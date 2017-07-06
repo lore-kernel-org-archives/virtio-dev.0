@@ -1,45 +1,75 @@
-Return-Path: virtio-dev-return-2365-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2361-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 6484E5818E02
-	for <virtio-dev@lists.oasis-open.org>; Mon, 10 Jul 2017 07:27:07 -0700 (PDT)
-Date: Mon, 10 Jul 2017 17:27:04 +0300
+	by lists.oasis-open.org (Postfix) with ESMTP id EE9CF5819398
+	for <virtio-dev@lists.oasis-open.org>; Wed,  5 Jul 2017 17:08:40 -0700 (PDT)
+Date: Thu, 6 Jul 2017 03:08:37 +0300
 From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20170710172253-mutt-send-email-mst@kernel.org>
-References: <3c1998ea-c802-8d82-64c4-de2db6fa05f4@oracle.com>
+Message-ID: <20170706030726-mutt-send-email-mst@kernel.org>
+References: <1498617479-5809-1-git-send-email-wei.w.wang@intel.com>
+ <20170703220017-mutt-send-email-mst@kernel.org>
+ <595B7617.4060203@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <3c1998ea-c802-8d82-64c4-de2db6fa05f4@oracle.com>
-Subject: [virtio-dev] Re: Recommendations about VirtIo Spec Patch Submission
-To: Mihai Carabas <mihai.carabas@oracle.com>
-Cc: virtio-dev@lists.oasis-open.org, virt_wizards_us_grp@oracle.com
+In-Reply-To: <595B7617.4060203@intel.com>
+Subject: Re: [virtio-dev] Re: [PATCH v4] virtio-net: enable configurable tx
+ queue size
+To: Wei Wang <wei.w.wang@intel.com>
+Cc: jasowang@redhat.com, eblake@redhat.com, virtio-dev@lists.oasis-open.org, qemu-devel@nongnu.org, armbru@redhat.com, stefanha@gmail.com, marcandre.lureau@gmail.com, pbonzini@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Mon, Jul 10, 2017 at 04:07:39PM +0300, Mihai Carabas wrote:
-> Hello Michael,
+On Tue, Jul 04, 2017 at 07:03:51PM +0800, Wei Wang wrote:
+> On 07/04/2017 03:18 AM, Michael S. Tsirkin wrote:
+> > On Wed, Jun 28, 2017 at 10:37:59AM +0800, Wei Wang wrote:
+> > > This patch enables the virtio-net tx queue size to be configurable
+> > > between 256 (the default queue size) and 1024 by the user when the
+> > > vhost-user backend is used.
+> > > 
+> > > Currently, the maximum tx queue size for other backends is 512 due
+> > > to the following limitations:
+> > > - QEMU backend: the QEMU backend implementation in some cases may
+> > > send 1024+1 iovs to writev.
+> > > - Vhost_net backend: there are possibilities that the guest sends
+> > > a vring_desc of memory which crosses a MemoryRegion thereby
+> > > generating more than 1024 iovs after translation from guest-physical
+> > > address in the backend.
+> > > 
+> > > Signed-off-by: Wei Wang <wei.w.wang@intel.com>
+> > I was going to apply this, but run into a host of issues:
+> > 
+> > This segfaults:
+> > $ ./x86_64-softmmu/qemu-system-x86_64 -device virtio-net,tx_queue_size=1024
+> > Segmentation fault (core dumped)
+> > 
+> > I tried to tweak this code a bit to avoid the crash, and I run into a further issue:
+> > $ ./x86_64-softmmu/qemu-system-x86_64 -device virtio-net,tx_queue_size=1024
+> > Bad ram offset aa49002
+> > Aborted (core dumped)
+> > 
+> > the second issue is especially concerning.
+> > 
 > 
-> My name is Mihai Carabas from Oracle Linux and Virtualization Engineering
-> team. We currently are working on some VirtIo driver implementations. During
-> the documentation part of the driver, we found some inconsistencies in
-> various paragraphs of the VirtIo 1.0 Spec (all of them are about the
-> form/terms used in the specification). What is the recommended way to submit
-> patches with proposed modifications?
-> 
-> Thank you,
-> Mihai Carabas
-> 
-> Oracle Linux and Virtualization Engineering
+> AFAIK, all the virtio-net backends require "-netdev". I'm wondering if there
+> is any case that virtio-net can work without a "-netdev" created in QEMU?
 
-The most appropriate mailing list for spec comments is virtio-comment:
-https://www.oasis-open.org/committees/tc_home.php?wg_abbrev=virtio#feedback
+Of course. Old style -net with vlans still work.
 
-We are using git-svn to work with the repository:
-https://tools.oasis-open.org/version-control/browse/wsvn/virtio/trunk/git-svn.txt
+> If not, would it be better if we just stop the device creation at the
+> beginning of
+> virtio_net_device_realize() if "-netdev" is not given (i.e.
+> !n->nic_conf.peers.ncs[0])?
+> 
+> Best,
+> Wei
+
+That will break a ton of scripts without any real benefit
+to users.
+
 
 -- 
 MST
