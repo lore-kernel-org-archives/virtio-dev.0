@@ -1,145 +1,79 @@
-Return-Path: virtio-dev-return-2362-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2363-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 71A1158193B1
-	for <virtio-dev@lists.oasis-open.org>; Thu,  6 Jul 2017 06:48:57 -0700 (PDT)
-Date: Thu, 6 Jul 2017 16:48:54 +0300
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20170706164819-mutt-send-email-mst@kernel.org>
+	by lists.oasis-open.org (Postfix) with ESMTP id 72E1058193BA
+	for <virtio-dev@lists.oasis-open.org>; Thu,  6 Jul 2017 08:30:43 -0700 (PDT)
+From: "Wang, Wei W" <wei.w.wang@intel.com>
+Date: Thu, 6 Jul 2017 15:30:37 +0000
+Message-ID: <286AC319A985734F985F78AFA26841F7392745A8@shsmsx102.ccr.corp.intel.com>
 References: <1498617479-5809-1-git-send-email-wei.w.wang@intel.com>
+ <20170706164819-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20170706164819-mutt-send-email-mst@kernel.org>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1498617479-5809-1-git-send-email-wei.w.wang@intel.com>
-Subject: [virtio-dev] Re: [PATCH v4] virtio-net: enable configurable tx queue size
-To: Wei Wang <wei.w.wang@intel.com>
-Cc: jasowang@redhat.com, eblake@redhat.com, virtio-dev@lists.oasis-open.org, qemu-devel@nongnu.org, armbru@redhat.com, stefanha@gmail.com, marcandre.lureau@gmail.com, pbonzini@redhat.com
+Subject: [virtio-dev] RE: [PATCH v4] virtio-net: enable configurable tx queue size
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: "jasowang@redhat.com" <jasowang@redhat.com>, "eblake@redhat.com" <eblake@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "qemu-devel@nongnu.org" <qemu-devel@nongnu.org>, "armbru@redhat.com" <armbru@redhat.com>, "stefanha@gmail.com" <stefanha@gmail.com>, "marcandre.lureau@gmail.com" <marcandre.lureau@gmail.com>, "pbonzini@redhat.com" <pbonzini@redhat.com>, Jan Scheurich <jan.scheurich@ericsson.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, Jun 28, 2017 at 10:37:59AM +0800, Wei Wang wrote:
-> This patch enables the virtio-net tx queue size to be configurable
-> between 256 (the default queue size) and 1024 by the user when the
-> vhost-user backend is used.
-> 
-> Currently, the maximum tx queue size for other backends is 512 due
-> to the following limitations:
-> - QEMU backend: the QEMU backend implementation in some cases may
-> send 1024+1 iovs to writev.
-> - Vhost_net backend: there are possibilities that the guest sends
-> a vring_desc of memory which crosses a MemoryRegion thereby
-> generating more than 1024 iovs after translation from guest-physical
-> address in the backend.
-> 
-> Signed-off-by: Wei Wang <wei.w.wang@intel.com>
+On Thursday, July 6, 2017 9:49 PM, Michael S. Tsirkin wrote:
+> On Wed, Jun 28, 2017 at 10:37:59AM +0800, Wei Wang wrote:
+> > This patch enables the virtio-net tx queue size to be configurable
+> > between 256 (the default queue size) and 1024 by the user when the
+> > vhost-user backend is used.
+> >
+> > Currently, the maximum tx queue size for other backends is 512 due to
+> > the following limitations:
+> > - QEMU backend: the QEMU backend implementation in some cases may send
+> > 1024+1 iovs to writev.
+> > - Vhost_net backend: there are possibilities that the guest sends a
+> > vring_desc of memory which crosses a MemoryRegion thereby generating
+> > more than 1024 iovs after translation from guest-physical address in
+> > the backend.
+> >
+> > Signed-off-by: Wei Wang <wei.w.wang@intel.com>
+>=20
+> Could you pls add a bit info about how this was tested?
+> Was any special setup for dpdk necessary?
 
-Could you pls add a bit info about how this was tested?
-Was any special setup for dpdk necessary?
+Yes, I used the vhost-user implementation in DPDK. So, on the host, I have=
+=20
+the legacy ovs-dpdk setup ready (I'm using dpdk-stable-16.11.1 and openvswi=
+tch-2.6.1,
+the setup steps can be found inside the source code directory).
 
-Thanks!
+When booting the guest, I have the following QEMU commands:
+-chardev socket,id=3Dchar1,path=3D/usr/local/var/run/openvswitch/vhost-user=
+-1
+-netdev type=3Dvhost-user,id=3Dmynet1,chardev=3Dchar1,vhostforce
+-device virtio-net-pci,mac=3D52:54:00:00:00:01,netdev=3Dmynet1,tx_queue_siz=
+e=3D1024
 
-> ---
->  hw/net/virtio-net.c            | 32 ++++++++++++++++++++++++++++++--
->  include/hw/virtio/virtio-net.h |  1 +
->  2 files changed, 31 insertions(+), 2 deletions(-)
-> 
-> diff --git a/hw/net/virtio-net.c b/hw/net/virtio-net.c
-> index 91eddaf..a1fc0db 100644
-> --- a/hw/net/virtio-net.c
-> +++ b/hw/net/virtio-net.c
-> @@ -34,8 +34,11 @@
->  
->  /* previously fixed value */
->  #define VIRTIO_NET_RX_QUEUE_DEFAULT_SIZE 256
-> +#define VIRTIO_NET_TX_QUEUE_DEFAULT_SIZE 256
-> +
->  /* for now, only allow larger queues; with virtio-1, guest can downsize */
->  #define VIRTIO_NET_RX_QUEUE_MIN_SIZE VIRTIO_NET_RX_QUEUE_DEFAULT_SIZE
-> +#define VIRTIO_NET_TX_QUEUE_MIN_SIZE VIRTIO_NET_TX_QUEUE_DEFAULT_SIZE
->  
->  /*
->   * Calculate the number of bytes up to and including the given 'field' of
-> @@ -1508,15 +1511,18 @@ static void virtio_net_add_queue(VirtIONet *n, int index)
->  
->      n->vqs[index].rx_vq = virtio_add_queue(vdev, n->net_conf.rx_queue_size,
->                                             virtio_net_handle_rx);
-> +
->      if (n->net_conf.tx && !strcmp(n->net_conf.tx, "timer")) {
->          n->vqs[index].tx_vq =
-> -            virtio_add_queue(vdev, 256, virtio_net_handle_tx_timer);
-> +            virtio_add_queue(vdev, n->net_conf.tx_queue_size,
-> +                             virtio_net_handle_tx_timer);
->          n->vqs[index].tx_timer = timer_new_ns(QEMU_CLOCK_VIRTUAL,
->                                                virtio_net_tx_timer,
->                                                &n->vqs[index]);
->      } else {
->          n->vqs[index].tx_vq =
-> -            virtio_add_queue(vdev, 256, virtio_net_handle_tx_bh);
-> +            virtio_add_queue(vdev, n->net_conf.tx_queue_size,
-> +                             virtio_net_handle_tx_bh);
->          n->vqs[index].tx_bh = qemu_bh_new(virtio_net_tx_bh, &n->vqs[index]);
->      }
->  
-> @@ -1927,6 +1933,17 @@ static void virtio_net_device_realize(DeviceState *dev, Error **errp)
->          return;
->      }
->  
-> +    if (n->net_conf.tx_queue_size < VIRTIO_NET_TX_QUEUE_MIN_SIZE ||
-> +        n->net_conf.tx_queue_size > VIRTQUEUE_MAX_SIZE ||
-> +        !is_power_of_2(n->net_conf.tx_queue_size)) {
-> +        error_setg(errp, "Invalid tx_queue_size (= %" PRIu16 "), "
-> +                   "must be a power of 2 between %d and %d",
-> +                   n->net_conf.tx_queue_size, VIRTIO_NET_TX_QUEUE_MIN_SIZE,
-> +                   VIRTQUEUE_MAX_SIZE);
-> +        virtio_cleanup(vdev);
-> +        return;
-> +    }
-> +
->      n->max_queues = MAX(n->nic_conf.peers.queues, 1);
->      if (n->max_queues * 2 + 1 > VIRTIO_QUEUE_MAX) {
->          error_setg(errp, "Invalid number of queues (= %" PRIu32 "), "
-> @@ -1947,6 +1964,15 @@ static void virtio_net_device_realize(DeviceState *dev, Error **errp)
->          error_report("Defaulting to \"bh\"");
->      }
->  
-> +    /*
-> +     * Currently, backends other than vhost-user don't support 1024 queue
-> +     * size.
-> +     */
-> +    if (n->net_conf.tx_queue_size == VIRTQUEUE_MAX_SIZE &&
-> +        n->nic_conf.peers.ncs[0]->info->type != NET_CLIENT_DRIVER_VHOST_USER) {
-> +        n->net_conf.tx_queue_size = VIRTIO_NET_TX_QUEUE_DEFAULT_SIZE;
-> +    }
-> +
->      for (i = 0; i < n->max_queues; i++) {
->          virtio_net_add_queue(n, i);
->      }
-> @@ -2106,6 +2132,8 @@ static Property virtio_net_properties[] = {
->      DEFINE_PROP_STRING("tx", VirtIONet, net_conf.tx),
->      DEFINE_PROP_UINT16("rx_queue_size", VirtIONet, net_conf.rx_queue_size,
->                         VIRTIO_NET_RX_QUEUE_DEFAULT_SIZE),
-> +    DEFINE_PROP_UINT16("tx_queue_size", VirtIONet, net_conf.tx_queue_size,
-> +                       VIRTIO_NET_TX_QUEUE_DEFAULT_SIZE),
->      DEFINE_PROP_UINT16("host_mtu", VirtIONet, net_conf.mtu, 0),
->      DEFINE_PROP_BOOL("x-mtu-bypass-backend", VirtIONet, mtu_bypass_backend,
->                       true),
-> diff --git a/include/hw/virtio/virtio-net.h b/include/hw/virtio/virtio-net.h
-> index 602b486..b81b6a4 100644
-> --- a/include/hw/virtio/virtio-net.h
-> +++ b/include/hw/virtio/virtio-net.h
-> @@ -36,6 +36,7 @@ typedef struct virtio_net_conf
->      int32_t txburst;
->      char *tx;
->      uint16_t rx_queue_size;
-> +    uint16_t tx_queue_size;
->      uint16_t mtu;
->  } virtio_net_conf;
->  
-> -- 
-> 2.7.4
+To check the guest tx queue size, I simply added a printk() at the end of v=
+irtnet_probe()
+to print out vi->sq->vq->num_free, which initially equals to the queue size=
+.
+
+Then, I did Ping and netperf tests to transmit packets between VMs, which w=
+orked fine.
+
+If the related configuration support to Libvirt is ready, I think we can ge=
+t the customer
+to try in their test environment, too.
+
+Best,
+Wei
+
+
+
+
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
