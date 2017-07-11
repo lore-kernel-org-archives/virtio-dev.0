@@ -1,45 +1,49 @@
-Return-Path: virtio-dev-return-2381-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 1A32E5818E57
-	for <virtio-dev@lists.oasis-open.org>; Wed, 12 Jul 2017 06:03:18 -0700 (PDT)
-Message-ID: <59661EA2.2040708@intel.com>
-Date: Wed, 12 Jul 2017 21:05:38 +0800
-From: Wei Wang <wei.w.wang@intel.com>
-MIME-Version: 1.0
-References: <1497004901-30593-1-git-send-email-wei.w.wang@intel.com> <1497004901-30593-4-git-send-email-wei.w.wang@intel.com> <20170613200049-mutt-send-email-mst@kernel.org> <594240E9.2070705@intel.com> <20170628150450.GA1402@bombadil.infradead.org>
-In-Reply-To: <20170628150450.GA1402@bombadil.infradead.org>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [virtio-dev] Re: [PATCH v11 3/6] virtio-balloon: VIRTIO_BALLOON_F_PAGE_CHUNKS
-To: Matthew Wilcox <willy@infradead.org>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>, virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, qemu-devel@nongnu.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, linux-mm@kvack.org, david@redhat.com, dave.hansen@intel.com, cornelia.huck@de.ibm.com, akpm@linux-foundation.org, mgorman@techsingularity.net, aarcange@redhat.com, amit.shah@redhat.com, pbonzini@redhat.com, liliang.opensource@gmail.com
+Return-Path: virtio-return-2765-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio@lists.oasis-open.org>
+List-Post: <mailto:virtio@lists.oasis-open.org>
+List-Help: <mailto:virtio-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
+From: Cornelia Huck <cohuck@redhat.com>
+Date: Tue, 11 Jul 2017 13:51:29 +0200
+Message-Id: <20170711115129.18828-1-cohuck@redhat.com>
+Subject: [virtio] [PATCH] virtio-net: fix virtqueue numbering error
+To: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Hi Matthew,
+receiveq(n) is at position 2(n-1)+1. Same error for transmitq(n)
+and controlq.
 
-On 06/28/2017 11:04 PM, Matthew Wilcox wrote:
-> On Thu, Jun 15, 2017 at 04:10:17PM +0800, Wei Wang wrote:
->>> So you still have a home-grown bitmap. I'd like to know why
->>> isn't xbitmap suggested for this purpose by Matthew Wilcox
->>> appropriate. Please add a comment explaining the requirements
->>> from the data structure.
->> I didn't find his xbitmap being upstreamed, did you?
-> It doesn't have any users in the tree yet.  Can't add code with new users.
-> You should be the first!
+VIRTIO-161
 
-Glad to be the first person eating your tomato. Taste good :-)
-Please have a check how it's cooked in the latest v12 patches. Thanks.
+Signed-off-by: Cornelia Huck <cohuck@redhat.com>
+---
+ content.tex | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-Best,
-Wei
+diff --git a/content.tex b/content.tex
+index d8bde3a..2319729 100644
+--- a/content.tex
++++ b/content.tex
+@@ -3064,9 +3064,9 @@ features.
+ \item[0] receiveq1
+ \item[1] transmitq1
+ \item[\ldots]
+-\item[2N] receiveqN
+-\item[2N+1] transmitqN
+-\item[2N+2] controlq
++\item[2(N-1)] receiveqN
++\item[2(N-1)+1] transmitqN
++\item[2(N-1)+2] controlq
+ \end{description}
+ 
+  N=1 if VIRTIO_NET_F_MQ is not negotiated, otherwise N is set by
+-- 
+2.13.0
 
 
 ---------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+To unsubscribe from this mail list, you must leave the OASIS TC that 
+generates this mail.  Follow this link to all your TCs in OASIS at:
+https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
 
