@@ -1,79 +1,168 @@
-Return-Path: virtio-dev-return-2425-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2377-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 7D9795818F7B
-	for <virtio-dev@lists.oasis-open.org>; Fri, 28 Jul 2017 16:01:49 -0700 (PDT)
-Date: Sat, 29 Jul 2017 02:01:35 +0300
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20170729020006-mutt-send-email-mst@kernel.org>
+	by lists.oasis-open.org (Postfix) with ESMTP id 855E15818B02
+	for <virtio-dev@lists.oasis-open.org>; Wed, 12 Jul 2017 05:47:46 -0700 (PDT)
+From: Wei Wang <wei.w.wang@intel.com>
+Date: Wed, 12 Jul 2017 20:40:19 +0800
+Message-Id: <1499863221-16206-7-git-send-email-wei.w.wang@intel.com>
+In-Reply-To: <1499863221-16206-1-git-send-email-wei.w.wang@intel.com>
 References: <1499863221-16206-1-git-send-email-wei.w.wang@intel.com>
- <1499863221-16206-6-git-send-email-wei.w.wang@intel.com>
- <597AF4EF.4020705@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <597AF4EF.4020705@intel.com>
-Subject: [virtio-dev] Re: [PATCH v12 5/8] virtio-balloon: VIRTIO_BALLOON_F_SG
-To: Wei Wang <wei.w.wang@intel.com>
-Cc: linux-kernel@vger.kernel.org, qemu-devel@nongnu.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, linux-mm@kvack.org, david@redhat.com, cornelia.huck@de.ibm.com, akpm@linux-foundation.org, mgorman@techsingularity.net, aarcange@redhat.com, amit.shah@redhat.com, pbonzini@redhat.com, liliang.opensource@gmail.com, mhocko@kernel.org, willy@infradead.org, virtio-dev@lists.oasis-open.org, yang.zhang.wz@gmail.com, quan.xu@aliyun.com
+Subject: [virtio-dev] [PATCH v12 6/8] mm: support reporting free page blocks
+To: linux-kernel@vger.kernel.org, qemu-devel@nongnu.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, linux-mm@kvack.org, mst@redhat.com, david@redhat.com, cornelia.huck@de.ibm.com, akpm@linux-foundation.org, mgorman@techsingularity.net, aarcange@redhat.com, amit.shah@redhat.com, pbonzini@redhat.com, wei.w.wang@intel.com, liliang.opensource@gmail.com
+Cc: virtio-dev@lists.oasis-open.org, yang.zhang.wz@gmail.com, quan.xu@aliyun.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Fri, Jul 28, 2017 at 04:25:19PM +0800, Wei Wang wrote:
-> On 07/12/2017 08:40 PM, Wei Wang wrote:
-> > Add a new feature, VIRTIO_BALLOON_F_SG, which enables to
-> > transfer a chunk of ballooned (i.e. inflated/deflated) pages using
-> > scatter-gather lists to the host.
-> > 
-> > The implementation of the previous virtio-balloon is not very
-> > efficient, because the balloon pages are transferred to the
-> > host one by one. Here is the breakdown of the time in percentage
-> > spent on each step of the balloon inflating process (inflating
-> > 7GB of an 8GB idle guest).
-> > 
-> > 1) allocating pages (6.5%)
-> > 2) sending PFNs to host (68.3%)
-> > 3) address translation (6.1%)
-> > 4) madvise (19%)
-> > 
-> > It takes about 4126ms for the inflating process to complete.
-> > The above profiling shows that the bottlenecks are stage 2)
-> > and stage 4).
-> > 
-> > This patch optimizes step 2) by transferring pages to the host in
-> > sgs. An sg describes a chunk of guest physically continuous pages.
-> > With this mechanism, step 4) can also be optimized by doing address
-> > translation and madvise() in chunks rather than page by page.
-> > 
-> > With this new feature, the above ballooning process takes ~491ms
-> > resulting in an improvement of ~88%.
-> > 
-> 
-> 
-> I found a recent mm patch, bb01b64cfab7c22f3848cb73dc0c2b46b8d38499
-> , zeros all the ballooned pages, which is very time consuming.
-> 
-> Tests show that the time to balloon 7G pages is increased from ~491 ms to
-> 2.8 seconds with the above patch.
+This patch adds support for reporting blocks of pages on the free list
+specified by the caller.
 
-Sounds like it should be reverted. Post a revert pls and
-we'll discuss.
+As pages can leave the free list during this call or immediately
+afterwards, they are not guaranteed to be free after the function
+returns. The only guarantee this makes is that the page was on the free
+list at some point in time after the function has been invoked.
 
-> How about moving the zero operation to the hypervisor? In this way, we
-> will have a much faster balloon process.
-> 
-> 
-> Best,
-> Wei
+Therefore, it is not safe for caller to use any pages on the returned
+block or to discard data that is put there after the function returns.
+However, it is safe for caller to discard data that was in one of these
+pages before the function was invoked.
 
-Or in other words hypervisors should not be stupid and
-should not try to run ksm on DONTNEED pages.
+Signed-off-by: Wei Wang <wei.w.wang@intel.com>
+Signed-off-by: Liang Li <liang.z.li@intel.com>
+---
+ include/linux/mm.h |  5 +++
+ mm/page_alloc.c    | 96 ++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 101 insertions(+)
 
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index 46b9ac5..76cb433 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -1835,6 +1835,11 @@ extern void free_area_init_node(int nid, unsigned long * zones_size,
+ 		unsigned long zone_start_pfn, unsigned long *zholes_size);
+ extern void free_initmem(void);
+ 
++#if IS_ENABLED(CONFIG_VIRTIO_BALLOON)
++extern int report_unused_page_block(struct zone *zone, unsigned int order,
++				    unsigned int migratetype,
++				    struct page **page);
++#endif
+ /*
+  * Free reserved pages within range [PAGE_ALIGN(start), end & PAGE_MASK)
+  * into the buddy system. The freed pages will be poisoned with pattern
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index 64b7d82..8b3c9dd 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -4753,6 +4753,102 @@ void show_free_areas(unsigned int filter, nodemask_t *nodemask)
+ 	show_swap_cache_info();
+ }
+ 
++#if IS_ENABLED(CONFIG_VIRTIO_BALLOON)
++
++/*
++ * Heuristically get a page block in the system that is unused.
++ * It is possible that pages from the page block are used immediately after
++ * report_unused_page_block() returns. It is the caller's responsibility
++ * to either detect or prevent the use of such pages.
++ *
++ * The free list to check: zone->free_area[order].free_list[migratetype].
++ *
++ * If the caller supplied page block (i.e. **page) is on the free list, offer
++ * the next page block on the list to the caller. Otherwise, offer the first
++ * page block on the list.
++ *
++ * Note: it is not safe for caller to use any pages on the returned
++ * block or to discard data that is put there after the function returns.
++ * However, it is safe for caller to discard data that was in one of these
++ * pages before the function was invoked.
++ *
++ * Return 0 when a page block is found on the caller specified free list.
++ */
++int report_unused_page_block(struct zone *zone, unsigned int order,
++			     unsigned int migratetype, struct page **page)
++{
++	struct zone *this_zone;
++	struct list_head *this_list;
++	int ret = 0;
++	unsigned long flags;
++
++	/* Sanity check */
++	if (zone == NULL || page == NULL || order >= MAX_ORDER ||
++	    migratetype >= MIGRATE_TYPES)
++		return -EINVAL;
++
++	/* Zone validity check */
++	for_each_populated_zone(this_zone) {
++		if (zone == this_zone)
++			break;
++	}
++
++	/* Got a non-existent zone from the caller? */
++	if (zone != this_zone)
++		return -EINVAL;
++
++	spin_lock_irqsave(&this_zone->lock, flags);
++
++	this_list = &zone->free_area[order].free_list[migratetype];
++	if (list_empty(this_list)) {
++		*page = NULL;
++		ret = 1;
++		goto out;
++	}
++
++	/* The caller is asking for the first free page block on the list */
++	if ((*page) == NULL) {
++		*page = list_first_entry(this_list, struct page, lru);
++		ret = 0;
++		goto out;
++	}
++
++	/*
++	 * The page block passed from the caller is not on this free list
++	 * anymore (e.g. a 1MB free page block has been split). In this case,
++	 * offer the first page block on the free list that the caller is
++	 * asking for.
++	 */
++	if (PageBuddy(*page) && order != page_order(*page)) {
++		*page = list_first_entry(this_list, struct page, lru);
++		ret = 0;
++		goto out;
++	}
++
++	/*
++	 * The page block passed from the caller has been the last page block
++	 * on the list.
++	 */
++	if ((*page)->lru.next == this_list) {
++		*page = NULL;
++		ret = 1;
++		goto out;
++	}
++
++	/*
++	 * Finally, fall into the regular case: the page block passed from the
++	 * caller is still on the free list. Offer the next one.
++	 */
++	*page = list_next_entry((*page), lru);
++	ret = 0;
++out:
++	spin_unlock_irqrestore(&this_zone->lock, flags);
++	return ret;
++}
++EXPORT_SYMBOL(report_unused_page_block);
++
++#endif
++
+ static void zoneref_set_zone(struct zone *zone, struct zoneref *zoneref)
+ {
+ 	zoneref->zone = zone;
 -- 
-MST
+2.7.4
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
