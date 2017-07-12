@@ -1,403 +1,122 @@
-Return-Path: virtio-dev-return-2401-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2380-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 5CEE01CB8084
-	for <virtio-dev@lists.oasis-open.org>; Mon, 17 Jul 2017 07:14:33 -0700 (PDT)
-From: "Zeng, Xin" <xin.zeng@intel.com>
-Date: Mon, 17 Jul 2017 14:14:27 +0000
-Message-ID: <82063967A54EF84C8AFCD6BD7F6AD93310D7102B@SHSMSX103.ccr.corp.intel.com>
-References: <1498231879-3795-1-git-send-email-xin.zeng@intel.com>
-In-Reply-To: <1498231879-3795-1-git-send-email-xin.zeng@intel.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	by lists.oasis-open.org (Postfix) with ESMTP id F17BF5818B02
+	for <virtio-dev@lists.oasis-open.org>; Wed, 12 Jul 2017 05:54:44 -0700 (PDT)
+Message-ID: <59661CA6.5040903@intel.com>
+Date: Wed, 12 Jul 2017 20:57:10 +0800
+From: Wei Wang <wei.w.wang@intel.com>
 MIME-Version: 1.0
-Subject: [virtio-dev] RE: [PATCH] crypto: virtio - Refacotor virtio_crypto driver for new
- virito crypto services
-To: "herbert@gondor.apana.org.au" <herbert@gondor.apana.org.au>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
-Cc: "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>, "arei.gonglei@huawei.com" <arei.gonglei@huawei.com>
+References: <1497004901-30593-1-git-send-email-wei.w.wang@intel.com> <1497004901-30593-7-git-send-email-wei.w.wang@intel.com> <20170620190343-mutt-send-email-mst@kernel.org> <5949E7C0.3050106@intel.com> <20170621151922-mutt-send-email-mst@kernel.org> <594B8287.6000706@intel.com> <20170628175956-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20170628175956-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [virtio-dev] Re: [PATCH v11 6/6] virtio-balloon: VIRTIO_BALLOON_F_CMD_VQ
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "qemu-devel@nongnu.org" <qemu-devel@nongnu.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "david@redhat.com" <david@redhat.com>, "Hansen, Dave" <dave.hansen@intel.com>, "cornelia.huck@de.ibm.com" <cornelia.huck@de.ibm.com>, "akpm@linux-foundation.org" <akpm@linux-foundation.org>, "mgorman@techsingularity.net" <mgorman@techsingularity.net>, "aarcange@redhat.com" <aarcange@redhat.com>, "amit.shah@redhat.com" <amit.shah@redhat.com>, "pbonzini@redhat.com" <pbonzini@redhat.com>, "liliang.opensource@gmail.com" <liliang.opensource@gmail.com>, "riel@redhat.com" <riel@redhat.com>, "nilal@redhat.com" <nilal@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Hi Herbert:
-   Ping... any comments for this patch?
+On 06/28/2017 11:01 PM, Michael S. Tsirkin wrote:
+> On Thu, Jun 22, 2017 at 04:40:39PM +0800, Wei Wang wrote:
+>> On 06/21/2017 08:28 PM, Michael S. Tsirkin wrote:
+>>> On Wed, Jun 21, 2017 at 11:28:00AM +0800, Wei Wang wrote:
+>>>> On 06/21/2017 12:18 AM, Michael S. Tsirkin wrote:
+>>>>> On Fri, Jun 09, 2017 at 06:41:41PM +0800, Wei Wang wrote:
+>>>>>> -	if (!virtqueue_indirect_desc_table_add(vq, desc, num)) {
+>>>>>> +	if (!virtqueue_indirect_desc_table_add(vq, desc, *num)) {
+>>>>>>     		virtqueue_kick(vq);
+>>>>>> -		wait_event(vb->acked, virtqueue_get_buf(vq, &len));
+>>>>>> -		vb->balloon_page_chunk.chunk_num = 0;
+>>>>>> +		if (busy_wait)
+>>>>>> +			while (!virtqueue_get_buf(vq, &len) &&
+>>>>>> +			       !virtqueue_is_broken(vq))
+>>>>>> +				cpu_relax();
+>>>>>> +		else
+>>>>>> +			wait_event(vb->acked, virtqueue_get_buf(vq, &len));
+>>>>> This is something I didn't previously notice.
+>>>>> As you always keep a single buffer in flight, you do not
+>>>>> really need indirect at all. Just add all descriptors
+>>>>> in the ring directly, then kick.
+>>>>>
+>>>>> E.g.
+>>>>> 	virtqueue_add_first
+>>>>> 	virtqueue_add_next
+>>>>> 	virtqueue_add_last
+>>>>>
+>>>>> ?
+>>>>>
+>>>>> You also want a flag to avoid allocations but there's no need to do it
+>>>>> per descriptor, set it on vq.
+>>>>>
+>>>> Without using the indirect table, I'm thinking about changing to use
+>>>> the standard sg (i.e. struct scatterlist), instead of vring_desc, so that
+>>>> we don't need to modify or add any new functions of virtqueue_add().
+>>>>
+>>>> In this case, we will kmalloc an array of sgs in probe(), and we can add
+>>>> the sgs one by one to the vq, which won't trigger the allocation of an
+>>>> indirect table inside virtqueue_add(), and then kick when all are added.
+>>>>
+>>>> Best,
+>>>> Wei
+>>> And allocate headers too? This can work. API extensions aren't
+>>> necessarily a bad idea though. The API I suggest above is preferable
+>>> for the simple reason that it can work without INDIRECT flag
+>>> support in hypervisor.
+>> OK, probably we don't need to add a desc to the vq - we can just use
+>> the vq's desc, like this:
+>>
+>> int virtqueue_add_first(struct virtqueue *_vq,
+>>                                       uint64_t addr,
+>>                                       uint32_t len,
+>>                                       bool in,
+>>                                       unsigned int *idx) {
+>>
+>>      ...
+>>     uint16_t desc_flags = in ? VRING_DESC_F_NEXT | VRING_DESC_F_WRITE :
+>>                                               VRING_DESC_F_NEXT;
+>>
+>>      vq->vring.desc[vq->free_head].addr = addr;
+>>      vq->vring.desc[vq->free_head].len = len;
+>>      vq->vring.desc[vq->free_head].flags = cpu_to_virtio16(_vq->vdev, flags);
+>>      /* return to the caller the desc id */
+>>      *idx = vq->free_head;
+>>      ...
+>> }
+>>
+>> int virtqueue_add_next(struct virtqueue *_vq,
+>>                                       uint64_t addr,
+>>                                       uint32_t len,
+>>                                       bool in,
+>>                                       bool end,
+>>                                       unsigned int *idx) {
+>>      ...
+>>      vq->vring.desc[*idx].next = vq->free_head;
+>>      vq->vring.desc[vq->free_head].addr = addr;
+>>      ...
+>>      if (end)
+>>          remove the VRING_DESC_F_NEXT flag
+>> }
+>>
+> Add I would say add-last.
+>
+>> What do you think? We can also combine the two functions into one.
+>>
+>>
+>>
+>> Best,
+>> Wei
+> With an enum? Yes that's also an option.
+>
 
-Regards
-Xin
+Thanks for the suggestion. I shifted it a little bit, please have a check
+the latest v12 patches that I just sent out.
 
-< -----Original Message-----
-< From: Zeng, Xin
-< Sent: Friday, June 23, 2017 11:31 PM
-< To: herbert@gondor.apana.org.au; virtio-dev@lists.oasis-open.org
-< Cc: linux-crypto@vger.kernel.org; arei.gonglei@huawei.com; Zeng, Xin
-< <xin.zeng@intel.com>
-< Subject: [PATCH] crypto: virtio - Refacotor virtio_crypto driver for new =
-virito
-< crypto services
-<=20
-< In current virtio crypto device driver, some common data structures and
-< implementations that should be used by other virtio crypto algorithms
-< (e.g. asymmetric crypto algorithms) introduce symmetric crypto algorithms
-< specific implementations.
-< This patch refactors these pieces of code so that they can be reused by
-< other virtio crypto algorithms.
-<=20
-< Acked-by: Gonglei <arei.gonglei@huawei.com>
-< Signed-off-by: Xin Zeng <xin.zeng@intel.com>
-< ---
-<  drivers/crypto/virtio/virtio_crypto_algs.c   | 109 +++++++++++++++++++++=
-------
-<  drivers/crypto/virtio/virtio_crypto_common.h |  22 +-----
-<  drivers/crypto/virtio/virtio_crypto_core.c   |  37 ++-------
-<  3 files changed, 98 insertions(+), 70 deletions(-)
-<=20
-< diff --git a/drivers/crypto/virtio/virtio_crypto_algs.c
-< b/drivers/crypto/virtio/virtio_crypto_algs.c
-< index 49defda..5035b0d 100644
-< --- a/drivers/crypto/virtio/virtio_crypto_algs.c
-< +++ b/drivers/crypto/virtio/virtio_crypto_algs.c
-< @@ -27,12 +27,68 @@
-<  #include <uapi/linux/virtio_crypto.h>
-<  #include "virtio_crypto_common.h"
-<=20
-< +
-< +struct virtio_crypto_ablkcipher_ctx {
-< +	struct virtio_crypto *vcrypto;
-< +	struct crypto_tfm *tfm;
-< +
-< +	struct virtio_crypto_sym_session_info enc_sess_info;
-< +	struct virtio_crypto_sym_session_info dec_sess_info;
-< +};
-< +
-< +struct virtio_crypto_sym_request {
-< +	struct virtio_crypto_request base;
-< +
-< +	/* Cipher or aead */
-< +	uint32_t type;
-< +	struct virtio_crypto_ablkcipher_ctx *ablkcipher_ctx;
-< +	struct ablkcipher_request *ablkcipher_req;
-< +	uint8_t *iv;
-< +	/* Encryption? */
-< +	bool encrypt;
-< +};
-< +
-<  /*
-<   * The algs_lock protects the below global virtio_crypto_active_devs
-<   * and crypto algorithms registion.
-<   */
-<  static DEFINE_MUTEX(algs_lock);
-<  static unsigned int virtio_crypto_active_devs;
-< +static void virtio_crypto_ablkcipher_finalize_req(
-< +	struct virtio_crypto_sym_request *vc_sym_req,
-< +	struct ablkcipher_request *req,
-< +	int err);
-< +
-< +static void virtio_crypto_dataq_sym_callback
-< +		(struct virtio_crypto_request *vc_req, int len)
-< +{
-< +	struct virtio_crypto_sym_request *vc_sym_req =3D
-< +		container_of(vc_req, struct virtio_crypto_sym_request, base);
-< +	struct ablkcipher_request *ablk_req;
-< +	int error;
-< +
-< +	/* Finish the encrypt or decrypt process */
-< +	if (vc_sym_req->type =3D=3D VIRTIO_CRYPTO_SYM_OP_CIPHER) {
-< +		switch (vc_req->status) {
-< +		case VIRTIO_CRYPTO_OK:
-< +			error =3D 0;
-< +			break;
-< +		case VIRTIO_CRYPTO_INVSESS:
-< +		case VIRTIO_CRYPTO_ERR:
-< +			error =3D -EINVAL;
-< +			break;
-< +		case VIRTIO_CRYPTO_BADMSG:
-< +			error =3D -EBADMSG;
-< +			break;
-< +		default:
-< +			error =3D -EIO;
-< +			break;
-< +		}
-< +		ablk_req =3D vc_sym_req->ablkcipher_req;
-< +		virtio_crypto_ablkcipher_finalize_req(vc_sym_req,
-< +							ablk_req, error);
-< +	}
-< +}
-<=20
-<  static u64 virtio_crypto_alg_sg_nents_length(struct scatterlist *sg)
-<  {
-< @@ -286,13 +342,14 @@ static int virtio_crypto_ablkcipher_setkey(struct
-< crypto_ablkcipher *tfm,
-<  }
-<=20
-<  static int
-< -__virtio_crypto_ablkcipher_do_req(struct virtio_crypto_request *vc_req,
-< +__virtio_crypto_ablkcipher_do_req(struct virtio_crypto_sym_request
-< *vc_sym_req,
-<  		struct ablkcipher_request *req,
-<  		struct data_queue *data_vq)
-<  {
-<  	struct crypto_ablkcipher *tfm =3D crypto_ablkcipher_reqtfm(req);
-< +	struct virtio_crypto_ablkcipher_ctx *ctx =3D vc_sym_req->ablkcipher_ctx=
-;
-< +	struct virtio_crypto_request *vc_req =3D &vc_sym_req->base;
-<  	unsigned int ivsize =3D crypto_ablkcipher_ivsize(tfm);
-< -	struct virtio_crypto_ablkcipher_ctx *ctx =3D vc_req->ablkcipher_ctx;
-<  	struct virtio_crypto *vcrypto =3D ctx->vcrypto;
-<  	struct virtio_crypto_op_data_req *req_data;
-<  	int src_nents, dst_nents;
-< @@ -326,9 +383,9 @@ __virtio_crypto_ablkcipher_do_req(struct
-< virtio_crypto_request *vc_req,
-<  	}
-<=20
-<  	vc_req->req_data =3D req_data;
-< -	vc_req->type =3D VIRTIO_CRYPTO_SYM_OP_CIPHER;
-< +	vc_sym_req->type =3D VIRTIO_CRYPTO_SYM_OP_CIPHER;
-<  	/* Head of operation */
-< -	if (vc_req->encrypt) {
-< +	if (vc_sym_req->encrypt) {
-<  		req_data->header.session_id =3D
-<  			cpu_to_le64(ctx->enc_sess_info.session_id);
-<  		req_data->header.opcode =3D
-< @@ -383,7 +440,7 @@ __virtio_crypto_ablkcipher_do_req(struct
-< virtio_crypto_request *vc_req,
-<  	memcpy(iv, req->info, ivsize);
-<  	sg_init_one(&iv_sg, iv, ivsize);
-<  	sgs[num_out++] =3D &iv_sg;
-< -	vc_req->iv =3D iv;
-< +	vc_sym_req->iv =3D iv;
-<=20
-<  	/* Source data */
-<  	for (i =3D 0; i < src_nents; i++)
-< @@ -421,15 +478,18 @@ static int virtio_crypto_ablkcipher_encrypt(struct
-< ablkcipher_request *req)
-<  {
-<  	struct crypto_ablkcipher *atfm =3D crypto_ablkcipher_reqtfm(req);
-<  	struct virtio_crypto_ablkcipher_ctx *ctx =3D crypto_ablkcipher_ctx(atfm=
-);
-< -	struct virtio_crypto_request *vc_req =3D ablkcipher_request_ctx(req);
-< +	struct virtio_crypto_sym_request *vc_sym_req =3D
-< +				ablkcipher_request_ctx(req);
-< +	struct virtio_crypto_request *vc_req =3D &vc_sym_req->base;
-<  	struct virtio_crypto *vcrypto =3D ctx->vcrypto;
-<  	/* Use the first data virtqueue as default */
-<  	struct data_queue *data_vq =3D &vcrypto->data_vq[0];
-<=20
-< -	vc_req->ablkcipher_ctx =3D ctx;
-< -	vc_req->ablkcipher_req =3D req;
-< -	vc_req->encrypt =3D true;
-<  	vc_req->dataq =3D data_vq;
-< +	vc_req->alg_cb =3D virtio_crypto_dataq_sym_callback;
-< +	vc_sym_req->ablkcipher_ctx =3D ctx;
-< +	vc_sym_req->ablkcipher_req =3D req;
-< +	vc_sym_req->encrypt =3D true;
-<=20
-<  	return crypto_transfer_cipher_request_to_engine(data_vq->engine,
-< req);
-<  }
-< @@ -438,16 +498,18 @@ static int virtio_crypto_ablkcipher_decrypt(struct
-< ablkcipher_request *req)
-<  {
-<  	struct crypto_ablkcipher *atfm =3D crypto_ablkcipher_reqtfm(req);
-<  	struct virtio_crypto_ablkcipher_ctx *ctx =3D crypto_ablkcipher_ctx(atfm=
-);
-< -	struct virtio_crypto_request *vc_req =3D ablkcipher_request_ctx(req);
-< +	struct virtio_crypto_sym_request *vc_sym_req =3D
-< +				ablkcipher_request_ctx(req);
-< +	struct virtio_crypto_request *vc_req =3D &vc_sym_req->base;
-<  	struct virtio_crypto *vcrypto =3D ctx->vcrypto;
-<  	/* Use the first data virtqueue as default */
-<  	struct data_queue *data_vq =3D &vcrypto->data_vq[0];
-<=20
-< -	vc_req->ablkcipher_ctx =3D ctx;
-< -	vc_req->ablkcipher_req =3D req;
-< -
-< -	vc_req->encrypt =3D false;
-<  	vc_req->dataq =3D data_vq;
-< +	vc_req->alg_cb =3D virtio_crypto_dataq_sym_callback;
-< +	vc_sym_req->ablkcipher_ctx =3D ctx;
-< +	vc_sym_req->ablkcipher_req =3D req;
-< +	vc_sym_req->encrypt =3D false;
-<=20
-<  	return crypto_transfer_cipher_request_to_engine(data_vq->engine,
-< req);
-<  }
-< @@ -456,7 +518,7 @@ static int virtio_crypto_ablkcipher_init(struct crypt=
-o_tfm
-< *tfm)
-<  {
-<  	struct virtio_crypto_ablkcipher_ctx *ctx =3D crypto_tfm_ctx(tfm);
-<=20
-< -	tfm->crt_ablkcipher.reqsize =3D sizeof(struct virtio_crypto_request);
-< +	tfm->crt_ablkcipher.reqsize =3D sizeof(struct virtio_crypto_sym_request=
-);
-<  	ctx->tfm =3D tfm;
-<=20
-<  	return 0;
-< @@ -479,11 +541,13 @@ int virtio_crypto_ablkcipher_crypt_req(
-<  	struct crypto_engine *engine,
-<  	struct ablkcipher_request *req)
-<  {
-< -	struct virtio_crypto_request *vc_req =3D ablkcipher_request_ctx(req);
-< +	struct virtio_crypto_sym_request *vc_sym_req =3D
-< +				ablkcipher_request_ctx(req);
-< +	struct virtio_crypto_request *vc_req =3D &vc_sym_req->base;
-<  	struct data_queue *data_vq =3D vc_req->dataq;
-<  	int ret;
-<=20
-< -	ret =3D __virtio_crypto_ablkcipher_do_req(vc_req, req, data_vq);
-< +	ret =3D __virtio_crypto_ablkcipher_do_req(vc_sym_req, req, data_vq);
-<  	if (ret < 0)
-<  		return ret;
-<=20
-< @@ -492,14 +556,15 @@ int virtio_crypto_ablkcipher_crypt_req(
-<  	return 0;
-<  }
-<=20
-< -void virtio_crypto_ablkcipher_finalize_req(
-< -	struct virtio_crypto_request *vc_req,
-< +static void virtio_crypto_ablkcipher_finalize_req(
-< +	struct virtio_crypto_sym_request *vc_sym_req,
-<  	struct ablkcipher_request *req,
-<  	int err)
-<  {
-< -	crypto_finalize_cipher_request(vc_req->dataq->engine, req, err);
-< -
-< -	virtcrypto_clear_request(vc_req);
-< +	crypto_finalize_cipher_request(vc_sym_req->base.dataq->engine,
-< +					req, err);
-< +	kzfree(vc_sym_req->iv);
-< +	virtcrypto_clear_request(&vc_sym_req->base);
-<  }
-<=20
-<  static struct crypto_alg virtio_crypto_algs[] =3D { {
-< diff --git a/drivers/crypto/virtio/virtio_crypto_common.h
-< b/drivers/crypto/virtio/virtio_crypto_common.h
-< index da6d8c0..e976539 100644
-< --- a/drivers/crypto/virtio/virtio_crypto_common.h
-< +++ b/drivers/crypto/virtio/virtio_crypto_common.h
-< @@ -83,26 +83,16 @@ struct virtio_crypto_sym_session_info {
-<  	__u64 session_id;
-<  };
-<=20
-< -struct virtio_crypto_ablkcipher_ctx {
-< -	struct virtio_crypto *vcrypto;
-< -	struct crypto_tfm *tfm;
-< -
-< -	struct virtio_crypto_sym_session_info enc_sess_info;
-< -	struct virtio_crypto_sym_session_info dec_sess_info;
-< -};
-< +struct virtio_crypto_request;
-< +typedef void (*virtio_crypto_data_callback)
-< +		(struct virtio_crypto_request *vc_req, int len);
-<=20
-<  struct virtio_crypto_request {
-< -	/* Cipher or aead */
-< -	uint32_t type;
-<  	uint8_t status;
-< -	struct virtio_crypto_ablkcipher_ctx *ablkcipher_ctx;
-< -	struct ablkcipher_request *ablkcipher_req;
-<  	struct virtio_crypto_op_data_req *req_data;
-<  	struct scatterlist **sgs;
-< -	uint8_t *iv;
-< -	/* Encryption? */
-< -	bool encrypt;
-<  	struct data_queue *dataq;
-< +	virtio_crypto_data_callback alg_cb;
-<  };
-<=20
-<  int virtcrypto_devmgr_add_dev(struct virtio_crypto *vcrypto_dev);
-< @@ -119,10 +109,6 @@ void virtcrypto_dev_stop(struct virtio_crypto *vcryp=
-to);
-<  int virtio_crypto_ablkcipher_crypt_req(
-<  	struct crypto_engine *engine,
-<  	struct ablkcipher_request *req);
-< -void virtio_crypto_ablkcipher_finalize_req(
-< -	struct virtio_crypto_request *vc_req,
-< -	struct ablkcipher_request *req,
-< -	int err);
-<=20
-<  void
-<  virtcrypto_clear_request(struct virtio_crypto_request *vc_req);
-< diff --git a/drivers/crypto/virtio/virtio_crypto_core.c
-< b/drivers/crypto/virtio/virtio_crypto_core.c
-< index 21472e4..5752d4c 100644
-< --- a/drivers/crypto/virtio/virtio_crypto_core.c
-< +++ b/drivers/crypto/virtio/virtio_crypto_core.c
-< @@ -29,7 +29,6 @@ void
-<  virtcrypto_clear_request(struct virtio_crypto_request *vc_req)
-<  {
-<  	if (vc_req) {
-< -		kzfree(vc_req->iv);
-<  		kzfree(vc_req->req_data);
-<  		kfree(vc_req->sgs);
-<  	}
-< @@ -41,40 +40,18 @@ static void virtcrypto_dataq_callback(struct virtqueu=
-e
-< *vq)
-<  	struct virtio_crypto_request *vc_req;
-<  	unsigned long flags;
-<  	unsigned int len;
-< -	struct ablkcipher_request *ablk_req;
-< -	int error;
-<  	unsigned int qid =3D vq->index;
-<=20
-<  	spin_lock_irqsave(&vcrypto->data_vq[qid].lock, flags);
-<  	do {
-<  		virtqueue_disable_cb(vq);
-<  		while ((vc_req =3D virtqueue_get_buf(vq, &len)) !=3D NULL) {
-< -			if (vc_req->type =3D=3D VIRTIO_CRYPTO_SYM_OP_CIPHER)
-< {
-< -				switch (vc_req->status) {
-< -				case VIRTIO_CRYPTO_OK:
-< -					error =3D 0;
-< -					break;
-< -				case VIRTIO_CRYPTO_INVSESS:
-< -				case VIRTIO_CRYPTO_ERR:
-< -					error =3D -EINVAL;
-< -					break;
-< -				case VIRTIO_CRYPTO_BADMSG:
-< -					error =3D -EBADMSG;
-< -					break;
-< -				default:
-< -					error =3D -EIO;
-< -					break;
-< -				}
-< -				ablk_req =3D vc_req->ablkcipher_req;
-< -
-< -				spin_unlock_irqrestore(
-< -					&vcrypto->data_vq[qid].lock, flags);
-< -				/* Finish the encrypt or decrypt process */
-< -				virtio_crypto_ablkcipher_finalize_req(vc_req,
-< -				    ablk_req, error);
-< -				spin_lock_irqsave(
-< -					&vcrypto->data_vq[qid].lock, flags);
-< -			}
-< +			spin_unlock_irqrestore(
-< +				&vcrypto->data_vq[qid].lock, flags);
-< +			if (vc_req->alg_cb)
-< +				vc_req->alg_cb(vc_req, len);
-< +			spin_lock_irqsave(
-< +				&vcrypto->data_vq[qid].lock, flags);
-<  		}
-<  	} while (!virtqueue_enable_cb(vq));
-<  	spin_unlock_irqrestore(&vcrypto->data_vq[qid].lock, flags);
-< @@ -271,7 +248,7 @@ static int virtcrypto_update_status(struct virtio_cry=
-pto
-< *vcrypto)
-<=20
-<  			return -EPERM;
-<  		}
-< -		dev_info(&vcrypto->vdev->dev, "Accelerator is ready\n");
-< +		dev_info(&vcrypto->vdev->dev, "Accelerator device is ready\n");
-<  	} else {
-<  		virtcrypto_dev_stop(vcrypto);
-<  		dev_info(&vcrypto->vdev->dev, "Accelerator is not ready\n");
-< --
-< 2.4.11
-
+Best,
+Wei
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
