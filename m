@@ -1,114 +1,103 @@
-Return-Path: virtio-dev-return-2384-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2390-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 271725818E63
-	for <virtio-dev@lists.oasis-open.org>; Wed, 12 Jul 2017 06:56:08 -0700 (PDT)
-Date: Wed, 12 Jul 2017 16:56:00 +0300
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20170712163746-mutt-send-email-mst@kernel.org>
-References: <1499863221-16206-1-git-send-email-wei.w.wang@intel.com>
- <1499863221-16206-6-git-send-email-wei.w.wang@intel.com>
- <20170712160129-mutt-send-email-mst@kernel.org>
- <5966241C.9060503@intel.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 3CD0258192D3
+	for <virtio-dev@lists.oasis-open.org>; Thu, 13 Jul 2017 00:40:08 -0700 (PDT)
+Message-ID: <5967246B.9030804@intel.com>
+Date: Thu, 13 Jul 2017 15:42:35 +0800
+From: Wei Wang <wei.w.wang@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5966241C.9060503@intel.com>
+References: <1499863221-16206-1-git-send-email-wei.w.wang@intel.com> <1499863221-16206-6-git-send-email-wei.w.wang@intel.com> <20170712160129-mutt-send-email-mst@kernel.org> <5966241C.9060503@intel.com> <20170712163746-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20170712163746-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
 Subject: [virtio-dev] Re: [PATCH v12 5/8] virtio-balloon: VIRTIO_BALLOON_F_SG
-To: Wei Wang <wei.w.wang@intel.com>
+To: "Michael S. Tsirkin" <mst@redhat.com>
 Cc: linux-kernel@vger.kernel.org, qemu-devel@nongnu.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, linux-mm@kvack.org, david@redhat.com, cornelia.huck@de.ibm.com, akpm@linux-foundation.org, mgorman@techsingularity.net, aarcange@redhat.com, amit.shah@redhat.com, pbonzini@redhat.com, liliang.opensource@gmail.com, virtio-dev@lists.oasis-open.org, yang.zhang.wz@gmail.com, quan.xu@aliyun.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, Jul 12, 2017 at 09:29:00PM +0800, Wei Wang wrote:
-> On 07/12/2017 09:06 PM, Michael S. Tsirkin wrote:
-> > On Wed, Jul 12, 2017 at 08:40:18PM +0800, Wei Wang wrote:
-> > > diff --git a/include/linux/virtio.h b/include/linux/virtio.h
-> > > index 28b0e96..9f27101 100644
-> > > --- a/include/linux/virtio.h
-> > > +++ b/include/linux/virtio.h
-> > > @@ -57,8 +57,28 @@ int virtqueue_add_sgs(struct virtqueue *vq,
-> > >   		      void *data,
-> > >   		      gfp_t gfp);
-> > > +/* A desc with this init id is treated as an invalid desc */
-> > > +#define VIRTQUEUE_DESC_ID_INIT UINT_MAX
-> > > +int virtqueue_add_chain_desc(struct virtqueue *_vq,
-> > > +			     uint64_t addr,
-> > > +			     uint32_t len,
-> > > +			     unsigned int *head_id,
-> > > +			     unsigned int *prev_id,
-> > > +			     bool in);
-> > > +
-> > > +int virtqueue_add_chain(struct virtqueue *_vq,
-> > > +			unsigned int head,
-> > > +			bool indirect,
-> > > +			struct vring_desc *indirect_desc,
-> > > +			void *data,
-> > > +			void *ctx);
-> > > +
-> > >   bool virtqueue_kick(struct virtqueue *vq);
-> > > +bool virtqueue_kick_sync(struct virtqueue *vq);
-> > > +
-> > > +bool virtqueue_kick_async(struct virtqueue *vq, wait_queue_head_t wq);
-> > > +
-> > >   bool virtqueue_kick_prepare(struct virtqueue *vq);
-> > >   bool virtqueue_notify(struct virtqueue *vq);
-> > I don't much care for this API. It does exactly what balloon needs,
-> > but at cost of e.g. transparently busy-waiting. Unlikely to be
-> > a good fit for anything else.
-> 
-> If you were referring to this API - virtqueue_add_chain_desc():
-> 
-> Busy waiting only happens when the vq is full (i.e. no desc left). If
-> necessary, I think we can add an input parameter like
-> "bool busywaiting", then the caller can decide to simply get a -ENOSPC
-> or busy wait to add when no desc is available.
+On 07/12/2017 09:56 PM, Michael S. Tsirkin wrote:
+>
+> So the way I see it, there are several issues:
+>
+> - internal wait - forces multiple APIs like kick/kick_sync
+>    note how kick_sync can fail but your code never checks return code
+> - need to re-write the last descriptor - might not work
+>    for alternative layouts which always expose descriptors
+>    immediately
 
-I think this just shows this API is too high level.
-This policy should live in drivers.
+Probably it wasn't clear. Please let me explain the two functions here:
 
-> > 
-> > If you don't like my original _first/_next/_last, you will
-> > need to come up with something else.
-> 
-> I thought the above virtqueue_add_chain_des() performs the same
-> functionality as _first/next/last, which are used to grab descs from the
-> vq and chain them together. If not, could you please elaborate the
-> usage of the original proposal?
-> 
-> Best,
-> Wei
-> 
+1) virtqueue_add_chain_desc(vq, head_id, prev_id,..):
+grabs a desc from the vq and inserts it to the chain tail (which is 
+indexed by
+prev_id, probably better to call it tail_id). Then, the new added desc 
+becomes
+the tail (i.e. the last desc). The _F_NEXT flag is cleared for each desc 
+when it's
+added to the chain, and set when another desc comes to follow later.
 
-So the way I see it, there are several issues:
+2) virtqueue_add_chain(vq, head_id,..): expose the chain to the other end.
 
-- internal wait - forces multiple APIs like kick/kick_sync
-  note how kick_sync can fail but your code never checks return code
-- need to re-write the last descriptor - might not work
-  for alternative layouts which always expose descriptors
-  immediately
-- some kind of iterator type would be nicer instead of
-  maintaining head/prev explicitly
+So, if people want to add a desc and immediately expose it to the other end,
+i.e. build a single desc chain, they can just add and expose:
+
+virtqueue_add_chain_desc(..);
+virtqueue_add_chain(..,head_id);
+
+Would you see any issues here?
 
 
-As for the use, it would be better to do
+> - some kind of iterator type would be nicer instead of
+>    maintaining head/prev explicitly
 
-if (!add_next(vq, ...)) {
-	add_last(vq, ...)
-	kick
-	wait
+Why would we need to iterate the chain? I think it would be simpler to use
+a wrapper struct:
+
+struct virtqueue_desc_chain {
+     unsigned int head;  // head desc id of the chain
+     unsigned int tail;     // tail desc id of the chain
 }
 
-Using VIRTQUEUE_DESC_ID_INIT seems to avoid a branch in the driver, but
-in fact it merely puts the branch in the virtio code.
+The new desc will be put to desc[tail].next, and we don't need to walk
+from the head desc[head].next when inserting a new desc to the chain, right?
+
+
+>
+> As for the use, it would be better to do
+>
+> if (!add_next(vq, ...)) {
+> 	add_last(vq, ...)
+> 	kick
+> 	wait
+> }
+
+"!add_next(vq, ...)" means that the vq is full? If so, what would 
+add_last() do then?
+
+
+> Using VIRTQUEUE_DESC_ID_INIT seems to avoid a branch in the driver, but
+> in fact it merely puts the branch in the virtio code.
+>
+
+Actually it wasn't intended to improve performance. It is used to 
+indicate the "init" state
+of the chain. So, when virtqueue_add_chain_desc(, head_id,..) finds head 
+id=INIT, it will
+assign the grabbed desc id to &head_id. In some sense, it is equivalent 
+to add_first().
+
+Do you have a different opinion here?
+
+Best,
+Wei
 
 
 
--- 
-MST
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
