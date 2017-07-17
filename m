@@ -1,34 +1,30 @@
-Return-Path: virtio-return-2771-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-return-2772-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio@lists.oasis-open.org>
 List-Post: <mailto:virtio@lists.oasis-open.org>
 List-Help: <mailto:virtio-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Fri, 14 Jul 2017 12:28:19 +0100
-From: Stefan Hajnoczi <stefanha@redhat.com>
-Message-ID: <20170714112819.GJ27446@stefanha-x1.localdomain>
 References: <20170712095016.9926-1-cohuck@redhat.com>
+From: Halil Pasic <pasic@linux.vnet.ibm.com>
+Date: Mon, 17 Jul 2017 17:21:26 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="k1BdFSKqAqVdu8k/"
-Content-Disposition: inline
 In-Reply-To: <20170712095016.9926-1-cohuck@redhat.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+Message-Id: <af0491c2-6ce1-6775-0f50-67c51ee5d956@linux.vnet.ibm.com>
 Subject: [virtio] Re: [virtio-dev] [PATCH v2] virtio-net: fix virtqueue numbering error
-To: Cornelia Huck <cohuck@redhat.com>
-Cc: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+To: Cornelia Huck <cohuck@redhat.com>, virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
---k1BdFSKqAqVdu8k/
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-On Wed, Jul 12, 2017 at 11:50:16AM +0200, Cornelia Huck wrote:
+
+On 07/12/2017 11:50 AM, Cornelia Huck wrote:
 > receiveq(n) is at position 2(n-1), not 2n. Same error for transmitq(n)
 > and controlq.
->=20
+> 
 > VIRTIO-161
->=20
+> 
 > Signed-off-by: Cornelia Huck <cohuck@redhat.com>
 > ---
 > v1->v2: fix description
@@ -36,21 +32,41 @@ On Wed, Jul 12, 2017 at 11:50:16AM +0200, Cornelia Huck wrote:
 > ---
 >  content.tex | 6 +++---
 >  1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/content.tex b/content.tex
+> index d8bde3a..19f84c8 100644
+> --- a/content.tex
+> +++ b/content.tex
+> @@ -3064,9 +3064,9 @@ features.
+>  \item[0] receiveq1
+>  \item[1] transmitq1
+>  \item[\ldots]
+> -\item[2N] receiveqN
+> -\item[2N+1] transmitqN
+> -\item[2N+2] controlq
+> +\item[2(N-1)] receiveqN
+> +\item[2(N-1)+1] transmitqN
+> +\item[2N] controlq
+>  \end{description}
+> 
+>   N=1 if VIRTIO_NET_F_MQ is not negotiated, otherwise N is set by
+> 
 
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+Reviewed-by: Halil Pasic <pasic@linux.vnet.ibm.com>
 
---k1BdFSKqAqVdu8k/
-Content-Type: application/pgp-signature; name="signature.asc"
+I would actually prefer
+ +\item[2N-2] receiveqN
+ +\item[2N-1] transmitqN
+ +\item[2N] controlq
+as I don't think we have to spell out  that the n-th tq is
+at the index 2n + 1 and the n-th rq is at the index of 2n at all and
+especially not in this listing. 
 
------BEGIN PGP SIGNATURE-----
+But, I'm fine with this too.
 
-iQEcBAEBAgAGBQJZaKrTAAoJEJykq7OBq3PIF7EH/jkJIFsNP9BqSE0Uc46ByyFB
-rxDP1IeJemsz683SvKkSrY/t61GuKeaVuYjMKaTIHgQ3chpkeh0CwEs9s8hxs2bM
-BBwYAQraft4YNG4tvecX5ngiQ5yxFQ9llMOpAPuCi01fZTJBJN00/Z2v65uBwJjr
-HfOADXHlUMuitLx33LxZSLB2PxqaTz2w8wrh/qWHPS22xQgfcBRd/kXvAcQH1MON
-Ir8RCOdIyVNQ8DKTNuWQ2OsrDhnz1R4cV+k0V60NjA7z1uj83OHZOzBIDc9bBL0w
-c65bkqR6WIm1rt4cuLLJx2s3iRU6c5HxSvktA5N6orqVrBkDWkkL8js/JrDO7sA=
-=XTk6
------END PGP SIGNATURE-----
 
---k1BdFSKqAqVdu8k/--
+---------------------------------------------------------------------
+To unsubscribe from this mail list, you must leave the OASIS TC that 
+generates this mail.  Follow this link to all your TCs in OASIS at:
+https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
+
