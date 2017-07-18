@@ -1,38 +1,48 @@
-Return-Path: virtio-return-2777-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio@lists.oasis-open.org>
-List-Post: <mailto:virtio@lists.oasis-open.org>
-List-Help: <mailto:virtio-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Sat, 29 Jul 2017 02:48:33 +0300
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20170729024712-mutt-send-email-mst@kernel.org>
-References: <20170719004721-mutt-send-email-mst@kernel.org>
- <20170719105549.GB3500@work-vm>
- <20170725165915-mutt-send-email-mst@kernel.org>
- <20170728180255.GF2560@work-vm>
+Return-Path: virtio-dev-return-2404-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
+	by lists.oasis-open.org (Postfix) with ESMTP id 6A45A58192C4
+	for <virtio-dev@lists.oasis-open.org>; Tue, 18 Jul 2017 07:29:09 -0700 (PDT)
+From: Lior Narkis <liorn@mellanox.com>
+Date: Tue, 18 Jul 2017 14:29:04 +0000
+Message-ID: <VI1PR05MB1774022115CB7C4502DEEE73D3A10@VI1PR05MB1774.eurprd05.prod.outlook.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20170728180255.GF2560@work-vm>
-Subject: [virtio] Re: [Qemu-devel] host side todo list for virtio rdma
-To: "Dr. David Alan Gilbert" <dgilbert@redhat.com>
-Cc: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, linux-rdma@vger.kernel.org, qemu-devel@nongnu.org, Marcel Apfelbaum <marcel.a@redhat.com>
+Subject: [virtio-dev] virtq configuration over PCI
+To: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Fri, Jul 28, 2017 at 07:02:55PM +0100, Dr. David Alan Gilbert wrote:
-> OK, does it seem silly for a message to go all the way to the host
-> kernel to then have to go back down to QEMU to be turned back into verbs
-> to go back upto the host kernel?
+Hi All,
+I am trying to figure out how the queue_select mechanism works.
+It seems that there is an assumption that the device can react to the pcie =
+write of the queue index to queue_select,=20
+before other pcie transactions that come after are being served.
+So for example, reading the queue_size after writing to queue_select.
 
-This is how most IO works except vhost.  If it's not a data path
-there's no need to write code to avoid some context switches IMHO.
+I would like to understand if I captured it right, and if so, understand ho=
+w it is guaranteed today with a SW implementation of a device.
 
--- 
-MST
+Having an HW implementation in mind, I believe this mechanism limits some p=
+ossible implementations, and it is not robust for adding/changing new queue=
+ properties, which will require a new field on the PCIe BAR.
+
+I believe a cleaner way will be to have a queue for device management.
+The parameters of how to access this queue should be R/W on the PCIe BAR, b=
+ut there is only one such queue so no need for the select.
+In this queue the work is a command to the device. e.g create_virtq
+
+Kind Regards,
+Lior Narkis
+
+
 
 ---------------------------------------------------------------------
-To unsubscribe from this mail list, you must leave the OASIS TC that 
-generates this mail.  Follow this link to all your TCs in OASIS at:
-https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
