@@ -1,121 +1,42 @@
-Return-Path: virtio-dev-return-2429-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2430-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id B004D5818FA3
-	for <virtio-dev@lists.oasis-open.org>; Sat, 29 Jul 2017 21:22:57 -0700 (PDT)
-Date: Sun, 30 Jul 2017 07:22:47 +0300
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20170730043922-mutt-send-email-mst@kernel.org>
-References: <20170712163746-mutt-send-email-mst@kernel.org>
- <5967246B.9030804@intel.com>
- <20170713210819-mutt-send-email-mst@kernel.org>
- <59686EEB.8080805@intel.com>
- <20170723044036-mutt-send-email-mst@kernel.org>
- <59781119.8010200@intel.com>
- <20170726155856-mutt-send-email-mst@kernel.org>
- <597954E3.2070801@intel.com>
- <20170729020231-mutt-send-email-mst@kernel.org>
- <597C83CC.7060702@intel.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 118AF5819382
+	for <virtio-dev@lists.oasis-open.org>; Mon, 31 Jul 2017 15:18:41 -0700 (PDT)
+Message-ID: <597F2439.5070309@intel.com>
+Date: Mon, 31 Jul 2017 20:36:09 +0800
+From: Wei Wang <wei.w.wang@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <597C83CC.7060702@intel.com>
+References: <59686EEB.8080805@intel.com> <20170723044036-mutt-send-email-mst@kernel.org> <59781119.8010200@intel.com> <20170726155856-mutt-send-email-mst@kernel.org> <597954E3.2070801@intel.com> <20170729020231-mutt-send-email-mst@kernel.org> <597C83CC.7060702@intel.com> <20170730043922-mutt-send-email-mst@kernel.org> <286AC319A985734F985F78AFA26841F739288D85@shsmsx102.ccr.corp.intel.com> <20170730191735-mutt-send-email-mst@kernel.org> <20170730191911-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20170730191911-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
 Subject: [virtio-dev] Re: [PATCH v12 5/8] virtio-balloon: VIRTIO_BALLOON_F_SG
-To: Wei Wang <wei.w.wang@intel.com>
-Cc: linux-kernel@vger.kernel.org, qemu-devel@nongnu.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, linux-mm@kvack.org, david@redhat.com, cornelia.huck@de.ibm.com, akpm@linux-foundation.org, mgorman@techsingularity.net, aarcange@redhat.com, amit.shah@redhat.com, pbonzini@redhat.com, liliang.opensource@gmail.com, virtio-dev@lists.oasis-open.org, yang.zhang.wz@gmail.com, quan.xu@aliyun.com
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "qemu-devel@nongnu.org" <qemu-devel@nongnu.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "david@redhat.com" <david@redhat.com>, "cornelia.huck@de.ibm.com" <cornelia.huck@de.ibm.com>, "akpm@linux-foundation.org" <akpm@linux-foundation.org>, "mgorman@techsingularity.net" <mgorman@techsingularity.net>, "aarcange@redhat.com" <aarcange@redhat.com>, "amit.shah@redhat.com" <amit.shah@redhat.com>, "pbonzini@redhat.com" <pbonzini@redhat.com>, "liliang.opensource@gmail.com" <liliang.opensource@gmail.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "yang.zhang.wz@gmail.com" <yang.zhang.wz@gmail.com>, "quan.xu@aliyun.com" <quan.xu@aliyun.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Sat, Jul 29, 2017 at 08:47:08PM +0800, Wei Wang wrote:
-> On 07/29/2017 07:08 AM, Michael S. Tsirkin wrote:
-> > On Thu, Jul 27, 2017 at 10:50:11AM +0800, Wei Wang wrote:
-> > > > > > OK I thought this over. While we might need these new APIs in
-> > > > > > the future, I think that at the moment, there's a way to implement
-> > > > > > this feature that is significantly simpler. Just add each s/g
-> > > > > > as a separate input buffer.
-> > > > > Should it be an output buffer?
-> > > > Hypervisor overwrites these pages with zeroes. Therefore it is
-> > > > writeable by device: DMA_FROM_DEVICE.
-> > > Why would the hypervisor need to zero the buffer?
-> > The page is supplied to hypervisor and can lose the value that
-> > is there.  That is the definition of writeable by device.
-> 
-> I think for the free pages, it should be clear that they will be added as
-> output buffer to the device, because (as we discussed) they are just hints,
-> and some of them may be used by the guest after the report_ API is invoked.
-> The device/hypervisor should not use or discard them.
+On 07/31/2017 12:20 AM, Michael S. Tsirkin wrote:
+> On Sun, Jul 30, 2017 at 07:18:33PM +0300, Michael S. Tsirkin wrote:
+>> On Sun, Jul 30, 2017 at 05:59:17AM +0000, Wang, Wei W wrote:
+>> That's a hypervisor implementation detail. From guest point of view,
+>> discarding contents can not be distinguished from writing old contents.
+>>
+> Besides, ignoring the free page tricks, consider regular ballooning.
+> We map page with DONTNEED then back with WILLNEED. Result is
+> getting a zero page. So at least one of deflate/inflate should be input.
+> I'd say both for symmetry.
+>
 
-Discarding contents is exactly what you propose doing if
-migration is going on, isn't it?
+OK, I see the point. Thanks.
 
-> For the balloon pages, I kind of agree with the existing implementation
-> (e.g. inside tell_host()), which uses virtqueue_add_outbuf (instead of
-> _add_inbuf()).
+Best,
+Wei
 
-
-This is because it does not pass SGs, it passes weirdly
-formatted PA within the buffer.
-
-> I think inbuf should be a buffer which will be written by the device and
-> read by the
-> driver.
-
-If hypervisor can change it, it's an inbuf. Should not matter
-whether driver reads it.
-
-> The cmd buffer put on the vq for the device to send commands can be
-> an
-> inbuf, I think.
-> 
-> 
-> > 
-> > > I think it may only
-> > > need to read out the info(base,size).
-> > And then do what?
-> 
-> 
-> For the free pages, the info will be used to clear the corresponding "1" in
-> the dirty bitmap.
-> For balloon pages, they will be made DONTNEED and given to other host
-> processes to
-> use (the device won't write them, so no need to set "write" when
-> virtqueue_map_desc() in
-> the device).
-> 
-> 
-> > 
-> > > I think it should be like this:
-> > > the cmd hdr buffer: input, because the hypervisor would write it to
-> > > send a cmd to the guest
-> > > the payload buffer: output, for the hypervisor to read the info
-> > These should be split.
-> > 
-> > We have:
-> > 
-> > 1. request that hypervisor sends to guest, includes ID: input
-> > 2. synchronisation header with ID sent by guest: output
-> > 3. list of pages: input
-> > 
-> > 2 and 3 must be on the same VQ. 1 can come on any VQ - reusing stats VQ
-> > might make sense.
-> 
-> I would prefer to make the above item 1 come on the the free page vq,
-> because the existing stat_vq doesn't support the cmd hdr.
-> Now, I think it is also not necessary to move the existing stat_vq
-> implementation to
-> a new implementation under the cmd hdr, because
-> that new support doesn't make a difference for stats, it will still use its
-> stat_vq (the free
-> page vq will be used for reporting free pages only)
-> 
-> What do you think?
-> 
-> 
-> Best,
-> Wei
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
