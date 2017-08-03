@@ -1,163 +1,87 @@
-Return-Path: virtio-dev-return-2460-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2435-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id BD16D58180FF
-	for <virtio-dev@lists.oasis-open.org>; Wed,  9 Aug 2017 23:01:18 -0700 (PDT)
-Message-ID: <598BF630.3060308@intel.com>
-Date: Thu, 10 Aug 2017 13:59:12 +0800
+	by lists.oasis-open.org (Postfix) with ESMTP id 328CB1CB8078
+	for <virtio-dev@lists.oasis-open.org>; Wed,  2 Aug 2017 23:48:40 -0700 (PDT)
 From: Wei Wang <wei.w.wang@intel.com>
-MIME-Version: 1.0
-References: <1501742299-4369-1-git-send-email-wei.w.wang@intel.com>	<1501742299-4369-2-git-send-email-wei.w.wang@intel.com> <20170809143636.e2c2d2713f58768c1427855d@linux-foundation.org>
-In-Reply-To: <20170809143636.e2c2d2713f58768c1427855d@linux-foundation.org>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: [virtio-dev] Re: [PATCH v13 1/5] Introduce xbitmap
-To: Andrew Morton <akpm@linux-foundation.org>
-Cc: linux-kernel@vger.kernel.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, linux-mm@kvack.org, mst@redhat.com, mhocko@kernel.org, mawilcox@microsoft.com, virtio-dev@lists.oasis-open.org, david@redhat.com, cornelia.huck@de.ibm.com, mgorman@techsingularity.net, aarcange@redhat.com, amit.shah@redhat.com, pbonzini@redhat.com, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu@aliyun.com
+Date: Thu,  3 Aug 2017 14:38:16 +0800
+Message-Id: <1501742299-4369-3-git-send-email-wei.w.wang@intel.com>
+In-Reply-To: <1501742299-4369-1-git-send-email-wei.w.wang@intel.com>
+References: <1501742299-4369-1-git-send-email-wei.w.wang@intel.com>
+Subject: [virtio-dev] [PATCH v13 2/5] xbitmap: add xb_find_next_bit() and xb_zero()
+To: linux-kernel@vger.kernel.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, linux-mm@kvack.org, mst@redhat.com, mhocko@kernel.org, mawilcox@microsoft.com, akpm@linux-foundation.org
+Cc: virtio-dev@lists.oasis-open.org, david@redhat.com, cornelia.huck@de.ibm.com, mgorman@techsingularity.net, aarcange@redhat.com, amit.shah@redhat.com, pbonzini@redhat.com, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu@aliyun.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 08/10/2017 05:36 AM, Andrew Morton wrote:
-> On Thu,  3 Aug 2017 14:38:15 +0800 Wei Wang <wei.w.wang@intel.com> wrote:
->
->> From: Matthew Wilcox <mawilcox@microsoft.com>
->>
->> The eXtensible Bitmap is a sparse bitmap representation which is
->> efficient for set bits which tend to cluster.  It supports up to
->> 'unsigned long' worth of bits, and this commit adds the bare bones --
->> xb_set_bit(), xb_clear_bit() and xb_test_bit().
-> Would like to see some additional details here justifying the change.
-> The sole user is virtio-balloon, yes?  What alternatives were examined
-> and what are the benefits of this approach?
->
-> Have you identified any other subsystems which could utilize this?
+xb_find_next_bit() supports to find the next "1" or "0" bit in the
+given range. xb_zero() supports to zero the given range of bits.
 
+Signed-off-by: Wei Wang <wei.w.wang@intel.com>
+---
+ include/linux/xbitmap.h |  4 ++++
+ lib/radix-tree.c        | 28 ++++++++++++++++++++++++++++
+ 2 files changed, 32 insertions(+)
 
-The idea and implementation comes from Matthew, but I can share
-my thought here (mostly from a user perspective):
-
-This seems to be the first kind that uses bitmaps based on radix like
-structures for id recording purposes.  The id is given by the user,
-which is different from ida (ida is used for id allocation purpose). A
-bitmap is allocated on demand when an id provided by the user to
-record beyond the existing id range that the allocated bitmaps can
-cover. Benefits are actually from the radix implementation - efficient
-storage and quick lookup.
-
-We use it in virtio-balloon to record the pfns of balloon pages, that is,
-a pfn is an id to be recorded into the bitmap. The bitmaps are latter
-searched for continuous "1" bits, which correspond to continuous pfns.
-
-Virtio-ballon is the first user of it. I'm not sure about other subsystems,
-but other developers may notice it and use it once it's available there.
-
-
->> ...
->>
->> --- a/lib/radix-tree.c
->> +++ b/lib/radix-tree.c
->> @@ -37,6 +37,7 @@
->>   #include <linux/rcupdate.h>
->>   #include <linux/slab.h>
->>   #include <linux/string.h>
->> +#include <linux/xbitmap.h>
->>   
->>   
->>   /* Number of nodes in fully populated tree of given height */
->> @@ -78,6 +79,14 @@ static struct kmem_cache *radix_tree_node_cachep;
->>   #define IDA_PRELOAD_SIZE	(IDA_MAX_PATH * 2 - 1)
->>   
->>   /*
->> + * The XB can go up to unsigned long, but also uses a bitmap.
-> This comment is hard to understand.
-
-Also not sure bout it.
-
->
->> + */
->> +#define XB_INDEX_BITS		(BITS_PER_LONG - ilog2(IDA_BITMAP_BITS))
->> +#define XB_MAX_PATH		(DIV_ROUND_UP(XB_INDEX_BITS, \
->> +					      RADIX_TREE_MAP_SHIFT))
->> +#define XB_PRELOAD_SIZE		(XB_MAX_PATH * 2 - 1)
->> +
->>
->> ...
->>   
->> +void xb_preload(gfp_t gfp)
->> +{
->> +	__radix_tree_preload(gfp, XB_PRELOAD_SIZE);
->> +	if (!this_cpu_read(ida_bitmap)) {
->> +		struct ida_bitmap *bitmap = kmalloc(sizeof(*bitmap), gfp);
->> +
->> +		if (!bitmap)
->> +			return;
->> +		bitmap = this_cpu_cmpxchg(ida_bitmap, NULL, bitmap);
->> +		kfree(bitmap);
->> +	}
->> +}
->> +EXPORT_SYMBOL(xb_preload);
-> Please document the exported API.  It's conventional to do this in
-> kerneldoc but for some reason kerneldoc makes people write
-> uninteresting and unuseful documentation.  Be sure to cover the
-> *useful* stuff: what it does, why it does it, under which circumstances
-> it should be used, what the caller-provided locking should look like,
-> what the return values mean, etc.  Stuff which programmers actually
-> will benefit from knowing.
-
-OK.
-
->
->> +int xb_set_bit(struct xb *xb, unsigned long bit)
->>
->> ...
->>
->> +int xb_clear_bit(struct xb *xb, unsigned long bit)
-> There's quite a lot of common code here.  Did you investigate factoring
-> that out in some fashion?
-
-
-If we combine the functions into one
-xb_bit_ops(struct xb *xb, unsigned long bit, enum xb_ops ops),
-it will be a big function with some if (ops == set/clear/test)-else,
-not sure if that would look good.
-
-
->
->> +bool xb_test_bit(const struct xb *xb, unsigned long bit)
->> +{
->> +	unsigned long index = bit / IDA_BITMAP_BITS;
->> +	const struct radix_tree_root *root = &xb->xbrt;
->> +	struct ida_bitmap *bitmap = radix_tree_lookup(root, index);
->> +
->> +	bit %= IDA_BITMAP_BITS;
->> +
->> +	if (!bitmap)
->> +		return false;
->> +	if (radix_tree_exception(bitmap)) {
->> +		bit += RADIX_TREE_EXCEPTIONAL_SHIFT;
->> +		if (bit > BITS_PER_LONG)
->> +			return false;
->> +		return (unsigned long)bitmap & (1UL << bit);
->> +	}
->> +	return test_bit(bit, bitmap->bitmap);
->> +}
->> +
-> Missing EXPORT_SYMBOL?
-
-Yes, will add that, thanks.
-
->
-> Perhaps all this code should go into a new lib/xbitmap.c.
-
-Ok, will relocate.
-
-
-Best,
-Wei
-
+diff --git a/include/linux/xbitmap.h b/include/linux/xbitmap.h
+index 0b93a46..88c2045 100644
+--- a/include/linux/xbitmap.h
++++ b/include/linux/xbitmap.h
+@@ -36,6 +36,10 @@ int xb_set_bit(struct xb *xb, unsigned long bit);
+ bool xb_test_bit(const struct xb *xb, unsigned long bit);
+ int xb_clear_bit(struct xb *xb, unsigned long bit);
+ 
++void xb_zero(struct xb *xb, unsigned long start, unsigned long end);
++unsigned long xb_find_next_bit(struct xb *xb, unsigned long start,
++			       unsigned long end, bool set);
++
+ static inline bool xb_empty(const struct xb *xb)
+ {
+ 	return radix_tree_empty(&xb->xbrt);
+diff --git a/lib/radix-tree.c b/lib/radix-tree.c
+index d8c3c18..84842a3 100644
+--- a/lib/radix-tree.c
++++ b/lib/radix-tree.c
+@@ -2272,6 +2272,34 @@ bool xb_test_bit(const struct xb *xb, unsigned long bit)
+ 	return test_bit(bit, bitmap->bitmap);
+ }
+ 
++void xb_zero(struct xb *xb, unsigned long start, unsigned long end)
++{
++	unsigned long i;
++
++	for (i = start; i <= end; i++)
++		xb_clear_bit(xb, i);
++}
++EXPORT_SYMBOL(xb_zero);
++
++/*
++ * Find the next one (@set = 1) or zero (@set = 0) bit within the bit range
++ * from @start to @end in @xb. If no such bit is found in the given range,
++ * bit end + 1 will be returned.
++ */
++unsigned long xb_find_next_bit(struct xb *xb, unsigned long start,
++			       unsigned long end, bool set)
++{
++	unsigned long i;
++
++	for (i = start; i <= end; i++) {
++		if (xb_test_bit(xb, i) == set)
++			break;
++	}
++
++	return i;
++}
++EXPORT_SYMBOL(xb_find_next_bit);
++
+ void __rcu **idr_get_free(struct radix_tree_root *root,
+ 			struct radix_tree_iter *iter, gfp_t gfp, int end)
+ {
+-- 
+2.7.4
 
 
 ---------------------------------------------------------------------
