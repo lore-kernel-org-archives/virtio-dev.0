@@ -1,18 +1,18 @@
-Return-Path: virtio-dev-return-2441-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2444-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id DE2245818A60
-	for <virtio-dev@lists.oasis-open.org>; Thu,  3 Aug 2017 05:09:18 -0700 (PDT)
-Message-ID: <5983130E.2070806@intel.com>
-Date: Thu, 03 Aug 2017 20:11:58 +0800
+	by lists.oasis-open.org (Postfix) with ESMTP id BD6EB5818C81
+	for <virtio-dev@lists.oasis-open.org>; Thu,  3 Aug 2017 06:14:44 -0700 (PDT)
+Message-ID: <59832265.1040805@intel.com>
+Date: Thu, 03 Aug 2017 21:17:25 +0800
 From: Wei Wang <wei.w.wang@intel.com>
 MIME-Version: 1.0
-References: <1501742299-4369-1-git-send-email-wei.w.wang@intel.com> <1501742299-4369-5-git-send-email-wei.w.wang@intel.com> <20170803091151.GF12521@dhcp22.suse.cz> <5982FE07.3040207@intel.com> <20170803104417.GI12521@dhcp22.suse.cz> <59830897.2060203@intel.com> <20170803112831.GN12521@dhcp22.suse.cz>
-In-Reply-To: <20170803112831.GN12521@dhcp22.suse.cz>
+References: <1501742299-4369-1-git-send-email-wei.w.wang@intel.com> <1501742299-4369-5-git-send-email-wei.w.wang@intel.com> <20170803091151.GF12521@dhcp22.suse.cz> <5982FE07.3040207@intel.com> <20170803104417.GI12521@dhcp22.suse.cz> <59830897.2060203@intel.com> <20170803112831.GN12521@dhcp22.suse.cz> <5983130E.2070806@intel.com> <20170803124106.GR12521@dhcp22.suse.cz>
+In-Reply-To: <20170803124106.GR12521@dhcp22.suse.cz>
 Content-Type: text/plain; charset=windows-1252; format=flowed
 Content-Transfer-Encoding: 7bit
 Subject: [virtio-dev] Re: [PATCH v13 4/5] mm: support reporting free page blocks
@@ -20,96 +20,113 @@ To: Michal Hocko <mhocko@kernel.org>
 Cc: linux-kernel@vger.kernel.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, linux-mm@kvack.org, mst@redhat.com, mawilcox@microsoft.com, akpm@linux-foundation.org, virtio-dev@lists.oasis-open.org, david@redhat.com, cornelia.huck@de.ibm.com, mgorman@techsingularity.net, aarcange@redhat.com, amit.shah@redhat.com, pbonzini@redhat.com, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu@aliyun.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 08/03/2017 07:28 PM, Michal Hocko wrote:
-> On Thu 03-08-17 19:27:19, Wei Wang wrote:
->> On 08/03/2017 06:44 PM, Michal Hocko wrote:
->>> On Thu 03-08-17 18:42:15, Wei Wang wrote:
->>>> On 08/03/2017 05:11 PM, Michal Hocko wrote:
->>>>> On Thu 03-08-17 14:38:18, Wei Wang wrote:
->>> [...]
->>>>>> +static int report_free_page_block(struct zone *zone, unsigned int order,
->>>>>> +				  unsigned int migratetype, struct page **page)
->>>>> This is just too ugly and wrong actually. Never provide struct page
->>>>> pointers outside of the zone->lock. What I've had in mind was to simply
->>>>> walk free lists of the suitable order and call the callback for each one.
->>>>> Something as simple as
->>>>>
->>>>> 	for (i = 0; i < MAX_NR_ZONES; i++) {
->>>>> 		struct zone *zone = &pgdat->node_zones[i];
->>>>>
->>>>> 		if (!populated_zone(zone))
->>>>> 			continue;
->>>>> 		spin_lock_irqsave(&zone->lock, flags);
->>>>> 		for (order = min_order; order < MAX_ORDER; ++order) {
->>>>> 			struct free_area *free_area = &zone->free_area[order];
->>>>> 			enum migratetype mt;
->>>>> 			struct page *page;
->>>>>
->>>>> 			if (!free_area->nr_pages)
->>>>> 				continue;
->>>>>
->>>>> 			for_each_migratetype_order(order, mt) {
->>>>> 				list_for_each_entry(page,
->>>>> 						&free_area->free_list[mt], lru) {
->>>>>
->>>>> 					pfn = page_to_pfn(page);
->>>>> 					visit(opaque2, prn, 1<<order);
->>>>> 				}
->>>>> 			}
->>>>> 		}
->>>>>
->>>>> 		spin_unlock_irqrestore(&zone->lock, flags);
->>>>> 	}
->>>>>
+On 08/03/2017 08:41 PM, Michal Hocko wrote:
+> On Thu 03-08-17 20:11:58, Wei Wang wrote:
+>> On 08/03/2017 07:28 PM, Michal Hocko wrote:
+>>> On Thu 03-08-17 19:27:19, Wei Wang wrote:
+>>>> On 08/03/2017 06:44 PM, Michal Hocko wrote:
+>>>>> On Thu 03-08-17 18:42:15, Wei Wang wrote:
+>>>>>> On 08/03/2017 05:11 PM, Michal Hocko wrote:
+>>>>>>> On Thu 03-08-17 14:38:18, Wei Wang wrote:
 >>>>> [...]
->>>> I think the above would take the lock for too long time. That's why we
->>>> prefer to take one free page block each time, and taking it one by one
->>>> also doesn't make a difference, in terms of the performance that we
->>>> need.
->>> I think you should start with simple approach and impove incrementally
->>> if this turns out to be not optimal. I really detest taking struct pages
->>> outside of the lock. You never know what might happen after the lock is
->>> dropped. E.g. can you race with the memory hotremove?
+>>>>>>>> +static int report_free_page_block(struct zone *zone, unsigned int order,
+>>>>>>>> +				  unsigned int migratetype, struct page **page)
+>>>>>>> This is just too ugly and wrong actually. Never provide struct page
+>>>>>>> pointers outside of the zone->lock. What I've had in mind was to simply
+>>>>>>> walk free lists of the suitable order and call the callback for each one.
+>>>>>>> Something as simple as
+>>>>>>>
+>>>>>>> 	for (i = 0; i < MAX_NR_ZONES; i++) {
+>>>>>>> 		struct zone *zone = &pgdat->node_zones[i];
+>>>>>>>
+>>>>>>> 		if (!populated_zone(zone))
+>>>>>>> 			continue;
+>>>>>>> 		spin_lock_irqsave(&zone->lock, flags);
+>>>>>>> 		for (order = min_order; order < MAX_ORDER; ++order) {
+>>>>>>> 			struct free_area *free_area = &zone->free_area[order];
+>>>>>>> 			enum migratetype mt;
+>>>>>>> 			struct page *page;
+>>>>>>>
+>>>>>>> 			if (!free_area->nr_pages)
+>>>>>>> 				continue;
+>>>>>>>
+>>>>>>> 			for_each_migratetype_order(order, mt) {
+>>>>>>> 				list_for_each_entry(page,
+>>>>>>> 						&free_area->free_list[mt], lru) {
+>>>>>>>
+>>>>>>> 					pfn = page_to_pfn(page);
+>>>>>>> 					visit(opaque2, prn, 1<<order);
+>>>>>>> 				}
+>>>>>>> 			}
+>>>>>>> 		}
+>>>>>>>
+>>>>>>> 		spin_unlock_irqrestore(&zone->lock, flags);
+>>>>>>> 	}
+>>>>>>>
+>>>>>>> [...]
+>>>>>> I think the above would take the lock for too long time. That's why we
+>>>>>> prefer to take one free page block each time, and taking it one by one
+>>>>>> also doesn't make a difference, in terms of the performance that we
+>>>>>> need.
+>>>>> I think you should start with simple approach and impove incrementally
+>>>>> if this turns out to be not optimal. I really detest taking struct pages
+>>>>> outside of the lock. You never know what might happen after the lock is
+>>>>> dropped. E.g. can you race with the memory hotremove?
+>>>> The caller won't use pages returned from the function, so I think there
+>>>> shouldn't be an issue or race if the returned pages are used (i.e. not free
+>>>> anymore) or simply gone due to hotremove.
+>>> No, this is just too error prone. Consider that struct page pointer
+>>> itself could get invalid in the meantime. Please always keep robustness
+>>> in mind first. Optimizations are nice but it is even not clear whether
+>>> the simple variant will cause any problems.
 >>
->> The caller won't use pages returned from the function, so I think there
->> shouldn't be an issue or race if the returned pages are used (i.e. not free
->> anymore) or simply gone due to hotremove.
-> No, this is just too error prone. Consider that struct page pointer
-> itself could get invalid in the meantime. Please always keep robustness
-> in mind first. Optimizations are nice but it is even not clear whether
-> the simple variant will cause any problems.
+>> how about this:
+>>
+>> for_each_populated_zone(zone) {
+>>                for_each_migratetype_order_decend(min_order, order, type) {
+>>                      do {
+>>       =>                  spin_lock_irqsave(&zone->lock, flags);
+>>                          ret = report_free_page_block(zone, order, type,
+>>                               &page)) {
+>>                                 pfn = page_to_pfn(page);
+>>                                 nr_pages = 1 << order;
+>>                                 visit(opaque1, pfn, nr_pages);
+>>                           }
+>>       => spin_unlock_irqrestore(&zone->lock, flags);
+>>                      } while (!ret)
+>> }
+>>
+>> In this way, we can still keep the lock granularity at one free page block
+>> while having the struct page operated under the lock.
+> How can you continue iteration of free_list after the lock has been
+> dropped?
 
+report_free_page_block() has handled all the possible cases after the 
+lock is
+dropped. For example, if the previous reported page has not been on the free
+list, then the first node from the list of this order will be given. 
+This is because
+page allocation takes page blocks from the head to end, for example:
 
-how about this:
+1,2,3,4,5,6
+if the previous reported free block is 2, when we give 2 to the report 
+function
+to get the next page block, and find 1,2,3 have all gone, it will report 
+4, which
+is the head of the free list.
 
-for_each_populated_zone(zone) {
-               for_each_migratetype_order_decend(min_order, order, type) {
-                     do {
-      =>                  spin_lock_irqsave(&zone->lock, flags);
-                         ret = report_free_page_block(zone, order, type,
-                              &page)) {
-                                pfn = page_to_pfn(page);
-                                nr_pages = 1 << order;
-                                visit(opaque1, pfn, nr_pages);
-                          }
-      => spin_unlock_irqrestore(&zone->lock, flags);
-                     } while (!ret)
-}
+> If you want to keep the lock held for each migrate type then
+> why not. Just push the lock inside for_each_migratetype_order loop from
+> my example.
+>
 
-In this way, we can still keep the lock granularity at one free page block
-while having the struct page operated under the lock.
-
+The above lock is held for each free page block, instead of each migrate 
+type, since
+the report function only reports one page block each time.
 
 
 Best,
 Wei
-
-
-
-
-
-
-
 
 
 
