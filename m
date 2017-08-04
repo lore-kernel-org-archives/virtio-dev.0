@@ -1,79 +1,123 @@
-Return-Path: virtio-dev-return-2363-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2453-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 72E1058193BA
-	for <virtio-dev@lists.oasis-open.org>; Thu,  6 Jul 2017 08:30:43 -0700 (PDT)
-From: "Wang, Wei W" <wei.w.wang@intel.com>
-Date: Thu, 6 Jul 2017 15:30:37 +0000
-Message-ID: <286AC319A985734F985F78AFA26841F7392745A8@shsmsx102.ccr.corp.intel.com>
-References: <1498617479-5809-1-git-send-email-wei.w.wang@intel.com>
- <20170706164819-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20170706164819-mutt-send-email-mst@kernel.org>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-Subject: [virtio-dev] RE: [PATCH v4] virtio-net: enable configurable tx queue size
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: "jasowang@redhat.com" <jasowang@redhat.com>, "eblake@redhat.com" <eblake@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "qemu-devel@nongnu.org" <qemu-devel@nongnu.org>, "armbru@redhat.com" <armbru@redhat.com>, "stefanha@gmail.com" <stefanha@gmail.com>, "marcandre.lureau@gmail.com" <marcandre.lureau@gmail.com>, "pbonzini@redhat.com" <pbonzini@redhat.com>, Jan Scheurich <jan.scheurich@ericsson.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id CA8FE58180C6
+	for <virtio-dev@lists.oasis-open.org>; Fri,  4 Aug 2017 11:18:49 -0700 (PDT)
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Date: Fri,  4 Aug 2017 19:19:25 +0100
+Message-Id: <20170804181927.12148-1-jean-philippe.brucker@arm.com>
+Subject: [virtio-dev] [RFC] virtio-iommu version 0.4
+To: iommu@lists.linux-foundation.org, kvm@vger.kernel.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org
+Cc: will.deacon@arm.com, robin.murphy@arm.com, lorenzo.pieralisi@arm.com, mst@redhat.com, jasowang@redhat.com, marc.zyngier@arm.com, eric.auger@redhat.com, eric.auger.pro@gmail.com, bharat.bhushan@nxp.com, peterx@redhat.com, kevin.tian@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Thursday, July 6, 2017 9:49 PM, Michael S. Tsirkin wrote:
-> On Wed, Jun 28, 2017 at 10:37:59AM +0800, Wei Wang wrote:
-> > This patch enables the virtio-net tx queue size to be configurable
-> > between 256 (the default queue size) and 1024 by the user when the
-> > vhost-user backend is used.
-> >
-> > Currently, the maximum tx queue size for other backends is 512 due to
-> > the following limitations:
-> > - QEMU backend: the QEMU backend implementation in some cases may send
-> > 1024+1 iovs to writev.
-> > - Vhost_net backend: there are possibilities that the guest sends a
-> > vring_desc of memory which crosses a MemoryRegion thereby generating
-> > more than 1024 iovs after translation from guest-physical address in
-> > the backend.
-> >
-> > Signed-off-by: Wei Wang <wei.w.wang@intel.com>
->=20
-> Could you pls add a bit info about how this was tested?
-> Was any special setup for dpdk necessary?
+This is the continuation of my proposal for virtio-iommu, the para-
+virtualized IOMMU. Here is a summary of the changes since last time [1]:
 
-Yes, I used the vhost-user implementation in DPDK. So, on the host, I have=
-=20
-the legacy ovs-dpdk setup ready (I'm using dpdk-stable-16.11.1 and openvswi=
-tch-2.6.1,
-the setup steps can be found inside the source code directory).
+* The virtio-iommu document now resembles an actual specification. It is
+  split into a formal description of the virtio device, and implementation
+  notes. Please find sources and binaries at [2].
 
-When booting the guest, I have the following QEMU commands:
--chardev socket,id=3Dchar1,path=3D/usr/local/var/run/openvswitch/vhost-user=
--1
--netdev type=3Dvhost-user,id=3Dmynet1,chardev=3Dchar1,vhostforce
--device virtio-net-pci,mac=3D52:54:00:00:00:01,netdev=3Dmynet1,tx_queue_siz=
-e=3D1024
+* Added a probe request to describe to the guest different properties that
+  do not fit in firmware or in the virtio config space. This is a
+  necessary stepping stone for extending the virtio-iommu.
 
-To check the guest tx queue size, I simply added a printk() at the end of v=
-irtnet_probe()
-to print out vi->sq->vq->num_free, which initially equals to the queue size=
-.
+* There is a working Qemu prototype [3], thanks to Eric Auger and Bharat
+  Bhushan.
 
-Then, I did Ping and netperf tests to transmit packets between VMs, which w=
-orked fine.
+You can find the Linux driver and kvmtool device at [4] and [5]. I
+plan to rework driver and kvmtool device slightly before sending the
+patches.
 
-If the related configuration support to Libvirt is ready, I think we can ge=
-t the customer
-to try in their test environment, too.
+To understand the virtio-iommu, I advise to first read introduction and
+motivation, then skim through implementation notes and finally look at the
+device specification.
 
-Best,
-Wei
+I wasn't sure how to organize the review. For those who prefer to comment
+inline, I attached v0.4 of device-operations.tex and topology.tex+MSI.tex
+to this thread. They are the biggest chunks of the document. But LaTeX
+isn't very pleasant to read, so you can simply send a list of comments in
+relation to section numbers and a few words of context, we'll manage.
 
+---
+Version numbers 0.1-0.4 are arbitrary. I'm hoping they allow to compare
+more easily differences since the RFC (see [6]), but haven't been made
+public so far. This is the first public posting since initial proposal
+[1], and the following describes all changes.
 
+## v0.1 ##
 
+Content is the same as the RFC, but formatted to LaTeX. 'make' generates
+one PDF and one HTML document.
 
+## v0.2 ##
 
+Add introductions, improve topology example and firmware description based
+on feedback and a number of useful discussions.
+
+## v0.3 ##
+
+Add normative sections (MUST, SHOULD, etc). Clarify some things, tighten
+the device and driver behaviour. Unmap semantics are consolidated; they
+are now closer to VFIO Type1 v2 semantics.
+
+## v0.4 ##
+
+Introduce PROBE requests. They provide per-endpoint information to the
+driver that couldn't be described otherwise.
+
+For the moment, they allow to handle MSIs on x86 virtual platforms (see
+3.2). To do that we communicate reserved IOVA regions, that will also be
+useful for describing regions that cannot be mapped for a given endpoint,
+for instance addresses that correspond to a PCI bridge window.
+
+Introducing such a large framework for this tiny feature may seem
+overkill, but it is needed for future extensions of the virtio-iommu and I
+believe it really is worth the effort.
+
+## Future ##
+
+Other extensions are in preparation. I won't detail them here because v0.4
+already is a lot to digest, but in short, building on top of PROBE:
+
+* First, since the IOMMU is paravirtualized, the device can expose some
+  properties of the physical topology to the guest, and let it allocate
+  resources more efficiently. For example, when the virtio-iommu manages
+  both physical and emulated endpoints, with different underlying IOMMUs,
+  we now have a way to describe multiple page and block granularities,
+  instead of forcing the guest to use the most restricted one for all
+  endpoints. This will most likely be in v0.5.
+
+* Then on top of that, a major improvement will describe hardware
+  acceleration features available to the guest. There is what I call "Page
+  Table Handover" (or simply, from the host POV, "Nested"), the ability
+  for the guest to manipulate its own page tables instead of sending
+  MAP/UNMAP requests to the host. This, along with IO Page Fault
+  reporting, will also permit SVM virtualization on different platforms.
+
+Thanks,
+Jean
+
+[1] http://www.spinics.net/lists/kvm/msg147990.html
+[2] git://linux-arm.org/virtio-iommu.git branch viommu/v0.4
+    http://www.linux-arm.org/git?p=virtio-iommu.git;a=blob;f=dist/v0.4/virtio-iommu-v0.4.pdf
+    I reiterate the disclaimers: don't use this document as a reference,
+    it's a draft. It's also not an OASIS document yet. It may be riddled
+    with mistakes. As this is a working draft, it is unstable and I do not
+    guarantee backward compatibility of future versions.
+[3] https://lists.gnu.org/archive/html/qemu-arm/2017-08/msg00004.html
+[4] git://linux-arm.org/linux-jpb.git virtio-iommu/v0.4
+    Warning: UAPI headers have changed! They didn't follow the spec,
+    please update. (Use branch v0.1, that has the old headers, for the
+    Qemu prototype [3])
+[5] git://linux-arm.org/kvmtool-jpb.git virtio-iommu/v0.4
+    Warning: command-line has changed! Use --viommu vfio[,opts] and
+    --viommu virtio[,opts] to instantiate a device.
+[6] http://www.linux-arm.org/git?p=virtio-iommu.git;a=tree;f=dist/diffs
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
