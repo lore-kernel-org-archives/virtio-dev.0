@@ -1,76 +1,83 @@
-Return-Path: virtio-dev-return-2472-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2473-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 035625818FFB
-	for <virtio-dev@lists.oasis-open.org>; Thu, 17 Aug 2017 03:10:00 -0700 (PDT)
+	by lists.oasis-open.org (Postfix) with ESMTP id 479375818FFB
+	for <virtio-dev@lists.oasis-open.org>; Thu, 17 Aug 2017 04:27:07 -0700 (PDT)
+From: Bharat Bhushan <bharat.bhushan@nxp.com>
+Date: Thu, 17 Aug 2017 11:27:01 +0000
+Message-ID: <AM5PR0401MB2545F70A3ABF2DBFFFC4A6B09A830@AM5PR0401MB2545.eurprd04.prod.outlook.com>
 References: <20170804181927.12148-1-jean-philippe.brucker@arm.com>
  <20170816040853.GA10652@shay3t003839711.china.huawei.com>
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Message-ID: <a2e573f3-bdfb-b5e5-7835-a7597abd48f5@arm.com>
-Date: Thu, 17 Aug 2017 11:12:24 +0100
-MIME-Version: 1.0
-In-Reply-To: <20170816040853.GA10652@shay3t003839711.china.huawei.com>
-Content-Type: text/plain; charset=utf-8
+ <a2e573f3-bdfb-b5e5-7835-a7597abd48f5@arm.com>
+In-Reply-To: <a2e573f3-bdfb-b5e5-7835-a7597abd48f5@arm.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [virtio-dev] [RFC] virtio-iommu version 0.4
-To: Adam Tao <taozhe1@huawei.com>
-Cc: iommu@lists.linux-foundation.org, kvm@vger.kernel.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, will.deacon@arm.com, robin.murphy@arm.com, lorenzo.pieralisi@arm.com, mst@redhat.com, jasowang@redhat.com, marc.zyngier@arm.com, eric.auger@redhat.com, eric.auger.pro@gmail.com, bharat.bhushan@nxp.com, peterx@redhat.com, kevin.tian@intel.com
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+Subject: RE: [virtio-dev] [RFC] virtio-iommu version 0.4
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Adam Tao <taozhe1@huawei.com>
+Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "will.deacon@arm.com" <will.deacon@arm.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>, "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>, "mst@redhat.com" <mst@redhat.com>, "jasowang@redhat.com" <jasowang@redhat.com>, "marc.zyngier@arm.com" <marc.zyngier@arm.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>, "eric.auger.pro@gmail.com" <eric.auger.pro@gmail.com>, "peterx@redhat.com" <peterx@redhat.com>, "kevin.tian@intel.com" <kevin.tian@intel.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Hi Adam,
-
-On 16/08/17 05:08, Adam Tao wrote:
->> * There is a working Qemu prototype [3], thanks to Eric Auger and Bharat
->>   Bhushan.
-> Hi, Brucker
-> I read the related spec for virtio IOMMU,
-> I am wondering if we support both the virtual and physical devices in
-> the guest to use the virtio IOMMU, how can we config the related address
-> translation for the different type of devices.
-> e.g.
-> 1. for Virtio devs(e.g. virtio-net), we can change the memmap table used
-> by the vhost device.
-> 2. for physical devices we can directly config the IOMMU/SMMU on the
-> host.
-> 
-> So do you know are there any RFCs for the back-end implementation for the virtio-IOMMU
-> thanks
-> Adam
-
-Eric's series [3] adds support for virtual devices (I'v only had time to
-test virtio-net so far, but as vhost-iotlb seems to be supported by Qemu,
-it should work with vhost-net as well). Bharat is working on the VFIO
-backend for physical devices. As far as I'm aware, his latest version is:
-
-[7] https://lists.gnu.org/archive/html/qemu-devel/2017-07/msg04094.html
-
-Thanks,
-Jean
-
-
->> [1] http://www.spinics.net/lists/kvm/msg147990.html
->> [2] git://linux-arm.org/virtio-iommu.git branch viommu/v0.4
->>     http://www.linux-arm.org/git?p=virtio-iommu.git;a=blob;f=dist/v0.4/virtio-iommu-v0.4.pdf
->>     I reiterate the disclaimers: don't use this document as a reference,
->>     it's a draft. It's also not an OASIS document yet. It may be riddled
->>     with mistakes. As this is a working draft, it is unstable and I do not
->>     guarantee backward compatibility of future versions.
->> [3] https://lists.gnu.org/archive/html/qemu-arm/2017-08/msg00004.html
->> [4] git://linux-arm.org/linux-jpb.git virtio-iommu/v0.4
->>     Warning: UAPI headers have changed! They didn't follow the spec,
->>     please update. (Use branch v0.1, that has the old headers, for the
->>     Qemu prototype [3])
->> [5] git://linux-arm.org/kvmtool-jpb.git virtio-iommu/v0.4
->>     Warning: command-line has changed! Use --viommu vfio[,opts] and
->>     --viommu virtio[,opts] to instantiate a device.
->> [6] http://www.linux-arm.org/git?p=virtio-iommu.git;a=tree;f=dist/diffs
-
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+SGksDQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSmVhbi1QaGlsaXBw
+ZSBCcnVja2VyIFttYWlsdG86amVhbi1waGlsaXBwZS5icnVja2VyQGFybS5jb21dDQo+IFNlbnQ6
+IFRodXJzZGF5LCBBdWd1c3QgMTcsIDIwMTcgMzo0MiBQTQ0KPiBUbzogQWRhbSBUYW8gPHRhb3po
+ZTFAaHVhd2VpLmNvbT4NCj4gQ2M6IGlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnOyBr
+dm1Admdlci5rZXJuZWwub3JnOw0KPiB2aXJ0dWFsaXphdGlvbkBsaXN0cy5saW51eC1mb3VuZGF0
+aW9uLm9yZzsgdmlydGlvLWRldkBsaXN0cy5vYXNpcy1vcGVuLm9yZzsNCj4gd2lsbC5kZWFjb25A
+YXJtLmNvbTsgcm9iaW4ubXVycGh5QGFybS5jb207IGxvcmVuem8ucGllcmFsaXNpQGFybS5jb207
+DQo+IG1zdEByZWRoYXQuY29tOyBqYXNvd2FuZ0ByZWRoYXQuY29tOyBtYXJjLnp5bmdpZXJAYXJt
+LmNvbTsNCj4gZXJpYy5hdWdlckByZWRoYXQuY29tOyBlcmljLmF1Z2VyLnByb0BnbWFpbC5jb207
+IEJoYXJhdCBCaHVzaGFuDQo+IDxiaGFyYXQuYmh1c2hhbkBueHAuY29tPjsgcGV0ZXJ4QHJlZGhh
+dC5jb207IGtldmluLnRpYW5AaW50ZWwuY29tDQo+IFN1YmplY3Q6IFJlOiBbdmlydGlvLWRldl0g
+W1JGQ10gdmlydGlvLWlvbW11IHZlcnNpb24gMC40DQo+IA0KPiBIaSBBZGFtLA0KPiANCj4gT24g
+MTYvMDgvMTcgMDU6MDgsIEFkYW0gVGFvIHdyb3RlOg0KPiA+PiAqIFRoZXJlIGlzIGEgd29ya2lu
+ZyBRZW11IHByb3RvdHlwZSBbM10sIHRoYW5rcyB0byBFcmljIEF1Z2VyIGFuZCBCaGFyYXQNCj4g
+Pj4gICBCaHVzaGFuLg0KPiA+IEhpLCBCcnVja2VyDQo+ID4gSSByZWFkIHRoZSByZWxhdGVkIHNw
+ZWMgZm9yIHZpcnRpbyBJT01NVSwgSSBhbSB3b25kZXJpbmcgaWYgd2Ugc3VwcG9ydA0KPiA+IGJv
+dGggdGhlIHZpcnR1YWwgYW5kIHBoeXNpY2FsIGRldmljZXMgaW4gdGhlIGd1ZXN0IHRvIHVzZSB0
+aGUgdmlydGlvDQo+ID4gSU9NTVUsIGhvdyBjYW4gd2UgY29uZmlnIHRoZSByZWxhdGVkIGFkZHJl
+c3MgdHJhbnNsYXRpb24gZm9yIHRoZQ0KPiA+IGRpZmZlcmVudCB0eXBlIG9mIGRldmljZXMuDQo+
+ID4gZS5nLg0KPiA+IDEuIGZvciBWaXJ0aW8gZGV2cyhlLmcuIHZpcnRpby1uZXQpLCB3ZSBjYW4g
+Y2hhbmdlIHRoZSBtZW1tYXAgdGFibGUNCj4gPiB1c2VkIGJ5IHRoZSB2aG9zdCBkZXZpY2UuDQo+
+ID4gMi4gZm9yIHBoeXNpY2FsIGRldmljZXMgd2UgY2FuIGRpcmVjdGx5IGNvbmZpZyB0aGUgSU9N
+TVUvU01NVSBvbiB0aGUNCj4gPiBob3N0Lg0KPiA+DQo+ID4gU28gZG8geW91IGtub3cgYXJlIHRo
+ZXJlIGFueSBSRkNzIGZvciB0aGUgYmFjay1lbmQgaW1wbGVtZW50YXRpb24gZm9yDQo+ID4gdGhl
+IHZpcnRpby1JT01NVSB0aGFua3MgQWRhbQ0KPiANCj4gRXJpYydzIHNlcmllcyBbM10gYWRkcyBz
+dXBwb3J0IGZvciB2aXJ0dWFsIGRldmljZXMgKEkndiBvbmx5IGhhZCB0aW1lIHRvIHRlc3QNCj4g
+dmlydGlvLW5ldCBzbyBmYXIsIGJ1dCBhcyB2aG9zdC1pb3RsYiBzZWVtcyB0byBiZSBzdXBwb3J0
+ZWQgYnkgUWVtdSwgaXQgc2hvdWxkDQo+IHdvcmsgd2l0aCB2aG9zdC1uZXQgYXMgd2VsbCkuIEJo
+YXJhdCBpcyB3b3JraW5nIG9uIHRoZSBWRklPIGJhY2tlbmQgZm9yDQo+IHBoeXNpY2FsIGRldmlj
+ZXMuIEFzIGZhciBhcyBJJ20gYXdhcmUsIGhpcyBsYXRlc3QgdmVyc2lvbiBpczoNCj4gDQo+IFs3
+XSBodHRwczovL2xpc3RzLmdudS5vcmcvYXJjaGl2ZS9odG1sL3FlbXUtZGV2ZWwvMjAxNy0wNy9t
+c2cwNDA5NC5odG1sDQoNCkkgYW0gd29ya2luZyBvbiBuZXdlciB2ZXJzaW9uIHdoaWNoIHdpbGwg
+YmUgYmFzZWQgb24gRXJpYy12My4NCkFjdHVhbGx5IEkgd2FudGVkIHRvIGluY2x1ZGUgdGhlIGZp
+eCBmb3IgdGhlIGlzc3VlIHJlcG9ydGVkIGJ5IEVyaWMsIGl0IGZhaWxzIGlmIHdlIGFzc2lnbiBt
+b3JlIHRoYW4gb25lIGludGVyZmFjZS4NCkkgcmVwcm9kdWNlZCB0aGUgaXNzdWVzIG9uIG15IHNp
+ZGUgYW5kIGtub3cgdGhlIHJvb3QgY2F1c2UuIEkgYW0gd29ya2luZyBvbiBmaXhpbmcgdGhpcy4N
+Cg0KVGhhbmtzDQotQmhhcmF0DQoNCj4gDQo+IFRoYW5rcywNCj4gSmVhbg0KPiANCj4gDQo+ID4+
+IFsxXSBodHRwOi8vd3d3LnNwaW5pY3MubmV0L2xpc3RzL2t2bS9tc2cxNDc5OTAuaHRtbA0KPiA+
+PiBbMl0gZ2l0Oi8vbGludXgtYXJtLm9yZy92aXJ0aW8taW9tbXUuZ2l0IGJyYW5jaCB2aW9tbXUv
+djAuNA0KPiA+PiAgICAgaHR0cDovL3d3dy5saW51eC1hcm0ub3JnL2dpdD9wPXZpcnRpby0NCj4g
+aW9tbXUuZ2l0O2E9YmxvYjtmPWRpc3QvdjAuNC92aXJ0aW8taW9tbXUtdjAuNC5wZGYNCj4gPj4g
+ICAgIEkgcmVpdGVyYXRlIHRoZSBkaXNjbGFpbWVyczogZG9uJ3QgdXNlIHRoaXMgZG9jdW1lbnQg
+YXMgYSByZWZlcmVuY2UsDQo+ID4+ICAgICBpdCdzIGEgZHJhZnQuIEl0J3MgYWxzbyBub3QgYW4g
+T0FTSVMgZG9jdW1lbnQgeWV0LiBJdCBtYXkgYmUgcmlkZGxlZA0KPiA+PiAgICAgd2l0aCBtaXN0
+YWtlcy4gQXMgdGhpcyBpcyBhIHdvcmtpbmcgZHJhZnQsIGl0IGlzIHVuc3RhYmxlIGFuZCBJIGRv
+IG5vdA0KPiA+PiAgICAgZ3VhcmFudGVlIGJhY2t3YXJkIGNvbXBhdGliaWxpdHkgb2YgZnV0dXJl
+IHZlcnNpb25zLg0KPiA+PiBbM10gaHR0cHM6Ly9saXN0cy5nbnUub3JnL2FyY2hpdmUvaHRtbC9x
+ZW11LWFybS8yMDE3LTA4L21zZzAwMDA0Lmh0bWwNCj4gPj4gWzRdIGdpdDovL2xpbnV4LWFybS5v
+cmcvbGludXgtanBiLmdpdCB2aXJ0aW8taW9tbXUvdjAuNA0KPiA+PiAgICAgV2FybmluZzogVUFQ
+SSBoZWFkZXJzIGhhdmUgY2hhbmdlZCEgVGhleSBkaWRuJ3QgZm9sbG93IHRoZSBzcGVjLA0KPiA+
+PiAgICAgcGxlYXNlIHVwZGF0ZS4gKFVzZSBicmFuY2ggdjAuMSwgdGhhdCBoYXMgdGhlIG9sZCBo
+ZWFkZXJzLCBmb3IgdGhlDQo+ID4+ICAgICBRZW11IHByb3RvdHlwZSBbM10pDQo+ID4+IFs1XSBn
+aXQ6Ly9saW51eC1hcm0ub3JnL2t2bXRvb2wtanBiLmdpdCB2aXJ0aW8taW9tbXUvdjAuNA0KPiA+
+PiAgICAgV2FybmluZzogY29tbWFuZC1saW5lIGhhcyBjaGFuZ2VkISBVc2UgLS12aW9tbXUgdmZp
+b1ssb3B0c10gYW5kDQo+ID4+ICAgICAtLXZpb21tdSB2aXJ0aW9bLG9wdHNdIHRvIGluc3RhbnRp
+YXRlIGEgZGV2aWNlLg0KPiA+PiBbNl0NCj4gPj4gaHR0cDovL3d3dy5saW51eC1hcm0ub3JnL2dp
+dD9wPXZpcnRpby1pb21tdS5naXQ7YT10cmVlO2Y9ZGlzdC9kaWZmcw0K
 
