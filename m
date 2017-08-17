@@ -1,95 +1,126 @@
-Return-Path: virtio-dev-return-2489-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2467-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 5908458191EF
-	for <virtio-dev@lists.oasis-open.org>; Tue, 22 Aug 2017 19:23:53 -0700 (PDT)
-From: "Tian, Kevin" <kevin.tian@intel.com>
-Date: Wed, 23 Aug 2017 02:23:46 +0000
-Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D190D7E8D9@SHSMSX101.ccr.corp.intel.com>
-References: <20170407191747.26618-1-jean-philippe.brucker@arm.com>
- <20170407191747.26618-3-jean-philippe.brucker@arm.com>
- <AADFC41AFE54684AB9EE6CBC0274A5D190CADECE@SHSMSX101.ccr.corp.intel.com>
- <34166633-f4d5-21d5-20db-9091243ccd84@arm.com>
- <AADFC41AFE54684AB9EE6CBC0274A5D190CB262D@SHSMSX101.ccr.corp.intel.com>
- <a4df3472-449f-297f-2a18-b3a21affadee@arm.com>
- <AADFC41AFE54684AB9EE6CBC0274A5D190D7BAB1@SHSMSX101.ccr.corp.intel.com>
- <454095c4-cae5-ad52-a459-5c9e2cce4047@arm.com>
- <AADFC41AFE54684AB9EE6CBC0274A5D190D7CF52@SHSMSX101.ccr.corp.intel.com>
- <03eabc9f-5db1-0eb9-b91a-c47da9d1a29b@arm.com>
-In-Reply-To: <03eabc9f-5db1-0eb9-b91a-c47da9d1a29b@arm.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-Subject: [virtio-dev] RE: [RFC 2/3] virtio-iommu: device probing and operations
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
-Cc: "cdall@linaro.org" <cdall@linaro.org>, "will.deacon@arm.com" <will.deacon@arm.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>, "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>, "joro@8bytes.org" <joro@8bytes.org>, "mst@redhat.com" <mst@redhat.com>, "jasowang@redhat.com" <jasowang@redhat.com>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "marc.zyngier@arm.com" <marc.zyngier@arm.com>, Auger Eric <eric.auger@redhat.com>, Bharat Bhushan <bharat.bhushan@nxp.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 4D5FA5818C9B
+	for <virtio-dev@lists.oasis-open.org>; Wed, 16 Aug 2017 20:38:15 -0700 (PDT)
+From: Wei Wang <wei.w.wang@intel.com>
+Date: Thu, 17 Aug 2017 11:26:51 +0800
+Message-Id: <1502940416-42944-1-git-send-email-wei.w.wang@intel.com>
+Subject: [virtio-dev] [PATCH v14 0/5] Virtio-balloon Enhancement
+To: virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, qemu-devel@nongnu.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, linux-mm@kvack.org, mst@redhat.com, mhocko@kernel.org, akpm@linux-foundation.org, mawilcox@microsoft.com
+Cc: david@redhat.com, cornelia.huck@de.ibm.com, mgorman@techsingularity.net, aarcange@redhat.com, amit.shah@redhat.com, pbonzini@redhat.com, willy@infradead.org, wei.w.wang@intel.com, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu@aliyun.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-PiBGcm9tOiBKZWFuLVBoaWxpcHBlIEJydWNrZXIgW21haWx0bzpqZWFuLXBoaWxpcHBlLmJydWNr
-ZXJAYXJtLmNvbV0NCj4gU2VudDogVHVlc2RheSwgQXVndXN0IDIyLCAyMDE3IDEwOjE5IFBNDQo+
-IA0KPiBPbiAyMi8wOC8xNyAwNzoyNCwgVGlhbiwgS2V2aW4gd3JvdGU6DQo+ID4+PiAoc29ycnkg
-dG8gcGljayB1cCB0aGlzIG9sZCB0aHJlYWQsIGFzIHRoZSAudGV4IG9uZSBpcyBub3QgZ29vZCBm
-b3IgcmV2aWV3DQo+ID4+PiBhbmQgdGhpcyB0aHJlYWQgcHJvdmlkZXMgbmVjZXNzYXJ5IGJhY2tn
-cm91bmQgZm9yIElPQVNJRCkuDQo+ID4+Pg0KPiA+Pj4gSGksIEplYW4sDQo+ID4+Pg0KPiA+Pj4g
-SSdkIGxpa2UgdG8gaGVhciBtb3JlIGNsYXJpZmljYXRpb24gcmVnYXJkaW5nIHRoZSByZWxhdGlv
-bnNoaXAgYmV0d2Vlbg0KPiA+Pj4gSU9BU0lEIGFuZCBQQVNJRC4gV2hlbiByZWFkaW5nIGJhY2sg
-YWJvdmUgZXhwbGFuYXRpb24sIGl0IGxvb2tzDQo+ID4+PiBjb25mdXNpbmcgdG8gbWUgbm93ICh0
-aG91Z2ggSSBtaWdodCBnZXQgdGhlIG1lYW5pbmcgbW9udGhzIGFnbyA6LykuDQo+ID4+PiBBdCBs
-ZWFzdCBJbnRlbCBWVC1kIG9ubHkgdW5kZXJzdGFuZHMgUEFTSUQgKG9yIHlvdSBjYW4gdGhpbmsg
-SU9BU0lEDQo+ID4+PiA9UEFTSUQpLiBUaGVyZSBpcyBubyBzdWNoIGxheWVyZWQgYWRkcmVzcyBz
-cGFjZSBjb25jZXB0LiBUaGVuIGZvcg0KPiA+Pj4gbWFwL3VubWFwIHR5cGUgcmVxdWVzdCwgZG8g
-eW91IGludGVuZCB0byBzdGVhbCBzb21lIFBBU0lEcyBmb3INCj4gPj4+IHRoYXQgcHVycG9zZSBv
-biBzdWNoIGFyY2hpdGVjdHVyZSAoc2luY2UgSU9BU0lEIGlzIGEgbWFuZGF0b3J5IGZpZWxkDQo+
-ID4+PiBpbiBtYXAvdW5tYXAgcmVxdWVzdCk/DQo+ID4+DQo+ID4+IElPQVNJRCBpcyBhIGxvZ2lj
-YWwgSUQsIGl0IGlzbid0IHVzZWQgYnkgaGFyZHdhcmUuIFRoZSBhZGRyZXNzIHNwYWNlDQo+ID4+
-IGNvbmNlcHQgaW4gdmlydGlvLWlvbW11IGFsbG93cyB0byBncm91cCBlbmRwb2ludHMgdG9nZXRo
-ZXIsIHNvIHRoYXQgdGhleQ0KPiA+PiBoYXZlIHRoZSBzYW1lIGFkZHJlc3Mgc3BhY2UuIEkgdGhv
-dWdodCBpdCB3YXMgcHJldHR5IG11Y2ggdGhlIHNhbWUgYXMNCj4gPj4gImRvbWFpbnMiIGluIFZU
-LWQ/IEluIGFueSBjYXNlLCBpdCBpcyB0aGUgc2FtZSBhcyBkb21haW5zIGluIExpbnV4LiBBbg0K
-PiA+PiBJT0FTSUQgcHJvdmlkZXMgYSBoYW5kbGUgZm9yIGNvbW11bmljYXRpb24gYmV0d2VlbiB2
-aXJ0aW8taW9tbXUNCj4gZGV2aWNlDQo+ID4+IGFuZA0KPiA+PiBkcml2ZXIsIGJ1dCB1bmxpa2Ug
-UEFTSUQsIHRoZSBJT0FTSUQgbnVtYmVyIGRvZXNuJ3QgbWVhbiBhbnl0aGluZw0KPiBvdXRzaWRl
-DQo+ID4+IG9mIHZpcnRpby1pb21tdS4NCj4gPg0KPiA+IFRoYW5rcy4gSXQncyBjbGVhciB0byBt
-ZSB0aGVuLg0KPiA+DQo+ID4gYnR3IGRvZXMgaXQgbWFrZSBtb3JlIHNlbnNlIHRvIHVzZSAiZG9t
-YWluIGlkIiBpbnN0ZWFkIG9mICJJTyBhZGRyZXNzDQo+ID4gc3BhY2UgaWQiPyBGb3Igb25lLCB3
-aGVuIHRhbGtpbmcgYWJvdXQgbGF5ZXJlZCBhZGRyZXNzIHNwYWNlcw0KPiA+IHVzdWFsbHkgcGFy
-ZW50IGFkZHJlc3Mgc3BhY2UgaXMgYSBzdXBlcnNldCBvZiBhbGwgY2hpbGQgYWRkcmVzcyBzcGFj
-ZXMNCj4gPiB3aGljaCBkb2Vzbid0IGFwcGx5IHRvIHRoaXMgY2FzZSwgc2luY2UgZWl0aGVyIGFu
-b255bW91cyBhZGRyZXNzDQo+ID4gc3BhY2Ugb3IgUEFTSUQtdGFnZ2VkIGFkZHJlc3Mgc3BhY2Vz
-IGFyZSBjb21wbGV0ZWx5IGlzb2xhdGVkLiBJbnN0ZWFkPg0KPiAnZG9tYWluJyBpcyBhIG1vcmUg
-aW5jbHVzaXZlIHRlcm1pbm9sb2d5IHRvIGVtYnJhY2UgbXVsdGlwbGUgYWRkcmVzcw0KPiA+IHNw
-YWNlcy4gRm9yIHR3bywgJ2RvbWFpbicgaXMgYmV0dGVyIGFsaWduZWQgdG8gc29mdHdhcmUgdGVy
-bWlub2xvZ3kgKGUuZy4NCj4gPiBpb21tdV9kb21haW4pIGlzIGVhc2llciBmb3IgcGVvcGxlIHRv
-IGNhdGNoIHVwLiA6LSkNCj4gDQo+IEkgZG8gYWdyZWUgdGhhdCB0aGUgbmFtaW5nIGlzbid0IGdy
-ZWF0LiBJIGRpZG4ndCB1c2UgImRvbWFpbiIgZm9yIHZhcmlvdXMNCj4gcmVhc29ucyAoaXQgYWxz
-byBoYXMgYSBkaWZmZXJlbnQgbWVhbmluZ3MgaW4gQVJNKSBidXQgSSBrZWVwIHJlZ3JldHRpbmcN
-Cj4gaXQuIEFzIHRoZXJlIGlzIG5vIHZpcnRpby1pb21tdSBjb2RlIHVwc3RyZWFtIHlldCwgaXQg
-aXMgc3RpbGwgcG9zc2libGUgdG8NCj4gY2hhbmdlIHRoaXMgb25lLg0KPiANCj4gSSBmaW5kIHRo
-YXQgImFkZHJlc3Mgc3BhY2UiIHdhcyBhIGdvb2QgZml0IGZvciB0aGUgYmFzZWxpbmUgZGV2aWNl
-LCBidXQNCj4gdGhlIG5hbWUgZG9lc24ndCBzY2FsZS4gV2hlbiBpbnRyb2R1Y2luZyBQQVNJRHMs
-IHRoZSBhZGRyZXNzIHNwYWNlDQo+IG1vdmVzDQo+IG9uZSBsZXZlbCBkb3duIGluIHRoZSBwcm9n
-cmFtbWluZyBtb2RlbC4gSXQgaXMgY29udGV4dHMsIGFub255bW91cyBvcg0KPiBQQVNJRC10YWdn
-ZWQsIHRoYXQgc2hvdWxkIGJlIGNhbGxlZCBhZGRyZXNzIHNwYWNlcy4gSSB3YXMgY29uc2lkZXJp
-bmcNCj4gcmVwbGFjaW5nIGl0IHdpdGggImRvbWFpbiIsICJjb250YWluZXIiLCAicGFydGl0aW9u
-Ii4uLg0KPiANCj4gRXZlbiB0aG91Z2ggSSBkb24ndCB3YW50IHRvIHVzZSB0b28gbXVjaCBMaW51
-eCB0ZXJtaW5vbG9neSAodmlydGlvIGlzbid0DQo+IGp1c3QgTGludXgpLCAiZG9tYWluIiBpcyBi
-ZXR0ZXIgZml0dGVkLCBzb21ld2hhdCBuZXV0cmFsLCBhbmQgZ2V0cyB0aGUNCj4gcG9pbnQgYWNy
-b3NzLiBBIGRvbWFpbiBoYXMgb25lIG9yIG1vcmUgaW5wdXQgYWRkcmVzcyBzcGFjZXMgYW5kIGEg
-c2luZ2xlDQo+IG91dHB1dCBhZGRyZXNzIHNwYWNlLg0KPiANCj4gV2hlbiBpbnRyb2R1Y2luZyBu
-ZXN0ZWQgdHJhbnNsYXRpb24gdG8gdmlydGlvLWlvbW11IChmb3IgdGhlIGd1ZXN0IHRvIGhhdmUN
-Cj4gdmlydHVhbCBtYWNoaW5lcyBpdHNlbGYpLCB0aGVyZSB3aWxsIGJlIG9uZSBvciBtb3JlIGlu
-dGVybWVkaWF0ZSBhZGRyZXNzDQo+IHNwYWNlcy4gRG9tYWlucyB3aWxsIGJlIG5lc3RlZCwgd2l0
-aCB0aGUgdGVybWlub2xvZ3kgInBhcmVudCBkb21haW4iIGFuZA0KPiAiY2hpbGQgZG9tYWluIi4g
-SSBvbmx5IGJyaWVmbHkgbG9va2VkIGF0IGEgcHJvZ3JhbW1pbmcgbW9kZWwgZm9yIHRoaXMgYnV0
-DQo+IEkgdGhpbmsgd2UgY2FuIG5lc3QgdmlydGlvLWlvbW11cyB3aXRob3V0IG11Y2ggaGFzc2xl
-Lg0KPiANCj4gSWYgdGhlcmUgaXMgbm8gb2JqZWN0aW9uIHRoZSBuZXh0IHZlcnNpb24gd2lsbCB1
-c2UgImRvbWFpbiIgaW4gcGxhY2Ugb2YNCj4gImFkZHJlc3Nfc3BhY2UiLiBUaGUgY2hhbmdlIGlz
-IHF1aXRlIGludmFzaXZlIGF0IHRoaXMgcG9pbnQsIGJ1dCBJIGJlbGlldmUNCj4gdGhhdCBpdCB3
-aWxsIG1ha2VzIHRoaW5ncyBtb3JlIGNsZWFyIGRvd24gdGhlIHJvYWQuDQo+IA0KDQpTb3VuZHMg
-Z29vZCB0byBtZS4gVGhhbmtzLg0K
+This patch series enhances the existing virtio-balloon with the following
+new features:
+1) fast ballooning: transfer ballooned pages between the guest and host in
+chunks using sgs, instead of one by one; and
+2) free_page_vq: a new virtqueue to report guest free pages to the host.
+
+The second feature can be used to accelerate live migration of VMs. Here
+are some details:
+
+Live migration needs to transfer the VM's memory from the source machine
+to the destination round by round. For the 1st round, all the VM's memory
+is transferred. From the 2nd round, only the pieces of memory that were
+written by the guest (after the 1st round) are transferred. One method
+that is popularly used by the hypervisor to track which part of memory is
+written is to write-protect all the guest memory.
+
+The second feature  enables the optimization of the 1st round memory
+transfer - the hypervisor can skip the transfer of guest free pages in the
+1st round. It is not concerned that the memory pages are used after they
+are given to the hypervisor as a hint of the free pages, because they will
+be tracked by the hypervisor and transferred in the next round if they are
+used and written.
+
+Change Log:
+v13->v14:
+1) xbitmap: move the code from lib/radix-tree.c to lib/xbitmap.c.
+2) xbitmap: consolidate the implementation of xb_bit_set/clear/test into
+one xb_bit_ops.
+3) xbitmap: add documents for the exported APIs.
+4) mm: rewrite the function to walk through free page blocks.
+5) virtio-balloon: when reporting a free page blcok to the device, if the
+vq is full (less likey to happen in practice), just skip reporting this
+block, instead of busywaiting till an entry gets released.
+6) virtio-balloon: fail the probe function if adding the signal buf in
+init_vqs fails.
+
+v12->v13:
+1) mm: use a callback function to handle the the free page blocks from the
+report function. This avoids exposing the zone internal to a kernel module.
+2) virtio-balloon: send balloon pages or a free page block using a single sg
+each time. This has the benefits of simpler implementation with no new APIs.
+3) virtio-balloon: the free_page_vq is used to report free pages only (no
+multiple usages interleaving)
+4) virtio-balloon: Balloon pages and free page blocks are sent via input sgs,
+and the completion signal to the host is sent via an output sg.
+
+v11->v12:
+1) xbitmap: use the xbitmap from Matthew Wilcox to record ballooned pages.
+2) virtio-ring: enable the driver to build up a desc chain using vring desc.
+3) virtio-ring: Add locking to the existing START_USE() and END_USE() macro
+to lock/unlock the vq when a vq operation starts/ends.
+4) virtio-ring: add virtqueue_kick_sync() and virtqueue_kick_async()
+5) virtio-balloon: describe chunks of ballooned pages and free pages blocks
+directly using one or more chains of desc from the vq.
+
+v10->v11:
+1) virtio_balloon: use vring_desc to describe a chunk;
+2) virtio_ring: support to add an indirect desc table to virtqueue;
+3)  virtio_balloon: use cmdq to report guest memory statistics.
+
+v9->v10:
+1) mm: put report_unused_page_block() under CONFIG_VIRTIO_BALLOON;
+2) virtio-balloon: add virtballoon_validate();
+3) virtio-balloon: msg format change;
+4) virtio-balloon: move miscq handling to a task on system_freezable_wq;
+5) virtio-balloon: code cleanup.
+
+v8->v9:
+1) Split the two new features, VIRTIO_BALLOON_F_BALLOON_CHUNKS and
+VIRTIO_BALLOON_F_MISC_VQ, which were mixed together in the previous
+implementation;
+2) Simpler function to get the free page block.
+
+v7->v8:
+1) Use only one chunk format, instead of two.
+2) re-write the virtio-balloon implementation patch.
+3) commit changes
+4) patch re-org
+
+Matthew Wilcox (1):
+  lib/xbitmap: Introduce xbitmap
+
+Wei Wang (4):
+  lib/xbitmap: add xb_find_next_bit() and xb_zero()
+  virtio-balloon: VIRTIO_BALLOON_F_SG
+  mm: support reporting free page blocks
+  virtio-balloon: VIRTIO_BALLOON_F_FREE_PAGE_VQ
+
+ drivers/virtio/virtio_balloon.c     | 324 +++++++++++++++++++++++++++++++-----
+ include/linux/mm.h                  |   6 +
+ include/linux/radix-tree.h          |   3 +
+ include/linux/xbitmap.h             |  64 +++++++
+ include/uapi/linux/virtio_balloon.h |   2 +
+ lib/Makefile                        |   2 +-
+ lib/radix-tree.c                    |  22 ++-
+ lib/xbitmap.c                       | 215 ++++++++++++++++++++++++
+ mm/page_alloc.c                     |  44 +++++
+ 9 files changed, 640 insertions(+), 42 deletions(-)
+ create mode 100644 include/linux/xbitmap.h
+ create mode 100644 lib/xbitmap.c
+
+-- 
+2.7.4
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
