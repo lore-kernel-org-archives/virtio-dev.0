@@ -1,65 +1,111 @@
-Return-Path: virtio-dev-return-2487-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2470-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 1B1225819009
-	for <virtio-dev@lists.oasis-open.org>; Mon, 21 Aug 2017 13:22:22 -0700 (PDT)
-Date: Mon, 21 Aug 2017 23:22:17 +0300
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20170821232052-mutt-send-email-mst@kernel.org>
+	by lists.oasis-open.org (Postfix) with ESMTP id 263C95818FE7
+	for <virtio-dev@lists.oasis-open.org>; Wed, 16 Aug 2017 20:38:32 -0700 (PDT)
+From: Wei Wang <wei.w.wang@intel.com>
+Date: Thu, 17 Aug 2017 11:26:55 +0800
+Message-Id: <1502940416-42944-5-git-send-email-wei.w.wang@intel.com>
+In-Reply-To: <1502940416-42944-1-git-send-email-wei.w.wang@intel.com>
 References: <1502940416-42944-1-git-send-email-wei.w.wang@intel.com>
- <1502940416-42944-4-git-send-email-wei.w.wang@intel.com>
- <20170818051451-mutt-send-email-mst@kernel.org>
- <599699AF.1090705@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <599699AF.1090705@intel.com>
-Subject: [virtio-dev] Re: [PATCH v14 3/5] virtio-balloon: VIRTIO_BALLOON_F_SG
-To: Wei Wang <wei.w.wang@intel.com>
-Cc: virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, qemu-devel@nongnu.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, linux-mm@kvack.org, mhocko@kernel.org, akpm@linux-foundation.org, mawilcox@microsoft.com, david@redhat.com, cornelia.huck@de.ibm.com, mgorman@techsingularity.net, aarcange@redhat.com, amit.shah@redhat.com, pbonzini@redhat.com, willy@infradead.org, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu@aliyun.com
+Subject: [virtio-dev] [PATCH v14 4/5] mm: support reporting free page blocks
+To: virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, qemu-devel@nongnu.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, linux-mm@kvack.org, mst@redhat.com, mhocko@kernel.org, akpm@linux-foundation.org, mawilcox@microsoft.com
+Cc: david@redhat.com, cornelia.huck@de.ibm.com, mgorman@techsingularity.net, aarcange@redhat.com, amit.shah@redhat.com, pbonzini@redhat.com, willy@infradead.org, wei.w.wang@intel.com, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu@aliyun.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Fri, Aug 18, 2017 at 03:39:27PM +0800, Wei Wang wrote:
-> On 08/18/2017 10:22 AM, Michael S. Tsirkin wrote:
-> > +static void send_balloon_page_sg(struct virtio_balloon *vb,
-> > +				 struct virtqueue *vq,
-> > +				 void *addr,
-> > +				 uint32_t size)
-> > +{
-> > +	unsigned int len;
-> > +	int ret;
-> > +
-> > +	do {
-> > +		ret = add_one_sg(vq, addr, size);
-> > +		virtqueue_kick(vq);
-> > +		wait_event(vb->acked, virtqueue_get_buf(vq, &len));
-> > +		/*
-> > +		 * It is uncommon to see the vq is full, because the sg is sent
-> > +		 * one by one and the device is able to handle it in time. But
-> > +		 * if that happens, we go back to retry after an entry gets
-> > +		 * released.
-> > +		 */
-> > Why send one by one though? Why not batch some s/gs and wait for all
-> > of them to be completed? If memory if fragmented, waiting every time is
-> > worse than what we have now (VIRTIO_BALLOON_ARRAY_PFNS_MAX at a time).
-> > 
-> 
-> OK, I'll do batching in some fashion.
-> 
-> 
-> Best,
-> Wei
-> 
-> 
+This patch adds support to walk through the free page blocks in the
+system and report them via a callback function. Some page blocks may
+leave the free list after zone->lock is released, so it is the caller's
+responsibility to either detect or prevent the use of such pages.
 
-btw you need to address the build errors that kbot has found.
+Signed-off-by: Wei Wang <wei.w.wang@intel.com>
+Signed-off-by: Liang Li <liang.z.li@intel.com>
+Cc: Michal Hocko <mhocko@kernel.org>
+Cc: Michael S. Tsirkin <mst@redhat.com>
+---
+ include/linux/mm.h |  6 ++++++
+ mm/page_alloc.c    | 44 ++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 50 insertions(+)
 
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index 46b9ac5..cd29b9f 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -1835,6 +1835,12 @@ extern void free_area_init_node(int nid, unsigned long * zones_size,
+ 		unsigned long zone_start_pfn, unsigned long *zholes_size);
+ extern void free_initmem(void);
+ 
++extern void walk_free_mem_block(void *opaque1,
++				unsigned int min_order,
++				void (*visit)(void *opaque2,
++					      unsigned long pfn,
++					      unsigned long nr_pages));
++
+ /*
+  * Free reserved pages within range [PAGE_ALIGN(start), end & PAGE_MASK)
+  * into the buddy system. The freed pages will be poisoned with pattern
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index 6d00f74..a721a35 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -4762,6 +4762,50 @@ void show_free_areas(unsigned int filter, nodemask_t *nodemask)
+ 	show_swap_cache_info();
+ }
+ 
++/**
++ * walk_free_mem_block - Walk through the free page blocks in the system
++ * @opaque1: the context passed from the caller
++ * @min_order: the minimum order of free lists to check
++ * @visit: the callback function given by the caller
++ *
++ * The function is used to walk through the free page blocks in the system,
++ * and each free page block is reported to the caller via the @visit callback.
++ * Please note:
++ * 1) The function is used to report hints of free pages, so the caller should
++ * not use those reported pages after the callback returns.
++ * 2) The callback is invoked with the zone->lock being held, so it should not
++ * block and should finish as soon as possible.
++ */
++void walk_free_mem_block(void *opaque1,
++			 unsigned int min_order,
++			 void (*visit)(void *opaque2,
++				       unsigned long pfn,
++				       unsigned long nr_pages))
++{
++	struct zone *zone;
++	struct page *page;
++	struct list_head *list;
++	unsigned int order;
++	enum migratetype mt;
++	unsigned long pfn, flags;
++
++	for_each_populated_zone(zone) {
++		for (order = MAX_ORDER - 1;
++		     order < MAX_ORDER && order >= min_order; order--) {
++			for (mt = 0; mt < MIGRATE_TYPES; mt++) {
++				spin_lock_irqsave(&zone->lock, flags);
++				list = &zone->free_area[order].free_list[mt];
++				list_for_each_entry(page, list, lru) {
++					pfn = page_to_pfn(page);
++					visit(opaque1, pfn, 1 << order);
++				}
++				spin_unlock_irqrestore(&zone->lock, flags);
++			}
++		}
++	}
++}
++EXPORT_SYMBOL_GPL(walk_free_mem_block);
++
+ static void zoneref_set_zone(struct zone *zone, struct zoneref *zoneref)
+ {
+ 	zoneref->zone = zone;
 -- 
-MST
+2.7.4
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
