@@ -1,137 +1,129 @@
-Return-Path: virtio-dev-return-2505-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2486-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id A00DB58190D9
-	for <virtio-dev@lists.oasis-open.org>; Tue, 29 Aug 2017 15:39:13 -0700 (PDT)
+	by lists.oasis-open.org (Postfix) with ESMTP id E322B58190D2
+	for <virtio-dev@lists.oasis-open.org>; Mon, 21 Aug 2017 04:57:46 -0700 (PDT)
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+References: <20170407191747.26618-1-jean-philippe.brucker@arm.com>
+ <20170407191747.26618-3-jean-philippe.brucker@arm.com>
+ <AADFC41AFE54684AB9EE6CBC0274A5D190CADECE@SHSMSX101.ccr.corp.intel.com>
+ <34166633-f4d5-21d5-20db-9091243ccd84@arm.com>
+ <AADFC41AFE54684AB9EE6CBC0274A5D190CB262D@SHSMSX101.ccr.corp.intel.com>
+ <a4df3472-449f-297f-2a18-b3a21affadee@arm.com>
+ <AADFC41AFE54684AB9EE6CBC0274A5D190D7BAB1@SHSMSX101.ccr.corp.intel.com>
+Message-ID: <454095c4-cae5-ad52-a459-5c9e2cce4047@arm.com>
+Date: Mon, 21 Aug 2017 13:00:23 +0100
 MIME-Version: 1.0
-In-Reply-To: <20170830000452-mutt-send-email-mst@kernel.org>
-References: <20170829200759.13975-1-willemdebruijn.kernel@gmail.com>
- <20170829200759.13975-3-willemdebruijn.kernel@gmail.com> <20170829231606-mutt-send-email-mst@kernel.org>
- <CAF=yD-L95x1EPKFeiPiZ2hbTzwYmDaG9O54+0tUW_4opuRKDMw@mail.gmail.com>
- <20170829233525-mutt-send-email-mst@kernel.org> <CAF=yD-+gPOYSgq8ckJ4wt3TPQYEnnB36g=Q5G4=yfoesGc=4hA@mail.gmail.com>
- <20170830000452-mutt-send-email-mst@kernel.org>
-From: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date: Tue, 29 Aug 2017 18:38:31 -0400
-Message-ID: <CAF=yD-+E_+AGtjM5MeXkre9T9BMK3KK06yn=zbuyiXexfTxp1Q@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Subject: [virtio-dev] Re: [PATCH RFC 2/2] virtio_net: enable probing for NEEDS_RESET support
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Network Development <netdev@vger.kernel.org>, Jason Wang <jasowang@redhat.com>, virtualization@lists.linux-foundation.org, Willem de Bruijn <willemb@google.com>, virtio-dev@lists.oasis-open.org
+In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D190D7BAB1@SHSMSX101.ccr.corp.intel.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+Subject: [virtio-dev] Re: [RFC 2/3] virtio-iommu: device probing and operations
+To: "Tian, Kevin" <kevin.tian@intel.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
+Cc: "cdall@linaro.org" <cdall@linaro.org>, "will.deacon@arm.com" <will.deacon@arm.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>, "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>, "joro@8bytes.org" <joro@8bytes.org>, "mst@redhat.com" <mst@redhat.com>, "jasowang@redhat.com" <jasowang@redhat.com>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "marc.zyngier@arm.com" <marc.zyngier@arm.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Tue, Aug 29, 2017 at 5:13 PM, Michael S. Tsirkin <mst@redhat.com> wrote:
-> On Tue, Aug 29, 2017 at 05:02:29PM -0400, Willem de Bruijn wrote:
->> + virtio-dev
+On 21/08/17 08:59, Tian, Kevin wrote:
+>> From: Jean-Philippe Brucker [mailto:jean-philippe.brucker@arm.com]
+>> Sent: Monday, April 24, 2017 11:06 PM
+>>>>>>   1. Attach device
+>>>>>>   ----------------
+>>>>>>
+>>>>>> struct virtio_iommu_req_attach {
+>>>>>> 	le32	address_space;
+>>>>>> 	le32	device;
+>>>>>> 	le32	flags/reserved;
+>>>>>> };
+>>>>>>
+>>>>>> Attach a device to an address space. 'address_space' is an identifier
+>>>>>> unique to the guest. If the address space doesn't exist in the IOMMU
+>>>>>
+>>>>> Based on your description this address space ID is per operation right?
+>>>>> MAP/UNMAP and page-table sharing should have different ID spaces...
+>>>>
+>>>> I think it's simpler if we keep a single IOASID space per virtio-iommu
+>>>> device, because the maximum number of address spaces (described by
+>>>> ioasid_bits) might be a restriction of the pIOMMU. For page-table
+>> sharing
+>>>> you still need to define which devices will share a page directory using
+>>>> ATTACH requests, though that interface is not set in stone.
+>>>
+>>> got you. yes VM is supposed to consume less IOASIDs than physically
+>>> available. It doesn’t hurt to have one IOASID space for both IOVA
+>>> map/unmap usages (one IOASID per device) and SVM usages (multiple
+>>> IOASIDs per device). The former is digested by software and the latter
+>>> will be bound to hardware.
+>>>
 >>
->> On Tue, Aug 29, 2017 at 4:38 PM, Michael S. Tsirkin <mst@redhat.com> wrote:
->> > On Tue, Aug 29, 2017 at 04:27:41PM -0400, Willem de Bruijn wrote:
->> >> On Tue, Aug 29, 2017 at 4:16 PM, Michael S. Tsirkin <mst@redhat.com> wrote:
->> >> > On Tue, Aug 29, 2017 at 04:07:59PM -0400, Willem de Bruijn wrote:
->> >> >> From: Willem de Bruijn <willemb@google.com>
->> >> >>
->> >> >> Implement a mechanism to signal that a virtio device implements the
->> >> >> VIRTIO_CONFIG_S_NEEDS_RESET command.
->> >> >>
->> >> >> Testing for VIRTIO_CONFIG_S_NEEDS_RESET support by issuing the request
->> >> >> and verifying the reset state would require an expensive state change.
->> >> >>
->> >> >> To avoid that, add a status bit to the feature register used during
->> >> >> feature negotiation between host and guest.
->> >> >>
->> >> >> Set the bit for virtio-net, which supports the feature.
->> >> >>
->> >> >> Signed-off-by: Willem de Bruijn <willemb@google.com>
->> >> >
->> >> > All virtio 1 devices have the reset feature
->> >>
->> >> I don't quite follow. No device drivers implement this request currently?
->> >
->> > Depends. Spec 1.0 describes the bit and that driver can respond
->> > by reseting the device. You seem to do something else
->> > in this patchset, but as designed in 1.0 it does not seem to need
->> > a feature bit.
+>> Hmm, I'm using address space indexed by IOASID for "classic" IOMMU, and
+>> then contexts indexed by PASID when talking about SVM. So in my mind an
+>> address space can have multiple sub-address-spaces (contexts). Number of
+>> IOASIDs is a limitation of the pIOMMU, and number of PASIDs is a
+>> limitation of the device. Therefore attaching devices to address spaces
+>> would update the number of available contexts in that address space. The
+>> terminology is not ideal, and I'd be happy to change it for something more
+>> clear.
 >>
->> I see. So support is designed to be best effort?
->>
->> The feature bit is only needed if driver support is optional.
->>
->> The ack response is necessary if the device acts differently
->> depending on whether the reset happened. The device has
->> to reset its local state, too, so I think that this is needed.
->
-> That reset should only happen when guest driver resets the device.
-> And spec already has a mechanism for that anyway.
+> 
+> (sorry to pick up this old thread, as the .tex one is not good for review
+> and this thread provides necessary background for IOASID).
+> 
+> Hi, Jean,
+> 
+> I'd like to hear more clarification regarding the relationship between 
+> IOASID and PASID. When reading back above explanation, it looks
+> confusing to me now (though I might get the meaning months ago :/).
+> At least Intel VT-d only understands PASID (or you can think IOASID
+> =PASID). There is no such layered address space concept. Then for
+> map/unmap type request, do you intend to steal some PASIDs for
+> that purpose on such architecture (since IOASID is a mandatory field 
+> in map/unmap request)?
 
-And the device can read the ring state to see whether it has reset,
-perhaps.
+IOASID is a logical ID, it isn't used by hardware. The address space
+concept in virtio-iommu allows to group endpoints together, so that they
+have the same address space. I thought it was pretty much the same as
+"domains" in VT-d? In any case, it is the same as domains in Linux. An
+IOASID provides a handle for communication between virtio-iommu device and
+driver, but unlike PASID, the IOASID number doesn't mean anything outside
+of virtio-iommu.
 
->>
->> >> > so maybe guest does
->> >> > not need this flag. Does device need it? Does device really
->> >> > care that guest can't recover?
->> >>
->> >> If all device drivers support it, then the flag is not needed.
->> >>
->> >> But as long as legacy device drivers can exist that do not support
->> >> this feature, it has to have a way of differentiating between the two.
->> >
->> > Why? Device won't set this unless it's in a bad state. In that case,
->> > setting the bit is harmless even if drivers ignore it.
->>
->> The goal is for the device to be able to rely on the driver reset to get
->> to a good state even if it gets it into a bad state.
->>
->> That allows it to implement optimizations that could get it into that bad
->> state.
->
-> I see. I don't think this is what the need reset was designed for.
->
-> We can extend it to cover this case but let's add a bit more
-> documentation then.
+I haven't introduced PASIDs in public virtio-iommu documents yet, but the
+way I intend it, PASID != IOASID. We will still have a logical address
+space identified by IOASID, that can contain multiple contexts identified
+by PASID. At the moment, after the ATTACH request, an address space
+contains a single anonymous context (NO PASID) that can be managed with
+MAP/UNMAP requests. With virtio-iommu v0.4, structures look like the
+following. The NO PASID context is implicit.
 
-Okay.
+                    address space      context
+    endpoint ----.                                  .- mapping
+    endpoint ----+---- IOASID -------- NO PASID ----+- mapping
+    endpoint ----'                                  '- mapping
 
-> And in particular won't it be better if we could just reset one ring,
-> and not the whole device state? This might be nicer so flows on other
-> rings aren't disrupted.
+I'd like to add a flag to ATTACH that says "don't create a default
+anonymous context, I'll handle contexts myself". Then a new "ADD_TABLE"
+request to handle contexts. When creating a context, the guest decides if
+it wants to manage it via MAP/UNMAP requests (and a new "context" field),
+or instead manage mappings itself by allocating a page directory and use
+INVALIDATE requests.
 
-Indeed. But that would require a different request, then? It also
-depends on the use case. A full device reset is a big hammer,
-but if used only to get out of rare edge cases, it is good enough.
+                    address space      context
+    endpoint ----.                                  .- mapping
+    endpoint ----+---- IOASID ----+--- NO PASID ----+- mapping
+    endpoint ----'                |                 '- mapping
+                                  +--- PASID 0  ---- pgd
+                                  |     ...
+                                  '--- PASID N  ---- pgd
 
->>
->> In particular, in the edge case where the device performs backpressure,
->> takes the descriptor out of the avail ring and does not immediately post
->> it to the used ring.
->>
->> A reset will make the guest free all delayed packets and treat any
->> unsent and unacknowledged as network drops. This allows the
->> device to indeed drop long delayed packets when they eventually
->> surface (e.g., leave a qdisc queue).
->
-> In this particular case, won't it be easier for device to just
-> report all packets as used, without involving the guest?
+In this example the guest chose to still have an anonymous context that
+uses MAP/UNMAP, along with a few PASID contexts with their own page tables.
 
-When the device can just iterate over the outstanding packet, yeah,
-that's actually simpler.
-
->> This is of course not safe with
->> zerocopy packets.
->
->
-> I wonder if we can teach kernel to drop zero copy packets too.
-
-Your point about changing frags[] underneath a cloned skb really does
-make that hard. We might be able to mitigate individual specific cases
-of high latency, such as TC queue occupancy.
-
->
-> --
-> MST
+Thanks,
+Jean
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
