@@ -1,83 +1,60 @@
-Return-Path: virtio-dev-return-2473-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2490-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 479375818FFB
-	for <virtio-dev@lists.oasis-open.org>; Thu, 17 Aug 2017 04:27:07 -0700 (PDT)
-From: Bharat Bhushan <bharat.bhushan@nxp.com>
-Date: Thu, 17 Aug 2017 11:27:01 +0000
-Message-ID: <AM5PR0401MB2545F70A3ABF2DBFFFC4A6B09A830@AM5PR0401MB2545.eurprd04.prod.outlook.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 56FF558191FA
+	for <virtio-dev@lists.oasis-open.org>; Wed, 23 Aug 2017 02:58:30 -0700 (PDT)
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
 References: <20170804181927.12148-1-jean-philippe.brucker@arm.com>
- <20170816040853.GA10652@shay3t003839711.china.huawei.com>
- <a2e573f3-bdfb-b5e5-7835-a7597abd48f5@arm.com>
-In-Reply-To: <a2e573f3-bdfb-b5e5-7835-a7597abd48f5@arm.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Message-ID: <5be484ff-6a1a-6c9b-947c-f64ea23f58cc@arm.com>
+Date: Wed, 23 Aug 2017 11:01:11 +0100
 MIME-Version: 1.0
-Subject: RE: [virtio-dev] [RFC] virtio-iommu version 0.4
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Adam Tao <taozhe1@huawei.com>
-Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "will.deacon@arm.com" <will.deacon@arm.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>, "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>, "mst@redhat.com" <mst@redhat.com>, "jasowang@redhat.com" <jasowang@redhat.com>, "marc.zyngier@arm.com" <marc.zyngier@arm.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>, "eric.auger.pro@gmail.com" <eric.auger.pro@gmail.com>, "peterx@redhat.com" <peterx@redhat.com>, "kevin.tian@intel.com" <kevin.tian@intel.com>
+In-Reply-To: <20170804181927.12148-1-jean-philippe.brucker@arm.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: [virtio-dev] Re: [RFC] virtio-iommu version 0.4
+To: iommu@lists.linux-foundation.org, kvm@vger.kernel.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org
+Cc: will.deacon@arm.com, robin.murphy@arm.com, lorenzo.pieralisi@arm.com, mst@redhat.com, jasowang@redhat.com, marc.zyngier@arm.com, eric.auger@redhat.com, eric.auger.pro@gmail.com, bharat.bhushan@nxp.com, peterx@redhat.com, kevin.tian@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-SGksDQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSmVhbi1QaGlsaXBw
-ZSBCcnVja2VyIFttYWlsdG86amVhbi1waGlsaXBwZS5icnVja2VyQGFybS5jb21dDQo+IFNlbnQ6
-IFRodXJzZGF5LCBBdWd1c3QgMTcsIDIwMTcgMzo0MiBQTQ0KPiBUbzogQWRhbSBUYW8gPHRhb3po
-ZTFAaHVhd2VpLmNvbT4NCj4gQ2M6IGlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnOyBr
-dm1Admdlci5rZXJuZWwub3JnOw0KPiB2aXJ0dWFsaXphdGlvbkBsaXN0cy5saW51eC1mb3VuZGF0
-aW9uLm9yZzsgdmlydGlvLWRldkBsaXN0cy5vYXNpcy1vcGVuLm9yZzsNCj4gd2lsbC5kZWFjb25A
-YXJtLmNvbTsgcm9iaW4ubXVycGh5QGFybS5jb207IGxvcmVuem8ucGllcmFsaXNpQGFybS5jb207
-DQo+IG1zdEByZWRoYXQuY29tOyBqYXNvd2FuZ0ByZWRoYXQuY29tOyBtYXJjLnp5bmdpZXJAYXJt
-LmNvbTsNCj4gZXJpYy5hdWdlckByZWRoYXQuY29tOyBlcmljLmF1Z2VyLnByb0BnbWFpbC5jb207
-IEJoYXJhdCBCaHVzaGFuDQo+IDxiaGFyYXQuYmh1c2hhbkBueHAuY29tPjsgcGV0ZXJ4QHJlZGhh
-dC5jb207IGtldmluLnRpYW5AaW50ZWwuY29tDQo+IFN1YmplY3Q6IFJlOiBbdmlydGlvLWRldl0g
-W1JGQ10gdmlydGlvLWlvbW11IHZlcnNpb24gMC40DQo+IA0KPiBIaSBBZGFtLA0KPiANCj4gT24g
-MTYvMDgvMTcgMDU6MDgsIEFkYW0gVGFvIHdyb3RlOg0KPiA+PiAqIFRoZXJlIGlzIGEgd29ya2lu
-ZyBRZW11IHByb3RvdHlwZSBbM10sIHRoYW5rcyB0byBFcmljIEF1Z2VyIGFuZCBCaGFyYXQNCj4g
-Pj4gICBCaHVzaGFuLg0KPiA+IEhpLCBCcnVja2VyDQo+ID4gSSByZWFkIHRoZSByZWxhdGVkIHNw
-ZWMgZm9yIHZpcnRpbyBJT01NVSwgSSBhbSB3b25kZXJpbmcgaWYgd2Ugc3VwcG9ydA0KPiA+IGJv
-dGggdGhlIHZpcnR1YWwgYW5kIHBoeXNpY2FsIGRldmljZXMgaW4gdGhlIGd1ZXN0IHRvIHVzZSB0
-aGUgdmlydGlvDQo+ID4gSU9NTVUsIGhvdyBjYW4gd2UgY29uZmlnIHRoZSByZWxhdGVkIGFkZHJl
-c3MgdHJhbnNsYXRpb24gZm9yIHRoZQ0KPiA+IGRpZmZlcmVudCB0eXBlIG9mIGRldmljZXMuDQo+
-ID4gZS5nLg0KPiA+IDEuIGZvciBWaXJ0aW8gZGV2cyhlLmcuIHZpcnRpby1uZXQpLCB3ZSBjYW4g
-Y2hhbmdlIHRoZSBtZW1tYXAgdGFibGUNCj4gPiB1c2VkIGJ5IHRoZSB2aG9zdCBkZXZpY2UuDQo+
-ID4gMi4gZm9yIHBoeXNpY2FsIGRldmljZXMgd2UgY2FuIGRpcmVjdGx5IGNvbmZpZyB0aGUgSU9N
-TVUvU01NVSBvbiB0aGUNCj4gPiBob3N0Lg0KPiA+DQo+ID4gU28gZG8geW91IGtub3cgYXJlIHRo
-ZXJlIGFueSBSRkNzIGZvciB0aGUgYmFjay1lbmQgaW1wbGVtZW50YXRpb24gZm9yDQo+ID4gdGhl
-IHZpcnRpby1JT01NVSB0aGFua3MgQWRhbQ0KPiANCj4gRXJpYydzIHNlcmllcyBbM10gYWRkcyBz
-dXBwb3J0IGZvciB2aXJ0dWFsIGRldmljZXMgKEkndiBvbmx5IGhhZCB0aW1lIHRvIHRlc3QNCj4g
-dmlydGlvLW5ldCBzbyBmYXIsIGJ1dCBhcyB2aG9zdC1pb3RsYiBzZWVtcyB0byBiZSBzdXBwb3J0
-ZWQgYnkgUWVtdSwgaXQgc2hvdWxkDQo+IHdvcmsgd2l0aCB2aG9zdC1uZXQgYXMgd2VsbCkuIEJo
-YXJhdCBpcyB3b3JraW5nIG9uIHRoZSBWRklPIGJhY2tlbmQgZm9yDQo+IHBoeXNpY2FsIGRldmlj
-ZXMuIEFzIGZhciBhcyBJJ20gYXdhcmUsIGhpcyBsYXRlc3QgdmVyc2lvbiBpczoNCj4gDQo+IFs3
-XSBodHRwczovL2xpc3RzLmdudS5vcmcvYXJjaGl2ZS9odG1sL3FlbXUtZGV2ZWwvMjAxNy0wNy9t
-c2cwNDA5NC5odG1sDQoNCkkgYW0gd29ya2luZyBvbiBuZXdlciB2ZXJzaW9uIHdoaWNoIHdpbGwg
-YmUgYmFzZWQgb24gRXJpYy12My4NCkFjdHVhbGx5IEkgd2FudGVkIHRvIGluY2x1ZGUgdGhlIGZp
-eCBmb3IgdGhlIGlzc3VlIHJlcG9ydGVkIGJ5IEVyaWMsIGl0IGZhaWxzIGlmIHdlIGFzc2lnbiBt
-b3JlIHRoYW4gb25lIGludGVyZmFjZS4NCkkgcmVwcm9kdWNlZCB0aGUgaXNzdWVzIG9uIG15IHNp
-ZGUgYW5kIGtub3cgdGhlIHJvb3QgY2F1c2UuIEkgYW0gd29ya2luZyBvbiBmaXhpbmcgdGhpcy4N
-Cg0KVGhhbmtzDQotQmhhcmF0DQoNCj4gDQo+IFRoYW5rcywNCj4gSmVhbg0KPiANCj4gDQo+ID4+
-IFsxXSBodHRwOi8vd3d3LnNwaW5pY3MubmV0L2xpc3RzL2t2bS9tc2cxNDc5OTAuaHRtbA0KPiA+
-PiBbMl0gZ2l0Oi8vbGludXgtYXJtLm9yZy92aXJ0aW8taW9tbXUuZ2l0IGJyYW5jaCB2aW9tbXUv
-djAuNA0KPiA+PiAgICAgaHR0cDovL3d3dy5saW51eC1hcm0ub3JnL2dpdD9wPXZpcnRpby0NCj4g
-aW9tbXUuZ2l0O2E9YmxvYjtmPWRpc3QvdjAuNC92aXJ0aW8taW9tbXUtdjAuNC5wZGYNCj4gPj4g
-ICAgIEkgcmVpdGVyYXRlIHRoZSBkaXNjbGFpbWVyczogZG9uJ3QgdXNlIHRoaXMgZG9jdW1lbnQg
-YXMgYSByZWZlcmVuY2UsDQo+ID4+ICAgICBpdCdzIGEgZHJhZnQuIEl0J3MgYWxzbyBub3QgYW4g
-T0FTSVMgZG9jdW1lbnQgeWV0LiBJdCBtYXkgYmUgcmlkZGxlZA0KPiA+PiAgICAgd2l0aCBtaXN0
-YWtlcy4gQXMgdGhpcyBpcyBhIHdvcmtpbmcgZHJhZnQsIGl0IGlzIHVuc3RhYmxlIGFuZCBJIGRv
-IG5vdA0KPiA+PiAgICAgZ3VhcmFudGVlIGJhY2t3YXJkIGNvbXBhdGliaWxpdHkgb2YgZnV0dXJl
-IHZlcnNpb25zLg0KPiA+PiBbM10gaHR0cHM6Ly9saXN0cy5nbnUub3JnL2FyY2hpdmUvaHRtbC9x
-ZW11LWFybS8yMDE3LTA4L21zZzAwMDA0Lmh0bWwNCj4gPj4gWzRdIGdpdDovL2xpbnV4LWFybS5v
-cmcvbGludXgtanBiLmdpdCB2aXJ0aW8taW9tbXUvdjAuNA0KPiA+PiAgICAgV2FybmluZzogVUFQ
-SSBoZWFkZXJzIGhhdmUgY2hhbmdlZCEgVGhleSBkaWRuJ3QgZm9sbG93IHRoZSBzcGVjLA0KPiA+
-PiAgICAgcGxlYXNlIHVwZGF0ZS4gKFVzZSBicmFuY2ggdjAuMSwgdGhhdCBoYXMgdGhlIG9sZCBo
-ZWFkZXJzLCBmb3IgdGhlDQo+ID4+ICAgICBRZW11IHByb3RvdHlwZSBbM10pDQo+ID4+IFs1XSBn
-aXQ6Ly9saW51eC1hcm0ub3JnL2t2bXRvb2wtanBiLmdpdCB2aXJ0aW8taW9tbXUvdjAuNA0KPiA+
-PiAgICAgV2FybmluZzogY29tbWFuZC1saW5lIGhhcyBjaGFuZ2VkISBVc2UgLS12aW9tbXUgdmZp
-b1ssb3B0c10gYW5kDQo+ID4+ICAgICAtLXZpb21tdSB2aXJ0aW9bLG9wdHNdIHRvIGluc3RhbnRp
-YXRlIGEgZGV2aWNlLg0KPiA+PiBbNl0NCj4gPj4gaHR0cDovL3d3dy5saW51eC1hcm0ub3JnL2dp
-dD9wPXZpcnRpby1pb21tdS5naXQ7YT10cmVlO2Y9ZGlzdC9kaWZmcw0K
+On 04/08/17 19:19, Jean-Philippe Brucker wrote:
+> Other extensions are in preparation. I won't detail them here because v0.4
+> already is a lot to digest, but in short, building on top of PROBE:
+> 
+> * First, since the IOMMU is paravirtualized, the device can expose some
+>   properties of the physical topology to the guest, and let it allocate
+>   resources more efficiently. For example, when the virtio-iommu manages
+>   both physical and emulated endpoints, with different underlying IOMMUs,
+>   we now have a way to describe multiple page and block granularities,
+>   instead of forcing the guest to use the most restricted one for all
+>   endpoints. This will most likely be in v0.5.
+
+In order to extend requests with PASIDs and (later) nested mode, I intend
+to rename "address_space" field to "domain", since it is a lot more
+precise about what the field is referring to and the current name would
+make these extensions confusing. Please find the rationale at [1].
+"ioasid_bits" will be "domain_bits" and "VIRTIO_IOMMU_F_IOASID_BITS" will
+be "VIRTIO_IOMMU_F_DOMAIN_BITS".
+
+For those that had time to read this version, do you have other comments
+and suggestions about v0.4? Otherwise it is the only update I have for
+v0.5 (along with fine-grained address range and page size properties from
+the quoted text) and I will send it soon.
+
+In particular, please tell me now if you see the need for other
+destructive changes like this one. They will be impossible to introduce
+once a driver or device is upstream.
+
+Thanks,
+Jean
+
+[1] https://www.spinics.net/lists/kvm/msg154573.html
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
