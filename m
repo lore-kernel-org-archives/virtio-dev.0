@@ -1,12 +1,15 @@
-Return-Path: virtio-dev-return-2488-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2489-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 927341CB807D
-	for <virtio-dev@lists.oasis-open.org>; Tue, 22 Aug 2017 07:16:47 -0700 (PDT)
+	by lists.oasis-open.org (Postfix) with ESMTP id 5908458191EF
+	for <virtio-dev@lists.oasis-open.org>; Tue, 22 Aug 2017 19:23:53 -0700 (PDT)
+From: "Tian, Kevin" <kevin.tian@intel.com>
+Date: Wed, 23 Aug 2017 02:23:46 +0000
+Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D190D7E8D9@SHSMSX101.ccr.corp.intel.com>
 References: <20170407191747.26618-1-jean-philippe.brucker@arm.com>
  <20170407191747.26618-3-jean-philippe.brucker@arm.com>
  <AADFC41AFE54684AB9EE6CBC0274A5D190CADECE@SHSMSX101.ccr.corp.intel.com>
@@ -16,124 +19,77 @@ References: <20170407191747.26618-1-jean-philippe.brucker@arm.com>
  <AADFC41AFE54684AB9EE6CBC0274A5D190D7BAB1@SHSMSX101.ccr.corp.intel.com>
  <454095c4-cae5-ad52-a459-5c9e2cce4047@arm.com>
  <AADFC41AFE54684AB9EE6CBC0274A5D190D7CF52@SHSMSX101.ccr.corp.intel.com>
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Message-ID: <03eabc9f-5db1-0eb9-b91a-c47da9d1a29b@arm.com>
-Date: Tue, 22 Aug 2017 15:19:26 +0100
-MIME-Version: 1.0
-In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D190D7CF52@SHSMSX101.ccr.corp.intel.com>
-Content-Type: text/plain; charset=utf-8
+ <03eabc9f-5db1-0eb9-b91a-c47da9d1a29b@arm.com>
+In-Reply-To: <03eabc9f-5db1-0eb9-b91a-c47da9d1a29b@arm.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: [virtio-dev] Re: [RFC 2/3] virtio-iommu: device probing and operations
-To: "Tian, Kevin" <kevin.tian@intel.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+Subject: [virtio-dev] RE: [RFC 2/3] virtio-iommu: device probing and operations
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
 Cc: "cdall@linaro.org" <cdall@linaro.org>, "will.deacon@arm.com" <will.deacon@arm.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>, "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>, "joro@8bytes.org" <joro@8bytes.org>, "mst@redhat.com" <mst@redhat.com>, "jasowang@redhat.com" <jasowang@redhat.com>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "marc.zyngier@arm.com" <marc.zyngier@arm.com>, Auger Eric <eric.auger@redhat.com>, Bharat Bhushan <bharat.bhushan@nxp.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 22/08/17 07:24, Tian, Kevin wrote:
->>> (sorry to pick up this old thread, as the .tex one is not good for review
->>> and this thread provides necessary background for IOASID).
->>>
->>> Hi, Jean,
->>>
->>> I'd like to hear more clarification regarding the relationship between
->>> IOASID and PASID. When reading back above explanation, it looks
->>> confusing to me now (though I might get the meaning months ago :/).
->>> At least Intel VT-d only understands PASID (or you can think IOASID
->>> =PASID). There is no such layered address space concept. Then for
->>> map/unmap type request, do you intend to steal some PASIDs for
->>> that purpose on such architecture (since IOASID is a mandatory field
->>> in map/unmap request)?
->>
->> IOASID is a logical ID, it isn't used by hardware. The address space
->> concept in virtio-iommu allows to group endpoints together, so that they
->> have the same address space. I thought it was pretty much the same as
->> "domains" in VT-d? In any case, it is the same as domains in Linux. An
->> IOASID provides a handle for communication between virtio-iommu device
->> and
->> driver, but unlike PASID, the IOASID number doesn't mean anything outside
->> of virtio-iommu.
-> 
-> Thanks. It's clear to me then.
-> 
-> btw does it make more sense to use "domain id" instead of "IO address
-> space id"? For one, when talking about layered address spaces
-> usually parent address space is a superset of all child address spaces
-> which doesn't apply to this case, since either anonymous address
-> space or PASID-tagged address spaces are completely isolated. Instead> 'domain' is a more inclusive terminology to embrace multiple address
-> spaces. For two, 'domain' is better aligned to software terminology (e.g.
-> iommu_domain) is easier for people to catch up. :-)
-
-I do agree that the naming isn't great. I didn't use "domain" for various
-reasons (it also has a different meanings in ARM) but I keep regretting
-it. As there is no virtio-iommu code upstream yet, it is still possible to
-change this one.
-
-I find that "address space" was a good fit for the baseline device, but
-the name doesn't scale. When introducing PASIDs, the address space moves
-one level down in the programming model. It is contexts, anonymous or
-PASID-tagged, that should be called address spaces. I was considering
-replacing it with "domain", "container", "partition"...
-
-Even though I don't want to use too much Linux terminology (virtio isn't
-just Linux), "domain" is better fitted, somewhat neutral, and gets the
-point across. A domain has one or more input address spaces and a single
-output address space.
-
-When introducing nested translation to virtio-iommu (for the guest to have
-virtual machines itself), there will be one or more intermediate address
-spaces. Domains will be nested, with the terminology "parent domain" and
-"child domain". I only briefly looked at a programming model for this but
-I think we can nest virtio-iommus without much hassle.
-
-If there is no objection the next version will use "domain" in place of
-"address_space". The change is quite invasive at this point, but I believe
-that it will makes things more clear down the road.
-
->> I haven't introduced PASIDs in public virtio-iommu documents yet, but the
->> way I intend it, PASID != IOASID. We will still have a logical address
->> space identified by IOASID, that can contain multiple contexts identified
->> by PASID. At the moment, after the ATTACH request, an address space
->> contains a single anonymous context (NO PASID) that can be managed with
->> MAP/UNMAP requests. With virtio-iommu v0.4, structures look like the
->> following. The NO PASID context is implicit.
->>
->>                     address space      context
->>     endpoint ----.                                  .- mapping
->>     endpoint ----+---- IOASID -------- NO PASID ----+- mapping
->>     endpoint ----'                                  '- mapping
->>
->> I'd like to add a flag to ATTACH that says "don't create a default
->> anonymous context, I'll handle contexts myself". Then a new "ADD_TABLE"
->> request to handle contexts. When creating a context, the guest decides if
->> it wants to manage it via MAP/UNMAP requests (and a new "context" field),
->> or instead manage mappings itself by allocating a page directory and use
->> INVALIDATE requests.
->>
->>                     address space      context
->>     endpoint ----.                                  .- mapping
->>     endpoint ----+---- IOASID ----+--- NO PASID ----+- mapping
->>     endpoint ----'                |                 '- mapping
->>                                   +--- PASID 0  ---- pgd
->>                                   |     ...
->>                                   '--- PASID N  ---- pgd
->>
->> In this example the guest chose to still have an anonymous context that
->> uses MAP/UNMAP, along with a few PASID contexts with their own page
->> tables.
->>
-> 
-> Above explanation is a good background. Is it useful to include it
-> in current spec? Though SVM support is not planned now, adding
-> such background could help build a full story for IOASID concept.
-
-I think introducing this explanation when PASIDs are added to the spec is
-good enough. Right now it would look like clutter.
-
-Thanks,
-Jean
-
-
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+PiBGcm9tOiBKZWFuLVBoaWxpcHBlIEJydWNrZXIgW21haWx0bzpqZWFuLXBoaWxpcHBlLmJydWNr
+ZXJAYXJtLmNvbV0NCj4gU2VudDogVHVlc2RheSwgQXVndXN0IDIyLCAyMDE3IDEwOjE5IFBNDQo+
+IA0KPiBPbiAyMi8wOC8xNyAwNzoyNCwgVGlhbiwgS2V2aW4gd3JvdGU6DQo+ID4+PiAoc29ycnkg
+dG8gcGljayB1cCB0aGlzIG9sZCB0aHJlYWQsIGFzIHRoZSAudGV4IG9uZSBpcyBub3QgZ29vZCBm
+b3IgcmV2aWV3DQo+ID4+PiBhbmQgdGhpcyB0aHJlYWQgcHJvdmlkZXMgbmVjZXNzYXJ5IGJhY2tn
+cm91bmQgZm9yIElPQVNJRCkuDQo+ID4+Pg0KPiA+Pj4gSGksIEplYW4sDQo+ID4+Pg0KPiA+Pj4g
+SSdkIGxpa2UgdG8gaGVhciBtb3JlIGNsYXJpZmljYXRpb24gcmVnYXJkaW5nIHRoZSByZWxhdGlv
+bnNoaXAgYmV0d2Vlbg0KPiA+Pj4gSU9BU0lEIGFuZCBQQVNJRC4gV2hlbiByZWFkaW5nIGJhY2sg
+YWJvdmUgZXhwbGFuYXRpb24sIGl0IGxvb2tzDQo+ID4+PiBjb25mdXNpbmcgdG8gbWUgbm93ICh0
+aG91Z2ggSSBtaWdodCBnZXQgdGhlIG1lYW5pbmcgbW9udGhzIGFnbyA6LykuDQo+ID4+PiBBdCBs
+ZWFzdCBJbnRlbCBWVC1kIG9ubHkgdW5kZXJzdGFuZHMgUEFTSUQgKG9yIHlvdSBjYW4gdGhpbmsg
+SU9BU0lEDQo+ID4+PiA9UEFTSUQpLiBUaGVyZSBpcyBubyBzdWNoIGxheWVyZWQgYWRkcmVzcyBz
+cGFjZSBjb25jZXB0LiBUaGVuIGZvcg0KPiA+Pj4gbWFwL3VubWFwIHR5cGUgcmVxdWVzdCwgZG8g
+eW91IGludGVuZCB0byBzdGVhbCBzb21lIFBBU0lEcyBmb3INCj4gPj4+IHRoYXQgcHVycG9zZSBv
+biBzdWNoIGFyY2hpdGVjdHVyZSAoc2luY2UgSU9BU0lEIGlzIGEgbWFuZGF0b3J5IGZpZWxkDQo+
+ID4+PiBpbiBtYXAvdW5tYXAgcmVxdWVzdCk/DQo+ID4+DQo+ID4+IElPQVNJRCBpcyBhIGxvZ2lj
+YWwgSUQsIGl0IGlzbid0IHVzZWQgYnkgaGFyZHdhcmUuIFRoZSBhZGRyZXNzIHNwYWNlDQo+ID4+
+IGNvbmNlcHQgaW4gdmlydGlvLWlvbW11IGFsbG93cyB0byBncm91cCBlbmRwb2ludHMgdG9nZXRo
+ZXIsIHNvIHRoYXQgdGhleQ0KPiA+PiBoYXZlIHRoZSBzYW1lIGFkZHJlc3Mgc3BhY2UuIEkgdGhv
+dWdodCBpdCB3YXMgcHJldHR5IG11Y2ggdGhlIHNhbWUgYXMNCj4gPj4gImRvbWFpbnMiIGluIFZU
+LWQ/IEluIGFueSBjYXNlLCBpdCBpcyB0aGUgc2FtZSBhcyBkb21haW5zIGluIExpbnV4LiBBbg0K
+PiA+PiBJT0FTSUQgcHJvdmlkZXMgYSBoYW5kbGUgZm9yIGNvbW11bmljYXRpb24gYmV0d2VlbiB2
+aXJ0aW8taW9tbXUNCj4gZGV2aWNlDQo+ID4+IGFuZA0KPiA+PiBkcml2ZXIsIGJ1dCB1bmxpa2Ug
+UEFTSUQsIHRoZSBJT0FTSUQgbnVtYmVyIGRvZXNuJ3QgbWVhbiBhbnl0aGluZw0KPiBvdXRzaWRl
+DQo+ID4+IG9mIHZpcnRpby1pb21tdS4NCj4gPg0KPiA+IFRoYW5rcy4gSXQncyBjbGVhciB0byBt
+ZSB0aGVuLg0KPiA+DQo+ID4gYnR3IGRvZXMgaXQgbWFrZSBtb3JlIHNlbnNlIHRvIHVzZSAiZG9t
+YWluIGlkIiBpbnN0ZWFkIG9mICJJTyBhZGRyZXNzDQo+ID4gc3BhY2UgaWQiPyBGb3Igb25lLCB3
+aGVuIHRhbGtpbmcgYWJvdXQgbGF5ZXJlZCBhZGRyZXNzIHNwYWNlcw0KPiA+IHVzdWFsbHkgcGFy
+ZW50IGFkZHJlc3Mgc3BhY2UgaXMgYSBzdXBlcnNldCBvZiBhbGwgY2hpbGQgYWRkcmVzcyBzcGFj
+ZXMNCj4gPiB3aGljaCBkb2Vzbid0IGFwcGx5IHRvIHRoaXMgY2FzZSwgc2luY2UgZWl0aGVyIGFu
+b255bW91cyBhZGRyZXNzDQo+ID4gc3BhY2Ugb3IgUEFTSUQtdGFnZ2VkIGFkZHJlc3Mgc3BhY2Vz
+IGFyZSBjb21wbGV0ZWx5IGlzb2xhdGVkLiBJbnN0ZWFkPg0KPiAnZG9tYWluJyBpcyBhIG1vcmUg
+aW5jbHVzaXZlIHRlcm1pbm9sb2d5IHRvIGVtYnJhY2UgbXVsdGlwbGUgYWRkcmVzcw0KPiA+IHNw
+YWNlcy4gRm9yIHR3bywgJ2RvbWFpbicgaXMgYmV0dGVyIGFsaWduZWQgdG8gc29mdHdhcmUgdGVy
+bWlub2xvZ3kgKGUuZy4NCj4gPiBpb21tdV9kb21haW4pIGlzIGVhc2llciBmb3IgcGVvcGxlIHRv
+IGNhdGNoIHVwLiA6LSkNCj4gDQo+IEkgZG8gYWdyZWUgdGhhdCB0aGUgbmFtaW5nIGlzbid0IGdy
+ZWF0LiBJIGRpZG4ndCB1c2UgImRvbWFpbiIgZm9yIHZhcmlvdXMNCj4gcmVhc29ucyAoaXQgYWxz
+byBoYXMgYSBkaWZmZXJlbnQgbWVhbmluZ3MgaW4gQVJNKSBidXQgSSBrZWVwIHJlZ3JldHRpbmcN
+Cj4gaXQuIEFzIHRoZXJlIGlzIG5vIHZpcnRpby1pb21tdSBjb2RlIHVwc3RyZWFtIHlldCwgaXQg
+aXMgc3RpbGwgcG9zc2libGUgdG8NCj4gY2hhbmdlIHRoaXMgb25lLg0KPiANCj4gSSBmaW5kIHRo
+YXQgImFkZHJlc3Mgc3BhY2UiIHdhcyBhIGdvb2QgZml0IGZvciB0aGUgYmFzZWxpbmUgZGV2aWNl
+LCBidXQNCj4gdGhlIG5hbWUgZG9lc24ndCBzY2FsZS4gV2hlbiBpbnRyb2R1Y2luZyBQQVNJRHMs
+IHRoZSBhZGRyZXNzIHNwYWNlDQo+IG1vdmVzDQo+IG9uZSBsZXZlbCBkb3duIGluIHRoZSBwcm9n
+cmFtbWluZyBtb2RlbC4gSXQgaXMgY29udGV4dHMsIGFub255bW91cyBvcg0KPiBQQVNJRC10YWdn
+ZWQsIHRoYXQgc2hvdWxkIGJlIGNhbGxlZCBhZGRyZXNzIHNwYWNlcy4gSSB3YXMgY29uc2lkZXJp
+bmcNCj4gcmVwbGFjaW5nIGl0IHdpdGggImRvbWFpbiIsICJjb250YWluZXIiLCAicGFydGl0aW9u
+Ii4uLg0KPiANCj4gRXZlbiB0aG91Z2ggSSBkb24ndCB3YW50IHRvIHVzZSB0b28gbXVjaCBMaW51
+eCB0ZXJtaW5vbG9neSAodmlydGlvIGlzbid0DQo+IGp1c3QgTGludXgpLCAiZG9tYWluIiBpcyBi
+ZXR0ZXIgZml0dGVkLCBzb21ld2hhdCBuZXV0cmFsLCBhbmQgZ2V0cyB0aGUNCj4gcG9pbnQgYWNy
+b3NzLiBBIGRvbWFpbiBoYXMgb25lIG9yIG1vcmUgaW5wdXQgYWRkcmVzcyBzcGFjZXMgYW5kIGEg
+c2luZ2xlDQo+IG91dHB1dCBhZGRyZXNzIHNwYWNlLg0KPiANCj4gV2hlbiBpbnRyb2R1Y2luZyBu
+ZXN0ZWQgdHJhbnNsYXRpb24gdG8gdmlydGlvLWlvbW11IChmb3IgdGhlIGd1ZXN0IHRvIGhhdmUN
+Cj4gdmlydHVhbCBtYWNoaW5lcyBpdHNlbGYpLCB0aGVyZSB3aWxsIGJlIG9uZSBvciBtb3JlIGlu
+dGVybWVkaWF0ZSBhZGRyZXNzDQo+IHNwYWNlcy4gRG9tYWlucyB3aWxsIGJlIG5lc3RlZCwgd2l0
+aCB0aGUgdGVybWlub2xvZ3kgInBhcmVudCBkb21haW4iIGFuZA0KPiAiY2hpbGQgZG9tYWluIi4g
+SSBvbmx5IGJyaWVmbHkgbG9va2VkIGF0IGEgcHJvZ3JhbW1pbmcgbW9kZWwgZm9yIHRoaXMgYnV0
+DQo+IEkgdGhpbmsgd2UgY2FuIG5lc3QgdmlydGlvLWlvbW11cyB3aXRob3V0IG11Y2ggaGFzc2xl
+Lg0KPiANCj4gSWYgdGhlcmUgaXMgbm8gb2JqZWN0aW9uIHRoZSBuZXh0IHZlcnNpb24gd2lsbCB1
+c2UgImRvbWFpbiIgaW4gcGxhY2Ugb2YNCj4gImFkZHJlc3Nfc3BhY2UiLiBUaGUgY2hhbmdlIGlz
+IHF1aXRlIGludmFzaXZlIGF0IHRoaXMgcG9pbnQsIGJ1dCBJIGJlbGlldmUNCj4gdGhhdCBpdCB3
+aWxsIG1ha2VzIHRoaW5ncyBtb3JlIGNsZWFyIGRvd24gdGhlIHJvYWQuDQo+IA0KDQpTb3VuZHMg
+Z29vZCB0byBtZS4gVGhhbmtzLg0K
 
