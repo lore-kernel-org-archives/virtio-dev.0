@@ -1,60 +1,97 @@
-Return-Path: virtio-dev-return-2490-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2492-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 56FF558191FA
-	for <virtio-dev@lists.oasis-open.org>; Wed, 23 Aug 2017 02:58:30 -0700 (PDT)
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 6C59E58182B4
+	for <virtio-dev@lists.oasis-open.org>; Mon, 28 Aug 2017 00:40:04 -0700 (PDT)
+From: "Tian, Kevin" <kevin.tian@intel.com>
+Date: Mon, 28 Aug 2017 07:39:49 +0000
+Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D190D941E3@SHSMSX101.ccr.corp.intel.com>
 References: <20170804181927.12148-1-jean-philippe.brucker@arm.com>
-Message-ID: <5be484ff-6a1a-6c9b-947c-f64ea23f58cc@arm.com>
-Date: Wed, 23 Aug 2017 11:01:11 +0100
-MIME-Version: 1.0
-In-Reply-To: <20170804181927.12148-1-jean-philippe.brucker@arm.com>
-Content-Type: text/plain; charset=utf-8
+ <5be484ff-6a1a-6c9b-947c-f64ea23f58cc@arm.com>
+In-Reply-To: <5be484ff-6a1a-6c9b-947c-f64ea23f58cc@arm.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: [virtio-dev] Re: [RFC] virtio-iommu version 0.4
-To: iommu@lists.linux-foundation.org, kvm@vger.kernel.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org
-Cc: will.deacon@arm.com, robin.murphy@arm.com, lorenzo.pieralisi@arm.com, mst@redhat.com, jasowang@redhat.com, marc.zyngier@arm.com, eric.auger@redhat.com, eric.auger.pro@gmail.com, bharat.bhushan@nxp.com, peterx@redhat.com, kevin.tian@intel.com
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+Subject: [virtio-dev] RE: [RFC] virtio-iommu version 0.4
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
+Cc: "will.deacon@arm.com" <will.deacon@arm.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>, "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>, "mst@redhat.com" <mst@redhat.com>, "jasowang@redhat.com" <jasowang@redhat.com>, "marc.zyngier@arm.com" <marc.zyngier@arm.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>, "eric.auger.pro@gmail.com" <eric.auger.pro@gmail.com>, "bharat.bhushan@nxp.com" <bharat.bhushan@nxp.com>, "peterx@redhat.com" <peterx@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 04/08/17 19:19, Jean-Philippe Brucker wrote:
-> Other extensions are in preparation. I won't detail them here because v0.4
-> already is a lot to digest, but in short, building on top of PROBE:
-> 
-> * First, since the IOMMU is paravirtualized, the device can expose some
->   properties of the physical topology to the guest, and let it allocate
->   resources more efficiently. For example, when the virtio-iommu manages
->   both physical and emulated endpoints, with different underlying IOMMUs,
->   we now have a way to describe multiple page and block granularities,
->   instead of forcing the guest to use the most restricted one for all
->   endpoints. This will most likely be in v0.5.
-
-In order to extend requests with PASIDs and (later) nested mode, I intend
-to rename "address_space" field to "domain", since it is a lot more
-precise about what the field is referring to and the current name would
-make these extensions confusing. Please find the rationale at [1].
-"ioasid_bits" will be "domain_bits" and "VIRTIO_IOMMU_F_IOASID_BITS" will
-be "VIRTIO_IOMMU_F_DOMAIN_BITS".
-
-For those that had time to read this version, do you have other comments
-and suggestions about v0.4? Otherwise it is the only update I have for
-v0.5 (along with fine-grained address range and page size properties from
-the quoted text) and I will send it soon.
-
-In particular, please tell me now if you see the need for other
-destructive changes like this one. They will be impossible to introduce
-once a driver or device is upstream.
-
-Thanks,
-Jean
-
-[1] https://www.spinics.net/lists/kvm/msg154573.html
-
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+PiBGcm9tOiBKZWFuLVBoaWxpcHBlIEJydWNrZXIgW21haWx0bzpqZWFuLXBoaWxpcHBlLmJydWNr
+ZXJAYXJtLmNvbV0NCj4gU2VudDogV2VkbmVzZGF5LCBBdWd1c3QgMjMsIDIwMTcgNjowMSBQTQ0K
+PiANCj4gT24gMDQvMDgvMTcgMTk6MTksIEplYW4tUGhpbGlwcGUgQnJ1Y2tlciB3cm90ZToNCj4g
+PiBPdGhlciBleHRlbnNpb25zIGFyZSBpbiBwcmVwYXJhdGlvbi4gSSB3b24ndCBkZXRhaWwgdGhl
+bSBoZXJlIGJlY2F1c2UNCj4gdjAuNA0KPiA+IGFscmVhZHkgaXMgYSBsb3QgdG8gZGlnZXN0LCBi
+dXQgaW4gc2hvcnQsIGJ1aWxkaW5nIG9uIHRvcCBvZiBQUk9CRToNCj4gPg0KPiA+ICogRmlyc3Qs
+IHNpbmNlIHRoZSBJT01NVSBpcyBwYXJhdmlydHVhbGl6ZWQsIHRoZSBkZXZpY2UgY2FuIGV4cG9z
+ZSBzb21lDQo+ID4gICBwcm9wZXJ0aWVzIG9mIHRoZSBwaHlzaWNhbCB0b3BvbG9neSB0byB0aGUg
+Z3Vlc3QsIGFuZCBsZXQgaXQgYWxsb2NhdGUNCj4gPiAgIHJlc291cmNlcyBtb3JlIGVmZmljaWVu
+dGx5LiBGb3IgZXhhbXBsZSwgd2hlbiB0aGUgdmlydGlvLWlvbW11DQo+IG1hbmFnZXMNCj4gPiAg
+IGJvdGggcGh5c2ljYWwgYW5kIGVtdWxhdGVkIGVuZHBvaW50cywgd2l0aCBkaWZmZXJlbnQgdW5k
+ZXJseWluZw0KPiBJT01NVXMsDQo+ID4gICB3ZSBub3cgaGF2ZSBhIHdheSB0byBkZXNjcmliZSBt
+dWx0aXBsZSBwYWdlIGFuZCBibG9jayBncmFudWxhcml0aWVzLA0KPiA+ICAgaW5zdGVhZCBvZiBm
+b3JjaW5nIHRoZSBndWVzdCB0byB1c2UgdGhlIG1vc3QgcmVzdHJpY3RlZCBvbmUgZm9yIGFsbA0K
+PiA+ICAgZW5kcG9pbnRzLiBUaGlzIHdpbGwgbW9zdCBsaWtlbHkgYmUgaW4gdjAuNS4NCj4gDQo+
+IEluIG9yZGVyIHRvIGV4dGVuZCByZXF1ZXN0cyB3aXRoIFBBU0lEcyBhbmQgKGxhdGVyKSBuZXN0
+ZWQgbW9kZSwgSSBpbnRlbmQNCj4gdG8gcmVuYW1lICJhZGRyZXNzX3NwYWNlIiBmaWVsZCB0byAi
+ZG9tYWluIiwgc2luY2UgaXQgaXMgYSBsb3QgbW9yZQ0KPiBwcmVjaXNlIGFib3V0IHdoYXQgdGhl
+IGZpZWxkIGlzIHJlZmVycmluZyB0byBhbmQgdGhlIGN1cnJlbnQgbmFtZSB3b3VsZA0KPiBtYWtl
+IHRoZXNlIGV4dGVuc2lvbnMgY29uZnVzaW5nLiBQbGVhc2UgZmluZCB0aGUgcmF0aW9uYWxlIGF0
+IFsxXS4NCj4gImlvYXNpZF9iaXRzIiB3aWxsIGJlICJkb21haW5fYml0cyIgYW5kICJWSVJUSU9f
+SU9NTVVfRl9JT0FTSURfQklUUyINCj4gd2lsbA0KPiBiZSAiVklSVElPX0lPTU1VX0ZfRE9NQUlO
+X0JJVFMiLg0KPiANCj4gRm9yIHRob3NlIHRoYXQgaGFkIHRpbWUgdG8gcmVhZCB0aGlzIHZlcnNp
+b24sIGRvIHlvdSBoYXZlIG90aGVyIGNvbW1lbnRzDQo+IGFuZCBzdWdnZXN0aW9ucyBhYm91dCB2
+MC40PyBPdGhlcndpc2UgaXQgaXMgdGhlIG9ubHkgdXBkYXRlIEkgaGF2ZSBmb3INCj4gdjAuNSAo
+YWxvbmcgd2l0aCBmaW5lLWdyYWluZWQgYWRkcmVzcyByYW5nZSBhbmQgcGFnZSBzaXplIHByb3Bl
+cnRpZXMgZnJvbQ0KPiB0aGUgcXVvdGVkIHRleHQpIGFuZCBJIHdpbGwgc2VuZCBpdCBzb29uLg0K
+PiANCj4gSW4gcGFydGljdWxhciwgcGxlYXNlIHRlbGwgbWUgbm93IGlmIHlvdSBzZWUgdGhlIG5l
+ZWQgZm9yIG90aGVyDQo+IGRlc3RydWN0aXZlIGNoYW5nZXMgbGlrZSB0aGlzIG9uZS4gVGhleSB3
+aWxsIGJlIGltcG9zc2libGUgdG8gaW50cm9kdWNlDQo+IG9uY2UgYSBkcml2ZXIgb3IgZGV2aWNl
+IGlzIHVwc3RyZWFtLg0KPiANCj4gVGhhbmtzLA0KPiBKZWFuDQo+IA0KPiBbMV0gaHR0cHM6Ly93
+d3cuc3Bpbmljcy5uZXQvbGlzdHMva3ZtL21zZzE1NDU3My5odG1sDQoNCkhlcmUgY29tZXMgc29t
+ZSBjb21tZW50czoNCg0KMS4xIE1vdGl2YXRpb24NCg0KWW91IGRlc2NyaWJlIEkvTyBwYWdlIGZh
+dWx0cyBoYW5kbGluZyBhcyBmdXR1cmUgd29yay4gU2VlbXMgeW91IGNvbnNpZGVyZWQNCm9ubHkg
+cmVjb3ZlcmFibGUgZmF1bHQgKHNpbmNlICJha2EuIFBDSSBQUkkiIGJlaW5nIHVzZWQpLiBXaGF0
+IGFib3V0IG90aGVyDQp1bnJlY292ZXJhYmxlIGZhdWx0cyBlLmcuIHdoYXQgdG8gZG8gaWYgYSB2
+aXJ0dWFsIERNQSByZXF1ZXN0IGRvZXNuJ3QgZmluZCANCmEgdmFsaWQgbWFwcGluZz8gRXZlbiB3
+aGVuIHRoZXJlIGlzIG5vIFBSSSBzdXBwb3J0LCB3ZSBuZWVkIHNvbWUgYmFzaWMNCmZvcm0gb2Yg
+ZmF1bHQgcmVwb3J0aW5nIG1lY2hhbmlzbSB0byBpbmRpY2F0ZSBzdWNoIGVycm9ycyB0byBndWVz
+dC4NCg0KMi42LjguMiBQcm9wZXJ0eSBSRVNWX01FTQ0KDQpJJ20gbm90IGltbWVkaWF0ZWx5IGNs
+ZWFyIHdoZW4gVklSVElPX0lPTU1VX1BST0JFX1JFU1ZfTUVNX1RfQUJPUlQNCnNob3VsZCBiZSBl
+eHBsaWNpdGx5IHJlcG9ydGVkLiBJcyB0aGVyZSBhbnkgcmVhbCBleGFtcGxlIG9uIGJhcmUgbWV0
+YWwgSU9NTVU/DQp1c3VhbGx5IHJlc2VydmVkIG1lbW9yeSBpcyByZXBvcnRlZCB0byBDUFUgdGhy
+b3VnaCBvdGhlciBtZXRob2QgKGUuZy4gZTgyMA0Kb24geDg2IHBsYXRmb3JtKS4gT2YgY291cnNl
+IE1TSSBpcyBhIHNwZWNpYWwgY2FzZSB3aGljaCBpcyBjb3ZlcmVkIGJ5IEJZUEFTUyANCmFuZCBN
+U0kgZmxhZy4uLiBJZiB5ZXMsIG1heWJlIHlvdSBjYW4gYWxzbyBpbmNsdWRlIGFuIGV4YW1wbGUg
+aW4gaW1wbGVtZW50YXRpb24gDQpub3Rlcy4NCg0KQW5vdGhlciB0aGluZyBJIHdhbnQgdG8gYXNr
+IHlvdXIgb3BpbmlvbiwgYWJvdXQgd2hldGhlciB0aGVyZSBpcyB2YWx1ZSBvZg0KYWRkaW5nIGFu
+b3RoZXIgc3VidHlwZSAoTUVNX1RfSURFTlRJVFkpLCBhc2tpbmcgZm9yIGlkZW50aXR5IG1hcHBp
+bmcNCmluIHRoZSBhZGRyZXNzIHNwYWNlLiBJdCdzIHNpbWlsYXIgdG8gUmVzZXJ2ZWQgTWVtb3J5
+IFJlZ2lvbiBSZXBvcnRpbmcNCihSTVJSKSBzdHJ1Y3R1cmUgZGVmaW5lZCBpbiBWVC1kLCB0byBp
+bmRpY2F0ZSBCSU9TIGFsbG9jYXRlZCByZXNlcnZlZA0KbWVtb3J5IHJhbmdlcyB3aGljaCBtYXkg
+YmUgRE1BIHRhcmdldCBhbmQgaGFzIHRvIGJlIGlkZW50aXR5IG1hcHBlZA0Kd2hlbiBETUEgcmVt
+YXBwaW5nIGlzIGVuYWJsZWQuIEknbSBub3Qgc3VyZSB3aGV0aGVyIEFSTSBoYXMgc2ltaWxhcg0K
+Y2FwYWJpbGl0eSBhbmQgd2hldGhlciB0aGVyZSBtaWdodCBiZSBhIGdlbmVyYWwgdXNhZ2UgYmV5
+b25kIFZULWQuIEZvcg0Kbm93IHRoZSBvbmx5IHVzYWdlIGluIG15IG1pbmQgaXMgdG8gYXNzaWdu
+IGEgZGV2aWNlIHdpdGggUk1SUiBhc3NvY2lhdGVkDQpvbiBWVC1kIChJbnRlbCBHUFUsIG9yIHNv
+bWUgVVNCIGNvbnRyb2xsZXJzKSB3aGVyZSB0aGUgUk1SUiBpbmZvIG5lZWRzDQpwcm9wYWdhdGVk
+IHRvIHRoZSBndWVzdCAoc2luY2UgaWRlbnRpdHkgbWFwcGluZyBhbHNvIG1lYW5zIHJlc2VydmF0
+aW9uDQpvZiB2aXJ0dWFsIGFkZHJlc3Mgc3BhY2UpLg0KDQoyLjYuOC4yLjMgRGV2aWNlIFJlcXVp
+cmVtZW50czogUHJvcGVydHkgUkVTVl9NRU0NCg0KLS1jaXRhdGlvbiBzdGFydC0tDQpJZiBhbiBl
+bmRwb2ludCBpcyBhdHRhY2hlZCB0byBhbiBhZGRyZXNzIHNwYWNlLCB0aGUgZGV2aWNlIFNIT1VM
+RCBsZWF2ZSANCmFueSBhY2Nlc3MgdGFyZ2V0aW5nIG9uZSBvZiBpdHMgVklSVElPX0lPTU1VX1BS
+T0JFX1JFU1ZfTUVNX1RfQllQQVNTIA0KcmVnaW9ucyBwYXNzIHRocm91Z2ggdW50cmFuc2xhdGVk
+LiBJbiBvdGhlciB3b3JkcywgdGhlIGRldmljZSBTSE9VTEQgDQpoYW5kbGUgc3VjaCBhIHJlZ2lv
+biBhcyBpZiBpdCB3YXMgaWRlbnRpdHktbWFwcGVkICh2aXJ0dWFsIGFkZHJlc3MgZXF1YWwgdG8N
+CnBoeXNpY2FsIGFkZHJlc3MpLiBJZiB0aGUgZW5kcG9pbnQgaXMgbm90IGF0dGFjaGVkIHRvIGFu
+eSBhZGRyZXNzIHNwYWNlLCANCnRoZW4gdGhlIGRldmljZSBNQVkgYWJvcnQgdGhlIHRyYW5zYWN0
+aW9uLg0KLS1jaXRhdGlvbiBlbmQNCg0KSSBoYXZlIGEgcXVlc3Rpb24gZm9yIHRoZSBsYXN0IHNl
+bnRlbmNlLiBGcm9tIGRlZmluaXRpb24gb2YgQllQQVNTLCBpdCdzDQpvcnRob2dvbmFsIHRvIHdo
+ZXRoZXIgdGhlcmUgaXMgYW4gYWRkcmVzcyBzcGFjZSBhdHRhY2hlZCwgdGhlbiBzaG91bGQNCndl
+IHN0aWxsIGFsbG93ICJNYXkgYWJvcnQiIGJlaGF2aW9yPyANCg0KVGhhbmtzDQpLZXZpbiANCg==
 
