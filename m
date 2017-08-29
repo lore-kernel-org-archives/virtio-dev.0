@@ -1,138 +1,96 @@
-Return-Path: virtio-dev-return-2497-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2501-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id B90055818DE8
-	for <virtio-dev@lists.oasis-open.org>; Mon, 28 Aug 2017 03:20:38 -0700 (PDT)
+	by lists.oasis-open.org (Postfix) with ESMTP id E2ABE581855F
+	for <virtio-dev@lists.oasis-open.org>; Mon, 28 Aug 2017 20:20:57 -0700 (PDT)
+Message-ID: <59A4DE48.9030206@intel.com>
+Date: Tue, 29 Aug 2017 11:23:52 +0800
 From: Wei Wang <wei.w.wang@intel.com>
-Date: Mon, 28 Aug 2017 18:08:32 +0800
-Message-Id: <1503914913-28893-5-git-send-email-wei.w.wang@intel.com>
-In-Reply-To: <1503914913-28893-1-git-send-email-wei.w.wang@intel.com>
-References: <1503914913-28893-1-git-send-email-wei.w.wang@intel.com>
-Subject: [virtio-dev] [PATCH v15 4/5] mm: support reporting free page blocks
-To: virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, qemu-devel@nongnu.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, linux-mm@kvack.org, mst@redhat.com, mhocko@kernel.org, akpm@linux-foundation.org, mawilcox@microsoft.com
-Cc: david@redhat.com, cornelia.huck@de.ibm.com, mgorman@techsingularity.net, aarcange@redhat.com, amit.shah@redhat.com, pbonzini@redhat.com, willy@infradead.org, wei.w.wang@intel.com, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu@aliyun.com
+MIME-Version: 1.0
+References: <1503914913-28893-1-git-send-email-wei.w.wang@intel.com> <1503914913-28893-5-git-send-email-wei.w.wang@intel.com> <20170828133326.GN17097@dhcp22.suse.cz>
+In-Reply-To: <20170828133326.GN17097@dhcp22.suse.cz>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [virtio-dev] Re: [PATCH v15 4/5] mm: support reporting free page blocks
+To: Michal Hocko <mhocko@kernel.org>
+Cc: virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, qemu-devel@nongnu.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, linux-mm@kvack.org, mst@redhat.com, akpm@linux-foundation.org, mawilcox@microsoft.com, david@redhat.com, cornelia.huck@de.ibm.com, mgorman@techsingularity.net, aarcange@redhat.com, amit.shah@redhat.com, pbonzini@redhat.com, willy@infradead.org, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu@aliyun.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-This patch adds support to walk through the free page blocks in the
-system and report them via a callback function. Some page blocks may
-leave the free list after zone->lock is released, so it is the caller's
-responsibility to either detect or prevent the use of such pages.
+On 08/28/2017 09:33 PM, Michal Hocko wrote:
+> On Mon 28-08-17 18:08:32, Wei Wang wrote:
+>> This patch adds support to walk through the free page blocks in the
+>> system and report them via a callback function. Some page blocks may
+>> leave the free list after zone->lock is released, so it is the caller's
+>> responsibility to either detect or prevent the use of such pages.
+>>
+>> One use example of this patch is to accelerate live migration by skipping
+>> the transfer of free pages reported from the guest. A popular method used
+>> by the hypervisor to track which part of memory is written during live
+>> migration is to write-protect all the guest memory. So, those pages that
+>> are reported as free pages but are written after the report function
+>> returns will be captured by the hypervisor, and they will be added to the
+>> next round of memory transfer.
+> OK, looks much better. I still have few nits.
+>
+>> +extern void walk_free_mem_block(void *opaque,
+>> +				int min_order,
+>> +				bool (*report_page_block)(void *, unsigned long,
+>> +							  unsigned long));
+>> +
+> please add names to arguments of the prototype
+>
+>>   /*
+>>    * Free reserved pages within range [PAGE_ALIGN(start), end & PAGE_MASK)
+>>    * into the buddy system. The freed pages will be poisoned with pattern
+>> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+>> index 6d00f74..81eedc7 100644
+>> --- a/mm/page_alloc.c
+>> +++ b/mm/page_alloc.c
+>> @@ -4762,6 +4762,71 @@ void show_free_areas(unsigned int filter, nodemask_t *nodemask)
+>>   	show_swap_cache_info();
+>>   }
+>>   
+>> +/**
+>> + * walk_free_mem_block - Walk through the free page blocks in the system
+>> + * @opaque: the context passed from the caller
+>> + * @min_order: the minimum order of free lists to check
+>> + * @report_page_block: the callback function to report free page blocks
+> page_block has meaning in the core MM which doesn't strictly match its
+> usage here. Moreover we are reporting pfn ranges rather than struct page
+> range. So report_pfn_range would suit better.
+>
+> [...]
+>> +	for_each_populated_zone(zone) {
+>> +		for (order = MAX_ORDER - 1; order >= min_order; order--) {
+>> +			for (mt = 0; !stop && mt < MIGRATE_TYPES; mt++) {
+>> +				spin_lock_irqsave(&zone->lock, flags);
+>> +				list = &zone->free_area[order].free_list[mt];
+>> +				list_for_each_entry(page, list, lru) {
+>> +					pfn = page_to_pfn(page);
+>> +					stop = report_page_block(opaque, pfn,
+>> +								 1 << order);
+>> +					if (stop)
+>> +						break;
+> 					if (stop) {
+> 						spin_unlock_irqrestore(&zone->lock, flags);
+> 						return;
+> 					}
+>
+> would be both easier and less error prone. E.g. You wouldn't pointlessly
+> iterate over remaining orders just to realize there is nothing to be
+> done for those...
+>
 
-One use example of this patch is to accelerate live migration by skipping
-the transfer of free pages reported from the guest. A popular method used
-by the hypervisor to track which part of memory is written during live
-migration is to write-protect all the guest memory. So, those pages that
-are reported as free pages but are written after the report function
-returns will be captured by the hypervisor, and they will be added to the
-next round of memory transfer.
+Yes, that's better, thanks. I will take other suggestions as well.
 
-Signed-off-by: Wei Wang <wei.w.wang@intel.com>
-Signed-off-by: Liang Li <liang.z.li@intel.com>
-Cc: Michal Hocko <mhocko@kernel.org>
-Cc: Michael S. Tsirkin <mst@redhat.com>
----
- include/linux/mm.h |  5 +++++
- mm/page_alloc.c    | 65 ++++++++++++++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 70 insertions(+)
+Best,
+Wei
 
-diff --git a/include/linux/mm.h b/include/linux/mm.h
-index 46b9ac5..3c4267d 100644
---- a/include/linux/mm.h
-+++ b/include/linux/mm.h
-@@ -1835,6 +1835,11 @@ extern void free_area_init_node(int nid, unsigned long * zones_size,
- 		unsigned long zone_start_pfn, unsigned long *zholes_size);
- extern void free_initmem(void);
- 
-+extern void walk_free_mem_block(void *opaque,
-+				int min_order,
-+				bool (*report_page_block)(void *, unsigned long,
-+							  unsigned long));
-+
- /*
-  * Free reserved pages within range [PAGE_ALIGN(start), end & PAGE_MASK)
-  * into the buddy system. The freed pages will be poisoned with pattern
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index 6d00f74..81eedc7 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -4762,6 +4762,71 @@ void show_free_areas(unsigned int filter, nodemask_t *nodemask)
- 	show_swap_cache_info();
- }
- 
-+/**
-+ * walk_free_mem_block - Walk through the free page blocks in the system
-+ * @opaque: the context passed from the caller
-+ * @min_order: the minimum order of free lists to check
-+ * @report_page_block: the callback function to report free page blocks
-+ *
-+ * If the callback returns 1, stop iterating the list of free page blocks.
-+ * Otherwise, continue to report.
-+ *
-+ * Please note that there are no locking guarantees for the callback and
-+ * that the reported pfn range might be freed or disappear after the
-+ * callback returns so the caller has to be very careful how it is used.
-+ *
-+ * The callback itself must not sleep or perform any operations which would
-+ * require any memory allocations directly (not even GFP_NOWAIT/GFP_ATOMIC)
-+ * or via any lock dependency. It is generally advisable to implement
-+ * the callback as simple as possible and defer any heavy lifting to a
-+ * different context.
-+ *
-+ * There is no guarantee that each free range will be reported only once
-+ * during one walk_free_mem_block invocation.
-+ *
-+ * pfn_to_page on the given range is strongly discouraged and if there is
-+ * an absolute need for that make sure to contact MM people to discuss
-+ * potential problems.
-+ *
-+ * The function itself might sleep so it cannot be called from atomic
-+ * contexts.
-+ *
-+ * In general low orders tend to be very volatile and so it makes more
-+ * sense to query larger ones first for various optimizations which like
-+ * ballooning etc... This will reduce the overhead as well.
-+ */
-+void walk_free_mem_block(void *opaque,
-+			 int min_order,
-+			 bool (*report_page_block)(void *, unsigned long,
-+						   unsigned long))
-+{
-+	struct zone *zone;
-+	struct page *page;
-+	struct list_head *list;
-+	int order;
-+	enum migratetype mt;
-+	unsigned long pfn, flags;
-+	bool stop = 0;
-+
-+	for_each_populated_zone(zone) {
-+		for (order = MAX_ORDER - 1; order >= min_order; order--) {
-+			for (mt = 0; !stop && mt < MIGRATE_TYPES; mt++) {
-+				spin_lock_irqsave(&zone->lock, flags);
-+				list = &zone->free_area[order].free_list[mt];
-+				list_for_each_entry(page, list, lru) {
-+					pfn = page_to_pfn(page);
-+					stop = report_page_block(opaque, pfn,
-+								 1 << order);
-+					if (stop)
-+						break;
-+				}
-+				spin_unlock_irqrestore(&zone->lock, flags);
-+			}
-+		}
-+	}
-+}
-+EXPORT_SYMBOL_GPL(walk_free_mem_block);
-+
- static void zoneref_set_zone(struct zone *zone, struct zoneref *zoneref)
- {
- 	zoneref->zone = zone;
--- 
-2.7.4
+
 
 
 ---------------------------------------------------------------------
