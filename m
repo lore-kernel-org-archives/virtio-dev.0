@@ -1,96 +1,94 @@
-Return-Path: virtio-return-2788-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio@lists.oasis-open.org>
-List-Post: <mailto:virtio@lists.oasis-open.org>
-List-Help: <mailto:virtio-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-From: Halil Pasic <pasic@linux.vnet.ibm.com>
-References: <1490655576-12173-1-git-send-email-mst@redhat.com>
-Date: Thu, 31 Aug 2017 13:30:26 +0200
+Return-Path: virtio-dev-return-2503-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
+	by lists.oasis-open.org (Postfix) with ESMTP id 384C158190D9
+	for <virtio-dev@lists.oasis-open.org>; Tue, 29 Aug 2017 14:03:11 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <1490655576-12173-1-git-send-email-mst@redhat.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-Message-Id: <14c81460-bf85-4724-98bd-5160d49b08f9@linux.vnet.ibm.com>
-Subject: [virtio] Re: [virtio-dev] [PATCH] net: clarify device rules for mergeable
- buffers
-To: "Michael S. Tsirkin" <mst@redhat.com>, virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+In-Reply-To: <20170829233525-mutt-send-email-mst@kernel.org>
+References: <20170829200759.13975-1-willemdebruijn.kernel@gmail.com>
+ <20170829200759.13975-3-willemdebruijn.kernel@gmail.com> <20170829231606-mutt-send-email-mst@kernel.org>
+ <CAF=yD-L95x1EPKFeiPiZ2hbTzwYmDaG9O54+0tUW_4opuRKDMw@mail.gmail.com> <20170829233525-mutt-send-email-mst@kernel.org>
+From: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date: Tue, 29 Aug 2017 17:02:29 -0400
+Message-ID: <CAF=yD-+gPOYSgq8ckJ4wt3TPQYEnnB36g=Q5G4=yfoesGc=4hA@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: [virtio-dev] Re: [PATCH RFC 2/2] virtio_net: enable probing for NEEDS_RESET support
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: Network Development <netdev@vger.kernel.org>, Jason Wang <jasowang@redhat.com>, virtualization@lists.linux-foundation.org, Willem de Bruijn <willemb@google.com>, virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
++ virtio-dev
+
+On Tue, Aug 29, 2017 at 4:38 PM, Michael S. Tsirkin <mst@redhat.com> wrote:
+> On Tue, Aug 29, 2017 at 04:27:41PM -0400, Willem de Bruijn wrote:
+>> On Tue, Aug 29, 2017 at 4:16 PM, Michael S. Tsirkin <mst@redhat.com> wrote:
+>> > On Tue, Aug 29, 2017 at 04:07:59PM -0400, Willem de Bruijn wrote:
+>> >> From: Willem de Bruijn <willemb@google.com>
+>> >>
+>> >> Implement a mechanism to signal that a virtio device implements the
+>> >> VIRTIO_CONFIG_S_NEEDS_RESET command.
+>> >>
+>> >> Testing for VIRTIO_CONFIG_S_NEEDS_RESET support by issuing the request
+>> >> and verifying the reset state would require an expensive state change.
+>> >>
+>> >> To avoid that, add a status bit to the feature register used during
+>> >> feature negotiation between host and guest.
+>> >>
+>> >> Set the bit for virtio-net, which supports the feature.
+>> >>
+>> >> Signed-off-by: Willem de Bruijn <willemb@google.com>
+>> >
+>> > All virtio 1 devices have the reset feature
+>>
+>> I don't quite follow. No device drivers implement this request currently?
+>
+> Depends. Spec 1.0 describes the bit and that driver can respond
+> by reseting the device. You seem to do something else
+> in this patchset, but as designed in 1.0 it does not seem to need
+> a feature bit.
+
+I see. So support is designed to be best effort?
+
+The feature bit is only needed if driver support is optional.
+
+The ack response is necessary if the device acts differently
+depending on whether the reset happened. The device has
+to reset its local state, too, so I think that this is needed.
 
 
-On 03/28/2017 01:09 AM, Michael S. Tsirkin wrote:
-> The idea behind mergeable buffers was to simply use them in a way
-> similar to a chain of descriptors.  Unfortunately the current text does
-> not say so - apparently nothing says device can't spread a packet over
-> as many buffers as it likes - but this didn't prevent drivers from
-> relying on buffers being used as a chain of descriptors, completely -
-> and blindly accessing it without checking the length at least for the
-> packet header.
-> 
-> Let's just make the spec match this reality - if devices ever want more
-> flexibility, we can add a feature bit.
-> 
-> Further, correct all misuses of a "descriptor" to "buffer" as that
-> is the entity that is being merged.
-> 
-> VIRTIO-160
-> 
-> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+>> > so maybe guest does
+>> > not need this flag. Does device need it? Does device really
+>> > care that guest can't recover?
+>>
+>> If all device drivers support it, then the flag is not needed.
+>>
+>> But as long as legacy device drivers can exist that do not support
+>> this feature, it has to have a way of differentiating between the two.
+>
+> Why? Device won't set this unless it's in a bad state. In that case,
+> setting the bit is harmless even if drivers ignore it.
 
-Sorry for not commenting sooner. I'm revisiting this because I would
-like to have a good understanding of what I'm voting about.
+The goal is for the device to be able to rely on the driver reset to get
+to a good state even if it gets it into a bad state.
 
-I think this patch is surely an improvement, but I'm not sure it brings
-us to the point, where the information is easy to understand and hard
-to misinterpret.
+That allows it to implement optimizations that could get it into that bad
+state.
 
-In my understanding we have 3 levels here, starting from the lowest
-(regarding abstraction):
-I) Descriptor level: a descriptor designates a single continuous piece
-of memory (at places called buffer in the spec).
-II) Descriptor chain, aka buffer: a linked list of descriptors arranged
-according specific constrains (device-readable before device-writable).
-The chain of descriptors can contain indirect descriptors.
-III) Device type specific messages defined by as a part of the protocol
-defining the device type (optional, not existent for e.g. console). The
-names used in the spec for these are: packet (net), request (blk, scsi-host,
-crypto), descriptor of one or more buffers (rng), descriptor describing the
-resulting 32-bit array (balloon),
+In particular, in the edge case where the device performs backpressure,
+takes the descriptor out of the avail ring and does not immediately post
+it to the used ring.
 
-Now between level I and level II we have what we call 'framing' and
-'message framing' requirements if I understand it correctly. Basically
-with some legacy motivated exceptions we say it should not matter how a
-buffer is mapped to descriptors.
-
-The relationship between level II and level III seems is a tougher nut.
-I'm under the impression, that it was supposed to be a direct
-correspondence except for exceptions. That is a buffer (II) is supposed
-to contain exactly one request or one response, or one request&response
-depending on the queue and the design of the device type. For instance
-for blk the amount of data involved is determined by the buffer length.
-
-AFAIU the VIRTIO_NET_F_MRG_RXBUF is supposed to be an exception from that
-rule: if VIRTIO_NET_F_MRG_RXBUF a packet (level III concept) is allowed
-to span multiple buffers (level II concept), but a packet is only allowed
-to 'begin' at the beginning of a buffer.
-
-Bottom line is, even with this patch applied the situation remains messy.
-Part of the problem is that 'buffer' is used to denote two different
-things (level II and level I). And I think, there are devices, which say
-descriptor when they mean buffer (level II). Furthermore what I describe
-as level III is mostly just implicitly present in the spec. IMHO if we
-want these things nice and easy to understand we need a bigger overhaul.
-I will vote for because it is an improvement -- even if its sufficiency
-is somewhat debatable.
-
-Regards,
-Halil
-
+A reset will make the guest free all delayed packets and treat any
+unsent and unacknowledged as network drops. This allows the
+device to indeed drop long delayed packets when they eventually
+surface (e.g., leave a qdisc queue). This is of course not safe with
+zerocopy packets.
 
 ---------------------------------------------------------------------
-To unsubscribe from this mail list, you must leave the OASIS TC that 
-generates this mail.  Follow this link to all your TCs in OASIS at:
-https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
