@@ -1,123 +1,191 @@
-Return-Path: virtio-dev-return-2566-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2510-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 4093458182C4
-	for <virtio-dev@lists.oasis-open.org>; Mon, 25 Sep 2017 06:28:06 -0700 (PDT)
-References: <20170804181927.12148-1-jean-philippe.brucker@arm.com>
- <5be484ff-6a1a-6c9b-947c-f64ea23f58cc@arm.com>
- <AADFC41AFE54684AB9EE6CBC0274A5D190D941E3@SHSMSX101.ccr.corp.intel.com>
- <013a2fdd-86f7-a7ee-7e71-11bbb6261f33@arm.com>
- <AADFC41AFE54684AB9EE6CBC0274A5D190DDCF8D@SHSMSX101.ccr.corp.intel.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id A91305819215
+	for <virtio-dev@lists.oasis-open.org>; Wed,  6 Sep 2017 04:45:24 -0700 (PDT)
 From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Message-ID: <68b68f4d-360c-9849-662f-61db6919c7db@arm.com>
-Date: Mon, 25 Sep 2017 14:32:15 +0100
+References: <20170804181927.12148-1-jean-philippe.brucker@arm.com>
+ <f9b02ce1-057f-df4f-90d7-52616ad60b88@redhat.com>
+Message-ID: <6b56fd96-fee5-d105-5261-2e7274b4aa15@arm.com>
+Date: Wed, 6 Sep 2017 12:48:42 +0100
 MIME-Version: 1.0
-In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D190DDCF8D@SHSMSX101.ccr.corp.intel.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <f9b02ce1-057f-df4f-90d7-52616ad60b88@redhat.com>
+Content-Type: text/plain; charset=windows-1252
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: Re: [virtio-dev] RE: [RFC] virtio-iommu version 0.4
-To: "Tian, Kevin" <kevin.tian@intel.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
-Cc: Will Deacon <Will.Deacon@arm.com>, Robin Murphy <Robin.Murphy@arm.com>, Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>, "mst@redhat.com" <mst@redhat.com>, "jasowang@redhat.com" <jasowang@redhat.com>, Marc Zyngier <Marc.Zyngier@arm.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>, "eric.auger.pro@gmail.com" <eric.auger.pro@gmail.com>, "bharat.bhushan@nxp.com" <bharat.bhushan@nxp.com>, "peterx@redhat.com" <peterx@redhat.com>
+Subject: Re: [virtio-dev] [RFC] virtio-iommu version 0.4
+To: Auger Eric <eric.auger@redhat.com>, iommu@lists.linux-foundation.org, kvm@vger.kernel.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org
+Cc: will.deacon@arm.com, robin.murphy@arm.com, lorenzo.pieralisi@arm.com, mst@redhat.com, jasowang@redhat.com, marc.zyngier@arm.com, eric.auger.pro@gmail.com, bharat.bhushan@nxp.com, peterx@redhat.com, kevin.tian@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 21/09/17 07:27, Tian, Kevin wrote:
->> From: Jean-Philippe Brucker
->> Sent: Wednesday, September 6, 2017 7:55 PM
->>
->> Hi Kevin,
->>
->> On 28/08/17 08:39, Tian, Kevin wrote:
->>> Here comes some comments:
->>>
->>> 1.1 Motivation
->>>
->>> You describe I/O page faults handling as future work. Seems you
->> considered
->>> only recoverable fault (since "aka. PCI PRI" being used). What about other
->>> unrecoverable faults e.g. what to do if a virtual DMA request doesn't find
->>> a valid mapping? Even when there is no PRI support, we need some basic
->>> form of fault reporting mechanism to indicate such errors to guest.
->>
->> I am considering recoverable faults as the end goal, but reporting
->> unrecoverable faults should use the same queue, with slightly different
->> fields and no need for the driver to reply to the device.
-> 
-> what about adding a placeholder for now? Though same mechanism
-> can be reused, it's an essential part to make virtio-iommu architecture
-> complete even before talking support for recoverable faults. :-)
+Hi Eric,
 
-I'll see if I can come up with something simple for v0.5, but it seems
-like a big chunk of work. I don't really know what to report to the guest
-at the moment. I don't want to report vendor-specific details about the
-fault, but it should still be useful content, to let the guest decide
-whether they need to reset/kill the device or just print something
+On 23/08/17 14:55, Auger Eric wrote:
+> Please find some comments/questions below:
 
-[...]
->> Yes I think adding MEM_T_IDENTITY will be necessary. I can see they are
->> used for both iGPU and USB controllers on my x86 machines. Do you know
->> more precisely what they are used for by the firmware?
-> 
-> VTd spec has a clear description:
-> 
-> 3.14 Handling Requests to Reserved System Memory
-> Reserved system memory regions are typically allocated by BIOS at boot 
-> time and reported to OS as reserved address ranges in the system memory 
-> map. Requests-without-PASID to these reserved regions may either occur 
-> as a result of operations performed by the system software driver (for 
-> example in the case of DMA from unified memory access (UMA) graphics 
-> controllers to graphics reserved memory), or may be initiated by non 
-> system software (for example in case of DMA performed by a USB 
-> controller under BIOS SMM control for legacy keyboard emulation). 
-> For proper functioning of these legacy reserved memory usages, when 
-> system software enables DMA remapping, the second-level translation 
-> structures for the respective devices are expected to be set up to provide
-> identity mapping for the specified reserved memory regions with read 
-> and write permissions.
-> 
-> (one specific example for GPU happens in legacy VGA usage in early
-> boot time before actual graphics driver is loaded)
+Thanks a lot for this. Sorry for the delay, I was on holiday and it took
+me a while to sort out the details.
 
-Thanks for the explanation. So it is only legacy, and enabling nested mode
-would be forbidden for a device with Reserved System Memory regions? I'm
-wondering if virtio-iommu RESV regions will be extended to affect a
-specific PASIDs (or all requests-with-PASID) in the future.
->> It's not necessary with the base virtio-iommu device though (v0.4),
->> because the device can create the identity mappings itself and report them
->> to the guest as MEM_T_BYPASS. However, when we start handing page
-> 
-> when you say "the device can create ...", I think you really meant
-> "host iommu driver can create identity mapping for assigned device",
-> correct?
-> 
-> Then yes, I think above works.
+> 2.6.7:1
+> I do not understand the footnode #6 sentence: 'Without a specific
+> definition of the ACK requirements for a given property type, it simply
+> means that the driver read all fields of that property."
 
-Yes it can be the host IOMMU driver, or simply Qemu sending VFIO ioctls to
-create those identity mappings (they are reported in sysfs reserved_regions).
+That doesn't serve any purpose, I'll remove the footnote.
 
->> table
->> control over to the guest, the host won't be in control of IOVA->GPA
->> mappings and will need to gracefully ask the guest to do it.
->>
->> I'm not aware of any firmware description resembling Intel RMRR or AMD
->> IVMD on ARM platforms. I do think ARM platforms could need
->> MEM_T_IDENTITY
->> for requesting the guest to map MSI windows when page-table handover is
->> in
->> use (MSI addresses are translated by the physical SMMU, so a IOVA->GPA
->> mapping must be installed by the guest). But since a vSMMU would need a
->> solution as well, I think I'll try to implement something more generic.
-> 
-> curious do you need identity mapping full IOVA->GPA->HPA translation, 
-> or just in GPA->HPA stage sufficient for above MSI scenario?
+> 2.6.7:2
+> what if the driver has not provided a big enough buffer and the device
+> cannot report all supported properties?
 
-It has to be IOVA->GPA->HPA. So it'll be a bit complicated to implement
-for us, I think we're going to need a VFIO ioctl to tell the host what
-IOVA the guest allocated for its MSI, but it's not ideal.
+Good point, how about adding the following to 2.6.7.2 - Device
+Requirements: PROBE Request
+
+    If the properties array is smaller than \field{probe_size}, then the
+device SHOULD NOT write any property and SHOULD set the request
+\field{status} to VIRTIO_IOMMU_S_INVAL.
+
+> 2.6.8.2:
+> Couldn't we use the same terminology as iommu_resv_type in iommu.h?
+> the negative form is not the easiest to understand for me.
+> Why F_MSI?
+
+It also needs to be understandable by someone not familiar with the Linux
+APIs. It's not entirely obvious to me what the iommu.h regions are without
+looking at the implementation, maybe using names from the device point of
+view is more clear. I don't mind simplifying though, as I don't see a
+reason for the driver to know about BYPASS regions other than
+HW MSIs.
+
+How about I remove ABORT and BYPASS, make the only subtype RESV_MEM_T_MSI
+(1)? We'd use subtype 0 as "don't care, just don't map this". Can call it
+RESV_MEM_T_RESERVED. Flags won't be used for these subtypes.
+
+Another subtype will be RESV_MEM_T_IDENTITY (see my reply to Kevin).
+IDENTITY regions must be identity-mapped by the guest and, as I understand
+it, are virtual addresses used for DMA by firmware. The flags field will
+then contain read/write protection flags.
+
+> 2.6.8.2.1
+> Multiple overlapping RESV_MEM properties are merged together. Device
+> requirement? if same types I assume?
+
+Combination rules apply to device and driver. When the driver puts
+multiple endpoints in the same domain, combination rules apply. They will
+become important once the guest attempts to do things like combining
+endpoints with different PASID capabilities in the same domain. I'm
+considering these endpoints to be behind different physical IOMMUs.
+
+For reserved regions, we specify what the driver should do and what the
+device should enforce with regard to mapping IOVAs of overlapping regions.
+For example, if a device has some virtual address RESV_T_MSI and an other
+device has the same virtual address RESV_T_IDENTITY, what should the
+driver do?
+
+I think it should apply the RESV_T_IDENTITY. RESV_T_MSI is just a special
+case of RESV_T_RESERVED, it's a hint for the IRQ subsystem and doesn't
+have a meaning within a domain. From DMA mappings point of view, it is
+effectively the same as RESV_T_RESERVED. When merging RESV_T_RESERVED and
+RESV_T_IDENTITY, we should make it RESV_T_IDENTITY. Because it is required
+for one endpoint to work (the one with IDENTITY) and is not accessed by
+the other (the driver must not allocate this IOVA range for DMA).
+
+More generally, I'd like to add the following combination table to the
+spec, that shows the resulting reserved region type after merging regions
+from two endpoints. N: no reserved region, R: RESV_T_RESERVED, M:
+RESV_T_MSI, I: RESV_T_IDENTITY. It is symmetric so I didn't fill the
+bottom half.
+
+      | N | R | M | I
+    ------------------
+    N | N | R | M | ?
+    ------------------
+    R |   | R | R | I
+    ------------------
+    M |   |   | M | I
+    ------------------
+    I |   |   |   | I
+
+The 'I' column is problematic. If one endpoint has an IDENTITY region and
+the other doesn't have anything at that virtual address, then making that
+region an identity mapping will result in the second endpoint being able
+to access firmware memory. If using nested translation, stage-2 can help
+us here. But in general we should allow the device to reject an attach
+that would result in a N+I combination if the host considers it too dodgy.
+I think the other combinations are safe enough.
+
+> what if the device is a physical assigned device. does the device report
+> the host doorbell or the guest doorbell, may be worth to clarify.
+
+Indeed. For a physical assigned device it is the guest doorbell as it
+corresponds to the virtual ITS or APIC (though with the APIC it's the same
+region).
+
+> 3.1.1 last paragraph
+> you talk about device ID but this is a terminology only known by ARM I
+> think. Actually it is introduced later in 3.1.2.
+
+Indeed, I'll move the explanation up.
+
+> 3.1.2
+> About ACPI integration. Isn't IORT ARM specific?
+
+IORT is currently edited by ARM, as is virtio-iommu. Their contents are
+not ARM specific however, they describe software interfaces that solve
+mostly generic problems, and aim to be open.
+
+IORT describes the relation between endpoints and their translation
+agents. This problem has already been solved by IVRS, DMAR and IORT. From
+a technical point of view the latter is more flexible and can host a new
+translation agent. It should be relatively easy to use for virtio-iommu in
+the kernel, and therefore I don't think we should introduce a fourth type
+of table just for virtio-iommu.
+
+> Will other architectures use that table?
+
+Yes, in particular the IORT node would be used on virtual x86 platforms.
+On ARM platforms, Linux guests use existing device-tree bindings.
+Operating systems that don't implement DT could use IORT as well.
+
+> In IORT we also have Named Component node
+> which look pretty the same. Could you elaborate of the difference?
+
+It's the same mechanism, except that the named component node is supposed
+to be a leaf in the topology, not a translation agent. Using the same node
+type could make it difficult for the driver to understand the table. But
+see below.
+
+> Device Object name: isn't it the path to the LNR0005 in the namespace?
+
+It is. However, I wrote the example table to give a rough idea, but didn't
+investigate the feasibility. I now think it would be easier to not present
+the virtio-iommu as a LNRO0005 to the guest, but solely as the IORT node.
+Instead of a namespace path, the node would directly describe the _CRS
+content, which should be enough for the kernel to instantiate the device.
+
+I'll prototype something to understand the problem better and find which
+is easier to do. I'm busy preparing for conferences, so it might be two or
+three weeks.
+
+
+Unrelated remarks:
+
+* When renaming "devices" to "endpoints" in v0.3 (to avoid confusion wrt
+"The device", which is virtio-iommu dev), I didn't update the
+attach/detach/probe requests, they still have 'device' fields. Since I'm
+already butchering the API by renaming address_space to domain, should I
+also rename 'device' to 'endpoint' in the structure? It doesn't matter as
+much, since the difference here is mostly stylistic. But I think I will
+get it out of the way for v0.5, to make things more clear overall.
+
+* Regarding my question in v0.4 about adding a 'size' field to all
+requests. I don't think we should do that. The problem was for parsing
+interleaved RO/WO/RO buffers, but we might never hit the problem if we
+design virtio-iommu properly. Framing should be left to the transport
+protocol and it'd be mostly redundant in virtio-iommu requests.
 
 Thanks,
 Jean
