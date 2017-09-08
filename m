@@ -1,110 +1,249 @@
-Return-Path: virtio-dev-return-2587-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2515-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 1AD9A58190FF
-	for <virtio-dev@lists.oasis-open.org>; Fri, 29 Sep 2017 21:24:32 -0700 (PDT)
-From: "Wang, Wei W" <wei.w.wang@intel.com>
-Date: Sat, 30 Sep 2017 04:24:26 +0000
-Message-ID: <286AC319A985734F985F78AFA26841F73931DE83@shsmsx102.ccr.corp.intel.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 8AC8E5818F9A
+	for <virtio-dev@lists.oasis-open.org>; Thu,  7 Sep 2017 20:37:08 -0700 (PDT)
+Date: Fri, 8 Sep 2017 06:36:46 +0300
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20170908062748-mutt-send-email-mst@kernel.org>
 References: <1503914913-28893-1-git-send-email-wei.w.wang@intel.com>
- <1503914913-28893-3-git-send-email-wei.w.wang@intel.com>
- <20170911132710.GB32538@bombadil.infradead.org>
-In-Reply-To: <20170911132710.GB32538@bombadil.infradead.org>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+ <1503914913-28893-4-git-send-email-wei.w.wang@intel.com>
+ <20170828204659-mutt-send-email-mst@kernel.org>
+ <59A4DADE.5050303@intel.com>
 MIME-Version: 1.0
-Subject: [virtio-dev] RE: [PATCH v15 2/5] lib/xbitmap: add xb_find_next_bit() and
- xb_zero()
-To: Matthew Wilcox <willy@infradead.org>
-Cc: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "qemu-devel@nongnu.org" <qemu-devel@nongnu.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "mst@redhat.com" <mst@redhat.com>, "mhocko@kernel.org" <mhocko@kernel.org>, "akpm@linux-foundation.org" <akpm@linux-foundation.org>, "mawilcox@microsoft.com" <mawilcox@microsoft.com>, "david@redhat.com" <david@redhat.com>, "cornelia.huck@de.ibm.com" <cornelia.huck@de.ibm.com>, "mgorman@techsingularity.net" <mgorman@techsingularity.net>, "aarcange@redhat.com" <aarcange@redhat.com>, "amit.shah@redhat.com" <amit.shah@redhat.com>, "pbonzini@redhat.com" <pbonzini@redhat.com>, "liliang.opensource@gmail.com" <liliang.opensource@gmail.com>, "yang.zhang.wz@gmail.com" <yang.zhang.wz@gmail.com>, "quan.xu@aliyun.com" <quan.xu@aliyun.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <59A4DADE.5050303@intel.com>
+Subject: [virtio-dev] Re: [PATCH v15 3/5] virtio-balloon: VIRTIO_BALLOON_F_SG
+To: Wei Wang <wei.w.wang@intel.com>
+Cc: virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, qemu-devel@nongnu.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, linux-mm@kvack.org, mhocko@kernel.org, akpm@linux-foundation.org, mawilcox@microsoft.com, david@redhat.com, cornelia.huck@de.ibm.com, mgorman@techsingularity.net, aarcange@redhat.com, amit.shah@redhat.com, pbonzini@redhat.com, willy@infradead.org, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu@aliyun.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Monday, September 11, 2017 9:27 PM, Matthew Wilcox wrote
-> On Mon, Aug 28, 2017 at 06:08:30PM +0800, Wei Wang wrote:
-> > +/**
-> > + *  xb_zero - zero a range of bits in the xbitmap
-> > + *  @xb: the xbitmap that the bits reside in
-> > + *  @start: the start of the range, inclusive
-> > + *  @end: the end of the range, inclusive  */ void xb_zero(struct xb
-> > +*xb, unsigned long start, unsigned long end) {
-> > +	unsigned long i;
-> > +
-> > +	for (i =3D start; i <=3D end; i++)
-> > +		xb_clear_bit(xb, i);
-> > +}
-> > +EXPORT_SYMBOL(xb_zero);
->=20
-> Um.  This is not exactly going to be quick if you're clearing a range of =
-bits.
-> I think it needs to be more along the lines of this:
->=20
-> void xb_clear(struct xb *xb, unsigned long start, unsigned long end) {
->         struct radix_tree_root *root =3D &xb->xbrt;
->         struct radix_tree_node *node;
->         void **slot;
->         struct ida_bitmap *bitmap;
->=20
->         for (; end < start; start =3D (start | (IDA_BITMAP_BITS - 1)) + 1=
-) {
->                 unsigned long index =3D start / IDA_BITMAP_BITS;
->                 unsigned long bit =3D start % IDA_BITMAP_BITS;
->=20
->                 bitmap =3D __radix_tree_lookup(root, index, &node, &slot)=
-;
->                 if (radix_tree_exception(bitmap)) {
->                         unsigned long ebit =3D bit + 2;
->                         unsigned long tmp =3D (unsigned long)bitmap;
->                         if (ebit >=3D BITS_PER_LONG)
->                                 continue;
->                         tmp &=3D ... something ...;
->                         if (tmp =3D=3D RADIX_TREE_EXCEPTIONAL_ENTRY)
->                                 __radix_tree_delete(root, node, slot);
->                         else
->                                 rcu_assign_pointer(*slot, (void *)tmp);
->                 } else if (bitmap) {
->                         unsigned int nbits =3D end - start + 1;
->                         if (nbits + bit > IDA_BITMAP_BITS)
->                                 nbits =3D IDA_BITMAP_BITS - bit;
->                         bitmap_clear(bitmap->bitmap, bit, nbits);
->                         if (bitmap_empty(bitmap->bitmap, IDA_BITMAP_BITS)=
-) {
->                                 kfree(bitmap);
->                                 __radix_tree_delete(root, node, slot);
->                         }
->                 }
->         }
+On Tue, Aug 29, 2017 at 11:09:18AM +0800, Wei Wang wrote:
+> On 08/29/2017 02:03 AM, Michael S. Tsirkin wrote:
+> > On Mon, Aug 28, 2017 at 06:08:31PM +0800, Wei Wang wrote:
+> > > Add a new feature, VIRTIO_BALLOON_F_SG, which enables the transfer
+> > > of balloon (i.e. inflated/deflated) pages using scatter-gather lists
+> > > to the host.
+> > > 
+> > > The implementation of the previous virtio-balloon is not very
+> > > efficient, because the balloon pages are transferred to the
+> > > host one by one. Here is the breakdown of the time in percentage
+> > > spent on each step of the balloon inflating process (inflating
+> > > 7GB of an 8GB idle guest).
+> > > 
+> > > 1) allocating pages (6.5%)
+> > > 2) sending PFNs to host (68.3%)
+> > > 3) address translation (6.1%)
+> > > 4) madvise (19%)
+> > > 
+> > > It takes about 4126ms for the inflating process to complete.
+> > > The above profiling shows that the bottlenecks are stage 2)
+> > > and stage 4).
+> > > 
+> > > This patch optimizes step 2) by transferring pages to the host in
+> > > sgs. An sg describes a chunk of guest physically continuous pages.
+> > > With this mechanism, step 4) can also be optimized by doing address
+> > > translation and madvise() in chunks rather than page by page.
+> > > 
+> > > With this new feature, the above ballooning process takes ~597ms
+> > > resulting in an improvement of ~86%.
+> > > 
+> > > TODO: optimize stage 1) by allocating/freeing a chunk of pages
+> > > instead of a single page each time.
+> > > 
+> > > Signed-off-by: Wei Wang <wei.w.wang@intel.com>
+> > > Signed-off-by: Liang Li <liang.z.li@intel.com>
+> > > Suggested-by: Michael S. Tsirkin <mst@redhat.com>
+> > > ---
+> > >   drivers/virtio/virtio_balloon.c     | 171 ++++++++++++++++++++++++++++++++----
+> > >   include/uapi/linux/virtio_balloon.h |   1 +
+> > >   2 files changed, 155 insertions(+), 17 deletions(-)
+> > > 
+> > > diff --git a/drivers/virtio/virtio_balloon.c b/drivers/virtio/virtio_balloon.c
+> > > index f0b3a0b..8ecc1d4 100644
+> > > --- a/drivers/virtio/virtio_balloon.c
+> > > +++ b/drivers/virtio/virtio_balloon.c
+> > > @@ -32,6 +32,8 @@
+> > >   #include <linux/mm.h>
+> > >   #include <linux/mount.h>
+> > >   #include <linux/magic.h>
+> > > +#include <linux/xbitmap.h>
+> > > +#include <asm/page.h>
+> > >   /*
+> > >    * Balloon device works in 4K page units.  So each page is pointed to by
+> > > @@ -79,6 +81,9 @@ struct virtio_balloon {
+> > >   	/* Synchronize access/update to this struct virtio_balloon elements */
+> > >   	struct mutex balloon_lock;
+> > > +	/* The xbitmap used to record balloon pages */
+> > > +	struct xb page_xb;
+> > > +
+> > >   	/* The array of pfns we tell the Host about. */
+> > >   	unsigned int num_pfns;
+> > >   	__virtio32 pfns[VIRTIO_BALLOON_ARRAY_PFNS_MAX];
+> > > @@ -141,13 +146,111 @@ static void set_page_pfns(struct virtio_balloon *vb,
+> > >   					  page_to_balloon_pfn(page) + i);
+> > >   }
+> > > +static int add_one_sg(struct virtqueue *vq, void *addr, uint32_t size)
+> > > +{
+> > > +	struct scatterlist sg;
+> > > +
+> > > +	sg_init_one(&sg, addr, size);
+> > > +	return virtqueue_add_inbuf(vq, &sg, 1, vq, GFP_KERNEL);
+> > > +}
+> > > +
+> > > +static void send_balloon_page_sg(struct virtio_balloon *vb,
+> > > +				 struct virtqueue *vq,
+> > > +				 void *addr,
+> > > +				 uint32_t size,
+> > > +				 bool batch)
+> > > +{
+> > > +	unsigned int len;
+> > > +	int err;
+> > > +
+> > > +	err = add_one_sg(vq, addr, size);
+> > > +	/* Sanity check: this can't really happen */
+> > > +	WARN_ON(err);
+> > It might be cleaner to detect that add failed due to
+> > ring full and kick then. Just an idea, up to you
+> > whether to do it.
+> > 
+> > > +
+> > > +	/* If batching is in use, we batch the sgs till the vq is full. */
+> > > +	if (!batch || !vq->num_free) {
+> > > +		virtqueue_kick(vq);
+> > > +		wait_event(vb->acked, virtqueue_get_buf(vq, &len));
+> > > +		/* Release all the entries if there are */
+> > Meaning
+> > 	Account for all used entries if any
+> > ?
+> > 
+> > > +		while (virtqueue_get_buf(vq, &len))
+> > > +			;
+> > 
+> > Above code is reused below. Add a function?
+> > 
+> > > +	}
+> > > +}
+> > > +
+> > > +/*
+> > > + * Send balloon pages in sgs to host. The balloon pages are recorded in the
+> > > + * page xbitmap. Each bit in the bitmap corresponds to a page of PAGE_SIZE.
+> > > + * The page xbitmap is searched for continuous "1" bits, which correspond
+> > > + * to continuous pages, to chunk into sgs.
+> > > + *
+> > > + * @page_xb_start and @page_xb_end form the range of bits in the xbitmap that
+> > > + * need to be searched.
+> > > + */
+> > > +static void tell_host_sgs(struct virtio_balloon *vb,
+> > > +			  struct virtqueue *vq,
+> > > +			  unsigned long page_xb_start,
+> > > +			  unsigned long page_xb_end)
+> > > +{
+> > > +	unsigned long sg_pfn_start, sg_pfn_end;
+> > > +	void *sg_addr;
+> > > +	uint32_t sg_len, sg_max_len = round_down(UINT_MAX, PAGE_SIZE);
+> > > +
+> > > +	sg_pfn_start = page_xb_start;
+> > > +	while (sg_pfn_start < page_xb_end) {
+> > > +		sg_pfn_start = xb_find_next_bit(&vb->page_xb, sg_pfn_start,
+> > > +						page_xb_end, 1);
+> > > +		if (sg_pfn_start == page_xb_end + 1)
+> > > +			break;
+> > > +		sg_pfn_end = xb_find_next_bit(&vb->page_xb, sg_pfn_start + 1,
+> > > +					      page_xb_end, 0);
+> > > +		sg_addr = (void *)pfn_to_kaddr(sg_pfn_start);
+> > > +		sg_len = (sg_pfn_end - sg_pfn_start) << PAGE_SHIFT;
+> > > +		while (sg_len > sg_max_len) {
+> > > +			send_balloon_page_sg(vb, vq, sg_addr, sg_max_len, 1);
+> > Last argument should be true, not 1.
+> > 
+> > > +			sg_addr += sg_max_len;
+> > > +			sg_len -= sg_max_len;
+> > > +		}
+> > > +		send_balloon_page_sg(vb, vq, sg_addr, sg_len, 1);
+> > > +		xb_zero(&vb->page_xb, sg_pfn_start, sg_pfn_end);
+> > > +		sg_pfn_start = sg_pfn_end + 1;
+> > > +	}
+> > > +
+> > > +	/*
+> > > +	 * The last few sgs may not reach the batch size, but need a kick to
+> > > +	 * notify the device to handle them.
+> > > +	 */
+> > > +	if (vq->num_free != virtqueue_get_vring_size(vq)) {
+> > > +		virtqueue_kick(vq);
+> > > +		wait_event(vb->acked, virtqueue_get_buf(vq, &sg_len));
+> > > +		while (virtqueue_get_buf(vq, &sg_len))
+> > > +			;
+> > Some entries can get used after a pause. Looks like they will leak then?
+> > One fix would be to convert above if to a while loop.
+> > I don't know whether to do it like this in send_balloon_page_sg too.
+> > 
+> 
+> Thanks for the above comments. I've re-written this part of code.
+> Please have a check below if there is anything more we could improve:
+> 
+> static void kick_and_wait(struct virtqueue *vq, wait_queue_head_t wq_head)
+> {
+>         unsigned int len;
+> 
+>         virtqueue_kick(vq);
+>         wait_event(wq_head, virtqueue_get_buf(vq, &len));
+>         /* Detach all the used buffers from the vq */
+>         while (virtqueue_get_buf(vq, &len))
+>                 ;
+
+I would move this last part to before add_buf. Increases chances
+it succeeds even in case of a bug.
+
 > }
->=20
-> Also note that this should be called xb_clear(), not xb_zero() to fit in =
-with
-> bitmap_clear().  And this needs a thorough test suite testing all values =
-for 'start'
-> and 'end' between 0 and at least 1024; probably much higher.  And a varia=
-ble
-> number of bits need to be set before calling
-> xb_clear() in the test suite.
->=20
-> Also, this implementation above is missing a few tricks.  For example, if=
- 'bit' is 0
-> and 'nbits' =3D=3D IDA_BITMAP_BITS, we can simply call kfree without firs=
-t zeroing
-> out the bits and then checking if the whole thing is zero.
+> 
+> static int add_one_sg(struct virtqueue *vq, void *addr, uint32_t size)
+> {
+>         struct scatterlist sg;
+>         int ret;
+> 
+>         sg_init_one(&sg, addr, size);
+>         ret = virtqueue_add_inbuf(vq, &sg, 1, vq, GFP_KERNEL);
+>         if (unlikely(ret == -ENOSPC))
+>                 dev_warn(&vq->vdev->dev, "%s: failed due to ring full\n",
+>                                  __func__);
 
-Thanks for the optimization suggestions. We've seen significant improvement=
- of
-the ballooning time. Some other optimizations (stated in the changelog) hav=
-en't
-been included in the new version. If possible, we can leave that to a secon=
-d step
-optimization outside this patch series.
+So if this ever triggers then kick and wait might fail, right?
+I think you should not special-case this one then.
 
-Best,
-Wei
+> 
+>         return ret;
+> }
+> 
+> static void send_balloon_page_sg(struct virtio_balloon *vb,
+>                                                       struct virtqueue *vq,
+>                                                       void *addr,
+>                                                       uint32_t size,
+>                                                       bool batch)
+> {
+>         int err;
+> 
+>         do {
+>                 err = add_one_sg(vq, addr, size);
+>                 if (err == -ENOSPC || !batch || !vq->num_free)
+>                         kick_and_wait(vq, vb->acked);
+>         } while (err == -ENOSPC);
+> }
+> 
+> 
+> Best,
+> Wei
+
+I think this fixes the bug, yes. I would skip trying to handle ENOSPC,
+it's more a less a bug if it triggers. Just bail out on any error.
+
+-- 
+MST
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
