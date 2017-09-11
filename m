@@ -1,117 +1,127 @@
-Return-Path: virtio-dev-return-2521-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2520-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id EA9AA58190CD
+	by lists.oasis-open.org (Postfix) with ESMTP id 7E77658190D2
 	for <virtio-dev@lists.oasis-open.org>; Sun, 10 Sep 2017 18:11:27 -0700 (PDT)
 From: "Longpeng(Mike)" <longpeng2@huawei.com>
-Date: Mon, 11 Sep 2017 09:10:35 +0800
-Message-ID: <1505092240-10864-4-git-send-email-longpeng2@huawei.com>
+Date: Mon, 11 Sep 2017 09:10:36 +0800
+Message-ID: <1505092240-10864-5-git-send-email-longpeng2@huawei.com>
 In-Reply-To: <1505092240-10864-1-git-send-email-longpeng2@huawei.com>
 References: <1505092240-10864-1-git-send-email-longpeng2@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-Subject: [virtio-dev] [RFC 3/8] virtio-crypto: add dataq operation logic for mux mode
+Subject: [virtio-dev] [RFC 4/8] cryptodev: add stateless mode cipher support
 To: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org
 Cc: luonengjun@huawei.com, mst@redhat.com, cohuck@redhat.com, stefanha@redhat.com, denglingli@chinamobile.com, Jani.Kokkonen@huawei.com, Ola.Liljedahl@arm.com, Varun.Sethi@freescale.com, xin.zeng@intel.com, brian.a.keating@intel.com, liang.j.ma@intel.com, john.griffin@intel.com, weidong.huang@huawei.com, mike.caraman@nxp.com, agraf@suse.de, jasowang@redhat.com, vincent.jardin@6wind.com, arei.gonglei@hotmail.com, pasic@linux.vnet.ibm.com, wangxinxin.wang@huawei.com, arei.gonglei@huawei.com, "Longpeng(Mike)" <longpeng2@huawei.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Adds dataq operation support for MUX mode.
+Adds stateless mode cipher support.
 
 Signed-off-by: Longpeng(Mike) <longpeng2@huawei.com>
 ---
- hw/virtio/virtio-crypto.c | 47 +++++++++++++++++++++++++++++++++++++----------
- 1 file changed, 37 insertions(+), 10 deletions(-)
+ backends/cryptodev.c              | 21 +++++++++++++++++++++
+ include/hw/virtio/virtio-crypto.h |  1 +
+ include/sysemu/cryptodev.h        | 18 ++++++++++++++++++
+ 3 files changed, 40 insertions(+)
 
-diff --git a/hw/virtio/virtio-crypto.c b/hw/virtio/virtio-crypto.c
-index 78f75c2..6076fb0 100755
---- a/hw/virtio/virtio-crypto.c
-+++ b/hw/virtio/virtio-crypto.c
-@@ -629,7 +629,7 @@ virtio_crypto_handle_request(VirtIOCryptoReq *request)
-     VirtIODevice *vdev = VIRTIO_DEVICE(vcrypto);
-     VirtQueueElement *elem = &request->elem;
-     int queue_index = virtio_crypto_vq2q(virtio_get_queue_index(request->vq));
--    struct virtio_crypto_op_data_req req;
-+    struct virtio_crypto_op_header *generic_hdr;
-     int ret;
-     struct iovec *in_iov;
-     struct iovec *out_iov;
-@@ -640,6 +640,12 @@ virtio_crypto_handle_request(VirtIOCryptoReq *request)
-     uint64_t session_id;
-     CryptoDevBackendSymOpInfo *sym_op_info = NULL;
-     Error *local_err = NULL;
-+    size_t s, exp_len;
-+    void *body;
-+    union {
-+        struct virtio_crypto_op_data_req req;
-+        struct virtio_crypto_op_data_req_mux mux_req;
-+    } op;
+diff --git a/backends/cryptodev.c b/backends/cryptodev.c
+index 1764c17..a76a312 100755
+--- a/backends/cryptodev.c
++++ b/backends/cryptodev.c
+@@ -120,6 +120,21 @@ static int cryptodev_backend_sym_operation(
+     return -VIRTIO_CRYPTO_ERR;
+ }
  
-     if (elem->out_num < 1 || elem->in_num < 1) {
-         virtio_error(vdev, "virtio-crypto dataq missing headers");
-@@ -650,12 +656,22 @@ virtio_crypto_handle_request(VirtIOCryptoReq *request)
-     out_iov = elem->out_sg;
-     in_num = elem->in_num;
-     in_iov = elem->in_sg;
--    if (unlikely(iov_to_buf(out_iov, out_num, 0, &req, sizeof(req))
--                != sizeof(req))) {
++static int cryptodev_backend_sym_stateless_operation(
++                 CryptoDevBackend *backend,
++                 CryptoDevBackendSymStatelessInfo *op_info,
++                 uint32_t queue_index, Error **errp)
++{
++    CryptoDevBackendClass *bc =
++                      CRYPTODEV_BACKEND_GET_CLASS(backend);
 +
-+    if (virtio_crypto_in_mux_mode(vdev)) {
-+        exp_len = sizeof(op.mux_req);
-+        generic_hdr = (struct virtio_crypto_op_header *)(&op.mux_req);
-+    } else {
-+        exp_len = sizeof(op.req);
-+        generic_hdr = (struct virtio_crypto_op_header *)(&op.req);
++    if (bc->do_sym_stateless_op) {
++        return bc->do_sym_stateless_op(backend, op_info, queue_index, errp);
 +    }
 +
-+    s = iov_to_buf(out_iov, out_num, 0, generic_hdr, exp_len);
-+    if (unlikely(s != exp_len)) {
-         virtio_error(vdev, "virtio-crypto request outhdr too short");
-         return -1;
-     }
--    iov_discard_front(&out_iov, &out_num, sizeof(req));
++    return -VIRTIO_CRYPTO_ERR;
++}
 +
-+    iov_discard_front(&out_iov, &out_num, exp_len);
+ int cryptodev_backend_crypto_operation(
+                  CryptoDevBackend *backend,
+                  void *opaque,
+@@ -133,6 +148,12 @@ int cryptodev_backend_crypto_operation(
  
-     if (in_iov[in_num - 1].iov_len <
-             sizeof(struct virtio_crypto_inhdr)) {
-@@ -676,16 +692,27 @@ virtio_crypto_handle_request(VirtIOCryptoReq *request)
-     request->in_num = in_num;
-     request->in_iov = in_iov;
- 
--    opcode = ldl_le_p(&req.header.opcode);
--    session_id = ldq_le_p(&req.header.session_id);
-+    opcode = ldl_le_p(&generic_hdr->opcode);
-+    session_id = ldq_le_p(&generic_hdr->session_id);
- 
-     switch (opcode) {
-     case VIRTIO_CRYPTO_CIPHER_ENCRYPT:
-     case VIRTIO_CRYPTO_CIPHER_DECRYPT:
--        ret = virtio_crypto_handle_sym_req(vcrypto,
--                         &req.u.sym_req,
--                         &sym_op_info,
--                         out_iov, out_num);
-+        if (virtio_crypto_in_mux_mode(vdev)) {
-+            body = g_new0(struct virtio_crypto_sym_data_req, 1);
-+            exp_len = sizeof(struct virtio_crypto_sym_data_req);
-+            s = iov_to_buf(out_iov, out_num, 0, body, exp_len);
-+            if (unlikely(s != exp_len)) {
-+                g_free(body);
-+                return -1;
-+            }
-+            iov_discard_front(&out_iov, &out_num, exp_len);
-+        } else {
-+            body = &op.req.u.sym_req;
-+        }
+         return cryptodev_backend_sym_operation(backend,
+                          op_info, queue_index, errp);
++    } else if (req->flags == CRYPTODEV_BACKEND_ALG_SYM_STATELESS) {
++        CryptoDevBackendSymStatelessInfo *op_info;
++        op_info = req->u.sym_stateless_info;
 +
-+        ret = virtio_crypto_handle_sym_req(vcrypto, body,
-+                         &sym_op_info, out_iov, out_num);
-         /* Serious errors, need to reset virtio crypto device */
-         if (ret == -EFAULT) {
-             return -1;
++        return cryptodev_backend_sym_stateless_operation(backend,
++                         op_info, queue_index, errp);
+     } else {
+         error_setg(errp, "Unsupported cryptodev alg type: %" PRIu32 "",
+                    req->flags);
+diff --git a/include/hw/virtio/virtio-crypto.h b/include/hw/virtio/virtio-crypto.h
+index a00a0bf..465ad20 100755
+--- a/include/hw/virtio/virtio-crypto.h
++++ b/include/hw/virtio/virtio-crypto.h
+@@ -73,6 +73,7 @@ typedef struct VirtIOCryptoReq {
+     struct VirtIOCrypto *vcrypto;
+     union {
+         CryptoDevBackendSymOpInfo *sym_op_info;
++        CryptoDevBackendSymStatelessInfo *sym_stateless_info;
+     } u;
+ } VirtIOCryptoReq;
+ 
+diff --git a/include/sysemu/cryptodev.h b/include/sysemu/cryptodev.h
+index a9d0d1e..aa2fcd8 100755
+--- a/include/sysemu/cryptodev.h
++++ b/include/sysemu/cryptodev.h
+@@ -58,6 +58,7 @@ typedef struct CryptoDevBackend CryptoDevBackend;
+ 
+ enum CryptoDevBackendAlgType {
+     CRYPTODEV_BACKEND_ALG_SYM,
++    CRYPTODEV_BACKEND_ALG_SYM_STATELESS,
+     CRYPTODEV_BACKEND_ALG__MAX,
+ };
+ 
+@@ -146,6 +147,20 @@ typedef struct CryptoDevBackendSymOpInfo {
+     uint8_t data[0];
+ } CryptoDevBackendSymOpInfo;
+ 
++/**
++ * CryptoDevBackendSymStatelessInfo:
++ *
++ * @session_info: session information, see above
++ *  CryptoDevBackendSymSessionInfo
++ * @op_info: crypto operation information, see above
++ *  CryptoDevBackendSymOpInfo, @session_id is ignored
++ *
++ **/
++typedef struct CryptoDevBackendSymStatelessInfo {
++    CryptoDevBackendSymSessionInfo session_info;
++    CryptoDevBackendSymOpInfo op_info;
++} CryptoDevBackendSymStatelessInfo;
++
+ typedef struct CryptoDevBackendClass {
+     ObjectClass parent_class;
+ 
+@@ -161,6 +176,9 @@ typedef struct CryptoDevBackendClass {
+     int (*do_sym_op)(CryptoDevBackend *backend,
+                      CryptoDevBackendSymOpInfo *op_info,
+                      uint32_t queue_index, Error **errp);
++    int (*do_sym_stateless_op)(CryptoDevBackend *backend,
++                     CryptoDevBackendSymStatelessInfo *op_info,
++                     uint32_t queue_index, Error **errp);
+ } CryptoDevBackendClass;
+ 
+ 
 -- 
 1.8.3.1
 
