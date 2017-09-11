@@ -1,92 +1,169 @@
-Return-Path: virtio-dev-return-2530-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2527-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id C9E8E581815E
-	for <virtio-dev@lists.oasis-open.org>; Sun, 10 Sep 2017 18:14:42 -0700 (PDT)
+	by lists.oasis-open.org (Postfix) with ESMTP id 21DDF58190CD
+	for <virtio-dev@lists.oasis-open.org>; Sun, 10 Sep 2017 18:11:40 -0700 (PDT)
 From: "Longpeng(Mike)" <longpeng2@huawei.com>
-Date: Mon, 11 Sep 2017 09:10:33 +0800
-Message-ID: <1505092240-10864-2-git-send-email-longpeng2@huawei.com>
+Date: Mon, 11 Sep 2017 09:10:34 +0800
+Message-ID: <1505092240-10864-3-git-send-email-longpeng2@huawei.com>
 In-Reply-To: <1505092240-10864-1-git-send-email-longpeng2@huawei.com>
 References: <1505092240-10864-1-git-send-email-longpeng2@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-Subject: [virtio-dev] [RFC 1/8] virtio-crypto: add new definations for multiplexing mode
+Subject: [virtio-dev] [RFC 2/8] virtio-crypto: add session creation logic for mux mode
 To: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org
 Cc: luonengjun@huawei.com, mst@redhat.com, cohuck@redhat.com, stefanha@redhat.com, denglingli@chinamobile.com, Jani.Kokkonen@huawei.com, Ola.Liljedahl@arm.com, Varun.Sethi@freescale.com, xin.zeng@intel.com, brian.a.keating@intel.com, liang.j.ma@intel.com, john.griffin@intel.com, weidong.huang@huawei.com, mike.caraman@nxp.com, agraf@suse.de, jasowang@redhat.com, vincent.jardin@6wind.com, arei.gonglei@hotmail.com, pasic@linux.vnet.ibm.com, wangxinxin.wang@huawei.com, arei.gonglei@huawei.com, "Longpeng(Mike)" <longpeng2@huawei.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Adds the defination of the control/operation header for
-multiplexing mode.
+Adds the session creatation logic for MUX mode.
 
 Signed-off-by: Longpeng(Mike) <longpeng2@huawei.com>
 ---
- include/standard-headers/linux/virtio_crypto.h | 21 +++++++++++++++++++--
- 1 file changed, 19 insertions(+), 2 deletions(-)
+ hw/virtio/virtio-crypto.c | 79 +++++++++++++++++++++++++++++++++++++++--------
+ 1 file changed, 66 insertions(+), 13 deletions(-)
 
-diff --git a/include/standard-headers/linux/virtio_crypto.h b/include/standard-headers/linux/virtio_crypto.h
-index 5ff0b4e..987fb1e 100755
---- a/include/standard-headers/linux/virtio_crypto.h
-+++ b/include/standard-headers/linux/virtio_crypto.h
-@@ -38,6 +38,13 @@
- #define VIRTIO_CRYPTO_SERVICE_MAC    2
- #define VIRTIO_CRYPTO_SERVICE_AEAD   3
+diff --git a/hw/virtio/virtio-crypto.c b/hw/virtio/virtio-crypto.c
+index 19c82e0..78f75c2 100755
+--- a/hw/virtio/virtio-crypto.c
++++ b/hw/virtio/virtio-crypto.c
+@@ -33,6 +33,11 @@ static inline int virtio_crypto_vq2q(int queue_index)
+     return queue_index;
+ }
  
-+/* The features for virtio crypto device */
-+#define VIRTIO_CRYPTO_F_MUX_MODE	0
-+#define VIRTIO_CRYPTO_F_CIPHER_STATELESS_MODE	1
-+#define VIRTIO_CRYPTO_F_HASH_STATELESS_MODE	2
-+#define VIRTIO_CRYPTO_F_MAC_STATELESS_MODE	3
-+#define VIRTIO_CRYPTO_F_AEAD_STATELESS_MODE	4
++static inline bool virtio_crypto_in_mux_mode(VirtIODevice *vdev)
++{
++    return virtio_vdev_has_feature(vdev, VIRTIO_CRYPTO_F_MUX_MODE);
++}
 +
- #define VIRTIO_CRYPTO_OPCODE(service, op)   (((service) << 8) | (op))
- 
- struct virtio_crypto_ctrl_header {
-@@ -234,7 +241,7 @@ struct virtio_crypto_destroy_session_req {
- 	uint8_t padding[48];
- };
- 
--/* The request of the control virtqueue's packet */
-+/* The request of the control virtqueue's packet for non-MUX mode */
- struct virtio_crypto_op_ctrl_req {
- 	struct virtio_crypto_ctrl_header header;
- 
-@@ -253,6 +260,11 @@ struct virtio_crypto_op_ctrl_req {
- 	} u;
- };
- 
-+/* The request of the control virtqueue's packet for MUX mode */
-+struct virtio_crypto_op_ctrl_req_mux {
-+	struct virtio_crypto_ctrl_header header;
-+};
+ static int
+ virtio_crypto_cipher_session_helper(VirtIODevice *vdev,
+            CryptoDevBackendSymSessionInfo *info,
+@@ -210,18 +215,24 @@ virtio_crypto_handle_close_session(VirtIOCrypto *vcrypto,
+ static void virtio_crypto_handle_ctrl(VirtIODevice *vdev, VirtQueue *vq)
+ {
+     VirtIOCrypto *vcrypto = VIRTIO_CRYPTO(vdev);
+-    struct virtio_crypto_op_ctrl_req ctrl;
+     VirtQueueElement *elem;
++    struct virtio_crypto_session_input input;
++    struct virtio_crypto_ctrl_header *generic_hdr;
++    union {
++        struct virtio_crypto_op_ctrl_req ctrl;
++        struct virtio_crypto_op_ctrl_req_mux mux_ctrl;
++    } req;
 +
- struct virtio_crypto_op_header {
- #define VIRTIO_CRYPTO_CIPHER_ENCRYPT \
- 	VIRTIO_CRYPTO_OPCODE(VIRTIO_CRYPTO_SERVICE_CIPHER, 0x00)
-@@ -390,7 +402,7 @@ struct virtio_crypto_aead_data_req {
- 	uint8_t padding[32];
- };
+     struct iovec *in_iov;
+     struct iovec *out_iov;
+     unsigned in_num;
+     unsigned out_num;
+     uint32_t queue_id;
+     uint32_t opcode;
+-    struct virtio_crypto_session_input input;
+     int64_t session_id;
+     uint8_t status;
+-    size_t s;
++    size_t s, exp_len;
++    void *sess;
  
--/* The request of the data virtqueue's packet */
-+/* The request of the data virtqueue's packet for non-MUX mode */
- struct virtio_crypto_op_data_req {
- 	struct virtio_crypto_op_header header;
- 
-@@ -403,6 +415,11 @@ struct virtio_crypto_op_data_req {
- 	} u;
- };
- 
-+/* The request of the data virtqueue's packet for MUX mode */
-+struct virtio_crypto_op_data_req_mux {
-+	struct virtio_crypto_op_header header;
-+};
+     for (;;) {
+         elem = virtqueue_pop(vq, sizeof(VirtQueueElement));
+@@ -239,25 +250,49 @@ static void virtio_crypto_handle_ctrl(VirtIODevice *vdev, VirtQueue *vq)
+         out_iov = elem->out_sg;
+         in_num = elem->in_num;
+         in_iov = elem->in_sg;
+-        if (unlikely(iov_to_buf(out_iov, out_num, 0, &ctrl, sizeof(ctrl))
+-                    != sizeof(ctrl))) {
 +
- #define VIRTIO_CRYPTO_OK        0
- #define VIRTIO_CRYPTO_ERR       1
- #define VIRTIO_CRYPTO_BADMSG    2
++        if (virtio_crypto_in_mux_mode(vdev)) {
++            exp_len = sizeof(req.mux_ctrl);
++            generic_hdr = (struct virtio_crypto_ctrl_header *)(&req.mux_ctrl);
++        } else {
++            exp_len = sizeof(req.ctrl);
++            generic_hdr = (struct virtio_crypto_ctrl_header *)(&req.ctrl);
++        }
++
++        s = iov_to_buf(out_iov, out_num, 0, generic_hdr, exp_len);
++        if (unlikely(s != exp_len)) {
+             virtio_error(vdev, "virtio-crypto request ctrl_hdr too short");
+             virtqueue_detach_element(vq, elem, 0);
+             g_free(elem);
+             break;
+         }
+-        iov_discard_front(&out_iov, &out_num, sizeof(ctrl));
+ 
+-        opcode = ldl_le_p(&ctrl.header.opcode);
+-        queue_id = ldl_le_p(&ctrl.header.queue_id);
++        iov_discard_front(&out_iov, &out_num, exp_len);
++
++        opcode = ldl_le_p(&generic_hdr->opcode);
++        queue_id = ldl_le_p(&generic_hdr->queue_id);
+ 
+         switch (opcode) {
+         case VIRTIO_CRYPTO_CIPHER_CREATE_SESSION:
++            if (virtio_crypto_in_mux_mode(vdev)) {
++                sess = g_new0(struct virtio_crypto_sym_create_session_req, 1);
++                exp_len = sizeof(struct virtio_crypto_sym_create_session_req);
++                s = iov_to_buf(out_iov, out_num, 0, sess, exp_len);
++                if (unlikely(s != exp_len)) {
++                    virtio_error(vdev, "virtio-crypto request additional "
++                                 "parameters too short");
++                    virtqueue_detach_element(vq, elem, 0);
++                    break;
++                }
++                iov_discard_front(&out_iov, &out_num, exp_len);
++            } else {
++                sess = &req.ctrl.u.sym_create_session;
++            }
++
+             memset(&input, 0, sizeof(input));
+-            session_id = virtio_crypto_create_sym_session(vcrypto,
+-                             &ctrl.u.sym_create_session,
+-                             queue_id, opcode,
+-                             out_iov, out_num);
++
++            session_id = virtio_crypto_create_sym_session(vcrypto, sess,
++                                    queue_id, opcode, out_iov, out_num);
+             /* Serious errors, need to reset virtio crypto device */
+             if (session_id == -EFAULT) {
+                 virtqueue_detach_element(vq, elem, 0);
+@@ -285,8 +320,23 @@ static void virtio_crypto_handle_ctrl(VirtIODevice *vdev, VirtQueue *vq)
+         case VIRTIO_CRYPTO_HASH_DESTROY_SESSION:
+         case VIRTIO_CRYPTO_MAC_DESTROY_SESSION:
+         case VIRTIO_CRYPTO_AEAD_DESTROY_SESSION:
++            if (virtio_crypto_in_mux_mode(vdev)) {
++                sess = g_new0(struct virtio_crypto_destroy_session_req, 1);
++                exp_len = sizeof(struct virtio_crypto_destroy_session_req);
++                s = iov_to_buf(out_iov, out_num, 0, sess, exp_len);
++                if (unlikely(s != exp_len)) {
++                    virtio_error(vdev, "virtio-crypto request additional "
++                                 "parameters too short");
++                    virtqueue_detach_element(vq, elem, 0);
++                    break;
++                }
++                iov_discard_front(&out_iov, &out_num, exp_len);
++            } else {
++                sess = &req.ctrl.u.destroy_session;
++            }
++
+             status = virtio_crypto_handle_close_session(vcrypto,
+-                   &ctrl.u.destroy_session, queue_id);
++                                                sess, queue_id);
+             /* The status only occupy one byte, we can directly use it */
+             s = iov_from_buf(in_iov, in_num, 0, &status, sizeof(status));
+             if (unlikely(s != sizeof(status))) {
+@@ -316,6 +366,9 @@ static void virtio_crypto_handle_ctrl(VirtIODevice *vdev, VirtQueue *vq)
+             break;
+         } /* end switch case */
+ 
++        if (virtio_crypto_in_mux_mode(vdev)) {
++            g_free(sess);
++        }
+         g_free(elem);
+     } /* end for loop */
+ }
 -- 
 1.8.3.1
 
