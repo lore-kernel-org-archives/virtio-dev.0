@@ -1,169 +1,94 @@
-Return-Path: virtio-dev-return-2562-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2533-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id A6D905819266
-	for <virtio-dev@lists.oasis-open.org>; Thu, 21 Sep 2017 03:25:39 -0700 (PDT)
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-References: <20170804181927.12148-1-jean-philippe.brucker@arm.com>
- <072f5a14-baae-57a9-9c5b-b93163c67075@redhat.com>
- <4543e6dc-0f36-11ad-784a-d7c07399d10f@arm.com>
- <6d9f91df-ebb0-2ae0-a098-60a6bcd0e09b@redhat.com>
-Message-ID: <edb3232f-ed46-9ba5-27a8-281b2f9a5f0c@arm.com>
-Date: Thu, 21 Sep 2017 11:29:37 +0100
+	by lists.oasis-open.org (Postfix) with ESMTP id E034358190FF
+	for <virtio-dev@lists.oasis-open.org>; Tue, 12 Sep 2017 06:20:55 -0700 (PDT)
+Message-ID: <59B7DFED.6060502@intel.com>
+Date: Tue, 12 Sep 2017 21:23:57 +0800
+From: Wei Wang <wei.w.wang@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <6d9f91df-ebb0-2ae0-a098-60a6bcd0e09b@redhat.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+References: <1503914913-28893-1-git-send-email-wei.w.wang@intel.com> <1503914913-28893-2-git-send-email-wei.w.wang@intel.com> <20170911125455.GA32538@bombadil.infradead.org>
+In-Reply-To: <20170911125455.GA32538@bombadil.infradead.org>
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: [virtio-dev] Re: [RFC] virtio-iommu version 0.4
-To: Auger Eric <eric.auger@redhat.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
-Cc: Will Deacon <Will.Deacon@arm.com>, Robin Murphy <Robin.Murphy@arm.com>, Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>, "mst@redhat.com" <mst@redhat.com>, "jasowang@redhat.com" <jasowang@redhat.com>, Marc Zyngier <Marc.Zyngier@arm.com>, "eric.auger.pro@gmail.com" <eric.auger.pro@gmail.com>, "bharat.bhushan@nxp.com" <bharat.bhushan@nxp.com>, "peterx@redhat.com" <peterx@redhat.com>, "kevin.tian@intel.com" <kevin.tian@intel.com>
+Subject: [virtio-dev] Re: [PATCH v15 1/5] lib/xbitmap: Introduce xbitmap
+To: Matthew Wilcox <willy@infradead.org>
+Cc: virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, qemu-devel@nongnu.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, linux-mm@kvack.org, mst@redhat.com, mhocko@kernel.org, akpm@linux-foundation.org, mawilcox@microsoft.com, david@redhat.com, cornelia.huck@de.ibm.com, mgorman@techsingularity.net, aarcange@redhat.com, amit.shah@redhat.com, pbonzini@redhat.com, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu@aliyun.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 20/09/17 10:37, Auger Eric wrote:
-> Hi Jean,
-> On 19/09/2017 12:47, Jean-Philippe Brucker wrote:
->> Hi Eric,
+On 09/11/2017 08:54 PM, Matthew Wilcox wrote:
+> On Mon, Aug 28, 2017 at 06:08:29PM +0800, Wei Wang wrote:
+>> From: Matthew Wilcox <mawilcox@microsoft.com>
 >>
->> On 12/09/17 18:13, Auger Eric wrote:
->>> 2.6.7
->>> - As I am currently integrating v0.4 in QEMU here are some other comments:
->>> At the moment struct virtio_iommu_req_probe flags is missing in your
->>> header. As such I understood the ACK protocol was not implemented by the
->>> driver in your branch.
+>> The eXtensible Bitmap is a sparse bitmap representation which is
+>> efficient for set bits which tend to cluster.  It supports up to
+>> 'unsigned long' worth of bits, and this commit adds the bare bones --
+>> xb_set_bit(), xb_clear_bit() and xb_test_bit().
 >>
->> Uh indeed. And yet I could swear I've written that code... somewhere. I
->> will add it to the batch of v0.5 changes, it shouldn't be too invasive.
->>
->>> - VIRTIO_IOMMU_PROBE_PROPERTY_TYPE_MASK is VIRTIO_IOMMU_T_MASK in your
->>> header too.
->>
->> Yes, keeping VIRTIO_IOMMU_PROBE_PROPERTY_TYPE_MASK is probably best
->> (though it is a mouthful).
->>
->>> 2.6.8.2:
->>> - I am really confused about what the device should report as resv
->>> regions depending on the PE nature (VFIO or not VFIO)
->>>
->>> In other iommu drivers, the resv regions are populated by the iommu
->>> driver through its get_resv_regions callback. They are usually composed
->>> of an iommu specific MSI region (mapped or bypassed) and non IOMMU
->>> specific (device specific) reserved regions:
->>> iommu_dma_get_resv_regions(). In the case of virtio-iommu driver, those
->>> are the guest reserved regions.
->>>
->>> First in the current virtio-iommu driver I don't see the
->>> iommu_dma_get_resv_regions call. Do you agree that the virtio-iommu
->>> driver should compute the non IOMMU specific MSI regions ie. this is
->>> not the responsability of the virtio-iommu device.
->>
->> For SW_MSI, certainly. The driver allocates a fixed IOVA region for
->> mapping the MSI doorbell. But the driver has to know whether the doorbell
->> region is translated or bypassed.
-> Sorry I was talking about *non* IOMMU specific MSI regions, typically
-> the regions corresponding to guest PCI host bridge windows. This is
-> normally computed in the iommu driver and I didn't that that in the
-> existing virtio-iommu driver.
+>> Signed-off-by: Matthew Wilcox <mawilcox@microsoft.com>
+>> Signed-off-by: Wei Wang <wei.w.wang@intel.com>
+>> Cc: Andrew Morton <akpm@linux-foundation.org>
+>> Cc: Michal Hocko <mhocko@kernel.org>
+>> Cc: Michael S. Tsirkin <mst@redhat.com>
+> This is quite naughty of you.  You've modified the xbitmap implementation
+> without any indication in the changelog that you did so.
 
-Ah right, I don't think the virtio-iommu device has to report the windows
-of the emulated host bridge. RESV is useful for things that are not
-obvious to the guest, for instance the physical PCI bridges that are
-hidden from the guest.
+This was changed in the previous version and included in that
+v13->v14 ChangeLog: https://lkml.org/lkml/2017/8/16/923
 
-It's an interesting point though, I can imagine non-Linux guest that are
-not as well-equipped with dealing with things like PCI bridge windows, and
-could benefit from the device reporting them.
 
-In the end it is up to the device implementation to decide what regions to
-report, and make sure that the guest is aware of the various traps in IOVA
-space. For things like emulated bridges, the device can expect the guest
-to find out about them. For physical bridges/SW_MSI of the host, it should
-report the region and make sure that the guest doesn't map them. I'll add
-a few more examples to the Implementation Notes, but I suspect reading
-your Qemu source code will always be more helpful to people.
+> I don't
+> think the modifications you made are an improvement, but without any
+> argumentation from you I don't know why you think they're an improvement.
 
->>> Then why is it more the job of the device to return the guest iommu
->>> specific region rather than the driver itself?
->>
->> The MSI region is architectural on x86 IOMMUs, but
->> implementation-defined on virtio-iommu. It depends which platform the host
->> is emulating. In Linux, x86 IOMMU drivers register the bypass region
->> because there always is an IOAPIC on the other end, with a fixed MSI
->> address. But virtio-iommu may be either behind a GIC, an APIC or some
->> other IRQ chip.
->>
->> The driver *could* go over all the irqchips/platforms it knows and try to
->> guess if there is a fixed doorbell or if it needs to reserve an IOVA for
->> them, but it would look horrible. I much prefer having a well-defined way
->> of doing this, so a description from the device.
-> 
-> This means I must have target specific code in the virtio-iommu device
-> which is unusual, right? I was initially thinking you could handle that
-> on the driver side using a config set for ARM|ARM64. But on the other
-> hand you should communicate the info to the device ...
+Probably it shouldn't be modified when the discussion is incomplete:
+https://lkml.org/lkml/2017/8/10/36
+Sorry about that. Hope we could get more feedback from you on the
+changes later.
 
-But the device has to know that it has a region that DMA transactions
-bypass, right? If you want to implement MSI bypass, then you already have
-to add a special case to your device code, and reporting it in a probe
-shouldn't require a lot more work. For example, amdvi_translate() has a
-special case for amdvi_is_interrupt_addr().
+If you want, we can continue this part from the the v13 patch, which might
+be closer to the implementation that you like: 
+https://lkml.org/lkml/2017/8/3/60
 
->>> Then I understand this is the responsability of the virtio-iommu device
->>> to gather information about the host resv regions in case of VFIO EP.
->>> Typically the host PCIe host bridge windows cannot be used for IOVA.
->>> Also the host MSI reserved IOVA window cannot be used. Do you agree.
->>
->> Yes, all regions reported in sysfs reserved_regions in the host would be
->> reported as RESV_T_RESERVED by virtio-iommu.
-> So to summarize if the probe request is sent to an emulated device, we
-> should return the target specific MSI window. We can't and don't return
-> the non IOMMU specific guest reserved windows.
-> 
-> For a VFIO device, we would return all reserved regions of the group the
-> device belongs to. Is that correct?
+>> diff --git a/lib/xbitmap.c b/lib/xbitmap.c
+>> new file mode 100644
+>> index 0000000..8c55296
+>> --- /dev/null
+>> +++ b/lib/xbitmap.c
+>> @@ -0,0 +1,176 @@
+>> +#include <linux/slab.h>
+>> +#include <linux/xbitmap.h>
+>> +
+>> +/*
+>> + * The xbitmap implementation supports up to ULONG_MAX bits, and it is
+>> + * implemented based on ida bitmaps. So, given an unsigned long index,
+>> + * the high order XB_INDEX_BITS bits of the index is used to find the
+>> + * corresponding item (i.e. ida bitmap) from the radix tree, and the low
+>> + * order (i.e. ilog2(IDA_BITMAP_BITS)) bits of the index are indexed into
+>> + * the ida bitmap to find the bit.
+>> + */
+>> +#define XB_INDEX_BITS		(BITS_PER_LONG - ilog2(IDA_BITMAP_BITS))
+>> +#define XB_MAX_PATH		(DIV_ROUND_UP(XB_INDEX_BITS, \
+>> +					      RADIX_TREE_MAP_SHIFT))
+>> +#define XB_PRELOAD_SIZE		(XB_MAX_PATH * 2 - 1)
+> I don't understand why you moved the xb_preload code here from the
+> radix tree.  I want all the code which touches the preload implementation
+> together in one place, which is the radix tree.
 
-Yes
+Based on the previous comments (put all the code to lib/xbitmap.c) and your
+comment here, I will move xb_preload() and the above Macro to radix-tree.c,
+while leaving the rest in xbitmap.c.
 
->>
->>> I really think the spec should clarify what exact resv regions the
->>> device should return in case of VFIO device and non VFIO device.
->>
->> Agreed. I will add something about RESV_T_RESERVED with the PCI bridge
->> example in Implementation Notes. Do you think the MSI examples at the end
->> need improvement as well? I can try to explain that RESV_MSI regions in
->> virtio-iommu are only those of the emulated platform, not the HW or SW MSI
->> regions from the host.
-> 
-> I think I would expect an explanation detailing returned reserved
-> regions for pure emulated devices and HW/VFIO devices.
-> 
-> Another unrelated remark:
-> - you should add a permission violation error.
+Would this be something you expected? Or would you like to move all back
+to radix-tree.c like that in v13?
 
-Do you mean reporting errors from device to driver? It's on the top of my
-list, I might add it to v0.5 (without recoverable/PRI mode at the moment)
 
-> - wrt the probe request ACK protocol, this looks pretty heavy as both
-> the driver and the device need to parse the req_probe buffer. The device
-> need to fill in the output buffer and then read the same info on the
-> input buffer. Couldn't we imagine something simpler?
-
-I can't, but I can get rid of the ack protocol and leave space if someone
-needs to re-introduce it. I quite like it but don't think it'll be useful
-to the few features I'm planning to add. A future re-introduction will
-simply have to add a global feature bit VIRTIO_IOMMU_F_PROBE_ACK.
-
-Note that the device isn't required to implement the ACK phase, we simply
-give it a chance to verify that the driver understood its information. It
-could simply check if the ACK bit is present and ignore the request in
-this case.
-
-Thanks,
-Jean
+Best,
+Wei
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
