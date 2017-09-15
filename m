@@ -1,564 +1,430 @@
-Return-Path: virtio-dev-return-2569-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2544-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 83D8D5818DE9
-	for <virtio-dev@lists.oasis-open.org>; Tue, 26 Sep 2017 06:56:01 -0700 (PDT)
-Message-ID: <59CA5C3F.7080708@huawei.com>
-Date: Tue, 26 Sep 2017 21:55:11 +0800
-From: "Longpeng (Mike)" <longpeng2@huawei.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 8323D581921E
+	for <virtio-dev@lists.oasis-open.org>; Fri, 15 Sep 2017 09:00:18 -0700 (PDT)
+References: <1505092362-10544-1-git-send-email-longpeng2@huawei.com>
+ <1505092362-10544-2-git-send-email-longpeng2@huawei.com>
+From: Halil Pasic <pasic@linux.vnet.ibm.com>
+Date: Fri, 15 Sep 2017 17:59:57 +0200
 MIME-Version: 1.0
-References: <1505092362-10544-1-git-send-email-longpeng2@huawei.com> <1505092362-10544-2-git-send-email-longpeng2@huawei.com> <bc4406dd-dd7d-da29-5658-5d66a5909098@linux.vnet.ibm.com>
-In-Reply-To: <bc4406dd-dd7d-da29-5658-5d66a5909098@linux.vnet.ibm.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <1505092362-10544-2-git-send-email-longpeng2@huawei.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+Message-Id: <67d5549e-84de-ee85-00a7-37edc52234c4@linux.vnet.ibm.com>
 Subject: [virtio-dev] Re: [Qemu-devel] [PATCH REPOST v19 1/2] virtio-crypto: Add virtio
  crypto device specification
-To: Halil Pasic <pasic@linux.vnet.ibm.com>
-Cc: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, luonengjun@huawei.com, mst@redhat.com, cohuck@redhat.com, stefanha@redhat.com, denglingli@chinamobile.com, Jani.Kokkonen@huawei.com, Ola.Liljedahl@arm.com, Varun.Sethi@freescale.com, xin.zeng@intel.com, brian.a.keating@intel.com, liang.j.ma@intel.com, john.griffin@intel.com, weidong.huang@huawei.com, mike.caraman@nxp.com, agraf@suse.de, jasowang@redhat.com, vincent.jardin@6wind.com, arei.gonglei@hotmail.com, wangxinxin.wang@huawei.com, arei.gonglei@huawei.com
+To: "Longpeng(Mike)" <longpeng2@huawei.com>, qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org
+Cc: weidong.huang@huawei.com, mst@redhat.com, jasowang@redhat.com, john.griffin@intel.com, Varun.Sethi@freescale.com, denglingli@chinamobile.com, arei.gonglei@hotmail.com, agraf@suse.de, arei.gonglei@huawei.com, vincent.jardin@6wind.com, Ola.Liljedahl@arm.com, luonengjun@huawei.com, xin.zeng@intel.com, liang.j.ma@intel.com, stefanha@redhat.com, Jani.Kokkonen@huawei.com, brian.a.keating@intel.com, wangxinxin.wang@huawei.com, cohuck@redhat.com, mike.caraman@nxp.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Hi Halil,
 
-On 2017/9/15 22:39, Halil Pasic wrote:
 
+On 09/11/2017 03:12 AM, Longpeng(Mike) wrote:
+> From: Gonglei <arei.gonglei@huawei.com>
 > 
+> The virtio crypto device is a virtual crypto device (ie. hardware
+> crypto accelerator card). Currently, the virtio crypto device provides
+> the following crypto services: CIPHER, MAC, HASH, and AEAD.
 > 
-> On 09/11/2017 03:12 AM, Longpeng(Mike) wrote:
->> From: Gonglei <arei.gonglei@huawei.com>
->>
->> The virtio crypto device is a virtual crypto device (ie. hardware
->> crypto accelerator card). Currently, the virtio crypto device provides
->> the following crypto services: CIPHER, MAC, HASH, and AEAD.
->>
->> In this patch, CIPHER, MAC, HASH, AEAD services are introduced.
->>
->> VIRTIO-153
->>
->> Signed-off-by: Gonglei <arei.gonglei@huawei.com>
->> Signed-off-by: Longpeng(Mike) <longpeng2@huawei.com>
->> ---
->>  acknowledgements.tex |    3 +
->>  content.tex          |    2 +
->>  virtio-crypto.tex    | 1479 ++++++++++++++++++++++++++++++++++++++++++++++++++
->>  3 files changed, 1484 insertions(+)
->>  create mode 100644 virtio-crypto.tex
->>
->> diff --git a/acknowledgements.tex b/acknowledgements.tex
->> index 6c86d12..c4b6844 100644
->> --- a/acknowledgements.tex
->> +++ b/acknowledgements.tex
->> @@ -26,6 +26,8 @@ Sasha Levin,	Oracle	\newline
->>  Sergey Tverdyshev,	Thales e-Security	\newline
->>  Stefan Hajnoczi,	Red Hat	\newline
->>  Tom Lyon,	Samya Systems, Inc.	\newline
->> +Lei Gong,	Huawei	\newline
->> +Peng Long,	Huawei	\newline
->>  \end{oasistitlesection}
->>
->>  The following non-members have provided valuable feedback on this
->> @@ -43,4 +45,5 @@ Laura Novich, Red Hat	\newline
->>  Patrick Durusau,	Technical Advisory Board, OASIS	\newline
->>  Thomas Huth,	IBM	\newline
->>  Yan Vugenfirer, Red Hat / Daynix	\newline
->> +Halil Pasic,	IBM	\newline
->>  \end{oasistitlesection}
->> diff --git a/content.tex b/content.tex
->> index d989d98..7710f8c 100644
->> --- a/content.tex
->> +++ b/content.tex
->> @@ -5641,6 +5641,8 @@ descriptor for the \field{sense_len}, \field{residual},
->>  \field{status_qualifier}, \field{status}, \field{response} and
->>  \field{sense} fields.
->>
->> +\input{virtio-crypto.tex}
->> +
->>  \chapter{Reserved Feature Bits}\label{sec:Reserved Feature Bits}
->>
->>  Currently there are three device-independent feature bits defined:
->> diff --git a/virtio-crypto.tex b/virtio-crypto.tex
->> new file mode 100644
->> index 0000000..1e75cbc
->> --- /dev/null
->> +++ b/virtio-crypto.tex
->> @@ -0,0 +1,1479 @@
->> +\section{Crypto Device}\label{sec:Device Types / Crypto Device}
->> +
->> +The virtio crypto device is a virtual cryptography device as well as a
->> +virtual cryptographic accelerator. The virtio crypto device provides the
->> +following crypto services: CIPHER, MAC, HASH, and AEAD. Virtio crypto
->> +devices have a single control queue and at least one data queue. Crypto
->> +operation requests are placed into a data queue, and serviced by the
->> +device. Some crypto operation requests are only valid in the context of a
->> +session. The role of the control queue is facilitating control operation
->> +requests. Sessions management is realized with control operation
->> +requests.
->> +
->> +\subsection{Device ID}\label{sec:Device Types / Crypto Device / Device ID}
->> +
->> +20
->> +
->> +\subsection{Virtqueues}\label{sec:Device Types / Crypto Device / Virtqueues}
->> +
->> +\begin{description}
->> +\item[0] dataq1
->> +\item[\ldots]
->> +\item[N-1] dataqN
->> +\item[N] controlq
->> +\end{description}
->> +
->> +N is set by \field{max_dataqueues}.
->> +
->> +\subsection{Feature bits}\label{sec:Device Types / Crypto Device / Feature bits}
->> +
->> +\begin{description}
->> +\item VIRTIO_CRYPTO_F_MUX_MODE (0) multiplexing mode is available.
->> +\item VIRTIO_CRYPTO_F_CIPHER_STATELESS_MODE (1) stateless mode is available for CIPHER service.
->> +\item VIRTIO_CRYPTO_F_HASH_STATELESS_MODE (2) stateless mode is available for HASH service.
->> +\item VIRTIO_CRYPTO_F_MAC_STATELESS_MODE (3) stateless mode is available for MAC service.
->> +\item VIRTIO_CRYPTO_F_AEAD_STATELESS_MODE (4) stateless mode is available for AEAD service.
->> +\end{description}
->> +
->> +\subsubsection{Feature bit requirements}\label{sec:Device Types / Crypto Device / Feature bits}
->> +
->> +Some crypto feature bits require other crypto feature bits
->> +(see \ref{drivernormative:Basic Facilities of a Virtio Device / Feature Bits}):
->> +
->> +\begin{description}
->> +\item[VIRTIO_CRYPTO_F_CIPHER_STATELESS_MODE] Requires VIRTIO_CRYPTO_F_MUX_MODE.
->> +\item[VIRTIO_CRYPTO_F_HASH_STATELESS_MODE] Requires VIRTIO_CRYPTO_F_MUX_MODE.
->> +\item[VIRTIO_CRYPTO_F_MAC_STATELESS_MODE] Requires VIRTIO_CRYPTO_F_MUX_MODE.
->> +\item[VIRTIO_CRYPTO_F_AEAD_STATELESS_MODE] Requires VIRTIO_CRYPTO_F_MUX_MODE.
->> +\end{description}
->> +
->> +\subsection{Supported crypto services}\label{sec:Device Types / Crypto Device / Supported crypto services}
->> +
->> +The following crypto services are defined:
->> +
->> +\begin{lstlisting}
->> +/* CIPHER service */
->> +#define VIRTIO_CRYPTO_SERVICE_CIPHER 0
->> +/* HASH service */
->> +#define VIRTIO_CRYPTO_SERVICE_HASH   1
->> +/* MAC (Message Authentication Codes) service */
->> +#define VIRTIO_CRYPTO_SERVICE_MAC    2
->> +/* AEAD (Authenticated Encryption with Associated Data) service */
->> +#define VIRTIO_CRYPTO_SERVICE_AEAD   3
->> +\end{lstlisting}
->> +
->> +The above constants designate bits used to indicate the which of crypto services are
->> +offered by the device as described in, see \ref{sec:Device Types / Crypto Device / Device configuration layout}.
->> +
->> +\subsubsection{CIPHER services}\label{sec:Device Types / Crypto Device / Supported crypto services / CIPHER services}
->> +
->> +The following CIPHER algorithms are defined:
->> +
->> +\begin{lstlisting}
->> +#define VIRTIO_CRYPTO_NO_CIPHER                 0
->> +#define VIRTIO_CRYPTO_CIPHER_ARC4               1
->> +#define VIRTIO_CRYPTO_CIPHER_AES_ECB            2
->> +#define VIRTIO_CRYPTO_CIPHER_AES_CBC            3
->> +#define VIRTIO_CRYPTO_CIPHER_AES_CTR            4
->> +#define VIRTIO_CRYPTO_CIPHER_DES_ECB            5
->> +#define VIRTIO_CRYPTO_CIPHER_DES_CBC            6
->> +#define VIRTIO_CRYPTO_CIPHER_3DES_ECB           7
->> +#define VIRTIO_CRYPTO_CIPHER_3DES_CBC           8
->> +#define VIRTIO_CRYPTO_CIPHER_3DES_CTR           9
->> +#define VIRTIO_CRYPTO_CIPHER_KASUMI_F8          10
->> +#define VIRTIO_CRYPTO_CIPHER_SNOW3G_UEA2        11
->> +#define VIRTIO_CRYPTO_CIPHER_AES_F8             12
->> +#define VIRTIO_CRYPTO_CIPHER_AES_XTS            13
->> +#define VIRTIO_CRYPTO_CIPHER_ZUC_EEA3           14
->> +\end{lstlisting}
->> +
->> +The above constants have two usages:
->> +\begin{enumerate}
->> +\item As bit numbers, used to tell the driver which CIPHER algorithms
->> +are supported by the device, see \ref{sec:Device Types / Crypto Device / Device configuration layout}.
->> +\item As values, used to tell the device which CIPHER algorithm
->> +a crypto request from the driver requires, see \ref{sec:Device Types / Crypto Device / Device Operation / Control Virtqueue / Session operation}.
->> +\end{enumerate}
->> +
->> +\subsubsection{HASH services}\label{sec:Device Types / Crypto Device / Supported crypto services / HASH services}
->> +
->> +The following HASH algorithms are defined:
->> +
->> +\begin{lstlisting}
->> +#define VIRTIO_CRYPTO_NO_HASH            0
->> +#define VIRTIO_CRYPTO_HASH_MD5           1
->> +#define VIRTIO_CRYPTO_HASH_SHA1          2
->> +#define VIRTIO_CRYPTO_HASH_SHA_224       3
->> +#define VIRTIO_CRYPTO_HASH_SHA_256       4
->> +#define VIRTIO_CRYPTO_HASH_SHA_384       5
->> +#define VIRTIO_CRYPTO_HASH_SHA_512       6
->> +#define VIRTIO_CRYPTO_HASH_SHA3_224      7
->> +#define VIRTIO_CRYPTO_HASH_SHA3_256      8
->> +#define VIRTIO_CRYPTO_HASH_SHA3_384      9
->> +#define VIRTIO_CRYPTO_HASH_SHA3_512      10
->> +#define VIRTIO_CRYPTO_HASH_SHA3_SHAKE128      11
->> +#define VIRTIO_CRYPTO_HASH_SHA3_SHAKE256      12
->> +\end{lstlisting}
->> +
->> +The above constants have two usages:
->> +\begin{enumerate}
->> +\item As bit numbers, used to tell the driver which HASH algorithms
->> +are supported by the device, see \ref{sec:Device Types / Crypto Device / Device configuration layout}.
->> +\item As values, used to tell the device which HASH algorithm
->> +a crypto request from the driver requires, see \ref{sec:Device Types / Crypto Device / Device Operation / Control Virtqueue / Session operation}.
->> +\end{enumerate}
->> +
->> +\subsubsection{MAC services}\label{sec:Device Types / Crypto Device / Supported crypto services / MAC services}
->> +
->> +The following MAC algorithms are defined:
->> +
->> +\begin{lstlisting}
->> +#define VIRTIO_CRYPTO_NO_MAC                       0
->> +#define VIRTIO_CRYPTO_MAC_HMAC_MD5                 1
->> +#define VIRTIO_CRYPTO_MAC_HMAC_SHA1                2
->> +#define VIRTIO_CRYPTO_MAC_HMAC_SHA_224             3
->> +#define VIRTIO_CRYPTO_MAC_HMAC_SHA_256             4
->> +#define VIRTIO_CRYPTO_MAC_HMAC_SHA_384             5
->> +#define VIRTIO_CRYPTO_MAC_HMAC_SHA_512             6
->> +#define VIRTIO_CRYPTO_MAC_CMAC_3DES                25
->> +#define VIRTIO_CRYPTO_MAC_CMAC_AES                 26
->> +#define VIRTIO_CRYPTO_MAC_KASUMI_F9                27
->> +#define VIRTIO_CRYPTO_MAC_SNOW3G_UIA2              28
->> +#define VIRTIO_CRYPTO_MAC_GMAC_AES                 41
->> +#define VIRTIO_CRYPTO_MAC_GMAC_TWOFISH             42
->> +#define VIRTIO_CRYPTO_MAC_CBCMAC_AES               49
->> +#define VIRTIO_CRYPTO_MAC_CBCMAC_KASUMI_F9         50
->> +#define VIRTIO_CRYPTO_MAC_XCBC_AES                 53
->> +#define VIRTIO_CRYPTO_MAC_ZUC_EIA3                 54
->> +\end{lstlisting}
->> +
->> +The above constants have two usages:
->> +\begin{enumerate}
->> +\item As bit numbers, used to tell the driver which MAC algorithms
->> +are supported by the device, see \ref{sec:Device Types / Crypto Device / Device configuration layout}.
->> +\item As values, used to tell the device which MAC algorithm
->> +a crypto request from the driver requires, see \ref{sec:Device Types / Crypto Device / Device Operation / Control Virtqueue / Session operation}.
+> In this patch, CIPHER, MAC, HASH, AEAD services are introduced.
 > 
-> Cosmetic comment: instead of 'used to tell the device which MAC algorithm
-> a crypto request form the driver requires' I would prefer  'used to designate
-> the algorithm in (MAC type) crypto operation requests'.
+> VIRTIO-153
 > 
+> Signed-off-by: Gonglei <arei.gonglei@huawei.com>
+> Signed-off-by: Longpeng(Mike) <longpeng2@huawei.com>
+> ---
+[..]
 
 
-OK, yours is more decent. :)
+> +\subsubsection{Control Virtqueue}\label{sec:Device Types / Crypto Device / Device Operation / Control Virtqueue}
+> +
+> +The driver uses the control virtqueue to send control commands to the
+> +device, such as session operations (See \ref{sec:Device Types / Crypto Device / Device Operation / Control Virtqueue / Session operation}).
+> +
+> +The header for controlq is of the following form:
+> +\begin{lstlisting}
+> +#define VIRTIO_CRYPTO_OPCODE(service, op)   (((service) << 8) | (op))
+> +
+> +struct virtio_crypto_ctrl_header {
+> +#define VIRTIO_CRYPTO_CIPHER_CREATE_SESSION \
+> +       VIRTIO_CRYPTO_OPCODE(VIRTIO_CRYPTO_SERVICE_CIPHER, 0x02)
+> +#define VIRTIO_CRYPTO_CIPHER_DESTROY_SESSION \
+> +       VIRTIO_CRYPTO_OPCODE(VIRTIO_CRYPTO_SERVICE_CIPHER, 0x03)
+> +#define VIRTIO_CRYPTO_HASH_CREATE_SESSION \
+> +       VIRTIO_CRYPTO_OPCODE(VIRTIO_CRYPTO_SERVICE_HASH, 0x02)
+> +#define VIRTIO_CRYPTO_HASH_DESTROY_SESSION \
+> +       VIRTIO_CRYPTO_OPCODE(VIRTIO_CRYPTO_SERVICE_HASH, 0x03)
+> +#define VIRTIO_CRYPTO_MAC_CREATE_SESSION \
+> +       VIRTIO_CRYPTO_OPCODE(VIRTIO_CRYPTO_SERVICE_MAC, 0x02)
+> +#define VIRTIO_CRYPTO_MAC_DESTROY_SESSION \
+> +       VIRTIO_CRYPTO_OPCODE(VIRTIO_CRYPTO_SERVICE_MAC, 0x03)
+> +#define VIRTIO_CRYPTO_AEAD_CREATE_SESSION \
+> +       VIRTIO_CRYPTO_OPCODE(VIRTIO_CRYPTO_SERVICE_AEAD, 0x02)
+> +#define VIRTIO_CRYPTO_AEAD_DESTROY_SESSION \
+> +       VIRTIO_CRYPTO_OPCODE(VIRTIO_CRYPTO_SERVICE_AEAD, 0x03)
+> +    le32 opcode;
+> +    /* algo should be service-specific algorithms */
+> +    le32 algo;
+> +    le32 flag;
+> +    /* data virtqueue id */
+> +    le32 queue_id;
+> +};
+> +\end{lstlisting}
+> +
+> +The format of the controlq request depends on the VIRTIO_CRYPTO_F_MUX_MODE feature bit:
+> +
+> +\begin{itemize*}
+> +\item If the VIRTIO_CRYPTO_F_MUX_MODE feature bit is NOT negotiated the controlq request is
+> +    a fixed-size structure of form:
+> +\begin{lstlisting}
+> +struct virtio_crypto_op_ctrl_req {
+> +    struct virtio_crypto_ctrl_header header;
+> +
+> +    union {
+> +        struct virtio_crypto_sym_create_session_req   sym_create_session;
+> +        struct virtio_crypto_hash_create_session_req  hash_create_session;
+> +        struct virtio_crypto_mac_create_session_req   mac_create_session;
+> +        struct virtio_crypto_aead_create_session_req  aead_create_session;
+> +        struct virtio_crypto_destroy_session_req      destroy_session;
+> +    } u;
+> +};
+> +\end{lstlisting}
+> +The header is the general header, and the union is of the algorithm-specific type or the
+> +virtio_crypto_destroy_session_req structure, which is set by the driver. All the properties
+> +in the union are shown as follows.
+> +
+> +\item If the VIRTIO_CRYPTO_F_MUX_MODE feature bit is negotiated the controlq request is composed
+> +    of two parts, the additional paramenters are preceded by the general header.
+> +
+> +\begin{lstlisting}
+> +struct virtio_crypto_op_ctrl_req_mux {
+> +    struct virtio_crypto_ctrl_header header;
+> +
+> +    /* additional paramenter */
+> +    u8 additional_para[addl_para_len];
+> +};
+> +\end{lstlisting}
+> +
+> +The additional paramenters are stored in a virtio_crypto_destroy_session_req structure or
+> +in a algorithm-specific structure:
+> +\begin{itemize*}
+> +\item struct virtio_crypto_sym_create_session_req
+> +\item struct virtio_crypto_hash_create_session_req
+> +\item struct virtio_crypto_mac_create_session_req
+> +\item struct virtio_crypto_aead_create_session_req
+> +\end{itemize*}
+> +All of the structures above are shown as follows.
+> +\end{itemize*}
+> +
+> +\paragraph{Session operation}\label{sec:Device Types / Crypto Device / Device Operation / Control Virtqueue / Session operation}
+> +
+> +The session is a
+> +handle which describes the cryptographic parameters to be applied to
+> +a number of buffers.
+> +
+> +The following structure stores the result of session creation set by the device:
+> +
+> +\begin{lstlisting}
+> +struct virtio_crypto_session_input {
+> +    /* Device-writable part */
+> +    le64 session_id;
+> +    le32 status;
+> +    le32 padding;
+> +};
+> +\end{lstlisting}
+> +
+> +A request to destroy a session includes the following information:
+> +
+> +\begin{lstlisting}
+> +struct virtio_crypto_destroy_session_req {
+> +    /* Device-readable part */
+> +    le64  session_id;
+> +    /* Device-writable part */
+> +    le32  status;
+> +    le32  padding;
+> +};
+> +\end{lstlisting}
+> +
+> +\subparagraph{Session operation: HASH session}\label{sec:Device Types / Crypto Device / Device
+> +Operation / Control Virtqueue / Session operation / Session operation: HASH session}
+> +
+> +HASH session requests are as follows:
+> +
+> +\begin{lstlisting}
+> +struct virtio_crypto_hash_session_para {
+> +    /* See VIRTIO_CRYPTO_HASH_* above */
+> +    le32 algo;
+> +    /* hash result length */
+> +    le32 hash_result_len;
+> +};
+> +struct virtio_crypto_hash_create_session_req {
+> +    /* Device-readable part */
+> +    struct virtio_crypto_hash_session_para para;
+> +    /* Device-writable part */
+> +    struct virtio_crypto_session_input input;
+> +};
+> +\end{lstlisting}
+> +
+> +The information required by HASH session creation is stored in the virtio_crypto_hash_create_session_req
+> +structure, including the hash parameters stored in \field{para}. \field{input} stores the result of this operation.
+> +
+> +\subparagraph{Session operation: MAC session}\label{sec:Device Types / Crypto Device / Device
+> +Operation / Control Virtqueue / Session operation / Session operation: MAC session}
+> +
+> +MAC session requests are as follows:
+> +
+> +\begin{lstlisting}
+> +struct virtio_crypto_mac_session_para {
+> +    /* See VIRTIO_CRYPTO_MAC_* above */
+> +    le32 algo;
+> +    /* hash result length */
+> +    le32 hash_result_len;
+> +    /* length of authenticated key */
+> +    le32 auth_key_len;
+> +    le32 padding;
+> +};
+> +
+> +struct virtio_crypto_mac_create_session_req {
+> +    /* Device-readable part */
+> +    struct virtio_crypto_mac_session_para para;
+> +    /* The authenticated key */
+> +    u8 auth_key[auth_key_len];
+> +
+> +    /* Device-writable part */
+> +    struct virtio_crypto_session_input input;
+> +};
+> +\end{lstlisting}
+> +
+> +The information required by MAC session creation is stored in the virtio_crypto_mac_create_session_req
+> +structure, including the mac parameters stored in \field{para} and the authenticated key in \field{auth_key}.
+> +\field{input} stores the result of this operation.
+> +
+> +\subparagraph{Session operation: Symmetric algorithms session}\label{sec:Device Types / Crypto Device / Device
+> +Operation / Control Virtqueue / Session operation / Session operation: Symmetric algorithms session}
+> +
+> +The request of symmetric session includes two parts, CIPHER algorithms and chain
+> +algorithms (chaining CIPHER and HASH/MAC).
+> +
+> +CIPHER session requests are as follows:
+> +
+> +\begin{lstlisting}
+> +struct virtio_crypto_cipher_session_para {
+> +    /* See VIRTIO_CRYPTO_CIPHER* above */
+> +    le32 algo;
+> +    /* length of key */
+> +    le32 keylen;
+> +#define VIRTIO_CRYPTO_OP_ENCRYPT  1
+> +#define VIRTIO_CRYPTO_OP_DECRYPT  2
+> +    /* encryption or decryption */
+> +    le32 op;
+> +    le32 padding;
+> +};
+> +
+> +struct virtio_crypto_cipher_session_req {
+> +    /* Device-readable part */
+> +    struct virtio_crypto_cipher_session_para para;
+> +    /* The cipher key */
+> +    u8 cipher_key[keylen];
+> +
+> +    /* Device-writable part */
+> +    struct virtio_crypto_session_input input;that
+> +};
+> +\end{lstlisting}
+> +
+> +Algorithm chaining requests are as follows:
+> +
+> +\begin{lstlisting}
+> +struct virtio_crypto_alg_chain_session_para {
+> +#define VIRTIO_CRYPTO_SYM_ALG_CHAIN_ORDER_HASH_THEN_CIPHER  1
+> +#define VIRTIO_CRYPTO_SYM_ALG_CHAIN_ORDER_CIPHER_THEN_HASH  2
+> +    le32 alg_chain_order;
+> +/* Plain hash */
+> +#define VIRTIO_CRYPTO_SYM_HASH_MODE_PLAIN    1
+> +/* Authenticated hash (mac) */
+> +#define VIRTIO_CRYPTO_SYM_HASH_MODE_AUTH     2
+> +/* Nested hash */
+> +#define VIRTIO_CRYPTO_SYM_HASH_MODE_NESTED   3
+> +    le32 hash_mode;
+> +    struct virtio_crypto_cipher_session_para cipher_param;
+> +    union {
+> +        struct virtio_crypto_hash_session_para hash_param;
+> +        struct virtio_crypto_mac_session_para mac_param;
+> +    } u;
+> +    /* length of the additional authenticated data (AAD) in bytes */
+> +    le32 aad_len;
+> +    le32 padding;
+> +};
+> +
+> +struct virtio_crypto_alg_chain_session_req {
+> +    /* Device-readable part */
+> +    struct virtio_crypto_alg_chain_session_para para;
+> +    /* The cipher key */
+> +    u8 cipher_key[keylen];
+> +    /* The authenticated key */
+> +    u8 auth_key[auth_key_len];
+> +
+> +    /* Device-writable part */
+> +    struct virtio_crypto_session_input input;
+> +};
+> +\end{lstlisting}
+> +
+> +Symmetric algorithm requests are as follows:
+> +
+> +\begin{lstlisting}
+> +struct virtio_crypto_sym_create_session_req {
+> +    union {
+> +        struct virtio_crypto_cipher_session_req cipher;
+> +        struct virtio_crypto_alg_chain_session_req chain;
+> +    } u;
+> +
+> +    /* Device-readable part */
+> +
+> +/* No operation */
+> +#define VIRTIO_CRYPTO_SYM_OP_NONE  0
+> +/* Cipher only operation on the data */
+> +#define VIRTIO_CRYPTO_SYM_OP_CIPHER  1
+> +/* Chain any cipher with any hash or mac operation. The order
+> +   depends on the value of alg_chain_order param */
+> +#define VIRTIO_CRYPTO_SYM_OP_ALGORITHM_CHAINING  2
+> +    le32 op_type;
+> +    le32 padding;
+> +};
+> +\end{lstlisting}
+> +
+> +The information required by symmetric algorithms session creation is stored in the
+> +virtio_crypto_sym_create_session_req structure, including the symmetric operation
+> +type in \field{op_type} and the cipher parameters stored in \field{cipher} or the
+> +algorithm chaining paramenters in \field{chain}.
+> +
+> +The driver can set the \field{op_type} field in struct virtio_crypto_sym_create_session_req
+> +as follows: VIRTIO_CRYPTO_SYM_OP_NONE: no operation; VIRTIO_CRYPTO_SYM_OP_CIPHER: Cipher only
+> +operation on the data; VIRTIO_CRYPTO_SYM_OP_ALGORITHM_CHAINING: Chain any cipher with any hash
+> +or mac operation.
+> +
+> +\subparagraph{Session operation: AEAD session}\label{sec:Device Types / Crypto Device / Device
+> +Operation / Control Virtqueue / Session operation / Session operation: AEAD session}
+> +
+> +AEAD session requests are as follows:
+> +
+> +\begin{lstlisting}
+> +struct virtio_crypto_aead_session_para {
+> +    /* See VIRTIO_CRYPTO_AEAD_* above */
+> +    le32 algo;
+> +    /* length of key */
+> +    le32 key_len;
+> +    /* Authentication tag length */
+> +    le32 tag_len;
+> +    /* The length of the additional authenticated data (AAD) in bytes */
+> +    le32 aad_len;
+> +    /* encryption or decryption, See above VIRTIO_CRYPTO_OP_* */
+> +    le32 op;
+> +    le32 padding;
+> +};
+> +
+> +struct virtio_crypto_aead_create_session_req {
+> +    /* Device-readable part */
+> +    struct virtio_crypto_aead_session_para para;
+> +    u8 key[key_len];
+> +
+> +    /* Device-writeable part */
+> +    struct virtio_crypto_session_input input;
+> +};
+> +\end{lstlisting}
+> +
+> +The information required by AEAD session creation is stored in the virtio_crypto_aead_create_session_req
+> +structure, including the aead parameters stored in \field{para} and the cipher key in \field{key}.
+> +\field{input} stores the result of this operation.
+> +
+> +\drivernormative{\subparagraph}{Session operation: create session}{Device Types / Crypto Device / Device Operation / Control Virtqueue / Session operation / Session operation: create session}
+> +
+> +\begin{itemize*}
+> +\item The driver MUST set the control general header and the corresponding algorithm-specific structure.
+> +    See \ref{sec:Device Types / Crypto Device / Device Operation / Control Virtqueue}.
+> +\item The driver MUST set the \field{opcode} field based on service type: CIPHER, HASH, MAC, or AEAD.
+> +\item The driver MUST set the \field{queue_id} field to show used dataq.
 
-> I think, your version is good enough (won't be misunderstood)  it is just
-> that request requires sound a bit weird to me. I'm not sure my version is
-> better though.
-> 
->> +\end{enumerate}
->> +
->> +\subsubsection{AEAD services}\label{sec:Device Types / Crypto Device / Supported crypto services / AEAD services}
->> +
->> +The following AEAD algorithms are defined:
->> +
->> +\begin{lstlisting}
->> +#define VIRTIO_CRYPTO_NO_AEAD     0
->> +#define VIRTIO_CRYPTO_AEAD_GCM    1
->> +#define VIRTIO_CRYPTO_AEAD_CCM    2
->> +#define VIRTIO_CRYPTO_AEAD_CHACHA20_POLY1305  3
->> +\end{lstlisting}
->> +
->> +The above constants have two usages:
->> +\begin{enumerate}
->> +\item As bit numbers, used to tell the driver which AEAD algorithms
->> +are supported by the device, see \ref{sec:Device Types / Crypto Device / Device configuration layout}.
->> +\item As values, used to tell the device what AEAD algorithm
->> +a crypto request from the driver requires, see \ref{sec:Device Types / Crypto Device / Device Operation / Control Virtqueue / Session operation}.
-> 
-> More or less same as above (and we have some more similar occurrences below).
-> 
+I've failed to figure out the semantic behind queue_id. This could mean,
+that sessions and session_id's are queue scoped. But then we should be
+(IMHO) more explicit on this -- my guess is that session_id's aren't
+dataqueue scoped.
 
-OK.
+> +\end{itemize*}
+> +
+> +\devicenormative{\subparagraph}{Session operation: create session}{Device Types / Crypto Device / Device
+> +Operation / Control Virtqueue / Session operation / Session operation: create session}
+> +
+> +\begin{itemize*}
+> +\item The device MUST use the corresponding algorithm-specific structure according to the
+> +    \field{opcode} in the control general header.
+> +\item The device MUST set the \field{status} field to one of the following values of enum
+> +    VIRTIO_CRYPTO_STATUS after finish a session creation:
+> +\begin{itemize*}
+> +\item VIRTIO_CRYPTO_OK if a session is created successfully.
+> +\item VIRTIO_CRYPTO_NOTSUPP if the requested algorithm or operation is unsupported.
+> +\item VIRTIO_CRYPTO_NOSPC if no free session ID (only when the VIRTIO_CRYPTO_F_MUX_MODE
+> +    feature bit is negotiated).
+> +\item VIRTIO_CRYPTO_ERR if failure not mentioned above occurs.
 
->> +\end{enumerate}
->> +
->> +\subsection{Device configuration layout}\label{sec:Device Types / Crypto Device / Device configuration layout}
->> +
->> +\begin{lstlisting}
->> +struct virtio_crypto_config {
->> +    le32 status;
->> +    le32 max_dataqueues;
->> +    le32 crypto_services;
->> +    /* Detailed algorithms mask */
->> +    le32 cipher_algo_l;
->> +    le32 cipher_algo_h;
->> +    le32 hash_algo;
->> +    le32 mac_algo_l;
->> +    le32 mac_algo_h;
->> +    le32 aead_algo;
->> +    /* Maximum length of cipher key in bytes */
->> +    le32 max_cipher_key_len;
->> +    /* Maximum length of authenticated key in bytes */
->> +    le32 max_auth_key_len;
->> +    le32 reserved;
->> +    /* Maximum size of each crypto request's content in bytes */
->> +    le64 max_size;
->> +};
->> +\end{lstlisting}
->> +
->> +\begin{description}
->> +\item[\field{status}] is used to show whether the device is ready to work or
->> +    not, it can be either zero or have one or more flags. Only one read-only
->> +	bit (for the driver) is currently defined for the \field{status} field: VIRTIO_CRYPTO_S_HW_READY:
-> 
-> Cosmetic comment: maybe 'Currently, only one \field(status) bit is defined:
-> IRTIO_CRYPTO_S_HW_READY set indicates that the device is ready to process
-> requests, this bit is read-only for the driver
-> 
+I guess an invalid queue_id would be among these.
 
-OK.
+> +\end{itemize*}
+> +\item The device MUST set the \field{session_id} field to a unique session identifieronly
+s/identifieronly/identifier only
+> +    if the status is set to VIRTIO_CRYPTO_OK.
+> +\end{itemize*}
+> +
+> +\drivernormative{\subparagraph}{Session operation: destroy session}{Device Types / Crypto Device / Device
+> +Operation / Control Virtqueue / Session operation / Session operation: destroy session}
+> +
+> +\begin{itemize*}
+> +\item The driver MUST set the \field{opcode} field based on service type: CIPHER, HASH, MAC, or AEAD.
+> +\item The driver MUST set the \field{session_id} to a valid value assigned by the device
+> +    when the session was created.
 
-> While trying to reword this, I started thinking about whether read-only
-> makes sense for individual bits. I think it does not (I think we can't
-> do something like compare and swap to make this work). Does read
-> only even make sense for configuration space? I mean it is not random
-> access AFAIK (see 4.3 Virtio Over Channel I/O)?
-> 
-> I'm confused abut the config space in general. I've expected that after
-> a certain stage it can be only changed by the device, but I didn't
-> manage to find a corresponding statement in the spec.
-> 
+Destroy does not need to specify queue_id. That means session_id's aren't
+queue scoped from namespace perspective. The question remains what is
+queue_id good for, and whether a session type op request should be
+rejected if the the session id originates from a session creation
+request specifying a different dataqueue (not the dataqueue containing
+the given request)? 
 
-I'm not sure whether I understand you correctly.
+> +\end{itemize*}
+> +
+> +\devicenormative{\subparagraph}{Session operation: destroy session}{Device Types / Crypto Device / Device
+> +Operation / Control Virtqueue / Session operation / Session operation: destroy session}
+> +
+> +\begin{itemize*}
+> +\item The device MUST set the \field{status} field to one of the following values of enum VIRTIO_CRYPTO_STATUS.
+> +\begin{itemize*}
+> +\item VIRTIO_CRYPTO_OK if a session is created successfully.
+> +\item VIRTIO_CRYPTO_ERR if any failure occurs.
+> +\end{itemize*}
+> +\end{itemize*}
+> +
+> +\subsubsection{Data Virtqueue}\label{sec:Device Types / Crypto Device / Device Operation / Data Virtqueue}
+>
 
-For the virtio-crypto device, the fields in the configure space are all fixed
-after the initialization, so maybe make them read-only is acceptable.
+[..]
 
->> +\begin{lstlisting}
->> +#define VIRTIO_CRYPTO_S_HW_READY  (1 << 0)
->> +\end{lstlisting}
->> +
->> +\item[\field{max_dataqueues}] is the maximum number of data virtqueues exposed by
->> +    the device. The driver MAY use only one data queue,
->> +    or it can use more to achieve better performance.
-> 
-> s/exposed/ that can be configured/
-> 
+I've run through the rest. It some stuff seems very repetitive. I wonder if
+we can do better.
 
-> This is the wording virtio-net uses (if I'm not mistaken). Exposed can be
-> misleading.
-> 
+I also dislike this 5.7.7.5.3 Steps of Operation part. I also don't
+understand why is symmetric special in this respect (HASH, MAC and
+AEAD don't have a 'Steps of Operation' section.
 
-OK.
+I would like to try some things out with the reference implementation.
+Depending on how that goes I may or may not end up providing a detailed
+review for the rest before discussing what I've already addressed.
 
->> +
->> +\item[\field{crypto_services}] crypto service offered, see \ref{sec:Device Types / Crypto Device / Supported crypto services}.
->> +
->> +\item[\field{cipher_algo_l}] CIPHER algorithms bits 0-31, see \ref{sec:Device Types / Crypto Device / Supported crypto services  / CIPHER services}.
->> +
->> +\item[\field{cipher_algo_h}] CIPHER algorithms bits 32-63, see \ref{sec:Device Types / Crypto Device / Supported crypto services  / CIPHER services}.
->> +
->> +\item[\field{hash_algo}] HASH algorithms bits, see \ref{sec:Device Types / Crypto Device / Supported crypto services  / HASH services}.
->> +
->> +\item[\field{mac_algo_l}] MAC algorithms bits 0-31, see \ref{sec:Device Types / Crypto Device / Supported crypto services  / MAC services}.
->> +
->> +\item[\field{mac_algo_h}] MAC algorithms bits 32-63, see \ref{sec:Device Types / Crypto Device / Supported crypto services  / MAC services}.
->> +
->> +\item[\field{aead_algo}] AEAD algorithms bits, see \ref{sec:Device Types / Crypto Device / Supported crypto services  / AEAD services}.
->> +
->> +\item[\field{max_cipher_key_len}] is the maximum length of cipher key supported by the device.
->> +
->> +\item[\field{max_auth_key_len}] is the maximum length of authenticated key supported by the device.
->> +
->> +\item[\field{reserved}] is reserved for future use.
->> +
->> +\item[\field{max_size}] is the maximum size of each crypto request's content supported by the device
->> +\end{description}
->> +
->> +\begin{note}
->> +Unless explicitly stated otherwise all lengths and sizes are in bytes.
->> +\end{note}
->> +
->> +\devicenormative{\subsubsection}{Device configuration layout}{Device Types / Crypto Device / Device configuration layout}
->> +
->> +\begin{itemize*}
->> +\item The device MUST set \field{max_dataqueues} to between 1 and 65535 inclusive.
->> +\item The device MUST set the \field{status} flag based on the status of the crypto
-> s/flag/flags ?
->> +    accelerator, Non-valid flags MUST NOT be set.
-> What does this mean? It is a device requirement so it can't be about the driver.
-> What does the device have to do if it encounters an unknown flag?
-
-
-How about: The device MUST set the \field{status} with valid flags, undefined
-flags MUST NOT be set ?
-
-The existing crypto device in QEMU only sets VIRTIO_CRYPTO_S_HW_READY and other
-bits are zero, it's impossible to encounters an undefined flag.
-
-> 
->> +\item The device MUST accept and handle requests after \field{status} is set to VIRTIO_CRYPTO_S_HW_READY.
->> +\item The device MUST set \field{crypto_services} based on the crypto services the device offers.
->> +\item The device MUST set detailed algorithms masks for each service advertised by \field{crypto_services}.
->> +    The device MUST NOT set the not defined algorithms bits.
->> +\item The device MUST set \field{max_size} to show the maximum size of crypto request the device supports.
->> +\item The device MUST set \field{max_cipher_key_len} to show the maximum length of cipher key if the
->> +    device supports CIPHER service.
->> +\item The device MUST set \field{max_auth_key_len} to show the maximum length of authenticated key if
->> +    the device supports MAC service.
->> +\end{itemize*}
->> +
->> +\drivernormative{\subsubsection}{Device configuration layout}{Device Types / Crypto Device / Device configuration layout}
->> +
->> +\begin{itemize*}
->> +\item The driver MUST read the ready \field{status} from the bottom bit of status to check whether the
->> +    crypto accelerator is ready or not, and the driver MUST reread it after device reset.
-> 
-> You use 'ready' instead of VIRTIO_CRYPTO_S_HW_READY here and in the next point.
-> s/ MUST read the ready \field{status}/ MUST read the \field{status}/ ?
-> s/crypto accelerator is ready or not/VIRTIO_CRYPTO_S_HW_READY is set/ ?
-> 
-
-Uh, this is much better, thanks :)
-
->> +\item The driver MUST NOT transmit any requests to the device if the ready \field{status} is not set.
-> s/if the ready \field{status}/VIRTIO_CRYPTO_S_HW_READY/ ?
-
-OK.
-
->> +\item The driver MUST read \field{max_dataqueues} field to discover the number of data queues the device supports.> +\item The driver MUST read \field{crypto_services} field to discover which services the device is able to offer.
->> +\item The driver SHOULD ignore the not defined algorithms bits.
->> +\item The driver MUST read the detailed algorithms fields based on \field{crypto_services} field.
->> +\item The driver SHOULD read \field{max_size} to discover the maximum size of crypto request the device supports.
->> +\item The driver SHOULD read \field{max_cipher_key_len} to discover the maximum length of cipher key
->> +    the device supports.
->> +\item The driver SHOULD read \field{max_auth_key_len} to discover the maximum length of authenticated
->> +    key the device supports.
->> +\end{itemize*}
->> +
->> +\subsection{Device Initialization}\label{sec:Device Types / Crypto Device / Device Initialization}
->> +
->> +\drivernormative{\subsubsection}{Device Initialization}{Device Types / Crypto Device / Device Initialization}
->> +
->> +\begin{itemize*}
->> +\item The driver MUST identify and initialize all virtqueues.
-> s/initialize/configure/ ?
-> 
-
-OK.
-
-> I wonder, do we really want to mandate configuring all virtqueues even
-> if some are going to be unused? If yes why?
-> 
-
-IMHO the virtio-net does, please see:
-	\Device Types\Network Device\Device Initialization
-
-In my opinion, this can makes everything as simple as possible. We need to
-consider some complex situations if the vqs are configured as required, e.g,
-what should the driver to do if initialize the vq failure.
-
->> +\item The driver MUST read the supported crypto services from bits of \field{crypto_services}.
->> +\item The driver MUST read the supported algorithms based on \field{crypto_services} field.
->> +\end{itemize*}
->> +
->> +\subsection{Device Operation}\label{sec:Device Types / Crypto Device / Device Operation}
->> +
->> +Requests can be transmitted by placing them in the controlq or dataq.
-> 
-> How about: The operation of a virtio crypto device is driven by requests
-> placed on the virtqueues.
-> 
-> I don't like 'can be transmitted' and 'or' in your sentence. I can't put
-> my finger on it.
-> 
-
-OK.
-
->> +Requests consist of a queue-type specific header specifying among
->> +others the operation, and an operation specific payload.
-> 
-> Maybe put 'specifying among others the operation' in parenthesis or
-> between comas (I'm no good with grammar -- someone competent help!).
-> 
-
-OK.
-
->> +The payload is generally composed of operation parameters, output data, and input data.
->> +Operation parameters are algorithm-specific parameters, output data is the
-> 
-> Start a new sentence at the comma.
-
-OK.
-
-> 
->> +data that should be utilized in operations, and input data is equal to
->> +"operation result + result data".
->> +
->> +The device can support both session mode (See \ref{sec:Device Types / Crypto Device / Device Operation / Control Virtqueue / Session operation}) and stateless mode.
-> 
-> How about if VIRTIO_CRYPTO_F_MUX_MODE is negotioated the device
-> may support both session mode ... and stateless mode operation requests.
-> 
-
-Uh, yours is pretty good :)
-
->> +In stateless mode all operation parameters are supplied as a part
->> +of each request, while in session mode, some or all operation parameters
->> +are managed within the session. Stateless mode is guarded by
->> +feature bits 0-4 on a service level. If stateless mode is negotiated
->> +for a service, the service is available both in session and
->> +stateless mode; otherwise it's only available in session mode.
->> +
->> +The device can set the operation status as follows:
-> 
-> This is the first time you mention operation status. The only status
-> we have defined is the config layout status. Can we introduce the
-> operation status later? Alternatively before we intreudce the op status
-> code we could tell something about how requests serviced, and of course
-> introduce the op status field as the part of (each?) request.
-> 
-
-OK, I'll introduce them later in the next version.
-
->> +
->> +\begin{lstlisting}
->> +enum VIRTIO_CRYPTO_STATUS {
->> +    VIRTIO_CRYPTO_OK = 0,
->> +    VIRTIO_CRYPTO_ERR = 1,
->> +    VIRTIO_CRYPTO_BADMSG = 2,
->> +    VIRTIO_CRYPTO_NOTSUPP = 3,
->> +    VIRTIO_CRYPTO_INVSESS = 4,
->> +    VIRTIO_CRYPTO_NOSPC = 5,
->> +    VIRTIO_CRYPTO_MAX
->> +};
->> +\end{lstlisting}
->> +
-> 
-> [..]
-> 
-> I will continue reviewing right away but wanted to slit this up because
-> the patch is huge.
-> 
-> My overall impression is pretty decent (up until this point) even
-> with my suggestions ignored. If this weren't a standard I wouldn't probably
-> bother with most of the comments (a la, it's good enough and can be improved
-> upon later if deemed necessary), but since it's a standard it's more important
-> to get things as good as possible already in the first version.
-
-
-Yea, thank for your patience and comments, they're very useful. :)
-
-> 
-> Regards,
-> Halil
-> 
-> 
-> .
-> 
-
-
--- 
 Regards,
-Longpeng(Mike)
+Halil
 
 
 ---------------------------------------------------------------------
