@@ -1,60 +1,56 @@
-Return-Path: virtio-dev-return-2548-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2549-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 8BAEA5819241
-	for <virtio-dev@lists.oasis-open.org>; Mon, 18 Sep 2017 06:08:28 -0700 (PDT)
+	by lists.oasis-open.org (Postfix) with ESMTP id 5175A5819242
+	for <virtio-dev@lists.oasis-open.org>; Mon, 18 Sep 2017 06:24:07 -0700 (PDT)
+From: "Gonglei (Arei)" <arei.gonglei@huawei.com>
+Date: Mon, 18 Sep 2017 13:23:31 +0000
+Message-ID: <33183CC9F5247A488A2544077AF19020DA3D9B61@DGGEMA505-MBX.china.huawei.com>
 References: <1505092362-10544-1-git-send-email-longpeng2@huawei.com>
  <1505092362-10544-2-git-send-email-longpeng2@huawei.com>
  <67d5549e-84de-ee85-00a7-37edc52234c4@linux.vnet.ibm.com>
  <33183CC9F5247A488A2544077AF19020DA3D9A7B@DGGEMA505-MBX.china.huawei.com>
-From: Halil Pasic <pasic@linux.vnet.ibm.com>
-Date: Mon, 18 Sep 2017 15:08:16 +0200
+ <73b9f2a8-6746-593b-4277-3ea757476130@linux.vnet.ibm.com>
+In-Reply-To: <73b9f2a8-6746-593b-4277-3ea757476130@linux.vnet.ibm.com>
+Content-Language: zh-CN
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-In-Reply-To: <33183CC9F5247A488A2544077AF19020DA3D9A7B@DGGEMA505-MBX.china.huawei.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-Message-Id: <73b9f2a8-6746-593b-4277-3ea757476130@linux.vnet.ibm.com>
-Subject: [virtio-dev] Re: [Qemu-devel] [PATCH REPOST v19 1/2] virtio-crypto: Add virtio
+Subject: [virtio-dev] RE: [Qemu-devel] [PATCH REPOST v19 1/2] virtio-crypto: Add virtio
  crypto device specification
-To: "Gonglei (Arei)" <arei.gonglei@huawei.com>, longpeng <longpeng2@huawei.com>, "qemu-devel@nongnu.org" <qemu-devel@nongnu.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
+To: Halil Pasic <pasic@linux.vnet.ibm.com>, longpeng <longpeng2@huawei.com>, "qemu-devel@nongnu.org" <qemu-devel@nongnu.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
 Cc: "Huangweidong (C)" <weidong.huang@huawei.com>, "mst@redhat.com" <mst@redhat.com>, "jasowang@redhat.com" <jasowang@redhat.com>, "john.griffin@intel.com" <john.griffin@intel.com>, "Varun.Sethi@freescale.com" <Varun.Sethi@freescale.com>, "denglingli@chinamobile.com" <denglingli@chinamobile.com>, "arei.gonglei@hotmail.com" <arei.gonglei@hotmail.com>, "agraf@suse.de" <agraf@suse.de>, "vincent.jardin@6wind.com" <vincent.jardin@6wind.com>, "Ola.Liljedahl@arm.com" <Ola.Liljedahl@arm.com>, Luonengjun <luonengjun@huawei.com>, "xin.zeng@intel.com" <xin.zeng@intel.com>, "liang.j.ma@intel.com" <liang.j.ma@intel.com>, "stefanha@redhat.com" <stefanha@redhat.com>, Jani Kokkonen <Jani.Kokkonen@huawei.com>, "brian.a.keating@intel.com" <brian.a.keating@intel.com>, "wangxin (U)" <wangxinxin.wang@huawei.com>, "cohuck@redhat.com" <cohuck@redhat.com>, "mike.caraman@nxp.com" <mike.caraman@nxp.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-
-
-On 09/18/2017 02:13 PM, Gonglei (Arei) wrote:
->> Destroy does not need to specify queue_id. That means session_id's aren't
->> queue scoped from namespace perspective. The question remains what is
->> queue_id good for, and whether a session type op request should be
->> rejected if the the session id originates from a session creation
->> request specifying a different dataqueue (not the dataqueue containing
->> the given request)?
->>
-> My original idea about the queue_id is using the queue_id to specify which
-> datequeue of the following data requests will be used. But after deep thinking,
-> I find that the queue_id is superfluous, and the current code in QEMU also
-> don't use the queue_id value as well. That's because the we can use session_id
-> to find the pervious session information and get the current dataqueue id
-> from the used virtqueue .
-> 
-> So maybe we should drop the queue_id this time.
-> 
-> 
-
-Sounds reasonable to me. We can make it reserved and ignored in
-the specification. Linux uses it, but it's always set to 0 as we only
-support one data-queue (if I'm not wrong). So reserved and must be zero
-is an option too.
-
-Halil
-
-
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+DQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IEhhbGlsIFBhc2ljIFttYWls
+dG86cGFzaWNAbGludXgudm5ldC5pYm0uY29tXQ0KPiBTZW50OiBNb25kYXksIFNlcHRlbWJlciAx
+OCwgMjAxNyA5OjA4IFBNDQo+IFN1YmplY3Q6IFJlOiBbUWVtdS1kZXZlbF0gW1BBVENIIFJFUE9T
+VCB2MTkgMS8yXSB2aXJ0aW8tY3J5cHRvOiBBZGQgdmlydGlvDQo+IGNyeXB0byBkZXZpY2Ugc3Bl
+Y2lmaWNhdGlvbg0KPiANCj4gDQo+IA0KPiBPbiAwOS8xOC8yMDE3IDAyOjEzIFBNLCBHb25nbGVp
+IChBcmVpKSB3cm90ZToNCj4gPj4gRGVzdHJveSBkb2VzIG5vdCBuZWVkIHRvIHNwZWNpZnkgcXVl
+dWVfaWQuIFRoYXQgbWVhbnMgc2Vzc2lvbl9pZCdzIGFyZW4ndA0KPiA+PiBxdWV1ZSBzY29wZWQg
+ZnJvbSBuYW1lc3BhY2UgcGVyc3BlY3RpdmUuIFRoZSBxdWVzdGlvbiByZW1haW5zIHdoYXQgaXMN
+Cj4gPj4gcXVldWVfaWQgZ29vZCBmb3IsIGFuZCB3aGV0aGVyIGEgc2Vzc2lvbiB0eXBlIG9wIHJl
+cXVlc3Qgc2hvdWxkIGJlDQo+ID4+IHJlamVjdGVkIGlmIHRoZSB0aGUgc2Vzc2lvbiBpZCBvcmln
+aW5hdGVzIGZyb20gYSBzZXNzaW9uIGNyZWF0aW9uDQo+ID4+IHJlcXVlc3Qgc3BlY2lmeWluZyBh
+IGRpZmZlcmVudCBkYXRhcXVldWUgKG5vdCB0aGUgZGF0YXF1ZXVlIGNvbnRhaW5pbmcNCj4gPj4g
+dGhlIGdpdmVuIHJlcXVlc3QpPw0KPiA+Pg0KPiA+IE15IG9yaWdpbmFsIGlkZWEgYWJvdXQgdGhl
+IHF1ZXVlX2lkIGlzIHVzaW5nIHRoZSBxdWV1ZV9pZCB0byBzcGVjaWZ5IHdoaWNoDQo+ID4gZGF0
+ZXF1ZXVlIG9mIHRoZSBmb2xsb3dpbmcgZGF0YSByZXF1ZXN0cyB3aWxsIGJlIHVzZWQuIEJ1dCBh
+ZnRlciBkZWVwDQo+IHRoaW5raW5nLA0KPiA+IEkgZmluZCB0aGF0IHRoZSBxdWV1ZV9pZCBpcyBz
+dXBlcmZsdW91cywgYW5kIHRoZSBjdXJyZW50IGNvZGUgaW4gUUVNVSBhbHNvDQo+ID4gZG9uJ3Qg
+dXNlIHRoZSBxdWV1ZV9pZCB2YWx1ZSBhcyB3ZWxsLiBUaGF0J3MgYmVjYXVzZSB0aGUgd2UgY2Fu
+IHVzZQ0KPiBzZXNzaW9uX2lkDQo+ID4gdG8gZmluZCB0aGUgcGVydmlvdXMgc2Vzc2lvbiBpbmZv
+cm1hdGlvbiBhbmQgZ2V0IHRoZSBjdXJyZW50IGRhdGFxdWV1ZSBpZA0KPiA+IGZyb20gdGhlIHVz
+ZWQgdmlydHF1ZXVlIC4NCj4gPg0KPiA+IFNvIG1heWJlIHdlIHNob3VsZCBkcm9wIHRoZSBxdWV1
+ZV9pZCB0aGlzIHRpbWUuDQo+ID4NCj4gPg0KPiANCj4gU291bmRzIHJlYXNvbmFibGUgdG8gbWUu
+IFdlIGNhbiBtYWtlIGl0IHJlc2VydmVkIGFuZCBpZ25vcmVkIGluDQo+IHRoZSBzcGVjaWZpY2F0
+aW9uLiBMaW51eCB1c2VzIGl0LCBidXQgaXQncyBhbHdheXMgc2V0IHRvIDAgYXMgd2Ugb25seQ0K
+PiBzdXBwb3J0IG9uZSBkYXRhLXF1ZXVlIChpZiBJJ20gbm90IHdyb25nKS4gU28gcmVzZXJ2ZWQg
+YW5kIG11c3QgYmUgemVybw0KPiBpcyBhbiBvcHRpb24gdG9vLg0KPiANCk1ha2VzIHNlbnNlIHRv
+IGtlZXBpbmcgY29tcGF0aWJpbGl0eS4gDQoNClRoYW5rcywNCi1Hb25nbGVpDQo=
 
