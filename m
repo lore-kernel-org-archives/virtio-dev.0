@@ -1,433 +1,119 @@
-Return-Path: virtio-dev-return-2544-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2547-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 8323D581921E
-	for <virtio-dev@lists.oasis-open.org>; Fri, 15 Sep 2017 09:00:18 -0700 (PDT)
+	by lists.oasis-open.org (Postfix) with ESMTP id 2975858180EF
+	for <virtio-dev@lists.oasis-open.org>; Mon, 18 Sep 2017 05:13:44 -0700 (PDT)
+From: "Gonglei (Arei)" <arei.gonglei@huawei.com>
+Date: Mon, 18 Sep 2017 12:13:10 +0000
+Message-ID: <33183CC9F5247A488A2544077AF19020DA3D9A7B@DGGEMA505-MBX.china.huawei.com>
 References: <1505092362-10544-1-git-send-email-longpeng2@huawei.com>
  <1505092362-10544-2-git-send-email-longpeng2@huawei.com>
-From: Halil Pasic <pasic@linux.vnet.ibm.com>
-Date: Fri, 15 Sep 2017 17:59:57 +0200
+ <67d5549e-84de-ee85-00a7-37edc52234c4@linux.vnet.ibm.com>
+In-Reply-To: <67d5549e-84de-ee85-00a7-37edc52234c4@linux.vnet.ibm.com>
+Content-Language: zh-CN
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-In-Reply-To: <1505092362-10544-2-git-send-email-longpeng2@huawei.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-Message-Id: <67d5549e-84de-ee85-00a7-37edc52234c4@linux.vnet.ibm.com>
-Subject: [virtio-dev] Re: [Qemu-devel] [PATCH REPOST v19 1/2] virtio-crypto: Add virtio
+Subject: [virtio-dev] RE: [Qemu-devel] [PATCH REPOST v19 1/2] virtio-crypto: Add virtio
  crypto device specification
-To: "Longpeng(Mike)" <longpeng2@huawei.com>, qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org
-Cc: weidong.huang@huawei.com, mst@redhat.com, jasowang@redhat.com, john.griffin@intel.com, Varun.Sethi@freescale.com, denglingli@chinamobile.com, arei.gonglei@hotmail.com, agraf@suse.de, arei.gonglei@huawei.com, vincent.jardin@6wind.com, Ola.Liljedahl@arm.com, luonengjun@huawei.com, xin.zeng@intel.com, liang.j.ma@intel.com, stefanha@redhat.com, Jani.Kokkonen@huawei.com, brian.a.keating@intel.com, wangxinxin.wang@huawei.com, cohuck@redhat.com, mike.caraman@nxp.com
+To: Halil Pasic <pasic@linux.vnet.ibm.com>, longpeng <longpeng2@huawei.com>, "qemu-devel@nongnu.org" <qemu-devel@nongnu.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
+Cc: "Huangweidong (C)" <weidong.huang@huawei.com>, "mst@redhat.com" <mst@redhat.com>, "jasowang@redhat.com" <jasowang@redhat.com>, "john.griffin@intel.com" <john.griffin@intel.com>, "Varun.Sethi@freescale.com" <Varun.Sethi@freescale.com>, "denglingli@chinamobile.com" <denglingli@chinamobile.com>, "arei.gonglei@hotmail.com" <arei.gonglei@hotmail.com>, "agraf@suse.de" <agraf@suse.de>, "vincent.jardin@6wind.com" <vincent.jardin@6wind.com>, "Ola.Liljedahl@arm.com" <Ola.Liljedahl@arm.com>, Luonengjun <luonengjun@huawei.com>, "xin.zeng@intel.com" <xin.zeng@intel.com>, "liang.j.ma@intel.com" <liang.j.ma@intel.com>, "stefanha@redhat.com" <stefanha@redhat.com>, Jani Kokkonen <Jani.Kokkonen@huawei.com>, "brian.a.keating@intel.com" <brian.a.keating@intel.com>, "wangxin (U)" <wangxinxin.wang@huawei.com>, "cohuck@redhat.com" <cohuck@redhat.com>, "mike.caraman@nxp.com" <mike.caraman@nxp.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-
-
-On 09/11/2017 03:12 AM, Longpeng(Mike) wrote:
-> From: Gonglei <arei.gonglei@huawei.com>
-> 
-> The virtio crypto device is a virtual crypto device (ie. hardware
-> crypto accelerator card). Currently, the virtio crypto device provides
-> the following crypto services: CIPHER, MAC, HASH, and AEAD.
-> 
-> In this patch, CIPHER, MAC, HASH, AEAD services are introduced.
-> 
-> VIRTIO-153
-> 
-> Signed-off-by: Gonglei <arei.gonglei@huawei.com>
-> Signed-off-by: Longpeng(Mike) <longpeng2@huawei.com>
-> ---
-[..]
-
-
-> +\subsubsection{Control Virtqueue}\label{sec:Device Types / Crypto Device / Device Operation / Control Virtqueue}
-> +
-> +The driver uses the control virtqueue to send control commands to the
-> +device, such as session operations (See \ref{sec:Device Types / Crypto Device / Device Operation / Control Virtqueue / Session operation}).
-> +
-> +The header for controlq is of the following form:
-> +\begin{lstlisting}
-> +#define VIRTIO_CRYPTO_OPCODE(service, op)   (((service) << 8) | (op))
-> +
-> +struct virtio_crypto_ctrl_header {
-> +#define VIRTIO_CRYPTO_CIPHER_CREATE_SESSION \
-> +       VIRTIO_CRYPTO_OPCODE(VIRTIO_CRYPTO_SERVICE_CIPHER, 0x02)
-> +#define VIRTIO_CRYPTO_CIPHER_DESTROY_SESSION \
-> +       VIRTIO_CRYPTO_OPCODE(VIRTIO_CRYPTO_SERVICE_CIPHER, 0x03)
-> +#define VIRTIO_CRYPTO_HASH_CREATE_SESSION \
-> +       VIRTIO_CRYPTO_OPCODE(VIRTIO_CRYPTO_SERVICE_HASH, 0x02)
-> +#define VIRTIO_CRYPTO_HASH_DESTROY_SESSION \
-> +       VIRTIO_CRYPTO_OPCODE(VIRTIO_CRYPTO_SERVICE_HASH, 0x03)
-> +#define VIRTIO_CRYPTO_MAC_CREATE_SESSION \
-> +       VIRTIO_CRYPTO_OPCODE(VIRTIO_CRYPTO_SERVICE_MAC, 0x02)
-> +#define VIRTIO_CRYPTO_MAC_DESTROY_SESSION \
-> +       VIRTIO_CRYPTO_OPCODE(VIRTIO_CRYPTO_SERVICE_MAC, 0x03)
-> +#define VIRTIO_CRYPTO_AEAD_CREATE_SESSION \
-> +       VIRTIO_CRYPTO_OPCODE(VIRTIO_CRYPTO_SERVICE_AEAD, 0x02)
-> +#define VIRTIO_CRYPTO_AEAD_DESTROY_SESSION \
-> +       VIRTIO_CRYPTO_OPCODE(VIRTIO_CRYPTO_SERVICE_AEAD, 0x03)
-> +    le32 opcode;
-> +    /* algo should be service-specific algorithms */
-> +    le32 algo;
-> +    le32 flag;
-> +    /* data virtqueue id */
-> +    le32 queue_id;
-> +};
-> +\end{lstlisting}
-> +
-> +The format of the controlq request depends on the VIRTIO_CRYPTO_F_MUX_MODE feature bit:
-> +
-> +\begin{itemize*}
-> +\item If the VIRTIO_CRYPTO_F_MUX_MODE feature bit is NOT negotiated the controlq request is
-> +    a fixed-size structure of form:
-> +\begin{lstlisting}
-> +struct virtio_crypto_op_ctrl_req {
-> +    struct virtio_crypto_ctrl_header header;
-> +
-> +    union {
-> +        struct virtio_crypto_sym_create_session_req   sym_create_session;
-> +        struct virtio_crypto_hash_create_session_req  hash_create_session;
-> +        struct virtio_crypto_mac_create_session_req   mac_create_session;
-> +        struct virtio_crypto_aead_create_session_req  aead_create_session;
-> +        struct virtio_crypto_destroy_session_req      destroy_session;
-> +    } u;
-> +};
-> +\end{lstlisting}
-> +The header is the general header, and the union is of the algorithm-specific type or the
-> +virtio_crypto_destroy_session_req structure, which is set by the driver. All the properties
-> +in the union are shown as follows.
-> +
-> +\item If the VIRTIO_CRYPTO_F_MUX_MODE feature bit is negotiated the controlq request is composed
-> +    of two parts, the additional paramenters are preceded by the general header.
-> +
-> +\begin{lstlisting}
-> +struct virtio_crypto_op_ctrl_req_mux {
-> +    struct virtio_crypto_ctrl_header header;
-> +
-> +    /* additional paramenter */
-> +    u8 additional_para[addl_para_len];
-> +};
-> +\end{lstlisting}
-> +
-> +The additional paramenters are stored in a virtio_crypto_destroy_session_req structure or
-> +in a algorithm-specific structure:
-> +\begin{itemize*}
-> +\item struct virtio_crypto_sym_create_session_req
-> +\item struct virtio_crypto_hash_create_session_req
-> +\item struct virtio_crypto_mac_create_session_req
-> +\item struct virtio_crypto_aead_create_session_req
-> +\end{itemize*}
-> +All of the structures above are shown as follows.
-> +\end{itemize*}
-> +
-> +\paragraph{Session operation}\label{sec:Device Types / Crypto Device / Device Operation / Control Virtqueue / Session operation}
-> +
-> +The session is a
-> +handle which describes the cryptographic parameters to be applied to
-> +a number of buffers.
-> +
-> +The following structure stores the result of session creation set by the device:
-> +
-> +\begin{lstlisting}
-> +struct virtio_crypto_session_input {
-> +    /* Device-writable part */
-> +    le64 session_id;
-> +    le32 status;
-> +    le32 padding;
-> +};
-> +\end{lstlisting}
-> +
-> +A request to destroy a session includes the following information:
-> +
-> +\begin{lstlisting}
-> +struct virtio_crypto_destroy_session_req {
-> +    /* Device-readable part */
-> +    le64  session_id;
-> +    /* Device-writable part */
-> +    le32  status;
-> +    le32  padding;
-> +};
-> +\end{lstlisting}
-> +
-> +\subparagraph{Session operation: HASH session}\label{sec:Device Types / Crypto Device / Device
-> +Operation / Control Virtqueue / Session operation / Session operation: HASH session}
-> +
-> +HASH session requests are as follows:
-> +
-> +\begin{lstlisting}
-> +struct virtio_crypto_hash_session_para {
-> +    /* See VIRTIO_CRYPTO_HASH_* above */
-> +    le32 algo;
-> +    /* hash result length */
-> +    le32 hash_result_len;
-> +};
-> +struct virtio_crypto_hash_create_session_req {
-> +    /* Device-readable part */
-> +    struct virtio_crypto_hash_session_para para;
-> +    /* Device-writable part */
-> +    struct virtio_crypto_session_input input;
-> +};
-> +\end{lstlisting}
-> +
-> +The information required by HASH session creation is stored in the virtio_crypto_hash_create_session_req
-> +structure, including the hash parameters stored in \field{para}. \field{input} stores the result of this operation.
-> +
-> +\subparagraph{Session operation: MAC session}\label{sec:Device Types / Crypto Device / Device
-> +Operation / Control Virtqueue / Session operation / Session operation: MAC session}
-> +
-> +MAC session requests are as follows:
-> +
-> +\begin{lstlisting}
-> +struct virtio_crypto_mac_session_para {
-> +    /* See VIRTIO_CRYPTO_MAC_* above */
-> +    le32 algo;
-> +    /* hash result length */
-> +    le32 hash_result_len;
-> +    /* length of authenticated key */
-> +    le32 auth_key_len;
-> +    le32 padding;
-> +};
-> +
-> +struct virtio_crypto_mac_create_session_req {
-> +    /* Device-readable part */
-> +    struct virtio_crypto_mac_session_para para;
-> +    /* The authenticated key */
-> +    u8 auth_key[auth_key_len];
-> +
-> +    /* Device-writable part */
-> +    struct virtio_crypto_session_input input;
-> +};
-> +\end{lstlisting}
-> +
-> +The information required by MAC session creation is stored in the virtio_crypto_mac_create_session_req
-> +structure, including the mac parameters stored in \field{para} and the authenticated key in \field{auth_key}.
-> +\field{input} stores the result of this operation.
-> +
-> +\subparagraph{Session operation: Symmetric algorithms session}\label{sec:Device Types / Crypto Device / Device
-> +Operation / Control Virtqueue / Session operation / Session operation: Symmetric algorithms session}
-> +
-> +The request of symmetric session includes two parts, CIPHER algorithms and chain
-> +algorithms (chaining CIPHER and HASH/MAC).
-> +
-> +CIPHER session requests are as follows:
-> +
-> +\begin{lstlisting}
-> +struct virtio_crypto_cipher_session_para {
-> +    /* See VIRTIO_CRYPTO_CIPHER* above */
-> +    le32 algo;
-> +    /* length of key */
-> +    le32 keylen;
-> +#define VIRTIO_CRYPTO_OP_ENCRYPT  1
-> +#define VIRTIO_CRYPTO_OP_DECRYPT  2
-> +    /* encryption or decryption */
-> +    le32 op;
-> +    le32 padding;
-> +};
-> +
-> +struct virtio_crypto_cipher_session_req {
-> +    /* Device-readable part */
-> +    struct virtio_crypto_cipher_session_para para;
-> +    /* The cipher key */
-> +    u8 cipher_key[keylen];
-> +
-> +    /* Device-writable part */
-> +    struct virtio_crypto_session_input input;that
-> +};
-> +\end{lstlisting}
-> +
-> +Algorithm chaining requests are as follows:
-> +
-> +\begin{lstlisting}
-> +struct virtio_crypto_alg_chain_session_para {
-> +#define VIRTIO_CRYPTO_SYM_ALG_CHAIN_ORDER_HASH_THEN_CIPHER  1
-> +#define VIRTIO_CRYPTO_SYM_ALG_CHAIN_ORDER_CIPHER_THEN_HASH  2
-> +    le32 alg_chain_order;
-> +/* Plain hash */
-> +#define VIRTIO_CRYPTO_SYM_HASH_MODE_PLAIN    1
-> +/* Authenticated hash (mac) */
-> +#define VIRTIO_CRYPTO_SYM_HASH_MODE_AUTH     2
-> +/* Nested hash */
-> +#define VIRTIO_CRYPTO_SYM_HASH_MODE_NESTED   3
-> +    le32 hash_mode;
-> +    struct virtio_crypto_cipher_session_para cipher_param;
-> +    union {
-> +        struct virtio_crypto_hash_session_para hash_param;
-> +        struct virtio_crypto_mac_session_para mac_param;
-> +    } u;
-> +    /* length of the additional authenticated data (AAD) in bytes */
-> +    le32 aad_len;
-> +    le32 padding;
-> +};
-> +
-> +struct virtio_crypto_alg_chain_session_req {
-> +    /* Device-readable part */
-> +    struct virtio_crypto_alg_chain_session_para para;
-> +    /* The cipher key */
-> +    u8 cipher_key[keylen];
-> +    /* The authenticated key */
-> +    u8 auth_key[auth_key_len];
-> +
-> +    /* Device-writable part */
-> +    struct virtio_crypto_session_input input;
-> +};
-> +\end{lstlisting}
-> +
-> +Symmetric algorithm requests are as follows:
-> +
-> +\begin{lstlisting}
-> +struct virtio_crypto_sym_create_session_req {
-> +    union {
-> +        struct virtio_crypto_cipher_session_req cipher;
-> +        struct virtio_crypto_alg_chain_session_req chain;
-> +    } u;
-> +
-> +    /* Device-readable part */
-> +
-> +/* No operation */
-> +#define VIRTIO_CRYPTO_SYM_OP_NONE  0
-> +/* Cipher only operation on the data */
-> +#define VIRTIO_CRYPTO_SYM_OP_CIPHER  1
-> +/* Chain any cipher with any hash or mac operation. The order
-> +   depends on the value of alg_chain_order param */
-> +#define VIRTIO_CRYPTO_SYM_OP_ALGORITHM_CHAINING  2
-> +    le32 op_type;
-> +    le32 padding;
-> +};
-> +\end{lstlisting}
-> +
-> +The information required by symmetric algorithms session creation is stored in the
-> +virtio_crypto_sym_create_session_req structure, including the symmetric operation
-> +type in \field{op_type} and the cipher parameters stored in \field{cipher} or the
-> +algorithm chaining paramenters in \field{chain}.
-> +
-> +The driver can set the \field{op_type} field in struct virtio_crypto_sym_create_session_req
-> +as follows: VIRTIO_CRYPTO_SYM_OP_NONE: no operation; VIRTIO_CRYPTO_SYM_OP_CIPHER: Cipher only
-> +operation on the data; VIRTIO_CRYPTO_SYM_OP_ALGORITHM_CHAINING: Chain any cipher with any hash
-> +or mac operation.
-> +
-> +\subparagraph{Session operation: AEAD session}\label{sec:Device Types / Crypto Device / Device
-> +Operation / Control Virtqueue / Session operation / Session operation: AEAD session}
-> +
-> +AEAD session requests are as follows:
-> +
-> +\begin{lstlisting}
-> +struct virtio_crypto_aead_session_para {
-> +    /* See VIRTIO_CRYPTO_AEAD_* above */
-> +    le32 algo;
-> +    /* length of key */
-> +    le32 key_len;
-> +    /* Authentication tag length */
-> +    le32 tag_len;
-> +    /* The length of the additional authenticated data (AAD) in bytes */
-> +    le32 aad_len;
-> +    /* encryption or decryption, See above VIRTIO_CRYPTO_OP_* */
-> +    le32 op;
-> +    le32 padding;
-> +};
-> +
-> +struct virtio_crypto_aead_create_session_req {
-> +    /* Device-readable part */
-> +    struct virtio_crypto_aead_session_para para;
-> +    u8 key[key_len];
-> +
-> +    /* Device-writeable part */
-> +    struct virtio_crypto_session_input input;
-> +};
-> +\end{lstlisting}
-> +
-> +The information required by AEAD session creation is stored in the virtio_crypto_aead_create_session_req
-> +structure, including the aead parameters stored in \field{para} and the cipher key in \field{key}.
-> +\field{input} stores the result of this operation.
-> +
-> +\drivernormative{\subparagraph}{Session operation: create session}{Device Types / Crypto Device / Device Operation / Control Virtqueue / Session operation / Session operation: create session}
-> +
-> +\begin{itemize*}
-> +\item The driver MUST set the control general header and the corresponding algorithm-specific structure.
-> +    See \ref{sec:Device Types / Crypto Device / Device Operation / Control Virtqueue}.
-> +\item The driver MUST set the \field{opcode} field based on service type: CIPHER, HASH, MAC, or AEAD.
-> +\item The driver MUST set the \field{queue_id} field to show used dataq.
-
-I've failed to figure out the semantic behind queue_id. This could mean,
-that sessions and session_id's are queue scoped. But then we should be
-(IMHO) more explicit on this -- my guess is that session_id's aren't
-dataqueue scoped.
-
-> +\end{itemize*}
-> +
-> +\devicenormative{\subparagraph}{Session operation: create session}{Device Types / Crypto Device / Device
-> +Operation / Control Virtqueue / Session operation / Session operation: create session}
-> +
-> +\begin{itemize*}
-> +\item The device MUST use the corresponding algorithm-specific structure according to the
-> +    \field{opcode} in the control general header.
-> +\item The device MUST set the \field{status} field to one of the following values of enum
-> +    VIRTIO_CRYPTO_STATUS after finish a session creation:
-> +\begin{itemize*}
-> +\item VIRTIO_CRYPTO_OK if a session is created successfully.
-> +\item VIRTIO_CRYPTO_NOTSUPP if the requested algorithm or operation is unsupported.
-> +\item VIRTIO_CRYPTO_NOSPC if no free session ID (only when the VIRTIO_CRYPTO_F_MUX_MODE
-> +    feature bit is negotiated).
-> +\item VIRTIO_CRYPTO_ERR if failure not mentioned above occurs.
-
-I guess an invalid queue_id would be among these.
-
-> +\end{itemize*}
-> +\item The device MUST set the \field{session_id} field to a unique session identifieronly
-s/identifieronly/identifier only
-> +    if the status is set to VIRTIO_CRYPTO_OK.
-> +\end{itemize*}
-> +
-> +\drivernormative{\subparagraph}{Session operation: destroy session}{Device Types / Crypto Device / Device
-> +Operation / Control Virtqueue / Session operation / Session operation: destroy session}
-> +
-> +\begin{itemize*}
-> +\item The driver MUST set the \field{opcode} field based on service type: CIPHER, HASH, MAC, or AEAD.
-> +\item The driver MUST set the \field{session_id} to a valid value assigned by the device
-> +    when the session was created.
-
-Destroy does not need to specify queue_id. That means session_id's aren't
-queue scoped from namespace perspective. The question remains what is
-queue_id good for, and whether a session type op request should be
-rejected if the the session id originates from a session creation
-request specifying a different dataqueue (not the dataqueue containing
-the given request)? 
-
-> +\end{itemize*}
-> +
-> +\devicenormative{\subparagraph}{Session operation: destroy session}{Device Types / Crypto Device / Device
-> +Operation / Control Virtqueue / Session operation / Session operation: destroy session}
-> +
-> +\begin{itemize*}
-> +\item The device MUST set the \field{status} field to one of the following values of enum VIRTIO_CRYPTO_STATUS.
-> +\begin{itemize*}
-> +\item VIRTIO_CRYPTO_OK if a session is created successfully.
-> +\item VIRTIO_CRYPTO_ERR if any failure occurs.
-> +\end{itemize*}
-> +\end{itemize*}
-> +
-> +\subsubsection{Data Virtqueue}\label{sec:Device Types / Crypto Device / Device Operation / Data Virtqueue}
->
-
-[..]
-
-I've run through the rest. It some stuff seems very repetitive. I wonder if
-we can do better.
-
-I also dislike this 5.7.7.5.3 Steps of Operation part. I also don't
-understand why is symmetric special in this respect (HASH, MAC and
-AEAD don't have a 'Steps of Operation' section.
-
-I would like to try some things out with the reference implementation.
-Depending on how that goes I may or may not end up providing a detailed
-review for the rest before discussing what I've already addressed.
-
-Regards,
-Halil
-
-
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+Pg0KPiA+ICsNCj4gPiArVGhlIGluZm9ybWF0aW9uIHJlcXVpcmVkIGJ5IEFFQUQgc2Vzc2lvbiBj
+cmVhdGlvbiBpcyBzdG9yZWQgaW4gdGhlDQo+IHZpcnRpb19jcnlwdG9fYWVhZF9jcmVhdGVfc2Vz
+c2lvbl9yZXENCj4gPiArc3RydWN0dXJlLCBpbmNsdWRpbmcgdGhlIGFlYWQgcGFyYW1ldGVycyBz
+dG9yZWQgaW4gXGZpZWxke3BhcmF9IGFuZCB0aGUNCj4gY2lwaGVyIGtleSBpbiBcZmllbGR7a2V5
+fS4NCj4gPiArXGZpZWxke2lucHV0fSBzdG9yZXMgdGhlIHJlc3VsdCBvZiB0aGlzIG9wZXJhdGlv
+bi4NCj4gPiArDQo+ID4gK1xkcml2ZXJub3JtYXRpdmV7XHN1YnBhcmFncmFwaH17U2Vzc2lvbiBv
+cGVyYXRpb246IGNyZWF0ZSBzZXNzaW9ufXtEZXZpY2UNCj4gVHlwZXMgLyBDcnlwdG8gRGV2aWNl
+IC8gRGV2aWNlIE9wZXJhdGlvbiAvIENvbnRyb2wgVmlydHF1ZXVlIC8gU2Vzc2lvbg0KPiBvcGVy
+YXRpb24gLyBTZXNzaW9uIG9wZXJhdGlvbjogY3JlYXRlIHNlc3Npb259DQo+ID4gKw0KPiA+ICtc
+YmVnaW57aXRlbWl6ZSp9DQo+ID4gK1xpdGVtIFRoZSBkcml2ZXIgTVVTVCBzZXQgdGhlIGNvbnRy
+b2wgZ2VuZXJhbCBoZWFkZXIgYW5kIHRoZQ0KPiBjb3JyZXNwb25kaW5nIGFsZ29yaXRobS1zcGVj
+aWZpYyBzdHJ1Y3R1cmUuDQo+ID4gKyAgICBTZWUgXHJlZntzZWM6RGV2aWNlIFR5cGVzIC8gQ3J5
+cHRvIERldmljZSAvIERldmljZSBPcGVyYXRpb24gLyBDb250cm9sDQo+IFZpcnRxdWV1ZX0uDQo+
+ID4gK1xpdGVtIFRoZSBkcml2ZXIgTVVTVCBzZXQgdGhlIFxmaWVsZHtvcGNvZGV9IGZpZWxkIGJh
+c2VkIG9uIHNlcnZpY2UgdHlwZToNCj4gQ0lQSEVSLCBIQVNILCBNQUMsIG9yIEFFQUQuDQo+ID4g
+K1xpdGVtIFRoZSBkcml2ZXIgTVVTVCBzZXQgdGhlIFxmaWVsZHtxdWV1ZV9pZH0gZmllbGQgdG8g
+c2hvdyB1c2VkIGRhdGFxLg0KPiANCj4gSSd2ZSBmYWlsZWQgdG8gZmlndXJlIG91dCB0aGUgc2Vt
+YW50aWMgYmVoaW5kIHF1ZXVlX2lkLiBUaGlzIGNvdWxkIG1lYW4sDQo+IHRoYXQgc2Vzc2lvbnMg
+YW5kIHNlc3Npb25faWQncyBhcmUgcXVldWUgc2NvcGVkLiBCdXQgdGhlbiB3ZSBzaG91bGQgYmUN
+Cj4gKElNSE8pIG1vcmUgZXhwbGljaXQgb24gdGhpcyAtLSBteSBndWVzcyBpcyB0aGF0IHNlc3Np
+b25faWQncyBhcmVuJ3QNCj4gZGF0YXF1ZXVlIHNjb3BlZC4NCj4gDQo+ID4gK1xlbmR7aXRlbWl6
+ZSp9DQo+ID4gKw0KPiA+ICtcZGV2aWNlbm9ybWF0aXZle1xzdWJwYXJhZ3JhcGh9e1Nlc3Npb24g
+b3BlcmF0aW9uOiBjcmVhdGUgc2Vzc2lvbn17RGV2aWNlDQo+IFR5cGVzIC8gQ3J5cHRvIERldmlj
+ZSAvIERldmljZQ0KPiA+ICtPcGVyYXRpb24gLyBDb250cm9sIFZpcnRxdWV1ZSAvIFNlc3Npb24g
+b3BlcmF0aW9uIC8gU2Vzc2lvbiBvcGVyYXRpb246DQo+IGNyZWF0ZSBzZXNzaW9ufQ0KPiA+ICsN
+Cj4gPiArXGJlZ2lue2l0ZW1pemUqfQ0KPiA+ICtcaXRlbSBUaGUgZGV2aWNlIE1VU1QgdXNlIHRo
+ZSBjb3JyZXNwb25kaW5nIGFsZ29yaXRobS1zcGVjaWZpYyBzdHJ1Y3R1cmUNCj4gYWNjb3JkaW5n
+IHRvIHRoZQ0KPiA+ICsgICAgXGZpZWxke29wY29kZX0gaW4gdGhlIGNvbnRyb2wgZ2VuZXJhbCBo
+ZWFkZXIuDQo+ID4gK1xpdGVtIFRoZSBkZXZpY2UgTVVTVCBzZXQgdGhlIFxmaWVsZHtzdGF0dXN9
+IGZpZWxkIHRvIG9uZSBvZiB0aGUgZm9sbG93aW5nDQo+IHZhbHVlcyBvZiBlbnVtDQo+ID4gKyAg
+ICBWSVJUSU9fQ1JZUFRPX1NUQVRVUyBhZnRlciBmaW5pc2ggYSBzZXNzaW9uIGNyZWF0aW9uOg0K
+PiA+ICtcYmVnaW57aXRlbWl6ZSp9DQo+ID4gK1xpdGVtIFZJUlRJT19DUllQVE9fT0sgaWYgYSBz
+ZXNzaW9uIGlzIGNyZWF0ZWQgc3VjY2Vzc2Z1bGx5Lg0KPiA+ICtcaXRlbSBWSVJUSU9fQ1JZUFRP
+X05PVFNVUFAgaWYgdGhlIHJlcXVlc3RlZCBhbGdvcml0aG0gb3Igb3BlcmF0aW9uIGlzDQo+IHVu
+c3VwcG9ydGVkLg0KPiA+ICtcaXRlbSBWSVJUSU9fQ1JZUFRPX05PU1BDIGlmIG5vIGZyZWUgc2Vz
+c2lvbiBJRCAob25seSB3aGVuIHRoZQ0KPiBWSVJUSU9fQ1JZUFRPX0ZfTVVYX01PREUNCj4gPiAr
+ICAgIGZlYXR1cmUgYml0IGlzIG5lZ290aWF0ZWQpLg0KPiA+ICtcaXRlbSBWSVJUSU9fQ1JZUFRP
+X0VSUiBpZiBmYWlsdXJlIG5vdCBtZW50aW9uZWQgYWJvdmUgb2NjdXJzLg0KPiANCj4gSSBndWVz
+cyBhbiBpbnZhbGlkIHF1ZXVlX2lkIHdvdWxkIGJlIGFtb25nIHRoZXNlLg0KPiANCj4gPiArXGVu
+ZHtpdGVtaXplKn0NCj4gPiArXGl0ZW0gVGhlIGRldmljZSBNVVNUIHNldCB0aGUgXGZpZWxke3Nl
+c3Npb25faWR9IGZpZWxkIHRvIGEgdW5pcXVlIHNlc3Npb24NCj4gaWRlbnRpZmllcm9ubHkNCj4g
+cy9pZGVudGlmaWVyb25seS9pZGVudGlmaWVyIG9ubHkNCj4gPiArICAgIGlmIHRoZSBzdGF0dXMg
+aXMgc2V0IHRvIFZJUlRJT19DUllQVE9fT0suDQo+ID4gK1xlbmR7aXRlbWl6ZSp9DQo+ID4gKw0K
+PiA+ICtcZHJpdmVybm9ybWF0aXZle1xzdWJwYXJhZ3JhcGh9e1Nlc3Npb24gb3BlcmF0aW9uOiBk
+ZXN0cm95DQo+IHNlc3Npb259e0RldmljZSBUeXBlcyAvIENyeXB0byBEZXZpY2UgLyBEZXZpY2UN
+Cj4gPiArT3BlcmF0aW9uIC8gQ29udHJvbCBWaXJ0cXVldWUgLyBTZXNzaW9uIG9wZXJhdGlvbiAv
+IFNlc3Npb24gb3BlcmF0aW9uOg0KPiBkZXN0cm95IHNlc3Npb259DQo+ID4gKw0KPiA+ICtcYmVn
+aW57aXRlbWl6ZSp9DQo+ID4gK1xpdGVtIFRoZSBkcml2ZXIgTVVTVCBzZXQgdGhlIFxmaWVsZHtv
+cGNvZGV9IGZpZWxkIGJhc2VkIG9uIHNlcnZpY2UgdHlwZToNCj4gQ0lQSEVSLCBIQVNILCBNQUMs
+IG9yIEFFQUQuDQo+ID4gK1xpdGVtIFRoZSBkcml2ZXIgTVVTVCBzZXQgdGhlIFxmaWVsZHtzZXNz
+aW9uX2lkfSB0byBhIHZhbGlkIHZhbHVlIGFzc2lnbmVkIGJ5DQo+IHRoZSBkZXZpY2UNCj4gPiAr
+ICAgIHdoZW4gdGhlIHNlc3Npb24gd2FzIGNyZWF0ZWQuDQo+IA0KPiBEZXN0cm95IGRvZXMgbm90
+IG5lZWQgdG8gc3BlY2lmeSBxdWV1ZV9pZC4gVGhhdCBtZWFucyBzZXNzaW9uX2lkJ3MgYXJlbid0
+DQo+IHF1ZXVlIHNjb3BlZCBmcm9tIG5hbWVzcGFjZSBwZXJzcGVjdGl2ZS4gVGhlIHF1ZXN0aW9u
+IHJlbWFpbnMgd2hhdCBpcw0KPiBxdWV1ZV9pZCBnb29kIGZvciwgYW5kIHdoZXRoZXIgYSBzZXNz
+aW9uIHR5cGUgb3AgcmVxdWVzdCBzaG91bGQgYmUNCj4gcmVqZWN0ZWQgaWYgdGhlIHRoZSBzZXNz
+aW9uIGlkIG9yaWdpbmF0ZXMgZnJvbSBhIHNlc3Npb24gY3JlYXRpb24NCj4gcmVxdWVzdCBzcGVj
+aWZ5aW5nIGEgZGlmZmVyZW50IGRhdGFxdWV1ZSAobm90IHRoZSBkYXRhcXVldWUgY29udGFpbmlu
+Zw0KPiB0aGUgZ2l2ZW4gcmVxdWVzdCk/DQo+IA0KDQpNeSBvcmlnaW5hbCBpZGVhIGFib3V0IHRo
+ZSBxdWV1ZV9pZCBpcyB1c2luZyB0aGUgcXVldWVfaWQgdG8gc3BlY2lmeSB3aGljaA0KZGF0ZXF1
+ZXVlIG9mIHRoZSBmb2xsb3dpbmcgZGF0YSByZXF1ZXN0cyB3aWxsIGJlIHVzZWQuIEJ1dCBhZnRl
+ciBkZWVwIHRoaW5raW5nLA0KSSBmaW5kIHRoYXQgdGhlIHF1ZXVlX2lkIGlzIHN1cGVyZmx1b3Vz
+LCBhbmQgdGhlIGN1cnJlbnQgY29kZSBpbiBRRU1VIGFsc28NCmRvbid0IHVzZSB0aGUgcXVldWVf
+aWQgdmFsdWUgYXMgd2VsbC4gVGhhdCdzIGJlY2F1c2UgdGhlIHdlIGNhbiB1c2Ugc2Vzc2lvbl9p
+ZA0KdG8gZmluZCB0aGUgcGVydmlvdXMgc2Vzc2lvbiBpbmZvcm1hdGlvbiBhbmQgZ2V0IHRoZSBj
+dXJyZW50IGRhdGFxdWV1ZSBpZA0KZnJvbSB0aGUgdXNlZCB2aXJ0cXVldWUgLg0KDQpTbyBtYXli
+ZSB3ZSBzaG91bGQgZHJvcCB0aGUgcXVldWVfaWQgdGhpcyB0aW1lLg0KDQoNCj4gPiArXGVuZHtp
+dGVtaXplKn0NCj4gPiArDQo+ID4gK1xkZXZpY2Vub3JtYXRpdmV7XHN1YnBhcmFncmFwaH17U2Vz
+c2lvbiBvcGVyYXRpb246IGRlc3Ryb3kNCj4gc2Vzc2lvbn17RGV2aWNlIFR5cGVzIC8gQ3J5cHRv
+IERldmljZSAvIERldmljZQ0KPiA+ICtPcGVyYXRpb24gLyBDb250cm9sIFZpcnRxdWV1ZSAvIFNl
+c3Npb24gb3BlcmF0aW9uIC8gU2Vzc2lvbiBvcGVyYXRpb246DQo+IGRlc3Ryb3kgc2Vzc2lvbn0N
+Cj4gPiArDQo+ID4gK1xiZWdpbntpdGVtaXplKn0NCj4gPiArXGl0ZW0gVGhlIGRldmljZSBNVVNU
+IHNldCB0aGUgXGZpZWxke3N0YXR1c30gZmllbGQgdG8gb25lIG9mIHRoZSBmb2xsb3dpbmcNCj4g
+dmFsdWVzIG9mIGVudW0gVklSVElPX0NSWVBUT19TVEFUVVMuDQo+ID4gK1xiZWdpbntpdGVtaXpl
+Kn0NCj4gPiArXGl0ZW0gVklSVElPX0NSWVBUT19PSyBpZiBhIHNlc3Npb24gaXMgY3JlYXRlZCBz
+dWNjZXNzZnVsbHkuDQo+ID4gK1xpdGVtIFZJUlRJT19DUllQVE9fRVJSIGlmIGFueSBmYWlsdXJl
+IG9jY3Vycy4NCj4gPiArXGVuZHtpdGVtaXplKn0NCj4gPiArXGVuZHtpdGVtaXplKn0NCj4gPiAr
+DQo+ID4gK1xzdWJzdWJzZWN0aW9ue0RhdGEgVmlydHF1ZXVlfVxsYWJlbHtzZWM6RGV2aWNlIFR5
+cGVzIC8gQ3J5cHRvIERldmljZSAvDQo+IERldmljZSBPcGVyYXRpb24gLyBEYXRhIFZpcnRxdWV1
+ZX0NCj4gPg0KPiANCj4gWy4uXQ0KPiANCj4gSSd2ZSBydW4gdGhyb3VnaCB0aGUgcmVzdC4gSXQg
+c29tZSBzdHVmZiBzZWVtcyB2ZXJ5IHJlcGV0aXRpdmUuIEkgd29uZGVyIGlmDQo+IHdlIGNhbiBk
+byBiZXR0ZXIuDQo+IA0KPiBJIGFsc28gZGlzbGlrZSB0aGlzIDUuNy43LjUuMyBTdGVwcyBvZiBP
+cGVyYXRpb24gcGFydC4gSSBhbHNvIGRvbid0DQo+IHVuZGVyc3RhbmQgd2h5IGlzIHN5bW1ldHJp
+YyBzcGVjaWFsIGluIHRoaXMgcmVzcGVjdCAoSEFTSCwgTUFDIGFuZA0KPiBBRUFEIGRvbid0IGhh
+dmUgYSAnU3RlcHMgb2YgT3BlcmF0aW9uJyBzZWN0aW9uLg0KPiANCkhtbS4uIEkganVzdCB0b29r
+IGEgZXhhbXBsZSBhcyB0aGUgc3ltbWV0cmljIGlzIHRoZSBtb3N0IGNvbXBsaWNhdGVkIG9wZXJh
+dGlvbi4gOykNCg0KPiBJIHdvdWxkIGxpa2UgdG8gdHJ5IHNvbWUgdGhpbmdzIG91dCB3aXRoIHRo
+ZSByZWZlcmVuY2UgaW1wbGVtZW50YXRpb24uDQo+IERlcGVuZGluZyBvbiBob3cgdGhhdCBnb2Vz
+IEkgbWF5IG9yIG1heSBub3QgZW5kIHVwIHByb3ZpZGluZyBhIGRldGFpbGVkDQo+IHJldmlldyBm
+b3IgdGhlIHJlc3QgYmVmb3JlIGRpc2N1c3Npbmcgd2hhdCBJJ3ZlIGFscmVhZHkgYWRkcmVzc2Vk
+Lg0KPiANCkhhbGlsLCBUaGFuayB5b3UgZm9yIHlvdXIgd29yaywgcGxzIGdvIGFoZWFkIDopDQoN
+Cj4gUmVnYXJkcywNCj4gSGFsaWwNCg0KVGhhbmtzLA0KLUdvbmdsZWkNCg==
 
