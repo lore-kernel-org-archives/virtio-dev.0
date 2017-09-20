@@ -1,85 +1,101 @@
-Return-Path: virtio-dev-return-2528-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2556-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 1B3A5581815E
-	for <virtio-dev@lists.oasis-open.org>; Sun, 10 Sep 2017 18:13:27 -0700 (PDT)
-From: "Longpeng(Mike)" <longpeng2@huawei.com>
-Date: Mon, 11 Sep 2017 09:12:42 +0800
-Message-ID: <1505092362-10544-3-git-send-email-longpeng2@huawei.com>
-In-Reply-To: <1505092362-10544-1-git-send-email-longpeng2@huawei.com>
-References: <1505092362-10544-1-git-send-email-longpeng2@huawei.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 4ECB8581925E
+	for <virtio-dev@lists.oasis-open.org>; Wed, 20 Sep 2017 08:48:41 -0700 (PDT)
+From: =?UTF-8?q?Tom=C3=A1=C5=A1=20Golembiovsk=C3=BD?= <tgolembi@redhat.com>
+Date: Wed, 20 Sep 2017 17:48:36 +0200
+Message-Id: <0bc0c49663fafdf3b03844fe048cac3216d88c5b.1505922364.git.tgolembi@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-Subject: [virtio-dev] [PATCH REPOST v19 2/2] virtio-crypto: Add conformance clauses
-To: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org
-Cc: luonengjun@huawei.com, mst@redhat.com, cohuck@redhat.com, stefanha@redhat.com, denglingli@chinamobile.com, Jani.Kokkonen@huawei.com, Ola.Liljedahl@arm.com, Varun.Sethi@freescale.com, xin.zeng@intel.com, brian.a.keating@intel.com, liang.j.ma@intel.com, john.griffin@intel.com, weidong.huang@huawei.com, mike.caraman@nxp.com, agraf@suse.de, jasowang@redhat.com, vincent.jardin@6wind.com, arei.gonglei@hotmail.com, pasic@linux.vnet.ibm.com, wangxinxin.wang@huawei.com, arei.gonglei@huawei.com, "Longpeng(Mike)" <longpeng2@huawei.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Subject: [virtio-dev] [PATCH] virtio_balloon: include buffers and chached memory statistics
+To: linux-mm@kvack.org, virtio-dev@lists.oasis-open.org, qemu-devel@nongnu.org, kvm@vger.kernel.org, virtualization@lists.linux-foundation.org
+Cc: Wei Wang <wei.w.wang@intel.com>, Shaohua Li <shli@fb.com>, Huang Ying <ying.huang@intel.com>, "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, =?UTF-8?q?Tom=C3=A1=C5=A1=20Golembiovsk=C3=BD?= <tgolembi@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-From: Gonglei <arei.gonglei@huawei.com>
+Add a new fields, VIRTIO_BALLOON_S_BUFFERS and VIRTIO_BALLOON_S_CACHED,
+to virtio_balloon memory statistics protocol. The values correspond to
+'Buffers' and 'Cached' in /proc/meminfo.
 
-Add the conformance targets and clauses for
-virtio-crypto device.
+To be able to compute the value of 'Cached' memory it is necessary to
+export total_swapcache_pages() to modules.
 
-Signed-off-by: Gonglei <arei.gonglei@huawei.com>
-Signed-off-by: Longpeng(Mike) <longpeng2@huawei.com>
+Signed-off-by: Tomáš Golembiovský <tgolembi@redhat.com>
 ---
- conformance.tex | 29 +++++++++++++++++++++++++++++
- 1 file changed, 29 insertions(+)
+ drivers/virtio/virtio_balloon.c     | 11 +++++++++++
+ include/uapi/linux/virtio_balloon.h |  4 +++-
+ mm/swap_state.c                     |  1 +
+ 3 files changed, 15 insertions(+), 1 deletion(-)
 
-diff --git a/conformance.tex b/conformance.tex
-index 7b7df32..266a22f 100644
---- a/conformance.tex
-+++ b/conformance.tex
-@@ -145,6 +145,21 @@ An SCSI host driver MUST conform to the following normative statements:
- \item \ref{drivernormative:Device Types / SCSI Host Device / Device Operation / Device Operation: eventq}
- \end{itemize}
+diff --git a/drivers/virtio/virtio_balloon.c b/drivers/virtio/virtio_balloon.c
+index f0b3a0b9d42f..c2558ec47a62 100644
+--- a/drivers/virtio/virtio_balloon.c
++++ b/drivers/virtio/virtio_balloon.c
+@@ -244,12 +244,19 @@ static unsigned int update_balloon_stats(struct virtio_balloon *vb)
+ 	struct sysinfo i;
+ 	unsigned int idx = 0;
+ 	long available;
++	long cached;
  
-+\subsection{Crypto Driver Conformance}\label{sec:Conformance / Driver Conformance / Crypto Driver Conformance}
-+
-+A Crypto driver MUST conform to the following normative statements:
-+
-+\begin{itemize}
-+\item \ref{drivernormative:Device Types / Crypto Device / Device configuration layout}
-+\item \ref{drivernormative:Device Types / Crypto Device / Device Initialization}
-+\item \ref{drivernormative:Device Types / Crypto Device / Device Operation / Control Virtqueue / Session operation / Session operation: create session}
-+\item \ref{drivernormative:Device Types / Crypto Device / Device Operation / Control Virtqueue / Session operation / Session operation: destroy session}
-+\item \ref{drivernormative:Device Types / Crypto Device / Device Operation / HASH Service operation}
-+\item \ref{drivernormative:Device Types / Crypto Device / Device Operation / MAC Service operation}
-+\item \ref{drivernormative:Device Types / Crypto Device / Device Operation / Symmetric algorithms Operation}
-+\item \ref{drivernormative:Device Types / Crypto Device / Device Operation / AEAD Service operation}
-+\end{itemize}
-+
- \section{Device Conformance}\label{sec:Conformance / Device Conformance}
+ 	all_vm_events(events);
+ 	si_meminfo(&i);
  
- A device MUST conform to the following normative statements:
-@@ -265,6 +280,20 @@ An SCSI host device MUST conform to the following normative statements:
- \item \ref{devicenormative:Device Types / SCSI Host Device / Device Operation / Device Operation: eventq}
- \end{itemize}
+ 	available = si_mem_available();
  
-+\subsection{Crypto Device Conformance}\label{sec:Conformance / Device Conformance / Crypto Device Conformance}
++	cached = global_node_page_state(NR_FILE_PAGES) -
++			total_swapcache_pages() - i.bufferram;
++	if (cached < 0)
++		cached = 0;
 +
-+A Crypto device MUST conform to the following normative statements:
 +
-+\begin{itemize}
-+\item \ref{devicenormative:Device Types / Crypto Device / Device configuration layout}
-+\item \ref{devicenormative:Device Types / Crypto Device / Device Operation / Control Virtqueue / Session operation / Session operation: create session}
-+\item \ref{devicenormative:Device Types / Crypto Device / Device Operation / Control Virtqueue / Session operation / Session operation: destroy session}
-+\item \ref{devicenormative:Device Types / Crypto Device / Device Operation / HASH Service operation}
-+\item \ref{devicenormative:Device Types / Crypto Device / Device Operation / MAC Service operation}
-+\item \ref{devicenormative:Device Types / Crypto Device / Device Operation / Symmetric algorithms Operation}
-+\item \ref{devicenormative:Device Types / Crypto Device / Device Operation / AEAD Service operation}
-+\end{itemize}
-+
- \section{Legacy Interface: Transitional Device and
- Transitional Driver Conformance}\label{sec:Conformance / Legacy
- Interface: Transitional Device and 
+ #ifdef CONFIG_VM_EVENT_COUNTERS
+ 	update_stat(vb, idx++, VIRTIO_BALLOON_S_SWAP_IN,
+ 				pages_to_bytes(events[PSWPIN]));
+@@ -264,6 +271,10 @@ static unsigned int update_balloon_stats(struct virtio_balloon *vb)
+ 				pages_to_bytes(i.totalram));
+ 	update_stat(vb, idx++, VIRTIO_BALLOON_S_AVAIL,
+ 				pages_to_bytes(available));
++	update_stat(vb, idx++, VIRTIO_BALLOON_S_BUFFERS,
++				pages_to_bytes(i.bufferram));
++	update_stat(vb, idx++, VIRTIO_BALLOON_S_CACHED,
++				pages_to_bytes(cached));
+ 
+ 	return idx;
+ }
+diff --git a/include/uapi/linux/virtio_balloon.h b/include/uapi/linux/virtio_balloon.h
+index 343d7ddefe04..119224c34389 100644
+--- a/include/uapi/linux/virtio_balloon.h
++++ b/include/uapi/linux/virtio_balloon.h
+@@ -52,7 +52,9 @@ struct virtio_balloon_config {
+ #define VIRTIO_BALLOON_S_MEMFREE  4   /* Total amount of free memory */
+ #define VIRTIO_BALLOON_S_MEMTOT   5   /* Total amount of memory */
+ #define VIRTIO_BALLOON_S_AVAIL    6   /* Available memory as in /proc */
+-#define VIRTIO_BALLOON_S_NR       7
++#define VIRTIO_BALLOON_S_BUFFERS  7   /* Bufferes memory as in /proc */
++#define VIRTIO_BALLOON_S_CACHED   8   /* Cached memory as in /proc */
++#define VIRTIO_BALLOON_S_NR       9
+ 
+ /*
+  * Memory statistics structure.
+diff --git a/mm/swap_state.c b/mm/swap_state.c
+index 71ce2d1ccbf7..f3a4ff7d6c52 100644
+--- a/mm/swap_state.c
++++ b/mm/swap_state.c
+@@ -95,6 +95,7 @@ unsigned long total_swapcache_pages(void)
+ 	rcu_read_unlock();
+ 	return ret;
+ }
++EXPORT_SYMBOL_GPL(total_swapcache_pages);
+ 
+ static atomic_t swapin_readahead_hits = ATOMIC_INIT(4);
+ 
 -- 
-2.7.4
-
+2.14.1
 
 
 ---------------------------------------------------------------------
