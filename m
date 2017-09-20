@@ -1,80 +1,37 @@
-Return-Path: virtio-dev-return-2456-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2558-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id B73965818E5B
-	for <virtio-dev@lists.oasis-open.org>; Sun,  6 Aug 2017 21:16:39 -0700 (PDT)
-Date: Mon, 7 Aug 2017 12:16:23 +0800
-From: Adam Tao <taozhe1@huawei.com>
-Message-ID: <20170807041623.GA12132@shay3t003839711.china.huawei.com>
-References: <20170414051304-mutt-send-email-mst@kernel.org>
- <20170414054318-mutt-send-email-mst@kernel.org>
- <CAJR92jnV1VgBs567QNjO1fHKDgMX=1j1aJJ2gK-TqMB5E1=fvw@mail.gmail.com>
- <20170802164931-mutt-send-email-mst@kernel.org>
+	by lists.oasis-open.org (Postfix) with ESMTP id 53F92581925E
+	for <virtio-dev@lists.oasis-open.org>; Wed, 20 Sep 2017 09:05:28 -0700 (PDT)
+From: =?UTF-8?q?Tom=C3=A1=C5=A1=20Golembiovsk=C3=BD?= <tgolembi@redhat.com>
+Date: Wed, 20 Sep 2017 18:05:21 +0200
+Message-Id: <cover.1505923516.git.tgolembi@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <20170802164931-mutt-send-email-mst@kernel.org>
-Subject: Re: [virtio-dev] repost: af_packet vs virtio (was packed ring layout
- proposal v2)
-To: "Michael S. Tsirkin" <mst@redhat.com>, g@shay3t003839711.china.huawei.com
-Cc: Steven Luong <sluong99@gmail.com>, john.fastabend@gmail.com, alexei.starovoitov@gmail.com, netdev@vger.kernel.org, virtio-dev@lists.oasis-open.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org
+Content-Transfer-Encoding: 8bit
+Subject: [virtio-dev] [PATCH 0/1] Buffers/caches in VirtIO Balloon driver stats
+To: virtio-dev@lists.oasis-open.org, qemu-devel@nongnu.org
+Cc: Wei Wang <wei.w.wang@intel.com>, "Michael S. Tsirkin" <mst@redhat.com>, =?UTF-8?q?Tom=C3=A1=C5=A1=20Golembiovsk=C3=BD?= <tgolembi@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, Aug 02, 2017 at 04:50:03PM +0300, Michael S. Tsirkin wrote:
-> On Tue, Aug 01, 2017 at 08:54:27PM -0700, Steven Luong wrote:
-> >     * Descriptor ring:
-> > 
-> >     Guest adds descriptors with unique index values and DESC_HW set in flags.
-> >     Host overwrites used descriptors with correct len, index, and DESC_HW
-> >     clear.? Flags are always set/cleared last.
-> > 
-> >     #define DESC_HW 0x0080
-> > 
-> >     struct desc {
-> >     ? ? ? ? __le64 addr;
-> >     ? ? ? ? __le32 len;
-> >     ? ? ? ? __le16 index;
-> >     ? ? ? ? __le16 flags;
-> >     };
-> > 
-> >     When DESC_HW is set, descriptor belongs to device. When it is clear,
-> >     it belongs to the driver.
-> > 
-> >     We can use 1 bit to set direction
-> >     /* This marks a buffer as write-only (otherwise read-only). */
-> >     #define VRING_DESC_F_WRITE? ? ? 2
-> > 
-> >     * Scatter/gather support
-> > 
-> >     We can use 1 bit to chain s/g entries in a request, same as virtio 1.0:
-> > 
-> >     /* This marks a buffer as continuing via the next field. */
-next field seems like a structure field in the software, maybe we need
-to change the "next field" to "next desc" to avoid misunderstanding.
-> > 
-> > 
-> > This comment here is confusing to me. In 1.0, virtq_desc has the next field.
-> > When the flag VRING_DESC_F_NEXT is set, the next entry to continue is specified
-> > in the next field.
-> > 
-> > Here in 1.1, struct desc does not have the next field, only addr, len, index,
-> > and flags. So when VRING_DESC_F_NEXT is set in struct desc's flags field, where
-> > is the next entry to continue the current descriptor, the entry immediately
-> > following the current entry? ie, if the current entry is at index 10 in the
-> > descriptor table and its flags is set for VRING_DESC_F_NEXT, is the entry
-> > continuing the current entry in index 11?
-> > 
-> > Steven
-> 
-> Exactly, you got it right.
-> 
-> ---------------------------------------------------------------------
-> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+This is a QEMU counterpart to the patch for VirtIO balloon driver posted here:
+
+https://lists.nongnu.org/archive/html/qemu-devel/2017-09/msg05720.html
+
+Tomáš Golembiovský (1):
+  virtio-balloon: include buffers and chached memory statistics
+
+ hw/virtio/virtio-balloon.c                      | 2 ++
+ include/standard-headers/linux/virtio_balloon.h | 4 +++-
+ 2 files changed, 5 insertions(+), 1 deletion(-)
+
+-- 
+2.14.1
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
