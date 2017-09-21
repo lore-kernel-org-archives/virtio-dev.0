@@ -1,130 +1,154 @@
-Return-Path: virtio-dev-return-2511-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2560-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 208925819215
-	for <virtio-dev@lists.oasis-open.org>; Wed,  6 Sep 2017 04:51:27 -0700 (PDT)
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 7AE74581923C
+	for <virtio-dev@lists.oasis-open.org>; Wed, 20 Sep 2017 23:27:25 -0700 (PDT)
+From: "Tian, Kevin" <kevin.tian@intel.com>
+Date: Thu, 21 Sep 2017 06:27:17 +0000
+Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D190DDCF8D@SHSMSX101.ccr.corp.intel.com>
 References: <20170804181927.12148-1-jean-philippe.brucker@arm.com>
  <5be484ff-6a1a-6c9b-947c-f64ea23f58cc@arm.com>
  <AADFC41AFE54684AB9EE6CBC0274A5D190D941E3@SHSMSX101.ccr.corp.intel.com>
-Message-ID: <013a2fdd-86f7-a7ee-7e71-11bbb6261f33@arm.com>
-Date: Wed, 6 Sep 2017 12:54:46 +0100
-MIME-Version: 1.0
-In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D190D941E3@SHSMSX101.ccr.corp.intel.com>
-Content-Type: text/plain; charset=utf-8
+ <013a2fdd-86f7-a7ee-7e71-11bbb6261f33@arm.com>
+In-Reply-To: <013a2fdd-86f7-a7ee-7e71-11bbb6261f33@arm.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: [virtio-dev] Re: [RFC] virtio-iommu version 0.4
-To: "Tian, Kevin" <kevin.tian@intel.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+Subject: [virtio-dev] RE: [RFC] virtio-iommu version 0.4
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
 Cc: "will.deacon@arm.com" <will.deacon@arm.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>, "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>, "mst@redhat.com" <mst@redhat.com>, "jasowang@redhat.com" <jasowang@redhat.com>, "marc.zyngier@arm.com" <marc.zyngier@arm.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>, "eric.auger.pro@gmail.com" <eric.auger.pro@gmail.com>, "bharat.bhushan@nxp.com" <bharat.bhushan@nxp.com>, "peterx@redhat.com" <peterx@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Hi Kevin,
-
-On 28/08/17 08:39, Tian, Kevin wrote:
-> Here comes some comments:
-> 
-> 1.1 Motivation
-> 
-> You describe I/O page faults handling as future work. Seems you considered
-> only recoverable fault (since "aka. PCI PRI" being used). What about other
-> unrecoverable faults e.g. what to do if a virtual DMA request doesn't find 
-> a valid mapping? Even when there is no PRI support, we need some basic
-> form of fault reporting mechanism to indicate such errors to guest.
-
-I am considering recoverable faults as the end goal, but reporting
-unrecoverable faults should use the same queue, with slightly different
-fields and no need for the driver to reply to the device.
-
-> 2.6.8.2 Property RESV_MEM
-> 
-> I'm not immediately clear when VIRTIO_IOMMU_PROBE_RESV_MEM_T_ABORT
-> should be explicitly reported. Is there any real example on bare metal IOMMU?
-> usually reserved memory is reported to CPU through other method (e.g. e820
-> on x86 platform). Of course MSI is a special case which is covered by BYPASS 
-> and MSI flag... If yes, maybe you can also include an example in implementation 
-> notes.
-
-The RESV_MEM regions only describes IOVA space for the moment, not
-guest-physical, so I guess it provides different information than e820.
-
-I think a useful example is the PCI bridge windows reported by the Linux
-host to userspace using RESV_RESERVED regions (see
-iommu_dma_get_resv_regions). If I understand correctly, they represent DMA
-addresses that shouldn't be accessed by endpoints because they won't reach
-the IOMMU. These are specific to the physical topology: a device will have
-different reserved regions depending on the PCI slot it occupies.
-
-When handled properly, PCI bridge windows quickly become a nuisance. With
-kvmtool we observed that carving out their addresses globally removes a
-lot of useful GPA space from the guest. Without a virtual IOMMU we can
-either ignore them and hope everything will be fine, or remove all
-reserved regions from the GPA space (which currently means editing by hand
-the static guest-physical map...)
-
-That's where RESV_MEM_T_ABORT comes handy with virtio-iommu. It describes
-reserved IOVAs for a specific endpoint, and therefore removes the need to
-carve the window out of the whole guest.
-
-> Another thing I want to ask your opinion, about whether there is value of
-> adding another subtype (MEM_T_IDENTITY), asking for identity mapping
-> in the address space. It's similar to Reserved Memory Region Reporting
-> (RMRR) structure defined in VT-d, to indicate BIOS allocated reserved
-> memory ranges which may be DMA target and has to be identity mapped
-> when DMA remapping is enabled. I'm not sure whether ARM has similar
-> capability and whether there might be a general usage beyond VT-d. For
-> now the only usage in my mind is to assign a device with RMRR associated
-> on VT-d (Intel GPU, or some USB controllers) where the RMRR info needs
-> propagated to the guest (since identity mapping also means reservation
-> of virtual address space).
-
-Yes I think adding MEM_T_IDENTITY will be necessary. I can see they are
-used for both iGPU and USB controllers on my x86 machines. Do you know
-more precisely what they are used for by the firmware?
-
-It's not necessary with the base virtio-iommu device though (v0.4),
-because the device can create the identity mappings itself and report them
-to the guest as MEM_T_BYPASS. However, when we start handing page table
-control over to the guest, the host won't be in control of IOVA->GPA
-mappings and will need to gracefully ask the guest to do it.
-
-I'm not aware of any firmware description resembling Intel RMRR or AMD
-IVMD on ARM platforms. I do think ARM platforms could need MEM_T_IDENTITY
-for requesting the guest to map MSI windows when page-table handover is in
-use (MSI addresses are translated by the physical SMMU, so a IOVA->GPA
-mapping must be installed by the guest). But since a vSMMU would need a
-solution as well, I think I'll try to implement something more generic.
-
-> 2.6.8.2.3 Device Requirements: Property RESV_MEM
-> 
-> --citation start--
-> If an endpoint is attached to an address space, the device SHOULD leave 
-> any access targeting one of its VIRTIO_IOMMU_PROBE_RESV_MEM_T_BYPASS 
-> regions pass through untranslated. In other words, the device SHOULD 
-> handle such a region as if it was identity-mapped (virtual address equal to
-> physical address). If the endpoint is not attached to any address space, 
-> then the device MAY abort the transaction.
-> --citation end
-> 
-> I have a question for the last sentence. From definition of BYPASS, it's
-> orthogonal to whether there is an address space attached, then should
-> we still allow "May abort" behavior? 
-
-The behavior is left as an implementation choice, and I'm not sure it's
-worth enforcing in the architecture. If the endpoint isn't attached to any
-domain then (unless VIRTIO_IOMMU_F_BYPASS is negotiated), it isn't
-necessarily able to do DMA at all. The virtio-iommu device may setup DMA
-mastering lazily, in which case any DMA transaction would abort, or have
-setup DMA already, in which case the endpoint can access MEM_T_BYPASS regions.
-
-Thanks!
-Jean
-
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+PiBGcm9tOiBKZWFuLVBoaWxpcHBlIEJydWNrZXINCj4gU2VudDogV2VkbmVzZGF5LCBTZXB0ZW1i
+ZXIgNiwgMjAxNyA3OjU1IFBNDQo+IA0KPiBIaSBLZXZpbiwNCj4gDQo+IE9uIDI4LzA4LzE3IDA4
+OjM5LCBUaWFuLCBLZXZpbiB3cm90ZToNCj4gPiBIZXJlIGNvbWVzIHNvbWUgY29tbWVudHM6DQo+
+ID4NCj4gPiAxLjEgTW90aXZhdGlvbg0KPiA+DQo+ID4gWW91IGRlc2NyaWJlIEkvTyBwYWdlIGZh
+dWx0cyBoYW5kbGluZyBhcyBmdXR1cmUgd29yay4gU2VlbXMgeW91DQo+IGNvbnNpZGVyZWQNCj4g
+PiBvbmx5IHJlY292ZXJhYmxlIGZhdWx0IChzaW5jZSAiYWthLiBQQ0kgUFJJIiBiZWluZyB1c2Vk
+KS4gV2hhdCBhYm91dCBvdGhlcg0KPiA+IHVucmVjb3ZlcmFibGUgZmF1bHRzIGUuZy4gd2hhdCB0
+byBkbyBpZiBhIHZpcnR1YWwgRE1BIHJlcXVlc3QgZG9lc24ndCBmaW5kDQo+ID4gYSB2YWxpZCBt
+YXBwaW5nPyBFdmVuIHdoZW4gdGhlcmUgaXMgbm8gUFJJIHN1cHBvcnQsIHdlIG5lZWQgc29tZSBi
+YXNpYw0KPiA+IGZvcm0gb2YgZmF1bHQgcmVwb3J0aW5nIG1lY2hhbmlzbSB0byBpbmRpY2F0ZSBz
+dWNoIGVycm9ycyB0byBndWVzdC4NCj4gDQo+IEkgYW0gY29uc2lkZXJpbmcgcmVjb3ZlcmFibGUg
+ZmF1bHRzIGFzIHRoZSBlbmQgZ29hbCwgYnV0IHJlcG9ydGluZw0KPiB1bnJlY292ZXJhYmxlIGZh
+dWx0cyBzaG91bGQgdXNlIHRoZSBzYW1lIHF1ZXVlLCB3aXRoIHNsaWdodGx5IGRpZmZlcmVudA0K
+PiBmaWVsZHMgYW5kIG5vIG5lZWQgZm9yIHRoZSBkcml2ZXIgdG8gcmVwbHkgdG8gdGhlIGRldmlj
+ZS4NCg0Kd2hhdCBhYm91dCBhZGRpbmcgYSBwbGFjZWhvbGRlciBmb3Igbm93PyBUaG91Z2ggc2Ft
+ZSBtZWNoYW5pc20NCmNhbiBiZSByZXVzZWQsIGl0J3MgYW4gZXNzZW50aWFsIHBhcnQgdG8gbWFr
+ZSB2aXJ0aW8taW9tbXUgYXJjaGl0ZWN0dXJlDQpjb21wbGV0ZSBldmVuIGJlZm9yZSB0YWxraW5n
+IHN1cHBvcnQgZm9yIHJlY292ZXJhYmxlIGZhdWx0cy4gOi0pDQoNCj4gDQo+ID4gMi42LjguMiBQ
+cm9wZXJ0eSBSRVNWX01FTQ0KPiA+DQo+ID4gSSdtIG5vdCBpbW1lZGlhdGVseSBjbGVhciB3aGVu
+DQo+IFZJUlRJT19JT01NVV9QUk9CRV9SRVNWX01FTV9UX0FCT1JUDQo+ID4gc2hvdWxkIGJlIGV4
+cGxpY2l0bHkgcmVwb3J0ZWQuIElzIHRoZXJlIGFueSByZWFsIGV4YW1wbGUgb24gYmFyZSBtZXRh
+bA0KPiBJT01NVT8NCj4gPiB1c3VhbGx5IHJlc2VydmVkIG1lbW9yeSBpcyByZXBvcnRlZCB0byBD
+UFUgdGhyb3VnaCBvdGhlciBtZXRob2QgKGUuZy4NCj4gZTgyMA0KPiA+IG9uIHg4NiBwbGF0Zm9y
+bSkuIE9mIGNvdXJzZSBNU0kgaXMgYSBzcGVjaWFsIGNhc2Ugd2hpY2ggaXMgY292ZXJlZCBieQ0K
+PiBCWVBBU1MNCj4gPiBhbmQgTVNJIGZsYWcuLi4gSWYgeWVzLCBtYXliZSB5b3UgY2FuIGFsc28g
+aW5jbHVkZSBhbiBleGFtcGxlIGluDQo+IGltcGxlbWVudGF0aW9uDQo+ID4gbm90ZXMuDQo+IA0K
+PiBUaGUgUkVTVl9NRU0gcmVnaW9ucyBvbmx5IGRlc2NyaWJlcyBJT1ZBIHNwYWNlIGZvciB0aGUg
+bW9tZW50LCBub3QNCj4gZ3Vlc3QtcGh5c2ljYWwsIHNvIEkgZ3Vlc3MgaXQgcHJvdmlkZXMgZGlm
+ZmVyZW50IGluZm9ybWF0aW9uIHRoYW4gZTgyMC4NCj4gDQo+IEkgdGhpbmsgYSB1c2VmdWwgZXhh
+bXBsZSBpcyB0aGUgUENJIGJyaWRnZSB3aW5kb3dzIHJlcG9ydGVkIGJ5IHRoZSBMaW51eA0KPiBo
+b3N0IHRvIHVzZXJzcGFjZSB1c2luZyBSRVNWX1JFU0VSVkVEIHJlZ2lvbnMgKHNlZQ0KPiBpb21t
+dV9kbWFfZ2V0X3Jlc3ZfcmVnaW9ucykuIElmIEkgdW5kZXJzdGFuZCBjb3JyZWN0bHksIHRoZXkg
+cmVwcmVzZW50DQo+IERNQQ0KPiBhZGRyZXNzZXMgdGhhdCBzaG91bGRuJ3QgYmUgYWNjZXNzZWQg
+YnkgZW5kcG9pbnRzIGJlY2F1c2UgdGhleSB3b24ndA0KPiByZWFjaA0KPiB0aGUgSU9NTVUuIFRo
+ZXNlIGFyZSBzcGVjaWZpYyB0byB0aGUgcGh5c2ljYWwgdG9wb2xvZ3k6IGEgZGV2aWNlIHdpbGwg
+aGF2ZQ0KPiBkaWZmZXJlbnQgcmVzZXJ2ZWQgcmVnaW9ucyBkZXBlbmRpbmcgb24gdGhlIFBDSSBz
+bG90IGl0IG9jY3VwaWVzLg0KPiANCj4gV2hlbiBoYW5kbGVkIHByb3Blcmx5LCBQQ0kgYnJpZGdl
+IHdpbmRvd3MgcXVpY2tseSBiZWNvbWUgYSBudWlzYW5jZS4NCj4gV2l0aA0KPiBrdm10b29sIHdl
+IG9ic2VydmVkIHRoYXQgY2FydmluZyBvdXQgdGhlaXIgYWRkcmVzc2VzIGdsb2JhbGx5IHJlbW92
+ZXMgYQ0KPiBsb3Qgb2YgdXNlZnVsIEdQQSBzcGFjZSBmcm9tIHRoZSBndWVzdC4gV2l0aG91dCBh
+IHZpcnR1YWwgSU9NTVUgd2UgY2FuDQo+IGVpdGhlciBpZ25vcmUgdGhlbSBhbmQgaG9wZSBldmVy
+eXRoaW5nIHdpbGwgYmUgZmluZSwgb3IgcmVtb3ZlIGFsbA0KPiByZXNlcnZlZCByZWdpb25zIGZy
+b20gdGhlIEdQQSBzcGFjZSAod2hpY2ggY3VycmVudGx5IG1lYW5zIGVkaXRpbmcgYnkNCj4gaGFu
+ZA0KPiB0aGUgc3RhdGljIGd1ZXN0LXBoeXNpY2FsIG1hcC4uLikNCj4gDQo+IFRoYXQncyB3aGVy
+ZSBSRVNWX01FTV9UX0FCT1JUIGNvbWVzIGhhbmR5IHdpdGggdmlydGlvLWlvbW11LiBJdA0KPiBk
+ZXNjcmliZXMNCj4gcmVzZXJ2ZWQgSU9WQXMgZm9yIGEgc3BlY2lmaWMgZW5kcG9pbnQsIGFuZCB0
+aGVyZWZvcmUgcmVtb3ZlcyB0aGUgbmVlZCB0bw0KPiBjYXJ2ZSB0aGUgd2luZG93IG91dCBvZiB0
+aGUgd2hvbGUgZ3Vlc3QuDQoNClVuZGVyc3RhbmQgYW5kIHRoYW5rcyBmb3IgZWxhYm9yYXRpb24u
+DQoNCj4gDQo+ID4gQW5vdGhlciB0aGluZyBJIHdhbnQgdG8gYXNrIHlvdXIgb3BpbmlvbiwgYWJv
+dXQgd2hldGhlciB0aGVyZSBpcyB2YWx1ZSBvZg0KPiA+IGFkZGluZyBhbm90aGVyIHN1YnR5cGUg
+KE1FTV9UX0lERU5USVRZKSwgYXNraW5nIGZvciBpZGVudGl0eSBtYXBwaW5nDQo+ID4gaW4gdGhl
+IGFkZHJlc3Mgc3BhY2UuIEl0J3Mgc2ltaWxhciB0byBSZXNlcnZlZCBNZW1vcnkgUmVnaW9uIFJl
+cG9ydGluZw0KPiA+IChSTVJSKSBzdHJ1Y3R1cmUgZGVmaW5lZCBpbiBWVC1kLCB0byBpbmRpY2F0
+ZSBCSU9TIGFsbG9jYXRlZCByZXNlcnZlZA0KPiA+IG1lbW9yeSByYW5nZXMgd2hpY2ggbWF5IGJl
+IERNQSB0YXJnZXQgYW5kIGhhcyB0byBiZSBpZGVudGl0eSBtYXBwZWQNCj4gPiB3aGVuIERNQSBy
+ZW1hcHBpbmcgaXMgZW5hYmxlZC4gSSdtIG5vdCBzdXJlIHdoZXRoZXIgQVJNIGhhcyBzaW1pbGFy
+DQo+ID4gY2FwYWJpbGl0eSBhbmQgd2hldGhlciB0aGVyZSBtaWdodCBiZSBhIGdlbmVyYWwgdXNh
+Z2UgYmV5b25kIFZULWQuIEZvcg0KPiA+IG5vdyB0aGUgb25seSB1c2FnZSBpbiBteSBtaW5kIGlz
+IHRvIGFzc2lnbiBhIGRldmljZSB3aXRoIFJNUlIgYXNzb2NpYXRlZA0KPiA+IG9uIFZULWQgKElu
+dGVsIEdQVSwgb3Igc29tZSBVU0IgY29udHJvbGxlcnMpIHdoZXJlIHRoZSBSTVJSIGluZm8gbmVl
+ZHMNCj4gPiBwcm9wYWdhdGVkIHRvIHRoZSBndWVzdCAoc2luY2UgaWRlbnRpdHkgbWFwcGluZyBh
+bHNvIG1lYW5zIHJlc2VydmF0aW9uDQo+ID4gb2YgdmlydHVhbCBhZGRyZXNzIHNwYWNlKS4NCj4g
+DQo+IFllcyBJIHRoaW5rIGFkZGluZyBNRU1fVF9JREVOVElUWSB3aWxsIGJlIG5lY2Vzc2FyeS4g
+SSBjYW4gc2VlIHRoZXkgYXJlDQo+IHVzZWQgZm9yIGJvdGggaUdQVSBhbmQgVVNCIGNvbnRyb2xs
+ZXJzIG9uIG15IHg4NiBtYWNoaW5lcy4gRG8geW91IGtub3cNCj4gbW9yZSBwcmVjaXNlbHkgd2hh
+dCB0aGV5IGFyZSB1c2VkIGZvciBieSB0aGUgZmlybXdhcmU/DQoNClZUZCBzcGVjIGhhcyBhIGNs
+ZWFyIGRlc2NyaXB0aW9uOg0KDQozLjE0IEhhbmRsaW5nIFJlcXVlc3RzIHRvIFJlc2VydmVkIFN5
+c3RlbSBNZW1vcnkNClJlc2VydmVkIHN5c3RlbSBtZW1vcnkgcmVnaW9ucyBhcmUgdHlwaWNhbGx5
+IGFsbG9jYXRlZCBieSBCSU9TIGF0IGJvb3QgDQp0aW1lIGFuZCByZXBvcnRlZCB0byBPUyBhcyBy
+ZXNlcnZlZCBhZGRyZXNzIHJhbmdlcyBpbiB0aGUgc3lzdGVtIG1lbW9yeSANCm1hcC4gUmVxdWVz
+dHMtd2l0aG91dC1QQVNJRCB0byB0aGVzZSByZXNlcnZlZCByZWdpb25zIG1heSBlaXRoZXIgb2Nj
+dXIgDQphcyBhIHJlc3VsdCBvZiBvcGVyYXRpb25zIHBlcmZvcm1lZCBieSB0aGUgc3lzdGVtIHNv
+ZnR3YXJlIGRyaXZlciAoZm9yIA0KZXhhbXBsZSBpbiB0aGUgY2FzZSBvZiBETUEgZnJvbSB1bmlm
+aWVkIG1lbW9yeSBhY2Nlc3MgKFVNQSkgZ3JhcGhpY3MgDQpjb250cm9sbGVycyB0byBncmFwaGlj
+cyByZXNlcnZlZCBtZW1vcnkpLCBvciBtYXkgYmUgaW5pdGlhdGVkIGJ5IG5vbiANCnN5c3RlbSBz
+b2Z0d2FyZSAoZm9yIGV4YW1wbGUgaW4gY2FzZSBvZiBETUEgcGVyZm9ybWVkIGJ5IGEgVVNCIA0K
+Y29udHJvbGxlciB1bmRlciBCSU9TIFNNTSBjb250cm9sIGZvciBsZWdhY3kga2V5Ym9hcmQgZW11
+bGF0aW9uKS4gDQpGb3IgcHJvcGVyIGZ1bmN0aW9uaW5nIG9mIHRoZXNlIGxlZ2FjeSByZXNlcnZl
+ZCBtZW1vcnkgdXNhZ2VzLCB3aGVuIA0Kc3lzdGVtIHNvZnR3YXJlIGVuYWJsZXMgRE1BIHJlbWFw
+cGluZywgdGhlIHNlY29uZC1sZXZlbCB0cmFuc2xhdGlvbiANCnN0cnVjdHVyZXMgZm9yIHRoZSBy
+ZXNwZWN0aXZlIGRldmljZXMgYXJlIGV4cGVjdGVkIHRvIGJlIHNldCB1cCB0byBwcm92aWRlDQpp
+ZGVudGl0eSBtYXBwaW5nIGZvciB0aGUgc3BlY2lmaWVkIHJlc2VydmVkIG1lbW9yeSByZWdpb25z
+IHdpdGggcmVhZCANCmFuZCB3cml0ZSBwZXJtaXNzaW9ucy4NCg0KKG9uZSBzcGVjaWZpYyBleGFt
+cGxlIGZvciBHUFUgaGFwcGVucyBpbiBsZWdhY3kgVkdBIHVzYWdlIGluIGVhcmx5DQpib290IHRp
+bWUgYmVmb3JlIGFjdHVhbCBncmFwaGljcyBkcml2ZXIgaXMgbG9hZGVkKQ0KDQo+IA0KPiBJdCdz
+IG5vdCBuZWNlc3Nhcnkgd2l0aCB0aGUgYmFzZSB2aXJ0aW8taW9tbXUgZGV2aWNlIHRob3VnaCAo
+djAuNCksDQo+IGJlY2F1c2UgdGhlIGRldmljZSBjYW4gY3JlYXRlIHRoZSBpZGVudGl0eSBtYXBw
+aW5ncyBpdHNlbGYgYW5kIHJlcG9ydCB0aGVtDQo+IHRvIHRoZSBndWVzdCBhcyBNRU1fVF9CWVBB
+U1MuIEhvd2V2ZXIsIHdoZW4gd2Ugc3RhcnQgaGFuZGluZyBwYWdlDQoNCndoZW4geW91IHNheSAi
+dGhlIGRldmljZSBjYW4gY3JlYXRlIC4uLiIsIEkgdGhpbmsgeW91IHJlYWxseSBtZWFudA0KImhv
+c3QgaW9tbXUgZHJpdmVyIGNhbiBjcmVhdGUgaWRlbnRpdHkgbWFwcGluZyBmb3IgYXNzaWduZWQg
+ZGV2aWNlIiwNCmNvcnJlY3Q/DQoNClRoZW4geWVzLCBJIHRoaW5rIGFib3ZlIHdvcmtzLg0KDQo+
+IHRhYmxlDQo+IGNvbnRyb2wgb3ZlciB0byB0aGUgZ3Vlc3QsIHRoZSBob3N0IHdvbid0IGJlIGlu
+IGNvbnRyb2wgb2YgSU9WQS0+R1BBDQo+IG1hcHBpbmdzIGFuZCB3aWxsIG5lZWQgdG8gZ3JhY2Vm
+dWxseSBhc2sgdGhlIGd1ZXN0IHRvIGRvIGl0Lg0KPiANCj4gSSdtIG5vdCBhd2FyZSBvZiBhbnkg
+ZmlybXdhcmUgZGVzY3JpcHRpb24gcmVzZW1ibGluZyBJbnRlbCBSTVJSIG9yIEFNRA0KPiBJVk1E
+IG9uIEFSTSBwbGF0Zm9ybXMuIEkgZG8gdGhpbmsgQVJNIHBsYXRmb3JtcyBjb3VsZCBuZWVkDQo+
+IE1FTV9UX0lERU5USVRZDQo+IGZvciByZXF1ZXN0aW5nIHRoZSBndWVzdCB0byBtYXAgTVNJIHdp
+bmRvd3Mgd2hlbiBwYWdlLXRhYmxlIGhhbmRvdmVyIGlzDQo+IGluDQo+IHVzZSAoTVNJIGFkZHJl
+c3NlcyBhcmUgdHJhbnNsYXRlZCBieSB0aGUgcGh5c2ljYWwgU01NVSwgc28gYSBJT1ZBLT5HUEEN
+Cj4gbWFwcGluZyBtdXN0IGJlIGluc3RhbGxlZCBieSB0aGUgZ3Vlc3QpLiBCdXQgc2luY2UgYSB2
+U01NVSB3b3VsZCBuZWVkIGENCj4gc29sdXRpb24gYXMgd2VsbCwgSSB0aGluayBJJ2xsIHRyeSB0
+byBpbXBsZW1lbnQgc29tZXRoaW5nIG1vcmUgZ2VuZXJpYy4NCg0KY3VyaW91cyBkbyB5b3UgbmVl
+ZCBpZGVudGl0eSBtYXBwaW5nIGZ1bGwgSU9WQS0+R1BBLT5IUEEgdHJhbnNsYXRpb24sIA0Kb3Ig
+anVzdCBpbiBHUEEtPkhQQSBzdGFnZSBzdWZmaWNpZW50IGZvciBhYm92ZSBNU0kgc2NlbmFyaW8/
+DQoNCj4gDQo+ID4gMi42LjguMi4zIERldmljZSBSZXF1aXJlbWVudHM6IFByb3BlcnR5IFJFU1Zf
+TUVNDQo+ID4NCj4gPiAtLWNpdGF0aW9uIHN0YXJ0LS0NCj4gPiBJZiBhbiBlbmRwb2ludCBpcyBh
+dHRhY2hlZCB0byBhbiBhZGRyZXNzIHNwYWNlLCB0aGUgZGV2aWNlIFNIT1VMRCBsZWF2ZQ0KPiA+
+IGFueSBhY2Nlc3MgdGFyZ2V0aW5nIG9uZSBvZiBpdHMNCj4gVklSVElPX0lPTU1VX1BST0JFX1JF
+U1ZfTUVNX1RfQllQQVNTDQo+ID4gcmVnaW9ucyBwYXNzIHRocm91Z2ggdW50cmFuc2xhdGVkLiBJ
+biBvdGhlciB3b3JkcywgdGhlIGRldmljZSBTSE9VTEQNCj4gPiBoYW5kbGUgc3VjaCBhIHJlZ2lv
+biBhcyBpZiBpdCB3YXMgaWRlbnRpdHktbWFwcGVkICh2aXJ0dWFsIGFkZHJlc3MgZXF1YWwgdG8N
+Cj4gPiBwaHlzaWNhbCBhZGRyZXNzKS4gSWYgdGhlIGVuZHBvaW50IGlzIG5vdCBhdHRhY2hlZCB0
+byBhbnkgYWRkcmVzcyBzcGFjZSwNCj4gPiB0aGVuIHRoZSBkZXZpY2UgTUFZIGFib3J0IHRoZSB0
+cmFuc2FjdGlvbi4NCj4gPiAtLWNpdGF0aW9uIGVuZA0KPiA+DQo+ID4gSSBoYXZlIGEgcXVlc3Rp
+b24gZm9yIHRoZSBsYXN0IHNlbnRlbmNlLiBGcm9tIGRlZmluaXRpb24gb2YgQllQQVNTLCBpdCdz
+DQo+ID4gb3J0aG9nb25hbCB0byB3aGV0aGVyIHRoZXJlIGlzIGFuIGFkZHJlc3Mgc3BhY2UgYXR0
+YWNoZWQsIHRoZW4gc2hvdWxkDQo+ID4gd2Ugc3RpbGwgYWxsb3cgIk1heSBhYm9ydCIgYmVoYXZp
+b3I/DQo+IA0KPiBUaGUgYmVoYXZpb3IgaXMgbGVmdCBhcyBhbiBpbXBsZW1lbnRhdGlvbiBjaG9p
+Y2UsIGFuZCBJJ20gbm90IHN1cmUgaXQncw0KPiB3b3J0aCBlbmZvcmNpbmcgaW4gdGhlIGFyY2hp
+dGVjdHVyZS4gSWYgdGhlIGVuZHBvaW50IGlzbid0IGF0dGFjaGVkIHRvIGFueQ0KPiBkb21haW4g
+dGhlbiAodW5sZXNzIFZJUlRJT19JT01NVV9GX0JZUEFTUyBpcyBuZWdvdGlhdGVkKSwgaXQgaXNu
+J3QNCj4gbmVjZXNzYXJpbHkgYWJsZSB0byBkbyBETUEgYXQgYWxsLiBUaGUgdmlydGlvLWlvbW11
+IGRldmljZSBtYXkgc2V0dXAgRE1BDQo+IG1hc3RlcmluZyBsYXppbHksIGluIHdoaWNoIGNhc2Ug
+YW55IERNQSB0cmFuc2FjdGlvbiB3b3VsZCBhYm9ydCwgb3IgaGF2ZQ0KPiBzZXR1cCBETUEgYWxy
+ZWFkeSwgaW4gd2hpY2ggY2FzZSB0aGUgZW5kcG9pbnQgY2FuIGFjY2VzcyBNRU1fVF9CWVBBU1MN
+Cj4gcmVnaW9ucy4NCj4gDQoNCmZhaXIgZW5vdWdoLiB0aGFua3MNCg0KS2V2aW4NCg==
 
