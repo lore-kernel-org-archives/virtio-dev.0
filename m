@@ -1,115 +1,102 @@
-Return-Path: virtio-dev-return-2570-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2572-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id D5DB35818CB1
-	for <virtio-dev@lists.oasis-open.org>; Tue, 26 Sep 2017 16:38:21 -0700 (PDT)
-From: "Steven Luong (sluong)" <sluong@cisco.com>
-Date: Tue, 26 Sep 2017 23:38:18 +0000
-Message-ID: <7A0DC0C9-F148-4161-B2D1-8D8D14D8B9A1@cisco.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id A7CB05818082
+	for <virtio-dev@lists.oasis-open.org>; Wed, 27 Sep 2017 16:49:17 -0700 (PDT)
+Date: Thu, 28 Sep 2017 02:49:15 +0300
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20170928023112-mutt-send-email-mst@kernel.org>
 References: <20160915223915.qjlnlvf2w7u37bu3@redhat.com>
  <D0158A423229094DA7ABF71CF2FA0DA34E1A46A6@SHSMSX152.ccr.corp.intel.com>
  <20170926011826-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20170926011826-mutt-send-email-mst@kernel.org>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <F7F76D702A8DB041BDB1FF61D112A881@emea.cisco.com>
-Content-Transfer-Encoding: base64
+ <7A0DC0C9-F148-4161-B2D1-8D8D14D8B9A1@cisco.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <7A0DC0C9-F148-4161-B2D1-8D8D14D8B9A1@cisco.com>
 Subject: Re: [virtio-dev] packed ring layout proposal v3
-To: "Michael S. Tsirkin" <mst@redhat.com>, "Liang, Cunming" <cunming.liang@intel.com>
-Cc: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>
+To: "Steven Luong (sluong)" <sluong@cisco.com>
+Cc: "Liang, Cunming" <cunming.liang@intel.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-TWljaGFlbCwNCg0KV291bGQgeW91IHBsZWFzZSBnaXZlIGFuIGV4YW1wbGUgb3IgdHdvIGhvdyB0
-aGVzZSB0d28gZmxhZ3MgREVTQ19EUklWRVIgYW5kIERFU0NfV1JBUCBhcmUgdXNlZCB0b2dldGhl
-cj8gTGlrZSBvdGhlcnMsIEkgYW0gY29uZnVzZWQgYnkgdGhlIGRlc2NyaXB0aW9uIGFuZCBzdGls
-bCBkb27igJl0IHF1aXRlIGdyb2sgaXQuDQoNClN0ZXZlbg0KDQpPbiA5LzI1LzE3LCAzOjI0IFBN
-LCAidmlydGlvLWRldkBsaXN0cy5vYXNpcy1vcGVuLm9yZyBvbiBiZWhhbGYgb2YgTWljaGFlbCBT
-LiBUc2lya2luIiA8dmlydGlvLWRldkBsaXN0cy5vYXNpcy1vcGVuLm9yZyBvbiBiZWhhbGYgb2Yg
-bXN0QHJlZGhhdC5jb20+IHdyb3RlOg0KDQogICAgT24gV2VkLCBTZXAgMjAsIDIwMTcgYXQgMDk6
-MTE6NTdBTSArMDAwMCwgTGlhbmcsIEN1bm1pbmcgd3JvdGU6DQogICAgPiBIaSBNaWNoYWVsLA0K
-ICAgID4gDQogICAgPiA+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQogICAgPiA+IEZyb206
-IHZpcnRpby1kZXZAbGlzdHMub2FzaXMtb3Blbi5vcmcgW21haWx0bzp2aXJ0aW8tZGV2QGxpc3Rz
-Lm9hc2lzLW9wZW4ub3JnXQ0KICAgID4gPiBPbiBCZWhhbGYgT2YgTWljaGFlbCBTLiBUc2lya2lu
-DQogICAgPiA+IFNlbnQ6IFN1bmRheSwgU2VwdGVtYmVyIDEwLCAyMDE3IDE6MDYgUE0NCiAgICA+
-ID4gVG86IHZpcnRpby1kZXZAbGlzdHMub2FzaXMtb3Blbi5vcmcNCiAgICA+ID4gQ2M6IHZpcnR1
-YWxpemF0aW9uQGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnDQogICAgPiA+IFN1YmplY3Q6IFt2
-aXJ0aW8tZGV2XSBwYWNrZWQgcmluZyBsYXlvdXQgcHJvcG9zYWwgdjMNCiAgICA+ID4gDQogICAg
-PiBbLi4uXQ0KICAgID4gPiAqIERlc2NyaXB0b3IgcmluZzoNCiAgICA+ID4gDQogICAgPiA+IERy
-aXZlciB3cml0ZXMgZGVzY3JpcHRvcnMgd2l0aCB1bmlxdWUgaW5kZXggdmFsdWVzIGFuZCBERVND
-X0RSSVZFUiBzZXQgaW4NCiAgICA+ID4gZmxhZ3MuDQogICAgPiA+IERlc2NyaXB0b3JzIGFyZSB3
-cml0dGVuIGluIGEgcmluZyBvcmRlcjogZnJvbSBzdGFydCB0byBlbmQgb2YgcmluZywgd3JhcHBp
-bmcNCiAgICA+ID4gYXJvdW5kIHRvIHRoZSBiZWdpbm5pbmcuDQogICAgPiA+IERldmljZSB3cml0
-ZXMgdXNlZCBkZXNjcmlwdG9ycyB3aXRoIGNvcnJlY3QgbGVuLCBpbmRleCwgYW5kIERFU0NfSFcg
-Y2xlYXIuDQogICAgPiA+IEFnYWluIGRlc2NyaXB0b3JzIGFyZSB3cml0dGVuIGluIHJpbmcgb3Jk
-ZXIuIFRoaXMgbWlnaHQgbm90IGJlIHRoZSBzYW1lIG9yZGVyDQogICAgPiA+IG9mIGRyaXZlciBk
-ZXNjcmlwdG9ycywgYW5kIG5vdCBhbGwgZGVzY3JpcHRvcnMgaGF2ZSB0byBiZSB3cml0dGVuIG91
-dC4NCiAgICA+ID4gDQogICAgPiA+IERyaXZlciBhbmQgZGV2aWNlIGFyZSBleHBlY3RlZCB0byBt
-YWludGFpbiAoaW50ZXJuYWxseSkgYSB3cmFwLWFyb3VuZCBiaXQsDQogICAgPiA+IHN0YXJ0aW5n
-IGF0IDAgYW5kIGNoYW5naW5nIHZhbHVlIGVhY2ggdGltZSB0aGV5IHN0YXJ0IHdyaXRpbmcgb3V0
-IGRlc2NyaXB0b3JzDQogICAgPiA+IGF0IHRoZSBiZWdpbm5pbmcgb2YgdGhlIHJpbmcuIFRoaXMg
-Yml0IGlzIHBhc3NlZCBhcyBERVNDX1dSQVAgYml0IGluIHRoZSBmbGFncw0KICAgID4gPiBmaWVs
-ZC4NCiAgICA+IA0KICAgID4gT25lIHNpbXBsZSBxdWVzdGlvbiB0aGVyZSwgdHJ5aW5nIHRvIHVu
-ZGVyc3RhbmQgdGhlIHVzYWdlIG9mIERFU0NfV1JBUCBmbGFnLg0KICAgID4gDQogICAgPiBERVND
-X1dSQVAgYml0IGlzIGEgbmV3IGZsYWcgc2luY2UgdjIuIEl0J3MgdXNlZCB0byBhZGRyZXNzICdu
-b24gcG93ZXItb2YtMiByaW5nIHNpemVzJyBtZW50aW9uZWQgaW4gdjI/DQogICAgPiANCiAgICA+
-IEJlaW5nIGNvbmZ1c2VkIGJ5IHRoZSBzdGF0ZW1lbnQgb2Ygd3JhcC1hcm91bmQgYml0IGhlcmUs
-IGl0J3MgYW4gaW50ZXJuYWwgd3JhcC1hcm91bmQgY291bnRlciByZXByZXNlbnRlZCBieSBzaW5n
-bGUgYml0ICgwLzEpPw0KICAgID4gREVTQ19XUkFQIGNhbiBhcHBlYXIgb24gYW55IGRlc2NyaXB0
-b3IgZW50cnkgaW4gdGhlIHJpbmcsIHdoeSBpdCBoaWdobGlnaHRzIGNoYW5naW5nIHZhbHVlIGF0
-IHRoZSBiZWdpbm5pbmcgb2YgdGhlIHJpbmc/DQogICAgDQogICAgDQogICAgTm8sIHRoaXMgaXMg
-bmVjZXNzYXJ5IGlmIG5vdCBhbGwgZGVzY3JpcHRvcnMgYXJlIG92ZXJ3cml0dGVuIGJ5IGRldmlj
-ZQ0KICAgIGFmdGVyIHRoZXkgYXJlIHVzZWQuDQogICAgDQogICAgRWFjaCB0aW1lIGRyaXZlciBv
-dmVyd3JpdGVzIGEgZGVzY3JpcHRvciwgdGhlIHZhbHVlIGluIERFU0NfV1JBUCBjaGFuZ2VzDQog
-ICAgd2hpY2ggbWFrZXMgaXQgcG9zc2libGUgZm9yIGRldmljZSB0byBkZXRlY3QgdGhhdCB0aGVy
-ZSdzIGEgbmV3DQogICAgZGVzY3JpcHRvci4NCiAgICANCiAgICANCiAgICA+ID4gDQogICAgPiA+
-IEZsYWdzIGFyZSBhbHdheXMgc2V0L2NsZWFyZWQgbGFzdC4NCiAgICA+ID4gDQogICAgPiA+IE5v
-dGUgdGhhdCBkcml2ZXIgY2FuIHdyaXRlIGRlc2NyaXB0b3JzIG91dCBpbiBhbnkgb3JkZXIsIGJ1
-dCBkZXZpY2Ugd2lsbCBub3QNCiAgICA+ID4gZXhlY3V0ZSBkZXNjcmlwdG9yIFgrMSB1bnRpbCBk
-ZXNjcmlwdG9yIFggaGFzIGJlZW4gcmVhZCBhcyB2YWxpZC4NCiAgICA+ID4gDQogICAgPiA+IERy
-aXZlciBvcGVyYXRpb246DQogICAgPiA+IA0KICAgID4gWy4uLl0NCiAgICA+ID4gDQogICAgPiA+
-IERFU0NfV1JBUCAtIGRldmljZSB1c2VzIHRoaXMgZmllbGQgdG8gZGV0ZWN0IGRlc2NyaXB0b3Ig
-Y2hhbmdlIGJ5IGRyaXZlci4NCiAgICA+IA0KICAgID4gRGV2aWNlIHVzZXMgdGhpcyBmaWVsZCB0
-byBkZXRlY3QgY2hhbmdlIG9mIHdyYXAtYXJvdW5kIGJvdW5kYXJ5IGJ5IGRyaXZlcj8gDQogICAg
-PiANCiAgICA+IFsuLi5dDQogICAgPiA+IA0KICAgID4gPiBEZXZpY2Ugb3BlcmF0aW9uICh1c2lu
-ZyBkZXNjcmlwdG9ycyk6DQogICAgPiA+IA0KICAgID4gWy4uLl0NCiAgICA+ID4gDQogICAgPiA+
-IERFU0NfV1JBUCAtIGRyaXZlciB1c2VzIHRoaXMgZmllbGQgdG8gZGV0ZWN0IGRlc2NyaXB0b3Ig
-Y2hhbmdlIGJ5IGRldmljZS4NCiAgICA+IA0KICAgID4gRHJpdmVyIHVzZXMgdGhpcyBmaWVsZCB0
-byBkZXRlY3QgY2hhbmdlIG9mIHdyYXAtYXJvdW5kIGJvdW5kYXJ5IGJ5IGRldmljZT8NCiAgICA+
-DQogICAgPiBCeSB1c2luZyB0aGlzLCBkcml2ZXIgZG9lc24ndCBuZWVkIHRvIG1haW50YWluIGFu
-eSBpbnRlcm5hbCB3cmFwLWFyb3VuZCBjb3VudCwgYnV0IGJlaW5nIGF3YXJlIG9mIHdyYXAtYXJv
-dW5kIGJ5IERFU0NfV1JBUCBmbGFnLg0KICAgID4gDQogICAgPiANCiAgICA+IFRoYW5rcywNCiAg
-ICA+IFN0ZXZlDQogICAgDQogICAgU28gdjIgc2ltcGx5IHNhaWQgZGVzY3JpcHRvciBoYXMgYSBz
-aW5nbGUgYml0OiBkcml2ZXIgd3JpdGVzIDEgdGhlcmUsDQogICAgZGV2aWNlIHdyaXRlcyAwLg0K
-ICAgIA0KICAgIFRoaXMgcmVxdWlyZXMgZGV2aWNlIHRvIG92ZXJ3cml0ZSBlYWNoIGRlc2NyaXB0
-b3IgYW5kIHBlb3BsZSBhc2tlZCANCiAgICBmb3IgYSB3YXkgdG8gY29tbXVuaWNhdGUgd2hlcmUg
-c29tZSBkZXNjcmlwdG9ycyBhcmUgbm90IG92ZXJ3cml0dGVuLg0KICAgIA0KICAgIFRoaXMgbmV3
-IGJpdCBoZWxwcyBkZXZpY2UgZGlzdGluZ3Vpc2ggbmV3IGFuZCBvbGQgZGVzY3JpcHRvcnMgd3Jp
-dHRlbiBieSBkcml2ZXIuDQogICAgDQogICAgDQogICAgDQogICAgPiA+IA0KICAgID4gWy4uLl0N
-CiAgICA+ID4gDQogICAgPiA+IC0tLQ0KICAgID4gPiANCiAgICA+ID4gTm90ZTogc2hvdWxkIHRo
-aXMgcHJvcG9zYWwgYmUgYWNjZXB0ZWQgYW5kIGFwcHJvdmVkLCBvbmUgb3IgbW9yZQ0KICAgID4g
-PiAgICAgICBjbGFpbXMgZGlzY2xvc2VkIHRvIHRoZSBUQyBhZG1pbiBhbmQgbGlzdGVkIG9uIHRo
-ZSBWaXJ0aW8gVEMNCiAgICA+ID4gICAgICAgSVBSIHBhZ2UgaHR0cHM6Ly93d3cub2FzaXMtb3Bl
-bi5vcmcvY29tbWl0dGVlcy92aXJ0aW8vaXByLnBocA0KICAgID4gPiAgICAgICBtaWdodCBiZWNv
-bWUgRXNzZW50aWFsIENsYWltcy4NCiAgICA+ID4gTm90ZTogdGhlIHBhZ2UgYWJvdmUgaXMgdW5m
-b3J0dW5hdGVseSBvdXQgb2YgZGF0ZSBhbmQgb3V0IG9mDQogICAgPiA+ICAgICAgIG15IGhhbmRz
-LiBJJ20gaW4gdGhlIHByb2Nlc3Mgb2YgdXBkYXRpbmcgaXByIGRpc2Nsb3N1cmVzDQogICAgPiA+
-ICAgICAgIGluIGdpdGh1YiBpbnN0ZWFkLiAgV2lsbCBtYWtlIHN1cmUgYWxsIGlzIGluIHBsYWNl
-IGJlZm9yZQ0KICAgID4gPiAgICAgICB0aGlzIHByb3Bvc2FsIGlzIHB1dCB0byB2b3RlLiBBcyB1
-c3VhbCB0aGlzIFRDIG9wZXJhdGVzIHVuZGVyIHRoZQ0KICAgID4gPiAgICAgICBOb24tQXNzZXJ0
-aW9uIE1vZGUgb2YgdGhlIE9BU0lTIElQUiBQb2xpY3ksIHdoaWNoIHByb3RlY3RzDQogICAgPiA+
-ICAgICAgIGFueW9uZSBpbXBsZW1lbnRpbmcgdGhlIHZpcnRpbyBzcGVjLg0KICAgID4gPiANCiAg
-ICA+ID4gLS0NCiAgICA+ID4gTVNUDQogICAgPiA+IA0KICAgID4gPiAtLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0NCiAg
-ICA+ID4gVG8gdW5zdWJzY3JpYmUsIGUtbWFpbDogdmlydGlvLWRldi11bnN1YnNjcmliZUBsaXN0
-cy5vYXNpcy1vcGVuLm9yZw0KICAgID4gPiBGb3IgYWRkaXRpb25hbCBjb21tYW5kcywgZS1tYWls
-OiB2aXJ0aW8tZGV2LWhlbHBAbGlzdHMub2FzaXMtb3Blbi5vcmcNCiAgICANCiAgICAtLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0NCiAgICBUbyB1bnN1YnNjcmliZSwgZS1tYWlsOiB2aXJ0aW8tZGV2LXVuc3Vic2NyaWJl
-QGxpc3RzLm9hc2lzLW9wZW4ub3JnDQogICAgRm9yIGFkZGl0aW9uYWwgY29tbWFuZHMsIGUtbWFp
-bDogdmlydGlvLWRldi1oZWxwQGxpc3RzLm9hc2lzLW9wZW4ub3JnDQogICAgDQogICAgDQoNCg==
+On Tue, Sep 26, 2017 at 11:38:18PM +0000, Steven Luong (sluong) wrote:
+> Michael,
+> 
+> Would you please give an example or two how these two flags DESC_DRIVER and DESC_WRAP are used together? Like others, I am confused by the description and still don’t quite grok it.
+> 
+> Steven
+
+My bad, I will need to work on it. Here is an example:
+
+Let's assume device promised to consume packets in order
+
+ring size = 2
+
+Ring is 0 initialized.
+
+Device initially polls DESC[0].flags for WRAP bit to change.
+
+driver adds:
+
+DESC[0].addr = 1234
+DESC[0].id = 0
+DESC[0].flags = DESC_DRIVER | DESC_NEXT | DESC_WRAP
+
+and
+
+DESC[0].addr = 5678
+DESC[1].id = 1
+DESC[1].flags = DESC_DRIVER | DESC_WRAP
+
+
+it now starts polling DESC[0] flags.
+
+
+Device reads 1234, executes it, does not use it.
+
+Device reads 5678, executes it, and uses it:
+
+DESC[0].id = 1
+DESC[0].flags = 0
+
+Device now polls DESC[0].flags for WRAP bit to change.
+
+Now driver sees that DRIVER bit has been cleared, so it nows that id is
+valid. I sees id 1, therefore id 0 and 1 has been read and are safe to
+overwrite.
+
+So it writes it out. It wrapped around to beginning of ring,
+so it flips the WRAP bit to 0 on all descriptors now:
+
+DESC[0].addr = 9ABC
+DESC[0].id = 0
+DESC[0].flags = DESC_DRIVER | DESC_NEXT
+
+
+DESC[0].addr = DEF0
+DESC[0].id = 1
+DESC[0].flags = DESC_DRIVER
+
+
+Next round wrap will be 1 again.
+
+
+To summarise:
+
+DRIVER bit is used by driver to detect device has used one or more
+descriptors.  WRAP is is used by device to detect driver has made a
+new descriptor available.
+
+
+-- 
+MST
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
