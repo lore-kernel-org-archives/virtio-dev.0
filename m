@@ -1,78 +1,109 @@
-Return-Path: virtio-dev-return-2573-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2574-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 4E15F1CB8080
-	for <virtio-dev@lists.oasis-open.org>; Thu, 28 Sep 2017 02:44:41 -0700 (PDT)
-From: "Liang, Cunming" <cunming.liang@intel.com>
-Date: Thu, 28 Sep 2017 09:44:35 +0000
-Message-ID: <D0158A423229094DA7ABF71CF2FA0DA34E1AD49B@SHSMSX152.ccr.corp.intel.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 20A2958180EC
+	for <virtio-dev@lists.oasis-open.org>; Thu, 28 Sep 2017 14:13:36 -0700 (PDT)
+Date: Fri, 29 Sep 2017 00:13:32 +0300
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20170929001152-mutt-send-email-mst@kernel.org>
 References: <20160915223915.qjlnlvf2w7u37bu3@redhat.com>
  <D0158A423229094DA7ABF71CF2FA0DA34E1A46A6@SHSMSX152.ccr.corp.intel.com>
  <20170926011826-mutt-send-email-mst@kernel.org>
  <7A0DC0C9-F148-4161-B2D1-8D8D14D8B9A1@cisco.com>
  <20170928023112-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20170928023112-mutt-send-email-mst@kernel.org>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Subject: RE: [virtio-dev] packed ring layout proposal v3
-To: "Michael S. Tsirkin" <mst@redhat.com>, "Steven Luong (sluong)" <sluong@cisco.com>
-Cc: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20170928023112-mutt-send-email-mst@kernel.org>
+Subject: Re: [virtio-dev] packed ring layout proposal v3
+To: "Steven Luong (sluong)" <sluong@cisco.com>
+Cc: "Liang, Cunming" <cunming.liang@intel.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-DQpHZXQgaXQgbm93LiBQbGVhc2UgY29ycmVjdCBtZSBpZiBJIG1pc3Npbmcgc29tZXRoaW5nLg0K
-DQoNCkZsYWdzIHN0YXR1cyBoaW50cywNCg0KLSBERVNDX0RSSVZFUiBvbmx5OiBkcml2ZXIgb3du
-cyB0aGUgZGVzY3JpcHRvciB3L28gYXZhaWxhYmxlIGluZm8gcmVhZHkgZm9yIGRldmljZSB0byB1
-c2UNCg0KLSBERVNDX0RSSVZFUiB8IERFU0NfV1JBUDogZHJpdmVyIGhhcyBwcmVwYXJlZCBhbiBh
-dmFpbGFibGUgZGVzY3JpcHRvciwgZGV2aWNlIGhhc24ndCB1c2VkIGl0IHlldA0KDQotIE5vbmU6
-IGRldmljZSBoYXMgdXNlZCB0aGUgZGVzY3JpcHRvciwgYW5kIHdyaXRlIGRlc2NyaXB0b3Igb3V0
-DQoNCi0gREVTQ19XUkFQIG9ubHk6IHNoYWxsIG5vdCBoYXBwZW4sIGRldmljZSBtYWtlIHN1cmUg
-dG8gY2xlYXIgaXQNCg0KDQpQb2xsaW5nIGJlaGF2aW9yIGlzLA0KDQotIERldmljZSBtb25pdG9y
-IERFU0NfV1JBUCBiaXQgc2V0IG9yIG5vdDsgSWYgc2V0LCBnbyB0byB1c2UgZGVzY3JpcHRvciBh
-bmQgY2xlYXIgREVTQ19EUklWRVIgYml0IGluIHRoZSBlbmQgKG5vdGU6IGFsd2F5cyBuZWVkIHRv
-IGNsZWFyIERFU0NfV1JBUCkNCg0KLSBEcml2ZXIgbW9uaXRvciBERVNDX0RSSVZFUiBiaXQgY2xl
-YXJlZCBvciBub3Q7IElmIGNsZWFyZWQsIHJlY2xhaW0gZGVzY3JpcHRvcihzZXQgREVTQ19EUklW
-RVIpIGFuZCBzZXQgREVTQ19XUkFQIG9uY2UgbmV3IGF2YWlsYWJsZSBkZXNjcmlwdG9yIGdldCBy
-ZWFkeSB0byBnbw0KDQoNCi0tDQpTdGV2ZQ0KDQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0t
-DQo+IEZyb206IE1pY2hhZWwgUy4gVHNpcmtpbiBbbWFpbHRvOm1zdEByZWRoYXQuY29tXQ0KPiBT
-ZW50OiBUaHVyc2RheSwgU2VwdGVtYmVyIDI4LCAyMDE3IDc6NDkgQU0NCj4gVG86IFN0ZXZlbiBM
-dW9uZyAoc2x1b25nKQ0KPiBDYzogTGlhbmcsIEN1bm1pbmc7IHZpcnRpby1kZXZAbGlzdHMub2Fz
-aXMtb3Blbi5vcmc7DQo+IHZpcnR1YWxpemF0aW9uQGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3Jn
-DQo+IFN1YmplY3Q6IFJlOiBbdmlydGlvLWRldl0gcGFja2VkIHJpbmcgbGF5b3V0IHByb3Bvc2Fs
-IHYzDQo+IA0KPiBPbiBUdWUsIFNlcCAyNiwgMjAxNyBhdCAxMTozODoxOFBNICswMDAwLCBTdGV2
-ZW4gTHVvbmcgKHNsdW9uZykgd3JvdGU6DQo+ID4gTWljaGFlbCwNCj4gPg0KPiA+IFdvdWxkIHlv
-dSBwbGVhc2UgZ2l2ZSBhbiBleGFtcGxlIG9yIHR3byBob3cgdGhlc2UgdHdvIGZsYWdzDQo+IERF
-U0NfRFJJVkVSIGFuZCBERVNDX1dSQVAgYXJlIHVzZWQgdG9nZXRoZXI/IExpa2Ugb3RoZXJzLCBJ
-IGFtDQo+IGNvbmZ1c2VkIGJ5IHRoZSBkZXNjcmlwdGlvbiBhbmQgc3RpbGwgZG9u4oCZdCBxdWl0
-ZSBncm9rIGl0Lg0KPiA+DQo+ID4gU3RldmVuDQo+IA0KPiBNeSBiYWQsIEkgd2lsbCBuZWVkIHRv
-IHdvcmsgb24gaXQuIEhlcmUgaXMgYW4gZXhhbXBsZToNCj4gDQo+IExldCdzIGFzc3VtZSBkZXZp
-Y2UgcHJvbWlzZWQgdG8gY29uc3VtZSBwYWNrZXRzIGluIG9yZGVyDQo+IA0KPiByaW5nIHNpemUg
-PSAyDQo+IA0KPiBSaW5nIGlzIDAgaW5pdGlhbGl6ZWQuDQo+IA0KPiBEZXZpY2UgaW5pdGlhbGx5
-IHBvbGxzIERFU0NbMF0uZmxhZ3MgZm9yIFdSQVAgYml0IHRvIGNoYW5nZS4NCj4gDQo+IGRyaXZl
-ciBhZGRzOg0KPiANCj4gREVTQ1swXS5hZGRyID0gMTIzNA0KPiBERVNDWzBdLmlkID0gMA0KPiBE
-RVNDWzBdLmZsYWdzID0gREVTQ19EUklWRVIgfCBERVNDX05FWFQgfCBERVNDX1dSQVANCj4gDQo+
-IGFuZA0KPiANCj4gREVTQ1swXS5hZGRyID0gNTY3OA0KPiBERVNDWzFdLmlkID0gMQ0KPiBERVND
-WzFdLmZsYWdzID0gREVTQ19EUklWRVIgfCBERVNDX1dSQVANCj4gDQo+IA0KPiBpdCBub3cgc3Rh
-cnRzIHBvbGxpbmcgREVTQ1swXSBmbGFncy4NCj4gDQo+IA0KPiBEZXZpY2UgcmVhZHMgMTIzNCwg
-ZXhlY3V0ZXMgaXQsIGRvZXMgbm90IHVzZSBpdC4NCj4gDQo+IERldmljZSByZWFkcyA1Njc4LCBl
-eGVjdXRlcyBpdCwgYW5kIHVzZXMgaXQ6DQo+IA0KPiBERVNDWzBdLmlkID0gMQ0KPiBERVNDWzBd
-LmZsYWdzID0gMA0KPiANCj4gRGV2aWNlIG5vdyBwb2xscyBERVNDWzBdLmZsYWdzIGZvciBXUkFQ
-IGJpdCB0byBjaGFuZ2UuDQo+IA0KPiBOb3cgZHJpdmVyIHNlZXMgdGhhdCBEUklWRVIgYml0IGhh
-cyBiZWVuIGNsZWFyZWQsIHNvIGl0IG5vd3MgdGhhdCBpZCBpcyB2YWxpZC4gSQ0KPiBzZWVzIGlk
-IDEsIHRoZXJlZm9yZSBpZCAwIGFuZCAxIGhhcyBiZWVuIHJlYWQgYW5kIGFyZSBzYWZlIHRvIG92
-ZXJ3cml0ZS4NCj4gDQo+IFNvIGl0IHdyaXRlcyBpdCBvdXQuIEl0IHdyYXBwZWQgYXJvdW5kIHRv
-IGJlZ2lubmluZyBvZiByaW5nLCBzbyBpdCBmbGlwcyB0aGUNCj4gV1JBUCBiaXQgdG8gMCBvbiBh
-bGwgZGVzY3JpcHRvcnMgbm93Og0KPiANCj4gREVTQ1swXS5hZGRyID0gOUFCQw0KPiBERVNDWzBd
-LmlkID0gMA0KPiBERVNDWzBdLmZsYWdzID0gREVTQ19EUklWRVIgfCBERVNDX05FWFQNCj4gDQo+
-IA0KPiBERVNDWzBdLmFkZHIgPSBERUYwDQo+IERFU0NbMF0uaWQgPSAxDQo+IERFU0NbMF0uZmxh
-Z3MgPSBERVNDX0RSSVZFUg0KPiANCj4gDQo+IE5leHQgcm91bmQgd3JhcCB3aWxsIGJlIDEgYWdh
-aW4uDQo+IA0KPiANCj4gVG8gc3VtbWFyaXNlOg0KPiANCj4gRFJJVkVSIGJpdCBpcyB1c2VkIGJ5
-IGRyaXZlciB0byBkZXRlY3QgZGV2aWNlIGhhcyB1c2VkIG9uZSBvciBtb3JlDQo+IGRlc2NyaXB0
-b3JzLiAgV1JBUCBpcyBpcyB1c2VkIGJ5IGRldmljZSB0byBkZXRlY3QgZHJpdmVyIGhhcyBtYWRl
-IGEgbmV3DQo+IGRlc2NyaXB0b3IgYXZhaWxhYmxlLg0KPiANCj4gDQo+IC0tDQo+IE1TVA0K
+On Thu, Sep 28, 2017 at 02:49:15AM +0300, Michael S. Tsirkin wrote:
+> On Tue, Sep 26, 2017 at 11:38:18PM +0000, Steven Luong (sluong) wrote:
+> > Michael,
+> > 
+> > Would you please give an example or two how these two flags DESC_DRIVER and DESC_WRAP are used together? Like others, I am confused by the description and still don’t quite grok it.
+> > 
+> > Steven
+
+Note: I made a mistake in the email. Instead of DESC_NEXT it should read
+DESC_MORE everywhere. I corrected the quoted text below for simplicity.
+
+
+
+> My bad, I will need to work on it. Here is an example:
+> 
+> Let's assume device promised to consume packets in order
+> 
+> ring size = 2
+> 
+> Ring is 0 initialized.
+> 
+> Device initially polls DESC[0].flags for WRAP bit to change.
+> 
+> driver adds:
+> 
+> DESC[0].addr = 1234
+> DESC[0].id = 0
+> DESC[0].flags = DESC_DRIVER | DESC_MORE | DESC_WRAP
+> 
+> and
+> 
+> DESC[0].addr = 5678
+> DESC[1].id = 1
+> DESC[1].flags = DESC_DRIVER | DESC_WRAP
+> 
+> 
+> it now starts polling DESC[0] flags.
+> 
+> 
+> Device reads 1234, executes it, does not use it.
+> 
+> Device reads 5678, executes it, and uses it:
+> 
+> DESC[0].id = 1
+> DESC[0].flags = 0
+> 
+> Device now polls DESC[0].flags for WRAP bit to change.
+> 
+> Now driver sees that DRIVER bit has been cleared, so it nows that id is
+> valid. I sees id 1, therefore id 0 and 1 has been read and are safe to
+> overwrite.
+> 
+> So it writes it out. It wrapped around to beginning of ring,
+> so it flips the WRAP bit to 0 on all descriptors now:
+> 
+> DESC[0].addr = 9ABC
+> DESC[0].id = 0
+> DESC[0].flags = DESC_DRIVER | DESC_MORE
+> 
+> 
+> DESC[0].addr = DEF0
+> DESC[0].id = 1
+> DESC[0].flags = DESC_DRIVER
+> 
+> 
+> Next round wrap will be 1 again.
+> 
+> 
+> To summarise:
+> 
+> DRIVER bit is used by driver to detect device has used one or more
+> descriptors.  WRAP is is used by device to detect driver has made a
+> new descriptor available.
+> 
+> 
+> -- 
+> MST
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
