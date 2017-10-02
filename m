@@ -1,110 +1,209 @@
-Return-Path: virtio-dev-return-2611-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2590-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 6A27B58180CC
-	for <virtio-dev@lists.oasis-open.org>; Tue, 10 Oct 2017 20:15:00 -0700 (PDT)
-Message-ID: <59DD8D27.5010601@intel.com>
-Date: Wed, 11 Oct 2017 11:16:55 +0800
-From: Wei Wang <wei.w.wang@intel.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 772F55818041
+	for <virtio-dev@lists.oasis-open.org>; Mon,  2 Oct 2017 09:38:15 -0700 (PDT)
+From: "Wang, Wei W" <wei.w.wang@intel.com>
+Date: Mon, 2 Oct 2017 16:38:01 +0000
+Message-ID: <286AC319A985734F985F78AFA26841F73932025A@shsmsx102.ccr.corp.intel.com>
+References: <1506744354-20979-1-git-send-email-wei.w.wang@intel.com>
+ <1506744354-20979-6-git-send-email-wei.w.wang@intel.com>
+ <20171001060305-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20171001060305-mutt-send-email-mst@kernel.org>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <201710102209.DBE39528.MtFLOJQSFOFVOH@I-love.SAKURA.ne.jp> <59DD7932.3070106@intel.com> <201710110226.v9B2QGdx019779@www262.sakura.ne.jp>
-In-Reply-To: <201710110226.v9B2QGdx019779@www262.sakura.ne.jp>
-Content-Type: text/plain; charset=iso-2022-jp
-Content-Transfer-Encoding: 7bit
-Subject: [virtio-dev] Re: [PATCH v16 3/5] virtio-balloon: VIRTIO_BALLOON_F_SG
-To: Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
-Cc: mst@redhat.com, virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, qemu-devel@nongnu.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, linux-mm@kvack.org, mhocko@kernel.org, akpm@linux-foundation.org, mawilcox@microsoft.com, david@redhat.com, cornelia.huck@de.ibm.com, mgorman@techsingularity.net, aarcange@redhat.com, amit.shah@redhat.com, pbonzini@redhat.com, willy@infradead.org, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu@aliyun.com
+Subject: [virtio-dev] RE: [PATCH v16 5/5] virtio-balloon: VIRTIO_BALLOON_F_CTRL_VQ
+To: "'Michael S. Tsirkin'" <mst@redhat.com>
+Cc: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "qemu-devel@nongnu.org" <qemu-devel@nongnu.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "mhocko@kernel.org" <mhocko@kernel.org>, "akpm@linux-foundation.org" <akpm@linux-foundation.org>, "mawilcox@microsoft.com" <mawilcox@microsoft.com>, "david@redhat.com" <david@redhat.com>, "cornelia.huck@de.ibm.com" <cornelia.huck@de.ibm.com>, "mgorman@techsingularity.net" <mgorman@techsingularity.net>, "aarcange@redhat.com" <aarcange@redhat.com>, "amit.shah@redhat.com" <amit.shah@redhat.com>, "pbonzini@redhat.com" <pbonzini@redhat.com>, "willy@infradead.org" <willy@infradead.org>, "liliang.opensource@gmail.com" <liliang.opensource@gmail.com>, "yang.zhang.wz@gmail.com" <yang.zhang.wz@gmail.com>, "quan.xu@aliyun.com" <quan.xu@aliyun.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 10/11/2017 10:26 AM, Tetsuo Handa wrote:
-> Wei Wang wrote:
->> On 10/10/2017 09:09 PM, Tetsuo Handa wrote:
->>> Wei Wang wrote:
->>>>> And even if we could remove balloon_lock, you still cannot use
->>>>> __GFP_DIRECT_RECLAIM at xb_set_page(). I think you will need to use
->>>>> "whether it is safe to wait" flag from
->>>>> "[PATCH] virtio: avoid possible OOM lockup at virtballoon_oom_notify()" .
->>>> Without the lock being held, why couldn't we use __GFP_DIRECT_RECLAIM at
->>>> xb_set_page()?
->>> Because of dependency shown below.
->>>
->>> leak_balloon()
->>>    xb_set_page()
->>>      xb_preload(GFP_KERNEL)
->>>        kmalloc(GFP_KERNEL)
->>>          __alloc_pages_may_oom()
->>>            Takes oom_lock
->>>            out_of_memory()
->>>              blocking_notifier_call_chain()
->>>                leak_balloon()
->>>                  xb_set_page()
->>>                    xb_preload(GFP_KERNEL)
->>>                      kmalloc(GFP_KERNEL)
->>>                        __alloc_pages_may_oom()
->>>                          Fails to take oom_lock and loop forever
->> __alloc_pages_may_oom() uses mutex_trylock(&oom_lock).
-> Yes. But this mutex_trylock(&oom_lock) is semantically mutex_lock(&oom_lock)
-> because __alloc_pages_slowpath() will continue looping until
-> mutex_trylock(&oom_lock) succeeds (or somebody releases memory).
->
->> I think the second __alloc_pages_may_oom() will not continue since the
->> first one is in progress.
-> The second __alloc_pages_may_oom() will be called repeatedly because
-> __alloc_pages_slowpath() will continue looping (unless somebody releases
-> memory).
->
-
-OK, I see, thanks. So, the point is that the OOM code path should not
-have memory allocation, and the
-old leak_balloon (without the F_SG feature) don't need xb_preload(). I
-think one solution would be to let
-the OOM uses the old leak_balloon() code path, and we can add one more
-parameter to leak_balloon
-to control that:
-
-leak_balloon(struct virtio_balloon *vb, size_t num, bool oom)
+On Sunday, October 1, 2017 11:19 AM, Michael S. Tsirkin wrote:
+> On Sat, Sep 30, 2017 at 12:05:54PM +0800, Wei Wang wrote:
+> > +static void ctrlq_send_cmd(struct virtio_balloon *vb,
+> > +			  struct virtio_balloon_ctrlq_cmd *cmd,
+> > +			  bool inbuf)
+> > +{
+> > +	struct virtqueue *vq =3D vb->ctrl_vq;
+> > +
+> > +	ctrlq_add_cmd(vq, cmd, inbuf);
+> > +	if (!inbuf) {
+> > +		/*
+> > +		 * All the input cmd buffers are replenished here.
+> > +		 * This is necessary because the input cmd buffers are lost
+> > +		 * after live migration. The device needs to rewind all of
+> > +		 * them from the ctrl_vq.
+>=20
+> Confused. Live migration somehow loses state? Why is that and why is it a=
+ good
+> idea? And how do you know this is migration even?
+> Looks like all you know is you got free page end. Could be any reason for=
+ this.
 
 
+I think this would be something that the current live migration lacks - wha=
+t the
+device read from the vq is not transferred during live migration, an exampl=
+e is the=20
+stat_vq_elem:=20
+Line 476 at https://github.com/qemu/qemu/blob/master/hw/virtio/virtio-ballo=
+on.c
 
->>> By the way, is xb_set_page() safe?
->>> Sleeping in the kernel with preemption disabled is a bug, isn't it?
->>> __radix_tree_preload() returns 0 with preemption disabled upon success.
->>> xb_preload() disables preemption if __radix_tree_preload() fails.
->>> Then, kmalloc() is called with preemption disabled, isn't it?
->>> But xb_set_page() calls xb_preload(GFP_KERNEL) which might sleep with
->>> preemption disabled.
->> Yes, I think that should not be expected, thanks.
->>
->> I plan to change it like this:
->>
->> bool xb_preload(gfp_t gfp)
->> {
->>         if (!this_cpu_read(ida_bitmap)) {
->>                 struct ida_bitmap *bitmap = kmalloc(sizeof(*bitmap), gfp);
->>
->>                 if (!bitmap)
->>                         return false;
->>                 bitmap = this_cpu_cmpxchg(ida_bitmap, NULL, bitmap);
->>                 kfree(bitmap);
->>         }
-> Excuse me, but you are allocating per-CPU memory when running CPU might
-> change at this line? What happens if running CPU has changed at this line?
-> Will it work even with new CPU's ida_bitmap == NULL ?
->
+For all the things that are added to the vq and need to be held by the devi=
+ce
+to use later need to consider the situation that live migration might happe=
+n at any
+time and they need to be re-taken from the vq by the device on the destinat=
+ion
+machine.
+
+So, even without this live migration optimization feature, I think all the =
+things that are=20
+added to the vq for the device to hold, need a way for the device to rewind=
+ back from
+the vq - re-adding all the elements to the vq is a trick to keep a record o=
+f all of them
+on the vq so that the device side rewinding can work.=20
+
+Please let me know if anything is missed or if you have other suggestions.
 
 
-Yes, it will be detected in xb_set_bit(): when ida_bitmap = NULL on the
-new CPU, xb_set_bit() will
-return -EAGAIN to the caller, and the caller should restart from
-xb_preload().
+> > +static void ctrlq_handle(struct virtqueue *vq) {
+> > +	struct virtio_balloon *vb =3D vq->vdev->priv;
+> > +	struct virtio_balloon_ctrlq_cmd *msg;
+> > +	unsigned int class, cmd, len;
+> > +
+> > +	msg =3D (struct virtio_balloon_ctrlq_cmd *)virtqueue_get_buf(vq, &len=
+);
+> > +	if (unlikely(!msg))
+> > +		return;
+> > +
+> > +	/* The outbuf is sent by the host for recycling, so just return. */
+> > +	if (msg =3D=3D &vb->free_page_cmd_out)
+> > +		return;
+> > +
+> > +	class =3D virtio32_to_cpu(vb->vdev, msg->class);
+> > +	cmd =3D  virtio32_to_cpu(vb->vdev, msg->cmd);
+> > +
+> > +	switch (class) {
+> > +	case VIRTIO_BALLOON_CTRLQ_CLASS_FREE_PAGE:
+> > +		if (cmd =3D=3D VIRTIO_BALLOON_FREE_PAGE_F_STOP) {
+> > +			vb->report_free_page_stop =3D true;
+> > +		} else if (cmd =3D=3D VIRTIO_BALLOON_FREE_PAGE_F_START) {
+> > +			vb->report_free_page_stop =3D false;
+> > +			queue_work(vb->balloon_wq, &vb-
+> >report_free_page_work);
+> > +		}
+> > +		vb->free_page_cmd_in.class =3D
+> > +
+> 	VIRTIO_BALLOON_CTRLQ_CLASS_FREE_PAGE;
+> > +		ctrlq_send_cmd(vb, &vb->free_page_cmd_in, true);
+> > +	break;
+> > +	default:
+> > +		dev_warn(&vb->vdev->dev, "%s: cmd class not supported\n",
+> > +			 __func__);
+> > +	}
+>=20
+> Manipulating report_free_page_stop without any locks looks very suspiciou=
+s.
+
+> Also, what if we get two start commands? we should restart from beginning=
+,
+> should we not?
+>=20
+
+
+Yes, it will start to report free pages from the beginning.
+walk_free_mem_block() doesn't maintain any internal status, so the invoking=
+ of
+it will always start from the beginning.
+
+
+> > +/* Ctrlq commands related to VIRTIO_BALLOON_CTRLQ_CLASS_FREE_PAGE
+> */
+> > +#define VIRTIO_BALLOON_FREE_PAGE_F_STOP		0
+> > +#define VIRTIO_BALLOON_FREE_PAGE_F_START	1
+> > +
+> >  #endif /* _LINUX_VIRTIO_BALLOON_H */
+>=20
+> The stop command does not appear to be thought through.
+>=20
+> Let's assume e.g. you started migration. You ask guest for free pages.
+> Then you cancel it.  There are a bunch of pages in free vq and you are ge=
+tting
+> more.  You now want to start migration again. What to do?
+>=20
+> A bunch of vq flushing and waiting will maybe do the trick, but waiting o=
+n guest
+> is never a great idea.
+>=20
+
+
+I think the device can flush (pop out what's left in the vq and push them b=
+ack) the
+vq right after the Stop command is sent to the guest, rather than doing the=
+ flush
+when the 2nd initiation of live migration begins. The entries pushed back t=
+o the vq
+will be in the used ring, what would the device need to wait for?
+
+
+> I previously suggested pushing the stop/start commands from guest to host=
+ on
+> the free page vq, and including an ID in host to guest and guest to host
+> commands. This way ctrl vq is just for host to guest commands, and host
+> matches commands and knows which command is a free page in response to.
+>=20
+> I still think it's a good idea but go ahead and propose something else th=
+at works.
+>=20
+
+Thanks for the suggestion. Probably I haven't fully understood it. Please s=
+ee the example
+below:
+
+1) host-to-guest ctrl_vq:
+StartCMD, ID=3D1
+
+2) guest-to-host free_page_vq:
+free_page, ID=3D1
+free_page, ID=3D1
+free_page, ID=3D1
+free_page, ID=3D1
+
+3) host-to-guest ctrl_vq:
+StopCMD, ID=3D1
+
+4) initiate the 2nd try of live migration via host-to-guest ctrl_vq:
+StartCMD, ID=3D2
+
+5) the guest-to-host free_page_vq might look like this:
+free_page, ID=3D1
+free_page, ID=3D1
+free_page, ID=3D2
+free_page, ID=3D2
+
+The device will need to drop (pop out the two entries and push them back)
+the first 2 obsolete free pages which are sent by ID=3D1.
+
+I haven't found the benefits above yet. The device will perform the same op=
+erations
+to get rid of the old free pages. If we drop the old free pages after the S=
+topCMD (
+ID may also not be needed in this case), the overhead won't be added to the=
+ live
+migration time.
+
+Would you have any thought about this?
+
 
 Best,
 Wei
-
 
 
 
