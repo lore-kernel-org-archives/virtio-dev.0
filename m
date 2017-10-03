@@ -1,94 +1,153 @@
-Return-Path: virtio-dev-return-2604-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2591-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id C33B55818E63
-	for <virtio-dev@lists.oasis-open.org>; Tue, 10 Oct 2017 01:40:31 -0700 (PDT)
-Message-ID: <59DC865F.3040307@huawei.com>
-Date: Tue, 10 Oct 2017 16:35:43 +0800
-From: "Longpeng (Mike)" <longpeng2@huawei.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 312025818C9E
+	for <virtio-dev@lists.oasis-open.org>; Tue,  3 Oct 2017 06:04:58 -0700 (PDT)
+References: <20170804181927.12148-1-jean-philippe.brucker@arm.com>
+From: Auger Eric <eric.auger@redhat.com>
+Message-ID: <0e0db2c0-86bc-a76a-05bd-0b41e00ba926@redhat.com>
+Date: Tue, 3 Oct 2017 15:04:47 +0200
 MIME-Version: 1.0
-References: <1505092240-10864-1-git-send-email-longpeng2@huawei.com> <2d8ae3d3-438b-da84-4959-cf63f4f4ce99@linux.vnet.ibm.com> <59B9D439.10807@huawei.com> <7e490af1-9caa-c96d-5f62-308f1b5d8805@linux.vnet.ibm.com> <59BF1E9B.2030408@huawei.com> <64d90f78-a2ae-be37-672b-e47aa3d4ecb2@linux.vnet.ibm.com> <33183CC9F5247A488A2544077AF19020DA3FBCC5@DGGEMA505-MBX.china.huawei.com> <7eaac82c-0d8b-47f1-94dd-772b3abf31f9@linux.vnet.ibm.com> <33183CC9F5247A488A2544077AF19020DA3FBDD3@DGGEMA505-MBX.china.huawei.com>
-In-Reply-To: <33183CC9F5247A488A2544077AF19020DA3FBDD3@DGGEMA505-MBX.china.huawei.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20170804181927.12148-1-jean-philippe.brucker@arm.com>
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Subject: [virtio-dev] Re: [Qemu-devel] [virtio-dev] Re: [virtio-dev] Re: [RFC 0/8] virtio-crypto:
- add multiplexing mode support
-To: "Gonglei (Arei)" <arei.gonglei@huawei.com>, Halil Pasic <pasic@linux.vnet.ibm.com>
-Cc: "wangxin (U)" <wangxinxin.wang@huawei.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "Ola.Liljedahl@arm.com" <Ola.Liljedahl@arm.com>, "Huangweidong (C)" <weidong.huang@huawei.com>, "brian.a.keating@intel.com" <brian.a.keating@intel.com>, "mst@redhat.com" <mst@redhat.com>, "xin.zeng@intel.com" <xin.zeng@intel.com>, "jasowang@redhat.com" <jasowang@redhat.com>, "cohuck@redhat.com" <cohuck@redhat.com>, Luonengjun <luonengjun@huawei.com>, "qemu-devel@nongnu.org" <qemu-devel@nongnu.org>, "john.griffin@intel.com" <john.griffin@intel.com>, "agraf@suse.de" <agraf@suse.de>, "liang.j.ma@intel.com" <liang.j.ma@intel.com>, "mike.caraman@nxp.com" <mike.caraman@nxp.com>, "stefanha@redhat.com" <stefanha@redhat.com>, "Varun.Sethi@freescale.com" <Varun.Sethi@freescale.com>, Jani Kokkonen <Jani.Kokkonen@huawei.com>, "vincent.jardin@6wind.com" <vincent.jardin@6wind.com>, "denglingli@chinamobile.com" <denglingli@chinamobile.com>, "arei.gonglei@hotmail.com" <arei.gonglei@hotmail.com>
+Subject: Re: [virtio-dev] [RFC] virtio-iommu version 0.4
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, iommu@lists.linux-foundation.org, kvm@vger.kernel.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org
+Cc: will.deacon@arm.com, robin.murphy@arm.com, lorenzo.pieralisi@arm.com, mst@redhat.com, jasowang@redhat.com, marc.zyngier@arm.com, eric.auger.pro@gmail.com, bharat.bhushan@nxp.com, peterx@redhat.com, kevin.tian@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+Hi Jean,
 
-
-On 2017/10/9 19:17, Gonglei (Arei) wrote:
-
+On 04/08/2017 20:19, Jean-Philippe Brucker wrote:
+> This is the continuation of my proposal for virtio-iommu, the para-
+> virtualized IOMMU. Here is a summary of the changes since last time [1]:
 > 
->> -----Original Message-----
->> From: Halil Pasic [mailto:pasic@linux.vnet.ibm.com]
->> Sent: Monday, October 09, 2017 7:05 PM
->>
->> On 10/09/2017 11:22 AM, Gonglei (Arei) wrote:
->>> The next patch refactors make sense to me,
->>> but why do we need to decouple the virtio-crypto.h?
->>>
->>>
->>
->> I wanted to be able to freely change the host side and test with an unchanged
->> guest side, that's why I've done that. It's just for testing. I had to do that
->> because we don't have a mux capable linux driver. Neither of these patches is
->> intended for inclusion. I'm just trying to make a point with them: we can
->> make this substantially simpler (compared to this RFC).
->>
-> I see.
+> * The virtio-iommu document now resembles an actual specification. It is
+>   split into a formal description of the virtio device, and implementation
+>   notes. Please find sources and binaries at [2].
 > 
->> So how do we proceed here? It would be nice to see a cleaned up version of
+> * Added a probe request to describe to the guest different properties that
+>   do not fit in firmware or in the virtio config space. This is a
+>   necessary stepping stone for extending the virtio-iommu.
 > 
-> Maybe Longpeng can apply your test patches in the following patch set when
-> he has time. @Longpeng
+> * There is a working Qemu prototype [3], thanks to Eric Auger and Bharat
+>   Bhushan.
 > 
-
-OK, I'll take Halil's approach in the following patch set. But I think the spec
-is more important in the current, hope Halil would give more useful suggestions. :)
-
->> this series soon. If I recall correctly there were also other things which
->> can be done in a less convoluted manner.
->>
-> Oh? Which things?
+> You can find the Linux driver and kvmtool device at [4] and [5]. I
+> plan to rework driver and kvmtool device slightly before sending the
+> patches.
 > 
->>>> The basic idea behind the whole thing is that tinging about the requests put
->>>> on the virtqueues in terms of just complicates things unnecessarily.
->>>>
->>>> I could guess I will post the interesting part as a reply to this and the less
->>>> interesting part (decoupling) as an attachment. You are supposed to apply
->> first
->>>> the attachment then the part after the scissors line.
->>>>
->>>> Of course should you could respin the series preferably with the test
->>>> included I can rebase my stuff.
->>>>
->>>> Please let me know about your opinion.
->>>>
->>> Thanks for your work, Halil. What's your opinion about virtio crypto spec v20?
->>
->> I'm on it. I've already started witting on Friday but things turned out a bit more
->> interesting that expected. So I've postponed to today. Of course the two things
->> are
->> connected. I will try to give some feedback today.
->>
-> Sounds good.
+> To understand the virtio-iommu, I advise to first read introduction and
+> motivation, then skim through implementation notes and finally look at the
+> device specification.
+> 
+> I wasn't sure how to organize the review. For those who prefer to comment
+> inline, I attached v0.4 of device-operations.tex and topology.tex+MSI.tex
+> to this thread. They are the biggest chunks of the document. But LaTeX
+> isn't very pleasant to read, so you can simply send a list of comments in
+> relation to section numbers and a few words of context, we'll manage.
+> 
+> ---
+> Version numbers 0.1-0.4 are arbitrary. I'm hoping they allow to compare
+> more easily differences since the RFC (see [6]), but haven't been made
+> public so far. This is the first public posting since initial proposal
+> [1], and the following describes all changes.
+> 
+> ## v0.1 ##
+> 
+> Content is the same as the RFC, but formatted to LaTeX. 'make' generates
+> one PDF and one HTML document.
+> 
+> ## v0.2 ##
+> 
+> Add introductions, improve topology example and firmware description based
+> on feedback and a number of useful discussions.
+> 
+> ## v0.3 ##
+> 
+> Add normative sections (MUST, SHOULD, etc). Clarify some things, tighten
+> the device and driver behaviour. Unmap semantics are consolidated; they
+> are now closer to VFIO Type1 v2 semantics.
+> 
+> ## v0.4 ##
+> 
+> Introduce PROBE requests. They provide per-endpoint information to the
+> driver that couldn't be described otherwise.
+> 
+> For the moment, they allow to handle MSIs on x86 virtual platforms (see
+> 3.2). To do that we communicate reserved IOVA regions, that will also be
+> useful for describing regions that cannot be mapped for a given endpoint,
+> for instance addresses that correspond to a PCI bridge window.
+> 
+> Introducing such a large framework for this tiny feature may seem
+> overkill, but it is needed for future extensions of the virtio-iommu and I
+> believe it really is worth the effort.
+> 
+> ## Future ##
+> 
+> Other extensions are in preparation. I won't detail them here because v0.4
+> already is a lot to digest, but in short, building on top of PROBE:
+> 
+> * First, since the IOMMU is paravirtualized, the device can expose some
+>   properties of the physical topology to the guest, and let it allocate
+>   resources more efficiently. For example, when the virtio-iommu manages
+>   both physical and emulated endpoints, with different underlying IOMMUs,
+>   we now have a way to describe multiple page and block granularities,
+>   instead of forcing the guest to use the most restricted one for all
+>   endpoints. This will most likely be in v0.5.
+> 
+> * Then on top of that, a major improvement will describe hardware
+>   acceleration features available to the guest. There is what I call "Page
+>   Table Handover" (or simply, from the host POV, "Nested"), the ability
+>   for the guest to manipulate its own page tables instead of sending
+>   MAP/UNMAP requests to the host. This, along with IO Page Fault
+>   reporting, will also permit SVM virtualization on different platforms.
 > 
 > Thanks,
-> -Gonglei
+> Jean
 > 
+> [1] http://www.spinics.net/lists/kvm/msg147990.html
+> [2] git://linux-arm.org/virtio-iommu.git branch viommu/v0.4
+>     http://www.linux-arm.org/git?p=virtio-iommu.git;a=blob;f=dist/v0.4/virtio-iommu-v0.4.pdf
+>     I reiterate the disclaimers: don't use this document as a reference,
+>     it's a draft. It's also not an OASIS document yet. It may be riddled
+>     with mistakes. As this is a working draft, it is unstable and I do not
+>     guarantee backward compatibility of future versions.
+> [3] https://lists.gnu.org/archive/html/qemu-arm/2017-08/msg00004.html
+> [4] git://linux-arm.org/linux-jpb.git virtio-iommu/v0.4
+>     Warning: UAPI headers have changed! They didn't follow the spec,
+>     please update. (Use branch v0.1, that has the old headers, for the
+>     Qemu prototype [3])
+When rebasing the v0.4 driver on master I observe a regression: commands
+are not received properly by QEMU (typically an attach command is
+received with a type of 0). After a bisection of the guest kernel the
+first commit the problem appears is:
+
+commit e3067861ba6650a566a6273738c23c956ad55c02
+arm64: add basic VMAP_STACK support
+
+After reverting this patch, things resume working.
+
+I observe the problem with a 4kB page guest kernel.
+
+Thanks
+
+Eric
 
 
--- 
-Regards,
-Longpeng(Mike)
-
+> [5] git://linux-arm.org/kvmtool-jpb.git virtio-iommu/v0.4
+>     Warning: command-line has changed! Use --viommu vfio[,opts] and
+>     --viommu virtio[,opts] to instantiate a device.
+> [6] http://www.linux-arm.org/git?p=virtio-iommu.git;a=tree;f=dist/diffs
+> 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+> 
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
