@@ -1,36 +1,436 @@
-Return-Path: virtio-dev-return-2597-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2601-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 6D3AD58190F0
-	for <virtio-dev@lists.oasis-open.org>; Mon,  9 Oct 2017 02:37:48 -0700 (PDT)
-Message-ID: <59DB43DD.30409@intel.com>
-Date: Mon, 09 Oct 2017 17:39:41 +0800
-From: Wei Wang <wei.w.wang@intel.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id CE55658180CC
+	for <virtio-dev@lists.oasis-open.org>; Mon,  9 Oct 2017 08:44:04 -0700 (PDT)
+From: Halil Pasic <pasic@linux.vnet.ibm.com>
+References: <1506662648-55692-1-git-send-email-longpeng2@huawei.com>
+ <1506662648-55692-2-git-send-email-longpeng2@huawei.com>
+Date: Mon, 9 Oct 2017 17:43:51 +0200
 MIME-Version: 1.0
-References: <1506744354-20979-1-git-send-email-wei.w.wang@intel.com> <1506864327.1916.3.camel@icloud.com>
-In-Reply-To: <1506864327.1916.3.camel@icloud.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: [virtio-dev] Re: [PATCH v16 0/5] Virtio-balloon Enhancement
-To: Damian Tometzki <damian.tometzki@icloud.com>, virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, qemu-devel@nongnu.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, linux-mm@kvack.org, mst@redhat.com, mhocko@kernel.org, akpm@linux-foundation.org, mawilcox@microsoft.com
-Cc: david@redhat.com, cornelia.huck@de.ibm.com, mgorman@techsingularity.net, aarcange@redhat.com, amit.shah@redhat.com, pbonzini@redhat.com, willy@infradead.org, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu@aliyun.com
+In-Reply-To: <1506662648-55692-2-git-send-email-longpeng2@huawei.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+Message-Id: <23e444c8-7f23-1021-552e-534153c149dd@linux.vnet.ibm.com>
+Subject: [virtio-dev] Re: [Qemu-devel] [v20 1/2] virtio-crypto: Add virtio crypto device
+ specification
+To: "Longpeng(Mike)" <longpeng2@huawei.com>, qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org
+Cc: Ola.Liljedahl@arm.com, brian.a.keating@intel.com, mst@redhat.com, xin.zeng@intel.com, jasowang@redhat.com, luonengjun@huawei.com, agraf@suse.de, john.griffin@intel.com, mike.caraman@nxp.com, arei.gonglei@huawei.com, liang.j.ma@intel.com, stefanha@redhat.com, cornelia.huck@de.ibm.com, Varun.Sethi@freescale.com, Jani.Kokkonen@huawei.com, vincent.jardin@6wind.com, denglingli@chinamobile.com, weidong.huang@huawei.com, arei.gonglei@hotmail.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 10/01/2017 09:25 PM, Damian Tometzki wrote:
-> Hello,
->
-> where i can found the patch in git.kernel.org ?
->
 
-We don't have patches there. If you want to try this feature, you can 
-get the qemu side draft code here: https://github.com/wei-w-wang/qemu-lm
 
-Best,
-Wei
+On 09/29/2017 07:24 AM, Longpeng(Mike) wrote:
+> From: Gonglei <arei.gonglei@huawei.com>
+> 
+> The virtio crypto device is a virtual crypto device (ie. hardware
+> crypto accelerator card). Currently, the virtio crypto device provides
+> the following crypto services: CIPHER, MAC, HASH, and AEAD.
+> 
+> In this patch, CIPHER, MAC, HASH, AEAD services are introduced.
+> 
+> VIRTIO-153
+> 
+> Signed-off-by: Gonglei <arei.gonglei@huawei.com>
+> Signed-off-by: Longpeng(Mike) <longpeng2@huawei.com>
+> ---
+[..]
+
+Continuing basically form where I left of last time to avoid the
+beginning getting lots of review and the end hardly any.
+
+> +\subsubsection{Control Virtqueue}\label{sec:Device Types / Crypto Device / Device Operation / Control Virtqueue}
+> +
+> +The driver uses the control virtqueue to send control commands to the
+> +device, such as session operations (See \ref{sec:Device Types / Crypto Device / Device Operation / Control Virtqueue / Session operation}).
+> +
+> +The header for controlq is of the following form:
+> +\begin{lstlisting}
+> +#define VIRTIO_CRYPTO_OPCODE(service, op)   (((service) << 8) | (op))
+> +
+> +struct virtio_crypto_ctrl_header {
+> +#define VIRTIO_CRYPTO_CIPHER_CREATE_SESSION \
+> +       VIRTIO_CRYPTO_OPCODE(VIRTIO_CRYPTO_SERVICE_CIPHER, 0x02)
+> +#define VIRTIO_CRYPTO_CIPHER_DESTROY_SESSION \
+> +       VIRTIO_CRYPTO_OPCODE(VIRTIO_CRYPTO_SERVICE_CIPHER, 0x03)
+> +#define VIRTIO_CRYPTO_HASH_CREATE_SESSION \
+> +       VIRTIO_CRYPTO_OPCODE(VIRTIO_CRYPTO_SERVICE_HASH, 0x02)
+> +#define VIRTIO_CRYPTO_HASH_DESTROY_SESSION \
+> +       VIRTIO_CRYPTO_OPCODE(VIRTIO_CRYPTO_SERVICE_HASH, 0x03)
+> +#define VIRTIO_CRYPTO_MAC_CREATE_SESSION \
+> +       VIRTIO_CRYPTO_OPCODE(VIRTIO_CRYPTO_SERVICE_MAC, 0x02)
+> +#define VIRTIO_CRYPTO_MAC_DESTROY_SESSION \
+> +       VIRTIO_CRYPTO_OPCODE(VIRTIO_CRYPTO_SERVICE_MAC, 0x03)
+> +#define VIRTIO_CRYPTO_AEAD_CREATE_SESSION \
+> +       VIRTIO_CRYPTO_OPCODE(VIRTIO_CRYPTO_SERVICE_AEAD, 0x02)
+> +#define VIRTIO_CRYPTO_AEAD_DESTROY_SESSION \
+> +       VIRTIO_CRYPTO_OPCODE(VIRTIO_CRYPTO_SERVICE_AEAD, 0x03)
+> +    le32 opcode;
+> +    /* algo should be service-specific algorithms */
+> +    le32 algo;
+> +    le32 flag;
+> +    /* reserved */
+> +    le32 queue_id;
+
+AFAIR we agreed to drop queue_id. Call the variable something a reserved0,
+or whatever but not queue_id.
+
+> +};
+> +\end{lstlisting}
+> +
+> +The format of the controlq request depends on the VIRTIO_CRYPTO_F_MUX_MODE feature bit:
+> +
+> +\begin{itemize*}
+> +\item If the VIRTIO_CRYPTO_F_MUX_MODE feature bit is NOT negotiated the controlq request is
+> +    a fixed-size structure of form:
+> +\begin{lstlisting}
+> +struct virtio_crypto_op_ctrl_req {
+> +    struct virtio_crypto_ctrl_header header;
+> +
+> +    union {
+> +        struct virtio_crypto_sym_create_session_req   sym_create_session;
+> +        struct virtio_crypto_hash_create_session_req  hash_create_session;
+> +        struct virtio_crypto_mac_create_session_req   mac_create_session;
+> +        struct virtio_crypto_aead_create_session_req  aead_create_session;
+> +        struct virtio_crypto_destroy_session_req      destroy_session;
+> +    } u;
+> +};
+
+
+See my comment on your implementation RFC. I don't think we need to
+introduce these structs.
+
+The only difference is that a certain portion needs to be padded to 56
+bytes in case of no-mux and that it does not in case of mux.
+
+Furthermore is (struct virtio_crypto_op_ctrl_req) this even correct?
+Please explain to me, how is an implementer of this specification
+supposed to know on which offset does the stuff corresponding to struct
+virtio_crypto_session_input start! Another such question is, what is the
+size of struct virtio_crypto_op_ctrl_req? (I think I've asked the later
+one several times, and I'm quite frustrated to do it again -- sorry
+if I'm wrong, I did not have time to dig trough my emails and verify my
+hypothesis).
+
+IMHO whithout this information it's impossible to come up with an
+interoperable implementation -- and facilitating that is supposed to be
+the the main objective of this specification AFAIU.
+
+The stuff in the linux header is unambiguous because it has a lot of
+padding specified which isn't specified here. On the other hand here we
+have the variable length arrays notation which very ambiguous, and simply
+does not do the job. Please feel encouraged to point out my mistake
+if I'm wrong in my assessments (happens quite often -- sadly)!
+
+
+> +\end{lstlisting}
+> +The header is the general header, and the union is of the algorithm-specific type or the
+> +virtio_crypto_destroy_session_req structure, which is set by the driver. All the properties
+> +in the union are shown as follows.
+> +
+> +\item If the VIRTIO_CRYPTO_F_MUX_MODE feature bit is negotiated the controlq request is composed
+> +    of two parts, the additional paramenters are preceded by the general header.
+> +
+> +\begin{lstlisting}
+> +struct virtio_crypto_op_ctrl_req_mux {
+> +    struct virtio_crypto_ctrl_header header;
+> +
+> +    /* additional paramenter */
+> +    u8 additional_para[addl_para_len];
+> +};
+> +\end{lstlisting}
+> +
+> +The additional paramenters are stored in a virtio_crypto_destroy_session_req structure or
+> +in a algorithm-specific structure:
+> +\begin{itemize*}
+> +\item struct virtio_crypto_sym_create_session_req
+> +\item struct virtio_crypto_hash_create_session_req
+> +\item struct virtio_crypto_mac_create_session_req
+> +\item struct virtio_crypto_aead_create_session_req
+> +\item struct virtio_crypto_destroy_session_req
+> +\end{itemize*}
+> +All of the structures above are shown as follows.
+> +\end{itemize*}
+> +
+> +\paragraph{Session operation}\label{sec:Device Types / Crypto Device / Device Operation / Control Virtqueue / Session operation}
+> +
+> +The session is a
+> +handle which describes the cryptographic parameters to be applied to
+> +a number of buffers.
+> +
+> +The following structure stores the result of session creation set by the device:
+> +
+> +\begin{lstlisting}
+> +struct virtio_crypto_session_input {
+> +    /* Device-writable part */
+> +    le64 session_id;
+> +    le32 status;
+> +    le32 padding;
+> +};
+> +\end{lstlisting}
+> +
+> +A request to destroy a session includes the following information:
+> +
+> +\begin{lstlisting}
+> +struct virtio_crypto_destroy_session_req {
+> +    /* Device-readable part */
+> +    le64  session_id;
+> +    /* Device-writable part */
+> +    le32  status;
+> +    le32  padding;
+> +};
+> +\end{lstlisting}
+> +
+> +\subparagraph{Session operation: HASH session}\label{sec:Device Types / Crypto Device / Device
+> +Operation / Control Virtqueue / Session operation / Session operation: HASH session}
+> +
+> +HASH session requests are as follows:
+> +
+> +\begin{lstlisting}
+> +struct virtio_crypto_hash_session_para {
+> +    /* See VIRTIO_CRYPTO_HASH_* above */
+> +    le32 algo;
+> +    /* hash result length */
+> +    le32 hash_result_len;
+> +};
+> +struct virtio_crypto_hash_create_session_req {
+> +    /* Device-readable part */
+> +    struct virtio_crypto_hash_session_para para;
+> +    /* Device-writable part */
+> +    struct virtio_crypto_session_input input;
+> +};
+> +\end{lstlisting}
+> +
+> +The information required by HASH session creation is stored in the virtio_crypto_hash_create_session_req
+> +structure, including the hash parameters stored in \field{para}. \field{input} stores the result of this operation.
+> +
+> +\subparagraph{Session operation: MAC session}\label{sec:Device Types / Crypto Device / Device
+> +Operation / Control Virtqueue / Session operation / Session operation: MAC session}
+> +
+> +MAC session requests are as follows:
+> +
+> +\begin{lstlisting}
+> +struct virtio_crypto_mac_session_para {
+> +    /* See VIRTIO_CRYPTO_MAC_* above */
+> +    le32 algo;
+> +    /* hash result length */
+> +    le32 hash_result_len;
+> +    /* length of authenticated key */
+> +    le32 auth_key_len;
+> +    le32 padding;
+> +};
+> +
+> +struct virtio_crypto_mac_create_session_req {
+> +    /* Device-readable part */
+> +    struct virtio_crypto_mac_session_para para;
+> +    /* The authenticated key */
+> +    u8 auth_key[auth_key_len];
+> +
+> +    /* Device-writable part */
+> +    struct virtio_crypto_session_input input;
+> +};
+> +\end{lstlisting}
+> +
+> +The information required by MAC session creation is stored in the virtio_crypto_mac_create_session_req
+> +structure, including the mac parameters stored in \field{para} and the authenticated key in \field{auth_key}.
+> +\field{input} stores the result of this operation.
+> +
+> +\subparagraph{Session operation: Symmetric algorithms session}\label{sec:Device Types / Crypto Device / Device
+> +Operation / Control Virtqueue / Session operation / Session operation: Symmetric algorithms session}
+> +
+> +The request of symmetric session includes two parts, CIPHER algorithms and chain
+> +algorithms (chaining CIPHER and HASH/MAC).
+> +
+> +CIPHER session requests are as follows:
+> +
+> +\begin{lstlisting}
+> +struct virtio_crypto_cipher_session_para {
+> +    /* See VIRTIO_CRYPTO_CIPHER* above */
+> +    le32 algo;
+> +    /* length of key */
+> +    le32 keylen;
+> +#define VIRTIO_CRYPTO_OP_ENCRYPT  1
+> +#define VIRTIO_CRYPTO_OP_DECRYPT  2
+> +    /* encryption or decryption */
+> +    le32 op;
+> +    le32 padding;
+> +};
+> +
+> +struct virtio_crypto_cipher_session_req {
+> +    /* Device-readable part */
+> +    struct virtio_crypto_cipher_session_para para;
+> +    /* The cipher key */
+> +    u8 cipher_key[keylen];
+> +
+> +    /* Device-writable part */
+> +    struct virtio_crypto_session_input input;
+> +};
+> +\end{lstlisting}
+> +
+> +Algorithm chaining requests are as follows:
+> +
+> +\begin{lstlisting}
+> +struct virtio_crypto_alg_chain_session_para {
+> +#define VIRTIO_CRYPTO_SYM_ALG_CHAIN_ORDER_HASH_THEN_CIPHER  1
+> +#define VIRTIO_CRYPTO_SYM_ALG_CHAIN_ORDER_CIPHER_THEN_HASH  2
+> +    le32 alg_chain_order;
+> +/* Plain hash */
+> +#define VIRTIO_CRYPTO_SYM_HASH_MODE_PLAIN    1
+> +/* Authenticated hash (mac) */
+> +#define VIRTIO_CRYPTO_SYM_HASH_MODE_AUTH     2
+> +/* Nested hash */
+> +#define VIRTIO_CRYPTO_SYM_HASH_MODE_NESTED   3
+> +    le32 hash_mode;
+> +    struct virtio_crypto_cipher_session_para cipher_param;
+> +    union {
+> +        struct virtio_crypto_hash_session_para hash_param;
+> +        struct virtio_crypto_mac_session_para mac_param;
+> +    } u;
+> +    /* length of the additional authenticated data (AAD) in bytes */
+> +    le32 aad_len;
+> +    le32 padding;
+> +};
+> +
+> +struct virtio_crypto_alg_chain_session_req {
+> +    /* Device-readable part */
+> +    struct virtio_crypto_alg_chain_session_para para;
+> +    /* The cipher key */
+> +    u8 cipher_key[keylen];
+> +    /* The authenticated key */
+> +    u8 auth_key[auth_key_len];
+> +
+> +    /* Device-writable part */
+> +    struct virtio_crypto_session_input input;
+> +};
+> +\end{lstlisting}
+> +
+> +Symmetric algorithm requests are as follows:
+> +
+> +\begin{lstlisting}
+> +struct virtio_crypto_sym_create_session_req {
+> +    union {
+> +        struct virtio_crypto_cipher_session_req cipher;
+> +        struct virtio_crypto_alg_chain_session_req chain;
+> +    } u;
+> +
+> +    /* Device-readable part */
+> +
+> +/* No operation */
+> +#define VIRTIO_CRYPTO_SYM_OP_NONE  0
+> +/* Cipher only operation on the data */
+> +#define VIRTIO_CRYPTO_SYM_OP_CIPHER  1
+> +/* Chain any cipher with any hash or mac operation. The order
+> +   depends on the value of alg_chain_order param */
+> +#define VIRTIO_CRYPTO_SYM_OP_ALGORITHM_CHAINING  2
+> +    le32 op_type;
+> +    le32 padding;
+> +};
+> +\end{lstlisting}
+> +
+> +The information required by symmetric algorithms session creation is stored in the
+> +virtio_crypto_sym_create_session_req structure, including the symmetric operation
+> +type in \field{op_type} and the cipher parameters stored in \field{cipher} or the
+> +algorithm chaining paramenters in \field{chain}.
+> +
+> +The driver can set the \field{op_type} field in struct virtio_crypto_sym_create_session_req
+> +as follows: VIRTIO_CRYPTO_SYM_OP_NONE: no operation; VIRTIO_CRYPTO_SYM_OP_CIPHER: Cipher only
+> +operation on the data; VIRTIO_CRYPTO_SYM_OP_ALGORITHM_CHAINING: Chain any cipher with any hash
+> +or mac operation.
+> +
+> +\subparagraph{Session operation: AEAD session}\label{sec:Device Types / Crypto Device / Device
+> +Operation / Control Virtqueue / Session operation / Session operation: AEAD session}
+> +
+> +AEAD session requests are as follows:
+> +
+> +\begin{lstlisting}
+> +struct virtio_crypto_aead_session_para {
+> +    /* See VIRTIO_CRYPTO_AEAD_* above */
+> +    le32 algo;
+> +    /* length of key */
+> +    le32 key_len;
+> +    /* Authentication tag length */
+> +    le32 tag_len;
+> +    /* The length of the additional authenticated data (AAD) in bytes */
+> +    le32 aad_len;
+> +    /* encryption or decryption, See above VIRTIO_CRYPTO_OP_* */
+> +    le32 op;
+> +    le32 padding;
+> +};
+> +
+> +struct virtio_crypto_aead_create_session_req {
+> +    /* Device-readable part */
+> +    struct virtio_crypto_aead_session_para para;
+> +    u8 key[key_len];
+> +
+> +    /* Device-writeable part */
+> +    struct virtio_crypto_session_input input;
+> +};
+> +\end{lstlisting}
+> +
+> +The information required by AEAD session creation is stored in the virtio_crypto_aead_create_session_req
+> +structure, including the aead parameters stored in \field{para} and the cipher key in \field{key}.
+> +\field{input} stores the result of this operation.
+> +
+> +\drivernormative{\subparagraph}{Session operation: create session}{Device Types / Crypto Device / Device Operation / Control Virtqueue / Session operation / Session operation: create session}
+> +
+> +\begin{itemize*}
+> +\item The driver MUST set the control general header and the corresponding algorithm-specific structure.
+> +    See \ref{sec:Device Types / Crypto Device / Device Operation / Control Virtqueue}.
+> +\item The driver MUST set the \field{opcode} field based on service type: CIPHER, HASH, MAC, or AEAD.
+> +\item The driver MUST set the \field{queue_id} field to zero.
+> +\end{itemize*}
+> +
+> +\devicenormative{\subparagraph}{Session operation: create session}{Device Types / Crypto Device / Device
+> +Operation / Control Virtqueue / Session operation / Session operation: create session}
+> +
+> +\begin{itemize*}
+> +\item The device MUST use the corresponding algorithm-specific structure according to the
+> +    \field{opcode} in the control general header.
+> +\item The device MUST set the \field{status} field to one of the following values of enum
+> +    VIRTIO_CRYPTO_STATUS after finish a session creation:
+> +\begin{itemize*}
+> +\item VIRTIO_CRYPTO_OK if a session is created successfully.
+> +\item VIRTIO_CRYPTO_NOTSUPP if the requested algorithm or operation is unsupported.
+> +\item VIRTIO_CRYPTO_NOSPC if no free session ID (only when the VIRTIO_CRYPTO_F_MUX_MODE
+> +    feature bit is negotiated).
+> +\item VIRTIO_CRYPTO_ERR if failure not mentioned above occurs.
+> +\end{itemize*}
+> +\item The device MUST set the \field{session_id} field to a unique session identifier only
+> +    if the status is set to VIRTIO_CRYPTO_OK.
+> +\end{itemize*}
+> +
+> +\drivernormative{\subparagraph}{Session operation: destroy session}{Device Types / Crypto Device / Device
+> +Operation / Control Virtqueue / Session operation / Session operation: destroy session}
+> +
+> +\begin{itemize*}
+> +\item The driver MUST set the \field{opcode} field based on service type: CIPHER, HASH, MAC, or AEAD.
+> +\item The driver MUST set the \field{session_id} to a valid value assigned by the device
+> +    when the session was created.
+> +\end{itemize*}
+> +
+> +\devicenormative{\subparagraph}{Session operation: destroy session}{Device Types / Crypto Device / Device
+> +Operation / Control Virtqueue / Session operation / Session operation: destroy session}
+> +
+> +\begin{itemize*}
+> +\item The device MUST set the \field{status} field to one of the following values of enum VIRTIO_CRYPTO_STATUS.
+> +\begin{itemize*}
+> +\item VIRTIO_CRYPTO_OK if a session is created successfully.
+> +\item VIRTIO_CRYPTO_ERR if any failure occurs.
+> +\end{itemize*}
+> +\end{itemize*}
+> +
+
+I don't think further discussion makes any sense until the questions I've
+asked are clarified. Looking forward to your reply!
+
+
+Halil
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
