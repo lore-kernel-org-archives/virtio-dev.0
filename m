@@ -1,109 +1,74 @@
-Return-Path: virtio-dev-return-2619-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2600-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id B4021581911B
-	for <virtio-dev@lists.oasis-open.org>; Fri, 20 Oct 2017 02:50:07 -0700 (PDT)
-From: Lars Ganrot <lga@napatech.com>
-Date: Fri, 20 Oct 2017 09:50:03 +0000
-Message-ID: <ea698aaf8a2c40c0a8904485831f52ab@napatech.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+	by lists.oasis-open.org (Postfix) with ESMTP id CDA2258191AB
+	for <virtio-dev@lists.oasis-open.org>; Mon,  9 Oct 2017 08:20:46 -0700 (PDT)
+Date: Mon, 9 Oct 2017 18:20:30 +0300
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20171009181612-mutt-send-email-mst@kernel.org>
+References: <1506744354-20979-1-git-send-email-wei.w.wang@intel.com>
+ <1506744354-20979-4-git-send-email-wei.w.wang@intel.com>
 MIME-Version: 1.0
-Subject: Re: [virtio-dev] packed ring layout proposal v3
-To: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1506744354-20979-4-git-send-email-wei.w.wang@intel.com>
+Subject: [virtio-dev] Re: [PATCH v16 3/5] virtio-balloon: VIRTIO_BALLOON_F_SG
+To: Wei Wang <wei.w.wang@intel.com>
+Cc: virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, qemu-devel@nongnu.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, linux-mm@kvack.org, mhocko@kernel.org, akpm@linux-foundation.org, mawilcox@microsoft.com, david@redhat.com, cornelia.huck@de.ibm.com, mgorman@techsingularity.net, aarcange@redhat.com, amit.shah@redhat.com, pbonzini@redhat.com, willy@infradead.org, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu@aliyun.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Hi Michael,
+On Sat, Sep 30, 2017 at 12:05:52PM +0800, Wei Wang wrote:
+> +static inline void xb_set_page(struct virtio_balloon *vb,
+> +			       struct page *page,
+> +			       unsigned long *pfn_min,
+> +			       unsigned long *pfn_max)
+> +{
+> +	unsigned long pfn = page_to_pfn(page);
+> +
+> +	*pfn_min = min(pfn, *pfn_min);
+> +	*pfn_max = max(pfn, *pfn_max);
+> +	xb_preload(GFP_KERNEL);
+> +	xb_set_bit(&vb->page_xb, pfn);
+> +	xb_preload_end();
+> +}
+> +
 
-I'm trying to understand your Sep 28 13:32 example (text copied below). I'v=
-e in-lined my questions [#lga#].
+So, this will allocate memory
 
->
-> Let's assume device promised to consume packets in order
->
-> ring size =3D 2
->
-> Ring is 0 initialized.
->
-> Device initially polls DESC[0].flags for WRAP bit to change.
->
-> driver adds:
->
-> DESC[0].addr =3D 1234
-> DESC[0].id =3D 0
-> DESC[0].flags =3D DESC_DRIVER | DESC_MORE | DESC_WRAP
->
-> and
->
-> DESC[0].addr =3D 5678
+...
 
-[#lga#] Is index 0 above a typo (makes more sense if it is 1)?
+> @@ -198,9 +327,12 @@ static unsigned leak_balloon(struct virtio_balloon *vb, size_t num)
+>  	struct page *page;
+>  	struct balloon_dev_info *vb_dev_info = &vb->vb_dev_info;
+>  	LIST_HEAD(pages);
+> +	bool use_sg = virtio_has_feature(vb->vdev, VIRTIO_BALLOON_F_SG);
+> +	unsigned long pfn_max = 0, pfn_min = ULONG_MAX;
+>  
+> -	/* We can only do one array worth at a time. */
+> -	num = min(num, ARRAY_SIZE(vb->pfns));
+> +	/* Traditionally, we can only do one array worth at a time. */
+> +	if (!use_sg)
+> +		num = min(num, ARRAY_SIZE(vb->pfns));
+>  
+>  	mutex_lock(&vb->balloon_lock);
+>  	/* We can't release more pages than taken */
 
-> DESC[1].id =3D 1
-> DESC[1].flags =3D DESC_DRIVER | DESC_WRAP
->
-> it now starts polling DESC[0] flags.
->
-> Device reads 1234, executes it, does not use it.
->
-> Device reads 5678, executes it, and uses it:
->
-> DESC[0].id =3D 1
-> DESC[0].flags =3D 0
+And is sometimes called on OOM.
 
-[#lga#] Should above line be: "DESC[0].flags =3D  DESC[1].flags  & DESC_WRA=
-P"?
 
->
-> Device now polls DESC[0].flags for WRAP bit to change.
->
-> Now driver sees that DRIVER bit has been cleared, so it nows that id
-> is valid. I sees id 1, therefore id 0 and 1 has been read and are safe to=
- overwrite.
+I suspect we need to
 
-[#lga#] At this point, has the device returned both buffers *(1234) and *(5=
-678) to the driver?
-[#lga#] If so, how would out-of-order completion avoid head of line blockin=
-g?
-[#lga#] E.g. the device is done with id=3D1 and *(5678), but not id=3D0 and=
- *(1234).
+1. keep around some memory for leak on oom
 
->
-> So it writes it out. It wrapped around to beginning of ring, so it
-> flips the WRAP bit to 0 on all descriptors now:
->
-> DESC[0].addr =3D 9ABC
-> DESC[0].id =3D 0
-> DESC[0].flags =3D DESC_DRIVER | DESC_MORE
->
-> DESC[0].addr =3D DEF0
-> DESC[0].id =3D 1
-> DESC[0].flags =3D DESC_DRIVER
+2. for non oom allocate outside locks
 
-[#lga#] Index typo in all 3 lines above? DESC[1] makes more sense.
 
->
-> Next round wrap will be 1 again.
->
-> To summarise:
->
-> DRIVER bit is used by driver to detect device has used one or more
-> descriptors.  WRAP is is used by device to detect driver has made a
-> new descriptor available.
-
-Best Regards,
-
--Lars
-Disclaimer: This email and any files transmitted with it may contain confid=
-ential information intended for the addressee(s) only. The information is n=
-ot to be surrendered or copied to unauthorized persons. If you have receive=
-d this communication in error, please notify the sender immediately and del=
-ete this e-mail from your system.
+-- 
+MST
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
