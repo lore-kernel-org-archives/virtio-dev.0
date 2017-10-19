@@ -1,59 +1,114 @@
-Return-Path: virtio-dev-return-2629-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2618-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 641CF5819147
-	for <virtio-dev@lists.oasis-open.org>; Wed, 25 Oct 2017 05:04:56 -0700 (PDT)
-References: <20171023093241.20113-1-jean-philippe.brucker@arm.com>
- <20171024062704.GA23141@virtx40>
- <b878c366-6e43-aacc-c7f6-cabb3f91211e@arm.com>
- <20171024165859.GA24369@virtx40> <20171025070704.GA10689@virtx40>
- <6e5c3a23-9e00-1936-f80c-085faf42c420@arm.com>
- <20171025110548.GA20548@virtx40>
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Message-ID: <b35e1825-a5c2-e8b3-081c-2f23ac2d627f@arm.com>
-Date: Wed, 25 Oct 2017 13:05:33 +0100
+	by lists.oasis-open.org (Postfix) with ESMTP id 6189A5818C81
+	for <virtio-dev@lists.oasis-open.org>; Thu, 19 Oct 2017 06:12:23 -0700 (PDT)
+Date: Thu, 19 Oct 2017 16:12:20 +0300
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20171019160405-mutt-send-email-mst@kernel.org>
+References: <cover.1505998455.git.tgolembi@redhat.com>
+ <b13f11c03ed394bd8ad367dc90996ed134ea98da.1505998455.git.tgolembi@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <20171025110548.GA20548@virtx40>
-Content-Type: text/plain; charset=windows-1252
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: [virtio-dev] Re: [RFC] virtio-iommu version 0.5
-To: Linu Cherian <linu.cherian@cavium.com>
-Cc: Linu Cherian <linuc.decode@gmail.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Will Deacon <Will.Deacon@arm.com>, Robin Murphy <Robin.Murphy@arm.com>, Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>, "mst@redhat.com" <mst@redhat.com>, "jasowang@redhat.com" <jasowang@redhat.com>, Marc Zyngier <Marc.Zyngier@arm.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>, "eric.auger.pro@gmail.com" <eric.auger.pro@gmail.com>, "bharat.bhushan@nxp.com" <bharat.bhushan@nxp.com>, "peterx@redhat.com" <peterx@redhat.com>, "kevin.tian@intel.com" <kevin.tian@intel.com>, "Jayachandran.Nair@cavium.com" <Jayachandran.Nair@cavium.com>, "ashok.raj@intel.com" <ashok.raj@intel.com>, "sunil.goutham@cavium.com" <sunil.goutham@cavium.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <b13f11c03ed394bd8ad367dc90996ed134ea98da.1505998455.git.tgolembi@redhat.com>
+Subject: [virtio-dev] Re: [PATCH v2 1/1] virtio_balloon: include buffers and cached memory
+ statistics
+To: =?utf-8?B?VG9tw6HFoSBHb2xlbWJpb3Zza8O9?= <tgolembi@redhat.com>
+Cc: linux-mm@kvack.org, virtualization@lists.linux-foundation.org, qemu-devel@nongnu.org, kvm@vger.kernel.org, virtio-dev@lists.oasis-open.org, Wei Wang <wei.w.wang@intel.com>, Shaohua Li <shli@fb.com>, Huang Ying <ying.huang@intel.com>, Jason Wang <jasowang@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 25/10/17 12:05, Linu Cherian wrote:
->>> Also does this solution intend to cover the page table sharing of non SVM 
->>> cases. For example, if we need to share the IOMMU page table for 
->>> a device used in guest kernel, so that map/unmap gets directly handled by the guest
->>> and only TLB invalidates happens through a virtio-iommu channel.
->>
->> Yes for non-SVM in SMMuv3, you still have a context table but with a
->> single descriptor, so the interface stays the same. 
+On Thu, Sep 21, 2017 at 02:55:41PM +0200, Tomáš Golembiovský wrote:
+> Add a new fields, VIRTIO_BALLOON_S_BUFFERS and VIRTIO_BALLOON_S_CACHED,
+> to virtio_balloon memory statistics protocol. The values correspond to
+> 'Buffers' and 'Cached' in /proc/meminfo.
 > 
-> So for non SVM case, 
-> guest virtio-iommu driver will program the context descriptor such a way that,
-> ASID is not in shared set(ASET = 1b) and hence Physical IOMMU TLB invalidates would get triggered 
-> from software for every viommu_unmap(in guest kernel) through Qemu(using vfio ioctls) ? 
+> To be able to compute the value of 'Cached' memory it is necessary to
+> export total_swapcache_pages() to modules.
+> 
+> Signed-off-by: Tomáš Golembiovský <tgolembi@redhat.com>
 
-That's right. viommu_unmap will send an INVALIDATE request on the virtio
-request queue, forwarded to the driver via a VFIO ioctl.
+Does 'Buffers' actually make sense? It's a temporary storage -
+wouldn't it be significantly out of date by the time
+host receives it?
 
-> And for SVM case, ASID would be in shared set and explicit TLB invalidates 
-> are not required from software ?
+> ---
+>  drivers/virtio/virtio_balloon.c     | 11 +++++++++++
+>  include/uapi/linux/virtio_balloon.h |  4 +++-
+>  mm/swap_state.c                     |  1 +
+>  3 files changed, 15 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/virtio/virtio_balloon.c b/drivers/virtio/virtio_balloon.c
+> index f0b3a0b9d42f..c2558ec47a62 100644
+> --- a/drivers/virtio/virtio_balloon.c
+> +++ b/drivers/virtio/virtio_balloon.c
+> @@ -244,12 +244,19 @@ static unsigned int update_balloon_stats(struct virtio_balloon *vb)
+>  	struct sysinfo i;
+>  	unsigned int idx = 0;
+>  	long available;
+> +	long cached;
+>  
+>  	all_vm_events(events);
+>  	si_meminfo(&i);
+>  
+>  	available = si_mem_available();
+>  
+> +	cached = global_node_page_state(NR_FILE_PAGES) -
+> +			total_swapcache_pages() - i.bufferram;
+> +	if (cached < 0)
+> +		cached = 0;
+> +
+> +
+>  #ifdef CONFIG_VM_EVENT_COUNTERS
+>  	update_stat(vb, idx++, VIRTIO_BALLOON_S_SWAP_IN,
+>  				pages_to_bytes(events[PSWPIN]));
+> @@ -264,6 +271,10 @@ static unsigned int update_balloon_stats(struct virtio_balloon *vb)
+>  				pages_to_bytes(i.totalram));
+>  	update_stat(vb, idx++, VIRTIO_BALLOON_S_AVAIL,
+>  				pages_to_bytes(available));
+> +	update_stat(vb, idx++, VIRTIO_BALLOON_S_BUFFERS,
+> +				pages_to_bytes(i.bufferram));
+> +	update_stat(vb, idx++, VIRTIO_BALLOON_S_CACHED,
+> +				pages_to_bytes(cached));
+>  
+>  	return idx;
+>  }
+> diff --git a/include/uapi/linux/virtio_balloon.h b/include/uapi/linux/virtio_balloon.h
+> index 343d7ddefe04..d5dc8a56a497 100644
+> --- a/include/uapi/linux/virtio_balloon.h
+> +++ b/include/uapi/linux/virtio_balloon.h
+> @@ -52,7 +52,9 @@ struct virtio_balloon_config {
+>  #define VIRTIO_BALLOON_S_MEMFREE  4   /* Total amount of free memory */
+>  #define VIRTIO_BALLOON_S_MEMTOT   5   /* Total amount of memory */
+>  #define VIRTIO_BALLOON_S_AVAIL    6   /* Available memory as in /proc */
+> -#define VIRTIO_BALLOON_S_NR       7
+> +#define VIRTIO_BALLOON_S_BUFFERS  7   /* Buffers memory as in /proc */
+> +#define VIRTIO_BALLOON_S_CACHED   8   /* Cached memory as in /proc */
+> +#define VIRTIO_BALLOON_S_NR       9
+>  
+>  /*
+>   * Memory statistics structure.
+> diff --git a/mm/swap_state.c b/mm/swap_state.c
+> index 71ce2d1ccbf7..f3a4ff7d6c52 100644
+> --- a/mm/swap_state.c
+> +++ b/mm/swap_state.c
+> @@ -95,6 +95,7 @@ unsigned long total_swapcache_pages(void)
+>  	rcu_read_unlock();
+>  	return ret;
+>  }
+> +EXPORT_SYMBOL_GPL(total_swapcache_pages);
+>  
+>  static atomic_t swapin_readahead_hits = ATOMIC_INIT(4);
 
-Yes, although that's only true for integrated devices (non-PCI). On PCI,
-devices will have an ATC (a device IOTLB), in which case we still have to
-send an invalidation request through virtio and then VFIO, so that the
-SMMU driver sends an CMD_ATC_INV.
+Need an ack from MM crowd on that.
 
-Thanks,
-Jean
-
+> -- 
+> 2.14.1
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
