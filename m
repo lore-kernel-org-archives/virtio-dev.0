@@ -1,75 +1,109 @@
-Return-Path: virtio-dev-return-2637-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2619-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 6E9511CB80B6
-	for <virtio-dev@lists.oasis-open.org>; Mon, 30 Oct 2017 09:31:00 -0700 (PDT)
-Date: Mon, 30 Oct 2017 18:30:57 +0200
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20171030182950-mutt-send-email-mst@kernel.org>
-References: <20160915223915.qjlnlvf2w7u37bu3@redhat.com>
- <AM4PR0501MB27236B71E1B02176F1844ACBD4770@AM4PR0501MB2723.eurprd05.prod.outlook.com>
- <20171025191346-mutt-send-email-mst@kernel.org>
- <AM4PR0501MB2723177BF4E5EE32CC878E8CD4580@AM4PR0501MB2723.eurprd05.prod.outlook.com>
- <20171029162117-mutt-send-email-mst@kernel.org>
- <AM4PR0501MB272332C92A384C97D6975D8DD4580@AM4PR0501MB2723.eurprd05.prod.outlook.com>
- <20171030040341-mutt-send-email-mst@kernel.org>
- <AM4PR0501MB27233D93937CA1F2E5AD13DBD4590@AM4PR0501MB2723.eurprd05.prod.outlook.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id B4021581911B
+	for <virtio-dev@lists.oasis-open.org>; Fri, 20 Oct 2017 02:50:07 -0700 (PDT)
+From: Lars Ganrot <lga@napatech.com>
+Date: Fri, 20 Oct 2017 09:50:03 +0000
+Message-ID: <ea698aaf8a2c40c0a8904485831f52ab@napatech.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <AM4PR0501MB27233D93937CA1F2E5AD13DBD4590@AM4PR0501MB2723.eurprd05.prod.outlook.com>
-Subject: [virtio-dev] Re: packed ring layout proposal v3
-To: Ilya Lesokhin <ilyal@mellanox.com>
-Cc: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>
+Subject: Re: [virtio-dev] packed ring layout proposal v3
+To: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Mon, Oct 30, 2017 at 06:30:56AM +0000, Ilya Lesokhin wrote:
-> > -----Original Message-----
-> > From: Michael S. Tsirkin [mailto:mst@redhat.com]
-> > Sent: Monday, October 30, 2017 4:09 AM
-> > To: Ilya Lesokhin <ilyal@mellanox.com>
-> > Cc: virtio-dev@lists.oasis-open.org; virtualization@lists.linux-foundation.org
-> > Subject: Re: packed ring layout proposal v3
-> > 
-> > On Sun, Oct 29, 2017 at 02:34:56PM +0000, Ilya Lesokhin wrote:
-> > > > -----Original Message-----
-> > > > From: Michael S. Tsirkin [mailto:mst@redhat.com]
-> > > > Sent: Sunday, October 29, 2017 4:22 PM
-> > > > To: Ilya Lesokhin <ilyal@mellanox.com>
-> > > > Cc: virtio-dev@lists.oasis-open.org; virtualization@lists.linux-foundation.org
-> > > > Subject: Re: packed ring layout proposal v3
-> > > >
-> > > > If you do this whats the point of the id? Just use descriptor offset like virtio 0
-> > did.
-> > > >
-> > >
-> > > I agree that ID is pointless when requests are completed in order.
-> > >
-> > > But I'm not sure what you mean by descriptor offset?
-> > 
-> > Where the descriptor is within the ring.
-> > 
-> 
-> Using descriptor offset like virtio 0, won't work.
-> In virtio 0, there was no reordering in the descriptor ring, so the offset was always unique.
-> In the new spec, if descriptor in offset 2 completes before the descriptor in offset 1,
-> It can be put in offset 1, but reusing offset 1 is not yet safe.
-> 
-> Also, please ignore my earlier comment about in-order completion,
-> It invalidates the entire discussion.
-> 
-> 
+Hi Michael,
 
-Yes, using offsets only works if all descriptors are used and written back in
-order. If they are, descriptor ID isn't necessary. If they aren't,
-it's necessary.
+I'm trying to understand your Sep 28 13:32 example (text copied below). I'v=
+e in-lined my questions [#lga#].
 
--- 
-MST
+>
+> Let's assume device promised to consume packets in order
+>
+> ring size =3D 2
+>
+> Ring is 0 initialized.
+>
+> Device initially polls DESC[0].flags for WRAP bit to change.
+>
+> driver adds:
+>
+> DESC[0].addr =3D 1234
+> DESC[0].id =3D 0
+> DESC[0].flags =3D DESC_DRIVER | DESC_MORE | DESC_WRAP
+>
+> and
+>
+> DESC[0].addr =3D 5678
+
+[#lga#] Is index 0 above a typo (makes more sense if it is 1)?
+
+> DESC[1].id =3D 1
+> DESC[1].flags =3D DESC_DRIVER | DESC_WRAP
+>
+> it now starts polling DESC[0] flags.
+>
+> Device reads 1234, executes it, does not use it.
+>
+> Device reads 5678, executes it, and uses it:
+>
+> DESC[0].id =3D 1
+> DESC[0].flags =3D 0
+
+[#lga#] Should above line be: "DESC[0].flags =3D  DESC[1].flags  & DESC_WRA=
+P"?
+
+>
+> Device now polls DESC[0].flags for WRAP bit to change.
+>
+> Now driver sees that DRIVER bit has been cleared, so it nows that id
+> is valid. I sees id 1, therefore id 0 and 1 has been read and are safe to=
+ overwrite.
+
+[#lga#] At this point, has the device returned both buffers *(1234) and *(5=
+678) to the driver?
+[#lga#] If so, how would out-of-order completion avoid head of line blockin=
+g?
+[#lga#] E.g. the device is done with id=3D1 and *(5678), but not id=3D0 and=
+ *(1234).
+
+>
+> So it writes it out. It wrapped around to beginning of ring, so it
+> flips the WRAP bit to 0 on all descriptors now:
+>
+> DESC[0].addr =3D 9ABC
+> DESC[0].id =3D 0
+> DESC[0].flags =3D DESC_DRIVER | DESC_MORE
+>
+> DESC[0].addr =3D DEF0
+> DESC[0].id =3D 1
+> DESC[0].flags =3D DESC_DRIVER
+
+[#lga#] Index typo in all 3 lines above? DESC[1] makes more sense.
+
+>
+> Next round wrap will be 1 again.
+>
+> To summarise:
+>
+> DRIVER bit is used by driver to detect device has used one or more
+> descriptors.  WRAP is is used by device to detect driver has made a
+> new descriptor available.
+
+Best Regards,
+
+-Lars
+Disclaimer: This email and any files transmitted with it may contain confid=
+ential information intended for the addressee(s) only. The information is n=
+ot to be surrendered or copied to unauthorized persons. If you have receive=
+d this communication in error, please notify the sender immediately and del=
+ete this e-mail from your system.
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
