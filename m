@@ -1,66 +1,230 @@
-Return-Path: virtio-dev-return-2725-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2652-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 2B3D55819127
-	for <virtio-dev@lists.oasis-open.org>; Wed, 29 Nov 2017 06:18:51 -0800 (PST)
-Message-ID: <5A1EC23A.5090900@intel.com>
-Date: Wed, 29 Nov 2017 22:20:42 +0800
+	by lists.oasis-open.org (Postfix) with ESMTP id A0DDB581912F
+	for <virtio-dev@lists.oasis-open.org>; Fri,  3 Nov 2017 01:28:33 -0700 (PDT)
 From: Wei Wang <wei.w.wang@intel.com>
-MIME-Version: 1.0
-References: <1509696786-1597-1-git-send-email-wei.w.wang@intel.com> <1509696786-1597-3-git-send-email-wei.w.wang@intel.com> <20171106170000.GA1195@bombadil.infradead.org>
-In-Reply-To: <20171106170000.GA1195@bombadil.infradead.org>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: [virtio-dev] Re: [PATCH v17 2/6] radix tree test suite: add tests for xbitmap
-To: Matthew Wilcox <willy@infradead.org>
-Cc: virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, qemu-devel@nongnu.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, linux-mm@kvack.org, mst@redhat.com, mhocko@kernel.org, akpm@linux-foundation.org, mawilcox@microsoft.com, david@redhat.com, penguin-kernel@I-love.SAKURA.ne.jp, cornelia.huck@de.ibm.com, mgorman@techsingularity.net, aarcange@redhat.com, amit.shah@redhat.com, pbonzini@redhat.com, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu@aliyun.com
+Date: Fri,  3 Nov 2017 16:13:03 +0800
+Message-Id: <1509696786-1597-4-git-send-email-wei.w.wang@intel.com>
+In-Reply-To: <1509696786-1597-1-git-send-email-wei.w.wang@intel.com>
+References: <1509696786-1597-1-git-send-email-wei.w.wang@intel.com>
+Subject: [virtio-dev] [PATCH v17 3/6] mm/balloon_compaction.c: split balloon page allocation and enqueue
+To: virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, qemu-devel@nongnu.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, linux-mm@kvack.org, mst@redhat.com, mhocko@kernel.org, akpm@linux-foundation.org, mawilcox@microsoft.com
+Cc: david@redhat.com, penguin-kernel@I-love.SAKURA.ne.jp, cornelia.huck@de.ibm.com, mgorman@techsingularity.net, aarcange@redhat.com, amit.shah@redhat.com, pbonzini@redhat.com, willy@infradead.org, wei.w.wang@intel.com, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu@aliyun.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 11/07/2017 01:00 AM, Matthew Wilcox wrote:
-> On Fri, Nov 03, 2017 at 04:13:02PM +0800, Wei Wang wrote:
->> From: Matthew Wilcox <mawilcox@microsoft.com>
->>
->> Add the following tests for xbitmap:
->> 1) single bit test: single bit set/clear/find;
->> 2) bit range test: set/clear a range of bits and find a 0 or 1 bit in
->> the range.
->>
->> Signed-off-by: Wei Wang <wei.w.wang@intel.com>
->> Cc: Matthew Wilcox <mawilcox@microsoft.com>
->> Cc: Andrew Morton <akpm@linux-foundation.org>
->> Cc: Michael S. Tsirkin <mst@redhat.com>
->> ---
->>   tools/include/linux/bitmap.h            |  34 ++++
->>   tools/include/linux/kernel.h            |   2 +
->>   tools/testing/radix-tree/Makefile       |   7 +-
->>   tools/testing/radix-tree/linux/kernel.h |   2 -
->>   tools/testing/radix-tree/main.c         |   5 +
->>   tools/testing/radix-tree/test.h         |   1 +
->>   tools/testing/radix-tree/xbitmap.c      | 278 ++++++++++++++++++++++++++++++++
-> Umm.  No.  You've duplicated xbitmap.c into the test framework, so now it can
-> slowly get out of sync with the one in lib/.  That's not OK.
->
-> Put it back the way it was, with the patch I gave you as patch 1/n
-> (relocating xbitmap.c from tools/testing/radix-tree to lib/).
-> Then add your enhancements as patch 2/n.  All you should need to
-> change in your 1/n from
-> http://git.infradead.org/users/willy/linux-dax.git/commit/727e401bee5ad7d37e0077291d90cc17475c6392
-> is a bit of Makefile tooling.  Leave the test suite embedded in the file;
-> that way people might remember to update the test suite when adding
-> new functionality.
->
+From: "Michael S. Tsirkin" <mst.redhat.com>
 
-Thanks for you suggestions. Please have a check the v18 patches:
-The original implementation is put in patch 4, and the proposed changes 
-are separated into patch 5 (we can merge them to patch 4 later if they 
-look good to you), and the new APIs are in patch 6.
+fill_balloon doing memory allocations under balloon_lock
+can cause a deadlock when leak_balloon is called from
+virtballoon_oom_notify and tries to take same lock.
 
-Best,
-Wei
+To fix, split page allocation and enqueue and do allocations outside
+the lock.
+
+Here's a detailed analysis of the deadlock by Tetsuo Handa:
+
+In leak_balloon(), mutex_lock(&vb->balloon_lock) is called in order to
+serialize against fill_balloon(). But in fill_balloon(),
+alloc_page(GFP_HIGHUSER[_MOVABLE] | __GFP_NOMEMALLOC | __GFP_NORETRY) is
+called with vb->balloon_lock mutex held. Since GFP_HIGHUSER[_MOVABLE]
+implies __GFP_DIRECT_RECLAIM | __GFP_IO | __GFP_FS, despite __GFP_NORETRY
+is specified, this allocation attempt might indirectly depend on somebody
+else's __GFP_DIRECT_RECLAIM memory allocation. And such indirect
+__GFP_DIRECT_RECLAIM memory allocation might call leak_balloon() via
+virtballoon_oom_notify() via blocking_notifier_call_chain() callback via
+out_of_memory() when it reached __alloc_pages_may_oom() and held oom_lock
+mutex. Since vb->balloon_lock mutex is already held by fill_balloon(), it
+will cause OOM lockup. Thus, do not wait for vb->balloon_lock mutex if
+leak_balloon() is called from out_of_memory().
+
+Thread1                                Thread2
+fill_balloon()
+ takes a balloon_lock
+  balloon_page_enqueue()
+   alloc_page(GFP_HIGHUSER_MOVABLE)
+    direct reclaim (__GFP_FS context)  takes a fs lock
+     waits for that fs lock             alloc_page(GFP_NOFS)
+                                         __alloc_pages_may_oom()
+                                          takes the oom_lock
+                                           out_of_memory()
+                                            blocking_notifier_call_chain()
+                                             leak_balloon()
+                                               tries to take that
+					       balloon_lock and deadlocks
+
+Reported-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Cc: Michal Hocko <mhocko@suse.com>
+Cc: Wei Wang <wei.w.wang@intel.com>
+Reviewed-by: Wei Wang <wei.w.wang@intel.com>
+
+---
+ drivers/virtio/virtio_balloon.c    | 23 ++++++++++++++++++-----
+ include/linux/balloon_compaction.h | 34 +++++++++++++++++++++++++++++++++-
+ mm/balloon_compaction.c            | 28 +++++++++++++++++++++-------
+ 3 files changed, 72 insertions(+), 13 deletions(-)
+
+diff --git a/drivers/virtio/virtio_balloon.c b/drivers/virtio/virtio_balloon.c
+index f0b3a0b..45fe6a8 100644
+--- a/drivers/virtio/virtio_balloon.c
++++ b/drivers/virtio/virtio_balloon.c
+@@ -143,16 +143,17 @@ static void set_page_pfns(struct virtio_balloon *vb,
+ 
+ static unsigned fill_balloon(struct virtio_balloon *vb, size_t num)
+ {
+-	struct balloon_dev_info *vb_dev_info = &vb->vb_dev_info;
+ 	unsigned num_allocated_pages;
++	unsigned int num_pfns;
++	struct page *page;
++	LIST_HEAD(pages);
+ 
+ 	/* We can only do one array worth at a time. */
+ 	num = min(num, ARRAY_SIZE(vb->pfns));
+ 
+-	mutex_lock(&vb->balloon_lock);
+-	for (vb->num_pfns = 0; vb->num_pfns < num;
+-	     vb->num_pfns += VIRTIO_BALLOON_PAGES_PER_PAGE) {
+-		struct page *page = balloon_page_enqueue(vb_dev_info);
++	for (num_pfns = 0; num_pfns < num;
++	     num_pfns += VIRTIO_BALLOON_PAGES_PER_PAGE) {
++		struct page *page = balloon_page_alloc();
+ 
+ 		if (!page) {
+ 			dev_info_ratelimited(&vb->vdev->dev,
+@@ -162,6 +163,18 @@ static unsigned fill_balloon(struct virtio_balloon *vb, size_t num)
+ 			msleep(200);
+ 			break;
+ 		}
++
++		balloon_page_push(&pages, page);
++	}
++
++	mutex_lock(&vb->balloon_lock);
++
++	vb->num_pfns = 0;
++	while ((page = balloon_page_pop(&pages))) {
++		balloon_page_enqueue(&vb->vb_dev_info, page);
++
++		vb->num_pfns += VIRTIO_BALLOON_PAGES_PER_PAGE;
++
+ 		set_page_pfns(vb, vb->pfns + vb->num_pfns, page);
+ 		vb->num_pages += VIRTIO_BALLOON_PAGES_PER_PAGE;
+ 		if (!virtio_has_feature(vb->vdev,
+diff --git a/include/linux/balloon_compaction.h b/include/linux/balloon_compaction.h
+index 79542b2..bdc055a 100644
+--- a/include/linux/balloon_compaction.h
++++ b/include/linux/balloon_compaction.h
+@@ -49,6 +49,7 @@
+ #include <linux/gfp.h>
+ #include <linux/err.h>
+ #include <linux/fs.h>
++#include <linux/list.h>
+ 
+ /*
+  * Balloon device information descriptor.
+@@ -66,7 +67,9 @@ struct balloon_dev_info {
+ 	struct inode *inode;
+ };
+ 
+-extern struct page *balloon_page_enqueue(struct balloon_dev_info *b_dev_info);
++extern struct page *balloon_page_alloc(void);
++extern void balloon_page_enqueue(struct balloon_dev_info *b_dev_info,
++				 struct page *page);
+ extern struct page *balloon_page_dequeue(struct balloon_dev_info *b_dev_info);
+ 
+ static inline void balloon_devinfo_init(struct balloon_dev_info *balloon)
+@@ -86,6 +89,35 @@ extern void balloon_page_putback(struct page *page);
+ extern int balloon_page_migrate(struct address_space *mapping,
+ 				struct page *newpage,
+ 				struct page *page, enum migrate_mode mode);
++/*
++ * balloon_page_push - insert a page into a page list.
++ * @head : pointer to list
++ * @page : page to be added
++ *
++ * Caller must ensure the page is private and protect the list.
++ */
++static inline void balloon_page_push(struct list_head *pages, struct page *page)
++{
++	list_add(&page->lru, pages);
++}
++
++/*
++ * balloon_page_pop - remove a page from a page list.
++ * @head : pointer to list
++ * @page : page to be added
++ *
++ * Caller must ensure the page is private and protect the list.
++ */
++static inline struct page *balloon_page_pop(struct list_head *pages)
++{
++	struct page *page = list_first_entry_or_null(pages, struct page, lru);
++
++	if (!page)
++		return NULL;
++
++	list_del(&page->lru);
++	return page;
++}
+ 
+ /*
+  * balloon_page_insert - insert a page into the balloon's page list and make
+diff --git a/mm/balloon_compaction.c b/mm/balloon_compaction.c
+index 68d2892..16212c7 100644
+--- a/mm/balloon_compaction.c
++++ b/mm/balloon_compaction.c
+@@ -11,22 +11,36 @@
+ #include <linux/balloon_compaction.h>
+ 
+ /*
+- * balloon_page_enqueue - allocates a new page and inserts it into the balloon
++ * balloon_page_alloc - allocates a new page for insertion into the balloon
+  *			  page list.
++ *
++ * Driver must call it to properly allocate a new enlisted balloon page.
++ * Driver must call balloon_page_enqueue before definitively removing it from
++ * the guest system.  This function returns the page address for the recently
++ * allocated page or NULL in the case we fail to allocate a new page this turn.
++ */
++struct page *balloon_page_alloc(void)
++{
++	struct page *page = alloc_page(balloon_mapping_gfp_mask() |
++				       __GFP_NOMEMALLOC | __GFP_NORETRY);
++	return page;
++}
++EXPORT_SYMBOL_GPL(balloon_page_alloc);
++
++/*
++ * balloon_page_enqueue - inserts a new page into the balloon page list.
+  * @b_dev_info: balloon device descriptor where we will insert a new page to
++ * @page: new page to enqueue - allocated using balloon_page_alloc.
+  *
+- * Driver must call it to properly allocate a new enlisted balloon page
++ * Driver must call it to properly enqueue a new enlisted balloon page
+  * before definitively removing it from the guest system.
+  * This function returns the page address for the recently enqueued page or
+  * NULL in the case we fail to allocate a new page this turn.
+  */
+-struct page *balloon_page_enqueue(struct balloon_dev_info *b_dev_info)
++void balloon_page_enqueue(struct balloon_dev_info *b_dev_info,
++			  struct page *page)
+ {
+ 	unsigned long flags;
+-	struct page *page = alloc_page(balloon_mapping_gfp_mask() |
+-				       __GFP_NOMEMALLOC | __GFP_NORETRY);
+-	if (!page)
+-		return NULL;
+ 
+ 	/*
+ 	 * Block others from accessing the 'page' when we get around to
+-- 
+2.7.4
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
