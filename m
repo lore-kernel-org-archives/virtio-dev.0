@@ -1,98 +1,85 @@
-Return-Path: virtio-dev-return-2676-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2660-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id A131B5819124
-	for <virtio-dev@lists.oasis-open.org>; Sun, 12 Nov 2017 23:35:37 -0800 (PST)
-Message-ID: <5A094ADD.406@huawei.com>
-Date: Mon, 13 Nov 2017 15:33:49 +0800
-From: "Longpeng (Mike)" <longpeng2@huawei.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id E83275818FA3
+	for <virtio-dev@lists.oasis-open.org>; Sun,  5 Nov 2017 23:02:39 -0800 (PST)
+From: "Longpeng(Mike)" <longpeng2@huawei.com>
+Date: Mon, 6 Nov 2017 14:58:48 +0800
+Message-ID: <1509951528-30976-3-git-send-email-longpeng2@huawei.com>
+In-Reply-To: <1509951528-30976-1-git-send-email-longpeng2@huawei.com>
+References: <1509951528-30976-1-git-send-email-longpeng2@huawei.com>
 MIME-Version: 1.0
-References: <1509951528-30976-1-git-send-email-longpeng2@huawei.com> <1509951528-30976-2-git-send-email-longpeng2@huawei.com> <20171110170237.GA18834@stefanha-x1.localdomain>
-In-Reply-To: <20171110170237.GA18834@stefanha-x1.localdomain>
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 7bit
-Subject: [virtio-dev] Re: [Qemu-devel] [v21 RESEND 1/2] virtio-crypto: Add virtio crypto
- device specification
-To: Stefan Hajnoczi <stefanha@gmail.com>
-Cc: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, pasic@linux.vnet.ibm.com, Ola.Liljedahl@arm.com, brian.a.keating@intel.com, wangxinxin.wang@huawei.com, mst@redhat.com, xin.zeng@intel.com, jasowang@redhat.com, luonengjun@huawei.com, agraf@suse.de, john.griffin@intel.com, arei.gonglei@huawei.com, liang.j.ma@intel.com, stefanha@redhat.com, jianjay.zhou@huawei.com, cornelia.huck@de.ibm.com, Varun.Sethi@freescale.com, Jani.Kokkonen@huawei.com, vincent.jardin@6wind.com, denglingli@chinamobile.com, weidong.huang@huawei.com
+Content-Type: text/plain
+Subject: [virtio-dev] [v21 RESEND 2/2] virtio-crypto: Add conformance clauses
+To: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org
+Cc: luonengjun@huawei.com, mst@redhat.com, cornelia.huck@de.ibm.com, stefanha@redhat.com, denglingli@chinamobile.com, Jani.Kokkonen@huawei.com, Ola.Liljedahl@arm.com, Varun.Sethi@freescale.com, xin.zeng@intel.com, brian.a.keating@intel.com, liang.j.ma@intel.com, john.griffin@intel.com, weidong.huang@huawei.com, agraf@suse.de, jasowang@redhat.com, vincent.jardin@6wind.com, arei.gonglei@huawei.com, pasic@linux.vnet.ibm.com, wangxinxin.wang@huawei.com, jianjay.zhou@huawei.com, "Longpeng(Mike)" <longpeng2@huawei.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Hi Stefan,
+From: Gonglei <arei.gonglei@huawei.com>
 
-On 2017/11/11 1:02, Stefan Hajnoczi wrote:
+Add the conformance targets and clauses for
+virtio-crypto device.
 
-> On Mon, Nov 06, 2017 at 02:58:47PM +0800, Longpeng(Mike) wrote:
->> From: Gonglei <arei.gonglei@huawei.com>
->>
->> The virtio crypto device is a virtual crypto device (ie. hardware
->> crypto accelerator card). Currently, the virtio crypto device provides
->> the following crypto services: CIPHER, MAC, HASH, and AEAD.
->>
->> In this patch, CIPHER, MAC, HASH, AEAD services are introduced.
->>
->> VIRTIO-153
->>
->> Signed-off-by: Gonglei <arei.gonglei@huawei.com>
->> Signed-off-by: Longpeng(Mike) <longpeng2@huawei.com>
-> 
-> This doesn't build cleanly for me on commit
-> 2faf9b0666886abc0ca99f6813446a4e2a04f3ca
-> (https://github.com/oasis-tcs/virtio-spec master):
-> 
->   $ 
->   $ ./makeall.sh
->   ! LaTeX Error: Lonely \item--perhaps a missing list environment.
-> 
-> See the LaTeX manual or LaTeX Companion for explanation.
-> Type  H <return>  for immediate help.
->  ...
-> 
-> l.384 \item I
->              f the VIRTIO_CRYPTO_F_MUX_MODE feature bit is NOT negotiated, the
-> ?
-> 
+Signed-off-by: Gonglei <arei.gonglei@huawei.com>
+Signed-off-by: Longpeng(Mike) <longpeng2@huawei.com>
+---
+ conformance.tex | 29 +++++++++++++++++++++++++++++
+ 1 file changed, 29 insertions(+)
 
-Ah yes, I'll fix it.
-
->> diff --git a/acknowledgements.tex b/acknowledgements.tex
->> index 6c86d12..c4b6844 100644
->> --- a/acknowledgements.tex
->> +++ b/acknowledgements.tex
->> @@ -26,6 +26,8 @@ Sasha Levin,	Oracle	\newline
->>  Sergey Tverdyshev,	Thales e-Security	\newline
->>  Stefan Hajnoczi,	Red Hat	\newline
->>  Tom Lyon,	Samya Systems, Inc.	\newline
->> +Lei Gong,	Huawei	\newline
->> +Peng Long,	Huawei	\newline
->>  \end{oasistitlesection}
->>  
->>  The following non-members have provided valuable feedback on this
->> @@ -43,4 +45,5 @@ Laura Novich, Red Hat	\newline
->>  Patrick Durusau,	Technical Advisory Board, OASIS	\newline
->>  Thomas Huth,	IBM	\newline
->>  Yan Vugenfirer, Red Hat / Daynix	\newline
->> +Halil Pasic,	IBM	\newline
->>  \end{oasistitlesection}
-> 
-> These lists of names are in alphabetical order.  Please insert names at
-> the appropriate place.
-> 
-
-OK.
-
->> +If VIRTIO_CRYPTO_F_MUX_MODE is negotioated the device may support both session mode
-> 
-> s/negotioated/negotiated/
-
-OK. I'll fix some other typos together, thx.
-
+diff --git a/conformance.tex b/conformance.tex
+index 7b7df32..266a22f 100644
+--- a/conformance.tex
++++ b/conformance.tex
+@@ -145,6 +145,21 @@ An SCSI host driver MUST conform to the following normative statements:
+ \item \ref{drivernormative:Device Types / SCSI Host Device / Device Operation / Device Operation: eventq}
+ \end{itemize}
+ 
++\subsection{Crypto Driver Conformance}\label{sec:Conformance / Driver Conformance / Crypto Driver Conformance}
++
++A Crypto driver MUST conform to the following normative statements:
++
++\begin{itemize}
++\item \ref{drivernormative:Device Types / Crypto Device / Device configuration layout}
++\item \ref{drivernormative:Device Types / Crypto Device / Device Initialization}
++\item \ref{drivernormative:Device Types / Crypto Device / Device Operation / Control Virtqueue / Session operation / Session operation: create session}
++\item \ref{drivernormative:Device Types / Crypto Device / Device Operation / Control Virtqueue / Session operation / Session operation: destroy session}
++\item \ref{drivernormative:Device Types / Crypto Device / Device Operation / HASH Service operation}
++\item \ref{drivernormative:Device Types / Crypto Device / Device Operation / MAC Service operation}
++\item \ref{drivernormative:Device Types / Crypto Device / Device Operation / Symmetric algorithms Operation}
++\item \ref{drivernormative:Device Types / Crypto Device / Device Operation / AEAD Service operation}
++\end{itemize}
++
+ \section{Device Conformance}\label{sec:Conformance / Device Conformance}
+ 
+ A device MUST conform to the following normative statements:
+@@ -265,6 +280,20 @@ An SCSI host device MUST conform to the following normative statements:
+ \item \ref{devicenormative:Device Types / SCSI Host Device / Device Operation / Device Operation: eventq}
+ \end{itemize}
+ 
++\subsection{Crypto Device Conformance}\label{sec:Conformance / Device Conformance / Crypto Device Conformance}
++
++A Crypto device MUST conform to the following normative statements:
++
++\begin{itemize}
++\item \ref{devicenormative:Device Types / Crypto Device / Device configuration layout}
++\item \ref{devicenormative:Device Types / Crypto Device / Device Operation / Control Virtqueue / Session operation / Session operation: create session}
++\item \ref{devicenormative:Device Types / Crypto Device / Device Operation / Control Virtqueue / Session operation / Session operation: destroy session}
++\item \ref{devicenormative:Device Types / Crypto Device / Device Operation / HASH Service operation}
++\item \ref{devicenormative:Device Types / Crypto Device / Device Operation / MAC Service operation}
++\item \ref{devicenormative:Device Types / Crypto Device / Device Operation / Symmetric algorithms Operation}
++\item \ref{devicenormative:Device Types / Crypto Device / Device Operation / AEAD Service operation}
++\end{itemize}
++
+ \section{Legacy Interface: Transitional Device and
+ Transitional Driver Conformance}\label{sec:Conformance / Legacy
+ Interface: Transitional Device and 
 -- 
-Regards,
-Longpeng(Mike)
+1.8.3.1
+
 
 
 ---------------------------------------------------------------------
