@@ -1,102 +1,106 @@
-Return-Path: virtio-dev-return-2690-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2658-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 5254058191C8
-	for <virtio-dev@lists.oasis-open.org>; Thu, 16 Nov 2017 06:07:39 -0800 (PST)
-Date: Thu, 16 Nov 2017 15:07:33 +0100
-From: =?UTF-8?B?VG9tw6HFoSBHb2xlbWJpb3Zza8O9?= <tgolembi@redhat.com>
-Message-ID: <20171116150733.2dccc760@fiorina>
-In-Reply-To: <181C9C1B-9119-4B1D-8327-0C5EFD42A5F5@redhat.com>
-References: <cover.1505923516.git.tgolembi@redhat.com>
-	<13ca7e373615efac74661590527067ee8966f027.1505923516.git.tgolembi@redhat.com>
-	<181C9C1B-9119-4B1D-8327-0C5EFD42A5F5@redhat.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 2469C5818FA3
+	for <virtio-dev@lists.oasis-open.org>; Sun,  5 Nov 2017 22:57:03 -0800 (PST)
+From: "Longpeng(Mike)" <longpeng2@huawei.com>
+Date: Mon, 6 Nov 2017 14:53:11 +0800
+Message-ID: <1509951193-25256-1-git-send-email-longpeng2@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [virtio-dev] [PATCH 1/1] virtio-balloon: include buffers and
- chached memory statistics
-To: Yan Vugenfirer <yvugenfi@redhat.com>
-Cc: virtio-dev@lists.oasis-open.org, qemu-devel <qemu-devel@nongnu.org>, Wei Wang <wei.w.wang@intel.com>, "Michael S. Tsirkin" <mst@redhat.com>
+Content-Type: text/plain
+Subject: [virtio-dev] [v21 0/2] virtio-crypto: virtio crypto device specification
+To: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org
+Cc: luonengjun@huawei.com, mst@redhat.com, cornelia.huck@de.ibm.com, stefanha@redhat.com, denglingli@chinamobile.com, Jani.Kokkonen@huawei.com, Ola.Liljedahl@arm.com, Varun.Sethi@freescale.com, xin.zeng@intel.com, brian.a.keating@intel.com, liang.j.ma@intel.com, john.griffin@intel.com, weidong.huang@huawei.com, agraf@suse.de, jasowang@redhat.com, vincent.jardin@6wind.com, arei.gonglei@hotmail.com, pasic@linux.vnet.ibm.com, wangxinxin.wang@huawei.com, jianjay.zhou@huawei.com, "Longpeng(Mike)" <longpeng2@huawei.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Thu, 16 Nov 2017 15:38:21 +0200
-Yan Vugenfirer <yvugenfi@redhat.com> wrote:
+This is the specification about the new virtio crypto device.
 
-> Hello All,
->=20
-> Michael asked me to comment regarding the possibility to get this statist=
-ics on Windows.
-> By using Win32_OperatingSystem WMI class we can calculate the amount of c=
-ached memory (https://msdn.microsoft.com/en-us/library/aa394239(v=3Dvs.85).=
-aspx <https://msdn.microsoft.com/en-us/library/aa394239(v=3Dvs.85).aspx> ht=
-tp://brandonlive.com/2010/02/21/measuring-memory-usage-in-windows-7/ <http:=
-//brandonlive.com/2010/02/21/measuring-memory-usage-in-windows-7/>), but Wi=
-ndows doesn=E2=80=99t let to distinguish between =E2=80=9Ccached and buffer=
-s=E2=80=9D as far as I see.=20
+---
+v21 -> v20
+ - rename 'queue_id' to 'reserved' [Halil]
+ - redescribe the format of the structures which using 'union'
+   in the previous version [Halil]
 
-Thanks for the input, Yan. That's definitely good to know.
+v20 -> v19
+ - fix some typos and grammar fixes [Halil]
+ - make queue_id reserved [Halil]
+ - remove 'Steps of Operation'
 
-    Tomas
+v19 -> v18:
+ - fix some typos and grammar fixes [Stefan, Halil]
+ - rename VIRTIO_CRYPTO_F_STATELESS_MODE to VIRTIO_CRYPTO_F_MUX_MODE
+ - describe the VIRTIO_CRYPTO_STATUS in detial. [Halil]
+ - refactor and redescribe the controlq/dataq request's format
+   of mux mode. [Halil]
+ - other small fixes. [Halil]
 
->=20
-> Best regards,
-> Yan.
->=20
-> > On 20 Sep 2017, at 19:05, Tom=C3=A1=C5=A1 Golembiovsk=C3=BD <tgolembi@r=
-edhat.com> wrote:
-> >=20
-> > Signed-off-by: Tom=C3=A1=C5=A1 Golembiovsk=C3=BD <tgolembi@redhat.com>
-> > ---
-> > hw/virtio/virtio-balloon.c                      | 2 ++
-> > include/standard-headers/linux/virtio_balloon.h | 4 +++-
-> > 2 files changed, 5 insertions(+), 1 deletion(-)
-> >=20
-> > diff --git a/hw/virtio/virtio-balloon.c b/hw/virtio/virtio-balloon.c
-> > index a705e0ec55..0434784c14 100644
-> > --- a/hw/virtio/virtio-balloon.c
-> > +++ b/hw/virtio/virtio-balloon.c
-> > @@ -49,6 +49,8 @@ static const char *balloon_stat_names[] =3D {
-> >    [VIRTIO_BALLOON_S_MEMFREE] =3D "stat-free-memory",
-> >    [VIRTIO_BALLOON_S_MEMTOT] =3D "stat-total-memory",
-> >    [VIRTIO_BALLOON_S_AVAIL] =3D "stat-available-memory",
-> > +   [VIRTIO_BALLOON_S_BUFFERS] =3D "stat-linux-buffers",
-> > +   [VIRTIO_BALLOON_S_CACHED] =3D "stat-linux-cached",
-> >    [VIRTIO_BALLOON_S_NR] =3D NULL
-> > };
-> >=20
-> > diff --git a/include/standard-headers/linux/virtio_balloon.h b/include/=
-standard-headers/linux/virtio_balloon.h
-> > index 9d06ccd066..d61efbfcee 100644
-> > --- a/include/standard-headers/linux/virtio_balloon.h
-> > +++ b/include/standard-headers/linux/virtio_balloon.h
-> > @@ -52,7 +52,9 @@ struct virtio_balloon_config {
-> > #define VIRTIO_BALLOON_S_MEMFREE  4   /* Total amount of free memory */
-> > #define VIRTIO_BALLOON_S_MEMTOT   5   /* Total amount of memory */
-> > #define VIRTIO_BALLOON_S_AVAIL    6   /* Available memory as in /proc */
-> > -#define VIRTIO_BALLOON_S_NR       7
-> > +#define VIRTIO_BALLOON_S_BUFFERS  7   /* Buffers memory as in /proc */
-> > +#define VIRTIO_BALLOON_S_CACHED   8   /* Cached memory as in /proc */
-> > +#define VIRTIO_BALLOON_S_NR       9
-> >=20
-> > /*
-> >  * Memory statistics structure.
-> > --=20
-> > 2.14.1
-> >=20
-> >=20
-> > ---------------------------------------------------------------------
-> > To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> > For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
-> >  =20
->=20
+v18 -> v17:
+ - fix many English grammar problems suggested by Stefan, Thanks a lot!
+
+v17 -> v16:
+ - Some grammar fixes [Stefan, Halil, Michael]
+ - add a section named "Supported crypto services" in order to explain bit
+   numbers and valuse clearly. [Halil, Cornelia]
+ - avoid word reptition [Halil]
+ - rename non-session mode to stateless mode [Halil]
+ - change descriptions for all elements in struct virtio_crypto_config [Halil]
+ - add Halil as a reviewer in the ackonwledgement part, thanks for his work.
+ - other fixes here and there.
+
+Changes since v15:
+ - use feature bits for non-session mode in order to keep compatibility with
+   pre-existing code. [Halil & Michael]
+ - introduce VIRTIO_CRYPTO_F_ NON_SESSION_MODE feature bit to control all other
+   non-session mode feature bits.
+ - fix some typos. [Stefan]
+ - introduce struct virtio_crypto_op_data_req_mux to support both session
+   and non-session based crypto operations and keep compatibility with
+   pre-existing code.
+
+Changes since v14:
+ - drop VIRTIO_CRYPTO_S_STARTED status [Halil & Cornelia]
+ - correct a sentence about dataqueue and controlq in the first paragraph. 
+[Halil]
+ - change a MAY to MUST about max_dataqueues. [Halil]
+ - add non-session mode support
+   a) add four features for different crypto services to identify wheather 
+support session mode.
+   b) rewrite some
+
+For pervious versions of virtio crypto spec, Pls see:
+
+[v18]:
+https://www.mail-archive.com/qemu-devel@nongnu.org/msg444897.html
+
+[v14]:
+https://lists.gnu.org/archive/html/qemu-devel/2016-11/msg02212.html
+
+[v13]:
+https://lists.gnu.org/archive/html/qemu-devel/2016-10/msg07348.html
+
+For more information, please see:
+ http://qemu-project.org/Features/VirtioCrypto
+
+---
+Gonglei (2):
+  virtio-crypto: Add virtio crypto device specification
+  virtio-crypto: Add conformance clauses
+
+ acknowledgements.tex |    3 +
+ conformance.tex      |   29 +
+ content.tex          |    2 +
+ virtio-crypto.tex    | 1426 ++++++++++++++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 1460 insertions(+)
+ create mode 100644 virtio-crypto.tex
+
+-- 
+1.8.3.1
 
 
---=20
-Tom=C3=A1=C5=A1 Golembiovsk=C3=BD <tgolembi@redhat.com>
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
