@@ -1,184 +1,230 @@
-Return-Path: virtio-dev-return-2675-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2678-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 6A7AB581912B
-	for <virtio-dev@lists.oasis-open.org>; Sun, 12 Nov 2017 23:18:07 -0800 (PST)
-From: "Gonglei (Arei)" <arei.gonglei@huawei.com>
-Date: Mon, 13 Nov 2017 07:17:32 +0000
-Message-ID: <33183CC9F5247A488A2544077AF19020DA46A708@DGGEMA505-MBS.china.huawei.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 687CD581917D
+	for <virtio-dev@lists.oasis-open.org>; Mon, 13 Nov 2017 05:09:03 -0800 (PST)
 References: <1509951193-25256-1-git-send-email-longpeng2@huawei.com>
  <1509951193-25256-2-git-send-email-longpeng2@huawei.com>
  <9d566eaa-5ace-b136-904e-07f964a6a5e9@linux.vnet.ibm.com>
-In-Reply-To: <9d566eaa-5ace-b136-904e-07f964a6a5e9@linux.vnet.ibm.com>
-Content-Language: zh-CN
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <33183CC9F5247A488A2544077AF19020DA46A708@DGGEMA505-MBS.china.huawei.com>
+From: Halil Pasic <pasic@linux.vnet.ibm.com>
+Date: Mon, 13 Nov 2017 14:08:49 +0100
 MIME-Version: 1.0
-Subject: RE: [virtio-dev] Re: [Qemu-devel] [v21 1/2] virtio-crypto: Add
- virtio crypto device specification
-To: Halil Pasic <pasic@linux.vnet.ibm.com>, longpeng <longpeng2@huawei.com>, "qemu-devel@nongnu.org" <qemu-devel@nongnu.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
+In-Reply-To: <33183CC9F5247A488A2544077AF19020DA46A708@DGGEMA505-MBS.china.huawei.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+Message-Id: <e3613f11-7d95-17d4-610f-b3f44a14c723@linux.vnet.ibm.com>
+Subject: [virtio-dev] Re: [Qemu-devel] [virtio-dev] Re: [v21 1/2] virtio-crypto: Add virtio
+ crypto device specification
+To: "Gonglei (Arei)" <arei.gonglei@huawei.com>, longpeng <longpeng2@huawei.com>, "qemu-devel@nongnu.org" <qemu-devel@nongnu.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
 Cc: Luonengjun <luonengjun@huawei.com>, "mst@redhat.com" <mst@redhat.com>, "cornelia.huck@de.ibm.com" <cornelia.huck@de.ibm.com>, "stefanha@redhat.com" <stefanha@redhat.com>, "denglingli@chinamobile.com" <denglingli@chinamobile.com>, Jani Kokkonen <Jani.Kokkonen@huawei.com>, "Ola.Liljedahl@arm.com" <Ola.Liljedahl@arm.com>, "Varun.Sethi@freescale.com" <Varun.Sethi@freescale.com>, "xin.zeng@intel.com" <xin.zeng@intel.com>, "brian.a.keating@intel.com" <brian.a.keating@intel.com>, "liang.j.ma@intel.com" <liang.j.ma@intel.com>, "john.griffin@intel.com" <john.griffin@intel.com>, "Huangweidong (C)" <weidong.huang@huawei.com>, "agraf@suse.de" <agraf@suse.de>, "jasowang@redhat.com" <jasowang@redhat.com>, "vincent.jardin@6wind.com" <vincent.jardin@6wind.com>, "arei.gonglei@hotmail.com" <arei.gonglei@hotmail.com>, "wangxin (U)" <wangxinxin.wang@huawei.com>, "Zhoujian (jay)" <jianjay.zhou@huawei.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-SGksDQoNCj4NCj4gPiArVGhlIGNvbnRyb2xxIHJlcXVlc3QgaXMgY29tcG9zZWQgb2YgdHdvIHBh
-cnRzOg0KPiA+ICtcYmVnaW57bHN0bGlzdGluZ30NCj4gPiArc3RydWN0IHZpcnRpb19jcnlwdG9f
-b3BfY3RybF9yZXEgew0KPiA+ICsgICAgc3RydWN0IHZpcnRpb19jcnlwdG9fY3RybF9oZWFkZXIg
-aGVhZGVyOw0KPiA+ICsNCj4gPiArICAgIC8qIGFkZGl0aW9uYWwgcGFyYW1lbnRlciAqLw0KPiA+
-ICsgICAgdTggYWRkaXRpb25hbF9wYXJhW2FkZGxfcGFyYV9sZW5dOw0KPiANCj4gV2hhdCBkb2Vz
-IGFkZGl0aW9uYWwgcGFyYW1lbnRlciBtZWFuPyBFdmVuIGlmIEkgcy9wYXJhbWVudGVyL3BhcmFt
-ZXRlcg0KPiBpZCBkb2Vzbid0IHNpdCB3ZWxsLiBUbyBtZSBhbmQgaW4gdGhpcyBjb250ZXh0IGFk
-ZGl0aW9uYWwgaXMga2luZA0KPiBvZiBsaWtlIG9wdGlvbmFsOiBiZWNhdXNlIGVhY2ggbWVtYmVy
-IG9mIGEgc3RydWN0IGlzIHRyaXZpYWxseSBhZGRpdGlvbmFsDQo+IGluIHJlc3BlY3QgdG8gdGhl
-IHByZXZpb3VzIG1lbWJlcnMsIGFuZCB0aGVyZSBpcyBubyBwb2ludCBpbiBwb2ludGluZw0KPiBv
-dXQgYWRkaXRpb25hbC4gSSB3b3VsZCBtdWNoIHJhdGhlciBnbyB3aXRoIHNvbWV0aGluZyBsaWtl
-Og0KPiB1OCBvcF9zcGVjaWZpY1tdDQo+IA0KPiBJIGFsc28gZG9uJ3QgZmluZCB0aGUgYWRkbF9w
-YXJhX2xlbiB1c2VkIGFueXdoZXJlLiBUaGVuIElNSE8gd2UgZG9uJ3QNCj4gbmVlZCB0byBpbnRy
-b2R1Y2UgYSBuYW1lLg0KPiANCg0KSSdkIGxpa2UgdG8gc2F5IHRoYXQgdGhlIGFkZGl0aW9uYWxf
-cGFyYVthZGRsX3BhcmFfbGVuXSBpcyBqdXN0IGEgcGxhY2Vob2xkZXIsDQp3aGljaCBpcyBleHBs
-YWluZWQgYnkgdGhlIGJlbG93IGNvbnRlbnQuIEknbSBmaW5lIHdpdGggb3Bfc3BlY2lmaWNbXSB0
-b28uDQoNCj4gPiArfTsNCj4gPiArXGVuZHtsc3RsaXN0aW5nfQ0KPiA+ICsNCj4gPiArVGhlIGZp
-cnN0IGlzIGEgZ2VuZXJhbCBoZWFkZXIgKHNlZSBhYm92ZSkuIEFuZCB0aGUgc2Vjb25kIG9uZSwg
-YWRkaXRpb25hbA0KPiA+ICtwYXJhbWVudGVyLCBjb250YWlucyBhbiBjcnlwdG8tc2VydmljZS1z
-cGVjaWZpYyBzdHJ1Y3R1cmUsIHdoaWNoIGNvdWxkIGJlDQo+IG9uZQ0KPiANCj4gcy9wYXJhbWVu
-dGVyL3BhcmFtZXRlcg0KPiANCj4gSXQncyBhY3R1YWxseSBvcGNvZGUgc3BlY2lmaWMsIG9yPyBP
-ciBpcyB0aGVyZSBhIGRlc3Ryb3kgc2VydmljZT8NCj4gDQpXZSBjYW4gY2hvb3NlIHRoZSBzcGVj
-aWZpYyByZXF1ZXN0IChzdHJ1Y3R1cmUpIGFzIHRoZSAqb3Bfc3BlY2lmaWMqIGFjY29yZGluZyB0
-byBvcGNvZGUuDQoNCj4gPiArb2YgdGhlIGZvbGxvd2luZyB0eXBlczoNCj4gPiArXGJlZ2lue2l0
-ZW1pemUqfQ0KPiA+ICtcaXRlbSBzdHJ1Y3QgdmlydGlvX2NyeXB0b19zeW1fY3JlYXRlX3Nlc3Np
-b25fcmVxDQo+ID4gK1xpdGVtIHN0cnVjdCB2aXJ0aW9fY3J5cHRvX2hhc2hfY3JlYXRlX3Nlc3Np
-b25fcmVxDQo+ID4gK1xpdGVtIHN0cnVjdCB2aXJ0aW9fY3J5cHRvX21hY19jcmVhdGVfc2Vzc2lv
-bl9yZXENCj4gPiArXGl0ZW0gc3RydWN0IHZpcnRpb19jcnlwdG9fYWVhZF9jcmVhdGVfc2Vzc2lv
-bl9yZXENCj4gPiArXGl0ZW0gdmlydGlvX2NyeXB0b19kZXN0cm95X3Nlc3Npb25fcmVxDQo+ID4g
-K1xlbmR7aXRlbWl6ZSp9DQo+ID4gKw0KPiA+ICtUaGUgc2l6ZSBvZiB0aGUgYWRkaXRpb25hbCBw
-YXJhbWVudGVyIGRlcGVuZHMgb24gdGhlDQo+IFZJUlRJT19DUllQVE9fRl9NVVhfTU9ERQ0KPiAN
-Cj4gcy9wYXJhbWVudGVyL3BhcmFtZXRlcg0KPiANCj4gPiArZmVhdHVyZSBiaXQ6DQo+ID4gK1xp
-dGVtIElmIHRoZSBWSVJUSU9fQ1JZUFRPX0ZfTVVYX01PREUgZmVhdHVyZSBiaXQgaXMgTk9UIG5l
-Z290aWF0ZWQsDQo+IHRoZQ0KPiA+ICsgICAgc2l6ZSBvZiBhZGRpdGlvbmFsIHBhcmFtZW50ZXIg
-aXMgZml4ZWQgdG8gNTYgYnl0ZXMsIHRoZSBkYXRhIG9mIHRoZQ0KPiB1bnVzZWQNCj4gDQo+IHMv
-cGFyYW1lbnRlci9wYXJhbWV0ZXINCj4gDQo+ID4gKyAgICBwYXJ0IChpZiBoYXMpIHdpbGwgYmUg
-aW5nb3JlZC4NCj4gDQo+IHMvaW5nb3JlZC9pZ25vcmVkDQo+IA0KPiANCj4gPiArXGl0ZW0gSWYg
-dGhlIFZJUlRJT19DUllQVE9fRl9NVVhfTU9ERSBmZWF0dXJlIGJpdCBpcyBuZWdvdGlhdGVkLCB0
-aGUNCj4gc2l6ZSBvZg0KPiA+ICsgICAgYWRkaXRpb25hbCBwYXJhbWVudGVyIGlzIGZsZXhpYmxl
-LCB3aGljaCBpcyB0aGUgc2FtZSBhcyB0aGUNCj4gY3J5cHRvLXNlcnZpY2Utc3BlY2lmaWMNCj4g
-DQo+IHMvcGFyYW1lbnRlci9wYXJhbWV0ZXINCj4gDQo+ID4gKyAgICBzdHJ1Y3R1cmUgdXNlZC4N
-Cj4gPiArDQo+ID4gK1xwYXJhZ3JhcGh7U2Vzc2lvbiBvcGVyYXRpb259XGxhYmVse3NlYzpEZXZp
-Y2UgVHlwZXMgLyBDcnlwdG8gRGV2aWNlIC8NCj4gRGV2aWNlIE9wZXJhdGlvbiAvIENvbnRyb2wg
-VmlydHF1ZXVlIC8gU2Vzc2lvbiBvcGVyYXRpb259DQo+ID4gKw0KPiA+ICtUaGUgc2Vzc2lvbiBp
-cyBhIGhhbmRsZSB3aGljaCBkZXNjcmliZXMgdGhlIGNyeXB0b2dyYXBoaWMgcGFyYW1ldGVycyB0
-byBiZQ0KPiA+ICthcHBsaWVkIHRvIGEgbnVtYmVyIG9mIGJ1ZmZlcnMuDQo+ID4gKw0KPiA+ICtU
-aGUgZm9sbG93aW5nIHN0cnVjdHVyZSBzdG9yZXMgdGhlIHJlc3VsdCBvZiBzZXNzaW9uIGNyZWF0
-aW9uIHNldCBieSB0aGUNCj4gZGV2aWNlOg0KPiA+ICsNCj4gPiArXGJlZ2lue2xzdGxpc3Rpbmd9
-DQo+ID4gK3N0cnVjdCB2aXJ0aW9fY3J5cHRvX3Nlc3Npb25faW5wdXQgew0KPiA+ICsgICAgLyog
-RGV2aWNlLXdyaXRhYmxlIHBhcnQgKi8NCj4gPiArICAgIGxlNjQgc2Vzc2lvbl9pZDsNCj4gPiAr
-ICAgIGxlMzIgc3RhdHVzOw0KPiA+ICsgICAgbGUzMiBwYWRkaW5nOw0KPiA+ICt9Ow0KPiA+ICtc
-ZW5ke2xzdGxpc3Rpbmd9DQo+ID4gKw0KPiA+ICtBIHJlcXVlc3QgdG8gZGVzdHJveSBhIHNlc3Np
-b24gaW5jbHVkZXMgdGhlIGZvbGxvd2luZyBpbmZvcm1hdGlvbjoNCj4gPiArDQo+ID4gK1xiZWdp
-bntsc3RsaXN0aW5nfQ0KPiA+ICtzdHJ1Y3QgdmlydGlvX2NyeXB0b19kZXN0cm95X3Nlc3Npb25f
-cmVxIHsNCj4gPiArICAgIC8qIERldmljZS1yZWFkYWJsZSBwYXJ0ICovDQo+ID4gKyAgICBsZTY0
-ICBzZXNzaW9uX2lkOw0KPiA+ICsgICAgLyogRGV2aWNlLXdyaXRhYmxlIHBhcnQgKi8NCj4gPiAr
-ICAgIGxlMzIgIHN0YXR1czsNCj4gPiArICAgIGxlMzIgIHBhZGRpbmc7DQo+ID4gK307DQo+ID4g
-K1xlbmR7bHN0bGlzdGluZ30NCj4gPiArDQo+ID4gK1xzdWJwYXJhZ3JhcGh7U2Vzc2lvbiBvcGVy
-YXRpb246IEhBU0ggc2Vzc2lvbn1cbGFiZWx7c2VjOkRldmljZSBUeXBlcyAvDQo+IENyeXB0byBE
-ZXZpY2UgLyBEZXZpY2UNCj4gPiArT3BlcmF0aW9uIC8gQ29udHJvbCBWaXJ0cXVldWUgLyBTZXNz
-aW9uIG9wZXJhdGlvbiAvIFNlc3Npb24gb3BlcmF0aW9uOiBIQVNIDQo+IHNlc3Npb259DQo+ID4g
-Kw0KPiANCj4gTGV0IG1lIHNraXAgdG8gdGhlIG9uZSBhY3R1YWxseSBpbXBsZW1lbnRlZC4NCj4g
-DQo+ID4gKw0KPiA+ICtUaGUgcmVxdWVzdCBvZiBzeW1tZXRyaWMgc2Vzc2lvbiBpbmNsdWRlcyB0
-d28gcGFydHMsIENJUEhFUiBhbGdvcml0aG1zDQo+ID4gK2FuZCBjaGFpbiBhbGdvcml0aG1zIChj
-aGFpbmluZyBDSVBIRVIgYW5kIEhBU0gvTUFDKS4NCj4gDQo+IFRoaXMgc291bmRzIGxpa2UgY29u
-Y2F0ZW5hdGlvbiBhbmQgbm90IGVpdGhlci1vci4NCj4gPiArDQo+ID4gK0NJUEhFUiBzZXNzaW9u
-IHJlcXVlc3RzIGFyZSBhcyBmb2xsb3dzOg0KPiA+ICsNCj4gPiArXGJlZ2lue2xzdGxpc3Rpbmd9
-DQo+ID4gK3N0cnVjdCB2aXJ0aW9fY3J5cHRvX2NpcGhlcl9zZXNzaW9uX3BhcmEgew0KPiA+ICsg
-ICAgLyogU2VlIFZJUlRJT19DUllQVE9fQ0lQSEVSKiBhYm92ZSAqLw0KPiA+ICsgICAgbGUzMiBh
-bGdvOw0KPiA+ICsgICAgLyogbGVuZ3RoIG9mIGtleSAqLw0KPiA+ICsgICAgbGUzMiBrZXlsZW47
-DQo+ID4gKyNkZWZpbmUgVklSVElPX0NSWVBUT19PUF9FTkNSWVBUICAxDQo+ID4gKyNkZWZpbmUg
-VklSVElPX0NSWVBUT19PUF9ERUNSWVBUICAyDQo+ID4gKyAgICAvKiBlbmNyeXB0aW9uIG9yIGRl
-Y3J5cHRpb24gKi8NCj4gPiArICAgIGxlMzIgb3A7DQo+ID4gKyAgICBsZTMyIHBhZGRpbmc7DQo+
-ID4gK307DQo+ID4gKw0KPiA+ICtzdHJ1Y3QgdmlydGlvX2NyeXB0b19jaXBoZXJfc2Vzc2lvbl9y
-ZXEgew0KPiA+ICsgICAgLyogRGV2aWNlLXJlYWRhYmxlIHBhcnQgKi8NCj4gPiArICAgIHN0cnVj
-dCB2aXJ0aW9fY3J5cHRvX2NpcGhlcl9zZXNzaW9uX3BhcmEgcGFyYTsNCj4gPiArICAgIC8qIFRo
-ZSBjaXBoZXIga2V5ICovDQo+ID4gKyAgICB1OCBjaXBoZXJfa2V5W2tleWxlbl07DQo+ID4gKw0K
-PiANCj4gSXMgdGhlcmUgYSBsaW1pdCB0byB0aGUgc2l6ZSBvZiBjaGlwZXJfa2V5LiBJIGRvbid0
-IHNlZSBvbmUgaW4geW91cg0KPiBrZXJuZWwgY29kZS4gT1RPSCBnaXZlbiB0aGF0IHZpcnRpb19j
-cnlwdG9fc3ltX2NyZWF0ZV9zZXNzaW9uX3JlcQ0KPiBpcyBvbmUgZmxhdm9yIG9mIHZpcnRpb19j
-cnlwdG9fb3BfY3RybF9yZXEuYWRkaXRpb25hbF9wYXJhIGFuZCB0aGF0DQo+IHRoZSBsYXRlciBp
-cyA1NiBieXRlcyBpbiBjYXNlIG5vIG11eCBtb2RlIGlzIHN1cHBvcnRlZCwgSSB0aGluaw0KPiB0
-aGVyZSBtdXN0IGJlIGEgbGltaXQgdG8gdGhlIHNpemUgb2YgY2lwaGVyX2tleSENCj4gDQpPZiBj
-b3Vyc2UgdGhlIHNpemUgb2YgY2lwaGVyX2tleSBpcyBsaW1pdGVkLCBmaXJzdGx5IHRoZSBtYXgg
-bGVuZ3RoIGlzIGRlZmluZWQNCmluIHZpcnRpbyBjcnlwdG8ncyBjb25maWd1cmF0aW9uLCBzZWUN
-Cg0Kc3RydWN0IHZpcnRpb19jcnlwdG9fY29uZmlnIHsNCiAgLi4uIC4uLg0KICAgIC8qIE1heGlt
-dW0gbGVuZ3RoIG9mIGNpcGhlciBrZXkgKi8NCiAgICB1aW50MzJfdCBtYXhfY2lwaGVyX2tleV9s
-ZW47DQogIC4uLiAuLi4NCn07DQoNClNlY29uZGx5IHRoZSByZWFsIGNpcGhlcl9rZXkgc2l6ZSBm
-b3IgYSBzcGVjaWZpYyByZXF1ZXN0LCBpcyBpbiBzdHJ1Y3QgdmlydGlvX2NyeXB0b19jaXBoZXJf
-c2Vzc2lvbl9wYXJhLA0KDQpzdHJ1Y3QgdmlydGlvX2NyeXB0b19jaXBoZXJfc2Vzc2lvbl9wYXJh
-IHsNCiAgIC4uLiAuLi4NCiAgICAvKiBsZW5ndGggb2Yga2V5ICovDQogICAgbGUzMiBrZXlsZW47
-DQogICAuLi4gLi4uDQp9Ow0KDQpUaGF0IG1lYW5zIGEgc2l6ZSBvZiBjaXBoZXJfa2V5IGlzIHZh
-cmlhYmxlLCB3aGljaCBpcyBhc3NpZ25lZCBpbiBlYWNoIHJlcXVlc3QuDQoNCj4gUGxlYXNlIGV4
-cGxhaW4hDQo+IA0KPiBMb29raW5nIGF0IHRoZSBrZXJuZWwgY29kZSBhZ2FpbiwgaXQgc2VlbXMg
-dG8gbWUgdGhhdCBjaGlwZXJfa2V5DQo+IHN0YXJ0cyBhdCBvZmZzZXQgNzIgPT0gc2l6ZW9mKHN0
-cnVjdCB2aXJ0aW9fY3J5cHRvX29wX2N0cmxfcmVxKQ0KPiB3aGVyZSBzdHJ1Y3QgdmlydGlvX2Ny
-eXB0b19vcF9jdHJsX3JlcSBpcyBkZWZpbmVkIGluDQo+IGluY2x1ZGUvdWFwaS9saW51eC92aXJ0
-aW9fY3J5cHRvLmguIFRoYXQgd291bGQgbWVhbiB0aGF0IHRoaXMNCj4gZ3V5IGlzICpub3QgYSBw
-YXJ0IG9mKiB2aXJ0aW9fY3J5cHRvX29wX2N0cmxfcmVxIGJ1dCBjb21lcw0KPiBhZnRlciBpdCBh
-bmQgaXMgb2YgdmFyaWFibGUgc2l6ZS4NCj4gDQo+ID4gKyAgICAvKiBEZXZpY2Utd3JpdGFibGUg
-cGFydCAqLw0KPiANCj4gDQo+IE5vdyBJJ20gaW50ZXJlc3RlZCBvbiB3aGF0ICdvZmZzZXQnIGRv
-ZXMgdGhlIGRldmljZSB3cml0YWJsZQ0KPiBwYXJ0IHN0YXJ0Lg0KPiANCj4gT2YgY291cnNlIHRl
-Y2huaWNhbGx5IHdlIGRvbid0IG5lZWQgdG8ga25vdyB0aGlzLCBiZWNhdXNlIHdlDQo+IGhhdmUg
-YSBkZXZpY2UtcmVhZC1vbmx5IG9yIGRldmljZS13cml0ZS1vbmx5IGluZGljYXRpb24gb24gZWFj
-aA0KPiBkZXNjcmlwdG9yLiBTbyB2aXJ0aW9fY3J5cHRvX3Nlc3Npb25faW5wdXQgc3RhcnRzIHdp
-dGggdGhlIGZpcnN0DQo+IGRldmljZSB3cml0ZSBvbmx5IGRlc2NyaXB0b3IuDQo+IA0KWW91IGFy
-ZSByaWdodC4gV2UgZGVmaW5pdGVseSBkb24ndCBuZWVkIHRvIGtub3cgdGhpcy4gUGxzIHNlZSBR
-ZW11IGNvZGU6DQp2aXJ0aW9fY3J5cHRvX2hhbmRsZV9yZXF1ZXN0KCk6DQoNCiAgICAvKiBXZSBh
-bHdheXMgdG91Y2ggdGhlIGxhc3QgYnl0ZSwgc28ganVzdCBzZWUgaG93IGJpZyBpbl9pb3YgaXMu
-ICovDQogICAgcmVxdWVzdC0+aW5fbGVuID0gaW92X3NpemUoaW5faW92LCBpbl9udW0pOw0KICAg
-IHJlcXVlc3QtPmluID0gKHZvaWQgKilpbl9pb3ZbaW5fbnVtIC0gMV0uaW92X2Jhc2UNCiAgICAg
-ICAgICAgICAgKyBpbl9pb3ZbaW5fbnVtIC0gMV0uaW92X2xlbg0KICAgICAgICAgICAgICAtIHNp
-emVvZihzdHJ1Y3QgdmlydGlvX2NyeXB0b19pbmhkcik7DQogICAgaW92X2Rpc2NhcmRfYmFjayhp
-bl9pb3YsICZpbl9udW0sIHNpemVvZihzdHJ1Y3QgdmlydGlvX2NyeXB0b19pbmhkcikpOw0KDQpU
-aGUgYWJvdmUgaW5faW92IG1lYW5zIGRldmljZS13cml0YWJsZSBpb3YuDQoNCj4gPiArICAgIHN0
-cnVjdCB2aXJ0aW9fY3J5cHRvX3Nlc3Npb25faW5wdXQgaW5wdXQ7DQo+ID4gK307DQo+ID4gK1xl
-bmR7bHN0bGlzdGluZ30NCj4gPiArDQo+ID4gK0FsZ29yaXRobSBjaGFpbmluZyByZXF1ZXN0cyBh
-cmUgYXMgZm9sbG93czoNCj4gPiArDQo+ID4gK1xiZWdpbntsc3RsaXN0aW5nfQ0KPiA+ICtzdHJ1
-Y3QgdmlydGlvX2NyeXB0b19hbGdfY2hhaW5fc2Vzc2lvbl9wYXJhIHsNCj4gPiArI2RlZmluZSBW
-SVJUSU9fQ1JZUFRPX1NZTV9BTEdfQ0hBSU5fT1JERVJfSEFTSF9USEVOX0NJUEhFUg0KPiAxDQo+
-ID4gKyNkZWZpbmUgVklSVElPX0NSWVBUT19TWU1fQUxHX0NIQUlOX09SREVSX0NJUEhFUl9USEVO
-X0hBU0gNCj4gMg0KDQpbc2tpcF0NCg0KPiA+ICtUaGUgZHJpdmVyIGNhbiBzZXQgdGhlIFxmaWVs
-ZHtvcF90eXBlfSBmaWVsZCBpbiBzdHJ1Y3QNCj4gdmlydGlvX2NyeXB0b19zeW1fY3JlYXRlX3Nl
-c3Npb25fcmVxDQo+ID4gK2FzIGZvbGxvd3M6IFZJUlRJT19DUllQVE9fU1lNX09QX05PTkU6IG5v
-IG9wZXJhdGlvbjsNCj4gVklSVElPX0NSWVBUT19TWU1fT1BfQ0lQSEVSOiBDaXBoZXIgb25seQ0K
-PiA+ICtvcGVyYXRpb24gb24gdGhlIGRhdGE7IFZJUlRJT19DUllQVE9fU1lNX09QX0FMR09SSVRI
-TV9DSEFJTklORzoNCj4gQ2hhaW4gYW55IGNpcGhlciB3aXRoIGFueSBoYXNoDQo+ID4gK29yIG1h
-YyBvcGVyYXRpb24uDQo+ID4gKw0KPiANCj4gQmFzZWQgb24gdGhlIHN0dWZmIHdyaXR0ZW4gaGVy
-ZSwgaXQgYWluJ3Qgb2J2aW91cyB0byBtZSBhdCB3aGljaCBvZmZzZXQgZG9lcw0KPiB0aGUgZGV2
-aWNlIHdyaXRhYmxlIHBhcnQgKHRoYXQgaXMgdmlydGlvX2NyeXB0b19zZXNzaW9uX2lucHV0KSBz
-dGFydC4NCj4gDQoNCldoeSBkbyB3ZSBuZWVkIHRvIGtub3cgdGhlIG9mZnNldD8gSU1PIHdlIG9u
-bHkgbmVlZCB0byBmb2xsb3cgdGhlIHNwZWMgYXJyYW5nZW1lbnQgdG8gDQpmaWxsIHRoZSBzcGVj
-aWZpYyByZXF1ZXN0IHBhY2tldCB3aWxsIG5vdCBiZSBhIHByb2JsZW0sIHN1Y2ggYXMgZ2VuZXJh
-bCBoZWFkZXIgKyBvdXRfZGF0YSArIGluX2RhdGEuIA0KRHJpdmVyIGZpcnN0IGNvbXBsZXRlIHJl
-YWQtb25seSBwYXJ0LCB0aGVuIHRoZSB3cml0YWJsZSBwYXJ0LiBUaGUgZGV2aWNlIHRoZW4gcGFy
-c2VzIHRoZSANCnJlcXVlc3QgcGFja2V0IHRoaXMgd2F5LiBXaHkgZG8gd2UgbmVlZCB0byB3cml0
-ZSB0aGlzIG9mZnNldCBpbiB0aGUgc3BlYz8NCg0KPiBGcm9tIHlvdXIga2VybmVsIGNvZGUsIGl0
-IHNlZW1zIHRvIG1lIHRoYXQgaXQgc3RhcnRzIGF0IG9mZnNldCA3MiArIGtleWxlbi4NCj4gDQo+
-IA0KPiBUbyBzdW0gaXQgdXAgSSdtIGF3ZnVsbHkgZGlzc2F0aXNmaWVkLiBNYXliZSBJIG1hZGUg
-c29tZSBtaXN0YWtlIHNvbWV3aGVyZSwNCj4gYW5kIHRoYXQncyB3aHkgdGhpbmdzIGRvbid0IG1h
-a2Ugc2Vuc2UuDQo+IA0KPiBJIHdvdWxkIHJlYWxseSBhcHByZWNpYXRlIHNvbWVib2R5IGVsc2Ug
-aGF2aW5nIGEgbG9vaywgYW5kIHRlbGxpbmc6DQo+IGlzIGl0IHBvc3NpYmxlIHRvIGZpZ3VyZSBv
-dXQgdGhlIG1lc3NhZ2UgZm9ybWF0cyBhbmQgY3JlYXRlIGFuIGludGVyLW9wZXJhYmxlDQo+IGlt
-cGxlbWVudGF0aW9uIGJhc2VkIG9uIHRoaXMgdGV4dCAoYW5kIHdpdGhvdXQgbG9va2luZyBhdCB0
-aGUgTGludXgvUUVNVQ0KPiBjb2RlKT8NCj4gDQpZZXMsIHdlIG5lZWQgc29tZSBvdGhlciBjb21t
-ZW50cyBhYm91dCB0aGlzLg0KDQpUaGFua3MsDQotR29uZ2xlaQ0KPiANCj4gPiArXHN1YnBhcmFn
-cmFwaHtTZXNzaW9uIG9wZXJhdGlvbjogQUVBRCBzZXNzaW9ufVxsYWJlbHtzZWM6RGV2aWNlIFR5
-cGVzIC8NCj4gQ3J5cHRvIERldmljZSAvIERldmljZQ0KPiA+ICtPcGVyYXRpb24gLyBDb250cm9s
-IFZpcnRxdWV1ZSAvIFNlc3Npb24gb3BlcmF0aW9uIC8gU2Vzc2lvbiBvcGVyYXRpb246IEFFQUQN
-Cj4gc2Vzc2lvbn0NCj4gDQo+IEZ1cnRoZXIgcmV2aWV3IGRvZXMgbm90IG1ha2Ugc2Vuc2UgYXQg
-dGhlIG1vbWVudC4gSWYgaXQncyBqdXN0IG15IHRyYWluIG9mDQo+IHRob3VnaHQNCj4gdGhhdCBn
-b3QgZGVyYWlsZWQsIHBsZWFzZSBwdXQgaXQgYmFjayBvbiB0aGUgcmFpbHMgZmlyc3QuDQo+IA0K
-PiBSZWdhcmRzLA0KPiBIYWxpbA0KPiANCj4gWy4uXQ0KPiANCj4gDQo+IC0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQ0K
-PiBUbyB1bnN1YnNjcmliZSwgZS1tYWlsOiB2aXJ0aW8tZGV2LXVuc3Vic2NyaWJlQGxpc3RzLm9h
-c2lzLW9wZW4ub3JnDQo+IEZvciBhZGRpdGlvbmFsIGNvbW1hbmRzLCBlLW1haWw6IHZpcnRpby1k
-ZXYtaGVscEBsaXN0cy5vYXNpcy1vcGVuLm9yZw0KDQo=
+
+
+On 11/13/2017 08:17 AM, Gonglei (Arei) wrote:
+>>> +struct virtio_crypto_cipher_session_req {
+>>> +    /* Device-readable part */
+>>> +    struct virtio_crypto_cipher_session_para para;
+>>> +    /* The cipher key */
+>>> +    u8 cipher_key[keylen];
+>>> +
+>> Is there a limit to the size of chiper_key. I don't see one in your
+>> kernel code. OTOH given that virtio_crypto_sym_create_session_req
+>> is one flavor of virtio_crypto_op_ctrl_req.additional_para and that
+>> the later is 56 bytes in case no mux mode is supported, I think
+>> there must be a limit to the size of cipher_key!
+>>
+> Of course the size of cipher_key is limited, firstly the max length is defined
+> in virtio crypto's configuration, see
+> 
+> struct virtio_crypto_config {
+>   ... ...
+>     /* Maximum length of cipher key */
+>     uint32_t max_cipher_key_len;
+>   ... ...
+> };
+> 
+
+So for the current qemu implementation it's 64 bytes.
+
+> Secondly the real cipher_key size for a specific request, is in struct virtio_crypto_cipher_session_para,
+> 
+> struct virtio_crypto_cipher_session_para {
+>    ... ...
+>     /* length of key */
+>     le32 keylen;
+>    ... ...
+> };
+> 
+> That means a size of cipher_key is variable, which is assigned in each request.
+
+Of course I understood that. There are two problems I was trying
+to point out, and you ignored both.
+
+1. The more important one I was explicit about. Sadly you ignored
+that part of my mail. I will mark it as *Problem 1* down below.
+
+2. If there is a limit to the size, then there should be a driver
+normative statement ("Driver Requirements") that states this limit
+MUST be respected. I didn't find this statement.
+> 
+>> Please explain!
+>>
+>> Looking at the kernel code again, it seems to me that chiper_key
+>> starts at offset 72 == sizeof(struct virtio_crypto_op_ctrl_req)
+>> where struct virtio_crypto_op_ctrl_req is defined in
+>> include/uapi/linux/virtio_crypto.h. That would mean that this
+>> guy is *not a part of* virtio_crypto_op_ctrl_req but comes
+>> after it and is of variable size.
+
+*Problem 1*
+
+Now consider the part where the whole request is described
+
+"""
++The controlq request is composed of two parts:
++\begin{lstlisting}
++struct virtio_crypto_op_ctrl_req {
++    struct virtio_crypto_ctrl_header header;
++
++    /* additional paramenter */
++    u8 additional_para[addl_para_len];
++};
++\end{lstlisting}
++
++The first is a general header (see above). And the second one, additional
++paramenter, contains an crypto-service-specific structure, which could be one
++of the following types:
++\begin{itemize*}
++\item struct virtio_crypto_sym_create_session_req
++\item struct virtio_crypto_hash_create_session_req
++\item struct virtio_crypto_mac_create_session_req
++\item struct virtio_crypto_aead_create_session_req
++\item virtio_crypto_destroy_session_req
++\end{itemize*}
++
++The size of the additional paramenter depends on the VIRTIO_CRYPTO_F_MUX_MODE
++feature bit:
++\item If the VIRTIO_CRYPTO_F_MUX_MODE feature bit is NOT negotiated, the
++    size of additional paramenter is fixed to 56 bytes, the data of the unused
++    part (if has) will be ingored.
++\item If the VIRTIO_CRYPTO_F_MUX_MODE feature bit is negotiated, the size of
++    additional paramenter is flexible, which is the same as the crypto-service-specific
++    structure used.
+"""
+
+There it's said that the whole request is header + additional_para and that
+if VIRTIO_CRYPTO_F_MUX_MODE feature bit is NOT negotiated additional para
+is 56 bytes. Let's assume the key is part of the additional parameter.
+But you can't put 64 bytes into 56 bytes. So as I say above
+*the key is not part of virtio_crypto_op_ctrl_req* neiter as described
+in this spec nor as defined in uapi/linux/virtio_crypto.h. That means
+the communication protocol description (more precisely the message format
+description) in the spec is broken. QED
+
+In my opinion this is a big issue.
+
+
+>>
+>>> +    /* Device-writable part */
+>>
+>> Now I'm interested on what 'offset' does the device writable
+>> part start.
+>>
+>> Of course technically we don't need to know this, because we
+>> have a device-read-only or device-write-only indication on each
+>> descriptor. So virtio_crypto_session_input starts with the first
+>> device write only descriptor.
+>>
+> You are right. We definitely don't need to know this. Pls see Qemu code:
+> virtio_crypto_handle_request():
+> 
+>     /* We always touch the last byte, so just see how big in_iov is. */
+>     request->in_len = iov_size(in_iov, in_num);
+>     request->in = (void *)in_iov[in_num - 1].iov_base
+>               + in_iov[in_num - 1].iov_len
+>               - sizeof(struct virtio_crypto_inhdr);
+>     iov_discard_back(in_iov, &in_num, sizeof(struct virtio_crypto_inhdr));
+> 
+> The above in_iov means device-writable iov.
+> 
+
+I've seen that code. Thanks.
+
+>>> +    struct virtio_crypto_session_input input;
+>>> +};
+>>> +\end{lstlisting}
+>>> +
+>>> +Algorithm chaining requests are as follows:
+>>> +
+>>> +\begin{lstlisting}
+>>> +struct virtio_crypto_alg_chain_session_para {
+>>> +#define VIRTIO_CRYPTO_SYM_ALG_CHAIN_ORDER_HASH_THEN_CIPHER
+>> 1
+>>> +#define VIRTIO_CRYPTO_SYM_ALG_CHAIN_ORDER_CIPHER_THEN_HASH
+>> 2
+> [skip]
+> 
+>>> +The driver can set the \field{op_type} field in struct
+>> virtio_crypto_sym_create_session_req
+>>> +as follows: VIRTIO_CRYPTO_SYM_OP_NONE: no operation;
+>> VIRTIO_CRYPTO_SYM_OP_CIPHER: Cipher only
+>>> +operation on the data; VIRTIO_CRYPTO_SYM_OP_ALGORITHM_CHAINING:
+>> Chain any cipher with any hash
+>>> +or mac operation.
+>>> +
+>> Based on the stuff written here, it ain't obvious to me at which offset does
+>> the device writable part (that is virtio_crypto_session_input) start.
+>>
+> Why do we need to know the offset? IMO we only need to follow the spec arrangement to 
+> fill the specific request packet will not be a problem, such as general header + out_data + in_data. 
+> Driver first complete read-only part, then the writable part. The device then parses the 
+> request packet this way. Why do we need to write this offset in the spec?
+> 
+
+We actually don't. That is just what I've said a couple of lines before.
+But we do need to know at which offset the key is (or any other piece of
+information within the device readable and the device writable part).
+
+Maybe it was not smart from me to ask this question.
+
+I understood this specification as if it were trying to describe a message
+format as structs, which are basically supposed to define the offset of the
+individual fields. So for a guy trying to figure out the spec (because he
+wants to implement it) asking himself at what offset a certain piece
+of info is, is natural IMHO.
+
+I don't think the placement of virtio_crypto_session_input is adequately
+described. Please point me to the fragment if I've missed it. IMHO a
+straightforward way to describe it would be that virtio_crypto_session_input
+starts at the data address designated by the first device writable descriptor.
+
+Regards,
+Halil
+
+>> From your kernel code, it seems to me that it starts at offset 72 + keylen.
+>>
+>>
+>> To sum it up I'm awfully dissatisfied. Maybe I made some mistake somewhere,
+>> and that's why things don't make sense.
+>>
+>> I would really appreciate somebody else having a look, and telling:
+>> is it possible to figure out the message formats and create an inter-operable
+>> implementation based on this text (and without looking at the Linux/QEMU
+>> code)?
+>>
+> Yes, we need some other comments about this.
+> > Thanks,
+> -Gonglei
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
