@@ -1,55 +1,88 @@
-Return-Path: virtio-dev-return-2727-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2700-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id C5B51581912F
-	for <virtio-dev@lists.oasis-open.org>; Wed, 29 Nov 2017 07:14:48 -0800 (PST)
+	by lists.oasis-open.org (Postfix) with ESMTP id 266C01CB807A
+	for <virtio-dev@lists.oasis-open.org>; Fri, 17 Nov 2017 10:53:15 -0800 (PST)
 From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Date: Fri, 17 Nov 2017 18:52:11 +0000
+Message-Id: <20171117185211.32593-6-jean-philippe.brucker@arm.com>
+In-Reply-To: <20171117185211.32593-1-jean-philippe.brucker@arm.com>
 References: <20171117185211.32593-1-jean-philippe.brucker@arm.com>
- <20171117185211.32593-5-jean-philippe.brucker@arm.com>
-Message-ID: <aea995d0-333b-cfec-abe7-2e59ef37c19e@arm.com>
-Date: Wed, 29 Nov 2017 15:17:55 +0000
-MIME-Version: 1.0
-In-Reply-To: <20171117185211.32593-5-jean-philippe.brucker@arm.com>
-Content-Type: text/plain; charset=windows-1252
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [virtio-dev] [RFC PATCH v2 4/5] ACPI/IORT: Support
- paravirtualized IOMMU
-To: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "devel@acpica.org" <devel@acpica.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
-Cc: "jasowang@redhat.com" <jasowang@redhat.com>, "mst@redhat.com" <mst@redhat.com>, "lv.zheng@intel.com" <lv.zheng@intel.com>, "robert.moore@intel.com" <robert.moore@intel.com>, "joro@8bytes.org" <joro@8bytes.org>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, Sudeep Holla <Sudeep.Holla@arm.com>, "hanjun.guo@linaro.org" <hanjun.guo@linaro.org>, Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>, "lenb@kernel.org" <lenb@kernel.org>, "rjw@rjwysocki.net" <rjw@rjwysocki.net>, Marc Zyngier <Marc.Zyngier@arm.com>, Robin Murphy <Robin.Murphy@arm.com>, Will Deacon <Will.Deacon@arm.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>, "bharat.bhushan@nxp.com" <bharat.bhushan@nxp.com>, "Jayachandran.Nair@cavium.com" <Jayachandran.Nair@cavium.com>, "ashok.raj@intel.com" <ashok.raj@intel.com>, "peterx@redhat.com" <peterx@redhat.com>
+Subject: [virtio-dev] [RFC PATCH v2 5/5] ACPI/IORT: Move IORT to the ACPI folder
+To: iommu@lists.linux-foundation.org, devel@acpica.org, linux-acpi@vger.kernel.org, kvm@vger.kernel.org, kvmarm@lists.cs.columbia.edu, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org
+Cc: jasowang@redhat.com, mst@redhat.com, lv.zheng@intel.com, robert.moore@intel.com, joro@8bytes.org, alex.williamson@redhat.com, sudeep.holla@arm.com, hanjun.guo@linaro.org, lorenzo.pieralisi@arm.com, lenb@kernel.org, rjw@rjwysocki.net, marc.zyngier@arm.com, robin.murphy@arm.com, will.deacon@arm.com, eric.auger@redhat.com, bharat.bhushan@nxp.com, Jayachandran.Nair@cavium.com, ashok.raj@intel.com, peterx@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 17/11/17 18:52, Jean-Philippe Brucker wrote:
-> To describe the virtual topology in relation to a virtio-iommu device,
-> ACPI-based systems use a "paravirtualized IOMMU" IORT node. Add support
-> for it.
-> 
-> This is a RFC because the IORT specification doesn't describe the
-> paravirtualized node at the moment, it is only provided as an example in
-> the virtio-iommu spec. What we need to do first is confirm that x86
-> kernels are able to use the IORT driver with the virtio-iommu. There isn't
-> anything specific to arm64 in the driver but there might be other blockers
-> we're not aware of (I know for example that x86 also requires custom DMA
-> ops rather than iommu-dma ones, but it's unrelated) so this needs to be
-> tested on the x86 prototype.
+IORT can be used (by QEMU) to describe a virtual topology containing an
+architecture-agnostic paravirtualized device. The rationale behind this
+blasphemy is explained in patch 4/5.
 
-I tested IORT with an x86 guest, putting a virtio-iommu on the PCI bus and
-it worked fine :)
+In order to build IORT for x86 systems, the driver has to be moved outside
+of arm64/. Since there is nothing specific to arm64 in the driver, it
+simply requires moving Makefile and Kconfig entries.
 
-x86 still requires additional code [1] for using the IOMMU DMA ops,
-and I'm not comfortable enough with x86 to write the patch, but for
-instantiating virtio-iommus and for enumerating endpoints/buses connected
-to them, IORT should suffice.
+Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+---
+ drivers/acpi/Kconfig            | 3 +++
+ drivers/acpi/Makefile           | 1 +
+ drivers/acpi/arm64/Kconfig      | 3 ---
+ drivers/acpi/arm64/Makefile     | 1 -
+ drivers/acpi/{arm64 => }/iort.c | 0
+ 5 files changed, 4 insertions(+), 4 deletions(-)
+ rename drivers/acpi/{arm64 => }/iort.c (100%)
 
-Thanks,
-Jean
+diff --git a/drivers/acpi/Kconfig b/drivers/acpi/Kconfig
+index 5b1938f4b626..ce40275646c8 100644
+--- a/drivers/acpi/Kconfig
++++ b/drivers/acpi/Kconfig
+@@ -536,4 +536,7 @@ if ARM64
+ source "drivers/acpi/arm64/Kconfig"
+ endif
+ 
++config ACPI_IORT
++	bool
++
+ endif	# ACPI
+diff --git a/drivers/acpi/Makefile b/drivers/acpi/Makefile
+index cd1abc9bc325..689c470c013b 100644
+--- a/drivers/acpi/Makefile
++++ b/drivers/acpi/Makefile
+@@ -112,3 +112,4 @@ video-objs			+= acpi_video.o video_detect.o
+ obj-y				+= dptf/
+ 
+ obj-$(CONFIG_ARM64)		+= arm64/
++obj-$(CONFIG_ACPI_IORT) 	+= iort.o
+diff --git a/drivers/acpi/arm64/Kconfig b/drivers/acpi/arm64/Kconfig
+index 5a6f80fce0d6..403f917ab274 100644
+--- a/drivers/acpi/arm64/Kconfig
++++ b/drivers/acpi/arm64/Kconfig
+@@ -2,8 +2,5 @@
+ # ACPI Configuration for ARM64
+ #
+ 
+-config ACPI_IORT
+-	bool
+-
+ config ACPI_GTDT
+ 	bool
+diff --git a/drivers/acpi/arm64/Makefile b/drivers/acpi/arm64/Makefile
+index 1017def2ea12..47925dc6cfc8 100644
+--- a/drivers/acpi/arm64/Makefile
++++ b/drivers/acpi/arm64/Makefile
+@@ -1,2 +1 @@
+-obj-$(CONFIG_ACPI_IORT) 	+= iort.o
+ obj-$(CONFIG_ACPI_GTDT) 	+= gtdt.o
+diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/iort.c
+similarity index 100%
+rename from drivers/acpi/arm64/iort.c
+rename to drivers/acpi/iort.c
+-- 
+2.14.3
 
-[1]
-http://www.linux-arm.org/git?p=linux-jpb.git;a=patch;h=e910e224b58712151dda06df595a53ff07edef63;hp=e7f9475480c24c5f973711984b30cf6746ff3ec8
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
