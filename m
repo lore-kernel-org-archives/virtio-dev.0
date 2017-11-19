@@ -1,151 +1,160 @@
-Return-Path: virtio-dev-return-2701-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2702-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 57BFB1CB807B
-	for <virtio-dev@lists.oasis-open.org>; Fri, 17 Nov 2017 21:22:35 -0800 (PST)
-From: "Wang, Wei W" <wei.w.wang@intel.com>
-Date: Sat, 18 Nov 2017 05:22:28 +0000
-Message-ID: <286AC319A985734F985F78AFA26841F73936A8E7@shsmsx102.ccr.corp.intel.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 36E415818F45
+	for <virtio-dev@lists.oasis-open.org>; Sun, 19 Nov 2017 07:12:31 -0800 (PST)
+Date: Sun, 19 Nov 2017 17:11:24 +0200
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20171119170319-mutt-send-email-mst@kernel.org>
 References: <1509696786-1597-1-git-send-email-wei.w.wang@intel.com>
  <1509696786-1597-7-git-send-email-wei.w.wang@intel.com>
- <20171115220743-mutt-send-email-mst@kernel.org> <5A0D923C.4020807@intel.com>
- <5A0EC967.5090407@intel.com> <20171117144253-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20171117144253-mutt-send-email-mst@kernel.org>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+ <20171115220743-mutt-send-email-mst@kernel.org>
+ <5A0D923C.4020807@intel.com>
+ <5A0EC967.5090407@intel.com>
+ <20171117144253-mutt-send-email-mst@kernel.org>
+ <286AC319A985734F985F78AFA26841F73936A8E7@shsmsx102.ccr.corp.intel.com>
 MIME-Version: 1.0
-Subject: RE: [virtio-dev] Re: [PATCH v17 6/6] virtio-balloon:
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <286AC319A985734F985F78AFA26841F73936A8E7@shsmsx102.ccr.corp.intel.com>
+Subject: Re: [virtio-dev] Re: [PATCH v17 6/6] virtio-balloon:
  VIRTIO_BALLOON_F_FREE_PAGE_VQ
-To: "Michael S. Tsirkin" <mst@redhat.com>
+To: "Wang, Wei W" <wei.w.wang@intel.com>
 Cc: "aarcange@redhat.com" <aarcange@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "mawilcox@microsoft.com" <mawilcox@microsoft.com>, "qemu-devel@nongnu.org" <qemu-devel@nongnu.org>, "amit.shah@redhat.com" <amit.shah@redhat.com>, "penguin-kernel@I-love.SAKURA.ne.jp" <penguin-kernel@I-love.SAKURA.ne.jp>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "willy@infradead.org" <willy@infradead.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "yang.zhang.wz@gmail.com" <yang.zhang.wz@gmail.com>, "quan.xu@aliyun.com" <quan.xu@aliyun.com>, "cornelia.huck@de.ibm.com" <cornelia.huck@de.ibm.com>, "pbonzini@redhat.com" <pbonzini@redhat.com>, "akpm@linux-foundation.org" <akpm@linux-foundation.org>, "mhocko@kernel.org" <mhocko@kernel.org>, "mgorman@techsingularity.net" <mgorman@techsingularity.net>, "liliang.opensource@gmail.com" <liliang.opensource@gmail.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Friday, November 17, 2017 8:45 PM, Michael S. Tsirkin wrote:
-> On Fri, Nov 17, 2017 at 07:35:03PM +0800, Wei Wang wrote:
-> > On 11/16/2017 09:27 PM, Wei Wang wrote:
-> > > On 11/16/2017 04:32 AM, Michael S. Tsirkin wrote:
-> > > > On Fri, Nov 03, 2017 at 04:13:06PM +0800, Wei Wang wrote:
-> > > > > Negotiation of the VIRTIO_BALLOON_F_FREE_PAGE_VQ feature
-> > > > > indicates the support of reporting hints of guest free pages to
-> > > > > the host via virtio-balloon. The host requests the guest to
-> > > > > report the free pages by sending commands via the virtio-balloon
-> configuration registers.
+On Sat, Nov 18, 2017 at 05:22:28AM +0000, Wang, Wei W wrote:
+> On Friday, November 17, 2017 8:45 PM, Michael S. Tsirkin wrote:
+> > On Fri, Nov 17, 2017 at 07:35:03PM +0800, Wei Wang wrote:
+> > > On 11/16/2017 09:27 PM, Wei Wang wrote:
+> > > > On 11/16/2017 04:32 AM, Michael S. Tsirkin wrote:
+> > > > > On Fri, Nov 03, 2017 at 04:13:06PM +0800, Wei Wang wrote:
+> > > > > > Negotiation of the VIRTIO_BALLOON_F_FREE_PAGE_VQ feature
+> > > > > > indicates the support of reporting hints of guest free pages to
+> > > > > > the host via virtio-balloon. The host requests the guest to
+> > > > > > report the free pages by sending commands via the virtio-balloon
+> > configuration registers.
+> > > > > >
+> > > > > > When the guest starts to report, the first element added to the
+> > > > > > free page vq is a sequence id of the start reporting command.
+> > > > > > The id is given by the host, and it indicates whether the
+> > > > > > following free pages correspond to the command. For example, the
+> > > > > > host may stop the report and start again with a new command id.
+> > > > > > The obsolete pages for the previous start command can be
+> > > > > > detected by the id dismatching on the host. The id is added to
+> > > > > > the vq using an output buffer, and the free pages are added to
+> > > > > > the vq using input buffer.
+> > > > > >
+> > > > > > Here are some explainations about the added configuration registers:
+> > > > > > - host2guest_cmd: a register used by the host to send commands
+> > > > > > to the guest.
+> > > > > > - guest2host_cmd: written by the guest to ACK to the host about
+> > > > > > the commands that have been received. The host will clear the
+> > > > > > corresponding bits on the host2guest_cmd register. The guest
+> > > > > > also uses this register to send commands to the host (e.g. when finish
+> > free page reporting).
+> > > > > > - free_page_cmd_id: the sequence id of the free page report
+> > > > > > command given by the host.
+> > > > > >
+> > > > > > Signed-off-by: Wei Wang <wei.w.wang@intel.com>
+> > > > > > Signed-off-by: Liang Li <liang.z.li@intel.com>
+> > > > > > Cc: Michael S. Tsirkin <mst@redhat.com>
+> > > > > > Cc: Michal Hocko <mhocko@kernel.org>
+> > > > > > ---
+> > > > > >
+> > > > > > +
+> > > > > > +static void report_free_page(struct work_struct *work) {
+> > > > > > +    struct virtio_balloon *vb;
+> > > > > > +
+> > > > > > +    vb = container_of(work, struct virtio_balloon,
+> > > > > > report_free_page_work);
+> > > > > > +    report_free_page_cmd_id(vb);
+> > > > > > +    walk_free_mem_block(vb, 0, &virtio_balloon_send_free_pages);
+> > > > > > +    /*
+> > > > > > +     * The last few free page blocks that were added may not reach the
+> > > > > > +     * batch size, but need a kick to notify the device to
+> > > > > > handle them.
+> > > > > > +     */
+> > > > > > +    virtqueue_kick(vb->free_page_vq);
+> > > > > > +    report_free_page_end(vb);
+> > > > > > +}
+> > > > > > +
+> > > > > I think there's an issue here: if pages are poisoned and
+> > > > > hypervisor subsequently drops them, testing them after allocation
+> > > > > will trigger a false positive.
 > > > > >
-> > > > > When the guest starts to report, the first element added to the
-> > > > > free page vq is a sequence id of the start reporting command.
-> > > > > The id is given by the host, and it indicates whether the
-> > > > > following free pages correspond to the command. For example, the
-> > > > > host may stop the report and start again with a new command id.
-> > > > > The obsolete pages for the previous start command can be
-> > > > > detected by the id dismatching on the host. The id is added to
-> > > > > the vq using an output buffer, and the free pages are added to
-> > > > > the vq using input buffer.
+> > > > > The specific configuration:
 > > > > >
-> > > > > Here are some explainations about the added configuration registe=
-rs:
-> > > > > - host2guest_cmd: a register used by the host to send commands
-> > > > > to the guest.
-> > > > > - guest2host_cmd: written by the guest to ACK to the host about
-> > > > > the commands that have been received. The host will clear the
-> > > > > corresponding bits on the host2guest_cmd register. The guest
-> > > > > also uses this register to send commands to the host (e.g. when f=
-inish
-> free page reporting).
-> > > > > - free_page_cmd_id: the sequence id of the free page report
-> > > > > command given by the host.
+> > > > > PAGE_POISONING on
+> > > > > PAGE_POISONING_NO_SANITY off
+> > > > > PAGE_POISONING_ZERO off
 > > > > >
-> > > > > Signed-off-by: Wei Wang <wei.w.wang@intel.com>
-> > > > > Signed-off-by: Liang Li <liang.z.li@intel.com>
-> > > > > Cc: Michael S. Tsirkin <mst@redhat.com>
-> > > > > Cc: Michal Hocko <mhocko@kernel.org>
-> > > > > ---
 > > > > >
-> > > > > +
-> > > > > +static void report_free_page(struct work_struct *work) {
-> > > > > +    struct virtio_balloon *vb;
-> > > > > +
-> > > > > +    vb =3D container_of(work, struct virtio_balloon,
-> > > > > report_free_page_work);
-> > > > > +    report_free_page_cmd_id(vb);
-> > > > > +    walk_free_mem_block(vb, 0, &virtio_balloon_send_free_pages);
-> > > > > +    /*
-> > > > > +     * The last few free page blocks that were added may not rea=
-ch the
-> > > > > +     * batch size, but need a kick to notify the device to
-> > > > > handle them.
-> > > > > +     */
-> > > > > +    virtqueue_kick(vb->free_page_vq);
-> > > > > +    report_free_page_end(vb);
-> > > > > +}
-> > > > > +
-> > > > I think there's an issue here: if pages are poisoned and
-> > > > hypervisor subsequently drops them, testing them after allocation
-> > > > will trigger a false positive.
+> > > > > Solutions:
+> > > > > 1. disable the feature in that configuration
+> > > > >     suggested as an initial step
 > > > >
-> > > > The specific configuration:
+> > > > Thanks for the finding.
+> > > > Similar to this option: I'm thinking could we make
+> > > > walk_free_mem_block() simply return if that option is on?
+> > > > That is, at the beginning of the function:
+> > > >     if (!page_poisoning_enabled())
+> > > >                 return;
 > > > >
-> > > > PAGE_POISONING on
-> > > > PAGE_POISONING_NO_SANITY off
-> > > > PAGE_POISONING_ZERO off
-> > > >
-> > > >
-> > > > Solutions:
-> > > > 1. disable the feature in that configuration
-> > > >     suggested as an initial step
 > > >
-> > > Thanks for the finding.
-> > > Similar to this option: I'm thinking could we make
-> > > walk_free_mem_block() simply return if that option is on?
-> > > That is, at the beginning of the function:
-> > >     if (!page_poisoning_enabled())
-> > >                 return;
 > > >
-> >
-> >
-> > Thought about it more, I think it would be better to put this logic to
-> > virtio_balloon:
-> >
-> >         send_free_page_cmd_id(vb, &vb->start_cmd_id);
-> >         if (page_poisoning_enabled() &&
-> >             !IS_ENABLED(CONFIG_PAGE_POISONING_NO_SANITY))
-> >                 walk_free_mem_block(vb, 0, &virtio_balloon_send_free_pa=
-ges);
-> >         send_free_page_cmd_id(vb, &vb->stop_cmd_id);
-> >
-> >
-> > walk_free_mem_block() should be a more generic API, and this potential
-> > page poisoning issue is specific to live migration which is only one
-> > use case of this function, so I think it is better to handle it in the
-> > special use case itself.
-> >
-> > Best,
-> > Wei
-> >
->=20
-> It's a quick work-around but it doesn't make me very happy.
->=20
-> AFAIK e.g. RHEL has a debug kernel with poisoning enabled.
-> If this never uses free page hinting at all, it will be much less useful =
-for
-> debugging guests.
->=20
+> > > Thought about it more, I think it would be better to put this logic to
+> > > virtio_balloon:
+> > >
+> > >         send_free_page_cmd_id(vb, &vb->start_cmd_id);
+> > >         if (page_poisoning_enabled() &&
+> > >             !IS_ENABLED(CONFIG_PAGE_POISONING_NO_SANITY))
+> > >                 walk_free_mem_block(vb, 0, &virtio_balloon_send_free_pages);
+> > >         send_free_page_cmd_id(vb, &vb->stop_cmd_id);
+> > >
+> > >
+> > > walk_free_mem_block() should be a more generic API, and this potential
+> > > page poisoning issue is specific to live migration which is only one
+> > > use case of this function, so I think it is better to handle it in the
+> > > special use case itself.
+> > >
+> > > Best,
+> > > Wei
+> > >
+> > 
+> > It's a quick work-around but it doesn't make me very happy.
+> > 
+> > AFAIK e.g. RHEL has a debug kernel with poisoning enabled.
+> > If this never uses free page hinting at all, it will be much less useful for
+> > debugging guests.
+> > 
+> 
+> I understand your concern. I think people who use debugging guests
+> don't regard performance as the first priority, and most vendors
+> usually wouldn't use debugging guests for their products.
 
-I understand your concern. I think people who use debugging guests don't re=
-gard performance as the first priority, and most vendors usually wouldn't u=
-se debugging guests for their products.
+And when one of these crashes but only after migration what do you do?  A
+very common step is for Red Hat support is to ask people to try
+reproducing with a debug build.
 
-How about taking it as the initial solution? We can exploit more solutions =
-after this series is done.
+IOT being able to debug guests is important, if a debugging guest takes
+a significantly different path from non-debug one, we have a problem.
 
-Best,
-Wei
+> 
+> How about taking it as the initial solution? We can exploit more
+> solutions after this series is done.
+> 
+> Best,
+> Wei
 
+I think it's fine as a separate patch.
 
+-- 
+MST
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
