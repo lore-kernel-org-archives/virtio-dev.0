@@ -1,155 +1,166 @@
-Return-Path: virtio-dev-return-2728-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2722-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 5BFF15818FA3
-	for <virtio-dev@lists.oasis-open.org>; Thu, 30 Nov 2017 08:25:15 -0800 (PST)
-From: "Wang, Wei W" <wei.w.wang@intel.com>
-Date: Thu, 30 Nov 2017 16:25:09 +0000
-Message-ID: <286AC319A985734F985F78AFA26841F739376336@shsmsx102.ccr.corp.intel.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id C8BBF5819138
+	for <virtio-dev@lists.oasis-open.org>; Wed, 29 Nov 2017 06:11:55 -0800 (PST)
+From: Wei Wang <wei.w.wang@intel.com>
+Date: Wed, 29 Nov 2017 21:55:24 +0800
+Message-Id: <1511963726-34070-9-git-send-email-wei.w.wang@intel.com>
+In-Reply-To: <1511963726-34070-1-git-send-email-wei.w.wang@intel.com>
 References: <1511963726-34070-1-git-send-email-wei.w.wang@intel.com>
-	<1511963726-34070-8-git-send-email-wei.w.wang@intel.com>
- <201711301935.EHF86450.MSFLOOHFJtFOQV@I-love.SAKURA.ne.jp>
-In-Reply-To: <201711301935.EHF86450.MSFLOOHFJtFOQV@I-love.SAKURA.ne.jp>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-Subject: [virtio-dev] RE: [PATCH v18 07/10] virtio-balloon: VIRTIO_BALLOON_F_SG
-To: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-Cc: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "qemu-devel@nongnu.org" <qemu-devel@nongnu.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "mst@redhat.com" <mst@redhat.com>, "mhocko@kernel.org" <mhocko@kernel.org>, "akpm@linux-foundation.org" <akpm@linux-foundation.org>, "mawilcox@microsoft.com" <mawilcox@microsoft.com>, "david@redhat.com" <david@redhat.com>, "cornelia.huck@de.ibm.com" <cornelia.huck@de.ibm.com>, "mgorman@techsingularity.net" <mgorman@techsingularity.net>, "aarcange@redhat.com" <aarcange@redhat.com>, "amit.shah@redhat.com" <amit.shah@redhat.com>, "pbonzini@redhat.com" <pbonzini@redhat.com>, "willy@infradead.org" <willy@infradead.org>, "liliang.opensource@gmail.com" <liliang.opensource@gmail.com>, "yang.zhang.wz@gmail.com" <yang.zhang.wz@gmail.com>, "quan.xu@aliyun.com" <quan.xu@aliyun.com>, "nilal@redhat.com" <nilal@redhat.com>, "riel@redhat.com" <riel@redhat.com>
+Subject: [virtio-dev] [PATCH v18 08/10] mm: support reporting free page blocks
+To: virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, qemu-devel@nongnu.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, linux-mm@kvack.org, mst@redhat.com, mhocko@kernel.org, akpm@linux-foundation.org, mawilcox@microsoft.com
+Cc: david@redhat.com, penguin-kernel@I-love.SAKURA.ne.jp, cornelia.huck@de.ibm.com, mgorman@techsingularity.net, aarcange@redhat.com, amit.shah@redhat.com, pbonzini@redhat.com, willy@infradead.org, wei.w.wang@intel.com, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu@aliyun.com, nilal@redhat.com, riel@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Thursday, November 30, 2017 6:36 PM, Tetsuo Handa wrote:
-> Wei Wang wrote:
-> > +static inline int xb_set_page(struct virtio_balloon *vb,
-> > +			       struct page *page,
-> > +			       unsigned long *pfn_min,
-> > +			       unsigned long *pfn_max)
-> > +{
-> > +	unsigned long pfn =3D page_to_pfn(page);
-> > +	int ret;
-> > +
-> > +	*pfn_min =3D min(pfn, *pfn_min);
-> > +	*pfn_max =3D max(pfn, *pfn_max);
-> > +
-> > +	do {
-> > +		ret =3D xb_preload_and_set_bit(&vb->page_xb, pfn,
-> > +					     GFP_NOWAIT | __GFP_NOWARN);
->=20
-> It is a bit of pity that __GFP_NOWARN here is applied to only xb_preload(=
-).
-> Memory allocation by xb_set_bit() will after all emit warnings. Maybe
->=20
->   xb_init(&vb->page_xb);
->   vb->page_xb.gfp_mask |=3D __GFP_NOWARN;
->=20
-> is tolerable? Or, unconditionally apply __GFP_NOWARN at xb_init()?
->=20
+This patch adds support to walk through the free page blocks in the
+system and report them via a callback function. Some page blocks may
+leave the free list after zone->lock is released, so it is the caller's
+responsibility to either detect or prevent the use of such pages.
 
+One use example of this patch is to accelerate live migration by skipping
+the transfer of free pages reported from the guest. A popular method used
+by the hypervisor to track which part of memory is written during live
+migration is to write-protect all the guest memory. So, those pages that
+are reported as free pages but are written after the report function
+returns will be captured by the hypervisor, and they will be added to the
+next round of memory transfer.
 
+Signed-off-by: Wei Wang <wei.w.wang@intel.com>
+Signed-off-by: Liang Li <liang.z.li@intel.com>
+Cc: Michal Hocko <mhocko@kernel.org>
+Cc: Michael S. Tsirkin <mst@redhat.com>
+Acked-by: Michal Hocko <mhocko@kernel.org>
+---
+ include/linux/mm.h |  6 ++++
+ mm/page_alloc.c    | 91 ++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 97 insertions(+)
 
-Please have a check this one: radix_tree_node_alloc()
-
-In our case, I think the code path goes to=20
-
-if (!gfpflags_allow_blocking(gfp_mask) && !in_interrupt()) {
-...
-ret =3D kmem_cache_alloc(radix_tree_node_cachep,
-                                       gfp_mask | __GFP_NOWARN);
-...
-goto out;
-}
-
-So I think the __GFP_NOWARN is already there.
-
-
-
->   static inline void xb_init(struct xb *xb)
->   {
->           INIT_RADIX_TREE(&xb->xbrt, IDR_RT_MARKER | GFP_NOWAIT);
->   }
->=20
-> > +	} while (unlikely(ret =3D=3D -EAGAIN));
-> > +
-> > +	return ret;
-> > +}
-> > +
->=20
->=20
->=20
-> > @@ -172,11 +283,18 @@ static unsigned fill_balloon(struct virtio_balloo=
-n
-> *vb, size_t num)
-> >  	vb->num_pfns =3D 0;
-> >
-> >  	while ((page =3D balloon_page_pop(&pages))) {
-> > +		if (use_sg) {
-> > +			if (xb_set_page(vb, page, &pfn_min, &pfn_max) < 0) {
-> > +				__free_page(page);
-> > +				break;
->=20
-> You cannot "break;" without consuming all pages in "pages".
-
-
-Right, I think it should be "continue" here. Thanks.=20
-
->=20
-> > +			}
-> > +		} else {
-> > +			set_page_pfns(vb, vb->pfns + vb->num_pfns, page);
-> > +		}
-> > +
-> >  		balloon_page_enqueue(&vb->vb_dev_info, page);
-> >
-> >  		vb->num_pfns +=3D VIRTIO_BALLOON_PAGES_PER_PAGE;
-> > -
-> > -		set_page_pfns(vb, vb->pfns + vb->num_pfns, page);
-> >  		vb->num_pages +=3D VIRTIO_BALLOON_PAGES_PER_PAGE;
-> >  		if (!virtio_has_feature(vb->vdev,
-> >
-> 	VIRTIO_BALLOON_F_DEFLATE_ON_OOM))
->=20
->=20
->=20
-> > @@ -212,9 +334,12 @@ static unsigned leak_balloon(struct virtio_balloon
-> *vb, size_t num)
-> >  	struct page *page;
-> >  	struct balloon_dev_info *vb_dev_info =3D &vb->vb_dev_info;
-> >  	LIST_HEAD(pages);
-> > +	bool use_sg =3D virtio_has_feature(vb->vdev, VIRTIO_BALLOON_F_SG);
->=20
-> You can pass use_sg as an argument to leak_balloon(). Then, you won't nee=
-d
-> to define leak_balloon_sg_oom(). Since xbitmap allocation does not use
-> __GFP_DIRECT_RECLAIM, it is safe to reuse leak_balloon() for OOM path.
-> Just be sure to pass use_sg =3D=3D false because memory allocation for us=
-e_sg =3D=3D
-> true likely fails when called from OOM path. (But trying use_sg =3D=3D tr=
-ue for
-> OOM path and then fallback to use_sg =3D=3D false is not bad?)
->=20
-
-
-But once the SG mechanism is in use, we cannot use the non-SG mechanism, be=
-cause the interface between the guest and host is not the same for SG and n=
-on-SG. Methods to make the host support both mechanisms at the same time wo=
-uld complicate the interface and implementation.=20
-
-I also think the old non-SG mechanism should be deprecated to use since its=
- implementation isn't perfect in some sense, e.g. it balloons pages using o=
-utbuf which implies that no changes are allowed to the balloon pages and th=
-is isn't true for ballooning. The new mechanism (SG) has changed it to use =
-inbuf.
-
-So I think using leak_balloon_sg_oom() would be better. Is there any reason=
- that we couldn't use it?
-
-Best,
-Wei
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index ee07314..c1339be 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -1924,6 +1924,12 @@ extern void free_area_init_node(int nid, unsigned long * zones_size,
+ 		unsigned long zone_start_pfn, unsigned long *zholes_size);
+ extern void free_initmem(void);
+ 
++extern void walk_free_mem_block(void *opaque,
++				int min_order,
++				bool (*report_pfn_range)(void *opaque,
++							 unsigned long pfn,
++							 unsigned long num));
++
+ /*
+  * Free reserved pages within range [PAGE_ALIGN(start), end & PAGE_MASK)
+  * into the buddy system. The freed pages will be poisoned with pattern
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index d4096f4..0f4a197 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -4892,6 +4892,97 @@ void show_free_areas(unsigned int filter, nodemask_t *nodemask)
+ 	show_swap_cache_info();
+ }
+ 
++/*
++ * Walk through a free page list and report the found pfn range via the
++ * callback.
++ *
++ * Return false if the callback requests to stop reporting. Otherwise,
++ * return true.
++ */
++static bool walk_free_page_list(void *opaque,
++				struct zone *zone,
++				int order,
++				enum migratetype mt,
++				bool (*report_pfn_range)(void *,
++							 unsigned long,
++							 unsigned long))
++{
++	struct page *page;
++	struct list_head *list;
++	unsigned long pfn, flags;
++	bool ret;
++
++	spin_lock_irqsave(&zone->lock, flags);
++	list = &zone->free_area[order].free_list[mt];
++	list_for_each_entry(page, list, lru) {
++		pfn = page_to_pfn(page);
++		ret = report_pfn_range(opaque, pfn, 1 << order);
++		if (!ret)
++			break;
++	}
++	spin_unlock_irqrestore(&zone->lock, flags);
++
++	return ret;
++}
++
++/**
++ * walk_free_mem_block - Walk through the free page blocks in the system
++ * @opaque: the context passed from the caller
++ * @min_order: the minimum order of free lists to check
++ * @report_pfn_range: the callback to report the pfn range of the free pages
++ *
++ * If the callback returns false, stop iterating the list of free page blocks.
++ * Otherwise, continue to report.
++ *
++ * Please note that there are no locking guarantees for the callback and
++ * that the reported pfn range might be freed or disappear after the
++ * callback returns so the caller has to be very careful how it is used.
++ *
++ * The callback itself must not sleep or perform any operations which would
++ * require any memory allocations directly (not even GFP_NOWAIT/GFP_ATOMIC)
++ * or via any lock dependency. It is generally advisable to implement
++ * the callback as simple as possible and defer any heavy lifting to a
++ * different context.
++ *
++ * There is no guarantee that each free range will be reported only once
++ * during one walk_free_mem_block invocation.
++ *
++ * pfn_to_page on the given range is strongly discouraged and if there is
++ * an absolute need for that make sure to contact MM people to discuss
++ * potential problems.
++ *
++ * The function itself might sleep so it cannot be called from atomic
++ * contexts.
++ *
++ * In general low orders tend to be very volatile and so it makes more
++ * sense to query larger ones first for various optimizations which like
++ * ballooning etc... This will reduce the overhead as well.
++ */
++void walk_free_mem_block(void *opaque,
++			 int min_order,
++			 bool (*report_pfn_range)(void *opaque,
++						  unsigned long pfn,
++						  unsigned long num))
++{
++	struct zone *zone;
++	int order;
++	enum migratetype mt;
++	bool ret;
++
++	for_each_populated_zone(zone) {
++		for (order = MAX_ORDER - 1; order >= min_order; order--) {
++			for (mt = 0; mt < MIGRATE_TYPES; mt++) {
++				ret = walk_free_page_list(opaque, zone,
++							  order, mt,
++							  report_pfn_range);
++				if (!ret)
++					return;
++			}
++		}
++	}
++}
++EXPORT_SYMBOL_GPL(walk_free_mem_block);
++
+ static void zoneref_set_zone(struct zone *zone, struct zoneref *zoneref)
+ {
+ 	zoneref->zone = zone;
+-- 
+2.7.4
 
 
 ---------------------------------------------------------------------
