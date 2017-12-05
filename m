@@ -1,15 +1,15 @@
-Return-Path: virtio-dev-return-2755-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2757-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 4DFCA5818F75
-	for <virtio-dev@lists.oasis-open.org>; Tue,  5 Dec 2017 07:18:09 -0800 (PST)
-Date: Tue, 5 Dec 2017 17:17:34 +0200
+	by lists.oasis-open.org (Postfix) with ESMTP id 506335818F45
+	for <virtio-dev@lists.oasis-open.org>; Tue,  5 Dec 2017 07:56:01 -0800 (PST)
+Date: Tue, 5 Dec 2017 17:55:45 +0200
 From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20171205171420-mutt-send-email-mst@kernel.org>
+Message-ID: <20171205174833-mutt-send-email-mst@kernel.org>
 References: <1512444796-30615-1-git-send-email-wei.w.wang@intel.com>
  <1512444796-30615-3-git-send-email-wei.w.wang@intel.com>
  <20171205145950.GF31150@stefanha-x1.localdomain>
@@ -37,26 +37,20 @@ On Tue, Dec 05, 2017 at 02:59:50PM +0000, Stefan Hajnoczi wrote:
 > 2. VirtIODevice does not know about PCI.  It should work over virtio-ccw
 >    or virtio-mmio.  This patch talks about BARs inside a VirtIODevice so
 >    there is a problem here.
-> 
+
+I think the point is how memory is exposed to another guest.  This
+device exposes it as a pci bar. I don't think e.g. ccw can do this,
+it's all hypercall-based.
+
 > I'm concerned that there is no clear architecture and elements of the
 > virtio architecture are being mixed up with no justification.
 > 
 > Can you explain what you're trying to do?
-
-A specification was posted here:
-https://lists.oasis-open.org/archives/virtio-comment/201606/msg00009.html
-
-I gather there have been some changes since.
-
+> 
 > Please post a specification for the vhost-pci device so the operation of
 > the device can be discussed and is clear to reviewers.
 
-I'm not sure a full respin of the spec is strictly required at this
-point.  A list of differences with last spec posted would be
-appreciated.
 
--- 
-MST
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
