@@ -1,263 +1,283 @@
-Return-Path: virtio-dev-return-2739-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2740-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 6A5BF581815E
-	for <virtio-dev@lists.oasis-open.org>; Mon,  4 Dec 2017 19:49:40 -0800 (PST)
+	by lists.oasis-open.org (Postfix) with ESMTP id C0F97581815E
+	for <virtio-dev@lists.oasis-open.org>; Mon,  4 Dec 2017 19:49:42 -0800 (PST)
 From: Wei Wang <wei.w.wang@intel.com>
-Date: Tue,  5 Dec 2017 11:33:10 +0800
-Message-Id: <1512444796-30615-2-git-send-email-wei.w.wang@intel.com>
+Date: Tue,  5 Dec 2017 11:33:11 +0800
+Message-Id: <1512444796-30615-3-git-send-email-wei.w.wang@intel.com>
 In-Reply-To: <1512444796-30615-1-git-send-email-wei.w.wang@intel.com>
 References: <1512444796-30615-1-git-send-email-wei.w.wang@intel.com>
-Subject: [virtio-dev] [PATCH v3 1/7] vhost-user: share the vhost-user protocol related structures
+Subject: [virtio-dev] [PATCH v3 2/7] vhost-pci-net: add vhost-pci-net
 To: virtio-dev@lists.oasis-open.org, qemu-devel@nongnu.org, mst@redhat.com, marcandre.lureau@redhat.com, jasowang@redhat.com, stefanha@redhat.com, pbonzini@redhat.com
 Cc: jan.kiszka@siemens.com, avi.cohen@huawei.com, zhiyong.yang@intel.com, Wei Wang <wei.w.wang@intel.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Put the vhost-user protocol related data structures to vhost-user.h,
-so that they can be used in other implementations (e.g. a slave
-implementation).
+Add the vhost-pci-net device emulation. The device uses bar 2 to expose
+the remote VM's memory to the guest. The first 4KB of the the bar area
+stores the metadata which describes the remote memory and vring info.
 
 Signed-off-by: Wei Wang <wei.w.wang@intel.com>
 ---
- hw/virtio/vhost-user.c         | 100 +-------------------------------------
- include/hw/virtio/vhost-user.h | 106 +++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 107 insertions(+), 99 deletions(-)
- create mode 100644 include/hw/virtio/vhost-user.h
+ hw/net/Makefile.objs                           |   2 +-
+ hw/net/vhost_pci_net.c                         | 106 +++++++++++++++++++++++++
+ include/hw/virtio/vhost-pci-net.h              |  37 +++++++++
+ include/standard-headers/linux/vhost_pci_net.h |  60 ++++++++++++++
+ include/standard-headers/linux/virtio_ids.h    |   1 +
+ 5 files changed, 205 insertions(+), 1 deletion(-)
+ create mode 100644 hw/net/vhost_pci_net.c
+ create mode 100644 include/hw/virtio/vhost-pci-net.h
+ create mode 100644 include/standard-headers/linux/vhost_pci_net.h
 
-diff --git a/hw/virtio/vhost-user.c b/hw/virtio/vhost-user.c
-index 093675e..e512f5a 100644
---- a/hw/virtio/vhost-user.c
-+++ b/hw/virtio/vhost-user.c
-@@ -12,6 +12,7 @@
- #include "qapi/error.h"
- #include "hw/virtio/vhost.h"
- #include "hw/virtio/vhost-backend.h"
-+#include "hw/virtio/vhost-user.h"
- #include "hw/virtio/virtio-net.h"
- #include "chardev/char-fe.h"
- #include "sysemu/kvm.h"
-@@ -23,105 +24,6 @@
- #include <sys/un.h>
- #include <linux/vhost.h>
+diff --git a/hw/net/Makefile.objs b/hw/net/Makefile.objs
+index 4171af0..8b392fb 100644
+--- a/hw/net/Makefile.objs
++++ b/hw/net/Makefile.objs
+@@ -36,7 +36,7 @@ obj-$(CONFIG_MILKYMIST) += milkymist-minimac2.o
+ obj-$(CONFIG_PSERIES) += spapr_llan.o
+ obj-$(CONFIG_XILINX_ETHLITE) += xilinx_ethlite.o
  
--#define VHOST_MEMORY_MAX_NREGIONS    8
--#define VHOST_USER_F_PROTOCOL_FEATURES 30
--
--enum VhostUserProtocolFeature {
--    VHOST_USER_PROTOCOL_F_MQ = 0,
--    VHOST_USER_PROTOCOL_F_LOG_SHMFD = 1,
--    VHOST_USER_PROTOCOL_F_RARP = 2,
--    VHOST_USER_PROTOCOL_F_REPLY_ACK = 3,
--    VHOST_USER_PROTOCOL_F_NET_MTU = 4,
--    VHOST_USER_PROTOCOL_F_SLAVE_REQ = 5,
--    VHOST_USER_PROTOCOL_F_CROSS_ENDIAN = 6,
--
--    VHOST_USER_PROTOCOL_F_MAX
--};
--
--#define VHOST_USER_PROTOCOL_FEATURE_MASK ((1 << VHOST_USER_PROTOCOL_F_MAX) - 1)
--
--typedef enum VhostUserRequest {
--    VHOST_USER_NONE = 0,
--    VHOST_USER_GET_FEATURES = 1,
--    VHOST_USER_SET_FEATURES = 2,
--    VHOST_USER_SET_OWNER = 3,
--    VHOST_USER_RESET_OWNER = 4,
--    VHOST_USER_SET_MEM_TABLE = 5,
--    VHOST_USER_SET_LOG_BASE = 6,
--    VHOST_USER_SET_LOG_FD = 7,
--    VHOST_USER_SET_VRING_NUM = 8,
--    VHOST_USER_SET_VRING_ADDR = 9,
--    VHOST_USER_SET_VRING_BASE = 10,
--    VHOST_USER_GET_VRING_BASE = 11,
--    VHOST_USER_SET_VRING_KICK = 12,
--    VHOST_USER_SET_VRING_CALL = 13,
--    VHOST_USER_SET_VRING_ERR = 14,
--    VHOST_USER_GET_PROTOCOL_FEATURES = 15,
--    VHOST_USER_SET_PROTOCOL_FEATURES = 16,
--    VHOST_USER_GET_QUEUE_NUM = 17,
--    VHOST_USER_SET_VRING_ENABLE = 18,
--    VHOST_USER_SEND_RARP = 19,
--    VHOST_USER_NET_SET_MTU = 20,
--    VHOST_USER_SET_SLAVE_REQ_FD = 21,
--    VHOST_USER_IOTLB_MSG = 22,
--    VHOST_USER_SET_VRING_ENDIAN = 23,
--    VHOST_USER_MAX
--} VhostUserRequest;
--
--typedef enum VhostUserSlaveRequest {
--    VHOST_USER_SLAVE_NONE = 0,
--    VHOST_USER_SLAVE_IOTLB_MSG = 1,
--    VHOST_USER_SLAVE_MAX
--}  VhostUserSlaveRequest;
--
--typedef struct VhostUserMemoryRegion {
--    uint64_t guest_phys_addr;
--    uint64_t memory_size;
--    uint64_t userspace_addr;
--    uint64_t mmap_offset;
--} VhostUserMemoryRegion;
--
--typedef struct VhostUserMemory {
--    uint32_t nregions;
--    uint32_t padding;
--    VhostUserMemoryRegion regions[VHOST_MEMORY_MAX_NREGIONS];
--} VhostUserMemory;
--
--typedef struct VhostUserLog {
--    uint64_t mmap_size;
--    uint64_t mmap_offset;
--} VhostUserLog;
--
--typedef struct VhostUserMsg {
--    VhostUserRequest request;
--
--#define VHOST_USER_VERSION_MASK     (0x3)
--#define VHOST_USER_REPLY_MASK       (0x1<<2)
--#define VHOST_USER_NEED_REPLY_MASK  (0x1 << 3)
--    uint32_t flags;
--    uint32_t size; /* the following payload size */
--    union {
--#define VHOST_USER_VRING_IDX_MASK   (0xff)
--#define VHOST_USER_VRING_NOFD_MASK  (0x1<<8)
--        uint64_t u64;
--        struct vhost_vring_state state;
--        struct vhost_vring_addr addr;
--        VhostUserMemory memory;
--        VhostUserLog log;
--        struct vhost_iotlb_msg iotlb;
--    } payload;
--} QEMU_PACKED VhostUserMsg;
--
--static VhostUserMsg m __attribute__ ((unused));
--#define VHOST_USER_HDR_SIZE (sizeof(m.request) \
--                            + sizeof(m.flags) \
--                            + sizeof(m.size))
--
--#define VHOST_USER_PAYLOAD_SIZE (sizeof(m) - VHOST_USER_HDR_SIZE)
--
--/* The version of the protocol we support */
--#define VHOST_USER_VERSION    (0x1)
--
- struct vhost_user {
-     CharBackend *chr;
-     int slave_fd;
-diff --git a/include/hw/virtio/vhost-user.h b/include/hw/virtio/vhost-user.h
+-obj-$(CONFIG_VIRTIO) += virtio-net.o
++obj-$(CONFIG_VIRTIO) += virtio-net.o vhost_pci_net.o
+ obj-y += vhost_net.o
+ 
+ obj-$(CONFIG_ETSEC) += fsl_etsec/etsec.o fsl_etsec/registers.o \
+diff --git a/hw/net/vhost_pci_net.c b/hw/net/vhost_pci_net.c
 new file mode 100644
-index 0000000..d76e9ad
+index 0000000..db8f954
 --- /dev/null
-+++ b/include/hw/virtio/vhost-user.h
++++ b/hw/net/vhost_pci_net.c
 @@ -0,0 +1,106 @@
-+#ifndef VHOST_USER_H
-+#define VHOST_USER_H
++/*
++ * vhost-pci-net support
++ *
++ * Copyright Intel, Inc. 2017
++ *
++ * Authors:
++ *  Wei Wang <wei.w.wang@intel.com>
++ *  Zhiyong Yang <zhiyong.yang@intel.com>
++ *
++ * This work is licensed under the terms of the GNU GPL, version 2.  See
++ * the COPYING file in the top-level directory.
++ *
++ * Contributions after 2012-01-13 are licensed under the terms of the
++ * GNU GPL, version 2 or (at your option) any later version.
++ */
 +
-+#include <linux/vhost.h>
++#include "qemu/osdep.h"
++#include "qemu/iov.h"
++#include "qemu/error-report.h"
++#include "hw/pci/pci.h"
++#include "hw/virtio/virtio-access.h"
++#include "hw/virtio/vhost-pci-net.h"
++#include "hw/virtio/virtio-net.h"
 +
-+#define VHOST_MEMORY_MAX_NREGIONS    8
-+#define VHOST_USER_F_PROTOCOL_FEATURES 30
++static uint64_t vpnet_get_features(VirtIODevice *vdev, uint64_t features,
++                                   Error **errp)
++{
++    VhostPCINet *vpnet = VHOST_PCI_NET(vdev);
++    features |= vpnet->host_features;
 +
-+enum VhostUserProtocolFeature {
-+    VHOST_USER_PROTOCOL_F_MQ = 0,
-+    VHOST_USER_PROTOCOL_F_LOG_SHMFD = 1,
-+    VHOST_USER_PROTOCOL_F_RARP = 2,
-+    VHOST_USER_PROTOCOL_F_REPLY_ACK = 3,
-+    VHOST_USER_PROTOCOL_F_NET_MTU = 4,
-+    VHOST_USER_PROTOCOL_F_SLAVE_REQ = 5,
-+    VHOST_USER_PROTOCOL_F_CROSS_ENDIAN = 6,
++    return features;
++}
 +
-+    VHOST_USER_PROTOCOL_F_MAX
++static void vpnet_get_config(VirtIODevice *vdev, uint8_t *config)
++{
++    VhostPCINet *vpnet = VHOST_PCI_NET(vdev);
++    struct vpnet_config netcfg;
++
++    virtio_stw_p(vdev, &netcfg.status, vpnet->status);
++    memcpy(config, &netcfg, vpnet->config_size);
++}
++
++static void vpnet_device_realize(DeviceState *dev, Error **errp)
++{
++    VirtIODevice *vdev = VIRTIO_DEVICE(dev);
++    VhostPCINet *vpnet = VHOST_PCI_NET(vdev);
++
++    virtio_init(vdev, "vhost-pci-net", VIRTIO_ID_VHOST_PCI_NET,
++                vpnet->config_size);
++
++    memory_region_init_ram(&vpnet->metadata_region, NULL,
++                           "Metadata", METADATA_SIZE, NULL);
++    memory_region_add_subregion(&vpnet->bar_region, 0,
++                                &vpnet->metadata_region);
++    vpnet->metadata = memory_region_get_ram_ptr(&vpnet->metadata_region);
++    memset(vpnet->metadata, 0, METADATA_SIZE);
++}
++
++static void vpnet_device_unrealize(DeviceState *dev, Error **errp)
++{
++    VirtIODevice *vdev = VIRTIO_DEVICE(dev);
++
++    virtio_cleanup(vdev);
++}
++
++static Property vpnet_properties[] = {
++    DEFINE_PROP_BIT("mrg_rxbuf", VhostPCINet, host_features,
++                    VIRTIO_NET_F_MRG_RXBUF, true),
++    DEFINE_PROP_CHR("chardev", VhostPCINet, chr_be),
++    DEFINE_PROP_END_OF_LIST(),
 +};
 +
-+#define VHOST_USER_PROTOCOL_FEATURE_MASK ((1 << VHOST_USER_PROTOCOL_F_MAX) - 1)
++static void vpnet_instance_init(Object *obj)
++{
++    VhostPCINet *vpnet = VHOST_PCI_NET(obj);
 +
-+typedef enum VhostUserRequest {
-+    VHOST_USER_NONE = 0,
-+    VHOST_USER_GET_FEATURES = 1,
-+    VHOST_USER_SET_FEATURES = 2,
-+    VHOST_USER_SET_OWNER = 3,
-+    VHOST_USER_RESET_OWNER = 4,
-+    VHOST_USER_SET_MEM_TABLE = 5,
-+    VHOST_USER_SET_LOG_BASE = 6,
-+    VHOST_USER_SET_LOG_FD = 7,
-+    VHOST_USER_SET_VRING_NUM = 8,
-+    VHOST_USER_SET_VRING_ADDR = 9,
-+    VHOST_USER_SET_VRING_BASE = 10,
-+    VHOST_USER_GET_VRING_BASE = 11,
-+    VHOST_USER_SET_VRING_KICK = 12,
-+    VHOST_USER_SET_VRING_CALL = 13,
-+    VHOST_USER_SET_VRING_ERR = 14,
-+    VHOST_USER_GET_PROTOCOL_FEATURES = 15,
-+    VHOST_USER_SET_PROTOCOL_FEATURES = 16,
-+    VHOST_USER_GET_QUEUE_NUM = 17,
-+    VHOST_USER_SET_VRING_ENABLE = 18,
-+    VHOST_USER_SEND_RARP = 19,
-+    VHOST_USER_NET_SET_MTU = 20,
-+    VHOST_USER_SET_SLAVE_REQ_FD = 21,
-+    VHOST_USER_IOTLB_MSG = 22,
-+    VHOST_USER_SET_VRING_ENDIAN = 23,
-+    VHOST_USER_MAX
-+} VhostUserRequest;
++    vpnet->config_size = sizeof(struct vpnet_config);
++}
 +
-+typedef enum VhostUserSlaveRequest {
-+    VHOST_USER_SLAVE_NONE = 0,
-+    VHOST_USER_SLAVE_IOTLB_MSG = 1,
-+    VHOST_USER_SLAVE_MAX
-+}  VhostUserSlaveRequest;
++static void vpnet_class_init(ObjectClass *klass, void *data)
++{
++    DeviceClass *dc = DEVICE_CLASS(klass);
++    VirtioDeviceClass *vdc = VIRTIO_DEVICE_CLASS(klass);
 +
-+typedef struct VhostUserMemoryRegion {
-+    uint64_t guest_phys_addr;
-+    uint64_t memory_size;
-+    uint64_t userspace_addr;
-+    uint64_t mmap_offset;
-+} VhostUserMemoryRegion;
++    dc->props = vpnet_properties;
++    set_bit(DEVICE_CATEGORY_NETWORK, dc->categories);
++    vdc->realize = vpnet_device_realize;
++    vdc->unrealize = vpnet_device_unrealize;
++    vdc->get_config = vpnet_get_config;
++    vdc->get_features = vpnet_get_features;
++}
 +
-+typedef struct VhostUserMemory {
-+    uint32_t nregions;
-+    uint32_t padding;
-+    VhostUserMemoryRegion regions[VHOST_MEMORY_MAX_NREGIONS];
-+} VhostUserMemory;
++static const TypeInfo vpnet_info = {
++    .name = TYPE_VHOST_PCI_NET,
++    .parent = TYPE_VIRTIO_DEVICE,
++    .instance_size = sizeof(VhostPCINet),
++    .instance_init = vpnet_instance_init,
++    .class_init = vpnet_class_init,
++};
 +
-+typedef struct VhostUserLog {
-+    uint64_t mmap_size;
-+    uint64_t mmap_offset;
-+} VhostUserLog;
++static void virtio_register_types(void)
++{
++    type_register_static(&vpnet_info);
++}
 +
-+typedef struct VhostUserMsg {
-+    VhostUserRequest request;
++type_init(virtio_register_types)
+diff --git a/include/hw/virtio/vhost-pci-net.h b/include/hw/virtio/vhost-pci-net.h
+new file mode 100644
+index 0000000..0c6886d
+--- /dev/null
++++ b/include/hw/virtio/vhost-pci-net.h
+@@ -0,0 +1,37 @@
++/*
++ * Virtio Network Device
++ *
++ * Copyright Intel, Corp. 2017
++ *
++ * Authors:
++ *  Wei Wang <wei.w.wang@intel.com>
++ *  Zhiyong Yang <zhiyong.yang@intel.com>
++ *
++ * This work is licensed under the terms of the GNU GPL, version 2.  See
++ * the COPYING file in the top-level directory.
++ *
++ */
 +
-+#define VHOST_USER_VERSION_MASK     (0x3)
-+#define VHOST_USER_REPLY_MASK       (0x1 << 2)
-+#define VHOST_USER_NEED_REPLY_MASK  (0x1 << 3)
-+    uint32_t flags;
-+    /* The following payload size */
-+    uint32_t size;
-+    union {
-+#define VHOST_USER_VRING_IDX_MASK   (0xff)
-+#define VHOST_USER_VRING_NOFD_MASK  (0x1 << 8)
-+        uint64_t u64;
-+        struct vhost_vring_state state;
-+        struct vhost_vring_addr addr;
-+        VhostUserMemory memory;
-+        VhostUserLog log;
-+        struct vhost_iotlb_msg iotlb;
-+    } payload;
-+} QEMU_PACKED VhostUserMsg;
++#ifndef _QEMU_VHOST_PCI_NET_H
++#define _QEMU_VHOST_PCI_NET_H
 +
-+static VhostUserMsg m __attribute__ ((unused));
-+#define VHOST_USER_HDR_SIZE (sizeof(m.request) \
-+                            + sizeof(m.flags) \
-+                            + sizeof(m.size))
++#include "standard-headers/linux/vhost_pci_net.h"
++#include "hw/virtio/virtio.h"
++#include "chardev/char-fe.h"
 +
-+#define VHOST_USER_PAYLOAD_SIZE (sizeof(m) - VHOST_USER_HDR_SIZE)
++#define TYPE_VHOST_PCI_NET "vhost-pci-net-device"
++#define VHOST_PCI_NET(obj) \
++        OBJECT_CHECK(VhostPCINet, (obj), TYPE_VHOST_PCI_NET)
 +
-+/* The version of the protocol we support */
-+#define VHOST_USER_VERSION    (0x1)
++typedef struct VhostPCINet {
++    VirtIODevice parent_obj;
++    MemoryRegion bar_region;
++    MemoryRegion metadata_region;
++    struct vpnet_metadata *metadata;
++    uint32_t host_features;
++    size_t config_size;
++    uint16_t status;
++    CharBackend chr_be;
++} VhostPCINet;
 +
 +#endif
+diff --git a/include/standard-headers/linux/vhost_pci_net.h b/include/standard-headers/linux/vhost_pci_net.h
+new file mode 100644
+index 0000000..cfb2413
+--- /dev/null
++++ b/include/standard-headers/linux/vhost_pci_net.h
+@@ -0,0 +1,60 @@
++#ifndef _LINUX_VHOST_PCI_NET_H
++#define _LINUX_VHOST_PCI_NET_H
++
++/* This header is BSD licensed so anyone can use the definitions to implement
++ * compatible drivers/servers.
++ *
++ * Redistribution and use in source and binary forms, with or without
++ * modification, are permitted provided that the following conditions
++ * are met:
++ * 1. Redistributions of source code must retain the above copyright
++ *    notice, this list of conditions and the following disclaimer.
++ * 2. Redistributions in binary form must reproduce the above copyright
++ *    notice, this list of conditions and the following disclaimer in the
++ *    documentation and/or other materials provided with the distribution.
++ * 3. Neither the name of Intel nor the names of its contributors
++ *    may be used to endorse or promote products derived from this software
++ *    without specific prior written permission.
++ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS ``AS IS'' AND
++ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
++ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
++ * ARE DISCLAIMED.  IN NO EVENT SHALL Intel OR CONTRIBUTORS BE LIABLE
++ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
++ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
++ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
++ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
++ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
++ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
++ * SUCH DAMAGE. */
++
++#include "standard-headers/linux/virtio_ids.h"
++
++#define METADATA_SIZE 4096
++#define MAX_REMOTE_REGION 8
++
++struct vpnet_config {
++	uint16_t status;
++};
++
++struct vpnet_remote_mem {
++	uint64_t gpa;
++	uint64_t size;
++};
++
++struct vpnet_remote_vq {
++	uint16_t last_avail_idx;
++	int32_t  vring_enabled;
++	uint32_t vring_num;
++	uint64_t desc_gpa;
++	uint64_t avail_gpa;
++	uint64_t used_gpa;
++};
++
++struct vpnet_metadata {
++	uint32_t nregions;
++	uint32_t nvqs;
++	struct vpnet_remote_mem mem[MAX_REMOTE_REGION];
++	struct vpnet_remote_vq vq[0];
++};
++
++#endif
+diff --git a/include/standard-headers/linux/virtio_ids.h b/include/standard-headers/linux/virtio_ids.h
+index 6d5c3b2..333bbd1 100644
+--- a/include/standard-headers/linux/virtio_ids.h
++++ b/include/standard-headers/linux/virtio_ids.h
+@@ -43,5 +43,6 @@
+ #define VIRTIO_ID_INPUT        18 /* virtio input */
+ #define VIRTIO_ID_VSOCK        19 /* virtio vsock transport */
+ #define VIRTIO_ID_CRYPTO       20 /* virtio crypto */
++#define VIRTIO_ID_VHOST_PCI_NET 21 /* vhost-pci-net */
+ 
+ #endif /* _LINUX_VIRTIO_IDS_H */
 -- 
 2.7.4
 
