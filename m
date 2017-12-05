@@ -1,30 +1,24 @@
-Return-Path: virtio-dev-return-2753-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2756-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id C9E555818F45
-	for <virtio-dev@lists.oasis-open.org>; Tue,  5 Dec 2017 06:30:29 -0800 (PST)
-Date: Tue, 5 Dec 2017 14:30:01 +0000
-From: Stefan Hajnoczi <stefanha@redhat.com>
-Message-ID: <20171205143001.GE31150@stefanha-x1.localdomain>
+	by lists.oasis-open.org (Postfix) with ESMTP id BA7705818043
+	for <virtio-dev@lists.oasis-open.org>; Tue,  5 Dec 2017 07:20:15 -0800 (PST)
+Date: Tue, 5 Dec 2017 17:20:01 +0200
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20171205171906-mutt-send-email-mst@kernel.org>
 References: <1512444796-30615-1-git-send-email-wei.w.wang@intel.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="YkJPYEFdoxh/AXLE"
-Content-Disposition: inline
-In-Reply-To: <1512444796-30615-1-git-send-email-wei.w.wang@intel.com>
-Subject: Re: [virtio-dev] [PATCH v3 0/7] Vhost-pci for inter-VM communication
-To: Wei Wang <wei.w.wang@intel.com>
-Cc: virtio-dev@lists.oasis-open.org, qemu-devel@nongnu.org, mst@redhat.com, marcandre.lureau@redhat.com, jasowang@redhat.com, pbonzini@redhat.com, jan.kiszka@siemens.com, avi.cohen@huawei.com, zhiyong.yang@intel.com
-List-ID: <virtio-dev.lists.oasis-open.org>
-
---YkJPYEFdoxh/AXLE
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <1512444796-30615-1-git-send-email-wei.w.wang@intel.com>
+Subject: [virtio-dev] Re: [PATCH v3 0/7] Vhost-pci for inter-VM communication
+To: Wei Wang <wei.w.wang@intel.com>
+Cc: virtio-dev@lists.oasis-open.org, qemu-devel@nongnu.org, marcandre.lureau@redhat.com, jasowang@redhat.com, stefanha@redhat.com, pbonzini@redhat.com, jan.kiszka@siemens.com, avi.cohen@huawei.com, zhiyong.yang@intel.com
+List-ID: <virtio-dev.lists.oasis-open.org>
 
 On Tue, Dec 05, 2017 at 11:33:09AM +0800, Wei Wang wrote:
 > Vhost-pci is a point-to-point based inter-VM communication solution. This
@@ -32,39 +26,70 @@ On Tue, Dec 05, 2017 at 11:33:09AM +0800, Wei Wang wrote:
 > device is implemented as a virtio device, and it is set up via the
 > vhost-user protocol to get the neessary info (e.g the memory info of the
 > remote VM, vring info).
->=20
+> 
 > Currently, only the fundamental functions are implemented. More features,
 > such as MQ and live migration, will be updated in the future.
->=20
+> 
 > The DPDK PMD of vhost-pci has been posted to the dpdk mailinglist here:
 > http://dpdk.org/ml/archives/dev/2017-November/082615.html
+> 
+> v2->v3 changes:
+> 1) static device creation: instead of creating and hot-plugging the
+>    device when receiving a vhost-user msg, the device is not created
+>    via the qemu booting command line.
+> 2) remove vqs: rq and ctrlq are removed in this version.
+>     - receive vq: the receive vq is not needed anymore. The PMD directly
+>                   shares the remote txq and rxq - grab from remote txq to
+>                   receive packets, and put to rxq to send packets.
+>     - ctrlq: the ctrlq is replaced by the first 4KB metadata area of the
+>              device Bar-2.
+> 3) simpler implementation: the entire implementation has been tailored
+>    from ~1800 LOC to ~850 LOC.
 
-Please be explicit about "vhost-pci" vs "vhost-pci-net" in future
-emails.  In this email you use "vhost-pci" to mean both things and it's
-likely to cause confusion.  For example, MQ and DPDK PMD are related to
-vhost-pci-net.
+Pls always include full change log, so pls add v1->v2 as well.
+Also pls include the link to the spec you posted previously
+(not required to be 100% in sync, but pls list main
+differences).
 
-This is a general problem with all of vhost-user, not just vhost-pci.
-People sometimes focus solely on virtio-net.  It causes layering
-violations and protocol limitations because they are not thinking about
-the virtio device model as a whole.
+> Wei Wang (7):
+>   vhost-user: share the vhost-user protocol related structures
+>   vhost-pci-net: add vhost-pci-net
+>   virtio/virtio-pci.c: add vhost-pci-net-pci
+>   vhost-pci-slave: add vhost-pci slave implementation
+>   vhost-user: VHOST_USER_SET_VHOST_PCI msg
+>   vhost-pci-slave: handle VHOST_USER_SET_VHOST_PCI
+>   virtio/vhost.c: vhost-pci needs remote gpa
+> 
+>  hw/net/Makefile.objs                           |   2 +-
+>  hw/net/vhost_net.c                             |  37 +++
+>  hw/net/vhost_pci_net.c                         | 137 +++++++++++
+>  hw/virtio/Makefile.objs                        |   1 +
+>  hw/virtio/vhost-pci-slave.c                    | 310 +++++++++++++++++++++++++
+>  hw/virtio/vhost-user.c                         | 117 ++--------
+>  hw/virtio/vhost.c                              |  63 +++--
+>  hw/virtio/virtio-pci.c                         |  55 +++++
+>  hw/virtio/virtio-pci.h                         |  14 ++
+>  include/hw/pci/pci.h                           |   1 +
+>  include/hw/virtio/vhost-backend.h              |   2 +
+>  include/hw/virtio/vhost-pci-net.h              |  42 ++++
+>  include/hw/virtio/vhost-pci-slave.h            |  12 +
+>  include/hw/virtio/vhost-user.h                 | 108 +++++++++
+>  include/hw/virtio/vhost.h                      |   2 +
+>  include/net/vhost_net.h                        |   2 +
+>  include/standard-headers/linux/vhost_pci_net.h |  65 ++++++
+>  include/standard-headers/linux/virtio_ids.h    |   1 +
+>  18 files changed, 851 insertions(+), 120 deletions(-)
+>  create mode 100644 hw/net/vhost_pci_net.c
+>  create mode 100644 hw/virtio/vhost-pci-slave.c
+>  create mode 100644 include/hw/virtio/vhost-pci-net.h
+>  create mode 100644 include/hw/virtio/vhost-pci-slave.h
+>  create mode 100644 include/hw/virtio/vhost-user.h
+>  create mode 100644 include/standard-headers/linux/vhost_pci_net.h
+> 
+> -- 
+> 2.7.4
 
-Eventually virtio-gpu, virtio-scsi, etc should all work over vhost-pci
-so it's important to keep the virtio architecture in mind with a
-separation between the transport and devices.
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
---YkJPYEFdoxh/AXLE
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEcBAEBAgAGBQJaJq1pAAoJEJykq7OBq3PI/C8IAMo/2pz1x1Psm5ntCKwSt7Xx
-QXUnpNyg/s8/d6IGenLCPWwAUKaY37SGJxBYyumsnO7dBU0GZ7OfA90dNkJH7mjR
-azeyUt87ojKHBt2F+kR7sLH7ZTCG/+zpvqCjhUGVgT/U7zCscUkVtxRUXJkLYBAs
-9trrukxO4V/rj+oKs/P1PQ4rkOs/LxTw9jcEInNrjs3IImrD3t05aa0B6lRx4fiw
-5za+abzMqVn3HDTtCnamZ1jVEifMiWKf/i3qRS/Vw525FAHHA2IGtm+FAoB1pCpO
-+r3ZxG0xEjpD57V5wFnTPEkfsoNKebLnYuGVXHRG1RxxqkY1aeisfUBvAnh7/p8=
-=oaUX
------END PGP SIGNATURE-----
-
---YkJPYEFdoxh/AXLE--
