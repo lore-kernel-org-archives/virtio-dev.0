@@ -1,86 +1,36 @@
-Return-Path: virtio-dev-return-2889-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2751-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 9E6A85819166
-	for <virtio-dev@lists.oasis-open.org>; Sat, 30 Dec 2017 01:36:46 -0800 (PST)
-From: "Longpeng(Mike)" <longpeng2@huawei.com>
-Date: Sat, 30 Dec 2017 17:35:59 +0800
-Message-ID: <1514626559-162312-3-git-send-email-longpeng2@huawei.com>
-In-Reply-To: <1514626559-162312-1-git-send-email-longpeng2@huawei.com>
-References: <1514626559-162312-1-git-send-email-longpeng2@huawei.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id B47F15818FA1
+	for <virtio-dev@lists.oasis-open.org>; Tue,  5 Dec 2017 04:14:50 -0800 (PST)
+From: =?UTF-8?q?Tom=C3=A1=C5=A1=20Golembiovsk=C3=BD?= <tgolembi@redhat.com>
+Date: Tue,  5 Dec 2017 13:14:45 +0100
+Message-Id: <cover.1512476043.git.tgolembi@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-Subject: [virtio-dev] [v23 2/2] virtio-crypto: Add conformance clauses
-To: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org
-Cc: luonengjun@huawei.com, mst@redhat.com, cornelia.huck@de.ibm.com, stefanha@redhat.com, denglingli@chinamobile.com, Jani.Kokkonen@huawei.com, Ola.Liljedahl@arm.com, Varun.Sethi@freescale.com, xin.zeng@intel.com, brian.a.keating@intel.com, liang.j.ma@intel.com, john.griffin@intel.com, weidong.huang@huawei.com, agraf@suse.de, jasowang@redhat.com, vincent.jardin@6wind.com, arei.gonglei@huawei.com, pasic@linux.vnet.ibm.com, wangxinxin.wang@huawei.com, jianjay.zhou@huawei.com, "Longpeng(Mike)" <longpeng2@huawei.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Subject: [virtio-dev] [PATCH v2 0/1] Disk caches in VirtIO Balloon driver stats
+To: virtio-dev@lists.oasis-open.org, qemu-devel@nongnu.org
+Cc: Wei Wang <wei.w.wang@intel.com>, "Michael S. Tsirkin" <mst@redhat.com>, =?UTF-8?q?Tom=C3=A1=C5=A1=20Golembiovsk=C3=BD?= <tgolembi@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-From: Gonglei <arei.gonglei@huawei.com>
+This is a QEMU counterpart to the patch for VirtIO balloon driver posted here:
 
-Add the conformance targets and clauses for
-virtio-crypto device.
+https://lists.nongnu.org/archive/html/qemu-devel/2017-11/msg02106.html
 
-Signed-off-by: Gonglei <arei.gonglei@huawei.com>
-Signed-off-by: Zhoujian <jianjay.zhou@huawei.com>
-Signed-off-by: Longpeng(Mike) <longpeng2@huawei.com>
----
- conformance.tex | 29 +++++++++++++++++++++++++++++
- 1 file changed, 29 insertions(+)
+Tomáš Golembiovský (1):
+  virtio-balloon: include statistics of disk/file caches
 
-diff --git a/conformance.tex b/conformance.tex
-index f59e360..cf5f1ac 100644
---- a/conformance.tex
-+++ b/conformance.tex
-@@ -146,6 +146,21 @@ An SCSI host driver MUST conform to the following normative statements:
- \item \ref{drivernormative:Device Types / SCSI Host Device / Device Operation / Device Operation: eventq}
- \end{itemize}
- 
-+\subsection{Crypto Driver Conformance}\label{sec:Conformance / Driver Conformance / Crypto Driver Conformance}
-+
-+A Crypto driver MUST conform to the following normative statements:
-+
-+\begin{itemize}
-+\item \ref{drivernormative:Device Types / Crypto Device / Device configuration layout}
-+\item \ref{drivernormative:Device Types / Crypto Device / Device Initialization}
-+\item \ref{drivernormative:Device Types / Crypto Device / Device Operation / Control Virtqueue / Session operation / Session operation: create session}
-+\item \ref{drivernormative:Device Types / Crypto Device / Device Operation / Control Virtqueue / Session operation / Session operation: destroy session}
-+\item \ref{drivernormative:Device Types / Crypto Device / Device Operation / HASH Service operation}
-+\item \ref{drivernormative:Device Types / Crypto Device / Device Operation / MAC Service operation}
-+\item \ref{drivernormative:Device Types / Crypto Device / Device Operation / Symmetric algorithms Operation}
-+\item \ref{drivernormative:Device Types / Crypto Device / Device Operation / AEAD Service operation}
-+\end{itemize}
-+
- \section{Device Conformance}\label{sec:Conformance / Device Conformance}
- 
- A device MUST conform to the following normative statements:
-@@ -267,6 +282,20 @@ An SCSI host device MUST conform to the following normative statements:
- \item \ref{devicenormative:Device Types / SCSI Host Device / Device Operation / Device Operation: eventq}
- \end{itemize}
- 
-+\subsection{Crypto Device Conformance}\label{sec:Conformance / Device Conformance / Crypto Device Conformance}
-+
-+A Crypto device MUST conform to the following normative statements:
-+
-+\begin{itemize}
-+\item \ref{devicenormative:Device Types / Crypto Device / Device configuration layout}
-+\item \ref{devicenormative:Device Types / Crypto Device / Device Operation / Control Virtqueue / Session operation / Session operation: create session}
-+\item \ref{devicenormative:Device Types / Crypto Device / Device Operation / Control Virtqueue / Session operation / Session operation: destroy session}
-+\item \ref{devicenormative:Device Types / Crypto Device / Device Operation / HASH Service operation}
-+\item \ref{devicenormative:Device Types / Crypto Device / Device Operation / MAC Service operation}
-+\item \ref{devicenormative:Device Types / Crypto Device / Device Operation / Symmetric algorithms Operation}
-+\item \ref{devicenormative:Device Types / Crypto Device / Device Operation / AEAD Service operation}
-+\end{itemize}
-+
- \section{Legacy Interface: Transitional Device and
- Transitional Driver Conformance}\label{sec:Conformance / Legacy
- Interface: Transitional Device and 
+ hw/virtio/virtio-balloon.c                      | 1 +
+ include/standard-headers/linux/virtio_balloon.h | 3 ++-
+ 2 files changed, 3 insertions(+), 1 deletion(-)
+
 -- 
-1.8.3.1
-
+2.15.1
 
 
 ---------------------------------------------------------------------
