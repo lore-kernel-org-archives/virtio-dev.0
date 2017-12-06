@@ -1,50 +1,86 @@
-Return-Path: virtio-dev-return-2767-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2771-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 63A4158190D3
-	for <virtio-dev@lists.oasis-open.org>; Wed,  6 Dec 2017 02:15:29 -0800 (PST)
-Message-ID: <5A27C3B7.7010109@intel.com>
-Date: Wed, 06 Dec 2017 18:17:27 +0800
-From: Wei Wang <wei.w.wang@intel.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id CB5255819115
+	for <virtio-dev@lists.oasis-open.org>; Wed,  6 Dec 2017 04:01:28 -0800 (PST)
+Date: Wed, 6 Dec 2017 12:01:21 +0000
+From: Stefan Hajnoczi <stefanha@redhat.com>
+Message-ID: <20171206120121.GC12584@stefanha-x1.localdomain>
+References: <1512444796-30615-1-git-send-email-wei.w.wang@intel.com>
+ <1512444796-30615-3-git-send-email-wei.w.wang@intel.com>
+ <20171205145950.GF31150@stefanha-x1.localdomain>
+ <5A27C3B7.7010109@intel.com>
 MIME-Version: 1.0
-References: <1512444796-30615-1-git-send-email-wei.w.wang@intel.com> <1512444796-30615-3-git-send-email-wei.w.wang@intel.com> <20171205145950.GF31150@stefanha-x1.localdomain>
-In-Reply-To: <20171205145950.GF31150@stefanha-x1.localdomain>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="pAwQNkOnpTn9IO2O"
+Content-Disposition: inline
+In-Reply-To: <5A27C3B7.7010109@intel.com>
 Subject: Re: [virtio-dev] [PATCH v3 2/7] vhost-pci-net: add vhost-pci-net
-To: Stefan Hajnoczi <stefanha@redhat.com>
-Cc: virtio-dev@lists.oasis-open.org, qemu-devel@nongnu.org, mst@redhat.com, marcandre.lureau@redhat.com, jasowang@redhat.com, pbonzini@redhat.com, jan.kiszka@siemens.com, avi.cohen@huawei.com, zhiyong.yang@intel.com
+To: Wei Wang <wei.w.wang@intel.com>
+Cc: virtio-dev@lists.oasis-open.org, qemu-devel@nongnu.org, mst@redhat.com, marcandre.lureau@redhat.com, jasowang@redhat.com, pbonzini@redhat.com, jan.kiszka@siemens.com, avi.cohen@huawei.com, zhiyong.yang@intel.com, felipe@nutanix.com, changpeng.liu@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 12/05/2017 10:59 PM, Stefan Hajnoczi wrote:
-> On Tue, Dec 05, 2017 at 11:33:11AM +0800, Wei Wang wrote:
->> Add the vhost-pci-net device emulation. The device uses bar 2 to expose
->> the remote VM's memory to the guest. The first 4KB of the the bar area
->> stores the metadata which describes the remote memory and vring info.
-> This device looks like the beginning of a new "vhost-pci" virtio device
-> type.  There are layering violations:
->
-> 1. This has nothing to do with virtio-net or networking, it's purely
->     vhost-pci.  Why is it called vhost-pci-net instead of vhost-pci?
+--pAwQNkOnpTn9IO2O
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Here are a few things that are specific to vhost-pci-net here:
+On Wed, Dec 06, 2017 at 06:17:27PM +0800, Wei Wang wrote:
+> On 12/05/2017 10:59 PM, Stefan Hajnoczi wrote:
+> > On Tue, Dec 05, 2017 at 11:33:11AM +0800, Wei Wang wrote:
+> > > Add the vhost-pci-net device emulation. The device uses bar 2 to expo=
+se
+> > > the remote VM's memory to the guest. The first 4KB of the the bar area
+> > > stores the metadata which describes the remote memory and vring info.
+> > This device looks like the beginning of a new "vhost-pci" virtio device
+> > type.  There are layering violations:
+> >=20
+> > 1. This has nothing to do with virtio-net or networking, it's purely
+> >     vhost-pci.  Why is it called vhost-pci-net instead of vhost-pci?
+>=20
+> Here are a few things that are specific to vhost-pci-net here:
+>=20
+> 1) The device category here is set to NETWORK.
+> 2) vhost-pci-net related features (e.g. future MQ feature) will be added =
+to
+> the property here.
+>=20
+> Right now, we only have vhost-pci-net. How about all focusing on the
+> vhost-pci-net, and ignore vhost-pci for now? When future other types of
+> devices are addded, we can abstract out a common vhost-pci layer?
 
-1) The device category here is set to NETWORK.
-2) vhost-pci-net related features (e.g. future MQ feature) will be added 
-to the property here.
+That won't work well for a new device.  It would be fine if this code
+was internal to QEMU, but it's a guest interface and changing it is
+relatively costly.  Once this code ships the hardware interface is fixed
+and drivers depend on it.  Changing the hardware interface requires
+driver upgrades inside the guest.
 
-Right now, we only have vhost-pci-net. How about all focusing on the 
-vhost-pci-net, and ignore vhost-pci for now? When future other types of 
-devices are addded, we can abstract out a common vhost-pci layer?
+All information needed to design vhost-pci for multiple device types is
+already available.  The VIRTIO specification defines the device model
+and vhost-user supports at least virtio-net, virtio-scsi, and virtio-blk
+(in development).
 
-Best,
-Wei
+I have CCed Felipe (vhost-user-scsi) and Changpeng (vhost-user-blk) to
+see if they are interested in vhost-pci.
 
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+Stefan
 
+--pAwQNkOnpTn9IO2O
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEcBAEBAgAGBQJaJ9wRAAoJEJykq7OBq3PIlWEH/AqcQdh52W+8W/69ARfXz+wB
+n8gq2SpL6JwLbk0BpLMw+Wy+0Jqr2r39vcXf8cDfjQY3TEUV9oRoRp6e+ByVoHp+
+t3pZJ4Rf2BdtOXxDnT+87+YVuMkNABprcu53wZPt7rVbPdX7MsHbtSsI/yQ21xcO
+qhKC7zFk9BVPfObLkjLuvJiLhvGwZ1EEktWJIpUDjxRTYfbrQo2ea3Ho/G+wjP6l
+HoknPpmZ7VBuYQzlpIqcmyssKstqKtJz5psk2UgRENTn16+M7Z7TrN30hNPIdYCo
+MO9Q97JHpy/Qw1O4pxKmzsd5CENNpLDicNawGufNP74ycbMQokBKXYyCGLjB39E=
+=wjEx
+-----END PGP SIGNATURE-----
+
+--pAwQNkOnpTn9IO2O--
