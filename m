@@ -1,87 +1,188 @@
-Return-Path: virtio-dev-return-2785-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2780-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 8D4C25819115
-	for <virtio-dev@lists.oasis-open.org>; Thu,  7 Dec 2017 06:46:44 -0800 (PST)
-Date: Thu, 7 Dec 2017 10:24:21 +0000
-From: Stefan Hajnoczi <stefanha@redhat.com>
-Message-ID: <20171207102420.GB7830@stefanha-x1.localdomain>
-References: <1512444796-30615-1-git-send-email-wei.w.wang@intel.com>
- <20171206134957.GD12584@stefanha-x1.localdomain>
- <286AC319A985734F985F78AFA26841F73937B57F@shsmsx102.ccr.corp.intel.com>
- <CAJSP0QWugAKQy6hYEJfy_XHEg-Q2swAzZMNcWBqn-r9Yi7yiEg@mail.gmail.com>
- <5A28BC2D.6000308@intel.com>
- <CAJSP0QUxRv9LNb1+McYxV0KY4Ss3NkaSjwO6fXiJd+oU2+zJSQ@mail.gmail.com>
- <B84047ECBD981D4B93EAE5A6245AA3610159323B@FRAEML521-MBX.china.huawei.com>
- <CAJSP0QVSOsPXYTyjCsBbUmzivjtYbC7xKpU2m7dQbAPMhrcLnA@mail.gmail.com>
- <ed3c3bb2-acc9-b44e-2a5b-7f4f22c2230a@redhat.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 1B4801CB807D
+	for <virtio-dev@lists.oasis-open.org>; Thu,  7 Dec 2017 01:00:20 -0800 (PST)
+Message-ID: <5A290398.60508@intel.com>
+Date: Thu, 07 Dec 2017 17:02:16 +0800
+From: Wei Wang <wei.w.wang@intel.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="QTprm0S8XgL7H0Dt"
-Content-Disposition: inline
-In-Reply-To: <ed3c3bb2-acc9-b44e-2a5b-7f4f22c2230a@redhat.com>
-Subject: Re: [virtio-dev] Re: [Qemu-devel] [virtio-dev] [PATCH v3 0/7]
- Vhost-pci for inter-VM communication
-To: Jason Wang <jasowang@redhat.com>
-Cc: Stefan Hajnoczi <stefanha@gmail.com>, "Avi Cohen (A)" <avi.cohen@huawei.com>, Wei Wang <wei.w.wang@intel.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "mst@redhat.com" <mst@redhat.com>, "Yang, Zhiyong" <zhiyong.yang@intel.com>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>, "qemu-devel@nongnu.org" <qemu-devel@nongnu.org>, "marcandre.lureau@redhat.com" <marcandre.lureau@redhat.com>, "pbonzini@redhat.com" <pbonzini@redhat.com>
+References: <1512444796-30615-1-git-send-email-wei.w.wang@intel.com>	<20171206134957.GD12584@stefanha-x1.localdomain>	<286AC319A985734F985F78AFA26841F73937B57F@shsmsx102.ccr.corp.intel.com>	<CAJSP0QWugAKQy6hYEJfy_XHEg-Q2swAzZMNcWBqn-r9Yi7yiEg@mail.gmail.com>	<5A28BC2D.6000308@intel.com> <CAJSP0QUxRv9LNb1+McYxV0KY4Ss3NkaSjwO6fXiJd+oU2+zJSQ@mail.gmail.com>
+In-Reply-To: <CAJSP0QUxRv9LNb1+McYxV0KY4Ss3NkaSjwO6fXiJd+oU2+zJSQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [virtio-dev] Re: [Qemu-devel] [virtio-dev] [PATCH v3 0/7] Vhost-pci for inter-VM
+ communication
+To: Stefan Hajnoczi <stefanha@gmail.com>
+Cc: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "mst@redhat.com" <mst@redhat.com>, "Yang, Zhiyong" <zhiyong.yang@intel.com>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>, "jasowang@redhat.com" <jasowang@redhat.com>, "avi.cohen@huawei.com" <avi.cohen@huawei.com>, "qemu-devel@nongnu.org" <qemu-devel@nongnu.org>, Stefan Hajnoczi <stefanha@redhat.com>, "pbonzini@redhat.com" <pbonzini@redhat.com>, "marcandre.lureau@redhat.com" <marcandre.lureau@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
---QTprm0S8XgL7H0Dt
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On 12/07/2017 02:31 PM, Stefan Hajnoczi wrote:
+> On Thu, Dec 7, 2017 at 3:57 AM, Wei Wang <wei.w.wang@intel.com> wrote:
+>> On 12/07/2017 12:27 AM, Stefan Hajnoczi wrote:
+>>> On Wed, Dec 6, 2017 at 4:09 PM, Wang, Wei W <wei.w.wang@intel.com> wrote:
+>>>> On Wednesday, December 6, 2017 9:50 PM, Stefan Hajnoczi wrote:
+>>>>> On Tue, Dec 05, 2017 at 11:33:09AM +0800, Wei Wang wrote:
+>>>>>> Vhost-pci is a point-to-point based inter-VM communication solution.
+>>>>>> This patch series implements the vhost-pci-net device setup and
+>>>>>> emulation. The device is implemented as a virtio device, and it is set
+>>>>>> up via the vhost-user protocol to get the neessary info (e.g the
+>>>>>> memory info of the remote VM, vring info).
+>>>>>>
+>>>>>> Currently, only the fundamental functions are implemented. More
+>>>>>> features, such as MQ and live migration, will be updated in the future.
+>>>>>>
+>>>>>> The DPDK PMD of vhost-pci has been posted to the dpdk mailinglist here:
+>>>>>> http://dpdk.org/ml/archives/dev/2017-November/082615.html
+>>>>> I have asked questions about the scope of this feature.  In particular,
+>>>>> I think
+>>>>> it's best to support all device types rather than just virtio-net.  Here
+>>>>> is a
+>>>>> design document that shows how this can be achieved.
+>>>>>
+>>>>> What I'm proposing is different from the current approach:
+>>>>> 1. It's a PCI adapter (see below for justification) 2. The vhost-user
+>>>>> protocol is
+>>>>> exposed by the device (not handled 100% in
+>>>>>      QEMU).  Ultimately I think your approach would also need to do this.
+>>>>>
+>>>>> I'm not implementing this and not asking you to implement it.  Let's
+>>>>> just use
+>>>>> this for discussion so we can figure out what the final vhost-pci will
+>>>>> look like.
+>>>>>
+>>>>> Please let me know what you think, Wei, Michael, and others.
+>>>>>
+>>>> Thanks for sharing the thoughts. If I understand it correctly, the key
+>>>> difference is that this approach tries to relay every vhost-user msg to the
+>>>> guest. I'm not sure about the benefits of doing this.
+>>>> To make data plane (i.e. driver to send/receive packets) work, I think,
+>>>> mostly, the memory info and vring info are enough. Other things like callfd,
+>>>> kickfd don't need to be sent to the guest, they are needed by QEMU only for
+>>>> the eventfd and irqfd setup.
+>>> Handling the vhost-user protocol inside QEMU and exposing a different
+>>> interface to the guest makes the interface device-specific.  This will
+>>> cause extra work to support new devices (vhost-user-scsi,
+>>> vhost-user-blk).  It also makes development harder because you might
+>>> have to learn 3 separate specifications to debug the system (virtio,
+>>> vhost-user, vhost-pci-net).
+>>>
+>>> If vhost-user is mapped to a PCI device then these issues are solved.
+>>
+>> I intend to have a different opinion about this:
+>>
+>> 1) Even relaying the msgs to the guest, QEMU still need to handle the msg
+>> first, for example, it needs to decode the msg to see if it is the ones
+>> (e.g. SET_MEM_TABLE, SET_VRING_KICK, SET_VRING_CALL) that should be used for
+>> the device setup (e.g. mmap the memory given via SET_MEM_TABLE). In this
+>> case, we will be likely to have 2 slave handlers - one in the guest, another
+>> in QEMU device.
+> In theory the vhost-pci PCI adapter could decide not to relay certain
+> messages.  As explained in the document, I think it's better to relay
+> everything because some messages that only carry an fd still have a
+> meaning.
 
-On Thu, Dec 07, 2017 at 04:31:27PM +0800, Jason Wang wrote:
->=20
->=20
-> On 2017=E5=B9=B412=E6=9C=8807=E6=97=A5 16:04, Stefan Hajnoczi wrote:
-> > On Thu, Dec 7, 2017 at 7:54 AM, Avi Cohen (A) <avi.cohen@huawei.com> wr=
-ote:
-> > > There is already a  virtio mechanism in which 2 VMs assigned a virtio=
- device , are communicating via a veth pair  in the host .
-> > > KVM just passes  a pointer of the page of the writer VM to the reader=
- VM - resulting  in  excellent performance (no vSwitch in the middle)
-> > > **Question**:  What is the advantage of vhost-pci compared to this ?
-> > Which mechanism do you mean?
-> >=20
-> > vhost-pci will allow VM-to-VM communication without vmexits when
-> > polling mode is used.  Does the mechanism you are thinking about
-> > require vmexits?
-> >=20
-> > Stefan
->=20
-> I guess what Avi means is probably veth tap support (RFC) here:
->=20
-> https://www.spinics.net/lists/netdev/msg454040.html
->=20
-> But in fact, we don't need veth at all, by using rx handler trick, we can
-> easily implement pair mode on TUN/TAP.
+It has its meaning, which is useful for the device setup, but that's not 
+useful for the guest. I think the point is most of the mgs are not 
+useful for the guest.
 
-Okay, that is a different use case:
+IMHO, the relay mechanism is useful when
 
-1. VM<->physical NIC: macvtap
-2. VM<->host userspace: vhost-user
-3. VM<->host/container: vethtap or pair mode
-4. VM<->VM: vhost-pci
+1) the QEMU slave handler doesn't need to process the messages at all 
+(receive and directly pass on to the guest)
 
-Stefan
+2) most of the msgs are useful for the guest (say we have more than 20 
+msgs, only 2 or 3 of them are useful for the guest, why let the device 
+pass all of them to the guest)
 
---QTprm0S8XgL7H0Dt
-Content-Type: application/pgp-signature; name="signature.asc"
+Also the relay mechanism complicates the vhost-user protocol 
+interaction: normally, only master<->QemuSlave. With the relay 
+mechanism, it will be master<->QemuSlave<->GuestSlave. For example, when 
+the master sends VHOST_USER_GET_QUEUE_NUM, normally it can be answered 
+by QemuSlave directly. Why complicate it by passing the msg the 
+GuestSlave, and then get the same answer from GuestSlave.
 
------BEGIN PGP SIGNATURE-----
 
-iQEcBAEBAgAGBQJaKRbUAAoJEJykq7OBq3PIUo4H/RngXPiI5TkNlNWXbfQsNk8E
-LkKklNFPgitmEt6hGscFpL0kcvkJlR2ggk1M7frWtZoiBG9ZABpKgnetB/vrYnHd
-AXdlG24iogK0uLP4Y9moBNZ7C0goRncjWUcwwEeHcrDKUdDm/ALtu0WKRYhqIU0P
-HQRyXaP32etU1jKdTVZlBDsmwoksxW9D3+hL+5SU78jX+1UuzacYKic9icURYlUW
-h86heLQzIZGmR1/gtFEcn+FffjirJUGep1EOa7n2n7ewxQ5mbXppk+u/Izmb3UYA
-2BwtISf5jsSpm1zkiX/6LjOuI0553mvty/4bzcO7eGnoWL3uQEB8CC/EK+poVVs=
-=hpeo
------END PGP SIGNATURE-----
+>   They are a signal that the master has entered a new state.
 
---QTprm0S8XgL7H0Dt--
+Actually vhost-user isn't state-machine based.
+
+> Why have individual device types (vhost-pci-net, vhost-pci-blk, etc)
+> instead of just a vhost-pci device?
+
+This is the same as virtio - we don't have a single virtio device, we 
+have virtio-net, virtio-blk etc.
+
+So, the same way, we can have a common TYPE_VHOST_PCI_DEVICE parent 
+device (like TYPE_VIRTIO_DEVICE), but net may have its own special 
+features like MRG_RXBUF, and own config registers like mac[6] etc, so we 
+can have TYPE_VHOST_PCI_NET under TYPE_VHOST_PCI_DEVICE.
+
+
+>
+>>>>> vhost-pci is a PCI adapter instead of a virtio device to allow doorbells
+>>>>> and
+>>>>> interrupts to be connected to the virtio device in the master VM in the
+>>>>> most
+>>>>> efficient way possible.  This means the Vring call doorbell can be an
+>>>>> ioeventfd that signals an irqfd inside the host kernel without host
+>>>>> userspace
+>>>>> involvement.  The Vring kick interrupt can be an irqfd that is signalled
+>>>>> by the
+>>>>> master VM's virtqueue ioeventfd.
+>>>>>
+>>>> This looks the same as the implementation of inter-VM notification in v2:
+>>>> https://www.mail-archive.com/qemu-devel@nongnu.org/msg450005.html
+>>>> which is fig. 4 here:
+>>>> https://github.com/wei-w-wang/vhost-pci-discussion/blob/master/vhost-pci-rfc2.0.pdf
+>>>>
+>>>> When the vhost-pci driver kicks its tx, the host signals the irqfd of
+>>>> virtio-net's rx. I think this has already bypassed the host userspace
+>>>> (thanks to the fast mmio implementation)
+>>> Yes, I think the irqfd <-> ioeventfd mapping is good.  Perhaps it even
+>>> makes sense to implement a special fused_irq_ioevent_fd in the host
+>>> kernel to bypass the need for a kernel thread to read the eventfd so
+>>> that an interrupt can be injected (i.e. to make the operation
+>>> synchronous).
+>>>
+>>> Is the tx virtqueue in your inter-VM notification v2 series a real
+>>> virtqueue that gets used?  Or is it just a dummy virtqueue that you're
+>>> using for the ioeventfd doorbell?  It looks like vpnet_handle_vq() is
+>>> empty so it's really just a dummy.  The actual virtqueue is in the
+>>> vhost-user master guest memory.
+>>
+>>
+>> Yes, that tx is a dummy actually, just created to use its doorbell.
+>> Currently, with virtio_device, I think ioeventfd comes with virtqueue only.
+>> Actually, I think we could have the issues solved by vhost-pci. For example,
+>> reserve a piece of  the BAR area for ioeventfd. The bar layout can be:
+>> BAR 2:
+>> 0~4k: vhost-pci device specific usages (ioeventfd etc)
+>> 4k~8k: metadata (memory info and vring info)
+>> 8k~64GB: remote guest memory
+>> (we can make the bar size (64GB is the default value used) configurable via
+>> qemu cmdline)
+> Why use a virtio device?  The doorbell and shared memory don't fit the
+> virtio architecture.  There are no real virtqueues.  This makes it a
+> strange virtio device.
+
+
+The virtio spec doesn't seem to require the device to have at lease one 
+virtqueue. It doesn't make a huge difference to me whether it is a 
+virtio device or a regular PCI device. We use it as a virtio device 
+because it acts as a backend of virtio devices, not sure if it could be 
+used by other devices (I guess virtio would be the main 
+paravirtualized-like device here)
+
+
+
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+
