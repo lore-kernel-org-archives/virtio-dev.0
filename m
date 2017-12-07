@@ -1,91 +1,182 @@
-Return-Path: virtio-dev-return-2776-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2777-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 090CE581910D
-	for <virtio-dev@lists.oasis-open.org>; Wed,  6 Dec 2017 21:32:54 -0800 (PST)
-Message-ID: <5A28D2FA.2070006@intel.com>
-Date: Thu, 07 Dec 2017 13:34:50 +0800
-From: Wei Wang <wei.w.wang@intel.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 4B5D91CB807A
+	for <virtio-dev@lists.oasis-open.org>; Wed,  6 Dec 2017 23:54:58 -0800 (PST)
+From: "Avi Cohen (A)" <avi.cohen@huawei.com>
+Date: Thu, 7 Dec 2017 07:54:48 +0000
+Message-ID: <B84047ECBD981D4B93EAE5A6245AA3610159323B@FRAEML521-MBX.china.huawei.com>
+References: <1512444796-30615-1-git-send-email-wei.w.wang@intel.com>
+ <20171206134957.GD12584@stefanha-x1.localdomain>
+ <286AC319A985734F985F78AFA26841F73937B57F@shsmsx102.ccr.corp.intel.com>
+ <CAJSP0QWugAKQy6hYEJfy_XHEg-Q2swAzZMNcWBqn-r9Yi7yiEg@mail.gmail.com>
+ <5A28BC2D.6000308@intel.com>
+ <CAJSP0QUxRv9LNb1+McYxV0KY4Ss3NkaSjwO6fXiJd+oU2+zJSQ@mail.gmail.com>
+In-Reply-To: <CAJSP0QUxRv9LNb1+McYxV0KY4Ss3NkaSjwO6fXiJd+oU2+zJSQ@mail.gmail.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <1512444796-30615-1-git-send-email-wei.w.wang@intel.com> <20171206134957.GD12584@stefanha-x1.localdomain> <286AC319A985734F985F78AFA26841F73937B57F@shsmsx102.ccr.corp.intel.com> <CAJSP0QWugAKQy6hYEJfy_XHEg-Q2swAzZMNcWBqn-r9Yi7yiEg@mail.gmail.com> <5A28BC2D.6000308@intel.com> <20171207070947-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20171207070947-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: [virtio-dev] Re: [Qemu-devel] [virtio-dev] [PATCH v3 0/7] Vhost-pci for inter-VM
+Subject: [virtio-dev] RE: [Qemu-devel] [virtio-dev] [PATCH v3 0/7] Vhost-pci for inter-VM
  communication
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Stefan Hajnoczi <stefanha@gmail.com>, Stefan Hajnoczi <stefanha@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "Yang, Zhiyong" <zhiyong.yang@intel.com>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>, "jasowang@redhat.com" <jasowang@redhat.com>, "avi.cohen@huawei.com" <avi.cohen@huawei.com>, "qemu-devel@nongnu.org" <qemu-devel@nongnu.org>, "marcandre.lureau@redhat.com" <marcandre.lureau@redhat.com>, "pbonzini@redhat.com" <pbonzini@redhat.com>
+To: Stefan Hajnoczi <stefanha@gmail.com>, Wei Wang <wei.w.wang@intel.com>
+Cc: Stefan Hajnoczi <stefanha@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "mst@redhat.com" <mst@redhat.com>, "Yang,
+ Zhiyong" <zhiyong.yang@intel.com>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>, "jasowang@redhat.com" <jasowang@redhat.com>, "qemu-devel@nongnu.org" <qemu-devel@nongnu.org>, "marcandre.lureau@redhat.com" <marcandre.lureau@redhat.com>, "pbonzini@redhat.com" <pbonzini@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 12/07/2017 01:11 PM, Michael S. Tsirkin wrote:
-> On Thu, Dec 07, 2017 at 11:57:33AM +0800, Wei Wang wrote:
->> On 12/07/2017 12:27 AM, Stefan Hajnoczi wrote:
->>> On Wed, Dec 6, 2017 at 4:09 PM, Wang, Wei W <wei.w.wang@intel.com> wrote:
->>>> On Wednesday, December 6, 2017 9:50 PM, Stefan Hajnoczi wrote:
->>>>> On Tue, Dec 05, 2017 at 11:33:09AM +0800, Wei Wang wrote:
->>>>>> Vhost-pci is a point-to-point based inter-VM communication solution.
->>>>>> This patch series implements the vhost-pci-net device setup and
->>>>>> emulation. The device is implemented as a virtio device, and it is set
->>>>>> up via the vhost-user protocol to get the neessary info (e.g the
->>>>>> memory info of the remote VM, vring info).
->>>>>>
->>>>>> Currently, only the fundamental functions are implemented. More
->>>>>> features, such as MQ and live migration, will be updated in the future.
->>>>>>
->>>>>> The DPDK PMD of vhost-pci has been posted to the dpdk mailinglist here:
->>>>>> http://dpdk.org/ml/archives/dev/2017-November/082615.html
->>>>> I have asked questions about the scope of this feature.  In particular, I think
->>>>> it's best to support all device types rather than just virtio-net.  Here is a
->>>>> design document that shows how this can be achieved.
->>>>>
->>>>> What I'm proposing is different from the current approach:
->>>>> 1. It's a PCI adapter (see below for justification) 2. The vhost-user protocol is
->>>>> exposed by the device (not handled 100% in
->>>>>      QEMU).  Ultimately I think your approach would also need to do this.
->>>>>
->>>>> I'm not implementing this and not asking you to implement it.  Let's just use
->>>>> this for discussion so we can figure out what the final vhost-pci will look like.
->>>>>
->>>>> Please let me know what you think, Wei, Michael, and others.
->>>>>
->>>> Thanks for sharing the thoughts. If I understand it correctly, the key difference is that this approach tries to relay every vhost-user msg to the guest. I'm not sure about the benefits of doing this.
->>>> To make data plane (i.e. driver to send/receive packets) work, I think, mostly, the memory info and vring info are enough. Other things like callfd, kickfd don't need to be sent to the guest, they are needed by QEMU only for the eventfd and irqfd setup.
->>> Handling the vhost-user protocol inside QEMU and exposing a different
->>> interface to the guest makes the interface device-specific.  This will
->>> cause extra work to support new devices (vhost-user-scsi,
->>> vhost-user-blk).  It also makes development harder because you might
->>> have to learn 3 separate specifications to debug the system (virtio,
->>> vhost-user, vhost-pci-net).
->>>
->>> If vhost-user is mapped to a PCI device then these issues are solved.
->> I intend to have a different opinion about this:
->>
->> 1) Even relaying the msgs to the guest, QEMU still need to handle the msg
->> first, for example, it needs to decode the msg to see if it is the ones
->> (e.g. SET_MEM_TABLE, SET_VRING_KICK, SET_VRING_CALL) that should be used for
->> the device setup (e.g. mmap the memory given via SET_MEM_TABLE). In this
->> case, we will be likely to have 2 slave handlers - one in the guest, another
->> in QEMU device.
->>
->> 2) If people already understand the vhost-user protocol, it would be natural
->> for them to understand the vhost-pci metadata - just the obtained memory and
->> vring info are put to the metadata area (no new things).
-> I see a bigger problem with passthrough. If qemu can't fully decode all
-> messages, it can not operate in a disconected mode - guest will have to
-> stop on disconnect until we re-connect a backend.
->
-
-What do you mean by "passthrough" in this case? Why qemu can't fully 
-decode all the messages (probably I haven't got the point)
-
-Best,
-Wei
-
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+VGhlcmUgaXMgYWxyZWFkeSBhICB2aXJ0aW8gbWVjaGFuaXNtIGluIHdoaWNoIDIgVk1zIGFzc2ln
+bmVkIGEgdmlydGlvIGRldmljZSAsIGFyZSBjb21tdW5pY2F0aW5nIHZpYSBhIHZldGggcGFpciAg
+aW4gdGhlIGhvc3QgLg0KS1ZNIGp1c3QgcGFzc2VzICBhIHBvaW50ZXIgb2YgdGhlIHBhZ2Ugb2Yg
+dGhlIHdyaXRlciBWTSB0byB0aGUgcmVhZGVyIFZNIC0gcmVzdWx0aW5nICBpbiAgZXhjZWxsZW50
+IHBlcmZvcm1hbmNlIChubyB2U3dpdGNoIGluIHRoZSBtaWRkbGUpDQoqKlF1ZXN0aW9uKio6ICBX
+aGF0IGlzIHRoZSBhZHZhbnRhZ2Ugb2Ygdmhvc3QtcGNpIGNvbXBhcmVkIHRvIHRoaXMgPw0KQmVz
+dCBSZWdhcmRzDQpBdmkNCg0KPiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBT
+dGVmYW4gSGFqbm9jemkgW21haWx0bzpzdGVmYW5oYUBnbWFpbC5jb21dDQo+IFNlbnQ6IFRodXJz
+ZGF5LCAwNyBEZWNlbWJlciwgMjAxNyA4OjMxIEFNDQo+IFRvOiBXZWkgV2FuZw0KPiBDYzogU3Rl
+ZmFuIEhham5vY3ppOyB2aXJ0aW8tZGV2QGxpc3RzLm9hc2lzLW9wZW4ub3JnOyBtc3RAcmVkaGF0
+LmNvbTsgWWFuZywNCj4gWmhpeW9uZzsgamFuLmtpc3prYUBzaWVtZW5zLmNvbTsgamFzb3dhbmdA
+cmVkaGF0LmNvbTsgQXZpIENvaGVuIChBKTsNCj4gcWVtdS1kZXZlbEBub25nbnUub3JnOyBtYXJj
+YW5kcmUubHVyZWF1QHJlZGhhdC5jb207DQo+IHBib256aW5pQHJlZGhhdC5jb20NCj4gU3ViamVj
+dDogUmU6IFtRZW11LWRldmVsXSBbdmlydGlvLWRldl0gW1BBVENIIHYzIDAvN10gVmhvc3QtcGNp
+IGZvciBpbnRlci1WTQ0KPiBjb21tdW5pY2F0aW9uDQo+IA0KPiBPbiBUaHUsIERlYyA3LCAyMDE3
+IGF0IDM6NTcgQU0sIFdlaSBXYW5nIDx3ZWkudy53YW5nQGludGVsLmNvbT4gd3JvdGU6DQo+ID4g
+T24gMTIvMDcvMjAxNyAxMjoyNyBBTSwgU3RlZmFuIEhham5vY3ppIHdyb3RlOg0KPiA+Pg0KPiA+
+PiBPbiBXZWQsIERlYyA2LCAyMDE3IGF0IDQ6MDkgUE0sIFdhbmcsIFdlaSBXIDx3ZWkudy53YW5n
+QGludGVsLmNvbT4NCj4gd3JvdGU6DQo+ID4+Pg0KPiA+Pj4gT24gV2VkbmVzZGF5LCBEZWNlbWJl
+ciA2LCAyMDE3IDk6NTAgUE0sIFN0ZWZhbiBIYWpub2N6aSB3cm90ZToNCj4gPj4+Pg0KPiA+Pj4+
+IE9uIFR1ZSwgRGVjIDA1LCAyMDE3IGF0IDExOjMzOjA5QU0gKzA4MDAsIFdlaSBXYW5nIHdyb3Rl
+Og0KPiA+Pj4+Pg0KPiA+Pj4+PiBWaG9zdC1wY2kgaXMgYSBwb2ludC10by1wb2ludCBiYXNlZCBp
+bnRlci1WTSBjb21tdW5pY2F0aW9uIHNvbHV0aW9uLg0KPiA+Pj4+PiBUaGlzIHBhdGNoIHNlcmll
+cyBpbXBsZW1lbnRzIHRoZSB2aG9zdC1wY2ktbmV0IGRldmljZSBzZXR1cCBhbmQNCj4gPj4+Pj4g
+ZW11bGF0aW9uLiBUaGUgZGV2aWNlIGlzIGltcGxlbWVudGVkIGFzIGEgdmlydGlvIGRldmljZSwg
+YW5kIGl0IGlzDQo+ID4+Pj4+IHNldCB1cCB2aWEgdGhlIHZob3N0LXVzZXIgcHJvdG9jb2wgdG8g
+Z2V0IHRoZSBuZWVzc2FyeSBpbmZvIChlLmcNCj4gPj4+Pj4gdGhlIG1lbW9yeSBpbmZvIG9mIHRo
+ZSByZW1vdGUgVk0sIHZyaW5nIGluZm8pLg0KPiA+Pj4+Pg0KPiA+Pj4+PiBDdXJyZW50bHksIG9u
+bHkgdGhlIGZ1bmRhbWVudGFsIGZ1bmN0aW9ucyBhcmUgaW1wbGVtZW50ZWQuIE1vcmUNCj4gPj4+
+Pj4gZmVhdHVyZXMsIHN1Y2ggYXMgTVEgYW5kIGxpdmUgbWlncmF0aW9uLCB3aWxsIGJlIHVwZGF0
+ZWQgaW4gdGhlIGZ1dHVyZS4NCj4gPj4+Pj4NCj4gPj4+Pj4gVGhlIERQREsgUE1EIG9mIHZob3N0
+LXBjaSBoYXMgYmVlbiBwb3N0ZWQgdG8gdGhlIGRwZGsgbWFpbGluZ2xpc3QgaGVyZToNCj4gPj4+
+Pj4gaHR0cDovL2RwZGsub3JnL21sL2FyY2hpdmVzL2Rldi8yMDE3LU5vdmVtYmVyLzA4MjYxNS5o
+dG1sDQo+ID4+Pj4NCj4gPj4+PiBJIGhhdmUgYXNrZWQgcXVlc3Rpb25zIGFib3V0IHRoZSBzY29w
+ZSBvZiB0aGlzIGZlYXR1cmUuICBJbg0KPiA+Pj4+IHBhcnRpY3VsYXIsIEkgdGhpbmsgaXQncyBi
+ZXN0IHRvIHN1cHBvcnQgYWxsIGRldmljZSB0eXBlcyByYXRoZXINCj4gPj4+PiB0aGFuIGp1c3Qg
+dmlydGlvLW5ldC4gIEhlcmUgaXMgYSBkZXNpZ24gZG9jdW1lbnQgdGhhdCBzaG93cyBob3cNCj4g
+Pj4+PiB0aGlzIGNhbiBiZSBhY2hpZXZlZC4NCj4gPj4+Pg0KPiA+Pj4+IFdoYXQgSSdtIHByb3Bv
+c2luZyBpcyBkaWZmZXJlbnQgZnJvbSB0aGUgY3VycmVudCBhcHByb2FjaDoNCj4gPj4+PiAxLiBJ
+dCdzIGEgUENJIGFkYXB0ZXIgKHNlZSBiZWxvdyBmb3IganVzdGlmaWNhdGlvbikgMi4gVGhlDQo+
+ID4+Pj4gdmhvc3QtdXNlciBwcm90b2NvbCBpcyBleHBvc2VkIGJ5IHRoZSBkZXZpY2UgKG5vdCBo
+YW5kbGVkIDEwMCUgaW4NCj4gPj4+PiAgICAgUUVNVSkuICBVbHRpbWF0ZWx5IEkgdGhpbmsgeW91
+ciBhcHByb2FjaCB3b3VsZCBhbHNvIG5lZWQgdG8gZG8gdGhpcy4NCj4gPj4+Pg0KPiA+Pj4+IEkn
+bSBub3QgaW1wbGVtZW50aW5nIHRoaXMgYW5kIG5vdCBhc2tpbmcgeW91IHRvIGltcGxlbWVudCBp
+dC4NCj4gPj4+PiBMZXQncyBqdXN0IHVzZSB0aGlzIGZvciBkaXNjdXNzaW9uIHNvIHdlIGNhbiBm
+aWd1cmUgb3V0IHdoYXQgdGhlDQo+ID4+Pj4gZmluYWwgdmhvc3QtcGNpIHdpbGwgbG9vayBsaWtl
+Lg0KPiA+Pj4+DQo+ID4+Pj4gUGxlYXNlIGxldCBtZSBrbm93IHdoYXQgeW91IHRoaW5rLCBXZWks
+IE1pY2hhZWwsIGFuZCBvdGhlcnMuDQo+ID4+Pj4NCj4gPj4+IFRoYW5rcyBmb3Igc2hhcmluZyB0
+aGUgdGhvdWdodHMuIElmIEkgdW5kZXJzdGFuZCBpdCBjb3JyZWN0bHksIHRoZQ0KPiA+Pj4ga2V5
+IGRpZmZlcmVuY2UgaXMgdGhhdCB0aGlzIGFwcHJvYWNoIHRyaWVzIHRvIHJlbGF5IGV2ZXJ5IHZo
+b3N0LXVzZXINCj4gPj4+IG1zZyB0byB0aGUgZ3Vlc3QuIEknbSBub3Qgc3VyZSBhYm91dCB0aGUg
+YmVuZWZpdHMgb2YgZG9pbmcgdGhpcy4NCj4gPj4+IFRvIG1ha2UgZGF0YSBwbGFuZSAoaS5lLiBk
+cml2ZXIgdG8gc2VuZC9yZWNlaXZlIHBhY2tldHMpIHdvcmssIEkNCj4gPj4+IHRoaW5rLCBtb3N0
+bHksIHRoZSBtZW1vcnkgaW5mbyBhbmQgdnJpbmcgaW5mbyBhcmUgZW5vdWdoLiBPdGhlcg0KPiA+
+Pj4gdGhpbmdzIGxpa2UgY2FsbGZkLCBraWNrZmQgZG9uJ3QgbmVlZCB0byBiZSBzZW50IHRvIHRo
+ZSBndWVzdCwgdGhleQ0KPiA+Pj4gYXJlIG5lZWRlZCBieSBRRU1VIG9ubHkgZm9yIHRoZSBldmVu
+dGZkIGFuZCBpcnFmZCBzZXR1cC4NCj4gPj4NCj4gPj4gSGFuZGxpbmcgdGhlIHZob3N0LXVzZXIg
+cHJvdG9jb2wgaW5zaWRlIFFFTVUgYW5kIGV4cG9zaW5nIGEgZGlmZmVyZW50DQo+ID4+IGludGVy
+ZmFjZSB0byB0aGUgZ3Vlc3QgbWFrZXMgdGhlIGludGVyZmFjZSBkZXZpY2Utc3BlY2lmaWMuICBU
+aGlzDQo+ID4+IHdpbGwgY2F1c2UgZXh0cmEgd29yayB0byBzdXBwb3J0IG5ldyBkZXZpY2VzICh2
+aG9zdC11c2VyLXNjc2ksDQo+ID4+IHZob3N0LXVzZXItYmxrKS4gIEl0IGFsc28gbWFrZXMgZGV2
+ZWxvcG1lbnQgaGFyZGVyIGJlY2F1c2UgeW91IG1pZ2h0DQo+ID4+IGhhdmUgdG8gbGVhcm4gMyBz
+ZXBhcmF0ZSBzcGVjaWZpY2F0aW9ucyB0byBkZWJ1ZyB0aGUgc3lzdGVtICh2aXJ0aW8sDQo+ID4+
+IHZob3N0LXVzZXIsIHZob3N0LXBjaS1uZXQpLg0KPiA+Pg0KPiA+PiBJZiB2aG9zdC11c2VyIGlz
+IG1hcHBlZCB0byBhIFBDSSBkZXZpY2UgdGhlbiB0aGVzZSBpc3N1ZXMgYXJlIHNvbHZlZC4NCj4g
+Pg0KPiA+DQo+ID4gSSBpbnRlbmQgdG8gaGF2ZSBhIGRpZmZlcmVudCBvcGluaW9uIGFib3V0IHRo
+aXM6DQo+ID4NCj4gPiAxKSBFdmVuIHJlbGF5aW5nIHRoZSBtc2dzIHRvIHRoZSBndWVzdCwgUUVN
+VSBzdGlsbCBuZWVkIHRvIGhhbmRsZSB0aGUNCj4gPiBtc2cgZmlyc3QsIGZvciBleGFtcGxlLCBp
+dCBuZWVkcyB0byBkZWNvZGUgdGhlIG1zZyB0byBzZWUgaWYgaXQgaXMgdGhlDQo+ID4gb25lcyAo
+ZS5nLiBTRVRfTUVNX1RBQkxFLCBTRVRfVlJJTkdfS0lDSywgU0VUX1ZSSU5HX0NBTEwpIHRoYXQg
+c2hvdWxkDQo+ID4gYmUgdXNlZCBmb3IgdGhlIGRldmljZSBzZXR1cCAoZS5nLiBtbWFwIHRoZSBt
+ZW1vcnkgZ2l2ZW4gdmlhDQo+ID4gU0VUX01FTV9UQUJMRSkuIEluIHRoaXMgY2FzZSwgd2Ugd2ls
+bCBiZSBsaWtlbHkgdG8gaGF2ZSAyIHNsYXZlDQo+ID4gaGFuZGxlcnMgLSBvbmUgaW4gdGhlIGd1
+ZXN0LCBhbm90aGVyIGluIFFFTVUgZGV2aWNlLg0KPiANCj4gSW4gdGhlb3J5IHRoZSB2aG9zdC1w
+Y2kgUENJIGFkYXB0ZXIgY291bGQgZGVjaWRlIG5vdCB0byByZWxheSBjZXJ0YWluIG1lc3NhZ2Vz
+Lg0KPiBBcyBleHBsYWluZWQgaW4gdGhlIGRvY3VtZW50LCBJIHRoaW5rIGl0J3MgYmV0dGVyIHRv
+IHJlbGF5IGV2ZXJ5dGhpbmcgYmVjYXVzZQ0KPiBzb21lIG1lc3NhZ2VzIHRoYXQgb25seSBjYXJy
+eSBhbiBmZCBzdGlsbCBoYXZlIGEgbWVhbmluZy4gIFRoZXkgYXJlIGEgc2lnbmFsDQo+IHRoYXQg
+dGhlIG1hc3RlciBoYXMgZW50ZXJlZCBhIG5ldyBzdGF0ZS4NCj4gDQo+IFRoZSBhcHByb2FjaCBp
+biB0aGlzIHBhdGNoIHNlcmllcyBkb2Vzbid0IHJlYWxseSBzb2x2ZSB0aGUgMiBoYW5kbGVyIHBy
+b2JsZW0sIGl0DQo+IHN0aWxsIG5lZWRzIHRvIG5vdGlmeSB0aGUgZ3Vlc3Qgd2hlbiBjZXJ0YWlu
+IHZob3N0LXVzZXIgbWVzc2FnZXMgYXJlIHJlY2VpdmVkDQo+IGZyb20gdGhlIG1hc3Rlci4gIFRo
+ZSBkaWZmZXJlbmNlIGlzIGp1c3QgdGhhdCBpdCdzIG5vbi10cml2aWFsIGluIHRoaXMgcGF0Y2gg
+c2VyaWVzDQo+IGJlY2F1c2UgZWFjaCBtZXNzYWdlIGlzIGhhbmRsZWQgb24gYSBjYXNlLWJ5LWNh
+c2UgYmFzaXMgYW5kIGhhcyBhIGN1c3RvbQ0KPiBpbnRlcmZhY2UgKGRvZXMgbm90IHNpbXBseSBy
+ZWxheSBhIHZob3N0LXVzZXIgcHJvdG9jb2wgbWVzc2FnZSkuDQo+IA0KPiBBIDE6MSBtb2RlbCBp
+cyBzaW1wbGUgYW5kIGNvbnNpc3RlbnQuICBJIHRoaW5rIGl0IHdpbGwgYXZvaWQgYnVncyBhbmQg
+ZGVzaWduDQo+IG1pc3Rha2VzLg0KPiANCj4gPiAyKSBJZiBwZW9wbGUgYWxyZWFkeSB1bmRlcnN0
+YW5kIHRoZSB2aG9zdC11c2VyIHByb3RvY29sLCBpdCB3b3VsZCBiZQ0KPiA+IG5hdHVyYWwgZm9y
+IHRoZW0gdG8gdW5kZXJzdGFuZCB0aGUgdmhvc3QtcGNpIG1ldGFkYXRhIC0ganVzdCB0aGUNCj4g
+PiBvYnRhaW5lZCBtZW1vcnkgYW5kIHZyaW5nIGluZm8gYXJlIHB1dCB0byB0aGUgbWV0YWRhdGEg
+YXJlYSAobm8gbmV3DQo+IHRoaW5ncykuDQo+IA0KPiBUaGlzIGlzIGRlYmF0YWJsZS4gIEl0J3Mg
+bGlrZSBzYXlpbmcgaWYgeW91IHVuZGVyc3RhbmQgUUVNVSBjb21tYW5kLWxpbmUNCj4gb3B0aW9u
+cyB5b3Ugd2lsbCB1bmRlcnN0YW5kIGxpYnZpcnQgZG9tYWluIFhNTC4gIFRoZXkgbWFwIHRvIGVh
+Y2ggb3RoZXIgYnV0DQo+IGhvdyBvYnZpb3VzIHRoYXQgbWFwcGluZyBpcyBkZXBlbmRzIG9uIHRo
+ZSBkZXRhaWxzLg0KPiBJJ20gc2F5aW5nIGEgMToxIG1hcHBpbmcgKHJldXNpbmcgdGhlIHZob3N0
+LXVzZXIgcHJvdG9jb2wgbWVzc2FnZQ0KPiBsYXlvdXQpIGlzIHRoZSBjbGVhbmVzdCBvcHRpb24u
+DQo+IA0KPiA+IEluc3BpcmVkIGZyb20geW91ciBzaGFyaW5nLCBob3cgYWJvdXQgdGhlIGZvbGxv
+d2luZzoNCj4gPiB3ZSBjYW4gYWN0dWFsbHkgZmFjdG9yIG91dCBhIGNvbW1vbiB2aG9zdC1wY2kg
+bGF5ZXIsIHdoaWNoIGhhbmRsZXMgYWxsDQo+ID4gdGhlIGZlYXR1cmVzIHRoYXQgYXJlIGNvbW1v
+biB0byBhbGwgdGhlIHZob3N0LXBjaSBzZXJpZXMgb2YgZGV2aWNlcw0KPiA+ICh2aG9zdC1wY2kt
+bmV0LCB2aG9zdC1wY2ktYmxrLC4uLikgQ29taW5nIHRvIHRoZSBpbXBsZW1lbnRhdGlvbiwgd2UN
+Cj4gPiBjYW4gaGF2ZSBhIFZob3N0cGNpRGV2aWNlQ2xhc3MgKHNpbWlsYXIgdG8gVmlydGlvRGV2
+aWNlQ2xhc3MpLCB0aGUNCj4gPiBkZXZpY2UgcmVhbGl6ZSBzZXF1ZW5jZSB3aWxsIGJlDQo+ID4g
+dmlydGlvX2RldmljZV9yZWFsaXplKCktLT52aG9zdF9wY2lfZGV2aWNlX3JlYWxpemUoKS0tPnZo
+b3N0X3BjaV9uZXRfZA0KPiA+IGV2aWNlX3JlYWxpemUoKQ0KPiANCj4gV2h5IGhhdmUgaW5kaXZp
+ZHVhbCBkZXZpY2UgdHlwZXMgKHZob3N0LXBjaS1uZXQsIHZob3N0LXBjaS1ibGssIGV0YykgaW5z
+dGVhZCBvZg0KPiBqdXN0IGEgdmhvc3QtcGNpIGRldmljZT8NCj4gDQo+ID4+Pj4gdmhvc3QtcGNp
+IGlzIGEgUENJIGFkYXB0ZXIgaW5zdGVhZCBvZiBhIHZpcnRpbyBkZXZpY2UgdG8gYWxsb3cNCj4g
+Pj4+PiBkb29yYmVsbHMgYW5kIGludGVycnVwdHMgdG8gYmUgY29ubmVjdGVkIHRvIHRoZSB2aXJ0
+aW8gZGV2aWNlIGluDQo+ID4+Pj4gdGhlIG1hc3RlciBWTSBpbiB0aGUgbW9zdCBlZmZpY2llbnQg
+d2F5IHBvc3NpYmxlLiAgVGhpcyBtZWFucyB0aGUNCj4gPj4+PiBWcmluZyBjYWxsIGRvb3JiZWxs
+IGNhbiBiZSBhbiBpb2V2ZW50ZmQgdGhhdCBzaWduYWxzIGFuIGlycWZkDQo+ID4+Pj4gaW5zaWRl
+IHRoZSBob3N0IGtlcm5lbCB3aXRob3V0IGhvc3QgdXNlcnNwYWNlIGludm9sdmVtZW50LiAgVGhl
+DQo+ID4+Pj4gVnJpbmcga2ljayBpbnRlcnJ1cHQgY2FuIGJlIGFuIGlycWZkIHRoYXQgaXMgc2ln
+bmFsbGVkIGJ5IHRoZQ0KPiA+Pj4+IG1hc3RlciBWTSdzIHZpcnRxdWV1ZSBpb2V2ZW50ZmQuDQo+
+ID4+Pj4NCj4gPj4+DQo+ID4+PiBUaGlzIGxvb2tzIHRoZSBzYW1lIGFzIHRoZSBpbXBsZW1lbnRh
+dGlvbiBvZiBpbnRlci1WTSBub3RpZmljYXRpb24gaW4gdjI6DQo+ID4+PiBodHRwczovL3d3dy5t
+YWlsLWFyY2hpdmUuY29tL3FlbXUtZGV2ZWxAbm9uZ251Lm9yZy9tc2c0NTAwMDUuaHRtbA0KPiA+
+Pj4gd2hpY2ggaXMgZmlnLiA0IGhlcmU6DQo+ID4+PiBodHRwczovL2dpdGh1Yi5jb20vd2VpLXct
+d2FuZy92aG9zdC1wY2ktZGlzY3Vzc2lvbi9ibG9iL21hc3Rlci92aG9zdA0KPiA+Pj4gLXBjaS1y
+ZmMyLjAucGRmDQo+ID4+Pg0KPiA+Pj4gV2hlbiB0aGUgdmhvc3QtcGNpIGRyaXZlciBraWNrcyBp
+dHMgdHgsIHRoZSBob3N0IHNpZ25hbHMgdGhlIGlycWZkDQo+ID4+PiBvZiB2aXJ0aW8tbmV0J3Mg
+cnguIEkgdGhpbmsgdGhpcyBoYXMgYWxyZWFkeSBieXBhc3NlZCB0aGUgaG9zdA0KPiA+Pj4gdXNl
+cnNwYWNlICh0aGFua3MgdG8gdGhlIGZhc3QgbW1pbyBpbXBsZW1lbnRhdGlvbikNCj4gPj4NCj4g
+Pj4gWWVzLCBJIHRoaW5rIHRoZSBpcnFmZCA8LT4gaW9ldmVudGZkIG1hcHBpbmcgaXMgZ29vZC4g
+IFBlcmhhcHMgaXQNCj4gPj4gZXZlbiBtYWtlcyBzZW5zZSB0byBpbXBsZW1lbnQgYSBzcGVjaWFs
+IGZ1c2VkX2lycV9pb2V2ZW50X2ZkIGluIHRoZQ0KPiA+PiBob3N0IGtlcm5lbCB0byBieXBhc3Mg
+dGhlIG5lZWQgZm9yIGEga2VybmVsIHRocmVhZCB0byByZWFkIHRoZQ0KPiA+PiBldmVudGZkIHNv
+IHRoYXQgYW4gaW50ZXJydXB0IGNhbiBiZSBpbmplY3RlZCAoaS5lLiB0byBtYWtlIHRoZQ0KPiA+
+PiBvcGVyYXRpb24gc3luY2hyb25vdXMpLg0KPiA+Pg0KPiA+PiBJcyB0aGUgdHggdmlydHF1ZXVl
+IGluIHlvdXIgaW50ZXItVk0gbm90aWZpY2F0aW9uIHYyIHNlcmllcyBhIHJlYWwNCj4gPj4gdmly
+dHF1ZXVlIHRoYXQgZ2V0cyB1c2VkPyAgT3IgaXMgaXQganVzdCBhIGR1bW15IHZpcnRxdWV1ZSB0
+aGF0DQo+ID4+IHlvdSdyZSB1c2luZyBmb3IgdGhlIGlvZXZlbnRmZCBkb29yYmVsbD8gIEl0IGxv
+b2tzIGxpa2UNCj4gPj4gdnBuZXRfaGFuZGxlX3ZxKCkgaXMgZW1wdHkgc28gaXQncyByZWFsbHkg
+anVzdCBhIGR1bW15LiAgVGhlIGFjdHVhbA0KPiA+PiB2aXJ0cXVldWUgaXMgaW4gdGhlIHZob3N0
+LXVzZXIgbWFzdGVyIGd1ZXN0IG1lbW9yeS4NCj4gPg0KPiA+DQo+ID4NCj4gPiBZZXMsIHRoYXQg
+dHggaXMgYSBkdW1teSBhY3R1YWxseSwganVzdCBjcmVhdGVkIHRvIHVzZSBpdHMgZG9vcmJlbGwu
+DQo+ID4gQ3VycmVudGx5LCB3aXRoIHZpcnRpb19kZXZpY2UsIEkgdGhpbmsgaW9ldmVudGZkIGNv
+bWVzIHdpdGggdmlydHF1ZXVlIG9ubHkuDQo+ID4gQWN0dWFsbHksIEkgdGhpbmsgd2UgY291bGQg
+aGF2ZSB0aGUgaXNzdWVzIHNvbHZlZCBieSB2aG9zdC1wY2kuIEZvcg0KPiA+IGV4YW1wbGUsIHJl
+c2VydmUgYSBwaWVjZSBvZiAgdGhlIEJBUiBhcmVhIGZvciBpb2V2ZW50ZmQuIFRoZSBiYXIgbGF5
+b3V0IGNhbg0KPiBiZToNCj4gPiBCQVIgMjoNCj4gPiAwfjRrOiB2aG9zdC1wY2kgZGV2aWNlIHNw
+ZWNpZmljIHVzYWdlcyAoaW9ldmVudGZkIGV0YykNCj4gPiA0a344azogbWV0YWRhdGEgKG1lbW9y
+eSBpbmZvIGFuZCB2cmluZyBpbmZvKQ0KPiA+IDhrfjY0R0I6IHJlbW90ZSBndWVzdCBtZW1vcnkN
+Cj4gPiAod2UgY2FuIG1ha2UgdGhlIGJhciBzaXplICg2NEdCIGlzIHRoZSBkZWZhdWx0IHZhbHVl
+IHVzZWQpDQo+ID4gY29uZmlndXJhYmxlIHZpYSBxZW11IGNtZGxpbmUpDQo+IA0KPiBXaHkgdXNl
+IGEgdmlydGlvIGRldmljZT8gIFRoZSBkb29yYmVsbCBhbmQgc2hhcmVkIG1lbW9yeSBkb24ndCBm
+aXQgdGhlIHZpcnRpbw0KPiBhcmNoaXRlY3R1cmUuICBUaGVyZSBhcmUgbm8gcmVhbCB2aXJ0cXVl
+dWVzLiAgVGhpcyBtYWtlcyBpdCBhIHN0cmFuZ2UgdmlydGlvDQo+IGRldmljZS4NCj4gDQo+IFN0
+ZWZhbg0K
 
