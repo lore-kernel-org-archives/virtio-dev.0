@@ -1,184 +1,98 @@
-Return-Path: virtio-dev-return-2790-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2793-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 994921CB807D
-	for <virtio-dev@lists.oasis-open.org>; Thu,  7 Dec 2017 22:41:08 -0800 (PST)
-Message-ID: <5A2A347B.9070006@intel.com>
-Date: Fri, 08 Dec 2017 14:43:07 +0800
-From: Wei Wang <wei.w.wang@intel.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id D77C15818F76
+	for <virtio-dev@lists.oasis-open.org>; Sat,  9 Dec 2017 08:23:30 -0800 (PST)
+From: "Wang, Wei W" <wei.w.wang@intel.com>
+Date: Sat, 9 Dec 2017 16:23:17 +0000
+Message-ID: <286AC319A985734F985F78AFA26841F73937E001@shsmsx102.ccr.corp.intel.com>
+References: <5A28BC2D.6000308@intel.com>
+ <CAJSP0QUxRv9LNb1+McYxV0KY4Ss3NkaSjwO6fXiJd+oU2+zJSQ@mail.gmail.com>
+ <5A290398.60508@intel.com>
+ <CAJSP0QURjdD8BnOmJo83fzJn_zCijSKQh==Pz+Xu4r6Q2i3SkQ@mail.gmail.com>
+ <20171207153454-mutt-send-email-mst@kernel.org>
+ <CAJSP0QVu4iwAu01Sth84VZshQde97x3FW1E1ua_YXVKs-65vhQ@mail.gmail.com>
+ <20171207183945-mutt-send-email-mst@kernel.org>
+ <CAJSP0QVnukGD3Afu9myv=v5OjqrPDpXu6JL3Tpf+Cdk=em9V3w@mail.gmail.com>
+ <20171207193003-mutt-send-email-mst@kernel.org>
+ <CAJSP0QX4V64OoU4-Dhb93MUZ9Rz0FPR-La5Xq4_yqGH7SG6PjQ@mail.gmail.com>
+ <20171207213420-mutt-send-email-mst@kernel.org> <5A2A347B.9070006@intel.com>
+ <CAJSP0QUAqCzFgVtM1cg_KybdyrZa_FRUHhDN7oLfRjZ2ZVkp4g@mail.gmail.com>
+In-Reply-To: <CAJSP0QUAqCzFgVtM1cg_KybdyrZa_FRUHhDN7oLfRjZ2ZVkp4g@mail.gmail.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <5A28BC2D.6000308@intel.com> <CAJSP0QUxRv9LNb1+McYxV0KY4Ss3NkaSjwO6fXiJd+oU2+zJSQ@mail.gmail.com> <5A290398.60508@intel.com> <CAJSP0QURjdD8BnOmJo83fzJn_zCijSKQh==Pz+Xu4r6Q2i3SkQ@mail.gmail.com> <20171207153454-mutt-send-email-mst@kernel.org> <CAJSP0QVu4iwAu01Sth84VZshQde97x3FW1E1ua_YXVKs-65vhQ@mail.gmail.com> <20171207183945-mutt-send-email-mst@kernel.org> <CAJSP0QVnukGD3Afu9myv=v5OjqrPDpXu6JL3Tpf+Cdk=em9V3w@mail.gmail.com> <20171207193003-mutt-send-email-mst@kernel.org> <CAJSP0QX4V64OoU4-Dhb93MUZ9Rz0FPR-La5Xq4_yqGH7SG6PjQ@mail.gmail.com> <20171207213420-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20171207213420-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: [virtio-dev] Re: [Qemu-devel] [virtio-dev] [PATCH v3 0/7] Vhost-pci for inter-VM
+Subject: [virtio-dev] RE: [Qemu-devel] [virtio-dev] [PATCH v3 0/7] Vhost-pci for inter-VM
  communication
-To: "Michael S. Tsirkin" <mst@redhat.com>, Stefan Hajnoczi <stefanha@gmail.com>
-Cc: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "Yang, Zhiyong" <zhiyong.yang@intel.com>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>, "jasowang@redhat.com" <jasowang@redhat.com>, "avi.cohen@huawei.com" <avi.cohen@huawei.com>, "qemu-devel@nongnu.org" <qemu-devel@nongnu.org>, Stefan Hajnoczi <stefanha@redhat.com>, "pbonzini@redhat.com" <pbonzini@redhat.com>, "marcandre.lureau@redhat.com" <marcandre.lureau@redhat.com>
+To: Stefan Hajnoczi <stefanha@gmail.com>
+Cc: "Michael S. Tsirkin" <mst@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "Yang, Zhiyong" <zhiyong.yang@intel.com>, "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>, "jasowang@redhat.com" <jasowang@redhat.com>, "avi.cohen@huawei.com" <avi.cohen@huawei.com>, "qemu-devel@nongnu.org" <qemu-devel@nongnu.org>, Stefan Hajnoczi <stefanha@redhat.com>, "pbonzini@redhat.com" <pbonzini@redhat.com>, "marcandre.lureau@redhat.com" <marcandre.lureau@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 12/08/2017 07:54 AM, Michael S. Tsirkin wrote:
-> On Thu, Dec 07, 2017 at 06:28:19PM +0000, Stefan Hajnoczi wrote:
->> On Thu, Dec 7, 2017 at 5:38 PM, Michael S. Tsirkin <mst@redhat.com> wrote:
->>> On Thu, Dec 07, 2017 at 05:29:14PM +0000, Stefan Hajnoczi wrote:
->>>> On Thu, Dec 7, 2017 at 4:47 PM, Michael S. Tsirkin <mst@redhat.com> wrote:
->>>>> On Thu, Dec 07, 2017 at 04:29:45PM +0000, Stefan Hajnoczi wrote:
->>>>>> On Thu, Dec 7, 2017 at 2:02 PM, Michael S. Tsirkin <mst@redhat.com> wrote:
->>>>>>> On Thu, Dec 07, 2017 at 01:08:04PM +0000, Stefan Hajnoczi wrote:
->>>>>>>> Instead of responding individually to these points, I hope this will
->>>>>>>> explain my perspective.  Let me know if you do want individual
->>>>>>>> responses, I'm happy to talk more about the points above but I think
->>>>>>>> the biggest difference is our perspective on this:
->>>>>>>>
->>>>>>>> Existing vhost-user slave code should be able to run on top of
->>>>>>>> vhost-pci.  For example, QEMU's
->>>>>>>> contrib/vhost-user-scsi/vhost-user-scsi.c should work inside the guest
->>>>>>>> with only minimal changes to the source file (i.e. today it explicitly
->>>>>>>> opens a UNIX domain socket and that should be done by libvhost-user
->>>>>>>> instead).  It shouldn't be hard to add vhost-pci vfio support to
->>>>>>>> contrib/libvhost-user/ alongside the existing UNIX domain socket code.
->>>>>>>>
->>>>>>>> This seems pretty easy to achieve with the vhost-pci PCI adapter that
->>>>>>>> I've described but I'm not sure how to implement libvhost-user on top
->>>>>>>> of vhost-pci vfio if the device doesn't expose the vhost-user
->>>>>>>> protocol.
->>>>>>>>
->>>>>>>> I think this is a really important goal.  Let's use a single
->>>>>>>> vhost-user software stack instead of creating a separate one for guest
->>>>>>>> code only.
->>>>>>>>
->>>>>>>> Do you agree that the vhost-user software stack should be shared
->>>>>>>> between host userspace and guest code as much as possible?
->>>>>>>
->>>>>>>
->>>>>>> The sharing you propose is not necessarily practical because the security goals
->>>>>>> of the two are different.
->>>>>>>
->>>>>>> It seems that the best motivation presentation is still the original rfc
->>>>>>>
->>>>>>> http://virtualization.linux-foundation.narkive.com/A7FkzAgp/rfc-vhost-user-enhancements-for-vm2vm-communication
->>>>>>>
->>>>>>> So comparing with vhost-user iotlb handling is different:
->>>>>>>
->>>>>>> With vhost-user guest trusts the vhost-user backend on the host.
->>>>>>>
->>>>>>> With vhost-pci we can strive to limit the trust to qemu only.
->>>>>>> The switch running within a VM does not have to be trusted.
->>>>>> Can you give a concrete example?
->>>>>>
->>>>>> I have an idea about what you're saying but it may be wrong:
->>>>>>
->>>>>> Today the iotlb mechanism in vhost-user does not actually enforce
->>>>>> memory permissions.  The vhost-user slave has full access to mmapped
->>>>>> memory regions even when iotlb is enabled.  Currently the iotlb just
->>>>>> adds an indirection layer but no real security.  (Is this correct?)
->>>>> Not exactly. iotlb protects against malicious drivers within guest.
->>>>> But yes, not against a vhost-user driver on the host.
->>>>>
->>>>>> Are you saying the vhost-pci device code in QEMU should enforce iotlb
->>>>>> permissions so the vhost-user slave guest only has access to memory
->>>>>> regions that are allowed by the iotlb?
->>>>> Yes.
->>>> Okay, thanks for confirming.
->>>>
->>>> This can be supported by the approach I've described.  The vhost-pci
->>>> QEMU code has control over the BAR memory so it can prevent the guest
->>>> from accessing regions that are not allowed by the iotlb.
->>>>
->>>> Inside the guest the vhost-user slave still has the memory region
->>>> descriptions and sends iotlb messages.  This is completely compatible
->>>> with the libvirt-user APIs and existing vhost-user slave code can run
->>>> fine.  The only unique thing is that guest accesses to memory regions
->>>> not allowed by the iotlb do not work because QEMU has prevented it.
->>> I don't think this can work since suddenly you need
->>> to map full IOMMU address space into BAR.
->> The BAR covers all guest RAM
->> but QEMU can set up MemoryRegions that
->> hide parts from the guest (e.g. reads produce 0xff).  I'm not sure how
->> expensive that is but implementing a strict IOMMU is hard to do
->> without performance overhead.
-> I'm worried about leaking PAs.
-> fundamentally if you want proper protection you
-> need your device driver to use VA for addressing,
->
-> On the one hand BAR only needs to be as large as guest PA then.
-> On the other hand it must cover all of guest PA,
-> not just what is accessible to the device.
->
->
->>> Besides, this means implementing iotlb in both qemu and guest.
->> It's free in the guest, the libvhost-user stack already has it.
-> That library is designed to work with a unix domain socket
-> though. We'll need extra kernel code to make a device
-> pretend it's a socket.
->
->>>> If better performance is needed then it might be possible to optimize
->>>> this interface by handling most or even all of the iotlb stuff in QEMU
->>>> vhost-pci code and not exposing it to the vhost-user slave in the
->>>> guest.  But it doesn't change the fact that the vhost-user protocol
->>>> can be used and the same software stack works.
->>> For one, the iotlb part would be out of scope then.
->>> Instead you would have code to offset from BAR.
->>>
->>>> Do you have a concrete example of why sharing the same vhost-user
->>>> software stack inside the guest can't work?
->>> With enough dedication some code might be shared.  OTOH reusing virtio
->>> gains you a ready feature negotiation and discovery protocol.
->>>
->>> I'm not convinced which has more value, and the second proposal
->>> has been implemented already.
->> Thanks to you and Wei for the discussion.  I've learnt a lot about
->> vhost-user.  If you have questions about what I've posted, please let
->> me know and we can discuss further.
->>
->> The decision is not up to me so I'll just summarize what the vhost-pci
->> PCI adapter approach achieves:
->> 1. Just one device and driver
->> 2. Support for all device types (net, scsi, blk, etc)
->> 3. Reuse of software stack so vhost-user slaves can run in both host
->> userspace and the guest
->> 4. Simpler to debug because the vhost-user protocol used by QEMU is
->> also used by the guest
->>
->> Stefan
-
-Thanks Stefan and Michael for the sharing and discussion. I think above 
-3 and 4 are debatable (e.g. whether it is simpler really depends). 1 and 
-2 are implementations, I think both approaches could implement the 
-device that way. We originally thought about one device and driver to 
-support all types (called it transformer sometimes :-) ), that would 
-look interesting from research point of view, but from real usage point 
-of view, I think it would be better to have them separated, because:
-- different device types have different driver logic, mixing them 
-together would cause the driver to look messy. Imagine that a networking 
-driver developer has to go over the block related code to debug, that 
-also increases the difficulty.
-- For the kernel driver (looks like some people from Huawei are 
-interested in that), I think users may want to see a standard network 
-device and driver. If we mix all the types together, not sure what type 
-of device will it be (misc?).
-Please let me know if you have a different viewpoint.
-
-Btw, from your perspective, what would be the practical usage of 
-vhost-pci-blk?
-
-
-Best,
-Wei
-
-
-
-
-
-
-
-
-
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+T24gRnJpZGF5LCBEZWNlbWJlciA4LCAyMDE3IDQ6MzQgUE0sIFN0ZWZhbiBIYWpub2N6aSB3cm90
+ZToNCj4gT24gRnJpLCBEZWMgOCwgMjAxNyBhdCA2OjQzIEFNLCBXZWkgV2FuZyA8d2VpLncud2Fu
+Z0BpbnRlbC5jb20+IHdyb3RlOg0KPiA+IE9uIDEyLzA4LzIwMTcgMDc6NTQgQU0sIE1pY2hhZWwg
+Uy4gVHNpcmtpbiB3cm90ZToNCj4gPj4NCj4gPj4gT24gVGh1LCBEZWMgMDcsIDIwMTcgYXQgMDY6
+Mjg6MTlQTSArMDAwMCwgU3RlZmFuIEhham5vY3ppIHdyb3RlOg0KPiA+Pj4NCj4gPj4+IE9uIFRo
+dSwgRGVjIDcsIDIwMTcgYXQgNTozOCBQTSwgTWljaGFlbCBTLiBUc2lya2luIDxtc3RAcmVkaGF0
+LmNvbT4NCj4gPiBUaGFua3MgU3RlZmFuIGFuZCBNaWNoYWVsIGZvciB0aGUgc2hhcmluZyBhbmQg
+ZGlzY3Vzc2lvbi4gSSB0aGluaw0KPiA+IGFib3ZlIDMgYW5kIDQgYXJlIGRlYmF0YWJsZSAoZS5n
+LiB3aGV0aGVyIGl0IGlzIHNpbXBsZXIgcmVhbGx5DQo+ID4gZGVwZW5kcykuIDEgYW5kIDIgYXJl
+IGltcGxlbWVudGF0aW9ucywgSSB0aGluayBib3RoIGFwcHJvYWNoZXMgY291bGQNCj4gPiBpbXBs
+ZW1lbnQgdGhlIGRldmljZSB0aGF0IHdheS4gV2Ugb3JpZ2luYWxseSB0aG91Z2h0IGFib3V0IG9u
+ZSBkZXZpY2UNCj4gPiBhbmQgZHJpdmVyIHRvIHN1cHBvcnQgYWxsIHR5cGVzIChjYWxsZWQgaXQg
+dHJhbnNmb3JtZXIgc29tZXRpbWVzIDotKQ0KPiA+ICksIHRoYXQgd291bGQgbG9vayBpbnRlcmVz
+dGluZyBmcm9tIHJlc2VhcmNoIHBvaW50IG9mIHZpZXcsIGJ1dCBmcm9tDQo+ID4gcmVhbCB1c2Fn
+ZSBwb2ludCBvZiB2aWV3LCBJIHRoaW5rIGl0IHdvdWxkIGJlIGJldHRlciB0byBoYXZlIHRoZW0g
+c2VwYXJhdGVkLA0KPiBiZWNhdXNlOg0KPiA+IC0gZGlmZmVyZW50IGRldmljZSB0eXBlcyBoYXZl
+IGRpZmZlcmVudCBkcml2ZXIgbG9naWMsIG1peGluZyB0aGVtDQo+ID4gdG9nZXRoZXIgd291bGQg
+Y2F1c2UgdGhlIGRyaXZlciB0byBsb29rIG1lc3N5LiBJbWFnaW5lIHRoYXQgYQ0KPiA+IG5ldHdv
+cmtpbmcgZHJpdmVyIGRldmVsb3BlciBoYXMgdG8gZ28gb3ZlciB0aGUgYmxvY2sgcmVsYXRlZCBj
+b2RlIHRvDQo+ID4gZGVidWcsIHRoYXQgYWxzbyBpbmNyZWFzZXMgdGhlIGRpZmZpY3VsdHkuDQo+
+IA0KPiBJJ20gbm90IHN1cmUgSSB1bmRlcnN0YW5kIHdoZXJlIHRoaW5ncyBnZXQgbWVzc3kgYmVj
+YXVzZToNCj4gMS4gVGhlIHZob3N0LXBjaSBkZXZpY2UgaW1wbGVtZW50YXRpb24gaW4gUUVNVSBy
+ZWxheXMgbWVzc2FnZXMgYnV0IGhhcyBubw0KPiBkZXZpY2UgbG9naWMsIHNvIGRldmljZS1zcGVj
+aWZpYyBtZXNzYWdlcyBsaWtlIFZIT1NUX1VTRVJfTkVUX1NFVF9NVFUgYXJlDQo+IHRyaXZpYWwg
+YXQgdGhpcyBsYXllci4NCj4gMi4gdmhvc3QtdXNlciBzbGF2ZXMgb25seSBoYW5kbGUgY2VydGFp
+biB2aG9zdC11c2VyIHByb3RvY29sIG1lc3NhZ2VzLg0KPiBUaGV5IGhhbmRsZSBkZXZpY2Utc3Bl
+Y2lmaWMgbWVzc2FnZXMgZm9yIHRoZWlyIGRldmljZSB0eXBlIG9ubHkuICBUaGlzIGlzIGxpa2UN
+Cj4gdmhvc3QgZHJpdmVycyB0b2RheSB3aGVyZSB0aGUgaW9jdGwoKSBmdW5jdGlvbiByZXR1cm5z
+IGFuIGVycm9yIGlmIHRoZSBpb2N0bCBpcw0KPiBub3Qgc3VwcG9ydGVkIGJ5IHRoZSBkZXZpY2Uu
+ICBJdCdzIG5vdCBtZXNzeS4NCj4gDQo+IFdoZXJlIGFyZSB5b3Ugd29ycmllZCBhYm91dCBtZXNz
+eSBkcml2ZXIgbG9naWM/DQoNClByb2JhYmx5IEkgZGlkbuKAmXQgZXhwbGFpbiB3ZWxsLCBwbGVh
+c2UgbGV0IG1lIHN1bW1hcml6ZSBteSB0aG91Z2h0IGEgbGl0dGxlIGJpdCwgZnJvbSB0aGUgcGVy
+c3BlY3RpdmUgb2YgdGhlIGNvbnRyb2wgcGF0aCBhbmQgZGF0YSBwYXRoLg0KDQpDb250cm9sIHBh
+dGg6IHRoZSB2aG9zdC11c2VyIG1lc3NhZ2VzIC0gSSB3b3VsZCBwcmVmZXIganVzdCBoYXZlIHRo
+ZSBpbnRlcmFjdGlvbiBiZXR3ZWVuIFFFTVVzLCBpbnN0ZWFkIG9mIHJlbGF5aW5nIHRvIHRoZSBH
+dWVzdFNsYXZlLCBiZWNhdXNlDQoxKSBJIHRoaW5rIHRoZSBjbGFpbWVkIGFkdmFudGFnZSAoZWFz
+aWVyIHRvIGRlYnVnIGFuZCBkZXZlbG9wKSBkb2VzbuKAmXQgc2VlbSB2ZXJ5IGNvbnZpbmNpbmcN
+CjIpIHNvbWUgbWVzc2FnZXMgY2FuIGJlIGRpcmVjdGx5IGFuc3dlcmVkIGJ5IFFlbXVTbGF2ZSAs
+IGFuZCBzb21lIG1lc3NhZ2VzIGFyZSBub3QgdXNlZnVsIHRvIGdpdmUgdG8gdGhlIEd1ZXN0U2xh
+dmUgKGluc2lkZSB0aGUgVk0pLCBlLmcuIGZkcywgVmhvc3RVc2VyTWVtb3J5UmVnaW9uIGZyb20g
+U0VUX01FTV9UQUJMRSBtc2cgKHRoZSBkZXZpY2UgZmlyc3QgbWFwcyB0aGUgbWFzdGVyIG1lbW9y
+eSBhbmQgZ2l2ZXMgdGhlIG9mZnNldCAoaW4gdGVybXMgb2YgdGhlIGJhciwgaS5lLiwgd2hlcmUg
+ZG9lcyBpdCBzaXQgaW4gdGhlIGJhcikgb2YgdGhlIG1hcHBlZCBncGEgdG8gdGhlIGd1ZXN0LiBp
+ZiB3ZSBnaXZlIHRoZSByYXcgVmhvc3RVc2VyTWVtb3J5UmVnaW9uIHRvIHRoZSBndWVzdCwgdGhh
+dCB3b3VsZG7igJl0IGJlIHVzYWJsZSkuDQoNCg0KRGF0YSBwYXRoOiB0aGF0J3MgdGhlIGRpc2N1
+c3Npb24gd2UgaGFkIGFib3V0IG9uZSBkcml2ZXIgb3Igc2VwYXJhdGUgZHJpdmVyIGZvciBkaWZm
+ZXJlbnQgZGV2aWNlIHR5cGVzLCBhbmQgdGhpcyBpcyBub3QgcmVsYXRlZCB0byB0aGUgY29udHJv
+bCBwYXRoLg0KSSBtZWFudCBpZiB3ZSBoYXZlIG9uZSBkcml2ZXIgZm9yIGFsbCB0aGUgdHlwZXMs
+IHRoYXQgZHJpdmVyIHdvdWxkIGxvb2sgbWVzc3ksIGJlY2F1c2UgZWFjaCB0eXBlIGhhcyBpdHMg
+b3duIGRhdGEgc2VuZGluZy9yZWNlaXZpbmcgbG9naWMuIEZvciBleGFtcGxlLCBuZXQgdHlwZSBk
+ZWFscyB3aXRoIGEgcGFpciBvZiB0eCBhbmQgcngsIGFuZCB0cmFuc21pc3Npb24gaXMgc2tiIGJh
+c2VkIChlLmcuIHhtaXRfc2tiKSwgd2hpbGUgYmxvY2sgdHlwZSBkZWFscyB3aXRoIGEgcmVxdWVz
+dCBxdWV1ZS4gSWYgd2UgaGF2ZSBvbmUgZHJpdmVyLCB0aGVuIHRoZSBkcml2ZXIgd2lsbCBpbmNs
+dWRlIGFsbCB0aGUgdGhpbmdzIHRvZ2V0aGVyLg0KDQoNClRoZSBsYXN0IHBhcnQgaXMgd2hldGhl
+ciB0byBtYWtlIGl0IGEgdmlydGlvIGRldmljZSBvciBhIHJlZ3VsYXIgcGNpIGRldmljZQ0KSSBk
+b27igJl0IGhhdmUgYSBzdHJvbmcgcHJlZmVyZW5jZS4gSSB0aGluayB2aXJ0aW8gZGV2aWNlIHdv
+cmtzIGZpbmUgKGUuZy4gdXNlIHNvbWUgYmFyIGFyZWEgdG8gY3JlYXRlIGlvZXZlbmZkcyB0byBz
+b2x2ZSB0aGUgIm5vIHZpcnRxdWV1ZSBubyBmZHMiIGlzc3VlIGlmIHlvdSBhbmQgTWljaGFlbCB0
+aGluayB0aGF0J3MgYWNjZXB0YWJsZSksICBhbmQgd2UgY2FuIHJldXNlIHNvbWUgb3RoZXIgdGhp
+bmdzIGxpa2UgZmVhdHVyZSBuZWdvdGlhdGlvbiBmcm9tIHZpcnRpby4gQnV0IGlmIE1pY2hhZWwg
+YW5kIHlvdSBoYXZlIGEgZGVjaXNpb24gdG8gbWFrZSBpdCBhIHJlZ3VsYXIgUENJIGRldmljZSwg
+SSB0aGluayB0aGF0IHdvdWxkIGFsc28gd29yayB0aG91Z2guDQoNCkJlc3QsDQpXZWkNCg==
 
