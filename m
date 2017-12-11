@@ -1,57 +1,79 @@
-Return-Path: virtio-dev-return-2778-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2798-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id C06C51CB807D
-	for <virtio-dev@lists.oasis-open.org>; Wed,  6 Dec 2017 23:59:58 -0800 (PST)
-From: "Gonglei (Arei)" <arei.gonglei@huawei.com>
-Date: Thu, 7 Dec 2017 07:59:28 +0000
-Message-ID: <33183CC9F5247A488A2544077AF19020DA4CC4FC@DGGEMA505-MBS.china.huawei.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 5910B5818F97
+	for <virtio-dev@lists.oasis-open.org>; Mon, 11 Dec 2017 05:54:49 -0800 (PST)
 References: <1512545840-10256-1-git-send-email-longpeng2@huawei.com>
  <1512545840-10256-2-git-send-email-longpeng2@huawei.com>
  <0209e49f-3d81-cbc9-eb07-13654a288a22@linux.vnet.ibm.com>
-In-Reply-To: <0209e49f-3d81-cbc9-eb07-13654a288a22@linux.vnet.ibm.com>
-Content-Language: zh-CN
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <5A2E8067.4050000@huawei.com>
+From: Halil Pasic <pasic@linux.vnet.ibm.com>
+Date: Mon, 11 Dec 2017 14:54:25 +0100
 MIME-Version: 1.0
-Subject: [virtio-dev] RE: [Qemu-devel] [v22 1/2] virtio-crypto: Add virtio crypto device
+In-Reply-To: <5A2E8067.4050000@huawei.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+Message-Id: <2b7048c1-e2f8-ab40-c4df-afe5efd8f95d@linux.vnet.ibm.com>
+Subject: [virtio-dev] Re: [Qemu-devel] [v22 1/2] virtio-crypto: Add virtio crypto device
  specification
-To: Halil Pasic <pasic@linux.vnet.ibm.com>, longpeng <longpeng2@huawei.com>, "qemu-devel@nongnu.org" <qemu-devel@nongnu.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
-Cc: Luonengjun <luonengjun@huawei.com>, "mst@redhat.com" <mst@redhat.com>, "cornelia.huck@de.ibm.com" <cornelia.huck@de.ibm.com>, "stefanha@redhat.com" <stefanha@redhat.com>, "denglingli@chinamobile.com" <denglingli@chinamobile.com>, Jani Kokkonen <Jani.Kokkonen@huawei.com>, "Ola.Liljedahl@arm.com" <Ola.Liljedahl@arm.com>, "Varun.Sethi@freescale.com" <Varun.Sethi@freescale.com>, "xin.zeng@intel.com" <xin.zeng@intel.com>, "brian.a.keating@intel.com" <brian.a.keating@intel.com>, "liang.j.ma@intel.com" <liang.j.ma@intel.com>, "john.griffin@intel.com" <john.griffin@intel.com>, "Huangweidong (C)" <weidong.huang@huawei.com>, "agraf@suse.de" <agraf@suse.de>, "jasowang@redhat.com" <jasowang@redhat.com>, "vincent.jardin@6wind.com" <vincent.jardin@6wind.com>, "wangxin (U)" <wangxinxin.wang@huawei.com>, "Zhoujian (jay)" <jianjay.zhou@huawei.com>
+To: "Longpeng (Mike)" <longpeng2@huawei.com>
+Cc: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, luonengjun@huawei.com, mst@redhat.com, cornelia.huck@de.ibm.com, stefanha@redhat.com, denglingli@chinamobile.com, Jani.Kokkonen@huawei.com, Ola.Liljedahl@arm.com, Varun.Sethi@freescale.com, xin.zeng@intel.com, brian.a.keating@intel.com, liang.j.ma@intel.com, john.griffin@intel.com, weidong.huang@huawei.com, agraf@suse.de, jasowang@redhat.com, vincent.jardin@6wind.com, arei.gonglei@huawei.com, wangxinxin.wang@huawei.com, jianjay.zhou@huawei.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-PiANCj4gT24gMTIvMDYvMjAxNyAwODozNyBBTSwgTG9uZ3BlbmcoTWlrZSkgd3JvdGU6DQo+ID4g
-K1xmaWVsZHtvdXRjb21lX2xlbn0gaXMgdGhlIHNpemUgb2Ygc3RydWN0IHZpcnRpb19jcnlwdG9f
-c2Vzc2lvbl9pbnB1dCBvcg0KPiA+ICtaRVJPIGZvciB0aGUgc2Vzc2lvbi1kZXN0cm95IG9wZXJh
-dGlvbi4NCj4gDQo+IFRoaXMgYWluJ3QgY29ycmVjdC4gSXQgc2hvdWxkIGhhdmUgYmVlbiBzb21l
-dGhpbmcgbGlrZQ0KPiB2aXJ0aW9fY3J5cHRvX2Rlc3Ryb3lfc2Vzc2lvbl9pbnB1dC4NCj4gDQpS
-aWdodCwgd2lsbCBmaXggaXQuDQoNCj4gPiArDQo+ID4gKw0KPiA+ICtccGFyYWdyYXBoe1Nlc3Np
-b24gb3BlcmF0aW9ufVxsYWJlbHtzZWM6RGV2aWNlIFR5cGVzIC8gQ3J5cHRvIERldmljZSAvDQo+
-IERldmljZQ0KPiA+ICtPcGVyYXRpb24gLyBDb250cm9sIFZpcnRxdWV1ZSAvIFNlc3Npb24gb3Bl
-cmF0aW9ufQ0KPiA+ICsNCj4gPiArVGhlIHNlc3Npb24gaXMgYSBoYW5kbGUgd2hpY2ggZGVzY3Jp
-YmVzIHRoZSBjcnlwdG9ncmFwaGljIHBhcmFtZXRlcnMgdG8gYmUNCj4gPiArYXBwbGllZCB0byBh
-IG51bWJlciBvZiBidWZmZXJzLg0KPiA+ICsNCj4gPiArVGhlIGZvbGxvd2luZyBzdHJ1Y3R1cmUg
-c3RvcmVzIHRoZSByZXN1bHQgb2Ygc2Vzc2lvbiBjcmVhdGlvbiBzZXQgYnkgdGhlDQo+IGRldmlj
-ZToNCj4gPiArDQo+ID4gK1xiZWdpbntsc3RsaXN0aW5nfQ0KPiA+ICtzdHJ1Y3QgdmlydGlvX2Ny
-eXB0b19zZXNzaW9uX2lucHV0IHsNCj4gPiArICAgIC8qIERldmljZSB3cml0ZSBvbmx5IHBvcnRp
-b24gKi8NCj4gPiArICAgIGxlNjQgc2Vzc2lvbl9pZDsNCj4gPiArICAgIGxlMzIgc3RhdHVzOw0K
-PiA+ICsgICAgbGUzMiBwYWRkaW5nOw0KPiA+ICt9Ow0KPiA+ICtcZW5ke2xzdGxpc3Rpbmd9DQo+
-ID4gKw0KPiA+ICtBIHJlcXVlc3QgdG8gZGVzdHJveSBhIHNlc3Npb24gaW5jbHVkZXMgdGhlIGZv
-bGxvd2luZyBpbmZvcm1hdGlvbjoNCj4gPiArDQo+ID4gK1xiZWdpbntsc3RsaXN0aW5nfQ0KPiA+
-ICtzdHJ1Y3QgdmlydGlvX2NyeXB0b19kZXN0cm95X3Nlc3Npb25fZmxmIHsNCj4gPiArICAgIC8q
-IERldmljZSByZWFkIG9ubHkgcG9ydGlvbiAqLw0KPiA+ICsgICAgbGU2NCAgc2Vzc2lvbl9pZDsN
-Cj4gPiArICAgIC8qIERldmljZSB3cml0ZSBvbmx5IHBvcnRpb24gKi8NCj4gDQo+IFRoaXMgaXMg
-dGhlIGRldmljZSB3cml0YWJsZSBwb3J0aW9uIGFuZCB0aHVzIHdoYXQgd2UgY2FsIG9wX291dGNv
-bWUgYWJvdmUuDQo+IFNvIGl0IHNob3VsZCBoYXZlIGJlZW4NCj4gfTsNCj4gDQo+IA0KPiBzdHJ1
-Y3QgdmlydGlvX2NyeXB0b19kZXN0cm95X3Nlc3Npb25faW5wdXQgew0KPiA+ICsgICAgbGUzMiAg
-c3RhdHVzOw0KPiA+ICsgICAgbGUzMiAgcGFkZGluZzsNCj4gPiArfTsNCj4gDQo+IElmIHdlIGFy
-ZW4ndCBjb25zaXN0ZW50IGFib3V0IGl0IHRoZSBkaXZpZGluZyBpbnRvIHBhcnRzIChsaWtlIG9w
-IHNwZWNpZmljDQo+IGZpeGVkIGFuZCB2YXJpYWJsZSBsZW5ndGggKG91dHB1dCkgZmllbGRzLCBv
-cGVyYXRpb24gb3V0Y29tZSAoaW5wdXQpKQ0KPiBpc24ndCByZWFsbHkgaGVscGZ1bC4NCj4gDQpJ
-dCdzIG9rIHRvIHVzLCB3ZSBjYW4gZG8gaXQuIEFueSBvdGhlciBjb21tZW50cz8NCg0KVGhhbmtz
-LA0KLUdvbmdsZWkNCg0K
+
+
+On 12/11/2017 01:56 PM, Longpeng (Mike) wrote:
+> 
+> 
+> On 2017/12/6 19:01, Halil Pasic wrote:
+> 
+>>
+>>
+>> On 12/06/2017 08:37 AM, Longpeng(Mike) wrote:
+>>> +\field{outcome_len} is the size of struct virtio_crypto_session_input or
+>>> +ZERO for the session-destroy operation.
+>>
+>> This ain't correct. It should have been something like virtio_crypto_destroy_session_input.
+>>
+> 
+> Hi Halil,
+> 
+> I already fixed this just now.
+> Do you have any other comments on v22 ? I'll send v23 tomorrow if no. :)
+> 
+
+Did not read the rest of the document. I'm not in the middle of something,
+but I wanted to read the operation part these days. I guess, you prefer
+sending out v23 over waiting, so I guess I will wait for v23 then.
+
+Some general questions/remarks before you spin v23:
+
+* I'm not convinced about this 'header' and 'extra parameters' terminology.
+Please see https://en.wikipedia.org/wiki/Header_(computing) for header.
+I don't think it's fitting for the _flf structs. 
+Same about the 'extra'. Please see  https://www.merriam-webster.com/dictionary/extra
+(a : more than is due, usual, or necessary : additional) the things in
+_vlf aren't extra at all. Do you intend to stick with is terminology?
+If yes why? Please explain how should I read/understand it so that it makes
+sense!
+
+* Do we want/need to specify any alignment requirement for the
+stuff in guest storage (for instance the _flf fields) or be explicit
+about no alignment should be assumed (e.g virtio_crypto_mac_create_session_flf.algo
+ain't necessarily aligned (in guest memory) as required by uint32_t)?
+
+* I assume one request is supposed to correspond to one descriptor chain.
+Right? If yes, could you tell me, where is this expressed in the spec.
+
+Halil
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
