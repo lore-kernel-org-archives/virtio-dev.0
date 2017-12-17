@@ -1,75 +1,89 @@
-Return-Path: virtio-dev-return-2844-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2845-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 488E258180FF
-	for <virtio-dev@lists.oasis-open.org>; Sat, 16 Dec 2017 21:22:23 -0800 (PST)
-Message-ID: <5A35FF89.8040500@intel.com>
-Date: Sun, 17 Dec 2017 13:24:25 +0800
-From: Wei Wang <wei.w.wang@intel.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id AEB23581815E
+	for <virtio-dev@lists.oasis-open.org>; Sun, 17 Dec 2017 03:50:19 -0800 (PST)
+From: "Wang, Wei W" <wei.w.wang@intel.com>
+Date: Sun, 17 Dec 2017 11:50:03 +0000
+Message-ID: <286AC319A985734F985F78AFA26841F739387B68@shsmsx102.ccr.corp.intel.com>
+References: <1513079759-14169-4-git-send-email-wei.w.wang@intel.com>
+	<20171215184256.GA27160@bombadil.infradead.org>	<5A34F193.5040700@intel.com>
+	<201712162028.FEB87079.FOJFMQHVOSLtFO@I-love.SAKURA.ne.jp>
+	<5A35FF89.8040500@intel.com>
+ <201712171921.IBB30790.VOOOFMQHFSLFJt@I-love.SAKURA.ne.jp>
+In-Reply-To: <201712171921.IBB30790.VOOOFMQHFSLFJt@I-love.SAKURA.ne.jp>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <1513079759-14169-1-git-send-email-wei.w.wang@intel.com>	<1513079759-14169-4-git-send-email-wei.w.wang@intel.com>	<20171215184256.GA27160@bombadil.infradead.org>	<5A34F193.5040700@intel.com> <201712162028.FEB87079.FOJFMQHVOSLtFO@I-love.SAKURA.ne.jp>
-In-Reply-To: <201712162028.FEB87079.FOJFMQHVOSLtFO@I-love.SAKURA.ne.jp>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: [virtio-dev] Re: [PATCH v19 3/7] xbitmap: add more operations
-To: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>, willy@infradead.org
-Cc: virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, qemu-devel@nongnu.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, linux-mm@kvack.org, mst@redhat.com, mhocko@kernel.org, akpm@linux-foundation.org, mawilcox@microsoft.com, david@redhat.com, cornelia.huck@de.ibm.com, mgorman@techsingularity.net, aarcange@redhat.com, amit.shah@redhat.com, pbonzini@redhat.com, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu@aliyun.com, nilal@redhat.com, riel@redhat.com
+Subject: [virtio-dev] RE: [PATCH v19 3/7] xbitmap: add more operations
+To: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>, "willy@infradead.org" <willy@infradead.org>
+Cc: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "qemu-devel@nongnu.org" <qemu-devel@nongnu.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "mst@redhat.com" <mst@redhat.com>, "mhocko@kernel.org" <mhocko@kernel.org>, "akpm@linux-foundation.org" <akpm@linux-foundation.org>, "mawilcox@microsoft.com" <mawilcox@microsoft.com>, "david@redhat.com" <david@redhat.com>, "cornelia.huck@de.ibm.com" <cornelia.huck@de.ibm.com>, "mgorman@techsingularity.net" <mgorman@techsingularity.net>, "aarcange@redhat.com" <aarcange@redhat.com>, "amit.shah@redhat.com" <amit.shah@redhat.com>, "pbonzini@redhat.com" <pbonzini@redhat.com>, "liliang.opensource@gmail.com" <liliang.opensource@gmail.com>, "yang.zhang.wz@gmail.com" <yang.zhang.wz@gmail.com>, "quan.xu@aliyun.com" <quan.xu@aliyun.com>, "nilal@redhat.com" <nilal@redhat.com>, "riel@redhat.com" <riel@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 12/16/2017 07:28 PM, Tetsuo Handa wrote:
+
+
+> -----Original Message-----
+> From: Tetsuo Handa [mailto:penguin-kernel@I-love.SAKURA.ne.jp]
+> Sent: Sunday, December 17, 2017 6:22 PM
+> To: Wang, Wei W <wei.w.wang@intel.com>; willy@infradead.org
+> Cc: virtio-dev@lists.oasis-open.org; linux-kernel@vger.kernel.org; qemu-
+> devel@nongnu.org; virtualization@lists.linux-foundation.org;
+> kvm@vger.kernel.org; linux-mm@kvack.org; mst@redhat.com;
+> mhocko@kernel.org; akpm@linux-foundation.org; mawilcox@microsoft.com;
+> david@redhat.com; cornelia.huck@de.ibm.com;
+> mgorman@techsingularity.net; aarcange@redhat.com;
+> amit.shah@redhat.com; pbonzini@redhat.com;
+> liliang.opensource@gmail.com; yang.zhang.wz@gmail.com;
+> quan.xu@aliyun.com; nilal@redhat.com; riel@redhat.com
+> Subject: Re: [PATCH v19 3/7] xbitmap: add more operations
+>=20
 > Wei Wang wrote:
->> On 12/16/2017 02:42 AM, Matthew Wilcox wrote:
->>> On Tue, Dec 12, 2017 at 07:55:55PM +0800, Wei Wang wrote:
->>>> +int xb_preload_and_set_bit(struct xb *xb, unsigned long bit, gfp_t gfp);
->>> I'm struggling to understand when one would use this.  The xb_ API
->>> requires you to handle your own locking.  But specifying GFP flags
->>> here implies you can sleep.  So ... um ... there's no locking?
->> In the regular use cases, people would do xb_preload() before taking the
->> lock, and the xb_set/clear within the lock.
->>
->> In the virtio-balloon usage, we have a large number of bits to set with
->> the balloon_lock being held (we're not unlocking for each bit), so we
->> used the above wrapper to do preload and set within the balloon_lock,
->> and passed in GFP_NOWAIT to avoid sleeping. Probably we can change to
->> put this wrapper implementation to virtio-balloon, since it would not be
->> useful for the regular cases.
-> GFP_NOWAIT is chosen in order not to try to OOM-kill something, isn't it?
+> > > But passing GFP_NOWAIT means that we can handle allocation failure.
+> > > There is no need to use preload approach when we can handle allocatio=
+n
+> failure.
+> >
+> > I think the reason we need xb_preload is because radix tree insertion
+> > needs the memory being preallocated already (it couldn't suffer from
+> > memory failure during the process of inserting, probably because
+> > handling the failure there isn't easy, Matthew may know the backstory
+> > of
+> > this)
+>=20
+> According to https://lwn.net/Articles/175432/ , I think that preloading i=
+s
+> needed only when failure to insert an item into a radix tree is a signifi=
+cant
+> problem.
+> That is, when failure to insert an item into a radix tree is not a proble=
+m, I
+> think that we don't need to use preloading.
 
-Yes, I think that's right the issue we are discussing here (also 
-discussed in the deadlock patch before): Suppose we use a sleep-able 
-flag GFP_KERNEL, which gets the caller (fill_balloon or leak_balloon) 
-into sleep with balloon_lock being held, and the memory reclaiming from 
-GFP_KERNEL would fall into the OOM code path which first invokes the 
-oom_notify-->leak_balloon to release some balloon memory, which needs to 
-take the balloon_lock that is being held by the task who is sleeping.
+It also mentions that the preload attempts to allocate sufficient memory to=
+ *guarantee* that the next radix tree insertion cannot fail.
 
-So, using GFP_NOWAIT avoids sleeping to get memory through directly 
-memory reclaiming, which could fall into that OOM code path that needs 
-to take the balloon_lock.
+If we check radix_tree_node_alloc(), the comments there says "this assumes =
+that the caller has performed appropriate preallocation".
 
+So, I think we would get a risk of triggering some issue without preload().
 
-> But passing GFP_NOWAIT means that we can handle allocation failure. There is
-> no need to use preload approach when we can handle allocation failure.
+> >
+> > So, I think we can handle the memory failure with xb_preload, which
+> > stops going into the radix tree APIs, but shouldn't call radix tree
+> > APIs without the related memory preallocated.
+>=20
+> It seems to me that virtio-ballon case has no problem without using
+> preloading.
 
-I think the reason we need xb_preload is because radix tree insertion 
-needs the memory being preallocated already (it couldn't suffer from 
-memory failure during the process of inserting, probably because 
-handling the failure there isn't easy, Matthew may know the backstory of 
-this)
-
-So, I think we can handle the memory failure with xb_preload, which 
-stops going into the radix tree APIs, but shouldn't call radix tree APIs 
-without the related memory preallocated.
+Why is that?
 
 Best,
 Wei
-
-
-
 
 
 ---------------------------------------------------------------------
