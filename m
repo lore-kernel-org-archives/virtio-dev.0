@@ -1,96 +1,64 @@
-Return-Path: virtio-dev-return-2846-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2847-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 427F2581815E
-	for <virtio-dev@lists.oasis-open.org>; Sun, 17 Dec 2017 05:47:36 -0800 (PST)
-From: "Wang, Wei W" <wei.w.wang@intel.com>
-Date: Sun, 17 Dec 2017 13:47:21 +0000
-Message-ID: <286AC319A985734F985F78AFA26841F739387C1D@shsmsx102.ccr.corp.intel.com>
-References: <5A311C5E.7000304@intel.com>
- <201712132316.EJJ57332.MFOSJHOFFVLtQO@I-love.SAKURA.ne.jp>
- <5A31F445.6070504@intel.com>
- <201712150129.BFC35949.FFtFOLSOJOQHVM@I-love.SAKURA.ne.jp>
- <20171214181219.GA26124@bombadil.infradead.org>
- <201712160121.BEJ26052.HOFFOOQFMLtSVJ@I-love.SAKURA.ne.jp>
- <20171215184915.GB27160@bombadil.infradead.org>
- <20171215192203.GC27160@bombadil.infradead.org>
-In-Reply-To: <20171215192203.GC27160@bombadil.infradead.org>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	by lists.oasis-open.org (Postfix) with ESMTP id 6B6715818D8A
+	for <virtio-dev@lists.oasis-open.org>; Sun, 17 Dec 2017 18:31:08 -0800 (PST)
+Message-ID: <5A3728DC.3060509@intel.com>
+Date: Mon, 18 Dec 2017 10:33:00 +0800
+From: Wei Wang <wei.w.wang@intel.com>
 MIME-Version: 1.0
-Subject: [virtio-dev] RE: [PATCH v19 3/7] xbitmap: add more operations
-To: Matthew Wilcox <willy@infradead.org>, Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-Cc: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "qemu-devel@nongnu.org" <qemu-devel@nongnu.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "mst@redhat.com" <mst@redhat.com>, "mhocko@kernel.org" <mhocko@kernel.org>, "akpm@linux-foundation.org" <akpm@linux-foundation.org>, "mawilcox@microsoft.com" <mawilcox@microsoft.com>, "david@redhat.com" <david@redhat.com>, "cornelia.huck@de.ibm.com" <cornelia.huck@de.ibm.com>, "mgorman@techsingularity.net" <mgorman@techsingularity.net>, "aarcange@redhat.com" <aarcange@redhat.com>, "amit.shah@redhat.com" <amit.shah@redhat.com>, "pbonzini@redhat.com" <pbonzini@redhat.com>, "liliang.opensource@gmail.com" <liliang.opensource@gmail.com>, "yang.zhang.wz@gmail.com" <yang.zhang.wz@gmail.com>, "quan.xu@aliyun.com" <quan.xu@aliyun.com>, "nilal@redhat.com" <nilal@redhat.com>, "riel@redhat.com" <riel@redhat.com>
+References: <5A311C5E.7000304@intel.com> <201712132316.EJJ57332.MFOSJHOFFVLtQO@I-love.SAKURA.ne.jp> <5A31F445.6070504@intel.com> <201712150129.BFC35949.FFtFOLSOJOQHVM@I-love.SAKURA.ne.jp> <20171214181219.GA26124@bombadil.infradead.org> <201712160121.BEJ26052.HOFFOOQFMLtSVJ@I-love.SAKURA.ne.jp> <20171215184915.GB27160@bombadil.infradead.org> <20171215192203.GC27160@bombadil.infradead.org> <286AC319A985734F985F78AFA26841F739387C1D@shsmsx102.ccr.corp.intel.com> <20171217221842.GA6683@bombadil.infradead.org>
+In-Reply-To: <20171217221842.GA6683@bombadil.infradead.org>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [virtio-dev] Re: [PATCH v19 3/7] xbitmap: add more operations
+To: Matthew Wilcox <willy@infradead.org>
+Cc: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "qemu-devel@nongnu.org" <qemu-devel@nongnu.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "mst@redhat.com" <mst@redhat.com>, "mhocko@kernel.org" <mhocko@kernel.org>, "akpm@linux-foundation.org" <akpm@linux-foundation.org>, "mawilcox@microsoft.com" <mawilcox@microsoft.com>, "david@redhat.com" <david@redhat.com>, "cornelia.huck@de.ibm.com" <cornelia.huck@de.ibm.com>, "mgorman@techsingularity.net" <mgorman@techsingularity.net>, "aarcange@redhat.com" <aarcange@redhat.com>, "amit.shah@redhat.com" <amit.shah@redhat.com>, "pbonzini@redhat.com" <pbonzini@redhat.com>, "liliang.opensource@gmail.com" <liliang.opensource@gmail.com>, "yang.zhang.wz@gmail.com" <yang.zhang.wz@gmail.com>, "quan.xu@aliyun.com" <quan.xu@aliyun.com>, "nilal@redhat.com" <nilal@redhat.com>, "riel@redhat.com" <riel@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Saturday, December 16, 2017 3:22 AM, Matthew Wilcox wrote:
-> On Fri, Dec 15, 2017 at 10:49:15AM -0800, Matthew Wilcox wrote:
-> > Here's the API I'm looking at right now.  The user need take no lock;
-> > the locking (spinlock) is handled internally to the implementation.
+On 12/18/2017 06:18 AM, Matthew Wilcox wrote:
+> On Sun, Dec 17, 2017 at 01:47:21PM +0000, Wang, Wei W wrote:
+>> On Saturday, December 16, 2017 3:22 AM, Matthew Wilcox wrote:
+>>> On Fri, Dec 15, 2017 at 10:49:15AM -0800, Matthew Wilcox wrote:
+>>>   - xbit_clear() can't return an error.  Neither can xbit_zero().
+>> I found the current xbit_clear implementation only returns 0, and there isn't an error to be returned from this function. In this case, is it better to make the function "void"?
+> Yes, I think so.
+>
+> My only qualm is that I've been considering optimising the memory
+> consumption when an entire 1024-bit chunk is full; instead of keeping a
+> pointer to a 128-byte entry full of ones, store a special value in the
+> radix tree which means "every bit is set".
+>
+> The downside is that we then have to pass GFP flags to xbit_clear() and
+> xbit_zero(), and they can fail.  It's not clear to me whether that's a
+> good tradeoff.
 
-Another place I saw your comment " The xb_ API requires you to handle your =
-own locking" which seems conflict with the above "the user need take no loc=
-k".
-Doesn't the caller need a lock to avoid concurrent accesses to the ida bitm=
-ap?
-
-
-> I looked at the API some more and found some flaws:
->  - how does xbit_alloc communicate back which bit it allocated?
->  - What if xbit_find_set() is called on a completely empty array with
->    a range of 0, ULONG_MAX -- there's no invalid number to return.
-
-We'll change it to "bool xb_find_set(.., unsigned long *result)", returning=
- false indicates no "1" bit is found.
-
-
->  - xbit_clear() can't return an error.  Neither can xbit_zero().
-
-I found the current xbit_clear implementation only returns 0, and there isn=
-'t an error to be returned from this function. In this case, is it better t=
-o make the function "void"?
+Yes, this will sacrifice performance. In many usages, users may set bits 
+one by one, and each time when a bit is set, it needs to scan the whole 
+ida_bitmap to see if all other bits are set, if so, it can free the 
+ida_bitmap. I think this extra scanning of the ida_bitmap would add a 
+lot overhead.
 
 
->  - Need to add __must_check to various return values to discourage sloppy
->    programming
->=20
-> So I modify the proposed API we compete with thusly:
->=20
-> bool xbit_test(struct xbitmap *, unsigned long bit); int __must_check
-> xbit_set(struct xbitmap *, unsigned long bit, gfp_t); void xbit_clear(str=
-uct
-> xbitmap *, unsigned long bit); int __must_check xbit_alloc(struct xbitmap=
- *,
-> unsigned long *bit, gfp_t);
->=20
-> int __must_check xbit_fill(struct xbitmap *, unsigned long start,
->                         unsigned long nbits, gfp_t); void xbit_zero(struc=
-t xbitmap *,
-> unsigned long start, unsigned long nbits); int __must_check
-> xbit_alloc_range(struct xbitmap *, unsigned long *bit,
->                         unsigned long nbits, gfp_t);
->=20
-> bool xbit_find_clear(struct xbitmap *, unsigned long *start, unsigned lon=
-g
-> max); bool xbit_find_set(struct xbitmap *, unsigned long *start, unsigned
-> long max);
->=20
-> (I'm a little sceptical about the API accepting 'max' for the find functi=
-ons and
-> 'nbits' in the fill/zero/alloc_range functions, but I think that matches =
-how
-> people want to use it, and it matches how bitmap.h works)
+>
+>> Are you suggesting to rename the current xb_ APIs to the above xbit_ names (with parameter changes)?
+>>
+>> Why would we need xbit_alloc, which looks like ida_get_new, I think set/clear should be adequate to the current usages.
+> I'm intending on replacing the xb_ and ida_ implementations with this one.
+> It removes the preload API which makes it easier to use, and it handles
+> the locking for you.
+>
+> But I need to get the XArray (which replaces the radix tree) finished first.
 
-Are you suggesting to rename the current xb_ APIs to the above xbit_ names =
-(with parameter changes)?=20
-
-Why would we need xbit_alloc, which looks like ida_get_new, I think set/cle=
-ar should be adequate to the current usages.
+OK. It seems the new implementation wouldn't be done shortly.
+Other parts of this patch series are close to the end of review, and we 
+hope to make some progress soon. Would it be acceptable that we continue 
+with the basic xb_ implementation (e.g. as xbitmap 1.0) for this patch 
+series? and xbit_ implementation can come as xbitmap 2.0 in the future?
 
 Best,
 Wei
