@@ -1,119 +1,167 @@
-Return-Path: virtio-dev-return-2887-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2859-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 3ED9258190DE
-	for <virtio-dev@lists.oasis-open.org>; Mon, 25 Dec 2017 19:04:43 -0800 (PST)
-Message-ID: <5A41BCC1.5010004@intel.com>
-Date: Tue, 26 Dec 2017 11:06:41 +0800
+	by lists.oasis-open.org (Postfix) with ESMTP id CD9065819113
+	for <virtio-dev@lists.oasis-open.org>; Tue, 19 Dec 2017 04:35:02 -0800 (PST)
 From: Wei Wang <wei.w.wang@intel.com>
-MIME-Version: 1.0
-References: <1513685879-21823-5-git-send-email-wei.w.wang@intel.com>	<20171224032121.GA5273@bombadil.infradead.org>	<201712241345.DIG21823.SLFOOJtQFOMVFH@I-love.SAKURA.ne.jp>	<5A3F5A4A.1070009@intel.com>	<5A3F6254.7070306@intel.com> <201712252351.FBE81721.HFOtFOJQSOFLVM@I-love.SAKURA.ne.jp>
-In-Reply-To: <201712252351.FBE81721.HFOtFOJQSOFLVM@I-love.SAKURA.ne.jp>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: [virtio-dev] Re: [PATCH v20 4/7] virtio-balloon: VIRTIO_BALLOON_F_SG
-To: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>, willy@infradead.org
-Cc: virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, qemu-devel@nongnu.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, linux-mm@kvack.org, mst@redhat.com, mhocko@kernel.org, akpm@linux-foundation.org, mawilcox@microsoft.com, david@redhat.com, cornelia.huck@de.ibm.com, mgorman@techsingularity.net, aarcange@redhat.com, amit.shah@redhat.com, pbonzini@redhat.com, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu0@gmail.com, nilal@redhat.com, riel@redhat.com
+Date: Tue, 19 Dec 2017 20:17:57 +0800
+Message-Id: <1513685879-21823-6-git-send-email-wei.w.wang@intel.com>
+In-Reply-To: <1513685879-21823-1-git-send-email-wei.w.wang@intel.com>
+References: <1513685879-21823-1-git-send-email-wei.w.wang@intel.com>
+Subject: [virtio-dev] [PATCH v20 5/7] mm: support reporting free page blocks
+To: virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, qemu-devel@nongnu.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, linux-mm@kvack.org, mst@redhat.com, mhocko@kernel.org, akpm@linux-foundation.org, mawilcox@microsoft.com
+Cc: david@redhat.com, penguin-kernel@I-love.SAKURA.ne.jp, cornelia.huck@de.ibm.com, mgorman@techsingularity.net, aarcange@redhat.com, amit.shah@redhat.com, pbonzini@redhat.com, willy@infradead.org, wei.w.wang@intel.com, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu0@gmail.com, nilal@redhat.com, riel@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 12/25/2017 10:51 PM, Tetsuo Handa wrote:
-> Wei Wang wrote:
->>>>>> @@ -173,8 +292,15 @@ static unsigned fill_balloon(struct
->>>>>> virtio_balloon *vb, size_t num)
->>>>>>          while ((page = balloon_page_pop(&pages))) {
->>>>>>            balloon_page_enqueue(&vb->vb_dev_info, page);
->>>>>> +        if (use_sg) {
->>>>>> +            if (xb_set_page(vb, page, &pfn_min, &pfn_max) < 0) {
->>>>>> +                __free_page(page);
->>>>>> +                continue;
->>>>>> +            }
->>>>>> +        } else {
->>>>>> +            set_page_pfns(vb, vb->pfns + vb->num_pfns, page);
->>>>>> +        }
->>>>> Is this the right behaviour?
->>>> I don't think so. In the worst case, we can set no bit using
->>>> xb_set_page().
->>>>>                                 If we can't record the page in the xb,
->>>>> wouldn't we rather send it across as a single page?
->>>>>
->>>> I think that we need to be able to fallback to !use_sg path when OOM.
->>> I also have different thoughts:
->>>
->>> 1) For OOM, we have leak_balloon_sg_oom (oom has nothing to do with
->>> fill_balloon), which does not use xbitmap to record pages, thus no
->>> memory allocation.
->>>
->>> 2) If the memory is already under pressure, it is pointless to
->>> continue inflating memory to the host. We need to give thanks to the
->>> memory allocation failure reported by xbitmap, which gets us a chance
->>> to release the inflated pages that have been demonstrated to cause the
->>> memory pressure of the guest.
->>>
->> Forgot to add my conclusion: I think the above behavior is correct.
->>
-> What is the desired behavior when hitting OOM path during inflate/deflate?
-> Once inflation started, the inflation logic is called again and again
-> until the balloon inflates to the requested size.
+This patch adds support to walk through the free page blocks in the
+system and report them via a callback function. Some page blocks may
+leave the free list after zone->lock is released, so it is the caller's
+responsibility to either detect or prevent the use of such pages.
 
-The above is true, but I can't agree with the following. Please see below.
+One use example of this patch is to accelerate live migration by skipping
+the transfer of free pages reported from the guest. A popular method used
+by the hypervisor to track which part of memory is written during live
+migration is to write-protect all the guest memory. So, those pages that
+are reported as free pages but are written after the report function
+returns will be captured by the hypervisor, and they will be added to the
+next round of memory transfer.
 
-> Such situation will
-> continue wasting CPU resource between inflate-due-to-host's-request versus
-> deflate-due-to-guest's-OOM. It is pointless but cannot stop doing pointless
-> thing.
+Signed-off-by: Wei Wang <wei.w.wang@intel.com>
+Signed-off-by: Liang Li <liang.z.li@intel.com>
+Cc: Michal Hocko <mhocko@kernel.org>
+Cc: Michael S. Tsirkin <mst@redhat.com>
+Acked-by: Michal Hocko <mhocko@kernel.org>
+---
+ include/linux/mm.h |  6 ++++
+ mm/page_alloc.c    | 91 ++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 97 insertions(+)
 
-What we are doing here is to free the pages that were just allocated in 
-this round of inflating. Next round will be sometime later when the 
-balloon work item gets its turn to run. Yes, it will then continue to 
-inflate.
-Here are the two cases that will happen then:
-1) the guest is still under memory pressure, the inflate will fail at 
-memory allocation, which results in a msleep(200), and then it exists 
-for another time to run.
-2) the guest isn't under memory pressure any more (e.g. the task which 
-consumes the huge amount of memory is gone), it will continue to inflate 
-as normal till the requested size.
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index ea818ff..b3077dd 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -1938,6 +1938,12 @@ extern void free_area_init_node(int nid, unsigned long * zones_size,
+ 		unsigned long zone_start_pfn, unsigned long *zholes_size);
+ extern void free_initmem(void);
+ 
++extern void walk_free_mem_block(void *opaque,
++				int min_order,
++				bool (*report_pfn_range)(void *opaque,
++							 unsigned long pfn,
++							 unsigned long num));
++
+ /*
+  * Free reserved pages within range [PAGE_ALIGN(start), end & PAGE_MASK)
+  * into the buddy system. The freed pages will be poisoned with pattern
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index 7e5e775..f074503 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -4899,6 +4899,97 @@ void show_free_areas(unsigned int filter, nodemask_t *nodemask)
+ 	show_swap_cache_info();
+ }
+ 
++/*
++ * Walk through a free page list and report the found pfn range via the
++ * callback.
++ *
++ * Return false if the callback requests to stop reporting. Otherwise,
++ * return true.
++ */
++static bool walk_free_page_list(void *opaque,
++				struct zone *zone,
++				int order,
++				enum migratetype mt,
++				bool (*report_pfn_range)(void *,
++							 unsigned long,
++							 unsigned long))
++{
++	struct page *page;
++	struct list_head *list;
++	unsigned long pfn, flags;
++	bool ret;
++
++	spin_lock_irqsave(&zone->lock, flags);
++	list = &zone->free_area[order].free_list[mt];
++	list_for_each_entry(page, list, lru) {
++		pfn = page_to_pfn(page);
++		ret = report_pfn_range(opaque, pfn, 1 << order);
++		if (!ret)
++			break;
++	}
++	spin_unlock_irqrestore(&zone->lock, flags);
++
++	return ret;
++}
++
++/**
++ * walk_free_mem_block - Walk through the free page blocks in the system
++ * @opaque: the context passed from the caller
++ * @min_order: the minimum order of free lists to check
++ * @report_pfn_range: the callback to report the pfn range of the free pages
++ *
++ * If the callback returns false, stop iterating the list of free page blocks.
++ * Otherwise, continue to report.
++ *
++ * Please note that there are no locking guarantees for the callback and
++ * that the reported pfn range might be freed or disappear after the
++ * callback returns so the caller has to be very careful how it is used.
++ *
++ * The callback itself must not sleep or perform any operations which would
++ * require any memory allocations directly (not even GFP_NOWAIT/GFP_ATOMIC)
++ * or via any lock dependency. It is generally advisable to implement
++ * the callback as simple as possible and defer any heavy lifting to a
++ * different context.
++ *
++ * There is no guarantee that each free range will be reported only once
++ * during one walk_free_mem_block invocation.
++ *
++ * pfn_to_page on the given range is strongly discouraged and if there is
++ * an absolute need for that make sure to contact MM people to discuss
++ * potential problems.
++ *
++ * The function itself might sleep so it cannot be called from atomic
++ * contexts.
++ *
++ * In general low orders tend to be very volatile and so it makes more
++ * sense to query larger ones first for various optimizations which like
++ * ballooning etc... This will reduce the overhead as well.
++ */
++void walk_free_mem_block(void *opaque,
++			 int min_order,
++			 bool (*report_pfn_range)(void *opaque,
++						  unsigned long pfn,
++						  unsigned long num))
++{
++	struct zone *zone;
++	int order;
++	enum migratetype mt;
++	bool ret;
++
++	for_each_populated_zone(zone) {
++		for (order = MAX_ORDER - 1; order >= min_order; order--) {
++			for (mt = 0; mt < MIGRATE_TYPES; mt++) {
++				ret = walk_free_page_list(opaque, zone,
++							  order, mt,
++							  report_pfn_range);
++				if (!ret)
++					return;
++			}
++		}
++	}
++}
++EXPORT_SYMBOL_GPL(walk_free_mem_block);
++
+ static void zoneref_set_zone(struct zone *zone, struct zoneref *zoneref)
+ {
+ 	zoneref->zone = zone;
+-- 
+2.7.4
 
-I think what we are doing is a quite sensible behavior, except a small 
-change I plan to make:
-
-         while ((page = balloon_page_pop(&pages))) {
--               balloon_page_enqueue(&vb->vb_dev_info, page);
-                 if (use_sg) {
-                         if (xb_set_page(vb, page, &pfn_min, &pfn_max) < 
-0) {
-                                 __free_page(page);
-                                 continue;
-                         }
-                 } else {
-                         set_page_pfns(vb, vb->pfns + vb->num_pfns, page);
-                 }
-+             balloon_page_enqueue(&vb->vb_dev_info, page);
-
->
-> Also, as of Linux 4.15, only up to VIRTIO_BALLOON_ARRAY_PFNS_MAX pages (i.e.
-> 1MB) are invisible from deflate request. That amount would be an acceptable
-> error. But your patch makes more pages being invisible, for pages allocated
-> by balloon_page_alloc() without holding balloon_lock are stored into a local
-> variable "LIST_HEAD(pages)" (which means that balloon_page_dequeue() with
-> balloon_lock held won't be able to find pages not yet queued by
-> balloon_page_enqueue()), doesn't it? What if all memory pages were held in
-> "LIST_HEAD(pages)" and balloon_page_dequeue() was called before
-> balloon_page_enqueue() is called?
->
-
-If we think of the balloon driver just as a regular driver or 
-application, that will be a pretty nature thing. A regular driver can 
-eat a huge amount of memory for its own usages, would this amount of 
-memory be treated as an error as they are invisible to the 
-balloon_page_enqueue?
-
-Best,
-Wei
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
