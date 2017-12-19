@@ -1,502 +1,236 @@
-Return-Path: virtio-dev-return-2869-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2855-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 06F10581914D
-	for <virtio-dev@lists.oasis-open.org>; Wed, 20 Dec 2017 08:44:49 -0800 (PST)
-References: <1512545840-10256-1-git-send-email-longpeng2@huawei.com>
- <1512545840-10256-2-git-send-email-longpeng2@huawei.com>
-From: Halil Pasic <pasic@linux.vnet.ibm.com>
-Date: Wed, 20 Dec 2017 17:44:26 +0100
-MIME-Version: 1.0
-In-Reply-To: <1512545840-10256-2-git-send-email-longpeng2@huawei.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-Message-Id: <db20b680-e7c8-6563-ebd7-27ab7e06ad6a@linux.vnet.ibm.com>
-Subject: [virtio-dev] Re: [Qemu-devel] [v22 1/2] virtio-crypto: Add virtio crypto device
- specification
-To: "Longpeng(Mike)" <longpeng2@huawei.com>, qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org
-Cc: luonengjun@huawei.com, mst@redhat.com, Cornelia Huck <cohuck@redhat.com>, stefanha@redhat.com, denglingli@chinamobile.com, Jani.Kokkonen@huawei.com, Ola.Liljedahl@arm.com, Varun.Sethi@freescale.com, xin.zeng@intel.com, brian.a.keating@intel.com, liang.j.ma@intel.com, john.griffin@intel.com, weidong.huang@huawei.com, agraf@suse.de, jasowang@redhat.com, vincent.jardin@6wind.com, arei.gonglei@huawei.com, wangxinxin.wang@huawei.com, jianjay.zhou@huawei.com
+	by lists.oasis-open.org (Postfix) with ESMTP id 145CE58190D3
+	for <virtio-dev@lists.oasis-open.org>; Tue, 19 Dec 2017 04:34:43 -0800 (PST)
+From: Wei Wang <wei.w.wang@intel.com>
+Date: Tue, 19 Dec 2017 20:17:52 +0800
+Message-Id: <1513685879-21823-1-git-send-email-wei.w.wang@intel.com>
+Subject: [virtio-dev] [PATCH v20 0/7] Virtio-balloon Enhancement
+To: virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, qemu-devel@nongnu.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, linux-mm@kvack.org, mst@redhat.com, mhocko@kernel.org, akpm@linux-foundation.org, mawilcox@microsoft.com
+Cc: david@redhat.com, penguin-kernel@I-love.SAKURA.ne.jp, cornelia.huck@de.ibm.com, mgorman@techsingularity.net, aarcange@redhat.com, amit.shah@redhat.com, pbonzini@redhat.com, willy@infradead.org, wei.w.wang@intel.com, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu0@gmail.com, nilal@redhat.com, riel@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Meta: Updated Connie's email.
+This patch series enhances the existing virtio-balloon with the following
+new features:
+1) fast ballooning: transfer ballooned pages between the guest and host in
+chunks using sgs, instead of one array each time; and
+2) free page block reporting: a new virtqueue to report guest free pages
+to the host.
 
-On 12/06/2017 08:37 AM, Longpeng(Mike) wrote:
-> From: Gonglei <arei.gonglei@huawei.com>
-> 
-> The virtio crypto device is a virtual crypto device (ie. hardware
-> crypto accelerator card). Currently, the virtio crypto device provides
-> the following crypto services: CIPHER, MAC, HASH, and AEAD.
-> 
-> In this patch, CIPHER, MAC, HASH, AEAD services are introduced.
-> 
-> VIRTIO-153
-> 
-> Signed-off-by: Gonglei <arei.gonglei@huawei.com>
-> Signed-off-by: Zhoujian <jianjay.zhou@huawei.com>
-> Signed-off-by: Longpeng(Mike) <longpeng2@huawei.com>
-> ---
->  acknowledgements.tex |    4 +
->  content.tex          |    2 +
->  virtio-crypto.tex    | 1510 ++++++++++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 1516 insertions(+)
->  create mode 100644 virtio-crypto.tex
-> 
-> diff --git a/acknowledgements.tex b/acknowledgements.tex
-> index 2d893d9..cdde247 100644
-> --- a/acknowledgements.tex
-> +++ b/acknowledgements.tex
-> @@ -16,10 +16,13 @@ Daniel Kiper,	Oracle	\newline
->  Geoff Brown,	Machine-to-Machine Intelligence (M2MI) Corporation	\newline
->  Gershon Janssen,	Individual Member	\newline
->  James Bottomley,	Parallels IP Holdings GmbH	\newline
-> +Jian Zhou,	Huawei	\newline
-> +Lei Gong,	Huawei	\newline
->  Luiz Capitulino,	Red Hat	\newline
->  Michael S. Tsirkin,	Red Hat	\newline
->  Paolo Bonzini,	Red Hat	\newline
->  Pawel Moll,	ARM \newline
-> +Peng Long,	Huawei	\newline
->  Richard Sohn,	Alcatel-Lucent \newline
->  Rusty Russell,	IBM	\newline
->  Sasha Levin,	Oracle	\newline
-> @@ -38,6 +41,7 @@ Brian Foley,  ARM \newline
->  David Alan Gilbert, Red Hat \newline
->  Fam Zheng, Red Hat	\newline
->  Gerd Hoffmann, Red Hat	\newline
-> +Halil Pasic,	IBM	\newline
->  Jason Wang, Red Hat \newline
->  Laura Novich, Red Hat	\newline
->  Patrick Durusau,	Technical Advisory Board, OASIS	\newline
-> diff --git a/content.tex b/content.tex
-> index c840588..d1d3b09 100644
-> --- a/content.tex
-> +++ b/content.tex
-> @@ -5819,6 +5819,8 @@ descriptor for the \field{sense_len}, \field{residual},
->  \field{status_qualifier}, \field{status}, \field{response} and
->  \field{sense} fields.
-> 
-> +\input{virtio-crypto.tex}
-> +
->  \chapter{Reserved Feature Bits}\label{sec:Reserved Feature Bits}
-> 
->  Currently these device-independent feature bits defined:
-> diff --git a/virtio-crypto.tex b/virtio-crypto.tex
-> new file mode 100644
-> index 0000000..7e66898
-> --- /dev/null
-> +++ b/virtio-crypto.tex
-> @@ -0,0 +1,1510 @@
-> +\section{Crypto Device}\label{sec:Device Types / Crypto Device}
-> +
-> +The virtio crypto device is a virtual cryptography device as well as a
-> +virtual cryptographic accelerator. The virtio crypto device provides the
-> +following crypto services: CIPHER, MAC, HASH, and AEAD. Virtio crypto
-> +devices have a single control queue and at least one data queue. Crypto
-> +operation requests are placed into a data queue, and serviced by the
-> +device. Some crypto operation requests are only valid in the context of a
-> +session. The role of the control queue is facilitating control operation
-> +requests. Sessions management is realized with control operation
-> +requests.
-> +
-> +\subsection{Device ID}\label{sec:Device Types / Crypto Device / Device ID}
-> +
-> +20
-> +
-> +\subsection{Virtqueues}\label{sec:Device Types / Crypto Device / Virtqueues}
-> +
-> +\begin{description}
-> +\item[0] dataq1
-> +\item[\ldots]
-> +\item[N-1] dataqN
-> +\item[N] controlq
-> +\end{description}
-> +
-> +N is set by \field{max_dataqueues}.
-> +
-> +\subsection{Feature bits}\label{sec:Device Types / Crypto Device / Feature bits}
-> +
-> +\begin{description}
-> +\item VIRTIO_CRYPTO_F_MUX_MODE (0) multiplexing mode is available.
+The second feature can be used to accelerate live migration of VMs. Here
+are some details:
 
-Drop 'is available'? There is no separate frob for turning the MUX_MODE on/off
-if it is available, or?
+Live migration needs to transfer the VM's memory from the source machine
+to the destination round by round. For the 1st round, all the VM's memory
+is transferred. From the 2nd round, only the pieces of memory that were
+written by the guest (after the 1st round) are transferred. One method
+that is popularly used by the hypervisor to track which part of memory is
+written is to write-protect all the guest memory.
 
-At this point it's pretty unclear what 'multiplexing mode' means. Furthermore
-if you search the text for multiplexing, this is the only occurrence. 
+The second feature enables the optimization of the 1st round memory
+transfer - the hypervisor can skip the transfer of guest free pages in the
+1st round. It is not concerned that the memory pages are used after they
+are given to the hypervisor as a hint of the free pages, because they will
+be tracked by the hypervisor and transferred in the next round if they are
+used and written.
 
-I would probably go for"  
+ChangeLog:
+v19->v20:
+1) patch 1: xbitmap
+	- add __rcu to "void **slot";
+	- remove the exceptional path.
+2) patch 3: xbitmap
+	- DeveloperNotes: add an item to comment that the current bit range
+	  related APIs operating on extremely large ranges (e.g.
+          [0, ULONG_MAX)) will take too long time. This can be optimized in
+	  the future.
+	- remove the exceptional path;
+	- remove xb_preload_and_set();
+	- reimplement xb_clear_bit_range to make its usage close to
+	  bitmap_clear;
+	- rename xb_find_next_set_bit to xb_find_set, and re-implement it
+	  in a style close to find_next_bit;
+	- rename xb_find_next_zero_bit to xb_find_clear, and re-implement
+	  it in a stytle close to find_next_zero_bit;
+	- separate the implementation of xb_find_set and xb_find_clear for
+	  the convenience of future updates.
+3) patch 4: virtio-balloon
+	- xb_set_page: change the way to call xb_ related APIs
 
-+\item VIRTIO_CRYPTO_F_MUX_MODE (0) multiplexing mode. Multiplexing mode
-+ has a specific request format and other enhancements (which result in some
-+ additional requirements).
+v18->v19:
+1) patch 3:
+	- xb_clear_bit_range and xb_find_next_bit will deal with range [start,
+	  end), where end is changed to be exclusive of the range.
+	- add overflow checks at the end of xb_clear_bit_range and
+	  xb_find_next_bit 
+	- add overflow related test cases
+2) patch 4:
+	- change back to the previous add_one_sg methond, which is based on the
+	  scatterlist struct
+        - tell_host_sgs: use "uint64_t len" to avoid overflow
+	- batch_balloon_page_sg: a simpler function to implement the batching of
+	  sgs
+3) patch 6: batch_free_page_sg: batch sgs using the previous scatterlist struct
+4) patch 7: add a config field, poison_val, to tell the host about the poison
+	    value
+v17->v18:
+1) patch 1-2: new to solve some tools related compilation issues
+2) patch 3: revert to the original xbitmap implementation from Matthew
+Wilcox with some minor changes (e.g. comments added to the exported
+functions)
+3) patch 4: summarize the changes we want to make to patch 3
+4) patch 5: add the developer notes as a reminder for users to avoid
+concurrent accesses to the ida bitmap
+5) patch 6: a new vring API to allow users to directly pass in a physical
+address to a vring desc
+6) patch 7: ballooning time is reduced from ~490ms to ~440ms with the new
+implementation
+	- use the new API from patch 6 to send balloon pages
+	- xb_preload with "GFP_NOWAIT | __GFP_NOWARN" flag;
+	- handle the case when xb_set_page() fails to avoid memory leak;
+	- put xb_set_page() under the balloon lock
+7) patch 9: simper implementation
+	- start free page reporting by sending a new cmd id from the host
+	- guest acks the start or stop via adding a cmd id to the free page vq
+	- use vb->report_free_page, instead of vb->report_free_page_stop
+	- use WRITE_ONCE/READ_ONCE to access vb->report_free_page
+	- use the new API from patch 6 to send free pages to avoid the
+	  unnecessary use of kaddr.
+8) patch 10: new patch to solve the page posioning issue reported by
+Michael S. Tsirkin 
 
-> +\item VIRTIO_CRYPTO_F_CIPHER_STATELESS_MODE (1) stateless mode is available for CIPHER service.
-> +\item VIRTIO_CRYPTO_F_HASH_STATELESS_MODE (2) stateless mode is available for HASH service.
-> +\item VIRTIO_CRYPTO_F_MAC_STATELESS_MODE (3) stateless mode is available for MAC service.
-> +\item VIRTIO_CRYPTO_F_AEAD_STATELESS_MODE (4) stateless mode is available for AEAD service.
-> +\end{description}
-> +
+v16->v17:
+1) patch 1: please check the commit log there;
+2) patch 3: included Michael S. Tsirkin patch to fix the potential
+deadlock issue;
+3) patch 4: use BUG_ON if virtqueue_add_ returns error, which is
+expected never to happen;
+4) patch 4: add leak_balloon_sg_oom, which is used in the oom case when
+VIRTIO_BALLOON_F_SG is in use;
+5) patch 6: use config registers, instead of a vq, as the command channel
+between the host and guest;
+6) patch 6: add the command sequence id support.
 
-I think this turned out quite complicated. First some observations I intend
-to build on:
+v15->v16:
+1) mm: stop reporting the free pfn range if the callback returns false;
+2) mm: move some implementaion of walk_free_mem_block into a function to
+make the code layout looks better;
+3) xbitmap: added some optimizations suggested by Matthew, please refer to
+the ChangLog in the xbitmap patch for details.
+4) xbitmap: added a test suite
+5) virtio-balloon: bail out with a warning when virtqueue_add_inbuf returns
+an error
+6) virtio-balloon: some small code re-arrangement, e.g. detachinf used buf
+from the vq before adding a new buf
 
-* I associate modes are mutual exclusiveness: e.g. a device is always
-  in one of the several possible modes.
-* In my understanding mixing stateful and stateless requests is possible
-  (even on a same queue) iff the bit was negotiated for the service. I
-  will use stateful here as the opposite of stateless and in a sense
-  session bound.
+v14->v15:
+1) mm: make the report callback return a bool value - returning 1 to stop
+walking through the free page list.
+2) virtio-balloon: batching sgs of balloon pages till the vq is full
+3) virtio-balloon: create a new workqueue, rather than using the default
+system_wq, to queue the free page reporting work item.
+4) virtio-balloon: add a ctrl_vq to be a central control plane which will
+handle all the future control related commands between the host and guest.
+Add free page report as the first feature controlled under ctrl_vq, and
+the free_page_vq is a data plane vq dedicated to the transmission of free
+page blocks.
 
+v13->v14:
+1) xbitmap: move the code from lib/radix-tree.c to lib/xbitmap.c.
+2) xbitmap: consolidate the implementation of xb_bit_set/clear/test into
+one xb_bit_ops.
+3) xbitmap: add documents for the exported APIs.
+4) mm: rewrite the function to walk through free page blocks.
+5) virtio-balloon: when reporting a free page blcok to the device, if the
+vq is full (less likey to happen in practice), just skip reporting this
+block, instead of busywaiting till an entry gets released.
+6) virtio-balloon: fail the probe function if adding the signal buf in
+init_vqs fails.
 
-In my opinion these stateless bits are supposed to be rather about
-whether a certain type (stateless) of mux mode requests is supported by
-the device.
+v12->v13:
+1) mm: use a callback function to handle the the free page blocks from the
+report function. This avoids exposing the zone internal to a kernel
+module.
+2) virtio-balloon: send balloon pages or a free page block using a single
+sg each time. This has the benefits of simpler implementation with no new
+APIs.
+3) virtio-balloon: the free_page_vq is used to report free pages only (no
+multiple usages interleaving)
+4) virtio-balloon: Balloon pages and free page blocks are sent via input
+sgs, and the completion signal to the host is sent via an output sg.
 
-What you actually do is the following. You define a
-'VIRTIO_CRYPTO_F_<SERVICE_NAME>_STATELESS_MODE feature bit is negotiated'
-(A) mode and a '... bit is not negotiated (B)' mode for each service. In
-mode A the driver has to use type A sateful requests (to which you refer
-as session mode).  In mode B however the driver can use both stateless
-requests (to which you refer as stateless mode) and B type stateful
-requests (to which you also refer as session mode).
+v11->v12:
+1) xbitmap: use the xbitmap from Matthew Wilcox to record ballooned pages.
+2) virtio-ring: enable the driver to build up a desc chain using vring
+desc.
+3) virtio-ring: Add locking to the existing START_USE() and END_USE()
+macro to lock/unlock the vq when a vq operation starts/ends.
+4) virtio-ring: add virtqueue_kick_sync() and virtqueue_kick_async()
+5) virtio-balloon: describe chunks of ballooned pages and free pages
+blocks directly using one or more chains of desc from the vq.
 
-The only difference between A type and B type stateful requests is, that for
-B type, the VIRTIO_CRYPTO_FLAG_SESSION_MODE flag MUST be set. For A type
-stateful requests however the specification does not seem to specify
-definitive guidance on whether VIRTIO_CRYPTO_FLAG_SESSION_MODE is to be
-set or not. From what I see the op_request flags are ignored in QEMU the
-code.
+v10->v11:
+1) virtio_balloon: use vring_desc to describe a chunk;
+2) virtio_ring: support to add an indirect desc table to virtqueue;
+3)  virtio_balloon: use cmdq to report guest memory statistics.
 
-I hope I managed to illustrate it's complicated. 
+v9->v10:
+1) mm: put report_unused_page_block() under CONFIG_VIRTIO_BALLOON;
+2) virtio-balloon: add virtballoon_validate();
+3) virtio-balloon: msg format change;
+4) virtio-balloon: move miscq handling to a task on system_freezable_wq;
+5) virtio-balloon: code cleanup.
 
-Can this be simplified? I think we could tie the obligation to set the
-VIRTIO_CRYPTO_FLAG_SESSION_MODE or the VIRTIO_CRYPTO_FLAG_STATELESS_MODE
-flag to MUX_MODE.
+v8->v9:
+1) Split the two new features, VIRTIO_BALLOON_F_BALLOON_CHUNKS and
+VIRTIO_BALLOON_F_MISC_VQ, which were mixed together in the previous
+implementation;
+2) Simpler function to get the free page block.
 
-The point above would then morph to:
+v7->v8:
+1) Use only one chunk format, instead of two.
+2) re-write the virtio-balloon implementation patch.
+3) commit changes
+4) patch re-org
 
+Matthew Wilcox (1):
+  xbitmap: Introduce xbitmap
 
-+\item VIRTIO_CRYPTO_F_AEAD_STATELESS_MODE (4) stateless mode requests are supported by the AEAD service.
+Wei Wang (6):
+  xbitmap: potential improvement
+  xbitmap: add more operations
+  virtio-balloon: VIRTIO_BALLOON_F_SG
+  mm: support reporting free page blocks
+  virtio-balloon: VIRTIO_BALLOON_F_FREE_PAGE_VQ
+  virtio-balloon: don't report free pages when page poisoning is enabled
 
-And then if VIRTIO_CRYPTO_F_MUX_MODE is negotiated but
-VIRTIO_CRYPTO_F_<SERVICE>_STATELESS_MODE is not negotiated then <SERVICE>
-requests with the VIRTIO_CRYPTO_FLAG_STATELESS_MODE flag set need to be
-rejected. If VIRTIO_CRYPTO_F_MUX_MODE is negotiated is not negotiated the
-flag bits VIRTIO_CRYPTO_FLAG_STATELESS_MODE and
-VIRTIO_CRYPTO_FLAG_SESSION_MODE are ignored. We should probably ignore
-op_reqest.flags altogether if MUX_MODE is not negotiated.
+ drivers/virtio/virtio_balloon.c          | 444 +++++++++++++++++++++++++++----
+ include/linux/mm.h                       |   6 +
+ include/linux/radix-tree.h               |   2 +
+ include/linux/xbitmap.h                  |  55 ++++
+ include/uapi/linux/virtio_balloon.h      |   7 +
+ lib/Makefile                             |   2 +-
+ lib/radix-tree.c                         |  40 ++-
+ lib/xbitmap.c                            | 330 +++++++++++++++++++++++
+ mm/page_alloc.c                          |  91 +++++++
+ tools/include/linux/bitmap.h             |  34 +++
+ tools/include/linux/kernel.h             |   2 +
+ tools/testing/radix-tree/Makefile        |  12 +-
+ tools/testing/radix-tree/linux/xbitmap.h |   1 +
+ tools/testing/radix-tree/main.c          |   4 +
+ tools/testing/radix-tree/test.h          |   1 +
+ 15 files changed, 976 insertions(+), 55 deletions(-)
+ create mode 100644 include/linux/xbitmap.h
+ create mode 100644 lib/xbitmap.c
+ create mode 100644 tools/testing/radix-tree/linux/xbitmap.h
 
-If we go down this path renaming VIRTIO_CRYPTO_F_MUX_MODE should be
-considered.  We already have other stuff than the request format and with
-that the stateless depending on this feature bit. I was thinking
-something like _REVISION_1.
-
-Note, this is not a show-stopper for me. While I do think what we have is
-more complicated than it should be, it should still work. We can stick
-with it. But if we do, we have to stick wit it till the end of days
-(can't be improved later).
-
-
-> +\subsubsection{Feature bit requirements}\label{sec:Device Types / Crypto Device / Feature bits}
-> +
-> +Some crypto feature bits require other crypto feature bits
-> +(see \ref{drivernormative:Basic Facilities of a Virtio Device / Feature Bits}):
-> +
-> +\begin{description}
-> +\item[VIRTIO_CRYPTO_F_CIPHER_STATELESS_MODE] Requires VIRTIO_CRYPTO_F_MUX_MODE. 
-> +\item[VIRTIO_CRYPTO_F_HASH_STATELESS_MODE] Requires VIRTIO_CRYPTO_F_MUX_MODE.
-> +\item[VIRTIO_CRYPTO_F_MAC_STATELESS_MODE] Requires VIRTIO_CRYPTO_F_MUX_MODE.
-> +\item[VIRTIO_CRYPTO_F_AEAD_STATELESS_MODE] Requires VIRTIO_CRYPTO_F_MUX_MODE.
-> +\end{description}
-> +
-> +\subsection{Supported crypto services}\label{sec:Device Types / Crypto Device / Supported crypto services}
-> +
-> +The following crypto services are defined:
-> +
-> +\begin{lstlisting}
-> +/* CIPHER service */
-> +#define VIRTIO_CRYPTO_SERVICE_CIPHER 0
-> +/* HASH service */
-> +#define VIRTIO_CRYPTO_SERVICE_HASH   1
-> +/* MAC (Message Authentication Codes) service */
-> +#define VIRTIO_CRYPTO_SERVICE_MAC    2
-> +/* AEAD (Authenticated Encryption with Associated Data) service */
-> +#define VIRTIO_CRYPTO_SERVICE_AEAD   3
-> +\end{lstlisting}
-> +
-> +The above constants designate bits used to indicate the which of crypto services are
-> +offered by the device as described in, see \ref{sec:Device Types / Crypto Device / Device configuration layout}.
-> +
-> +\subsubsection{CIPHER services}\label{sec:Device Types / Crypto Device / Supported crypto services / CIPHER services}
-> +
-> +The following CIPHER algorithms are defined:
-> +
-> +\begin{lstlisting}
-> +#define VIRTIO_CRYPTO_NO_CIPHER                 0
-> +#define VIRTIO_CRYPTO_CIPHER_ARC4               1
-> +#define VIRTIO_CRYPTO_CIPHER_AES_ECB            2
-> +#define VIRTIO_CRYPTO_CIPHER_AES_CBC            3
-> +#define VIRTIO_CRYPTO_CIPHER_AES_CTR            4
-> +#define VIRTIO_CRYPTO_CIPHER_DES_ECB            5
-> +#define VIRTIO_CRYPTO_CIPHER_DES_CBC            6
-> +#define VIRTIO_CRYPTO_CIPHER_3DES_ECB           7
-> +#define VIRTIO_CRYPTO_CIPHER_3DES_CBC           8
-> +#define VIRTIO_CRYPTO_CIPHER_3DES_CTR           9
-> +#define VIRTIO_CRYPTO_CIPHER_KASUMI_F8          10
-> +#define VIRTIO_CRYPTO_CIPHER_SNOW3G_UEA2        11
-> +#define VIRTIO_CRYPTO_CIPHER_AES_F8             12
-> +#define VIRTIO_CRYPTO_CIPHER_AES_XTS            13
-> +#define VIRTIO_CRYPTO_CIPHER_ZUC_EEA3           14
-> +\end{lstlisting}
-> +
-> +The above constants have two usages:
-> +\begin{enumerate}
-> +\item As bit numbers, used to tell the driver which CIPHER algorithms
-> +are supported by the device, see \ref{sec:Device Types / Crypto Device / Device configuration layout}.
-> +\item As values, used to designate the algorithm in (CIPHER type) crypto
-> +operation requests, see \ref{sec:Device Types / Crypto Device / Device Operation / Control Virtqueue / Session operation}.
-> +\end{enumerate}
-> +
-> +\subsubsection{HASH services}\label{sec:Device Types / Crypto Device / Supported crypto services / HASH services}
-> +
-> +The following HASH algorithms are defined:
-> +
-> +\begin{lstlisting}
-> +#define VIRTIO_CRYPTO_NO_HASH            0
-> +#define VIRTIO_CRYPTO_HASH_MD5           1
-> +#define VIRTIO_CRYPTO_HASH_SHA1          2
-> +#define VIRTIO_CRYPTO_HASH_SHA_224       3
-> +#define VIRTIO_CRYPTO_HASH_SHA_256       4
-> +#define VIRTIO_CRYPTO_HASH_SHA_384       5
-> +#define VIRTIO_CRYPTO_HASH_SHA_512       6
-> +#define VIRTIO_CRYPTO_HASH_SHA3_224      7
-> +#define VIRTIO_CRYPTO_HASH_SHA3_256      8
-> +#define VIRTIO_CRYPTO_HASH_SHA3_384      9
-> +#define VIRTIO_CRYPTO_HASH_SHA3_512      10
-> +#define VIRTIO_CRYPTO_HASH_SHA3_SHAKE128      11
-> +#define VIRTIO_CRYPTO_HASH_SHA3_SHAKE256      12
-> +\end{lstlisting}
-> +
-> +The above constants have two usages:
-> +\begin{enumerate}
-> +\item As bit numbers, used to tell the driver which HASH algorithms
-> +are supported by the device, see \ref{sec:Device Types / Crypto Device / Device configuration layout}.
-> +\item As values, used to designate the algorithm in (HASH type) crypto
-> +operation requires, see \ref{sec:Device Types / Crypto Device / Device Operation / Control Virtqueue / Session operation}.
-> +\end{enumerate}
-> +
-> +\subsubsection{MAC services}\label{sec:Device Types / Crypto Device / Supported crypto services / MAC services}
-> +
-> +The following MAC algorithms are defined:
-> +
-> +\begin{lstlisting}
-> +#define VIRTIO_CRYPTO_NO_MAC                       0
-> +#define VIRTIO_CRYPTO_MAC_HMAC_MD5                 1
-> +#define VIRTIO_CRYPTO_MAC_HMAC_SHA1                2
-> +#define VIRTIO_CRYPTO_MAC_HMAC_SHA_224             3
-> +#define VIRTIO_CRYPTO_MAC_HMAC_SHA_256             4
-> +#define VIRTIO_CRYPTO_MAC_HMAC_SHA_384             5
-> +#define VIRTIO_CRYPTO_MAC_HMAC_SHA_512             6
-> +#define VIRTIO_CRYPTO_MAC_CMAC_3DES                25
-> +#define VIRTIO_CRYPTO_MAC_CMAC_AES                 26
-> +#define VIRTIO_CRYPTO_MAC_KASUMI_F9                27
-> +#define VIRTIO_CRYPTO_MAC_SNOW3G_UIA2              28
-> +#define VIRTIO_CRYPTO_MAC_GMAC_AES                 41
-> +#define VIRTIO_CRYPTO_MAC_GMAC_TWOFISH             42
-> +#define VIRTIO_CRYPTO_MAC_CBCMAC_AES               49
-> +#define VIRTIO_CRYPTO_MAC_CBCMAC_KASUMI_F9         50
-> +#define VIRTIO_CRYPTO_MAC_XCBC_AES                 53
-> +#define VIRTIO_CRYPTO_MAC_ZUC_EIA3                 54
-> +\end{lstlisting}
-> +
-> +The above constants have two usages:
-> +\begin{enumerate}
-> +\item As bit numbers, used to tell the driver which MAC algorithms
-> +are supported by the device, see \ref{sec:Device Types / Crypto Device / Device configuration layout}.
-> +\item As values, used to designate the algorithm in (MAC type) crypto
-> +operation requests, see \ref{sec:Device Types / Crypto Device / Device Operation / Control Virtqueue / Session operation}.
-> +\end{enumerate}
-> +
-> +\subsubsection{AEAD services}\label{sec:Device Types / Crypto Device / Supported crypto services / AEAD services}
-> +
-> +The following AEAD algorithms are defined:
-> +
-> +\begin{lstlisting}
-> +#define VIRTIO_CRYPTO_NO_AEAD     0
-> +#define VIRTIO_CRYPTO_AEAD_GCM    1
-> +#define VIRTIO_CRYPTO_AEAD_CCM    2
-> +#define VIRTIO_CRYPTO_AEAD_CHACHA20_POLY1305  3
-> +\end{lstlisting}
-> +
-> +The above constants have two usages:
-> +\begin{enumerate}
-> +\item As bit numbers, used to tell the driver which AEAD algorithms
-> +are supported by the device, see \ref{sec:Device Types / Crypto Device / Device configuration layout}.
-> +\item As values, used to designate the algorithm in (DEAD type) crypto
-> +operation requests, see \ref{sec:Device Types / Crypto Device / Device Operation / Control Virtqueue / Session operation}.
-> +\end{enumerate}
-> +
-> +\subsection{Device configuration layout}\label{sec:Device Types / Crypto Device / Device configuration layout}
-> +
-> +\begin{lstlisting}
-> +struct virtio_crypto_config {
-> +    le32 status;
-> +    le32 max_dataqueues;
-> +    le32 crypto_services;
-> +    /* Detailed algorithms mask */
-> +    le32 cipher_algo_l;
-> +    le32 cipher_algo_h;
-> +    le32 hash_algo;
-> +    le32 mac_algo_l;
-> +    le32 mac_algo_h;
-> +    le32 aead_algo;
-> +    /* Maximum length of cipher key in bytes */
-> +    le32 max_cipher_key_len;
-> +    /* Maximum length of authenticated key in bytes */
-> +    le32 max_auth_key_len;
-> +    le32 reserved;
-> +    /* Maximum size of each crypto request's content in bytes */
-> +    le64 max_size;
-> +};
-> +\end{lstlisting}
-> +
-> +\begin{description}
-> +\item Currently, only one \field(status) bit is defined: VIRTIO_CRYPTO_S_HW_READY
-> +    set indicates that the device is ready to process requests, this bit is read-only
-> +    for the driver
-> +\begin{lstlisting}
-> +#define VIRTIO_CRYPTO_S_HW_READY  (1 << 0)
-> +\end{lstlisting}
-> +
-> +\item[\field{max_dataqueues}] is the maximum number of data virtqueues that can
-> +    be configured by the device. The driver MAY use only one data queue, or it
-> +    can use more to achieve better performance.
-> +
-> +\item[\field{crypto_services}] crypto service offered, see \ref{sec:Device Types / Crypto Device / Supported crypto services}.
-> +
-> +\item[\field{cipher_algo_l}] CIPHER algorithms bits 0-31, see \ref{sec:Device Types / Crypto Device / Supported crypto services  / CIPHER services}.
-> +
-> +\item[\field{cipher_algo_h}] CIPHER algorithms bits 32-63, see \ref{sec:Device Types / Crypto Device / Supported crypto services  / CIPHER services}.
-> +
-> +\item[\field{hash_algo}] HASH algorithms bits, see \ref{sec:Device Types / Crypto Device / Supported crypto services  / HASH services}.
-> +
-> +\item[\field{mac_algo_l}] MAC algorithms bits 0-31, see \ref{sec:Device Types / Crypto Device / Supported crypto services  / MAC services}.
-> +
-> +\item[\field{mac_algo_h}] MAC algorithms bits 32-63, see \ref{sec:Device Types / Crypto Device / Supported crypto services  / MAC services}.
-> +
-> +\item[\field{aead_algo}] AEAD algorithms bits, see \ref{sec:Device Types / Crypto Device / Supported crypto services  / AEAD services}.
-> +
-> +\item[\field{max_cipher_key_len}] is the maximum length of cipher key supported by the device.
-> +
-> +\item[\field{max_auth_key_len}] is the maximum length of authenticated key supported by the device.
-> +
-> +\item[\field{reserved}] is reserved for future use.
-> +
-> +\item[\field{max_size}] is the maximum size of each crypto request's content supported by the device
-> +\end{description}
-> +
-> +\begin{note}
-> +Unless explicitly stated otherwise all lengths and sizes are in bytes.
-> +\end{note}
-> +
-> +\devicenormative{\subsubsection}{Device configuration layout}{Device Types / Crypto Device / Device configuration layout}
-> +
-> +\begin{itemize*}
-> +\item The device MUST set \field{max_dataqueues} to between 1 and 65535 inclusive.
-> +\item The device MUST set the \field{status} with valid flags, undefined flags MUST NOT be set.
-> +\item The device MUST accept and handle requests after \field{status} is set to VIRTIO_CRYPTO_S_HW_READY.
-> +\item The device MUST set \field{crypto_services} based on the crypto services the device offers.
-> +\item The device MUST set detailed algorithms masks for each service advertised by \field{crypto_services}.
-> +    The device MUST NOT set the not defined algorithms bits.
-> +\item The device MUST set \field{max_size} to show the maximum size of crypto request the device supports.
-> +\item The device MUST set \field{max_cipher_key_len} to show the maximum length of cipher key if the
-> +    device supports CIPHER service.
-> +\item The device MUST set \field{max_auth_key_len} to show the maximum length of authenticated key if
-> +    the device supports MAC service.
-> +\end{itemize*}
-> +
-> +\drivernormative{\subsubsection}{Device configuration layout}{Device Types / Crypto Device / Device configuration layout}
-> +
-> +\begin{itemize*}
-> +\item The driver MUST read the \field{status} from the bottom bit of status to check whether the
-> +    VIRTIO_CRYPTO_S_HW_READY is set, and the driver MUST reread it after device reset.
-> +\item The driver MUST NOT transmit any requests to the device if the VIRTIO_CRYPTO_S_HW_READY is not set.
-> +\item The driver MUST read \field{max_dataqueues} field to discover the number of data queues the device supports.
-> +\item The driver MUST read \field{crypto_services} field to discover which services the device is able to offer.
-> +\item The driver SHOULD ignore the not defined algorithms bits.
-> +\item The driver MUST read the detailed algorithms fields based on \field{crypto_services} field.
-> +\item The driver SHOULD read \field{max_size} to discover the maximum size of crypto request the device supports.
-> +\item The driver SHOULD read \field{max_cipher_key_len} to discover the maximum length of cipher key
-> +    the device supports.
-> +\item The driver SHOULD read \field{max_auth_key_len} to discover the maximum length of authenticated
-> +    key the device supports.
-> +\end{itemize*}
-> +
-> +\subsection{Device Initialization}\label{sec:Device Types / Crypto Device / Device Initialization}
-> +
-> +\drivernormative{\subsubsection}{Device Initialization}{Device Types / Crypto Device / Device Initialization}
-> +
-> +\begin{itemize*}
-> +\item The driver MUST configure and initialize all virtqueues.
-> +\item The driver MUST read the supported crypto services from bits of \field{crypto_services}.
-> +\item The driver MUST read the supported algorithms based on \field{crypto_services} field.
-> +\end{itemize*}
-> +
-> +\subsection{Device Operation}\label{sec:Device Types / Crypto Device / Device Operation}
-> +
-> +The operation of a virtio crypto device is driven by requests placed on the virtqueues.
-> +Requests consist of a queue-type specific header (specifying among others the operation)
-> +and an operation specific payload.
-> +
-> +If VIRTIO_CRYPTO_F_MUX_MODE is negotiated the device may support both session mode
-> +(See \ref{sec:Device Types / Crypto Device / Device Operation / Control Virtqueue / Session operation})
-> +and stateless mode operation requests.
-> +In stateless mode all operation parameters are supplied as a part of each request,
-> +while in session mode, some or all operation parameters are managed within the
-> +session. Stateless mode is guarded by feature bits 0-4 on a service level. If
-> +stateless mode is negotiated for a service, the service is available both in
-> +session and stateless mode; otherwise it's only available in session mode.
-> +
-> +\subsubsection{Operation Status}\label{sec:Device Types / Crypto Device / Device Operation / Operation status}
-> +The device MUST return a status code as part of the operation (both session
-> +operation and service operation) result. The valid operation status as follows:
-> +
-> +\begin{lstlisting}
-> +enum VIRTIO_CRYPTO_STATUS {
-> +    VIRTIO_CRYPTO_OK = 0,
-> +    VIRTIO_CRYPTO_ERR = 1,
-> +    VIRTIO_CRYPTO_BADMSG = 2,
-> +    VIRTIO_CRYPTO_NOTSUPP = 3,
-> +    VIRTIO_CRYPTO_INVSESS = 4,
-> +    VIRTIO_CRYPTO_NOSPC = 5,
-> +    VIRTIO_CRYPTO_MAX
-> +};
-> +\end{lstlisting}
-> +
-> +\begin{itemize*}
-> +\item VIRTIO_CRYPTO_OK: success.
-> +\item VIRTIO_CRYPTO_BADMSG: authentication failed (only when AEAD decryption).
-> +\item VIRTIO_CRYPTO_NOTSUPP: operation or algorithm is unsupported.
-> +\item VIRTIO_CRYPTO_INVSESS: invalid session ID when executing crypto operations.
-> +\item VIRTIO_CRYPTO_NOSPC: no free session ID (only when the VIRTIO_CRYPTO_F_MUX_MODE
-> +    feature bit is negotiated).
-> +\item VIRTIO_CRYPTO_ERR: any failure not mentioned above occurs.
-> +\end{itemize*}
-> +
-> +\subsubsection{Control Virtqueue}\label{sec:Device Types / Crypto Device / Device Operation / Control Virtqueue}
-
-We have already discussed the control virtqueue part so I'm going to
-skip it.
-
-Except for the stuff I'm complaining about above it looks good to me.
-
-Regards,
-Halil
+-- 
+2.7.4
 
 
 ---------------------------------------------------------------------
