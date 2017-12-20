@@ -1,72 +1,71 @@
-Return-Path: virtio-dev-return-2866-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2868-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 897F55818043
-	for <virtio-dev@lists.oasis-open.org>; Wed, 20 Dec 2017 02:32:40 -0800 (PST)
-Message-ID: <5A3A3CBC.4030202@intel.com>
-Date: Wed, 20 Dec 2017 18:34:36 +0800
-From: Wei Wang <wei.w.wang@intel.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id F1DCC5819144
+	for <virtio-dev@lists.oasis-open.org>; Wed, 20 Dec 2017 08:13:21 -0800 (PST)
+From: "Wang, Wei W" <wei.w.wang@intel.com>
+Date: Wed, 20 Dec 2017 16:13:16 +0000
+Message-ID: <286AC319A985734F985F78AFA26841F73938CC3E@shsmsx102.ccr.corp.intel.com>
+References: <1513685879-21823-1-git-send-email-wei.w.wang@intel.com>
+ <201712192305.AAE21882.MtQHJOFFSFVOLO@I-love.SAKURA.ne.jp>
+ <5A3A3CBC.4030202@intel.com> <20171220122547.GA1654@bombadil.infradead.org>
+In-Reply-To: <20171220122547.GA1654@bombadil.infradead.org>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <1513685879-21823-1-git-send-email-wei.w.wang@intel.com> <201712192305.AAE21882.MtQHJOFFSFVOLO@I-love.SAKURA.ne.jp>
-In-Reply-To: <201712192305.AAE21882.MtQHJOFFSFVOLO@I-love.SAKURA.ne.jp>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: [virtio-dev] Re: [PATCH v20 0/7] Virtio-balloon Enhancement
-To: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-Cc: virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, qemu-devel@nongnu.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, linux-mm@kvack.org, mst@redhat.com, mhocko@kernel.org, akpm@linux-foundation.org, mawilcox@microsoft.com, david@redhat.com, cornelia.huck@de.ibm.com, mgorman@techsingularity.net, aarcange@redhat.com, amit.shah@redhat.com, pbonzini@redhat.com, willy@infradead.org, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu0@gmail.com, nilal@redhat.com, riel@redhat.com
+Subject: [virtio-dev] RE: [PATCH v20 0/7] Virtio-balloon Enhancement
+To: Matthew Wilcox <willy@infradead.org>
+Cc: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "qemu-devel@nongnu.org" <qemu-devel@nongnu.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "mst@redhat.com" <mst@redhat.com>, "mhocko@kernel.org" <mhocko@kernel.org>, "akpm@linux-foundation.org" <akpm@linux-foundation.org>, "mawilcox@microsoft.com" <mawilcox@microsoft.com>, "david@redhat.com" <david@redhat.com>, "cornelia.huck@de.ibm.com" <cornelia.huck@de.ibm.com>, "mgorman@techsingularity.net" <mgorman@techsingularity.net>, "aarcange@redhat.com" <aarcange@redhat.com>, "amit.shah@redhat.com" <amit.shah@redhat.com>, "pbonzini@redhat.com" <pbonzini@redhat.com>, "liliang.opensource@gmail.com" <liliang.opensource@gmail.com>, "yang.zhang.wz@gmail.com" <yang.zhang.wz@gmail.com>, "quan.xu0@gmail.com" <quan.xu0@gmail.com>, "nilal@redhat.com" <nilal@redhat.com>, "riel@redhat.com" <riel@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 12/19/2017 10:05 PM, Tetsuo Handa wrote:
-> Wei Wang wrote:
->> ChangeLog:
->> v19->v20:
->> 1) patch 1: xbitmap
->> 	- add __rcu to "void **slot";
->> 	- remove the exceptional path.
->> 2) patch 3: xbitmap
->> 	- DeveloperNotes: add an item to comment that the current bit range
->> 	  related APIs operating on extremely large ranges (e.g.
->>            [0, ULONG_MAX)) will take too long time. This can be optimized in
->> 	  the future.
->> 	- remove the exceptional path;
->> 	- remove xb_preload_and_set();
->> 	- reimplement xb_clear_bit_range to make its usage close to
->> 	  bitmap_clear;
->> 	- rename xb_find_next_set_bit to xb_find_set, and re-implement it
->> 	  in a style close to find_next_bit;
->> 	- rename xb_find_next_zero_bit to xb_find_clear, and re-implement
->> 	  it in a stytle close to find_next_zero_bit;
->> 	- separate the implementation of xb_find_set and xb_find_clear for
->> 	  the convenience of future updates.
-> Removing exceptional path made this patch easier to read.
-> But what I meant is
->
->    Can you eliminate exception path and fold all xbitmap patches into one, and
->    post only one xbitmap patch without virtio-balloon changes?
->
-> .
->
-> I still think we don't need xb_preload()/xb_preload_end().
+On Wednesday, December 20, 2017 8:26 PM, Matthew Wilcox wrote:
+> On Wed, Dec 20, 2017 at 06:34:36PM +0800, Wei Wang wrote:
+> > On 12/19/2017 10:05 PM, Tetsuo Handa wrote:
+> > > I think xb_find_set() has a bug in !node path.
+> >
+> > I think we can probably remove the "!node" path for now. It would be
+> > good to get the fundamental part in first, and leave optimization to
+> > come as separate patches with corresponding test cases in the future.
+>=20
+> You can't remove the !node path.  You'll see !node when the highest set b=
+it
+> is less than 1024.  So do something like this:
+>=20
+> 	unsigned long bit;
+> 	xb_preload(GFP_KERNEL);
+> 	xb_set_bit(xb, 700);
+> 	xb_preload_end();
+> 	bit =3D xb_find_set(xb, ULONG_MAX, 0);
+> 	assert(bit =3D=3D 700);
 
-Why would you think preload is not needed?
+This above test will result in "!node with bitmap !=3DNULL", and it goes to=
+ the regular "if (bitmap)" path, which finds 700.
 
-The bitmap is allocated via preload "bitmap = 
-this_cpu_cmpxchg(ida_bitmap, NULL, bitmap);", this allocated bitmap 
-would be used in xb_set_bit().
+A better test would be
+...
+xb_set_bit(xb, 700);
+assert(xb_find_set(xb, ULONG_MAX, 800) =3D=3D ULONG_MAX);
+...
 
+The first try with the "if (bitmap)" path doesn't find a set bit, and the r=
+emaining tries will always result in "!node && !bitmap", which implies no s=
+et bit anymore and no need to try in this case.
 
-> I think xb_find_set() has a bug in !node path.
+So, I think we can change it to
 
-I think we can probably remove the "!node" path for now. It would be 
-good to get the fundamental part in first, and leave optimization to 
-come as separate patches with corresponding test cases in the future.
+If (!node && !bitmap)
+	return size;
+
 
 Best,
 Wei
+
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
