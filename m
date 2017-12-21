@@ -1,55 +1,73 @@
-Return-Path: virtio-dev-return-2867-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2872-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 59BBE5819140
-	for <virtio-dev@lists.oasis-open.org>; Wed, 20 Dec 2017 07:01:08 -0800 (PST)
-Date: Wed, 20 Dec 2017 17:00:53 +0200
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20171220165749-mutt-send-email-mst@kernel.org>
-References: <bf96d8c2-4aac-cdfd-24b9-218e0f89a7ef@akamai.com>
-MIME-Version: 1.0
+	by lists.oasis-open.org (Postfix) with ESMTP id 2AC545818F40
+	for <virtio-dev@lists.oasis-open.org>; Thu, 21 Dec 2017 03:37:46 -0800 (PST)
 Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <bf96d8c2-4aac-cdfd-24b9-218e0f89a7ef@akamai.com>
-Subject: [virtio-dev] Re: Add VIRTIO_NET_F_SPEED_DUPLEX (4) feature bit
-To: Jason Baron <jbaron@akamai.com>
-Cc: virtio-dev@lists.oasis-open.org, jasowang@redhat.com
+Mime-Version: 1.0 (Mac OS X Mail 10.3 \(3273\))
+From: Yan Vugenfirer <yvugenfi@redhat.com>
+In-Reply-To: <20171220165749-mutt-send-email-mst@kernel.org>
+Date: Thu, 21 Dec 2017 13:37:29 +0200
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <253C90BB-3BBD-4E01-800C-C88408B27F01@redhat.com>
+References: <bf96d8c2-4aac-cdfd-24b9-218e0f89a7ef@akamai.com>
+ <20171220165749-mutt-send-email-mst@kernel.org>
+Subject: Re: [virtio-dev] Add VIRTIO_NET_F_SPEED_DUPLEX (4) feature bit
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: Jason Baron <jbaron@akamai.com>, virtio-dev@lists.oasis-open.org, jasowang@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Thu, Dec 14, 2017 at 03:31:54PM -0500, Jason Baron wrote:
-> Hi,
-> 
-> We have found it useful to have the virtio net device export a linkspeed
-> and duplex setting, such that a guest linkspeed and duplex settings can
-> be set automatically from the host side. We have some guest software
-> that relies on this setting, and fails without a valid value provided.
 
-That software really should be fixed btw. You can't always reliably
-figure out the speed, and it might change at any time.
+> On 20 Dec 2017, at 17:00, Michael S. Tsirkin <mst@redhat.com> wrote:
+>=20
+> On Thu, Dec 14, 2017 at 03:31:54PM -0500, Jason Baron wrote:
+>> Hi,
+>>=20
+>> We have found it useful to have the virtio net device export a =
+linkspeed
+>> and duplex setting, such that a guest linkspeed and duplex settings =
+can
+>> be set automatically from the host side. We have some guest software
+>> that relies on this setting, and fails without a valid value =
+provided.
+>=20
+> That software really should be fixed btw. You can't always reliably
+> figure out the speed, and it might change at any time.
+>=20
+Good point. Each time when there is a linked up indication from the =
+host, we should expect that the settings can be different (for example =
+backend changed).
 
-> Thus, I would like to propose adding a new feature bit:
-> 
-> VIRTIO_NET_F_SPEED_DUPLEX (4) Device provides a linkspeed and duplex setting
+>> Thus, I would like to propose adding a new feature bit:
+>>=20
+>> VIRTIO_NET_F_SPEED_DUPLEX (4) Device provides a linkspeed and duplex =
+setting
+>=20
+>=20
+> I think a high feature bit would be better. Low bits can be
+> backported to legacy devices, so better used for things
+> like mtu, where communication just breaks otherwise,
+> and for net we are running out of these.
+>=20
+>=20
+>> I have provided sample qemu hypervisor and linux kernel guest code to
+>> implement this feature here:
+>>=20
+>> http://lkml.iu.edu/hypermail/linux/kernel/1712.1/05692.html
+>>=20
+>> Thanks,
+>>=20
+>> -Jason
+>=20
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+>=20
 
-
-I think a high feature bit would be better. Low bits can be
-backported to legacy devices, so better used for things
-like mtu, where communication just breaks otherwise,
-and for net we are running out of these.
-
-
-> I have provided sample qemu hypervisor and linux kernel guest code to
-> implement this feature here:
-> 
-> http://lkml.iu.edu/hypermail/linux/kernel/1712.1/05692.html
-> 
-> Thanks,
-> 
-> -Jason
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
