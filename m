@@ -1,59 +1,88 @@
-Return-Path: virtio-dev-return-2752-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2878-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 323855818F75
-	for <virtio-dev@lists.oasis-open.org>; Tue,  5 Dec 2017 04:14:52 -0800 (PST)
-From: =?UTF-8?q?Tom=C3=A1=C5=A1=20Golembiovsk=C3=BD?= <tgolembi@redhat.com>
-Date: Tue,  5 Dec 2017 13:14:46 +0100
-Message-Id: <938dc32019864c9c19259bdddd64a53b6b99efef.1512476043.git.tgolembi@redhat.com>
-In-Reply-To: <cover.1512476043.git.tgolembi@redhat.com>
-References: <cover.1512476043.git.tgolembi@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Subject: [virtio-dev] [PATCH v2 1/1] virtio-balloon: include statistics of disk/file caches
-To: virtio-dev@lists.oasis-open.org, qemu-devel@nongnu.org
-Cc: Wei Wang <wei.w.wang@intel.com>, "Michael S. Tsirkin" <mst@redhat.com>, =?UTF-8?q?Tom=C3=A1=C5=A1=20Golembiovsk=C3=BD?= <tgolembi@redhat.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 498C31CB807B
+	for <virtio-dev@lists.oasis-open.org>; Thu, 21 Dec 2017 22:42:36 -0800 (PST)
+From: Tiwei Bie <tiwei.bie@intel.com>
+Date: Fri, 22 Dec 2017 14:41:48 +0800
+Message-Id: <20171222064151.29266-1-tiwei.bie@intel.com>
+Subject: [virtio-dev] [RFC 0/3] Extend vhost-user to support VFIO based accelerators
+To: virtio-dev@lists.oasis-open.org, qemu-devel@nongnu.org, mst@redhat.com, alex.williamson@redhat.com, pbonzini@redhat.com, stefanha@redhat.com
+Cc: cunming.liang@intel.com, dan.daly@intel.com, jianfeng.tan@intel.com, zhihong.wang@intel.com, xiao.w.wang@intel.com, tiwei.bie@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Signed-off-by: Tomáš Golembiovský <tgolembi@redhat.com>
----
- hw/virtio/virtio-balloon.c                      | 1 +
- include/standard-headers/linux/virtio_balloon.h | 3 ++-
- 2 files changed, 3 insertions(+), 1 deletion(-)
+This RFC patch set does some small extensions to vhost-user protocol
+to support VFIO based accelerators, and makes it possible to get the
+similar performance of VFIO passthru while keeping the virtio device
+emulation in QEMU.
 
-diff --git a/hw/virtio/virtio-balloon.c b/hw/virtio/virtio-balloon.c
-index 37cde38982..8141326a51 100644
---- a/hw/virtio/virtio-balloon.c
-+++ b/hw/virtio/virtio-balloon.c
-@@ -50,6 +50,7 @@ static const char *balloon_stat_names[] = {
-    [VIRTIO_BALLOON_S_MEMFREE] = "stat-free-memory",
-    [VIRTIO_BALLOON_S_MEMTOT] = "stat-total-memory",
-    [VIRTIO_BALLOON_S_AVAIL] = "stat-available-memory",
-+   [VIRTIO_BALLOON_S_CACHES] = "stat-disk-caches",
-    [VIRTIO_BALLOON_S_NR] = NULL
- };
- 
-diff --git a/include/standard-headers/linux/virtio_balloon.h b/include/standard-headers/linux/virtio_balloon.h
-index 9d06ccd066..7b0a41b8fc 100644
---- a/include/standard-headers/linux/virtio_balloon.h
-+++ b/include/standard-headers/linux/virtio_balloon.h
-@@ -52,7 +52,8 @@ struct virtio_balloon_config {
- #define VIRTIO_BALLOON_S_MEMFREE  4   /* Total amount of free memory */
- #define VIRTIO_BALLOON_S_MEMTOT   5   /* Total amount of memory */
- #define VIRTIO_BALLOON_S_AVAIL    6   /* Available memory as in /proc */
--#define VIRTIO_BALLOON_S_NR       7
-+#define VIRTIO_BALLOON_S_CACHES   7   /* Disk caches */
-+#define VIRTIO_BALLOON_S_NR       8
- 
- /*
-  * Memory statistics structure.
+When we have virtio ring compatible devices, it's possible to setup
+the device (DMA mapping, PCI config, etc) based on the existing info
+(memory-table, features, vring info, etc) which is available on the
+vhost-backend (e.g. DPDK vhost library). Then, we will be able to
+use such devices to accelerate the emulated device for the VM. And
+we call it vDPA: vhost DataPath Acceleration. The key difference
+between VFIO passthru and vDPA is that, in vDPA only the data path
+(e.g. ring, notify and queue interrupt) is pass-throughed, the device
+control path (e.g. PCI configuration space and MMIO regions) is still
+defined and emulated by QEMU.
+
+The benefits of keeping virtio device emulation in QEMU compared
+with virtio device VFIO passthru include (but not limit to):
+
+- consistent device interface from guest OS;
+- max flexibility on control path and hardware design;
+- leveraging the existing virtio live-migration framework;
+
+But the critical issue in vDPA is that the data path performance is
+relatively low and some host threads are needed for the data path,
+because some necessary mechanisms are missing to support:
+
+1) guest driver notifies the device directly;
+2) device interrupts the guest directly;
+
+So this patch set does some small extensions to vhost-user protocol
+to make both of them possible. It leverages the same mechanisms (e.g.
+EPT and Posted-Interrupt on Intel platform) as the VFIO passthru to
+achieve the data path pass through.
+
+A new protocol feature bit is added to negotiate the accelerator feature
+support. Two new slave message types are added to enable the notify and
+interrupt passthru for each queue. From the view of vhost-user protocol
+design, it's very flexible. The passthru can be enabled/disabled for
+each queue individually, and it's possible to accelerate each queue by
+different devices. More design and implementation details can be found
+from the last patch.
+
+There are some rough edges in this patch set (so this is a RFC patch
+set for now), but it's never too early to hear the thoughts from the
+community! So any comments and suggestions would be really appreciated!
+
+Tiwei Bie (3):
+  vhost-user: support receiving file descriptors in slave_read
+  vhost-user: introduce shared vhost-user state
+  vhost-user: add VFIO based accelerators support
+
+ docs/interop/vhost-user.txt     |  57 ++++++
+ hw/scsi/vhost-user-scsi.c       |   6 +-
+ hw/vfio/common.c                |   2 +-
+ hw/virtio/vhost-user.c          | 430 +++++++++++++++++++++++++++++++++++++++-
+ hw/virtio/vhost.c               |   3 +-
+ hw/virtio/virtio-pci.c          |   8 -
+ hw/virtio/virtio-pci.h          |   8 +
+ include/hw/vfio/vfio.h          |   2 +
+ include/hw/virtio/vhost-user.h  |  43 ++++
+ include/hw/virtio/virtio-scsi.h |   6 +-
+ net/vhost-user.c                |  30 +--
+ 11 files changed, 561 insertions(+), 34 deletions(-)
+ create mode 100644 include/hw/virtio/vhost-user.h
+
 -- 
-2.15.1
+2.13.3
 
 
 ---------------------------------------------------------------------
