@@ -1,95 +1,140 @@
-Return-Path: virtio-dev-return-2882-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2883-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 621811CB807E
-	for <virtio-dev@lists.oasis-open.org>; Fri, 22 Dec 2017 00:43:27 -0800 (PST)
-Message-ID: <5A3CC62D.6020001@intel.com>
-Date: Fri, 22 Dec 2017 16:45:33 +0800
+	by lists.oasis-open.org (Postfix) with ESMTP id A7B7C1CB807E
+	for <virtio-dev@lists.oasis-open.org>; Fri, 22 Dec 2017 00:47:03 -0800 (PST)
+Message-ID: <5A3CC707.9070708@intel.com>
+Date: Fri, 22 Dec 2017 16:49:11 +0800
 From: Wei Wang <wei.w.wang@intel.com>
 MIME-Version: 1.0
-References: <1513823406-43632-1-git-send-email-wei.w.wang@intel.com>	<20171221141805.GA27695@bombadil.infradead.org> <201712212337.JFC57368.tLFOJFVSFHMOOQ@I-love.SAKURA.ne.jp>
-In-Reply-To: <201712212337.JFC57368.tLFOJFVSFHMOOQ@I-love.SAKURA.ne.jp>
+References: <1513823406-43632-1-git-send-email-wei.w.wang@intel.com> <20171221210327.GB25009@bombadil.infradead.org>
+In-Reply-To: <20171221210327.GB25009@bombadil.infradead.org>
 Content-Type: text/plain; charset=windows-1252; format=flowed
 Content-Transfer-Encoding: 7bit
 Subject: [virtio-dev] Re: [PATCH v20 3/7 RESEND] xbitmap: add more operations
-To: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>, willy@infradead.org
-Cc: virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, qemu-devel@nongnu.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, linux-mm@kvack.org, mst@redhat.com, mhocko@kernel.org, akpm@linux-foundation.org, mawilcox@microsoft.com
+To: Matthew Wilcox <willy@infradead.org>
+Cc: virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, qemu-devel@nongnu.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, linux-mm@kvack.org, mst@redhat.com, mhocko@kernel.org, akpm@linux-foundation.org, mawilcox@microsoft.com, penguin-kernel@I-love.SAKURA.ne.jp
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 12/21/2017 10:37 PM, Tetsuo Handa wrote:
-> Matthew Wilcox wrote:
->>> +/**
->>> + * xb_find_set - find the next set bit in a range of bits
->>> + * @xb: the xbitmap to search from
->>> + * @offset: the offset in the range to start searching
->>> + * @size: the size of the range
->>> + *
->>> + * Returns: the found bit or, @size if no set bit is found.
->>> + */
->>> +unsigned long xb_find_set(struct xb *xb, unsigned long size,
->>> +			  unsigned long offset)
->>> +{
->>> +	struct radix_tree_root *root = &xb->xbrt;
->>> +	struct radix_tree_node *node;
->>> +	void __rcu **slot;
->>> +	struct ida_bitmap *bitmap;
->>> +	unsigned long index = offset / IDA_BITMAP_BITS;
->>> +	unsigned long index_end = size / IDA_BITMAP_BITS;
->>> +	unsigned long bit = offset % IDA_BITMAP_BITS;
->>> +
->>> +	if (unlikely(offset >= size))
->>> +		return size;
->>> +
->>> +	while (index <= index_end) {
->>> +		unsigned long ret;
->>> +		unsigned int nbits = size - index * IDA_BITMAP_BITS;
->>> +
->>> +		bitmap = __radix_tree_lookup(root, index, &node, &slot);
->>> +
->>> +		if (!node && !bitmap)
->>> +			return size;
->>> +
->>> +		if (bitmap) {
->>> +			if (nbits > IDA_BITMAP_BITS)
->>> +				nbits = IDA_BITMAP_BITS;
->>> +
->>> +			ret = find_next_bit(bitmap->bitmap, nbits, bit);
->>> +			if (ret != nbits)
->>> +				return ret + index * IDA_BITMAP_BITS;
->>> +		}
->>> +		bit = 0;
->>> +		index++;
->>> +	}
->>> +
->>> +	return size;
->>> +}
->>> +EXPORT_SYMBOL(xb_find_set);
->> This is going to be slower than the implementation I sent yesterday.  If I
->> call:
->> 	xb_init(xb);
->> 	xb_set_bit(xb, ULONG_MAX);
->> 	xb_find_set(xb, ULONG_MAX, 0);
->>
->> it's going to call __radix_tree_lookup() 16 quadrillion times.
->> My implementation will walk the tree precisely once.
->>
-> Yes. Wei's patch still can not work.
-> We should start reviewing Matthew's implementation.
+On 12/22/2017 05:03 AM, Matthew Wilcox wrote:
+> OK, here's a rewrite of xbitmap.
+>
+> Compared to the version you sent:
+>   - xb_find_set() is the rewrite I sent out yesterday.
+>   - xb_find_clear() is a new implementation.  I use the IDR_FREE tag to find
+>     clear bits.  This led to me finding a bug in radix_tree_for_each_tagged().
+>   - xb_zero() is also a new implementation (replacing xb_clear_bit_range).
+>     It should also be more efficient in deep trees.
+>   - Did not accept your change to xb_set_bit(); I think it's important to
+>     leave the radix tree node in place, so we're guaranteed to make progress
+>     in low-memory situations.  We're expecting the caller to retry, so the
+>     memory should not leak.
+>   - Redid a lot of the kernel-doc.  Thanks for adding it!  I removed mentions
+>     of implementation details, leaving only information useful to those who
+>     are using it.
+>
+> Compared to the version I put out back in February:
+>   - Accepted your change to xb_preload(); I think it's an improvement.
+>   - Rewrote xb_set_bit() to use the radix_tree_iter_ family of functions.
+>     Should improve performance for deep trees.
+>   - Rewrote xb_clear_bit() for the same reason.
+>   - Left out the use of radix tree exceptional entries.  Thanks for taking
+>     them out!  Keeps it clearer for now; if they prove useful, we can put
+>     them back in.
+>   - Removed the use of __radix_tree_delete and __radix_tree_create, so drop
+>     the changes to those functions.
+>
+> Other miscellaneous notes
+>   - I left xb_fill() in the header file, even though there's no implementation
+>     yet.  Wouldn't be hard to add once we have a user.
+>   - Used SPDX tags instead of a license notice.
+>
+> I think we need more test cases ... in reviewing this to send out,
+> I found a bug in xb_zero(), which I've only fixed because I don't have
+> time to write a test case for it.
 
-It runs without any issue on my machine. I didn't generate an "xbitmap" 
-executable (I just found adding xbitmap executable causes a build error 
-due to a Makefile error), instead, I tested it within "main" and it 
-passed all the tests.
+Thanks for the improvement. I also found a small bug in xb_zero. With 
+the following changes, it has passed the current test cases and tested 
+with the virtio-balloon usage without any issue.
 
-Matthew has implemented a new version, let's start from there.
+
+> +
+> +/**
+> + * xb_zero() - Clear a range of bits in the XBitmap.
+> + * @xb: The XBitmap.
+> + * @min: The first bit to clear.
+> + * @max: The last bit to clear.
+> + *
+> + * This function is used to clear a range of bits in the xbitmap.
+> + */
+> +void xb_zero(struct xb *xb, unsigned long min, unsigned long max)
+> +{
+> +	struct radix_tree_root *root = &xb->xbrt;
+> +	struct radix_tree_iter iter;
+> +	void __rcu **slot;
+> +	struct ida_bitmap *bitmap;
+> +	unsigned long index = min / IDA_BITMAP_BITS;
+> +	unsigned long first = min % IDA_BITMAP_BITS;
+> +	unsigned long maxindex = max / IDA_BITMAP_BITS;
+> +
+> +	radix_tree_for_each_slot(slot, root, &iter, index) {
+> +		unsigned long nbits = IDA_BITMAP_BITS;
+> +		if (index > maxindex)
+> +			break;
+> +		bitmap = radix_tree_deref_slot(slot);
+> +		if (!bitmap)
+> +			continue;
+> +		radix_tree_iter_tag_set(root, &iter, IDR_FREE);
+> +
+> +		if (!first && iter.index < maxindex)
+> +			goto delete;
+> +		if (iter.index == maxindex)
+> +			nbits = max % IDA_BITMAP_BITS + 1;
+> +		bitmap_clear(bitmap->bitmap, first, nbits);
+
+It should be: bitmap_clear(.., first, nbits - first);
+
+
+> diff --git a/tools/testing/radix-tree/Makefile b/tools/testing/radix-tree/Makefile
+> index fa7ee369b3c9..adf36e34dd77 100644
+> --- a/tools/testing/radix-tree/Makefile
+> +++ b/tools/testing/radix-tree/Makefile
+> @@ -1,12 +1,13 @@
+>   # SPDX-License-Identifier: GPL-2.0
+>   
+>   CFLAGS += -I. -I../../include -g -O2 -Wall -D_LGPL_SOURCE -fsanitize=address
+> -LDFLAGS += -fsanitize=address
+> -LDLIBS+= -lpthread -lurcu
+> -TARGETS = main idr-test multiorder
+> +LDFLAGS += -fsanitize=address $(LDLIBS)
+> +LDLIBS := -lpthread -lurcu
+> +TARGETS = main idr-test multiorder xbitmap
+>   CORE_OFILES := radix-tree.o idr.o linux.o test.o find_bit.o
+>   OFILES = main.o $(CORE_OFILES) regression1.o regression2.o regression3.o \
+> -	 tag_check.o multiorder.o idr-test.o iteration_check.o benchmark.o
+> +	 tag_check.o multiorder.o idr-test.o iteration_check.o benchmark.o \
+> +	 xbitmap.o
+>   
+>   ifndef SHIFT
+>   	SHIFT=3
+> @@ -25,8 +26,11 @@ idr-test: idr-test.o $(CORE_OFILES)
+>   
+>   multiorder: multiorder.o $(CORE_OFILES)
+>   
+> +xbitmap: xbitmap.o $(CORE_OFILES)
+> +	$(CC) $(CFLAGS) $(LDFLAGS) $^ -o xbitmap
+> +
+
+I think the "$(CC).." line should be removed, which will fix the build 
+error when adding "xbitmap" to TARGET.
+
 
 Best,
 Wei
-
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
