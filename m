@@ -1,136 +1,70 @@
-Return-Path: virtio-dev-return-2883-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2884-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id A7B7C1CB807E
-	for <virtio-dev@lists.oasis-open.org>; Fri, 22 Dec 2017 00:47:03 -0800 (PST)
-Message-ID: <5A3CC707.9070708@intel.com>
-Date: Fri, 22 Dec 2017 16:49:11 +0800
+	by lists.oasis-open.org (Postfix) with ESMTP id 84C2E5818F5D
+	for <virtio-dev@lists.oasis-open.org>; Sat, 23 Dec 2017 23:29:28 -0800 (PST)
+Message-ID: <5A3F57D0.9050007@intel.com>
+Date: Sun, 24 Dec 2017 15:31:28 +0800
 From: Wei Wang <wei.w.wang@intel.com>
 MIME-Version: 1.0
-References: <1513823406-43632-1-git-send-email-wei.w.wang@intel.com> <20171221210327.GB25009@bombadil.infradead.org>
-In-Reply-To: <20171221210327.GB25009@bombadil.infradead.org>
+References: <1513823406-43632-1-git-send-email-wei.w.wang@intel.com>	<20171221210327.GB25009@bombadil.infradead.org>	<201712231159.ECI73411.tFFFJOHOVMOLQS@I-love.SAKURA.ne.jp>	<20171223032959.GA11578@bombadil.infradead.org> <201712232333.BAH82874.FFFtOMHSLVQOOJ@I-love.SAKURA.ne.jp>
+In-Reply-To: <201712232333.BAH82874.FFFtOMHSLVQOOJ@I-love.SAKURA.ne.jp>
 Content-Type: text/plain; charset=windows-1252; format=flowed
 Content-Transfer-Encoding: 7bit
 Subject: [virtio-dev] Re: [PATCH v20 3/7 RESEND] xbitmap: add more operations
-To: Matthew Wilcox <willy@infradead.org>
-Cc: virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, qemu-devel@nongnu.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, linux-mm@kvack.org, mst@redhat.com, mhocko@kernel.org, akpm@linux-foundation.org, mawilcox@microsoft.com, penguin-kernel@I-love.SAKURA.ne.jp
+To: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>, willy@infradead.org
+Cc: virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, qemu-devel@nongnu.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, linux-mm@kvack.org, mst@redhat.com, mhocko@kernel.org, akpm@linux-foundation.org, mawilcox@microsoft.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 12/22/2017 05:03 AM, Matthew Wilcox wrote:
-> OK, here's a rewrite of xbitmap.
->
-> Compared to the version you sent:
->   - xb_find_set() is the rewrite I sent out yesterday.
->   - xb_find_clear() is a new implementation.  I use the IDR_FREE tag to find
->     clear bits.  This led to me finding a bug in radix_tree_for_each_tagged().
->   - xb_zero() is also a new implementation (replacing xb_clear_bit_range).
->     It should also be more efficient in deep trees.
->   - Did not accept your change to xb_set_bit(); I think it's important to
->     leave the radix tree node in place, so we're guaranteed to make progress
->     in low-memory situations.  We're expecting the caller to retry, so the
->     memory should not leak.
->   - Redid a lot of the kernel-doc.  Thanks for adding it!  I removed mentions
->     of implementation details, leaving only information useful to those who
->     are using it.
->
-> Compared to the version I put out back in February:
->   - Accepted your change to xb_preload(); I think it's an improvement.
->   - Rewrote xb_set_bit() to use the radix_tree_iter_ family of functions.
->     Should improve performance for deep trees.
->   - Rewrote xb_clear_bit() for the same reason.
->   - Left out the use of radix tree exceptional entries.  Thanks for taking
->     them out!  Keeps it clearer for now; if they prove useful, we can put
->     them back in.
->   - Removed the use of __radix_tree_delete and __radix_tree_create, so drop
->     the changes to those functions.
->
-> Other miscellaneous notes
->   - I left xb_fill() in the header file, even though there's no implementation
->     yet.  Wouldn't be hard to add once we have a user.
->   - Used SPDX tags instead of a license notice.
->
-> I think we need more test cases ... in reviewing this to send out,
-> I found a bug in xb_zero(), which I've only fixed because I don't have
-> time to write a test case for it.
+On 12/23/2017 10:33 PM, Tetsuo Handa wrote:
+>>>> +	bitmap = rcu_dereference_raw(*slot);
+>>>> +	if (!bitmap) {
+>>>> +		bitmap = this_cpu_xchg(ida_bitmap, NULL);
+>>>> +		if (!bitmap)
+>>>> +			return -ENOMEM;
+>>> I can't understand this. I can understand if it were
+>>>
+>>>    BUG_ON(!bitmap);
+>>>
+>>> because you called xb_preload().
+>>>
+>>> But
+>>>
+>>> 	/*
+>>> 	 * Regular test 2
+>>> 	 * set bit 2000, 2001, 2040
+>>> 	 * Next 1 in [0, 2048)		--> 2000
+>>> 	 * Next 1 in [2000, 2002)	--> 2000
+>>> 	 * Next 1 in [2002, 2041)	--> 2040
+>>> 	 * Next 1 in [2002, 2040)	--> none
+>>> 	 * Next 0 in [2000, 2048)	--> 2002
+>>> 	 * Next 0 in [2048, 2060)	--> 2048
+>>> 	 */
+>>> 	xb_preload(GFP_KERNEL);
+>>> 	assert(!xb_set_bit(&xb1, 2000));
+>>> 	assert(!xb_set_bit(&xb1, 2001));
+>>> 	assert(!xb_set_bit(&xb1, 2040));
+>> [...]
+>>> 	xb_preload_end();
+>>>
+>>> you are not calling xb_preload() prior to each xb_set_bit() call.
+>>> This means that, if each xb_set_bit() is not surrounded with
+>>> xb_preload()/xb_preload_end(), there is possibility of hitting
+>>> this_cpu_xchg(ida_bitmap, NULL) == NULL.
+>> This is just a lazy test.  We "know" that the bits in the range 1024-2047
+>> will all land in the same bitmap, so there's no need to preload for each
+>> of them.
+> Testcases also serves as how to use that API.
+> Assuming such thing leads to incorrect usage.
 
-Thanks for the improvement. I also found a small bug in xb_zero. With 
-the following changes, it has passed the current test cases and tested 
-with the virtio-balloon usage without any issue.
-
-
-> +
-> +/**
-> + * xb_zero() - Clear a range of bits in the XBitmap.
-> + * @xb: The XBitmap.
-> + * @min: The first bit to clear.
-> + * @max: The last bit to clear.
-> + *
-> + * This function is used to clear a range of bits in the xbitmap.
-> + */
-> +void xb_zero(struct xb *xb, unsigned long min, unsigned long max)
-> +{
-> +	struct radix_tree_root *root = &xb->xbrt;
-> +	struct radix_tree_iter iter;
-> +	void __rcu **slot;
-> +	struct ida_bitmap *bitmap;
-> +	unsigned long index = min / IDA_BITMAP_BITS;
-> +	unsigned long first = min % IDA_BITMAP_BITS;
-> +	unsigned long maxindex = max / IDA_BITMAP_BITS;
-> +
-> +	radix_tree_for_each_slot(slot, root, &iter, index) {
-> +		unsigned long nbits = IDA_BITMAP_BITS;
-> +		if (index > maxindex)
-> +			break;
-> +		bitmap = radix_tree_deref_slot(slot);
-> +		if (!bitmap)
-> +			continue;
-> +		radix_tree_iter_tag_set(root, &iter, IDR_FREE);
-> +
-> +		if (!first && iter.index < maxindex)
-> +			goto delete;
-> +		if (iter.index == maxindex)
-> +			nbits = max % IDA_BITMAP_BITS + 1;
-> +		bitmap_clear(bitmap->bitmap, first, nbits);
-
-It should be: bitmap_clear(.., first, nbits - first);
-
-
-> diff --git a/tools/testing/radix-tree/Makefile b/tools/testing/radix-tree/Makefile
-> index fa7ee369b3c9..adf36e34dd77 100644
-> --- a/tools/testing/radix-tree/Makefile
-> +++ b/tools/testing/radix-tree/Makefile
-> @@ -1,12 +1,13 @@
->   # SPDX-License-Identifier: GPL-2.0
->   
->   CFLAGS += -I. -I../../include -g -O2 -Wall -D_LGPL_SOURCE -fsanitize=address
-> -LDFLAGS += -fsanitize=address
-> -LDLIBS+= -lpthread -lurcu
-> -TARGETS = main idr-test multiorder
-> +LDFLAGS += -fsanitize=address $(LDLIBS)
-> +LDLIBS := -lpthread -lurcu
-> +TARGETS = main idr-test multiorder xbitmap
->   CORE_OFILES := radix-tree.o idr.o linux.o test.o find_bit.o
->   OFILES = main.o $(CORE_OFILES) regression1.o regression2.o regression3.o \
-> -	 tag_check.o multiorder.o idr-test.o iteration_check.o benchmark.o
-> +	 tag_check.o multiorder.o idr-test.o iteration_check.o benchmark.o \
-> +	 xbitmap.o
->   
->   ifndef SHIFT
->   	SHIFT=3
-> @@ -25,8 +26,11 @@ idr-test: idr-test.o $(CORE_OFILES)
->   
->   multiorder: multiorder.o $(CORE_OFILES)
->   
-> +xbitmap: xbitmap.o $(CORE_OFILES)
-> +	$(CC) $(CFLAGS) $(LDFLAGS) $^ -o xbitmap
-> +
-
-I think the "$(CC).." line should be removed, which will fix the build 
-error when adding "xbitmap" to TARGET.
+If callers are aware that the bits that they going to record locate in 
+the same bitmap, I think they should also perform the xb_ APIs with only 
+one preload. So the test cases here have shown them a correct example. 
+We can probably add some comments above to explain this.
 
 
 Best,
