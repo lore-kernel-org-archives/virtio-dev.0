@@ -1,66 +1,100 @@
-Return-Path: virtio-dev-return-2974-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2890-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 1F09A1CB8078
-	for <virtio-dev@lists.oasis-open.org>; Tue, 16 Jan 2018 21:01:37 -0800 (PST)
-Date: Wed, 17 Jan 2018 13:00:59 +0800
-From: Tiwei Bie <tiwei.bie@intel.com>
-Message-ID: <20180117050059.wj3ljl4ltwx3fbsv@debian-xvivbkq.sh.intel.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id A17B0581919B
+	for <virtio-dev@lists.oasis-open.org>; Mon,  1 Jan 2018 21:49:24 -0800 (PST)
+From: "Liang, Cunming" <cunming.liang@intel.com>
+Date: Tue, 2 Jan 2018 05:49:09 +0000
+Message-ID: <D0158A423229094DA7ABF71CF2FA0DA34E8420DE@SHSMSX104.ccr.corp.intel.com>
 References: <20171222064151.29266-1-tiwei.bie@intel.com>
- <20171222064151.29266-4-tiwei.bie@intel.com>
- <20180116102339.7ad44e48@w520.home>
+ <367b37c2-a315-5e61-8ac0-69b92c01b9cf@ozlabs.ru>
+In-Reply-To: <367b37c2-a315-5e61-8ac0-69b92c01b9cf@ozlabs.ru>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20180116102339.7ad44e48@w520.home>
-Subject: [virtio-dev] Re: [RFC 3/3] vhost-user: add VFIO based accelerators support
-To: Alex Williamson <alex.williamson@redhat.com>
-Cc: virtio-dev@lists.oasis-open.org, qemu-devel@nongnu.org, mst@redhat.com, pbonzini@redhat.com, stefanha@redhat.com, cunming.liang@intel.com, dan.daly@intel.com, jianfeng.tan@intel.com, zhihong.wang@intel.com, xiao.w.wang@intel.com
+Subject: [virtio-dev] RE: [Qemu-devel] [RFC 0/3] Extend vhost-user to support VFIO based
+ accelerators
+To: Alexey Kardashevskiy <aik@ozlabs.ru>, "Bie, Tiwei" <tiwei.bie@intel.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "qemu-devel@nongnu.org" <qemu-devel@nongnu.org>, "mst@redhat.com" <mst@redhat.com>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "pbonzini@redhat.com" <pbonzini@redhat.com>, "stefanha@redhat.com" <stefanha@redhat.com>
+Cc: "Tan, Jianfeng" <jianfeng.tan@intel.com>, "Wang, Xiao W" <xiao.w.wang@intel.com>, "Wang, Zhihong" <zhihong.wang@intel.com>, "Daly,
+ Dan" <dan.daly@intel.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Tue, Jan 16, 2018 at 10:23:39AM -0700, Alex Williamson wrote:
-> On Fri, 22 Dec 2017 14:41:51 +0800
-> Tiwei Bie <tiwei.bie@intel.com> wrote:
-> 
-> > Signed-off-by: Tiwei Bie <tiwei.bie@intel.com>
-> > ---
-> >  docs/interop/vhost-user.txt    |  57 ++++++
-> >  hw/vfio/common.c               |   2 +-
-> >  hw/virtio/vhost-user.c         | 381 ++++++++++++++++++++++++++++++++++++++++-
-> >  hw/virtio/vhost.c              |   3 +-
-> >  hw/virtio/virtio-pci.c         |   8 -
-> >  hw/virtio/virtio-pci.h         |   8 +
-> >  include/hw/vfio/vfio.h         |   2 +
-> >  include/hw/virtio/vhost-user.h |  26 +++
-> >  8 files changed, 476 insertions(+), 11 deletions(-)
-> > 
-> > diff --git a/hw/vfio/common.c b/hw/vfio/common.c
-> > index 7b2924c0ef..53d8700581 100644
-> > --- a/hw/vfio/common.c
-> > +++ b/hw/vfio/common.c
-> > @@ -49,7 +49,7 @@ struct vfio_as_head vfio_address_spaces =
-> >   * initialized, this file descriptor is only released on QEMU exit and
-> >   * we'll re-use it should another vfio device be attached before then.
-> >   */
-> > -static int vfio_kvm_device_fd = -1;
-> > +int vfio_kvm_device_fd = -1;
-> >  #endif
-> 
-> It seems troublesome for vhost to maintain it's own list of groups and
-> register them with the vfio-kvm device.  These should likely be made
-> into services provided by vfio/common.c such that we can have a single
-> group list and interfaces for adding and deleting them.  Thanks,
-
-Thank you very much for the comments! I'll fix this.
-
-Best regards,
-Tiwei Bie
-
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogQWxleGV5IEthcmRhc2hl
+dnNraXkgW21haWx0bzphaWtAb3psYWJzLnJ1XQ0KPiBTZW50OiBUdWVzZGF5LCBKYW51YXJ5IDIs
+IDIwMTggMTA6NDIgQU0NCj4gVG86IEJpZSwgVGl3ZWkgPHRpd2VpLmJpZUBpbnRlbC5jb20+OyB2
+aXJ0aW8tZGV2QGxpc3RzLm9hc2lzLW9wZW4ub3JnOyBxZW11LQ0KPiBkZXZlbEBub25nbnUub3Jn
+OyBtc3RAcmVkaGF0LmNvbTsgYWxleC53aWxsaWFtc29uQHJlZGhhdC5jb207DQo+IHBib256aW5p
+QHJlZGhhdC5jb207IHN0ZWZhbmhhQHJlZGhhdC5jb20NCj4gQ2M6IFRhbiwgSmlhbmZlbmcgPGpp
+YW5mZW5nLnRhbkBpbnRlbC5jb20+OyBMaWFuZywgQ3VubWluZw0KPiA8Y3VubWluZy5saWFuZ0Bp
+bnRlbC5jb20+OyBXYW5nLCBYaWFvIFcgPHhpYW8udy53YW5nQGludGVsLmNvbT47IFdhbmcsDQo+
+IFpoaWhvbmcgPHpoaWhvbmcud2FuZ0BpbnRlbC5jb20+OyBEYWx5LCBEYW4gPGRhbi5kYWx5QGlu
+dGVsLmNvbT4NCj4gU3ViamVjdDogUmU6IFtRZW11LWRldmVsXSBbUkZDIDAvM10gRXh0ZW5kIHZo
+b3N0LXVzZXIgdG8gc3VwcG9ydCBWRklPIGJhc2VkDQo+IGFjY2VsZXJhdG9ycw0KPiANCj4gT24g
+MjIvMTIvMTcgMTc6NDEsIFRpd2VpIEJpZSB3cm90ZToNCj4gPiBUaGlzIFJGQyBwYXRjaCBzZXQg
+ZG9lcyBzb21lIHNtYWxsIGV4dGVuc2lvbnMgdG8gdmhvc3QtdXNlciBwcm90b2NvbA0KPiA+IHRv
+IHN1cHBvcnQgVkZJTyBiYXNlZCBhY2NlbGVyYXRvcnMsIGFuZCBtYWtlcyBpdCBwb3NzaWJsZSB0
+byBnZXQgdGhlDQo+ID4gc2ltaWxhciBwZXJmb3JtYW5jZSBvZiBWRklPIHBhc3N0aHJ1IHdoaWxl
+IGtlZXBpbmcgdGhlIHZpcnRpbyBkZXZpY2UNCj4gPiBlbXVsYXRpb24gaW4gUUVNVS4NCj4gPg0K
+PiA+IFdoZW4gd2UgaGF2ZSB2aXJ0aW8gcmluZyBjb21wYXRpYmxlIGRldmljZXMsIGl0J3MgcG9z
+c2libGUgdG8gc2V0dXANCj4gPiB0aGUgZGV2aWNlIChETUEgbWFwcGluZywgUENJIGNvbmZpZywg
+ZXRjKSBiYXNlZCBvbiB0aGUgZXhpc3RpbmcgaW5mbw0KPiA+IChtZW1vcnktdGFibGUsIGZlYXR1
+cmVzLCB2cmluZyBpbmZvLCBldGMpIHdoaWNoIGlzIGF2YWlsYWJsZSBvbiB0aGUNCj4gPiB2aG9z
+dC1iYWNrZW5kIChlLmcuIERQREsgdmhvc3QgbGlicmFyeSkuIFRoZW4sIHdlIHdpbGwgYmUgYWJs
+ZSB0byB1c2UNCj4gPiBzdWNoIGRldmljZXMgdG8gYWNjZWxlcmF0ZSB0aGUgZW11bGF0ZWQgZGV2
+aWNlIGZvciB0aGUgVk0uIEFuZCB3ZSBjYWxsDQo+ID4gaXQgdkRQQTogdmhvc3QgRGF0YVBhdGgg
+QWNjZWxlcmF0aW9uLiBUaGUga2V5IGRpZmZlcmVuY2UgYmV0d2VlbiBWRklPDQo+ID4gcGFzc3Ro
+cnUgYW5kIHZEUEEgaXMgdGhhdCwgaW4gdkRQQSBvbmx5IHRoZSBkYXRhIHBhdGggKGUuZy4gcmlu
+ZywNCj4gPiBub3RpZnkgYW5kIHF1ZXVlIGludGVycnVwdCkgaXMgcGFzcy10aHJvdWdoZWQsIHRo
+ZSBkZXZpY2UgY29udHJvbCBwYXRoDQo+ID4gKGUuZy4gUENJIGNvbmZpZ3VyYXRpb24gc3BhY2Ug
+YW5kIE1NSU8gcmVnaW9ucykgaXMgc3RpbGwgZGVmaW5lZCBhbmQNCj4gPiBlbXVsYXRlZCBieSBR
+RU1VLg0KPiA+DQo+ID4gVGhlIGJlbmVmaXRzIG9mIGtlZXBpbmcgdmlydGlvIGRldmljZSBlbXVs
+YXRpb24gaW4gUUVNVSBjb21wYXJlZCB3aXRoDQo+ID4gdmlydGlvIGRldmljZSBWRklPIHBhc3N0
+aHJ1IGluY2x1ZGUgKGJ1dCBub3QgbGltaXQgdG8pOg0KPiA+DQo+ID4gLSBjb25zaXN0ZW50IGRl
+dmljZSBpbnRlcmZhY2UgZnJvbSBndWVzdCBPUzsNCj4gPiAtIG1heCBmbGV4aWJpbGl0eSBvbiBj
+b250cm9sIHBhdGggYW5kIGhhcmR3YXJlIGRlc2lnbjsNCj4gPiAtIGxldmVyYWdpbmcgdGhlIGV4
+aXN0aW5nIHZpcnRpbyBsaXZlLW1pZ3JhdGlvbiBmcmFtZXdvcms7DQo+ID4NCj4gPiBCdXQgdGhl
+IGNyaXRpY2FsIGlzc3VlIGluIHZEUEEgaXMgdGhhdCB0aGUgZGF0YSBwYXRoIHBlcmZvcm1hbmNl
+IGlzDQo+ID4gcmVsYXRpdmVseSBsb3cgYW5kIHNvbWUgaG9zdCB0aHJlYWRzIGFyZSBuZWVkZWQg
+Zm9yIHRoZSBkYXRhIHBhdGgsDQo+ID4gYmVjYXVzZSBzb21lIG5lY2Vzc2FyeSBtZWNoYW5pc21z
+IGFyZSBtaXNzaW5nIHRvIHN1cHBvcnQ6DQo+ID4NCj4gPiAxKSBndWVzdCBkcml2ZXIgbm90aWZp
+ZXMgdGhlIGRldmljZSBkaXJlY3RseTsNCj4gPiAyKSBkZXZpY2UgaW50ZXJydXB0cyB0aGUgZ3Vl
+c3QgZGlyZWN0bHk7DQo+ID4NCj4gPiBTbyB0aGlzIHBhdGNoIHNldCBkb2VzIHNvbWUgc21hbGwg
+ZXh0ZW5zaW9ucyB0byB2aG9zdC11c2VyIHByb3RvY29sIHRvDQo+ID4gbWFrZSBib3RoIG9mIHRo
+ZW0gcG9zc2libGUuIEl0IGxldmVyYWdlcyB0aGUgc2FtZSBtZWNoYW5pc21zIChlLmcuDQo+ID4g
+RVBUIGFuZCBQb3N0ZWQtSW50ZXJydXB0IG9uIEludGVsIHBsYXRmb3JtKSBhcyB0aGUgVkZJTyBw
+YXNzdGhydSB0bw0KPiA+IGFjaGlldmUgdGhlIGRhdGEgcGF0aCBwYXNzIHRocm91Z2guDQo+ID4N
+Cj4gPiBBIG5ldyBwcm90b2NvbCBmZWF0dXJlIGJpdCBpcyBhZGRlZCB0byBuZWdvdGlhdGUgdGhl
+IGFjY2VsZXJhdG9yDQo+ID4gZmVhdHVyZSBzdXBwb3J0LiBUd28gbmV3IHNsYXZlIG1lc3NhZ2Ug
+dHlwZXMgYXJlIGFkZGVkIHRvIGVuYWJsZSB0aGUNCj4gPiBub3RpZnkgYW5kIGludGVycnVwdCBw
+YXNzdGhydSBmb3IgZWFjaCBxdWV1ZS4gRnJvbSB0aGUgdmlldyBvZg0KPiA+IHZob3N0LXVzZXIg
+cHJvdG9jb2wgZGVzaWduLCBpdCdzIHZlcnkgZmxleGlibGUuIFRoZSBwYXNzdGhydSBjYW4gYmUN
+Cj4gPiBlbmFibGVkL2Rpc2FibGVkIGZvciBlYWNoIHF1ZXVlIGluZGl2aWR1YWxseSwgYW5kIGl0
+J3MgcG9zc2libGUgdG8NCj4gPiBhY2NlbGVyYXRlIGVhY2ggcXVldWUgYnkgZGlmZmVyZW50IGRl
+dmljZXMuIE1vcmUgZGVzaWduIGFuZA0KPiA+IGltcGxlbWVudGF0aW9uIGRldGFpbHMgY2FuIGJl
+IGZvdW5kIGZyb20gdGhlIGxhc3QgcGF0Y2guDQo+ID4NCj4gPiBUaGVyZSBhcmUgc29tZSByb3Vn
+aCBlZGdlcyBpbiB0aGlzIHBhdGNoIHNldCAoc28gdGhpcyBpcyBhIFJGQyBwYXRjaA0KPiA+IHNl
+dCBmb3Igbm93KSwgYnV0IGl0J3MgbmV2ZXIgdG9vIGVhcmx5IHRvIGhlYXIgdGhlIHRob3VnaHRz
+IGZyb20gdGhlDQo+ID4gY29tbXVuaXR5ISBTbyBhbnkgY29tbWVudHMgYW5kIHN1Z2dlc3Rpb25z
+IHdvdWxkIGJlIHJlYWxseSBhcHByZWNpYXRlZCENCj4gDQo+IEkgYW0gbWlzc2luZyBhIGxvdCBv
+ZiBjb250ZXh0IGhlcmUuIE91dCBvZiBjdXJpb3NpdHkgLSBob3cgaXMgdGhpcyBhbGwgc3VwcG9z
+ZWQgdG8NCj4gd29yaz8gUUVNVSBjb21tYW5kIGxpbmUgZXhhbXBsZSB3b3VsZCBiZSB1c2VmdWws
+IHdoYXQgd2lsbCB0aGUgZ3Vlc3Qgc2VlPyBBDQo+IHZpcnRpbyBkZXZpY2UgKGkuZS4gUmVkaGF0
+IHZlbmRvciBJRCkgb3IgYW4gYWN0dWFsIFBDSSBkZXZpY2UgKHNpbmNlIFZGSU8gaXMNCj4gbWVu
+dGlvbmVkKT8gVGhhbmtzLg0KDQpJdCdzIGEgbm9ybWFsIHZpcnRpbyBQQ0llIGRldmljZXMgaW4g
+dGhlIGd1ZXN0LiBFeHRlbnNpb25zIG9uIHRoZSBob3N0IGFyZSB0cmFuc3BhcmVudCB0byB0aGUg
+Z3Vlc3QuDQoNCkluIHRlcm1zIG9mIHRoZSB1c2FnZSwgdGhlcmUncyBhIHNhbXBsZSBtYXkgaGVs
+cC4NCmh0dHA6Ly9kcGRrLm9yZy9tbC9hcmNoaXZlcy9kZXYvMjAxNy1EZWNlbWJlci8wODUwNDQu
+aHRtbA0KVGhlIHNhbXBsZSB0YWtlcyB2aXJ0aW8tbmV0IGRldmljZSBpbiBWTSBhcyBkYXRhIHBh
+dGggYWNjZWxlcmF0b3Igb2YgdmlydGlvLW5ldCBpbiBuZXN0ZWQgVk0uDQpXaGVuIHRha2luZyBw
+aHlzaWNhbCBkZXZpY2Ugb24gYmFyZSBtZXRhbCwgaXQgYWNjZWxlcmF0ZXMgdmlydGlvLW5ldCBp
+biBWTSBlcXVpdmFsZW50bHkuDQpUaGVyZSdzIG5vIGFkZGl0aW9uYWwgcGFyYW1zIG9mIFFFTVUg
+Y29tbWFuZCBsaW5lIG5lZWRlZCBmb3Igdmhvc3QtdXNlci4NCg0KT25lIG1vcmUgY29udGV4dCwg
+aW5jbHVkaW5nIHZEUEEgZW5hYmxpbmcgaW4gRFBESyB2aG9zdC11c2VyIGxpYnJhcnkuDQpodHRw
+Oi8vZHBkay5vcmcvbWwvYXJjaGl2ZXMvZGV2LzIwMTctRGVjZW1iZXIvMDg0NzkyLmh0bWwNCg0K
+PiANCj4gDQo+IA0KPiAtLQ0KPiBBbGV4ZXkNCg==
 
