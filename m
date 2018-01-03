@@ -1,53 +1,46 @@
-Return-Path: virtio-dev-return-2902-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2893-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id BE5AB58191B2
-	for <virtio-dev@lists.oasis-open.org>; Wed,  3 Jan 2018 12:43:22 -0800 (PST)
-References: <1512545840-10256-1-git-send-email-longpeng2@huawei.com>
- <1512545840-10256-2-git-send-email-longpeng2@huawei.com>
- <db20b680-e7c8-6563-ebd7-27ab7e06ad6a@linux.vnet.ibm.com>
- <5A4746F3.6090201@huawei.com>
-From: Halil Pasic <pasic@linux.vnet.ibm.com>
-Date: Wed, 3 Jan 2018 21:43:09 +0100
-MIME-Version: 1.0
-In-Reply-To: <5A4746F3.6090201@huawei.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-Message-Id: <41e46c1a-025f-7d03-50ac-c29e008fb9d8@linux.vnet.ibm.com>
-Subject: [virtio-dev] Re: [Qemu-devel] [v22 1/2] virtio-crypto: Add virtio crypto device
- specification
-To: "Longpeng (Mike)" <longpeng2@huawei.com>
-Cc: virtio-dev@lists.oasis-open.org, Ola.Liljedahl@arm.com, brian.a.keating@intel.com, wangxinxin.wang@huawei.com, mst@redhat.com, xin.zeng@intel.com, jasowang@redhat.com, Cornelia Huck <cohuck@redhat.com>, luonengjun@huawei.com, qemu-devel@nongnu.org, john.griffin@intel.com, agraf@suse.de, arei.gonglei@huawei.com, liang.j.ma@intel.com, stefanha@redhat.com, jianjay.zhou@huawei.com, Varun.Sethi@freescale.com, Jani.Kokkonen@huawei.com, vincent.jardin@6wind.com, denglingli@chinamobile.com, weidong.huang@huawei.com
+	by lists.oasis-open.org (Postfix) with ESMTP id CF76858191AA
+	for <virtio-dev@lists.oasis-open.org>; Tue,  2 Jan 2018 16:35:49 -0800 (PST)
+From: Sridhar Samudrala <sridhar.samudrala@intel.com>
+Date: Tue,  2 Jan 2018 16:35:36 -0800
+Message-Id: <1514939738-22423-1-git-send-email-sridhar.samudrala@intel.com>
+Subject: [virtio-dev] [PATCH net-next 0/2] Enable virtio to act as a master for a passthru device
+To: mst@redhat.com, stephen@networkplumber.org, netdev@vger.kernel.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, jesse.brandeburg@intel.com, sridhar.samudrala@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+This patch series enables virtio to switch over to a VF datapath when a VF
+netdev is present with the same MAC address. It allows live migration of a VM
+with a direct attached VF without the need to setup a bond/team between a
+VF and virtio net device in the guest.
 
+The hypervisor needs to unplug the VF device from the guest on the source
+host and reset the MAC filter of the VF to initiate failover of datapath to
+virtio before starting the migration. After the migration is completed, the
+destination hypervisor sets the MAC filter on the VF and plugs it back to
+the guest to switch over to VF datapath.
 
-On 12/30/2017 08:57 AM, Longpeng (Mike) wrote:
->> What you actually do is the following. You define a
->> 'VIRTIO_CRYPTO_F_<SERVICE_NAME>_STATELESS_MODE feature bit is negotiated'
->> (A) mode and a '... bit is not negotiated (B)' mode for each service. 
-> 
->> In
->> mode A the driver has to use type A sateful requests (to which you refer
->> as session mode).  In mode B however the driver can use both stateless
->> requests (to which you refer as stateless mode) and B type stateful
->> requests (to which you also refer as session mode).
-> Sorry, I think the driver can use both in mode A and has to use stateful mode in
-> mode B.
-> 
+It is based on netvsc implementation and it may be possible to make this code 
+generic and move it to a common location that can be shared by netvsc and virtio.
 
-You are right I've mixed up A and B. I think you got my point despite
-of this slip up. 
+This patch series is based on the discussion initiated by Jesse on this thread.
+https://marc.info/?l=linux-virtualization&m=151189725224231&w=2
 
-I'm on holiday this week. Will try to review v23 next week.
+Sridhar Samudrala (2):
+  virtio_net: Introduce VIRTIO_NET_F_MASTER feature bit
+  virtio_net: Extend virtio to use VF datapath when available
 
-Regards,
-Halil
+ drivers/net/virtio_net.c        | 308 +++++++++++++++++++++++++++++++++++++++-
+ include/uapi/linux/virtio_net.h |   1 +
+ 2 files changed, 306 insertions(+), 3 deletions(-)
+
+-- 
+2.14.3
 
 
 ---------------------------------------------------------------------
