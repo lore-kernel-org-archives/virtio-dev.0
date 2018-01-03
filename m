@@ -1,125 +1,105 @@
-Return-Path: virtio-dev-return-2891-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2897-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id ACAF0581919B
-	for <virtio-dev@lists.oasis-open.org>; Mon,  1 Jan 2018 22:49:01 -0800 (PST)
-From: "Liang, Cunming" <cunming.liang@intel.com>
-Date: Tue, 2 Jan 2018 06:48:46 +0000
-Message-ID: <D0158A423229094DA7ABF71CF2FA0DA34E842277@SHSMSX104.ccr.corp.intel.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id E2F5B58191AA
+	for <virtio-dev@lists.oasis-open.org>; Wed,  3 Jan 2018 06:34:58 -0800 (PST)
 References: <20171222064151.29266-1-tiwei.bie@intel.com>
- <367b37c2-a315-5e61-8ac0-69b92c01b9cf@ozlabs.ru>
- <D0158A423229094DA7ABF71CF2FA0DA34E8420DE@SHSMSX104.ccr.corp.intel.com>
- <3c88cc5e-b864-019d-1744-6f400c7ecfeb@ozlabs.ru>
-In-Reply-To: <3c88cc5e-b864-019d-1744-6f400c7ecfeb@ozlabs.ru>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+From: Jason Wang <jasowang@redhat.com>
+Message-ID: <fcf3858e-6643-350c-37b9-71698f1d26a5@redhat.com>
+Date: Wed, 3 Jan 2018 22:34:36 +0800
 MIME-Version: 1.0
-Subject: [virtio-dev] RE: [Qemu-devel] [RFC 0/3] Extend vhost-user to support VFIO based
+In-Reply-To: <20171222064151.29266-1-tiwei.bie@intel.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+Subject: Re: [virtio-dev] [RFC 0/3] Extend vhost-user to support VFIO based
  accelerators
-To: Alexey Kardashevskiy <aik@ozlabs.ru>, "Bie, Tiwei" <tiwei.bie@intel.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "qemu-devel@nongnu.org" <qemu-devel@nongnu.org>, "mst@redhat.com" <mst@redhat.com>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "pbonzini@redhat.com" <pbonzini@redhat.com>, "stefanha@redhat.com" <stefanha@redhat.com>
-Cc: "Tan, Jianfeng" <jianfeng.tan@intel.com>, "Wang, Xiao W" <xiao.w.wang@intel.com>, "Wang, Zhihong" <zhihong.wang@intel.com>, "Daly,
- Dan" <dan.daly@intel.com>
+To: Tiwei Bie <tiwei.bie@intel.com>, virtio-dev@lists.oasis-open.org, qemu-devel@nongnu.org, mst@redhat.com, alex.williamson@redhat.com, pbonzini@redhat.com, stefanha@redhat.com
+Cc: cunming.liang@intel.com, dan.daly@intel.com, jianfeng.tan@intel.com, zhihong.wang@intel.com, xiao.w.wang@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogQWxleGV5IEthcmRhc2hl
-dnNraXkgW21haWx0bzphaWtAb3psYWJzLnJ1XQ0KPiBTZW50OiBUdWVzZGF5LCBKYW51YXJ5IDIs
-IDIwMTggMjowMSBQTQ0KPiBUbzogTGlhbmcsIEN1bm1pbmcgPGN1bm1pbmcubGlhbmdAaW50ZWwu
-Y29tPjsgQmllLCBUaXdlaSA8dGl3ZWkuYmllQGludGVsLmNvbT47DQo+IHZpcnRpby1kZXZAbGlz
-dHMub2FzaXMtb3Blbi5vcmc7IHFlbXUtZGV2ZWxAbm9uZ251Lm9yZzsgbXN0QHJlZGhhdC5jb207
-DQo+IGFsZXgud2lsbGlhbXNvbkByZWRoYXQuY29tOyBwYm9uemluaUByZWRoYXQuY29tOyBzdGVm
-YW5oYUByZWRoYXQuY29tDQo+IENjOiBUYW4sIEppYW5mZW5nIDxqaWFuZmVuZy50YW5AaW50ZWwu
-Y29tPjsgV2FuZywgWGlhbyBXDQo+IDx4aWFvLncud2FuZ0BpbnRlbC5jb20+OyBXYW5nLCBaaGlo
-b25nIDx6aGlob25nLndhbmdAaW50ZWwuY29tPjsgRGFseSwNCj4gRGFuIDxkYW4uZGFseUBpbnRl
-bC5jb20+DQo+IFN1YmplY3Q6IFJlOiBbUWVtdS1kZXZlbF0gW1JGQyAwLzNdIEV4dGVuZCB2aG9z
-dC11c2VyIHRvIHN1cHBvcnQgVkZJTyBiYXNlZA0KPiBhY2NlbGVyYXRvcnMNCj4gDQo+IE9uIDAy
-LzAxLzE4IDE2OjQ5LCBMaWFuZywgQ3VubWluZyB3cm90ZToNCj4gPg0KPiA+DQo+ID4+IC0tLS0t
-T3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+ID4+IEZyb206IEFsZXhleSBLYXJkYXNoZXZza2l5IFtt
-YWlsdG86YWlrQG96bGFicy5ydV0NCj4gPj4gU2VudDogVHVlc2RheSwgSmFudWFyeSAyLCAyMDE4
-IDEwOjQyIEFNDQo+ID4+IFRvOiBCaWUsIFRpd2VpIDx0aXdlaS5iaWVAaW50ZWwuY29tPjsNCj4g
-Pj4gdmlydGlvLWRldkBsaXN0cy5vYXNpcy1vcGVuLm9yZzsgcWVtdS0gZGV2ZWxAbm9uZ251Lm9y
-ZzsNCj4gPj4gbXN0QHJlZGhhdC5jb207IGFsZXgud2lsbGlhbXNvbkByZWRoYXQuY29tOyBwYm9u
-emluaUByZWRoYXQuY29tOw0KPiA+PiBzdGVmYW5oYUByZWRoYXQuY29tDQo+ID4+IENjOiBUYW4s
-IEppYW5mZW5nIDxqaWFuZmVuZy50YW5AaW50ZWwuY29tPjsgTGlhbmcsIEN1bm1pbmcNCj4gPj4g
-PGN1bm1pbmcubGlhbmdAaW50ZWwuY29tPjsgV2FuZywgWGlhbyBXIDx4aWFvLncud2FuZ0BpbnRl
-bC5jb20+Ow0KPiA+PiBXYW5nLCBaaGlob25nIDx6aGlob25nLndhbmdAaW50ZWwuY29tPjsgRGFs
-eSwgRGFuDQo+ID4+IDxkYW4uZGFseUBpbnRlbC5jb20+DQo+ID4+IFN1YmplY3Q6IFJlOiBbUWVt
-dS1kZXZlbF0gW1JGQyAwLzNdIEV4dGVuZCB2aG9zdC11c2VyIHRvIHN1cHBvcnQgVkZJTw0KPiA+
-PiBiYXNlZCBhY2NlbGVyYXRvcnMNCj4gPj4NCj4gPj4gT24gMjIvMTIvMTcgMTc6NDEsIFRpd2Vp
-IEJpZSB3cm90ZToNCj4gPj4+IFRoaXMgUkZDIHBhdGNoIHNldCBkb2VzIHNvbWUgc21hbGwgZXh0
-ZW5zaW9ucyB0byB2aG9zdC11c2VyIHByb3RvY29sDQo+ID4+PiB0byBzdXBwb3J0IFZGSU8gYmFz
-ZWQgYWNjZWxlcmF0b3JzLCBhbmQgbWFrZXMgaXQgcG9zc2libGUgdG8gZ2V0IHRoZQ0KPiA+Pj4g
-c2ltaWxhciBwZXJmb3JtYW5jZSBvZiBWRklPIHBhc3N0aHJ1IHdoaWxlIGtlZXBpbmcgdGhlIHZp
-cnRpbyBkZXZpY2UNCj4gPj4+IGVtdWxhdGlvbiBpbiBRRU1VLg0KPiA+Pj4NCj4gPj4+IFdoZW4g
-d2UgaGF2ZSB2aXJ0aW8gcmluZyBjb21wYXRpYmxlIGRldmljZXMsIGl0J3MgcG9zc2libGUgdG8g
-c2V0dXANCj4gPj4+IHRoZSBkZXZpY2UgKERNQSBtYXBwaW5nLCBQQ0kgY29uZmlnLCBldGMpIGJh
-c2VkIG9uIHRoZSBleGlzdGluZyBpbmZvDQo+ID4+PiAobWVtb3J5LXRhYmxlLCBmZWF0dXJlcywg
-dnJpbmcgaW5mbywgZXRjKSB3aGljaCBpcyBhdmFpbGFibGUgb24gdGhlDQo+ID4+PiB2aG9zdC1i
-YWNrZW5kIChlLmcuIERQREsgdmhvc3QgbGlicmFyeSkuIFRoZW4sIHdlIHdpbGwgYmUgYWJsZSB0
-bw0KPiA+Pj4gdXNlIHN1Y2ggZGV2aWNlcyB0byBhY2NlbGVyYXRlIHRoZSBlbXVsYXRlZCBkZXZp
-Y2UgZm9yIHRoZSBWTS4gQW5kDQo+ID4+PiB3ZSBjYWxsIGl0IHZEUEE6IHZob3N0IERhdGFQYXRo
-IEFjY2VsZXJhdGlvbi4gVGhlIGtleSBkaWZmZXJlbmNlDQo+ID4+PiBiZXR3ZWVuIFZGSU8gcGFz
-c3RocnUgYW5kIHZEUEEgaXMgdGhhdCwgaW4gdkRQQSBvbmx5IHRoZSBkYXRhIHBhdGgNCj4gPj4+
-IChlLmcuIHJpbmcsIG5vdGlmeSBhbmQgcXVldWUgaW50ZXJydXB0KSBpcyBwYXNzLXRocm91Z2hl
-ZCwgdGhlDQo+ID4+PiBkZXZpY2UgY29udHJvbCBwYXRoIChlLmcuIFBDSSBjb25maWd1cmF0aW9u
-IHNwYWNlIGFuZCBNTUlPIHJlZ2lvbnMpDQo+ID4+PiBpcyBzdGlsbCBkZWZpbmVkIGFuZCBlbXVs
-YXRlZCBieSBRRU1VLg0KPiA+Pj4NCj4gPj4+IFRoZSBiZW5lZml0cyBvZiBrZWVwaW5nIHZpcnRp
-byBkZXZpY2UgZW11bGF0aW9uIGluIFFFTVUgY29tcGFyZWQNCj4gPj4+IHdpdGggdmlydGlvIGRl
-dmljZSBWRklPIHBhc3N0aHJ1IGluY2x1ZGUgKGJ1dCBub3QgbGltaXQgdG8pOg0KPiA+Pj4NCj4g
-Pj4+IC0gY29uc2lzdGVudCBkZXZpY2UgaW50ZXJmYWNlIGZyb20gZ3Vlc3QgT1M7DQo+ID4+PiAt
-IG1heCBmbGV4aWJpbGl0eSBvbiBjb250cm9sIHBhdGggYW5kIGhhcmR3YXJlIGRlc2lnbjsNCj4g
-Pj4+IC0gbGV2ZXJhZ2luZyB0aGUgZXhpc3RpbmcgdmlydGlvIGxpdmUtbWlncmF0aW9uIGZyYW1l
-d29yazsNCj4gPj4+DQo+ID4+PiBCdXQgdGhlIGNyaXRpY2FsIGlzc3VlIGluIHZEUEEgaXMgdGhh
-dCB0aGUgZGF0YSBwYXRoIHBlcmZvcm1hbmNlIGlzDQo+ID4+PiByZWxhdGl2ZWx5IGxvdyBhbmQg
-c29tZSBob3N0IHRocmVhZHMgYXJlIG5lZWRlZCBmb3IgdGhlIGRhdGEgcGF0aCwNCj4gPj4+IGJl
-Y2F1c2Ugc29tZSBuZWNlc3NhcnkgbWVjaGFuaXNtcyBhcmUgbWlzc2luZyB0byBzdXBwb3J0Og0K
-PiA+Pj4NCj4gPj4+IDEpIGd1ZXN0IGRyaXZlciBub3RpZmllcyB0aGUgZGV2aWNlIGRpcmVjdGx5
-Ow0KPiA+Pj4gMikgZGV2aWNlIGludGVycnVwdHMgdGhlIGd1ZXN0IGRpcmVjdGx5Ow0KPiA+Pj4N
-Cj4gPj4+IFNvIHRoaXMgcGF0Y2ggc2V0IGRvZXMgc29tZSBzbWFsbCBleHRlbnNpb25zIHRvIHZo
-b3N0LXVzZXIgcHJvdG9jb2wNCj4gPj4+IHRvIG1ha2UgYm90aCBvZiB0aGVtIHBvc3NpYmxlLiBJ
-dCBsZXZlcmFnZXMgdGhlIHNhbWUgbWVjaGFuaXNtcyAoZS5nLg0KPiA+Pj4gRVBUIGFuZCBQb3N0
-ZWQtSW50ZXJydXB0IG9uIEludGVsIHBsYXRmb3JtKSBhcyB0aGUgVkZJTyBwYXNzdGhydSB0bw0K
-PiA+Pj4gYWNoaWV2ZSB0aGUgZGF0YSBwYXRoIHBhc3MgdGhyb3VnaC4NCj4gPj4+DQo+ID4+PiBB
-IG5ldyBwcm90b2NvbCBmZWF0dXJlIGJpdCBpcyBhZGRlZCB0byBuZWdvdGlhdGUgdGhlIGFjY2Vs
-ZXJhdG9yDQo+ID4+PiBmZWF0dXJlIHN1cHBvcnQuIFR3byBuZXcgc2xhdmUgbWVzc2FnZSB0eXBl
-cyBhcmUgYWRkZWQgdG8gZW5hYmxlIHRoZQ0KPiA+Pj4gbm90aWZ5IGFuZCBpbnRlcnJ1cHQgcGFz
-c3RocnUgZm9yIGVhY2ggcXVldWUuIEZyb20gdGhlIHZpZXcgb2YNCj4gPj4+IHZob3N0LXVzZXIg
-cHJvdG9jb2wgZGVzaWduLCBpdCdzIHZlcnkgZmxleGlibGUuIFRoZSBwYXNzdGhydSBjYW4gYmUN
-Cj4gPj4+IGVuYWJsZWQvZGlzYWJsZWQgZm9yIGVhY2ggcXVldWUgaW5kaXZpZHVhbGx5LCBhbmQg
-aXQncyBwb3NzaWJsZSB0bw0KPiA+Pj4gYWNjZWxlcmF0ZSBlYWNoIHF1ZXVlIGJ5IGRpZmZlcmVu
-dCBkZXZpY2VzLiBNb3JlIGRlc2lnbiBhbmQNCj4gPj4+IGltcGxlbWVudGF0aW9uIGRldGFpbHMg
-Y2FuIGJlIGZvdW5kIGZyb20gdGhlIGxhc3QgcGF0Y2guDQo+ID4+Pg0KPiA+Pj4gVGhlcmUgYXJl
-IHNvbWUgcm91Z2ggZWRnZXMgaW4gdGhpcyBwYXRjaCBzZXQgKHNvIHRoaXMgaXMgYSBSRkMgcGF0
-Y2gNCj4gPj4+IHNldCBmb3Igbm93KSwgYnV0IGl0J3MgbmV2ZXIgdG9vIGVhcmx5IHRvIGhlYXIg
-dGhlIHRob3VnaHRzIGZyb20gdGhlDQo+ID4+PiBjb21tdW5pdHkhIFNvIGFueSBjb21tZW50cyBh
-bmQgc3VnZ2VzdGlvbnMgd291bGQgYmUgcmVhbGx5IGFwcHJlY2lhdGVkIQ0KPiA+Pg0KPiA+PiBJ
-IGFtIG1pc3NpbmcgYSBsb3Qgb2YgY29udGV4dCBoZXJlLiBPdXQgb2YgY3VyaW9zaXR5IC0gaG93
-IGlzIHRoaXMNCj4gPj4gYWxsIHN1cHBvc2VkIHRvIHdvcms/IFFFTVUgY29tbWFuZCBsaW5lIGV4
-YW1wbGUgd291bGQgYmUgdXNlZnVsLCB3aGF0DQo+ID4+IHdpbGwgdGhlIGd1ZXN0IHNlZT8gQSB2
-aXJ0aW8gZGV2aWNlIChpLmUuIFJlZGhhdCB2ZW5kb3IgSUQpIG9yIGFuDQo+ID4+IGFjdHVhbCBQ
-Q0kgZGV2aWNlIChzaW5jZSBWRklPIGlzIG1lbnRpb25lZCk/IFRoYW5rcy4NCj4gPg0KPiA+IEl0
-J3MgYSBub3JtYWwgdmlydGlvIFBDSWUgZGV2aWNlcyBpbiB0aGUgZ3Vlc3QuIEV4dGVuc2lvbnMg
-b24gdGhlIGhvc3QgYXJlDQo+IHRyYW5zcGFyZW50IHRvIHRoZSBndWVzdC4NCj4gPg0KPiA+IElu
-IHRlcm1zIG9mIHRoZSB1c2FnZSwgdGhlcmUncyBhIHNhbXBsZSBtYXkgaGVscC4NCj4gPiBodHRw
-Oi8vZHBkay5vcmcvbWwvYXJjaGl2ZXMvZGV2LzIwMTctRGVjZW1iZXIvMDg1MDQ0Lmh0bWwNCj4g
-PiBUaGUgc2FtcGxlIHRha2VzIHZpcnRpby1uZXQgZGV2aWNlIGluIFZNIGFzIGRhdGEgcGF0aCBh
-Y2NlbGVyYXRvciBvZiB2aXJ0aW8tbmV0DQo+IGluIG5lc3RlZCBWTS4NCj4gDQo+IA0KPiBBYWFo
-LCB0aGlzIGlzIGZvciBuZXN0ZWQgVk1zLCB0aGUgb3JpZ2luYWwgZGVzY3JpcHRpb24gd2FzIG5v
-dCBjbGVhciBhYm91dCB0aGlzLiBJDQo+IGdldCBpdCBub3csIHRoYW5rcy4NCg0KQlRXLCB0aGUg
-cGF0Y2ggaXMgbm90IG9ubHkgdXNlZCBmb3IgbmVzdGVkIFZNLCBldmVuIHRoZSBzYW1wbGUgaXMu
-DQpPbmNlIHlvdSBnZXQgYSB2aXJ0aW8gY29tcGF0aWJsZSBkZXZpY2UsIGl0J3MgaGVscGZ1bCB0
-byBub3JtYWwgVk0gdG9vLg0KQmFzaWNhbGx5LCBpdCBnaXZlcyBleHRyYSBhYmlsaXR5IG9mIHBh
-cmEtdmlydHVhbGl6ZWQgZGV2aWNlIHRvIGFzc29jaWF0ZSB3aXRoIGFuIGFjY2VsZXJhdG9yIHdo
-byBjYW4gdGFsayB3aXRoIHRoZSBndWVzdCBQViBkZXZpY2UgZHJpdmVyIGRpcmVjdGx5Lg0KDQo+
-IA0KPiANCj4gPiBXaGVuIHRha2luZyBwaHlzaWNhbCBkZXZpY2Ugb24gYmFyZSBtZXRhbCwgaXQg
-YWNjZWxlcmF0ZXMgdmlydGlvLW5ldCBpbiBWTQ0KPiBlcXVpdmFsZW50bHkuDQo+ID4gVGhlcmUn
-cyBubyBhZGRpdGlvbmFsIHBhcmFtcyBvZiBRRU1VIGNvbW1hbmQgbGluZSBuZWVkZWQgZm9yIHZo
-b3N0LXVzZXIuDQo+ID4NCj4gPiBPbmUgbW9yZSBjb250ZXh0LCBpbmNsdWRpbmcgdkRQQSBlbmFi
-bGluZyBpbiBEUERLIHZob3N0LXVzZXIgbGlicmFyeS4NCj4gPiBodHRwOi8vZHBkay5vcmcvbWwv
-YXJjaGl2ZXMvZGV2LzIwMTctRGVjZW1iZXIvMDg0NzkyLmh0bWwNCj4gDQo+IA0KPiANCj4gLS0N
-Cj4gQWxleGV5DQo=
+
+
+On 2017年12月22日 14:41, Tiwei Bie wrote:
+> This RFC patch set does some small extensions to vhost-user protocol
+> to support VFIO based accelerators, and makes it possible to get the
+> similar performance of VFIO passthru while keeping the virtio device
+> emulation in QEMU.
+>
+> When we have virtio ring compatible devices, it's possible to setup
+> the device (DMA mapping, PCI config, etc) based on the existing info
+> (memory-table, features, vring info, etc) which is available on the
+> vhost-backend (e.g. DPDK vhost library). Then, we will be able to
+> use such devices to accelerate the emulated device for the VM. And
+> we call it vDPA: vhost DataPath Acceleration. The key difference
+> between VFIO passthru and vDPA is that, in vDPA only the data path
+> (e.g. ring, notify and queue interrupt) is pass-throughed, the device
+> control path (e.g. PCI configuration space and MMIO regions) is still
+> defined and emulated by QEMU.
+>
+> The benefits of keeping virtio device emulation in QEMU compared
+> with virtio device VFIO passthru include (but not limit to):
+>
+> - consistent device interface from guest OS;
+> - max flexibility on control path and hardware design;
+> - leveraging the existing virtio live-migration framework;
+>
+> But the critical issue in vDPA is that the data path performance is
+> relatively low and some host threads are needed for the data path,
+> because some necessary mechanisms are missing to support:
+>
+> 1) guest driver notifies the device directly;
+> 2) device interrupts the guest directly;
+>
+> So this patch set does some small extensions to vhost-user protocol
+> to make both of them possible. It leverages the same mechanisms (e.g.
+> EPT and Posted-Interrupt on Intel platform) as the VFIO passthru to
+> achieve the data path pass through.
+>
+> A new protocol feature bit is added to negotiate the accelerator feature
+> support. Two new slave message types are added to enable the notify and
+> interrupt passthru for each queue. From the view of vhost-user protocol
+> design, it's very flexible. The passthru can be enabled/disabled for
+> each queue individually, and it's possible to accelerate each queue by
+> different devices. More design and implementation details can be found
+> from the last patch.
+>
+> There are some rough edges in this patch set (so this is a RFC patch
+> set for now), but it's never too early to hear the thoughts from the
+> community! So any comments and suggestions would be really appreciated!
+>
+> Tiwei Bie (3):
+>    vhost-user: support receiving file descriptors in slave_read
+>    vhost-user: introduce shared vhost-user state
+>    vhost-user: add VFIO based accelerators support
+>
+>   docs/interop/vhost-user.txt     |  57 ++++++
+>   hw/scsi/vhost-user-scsi.c       |   6 +-
+>   hw/vfio/common.c                |   2 +-
+>   hw/virtio/vhost-user.c          | 430 +++++++++++++++++++++++++++++++++++++++-
+>   hw/virtio/vhost.c               |   3 +-
+>   hw/virtio/virtio-pci.c          |   8 -
+>   hw/virtio/virtio-pci.h          |   8 +
+>   include/hw/vfio/vfio.h          |   2 +
+>   include/hw/virtio/vhost-user.h  |  43 ++++
+>   include/hw/virtio/virtio-scsi.h |   6 +-
+>   net/vhost-user.c                |  30 +--
+>   11 files changed, 561 insertions(+), 34 deletions(-)
+>   create mode 100644 include/hw/virtio/vhost-user.h
+>
+
+I may miss something, but may I ask why you must implement them through 
+vhost-use/dpdk. It looks to me you could put all of them in qemu which 
+could simplify a lots of things (just like userspace NVME driver wrote 
+by Fam).
+
+Thanks
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
