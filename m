@@ -1,82 +1,71 @@
-Return-Path: virtio-dev-return-2932-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2904-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 8DD1C5818CB1
-	for <virtio-dev@lists.oasis-open.org>; Tue,  9 Jan 2018 03:30:04 -0800 (PST)
-From: Wei Wang <wei.w.wang@intel.com>
-Date: Tue,  9 Jan 2018 19:11:02 +0800
-Message-Id: <1515496262-7533-6-git-send-email-wei.w.wang@intel.com>
-In-Reply-To: <1515496262-7533-1-git-send-email-wei.w.wang@intel.com>
-References: <1515496262-7533-1-git-send-email-wei.w.wang@intel.com>
-Subject: [virtio-dev] [PATCH v21 5/5] virtio-balloon: don't report free pages when page poisoning is enabled
-To: virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, qemu-devel@nongnu.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, linux-mm@kvack.org, mst@redhat.com, mhocko@kernel.org, akpm@linux-foundation.org, mawilcox@microsoft.com
-Cc: david@redhat.com, penguin-kernel@I-love.SAKURA.ne.jp, cornelia.huck@de.ibm.com, mgorman@techsingularity.net, aarcange@redhat.com, amit.shah@redhat.com, pbonzini@redhat.com, willy@infradead.org, wei.w.wang@intel.com, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu0@gmail.com, nilal@redhat.com, riel@redhat.com
+	by lists.oasis-open.org (Postfix) with ESMTP id 6A17658191C4
+	for <virtio-dev@lists.oasis-open.org>; Wed,  3 Jan 2018 21:17:20 -0800 (PST)
+From: Jason Baron <jbaron@akamai.com>
+Date: Thu,  4 Jan 2018 00:16:42 -0500
+Message-Id: <cover.1515041373.git.jbaron@akamai.com>
+Subject: [virtio-dev] [PATCH v3 0/3] virtio_net: allow hypervisor to indicate linkspeed and duplex setting
+To: mst@redhat.com, davem@davemloft.net
+Cc: jasowang@redhat.com, netdev@vger.kernel.org, virtualization@lists.linux-foundation.org, qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-The guest free pages should not be discarded by the live migration thread
-when page poisoning is enabled with PAGE_POISONING_NO_SANITY=n, because
-skipping the transfer of such poisoned free pages will trigger false
-positive when new pages are allocated and checked on the destination.
-This patch adds a config field, poison_val. Guest writes to the config
-field to tell the host about the poisoning value. The value will be 0 in
-the following cases:
-1) PAGE_POISONING_NO_SANITY is enabled;
-2) page poisoning is disabled; or
-3) PAGE_POISONING_ZERO is enabled.
+We have found it useful to be able to set the linkspeed and duplex
+settings from the host-side for virtio_net. This obviates the need
+for guest changes and settings for these fields, and does not require
+custom ethtool commands for virtio_net.
 
-Signed-off-by: Wei Wang <wei.w.wang@intel.com>
-Suggested-by: Michael S. Tsirkin <mst@redhat.com>
-Cc: Michal Hocko <mhocko@suse.com>
----
- drivers/virtio/virtio_balloon.c     | 8 ++++++++
- include/uapi/linux/virtio_balloon.h | 2 ++
- 2 files changed, 10 insertions(+)
+The ability to set linkspeed and duplex is useful in various cases
+as described here:
 
-diff --git a/drivers/virtio/virtio_balloon.c b/drivers/virtio/virtio_balloon.c
-index f7e8830..7429894 100644
---- a/drivers/virtio/virtio_balloon.c
-+++ b/drivers/virtio/virtio_balloon.c
-@@ -859,6 +859,7 @@ static struct file_system_type balloon_fs = {
- static int virtballoon_probe(struct virtio_device *vdev)
- {
- 	struct virtio_balloon *vb;
-+	__u32 poison_val;
- 	int err;
- 
- 	if (!vdev->config->get) {
-@@ -896,6 +897,13 @@ static int virtballoon_probe(struct virtio_device *vdev)
- 					WQ_FREEZABLE | WQ_CPU_INTENSIVE, 0);
- 		INIT_WORK(&vb->report_free_page_work, report_free_page);
- 		vb->stop_cmd_id = VIRTIO_BALLOON_FREE_PAGE_REPORT_STOP_ID;
-+		if (IS_ENABLED(CONFIG_PAGE_POISONING_NO_SANITY) ||
-+		    !page_poisoning_enabled())
-+			poison_val = 0;
-+		else
-+			poison_val = PAGE_POISON;
-+		virtio_cwrite(vb->vdev, struct virtio_balloon_config,
-+			      poison_val, &poison_val);
- 	}
- 
- 	vb->nb.notifier_call = virtballoon_oom_notify;
-diff --git a/include/uapi/linux/virtio_balloon.h b/include/uapi/linux/virtio_balloon.h
-index 58f1274..f270e9e 100644
---- a/include/uapi/linux/virtio_balloon.h
-+++ b/include/uapi/linux/virtio_balloon.h
-@@ -48,6 +48,8 @@ struct virtio_balloon_config {
- 	__u32 actual;
- 	/* Free page report command id, readonly by guest */
- 	__u32 free_page_report_cmd_id;
-+	/* Stores PAGE_POISON if page poisoning with sanity check is in use */
-+	__u32 poison_val;
- };
- 
- #define VIRTIO_BALLOON_S_SWAP_IN  0   /* Amount of memory swapped in */
+16032be virtio_net: add ethtool support for set and get of settings                                                                                                                                                           
+Using 'ethtool -s' continues to over-write the linkspeed/duplex
+settings with this patch.
+
+The 1/3 patch is against net-next, while the 2-3/3 patch are the associated
+qemu changes that would go in after as update-linux-headers.sh should
+be run first. So the qemu patches are a demonstration of how I intend this
+to work.
+
+Thanks,
+
+-Jason  
+
+linux changes:
+
+changes from v2:
+* move speed/duplex read into virtnet_config_changed_work() so link up changes
+  are detected
+
+Jason Baron (1):
+  virtio_net: propagate linkspeed/duplex settings from the hypervisor
+
+ drivers/net/virtio_net.c        | 19 ++++++++++++++++++-
+ include/uapi/linux/virtio_net.h | 13 +++++++++++++
+ 2 files changed, 31 insertions(+), 1 deletion(-)
+
+qemu changes:
+
+changes from v2:
+* if link up return configured speed/duplex, else return UNKNOWN speed and duplex
+
+Jason Baron (2):
+  qemu: virtio-net: use 64-bit values for feature flags
+  qemu: add linkspeed and duplex settings to virtio-net
+
+ hw/net/virtio-net.c                         | 89 ++++++++++++++++++++---------
+ include/hw/virtio/virtio-net.h              |  5 +-
+ include/standard-headers/linux/virtio_net.h | 13 +++++
+ 3 files changed, 79 insertions(+), 28 deletions(-)
+
+
 -- 
-2.7.4
+2.6.1
 
 
 ---------------------------------------------------------------------
