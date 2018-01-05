@@ -1,85 +1,77 @@
-Return-Path: virtio-return-2840-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio@lists.oasis-open.org>
-List-Post: <mailto:virtio@lists.oasis-open.org>
-List-Help: <mailto:virtio-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Tue, 23 Jan 2018 02:01:09 +0200
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <1516665617-30748-11-git-send-email-mst@redhat.com>
-References: <1515577653-9336-1-git-send-email-mst@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1515577653-9336-1-git-send-email-mst@redhat.com>
-Subject: [virtio] [PATCH v7 11/11] split-ring: in order feature
-To: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+Return-Path: virtio-dev-return-2920-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
+	by lists.oasis-open.org (Postfix) with ESMTP id 42A345818123
+	for <virtio-dev@lists.oasis-open.org>; Fri,  5 Jan 2018 14:45:16 -0800 (PST)
+From: Jason Baron <jbaron@akamai.com>
+Date: Fri,  5 Jan 2018 17:44:52 -0500
+Message-Id: <cover.1515190238.git.jbaron@akamai.com>
+Subject: [virtio-dev] [PATCH v4 0/3] virtio_net: allow hypervisor to indicate linkspeed and duplex setting 
+To: mst@redhat.com
+Cc: davem@davemloft.net, jasowang@redhat.com, netdev@vger.kernel.org, virtualization@lists.linux-foundation.org, qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-For a split ring, require that drivers use descriptors in order too.
-This allows devices to skip reading the available ring.
+We have found it useful to be able to set the linkspeed and duplex
+settings from the host-side for virtio_net. This obviates the need
+for guest changes and settings for these fields, and does not require
+custom ethtool commands for virtio_net.
 
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
----
- split-ring.tex | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+The ability to set linkspeed and duplex is useful in various cases
+as described here:
 
-diff --git a/split-ring.tex b/split-ring.tex
-index f976e45..43c496c 100644
---- a/split-ring.tex
-+++ b/split-ring.tex
-@@ -203,6 +203,10 @@ struct virtq_desc {
- The number of descriptors in the table is defined by the queue size
- for this virtqueue: this is the maximum possible descriptor chain length.
- 
-+If VIRTIO_F_IN_ORDER has been negotiated, driver uses
-+descriptors in ring order: starting from offset 0 in the table,
-+and wrapping around at the end of the table.
-+
- \begin{note}
- The legacy \hyperref[intro:Virtio PCI Draft]{[Virtio PCI Draft]}
- referred to this structure as vring_desc, and the constants as
-@@ -218,6 +222,12 @@ purposes).
- Drivers MUST NOT add a descriptor chain over than $2^{32}$ bytes long in total;
- this implies that loops in the descriptor chain are forbidden!
- 
-+If VIRTIO_F_IN_ORDER has been negotiated, and when making a
-+descriptor with VRING_DESC_F_NEXT set in \field{flags} at offset
-+$x$ in the table available to the device, driver MUST set
-+\field{next} to $0$ for the last descriptor in the table
-+(where $x = queue_size - 1$) and to $x + 1$ for the rest of the descriptors.
-+
- \subsubsection{Indirect Descriptors}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table / Indirect Descriptors}
- 
- Some devices benefit by concurrently dispatching a large number
-@@ -247,6 +257,10 @@ chained by \field{next}. An indirect descriptor without a valid \field{next}
- A single indirect descriptor
- table can include both device-readable and device-writable descriptors.
- 
-+If VIRTIO_F_IN_ORDER has been negotiated, indirect descriptors
-+use sequential indices, in-order: index 0 followed by index 1
-+followed by index 2, etc.
-+
- \drivernormative{\paragraph}{Indirect Descriptors}{Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table / Indirect Descriptors}
- The driver MUST NOT set the VIRTQ_DESC_F_INDIRECT flag unless the
- VIRTIO_F_INDIRECT_DESC feature was negotiated.   The driver MUST NOT
-@@ -259,6 +273,10 @@ the device.
- A driver MUST NOT set both VIRTQ_DESC_F_INDIRECT and VIRTQ_DESC_F_NEXT
- in \field{flags}.
- 
-+If VIRTIO_F_IN_ORDER has been negotiated, indirect descriptors
-+MUST appear sequentially, with \field{next} taking the value
-+of 1 for the 1st descriptor, 2 for the 2nd one, etc.
-+
- \devicenormative{\paragraph}{Indirect Descriptors}{Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table / Indirect Descriptors}
- The device MUST ignore the write-only flag (\field{flags}\&VIRTQ_DESC_F_WRITE) in the descriptor that refers to an indirect table.
- 
+16032be virtio_net: add ethtool support for set and get of settings
+
+Using 'ethtool -s' continues to over-write the linkspeed/duplex
+settings with this patch.
+
+The 1/3 patch is against net-next, while the 2-3/3 patch are the associated
+qemu changes that would go in after as update-linux-headers.sh should
+be run first. So the qemu patches are a demonstration of how I intend this
+to work.
+
+Thanks,
+
+-Jason
+
+linux changes:
+
+changes from v3:
+* break the speed/duplex read into a function and also call from virtnet_probe
+  when status bit is not negotiated
+* only do speed/duplex read in virtnet_config_changed_work() on LINK_UP
+
+changes from v2:
+* move speed/duplex read into virtnet_config_changed_work() so link up changes
+  are detected
+
+Jason Baron (1):
+  virtio_net: propagate linkspeed/duplex settings from the hypervisor
+
+ drivers/net/virtio_net.c        | 23 ++++++++++++++++++++++-
+ include/uapi/linux/virtio_net.h | 13 +++++++++++++
+ 2 files changed, 35 insertions(+), 1 deletion(-)
+
+
+qemu changes:
+
+Jason Baron (2):
+  qemu: virtio-net: use 64-bit values for feature flags
+  qemu: add linkspeed and duplex settings to virtio-net
+
+ hw/net/virtio-net.c                         | 87 ++++++++++++++++++++---------
+ include/hw/virtio/virtio-net.h              |  5 +-
+ include/standard-headers/linux/virtio_net.h | 13 +++++
+ 3 files changed, 77 insertions(+), 28 deletions(-)
+
 -- 
-MST
+2.6.1
 
 
 ---------------------------------------------------------------------
-To unsubscribe from this mail list, you must leave the OASIS TC that 
-generates this mail.  Follow this link to all your TCs in OASIS at:
-https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
