@@ -1,12 +1,15 @@
-Return-Path: virtio-dev-return-2924-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2925-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 7150F581815E
-	for <virtio-dev@lists.oasis-open.org>; Sun,  7 Jan 2018 19:24:21 -0800 (PST)
+	by lists.oasis-open.org (Postfix) with ESMTP id CC41F581819D
+	for <virtio-dev@lists.oasis-open.org>; Mon,  8 Jan 2018 00:23:09 -0800 (PST)
+From: "Liang, Cunming" <cunming.liang@intel.com>
+Date: Mon, 8 Jan 2018 08:23:04 +0000
+Message-ID: <D0158A423229094DA7ABF71CF2FA0DA34E8479EC@SHSMSX104.ccr.corp.intel.com>
 References: <20171222064151.29266-1-tiwei.bie@intel.com>
  <fcf3858e-6643-350c-37b9-71698f1d26a5@redhat.com>
  <20180104061853.jkdzbueashv2klka@debian-xvivbkq.sh.intel.com>
@@ -14,187 +17,239 @@ References: <20171222064151.29266-1-tiwei.bie@intel.com>
  <D0158A423229094DA7ABF71CF2FA0DA34E845FAD@SHSMSX104.ccr.corp.intel.com>
  <a1319915-6492-af8d-a35d-5aedad61eb76@redhat.com>
  <D0158A423229094DA7ABF71CF2FA0DA34E84629B@SHSMSX104.ccr.corp.intel.com>
-From: Jason Wang <jasowang@redhat.com>
-Message-ID: <238ebde1-0fca-9472-ae4e-1d5e67ff6606@redhat.com>
-Date: Mon, 8 Jan 2018 11:23:48 +0800
-MIME-Version: 1.0
-In-Reply-To: <D0158A423229094DA7ABF71CF2FA0DA34E84629B@SHSMSX104.ccr.corp.intel.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
+ <238ebde1-0fca-9472-ae4e-1d5e67ff6606@redhat.com>
+In-Reply-To: <238ebde1-0fca-9472-ae4e-1d5e67ff6606@redhat.com>
 Content-Language: en-US
-Subject: [virtio-dev] Re: [Qemu-devel] [virtio-dev] [RFC 0/3] Extend vhost-user to support
- VFIO based accelerators
-To: "Liang, Cunming" <cunming.liang@intel.com>, "Bie, Tiwei" <tiwei.bie@intel.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+Subject: RE: [virtio-dev] Re: [Qemu-devel] [virtio-dev] [RFC 0/3] Extend
+ vhost-user to support VFIO based accelerators
+To: Jason Wang <jasowang@redhat.com>, "Bie, Tiwei" <tiwei.bie@intel.com>
 Cc: "Tan, Jianfeng" <jianfeng.tan@intel.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "mst@redhat.com" <mst@redhat.com>, "Daly, Dan" <dan.daly@intel.com>, "qemu-devel@nongnu.org" <qemu-devel@nongnu.org>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "Wang, Xiao W" <xiao.w.wang@intel.com>, Maxime Coquelin <maxime.coquelin@redhat.com>, "stefanha@redhat.com" <stefanha@redhat.com>, "Wang, Zhihong" <zhihong.wang@intel.com>, "pbonzini@redhat.com" <pbonzini@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-
-
-On 2018年01月05日 18:25, Liang, Cunming wrote:
->
->> -----Original Message-----
->> From: Jason Wang [mailto:jasowang@redhat.com]
->> Sent: Friday, January 5, 2018 4:39 PM
->> To: Liang, Cunming <cunming.liang@intel.com>; Bie, Tiwei
->> <tiwei.bie@intel.com>
->> Cc: Tan, Jianfeng <jianfeng.tan@intel.com>; virtio-dev@lists.oasis-open.org;
->> mst@redhat.com; qemu-devel@nongnu.org; alex.williamson@redhat.com;
->> Wang, Xiao W <xiao.w.wang@intel.com>; stefanha@redhat.com; Wang,
->> Zhihong <zhihong.wang@intel.com>; pbonzini@redhat.com; Daly, Dan
->> <dan.daly@intel.com>
->> Subject: Re: [Qemu-devel] [virtio-dev] [RFC 0/3] Extend vhost-user to support
->> VFIO based accelerators
->>
->>
->>
->> On 2018年01月05日 14:58, Liang, Cunming wrote:
->>>> Thanks for the pointer. Looks rather interesting.
->>>>
->>>>> We're also working on it (including defining a standard device for
->>>>> vhost data path acceleration based on mdev to hide vendor specific
->>>>> details).
->>>> This is exactly what I mean. Form my point of view, there's no need
->>>> for any extension for vhost protocol, we just need to reuse qemu
->>>> iothread to implement a userspace vhost dataplane and do the mdev
->> inside that thread.
->>> On functional perspective, it makes sense to have qemu native support of
->> those certain usage. However, qemu doesn't have to take responsibility for
->> dataplane. There're already huge amounts of codes for different devices
->> emulation, leveraging external dataplane library is an effective way to
->> introduce more.
->>
->> This does not mean to drop external dataplane library. Actually, you can link
->> dpdk to qemu directly.
-> It's not a bad idea, then the interface comes to be new API/ABI definition of external dataplane library instead of existing vhost protocol.
-
-These API/ABI should be qemu internal which should be much flexible than 
-vhost-user.
-
->   dpdk as a library is not a big deal to link with, customized application is.
-> In addition, it will ask for qemu to provide flexible process model then. Lots of application level features (e.g. hot upgrade/fix) becomes burden.
-
-Don't quite get this, I think we can solve this by migration. Even if a 
-dpdk userspace backend can do this, it can only do upgrade and fix for 
-network datapath. This is not a complete solution obviously.
-
-It's nice to discuss this but it was a little bit out of the topic.
-
-> I'm open to that option, keep eyes on any proposal there.
->
->>> The beauty of vhost_user is to open a door for variable userland
->> workloads(e.g. vswitch). The dataplane connected with VM usually need to
->> be close integrated with those userland workloads, a control place
->> interface(vhost-user) is better than a datapath interface(e.g. provided by
->> dataplace in qemu iothread).
->>
->> Do we really need vswitch for vDPA?
-> Accelerators come into the picture of vswitch, which usually provides in-chip EMC for early classification. It gives a fast path for those throughput sensitive(SLA) VNF to bypass the further table lookup. It co-exists other VNF whose SLA level is best effort but requires more functions(e.g. stateful conntrack, security check, even higher layer WAF support) support, DPDK based datapath still boost the throughput there. It's not used to be a single choice of dedicated or shared datapath, usually they're co-exist.
-
-So if I understand this correctly, the "vswtich" here is a hardware 
-function (something like smart NICs or OVS offloaded). So the question 
-still, is vhost-user a must in this case?
-
->
->>>    On workloads point of view, it's not excited to be part of qemu process.
->> Don't see why, qemu have dataplane for virtio-blk/scsi.
-> Qemu has vhost-user for scsi too. I'm not saying which one is bad, just point out sometime it's very workloads driven. Network is different with blk/scsi/crypto.
-
-What's the main difference from your point of view which makes 
-vhost-user a must in this case?
-
->>> That comes up with the idea of vhost-user extension. Userland workloads
->> decides to enable accelerators or not, qemu provides the common control
->> plane infrastructure.
->>
->> It brings extra complexity: endless new types of messages and a huge brunch
->> of bugs. And what's more important, the split model tends to be less efficient
->> in some cases, e.g guest IOMMU integration. I'm pretty sure we will meet
->> more in the future.
-> vIOMMU relevant message has been supported by vhost protocol. It's independent effort there.
-
-The point is vIOMMU integration is very inefficient in vhost-user for 
-some cases. If you have lots of dynamic mappings, it can have only 
-5%-10% performance compared to vIOMMU disabled. A huge amount of 
-translation request will be generated in this case. The main issue here 
-is you can not offload datapath completely to vhost-user backends 
-completely, IOMMU translations were still done in qemu. This is one of 
-the defect of vhost-user when datapath need to access the device state.
-
-> I don't see this patch introduce endless new types.
-
-Not this patch but we can imagine vhost-user protocol will become 
-complex in the future.
-
-> My taking of your fundamental concern is about continues adding new features on vhost-user.
-> Feel free to correct me if I misunderstood your point.
-
-Unfortunately not, endless itself is not a problem but we'd better only 
-try to extend it only when it was really needed. The main questions are:
-
-1) whether or not we need to split things like what you suggested here?
-2) if needed, is vhost-user the best method?
-
->
->>>>> And IMO it's also not a bad idea to extend vhost-user protocol to
->>>>> support the accelerators if possible. And it could be more flexible
->>>>> because it could support (for example) below things easily without
->>>>> introducing any complex command line options or monitor commands to
->>>>> QEMU:
->>>> Maybe I was wrong but I don't think we care about the complexity of
->>>> command line or monitor command in this case.
->>>>
->>>>> - the switching among different accelerators and software version
->>>>>      can be done at runtime in vhost process;
->>>>> - use different accelerators to accelerate different queue pairs
->>>>>      or just accelerate some (instead of all) queue pairs;
->>>> Well, technically, if we want, these could be implemented in qemu too.
->>> You're right if just considering I/O. The ways to consume those I/O is
->> another perspective.
->>> Simply 1:1 associating guest virtio-net and accelerator w/ SW datapath
->> fallback is not the whole picture.
->>
->> Pay attention:
->>
->> 1) What I mean is not a fallback here. You can still do a lot of tricks e.g
->> offloading datapath to hardware or doorbell map.
->> 2) Qemu supports (very old and inefficient) a split model of device emulation
->> and network backend. This means we can switch between backends (though
->> not implemented).
-> Accelerator won't be defined in the same device layout, it means there're different kinds of drivers.
-
-Well, you can still use different drivers if you link dpdk or whatever 
-other dataplane library to qemu.
-
-> Qemu definitely won't like to have HW relevant driver there,
-
-Why not? We've already had userspace NVME driver.
-
->   that's end up with another vhost-vfio in my slides.
-
-I don't get why we can't implement it purely through a userspace driver 
-inside qemu.
-
->   A mediated device can help to unify the device layout definition, and leave the driver part in its own place.
-
-The point is not about mediated device but why you must use vhost-user 
-to do it.
-
-Thanks
-
-> This approach is quite good when application doesn't need to put userland SW datapath and accelerator datapath in the same picture as which I mentioned(vswitch cases).
->
->>>    It's variable usages on workload side to abstract the device (e.g. port re-
->> presenter for vswitch) and etc. I don't think qemu is interested for all bunch
->> of things there.
->> Again, you can link any dataplane to qemu directly instead of using vhost-
->> user if vhost-user tends to be less useful in some cases (vDPA is one of the
->> case I think).
-> See my previous words.
->
->> Thanks
-
-
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogdmlydGlvLWRldkBsaXN0
+cy5vYXNpcy1vcGVuLm9yZyBbbWFpbHRvOnZpcnRpby1kZXZAbGlzdHMub2FzaXMtb3Blbi5vcmdd
+DQo+IE9uIEJlaGFsZiBPZiBKYXNvbiBXYW5nDQo+IFNlbnQ6IE1vbmRheSwgSmFudWFyeSA4LCAy
+MDE4IDExOjI0IEFNDQo+IFRvOiBMaWFuZywgQ3VubWluZyA8Y3VubWluZy5saWFuZ0BpbnRlbC5j
+b20+OyBCaWUsIFRpd2VpDQo+IDx0aXdlaS5iaWVAaW50ZWwuY29tPg0KPiBDYzogVGFuLCBKaWFu
+ZmVuZyA8amlhbmZlbmcudGFuQGludGVsLmNvbT47IHZpcnRpby1kZXZAbGlzdHMub2FzaXMtb3Bl
+bi5vcmc7DQo+IG1zdEByZWRoYXQuY29tOyBEYWx5LCBEYW4gPGRhbi5kYWx5QGludGVsLmNvbT47
+IHFlbXUtDQo+IGRldmVsQG5vbmdudS5vcmc7IGFsZXgud2lsbGlhbXNvbkByZWRoYXQuY29tOyBX
+YW5nLCBYaWFvIFcNCj4gPHhpYW8udy53YW5nQGludGVsLmNvbT47IE1heGltZSBDb3F1ZWxpbg0K
+PiA8bWF4aW1lLmNvcXVlbGluQHJlZGhhdC5jb20+OyBzdGVmYW5oYUByZWRoYXQuY29tOyBXYW5n
+LCBaaGlob25nDQo+IDx6aGlob25nLndhbmdAaW50ZWwuY29tPjsgcGJvbnppbmlAcmVkaGF0LmNv
+bQ0KPiBTdWJqZWN0OiBbdmlydGlvLWRldl0gUmU6IFtRZW11LWRldmVsXSBbdmlydGlvLWRldl0g
+W1JGQyAwLzNdIEV4dGVuZCB2aG9zdC0NCj4gdXNlciB0byBzdXBwb3J0IFZGSU8gYmFzZWQgYWNj
+ZWxlcmF0b3JzDQo+IA0KPiANCj4gDQo+IE9uIDIwMTjlubQwMeaciDA15pelIDE4OjI1LCBMaWFu
+ZywgQ3VubWluZyB3cm90ZToNCj4gPg0KPiA+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0K
+PiA+PiBGcm9tOiBKYXNvbiBXYW5nIFttYWlsdG86amFzb3dhbmdAcmVkaGF0LmNvbV0NCj4gPj4g
+U2VudDogRnJpZGF5LCBKYW51YXJ5IDUsIDIwMTggNDozOSBQTQ0KPiA+PiBUbzogTGlhbmcsIEN1
+bm1pbmcgPGN1bm1pbmcubGlhbmdAaW50ZWwuY29tPjsgQmllLCBUaXdlaQ0KPiA+PiA8dGl3ZWku
+YmllQGludGVsLmNvbT4NCj4gPj4gQ2M6IFRhbiwgSmlhbmZlbmcgPGppYW5mZW5nLnRhbkBpbnRl
+bC5jb20+Ow0KPiA+PiB2aXJ0aW8tZGV2QGxpc3RzLm9hc2lzLW9wZW4ub3JnOyBtc3RAcmVkaGF0
+LmNvbTsNCj4gPj4gcWVtdS1kZXZlbEBub25nbnUub3JnOyBhbGV4LndpbGxpYW1zb25AcmVkaGF0
+LmNvbTsgV2FuZywgWGlhbyBXDQo+ID4+IDx4aWFvLncud2FuZ0BpbnRlbC5jb20+OyBzdGVmYW5o
+YUByZWRoYXQuY29tOyBXYW5nLCBaaGlob25nDQo+ID4+IDx6aGlob25nLndhbmdAaW50ZWwuY29t
+PjsgcGJvbnppbmlAcmVkaGF0LmNvbTsgRGFseSwgRGFuDQo+ID4+IDxkYW4uZGFseUBpbnRlbC5j
+b20+DQo+ID4+IFN1YmplY3Q6IFJlOiBbUWVtdS1kZXZlbF0gW3ZpcnRpby1kZXZdIFtSRkMgMC8z
+XSBFeHRlbmQgdmhvc3QtdXNlciB0bw0KPiA+PiBzdXBwb3J0IFZGSU8gYmFzZWQgYWNjZWxlcmF0
+b3JzDQo+ID4+DQo+ID4+DQo+ID4+DQo+ID4+IE9uIDIwMTjlubQwMeaciDA15pelIDE0OjU4LCBM
+aWFuZywgQ3VubWluZyB3cm90ZToNCj4gPj4+PiBUaGFua3MgZm9yIHRoZSBwb2ludGVyLiBMb29r
+cyByYXRoZXIgaW50ZXJlc3RpbmcuDQo+ID4+Pj4NCj4gPj4+Pj4gV2UncmUgYWxzbyB3b3JraW5n
+IG9uIGl0IChpbmNsdWRpbmcgZGVmaW5pbmcgYSBzdGFuZGFyZCBkZXZpY2UgZm9yDQo+ID4+Pj4+
+IHZob3N0IGRhdGEgcGF0aCBhY2NlbGVyYXRpb24gYmFzZWQgb24gbWRldiB0byBoaWRlIHZlbmRv
+ciBzcGVjaWZpYw0KPiA+Pj4+PiBkZXRhaWxzKS4NCj4gPj4+PiBUaGlzIGlzIGV4YWN0bHkgd2hh
+dCBJIG1lYW4uIEZvcm0gbXkgcG9pbnQgb2YgdmlldywgdGhlcmUncyBubyBuZWVkDQo+ID4+Pj4g
+Zm9yIGFueSBleHRlbnNpb24gZm9yIHZob3N0IHByb3RvY29sLCB3ZSBqdXN0IG5lZWQgdG8gcmV1
+c2UgcWVtdQ0KPiA+Pj4+IGlvdGhyZWFkIHRvIGltcGxlbWVudCBhIHVzZXJzcGFjZSB2aG9zdCBk
+YXRhcGxhbmUgYW5kIGRvIHRoZSBtZGV2DQo+ID4+IGluc2lkZSB0aGF0IHRocmVhZC4NCj4gPj4+
+IE9uIGZ1bmN0aW9uYWwgcGVyc3BlY3RpdmUsIGl0IG1ha2VzIHNlbnNlIHRvIGhhdmUgcWVtdSBu
+YXRpdmUNCj4gPj4+IHN1cHBvcnQgb2YNCj4gPj4gdGhvc2UgY2VydGFpbiB1c2FnZS4gSG93ZXZl
+ciwgcWVtdSBkb2Vzbid0IGhhdmUgdG8gdGFrZQ0KPiA+PiByZXNwb25zaWJpbGl0eSBmb3IgZGF0
+YXBsYW5lLiBUaGVyZSdyZSBhbHJlYWR5IGh1Z2UgYW1vdW50cyBvZiBjb2Rlcw0KPiA+PiBmb3Ig
+ZGlmZmVyZW50IGRldmljZXMgZW11bGF0aW9uLCBsZXZlcmFnaW5nIGV4dGVybmFsIGRhdGFwbGFu
+ZQ0KPiA+PiBsaWJyYXJ5IGlzIGFuIGVmZmVjdGl2ZSB3YXkgdG8gaW50cm9kdWNlIG1vcmUuDQo+
+ID4+DQo+ID4+IFRoaXMgZG9lcyBub3QgbWVhbiB0byBkcm9wIGV4dGVybmFsIGRhdGFwbGFuZSBs
+aWJyYXJ5LiBBY3R1YWxseSwgeW91DQo+ID4+IGNhbiBsaW5rIGRwZGsgdG8gcWVtdSBkaXJlY3Rs
+eS4NCj4gPiBJdCdzIG5vdCBhIGJhZCBpZGVhLCB0aGVuIHRoZSBpbnRlcmZhY2UgY29tZXMgdG8g
+YmUgbmV3IEFQSS9BQkkgZGVmaW5pdGlvbiBvZg0KPiBleHRlcm5hbCBkYXRhcGxhbmUgbGlicmFy
+eSBpbnN0ZWFkIG9mIGV4aXN0aW5nIHZob3N0IHByb3RvY29sLg0KPiANCj4gVGhlc2UgQVBJL0FC
+SSBzaG91bGQgYmUgcWVtdSBpbnRlcm5hbCB3aGljaCBzaG91bGQgYmUgbXVjaCBmbGV4aWJsZSB0
+aGFuDQo+IHZob3N0LXVzZXIuDQo+IA0KPiA+ICAgZHBkayBhcyBhIGxpYnJhcnkgaXMgbm90IGEg
+YmlnIGRlYWwgdG8gbGluayB3aXRoLCBjdXN0b21pemVkIGFwcGxpY2F0aW9uIGlzLg0KPiA+IElu
+IGFkZGl0aW9uLCBpdCB3aWxsIGFzayBmb3IgcWVtdSB0byBwcm92aWRlIGZsZXhpYmxlIHByb2Nl
+c3MgbW9kZWwgdGhlbi4gTG90cw0KPiBvZiBhcHBsaWNhdGlvbiBsZXZlbCBmZWF0dXJlcyAoZS5n
+LiBob3QgdXBncmFkZS9maXgpIGJlY29tZXMgYnVyZGVuLg0KPiANCj4gRG9uJ3QgcXVpdGUgZ2V0
+IHRoaXMsIEkgdGhpbmsgd2UgY2FuIHNvbHZlIHRoaXMgYnkgbWlncmF0aW9uLiBFdmVuIGlmIGEg
+ZHBkaw0KPiB1c2Vyc3BhY2UgYmFja2VuZCBjYW4gZG8gdGhpcywgaXQgY2FuIG9ubHkgZG8gdXBn
+cmFkZSBhbmQgZml4IGZvciBuZXR3b3JrDQo+IGRhdGFwYXRoLiBUaGlzIGlzIG5vdCBhIGNvbXBs
+ZXRlIHNvbHV0aW9uIG9idmlvdXNseS4NCj4gDQo+IEl0J3MgbmljZSB0byBkaXNjdXNzIHRoaXMg
+YnV0IGl0IHdhcyBhIGxpdHRsZSBiaXQgb3V0IG9mIHRoZSB0b3BpYy4NCj4gDQo+ID4gSSdtIG9w
+ZW4gdG8gdGhhdCBvcHRpb24sIGtlZXAgZXllcyBvbiBhbnkgcHJvcG9zYWwgdGhlcmUuDQo+ID4N
+Cj4gPj4+IFRoZSBiZWF1dHkgb2Ygdmhvc3RfdXNlciBpcyB0byBvcGVuIGEgZG9vciBmb3IgdmFy
+aWFibGUgdXNlcmxhbmQNCj4gPj4gd29ya2xvYWRzKGUuZy4gdnN3aXRjaCkuIFRoZSBkYXRhcGxh
+bmUgY29ubmVjdGVkIHdpdGggVk0gdXN1YWxseSBuZWVkDQo+ID4+IHRvIGJlIGNsb3NlIGludGVn
+cmF0ZWQgd2l0aCB0aG9zZSB1c2VybGFuZCB3b3JrbG9hZHMsIGEgY29udHJvbCBwbGFjZQ0KPiA+
+PiBpbnRlcmZhY2Uodmhvc3QtdXNlcikgaXMgYmV0dGVyIHRoYW4gYSBkYXRhcGF0aCBpbnRlcmZh
+Y2UoZS5nLg0KPiA+PiBwcm92aWRlZCBieSBkYXRhcGxhY2UgaW4gcWVtdSBpb3RocmVhZCkuDQo+
+ID4+DQo+ID4+IERvIHdlIHJlYWxseSBuZWVkIHZzd2l0Y2ggZm9yIHZEUEE/DQo+ID4gQWNjZWxl
+cmF0b3JzIGNvbWUgaW50byB0aGUgcGljdHVyZSBvZiB2c3dpdGNoLCB3aGljaCB1c3VhbGx5IHBy
+b3ZpZGVzIGluLQ0KPiBjaGlwIEVNQyBmb3IgZWFybHkgY2xhc3NpZmljYXRpb24uIEl0IGdpdmVz
+IGEgZmFzdCBwYXRoIGZvciB0aG9zZSB0aHJvdWdocHV0DQo+IHNlbnNpdGl2ZShTTEEpIFZORiB0
+byBieXBhc3MgdGhlIGZ1cnRoZXIgdGFibGUgbG9va3VwLiBJdCBjby1leGlzdHMgb3RoZXIgVk5G
+DQo+IHdob3NlIFNMQSBsZXZlbCBpcyBiZXN0IGVmZm9ydCBidXQgcmVxdWlyZXMgbW9yZSBmdW5j
+dGlvbnMoZS5nLiBzdGF0ZWZ1bA0KPiBjb25udHJhY2ssIHNlY3VyaXR5IGNoZWNrLCBldmVuIGhp
+Z2hlciBsYXllciBXQUYgc3VwcG9ydCkgc3VwcG9ydCwgRFBESw0KPiBiYXNlZCBkYXRhcGF0aCBz
+dGlsbCBib29zdCB0aGUgdGhyb3VnaHB1dCB0aGVyZS4gSXQncyBub3QgdXNlZCB0byBiZSBhIHNp
+bmdsZQ0KPiBjaG9pY2Ugb2YgZGVkaWNhdGVkIG9yIHNoYXJlZCBkYXRhcGF0aCwgdXN1YWxseSB0
+aGV5J3JlIGNvLWV4aXN0Lg0KPiANCj4gU28gaWYgSSB1bmRlcnN0YW5kIHRoaXMgY29ycmVjdGx5
+LCB0aGUgInZzd3RpY2giIGhlcmUgaXMgYSBoYXJkd2FyZSBmdW5jdGlvbg0KPiAoc29tZXRoaW5n
+IGxpa2Ugc21hcnQgTklDcyBvciBPVlMgb2ZmbG9hZGVkKS4gU28gdGhlIHF1ZXN0aW9uIHN0aWxs
+LCBpcyB2aG9zdC0NCj4gdXNlciBhIG11c3QgaW4gdGhpcyBjYXNlPw0KDQoidnN3aXRjaCIgcG9p
+bnQgdG8gU1cgdnN3aXRjaChlLmcuIE9WUy1EUERLKS4gQWNjZWxlcmF0b3JzIHN0YW5kcyBmb3Ig
+ZGlmZmVyZW50IG9mZmxvYWRpbmcgSVBzIG9uIHRoZSBkZXZpY2UoZS5nLiBzbWFydCBOSUMpIHdo
+aWNoIGNhbiBiZSB1c2VkIGZyb20gYSB1c2VybGFuZCBkcml2ZXIuDQpFTUMgSVAgdXNlZCB0byBv
+ZmZsb2FkIE9WUyBmYXN0cGF0aCwgc28gYXMgbW92ZSB0cmFmZmljIHRvIFZNIGRpcmVjdGx5LiBF
+aXRoZXIgU1JJT1YgZGV2aWNlIGFzc2lnbm1lbnQgb3IgdkRQQSBoZWxwcyB0byBidWlsZCBkYXRh
+cGF0aCBwYXNzLXRocnUgY29udGV4dCB3aGljaCByZXByZXNlbnRlZCBieSBhIHZpcnR1YWwgaW50
+ZXJmYWNlIG9uIG1hbmFnZW1lbnQgcGVyc3BlY3RpdmUuIEZvciBlbnRpcmUgInZzd2l0Y2giLCB0
+aGVyZSBzdGlsbCBjby1leGlzdCBub25lIHBhc3MtdGhydSBpbnRlcmZhY2UoU1cgYmFja2VuZCkg
+d2hpY2ggdXNlcyB2aG9zdC11c2VyIGZvciB2aXJ0dWFsIGludGVyZmFjZS4NCkJvdGggb2YgdGhl
+bSBzaGFsbCBiZSBhYmxlIHRvIHJlcGxhY2UgZWFjaCBvdGhlci4gDQoNClRoZXJlJ3Mgbm8gb3Ro
+ZXIgdXNlciBzcGFjZSBjaG9pY2UgeWV0IHJlY2VudGx5IGZvciBuZXR3b3JrIGV4Y2VwdCB2aG9z
+dC11c2VyLiBUaGUgcGF0Y2ggb2Ygdmhvc3QtdXNlciBleHRlbnNpb24gaGFzIGxvd2VyIGltcGFj
+dCBmb3IgcWVtdS4NCklmIHlvdSByZWFkIHRoaXMgcGF0Y2gsIGl0J3MgcmVhbGx5IGFib3V0IHRv
+IHJlZHVjZSB0aGUgZG9vcmJlbGwgYW5kIGludGVycnVwdCBvdmVyaGVhZC4gQmFzaWMgdkRQQSB3
+b3JrcyBldmVuIHdpdGhvdXQgYW55IHFlbXUgY2hhbmdlLiBBcyB2aG9zdC11c2VyIGlzIHdlbGwt
+cmVjb2duaXplZCBhcyB0aGUgdmhvc3QgaW50ZXJmYWNlIGZvciB1c2VybGFuZCBiYWNrZW5kLCBp
+dCdzIHJlYXNvbmFibGUgdG8gd2VsbC1zdXBwb3J0IHRoZSB1c2FnZSBvZiB1c2VybGFuZCBiYWNr
+ZW5kIHcvIEkvTyBhY2NlbGVyYXRvci4NCg0KQmVmb3JlIG1vdmluZyBmb3J3YXJkLCBpdCdzIG5l
+Y2Vzc2FyeSB0byBnZXQgc29tZSBhbGlnbm1lbnQgb24gdHdvIGJhc2ljIHRoaW5ncy4NCi0gRG8g
+eW91IGFncmVlIHRoYXQgcHJvdmlkaW5nIHVzZXJsYW5kIGJhY2tlbmQgdmlhIHZob3N0LXVzZXIg
+aXMgdGhlIHJpZ2h0IHdheSB0byBkbyB3aXRoIHZzd2l0Y2ggd29ya2xvYWQuDQogICBPdGhlcndp
+c2UsIHdlIHByb2JhYmx5IHNoYWxsIGdvIGJhY2sgdG8gcmV2aXNpdCB2aG9zdC11c2VyIGl0c2Vs
+ZiByYXRoZXIgdGhhbiB0YWxraW5nIGFueXRoaW5nIG5ldyBoYXBwZW5pbmcgb24gdmhvc3QtdXNl
+ci4NCi0gRG8geW91IGFncmVlIHZob3N0LXVzZXIgaXMgYSByaWdodCB3YXkgZm9yIHFlbXUgdG8g
+YWxsb3cgbXVsdGktcHJvY2Vzcz8NCiAgIFBsZWFzZSByZWZlciB0byBodHRwczovL3d3dy5saW51
+eC1rdm0ub3JnL2ltYWdlcy9mL2ZjL0tWTV9GT1JVTV9tdWx0aS1wcm9jZXNzLnBkZg0KDQo+IA0K
+PiA+DQo+ID4+PiAgICBPbiB3b3JrbG9hZHMgcG9pbnQgb2YgdmlldywgaXQncyBub3QgZXhjaXRl
+ZCB0byBiZSBwYXJ0IG9mIHFlbXUgcHJvY2Vzcy4NCj4gPj4gRG9uJ3Qgc2VlIHdoeSwgcWVtdSBo
+YXZlIGRhdGFwbGFuZSBmb3IgdmlydGlvLWJsay9zY3NpLg0KPiA+IFFlbXUgaGFzIHZob3N0LXVz
+ZXIgZm9yIHNjc2kgdG9vLiBJJ20gbm90IHNheWluZyB3aGljaCBvbmUgaXMgYmFkLCBqdXN0DQo+
+IHBvaW50IG91dCBzb21ldGltZSBpdCdzIHZlcnkgd29ya2xvYWRzIGRyaXZlbi4gTmV0d29yayBp
+cyBkaWZmZXJlbnQgd2l0aA0KPiBibGsvc2NzaS9jcnlwdG8uDQo+IA0KPiBXaGF0J3MgdGhlIG1h
+aW4gZGlmZmVyZW5jZSBmcm9tIHlvdXIgcG9pbnQgb2YgdmlldyB3aGljaCBtYWtlcw0KPiB2aG9z
+dC11c2VyIGEgbXVzdCBpbiB0aGlzIGNhc2U/DQpOZXR3b3JrIGRldmljZXMsIGEgTklDIG9yIGEg
+U21hcnQgTklDIHVzdWFsbHkgaGFzIHZlbmRvciBzcGVjaWZpYyBkcml2ZXIuIERQREsgdGFrZXMg
+ZGV2aWNlcyBieSBpdHMgdXNlciBzcGFjZSBkcml2ZXJzIHRvIHJ1biBPVlMuIFZpcnR1YWwgaW50
+ZXJmYWNlIGlzIGFsbCB2aG9zdC11c2VyIGJhc2VkIHRhbGtpbmcgd2l0aCBxZW11LiBGb3Igc29t
+ZSB2aXJ0dWFsIGludGVyZmFjZSwgaXQgbm93IHRyaWVzIHRvIGJ5cGFzcyB0aGUgdHJhZmZpYy4g
+SXQncyBsb29raW5nIGZvcndhcmQgYSBjb25zaXN0ZW50IHZob3N0LXVzZXIgaW50ZXJmYWNlIHRo
+ZXJlLiBMaW5raW5nIE9WUy1EUERLIHdpdGggcWVtdSwgVEJILCBpdCdzIGZhciBhd2F5IGZyb20g
+dG9kYXkncyB1c2FnZS4NCg0KPiANCj4gPj4+IFRoYXQgY29tZXMgdXAgd2l0aCB0aGUgaWRlYSBv
+ZiB2aG9zdC11c2VyIGV4dGVuc2lvbi4gVXNlcmxhbmQNCj4gd29ya2xvYWRzDQo+ID4+IGRlY2lk
+ZXMgdG8gZW5hYmxlIGFjY2VsZXJhdG9ycyBvciBub3QsIHFlbXUgcHJvdmlkZXMgdGhlIGNvbW1v
+biBjb250cm9sDQo+ID4+IHBsYW5lIGluZnJhc3RydWN0dXJlLg0KPiA+Pg0KPiA+PiBJdCBicmlu
+Z3MgZXh0cmEgY29tcGxleGl0eTogZW5kbGVzcyBuZXcgdHlwZXMgb2YgbWVzc2FnZXMgYW5kIGEg
+aHVnZQ0KPiBicnVuY2gNCj4gPj4gb2YgYnVncy4gQW5kIHdoYXQncyBtb3JlIGltcG9ydGFudCwg
+dGhlIHNwbGl0IG1vZGVsIHRlbmRzIHRvIGJlIGxlc3MNCj4gZWZmaWNpZW50DQo+ID4+IGluIHNv
+bWUgY2FzZXMsIGUuZyBndWVzdCBJT01NVSBpbnRlZ3JhdGlvbi4gSSdtIHByZXR0eSBzdXJlIHdl
+IHdpbGwgbWVldA0KPiA+PiBtb3JlIGluIHRoZSBmdXR1cmUuDQo+ID4gdklPTU1VIHJlbGV2YW50
+IG1lc3NhZ2UgaGFzIGJlZW4gc3VwcG9ydGVkIGJ5IHZob3N0IHByb3RvY29sLiBJdCdzDQo+IGlu
+ZGVwZW5kZW50IGVmZm9ydCB0aGVyZS4NCj4gDQo+IFRoZSBwb2ludCBpcyB2SU9NTVUgaW50ZWdy
+YXRpb24gaXMgdmVyeSBpbmVmZmljaWVudCBpbiB2aG9zdC11c2VyIGZvcg0KPiBzb21lIGNhc2Vz
+LiBJZiB5b3UgaGF2ZSBsb3RzIG9mIGR5bmFtaWMgbWFwcGluZ3MsIGl0IGNhbiBoYXZlIG9ubHkN
+Cj4gNSUtMTAlIHBlcmZvcm1hbmNlIGNvbXBhcmVkIHRvIHZJT01NVSBkaXNhYmxlZC4gQSBodWdl
+IGFtb3VudCBvZg0KPiB0cmFuc2xhdGlvbiByZXF1ZXN0IHdpbGwgYmUgZ2VuZXJhdGVkIGluIHRo
+aXMgY2FzZS4gVGhlIG1haW4gaXNzdWUgaGVyZQ0KPiBpcyB5b3UgY2FuIG5vdCBvZmZsb2FkIGRh
+dGFwYXRoIGNvbXBsZXRlbHkgdG8gdmhvc3QtdXNlciBiYWNrZW5kcw0KPiBjb21wbGV0ZWx5LCBJ
+T01NVSB0cmFuc2xhdGlvbnMgd2VyZSBzdGlsbCBkb25lIGluIHFlbXUuIFRoaXMgaXMgb25lIG9m
+DQo+IHRoZSBkZWZlY3Qgb2Ygdmhvc3QtdXNlciB3aGVuIGRhdGFwYXRoIG5lZWQgdG8gYWNjZXNz
+IHRoZSBkZXZpY2Ugc3RhdGUuDQpJdCdzIHZJT01NVSdzIGNoYWxsZW5nZSBvZiBkeW5hbWljIG1h
+cHBpbmcsIGJlc2lkZXMgdmhvc3QtdXNlciwga2VybmVsIHZob3N0IHNoYWxsIGZhY2UgdGhlIHNh
+bWUgc2l0dWF0aW9uLiBTdGF0aWMgbWFwcGluZyB3LyBEUERLIGxvb2tzIG11Y2ggYmV0dGVyLiBJ
+dCdzIG5vdCBmYWlyIHRvIGJsYW1lIHZob3N0LXVzZXIgYnkgdklPTU1VIG92ZXJoZWFkLg0KDQo+
+IA0KPiA+IEkgZG9uJ3Qgc2VlIHRoaXMgcGF0Y2ggaW50cm9kdWNlIGVuZGxlc3MgbmV3IHR5cGVz
+Lg0KPiANCj4gTm90IHRoaXMgcGF0Y2ggYnV0IHdlIGNhbiBpbWFnaW5lIHZob3N0LXVzZXIgcHJv
+dG9jb2wgd2lsbCBiZWNvbWUNCj4gY29tcGxleCBpbiB0aGUgZnV0dXJlLg0KPiANCj4gPiBNeSB0
+YWtpbmcgb2YgeW91ciBmdW5kYW1lbnRhbCBjb25jZXJuIGlzIGFib3V0IGNvbnRpbnVlcyBhZGRp
+bmcgbmV3DQo+IGZlYXR1cmVzIG9uIHZob3N0LXVzZXIuDQo+ID4gRmVlbCBmcmVlIHRvIGNvcnJl
+Y3QgbWUgaWYgSSBtaXN1bmRlcnN0b29kIHlvdXIgcG9pbnQuDQo+IA0KPiBVbmZvcnR1bmF0ZWx5
+IG5vdCwgZW5kbGVzcyBpdHNlbGYgaXMgbm90IGEgcHJvYmxlbSBidXQgd2UnZCBiZXR0ZXIgb25s
+eQ0KPiB0cnkgdG8gZXh0ZW5kIGl0IG9ubHkgd2hlbiBpdCB3YXMgcmVhbGx5IG5lZWRlZC4gVGhl
+IG1haW4gcXVlc3Rpb25zIGFyZToNCj4gDQo+IDEpIHdoZXRoZXIgb3Igbm90IHdlIG5lZWQgdG8g
+c3BsaXQgdGhpbmdzIGxpa2Ugd2hhdCB5b3Ugc3VnZ2VzdGVkIGhlcmU/DQo+IDIpIGlmIG5lZWRl
+ZCwgaXMgdmhvc3QtdXNlciB0aGUgYmVzdCBtZXRob2Q/DQpTb3VuZHMgZ29vZC4gQlRXLCB0aGlz
+IHBhdGNoKHZob3N0LXVzZXIgZXh0ZW50aW9uKSBpcyBhIHBlcmZvcm1hbmNlIGltcHJvdmVtZW50
+IHBhdGNoIGZvciBEUERLIHZEUEEgdXNhZ2UoUmVmZXIgRFBESyBwYXRjaGVzKS4gQW5vdGhlciBS
+RkMgcGF0Y2ggc3RheSB0dW5lZCBmb3Iga2VybmVsIHNwYWNlIHVzYWdlIHdoaWNoIHdpbGwgcHJv
+cG9zZSBhIHFlbXUgbmF0aXZlIHZob3N0IGFkYXB0b3IgZm9yIGluLWtlcm5lbCBtZWRpYXRlZCBk
+ZXZpY2UgZHJpdmVyLg0KDQo+IA0KPiA+DQo+ID4+Pj4+IEFuZCBJTU8gaXQncyBhbHNvIG5vdCBh
+IGJhZCBpZGVhIHRvIGV4dGVuZCB2aG9zdC11c2VyIHByb3RvY29sIHRvDQo+ID4+Pj4+IHN1cHBv
+cnQgdGhlIGFjY2VsZXJhdG9ycyBpZiBwb3NzaWJsZS4gQW5kIGl0IGNvdWxkIGJlIG1vcmUgZmxl
+eGlibGUNCj4gPj4+Pj4gYmVjYXVzZSBpdCBjb3VsZCBzdXBwb3J0IChmb3IgZXhhbXBsZSkgYmVs
+b3cgdGhpbmdzIGVhc2lseSB3aXRob3V0DQo+ID4+Pj4+IGludHJvZHVjaW5nIGFueSBjb21wbGV4
+IGNvbW1hbmQgbGluZSBvcHRpb25zIG9yIG1vbml0b3IgY29tbWFuZHMNCj4gdG8NCj4gPj4+Pj4g
+UUVNVToNCj4gPj4+PiBNYXliZSBJIHdhcyB3cm9uZyBidXQgSSBkb24ndCB0aGluayB3ZSBjYXJl
+IGFib3V0IHRoZSBjb21wbGV4aXR5IG9mDQo+ID4+Pj4gY29tbWFuZCBsaW5lIG9yIG1vbml0b3Ig
+Y29tbWFuZCBpbiB0aGlzIGNhc2UuDQo+ID4+Pj4NCj4gPj4+Pj4gLSB0aGUgc3dpdGNoaW5nIGFt
+b25nIGRpZmZlcmVudCBhY2NlbGVyYXRvcnMgYW5kIHNvZnR3YXJlIHZlcnNpb24NCj4gPj4+Pj4g
+ICAgICBjYW4gYmUgZG9uZSBhdCBydW50aW1lIGluIHZob3N0IHByb2Nlc3M7DQo+ID4+Pj4+IC0g
+dXNlIGRpZmZlcmVudCBhY2NlbGVyYXRvcnMgdG8gYWNjZWxlcmF0ZSBkaWZmZXJlbnQgcXVldWUg
+cGFpcnMNCj4gPj4+Pj4gICAgICBvciBqdXN0IGFjY2VsZXJhdGUgc29tZSAoaW5zdGVhZCBvZiBh
+bGwpIHF1ZXVlIHBhaXJzOw0KPiA+Pj4+IFdlbGwsIHRlY2huaWNhbGx5LCBpZiB3ZSB3YW50LCB0
+aGVzZSBjb3VsZCBiZSBpbXBsZW1lbnRlZCBpbiBxZW11IHRvby4NCj4gPj4+IFlvdSdyZSByaWdo
+dCBpZiBqdXN0IGNvbnNpZGVyaW5nIEkvTy4gVGhlIHdheXMgdG8gY29uc3VtZSB0aG9zZSBJL08g
+aXMNCj4gPj4gYW5vdGhlciBwZXJzcGVjdGl2ZS4NCj4gPj4+IFNpbXBseSAxOjEgYXNzb2NpYXRp
+bmcgZ3Vlc3QgdmlydGlvLW5ldCBhbmQgYWNjZWxlcmF0b3Igdy8gU1cgZGF0YXBhdGgNCj4gPj4g
+ZmFsbGJhY2sgaXMgbm90IHRoZSB3aG9sZSBwaWN0dXJlLg0KPiA+Pg0KPiA+PiBQYXkgYXR0ZW50
+aW9uOg0KPiA+Pg0KPiA+PiAxKSBXaGF0IEkgbWVhbiBpcyBub3QgYSBmYWxsYmFjayBoZXJlLiBZ
+b3UgY2FuIHN0aWxsIGRvIGEgbG90IG9mIHRyaWNrcyBlLmcNCj4gPj4gb2ZmbG9hZGluZyBkYXRh
+cGF0aCB0byBoYXJkd2FyZSBvciBkb29yYmVsbCBtYXAuDQo+ID4+IDIpIFFlbXUgc3VwcG9ydHMg
+KHZlcnkgb2xkIGFuZCBpbmVmZmljaWVudCkgYSBzcGxpdCBtb2RlbCBvZiBkZXZpY2UNCj4gZW11
+bGF0aW9uDQo+ID4+IGFuZCBuZXR3b3JrIGJhY2tlbmQuIFRoaXMgbWVhbnMgd2UgY2FuIHN3aXRj
+aCBiZXR3ZWVuIGJhY2tlbmRzDQo+ICh0aG91Z2gNCj4gPj4gbm90IGltcGxlbWVudGVkKS4NCj4g
+PiBBY2NlbGVyYXRvciB3b24ndCBiZSBkZWZpbmVkIGluIHRoZSBzYW1lIGRldmljZSBsYXlvdXQs
+IGl0IG1lYW5zIHRoZXJlJ3JlDQo+IGRpZmZlcmVudCBraW5kcyBvZiBkcml2ZXJzLg0KPiANCj4g
+V2VsbCwgeW91IGNhbiBzdGlsbCB1c2UgZGlmZmVyZW50IGRyaXZlcnMgaWYgeW91IGxpbmsgZHBk
+ayBvciB3aGF0ZXZlcg0KPiBvdGhlciBkYXRhcGxhbmUgbGlicmFyeSB0byBxZW11Lg0KPiANCj4g
+PiBRZW11IGRlZmluaXRlbHkgd29uJ3QgbGlrZSB0byBoYXZlIEhXIHJlbGV2YW50IGRyaXZlciB0
+aGVyZSwNCj4gDQo+IFdoeSBub3Q/IFdlJ3ZlIGFscmVhZHkgaGFkIHVzZXJzcGFjZSBOVk1FIGRy
+aXZlci4NClRoZXJlJ3MgaHVnZSBhbW91bnQgb2YgdmVuZG9yIHNwZWNpZmljIGRyaXZlciBmb3Ig
+bmV0d29yay4gTlZNZSBpcyBtdWNoIGdlbmVyYWxpemVkIHRoYW4gTklDLg0KVGhlIGlkZWEgb2Yg
+bGlua2luZyBhbiBleHRlcm5hbCBkYXRhcGxhbmUgc291bmRzIGludGVyZXN0aW5nLCBidXQgaXQn
+cyBub3QgdXNlZCBpbiByZWFsIHdvcmxkLiBMb29raW5nIGZvcndhcmQgdGhlIHByb2dyZXNzLg0K
+DQo+IA0KPiA+ICAgdGhhdCdzIGVuZCB1cCB3aXRoIGFub3RoZXIgdmhvc3QtdmZpbyBpbiBteSBz
+bGlkZXMuDQo+IA0KPiBJIGRvbid0IGdldCB3aHkgd2UgY2FuJ3QgaW1wbGVtZW50IGl0IHB1cmVs
+eSB0aHJvdWdoIGEgdXNlcnNwYWNlIGRyaXZlcg0KPiBpbnNpZGUgcWVtdS4NClRCSCwgd2UgdGhp
+bmsgYWJvdXQgdGhpcyBiZWZvcmUuIFRoZXJlJ3JlIGEgZmV3IHJlYXNvbnMgc3RvcHBpbmcgdXMu
+DQotIHFlbXUgaGFzbid0IGFuIGFic3RyYWN0aW9uIGxheW91dCBvZiBuZXR3b3JrIGRldmljZShI
+VyBOSUMpIGZvciB1c2Vyc3BhY2UgZHJpdmVycw0KLSBxZW11IGxhdW5jaCBwcm9jZXNzLCBsaW5r
+aW5nIGRwZGsgdy8gcWVtdSBpcyBub3QgcHJvYmxlbS4gR2FwIGlzIG9uIG92cyBpbnRlZ3JhdGlv
+biwgZWZmb3J0L2ltcGFjdCBpcyBub3Qgc21hbGwNCi0gZm9yIHFlbXUgbmF0aXZlIHZpcnRpbyBT
+VyBiYWNrZW5kLCBpdCBsYWNrcyBvZiBlZmZpY2llbnQgd2F5cyB0byB0YWxrIHdpdGggZXh0ZXJu
+YWwgcHJvY2Vzcy4gVGhlIGNoYW5nZSBlZmZvcnRzL2ltcGFjdCBpcyBub3Qgc21hbGwuDQotIHFl
+bXUgbmF0aXZlIHVzZXJzcGFjZSBkcml2ZXIgb25seSB1c2VkIGZvciBxZW11LCB1c2Vyc3BhY2Ug
+ZHJpdmVyIGluIERQREsgY2FuIGJlIHVzZWQgZm9yIG90aGVycw0KDQo+IA0KPiA+ICAgQSBtZWRp
+YXRlZCBkZXZpY2UgY2FuIGhlbHAgdG8gdW5pZnkgdGhlIGRldmljZSBsYXlvdXQgZGVmaW5pdGlv
+biwgYW5kIGxlYXZlDQo+IHRoZSBkcml2ZXIgcGFydCBpbiBpdHMgb3duIHBsYWNlLg0KPiANCj4g
+VGhlIHBvaW50IGlzIG5vdCBhYm91dCBtZWRpYXRlZCBkZXZpY2UgYnV0IHdoeSB5b3UgbXVzdCB1
+c2Ugdmhvc3QtdXNlcg0KPiB0byBkbyBpdC4NCj4gDQo+IFRoYW5rcw0KPiANCj4gPiBUaGlzIGFw
+cHJvYWNoIGlzIHF1aXRlIGdvb2Qgd2hlbiBhcHBsaWNhdGlvbiBkb2Vzbid0IG5lZWQgdG8gcHV0
+IHVzZXJsYW5kDQo+IFNXIGRhdGFwYXRoIGFuZCBhY2NlbGVyYXRvciBkYXRhcGF0aCBpbiB0aGUg
+c2FtZSBwaWN0dXJlIGFzIHdoaWNoIEkNCj4gbWVudGlvbmVkKHZzd2l0Y2ggY2FzZXMpLg0KPiA+
+DQo+ID4+PiAgICBJdCdzIHZhcmlhYmxlIHVzYWdlcyBvbiB3b3JrbG9hZCBzaWRlIHRvIGFic3Ry
+YWN0IHRoZSBkZXZpY2UgKGUuZy4gcG9ydA0KPiByZS0NCj4gPj4gcHJlc2VudGVyIGZvciB2c3dp
+dGNoKSBhbmQgZXRjLiBJIGRvbid0IHRoaW5rIHFlbXUgaXMgaW50ZXJlc3RlZCBmb3IgYWxsDQo+
+IGJ1bmNoDQo+ID4+IG9mIHRoaW5ncyB0aGVyZS4NCj4gPj4gQWdhaW4sIHlvdSBjYW4gbGluayBh
+bnkgZGF0YXBsYW5lIHRvIHFlbXUgZGlyZWN0bHkgaW5zdGVhZCBvZiB1c2luZyB2aG9zdC0NCj4g
+Pj4gdXNlciBpZiB2aG9zdC11c2VyIHRlbmRzIHRvIGJlIGxlc3MgdXNlZnVsIGluIHNvbWUgY2Fz
+ZXMgKHZEUEEgaXMgb25lIG9mIHRoZQ0KPiA+PiBjYXNlIEkgdGhpbmspLg0KPiA+IFNlZSBteSBw
+cmV2aW91cyB3b3Jkcy4NCj4gPg0KPiA+PiBUaGFua3MNCj4gDQo+IA0KPiAtLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0N
+Cj4gVG8gdW5zdWJzY3JpYmUsIGUtbWFpbDogdmlydGlvLWRldi11bnN1YnNjcmliZUBsaXN0cy5v
+YXNpcy1vcGVuLm9yZw0KPiBGb3IgYWRkaXRpb25hbCBjb21tYW5kcywgZS1tYWlsOiB2aXJ0aW8t
+ZGV2LWhlbHBAbGlzdHMub2FzaXMtb3Blbi5vcmcNCg0K
 
