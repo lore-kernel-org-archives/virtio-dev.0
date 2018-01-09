@@ -1,210 +1,245 @@
-Return-Path: virtio-return-2831-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio@lists.oasis-open.org>
-List-Post: <mailto:virtio@lists.oasis-open.org>
-List-Help: <mailto:virtio-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Wed, 10 Jan 2018 16:50:18 +0100
-From: Cornelia Huck <cohuck@redhat.com>
-Message-ID: <20180110165018.158e80c1.cohuck@redhat.com>
-In-Reply-To: <1515596714-18578-1-git-send-email-mst@redhat.com>
-References: <1515596714-18578-1-git-send-email-mst@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Subject: Re: [virtio] [PATCH RFC] content: generalize transport ring part
- naming
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+Return-Path: virtio-dev-return-2929-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
+	by lists.oasis-open.org (Postfix) with ESMTP id 093085818F6C
+	for <virtio-dev@lists.oasis-open.org>; Tue,  9 Jan 2018 03:29:43 -0800 (PST)
+From: Wei Wang <wei.w.wang@intel.com>
+Date: Tue,  9 Jan 2018 19:10:57 +0800
+Message-Id: <1515496262-7533-1-git-send-email-wei.w.wang@intel.com>
+Subject: [virtio-dev] [PATCH v21 0/5] Virtio-balloon Enhancement
+To: virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, qemu-devel@nongnu.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, linux-mm@kvack.org, mst@redhat.com, mhocko@kernel.org, akpm@linux-foundation.org, mawilcox@microsoft.com
+Cc: david@redhat.com, penguin-kernel@I-love.SAKURA.ne.jp, cornelia.huck@de.ibm.com, mgorman@techsingularity.net, aarcange@redhat.com, amit.shah@redhat.com, pbonzini@redhat.com, willy@infradead.org, wei.w.wang@intel.com, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu0@gmail.com, nilal@redhat.com, riel@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, 10 Jan 2018 17:05:40 +0200
-"Michael S. Tsirkin" <mst@redhat.com> wrote:
+This patch series enhances the existing virtio-balloon with the following
+new features:
+1) fast ballooning: transfer ballooned pages between the guest and host in
+chunks using sgs, instead of one array each time; and
+2) free page block reporting: a new virtqueue to report guest free pages
+to the host.
 
-> Replace descriptor table/available ring/used ring
-> with descriptor area/driver area/device area
-> in all transports.
-> 
-> Document what's in which area for each format.
-> 
-> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> ---
-> 
-> Cornelia, this is more or less what you suggested, isn't it?
-> 
-> 
->  content.tex     | 61 +++++++++++++++++++++++++++++++++++++--------------------
->  packed-ring.tex |  6 +++---
->  split-ring.tex  |  6 +++---
->  3 files changed, 46 insertions(+), 27 deletions(-)
-> 
-> diff --git a/content.tex b/content.tex
-> index f93c9ca..37b50c3 100644
-> --- a/content.tex
-> +++ b/content.tex
-> @@ -254,6 +254,24 @@ they have been made available. These devices can offer the
->  VIRTIO_F_IN_ORDER feature. If negotiated, this knowledge
->  might allow optimizations or simplify driver code.
->  
-> +Each virtqueue can consist of up to 3 parts:
-> +\begin{itemize}
-> +\item Descriptor Area - used for describing buffers
-> +\item Driver Area - extra data supplied by driver to the device
-> +\item Device Area - extra data supplied by device to driver
-> +\end{itemize}
-> +
-> +\begin{note}
-> +Note that previous versions of this spec used different names for
-> +these parts (following \ref{sec:Basic Facilities of a Virtio Device / Split Virtqueues}):
-> +\begin{itemize}
-> +\item Descriptor Table - for the Descriptor Area
-> +\item Available Ring - fir the Driver Area
+The second feature can be used to accelerate live migration of VMs. Here
+are some details:
 
-s/fir/for/
+Live migration needs to transfer the VM's memory from the source machine
+to the destination round by round. For the 1st round, all the VM's memory
+is transferred. From the 2nd round, only the pieces of memory that were
+written by the guest (after the 1st round) are transferred. One method
+that is popularly used by the hypervisor to track which part of memory is
+written is to write-protect all the guest memory.
 
-> +\item Used Ring - for the Device Area
-> +\end{itemize}
-> +
-> +\end{note}
-> +
->  Two formats are supported: Split Virtqueues (see \ref{sec:Basic
->  Facilities of a Virtio Device / Split
->  Virtqueues}~\nameref{sec:Basic Facilities of a Virtio Device /
-> @@ -683,8 +701,8 @@ struct virtio_pci_common_cfg {
->          le16 queue_enable;              /* read-write */
->          le16 queue_notify_off;          /* read-only for driver */
->          le64 queue_desc;                /* read-write */
-> -        le64 queue_avail;               /* read-write */
-> -        le64 queue_used;                /* read-write */
-> +        le64 queue_driver;              /* read-write */
-> +        le64 queue_device;              /* read-write */
->  };
->  \end{lstlisting}
->  
-> @@ -744,13 +762,13 @@ struct virtio_pci_common_cfg {
->          \end{note}
->  
->  \item[\field{queue_desc}]
-> -        The driver writes the physical address of Descriptor Table here.  See section \ref{sec:Basic Facilities of a Virtio Device / Virtqueues}.
-> +        The driver writes the physical address of Descriptor Area here.  See section \ref{sec:Basic Facilities of a Virtio Device / Virtqueues}.
->  
-> -\item[\field{queue_avail}]
-> -        The driver writes the physical address of Available Ring here.  See section \ref{sec:Basic Facilities of a Virtio Device / Virtqueues}.
-> +\item[\field{queue_driver}]
-> +        The driver writes the physical address of Driver Area here.  See section \ref{sec:Basic Facilities of a Virtio Device / Virtqueues}.
->  
-> -\item[\field{queue_used}]
-> -        The driver writes the physical address of Used Ring here.  See section \ref{sec:Basic Facilities of a Virtio Device / Virtqueues}.
-> +\item[\field{queue_device}]
-> +        The driver writes the physical address of Device Area here.  See section \ref{sec:Basic Facilities of a Virtio Device / Virtqueues}.
->  \end{description}
->  
->  \devicenormative{\paragraph}{Common configuration structure layout}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Common configuration structure layout}
-> @@ -1512,24 +1530,24 @@ All register values are organized as Little Endian.
->      See also p. \ref{sec:Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operation / Device Initialization}~\nameref{sec:Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operation / Device Initialization}.
->    }
->    \hline 
-> -  \mmiodreg{QueueDescLow}{QueueDescHigh}{Virtual queue's Descriptor Table 64 bit long physical address}{0x080}{0x084}{W}{%
-> +  \mmiodreg{QueueDescLow}{QueueDescHigh}{Virtual queue's Descriptor Area 64 bit long physical address}{0x080}{0x084}{W}{%
->      Writing to these two registers (lower 32 bits of the address
->      to \field{QueueDescLow}, higher 32 bits to \field{QueueDescHigh}) notifies
-> -    the device about location of the Descriptor Table of the queue
-> +    the device about location of the Descriptor Area of the queue
->      selected by writing to \field{QueueSel} register.
->    }
->    \hline 
-> -  \mmiodreg{QueueAvailLow}{QueueAvailHigh}{Virtual queue's Available Ring 64 bit long physical address}{0x090}{0x094}{W}{%
-> +  \mmiodreg{QueueDriverLow}{QueueDriverHigh}{Virtual queue's Driver Area 64 bit long physical address}{0x090}{0x094}{W}{%
->      Writing to these two registers (lower 32 bits of the address
->      to \field{QueueAvailLow}, higher 32 bits to \field{QueueAvailHigh}) notifies
-> -    the device about location of the Available Ring of the queue
-> +    the device about location of the Driver Area of the queue
->      selected by writing to \field{QueueSel}.
->    }
->    \hline 
-> -  \mmiodreg{QueueUsedLow}{QueueUsedHigh}{Virtual queue's Used Ring 64 bit long physical address}{0x0a0}{0x0a4}{W}{%
-> +  \mmiodreg{QueueDeviceLow}{QueueDeviceHigh}{Virtual queue's Device Area 64 bit long physical address}{0x0a0}{0x0a4}{W}{%
->      Writing to these two registers (lower 32 bits of the address
->      to \field{QueueUsedLow}, higher 32 bits to \field{QueueUsedHigh}) notifies
-> -    the device about location of the Used Ring of the queue
-> +    the device about location of the Device Area of the queue
->      selected by writing to \field{QueueSel}.
->    }
->    \hline 
-> @@ -1647,11 +1665,11 @@ The driver will typically initialize the virtual queue in the following way:
->  \item Notify the device about the queue size by writing the size to
->     \field{QueueNum}.
->  
-> -\item Write physical addresses of the queue's Descriptor Table,
-> -   Available Ring and Used Ring to (respectively) the
-> +\item Write physical addresses of the queue's Descriptor Area,
-> +   Driver Area and Device Area to (respectively) the
->     \field{QueueDescLow}/\field{QueueDescHigh},
-> -   \field{QueueAvailLow}/\field{QueueAvailHigh} and
-> -   \field{QueueUsedLow}/\field{QueueUsedHigh} register pairs.
-> +   \field{QueueDriverLow}/\field{QueueDriverHigh} and
-> +   \field{QueueDeviceLow}/\field{QueueDeviceHigh} register pairs.
->  
->  \item Write 0x1 to \field{QueueReady}.
->  \end{enumerate}
-> @@ -2041,13 +2059,14 @@ struct vq_info_block {
->          be32 res0;
->          be16 index;
->          be16 num;
-> -        be64 avail;
-> -        be64 used;
-> +        be64 driver;
-> +        be64 device;
->  };
->  \end{lstlisting}
->  
-> -\field{desc}, \field{avail} and \field{used} contain the guest addresses for the descriptor table,
-> -available ring and used ring for queue \field{index}, respectively. The actual
-> +\field{desc}, \field{driver} and \field{device} contain the guest
-> +addresses for the descriptor area,
-> +available area and used area for queue \field{index}, respectively. The actual
->  virtqueue size (number of allocated buffers) is transmitted in \field{num}.
->  
->  \devicenormative{\paragraph}{Configuring a Virtqueue}{Virtio Transport Options / Virtio over channel I/O / Device Initialization / Configuring a Virtqueue}
-> diff --git a/packed-ring.tex b/packed-ring.tex
-> index a2cf8ec..eb6136a 100644
-> --- a/packed-ring.tex
-> +++ b/packed-ring.tex
-> @@ -15,9 +15,9 @@ allocated by driver.
->  Each packed virtqueue consists of three parts:
->  
->  \begin{itemize}
-> -\item Descriptor Ring
-> -\item Device Event Suppression
-> -\item Driver Event Suppression
-> +\item Descriptor Ring - occupies the Descriptor Area
-> +\item Device Event Suppression - occupies the Driver Area
-> +\item Driver Event Suppression - occupies the Device Area
->  \end{itemize}
->  
->  Where Descriptor Ring in turn consists of descriptors,
-> diff --git a/split-ring.tex b/split-ring.tex
-> index 2770289..f976e45 100644
-> --- a/split-ring.tex
-> +++ b/split-ring.tex
-> @@ -15,9 +15,9 @@ of the queue.
->  Each virtqueue consists of three parts:
->  
->  \begin{itemize}
-> -\item Descriptor Table
-> -\item Available Ring
-> -\item Used Ring
-> +\item Descriptor Table - occupies the Descriptor Area
-> +\item Available Ring - occupies the Driver Area
-> +\item Used Ring - occupies the Device Area
->  \end{itemize}
->  
->  where each part is physically-contiguous in guest memory,
+The second feature enables the optimization of the 1st round memory
+transfer - the hypervisor can skip the transfer of guest free pages in the
+1st round. It is not concerned that the memory pages are used after they
+are given to the hypervisor as a hint of the free pages, because they will
+be tracked by the hypervisor and transferred in the next round if they are
+used and written.
 
-Looks good to me.
+ChangeLog:
+v20 (RESEND)->v21:
+1) patch 1:
+	- xb_zero: fix the bug related to bitmap_clear;
+	- testing/radix-tree/Makefile: removed the "$CC.." line;
+	- added a test case for xbitmap_check_zero_bits;
+2) patch 2: virtio-balloon
+	- changed the usage of the xb_ related APIs
+
+v19->v20:
+1) patch 1: xbitmap
+	- add __rcu to "void **slot";
+	- remove the exceptional path.
+2) patch 3: xbitmap
+	- DeveloperNotes: add an item to comment that the current bit range
+	  related APIs operating on extremely large ranges (e.g.
+          [0, ULONG_MAX)) will take too long time. This can be optimized in
+	  the future.
+	- remove the exceptional path;
+	- remove xb_preload_and_set();
+	- reimplement xb_clear_bit_range to make its usage close to
+	  bitmap_clear;
+	- rename xb_find_next_set_bit to xb_find_set, and re-implement it
+	  in a style close to find_next_bit;
+	- rename xb_find_next_zero_bit to xb_find_clear, and re-implement
+	  it in a stytle close to find_next_zero_bit;
+	- separate the implementation of xb_find_set and xb_find_clear for
+	  the convenience of future updates.
+3) patch 4: virtio-balloon
+	- xb_set_page: change the way to call xb_ related APIs
+
+v18->v19:
+1) patch 3:
+	- xb_clear_bit_range and xb_find_next_bit will deal with range [start,
+	  end), where end is changed to be exclusive of the range.
+	- add overflow checks at the end of xb_clear_bit_range and
+	  xb_find_next_bit 
+	- add overflow related test cases
+2) patch 4:
+	- change back to the previous add_one_sg methond, which is based on the
+	  scatterlist struct
+        - tell_host_sgs: use "uint64_t len" to avoid overflow
+	- batch_balloon_page_sg: a simpler function to implement the batching of
+	  sgs
+3) patch 6: batch_free_page_sg: batch sgs using the previous scatterlist struct
+4) patch 7: add a config field, poison_val, to tell the host about the poison
+	    value
+v17->v18:
+1) patch 1-2: new to solve some tools related compilation issues
+2) patch 3: revert to the original xbitmap implementation from Matthew
+Wilcox with some minor changes (e.g. comments added to the exported
+functions)
+3) patch 4: summarize the changes we want to make to patch 3
+4) patch 5: add the developer notes as a reminder for users to avoid
+concurrent accesses to the ida bitmap
+5) patch 6: a new vring API to allow users to directly pass in a physical
+address to a vring desc
+6) patch 7: ballooning time is reduced from ~490ms to ~440ms with the new
+implementation
+	- use the new API from patch 6 to send balloon pages
+	- xb_preload with "GFP_NOWAIT | __GFP_NOWARN" flag;
+	- handle the case when xb_set_page() fails to avoid memory leak;
+	- put xb_set_page() under the balloon lock
+7) patch 9: simper implementation
+	- start free page reporting by sending a new cmd id from the host
+	- guest acks the start or stop via adding a cmd id to the free page vq
+	- use vb->report_free_page, instead of vb->report_free_page_stop
+	- use WRITE_ONCE/READ_ONCE to access vb->report_free_page
+	- use the new API from patch 6 to send free pages to avoid the
+	  unnecessary use of kaddr.
+8) patch 10: new patch to solve the page posioning issue reported by
+Michael S. Tsirkin 
+
+v16->v17:
+1) patch 1: please check the commit log there;
+2) patch 3: included Michael S. Tsirkin patch to fix the potential
+deadlock issue;
+3) patch 4: use BUG_ON if virtqueue_add_ returns error, which is
+expected never to happen;
+4) patch 4: add leak_balloon_sg_oom, which is used in the oom case when
+VIRTIO_BALLOON_F_SG is in use;
+5) patch 6: use config registers, instead of a vq, as the command channel
+between the host and guest;
+6) patch 6: add the command sequence id support.
+
+v15->v16:
+1) mm: stop reporting the free pfn range if the callback returns false;
+2) mm: move some implementaion of walk_free_mem_block into a function to
+make the code layout looks better;
+3) xbitmap: added some optimizations suggested by Matthew, please refer to
+the ChangLog in the xbitmap patch for details.
+4) xbitmap: added a test suite
+5) virtio-balloon: bail out with a warning when virtqueue_add_inbuf returns
+an error
+6) virtio-balloon: some small code re-arrangement, e.g. detachinf used buf
+from the vq before adding a new buf
+
+v14->v15:
+1) mm: make the report callback return a bool value - returning 1 to stop
+walking through the free page list.
+2) virtio-balloon: batching sgs of balloon pages till the vq is full
+3) virtio-balloon: create a new workqueue, rather than using the default
+system_wq, to queue the free page reporting work item.
+4) virtio-balloon: add a ctrl_vq to be a central control plane which will
+handle all the future control related commands between the host and guest.
+Add free page report as the first feature controlled under ctrl_vq, and
+the free_page_vq is a data plane vq dedicated to the transmission of free
+page blocks.
+
+v13->v14:
+1) xbitmap: move the code from lib/radix-tree.c to lib/xbitmap.c.
+2) xbitmap: consolidate the implementation of xb_bit_set/clear/test into
+one xb_bit_ops.
+3) xbitmap: add documents for the exported APIs.
+4) mm: rewrite the function to walk through free page blocks.
+5) virtio-balloon: when reporting a free page blcok to the device, if the
+vq is full (less likey to happen in practice), just skip reporting this
+block, instead of busywaiting till an entry gets released.
+6) virtio-balloon: fail the probe function if adding the signal buf in
+init_vqs fails.
+
+v12->v13:
+1) mm: use a callback function to handle the the free page blocks from the
+report function. This avoids exposing the zone internal to a kernel
+module.
+2) virtio-balloon: send balloon pages or a free page block using a single
+sg each time. This has the benefits of simpler implementation with no new
+APIs.
+3) virtio-balloon: the free_page_vq is used to report free pages only (no
+multiple usages interleaving)
+4) virtio-balloon: Balloon pages and free page blocks are sent via input
+sgs, and the completion signal to the host is sent via an output sg.
+
+v11->v12:
+1) xbitmap: use the xbitmap from Matthew Wilcox to record ballooned pages.
+2) virtio-ring: enable the driver to build up a desc chain using vring
+desc.
+3) virtio-ring: Add locking to the existing START_USE() and END_USE()
+macro to lock/unlock the vq when a vq operation starts/ends.
+4) virtio-ring: add virtqueue_kick_sync() and virtqueue_kick_async()
+5) virtio-balloon: describe chunks of ballooned pages and free pages
+blocks directly using one or more chains of desc from the vq.
+
+v10->v11:
+1) virtio_balloon: use vring_desc to describe a chunk;
+2) virtio_ring: support to add an indirect desc table to virtqueue;
+3)  virtio_balloon: use cmdq to report guest memory statistics.
+
+v9->v10:
+1) mm: put report_unused_page_block() under CONFIG_VIRTIO_BALLOON;
+2) virtio-balloon: add virtballoon_validate();
+3) virtio-balloon: msg format change;
+4) virtio-balloon: move miscq handling to a task on system_freezable_wq;
+5) virtio-balloon: code cleanup.
+
+v8->v9:
+1) Split the two new features, VIRTIO_BALLOON_F_BALLOON_CHUNKS and
+VIRTIO_BALLOON_F_MISC_VQ, which were mixed together in the previous
+implementation;
+2) Simpler function to get the free page block.
+
+v7->v8:
+1) Use only one chunk format, instead of two.
+2) re-write the virtio-balloon implementation patch.
+3) commit changes
+4) patch re-org
+
+Matthew Wilcox (1):
+  xbitmap: Introduce xbitmap
+
+Wei Wang (4):
+  virtio-balloon: VIRTIO_BALLOON_F_SG
+  mm: support reporting free page blocks
+  virtio-balloon: VIRTIO_BALLOON_F_FREE_PAGE_VQ
+  virtio-balloon: don't report free pages when page poisoning is enabled
+
+ drivers/virtio/virtio_balloon.c          | 443 ++++++++++++++++++++++++++----
+ include/linux/mm.h                       |   6 +
+ include/linux/xbitmap.h                  |  48 ++++
+ include/uapi/linux/virtio_balloon.h      |   7 +
+ lib/Makefile                             |   2 +-
+ lib/radix-tree.c                         |  38 ++-
+ lib/xbitmap.c                            | 444 +++++++++++++++++++++++++++++++
+ mm/page_alloc.c                          |  91 +++++++
+ tools/include/linux/bitmap.h             |  34 +++
+ tools/include/linux/kernel.h             |   2 +
+ tools/testing/radix-tree/Makefile        |  17 +-
+ tools/testing/radix-tree/linux/kernel.h  |   2 -
+ tools/testing/radix-tree/linux/xbitmap.h |   1 +
+ tools/testing/radix-tree/main.c          |   4 +
+ tools/testing/radix-tree/test.h          |   1 +
+ 15 files changed, 1080 insertions(+), 60 deletions(-)
+ create mode 100644 include/linux/xbitmap.h
+ create mode 100644 lib/xbitmap.c
+ create mode 100644 tools/testing/radix-tree/linux/xbitmap.h
+
+-- 
+2.7.4
+
 
 ---------------------------------------------------------------------
-To unsubscribe from this mail list, you must leave the OASIS TC that 
-generates this mail.  Follow this link to all your TCs in OASIS at:
-https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
