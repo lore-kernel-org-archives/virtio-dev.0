@@ -1,99 +1,94 @@
-Return-Path: virtio-return-2830-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-return-2816-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio@lists.oasis-open.org>
 List-Post: <mailto:virtio@lists.oasis-open.org>
 List-Help: <mailto:virtio-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Wed, 10 Jan 2018 17:37:05 +0200
+Date: Wed, 10 Jan 2018 11:47:59 +0200
 From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20180110173540-mutt-send-email-mst@kernel.org>
+Message-ID: <1515577653-9336-6-git-send-email-mst@redhat.com>
 References: <1515577653-9336-1-git-send-email-mst@redhat.com>
- <1515577653-9336-5-git-send-email-mst@redhat.com>
- <20180110151538.465bce97.cohuck@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20180110151538.465bce97.cohuck@redhat.com>
-Subject: Re: [virtio] [PATCH v6 4/5] packed virtqueues: more efficient
- virtqueue layout
-To: Cornelia Huck <cohuck@redhat.com>
-Cc: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+In-Reply-To: <1515577653-9336-1-git-send-email-mst@redhat.com>
+Subject: [virtio] [PATCH v6 5/5] packed-ring: add in order request support
+To: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, Jan 10, 2018 at 03:15:38PM +0100, Cornelia Huck wrote:
-> On Wed, 10 Jan 2018 11:47:58 +0200
-> "Michael S. Tsirkin" <mst@redhat.com> wrote:
-> 
-> > Performance analysis of this is in my kvm forum 2016 presentation.  The
-> > idea is to have a r/w descriptor in a ring structure, replacing the used
-> > and available ring, index and descriptor buffer.
-> 
-> Do we have a place to store pointers to such information?
-> 
-> > 
-> > This is also easier for devices to implement than the 1.0 layout.
-> > Several more enhancements will be necessary to actually make this
-> > efficient for devices to use.
-> > 
-> > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> > ---
-> >  content.tex     |  36 ++-
-> >  packed-ring.tex | 668 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-> >  2 files changed, 701 insertions(+), 3 deletions(-)
-> >  create mode 100644 packed-ring.tex
-> > 
-> > diff --git a/content.tex b/content.tex
-> > index 3b4579e..3059bd3 100644
-> > --- a/content.tex
-> > +++ b/content.tex
-> 
-> (...)
-> 
-> > @@ -5199,10 +5215,19 @@ Currently these device-independent feature bits defined:
-> >  \begin{description}
-> >    \item[VIRTIO_F_RING_INDIRECT_DESC (28)] Negotiating this feature indicates
-> >    that the driver can use descriptors with the VIRTQ_DESC_F_INDIRECT
-> > -  flag set, as described in \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table / Indirect Descriptors}~\nameref{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table / Indirect Descriptors}.
-> > +  flag set, as described in \ref{sec:Basic Facilities of a Virtio
-> > +Device / Virtqueues / The Virtqueue Descriptor Table / Indirect
-> > +Descriptors}~\nameref{sec:Basic Facilities of a Virtio Device /
-> > +Virtqueues / The Virtqueue Descriptor Table / Indirect
-> > +Descriptors} and
-> > +  \ref{sec:Packed Virtqueues / Indirect Flag: Scatter-Gather Support}
-> > +\ref{sec:Packed Virtqueues / Driver and Device Event Suppression}.
-> 
-> That one needs to go below (copy/paste error?).
-> 
-> >  
-> >    \item[VIRTIO_F_RING_EVENT_IDX(29)] This feature enables the \field{used_event}
-> > -  and the \field{avail_event} fields as described in \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Interrupt Suppression} and \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Used Ring}.
-> > +  and the \field{avail_event} fields as described in
-> > +\ref{sec:Basic Facilities of a Virtio Device / Virtqueues /
-> > +Virtqueue Interrupt Suppression}, \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Used Ring}
-> > +and .
-> 
-> Here's where the ref above needs to go.
-> 
-> >  
-> >    \item[VIRTIO_F_VERSION_1(32)] This indicates compliance with this
-> >      specification, giving a simple way to detect legacy devices or drivers.
-> > @@ -5212,6 +5237,9 @@ Currently these device-independent feature bits defined:
-> >    addresses in memory.  If this feature bit is set to 0, then the device emits
-> >    physical addresses which are not translated further, even though an IOMMU
-> >    may be present.
-> > +  \item[VIRTIO_F_RING_PACKED(34)] This feature indicates
-> > +  support for the packed virtqueue layout as described in
-> > +\ref{sec:Basic Facilities of a Virtio Device / Packed Virtqueues}.
-> >  \end{description}
-> 
-> I think the references should include a title as well (that makes the
-> resulting document easier to read).
+support in-order requests for packed rings.  more work is needed to use
+them efficiently for split rings (e.g. it makes sense to bypass
+avail/used rings in this case), forbid that combination for now.
 
-Want to add a macro including ref+nameref?
-We'd use it for all sec: references then.
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+---
+ content.tex     |  7 +++++++
+ packed-ring.tex | 24 ++++++++++++++++++++++++
+ 2 files changed, 31 insertions(+)
 
-> >  
-> >  \drivernormative{\section}{Reserved Feature Bits}{Reserved Feature Bits}
+diff --git a/content.tex b/content.tex
+index 3059bd3..f478ae2 100644
+--- a/content.tex
++++ b/content.tex
+@@ -5240,6 +5240,10 @@ and .
+   \item[VIRTIO_F_RING_PACKED(34)] This feature indicates
+   support for the packed virtqueue layout as described in
+ \ref{sec:Basic Facilities of a Virtio Device / Packed Virtqueues}.
++  \item[VIRTIO_F_IN_ORDER(35)] This feature indicates
++  that all buffers are used by the device in the same
++  order in which they have been made available.
++  This feature should only be enabled with VIRTIO_F_RING_PACKED.
+ \end{description}
+ 
+ \drivernormative{\section}{Reserved Feature Bits}{Reserved Feature Bits}
+@@ -5255,6 +5259,9 @@ addresses to the device.
+ 
+ A driver SHOULD accept VIRTIO_F_PACKED_RING if it is offered.
+ 
++A driver MUST only accept VIRTIO_F_IN_ORDER if it also accepts
++VIRTIO_F_RING_PACKED.
++
+ \devicenormative{\section}{Reserved Feature Bits}{Reserved Feature Bits}
+ 
+ A device MUST offer VIRTIO_F_VERSION_1.  A device MAY fail to operate further
+diff --git a/packed-ring.tex b/packed-ring.tex
+index ffc699c..88d121c 100644
+--- a/packed-ring.tex
++++ b/packed-ring.tex
+@@ -260,6 +260,30 @@ Buffer ID is also reserved and is ignored by the device.
+ In Descriptors with VIRTQ_DESC_F_INDIRECT set VIRTQ_DESC_F_WRITE
+ is reserved and is ignored by the device.
+ 
++\subsection{In-order use of descriptors}
++\label{sec:Packed Virtqueues / In-order use of descriptors}
++
++Some devices always use descriptors in the same order in which
++they have been made available. These devices can offer the
++VIRTIO_F_IN_ORDER feature. If negotiated, this knowledge allows
++devices to notify the use of a batch of buffers to the driver by
++only writing out a single used descriptor with the Buffer ID
++corresponding to the last descriptor in the batch.
++
++Device then skips forward in the ring according to the size of
++the batch. Driver needs to look up the used Buffer ID and
++calculate the batch size to be able to advance to where the next
++used descriptor will be written by the device.
++
++This will result in the used descriptor overwriting the first
++available descriptor in the batch, the used descriptor for the
++next batch overwriting the first available descriptor in the next
++batch, etc.
++
++The skipped buffers (for which no used descriptor was written)
++are assumed to have been used (read or written) by the
++device completely.
++
+ \subsection{Multi-buffer requests}
+ \label{sec:Packed Virtqueues / Multi-descriptor batches}
+ Some devices combine multiple buffers as part of processing of a
+-- 
+MST
+
 
 ---------------------------------------------------------------------
 To unsubscribe from this mail list, you must leave the OASIS TC that 
