@@ -1,80 +1,1047 @@
-Return-Path: virtio-return-2823-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-return-2817-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio@lists.oasis-open.org>
 List-Post: <mailto:virtio@lists.oasis-open.org>
 List-Help: <mailto:virtio-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Wed, 10 Jan 2018 13:45:22 +0100
-From: Cornelia Huck <cohuck@redhat.com>
-Message-ID: <20180110134522.6436758d.cohuck@redhat.com>
-In-Reply-To: <1515577653-9336-2-git-send-email-mst@redhat.com>
+Date: Wed, 10 Jan 2018 11:47:56 +0200
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <1515577653-9336-3-git-send-email-mst@redhat.com>
 References: <1515577653-9336-1-git-send-email-mst@redhat.com>
-	<1515577653-9336-2-git-send-email-mst@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Subject: Re: [virtio] [PATCH v6 1/5] content: move 1.0 queue format out to a
- separate section
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1515577653-9336-1-git-send-email-mst@redhat.com>
+Subject: [virtio] [PATCH v6 2/5] content: move ring text out to a separate file
+To: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, 10 Jan 2018 11:47:55 +0200
-"Michael S. Tsirkin" <mst@redhat.com> wrote:
+Will be easier to manage this way.
 
-> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> ---
->  content.tex | 25 ++++++++++++++++++++++++-
->  1 file changed, 24 insertions(+), 1 deletion(-)
-> 
-> diff --git a/content.tex b/content.tex
-> index c7ef7fd..4483a4b 100644
-> --- a/content.tex
-> +++ b/content.tex
-> @@ -230,7 +230,30 @@ result.
->  The mechanism for bulk data transport on virtio devices is
->  pretentiously called a virtqueue. Each device can have zero or more
->  virtqueues\footnote{For example, the simplest network device has one virtqueue for
-> -transmit and one for receive.}.  Each queue has a 16-bit queue size
-> +transmit and one for receive.}.
-> +
-> +Driver makes requests available to device by adding
-> +an available buffer to the queue - i.e. adding a buffer
-> +describing the request to a virtqueue, and optionally triggering
-> +a driver event - i.e. sending a notification to the device.
-> +
-> +Device executes the requests and - when complete - adds
-> +a used buffer to the queue - i.e. lets the driver
-> +know by marking the buffer as used. Device can then trigger
-> +a device event - i.e. send an interrupt to the driver.
-> +
-> +For queue operation detail, see \ref{sec:Basic Facilities of a Virtio Device / Split Virtqueues}~\nameref{sec:Basic Facilities of a Virtio Device / Split Virtqueues}.
-> +
-> +\section{Split Virtqueues}\label{sec:Basic Facilities of a Virtio Device / Split Virtqueues}
-> +The split virtqueue format is the original format used by legacy
-> +virtio devices.  
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+---
+ content.tex    | 499 +--------------------------------------------------------
+ split-ring.tex | 498 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 499 insertions(+), 498 deletions(-)
+ create mode 100644 split-ring.tex
 
-I think the term 'legacy' is a bit confusing here. Elsewhere, 'legacy'
-refers to pre-standard devices, and while they use a variant of this
-layout, I don't think we should mix this up with 1.0 devices.
+diff --git a/content.tex b/content.tex
+index 4483a4b..5b4c4e9 100644
+--- a/content.tex
++++ b/content.tex
+@@ -244,504 +244,7 @@ a device event - i.e. send an interrupt to the driver.
+ 
+ For queue operation detail, see \ref{sec:Basic Facilities of a Virtio Device / Split Virtqueues}~\nameref{sec:Basic Facilities of a Virtio Device / Split Virtqueues}.
+ 
+-\section{Split Virtqueues}\label{sec:Basic Facilities of a Virtio Device / Split Virtqueues}
+-The split virtqueue format is the original format used by legacy
+-virtio devices.  The split virtqueue format separates the
+-virtqueue into several parts, where each part is write-able by
+-either the driver or the device, but not both. Multiple
+-locations need to be updated when making a buffer available
+-and when marking it as used.
+-
+-
+-Each queue has a 16-bit queue size
+-parameter, which sets the number of entries and implies the total size
+-of the queue.
+-
+-Each virtqueue consists of three parts:
+-
+-\begin{itemize}
+-\item Descriptor Table
+-\item Available Ring
+-\item Used Ring
+-\end{itemize}
+-
+-where each part is physically-contiguous in guest memory,
+-and has different alignment requirements.
+-
+-The memory aligment and size requirements, in bytes, of each part of the
+-virtqueue are summarized in the following table:
+-
+-\begin{tabular}{|l|l|l|}
+-\hline
+-Virtqueue Part    & Alignment & Size \\
+-\hline \hline
+-Descriptor Table  & 16        & $16 * $(Queue Size) \\
+-\hline
+-Available Ring    & 2         & $6 + 2 * $(Queue Size) \\
+- \hline
+-Used Ring         & 4         & $6 + 8 * $(Queue Size) \\
+- \hline
+-\end{tabular}
+-
+-The Alignment column gives the minimum alignment for each part
+-of the virtqueue.
+-
+-The Size column gives the total number of bytes for each
+-part of the virtqueue.
+-
+-Queue Size corresponds to the maximum number of buffers in the
+-virtqueue\footnote{For example, if Queue Size is 4 then at most 4 buffers
+-can be queued at any given time.}.  Queue Size value is always a
+-power of 2.  The maximum Queue Size value is 32768.  This value
+-is specified in a bus-specific way.
+-
+-When the driver wants to send a buffer to the device, it fills in
+-a slot in the descriptor table (or chains several together), and
+-writes the descriptor index into the available ring.  It then
+-notifies the device. When the device has finished a buffer, it
+-writes the descriptor index into the used ring, and sends an interrupt.
+-
+-\drivernormative{\subsection}{Virtqueues}{Basic Facilities of a Virtio Device / Virtqueues}
+-The driver MUST ensure that the physical address of the first byte
+-of each virtqueue part is a multiple of the specified alignment value
+-in the above table.
+-
+-\subsection{Legacy Interfaces: A Note on Virtqueue Layout}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / Legacy Interfaces: A Note on Virtqueue Layout}
+-
+-For Legacy Interfaces, several additional
+-restrictions are placed on the virtqueue layout:
+-
+-Each virtqueue occupies two or more physically-contiguous pages
+-(usually defined as 4096 bytes, but depending on the transport;
+-henceforth referred to as Queue Align)
+-and consists of three parts:
+-
+-\begin{tabular}{|l|l|l|}
+-\hline
+-Descriptor Table & Available Ring (\ldots padding\ldots) & Used Ring \\
+-\hline
+-\end{tabular}
+-
+-The bus-specific Queue Size field controls the total number of bytes
+-for the virtqueue.
+-When using the legacy interface, the transitional
+-driver MUST retrieve the Queue Size field from the device
+-and MUST allocate the total number of bytes for the virtqueue
+-according to the following formula (Queue Align given in qalign and
+-Queue Size given in qsz):
+-
+-\begin{lstlisting}
+-#define ALIGN(x) (((x) + qalign) & ~qalign)
+-static inline unsigned virtq_size(unsigned int qsz)
+-{
+-     return ALIGN(sizeof(struct virtq_desc)*qsz + sizeof(u16)*(3 + qsz))
+-          + ALIGN(sizeof(u16)*3 + sizeof(struct virtq_used_elem)*qsz);
+-}
+-\end{lstlisting}
+-
+-This wastes some space with padding.
+-When using the legacy interface, both transitional
+-devices and drivers MUST use the following virtqueue layout
+-structure to locate elements of the virtqueue:
+-
+-\begin{lstlisting}
+-struct virtq {
+-        // The actual descriptors (16 bytes each)
+-        struct virtq_desc desc[ Queue Size ];
+-
+-        // A ring of available descriptor heads with free-running index.
+-        struct virtq_avail avail;
+-
+-        // Padding to the next Queue Align boundary.
+-        u8 pad[ Padding ];
+-
+-        // A ring of used descriptor heads with free-running index.
+-        struct virtq_used used;
+-};
+-\end{lstlisting}
+-
+-\subsection{Legacy Interfaces: A Note on Virtqueue Endianness}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / Legacy Interfaces: A Note on Virtqueue Endianness}
+-
+-Note that when using the legacy interface, transitional
+-devices and drivers MUST use the native
+-endian of the guest as the endian of fields and in the virtqueue.
+-This is opposed to little-endian for non-legacy interface as
+-specified by this standard.
+-It is assumed that the host is already aware of the guest endian.
+-
+-\subsection{Message Framing}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / Message Framing}
+-The framing of messages with descriptors is
+-independent of the contents of the buffers. For example, a network
+-transmit buffer consists of a 12 byte header followed by the network
+-packet. This could be most simply placed in the descriptor table as a
+-12 byte output descriptor followed by a 1514 byte output descriptor,
+-but it could also consist of a single 1526 byte output descriptor in
+-the case where the header and packet are adjacent, or even three or
+-more descriptors (possibly with loss of efficiency in that case).
+-
+-Note that, some device implementations have large-but-reasonable
+-restrictions on total descriptor size (such as based on IOV_MAX in the
+-host OS). This has not been a problem in practice: little sympathy
+-will be given to drivers which create unreasonably-sized descriptors
+-such as by dividing a network packet into 1500 single-byte
+-descriptors!
+-
+-\devicenormative{\subsubsection}{Message Framing}{Basic Facilities of a Virtio Device / Message Framing}
+-The device MUST NOT make assumptions about the particular arrangement
+-of descriptors.  The device MAY have a reasonable limit of descriptors
+-it will allow in a chain.
+-
+-\drivernormative{\subsubsection}{Message Framing}{Basic Facilities of a Virtio Device / Message Framing}
+-The driver MUST place any device-writable descriptor elements after
+-any device-readable descriptor elements.
+-
+-The driver SHOULD NOT use an excessive number of descriptors to
+-describe a buffer.
+-
+-\subsubsection{Legacy Interface: Message Framing}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / Message Framing / Legacy Interface: Message Framing}
+-
+-Regrettably, initial driver implementations used simple layouts, and
+-devices came to rely on it, despite this specification wording.  In
+-addition, the specification for virtio_blk SCSI commands required
+-intuiting field lengths from frame boundaries (see
+- \ref{sec:Device Types / Block Device / Device Operation / Legacy Interface: Device Operation}~\nameref{sec:Device Types / Block Device / Device Operation / Legacy Interface: Device Operation})
+-
+-Thus when using the legacy interface, the VIRTIO_F_ANY_LAYOUT
+-feature indicates to both the device and the driver that no
+-assumptions were made about framing.  Requirements for
+-transitional drivers when this is not negotiated are included in
+-each device section.
+-
+-\subsection{The Virtqueue Descriptor Table}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table}
+-
+-The descriptor table refers to the buffers the driver is using for
+-the device. \field{addr} is a physical address, and the buffers
+-can be chained via \field{next}. Each descriptor describes a
+-buffer which is read-only for the device (``device-readable'') or write-only for the device (``device-writable''), but a chain of
+-descriptors can contain both device-readable and device-writable buffers.
+-
+-The actual contents of the memory offered to the device depends on the
+-device type.  Most common is to begin the data with a header
+-(containing little-endian fields) for the device to read, and postfix
+-it with a status tailer for the device to write.
+-
+-\begin{lstlisting}
+-struct virtq_desc {
+-        /* Address (guest-physical). */
+-        le64 addr;
+-        /* Length. */
+-        le32 len;
+-
+-/* This marks a buffer as continuing via the next field. */
+-#define VIRTQ_DESC_F_NEXT   1
+-/* This marks a buffer as device write-only (otherwise device read-only). */
+-#define VIRTQ_DESC_F_WRITE     2
+-/* This means the buffer contains a list of buffer descriptors. */
+-#define VIRTQ_DESC_F_INDIRECT   4
+-        /* The flags as indicated above. */
+-        le16 flags;
+-        /* Next field if flags & NEXT */
+-        le16 next;
+-};
+-\end{lstlisting}
+-
+-The number of descriptors in the table is defined by the queue size
+-for this virtqueue: this is the maximum possible descriptor chain length.
+-
+-\begin{note}
+-The legacy \hyperref[intro:Virtio PCI Draft]{[Virtio PCI Draft]}
+-referred to this structure as vring_desc, and the constants as
+-VRING_DESC_F_NEXT, etc, but the layout and values were identical.
+-\end{note}
+-
+-\devicenormative{\subsubsection}{The Virtqueue Descriptor Table}{Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table}
+-A device MUST NOT write to a device-readable buffer, and a device SHOULD NOT
+-read a device-writable buffer (it MAY do so for debugging or diagnostic
+-purposes).
+-
+-\drivernormative{\subsubsection}{The Virtqueue Descriptor Table}{Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table}
+-Drivers MUST NOT add a descriptor chain over than $2^{32}$ bytes long in total;
+-this implies that loops in the descriptor chain are forbidden!
+-
+-\subsubsection{Indirect Descriptors}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table / Indirect Descriptors}
+-
+-Some devices benefit by concurrently dispatching a large number
+-of large requests. The VIRTIO_F_INDIRECT_DESC feature allows this (see \ref{sec:virtio-queue.h}~\nameref{sec:virtio-queue.h}). To increase
+-ring capacity the driver can store a table of indirect
+-descriptors anywhere in memory, and insert a descriptor in main
+-virtqueue (with \field{flags}\&VIRTQ_DESC_F_INDIRECT on) that refers to memory buffer
+-containing this indirect descriptor table; \field{addr} and \field{len}
+-refer to the indirect table address and length in bytes,
+-respectively.
+-
+-The indirect table layout structure looks like this
+-(\field{len} is the length of the descriptor that refers to this table,
+-which is a variable, so this code won't compile):
+-
+-\begin{lstlisting}
+-struct indirect_descriptor_table {
+-        /* The actual descriptors (16 bytes each) */
+-        struct virtq_desc desc[len / 16];
+-};
+-\end{lstlisting}
+-
+-The first indirect descriptor is located at start of the indirect
+-descriptor table (index 0), additional indirect descriptors are
+-chained by \field{next}. An indirect descriptor without a valid \field{next}
+-(with \field{flags}\&VIRTQ_DESC_F_NEXT off) signals the end of the descriptor.
+-A single indirect descriptor
+-table can include both device-readable and device-writable descriptors.
+-
+-\drivernormative{\paragraph}{Indirect Descriptors}{Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table / Indirect Descriptors}
+-The driver MUST NOT set the VIRTQ_DESC_F_INDIRECT flag unless the
+-VIRTIO_F_INDIRECT_DESC feature was negotiated.   The driver MUST NOT
+-set the VIRTQ_DESC_F_INDIRECT flag within an indirect descriptor (ie. only
+-one table per descriptor).
+-
+-A driver MUST NOT create a descriptor chain longer than the Queue Size of
+-the device.
+-
+-A driver MUST NOT set both VIRTQ_DESC_F_INDIRECT and VIRTQ_DESC_F_NEXT
+-in \field{flags}.
+-
+-\devicenormative{\paragraph}{Indirect Descriptors}{Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table / Indirect Descriptors}
+-The device MUST ignore the write-only flag (\field{flags}\&VIRTQ_DESC_F_WRITE) in the descriptor that refers to an indirect table.
+-
+-The device MUST handle the case of zero or more normal chained
+-descriptors followed by a single descriptor with \field{flags}\&VIRTQ_DESC_F_INDIRECT.
+-
+-\begin{note}
+-While unusual (most implementations either create a chain solely using
+-non-indirect descriptors, or use a single indirect element), such a
+-layout is valid.
+-\end{note}
+-
+-\subsection{The Virtqueue Available Ring}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Available Ring}
+-
+-\begin{lstlisting}
+-struct virtq_avail {
+-#define VIRTQ_AVAIL_F_NO_INTERRUPT      1
+-        le16 flags;
+-        le16 idx;
+-        le16 ring[ /* Queue Size */ ];
+-        le16 used_event; /* Only if VIRTIO_F_EVENT_IDX */
+-};
+-\end{lstlisting}
+-
+-The driver uses the available ring to offer buffers to the
+-device: each ring entry refers to the head of a descriptor chain.  It is only
+-written by the driver and read by the device.
+-
+-\field{idx} field indicates where the driver would put the next descriptor
+-entry in the ring (modulo the queue size). This starts at 0, and increases.
+-
+-\begin{note}
+-The legacy \hyperref[intro:Virtio PCI Draft]{[Virtio PCI Draft]}
+-referred to this structure as vring_avail, and the constant as
+-VRING_AVAIL_F_NO_INTERRUPT, but the layout and value were identical.
+-\end{note}
+-
+-\subsection{Virtqueue Interrupt Suppression}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Interrupt Suppression}
+-
+-If the VIRTIO_F_EVENT_IDX feature bit is not negotiated,
+-the \field{flags} field in the available ring offers a crude mechanism for the driver to inform
+-the device that it doesn't want interrupts when buffers are used.  Otherwise
+-\field{used_event} is a more performant alternative where the driver
+-specifies how far the device can progress before interrupting.
+-
+-Neither of these interrupt suppression methods are reliable, as they
+-are not synchronized with the device, but they serve as
+-useful optimizations.
+-
+-\drivernormative{\subsubsection}{Virtqueue Interrupt Suppression}{Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Interrupt Suppression}
+-If the VIRTIO_F_EVENT_IDX feature bit is not negotiated:
+-\begin{itemize}
+-\item The driver MUST set \field{flags} to 0 or 1.
+-\item The driver MAY set \field{flags} to 1 to advise
+-the device that interrupts are not needed.
+-\end{itemize}
+-
+-Otherwise, if the VIRTIO_F_EVENT_IDX feature bit is negotiated:
+-\begin{itemize}
+-\item The driver MUST set \field{flags} to 0.
+-\item The driver MAY use \field{used_event} to advise the device that interrupts are unnecessary until the device writes entry with an index specified by \field{used_event} into the used ring (equivalently, until \field{idx} in the
+-used ring will reach the value \field{used_event} + 1).
+-\end{itemize}
+-
+-The driver MUST handle spurious interrupts from the device.
+-
+-\devicenormative{\subsubsection}{Virtqueue Interrupt Suppression}{Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Interrupt Suppression}
+-
+-If the VIRTIO_F_EVENT_IDX feature bit is not negotiated:
+-\begin{itemize}
+-\item The device MUST ignore the \field{used_event} value.
+-\item After the device writes a descriptor index into the used ring:
+-  \begin{itemize}
+-  \item If \field{flags} is 1, the device SHOULD NOT send an interrupt.
+-  \item If \field{flags} is 0, the device MUST send an interrupt.
+-  \end{itemize}
+-\end{itemize}
+-
+-Otherwise, if the VIRTIO_F_EVENT_IDX feature bit is negotiated:
+-\begin{itemize}
+-\item The device MUST ignore the lower bit of \field{flags}.
+-\item After the device writes a descriptor index into the used ring:
+-  \begin{itemize}
+-  \item If the \field{idx} field in the used ring (which determined
+-    where that descriptor index was placed) was equal to
+-    \field{used_event}, the device MUST send an interrupt.
+-  \item Otherwise the device SHOULD NOT send an interrupt.
+-  \end{itemize}
+-\end{itemize}
+-
+-\begin{note}
+-For example, if \field{used_event} is 0, then a device using
+-  VIRTIO_F_EVENT_IDX would interrupt after the first buffer is
+-  used (and again after the 65536th buffer, etc).
+-\end{note}
+-
+-\subsection{The Virtqueue Used Ring}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Used Ring}
+-
+-\begin{lstlisting}
+-struct virtq_used {
+-#define VIRTQ_USED_F_NO_NOTIFY  1
+-        le16 flags;
+-        le16 idx;
+-        struct virtq_used_elem ring[ /* Queue Size */];
+-        le16 avail_event; /* Only if VIRTIO_F_EVENT_IDX */
+-};
+-
+-/* le32 is used here for ids for padding reasons. */
+-struct virtq_used_elem {
+-        /* Index of start of used descriptor chain. */
+-        le32 id;
+-        /* Total length of the descriptor chain which was used (written to) */
+-        le32 len;
+-};
+-\end{lstlisting}
+-
+-The used ring is where the device returns buffers once it is done with
+-them: it is only written to by the device, and read by the driver.
+-
+-Each entry in the ring is a pair: \field{id} indicates the head entry of the
+-descriptor chain describing the buffer (this matches an entry
+-placed in the available ring by the guest earlier), and \field{len} the total
+-of bytes written into the buffer.
+-
+-\begin{note}
+-\field{len} is particularly useful
+-for drivers using untrusted buffers: if a driver does not know exactly
+-how much has been written by the device, the driver would have to zero
+-the buffer in advance to ensure no data leakage occurs.
+-
+-For example, a network driver may hand a received buffer directly to
+-an unprivileged userspace application.  If the network device has not
+-overwritten the bytes which were in that buffer, this could leak the
+-contents of freed memory from other processes to the application.
+-\end{note}
+-
+-\field{idx} field indicates where the driver would put the next descriptor
+-entry in the ring (modulo the queue size). This starts at 0, and increases.
+-
+-\begin{note}
+-The legacy \hyperref[intro:Virtio PCI Draft]{[Virtio PCI Draft]}
+-referred to these structures as vring_used and vring_used_elem, and
+-the constant as VRING_USED_F_NO_NOTIFY, but the layout and value were
+-identical.
+-\end{note}
+-
+-\subsubsection{Legacy Interface: The Virtqueue Used
+-Ring}\label{sec:Basic Facilities of a Virtio Device / Virtqueues
+-/ The Virtqueue Used Ring/ Legacy Interface: The Virtqueue Used
+-Ring}
+-
+-Historically, many drivers ignored the \field{len} value, as a
+-result, many devices set \field{len} incorrectly.  Thus, when
+-using the legacy interface, it is generally a good idea to ignore
+-the \field{len} value in used ring entries if possible.  Specific
+-known issues are listed per device type.
+-
+-\devicenormative{\subsubsection}{The Virtqueue Used Ring}{Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Used Ring}
+-
+-The device MUST set \field{len} prior to updating the used \field{idx}.
+-
+-The device MUST write at least \field{len} bytes to descriptor,
+-beginning at the first device-writable buffer,
+-prior to updating the used \field{idx}.
+-
+-The device MAY write more than \field{len} bytes to descriptor.
+-
+-\begin{note}
+-There are potential error cases where a device might not know what
+-parts of the buffers have been written.  This is why \field{len} is
+-permitted to be an underestimate: that's preferable to the driver believing
+-that uninitialized memory has been overwritten when it has not.
+-\end{note}
+-
+-\drivernormative{\subsubsection}{The Virtqueue Used Ring}{Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Used Ring}
+-
+-The driver MUST NOT make assumptions about data in device-writable buffers
+-beyond the first \field{len} bytes, and SHOULD ignore this data.
+-
+-\subsection{Virtqueue Notification Suppression}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Notification Suppression}
+-
+-The device can suppress notifications in a manner analogous to the way
+-drivers can suppress interrupts as detailed in section \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Interrupt Suppression}.
+-The device manipulates \field{flags} or \field{avail_event} in the used ring the
+-same way the driver manipulates \field{flags} or \field{used_event} in the available ring.
+-
+-\drivernormative{\subsubsection}{Virtqueue Notification Suppression}{Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Notification Suppression}
+-
+-The driver MUST initialize \field{flags} in the used ring to 0 when
+-allocating the used ring.
+-
+-If the VIRTIO_F_EVENT_IDX feature bit is not negotiated:
+-\begin{itemize}
+-\item The driver MUST ignore the \field{avail_event} value.
+-\item After the driver writes a descriptor index into the available ring:
+-  \begin{itemize}
+-        \item If \field{flags} is 1, the driver SHOULD NOT send a notification.
+-        \item If \field{flags} is 0, the driver MUST send a notification.
+-  \end{itemize}
+-\end{itemize}
+-
+-Otherwise, if the VIRTIO_F_EVENT_IDX feature bit is negotiated:
+-\begin{itemize}
+-\item The driver MUST ignore the lower bit of \field{flags}.
+-\item After the driver writes a descriptor index into the available ring:
+-  \begin{itemize}
+-        \item If the \field{idx} field in the available ring (which determined
+-          where that descriptor index was placed) was equal to
+-          \field{avail_event}, the driver MUST send a notification.
+-        \item Otherwise the driver SHOULD NOT send a notification.
+-  \end{itemize}
+-\end{itemize}
+-
+-\devicenormative{\subsubsection}{Virtqueue Notification Suppression}{Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Notification Suppression}
+-If the VIRTIO_F_EVENT_IDX feature bit is not negotiated:
+-\begin{itemize}
+-\item The device MUST set \field{flags} to 0 or 1.
+-\item The device MAY set \field{flags} to 1 to advise
+-the driver that notifications are not needed.
+-\end{itemize}
+-
+-Otherwise, if the VIRTIO_F_EVENT_IDX feature bit is negotiated:
+-\begin{itemize}
+-\item The device MUST set \field{flags} to 0.
+-\item The device MAY use \field{avail_event} to advise the driver that notifications are unnecessary until the driver writes entry with an index specified by \field{avail_event} into the available ring (equivalently, until \field{idx} in the
+-available ring will reach the value \field{avail_event} + 1).
+-\end{itemize}
+-
+-The device MUST handle spurious notifications from the driver.
+-
+-\subsection{Helpers for Operating Virtqueues}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / Helpers for Operating Virtqueues}
+-
+-The Linux Kernel Source code contains the definitions above and
+-helper routines in a more usable form, in
+-include/uapi/linux/virtio_ring.h. This was explicitly licensed by IBM
+-and Red Hat under the (3-clause) BSD license so that it can be
+-freely used by all other projects, and is reproduced (with slight
+-variation) in \ref{sec:virtio-queue.h}~\nameref{sec:virtio-queue.h}.
++\input{split-ring.tex}
+ 
+ \chapter{General Initialization And Device Operation}\label{sec:General Initialization And Device Operation}
+ 
+diff --git a/split-ring.tex b/split-ring.tex
+new file mode 100644
+index 0000000..418f63d
+--- /dev/null
++++ b/split-ring.tex
+@@ -0,0 +1,498 @@
++\section{Split Virtqueues}\label{sec:Basic Facilities of a Virtio Device / Split Virtqueues}
++The split virtqueue format is the original format used by legacy
++virtio devices.  The split virtqueue format separates the
++virtqueue into several parts, where each part is write-able by
++either the driver or the device, but not both. Multiple
++locations need to be updated when making a buffer available
++and when marking it as used.
++
++
++Each queue has a 16-bit queue size
++parameter, which sets the number of entries and implies the total size
++of the queue.
++
++Each virtqueue consists of three parts:
++
++\begin{itemize}
++\item Descriptor Table
++\item Available Ring
++\item Used Ring
++\end{itemize}
++
++where each part is physically-contiguous in guest memory,
++and has different alignment requirements.
++
++The memory aligment and size requirements, in bytes, of each part of the
++virtqueue are summarized in the following table:
++
++\begin{tabular}{|l|l|l|}
++\hline
++Virtqueue Part    & Alignment & Size \\
++\hline \hline
++Descriptor Table  & 16        & $16 * $(Queue Size) \\
++\hline
++Available Ring    & 2         & $6 + 2 * $(Queue Size) \\
++ \hline
++Used Ring         & 4         & $6 + 8 * $(Queue Size) \\
++ \hline
++\end{tabular}
++
++The Alignment column gives the minimum alignment for each part
++of the virtqueue.
++
++The Size column gives the total number of bytes for each
++part of the virtqueue.
++
++Queue Size corresponds to the maximum number of buffers in the
++virtqueue\footnote{For example, if Queue Size is 4 then at most 4 buffers
++can be queued at any given time.}.  Queue Size value is always a
++power of 2.  The maximum Queue Size value is 32768.  This value
++is specified in a bus-specific way.
++
++When the driver wants to send a buffer to the device, it fills in
++a slot in the descriptor table (or chains several together), and
++writes the descriptor index into the available ring.  It then
++notifies the device. When the device has finished a buffer, it
++writes the descriptor index into the used ring, and sends an interrupt.
++
++\drivernormative{\subsection}{Virtqueues}{Basic Facilities of a Virtio Device / Virtqueues}
++The driver MUST ensure that the physical address of the first byte
++of each virtqueue part is a multiple of the specified alignment value
++in the above table.
++
++\subsection{Legacy Interfaces: A Note on Virtqueue Layout}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / Legacy Interfaces: A Note on Virtqueue Layout}
++
++For Legacy Interfaces, several additional
++restrictions are placed on the virtqueue layout:
++
++Each virtqueue occupies two or more physically-contiguous pages
++(usually defined as 4096 bytes, but depending on the transport;
++henceforth referred to as Queue Align)
++and consists of three parts:
++
++\begin{tabular}{|l|l|l|}
++\hline
++Descriptor Table & Available Ring (\ldots padding\ldots) & Used Ring \\
++\hline
++\end{tabular}
++
++The bus-specific Queue Size field controls the total number of bytes
++for the virtqueue.
++When using the legacy interface, the transitional
++driver MUST retrieve the Queue Size field from the device
++and MUST allocate the total number of bytes for the virtqueue
++according to the following formula (Queue Align given in qalign and
++Queue Size given in qsz):
++
++\begin{lstlisting}
++#define ALIGN(x) (((x) + qalign) & ~qalign)
++static inline unsigned virtq_size(unsigned int qsz)
++{
++     return ALIGN(sizeof(struct virtq_desc)*qsz + sizeof(u16)*(3 + qsz))
++          + ALIGN(sizeof(u16)*3 + sizeof(struct virtq_used_elem)*qsz);
++}
++\end{lstlisting}
++
++This wastes some space with padding.
++When using the legacy interface, both transitional
++devices and drivers MUST use the following virtqueue layout
++structure to locate elements of the virtqueue:
++
++\begin{lstlisting}
++struct virtq {
++        // The actual descriptors (16 bytes each)
++        struct virtq_desc desc[ Queue Size ];
++
++        // A ring of available descriptor heads with free-running index.
++        struct virtq_avail avail;
++
++        // Padding to the next Queue Align boundary.
++        u8 pad[ Padding ];
++
++        // A ring of used descriptor heads with free-running index.
++        struct virtq_used used;
++};
++\end{lstlisting}
++
++\subsection{Legacy Interfaces: A Note on Virtqueue Endianness}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / Legacy Interfaces: A Note on Virtqueue Endianness}
++
++Note that when using the legacy interface, transitional
++devices and drivers MUST use the native
++endian of the guest as the endian of fields and in the virtqueue.
++This is opposed to little-endian for non-legacy interface as
++specified by this standard.
++It is assumed that the host is already aware of the guest endian.
++
++\subsection{Message Framing}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / Message Framing}
++The framing of messages with descriptors is
++independent of the contents of the buffers. For example, a network
++transmit buffer consists of a 12 byte header followed by the network
++packet. This could be most simply placed in the descriptor table as a
++12 byte output descriptor followed by a 1514 byte output descriptor,
++but it could also consist of a single 1526 byte output descriptor in
++the case where the header and packet are adjacent, or even three or
++more descriptors (possibly with loss of efficiency in that case).
++
++Note that, some device implementations have large-but-reasonable
++restrictions on total descriptor size (such as based on IOV_MAX in the
++host OS). This has not been a problem in practice: little sympathy
++will be given to drivers which create unreasonably-sized descriptors
++such as by dividing a network packet into 1500 single-byte
++descriptors!
++
++\devicenormative{\subsubsection}{Message Framing}{Basic Facilities of a Virtio Device / Message Framing}
++The device MUST NOT make assumptions about the particular arrangement
++of descriptors.  The device MAY have a reasonable limit of descriptors
++it will allow in a chain.
++
++\drivernormative{\subsubsection}{Message Framing}{Basic Facilities of a Virtio Device / Message Framing}
++The driver MUST place any device-writable descriptor elements after
++any device-readable descriptor elements.
++
++The driver SHOULD NOT use an excessive number of descriptors to
++describe a buffer.
++
++\subsubsection{Legacy Interface: Message Framing}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / Message Framing / Legacy Interface: Message Framing}
++
++Regrettably, initial driver implementations used simple layouts, and
++devices came to rely on it, despite this specification wording.  In
++addition, the specification for virtio_blk SCSI commands required
++intuiting field lengths from frame boundaries (see
++ \ref{sec:Device Types / Block Device / Device Operation / Legacy Interface: Device Operation}~\nameref{sec:Device Types / Block Device / Device Operation / Legacy Interface: Device Operation})
++
++Thus when using the legacy interface, the VIRTIO_F_ANY_LAYOUT
++feature indicates to both the device and the driver that no
++assumptions were made about framing.  Requirements for
++transitional drivers when this is not negotiated are included in
++each device section.
++
++\subsection{The Virtqueue Descriptor Table}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table}
++
++The descriptor table refers to the buffers the driver is using for
++the device. \field{addr} is a physical address, and the buffers
++can be chained via \field{next}. Each descriptor describes a
++buffer which is read-only for the device (``device-readable'') or write-only for the device (``device-writable''), but a chain of
++descriptors can contain both device-readable and device-writable buffers.
++
++The actual contents of the memory offered to the device depends on the
++device type.  Most common is to begin the data with a header
++(containing little-endian fields) for the device to read, and postfix
++it with a status tailer for the device to write.
++
++\begin{lstlisting}
++struct virtq_desc {
++        /* Address (guest-physical). */
++        le64 addr;
++        /* Length. */
++        le32 len;
++
++/* This marks a buffer as continuing via the next field. */
++#define VIRTQ_DESC_F_NEXT   1
++/* This marks a buffer as device write-only (otherwise device read-only). */
++#define VIRTQ_DESC_F_WRITE     2
++/* This means the buffer contains a list of buffer descriptors. */
++#define VIRTQ_DESC_F_INDIRECT   4
++        /* The flags as indicated above. */
++        le16 flags;
++        /* Next field if flags & NEXT */
++        le16 next;
++};
++\end{lstlisting}
++
++The number of descriptors in the table is defined by the queue size
++for this virtqueue: this is the maximum possible descriptor chain length.
++
++\begin{note}
++The legacy \hyperref[intro:Virtio PCI Draft]{[Virtio PCI Draft]}
++referred to this structure as vring_desc, and the constants as
++VRING_DESC_F_NEXT, etc, but the layout and values were identical.
++\end{note}
++
++\devicenormative{\subsubsection}{The Virtqueue Descriptor Table}{Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table}
++A device MUST NOT write to a device-readable buffer, and a device SHOULD NOT
++read a device-writable buffer (it MAY do so for debugging or diagnostic
++purposes).
++
++\drivernormative{\subsubsection}{The Virtqueue Descriptor Table}{Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table}
++Drivers MUST NOT add a descriptor chain over than $2^{32}$ bytes long in total;
++this implies that loops in the descriptor chain are forbidden!
++
++\subsubsection{Indirect Descriptors}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table / Indirect Descriptors}
++
++Some devices benefit by concurrently dispatching a large number
++of large requests. The VIRTIO_F_INDIRECT_DESC feature allows this (see \ref{sec:virtio-queue.h}~\nameref{sec:virtio-queue.h}). To increase
++ring capacity the driver can store a table of indirect
++descriptors anywhere in memory, and insert a descriptor in main
++virtqueue (with \field{flags}\&VIRTQ_DESC_F_INDIRECT on) that refers to memory buffer
++containing this indirect descriptor table; \field{addr} and \field{len}
++refer to the indirect table address and length in bytes,
++respectively.
++
++The indirect table layout structure looks like this
++(\field{len} is the length of the descriptor that refers to this table,
++which is a variable, so this code won't compile):
++
++\begin{lstlisting}
++struct indirect_descriptor_table {
++        /* The actual descriptors (16 bytes each) */
++        struct virtq_desc desc[len / 16];
++};
++\end{lstlisting}
++
++The first indirect descriptor is located at start of the indirect
++descriptor table (index 0), additional indirect descriptors are
++chained by \field{next}. An indirect descriptor without a valid \field{next}
++(with \field{flags}\&VIRTQ_DESC_F_NEXT off) signals the end of the descriptor.
++A single indirect descriptor
++table can include both device-readable and device-writable descriptors.
++
++\drivernormative{\paragraph}{Indirect Descriptors}{Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table / Indirect Descriptors}
++The driver MUST NOT set the VIRTQ_DESC_F_INDIRECT flag unless the
++VIRTIO_F_INDIRECT_DESC feature was negotiated.   The driver MUST NOT
++set the VIRTQ_DESC_F_INDIRECT flag within an indirect descriptor (ie. only
++one table per descriptor).
++
++A driver MUST NOT create a descriptor chain longer than the Queue Size of
++the device.
++
++A driver MUST NOT set both VIRTQ_DESC_F_INDIRECT and VIRTQ_DESC_F_NEXT
++in \field{flags}.
++
++\devicenormative{\paragraph}{Indirect Descriptors}{Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table / Indirect Descriptors}
++The device MUST ignore the write-only flag (\field{flags}\&VIRTQ_DESC_F_WRITE) in the descriptor that refers to an indirect table.
++
++The device MUST handle the case of zero or more normal chained
++descriptors followed by a single descriptor with \field{flags}\&VIRTQ_DESC_F_INDIRECT.
++
++\begin{note}
++While unusual (most implementations either create a chain solely using
++non-indirect descriptors, or use a single indirect element), such a
++layout is valid.
++\end{note}
++
++\subsection{The Virtqueue Available Ring}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Available Ring}
++
++\begin{lstlisting}
++struct virtq_avail {
++#define VIRTQ_AVAIL_F_NO_INTERRUPT      1
++        le16 flags;
++        le16 idx;
++        le16 ring[ /* Queue Size */ ];
++        le16 used_event; /* Only if VIRTIO_F_EVENT_IDX */
++};
++\end{lstlisting}
++
++The driver uses the available ring to offer buffers to the
++device: each ring entry refers to the head of a descriptor chain.  It is only
++written by the driver and read by the device.
++
++\field{idx} field indicates where the driver would put the next descriptor
++entry in the ring (modulo the queue size). This starts at 0, and increases.
++
++\begin{note}
++The legacy \hyperref[intro:Virtio PCI Draft]{[Virtio PCI Draft]}
++referred to this structure as vring_avail, and the constant as
++VRING_AVAIL_F_NO_INTERRUPT, but the layout and value were identical.
++\end{note}
++
++\subsection{Virtqueue Interrupt Suppression}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Interrupt Suppression}
++
++If the VIRTIO_F_EVENT_IDX feature bit is not negotiated,
++the \field{flags} field in the available ring offers a crude mechanism for the driver to inform
++the device that it doesn't want interrupts when buffers are used.  Otherwise
++\field{used_event} is a more performant alternative where the driver
++specifies how far the device can progress before interrupting.
++
++Neither of these interrupt suppression methods are reliable, as they
++are not synchronized with the device, but they serve as
++useful optimizations.
++
++\drivernormative{\subsubsection}{Virtqueue Interrupt Suppression}{Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Interrupt Suppression}
++If the VIRTIO_F_EVENT_IDX feature bit is not negotiated:
++\begin{itemize}
++\item The driver MUST set \field{flags} to 0 or 1.
++\item The driver MAY set \field{flags} to 1 to advise
++the device that interrupts are not needed.
++\end{itemize}
++
++Otherwise, if the VIRTIO_F_EVENT_IDX feature bit is negotiated:
++\begin{itemize}
++\item The driver MUST set \field{flags} to 0.
++\item The driver MAY use \field{used_event} to advise the device that interrupts are unnecessary until the device writes entry with an index specified by \field{used_event} into the used ring (equivalently, until \field{idx} in the
++used ring will reach the value \field{used_event} + 1).
++\end{itemize}
++
++The driver MUST handle spurious interrupts from the device.
++
++\devicenormative{\subsubsection}{Virtqueue Interrupt Suppression}{Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Interrupt Suppression}
++
++If the VIRTIO_F_EVENT_IDX feature bit is not negotiated:
++\begin{itemize}
++\item The device MUST ignore the \field{used_event} value.
++\item After the device writes a descriptor index into the used ring:
++  \begin{itemize}
++  \item If \field{flags} is 1, the device SHOULD NOT send an interrupt.
++  \item If \field{flags} is 0, the device MUST send an interrupt.
++  \end{itemize}
++\end{itemize}
++
++Otherwise, if the VIRTIO_F_EVENT_IDX feature bit is negotiated:
++\begin{itemize}
++\item The device MUST ignore the lower bit of \field{flags}.
++\item After the device writes a descriptor index into the used ring:
++  \begin{itemize}
++  \item If the \field{idx} field in the used ring (which determined
++    where that descriptor index was placed) was equal to
++    \field{used_event}, the device MUST send an interrupt.
++  \item Otherwise the device SHOULD NOT send an interrupt.
++  \end{itemize}
++\end{itemize}
++
++\begin{note}
++For example, if \field{used_event} is 0, then a device using
++  VIRTIO_F_EVENT_IDX would interrupt after the first buffer is
++  used (and again after the 65536th buffer, etc).
++\end{note}
++
++\subsection{The Virtqueue Used Ring}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Used Ring}
++
++\begin{lstlisting}
++struct virtq_used {
++#define VIRTQ_USED_F_NO_NOTIFY  1
++        le16 flags;
++        le16 idx;
++        struct virtq_used_elem ring[ /* Queue Size */];
++        le16 avail_event; /* Only if VIRTIO_F_EVENT_IDX */
++};
++
++/* le32 is used here for ids for padding reasons. */
++struct virtq_used_elem {
++        /* Index of start of used descriptor chain. */
++        le32 id;
++        /* Total length of the descriptor chain which was used (written to) */
++        le32 len;
++};
++\end{lstlisting}
++
++The used ring is where the device returns buffers once it is done with
++them: it is only written to by the device, and read by the driver.
++
++Each entry in the ring is a pair: \field{id} indicates the head entry of the
++descriptor chain describing the buffer (this matches an entry
++placed in the available ring by the guest earlier), and \field{len} the total
++of bytes written into the buffer.
++
++\begin{note}
++\field{len} is particularly useful
++for drivers using untrusted buffers: if a driver does not know exactly
++how much has been written by the device, the driver would have to zero
++the buffer in advance to ensure no data leakage occurs.
++
++For example, a network driver may hand a received buffer directly to
++an unprivileged userspace application.  If the network device has not
++overwritten the bytes which were in that buffer, this could leak the
++contents of freed memory from other processes to the application.
++\end{note}
++
++\field{idx} field indicates where the driver would put the next descriptor
++entry in the ring (modulo the queue size). This starts at 0, and increases.
++
++\begin{note}
++The legacy \hyperref[intro:Virtio PCI Draft]{[Virtio PCI Draft]}
++referred to these structures as vring_used and vring_used_elem, and
++the constant as VRING_USED_F_NO_NOTIFY, but the layout and value were
++identical.
++\end{note}
++
++\subsubsection{Legacy Interface: The Virtqueue Used
++Ring}\label{sec:Basic Facilities of a Virtio Device / Virtqueues
++/ The Virtqueue Used Ring/ Legacy Interface: The Virtqueue Used
++Ring}
++
++Historically, many drivers ignored the \field{len} value, as a
++result, many devices set \field{len} incorrectly.  Thus, when
++using the legacy interface, it is generally a good idea to ignore
++the \field{len} value in used ring entries if possible.  Specific
++known issues are listed per device type.
++
++\devicenormative{\subsubsection}{The Virtqueue Used Ring}{Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Used Ring}
++
++The device MUST set \field{len} prior to updating the used \field{idx}.
++
++The device MUST write at least \field{len} bytes to descriptor,
++beginning at the first device-writable buffer,
++prior to updating the used \field{idx}.
++
++The device MAY write more than \field{len} bytes to descriptor.
++
++\begin{note}
++There are potential error cases where a device might not know what
++parts of the buffers have been written.  This is why \field{len} is
++permitted to be an underestimate: that's preferable to the driver believing
++that uninitialized memory has been overwritten when it has not.
++\end{note}
++
++\drivernormative{\subsubsection}{The Virtqueue Used Ring}{Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Used Ring}
++
++The driver MUST NOT make assumptions about data in device-writable buffers
++beyond the first \field{len} bytes, and SHOULD ignore this data.
++
++\subsection{Virtqueue Notification Suppression}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Notification Suppression}
++
++The device can suppress notifications in a manner analogous to the way
++drivers can suppress interrupts as detailed in section \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Interrupt Suppression}.
++The device manipulates \field{flags} or \field{avail_event} in the used ring the
++same way the driver manipulates \field{flags} or \field{used_event} in the available ring.
++
++\drivernormative{\subsubsection}{Virtqueue Notification Suppression}{Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Notification Suppression}
++
++The driver MUST initialize \field{flags} in the used ring to 0 when
++allocating the used ring.
++
++If the VIRTIO_F_EVENT_IDX feature bit is not negotiated:
++\begin{itemize}
++\item The driver MUST ignore the \field{avail_event} value.
++\item After the driver writes a descriptor index into the available ring:
++  \begin{itemize}
++        \item If \field{flags} is 1, the driver SHOULD NOT send a notification.
++        \item If \field{flags} is 0, the driver MUST send a notification.
++  \end{itemize}
++\end{itemize}
++
++Otherwise, if the VIRTIO_F_EVENT_IDX feature bit is negotiated:
++\begin{itemize}
++\item The driver MUST ignore the lower bit of \field{flags}.
++\item After the driver writes a descriptor index into the available ring:
++  \begin{itemize}
++        \item If the \field{idx} field in the available ring (which determined
++          where that descriptor index was placed) was equal to
++          \field{avail_event}, the driver MUST send a notification.
++        \item Otherwise the driver SHOULD NOT send a notification.
++  \end{itemize}
++\end{itemize}
++
++\devicenormative{\subsubsection}{Virtqueue Notification Suppression}{Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Notification Suppression}
++If the VIRTIO_F_EVENT_IDX feature bit is not negotiated:
++\begin{itemize}
++\item The device MUST set \field{flags} to 0 or 1.
++\item The device MAY set \field{flags} to 1 to advise
++the driver that notifications are not needed.
++\end{itemize}
++
++Otherwise, if the VIRTIO_F_EVENT_IDX feature bit is negotiated:
++\begin{itemize}
++\item The device MUST set \field{flags} to 0.
++\item The device MAY use \field{avail_event} to advise the driver that notifications are unnecessary until the driver writes entry with an index specified by \field{avail_event} into the available ring (equivalently, until \field{idx} in the
++available ring will reach the value \field{avail_event} + 1).
++\end{itemize}
++
++The device MUST handle spurious notifications from the driver.
++
++\subsection{Helpers for Operating Virtqueues}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / Helpers for Operating Virtqueues}
++
++The Linux Kernel Source code contains the definitions above and
++helper routines in a more usable form, in
++include/uapi/linux/virtio_ring.h. This was explicitly licensed by IBM
++and Red Hat under the (3-clause) BSD license so that it can be
++freely used by all other projects, and is reproduced (with slight
++variation) in \ref{sec:virtio-queue.h}~\nameref{sec:virtio-queue.h}.
+-- 
+MST
 
-What about:
-
-"The split virtqueue format is the original format used by devices
-conforming to the 1.0 version of this standard (and a variant thereof
-by legacy virtio devices)."
-
-> The split virtqueue format separates the
-> +virtqueue into several parts, where each part is write-able by
-> +either the driver or the device, but not both. Multiple
-> +locations need to be updated when making a buffer available
-> +and when marking it as used.
-> +
-> +
-> +Each queue has a 16-bit queue size
->  parameter, which sets the number of entries and implies the total size
->  of the queue.
->  
 
 
 ---------------------------------------------------------------------
