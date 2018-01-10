@@ -1,69 +1,166 @@
-Return-Path: virtio-return-2828-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio@lists.oasis-open.org>
-List-Post: <mailto:virtio@lists.oasis-open.org>
-List-Help: <mailto:virtio-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Wed, 10 Jan 2018 16:39:29 +0200
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20180110163923-mutt-send-email-mst@kernel.org>
+Return-Path: virtio-dev-return-2953-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Date: Wed, 10 Jan 2018 22:08:01 +0800
+From: Tiwei Bie <tiwei.bie@intel.com>
+Message-ID: <20180110140801.zbiwgs6jgo5ptjff@debian-xvivbkq.sh.intel.com>
 References: <1515577653-9336-1-git-send-email-mst@redhat.com>
  <1515577653-9336-5-git-send-email-mst@redhat.com>
- <20180110134942.nz6nby2cu4uidj42@dhcp-192-241.str.redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20180110134942.nz6nby2cu4uidj42@dhcp-192-241.str.redhat.com>
-Subject: [virtio] Re: [virtio-dev] [PATCH v6 4/5] packed virtqueues: more efficient
+In-Reply-To: <1515577653-9336-5-git-send-email-mst@redhat.com>
+Subject: Re: [virtio-dev] [PATCH v6 4/5] packed virtqueues: more efficient
  virtqueue layout
-To: Jens Freimann <jfreimann@redhat.com>
+To: "Michael S. Tsirkin" <mst@redhat.com>
 Cc: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, Jan 10, 2018 at 02:49:42PM +0100, Jens Freimann wrote:
-> On Wed, Jan 10, 2018 at 11:47:58AM +0200, Michael S. Tsirkin wrote:
-> [...]
-> > +\subsection{Supplying Buffers to The Device}\label{sec:Basic Facilities of a Virtio Device / Packed Virtqueues / Supplying Buffers to The Device}
-> > +
-> > +The driver offers buffers to one of the device's virtqueues as follows:
-> > +
-> > +\begin{enumerate}
-> > +\item The driver places the buffer into free descriptor in the Descriptor Ring.
-> > +
-> > +\item The driver performs a suitable memory barrier to ensure that it updates
-> > +  the descriptor(s) before checking for notification suppression.
-> > +
-> > +\item If notifications are not suppressed, the driver notifies the device
-> > +    of the new available buffers.
-> > +\end{enumerate}
-> > +
-> > +What follows is the requirements of each stage in more detail.
-> > +
-> > +\subsubsection{Placing Available Buffers Into The Descriptor Ring}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / Supplying Buffers to The Device / Placing Available Buffers Into The Descriptor Ring}
-> > +
-> > +For each buffer element, b:
-> > +
-> > +\begin{enumerate}
-> > +\item Get the next descriptor table entry, d
-> > +\item Get the next free buffer id value
-> > +\item Set \field{d.addr} to the physical address of the start of b
-> > +\item Set \field{d.len} to the length of b.
-> > +\item Set \field{d.id} to the buffer id
-> > +\item Calculate the flags as follows:
-> > +\begin{enumerate}
-> > +\item If b is device-writable, set the VIRTQ_DESC_F_WRITE bit to 1, otherwise 0
-> > +\item Set VIRTQ_DESC_F_AVAIL bit to the current value of the Available Ring Wrap Counter
-> > +\item Set VIRTQ_DESC_F_AVAIL bit to inverse value
+On Wed, Jan 10, 2018 at 11:47:58AM +0200, Michael S. Tsirkin wrote:
+> Performance analysis of this is in my kvm forum 2016 presentation.  The
+> idea is to have a r/w descriptor in a ring structure, replacing the used
+> and available ring, index and descriptor buffer.
 > 
-> This should be "Set VIRTQ_DESC_F_USED bit to inverse value, no?
+> This is also easier for devices to implement than the 1.0 layout.
+> Several more enhancements will be necessary to actually make this
+> efficient for devices to use.
 > 
-> regards,
-> Jens
+> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+> ---
+>  content.tex     |  36 ++-
+>  packed-ring.tex | 668 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+>  2 files changed, 701 insertions(+), 3 deletions(-)
+>  create mode 100644 packed-ring.tex
+> 
+> diff --git a/content.tex b/content.tex
+> index 3b4579e..3059bd3 100644
+> --- a/content.tex
+> +++ b/content.tex
+> @@ -242,10 +242,26 @@ a used buffer to the queue - i.e. lets the driver
+>  know by marking the buffer as used. Device can then trigger
+>  a device event - i.e. send an interrupt to the driver.
+>  
+> -For queue operation detail, see \ref{sec:Basic Facilities of a Virtio Device / Split Virtqueues}~\nameref{sec:Basic Facilities of a Virtio Device / Split Virtqueues}.
+> +Device is not generally required to use buffers in
+> +the same order in which they have been made available
+> +by the driver.
+> +
+> +Some devices always use descriptors in the same order in which
+> +they have been made available. These devices can offer the
+> +VIRTIO_F_IN_ORDER feature. If negotiated, this knowledge
+> +might allow optimizations or simplify driver code.
 
-Right.
+Does this mean that for "Split Virtqueues" if VIRTIO_F_IN_ORDER
+feature is negotiated, drivers won't be required to access the
+id field of used_elem to figure out the desc idx when processing
+the used ring?
+
+> +
+> +Two formats are supported: Split Virtqueues (see \ref{sec:Basic
+> +Facilities of a Virtio Device / Split
+> +Virtqueues}~\nameref{sec:Basic Facilities of a Virtio Device /
+> +Split Virtqueues}) and Packed Virtqueues (see \ref{sec:Basic
+> +Facilities of a Virtio Device / Packed
+> +Virtqueues}~\nameref{sec:Basic Facilities of a Virtio Device /
+> +Packed Virtqueues}).
+>  
+>  \input{split-ring.tex}
+>  
+> +\input{packed-ring.tex}
+[...]
+> +Below is an example driver code. It does not attempt to reduce
+> +the number of device interrupts, neither does it support
+> +the VIRTIO_F_RING_EVENT_IDX feature.
+> +
+> +\begin{lstlisting}
+> +
+> +first = vq->next_avail;
+> +id = alloc_id(vq);
+> +
+> +for (each buffer element b) {
+> +        vq->desc[vq->next_avail].address = get_addr(b);
+> +        vq->desc[vq->next_avail].len = get_len(b);
+> +        init_desc(vq->next_avail, b);
+> +        avail = vq->avail_wrap_count;
+> +        used = !vq->avail_wrap_count;
+> +        f = get_flags(b) | (avail << VIRTQ_DESC_F_AVAIL) | (used << VIRTQ_DESC_F_USED);
+> +        if (vq->next_avail == first) {
+> +                flags = f;
+
+This is to implement the batching? I.e. don't make the first
+desc available to the device before other descs are ready?
+
+> +        } else {
+> +                vq->desc[vq->next_avail].flags = f;
+> +        }
+
+The vq->next_avail updating is missing in the loop?
+
+> +
+> +}
+> +vq->desc[vq->next_avail].id = id;
+> +write_memory_barrier();
+> +vq->desc[first].flags = flags;
+> +
+> +memory_barrier();
+> +
+> +if (vq->driver_event.flags != 0x3) {
+> +        notify_device(vq, vq->next_avail, vq->avail_wrap_count);
+> +}
+> +
+> +vq->next_avail++;
+> +
+> +if (vq->next_avail > vq->size) {
+
+Should be (vq->next_avail >= vq->size)?
+
+> +        vq->next_avail = 0;
+> +        vq->avail_wrap_count \^= 1;
+> +}
+> +
+> +\end{lstlisting}
+> +
+[...]
+> +\begin{lstlisting}
+> +vq->device_event.flags = 0x3;
+> +
+> +for (;;) {
+> +        flags = vq->desc[vq->next_used].flags;
+> +        bool avail = flags & (1 << VIRTQ_DESC_F_AVAIL);
+> +        bool used = flags & (1 << VIRTQ_DESC_F_USED);
+> +
+> +        if (avail != used) {
+> +                vq->device_event.flags = 0x1;
+> +                mb();
+> +
+> +                flags = vq->desc[vq->next_used].flags;
+> +                bool avail = flags & (1 << VIRTQ_DESC_F_AVAIL);
+> +                bool used = flags & (1 << VIRTQ_DESC_F_USED);
+> +                if (avail != used) {
+> +                        break;
+> +                }
+> +
+> +                vq->device_event.flags = 0x3;
+> +        }
+> +
+> +        struct virtq_desc *d = vq->desc[vq->next_used];
+> +        process_buffer(d);
+> +        vq->next_used++;
+> +        if (vq->next_used > vq->size) {
+
+Should be (vq->next_used >= vq->size)?
+
+> +                vq->next_used = 0;
+> +        }
+> +}
+> +\end{lstlisting}
+> -- 
+> MST
 
 ---------------------------------------------------------------------
-To unsubscribe from this mail list, you must leave the OASIS TC that 
-generates this mail.  Follow this link to all your TCs in OASIS at:
-https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
