@@ -1,94 +1,76 @@
-Return-Path: virtio-return-2816-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-return-2818-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio@lists.oasis-open.org>
 List-Post: <mailto:virtio@lists.oasis-open.org>
 List-Help: <mailto:virtio-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Wed, 10 Jan 2018 11:47:59 +0200
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <1515577653-9336-6-git-send-email-mst@redhat.com>
+Date: Wed, 10 Jan 2018 11:33:15 +0100
+From: Cornelia Huck <cohuck@redhat.com>
+Message-ID: <20180110113315.6d04a931.cohuck@redhat.com>
+In-Reply-To: <1515577653-9336-1-git-send-email-mst@redhat.com>
 References: <1515577653-9336-1-git-send-email-mst@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1515577653-9336-1-git-send-email-mst@redhat.com>
-Subject: [virtio] [PATCH v6 5/5] packed-ring: add in order request support
-To: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Subject: Re: [virtio] [PATCH v6 0/5] packed ring layout spec
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-support in-order requests for packed rings.  more work is needed to use
-them efficiently for split rings (e.g. it makes sense to bypass
-avail/used rings in this case), forbid that combination for now.
+On Wed, 10 Jan 2018 11:47:53 +0200
+"Michael S. Tsirkin" <mst@redhat.com> wrote:
 
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
----
- content.tex     |  7 +++++++
- packed-ring.tex | 24 ++++++++++++++++++++++++
- 2 files changed, 31 insertions(+)
+> OK, this is in a shape where we could include it in the spec.
+> Changes from v5:
+> - scope reductions (see below). We can add more
+>   features down the road, hopefully reduced scope will be enough
+>   to finalize spec soon.
+> - cleanup and integrate in the spec
+> - pseudo-code
+> 
+> Deferred features:
+> - dropped _F_DESC_LIST, 1.0 includes this unconditionally, we
+>   can do same
+> - dropped event structure change notifications - needed for
+>   efficient hardware implementations but let's add this on top
+> 
+> 3 1st patches just move text around so all virtio 1.0
+> things are in the same place. 2 last ones add the new layout
+> 
+> Option to mark descriptors as not generating events isn't
+> yet implemented. Again, let's add this on top.
+> 
+> I also note that for hardware implementations, a different
+> set of memory barriers is needed. Again, let's add this on top
+> 
+> not linking into conformance sections, will add after spec
+> itself is approved.
+> 
+> Michael S. Tsirkin (5):
+>   content: move 1.0 queue format out to a separate section
+>   content: move ring text out to a separate file
+>   content: move virtqueue operation description
+>   packed virtqueues: more efficient virtqueue layout
+>   packed-ring: add in order request support
+> 
+>  conformance.tex |   4 +-
+>  content.tex     | 718 +++++---------------------------------------------------
+>  packed-ring.tex | 692 ++++++++++++++++++++++++++++++++++++++++++++++++++++++
+>  split-ring.tex  | 666 ++++++++++++++++++++++++++++++++++++++++++++++++++++
+>  4 files changed, 1423 insertions(+), 657 deletions(-)
+>  create mode 100644 packed-ring.tex
+>  create mode 100644 split-ring.tex
+> 
 
-diff --git a/content.tex b/content.tex
-index 3059bd3..f478ae2 100644
---- a/content.tex
-+++ b/content.tex
-@@ -5240,6 +5240,10 @@ and .
-   \item[VIRTIO_F_RING_PACKED(34)] This feature indicates
-   support for the packed virtqueue layout as described in
- \ref{sec:Basic Facilities of a Virtio Device / Packed Virtqueues}.
-+  \item[VIRTIO_F_IN_ORDER(35)] This feature indicates
-+  that all buffers are used by the device in the same
-+  order in which they have been made available.
-+  This feature should only be enabled with VIRTIO_F_RING_PACKED.
- \end{description}
- 
- \drivernormative{\section}{Reserved Feature Bits}{Reserved Feature Bits}
-@@ -5255,6 +5259,9 @@ addresses to the device.
- 
- A driver SHOULD accept VIRTIO_F_PACKED_RING if it is offered.
- 
-+A driver MUST only accept VIRTIO_F_IN_ORDER if it also accepts
-+VIRTIO_F_RING_PACKED.
-+
- \devicenormative{\section}{Reserved Feature Bits}{Reserved Feature Bits}
- 
- A device MUST offer VIRTIO_F_VERSION_1.  A device MAY fail to operate further
-diff --git a/packed-ring.tex b/packed-ring.tex
-index ffc699c..88d121c 100644
---- a/packed-ring.tex
-+++ b/packed-ring.tex
-@@ -260,6 +260,30 @@ Buffer ID is also reserved and is ignored by the device.
- In Descriptors with VIRTQ_DESC_F_INDIRECT set VIRTQ_DESC_F_WRITE
- is reserved and is ignored by the device.
- 
-+\subsection{In-order use of descriptors}
-+\label{sec:Packed Virtqueues / In-order use of descriptors}
-+
-+Some devices always use descriptors in the same order in which
-+they have been made available. These devices can offer the
-+VIRTIO_F_IN_ORDER feature. If negotiated, this knowledge allows
-+devices to notify the use of a batch of buffers to the driver by
-+only writing out a single used descriptor with the Buffer ID
-+corresponding to the last descriptor in the batch.
-+
-+Device then skips forward in the ring according to the size of
-+the batch. Driver needs to look up the used Buffer ID and
-+calculate the batch size to be able to advance to where the next
-+used descriptor will be written by the device.
-+
-+This will result in the used descriptor overwriting the first
-+available descriptor in the batch, the used descriptor for the
-+next batch overwriting the first available descriptor in the next
-+batch, etc.
-+
-+The skipped buffers (for which no used descriptor was written)
-+are assumed to have been used (read or written) by the
-+device completely.
-+
- \subsection{Multi-buffer requests}
- \label{sec:Packed Virtqueues / Multi-descriptor batches}
- Some devices combine multiple buffers as part of processing of a
--- 
-MST
+One thing I just noticed: This does not seem to contain any changes for
+transports. For ccw, we use different payloads in the SET_VQ command
+for legacy (pre-virtio-1) and virtio-1 split layout. I think we would
+need a new SET_VQ payload for the packed ring guarded by a new
+revision, but I have not investigated it yet. I have not yet thought
+through how this interacts with feature negotiation, either.
 
+Otherwise, I don't see any reason why the packed ring would not work
+fine for ccw as well.
 
 ---------------------------------------------------------------------
 To unsubscribe from this mail list, you must leave the OASIS TC that 
