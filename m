@@ -1,60 +1,63 @@
-Return-Path: virtio-return-2812-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-return-2813-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio@lists.oasis-open.org>
 List-Post: <mailto:virtio@lists.oasis-open.org>
 List-Help: <mailto:virtio-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Wed, 10 Jan 2018 11:47:53 +0200
+Date: Wed, 10 Jan 2018 11:47:55 +0200
 From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <1515577653-9336-1-git-send-email-mst@redhat.com>
+Message-ID: <1515577653-9336-2-git-send-email-mst@redhat.com>
+References: <1515577653-9336-1-git-send-email-mst@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Subject: [virtio] [PATCH v6 0/5] packed ring layout spec
+In-Reply-To: <1515577653-9336-1-git-send-email-mst@redhat.com>
+Subject: [virtio] [PATCH v6 1/5] content: move 1.0 queue format out to a separate
+ section
 To: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-OK, this is in a shape where we could include it in the spec.
-Changes from v5:
-- scope reductions (see below). We can add more
-  features down the road, hopefully reduced scope will be enough
-  to finalize spec soon.
-- cleanup and integrate in the spec
-- pseudo-code
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+---
+ content.tex | 25 ++++++++++++++++++++++++-
+ 1 file changed, 24 insertions(+), 1 deletion(-)
 
-Deferred features:
-- dropped _F_DESC_LIST, 1.0 includes this unconditionally, we
-  can do same
-- dropped event structure change notifications - needed for
-  efficient hardware implementations but let's add this on top
-
-3 1st patches just move text around so all virtio 1.0
-things are in the same place. 2 last ones add the new layout
-
-Option to mark descriptors as not generating events isn't
-yet implemented. Again, let's add this on top.
-
-I also note that for hardware implementations, a different
-set of memory barriers is needed. Again, let's add this on top
-
-not linking into conformance sections, will add after spec
-itself is approved.
-
-Michael S. Tsirkin (5):
-  content: move 1.0 queue format out to a separate section
-  content: move ring text out to a separate file
-  content: move virtqueue operation description
-  packed virtqueues: more efficient virtqueue layout
-  packed-ring: add in order request support
-
- conformance.tex |   4 +-
- content.tex     | 718 +++++---------------------------------------------------
- packed-ring.tex | 692 ++++++++++++++++++++++++++++++++++++++++++++++++++++++
- split-ring.tex  | 666 ++++++++++++++++++++++++++++++++++++++++++++++++++++
- 4 files changed, 1423 insertions(+), 657 deletions(-)
- create mode 100644 packed-ring.tex
- create mode 100644 split-ring.tex
-
+diff --git a/content.tex b/content.tex
+index c7ef7fd..4483a4b 100644
+--- a/content.tex
++++ b/content.tex
+@@ -230,7 +230,30 @@ result.
+ The mechanism for bulk data transport on virtio devices is
+ pretentiously called a virtqueue. Each device can have zero or more
+ virtqueues\footnote{For example, the simplest network device has one virtqueue for
+-transmit and one for receive.}.  Each queue has a 16-bit queue size
++transmit and one for receive.}.
++
++Driver makes requests available to device by adding
++an available buffer to the queue - i.e. adding a buffer
++describing the request to a virtqueue, and optionally triggering
++a driver event - i.e. sending a notification to the device.
++
++Device executes the requests and - when complete - adds
++a used buffer to the queue - i.e. lets the driver
++know by marking the buffer as used. Device can then trigger
++a device event - i.e. send an interrupt to the driver.
++
++For queue operation detail, see \ref{sec:Basic Facilities of a Virtio Device / Split Virtqueues}~\nameref{sec:Basic Facilities of a Virtio Device / Split Virtqueues}.
++
++\section{Split Virtqueues}\label{sec:Basic Facilities of a Virtio Device / Split Virtqueues}
++The split virtqueue format is the original format used by legacy
++virtio devices.  The split virtqueue format separates the
++virtqueue into several parts, where each part is write-able by
++either the driver or the device, but not both. Multiple
++locations need to be updated when making a buffer available
++and when marking it as used.
++
++
++Each queue has a 16-bit queue size
+ parameter, which sets the number of entries and implies the total size
+ of the queue.
+ 
 -- 
 MST
 
