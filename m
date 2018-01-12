@@ -1,119 +1,53 @@
-Return-Path: virtio-dev-return-3084-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2961-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id D82AA1CB807A
-	for <virtio-dev@lists.oasis-open.org>; Fri, 26 Jan 2018 10:15:25 -0800 (PST)
+	by lists.oasis-open.org (Postfix) with ESMTP id 8810B1CB807A
+	for <virtio-dev@lists.oasis-open.org>; Thu, 11 Jan 2018 21:58:51 -0800 (PST)
+From: Sridhar Samudrala <sridhar.samudrala@intel.com>
+Date: Thu, 11 Jan 2018 21:58:40 -0800
+Message-Id: <1515736720-39368-4-git-send-email-sridhar.samudrala@intel.com>
+In-Reply-To: <1515736720-39368-1-git-send-email-sridhar.samudrala@intel.com>
 References: <1515736720-39368-1-git-send-email-sridhar.samudrala@intel.com>
- <1515736720-39368-3-git-send-email-sridhar.samudrala@intel.com>
- <20180126185617-mutt-send-email-mst@kernel.org>
-From: "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
-Message-ID: <dcebb89c-dff9-c499-a5ff-39aee79ce985@intel.com>
-Date: Fri, 26 Jan 2018 10:15:13 -0800
-MIME-Version: 1.0
-In-Reply-To: <20180126185617-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-Subject: [virtio-dev] Re: [RFC PATCH net-next v2 2/2] virtio_net: Extend virtio to use VF
- datapath when available
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: stephen@networkplumber.org, davem@davemloft.net, netdev@vger.kernel.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, jesse.brandeburg@intel.com, alexander.h.duyck@intel.com, kubakici@wp.pl
+Subject: [virtio-dev] [RFC PATCH 1/1] qemu: Introduce VIRTIO_NET_F_BACKUP feature bit to virtio_net
+To: mst@redhat.com, stephen@networkplumber.org, davem@davemloft.net, netdev@vger.kernel.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, jesse.brandeburg@intel.com, alexander.h.duyck@intel.com, kubakici@wp.pl, sridhar.samudrala@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+This feature bit can be used by hypervisor to indicate virtio_net device to
+act as a backup for another device with the same MAC address.
+    
+Signed-off-by: Sridhar Samudrala <sridhar.samudrala@intel.com>
 
-
-On 1/26/2018 8:58 AM, Michael S. Tsirkin wrote:
-> On Thu, Jan 11, 2018 at 09:58:39PM -0800, Sridhar Samudrala wrote:
->> @@ -2859,6 +3123,42 @@ static struct virtio_driver virtio_net_driver = {
->>   #endif
->>   };
->>   
->> +static int virtio_netdev_event(struct notifier_block *this,
->> +			       unsigned long event, void *ptr)
->> +{
->> +	struct net_device *event_dev = netdev_notifier_info_to_dev(ptr);
->> +
->> +	/* Skip our own events */
->> +	if (event_dev->netdev_ops == &virtnet_netdev)
->> +		return NOTIFY_DONE;
->> +
->> +	/* Avoid non-Ethernet type devices */
->> +	if (event_dev->type != ARPHRD_ETHER)
->> +		return NOTIFY_DONE;
->> +
->> +	/* Avoid Vlan dev with same MAC registering as VF */
->> +	if (is_vlan_dev(event_dev))
->> +		return NOTIFY_DONE;
->> +
->> +	/* Avoid Bonding master dev with same MAC registering as VF */
->> +	if ((event_dev->priv_flags & IFF_BONDING) &&
->> +	    (event_dev->flags & IFF_MASTER))
->> +		return NOTIFY_DONE;
->> +
->> +	switch (event) {
->> +	case NETDEV_REGISTER:
->> +		return virtnet_register_vf(event_dev);
->> +	case NETDEV_UNREGISTER:
->> +		return virtnet_unregister_vf(event_dev);
->> +	default:
->> +		return NOTIFY_DONE;
->> +	}
->> +}
->> +
->> +static struct notifier_block virtio_netdev_notifier = {
->> +	.notifier_call = virtio_netdev_event,
->> +};
->> +
->>   static __init int virtio_net_driver_init(void)
->>   {
->>   	int ret;
->> @@ -2877,6 +3177,8 @@ static __init int virtio_net_driver_init(void)
->>           ret = register_virtio_driver(&virtio_net_driver);
->>   	if (ret)
->>   		goto err_virtio;
->> +
->> +	register_netdevice_notifier(&virtio_netdev_notifier);
->>   	return 0;
->>   err_virtio:
->>   	cpuhp_remove_multi_state(CPUHP_VIRT_NET_DEAD);
->> @@ -2889,6 +3191,7 @@ module_init(virtio_net_driver_init);
->>   
->>   static __exit void virtio_net_driver_exit(void)
->>   {
->> +	unregister_netdevice_notifier(&virtio_netdev_notifier);
->>   	unregister_virtio_driver(&virtio_net_driver);
->>   	cpuhp_remove_multi_state(CPUHP_VIRT_NET_DEAD);
->>   	cpuhp_remove_multi_state(virtionet_online);
-> I have a question here: what if PT device driver module loads
-> and creates a device before virtio?
->
->
-Initially i also had this question if we get NETDEV_REGISTER events for 
-netdevs
-that are already present. But it looks like 
-register_netdevice_notifier() will cause
-replay of all the registration and up events of existing devices.
-
-/**
-  * register_netdevice_notifier - register a network notifier block
-  * @nb: notifier
-  *
-  * Register a notifier to be called when network device events occur.
-  * The notifier passed is linked into the kernel structures and must
-  * not be reused until it has been unregistered. A negative errno code
-  * is returned on a failure.
-  *
-  * When registered all registration and up events are replayed
-  * to the new notifier to allow device to have a race free
-  * view of the network device list.
-  */
-
-Thanks
-Sridhar
+diff --git a/hw/net/virtio-net.c b/hw/net/virtio-net.c
+index cd63659140..fa47e723b9 100644
+--- a/hw/net/virtio-net.c
++++ b/hw/net/virtio-net.c
+@@ -2193,6 +2193,8 @@ static Property virtio_net_properties[] = {
+                      true),
+     DEFINE_PROP_INT32("speed", VirtIONet, net_conf.speed, SPEED_UNKNOWN),
+     DEFINE_PROP_STRING("duplex", VirtIONet, net_conf.duplex_str),
++    DEFINE_PROP_BIT64("backup", VirtIONet, host_features,
++                    VIRTIO_NET_F_BACKUP, false),
+     DEFINE_PROP_END_OF_LIST(),
+ };
+ 
+diff --git a/include/standard-headers/linux/virtio_net.h b/include/standard-headers/linux/virtio_net.h
+index 17c8531a22..6afca6dcaf 100644
+--- a/include/standard-headers/linux/virtio_net.h
++++ b/include/standard-headers/linux/virtio_net.h
+@@ -57,6 +57,9 @@
+ 					 * Steering */
+ #define VIRTIO_NET_F_CTRL_MAC_ADDR 23	/* Set MAC address */
+ 
++#define VIRTIO_NET_F_BACKUP	  62   /* Act as backup for another device
++					* with the same MAC.
++					*/
+ #define VIRTIO_NET_F_SPEED_DUPLEX 63   /* Device set linkspeed and duplex */
+ 
+ #ifndef VIRTIO_NET_NO_LEGACY
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
