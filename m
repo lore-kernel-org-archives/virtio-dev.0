@@ -1,119 +1,79 @@
-Return-Path: virtio-dev-return-3118-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2960-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 8E88D1CB8096
-	for <virtio-dev@lists.oasis-open.org>; Wed, 31 Jan 2018 07:25:55 -0800 (PST)
-Date: Wed, 31 Jan 2018 17:25:37 +0200
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20180131161429-mutt-send-email-mst@kernel.org>
-References: <1514904621-39186-1-git-send-email-penguin-kernel@I-love.SAKURA.ne.jp>
- <20180131015912-mutt-send-email-mst@kernel.org>
- <201801312013.FGI90108.OQFMtFLHFOOJSV@I-love.SAKURA.ne.jp>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <201801312013.FGI90108.OQFMtFLHFOOJSV@I-love.SAKURA.ne.jp>
-Subject: [virtio-dev] Re: [PATCH] virtio_balloon: use non-blocking allocation
-To: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-Cc: virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, linux-mm@kvack.org, willy@infradead.org, mhocko@suse.com, wei.w.wang@intel.com
+	by lists.oasis-open.org (Postfix) with ESMTP id 62626581911D
+	for <virtio-dev@lists.oasis-open.org>; Thu, 11 Jan 2018 21:58:51 -0800 (PST)
+From: Sridhar Samudrala <sridhar.samudrala@intel.com>
+Date: Thu, 11 Jan 2018 21:58:37 -0800
+Message-Id: <1515736720-39368-1-git-send-email-sridhar.samudrala@intel.com>
+Subject: [virtio-dev] [RFC PATCH net-next v2 0/2] Enable virtio to act as a backup for a passthru device
+To: mst@redhat.com, stephen@networkplumber.org, davem@davemloft.net, netdev@vger.kernel.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, jesse.brandeburg@intel.com, alexander.h.duyck@intel.com, kubakici@wp.pl, sridhar.samudrala@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, Jan 31, 2018 at 08:13:26PM +0900, Tetsuo Handa wrote:
-> Michael S. Tsirkin wrote:
-> > On Tue, Jan 02, 2018 at 11:50:21PM +0900, Tetsuo Handa wrote:
-> > > Commit c7cdff0e864713a0 ("virtio_balloon: fix deadlock on OOM") tried to
-> > > avoid OOM lockup by moving memory allocations to outside of balloon_lock.
-> > > 
-> > > Now, Wei is trying to allocate far more pages outside of balloon_lock and
-> > > some more memory inside of balloon_lock in order to perform efficient
-> > > communication between host and guest using scatter-gather API.
-> > > 
-> > > Since pages allocated outside of balloon_lock are not visible to the OOM
-> > > notifier path until fill_balloon() holds balloon_lock (and enqueues the
-> > > pending pages), allocating more pages than now may lead to unacceptably
-> > > premature OOM killer invocation.
-> > > 
-> > > It would be possible to make the pending pages visible to the OOM notifier
-> > > path. But there is no need to try to allocate memory so hard from the
-> > > beginning. As of commit 18468d93e53b037e ("mm: introduce a common
-> > > interface for balloon pages mobility"), it made sense to try allocation
-> > > as hard as possible. But after commit 5a10b7dbf904bfe0 ("virtio_balloon:
-> > > free some memory from balloon on OOM"),
-> > 
-> > However, please not that this behavious is optional.
-> > Can you keep the current behaviour when deflate on OOM is disabled?
-> 
-> I can, for passing a flag to balloon_page_alloc() will do it.
-> 
-> But do we really prefer behavior up to comment 27 of
-> https://bugzilla.redhat.com/show_bug.cgi?id=1525356 ?
+This patch series extends virtio_net to take over VF datapath by
+simulating a transparent bond without creating any additional netdev.
 
+I understand that there are some comments suggesting an alternate model
+that is based on 3 driver model(virtio_net, VF driver, a new driver 
+virt_bond that acts as a master to virtio_net and VF).
 
-You show a config where so much memory is taken that guest crashes, but
-hopefully in other situations it's just an application hogging memory.
+Would like to get some feedback on the right way to solve the live
+migration problem with direct attached devices in KVM environment.
 
-So I'm sure current behaviour is not optimal for your config but the
-problem with deflate on OOM is it does not restart inflating when OOM
-condition goes away.  So if host *really* needs that memory it can't
-enable deflate on OOM.
+Stephen,
+Is the netvsc transparent bond implemenation robust enough and deployed
+in real environments? Or would netvsc switch over to a 3-driver model if
+that solution becomes available?
 
-Crashing the kernel is of course not really useful, I wish
-there was a way to avoid that while still reliably
-giving as much as we can to the host.
+Can we start with this implementation that is similar to netvsc and if
+needed we can move to the 3 driver model later?
 
-Ideally balloon flow looks like this:
-1. host needs some memory e.g. to start a new guest
-2. guest gets request from host to give it back some memory
-3. while request not satisfied:
-	a. try to get hold of free memory
-	b. free up some by flushing caches
-	c. free up some by killing memory hogs
+This patch series enables virtio to switch over to a VF datapath when a 
+VF netdev is present with the same MAC address. It allows live migration 
+of a VM with a direct attached VF without the need to setup a bond/team
+between a VF and virtio net device in the guest.
 
-All this without crashing the guest.
+The hypervisor needs to unplug the VF device from the guest on the source
+host and reset the MAC filter of the VF to initiate failover of datapath
+to virtio before starting the migration. After the migration is completed,
+the destination hypervisor sets the MAC filter on the VF and plugs it back
+to the guest to switch over to VF datapath.
 
-What we have implemented is a rough approximation.
+It is based on netvsc implementation and it should be possible to make this
+code generic and move it to a common location that can be shared by netvsc
+and virtio.
 
-Deflate on OOM reduces the chance of a crash or hang but it makes the
-inflate unreliable: host can no longer use the memory for another guest,
-this one might request it back at any time.
+This patch series is based on the discussion initiated by Jesse on this thread.
+https://marc.info/?l=linux-virtualization&m=151189725224231&w=2
 
-What is deflate on oom good for then?  I suspect that people use deflate
-on oom as poor man's page hinting.
+v2:
+- Changed VIRTIO_NET_F_MASTER to VIRTIO_NET_F_BACKUP (mst)
+- made a small change to the virtio-net xmit path to only use VF datapath
+  for unicasts. Broadcasts/multicasts use virtio datapath. This avoids
+  east-west broadcasts to go over the PCI link.
+- added suppport for the feature bit in qemu
 
+Sridhar Samudrala (2):
+  virtio_net: Introduce VIRTIO_NET_F_BACKUP feature bit
+  virtio_net: Extend virtio to use VF datapath when available
 
-> > 
-> > 
-> > > it no longer makes sense to try
-> > > allocation as hard as possible, for fill_balloon() will after all have to
-> > > release just allocated memory if some allocation request hits the OOM
-> > > notifier path. Therefore, this patch disables __GFP_DIRECT_RECLAIM when
-> > > allocating memory for inflating the balloon. Then, memory for inflating
-> > > the balloon can be allocated inside balloon_lock, and we can release just
-> > > allocated memory as needed.
-> > > 
-> > > Also, this patch adds __GFP_NOWARN, for possibility of hitting memory
-> > > allocation failure is increased by removing __GFP_DIRECT_RECLAIM, which
-> > > might spam the kernel log buffer. At the same time, this patch moves
-> > > "puff" messages to outside of balloon_lock, for it is not a good thing to
-> > > block the OOM notifier path for 1/5 of a second. (Moreover, it is better
-> > > to release the workqueue and allow processing other pending items. But
-> > > that change is out of this patch's scope.)
-> > > 
-> > > __GFP_NOMEMALLOC is currently not required because workqueue context
-> > > which calls balloon_page_alloc() won't cause __gfp_pfmemalloc_flags()
-> > > to return ALLOC_OOM. But since some process context might start calling
-> > > balloon_page_alloc() in future, this patch does not remove
-> > > __GFP_NOMEMALLOC.
-> > > 
-> > > (Only compile tested. Please do runtime tests before committing.)
-> > 
-> > You will have to find someone to test it.
-> 
-> I don't have machines with much memory.
+ drivers/net/virtio_net.c        | 309 +++++++++++++++++++++++++++++++++++++++-
+ include/uapi/linux/virtio_net.h |   3 +
+ 2 files changed, 309 insertions(+), 3 deletions(-)
+
+Sridhar Samudrala (1):
+  qemu: Introduce VIRTIO_NET_F_BACKUP feature bit to virtio_net
+
+ hw/net/virtio-net.c                         | 2 ++
+ include/standard-headers/linux/virtio_net.h | 3 +++
+ 2 files changed, 5 insertions(+)
+
+-- 
+2.14.3
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
