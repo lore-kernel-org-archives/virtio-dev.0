@@ -1,308 +1,371 @@
-Return-Path: virtio-dev-return-2970-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2968-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 51BC9581911F
-	for <virtio-dev@lists.oasis-open.org>; Tue, 16 Jan 2018 09:42:47 -0800 (PST)
-Date: Tue, 16 Jan 2018 17:45:05 +0000
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Message-ID: <5011918c-0893-8098-a0d2-e340bd740871@arm.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 980485818F6A
+	for <virtio-dev@lists.oasis-open.org>; Tue, 16 Jan 2018 01:26:10 -0800 (PST)
 References: <20171117185211.32593-1-jean-philippe.brucker@arm.com>
- <20171117185211.32593-2-jean-philippe.brucker@arm.com>
- <54320f26-05a5-9a09-f6cf-ae610c41e077@redhat.com>
+ <20171117185211.32593-3-jean-philippe.brucker@arm.com>
+From: Auger Eric <eric.auger@redhat.com>
+Message-ID: <d4640ecc-8029-413b-1485-a6062c3b8ece@redhat.com>
+Date: Tue, 16 Jan 2018 10:25:41 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <54320f26-05a5-9a09-f6cf-ae610c41e077@redhat.com>
-Content-Language: en-US
-Subject: [virtio-dev] Re: [RFC PATCH v2 1/5] iommu: Add virtio-iommu driver
-To: Auger Eric <eric.auger@redhat.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "devel@acpica.org" <devel@acpica.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
-Cc: "jasowang@redhat.com" <jasowang@redhat.com>, "mst@redhat.com" <mst@redhat.com>, "lv.zheng@intel.com" <lv.zheng@intel.com>, "robert.moore@intel.com" <robert.moore@intel.com>, "joro@8bytes.org" <joro@8bytes.org>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, Sudeep Holla <Sudeep.Holla@arm.com>, "hanjun.guo@linaro.org" <hanjun.guo@linaro.org>, Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>, "lenb@kernel.org" <lenb@kernel.org>, "rjw@rjwysocki.net" <rjw@rjwysocki.net>, Marc Zyngier <Marc.Zyngier@arm.com>, Robin Murphy <Robin.Murphy@arm.com>, Will Deacon <Will.Deacon@arm.com>, "bharat.bhushan@nxp.com" <bharat.bhushan@nxp.com>, "Jayachandran.Nair@cavium.com" <Jayachandran.Nair@cavium.com>, "ashok.raj@intel.com" <ashok.raj@intel.com>, "peterx@redhat.com" <peterx@redhat.com>
+In-Reply-To: <20171117185211.32593-3-jean-philippe.brucker@arm.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: [virtio-dev] Re: [RFC PATCH v2 2/5] iommu/virtio-iommu: Add probe request
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, iommu@lists.linux-foundation.org, devel@acpica.org, linux-acpi@vger.kernel.org, kvm@vger.kernel.org, kvmarm@lists.cs.columbia.edu, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org
+Cc: jasowang@redhat.com, mst@redhat.com, lv.zheng@intel.com, robert.moore@intel.com, joro@8bytes.org, alex.williamson@redhat.com, sudeep.holla@arm.com, hanjun.guo@linaro.org, lorenzo.pieralisi@arm.com, lenb@kernel.org, rjw@rjwysocki.net, marc.zyngier@arm.com, robin.murphy@arm.com, will.deacon@arm.com, bharat.bhushan@nxp.com, Jayachandran.Nair@cavium.com, ashok.raj@intel.com, peterx@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 15/01/18 15:12, Auger Eric wrote:
-[...]
->> +/*
->> + * viommu_get_req_size - compute request size
->> + *
->> + * A virtio-iommu request is split into one device-read-only part (top) and one
->> + * device-write-only part (bottom). Given a request, return the sizes of the two
->> + * parts in @top and @bottom.
-> for all but virtio_iommu_req_probe, which has a variable bottom size
+Hi Jean-Philippe,
 
-The comment still stands for the probe request, viommu_get_req_size will
-return @bottom depending on viommu->probe_size.
+On 17/11/17 19:52, Jean-Philippe Brucker wrote:
+> When the device offers the probe feature, send a probe request for each
+> device managed by the IOMMU. Extract RESV_MEM information. When we
+> encounter a MSI doorbell region, set it up as a IOMMU_RESV_MSI region.
+> This will tell other subsystems that there is no need to map the MSI
+> doorbell in the virtio-iommu, because MSIs bypass it.
+> 
+> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+> ---
+>  drivers/iommu/virtio-iommu.c      | 165 ++++++++++++++++++++++++++++++++++++--
+>  include/uapi/linux/virtio_iommu.h |  37 +++++++++
+>  2 files changed, 195 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
+> index feb8c8925c3a..79e0add94e05 100644
+> --- a/drivers/iommu/virtio-iommu.c
+> +++ b/drivers/iommu/virtio-iommu.c
+> @@ -45,6 +45,7 @@ struct viommu_dev {
+>  	struct iommu_domain_geometry	geometry;
+>  	u64				pgsize_bitmap;
+>  	u8				domain_bits;
+> +	u32				probe_size;
+>  };
+>  
+>  struct viommu_mapping {
+> @@ -72,6 +73,7 @@ struct viommu_domain {
+>  struct viommu_endpoint {
+>  	struct viommu_dev		*viommu;
+>  	struct viommu_domain		*vdomain;
+> +	struct list_head		resv_regions;
+>  };
+>  
+>  struct viommu_request {
+> @@ -139,6 +141,10 @@ static int viommu_get_req_size(struct viommu_dev *viommu,
+>  	case VIRTIO_IOMMU_T_UNMAP:
+>  		size = sizeof(r->unmap);
+>  		break;
+> +	case VIRTIO_IOMMU_T_PROBE:
+> +		*bottom += viommu->probe_size;
+> +		size = sizeof(r->probe) + *bottom;
+> +		break;
+>  	default:
+>  		return -EINVAL;
+>  	}
+> @@ -448,6 +454,106 @@ static int viommu_replay_mappings(struct viommu_domain *vdomain)
+>  	return ret;
+>  }
+>  
+> +static int viommu_add_resv_mem(struct viommu_endpoint *vdev,
+> +			       struct virtio_iommu_probe_resv_mem *mem,
+> +			       size_t len)
+> +{
+> +	struct iommu_resv_region *region = NULL;
+> +	unsigned long prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
+> +
+> +	u64 addr = le64_to_cpu(mem->addr);
+> +	u64 size = le64_to_cpu(mem->size);
+> +
+> +	if (len < sizeof(*mem))
+> +		return -EINVAL;
+> +
+> +	switch (mem->subtype) {
+> +	case VIRTIO_IOMMU_RESV_MEM_T_MSI:
+> +		region = iommu_alloc_resv_region(addr, size, prot,
+> +						 IOMMU_RESV_MSI);
+> +		break;
+> +	case VIRTIO_IOMMU_RESV_MEM_T_RESERVED:
+> +	default:
+> +		region = iommu_alloc_resv_region(addr, size, 0,
+> +						 IOMMU_RESV_RESERVED);
+> +		break;
+> +	}
+> +
+> +	list_add(&vdev->resv_regions, &region->list);
+> +
+> +	if (mem->subtype != VIRTIO_IOMMU_RESV_MEM_T_RESERVED &&
+> +	    mem->subtype != VIRTIO_IOMMU_RESV_MEM_T_MSI) {
+> +		/* Please update your driver. */
+> +		pr_warn("unknown resv mem subtype 0x%x\n", mem->subtype);
+> +		return -EINVAL;
+> +	}
+why not adding this in the switch default case and do not call list_add
+in case the subtype region is not recognized?
+> +
+> +	return 0;
+> +}
+> +
+> +static int viommu_probe_endpoint(struct viommu_dev *viommu, struct device *dev)
+> +{
+> +	int ret;
+> +	u16 type, len;
+> +	size_t cur = 0;
+> +	struct virtio_iommu_req_probe *probe;
+> +	struct virtio_iommu_probe_property *prop;
+> +	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
+> +	struct viommu_endpoint *vdev = fwspec->iommu_priv;
+> +
+> +	if (!fwspec->num_ids)
+> +		/* Trouble ahead. */
+> +		return -EINVAL;
+> +
+> +	probe = kzalloc(sizeof(*probe) + viommu->probe_size +
+> +			sizeof(struct virtio_iommu_req_tail), GFP_KERNEL);
+> +	if (!probe)
+> +		return -ENOMEM;
+> +
+> +	probe->head.type = VIRTIO_IOMMU_T_PROBE;
+> +	/*
+> +	 * For now, assume that properties of an endpoint that outputs multiple
+> +	 * IDs are consistent. Only probe the first one.
+> +	 */
+> +	probe->endpoint = cpu_to_le32(fwspec->ids[0]);
+> +
+> +	ret = viommu_send_req_sync(viommu, probe);
+> +	if (ret) {
+goto out?
+> +		kfree(probe);
+> +		return ret;
+> +	}
+> +
+> +	prop = (void *)probe->properties;
+> +	type = le16_to_cpu(prop->type) & VIRTIO_IOMMU_PROBE_T_MASK;
+> +
+> +	while (type != VIRTIO_IOMMU_PROBE_T_NONE &&
+> +	       cur < viommu->probe_size) {
+> +		len = le16_to_cpu(prop->length);
+> +
+> +		switch (type) {
+> +		case VIRTIO_IOMMU_PROBE_T_RESV_MEM:
+> +			ret = viommu_add_resv_mem(vdev, (void *)prop->value, len);
+> +			break;
+> +		default:
+> +			dev_dbg(dev, "unknown viommu prop 0x%x\n", type);
+> +		}
+> +
+> +		if (ret)
+> +			dev_err(dev, "failed to parse viommu prop 0x%x\n", type);
+> +
+> +		cur += sizeof(*prop) + len;
+> +		if (cur >= viommu->probe_size)
+> +			break;
+> +
+> +		prop = (void *)probe->properties + cur;
+> +		type = le16_to_cpu(prop->type) & VIRTIO_IOMMU_PROBE_T_MASK;
+> +	}
+> +
+> +	kfree(probe);
+> +
+> +	return 0;
+> +}
+> +
+>  /* IOMMU API */
+>  
+>  static bool viommu_capable(enum iommu_cap cap)
+> @@ -706,6 +812,7 @@ static struct viommu_dev *viommu_get_by_fwnode(struct fwnode_handle *fwnode)
+>  
+>  static int viommu_add_device(struct device *dev)
+>  {
+> +	int ret;
+>  	struct iommu_group *group;
+>  	struct viommu_endpoint *vdev;
+>  	struct viommu_dev *viommu = NULL;
+> @@ -723,8 +830,16 @@ static int viommu_add_device(struct device *dev)
+>  		return -ENOMEM;
+>  
+>  	vdev->viommu = viommu;
+> +	INIT_LIST_HEAD(&vdev->resv_regions);
+>  	fwspec->iommu_priv = vdev;
+>  
+> +	if (viommu->probe_size) {
+> +		/* Get additional information for this endpoint */
+> +		ret = viommu_probe_endpoint(viommu, dev);
+> +		if (ret)
+> +			return ret;
+> +	}
+> +
+>  	/*
+>  	 * Last step creates a default domain and attaches to it. Everything
+>  	 * must be ready.
+> @@ -738,7 +853,19 @@ static int viommu_add_device(struct device *dev)
+>  
+>  static void viommu_remove_device(struct device *dev)
+>  {
+> -	kfree(dev->iommu_fwspec->iommu_priv);
+> +	struct viommu_endpoint *vdev;
+> +	struct iommu_resv_region *entry, *next;
+> +	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
+> +
+> +	if (!fwspec || fwspec->ops != &viommu_ops)
+> +		return;
+> +
+> +	vdev = fwspec->iommu_priv;
+> +
+> +	list_for_each_entry_safe(entry, next, &vdev->resv_regions, list)
+> +		kfree(entry);
+> +
+> +	kfree(vdev);
+>  }
+>  
+>  static struct iommu_group *viommu_device_group(struct device *dev)
+> @@ -756,15 +883,34 @@ static int viommu_of_xlate(struct device *dev, struct of_phandle_args *args)
+>  
+>  static void viommu_get_resv_regions(struct device *dev, struct list_head *head)
+>  {
+> -	struct iommu_resv_region *region;
+> +	struct iommu_resv_region *entry, *new_entry, *msi = NULL;
+> +	struct viommu_endpoint *vdev = dev->iommu_fwspec->iommu_priv;
+>  	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
+>  
+> -	region = iommu_alloc_resv_region(MSI_IOVA_BASE, MSI_IOVA_LENGTH, prot,
+> -					 IOMMU_RESV_SW_MSI);
+> -	if (!region)
+> -		return;
+> +	list_for_each_entry(entry, &vdev->resv_regions, list) {
+> +		/*
+> +		 * If the device registered a bypass MSI windows, use it.
+> +		 * Otherwise add a software-mapped region
+> +		 */
+> +		if (entry->type == IOMMU_RESV_MSI)
+> +			msi = entry;
+> +
+> +		new_entry = kmemdup(entry, sizeof(*entry), GFP_KERNEL);
+> +		if (!new_entry)
+> +			return;
+> +		list_add_tail(&new_entry->list, head);
+> +	}
+>  
+> -	list_add_tail(&region->list, head);
+> +	if (!msi) {
+> +		msi = iommu_alloc_resv_region(MSI_IOVA_BASE, MSI_IOVA_LENGTH,
+> +					      prot, IOMMU_RESV_SW_MSI);
+> +		if (!msi)
+> +			return;
+> +
+> +		list_add_tail(&msi->list, head);
+> +	}
+> +
+> +	iommu_dma_get_resv_regions(dev, head);
+this change may belong to the 1st patch.
+>  }
+>  
+>  static void viommu_put_resv_regions(struct device *dev, struct list_head *head)
+> @@ -854,6 +1000,10 @@ static int viommu_probe(struct virtio_device *vdev)
+>  			     struct virtio_iommu_config, domain_bits,
+>  			     &viommu->domain_bits);
+>  
+> +	virtio_cread_feature(vdev, VIRTIO_IOMMU_F_PROBE,
+> +			     struct virtio_iommu_config, probe_size,
+> +			     &viommu->probe_size);
+> +
+>  	viommu->geometry = (struct iommu_domain_geometry) {
+>  		.aperture_start	= input_start,
+>  		.aperture_end	= input_end,
+> @@ -931,6 +1081,7 @@ static unsigned int features[] = {
+>  	VIRTIO_IOMMU_F_MAP_UNMAP,
+>  	VIRTIO_IOMMU_F_DOMAIN_BITS,
+>  	VIRTIO_IOMMU_F_INPUT_RANGE,
+> +	VIRTIO_IOMMU_F_PROBE,
+>  };
+>  
+>  static struct virtio_device_id id_table[] = {
+> diff --git a/include/uapi/linux/virtio_iommu.h b/include/uapi/linux/virtio_iommu.h
+> index 2b4cd2042897..eec90a2ab547 100644
+> --- a/include/uapi/linux/virtio_iommu.h
+> +++ b/include/uapi/linux/virtio_iommu.h
+> @@ -38,6 +38,7 @@
+>  #define VIRTIO_IOMMU_F_DOMAIN_BITS		1
+>  #define VIRTIO_IOMMU_F_MAP_UNMAP		2
+>  #define VIRTIO_IOMMU_F_BYPASS			3
+> +#define VIRTIO_IOMMU_F_PROBE			4
+>  
+>  struct virtio_iommu_config {
+>  	/* Supported page sizes */
+> @@ -49,6 +50,9 @@ struct virtio_iommu_config {
+>  	} input_range;
+>  	/* Max domain ID size */
+>  	__u8 					domain_bits;
+> +	__u8					padding[3];
+> +	/* Probe buffer size */
+> +	__u32					probe_size;
+>  } __packed;
+>  
+>  /* Request types */
+> @@ -56,6 +60,7 @@ struct virtio_iommu_config {
+>  #define VIRTIO_IOMMU_T_DETACH			0x02
+>  #define VIRTIO_IOMMU_T_MAP			0x03
+>  #define VIRTIO_IOMMU_T_UNMAP			0x04
+> +#define VIRTIO_IOMMU_T_PROBE			0x05
+>  
+>  /* Status types */
+>  #define VIRTIO_IOMMU_S_OK			0x00
+> @@ -128,6 +133,37 @@ struct virtio_iommu_req_unmap {
+>  	struct virtio_iommu_req_tail		tail;
+>  } __packed;
+>  
+> +#define VIRTIO_IOMMU_RESV_MEM_T_RESERVED	0
+> +#define VIRTIO_IOMMU_RESV_MEM_T_MSI		1
+> +
+> +struct virtio_iommu_probe_resv_mem {
+> +	__u8					subtype;
+> +	__u8					reserved[3];
+> +	__le64					addr;
+> +	__le64					size;
+> +} __packed;
+> +
+> +#define VIRTIO_IOMMU_PROBE_T_NONE		0
+> +#define VIRTIO_IOMMU_PROBE_T_RESV_MEM		1
+> +
+> +#define VIRTIO_IOMMU_PROBE_T_MASK		0xfff
+> +
+> +struct virtio_iommu_probe_property {
+> +	__le16					type;
+> +	__le16					length;
+> +	__u8					value[];
+> +} __packed;
+> +
+> +struct virtio_iommu_req_probe {
+> +	struct virtio_iommu_req_head		head;
+> +	__le32					endpoint;
+> +	__u8					reserved[64];
+> +
+> +	__u8					properties[];
+> +
+> +	/* Tail follows the variable-length properties array (no padding) */
+> +} __packed;
+> +
+>  union virtio_iommu_req {
+>  	struct virtio_iommu_req_head		head;
+>  
+> @@ -135,6 +171,7 @@ union virtio_iommu_req {
+>  	struct virtio_iommu_req_detach		detach;
+>  	struct virtio_iommu_req_map		map;
+>  	struct virtio_iommu_req_unmap		unmap;
+> +	struct virtio_iommu_req_probe		probe;
+>  };
+>  
+>  #endif
+> 
+Besides those minor comments, looks good to me.
 
-[...]
->> +/* Must be called with request_lock held */
->> +static int _viommu_send_reqs_sync(struct viommu_dev *viommu,
->> +				  struct viommu_request *req, int nr,
->> +				  int *nr_sent)
->> +{
->> +	int i, ret;
->> +	ktime_t timeout;
->> +	LIST_HEAD(pending);
->> +	int nr_received = 0;
->> +	struct scatterlist *sg[2];
->> +	/*
->> +	 * Yes, 1s timeout. As a guest, we don't necessarily have a precise
->> +	 * notion of time and this just prevents locking up a CPU if the device
->> +	 * dies.
->> +	 */
->> +	unsigned long timeout_ms = 1000;
->> +
->> +	*nr_sent = 0;
->> +
->> +	for (i = 0; i < nr; i++, req++) {
->> +		req->written = 0;
->> +
->> +		sg[0] = &req->top;
->> +		sg[1] = &req->bottom;
->> +
->> +		ret = virtqueue_add_sgs(viommu->vq, sg, 1, 1, req,
->> +					GFP_ATOMIC);
->> +		if (ret)
->> +			break;
->> +
->> +		list_add_tail(&req->list, &pending);
->> +	}
->> +
->> +	if (i && !virtqueue_kick(viommu->vq))
->> +		return -EPIPE;
->> +
->> +	timeout = ktime_add_ms(ktime_get(), timeout_ms * i);
-> I don't really understand how you choose your timeout value: 1s per sent
-> request.
+Thanks
 
-1s isn't a good timeout value, but I don't know what's good. In a
-prototype I have, even 1s isn't enough. The attach request (for nested
-mode) requires my device to pin down the whole guest memory, and the guest
-ends up timing out on the fastmodel because the request takes too long and
-the model timer runs too fast...
-
-I was tempted to simply remove this timeout, but I still think having a
-way out when the host device fails is preferable. Otherwise this
-completely locks up the CPU.
-
->> +	while (nr_received < i && ktime_before(ktime_get(), timeout)) {
->> +		nr_received += viommu_receive_resp(viommu, i - nr_received,
->> +						   &pending);
->> +		if (nr_received < i) {
->> +			/*
->> +			 * FIXME: what's a good way to yield to host? A second
->> +			 * virtqueue_kick won't have any effect since we haven't
->> +			 * added any descriptor.
->> +			 */
->> +			udelay(10);
-> could you explain why udelay gets used here?
-
-I was hoping this could switch to the host quicker than cpu_relax(),
-allowing it to handle the request faster (on ARM udelay could do WFE
-instead of YIELD). The value is completely arbitrary.
-
-Maybe I can replace this with cpu_relax for now. I'd like to refine this
-function anyway when working on performance improvements, but I'm not too
-hopeful we'll get something nicer here.
-
-[...]
->> +/*
->> + * viommu_send_req_sync - send one request and wait for reply
->> + *
->> + * @top: pointer to a virtio_iommu_req_* structure
->> + *
->> + * Returns 0 if the request was successful, or an error number otherwise. No
->> + * distinction is done between transport and request errors.
->> + */
->> +static int viommu_send_req_sync(struct viommu_dev *viommu, void *top)
->> +{
->> +	int ret;
->> +	int nr_sent;
->> +	void *bottom;
->> +	struct viommu_request req = {0};
->          ^
-> drivers/iommu/virtio-iommu.c:326:9: warning: (near initialization for
-> ‘req.top’) [-Wmissing-braces]
-
-Ok
-
-[...]
->> +/*
->> + * viommu_del_mappings - remove mappings from the internal tree
->> + *
->> + * @vdomain: the domain
->> + * @iova: start of the range
->> + * @size: size of the range. A size of 0 corresponds to the entire address
->> + *	space.
->> + * @out_mapping: if not NULL, the first removed mapping is returned in there.
->> + *	This allows the caller to reuse the buffer for the unmap request. Caller
->> + *	must always free the returned mapping, whether the function succeeds or
->> + *	not.
-> if unmapped > 0?
-
-Ok
-
->> + *
->> + * On success, returns the number of unmapped bytes (>= size)
->> + */
->> +static size_t viommu_del_mappings(struct viommu_domain *vdomain,
->> +				 unsigned long iova, size_t size,
->> +				 struct viommu_mapping **out_mapping)
->> +{
->> +	size_t unmapped = 0;
->> +	unsigned long flags;
->> +	unsigned long last = iova + size - 1;
->> +	struct viommu_mapping *mapping = NULL;
->> +	struct interval_tree_node *node, *next;
->> +
->> +	spin_lock_irqsave(&vdomain->mappings_lock, flags);
->> +	next = interval_tree_iter_first(&vdomain->mappings, iova, last);
->> +
->> +	if (next) {
->> +		mapping = container_of(next, struct viommu_mapping, iova);
->> +		/* Trying to split a mapping? */
->> +		if (WARN_ON(mapping->iova.start < iova))
->> +			next = NULL;
->> +	}
->> +
->> +	while (next) {
->> +		node = next;
->> +		mapping = container_of(node, struct viommu_mapping, iova);
->> +
->> +		next = interval_tree_iter_next(node, iova, last);
->> +
->> +		/*
->> +		 * Note that for a partial range, this will return the full
->> +		 * mapping so we avoid sending split requests to the device.
->> +		 */
->> +		unmapped += mapping->iova.last - mapping->iova.start + 1;
->> +
->> +		interval_tree_remove(node, &vdomain->mappings);
->> +
->> +		if (out_mapping && !(*out_mapping))
->> +			*out_mapping = mapping;
->> +		else
->> +			kfree(mapping);
->> +	}
->> +	spin_unlock_irqrestore(&vdomain->mappings_lock, flags);
->> +
->> +	return unmapped;
->> +}
->> +
->> +/*
->> + * viommu_replay_mappings - re-send MAP requests
->> + *
->> + * When reattaching a domain that was previously detached from all devices,
->> + * mappings were deleted from the device. Re-create the mappings available in
->> + * the internal tree.
->> + *
->> + * Caller should hold the mapping lock if necessary.
-> the only caller does not hold the lock. At this point we are attaching
-> our fisrt ep to the domain. I think it would be worth a comment in the
-> caller.
-
-Right
-
-[...]
->> +	/*
->> +	 * When attaching the device to a new domain, it will be detached from
->> +	 * the old one and, if as as a result the old domain isn't attached to
-> as as
->> +	 * any device, all mappings are removed from the old domain and it is
->> +	 * freed. (Note that we can't use get_domain_for_dev here, it returns
->> +	 * the default domain during initial attach.)
-> I don't see where the old domain is freed. I see you descrement the
-> endpoints ref count. Also if you replay the mapping, I guess the
-> mappings were not destroyed?
-
-That comment applies to the virtio-iommu domain - the virtio-iommu
-device needs to destroy the old domain when attaching to a new domain,
-to avoid any mapping leak. I'll change the comment to clarify this.
-
-In the kernel the domain lifetime differs from the virtio-iommu domain,
-the detached domain isn't freed until someone calls free_domain()
-explicitly:
-
-- Initially each device is attached to the default domain, used for
-  kernel DMA.
-- Then VFIO attaches the group to a new domain. The IOMMU core calls
-  attach_dev(). Default domain is detached and the VFIO domain is
-  attached.
-- When VFIO removes the device from its container, the IOMMU core
-  attaches the default domain again. The default domain may still have
-  mappings (SW_MSI for instance) but the device deleted them, so they
-  need to be replayed after the attach request.
-- VFIO issues iommu_domain_free when no group is attached to the VFIO
-  domain anymore.
-
->> +	 *
->> +	 * Take note of the device disappearing, so we can ignore unmap request
->> +	 * on stale domains (that is, between this detach and the upcoming
->> +	 * free.)
->> +	 *
->> +	 * vdev->vdomain is protected by group->mutex
->> +	 */
->> +	if (vdev->vdomain)
->> +		refcount_dec(&vdev->vdomain->endpoints);
->> +
->> +	/* DMA to the stack is forbidden, store request on the heap */
->> +	req = kzalloc(sizeof(*req), GFP_KERNEL);
->> +	if (!req)
->> +		return -ENOMEM;
->> +
->> +	*req = (struct virtio_iommu_req_attach) {
->> +		.head.type	= VIRTIO_IOMMU_T_ATTACH,
->> +		.domain		= cpu_to_le32(vdomain->id),
->> +	};
->> +
->> +	for (i = 0; i < fwspec->num_ids; i++) {
->> +		req->endpoint = cpu_to_le32(fwspec->ids[i]);
->> +
->> +		ret = viommu_send_req_sync(vdomain->viommu, req);
->> +		if (ret)
->> +			break;
->> +	}
->> +
->> +	kfree(req);
->> +
->> +	if (ret)
->> +		return ret;
->> +
->> +	if (!refcount_read(&vdomain->endpoints)) {
->> +		/*
->> +		 * This endpoint is the first to be attached to the domain.
->> +		 * Replay existing mappings if any.
->> +		 */
->> +		ret = viommu_replay_mappings(vdomain);
->> +		if (ret)
->> +			return ret;
->> +	}
->> +
->> +	refcount_inc(&vdomain->endpoints);
-> This does not work for me as the ref counter is initialized to 0 and
-> ref_count does not work if the counter is 0. It emits a WARN_ON and
-> stays at 0. I worked around the issue by explicitly setting
-> recount_set(&vdomain->endpoints, 1) if it was 0 and reffount_inc otherwise.
-
-Yes, I went back to a simple int instead of refcount
-
-[...]
->> +
->> +struct virtio_iommu_config {
->> +	/* Supported page sizes */
->> +	__u64					page_size_mask;
-> Get a warning
-> ./usr/include/linux/virtio_iommu.h:45: found __[us]{8,16,32,64} type
-> without #include <linux/types.h>
-
-Right, adding HEADERS_CHECK to my config :)
-
-Thanks a lot the review,
-Jean
-
+Eric
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
