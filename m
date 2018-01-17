@@ -1,122 +1,206 @@
-Return-Path: virtio-dev-return-2981-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2982-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 137D81CB807D
-	for <virtio-dev@lists.oasis-open.org>; Tue, 16 Jan 2018 22:50:18 -0800 (PST)
+	by lists.oasis-open.org (Postfix) with ESMTP id 2BAE31CB807D
+	for <virtio-dev@lists.oasis-open.org>; Tue, 16 Jan 2018 22:50:20 -0800 (PST)
 From: Wei Wang <wei.w.wang@intel.com>
-Date: Wed, 17 Jan 2018 14:31:58 +0800
-Message-Id: <1516170720-4948-3-git-send-email-wei.w.wang@intel.com>
+Date: Wed, 17 Jan 2018 14:31:59 +0800
+Message-Id: <1516170720-4948-4-git-send-email-wei.w.wang@intel.com>
 In-Reply-To: <1516170720-4948-1-git-send-email-wei.w.wang@intel.com>
 References: <1516170720-4948-1-git-send-email-wei.w.wang@intel.com>
-Subject: [virtio-dev] [PATCH v1 2/4] migration: call balloon to clear bits of free pages from dirty bitmap
+Subject: [virtio-dev] [PATCH v1 3/4] virtio-balloon: add a timer to limit the free page report wating time
 To: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, mst@redhat.com, quintela@redhat.com, dgilbert@redhat.com
 Cc: pbonzini@redhat.com, wei.w.wang@intel.com, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu0@gmail.com, nilal@redhat.com, riel@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-When migration starts, call the related balloon functions to clear the
-bits of guest free pages from the dirty bitmap. The dirty bitmap should
-be ready to use when sending pages to the destination, so stop the guest
-from reporting free pages before sending pages.
+This patch adds a timer to limit the time that the host waits for the
+free pages reported by the guest. Users can specify the time in ms via
+"free-page-wait-time" command line option. If a user doesn't specify a
+time, the host waits till the guest finishes reporting all the free
+pages. The policy (wait for all the free pages to be reported or use a
+time limit) is determined by the orchestration layer.
 
 Signed-off-by: Wei Wang <wei.w.wang@intel.com>
 CC: Michael S. Tsirkin <mst@redhat.com>
 ---
- migration/ram.c | 28 ++++++++++++++++++++++++----
- 1 file changed, 24 insertions(+), 4 deletions(-)
+ hw/virtio/virtio-balloon.c         | 85 +++++++++++++++++++++++++++++++++++++-
+ hw/virtio/virtio-pci.c             |  3 ++
+ include/hw/virtio/virtio-balloon.h |  4 ++
+ 3 files changed, 91 insertions(+), 1 deletion(-)
 
-diff --git a/migration/ram.c b/migration/ram.c
-index d6f462c..9b8d102 100644
---- a/migration/ram.c
-+++ b/migration/ram.c
-@@ -49,6 +49,7 @@
- #include "qemu/rcu_queue.h"
- #include "migration/colo.h"
- #include "migration/block.h"
-+#include "sysemu/balloon.h"
- 
- /***********************************************************/
- /* ram save/restore */
-@@ -206,6 +207,10 @@ struct RAMState {
-     uint32_t last_version;
-     /* We are in the first round */
-     bool ram_bulk_stage;
-+    /* The feature, skipping the transfer of free pages, is supported */
-+    bool free_page_support;
-+    /* Skip the transfer of free pages in the bulk stage */
-+    bool free_page_done;
-     /* How many times we have dirty too many pages */
-     int dirty_rate_high_cnt;
-     /* these variables are used for bitmap sync */
-@@ -773,7 +778,7 @@ unsigned long migration_bitmap_find_dirty(RAMState *rs, RAMBlock *rb,
-     unsigned long *bitmap = rb->bmap;
-     unsigned long next;
- 
--    if (rs->ram_bulk_stage && start > 0) {
-+    if (rs->ram_bulk_stage && start > 0 && !rs->free_page_support) {
-         next = start + 1;
-     } else {
-         next = find_next_bit(bitmap, size, start);
-@@ -1653,6 +1658,8 @@ static void ram_state_reset(RAMState *rs)
-     rs->last_page = 0;
-     rs->last_version = ram_list.version;
-     rs->ram_bulk_stage = true;
-+    rs->free_page_support = balloon_free_page_support();
-+    rs->free_page_done = false;
+diff --git a/hw/virtio/virtio-balloon.c b/hw/virtio/virtio-balloon.c
+index a2a5536..dcc8cb3 100644
+--- a/hw/virtio/virtio-balloon.c
++++ b/hw/virtio/virtio-balloon.c
+@@ -213,6 +213,66 @@ static void balloon_stats_set_poll_interval(Object *obj, Visitor *v,
+     balloon_stats_change_timer(s, 0);
  }
  
- #define MAX_WAIT 50 /* ms, half buffered_file limit */
-@@ -2135,7 +2142,7 @@ static int ram_state_init(RAMState **rsp)
-     return 0;
- }
- 
--static void ram_list_init_bitmaps(void)
-+static void ram_list_init_bitmaps(RAMState *rs)
- {
-     RAMBlock *block;
-     unsigned long pages;
-@@ -2145,7 +2152,11 @@ static void ram_list_init_bitmaps(void)
-         QLIST_FOREACH_RCU(block, &ram_list.blocks, next) {
-             pages = block->max_length >> TARGET_PAGE_BITS;
-             block->bmap = bitmap_new(pages);
--            bitmap_set(block->bmap, 0, pages);
-+            if (rs->free_page_support) {
-+                bitmap_set(block->bmap, 1, pages);
-+            } else {
-+                bitmap_set(block->bmap, 0, pages);
-+            }
-             if (migrate_postcopy_ram()) {
-                 block->unsentmap = bitmap_new(pages);
-                 bitmap_set(block->unsentmap, 0, pages);
-@@ -2161,8 +2172,11 @@ static void ram_init_bitmaps(RAMState *rs)
-     qemu_mutex_lock_ramlist();
-     rcu_read_lock();
- 
--    ram_list_init_bitmaps();
-+    ram_list_init_bitmaps(rs);
-     memory_global_dirty_log_start();
-+    if (rs->free_page_support) {
-+        balloon_free_page_start();
++static void balloon_free_page_change_timer(VirtIOBalloon *s, int64_t ms)
++{
++    timer_mod(s->free_page_timer,
++              qemu_clock_get_ms(QEMU_CLOCK_REALTIME) + ms);
++}
++
++static void balloon_stop_free_page_report(void *opaque)
++{
++    VirtIOBalloon *dev = opaque;
++    VirtIODevice *vdev = VIRTIO_DEVICE(dev);
++
++    timer_del(dev->free_page_timer);
++    timer_free(dev->free_page_timer);
++    dev->free_page_timer = NULL;
++
++    if (atomic_read(&dev->free_page_report_status) ==
++        FREE_PAGE_REPORT_S_IN_PROGRESS) {
++        dev->host_stop_free_page = true;
++        virtio_notify_config(vdev);
 +    }
-     migration_bitmap_sync(rs);
- 
-     rcu_read_unlock();
-@@ -2275,6 +2289,12 @@ static int ram_save_iterate(QEMUFile *f, void *opaque)
- 
-     ram_control_before_iterate(f, RAM_CONTROL_ROUND);
- 
-+    /* Before sending the pages, stop the guest from reporting free pages. */
-+    if (rs->free_page_support && !rs->free_page_done) {
-+        balloon_free_page_stop();
-+        rs->free_page_done = true;
++}
++
++static void balloon_free_page_get_wait_time(Object *obj, Visitor *v,
++                                            const char *name, void *opaque,
++                                            Error **errp)
++{
++    VirtIOBalloon *s = opaque;
++
++    visit_type_int(v, name, &s->free_page_wait_time, errp);
++}
++
++static void balloon_free_page_set_wait_time(Object *obj, Visitor *v,
++                                            const char *name, void *opaque,
++                                            Error **errp)
++{
++    VirtIOBalloon *s = opaque;
++    Error *local_err = NULL;
++    int64_t value;
++
++    visit_type_int(v, name, &value, &local_err);
++    if (local_err) {
++        error_propagate(errp, local_err);
++        return;
++    }
++    if (value < 0) {
++        error_setg(errp, "free page wait time must be greater than zero");
++        return;
 +    }
 +
-     t0 = qemu_clock_get_ns(QEMU_CLOCK_REALTIME);
-     i = 0;
-     while ((ret = qemu_file_rate_limit(f)) == 0) {
++    if (value > UINT32_MAX) {
++        error_setg(errp, "free page wait time value is too big");
++        return;
++    }
++
++    s->free_page_wait_time = value;
++    g_assert(s->free_page_timer == NULL);
++    s->free_page_timer = timer_new_ms(QEMU_CLOCK_REALTIME,
++                                      balloon_stop_free_page_report, s);
++}
++
+ static void virtio_balloon_handle_output(VirtIODevice *vdev, VirtQueue *vq)
+ {
+     VirtIOBalloon *s = VIRTIO_BALLOON(vdev);
+@@ -332,6 +392,7 @@ static void virtio_balloon_handle_free_pages(VirtIODevice *vdev, VirtQueue *vq)
+                 atomic_set(&dev->free_page_report_status,
+                            FREE_PAGE_REPORT_S_IN_PROGRESS);
+             } else {
++                dev->host_stop_free_page = false;
+                 atomic_set(&dev->free_page_report_status,
+                            FREE_PAGE_REPORT_S_STOP);
+             }
+@@ -386,6 +447,10 @@ static void virtio_balloon_free_page_stop(void *opaque)
+         return;
+     }
+ 
++    if (dev->free_page_wait_time) {
++        balloon_free_page_change_timer(dev, dev->free_page_wait_time);
++    }
++
+     /* Wait till a stop sign is received from the guest */
+     while (atomic_read(&dev->free_page_report_status) !=
+            FREE_PAGE_REPORT_S_STOP)
+@@ -399,7 +464,19 @@ static void virtio_balloon_get_config(VirtIODevice *vdev, uint8_t *config_data)
+ 
+     config.num_pages = cpu_to_le32(dev->num_pages);
+     config.actual = cpu_to_le32(dev->actual);
+-    config.free_page_report_cmd_id = cpu_to_le32(dev->free_page_report_cmd_id);
++    if (dev->host_stop_free_page) {
++        /*
++         * Host is actively requesting to stop the free page report, send the
++         * stop sign to the guest. This happens when the migration thread has
++         * reached the phase to send pages to the destination while the guest
++         * hasn't done the reporting.
++         */
++        config.free_page_report_cmd_id =
++                                    VIRTIO_BALLOON_FREE_PAGE_REPORT_STOP_ID;
++    } else {
++        config.free_page_report_cmd_id =
++                                    cpu_to_le32(dev->free_page_report_cmd_id);
++    }
+ 
+     trace_virtio_balloon_get_config(config.num_pages, config.actual);
+     memcpy(config_data, &config, sizeof(struct virtio_balloon_config));
+@@ -526,6 +603,7 @@ static void virtio_balloon_device_realize(DeviceState *dev, Error **errp)
+         s->free_page_vq = virtio_add_queue(vdev, 128,
+                                            virtio_balloon_handle_free_pages);
+         atomic_set(&s->free_page_report_status, FREE_PAGE_REPORT_S_STOP);
++        s->host_stop_free_page = false;
+     }
+     reset_stats(s);
+ }
+@@ -597,6 +675,11 @@ static void virtio_balloon_instance_init(Object *obj)
+                         balloon_stats_get_poll_interval,
+                         balloon_stats_set_poll_interval,
+                         NULL, s, NULL);
++
++    object_property_add(obj, "free-page-wait-time", "int",
++                        balloon_free_page_get_wait_time,
++                        balloon_free_page_set_wait_time,
++                        NULL, s, NULL);
+ }
+ 
+ static const VMStateDescription vmstate_virtio_balloon = {
+diff --git a/hw/virtio/virtio-pci.c b/hw/virtio/virtio-pci.c
+index 6c75cca..3345104 100644
+--- a/hw/virtio/virtio-pci.c
++++ b/hw/virtio/virtio-pci.c
+@@ -2250,6 +2250,9 @@ static void virtio_balloon_pci_instance_init(Object *obj)
+     object_property_add_alias(obj, "guest-stats-polling-interval",
+                               OBJECT(&dev->vdev),
+                               "guest-stats-polling-interval", &error_abort);
++    object_property_add_alias(obj, "free-page-wait-time",
++                              OBJECT(&dev->vdev),
++                              "free-page-wait-time", &error_abort);
+ }
+ 
+ static const TypeInfo virtio_balloon_pci_info = {
+diff --git a/include/hw/virtio/virtio-balloon.h b/include/hw/virtio/virtio-balloon.h
+index b84b4af..268f7d6 100644
+--- a/include/hw/virtio/virtio-balloon.h
++++ b/include/hw/virtio/virtio-balloon.h
+@@ -37,6 +37,8 @@ typedef struct virtio_balloon_stat_modern {
+ typedef struct VirtIOBalloon {
+     VirtIODevice parent_obj;
+     VirtQueue *ivq, *dvq, *svq, *free_page_vq;
++    /* The host is requesting the guest to stop free page reporting */
++    bool host_stop_free_page;
+     uint32_t free_page_report_status;
+     uint32_t num_pages;
+     uint32_t actual;
+@@ -45,8 +47,10 @@ typedef struct VirtIOBalloon {
+     VirtQueueElement *stats_vq_elem;
+     size_t stats_vq_offset;
+     QEMUTimer *stats_timer;
++    QEMUTimer *free_page_timer;
+     int64_t stats_last_update;
+     int64_t stats_poll_interval;
++    int64_t free_page_wait_time;
+     uint32_t host_features;
+ } VirtIOBalloon;
+ 
 -- 
 1.8.3.1
 
