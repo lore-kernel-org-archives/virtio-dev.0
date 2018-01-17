@@ -1,102 +1,124 @@
-Return-Path: virtio-dev-return-2997-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2981-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id C75F95819169
-	for <virtio-dev@lists.oasis-open.org>; Thu, 18 Jan 2018 19:50:32 -0800 (PST)
-Message-ID: <5A616B91.1020508@intel.com>
-Date: Fri, 19 Jan 2018 11:52:49 +0800
+	by lists.oasis-open.org (Postfix) with ESMTP id 137D81CB807D
+	for <virtio-dev@lists.oasis-open.org>; Tue, 16 Jan 2018 22:50:18 -0800 (PST)
 From: Wei Wang <wei.w.wang@intel.com>
-MIME-Version: 1.0
-References: <1516170720-4948-1-git-send-email-wei.w.wang@intel.com>	<1516170720-4948-2-git-send-email-wei.w.wang@intel.com> <871sio4qg2.fsf@secure.laptop>
-In-Reply-To: <871sio4qg2.fsf@secure.laptop>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: [virtio-dev] Re: [PATCH v1 1/4] virtio-balloon: VIRTIO_BALLOON_F_FREE_PAGE_VQ
-To: quintela@redhat.com
-Cc: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, mst@redhat.com, dgilbert@redhat.com, pbonzini@redhat.com, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu0@gmail.com, nilal@redhat.com, riel@redhat.com
+Date: Wed, 17 Jan 2018 14:31:58 +0800
+Message-Id: <1516170720-4948-3-git-send-email-wei.w.wang@intel.com>
+In-Reply-To: <1516170720-4948-1-git-send-email-wei.w.wang@intel.com>
+References: <1516170720-4948-1-git-send-email-wei.w.wang@intel.com>
+Subject: [virtio-dev] [PATCH v1 2/4] migration: call balloon to clear bits of free pages from dirty bitmap
+To: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, mst@redhat.com, quintela@redhat.com, dgilbert@redhat.com
+Cc: pbonzini@redhat.com, wei.w.wang@intel.com, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu0@gmail.com, nilal@redhat.com, riel@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 01/17/2018 08:31 PM, Juan Quintela wrote:
-> Wei Wang <wei.w.wang@intel.com> wrote:
->> The new feature enables the virtio-balloon device to receive the hint of
->> guest free pages from the free page vq, and clears the corresponding bits
->> of the free page from the dirty bitmap, so that those free pages are not
->> transferred by the migration thread.
->>
->> Without this feature, to local live migrate an 8G idle guest takes
->> ~2286 ms. With this featrue, it takes ~260 ms, which redues the
->> migration time to ~11%.
->>
->> Signed-off-by: Wei Wang <wei.w.wang@intel.com>
->> Signed-off-by: Liang Li <liang.z.li@intel.com>
->> CC: Michael S. Tsirkin <mst@redhat.com>
-> I hate to answer twice,but ...
+When migration starts, call the related balloon functions to clear the
+bits of guest free pages from the dirty bitmap. The dirty bitmap should
+be ready to use when sending pages to the destination, so stop the guest
+from reporting free pages before sending pages.
 
-Thanks for the second review :)
+Signed-off-by: Wei Wang <wei.w.wang@intel.com>
+CC: Michael S. Tsirkin <mst@redhat.com>
+---
+ migration/ram.c | 28 ++++++++++++++++++++++++----
+ 1 file changed, 24 insertions(+), 4 deletions(-)
 
->
->
->> +static bool virtio_balloon_free_page_support(void *opaque)
->> +{
->> +    VirtIOBalloon *s = opaque;
->> +
->> +    if (!balloon_free_page_supported(s)) {
->> +        return false;
->> +    }
->> +
->> +    return true;
-> return balloon_free_page_supported(s); ???
-
-Forgot to clean this up. It is actually a duplicate of 
-balloon_free_page_supported() now, I'll remove one of them in the next 
-version.
-
->
->
->> @@ -312,6 +399,7 @@ static void virtio_balloon_get_config(VirtIODevice *vdev, uint8_t *config_data)
->>   
->>       config.num_pages = cpu_to_le32(dev->num_pages);
->>       config.actual = cpu_to_le32(dev->actual);
->> +    config.free_page_report_cmd_id = cpu_to_le32(dev->free_page_report_cmd_id);
->>   
->>       trace_virtio_balloon_get_config(config.num_pages, config.actual);
->>       memcpy(config_data, &config, sizeof(struct virtio_balloon_config));
->> @@ -418,6 +506,7 @@ static const VMStateDescription vmstate_virtio_balloon_device = {
->>       .fields = (VMStateField[]) {
->>           VMSTATE_UINT32(num_pages, VirtIOBalloon),
->>           VMSTATE_UINT32(actual, VirtIOBalloon),
->> +        VMSTATE_UINT32(free_page_report_cmd_id, VirtIOBalloon),
->>           VMSTATE_END_OF_LIST()
-> No new version, no subsection, and we add a new field?
-> I think that is wrong.  We need to send that only for old versions.
-> Look at how was handled for ....
->
-> [PATCH v2] hpet: recover timer offset correctly
->
-> v2 discussion explains why we want to handle that way for different
-> machine types.
->
-> v3 does it correctly.
-
-OK, I'll put it to a subsection.
-
->
->
-> And I think that with this I have reviewed all the migration/vmstate
-> bits, no?
->
-> If something is missing, please ask.
-
-Thanks. This is the only new device state that need to be saved. Please 
-have a review of patch 2 as well, which makes the migration thread use 
-this feature.
-
-Best,
-Wei
+diff --git a/migration/ram.c b/migration/ram.c
+index d6f462c..9b8d102 100644
+--- a/migration/ram.c
++++ b/migration/ram.c
+@@ -49,6 +49,7 @@
+ #include "qemu/rcu_queue.h"
+ #include "migration/colo.h"
+ #include "migration/block.h"
++#include "sysemu/balloon.h"
+ 
+ /***********************************************************/
+ /* ram save/restore */
+@@ -206,6 +207,10 @@ struct RAMState {
+     uint32_t last_version;
+     /* We are in the first round */
+     bool ram_bulk_stage;
++    /* The feature, skipping the transfer of free pages, is supported */
++    bool free_page_support;
++    /* Skip the transfer of free pages in the bulk stage */
++    bool free_page_done;
+     /* How many times we have dirty too many pages */
+     int dirty_rate_high_cnt;
+     /* these variables are used for bitmap sync */
+@@ -773,7 +778,7 @@ unsigned long migration_bitmap_find_dirty(RAMState *rs, RAMBlock *rb,
+     unsigned long *bitmap = rb->bmap;
+     unsigned long next;
+ 
+-    if (rs->ram_bulk_stage && start > 0) {
++    if (rs->ram_bulk_stage && start > 0 && !rs->free_page_support) {
+         next = start + 1;
+     } else {
+         next = find_next_bit(bitmap, size, start);
+@@ -1653,6 +1658,8 @@ static void ram_state_reset(RAMState *rs)
+     rs->last_page = 0;
+     rs->last_version = ram_list.version;
+     rs->ram_bulk_stage = true;
++    rs->free_page_support = balloon_free_page_support();
++    rs->free_page_done = false;
+ }
+ 
+ #define MAX_WAIT 50 /* ms, half buffered_file limit */
+@@ -2135,7 +2142,7 @@ static int ram_state_init(RAMState **rsp)
+     return 0;
+ }
+ 
+-static void ram_list_init_bitmaps(void)
++static void ram_list_init_bitmaps(RAMState *rs)
+ {
+     RAMBlock *block;
+     unsigned long pages;
+@@ -2145,7 +2152,11 @@ static void ram_list_init_bitmaps(void)
+         QLIST_FOREACH_RCU(block, &ram_list.blocks, next) {
+             pages = block->max_length >> TARGET_PAGE_BITS;
+             block->bmap = bitmap_new(pages);
+-            bitmap_set(block->bmap, 0, pages);
++            if (rs->free_page_support) {
++                bitmap_set(block->bmap, 1, pages);
++            } else {
++                bitmap_set(block->bmap, 0, pages);
++            }
+             if (migrate_postcopy_ram()) {
+                 block->unsentmap = bitmap_new(pages);
+                 bitmap_set(block->unsentmap, 0, pages);
+@@ -2161,8 +2172,11 @@ static void ram_init_bitmaps(RAMState *rs)
+     qemu_mutex_lock_ramlist();
+     rcu_read_lock();
+ 
+-    ram_list_init_bitmaps();
++    ram_list_init_bitmaps(rs);
+     memory_global_dirty_log_start();
++    if (rs->free_page_support) {
++        balloon_free_page_start();
++    }
+     migration_bitmap_sync(rs);
+ 
+     rcu_read_unlock();
+@@ -2275,6 +2289,12 @@ static int ram_save_iterate(QEMUFile *f, void *opaque)
+ 
+     ram_control_before_iterate(f, RAM_CONTROL_ROUND);
+ 
++    /* Before sending the pages, stop the guest from reporting free pages. */
++    if (rs->free_page_support && !rs->free_page_done) {
++        balloon_free_page_stop();
++        rs->free_page_done = true;
++    }
++
+     t0 = qemu_clock_get_ns(QEMU_CLOCK_REALTIME);
+     i = 0;
+     while ((ret = qemu_file_rate_limit(f)) == 0) {
+-- 
+1.8.3.1
 
 
 ---------------------------------------------------------------------
