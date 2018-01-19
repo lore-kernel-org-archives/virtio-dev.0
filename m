@@ -1,113 +1,254 @@
-Return-Path: virtio-dev-return-2994-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-2996-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 04C735818F92
-	for <virtio-dev@lists.oasis-open.org>; Thu, 18 Jan 2018 14:32:56 -0800 (PST)
-Date: Fri, 19 Jan 2018 00:32:38 +0200
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20180119003101-mutt-send-email-mst@kernel.org>
-References: <1516165812-3995-1-git-send-email-wei.w.wang@intel.com>
- <1516165812-3995-3-git-send-email-wei.w.wang@intel.com>
- <20180117180337-mutt-send-email-mst@kernel.org>
- <2bb0e3d9-1679-9ad3-b402-f0781f6cf094@I-love.SAKURA.ne.jp>
- <20180118210239-mutt-send-email-mst@kernel.org>
- <201801190611.HGI18722.FVtOMQLSHFFOOJ@I-love.SAKURA.ne.jp>
+	by lists.oasis-open.org (Postfix) with ESMTP id 9E2DC58190DE
+	for <virtio-dev@lists.oasis-open.org>; Thu, 18 Jan 2018 19:42:05 -0800 (PST)
+Message-ID: <5A616995.4050702@intel.com>
+Date: Fri, 19 Jan 2018 11:44:21 +0800
+From: Wei Wang <wei.w.wang@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <201801190611.HGI18722.FVtOMQLSHFFOOJ@I-love.SAKURA.ne.jp>
+References: <1516165812-3995-1-git-send-email-wei.w.wang@intel.com> <1516165812-3995-3-git-send-email-wei.w.wang@intel.com> <20180117180337-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20180117180337-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
 Subject: [virtio-dev] Re: [PATCH v22 2/3] virtio-balloon: VIRTIO_BALLOON_F_FREE_PAGE_VQ
-To: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-Cc: wei.w.wang@intel.com, virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, linux-mm@kvack.org, mhocko@kernel.org, akpm@linux-foundation.org, pbonzini@redhat.com, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu0@gmail.com, nilal@redhat.com, riel@redhat.com
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, linux-mm@kvack.org, mhocko@kernel.org, akpm@linux-foundation.org, pbonzini@redhat.com, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu0@gmail.com, nilal@redhat.com, riel@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Fri, Jan 19, 2018 at 06:11:31AM +0900, Tetsuo Handa wrote:
-> Michael S. Tsirkin wrote:
-> > On Thu, Jan 18, 2018 at 10:30:18PM +0900, Tetsuo Handa wrote:
-> > > On 2018/01/18 1:44, Michael S. Tsirkin wrote:
-> > > >> +static void add_one_sg(struct virtqueue *vq, unsigned long pfn, uint32_t len)
-> > > >> +{
-> > > >> +	struct scatterlist sg;
-> > > >> +	unsigned int unused;
-> > > >> +	int err;
-> > > >> +
-> > > >> +	sg_init_table(&sg, 1);
-> > > >> +	sg_set_page(&sg, pfn_to_page(pfn), len, 0);
-> > > >> +
-> > > >> +	/* Detach all the used buffers from the vq */
-> > > >> +	while (virtqueue_get_buf(vq, &unused))
-> > > >> +		;
-> > > >> +
-> > > >> +	/*
-> > > >> +	 * Since this is an optimization feature, losing a couple of free
-> > > >> +	 * pages to report isn't important.
-> > > >> We simply resturn
-> > > > 
-> > > > return
-> > > > 
-> > > >> without adding
-> > > >> +	 * the page if the vq is full. We are adding one entry each time,
-> > > >> +	 * which essentially results in no memory allocation, so the
-> > > >> +	 * GFP_KERNEL flag below can be ignored.
-> > > >> +	 */
-> > > >> +	if (vq->num_free) {
-> > > >> +		err = virtqueue_add_inbuf(vq, &sg, 1, vq, GFP_KERNEL);
-> > > > 
-> > > > Should we kick here? At least when ring is close to
-> > > > being full. Kick at half way full?
-> > > > Otherwise it's unlikely ring will
-> > > > ever be cleaned until we finish the scan.
-> > > 
-> > > Since this add_one_sg() is called between spin_lock_irqsave(&zone->lock, flags)
-> > > and spin_unlock_irqrestore(&zone->lock, flags), it is not permitted to sleep.
-> > 
-> > kick takes a while sometimes but it doesn't sleep.
-> 
-> I don't know about virtio. But the purpose of kicking here is to wait for pending data
-> to be flushed in order to increase vq->num_free, isn't it?
+On 01/18/2018 12:44 AM, Michael S. Tsirkin wrote:
+> On Wed, Jan 17, 2018 at 01:10:11PM +0800, Wei Wang wrote:
+>
 
-It isn't. It's to wake up device out of sleep to make it start
-processing the pending data. If device isn't asleep, it's a nop.
+>
+>> +{
+>> +	struct scatterlist sg;
+>> +	unsigned int unused;
+>> +	int err;
+>> +
+>> +	sg_init_one(&sg, addr, sizeof(uint32_t));
+> This passes a guest-endian value to host. This is a problem:
+> should always pass LE values.
 
-> Then, doesn't waiting for
-> pending data to be flushed involve sleeping? If yes, we can wait for completion of kick
-> but we can't wait for completion of flush. Is pending data flushed without sleep?
-> 
-> > 
-> > > And walk_free_mem_block() is not ready to handle resume.
-> > > 
-> > > By the way, specifying GFP_KERNEL here is confusing even though it is never used.
-> > > walk_free_mem_block() says:
-> > > 
-> > >   * The callback itself must not sleep or perform any operations which would
-> > >   * require any memory allocations directly (not even GFP_NOWAIT/GFP_ATOMIC)
-> > >   * or via any lock dependency. 
-> > 
-> > Yea, GFP_ATOMIC would do just as well. But I think any allocation
-> > on this path would be problematic.
-> > 
-> > How about a flag to make all allocations fail?
-> > 
-> > E.g. 
-> > 
-> > #define GFP_FORBIDDEN (___GFP_DMA | ___GFP_HIGHMEM)
-> > 
-> > Still this is not a blocker, we can worry about this later.
-> > 
-> > 
-> > > > 
-> > > >> +		/*
-> > > >> +		 * This is expected to never fail, because there is always an
-> > > >> +		 * entry available on the vq.
-> > > >> +		 */
-> > > >> +		BUG_ON(err);
-> > > >> +	}
-> > > >> +}
-> > 
+I think the endianness is handled when virtqueue_add_outbuf():
+
+desc[i].addr = cpu_to_virtio64(_vq->vdev, addr);
+
+right?
+
+>
+>> +
+>> +	/*
+>> +	 * This handles the cornercase that the vq happens to be full when
+>> +	 * adding a cmd id. Rarely happen in practice.
+>> +	 */
+>> +	while (!vq->num_free)
+>> +		virtqueue_get_buf(vq, &unused);
+> I dislike this busy-waiting. It's a hint after all -
+> why not just retry later - hopefully after getting an
+> interrupt?
+>
+> Alternatively, stop adding more entries when we have a single
+> ring entry left, making sure we have space for the command.
+
+I think the second one looks good. Thanks.
+
+>> +			queue_work(system_freezable_wq,
+>> +				   &vb->update_balloon_size_work);
+>> +		spin_unlock_irqrestore(&vb->stop_update_lock, flags);
+>> +	}
+>> +
+>> +	virtio_cread(vb->vdev, struct virtio_balloon_config,
+>> +		     free_page_report_cmd_id, &cmd_id);
+> You want virtio_cread_feature, don't access the new field
+> if the feature has not been negotiated.
+
+Right. We probably need to put all the following cmd id related things 
+under the feature check,
+
+How about
+
+if (virtio_has_feature(vb->vdev, VIRTIO_BALLOON_F_FREE_PAGE_VQ)) {
+     virtio_cread(..);
+     if (cmd_id == VIRTIO_BALLOON_FREE_PAGE_REPORT_STOP_ID) {
+     ....
+}
+
+
+>
+>
+>> +	if (cmd_id == VIRTIO_BALLOON_FREE_PAGE_REPORT_STOP_ID) {
+>> +		WRITE_ONCE(vb->report_free_page, false);
+>> +	} else if (cmd_id != vb->start_cmd_id) {
+>> +		/*
+>> +		 * Host requests to start the reporting by sending a new cmd
+>> +		 * id.
+>> +		 */
+>> +		WRITE_ONCE(vb->report_free_page, true);
+> I don't know why we bother with WRITE_ONCE here.  The point of
+> report_free_page being used lockless is that that it's not a big deal if
+> it's wrong occasionally, right?
+
+Actually the main reason is that "vb->report_free_page" is a value 
+shared by two threads:
+Written by the config_change here, and read by the worker thread that 
+reports the free pages.
+
+Alternatively, we could let the two sides access to the shared variable 
+with "volatile" pointers.
+
+
+>
+>
+>
+>> +		vb->start_cmd_id = cmd_id;
+>> +		queue_work(vb->balloon_wq, &vb->report_free_page_work);
+> It seems that if a command was already queued (with a different id),
+> this will result in new command id being sent to host twice, which will
+> likely confuse the host.
+
+I think that case won't happen, because
+- the host sends a cmd id to the guest via the config, while the guest 
+acks back the received cmd id via the virtqueue;
+- the guest ack back a cmd id only when a new cmd id is received from 
+the host, that is the above check:
+
+     if (cmd_id != vb->start_cmd_id) { --> the driver only queues the 
+reporting work only when a new cmd id is received
+                         /*
+                          * Host requests to start the reporting by 
+sending a
+                          * new cmd id.
+                          */
+                         WRITE_ONCE(vb->report_free_page, true);
+                         vb->start_cmd_id = cmd_id;
+                         queue_work(vb->balloon_wq, 
+&vb->report_free_page_work);
+     }
+
+So the same cmd id wouldn't queue the reporting work twice.
+
+
+>
+>
+>
+>> +	}
+>> +}
+>> +
+>>   static void update_balloon_size(struct virtio_balloon *vb)
+>>   {
+>>   	u32 actual = vb->num_pages;
+>> @@ -417,40 +513,113 @@ static void update_balloon_size_func(struct work_struct *work)
+>>   
+>>   static int init_vqs(struct virtio_balloon *vb)
+>>   {
+>> -	struct virtqueue *vqs[3];
+>> -	vq_callback_t *callbacks[] = { balloon_ack, balloon_ack, stats_request };
+>> -	static const char * const names[] = { "inflate", "deflate", "stats" };
+>> -	int err, nvqs;
+>> +	struct virtqueue **vqs;
+>> +	vq_callback_t **callbacks;
+>> +	const char **names;
+>> +	struct scatterlist sg;
+>> +	int i, nvqs, err = -ENOMEM;
+>> +
+>> +	/* Inflateq and deflateq are used unconditionally */
+>> +	nvqs = 2;
+>> +	if (virtio_has_feature(vb->vdev, VIRTIO_BALLOON_F_STATS_VQ))
+>> +		nvqs++;
+>> +	if (virtio_has_feature(vb->vdev, VIRTIO_BALLOON_F_FREE_PAGE_VQ))
+>> +		nvqs++;
+>> +
+>> +	/* Allocate space for find_vqs parameters */
+>> +	vqs = kcalloc(nvqs, sizeof(*vqs), GFP_KERNEL);
+>> +	if (!vqs)
+>> +		goto err_vq;
+>> +	callbacks = kmalloc_array(nvqs, sizeof(*callbacks), GFP_KERNEL);
+>> +	if (!callbacks)
+>> +		goto err_callback;
+>> +	names = kmalloc_array(nvqs, sizeof(*names), GFP_KERNEL);
+>> +	if (!names)
+>> +		goto err_names;
+> Why not just keep these 3 arrays on stack? they aren't large.
+
+Sounds good. Here is the new implementation:
+
+static int init_vqs(struct virtio_balloon *vb)
+{
+         struct virtqueue *vqs[4];
+         vq_callback_t *callbacks[4];
+         const char *names[4];
+         struct scatterlist sg;
+         int ret;
+
+
+         /*
+          * Inflateq and deflateq are used unconditionally. stats_vq and
+          * free_page_vq uses names[2] and names[3], respectively. The 
+names[]
+          * will be NULL if the related feature is not enabled, which will
+          * cause no allocation for the corresponding virtqueue in find_vqs.
+          */
+         callbacks[0] = balloon_ack;
+         names[0] = "inflate";
+         callbacks[1] = balloon_ack;
+         names[1] = "deflate";
+         names[2] = NULL;
+         names[3] = NULL;
+
+         if (virtio_has_feature(vb->vdev, VIRTIO_BALLOON_F_STATS_VQ)) {
+                 names[2] = "stats";
+                 callbacks[2] = stats_request;
+         }
+         if (virtio_has_feature(vb->vdev, VIRTIO_BALLOON_F_FREE_PAGE_VQ)) {
+                 names[3] = "free_page_vq";
+                 callbacks[3] = NULL;
+         }
+
+         ret = vb->vdev->config->find_vqs(vb->vdev, 4, vqs, callbacks, 
+names,
+                                          NULL, NULL);
+         if (ret)
+                 return ret;
+
+         vb->inflate_vq = vqs[0];
+         vb->deflate_vq = vqs[1];
+
+         if (virtio_has_feature(vb->vdev, VIRTIO_BALLOON_F_STATS_VQ)) {
+                 vb->stats_vq = vqs[2];
+                 /*
+                  * Prime this virtqueue with one buffer so the 
+hypervisor can
+                  * use it to signal us later (it can't be broken yet!).
+                  */
+                 sg_init_one(&sg, vb->stats, sizeof(vb->stats));
+                 ret = virtqueue_add_outbuf(vb->stats_vq, &sg, 1, vb,
+                                            GFP_KERNEL);
+                 if (ret) {
+                         dev_warn(&vb->vdev->dev, "%s: add stat_vq 
+failed\n",
+                                  __func__);
+                         return ret;
+                 }
+                 virtqueue_kick(vb->stats_vq);
+         }
+
+         if (virtio_has_feature(vb->vdev, VIRTIO_BALLOON_F_FREE_PAGE_VQ))
+                 vb->free_page_vq = vqs[3];
+
+         return 0;
+}
+
+
+Btw, the QEMU side doesn't have an option to disable STATS_VQ currently, 
+we may need to add that later.
+
+Best,
+Wei
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
