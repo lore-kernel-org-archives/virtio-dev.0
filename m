@@ -1,75 +1,92 @@
-Return-Path: virtio-dev-return-3079-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3056-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 361A658191C9
-	for <virtio-dev@lists.oasis-open.org>; Thu, 25 Jan 2018 22:28:44 -0800 (PST)
-Date: Fri, 26 Jan 2018 14:28:06 +0800
-From: Tiwei Bie <tiwei.bie@intel.com>
-Message-ID: <20180126062806.dwu5qq4jnzsfg7a7@debian-xvivbkq.sh.intel.com>
-References: <20180125040328.22867-1-tiwei.bie@intel.com>
- <20180125142220.GD28396@stefanha-x1.localdomain>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20180125142220.GD28396@stefanha-x1.localdomain>
-Subject: [virtio-dev] Re: [Qemu-devel] [PATCH v1 0/6] Extend vhost-user to support VFIO
- based accelerators
-To: Stefan Hajnoczi <stefanha@gmail.com>
-Cc: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, mst@redhat.com, alex.williamson@redhat.com, jasowang@redhat.com, pbonzini@redhat.com, stefanha@redhat.com, jianfeng.tan@intel.com, cunming.liang@intel.com, xiao.w.wang@intel.com, zhihong.wang@intel.com, dan.daly@intel.com
+	by lists.oasis-open.org (Postfix) with ESMTP id 0C13958191D3
+	for <virtio-dev@lists.oasis-open.org>; Thu, 25 Jan 2018 01:33:06 -0800 (PST)
+From: Wei Wang <wei.w.wang@intel.com>
+Date: Thu, 25 Jan 2018 17:14:04 +0800
+Message-Id: <1516871646-22741-1-git-send-email-wei.w.wang@intel.com>
+Subject: [virtio-dev] [PATCH v25 0/2] Virtio-balloon: support free page reporting
+To: virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, linux-mm@kvack.org, mst@redhat.com, mhocko@kernel.org, akpm@linux-foundation.org
+Cc: pbonzini@redhat.com, wei.w.wang@intel.com, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu0@gmail.com, nilal@redhat.com, riel@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Thu, Jan 25, 2018 at 02:22:20PM +0000, Stefan Hajnoczi wrote:
-> On Thu, Jan 25, 2018 at 12:03:22PM +0800, Tiwei Bie wrote:
-> > Why extend vhost-user for vDPA
-> > ==============================
-> > 
-> > We have already implemented various virtual switches (e.g. OVS-DPDK)
-> > based on vhost-user for VMs in the Cloud. They are purely software
-> > running on CPU cores. When we have accelerators for such NFVi applications,
-> > it's ideal if the applications could keep using the original interface
-> > (i.e. vhost-user netdev) with QEMU, and infrastructure is able to decide
-> > when and how to switch between CPU and accelerators within the interface.
-> > And the switching (i.e. switch between CPU and accelerators) can be done
-> > flexibly and quickly inside the applications.
-> > 
-> > More details about this can be found from the Cunming's discussions on
-> > the RFC patch set.
-> > 
-> > The previous links:
-> > RFC: http://lists.nongnu.org/archive/html/qemu-devel/2017-12/msg04844.html
-> 
-> Is vDPA also useful in the simpler use case where there is no NFVi
-> application?
-> 
-> In other words, you have virtio-net inside the guest and vhost-net on
-> the host.  You'd like to accelerate the virtio-net NIC using the
-> hardware's vDPA support.
-> 
-> DPDK requires dedicated logical cores and hugepages.  Those resources
-> will not be used (wasted) if you just want to enable vDPA but have no
-> DPDK packet processing application.
-> 
-> How can this use case be supported without wasting resources?
+This patch series is separated from the previous "Virtio-balloon
+Enhancement" series. The new feature, VIRTIO_BALLOON_F_FREE_PAGE_HINT,  
+implemented by this series enables the virtio-balloon driver to report
+hints of guest free pages to the host. It can be used to accelerate live
+migration of VMs. Here is an introduction of this usage:
 
-DPDK applications don't have to keep polling. In the case
-you described, the DPDK process just need to listen on the
-vhost socket, basically its CPU utilization is 0% if the
-notify passthrough is setup correctly.
+Live migration needs to transfer the VM's memory from the source machine
+to the destination round by round. For the 1st round, all the VM's memory
+is transferred. From the 2nd round, only the pieces of memory that were
+written by the guest (after the 1st round) are transferred. One method
+that is popularly used by the hypervisor to track which part of memory is
+written is to write-protect all the guest memory.
 
-DPDK applications also don't have to allocate a lot of
-memory. In the case you described, the DPDK process just
-need to allocate some memory to initialize eal. The memory
-table provided by QEMU will be used to program the IOMMU
-for the accelerator device. If the accelerator device has
-control vq, the DPDK process may need to allocate some
-extra memory to talk with the device via control vq.
+The second feature enables the optimization of the 1st round memory
+transfer - the hypervisor can skip the transfer of guest free pages in the
+1st round. It is not concerned that the memory pages are used after they
+are given to the hypervisor as a hint of the free pages, because they will
+be tracked by the hypervisor and transferred in the next round if they are
+used and written.
 
-Best regards,
-Tiwei Bie
+ChangeLog:
+v24->v25:
+    - mm: change walk_free_mem_block to return 0 (instead of true) on
+          completing the report, and return a non-zero value from the
+          callabck, which stops the reporting.
+    - virtio-balloon:
+        - use enum instead of define for VIRTIO_BALLOON_VQ_INFLATE etc.
+        - avoid __virtio_clear_bit when bailing out;
+        - a new method to avoid reporting the some cmd id to host twice
+        - destroy_workqueue can cancel free page work when the feature is
+          negotiated;
+        - fail probe when the free page vq size is less than 2.
+v23->v24:
+    - change feature name VIRTIO_BALLOON_F_FREE_PAGE_VQ to
+      VIRTIO_BALLOON_F_FREE_PAGE_HINT
+    - kick when vq->num_free < half full, instead of "= half full"
+    - replace BUG_ON with bailing out
+    - check vb->balloon_wq in probe(), if null, bail out
+    - add a new feature bit for page poisoning
+    - solve the corner case that one cmd id being sent to host twice
+v22->v23:
+    - change to kick the device when the vq is half-way full;
+    - open-code batch_free_page_sg into add_one_sg;
+    - change cmd_id from "uint32_t" to "__virtio32";
+    - reserver one entry in the vq for teh driver to send cmd_id, instead
+      of busywaiting for an available entry;
+    - add "stop_update" check before queue_work for prudence purpose for
+      now, will have a separate patch to discuss this flag check later;
+    - init_vqs: change to put some variables on stack to have simpler
+      implementation;
+    - add destroy_workqueue(vb->balloon_wq);
+
+v21->v22:
+    - add_one_sg: some code and comment re-arrangement
+    - send_cmd_id: handle a cornercase
+
+For previous ChangeLog, please reference
+https://lwn.net/Articles/743660/
+
+Wei Wang (2):
+  mm: support reporting free page blocks
+  virtio-balloon: VIRTIO_BALLOON_F_FREE_PAGE_HINT
+
+ drivers/virtio/virtio_balloon.c     | 251 ++++++++++++++++++++++++++++++------
+ include/linux/mm.h                  |   6 +
+ include/uapi/linux/virtio_balloon.h |   7 +
+ mm/page_alloc.c                     |  96 ++++++++++++++
+ 4 files changed, 324 insertions(+), 36 deletions(-)
+
+-- 
+2.7.4
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
