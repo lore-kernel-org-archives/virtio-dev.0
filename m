@@ -1,170 +1,152 @@
-Return-Path: virtio-dev-return-2923-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3051-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 744585818123
-	for <virtio-dev@lists.oasis-open.org>; Fri,  5 Jan 2018 14:45:31 -0800 (PST)
-From: Jason Baron <jbaron@akamai.com>
-Date: Fri,  5 Jan 2018 17:44:55 -0500
-Message-Id: <cb116634b45b4da0c437ca54cd979c703fc6b920.1515190612.git.jbaron@akamai.com>
-In-Reply-To: <cover.1515190238.git.jbaron@akamai.com>
-References: <cover.1515190238.git.jbaron@akamai.com>
-References: <cover.1515190238.git.jbaron@akamai.com>
-Subject: [virtio-dev] [PATCH v4 3/3] qemu: add linkspeed and duplex settings to virtio-net
-To: mst@redhat.com
-Cc: davem@davemloft.net, jasowang@redhat.com, netdev@vger.kernel.org, virtualization@lists.linux-foundation.org, qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org
+	by lists.oasis-open.org (Postfix) with ESMTP id 65B265819119
+	for <virtio-dev@lists.oasis-open.org>; Wed, 24 Jan 2018 20:04:24 -0800 (PST)
+From: Tiwei Bie <tiwei.bie@intel.com>
+Date: Thu, 25 Jan 2018 12:03:22 +0800
+Message-Id: <20180125040328.22867-1-tiwei.bie@intel.com>
+Subject: [virtio-dev] [PATCH v1 0/6] Extend vhost-user to support VFIO based accelerators
+To: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, mst@redhat.com, alex.williamson@redhat.com, jasowang@redhat.com, pbonzini@redhat.com, stefanha@redhat.com
+Cc: cunming.liang@intel.com, dan.daly@intel.com, jianfeng.tan@intel.com, zhihong.wang@intel.com, xiao.w.wang@intel.com, tiwei.bie@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Although linkspeed and duplex can be set in a linux guest via 'ethtool -s',
-this requires custom ethtool commands for virtio-net by default.
+This patch set does some small extensions to vhost-user protocol
+to support VFIO based accelerators, and makes it possible to get
+the similar performance of VFIO based PCI passthru while keeping
+the virtio device emulation in QEMU.
 
-Introduce a new feature flag, VIRTIO_NET_F_SPEED_DUPLEX, which allows
-the hypervisor to export a linkspeed and duplex setting. The user can
-subsequently overwrite it later if desired via: 'ethtool -s'.
+How does accelerator accelerate vhost (data path)
+=================================================
 
-Linkspeed and duplex settings can be set as:
-'-device virtio-net,speed=10000,duplex=full'
+Any virtio ring compatible devices potentially can be used as the
+vhost data path accelerators. We can setup the accelerator based
+on the informations (e.g. memory table, features, ring info, etc)
+available on the vhost backend. And accelerator will be able to use
+the virtio ring provided by the virtio driver in the VM directly.
+So the virtio driver in the VM can exchange e.g. network packets
+with the accelerator directly via the virtio ring. That is to say,
+we will be able to use the accelerator to accelerate the vhost
+data path. We call it vDPA: vhost Data Path Acceleration.
 
-where speed is [-1...INT_MAX], and duplex is ["half"|"full"].
+Notice: Although the accelerator can talk with the virtio driver
+in the VM via the virtio ring directly. The control path events
+(e.g. device start/stop) in the VM will still be trapped and handled
+by QEMU, and QEMU will deliver such events to the vhost backend
+via standard vhost protocol.
 
-Signed-off-by: Jason Baron <jbaron@akamai.com>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Jason Wang <jasowang@redhat.com>
-Cc: virtio-dev@lists.oasis-open.org
----
- hw/net/virtio-net.c                         | 32 +++++++++++++++++++++++++++++
- include/hw/virtio/virtio-net.h              |  3 +++
- include/standard-headers/linux/virtio_net.h | 13 ++++++++++++
- 3 files changed, 48 insertions(+)
+Below link is an example showing how to setup a such environment
+via nested VM. In this case, the virtio device in the outer VM is
+the accelerator. It will be used to accelerate the virtio device
+in the inner VM. In reality, we could use virtio ring compatible
+hardware device as the accelerators.
 
-diff --git a/hw/net/virtio-net.c b/hw/net/virtio-net.c
-index 54823af..cd63659 100644
---- a/hw/net/virtio-net.c
-+++ b/hw/net/virtio-net.c
-@@ -40,6 +40,12 @@
- #define VIRTIO_NET_RX_QUEUE_MIN_SIZE VIRTIO_NET_RX_QUEUE_DEFAULT_SIZE
- #define VIRTIO_NET_TX_QUEUE_MIN_SIZE VIRTIO_NET_TX_QUEUE_DEFAULT_SIZE
- 
-+/* duplex and speed */
-+#define DUPLEX_UNKNOWN          0xff
-+#define DUPLEX_HALF             0x00
-+#define DUPLEX_FULL             0x01
-+#define SPEED_UNKNOWN           -1
-+
- /*
-  * Calculate the number of bytes up to and including the given 'field' of
-  * 'container'.
-@@ -61,6 +67,8 @@ static VirtIOFeature feature_sizes[] = {
-      .end = endof(struct virtio_net_config, max_virtqueue_pairs)},
-     {.flags = 1ULL << VIRTIO_NET_F_MTU,
-      .end = endof(struct virtio_net_config, mtu)},
-+    {.flags = 1ULL << VIRTIO_NET_F_SPEED_DUPLEX,
-+     .end = endof(struct virtio_net_config, duplex)},
-     {}
- };
- 
-@@ -89,6 +97,8 @@ static void virtio_net_get_config(VirtIODevice *vdev, uint8_t *config)
-     virtio_stw_p(vdev, &netcfg.max_virtqueue_pairs, n->max_queues);
-     virtio_stw_p(vdev, &netcfg.mtu, n->net_conf.mtu);
-     memcpy(netcfg.mac, n->mac, ETH_ALEN);
-+    virtio_stl_p(vdev, &netcfg.speed, n->net_conf.speed);
-+    netcfg.duplex = n->net_conf.duplex;
-     memcpy(config, &netcfg, n->config_size);
- }
- 
-@@ -1941,6 +1951,26 @@ static void virtio_net_device_realize(DeviceState *dev, Error **errp)
-         n->host_features |= (1ULL << VIRTIO_NET_F_MTU);
-     }
- 
-+    if (n->net_conf.duplex_str) {
-+        if (strncmp(n->net_conf.duplex_str, "half", 5) == 0) {
-+            n->net_conf.duplex = DUPLEX_HALF;
-+        } else if (strncmp(n->net_conf.duplex_str, "full", 5) == 0) {
-+            n->net_conf.duplex = DUPLEX_FULL;
-+        } else {
-+            error_setg(errp, "'duplex' must be 'half' or 'full'");
-+        }
-+        n->host_features |= (1ULL << VIRTIO_NET_F_SPEED_DUPLEX);
-+    } else {
-+        n->net_conf.duplex = DUPLEX_UNKNOWN;
-+    }
-+
-+    if (n->net_conf.speed < SPEED_UNKNOWN) {
-+        error_setg(errp, "'speed' must be between -1 (SPEED_UNKOWN) and "
-+                   "INT_MAX");
-+    } else if (n->net_conf.speed >= 0) {
-+        n->host_features |= (1ULL << VIRTIO_NET_F_SPEED_DUPLEX);
-+    }
-+
-     virtio_net_set_config_size(n, n->host_features);
-     virtio_init(vdev, "virtio-net", VIRTIO_ID_NET, n->config_size);
- 
-@@ -2161,6 +2191,8 @@ static Property virtio_net_properties[] = {
-     DEFINE_PROP_UINT16("host_mtu", VirtIONet, net_conf.mtu, 0),
-     DEFINE_PROP_BOOL("x-mtu-bypass-backend", VirtIONet, mtu_bypass_backend,
-                      true),
-+    DEFINE_PROP_INT32("speed", VirtIONet, net_conf.speed, SPEED_UNKNOWN),
-+    DEFINE_PROP_STRING("duplex", VirtIONet, net_conf.duplex_str),
-     DEFINE_PROP_END_OF_LIST(),
- };
- 
-diff --git a/include/hw/virtio/virtio-net.h b/include/hw/virtio/virtio-net.h
-index e7634c9..02484dc 100644
---- a/include/hw/virtio/virtio-net.h
-+++ b/include/hw/virtio/virtio-net.h
-@@ -38,6 +38,9 @@ typedef struct virtio_net_conf
-     uint16_t rx_queue_size;
-     uint16_t tx_queue_size;
-     uint16_t mtu;
-+    int32_t speed;
-+    char *duplex_str;
-+    uint8_t duplex;
- } virtio_net_conf;
- 
- /* Maximum packet size we can receive from tap device: header + 64k */
-diff --git a/include/standard-headers/linux/virtio_net.h b/include/standard-headers/linux/virtio_net.h
-index 30ff249..17c8531 100644
---- a/include/standard-headers/linux/virtio_net.h
-+++ b/include/standard-headers/linux/virtio_net.h
-@@ -57,6 +57,8 @@
- 					 * Steering */
- #define VIRTIO_NET_F_CTRL_MAC_ADDR 23	/* Set MAC address */
- 
-+#define VIRTIO_NET_F_SPEED_DUPLEX 63   /* Device set linkspeed and duplex */
-+
- #ifndef VIRTIO_NET_NO_LEGACY
- #define VIRTIO_NET_F_GSO	6	/* Host handles pkts w/ any GSO type */
- #endif /* VIRTIO_NET_NO_LEGACY */
-@@ -76,6 +78,17 @@ struct virtio_net_config {
- 	uint16_t max_virtqueue_pairs;
- 	/* Default maximum transmit unit advice */
- 	uint16_t mtu;
-+	/*
-+	 * speed, in units of 1Mb. All values 0 to INT_MAX are legal.
-+	 * Any other value stands for unknown.
-+	 */
-+	uint32_t speed;
-+	/*
-+	 * 0x00 - half duplex
-+	 * 0x01 - full duplex
-+	 * Any other value stands for unknown.
-+	 */
-+	uint8_t duplex;
- } QEMU_PACKED;
- 
- /*
-diff --git a/pixman b/pixman
-new file mode 160000
-index 0000000..87eea99
---- /dev/null
-+++ b/pixman
-@@ -0,0 +1 @@
-+Subproject commit 87eea99e443b389c978cf37efc52788bf03a0ee0
+http://dpdk.org/ml/archives/dev/2017-December/085044.html
+
+In above example, it doesn't require any changes to QEMU, but
+it has lower performance compared with the traditional VFIO
+based PCI passthru. And that's the problem this patch set wants
+to solve.
+
+The performance issue of vDPA/vhost-user and solutions
+======================================================
+
+For vhost-user backend, the critical issue in vDPA is that the
+data path performance is relatively low and some host threads are
+needed for the data path, because some necessary mechanisms are
+missing to support:
+
+1) guest driver notifies the device directly;
+2) device interrupts the guest directly;
+
+So this patch set does some small extensions to the vhost-user
+protocol to make both of them possible. It leverages the same
+mechanisms (e.g. EPT and Posted-Interrupt on Intel platform) as
+the PCI passthru.
+
+A new protocol feature bit is added to negotiate the accelerator
+feature support. Two new slave message types are added to control
+the notify region and queue interrupt passthru for each queue.
+From the view of vhost-user protocol design, it's very flexible.
+The passthru can be enabled/disabled for each queue individually,
+and it's possible to accelerate each queue by different devices.
+More design and implementation details can be found from the last
+patch.
+
+Difference between vDPA and PCI passthru
+========================================
+
+The key difference between PCI passthru and vDPA is that, in vDPA
+only the data path of the device (e.g. DMA ring, notify region and
+queue interrupt) is pass-throughed to the VM, the device control
+path (e.g. PCI configuration space and MMIO regions) is still
+defined and emulated by QEMU.
+
+The benefits of keeping virtio device emulation in QEMU compared
+with virtio device PCI passthru include (but not limit to):
+
+- consistent device interface for guest OS in the VM;
+- max flexibility on the hardware (i.e. the accelerators) design;
+- leveraging the existing virtio live-migration framework;
+
+Why extend vhost-user for vDPA
+==============================
+
+We have already implemented various virtual switches (e.g. OVS-DPDK)
+based on vhost-user for VMs in the Cloud. They are purely software
+running on CPU cores. When we have accelerators for such NFVi applications,
+it's ideal if the applications could keep using the original interface
+(i.e. vhost-user netdev) with QEMU, and infrastructure is able to decide
+when and how to switch between CPU and accelerators within the interface.
+And the switching (i.e. switch between CPU and accelerators) can be done
+flexibly and quickly inside the applications.
+
+More details about this can be found from the Cunming's discussions on
+the RFC patch set.
+
+The previous links:
+RFC: http://lists.nongnu.org/archive/html/qemu-devel/2017-12/msg04844.html
+
+RFC -> v1:
+- Add some details about how vDPA works in cover letter (Alexey)
+- Add some details about the OVS offload use-case in cover letter (Jason)
+- Move PCI specific stuffs out of vhost-user (Jason)
+- Handle the virtual IOMMU case (Jason)
+- Move VFIO group management code into vfio/common.c (Alex)
+- Various refinements;
+(approximately sorted by comment posting time)
+
+Tiwei Bie (6):
+  vhost-user: support receiving file descriptors in slave_read
+  vhost-user: introduce shared vhost-user state
+  virtio: support adding sub-regions for notify region
+  vfio: support getting VFIOGroup from groupfd
+  vfio: remove DPRINTF() definition from vfio-common.h
+  vhost-user: add VFIO based accelerators support
+
+ Makefile.target                 |   4 +
+ docs/interop/vhost-user.txt     |  57 +++++++++
+ hw/scsi/vhost-user-scsi.c       |   6 +-
+ hw/vfio/common.c                |  96 ++++++++++++++-
+ hw/virtio/vhost-user.c          | 250 +++++++++++++++++++++++++++++++++++++++-
+ hw/virtio/virtio-pci.c          |  48 ++++++++
+ hw/virtio/virtio-pci.h          |   5 +
+ hw/virtio/virtio.c              |  39 +++++++
+ include/hw/vfio/vfio-common.h   |  11 +-
+ include/hw/virtio/vhost-user.h  |  34 ++++++
+ include/hw/virtio/virtio-scsi.h |   6 +-
+ include/hw/virtio/virtio.h      |   5 +
+ include/qemu/osdep.h            |   1 +
+ net/vhost-user.c                |  30 ++---
+ 14 files changed, 559 insertions(+), 33 deletions(-)
+ create mode 100644 include/hw/virtio/vhost-user.h
+
 -- 
-2.6.1
+2.13.3
 
 
 ---------------------------------------------------------------------
