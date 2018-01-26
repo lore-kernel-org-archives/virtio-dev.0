@@ -1,58 +1,91 @@
-Return-Path: virtio-dev-return-3077-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3078-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id B4D9258191C4
-	for <virtio-dev@lists.oasis-open.org>; Thu, 25 Jan 2018 19:41:55 -0800 (PST)
+	by lists.oasis-open.org (Postfix) with ESMTP id A783158191C9
+	for <virtio-dev@lists.oasis-open.org>; Thu, 25 Jan 2018 21:58:35 -0800 (PST)
+Date: Fri, 26 Jan 2018 13:57:59 +0800
+From: Tiwei Bie <tiwei.bie@intel.com>
+Message-ID: <20180126055759.vu4qwdpjbzf4mg4j@debian-xvivbkq.sh.intel.com>
 References: <20180125040328.22867-1-tiwei.bie@intel.com>
  <20180125040328.22867-7-tiwei.bie@intel.com>
  <20180126015553-mutt-send-email-mst@kernel.org>
-From: Jason Wang <jasowang@redhat.com>
-Message-ID: <28ab37d5-6cf6-866d-9167-e14e7441415f@redhat.com>
-Date: Fri, 26 Jan 2018 11:41:27 +0800
+ <28ab37d5-6cf6-866d-9167-e14e7441415f@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <20180126015553-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+In-Reply-To: <28ab37d5-6cf6-866d-9167-e14e7441415f@redhat.com>
 Subject: Re: [virtio-dev] Re: [PATCH v1 6/6] vhost-user: add VFIO based
  accelerators support
-To: "Michael S. Tsirkin" <mst@redhat.com>, Tiwei Bie <tiwei.bie@intel.com>
-Cc: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, alex.williamson@redhat.com, pbonzini@redhat.com, stefanha@redhat.com, cunming.liang@intel.com, dan.daly@intel.com, jianfeng.tan@intel.com, zhihong.wang@intel.com, xiao.w.wang@intel.com
+To: Jason Wang <jasowang@redhat.com>
+Cc: "Michael S. Tsirkin" <mst@redhat.com>, qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, alex.williamson@redhat.com, pbonzini@redhat.com, stefanha@redhat.com, cunming.liang@intel.com, dan.daly@intel.com, jianfeng.tan@intel.com, zhihong.wang@intel.com, xiao.w.wang@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+On Fri, Jan 26, 2018 at 11:41:27AM +0800, Jason Wang wrote:
+> On 2018年01月26日 07:59, Michael S. Tsirkin wrote:
+> > > The virtual IOMMU isn't supported by the accelerators for now.
+> > > Because vhost-user currently lacks of an efficient way to share
+> > > the IOMMU table in VM to vhost backend. That's why the software
+> > > implementation of virtual IOMMU support in vhost-user backend
+> > > can't support dynamic mapping well.
+> > What exactly is meant by that? vIOMMU seems to work for people,
+> > it's not that fast if you change mappings all the time,
+> > but e.g. dpdk within guest doesn't.
+> 
+> Yes, software implementation support dynamic mapping for sure. I think the
+> point is, current vhost-user backend can not program hardware IOMMU. So it
+> can not let hardware accelerator to cowork with software vIOMMU.
 
+Vhost-user backend can program hardware IOMMU. Currently
+vhost-user backend (or more precisely the vDPA driver in
+vhost-user backend) will use the memory table (delivered
+by the VHOST_USER_SET_MEM_TABLE message) to program the
+IOMMU via vfio, and that's why accelerators can use the
+GPA (guest physical address) in descriptors directly.
 
-On 2018年01月26日 07:59, Michael S. Tsirkin wrote:
->> The virtual IOMMU isn't supported by the accelerators for now.
->> Because vhost-user currently lacks of an efficient way to share
->> the IOMMU table in VM to vhost backend. That's why the software
->> implementation of virtual IOMMU support in vhost-user backend
->> can't support dynamic mapping well.
-> What exactly is meant by that? vIOMMU seems to work for people,
-> it's not that fast if you change mappings all the time,
-> but e.g. dpdk within guest doesn't.
+Theoretically, we can use the IOVA mapping info (delivered
+by the VHOST_USER_IOTLB_MSG message) to program the IOMMU,
+and accelerators will be able to use IOVA. But the problem
+is that in vhost-user QEMU won't push all the IOVA mappings
+to backend directly. Backend needs to ask for those info
+when it meets a new IOVA. Such design and implementation
+won't work well for dynamic mappings anyway and couldn't
+be supported by hardware accelerators.
 
-Yes, software implementation support dynamic mapping for sure. I think 
-the point is, current vhost-user backend can not program hardware IOMMU. 
-So it can not let hardware accelerator to cowork with software vIOMMU. I 
-think that's another call to implement the offloaded path inside qemu 
-which has complete support for vIOMMU co-operated VFIO.
+> I think
+> that's another call to implement the offloaded path inside qemu which has
+> complete support for vIOMMU co-operated VFIO.
 
-Thanks
+Yes, that's exactly what we want. After revisiting the
+last paragraph in the commit message, I found it's not
+really accurate. The practicability of dynamic mappings
+support is a common issue for QEMU. It also exists for
+vfio (hw/vfio in QEMU). If QEMU needs to trap all the
+map/unmap events, the data path performance couldn't be
+high. If we want to thoroughly fix this issue especially
+for vfio (hw/vfio in QEMU), we need to have the offload
+path Jason mentioned in QEMU. And I think accelerators
+could use it too.
 
->
->> Once this problem is solved
->> in vhost-user, virtual IOMMU can be supported by accelerators
->> too, and the IOMMU feature bit checking in this patch can be
->> removed.
-> Given it works with software backends right now, I suspect
-> this will be up to you guys to address.
->
+Best regards,
+Tiwei Bie
 
+> 
+> Thanks
+> 
+> > 
+> > > Once this problem is solved
+> > > in vhost-user, virtual IOMMU can be supported by accelerators
+> > > too, and the IOMMU feature bit checking in this patch can be
+> > > removed.
+> > Given it works with software backends right now, I suspect
+> > this will be up to you guys to address.
+> > 
+> 
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
