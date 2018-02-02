@@ -1,52 +1,63 @@
-Return-Path: virtio-return-2887-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-return-2861-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio@lists.oasis-open.org>
 List-Post: <mailto:virtio@lists.oasis-open.org>
 List-Help: <mailto:virtio-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Mon, 12 Feb 2018 13:22:09 +0000
-From: Stefan Hajnoczi <stefanha@redhat.com>
-Message-ID: <20180212132209.GC4913@stefanha-x1.localdomain>
+Date: Fri, 2 Feb 2018 12:06:52 +0100
+From: Cornelia Huck <cohuck@redhat.com>
+Message-ID: <20180202120652.38ef480e.cohuck@redhat.com>
+In-Reply-To: <1516665617-30748-11-git-send-email-mst@redhat.com>
 References: <1515577653-9336-1-git-send-email-mst@redhat.com>
- <1516665617-30748-10-git-send-email-mst@redhat.com>
+	<1516665617-30748-11-git-send-email-mst@redhat.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="wxDdMuZNg1r63Hyj"
-Content-Disposition: inline
-In-Reply-To: <1516665617-30748-10-git-send-email-mst@redhat.com>
-Subject: Re: [virtio] [PATCH v7 10/11] packed-ring: add in order support
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Subject: Re: [virtio] [PATCH v7 11/11] split-ring: in order feature
 To: "Michael S. Tsirkin" <mst@redhat.com>
 Cc: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
---wxDdMuZNg1r63Hyj
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On Tue, 23 Jan 2018 02:01:09 +0200
+"Michael S. Tsirkin" <mst@redhat.com> wrote:
 
-On Tue, Jan 23, 2018 at 02:01:09AM +0200, Michael S. Tsirkin wrote:
-> Support in-order requests for packed rings.
-> This allows selective write-out of used descriptors.
->=20
+> For a split ring, require that drivers use descriptors in order too.
+> This allows devices to skip reading the available ring.
+> 
 > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 > ---
->  packed-ring.tex | 24 ++++++++++++++++++++++++
->  1 file changed, 24 insertions(+)
+>  split-ring.tex | 18 ++++++++++++++++++
+>  1 file changed, 18 insertions(+)
+> 
+> diff --git a/split-ring.tex b/split-ring.tex
+> index f976e45..43c496c 100644
+> --- a/split-ring.tex
+> +++ b/split-ring.tex
 
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+> @@ -218,6 +222,12 @@ purposes).
+>  Drivers MUST NOT add a descriptor chain over than $2^{32}$ bytes long in total;
+>  this implies that loops in the descriptor chain are forbidden!
+>  
+> +If VIRTIO_F_IN_ORDER has been negotiated, and when making a
+> +descriptor with VRING_DESC_F_NEXT set in \field{flags} at offset
+> +$x$ in the table available to the device, driver MUST set
+> +\field{next} to $0$ for the last descriptor in the table
+> +(where $x = queue_size - 1$) and to $x + 1$ for the rest of the descriptors.
 
---wxDdMuZNg1r63Hyj
-Content-Type: application/pgp-signature; name="signature.asc"
+The underscore in queue_size makes this a subscript s, which is
+probably not what you want :)
 
------BEGIN PGP SIGNATURE-----
+> +
+>  \subsubsection{Indirect Descriptors}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table / Indirect Descriptors}
+>  
+>  Some devices benefit by concurrently dispatching a large number
 
-iQEcBAEBAgAGBQJagZUBAAoJEJykq7OBq3PImVoH/3i2YjQ3A+LuEg2M/MOgXL4v
-rCJMVzGxxBnIMkZtW+RniuJ8MsFUpRWI3LSmWIBoIprcH44ZojwKrez+fI6LpPcc
-lVb68egOova1jvshuvC1LR+ha3xxoNNKGBKppIkcrk18o9+amBqLVPgm5OYWXoTn
-aP8dkNAy89IHDyk0wCA7fsnaQhQ5IMuRxsZWZgRq+wLN5D5FVgW56iC84AuD9xoB
-UfihBdxxkqpCK4t7do5rvONRWOJ44JuBJjmT7x5+FW2oOR1rF/4KmEnh9L7VPy1R
-f5/yGkhgNzRCqCzJ2BRKd+VqYJxjYJbeetOhL5AHPm+95qruujvyJRJZo/AjYu4=
-=vANK
------END PGP SIGNATURE-----
+Otherwise,
 
---wxDdMuZNg1r63Hyj--
+Reviewed-by: Cornelia Huck <cohuck@redhat.com>
+
+---------------------------------------------------------------------
+To unsubscribe from this mail list, you must leave the OASIS TC that 
+generates this mail.  Follow this link to all your TCs in OASIS at:
+https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
+
