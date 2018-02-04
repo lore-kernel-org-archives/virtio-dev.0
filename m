@@ -1,69 +1,118 @@
-Return-Path: virtio-dev-return-3171-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3132-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 685711CB8080
-	for <virtio-dev@lists.oasis-open.org>; Tue,  6 Feb 2018 23:24:10 -0800 (PST)
-Message-ID: <5A7AAA2E.5090809@intel.com>
-Date: Wed, 07 Feb 2018 15:26:38 +0800
+	by lists.oasis-open.org (Postfix) with ESMTP id D5BE31CB807B
+	for <virtio-dev@lists.oasis-open.org>; Sun,  4 Feb 2018 05:00:16 -0800 (PST)
 From: Wei Wang <wei.w.wang@intel.com>
-MIME-Version: 1.0
-References: <1517972467-14352-1-git-send-email-wei.w.wang@intel.com> <20180207062846-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20180207062846-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: [virtio-dev] Re: [PATCH v26 2/2 RESEND] virtio-balloon: VIRTIO_BALLOON_F_FREE_PAGE_HINT
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, linux-mm@kvack.org, mhocko@kernel.org, akpm@linux-foundation.org, pbonzini@redhat.com, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu0@gmail.com, nilal@redhat.com, riel@redhat.com, huangzhichao@huawei.com
+Date: Sun,  4 Feb 2018 20:41:06 +0800
+Message-Id: <1517748068-25499-1-git-send-email-wei.w.wang@intel.com>
+Subject: [virtio-dev] [PATCH v26 0/2] Virtio-balloon: support free page reporting
+To: virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, linux-mm@kvack.org, mst@redhat.com, mhocko@kernel.org, akpm@linux-foundation.org
+Cc: pbonzini@redhat.com, wei.w.wang@intel.com, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu0@gmail.com, nilal@redhat.com, riel@redhat.com, huangzhichao@huawei.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 02/07/2018 12:34 PM, Michael S. Tsirkin wrote:
-> On Wed, Feb 07, 2018 at 11:01:06AM +0800, Wei Wang wrote:
->> Negotiation of the VIRTIO_BALLOON_F_FREE_PAGE_HINT feature indicates the
->> support of reporting hints of guest free pages to host via virtio-balloon.
->>
->> Host requests the guest to report free page hints by sending a new cmd
->> id to the guest via the free_page_report_cmd_id configuration register.
->>
->> When the guest starts to report, the first element added to the free page
->> vq is the cmd id given by host. When the guest finishes the reporting
->> of all the free pages, VIRTIO_BALLOON_FREE_PAGE_REPORT_STOP_ID is added
->> to the vq to tell host that the reporting is done. Host polls the free
->> page vq after sending the starting cmd id, so the guest doesn't need to
->> kick after filling an element to the vq.
->>
->> Host may also requests the guest to stop the reporting in advance by
->> sending the stop cmd id to the guest via the configuration register.
->>
->> Signed-off-by: Wei Wang <wei.w.wang@intel.com>
->> Signed-off-by: Liang Li <liang.z.li@intel.com>
->> Cc: Michael S. Tsirkin <mst@redhat.com>
->> Cc: Michal Hocko <mhocko@kernel.org>
->> ---
->>   drivers/virtio/virtio_balloon.c     | 255 +++++++++++++++++++++++++++++++-----
->>   include/uapi/linux/virtio_balloon.h |   7 +
->>   mm/page_poison.c                    |   6 +
->>   3 files changed, 232 insertions(+), 36 deletions(-)
->>
->> Resend Change:
->> 	- Expose page_poisoning_enabled to kernel modules
-> RESEND tag is for reposting unchanged patches.
-> you want to post a v27, and you want the mm patch
-> as a separate one, so you can get an ack on it from
-> someone on linux-mm.
->
-> In fact, I would probably add reporting the poison value as
-> a separate feature/couple of patches.
->
+This patch series is separated from the previous "Virtio-balloon
+Enhancement" series. The new feature, VIRTIO_BALLOON_F_FREE_PAGE_HINT,  
+implemented by this series enables the virtio-balloon driver to report
+hints of guest free pages to the host. It can be used to accelerate live
+migration of VMs. Here is an introduction of this usage:
 
-OK. I have made them separate patches in v27. Thanks a lot for reviewing 
-so many versions, I learned a lot from the comments and discussion.
+Live migration needs to transfer the VM's memory from the source machine
+to the destination round by round. For the 1st round, all the VM's memory
+is transferred. From the 2nd round, only the pieces of memory that were
+written by the guest (after the 1st round) are transferred. One method
+that is popularly used by the hypervisor to track which part of memory is
+written is to write-protect all the guest memory.
 
-Best,
-Wei
+The second feature enables the optimization of the 1st round memory
+transfer - the hypervisor can skip the transfer of guest free pages in the
+1st round. It is not concerned that the memory pages are used after they
+are given to the hypervisor as a hint of the free pages, because they will
+be tracked by the hypervisor and transferred in the next round if they are
+used and written.
+
+* Tests
+- Migration time improvement
+Result:
+Live migration time is reduced to 14% with this optimization.
+Details
+Local live migration of 8GB idle guest, the legacy live migration takes
+~1817ms. With this optimization, it takes ~254ms, which reduces the time
+to 14%.
+- Workload tests
+Results:
+Running this feature has no impact on the linux compilation workload
+running inside the guest.
+Details:
+Set up a Ping-Pong local live migration, where the guest ceaselessy
+migrates between the source and destination. Linux compilation,
+i.e. make bzImage -j4, is performed during the Ping-Pong migration. The
+legacy case takes 5min14s to finish the compilation. With this
+optimization patched, it takes 5min12s.
+
+ChangeLog:
+v25->v26: virtio-balloon changes only
+    - remove kicking free page vq since the host now polls the vq after
+      initiating the reporting
+    - report_free_page_func: detach all the used buffers after sending
+      the stop cmd id. This avoids leaving the detaching burden (i.e.
+      overhead) to the next cmd id. Detaching here isn't considered
+      overhead since the stop cmd id has been sent, and host has already
+      moved formard.
+v24->v25:
+    - mm: change walk_free_mem_block to return 0 (instead of true) on
+          completing the report, and return a non-zero value from the
+          callabck, which stops the reporting.
+    - virtio-balloon:
+        - use enum instead of define for VIRTIO_BALLOON_VQ_INFLATE etc.
+        - avoid __virtio_clear_bit when bailing out;
+        - a new method to avoid reporting the some cmd id to host twice
+        - destroy_workqueue can cancel free page work when the feature is
+          negotiated;
+        - fail probe when the free page vq size is less than 2.
+v23->v24:
+    - change feature name VIRTIO_BALLOON_F_FREE_PAGE_VQ to
+      VIRTIO_BALLOON_F_FREE_PAGE_HINT
+    - kick when vq->num_free < half full, instead of "= half full"
+    - replace BUG_ON with bailing out
+    - check vb->balloon_wq in probe(), if null, bail out
+    - add a new feature bit for page poisoning
+    - solve the corner case that one cmd id being sent to host twice
+v22->v23:
+    - change to kick the device when the vq is half-way full;
+    - open-code batch_free_page_sg into add_one_sg;
+    - change cmd_id from "uint32_t" to "__virtio32";
+    - reserver one entry in the vq for the driver to send cmd_id, instead
+      of busywaiting for an available entry;
+    - add "stop_update" check before queue_work for prudence purpose for
+      now, will have a separate patch to discuss this flag check later;
+    - init_vqs: change to put some variables on stack to have simpler
+      implementation;
+    - add destroy_workqueue(vb->balloon_wq);
+
+v21->v22:
+    - add_one_sg: some code and comment re-arrangement
+    - send_cmd_id: handle a cornercase
+
+For previous ChangeLog, please reference
+https://lwn.net/Articles/743660/
+
+Wei Wang (2):
+  mm: support reporting free page blocks
+  virtio-balloon: VIRTIO_BALLOON_F_FREE_PAGE_HINT
+
+ drivers/virtio/virtio_balloon.c     | 255 +++++++++++++++++++++++++++++++-----
+ include/linux/mm.h                  |   6 +
+ include/uapi/linux/virtio_balloon.h |   7 +
+ mm/page_alloc.c                     |  96 ++++++++++++++
+ 4 files changed, 328 insertions(+), 36 deletions(-)
+
+-- 
+2.7.4
 
 
 ---------------------------------------------------------------------
