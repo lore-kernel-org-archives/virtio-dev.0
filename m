@@ -1,102 +1,113 @@
-Return-Path: virtio-dev-return-3170-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3135-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id C17141CB8080
-	for <virtio-dev@lists.oasis-open.org>; Tue,  6 Feb 2018 23:13:49 -0800 (PST)
-From: Wei Wang <wei.w.wang@intel.com>
-Date: Wed,  7 Feb 2018 14:54:31 +0800
-Message-Id: <1517986471-15185-5-git-send-email-wei.w.wang@intel.com>
-In-Reply-To: <1517986471-15185-1-git-send-email-wei.w.wang@intel.com>
-References: <1517986471-15185-1-git-send-email-wei.w.wang@intel.com>
-Subject: [virtio-dev] [PATCH v27 4/4] virtio-balloon: VIRTIO_BALLOON_F_PAGE_POISON
-To: virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, linux-mm@kvack.org, mst@redhat.com, mhocko@kernel.org, akpm@linux-foundation.org
-Cc: pbonzini@redhat.com, wei.w.wang@intel.com, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu0@gmail.com, nilal@redhat.com, riel@redhat.com, huangzhichao@huawei.com
+	by lists.oasis-open.org (Postfix) with ESMTP id 4FF715818EC1
+	for <virtio-dev@lists.oasis-open.org>; Sun,  4 Feb 2018 13:49:58 -0800 (PST)
+MIME-Version: 1.0
+In-Reply-To: <20180126055759.vu4qwdpjbzf4mg4j@debian-xvivbkq.sh.intel.com>
+References: <20180125040328.22867-1-tiwei.bie@intel.com> <20180125040328.22867-7-tiwei.bie@intel.com>
+ <20180126015553-mutt-send-email-mst@kernel.org> <28ab37d5-6cf6-866d-9167-e14e7441415f@redhat.com>
+ <20180126055759.vu4qwdpjbzf4mg4j@debian-xvivbkq.sh.intel.com>
+From: Alexander Duyck <alexander.duyck@gmail.com>
+Date: Sun, 4 Feb 2018 13:49:46 -0800
+Message-ID: <CAKgT0UcCKxBmm23tOXreTQwKsY4wqLF1MwtQm7ND7Ee0Td0rjQ@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [virtio-dev] Re: [PATCH v1 6/6] vhost-user: add VFIO based
+ accelerators support
+To: Tiwei Bie <tiwei.bie@intel.com>
+Cc: Jason Wang <jasowang@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>, qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, Alex Williamson <alex.williamson@redhat.com>, Paolo Bonzini <pbonzini@redhat.com>, stefanha@redhat.com, cunming.liang@intel.com, dan.daly@intel.com, jianfeng.tan@intel.com, zhihong.wang@intel.com, xiao.w.wang@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-The VIRTIO_BALLOON_F_PAGE_POISON feature bit is used to indicate if the
-guest is using page poisoning. Guest writes to the poison_val config
-field to tell host about the page poisoning value in use.
+On Thu, Jan 25, 2018 at 9:57 PM, Tiwei Bie <tiwei.bie@intel.com> wrote:
+> On Fri, Jan 26, 2018 at 11:41:27AM +0800, Jason Wang wrote:
+>> On 2018=E5=B9=B401=E6=9C=8826=E6=97=A5 07:59, Michael S. Tsirkin wrote:
+>> > > The virtual IOMMU isn't supported by the accelerators for now.
+>> > > Because vhost-user currently lacks of an efficient way to share
+>> > > the IOMMU table in VM to vhost backend. That's why the software
+>> > > implementation of virtual IOMMU support in vhost-user backend
+>> > > can't support dynamic mapping well.
+>> > What exactly is meant by that? vIOMMU seems to work for people,
+>> > it's not that fast if you change mappings all the time,
+>> > but e.g. dpdk within guest doesn't.
+>>
+>> Yes, software implementation support dynamic mapping for sure. I think t=
+he
+>> point is, current vhost-user backend can not program hardware IOMMU. So =
+it
+>> can not let hardware accelerator to cowork with software vIOMMU.
+>
+> Vhost-user backend can program hardware IOMMU. Currently
+> vhost-user backend (or more precisely the vDPA driver in
+> vhost-user backend) will use the memory table (delivered
+> by the VHOST_USER_SET_MEM_TABLE message) to program the
+> IOMMU via vfio, and that's why accelerators can use the
+> GPA (guest physical address) in descriptors directly.
+>
+> Theoretically, we can use the IOVA mapping info (delivered
+> by the VHOST_USER_IOTLB_MSG message) to program the IOMMU,
+> and accelerators will be able to use IOVA. But the problem
+> is that in vhost-user QEMU won't push all the IOVA mappings
+> to backend directly. Backend needs to ask for those info
+> when it meets a new IOVA. Such design and implementation
+> won't work well for dynamic mappings anyway and couldn't
+> be supported by hardware accelerators.
+>
+>> I think
+>> that's another call to implement the offloaded path inside qemu which ha=
+s
+>> complete support for vIOMMU co-operated VFIO.
+>
+> Yes, that's exactly what we want. After revisiting the
+> last paragraph in the commit message, I found it's not
+> really accurate. The practicability of dynamic mappings
+> support is a common issue for QEMU. It also exists for
+> vfio (hw/vfio in QEMU). If QEMU needs to trap all the
+> map/unmap events, the data path performance couldn't be
+> high. If we want to thoroughly fix this issue especially
+> for vfio (hw/vfio in QEMU), we need to have the offload
+> path Jason mentioned in QEMU. And I think accelerators
+> could use it too.
+>
+> Best regards,
+> Tiwei Bie
 
-Signed-off-by: Wei Wang <wei.w.wang@intel.com>
-Suggested-by: Michael S. Tsirkin <mst@redhat.com>
-Cc: Michael S. Tsirkin <mst@redhat.com>
-Cc: Michal Hocko <mhocko@suse.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>
----
- drivers/virtio/virtio_balloon.c     | 10 ++++++++++
- include/uapi/linux/virtio_balloon.h |  3 +++
- 2 files changed, 13 insertions(+)
+I wonder if we couldn't look at coming up with an altered security
+model for the IOMMU drivers to address some of the performance issues
+seen with typical hardware IOMMU?
 
-diff --git a/drivers/virtio/virtio_balloon.c b/drivers/virtio/virtio_balloon.c
-index 39ecce3..76b4853 100644
---- a/drivers/virtio/virtio_balloon.c
-+++ b/drivers/virtio/virtio_balloon.c
-@@ -685,6 +685,7 @@ static struct file_system_type balloon_fs = {
- static int virtballoon_probe(struct virtio_device *vdev)
- {
- 	struct virtio_balloon *vb;
-+	__u32 poison_val;
- 	int err;
- 
- 	if (!vdev->config->get) {
-@@ -728,6 +729,11 @@ static int virtballoon_probe(struct virtio_device *vdev)
- 			goto out_del_vqs;
- 		}
- 		INIT_WORK(&vb->report_free_page_work, report_free_page_func);
-+		if (virtio_has_feature(vdev, VIRTIO_BALLOON_F_PAGE_POISON)) {
-+			memset(&poison_val, PAGE_POISON, sizeof(poison_val));
-+			virtio_cwrite(vb->vdev, struct virtio_balloon_config,
-+				      poison_val, &poison_val);
-+		}
- 	}
- 
- 	vb->nb.notifier_call = virtballoon_oom_notify;
-@@ -846,6 +852,9 @@ static int virtballoon_restore(struct virtio_device *vdev)
- 
- static int virtballoon_validate(struct virtio_device *vdev)
- {
-+	if (!page_poisoning_enabled())
-+		__virtio_clear_bit(vdev, VIRTIO_BALLOON_F_PAGE_POISON);
-+
- 	__virtio_clear_bit(vdev, VIRTIO_F_IOMMU_PLATFORM);
- 	return 0;
- }
-@@ -855,6 +864,7 @@ static unsigned int features[] = {
- 	VIRTIO_BALLOON_F_STATS_VQ,
- 	VIRTIO_BALLOON_F_DEFLATE_ON_OOM,
- 	VIRTIO_BALLOON_F_FREE_PAGE_HINT,
-+	VIRTIO_BALLOON_F_PAGE_POISON,
- };
- 
- static struct virtio_driver virtio_balloon_driver = {
-diff --git a/include/uapi/linux/virtio_balloon.h b/include/uapi/linux/virtio_balloon.h
-index 0c654db..3f97067 100644
---- a/include/uapi/linux/virtio_balloon.h
-+++ b/include/uapi/linux/virtio_balloon.h
-@@ -35,6 +35,7 @@
- #define VIRTIO_BALLOON_F_STATS_VQ	1 /* Memory Stats virtqueue */
- #define VIRTIO_BALLOON_F_DEFLATE_ON_OOM	2 /* Deflate balloon on OOM */
- #define VIRTIO_BALLOON_F_FREE_PAGE_HINT	3 /* VQ to report free pages */
-+#define VIRTIO_BALLOON_F_PAGE_POISON	4 /* Guest is using page poisoning */
- 
- /* Size of a PFN in the balloon interface. */
- #define VIRTIO_BALLOON_PFN_SHIFT 12
-@@ -47,6 +48,8 @@ struct virtio_balloon_config {
- 	__u32 actual;
- 	/* Free page report command id, readonly by guest */
- 	__u32 free_page_report_cmd_id;
-+	/* Stores PAGE_POISON if page poisoning is in use */
-+	__u32 poison_val;
- };
- 
- #define VIRTIO_BALLOON_S_SWAP_IN  0   /* Amount of memory swapped in */
--- 
-2.7.4
+In the case of most network devices, we seem to be moving toward a
+model where the Rx pages are mapped for an extended period of time and
+see a fairly high rate of reuse. As such pages mapped as being
+writable or read/write by the device are left mapped for an extended
+period of time while Tx pages, which are read only, are often
+mapped/unmapped since they are coming from some other location in the
+kernel beyond the driver's control.
 
+If we were to somehow come up with a model where the read-only(Tx)
+pages had access to a pre-allocated memory mapped address, and the
+read/write(descriptor rings), write-only(Rx) pages were provided with
+dynamic addresses we might be able to come up with a solution that
+would allow for fairly high network performance while at least
+protecting from memory corruption. The only issue it would open up is
+that the device would have the ability to read any/all memory on the
+guest. I was wondering about doing something like this with the vIOMMU
+with VFIO for the Intel NICs this way since an interface like igb,
+ixgbe, ixgbevf, i40e, or i40evf would probably show pretty good
+performance under such a model and as long as the writable pages were
+being tracked by the vIOMMU. It could even allow for live migration
+support if the vIOMMU provided the info needed for migratable/dirty
+page tracking and we held off on migrating any of the dynamically
+mapped pages until after they were either unmapped or an FLR reset the
+device.
+
+Thanks.
+
+- Alex
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
