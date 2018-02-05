@@ -1,79 +1,92 @@
-Return-Path: virtio-return-2889-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-return-2870-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio@lists.oasis-open.org>
 List-Post: <mailto:virtio@lists.oasis-open.org>
 List-Help: <mailto:virtio-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-References: <1518206354-29610-1-git-send-email-pasic@linux.vnet.ibm.com>
- <20180209220411-mutt-send-email-mst@kernel.org>
- <20180212140321.38725bda.cohuck@redhat.com>
 From: Halil Pasic <pasic@linux.vnet.ibm.com>
-Date: Mon, 12 Feb 2018 15:29:34 +0100
+References: <1515577653-9336-1-git-send-email-mst@redhat.com>
+ <1516665617-30748-1-git-send-email-mst@redhat.com>
+Date: Mon, 5 Feb 2018 23:54:52 +0100
 MIME-Version: 1.0
-In-Reply-To: <20180212140321.38725bda.cohuck@redhat.com>
+In-Reply-To: <1516665617-30748-1-git-send-email-mst@redhat.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Message-Id: <d6f3c515-d448-2385-0527-edda3bfd953e@linux.vnet.ibm.com>
-Subject: [virtio] Re: [PATCH 0/2] two versioning related changes
-To: Cornelia Huck <cohuck@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>
-Cc: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+Message-Id: <db5515bb-5995-011a-6e84-c2194dedf2aa@linux.vnet.ibm.com>
+Subject: Re: [virtio] [PATCH v7 01/11] content: move 1.0 queue format out to a
+ separate section
+To: "Michael S. Tsirkin" <mst@redhat.com>, virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
 
 
-On 02/12/2018 02:03 PM, Cornelia Huck wrote:
-> On Fri, 9 Feb 2018 22:43:23 +0200
-> "Michael S. Tsirkin" <mst@redhat.com> wrote:
+On 01/23/2018 01:01 AM, Michael S. Tsirkin wrote:
+> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+> ---
+>  content.tex | 25 ++++++++++++++++++++++++-
+>  1 file changed, 24 insertions(+), 1 deletion(-)
 > 
->> On Fri, Feb 09, 2018 at 08:59:12PM +0100, Halil Pasic wrote:
->>> Regarding patch #1 please see also:
->>> https://lists.oasis-open.org/archives/virtio/201802/msg00018.html  
->>
->> Fine by me. Can you please open an issue to track it?
->> This makes it easier for me to start voting.
->>
->> If you would rather use github issues,
->> that'd be great. There seem to be easy tools
->> to work with their API, e.g.
->> http://search.cpan.org/~fayland/Net-GitHub-0.93/lib/Net/GitHub/V3/Issues.pm
->>
->> We need to come up with a schema to keep the following info in github:
->> - what is the issue title/short description
->> - which version fixes the issue?
->> - what is the proposed spec change?
->>
->> and then send a script that can get an issue # and
->> print that, similar to virtio-jira.pl in virtio-admin.
-> 
-> I'd vote (heh) to just use jira for now. Especially as I'd like to get
-> the big batch of the packed ring updates out of the way before we start
-> to tweak our tooling...
-> 
->>
->> Help with that is very welcome but if you'd rather not you
->> can just use jira for now.
+> diff --git a/content.tex b/content.tex
+> index c7ef7fd..4483a4b 100644
+> --- a/content.tex
+> +++ b/content.tex
+> @@ -230,7 +230,30 @@ result.
+>  The mechanism for bulk data transport on virtio devices is
+>  pretentiously called a virtqueue. Each device can have zero or more
+>  virtqueues\footnote{For example, the simplest network device has one virtqueue for
+> -transmit and one for receive.}.  Each queue has a 16-bit queue size
+> +transmit and one for receive.}.
+> +
+> +Driver makes requests available to device by adding
+> +an available buffer to the queue - i.e. adding a buffer
+> +describing the request to a virtqueue, and optionally triggering
+> +a driver event - i.e. sending a notification to the device.
+> +
+> +Device executes the requests and - when complete - adds
+> +a used buffer to the queue - i.e. lets the driver
+> +know by marking the buffer as used. Device can then trigger
+> +a device event - i.e. send an interrupt to the driver.
+> +
+
+Here I seem to recognize my suggestion about describing the
+relationship between virtqueue buffers and requests. But none
+of the terms your are using are defined yet, so assuming linear
+reading, this may not be the best place to establish that relationship.
+
+Furthermore I think the usage of the term 'buffer' got even messier
+that in v1.0. I will elaborate on that later.
 
 
-I had a look at the script mentioned above and the GitHub API. I'm not
-too eager to do this GitHub issues support at the moment, so I'm going
-to stick with Jira.
+> +For queue operation detail, see \ref{sec:Basic Facilities of a Virtio Device / Split Virtqueues}~\nameref{sec:Basic Facilities of a Virtio Device / Split Virtqueues}.
+> +
+> +\section{Split Virtqueues}\label{sec:Basic Facilities of a Virtio Device / Split Virtqueues}
+> +The split virtqueue format is the original format used by legacy
+> +virtio devices.
+
+All v1.0 devices and drivers are using split too not only legacy (aka pre v1.0). 
+
+>  The split virtqueue format separates the
+> +virtqueue into several parts, where each part is write-able by
+> +either the driver or the device, but not both. Multiple
+> +locations need to be updated when making a buffer available
+> +and when marking it as used.
+> +
+
+If we assume 3 parts (available ring, used ring and descriptor table),
+then the two last sentences are contradictory: as one of three would have
+to be updated by both the device and the driver. Or did I misunderstand
+something?
+
+I think, the purpose of this paragraph is to distinguish the split
+form the packed. We probably don't need these additions to understand
+'split'. I would rather see a discussion on the two formats in the
+common (2.4) virtqueue section.
+
+[..]
 
 Regards,
 Halil
-
->> Pls remember to set fixed in to 1.1 and environment to
->> reporter name and email (yourself).
->>
->>
->>> Halil Pasic (2):
->>>   ccw: be more precise the semantic of revision 1
->>>   introduction: simplify the designation of legacy
->>>
->>>  content.tex      |    2 +-
->>>  introduction.tex |    4 ++--
->>>  2 files changed, 3 insertions(+), 3 deletions(-)  
-> 
 
 
 ---------------------------------------------------------------------
