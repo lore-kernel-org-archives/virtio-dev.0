@@ -1,68 +1,74 @@
-Return-Path: virtio-dev-return-3243-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3137-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id B4FC658191F8
-	for <virtio-dev@lists.oasis-open.org>; Tue, 20 Feb 2018 08:56:53 -0800 (PST)
-Date: Tue, 20 Feb 2018 16:56:34 +0000
-From: Stefan Hajnoczi <stefanha@redhat.com>
-Message-ID: <20180220165634.GA12161@stefanha-x1.localdomain>
-References: <12c223afbafb402d6e6602a5888e5dca2953dbfc.1519044214.git.tgolembi@redhat.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id E75B35818F76
+	for <virtio-dev@lists.oasis-open.org>; Mon,  5 Feb 2018 04:08:39 -0800 (PST)
+Date: Mon, 5 Feb 2018 13:08:24 +0100
+From: =?UTF-8?B?VG9tw6HFoSBHb2xlbWJpb3Zza8O9?= <tgolembi@redhat.com>
+Message-ID: <20180205130824.79f570bc@fiorina>
+In-Reply-To: <938dc32019864c9c19259bdddd64a53b6b99efef.1512476043.git.tgolembi@redhat.com>
+References: <cover.1512476043.git.tgolembi@redhat.com>
+	<938dc32019864c9c19259bdddd64a53b6b99efef.1512476043.git.tgolembi@redhat.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="Qxx1br4bt0+wmkIi"
-Content-Disposition: inline
-In-Reply-To: <12c223afbafb402d6e6602a5888e5dca2953dbfc.1519044214.git.tgolembi@redhat.com>
-Subject: Re: [virtio-dev] [PATCH] docs: document virtio-balloon stats
-To: =?utf-8?B?VG9tw6HFoSBHb2xlbWJpb3Zza8O9?= <tgolembi@redhat.com>
-Cc: virtio-dev@lists.oasis-open.org, qemu-devel@nongnu.org, Wei Wang <wei.w.wang@intel.com>, Jonathan Helman <jonathan.helman@oracle.com>, "Michael S. Tsirkin" <mst@redhat.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Subject: [virtio-dev] Re: [PATCH v2 1/1] virtio-balloon: include statistics of disk/file
+ caches
+To: virtio-dev@lists.oasis-open.org, qemu-devel@nongnu.org
+Cc: Wei Wang <wei.w.wang@intel.com>, "Michael S. Tsirkin" <mst@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
---Qxx1br4bt0+wmkIi
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+ping
 
-On Mon, Feb 19, 2018 at 01:43:44PM +0100, Tom=C3=A1=C5=A1 Golembiovsk=C3=BD=
- wrote:
-> Document statistics added in commits
->=20
->     commit a0d06486b445985b8d128df172daefbae205bffd
->     Author: Denis V. Lunev <den@openvz.org>
->     Date:   Wed Feb 24 10:50:48 2016 +0300
->=20
->         virtio-balloon: add 'available' counter
->=20
-> and
->=20
->     commit bf1e7140ef0b3a149860ab9f05b36665133238f6
->     Author: Tom=C3=A1=C5=A1 Golembiovsk=C3=BD <tgolembi@redhat.com>
->     Date:   Tue Dec 5 13:14:46 2017 +0100
->=20
->         virtio-balloon: include statistics of disk/file caches
->=20
+On Tue,  5 Dec 2017 13:14:46 +0100
+Tom=C3=A1=C5=A1 Golembiovsk=C3=BD <tgolembi@redhat.com> wrote:
+
 > Signed-off-by: Tom=C3=A1=C5=A1 Golembiovsk=C3=BD <tgolembi@redhat.com>
 > ---
->  docs/virtio-balloon-stats.txt | 2 ++
->  1 file changed, 2 insertions(+)
+>  hw/virtio/virtio-balloon.c                      | 1 +
+>  include/standard-headers/linux/virtio_balloon.h | 3 ++-
+>  2 files changed, 3 insertions(+), 1 deletion(-)
+>=20
+> diff --git a/hw/virtio/virtio-balloon.c b/hw/virtio/virtio-balloon.c
+> index 37cde38982..8141326a51 100644
+> --- a/hw/virtio/virtio-balloon.c
+> +++ b/hw/virtio/virtio-balloon.c
+> @@ -50,6 +50,7 @@ static const char *balloon_stat_names[] =3D {
+>     [VIRTIO_BALLOON_S_MEMFREE] =3D "stat-free-memory",
+>     [VIRTIO_BALLOON_S_MEMTOT] =3D "stat-total-memory",
+>     [VIRTIO_BALLOON_S_AVAIL] =3D "stat-available-memory",
+> +   [VIRTIO_BALLOON_S_CACHES] =3D "stat-disk-caches",
+>     [VIRTIO_BALLOON_S_NR] =3D NULL
+>  };
+> =20
+> diff --git a/include/standard-headers/linux/virtio_balloon.h b/include/st=
+andard-headers/linux/virtio_balloon.h
+> index 9d06ccd066..7b0a41b8fc 100644
+> --- a/include/standard-headers/linux/virtio_balloon.h
+> +++ b/include/standard-headers/linux/virtio_balloon.h
+> @@ -52,7 +52,8 @@ struct virtio_balloon_config {
+>  #define VIRTIO_BALLOON_S_MEMFREE  4   /* Total amount of free memory */
+>  #define VIRTIO_BALLOON_S_MEMTOT   5   /* Total amount of memory */
+>  #define VIRTIO_BALLOON_S_AVAIL    6   /* Available memory as in /proc */
+> -#define VIRTIO_BALLOON_S_NR       7
+> +#define VIRTIO_BALLOON_S_CACHES   7   /* Disk caches */
+> +#define VIRTIO_BALLOON_S_NR       8
+> =20
+>  /*
+>   * Memory statistics structure.
+> --=20
+> 2.15.1
+>=20
 
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
 
---Qxx1br4bt0+wmkIi
-Content-Type: application/pgp-signature; name="signature.asc"
+--=20
+Tom=C3=A1=C5=A1 Golembiovsk=C3=BD <tgolembi@redhat.com>
 
------BEGIN PGP SIGNATURE-----
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
-iQEcBAEBAgAGBQJajFNBAAoJEJykq7OBq3PIYmoIAJCqyVBCOddyRe7A+xIDRaoh
-enFTqfHEJ82tLaq4Tebw/aONy2UdklNg43kdVjUFHOmk4aELRq1psQhOmPvSq/Wb
-/2v/KuySJaigGGrbjzeQ0YjJcqWLdgTXvoBvEyCP999/3FHx6vJvH4zlVcc68i8g
-BU+RfjZMGqjs1l9WcMwkco4bNmVhL6AohBozJK6TPyN2gn/UZwPnneqdOP0ysL2W
-uTzo4uqekm4n9wZhmT4WlkhIcA7g54G7vkHkBScbM/QhiFRSj2Bq7olBjygQqfZW
-nv8x6LCOaK5ZRD5CfyIH3iSYvMLCPbwryteYQAIfwf43rxWvN4C8Sa8vSFycxfM=
-=cmwu
------END PGP SIGNATURE-----
-
---Qxx1br4bt0+wmkIi--
