@@ -1,101 +1,42 @@
-Return-Path: virtio-dev-return-3149-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3172-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 639535818F7B
-	for <virtio-dev@lists.oasis-open.org>; Mon,  5 Feb 2018 20:40:55 -0800 (PST)
-Date: Tue, 6 Feb 2018 12:40:05 +0800
-From: Tiwei Bie <tiwei.bie@intel.com>
-Message-ID: <20180206044005.louuil5etk6vsy4z@debian-xvivbkq.sh.intel.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 6E1045819113
+	for <virtio-dev@lists.oasis-open.org>; Wed,  7 Feb 2018 07:23:48 -0800 (PST)
 References: <20180125040328.22867-1-tiwei.bie@intel.com>
  <20180125040328.22867-7-tiwei.bie@intel.com>
  <2e83b7fa-8cec-4c13-003f-f753a13fbfe2@redhat.com>
+ <20180206044005.louuil5etk6vsy4z@debian-xvivbkq.sh.intel.com>
+From: Paolo Bonzini <pbonzini@redhat.com>
+Message-ID: <d7ff477b-11eb-720b-c389-1b75348f3a89@redhat.com>
+Date: Wed, 7 Feb 2018 16:23:29 +0100
 MIME-Version: 1.0
+In-Reply-To: <20180206044005.louuil5etk6vsy4z@debian-xvivbkq.sh.intel.com>
 Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <2e83b7fa-8cec-4c13-003f-f753a13fbfe2@redhat.com>
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Subject: Re: [virtio-dev] [PATCH v1 6/6] vhost-user: add VFIO based
  accelerators support
-To: Paolo Bonzini <pbonzini@redhat.com>
+To: Tiwei Bie <tiwei.bie@intel.com>
 Cc: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, mst@redhat.com, alex.williamson@redhat.com, jasowang@redhat.com, stefanha@redhat.com, cunming.liang@intel.com, dan.daly@intel.com, jianfeng.tan@intel.com, zhihong.wang@intel.com, xiao.w.wang@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Mon, Feb 05, 2018 at 06:47:51PM +0100, Paolo Bonzini wrote:
-> On 25/01/2018 05:03, Tiwei Bie wrote:
-> > The key difference with PCI passthru is that, in this case only
-> > the data path of the device (e.g. DMA ring, notify region and
-> > queue interrupt) is pass-throughed to the VM, the device control
-> > path (e.g. PCI configuration space and MMIO regions) is still
-> > defined and emulated by QEMU.
-> > 
-> > The benefits of keeping virtio device emulation in QEMU compared
-> > with virtio device PCI passthru include (but not limit to):
-> > 
-> > - consistent device interface for guest OS in the VM;
-> > - max flexibility on the hardware (i.e. the accelerators) design;
-> > - leveraging the existing virtio live-migration framework;
-> > 
-> > The virtual IOMMU isn't supported by the accelerators for now.
-> > Because vhost-user currently lacks of an efficient way to share
-> > the IOMMU table in VM to vhost backend. That's why the software
-> > implementation of virtual IOMMU support in vhost-user backend
-> > can't support dynamic mapping well. Once this problem is solved
-> > in vhost-user, virtual IOMMU can be supported by accelerators
-> > too, and the IOMMU feature bit checking in this patch can be
-> > removed.
-> 
-> I don't understand why this would use vhost-user.  vhost-user is meant
-> for connecting to e.g. a user-space switch that is shared between
-> multiple virtual machines.
+On 06/02/2018 05:40, Tiwei Bie wrote:
+> In our case, the accelerator for
+> each VM is a PCI VF device and the PCI card has vswitch
+> logic (the VFs are the ports of switch to connect VMs).
 
-Yeah, you're right!
+Ok, this makes a lot more sense now. :)
 
-The commit log you quoted is talking about the benefits
-of vDPA (i.e. only passthru the data path), which is not
-related to vhost-user.
+Paolo
 
-The usage of vhost-user you described is exactly why we
-want to use vhost-user. In our case, the accelerator for
-each VM is a PCI VF device and the PCI card has vswitch
-logic (the VFs are the ports of switch to connect VMs).
-So the card is a vswitch accelerator which will be shared
-between multiple VMs. If we extend vhost-user, QEMU can
-keep using the vhost-user interface to connect to the
-user-space switch which has an optional accelerator.
+> So the card is a vswitch accelerator which will be shared
+> between multiple VMs.
 
-More details can be found in the "Why extend vhost-user
-for vDPA" section of the cover letter:
-
------ START -----
-
-Why extend vhost-user for vDPA
-==============================
-
-We have already implemented various virtual switches (e.g. OVS-DPDK)
-based on vhost-user for VMs in the Cloud. They are purely software
-running on CPU cores. When we have accelerators for such NFVi applications,
-it's ideal if the applications could keep using the original interface
-(i.e. vhost-user netdev) with QEMU, and infrastructure is able to decide
-when and how to switch between CPU and accelerators within the interface.
-And the switching (i.e. switch between CPU and accelerators) can be done
-flexibly and quickly inside the applications.
-
------ END -----
-
-I'll try to add these infos into the commit log. Thanks!
-
-Best regards,
-Tiwei Bie
-
-> 
-> In this case, there would be one VFIO device per VM (because different
-> VM must be in different VFIO groups).  So I don't understand the benefit
-> of configuring the control path of the VFIO device outside QEMU.
-> 
-> Paolo
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
