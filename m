@@ -1,187 +1,125 @@
-Return-Path: virtio-dev-return-3186-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3169-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 53A6058191B5
-	for <virtio-dev@lists.oasis-open.org>; Thu,  8 Feb 2018 08:39:58 -0800 (PST)
-Date: Thu, 8 Feb 2018 18:39:55 +0200
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20180208183635-mutt-send-email-mst@kernel.org>
-References: <cover.1515190238.git.jbaron@akamai.com>
- <cb116634b45b4da0c437ca54cd979c703fc6b920.1515190612.git.jbaron@akamai.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cb116634b45b4da0c437ca54cd979c703fc6b920.1515190612.git.jbaron@akamai.com>
-Subject: [virtio-dev] Re: [PATCH v4 3/3] qemu: add linkspeed and duplex settings to
- virtio-net
-To: Jason Baron <jbaron@akamai.com>
-Cc: davem@davemloft.net, jasowang@redhat.com, netdev@vger.kernel.org, virtualization@lists.linux-foundation.org, qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org
+	by lists.oasis-open.org (Postfix) with ESMTP id E652F1CB807B
+	for <virtio-dev@lists.oasis-open.org>; Tue,  6 Feb 2018 23:13:38 -0800 (PST)
+From: Wei Wang <wei.w.wang@intel.com>
+Date: Wed,  7 Feb 2018 14:54:27 +0800
+Message-Id: <1517986471-15185-1-git-send-email-wei.w.wang@intel.com>
+Subject: [virtio-dev] [PATCH v27 0/4] Virtio-balloon: support free page reporting
+To: virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, linux-mm@kvack.org, mst@redhat.com, mhocko@kernel.org, akpm@linux-foundation.org
+Cc: pbonzini@redhat.com, wei.w.wang@intel.com, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu0@gmail.com, nilal@redhat.com, riel@redhat.com, huangzhichao@huawei.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Fri, Jan 05, 2018 at 05:44:55PM -0500, Jason Baron wrote:
-> Although linkspeed and duplex can be set in a linux guest via 'ethtool -s',
-> this requires custom ethtool commands for virtio-net by default.
-> 
-> Introduce a new feature flag, VIRTIO_NET_F_SPEED_DUPLEX, which allows
-> the hypervisor to export a linkspeed and duplex setting. The user can
-> subsequently overwrite it later if desired via: 'ethtool -s'.
-> 
-> Linkspeed and duplex settings can be set as:
-> '-device virtio-net,speed=10000,duplex=full'
-> 
-> where speed is [-1...INT_MAX], and duplex is ["half"|"full"].
-> 
-> Signed-off-by: Jason Baron <jbaron@akamai.com>
-> Cc: "Michael S. Tsirkin" <mst@redhat.com>
-> Cc: Jason Wang <jasowang@redhat.com>
-> Cc: virtio-dev@lists.oasis-open.org
-> ---
->  hw/net/virtio-net.c                         | 32 +++++++++++++++++++++++++++++
->  include/hw/virtio/virtio-net.h              |  3 +++
->  include/standard-headers/linux/virtio_net.h | 13 ++++++++++++
->  3 files changed, 48 insertions(+)
-> 
-> diff --git a/hw/net/virtio-net.c b/hw/net/virtio-net.c
-> index 54823af..cd63659 100644
-> --- a/hw/net/virtio-net.c
-> +++ b/hw/net/virtio-net.c
-> @@ -40,6 +40,12 @@
->  #define VIRTIO_NET_RX_QUEUE_MIN_SIZE VIRTIO_NET_RX_QUEUE_DEFAULT_SIZE
->  #define VIRTIO_NET_TX_QUEUE_MIN_SIZE VIRTIO_NET_TX_QUEUE_DEFAULT_SIZE
->  
-> +/* duplex and speed */
-> +#define DUPLEX_UNKNOWN          0xff
-> +#define DUPLEX_HALF             0x00
-> +#define DUPLEX_FULL             0x01
-> +#define SPEED_UNKNOWN           -1
-> +
->  /*
->   * Calculate the number of bytes up to and including the given 'field' of
->   * 'container'.
+This patch series is separated from the previous "Virtio-balloon
+Enhancement" series. The new feature, VIRTIO_BALLOON_F_FREE_PAGE_HINT,  
+implemented by this series enables the virtio-balloon driver to report
+hints of guest free pages to the host. It can be used to accelerate live
+migration of VMs. Here is an introduction of this usage:
 
-Please import ethtool.h with these macros from linux using scripts/update-linux-headers.sh
-machinery.
+Live migration needs to transfer the VM's memory from the source machine
+to the destination round by round. For the 1st round, all the VM's memory
+is transferred. From the 2nd round, only the pieces of memory that were
+written by the guest (after the 1st round) are transferred. One method
+that is popularly used by the hypervisor to track which part of memory is
+written is to write-protect all the guest memory.
 
-> @@ -61,6 +67,8 @@ static VirtIOFeature feature_sizes[] = {
->       .end = endof(struct virtio_net_config, max_virtqueue_pairs)},
->      {.flags = 1ULL << VIRTIO_NET_F_MTU,
->       .end = endof(struct virtio_net_config, mtu)},
-> +    {.flags = 1ULL << VIRTIO_NET_F_SPEED_DUPLEX,
-> +     .end = endof(struct virtio_net_config, duplex)},
->      {}
->  };
->  
-> @@ -89,6 +97,8 @@ static void virtio_net_get_config(VirtIODevice *vdev, uint8_t *config)
->      virtio_stw_p(vdev, &netcfg.max_virtqueue_pairs, n->max_queues);
->      virtio_stw_p(vdev, &netcfg.mtu, n->net_conf.mtu);
->      memcpy(netcfg.mac, n->mac, ETH_ALEN);
-> +    virtio_stl_p(vdev, &netcfg.speed, n->net_conf.speed);
-> +    netcfg.duplex = n->net_conf.duplex;
->      memcpy(config, &netcfg, n->config_size);
->  }
->  
-> @@ -1941,6 +1951,26 @@ static void virtio_net_device_realize(DeviceState *dev, Error **errp)
->          n->host_features |= (1ULL << VIRTIO_NET_F_MTU);
->      }
->  
-> +    if (n->net_conf.duplex_str) {
-> +        if (strncmp(n->net_conf.duplex_str, "half", 5) == 0) {
-> +            n->net_conf.duplex = DUPLEX_HALF;
-> +        } else if (strncmp(n->net_conf.duplex_str, "full", 5) == 0) {
-> +            n->net_conf.duplex = DUPLEX_FULL;
-> +        } else {
-> +            error_setg(errp, "'duplex' must be 'half' or 'full'");
-> +        }
-> +        n->host_features |= (1ULL << VIRTIO_NET_F_SPEED_DUPLEX);
-> +    } else {
-> +        n->net_conf.duplex = DUPLEX_UNKNOWN;
-> +    }
-> +
-> +    if (n->net_conf.speed < SPEED_UNKNOWN) {
-> +        error_setg(errp, "'speed' must be between -1 (SPEED_UNKOWN) and "
-> +                   "INT_MAX");
-> +    } else if (n->net_conf.speed >= 0) {
-> +        n->host_features |= (1ULL << VIRTIO_NET_F_SPEED_DUPLEX);
-> +    }
-> +
->      virtio_net_set_config_size(n, n->host_features);
->      virtio_init(vdev, "virtio-net", VIRTIO_ID_NET, n->config_size);
->  
-> @@ -2161,6 +2191,8 @@ static Property virtio_net_properties[] = {
->      DEFINE_PROP_UINT16("host_mtu", VirtIONet, net_conf.mtu, 0),
->      DEFINE_PROP_BOOL("x-mtu-bypass-backend", VirtIONet, mtu_bypass_backend,
->                       true),
-> +    DEFINE_PROP_INT32("speed", VirtIONet, net_conf.speed, SPEED_UNKNOWN),
-> +    DEFINE_PROP_STRING("duplex", VirtIONet, net_conf.duplex_str),
->      DEFINE_PROP_END_OF_LIST(),
->  };
->  
-> diff --git a/include/hw/virtio/virtio-net.h b/include/hw/virtio/virtio-net.h
-> index e7634c9..02484dc 100644
-> --- a/include/hw/virtio/virtio-net.h
-> +++ b/include/hw/virtio/virtio-net.h
-> @@ -38,6 +38,9 @@ typedef struct virtio_net_conf
->      uint16_t rx_queue_size;
->      uint16_t tx_queue_size;
->      uint16_t mtu;
-> +    int32_t speed;
-> +    char *duplex_str;
-> +    uint8_t duplex;
->  } virtio_net_conf;
->  
->  /* Maximum packet size we can receive from tap device: header + 64k */
-> diff --git a/include/standard-headers/linux/virtio_net.h b/include/standard-headers/linux/virtio_net.h
-> index 30ff249..17c8531 100644
-> --- a/include/standard-headers/linux/virtio_net.h
-> +++ b/include/standard-headers/linux/virtio_net.h
-> @@ -57,6 +57,8 @@
->  					 * Steering */
->  #define VIRTIO_NET_F_CTRL_MAC_ADDR 23	/* Set MAC address */
->  
-> +#define VIRTIO_NET_F_SPEED_DUPLEX 63   /* Device set linkspeed and duplex */
-> +
->  #ifndef VIRTIO_NET_NO_LEGACY
->  #define VIRTIO_NET_F_GSO	6	/* Host handles pkts w/ any GSO type */
->  #endif /* VIRTIO_NET_NO_LEGACY */
-> @@ -76,6 +78,17 @@ struct virtio_net_config {
->  	uint16_t max_virtqueue_pairs;
->  	/* Default maximum transmit unit advice */
->  	uint16_t mtu;
-> +	/*
-> +	 * speed, in units of 1Mb. All values 0 to INT_MAX are legal.
-> +	 * Any other value stands for unknown.
-> +	 */
-> +	uint32_t speed;
-> +	/*
-> +	 * 0x00 - half duplex
-> +	 * 0x01 - full duplex
-> +	 * Any other value stands for unknown.
-> +	 */
-> +	uint8_t duplex;
->  } QEMU_PACKED;
->  
->  /*
+This feature enables the optimization of the 1st round memory transfer -
+the hypervisor can skip the transfer of guest free pages in the 1st round.
+It is not concerned that the memory pages are used after they are given
+to the hypervisor as a hint of the free pages, because they will be
+tracked by the hypervisor and transferred in the next round if they are
+used and written.
 
-This should be done as a separate patch by running the abovementioned
-update script.
+* Tests
+- Migration time improvement
+Result:
+Live migration time is reduced to 14% with this optimization.
+Details:
+Local live migration of 8GB idle guest, the legacy live migration takes
+~1817ms. With this optimization, it takes ~254ms, which reduces the time
+to 14%.
+- Workload tests
+Results:
+Running this feature has no impact on the linux compilation workload
+running inside the guest.
+Details:
+Set up a Ping-Pong local live migration, where the guest ceaselessy
+migrates between the source and destination. Linux compilation,
+i.e. make bzImage -j4, is performed during the Ping-Pong migration. The
+legacy case takes 5min14s to finish the compilation. With this
+optimization patched, it takes 5min12s.
 
+ChangeLog:
+v26->v27:
+    - add a new patch to expose page_poisoning_enabled to kernel modules
+    - virtio-balloon: set poison_val to 0xaaaaaaaa, instead of 0xaa
+v25->v26: virtio-balloon changes only
+    - remove kicking free page vq since the host now polls the vq after
+      initiating the reporting
+    - report_free_page_func: detach all the used buffers after sending
+      the stop cmd id. This avoids leaving the detaching burden (i.e.
+      overhead) to the next cmd id. Detaching here isn't considered
+      overhead since the stop cmd id has been sent, and host has already
+      moved formard.
+v24->v25:
+    - mm: change walk_free_mem_block to return 0 (instead of true) on
+          completing the report, and return a non-zero value from the
+          callabck, which stops the reporting.
+    - virtio-balloon:
+        - use enum instead of define for VIRTIO_BALLOON_VQ_INFLATE etc.
+        - avoid __virtio_clear_bit when bailing out;
+        - a new method to avoid reporting the some cmd id to host twice
+        - destroy_workqueue can cancel free page work when the feature is
+          negotiated;
+        - fail probe when the free page vq size is less than 2.
+v23->v24:
+    - change feature name VIRTIO_BALLOON_F_FREE_PAGE_VQ to
+      VIRTIO_BALLOON_F_FREE_PAGE_HINT
+    - kick when vq->num_free < half full, instead of "= half full"
+    - replace BUG_ON with bailing out
+    - check vb->balloon_wq in probe(), if null, bail out
+    - add a new feature bit for page poisoning
+    - solve the corner case that one cmd id being sent to host twice
+v22->v23:
+    - change to kick the device when the vq is half-way full;
+    - open-code batch_free_page_sg into add_one_sg;
+    - change cmd_id from "uint32_t" to "__virtio32";
+    - reserver one entry in the vq for the driver to send cmd_id, instead
+      of busywaiting for an available entry;
+    - add "stop_update" check before queue_work for prudence purpose for
+      now, will have a separate patch to discuss this flag check later;
+    - init_vqs: change to put some variables on stack to have simpler
+      implementation;
+    - add destroy_workqueue(vb->balloon_wq);
 
-> diff --git a/pixman b/pixman
-> new file mode 160000
-> index 0000000..87eea99
-> --- /dev/null
-> +++ b/pixman
-> @@ -0,0 +1 @@
-> +Subproject commit 87eea99e443b389c978cf37efc52788bf03a0ee0
+v21->v22:
+    - add_one_sg: some code and comment re-arrangement
+    - send_cmd_id: handle a cornercase
 
-I don't think we need this part.
+For previous ChangeLog, please reference
+https://lwn.net/Articles/743660/
 
-> -- 
-> 2.6.1
+Wei Wang (4):
+  mm: support reporting free page blocks
+  virtio-balloon: VIRTIO_BALLOON_F_FREE_PAGE_HINT
+  mm/page_poison: expose page_poisoning_enabled to kernel modules
+  virtio-balloon: VIRTIO_BALLOON_F_PAGE_POISON
+
+ drivers/virtio/virtio_balloon.c     | 255 +++++++++++++++++++++++++++++++-----
+ include/linux/mm.h                  |   6 +
+ include/uapi/linux/virtio_balloon.h |   7 +
+ mm/page_alloc.c                     |  96 ++++++++++++++
+ mm/page_poison.c                    |   6 +
+ 5 files changed, 334 insertions(+), 36 deletions(-)
+
+-- 
+2.7.4
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
