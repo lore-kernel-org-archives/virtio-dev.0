@@ -1,52 +1,189 @@
-Return-Path: virtio-return-2886-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio@lists.oasis-open.org>
-List-Post: <mailto:virtio@lists.oasis-open.org>
-List-Help: <mailto:virtio-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Mon, 12 Feb 2018 13:23:24 +0000
-From: Stefan Hajnoczi <stefanha@redhat.com>
-Message-ID: <20180212132324.GD4913@stefanha-x1.localdomain>
-References: <1515577653-9336-1-git-send-email-mst@redhat.com>
- <1516665617-30748-11-git-send-email-mst@redhat.com>
+Return-Path: virtio-dev-return-3186-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
+	by lists.oasis-open.org (Postfix) with ESMTP id 53A6058191B5
+	for <virtio-dev@lists.oasis-open.org>; Thu,  8 Feb 2018 08:39:58 -0800 (PST)
+Date: Thu, 8 Feb 2018 18:39:55 +0200
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20180208183635-mutt-send-email-mst@kernel.org>
+References: <cover.1515190238.git.jbaron@akamai.com>
+ <cb116634b45b4da0c437ca54cd979c703fc6b920.1515190612.git.jbaron@akamai.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="Q0rSlbzrZN6k9QnT"
-Content-Disposition: inline
-In-Reply-To: <1516665617-30748-11-git-send-email-mst@redhat.com>
-Subject: Re: [virtio] [PATCH v7 11/11] split-ring: in order feature
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
-List-ID: <virtio-dev.lists.oasis-open.org>
-
---Q0rSlbzrZN6k9QnT
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <cb116634b45b4da0c437ca54cd979c703fc6b920.1515190612.git.jbaron@akamai.com>
+Subject: [virtio-dev] Re: [PATCH v4 3/3] qemu: add linkspeed and duplex settings to
+ virtio-net
+To: Jason Baron <jbaron@akamai.com>
+Cc: davem@davemloft.net, jasowang@redhat.com, netdev@vger.kernel.org, virtualization@lists.linux-foundation.org, qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org
+List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Tue, Jan 23, 2018 at 02:01:09AM +0200, Michael S. Tsirkin wrote:
-> For a split ring, require that drivers use descriptors in order too.
-> This allows devices to skip reading the available ring.
->=20
-> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+On Fri, Jan 05, 2018 at 05:44:55PM -0500, Jason Baron wrote:
+> Although linkspeed and duplex can be set in a linux guest via 'ethtool -s',
+> this requires custom ethtool commands for virtio-net by default.
+> 
+> Introduce a new feature flag, VIRTIO_NET_F_SPEED_DUPLEX, which allows
+> the hypervisor to export a linkspeed and duplex setting. The user can
+> subsequently overwrite it later if desired via: 'ethtool -s'.
+> 
+> Linkspeed and duplex settings can be set as:
+> '-device virtio-net,speed=10000,duplex=full'
+> 
+> where speed is [-1...INT_MAX], and duplex is ["half"|"full"].
+> 
+> Signed-off-by: Jason Baron <jbaron@akamai.com>
+> Cc: "Michael S. Tsirkin" <mst@redhat.com>
+> Cc: Jason Wang <jasowang@redhat.com>
+> Cc: virtio-dev@lists.oasis-open.org
 > ---
->  split-ring.tex | 18 ++++++++++++++++++
->  1 file changed, 18 insertions(+)
+>  hw/net/virtio-net.c                         | 32 +++++++++++++++++++++++++++++
+>  include/hw/virtio/virtio-net.h              |  3 +++
+>  include/standard-headers/linux/virtio_net.h | 13 ++++++++++++
+>  3 files changed, 48 insertions(+)
+> 
+> diff --git a/hw/net/virtio-net.c b/hw/net/virtio-net.c
+> index 54823af..cd63659 100644
+> --- a/hw/net/virtio-net.c
+> +++ b/hw/net/virtio-net.c
+> @@ -40,6 +40,12 @@
+>  #define VIRTIO_NET_RX_QUEUE_MIN_SIZE VIRTIO_NET_RX_QUEUE_DEFAULT_SIZE
+>  #define VIRTIO_NET_TX_QUEUE_MIN_SIZE VIRTIO_NET_TX_QUEUE_DEFAULT_SIZE
+>  
+> +/* duplex and speed */
+> +#define DUPLEX_UNKNOWN          0xff
+> +#define DUPLEX_HALF             0x00
+> +#define DUPLEX_FULL             0x01
+> +#define SPEED_UNKNOWN           -1
+> +
+>  /*
+>   * Calculate the number of bytes up to and including the given 'field' of
+>   * 'container'.
 
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+Please import ethtool.h with these macros from linux using scripts/update-linux-headers.sh
+machinery.
 
---Q0rSlbzrZN6k9QnT
-Content-Type: application/pgp-signature; name="signature.asc"
+> @@ -61,6 +67,8 @@ static VirtIOFeature feature_sizes[] = {
+>       .end = endof(struct virtio_net_config, max_virtqueue_pairs)},
+>      {.flags = 1ULL << VIRTIO_NET_F_MTU,
+>       .end = endof(struct virtio_net_config, mtu)},
+> +    {.flags = 1ULL << VIRTIO_NET_F_SPEED_DUPLEX,
+> +     .end = endof(struct virtio_net_config, duplex)},
+>      {}
+>  };
+>  
+> @@ -89,6 +97,8 @@ static void virtio_net_get_config(VirtIODevice *vdev, uint8_t *config)
+>      virtio_stw_p(vdev, &netcfg.max_virtqueue_pairs, n->max_queues);
+>      virtio_stw_p(vdev, &netcfg.mtu, n->net_conf.mtu);
+>      memcpy(netcfg.mac, n->mac, ETH_ALEN);
+> +    virtio_stl_p(vdev, &netcfg.speed, n->net_conf.speed);
+> +    netcfg.duplex = n->net_conf.duplex;
+>      memcpy(config, &netcfg, n->config_size);
+>  }
+>  
+> @@ -1941,6 +1951,26 @@ static void virtio_net_device_realize(DeviceState *dev, Error **errp)
+>          n->host_features |= (1ULL << VIRTIO_NET_F_MTU);
+>      }
+>  
+> +    if (n->net_conf.duplex_str) {
+> +        if (strncmp(n->net_conf.duplex_str, "half", 5) == 0) {
+> +            n->net_conf.duplex = DUPLEX_HALF;
+> +        } else if (strncmp(n->net_conf.duplex_str, "full", 5) == 0) {
+> +            n->net_conf.duplex = DUPLEX_FULL;
+> +        } else {
+> +            error_setg(errp, "'duplex' must be 'half' or 'full'");
+> +        }
+> +        n->host_features |= (1ULL << VIRTIO_NET_F_SPEED_DUPLEX);
+> +    } else {
+> +        n->net_conf.duplex = DUPLEX_UNKNOWN;
+> +    }
+> +
+> +    if (n->net_conf.speed < SPEED_UNKNOWN) {
+> +        error_setg(errp, "'speed' must be between -1 (SPEED_UNKOWN) and "
+> +                   "INT_MAX");
+> +    } else if (n->net_conf.speed >= 0) {
+> +        n->host_features |= (1ULL << VIRTIO_NET_F_SPEED_DUPLEX);
+> +    }
+> +
+>      virtio_net_set_config_size(n, n->host_features);
+>      virtio_init(vdev, "virtio-net", VIRTIO_ID_NET, n->config_size);
+>  
+> @@ -2161,6 +2191,8 @@ static Property virtio_net_properties[] = {
+>      DEFINE_PROP_UINT16("host_mtu", VirtIONet, net_conf.mtu, 0),
+>      DEFINE_PROP_BOOL("x-mtu-bypass-backend", VirtIONet, mtu_bypass_backend,
+>                       true),
+> +    DEFINE_PROP_INT32("speed", VirtIONet, net_conf.speed, SPEED_UNKNOWN),
+> +    DEFINE_PROP_STRING("duplex", VirtIONet, net_conf.duplex_str),
+>      DEFINE_PROP_END_OF_LIST(),
+>  };
+>  
+> diff --git a/include/hw/virtio/virtio-net.h b/include/hw/virtio/virtio-net.h
+> index e7634c9..02484dc 100644
+> --- a/include/hw/virtio/virtio-net.h
+> +++ b/include/hw/virtio/virtio-net.h
+> @@ -38,6 +38,9 @@ typedef struct virtio_net_conf
+>      uint16_t rx_queue_size;
+>      uint16_t tx_queue_size;
+>      uint16_t mtu;
+> +    int32_t speed;
+> +    char *duplex_str;
+> +    uint8_t duplex;
+>  } virtio_net_conf;
+>  
+>  /* Maximum packet size we can receive from tap device: header + 64k */
+> diff --git a/include/standard-headers/linux/virtio_net.h b/include/standard-headers/linux/virtio_net.h
+> index 30ff249..17c8531 100644
+> --- a/include/standard-headers/linux/virtio_net.h
+> +++ b/include/standard-headers/linux/virtio_net.h
+> @@ -57,6 +57,8 @@
+>  					 * Steering */
+>  #define VIRTIO_NET_F_CTRL_MAC_ADDR 23	/* Set MAC address */
+>  
+> +#define VIRTIO_NET_F_SPEED_DUPLEX 63   /* Device set linkspeed and duplex */
+> +
+>  #ifndef VIRTIO_NET_NO_LEGACY
+>  #define VIRTIO_NET_F_GSO	6	/* Host handles pkts w/ any GSO type */
+>  #endif /* VIRTIO_NET_NO_LEGACY */
+> @@ -76,6 +78,17 @@ struct virtio_net_config {
+>  	uint16_t max_virtqueue_pairs;
+>  	/* Default maximum transmit unit advice */
+>  	uint16_t mtu;
+> +	/*
+> +	 * speed, in units of 1Mb. All values 0 to INT_MAX are legal.
+> +	 * Any other value stands for unknown.
+> +	 */
+> +	uint32_t speed;
+> +	/*
+> +	 * 0x00 - half duplex
+> +	 * 0x01 - full duplex
+> +	 * Any other value stands for unknown.
+> +	 */
+> +	uint8_t duplex;
+>  } QEMU_PACKED;
+>  
+>  /*
 
------BEGIN PGP SIGNATURE-----
+This should be done as a separate patch by running the abovementioned
+update script.
 
-iQEcBAEBAgAGBQJagZVMAAoJEJykq7OBq3PIhocH/0R/kOQ50D5qWStwiIccoo19
-VfmI4DMbvthy6bZO30VYK203S8Z5hdSxqrNDhWethw2cEERX7Eagvh/XpTlETCuw
-bcJgkQYZNVSBxBGhMGev4oPAPOEmtQEGMpwj2iK2czvsXV1Yx/BnEPap7gxSPcx3
-arnvDJ1TySMBh/bqkSHTAlBn5hGP5PRBvgF9pSPNRKqbBkm7VYjQgvYvJCfEuu8g
-BVnMEQE1J6C7bj9g9hXORB4KQ4bMdNQelS2uQrrCQiysXYtDrvm20O54FcpqaHDo
-DXJJcHBhY/7w6Vds+wPbQ1OfOlctgHMZ/HDcb+iUHA3afyi6hIWAQv93K1yNQKY=
-=YY/9
------END PGP SIGNATURE-----
 
---Q0rSlbzrZN6k9QnT--
+> diff --git a/pixman b/pixman
+> new file mode 160000
+> index 0000000..87eea99
+> --- /dev/null
+> +++ b/pixman
+> @@ -0,0 +1 @@
+> +Subproject commit 87eea99e443b389c978cf37efc52788bf03a0ee0
+
+I don't think we need this part.
+
+> -- 
+> 2.6.1
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+
