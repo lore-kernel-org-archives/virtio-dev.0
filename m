@@ -1,15 +1,15 @@
-Return-Path: virtio-dev-return-3187-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3189-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 1BA6C58191B8
-	for <virtio-dev@lists.oasis-open.org>; Thu,  8 Feb 2018 11:25:22 -0800 (PST)
-Date: Thu, 8 Feb 2018 21:25:10 +0200
+	by lists.oasis-open.org (Postfix) with ESMTP id 6F71758191B8
+	for <virtio-dev@lists.oasis-open.org>; Thu,  8 Feb 2018 11:31:15 -0800 (PST)
+Date: Thu, 8 Feb 2018 21:31:03 +0200
 From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20180208212414-mutt-send-email-mst@kernel.org>
+Message-ID: <20180208213008-mutt-send-email-mst@kernel.org>
 References: <1518083420-11108-1-git-send-email-wei.w.wang@intel.com>
  <1518083420-11108-5-git-send-email-wei.w.wang@intel.com>
 MIME-Version: 1.0
@@ -31,6 +31,11 @@ On Thu, Feb 08, 2018 at 05:50:20PM +0800, Wei Wang wrote:
 > Cc: Michael S. Tsirkin <mst@redhat.com>
 > Cc: Michal Hocko <mhocko@suse.com>
 > Cc: Andrew Morton <akpm@linux-foundation.org>
+
+I'd reorder this before 2/4 this way host can always rely
+on the poison feature being supported if free page
+tracking is supported.
+
 > ---
 >  drivers/virtio/virtio_balloon.c     | 13 +++++++++++++
 >  include/uapi/linux/virtio_balloon.h |  3 +++
@@ -55,10 +60,6 @@ On Thu, Feb 08, 2018 at 05:50:20PM +0800, Wei Wang wrote:
 > +		if (virtio_has_feature(vdev, VIRTIO_BALLOON_F_PAGE_POISON)) {
 > +			page_poison_val_get((u8 *)&poison_val);
 > +			memset(&poison_val, poison_val, sizeof(poison_val));
-
-This will not DTRT on big-endian platforms.
-Just use a local u8 variable.
-
 > +			virtio_cwrite(vb->vdev, struct virtio_balloon_config,
 > +				      poison_val, &poison_val);
 > +		}
