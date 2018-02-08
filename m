@@ -1,93 +1,130 @@
-Return-Path: virtio-dev-return-3291-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3181-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 72A255819125
-	for <virtio-dev@lists.oasis-open.org>; Mon, 26 Feb 2018 14:39:26 -0800 (PST)
-Date: Tue, 27 Feb 2018 00:39:14 +0200
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20180227003852-mutt-send-email-mst@kernel.org>
-References: <20180226044837.19543.12267.stgit@mdrustad-mac04.local>
- <CAKgT0UcMth9Jxovoj7xo0q2t+MuY0K1Upf+Mqs3zgXdriui-tA@mail.gmail.com>
- <20180227003123-mutt-send-email-mst@kernel.org>
- <CAKgT0UfGsQbONBWpoHmT4pM8gxonjovuD0BWraeA9D7q1SCtaw@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAKgT0UfGsQbONBWpoHmT4pM8gxonjovuD0BWraeA9D7q1SCtaw@mail.gmail.com>
-Subject: [virtio-dev] Re: [RFC PATCH V4] pci: virtio_pci: Add SR-IOV support for
- virtio_pci devices
-To: Alexander Duyck <alexander.duyck@gmail.com>
-Cc: Mark Rustad <mark.d.rustad@intel.com>, virtio-dev@lists.oasis-open.org, Netdev <netdev@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>, linux-pci@vger.kernel.org, "Daly, Dan" <dan.daly@intel.com>, Alex Williamson <alex.williamson@redhat.com>, Mark Rustad <MRustad@gmail.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 06BEA58191A2
+	for <virtio-dev@lists.oasis-open.org>; Thu,  8 Feb 2018 02:09:18 -0800 (PST)
+From: Wei Wang <wei.w.wang@intel.com>
+Date: Thu,  8 Feb 2018 17:50:16 +0800
+Message-Id: <1518083420-11108-1-git-send-email-wei.w.wang@intel.com>
+Subject: [virtio-dev] [PATCH v28 0/4] Virtio-balloon: support free page reporting
+To: virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, linux-mm@kvack.org, mst@redhat.com, mhocko@kernel.org, akpm@linux-foundation.org
+Cc: pbonzini@redhat.com, wei.w.wang@intel.com, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu0@gmail.com, nilal@redhat.com, riel@redhat.com, huangzhichao@huawei.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Mon, Feb 26, 2018 at 02:38:01PM -0800, Alexander Duyck wrote:
-> On Mon, Feb 26, 2018 at 2:32 PM, Michael S. Tsirkin <mst@redhat.com> wrote:
-> > On Mon, Feb 26, 2018 at 07:26:14AM -0800, Alexander Duyck wrote:
-> >> On Sun, Feb 25, 2018 at 8:48 PM, Mark Rustad <mark.d.rustad@intel.com> wrote:
-> >> > Hardware-realized virtio_pci devices can implement SR-IOV, so this
-> >> > patch enables its use. The device in question is an upcoming Intel
-> >> > NIC that implements both a virtio_net PF and virtio_net VFs. These
-> >> > are hardware realizations of what has been up to now been a software
-> >> > interface.
-> >> >
-> >> > The device in question has the following 4-part PCI IDs:
-> >> >
-> >> > PF: vendor: 1af4 device: 1041 subvendor: 8086 subdevice: 15fe
-> >> > VF: vendor: 1af4 device: 1041 subvendor: 8086 subdevice: 05fe
-> >> >
-> >> > The patch needs no check for device ID, because the callback will
-> >> > never be made for devices that do not assert the capability or
-> >> > when run on a platform incapable of SR-IOV.
-> >> >
-> >> > One reason for this patch is because the hardware requires the
-> >> > vendor ID of a VF to be the same as the vendor ID of the PF that
-> >> > created it. So it seemed logical to simply have a fully-functioning
-> >> > virtio_net PF create the VFs. This patch makes that possible.
-> >> >
-> >> > Signed-off-by: Mark Rustad <mark.d.rustad@intel.com>
-> >> > Reviewed-by: Alexander Duyck <alexander.h.duyck@intel.com>
-> >>
-> >> Mark,
-> >>
-> >> In the future please don't put my "Reviewed-by" on a patch that I
-> >> haven't reviewed. I believe I reviewed one of the earlier patches, but
-> >> I hadn't reviewed this version.
-> >>
-> >> Also, after thinking about it over the weekend we may want to look at
-> >> just coming up with a truly "generic" solution that is applied to
-> >> SR-IOV capable devices that don't have a SR-IOV capable driver loaded
-> >> on them. That would allow us to handle the uio, vfio, pci-stub, and
-> >> virtio cases all in one fell swoop. I think us going though and
-> >> modifying one patch at a time to do this kind of thing isn't going to
-> >> scale.
-> >
-> > uio really can't support VFs properly - without proper IOMMU
-> > support any MSIs can corrupt kernel memory, and VFs are
-> > limited to MSIs.
-> 
-> UIO wasn't being run on the VFs, it was just running the PF.
+This patch series is separated from the previous "Virtio-balloon
+Enhancement" series. The new feature, VIRTIO_BALLOON_F_FREE_PAGE_HINT,  
+implemented by this series enables the virtio-balloon driver to report
+hints of guest free pages to the host. It can be used to accelerate live
+migration of VMs. Here is an introduction of this usage:
 
-I see. That's fine then.
+Live migration needs to transfer the VM's memory from the source machine
+to the destination round by round. For the 1st round, all the VM's memory
+is transferred. From the 2nd round, only the pieces of memory that were
+written by the guest (after the 1st round) are transferred. One method
+that is popularly used by the hypervisor to track which part of memory is
+written is to write-protect all the guest memory.
 
-> The point
-> is that there have been about 4 attempts, including this one, to add
-> SR-IOV support to drivers that don't actually do any VF management
-> internally. They were just being used as a shim so that they could add
-> the sriov_configure function to a driver that would load on the PF.
-> 
-> If we make the solution generic I think it should turn out pretty
-> clean. Most of the work just needs to happen in the sysfs function for
-> storing the value that is written to sriov_numvfs. I'm working with
-> Mark and a few other people now to get this addressed and I hope that
-> we can have a patch available shortly.
-> 
-> Thanks.
-> 
-> - Alex
+This feature enables the optimization of the 1st round memory transfer -
+the hypervisor can skip the transfer of guest free pages in the 1st round.
+It is not concerned that the memory pages are used after they are given
+to the hypervisor as a hint of the free pages, because they will be
+tracked by the hypervisor and transferred in the next round if they are
+used and written.
+
+* Tests
+- Migration time improvement
+Result:
+Live migration time is reduced to 14% with this optimization.
+Details:
+Local live migration of 8GB idle guest, the legacy live migration takes
+~1817ms. With this optimization, it takes ~254ms, which reduces the time
+to 14%.
+- Workload tests
+Results:
+Running this feature has no impact on the linux compilation workload
+running inside the guest.
+Details:
+Set up a Ping-Pong local live migration, where the guest ceaselessy
+migrates between the source and destination. Linux compilation,
+i.e. make bzImage -j4, is performed during the Ping-Pong migration. The
+legacy case takes 5min14s to finish the compilation. With this
+optimization patched, it takes 5min12s.
+
+ChangeLog:
+v27->v28:
+    - mm/page_poison: Move PAGE_POISON to page_poison.c and add a function
+      to expose page poison val to kernel modules.
+v26->v27:
+    - add a new patch to expose page_poisoning_enabled to kernel modules
+    - virtio-balloon: set poison_val to 0xaaaaaaaa, instead of 0xaa
+v25->v26: virtio-balloon changes only
+    - remove kicking free page vq since the host now polls the vq after
+      initiating the reporting
+    - report_free_page_func: detach all the used buffers after sending
+      the stop cmd id. This avoids leaving the detaching burden (i.e.
+      overhead) to the next cmd id. Detaching here isn't considered
+      overhead since the stop cmd id has been sent, and host has already
+      moved formard.
+v24->v25:
+    - mm: change walk_free_mem_block to return 0 (instead of true) on
+          completing the report, and return a non-zero value from the
+          callabck, which stops the reporting.
+    - virtio-balloon:
+        - use enum instead of define for VIRTIO_BALLOON_VQ_INFLATE etc.
+        - avoid __virtio_clear_bit when bailing out;
+        - a new method to avoid reporting the some cmd id to host twice
+        - destroy_workqueue can cancel free page work when the feature is
+          negotiated;
+        - fail probe when the free page vq size is less than 2.
+v23->v24:
+    - change feature name VIRTIO_BALLOON_F_FREE_PAGE_VQ to
+      VIRTIO_BALLOON_F_FREE_PAGE_HINT
+    - kick when vq->num_free < half full, instead of "= half full"
+    - replace BUG_ON with bailing out
+    - check vb->balloon_wq in probe(), if null, bail out
+    - add a new feature bit for page poisoning
+    - solve the corner case that one cmd id being sent to host twice
+v22->v23:
+    - change to kick the device when the vq is half-way full;
+    - open-code batch_free_page_sg into add_one_sg;
+    - change cmd_id from "uint32_t" to "__virtio32";
+    - reserver one entry in the vq for the driver to send cmd_id, instead
+      of busywaiting for an available entry;
+    - add "stop_update" check before queue_work for prudence purpose for
+      now, will have a separate patch to discuss this flag check later;
+    - init_vqs: change to put some variables on stack to have simpler
+      implementation;
+    - add destroy_workqueue(vb->balloon_wq);
+
+v21->v22:
+    - add_one_sg: some code and comment re-arrangement
+    - send_cmd_id: handle a cornercase
+
+For previous ChangeLog, please reference
+https://lwn.net/Articles/743660/
+
+Wei Wang (4):
+  mm: support reporting free page blocks
+  virtio-balloon: VIRTIO_BALLOON_F_FREE_PAGE_HINT
+  mm/page_poison: add a function to expose page poison val to kernel
+    modules
+  virtio-balloon: VIRTIO_BALLOON_F_PAGE_POISON
+
+ drivers/virtio/virtio_balloon.c     | 258 +++++++++++++++++++++++++++++++-----
+ include/linux/mm.h                  |   8 ++
+ include/linux/poison.h              |   7 -
+ include/uapi/linux/virtio_balloon.h |   7 +
+ mm/page_alloc.c                     |  96 ++++++++++++++
+ mm/page_poison.c                    |  24 ++++
+ 6 files changed, 357 insertions(+), 43 deletions(-)
+
+-- 
+2.7.4
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
