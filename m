@@ -1,27 +1,27 @@
-Return-Path: virtio-dev-return-3180-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3191-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 9671058191A2
-	for <virtio-dev@lists.oasis-open.org>; Wed,  7 Feb 2018 21:35:49 -0800 (PST)
-Message-ID: <5A7BE253.8050306@intel.com>
-Date: Thu, 08 Feb 2018 13:38:27 +0800
+	by lists.oasis-open.org (Postfix) with ESMTP id EDAEB58191BA
+	for <virtio-dev@lists.oasis-open.org>; Thu,  8 Feb 2018 19:07:55 -0800 (PST)
+Message-ID: <5A7D1121.6030903@intel.com>
+Date: Fri, 09 Feb 2018 11:10:25 +0800
 From: Wei Wang <wei.w.wang@intel.com>
 MIME-Version: 1.0
-References: <1517915299-15349-1-git-send-email-wei.w.wang@intel.com> <20180207015803-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20180207015803-mutt-send-email-mst@kernel.org>
+References: <1517915299-15349-1-git-send-email-wei.w.wang@intel.com> <20180208201523.GE2326@work-vm>
+In-Reply-To: <20180208201523.GE2326@work-vm>
 Content-Type: text/plain; charset=windows-1252; format=flowed
 Content-Transfer-Encoding: 7bit
 Subject: [virtio-dev] Re: [PATCH v2 0/3] virtio-balloon: free page hint reporting support
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, quintela@redhat.com, dgilbert@redhat.com, pbonzini@redhat.com, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu0@gmail.com, nilal@redhat.com, riel@redhat.com
+To: "Dr. David Alan Gilbert" <dgilbert@redhat.com>
+Cc: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, mst@redhat.com, quintela@redhat.com, pbonzini@redhat.com, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu0@gmail.com, nilal@redhat.com, riel@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 02/07/2018 08:02 AM, Michael S. Tsirkin wrote:
-> On Tue, Feb 06, 2018 at 07:08:16PM +0800, Wei Wang wrote:
+On 02/09/2018 04:15 AM, Dr. David Alan Gilbert wrote:
+> * Wei Wang (wei.w.wang@intel.com) wrote:
 >> This is the deivce part implementation to add a new feature,
 >> VIRTIO_BALLOON_F_FREE_PAGE_HINT to the virtio-balloon device. The device
 >> receives the guest free page hints from the driver and clears the
@@ -30,31 +30,61 @@ On 02/07/2018 08:02 AM, Michael S. Tsirkin wrote:
 >>
 >> Please see the driver patch link for test results:
 >> https://lkml.org/lkml/2018/2/4/60
->>
->> ChangeLog:
->> v1->v2:
->>      1) virtio-balloon
->>          - use subsections to save free_page_report_cmd_id;
->>          - poll the free page vq after sending a cmd id to the driver;
->>          - change the free page vq size to VIRTQUEUE_MAX_SIZE;
->>          - virtio_balloon_poll_free_page_hints: handle the corner case
->>            that the free page block reported from the driver may cross
->>            the RAMBlock boundary.
->>      2) migration/ram.c
->>          - use balloon_free_page_poll to start the optimization
->>
->> Wei Wang (3):
->>    virtio-balloon: VIRTIO_BALLOON_F_FREE_PAGE_HINT
->>    migration: use the free page reporting feature from balloon
->>    virtio-balloon: add a timer to limit the free page report waiting time
-> This feature needs in-tree documentation about possible ways to use it,
-> tradeoffs involved etc.
+> Hi Wei,
+>     I'll look at the code a bit more - but first some more basic
+> questions on that lkml post:
+>
+>      a) The idle guest time thing is a nice result; can you just state
+>         what the host was, speed of connection, and what other options
+>         you were using?
+>
+>      b) The workload test, the one with the kernel compile; you list
+>         the kernel compile time but don't mention any changes in the
+>         migration times of the ping-pong; can you give those times as
+>         well?
+>
+>      c) What's your real workload that this is aimed at?
+>         Is it really for people migrating idle VMs - or do you have some
+>         NFV application in mind, if so why not include a figure for
+>         those?
+>
 
-OK. I plan to add the documentation in later versions after we mostly 
-finalize the QEMU part design.
+Hi Dave,
+
+Thanks for joining the review. Please see below info.
+
+a) Environment info
+     - Host:
+         - Physical CPU: Intel(R) Xeon(R) CPU E5-2699 v4 @ 2.20GHz
+         - kernel: 3.10.0
+
+     - Guest:
+         - kernel: 4.15.0
+         - QEMU setup: -cpu host -M pc -smp 4,threads=1,sockets=1 -m 8G 
+--mem-prealloc -realtime mlock=on -balloon virtio,free-page-hint=true
+
+     - Migration setup:
+         - migrate_set_speed 0
+         - migrate_set_downtime 0.01  (10ms)
+
+b) Michael asked the same question on the kernel patches, I'll reply 
+there with you cc-ed, so that kernel maintainers can also see it. Btw, 
+do you have any other workloads you would suggest to have a try?
+
+c) This feature is requested by many customers (e.g. general cloud 
+vendors). It's for general use cases. As long as the guest has free 
+memory, it will benefit from this optimization when doing migration. 
+It's not specific for NFV usages, but for sure NFV will also benefit 
+from this feature if we think about service chaining, where multiple VMs 
+need to co-work with each other. In that case, migrating one VM will 
+just break the working model, which means we will need to migrate all 
+the VMs. A shorter migration time will be very helpful.
+
 
 Best,
 Wei
+
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
