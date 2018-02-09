@@ -1,57 +1,55 @@
-Return-Path: virtio-return-2883-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-return-2881-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio@lists.oasis-open.org>
 List-Post: <mailto:virtio@lists.oasis-open.org>
 List-Help: <mailto:virtio-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Mon, 12 Feb 2018 14:00:24 +0100
-From: Cornelia Huck <cohuck@redhat.com>
-Message-ID: <20180212140024.356a869d.cohuck@redhat.com>
-In-Reply-To: <1518206354-29610-3-git-send-email-pasic@linux.vnet.ibm.com>
+Date: Fri, 9 Feb 2018 22:43:23 +0200
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20180209220411-mutt-send-email-mst@kernel.org>
 References: <1518206354-29610-1-git-send-email-pasic@linux.vnet.ibm.com>
-	<1518206354-29610-3-git-send-email-pasic@linux.vnet.ibm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Subject: [virtio] Re: [PATCH 2/2] introduction: simplify the designation of legacy
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1518206354-29610-1-git-send-email-pasic@linux.vnet.ibm.com>
+Subject: [virtio] Re: [PATCH 0/2] two versioning related changes
 To: Halil Pasic <pasic@linux.vnet.ibm.com>
-Cc: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, "Michael
- S. Tsirkin" <mst@redhat.com>
+Cc: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, Cornelia Huck <cohuck@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Fri,  9 Feb 2018 20:59:14 +0100
-Halil Pasic <pasic@linux.vnet.ibm.com> wrote:
+On Fri, Feb 09, 2018 at 08:59:12PM +0100, Halil Pasic wrote:
+> Regarding patch #1 please see also:
+> https://lists.oasis-open.org/archives/virtio/201802/msg00018.html
 
-> The sentence designating the documents defining what later
-> became known as the legacy virtio interface had the most
-> important piece of information placed in parenthesis.
+Fine by me. Can you please open an issue to track it?
+This makes it easier for me to start voting.
+
+If you would rather use github issues,
+that'd be great. There seem to be easy tools
+to work with their API, e.g.
+http://search.cpan.org/~fayland/Net-GitHub-0.93/lib/Net/GitHub/V3/Issues.pm
+
+We need to come up with a schema to keep the following info in github:
+- what is the issue title/short description
+- which version fixes the issue?
+- what is the proposed spec change?
+
+and then send a script that can get an issue # and
+print that, similar to virtio-jira.pl in virtio-admin.
+
+Help with that is very welcome but if you'd rather not you
+can just use jira for now.
+Pls remember to set fixed in to 1.1 and environment to
+reporter name and email (yourself).
+
+
+> Halil Pasic (2):
+>   ccw: be more precise the semantic of revision 1
+>   introduction: simplify the designation of legacy
 > 
-> Let's reword this sentence so we avoid using an ambiguous designation
-> based on a relative anchor (i.e. 'earlier drafts of this specification')
-> and just use the absolute anchor (version 1.0).
-> 
-> Signed-off-by: Halil Pasic <pasic@linux.vnet.ibm.com>
-> ---
+>  content.tex      |    2 +-
 >  introduction.tex |    4 ++--
->  1 files changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/introduction.tex b/introduction.tex
-> index 979881e..78c340d 100644
-> --- a/introduction.tex
-> +++ b/introduction.tex
-> @@ -78,8 +78,8 @@ The key words ``MUST'', ``MUST NOT'', ``REQUIRED'', ``SHALL'', ``SHALL NOT'', ``
->  \subsection{Legacy Interface: Terminology}\label{intro:Legacy
->  Interface: Terminology}
->  
-> -Earlier drafts of this specification (i.e. revisions before 1.0,
-> -see e.g. \hyperref[intro:Virtio PCI Draft]{[Virtio PCI Draft]})
-> +Specification drafts preceding version 1.0 of this specification
-> +(e.g. see \hyperref[intro:Virtio PCI Draft]{[Virtio PCI Draft]})
->  defined a similar, but different
->  interface between the driver and the device.
->  Since these are widely deployed, this specification
-
-Reviewed-by: Cornelia Huck <cohuck@redhat.com>
+>  2 files changed, 3 insertions(+), 3 deletions(-)
 
 ---------------------------------------------------------------------
 To unsubscribe from this mail list, you must leave the OASIS TC that 
