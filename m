@@ -1,53 +1,39 @@
-Return-Path: virtio-return-2894-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-return-2896-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio@lists.oasis-open.org>
 List-Post: <mailto:virtio@lists.oasis-open.org>
 List-Help: <mailto:virtio-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-From: Halil Pasic <pasic@linux.vnet.ibm.com>
-Date: Tue, 13 Feb 2018 13:44:08 +0100
-In-Reply-To: <1518525848-8307-1-git-send-email-pasic@linux.vnet.ibm.com>
+Date: Tue, 13 Feb 2018 16:41:23 +0200
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20180213164001-mutt-send-email-mst@kernel.org>
 References: <1518525848-8307-1-git-send-email-pasic@linux.vnet.ibm.com>
-Message-Id: <1518525848-8307-3-git-send-email-pasic@linux.vnet.ibm.com>
-Subject: [virtio] [PATCH v2 2/2] introduction: simplify the designation of legacy
-To: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
-Cc: "Michael S. Tsirkin" <mst@redhat.com>, Cornelia Huck <cohuck@redhat.com>, Halil Pasic <pasic@linux.vnet.ibm.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1518525848-8307-1-git-send-email-pasic@linux.vnet.ibm.com>
+Subject: [virtio] Re: [PATCH v2 0/2] two versioning related changes
+To: Halil Pasic <pasic@linux.vnet.ibm.com>
+Cc: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, Cornelia Huck <cohuck@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-The sentence designating the documents defining what later
-became known as the legacy virtio interface had the most
-important piece of information placed in parenthesis.
+On Tue, Feb 13, 2018 at 01:44:06PM +0100, Halil Pasic wrote:
+> v1->v2:
+> * fixed ungrammatical commit title for #1
+> * added r-b's
+> * added bug tracker references
 
-Let's reword this sentence so we avoid using an ambiguous designation
-based on a relative anchor (i.e. 'earlier drafts of this specification')
-and just use the absolute anchor (version 1.0).
+thanks!
+Once you feel this had enough review, pls move this status to
+open and I will start the voting.
 
-VIRTIO-164
-
-Signed-off-by: Halil Pasic <pasic@linux.vnet.ibm.com>
-Reviewed-by: Cornelia Huck <cohuck@redhat.com>
----
- introduction.tex |    4 ++--
- 1 files changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/introduction.tex b/introduction.tex
-index 979881e..78c340d 100644
---- a/introduction.tex
-+++ b/introduction.tex
-@@ -78,8 +78,8 @@ The key words ``MUST'', ``MUST NOT'', ``REQUIRED'', ``SHALL'', ``SHALL NOT'', ``
- \subsection{Legacy Interface: Terminology}\label{intro:Legacy
- Interface: Terminology}
- 
--Earlier drafts of this specification (i.e. revisions before 1.0,
--see e.g. \hyperref[intro:Virtio PCI Draft]{[Virtio PCI Draft]})
-+Specification drafts preceding version 1.0 of this specification
-+(e.g. see \hyperref[intro:Virtio PCI Draft]{[Virtio PCI Draft]})
- defined a similar, but different
- interface between the driver and the device.
- Since these are widely deployed, this specification
--- 
-1.7.1
-
+> Halil Pasic (2):
+>   ccw: be more precise about the semantic of revision 1
+>   introduction: simplify the designation of legacy
+> 
+>  content.tex      |    2 +-
+>  introduction.tex |    4 ++--
+>  2 files changed, 3 insertions(+), 3 deletions(-)
 
 ---------------------------------------------------------------------
 To unsubscribe from this mail list, you must leave the OASIS TC that 
