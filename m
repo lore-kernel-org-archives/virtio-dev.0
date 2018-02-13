@@ -1,29 +1,50 @@
-Return-Path: virtio-return-2893-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-return-2895-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio@lists.oasis-open.org>
 List-Post: <mailto:virtio@lists.oasis-open.org>
 List-Help: <mailto:virtio-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
 From: Halil Pasic <pasic@linux.vnet.ibm.com>
-Date: Tue, 13 Feb 2018 13:44:06 +0100
-Message-Id: <1518525848-8307-1-git-send-email-pasic@linux.vnet.ibm.com>
-Subject: [virtio] [PATCH v2 0/2] two versioning related changes
+Date: Tue, 13 Feb 2018 13:44:07 +0100
+In-Reply-To: <1518525848-8307-1-git-send-email-pasic@linux.vnet.ibm.com>
+References: <1518525848-8307-1-git-send-email-pasic@linux.vnet.ibm.com>
+Message-Id: <1518525848-8307-2-git-send-email-pasic@linux.vnet.ibm.com>
+Subject: [virtio] [PATCH v2 1/2] ccw: be more precise about the semantic of revision 1
 To: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
 Cc: "Michael S. Tsirkin" <mst@redhat.com>, Cornelia Huck <cohuck@redhat.com>, Halil Pasic <pasic@linux.vnet.ibm.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-v1->v2:
-* fixed ungrammatical commit title for #1
-* added r-b's
-* added bug tracker references
+Revision 1 of the CCW transport is currently defined as virtio 1.0. This
+could become confusing when we bump the version of the virtio
+specification to 1.1, in a sense that it could be interpreted like one
+can not use any features not part of the 1.0 specification.
 
-Halil Pasic (2):
-  ccw: be more precise about the semantic of revision 1
-  introduction: simplify the designation of legacy
+So let us try to avoid confusion regarding the semantic of virtio-ccw
+revision 1.
 
- content.tex      |    2 +-
- introduction.tex |    4 ++--
- 2 files changed, 3 insertions(+), 3 deletions(-)
+VIRTIO-163
+
+Signed-off-by: Halil Pasic <pasic@linux.vnet.ibm.com>
+Reviewed-by: Cornelia Huck <cohuck@redhat.com>
+---
+ content.tex |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/content.tex b/content.tex
+index c7ef7fd..86044dd 100644
+--- a/content.tex
++++ b/content.tex
+@@ -2572,7 +2572,7 @@ The following values are supported:
+ \hline \hline
+ 0        & 0      & <empty>   & legacy interface; transitional devices only \\
+ \hline
+-1        & 0      & <empty>   & Virtio 1.0 \\
++1        & 0      & <empty>   & Virtio 1 \\
+ \hline
+ 2        & 0      & <empty>   & CCW_CMD_READ_STATUS support \\
+ \hline
+-- 
+1.7.1
 
 
 ---------------------------------------------------------------------
