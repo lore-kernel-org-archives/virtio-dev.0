@@ -1,172 +1,78 @@
-Return-Path: virtio-dev-return-2895-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3215-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id B7BC358191A8
-	for <virtio-dev@lists.oasis-open.org>; Wed,  3 Jan 2018 00:54:32 -0800 (PST)
-Message-ID: <5A4C9ACF.2090000@intel.com>
-Date: Wed, 03 Jan 2018 16:56:47 +0800
-From: Wei Wang <wei.w.wang@intel.com>
-MIME-Version: 1.0
-References: <1513823406-43632-1-git-send-email-wei.w.wang@intel.com> <20171221210327.GB25009@bombadil.infradead.org> <5A3CC707.9070708@intel.com> <20180102140906.GC8222@bombadil.infradead.org>
-In-Reply-To: <20180102140906.GC8222@bombadil.infradead.org>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: [virtio-dev] Re: [PATCH v20 3/7 RESEND] xbitmap: add more operations
-To: Matthew Wilcox <willy@infradead.org>
-Cc: virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, qemu-devel@nongnu.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, linux-mm@kvack.org, mst@redhat.com, mhocko@kernel.org, akpm@linux-foundation.org, mawilcox@microsoft.com, penguin-kernel@I-love.SAKURA.ne.jp
+	by lists.oasis-open.org (Postfix) with ESMTP id 92B965818F54
+	for <virtio-dev@lists.oasis-open.org>; Wed, 14 Feb 2018 06:54:15 -0800 (PST)
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Date: Wed, 14 Feb 2018 14:53:36 +0000
+Message-Id: <20180214145340.1223-1-jean-philippe.brucker@arm.com>
+Subject: [virtio-dev] [PATCH 0/4] Add virtio-iommu driver
+To: iommu@lists.linux-foundation.org, kvm@vger.kernel.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, kvmarm@lists.cs.columbia.edu
+Cc: joro@8bytes.org, alex.williamson@redhat.com, mst@redhat.com, jasowang@redhat.com, marc.zyngier@arm.com, robin.murphy@arm.com, will.deacon@arm.com, lorenzo.pieralisi@arm.com, eric.auger@redhat.com, eric.auger.pro@gmail.com, peterx@redhat.com, bharat.bhushan@nxp.com, tnowicki@caviumnetworks.com, jayachandran.nair@cavium.com, kevin.tian@intel.com, jintack@cs.columbia.edu
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 01/02/2018 10:09 PM, Matthew Wilcox wrote:
-> On Fri, Dec 22, 2017 at 04:49:11PM +0800, Wei Wang wrote:
->> Thanks for the improvement. I also found a small bug in xb_zero. With the
->> following changes, it has passed the current test cases and tested with the
->> virtio-balloon usage without any issue.
-> Thanks; I applied the change.  Can you supply a test-case for testing
-> xb_zero please?
->
+Implement the virtio-iommu driver following version 0.6 of the
+specification [1]. Previous version, RFCv2, was sent in November [2].
+This version addresses Eric's comments and changes the device number.
+(Since last week I also tested and fixed the probe/release functions,
+they now use devm properly.)
 
-Sure. Please check below the test cases. Do you plan to send out the new 
-version of xbitmap yourself? If so, I will wait for that to send out the 
-virtio-balloon patches.
+I did not include ACPI support because the next IORT specifications
+isn't ready yet (even though the virtio-iommu spec describes the node
+format, a new node type has to be allocated). Therefore only device-tree
+guests are supported for the moment but the x86 prototype, on branch
+virtio-iommu/devel, doesn't add much complexity.
 
+	git://linux-arm.org/linux-jpb.git virtio-iommu/v0.6
 
-static void xbitmap_check_zero_bits(void)
-{
-         assert(xb_empty(&xb1));
+Test it with Eric's latest QEMU device [3], for example with the
+following command-line:
 
-         /* Zero an empty xbitmap should work though no real work to do */
-         xb_zero(&xb1, 0, ULONG_MAX);
-         assert(xb_empty(&xb1));
+$ qemu-system-aarch64 -M virt -cpu cortex-a57 -nographic
+	-kernel Image -append 'console=ttyAMA0 root=/dev/vda rw'
+	-device virtio-iommu-device
+	-device virtio-blk-pci,iommu_platform,disable-legacy=on,drive=hd0
+	-drive if=none,file=rootfs.bin,id=hd0
 
-         xb_preload(GFP_KERNEL);
-         assert(xb_set_bit(&xb1, 0) == 0);
-         xb_preload_end();
+You can also try the kvmtool device [4]. For example on AMD Seattle I
+use the following commands to boot a guest with all devices behind a
+virtio-iommu, then display mapping stats.
 
-         /* Overflow test */
-         xb_zero(&xb1, ULONG_MAX - 10, ULONG_MAX);
-         assert(xb_test_bit(&xb1, 0));
+$ lkvm run -k Image --irqchip gicv2m --console virtio --vfio-pci 01:00.0
+	--viommu vfio --viommu virtio
+$ lkvm debug -a -i stats
 
-         xb_preload(GFP_KERNEL);
-         assert(xb_set_bit(&xb1, ULONG_MAX) == 0);
-         xb_preload_end();
+[1] [RFC] virtio-iommu version 0.6
+    https://www.spinics.net/lists/linux-virtualization/msg32628.html
+[2] [RFC PATCH v2 0/5] Add virtio-iommu driver
+    https://www.spinics.net/lists/kvm/msg159047.html
+[3] [RFC v6 00/22] VIRTIO-IOMMU device
+    http://lists.gnu.org/archive/html/qemu-arm/2018-02/msg00274.html
+[4] git://linux-arm.org/kvmtool-jpb.git virtio-iommu/v0.6
 
-         xb_zero(&xb1, 0, ULONG_MAX);
-         assert(xb_empty(&xb1));
-}
+Jean-Philippe Brucker (4):
+  iommu: Add virtio-iommu driver
+  iommu/virtio: Add probe request
+  iommu/virtio: Add event queue
+  vfio: Allow type-1 IOMMU instantiation with a virtio-iommu
 
+ MAINTAINERS                       |    6 +
+ drivers/iommu/Kconfig             |   11 +
+ drivers/iommu/Makefile            |    1 +
+ drivers/iommu/virtio-iommu.c      | 1220 +++++++++++++++++++++++++++++++++++++
+ drivers/vfio/Kconfig              |    2 +-
+ include/uapi/linux/virtio_ids.h   |    1 +
+ include/uapi/linux/virtio_iommu.h |  171 ++++++
+ 7 files changed, 1411 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/iommu/virtio-iommu.c
+ create mode 100644 include/uapi/linux/virtio_iommu.h
 
-/*
-  * In the following tests, preload is called once when all the bits to set
-  * locate in the same ida bitmap. Otherwise, it is recommended to call
-  * preload for each xb_set_bit.
-  */
-static void xbitmap_check_bit_range(void)
-{
-         unsigned long nbit = 0;
-
-         /* Regular test1: node = NULL */
-         xb_preload(GFP_KERNEL);
-         xb_set_bit(&xb1, 700);
-         xb_preload_end();
-         assert(xb_find_set(&xb1, ULONG_MAX, &nbit) == true);
-         assert(nbit == 700);
-         nbit++;
-         assert(xb_find_set(&xb1, ULONG_MAX, &nbit) == false);
-         assert(nbit == 701);
-         xb_zero(&xb1, 0, 1023);
-
-         /*
-          * Regular test2
-          * set bit 2000, 2001, 2040
-          * Next 1 in [0, 2048]          --> 2000
-          * Next 1 in [2000, 2002]       --> 2000
-          * Next 1 in [2002, 2040]       --> 2040
-          * Next 1 in [2002, 2039]       --> none
-          * Next 0 in [2000, 2048]       --> 2002
-          * Next 0 in [2048, 2060]       --> 2048
-          */
-         xb_preload(GFP_KERNEL);
-         assert(!xb_set_bit(&xb1, 2000));
-         assert(!xb_set_bit(&xb1, 2001));
-         assert(!xb_set_bit(&xb1, 2040));
-         nbit = 0;
-         assert(xb_find_set(&xb1, 2048, &nbit) == true);
-         assert(nbit == 2000);
-         assert(xb_find_set(&xb1, 2002, &nbit) == true);
-         assert(nbit == 2000);
-         nbit = 2002;
-         assert(xb_find_set(&xb1, 2040, &nbit) == true);
-         assert(nbit == 2040);
-         nbit = 2002;
-         assert(xb_find_set(&xb1, 2039, &nbit) == false);
-         assert(nbit == 2002);
-         nbit = 2000;
-         assert(xb_find_zero(&xb1, 2048, &nbit) == true);
-         assert(nbit == 2002);
-         nbit = 2048;
-         assert(xb_find_zero(&xb1, 2060, &nbit) == true);
-         assert(nbit == 2048);
-         xb_zero(&xb1, 0, 2048);
-         nbit = 0;
-         assert(xb_find_set(&xb1, 2048, &nbit) == false);
-         assert(nbit == 0);
-         xb_preload_end();
-
-         /*
-          * Overflow tests:
-          * Set bit 1 and ULONG_MAX - 4
-          * Next 1 in [0, ULONG_MAX]                     --> 1
-          * Next 1 in [1, ULONG_MAX]                     --> 1
-          * Next 1 in [2, ULONG_MAX]                     --> ULONG_MAX - 4
-          * Next 1 in [ULONG_MAX - 3, 2]                 --> none
-          * Next 0 in [ULONG_MAX - 4, ULONG_MAX]         --> ULONG_MAX - 3
-          * Zero [ULONG_MAX - 4, ULONG_MAX]
-          * Next 1 in [ULONG_MAX - 10, ULONG_MAX]        --> none
-          * Next 1 in [ULONG_MAX - 1, 2]                 --> none
-          * Zero [0, 1]
-          * Next 1 in [0, 2]                             --> none
-          */
-         xb_preload(GFP_KERNEL);
-         assert(!xb_set_bit(&xb1, 1));
-         xb_preload_end();
-         xb_preload(GFP_KERNEL);
-         assert(!xb_set_bit(&xb1, ULONG_MAX - 4));
-         nbit = 0;
-         assert(xb_find_set(&xb1, ULONG_MAX, &nbit) == true);
-         assert(nbit == 1);
-         nbit = 1;
-         assert(xb_find_set(&xb1, ULONG_MAX, &nbit) == true);
-         assert(nbit == 1);
-         nbit = 2;
-         assert(xb_find_set(&xb1, ULONG_MAX, &nbit) == true);
-         assert(nbit == ULONG_MAX - 4);
-         nbit++;
-         assert(xb_find_set(&xb1, 2, &nbit) == false);
-         assert(nbit == ULONG_MAX - 3);
-         nbit--;
-         assert(xb_find_zero(&xb1, ULONG_MAX, &nbit) == true);
-         assert(nbit == ULONG_MAX - 3);
-         xb_zero(&xb1, ULONG_MAX - 4, ULONG_MAX);
-         nbit = ULONG_MAX - 10;
-         assert(xb_find_set(&xb1, ULONG_MAX, &nbit) == false);
-         assert(nbit == ULONG_MAX - 10);
-         nbit = ULONG_MAX - 1;
-         assert(xb_find_set(&xb1, 2, &nbit) == false);
-         xb_zero(&xb1, 0, 1);
-         nbit = 0;
-         assert(xb_find_set(&xb1, 2, &nbit) == false);
-         assert(nbit == 0);
-         xb_preload_end();
-         assert(xb_empty(&xb1));
-}
-
-
-Best,
-Wei
+-- 
+2.16.1
 
 
 ---------------------------------------------------------------------
