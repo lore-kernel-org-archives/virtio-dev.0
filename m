@@ -1,40 +1,46 @@
-Return-Path: virtio-return-2904-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-return-2909-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio@lists.oasis-open.org>
 List-Post: <mailto:virtio@lists.oasis-open.org>
 List-Help: <mailto:virtio-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Fri, 16 Feb 2018 17:35:47 +0100
+Date: Fri, 16 Feb 2018 18:01:51 +0100
 From: Cornelia Huck <cohuck@redhat.com>
-Message-ID: <20180216173547.6481bc3e.cohuck@redhat.com>
-In-Reply-To: <20180216092208-mutt-send-email-mst@kernel.org>
+Message-ID: <20180216180151.113ea063.cohuck@redhat.com>
+In-Reply-To: <20180216092412-mutt-send-email-mst@kernel.org>
 References: <1518765602-8739-1-git-send-email-mst@redhat.com>
-	<20180216092208-mutt-send-email-mst@kernel.org>
+	<20180216092412-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Subject: [virtio] Re: [PATCH v8 04/16] content: replace mentions of len with used
- length
+Subject: [virtio] Re: [PATCH v8 08/16] packed virtqueues: more efficient virtqueue
+ layout
 To: "Michael S. Tsirkin" <mst@redhat.com>
 Cc: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, Halil Pasic <pasic@linux.vnet.ibm.com>, Tiwei Bie <tiwei.bie@intel.com>, Stefan Hajnoczi <stefanha@redhat.com>, "Dhanoa, Kully" <kully.dhanoa@intel.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Fri, 16 Feb 2018 09:22:08 +0200
+On Fri, 16 Feb 2018 09:24:12 +0200
 "Michael S. Tsirkin" <mst@redhat.com> wrote:
 
-> Document buffer used len and use that terminology everywhere in the
-> generic section.
-
-It also replaces the 'used ring' terminology (which makes sense, but
-was not mentioned.)
-
+> Performance analysis of this is in my kvm forum 2016 presentation.  The
+> idea is to have a r/w descriptor in a ring structure, replacing the used
+> and available ring, index and descriptor buffer.
+> 
+> This is also easier for devices to implement than the 1.0 layout.
+> Several more enhancements will be necessary to actually make this
+> efficient for devices to use.
 > 
 > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 > ---
->  content.tex | 39 ++++++++++++++++++++-------------------
->  1 file changed, 20 insertions(+), 19 deletions(-)
+>  content.tex     |  28 ++-
+>  packed-ring.tex | 646 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+>  2 files changed, 671 insertions(+), 3 deletions(-)
+>  create mode 100644 packed-ring.tex
 
-Reviewed-by: Cornelia Huck <cohuck@redhat.com>
+I'm at the point where my eyes glaze over when I try to look at this
+yet again, so you won't get a r-b from me, but
+
+Acked-by: Cornelia Huck <cohuck@redhat.com>
 
 ---------------------------------------------------------------------
 To unsubscribe from this mail list, you must leave the OASIS TC that 
