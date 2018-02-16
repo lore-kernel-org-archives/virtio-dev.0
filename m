@@ -1,31 +1,60 @@
-Return-Path: rkagan@virtuozzo.com
-Date: Mon, 09 Jul 2018 06:14:19 -0700
-From: Roman Kagan <rkagan@virtuozzo.com>
-Subject: Re: [virtio-dev] Re: [Qemu-devel] [PATCH v3 0/3] Use of unique
- identifier for pairing virtio and passthrough devices...
-Message-ID: <20180709131419.GB6271@rkaganb.sw.ru>
-References: <20180629221907.3662-1-venu.busireddy@oracle.com> <20180702161404.GA2339@rkaganb.sw.ru>
- <449f1449-ddf6-cd95-976c-14d04d8d503a@oracle.com> <20180703095825.GC30904@rkaganb.sw.ru>
- <20180703142817.GA3088@vbusired-vm> <20180703165200.180c93bb.cohuck@redhat.com>
- <CADGSJ23+sZiMCx=n=DytZ=TT2z7i0sMhrmnPuFYtuZhSc=qA+Q@mail.gmail.com> <20180704141523.377cb66d.cohuck@redhat.com>
- <CADGSJ206U4x0UNTEKu0Lt9K9qA025ajtmnj6ym4PDz4Q-c8RKA@mail.gmail.com> <20180706155406.0587733c.cohuck@redhat.com>
+Return-Path: SRS0=KMw5=FK=redhat.com=mst@kernel.org
+Date: Fri, 16 Feb 2018 09:21:05 +0200
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Subject: [PATCH v8 01/16] content: move 1.0 queue format out to a separate
+ section
+Message-ID: <20180216092105-mutt-send-email-mst@kernel.org>
+References: <1518765602-8739-1-git-send-email-mst@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20180706155406.0587733c.cohuck@redhat.com>
-To: Cornelia Huck <cohuck@redhat.com>
-Cc: Siwei Liu <loseweigh@gmail.com>, Venu Busireddy <venu.busireddy@oracle.com>, si-wei liu <si-wei.liu@oracle.com>, "Michael S . Tsirkin" <mst@redhat.com>, Marcel Apfelbaum <marcel@redhat.com>, virtio-dev@lists.oasis-open.org, qemu-devel@nongnu.org
+In-Reply-To: <1518765602-8739-1-git-send-email-mst@redhat.com>
+To: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+Cc: Cornelia Huck <cohuck@redhat.com>, Halil Pasic <pasic@linux.vnet.ibm.com>, Tiwei Bie <tiwei.bie@intel.com>, Stefan Hajnoczi <stefanha@redhat.com>, "Dhanoa, Kully" <kully.dhanoa@intel.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Fri, Jul 06, 2018 at 03:54:06PM +0200, Cornelia Huck wrote:
-> If we want to extend that to other device types, we can add the field
-> in their config space; but I'd rather prefer a more generic "host
-> relays config metainformation" approach.
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Reviewed-by: Cornelia Huck <cohuck@redhat.com>
+---
+ content.tex | 25 ++++++++++++++++++++++++-
+ 1 file changed, 24 insertions(+), 1 deletion(-)
 
-The problem with this approach is that it's too generic and poorly
-scoped.  As a result I guess it's likely to take ages to converge.
+diff --git a/content.tex b/content.tex
+index c7ef7fd..4483a4b 100644
+--- a/content.tex
++++ b/content.tex
+@@ -230,7 +230,30 @@ result.
+ The mechanism for bulk data transport on virtio devices is
+ pretentiously called a virtqueue. Each device can have zero or more
+ virtqueues\footnote{For example, the simplest network device has one virtqueue for
+-transmit and one for receive.}.  Each queue has a 16-bit queue size
++transmit and one for receive.}.
++
++Driver makes requests available to device by adding
++an available buffer to the queue - i.e. adding a buffer
++describing the request to a virtqueue, and optionally triggering
++a driver event - i.e. sending a notification to the device.
++
++Device executes the requests and - when complete - adds
++a used buffer to the queue - i.e. lets the driver
++know by marking the buffer as used. Device can then trigger
++a device event - i.e. send an interrupt to the driver.
++
++For queue operation detail, see \ref{sec:Basic Facilities of a Virtio Device / Split Virtqueues}~\nameref{sec:Basic Facilities of a Virtio Device / Split Virtqueues}.
++
++\section{Split Virtqueues}\label{sec:Basic Facilities of a Virtio Device / Split Virtqueues}
++The split virtqueue format is the original format used by legacy
++virtio devices.  The split virtqueue format separates the
++virtqueue into several parts, where each part is write-able by
++either the driver or the device, but not both. Multiple
++locations need to be updated when making a buffer available
++and when marking it as used.
++
++
++Each queue has a 16-bit queue size
+ parameter, which sets the number of entries and implies the total size
+ of the queue.
+ 
+-- 
+MST
 
-See for instance the discussion on including vm config metadata in qcow2
-images: I think it's similar in scope (or the absense thereof).
-
-Roman.
