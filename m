@@ -1,90 +1,150 @@
-Return-Path: virtio-dev-return-3242-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3244-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id CD3EC581922D
-	for <virtio-dev@lists.oasis-open.org>; Tue, 20 Feb 2018 08:26:37 -0800 (PST)
+	by lists.oasis-open.org (Postfix) with ESMTP id 43C2E5819233
+	for <virtio-dev@lists.oasis-open.org>; Tue, 20 Feb 2018 09:14:35 -0800 (PST)
 References: <1518804682-16881-1-git-send-email-sridhar.samudrala@intel.com>
- <20180216183817.42b07af6@cakuba.netronome.com>
- <CAKgT0UfU9gV2Y7hWFQi0vJoD9kYeoq+7cXmwAjXeV5zxXHa3dQ@mail.gmail.com>
- <20180218221140.6c7fb32e@cakuba.netronome.com>
+ <20180220104224.GA2031@nanopsycho>
+ <CAKgT0UdU8PDXduzxp4kKfur-DLeFQSJj7-fhW_eTgVzd+AcViw@mail.gmail.com>
+ <20180220162933.GD2031@nanopsycho>
 From: "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
-Message-ID: <94062cc0-fe88-86c6-3dc8-40cb8422f9df@intel.com>
-Date: Tue, 20 Feb 2018 08:26:33 -0800
+Message-ID: <509bbbf9-4db7-dc78-a05e-403452a7407a@intel.com>
+Date: Tue, 20 Feb 2018 09:14:32 -0800
 MIME-Version: 1.0
-In-Reply-To: <20180218221140.6c7fb32e@cakuba.netronome.com>
+In-Reply-To: <20180220162933.GD2031@nanopsycho>
 Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Transfer-Encoding: 8bit
 Content-Language: en-US
 Subject: [virtio-dev] Re: [RFC PATCH v3 0/3] Enable virtio_net to act as a backup for a
  passthru device
-To: Jakub Kicinski <kubakici@wp.pl>, Alexander Duyck <alexander.duyck@gmail.com>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>, Stephen Hemminger <stephen@networkplumber.org>, David Miller <davem@davemloft.net>, Netdev <netdev@vger.kernel.org>, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, "Brandeburg, Jesse" <jesse.brandeburg@intel.com>, "Duyck, Alexander H" <alexander.h.duyck@intel.com>, Jason Wang <jasowang@redhat.com>, Siwei Liu <loseweigh@gmail.com>
+To: Jiri Pirko <jiri@resnulli.us>, Alexander Duyck <alexander.duyck@gmail.com>
+Cc: "Michael S. Tsirkin" <mst@redhat.com>, Stephen Hemminger <stephen@networkplumber.org>, David Miller <davem@davemloft.net>, Netdev <netdev@vger.kernel.org>, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, "Brandeburg, Jesse" <jesse.brandeburg@intel.com>, "Duyck, Alexander H" <alexander.h.duyck@intel.com>, Jakub Kicinski <kubakici@wp.pl>, Jason Wang <jasowang@redhat.com>, Siwei Liu <loseweigh@gmail.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 2/18/2018 10:11 PM, Jakub Kicinski wrote:
-> On Sat, 17 Feb 2018 09:12:01 -0800, Alexander Duyck wrote:
->>>> We noticed a couple of issues with this approach during testing.
->>>> - As both 'bypass' and 'backup' netdevs are associated with the same
->>>>    virtio pci device, udev tries to rename both of them with the same name
->>>>    and the 2nd rename will fail. This would be OK as long as the first netdev
->>>>    to be renamed is the 'bypass' netdev, but the order in which udev gets
->>>>    to rename the 2 netdevs is not reliable.
->>> Out of curiosity - why do you link the master netdev to the virtio
->>> struct device?
->> The basic idea of all this is that we wanted this to work with an
->> existing VM image that was using virtio. As such we were trying to
->> make it so that the bypass interface takes the place of the original
->> virtio and get udev to rename the bypass to what the original
->> virtio_net was.
-> That makes sense.  Is it udev/naming that you're most concerned about
-> here?  I.e. what's the user space app that expects the netdev to be
-> linked?  This is just out of curiosity, the linking of netdevs to
-> devices is a bit of a PITA in the switchdev eswitch mode world, with
-> libvirt expecting only certain devices to be there..  Right now we're
-> not linking VF reprs, which breaks naming.  I wanted to revisit that.
+On 2/20/2018 8:29 AM, Jiri Pirko wrote:
+> Tue, Feb 20, 2018 at 05:04:29PM CET, alexander.duyck@gmail.com wrote:
+>> On Tue, Feb 20, 2018 at 2:42 AM, Jiri Pirko <jiri@resnulli.us> wrote:
+>>> Fri, Feb 16, 2018 at 07:11:19PM CET, sridhar.samudrala@intel.com wrote:
+>>>> Patch 1 introduces a new feature bit VIRTIO_NET_F_BACKUP that can be
+>>>> used by hypervisor to indicate that virtio_net interface should act as
+>>>> a backup for another device with the same MAC address.
+>>>>
+>>>> Ppatch 2 is in response to the community request for a 3 netdev
+>>>> solution.  However, it creates some issues we'll get into in a moment.
+>>>> It extends virtio_net to use alternate datapath when available and
+>>>> registered. When BACKUP feature is enabled, virtio_net driver creates
+>>>> an additional 'bypass' netdev that acts as a master device and controls
+>>>> 2 slave devices.  The original virtio_net netdev is registered as
+>>>> 'backup' netdev and a passthru/vf device with the same MAC gets
+>>>> registered as 'active' netdev. Both 'bypass' and 'backup' netdevs are
+>>>> associated with the same 'pci' device.  The user accesses the network
+>>>> interface via 'bypass' netdev. The 'bypass' netdev chooses 'active' netdev
+>>>> as default for transmits when it is available with link up and running.
+>>> Sorry, but this is ridiculous. You are apparently re-implemeting part
+>>> of bonding driver as a part of NIC driver. Bond and team drivers
+>>> are mature solutions, well tested, broadly used, with lots of issues
+>>> resolved in the past. What you try to introduce is a weird shortcut
+>>> that already has couple of issues as you mentioned and will certanly
+>>> have many more. Also, I'm pretty sure that in future, someone comes up
+>>> with ideas like multiple VFs, LACP and similar bonding things.
+>> The problem with the bond and team drivers is they are too large and
+>> have too many interfaces available for configuration so as a result
+>> they can really screw this interface up.
+> What? Too large is which sense? Why "too many interfaces" is a problem?
+> Also, team has only one interface to userspace team-generic-netlink.
+>
+>
+>> Essentially this is meant to be a bond that is more-or-less managed by
+>> the host, not the guest. We want the host to be able to configure it
+> How is it managed by the host? In your usecase the guest has 2 netdevs:
+> virtio_net, pci vf.
+> I don't see how host can do any managing of that, other than the
+> obvious. But still, the active/backup decision is done in guest. This is
+> a simple bond/team usecase. As I said, there is something needed to be
+> implemented in userspace in order to handle re-appear of vf netdev.
+> But that should be fairly easy to do in teamd.
 
-For live migration usecase, userspace is only aware of one virtio_net 
-interface and
-it doesn't expect it to be linked with any lower dev.  So it should be 
-fine even if the
-lower netdev is not present. Only the master netdev should be assigned 
-the same
-name so that userspace configuration scripts  in the VM don't need to 
-change.
+The host manages the active/backup decision by
+- assigning the same MAC address to both VF and virtio interfaces
+- setting a BACKUP feature bit on virtio that enables virtio to 
+transparently take
+   over the VFs datapath.
+- only enable one datapath at anytime so that packets don't get looped back
+- during live migration enable virtio datapth, unplug vf on the source 
+and replug
+   vf on the destination.
+
+The VM is not expected and doesn't have any control of setting the MAC 
+address
+or bringing up/down the links.
+
+This is the model that is currently supported with netvsc driver on Azure.
 
 >
->>> FWIW two solutions that immediately come to mind is to export "backup"
->>> as phys_port_name of the backup virtio link and/or assign a name to the
->>> master like you are doing already.  I think team uses team%d and bond
->>> uses bond%d, soft naming of master devices seems quite natural in this
->>> case.
->> I figured I had overlooked something like that.. Thanks for pointing
->> this out. Okay so I think the phys_port_name approach might resolve
->> the original issue. If I am reading things correctly what we end up
->> with is the master showing up as "ens1" for example and the backup
->> showing up as "ens1nbackup". Am I understanding that right?
-> Yes, provided systemd is new enough.
+>
+>> and have it automatically kick in on the guest. For now we want to
+>> avoid adding too much complexity as this is meant to be just the first
+> That's what I fear, "for now"..
+>
+>
+>> step. Trying to go in and implement the whole solution right from the
+>> start based on existing drivers is going to be a massive time sink and
+>> will likely never get completed due to the fact that there is always
+>> going to be some other thing that will interfere.
+> "implement the whole solution right from the start based on existing
+> drivers" - what solution are you talking about? I don't understand this
+> para.
+>
+>
+>> My personal hope is that we can look at doing a virtio-bond sort of
+>> device that will handle all this as well as providing a communication
+>> channel, but that is much further down the road. For now we only have
+>> a single bit so the goal for now is trying to keep this as simple as
+>> possible.
+> Oh. So there is really intention to do re-implementation of bonding
+> in virtio. That is plain-wrong in my opinion.
+>
+> Could you just use bond/team, please, and don't reinvent the wheel with
+> this abomination?
 
-Yes. I did a quick test to confirm that adding ndo_phys_port_name() to 
-virtio_net
-ndo_ops fixes the udev naming issue with 2 virtio netdevs.  This is on 
-fedora27.
 
 
 >
->> The problem with the team/bond%d approach is that it creates a new
->> netdevice and so it would require guest configuration changes.
+>>> What is the reason for this abomination? According to:
+>>> https://marc.info/?l=linux-virtualization&m=151189725224231&w=2
+>>> The reason is quite weak.
+>>> User in the vm sees 2 (or more) netdevices, he puts them in bond/team
+>>> and that's it. This works now! If the vm lacks some userspace features,
+>>> let's fix it there! For example the MAC changes is something that could
+>>> be easily handled in teamd userspace deamon.
+>> I think you might have missed the point of this. This is meant to be a
+>> simple interface so the guest should not be able to change the MAC
+>> address, and it shouldn't require any userspace daemon to setup or
+>> tear down. Ideally with this solution the virtio bypass will come up
+>> and be assigned the name of the original virtio, and the "backup"
+>> interface will come up and be assigned the name of the original virtio
+>> with an additional "nbackup" tacked on via the phys_port_name, and
+>> then whenever a VF is added it will automatically be enslaved by the
+>> bypass interface, and it will be removed when the VF is hotplugged
+>> out.
 >>
->>> IMHO phys_port_name == "backup" if BACKUP bit is set on slave virtio
->>> link is quite neat.
->> I agree. For non-"backup" virio_net devices would it be okay for us to
->> just return -EOPNOTSUPP? I assume it would be and that way the legacy
->> behavior could be maintained although the function still exists.
-> That's my understanding too.
+>> In my mind the difference between this and bond or team is where the
+>> configuration interface lies. In the case of bond it is in the kernel.
+>> If my understanding is correct team is mostly in user space. With this
+>> the configuration interface is really down in the hypervisor and
+>> requests are communicated up to the guest. I would prefer not to make
+>> virtio_net dependent on the bonding or team drivers, or worse yet a
+>> userspace daemon in the guest. For now I would argue we should keep
+>> this as simple as possible just to support basic live migration. There
+>> has already been discussions of refactoring this after it is in so
+>> that we can start to combine the functionality here with what is there
+>> in bonding/team, but the differences in configuration interface and
+>> the size of the code bases will make it challenging to outright merge
+>> this into something like that.
 
 
 ---------------------------------------------------------------------
