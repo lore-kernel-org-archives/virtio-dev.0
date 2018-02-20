@@ -1,139 +1,102 @@
-Return-Path: virtio-dev-return-3273-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3241-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 409FA581910D
-	for <virtio-dev@lists.oasis-open.org>; Sun, 25 Feb 2018 14:17:23 -0800 (PST)
+	by lists.oasis-open.org (Postfix) with ESMTP id BEFDD5819237
+	for <virtio-dev@lists.oasis-open.org>; Tue, 20 Feb 2018 08:04:34 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20180223160305.71fb2db2@xeon-e3>
-References: <1518804682-16881-1-git-send-email-sridhar.samudrala@intel.com>
- <20180216183817.42b07af6@cakuba.netronome.com> <CAKgT0UfU9gV2Y7hWFQi0vJoD9kYeoq+7cXmwAjXeV5zxXHa3dQ@mail.gmail.com>
- <CADGSJ217HahFJsGmNXMD6SwWiK374+u_YET8QqdsmofCRFZr=Q@mail.gmail.com>
- <CAKgT0Uda7Bmzf06RMmD7hCVLr8hHQxaY8Fk7w9Qy=7Vi6NODwQ@mail.gmail.com> <20180223160305.71fb2db2@xeon-e3>
+In-Reply-To: <20180220104224.GA2031@nanopsycho>
+References: <1518804682-16881-1-git-send-email-sridhar.samudrala@intel.com> <20180220104224.GA2031@nanopsycho>
 From: Alexander Duyck <alexander.duyck@gmail.com>
-Date: Sun, 25 Feb 2018 14:17:10 -0800
-Message-ID: <CAKgT0Uc4sFv+Z+3H-_=6g-VeQgk_pPpPfbpu6U1Vct_GAXjwkw@mail.gmail.com>
+Date: Tue, 20 Feb 2018 08:04:29 -0800
+Message-ID: <CAKgT0UdU8PDXduzxp4kKfur-DLeFQSJj7-fhW_eTgVzd+AcViw@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Subject: [virtio-dev] Re: [RFC PATCH v3 0/3] Enable virtio_net to act as a backup for a
  passthru device
-To: Stephen Hemminger <stephen@networkplumber.org>, Jakub Kicinski <kubakici@wp.pl>, "Michael S. Tsirkin" <mst@redhat.com>, Siwei Liu <loseweigh@gmail.com>, Jiri Pirko <jiri@resnulli.us>, Jason Wang <jasowang@redhat.com>
-Cc: Sridhar Samudrala <sridhar.samudrala@intel.com>, David Miller <davem@davemloft.net>, Netdev <netdev@vger.kernel.org>, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, "Brandeburg, Jesse" <jesse.brandeburg@intel.com>, "Duyck, Alexander H" <alexander.h.duyck@intel.com>
+To: Jiri Pirko <jiri@resnulli.us>
+Cc: Sridhar Samudrala <sridhar.samudrala@intel.com>, "Michael S. Tsirkin" <mst@redhat.com>, Stephen Hemminger <stephen@networkplumber.org>, David Miller <davem@davemloft.net>, Netdev <netdev@vger.kernel.org>, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, "Brandeburg, Jesse" <jesse.brandeburg@intel.com>, "Duyck, Alexander H" <alexander.h.duyck@intel.com>, Jakub Kicinski <kubakici@wp.pl>, Jason Wang <jasowang@redhat.com>, Siwei Liu <loseweigh@gmail.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Fri, Feb 23, 2018 at 4:03 PM, Stephen Hemminger
-<stephen@networkplumber.org> wrote:
-> (pruned to reduce thread)
->
-> On Wed, 21 Feb 2018 16:17:19 -0800
-> Alexander Duyck <alexander.duyck@gmail.com> wrote:
->
->> >>> FWIW two solutions that immediately come to mind is to export "backup"
->> >>> as phys_port_name of the backup virtio link and/or assign a name to the
->> >>> master like you are doing already.  I think team uses team%d and bond
->> >>> uses bond%d, soft naming of master devices seems quite natural in this
->> >>> case.
->> >>
->> >> I figured I had overlooked something like that.. Thanks for pointing
->> >> this out. Okay so I think the phys_port_name approach might resolve
->> >> the original issue. If I am reading things correctly what we end up
->> >> with is the master showing up as "ens1" for example and the backup
->> >> showing up as "ens1nbackup". Am I understanding that right?
->> >>
->> >> The problem with the team/bond%d approach is that it creates a new
->> >> netdevice and so it would require guest configuration changes.
->> >>
->> >>> IMHO phys_port_name == "backup" if BACKUP bit is set on slave virtio
->> >>> link is quite neat.
->> >>
->> >> I agree. For non-"backup" virio_net devices would it be okay for us to
->> >> just return -EOPNOTSUPP? I assume it would be and that way the legacy
->> >> behavior could be maintained although the function still exists.
->> >>
->> >>>> - When the 'active' netdev is unplugged OR not present on a destination
->> >>>>   system after live migration, the user will see 2 virtio_net netdevs.
->> >>>
->> >>> That's necessary and expected, all configuration applies to the master
->> >>> so master must exist.
->> >>
->> >> With the naming issue resolved this is the only item left outstanding.
->> >> This becomes a matter of form vs function.
->> >>
->> >> The main complaint about the "3 netdev" solution is a bit confusing to
->> >> have the 2 netdevs present if the VF isn't there. The idea is that
->> >> having the extra "master" netdev there if there isn't really a bond is
->> >> a bit ugly.
->> >
->> > Is it this uglier in terms of user experience rather than
->> > functionality? I don't want it dynamically changed between 2-netdev
->> > and 3-netdev depending on the presence of VF. That gets back to my
->> > original question and suggestion earlier: why not just hide the lower
->> > netdevs from udev renaming and such? Which important observability
->> > benefits users may get if exposing the lower netdevs?
->> >
->> > Thanks,
->> > -Siwei
+On Tue, Feb 20, 2018 at 2:42 AM, Jiri Pirko <jiri@resnulli.us> wrote:
+> Fri, Feb 16, 2018 at 07:11:19PM CET, sridhar.samudrala@intel.com wrote:
+>>Patch 1 introduces a new feature bit VIRTIO_NET_F_BACKUP that can be
+>>used by hypervisor to indicate that virtio_net interface should act as
+>>a backup for another device with the same MAC address.
 >>
->> The only real advantage to a 2 netdev solution is that it looks like
->> the netvsc solution, however it doesn't behave like it since there are
->> some features like XDP that may not function correctly if they are
->> left enabled in the virtio_net interface.
->>
->> As far as functionality the advantage of not hiding the lower devices
->> is that they are free to be managed. The problem with pushing all of
->> the configuration into the upper device is that you are limited to the
->> intersection of the features of the lower devices. This can be
->> limiting for some setups as some VFs support things like more queues,
->> or better interrupt moderation options than others so trying to make
->> everything work with one config would be ugly.
->>
+>>Ppatch 2 is in response to the community request for a 3 netdev
+>>solution.  However, it creates some issues we'll get into in a moment.
+>>It extends virtio_net to use alternate datapath when available and
+>>registered. When BACKUP feature is enabled, virtio_net driver creates
+>>an additional 'bypass' netdev that acts as a master device and controls
+>>2 slave devices.  The original virtio_net netdev is registered as
+>>'backup' netdev and a passthru/vf device with the same MAC gets
+>>registered as 'active' netdev. Both 'bypass' and 'backup' netdevs are
+>>associated with the same 'pci' device.  The user accesses the network
+>>interface via 'bypass' netdev. The 'bypass' netdev chooses 'active' netdev
+>>as default for transmits when it is available with link up and running.
 >
->
-> Let's not make XDP the blocker for doing the best solution
-> from the end user point of view. XDP is just yet another offload
-> thing which needs to be handled.  The current backup device solution
-> used in netvsc doesn't handle the full range of offload options
-> (things like flow direction, DCB, etc); no one but the HW vendors
-> seems to care.
+> Sorry, but this is ridiculous. You are apparently re-implemeting part
+> of bonding driver as a part of NIC driver. Bond and team drivers
+> are mature solutions, well tested, broadly used, with lots of issues
+> resolved in the past. What you try to introduce is a weird shortcut
+> that already has couple of issues as you mentioned and will certanly
+> have many more. Also, I'm pretty sure that in future, someone comes up
+> with ideas like multiple VFs, LACP and similar bonding things.
 
-XDP isn't the blocker here. As far as I am concerned we can go either
-way, with a 2 netdev or a 3 netdev solution. We just need to make sure
-we are aware of all the trade-offs, and make a decision one way or the
-other. This is quickly turning into a bikeshed and I would prefer us
-to all agree, or at least disagree and commit, on which way to go
-before we burn more cycles on a patch set that seems to be getting
-tied up in debate.
+The problem with the bond and team drivers is they are too large and
+have too many interfaces available for configuration so as a result
+they can really screw this interface up.
 
-With the 2 netdev solution we have to limit the functionality so that
-we don't break things when we bypass the guts of the driver to hand
-traffic off to the VF. Then ends up meaning that we are stuck with an
-extra qdisc and Tx queue lock in the transmit path of the VF, and we
-cannot rely on any in-driver Rx functionality to work such as
-in-driver XDP. However the advantage here is that this is how netvsc
-is already doing things.
+Essentially this is meant to be a bond that is more-or-less managed by
+the host, not the guest. We want the host to be able to configure it
+and have it automatically kick in on the guest. For now we want to
+avoid adding too much complexity as this is meant to be just the first
+step. Trying to go in and implement the whole solution right from the
+start based on existing drivers is going to be a massive time sink and
+will likely never get completed due to the fact that there is always
+going to be some other thing that will interfere.
 
-The issue with the 3 netdev solution is that you are stuck with 2
-netdevs ("ens1", "ens1nbackup") when the VF is not present. It could
-be argued this isn't a very elegant looking solution, especially when
-the VF is not present. With virtio this makes more sense though as you
-are still able to expose the full functionality of the lower device so
-you don't have to strip or drop any of the existing net device ops if
-the "backup" bit is present.
+My personal hope is that we can look at doing a virtio-bond sort of
+device that will handle all this as well as providing a communication
+channel, but that is much further down the road. For now we only have
+a single bit so the goal for now is trying to keep this as simple as
+possible.
 
-Ultimately I would have preferred to have the 3 netdev solution go
-with virtio only as it would have allowed for healthy competition
-between the two designs and we could have seen which one would have
-ultimately won out, but if we have to decide this now we need to do so
-before we put too much more effort into the patches as these end up
-becoming two very different solutions, especially if we have to apply
-the solution to both drivers. My preference would still be 3 netdevs
-since we could apply this to netvsc without too many changes, but I
-will agree with whatever conclusion we can come to in terms of how
-this is supposed to work for both netvsc and virtio_bypass.
+> What is the reason for this abomination? According to:
+> https://marc.info/?l=linux-virtualization&m=151189725224231&w=2
+> The reason is quite weak.
+> User in the vm sees 2 (or more) netdevices, he puts them in bond/team
+> and that's it. This works now! If the vm lacks some userspace features,
+> let's fix it there! For example the MAC changes is something that could
+> be easily handled in teamd userspace deamon.
 
-- Alex
+I think you might have missed the point of this. This is meant to be a
+simple interface so the guest should not be able to change the MAC
+address, and it shouldn't require any userspace daemon to setup or
+tear down. Ideally with this solution the virtio bypass will come up
+and be assigned the name of the original virtio, and the "backup"
+interface will come up and be assigned the name of the original virtio
+with an additional "nbackup" tacked on via the phys_port_name, and
+then whenever a VF is added it will automatically be enslaved by the
+bypass interface, and it will be removed when the VF is hotplugged
+out.
+
+In my mind the difference between this and bond or team is where the
+configuration interface lies. In the case of bond it is in the kernel.
+If my understanding is correct team is mostly in user space. With this
+the configuration interface is really down in the hypervisor and
+requests are communicated up to the guest. I would prefer not to make
+virtio_net dependent on the bonding or team drivers, or worse yet a
+userspace daemon in the guest. For now I would argue we should keep
+this as simple as possible just to support basic live migration. There
+has already been discussions of refactoring this after it is in so
+that we can start to combine the functionality here with what is there
+in bonding/team, but the differences in configuration interface and
+the size of the code bases will make it challenging to outright merge
+this into something like that.
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
