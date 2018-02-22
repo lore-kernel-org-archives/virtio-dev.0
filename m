@@ -1,52 +1,62 @@
-Return-Path: virtio-dev-return-3158-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3262-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 3C2851CB8080
-	for <virtio-dev@lists.oasis-open.org>; Tue,  6 Feb 2018 10:09:37 -0800 (PST)
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Date: Tue,  6 Feb 2018 18:11:06 +0000
-Message-Id: <20180206181106.21815-1-jean-philippe.brucker@arm.com>
-Subject: [virtio-dev] [RFC] virtio-iommu version 0.6
-To: virtio-dev@lists.oasis-open.org, virtualization@lists.linux-foundation.org
-Cc: eric.auger@redhat.com, bharat.bhushan@nxp.com, eric.auger.pro@gmail.com
+	by lists.oasis-open.org (Postfix) with ESMTP id 2805158180F8
+	for <virtio-dev@lists.oasis-open.org>; Thu, 22 Feb 2018 04:51:05 -0800 (PST)
+From: =?UTF-8?q?Tom=C3=A1=C5=A1=20Golembiovsk=C3=BD?= <tgolembi@redhat.com>
+Date: Thu, 22 Feb 2018 13:50:52 +0100
+Message-Id: <7849539ddc252748908b3ff62ca6539b6dea73b0.1519303843.git.tgolembi@redhat.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Subject: [virtio-dev] [PATCH v2] content: document balloon memory statistics
+To: virtio-dev@lists.oasis-open.org
+Cc: Stefan Hajnoczi <stefanha@redhat.com>, Jonathan Helman <jonathan.helman@oracle.com>, "Michael S. Tsirkin" <mst@redhat.com>, =?UTF-8?q?Tom=C3=A1=C5=A1=20Golembiovsk=C3=BD?= <tgolembi@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Please find version 0.6 of the virtio-iommu specification at the following
-locations.
+Linux kernel provides some balloon memory statistics that were not
+included in the specs. Include them to avoid any ID clashes in the
+future.
 
-Document: http://jpbrucker.net/virtio-iommu/spec/virtio-iommu.pdf
-          http://jpbrucker.net/virtio-iommu/spec/virtio-iommu.html
+Signed-off-by: Tomáš Golembiovský <tgolembi@redhat.com>
+---
+ content.tex | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-Sources: git://linux-arm.org/virtio-iommu.git viommu/v0.6
+diff --git a/content.tex b/content.tex
+index c7ef7fd..7e9e026 100644
+--- a/content.tex
++++ b/content.tex
+@@ -5028,6 +5028,8 @@ struct virtio_balloon_stat {
+ #define VIRTIO_BALLOON_S_MINFLT   3
+ #define VIRTIO_BALLOON_S_MEMFREE  4
+ #define VIRTIO_BALLOON_S_MEMTOT   5
++#define VIRTIO_BALLOON_S_AVAIL    6
++#define VIRTIO_BALLOON_S_CACHES   7
+         le16 tag;
+         le64 val;
+ } __attribute__((packed));
+@@ -5109,6 +5111,13 @@ first buffer.
+ 
+ \item[VIRTIO_BALLOON_S_MEMTOT (5)] The total amount of memory available
+   (in bytes).
++
++\item[VIRTIO_BALLOON_S_AVAIL (6)] An estimate of how much memory is available
++  (in bytes) for starting new applications, without pushing the system to swap.
++
++\item[VIRTIO_BALLOON_S_CACHES (7)] The amount of memory, in bytes, that can be
++  quickly reclaimed without additional I/O. Typically these pages are used for
++  caching files from disk.
+ \end{description}
+ 
+ \section{SCSI Host Device}\label{sec:Device Types / SCSI Host Device}
+-- 
+2.16.1
 
-I didn't receive any comment for v0.5 [1], so this update is fairly light:
-* Changed range definition in map and unmap requests
-* Use virtio-iommu device ID
-* Update IORT node ID and simplify layout
-
-The following document shows the difference between v0.5 and v0.6:
-http://jpbrucker.net/virtio-iommu/spec/diffs/virtio-iommu-pdf-diff-v0.5-v0.6.pdf
-
-Next version will hopefully add vSVA (PASID+PRI) and/or architectural
-optimizations, but I can't provide a timeline yet. I'll probably send a
-small draft first.
-
-I will send the Linux driver soon. In the meantime you can fetch it on my
-development branches, based on next-20180206.
-
-git://linux-arm.org/linux-jpb.git virtio-iommu/devel
-git://linux-arm.org/kvmtool-jpb.git virtio-iommu/devel
-
-Any comments welcome!
-
-Thanks,
-Jean
-
-[1] https://www.spinics.net/lists/kvm/msg157402.html
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
