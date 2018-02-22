@@ -1,65 +1,75 @@
-Return-Path: virtio-dev-return-3240-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3261-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 581B85819220
-	for <virtio-dev@lists.oasis-open.org>; Tue, 20 Feb 2018 03:28:21 -0800 (PST)
-References: <20180214145340.1223-1-jean-philippe.brucker@arm.com>
- <20180214145340.1223-2-jean-philippe.brucker@arm.com>
- <417e1617-e5ff-7b13-64e3-a8a98d30bcb9@semihalf.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 20F675818080
+	for <virtio-dev@lists.oasis-open.org>; Thu, 22 Feb 2018 03:02:14 -0800 (PST)
+References: <20180214145340.1223-2-jean-philippe.brucker@arm.com>
+ <201802220455.lMEb6LLi%fengguang.wu@intel.com>
 From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Message-ID: <ab5bf4f1-9564-9dc6-fefe-5c96352da1be@arm.com>
-Date: Tue, 20 Feb 2018 11:30:41 +0000
+Message-ID: <e5ffc52f-4510-f757-aa83-2a99af3ae06b@arm.com>
+Date: Thu, 22 Feb 2018 11:04:30 +0000
 MIME-Version: 1.0
-In-Reply-To: <417e1617-e5ff-7b13-64e3-a8a98d30bcb9@semihalf.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <201802220455.lMEb6LLi%fengguang.wu@intel.com>
+Content-Type: text/plain; charset=windows-1252
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Subject: [virtio-dev] Re: [PATCH 1/4] iommu: Add virtio-iommu driver
-To: Tomasz Nowicki <tn@semihalf.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>
-Cc: "joro@8bytes.org" <joro@8bytes.org>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "mst@redhat.com" <mst@redhat.com>, "jasowang@redhat.com" <jasowang@redhat.com>, Marc Zyngier <Marc.Zyngier@arm.com>, Robin Murphy <Robin.Murphy@arm.com>, Will Deacon <Will.Deacon@arm.com>, Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>, "eric.auger.pro@gmail.com" <eric.auger.pro@gmail.com>, "peterx@redhat.com" <peterx@redhat.com>, "bharat.bhushan@nxp.com" <bharat.bhushan@nxp.com>, "tnowicki@caviumnetworks.com" <tnowicki@caviumnetworks.com>, "jayachandran.nair@cavium.com" <jayachandran.nair@cavium.com>, "kevin.tian@intel.com" <kevin.tian@intel.com>, "jintack@cs.columbia.edu" <jintack@cs.columbia.edu>
+To: kbuild test robot <lkp@intel.com>
+Cc: "kbuild-all@01.org" <kbuild-all@01.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>, "joro@8bytes.org" <joro@8bytes.org>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "mst@redhat.com" <mst@redhat.com>, "jasowang@redhat.com" <jasowang@redhat.com>, Marc Zyngier <Marc.Zyngier@arm.com>, Robin Murphy <Robin.Murphy@arm.com>, Will Deacon <Will.Deacon@arm.com>, Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>, "eric.auger.pro@gmail.com" <eric.auger.pro@gmail.com>, "peterx@redhat.com" <peterx@redhat.com>, "bharat.bhushan@nxp.com" <bharat.bhushan@nxp.com>, "tnowicki@caviumnetworks.com" <tnowicki@caviumnetworks.com>, "jayachandran.nair@cavium.com" <jayachandran.nair@cavium.com>, "kevin.tian@intel.com" <kevin.tian@intel.com>, "jintack@cs.columbia.edu" <jintack@cs.columbia.edu>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 19/02/18 12:23, Tomasz Nowicki wrote:
+On 21/02/18 20:12, kbuild test robot wrote:
 [...]
->> +static int viommu_receive_resp(struct viommu_dev *viommu, int nr_sent,
->> +			       struct list_head *sent)
->> +{
->> +
->> +	unsigned int len;
->> +	int nr_received = 0;
->> +	struct viommu_request *req, *pending;
->> +
->> +	pending = list_first_entry_or_null(sent, struct viommu_request, list);
->> +	if (WARN_ON(!pending))
->> +		return 0;
->> +
->> +	while ((req = virtqueue_get_buf(viommu->vq, &len)) != NULL) {
->> +		if (req != pending) {
->> +			dev_warn(viommu->dev, "discarding stale request\n");
->> +			continue;
->> +		}
->> +
->> +		pending->written = len;
->> +
->> +		if (++nr_received == nr_sent) {
->> +			WARN_ON(!list_is_last(&pending->list, sent));
->> +			break;
->> +		} else if (WARN_ON(list_is_last(&pending->list, sent))) {
->> +			break;
->> +		}
->> +
->> +		pending = list_next_entry(pending, list);
-> 
-> We should remove current element from the pending list. There is no 
-> guarantee we get response for each while loop so when we get back for 
-> more the _viommu_send_reqs_sync() caller will pass pointer to the out of 
-> date head next time.
+> config: arm64-allmodconfig (attached as .config)
+[...]
+>    aarch64-linux-gnu-ld: arch/arm64/kernel/head.o: relocation R_AARCH64_ABS32 against `_kernel_offset_le_lo32' can not be used when making a shared object
+>    arch/arm64/kernel/head.o: In function `kimage_vaddr':
+>    (.idmap.text+0x0): dangerous relocation: unsupported relocation
 
-Right, I'll fix this
+Is this related?
+
+>    arch/arm64/kernel/head.o: In function `__primary_switch':
+>    (.idmap.text+0x340): dangerous relocation: unsupported relocation
+>    (.idmap.text+0x348): dangerous relocation: unsupported relocation
+>    drivers/iommu/virtio-iommu.o: In function `viommu_probe':
+>    virtio-iommu.c:(.text+0xbdc): undefined reference to `virtio_check_driver_offered_feature'
+>    virtio-iommu.c:(.text+0xcfc): undefined reference to `virtio_check_driver_offered_feature'
+>    virtio-iommu.c:(.text+0xe10): undefined reference to `virtio_check_driver_offered_feature'
+>    drivers/iommu/virtio-iommu.o: In function `viommu_send_reqs_sync':
+>    virtio-iommu.c:(.text+0x130c): undefined reference to `virtqueue_add_sgs'
+>    virtio-iommu.c:(.text+0x1398): undefined reference to `virtqueue_kick'
+>    virtio-iommu.c:(.text+0x14d4): undefined reference to `virtqueue_get_buf'
+>    drivers/iommu/virtio-iommu.o: In function `virtio_iommu_drv_init':
+>    virtio-iommu.c:(.init.text+0x1c): undefined reference to `register_virtio_driver'
+>    drivers/iommu/virtio-iommu.o: In function `virtio_iommu_drv_exit':
+>>> virtio-iommu.c:(.exit.text+0x14): undefined reference to `unregister_virtio_driver'
+
+Right. At the moment CONFIG_VIRTIO_IOMMU is a bool instead of tristate,
+because the IOMMU subsystem isn't entirely ready to have IOMMU drivers
+built as modules. In addition to exporting symbols it would also needs to
+hold off probing endpoints behind the IOMMU until the IOMMU driver is
+loaded. At the moment (I think) it gives up once userspace is reached (see
+of_iommu_driver_present).
+
+The above report is due to VIRTIO=m and VIRTIO_IOMMU=y. To solve it we could:
+
+a) Allow VIRTIO_IOMMU to be built as module by exporting a dozen IOMMU
+symbols. It would be a lie. The driver wouldn't be usable because of the
+probe issue discussed above, but it would build.
+
+b) Actually make any IOMMU driver work as module. Whilst it would
+certainly be a nice feature, it's a bigger problem and I don't think it
+has its place in this series.
+
+c) Make VIRTIO_IOMMU depend on VIRTIO_MMIO=y instead of VIRTIO_MMIO, which
+I think is the sanest for now (and does work), even though distro kernels
+probably all have VIRTIO=m.
+
+I prefer doing c) now and experiment with b) once I got some time.
 
 Thanks,
 Jean
