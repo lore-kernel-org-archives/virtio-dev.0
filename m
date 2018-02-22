@@ -1,51 +1,129 @@
-Return-Path: virtio-return-2910-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio@lists.oasis-open.org>
-List-Post: <mailto:virtio@lists.oasis-open.org>
-List-Help: <mailto:virtio-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Fri, 16 Feb 2018 18:02:58 +0100
-From: Cornelia Huck <cohuck@redhat.com>
-Message-ID: <20180216180258.169de0d7.cohuck@redhat.com>
-In-Reply-To: <20180216092050-mutt-send-email-mst@kernel.org>
-References: <20180216092050-mutt-send-email-mst@kernel.org>
+Return-Path: virtio-dev-return-3264-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
+	by lists.oasis-open.org (Postfix) with ESMTP id 1188D5818CB1
+	for <virtio-dev@lists.oasis-open.org>; Thu, 22 Feb 2018 09:53:01 -0800 (PST)
+From: Mark Rustad <mark.d.rustad@intel.com>
+Date: Thu, 22 Feb 2018 09:52:50 -0800
+Message-ID: <20180222175250.97135.98386.stgit@mdrustad-mac04.local>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Subject: [virtio] Re: [PATCH v8 00/16] packed ring layout spec
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, Halil Pasic <pasic@linux.vnet.ibm.com>, Tiwei Bie <tiwei.bie@intel.com>, Stefan Hajnoczi <stefanha@redhat.com>, "Dhanoa, Kully" <kully.dhanoa@intel.com>
+Subject: [virtio-dev] [RFC PATCH V2] virtio_pci: Add SR-IOV support
+To: virtio-dev@lists.oasis-open.org, netdev@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org
+Cc: dan.daly@intel.com, alex.williamson@redhat.com, MRustad@gmail.com, alexander.duyck@gmail.com, mst@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Fri, 16 Feb 2018 09:20:50 +0200
-"Michael S. Tsirkin" <mst@redhat.com> wrote:
+Hardware-realized virtio-pci devices can implement SR-IOV, so this
+patch enables its use. The device in question is an upcoming Intel
+NIC that implements both a virtio-net PF and virtio-net VFs. These
+are hardware realizations of what has been up to now been a software
+interface.
 
-> This addresses comments on v7. A compiled version can
-> be found under https://github.com/oasis-tcs/virtio-docs.git
-> 
-> virtio-v1.1-packed-wd08-diff.pdf  virtio-v1.1-packed-wd08.pdf
-> 
-> for redline and clean versions, respectively.
-> 
-> Note: please do not try to edit the pdf and post comments
-> in the edited file. Please post comments in a text
-> format, as pdfs are not archived with the list.
-> 
-> TODO: support for actual passthrough devices will likely
-> require more new features, such as requirement for
-> stronger memory barriers.
-> 
-> Thanks to everyone who commented! You know who you are.
-> 
-> changes from v7:
-> - new notitfication_data feature, supported for all
->   transports and formats
-> - addressed all outstanding comments
+The device in question has the following 4-part PCI IDs:
 
-I'm basically fine with this. Only minor things.
+PF: device: 1af4 vendor: 1041 subvendor: 8086 subdevice: 15fe
+VF: device: 1af4 vendor: 1041 subvendor: 8086 subdevice: 05fe
+
+The patch needs no check for device ID, because the callback will
+never be made for devices that do not assert the capability or
+when run on a platform incapable of SR-IOV.
+
+One reason for this patch is because the hardware requires the
+vendor ID of a VF to be the same as the vendor ID of the PF that
+created it. So it seemed logical to simply have a fully-functioning
+virtio-net PF create the VFs. This patch makes that possible.
+
+Signed-off-by: Mark Rustad <mark.d.rustad@intel.com>
+Reviewed-by: Alexander Duyck <alexander.h.duyck@intel.com>
+---
+Changes in V2:
+- Simplified logic from previous version, removed added driver variable
+- Disable SR-IOV on driver removal excapt when VFs are assigned
+- Sent as RFC to virtio-dev, linux-pci, netdev, lkml and others
+---
+ drivers/virtio/virtio_pci_common.c |   47 ++++++++++++++++++++++++++++++++++++
+ 1 file changed, 47 insertions(+)
+
+diff --git a/drivers/virtio/virtio_pci_common.c b/drivers/virtio/virtio_pci_common.c
+index 48d4d1cf1cb6..78b53ffc4cee 100644
+--- a/drivers/virtio/virtio_pci_common.c
++++ b/drivers/virtio/virtio_pci_common.c
+@@ -572,6 +572,47 @@ static int virtio_pci_probe(struct pci_dev *pci_dev,
+ 	return rc;
+ }
+ 
++#ifdef CONFIG_PCI_IOV
++static int virtio_pci_sriov_disable(struct pci_dev *pci_dev)
++{
++	/* If vfs are assigned we cannot shut down SR-IOV without causing
++	 * issues, so just leave the hardware available.
++	 */
++	if (pci_vfs_assigned(pci_dev)) {
++		dev_warn(&pci_dev->dev,
++			 "Unloading driver while VFs are assigned - VFs will not be deallocated\n");
++		return -EPERM;
++	}
++	pci_disable_sriov(pci_dev);
++	return 0;
++}
++
++static int virtio_pci_sriov_enable(struct pci_dev *pci_dev, int num_vfs)
++{
++	int rc = 0;
++
++	if (pci_num_vf(pci_dev))
++		return -EINVAL;
++
++	rc = pci_enable_sriov(pci_dev, num_vfs);
++	if (rc) {
++		dev_warn(&pci_dev->dev, "Failed to enable PCI sriov: %d\n", rc);
++		return rc;
++	}
++	dev_info(&pci_dev->dev, "SR-IOV enabled with %d VFs\n", num_vfs);
++	return num_vfs;
++}
++
++static int virtio_pci_sriov_configure(struct pci_dev *dev, int num_vfs)
++{
++	if (num_vfs)
++		return virtio_pci_sriov_enable(dev, num_vfs);
++	if (!pci_num_vf(dev))
++		return -EINVAL;
++	return virtio_pci_sriov_disable(dev);
++}
++#endif /* CONFIG_PCI_IOV */
++
+ static void virtio_pci_remove(struct pci_dev *pci_dev)
+ {
+ 	struct virtio_pci_device *vp_dev = pci_get_drvdata(pci_dev);
+@@ -584,6 +625,9 @@ static void virtio_pci_remove(struct pci_dev *pci_dev)
+ 	else
+ 		virtio_pci_modern_remove(vp_dev);
+ 
++#ifdef CONFIG_PCI_IOV
++	virtio_pci_sriov_disable(pci_dev);
++#endif
+ 	pci_disable_device(pci_dev);
+ 	put_device(dev);
+ }
+@@ -596,6 +640,9 @@ static void virtio_pci_remove(struct pci_dev *pci_dev)
+ #ifdef CONFIG_PM_SLEEP
+ 	.driver.pm	= &virtio_pci_pm_ops,
+ #endif
++#ifdef CONFIG_PCI_IOV
++	.sriov_configure = virtio_pci_sriov_configure,
++#endif
+ };
+ 
+ module_pci_driver(virtio_pci_driver);
+
 
 ---------------------------------------------------------------------
-To unsubscribe from this mail list, you must leave the OASIS TC that 
-generates this mail.  Follow this link to all your TCs in OASIS at:
-https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
