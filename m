@@ -1,38 +1,38 @@
-Return-Path: virtio-dev-return-3260-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3267-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 79F855818039
-	for <virtio-dev@lists.oasis-open.org>; Wed, 21 Feb 2018 19:28:51 -0800 (PST)
-From: "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
-References: <1518804682-16881-1-git-send-email-sridhar.samudrala@intel.com>
- <20180216183817.42b07af6@cakuba.netronome.com>
- <CAKgT0UfU9gV2Y7hWFQi0vJoD9kYeoq+7cXmwAjXeV5zxXHa3dQ@mail.gmail.com>
- <CADGSJ217HahFJsGmNXMD6SwWiK374+u_YET8QqdsmofCRFZr=Q@mail.gmail.com>
- <CAKgT0Uda7Bmzf06RMmD7hCVLr8hHQxaY8Fk7w9Qy=7Vi6NODwQ@mail.gmail.com>
- <CADGSJ23WFYEYo2DpSPVfZsOLjoSpgWWVCtEZi84wrUHN-noxag@mail.gmail.com>
- <0d158bf6-79b3-442b-2c61-3e900ff40922@intel.com>
-Message-ID: <8ac8a83f-3af4-995e-6eba-c58eddcd086e@intel.com>
-Date: Wed, 21 Feb 2018 19:28:30 -0800
+	by lists.oasis-open.org (Postfix) with ESMTP id 72DD75818294
+	for <virtio-dev@lists.oasis-open.org>; Fri, 23 Feb 2018 14:22:49 -0800 (PST)
 MIME-Version: 1.0
 In-Reply-To: <0d158bf6-79b3-442b-2c61-3e900ff40922@intel.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+References: <1518804682-16881-1-git-send-email-sridhar.samudrala@intel.com>
+ <20180216183817.42b07af6@cakuba.netronome.com> <CAKgT0UfU9gV2Y7hWFQi0vJoD9kYeoq+7cXmwAjXeV5zxXHa3dQ@mail.gmail.com>
+ <CADGSJ217HahFJsGmNXMD6SwWiK374+u_YET8QqdsmofCRFZr=Q@mail.gmail.com>
+ <CAKgT0Uda7Bmzf06RMmD7hCVLr8hHQxaY8Fk7w9Qy=7Vi6NODwQ@mail.gmail.com>
+ <CADGSJ23WFYEYo2DpSPVfZsOLjoSpgWWVCtEZi84wrUHN-noxag@mail.gmail.com> <0d158bf6-79b3-442b-2c61-3e900ff40922@intel.com>
+From: Siwei Liu <loseweigh@gmail.com>
+Date: Fri, 23 Feb 2018 14:22:36 -0800
+Message-ID: <CADGSJ22Z1ujZOc+OS5E=MwGCy1nTn9D6mHKBz+J=K9+--8R+jg@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Subject: [virtio-dev] Re: [RFC PATCH v3 0/3] Enable virtio_net to act as a backup for a
  passthru device
-To: Siwei Liu <loseweigh@gmail.com>, Alexander Duyck <alexander.duyck@gmail.com>
-Cc: Jakub Kicinski <kubakici@wp.pl>, "Michael S. Tsirkin" <mst@redhat.com>, Stephen Hemminger <stephen@networkplumber.org>, David Miller <davem@davemloft.net>, Netdev <netdev@vger.kernel.org>, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, "Brandeburg, Jesse" <jesse.brandeburg@intel.com>, "Duyck, Alexander H" <alexander.h.duyck@intel.com>, Jason Wang <jasowang@redhat.com>
+To: "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
+Cc: Alexander Duyck <alexander.duyck@gmail.com>, Jakub Kicinski <kubakici@wp.pl>, "Michael S. Tsirkin" <mst@redhat.com>, Stephen Hemminger <stephen@networkplumber.org>, David Miller <davem@davemloft.net>, Netdev <netdev@vger.kernel.org>, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, "Brandeburg, Jesse" <jesse.brandeburg@intel.com>, "Duyck, Alexander H" <alexander.h.duyck@intel.com>, Jason Wang <jasowang@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 2/21/2018 6:35 PM, Samudrala, Sridhar wrote:
+On Wed, Feb 21, 2018 at 6:35 PM, Samudrala, Sridhar
+<sridhar.samudrala@intel.com> wrote:
 > On 2/21/2018 5:59 PM, Siwei Liu wrote:
+>>
 >> On Wed, Feb 21, 2018 at 4:17 PM, Alexander Duyck
 >> <alexander.duyck@gmail.com> wrote:
+>>>
 >>> On Wed, Feb 21, 2018 at 3:50 PM, Siwei Liu <loseweigh@gmail.com> wrote:
+>>>>
 >>>> I haven't checked emails for days and did not realize the new revision
 >>>> had already came out. And thank you for the effort, this revision
 >>>> really looks to be a step forward towards our use case and is close to
@@ -40,46 +40,48 @@ On 2/21/2018 6:35 PM, Samudrala, Sridhar wrote:
 >>>>
 >>>> On Sat, Feb 17, 2018 at 9:12 AM, Alexander Duyck
 >>>> <alexander.duyck@gmail.com> wrote:
->>>>> On Fri, Feb 16, 2018 at 6:38 PM, Jakub Kicinski <kubakici@wp.pl> 
->>>>> wrote:
+>>>>>
+>>>>> On Fri, Feb 16, 2018 at 6:38 PM, Jakub Kicinski <kubakici@wp.pl> wrote:
+>>>>>>
 >>>>>> On Fri, 16 Feb 2018 10:11:19 -0800, Sridhar Samudrala wrote:
+>>>>>>>
 >>>>>>> Ppatch 2 is in response to the community request for a 3 netdev
->>>>>>> solution.  However, it creates some issues we'll get into in a 
+>>>>>>> solution.  However, it creates some issues we'll get into in a
 >>>>>>> moment.
 >>>>>>> It extends virtio_net to use alternate datapath when available and
->>>>>>> registered. When BACKUP feature is enabled, virtio_net driver 
->>>>>>> creates
->>>>>>> an additional 'bypass' netdev that acts as a master device and 
+>>>>>>> registered. When BACKUP feature is enabled, virtio_net driver creates
+>>>>>>> an additional 'bypass' netdev that acts as a master device and
 >>>>>>> controls
->>>>>>> 2 slave devices.  The original virtio_net netdev is registered as
+>>>>>>> 2 slave devices.  The original virtio_net netdev is registered as
 >>>>>>> 'backup' netdev and a passthru/vf device with the same MAC gets
->>>>>>> registered as 'active' netdev. Both 'bypass' and 'backup' 
->>>>>>> netdevs are
->>>>>>> associated with the same 'pci' device.  The user accesses the 
->>>>>>> network
->>>>>>> interface via 'bypass' netdev. The 'bypass' netdev chooses 
->>>>>>> 'active' netdev
->>>>>>> as default for transmits when it is available with link up and 
+>>>>>>> registered as 'active' netdev. Both 'bypass' and 'backup' netdevs are
+>>>>>>> associated with the same 'pci' device.  The user accesses the network
+>>>>>>> interface via 'bypass' netdev. The 'bypass' netdev chooses 'active'
+>>>>>>> netdev
+>>>>>>> as default for transmits when it is available with link up and
 >>>>>>> running.
+>>>>>>
 >>>>>> Thank you do doing this.
 >>>>>>
 >>>>>>> We noticed a couple of issues with this approach during testing.
->>>>>>> - As both 'bypass' and 'backup' netdevs are associated with the 
->>>>>>> same
->>>>>>>    virtio pci device, udev tries to rename both of them with the 
->>>>>>> same name
->>>>>>>    and the 2nd rename will fail. This would be OK as long as the 
+>>>>>>> - As both 'bypass' and 'backup' netdevs are associated with the same
+>>>>>>>    virtio pci device, udev tries to rename both of them with the same
+>>>>>>> name
+>>>>>>>    and the 2nd rename will fail. This would be OK as long as the
 >>>>>>> first netdev
->>>>>>>    to be renamed is the 'bypass' netdev, but the order in which 
->>>>>>> udev gets
->>>>>>>    to rename the 2 netdevs is not reliable.
+>>>>>>>    to be renamed is the 'bypass' netdev, but the order in which udev
+>>>>>>> gets
+>>>>>>>    to rename the 2 netdevs is not reliable.
+>>>>>>
 >>>>>> Out of curiosity - why do you link the master netdev to the virtio
 >>>>>> struct device?
+>>>>>
 >>>>> The basic idea of all this is that we wanted this to work with an
 >>>>> existing VM image that was using virtio. As such we were trying to
 >>>>> make it so that the bypass interface takes the place of the original
 >>>>> virtio and get udev to rename the bypass to what the original
 >>>>> virtio_net was.
+>>>>
 >>>> Could it made it also possible to take over the config from VF instead
 >>>> of virtio on an existing VM image? And get udev rename the bypass
 >>>> netdev to what the original VF was. I don't say tightly binding the
@@ -92,6 +94,7 @@ On 2/21/2018 6:35 PM, Samudrala, Sridhar wrote:
 >>>> purpose?
 >>>>
 >>>> Our case we'll upgrade the config from VF to virtio-bypass directly.
+>>>
 >>> So if I am understanding what you are saying you are wanting to flip
 >>> the backup interface from the virtio to a VF. The problem is that
 >>> becomes a bit of a vendor lock-in solution since it would rely on a
@@ -100,6 +103,7 @@ On 2/21/2018 6:35 PM, Samudrala, Sridhar wrote:
 >>> separate bond. Ideally you want the hypervisor to be able to manage
 >>> all of this which is why it makes sense to have virtio manage this and
 >>> why this is associated with the virtio_net interface.
+>>
 >> No, that's not what I was talking about of course. I thought you
 >> mentioned the upgrade scenario this patch would like to address is to
 >> use the bypass interface "to take the place of the original virtio,
@@ -115,21 +119,17 @@ On 2/21/2018 6:35 PM, Samudrala, Sridhar wrote:
 >> existing setup on VF interface don't have to recreate it on virtio-net
 >> and VF separately again.
 >
-> Yes. This sounds interesting. Looks like you want an existing VM image 
-> with
+>
+> Yes. This sounds interesting. Looks like you want an existing VM image with
 > VF only configuration to get transparent live migration support by adding
-> virtio_net with BACKUP feature.  We may need another feature bit to 
-> switch
+> virtio_net with BACKUP feature.  We may need another feature bit to switch
 > between these 2 options.
 
-After thinking some more, this may be more involved than adding a new
-feature bit.  This requires a netdev created by virtio to take over the 
-name of
-a VF netdev associated with a PCI device that may not be plugged in when
-the virtio driver is coming up. This definitely requires some new messages
-exchanged across the virtio control queue to pass the PCI device info of the
-VF netdev.
+Yes, that's what I was thinking about. I have been building something
+like this before, and would like to get back after merging with your
+patch.
 
+>
 >
 >
 >>
@@ -139,18 +139,17 @@ VF netdev.
 >>> tree topology that makes this easier to sort out, and the "virtio-bond
 >>> would be used to handle coordination/configuration of a much more
 >>> complex interface.
+>>
 >> That was one way to solve this problem but I'd like to see simple ways
 >> to sort it out.
 >>
->>>>>> FWIW two solutions that immediately come to mind is to export 
->>>>>> "backup"
->>>>>> as phys_port_name of the backup virtio link and/or assign a name 
->>>>>> to the
->>>>>> master like you are doing already.  I think team uses team%d and 
->>>>>> bond
->>>>>> uses bond%d, soft naming of master devices seems quite natural in 
->>>>>> this
+>>>>>> FWIW two solutions that immediately come to mind is to export "backup"
+>>>>>> as phys_port_name of the backup virtio link and/or assign a name to
+>>>>>> the
+>>>>>> master like you are doing already.  I think team uses team%d and bond
+>>>>>> uses bond%d, soft naming of master devices seems quite natural in this
 >>>>>> case.
+>>>>>
 >>>>> I figured I had overlooked something like that.. Thanks for pointing
 >>>>> this out. Okay so I think the phys_port_name approach might resolve
 >>>>> the original issue. If I am reading things correctly what we end up
@@ -162,28 +161,27 @@ VF netdev.
 >>>>>
 >>>>>> IMHO phys_port_name == "backup" if BACKUP bit is set on slave virtio
 >>>>>> link is quite neat.
->>>>> I agree. For non-"backup" virio_net devices would it be okay for 
->>>>> us to
+>>>>>
+>>>>> I agree. For non-"backup" virio_net devices would it be okay for us to
 >>>>> just return -EOPNOTSUPP? I assume it would be and that way the legacy
 >>>>> behavior could be maintained although the function still exists.
 >>>>>
->>>>>>> - When the 'active' netdev is unplugged OR not present on a 
+>>>>>>> - When the 'active' netdev is unplugged OR not present on a
 >>>>>>> destination
->>>>>>>    system after live migration, the user will see 2 virtio_net 
+>>>>>>>    system after live migration, the user will see 2 virtio_net
 >>>>>>> netdevs.
->>>>>> That's necessary and expected, all configuration applies to the 
->>>>>> master
+>>>>>>
+>>>>>> That's necessary and expected, all configuration applies to the master
 >>>>>> so master must exist.
->>>>> With the naming issue resolved this is the only item left 
->>>>> outstanding.
+>>>>>
+>>>>> With the naming issue resolved this is the only item left outstanding.
 >>>>> This becomes a matter of form vs function.
 >>>>>
->>>>> The main complaint about the "3 netdev" solution is a bit 
->>>>> confusing to
+>>>>> The main complaint about the "3 netdev" solution is a bit confusing to
 >>>>> have the 2 netdevs present if the VF isn't there. The idea is that
->>>>> having the extra "master" netdev there if there isn't really a 
->>>>> bond is
+>>>>> having the extra "master" netdev there if there isn't really a bond is
 >>>>> a bit ugly.
+>>>>
 >>>> Is it this uglier in terms of user experience rather than
 >>>> functionality? I don't want it dynamically changed between 2-netdev
 >>>> and 3-netdev depending on the presence of VF. That gets back to my
@@ -193,6 +191,7 @@ VF netdev.
 >>>>
 >>>> Thanks,
 >>>> -Siwei
+>>>
 >>> The only real advantage to a 2 netdev solution is that it looks like
 >>> the netvsc solution, however it doesn't behave like it since there are
 >>> some features like XDP that may not function correctly if they are
@@ -205,6 +204,7 @@ VF netdev.
 >>> limiting for some setups as some VFs support things like more queues,
 >>> or better interrupt moderation options than others so trying to make
 >>> everything work with one config would be ugly.
+>>
 >> It depends on how you build it and the way you expect it to work. IMHO
 >> the lower devices don't need to be directly managed at all, otherwise
 >> it ends up with loss of configuration across migration, and it really
@@ -217,16 +217,22 @@ VF netdev.
 >> supporting ones to active device automatically when switching the
 >> datapath.
 >>
-> It should be possible to extend this patchset to support migration of 
+> It should be possible to extend this patchset to support migration of
 > additional
-> settings  by enabling additional ndo_ops and ethtool_ops on the upper dev
-> and propagating them down the lower devices and replaying the settings 
-> after
+> settings  by enabling additional ndo_ops and ethtool_ops on the upper dev
+> and propagating them down the lower devices and replaying the settings after
 > the VF is replugged after migration.
+
+Indeed. But your 3rd patch will collapse this merit of the 3-netdev
+into the former 2-netdev model - I hope it's just for demostrating the
+possibility of dynamically switching ndo_ops and ethtool_ops but not
+actually making it complicated in implementing this further.
+
+Thanks,
+-Siwei
 >
 > Thanks
 > Sridhar
-
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
