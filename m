@@ -1,99 +1,209 @@
-Return-Path: virtio-dev-return-3292-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3288-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id C706358180FF
-	for <virtio-dev@lists.oasis-open.org>; Mon, 26 Feb 2018 14:44:58 -0800 (PST)
-MIME-Version: 1.0
-In-Reply-To: <20180227003257-mutt-send-email-mst@kernel.org>
+	by lists.oasis-open.org (Postfix) with ESMTP id D5785581916C
+	for <virtio-dev@lists.oasis-open.org>; Mon, 26 Feb 2018 14:32:51 -0800 (PST)
+Date: Tue, 27 Feb 2018 00:32:47 +0200
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20180227003123-mutt-send-email-mst@kernel.org>
 References: <20180226044837.19543.12267.stgit@mdrustad-mac04.local>
  <CAKgT0UcMth9Jxovoj7xo0q2t+MuY0K1Upf+Mqs3zgXdriui-tA@mail.gmail.com>
- <E8D91EBA-F75D-4FF9-BDE8-FCE3A4B4B007@intel.com> <CAKgT0UcG91o3H8jmSJFfyt2p_CoqxgCYrEX2Xchoira6nu6mNg@mail.gmail.com>
- <20180227003257-mutt-send-email-mst@kernel.org>
-From: Alexander Duyck <alexander.duyck@gmail.com>
-Date: Mon, 26 Feb 2018 14:44:56 -0800
-Message-ID: <CAKgT0UdicSYCJ_=oCUrxKg+zx5X3B9ubt1X+BdfP42n4NR9B3g@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-Subject: [virtio-dev] Re: [RFC PATCH V4] pci: virtio_pci: Add SR-IOV support for virtio_pci devices
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: "Rustad, Mark D" <mark.d.rustad@intel.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Netdev <netdev@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "Daly, Dan" <dan.daly@intel.com>, Alex Williamson <alex.williamson@redhat.com>, "MRustad@gmail.com" <MRustad@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAKgT0UcMth9Jxovoj7xo0q2t+MuY0K1Upf+Mqs3zgXdriui-tA@mail.gmail.com>
+Subject: [virtio-dev] Re: [RFC PATCH V4] pci: virtio_pci: Add SR-IOV support for
+ virtio_pci devices
+To: Alexander Duyck <alexander.duyck@gmail.com>
+Cc: Mark Rustad <mark.d.rustad@intel.com>, virtio-dev@lists.oasis-open.org, Netdev <netdev@vger.kernel.org>, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, "Daly, Dan" <dan.daly@intel.com>, Alex Williamson <alex.williamson@redhat.com>, MRustad@gmail.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Mon, Feb 26, 2018 at 2:38 PM, Michael S. Tsirkin <mst@redhat.com> wrote:
-> On Mon, Feb 26, 2018 at 10:05:31AM -0800, Alexander Duyck wrote:
->> On Mon, Feb 26, 2018 at 9:48 AM, Rustad, Mark D <mark.d.rustad@intel.com=
-> wrote:
->> > Alex,
->> >
->> >> On Feb 26, 2018, at 7:26 AM, Alexander Duyck <alexander.duyck@gmail.c=
-om> wrote:
->> >>
->> >> Mark,
->> >>
->> >> In the future please don't put my "Reviewed-by" on a patch that I
->> >> haven't reviewed. I believe I reviewed one of the earlier patches, bu=
-t
->> >> I hadn't reviewed this version.
->> >
->> > I'm very sorry. I completely spaced doing something about that. I thin=
-k yours was the first Reviewed-by I ever had in this way. In the future I w=
-ill remove such things from my changelog right after sending. Thanks for al=
-erting me to what I had failed to do.
->> >
->> >> Also, after thinking about it over the weekend we may want to look at
->> >> just coming up with a truly "generic" solution that is applied to
->> >> SR-IOV capable devices that don't have a SR-IOV capable driver loaded
->> >> on them. That would allow us to handle the uio, vfio, pci-stub, and
->> >> virtio cases all in one fell swoop. I think us going though and
->> >> modifying one patch at a time to do this kind of thing isn't going to
->> >> scale.
->> >
->> > The notion of that kind of troubles me - at least pci-stub does. Havin=
-g worked on ixgbe a bit, I have to wonder what kind of havoc would ensue if=
- an ixgbe device were assigned to a guest, and an attempt was made to alloc=
-ate VFs by the pci-stub. The guest could be running any version of the ixgb=
-e driver, possibly even an old one that didn't support SR-IOV. Even if it d=
-id support SR-IOV, I don't know how it would respond to mailbox messages wh=
-en it doesn't think it has VFs.
->>
->> The assumption here is that the root user knows what they are doing.
->
-> There are tools that let non-root users load the stub.
->
-> People use that to e.g.  prevent a native driver from loading while also
-> assuming it won't break the kernel.
->
->
->> We have already had some discussion on this in regards to VFIO. My
->> thought is we look at adding a new PCI sysfs option called
->> "sriov_unmanaged_autoprobe" that would be similar to
->> "sriov_drivers_autoprobe" and is used to determine if we allow for
->> auto probing of the VFs into the host kernel when SR-IOV is enabled.
->
-> I'm not sure how a global option can work for use-cases
-> such as containers though.
+On Mon, Feb 26, 2018 at 07:26:14AM -0800, Alexander Duyck wrote:
+> On Sun, Feb 25, 2018 at 8:48 PM, Mark Rustad <mark.d.rustad@intel.com> wrote:
+> > Hardware-realized virtio_pci devices can implement SR-IOV, so this
+> > patch enables its use. The device in question is an upcoming Intel
+> > NIC that implements both a virtio_net PF and virtio_net VFs. These
+> > are hardware realizations of what has been up to now been a software
+> > interface.
+> >
+> > The device in question has the following 4-part PCI IDs:
+> >
+> > PF: vendor: 1af4 device: 1041 subvendor: 8086 subdevice: 15fe
+> > VF: vendor: 1af4 device: 1041 subvendor: 8086 subdevice: 05fe
+> >
+> > The patch needs no check for device ID, because the callback will
+> > never be made for devices that do not assert the capability or
+> > when run on a platform incapable of SR-IOV.
+> >
+> > One reason for this patch is because the hardware requires the
+> > vendor ID of a VF to be the same as the vendor ID of the PF that
+> > created it. So it seemed logical to simply have a fully-functioning
+> > virtio_net PF create the VFs. This patch makes that possible.
+> >
+> > Signed-off-by: Mark Rustad <mark.d.rustad@intel.com>
+> > Reviewed-by: Alexander Duyck <alexander.h.duyck@intel.com>
+> 
+> Mark,
+> 
+> In the future please don't put my "Reviewed-by" on a patch that I
+> haven't reviewed. I believe I reviewed one of the earlier patches, but
+> I hadn't reviewed this version.
+> 
+> Also, after thinking about it over the weekend we may want to look at
+> just coming up with a truly "generic" solution that is applied to
+> SR-IOV capable devices that don't have a SR-IOV capable driver loaded
+> on them. That would allow us to handle the uio, vfio, pci-stub, and
+> virtio cases all in one fell swoop. I think us going though and
+> modifying one patch at a time to do this kind of thing isn't going to
+> scale.
 
-It isn't global. It is per PF. There is a sysfs value per PF called
-"sriov_drivers_autoprobe" that currently controls if VFs are
-automatically bound by drivers from the kernel. What I am suggesting
-is we split that value, and then add a new one called
-"sriov_unmanaged_autoprobe" to handle the case where either there is
-no driver on the PF or the driver loaded doesn't support SR-IOV. The
-default behavior for it would be to be disabled by default so if VFs
-are spawned by an unmanaged PF the drivers don't load on them by
-default. The root user can toggle the sysfs entry if they want that
-behavior to change.
+uio really can't support VFs properly - without proper IOMMU
+support any MSIs can corrupt kernel memory, and VFs are
+limited to MSIs.
 
-The idea based on a request by Alex Williamson that we prevent VF
-drivers from loading in the host if a PF is managed by user-space or a
-firmware entity and we don't have a clear way of configuring VFs from
-the kernel.
-
-- Alex
+> I'll try to do some digging and find the VFIO approach we had been
+> working on. I think with a couple tweaks we can probably make that
+> truly generic and ready for submission.
+> 
+> Thanks.
+> 
+> - Alex
+> 
+> > ---
+> > Changes in V4:
+> > - V3 was a mis-send, this has what was intended
+> > - Move most code to new helpers in pci/iov.c, pci_sriov_configure_generic
+> >   and pci_sriov_disable_generic
+> > - Correct mislabeling of vendor and device IDs
+> > - Other minor changelog fixes
+> > - Rebased to pci/master, since most changes are in that area now
+> > - No new ifdefs with this approach (yay)
+> > Changes in V3:
+> > - Missent patch, please disregard
+> > Changes in V2:
+> > - Simplified logic from previous version, removed added driver variable
+> > - Disable SR-IOV on driver removal except when VFs are assigned
+> > - Sent as RFC to virtio-dev, linux-pci, netdev, lkml and others
+> > ---
+> >  drivers/pci/iov.c                  |   50 ++++++++++++++++++++++++++++++++++++
+> >  drivers/virtio/virtio_pci_common.c |    2 +
+> >  include/linux/pci.h                |   10 +++++++
+> >  3 files changed, 62 insertions(+)
+> >
+> > diff --git a/drivers/pci/iov.c b/drivers/pci/iov.c
+> > index 677924ae0350..4b110e169b7c 100644
+> > --- a/drivers/pci/iov.c
+> > +++ b/drivers/pci/iov.c
+> > @@ -367,6 +367,56 @@ static void sriov_disable(struct pci_dev *dev)
+> >         pci_iov_set_numvfs(dev, 0);
+> >  }
+> >
+> > +/**
+> > + * pci_sriov_disable_generic - standard helper to disable SR-IOV
+> > + * @dev:the PCI PF device whose VFs are to be disabled
+> > + */
+> > +int pci_sriov_disable_generic(struct pci_dev *dev)
+> > +{
+> > +       /*
+> > +        * If vfs are assigned we cannot shut down SR-IOV without causing
+> > +        * issues, so just leave the hardware available.
+> > +        */
+> > +       if (pci_vfs_assigned(dev)) {
+> > +               pci_warn(dev,
+> > +                        "Cannot disable SR-IOV while VFs are assigned - VFs will not be deallocated\n");
+> > +               return -EPERM;
+> > +       }
+> > +       pci_disable_sriov(dev);
+> > +       return 0;
+> > +}
+> > +EXPORT_SYMBOL_GPL(pci_sriov_disable_generic);
+> > +
+> > +static int pci_sriov_enable(struct pci_dev *dev, int num_vfs)
+> > +{
+> > +       int rc;
+> > +
+> > +       if (pci_num_vf(dev))
+> > +               return -EINVAL;
+> > +
+> > +       rc = pci_enable_sriov(dev, num_vfs);
+> > +       if (rc) {
+> > +               pci_warn(dev, "Failed to enable PCI sriov: %d\n", rc);
+> > +               return rc;
+> > +       }
+> > +       pci_info(dev, "SR-IOV enabled with %d VFs\n", num_vfs);
+> > +       return num_vfs;
+> > +}
+> > +
+> > +/**
+> > + * pci_sriov_configure_generic - standard helper to configure SR-IOV
+> > + * @dev: the PCI PF device that is configuring SR-IOV
+> > + */
+> > +int pci_sriov_configure_generic(struct pci_dev *dev, int num_vfs)
+> > +{
+> > +       if (num_vfs)
+> > +               return pci_sriov_enable(dev, num_vfs);
+> > +       if (!pci_num_vf(dev))
+> > +               return -EINVAL;
+> > +       return pci_sriov_disable_generic(dev);
+> > +}
+> > +EXPORT_SYMBOL_GPL(pci_sriov_configure_generic);
+> > +
+> >  static int sriov_init(struct pci_dev *dev, int pos)
+> >  {
+> >         int i, bar64;
+> > diff --git a/drivers/virtio/virtio_pci_common.c b/drivers/virtio/virtio_pci_common.c
+> > index 48d4d1cf1cb6..d7679377131f 100644
+> > --- a/drivers/virtio/virtio_pci_common.c
+> > +++ b/drivers/virtio/virtio_pci_common.c
+> > @@ -584,6 +584,7 @@ static void virtio_pci_remove(struct pci_dev *pci_dev)
+> >         else
+> >                 virtio_pci_modern_remove(vp_dev);
+> >
+> > +       pci_sriov_disable_generic(pci_dev);
+> >         pci_disable_device(pci_dev);
+> >         put_device(dev);
+> >  }
+> > @@ -596,6 +597,7 @@ static struct pci_driver virtio_pci_driver = {
+> >  #ifdef CONFIG_PM_SLEEP
+> >         .driver.pm      = &virtio_pci_pm_ops,
+> >  #endif
+> > +       .sriov_configure = pci_sriov_configure_generic,
+> >  };
+> >
+> >  module_pci_driver(virtio_pci_driver);
+> > diff --git a/include/linux/pci.h b/include/linux/pci.h
+> > index 024a1beda008..937124d4e098 100644
+> > --- a/include/linux/pci.h
+> > +++ b/include/linux/pci.h
+> > @@ -1947,6 +1947,8 @@ int pci_iov_virtfn_devfn(struct pci_dev *dev, int id);
+> >
+> >  int pci_enable_sriov(struct pci_dev *dev, int nr_virtfn);
+> >  void pci_disable_sriov(struct pci_dev *dev);
+> > +int pci_sriov_disable_generic(struct pci_dev *dev);
+> > +int pci_sriov_configure_generic(struct pci_dev *dev, int num_vfs);
+> >  int pci_iov_add_virtfn(struct pci_dev *dev, int id);
+> >  void pci_iov_remove_virtfn(struct pci_dev *dev, int id);
+> >  int pci_num_vf(struct pci_dev *dev);
+> > @@ -1973,6 +1975,14 @@ static inline int pci_iov_add_virtfn(struct pci_dev *dev, int id)
+> >  static inline void pci_iov_remove_virtfn(struct pci_dev *dev,
+> >                                          int id) { }
+> >  static inline void pci_disable_sriov(struct pci_dev *dev) { }
+> > +static inline int pci_sriov_disable_generic(struct pci_dev *dev)
+> > +{
+> > +       return -ENODEV;
+> > +}
+> > +static inline int pci_sriov_configure_generic(struct pci_dev *dev, int num_vfs)
+> > +{
+> > +       return -ENODEV;
+> > +}
+> >  static inline int pci_num_vf(struct pci_dev *dev) { return 0; }
+> >  static inline int pci_vfs_assigned(struct pci_dev *dev)
+> >  { return 0; }
+> >
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
