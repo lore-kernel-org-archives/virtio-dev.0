@@ -1,165 +1,49 @@
-Return-Path: virtio-dev-return-3275-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3310-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id B6CB75819119
-	for <virtio-dev@lists.oasis-open.org>; Sun, 25 Feb 2018 19:19:14 -0800 (PST)
-From: Mark Rustad <mark.d.rustad@intel.com>
-Date: Sun, 25 Feb 2018 19:19:11 -0800
-Message-ID: <20180226031911.18980.80488.stgit@mdrustad-mac04.local>
+	by lists.oasis-open.org (Postfix) with ESMTP id C94DA58191BD
+	for <virtio-dev@lists.oasis-open.org>; Tue, 27 Feb 2018 14:45:23 -0800 (PST)
+From: "Rustad, Mark D" <mark.d.rustad@intel.com>
+Date: Tue, 27 Feb 2018 22:45:19 +0000
+Message-ID: <CABB6175-4FC3-4742-9C54-FCDEE3E5A608@intel.com>
+References: <20180226031911.18980.80488.stgit@mdrustad-mac04.local>
+ <20180227.103502.2160088807348773566.davem@davemloft.net>
+In-Reply-To: <20180227.103502.2160088807348773566.davem@davemloft.net>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <AB59E9BAE7B06A408C67D7E856C619DF@intel.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Subject: [virtio-dev] [RFC PATCH V3] virtio_pci: Add SR-IOV support
-To: virtio-dev@lists.oasis-open.org, netdev@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org
-Cc: dan.daly@intel.com, alex.williamson@redhat.com, MRustad@gmail.com, alexander.duyck@gmail.com, mst@redhat.com
+Subject: [virtio-dev] Re: [RFC PATCH V3] virtio_pci: Add SR-IOV support
+To: David Miller <davem@davemloft.net>
+Cc: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "Daly, Dan" <dan.daly@intel.com>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "MRustad@gmail.com" <MRustad@gmail.com>, "alexander.duyck@gmail.com" <alexander.duyck@gmail.com>, "mst@redhat.com" <mst@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Hardware-realized virtio-pci devices can implement SR-IOV, so this
-patch enables its use. The device in question is an upcoming Intel
-NIC that implements both a virtio-net PF and virtio-net VFs. These
-are hardware realizations of what has been up to now been a software
-interface.
+> On Feb 27, 2018, at 7:35 AM, David Miller <davem@davemloft.net> wrote:
+>=20
+> I don't like these helpers on many different levels.
 
-The device in question has the following 4-part PCI IDs:
+<snip much embarrassment>
 
-PF: device: 1af4 vendor: 1041 subvendor: 8086 subdevice: 15fe
-VF: device: 1af4 vendor: 1041 subvendor: 8086 subdevice: 05fe
+> So kill off pci_sriov_enable() helper completely, it is unnecessary,
+> and rename the disable helper so that it says something meaningful to
+> the reader.
 
-The patch needs no check for device ID, because the callback will
-never be made for devices that do not assert the capability or
-when run on a platform incapable of SR-IOV.
+Yes. Once pointed out, I completely agree with your comments and wish that =
+I had seen those things myself.
 
-One reason for this patch is because the hardware requires the
-vendor ID of a VF to be the same as the vendor ID of the PF that
-created it. So it seemed logical to simply have a fully-functioning
-virtio-net PF create the VFs. This patch makes that possible.
+> Thanks.
 
-Signed-off-by: Mark Rustad <mark.d.rustad@intel.com>
-Reviewed-by: Alexander Duyck <alexander.h.duyck@intel.com>
----
-Changes in V3:
-- Move most code to a new helper in pci/iov.c, pci_sriov_configure
-Changes in V2:
-- Simplified logic from previous version, removed added driver variable
-- Disable SR-IOV on driver removal excapt when VFs are assigned
-- Sent as RFC to virtio-dev, linux-pci, netdev, lkml and others
----
- drivers/pci/iov.c                  |   48 ++++++++++++++++++++++++++++++++++++
- drivers/virtio/virtio_pci_common.c |    2 ++
- include/linux/pci.h                |   10 ++++++++
- 3 files changed, 60 insertions(+)
+V3 was junk, but your comments apply to V4 as well, so please ignore it.
 
-diff --git a/drivers/pci/iov.c b/drivers/pci/iov.c
-index 677924ae0350..ddd44a9d93ec 100644
---- a/drivers/pci/iov.c
-+++ b/drivers/pci/iov.c
-@@ -367,6 +367,54 @@ static void sriov_disable(struct pci_dev *dev)
- 	pci_iov_set_numvfs(dev, 0);
- }
- 
-+/**
-+ * pci_sriov_disable - standard helper to disable SR-IOV
-+ * @dev:the PCI PF device whose VFs are to be disabled
-+ */
-+int pci_sriov_disable(struct pci_dev *dev)
-+{
-+	/*
-+	 * If vfs are assigned we cannot shut down SR-IOV without causing
-+	 * issues, so just leave the hardware available.
-+	 */
-+	if (pci_vfs_assigned(dev)) {
-+		pci_warn(&dev->dev,
-+			 "Cannot disable SR-IOV while VFs are assigned - VFs will not be deallocated\n");
-+		return -EPERM;
-+	}
-+	pci_disable_sriov(dev);
-+	return 0;
-+}
-+
-+static int pci_sriov_enable(struct pci_dev *dev, int num_vfs)
-+{
-+	int rc;
-+
-+	if (pci_num_vf(dev))
-+		return -EINVAL;
-+
-+	rc = pci_enable_sriov(dev, num_vfs);
-+	if (rc) {
-+		pci_warn(dev, "Failed to enable PCI sriov: %d\n", rc);
-+		return rc;
-+	}
-+	dev_info(dev, "SR-IOV enabled with %d VFs\n", num_vfs);
-+	return num_vfs;
-+}
-+
-+/**
-+ * pci_sriov_configure - standard helper to configure SR-IOV
-+ * @dev: the PCI PF device that is configuring SR-IOV
-+ */
-+int pci_sriov_configure(struct pci_dev *dev, int num_vfs)
-+{
-+	if (num_vfs)
-+		return pci_sriov_enable(dev, num_vfs);
-+	if (!pci_num_vf(dev))
-+		return -EINVAL;
-+	return pci_sriov_disable(dev);
-+}
-+
- static int sriov_init(struct pci_dev *dev, int pos)
- {
- 	int i, bar64;
-diff --git a/drivers/virtio/virtio_pci_common.c b/drivers/virtio/virtio_pci_common.c
-index 48d4d1cf1cb6..37e353c4f8b4 100644
---- a/drivers/virtio/virtio_pci_common.c
-+++ b/drivers/virtio/virtio_pci_common.c
-@@ -584,6 +584,7 @@ static void virtio_pci_remove(struct pci_dev *pci_dev)
- 	else
- 		virtio_pci_modern_remove(vp_dev);
- 
-+	pci_sriov_disable(pci_dev);
- 	pci_disable_device(pci_dev);
- 	put_device(dev);
- }
-@@ -596,6 +597,7 @@ static struct pci_driver virtio_pci_driver = {
- #ifdef CONFIG_PM_SLEEP
- 	.driver.pm	= &virtio_pci_pm_ops,
- #endif
-+	.sriov_configure = pci_sriov_configure,
- };
- 
- module_pci_driver(virtio_pci_driver);
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 024a1beda008..ef6b359afefd 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -1947,6 +1947,8 @@ int pci_iov_virtfn_devfn(struct pci_dev *dev, int id);
- 
- int pci_enable_sriov(struct pci_dev *dev, int nr_virtfn);
- void pci_disable_sriov(struct pci_dev *dev);
-+int pci_sriov_disable(struct pci_dev *dev);
-+int pci_sriov_configure(struct pci_dev *dev, int num_vfs);
- int pci_iov_add_virtfn(struct pci_dev *dev, int id);
- void pci_iov_remove_virtfn(struct pci_dev *dev, int id);
- int pci_num_vf(struct pci_dev *dev);
-@@ -1973,6 +1975,14 @@ static inline int pci_iov_add_virtfn(struct pci_dev *dev, int id)
- static inline void pci_iov_remove_virtfn(struct pci_dev *dev,
- 					 int id) { }
- static inline void pci_disable_sriov(struct pci_dev *dev) { }
-+static inline int pci_sriov_disable(struct pci_dev *dev)
-+{
-+	return -ENODEV;
-+}
-+static inline int pci_sriov_configure(struct pci_dev *dev, int num_vfs)
-+{
-+	return -ENODEV;
-+}
- static inline int pci_num_vf(struct pci_dev *dev) { return 0; }
- static inline int pci_vfs_assigned(struct pci_dev *dev)
- { return 0; }
+Thank you for your valuable review.
+
+--=20
+Mark Rustad, Networking Division, Intel Corporation
 
 
 ---------------------------------------------------------------------
