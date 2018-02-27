@@ -1,234 +1,197 @@
-Return-Path: virtio-return-2914-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio@lists.oasis-open.org>
-List-Post: <mailto:virtio@lists.oasis-open.org>
-List-Help: <mailto:virtio-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
+Return-Path: virtio-dev-return-3295-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+From: "Liu, Changpeng" <changpeng.liu@intel.com>
+Date: Tue, 27 Feb 2018 05:45:35 +0000
+Message-ID: <FF7FC980937D6342B9D289F5F3C7C2625B613009@SHSMSX103.ccr.corp.intel.com>
 References: <1519633014-8683-1-git-send-email-changpeng.liu@intel.com>
-From: Paolo Bonzini <pbonzini@redhat.com>
-Message-ID: <e264f4f4-ee96-e77a-54c9-a4f07b996359@redhat.com>
-Date: Mon, 26 Feb 2018 16:20:39 +0100
-MIME-Version: 1.0
-In-Reply-To: <1519633014-8683-1-git-send-email-changpeng.liu@intel.com>
-Content-Type: text/plain; charset=utf-8
+ <e264f4f4-ee96-e77a-54c9-a4f07b996359@redhat.com>
+In-Reply-To: <e264f4f4-ee96-e77a-54c9-a4f07b996359@redhat.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-Subject: [virtio] Re: [RFC] virtio-blk: add discard and write zeroes features to
- specification
-To: Changpeng Liu <changpeng.liu@intel.com>, virtio-dev@lists.oasis-open.org, virtio@lists.oasis-open.org
-Cc: cavery@redhat.com, stefanha@redhat.com, pawelx.wodkowski@intel.com, james.r.harris@intel.com
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+Subject: RE: [virtio-dev] Re: [RFC] virtio-blk: add discard and write zeroes
+ features to specification
+To: Paolo Bonzini <pbonzini@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "virtio@lists.oasis-open.org" <virtio@lists.oasis-open.org>
+Cc: "cavery@redhat.com" <cavery@redhat.com>, "stefanha@redhat.com" <stefanha@redhat.com>, "Wodkowski, PawelX" <pawelx.wodkowski@intel.com>, "Harris, James R" <james.r.harris@intel.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 26/02/2018 09:16, Changpeng Liu wrote:
-> Existing virtio-blk protocol doesn't have DISCARD/WRITE ZEROES support,
-> this will impact the performance when using SSD backend over file systems.
-> 
-> Here is the proposal to extend existing virtio-blk protocol to support
-> DISCARD/WRITE ZEROES commands.
-> 
-> Basic idea here is using 16 Bytes payload to support 1 descriptor, users
-> can put several segments together with 1 DISCARD command.
-> 
-> struct virtio_blk_discard_write_zeroes {
->        le64 slba;
->        le32 nlba;
->        struct {
->                le32 unmap:1;
->                le32 reserved:31;
->        } flags;
-> };
-> 
-> For the purpose to support such feature, we need to introduce 2 new feature
-> flags: VIRTIO_BLK_F_DISCARD/VIRTIO_BLK_F_WRITE_ZEROES, and 2 new command
-> types: VIRTIO_BLK_T_DISCARD/VIRTIO_BLK_T_WRITE_ZEROES. Also we introduce
-> 3 new parameters in the configuration space of virtio-blk: max_discard_sectors/
-> max_discard_seg/max_write_zeroes_sectors. These parameters will tell the
-> OS what's the granularity when issuing such commands.
-> 
-> If both DISCARD and WRITE ZEROES are supported, unmap flag bit maybe used
-> for WRITE ZEROES command with DISCARD bit enabled.
-> 
-> Signed-off-by: Changpeng Liu <changpeng.liu@intel.com>
-> ---
->  content.tex | 41 ++++++++++++++++++++++++++++++++++++++++-
->  1 file changed, 40 insertions(+), 1 deletion(-)
-> 
-> diff --git a/content.tex b/content.tex
-> index c7ef7fd..5555b18 100644
-> --- a/content.tex
-> +++ b/content.tex
-> @@ -4127,6 +4127,13 @@ device except where noted.
->  
->  \item[VIRTIO_BLK_F_CONFIG_WCE (11)] Device can toggle its cache between writeback
->      and writethrough modes.
-> +
-> +\item[VIRTIO_BLK_F_DISCARD (13)] Device can support discard command, maximum
-> +    discard sectors size in \field{max_discard_sectors} and maximum discard
-> +    segment number in field{max_discard_seg}.
-> +
-> +\item[VIRTIO_BLK_F_WRITE_ZEROES (14)] Device can support write zeroes command,
-> +	maximum write zeroes sectors size in \field{max_write_zeroes_sectors}.
->  \end{description}
->  
->  \subsubsection{Legacy Interface: Feature bits}\label{sec:Device Types / Block Device / Feature bits / Legacy Interface: Feature bits}
-> @@ -4170,6 +4177,9 @@ struct virtio_blk_config {
->                  le32 opt_io_size;
->          } topology;
->          u8 writeback;
-
-Let's add three padding bytes here, for clarity.  Please add a note that
-these three bytes MUST be zero in the "Device Requirements: Device
-Initialization" section.
-
-> +        le32 max_discard_sectors;
-> +        le32 max_discard_seg;
-
-Perhaps add here:
-
-	le32 discard_sector_alignment;
-
-(and document it below)?
-
-> +        le32 max_write_zeroes_sectors;
-
-Perhaps we can put a bit here saying whether write_zeroes will ever look
-at the \field{unmap} bit?  Like:
-
-	u8   write_zeroes_may_unmap;
-
->  };
->  \end{lstlisting}
->  
-> @@ -4211,6 +4221,15 @@ according to the native endian of the guest rather than
->    after reset can be either writeback or writethrough.  The actual
->    mode can be determined by reading \field{writeback} after feature
->    negotiation.
-> +
-> +\item If the VIRTIO_BLK_F_DISCARD feature is negotiated,
-> +    \field{max_discard_sectors} and \field{max_discard_seg} can be read
-> +    to determine the maximum discard sectors and maximum number of discard
-> +    segments for the block driver to use.
-> +
-> +\item if the VIRTIO_BLK_F_WRITE_ZEROES feature is negotiated,
-> +    \field{max_write_zeroes_sectors} can be read to determine the maximum
-> +    write zeroes sectors for the block driver to use.
-
-So only one struct virtio_blk_discard_write_zeroes is possible?
-
->  \end{enumerate}
->  
->  \drivernormative{\subsubsection}{Device Initialization}{Device Types / Block Device / Device Initialization}
-> @@ -4270,21 +4289,41 @@ struct virtio_blk_req {
->          u8 data[][512];
->          u8 status;
->  };
-> +
-> +struct virtio_blk_discard_write_zeroes {
-> +       le64 slba;
-> +       le32 nlba;
-
-	le64 sector;
-	le32 num_sectors;
-
-please (more consistent with the rest).
-
-> +       struct {
-> +               le32 unmap:1;
-> +               le32 reserved:31;
-> +       } flags;
-> +};
->  \end{lstlisting}
->  
->  The type of the request is either a read (VIRTIO_BLK_T_IN), a write
-> -(VIRTIO_BLK_T_OUT), or a flush (VIRTIO_BLK_T_FLUSH).
-> +(VIRTIO_BLK_T_OUT), a discard (VIRTIO_BLK_T_DISCARD), a write zeroes
-> +(VIRTIO_BLK_T_WRITE_ZEROES) or a flush (VIRTIO_BLK_T_FLUSH).
->  
->  \begin{lstlisting}
->  #define VIRTIO_BLK_T_IN           0
->  #define VIRTIO_BLK_T_OUT          1
->  #define VIRTIO_BLK_T_FLUSH        4
-> +#define VIRTIO_BLK_T_DISCARD      16
-> +#define VIRTIO_BLK_T_WRITE_ZEROES 32
->  \end{lstlisting}
-
-Bit 0 defines the command direction, which should be 1, while the
-command number is in bits 1-30.  Since the highest-numbered command is
-currently 8, we can use 11 and 13 respectively for discard and write zeroes.
-
->  The \field{sector} number indicates the offset (multiplied by 512) where
->  the read or write is to occur. This field is unused and set to 0
->  for scsi packet commands and for flush commands.
->  
-> +The \field{data} used for discard or write zeroes command can be
-> +described by structure virtio_blk_discard_write_zeroes, while here,
-> +\field{sector} is not used for the two commands. \field{slba} indicates
-> +the starting sector of the segment, \field{nlba} indicates the number
-> +of sectors for discard/write zeroes commands, \field{unmap} only used
-> +for write zeroes command, which means write zeroes to specified sectors
-> +while keep these sectors discarded.
-
------
-The \field{sector} number indicates the offset (multiplied by 512) where
-the read or write is to occur. This field is unused and set to 0
-commands other than read or write.
-
-The \field{data} used for discard or write zeroes command is
-described by one or more virtio_blk_discard_write_zeroes structs.
-\field{sector} indicates the starting sector of the segment, while
-\field{nlba} indicates the number of sectors in each discarded range.
-\field{unmap} is only used for write zeroes command.
------
-
-Please add the following to "Device Requirements: Device Operation":
-
------
-The device MUST set the \emph{status} byte to VIRTIO_BLK_S_UNSUPP for
-discard and write zeroes commands if any unknown flag is set.
-Furthermore, the device MUST set the \emph{status} byte to
-VIRTIO_BLK_S_UNSUPP for discard commands if the \field{unmap} flag is set.
-
-For discard commands, the device MAY deallocate the specified range of
-sectors in the device backend storage.
-
-For write zeroes commands, if the \field{unmap} is set, the device MAY
-deallocate the specified range of sectors in the device backend storage,
-as if the DISCARD command had been sent.  After a write zeroes command
-is completed, reads of the specified ranges of sectors MUST return
-zeroes.  This is true independent of whether \field{unmap} was set or clear.
------
-
-Please add this to "Device Requirements: Driver Operation", too:
-
------
-The \field{unmap} bit MUST be zero for discard commands.  The driver
-MUST NOT assume anything about the data returned by read requests after
-a range of sectors has been discarded.
------
-
-If we added the "write_zeroes_may_unmap" bit, something like this would
-go in "Device Requirements: Device Operation":
-
-----
-The device SHOULD clear the \field{write_zeroes_may_unmap} field of the
-virtio configuration space if and only if a write zeroes request cannot
-result in deallocating one or more sectors.  The device MAY change the
-content of the field during operation of the device; when this happens,
-the device SHOULD trigger a configuration change interrupt.
------
-
-Thanks,
-
-Paolo
-
->  The final \field{status} byte is written by the device: either
->  VIRTIO_BLK_S_OK for success, VIRTIO_BLK_S_IOERR for device or driver
->  error or VIRTIO_BLK_S_UNSUPP for a request unsupported by device:
-> 
-
-
----------------------------------------------------------------------
-To unsubscribe from this mail list, you must leave the OASIS TC that 
-generates this mail.  Follow this link to all your TCs in OASIS at:
-https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogdmlydGlvLWRldkBsaXN0
+cy5vYXNpcy1vcGVuLm9yZyBbbWFpbHRvOnZpcnRpby1kZXZAbGlzdHMub2FzaXMtb3Blbi5vcmdd
+IE9uDQo+IEJlaGFsZiBPZiBQYW9sbyBCb256aW5pDQo+IFNlbnQ6IE1vbmRheSwgRmVicnVhcnkg
+MjYsIDIwMTggMTE6MjEgUE0NCj4gVG86IExpdSwgQ2hhbmdwZW5nIDxjaGFuZ3BlbmcubGl1QGlu
+dGVsLmNvbT47IHZpcnRpby1kZXZAbGlzdHMub2FzaXMtb3Blbi5vcmc7DQo+IHZpcnRpb0BsaXN0
+cy5vYXNpcy1vcGVuLm9yZw0KPiBDYzogY2F2ZXJ5QHJlZGhhdC5jb207IHN0ZWZhbmhhQHJlZGhh
+dC5jb207IFdvZGtvd3NraSwgUGF3ZWxYDQo+IDxwYXdlbHgud29ka293c2tpQGludGVsLmNvbT47
+IEhhcnJpcywgSmFtZXMgUiA8amFtZXMuci5oYXJyaXNAaW50ZWwuY29tPg0KPiBTdWJqZWN0OiBb
+dmlydGlvLWRldl0gUmU6IFtSRkNdIHZpcnRpby1ibGs6IGFkZCBkaXNjYXJkIGFuZCB3cml0ZSB6
+ZXJvZXMgZmVhdHVyZXMgdG8NCj4gc3BlY2lmaWNhdGlvbg0KPiANCj4gT24gMjYvMDIvMjAxOCAw
+OToxNiwgQ2hhbmdwZW5nIExpdSB3cm90ZToNCj4gPiBFeGlzdGluZyB2aXJ0aW8tYmxrIHByb3Rv
+Y29sIGRvZXNuJ3QgaGF2ZSBESVNDQVJEL1dSSVRFIFpFUk9FUyBzdXBwb3J0LA0KPiA+IHRoaXMg
+d2lsbCBpbXBhY3QgdGhlIHBlcmZvcm1hbmNlIHdoZW4gdXNpbmcgU1NEIGJhY2tlbmQgb3ZlciBm
+aWxlIHN5c3RlbXMuDQo+ID4NCj4gPiBIZXJlIGlzIHRoZSBwcm9wb3NhbCB0byBleHRlbmQgZXhp
+c3RpbmcgdmlydGlvLWJsayBwcm90b2NvbCB0byBzdXBwb3J0DQo+ID4gRElTQ0FSRC9XUklURSBa
+RVJPRVMgY29tbWFuZHMuDQo+ID4NCj4gPiBCYXNpYyBpZGVhIGhlcmUgaXMgdXNpbmcgMTYgQnl0
+ZXMgcGF5bG9hZCB0byBzdXBwb3J0IDEgZGVzY3JpcHRvciwgdXNlcnMNCj4gPiBjYW4gcHV0IHNl
+dmVyYWwgc2VnbWVudHMgdG9nZXRoZXIgd2l0aCAxIERJU0NBUkQgY29tbWFuZC4NCj4gPg0KPiA+
+IHN0cnVjdCB2aXJ0aW9fYmxrX2Rpc2NhcmRfd3JpdGVfemVyb2VzIHsNCj4gPiAgICAgICAgbGU2
+NCBzbGJhOw0KPiA+ICAgICAgICBsZTMyIG5sYmE7DQo+ID4gICAgICAgIHN0cnVjdCB7DQo+ID4g
+ICAgICAgICAgICAgICAgbGUzMiB1bm1hcDoxOw0KPiA+ICAgICAgICAgICAgICAgIGxlMzIgcmVz
+ZXJ2ZWQ6MzE7DQo+ID4gICAgICAgIH0gZmxhZ3M7DQo+ID4gfTsNCj4gPg0KPiA+IEZvciB0aGUg
+cHVycG9zZSB0byBzdXBwb3J0IHN1Y2ggZmVhdHVyZSwgd2UgbmVlZCB0byBpbnRyb2R1Y2UgMiBu
+ZXcgZmVhdHVyZQ0KPiA+IGZsYWdzOiBWSVJUSU9fQkxLX0ZfRElTQ0FSRC9WSVJUSU9fQkxLX0Zf
+V1JJVEVfWkVST0VTLCBhbmQgMiBuZXcNCj4gY29tbWFuZA0KPiA+IHR5cGVzOiBWSVJUSU9fQkxL
+X1RfRElTQ0FSRC9WSVJUSU9fQkxLX1RfV1JJVEVfWkVST0VTLiBBbHNvIHdlDQo+IGludHJvZHVj
+ZQ0KPiA+IDMgbmV3IHBhcmFtZXRlcnMgaW4gdGhlIGNvbmZpZ3VyYXRpb24gc3BhY2Ugb2Ygdmly
+dGlvLWJsazoNCj4gbWF4X2Rpc2NhcmRfc2VjdG9ycy8NCj4gPiBtYXhfZGlzY2FyZF9zZWcvbWF4
+X3dyaXRlX3plcm9lc19zZWN0b3JzLiBUaGVzZSBwYXJhbWV0ZXJzIHdpbGwgdGVsbCB0aGUNCj4g
+PiBPUyB3aGF0J3MgdGhlIGdyYW51bGFyaXR5IHdoZW4gaXNzdWluZyBzdWNoIGNvbW1hbmRzLg0K
+PiA+DQo+ID4gSWYgYm90aCBESVNDQVJEIGFuZCBXUklURSBaRVJPRVMgYXJlIHN1cHBvcnRlZCwg
+dW5tYXAgZmxhZyBiaXQgbWF5YmUgdXNlZA0KPiA+IGZvciBXUklURSBaRVJPRVMgY29tbWFuZCB3
+aXRoIERJU0NBUkQgYml0IGVuYWJsZWQuDQo+ID4NCj4gPiBTaWduZWQtb2ZmLWJ5OiBDaGFuZ3Bl
+bmcgTGl1IDxjaGFuZ3BlbmcubGl1QGludGVsLmNvbT4NCj4gPiAtLS0NCj4gPiAgY29udGVudC50
+ZXggfCA0MSArKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrLQ0KPiA+ICAx
+IGZpbGUgY2hhbmdlZCwgNDAgaW5zZXJ0aW9ucygrKSwgMSBkZWxldGlvbigtKQ0KPiA+DQo+ID4g
+ZGlmZiAtLWdpdCBhL2NvbnRlbnQudGV4IGIvY29udGVudC50ZXgNCj4gPiBpbmRleCBjN2VmN2Zk
+Li41NTU1YjE4IDEwMDY0NA0KPiA+IC0tLSBhL2NvbnRlbnQudGV4DQo+ID4gKysrIGIvY29udGVu
+dC50ZXgNCj4gPiBAQCAtNDEyNyw2ICs0MTI3LDEzIEBAIGRldmljZSBleGNlcHQgd2hlcmUgbm90
+ZWQuDQo+ID4NCj4gPiAgXGl0ZW1bVklSVElPX0JMS19GX0NPTkZJR19XQ0UgKDExKV0gRGV2aWNl
+IGNhbiB0b2dnbGUgaXRzIGNhY2hlIGJldHdlZW4NCj4gd3JpdGViYWNrDQo+ID4gICAgICBhbmQg
+d3JpdGV0aHJvdWdoIG1vZGVzLg0KPiA+ICsNCj4gPiArXGl0ZW1bVklSVElPX0JMS19GX0RJU0NB
+UkQgKDEzKV0gRGV2aWNlIGNhbiBzdXBwb3J0IGRpc2NhcmQgY29tbWFuZCwNCj4gbWF4aW11bQ0K
+PiA+ICsgICAgZGlzY2FyZCBzZWN0b3JzIHNpemUgaW4gXGZpZWxke21heF9kaXNjYXJkX3NlY3Rv
+cnN9IGFuZCBtYXhpbXVtIGRpc2NhcmQNCj4gPiArICAgIHNlZ21lbnQgbnVtYmVyIGluIGZpZWxk
+e21heF9kaXNjYXJkX3NlZ30uDQo+ID4gKw0KPiA+ICtcaXRlbVtWSVJUSU9fQkxLX0ZfV1JJVEVf
+WkVST0VTICgxNCldIERldmljZSBjYW4gc3VwcG9ydCB3cml0ZSB6ZXJvZXMNCj4gY29tbWFuZCwN
+Cj4gPiArCW1heGltdW0gd3JpdGUgemVyb2VzIHNlY3RvcnMgc2l6ZSBpbiBcZmllbGR7bWF4X3dy
+aXRlX3plcm9lc19zZWN0b3JzfS4NCj4gPiAgXGVuZHtkZXNjcmlwdGlvbn0NCj4gPg0KPiA+ICBc
+c3Vic3Vic2VjdGlvbntMZWdhY3kgSW50ZXJmYWNlOiBGZWF0dXJlIGJpdHN9XGxhYmVse3NlYzpE
+ZXZpY2UgVHlwZXMgLyBCbG9jaw0KPiBEZXZpY2UgLyBGZWF0dXJlIGJpdHMgLyBMZWdhY3kgSW50
+ZXJmYWNlOiBGZWF0dXJlIGJpdHN9DQo+ID4gQEAgLTQxNzAsNiArNDE3Nyw5IEBAIHN0cnVjdCB2
+aXJ0aW9fYmxrX2NvbmZpZyB7DQo+ID4gICAgICAgICAgICAgICAgICBsZTMyIG9wdF9pb19zaXpl
+Ow0KPiA+ICAgICAgICAgIH0gdG9wb2xvZ3k7DQo+ID4gICAgICAgICAgdTggd3JpdGViYWNrOw0K
+PiANCj4gTGV0J3MgYWRkIHRocmVlIHBhZGRpbmcgYnl0ZXMgaGVyZSwgZm9yIGNsYXJpdHkuICBQ
+bGVhc2UgYWRkIGEgbm90ZSB0aGF0DQo+IHRoZXNlIHRocmVlIGJ5dGVzIE1VU1QgYmUgemVybyBp
+biB0aGUgIkRldmljZSBSZXF1aXJlbWVudHM6IERldmljZQ0KPiBJbml0aWFsaXphdGlvbiIgc2Vj
+dGlvbi4NCj4gDQo+ID4gKyAgICAgICAgbGUzMiBtYXhfZGlzY2FyZF9zZWN0b3JzOw0KPiA+ICsg
+ICAgICAgIGxlMzIgbWF4X2Rpc2NhcmRfc2VnOw0KPiANCj4gUGVyaGFwcyBhZGQgaGVyZToNCj4g
+DQo+IAlsZTMyIGRpc2NhcmRfc2VjdG9yX2FsaWdubWVudDsNCj4gDQo+IChhbmQgZG9jdW1lbnQg
+aXQgYmVsb3cpPw0KT2suDQo+IA0KPiA+ICsgICAgICAgIGxlMzIgbWF4X3dyaXRlX3plcm9lc19z
+ZWN0b3JzOw0KPiANCj4gUGVyaGFwcyB3ZSBjYW4gcHV0IGEgYml0IGhlcmUgc2F5aW5nIHdoZXRo
+ZXIgd3JpdGVfemVyb2VzIHdpbGwgZXZlciBsb29rDQo+IGF0IHRoZSBcZmllbGR7dW5tYXB9IGJp
+dD8gIExpa2U6DQo+IA0KPiAJdTggICB3cml0ZV96ZXJvZXNfbWF5X3VubWFwOw0KSSBkbyB0YWtl
+IHRoaXMgaW50byBjb25zaWRlcmF0aW9uLCBpZiB3cml0ZSB6ZXJvZXMgaXMgc3VwcG9ydGVkIGFu
+ZCBkaXNjYXJkIGlzIG5vdCBzdXBwb3J0ZWQsDQpldmVuIHRoZSBPUyBzZW5kIHdyaXRlIHplcm9l
+cyBjb21tYW5kIHdpdGggdW5tYXAgYml0IGVuYWJsZWQsIHRoZSBiYWNrZW5kIHdpbGwgYWxzbw0K
+aWdub3JlIHRoaXMgYml0LCBzbyB0aGUgY29uZmlndXJhdGlvbiBwYXJhbWV0ZXIgc2VlbXMgdXNl
+bGVzcy4NCj4gDQo+ID4gIH07DQo+ID4gIFxlbmR7bHN0bGlzdGluZ30NCj4gPg0KPiA+IEBAIC00
+MjExLDYgKzQyMjEsMTUgQEAgYWNjb3JkaW5nIHRvIHRoZSBuYXRpdmUgZW5kaWFuIG9mIHRoZSBn
+dWVzdCByYXRoZXINCj4gdGhhbg0KPiA+ICAgIGFmdGVyIHJlc2V0IGNhbiBiZSBlaXRoZXIgd3Jp
+dGViYWNrIG9yIHdyaXRldGhyb3VnaC4gIFRoZSBhY3R1YWwNCj4gPiAgICBtb2RlIGNhbiBiZSBk
+ZXRlcm1pbmVkIGJ5IHJlYWRpbmcgXGZpZWxke3dyaXRlYmFja30gYWZ0ZXIgZmVhdHVyZQ0KPiA+
+ICAgIG5lZ290aWF0aW9uLg0KPiA+ICsNCj4gPiArXGl0ZW0gSWYgdGhlIFZJUlRJT19CTEtfRl9E
+SVNDQVJEIGZlYXR1cmUgaXMgbmVnb3RpYXRlZCwNCj4gPiArICAgIFxmaWVsZHttYXhfZGlzY2Fy
+ZF9zZWN0b3JzfSBhbmQgXGZpZWxke21heF9kaXNjYXJkX3NlZ30gY2FuIGJlIHJlYWQNCj4gPiAr
+ICAgIHRvIGRldGVybWluZSB0aGUgbWF4aW11bSBkaXNjYXJkIHNlY3RvcnMgYW5kIG1heGltdW0g
+bnVtYmVyIG9mDQo+IGRpc2NhcmQNCj4gPiArICAgIHNlZ21lbnRzIGZvciB0aGUgYmxvY2sgZHJp
+dmVyIHRvIHVzZS4NCj4gPiArDQo+ID4gK1xpdGVtIGlmIHRoZSBWSVJUSU9fQkxLX0ZfV1JJVEVf
+WkVST0VTIGZlYXR1cmUgaXMgbmVnb3RpYXRlZCwNCj4gPiArICAgIFxmaWVsZHttYXhfd3JpdGVf
+emVyb2VzX3NlY3RvcnN9IGNhbiBiZSByZWFkIHRvIGRldGVybWluZSB0aGUgbWF4aW11bQ0KPiA+
+ICsgICAgd3JpdGUgemVyb2VzIHNlY3RvcnMgZm9yIHRoZSBibG9jayBkcml2ZXIgdG8gdXNlLg0K
+PiANCj4gU28gb25seSBvbmUgc3RydWN0IHZpcnRpb19ibGtfZGlzY2FyZF93cml0ZV96ZXJvZXMg
+aXMgcG9zc2libGU/DQpNYXliZSBiZXR0ZXIgc2FtZSB3aXRoIERJU0NBUkQsIHVzZXIgY2FuIGFs
+c28gYWRkIG51bWJlciBvZiBzZWdtZW50IGZvciB3cml0ZSB6ZXJvZXMgY29tbWFuZC4NCkknbGwg
+YWRkIGl0Lg0KPiANCj4gPiAgXGVuZHtlbnVtZXJhdGV9DQo+ID4NCj4gPiAgXGRyaXZlcm5vcm1h
+dGl2ZXtcc3Vic3Vic2VjdGlvbn17RGV2aWNlIEluaXRpYWxpemF0aW9ufXtEZXZpY2UgVHlwZXMg
+LyBCbG9jaw0KPiBEZXZpY2UgLyBEZXZpY2UgSW5pdGlhbGl6YXRpb259DQo+ID4gQEAgLTQyNzAs
+MjEgKzQyODksNDEgQEAgc3RydWN0IHZpcnRpb19ibGtfcmVxIHsNCj4gPiAgICAgICAgICB1OCBk
+YXRhW11bNTEyXTsNCj4gPiAgICAgICAgICB1OCBzdGF0dXM7DQo+ID4gIH07DQo+ID4gKw0KPiA+
+ICtzdHJ1Y3QgdmlydGlvX2Jsa19kaXNjYXJkX3dyaXRlX3plcm9lcyB7DQo+ID4gKyAgICAgICBs
+ZTY0IHNsYmE7DQo+ID4gKyAgICAgICBsZTMyIG5sYmE7DQo+IA0KPiAJbGU2NCBzZWN0b3I7DQo+
+IAlsZTMyIG51bV9zZWN0b3JzOw0KPiANCj4gcGxlYXNlIChtb3JlIGNvbnNpc3RlbnQgd2l0aCB0
+aGUgcmVzdCkuDQo+IA0KPiA+ICsgICAgICAgc3RydWN0IHsNCj4gPiArICAgICAgICAgICAgICAg
+bGUzMiB1bm1hcDoxOw0KPiA+ICsgICAgICAgICAgICAgICBsZTMyIHJlc2VydmVkOjMxOw0KPiA+
+ICsgICAgICAgfSBmbGFnczsNCj4gPiArfTsNCj4gPiAgXGVuZHtsc3RsaXN0aW5nfQ0KPiA+DQo+
+ID4gIFRoZSB0eXBlIG9mIHRoZSByZXF1ZXN0IGlzIGVpdGhlciBhIHJlYWQgKFZJUlRJT19CTEtf
+VF9JTiksIGEgd3JpdGUNCj4gPiAtKFZJUlRJT19CTEtfVF9PVVQpLCBvciBhIGZsdXNoIChWSVJU
+SU9fQkxLX1RfRkxVU0gpLg0KPiA+ICsoVklSVElPX0JMS19UX09VVCksIGEgZGlzY2FyZCAoVklS
+VElPX0JMS19UX0RJU0NBUkQpLCBhIHdyaXRlIHplcm9lcw0KPiA+ICsoVklSVElPX0JMS19UX1dS
+SVRFX1pFUk9FUykgb3IgYSBmbHVzaCAoVklSVElPX0JMS19UX0ZMVVNIKS4NCj4gPg0KPiA+ICBc
+YmVnaW57bHN0bGlzdGluZ30NCj4gPiAgI2RlZmluZSBWSVJUSU9fQkxLX1RfSU4gICAgICAgICAg
+IDANCj4gPiAgI2RlZmluZSBWSVJUSU9fQkxLX1RfT1VUICAgICAgICAgIDENCj4gPiAgI2RlZmlu
+ZSBWSVJUSU9fQkxLX1RfRkxVU0ggICAgICAgIDQNCj4gPiArI2RlZmluZSBWSVJUSU9fQkxLX1Rf
+RElTQ0FSRCAgICAgIDE2DQo+ID4gKyNkZWZpbmUgVklSVElPX0JMS19UX1dSSVRFX1pFUk9FUyAz
+Mg0KPiA+ICBcZW5ke2xzdGxpc3Rpbmd9DQo+IA0KPiBCaXQgMCBkZWZpbmVzIHRoZSBjb21tYW5k
+IGRpcmVjdGlvbiwgd2hpY2ggc2hvdWxkIGJlIDEsIHdoaWxlIHRoZQ0KPiBjb21tYW5kIG51bWJl
+ciBpcyBpbiBiaXRzIDEtMzAuICBTaW5jZSB0aGUgaGlnaGVzdC1udW1iZXJlZCBjb21tYW5kIGlz
+DQo+IGN1cnJlbnRseSA4LCB3ZSBjYW4gdXNlIDExIGFuZCAxMyByZXNwZWN0aXZlbHkgZm9yIGRp
+c2NhcmQgYW5kIHdyaXRlIHplcm9lcy4NCk9rLg0KPiANCj4gPiAgVGhlIFxmaWVsZHtzZWN0b3J9
+IG51bWJlciBpbmRpY2F0ZXMgdGhlIG9mZnNldCAobXVsdGlwbGllZCBieSA1MTIpIHdoZXJlDQo+
+ID4gIHRoZSByZWFkIG9yIHdyaXRlIGlzIHRvIG9jY3VyLiBUaGlzIGZpZWxkIGlzIHVudXNlZCBh
+bmQgc2V0IHRvIDANCj4gPiAgZm9yIHNjc2kgcGFja2V0IGNvbW1hbmRzIGFuZCBmb3IgZmx1c2gg
+Y29tbWFuZHMuDQo+ID4NCj4gPiArVGhlIFxmaWVsZHtkYXRhfSB1c2VkIGZvciBkaXNjYXJkIG9y
+IHdyaXRlIHplcm9lcyBjb21tYW5kIGNhbiBiZQ0KPiA+ICtkZXNjcmliZWQgYnkgc3RydWN0dXJl
+IHZpcnRpb19ibGtfZGlzY2FyZF93cml0ZV96ZXJvZXMsIHdoaWxlIGhlcmUsDQo+ID4gK1xmaWVs
+ZHtzZWN0b3J9IGlzIG5vdCB1c2VkIGZvciB0aGUgdHdvIGNvbW1hbmRzLiBcZmllbGR7c2xiYX0g
+aW5kaWNhdGVzDQo+ID4gK3RoZSBzdGFydGluZyBzZWN0b3Igb2YgdGhlIHNlZ21lbnQsIFxmaWVs
+ZHtubGJhfSBpbmRpY2F0ZXMgdGhlIG51bWJlcg0KPiA+ICtvZiBzZWN0b3JzIGZvciBkaXNjYXJk
+L3dyaXRlIHplcm9lcyBjb21tYW5kcywgXGZpZWxke3VubWFwfSBvbmx5IHVzZWQNCj4gPiArZm9y
+IHdyaXRlIHplcm9lcyBjb21tYW5kLCB3aGljaCBtZWFucyB3cml0ZSB6ZXJvZXMgdG8gc3BlY2lm
+aWVkIHNlY3RvcnMNCj4gPiArd2hpbGUga2VlcCB0aGVzZSBzZWN0b3JzIGRpc2NhcmRlZC4NCj4g
+DQo+IC0tLS0tDQo+IFRoZSBcZmllbGR7c2VjdG9yfSBudW1iZXIgaW5kaWNhdGVzIHRoZSBvZmZz
+ZXQgKG11bHRpcGxpZWQgYnkgNTEyKSB3aGVyZQ0KPiB0aGUgcmVhZCBvciB3cml0ZSBpcyB0byBv
+Y2N1ci4gVGhpcyBmaWVsZCBpcyB1bnVzZWQgYW5kIHNldCB0byAwDQo+IGNvbW1hbmRzIG90aGVy
+IHRoYW4gcmVhZCBvciB3cml0ZS4NCj4gDQo+IFRoZSBcZmllbGR7ZGF0YX0gdXNlZCBmb3IgZGlz
+Y2FyZCBvciB3cml0ZSB6ZXJvZXMgY29tbWFuZCBpcw0KPiBkZXNjcmliZWQgYnkgb25lIG9yIG1v
+cmUgdmlydGlvX2Jsa19kaXNjYXJkX3dyaXRlX3plcm9lcyBzdHJ1Y3RzLg0KPiBcZmllbGR7c2Vj
+dG9yfSBpbmRpY2F0ZXMgdGhlIHN0YXJ0aW5nIHNlY3RvciBvZiB0aGUgc2VnbWVudCwgd2hpbGUN
+Cj4gXGZpZWxke25sYmF9IGluZGljYXRlcyB0aGUgbnVtYmVyIG9mIHNlY3RvcnMgaW4gZWFjaCBk
+aXNjYXJkZWQgcmFuZ2UuDQo+IFxmaWVsZHt1bm1hcH0gaXMgb25seSB1c2VkIGZvciB3cml0ZSB6
+ZXJvZXMgY29tbWFuZC4NCj4gLS0tLS0NCj4gDQo+IFBsZWFzZSBhZGQgdGhlIGZvbGxvd2luZyB0
+byAiRGV2aWNlIFJlcXVpcmVtZW50czogRGV2aWNlIE9wZXJhdGlvbiI6DQo+IA0KPiAtLS0tLQ0K
+PiBUaGUgZGV2aWNlIE1VU1Qgc2V0IHRoZSBcZW1waHtzdGF0dXN9IGJ5dGUgdG8gVklSVElPX0JM
+S19TX1VOU1VQUCBmb3INCj4gZGlzY2FyZCBhbmQgd3JpdGUgemVyb2VzIGNvbW1hbmRzIGlmIGFu
+eSB1bmtub3duIGZsYWcgaXMgc2V0Lg0KPiBGdXJ0aGVybW9yZSwgdGhlIGRldmljZSBNVVNUIHNl
+dCB0aGUgXGVtcGh7c3RhdHVzfSBieXRlIHRvDQo+IFZJUlRJT19CTEtfU19VTlNVUFAgZm9yIGRp
+c2NhcmQgY29tbWFuZHMgaWYgdGhlIFxmaWVsZHt1bm1hcH0gZmxhZyBpcyBzZXQuDQo+IA0KPiBG
+b3IgZGlzY2FyZCBjb21tYW5kcywgdGhlIGRldmljZSBNQVkgZGVhbGxvY2F0ZSB0aGUgc3BlY2lm
+aWVkIHJhbmdlIG9mDQo+IHNlY3RvcnMgaW4gdGhlIGRldmljZSBiYWNrZW5kIHN0b3JhZ2UuDQo+
+IA0KPiBGb3Igd3JpdGUgemVyb2VzIGNvbW1hbmRzLCBpZiB0aGUgXGZpZWxke3VubWFwfSBpcyBz
+ZXQsIHRoZSBkZXZpY2UgTUFZDQo+IGRlYWxsb2NhdGUgdGhlIHNwZWNpZmllZCByYW5nZSBvZiBz
+ZWN0b3JzIGluIHRoZSBkZXZpY2UgYmFja2VuZCBzdG9yYWdlLA0KPiBhcyBpZiB0aGUgRElTQ0FS
+RCBjb21tYW5kIGhhZCBiZWVuIHNlbnQuICBBZnRlciBhIHdyaXRlIHplcm9lcyBjb21tYW5kDQo+
+IGlzIGNvbXBsZXRlZCwgcmVhZHMgb2YgdGhlIHNwZWNpZmllZCByYW5nZXMgb2Ygc2VjdG9ycyBN
+VVNUIHJldHVybg0KPiB6ZXJvZXMuICBUaGlzIGlzIHRydWUgaW5kZXBlbmRlbnQgb2Ygd2hldGhl
+ciBcZmllbGR7dW5tYXB9IHdhcyBzZXQgb3IgY2xlYXIuDQo+IC0tLS0tDQo+IA0KPiBQbGVhc2Ug
+YWRkIHRoaXMgdG8gIkRldmljZSBSZXF1aXJlbWVudHM6IERyaXZlciBPcGVyYXRpb24iLCB0b286
+DQo+IA0KPiAtLS0tLQ0KPiBUaGUgXGZpZWxke3VubWFwfSBiaXQgTVVTVCBiZSB6ZXJvIGZvciBk
+aXNjYXJkIGNvbW1hbmRzLiAgVGhlIGRyaXZlcg0KPiBNVVNUIE5PVCBhc3N1bWUgYW55dGhpbmcg
+YWJvdXQgdGhlIGRhdGEgcmV0dXJuZWQgYnkgcmVhZCByZXF1ZXN0cyBhZnRlcg0KPiBhIHJhbmdl
+IG9mIHNlY3RvcnMgaGFzIGJlZW4gZGlzY2FyZGVkLg0KPiAtLS0tLQ0KPiANCj4gSWYgd2UgYWRk
+ZWQgdGhlICJ3cml0ZV96ZXJvZXNfbWF5X3VubWFwIiBiaXQsIHNvbWV0aGluZyBsaWtlIHRoaXMg
+d291bGQNCj4gZ28gaW4gIkRldmljZSBSZXF1aXJlbWVudHM6IERldmljZSBPcGVyYXRpb24iOg0K
+PiANCj4gLS0tLQ0KPiBUaGUgZGV2aWNlIFNIT1VMRCBjbGVhciB0aGUgXGZpZWxke3dyaXRlX3pl
+cm9lc19tYXlfdW5tYXB9IGZpZWxkIG9mIHRoZQ0KPiB2aXJ0aW8gY29uZmlndXJhdGlvbiBzcGFj
+ZSBpZiBhbmQgb25seSBpZiBhIHdyaXRlIHplcm9lcyByZXF1ZXN0IGNhbm5vdA0KPiByZXN1bHQg
+aW4gZGVhbGxvY2F0aW5nIG9uZSBvciBtb3JlIHNlY3RvcnMuICBUaGUgZGV2aWNlIE1BWSBjaGFu
+Z2UgdGhlDQpJIHRob3VnaHQgdGhpcyBzY2VuYXJpb3MgdGhyb3VnaCwgdGhpcyBtYXkgb25seSBo
+YXBwZW5lZCB3aGVuIG1heF93cml0ZV96ZXJvZXNfc2VjdG9ycyBiaWdnZXINCnRoYW4gbWF4X2Rp
+c2NhcmRfc2VjdG9ycywgYnV0IHRoZSBiYWNrZW5kIGltcGxlbWVudGF0aW9uIGNhbiBkaXZpZGUg
+dGhpcyBjb21tYW5kDQppbnRvIHNldmVyYWwgc21hbGwgb25lcyBhY2NvcmRpbmcgdG8gbWF4X2Rp
+c2NhcmRfc2VjdG9ycy4gDQo+IGNvbnRlbnQgb2YgdGhlIGZpZWxkIGR1cmluZyBvcGVyYXRpb24g
+b2YgdGhlIGRldmljZTsgd2hlbiB0aGlzIGhhcHBlbnMsDQo+IHRoZSBkZXZpY2UgU0hPVUxEIHRy
+aWdnZXIgYSBjb25maWd1cmF0aW9uIGNoYW5nZSBpbnRlcnJ1cHQuDQo+IC0tLS0tDQo+IA0KPiBU
+aGFua3MsDQo+IA0KPiBQYW9sbw0KPiANCj4gPiAgVGhlIGZpbmFsIFxmaWVsZHtzdGF0dXN9IGJ5
+dGUgaXMgd3JpdHRlbiBieSB0aGUgZGV2aWNlOiBlaXRoZXINCj4gPiAgVklSVElPX0JMS19TX09L
+IGZvciBzdWNjZXNzLCBWSVJUSU9fQkxLX1NfSU9FUlIgZm9yIGRldmljZSBvciBkcml2ZXINCj4g
+PiAgZXJyb3Igb3IgVklSVElPX0JMS19TX1VOU1VQUCBmb3IgYSByZXF1ZXN0IHVuc3VwcG9ydGVk
+IGJ5IGRldmljZToNCj4gPg0KPiANCj4gDQo+IC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQ0KPiBUbyB1bnN1YnNjcmli
+ZSwgZS1tYWlsOiB2aXJ0aW8tZGV2LXVuc3Vic2NyaWJlQGxpc3RzLm9hc2lzLW9wZW4ub3JnDQo+
+IEZvciBhZGRpdGlvbmFsIGNvbW1hbmRzLCBlLW1haWw6IHZpcnRpby1kZXYtaGVscEBsaXN0cy5v
+YXNpcy1vcGVuLm9yZw0KDQo=
 
