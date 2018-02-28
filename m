@@ -1,67 +1,82 @@
-Return-Path: virtio-return-2942-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-return-2951-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio@lists.oasis-open.org>
 List-Post: <mailto:virtio@lists.oasis-open.org>
 List-Help: <mailto:virtio-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Thu, 1 Mar 2018 01:31:32 +0200
+Date: Thu, 1 Mar 2018 01:31:33 +0200
 From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <1519860484-7936-8-git-send-email-mst@redhat.com>
+Message-ID: <1519860484-7936-9-git-send-email-mst@redhat.com>
 References: <1519860484-7936-1-git-send-email-mst@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 In-Reply-To: <1519860484-7936-1-git-send-email-mst@redhat.com>
-Subject: [virtio] [PATCH v9 07/16] content: generalize rest of text
+Subject: [virtio] [PATCH v9 08/16] split-ring: generalize text
 To: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
 Cc: Cornelia Huck <cohuck@redhat.com>, Halil Pasic <pasic@linux.vnet.ibm.com>, Tiwei Bie <tiwei.bie@intel.com>, Stefan Hajnoczi <stefanha@redhat.com>, "Dhanoa, Kully" <kully.dhanoa@intel.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-Reviewed-by: Cornelia Huck <cohuck@redhat.com>
----
- content.tex | 14 ++++++--------
- 1 file changed, 6 insertions(+), 8 deletions(-)
+Update generic text to talk about available/used buffers, not rings.
+Move some split-ring specific text to the correct section.
 
+Update conformance section with link to the new conformance clause.
+
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+---
+ conformance.tex |  1 +
+ content.tex     | 10 ++++------
+ split-ring.tex  |  4 ++++
+ 3 files changed, 9 insertions(+), 6 deletions(-)
+
+diff --git a/conformance.tex b/conformance.tex
+index 55d17b4..e4efe33 100644
+--- a/conformance.tex
++++ b/conformance.tex
+@@ -38,6 +38,7 @@ A driver MUST conform to the following normative statements:
+ \item \ref{drivernormative:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table}
+ \item \ref{drivernormative:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table / Indirect Descriptors}
+ \item \ref{drivernormative:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Interrupt Suppression}
++\item \ref{drivernormative:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Available Ring}
+ \item \ref{drivernormative:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Used Ring}
+ \item \ref{drivernormative:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Notification Suppression}
+ \item \ref{drivernormative:Basic Facilities of a Virtio Device / Virtqueues / Supplying Buffers to The Device / Updating idx}
 diff --git a/content.tex b/content.tex
-index 9fc9673..5634c7d 100644
+index 5634c7d..e1e30a0 100644
 --- a/content.tex
 +++ b/content.tex
-@@ -1467,8 +1467,7 @@ All register values are organized as Little Endian.
-   }
-   \hline 
-   \mmioreg{QueueNum}{Virtual queue size}{0x038}{W}{%
--    Queue size is the number of elements in the queue, therefore in each
--    of the Descriptor Table, the Available Ring and the Used Ring.
-+    Queue size is the number of elements in the queue.
-     Writing to this register notifies the device what size of the
-     queue the driver will use. This applies to the queue selected by
-     writing to \field{QueueSel}.
-@@ -1491,9 +1490,9 @@ All register values are organized as Little Endian.
-     caused the device interrupt to be asserted.
-     The following events are possible:
-     \begin{description}
--      \item[Used Ring Update] - bit 0 - the interrupt was asserted
--        because the device has updated the Used
--        Ring in at least one of the active virtual queues.
-+      \item[Used Buffer Update] - bit 0 - the interrupt was asserted
-+        because the device has used a buffer
-+        in at least one of the active virtual queues.
-       \item [Configuration Change] - bit 1 - the interrupt was
-         asserted because the configuration of the device has changed.
-     \end{description}
-@@ -1642,9 +1641,8 @@ The driver will typically initialize the virtual queue in the following way:
-    \field{QueueNumMax}. If the returned value is zero (0x0) the
-    queue is not available.
+@@ -381,12 +381,10 @@ of a device are live once the device has been reset.
  
--\item Allocate and zero the queue pages, making sure the memory
--   is physically contiguous. It is recommended to align the
--   Used Ring to an optimal boundary (usually the page size).
-+\item Allocate and zero the queue memory, making sure the memory
-+   is physically contiguous.
+ \drivernormative{\subsection}{Device Cleanup}{General Initialization And Device Operation / Device Cleanup}
  
- \item Notify the device about the queue size by writing the size to
-    \field{QueueNum}.
+-A driver MUST NOT alter descriptor table entries which have been
+-exposed in the available ring (and not marked consumed by the device
+-in the used ring) of a live virtqueue.
+-
+-A driver MUST NOT decrement the available \field{idx} on a live virtqueue (ie.
+-there is no way to ``unexpose'' buffers).
++A driver MUST NOT alter virtqueue entries for exposed buffers -
++i.e. buffers which have been
++made available to the device (and not been used by the device)
++of a live virtqueue.
+ 
+ Thus a driver MUST ensure a virtqueue isn't live (by device reset) before removing exposed buffers.
+ 
+diff --git a/split-ring.tex b/split-ring.tex
+index 9601a53..a594d41 100644
+--- a/split-ring.tex
++++ b/split-ring.tex
+@@ -296,6 +296,10 @@ referred to this structure as vring_avail, and the constant as
+ VRING_AVAIL_F_NO_INTERRUPT, but the layout and value were identical.
+ \end{note}
+ 
++\drivernormative{\subsubsection}{The Virtqueue Available Ring}{Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Available Ring}
++A driver MUST NOT decrement the available \field{idx} on a virtqueue (ie.
++there is no way to ``unexpose'' buffers).
++
+ \subsection{Virtqueue Interrupt Suppression}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Interrupt Suppression}
+ 
+ If the VIRTIO_F_EVENT_IDX feature bit is not negotiated,
 -- 
 MST
 
