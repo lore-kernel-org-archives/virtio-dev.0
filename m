@@ -1,51 +1,79 @@
-Return-Path: virtio-return-3011-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio@lists.oasis-open.org>
-List-Post: <mailto:virtio@lists.oasis-open.org>
-List-Help: <mailto:virtio-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Wed, 14 Mar 2018 11:25:01 +0000
-From: Stefan Hajnoczi <stefanha@redhat.com>
-Message-ID: <20180314112501.GA8461@stefanha-x1.localdomain>
-References: <1520998320-264512-1-git-send-email-mst@redhat.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="PEIAKu/WMn1b1Hv9"
-Content-Disposition: inline
-In-Reply-To: <1520998320-264512-1-git-send-email-mst@redhat.com>
-Subject: Re: [virtio] [PATCH] github: PULL_REQUEST_TEMPLATE.md
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+Return-Path: virtio-dev-return-3354-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
+	by lists.oasis-open.org (Postfix) with ESMTP id CA89558191C7
+	for <virtio-dev@lists.oasis-open.org>; Thu,  1 Mar 2018 12:08:45 -0800 (PST)
+From: Sridhar Samudrala <sridhar.samudrala@intel.com>
+Date: Thu,  1 Mar 2018 12:08:41 -0800
+Message-Id: <1519934923-39372-1-git-send-email-sridhar.samudrala@intel.com>
+Subject: [virtio-dev] [PATCH v4 0/2] Enable virtio_net to act as a backup for a passthru device 
+To: mst@redhat.com, stephen@networkplumber.org, davem@davemloft.net, netdev@vger.kernel.org, jiri@resnulli.us, virtio-dev@lists.oasis-open.org, jesse.brandeburg@intel.com, alexander.h.duyck@intel.com, kubakici@wp.pl, sridhar.samudrala@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
---PEIAKu/WMn1b1Hv9
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Based on the review comments on the v3 version of the RFC patch and
+Jakub's suggestion for the naming issue with 3 netdev solution, we are now 
+proposing 3 netdev in-driver bonding solution for virtio-net.
 
-On Wed, Mar 14, 2018 at 05:32:14AM +0200, Michael S. Tsirkin wrote:
-> Document that we don't accept pull requests at this point.
->=20
-> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> ---
->  .github/PULL_REQUEST_TEMPLATE.md | 10 ++++++++++
->  1 file changed, 10 insertions(+)
->  create mode 100644 .github/PULL_REQUEST_TEMPLATE.md
+The main motivation for this patch is to enable cloud service providers
+to provide an accelerated datapath to virtio-net enabled VMs in a 
+transparent manner with no/minimal guest userspace changes. This also
+enables hypervisor controlled live migration to be supported with VMs that
+have direct attached SR-IOV VF devices.
 
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+Patch 1 introduces a new feature bit VIRTIO_NET_F_BACKUP that can be
+used by hypervisor to indicate that virtio_net interface should act as
+a backup for another device with the same MAC address.
 
---PEIAKu/WMn1b1Hv9
-Content-Type: application/pgp-signature; name="signature.asc"
+Patch 2 extends virtio_net to use alternate datapath when available and
+registered. When BACKUP feature is enabled, virtio_net driver creates
+an additional 'bypass' netdev that acts as a master device and controls
+2 slave devices.  The original virtio_net netdev is registered as
+'backup' netdev and a passthru/vf device with the same MAC gets
+registered as 'active' netdev. Both 'bypass' and 'backup' netdevs are
+associated with the same 'pci' device.  The user accesses the network
+interface via 'bypass' netdev. The 'bypass' netdev chooses 'active' netdev
+as default for transmits when it is available with link up and running.
 
------BEGIN PGP SIGNATURE-----
+As this patch series is initially focusing on usecases where hypervisor 
+fully controls the VM networking and the guest is not expected to directly 
+configure any hardware settings, it doesn't expose all the ndo/ethtool ops
+that are supported by virtio_net at this time. To support additional usecases,
+it should be possible to enable additional ops later by caching the state
+in virtio netdev and replaying when the 'active' netdev gets registered. 
+ 
+The hypervisor needs to enable only one datapath at any time so that packets
+don't get looped back to the VM over the other datapath. When a VF is
+plugged, the virtio datapath link state can be marked as down.
+At the time of live migration, the hypervisor needs to unplug the VF device
+from the guest on the source host and reset the MAC filter of the VF to
+initiate failover of datapath to virtio before starting the migration. After
+the migration is completed, the destination hypervisor sets the MAC filter
+on the VF and plugs it back to the guest to switch over to VF datapath.
 
-iQEcBAEBAgAGBQJaqQaNAAoJEJykq7OBq3PI2/cH/0qF3Bjk/2GZOX+QMFmXm5NH
-So7GbyLgXVEXaFZf/xAcBW3h+aJPQYvEAieJ01uSW81py0wqeDhk3hTDnb/PGx12
-emTNSwjG6QPI7KY604Ap3rzrb+eVd84ncOLQwYMNK5A/qgp8E/Y8mpA1iWsVNYNW
-lW8U6hJSWaLJq0IMxjfjUA61NjAE6amHpfBTJwFzG02aALZNvIny9sQAxK7stFfz
-EiedXhNhvYDhwKbiiJwneTMkW5PAMBUqeQ3uP+AmzMyF2/e1VIKy3xSgVOdt8N7J
-+ahUEJVx1dXj8JTbIB2bEEYshsbXjimRc3j6AAB3vhArElFu52qikIjLQaRa8oI=
-=JK/f
------END PGP SIGNATURE-----
+Most of the code added is implemented as new functions that are isolated
+from the existing virtio_net functionality and it can be moved to a new
+driver to implement bypass functionality if we decide to make it common
+with other para virtual drivers like netvsc.
 
---PEIAKu/WMn1b1Hv9--
+This patch is based on the discussion initiated by Jesse on this thread.
+https://marc.info/?l=linux-virtualization&m=151189725224231&w=2
+
+Sridhar Samudrala (2):
+  virtio_net: Introduce VIRTIO_NET_F_BACKUP feature bit
+  virtio_net: Extend virtio to use VF datapath when available
+
+ drivers/net/virtio_net.c        | 682 +++++++++++++++++++++++++++++++++++++++-
+ include/uapi/linux/virtio_net.h |   3 +
+ 2 files changed, 683 insertions(+), 2 deletions(-)
+
+-- 
+2.14.3
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+
