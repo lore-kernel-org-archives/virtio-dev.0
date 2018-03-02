@@ -1,50 +1,83 @@
-Return-Path: virtio-return-2961-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio@lists.oasis-open.org>
-List-Post: <mailto:virtio@lists.oasis-open.org>
-List-Help: <mailto:virtio-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Mon, 5 Mar 2018 10:40:32 +0000
-From: Stefan Hajnoczi <stefanha@redhat.com>
-Message-ID: <20180305104032.GD7910@stefanha-x1.localdomain>
-References: <1520021345-25542-1-git-send-email-mst@redhat.com>
+Return-Path: virtio-dev-return-3395-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
+	by lists.oasis-open.org (Postfix) with ESMTP id 16D5758180F8
+	for <virtio-dev@lists.oasis-open.org>; Fri,  2 Mar 2018 15:44:18 -0800 (PST)
+From: Alexander Duyck <alexander.duyck@gmail.com>
+Date: Fri, 02 Mar 2018 15:44:05 -0800
+Message-ID: <20180302234218.3337.16486.stgit@localhost.localdomain>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="at6+YcpfzWZg/htY"
-Content-Disposition: inline
-In-Reply-To: <1520021345-25542-1-git-send-email-mst@redhat.com>
-Subject: [virtio] Re: [virtio-dev] [PATCH] README.md: add hints for contributors
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Subject: [virtio-dev] [PATCH 0/3] pci-iov: Add support for unmanaged SR-IOV
+To: bhelgaas@google.com, alexander.h.duyck@intel.com, linux-pci@vger.kernel.org
+Cc: virtio-dev@lists.oasis-open.org, kvm@vger.kernel.org, netdev@vger.kernel.org, dan.daly@intel.com, linux-kernel@vger.kernel.org, mheyne@amazon.de, liang-min.wang@intel.com, mark.d.rustad@intel.com, dwmw2@infradead.org, dwmw@amazon.co.uk
 List-ID: <virtio-dev.lists.oasis-open.org>
 
---at6+YcpfzWZg/htY
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+This series is meant to add support for SR-IOV on devices when the VFs are
+not managed by the kernel. Examples of recent patches attempting to do this
+include:
+virto - https://patchwork.kernel.org/patch/10241225/
+pci-stub - https://patchwork.kernel.org/patch/10109935/
+vfio - https://patchwork.kernel.org/patch/10103353/
+uio - https://patchwork.kernel.org/patch/9974031/
 
-On Fri, Mar 02, 2018 at 10:09:09PM +0200, Michael S. Tsirkin wrote:
-> Add links to admin repo and mailing lists.
->=20
-> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> ---
->  README.md | 14 ++++++++++----
->  1 file changed, 10 insertions(+), 4 deletions(-)
+Since this is quickly blowing up into a multi-driver problem it is probably
+best to implement this solution as generically as possible.
 
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+This series is an attempt to do that. What we do with this patch set is 
+provide a generic framework to enable SR-IOV in the case that the PF driver 
+doesn't support managing the VFs itself.
 
---at6+YcpfzWZg/htY
-Content-Type: application/pgp-signature; name="signature.asc"
+I based my patch set originally on the patch by Mark Rustad but there isn't
+much left after going through and cleaning out the bits that were no longer
+needed, and after incorporating the feedback from David Miller. At this point
+the only items to be fully reused was his patch description which is now 
+present in patch 3 of the set.
 
------BEGIN PGP SIGNATURE-----
+I have included the authors of the original 4 patches above in the Cc here.
+My hope is to get feedback and/or review on if this works for their use
+cases.
 
-iQEcBAEBAgAGBQJanR6gAAoJEJykq7OBq3PI9q4IAIS5PQB6Z1fW8q1zYP1AIbFB
-nJG87cYGud0mgTrcO4p6s61fAsTG+QZK693jM6GXRyplD2unpAF6cr3LfJCh3vwo
-F1tRPOXj8xdNbjrxeqcNjYrl0qxzzz3i4DSqvHwH+i33hLIqIBMb2Ua1d3lzZLck
-vQscvf1AeebDPkwx9GJPxc0yy6wCRNvAS3SaFbqMkWCXINAL/7bHCaHEGdnB1Xyt
-OrHqOGEKJyDOrL6fxdj+S+HOkAnCJ4X7J9R4DNBR07aLvQM/hYgZejXVuTMIHqBU
-GsiwGZ9/wTR+/Tt47Fho35ig6jY4mm1DkarWKtFrvBgAxzs6axYemYTBOON3TZU=
-=x7zT
------END PGP SIGNATURE-----
+My hope is that for now the pci-stub and uio driver approaches can be 
+addressed using the current patch that enables vfio-pci support. The only
+limitation is that it is also setting the taint flag until we have a better 
+solution.
 
---at6+YcpfzWZg/htY--
+v2: Reduced scope back to just virtio_pci and vfio-pci
+    Broke into 3 patch set from single patch
+    Changed autoprobe behavior to always set when num_vfs is set non-zero
+
+Cc: Mark Rustad <mark.d.rustad@intel.com>
+Cc: Maximilian Heyne <mheyne@amazon.de>
+Cc: Liang-Min Wang <liang-min.wang@intel.com>
+Cc: David Woodhouse <dwmw@amazon.co.uk>
+
+---
+
+Alexander Duyck (3):
+      pci-iov: Add support for unmanaged SR-IOV
+      vfio: Add support for unmanaged or userspace managed SR-IOV
+      virtio_pci: Add support for unmanaged SR-IOV on virtio_pci devices
+
+
+ Documentation/ABI/testing/sysfs-bus-pci |   17 +++++++++
+ drivers/pci/iov.c                       |   37 ++++++++++++++++++++
+ drivers/pci/pci-driver.c                |    2 +
+ drivers/pci/pci-sysfs.c                 |   29 ++++++++++++++++
+ drivers/pci/pci.h                       |    4 ++
+ drivers/vfio/pci/vfio_pci.c             |   57 +++++++++++++++++++++++++++++++
+ drivers/virtio/virtio_pci_common.c      |    4 ++
+ include/linux/pci.h                     |    1 +
+ 8 files changed, 149 insertions(+), 2 deletions(-)
+
+--
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+
