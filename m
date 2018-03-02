@@ -1,124 +1,51 @@
-Return-Path: virtio-dev-return-3470-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3360-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 85ADA1CB8084
-	for <virtio-dev@lists.oasis-open.org>; Wed,  7 Mar 2018 19:25:52 -0800 (PST)
+	by lists.oasis-open.org (Postfix) with ESMTP id 499D358180E7
+	for <virtio-dev@lists.oasis-open.org>; Thu,  1 Mar 2018 19:47:11 -0800 (PST)
 From: Jason Baron <jbaron@akamai.com>
-Date: Wed,  7 Mar 2018 22:25:41 -0500
-Message-Id: <d4920d0c06c64330777f65b91056a4203b95ee1d.1520450515.git.jbaron@akamai.com>
-In-Reply-To: <cover.1520450515.git.jbaron@akamai.com>
-References: <cover.1520450515.git.jbaron@akamai.com>
-In-Reply-To: <cover.1520450515.git.jbaron@akamai.com>
-References: <cover.1520450515.git.jbaron@akamai.com>
-Subject: [virtio-dev] [PATCH v2 3/3] virtio-net: add linkspeed and duplex settings to virtio-net
-To: qemu-devel@nongnu.org
-Cc: mst@redhat.com, jasowang@redhat.com, virtio-dev@lists.oasis-open.org
+Date: Thu,  1 Mar 2018 22:46:33 -0500
+Message-Id: <864430f2a613c4d3c82b591ed7bc27068ddad369.1519961667.git.jbaron@akamai.com>
+In-Reply-To: <cover.1519961667.git.jbaron@akamai.com>
+References: <cover.1519961667.git.jbaron@akamai.com>
+In-Reply-To: <cover.1519961667.git.jbaron@akamai.com>
+References: <cover.1519961667.git.jbaron@akamai.com>
+Subject: [virtio-dev] [PATCH 1/4] eth: add speed and duplex definitions
+To: mst@redhat.com
+Cc: jasowang@redhat.com, qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Although linkspeed and duplex can be set in a linux guest via 'ethtool -s',
-this requires custom ethtool commands for virtio-net by default.
-
-Introduce a new feature flag, VIRTIO_NET_F_SPEED_DUPLEX, which allows
-the hypervisor to export a linkspeed and duplex setting. The user can
-subsequently overwrite it later if desired via: 'ethtool -s'.
-
-Linkspeed and duplex settings can be set as:
-'-device virtio-net,speed=10000,duplex=full'
-
-where speed is [0...INT_MAX], and duplex is ["half"|"full"].
+Pull in definitions for SPEED_UNKNOWN, DUPLEX_UNKNOWN, DUPLEX_HALF,
+and DUPLEX_FULL.
 
 Signed-off-by: Jason Baron <jbaron@akamai.com>
 Cc: "Michael S. Tsirkin" <mst@redhat.com>
 Cc: Jason Wang <jasowang@redhat.com>
 Cc: virtio-dev@lists.oasis-open.org
 ---
- hw/net/virtio-net.c            | 26 ++++++++++++++++++++++++++
- include/hw/virtio/virtio-net.h |  3 +++
- 2 files changed, 29 insertions(+)
+ include/net/eth.h | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/hw/net/virtio-net.c b/hw/net/virtio-net.c
-index 4feaa49..c3ce7d2 100644
---- a/hw/net/virtio-net.c
-+++ b/hw/net/virtio-net.c
-@@ -26,6 +26,7 @@
- #include "qapi-event.h"
- #include "hw/virtio/virtio-access.h"
- #include "migration/misc.h"
-+#include "standard-headers/linux/ethtool.h"
+diff --git a/include/net/eth.h b/include/net/eth.h
+index 09054a5..9843678 100644
+--- a/include/net/eth.h
++++ b/include/net/eth.h
+@@ -417,4 +417,11 @@ bool
+ eth_parse_ipv6_hdr(const struct iovec *pkt, int pkt_frags,
+                    size_t ip6hdr_off, eth_ip6_hdr_info *info);
  
- #define VIRTIO_NET_VM_VERSION    11
- 
-@@ -61,6 +62,8 @@ static VirtIOFeature feature_sizes[] = {
-      .end = endof(struct virtio_net_config, max_virtqueue_pairs)},
-     {.flags = 1ULL << VIRTIO_NET_F_MTU,
-      .end = endof(struct virtio_net_config, mtu)},
-+    {.flags = 1ULL << VIRTIO_NET_F_SPEED_DUPLEX,
-+     .end = endof(struct virtio_net_config, duplex)},
-     {}
- };
- 
-@@ -89,6 +92,8 @@ static void virtio_net_get_config(VirtIODevice *vdev, uint8_t *config)
-     virtio_stw_p(vdev, &netcfg.max_virtqueue_pairs, n->max_queues);
-     virtio_stw_p(vdev, &netcfg.mtu, n->net_conf.mtu);
-     memcpy(netcfg.mac, n->mac, ETH_ALEN);
-+    virtio_stl_p(vdev, &netcfg.speed, n->net_conf.speed);
-+    netcfg.duplex = n->net_conf.duplex;
-     memcpy(config, &netcfg, n->config_size);
- }
- 
-@@ -1941,6 +1946,25 @@ static void virtio_net_device_realize(DeviceState *dev, Error **errp)
-         n->host_features |= (1ULL << VIRTIO_NET_F_MTU);
-     }
- 
-+    if (n->net_conf.duplex_str) {
-+        if (strncmp(n->net_conf.duplex_str, "half", 5) == 0) {
-+            n->net_conf.duplex = DUPLEX_HALF;
-+        } else if (strncmp(n->net_conf.duplex_str, "full", 5) == 0) {
-+            n->net_conf.duplex = DUPLEX_FULL;
-+        } else {
-+            error_setg(errp, "'duplex' must be 'half' or 'full'");
-+        }
-+        n->host_features |= (1ULL << VIRTIO_NET_F_SPEED_DUPLEX);
-+    } else {
-+        n->net_conf.duplex = DUPLEX_UNKNOWN;
-+    }
++/* ethtool defines - from linux/ethtool.h */
++#define SPEED_UNKNOWN           -1
 +
-+    if (n->net_conf.speed < SPEED_UNKNOWN) {
-+        error_setg(errp, "'speed' must be between 0 and INT_MAX");
-+    } else if (n->net_conf.speed >= 0) {
-+        n->host_features |= (1ULL << VIRTIO_NET_F_SPEED_DUPLEX);
-+    }
++#define DUPLEX_HALF             0x00
++#define DUPLEX_FULL             0x01
++#define DUPLEX_UNKNOWN          0xff
 +
-     virtio_net_set_config_size(n, n->host_features);
-     virtio_init(vdev, "virtio-net", VIRTIO_ID_NET, n->config_size);
- 
-@@ -2161,6 +2185,8 @@ static Property virtio_net_properties[] = {
-     DEFINE_PROP_UINT16("host_mtu", VirtIONet, net_conf.mtu, 0),
-     DEFINE_PROP_BOOL("x-mtu-bypass-backend", VirtIONet, mtu_bypass_backend,
-                      true),
-+    DEFINE_PROP_INT32("speed", VirtIONet, net_conf.speed, SPEED_UNKNOWN),
-+    DEFINE_PROP_STRING("duplex", VirtIONet, net_conf.duplex_str),
-     DEFINE_PROP_END_OF_LIST(),
- };
- 
-diff --git a/include/hw/virtio/virtio-net.h b/include/hw/virtio/virtio-net.h
-index e7634c9..02484dc 100644
---- a/include/hw/virtio/virtio-net.h
-+++ b/include/hw/virtio/virtio-net.h
-@@ -38,6 +38,9 @@ typedef struct virtio_net_conf
-     uint16_t rx_queue_size;
-     uint16_t tx_queue_size;
-     uint16_t mtu;
-+    int32_t speed;
-+    char *duplex_str;
-+    uint8_t duplex;
- } virtio_net_conf;
- 
- /* Maximum packet size we can receive from tap device: header + 64k */
+ #endif
 -- 
 2.7.4
 
