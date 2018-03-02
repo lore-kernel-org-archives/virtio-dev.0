@@ -1,46 +1,90 @@
-Return-Path: virtio-dev-return-3465-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3366-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 3ECB05818F22
-	for <virtio-dev@lists.oasis-open.org>; Wed,  7 Mar 2018 11:06:02 -0800 (PST)
-MIME-Version: 1.0
-In-Reply-To: <20180307064612.GA10926@infradead.org>
-References: <20180306192423.3153.42741.stgit@localhost.localdomain> <20180307064612.GA10926@infradead.org>
-From: Alexander Duyck <alexander.duyck@gmail.com>
-Date: Wed, 7 Mar 2018 11:05:58 -0800
-Message-ID: <CAKgT0UdRFxGUPu4jY0xrUuv8Um62ndPnknhHXuF4Abu6D7GEqg@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Subject: [virtio-dev] Re: [pci PATCH v3 0/3] Add support for unmanaged SR-IOV
-To: Christoph Hellwig <hch@infradead.org>
-Cc: Bjorn Helgaas <bhelgaas@google.com>, "Duyck, Alexander H" <alexander.h.duyck@intel.com>, linux-pci@vger.kernel.org, virtio-dev@lists.oasis-open.org, kvm@vger.kernel.org, Netdev <netdev@vger.kernel.org>, "Daly, Dan" <dan.daly@intel.com>, LKML <linux-kernel@vger.kernel.org>, Maximilian Heyne <mheyne@amazon.de>, "Wang, Liang-min" <liang-min.wang@intel.com>, "Rustad, Mark D" <mark.d.rustad@intel.com>, David Woodhouse <dwmw2@infradead.org>, dwmw@amazon.co.uk
+	by lists.oasis-open.org (Postfix) with ESMTP id EB3095818F01
+	for <virtio-dev@lists.oasis-open.org>; Fri,  2 Mar 2018 01:06:22 -0800 (PST)
+From: Wei Wang <wei.w.wang@intel.com>
+Date: Fri,  2 Mar 2018 16:47:27 +0800
+Message-Id: <1519980450-3404-1-git-send-email-wei.w.wang@intel.com>
+Subject: [virtio-dev] [PATCH v3 0/3] virtio-balloon: free page hint reporting support
+To: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, mst@redhat.com, quintela@redhat.com, dgilbert@redhat.com
+Cc: pbonzini@redhat.com, wei.w.wang@intel.com, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu0@gmail.com, nilal@redhat.com, riel@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Tue, Mar 6, 2018 at 10:46 PM, Christoph Hellwig <hch@infradead.org> wrote:
-> On Tue, Mar 06, 2018 at 11:29:08AM -0800, Alexander Duyck wrote:
->> This series is meant to add support for SR-IOV on devices when the VFs are
->> not managed by the kernel. Examples of recent patches attempting to do this
->> include:
->> virto - https://patchwork.kernel.org/patch/10241225/
->> pci-stub - https://patchwork.kernel.org/patch/10109935/
->> vfio - https://patchwork.kernel.org/patch/10103353/
->> uio - https://patchwork.kernel.org/patch/9974031/
->
-> nvme and ema seems to be existing examples.  Care to throw in
-> conversions while you're at it?
+This is the deivce part implementation to add a new feature,
+VIRTIO_BALLOON_F_FREE_PAGE_HINT to the virtio-balloon device. The device
+receives the guest free page hints from the driver and clears the
+corresponding bits in the dirty bitmap, so that those free pages are
+not transferred by the migration thread to the destination.
 
-Yeah, I can do that. I assume you meant "ena" not "ema".
+- Test Environment
+    Host: Intel(R) Xeon(R) CPU E5-2699 v4 @ 2.20GHz
+    Guest: 8G RAM, 4 vCPU
+    Migration setup: migrate_set_speed 100G, migrate_set_downtime 2 second
 
-I'm probably looking at doing a v4 that will drop the vfio userspace
-driver bits for now as it sounds like there are additional issues that
-still need to be addressed.
+- Test Results
+    - Idle Guest Live Migration Time (results are averaged over 10 runs):
+        - Optimization v.s. Legacy = 259ms vs 1769ms --> ~86% reduction
+    - Guest with Linux Compilation Workload (make bzImage -j4):
+        - Live Migration Time (average)
+          Optimization v.s. Legacy = 1290ms v.s. 2634ms --> ~51% reduction
+        - Linux Compilation Time
+          Optimization v.s. Legacy = 5min v.s. 5min3s
+          --> no obvious difference
 
-Thanks.
+- Source Code
+    - QEMU:  https://github.com/wei-w-wang/qemu-free-page-lm.git
+    - Linux: https://github.com/wei-w-wang/linux-free-page-lm.git
 
-- Alex
+ChangeLog:
+v2->v3:
+    1) virtio-balloon
+        - virtio_balloon_free_page_start: poll the hints using a new
+          thread;
+        - use cmd id between [0x80000000, UINT_MAX];
+        - virtio_balloon_poll_free_page_hints:
+            - stop the optimization only when it has started;
+            - don't skip free pages when !poison_val;
+        - add poison_val to vmsd to migrate;
+        - virtio_balloon_get_features: add the F_PAGE_POISON feature when
+          host has F_FREE_PAGE_HINT;
+        - remove the timer patch which is not needed now.
+    2) migration
+       - new api, qemu_guest_free_page_hint;
+       - rs->free_page_support set only in the precopy case;
+       - use the new balloon APIs.
+v1->v2: 
+    1) virtio-balloon
+        - use subsections to save free_page_report_cmd_id;
+        - poll the free page vq after sending a cmd id to the driver;
+        - change the free page vq size to VIRTQUEUE_MAX_SIZE;
+        - virtio_balloon_poll_free_page_hints: handle the corner case
+          that the free page block reported from the driver may cross
+          the RAMBlock boundary.
+    2) migration/ram.c
+        - use balloon_free_page_poll to start the optimization
+
+Wei Wang (3):
+  migration: API to clear bits of guest free pages from the dirty bitmap
+  virtio-balloon: VIRTIO_BALLOON_F_FREE_PAGE_HINT
+  migration: use the free page hint feature from balloon
+
+ balloon.c                                       |  49 +++++--
+ hw/virtio/virtio-balloon.c                      | 172 +++++++++++++++++++++---
+ include/hw/virtio/virtio-balloon.h              |  14 +-
+ include/migration/misc.h                        |   2 +
+ include/standard-headers/linux/virtio_balloon.h |   7 +
+ include/sysemu/balloon.h                        |  15 ++-
+ migration/ram.c                                 |  39 +++++-
+ 7 files changed, 268 insertions(+), 30 deletions(-)
+
+-- 
+1.8.3.1
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
