@@ -1,87 +1,59 @@
-Return-Path: virtio-dev-return-3424-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id F31675818F86
-	for <virtio-dev@lists.oasis-open.org>; Mon,  5 Mar 2018 17:28:40 -0800 (PST)
-From: "Liu, Changpeng" <changpeng.liu@intel.com>
-Date: Tue, 6 Mar 2018 01:28:34 +0000
-Message-ID: <FF7FC980937D6342B9D289F5F3C7C2625B615539@SHSMSX103.ccr.corp.intel.com>
-References: <1519800868-19594-1-git-send-email-changpeng.liu@intel.com>
- <20180305113353.GH7910@stefanha-x1.localdomain>
-In-Reply-To: <20180305113353.GH7910@stefanha-x1.localdomain>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Return-Path: virtio-return-2960-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio@lists.oasis-open.org>
+List-Post: <mailto:virtio@lists.oasis-open.org>
+List-Help: <mailto:virtio-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
+Date: Fri, 2 Mar 2018 22:09:09 +0200
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <1520021345-25542-1-git-send-email-mst@redhat.com>
 MIME-Version: 1.0
-Subject: [virtio-dev] RE: [RFC v2] virtio-blk: add discard and write zeroes features to
- specification
-To: Stefan Hajnoczi <stefanha@redhat.com>
-Cc: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "cavery@redhat.com" <cavery@redhat.com>, "pbonzini@redhat.com" <pbonzini@redhat.com>, "Wodkowski, PawelX" <pawelx.wodkowski@intel.com>, "Harris, James R" <james.r.harris@intel.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Subject: [virtio] [PATCH] README.md: add hints for contributors
+To: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+Add links to admin repo and mailing lists.
 
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+---
+ README.md | 14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
 
-> -----Original Message-----
-> From: Stefan Hajnoczi [mailto:stefanha@redhat.com]
-> Sent: Monday, March 5, 2018 7:34 PM
-> To: Liu, Changpeng <changpeng.liu@intel.com>
-> Cc: virtio-dev@lists.oasis-open.org; cavery@redhat.com; pbonzini@redhat.c=
-om;
-> Wodkowski, PawelX <pawelx.wodkowski@intel.com>; Harris, James R
-> <james.r.harris@intel.com>
-> Subject: Re: [RFC v2] virtio-blk: add discard and write zeroes features t=
-o
-> specification
->=20
-> On Wed, Feb 28, 2018 at 02:54:28PM +0800, Changpeng Liu wrote:
-> > @@ -4211,6 +4227,17 @@ according to the native endian of the guest rath=
-er
-> than
-> >    after reset can be either writeback or writethrough.  The actual
-> >    mode can be determined by reading \field{writeback} after feature
-> >    negotiation.
-> > +
-> > +\item If the VIRTIO_BLK_F_DISCARD feature is negotiated,
-> > +    \field{max_discard_sectors} and \field{max_discard_seg} can be rea=
-d
-> > +    to determine the maximum discard sectors and maximum number of
-> discard
-> > +    segments for the block driver to use. \field{discard_sector_alignm=
-ent}
-> > +    can be used by OS when splitting a request based on alignment.
-> > +
-> > +\item if the VIRTIO_BLK_F_WRITE_ZEROES feature is negotiated,
-> > +    \field{max_write_zeroes_sectors} and \field{max_write_zeroes_seg} =
-can
-> > +    be read to determine the maximum write zeroes sectors and maximum
-> > +    number of write zeroes segments for the block driver to use.
->=20
-> Does "sectors" use the same 512-byte units as the capacity field?  The
-> term "sectors" is slightly ambiguous in this spec so it would be helpful
-> to describe it explicitly.
->=20
-> What are the units of discard_sector_alignment?
-Ok, will add explicit unit description for those parameters in configuratio=
-n space.
->=20
-> >  The \field{sector} number indicates the offset (multiplied by 512) whe=
-re
-> >  the read or write is to occur. This field is unused and set to 0
-> >  for scsi packet commands and for flush commands.
-> >
-> > +The \field{sector} number indicates the offset (multiplied by 512) whe=
-re
-> > +the read or write is to occur. This field is unused and set to 0 for
-> > +commands other than read or write.
->=20
-> This paragraph has been duplicated.
-Thanks, will remove the duplicated paragraph.
+diff --git a/README.md b/README.md
+index 7dadb68..a4fdc4e 100644
+--- a/README.md
++++ b/README.md
+@@ -27,13 +27,19 @@
+ </div>
+ 
+ <div>
++
+ <h3>Further Description of this Repository</h3>
++<h4>Providing Feedback</h4>
++<p>See <A
++HREF="https://www.oasis-open.org/committees/tc_home.php?wg_abbrev=virtio#feedback">
++https://www.oasis-open.org/committees/tc_home.php?wg_abbrev=virtio#feedback</A>
++<h4>Note for Contributors</h4>
++<p>Contributors should review TC specific
++process rules under "Further Description of this Repository"
++in <A
++HREF="https://github.com/oasis-tcs/virtio-admin">https://github.com/oasis-tcs/virtio-admin</A>.
+ 
+-<p>[Any narrative content may be provided here by the TC, for example, if the Members wish to provide an extended statement of purpose.]</p>
+ </div>
+-
+-<div>
+-
+ <h3>Contact</h3>
+ <p>Please send questions or comments about <a href="https://www.oasis-open.org/resources/tcadmin/github-repositories-for-oasis-tc-members-chartered-work">OASIS TC GitHub repositories</a> to <a href="mailto:robin@oasis-open.org">Robin Cover</a> and <a href="mailto:chet.ensign@oasis-open.org">Chet Ensign</a>.  For questions about content in this repository, please contact the TC Chair or Co-Chairs as listed on the the virtio TC's <a href="https://www.oasis-open.org/committees/virtio/">home page</a>.</p>
+ </div>
+-- 
+MST
 
 ---------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+To unsubscribe from this mail list, you must leave the OASIS TC that 
+generates this mail.  Follow this link to all your TCs in OASIS at:
+https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
 
