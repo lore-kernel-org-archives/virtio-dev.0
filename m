@@ -1,73 +1,109 @@
-Return-Path: virtio-dev-return-3455-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3369-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id CF75D5818F29
-	for <virtio-dev@lists.oasis-open.org>; Wed,  7 Mar 2018 05:06:17 -0800 (PST)
-Message-ID: <5A9FE470.2090805@intel.com>
-Date: Wed, 07 Mar 2018 21:09:04 +0800
+	by lists.oasis-open.org (Postfix) with ESMTP id 74B171CB807D
+	for <virtio-dev@lists.oasis-open.org>; Fri,  2 Mar 2018 01:06:37 -0800 (PST)
 From: Wei Wang <wei.w.wang@intel.com>
-MIME-Version: 1.0
-References: <1519980450-3404-1-git-send-email-wei.w.wang@intel.com> <1519980450-3404-3-git-send-email-wei.w.wang@intel.com> <20180302203557-mutt-send-email-mst@kernel.org> <5A9CBB2F.8010400@intel.com> <20180305155642-mutt-send-email-mst@kernel.org> <5A9DF4E9.3090706@intel.com> <20180306042253-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20180306042253-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: [virtio-dev] Re: [PATCH v3 2/3] virtio-balloon: VIRTIO_BALLOON_F_FREE_PAGE_HINT
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, quintela@redhat.com, dgilbert@redhat.com, pbonzini@redhat.com, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu0@gmail.com, nilal@redhat.com, riel@redhat.com
+Date: Fri,  2 Mar 2018 16:47:30 +0800
+Message-Id: <1519980450-3404-4-git-send-email-wei.w.wang@intel.com>
+In-Reply-To: <1519980450-3404-1-git-send-email-wei.w.wang@intel.com>
+References: <1519980450-3404-1-git-send-email-wei.w.wang@intel.com>
+Subject: [virtio-dev] [PATCH v3 3/3] migration: use the free page hint feature from balloon
+To: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, mst@redhat.com, quintela@redhat.com, dgilbert@redhat.com
+Cc: pbonzini@redhat.com, wei.w.wang@intel.com, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu0@gmail.com, nilal@redhat.com, riel@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 03/06/2018 10:38 AM, Michael S. Tsirkin wrote:
-> On Tue, Mar 06, 2018 at 09:54:49AM +0800, Wei Wang wrote:
->> On 03/05/2018 10:09 PM, Michael S. Tsirkin wrote:
->>> On Mon, Mar 05, 2018 at 11:36:15AM +0800, Wei Wang wrote:
->>>> On 03/03/2018 02:37 AM, Michael S. Tsirkin wrote:
->>>>> On Fri, Mar 02, 2018 at 04:47:29PM +0800, Wei Wang wrote:
->>>>>> diff --git a/include/sysemu/balloon.h b/include/sysemu/balloon.h
->>>>>> index af49e19..16a2aae 100644
->>>>>> --- a/include/sysemu/balloon.h
->>>>>> +++ b/include/sysemu/balloon.h
->>>>> ...
->>>>>
->>>>>> +typedef void (QEMUBalloonFreePageStart)(void *opaque);
->>>>>> +typedef void (QEMUBalloonFreePageStop)(void *opaque);
->>>>> So I think the rule is that no bitmap sync must happen
->>>>> between these two, otherwise a hint might arrive and
->>>>> override the sync output.
->>>>>
->>>>> Should be documented I think.
->>>>>
->>>> Yes, agree.
->>> Ideally we'd also detect violations and trigger an assert.
->> How about just invoking
->>
->> if (rs->free_page_support)
->>      balloon_free_page_stop();
->>
->> at the beginning of migration_bitmap_sync()? (balloon_free_page_stop will
->> just return if the optimization has stopped.)
->>
->> In this way, we can always have the guarantee that "no bitmap sync must
->> happen between these two"
-> Why not. And in fact you can do balloon_free_page_start at the
-> end of sync.
+Start the free page optimization when the bulk stage starts. In case the
+guest is slow in reporting, actively stops it when the bulk stage ends.
+The optimization avoids sending guest free pages during the bulk stage.
+Currently, the optimization is added to precopy only.
 
-Sounds good. I implemented it this way in v4. In this case, we actually 
-extend the usage of this optimization beyond the bulk stage. Though it 
-shows similar test results as v3 which optimizes bulk stage only, but 
-still good to leave the optimization there for the 2nd stage onward as 
-well. It will speed up 2nd stage onward, for example, in this scenario: 
-the guest writes page A, and then free(A) soon. After QEMU syncs bitmap, 
-it sees bit of A is set, but now A is free page, the optimization can 
-help to clear A from the bitmap.
+Signed-off-by: Wei Wang <wei.w.wang@intel.com>
+CC: Dr. David Alan Gilbert <dgilbert@redhat.com>
+CC: Juan Quintela <quintela@redhat.com>
+CC: Michael S. Tsirkin <mst@redhat.com>
+---
+ migration/ram.c | 19 ++++++++++++++++++-
+ 1 file changed, 18 insertions(+), 1 deletion(-)
 
-Best,
-Wei
-
-
+diff --git a/migration/ram.c b/migration/ram.c
+index 769a0f6..f6af7e6 100644
+--- a/migration/ram.c
++++ b/migration/ram.c
+@@ -51,6 +51,7 @@
+ #include "qemu/rcu_queue.h"
+ #include "migration/colo.h"
+ #include "migration/block.h"
++#include "sysemu/balloon.h"
+ 
+ /***********************************************************/
+ /* ram save/restore */
+@@ -208,6 +209,8 @@ struct RAMState {
+     uint32_t last_version;
+     /* We are in the first round */
+     bool ram_bulk_stage;
++    /* The free pages optimization feature is supported */
++    bool free_page_support;
+     /* How many times we have dirty too many pages */
+     int dirty_rate_high_cnt;
+     /* these variables are used for bitmap sync */
+@@ -775,7 +778,7 @@ unsigned long migration_bitmap_find_dirty(RAMState *rs, RAMBlock *rb,
+     unsigned long *bitmap = rb->bmap;
+     unsigned long next;
+ 
+-    if (rs->ram_bulk_stage && start > 0) {
++    if (rs->ram_bulk_stage && start > 0 && !rs->free_page_support) {
+         next = start + 1;
+     } else {
+         next = find_next_bit(bitmap, size, start);
+@@ -1225,6 +1228,10 @@ static bool find_dirty_block(RAMState *rs, PageSearchStatus *pss, bool *again)
+             /* Flag that we've looped */
+             pss->complete_round = true;
+             rs->ram_bulk_stage = false;
++            if (rs->free_page_support) {
++                balloon_free_page_stop();
++                rs->free_page_support = false;
++            }
+             if (migrate_use_xbzrle()) {
+                 /* If xbzrle is on, stop using the data compression at this
+                  * point. In theory, xbzrle can do better than compression.
+@@ -1656,6 +1663,8 @@ static void ram_state_reset(RAMState *rs)
+     rs->last_page = 0;
+     rs->last_version = ram_list.version;
+     rs->ram_bulk_stage = true;
++    rs->free_page_support = balloon_free_page_support() &
++                            !migration_in_postcopy();
+ }
+ 
+ #define MAX_WAIT 50 /* ms, half buffered_file limit */
+@@ -2235,6 +2244,11 @@ static int ram_save_setup(QEMUFile *f, void *opaque)
+             return -1;
+         }
+     }
++
++    if ((*rsp)->free_page_support) {
++        balloon_free_page_start();
++    }
++
+     (*rsp)->f = f;
+ 
+     rcu_read_lock();
+@@ -2329,6 +2343,9 @@ static int ram_save_iterate(QEMUFile *f, void *opaque)
+ 
+     ret = qemu_file_get_error(f);
+     if (ret < 0) {
++        if (rs->ram_bulk_stage && rs->free_page_support) {
++                balloon_free_page_stop();
++        }
+         return ret;
+     }
+ 
+-- 
+1.8.3.1
 
 
 ---------------------------------------------------------------------
