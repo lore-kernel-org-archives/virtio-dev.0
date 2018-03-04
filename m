@@ -1,134 +1,87 @@
-Return-Path: virtio-dev-return-3520-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3404-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 4F992581806F
-	for <virtio-dev@lists.oasis-open.org>; Mon, 12 Mar 2018 11:47:20 -0700 (PDT)
-References: <20180305081132.72b5159f@xeon-e3>
- <20180305223013.GA2144@nanopsycho>
- <CAKgT0UeUsQ13YYMhnE1i0aeWBVEKk34CujP1o68sapt-OiLUDg@mail.gmail.com>
- <20180305191508.298bd595@xeon-e3>
- <CAKgT0UckX6YhkVwCOGV5Jv5YRGXFAGj4goDRQQBwe9bM5tVpNQ@mail.gmail.com>
- <20180306225927.GB2144@nanopsycho>
- <CAKgT0Uf_c_yNJNHBbPs8MBybxmTJJx4u0mg8MrZd+=ZGot22XA@mail.gmail.com>
- <20180307043534-mutt-send-email-mst@kernel.org>
- <CAKgT0UfpH-XBa4yrTVWna_3ftrmj-S0p4Qoin3hgH=xLEfgHDQ@mail.gmail.com>
- <20180307100630.0f7ba1df@xeon-e3>
- <20180307221001-mutt-send-email-mst@kernel.org>
-From: "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
-Message-ID: <fef24687-c77e-3a83-ad50-31ce7b62a5df@intel.com>
-Date: Mon, 12 Mar 2018 11:47:09 -0700
+	by lists.oasis-open.org (Postfix) with ESMTP id A80D05818F0F
+	for <virtio-dev@lists.oasis-open.org>; Sat,  3 Mar 2018 16:27:05 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20180307221001-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-Subject: Re: [virtio-dev] Re: [PATCH v4 2/2] virtio_net: Extend virtio to use
- VF datapath when available
-To: "Michael S. Tsirkin" <mst@redhat.com>, Stephen Hemminger <stephen@networkplumber.org>
-Cc: Alexander Duyck <alexander.duyck@gmail.com>, Jiri Pirko <jiri@resnulli.us>, David Miller <davem@davemloft.net>, Netdev <netdev@vger.kernel.org>, virtio-dev@lists.oasis-open.org, "Brandeburg, Jesse" <jesse.brandeburg@intel.com>, "Duyck, Alexander H" <alexander.h.duyck@intel.com>, Jakub Kicinski <kubakici@wp.pl>
+In-Reply-To: <20180303212542.GA10132@nanopsycho.orion>
+References: <1519934923-39372-1-git-send-email-sridhar.samudrala@intel.com>
+ <1519934923-39372-3-git-send-email-sridhar.samudrala@intel.com>
+ <20180302083605.GD2099@nanopsycho> <CAKgT0UeMQ8GkHLrCHQ_OfFw3beqHVM2QvbRt7zoZKf1Vwvbt1A@mail.gmail.com>
+ <20180302162017.GG2099@nanopsycho> <20180302214114-mutt-send-email-mst@kernel.org>
+ <20180303113120.GA3205@nanopsycho.orion> <CAKgT0UcdJ0D-64N0cKsZtpqyKWsXkoPTdvRPxoCrpU=q1T8UuA@mail.gmail.com>
+ <20180303212542.GA10132@nanopsycho.orion>
+From: Alexander Duyck <alexander.duyck@gmail.com>
+Date: Sat, 3 Mar 2018 16:26:53 -0800
+Message-ID: <CAKgT0UeH3JGGEvwwFfjpde=iPwV7s2MEwhKk08ixedCXZHcCFg@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: [virtio-dev] Re: [PATCH v4 2/2] virtio_net: Extend virtio to use VF datapath when available
+To: Jiri Pirko <jiri@resnulli.us>
+Cc: "Michael S. Tsirkin" <mst@redhat.com>, Sridhar Samudrala <sridhar.samudrala@intel.com>, Stephen Hemminger <stephen@networkplumber.org>, David Miller <davem@davemloft.net>, Netdev <netdev@vger.kernel.org>, virtio-dev@lists.oasis-open.org, "Brandeburg, Jesse" <jesse.brandeburg@intel.com>, "Duyck, Alexander H" <alexander.h.duyck@intel.com>, Jakub Kicinski <kubakici@wp.pl>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 3/7/2018 12:11 PM, Michael S. Tsirkin wrote:
-> On Wed, Mar 07, 2018 at 10:06:30AM -0800, Stephen Hemminger wrote:
->> On Wed, 7 Mar 2018 09:50:50 -0800
->> Alexander Duyck <alexander.duyck@gmail.com> wrote:
+On Sat, Mar 3, 2018 at 1:25 PM, Jiri Pirko <jiri@resnulli.us> wrote:
+> Sat, Mar 03, 2018 at 07:04:57PM CET, alexander.duyck@gmail.com wrote:
+>>On Sat, Mar 3, 2018 at 3:31 AM, Jiri Pirko <jiri@resnulli.us> wrote:
+>>> Fri, Mar 02, 2018 at 08:42:47PM CET, mst@redhat.com wrote:
+>>>>On Fri, Mar 02, 2018 at 05:20:17PM +0100, Jiri Pirko wrote:
+>>>>> >Yeah, this code essentially calls out the "shareable" code with a
+>>>>> >comment at the start and end of the section what defines the
+>>>>> >virtio_bypass functionality. It would just be a matter of mostly
+>>>>> >cutting and pasting to put it into a separate driver module.
+>>>>>
+>>>>> Please put it there and unite the use of it with netvsc.
+>>>>
+>>>>Surely, adding this to other drivers (e.g. might this be handy for xen
+>>>>too?) can be left for a separate patchset. Let's get one device merged
+>>>>first.
+>>>
+>>> Why? Let's do the generic infra alongside with the driver. I see no good
+>>> reason to rush into merging driver and only later, if ever, to convert
+>>> it to generic solution. On contrary. That would lead into multiple
+>>> approaches and different behavious in multiple drivers. That is plain
+>>> wrong.
 >>
->>> On Tue, Mar 6, 2018 at 6:38 PM, Michael S. Tsirkin <mst@redhat.com> wrote:
->>>> On Tue, Mar 06, 2018 at 03:27:46PM -0800, Alexander Duyck wrote:
->>>>>> I definitelly vote for a separate common shared code for both netvsc and
->>>>>> virtio_net - even if you use 2 and 3 netdev model, you could share the
->>>>>> common code. Strict checks and limitation should be in place.
->>>>> Noted. But as I also mentioned there isn't that much "common" code
->>>>> between the two models. I think if anything we could probably look at
->>>>> peeling out a few bits such as "get_<iface>_bymac" which really would
->>>>> become dev_get_by_mac_and_ops in order to find the device for the
->>>>> notifiers. I probably wouldn't even put that in our driver and would
->>>>> instead put it in the core code since it almost makes more sense
->>>>> there. Beyond that sharing becomes much more challenging due to the
->>>>> differences in the Rx and Tx paths that build out of the difference
->>>>> between the 2 driver and 3 driver models.
->>>> At this point it might be worth it to articulate the advantages
->>>> of the 3 netdev model.
->>> The main advantages are performance on the lower devices. Specifically
->>> we can run LLTX and IFF_NOQUEUE on the upper device, meaning the VF
->>> doesn't take a performance hit when we start transmitting through it.
->>> In addition the paravirtual device is able to fully expose it's
->>> features, so for example virtio_net can maintain in-driver XDP, and we
->>> can provide generic XDP on the upper device. We can also have an
->>> asymmetric configuration where the number of queues or feature sets
->>> can be different between the ports.
->>>
->>> Basically what it comes down to is in the 3 netdev model we never have
->>> to deal with the issues of going from being a standard netdev to being
->>> a master netdev. The role of each netdev is clearly defined.
->>>
->>> As far as doing a generic solution it is the preferred way to go as
->>> well since we don't have to rewrite functionality of the lower device.
->>> Currently the only changes really needed are to add a phys_port_name
->>> operation so that you can distinguish between the bypass interface and
->>> the original paravirtual one. As such you have no confusion about what
->>> you are running.
->>>
->>>> If they are compelling, why wouldn't netvsc users want them?
->>> I believe part of the logic for Stephen's choice is that netvsc
->>> doesn't have a "BACKUP" bit like what we have virtio_net. As a result
->>> they have no way of knowing if a VF will ever show up or not. That
->>> makes the 3 netdev solution less appealing as they always end up in
->>> the bonding mode. In addition they have intentionally limited
->>> themselves to avoid features such as XDP that would cause issues with
->>> the 2 netdev model.
->>>
->>>> Alex, I think you were one of the strongest proponents of this model,
->>>> you should be well placed to provide a summary.
->>> Hopefully the information provided helps. In my mind the issue is that
->>> netvsc was not designed correctly, and as such it is using the 2
->>> netdev model as a bit of a crutch to handle the case where they wanted
->>> to add a VF bypass. At this point it has become a part of their
->>> architecture so it would be confusing for their user base to deal with
->>> having 2 netdevs spawn every time their driver sees a new device. In
->>> the case of virtio we only spawn 2 netdevs if the backup bit is set
->>> which implies a specific use case. When the bit isn't set we are only
->>> spawning one device, and as a result we can get much better
->>> performance out of the resultant combination of devices, and can
->>> expose functionality such as in-driver XDP in virtio.
+>>If nothing else it doesn't hurt to do this in one driver in a generic
+>>way, and once it has been proven to address all the needs of that one
+>>driver we can then start moving other drivers to it. The current
+>>solution is quite generic, that was my contribution to this patch set
+>>as I didn't like how invasive it was being to virtio and thought it
+>>would be best to keep this as minimally invasive as possible.
 >>
->> I have experimented with toggling IFF_NOQUEUE and/or LLTX on the netvsc
->> device when doing passthrough. It didn't help performance much and there
->> are corner cases that make it painful, like what if qdisc was placed
->> by user on the netvsc device?  Should the qdisc then be moved back
->> and forth to the VF device when it arrives or is removed?
->>
->> As far as XDP support, it is on the plan to support XDP on the netvsc
->> device since the receive buffers do have to be copied. But there has
->> been no customer demand for it; and the VF model on Azure has limitations
->> which make a transparent XDP model pretty much impossible.
+>>My preference would be to give this a release or two in virtio to
+>>mature before we start pushing it onto other drivers. It shouldn't
+>>take much to cut/paste this into a new driver file once we decide it
+>>is time to start extending it out to other drivers.
 >
-> Jiri, does that answer your question? Even though there is some
-> similarity, the needs of netvsc and virtio appear significantly
-> different.
->
-> We do not yet know whether other PV devices will be virtio-like
-> or netvsc-like.
->
-> Do you agree?
+> I'm not talking about cut/paste and in fact that is what I'm worried
+> about. I'm talking about common code in net/core/ or somewhere that
+> would take care of this in-driver bonding. Each driver, like virtio_net,
+> netvsc would just register some ops to it and the core would do all
+> logic. I believe it is essential take this approach from the start.
 
-Michael,
+Sorry, I didn't mean cut/paste into another driver, I meant to make it
+a driver of its own. My thought was to eventually create a shared/core
+driver module that is then used by the other drivers.
 
-At this point can we agree to go with 3 netdev model for virtio and as 
-this is
-not compatible with netvsc's 2 netdev model,  the scope for any common code
-between virtio and netvsc is very limited.
+My concern right now is that Stephen has indicated he doesn't want
+this approach taken with netvsc, and most of the community doesn't
+want the netvsc approach applied to virtio. Until that impasse can be
+resolved there isn't much value in trying to split this up so it is
+available to other drivers. In addition I would imagine it would make
+it a pain for others to back-port into distros since it would break
+legacy netvsc driver behavior. Patches are always welcome. Once this
+is in you are free to try fighting to get this made into a generic
+module and applied to both drivers, but we have already spent close to
+3 months on this and it seems like there has been significantly more
+time spent arguing over the number of interfaces and/or drivers than
+spent writing/reviewing actual code.
 
-Should i submit a v5 version of this patch series with some minor 
-fixes?  Or can
-you pull in this series and i can submit patches on top of that?
-
-Thanks
-Sridhar
+- Alex
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
