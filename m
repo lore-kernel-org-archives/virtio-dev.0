@@ -1,57 +1,72 @@
-Return-Path: virtio-dev-return-3415-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3417-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id D16145818F63
-	for <virtio-dev@lists.oasis-open.org>; Mon,  5 Mar 2018 06:09:02 -0800 (PST)
-Date: Mon, 5 Mar 2018 14:08:59 +0000
-From: Stefan Hajnoczi <stefanha@redhat.com>
-Message-ID: <20180305140859.GL7910@stefanha-x1.localdomain>
+	by lists.oasis-open.org (Postfix) with ESMTP id 45C045818F63
+	for <virtio-dev@lists.oasis-open.org>; Mon,  5 Mar 2018 06:16:42 -0800 (PST)
+Date: Mon, 5 Mar 2018 16:16:28 +0200
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20180305161419-mutt-send-email-mst@kernel.org>
 References: <7849539ddc252748908b3ff62ca6539b6dea73b0.1519303843.git.tgolembi@redhat.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="Qgd2S+2VS1hsWwXW"
+Content-Type: text/plain; charset="utf-8"
 Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 In-Reply-To: <7849539ddc252748908b3ff62ca6539b6dea73b0.1519303843.git.tgolembi@redhat.com>
-Subject: Re: [virtio-dev] [PATCH v2] content: document balloon memory
- statistics
+Subject: [virtio-dev] Re: [PATCH v2] content: document balloon memory statistics
 To: =?utf-8?B?VG9tw6HFoSBHb2xlbWJpb3Zza8O9?= <tgolembi@redhat.com>
-Cc: virtio-dev@lists.oasis-open.org, Jonathan Helman <jonathan.helman@oracle.com>, "Michael S. Tsirkin" <mst@redhat.com>
+Cc: virtio-dev@lists.oasis-open.org, Stefan Hajnoczi <stefanha@redhat.com>, Jonathan Helman <jonathan.helman@oracle.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
---Qgd2S+2VS1hsWwXW
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Thu, Feb 22, 2018 at 01:50:52PM +0100, Tom=C3=A1=C5=A1 Golembiovsk=C3=BD=
- wrote:
+On Thu, Feb 22, 2018 at 01:50:52PM +0100, Tomáš Golembiovský wrote:
 > Linux kernel provides some balloon memory statistics that were not
 > included in the specs. Include them to avoid any ID clashes in the
 > future.
->=20
-> Signed-off-by: Tom=C3=A1=C5=A1 Golembiovsk=C3=BD <tgolembi@redhat.com>
+> 
+> Signed-off-by: Tomáš Golembiovský <tgolembi@redhat.com>
+
+OK when you feel it's ready, pls open an issue in github,
+don't forget to include link to list archives (this email).
+Then send an email so I can start the voting.
+
 > ---
 >  content.tex | 9 +++++++++
 >  1 file changed, 9 insertions(+)
+> 
+> diff --git a/content.tex b/content.tex
+> index c7ef7fd..7e9e026 100644
+> --- a/content.tex
+> +++ b/content.tex
+> @@ -5028,6 +5028,8 @@ struct virtio_balloon_stat {
+>  #define VIRTIO_BALLOON_S_MINFLT   3
+>  #define VIRTIO_BALLOON_S_MEMFREE  4
+>  #define VIRTIO_BALLOON_S_MEMTOT   5
+> +#define VIRTIO_BALLOON_S_AVAIL    6
+> +#define VIRTIO_BALLOON_S_CACHES   7
+>          le16 tag;
+>          le64 val;
+>  } __attribute__((packed));
+> @@ -5109,6 +5111,13 @@ first buffer.
+>  
+>  \item[VIRTIO_BALLOON_S_MEMTOT (5)] The total amount of memory available
+>    (in bytes).
+> +
+> +\item[VIRTIO_BALLOON_S_AVAIL (6)] An estimate of how much memory is available
+> +  (in bytes) for starting new applications, without pushing the system to swap.
+> +
+> +\item[VIRTIO_BALLOON_S_CACHES (7)] The amount of memory, in bytes, that can be
+> +  quickly reclaimed without additional I/O. Typically these pages are used for
+> +  caching files from disk.
+>  \end{description}
+>  
+>  \section{SCSI Host Device}\label{sec:Device Types / SCSI Host Device}
+> -- 
+> 2.16.1
 
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
---Qgd2S+2VS1hsWwXW
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEcBAEBAgAGBQJanU97AAoJEJykq7OBq3PIJ+cIAIVqo4OBlQA/XAw0xVQEghDF
-7HSy71GHxuTEccmil5Y6P7Df+423uA18SCMJU2XwrG6E8cjlpwJi2SaQUALued6l
-rgEBl7Pcqg1CD2CkuW+E2uHE7ZPconapv3GfQJHduxgCFEl1hl/6JvJzdCILpil/
-AL4ZDIMCzz4/mGpc2CeB7I1tl63EdMpMG/RspVWs4rEJwSMBzk1GqsG+NpFJ/n1r
-1doDBvOmWWclOZNNxIY3/za5QxTSomJPQUe2DJWV1OtEj7HjwiGJXgUiHC82XAek
-/Yi5mvHXKEc8s0APjHEdOzn8vsejyX8O8e0P8n8FQWec3bmIxEybIlN/7sAM+dg=
-=zP+8
------END PGP SIGNATURE-----
-
---Qgd2S+2VS1hsWwXW--
