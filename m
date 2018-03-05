@@ -1,59 +1,50 @@
-Return-Path: virtio-return-2960-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-return-2961-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio@lists.oasis-open.org>
 List-Post: <mailto:virtio@lists.oasis-open.org>
 List-Help: <mailto:virtio-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Fri, 2 Mar 2018 22:09:09 +0200
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <1520021345-25542-1-git-send-email-mst@redhat.com>
+Date: Mon, 5 Mar 2018 10:40:32 +0000
+From: Stefan Hajnoczi <stefanha@redhat.com>
+Message-ID: <20180305104032.GD7910@stefanha-x1.localdomain>
+References: <1520021345-25542-1-git-send-email-mst@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="at6+YcpfzWZg/htY"
 Content-Disposition: inline
-Subject: [virtio] [PATCH] README.md: add hints for contributors
-To: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+In-Reply-To: <1520021345-25542-1-git-send-email-mst@redhat.com>
+Subject: [virtio] Re: [virtio-dev] [PATCH] README.md: add hints for contributors
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Add links to admin repo and mailing lists.
+--at6+YcpfzWZg/htY
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
----
- README.md | 14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
+On Fri, Mar 02, 2018 at 10:09:09PM +0200, Michael S. Tsirkin wrote:
+> Add links to admin repo and mailing lists.
+>=20
+> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+> ---
+>  README.md | 14 ++++++++++----
+>  1 file changed, 10 insertions(+), 4 deletions(-)
 
-diff --git a/README.md b/README.md
-index 7dadb68..a4fdc4e 100644
---- a/README.md
-+++ b/README.md
-@@ -27,13 +27,19 @@
- </div>
- 
- <div>
-+
- <h3>Further Description of this Repository</h3>
-+<h4>Providing Feedback</h4>
-+<p>See <A
-+HREF="https://www.oasis-open.org/committees/tc_home.php?wg_abbrev=virtio#feedback">
-+https://www.oasis-open.org/committees/tc_home.php?wg_abbrev=virtio#feedback</A>
-+<h4>Note for Contributors</h4>
-+<p>Contributors should review TC specific
-+process rules under "Further Description of this Repository"
-+in <A
-+HREF="https://github.com/oasis-tcs/virtio-admin">https://github.com/oasis-tcs/virtio-admin</A>.
- 
--<p>[Any narrative content may be provided here by the TC, for example, if the Members wish to provide an extended statement of purpose.]</p>
- </div>
--
--<div>
--
- <h3>Contact</h3>
- <p>Please send questions or comments about <a href="https://www.oasis-open.org/resources/tcadmin/github-repositories-for-oasis-tc-members-chartered-work">OASIS TC GitHub repositories</a> to <a href="mailto:robin@oasis-open.org">Robin Cover</a> and <a href="mailto:chet.ensign@oasis-open.org">Chet Ensign</a>.  For questions about content in this repository, please contact the TC Chair or Co-Chairs as listed on the the virtio TC's <a href="https://www.oasis-open.org/committees/virtio/">home page</a>.</p>
- </div>
--- 
-MST
+Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
 
----------------------------------------------------------------------
-To unsubscribe from this mail list, you must leave the OASIS TC that 
-generates this mail.  Follow this link to all your TCs in OASIS at:
-https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
+--at6+YcpfzWZg/htY
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+
+iQEcBAEBAgAGBQJanR6gAAoJEJykq7OBq3PI9q4IAIS5PQB6Z1fW8q1zYP1AIbFB
+nJG87cYGud0mgTrcO4p6s61fAsTG+QZK693jM6GXRyplD2unpAF6cr3LfJCh3vwo
+F1tRPOXj8xdNbjrxeqcNjYrl0qxzzz3i4DSqvHwH+i33hLIqIBMb2Ua1d3lzZLck
+vQscvf1AeebDPkwx9GJPxc0yy6wCRNvAS3SaFbqMkWCXINAL/7bHCaHEGdnB1Xyt
+OrHqOGEKJyDOrL6fxdj+S+HOkAnCJ4X7J9R4DNBR07aLvQM/hYgZejXVuTMIHqBU
+GsiwGZ9/wTR+/Tt47Fho35ig6jY4mm1DkarWKtFrvBgAxzs6axYemYTBOON3TZU=
+=x7zT
+-----END PGP SIGNATURE-----
+
+--at6+YcpfzWZg/htY--
