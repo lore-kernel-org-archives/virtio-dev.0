@@ -1,111 +1,83 @@
-Return-Path: virtio-dev-return-3475-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3437-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 1D2A8581819D
-	for <virtio-dev@lists.oasis-open.org>; Thu,  8 Mar 2018 04:49:04 -0800 (PST)
-Content-Type: text/plain;
-	charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 11.2 \(3445.5.20\))
-From: Yan Vugenfirer <yvugenfi@redhat.com>
-In-Reply-To: <20180306201252-mutt-send-email-mst@kernel.org>
-Date: Thu, 8 Mar 2018 14:48:45 +0200
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <71A8623C-BB2A-4579-AD12-77A9D1B70F97@redhat.com>
-References: <cover.1519961667.git.jbaron@akamai.com>
- <c9d3cf2fbc3c64bb28e0438185d85d95b2088127.1519961667.git.jbaron@akamai.com>
- <7fc612d0-9610-9b07-d054-bb1438898f47@redhat.com>
- <20180302221831-mutt-send-email-mst@kernel.org>
- <258F88CA-D946-4804-A65D-2EA0790A66AF@redhat.com>
- <09cbf694-907e-dd68-60ff-eeb169925a5e@akamai.com>
- <20180306201252-mutt-send-email-mst@kernel.org>
-Subject: Re: [virtio-dev] [PATCH 4/4] virtio-net: add linkspeed and duplex
- settings to virtio-net
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Jason Baron <jbaron@akamai.com>, Jason Wang <jasowang@redhat.com>, qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org
+	by lists.oasis-open.org (Postfix) with ESMTP id 672A65818F95
+	for <virtio-dev@lists.oasis-open.org>; Tue,  6 Mar 2018 11:29:21 -0800 (PST)
+From: Alexander Duyck <alexander.duyck@gmail.com>
+Date: Tue, 06 Mar 2018 11:29:08 -0800
+Message-ID: <20180306192423.3153.42741.stgit@localhost.localdomain>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Subject: [virtio-dev] [pci PATCH v3 0/3] Add support for unmanaged SR-IOV
+To: bhelgaas@google.com, alexander.h.duyck@intel.com, linux-pci@vger.kernel.org
+Cc: virtio-dev@lists.oasis-open.org, kvm@vger.kernel.org, netdev@vger.kernel.org, dan.daly@intel.com, linux-kernel@vger.kernel.org, mheyne@amazon.de, liang-min.wang@intel.com, mark.d.rustad@intel.com, dwmw2@infradead.org, dwmw@amazon.co.uk
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+This series is meant to add support for SR-IOV on devices when the VFs are
+not managed by the kernel. Examples of recent patches attempting to do this
+include:
+virto - https://patchwork.kernel.org/patch/10241225/
+pci-stub - https://patchwork.kernel.org/patch/10109935/
+vfio - https://patchwork.kernel.org/patch/10103353/
+uio - https://patchwork.kernel.org/patch/9974031/
+
+Since this is quickly blowing up into a multi-driver problem it is probably
+best to implement this solution as generically as possible.
+
+This series is an attempt to do that. What we do with this patch set is
+provide a generic framework to enable SR-IOV in the case that the PF driver
+doesn't support managing the VFs itself.
+
+I based my patch set originally on the patch by Mark Rustad but there isn't
+much left after going through and cleaning out the bits that were no longer
+needed, and after incorporating the feedback from David Miller. At this point
+the only items to be fully reused was his patch description which is now
+present in patch 3 of the set.
+
+I have included the authors of the original 4 patches above in the Cc here.
+My hope is to get feedback and/or review on if this works for their use
+cases.
+
+My hope is that for now the pci-stub and uio driver approaches can be
+addressed using the current patch that enables vfio-pci support. The only
+limitation is that it is also setting the taint flag until we have a better
+solution.
+
+v2: Reduced scope back to just virtio_pci and vfio-pci
+    Broke into 3 patch set from single patch
+    Changed autoprobe behavior to always set when num_vfs is set non-zero
+v3: Updated Documentation to clarify when sriov_unmanaged_autoprobe is used
+    Wrapped vfio_pci_sriov_configure to fix build errors w/o SR-IOV in kernel
+
+Cc: Mark Rustad <mark.d.rustad@intel.com>
+Cc: Maximilian Heyne <mheyne@amazon.de>
+Cc: Liang-Min Wang <liang-min.wang@intel.com>
+Cc: David Woodhouse <dwmw@amazon.co.uk>
+
+---
+
+Alexander Duyck (3):
+      pci-iov: Add support for unmanaged SR-IOV
+      vfio: Add support for unmanaged or userspace managed SR-IOV
+      virtio_pci: Add support for unmanaged SR-IOV on virtio_pci devices
 
 
-> On 6 Mar 2018, at 20:13, Michael S. Tsirkin <mst@redhat.com> wrote:
->=20
-> On Tue, Mar 06, 2018 at 01:02:06PM -0500, Jason Baron wrote:
->>=20
->>=20
->> On 03/04/2018 08:05 AM, Yan Vugenfirer wrote:
->>>=20
->>>=20
->>>> On 2 Mar 2018, at 22:19, Michael S. Tsirkin <mst@redhat.com
->>>> <mailto:mst@redhat.com>> wrote:
->>>>=20
->>>> On Fri, Mar 02, 2018 at 03:14:01PM +0800, Jason Wang wrote:
->>>>>=20
->>>>>=20
->>>>> On 2018=E5=B9=B403=E6=9C=8802=E6=97=A5 11:46, Jason Baron wrote:
->>>>>> Although linkspeed and duplex can be set in a linux guest via
->>>>>> 'ethtool -s',
->>>>>> this requires custom ethtool commands for virtio-net by default.
->>>>>>=20
->>>>>> Introduce a new feature flag, VIRTIO_NET_F_SPEED_DUPLEX, which =
-allows
->>>>>> the hypervisor to export a linkspeed and duplex setting. The user =
-can
->>>>>> subsequently overwrite it later if desired via: 'ethtool -s'.
->>>>>>=20
->>>>>> Linkspeed and duplex settings can be set as:
->>>>>> '-device virtio-net,speed=3D10000,duplex=3Dfull'
->>>>>=20
->>>>> I was thinking whether or not it's better to decide the duplex by =
-the
->>>>> type
->>>>> of backends.
->>>>>=20
->>>>> E.g userspace and vhost-kernel implement a in fact half duplex. =
-But dpdk
->>>>> implement a full duplex.
->>>>>=20
->>>>> Thanks
->>>>=20
->>>> OTOH it's a priority for some people to be able to support =
-migration
->>>> between different backend types. Breaking that won't be nice.
->>>=20
->>> I think that in this case we need a way to update the settings of =
-link
->>> speed and link duplex (maybe add QMP command). Migration between
->>> different backend types should cause link down\link up events. And =
-this
->>> is a time for a driver to re-read the settings and update the OS.
->>>=20
->>> Best regards,
->>> Yan.
->>>=20
->>=20
->> So the virtio_net driver in linux will re-read these settings on link =
-up
->> events. So I could add a qmp command to set these (in addition to the
->> command-line) interface, if desired. Is there a consensus that we =
-need
->> to add a qmp command here? Or can that be treated as a future item, =
-if
->> somebody wants it?
->>=20
->> Thanks,
->>=20
->> -Jason
->=20
-> We already have ability to take link down and up.
-> I'd say it's a future item.
-I agree.
+ Documentation/ABI/testing/sysfs-bus-pci |   24 +++++++++++++
+ drivers/pci/iov.c                       |   37 +++++++++++++++++++
+ drivers/pci/pci-driver.c                |    2 +
+ drivers/pci/pci-sysfs.c                 |   29 +++++++++++++++
+ drivers/pci/pci.h                       |    4 ++
+ drivers/vfio/pci/vfio_pci.c             |   59 +++++++++++++++++++++++++++++++
+ drivers/virtio/virtio_pci_common.c      |    4 ++
+ include/linux/pci.h                     |    1 +
+ 8 files changed, 158 insertions(+), 2 deletions(-)
 
-Yan.
->=20
-> --=20
-> MST
-
+--
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
