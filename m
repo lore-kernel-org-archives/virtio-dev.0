@@ -1,77 +1,208 @@
-Return-Path: virtio-dev-return-3518-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3427-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 08A905818081
-	for <virtio-dev@lists.oasis-open.org>; Mon, 12 Mar 2018 10:25:55 -0700 (PDT)
-MIME-Version: 1.0
-From: Alexander Duyck <alexander.duyck@gmail.com>
-Date: Mon, 12 Mar 2018 10:25:52 -0700
-Message-ID: <CAKgT0Uc3xzQn5-0xw4y=2SixZpucaevAodM3NLUOn4W06UbQ3Q@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Subject: [virtio-dev] Re: [pci PATCH v5 0/4] Add support for unmanaged SR-IOV (was: Series
- short description)
-To: Bjorn Helgaas <bhelgaas@google.com>, "Duyck, Alexander H" <alexander.h.duyck@intel.com>, linux-pci@vger.kernel.org
-Cc: virtio-dev@lists.oasis-open.org, kvm@vger.kernel.org, Netdev <netdev@vger.kernel.org>, "Daly, Dan" <dan.daly@intel.com>, LKML <linux-kernel@vger.kernel.org>, linux-nvme@lists.infradead.org, keith.busch@intel.com, netanel@amazon.com, Maximilian Heyne <mheyne@amazon.de>, "Wang, Liang-min" <liang-min.wang@intel.com>, "Rustad, Mark D" <mark.d.rustad@intel.com>, David Woodhouse <dwmw2@infradead.org>, Christoph Hellwig <hch@lst.de>, dwmw@amazon.co.uk
+From: Changpeng Liu <changpeng.liu@intel.com>
+Date: Tue,  6 Mar 2018 10:50:20 +0800
+Message-Id: <1520304620-10753-1-git-send-email-changpeng.liu@intel.com>
+Subject: [virtio-dev] [PATCH v3] virtio-blk: add discard and write zeroes features to specification
+To: virtio-dev@lists.oasis-open.org
+Cc: virtio-comment@lists.oasis-open.org, changpeng.liu@intel.com, cavery@redhat.com, stefanha@redhat.com, pbonzini@redhat.com, pawelx.wodkowski@intel.com, james.r.harris@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Mon, Mar 12, 2018 at 10:20 AM, Alexander Duyck
-<alexander.duyck@gmail.com> wrote:
-> This series is meant to add support for SR-IOV on devices when the VFs are
-> not managed by the kernel. Examples of recent patches attempting to do this
-> include:
-> virto - https://patchwork.kernel.org/patch/10241225/
-> pci-stub - https://patchwork.kernel.org/patch/10109935/
-> vfio - https://patchwork.kernel.org/patch/10103353/
-> uio - https://patchwork.kernel.org/patch/9974031/
->
-> Since this is quickly blowing up into a multi-driver problem it is probably
-> best to implement this solution as generically as possible.
->
-> This series is an attempt to do that. What we do with this patch set is
-> provide a generic framework to enable SR-IOV in the case that the PF driver
-> doesn't support managing the VFs itself.
->
-> I based my patch set originally on the patch by Mark Rustad but there isn't
-> much left after going through and cleaning out the bits that were no longer
-> needed, and after incorporating the feedback from David Miller. At this point
-> the only items to be fully reused was his patch description which is now
-> present in patch 3 of the set.
->
-> This solution is limited in scope to just adding support for devices that
-> provide no functionality for SR-IOV other than allocating the VFs by
-> calling pci_enable_sriov. Previous sets had included patches for VFIO, but
-> for now I am dropping that as the scope of that work is larger then I
-> think I can take on at this time.
->
-> v2: Reduced scope back to just virtio_pci and vfio-pci
->     Broke into 3 patch set from single patch
->     Changed autoprobe behavior to always set when num_vfs is set non-zero
-> v3: Updated Documentation to clarify when sriov_unmanaged_autoprobe is used
->     Wrapped vfio_pci_sriov_configure to fix build errors w/o SR-IOV in kernel
-> v4: Dropped vfio-pci patch
->     Added ena and nvme to drivers now using pci_sriov_configure_unmanaged
->     Dropped pci_disable_sriov call in virtio_pci to be consistent with ena
-> v5: Dropped sriov_unmanaged_autoprobe and pci_sriov_conifgure_unmanaged
->     Added new patch that enables pci_sriov_configure_simple
->     Updated drivers to use pci_sriov_configure_simple
->
-> Cc: Mark Rustad <mark.d.rustad@intel.com>
-> Cc: Maximilian Heyne <mheyne@amazon.de>
-> Cc: Liang-Min Wang <liang-min.wang@intel.com>
-> Cc: David Woodhouse <dwmw@amazon.co.uk>
+Existing virtio-blk protocol doesn't have DISCARD/WRITE ZEROES support,
+this will impact the performance when using SSD backend over file systems.
 
-Ugh. Just realized I forgot to post the correct subject line in the cover page.
+Here is the proposal to extend existing virtio-blk protocol to support
+DISCARD/WRITE ZEROES commands.
 
-I needed I can resubmit the series, will just leave it for now in case
-there are any other review comments.
+Basic idea here is using 16 Bytes payload to support 1 descriptor, users
+can put several segments together with 1 DISCARD/WRITE ZEROES command.
 
-Thanks.
+struct virtio_blk_discard_write_zeroes {
+       le64 sector;
+       le32 num_sectors;
+       struct {
+               le32 unmap:1;
+               le32 reserved:31;
+       } flags;
+};
 
-- Alex
+For the purpose to support such feature, we need to introduce 2 new feature
+flags: VIRTIO_BLK_F_DISCARD/VIRTIO_BLK_F_WRITE_ZEROES, and 2 new command
+types: VIRTIO_BLK_T_DISCARD/VIRTIO_BLK_T_WRITE_ZEROES. Also we introduce
+several new parameters in the configuration space of virtio-blk:
+max_discard_sectors/max_discard_seg/max_write_zeroes_sectors.
+These parameters will tell the OS what's the granularity when
+issuing such commands.
+
+If both DISCARD and WRITE ZEROES are supported, unmap flag bit maybe used
+for WRITE ZEROES command with DISCARD bit enabled.
+
+Signed-off-by: Changpeng Liu <changpeng.liu@intel.com>
+---
+ content.tex | 84 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 81 insertions(+), 3 deletions(-)
+
+diff --git a/content.tex b/content.tex
+index c7ef7fd..c4b3190 100644
+--- a/content.tex
++++ b/content.tex
+@@ -4127,6 +4127,14 @@ device except where noted.
+ 
+ \item[VIRTIO_BLK_F_CONFIG_WCE (11)] Device can toggle its cache between writeback
+     and writethrough modes.
++
++\item[VIRTIO_BLK_F_DISCARD (13)] Device can support discard command, maximum
++    discard sectors size in \field{max_discard_sectors} and maximum discard
++    segment number in \field{max_discard_seg}.
++
++\item[VIRTIO_BLK_F_WRITE_ZEROES (14)] Device can support write zeroes command,
++     maximum write zeroes sectors size in \field{max_write_zeroes_sectors} and
++     maximum write zeroes segment number in \field{max_write_zeroes_seg}.
+ \end{description}
+ 
+ \subsubsection{Legacy Interface: Feature bits}\label{sec:Device Types / Block Device / Feature bits / Legacy Interface: Feature bits}
+@@ -4148,6 +4156,12 @@ The \field{capacity} of the device (expressed in 512-byte sectors) is always
+ present. The availability of the others all depend on various feature
+ bits as indicated above.
+ 
++The parameters in the configuration space of the device \field{max_discard_sectors}
++\field{discard_sector_alignment} are expressed in 512-bytes sectors if the
++VIRTIO_BLK_F_DISCARD feature bit is negotiated. The \field{max_write_zeroes_sectors}
++is expressed in 512-byte sectors if the VIRTIO_BLK_F_WRITE_ZEROES feature
++bit is negotiated.
++
+ \begin{lstlisting}
+ struct virtio_blk_config {
+         le64 capacity;
+@@ -4170,6 +4184,14 @@ struct virtio_blk_config {
+                 le32 opt_io_size;
+         } topology;
+         u8 writeback;
++        u8 unused0[3];
++        le32 max_discard_sectors;
++        le32 max_discard_seg;
++        le32 discard_sector_alignment;
++        le32 max_write_zeroes_sectors;
++        le32 max_write_zeroes_seg;
++        u8 write_zeroes_may_unmap;
++        u8 unused1[3];
+ };
+ \end{lstlisting}
+ 
+@@ -4211,6 +4233,17 @@ according to the native endian of the guest rather than
+   after reset can be either writeback or writethrough.  The actual
+   mode can be determined by reading \field{writeback} after feature
+   negotiation.
++
++\item If the VIRTIO_BLK_F_DISCARD feature is negotiated,
++    \field{max_discard_sectors} and \field{max_discard_seg} can be read
++    to determine the maximum discard sectors and maximum number of discard
++    segments for the block driver to use. \field{discard_sector_alignment}
++    can be used by OS when splitting a request based on alignment.
++
++\item if the VIRTIO_BLK_F_WRITE_ZEROES feature is negotiated,
++    \field{max_write_zeroes_sectors} and \field{max_write_zeroes_seg} can
++    be read to determine the maximum write zeroes sectors and maximum
++    number of write zeroes segments for the block driver to use.
+ \end{enumerate}
+ 
+ \drivernormative{\subsubsection}{Device Initialization}{Device Types / Block Device / Device Initialization}
+@@ -4234,6 +4267,9 @@ if they offer VIRTIO_BLK_F_CONFIG_WCE.
+ If VIRTIO_BLK_F_CONFIG_WCE is negotiated but VIRTIO_BLK_F_FLUSH
+ is not, the device MUST initialize \field{writeback} to 0.
+ 
++The device MUST initialize padding bytes \field{unused0} and
++\field{unused1} to 0.
++
+ \subsubsection{Legacy Interface: Device Initialization}\label{sec:Device Types / Block Device / Device Initialization / Legacy Interface: Device Initialization}
+ 
+ Because legacy devices do not have FEATURES_OK, transitional devices
+@@ -4270,20 +4306,38 @@ struct virtio_blk_req {
+         u8 data[][512];
+         u8 status;
+ };
++
++struct virtio_blk_discard_write_zeroes {
++       le64 sector;
++       le32 num_sectors;
++       struct {
++               le32 unmap:1;
++               le32 reserved:31;
++       } flags;
++};
+ \end{lstlisting}
+ 
+ The type of the request is either a read (VIRTIO_BLK_T_IN), a write
+-(VIRTIO_BLK_T_OUT), or a flush (VIRTIO_BLK_T_FLUSH).
++(VIRTIO_BLK_T_OUT), a discard (VIRTIO_BLK_T_DISCARD), a write zeroes
++(VIRTIO_BLK_T_WRITE_ZEROES) or a flush (VIRTIO_BLK_T_FLUSH).
+ 
+ \begin{lstlisting}
+ #define VIRTIO_BLK_T_IN           0
+ #define VIRTIO_BLK_T_OUT          1
+ #define VIRTIO_BLK_T_FLUSH        4
++#define VIRTIO_BLK_T_DISCARD      11
++#define VIRTIO_BLK_T_WRITE_ZEROES 13
+ \end{lstlisting}
+ 
+ The \field{sector} number indicates the offset (multiplied by 512) where
+-the read or write is to occur. This field is unused and set to 0
+-for scsi packet commands and for flush commands.
++the read or write is to occur. This field is unused and set to 0 for
++commands other than read or write.
++
++The \field{data} used for discard or write zeroes command is described
++by one or more virtio_blk_discard_write_zeroes structs. \field{sector}
++indicates the starting offset (multiplied by 512) of the segment, while
++\field{num_sectors} indicates the number of sectors in each discarded
++range. \field{unmap} is only used for write zeroes command.
+ 
+ The final \field{status} byte is written by the device: either
+ VIRTIO_BLK_S_OK for success, VIRTIO_BLK_S_IOERR for device or driver
+@@ -4311,12 +4365,36 @@ switch to writethrough or writeback mode by writing respectively 0 and
+ the driver MUST NOT assume that any volatile writes have been committed
+ to persistent device backend storage.
+ 
++The \field{unmap} bit MUST be zero for discard commands.  The driver
++MUST NOT assume anything about the data returned by read requests after
++a range of sectors has been discarded.
++
+ \devicenormative{\subsubsection}{Device Operation}{Device Types / Block Device / Device Operation}
+ 
+ A device MUST set the \field{status} byte to VIRTIO_BLK_S_IOERR
+ for a write request if the VIRTIO_BLK_F_RO feature if offered, and MUST NOT
+ write any data.
+ 
++The device MUST set the \field{status} byte to VIRTIO_BLK_S_UNSUPP for
++discard and write zeroes commands if any unknown flag is set.
++Furthermore, the device MUST set the \field{status} byte to
++VIRTIO_BLK_S_UNSUPP for discard commands if the \field{unmap} flag is set.
++
++For discard commands, the device MAY deallocate the specified range of
++sectors in the device backend storage.
++
++For write zeroes commands, if the \field{unmap} is set, the device MAY
++deallocate the specified range of sectors in the device backend storage,
++as if the DISCARD command had been sent.  After a write zeroes command
++is completed, reads of the specified ranges of sectors MUST return
++zeroes.  This is true independent of whether \field{unmap} was set or clear.
++
++The device SHOULD clear the \field{write_zeroes_may_unmap} field of the
++virtio configuration space if and only if a write zeroes request cannot
++result in deallocating one or more sectors.  The device MAY change the
++content of the field during operation of the device; when this happens,
++the device SHOULD trigger a configuration change interrupt.
++
+ A write is considered volatile when it is submitted; the contents of
+ sectors covered by a volatile write are undefined in persistent device
+ backend storage until the write becomes stable.  A write becomes stable
+-- 
+1.9.3
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
