@@ -1,51 +1,114 @@
-Return-Path: virtio-return-3022-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio@lists.oasis-open.org>
-List-Post: <mailto:virtio@lists.oasis-open.org>
-List-Help: <mailto:virtio-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Mon, 19 Mar 2018 17:38:09 +0200
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20180319173730-mutt-send-email-mst@kernel.org>
-References: <20180314154618.13069-1-stefanha@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20180314154618.13069-1-stefanha@redhat.com>
-Subject: [virtio] Re: [PATCH 0/7] Packed ring layout wording and typo fixes
-To: Stefan Hajnoczi <stefanha@redhat.com>
-Cc: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, Tiwei Bie <tiwei.bie@intel.com>, Cornelia Huck <cohuck@redhat.com>, "Dhanoa, Kully" <kully.dhanoa@intel.com>, Halil Pasic <pasic@linux.vnet.ibm.com>
+Return-Path: virtio-dev-return-3448-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
+	by lists.oasis-open.org (Postfix) with ESMTP id 214385818F29
+	for <virtio-dev@lists.oasis-open.org>; Wed,  7 Mar 2018 04:53:27 -0800 (PST)
+From: Wei Wang <wei.w.wang@intel.com>
+Date: Wed,  7 Mar 2018 20:34:21 +0800
+Message-Id: <1520426065-40265-1-git-send-email-wei.w.wang@intel.com>
+Subject: [virtio-dev] [PATCH v4 0/4] virtio-balloon: free page hint reporting support
+To: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, mst@redhat.com, quintela@redhat.com, dgilbert@redhat.com
+Cc: pbonzini@redhat.com, wei.w.wang@intel.com, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu0@gmail.com, nilal@redhat.com, riel@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, Mar 14, 2018 at 03:46:11PM +0000, Stefan Hajnoczi wrote:
-> These patches tweak the wording and fix typos in v10 of the packed ring layout
-> spec.
-> 
-> Michael: Feel free to squash this into your patch series if you agree with the
-> changes.  I don't mind if my authorship disappears.
+This is the deivce part implementation to add a new feature,
+VIRTIO_BALLOON_F_FREE_PAGE_HINT to the virtio-balloon device. The device
+receives the guest free page hints from the driver and clears the
+corresponding bits in the dirty bitmap, so that those free pages are
+not transferred by the migration thread to the destination.
 
-Now that v10 of the patches has been voted in, we can apply these.
-Ballot started:
+- Test Environment
+    Host: Intel(R) Xeon(R) CPU E5-2699 v4 @ 2.20GHz
+    Guest: 8G RAM, 4 vCPU
+    Migration setup: migrate_set_speed 100G, migrate_set_downtime 2 second
 
-https://www.oasis-open.org/apps/org/workgroup/virtio/ballot.php?id=3184
+- Test Results
+    - Idle Guest Live Migration Time (results are averaged over 10 runs):
+        - Optimization v.s. Legacy = 251ms vs 1769ms --> ~86% reduction
+    - Guest with Linux Compilation Workload (make bzImage -j4):
+        - Live Migration Time (average)
+          Optimization v.s. Legacy = 1297ms v.s. 2634ms --> ~51% reduction
+        - Linux Compilation Time
+          Optimization v.s. Legacy = 4min56s v.s. 5min3s
+          --> no obvious difference
 
-> Stefan Hajnoczi (7):
->   packed-ring: add missing articles to sentences
->   packed-ring: add missing comma
->   packed-ring: fix 'contigious' typo
->   packed-ring: fix capitalization of names
->   packed-ring: fix plurals
->   packed-ring: fix "the descriptor flags +field+ is updated"
->   packed-ring: rephrase "an example driver code"
-> 
->  packed-ring.tex | 110 ++++++++++++++++++++++++++++----------------------------
->  1 file changed, 55 insertions(+), 55 deletions(-)
-> 
-> -- 
-> 2.14.3
+- Source Code
+    - QEMU:  https://github.com/wei-w-wang/qemu-free-page-lm.git
+    - Linux: https://github.com/wei-w-wang/linux-free-page-lm.git
+
+ChangeLog:
+v3->v4:
+    1) bitmap: add a new API to count 1s starting from an offset of a
+       bitmap
+    2) migration:
+        - qemu_guest_free_page_hint: calculate
+          ram_state->migration_dirty_pages by counting how many bits of
+          free pages are truely cleared. If some of the bits were
+          already 0, they shouldn't be deducted by
+          ram_state->migration_dirty_pages. This wasn't needed for
+          previous versions since we optimized bulk stage only,
+          where all bits are guaranteed to be set. It's needed now
+          because we extened the usage of this optimizaton to all stages
+          except the last stop&copy stage. From 2nd stage onward, there
+          are possibilities that some bits of free pages are already 0.
+     3) virtio-balloon:
+         - virtio_balloon_free_page_report_status: introduce a new status,
+           FREE_PAGE_REPORT_S_EXIT. This status indicates that the
+           optimization thread has exited. FREE_PAGE_REPORT_S_STOP means
+           the reporting is stopped, but the optimization thread still needs
+           to be joined by the migration thread.
+v2->v3:
+    1) virtio-balloon
+        - virtio_balloon_free_page_start: poll the hints using a new
+          thread;
+        - use cmd id between [0x80000000, UINT_MAX];
+        - virtio_balloon_poll_free_page_hints:
+            - stop the optimization only when it has started;
+            - don't skip free pages when !poison_val;
+        - add poison_val to vmsd to migrate;
+        - virtio_balloon_get_features: add the F_PAGE_POISON feature when
+          host has F_FREE_PAGE_HINT;
+        - remove the timer patch which is not needed now.
+    2) migration
+       - new api, qemu_guest_free_page_hint;
+       - rs->free_page_support set only in the precopy case;
+       - use the new balloon APIs.
+v1->v2: 
+    1) virtio-balloon
+        - use subsections to save free_page_report_cmd_id;
+        - poll the free page vq after sending a cmd id to the driver;
+        - change the free page vq size to VIRTQUEUE_MAX_SIZE;
+        - virtio_balloon_poll_free_page_hints: handle the corner case
+          that the free page block reported from the driver may cross
+          the RAMBlock boundary.
+    2) migration/ram.c
+        - use balloon_free_page_poll to start the optimization
+
+Wei Wang (4):
+  bitmap: bitmap_count_one_with_offset
+  migration: API to clear bits of guest free pages from the dirty bitmap
+  virtio-balloon: VIRTIO_BALLOON_F_FREE_PAGE_HINT
+  migration: use the free page hint feature from balloon
+
+ balloon.c                                       |  49 +++++--
+ hw/virtio/virtio-balloon.c                      | 183 +++++++++++++++++++++---
+ include/hw/virtio/virtio-balloon.h              |  15 +-
+ include/migration/misc.h                        |   2 +
+ include/qemu/bitmap.h                           |  13 ++
+ include/standard-headers/linux/virtio_balloon.h |   7 +
+ include/sysemu/balloon.h                        |  15 +-
+ migration/ram.c                                 |  40 +++++-
+ 8 files changed, 294 insertions(+), 30 deletions(-)
+
+-- 
+1.8.3.1
+
 
 ---------------------------------------------------------------------
-To unsubscribe from this mail list, you must leave the OASIS TC that 
-generates this mail.  Follow this link to all your TCs in OASIS at:
-https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
