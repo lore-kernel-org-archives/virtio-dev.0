@@ -1,77 +1,46 @@
-Return-Path: virtio-dev-return-3440-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3465-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 702315818F9D
-	for <virtio-dev@lists.oasis-open.org>; Tue,  6 Mar 2018 11:30:21 -0800 (PST)
-From: Alexander Duyck <alexander.duyck@gmail.com>
-Date: Tue, 06 Mar 2018 11:30:17 -0800
-Message-ID: <20180306192957.3153.60365.stgit@localhost.localdomain>
-In-Reply-To: <20180306192423.3153.42741.stgit@localhost.localdomain>
-References: <20180306192423.3153.42741.stgit@localhost.localdomain>
+	by lists.oasis-open.org (Postfix) with ESMTP id 3ECB05818F22
+	for <virtio-dev@lists.oasis-open.org>; Wed,  7 Mar 2018 11:06:02 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Subject: [virtio-dev] [pci PATCH v3 3/3] virtio_pci: Add support for unmanaged SR-IOV on
- virtio_pci devices
-To: bhelgaas@google.com, alexander.h.duyck@intel.com, linux-pci@vger.kernel.org
-Cc: virtio-dev@lists.oasis-open.org, kvm@vger.kernel.org, netdev@vger.kernel.org, dan.daly@intel.com, linux-kernel@vger.kernel.org, mheyne@amazon.de, liang-min.wang@intel.com, mark.d.rustad@intel.com, dwmw2@infradead.org, dwmw@amazon.co.uk
+In-Reply-To: <20180307064612.GA10926@infradead.org>
+References: <20180306192423.3153.42741.stgit@localhost.localdomain> <20180307064612.GA10926@infradead.org>
+From: Alexander Duyck <alexander.duyck@gmail.com>
+Date: Wed, 7 Mar 2018 11:05:58 -0800
+Message-ID: <CAKgT0UdRFxGUPu4jY0xrUuv8Um62ndPnknhHXuF4Abu6D7GEqg@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: [virtio-dev] Re: [pci PATCH v3 0/3] Add support for unmanaged SR-IOV
+To: Christoph Hellwig <hch@infradead.org>
+Cc: Bjorn Helgaas <bhelgaas@google.com>, "Duyck, Alexander H" <alexander.h.duyck@intel.com>, linux-pci@vger.kernel.org, virtio-dev@lists.oasis-open.org, kvm@vger.kernel.org, Netdev <netdev@vger.kernel.org>, "Daly, Dan" <dan.daly@intel.com>, LKML <linux-kernel@vger.kernel.org>, Maximilian Heyne <mheyne@amazon.de>, "Wang, Liang-min" <liang-min.wang@intel.com>, "Rustad, Mark D" <mark.d.rustad@intel.com>, David Woodhouse <dwmw2@infradead.org>, dwmw@amazon.co.uk
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-From: Alexander Duyck <alexander.h.duyck@intel.com>
+On Tue, Mar 6, 2018 at 10:46 PM, Christoph Hellwig <hch@infradead.org> wrote:
+> On Tue, Mar 06, 2018 at 11:29:08AM -0800, Alexander Duyck wrote:
+>> This series is meant to add support for SR-IOV on devices when the VFs are
+>> not managed by the kernel. Examples of recent patches attempting to do this
+>> include:
+>> virto - https://patchwork.kernel.org/patch/10241225/
+>> pci-stub - https://patchwork.kernel.org/patch/10109935/
+>> vfio - https://patchwork.kernel.org/patch/10103353/
+>> uio - https://patchwork.kernel.org/patch/9974031/
+>
+> nvme and ema seems to be existing examples.  Care to throw in
+> conversions while you're at it?
 
-Hardware-realized virtio_pci devices can implement SR-IOV, so this
-patch enables its use. The device in question is an upcoming Intel
-NIC that implements both a virtio_net PF and virtio_net VFs. These
-are hardware realizations of what has been up to now been a software
-interface.
+Yeah, I can do that. I assume you meant "ena" not "ema".
 
-The device in question has the following 4-part PCI IDs:
+I'm probably looking at doing a v4 that will drop the vfio userspace
+driver bits for now as it sounds like there are additional issues that
+still need to be addressed.
 
-PF: vendor: 1af4 device: 1041 subvendor: 8086 subdevice: 15fe
-VF: vendor: 1af4 device: 1041 subvendor: 8086 subdevice: 05fe
+Thanks.
 
-The patch currently needs no check for device ID, because the callback
-will never be made for devices that do not assert the capability or
-when run on a platform incapable of SR-IOV.
-
-One reason for this patch is because the hardware requires the
-vendor ID of a VF to be the same as the vendor ID of the PF that
-created it. So it seemed logical to simply have a fully-functioning
-virtio_net PF create the VFs. This patch makes that possible.
-
-Signed-off-by: Mark Rustad <mark.d.rustad@intel.com>
-Signed-off-by: Alexander Duyck <alexander.h.duyck@intel.com>
----
- drivers/virtio/virtio_pci_common.c |    4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/drivers/virtio/virtio_pci_common.c b/drivers/virtio/virtio_pci_common.c
-index 48d4d1cf1cb6..ca1549393255 100644
---- a/drivers/virtio/virtio_pci_common.c
-+++ b/drivers/virtio/virtio_pci_common.c
-@@ -584,6 +584,7 @@ static void virtio_pci_remove(struct pci_dev *pci_dev)
- 	else
- 		virtio_pci_modern_remove(vp_dev);
- 
-+	pci_disable_sriov(pci_dev);
- 	pci_disable_device(pci_dev);
- 	put_device(dev);
- }
-@@ -596,6 +597,9 @@ static void virtio_pci_remove(struct pci_dev *pci_dev)
- #ifdef CONFIG_PM_SLEEP
- 	.driver.pm	= &virtio_pci_pm_ops,
- #endif
-+#ifdef CONFIG_PCI_IOV
-+	.sriov_configure = pci_sriov_configure_unmanaged,
-+#endif
- };
- 
- module_pci_driver(virtio_pci_driver);
-
+- Alex
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
