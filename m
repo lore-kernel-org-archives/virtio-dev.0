@@ -1,12 +1,9 @@
-Return-Path: virtio-return-2981-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-return-2982-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio@lists.oasis-open.org>
 List-Post: <mailto:virtio@lists.oasis-open.org>
 List-Help: <mailto:virtio-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Wed, 7 Mar 2018 21:53:19 +0200
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20180307214210-mutt-send-email-mst@kernel.org>
 References: <1519860484-7936-1-git-send-email-mst@redhat.com>
  <1519860484-7936-15-git-send-email-mst@redhat.com>
  <20180307121158.34829f6b.cohuck@redhat.com>
@@ -14,119 +11,161 @@ References: <1519860484-7936-1-git-send-email-mst@redhat.com>
  <20180307154941.06a27742.cohuck@redhat.com>
  <1ad91690-7096-7826-3fe7-93330bc7d2a5@linux.vnet.ibm.com>
  <20180307171427.3eb8efc6.cohuck@redhat.com>
+ <20180307214210-mutt-send-email-mst@kernel.org>
+From: Halil Pasic <pasic@linux.vnet.ibm.com>
+Date: Thu, 8 Mar 2018 14:03:31 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20180307171427.3eb8efc6.cohuck@redhat.com>
-Subject: Re: [virtio] Re: [PATCH v9 14/16] VIRTIO_F_NOTIFICATION_DATA: extra
- data to devices
-To: Cornelia Huck <cohuck@redhat.com>
-Cc: Halil Pasic <pasic@linux.vnet.ibm.com>, virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, Tiwei Bie <tiwei.bie@intel.com>, Stefan Hajnoczi <stefanha@redhat.com>, "Dhanoa, Kully" <kully.dhanoa@intel.com>
+In-Reply-To: <20180307214210-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+Message-Id: <8f459bb6-6520-46ac-e858-34ae457ac314@linux.vnet.ibm.com>
+Subject: [virtio] Re: [virtio-dev] Re: [virtio] Re: [PATCH v9 14/16]
+ VIRTIO_F_NOTIFICATION_DATA: extra data to devices
+To: "Michael S. Tsirkin" <mst@redhat.com>, Cornelia Huck <cohuck@redhat.com>
+Cc: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, Tiwei Bie <tiwei.bie@intel.com>, Stefan Hajnoczi <stefanha@redhat.com>, "Dhanoa, Kully" <kully.dhanoa@intel.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, Mar 07, 2018 at 05:14:27PM +0100, Cornelia Huck wrote:
-> On Wed, 7 Mar 2018 17:05:24 +0100
-> Halil Pasic <pasic@linux.vnet.ibm.com> wrote:
+
+
+On 03/07/2018 08:53 PM, Michael S. Tsirkin wrote:
+> On Wed, Mar 07, 2018 at 05:14:27PM +0100, Cornelia Huck wrote:
+>> On Wed, 7 Mar 2018 17:05:24 +0100
+>> Halil Pasic <pasic@linux.vnet.ibm.com> wrote:
+>>
+>>> On 03/07/2018 03:49 PM, Cornelia Huck wrote:
+>>>>>>> +When VIRTIO_F_NOTIFICATION_DATA has been negotiated,
+>>>>>>> +the driver notifies the device by writing the following
+>>>>>>> +32-bit value to the Queue Notify address:
+>>>>>>> +\begin{lstlisting}
+>>>>>>> +le32 vqn : 16,
+>>>>>>> +     next_off : 15,
+>>>>>>> +     next_wrap : 1;    
+>>>>>> Don't we want to write this as
+>>>>>>
+>>>>>> le32 vqn : 16;
+>>>>>> le32 next_off :15;
+>>>>>> le32 next_wrap : 1;
+>>>>>>
+>>>>>> ?    
+>>>>> Same thing in C, but would be more confusing IMHO since it will be up to
+>>>>> the reader to figure out which fields comprise the 32 bit integer.  
+>>>> It looked weird to me. Other opinions?
+>>>>   
+>>>
+
+[..]
+
+>>
+>> I'm not sure we should go down the C standard rabbit hole. People have
+>> gotten lost in there.
 > 
-> > On 03/07/2018 03:49 PM, Cornelia Huck wrote:
-> > >>>> +When VIRTIO_F_NOTIFICATION_DATA has been negotiated,
-> > >>>> +the driver notifies the device by writing the following
-> > >>>> +32-bit value to the Queue Notify address:
-> > >>>> +\begin{lstlisting}
-> > >>>> +le32 vqn : 16,
-> > >>>> +     next_off : 15,
-> > >>>> +     next_wrap : 1;    
-> > >>> Don't we want to write this as
-> > >>>
-> > >>> le32 vqn : 16;
-> > >>> le32 next_off :15;
-> > >>> le32 next_wrap : 1;
-> > >>>
-> > >>> ?    
-> > >> Same thing in C, but would be more confusing IMHO since it will be up to
-> > >> the reader to figure out which fields comprise the 32 bit integer.  
-> > > It looked weird to me. Other opinions?
-> > >   
-> > 
-> > Regarding the c11 standard the two are equivalent. Thus it does not
-> > matter to me which notation is used. AFAIK bit-fields are only defined
-> > in the context of structs (and/or unions), so I assumed that. Putting a
-> > struct around it would be much better IMHO.
-> > 
-> > I don't agree with Michael's argument about 'which fields comprise the
-> > 32 bit integer', as IMHO it does not make sense in terms of c11.
-> > 
-> > Consider 
-> > 
-> > struct A {
-> > 	uint32_t a:30, b:1, c:2:, d:8;
-> > };
-> > 
-> > I think, in this particular case the notation ain't very helpful in
-> > figuring out what comprises what. For that reason, if I really need
-> > to choose, I would side with Connie on this one.
-> > 
-> > But there is another, more significant problem IMHO. The guarantees
-> > provided by the C language (c11) regarding the resulting memory layout
-> > are not sufficient to reason about it like Michael's comment and
-> > the bit's of the draft imply. To know the memory layout we need the
-> > ABI specification for the given platform on top of the C standard.
-> > 
-> > So if the bit fields are about in memory layout, I find the stuff
-> > problematic. If however we use bit-fields only to define how arithmetic
-> > works, then we are fine.
+> +1
+> In particular virtio already uses C-like syntax for structure
+> without regard to what the C standard says. It's just pseudo-code,
+> nothing to be hang about.
+
+I'm not the one who started talking abut C (I mean the sentence
+'Same thing in C...'). Sadly I did get confused into thinking this
+is a syntactic construct borrowed form C along with it's semantic.
+
+I've realized my mistake later.
+
+In that light Connie's proposal does not make sense to me, because
+with the semantic we defined in 1.4 Structure Specifications what
+Connie wrote is something completely different: The whole thing gets
+12 byte instead of 4 (assuming that leftovers are permitted and kind
+of reserved for future use -- it ain't really specified if be16 a:16:, b:15;
+is legit nor what it means).
+
 > 
-> I'm not sure we should go down the C standard rabbit hole. People have
-> gotten lost in there.
+>> If the clarification of what we mean by this notation (patch 1 + the
+>> update sent later) is not enough,
+> 
+> Halil, can you pls say whether it's enough?
+> 
 
-+1
-In particular virtio already uses C-like syntax for structure
-without regard to what the C standard says. It's just pseudo-code,
-nothing to be hang about.
+I think the notation is confusing. It looks like C, it compiles
+when put in a struct, but has different semantic. You have a note
+for that in 1.4 Structure Specifications, and that's great, but looking
+at the construct where it's used, it is too easy to jump on the C train.
 
-> If the clarification of what we mean by this notation (patch 1 + the
-> update sent later) is not enough,
+I think I would prefer a notation less similar to C bit-fields
+to avoid confusion.
 
-Halil, can you pls say whether it's enough?
+I think the definition in  '1.4 Structure Specifications' is
+kind of OK but I can't say if it is waterproof or not. One thing is
+sure however: the definition lacks a formal definition of the (phrase) syntax
+and solely relies on the example for that purpose. So without the example,
+there is no definition.
 
-> I'd rather prefer us to add a
-> clarifying sentence/diagram/... there. I was mainly bothered by the
-> change to the definition in this patch...
+Another thing is the semantic of the fields. I guess those are to be
+considered unsigned integers of the specified width with the next in
+significance relationship on the bits preserved.
 
-Here's what we are trying to say (for example):
+>> I'd rather prefer us to add a
+>> clarifying sentence/diagram/... there. I was mainly bothered by the
+>> change to the definition in this patch...
+> 
+> Here's what we are trying to say (for example):
+> 
+> 	+the value A stored in the low 15 bit of a 16 bit
+> 	+integer and the value B stored in the high bit of the 16 bit
+> 	+integer, the integer in turn using the big-endian byte order.
+> 
+> Thus we can write:
+> 
+> be16 A : 15,
+>      B : 1;
+> 
+> which maps to:
+> 
+> be -> big endian
+> 16 -> 16 bit integer
+> 
+> A : 15 - low 15 bits
+> B : 1 - following 1 bit
+> 
+> Why not repeat be16 twice? Well first of all why repeat information
+> twice? Second this notation lets us list many integer fields
+> as we might have in the structure:
+> 
+> be16 A : 15,
+>      B : 1;
+> be16 C;
+> 
 
-	+the value A stored in the low 15 bit of a 16 bit
-	+integer and the value B stored in the high bit of the 16 bit
-	+integer, the integer in turn using the big-endian byte order.
+Yeah, I understood this in a meanwhile.
 
-Thus we can write:
+> And it also ties to the existing notation for full integers.
+> 
+> Any suggestions on how to do it better?
 
-be16 A : 15,
-     B : 1;
+I will have to think about this. Especially if we all agree that
+the current notation is not good enough.
 
-which maps to:
+One stray idea was something like
 
-be -> big endian
-16 -> 16 bit integer
+be32 (A:16;B:15;C:1);
 
-A : 15 - low 15 bits
-B : 1 - following 1 bit
+With 
+* A occupying bits 0-15
+* B occupying bits 16-30
+* C occupying bit 30
 
-Why not repeat be16 twice? Well first of all why repeat information
-twice? Second this notation lets us list many integer fields
-as we might have in the structure:
+And bit n of B (n \in [0..15] being the n-16-th bit of the be32
+subdivided into fields.
 
-be16 A : 15,
-     B : 1;
-be16 C;
+The idea behind () is that it ain't unusual for tuples, and
+also the most common grouping semantic is fitting in a sense
+that all the fields are together the be32. The separation by
+semicolon is to make it obvious that this has nothing to do
+with C and that it's not intended to be implemented with C
+bit-fields.
 
-And it also ties to the existing notation for full integers.
+> Please provide an example based on the above.
+> 
 
-Any suggestions on how to do it better?
-Please provide an example based on the above.
-
--- 
-MST
 
 ---------------------------------------------------------------------
 To unsubscribe from this mail list, you must leave the OASIS TC that 
