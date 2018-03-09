@@ -1,15 +1,15 @@
-Return-Path: virtio-dev-return-3417-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3507-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 45C045818F63
-	for <virtio-dev@lists.oasis-open.org>; Mon,  5 Mar 2018 06:16:42 -0800 (PST)
-Date: Mon, 5 Mar 2018 16:16:28 +0200
+	by lists.oasis-open.org (Postfix) with ESMTP id 437285818F95
+	for <virtio-dev@lists.oasis-open.org>; Fri,  9 Mar 2018 14:53:50 -0800 (PST)
+Date: Sat, 10 Mar 2018 00:53:48 +0200
 From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20180305161419-mutt-send-email-mst@kernel.org>
+Message-ID: <20180310005226-mutt-send-email-mst@kernel.org>
 References: <7849539ddc252748908b3ff62ca6539b6dea73b0.1519303843.git.tgolembi@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
@@ -28,9 +28,10 @@ On Thu, Feb 22, 2018 at 01:50:52PM +0100, Tomáš Golembiovský wrote:
 > 
 > Signed-off-by: Tomáš Golembiovský <tgolembi@redhat.com>
 
-OK when you feel it's ready, pls open an issue in github,
-don't forget to include link to list archives (this email).
-Then send an email so I can start the voting.
+No comments on this so far. When you feel it's ready to vote,
+please open a github issue:
+https://github.com/oasis-tcs/virtio-spec/issues
+Set it as ready to vote and I'll start voting.
 
 > ---
 >  content.tex | 9 +++++++++
