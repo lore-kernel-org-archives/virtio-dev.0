@@ -1,73 +1,67 @@
-Return-Path: virtio-return-3002-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-return-2997-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio@lists.oasis-open.org>
 List-Post: <mailto:virtio@lists.oasis-open.org>
 List-Help: <mailto:virtio-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Fri, 9 Mar 2018 23:23:37 +0200
+Date: Fri, 9 Mar 2018 23:23:38 +0200
 From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <1520629942-36324-12-git-send-email-mst@redhat.com>
+Message-ID: <1520629942-36324-13-git-send-email-mst@redhat.com>
 References: <1520629942-36324-1-git-send-email-mst@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 In-Reply-To: <1520629942-36324-1-git-send-email-mst@redhat.com>
-Subject: [virtio] [PATCH v10 11/13] content: in-order buffer use
+Subject: [virtio] [PATCH v10 12/13] packed-ring: add in order support
 To: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
 Cc: Cornelia Huck <cohuck@redhat.com>, Halil Pasic <pasic@linux.vnet.ibm.com>, Tiwei Bie <tiwei.bie@intel.com>, Stefan Hajnoczi <stefanha@redhat.com>, "Dhanoa, Kully" <kully.dhanoa@intel.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Using descriptors in-order is sometimes beneficial.  Add an option for
-that - per-format detail allowing more optimizations will be added by
-follow-up patches.
+Support in-order requests for packed rings.
+This allows selective write-out of used descriptors.
 
 Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 Reviewed-by: Cornelia Huck <cohuck@redhat.com>
 Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
 ---
- content.tex | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
+ packed-ring.tex | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
 
-diff --git a/content.tex b/content.tex
-index 73f40b7..c57a918 100644
---- a/content.tex
-+++ b/content.tex
-@@ -245,6 +245,15 @@ a device event - i.e. send an interrupt to the driver.
- Device reports the number of bytes it has written to memory for
- each buffer it uses. This is referred to as ``used length''.
+diff --git a/packed-ring.tex b/packed-ring.tex
+index ebdba09..4b3d9d9 100644
+--- a/packed-ring.tex
++++ b/packed-ring.tex
+@@ -272,6 +272,30 @@ Buffer ID is also reserved and is ignored by the device.
+ In Descriptors with VIRTQ_DESC_F_INDIRECT set VIRTQ_DESC_F_WRITE
+ is reserved and is ignored by the device.
  
-+Device is not generally required to use buffers in
-+the same order in which they have been made available
-+by the driver.
++\subsection{In-order use of descriptors}
++\label{sec:Packed Virtqueues / In-order use of descriptors}
 +
 +Some devices always use descriptors in the same order in which
 +they have been made available. These devices can offer the
-+VIRTIO_F_IN_ORDER feature. If negotiated, this knowledge
-+might allow optimizations or simplify driver and/or device code.
++VIRTIO_F_IN_ORDER feature. If negotiated, this knowledge allows
++devices to notify the use of a batch of buffers to the driver by
++only writing out a single used descriptor with the Buffer ID
++corresponding to the last descriptor in the batch.
 +
- Each virtqueue can consist of up to 3 parts:
- \begin{itemize}
- \item Descriptor Area - used for describing buffers
-@@ -5248,6 +5257,9 @@ Descriptors} and \ref{sec:Packed Virtqueues / Indirect Flag: Scatter-Gather Supp
-   \item[VIRTIO_F_RING_PACKED(34)] This feature indicates
-   support for the packed virtqueue layout as described in
-   \ref{sec:Basic Facilities of a Virtio Device / Packed Virtqueues}~\nameref{sec:Basic Facilities of a Virtio Device / Packed Virtqueues}.
-+  \item[VIRTIO_F_IN_ORDER(35)] This feature indicates
-+  that all buffers are used by the device in the same
-+  order in which they have been made available.
- \end{description}
- 
- \drivernormative{\section}{Reserved Feature Bits}{Reserved Feature Bits}
-@@ -5273,6 +5285,9 @@ translates bus addresses from the device into physical addresses in memory.
- A device MAY fail to operate further if VIRTIO_F_IOMMU_PLATFORM is not
- accepted.
- 
-+If VIRTIO_F_IN_ORDER has been negotiated, a device MUST use
-+buffers in the same order in which they have been available.
++Device then skips forward in the ring according to the size of
++the batch. Driver needs to look up the used Buffer ID and
++calculate the batch size to be able to advance to where the next
++used descriptor will be written by the device.
 +
- \section{Legacy Interface: Reserved Feature Bits}\label{sec:Reserved Feature Bits / Legacy Interface: Reserved Feature Bits}
- 
- Transitional devices MAY offer the following:
++This will result in the used descriptor overwriting the first
++available descriptor in the batch, the used descriptor for the
++next batch overwriting the first available descriptor in the next
++batch, etc.
++
++The skipped buffers (for which no used descriptor was written)
++are assumed to have been used (read or written) by the
++device completely.
++
+ \subsection{Multi-buffer requests}
+ \label{sec:Packed Virtqueues / Multi-buffer requests}
+ Some devices combine multiple buffers as part of processing of a
 -- 
 MST
 
