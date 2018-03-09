@@ -1,174 +1,177 @@
-Return-Path: virtio-return-3003-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-return-2991-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio@lists.oasis-open.org>
 List-Post: <mailto:virtio@lists.oasis-open.org>
 List-Help: <mailto:virtio-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Fri, 9 Mar 2018 23:23:32 +0200
+Date: Fri, 9 Mar 2018 23:23:33 +0200
 From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <1520629942-36324-6-git-send-email-mst@redhat.com>
+Message-ID: <1520629942-36324-7-git-send-email-mst@redhat.com>
 References: <1520629942-36324-1-git-send-email-mst@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 In-Reply-To: <1520629942-36324-1-git-send-email-mst@redhat.com>
-Subject: [virtio] [PATCH v10 05/13] content: len -> used length, used ring -> vq
+Subject: [virtio] [PATCH v10 06/13] content: generalize transport ring part naming
 To: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
 Cc: Cornelia Huck <cohuck@redhat.com>, Halil Pasic <pasic@linux.vnet.ibm.com>, Tiwei Bie <tiwei.bie@intel.com>, Stefan Hajnoczi <stefanha@redhat.com>, "Dhanoa, Kully" <kully.dhanoa@intel.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Document buffer used len and use that terminology everywhere in the
-generic section.
+Replace descriptor table/available ring/used ring
+with descriptor area/driver area/device area
+in all transports.
 
-Further, drop the 'used ring' terminology and just say virtqueue.
+Document what's in which area.
 
-Reviewed-by: Cornelia Huck <cohuck@redhat.com>
 Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Reviewed-by: Cornelia Huck <cohuck@redhat.com>
 ---
- content.tex | 39 ++++++++++++++++++++-------------------
- 1 file changed, 20 insertions(+), 19 deletions(-)
+ content.tex    | 61 ++++++++++++++++++++++++++++++++++++++--------------------
+ split-ring.tex |  6 +++---
+ 2 files changed, 43 insertions(+), 24 deletions(-)
 
 diff --git a/content.tex b/content.tex
-index 3b4579e..4350ecf 100644
+index 4350ecf..9fc9673 100644
 --- a/content.tex
 +++ b/content.tex
-@@ -242,7 +242,8 @@ a used buffer to the queue - i.e. lets the driver
- know by marking the buffer as used. Device can then trigger
- a device event - i.e. send an interrupt to the driver.
+@@ -245,6 +245,24 @@ a device event - i.e. send an interrupt to the driver.
+ Device reports the number of bytes it has written to memory for
+ each buffer it uses. This is referred to as ``used length''.
  
--For queue operation detail, see \ref{sec:Basic Facilities of a Virtio Device / Split Virtqueues}~\nameref{sec:Basic Facilities of a Virtio Device / Split Virtqueues}.
-+Device reports the number of bytes it has written to memory for
-+each buffer it uses. This is referred to as ``used length''.
- 
++Each virtqueue can consist of up to 3 parts:
++\begin{itemize}
++\item Descriptor Area - used for describing buffers
++\item Driver Area - extra data supplied by driver to the device
++\item Device Area - extra data supplied by device to driver
++\end{itemize}
++
++\begin{note}
++Note that previous versions of this spec used different names for
++these parts (following \ref{sec:Basic Facilities of a Virtio Device / Split Virtqueues}):
++\begin{itemize}
++\item Descriptor Table - for the Descriptor Area
++\item Available Ring - for the Driver Area
++\item Used Ring - for the Device Area
++\end{itemize}
++
++\end{note}
++
  \input{split-ring.tex}
  
-@@ -1304,7 +1305,7 @@ The driver interrupt handler would typically:
-     \begin{itemize}
-       \item Read the ISR Status field, which will reset it to zero.
-       \item If the lower bit is set:
--        look through the used rings of all virtqueues for the
-+        look through all virtqueues for the
-         device, to see if any progress has been made by the device
-         which requires servicing.
-       \item If the second lower bit is set:
-@@ -1313,8 +1314,7 @@ The driver interrupt handler would typically:
-   \item If MSI-X capability is enabled:
-     \begin{itemize}
-       \item
--        Look through the used rings of
--        all virtqueues mapped to that MSI-X vector for the
-+        Look through all virtqueues mapped to that MSI-X vector for the
-         device, to see if any progress has been made by the device
-         which requires servicing.
-       \item
-@@ -1728,8 +1728,7 @@ nor behaviour:
+ \chapter{General Initialization And Device Operation}\label{sec:General Initialization And Device Operation}
+@@ -667,8 +685,8 @@ struct virtio_pci_common_cfg {
+         le16 queue_enable;              /* read-write */
+         le16 queue_notify_off;          /* read-only for driver */
+         le64 queue_desc;                /* read-write */
+-        le64 queue_avail;               /* read-write */
+-        le64 queue_used;                /* read-write */
++        le64 queue_driver;              /* read-write */
++        le64 queue_device;              /* read-write */
+ };
+ \end{lstlisting}
+ 
+@@ -728,13 +746,13 @@ struct virtio_pci_common_cfg {
+         \end{note}
+ 
+ \item[\field{queue_desc}]
+-        The driver writes the physical address of Descriptor Table here.  See section \ref{sec:Basic Facilities of a Virtio Device / Virtqueues}.
++        The driver writes the physical address of Descriptor Area here.  See section \ref{sec:Basic Facilities of a Virtio Device / Virtqueues}.
+ 
+-\item[\field{queue_avail}]
+-        The driver writes the physical address of Available Ring here.  See section \ref{sec:Basic Facilities of a Virtio Device / Virtqueues}.
++\item[\field{queue_driver}]
++        The driver writes the physical address of Driver Area here.  See section \ref{sec:Basic Facilities of a Virtio Device / Virtqueues}.
+ 
+-\item[\field{queue_used}]
+-        The driver writes the physical address of Used Ring here.  See section \ref{sec:Basic Facilities of a Virtio Device / Virtqueues}.
++\item[\field{queue_device}]
++        The driver writes the physical address of Device Area here.  See section \ref{sec:Basic Facilities of a Virtio Device / Virtqueues}.
+ \end{description}
+ 
+ \devicenormative{\paragraph}{Common configuration structure layout}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Common configuration structure layout}
+@@ -1496,24 +1514,24 @@ All register values are organized as Little Endian.
+     See also p. \ref{sec:Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operation / Device Initialization}~\nameref{sec:Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operation / Device Initialization}.
    }
-   \hline
-   \mmioreg{QueueNum}{Virtual queue size}{0x038}{W}{%
--    Queue size is the number of elements in the queue, therefore size
--    of the descriptor table and both available and used rings.
-+    Queue size is the number of elements in the queue.
-     Writing to this register notifies the device what size of the
-     queue the driver will use. This applies to the queue selected by
-     writing to \field{QueueSel}.
-@@ -2709,7 +2708,7 @@ when VIRTIO_NET_F_MRG_RXBUF was negotiated; without that feature the
- structure was 2 bytes shorter.
+   \hline 
+-  \mmiodreg{QueueDescLow}{QueueDescHigh}{Virtual queue's Descriptor Table 64 bit long physical address}{0x080}{0x084}{W}{%
++  \mmiodreg{QueueDescLow}{QueueDescHigh}{Virtual queue's Descriptor Area 64 bit long physical address}{0x080}{0x084}{W}{%
+     Writing to these two registers (lower 32 bits of the address
+     to \field{QueueDescLow}, higher 32 bits to \field{QueueDescHigh}) notifies
+-    the device about location of the Descriptor Table of the queue
++    the device about location of the Descriptor Area of the queue
+     selected by writing to \field{QueueSel} register.
+   }
+   \hline 
+-  \mmiodreg{QueueAvailLow}{QueueAvailHigh}{Virtual queue's Available Ring 64 bit long physical address}{0x090}{0x094}{W}{%
++  \mmiodreg{QueueDriverLow}{QueueDriverHigh}{Virtual queue's Driver Area 64 bit long physical address}{0x090}{0x094}{W}{%
+     Writing to these two registers (lower 32 bits of the address
+     to \field{QueueAvailLow}, higher 32 bits to \field{QueueAvailHigh}) notifies
+-    the device about location of the Available Ring of the queue
++    the device about location of the Driver Area of the queue
+     selected by writing to \field{QueueSel}.
+   }
+   \hline 
+-  \mmiodreg{QueueUsedLow}{QueueUsedHigh}{Virtual queue's Used Ring 64 bit long physical address}{0x0a0}{0x0a4}{W}{%
++  \mmiodreg{QueueDeviceLow}{QueueDeviceHigh}{Virtual queue's Device Area 64 bit long physical address}{0x0a0}{0x0a4}{W}{%
+     Writing to these two registers (lower 32 bits of the address
+     to \field{QueueUsedLow}, higher 32 bits to \field{QueueUsedHigh}) notifies
+-    the device about location of the Used Ring of the queue
++    the device about location of the Device Area of the queue
+     selected by writing to \field{QueueSel}.
+   }
+   \hline 
+@@ -1631,11 +1649,11 @@ The driver will typically initialize the virtual queue in the following way:
+ \item Notify the device about the queue size by writing the size to
+    \field{QueueNum}.
  
- When using the legacy interface, the driver SHOULD ignore the
--\field{len} value in used ring entries for the transmit queues
-+used length for the transmit queues
- and the controlq queue.
- \begin{note}
- Historically, some devices put
-@@ -2868,8 +2867,8 @@ Often a driver will suppress transmission virtqueue interrupts
- and check for used packets in the transmit path of following
- packets.
+-\item Write physical addresses of the queue's Descriptor Table,
+-   Available Ring and Used Ring to (respectively) the
++\item Write physical addresses of the queue's Descriptor Area,
++   Driver Area and Device Area to (respectively) the
+    \field{QueueDescLow}/\field{QueueDescHigh},
+-   \field{QueueAvailLow}/\field{QueueAvailHigh} and
+-   \field{QueueUsedLow}/\field{QueueUsedHigh} register pairs.
++   \field{QueueDriverLow}/\field{QueueDriverHigh} and
++   \field{QueueDeviceLow}/\field{QueueDeviceHigh} register pairs.
  
--The normal behavior in this interrupt handler is to retrieve and
--new descriptors from the used ring and free the corresponding
-+The normal behavior in this interrupt handler is to retrieve
-+used buffers from the virtqueue and free the corresponding
- headers and packets.
+ \item Write 0x1 to \field{QueueReady}.
+ \end{enumerate}
+@@ -2025,13 +2043,14 @@ struct vq_info_block {
+         be32 res0;
+         be16 index;
+         be16 num;
+-        be64 avail;
+-        be64 used;
++        be64 driver;
++        be64 device;
+ };
+ \end{lstlisting}
  
- \subsubsection{Setting Up Receive Buffers}\label{sec:Device Types / Network Device / Device Operation / Setting Up Receive Buffers}
-@@ -2936,7 +2935,7 @@ Processing incoming packets involves:
-   This allows receipt of large packets without having to allocate large
-   buffers: a packet that does not fit in a single buffer can flow
-   over to the next buffer, and so on. In this case, there will be
--  at least \field{num_buffers} in the used ring, and the device
-+  at least \field{num_buffers} used buffers in the virtqueue, and the device
-   chains them together to form a single packet in a way similar to
-   how it would store it in a single buffer spread over multiple
-   descriptors.
-@@ -2990,8 +2989,8 @@ MUST use all buffers but the last (i.e. the first $num_buffers -
- supplied by the driver.
+-\field{desc}, \field{avail} and \field{used} contain the guest addresses for the descriptor table,
+-available ring and used ring for queue \field{index}, respectively. The actual
++\field{desc}, \field{driver} and \field{device} contain the guest
++addresses for the descriptor area,
++available area and used area for queue \field{index}, respectively. The actual
+ virtqueue size (number of allocated buffers) is transmitted in \field{num}.
  
- The device MUST use all buffers used by a single receive
--packet together, by atomically incrementing \field{idx} in the
--used ring by the \field{num_buffers} value.
-+packet together, such that at least \field{num_buffers} are
-+observed by driver as used.
+ \devicenormative{\paragraph}{Configuring a Virtqueue}{Virtio Transport Options / Virtio over channel I/O / Device Initialization / Configuring a Virtqueue}
+diff --git a/split-ring.tex b/split-ring.tex
+index 404660b..9601a53 100644
+--- a/split-ring.tex
++++ b/split-ring.tex
+@@ -15,9 +15,9 @@ of the queue.
+ Each virtqueue consists of three parts:
  
- If VIRTIO_NET_F_GUEST_CSUM is not negotiated, the device MUST set
- \field{flags} to zero and SHOULD supply a fully checksummed
-@@ -3378,7 +3377,8 @@ The device MUST queue packets only on any receiveq1 before the
- VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET command.
+ \begin{itemize}
+-\item Descriptor Table
+-\item Available Ring
+-\item Used Ring
++\item Descriptor Table - occupies the Descriptor Area
++\item Available Ring - occupies the Driver Area
++\item Used Ring - occupies the Device Area
+ \end{itemize}
  
- The device MUST NOT queue packets on receive queues greater than
--\field{virtqueue_pairs} once it has placed the VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET command in the used ring.
-+\field{virtqueue_pairs} once it has placed the
-+VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET command in a used buffer.
- 
- \subparagraph{Legacy Interface: Automatic receive steering in multiqueue mode}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Automatic receive steering in multiqueue mode / Legacy Interface: Automatic receive steering in multiqueue mode}
- When using the legacy interface, transitional devices and drivers
-@@ -3744,7 +3744,7 @@ according to the native endian of the guest rather than
- (necessarily when not using the legacy interface) little-endian.
- 
- When using the legacy interface, transitional drivers
--SHOULD ignore the \field{len} value in used ring entries.
-+SHOULD ignore the used length values.
- \begin{note}
- Historically, some devices put the total descriptor length,
- or the total length of device-writable buffers there,
-@@ -4081,7 +4081,7 @@ according to the native endian of the guest rather than
- (necessarily when not using the legacy interface) little-endian.
- 
- When using the legacy interface, the driver SHOULD ignore the
--\field{len} value in used ring entries for the transmit queues
-+used length values for the transmit queues
- and the control transmitq.
- \begin{note}
- Historically, some devices put the total descriptor length there,
-@@ -4337,7 +4337,8 @@ and acknowledging the deflate request.
- \paragraph{Legacy Interface: Device Operation}\label{sec:Device
- Types / Memory Balloon Device / Device Operation / Legacy
- Interface: Device Operation}
--When using the legacy interface, the driver SHOULD ignore the \field{len} value in used ring entries.
-+When using the legacy interface, the driver SHOULD ignore the
-+used length values.
- \begin{note}
- Historically, some devices put the total descriptor length there,
- even though no data was actually written.
-@@ -4370,8 +4371,7 @@ and notifies the device. A request for memory statistics proceeds
- as follows:
- 
- \begin{enumerate}
--\item The device pushes the buffer onto the used ring and sends an
--  interrupt.
-+\item The device uses the buffer and sends an interrupt.
- 
- \item The driver pops the used buffer and discards it.
- 
-@@ -4632,7 +4632,8 @@ queue and the event queue.
- \paragraph{Legacy Interface: Device Operation}\label{sec:Device
- Types / SCSI Host Device / Device Operation / Legacy
- Interface: Device Operation}
--When using the legacy interface, the driver SHOULD ignore the \field{len} value in used ring entries.
-+When using the legacy interface, the driver SHOULD ignore the
-+used length values.
- \begin{note}
- Historically, devices put the total descriptor length,
- or the total length of device-writable buffers there,
+ where each part is physically-contiguous in guest memory,
 -- 
 MST
 
