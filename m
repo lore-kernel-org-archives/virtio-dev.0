@@ -1,116 +1,319 @@
-Return-Path: virtio-dev-return-3408-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3522-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 4D7CE5818F23
-	for <virtio-dev@lists.oasis-open.org>; Sun,  4 Mar 2018 10:24:26 -0800 (PST)
-MIME-Version: 1.0
-In-Reply-To: <20180304071329.GA2112@nanopsycho.orion>
+	by lists.oasis-open.org (Postfix) with ESMTP id 594265818081
+	for <virtio-dev@lists.oasis-open.org>; Mon, 12 Mar 2018 13:58:18 -0700 (PDT)
 References: <1519934923-39372-1-git-send-email-sridhar.samudrala@intel.com>
  <1519934923-39372-3-git-send-email-sridhar.samudrala@intel.com>
- <20180302083605.GD2099@nanopsycho> <CAKgT0UeMQ8GkHLrCHQ_OfFw3beqHVM2QvbRt7zoZKf1Vwvbt1A@mail.gmail.com>
- <20180302162017.GG2099@nanopsycho> <20180302214114-mutt-send-email-mst@kernel.org>
- <20180303113120.GA3205@nanopsycho.orion> <CAKgT0UcdJ0D-64N0cKsZtpqyKWsXkoPTdvRPxoCrpU=q1T8UuA@mail.gmail.com>
- <20180303212542.GA10132@nanopsycho.orion> <CAKgT0UeH3JGGEvwwFfjpde=iPwV7s2MEwhKk08ixedCXZHcCFg@mail.gmail.com>
- <20180304071329.GA2112@nanopsycho.orion>
-From: Alexander Duyck <alexander.duyck@gmail.com>
-Date: Sun, 4 Mar 2018 10:24:12 -0800
-Message-ID: <CAKgT0UfHg6OfLzYGSo2vM9PCqpajHW-RAEJ0WQbx6NT8H_AQDg@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Subject: [virtio-dev] Re: [PATCH v4 2/2] virtio_net: Extend virtio to use VF datapath when available
+ <20180312201231.GA17283@nanopsycho>
+From: "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
+Message-ID: <4bfb0f35-cbb4-b9e1-b8b6-9fb723c29140@intel.com>
+Date: Mon, 12 Mar 2018 13:58:06 -0700
+MIME-Version: 1.0
+In-Reply-To: <20180312201231.GA17283@nanopsycho>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+Subject: [virtio-dev] Re: [PATCH v4 2/2] virtio_net: Extend virtio to use VF datapath when
+ available
 To: Jiri Pirko <jiri@resnulli.us>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>, Sridhar Samudrala <sridhar.samudrala@intel.com>, Stephen Hemminger <stephen@networkplumber.org>, David Miller <davem@davemloft.net>, Netdev <netdev@vger.kernel.org>, virtio-dev@lists.oasis-open.org, "Brandeburg, Jesse" <jesse.brandeburg@intel.com>, "Duyck, Alexander H" <alexander.h.duyck@intel.com>, Jakub Kicinski <kubakici@wp.pl>
+Cc: mst@redhat.com, stephen@networkplumber.org, davem@davemloft.net, netdev@vger.kernel.org, virtio-dev@lists.oasis-open.org, jesse.brandeburg@intel.com, alexander.h.duyck@intel.com, kubakici@wp.pl
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Sat, Mar 3, 2018 at 11:13 PM, Jiri Pirko <jiri@resnulli.us> wrote:
-> Sun, Mar 04, 2018 at 01:26:53AM CET, alexander.duyck@gmail.com wrote:
->>On Sat, Mar 3, 2018 at 1:25 PM, Jiri Pirko <jiri@resnulli.us> wrote:
->>> Sat, Mar 03, 2018 at 07:04:57PM CET, alexander.duyck@gmail.com wrote:
->>>>On Sat, Mar 3, 2018 at 3:31 AM, Jiri Pirko <jiri@resnulli.us> wrote:
->>>>> Fri, Mar 02, 2018 at 08:42:47PM CET, mst@redhat.com wrote:
->>>>>>On Fri, Mar 02, 2018 at 05:20:17PM +0100, Jiri Pirko wrote:
->>>>>>> >Yeah, this code essentially calls out the "shareable" code with a
->>>>>>> >comment at the start and end of the section what defines the
->>>>>>> >virtio_bypass functionality. It would just be a matter of mostly
->>>>>>> >cutting and pasting to put it into a separate driver module.
->>>>>>>
->>>>>>> Please put it there and unite the use of it with netvsc.
->>>>>>
->>>>>>Surely, adding this to other drivers (e.g. might this be handy for xen
->>>>>>too?) can be left for a separate patchset. Let's get one device merged
->>>>>>first.
->>>>>
->>>>> Why? Let's do the generic infra alongside with the driver. I see no good
->>>>> reason to rush into merging driver and only later, if ever, to convert
->>>>> it to generic solution. On contrary. That would lead into multiple
->>>>> approaches and different behavious in multiple drivers. That is plain
->>>>> wrong.
->>>>
->>>>If nothing else it doesn't hurt to do this in one driver in a generic
->>>>way, and once it has been proven to address all the needs of that one
->>>>driver we can then start moving other drivers to it. The current
->>>>solution is quite generic, that was my contribution to this patch set
->>>>as I didn't like how invasive it was being to virtio and thought it
->>>>would be best to keep this as minimally invasive as possible.
->>>>
->>>>My preference would be to give this a release or two in virtio to
->>>>mature before we start pushing it onto other drivers. It shouldn't
->>>>take much to cut/paste this into a new driver file once we decide it
->>>>is time to start extending it out to other drivers.
->>>
->>> I'm not talking about cut/paste and in fact that is what I'm worried
->>> about. I'm talking about common code in net/core/ or somewhere that
->>> would take care of this in-driver bonding. Each driver, like virtio_net,
->>> netvsc would just register some ops to it and the core would do all
->>> logic. I believe it is essential take this approach from the start.
+
+
+On 3/12/2018 1:12 PM, Jiri Pirko wrote:
+> Thu, Mar 01, 2018 at 09:08:43PM CET, sridhar.samudrala@intel.com wrote:
+>> This patch enables virtio_net to switch over to a VF datapath when a VF
+>> netdev is present with the same MAC address. It allows live migration
+>> of a VM with a direct attached VF without the need to setup a bond/team
+>> between a VF and virtio net device in the guest.
 >>
->>Sorry, I didn't mean cut/paste into another driver, I meant to make it
->>a driver of its own. My thought was to eventually create a shared/core
->>driver module that is then used by the other drivers.
+>> The hypervisor needs to enable only one datapath at any time so that
+>> packets don't get looped back to the VM over the other datapath. When a VF
+>> is plugged, the virtio datapath link state can be marked as down. The
+>> hypervisor needs to unplug the VF device from the guest on the source host
+>> and reset the MAC filter of the VF to initiate failover of datapath to
+>> virtio before starting the migration. After the migration is completed,
+>> the destination hypervisor sets the MAC filter on the VF and plugs it back
+>> to the guest to switch over to VF datapath.
 >>
->>My concern right now is that Stephen has indicated he doesn't want
->>this approach taken with netvsc, and most of the community doesn't
+>> When BACKUP feature is enabled, an additional netdev(bypass netdev) is
+>> created that acts as a master device and tracks the state of the 2 lower
+>> netdevs. The original virtio_net netdev is marked as 'backup' netdev and a
+>> passthru device with the same MAC is registered as 'active' netdev.
+>>
+>> This patch is based on the discussion initiated by Jesse on this thread.
+>> https://marc.info/?l=linux-virtualization&m=151189725224231&w=2
+>>
+>> Signed-off-by: Sridhar Samudrala <sridhar.samudrala@intel.com>
+>> Signed-off-by: Alexander Duyck <alexander.h.duyck@intel.com>
+>> Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+> [...]
 >
-> IIUC, he only does not like the extra netdev. Is there anything else?
-
-Nope that is pretty much it. It doesn't seem like a big deal for
-virtio, but for netvsc it is significant since they don't have any
-"backup" bit feature differentiation, so they would likely be stuck
-with 2 netdevs even in their basic setup.
-
->>want the netvsc approach applied to virtio. Until that impasse can be
->>resolved there isn't much value in trying to split this up so it is
->>available to other drivers. In addition I would imagine it would make
->>it a pain for others to back-port into distros since it would break
->>legacy netvsc driver behavior. Patches are always welcome. Once this
->>is in you are free to try fighting to get this made into a generic
->>module and applied to both drivers, but we have already spent close to
->>3 months on this and it seems like there has been significantly more
 >
-> Alex, time is never a good argument for poor design and shortcuts.
+>> +static int virtnet_bypass_register_child(struct net_device *child_netdev)
+>> +{
+>> +	struct virtnet_bypass_info *vbi;
+>> +	struct net_device *dev;
+>> +	bool backup;
+>> +	int ret;
+>> +
+>> +	if (child_netdev->addr_len != ETH_ALEN)
+>> +		return NOTIFY_DONE;
+>> +
+>> +	/* We will use the MAC address to locate the virtnet_bypass netdev
+>> +	 * to associate with the child netdev. If we don't find a matching
+>> +	 * bypass netdev, move on.
+>> +	 */
+>> +	dev = get_virtnet_bypass_bymac(dev_net(child_netdev),
+>> +				       child_netdev->perm_addr);
+>> +	if (!dev)
+>> +		return NOTIFY_DONE;
+>> +
+>> +	vbi = netdev_priv(dev);
+>> +	backup = (child_netdev->dev.parent == dev->dev.parent);
+>> +	if (backup ? rtnl_dereference(vbi->backup_netdev) :
+>> +			rtnl_dereference(vbi->active_netdev)) {
+>> +		netdev_info(dev,
+>> +			    "%s attempting to join bypass dev when %s already present\n",
+>> +			    child_netdev->name, backup ? "backup" : "active");
+>> +		return NOTIFY_DONE;
+>> +	}
+>> +
+>> +	/* Avoid non pci devices as active netdev */
+>> +	if (!backup && (!child_netdev->dev.parent ||
+>> +			!dev_is_pci(child_netdev->dev.parent)))
+>> +		return NOTIFY_DONE;
+>> +
+>> +	ret = netdev_rx_handler_register(child_netdev,
+>> +					 virtnet_bypass_handle_frame, dev);
+>> +	if (ret != 0) {
+>> +		netdev_err(child_netdev,
+>> +			   "can not register bypass receive handler (err = %d)\n",
+>> +			   ret);
+>> +		goto rx_handler_failed;
+>> +	}
+>> +
+>> +	ret = netdev_upper_dev_link(child_netdev, dev, NULL);
+>> +	if (ret != 0) {
+>> +		netdev_err(child_netdev,
+>> +			   "can not set master device %s (err = %d)\n",
+>> +			   dev->name, ret);
+>> +		goto upper_link_failed;
+>> +	}
+>> +
+>> +	child_netdev->flags |= IFF_SLAVE;
+>> +
+>> +	if (netif_running(dev)) {
+>> +		ret = dev_open(child_netdev);
+>> +		if (ret && (ret != -EBUSY)) {
+>> +			netdev_err(dev, "Opening child %s failed ret:%d\n",
+>> +				   child_netdev->name, ret);
+>> +			goto err_interface_up;
+>> +		}
+>> +	}
+> Much of this function is copy of netvsc_vf_join, should be shared with
+> netvsc.
 
-I'm not saying we should go with a poor design due to time. But
-expecting us to implement something where the maintainer of said
-driver has not agreed to is pointless, and I don't see it as a design
-shortcut to implement something in one driver with the expectation
-that we will then make it core later once it has proven itself and has
-use elsewhere. In the meantime I would imagine it also makes it easier
-for things like backports and such for us to do it this way since we
-are only impacting one driver.
+Yes. This is based on netvsc_register_vf() and netvsc_vf_join(). But modified
+to handle registration of 2 child netdevs(backup virtio and active vf).  In case
+of netvsc, they only register VF. There is no backup netdev.
+I think trying to make this code shareable with netvsc will introduce additional
+checks and make it convoluted.
 
-You are telling us to do something that not everyone has agreed to.
-Currently we only have agreement from Michael on taking this code, as
-such we are working with virtio only for now. When the time comes that
-we can get other maintainers, specifically Stephen, to agree to it
-then we can cut/paste this code into a core file or into a module of
-its own. Alternatively I suppose we could take this up to Dave if you
-can't get Stephen to agree. If you can get Dave to say we need to
-change netvsc then we will go ahead with it, but generally I prefer to
-respect when the maintainer of something says they don't want us
-modifying their code in some way.
+
+>
+>
+>> +
+>> +	/* Align MTU of child with master */
+>> +	ret = dev_set_mtu(child_netdev, dev->mtu);
+>> +	if (ret) {
+>> +		netdev_err(dev,
+>> +			   "unable to change mtu of %s to %u register failed\n",
+>> +			   child_netdev->name, dev->mtu);
+>> +		goto err_set_mtu;
+>> +	}
+>> +
+>> +	call_netdevice_notifiers(NETDEV_JOIN, child_netdev);
+>> +
+>> +	netdev_info(dev, "registering %s\n", child_netdev->name);
+>> +
+>> +	dev_hold(child_netdev);
+>> +	if (backup) {
+>> +		rcu_assign_pointer(vbi->backup_netdev, child_netdev);
+>> +		dev_get_stats(vbi->backup_netdev, &vbi->backup_stats);
+>> +	} else {
+>> +		rcu_assign_pointer(vbi->active_netdev, child_netdev);
+>> +		dev_get_stats(vbi->active_netdev, &vbi->active_stats);
+>> +		dev->min_mtu = child_netdev->min_mtu;
+>> +		dev->max_mtu = child_netdev->max_mtu;
+>> +	}
+>> +
+>> +	return NOTIFY_OK;
+>> +
+>> +err_set_mtu:
+>> +	dev_close(child_netdev);
+>> +err_interface_up:
+>> +	netdev_upper_dev_unlink(child_netdev, dev);
+>> +	child_netdev->flags &= ~IFF_SLAVE;
+>> +upper_link_failed:
+>> +	netdev_rx_handler_unregister(child_netdev);
+>> +rx_handler_failed:
+>> +	return NOTIFY_DONE;
+>> +}
+>> +
+>> +static int virtnet_bypass_unregister_child(struct net_device *child_netdev)
+>> +{
+>> +	struct virtnet_bypass_info *vbi;
+>> +	struct net_device *dev, *backup;
+>> +
+>> +	dev = get_virtnet_bypass_byref(child_netdev);
+>> +	if (!dev)
+>> +		return NOTIFY_DONE;
+>> +
+>> +	vbi = netdev_priv(dev);
+>> +
+>> +	netdev_info(dev, "unregistering %s\n", child_netdev->name);
+>> +
+>> +	netdev_rx_handler_unregister(child_netdev);
+>> +	netdev_upper_dev_unlink(child_netdev, dev);
+>> +	child_netdev->flags &= ~IFF_SLAVE;
+>> +
+>> +	if (child_netdev->dev.parent == dev->dev.parent) {
+>> +		RCU_INIT_POINTER(vbi->backup_netdev, NULL);
+>> +	} else {
+>> +		RCU_INIT_POINTER(vbi->active_netdev, NULL);
+>> +		backup = rtnl_dereference(vbi->backup_netdev);
+>> +		if (backup) {
+>> +			dev->min_mtu = backup->min_mtu;
+>> +			dev->max_mtu = backup->max_mtu;
+>> +		}
+>> +	}
+>> +
+>> +	dev_put(child_netdev);
+>> +
+>> +	return NOTIFY_OK;
+>> +}
+>> +
+>> +static int virtnet_bypass_update_link(struct net_device *child_netdev)
+>> +{
+>> +	struct net_device *dev, *active, *backup;
+>> +	struct virtnet_bypass_info *vbi;
+>> +
+>> +	dev = get_virtnet_bypass_byref(child_netdev);
+>> +	if (!dev || !netif_running(dev))
+>> +		return NOTIFY_DONE;
+>> +
+>> +	vbi = netdev_priv(dev);
+>> +
+>> +	active = rtnl_dereference(vbi->active_netdev);
+>> +	backup = rtnl_dereference(vbi->backup_netdev);
+>> +
+>> +	if ((active && virtnet_bypass_xmit_ready(active)) ||
+>> +	    (backup && virtnet_bypass_xmit_ready(backup))) {
+>> +		netif_carrier_on(dev);
+>> +		netif_tx_wake_all_queues(dev);
+>> +	} else {
+>> +		netif_carrier_off(dev);
+>> +		netif_tx_stop_all_queues(dev);
+>> +	}
+>> +
+>> +	return NOTIFY_OK;
+>> +}
+>> +
+>> +static int virtnet_bypass_event(struct notifier_block *this,
+>> +				unsigned long event, void *ptr)
+>> +{
+>> +	struct net_device *event_dev = netdev_notifier_info_to_dev(ptr);
+>> +
+>> +	/* Skip our own events */
+>> +	if (event_dev->netdev_ops == &virtnet_bypass_netdev_ops)
+>> +		return NOTIFY_DONE;
+>> +
+>> +	/* Avoid non-Ethernet type devices */
+>> +	if (event_dev->type != ARPHRD_ETHER)
+>> +		return NOTIFY_DONE;
+>> +
+>> +	/* Avoid Vlan dev with same MAC registering as child dev */
+>> +	if (is_vlan_dev(event_dev))
+>> +		return NOTIFY_DONE;
+>> +
+>> +	/* Avoid Bonding master dev with same MAC registering as child dev */
+>> +	if ((event_dev->priv_flags & IFF_BONDING) &&
+>> +	    (event_dev->flags & IFF_MASTER))
+>> +		return NOTIFY_DONE;
+>> +
+>> +	switch (event) {
+>> +	case NETDEV_REGISTER:
+>> +		return virtnet_bypass_register_child(event_dev);
+>> +	case NETDEV_UNREGISTER:
+>> +		return virtnet_bypass_unregister_child(event_dev);
+>> +	case NETDEV_UP:
+>> +	case NETDEV_DOWN:
+>> +	case NETDEV_CHANGE:
+>> +		return virtnet_bypass_update_link(event_dev);
+>> +	default:
+>> +		return NOTIFY_DONE;
+>> +	}
+>> +}
+> For example this function is 1:1 copy of netvsc, even with comments
+> and bugs (like IFF_BODING check).
+>
+> This is also something that should be shared with netvsc.
+
+The problem is with the calls that are made from this function.
+Sharing would have been possible if both virtio and netvsc went with
+same netdev model.
+
+>
+>
+>> +
+>> +static struct notifier_block virtnet_bypass_notifier = {
+>> +	.notifier_call = virtnet_bypass_event,
+>> +};
+>> +
+>> +static int virtnet_bypass_create(struct virtnet_info *vi)
+>> +{
+>> +	struct net_device *backup_netdev = vi->dev;
+>> +	struct device *dev = &vi->vdev->dev;
+>> +	struct net_device *bypass_netdev;
+>> +	int res;
+>> +
+>> +	/* Alloc at least 2 queues, for now we are going with 16 assuming
+>> +	 * that most devices being bonded won't have too many queues.
+>> +	 */
+>> +	bypass_netdev = alloc_etherdev_mq(sizeof(struct virtnet_bypass_info),
+>> +					  16);
+>> +	if (!bypass_netdev) {
+>> +		dev_err(dev, "Unable to allocate bypass_netdev!\n");
+>> +		return -ENOMEM;
+>> +	}
+>> +
+>> +	dev_net_set(bypass_netdev, dev_net(backup_netdev));
+>> +	SET_NETDEV_DEV(bypass_netdev, dev);
+>> +
+>> +	bypass_netdev->netdev_ops = &virtnet_bypass_netdev_ops;
+>> +	bypass_netdev->ethtool_ops = &virtnet_bypass_ethtool_ops;
+>> +
+>> +	/* Initialize the device options */
+>> +	bypass_netdev->flags |= IFF_MASTER;
+>> +	bypass_netdev->priv_flags |= IFF_BONDING | IFF_UNICAST_FLT |
+> No clue why you set IFF_BONDING here...
+
+This is to indicate to the userspace that this is a master bond device.
+May be it is sufficient to just set IFF_MASTER.
+
+>
+>
+>
+>
+>
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
