@@ -1,96 +1,53 @@
-Return-Path: virtio-dev-return-3514-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3519-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id B7042581806F
-	for <virtio-dev@lists.oasis-open.org>; Mon, 12 Mar 2018 10:21:42 -0700 (PDT)
-From: Alexander Duyck <alexander.duyck@gmail.com>
-Date: Mon, 12 Mar 2018 10:21:29 -0700
-Message-ID: <20180312172031.3487.20651.stgit@localhost.localdomain>
-In-Reply-To: <20180312171813.3487.94803.stgit@localhost.localdomain>
-References: <20180312171813.3487.94803.stgit@localhost.localdomain>
+	by lists.oasis-open.org (Postfix) with ESMTP id 5E25D5818081
+	for <virtio-dev@lists.oasis-open.org>; Mon, 12 Mar 2018 11:09:37 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Subject: [virtio-dev] [pci PATCH v5 1/4] pci: Add pci_sriov_configure_simple for PFs that
- don't manage VF resources
-To: bhelgaas@google.com, alexander.h.duyck@intel.com, linux-pci@vger.kernel.org
-Cc: virtio-dev@lists.oasis-open.org, kvm@vger.kernel.org, netdev@vger.kernel.org, dan.daly@intel.com, linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org, keith.busch@intel.com, netanel@amazon.com, mheyne@amazon.de, liang-min.wang@intel.com, mark.d.rustad@intel.com, dwmw2@infradead.org, hch@lst.de, dwmw@amazon.co.uk
+In-Reply-To: <20180312174012.GE18494@localhost.localdomain>
+References: <20180312171813.3487.94803.stgit@localhost.localdomain>
+ <20180312172031.3487.20651.stgit@localhost.localdomain> <20180312174012.GE18494@localhost.localdomain>
+From: Alexander Duyck <alexander.duyck@gmail.com>
+Date: Mon, 12 Mar 2018 11:09:34 -0700
+Message-ID: <CAKgT0UdWc=Sz-xgd4H3bTDt5d17=-PY8VPWz6A3mAciWV6=97w@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: [virtio-dev] Re: [pci PATCH v5 1/4] pci: Add pci_sriov_configure_simple for PFs
+ that don't manage VF resources
+To: Keith Busch <keith.busch@intel.com>
+Cc: Bjorn Helgaas <bhelgaas@google.com>, "Duyck, Alexander H" <alexander.h.duyck@intel.com>, linux-pci@vger.kernel.org, virtio-dev@lists.oasis-open.org, kvm@vger.kernel.org, Netdev <netdev@vger.kernel.org>, "Daly, Dan" <dan.daly@intel.com>, LKML <linux-kernel@vger.kernel.org>, linux-nvme@lists.infradead.org, netanel@amazon.com, Maximilian Heyne <mheyne@amazon.de>, "Wang, Liang-min" <liang-min.wang@intel.com>, "Rustad, Mark D" <mark.d.rustad@intel.com>, David Woodhouse <dwmw2@infradead.org>, Christoph Hellwig <hch@lst.de>, dwmw@amazon.co.uk
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-From: Alexander Duyck <alexander.h.duyck@intel.com>
+On Mon, Mar 12, 2018 at 10:40 AM, Keith Busch <keith.busch@intel.com> wrote:
+> On Mon, Mar 12, 2018 at 10:21:29AM -0700, Alexander Duyck wrote:
+>> diff --git a/include/linux/pci.h b/include/linux/pci.h
+>> index 024a1beda008..9cab9d0d51dc 100644
+>> --- a/include/linux/pci.h
+>> +++ b/include/linux/pci.h
+>> @@ -1953,6 +1953,7 @@ static inline void pci_mmcfg_late_init(void) { }
+>>  int pci_vfs_assigned(struct pci_dev *dev);
+>>  int pci_sriov_set_totalvfs(struct pci_dev *dev, u16 numvfs);
+>>  int pci_sriov_get_totalvfs(struct pci_dev *dev);
+>> +int pci_sriov_configure_simple(struct pci_dev *dev, int nr_virtfn);
+>>  resource_size_t pci_iov_resource_size(struct pci_dev *dev, int resno);
+>>  void pci_vf_drivers_autoprobe(struct pci_dev *dev, bool probe);
+>>  #else
+>
+> I recommend stubbing 'pci_sriov_configure_simple' or defining it to
+> NULL in the '#else' section here so you don't need to repeat the "#ifdef
+> CONFIG_PCI_IOV" in each driver wishing to use this function. Otherwise
+> looks fine to me.
 
-This patch adds a common configuration function called
-pci_sriov_configure_simple that will allow for managing VFs on devices
-where the PF is not capable of managing VF resources.
-
-Signed-off-by: Alexander Duyck <alexander.h.duyck@intel.com>
----
-
-v5: New patch replacing pci_sriov_configure_unmanaged with
-      pci_sriov_configure_simple
-    Dropped bits related to autoprobe changes
-
- drivers/pci/iov.c   |   32 ++++++++++++++++++++++++++++++++
- include/linux/pci.h |    1 +
- 2 files changed, 33 insertions(+)
-
-diff --git a/drivers/pci/iov.c b/drivers/pci/iov.c
-index 677924ae0350..bd7021491fdb 100644
---- a/drivers/pci/iov.c
-+++ b/drivers/pci/iov.c
-@@ -807,3 +807,35 @@ int pci_sriov_get_totalvfs(struct pci_dev *dev)
- 	return dev->sriov->total_VFs;
- }
- EXPORT_SYMBOL_GPL(pci_sriov_get_totalvfs);
-+
-+/**
-+ * pci_sriov_configure_simple - helper to configure unmanaged SR-IOV
-+ * @dev: the PCI device
-+ * @nr_virtfn: number of virtual functions to enable, 0 to disable
-+ *
-+ * Used to provide generic enable/disable SR-IOV option for devices
-+ * that do not manage the VFs generated by their driver
-+ */
-+int pci_sriov_configure_simple(struct pci_dev *dev, int nr_virtfn)
-+{
-+	int err = -EINVAL;
-+
-+	might_sleep();
-+
-+	if (!dev->is_physfn)
-+		return -ENODEV;
-+
-+	if (pci_vfs_assigned(dev)) {
-+		pci_warn(dev,
-+			 "Cannot modify SR-IOV while VFs are assigned\n");
-+		err = -EPERM;
-+	} else if (!nr_virtfn) {
-+		sriov_disable(dev);
-+		err = 0;
-+	} else if (!dev->sriov->num_VFs) {
-+		err = sriov_enable(dev, nr_virtfn);
-+	}
-+
-+	return err ? err : nr_virtfn;
-+}
-+EXPORT_SYMBOL_GPL(pci_sriov_configure_simple);
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 024a1beda008..9cab9d0d51dc 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -1953,6 +1953,7 @@ static inline void pci_mmcfg_late_init(void) { }
- int pci_vfs_assigned(struct pci_dev *dev);
- int pci_sriov_set_totalvfs(struct pci_dev *dev, u16 numvfs);
- int pci_sriov_get_totalvfs(struct pci_dev *dev);
-+int pci_sriov_configure_simple(struct pci_dev *dev, int nr_virtfn);
- resource_size_t pci_iov_resource_size(struct pci_dev *dev, int resno);
- void pci_vf_drivers_autoprobe(struct pci_dev *dev, bool probe);
- #else
-
+My concern with defining it as NULL is that somebody may end up
+calling it in the future directly and that may end up causing issues.
+One thought I have been debating is moving it to a different file. I
+am just not sure where the best place to put something like this would
+be. I could move this function to drivers/pci/pci.c if everyone is
+okay with it and then I could just strip the contents out by wrapping
+them in a #ifdef instead.
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
