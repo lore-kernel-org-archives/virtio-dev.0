@@ -1,162 +1,84 @@
-Return-Path: virtio-dev-return-3535-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3513-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id D42665818F8C
-	for <virtio-dev@lists.oasis-open.org>; Tue, 13 Mar 2018 14:45:24 -0700 (PDT)
-Date: Tue, 13 Mar 2018 23:45:13 +0200
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <1520977432-187679-3-git-send-email-mst@redhat.com>
-References: <1520977432-187679-1-git-send-email-mst@redhat.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id C25F8581806F
+	for <virtio-dev@lists.oasis-open.org>; Mon, 12 Mar 2018 10:20:28 -0700 (PDT)
+From: Alexander Duyck <alexander.duyck@gmail.com>
+Date: Mon, 12 Mar 2018 10:20:23 -0700
+Message-ID: <20180312171813.3487.94803.stgit@localhost.localdomain>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1520977432-187679-1-git-send-email-mst@redhat.com>
-Subject: [virtio-dev] [PULL 02/22] virtio-net: use 64-bit values for feature flags
-To: qemu-devel@nongnu.org
-Cc: Peter Maydell <peter.maydell@linaro.org>, Jason Baron <jbaron@akamai.com>, Jason Wang <jasowang@redhat.com>, virtio-dev@lists.oasis-open.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Subject: [virtio-dev] [pci PATCH v5 0/4] Series short description
+To: bhelgaas@google.com, alexander.h.duyck@intel.com, linux-pci@vger.kernel.org
+Cc: virtio-dev@lists.oasis-open.org, kvm@vger.kernel.org, netdev@vger.kernel.org, dan.daly@intel.com, linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org, keith.busch@intel.com, netanel@amazon.com, mheyne@amazon.de, liang-min.wang@intel.com, mark.d.rustad@intel.com, dwmw2@infradead.org, hch@lst.de, dwmw@amazon.co.uk
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-From: Jason Baron <jbaron@akamai.com>
+This series is meant to add support for SR-IOV on devices when the VFs are
+not managed by the kernel. Examples of recent patches attempting to do this
+include:
+virto - https://patchwork.kernel.org/patch/10241225/
+pci-stub - https://patchwork.kernel.org/patch/10109935/
+vfio - https://patchwork.kernel.org/patch/10103353/
+uio - https://patchwork.kernel.org/patch/9974031/
 
-In prepartion for using some of the high order feature bits, make sure that
-virtio-net uses 64-bit values everywhere.
+Since this is quickly blowing up into a multi-driver problem it is probably
+best to implement this solution as generically as possible.
 
-Signed-off-by: Jason Baron <jbaron@akamai.com>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Jason Wang <jasowang@redhat.com>
-Cc: virtio-dev@lists.oasis-open.org
-Reviewed-by: Michael S. Tsirkin <mst@redhat.com>
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+This series is an attempt to do that. What we do with this patch set is
+provide a generic framework to enable SR-IOV in the case that the PF driver
+doesn't support managing the VFs itself.
+
+I based my patch set originally on the patch by Mark Rustad but there isn't
+much left after going through and cleaning out the bits that were no longer
+needed, and after incorporating the feedback from David Miller. At this point
+the only items to be fully reused was his patch description which is now
+present in patch 3 of the set.
+
+This solution is limited in scope to just adding support for devices that
+provide no functionality for SR-IOV other than allocating the VFs by
+calling pci_enable_sriov. Previous sets had included patches for VFIO, but
+for now I am dropping that as the scope of that work is larger then I
+think I can take on at this time.
+
+v2: Reduced scope back to just virtio_pci and vfio-pci
+    Broke into 3 patch set from single patch
+    Changed autoprobe behavior to always set when num_vfs is set non-zero
+v3: Updated Documentation to clarify when sriov_unmanaged_autoprobe is used
+    Wrapped vfio_pci_sriov_configure to fix build errors w/o SR-IOV in kernel
+v4: Dropped vfio-pci patch
+    Added ena and nvme to drivers now using pci_sriov_configure_unmanaged
+    Dropped pci_disable_sriov call in virtio_pci to be consistent with ena
+v5: Dropped sriov_unmanaged_autoprobe and pci_sriov_conifgure_unmanaged
+    Added new patch that enables pci_sriov_configure_simple
+    Updated drivers to use pci_sriov_configure_simple
+
+Cc: Mark Rustad <mark.d.rustad@intel.com>
+Cc: Maximilian Heyne <mheyne@amazon.de>
+Cc: Liang-Min Wang <liang-min.wang@intel.com>
+Cc: David Woodhouse <dwmw@amazon.co.uk>
+
 ---
- include/hw/virtio/virtio-net.h |  2 +-
- hw/net/virtio-net.c            | 55 +++++++++++++++++++++---------------------
- 2 files changed, 29 insertions(+), 28 deletions(-)
 
-diff --git a/include/hw/virtio/virtio-net.h b/include/hw/virtio/virtio-net.h
-index b81b6a4..e7634c9 100644
---- a/include/hw/virtio/virtio-net.h
-+++ b/include/hw/virtio/virtio-net.h
-@@ -67,7 +67,7 @@ typedef struct VirtIONet {
-     uint32_t has_vnet_hdr;
-     size_t host_hdr_len;
-     size_t guest_hdr_len;
--    uint32_t host_features;
-+    uint64_t host_features;
-     uint8_t has_ufo;
-     uint32_t mergeable_rx_bufs;
-     uint8_t promisc;
-diff --git a/hw/net/virtio-net.c b/hw/net/virtio-net.c
-index 188744e..ab06f93 100644
---- a/hw/net/virtio-net.c
-+++ b/hw/net/virtio-net.c
-@@ -48,18 +48,18 @@
-     (offsetof(container, field) + sizeof(((container *)0)->field))
- 
- typedef struct VirtIOFeature {
--    uint32_t flags;
-+    uint64_t flags;
-     size_t end;
- } VirtIOFeature;
- 
- static VirtIOFeature feature_sizes[] = {
--    {.flags = 1 << VIRTIO_NET_F_MAC,
-+    {.flags = 1ULL << VIRTIO_NET_F_MAC,
-      .end = endof(struct virtio_net_config, mac)},
--    {.flags = 1 << VIRTIO_NET_F_STATUS,
-+    {.flags = 1ULL << VIRTIO_NET_F_STATUS,
-      .end = endof(struct virtio_net_config, status)},
--    {.flags = 1 << VIRTIO_NET_F_MQ,
-+    {.flags = 1ULL << VIRTIO_NET_F_MQ,
-      .end = endof(struct virtio_net_config, max_virtqueue_pairs)},
--    {.flags = 1 << VIRTIO_NET_F_MTU,
-+    {.flags = 1ULL << VIRTIO_NET_F_MTU,
-      .end = endof(struct virtio_net_config, mtu)},
-     {}
- };
-@@ -1938,7 +1938,7 @@ static void virtio_net_device_realize(DeviceState *dev, Error **errp)
-     int i;
- 
-     if (n->net_conf.mtu) {
--        n->host_features |= (0x1 << VIRTIO_NET_F_MTU);
-+        n->host_features |= (1ULL << VIRTIO_NET_F_MTU);
-     }
- 
-     virtio_net_set_config_size(n, n->host_features);
-@@ -2109,45 +2109,46 @@ static const VMStateDescription vmstate_virtio_net = {
- };
- 
- static Property virtio_net_properties[] = {
--    DEFINE_PROP_BIT("csum", VirtIONet, host_features, VIRTIO_NET_F_CSUM, true),
--    DEFINE_PROP_BIT("guest_csum", VirtIONet, host_features,
-+    DEFINE_PROP_BIT64("csum", VirtIONet, host_features,
-+                    VIRTIO_NET_F_CSUM, true),
-+    DEFINE_PROP_BIT64("guest_csum", VirtIONet, host_features,
-                     VIRTIO_NET_F_GUEST_CSUM, true),
--    DEFINE_PROP_BIT("gso", VirtIONet, host_features, VIRTIO_NET_F_GSO, true),
--    DEFINE_PROP_BIT("guest_tso4", VirtIONet, host_features,
-+    DEFINE_PROP_BIT64("gso", VirtIONet, host_features, VIRTIO_NET_F_GSO, true),
-+    DEFINE_PROP_BIT64("guest_tso4", VirtIONet, host_features,
-                     VIRTIO_NET_F_GUEST_TSO4, true),
--    DEFINE_PROP_BIT("guest_tso6", VirtIONet, host_features,
-+    DEFINE_PROP_BIT64("guest_tso6", VirtIONet, host_features,
-                     VIRTIO_NET_F_GUEST_TSO6, true),
--    DEFINE_PROP_BIT("guest_ecn", VirtIONet, host_features,
-+    DEFINE_PROP_BIT64("guest_ecn", VirtIONet, host_features,
-                     VIRTIO_NET_F_GUEST_ECN, true),
--    DEFINE_PROP_BIT("guest_ufo", VirtIONet, host_features,
-+    DEFINE_PROP_BIT64("guest_ufo", VirtIONet, host_features,
-                     VIRTIO_NET_F_GUEST_UFO, true),
--    DEFINE_PROP_BIT("guest_announce", VirtIONet, host_features,
-+    DEFINE_PROP_BIT64("guest_announce", VirtIONet, host_features,
-                     VIRTIO_NET_F_GUEST_ANNOUNCE, true),
--    DEFINE_PROP_BIT("host_tso4", VirtIONet, host_features,
-+    DEFINE_PROP_BIT64("host_tso4", VirtIONet, host_features,
-                     VIRTIO_NET_F_HOST_TSO4, true),
--    DEFINE_PROP_BIT("host_tso6", VirtIONet, host_features,
-+    DEFINE_PROP_BIT64("host_tso6", VirtIONet, host_features,
-                     VIRTIO_NET_F_HOST_TSO6, true),
--    DEFINE_PROP_BIT("host_ecn", VirtIONet, host_features,
-+    DEFINE_PROP_BIT64("host_ecn", VirtIONet, host_features,
-                     VIRTIO_NET_F_HOST_ECN, true),
--    DEFINE_PROP_BIT("host_ufo", VirtIONet, host_features,
-+    DEFINE_PROP_BIT64("host_ufo", VirtIONet, host_features,
-                     VIRTIO_NET_F_HOST_UFO, true),
--    DEFINE_PROP_BIT("mrg_rxbuf", VirtIONet, host_features,
-+    DEFINE_PROP_BIT64("mrg_rxbuf", VirtIONet, host_features,
-                     VIRTIO_NET_F_MRG_RXBUF, true),
--    DEFINE_PROP_BIT("status", VirtIONet, host_features,
-+    DEFINE_PROP_BIT64("status", VirtIONet, host_features,
-                     VIRTIO_NET_F_STATUS, true),
--    DEFINE_PROP_BIT("ctrl_vq", VirtIONet, host_features,
-+    DEFINE_PROP_BIT64("ctrl_vq", VirtIONet, host_features,
-                     VIRTIO_NET_F_CTRL_VQ, true),
--    DEFINE_PROP_BIT("ctrl_rx", VirtIONet, host_features,
-+    DEFINE_PROP_BIT64("ctrl_rx", VirtIONet, host_features,
-                     VIRTIO_NET_F_CTRL_RX, true),
--    DEFINE_PROP_BIT("ctrl_vlan", VirtIONet, host_features,
-+    DEFINE_PROP_BIT64("ctrl_vlan", VirtIONet, host_features,
-                     VIRTIO_NET_F_CTRL_VLAN, true),
--    DEFINE_PROP_BIT("ctrl_rx_extra", VirtIONet, host_features,
-+    DEFINE_PROP_BIT64("ctrl_rx_extra", VirtIONet, host_features,
-                     VIRTIO_NET_F_CTRL_RX_EXTRA, true),
--    DEFINE_PROP_BIT("ctrl_mac_addr", VirtIONet, host_features,
-+    DEFINE_PROP_BIT64("ctrl_mac_addr", VirtIONet, host_features,
-                     VIRTIO_NET_F_CTRL_MAC_ADDR, true),
--    DEFINE_PROP_BIT("ctrl_guest_offloads", VirtIONet, host_features,
-+    DEFINE_PROP_BIT64("ctrl_guest_offloads", VirtIONet, host_features,
-                     VIRTIO_NET_F_CTRL_GUEST_OFFLOADS, true),
--    DEFINE_PROP_BIT("mq", VirtIONet, host_features, VIRTIO_NET_F_MQ, false),
-+    DEFINE_PROP_BIT64("mq", VirtIONet, host_features, VIRTIO_NET_F_MQ, false),
-     DEFINE_NIC_PROPERTIES(VirtIONet, nic_conf),
-     DEFINE_PROP_UINT32("x-txtimer", VirtIONet, net_conf.txtimer,
-                        TX_TIMER_INTERVAL),
--- 
-MST
+Alexander Duyck (4):
+      pci: Add pci_sriov_configure_simple for PFs that don't manage VF resources
+      virtio_pci: Add support for unmanaged SR-IOV on virtio_pci devices
+      ena: Migrate over to unmanaged SR-IOV support
+      nvme: Migrate over to unmanaged SR-IOV support
 
+
+ drivers/net/ethernet/amazon/ena/ena_netdev.c |   30 ++----------------------
+ drivers/nvme/host/pci.c                      |   22 ++----------------
+ drivers/pci/iov.c                            |   32 ++++++++++++++++++++++++++
+ drivers/virtio/virtio_pci_common.c           |    3 ++
+ include/linux/pci.h                          |    1 +
+ 5 files changed, 42 insertions(+), 46 deletions(-)
+
+--
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
