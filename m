@@ -1,81 +1,77 @@
-Return-Path: virtio-dev-return-3517-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3518-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 5CD805818081
-	for <virtio-dev@lists.oasis-open.org>; Mon, 12 Mar 2018 10:23:57 -0700 (PDT)
-From: Alexander Duyck <alexander.duyck@gmail.com>
-Date: Mon, 12 Mar 2018 10:23:43 -0700
-Message-ID: <20180312172337.3487.95817.stgit@localhost.localdomain>
-In-Reply-To: <20180312171813.3487.94803.stgit@localhost.localdomain>
-References: <20180312171813.3487.94803.stgit@localhost.localdomain>
+	by lists.oasis-open.org (Postfix) with ESMTP id 08A905818081
+	for <virtio-dev@lists.oasis-open.org>; Mon, 12 Mar 2018 10:25:55 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Subject: [virtio-dev] [pci PATCH v5 4/4] nvme: Migrate over to unmanaged SR-IOV support
-To: bhelgaas@google.com, alexander.h.duyck@intel.com, linux-pci@vger.kernel.org
-Cc: virtio-dev@lists.oasis-open.org, kvm@vger.kernel.org, netdev@vger.kernel.org, dan.daly@intel.com, linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org, keith.busch@intel.com, netanel@amazon.com, mheyne@amazon.de, liang-min.wang@intel.com, mark.d.rustad@intel.com, dwmw2@infradead.org, hch@lst.de, dwmw@amazon.co.uk
+From: Alexander Duyck <alexander.duyck@gmail.com>
+Date: Mon, 12 Mar 2018 10:25:52 -0700
+Message-ID: <CAKgT0Uc3xzQn5-0xw4y=2SixZpucaevAodM3NLUOn4W06UbQ3Q@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: [virtio-dev] Re: [pci PATCH v5 0/4] Add support for unmanaged SR-IOV (was: Series
+ short description)
+To: Bjorn Helgaas <bhelgaas@google.com>, "Duyck, Alexander H" <alexander.h.duyck@intel.com>, linux-pci@vger.kernel.org
+Cc: virtio-dev@lists.oasis-open.org, kvm@vger.kernel.org, Netdev <netdev@vger.kernel.org>, "Daly, Dan" <dan.daly@intel.com>, LKML <linux-kernel@vger.kernel.org>, linux-nvme@lists.infradead.org, keith.busch@intel.com, netanel@amazon.com, Maximilian Heyne <mheyne@amazon.de>, "Wang, Liang-min" <liang-min.wang@intel.com>, "Rustad, Mark D" <mark.d.rustad@intel.com>, David Woodhouse <dwmw2@infradead.org>, Christoph Hellwig <hch@lst.de>, dwmw@amazon.co.uk
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-From: Alexander Duyck <alexander.h.duyck@intel.com>
+On Mon, Mar 12, 2018 at 10:20 AM, Alexander Duyck
+<alexander.duyck@gmail.com> wrote:
+> This series is meant to add support for SR-IOV on devices when the VFs are
+> not managed by the kernel. Examples of recent patches attempting to do this
+> include:
+> virto - https://patchwork.kernel.org/patch/10241225/
+> pci-stub - https://patchwork.kernel.org/patch/10109935/
+> vfio - https://patchwork.kernel.org/patch/10103353/
+> uio - https://patchwork.kernel.org/patch/9974031/
+>
+> Since this is quickly blowing up into a multi-driver problem it is probably
+> best to implement this solution as generically as possible.
+>
+> This series is an attempt to do that. What we do with this patch set is
+> provide a generic framework to enable SR-IOV in the case that the PF driver
+> doesn't support managing the VFs itself.
+>
+> I based my patch set originally on the patch by Mark Rustad but there isn't
+> much left after going through and cleaning out the bits that were no longer
+> needed, and after incorporating the feedback from David Miller. At this point
+> the only items to be fully reused was his patch description which is now
+> present in patch 3 of the set.
+>
+> This solution is limited in scope to just adding support for devices that
+> provide no functionality for SR-IOV other than allocating the VFs by
+> calling pci_enable_sriov. Previous sets had included patches for VFIO, but
+> for now I am dropping that as the scope of that work is larger then I
+> think I can take on at this time.
+>
+> v2: Reduced scope back to just virtio_pci and vfio-pci
+>     Broke into 3 patch set from single patch
+>     Changed autoprobe behavior to always set when num_vfs is set non-zero
+> v3: Updated Documentation to clarify when sriov_unmanaged_autoprobe is used
+>     Wrapped vfio_pci_sriov_configure to fix build errors w/o SR-IOV in kernel
+> v4: Dropped vfio-pci patch
+>     Added ena and nvme to drivers now using pci_sriov_configure_unmanaged
+>     Dropped pci_disable_sriov call in virtio_pci to be consistent with ena
+> v5: Dropped sriov_unmanaged_autoprobe and pci_sriov_conifgure_unmanaged
+>     Added new patch that enables pci_sriov_configure_simple
+>     Updated drivers to use pci_sriov_configure_simple
+>
+> Cc: Mark Rustad <mark.d.rustad@intel.com>
+> Cc: Maximilian Heyne <mheyne@amazon.de>
+> Cc: Liang-Min Wang <liang-min.wang@intel.com>
+> Cc: David Woodhouse <dwmw@amazon.co.uk>
 
-Instead of implementing our own version of a SR-IOV configuration stub in
-the nvme driver we can just reuse the existing
-pci_sriov_configure_simple function.
+Ugh. Just realized I forgot to post the correct subject line in the cover page.
 
-Signed-off-by: Alexander Duyck <alexander.h.duyck@intel.com>
----
+I needed I can resubmit the series, will just leave it for now in case
+there are any other review comments.
 
-v5: Replaced call to pci_sriov_configure_unmanaged with
-        pci_sriov_configure_simple
+Thanks.
 
- drivers/nvme/host/pci.c |   22 +++-------------------
- 1 file changed, 3 insertions(+), 19 deletions(-)
-
-diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
-index 5933a5c732e8..3b582f9f8cac 100644
---- a/drivers/nvme/host/pci.c
-+++ b/drivers/nvme/host/pci.c
-@@ -2580,24 +2580,6 @@ static void nvme_remove(struct pci_dev *pdev)
- 	nvme_put_ctrl(&dev->ctrl);
- }
- 
--static int nvme_pci_sriov_configure(struct pci_dev *pdev, int numvfs)
--{
--	int ret = 0;
--
--	if (numvfs == 0) {
--		if (pci_vfs_assigned(pdev)) {
--			dev_warn(&pdev->dev,
--				"Cannot disable SR-IOV VFs while assigned\n");
--			return -EPERM;
--		}
--		pci_disable_sriov(pdev);
--		return 0;
--	}
--
--	ret = pci_enable_sriov(pdev, numvfs);
--	return ret ? ret : numvfs;
--}
--
- #ifdef CONFIG_PM_SLEEP
- static int nvme_suspend(struct device *dev)
- {
-@@ -2716,7 +2698,9 @@ static void nvme_error_resume(struct pci_dev *pdev)
- 	.driver		= {
- 		.pm	= &nvme_dev_pm_ops,
- 	},
--	.sriov_configure = nvme_pci_sriov_configure,
-+#ifdef CONFIG_PCI_IOV
-+	.sriov_configure = pci_sriov_configure_simple,
-+#endif
- 	.err_handler	= &nvme_err_handler,
- };
- 
-
+- Alex
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
