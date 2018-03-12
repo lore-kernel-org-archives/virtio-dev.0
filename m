@@ -1,68 +1,58 @@
-Return-Path: virtio-dev-return-3484-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3512-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 054511CB8082
-	for <virtio-dev@lists.oasis-open.org>; Thu,  8 Mar 2018 18:31:20 -0800 (PST)
-From: "Liu, Changpeng" <changpeng.liu@intel.com>
-Date: Fri, 9 Mar 2018 02:31:06 +0000
-Message-ID: <FF7FC980937D6342B9D289F5F3C7C2625B61C7DA@SHSMSX103.ccr.corp.intel.com>
 References: <1520304620-10753-1-git-send-email-changpeng.liu@intel.com>
- <20180307112855.GB16861@stefanha-x1.localdomain>
- <FF7FC980937D6342B9D289F5F3C7C2625B6161B4@SHSMSX103.ccr.corp.intel.com>
- <9b479a6b-2863-e940-19b2-283b925cc3f0@redhat.com>
-In-Reply-To: <9b479a6b-2863-e940-19b2-283b925cc3f0@redhat.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <bc8d88a4-3069-188a-99aa-c1c75a6e13b2@redhat.com>
+From: Paolo Bonzini <pbonzini@redhat.com>
+Message-ID: <f52ee0f7-9eff-e5a0-70de-ece56d9d9b2d@redhat.com>
+Date: Mon, 12 Mar 2018 17:28:50 +0100
 MIME-Version: 1.0
-Subject: RE: [virtio-dev] [PATCH v3] virtio-blk: add discard and write
+In-Reply-To: <bc8d88a4-3069-188a-99aa-c1c75a6e13b2@redhat.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+Subject: [virtio-dev] Re: [virtio-comment] [PATCH v3] virtio-blk: add discard and write
  zeroes features to specification
-To: Paolo Bonzini <pbonzini@redhat.com>, Stefan Hajnoczi <stefanha@redhat.com>
-Cc: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "cavery@redhat.com" <cavery@redhat.com>, "Wodkowski, PawelX" <pawelx.wodkowski@intel.com>, "Harris, James R" <james.r.harris@intel.com>
+To: Laszlo Ersek <lersek@redhat.com>, Changpeng Liu <changpeng.liu@intel.com>
+Cc: virtio-dev@lists.oasis-open.org, virtio-comment@lists.oasis-open.org, cavery@redhat.com, stefanha@redhat.com, pawelx.wodkowski@intel.com, james.r.harris@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogdmlydGlvLWRldkBsaXN0
-cy5vYXNpcy1vcGVuLm9yZyBbbWFpbHRvOnZpcnRpby1kZXZAbGlzdHMub2FzaXMtb3Blbi5vcmdd
-IE9uDQo+IEJlaGFsZiBPZiBQYW9sbyBCb256aW5pDQo+IFNlbnQ6IFRodXJzZGF5LCBNYXJjaCA4
-LCAyMDE4IDk6MDUgUE0NCj4gVG86IExpdSwgQ2hhbmdwZW5nIDxjaGFuZ3BlbmcubGl1QGludGVs
-LmNvbT47IFN0ZWZhbiBIYWpub2N6aQ0KPiA8c3RlZmFuaGFAcmVkaGF0LmNvbT4NCj4gQ2M6IHZp
-cnRpby1kZXZAbGlzdHMub2FzaXMtb3Blbi5vcmc7IHZpcnRpby1jb21tZW50QGxpc3RzLm9hc2lz
-LW9wZW4ub3JnOw0KPiBjYXZlcnlAcmVkaGF0LmNvbTsgV29ka293c2tpLCBQYXdlbFggPHBhd2Vs
-eC53b2Rrb3dza2lAaW50ZWwuY29tPjsgSGFycmlzLA0KPiBKYW1lcyBSIDxqYW1lcy5yLmhhcnJp
-c0BpbnRlbC5jb20+DQo+IFN1YmplY3Q6IFJlOiBbdmlydGlvLWRldl0gW1BBVENIIHYzXSB2aXJ0
-aW8tYmxrOiBhZGQgZGlzY2FyZCBhbmQgd3JpdGUgemVyb2VzIGZlYXR1cmVzDQo+IHRvIHNwZWNp
-ZmljYXRpb24NCj4gDQo+IE9uIDA4LzAzLzIwMTggMDI6MDEsIExpdSwgQ2hhbmdwZW5nIHdyb3Rl
-Og0KPiA+DQo+ID4NCj4gPj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gPj4gRnJvbTog
-dmlydGlvLWRldkBsaXN0cy5vYXNpcy1vcGVuLm9yZyBbbWFpbHRvOnZpcnRpby1kZXZAbGlzdHMu
-b2FzaXMtb3Blbi5vcmddDQo+IE9uDQo+ID4+IEJlaGFsZiBPZiBTdGVmYW4gSGFqbm9jemkNCj4g
-Pj4gU2VudDogV2VkbmVzZGF5LCBNYXJjaCA3LCAyMDE4IDc6MjkgUE0NCj4gPj4gVG86IExpdSwg
-Q2hhbmdwZW5nIDxjaGFuZ3BlbmcubGl1QGludGVsLmNvbT4NCj4gPj4gQ2M6IHZpcnRpby1kZXZA
-bGlzdHMub2FzaXMtb3Blbi5vcmc7IHZpcnRpby1jb21tZW50QGxpc3RzLm9hc2lzLW9wZW4ub3Jn
-Ow0KPiA+PiBjYXZlcnlAcmVkaGF0LmNvbTsgcGJvbnppbmlAcmVkaGF0LmNvbTsgV29ka293c2tp
-LCBQYXdlbFgNCj4gPj4gPHBhd2VseC53b2Rrb3dza2lAaW50ZWwuY29tPjsgSGFycmlzLCBKYW1l
-cyBSIDxqYW1lcy5yLmhhcnJpc0BpbnRlbC5jb20+DQo+ID4+IFN1YmplY3Q6IFJlOiBbdmlydGlv
-LWRldl0gW1BBVENIIHYzXSB2aXJ0aW8tYmxrOiBhZGQgZGlzY2FyZCBhbmQgd3JpdGUgemVyb2Vz
-DQo+ID4+IGZlYXR1cmVzIHRvIHNwZWNpZmljYXRpb24NCj4gPj4NCj4gPj4gT24gVHVlLCBNYXIg
-MDYsIDIwMTggYXQgMTA6NTA6MjBBTSArMDgwMCwgQ2hhbmdwZW5nIExpdSB3cm90ZToNCj4gPj4+
-ICtUaGUgXGZpZWxke2RhdGF9IHVzZWQgZm9yIGRpc2NhcmQgb3Igd3JpdGUgemVyb2VzIGNvbW1h
-bmQgaXMgZGVzY3JpYmVkDQo+ID4+PiArYnkgb25lIG9yIG1vcmUgdmlydGlvX2Jsa19kaXNjYXJk
-X3dyaXRlX3plcm9lcyBzdHJ1Y3RzLiBcZmllbGR7c2VjdG9yfQ0KPiA+Pj4gK2luZGljYXRlcyB0
-aGUgc3RhcnRpbmcgb2Zmc2V0IChtdWx0aXBsaWVkIGJ5IDUxMikgb2YgdGhlIHNlZ21lbnQsIHdo
-aWxlDQo+ID4+DQo+ID4+IERpZCB5b3UgbWVhbiAiZGl2aWRlZCBieSA1MTIgYnl0ZXMiIGluc3Rl
-YWQgb2YgIm11bHRpcGxpZWQgYnkgNTEyIj8NCj4gPiBJIHNhdyB0aGUgb3JpZ2luYWwgZXhwcmVz
-c2lvbiBmb3IgYHNlY3RvcmAgZmllbGQgdXNlZCAibXVsdGlwbGllZCBieSA1MTIiLCBzbyBoZXJl
-DQo+IGp1c3QNCj4gPiBmb2xsb3cgaXQsIHNob3VsZCBoZXJlIHVzZSAiZXhwcmVzc2VkIGJ5IDUx
-Mi1ieXRlIiwgbWF5YmUgdGhpcyBsb29rcyBtb3JlIGNsZWFyDQo+IHRvDQo+ID4gcmVhZGVycy4N
-Cj4gDQo+IEFjdHVhbGx5IHRoZSBleGlzdGluZyBkZXNjcmlwdGlvbiBvZiB0aGUgInNlY3RvciIg
-ZmllbGQgaXMgd3JvbmcgdG9vLg0KPiAiaW4gNTEyLWJ5dGUgdW5pdHMiIGlzIHByb2JhYmx5IHRo
-ZSBiZXN0IHdheSB0byBleHByZXNzIGl0Lg0KT2theSwgSSB3aWxsIGNoYW5nZSB0aGUgZXhwcmVz
-c2lvbi4NCj4gDQo+IFBhb2xvDQo+IA0KPiAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0NCj4gVG8gdW5zdWJzY3JpYmUs
-IGUtbWFpbDogdmlydGlvLWRldi11bnN1YnNjcmliZUBsaXN0cy5vYXNpcy1vcGVuLm9yZw0KPiBG
-b3IgYWRkaXRpb25hbCBjb21tYW5kcywgZS1tYWlsOiB2aXJ0aW8tZGV2LWhlbHBAbGlzdHMub2Fz
-aXMtb3Blbi5vcmcNCg0K
+On 12/03/2018 17:19, Laszlo Ersek wrote:
+> virtio-scsi already supports discard and write zeroes, and virtio-scsi
+> can be backed by SSDs. Can you please describe the use case in the
+> commit message (in a few words) that needs discard / write zeroes but is
+> ill-served by virtio-scsi?
+> 
+> I believe the spec (and implementations) should be conservative about
+> feature duplication unless there's a good reason for it. I don't doubt
+> you have a good reason; can you please name it in the commit message?
+> I'm not questioning your motives, I'd just like to see them documented
+> in the commit log.
+
+Hi Laszlo, the basic reason is that virtio-scsi is slower than
+virtio-blk. :)
+
+Indeed DISCARD/WRITE ZEROES was a reason to use virtio-scsi instead of
+virtio-blk back when it was created, but at the time DISCARD was
+considered a thin provisioning feature; that is, the idea was that
+guests could cooperate with the host to save host disk space and to
+speed up maintenance operation such as live disk migration.
+
+Nowadays, DISCARD has evolved into a basic disk maintenance operation
+and IMO it fits within the scope of virtio-blk, as the backend of choice
+for high performance I/O devices.  (Though I wouldn't be surprised
+however if, in a few years, virtio-blk has become obsolete and we'll
+just use NVMe.  Recent versions of the NVMe spec have taken some
+inspiration from Xen and virtio ring buffers, and perform great as
+virtual devices; this is a similar "convergence" to what's happening in
+virtio for the new packed ring format, just in the opposite direction).
+
+Paolo
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
