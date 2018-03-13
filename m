@@ -1,138 +1,93 @@
-Return-Path: virtio-dev-return-3550-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3528-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 982DA5818F8C
-	for <virtio-dev@lists.oasis-open.org>; Wed, 14 Mar 2018 07:45:41 -0700 (PDT)
-Date: Wed, 14 Mar 2018 16:45:25 +0200
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20180314164312-mutt-send-email-mst@kernel.org>
-References: <1520426065-40265-1-git-send-email-wei.w.wang@intel.com>
- <1520426065-40265-5-git-send-email-wei.w.wang@intel.com>
- <20180313183050-mutt-send-email-mst@kernel.org>
- <5AA88BE0.3020004@intel.com>
- <20180314044737-mutt-send-email-mst@kernel.org>
- <5AA8C644.1020308@intel.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id CF2745818F67
+	for <virtio-dev@lists.oasis-open.org>; Tue, 13 Mar 2018 14:28:00 -0700 (PDT)
+From: Alexander Duyck <alexander.duyck@gmail.com>
+Date: Tue, 13 Mar 2018 14:27:48 -0700
+Message-ID: <20180313212508.3553.65326.stgit@localhost.localdomain>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5AA8C644.1020308@intel.com>
-Subject: [virtio-dev] Re: [PATCH v4 4/4] migration: use the free page hint feature from
- balloon
-To: Wei Wang <wei.w.wang@intel.com>
-Cc: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, quintela@redhat.com, dgilbert@redhat.com, pbonzini@redhat.com, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu0@gmail.com, nilal@redhat.com, riel@redhat.com
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Subject: [virtio-dev] [pci PATCH v6 0/5] Add support for unmanaged SR-IOV
+To: bhelgaas@google.com, alexander.h.duyck@intel.com, linux-pci@vger.kernel.org
+Cc: virtio-dev@lists.oasis-open.org, kvm@vger.kernel.org, netdev@vger.kernel.org, dan.daly@intel.com, linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org, keith.busch@intel.com, netanel@amazon.com, ddutile@redhat.com, mheyne@amazon.de, liang-min.wang@intel.com, mark.d.rustad@intel.com, dwmw2@infradead.org, hch@lst.de, dwmw@amazon.co.uk
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, Mar 14, 2018 at 02:50:44PM +0800, Wei Wang wrote:
-> On 03/14/2018 10:51 AM, Michael S. Tsirkin wrote:
-> > On Wed, Mar 14, 2018 at 10:41:36AM +0800, Wei Wang wrote:
-> > > On 03/14/2018 12:35 AM, Michael S. Tsirkin wrote:
-> > > > On Wed, Mar 07, 2018 at 08:34:25PM +0800, Wei Wang wrote:
-> > > > > Start the free page optimization after the migration bitmap is
-> > > > > synchronized. This can't be used in the stop&copy phase since the guest
-> > > > > is paused. Make sure the guest reporting has stopped before
-> > > > > synchronizing the migration dirty bitmap. Currently, the optimization is
-> > > > > added to precopy only.
-> > > > > 
-> > > > > Signed-off-by: Wei Wang <wei.w.wang@intel.com>
-> > > > > CC: Dr. David Alan Gilbert <dgilbert@redhat.com>
-> > > > > CC: Juan Quintela <quintela@redhat.com>
-> > > > > CC: Michael S. Tsirkin <mst@redhat.com>
-> > > > > ---
-> > > > >    migration/ram.c | 19 ++++++++++++++++++-
-> > > > >    1 file changed, 18 insertions(+), 1 deletion(-)
-> > > > > 
-> > > > > diff --git a/migration/ram.c b/migration/ram.c
-> > > > > index e172798..7b4c9b1 100644
-> > > > > --- a/migration/ram.c
-> > > > > +++ b/migration/ram.c
-> > > > > @@ -51,6 +51,8 @@
-> > > > >    #include "qemu/rcu_queue.h"
-> > > > >    #include "migration/colo.h"
-> > > > >    #include "migration/block.h"
-> > > > > +#include "sysemu/balloon.h"
-> > > > > +#include "sysemu/sysemu.h"
-> > > > >    /***********************************************************/
-> > > > >    /* ram save/restore */
-> > > > > @@ -208,6 +210,8 @@ struct RAMState {
-> > > > >        uint32_t last_version;
-> > > > >        /* We are in the first round */
-> > > > >        bool ram_bulk_stage;
-> > > > > +    /* The free pages optimization feature is supported */
-> > > > > +    bool free_page_support;
-> > > > >        /* How many times we have dirty too many pages */
-> > > > >        int dirty_rate_high_cnt;
-> > > > >        /* these variables are used for bitmap sync */
-> > > > > @@ -775,7 +779,7 @@ unsigned long migration_bitmap_find_dirty(RAMState *rs, RAMBlock *rb,
-> > > > >        unsigned long *bitmap = rb->bmap;
-> > > > >        unsigned long next;
-> > > > > -    if (rs->ram_bulk_stage && start > 0) {
-> > > > > +    if (rs->ram_bulk_stage && start > 0 && !rs->free_page_support) {
-> > > > >            next = start + 1;
-> > > > >        } else {
-> > > > >            next = find_next_bit(bitmap, size, start);
-> > > > > @@ -833,6 +837,10 @@ static void migration_bitmap_sync(RAMState *rs)
-> > > > >        int64_t end_time;
-> > > > >        uint64_t bytes_xfer_now;
-> > > > > +    if (rs->free_page_support) {
-> > > > > +        balloon_free_page_stop();
-> > > > > +    }
-> > > > > +
-> > > > >        ram_counters.dirty_sync_count++;
-> > > > >        if (!rs->time_last_bitmap_sync) {
-> > > > > @@ -899,6 +907,10 @@ static void migration_bitmap_sync(RAMState *rs)
-> > > > >        if (migrate_use_events()) {
-> > > > >            qapi_event_send_migration_pass(ram_counters.dirty_sync_count, NULL);
-> > > > >        }
-> > > > > +
-> > > > > +    if (rs->free_page_support && runstate_is_running()) {
-> > > > > +        balloon_free_page_start();
-> > > > > +    }
-> > > > >    }
-> > > > I think some of these conditions should go into
-> > > > balloon_free_page_start/stop.
-> > > > 
-> > > > Checking runstate is generally problematic unless you
-> > > > also handle run state change notifiers as it can
-> > > > be manipulated from QMP.
-> > > How about moving the check of runstate to
-> > > virtio_balloon_poll_free_page_hints:
-> > > 
-> > > while (dev->free_page_report_status < FREE_PAGE_REPORT_S_STOP &&
-> > > runstate_is_running()) {
-> > > ...
-> > > }
-> > Hard to tell on the outset. E.g. why is just stop affected?  Pls add
-> > comments explaining what happens if VM is not running when start or stop
-> > is called.
-> > 
-> > 
-> > > In this case, I think we won't need a notifier - if the run state is changed
-> > > by qmp, the optimization thread will just exist.
-> > But you need to wake it up and notify the guest presumably?
-> > 
-> 
-> 
-> I think it's not necessary to wake it up, because when the VM is not
-> running, there will be no hints reported to the vq, and the optimization
-> thread exits. (there is no issue in that case)
-> Probably we can add a notifier which calls virtio_balloon_free_page_stop()
-> when qmp wakes up the VM.
-> 
-> Best,
-> Wei
+This series is meant to add support for SR-IOV on devices when the VFs are
+not managed by the kernel. Examples of recent patches attempting to do this
+include:
+virto - https://patchwork.kernel.org/patch/10241225/
+pci-stub - https://patchwork.kernel.org/patch/10109935/
+vfio - https://patchwork.kernel.org/patch/10103353/
+uio - https://patchwork.kernel.org/patch/9974031/
 
-set_status callback is invoked so you can use that maybe.
+Since this is quickly blowing up into a multi-driver problem it is probably
+best to implement this solution as generically as possible.
 
-Might be a good idea to handle a bunch of other corner
-cases e.g. if guest driver is loaded when migration
-is already in progress.
+This series is an attempt to do that. What we do with this patch set is
+provide a generic framework to enable SR-IOV in the case that the PF driver
+doesn't support managing the VFs itself.
 
--- 
-MST
+I based my patch set originally on the patch by Mark Rustad but there isn't
+much left after going through and cleaning out the bits that were no longer
+needed, and after incorporating the feedback from David Miller. At this point
+the only items to be fully reused was his patch description which is now
+present in patch 3 of the set.
+
+This solution is limited in scope to just adding support for devices that
+provide no functionality for SR-IOV other than allocating the VFs by
+calling pci_enable_sriov. Previous sets had included patches for VFIO, but
+for now I am dropping that as the scope of that work is larger then I
+think I can take on at this time.
+
+v2: Reduced scope back to just virtio_pci and vfio-pci
+    Broke into 3 patch set from single patch
+    Changed autoprobe behavior to always set when num_vfs is set non-zero
+v3: Updated Documentation to clarify when sriov_unmanaged_autoprobe is used
+    Wrapped vfio_pci_sriov_configure to fix build errors w/o SR-IOV in kernel
+v4: Dropped vfio-pci patch
+    Added ena and nvme to drivers now using pci_sriov_configure_unmanaged
+    Dropped pci_disable_sriov call in virtio_pci to be consistent with ena
+v5: Dropped sriov_unmanaged_autoprobe and pci_sriov_conifgure_unmanaged
+    Added new patch that enables pci_sriov_configure_simple
+    Updated drivers to use pci_sriov_configure_simple
+v6: Defined pci_sriov_configure_simple as NULL when SR-IOV is not enabled
+    Updated drivers to drop "#ifdef" checks for IOV
+    Added pci-pf-stub as place for PF-only drivers to add support
+
+Cc: Mark Rustad <mark.d.rustad@intel.com>
+Cc: Maximilian Heyne <mheyne@amazon.de>
+Cc: Liang-Min Wang <liang-min.wang@intel.com>
+Cc: David Woodhouse <dwmw@amazon.co.uk>
+
+---
+
+Alexander Duyck (5):
+      pci: Add pci_sriov_configure_simple for PFs that don't manage VF resources
+      virtio_pci: Add support for unmanaged SR-IOV on virtio_pci devices
+      ena: Migrate over to unmanaged SR-IOV support
+      nvme: Migrate over to unmanaged SR-IOV support
+      pci-pf-stub: Add PF driver stub for PFs that function only to enable VFs
+
+
+ drivers/net/ethernet/amazon/ena/ena_netdev.c |   28 ------------
+ drivers/nvme/host/pci.c                      |   20 ---------
+ drivers/pci/Kconfig                          |   12 +++++
+ drivers/pci/Makefile                         |    2 +
+ drivers/pci/iov.c                            |   32 ++++++++++++++
+ drivers/pci/pci-pf-stub.c                    |   60 ++++++++++++++++++++++++++
+ drivers/virtio/virtio_pci_common.c           |    1 
+ include/linux/pci.h                          |    3 +
+ include/linux/pci_ids.h                      |    2 +
+ 9 files changed, 114 insertions(+), 46 deletions(-)
+ create mode 100644 drivers/pci/pci-pf-stub.c
+
+--
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
