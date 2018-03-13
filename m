@@ -1,21 +1,21 @@
-Return-Path: virtio-dev-return-3531-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3532-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 0E8935818F1F
-	for <virtio-dev@lists.oasis-open.org>; Tue, 13 Mar 2018 14:30:31 -0700 (PDT)
+	by lists.oasis-open.org (Postfix) with ESMTP id 5070D5818F76
+	for <virtio-dev@lists.oasis-open.org>; Tue, 13 Mar 2018 14:30:50 -0700 (PDT)
 From: Alexander Duyck <alexander.duyck@gmail.com>
-Date: Tue, 13 Mar 2018 14:30:28 -0700
-Message-ID: <20180313212955.3553.16026.stgit@localhost.localdomain>
+Date: Tue, 13 Mar 2018 14:30:47 -0700
+Message-ID: <20180313213034.3553.47677.stgit@localhost.localdomain>
 In-Reply-To: <20180313212508.3553.65326.stgit@localhost.localdomain>
 References: <20180313212508.3553.65326.stgit@localhost.localdomain>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Subject: [virtio-dev] [pci PATCH v6 3/5] ena: Migrate over to unmanaged SR-IOV support
+Subject: [virtio-dev] [pci PATCH v6 4/5] nvme: Migrate over to unmanaged SR-IOV support
 To: bhelgaas@google.com, alexander.h.duyck@intel.com, linux-pci@vger.kernel.org
 Cc: virtio-dev@lists.oasis-open.org, kvm@vger.kernel.org, netdev@vger.kernel.org, dan.daly@intel.com, linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org, keith.busch@intel.com, netanel@amazon.com, ddutile@redhat.com, mheyne@amazon.de, liang-min.wang@intel.com, mark.d.rustad@intel.com, dwmw2@infradead.org, hch@lst.de, dwmw@amazon.co.uk
 List-ID: <virtio-dev.lists.oasis-open.org>
@@ -23,7 +23,7 @@ List-ID: <virtio-dev.lists.oasis-open.org>
 From: Alexander Duyck <alexander.h.duyck@intel.com>
 
 Instead of implementing our own version of a SR-IOV configuration stub in
-the ena driver we can just reuse the existing
+the nvme driver we can just reuse the existing
 pci_sriov_configure_simple function.
 
 Signed-off-by: Alexander Duyck <alexander.h.duyck@intel.com>
@@ -33,55 +33,47 @@ v5: Replaced call to pci_sriov_configure_unmanaged with
         pci_sriov_configure_simple
 v6: Dropped "#ifdef" checks for IOV wrapping sriov_configure definition
 
- drivers/net/ethernet/amazon/ena/ena_netdev.c |   28 +-------------------------
- 1 file changed, 1 insertion(+), 27 deletions(-)
+ drivers/nvme/host/pci.c |   20 +-------------------
+ 1 file changed, 1 insertion(+), 19 deletions(-)
 
-diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-index 6975150d144e..6054deb1e6aa 100644
---- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-@@ -3385,32 +3385,6 @@ static int ena_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
+index 5933a5c732e8..5e963058882a 100644
+--- a/drivers/nvme/host/pci.c
++++ b/drivers/nvme/host/pci.c
+@@ -2580,24 +2580,6 @@ static void nvme_remove(struct pci_dev *pdev)
+ 	nvme_put_ctrl(&dev->ctrl);
  }
  
- /*****************************************************************************/
--static int ena_sriov_configure(struct pci_dev *dev, int numvfs)
+-static int nvme_pci_sriov_configure(struct pci_dev *pdev, int numvfs)
 -{
--	int rc;
--
--	if (numvfs > 0) {
--		rc = pci_enable_sriov(dev, numvfs);
--		if (rc != 0) {
--			dev_err(&dev->dev,
--				"pci_enable_sriov failed to enable: %d vfs with the error: %d\n",
--				numvfs, rc);
--			return rc;
--		}
--
--		return numvfs;
--	}
+-	int ret = 0;
 -
 -	if (numvfs == 0) {
--		pci_disable_sriov(dev);
+-		if (pci_vfs_assigned(pdev)) {
+-			dev_warn(&pdev->dev,
+-				"Cannot disable SR-IOV VFs while assigned\n");
+-			return -EPERM;
+-		}
+-		pci_disable_sriov(pdev);
 -		return 0;
 -	}
 -
--	return -EINVAL;
+-	ret = pci_enable_sriov(pdev, numvfs);
+-	return ret ? ret : numvfs;
 -}
 -
--/*****************************************************************************/
--/*****************************************************************************/
- 
- /* ena_remove - Device Removal Routine
-  * @pdev: PCI device information struct
-@@ -3525,7 +3499,7 @@ static int ena_resume(struct pci_dev *pdev)
- 	.suspend    = ena_suspend,
- 	.resume     = ena_resume,
- #endif
--	.sriov_configure = ena_sriov_configure,
+ #ifdef CONFIG_PM_SLEEP
+ static int nvme_suspend(struct device *dev)
+ {
+@@ -2716,7 +2698,7 @@ static void nvme_error_resume(struct pci_dev *pdev)
+ 	.driver		= {
+ 		.pm	= &nvme_dev_pm_ops,
+ 	},
+-	.sriov_configure = nvme_pci_sriov_configure,
 +	.sriov_configure = pci_sriov_configure_simple,
+ 	.err_handler	= &nvme_err_handler,
  };
  
- static int __init ena_init(void)
 
 
 ---------------------------------------------------------------------
