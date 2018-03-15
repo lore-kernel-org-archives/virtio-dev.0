@@ -1,86 +1,77 @@
-Return-Path: virtio-dev-return-3667-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3575-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id B0E6F1CB80EE
-	for <virtio-dev@lists.oasis-open.org>; Wed, 28 Mar 2018 14:30:33 -0700 (PDT)
-From: "Rustad, Mark D" <mark.d.rustad@intel.com>
-Date: Wed, 28 Mar 2018 21:30:29 +0000
-Message-ID: <C573B44F-097F-45D2-AB4C-B8BCCBCC2C4F@intel.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id C441D581819D
+	for <virtio-dev@lists.oasis-open.org>; Thu, 15 Mar 2018 11:42:54 -0700 (PDT)
+From: Alexander Duyck <alexander.duyck@gmail.com>
+Date: Thu, 15 Mar 2018 11:42:41 -0700
+Message-ID: <20180315184132.3102.90947.stgit@localhost.localdomain>
+In-Reply-To: <20180315183449.3102.64791.stgit@localhost.localdomain>
 References: <20180315183449.3102.64791.stgit@localhost.localdomain>
- <20180315184055.3102.2435.stgit@localhost.localdomain>
-In-Reply-To: <20180315184055.3102.2435.stgit@localhost.localdomain>
-Content-Language: en-US
-Content-Type: multipart/signed;
-	boundary="Apple-Mail=_BBED0712-6906-4470-94B1-31A72AA8A265";
-	protocol="application/pgp-signature"; micalg=pgp-sha256
 MIME-Version: 1.0
-Subject: Re: [virtio-dev] [pci PATCH v7 1/5] pci: Add
- pci_sriov_configure_simple for PFs that don't manage VF resources
-To: Alexander Duyck <alexander.duyck@gmail.com>
-Cc: "bhelgaas@google.com" <bhelgaas@google.com>, "Duyck, Alexander H" <alexander.h.duyck@intel.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, Netdev <netdev@vger.kernel.org>, "Daly, Dan" <dan.daly@intel.com>, LKML <linux-kernel@vger.kernel.org>, "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>, "Busch,
- Keith" <keith.busch@intel.com>, "netanel@amazon.com" <netanel@amazon.com>, "ddutile@redhat.com" <ddutile@redhat.com>, "mheyne@amazon.de" <mheyne@amazon.de>, "Wang, Liang-min" <liang-min.wang@intel.com>, "dwmw2@infradead.org" <dwmw2@infradead.org>, "hch@lst.de" <hch@lst.de>, "dwmw@amazon.co.uk" <dwmw@amazon.co.uk>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Subject: [virtio-dev] [pci PATCH v7 2/5] virtio_pci: Add support for unmanaged SR-IOV on
+ virtio_pci devices
+To: bhelgaas@google.com, alexander.h.duyck@intel.com, linux-pci@vger.kernel.org
+Cc: virtio-dev@lists.oasis-open.org, kvm@vger.kernel.org, netdev@vger.kernel.org, dan.daly@intel.com, linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org, keith.busch@intel.com, netanel@amazon.com, ddutile@redhat.com, mheyne@amazon.de, liang-min.wang@intel.com, mark.d.rustad@intel.com, dwmw2@infradead.org, hch@lst.de, dwmw@amazon.co.uk
 List-ID: <virtio-dev.lists.oasis-open.org>
 
---Apple-Mail=_BBED0712-6906-4470-94B1-31A72AA8A265
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain;
-	charset=us-ascii
+From: Alexander Duyck <alexander.h.duyck@intel.com>
 
-On Mar 15, 2018, at 11:41 AM, Alexander Duyck <alexander.duyck@gmail.com> wrote:
+Hardware-realized virtio_pci devices can implement SR-IOV, so this
+patch enables its use. The device in question is an upcoming Intel
+NIC that implements both a virtio_net PF and virtio_net VFs. These
+are hardware realizations of what has been up to now been a software
+interface.
 
-> From: Alexander Duyck <alexander.h.duyck@intel.com>
-> 
-> This patch adds a common configuration function called
-> pci_sriov_configure_simple that will allow for managing VFs on devices
-> where the PF is not capable of managing VF resources.
-> 
-> Signed-off-by: Alexander Duyck <alexander.h.duyck@intel.com>
-> ---
-> 
-> v5: New patch replacing pci_sriov_configure_unmanaged with
->       pci_sriov_configure_simple
->     Dropped bits related to autoprobe changes
-> v6: Defined pci_sriov_configure_simple as NULL if IOV is disabled
-> v7: Updated pci_sriov_configure_simple to drop need for err value
->     Fixed comment explaining why pci_sriov_configure_simple is NULL
-> 
->  drivers/pci/iov.c   |   31 +++++++++++++++++++++++++++++++
->  include/linux/pci.h |    3 +++
->  2 files changed, 34 insertions(+)
+The device in question has the following 4-part PCI IDs:
 
-Tested with the device identified in patch #2.
+PF: vendor: 1af4 device: 1041 subvendor: 8086 subdevice: 15fe
+VF: vendor: 1af4 device: 1041 subvendor: 8086 subdevice: 05fe
 
-Tested-by: Mark Rustad <mark.d.rustad@intel.com>
+The patch currently needs no check for device ID, because the callback
+will never be made for devices that do not assert the capability or
+when run on a platform incapable of SR-IOV.
 
---
-Mark Rustad, Networking Division, Intel Corporation
+One reason for this patch is because the hardware requires the
+vendor ID of a VF to be the same as the vendor ID of the PF that
+created it. So it seemed logical to simply have a fully-functioning
+virtio_net PF create the VFs. This patch makes that possible.
 
---Apple-Mail=_BBED0712-6906-4470-94B1-31A72AA8A265
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment; filename="signature.asc"
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Message signed with OpenPGP
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Mark Rustad <mark.d.rustad@intel.com>
+Signed-off-by: Alexander Duyck <alexander.h.duyck@intel.com>
+---
 
------BEGIN PGP SIGNATURE-----
-Comment: GPGTools - http://gpgtools.org
+v4: Dropped call to pci_disable_sriov in virtio_pci_remove function
+v5: Replaced call to pci_sriov_configure_unmanaged with
+        pci_sriov_configure_simple
+v6: Dropped "#ifdef" checks for IOV wrapping sriov_configure definition
+v7: No code change, added Reviewed-by
 
-iQIzBAEBCAAdFiEE6ug8b0Wg+ULmnksNPA7/547j7m4FAlq8CXQACgkQPA7/547j
-7m6pew/8CP45+0ywjt3/o6XIMCG2lY8I4kEyzMy+qDRd6Enk2kQkcORMhSxNOrwF
-MXK7CSa01s3Y0AwjHuy+0d+/jDvxyUGuhw0Tb98DkL3T9OQDhgCuTPTC8/wu9XYS
-AoACL8alz4pouJM/P9VT24pGIkwbEWl0bE/LZ0fZvhOkVjLBp6f3E5aqgcMZlI4V
-uAEDdP/AHdessoOktzRWxmlEFJdBN/TDkobLM0I+ipI2VIJh+Wu8n2Cb9nT9ZrFz
-bgOVdwJMloky6CF23XHu/R+vrfmtQJf7/OKpI63it2ryX9g0c2ZKTw3RhqrBCR+c
-470ZslFbxfQTMNZnI/+6pU5/mriHtEuN+X/Pyr0UVgjDezjtiId9bwNxbRUsZrvF
-MvzfHBixgYmtRa+cBguiV48qfkWrfXdmhteqYta786+Tr0zvKX833WAydO+/V6bx
-ZiBaZEa3LoSuOhGbzRjPxyMIy6nrkVYKvulm/N1G4iTzgs1Lj5heWiH6onW1y32o
-sLyEYpLVLHAEGVtHEUTxJU4xIbyW5hvY/dUqjOiXnvcIdP7yc+bo9s3kLiuEVn81
-r8/VkR1W6+q1r5J/ED9iWEt7D7BkOBdH9THRIQIDq3O1vSzX6m+Pvhw2mjLcsY9U
-A5ABZsKAF+7gYtNlM4X5bl8tXhzNOJo4pP7zAHTOqffxeOIYD0A=
-=39ai
------END PGP SIGNATURE-----
+ drivers/virtio/virtio_pci_common.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---Apple-Mail=_BBED0712-6906-4470-94B1-31A72AA8A265--
+diff --git a/drivers/virtio/virtio_pci_common.c b/drivers/virtio/virtio_pci_common.c
+index 48d4d1cf1cb6..67a227fd7aa0 100644
+--- a/drivers/virtio/virtio_pci_common.c
++++ b/drivers/virtio/virtio_pci_common.c
+@@ -596,6 +596,7 @@ static void virtio_pci_remove(struct pci_dev *pci_dev)
+ #ifdef CONFIG_PM_SLEEP
+ 	.driver.pm	= &virtio_pci_pm_ops,
+ #endif
++	.sriov_configure = pci_sriov_configure_simple,
+ };
+ 
+ module_pci_driver(virtio_pci_driver);
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+
