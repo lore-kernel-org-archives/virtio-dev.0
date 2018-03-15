@@ -1,109 +1,105 @@
-Return-Path: virtio-dev-return-3585-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3570-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 9A3965818FAD
-	for <virtio-dev@lists.oasis-open.org>; Fri, 16 Mar 2018 04:22:07 -0700 (PDT)
-Message-ID: <5AABA982.3080106@intel.com>
-Date: Fri, 16 Mar 2018 19:24:50 +0800
+	by lists.oasis-open.org (Postfix) with ESMTP id F28231CB807A
+	for <virtio-dev@lists.oasis-open.org>; Thu, 15 Mar 2018 04:07:40 -0700 (PDT)
+Message-ID: <5AAA54A6.9020900@intel.com>
+Date: Thu, 15 Mar 2018 19:10:30 +0800
 From: Wei Wang <wei.w.wang@intel.com>
 MIME-Version: 1.0
-References: <1520426065-40265-1-git-send-email-wei.w.wang@intel.com> <1520426065-40265-3-git-send-email-wei.w.wang@intel.com> <20180314181137.GG3006@work-vm> <5AAA5079.2000308@intel.com> <20180315154754-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20180315154754-mutt-send-email-mst@kernel.org>
+References: <1520426065-40265-1-git-send-email-wei.w.wang@intel.com> <1520426065-40265-3-git-send-email-wei.w.wang@intel.com> <20180314181137.GG3006@work-vm> <20180314211302-mutt-send-email-mst@kernel.org> <20180314194258.GI3006@work-vm>
+In-Reply-To: <20180314194258.GI3006@work-vm>
 Content-Type: text/plain; charset=windows-1252; format=flowed
 Content-Transfer-Encoding: 7bit
 Subject: [virtio-dev] Re: [PATCH v4 2/4] migration: API to clear bits of guest free pages
  from the dirty bitmap
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: "Dr. David Alan Gilbert" <dgilbert@redhat.com>, qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, quintela@redhat.com, pbonzini@redhat.com, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu0@gmail.com, nilal@redhat.com, riel@redhat.com
+To: "Dr. David Alan Gilbert" <dgilbert@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>
+Cc: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, quintela@redhat.com, pbonzini@redhat.com, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu0@gmail.com, nilal@redhat.com, riel@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 03/15/2018 09:50 PM, Michael S. Tsirkin wrote:
-> On Thu, Mar 15, 2018 at 06:52:41PM +0800, Wei Wang wrote:
->> On 03/15/2018 02:11 AM, Dr. David Alan Gilbert wrote:
->>> * Wei Wang (wei.w.wang@intel.com) wrote:
->>>> This patch adds an API to clear bits corresponding to guest free pages
->>>> from the dirty bitmap. Spilt the free page block if it crosses the QEMU
->>>> RAMBlock boundary.
->>>>
->>>> Signed-off-by: Wei Wang <wei.w.wang@intel.com>
->>>> CC: Dr. David Alan Gilbert <dgilbert@redhat.com>
->>>> CC: Juan Quintela <quintela@redhat.com>
->>>> CC: Michael S. Tsirkin <mst@redhat.com>
->>>> ---
->>>>    include/migration/misc.h |  2 ++
->>>>    migration/ram.c          | 21 +++++++++++++++++++++
->>>>    2 files changed, 23 insertions(+)
->>>>
->>>> diff --git a/include/migration/misc.h b/include/migration/misc.h
->>>> index 77fd4f5..fae1acf 100644
->>>> --- a/include/migration/misc.h
->>>> +++ b/include/migration/misc.h
->>>> @@ -14,11 +14,13 @@
->>>>    #ifndef MIGRATION_MISC_H
->>>>    #define MIGRATION_MISC_H
->>>> +#include "exec/cpu-common.h"
->>>>    #include "qemu/notify.h"
->>>>    /* migration/ram.c */
->>>>    void ram_mig_init(void);
->>>> +void qemu_guest_free_page_hint(void *addr, size_t len);
->>>>    /* migration/block.c */
->>>> diff --git a/migration/ram.c b/migration/ram.c
->>>> index 5e33e5c..e172798 100644
->>>> --- a/migration/ram.c
->>>> +++ b/migration/ram.c
->>>> @@ -2189,6 +2189,27 @@ static int ram_init_all(RAMState **rsp)
->>>>        return 0;
->>>>    }
->>> This could do with some comments
->> OK, I'll add some.
->>
->>>> +void qemu_guest_free_page_hint(void *addr, size_t len)
->>>> +{
->>>> +    RAMBlock *block;
->>>> +    ram_addr_t offset;
->>>> +    size_t used_len, start, npages;
->>>   From your use I think the addr and len are coming raw from the guest;
->>> so we need to take some care.
+On 03/15/2018 03:42 AM, Dr. David Alan Gilbert wrote:
+> * Michael S. Tsirkin (mst@redhat.com) wrote:
+>> On Wed, Mar 14, 2018 at 06:11:37PM +0000, Dr. David Alan Gilbert wrote:
+>>>> +            used_len = block->used_length - offset;
+>>>> +            addr += used_len;
+>>>> +        }
+>>>> +
+>>>> +        start = offset >> TARGET_PAGE_BITS;
+>>>> +        npages = used_len >> TARGET_PAGE_BITS;
+>>>> +        ram_state->migration_dirty_pages -=
+>>>> +                      bitmap_count_one_with_offset(block->bmap, start, npages);
+>>>> +        bitmap_clear(block->bmap, start, npages);
+>>> If this is happening while the migration is running, this isn't safe -
+>>> the migration code could clear a bit at about the same point this
+>>> happens, so that the count returned by bitmap_count_one_with_offset
+>>> wouldn't match the word that was cleared by bitmap_clear.
 >>>
->> Actually the "addr" here has been the host address that corresponds to the
->> guest free page. It's from elem->in_sg[0].iov_base.
->>
->>>> +        if (unlikely(offset + len > block->used_length)) {
->>> I think to make that overflow safe, that should be:
->>>     if (len > (block->used_length - offset)) {
+>>> The only way I can see to fix it is to run over the range using
+>>> bitmap_test_and_clear_atomic, using the return value to decrement
+>>> the number of dirty pages.
+>>> But you also need to be careful with the update of the
+>>> migration_dirty_pages value itself, because that's also being read
+>>> by the migration thread.
 >>>
->>> But we'll need another test before it, because qemu_ram_block_from_host
->>> seems to check max_length not used_length, so we need to check
->>> for offset > block->used_length first
->> OK, how about adding an assert above, like this:
->>
->> block = qemu_ram_block_from_host(addr, false, &offset);
->> assert (offset  < block->used_length );
->> if (!block)
->>      ...
->>
->> The address corresponds to a guest free page, which means it should be
->> within used_length. If not, something weird happens, I think we'd better to
->> assert it in that case.
->>
->> Best,
->> Wei
-> What if memory has been removed by hotunplug after guest sent the
-> free page notification?
+>>> Dave
+>> I see that there's migration_bitmap_sync but it does not seem to be
+> Do you mean bitmap_mutex?
 >
-> This seems to actually be likely to happen as memory being unplugged
-> would typically be mostly free.
+>> taken on all paths. E.g. migration_bitmap_clear_dirty and
+>> migration_bitmap_find_dirty are called without that lock sometimes.
+>> Thoughts?
+
+Right. The bitmap claims to protect modification of the bitmap, but 
+migration_bitmap_clear_dirty doesn't strictly follow the rule.
+
+> Hmm, that doesn't seem to protect much at all!  It looks like it was
+> originally added to handle hotplug causing the bitmaps to be resized;
+> that extension code was removed in 66103a5 so that lock can probably go.
+>
+> I don't see how the lock would help us though; the migration thread is
+> scanning it most of the time so would have to have the lock held
+> most of the time.
+>
 
 
-OK, thanks for the reminder. Instead of using an assert, I think we can 
-let the function just return if (offset > block->used_length).
+
+How about adding the lock to migration_bitmap_clear_dirty, and we will 
+have something like this:
+
+migration_bitmap_clear_dirty()
+{
+     qemu_mutex_lock(&rs->bitmap_mutex);
+     ret = test_and_clear_bit(page, rb->bmap);
+      if (ret) {
+         rs->migration_dirty_pages--;
+     }
+     ...
+     qemu_mutex_unlock(&rs->bitmap_mutex);
+}
+
+
+qemu_guest_free_page_hint()
+{
+     qemu_mutex_lock(&rs->bitmap_mutex);
+     ...
+     ram_state->migration_dirty_pages -=
+                       bitmap_count_one_with_offset(block->bmap, start, 
+npages);
+     bitmap_clear(block->bmap, start, npages);
+     qemu_mutex_unlock(&rs->bitmap_mutex);
+}
+
+
+The migration thread will hold the lock only when it clears a bit from 
+the bitmap. Or would you consider to change it to qemu_spin_lock?
 
 Best,
 Wei
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
