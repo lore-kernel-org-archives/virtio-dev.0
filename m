@@ -1,125 +1,111 @@
-Return-Path: virtio-dev-return-3688-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3583-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id D3CF858191A8
-	for <virtio-dev@lists.oasis-open.org>; Fri, 30 Mar 2018 02:49:29 -0700 (PDT)
-Message-ID: <5ABE08E7.2060108@intel.com>
-Date: Fri, 30 Mar 2018 17:52:39 +0800
+	by lists.oasis-open.org (Postfix) with ESMTP id 5CCC8581902F
+	for <virtio-dev@lists.oasis-open.org>; Fri, 16 Mar 2018 04:07:42 -0700 (PDT)
 From: Wei Wang <wei.w.wang@intel.com>
-MIME-Version: 1.0
-References: <1521197309-13544-1-git-send-email-wei.w.wang@intel.com> <1521197309-13544-5-git-send-email-wei.w.wang@intel.com> <20180316165319-mutt-send-email-mst@kernel.org> <5AAE4124.5010602@intel.com> <20180319062023-mutt-send-email-mst@kernel.org> <5AAF7C72.5070403@intel.com> <20180320004900-mutt-send-email-mst@kernel.org> <5AB06EE9.1030306@intel.com> <20180320045134-mutt-send-email-mst@kernel.org> <5AB07D7F.90205@intel.com> <20180320051840-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20180320051840-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [virtio-dev] Re: [PATCH v5 4/5] virtio-balloon: VIRTIO_BALLOON_F_FREE_PAGE_HINT
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, quintela@redhat.com, dgilbert@redhat.com, pbonzini@redhat.com, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu0@gmail.com, nilal@redhat.com, riel@redhat.com
+Date: Fri, 16 Mar 2018 18:48:29 +0800
+Message-Id: <1521197309-13544-6-git-send-email-wei.w.wang@intel.com>
+In-Reply-To: <1521197309-13544-1-git-send-email-wei.w.wang@intel.com>
+References: <1521197309-13544-1-git-send-email-wei.w.wang@intel.com>
+Subject: [virtio-dev] [PATCH v5 5/5] migration: use the free page hint feature from balloon
+To: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, mst@redhat.com, quintela@redhat.com, dgilbert@redhat.com
+Cc: pbonzini@redhat.com, wei.w.wang@intel.com, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu0@gmail.com, nilal@redhat.com, riel@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 03/20/2018 11:24 AM, Michael S. Tsirkin wrote:
-> On Tue, Mar 20, 2018 at 11:18:23AM +0800, Wei Wang wrote:
->> On 03/20/2018 10:59 AM, Michael S. Tsirkin wrote:
->>> On Tue, Mar 20, 2018 at 10:16:09AM +0800, Wei Wang wrote:
->>>> On 03/20/2018 06:55 AM, Michael S. Tsirkin wrote:
->>>>> On Mon, Mar 19, 2018 at 05:01:38PM +0800, Wei Wang wrote:
->>>>>> On 03/19/2018 12:24 PM, Michael S. Tsirkin wrote:
->>>>>>> On Sun, Mar 18, 2018 at 06:36:20PM +0800, Wei Wang wrote:
->>>>>>>> On 03/16/2018 11:16 PM, Michael S. Tsirkin wrote:
->>>>>>>>> On Fri, Mar 16, 2018 at 06:48:28PM +0800, Wei Wang wrote:
->>>>>>> OTOH it seems that if thread stops nothing will wake it up
->>>>>>> whem vm is restarted. Such bahaviour change across vmstop/vmstart
->>>>>>> is unexpected.
->>>>>>> I do not understand why we want to increment the counter
->>>>>>> on vm stop though. It does make sense to stop the thread
->>>>>>> but why not resume where we left off when vm is resumed?
->>>>>>>
->>>>>> I'm not sure which counter we incremented. But it would be clear if we have
->>>>>> a high level view of how it works (it is symmetric actually). Basically, we
->>>>>> start the optimization when each round starts and stop it at the end of each
->>>>>> round (i.e. before we do the bitmap sync), as shown below:
->>>>>>
->>>>>> 1) 1st Round starts --> free_page_start
->>>>>> 2) 1st Round in progress..
->>>>>> 3) 1st Round ends  --> free_page_stop
->>>>>> 4) 2nd Round starts --> free_page_start
->>>>>> 5) 2nd Round in progress..
->>>>>> 6) 2nd Round ends --> free_page_stop
->>>>>> ......
->>>>>>
->>>>>> For example, in 2), the VM is stopped. virtio_balloon_poll_free_page_hints
->>>>>> finds the vq is empty (i.e. elem == NULL) and the runstate is stopped, the
->>>>>> optimization thread exits immediately. That is, this optimization thread is
->>>>>> gone forever (the optimization we can do for this round is done). We won't
->>>>>> know when would the VM be woken up:
->>>>>> A) If the VM is woken up very soon when the migration thread is still in
->>>>>> progress of 2), then in 4) a new optimization thread (not the same one for
->>>>>> the first round) will be created and start the optimization for the 2nd
->>>>>> round as usual (If you have questions about 3) in this case, that
->>>>>> free_page_stop will do nothing than just return, since the optimization
->>>>>> thread has exited) ;
->>>>>> B) If the VM is woken up after the whole migration has ended, there is still
->>>>>> no point in resuming the optimization.
->>>>>>
->>>>>> I think this would be the simple design for the first release of this
->>>>>> optimization. There are possibilities to improve case A) above by continuing
->>>>>> optimization for the 1st Round as it is still in progress, but I think
->>>>>> adding that complexity for this rare case wouldn't be worthwhile (at least
->>>>>> for now). What would you think?
->>>>>>
->>>>>>
->>>>>> Best,
->>>>>> Wei
->>>>> In my opinion this just makes the patch very messy.
->>>>>
->>>>> E.g. attempts to attach a debugger to the guest will call vmstop and
->>>>> then behaviour changes. This is a receipe for heisenbugs which are then
->>>>> extremely painful to debug.
->>>>>
->>>>> It is not really hard to make things symmetrical:
->>>>> e.g. if you stop on vmstop then you should start on vmstart, etc.
->>>>> And stopping thread should not involve a bunch of state
->>>>> changes, just stop it and that's it.
->>>>>
->>>> "stop it" - do you mean to
->>>> 1) make the thread exit (i.e.make virtio_balloon_poll_free_page_hints exit
->>>> the while loop and return NULL); or
->>>> 2) keep the thread staying in the while loop but yield running (e.g.
->>>> sleep(1) or block on a mutex)? (or please let me know if you suggested a
->>>> different implementation about stopping the thread)
->>> I would say it makes more sense to make it block on something.
->>>
->>> BTW I still think you are engaging in premature optimization here.
->>> What you are doing here is a "data plane for balloon".
->>> I would make the feature work first by processing this in a BH.
->>> Creating threads immediately opens up questions of isolation,
->>> cgroups etc.
->>>
->> Could you please share more about how creating threads affects isolation and
->> cgroup?
-> When threads are coming and going, they are hard to control.
->
-> Consider the rich API libvirt exposes for controlling the io threads:
->
-> https://libvirt.org/formatdomain.html#elementsIOThreadsAllocation
->
->
->> and how does BH solve it? Thanks.
->> Best,
->> Wei
-> It's late at night so I don't remember whether it's the emulator
-> or the io thread that runs the BH, but the point is it's
-> already controlled by libvirt.
->
+Start the free page optimization after the migration bitmap is
+synchronized. This can't be used in the stop&copy phase since the guest
+is paused. Make sure the guest reporting has stopped before
+synchronizing the migration dirty bitmap. Currently, the optimization is
+added to precopy only.
 
-Thanks all for reviewing the patches. I've changed to use iothread in 
-the new version. Please have a check if that would be good enough.
+Signed-off-by: Wei Wang <wei.w.wang@intel.com>
+CC: Dr. David Alan Gilbert <dgilbert@redhat.com>
+CC: Juan Quintela <quintela@redhat.com>
+CC: Michael S. Tsirkin <mst@redhat.com>
+---
+ migration/ram.c | 26 +++++++++++++++++++++++++-
+ 1 file changed, 25 insertions(+), 1 deletion(-)
 
-Best,
-Wei
+diff --git a/migration/ram.c b/migration/ram.c
+index 2e82181..8589a51 100644
+--- a/migration/ram.c
++++ b/migration/ram.c
+@@ -51,6 +51,7 @@
+ #include "qemu/rcu_queue.h"
+ #include "migration/colo.h"
+ #include "migration/block.h"
++#include "sysemu/balloon.h"
+ 
+ /***********************************************************/
+ /* ram save/restore */
+@@ -208,6 +209,8 @@ struct RAMState {
+     uint32_t last_version;
+     /* We are in the first round */
+     bool ram_bulk_stage;
++    /* The free pages optimization feature is supported */
++    bool free_page_support;
+     /* How many times we have dirty too many pages */
+     int dirty_rate_high_cnt;
+     /* these variables are used for bitmap sync */
+@@ -836,6 +839,10 @@ static void migration_bitmap_sync(RAMState *rs)
+     int64_t end_time;
+     uint64_t bytes_xfer_now;
+ 
++    if (rs->free_page_support) {
++        balloon_free_page_stop();
++    }
++
+     ram_counters.dirty_sync_count++;
+ 
+     if (!rs->time_last_bitmap_sync) {
+@@ -902,6 +909,10 @@ static void migration_bitmap_sync(RAMState *rs)
+     if (migrate_use_events()) {
+         qapi_event_send_migration_pass(ram_counters.dirty_sync_count, NULL);
+     }
++
++    if (rs->free_page_support) {
++        balloon_free_page_start();
++    }
+ }
+ 
+ /**
+@@ -1658,7 +1669,17 @@ static void ram_state_reset(RAMState *rs)
+     rs->last_sent_block = NULL;
+     rs->last_page = 0;
+     rs->last_version = ram_list.version;
+-    rs->ram_bulk_stage = true;
++    rs->free_page_support = balloon_free_page_support() && !migrate_postcopy();
++    if (rs->free_page_support) {
++        /*
++         * When the free page optimization is used, not all the pages are
++         * treated as dirty pages (via migration_bitmap_find_dirty) that need
++         * to be sent. So disable ram_bulk_stage in this case.
++         */
++        rs->ram_bulk_stage = false;
++    } else {
++        rs->ram_bulk_stage = true;
++    }
+ }
+ 
+ #define MAX_WAIT 50 /* ms, half buffered_file limit */
+@@ -2364,6 +2385,9 @@ out:
+ 
+     ret = qemu_file_get_error(f);
+     if (ret < 0) {
++        if (rs->free_page_support) {
++            balloon_free_page_stop();
++        }
+         return ret;
+     }
+ 
+-- 
+1.8.3.1
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
