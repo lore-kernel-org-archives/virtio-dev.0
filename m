@@ -1,222 +1,150 @@
-Return-Path: virtio-return-3040-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio@lists.oasis-open.org>
-List-Post: <mailto:virtio@lists.oasis-open.org>
-List-Help: <mailto:virtio-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Thu, 29 Mar 2018 22:12:35 +0300
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20180329215452-mutt-send-email-mst@kernel.org>
-References: <1520629942-36324-1-git-send-email-mst@redhat.com>
- <1520629942-36324-14-git-send-email-mst@redhat.com>
- <ee81d80dd7d4497a97f924be66e17227@napatech.com>
- <20180328173142-mutt-send-email-mst@kernel.org>
- <a3ab2d6229cb49b09d27d067ca74b9a9@napatech.com>
- <20180329173105-mutt-send-email-mst@kernel.org>
- <2552bfc5d77e4b789d08d3479c3baf01@napatech.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2552bfc5d77e4b789d08d3479c3baf01@napatech.com>
-Subject: [virtio] Re: [virtio-dev] [PATCH v10 13/13] split-ring: in order feature
-To: Lars Ganrot <lga@napatech.com>
-Cc: "virtio@lists.oasis-open.org" <virtio@lists.oasis-open.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
+Return-Path: virtio-dev-return-3579-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
+	by lists.oasis-open.org (Postfix) with ESMTP id 2A0525818FAD
+	for <virtio-dev@lists.oasis-open.org>; Fri, 16 Mar 2018 04:07:29 -0700 (PDT)
+From: Wei Wang <wei.w.wang@intel.com>
+Date: Fri, 16 Mar 2018 18:48:24 +0800
+Message-Id: <1521197309-13544-1-git-send-email-wei.w.wang@intel.com>
+Subject: [virtio-dev] [PATCH v5 0/5] virtio-balloon: free page hint reporting support
+To: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, mst@redhat.com, quintela@redhat.com, dgilbert@redhat.com
+Cc: pbonzini@redhat.com, wei.w.wang@intel.com, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu0@gmail.com, nilal@redhat.com, riel@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Thu, Mar 29, 2018 at 06:23:28PM +0000, Lars Ganrot wrote:
-> 
-> 
-> > -----Original Message-----
-> > From: Michael S. Tsirkin <mst@redhat.com>
-> > Sent: 29. marts 2018 16:42
-> > To: Lars Ganrot <lga@napatech.com>
-> > Cc: virtio@lists.oasis-open.org; virtio-dev@lists.oasis-open.org
-> > Subject: Re: [virtio-dev] [PATCH v10 13/13] split-ring: in order feature
-> >
-> > On Wed, Mar 28, 2018 at 04:12:10PM +0000, Lars Ganrot wrote:
-> > > Missed replying to the lists. Sorry.
-> > >
-> > > > From: Michael S. Tsirkin <mst@redhat.com>
-> > > > Sent: 28. marts 2018 16:39
-> > > >
-> > > > On Wed, Mar 28, 2018 at 08:23:38AM +0000, Lars Ganrot wrote:
-> > > > > Hi Michael et al
-> > > > >
-> > > > > > Behalf Of Michael S. Tsirkin
-> > > > > > Sent: 9. marts 2018 22:24
-> > > > > >
-> > > > > > For a split ring, require that drivers use descriptors in order too.
-> > > > > > This allows devices to skip reading the available ring.
-> > > > > >
-> > > > > > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> > > > > > Reviewed-by: Cornelia Huck <cohuck@redhat.com>
-> > > > > > Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
-> > > > > > ---
-> > > > > [snip]
-> > > > > >
-> > > > > > +If VIRTIO_F_IN_ORDER has been negotiated, and when making a
-> > > > > > +descriptor with VRING_DESC_F_NEXT set in \field{flags} at
-> > > > > > +offset $x$ in the table available to the device, driver MUST
-> > > > > > +set \field{next} to $0$ for the last descriptor in the table
-> > > > > > +(where $x = queue\_size - 1$) and to $x + 1$ for the rest of the
-> > descriptors.
-> > > > > > +
-> > > > > >  \subsubsection{Indirect Descriptors}\label{sec:Basic Facilities
-> > > > > > of a Virtio Device / Virtqueues / The Virtqueue Descriptor Table
-> > > > > > / Indirect Descriptors}
-> > > > > >
-> > > > > >  Some devices benefit by concurrently dispatching a large number
-> > > > > > @@
-> > > > > > -247,6
-> > > > > > +257,10 @@ chained by \field{next}. An indirect descriptor
-> > > > > > +without a valid
-> > > > > > \field{next}  A single indirect descriptor  table can include
-> > > > > > both
-> > > > > > device- readable and device-writable descriptors.
-> > > > > >
-> > > > > > +If VIRTIO_F_IN_ORDER has been negotiated, indirect descriptors
-> > > > > > +use sequential indices, in-order: index 0 followed by index 1
-> > > > > > +followed by index 2, etc.
-> > > > > > +
-> > > > > >  \drivernormative{\paragraph}{Indirect Descriptors}{Basic
-> > > > > > Facilities of a Virtio Device / Virtqueues / The Virtqueue
-> > > > > > Descriptor Table / Indirect Descriptors} The driver MUST NOT set
-> > > > > > the
-> > > > VIRTQ_DESC_F_INDIRECT flag unless the
-> > > > > >  VIRTIO_F_INDIRECT_DESC feature was negotiated.   The driver MUST
-> > > > NOT
-> > > > > > @@ -259,6 +273,10 @@ the device.
-> > > > > >  A driver MUST NOT set both VIRTQ_DESC_F_INDIRECT and
-> > > > > > VIRTQ_DESC_F_NEXT  in \field{flags}.
-> > > > > >
-> > > > > > +If VIRTIO_F_IN_ORDER has been negotiated, indirect descriptors
-> > > > > > +MUST appear sequentially, with \field{next} taking the value of
-> > > > > > +1 for the 1st descriptor, 2 for the 2nd one, etc.
-> > > > > > +
-> > > > > >  \devicenormative{\paragraph}{Indirect Descriptors}{Basic
-> > > > > > Facilities of a Virtio Device / Virtqueues / The Virtqueue
-> > > > > > Descriptor Table / Indirect Descriptors} The device MUST ignore
-> > > > > > the write-only flag
-> > > > > > (\field{flags}\&VIRTQ_DESC_F_WRITE) in the descriptor that
-> > > > > > refers to an indirect table.
-> > > > > >
-> > > > >
-> > > > > The use of VIRTIO_F_IN_ORDER for split-ring can eliminate some
-> > > > > accesses
-> > > > to the virtq_avail.ring and virtq_used.ring. However I'm wondering
-> > > > if the proposed descriptor ordering for multi-element buffers
-> > > > couldn't be tweaked to be more HW friendly.  Currently even with the
-> > > > VIRTIO_F_IN_ORDER negotiated, there is no way of knowing if, or how
-> > > > many chained descriptors follow the descriptor pointed to by the
-> > > > virtq_avail.idx. A chain has to be inspected one descriptor at a
-> > > > time until virtq_desc.flags[VIRTQ_DESC_F_NEXT]=0. This is awkward
-> > > > for HW offload, where you want to DMA all available descriptors in
-> > > > one shot, instead of iterating based on the contents of received DMA
-> > > > data. As currently defined, HW would have to find a compromise
-> > > > between likely chain length, and cost of additional DMA transfers.
-> > > > This leads to a performance penalty for all chained descriptors, and
-> > > > in case the length assumption is wrong the impact can be significant.
-> > > > >
-> > > > > Now, what if the VIRTIO_F_IN_ORDER instead required chained
-> > > > > buffers to
-> > > > place the last element at the lowest index, and the head-element (to
-> > > > which virtq_avail.idx points) at the highest index? Then all the
-> > > > chained element descriptors would be included in a DMA of the
-> > > > descriptor table from the previous virtq_avail.idx+1 to the current
-> > virtq_avail.idx. The "backward"
-> > > > order of the chained descriptors shouldn't pose an issue as such (at
-> > > > least not in HW).
-> > > > >
-> > > > > Best Regards,
-> > > > >
-> > > > > -Lars
-> > > >
-> > > > virtq_avail.idx is still an index into the available ring.
-> > > >
-> > > > I don't really see how you can use virtq_avail.idx to guess the
-> > > > placement of a descriptor.
-> > > >
-> > > > I suspect the best way to optimize this is to include the relevant
-> > > > data with the VIRTIO_F_NOTIFICATION_DATA feature.
-> > > >
-> > >
-> > > Argh, naturally.
-> >
-> > BTW, for split rings VIRTIO_F_NOTIFICATION_DATA just copies the index
-> > right now.
-> >
-> > Do you have an opinion on whether we should change that for in-order?
-> >
-> 
-> Maybe I should think more about this, however adding the last element descriptor index, would be useful to accelerate interfaces that frequently use chaining (from a HW DMA perspective at least).
-> 
-> > > For HW offload I'd want to avoid notifications for buffer transfer from host
-> > to device, and hoped to just poll virtq_avail.idx directly.
-> > >
-> > > A split virtqueue with VITRIO_F_IN_ORDER will maintain
-> > virtq_avail.idx==virtq_avail.ring[idx] as long as there is no chaining. It would
-> > be nice to allow negotiating away chaining, i.e add a VIRTIO_F_NO_CHAIN. If
-> > negotiated, the driver agrees not to use chaining, and as a result (of
-> > IN_ORDER and NO_CHAIN) both device and driver can ignore the
-> > virtq_avail.ring[].
-> >
-> > My point was that device can just assume no chains, and then fall back on
-> > doing extra reads upon encountering a chain.
-> >
-> 
-> Yes, you are correct that the HW can speculatively use virtq_avail.idx as the direct index to the descriptor table, and if it encounters a chain, revert to using the virtq_avail.ring[] in the traditional way, and this would work without the feature-bit.
+This is the deivce part implementation to add a new feature,
+VIRTIO_BALLOON_F_FREE_PAGE_HINT to the virtio-balloon device. The device
+receives the guest free page hints from the driver and clears the
+corresponding bits in the dirty bitmap, so that those free pages are
+not transferred by the migration thread to the destination.
 
-Sorry that was not my idea.
+- Test Environment
+    Host: Intel(R) Xeon(R) CPU E5-2699 v4 @ 2.20GHz
+    Guest: 8G RAM, 4 vCPU
+    Migration setup: migrate_set_speed 100G, migrate_set_downtime 2 second
 
-Device should not need to read the ring at all.
-It reads the descriptor table and counts the descriptors
-without the next bit. Once the count reaches the available
-index, it stops.
+- Test Results
+    - Idle Guest Live Migration Time (results are averaged over 10 runs):
+        - Optimization v.s. Legacy = 261ms vs 1769ms --> ~86% reduction
+    - Guest with Linux Compilation Workload (make bzImage -j4):
+        - Live Migration Time (average)
+          Optimization v.s. Legacy = 1260ms v.s. 2634ms --> ~51% reduction
+        - Linux Compilation Time
+          Optimization v.s. Legacy = 4min58s v.s. 5min3s
+          --> no obvious difference
 
+- Source Code
+    - QEMU:  https://github.com/wei-w-wang/qemu-free-page-lm.git
+    - Linux: https://github.com/wei-w-wang/linux-free-page-lm.git
 
-> However the driver would not be able to optimize away the writing of
-> the virtq_avail.ring[] (=cache miss)
+ChangeLog:
+v4->v5:
+    1) migration:
+        - bitmap_clear_dirty: update the dirty bitmap and dirty page
+          count under the bitmap mutex as what other functions are doing;
+        - qemu_guest_free_page_hint:
+            - add comments for this function;
+            - check the !block case;
+            - check "offset > block->used_length" before proceed;
+            - assign used_len inside the for{} body;
+            - update the dirty bitmap and dirty page counter under the
+              bitmap mutex;
+        - ram_state_reset:
+            - rs->free_page_support: && with use "migrate_postcopy"
+              instead of migration_in_postcopy;
+            - clear the ram_bulk_stage flag if free_page_support is true;
+    2) balloon:
+         - add the usage documentation of balloon_free_page_start and
+           balloon_free_page_stop in code;
+         - the optimization thread is named "balloon_fpo" to meet the
+           requirement of "less than 14 characters";
+         - virtio_balloon_poll_free_page_hints:
+             - run on condition when runstate_is_running() is true;
+             - add a qemu spin lock to synchronize accesses to the free
+               page reporting related fields shared among the migration
+               thread and the optimization thread;
+          - virtio_balloon_free_page_start: just return if
+            runstate_is_running is false;
+          - virtio_balloon_free_page_stop: access to the free page
+            reporting related fields under a qemu spin lock;
+          - virtio_balloon_device_unrealize/reset: call
+            virtio_balloon_free_page_stop is the free page hint feature is
+            used;
+          - virtio_balloon_set_status: call irtio_balloon_free_page_stop
+            in case the guest is stopped by qmp when the optimization is
+            running;
+v3->v4:
+    1) bitmap: add a new API to count 1s starting from an offset of a
+       bitmap
+    2) migration:
+        - qemu_guest_free_page_hint: calculate
+          ram_state->migration_dirty_pages by counting how many bits of
+          free pages are truely cleared. If some of the bits were
+          already 0, they shouldn't be deducted by
+          ram_state->migration_dirty_pages. This wasn't needed for
+          previous versions since we optimized bulk stage only,
+          where all bits are guaranteed to be set. It's needed now
+          because we extened the usage of this optimizaton to all stages
+          except the last stop&copy stage. From 2nd stage onward, there
+          are possibilities that some bits of free pages are already 0.
+     3) virtio-balloon:
+         - virtio_balloon_free_page_report_status: introduce a new status,
+           FREE_PAGE_REPORT_S_EXIT. This status indicates that the
+           optimization thread has exited. FREE_PAGE_REPORT_S_STOP means
+           the reporting is stopped, but the optimization thread still needs
+           to be joined by the migration thread.
+v2->v3:
+    1) virtio-balloon
+        - virtio_balloon_free_page_start: poll the hints using a new
+          thread;
+        - use cmd id between [0x80000000, UINT_MAX];
+        - virtio_balloon_poll_free_page_hints:
+            - stop the optimization only when it has started;
+            - don't skip free pages when !poison_val;
+        - add poison_val to vmsd to migrate;
+        - virtio_balloon_get_features: add the F_PAGE_POISON feature when
+          host has F_FREE_PAGE_HINT;
+        - remove the timer patch which is not needed now.
+    2) migration
+       - new api, qemu_guest_free_page_hint;
+       - rs->free_page_support set only in the precopy case;
+       - use the new balloon APIs.
+v1->v2: 
+    1) virtio-balloon
+        - use subsections to save free_page_report_cmd_id;
+        - poll the free page vq after sending a cmd id to the driver;
+        - change the free page vq size to VIRTQUEUE_MAX_SIZE;
+        - virtio_balloon_poll_free_page_hints: handle the corner case
+          that the free page block reported from the driver may cross
+          the RAMBlock boundary.
+    2) migration/ram.c
+        - use balloon_free_page_poll to start the optimization
 
+Wei Wang (5):
+  bitmap: bitmap_count_one_with_offset
+  migration: use bitmap_mutex in migration_bitmap_clear_dirty
+  migration: API to clear bits of guest free pages from the dirty bitmap
+  virtio-balloon: VIRTIO_BALLOON_F_FREE_PAGE_HINT
+  migration: use the free page hint feature from balloon
 
-BTW writing is a separate question (there is no provision in
-the spec to skip writes) but device does not have to read the ring.
+ balloon.c                                       |  58 +++++--
+ hw/virtio/virtio-balloon.c                      | 217 ++++++++++++++++++++++--
+ include/hw/virtio/virtio-balloon.h              |  20 ++-
+ include/migration/misc.h                        |   2 +
+ include/qemu/bitmap.h                           |  13 ++
+ include/standard-headers/linux/virtio_balloon.h |   7 +
+ include/sysemu/balloon.h                        |  15 +-
+ migration/ram.c                                 |  73 +++++++-
+ 8 files changed, 375 insertions(+), 30 deletions(-)
 
-Without device accesses ring will not be invaliated in cache
-so no misses hopefully.
+-- 
+1.8.3.1
 
-> unless a NO_CHAIN feature has
-> been negotiated.
-> The IN_ORDER by itself has already eliminated the
-> need to maintain the TX virtq_used.ring[], since the buffer order is
-> always known by the driver.
-> With a NO_CHAIN feature-bit both RX and TX
-> virtq_avail.ring[] related cache-misses could be eliminated. I.e.
-> looping a packet over a split virtqueue would just experience 7 driver
-> cache misses, down from 10 in Virtio v1.0. Multi-element buffers would
-> still be possible provided INDIRECT is negotiated.
-
-
-NO_CHAIN might be a valid optimization, it is just unfortunately
-somewhat narrow in that devices that need to mix write and read descriptors in
-the same ring (e.g. storage) can not use this feature.
-
-
-> >
-> >
-> > > >
-> > > > > ------------------------------------------------------------------
-> > > > > --- To unsubscribe, e-mail:
-> > > > > virtio-dev-unsubscribe@lists.oasis-open.org
-> > > > > For additional commands, e-mail:
-> > > > > virtio-dev-help@lists.oasis-open.org
-> > >
-> > > ---------------------------------------------------------------------
-> > > To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> > > For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
-> Disclaimer: This email and any files transmitted with it may contain confidential information intended for the addressee(s) only. The information is not to be surrendered or copied to unauthorized persons. If you have received this communication in error, please notify the sender immediately and delete this e-mail from your system.
 
 ---------------------------------------------------------------------
-To unsubscribe from this mail list, you must leave the OASIS TC that 
-generates this mail.  Follow this link to all your TCs in OASIS at:
-https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
