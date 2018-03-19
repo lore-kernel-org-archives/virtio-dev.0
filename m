@@ -1,228 +1,76 @@
-Return-Path: virtio-dev-return-3593-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3601-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id C1DD55819034
-	for <virtio-dev@lists.oasis-open.org>; Sun, 18 Mar 2018 21:24:30 -0700 (PDT)
-Date: Mon, 19 Mar 2018 06:24:10 +0200
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20180319062023-mutt-send-email-mst@kernel.org>
-References: <1521197309-13544-1-git-send-email-wei.w.wang@intel.com>
- <1521197309-13544-5-git-send-email-wei.w.wang@intel.com>
- <20180316165319-mutt-send-email-mst@kernel.org>
- <5AAE4124.5010602@intel.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id E3D605818F74
+	for <virtio-dev@lists.oasis-open.org>; Mon, 19 Mar 2018 01:58:43 -0700 (PDT)
+Message-ID: <5AAF7C72.5070403@intel.com>
+Date: Mon, 19 Mar 2018 17:01:38 +0800
+From: Wei Wang <wei.w.wang@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5AAE4124.5010602@intel.com>
-Subject: [virtio-dev] Re: [PATCH v5 4/5] virtio-balloon: VIRTIO_BALLOON_F_FREE_PAGE_HINT
-To: Wei Wang <wei.w.wang@intel.com>
+References: <1521197309-13544-1-git-send-email-wei.w.wang@intel.com> <1521197309-13544-5-git-send-email-wei.w.wang@intel.com> <20180316165319-mutt-send-email-mst@kernel.org> <5AAE4124.5010602@intel.com> <20180319062023-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20180319062023-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [virtio-dev] Re: [PATCH v5 4/5] virtio-balloon: VIRTIO_BALLOON_F_FREE_PAGE_HINT
+To: "Michael S. Tsirkin" <mst@redhat.com>
 Cc: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, quintela@redhat.com, dgilbert@redhat.com, pbonzini@redhat.com, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu0@gmail.com, nilal@redhat.com, riel@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Sun, Mar 18, 2018 at 06:36:20PM +0800, Wei Wang wrote:
-> On 03/16/2018 11:16 PM, Michael S. Tsirkin wrote:
-> > On Fri, Mar 16, 2018 at 06:48:28PM +0800, Wei Wang wrote:
-> > > The new feature enables the virtio-balloon device to receive hints of
-> > > guest free pages from the free page vq.
-> > > 
-> > > balloon_free_page_start - start guest free page hint reporting.
-> > > balloon_free_page_stop - stop guest free page hint reporting.
-> > > 
-> > > Note: balloon will report pages which were free at the time
-> > > of this call. As the reporting happens asynchronously, dirty bit logging
-> > > must be enabled before this call is made. Guest reporting must be
-> > > disabled before the migration dirty bitmap is synchronized.
-> > > 
-> > > Signed-off-by: Wei Wang <wei.w.wang@intel.com>
-> > > Signed-off-by: Liang Li <liang.z.li@intel.com>
-> > > CC: Michael S. Tsirkin <mst@redhat.com>
-> > > CC: Dr. David Alan Gilbert <dgilbert@redhat.com>
-> > > CC: Juan Quintela <quintela@redhat.com>
-> > > ---
-> > >   balloon.c                                       |  58 +++++--
-> > >   hw/virtio/virtio-balloon.c                      | 217 ++++++++++++++++++++++--
-> > >   include/hw/virtio/virtio-balloon.h              |  20 ++-
-> > >   include/standard-headers/linux/virtio_balloon.h |   7 +
-> > >   include/sysemu/balloon.h                        |  15 +-
-> > >   5 files changed, 288 insertions(+), 29 deletions(-)
-> > > 
-> > > diff --git a/balloon.c b/balloon.c
-> > > index 6bf0a96..87a0410 100644
-> > > --- a/balloon.c
-> > > +++ b/balloon.c
-> > > @@ -36,6 +36,9 @@
-> > > 
-> > > +static void *virtio_balloon_poll_free_page_hints(void *opaque)
-> > > +{
-> > > +    VirtQueueElement *elem;
-> > > +    VirtIOBalloon *dev = opaque;
-> > > +    VirtQueue *vq = dev->free_page_vq;
-> > > +    uint32_t id;
-> > > +    size_t size;
-> > > +
-> > > +    /* The optimization thread runs only when the guest is running. */
-> > > +    while (runstate_is_running()) {
-> > Note that this check is not guaranteed to be correct
-> > when checked like this outside BQL.
-> > 
-> > I think you are better off relying on status
-> > callback to synchronise with the backend thread.
-> > 
-> 
-> It's actually OK here, I think we don't need the guarantee. The device is
-> just the consumer of the vq, essentially it doesn't have a dependency (i.e.
-> won't block or cause errors) on the guest state.
-> For example:
-> 1) when the device executes "while (runstate_is_running())" and finds that
-> the guest is running, it proceeds;
-> 2) the guest is stopped immediately right after the "while
-> (runstate_is_running())" check;
-> 3) the device side execution reaches virtqueue_pop(), and finds
-> "elem==NULL", since the driver (provider) stops adding hints. Then it
-> continues by going back to "while (runstate_is_running())", and now it finds
-> the guest is stopped, and then exits.
+On 03/19/2018 12:24 PM, Michael S. Tsirkin wrote:
+> On Sun, Mar 18, 2018 at 06:36:20PM +0800, Wei Wang wrote:
+>> On 03/16/2018 11:16 PM, Michael S. Tsirkin wrote:
+>>> On Fri, Mar 16, 2018 at 06:48:28PM +0800, Wei Wang wrote:
+>
+> OTOH it seems that if thread stops nothing will wake it up
+> whem vm is restarted. Such bahaviour change across vmstop/vmstart
+> is unexpected.
+> I do not understand why we want to increment the counter
+> on vm stop though. It does make sense to stop the thread
+> but why not resume where we left off when vm is resumed?
+>
+
+I'm not sure which counter we incremented. But it would be clear if we 
+have a high level view of how it works (it is symmetric actually). 
+Basically, we start the optimization when each round starts and stop it 
+at the end of each round (i.e. before we do the bitmap sync), as shown 
+below:
+
+1) 1st Round starts --> free_page_start
+2) 1st Round in progress..
+3) 1st Round ends  --> free_page_stop
+4) 2nd Round starts --> free_page_start
+5) 2nd Round in progress..
+6) 2nd Round ends --> free_page_stop
+......
+
+For example, in 2), the VM is stopped. 
+virtio_balloon_poll_free_page_hints finds the vq is empty (i.e. elem == 
+NULL) and the runstate is stopped, the optimization thread exits 
+immediately. That is, this optimization thread is gone forever (the 
+optimization we can do for this round is done). We won't know when would 
+the VM be woken up:
+A) If the VM is woken up very soon when the migration thread is still in 
+progress of 2), then in 4) a new optimization thread (not the same one 
+for the first round) will be created and start the optimization for the 
+2nd round as usual (If you have questions about 3) in this case, that 
+free_page_stop will do nothing than just return, since the optimization 
+thread has exited) ;
+B) If the VM is woken up after the whole migration has ended, there is 
+still no point in resuming the optimization.
+
+I think this would be the simple design for the first release of this 
+optimization. There are possibilities to improve case A) above by 
+continuing optimization for the 1st Round as it is still in progress, 
+but I think adding that complexity for this rare case wouldn't be 
+worthwhile (at least for now). What would you think?
 
 
-OTOH it seems that if thread stops nothing will wake it up
-whem vm is restarted. Such bahaviour change across vmstop/vmstart
-is unexpected.
-
-> Essentially, this runstate check is just an optimization to the case that
-> the driver is stopped to provide hints while the device side optimization
-> thread is still polling the empty vq (i.e. effort in vain). Probably, it
-> would be better to check the runstate under "elem==NULL":
-> 
-> while (1) {
->     ...
->     elem = virtqueue_pop(vq, sizeof(VirtQueueElement));
->     if (!elem) {
->             qemu_spin_unlock(&dev->free_page_lock);
->             if (runstate_is_running())
->                 continue;
->             else
->                 break;
->     }
->     ...
-> }
-> 
-> 
-> > > +                dev->free_page_report_status = FREE_PAGE_REPORT_S_START;
-> > > +            } else if (dev->free_page_report_status ==
-> > > +                       FREE_PAGE_REPORT_S_START) {
-> > > +                /*
-> > > +                 * Stop the optimization only when it has started. This avoids
-> > > +                 * a stale stop sign for the previous command.
-> > > +                 */
-> > > +                dev->free_page_report_status = FREE_PAGE_REPORT_S_STOP;
-> > > +                qemu_spin_unlock(&dev->free_page_lock);
-> > > +                break;
-> > > +            }
-> > And else? What if it does not match and status is not start?
-> > Don't you need to skip in elem decoding?
-> 
-> No, actually we don't need "else". Please see the code inside if
-> (elem->in_num) below. If the status isn't set to START,
-> qemu_guest_free_page_hint will not be called to decode the elem.
-> 
-> 
-> > 
-> > > +        }
-> > > +
-> > > +        if (elem->in_num) {
-> > > +            if (dev->free_page_report_status == FREE_PAGE_REPORT_S_START &&
-> > > +                !dev->poison_val) {
-> > poison generally disables everything? Add a TODO to handle
-> > it in he future pls.
-> 
-> 
-> OK, will add TODO in the commit.
-> 
-> 
-> 
-> @@ -368,6 +499,7 @@ static void virtio_balloon_set_config(VirtIODevice *vdev,
->                          ((ram_addr_t) dev->actual << VIRTIO_BALLOON_PFN_SHIFT),
->                          &error_abort);
->      }
-> +    dev->poison_val = le32_to_cpu(config.poison_val);
-> 
-> > We probably should not assume this value is correct if guest didn't
-> > ack the appropriate feature.
-> 
-> 
-> OK, I'll add a comment to explain that.
-> 
-> 
-> @@ -475,11 +632,37 @@ static void virtio_balloon_set_status(VirtIODevice *vdev, uint8_t status)
->  {
->      VirtIOBalloon *s = VIRTIO_BALLOON(vdev);
-> -    if (!s->stats_vq_elem && vdev->vm_running &&
-> -        (status & VIRTIO_CONFIG_S_DRIVER_OK) && virtqueue_rewind(s->svq, 1)) {
-> -        /* poll stats queue for the element we have discarded when the VM
-> -         * was stopped */
-> -        virtio_balloon_receive_stats(vdev, s->svq);
-> +    if (status & VIRTIO_CONFIG_S_DRIVER_OK) {
-> +        if (!s->stats_vq_elem && vdev->vm_running &&
-> +            virtqueue_rewind(s->svq, 1)) {
-> +            /*
-> +             * Poll stats queue for the element we have discarded when the VM
-> +             * was stopped.
-> +             */
-> +            virtio_balloon_receive_stats(vdev, s->svq);
-> +        }
-> +
-> +        if (virtio_balloon_free_page_support(s)) {
-> +            qemu_add_balloon_handler(virtio_balloon_to_target,
-> +                                     virtio_balloon_stat,
-> +                                     virtio_balloon_free_page_support,
-> +                                     virtio_balloon_free_page_start,
-> +                                     virtio_balloon_free_page_stop,
-> +                                     s);
-> +            /*
-> +             * This handles the case that the guest is being stopped (e.g. by
-> +             * qmp commands) while the driver is still reporting hints. When
-> +             * the guest is woken up, it will continue to report hints, which
-> +             * are not needed. So when the wakeup notifier invokes the
-> +             * set_status callback here, we get the chance to make sure that
-> +             * the free page optimization thread is exited via
-> +             * virtio_balloon_free_page_stop.
-> +             */
-> +            virtio_balloon_free_page_stop(s);
-> 
-> > I don't understand the logic here at all.
-> > So if status is set to DRIVER_OK, then we stop reporting?
-> > 
-> 
-> I thought about this more. It's not necessary to call the stop() function
-> here, because we have already made the optimization thread exit when the
-> guest is stopped. When the guest is woken up, it will continue to report,
-> and there is no consumer of the vq (the optimization thread has exited).
-> There is no functional issue here, since the driver will just drop the hint
-> when the vq is full. From the optimization point of view, I think we can
-> consider to replace the above sop() function with
-> virtio_notify_config(vdev), which will stop the guest's unnecessary
-> reporting.
-
-I do not understand why we want to increment the counter
-on vm stop though. It does make sense to stop the thread
-but why not resume where we left off when vm is resumed?
-
-
-> 
-> Best,
-> Wei
-
-In short the code will be easier to reason about if there's some
-symmetry in how we start/stop things.  If we need the thread to run
-together with the VCPU then starting/stopping it from status seems
-like a reasonable choice.
-
-
--- 
-MST
+Best,
+Wei
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
