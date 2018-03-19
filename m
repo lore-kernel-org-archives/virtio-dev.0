@@ -1,112 +1,173 @@
-Return-Path: virtio-dev-return-3681-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3596-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 8A49558191D2
-	for <virtio-dev@lists.oasis-open.org>; Thu, 29 Mar 2018 16:03:03 -0700 (PDT)
-From: Stephen Warren <swarren@wwwdotorg.org>
-Message-ID: <719390c5-99cd-f3f5-2f74-a0f374a124c2@wwwdotorg.org>
-Date: Thu, 29 Mar 2018 17:02:51 -0600
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: [virtio-dev] virtio over SW-defined/CPU-driven PCIe endpoint
-To: virtio-dev@lists.oasis-open.org
+	by lists.oasis-open.org (Postfix) with ESMTP id 85A4B5819042
+	for <virtio-dev@lists.oasis-open.org>; Mon, 19 Mar 2018 00:17:37 -0700 (PDT)
+From: Tiwei Bie <tiwei.bie@intel.com>
+Date: Mon, 19 Mar 2018 15:15:31 +0800
+Message-Id: <20180319071537.28649-1-tiwei.bie@intel.com>
+Subject: [virtio-dev] [PATCH v2 0/6] Extend vhost-user to support VFIO based accelerators
+To: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, mst@redhat.com, alex.williamson@redhat.com, jasowang@redhat.com, pbonzini@redhat.com, stefanha@redhat.com
+Cc: cunming.liang@intel.com, dan.daly@intel.com, jianfeng.tan@intel.com, zhihong.wang@intel.com, xiao.w.wang@intel.com, tiwei.bie@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-I've been investigating how to implement a virtio device (as opposed to 
-a virtio driver) on a regular computer system with a PCIe controller 
-that can operate in endpoint mode, as opposed to an endpoint that's 
-implemented by a hypervisor that can preempt execution of a VM, or an 
-endpoint that's implemented purely in hardware by logic gates. In my 
-case (and I assume likely in most CPU-driven PCIe endpoint cases), the 
-endpoint controller has the following capabilities:
+This patch set does some small extensions to vhost-user protocol
+to support VFIO based accelerators, and makes it possible to get
+the similar performance of VFIO based PCI passthru while keeping
+the virtio device emulation in QEMU.
 
-- Host-initiated accesses to the endpoint's BARs can read/write normal 
-memory, but not hardware registers within the endpoint system.
+How does accelerator accelerate vhost (data path)
+=================================================
 
-- Accesses to memory exposed by BARs can't be synchronously handled by 
-the endpoint's local CPU. The local CPU can't be notified when the host 
-writes memory in order to synchronously update other memory locations. 
-The local CPU can't synchronously generate the result of a host read 
-transaction, but rather the data must be present in memory ahead of time.
+Any virtio ring compatible devices potentially can be used as the
+vhost data path accelerators. We can setup the accelerator based
+on the informations (e.g. memory table, features, ring info, etc)
+available on the vhost backend. And accelerator will be able to use
+the virtio ring provided by the virtio driver in the VM directly.
+So the virtio driver in the VM can exchange e.g. network packets
+with the accelerator directly via the virtio ring. That is to say,
+we will be able to use the accelerator to accelerate the vhost
+data path. We call it vDPA: vhost Data Path Acceleration.
 
-- Accesses to a small region of address space can be used to generate 
-interrupts to the endpoint's local CPU. This region can be exposed 
-through a PCI BAR (or perhaps as part of a BAR; not sure on details 
-yet). This region of memory has a fixed format and is separate from true 
-RAM, and so can't be used to hold PCI-virtio's discovery/capability data.
+Notice: Although the accelerator can talk with the virtio driver
+in the VM via the virtio ring directly. The control path events
+(e.g. device start/stop) in the VM will still be trapped and handled
+by QEMU, and QEMU will deliver such events to the vhost backend
+via standard vhost protocol.
 
-- The endpoint can emit PCI interrupts (e.g. MSI) to the attached host.
+Below link is an example showing how to setup a such environment
+via nested VM. In this case, the virtio device in the outer VM is
+the accelerator. It will be used to accelerate the virtio device
+in the inner VM. In reality, we could use virtio ring compatible
+hardware device as the accelerators.
 
-The model described in the virtio spec's "Virtio PCI Bus" section 
-doesn't seem to work in this case, since it assumes:
+http://dpdk.org/ml/archives/dev/2017-December/085044.html
 
-- Writes to some fields in the PCI configuration space (e.g. 
-{queue,device_feature,driver_feature}_select) synchronously update other 
-fields (e.g. queue_size), which can immediately be accessed by the host. 
-This isn't possible when the memory content is created by a CPU that 
-isn't a synchronous part of PCI accesses.
+In above example, it doesn't require any changes to QEMU, but
+it has lower performance compared with the traditional VFIO
+based PCI passthru. And that's the problem this patch set wants
+to solve.
 
-- Writing to some fields in the PCI configuration space (e.g. 
-device_status) are supposed to trigger a response by the device, without 
-the need to explicitly notify the device of the memory write by some 
-other means. This isn't possible when the endpoint's local CPU has no 
-mechanism to be notified of such writes.
+The performance issue of vDPA/vhost-user and solutions
+======================================================
 
-- The device_status field is asynchronously read-write by both the 
-device and driver, yet the spec requires that the driver must always 
-read-modify-write this field, and additionally that the driver must 
-never clear any device status bit. These requirements seem impossible to 
-satisfy in any case at all, let alone the current case.
+For vhost-user backend, the critical issue in vDPA is that the
+data path performance is relatively low and some host threads are
+needed for the data path, because some necessary mechanisms are
+missing to support:
 
-I can see some possible solutions here:
+1) guest driver notifies the device directly;
+2) device interrupts the guest directly;
 
-1) Just implement virtqueues but not all of the standardized PCI 
-discovery protocol. virtqueues don't have the problems described above 
-and should work fine between systems where there are asynchronous CPUs 
-on both ends. virtqueus solely rely on normal memory access without 
-side-effects and explicit notification. This would require implementing 
-some custom/device-specific discovery protocol. I believe that 
-remoteproc/rpmsg take this approach.
+So this patch set does some small extensions to the vhost-user
+protocol to make both of them possible. It leverages the same
+mechanisms (e.g. EPT and Posted-Interrupt on Intel platform) as
+the PCI passthru.
 
-2) Define a new standardized virtio PCI discovery protocol that is 
-better suited to the device being an asynchronous CPU. For example, 
-eliminate the need for the device to somehow notice memory accesses and 
-rely on explicitl notification instead. Separate device-written and 
-driver-written data into different cache-lines or pages.
+A new protocol feature bit is added to negotiate the accelerator
+feature support. Two new slave message types are added to control
+the notify region and queue interrupt passthru for each queue.
+From the view of vhost-user protocol design, it's very flexible.
+The passthru can be enabled/disabled for each queue individually,
+and it's possible to accelerate each queue by different devices.
+More design and implementation details can be found from the last
+patch.
 
-3) Use something other than virtio/virtqueues instead.
+Difference between vDPA and PCI passthru
+========================================
 
-As an aside, I noticed that the memory allocation for virtqueues is very 
-lopsided; the driver always allocates the storage. This means that the 
-device must perform PCI reads to transfer data from the driver to the 
-device. PCI reads are typically slower than PCI writes since reads 
-require a round-trip transfer, whereas writes can be posted. I wonder if 
-any thought has been put into having the device optionally allocate 
-virtuqueue buffers so that the protocol can rely primarily on PCI 
-writes? Perhaps there's some alternative protocol that's more optimized 
-for true PCI-based communication than paravirtualized PCI-based 
-communication?
+The key difference between PCI passthru and vDPA is that, in vDPA
+only the data path of the device (e.g. DMA ring, notify region and
+queue interrupt) is pass-throughed to the VM, the device control
+path (e.g. PCI configuration space and MMIO regions) is still
+defined and emulated by QEMU.
 
-Thanks for any thoughts on the best approach, or pointers to 
-pre-existing work in this area.
+The benefits of keeping virtio device emulation in QEMU compared
+with virtio device PCI passthru include (but not limit to):
 
-[I originally sent this email to a Linux virtio/virtualization mailing 
-list, to which Michael S. Tsirkin responded with the below, which I'm in 
-order to mention Jan's work.]
+- consistent device interface for guest OS in the VM;
+- max flexibility on the hardware (i.e. the accelerators) design;
+- leveraging the existing virtio live-migration framework;
 
-I think Jan Kiszka wanted to add ability to put some data in the PCI
-BAR. This was never formally proposed.
+Why extend vhost-user for vDPA
+==============================
 
-Your first step IMHO should be to send these thoughts to one of the
-virtio TC mailing lists, that's where discussion about virtio interface
-extensions takes place. virtualization@lists.linux-foundation.org is
-mostly for Linux virtio drivers.
+We have already implemented various virtual switches (e.g. OVS-DPDK)
+based on vhost-user for VMs in the Cloud. They are purely software
+running on CPU cores. When we have accelerators for such NFVi applications,
+it's ideal if the applications could keep using the original interface
+(i.e. vhost-user netdev) with QEMU, and infrastructure is able to decide
+when and how to switch between CPU and accelerators within the interface.
+And the switching (i.e. switch between CPU and accelerators) can be done
+flexibly and quickly inside the applications.
+
+More details about this can be found from the Cunming's discussions on
+the RFC patch set.
+
+Update notes
+============
+
+IOMMU feature bit check is removed in this version, because:
+
+The IOMMU feature is negotiable, when an accelerator is used and
+it doesn't support virtual IOMMU, its driver just won't provide
+this feature bit when vhost library querying its features. And if
+it supports the virtual IOMMU, its driver can provide this feature
+bit. It's not reasonable to add this limitation in this patch set.
+
+The previous links:
+RFC: http://lists.nongnu.org/archive/html/qemu-devel/2017-12/msg04844.html
+v1:  http://lists.nongnu.org/archive/html/qemu-devel/2018-01/msg06028.html
+
+v1 -> v2:
+- Add some explanations about why extend vhost-user in commit log (Paolo);
+- Bug fix in slave_read() according to Stefan's fix in DPDK;
+- Remove IOMMU feature check and related commit log;
+- Some minor refinements;
+- Rebase to the latest QEMU;
+
+RFC -> v1:
+- Add some details about how vDPA works in cover letter (Alexey)
+- Add some details about the OVS offload use-case in cover letter (Jason)
+- Move PCI specific stuffs out of vhost-user (Jason)
+- Handle the virtual IOMMU case (Jason)
+- Move VFIO group management code into vfio/common.c (Alex)
+- Various refinements;
+(approximately sorted by comment posting time)
+
+Tiwei Bie (6):
+  vhost-user: support receiving file descriptors in slave_read
+  vhost-user: introduce shared vhost-user state
+  virtio: support adding sub-regions for notify region
+  vfio: support getting VFIOGroup from groupfd
+  vfio: remove DPRINTF() definition from vfio-common.h
+  vhost-user: add VFIO based accelerators support
+
+ Makefile.target                 |   4 +
+ docs/interop/vhost-user.txt     |  57 +++++++++
+ hw/scsi/vhost-user-scsi.c       |   6 +-
+ hw/vfio/common.c                |  97 +++++++++++++++-
+ hw/virtio/vhost-user.c          | 248 +++++++++++++++++++++++++++++++++++++++-
+ hw/virtio/virtio-pci.c          |  48 ++++++++
+ hw/virtio/virtio-pci.h          |   5 +
+ hw/virtio/virtio.c              |  39 +++++++
+ include/hw/vfio/vfio-common.h   |  11 +-
+ include/hw/virtio/vhost-user.h  |  34 ++++++
+ include/hw/virtio/virtio-scsi.h |   6 +-
+ include/hw/virtio/virtio.h      |   5 +
+ include/qemu/osdep.h            |   1 +
+ net/vhost-user.c                |  30 ++---
+ scripts/create_config           |   3 +
+ 15 files changed, 561 insertions(+), 33 deletions(-)
+ create mode 100644 include/hw/virtio/vhost-user.h
+
+-- 
+2.11.0
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
