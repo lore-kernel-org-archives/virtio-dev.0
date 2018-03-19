@@ -1,163 +1,233 @@
-Return-Path: virtio-dev-return-3652-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3598-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 53F7F5818041
-	for <virtio-dev@lists.oasis-open.org>; Tue, 27 Mar 2018 06:33:50 -0700 (PDT)
-Date: Tue, 27 Mar 2018 21:32:02 +0800
+	by lists.oasis-open.org (Postfix) with ESMTP id BD2215819042
+	for <virtio-dev@lists.oasis-open.org>; Mon, 19 Mar 2018 00:17:45 -0700 (PDT)
 From: Tiwei Bie <tiwei.bie@intel.com>
-Message-ID: <20180327133201.iauxquit2ji3igyh@debian>
+Date: Mon, 19 Mar 2018 15:15:34 +0800
+Message-Id: <20180319071537.28649-4-tiwei.bie@intel.com>
+In-Reply-To: <20180319071537.28649-1-tiwei.bie@intel.com>
 References: <20180319071537.28649-1-tiwei.bie@intel.com>
- <20180319071537.28649-3-tiwei.bie@intel.com>
- <20180322165800-mutt-send-email-mst@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20180322165800-mutt-send-email-mst@kernel.org>
-Subject: Re: [virtio-dev] Re: [PATCH v2 2/6] vhost-user: introduce shared
- vhost-user state
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, alex.williamson@redhat.com, jasowang@redhat.com, pbonzini@redhat.com, stefanha@redhat.com, cunming.liang@intel.com, dan.daly@intel.com, jianfeng.tan@intel.com, zhihong.wang@intel.com, xiao.w.wang@intel.com
+Subject: [virtio-dev] [PATCH v2 3/6] virtio: support adding sub-regions for notify region
+To: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, mst@redhat.com, alex.williamson@redhat.com, jasowang@redhat.com, pbonzini@redhat.com, stefanha@redhat.com
+Cc: cunming.liang@intel.com, dan.daly@intel.com, jianfeng.tan@intel.com, zhihong.wang@intel.com, xiao.w.wang@intel.com, tiwei.bie@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Thu, Mar 22, 2018 at 05:13:41PM +0200, Michael S. Tsirkin wrote:
-> On Mon, Mar 19, 2018 at 03:15:33PM +0800, Tiwei Bie wrote:
-> > @@ -22,7 +23,7 @@
-> >  
-> >  typedef struct VhostUserState {
-> >      NetClientState nc;
-> > -    CharBackend chr; /* only queue index 0 */
-> > +    VhostUser vhost_user; /* only queue index 0 */
-> >      VHostNetState *vhost_net;
-> >      guint watch;
-> >      uint64_t acked_features;
-> 
-> Is the comment still valid?
+Provide APIs to support querying whether the page-per-vq
+is enabled and adding sub-regions for notify region.
 
-The comment is still valid in this patch. But the
-implementation in this patch is inelegant. I plan
-to rewrite this patch.
+Signed-off-by: Tiwei Bie <tiwei.bie@intel.com>
+---
+ Makefile.target            |  4 ++++
+ hw/virtio/virtio-pci.c     | 48 ++++++++++++++++++++++++++++++++++++++++++++++
+ hw/virtio/virtio-pci.h     |  5 +++++
+ hw/virtio/virtio.c         | 39 +++++++++++++++++++++++++++++++++++++
+ include/hw/virtio/virtio.h |  5 +++++
+ include/qemu/osdep.h       |  1 +
+ scripts/create_config      |  3 +++
+ 7 files changed, 105 insertions(+)
 
-> 
-> > @@ -64,7 +65,7 @@ static void vhost_user_stop(int queues, NetClientState *ncs[])
-> >      }
-> >  }
-> >  
-> > -static int vhost_user_start(int queues, NetClientState *ncs[], CharBackend *be)
-> > +static int vhost_user_start(int queues, NetClientState *ncs[], void *be)
-> >  {
-> >      VhostNetOptions options;
-> >      struct vhost_net *net = NULL;
-> 
-> Type safety going away here. This is actually pretty scary:
-> are we sure no users cast this pointer to CharBackend?
-> 
-> For example it seems that vhost_user_init does exactly that.
-> 
-> Need to find a way to add type safety before making
-> such a change.
+diff --git a/Makefile.target b/Makefile.target
+index 6549481096..b2cf618dc9 100644
+--- a/Makefile.target
++++ b/Makefile.target
+@@ -39,6 +39,9 @@ STPFILES=
+ config-target.h: config-target.h-timestamp
+ config-target.h-timestamp: config-target.mak
+ 
++config-devices.h: config-devices.h-timestamp
++config-devices.h-timestamp: config-devices.mak
++
+ ifdef CONFIG_TRACE_SYSTEMTAP
+ stap: $(QEMU_PROG).stp-installed $(QEMU_PROG).stp $(QEMU_PROG)-simpletrace.stp
+ 
+@@ -224,4 +227,5 @@ ifdef CONFIG_TRACE_SYSTEMTAP
+ endif
+ 
+ GENERATED_FILES += config-target.h
++GENERATED_FILES += config-devices.h
+ Makefile: $(GENERATED_FILES)
+diff --git a/hw/virtio/virtio-pci.c b/hw/virtio/virtio-pci.c
+index 1e8ab7bbc5..b17471092a 100644
+--- a/hw/virtio/virtio-pci.c
++++ b/hw/virtio/virtio-pci.c
+@@ -1534,6 +1534,54 @@ static void virtio_pci_modern_io_region_unmap(VirtIOPCIProxy *proxy,
+                                 &region->mr);
+ }
+ 
++static VirtIOPCIProxy *virtio_device_to_virtio_pci_proxy(VirtIODevice *vdev)
++{
++    VirtIOPCIProxy *proxy = NULL;
++
++    if (vdev->device_id == VIRTIO_ID_NET) {
++        VirtIONetPCI *d = container_of(vdev, VirtIONetPCI, vdev.parent_obj);
++        proxy = &d->parent_obj;
++    }
++
++    return proxy;
++}
++
++bool virtio_pci_page_per_vq_enabled(VirtIODevice *vdev)
++{
++    VirtIOPCIProxy *proxy = virtio_device_to_virtio_pci_proxy(vdev);
++
++    if (proxy == NULL) {
++        return false;
++    }
++
++    return !!(proxy->flags & VIRTIO_PCI_FLAG_PAGE_PER_VQ);
++}
++
++int virtio_pci_notify_region_map(VirtIODevice *vdev, int queue_idx,
++                                 MemoryRegion *mr)
++{
++    VirtIOPCIProxy *proxy = virtio_device_to_virtio_pci_proxy(vdev);
++    int offset;
++
++    if (proxy == NULL || !virtio_pci_modern(proxy)) {
++        return -1;
++    }
++
++    offset = virtio_pci_queue_mem_mult(proxy) * queue_idx;
++    memory_region_add_subregion(&proxy->notify.mr, offset, mr);
++
++    return 0;
++}
++
++void virtio_pci_notify_region_unmap(VirtIODevice *vdev, MemoryRegion *mr)
++{
++    VirtIOPCIProxy *proxy = virtio_device_to_virtio_pci_proxy(vdev);
++
++    if (proxy != NULL) {
++        memory_region_del_subregion(&proxy->notify.mr, mr);
++    }
++}
++
+ static void virtio_pci_pre_plugged(DeviceState *d, Error **errp)
+ {
+     VirtIOPCIProxy *proxy = VIRTIO_PCI(d);
+diff --git a/hw/virtio/virtio-pci.h b/hw/virtio/virtio-pci.h
+index 813082b0d7..8061133741 100644
+--- a/hw/virtio/virtio-pci.h
++++ b/hw/virtio/virtio-pci.h
+@@ -213,6 +213,11 @@ static inline void virtio_pci_disable_modern(VirtIOPCIProxy *proxy)
+     proxy->disable_modern = true;
+ }
+ 
++bool virtio_pci_page_per_vq_enabled(VirtIODevice *vdev);
++int virtio_pci_notify_region_map(VirtIODevice *vdev, int queue_idx,
++                                 MemoryRegion *mr);
++void virtio_pci_notify_region_unmap(VirtIODevice *vdev, MemoryRegion *mr);
++
+ /*
+  * virtio-scsi-pci: This extends VirtioPCIProxy.
+  */
+diff --git a/hw/virtio/virtio.c b/hw/virtio/virtio.c
+index 006d3d1148..90ee72984c 100644
+--- a/hw/virtio/virtio.c
++++ b/hw/virtio/virtio.c
+@@ -22,6 +22,7 @@
+ #include "qemu/atomic.h"
+ #include "hw/virtio/virtio-bus.h"
+ #include "hw/virtio/virtio-access.h"
++#include "hw/virtio/virtio-pci.h"
+ #include "sysemu/dma.h"
+ 
+ /*
+@@ -2681,6 +2682,44 @@ void virtio_device_release_ioeventfd(VirtIODevice *vdev)
+     virtio_bus_release_ioeventfd(vbus);
+ }
+ 
++bool virtio_device_parent_is_pci_device(VirtIODevice *vdev)
++{
++    BusState *qbus = qdev_get_parent_bus(DEVICE(vdev));
++    const char *typename = object_get_typename(OBJECT(qbus->parent));
++
++    return strstr(typename, "pci") != NULL;
++}
++
++bool virtio_device_page_per_vq_enabled(VirtIODevice *vdev)
++{
++#ifdef CONFIG_VIRTIO_PCI
++    if (virtio_device_parent_is_pci_device(vdev)) {
++        return virtio_pci_page_per_vq_enabled(vdev);
++    }
++#endif
++    return false;
++}
++
++int virtio_device_notify_region_map(VirtIODevice *vdev, int queue_idx,
++                                    MemoryRegion *mr)
++{
++#ifdef CONFIG_VIRTIO_PCI
++    if (virtio_device_parent_is_pci_device(vdev)) {
++        return virtio_pci_notify_region_map(vdev, queue_idx, mr);
++    }
++#endif
++    return -1;
++}
++
++void virtio_device_notify_region_unmap(VirtIODevice *vdev, MemoryRegion *mr)
++{
++#ifdef CONFIG_VIRTIO_PCI
++    if (virtio_device_parent_is_pci_device(vdev)) {
++        virtio_pci_notify_region_unmap(vdev, mr);
++    }
++#endif
++}
++
+ static void virtio_device_class_init(ObjectClass *klass, void *data)
+ {
+     /* Set the default value here. */
+diff --git a/include/hw/virtio/virtio.h b/include/hw/virtio/virtio.h
+index 098bdaaea3..b14accdb08 100644
+--- a/include/hw/virtio/virtio.h
++++ b/include/hw/virtio/virtio.h
+@@ -285,6 +285,11 @@ void virtio_device_stop_ioeventfd(VirtIODevice *vdev);
+ int virtio_device_grab_ioeventfd(VirtIODevice *vdev);
+ void virtio_device_release_ioeventfd(VirtIODevice *vdev);
+ bool virtio_device_ioeventfd_enabled(VirtIODevice *vdev);
++bool virtio_device_parent_is_pci_device(VirtIODevice *vdev);
++bool virtio_device_page_per_vq_enabled(VirtIODevice *vdev);
++int virtio_device_notify_region_map(VirtIODevice *vdev, int queue_idx,
++                                    MemoryRegion *mr);
++void virtio_device_notify_region_unmap(VirtIODevice *vdev, MemoryRegion *mr);
+ EventNotifier *virtio_queue_get_host_notifier(VirtQueue *vq);
+ void virtio_queue_host_notifier_read(EventNotifier *n);
+ void virtio_queue_aio_set_host_notifier_handler(VirtQueue *vq, AioContext *ctx,
+diff --git a/include/qemu/osdep.h b/include/qemu/osdep.h
+index 41658060a7..2532c278ef 100644
+--- a/include/qemu/osdep.h
++++ b/include/qemu/osdep.h
+@@ -30,6 +30,7 @@
+ #include "config-host.h"
+ #ifdef NEED_CPU_H
+ #include "config-target.h"
++#include "config-devices.h"
+ #else
+ #include "exec/poison.h"
+ #endif
+diff --git a/scripts/create_config b/scripts/create_config
+index d727e5e36e..e4541a51ed 100755
+--- a/scripts/create_config
++++ b/scripts/create_config
+@@ -58,6 +58,9 @@ case $line in
+     name=${line%=*}
+     echo "#define $name 1"
+     ;;
++ CONFIG_*='$(CONFIG_'*')') # configuration
++    continue
++    ;;
+  CONFIG_*=*) # configuration
+     name=${line%=*}
+     value=${line#*=}
+-- 
+2.11.0
 
-I have changed vhost_user_init() to cast this pointer
-to the new type (VhostUser) in this patch. But my bad,
-I shouldn't change the type to 'void *'. Will fix this.
-
-Best regards,
-Tiwei Bie
-
-> 
-> 
-> > @@ -158,7 +159,7 @@ static void vhost_user_cleanup(NetClientState *nc)
-> >              g_source_remove(s->watch);
-> >              s->watch = 0;
-> >          }
-> > -        qemu_chr_fe_deinit(&s->chr, true);
-> > +        qemu_chr_fe_deinit(&s->vhost_user.chr, true);
-> >      }
-> >  
-> >      qemu_purge_queued_packets(nc);
-> > @@ -192,7 +193,7 @@ static gboolean net_vhost_user_watch(GIOChannel *chan, GIOCondition cond,
-> >  {
-> >      VhostUserState *s = opaque;
-> >  
-> > -    qemu_chr_fe_disconnect(&s->chr);
-> > +    qemu_chr_fe_disconnect(&s->vhost_user.chr);
-> >  
-> >      return TRUE;
-> >  }
-> > @@ -217,7 +218,8 @@ static void chr_closed_bh(void *opaque)
-> >      qmp_set_link(name, false, &err);
-> >      vhost_user_stop(queues, ncs);
-> >  
-> > -    qemu_chr_fe_set_handlers(&s->chr, NULL, NULL, net_vhost_user_event,
-> > +    qemu_chr_fe_set_handlers(&s->vhost_user.chr, NULL, NULL,
-> > +                             net_vhost_user_event,
-> >                               NULL, opaque, NULL, true);
-> >  
-> >      if (err) {
-> > @@ -240,15 +242,15 @@ static void net_vhost_user_event(void *opaque, int event)
-> >      assert(queues < MAX_QUEUE_NUM);
-> >  
-> >      s = DO_UPCAST(VhostUserState, nc, ncs[0]);
-> > -    chr = qemu_chr_fe_get_driver(&s->chr);
-> > +    chr = qemu_chr_fe_get_driver(&s->vhost_user.chr);
-> >      trace_vhost_user_event(chr->label, event);
-> >      switch (event) {
-> >      case CHR_EVENT_OPENED:
-> > -        if (vhost_user_start(queues, ncs, &s->chr) < 0) {
-> > -            qemu_chr_fe_disconnect(&s->chr);
-> > +        if (vhost_user_start(queues, ncs, &s->vhost_user) < 0) {
-> > +            qemu_chr_fe_disconnect(&s->vhost_user.chr);
-> >              return;
-> >          }
-> > -        s->watch = qemu_chr_fe_add_watch(&s->chr, G_IO_HUP,
-> > +        s->watch = qemu_chr_fe_add_watch(&s->vhost_user.chr, G_IO_HUP,
-> >                                           net_vhost_user_watch, s);
-> >          qmp_set_link(name, true, &err);
-> >          s->started = true;
-> > @@ -264,8 +266,8 @@ static void net_vhost_user_event(void *opaque, int event)
-> >  
-> >              g_source_remove(s->watch);
-> >              s->watch = 0;
-> > -            qemu_chr_fe_set_handlers(&s->chr, NULL, NULL, NULL, NULL,
-> > -                                     NULL, NULL, false);
-> > +            qemu_chr_fe_set_handlers(&s->vhost_user.chr, NULL, NULL, NULL,
-> > +                                     NULL, NULL, NULL, false);
-> >  
-> >              aio_bh_schedule_oneshot(ctx, chr_closed_bh, opaque);
-> >          }
-> > @@ -297,7 +299,7 @@ static int net_vhost_user_init(NetClientState *peer, const char *device,
-> >          if (!nc0) {
-> >              nc0 = nc;
-> >              s = DO_UPCAST(VhostUserState, nc, nc);
-> > -            if (!qemu_chr_fe_init(&s->chr, chr, &err)) {
-> > +            if (!qemu_chr_fe_init(&s->vhost_user.chr, chr, &err)) {
-> >                  error_report_err(err);
-> >                  return -1;
-> >              }
-> > @@ -307,11 +309,11 @@ static int net_vhost_user_init(NetClientState *peer, const char *device,
-> >  
-> >      s = DO_UPCAST(VhostUserState, nc, nc0);
-> >      do {
-> > -        if (qemu_chr_fe_wait_connected(&s->chr, &err) < 0) {
-> > +        if (qemu_chr_fe_wait_connected(&s->vhost_user.chr, &err) < 0) {
-> >              error_report_err(err);
-> >              return -1;
-> >          }
-> > -        qemu_chr_fe_set_handlers(&s->chr, NULL, NULL,
-> > +        qemu_chr_fe_set_handlers(&s->vhost_user.chr, NULL, NULL,
-> >                                   net_vhost_user_event, NULL, nc0->name, NULL,
-> >                                   true);
-> >      } while (!s->started);
-> > -- 
-> > 2.11.0
-> 
-> ---------------------------------------------------------------------
-> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
-> 
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
