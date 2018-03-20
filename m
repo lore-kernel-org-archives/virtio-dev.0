@@ -1,1052 +1,1966 @@
-Return-Path: virtio-dev-return-3621-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3617-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id ABB1358180EF
-	for <virtio-dev@lists.oasis-open.org>; Tue, 20 Mar 2018 02:40:04 -0700 (PDT)
+	by lists.oasis-open.org (Postfix) with ESMTP id E50955818017
+	for <virtio-dev@lists.oasis-open.org>; Mon, 19 Mar 2018 20:17:14 -0700 (PDT)
+Date: Tue, 20 Mar 2018 05:16:59 +0200
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <1521515720-612046-2-git-send-email-mst@redhat.com>
+References: <1521515720-612046-1-git-send-email-mst@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <2f56babd-e9db-f5ba-0678-25864a41fb9e@redhat.com>
-References: <20180125162709.370-1-sameeh@daynix.com> <20180125162709.370-2-sameeh@daynix.com>
- <767992ef-c23a-2098-6055-3b8d0cfec093@redhat.com> <CAKPgXcG4C0k+Kzjo0HzfDLskMcxRfLNvXe5wxVJY4cFMZnhn4Q@mail.gmail.com>
- <2f56babd-e9db-f5ba-0678-25864a41fb9e@redhat.com>
-From: Sameeh Jubran <sameeh@daynix.com>
-Date: Tue, 20 Mar 2018 11:39:51 +0200
-Message-ID: <CAKPgXcHkLc40-0oYWF6iiWOjw2S8M+ZTsXZQ8mqos_r3o6sL8g@mail.gmail.com>
-Content-Type: multipart/alternative; boundary="00000000000037ce190567d4dbeb"
-Subject: Re: [virtio-dev] [RFC virtio-net 1/1] content: net: Add
- VIRTIO_NET_F_CTRL_RSS feature
-To: Jason Wang <jasowang@redhat.com>
-Cc: virtio-dev <virtio-dev@lists.oasis-open.org>, Amnon Ilan <ailan@redhat.com>, Yan Vugenfirer <yan@daynix.com>, "Michael S. Tsirkin" <mst@redhat.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1521515720-612046-1-git-send-email-mst@redhat.com>
+Subject: [virtio-dev] [PULL v2 01/50] scripts/update-linux-headers: add ethtool.h and
+ update to 4.16.0-rc4
+To: qemu-devel@nongnu.org
+Cc: Peter Maydell <peter.maydell@linaro.org>, Jason Baron <jbaron@akamai.com>, Jason Wang <jasowang@redhat.com>, virtio-dev@lists.oasis-open.org, Roman Kagan <rkagan@virtuozzo.com>, Paolo Bonzini <pbonzini@redhat.com>, Cornelia Huck <cohuck@redhat.com>, Yuval Shaia <yuval.shaia@oracle.com>, Stefan Hajnoczi <stefanha@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
---00000000000037ce190567d4dbeb
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Jason Baron <jbaron@akamai.com>
 
-On Tue, Mar 20, 2018 at 5:10 AM, Jason Wang <jasowang@redhat.com> wrote:
+A subsequent patch to add support for setting linkspeed/duplex in
+virtio-net, requires a few definitions from ethtool.h, which ends up
+pulling in kernel.h and sysinfo.h as well.
 
->
->
-> On 2018=E5=B9=B403=E6=9C=8819=E6=97=A5 21:33, Sameeh Jubran wrote:
->
->>
->>
->> On Thu, Mar 15, 2018 at 4:19 AM, Jason Wang <jasowang@redhat.com <mailto=
-:
->> jasowang@redhat.com>> wrote:
->>
->>
->>
->>     On 2018=E5=B9=B401=E6=9C=8826=E6=97=A5 00:27, Sameeh Jubran wrote:
->>
->>         From: Sameeh Jubran <sameeh.j@gmail.com
->>         <mailto:sameeh.j@gmail.com>>
->>
->>         Most modern high end network devices today support
->>         configurable hash functions,
->>         this commit introduces RSS - Receive Side Scaling - [1] to
->>         virtio net device.
->>
->>         The RSS is a technology from Microsoft that boosts network
->>         device performance
->>         by efficiently distributing the traffic among the CPUs in a
->>         multiprocessor
->>         system.
->>
->>         This feature is supported in most of the modern network cards
->>         as well as most
->>         modern OSes including Linux and Windows. It is worth
->>         mentioning that both DPDK
->>         and Hyper-v support RSS too.
->>
->>         [1]
->>         https://docs.microsoft.com/en-us/windows-hardware/drivers/ne
->> twork/ndis-receive-side-scaling2
->>         <https://docs.microsoft.com/en-us/windows-hardware/drivers/
->> network/ndis-receive-side-scaling2>
->>
->>         Signed-off-by: Sameeh Jubran <sjubran@redhat.com
->>         <mailto:sjubran@redhat.com>>
->>
->>         ---
->>           content.tex | 133
->>         ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
->>           1 file changed, 133 insertions(+)
->>
->>         diff --git a/content.tex b/content.tex
->>         index c840588..5969b28 100644
->>         --- a/content.tex
->>         +++ b/content.tex
->>         @@ -3115,6 +3115,9 @@ features.
->>             \item[VIRTIO_NET_F_CTRL_MAC_ADDR(23)] Set MAC address
->>         through control
->>               channel.
->>         +
->>         +\item[VIRTIO_NET_F_CTRL_RSS(24)] Device supports configurable
->>         RSS hash
->>         +    functions.
->>           \end{description}
->>             \subsubsection{Feature bit requirements}\label{sec:Device
->>         Types / Network Device / Feature bits / Feature bit requirements=
-}
->>         @@ -3138,6 +3141,8 @@ Some networking feature bits require
->>         other networking feature bits
->>           \item[VIRTIO_NET_F_GUEST_ANNOUNCE] Requires
->>         VIRTIO_NET_F_CTRL_VQ.
->>           \item[VIRTIO_NET_F_MQ] Requires VIRTIO_NET_F_CTRL_VQ.
->>           \item[VIRTIO_NET_F_CTRL_MAC_ADDR] Requires
->> VIRTIO_NET_F_CTRL_VQ.
->>         +
->>         +\item[VIRTIO_NET_F_CTRL_RSS] Requires VIRTIO_NET_F_MQ.
->>           \end{description}
->>
->>
->>     Is this a requirement of RSSv2? Looks like at least RSS can work
->>     without multiqueue in V1.
->>
->> You are right this is not a requirement and should be dropped. More on
->> RSS with single hardware queue:
->>  https://docs.microsoft.com/en-us/windows-hardware/drivers/
->> network/rss-with-a-single-hardware-receive-queue <
->> https://docs.microsoft.com/en-us/windows-hardware/drivers/
->> network/rss-with-a-single-hardware-receive-queue>
->>
->>
->>
->>             \subsubsection{Legacy Interface: Feature
->>         bits}\label{sec:Device Types / Network Device / Feature bits /
->>         Legacy Interface: Feature bits}
->>         @@ -3308,6 +3313,7 @@ struct virtio_net_hdr {
->>                   u8 flags;
->>           #define VIRTIO_NET_HDR_GSO_NONE        0
->>           #define VIRTIO_NET_HDR_GSO_TCPV4       1
->>         +#define VIRTIO_NET_HDR_GSO_RSS         2
->>
->>
->>     What's the reason of introducing a new GSO type here? RSS should
->>     be independent for a specific offloading type I think.
->>
->> This was the straight forward option as there is no need to extend the
->> virtio header but it can be moved to a specific offload.
->>
->
-> If I understand correctly, RSS is not tied to GSO, so you mean
-> VIRTIO_NET_HDR_RSS here?
+Signed-off-by: Jason Baron <jbaron@akamai.com>
+Cc: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: Jason Wang <jasowang@redhat.com>
+Cc: virtio-dev@lists.oasis-open.org
+---
+ include/standard-headers/linux/ethtool.h | 1821 ++++++++++++++++++++++++++++++
+ include/standard-headers/linux/kernel.h  |   15 +
+ include/standard-headers/linux/sysinfo.h |   25 +
+ scripts/update-linux-headers.sh          |   11 +-
+ 4 files changed, 1871 insertions(+), 1 deletion(-)
+ create mode 100644 include/standard-headers/linux/ethtool.h
+ create mode 100644 include/standard-headers/linux/kernel.h
+ create mode 100644 include/standard-headers/linux/sysinfo.h
 
-Yup
+diff --git a/include/standard-headers/linux/ethtool.h b/include/standard-headers/linux/ethtool.h
+new file mode 100644
+index 0000000..94aacb7
+--- /dev/null
++++ b/include/standard-headers/linux/ethtool.h
+@@ -0,0 +1,1821 @@
++/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
++/*
++ * ethtool.h: Defines for Linux ethtool.
++ *
++ * Copyright (C) 1998 David S. Miller (davem@redhat.com)
++ * Copyright 2001 Jeff Garzik <jgarzik@pobox.com>
++ * Portions Copyright 2001 Sun Microsystems (thockin@sun.com)
++ * Portions Copyright 2002 Intel (eli.kupermann@intel.com,
++ *                                christopher.leech@intel.com,
++ *                                scott.feldman@intel.com)
++ * Portions Copyright (C) Sun Microsystems 2008
++ */
++
++#ifndef _LINUX_ETHTOOL_H
++#define _LINUX_ETHTOOL_H
++
++#include "net/eth.h"
++
++#include "standard-headers/linux/kernel.h"
++#include "standard-headers/linux/types.h"
++#include "standard-headers/linux/if_ether.h"
++
++#include <limits.h> /* for INT_MAX */
++
++/* All structures exposed to userland should be defined such that they
++ * have the same layout for 32-bit and 64-bit userland.
++ */
++
++/**
++ * struct ethtool_cmd - DEPRECATED, link control and status
++ * This structure is DEPRECATED, please use struct ethtool_link_settings.
++ * @cmd: Command number = %ETHTOOL_GSET or %ETHTOOL_SSET
++ * @supported: Bitmask of %SUPPORTED_* flags for the link modes,
++ *	physical connectors and other link features for which the
++ *	interface supports autonegotiation or auto-detection.
++ *	Read-only.
++ * @advertising: Bitmask of %ADVERTISED_* flags for the link modes,
++ *	physical connectors and other link features that are
++ *	advertised through autonegotiation or enabled for
++ *	auto-detection.
++ * @speed: Low bits of the speed, 1Mb units, 0 to INT_MAX or SPEED_UNKNOWN
++ * @duplex: Duplex mode; one of %DUPLEX_*
++ * @port: Physical connector type; one of %PORT_*
++ * @phy_address: MDIO address of PHY (transceiver); 0 or 255 if not
++ *	applicable.  For clause 45 PHYs this is the PRTAD.
++ * @transceiver: Historically used to distinguish different possible
++ *	PHY types, but not in a consistent way.  Deprecated.
++ * @autoneg: Enable/disable autonegotiation and auto-detection;
++ *	either %AUTONEG_DISABLE or %AUTONEG_ENABLE
++ * @mdio_support: Bitmask of %ETH_MDIO_SUPPORTS_* flags for the MDIO
++ *	protocols supported by the interface; 0 if unknown.
++ *	Read-only.
++ * @maxtxpkt: Historically used to report TX IRQ coalescing; now
++ *	obsoleted by &struct ethtool_coalesce.  Read-only; deprecated.
++ * @maxrxpkt: Historically used to report RX IRQ coalescing; now
++ *	obsoleted by &struct ethtool_coalesce.  Read-only; deprecated.
++ * @speed_hi: High bits of the speed, 1Mb units, 0 to INT_MAX or SPEED_UNKNOWN
++ * @eth_tp_mdix: Ethernet twisted-pair MDI(-X) status; one of
++ *	%ETH_TP_MDI_*.  If the status is unknown or not applicable, the
++ *	value will be %ETH_TP_MDI_INVALID.  Read-only.
++ * @eth_tp_mdix_ctrl: Ethernet twisted pair MDI(-X) control; one of
++ *	%ETH_TP_MDI_*.  If MDI(-X) control is not implemented, reads
++ *	yield %ETH_TP_MDI_INVALID and writes may be ignored or rejected.
++ *	When written successfully, the link should be renegotiated if
++ *	necessary.
++ * @lp_advertising: Bitmask of %ADVERTISED_* flags for the link modes
++ *	and other link features that the link partner advertised
++ *	through autonegotiation; 0 if unknown or not applicable.
++ *	Read-only.
++ *
++ * The link speed in Mbps is split between @speed and @speed_hi.  Use
++ * the ethtool_cmd_speed() and ethtool_cmd_speed_set() functions to
++ * access it.
++ *
++ * If autonegotiation is disabled, the speed and @duplex represent the
++ * fixed link mode and are writable if the driver supports multiple
++ * link modes.  If it is enabled then they are read-only; if the link
++ * is up they represent the negotiated link mode; if the link is down,
++ * the speed is 0, %SPEED_UNKNOWN or the highest enabled speed and
++ * @duplex is %DUPLEX_UNKNOWN or the best enabled duplex mode.
++ *
++ * Some hardware interfaces may have multiple PHYs and/or physical
++ * connectors fitted or do not allow the driver to detect which are
++ * fitted.  For these interfaces @port and/or @phy_address may be
++ * writable, possibly dependent on @autoneg being %AUTONEG_DISABLE.
++ * Otherwise, attempts to write different values may be ignored or
++ * rejected.
++ *
++ * Users should assume that all fields not marked read-only are
++ * writable and subject to validation by the driver.  They should use
++ * %ETHTOOL_GSET to get the current values before making specific
++ * changes and then applying them with %ETHTOOL_SSET.
++ *
++ * Drivers that implement set_settings() should validate all fields
++ * other than @cmd that are not described as read-only or deprecated,
++ * and must ignore all fields described as read-only.
++ *
++ * Deprecated fields should be ignored by both users and drivers.
++ */
++struct ethtool_cmd {
++	uint32_t	cmd;
++	uint32_t	supported;
++	uint32_t	advertising;
++	uint16_t	speed;
++	uint8_t	duplex;
++	uint8_t	port;
++	uint8_t	phy_address;
++	uint8_t	transceiver;
++	uint8_t	autoneg;
++	uint8_t	mdio_support;
++	uint32_t	maxtxpkt;
++	uint32_t	maxrxpkt;
++	uint16_t	speed_hi;
++	uint8_t	eth_tp_mdix;
++	uint8_t	eth_tp_mdix_ctrl;
++	uint32_t	lp_advertising;
++	uint32_t	reserved[2];
++};
++
++static inline void ethtool_cmd_speed_set(struct ethtool_cmd *ep,
++					 uint32_t speed)
++{
++	ep->speed = (uint16_t)(speed & 0xFFFF);
++	ep->speed_hi = (uint16_t)(speed >> 16);
++}
++
++static inline uint32_t ethtool_cmd_speed(const struct ethtool_cmd *ep)
++{
++	return (ep->speed_hi << 16) | ep->speed;
++}
++
++/* Device supports clause 22 register access to PHY or peripherals
++ * using the interface defined in "standard-headers/linux/mii.h".  This should not be
++ * set if there are known to be no such peripherals present or if
++ * the driver only emulates clause 22 registers for compatibility.
++ */
++#define ETH_MDIO_SUPPORTS_C22	1
++
++/* Device supports clause 45 register access to PHY or peripherals
++ * using the interface defined in "standard-headers/linux/mii.h" and <linux/mdio.h>.
++ * This should not be set if there are known to be no such peripherals
++ * present.
++ */
++#define ETH_MDIO_SUPPORTS_C45	2
++
++#define ETHTOOL_FWVERS_LEN	32
++#define ETHTOOL_BUSINFO_LEN	32
++#define ETHTOOL_EROMVERS_LEN	32
++
++/**
++ * struct ethtool_drvinfo - general driver and device information
++ * @cmd: Command number = %ETHTOOL_GDRVINFO
++ * @driver: Driver short name.  This should normally match the name
++ *	in its bus driver structure (e.g. pci_driver::name).  Must
++ *	not be an empty string.
++ * @version: Driver version string; may be an empty string
++ * @fw_version: Firmware version string; may be an empty string
++ * @erom_version: Expansion ROM version string; may be an empty string
++ * @bus_info: Device bus address.  This should match the dev_name()
++ *	string for the underlying bus device, if there is one.  May be
++ *	an empty string.
++ * @n_priv_flags: Number of flags valid for %ETHTOOL_GPFLAGS and
++ *	%ETHTOOL_SPFLAGS commands; also the number of strings in the
++ *	%ETH_SS_PRIV_FLAGS set
++ * @n_stats: Number of uint64_t statistics returned by the %ETHTOOL_GSTATS
++ *	command; also the number of strings in the %ETH_SS_STATS set
++ * @testinfo_len: Number of results returned by the %ETHTOOL_TEST
++ *	command; also the number of strings in the %ETH_SS_TEST set
++ * @eedump_len: Size of EEPROM accessible through the %ETHTOOL_GEEPROM
++ *	and %ETHTOOL_SEEPROM commands, in bytes
++ * @regdump_len: Size of register dump returned by the %ETHTOOL_GREGS
++ *	command, in bytes
++ *
++ * Users can use the %ETHTOOL_GSSET_INFO command to get the number of
++ * strings in any string set (from Linux 2.6.34).
++ *
++ * Drivers should set at most @driver, @version, @fw_version and
++ * @bus_info in their get_drvinfo() implementation.  The ethtool
++ * core fills in the other fields using other driver operations.
++ */
++struct ethtool_drvinfo {
++	uint32_t	cmd;
++	char	driver[32];
++	char	version[32];
++	char	fw_version[ETHTOOL_FWVERS_LEN];
++	char	bus_info[ETHTOOL_BUSINFO_LEN];
++	char	erom_version[ETHTOOL_EROMVERS_LEN];
++	char	reserved2[12];
++	uint32_t	n_priv_flags;
++	uint32_t	n_stats;
++	uint32_t	testinfo_len;
++	uint32_t	eedump_len;
++	uint32_t	regdump_len;
++};
++
++#define SOPASS_MAX	6
++
++/**
++ * struct ethtool_wolinfo - Wake-On-Lan configuration
++ * @cmd: Command number = %ETHTOOL_GWOL or %ETHTOOL_SWOL
++ * @supported: Bitmask of %WAKE_* flags for supported Wake-On-Lan modes.
++ *	Read-only.
++ * @wolopts: Bitmask of %WAKE_* flags for enabled Wake-On-Lan modes.
++ * @sopass: SecureOn(tm) password; meaningful only if %WAKE_MAGICSECURE
++ *	is set in @wolopts.
++ */
++struct ethtool_wolinfo {
++	uint32_t	cmd;
++	uint32_t	supported;
++	uint32_t	wolopts;
++	uint8_t	sopass[SOPASS_MAX];
++};
++
++/* for passing single values */
++struct ethtool_value {
++	uint32_t	cmd;
++	uint32_t	data;
++};
++
++enum tunable_id {
++	ETHTOOL_ID_UNSPEC,
++	ETHTOOL_RX_COPYBREAK,
++	ETHTOOL_TX_COPYBREAK,
++	/*
++	 * Add your fresh new tubale attribute above and remember to update
++	 * tunable_strings[] in net/core/ethtool.c
++	 */
++	__ETHTOOL_TUNABLE_COUNT,
++};
++
++enum tunable_type_id {
++	ETHTOOL_TUNABLE_UNSPEC,
++	ETHTOOL_TUNABLE_U8,
++	ETHTOOL_TUNABLE_U16,
++	ETHTOOL_TUNABLE_U32,
++	ETHTOOL_TUNABLE_U64,
++	ETHTOOL_TUNABLE_STRING,
++	ETHTOOL_TUNABLE_S8,
++	ETHTOOL_TUNABLE_S16,
++	ETHTOOL_TUNABLE_S32,
++	ETHTOOL_TUNABLE_S64,
++};
++
++struct ethtool_tunable {
++	uint32_t	cmd;
++	uint32_t	id;
++	uint32_t	type_id;
++	uint32_t	len;
++	void	*data[0];
++};
++
++#define DOWNSHIFT_DEV_DEFAULT_COUNT	0xff
++#define DOWNSHIFT_DEV_DISABLE		0
++
++enum phy_tunable_id {
++	ETHTOOL_PHY_ID_UNSPEC,
++	ETHTOOL_PHY_DOWNSHIFT,
++	/*
++	 * Add your fresh new phy tunable attribute above and remember to update
++	 * phy_tunable_strings[] in net/core/ethtool.c
++	 */
++	__ETHTOOL_PHY_TUNABLE_COUNT,
++};
++
++/**
++ * struct ethtool_regs - hardware register dump
++ * @cmd: Command number = %ETHTOOL_GREGS
++ * @version: Dump format version.  This is driver-specific and may
++ *	distinguish different chips/revisions.  Drivers must use new
++ *	version numbers whenever the dump format changes in an
++ *	incompatible way.
++ * @len: On entry, the real length of @data.  On return, the number of
++ *	bytes used.
++ * @data: Buffer for the register dump
++ *
++ * Users should use %ETHTOOL_GDRVINFO to find the maximum length of
++ * a register dump for the interface.  They must allocate the buffer
++ * immediately following this structure.
++ */
++struct ethtool_regs {
++	uint32_t	cmd;
++	uint32_t	version;
++	uint32_t	len;
++	uint8_t	data[0];
++};
++
++/**
++ * struct ethtool_eeprom - EEPROM dump
++ * @cmd: Command number = %ETHTOOL_GEEPROM, %ETHTOOL_GMODULEEEPROM or
++ *	%ETHTOOL_SEEPROM
++ * @magic: A 'magic cookie' value to guard against accidental changes.
++ *	The value passed in to %ETHTOOL_SEEPROM must match the value
++ *	returned by %ETHTOOL_GEEPROM for the same device.  This is
++ *	unused when @cmd is %ETHTOOL_GMODULEEEPROM.
++ * @offset: Offset within the EEPROM to begin reading/writing, in bytes
++ * @len: On entry, number of bytes to read/write.  On successful
++ *	return, number of bytes actually read/written.  In case of
++ *	error, this may indicate at what point the error occurred.
++ * @data: Buffer to read/write from
++ *
++ * Users may use %ETHTOOL_GDRVINFO or %ETHTOOL_GMODULEINFO to find
++ * the length of an on-board or module EEPROM, respectively.  They
++ * must allocate the buffer immediately following this structure.
++ */
++struct ethtool_eeprom {
++	uint32_t	cmd;
++	uint32_t	magic;
++	uint32_t	offset;
++	uint32_t	len;
++	uint8_t	data[0];
++};
++
++/**
++ * struct ethtool_eee - Energy Efficient Ethernet information
++ * @cmd: ETHTOOL_{G,S}EEE
++ * @supported: Mask of %SUPPORTED_* flags for the speed/duplex combinations
++ *	for which there is EEE support.
++ * @advertised: Mask of %ADVERTISED_* flags for the speed/duplex combinations
++ *	advertised as eee capable.
++ * @lp_advertised: Mask of %ADVERTISED_* flags for the speed/duplex
++ *	combinations advertised by the link partner as eee capable.
++ * @eee_active: Result of the eee auto negotiation.
++ * @eee_enabled: EEE configured mode (enabled/disabled).
++ * @tx_lpi_enabled: Whether the interface should assert its tx lpi, given
++ *	that eee was negotiated.
++ * @tx_lpi_timer: Time in microseconds the interface delays prior to asserting
++ *	its tx lpi (after reaching 'idle' state). Effective only when eee
++ *	was negotiated and tx_lpi_enabled was set.
++ */
++struct ethtool_eee {
++	uint32_t	cmd;
++	uint32_t	supported;
++	uint32_t	advertised;
++	uint32_t	lp_advertised;
++	uint32_t	eee_active;
++	uint32_t	eee_enabled;
++	uint32_t	tx_lpi_enabled;
++	uint32_t	tx_lpi_timer;
++	uint32_t	reserved[2];
++};
++
++/**
++ * struct ethtool_modinfo - plugin module eeprom information
++ * @cmd: %ETHTOOL_GMODULEINFO
++ * @type: Standard the module information conforms to %ETH_MODULE_SFF_xxxx
++ * @eeprom_len: Length of the eeprom
++ *
++ * This structure is used to return the information to
++ * properly size memory for a subsequent call to %ETHTOOL_GMODULEEEPROM.
++ * The type code indicates the eeprom data format
++ */
++struct ethtool_modinfo {
++	uint32_t   cmd;
++	uint32_t   type;
++	uint32_t   eeprom_len;
++	uint32_t   reserved[8];
++};
++
++/**
++ * struct ethtool_coalesce - coalescing parameters for IRQs and stats updates
++ * @cmd: ETHTOOL_{G,S}COALESCE
++ * @rx_coalesce_usecs: How many usecs to delay an RX interrupt after
++ *	a packet arrives.
++ * @rx_max_coalesced_frames: Maximum number of packets to receive
++ *	before an RX interrupt.
++ * @rx_coalesce_usecs_irq: Same as @rx_coalesce_usecs, except that
++ *	this value applies while an IRQ is being serviced by the host.
++ * @rx_max_coalesced_frames_irq: Same as @rx_max_coalesced_frames,
++ *	except that this value applies while an IRQ is being serviced
++ *	by the host.
++ * @tx_coalesce_usecs: How many usecs to delay a TX interrupt after
++ *	a packet is sent.
++ * @tx_max_coalesced_frames: Maximum number of packets to be sent
++ *	before a TX interrupt.
++ * @tx_coalesce_usecs_irq: Same as @tx_coalesce_usecs, except that
++ *	this value applies while an IRQ is being serviced by the host.
++ * @tx_max_coalesced_frames_irq: Same as @tx_max_coalesced_frames,
++ *	except that this value applies while an IRQ is being serviced
++ *	by the host.
++ * @stats_block_coalesce_usecs: How many usecs to delay in-memory
++ *	statistics block updates.  Some drivers do not have an
++ *	in-memory statistic block, and in such cases this value is
++ *	ignored.  This value must not be zero.
++ * @use_adaptive_rx_coalesce: Enable adaptive RX coalescing.
++ * @use_adaptive_tx_coalesce: Enable adaptive TX coalescing.
++ * @pkt_rate_low: Threshold for low packet rate (packets per second).
++ * @rx_coalesce_usecs_low: How many usecs to delay an RX interrupt after
++ *	a packet arrives, when the packet rate is below @pkt_rate_low.
++ * @rx_max_coalesced_frames_low: Maximum number of packets to be received
++ *	before an RX interrupt, when the packet rate is below @pkt_rate_low.
++ * @tx_coalesce_usecs_low: How many usecs to delay a TX interrupt after
++ *	a packet is sent, when the packet rate is below @pkt_rate_low.
++ * @tx_max_coalesced_frames_low: Maximum nuumber of packets to be sent before
++ *	a TX interrupt, when the packet rate is below @pkt_rate_low.
++ * @pkt_rate_high: Threshold for high packet rate (packets per second).
++ * @rx_coalesce_usecs_high: How many usecs to delay an RX interrupt after
++ *	a packet arrives, when the packet rate is above @pkt_rate_high.
++ * @rx_max_coalesced_frames_high: Maximum number of packets to be received
++ *	before an RX interrupt, when the packet rate is above @pkt_rate_high.
++ * @tx_coalesce_usecs_high: How many usecs to delay a TX interrupt after
++ *	a packet is sent, when the packet rate is above @pkt_rate_high.
++ * @tx_max_coalesced_frames_high: Maximum number of packets to be sent before
++ *	a TX interrupt, when the packet rate is above @pkt_rate_high.
++ * @rate_sample_interval: How often to do adaptive coalescing packet rate
++ *	sampling, measured in seconds.  Must not be zero.
++ *
++ * Each pair of (usecs, max_frames) fields specifies that interrupts
++ * should be coalesced until
++ *	(usecs > 0 && time_since_first_completion >= usecs) ||
++ *	(max_frames > 0 && completed_frames >= max_frames)
++ *
++ * It is illegal to set both usecs and max_frames to zero as this
++ * would cause interrupts to never be generated.  To disable
++ * coalescing, set usecs = 0 and max_frames = 1.
++ *
++ * Some implementations ignore the value of max_frames and use the
++ * condition time_since_first_completion >= usecs
++ *
++ * This is deprecated.  Drivers for hardware that does not support
++ * counting completions should validate that max_frames == !rx_usecs.
++ *
++ * Adaptive RX/TX coalescing is an algorithm implemented by some
++ * drivers to improve latency under low packet rates and improve
++ * throughput under high packet rates.  Some drivers only implement
++ * one of RX or TX adaptive coalescing.  Anything not implemented by
++ * the driver causes these values to be silently ignored.
++ *
++ * When the packet rate is below @pkt_rate_high but above
++ * @pkt_rate_low (both measured in packets per second) the
++ * normal {rx,tx}_* coalescing parameters are used.
++ */
++struct ethtool_coalesce {
++	uint32_t	cmd;
++	uint32_t	rx_coalesce_usecs;
++	uint32_t	rx_max_coalesced_frames;
++	uint32_t	rx_coalesce_usecs_irq;
++	uint32_t	rx_max_coalesced_frames_irq;
++	uint32_t	tx_coalesce_usecs;
++	uint32_t	tx_max_coalesced_frames;
++	uint32_t	tx_coalesce_usecs_irq;
++	uint32_t	tx_max_coalesced_frames_irq;
++	uint32_t	stats_block_coalesce_usecs;
++	uint32_t	use_adaptive_rx_coalesce;
++	uint32_t	use_adaptive_tx_coalesce;
++	uint32_t	pkt_rate_low;
++	uint32_t	rx_coalesce_usecs_low;
++	uint32_t	rx_max_coalesced_frames_low;
++	uint32_t	tx_coalesce_usecs_low;
++	uint32_t	tx_max_coalesced_frames_low;
++	uint32_t	pkt_rate_high;
++	uint32_t	rx_coalesce_usecs_high;
++	uint32_t	rx_max_coalesced_frames_high;
++	uint32_t	tx_coalesce_usecs_high;
++	uint32_t	tx_max_coalesced_frames_high;
++	uint32_t	rate_sample_interval;
++};
++
++/**
++ * struct ethtool_ringparam - RX/TX ring parameters
++ * @cmd: Command number = %ETHTOOL_GRINGPARAM or %ETHTOOL_SRINGPARAM
++ * @rx_max_pending: Maximum supported number of pending entries per
++ *	RX ring.  Read-only.
++ * @rx_mini_max_pending: Maximum supported number of pending entries
++ *	per RX mini ring.  Read-only.
++ * @rx_jumbo_max_pending: Maximum supported number of pending entries
++ *	per RX jumbo ring.  Read-only.
++ * @tx_max_pending: Maximum supported number of pending entries per
++ *	TX ring.  Read-only.
++ * @rx_pending: Current maximum number of pending entries per RX ring
++ * @rx_mini_pending: Current maximum number of pending entries per RX
++ *	mini ring
++ * @rx_jumbo_pending: Current maximum number of pending entries per RX
++ *	jumbo ring
++ * @tx_pending: Current maximum supported number of pending entries
++ *	per TX ring
++ *
++ * If the interface does not have separate RX mini and/or jumbo rings,
++ * @rx_mini_max_pending and/or @rx_jumbo_max_pending will be 0.
++ *
++ * There may also be driver-dependent minimum values for the number
++ * of entries per ring.
++ */
++struct ethtool_ringparam {
++	uint32_t	cmd;
++	uint32_t	rx_max_pending;
++	uint32_t	rx_mini_max_pending;
++	uint32_t	rx_jumbo_max_pending;
++	uint32_t	tx_max_pending;
++	uint32_t	rx_pending;
++	uint32_t	rx_mini_pending;
++	uint32_t	rx_jumbo_pending;
++	uint32_t	tx_pending;
++};
++
++/**
++ * struct ethtool_channels - configuring number of network channel
++ * @cmd: ETHTOOL_{G,S}CHANNELS
++ * @max_rx: Read only. Maximum number of receive channel the driver support.
++ * @max_tx: Read only. Maximum number of transmit channel the driver support.
++ * @max_other: Read only. Maximum number of other channel the driver support.
++ * @max_combined: Read only. Maximum number of combined channel the driver
++ *	support. Set of queues RX, TX or other.
++ * @rx_count: Valid values are in the range 1 to the max_rx.
++ * @tx_count: Valid values are in the range 1 to the max_tx.
++ * @other_count: Valid values are in the range 1 to the max_other.
++ * @combined_count: Valid values are in the range 1 to the max_combined.
++ *
++ * This can be used to configure RX, TX and other channels.
++ */
++
++struct ethtool_channels {
++	uint32_t	cmd;
++	uint32_t	max_rx;
++	uint32_t	max_tx;
++	uint32_t	max_other;
++	uint32_t	max_combined;
++	uint32_t	rx_count;
++	uint32_t	tx_count;
++	uint32_t	other_count;
++	uint32_t	combined_count;
++};
++
++/**
++ * struct ethtool_pauseparam - Ethernet pause (flow control) parameters
++ * @cmd: Command number = %ETHTOOL_GPAUSEPARAM or %ETHTOOL_SPAUSEPARAM
++ * @autoneg: Flag to enable autonegotiation of pause frame use
++ * @rx_pause: Flag to enable reception of pause frames
++ * @tx_pause: Flag to enable transmission of pause frames
++ *
++ * Drivers should reject a non-zero setting of @autoneg when
++ * autoneogotiation is disabled (or not supported) for the link.
++ *
++ * If the link is autonegotiated, drivers should use
++ * mii_advertise_flowctrl() or similar code to set the advertised
++ * pause frame capabilities based on the @rx_pause and @tx_pause flags,
++ * even if @autoneg is zero.  They should also allow the advertised
++ * pause frame capabilities to be controlled directly through the
++ * advertising field of &struct ethtool_cmd.
++ *
++ * If @autoneg is non-zero, the MAC is configured to send and/or
++ * receive pause frames according to the result of autonegotiation.
++ * Otherwise, it is configured directly based on the @rx_pause and
++ * @tx_pause flags.
++ */
++struct ethtool_pauseparam {
++	uint32_t	cmd;
++	uint32_t	autoneg;
++	uint32_t	rx_pause;
++	uint32_t	tx_pause;
++};
++
++#define ETH_GSTRING_LEN		32
++
++/**
++ * enum ethtool_stringset - string set ID
++ * @ETH_SS_TEST: Self-test result names, for use with %ETHTOOL_TEST
++ * @ETH_SS_STATS: Statistic names, for use with %ETHTOOL_GSTATS
++ * @ETH_SS_PRIV_FLAGS: Driver private flag names, for use with
++ *	%ETHTOOL_GPFLAGS and %ETHTOOL_SPFLAGS
++ * @ETH_SS_NTUPLE_FILTERS: Previously used with %ETHTOOL_GRXNTUPLE;
++ *	now deprecated
++ * @ETH_SS_FEATURES: Device feature names
++ * @ETH_SS_RSS_HASH_FUNCS: RSS hush function names
++ * @ETH_SS_PHY_STATS: Statistic names, for use with %ETHTOOL_GPHYSTATS
++ * @ETH_SS_PHY_TUNABLES: PHY tunable names
++ */
++enum ethtool_stringset {
++	ETH_SS_TEST		= 0,
++	ETH_SS_STATS,
++	ETH_SS_PRIV_FLAGS,
++	ETH_SS_NTUPLE_FILTERS,
++	ETH_SS_FEATURES,
++	ETH_SS_RSS_HASH_FUNCS,
++	ETH_SS_TUNABLES,
++	ETH_SS_PHY_STATS,
++	ETH_SS_PHY_TUNABLES,
++};
++
++/**
++ * struct ethtool_gstrings - string set for data tagging
++ * @cmd: Command number = %ETHTOOL_GSTRINGS
++ * @string_set: String set ID; one of &enum ethtool_stringset
++ * @len: On return, the number of strings in the string set
++ * @data: Buffer for strings.  Each string is null-padded to a size of
++ *	%ETH_GSTRING_LEN.
++ *
++ * Users must use %ETHTOOL_GSSET_INFO to find the number of strings in
++ * the string set.  They must allocate a buffer of the appropriate
++ * size immediately following this structure.
++ */
++struct ethtool_gstrings {
++	uint32_t	cmd;
++	uint32_t	string_set;
++	uint32_t	len;
++	uint8_t	data[0];
++};
++
++/**
++ * struct ethtool_sset_info - string set information
++ * @cmd: Command number = %ETHTOOL_GSSET_INFO
++ * @sset_mask: On entry, a bitmask of string sets to query, with bits
++ *	numbered according to &enum ethtool_stringset.  On return, a
++ *	bitmask of those string sets queried that are supported.
++ * @data: Buffer for string set sizes.  On return, this contains the
++ *	size of each string set that was queried and supported, in
++ *	order of ID.
++ *
++ * Example: The user passes in @sset_mask = 0x7 (sets 0, 1, 2) and on
++ * return @sset_mask == 0x6 (sets 1, 2).  Then @data[0] contains the
++ * size of set 1 and @data[1] contains the size of set 2.
++ *
++ * Users must allocate a buffer of the appropriate size (4 * number of
++ * sets queried) immediately following this structure.
++ */
++struct ethtool_sset_info {
++	uint32_t	cmd;
++	uint32_t	reserved;
++	uint64_t	sset_mask;
++	uint32_t	data[0];
++};
++
++/**
++ * enum ethtool_test_flags - flags definition of ethtool_test
++ * @ETH_TEST_FL_OFFLINE: if set perform online and offline tests, otherwise
++ *	only online tests.
++ * @ETH_TEST_FL_FAILED: Driver set this flag if test fails.
++ * @ETH_TEST_FL_EXTERNAL_LB: Application request to perform external loopback
++ *	test.
++ * @ETH_TEST_FL_EXTERNAL_LB_DONE: Driver performed the external loopback test
++ */
++
++enum ethtool_test_flags {
++	ETH_TEST_FL_OFFLINE	= (1 << 0),
++	ETH_TEST_FL_FAILED	= (1 << 1),
++	ETH_TEST_FL_EXTERNAL_LB	= (1 << 2),
++	ETH_TEST_FL_EXTERNAL_LB_DONE	= (1 << 3),
++};
++
++/**
++ * struct ethtool_test - device self-test invocation
++ * @cmd: Command number = %ETHTOOL_TEST
++ * @flags: A bitmask of flags from &enum ethtool_test_flags.  Some
++ *	flags may be set by the user on entry; others may be set by
++ *	the driver on return.
++ * @len: On return, the number of test results
++ * @data: Array of test results
++ *
++ * Users must use %ETHTOOL_GSSET_INFO or %ETHTOOL_GDRVINFO to find the
++ * number of test results that will be returned.  They must allocate a
++ * buffer of the appropriate size (8 * number of results) immediately
++ * following this structure.
++ */
++struct ethtool_test {
++	uint32_t	cmd;
++	uint32_t	flags;
++	uint32_t	reserved;
++	uint32_t	len;
++	uint64_t	data[0];
++};
++
++/**
++ * struct ethtool_stats - device-specific statistics
++ * @cmd: Command number = %ETHTOOL_GSTATS
++ * @n_stats: On return, the number of statistics
++ * @data: Array of statistics
++ *
++ * Users must use %ETHTOOL_GSSET_INFO or %ETHTOOL_GDRVINFO to find the
++ * number of statistics that will be returned.  They must allocate a
++ * buffer of the appropriate size (8 * number of statistics)
++ * immediately following this structure.
++ */
++struct ethtool_stats {
++	uint32_t	cmd;
++	uint32_t	n_stats;
++	uint64_t	data[0];
++};
++
++/**
++ * struct ethtool_perm_addr - permanent hardware address
++ * @cmd: Command number = %ETHTOOL_GPERMADDR
++ * @size: On entry, the size of the buffer.  On return, the size of the
++ *	address.  The command fails if the buffer is too small.
++ * @data: Buffer for the address
++ *
++ * Users must allocate the buffer immediately following this structure.
++ * A buffer size of %MAX_ADDR_LEN should be sufficient for any address
++ * type.
++ */
++struct ethtool_perm_addr {
++	uint32_t	cmd;
++	uint32_t	size;
++	uint8_t	data[0];
++};
++
++/* boolean flags controlling per-interface behavior characteristics.
++ * When reading, the flag indicates whether or not a certain behavior
++ * is enabled/present.  When writing, the flag indicates whether
++ * or not the driver should turn on (set) or off (clear) a behavior.
++ *
++ * Some behaviors may read-only (unconditionally absent or present).
++ * If such is the case, return EINVAL in the set-flags operation if the
++ * flag differs from the read-only value.
++ */
++enum ethtool_flags {
++	ETH_FLAG_TXVLAN		= (1 << 7),	/* TX VLAN offload enabled */
++	ETH_FLAG_RXVLAN		= (1 << 8),	/* RX VLAN offload enabled */
++	ETH_FLAG_LRO		= (1 << 15),	/* LRO is enabled */
++	ETH_FLAG_NTUPLE		= (1 << 27),	/* N-tuple filters enabled */
++	ETH_FLAG_RXHASH		= (1 << 28),
++};
++
++/* The following structures are for supporting RX network flow
++ * classification and RX n-tuple configuration. Note, all multibyte
++ * fields, e.g., ip4src, ip4dst, psrc, pdst, spi, etc. are expected to
++ * be in network byte order.
++ */
++
++/**
++ * struct ethtool_tcpip4_spec - flow specification for TCP/IPv4 etc.
++ * @ip4src: Source host
++ * @ip4dst: Destination host
++ * @psrc: Source port
++ * @pdst: Destination port
++ * @tos: Type-of-service
++ *
++ * This can be used to specify a TCP/IPv4, UDP/IPv4 or SCTP/IPv4 flow.
++ */
++struct ethtool_tcpip4_spec {
++	uint32_t	ip4src;
++	uint32_t	ip4dst;
++	uint16_t	psrc;
++	uint16_t	pdst;
++	uint8_t    tos;
++};
++
++/**
++ * struct ethtool_ah_espip4_spec - flow specification for IPsec/IPv4
++ * @ip4src: Source host
++ * @ip4dst: Destination host
++ * @spi: Security parameters index
++ * @tos: Type-of-service
++ *
++ * This can be used to specify an IPsec transport or tunnel over IPv4.
++ */
++struct ethtool_ah_espip4_spec {
++	uint32_t	ip4src;
++	uint32_t	ip4dst;
++	uint32_t	spi;
++	uint8_t    tos;
++};
++
++#define	ETH_RX_NFC_IP4	1
++
++/**
++ * struct ethtool_usrip4_spec - general flow specification for IPv4
++ * @ip4src: Source host
++ * @ip4dst: Destination host
++ * @l4_4_bytes: First 4 bytes of transport (layer 4) header
++ * @tos: Type-of-service
++ * @ip_ver: Value must be %ETH_RX_NFC_IP4; mask must be 0
++ * @proto: Transport protocol number; mask must be 0
++ */
++struct ethtool_usrip4_spec {
++	uint32_t	ip4src;
++	uint32_t	ip4dst;
++	uint32_t	l4_4_bytes;
++	uint8_t    tos;
++	uint8_t    ip_ver;
++	uint8_t    proto;
++};
++
++/**
++ * struct ethtool_tcpip6_spec - flow specification for TCP/IPv6 etc.
++ * @ip6src: Source host
++ * @ip6dst: Destination host
++ * @psrc: Source port
++ * @pdst: Destination port
++ * @tclass: Traffic Class
++ *
++ * This can be used to specify a TCP/IPv6, UDP/IPv6 or SCTP/IPv6 flow.
++ */
++struct ethtool_tcpip6_spec {
++	uint32_t	ip6src[4];
++	uint32_t	ip6dst[4];
++	uint16_t	psrc;
++	uint16_t	pdst;
++	uint8_t    tclass;
++};
++
++/**
++ * struct ethtool_ah_espip6_spec - flow specification for IPsec/IPv6
++ * @ip6src: Source host
++ * @ip6dst: Destination host
++ * @spi: Security parameters index
++ * @tclass: Traffic Class
++ *
++ * This can be used to specify an IPsec transport or tunnel over IPv6.
++ */
++struct ethtool_ah_espip6_spec {
++	uint32_t	ip6src[4];
++	uint32_t	ip6dst[4];
++	uint32_t	spi;
++	uint8_t    tclass;
++};
++
++/**
++ * struct ethtool_usrip6_spec - general flow specification for IPv6
++ * @ip6src: Source host
++ * @ip6dst: Destination host
++ * @l4_4_bytes: First 4 bytes of transport (layer 4) header
++ * @tclass: Traffic Class
++ * @l4_proto: Transport protocol number (nexthdr after any Extension Headers)
++ */
++struct ethtool_usrip6_spec {
++	uint32_t	ip6src[4];
++	uint32_t	ip6dst[4];
++	uint32_t	l4_4_bytes;
++	uint8_t    tclass;
++	uint8_t    l4_proto;
++};
++
++union ethtool_flow_union {
++	struct ethtool_tcpip4_spec		tcp_ip4_spec;
++	struct ethtool_tcpip4_spec		udp_ip4_spec;
++	struct ethtool_tcpip4_spec		sctp_ip4_spec;
++	struct ethtool_ah_espip4_spec		ah_ip4_spec;
++	struct ethtool_ah_espip4_spec		esp_ip4_spec;
++	struct ethtool_usrip4_spec		usr_ip4_spec;
++	struct ethtool_tcpip6_spec		tcp_ip6_spec;
++	struct ethtool_tcpip6_spec		udp_ip6_spec;
++	struct ethtool_tcpip6_spec		sctp_ip6_spec;
++	struct ethtool_ah_espip6_spec		ah_ip6_spec;
++	struct ethtool_ah_espip6_spec		esp_ip6_spec;
++	struct ethtool_usrip6_spec		usr_ip6_spec;
++	struct eth_header				ether_spec;
++	uint8_t					hdata[52];
++};
++
++/**
++ * struct ethtool_flow_ext - additional RX flow fields
++ * @h_dest: destination MAC address
++ * @vlan_etype: VLAN EtherType
++ * @vlan_tci: VLAN tag control information
++ * @data: user defined data
++ *
++ * Note, @vlan_etype, @vlan_tci, and @data are only valid if %FLOW_EXT
++ * is set in &struct ethtool_rx_flow_spec @flow_type.
++ * @h_dest is valid if %FLOW_MAC_EXT is set.
++ */
++struct ethtool_flow_ext {
++	uint8_t		padding[2];
++	unsigned char	h_dest[ETH_ALEN];
++	uint16_t		vlan_etype;
++	uint16_t		vlan_tci;
++	uint32_t		data[2];
++};
++
++/**
++ * struct ethtool_rx_flow_spec - classification rule for RX flows
++ * @flow_type: Type of match to perform, e.g. %TCP_V4_FLOW
++ * @h_u: Flow fields to match (dependent on @flow_type)
++ * @h_ext: Additional fields to match
++ * @m_u: Masks for flow field bits to be matched
++ * @m_ext: Masks for additional field bits to be matched
++ *	Note, all additional fields must be ignored unless @flow_type
++ *	includes the %FLOW_EXT or %FLOW_MAC_EXT flag
++ *	(see &struct ethtool_flow_ext description).
++ * @ring_cookie: RX ring/queue index to deliver to, or %RX_CLS_FLOW_DISC
++ *	if packets should be discarded
++ * @location: Location of rule in the table.  Locations must be
++ *	numbered such that a flow matching multiple rules will be
++ *	classified according to the first (lowest numbered) rule.
++ */
++struct ethtool_rx_flow_spec {
++	uint32_t		flow_type;
++	union ethtool_flow_union h_u;
++	struct ethtool_flow_ext h_ext;
++	union ethtool_flow_union m_u;
++	struct ethtool_flow_ext m_ext;
++	uint64_t		ring_cookie;
++	uint32_t		location;
++};
++
++/* How rings are layed out when accessing virtual functions or
++ * offloaded queues is device specific. To allow users to do flow
++ * steering and specify these queues the ring cookie is partitioned
++ * into a 32bit queue index with an 8 bit virtual function id.
++ * This also leaves the 3bytes for further specifiers. It is possible
++ * future devices may support more than 256 virtual functions if
++ * devices start supporting PCIe w/ARI. However at the moment I
++ * do not know of any devices that support this so I do not reserve
++ * space for this at this time. If a future patch consumes the next
++ * byte it should be aware of this possiblity.
++ */
++#define ETHTOOL_RX_FLOW_SPEC_RING	0x00000000FFFFFFFFLL
++#define ETHTOOL_RX_FLOW_SPEC_RING_VF	0x000000FF00000000LL
++#define ETHTOOL_RX_FLOW_SPEC_RING_VF_OFF 32
++static inline uint64_t ethtool_get_flow_spec_ring(uint64_t ring_cookie)
++{
++	return ETHTOOL_RX_FLOW_SPEC_RING & ring_cookie;
++};
++
++static inline uint64_t ethtool_get_flow_spec_ring_vf(uint64_t ring_cookie)
++{
++	return (ETHTOOL_RX_FLOW_SPEC_RING_VF & ring_cookie) >>
++				ETHTOOL_RX_FLOW_SPEC_RING_VF_OFF;
++};
++
++/**
++ * struct ethtool_rxnfc - command to get or set RX flow classification rules
++ * @cmd: Specific command number - %ETHTOOL_GRXFH, %ETHTOOL_SRXFH,
++ *	%ETHTOOL_GRXRINGS, %ETHTOOL_GRXCLSRLCNT, %ETHTOOL_GRXCLSRULE,
++ *	%ETHTOOL_GRXCLSRLALL, %ETHTOOL_SRXCLSRLDEL or %ETHTOOL_SRXCLSRLINS
++ * @flow_type: Type of flow to be affected, e.g. %TCP_V4_FLOW
++ * @data: Command-dependent value
++ * @fs: Flow classification rule
++ * @rule_cnt: Number of rules to be affected
++ * @rule_locs: Array of used rule locations
++ *
++ * For %ETHTOOL_GRXFH and %ETHTOOL_SRXFH, @data is a bitmask indicating
++ * the fields included in the flow hash, e.g. %RXH_IP_SRC.  The following
++ * structure fields must not be used.
++ *
++ * For %ETHTOOL_GRXRINGS, @data is set to the number of RX rings/queues
++ * on return.
++ *
++ * For %ETHTOOL_GRXCLSRLCNT, @rule_cnt is set to the number of defined
++ * rules on return.  If @data is non-zero on return then it is the
++ * size of the rule table, plus the flag %RX_CLS_LOC_SPECIAL if the
++ * driver supports any special location values.  If that flag is not
++ * set in @data then special location values should not be used.
++ *
++ * For %ETHTOOL_GRXCLSRULE, @fs.@location specifies the location of an
++ * existing rule on entry and @fs contains the rule on return.
++ *
++ * For %ETHTOOL_GRXCLSRLALL, @rule_cnt specifies the array size of the
++ * user buffer for @rule_locs on entry.  On return, @data is the size
++ * of the rule table, @rule_cnt is the number of defined rules, and
++ * @rule_locs contains the locations of the defined rules.  Drivers
++ * must use the second parameter to get_rxnfc() instead of @rule_locs.
++ *
++ * For %ETHTOOL_SRXCLSRLINS, @fs specifies the rule to add or update.
++ * @fs.@location either specifies the location to use or is a special
++ * location value with %RX_CLS_LOC_SPECIAL flag set.  On return,
++ * @fs.@location is the actual rule location.
++ *
++ * For %ETHTOOL_SRXCLSRLDEL, @fs.@location specifies the location of an
++ * existing rule on entry.
++ *
++ * A driver supporting the special location values for
++ * %ETHTOOL_SRXCLSRLINS may add the rule at any suitable unused
++ * location, and may remove a rule at a later location (lower
++ * priority) that matches exactly the same set of flows.  The special
++ * values are %RX_CLS_LOC_ANY, selecting any location;
++ * %RX_CLS_LOC_FIRST, selecting the first suitable location (maximum
++ * priority); and %RX_CLS_LOC_LAST, selecting the last suitable
++ * location (minimum priority).  Additional special values may be
++ * defined in future and drivers must return -%EINVAL for any
++ * unrecognised value.
++ */
++struct ethtool_rxnfc {
++	uint32_t				cmd;
++	uint32_t				flow_type;
++	uint64_t				data;
++	struct ethtool_rx_flow_spec	fs;
++	uint32_t				rule_cnt;
++	uint32_t				rule_locs[0];
++};
++
++
++/**
++ * struct ethtool_rxfh_indir - command to get or set RX flow hash indirection
++ * @cmd: Specific command number - %ETHTOOL_GRXFHINDIR or %ETHTOOL_SRXFHINDIR
++ * @size: On entry, the array size of the user buffer, which may be zero.
++ *	On return from %ETHTOOL_GRXFHINDIR, the array size of the hardware
++ *	indirection table.
++ * @ring_index: RX ring/queue index for each hash value
++ *
++ * For %ETHTOOL_GRXFHINDIR, a @size of zero means that only the size
++ * should be returned.  For %ETHTOOL_SRXFHINDIR, a @size of zero means
++ * the table should be reset to default values.  This last feature
++ * is not supported by the original implementations.
++ */
++struct ethtool_rxfh_indir {
++	uint32_t	cmd;
++	uint32_t	size;
++	uint32_t	ring_index[0];
++};
++
++/**
++ * struct ethtool_rxfh - command to get/set RX flow hash indir or/and hash key.
++ * @cmd: Specific command number - %ETHTOOL_GRSSH or %ETHTOOL_SRSSH
++ * @rss_context: RSS context identifier.
++ * @indir_size: On entry, the array size of the user buffer for the
++ *	indirection table, which may be zero, or (for %ETHTOOL_SRSSH),
++ *	%ETH_RXFH_INDIR_NO_CHANGE.  On return from %ETHTOOL_GRSSH,
++ *	the array size of the hardware indirection table.
++ * @key_size: On entry, the array size of the user buffer for the hash key,
++ *	which may be zero.  On return from %ETHTOOL_GRSSH, the size of the
++ *	hardware hash key.
++ * @hfunc: Defines the current RSS hash function used by HW (or to be set to).
++ *	Valid values are one of the %ETH_RSS_HASH_*.
++ * @rsvd:	Reserved for future extensions.
++ * @rss_config: RX ring/queue index for each hash value i.e., indirection table
++ *	of @indir_size uint32_t elements, followed by hash key of @key_size
++ *	bytes.
++ *
++ * For %ETHTOOL_GRSSH, a @indir_size and key_size of zero means that only the
++ * size should be returned.  For %ETHTOOL_SRSSH, an @indir_size of
++ * %ETH_RXFH_INDIR_NO_CHANGE means that indir table setting is not requested
++ * and a @indir_size of zero means the indir table should be reset to default
++ * values. An hfunc of zero means that hash function setting is not requested.
++ */
++struct ethtool_rxfh {
++	uint32_t   cmd;
++	uint32_t	rss_context;
++	uint32_t   indir_size;
++	uint32_t   key_size;
++	uint8_t	hfunc;
++	uint8_t	rsvd8[3];
++	uint32_t	rsvd32;
++	uint32_t   rss_config[0];
++};
++#define ETH_RXFH_INDIR_NO_CHANGE	0xffffffff
++
++/**
++ * struct ethtool_rx_ntuple_flow_spec - specification for RX flow filter
++ * @flow_type: Type of match to perform, e.g. %TCP_V4_FLOW
++ * @h_u: Flow field values to match (dependent on @flow_type)
++ * @m_u: Masks for flow field value bits to be ignored
++ * @vlan_tag: VLAN tag to match
++ * @vlan_tag_mask: Mask for VLAN tag bits to be ignored
++ * @data: Driver-dependent data to match
++ * @data_mask: Mask for driver-dependent data bits to be ignored
++ * @action: RX ring/queue index to deliver to (non-negative) or other action
++ *	(negative, e.g. %ETHTOOL_RXNTUPLE_ACTION_DROP)
++ *
++ * For flow types %TCP_V4_FLOW, %UDP_V4_FLOW and %SCTP_V4_FLOW, where
++ * a field value and mask are both zero this is treated as if all mask
++ * bits are set i.e. the field is ignored.
++ */
++struct ethtool_rx_ntuple_flow_spec {
++	uint32_t		 flow_type;
++	union {
++		struct ethtool_tcpip4_spec		tcp_ip4_spec;
++		struct ethtool_tcpip4_spec		udp_ip4_spec;
++		struct ethtool_tcpip4_spec		sctp_ip4_spec;
++		struct ethtool_ah_espip4_spec		ah_ip4_spec;
++		struct ethtool_ah_espip4_spec		esp_ip4_spec;
++		struct ethtool_usrip4_spec		usr_ip4_spec;
++		struct eth_header				ether_spec;
++		uint8_t					hdata[72];
++	} h_u, m_u;
++
++	uint16_t	        vlan_tag;
++	uint16_t	        vlan_tag_mask;
++	uint64_t		data;
++	uint64_t		data_mask;
++
++	int32_t		action;
++#define ETHTOOL_RXNTUPLE_ACTION_DROP	(-1)	/* drop packet */
++#define ETHTOOL_RXNTUPLE_ACTION_CLEAR	(-2)	/* clear filter */
++};
++
++/**
++ * struct ethtool_rx_ntuple - command to set or clear RX flow filter
++ * @cmd: Command number - %ETHTOOL_SRXNTUPLE
++ * @fs: Flow filter specification
++ */
++struct ethtool_rx_ntuple {
++	uint32_t					cmd;
++	struct ethtool_rx_ntuple_flow_spec	fs;
++};
++
++#define ETHTOOL_FLASH_MAX_FILENAME	128
++enum ethtool_flash_op_type {
++	ETHTOOL_FLASH_ALL_REGIONS	= 0,
++};
++
++/* for passing firmware flashing related parameters */
++struct ethtool_flash {
++	uint32_t	cmd;
++	uint32_t	region;
++	char	data[ETHTOOL_FLASH_MAX_FILENAME];
++};
++
++/**
++ * struct ethtool_dump - used for retrieving, setting device dump
++ * @cmd: Command number - %ETHTOOL_GET_DUMP_FLAG, %ETHTOOL_GET_DUMP_DATA, or
++ * 	%ETHTOOL_SET_DUMP
++ * @version: FW version of the dump, filled in by driver
++ * @flag: driver dependent flag for dump setting, filled in by driver during
++ *        get and filled in by ethtool for set operation.
++ *        flag must be initialized by macro ETH_FW_DUMP_DISABLE value when
++ *        firmware dump is disabled.
++ * @len: length of dump data, used as the length of the user buffer on entry to
++ * 	 %ETHTOOL_GET_DUMP_DATA and this is returned as dump length by driver
++ * 	 for %ETHTOOL_GET_DUMP_FLAG command
++ * @data: data collected for get dump data operation
++ */
++struct ethtool_dump {
++	uint32_t	cmd;
++	uint32_t	version;
++	uint32_t	flag;
++	uint32_t	len;
++	uint8_t	data[0];
++};
++
++#define ETH_FW_DUMP_DISABLE 0
++
++/* for returning and changing feature sets */
++
++/**
++ * struct ethtool_get_features_block - block with state of 32 features
++ * @available: mask of changeable features
++ * @requested: mask of features requested to be enabled if possible
++ * @active: mask of currently enabled features
++ * @never_changed: mask of features not changeable for any device
++ */
++struct ethtool_get_features_block {
++	uint32_t	available;
++	uint32_t	requested;
++	uint32_t	active;
++	uint32_t	never_changed;
++};
++
++/**
++ * struct ethtool_gfeatures - command to get state of device's features
++ * @cmd: command number = %ETHTOOL_GFEATURES
++ * @size: On entry, the number of elements in the features[] array;
++ *	on return, the number of elements in features[] needed to hold
++ *	all features
++ * @features: state of features
++ */
++struct ethtool_gfeatures {
++	uint32_t	cmd;
++	uint32_t	size;
++	struct ethtool_get_features_block features[0];
++};
++
++/**
++ * struct ethtool_set_features_block - block with request for 32 features
++ * @valid: mask of features to be changed
++ * @requested: values of features to be changed
++ */
++struct ethtool_set_features_block {
++	uint32_t	valid;
++	uint32_t	requested;
++};
++
++/**
++ * struct ethtool_sfeatures - command to request change in device's features
++ * @cmd: command number = %ETHTOOL_SFEATURES
++ * @size: array size of the features[] array
++ * @features: feature change masks
++ */
++struct ethtool_sfeatures {
++	uint32_t	cmd;
++	uint32_t	size;
++	struct ethtool_set_features_block features[0];
++};
++
++/**
++ * struct ethtool_ts_info - holds a device's timestamping and PHC association
++ * @cmd: command number = %ETHTOOL_GET_TS_INFO
++ * @so_timestamping: bit mask of the sum of the supported SO_TIMESTAMPING flags
++ * @phc_index: device index of the associated PHC, or -1 if there is none
++ * @tx_types: bit mask of the supported hwtstamp_tx_types enumeration values
++ * @rx_filters: bit mask of the supported hwtstamp_rx_filters enumeration values
++ *
++ * The bits in the 'tx_types' and 'rx_filters' fields correspond to
++ * the 'hwtstamp_tx_types' and 'hwtstamp_rx_filters' enumeration values,
++ * respectively.  For example, if the device supports HWTSTAMP_TX_ON,
++ * then (1 << HWTSTAMP_TX_ON) in 'tx_types' will be set.
++ *
++ * Drivers should only report the filters they actually support without
++ * upscaling in the SIOCSHWTSTAMP ioctl. If the SIOCSHWSTAMP request for
++ * HWTSTAMP_FILTER_V1_SYNC is supported by HWTSTAMP_FILTER_V1_EVENT, then the
++ * driver should only report HWTSTAMP_FILTER_V1_EVENT in this op.
++ */
++struct ethtool_ts_info {
++	uint32_t	cmd;
++	uint32_t	so_timestamping;
++	int32_t	phc_index;
++	uint32_t	tx_types;
++	uint32_t	tx_reserved[3];
++	uint32_t	rx_filters;
++	uint32_t	rx_reserved[3];
++};
++
++/*
++ * %ETHTOOL_SFEATURES changes features present in features[].valid to the
++ * values of corresponding bits in features[].requested. Bits in .requested
++ * not set in .valid or not changeable are ignored.
++ *
++ * Returns %EINVAL when .valid contains undefined or never-changeable bits
++ * or size is not equal to required number of features words (32-bit blocks).
++ * Returns >= 0 if request was completed; bits set in the value mean:
++ *   %ETHTOOL_F_UNSUPPORTED - there were bits set in .valid that are not
++ *	changeable (not present in %ETHTOOL_GFEATURES' features[].available)
++ *	those bits were ignored.
++ *   %ETHTOOL_F_WISH - some or all changes requested were recorded but the
++ *      resulting state of bits masked by .valid is not equal to .requested.
++ *      Probably there are other device-specific constraints on some features
++ *      in the set. When %ETHTOOL_F_UNSUPPORTED is set, .valid is considered
++ *      here as though ignored bits were cleared.
++ *   %ETHTOOL_F_COMPAT - some or all changes requested were made by calling
++ *      compatibility functions. Requested offload state cannot be properly
++ *      managed by kernel.
++ *
++ * Meaning of bits in the masks are obtained by %ETHTOOL_GSSET_INFO (number of
++ * bits in the arrays - always multiple of 32) and %ETHTOOL_GSTRINGS commands
++ * for ETH_SS_FEATURES string set. First entry in the table corresponds to least
++ * significant bit in features[0] fields. Empty strings mark undefined features.
++ */
++enum ethtool_sfeatures_retval_bits {
++	ETHTOOL_F_UNSUPPORTED__BIT,
++	ETHTOOL_F_WISH__BIT,
++	ETHTOOL_F_COMPAT__BIT,
++};
++
++#define ETHTOOL_F_UNSUPPORTED   (1 << ETHTOOL_F_UNSUPPORTED__BIT)
++#define ETHTOOL_F_WISH          (1 << ETHTOOL_F_WISH__BIT)
++#define ETHTOOL_F_COMPAT        (1 << ETHTOOL_F_COMPAT__BIT)
++
++#define MAX_NUM_QUEUE		4096
++
++/**
++ * struct ethtool_per_queue_op - apply sub command to the queues in mask.
++ * @cmd: ETHTOOL_PERQUEUE
++ * @sub_command: the sub command which apply to each queues
++ * @queue_mask: Bitmap of the queues which sub command apply to
++ * @data: A complete command structure following for each of the queues addressed
++ */
++struct ethtool_per_queue_op {
++	uint32_t	cmd;
++	uint32_t	sub_command;
++	uint32_t	queue_mask[__KERNEL_DIV_ROUND_UP(MAX_NUM_QUEUE, 32)];
++	char	data[];
++};
++
++/**
++ * struct ethtool_fecparam - Ethernet forward error correction(fec) parameters
++ * @cmd: Command number = %ETHTOOL_GFECPARAM or %ETHTOOL_SFECPARAM
++ * @active_fec: FEC mode which is active on porte
++ * @fec: Bitmask of supported/configured FEC modes
++ * @rsvd: Reserved for future extensions. i.e FEC bypass feature.
++ *
++ * Drivers should reject a non-zero setting of @autoneg when
++ * autoneogotiation is disabled (or not supported) for the link.
++ *
++ */
++struct ethtool_fecparam {
++	uint32_t   cmd;
++	/* bitmask of FEC modes */
++	uint32_t   active_fec;
++	uint32_t   fec;
++	uint32_t   reserved;
++};
++
++/**
++ * enum ethtool_fec_config_bits - flags definition of ethtool_fec_configuration
++ * @ETHTOOL_FEC_NONE: FEC mode configuration is not supported
++ * @ETHTOOL_FEC_AUTO: Default/Best FEC mode provided by driver
++ * @ETHTOOL_FEC_OFF: No FEC Mode
++ * @ETHTOOL_FEC_RS: Reed-Solomon Forward Error Detection mode
++ * @ETHTOOL_FEC_BASER: Base-R/Reed-Solomon Forward Error Detection mode
++ */
++enum ethtool_fec_config_bits {
++	ETHTOOL_FEC_NONE_BIT,
++	ETHTOOL_FEC_AUTO_BIT,
++	ETHTOOL_FEC_OFF_BIT,
++	ETHTOOL_FEC_RS_BIT,
++	ETHTOOL_FEC_BASER_BIT,
++};
++
++#define ETHTOOL_FEC_NONE		(1 << ETHTOOL_FEC_NONE_BIT)
++#define ETHTOOL_FEC_AUTO		(1 << ETHTOOL_FEC_AUTO_BIT)
++#define ETHTOOL_FEC_OFF			(1 << ETHTOOL_FEC_OFF_BIT)
++#define ETHTOOL_FEC_RS			(1 << ETHTOOL_FEC_RS_BIT)
++#define ETHTOOL_FEC_BASER		(1 << ETHTOOL_FEC_BASER_BIT)
++
++/* CMDs currently supported */
++#define ETHTOOL_GSET		0x00000001 /* DEPRECATED, Get settings.
++					    * Please use ETHTOOL_GLINKSETTINGS
++					    */
++#define ETHTOOL_SSET		0x00000002 /* DEPRECATED, Set settings.
++					    * Please use ETHTOOL_SLINKSETTINGS
++					    */
++#define ETHTOOL_GDRVINFO	0x00000003 /* Get driver info. */
++#define ETHTOOL_GREGS		0x00000004 /* Get NIC registers. */
++#define ETHTOOL_GWOL		0x00000005 /* Get wake-on-lan options. */
++#define ETHTOOL_SWOL		0x00000006 /* Set wake-on-lan options. */
++#define ETHTOOL_GMSGLVL		0x00000007 /* Get driver message level */
++#define ETHTOOL_SMSGLVL		0x00000008 /* Set driver msg level. */
++#define ETHTOOL_NWAY_RST	0x00000009 /* Restart autonegotiation. */
++/* Get link status for host, i.e. whether the interface *and* the
++ * physical port (if there is one) are up (ethtool_value). */
++#define ETHTOOL_GLINK		0x0000000a
++#define ETHTOOL_GEEPROM		0x0000000b /* Get EEPROM data */
++#define ETHTOOL_SEEPROM		0x0000000c /* Set EEPROM data. */
++#define ETHTOOL_GCOALESCE	0x0000000e /* Get coalesce config */
++#define ETHTOOL_SCOALESCE	0x0000000f /* Set coalesce config. */
++#define ETHTOOL_GRINGPARAM	0x00000010 /* Get ring parameters */
++#define ETHTOOL_SRINGPARAM	0x00000011 /* Set ring parameters. */
++#define ETHTOOL_GPAUSEPARAM	0x00000012 /* Get pause parameters */
++#define ETHTOOL_SPAUSEPARAM	0x00000013 /* Set pause parameters. */
++#define ETHTOOL_GRXCSUM		0x00000014 /* Get RX hw csum enable (ethtool_value) */
++#define ETHTOOL_SRXCSUM		0x00000015 /* Set RX hw csum enable (ethtool_value) */
++#define ETHTOOL_GTXCSUM		0x00000016 /* Get TX hw csum enable (ethtool_value) */
++#define ETHTOOL_STXCSUM		0x00000017 /* Set TX hw csum enable (ethtool_value) */
++#define ETHTOOL_GSG		0x00000018 /* Get scatter-gather enable
++					    * (ethtool_value) */
++#define ETHTOOL_SSG		0x00000019 /* Set scatter-gather enable
++					    * (ethtool_value). */
++#define ETHTOOL_TEST		0x0000001a /* execute NIC self-test. */
++#define ETHTOOL_GSTRINGS	0x0000001b /* get specified string set */
++#define ETHTOOL_PHYS_ID		0x0000001c /* identify the NIC */
++#define ETHTOOL_GSTATS		0x0000001d /* get NIC-specific statistics */
++#define ETHTOOL_GTSO		0x0000001e /* Get TSO enable (ethtool_value) */
++#define ETHTOOL_STSO		0x0000001f /* Set TSO enable (ethtool_value) */
++#define ETHTOOL_GPERMADDR	0x00000020 /* Get permanent hardware address */
++#define ETHTOOL_GUFO		0x00000021 /* Get UFO enable (ethtool_value) */
++#define ETHTOOL_SUFO		0x00000022 /* Set UFO enable (ethtool_value) */
++#define ETHTOOL_GGSO		0x00000023 /* Get GSO enable (ethtool_value) */
++#define ETHTOOL_SGSO		0x00000024 /* Set GSO enable (ethtool_value) */
++#define ETHTOOL_GFLAGS		0x00000025 /* Get flags bitmap(ethtool_value) */
++#define ETHTOOL_SFLAGS		0x00000026 /* Set flags bitmap(ethtool_value) */
++#define ETHTOOL_GPFLAGS		0x00000027 /* Get driver-private flags bitmap */
++#define ETHTOOL_SPFLAGS		0x00000028 /* Set driver-private flags bitmap */
++
++#define ETHTOOL_GRXFH		0x00000029 /* Get RX flow hash configuration */
++#define ETHTOOL_SRXFH		0x0000002a /* Set RX flow hash configuration */
++#define ETHTOOL_GGRO		0x0000002b /* Get GRO enable (ethtool_value) */
++#define ETHTOOL_SGRO		0x0000002c /* Set GRO enable (ethtool_value) */
++#define ETHTOOL_GRXRINGS	0x0000002d /* Get RX rings available for LB */
++#define ETHTOOL_GRXCLSRLCNT	0x0000002e /* Get RX class rule count */
++#define ETHTOOL_GRXCLSRULE	0x0000002f /* Get RX classification rule */
++#define ETHTOOL_GRXCLSRLALL	0x00000030 /* Get all RX classification rule */
++#define ETHTOOL_SRXCLSRLDEL	0x00000031 /* Delete RX classification rule */
++#define ETHTOOL_SRXCLSRLINS	0x00000032 /* Insert RX classification rule */
++#define ETHTOOL_FLASHDEV	0x00000033 /* Flash firmware to device */
++#define ETHTOOL_RESET		0x00000034 /* Reset hardware */
++#define ETHTOOL_SRXNTUPLE	0x00000035 /* Add an n-tuple filter to device */
++#define ETHTOOL_GRXNTUPLE	0x00000036 /* deprecated */
++#define ETHTOOL_GSSET_INFO	0x00000037 /* Get string set info */
++#define ETHTOOL_GRXFHINDIR	0x00000038 /* Get RX flow hash indir'n table */
++#define ETHTOOL_SRXFHINDIR	0x00000039 /* Set RX flow hash indir'n table */
++
++#define ETHTOOL_GFEATURES	0x0000003a /* Get device offload settings */
++#define ETHTOOL_SFEATURES	0x0000003b /* Change device offload settings */
++#define ETHTOOL_GCHANNELS	0x0000003c /* Get no of channels */
++#define ETHTOOL_SCHANNELS	0x0000003d /* Set no of channels */
++#define ETHTOOL_SET_DUMP	0x0000003e /* Set dump settings */
++#define ETHTOOL_GET_DUMP_FLAG	0x0000003f /* Get dump settings */
++#define ETHTOOL_GET_DUMP_DATA	0x00000040 /* Get dump data */
++#define ETHTOOL_GET_TS_INFO	0x00000041 /* Get time stamping and PHC info */
++#define ETHTOOL_GMODULEINFO	0x00000042 /* Get plug-in module information */
++#define ETHTOOL_GMODULEEEPROM	0x00000043 /* Get plug-in module eeprom */
++#define ETHTOOL_GEEE		0x00000044 /* Get EEE settings */
++#define ETHTOOL_SEEE		0x00000045 /* Set EEE settings */
++
++#define ETHTOOL_GRSSH		0x00000046 /* Get RX flow hash configuration */
++#define ETHTOOL_SRSSH		0x00000047 /* Set RX flow hash configuration */
++#define ETHTOOL_GTUNABLE	0x00000048 /* Get tunable configuration */
++#define ETHTOOL_STUNABLE	0x00000049 /* Set tunable configuration */
++#define ETHTOOL_GPHYSTATS	0x0000004a /* get PHY-specific statistics */
++
++#define ETHTOOL_PERQUEUE	0x0000004b /* Set per queue options */
++
++#define ETHTOOL_GLINKSETTINGS	0x0000004c /* Get ethtool_link_settings */
++#define ETHTOOL_SLINKSETTINGS	0x0000004d /* Set ethtool_link_settings */
++#define ETHTOOL_PHY_GTUNABLE	0x0000004e /* Get PHY tunable configuration */
++#define ETHTOOL_PHY_STUNABLE	0x0000004f /* Set PHY tunable configuration */
++#define ETHTOOL_GFECPARAM	0x00000050 /* Get FEC settings */
++#define ETHTOOL_SFECPARAM	0x00000051 /* Set FEC settings */
++
++/* compatibility with older code */
++#define SPARC_ETH_GSET		ETHTOOL_GSET
++#define SPARC_ETH_SSET		ETHTOOL_SSET
++
++/* Link mode bit indices */
++enum ethtool_link_mode_bit_indices {
++	ETHTOOL_LINK_MODE_10baseT_Half_BIT	= 0,
++	ETHTOOL_LINK_MODE_10baseT_Full_BIT	= 1,
++	ETHTOOL_LINK_MODE_100baseT_Half_BIT	= 2,
++	ETHTOOL_LINK_MODE_100baseT_Full_BIT	= 3,
++	ETHTOOL_LINK_MODE_1000baseT_Half_BIT	= 4,
++	ETHTOOL_LINK_MODE_1000baseT_Full_BIT	= 5,
++	ETHTOOL_LINK_MODE_Autoneg_BIT		= 6,
++	ETHTOOL_LINK_MODE_TP_BIT		= 7,
++	ETHTOOL_LINK_MODE_AUI_BIT		= 8,
++	ETHTOOL_LINK_MODE_MII_BIT		= 9,
++	ETHTOOL_LINK_MODE_FIBRE_BIT		= 10,
++	ETHTOOL_LINK_MODE_BNC_BIT		= 11,
++	ETHTOOL_LINK_MODE_10000baseT_Full_BIT	= 12,
++	ETHTOOL_LINK_MODE_Pause_BIT		= 13,
++	ETHTOOL_LINK_MODE_Asym_Pause_BIT	= 14,
++	ETHTOOL_LINK_MODE_2500baseX_Full_BIT	= 15,
++	ETHTOOL_LINK_MODE_Backplane_BIT		= 16,
++	ETHTOOL_LINK_MODE_1000baseKX_Full_BIT	= 17,
++	ETHTOOL_LINK_MODE_10000baseKX4_Full_BIT	= 18,
++	ETHTOOL_LINK_MODE_10000baseKR_Full_BIT	= 19,
++	ETHTOOL_LINK_MODE_10000baseR_FEC_BIT	= 20,
++	ETHTOOL_LINK_MODE_20000baseMLD2_Full_BIT = 21,
++	ETHTOOL_LINK_MODE_20000baseKR2_Full_BIT	= 22,
++	ETHTOOL_LINK_MODE_40000baseKR4_Full_BIT	= 23,
++	ETHTOOL_LINK_MODE_40000baseCR4_Full_BIT	= 24,
++	ETHTOOL_LINK_MODE_40000baseSR4_Full_BIT	= 25,
++	ETHTOOL_LINK_MODE_40000baseLR4_Full_BIT	= 26,
++	ETHTOOL_LINK_MODE_56000baseKR4_Full_BIT	= 27,
++	ETHTOOL_LINK_MODE_56000baseCR4_Full_BIT	= 28,
++	ETHTOOL_LINK_MODE_56000baseSR4_Full_BIT	= 29,
++	ETHTOOL_LINK_MODE_56000baseLR4_Full_BIT	= 30,
++	ETHTOOL_LINK_MODE_25000baseCR_Full_BIT	= 31,
++	ETHTOOL_LINK_MODE_25000baseKR_Full_BIT	= 32,
++	ETHTOOL_LINK_MODE_25000baseSR_Full_BIT	= 33,
++	ETHTOOL_LINK_MODE_50000baseCR2_Full_BIT	= 34,
++	ETHTOOL_LINK_MODE_50000baseKR2_Full_BIT	= 35,
++	ETHTOOL_LINK_MODE_100000baseKR4_Full_BIT	= 36,
++	ETHTOOL_LINK_MODE_100000baseSR4_Full_BIT	= 37,
++	ETHTOOL_LINK_MODE_100000baseCR4_Full_BIT	= 38,
++	ETHTOOL_LINK_MODE_100000baseLR4_ER4_Full_BIT	= 39,
++	ETHTOOL_LINK_MODE_50000baseSR2_Full_BIT		= 40,
++	ETHTOOL_LINK_MODE_1000baseX_Full_BIT	= 41,
++	ETHTOOL_LINK_MODE_10000baseCR_Full_BIT	= 42,
++	ETHTOOL_LINK_MODE_10000baseSR_Full_BIT	= 43,
++	ETHTOOL_LINK_MODE_10000baseLR_Full_BIT	= 44,
++	ETHTOOL_LINK_MODE_10000baseLRM_Full_BIT	= 45,
++	ETHTOOL_LINK_MODE_10000baseER_Full_BIT	= 46,
++	ETHTOOL_LINK_MODE_2500baseT_Full_BIT	= 47,
++	ETHTOOL_LINK_MODE_5000baseT_Full_BIT	= 48,
++
++	ETHTOOL_LINK_MODE_FEC_NONE_BIT	= 49,
++	ETHTOOL_LINK_MODE_FEC_RS_BIT	= 50,
++	ETHTOOL_LINK_MODE_FEC_BASER_BIT	= 51,
++
++	/* Last allowed bit for __ETHTOOL_LINK_MODE_LEGACY_MASK is bit
++	 * 31. Please do NOT define any SUPPORTED_* or ADVERTISED_*
++	 * macro for bits > 31. The only way to use indices > 31 is to
++	 * use the new ETHTOOL_GLINKSETTINGS/ETHTOOL_SLINKSETTINGS API.
++	 */
++
++	__ETHTOOL_LINK_MODE_LAST
++	  = ETHTOOL_LINK_MODE_FEC_BASER_BIT,
++};
++
++#define __ETHTOOL_LINK_MODE_LEGACY_MASK(base_name)	\
++	(1UL << (ETHTOOL_LINK_MODE_ ## base_name ## _BIT))
++
++/* DEPRECATED macros. Please migrate to
++ * ETHTOOL_GLINKSETTINGS/ETHTOOL_SLINKSETTINGS API. Please do NOT
++ * define any new SUPPORTED_* macro for bits > 31.
++ */
++#define SUPPORTED_10baseT_Half		__ETHTOOL_LINK_MODE_LEGACY_MASK(10baseT_Half)
++#define SUPPORTED_10baseT_Full		__ETHTOOL_LINK_MODE_LEGACY_MASK(10baseT_Full)
++#define SUPPORTED_100baseT_Half		__ETHTOOL_LINK_MODE_LEGACY_MASK(100baseT_Half)
++#define SUPPORTED_100baseT_Full		__ETHTOOL_LINK_MODE_LEGACY_MASK(100baseT_Full)
++#define SUPPORTED_1000baseT_Half	__ETHTOOL_LINK_MODE_LEGACY_MASK(1000baseT_Half)
++#define SUPPORTED_1000baseT_Full	__ETHTOOL_LINK_MODE_LEGACY_MASK(1000baseT_Full)
++#define SUPPORTED_Autoneg		__ETHTOOL_LINK_MODE_LEGACY_MASK(Autoneg)
++#define SUPPORTED_TP			__ETHTOOL_LINK_MODE_LEGACY_MASK(TP)
++#define SUPPORTED_AUI			__ETHTOOL_LINK_MODE_LEGACY_MASK(AUI)
++#define SUPPORTED_MII			__ETHTOOL_LINK_MODE_LEGACY_MASK(MII)
++#define SUPPORTED_FIBRE			__ETHTOOL_LINK_MODE_LEGACY_MASK(FIBRE)
++#define SUPPORTED_BNC			__ETHTOOL_LINK_MODE_LEGACY_MASK(BNC)
++#define SUPPORTED_10000baseT_Full	__ETHTOOL_LINK_MODE_LEGACY_MASK(10000baseT_Full)
++#define SUPPORTED_Pause			__ETHTOOL_LINK_MODE_LEGACY_MASK(Pause)
++#define SUPPORTED_Asym_Pause		__ETHTOOL_LINK_MODE_LEGACY_MASK(Asym_Pause)
++#define SUPPORTED_2500baseX_Full	__ETHTOOL_LINK_MODE_LEGACY_MASK(2500baseX_Full)
++#define SUPPORTED_Backplane		__ETHTOOL_LINK_MODE_LEGACY_MASK(Backplane)
++#define SUPPORTED_1000baseKX_Full	__ETHTOOL_LINK_MODE_LEGACY_MASK(1000baseKX_Full)
++#define SUPPORTED_10000baseKX4_Full	__ETHTOOL_LINK_MODE_LEGACY_MASK(10000baseKX4_Full)
++#define SUPPORTED_10000baseKR_Full	__ETHTOOL_LINK_MODE_LEGACY_MASK(10000baseKR_Full)
++#define SUPPORTED_10000baseR_FEC	__ETHTOOL_LINK_MODE_LEGACY_MASK(10000baseR_FEC)
++#define SUPPORTED_20000baseMLD2_Full	__ETHTOOL_LINK_MODE_LEGACY_MASK(20000baseMLD2_Full)
++#define SUPPORTED_20000baseKR2_Full	__ETHTOOL_LINK_MODE_LEGACY_MASK(20000baseKR2_Full)
++#define SUPPORTED_40000baseKR4_Full	__ETHTOOL_LINK_MODE_LEGACY_MASK(40000baseKR4_Full)
++#define SUPPORTED_40000baseCR4_Full	__ETHTOOL_LINK_MODE_LEGACY_MASK(40000baseCR4_Full)
++#define SUPPORTED_40000baseSR4_Full	__ETHTOOL_LINK_MODE_LEGACY_MASK(40000baseSR4_Full)
++#define SUPPORTED_40000baseLR4_Full	__ETHTOOL_LINK_MODE_LEGACY_MASK(40000baseLR4_Full)
++#define SUPPORTED_56000baseKR4_Full	__ETHTOOL_LINK_MODE_LEGACY_MASK(56000baseKR4_Full)
++#define SUPPORTED_56000baseCR4_Full	__ETHTOOL_LINK_MODE_LEGACY_MASK(56000baseCR4_Full)
++#define SUPPORTED_56000baseSR4_Full	__ETHTOOL_LINK_MODE_LEGACY_MASK(56000baseSR4_Full)
++#define SUPPORTED_56000baseLR4_Full	__ETHTOOL_LINK_MODE_LEGACY_MASK(56000baseLR4_Full)
++/* Please do not define any new SUPPORTED_* macro for bits > 31, see
++ * notice above.
++ */
++
++/*
++ * DEPRECATED macros. Please migrate to
++ * ETHTOOL_GLINKSETTINGS/ETHTOOL_SLINKSETTINGS API. Please do NOT
++ * define any new ADERTISE_* macro for bits > 31.
++ */
++#define ADVERTISED_10baseT_Half		__ETHTOOL_LINK_MODE_LEGACY_MASK(10baseT_Half)
++#define ADVERTISED_10baseT_Full		__ETHTOOL_LINK_MODE_LEGACY_MASK(10baseT_Full)
++#define ADVERTISED_100baseT_Half	__ETHTOOL_LINK_MODE_LEGACY_MASK(100baseT_Half)
++#define ADVERTISED_100baseT_Full	__ETHTOOL_LINK_MODE_LEGACY_MASK(100baseT_Full)
++#define ADVERTISED_1000baseT_Half	__ETHTOOL_LINK_MODE_LEGACY_MASK(1000baseT_Half)
++#define ADVERTISED_1000baseT_Full	__ETHTOOL_LINK_MODE_LEGACY_MASK(1000baseT_Full)
++#define ADVERTISED_Autoneg		__ETHTOOL_LINK_MODE_LEGACY_MASK(Autoneg)
++#define ADVERTISED_TP			__ETHTOOL_LINK_MODE_LEGACY_MASK(TP)
++#define ADVERTISED_AUI			__ETHTOOL_LINK_MODE_LEGACY_MASK(AUI)
++#define ADVERTISED_MII			__ETHTOOL_LINK_MODE_LEGACY_MASK(MII)
++#define ADVERTISED_FIBRE		__ETHTOOL_LINK_MODE_LEGACY_MASK(FIBRE)
++#define ADVERTISED_BNC			__ETHTOOL_LINK_MODE_LEGACY_MASK(BNC)
++#define ADVERTISED_10000baseT_Full	__ETHTOOL_LINK_MODE_LEGACY_MASK(10000baseT_Full)
++#define ADVERTISED_Pause		__ETHTOOL_LINK_MODE_LEGACY_MASK(Pause)
++#define ADVERTISED_Asym_Pause		__ETHTOOL_LINK_MODE_LEGACY_MASK(Asym_Pause)
++#define ADVERTISED_2500baseX_Full	__ETHTOOL_LINK_MODE_LEGACY_MASK(2500baseX_Full)
++#define ADVERTISED_Backplane		__ETHTOOL_LINK_MODE_LEGACY_MASK(Backplane)
++#define ADVERTISED_1000baseKX_Full	__ETHTOOL_LINK_MODE_LEGACY_MASK(1000baseKX_Full)
++#define ADVERTISED_10000baseKX4_Full	__ETHTOOL_LINK_MODE_LEGACY_MASK(10000baseKX4_Full)
++#define ADVERTISED_10000baseKR_Full	__ETHTOOL_LINK_MODE_LEGACY_MASK(10000baseKR_Full)
++#define ADVERTISED_10000baseR_FEC	__ETHTOOL_LINK_MODE_LEGACY_MASK(10000baseR_FEC)
++#define ADVERTISED_20000baseMLD2_Full	__ETHTOOL_LINK_MODE_LEGACY_MASK(20000baseMLD2_Full)
++#define ADVERTISED_20000baseKR2_Full	__ETHTOOL_LINK_MODE_LEGACY_MASK(20000baseKR2_Full)
++#define ADVERTISED_40000baseKR4_Full	__ETHTOOL_LINK_MODE_LEGACY_MASK(40000baseKR4_Full)
++#define ADVERTISED_40000baseCR4_Full	__ETHTOOL_LINK_MODE_LEGACY_MASK(40000baseCR4_Full)
++#define ADVERTISED_40000baseSR4_Full	__ETHTOOL_LINK_MODE_LEGACY_MASK(40000baseSR4_Full)
++#define ADVERTISED_40000baseLR4_Full	__ETHTOOL_LINK_MODE_LEGACY_MASK(40000baseLR4_Full)
++#define ADVERTISED_56000baseKR4_Full	__ETHTOOL_LINK_MODE_LEGACY_MASK(56000baseKR4_Full)
++#define ADVERTISED_56000baseCR4_Full	__ETHTOOL_LINK_MODE_LEGACY_MASK(56000baseCR4_Full)
++#define ADVERTISED_56000baseSR4_Full	__ETHTOOL_LINK_MODE_LEGACY_MASK(56000baseSR4_Full)
++#define ADVERTISED_56000baseLR4_Full	__ETHTOOL_LINK_MODE_LEGACY_MASK(56000baseLR4_Full)
++/* Please do not define any new ADVERTISED_* macro for bits > 31, see
++ * notice above.
++ */
++
++/* The following are all involved in forcing a particular link
++ * mode for the device for setting things.  When getting the
++ * devices settings, these indicate the current mode and whether
++ * it was forced up into this mode or autonegotiated.
++ */
++
++/* The forced speed, in units of 1Mb. All values 0 to INT_MAX are legal.
++ * Update drivers/net/phy/phy.c:phy_speed_to_str() and
++ * drivers/net/bonding/bond_3ad.c:__get_link_speed() when adding new values.
++ */
++#define SPEED_10		10
++#define SPEED_100		100
++#define SPEED_1000		1000
++#define SPEED_2500		2500
++#define SPEED_5000		5000
++#define SPEED_10000		10000
++#define SPEED_14000		14000
++#define SPEED_20000		20000
++#define SPEED_25000		25000
++#define SPEED_40000		40000
++#define SPEED_50000		50000
++#define SPEED_56000		56000
++#define SPEED_100000		100000
++
++#define SPEED_UNKNOWN		-1
++
++static inline int ethtool_validate_speed(uint32_t speed)
++{
++	return speed <= INT_MAX || speed == SPEED_UNKNOWN;
++}
++
++/* Duplex, half or full. */
++#define DUPLEX_HALF		0x00
++#define DUPLEX_FULL		0x01
++#define DUPLEX_UNKNOWN		0xff
++
++static inline int ethtool_validate_duplex(uint8_t duplex)
++{
++	switch (duplex) {
++	case DUPLEX_HALF:
++	case DUPLEX_FULL:
++	case DUPLEX_UNKNOWN:
++		return 1;
++	}
++
++	return 0;
++}
++
++/* Which connector port. */
++#define PORT_TP			0x00
++#define PORT_AUI		0x01
++#define PORT_MII		0x02
++#define PORT_FIBRE		0x03
++#define PORT_BNC		0x04
++#define PORT_DA			0x05
++#define PORT_NONE		0xef
++#define PORT_OTHER		0xff
++
++/* Which transceiver to use. */
++#define XCVR_INTERNAL		0x00 /* PHY and MAC are in the same package */
++#define XCVR_EXTERNAL		0x01 /* PHY and MAC are in different packages */
++#define XCVR_DUMMY1		0x02
++#define XCVR_DUMMY2		0x03
++#define XCVR_DUMMY3		0x04
++
++/* Enable or disable autonegotiation. */
++#define AUTONEG_DISABLE		0x00
++#define AUTONEG_ENABLE		0x01
++
++/* MDI or MDI-X status/control - if MDI/MDI_X/AUTO is set then
++ * the driver is required to renegotiate link
++ */
++#define ETH_TP_MDI_INVALID	0x00 /* status: unknown; control: unsupported */
++#define ETH_TP_MDI		0x01 /* status: MDI;     control: force MDI */
++#define ETH_TP_MDI_X		0x02 /* status: MDI-X;   control: force MDI-X */
++#define ETH_TP_MDI_AUTO		0x03 /*                  control: auto-select */
++
++/* Wake-On-Lan options. */
++#define WAKE_PHY		(1 << 0)
++#define WAKE_UCAST		(1 << 1)
++#define WAKE_MCAST		(1 << 2)
++#define WAKE_BCAST		(1 << 3)
++#define WAKE_ARP		(1 << 4)
++#define WAKE_MAGIC		(1 << 5)
++#define WAKE_MAGICSECURE	(1 << 6) /* only meaningful if WAKE_MAGIC */
++
++/* L2-L4 network traffic flow types */
++#define	TCP_V4_FLOW	0x01	/* hash or spec (tcp_ip4_spec) */
++#define	UDP_V4_FLOW	0x02	/* hash or spec (udp_ip4_spec) */
++#define	SCTP_V4_FLOW	0x03	/* hash or spec (sctp_ip4_spec) */
++#define	AH_ESP_V4_FLOW	0x04	/* hash only */
++#define	TCP_V6_FLOW	0x05	/* hash or spec (tcp_ip6_spec; nfc only) */
++#define	UDP_V6_FLOW	0x06	/* hash or spec (udp_ip6_spec; nfc only) */
++#define	SCTP_V6_FLOW	0x07	/* hash or spec (sctp_ip6_spec; nfc only) */
++#define	AH_ESP_V6_FLOW	0x08	/* hash only */
++#define	AH_V4_FLOW	0x09	/* hash or spec (ah_ip4_spec) */
++#define	ESP_V4_FLOW	0x0a	/* hash or spec (esp_ip4_spec) */
++#define	AH_V6_FLOW	0x0b	/* hash or spec (ah_ip6_spec; nfc only) */
++#define	ESP_V6_FLOW	0x0c	/* hash or spec (esp_ip6_spec; nfc only) */
++#define	IPV4_USER_FLOW	0x0d	/* spec only (usr_ip4_spec) */
++#define	IP_USER_FLOW	IPV4_USER_FLOW
++#define	IPV6_USER_FLOW	0x0e	/* spec only (usr_ip6_spec; nfc only) */
++#define	IPV4_FLOW	0x10	/* hash only */
++#define	IPV6_FLOW	0x11	/* hash only */
++#define	ETHER_FLOW	0x12	/* spec only (ether_spec) */
++/* Flag to enable additional fields in struct ethtool_rx_flow_spec */
++#define	FLOW_EXT	0x80000000
++#define	FLOW_MAC_EXT	0x40000000
++
++/* L3-L4 network traffic flow hash options */
++#define	RXH_L2DA	(1 << 1)
++#define	RXH_VLAN	(1 << 2)
++#define	RXH_L3_PROTO	(1 << 3)
++#define	RXH_IP_SRC	(1 << 4)
++#define	RXH_IP_DST	(1 << 5)
++#define	RXH_L4_B_0_1	(1 << 6) /* src port in case of TCP/UDP/SCTP */
++#define	RXH_L4_B_2_3	(1 << 7) /* dst port in case of TCP/UDP/SCTP */
++#define	RXH_DISCARD	(1 << 31)
++
++#define	RX_CLS_FLOW_DISC	0xffffffffffffffffULL
++
++/* Special RX classification rule insert location values */
++#define RX_CLS_LOC_SPECIAL	0x80000000	/* flag */
++#define RX_CLS_LOC_ANY		0xffffffff
++#define RX_CLS_LOC_FIRST	0xfffffffe
++#define RX_CLS_LOC_LAST		0xfffffffd
++
++/* EEPROM Standards for plug in modules */
++#define ETH_MODULE_SFF_8079		0x1
++#define ETH_MODULE_SFF_8079_LEN		256
++#define ETH_MODULE_SFF_8472		0x2
++#define ETH_MODULE_SFF_8472_LEN		512
++#define ETH_MODULE_SFF_8636		0x3
++#define ETH_MODULE_SFF_8636_LEN		256
++#define ETH_MODULE_SFF_8436		0x4
++#define ETH_MODULE_SFF_8436_LEN		256
++
++/* Reset flags */
++/* The reset() operation must clear the flags for the components which
++ * were actually reset.  On successful return, the flags indicate the
++ * components which were not reset, either because they do not exist
++ * in the hardware or because they cannot be reset independently.  The
++ * driver must never reset any components that were not requested.
++ */
++enum ethtool_reset_flags {
++	/* These flags represent components dedicated to the interface
++	 * the command is addressed to.  Shift any flag left by
++	 * ETH_RESET_SHARED_SHIFT to reset a shared component of the
++	 * same type.
++	 */
++	ETH_RESET_MGMT		= 1 << 0,	/* Management processor */
++	ETH_RESET_IRQ		= 1 << 1,	/* Interrupt requester */
++	ETH_RESET_DMA		= 1 << 2,	/* DMA engine */
++	ETH_RESET_FILTER	= 1 << 3,	/* Filtering/flow direction */
++	ETH_RESET_OFFLOAD	= 1 << 4,	/* Protocol offload */
++	ETH_RESET_MAC		= 1 << 5,	/* Media access controller */
++	ETH_RESET_PHY		= 1 << 6,	/* Transceiver/PHY */
++	ETH_RESET_RAM		= 1 << 7,	/* RAM shared between
++						 * multiple components */
++	ETH_RESET_AP		= 1 << 8,	/* Application processor */
++
++	ETH_RESET_DEDICATED	= 0x0000ffff,	/* All components dedicated to
++						 * this interface */
++	ETH_RESET_ALL		= 0xffffffff,	/* All components used by this
++						 * interface, even if shared */
++};
++#define ETH_RESET_SHARED_SHIFT	16
++
++
++/**
++ * struct ethtool_link_settings - link control and status
++ *
++ * IMPORTANT, Backward compatibility notice: When implementing new
++ *	user-space tools, please first try %ETHTOOL_GLINKSETTINGS, and
++ *	if it succeeds use %ETHTOOL_SLINKSETTINGS to change link
++ *	settings; do not use %ETHTOOL_SSET if %ETHTOOL_GLINKSETTINGS
++ *	succeeded: stick to %ETHTOOL_GLINKSETTINGS/%SLINKSETTINGS in
++ *	that case.  Conversely, if %ETHTOOL_GLINKSETTINGS fails, use
++ *	%ETHTOOL_GSET to query and %ETHTOOL_SSET to change link
++ *	settings; do not use %ETHTOOL_SLINKSETTINGS if
++ *	%ETHTOOL_GLINKSETTINGS failed: stick to
++ *	%ETHTOOL_GSET/%ETHTOOL_SSET in that case.
++ *
++ * @cmd: Command number = %ETHTOOL_GLINKSETTINGS or %ETHTOOL_SLINKSETTINGS
++ * @speed: Link speed (Mbps)
++ * @duplex: Duplex mode; one of %DUPLEX_*
++ * @port: Physical connector type; one of %PORT_*
++ * @phy_address: MDIO address of PHY (transceiver); 0 or 255 if not
++ *	applicable.  For clause 45 PHYs this is the PRTAD.
++ * @autoneg: Enable/disable autonegotiation and auto-detection;
++ *	either %AUTONEG_DISABLE or %AUTONEG_ENABLE
++ * @mdio_support: Bitmask of %ETH_MDIO_SUPPORTS_* flags for the MDIO
++ *	protocols supported by the interface; 0 if unknown.
++ *	Read-only.
++ * @eth_tp_mdix: Ethernet twisted-pair MDI(-X) status; one of
++ *	%ETH_TP_MDI_*.  If the status is unknown or not applicable, the
++ *	value will be %ETH_TP_MDI_INVALID.  Read-only.
++ * @eth_tp_mdix_ctrl: Ethernet twisted pair MDI(-X) control; one of
++ *	%ETH_TP_MDI_*.  If MDI(-X) control is not implemented, reads
++ *	yield %ETH_TP_MDI_INVALID and writes may be ignored or rejected.
++ *	When written successfully, the link should be renegotiated if
++ *	necessary.
++ * @link_mode_masks_nwords: Number of 32-bit words for each of the
++ *	supported, advertising, lp_advertising link mode bitmaps. For
++ *	%ETHTOOL_GLINKSETTINGS: on entry, number of words passed by user
++ *	(>= 0); on return, if handshake in progress, negative if
++ *	request size unsupported by kernel: absolute value indicates
++ *	kernel expected size and all the other fields but cmd
++ *	are 0; otherwise (handshake completed), strictly positive
++ *	to indicate size used by kernel and cmd field stays
++ *	%ETHTOOL_GLINKSETTINGS, all other fields populated by driver. For
++ *	%ETHTOOL_SLINKSETTINGS: must be valid on entry, ie. a positive
++ *	value returned previously by %ETHTOOL_GLINKSETTINGS, otherwise
++ *	refused. For drivers: ignore this field (use kernel's
++ *	__ETHTOOL_LINK_MODE_MASK_NBITS instead), any change to it will
++ *	be overwritten by kernel.
++ * @supported: Bitmap with each bit meaning given by
++ *	%ethtool_link_mode_bit_indices for the link modes, physical
++ *	connectors and other link features for which the interface
++ *	supports autonegotiation or auto-detection.  Read-only.
++ * @advertising: Bitmap with each bit meaning given by
++ *	%ethtool_link_mode_bit_indices for the link modes, physical
++ *	connectors and other link features that are advertised through
++ *	autonegotiation or enabled for auto-detection.
++ * @lp_advertising: Bitmap with each bit meaning given by
++ *	%ethtool_link_mode_bit_indices for the link modes, and other
++ *	link features that the link partner advertised through
++ *	autonegotiation; 0 if unknown or not applicable.  Read-only.
++ * @transceiver: Used to distinguish different possible PHY types,
++ *	reported consistently by PHYLIB.  Read-only.
++ *
++ * If autonegotiation is disabled, the speed and @duplex represent the
++ * fixed link mode and are writable if the driver supports multiple
++ * link modes.  If it is enabled then they are read-only; if the link
++ * is up they represent the negotiated link mode; if the link is down,
++ * the speed is 0, %SPEED_UNKNOWN or the highest enabled speed and
++ * @duplex is %DUPLEX_UNKNOWN or the best enabled duplex mode.
++ *
++ * Some hardware interfaces may have multiple PHYs and/or physical
++ * connectors fitted or do not allow the driver to detect which are
++ * fitted.  For these interfaces @port and/or @phy_address may be
++ * writable, possibly dependent on @autoneg being %AUTONEG_DISABLE.
++ * Otherwise, attempts to write different values may be ignored or
++ * rejected.
++ *
++ * Deprecated %ethtool_cmd fields transceiver, maxtxpkt and maxrxpkt
++ * are not available in %ethtool_link_settings. Until all drivers are
++ * converted to ignore them or to the new %ethtool_link_settings API,
++ * for both queries and changes, users should always try
++ * %ETHTOOL_GLINKSETTINGS first, and if it fails with -ENOTSUPP stick
++ * only to %ETHTOOL_GSET and %ETHTOOL_SSET consistently. If it
++ * succeeds, then users should stick to %ETHTOOL_GLINKSETTINGS and
++ * %ETHTOOL_SLINKSETTINGS (which would support drivers implementing
++ * either %ethtool_cmd or %ethtool_link_settings).
++ *
++ * Users should assume that all fields not marked read-only are
++ * writable and subject to validation by the driver.  They should use
++ * %ETHTOOL_GLINKSETTINGS to get the current values before making specific
++ * changes and then applying them with %ETHTOOL_SLINKSETTINGS.
++ *
++ * Drivers that implement %get_link_ksettings and/or
++ * %set_link_ksettings should ignore the @cmd
++ * and @link_mode_masks_nwords fields (any change to them overwritten
++ * by kernel), and rely only on kernel's internal
++ * %__ETHTOOL_LINK_MODE_MASK_NBITS and
++ * %ethtool_link_mode_mask_t. Drivers that implement
++ * %set_link_ksettings() should validate all fields other than @cmd
++ * and @link_mode_masks_nwords that are not described as read-only or
++ * deprecated, and must ignore all fields described as read-only.
++ */
++struct ethtool_link_settings {
++	uint32_t	cmd;
++	uint32_t	speed;
++	uint8_t	duplex;
++	uint8_t	port;
++	uint8_t	phy_address;
++	uint8_t	autoneg;
++	uint8_t	mdio_support;
++	uint8_t	eth_tp_mdix;
++	uint8_t	eth_tp_mdix_ctrl;
++	int8_t	link_mode_masks_nwords;
++	uint8_t	transceiver;
++	uint8_t	reserved1[3];
++	uint32_t	reserved[7];
++	uint32_t	link_mode_masks[0];
++	/* layout of link_mode_masks fields:
++	 * uint32_t map_supported[link_mode_masks_nwords];
++	 * uint32_t map_advertising[link_mode_masks_nwords];
++	 * uint32_t map_lp_advertising[link_mode_masks_nwords];
++	 */
++};
++#endif /* _LINUX_ETHTOOL_H */
+diff --git a/include/standard-headers/linux/kernel.h b/include/standard-headers/linux/kernel.h
+new file mode 100644
+index 0000000..1eeba2e
+--- /dev/null
++++ b/include/standard-headers/linux/kernel.h
+@@ -0,0 +1,15 @@
++/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
++#ifndef _LINUX_KERNEL_H
++#define _LINUX_KERNEL_H
++
++#include "standard-headers/linux/sysinfo.h"
++
++/*
++ * 'kernel.h' contains some often-used function prototypes etc
++ */
++#define __ALIGN_KERNEL(x, a)		__ALIGN_KERNEL_MASK(x, (typeof(x))(a) - 1)
++#define __ALIGN_KERNEL_MASK(x, mask)	(((x) + (mask)) & ~(mask))
++
++#define __KERNEL_DIV_ROUND_UP(n, d) (((n) + (d) - 1) / (d))
++
++#endif /* _LINUX_KERNEL_H */
+diff --git a/include/standard-headers/linux/sysinfo.h b/include/standard-headers/linux/sysinfo.h
+new file mode 100644
+index 0000000..e3c06ac
+--- /dev/null
++++ b/include/standard-headers/linux/sysinfo.h
+@@ -0,0 +1,25 @@
++/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
++#ifndef _LINUX_SYSINFO_H
++#define _LINUX_SYSINFO_H
++
++#include "standard-headers/linux/types.h"
++
++#define SI_LOAD_SHIFT	16
++struct sysinfo {
++	long uptime;		/* Seconds since boot */
++	unsigned long loads[3];	/* 1, 5, and 15 minute load averages */
++	unsigned long totalram;	/* Total usable main memory size */
++	unsigned long freeram;	/* Available memory size */
++	unsigned long sharedram;	/* Amount of shared memory */
++	unsigned long bufferram;	/* Memory used by buffers */
++	unsigned long totalswap;	/* Total swap space size */
++	unsigned long freeswap;	/* swap space still available */
++	uint16_t procs;		   	/* Number of current processes */
++	uint16_t pad;		   	/* Explicit padding for m68k */
++	unsigned long totalhigh;	/* Total high memory size */
++	unsigned long freehigh;	/* Available high memory size */
++	uint32_t mem_unit;			/* Memory unit size in bytes */
++	char _f[20-2*sizeof(unsigned long)-sizeof(uint32_t)];	/* Padding: libc5 uses this.. */
++};
++
++#endif /* _LINUX_SYSINFO_H */
+diff --git a/scripts/update-linux-headers.sh b/scripts/update-linux-headers.sh
+index be06570..d18e2f1 100755
+--- a/scripts/update-linux-headers.sh
++++ b/scripts/update-linux-headers.sh
+@@ -39,6 +39,9 @@ cp_portable() {
+                                      -e 'input-event-codes' \
+                                      -e 'sys/' \
+                                      -e 'pvrdma_verbs' \
++                                     -e 'limits' \
++                                     -e 'linux/kernel' \
++                                     -e 'linux/sysinfo' \
+                                      > /dev/null
+     then
+         echo "Unexpected #include in input file $f".
+@@ -59,6 +62,10 @@ cp_portable() {
+         -e '/sys\/ioctl.h/d' \
+         -e 's/SW_MAX/SW_MAX_/' \
+         -e 's/atomic_t/int/' \
++        -e 's/__kernel_long_t/long/' \
++        -e 's/__kernel_ulong_t/unsigned long/' \
++        -e 's/struct ethhdr/struct eth_header/' \
++        -e '/\#define _LINUX_ETHTOOL_H/a \\n\#include "net/eth.h"' \
+         "$f" > "$to/$header";
+ }
+ 
+@@ -146,7 +153,9 @@ rm -rf "$output/include/standard-headers/linux"
+ mkdir -p "$output/include/standard-headers/linux"
+ for i in "$tmpdir"/include/linux/*virtio*.h "$tmpdir/include/linux/input.h" \
+          "$tmpdir/include/linux/input-event-codes.h" \
+-         "$tmpdir/include/linux/pci_regs.h"; do
++         "$tmpdir/include/linux/pci_regs.h" \
++         "$tmpdir/include/linux/ethtool.h" "$tmpdir/include/linux/kernel.h" \
++         "$tmpdir/include/linux/sysinfo.h"; do
+     cp_portable "$i" "$output/include/standard-headers/linux"
+ done
+ 
+-- 
+MST
 
->
->
->
->>
->>           #define VIRTIO_NET_HDR_GSO_UDP         3
->>           #define VIRTIO_NET_HDR_GSO_TCPV6       4
->>           #define VIRTIO_NET_HDR_GSO_ECN      0x80
->>         @@ -3317,6 +3323,8 @@ struct virtio_net_hdr {
->>                   le16 csum_start;
->>                   le16 csum_offset;
->>                   le16 num_buffers;
->>         +// Only if RSS hash offload has been negotiated
->>         +        le64 rss_hash_value;
->>
->>
->>     Not a native English speaker, but "rss_hash" should be sufficient.
->>
->> will do
->>
->>
->>
->>           };
->>           \end{lstlisting}
->>           @@ -4007,6 +4015,131 @@ VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET
->> command.
->>           The device MUST NOT queue packets on receive queues greater th=
-an
->>           \field{virtqueue_pairs} once it has placed the
->>         VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET command in the used ring.
->>           +\paragraph{RSS hash offload}\label{sec:Device Types /
->>         Network Device / Device Operation / Control Virtqueue / RSS
->>         hash offload}
->>         +
->>         +\begin{lstlisting}
->>         +#define RSS_HASH_FUNCTION_NONE      1
->>         +#define RSS_HASH_FUNCTION_TOEPLITZ  2
->>         +#define RSS_HASH_FUNCTION_SYMMETRIC 3
->>         +
->>         +// Hash function fields
->>         +#define RSS_HASH_FIELDS_IPV4          0x00000100
->>         +#define RSS_HASH_FIELDS_TCP_IPV4      0x00000200
->>         +#define RSS_HASH_FIELDS_IPV6          0x00000400
->>         +#define RSS_HASH_FIELDS_IPV6_EX       0x00000800
->>         +#define RSS_HASH_FIELDS_TCP_IPV6      0x00001000
->>         +#define RSS_HASH_FIELDS_TCP_IPV6_EX   0x00002000
->>         +
->>         +struct virtio_net_ctrl_rss_hash{
->>         +le32 hash_function;
->>         +}
->>         +
->>         +struct virtio_net_rss {
->>         +le32 hash_function;
->>         +le32 hash_function_flags;
->>         +le32 hash_key_length;
->>         +le32 indirection_table_length;
->>         +       struct {
->>         +               le32 hash_key[hash_key_length];
->>         +               le32 indirection_table[indirection_table_length]=
-;
->>         +       }
->>         +};
->>         +
->>         +#define VIRTIO_NET_F_CTRL_RSS     24
->>         +
->>         +#define VIRTIO_NET_CTRL_RSS    6
->>         +#define VIRTIO_NET_CTRL_RSS_GET_SUPPORTED_FUNCTIONS  0
->>         +#define VIRTIO_NET_CTRL_RSS_DISABLE    1
->>         +#define VIRTIO_NET_CTRL_RSS_SET    2
->>         +\end{lstlisting}
->>         +
->>         +If the VIRTIO_NET_F_CTRL_RSS is negotiated the driver can
->>         send control
->>         +commands for the RSS configuration.
->>         +
->>         +The class VIRTIO_NET_CTRL_RSS has three commands:
->>         +
->>         +\begin{enumerate}
->>         +\item VIRTIO_NET_CTRL_RSS_GET_SUPPLIED_FUNCTIONS returns the
->>         hash functions
->>         +       supported by the device to the driver.
->>
->>
->>     Can we just reuse virtio_net_rss in this case, it contains all the
->>     informations (e.g hash key or whatever others)?
->>
->> Sure this can work
->>
->>
->>
->>         +\item VIRTIO_NET_CTRL_RSS_DISABLE Instructs the device that
->>         RSS hashing is no
->>         +       longer required.
->>
->>
->>     So this implies that if MQ is supported, we will go to use
->>     automatic steering mode? I was thinking maybe it's better to
->>     introduce a generic command to switch between steering mode.
->>
->>  So you are suggesting that we should have an additional generic command
->> that changes between steering modes and RSS is one of those modes?
->>
->
-> Yes.
->
->
->
->>
->>         +\item VIRTIO_NET_CTRL_RSS_SET applies the new RSS
->>         configuration. The command is
->>         +       used by the driver for setting RSS hash function, hash
->>         key and
->>         +       indirection table in the device.
->>         +\end{enumerate}
->>         +
->>         +If this feaure has been negotiated, the virtio header has an
->>         additional
->>         +field{rss_hash_value} field attached to it.
->>         +
->>         +\devicenormative{\subparagraph}{RSS hash offload}{Device
->>         Types / Network Device / Device Operation / Control Virtqueue
->>         / RSS hash offload}
->>         +
->>         +The device MUST fill the virtio_net_ctrl_rss_hash structure
->>         with the hash
->>         +functions it supports and return the structure to the driver.
->>         Zero or more
->>         +flags of the RSS_HASH_FUNCTION flags MUST be used to fill the
->>         \field{hash_function}
->>         +field.
->>         +
->>         +Upon recieving VIRTIO_NET_CTRL_DISABLE the device SHOULD stop
->>         calculating and
->>         +attaching hashes
->>
->>
->>     For simplicity, what if just compute the hash in this case?
->>     Consider a driver may want to use this hash (e.g Linux driver).
->>
->> I get the use case but maybe introduce a new command for computing hashe=
-s
->> only?
->>
->
-> Then it looks unnecessary. (Btw, the above should be
-> "VIRTIO_NET_CTRL_RSS_DISABLE").
 
-We can have it as a sub command of the RSS command where the command
-calculates hashes only
-or else make the device calculate hashes only when setting the hash
-function and key but not setting the indirection table
-(indirection_table_length =3D 0)
-True, thanks.
-
->
-
-
-
-
->
-> I think the disable should be preserved for disabling only.
->>
->>
->>
->>         for the packets as well as stop setting the VIRTIO_NET_HDR_GSO_R=
-SS
->>         +in the \field{gso_type} field, however the
->>         \field{hash_function} field is kept
->>         +as a part of the header.
->>         +
->>         +The device MUST drop all previous RSS configuration upon
->>         receiving
->>         +VIRTIO_NET_CTRL_RSS_SET command.
->>         +
->>         +The device MUST set the RSS configuration according to the
->>         settings provided as
->>         +follows, once the configuration process is completed the
->>         device SHOULD apply
->>         +the hash function to each of the incoming packets and
->>         distribute the packets
->>         +through the virqueues using the calculated hash and the
->>         indirection table
->>         +that were earlier provided by the driver.
->>
->>
->>     We support changing #queues dynamically, so need to clarify the
->>     behavior when e.g the destination queues were disabled.
->>
->> I will go into these details in the next version.
->>
->>
->>
->>         +
->>         +Setting RSS configuration
->>         +\begin{enumerate}
->>         +\item The driver fills all of the fields and passes them
->>         through the control
->>         +       queue to the device.
->>         +
->>         +\item The device sets the RSS configuration as provided by
->>         the driver.
->>         +
->>         +\item If the device successfully applied the configuration,
->>         on each packet
->>         +       recieved the device MUST calculate the hashing for the
->>         packet and
->>         +       store it in the virtio-net header in rss_hash_value
->>         and the hash
->>         +       fields used in the calculation in rss_hash_type.
->>         +\end{enumerate}
->>         +
->>         +In case of any unexpected values/ unsupported hash function
->>         the driver
->>         +MUST return VIRTIO_NET_ERR in the \field{ack} field.
->>         +
->>         +\drivernormative{\subparagraph}{RSS hash offload}{Device
->>         Types / Network Device / Device Operation / Control Virtqueue
->>         / RSS hash offload}
->>         +
->>         +If the driver negotiates the feature VIRTIO_NET_F_CTRL_RSS
->>         the driver SHOULD
->>         +send VIRTIO_NET_CTRL_RSS_SET command to the device along with
->>         the RSS structure
->>         +filled. The RSS structure fields should be filled as follows:
->>         +
->>         +\begin{itemize}
->>         +\item The driver SHOULD choose the hash function that SHOULD
->>         be used and fill
->>         +       it in the \field{hash_function} field along with the
->>         approperiate flags
->>         +       in the \field{hash_function_flags} field. These flags
->>         inidicate to the
->>         +       device which packet fields MUST be used in the
->>         calculation process of
->>         +       the hash.
->>         +\item Once the hash function has been chosen a suitable hash
->>         key should be set
->>         +       in the \field{hash_key} field, the length of the key
->>         should be stored
->>         +       in the \field{hash_key_length} field.
->>         +\item Lastly the driver should fill the indirection table
->>         array in the
->>         +       \field{indirection_table} field while setting the
->>         array length in
->>         +       \field{indirection_table_length}. This structure is
->>         used by the device
->>         +       for determining in which RX virt queue the packet
->>         should be placed.
->>
->>
->>     Is the indirection table expected to be changed frequently? If
->>     yes, a single entry modification will cause a update of the whole
->>     table.
->>
->> No, it should not be changing frequently
->>
->>
->>
->>         +\end{itemize}
->>         +Once the configuration phase is over successfully, the
->>         packets SHOULD have the
->>         +\field{rss_hash_value} field with the hash value that was
->>         calculated by the
->>         +device.
->>         +
->>         +Whenever the driver wants to discard the current RSS
->>         settings, it can send an
->>         +VIRTIO_NET_CTRL_RSS_SET command along with rss structure that h=
-as
->>         +RSS_HASH_FUNCTION_NONE the \field{hash_function} field.
->>
->>
->>     So this function looks equivalent to VIRTIO_NET_CTRL_RSS_DISABLE?
->>
->> Yes, do you think we should discard one of the two?
->>
->
-> Yes.
->
-> Thanks
->
->
->>     Thanks
->>
->>
->>         +
->>         +The driver MUST check the \field{ack} field value provided by
->>         the device, in
->>         +case the value is not VIRTIO_NET_OK then the driver MUST
->>         hanlde faliure and
->>         +retry another hash function or else give up.
->>         +
->>           \subparagraph{Legacy Interface: Automatic receive steering
->>         in multiqueue mode}\label{sec:Device Types / Network Device /
->>         Device Operation / Control Virtqueue / Automatic receive
->>         steering in multiqueue mode / Legacy Interface: Automatic
->>         receive steering in multiqueue mode}
->>           When using the legacy interface, transitional devices and
->>         drivers
->>           MUST format \field{virtqueue_pairs}
->>
->>
->>
->>
->>
->> --
->> Respectfully,
->> */Sameeh Jubran/*
->> /Linkedin <https://il.linkedin.com/pub/sameeh-jubran/87/747/a8a>/
->> /Software Engineer @ Daynix <http://www.daynix.com>./
->>
->
->
-
-
---=20
-Respectfully,
-*Sameeh Jubran*
-*Linkedin <https://il.linkedin.com/pub/sameeh-jubran/87/747/a8a>*
-*Software Engineer @ Daynix <http://www.daynix.com>.*
-
---00000000000037ce190567d4dbeb
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><br><div class=3D"gmail_extra"><br><div class=3D"gmail_quo=
-te">On Tue, Mar 20, 2018 at 5:10 AM, Jason Wang <span dir=3D"ltr">&lt;<a hr=
-ef=3D"mailto:jasowang@redhat.com" target=3D"_blank">jasowang@redhat.com</a>=
-&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0px=
- 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex"><br=
->
-<br>
-On 2018=E5=B9=B403=E6=9C=8819=E6=97=A5 21:33, Sameeh Jubran wrote:<br>
-<blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-=
-left:1px solid rgb(204,204,204);padding-left:1ex"><span class=3D"gmail-">
-<br>
-<br>
-On Thu, Mar 15, 2018 at 4:19 AM, Jason Wang &lt;<a href=3D"mailto:jasowang@=
-redhat.com" target=3D"_blank">jasowang@redhat.com</a> &lt;mailto:<a href=3D=
-"mailto:jasowang@redhat.com" target=3D"_blank">jasowang@redhat.com</a>&gt;&=
-gt; wrote:<br>
-<br>
-<br>
-<br>
-=C2=A0 =C2=A0 On 2018=E5=B9=B401=E6=9C=8826=E6=97=A5 00:27, Sameeh Jubran w=
-rote:<br>
-<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 From: Sameeh Jubran &lt;<a href=3D"mailto:samee=
-h.j@gmail.com" target=3D"_blank">sameeh.j@gmail.com</a><br></span>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 &lt;mailto:<a href=3D"mailto:sameeh.j@gmail.com=
-" target=3D"_blank">sameeh.j@gmail.com</a>&gt;&gt;<span class=3D"gmail-"><b=
-r>
-<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 Most modern high end network devices today supp=
-ort<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 configurable hash functions,<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 this commit introduces RSS - Receive Side Scali=
-ng - [1] to<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 virtio net device.<br>
-<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 The RSS is a technology from Microsoft that boo=
-sts network<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 device performance<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 by efficiently distributing the traffic among t=
-he CPUs in a<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 multiprocessor<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 system.<br>
-<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 This feature is supported in most of the modern=
- network cards<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 as well as most<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 modern OSes including Linux and Windows. It is =
-worth<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 mentioning that both DPDK<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 and Hyper-v support RSS too.<br>
-<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 [1]<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 <a href=3D"https://docs.microsoft.com/en-us/win=
-dows-hardware/drivers/network/ndis-receive-side-scaling2" rel=3D"noreferrer=
-" target=3D"_blank">https://docs.microsoft.com/en-<wbr>us/windows-hardware/=
-drivers/ne<wbr>twork/ndis-receive-side-scalin<wbr>g2</a><br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 &lt;<a href=3D"https://docs.microsoft.com/en-us=
-/windows-hardware/drivers/network/ndis-receive-side-scaling2" rel=3D"norefe=
-rrer" target=3D"_blank">https://docs.microsoft.com/en<wbr>-us/windows-hardw=
-are/drivers/<wbr>network/ndis-receive-side-<wbr>scaling2</a>&gt;<br>
-<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 Signed-off-by: Sameeh Jubran &lt;<a href=3D"mai=
-lto:sjubran@redhat.com" target=3D"_blank">sjubran@redhat.com</a><br></span>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 &lt;mailto:<a href=3D"mailto:sjubran@redhat.com=
-" target=3D"_blank">sjubran@redhat.com</a>&gt;&gt;<div><div class=3D"gmail-=
-h5"><br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 ---<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 content.tex | 133<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 ++++++++++++++++++++++++++++++<wbr>++++++++++++=
-++++++++++++++++++<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 1 file changed, 133 insertions(+)<br>
-<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 diff --git a/content.tex b/content.tex<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 index c840588..5969b28 100644<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 --- a/content.tex<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +++ b/content.tex<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 @@ -3115,6 +3115,9 @@ features.<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 \item[VIRTIO_NET_F_CTRL_MAC_AD<wb=
-r>DR(23)] Set MAC address<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 through control<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 channel.<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +\item[VIRTIO_NET_F_CTRL_RSS(2<wbr>4)] Device s=
-upports configurable<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 RSS hash<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +=C2=A0 =C2=A0 functions.<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 \end{description}<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 \subsubsection{Feature bit requir=
-ements}\label{sec:Device<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 Types / Network Device / Feature bits / Feature=
- bit requirements}<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 @@ -3138,6 +3141,8 @@ Some networking feature b=
-its require<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 other networking feature bits<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 \item[VIRTIO_NET_F_GUEST_ANNOU<wbr>NCE] =
-Requires<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 VIRTIO_NET_F_CTRL_VQ.<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 \item[VIRTIO_NET_F_MQ] Requires VIRTIO_N=
-ET_F_CTRL_VQ.<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 \item[VIRTIO_NET_F_CTRL_MAC_AD<wbr>DR] R=
-equires VIRTIO_NET_F_CTRL_VQ.<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +\item[VIRTIO_NET_F_CTRL_RSS] Requires VIRTIO_N=
-ET_F_MQ.<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 \end{description}<br>
-<br>
-<br>
-=C2=A0 =C2=A0 Is this a requirement of RSSv2? Looks like at least RSS can w=
-ork<br>
-=C2=A0 =C2=A0 without multiqueue in V1.<br>
-<br>
-You are right this is not a requirement and should be dropped. More on RSS =
-with single hardware queue:<br></div></div>
-=C2=A0<a href=3D"https://docs.microsoft.com/en-us/windows-hardware/drivers/=
-network/rss-with-a-single-hardware-receive-queue" rel=3D"noreferrer" target=
-=3D"_blank">https://docs.microsoft.com/en<wbr>-us/windows-hardware/drivers/=
-<wbr>network/rss-with-a-single-<wbr>hardware-receive-queue</a> &lt;<a href=
-=3D"https://docs.microsoft.com/en-us/windows-hardware/drivers/network/rss-w=
-ith-a-single-hardware-receive-queue" rel=3D"noreferrer" target=3D"_blank">h=
-ttps://docs.microsoft.com/en<wbr>-us/windows-hardware/drivers/<wbr>network/=
-rss-with-a-single-<wbr>hardware-receive-queue</a>&gt;<span class=3D"gmail-"=
-><br>
-<br>
-<br>
-<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 \subsubsection{Legacy Interface: =
-Feature<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 bits}\label{sec:Device Types / Network Device /=
- Feature bits /<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 Legacy Interface: Feature bits}<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 @@ -3308,6 +3313,7 @@ struct virtio_net_hdr {<b=
-r>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 u8 flags;<br=
->
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 #define VIRTIO_NET_HDR_GSO_NONE=C2=A0 =
-=C2=A0 =C2=A0 =C2=A0 0<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 #define VIRTIO_NET_HDR_GSO_TCPV4=C2=A0 =
-=C2=A0 =C2=A0 =C2=A01<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +#define VIRTIO_NET_HDR_GSO_RSS=C2=A0 =C2=A0 =
-=C2=A0 =C2=A0 =C2=A02<br>
-<br>
-<br>
-=C2=A0 =C2=A0 What&#39;s the reason of introducing a new GSO type here? RSS=
- should<br>
-=C2=A0 =C2=A0 be independent for a specific offloading type I think.<br>
-<br>
-This was the straight forward option as there is no need to extend the virt=
-io header but it can be moved to a specific offload.<br>
-</span></blockquote>
-<br>
-If I understand correctly, RSS is not tied to GSO, so you mean VIRTIO_NET_H=
-DR_RSS here?</blockquote><div>Yup=C2=A0</div><blockquote class=3D"gmail_quo=
-te" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204=
-);padding-left:1ex"><div><div class=3D"gmail-h5"><br>
-<br>
-<blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-=
-left:1px solid rgb(204,204,204);padding-left:1ex">
-<br>
-<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 #define VIRTIO_NET_HDR_GSO_UDP=C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A03<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 #define VIRTIO_NET_HDR_GSO_TCPV6=C2=A0 =
-=C2=A0 =C2=A0 =C2=A04<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 #define VIRTIO_NET_HDR_GSO_ECN=C2=A0 =C2=
-=A0 =C2=A0 0x80<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 @@ -3317,6 +3323,8 @@ struct virtio_net_hdr {<b=
-r>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 le16 csum_st=
-art;<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 le16 csum_of=
-fset;<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 le16 num_buf=
-fers;<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +// Only if RSS hash offload has been negotiate=
-d<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +=C2=A0 =C2=A0 =C2=A0 =C2=A0 le64 rss_hash_valu=
-e;<br>
-<br>
-<br>
-=C2=A0 =C2=A0 Not a native English speaker, but &quot;rss_hash&quot; should=
- be sufficient.<br>
-<br>
-will do<br>
-<br>
-<br>
-<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 };<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 \end{lstlisting}<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 @@ -4007,6 +4015,131 @@ VIRTIO_NET_CTRL_=
-MQ_VQ_PAIRS_SE<wbr>T command.<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 The device MUST NOT queue packets on rec=
-eive queues greater than<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 \field{virtqueue_pairs} once it has plac=
-ed the<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SE<wbr>T command in=
- the used ring.<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 +\paragraph{RSS hash offload}\label{sec:=
-Device Types /<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 Network Device / Device Operation / Control Vir=
-tqueue / RSS<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 hash offload}<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +\begin{lstlisting}<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +#define RSS_HASH_FUNCTION_NONE=C2=A0 =C2=A0 =
-=C2=A0 1<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +#define RSS_HASH_FUNCTION_TOEPLITZ=C2=A0 2<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +#define RSS_HASH_FUNCTION_SYMMETRIC 3<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +// Hash function fields<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +#define RSS_HASH_FIELDS_IPV4=C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 0x00000100<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +#define RSS_HASH_FIELDS_TCP_IPV4=C2=A0 =C2=A0 =
-=C2=A0 0x00000200<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +#define RSS_HASH_FIELDS_IPV6=C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 0x00000400<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +#define RSS_HASH_FIELDS_IPV6_EX=C2=A0 =C2=A0 =
-=C2=A0 =C2=A00x00000800<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +#define RSS_HASH_FIELDS_TCP_IPV6=C2=A0 =C2=A0 =
-=C2=A0 0x00001000<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +#define RSS_HASH_FIELDS_TCP_IPV6_EX=C2=A0 =C2=
-=A00x00002000<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +struct virtio_net_ctrl_rss_hash{<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +le32 hash_function;<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +}<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +struct virtio_net_rss {<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +le32 hash_function;<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +le32 hash_function_flags;<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +le32 hash_key_length;<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +le32 indirection_table_length;<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +=C2=A0 =C2=A0 =C2=A0 =C2=A0struct {<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0le32 hash_key[hash_key_length];<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0le32 indirection_table[indirection_<wbr>table_length];<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +=C2=A0 =C2=A0 =C2=A0 =C2=A0}<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +};<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +#define VIRTIO_NET_F_CTRL_RSS=C2=A0 =C2=A0 =C2=
-=A024<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +#define VIRTIO_NET_CTRL_RSS =C2=A0 =C2=A06<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +#define VIRTIO_NET_CTRL_RSS_GET_SUPPOR<wbr>TED=
-_FUNCTIONS =C2=A00<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +#define VIRTIO_NET_CTRL_RSS_DISABLE =C2=A0 =C2=
-=A01<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +#define VIRTIO_NET_CTRL_RSS_SET =C2=A0 =C2=A02=
-<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +\end{lstlisting}<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +If the VIRTIO_NET_F_CTRL_RSS is negotiated the=
- driver can<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 send control<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +commands for the RSS configuration.<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +The class VIRTIO_NET_CTRL_RSS has three comman=
-ds:<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +\begin{enumerate}<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +\item VIRTIO_NET_CTRL_RSS_GET_SUPPLI<wbr>ED_FU=
-NCTIONS returns the<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 hash functions<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +=C2=A0 =C2=A0 =C2=A0 =C2=A0supported by the de=
-vice to the driver.<br>
-<br>
-<br>
-=C2=A0 =C2=A0 Can we just reuse virtio_net_rss in this case, it contains al=
-l the<br>
-=C2=A0 =C2=A0 informations (e.g hash key or whatever others)?<br>
-<br>
-Sure this can work<br>
-<br>
-<br>
-<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +\item VIRTIO_NET_CTRL_RSS_DISABLE Instructs th=
-e device that<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 RSS hashing is no<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +=C2=A0 =C2=A0 =C2=A0 =C2=A0longer required.<br=
->
-<br>
-<br>
-=C2=A0 =C2=A0 So this implies that if MQ is supported, we will go to use<br=
->
-=C2=A0 =C2=A0 automatic steering mode? I was thinking maybe it&#39;s better=
- to<br>
-=C2=A0 =C2=A0 introduce a generic command to switch between steering mode.<=
-br>
-<br>
-=C2=A0So you are suggesting that we should have an additional generic comma=
-nd that changes between steering modes and RSS is one of those modes?<br>
-</blockquote>
-<br></div></div>
-Yes.<div><div class=3D"gmail-h5"><br>
-<br>
-<blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-=
-left:1px solid rgb(204,204,204);padding-left:1ex">
-<br>
-<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +\item VIRTIO_NET_CTRL_RSS_SET applies the new =
-RSS<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 configuration. The command is<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +=C2=A0 =C2=A0 =C2=A0 =C2=A0used by the driver =
-for setting RSS hash function, hash<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 key and<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +=C2=A0 =C2=A0 =C2=A0 =C2=A0indirection table i=
-n the device.<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +\end{enumerate}<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +If this feaure has been negotiated, the virtio=
- header has an<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 additional<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +field{rss_hash_value} field attached to it.<br=
->
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +\devicenormative{\subparagrap<wbr>h}{RSS hash =
-offload}{Device<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 Types / Network Device / Device Operation / Con=
-trol Virtqueue<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 / RSS hash offload}<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +The device MUST fill the virtio_net_ctrl_rss_h=
-ash structure<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 with the hash<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +functions it supports and return the structure=
- to the driver.<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 Zero or more<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +flags of the RSS_HASH_FUNCTION flags MUST be u=
-sed to fill the<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 \field{hash_function}<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +field.<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +Upon recieving VIRTIO_NET_CTRL_DISABLE the dev=
-ice SHOULD stop<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 calculating and<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +attaching hashes<br>
-<br>
-<br>
-=C2=A0 =C2=A0 For simplicity, what if just compute the hash in this case?<b=
-r>
-=C2=A0 =C2=A0 Consider a driver may want to use this hash (e.g Linux driver=
-).<br>
-<br>
-I get the use case but maybe introduce a new command for computing hashes o=
-nly?<br>
-</blockquote>
-<br></div></div>
-Then it looks unnecessary. (Btw, the above should be &quot;VIRTIO_NET_CTRL_=
-RSS_DISABLE&quot;)<wbr>.</blockquote><div>We can have it as a sub command o=
-f the RSS command where the command calculates hashes only</div><div>or els=
-e make the device calculate hashes only when setting the hash function and =
-key but not setting the indirection table (indirection_table_length =3D 0)<=
-/div><div>True, thanks.=C2=A0</div><blockquote class=3D"gmail_quote" style=
-=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding=
--left:1ex">=C2=A0</blockquote><blockquote class=3D"gmail_quote" style=3D"ma=
-rgin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:=
-1ex">=C2=A0</blockquote><blockquote class=3D"gmail_quote" style=3D"margin:0=
-px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex"><=
-div><div class=3D"gmail-h5"><br>
-<br>
-<blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-=
-left:1px solid rgb(204,204,204);padding-left:1ex">
-I think the disable should be preserved for disabling only.<br>
-<br>
-<br>
-<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 for the packets as well as stop setting the VIR=
-TIO_NET_HDR_GSO_RSS<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +in the \field{gso_type} field, however the<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 \field{hash_function} field is kept<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +as a part of the header.<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +The device MUST drop all previous RSS configur=
-ation upon<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 receiving<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +VIRTIO_NET_CTRL_RSS_SET command.<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +The device MUST set the RSS configuration acco=
-rding to the<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 settings provided as<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +follows, once the configuration process is com=
-pleted the<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 device SHOULD apply<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +the hash function to each of the incoming pack=
-ets and<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 distribute the packets<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +through the virqueues using the calculated has=
-h and the<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 indirection table<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +that were earlier provided by the driver.<br>
-<br>
-<br>
-=C2=A0 =C2=A0 We support changing #queues dynamically, so need to clarify t=
-he<br>
-=C2=A0 =C2=A0 behavior when e.g the destination queues were disabled.<br>
-<br>
-I will go into these details in the next version.<br>
-<br>
-<br>
-<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +Setting RSS configuration<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +\begin{enumerate}<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +\item The driver fills all of the fields and p=
-asses them<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 through the control<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +=C2=A0 =C2=A0 =C2=A0 =C2=A0queue to the device=
-.<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +\item The device sets the RSS configuration as=
- provided by<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 the driver.<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +\item If the device successfully applied the c=
-onfiguration,<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 on each packet<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +=C2=A0 =C2=A0 =C2=A0 =C2=A0recieved the device=
- MUST calculate the hashing for the<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 packet and<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +=C2=A0 =C2=A0 =C2=A0 =C2=A0store it in the vir=
-tio-net header in rss_hash_value<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 and the hash<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +=C2=A0 =C2=A0 =C2=A0 =C2=A0fields used in the =
-calculation in rss_hash_type.<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +\end{enumerate}<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +In case of any unexpected values/ unsupported =
-hash function<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 the driver<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +MUST return VIRTIO_NET_ERR in the \field{ack} =
-field.<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +\drivernormative{\subparagrap<wbr>h}{RSS hash =
-offload}{Device<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 Types / Network Device / Device Operation / Con=
-trol Virtqueue<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 / RSS hash offload}<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +If the driver negotiates the feature VIRTIO_NE=
-T_F_CTRL_RSS<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 the driver SHOULD<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +send VIRTIO_NET_CTRL_RSS_SET command to the de=
-vice along with<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 the RSS structure<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +filled. The RSS structure fields should be fil=
-led as follows:<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +\begin{itemize}<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +\item The driver SHOULD choose the hash functi=
-on that SHOULD<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 be used and fill<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +=C2=A0 =C2=A0 =C2=A0 =C2=A0it in the \field{ha=
-sh_function} field along with the<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 approperiate flags<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +=C2=A0 =C2=A0 =C2=A0 =C2=A0in the \field{hash_=
-function_flags} field. These flags<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 inidicate to the<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +=C2=A0 =C2=A0 =C2=A0 =C2=A0device which packet=
- fields MUST be used in the<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 calculation process of<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +=C2=A0 =C2=A0 =C2=A0 =C2=A0the hash.<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +\item Once the hash function has been chosen a=
- suitable hash<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 key should be set<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +=C2=A0 =C2=A0 =C2=A0 =C2=A0in the \field{hash_=
-key} field, the length of the key<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 should be stored<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +=C2=A0 =C2=A0 =C2=A0 =C2=A0in the \field{hash_=
-key_length} field.<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +\item Lastly the driver should fill the indire=
-ction table<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 array in the<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +=C2=A0 =C2=A0 =C2=A0 =C2=A0\field{indirection_=
-table} field while setting the<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 array length in<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +=C2=A0 =C2=A0 =C2=A0 =C2=A0\field{indirection_=
-table_leng<wbr>th}. This structure is<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 used by the device<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +=C2=A0 =C2=A0 =C2=A0 =C2=A0for determining in =
-which RX virt queue the packet<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 should be placed.<br>
-<br>
-<br>
-=C2=A0 =C2=A0 Is the indirection table expected to be changed frequently? I=
-f<br>
-=C2=A0 =C2=A0 yes, a single entry modification will cause a update of the w=
-hole<br>
-=C2=A0 =C2=A0 table.<br>
-<br>
-No, it should not be changing frequently<br>
-<br>
-<br>
-<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +\end{itemize}<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +Once the configuration phase is over successfu=
-lly, the<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 packets SHOULD have the<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +\field{rss_hash_value} field with the hash val=
-ue that was<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 calculated by the<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +device.<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +Whenever the driver wants to discard the curre=
-nt RSS<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 settings, it can send an<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +VIRTIO_NET_CTRL_RSS_SET command along with rss=
- structure that has<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +RSS_HASH_FUNCTION_NONE the \field{hash_functio=
-n} field.<br>
-<br>
-<br>
-=C2=A0 =C2=A0 So this function looks equivalent to VIRTIO_NET_CTRL_RSS_DISA=
-BLE?<br>
-<br>
-Yes, do you think we should discard one of the two?<br>
-</blockquote>
-<br></div></div>
-Yes.<br>
-<br>
-Thanks<br>
-<br>
-<blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-=
-left:1px solid rgb(204,204,204);padding-left:1ex"><span class=3D"gmail-">
-<br>
-=C2=A0 =C2=A0 Thanks<br>
-<br>
-<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +The driver MUST check the \field{ack} field va=
-lue provided by<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 the device, in<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +case the value is not VIRTIO_NET_OK then the d=
-river MUST<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 hanlde faliure and<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +retry another hash function or else give up.<b=
-r>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 +<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 \subparagraph{Legacy Interface: Automati=
-c receive steering<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 in multiqueue mode}\label{sec:Device Types / Ne=
-twork Device /<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 Device Operation / Control Virtqueue / Automati=
-c receive<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 steering in multiqueue mode / Legacy Interface:=
- Automatic<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 receive steering in multiqueue mode}<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 When using the legacy interface, transit=
-ional devices and<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 drivers<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 MUST format \field{virtqueue_pairs}<br>
-<br>
-<br>
-<br>
-<br>
-<br>
--- <br>
-Respectfully,<br></span>
-*/Sameeh Jubran/*<br>
-/Linkedin &lt;<a href=3D"https://il.linkedin.com/pub/sameeh-jubran/87/747/a=
-8a" rel=3D"noreferrer" target=3D"_blank">https://il.linkedin.com/pub/s<wbr>=
-ameeh-jubran/87/747/a8a</a>&gt;/<br>
-/Software Engineer @ Daynix &lt;<a href=3D"http://www.daynix.com" rel=3D"no=
-referrer" target=3D"_blank">http://www.daynix.com</a>&gt;./<br>
-</blockquote>
-<br>
-</blockquote></div><br><br clear=3D"all"><div><br></div>-- <br><div class=
-=3D"gmail_signature"><div dir=3D"ltr"><div><div dir=3D"ltr"><div><div dir=
-=3D"ltr"><div><div dir=3D"ltr"><font size=3D"4" color=3D"#0b5394" face=3D"t=
-imes new roman, serif">Respectfully,<br></font><div style=3D"font-size:12.8=
-px;color:rgb(136,136,136)"><font size=3D"4" color=3D"#0b5394" face=3D"times=
- new roman, serif"><b><i>Sameeh Jubran</i></b></font></div><div style=3D"fo=
-nt-size:12.8px;color:rgb(136,136,136)"><i style=3D"color:rgb(7,55,99);font-=
-family:&quot;times new roman&quot;,serif;font-size:large"><span style=3D"li=
-ne-height:15px"><a href=3D"https://il.linkedin.com/pub/sameeh-jubran/87/747=
-/a8a" title=3D"View public profile" name=3D"UNIQUE_ID_SafeHtmlFilter_UNIQUE=
-_ID_SafeHtmlFilter_UNIQUE_ID_SafeHtmlFilter_UNIQUE_ID_SafeHtmlFilter_UNIQUE=
-_ID_SafeHtmlFilter_14e2c1de96f8c195_UNIQUE_ID_SafeHtmlFilter_SafeHtmlFilter=
-_SafeHtmlFilter_webProfileURL" style=3D"color:rgb(17,85,204);margin:0px;pad=
-ding:0px;border-width:0px;outline:none;vertical-align:baseline;text-decorat=
-ion:none" target=3D"_blank">Linkedin</a></span></i><br></div><div style=3D"=
-font-size:12.8px;color:rgb(136,136,136)"><font size=3D"4" face=3D"times new=
- roman, serif" color=3D"#073763"><i>Software Engineer @ <a href=3D"http://w=
-ww.daynix.com" target=3D"_blank">Daynix</a>.</i></font></div></div></div></=
-div></div></div></div></div></div>
-</div></div>
-
---00000000000037ce190567d4dbeb--
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
