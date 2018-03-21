@@ -1,103 +1,87 @@
-Return-Path: virtio-dev-return-3636-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3622-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 4197D58190DC
-	for <virtio-dev@lists.oasis-open.org>; Thu, 22 Mar 2018 19:39:01 -0700 (PDT)
-References: <1521497654-24807-1-git-send-email-jonathan.helman@oracle.com>
- <db6371af-f93d-4409-c910-2ff712196c5b@redhat.com>
- <6ED6CAC9-FAD9-4A27-A9B1-C6EFC7627D68@oracle.com>
- <c09d3570-a8f9-7a84-5dd6-46d385da2e15@redhat.com>
- <20180322050842-mutt-send-email-mst@kernel.org>
-From: Jason Wang <jasowang@redhat.com>
-Message-ID: <3f8a1b91-c5ba-8a24-72b8-02d884a67826@redhat.com>
-Date: Fri, 23 Mar 2018 10:38:41 +0800
-MIME-Version: 1.0
-In-Reply-To: <20180322050842-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
+	by lists.oasis-open.org (Postfix) with ESMTP id A790F5818D93
+	for <virtio-dev@lists.oasis-open.org>; Tue, 20 Mar 2018 23:44:33 -0700 (PDT)
+From: "Tian, Kevin" <kevin.tian@intel.com>
+Date: Wed, 21 Mar 2018 06:43:35 +0000
+Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D19108B0FE@SHSMSX101.ccr.corp.intel.com>
+References: <20180214145340.1223-1-jean-philippe.brucker@arm.com>
+ <20180214145340.1223-2-jean-philippe.brucker@arm.com>
+In-Reply-To: <20180214145340.1223-2-jean-philippe.brucker@arm.com>
 Content-Language: en-US
-Subject: Re: [virtio-dev] Re: [PATCH v2] virtio_balloon: export hugetlb page
- allocation counts
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Jonathan Helman <jonathan.helman@oracle.com>, virtualization@lists.linux-foundation.org, linux-kernel@vger.kernel.org, virtio-dev@lists.oasis-open.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+Subject: [virtio-dev] RE: [PATCH 1/4] iommu: Add virtio-iommu driver
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>
+Cc: "joro@8bytes.org" <joro@8bytes.org>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "mst@redhat.com" <mst@redhat.com>, "jasowang@redhat.com" <jasowang@redhat.com>, "marc.zyngier@arm.com" <marc.zyngier@arm.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>, "will.deacon@arm.com" <will.deacon@arm.com>, "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>, "eric.auger.pro@gmail.com" <eric.auger.pro@gmail.com>, "peterx@redhat.com" <peterx@redhat.com>, "bharat.bhushan@nxp.com" <bharat.bhushan@nxp.com>, "tnowicki@caviumnetworks.com" <tnowicki@caviumnetworks.com>, "jayachandran.nair@cavium.com" <jayachandran.nair@cavium.com>, "jintack@cs.columbia.edu" <jintack@cs.columbia.edu>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+> From: Jean-Philippe Brucker [mailto:jean-philippe.brucker@arm.com]
+> Sent: Wednesday, February 14, 2018 10:54 PM
+>=20
+> The virtio IOMMU is a para-virtualized device, allowing to send IOMMU
+> requests such as map/unmap over virtio-mmio transport without
+> emulating
+> page tables. This implementation handles ATTACH, DETACH, MAP and
+> UNMAP
+> requests.
+>=20
+> The bulk of the code transforms calls coming from the IOMMU API into
+> corresponding virtio requests. Mappings are kept in an interval tree
+> instead of page tables.
+>=20
+> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
 
+[...]
+> diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
+> new file mode 100644
+> index 000000000000..a9c9245e8ba2
+> --- /dev/null
+> +++ b/drivers/iommu/virtio-iommu.c
+> @@ -0,0 +1,960 @@
+> +/*
+> + * Virtio driver for the paravirtualized IOMMU
+> + *
+> + * Copyright (C) 2018 ARM Limited
+> + * Author: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+> + *
+> + * SPDX-License-Identifier: GPL-2.0
+> + */
+> +
+> +#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+> +
+> +#include <linux/amba/bus.h>
+> +#include <linux/delay.h>
+> +#include <linux/dma-iommu.h>
+> +#include <linux/freezer.h>
+> +#include <linux/interval_tree.h>
+> +#include <linux/iommu.h>
+> +#include <linux/module.h>
+> +#include <linux/of_iommu.h>
+> +#include <linux/of_platform.h>
+> +#include <linux/pci.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/virtio.h>
+> +#include <linux/virtio_config.h>
+> +#include <linux/virtio_ids.h>
+> +#include <linux/wait.h>
+> +
+> +#include <uapi/linux/virtio_iommu.h>
+> +
+> +#define MSI_IOVA_BASE			0x8000000
+> +#define MSI_IOVA_LENGTH			0x100000
 
-On 2018年03月22日 11:10, Michael S. Tsirkin wrote:
-> On Thu, Mar 22, 2018 at 09:52:18AM +0800, Jason Wang wrote:
->> On 2018年03月20日 12:26, Jonathan Helman wrote:
->>>> On Mar 19, 2018, at 7:31 PM, Jason Wang<jasowang@redhat.com>  wrote:
->>>>
->>>>
->>>>
->>>> On 2018年03月20日 06:14, Jonathan Helman wrote:
->>>>> Export the number of successful and failed hugetlb page
->>>>> allocations via the virtio balloon driver. These 2 counts
->>>>> come directly from the vm_events HTLB_BUDDY_PGALLOC and
->>>>> HTLB_BUDDY_PGALLOC_FAIL.
->>>>>
->>>>> Signed-off-by: Jonathan Helman<jonathan.helman@oracle.com>
->>>> Reviewed-by: Jason Wang<jasowang@redhat.com>
->>> Thanks.
->>>
->>>>> ---
->>>>>    drivers/virtio/virtio_balloon.c     | 6 ++++++
->>>>>    include/uapi/linux/virtio_balloon.h | 4 +++-
->>>>>    2 files changed, 9 insertions(+), 1 deletion(-)
->>>>>
->>>>> diff --git a/drivers/virtio/virtio_balloon.c b/drivers/virtio/virtio_balloon.c
->>>>> index dfe5684..6b237e3 100644
->>>>> --- a/drivers/virtio/virtio_balloon.c
->>>>> +++ b/drivers/virtio/virtio_balloon.c
->>>>> @@ -272,6 +272,12 @@ static unsigned int update_balloon_stats(struct virtio_balloon *vb)
->>>>>    				pages_to_bytes(events[PSWPOUT]));
->>>>>    	update_stat(vb, idx++, VIRTIO_BALLOON_S_MAJFLT, events[PGMAJFAULT]);
->>>>>    	update_stat(vb, idx++, VIRTIO_BALLOON_S_MINFLT, events[PGFAULT]);
->>>>> +#ifdef CONFIG_HUGETLB_PAGE
->>>>> +	update_stat(vb, idx++, VIRTIO_BALLOON_S_HTLB_PGALLOC,
->>>>> +		    events[HTLB_BUDDY_PGALLOC]);
->>>>> +	update_stat(vb, idx++, VIRTIO_BALLOON_S_HTLB_PGFAIL,
->>>>> +		    events[HTLB_BUDDY_PGALLOC_FAIL]);
->>>>> +#endif
->>>>>    #endif
->>>>>    	update_stat(vb, idx++, VIRTIO_BALLOON_S_MEMFREE,
->>>>>    				pages_to_bytes(i.freeram));
->>>>> diff --git a/include/uapi/linux/virtio_balloon.h b/include/uapi/linux/virtio_balloon.h
->>>>> index 4e8b830..40297a3 100644
->>>>> --- a/include/uapi/linux/virtio_balloon.h
->>>>> +++ b/include/uapi/linux/virtio_balloon.h
->>>>> @@ -53,7 +53,9 @@ struct virtio_balloon_config {
->>>>>    #define VIRTIO_BALLOON_S_MEMTOT   5   /* Total amount of memory */
->>>>>    #define VIRTIO_BALLOON_S_AVAIL    6   /* Available memory as in /proc */
->>>>>    #define VIRTIO_BALLOON_S_CACHES   7   /* Disk caches */
->>>>> -#define VIRTIO_BALLOON_S_NR       8
->>>>> +#define VIRTIO_BALLOON_S_HTLB_PGALLOC  8  /* Hugetlb page allocations */
->>>>> +#define VIRTIO_BALLOON_S_HTLB_PGFAIL   9  /* Hugetlb page allocation failures */
->>>>> +#define VIRTIO_BALLOON_S_NR       10
->>>>>      /*
->>>>>     * Memory statistics structure.
->>>> Not for this patch, but it looks to me that exporting such nr through uapi is fragile.
->>> Sorry, can you explain what you mean here?
->>>
->>> Jon
->> Spec said "Within an output buffer submitted to the statsq, the device MUST
->> ignore entries with tag values that it does not recognize". So exporting
->> VIRTIO_BALLOON_S_NR seems useless and device implementation can not depend
->> on such number in uapi.
->>
->> Thanks
-> Suggestions? I don't like to break build for people ...
->
-
-Didn't have a good idea. But maybe we should keep VIRTIO_BALLOON_S_NR 
-unchanged, and add a comment here.
+this is ARM specific, and according to virtio-iommu spec isn't it
+better probed on the endpoint instead of hard-coding here?
 
 Thanks
+Kevin
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
