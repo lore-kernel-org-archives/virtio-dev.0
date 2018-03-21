@@ -1,92 +1,149 @@
-Return-Path: virtio-dev-return-3602-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3623-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 177A95818F29
-	for <virtio-dev@lists.oasis-open.org>; Mon, 19 Mar 2018 03:03:48 -0700 (PDT)
-From: "Tian, Kevin" <kevin.tian@intel.com>
-Date: Mon, 19 Mar 2018 10:03:42 +0000
-Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D191085A76@SHSMSX101.ccr.corp.intel.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 21CBB5818F5E
+	for <virtio-dev@lists.oasis-open.org>; Wed, 21 Mar 2018 06:10:23 -0700 (PDT)
 References: <20180206181106.21815-1-jean-philippe.brucker@arm.com>
-In-Reply-To: <20180206181106.21815-1-jean-philippe.brucker@arm.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <AADFC41AFE54684AB9EE6CBC0274A5D191085A76@SHSMSX101.ccr.corp.intel.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Message-ID: <3575fbb8-36a9-ef38-8234-6adf6a573b3e@arm.com>
+Date: Wed, 21 Mar 2018 13:13:30 +0000
 MIME-Version: 1.0
-Subject: RE: [virtio-dev] [RFC] virtio-iommu version 0.6
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>
+In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D191085A76@SHSMSX101.ccr.corp.intel.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+Subject: Re: [virtio-dev] [RFC] virtio-iommu version 0.6
+To: "Tian, Kevin" <kevin.tian@intel.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>
 Cc: "eric.auger@redhat.com" <eric.auger@redhat.com>, "bharat.bhushan@nxp.com" <bharat.bhushan@nxp.com>, "eric.auger.pro@gmail.com" <eric.auger.pro@gmail.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-PiBGcm9tOiBKZWFuLVBoaWxpcHBlIEJydWNrZXINCj4gU2VudDogV2VkbmVzZGF5LCBGZWJydWFy
-eSA3LCAyMDE4IDI6MTEgQU0NCj4gDQo+IFBsZWFzZSBmaW5kIHZlcnNpb24gMC42IG9mIHRoZSB2
-aXJ0aW8taW9tbXUgc3BlY2lmaWNhdGlvbiBhdCB0aGUgZm9sbG93aW5nDQo+IGxvY2F0aW9ucy4N
-Cj4gDQo+IERvY3VtZW50OiBodHRwOi8vanBicnVja2VyLm5ldC92aXJ0aW8taW9tbXUvc3BlYy92
-aXJ0aW8taW9tbXUucGRmDQo+ICAgICAgICAgICBodHRwOi8vanBicnVja2VyLm5ldC92aXJ0aW8t
-aW9tbXUvc3BlYy92aXJ0aW8taW9tbXUuaHRtbA0KPiANCj4gU291cmNlczogZ2l0Oi8vbGludXgt
-YXJtLm9yZy92aXJ0aW8taW9tbXUuZ2l0IHZpb21tdS92MC42DQo+IA0KPiBJIGRpZG4ndCByZWNl
-aXZlIGFueSBjb21tZW50IGZvciB2MC41IFsxXSwgc28gdGhpcyB1cGRhdGUgaXMgZmFpcmx5IGxp
-Z2h0Og0KPiAqIENoYW5nZWQgcmFuZ2UgZGVmaW5pdGlvbiBpbiBtYXAgYW5kIHVubWFwIHJlcXVl
-c3RzDQo+ICogVXNlIHZpcnRpby1pb21tdSBkZXZpY2UgSUQNCj4gKiBVcGRhdGUgSU9SVCBub2Rl
-IElEIGFuZCBzaW1wbGlmeSBsYXlvdXQNCj4gDQo+IFRoZSBmb2xsb3dpbmcgZG9jdW1lbnQgc2hv
-d3MgdGhlIGRpZmZlcmVuY2UgYmV0d2VlbiB2MC41IGFuZCB2MC42Og0KPiBodHRwOi8vanBicnVj
-a2VyLm5ldC92aXJ0aW8taW9tbXUvc3BlYy9kaWZmcy92aXJ0aW8taW9tbXUtcGRmLWRpZmYtdjAu
-NS0NCj4gdjAuNi5wZGYNCj4gDQo+IE5leHQgdmVyc2lvbiB3aWxsIGhvcGVmdWxseSBhZGQgdlNW
-QSAoUEFTSUQrUFJJKSBhbmQvb3IgYXJjaGl0ZWN0dXJhbA0KPiBvcHRpbWl6YXRpb25zLCBidXQg
-SSBjYW4ndCBwcm92aWRlIGEgdGltZWxpbmUgeWV0LiBJJ2xsIHByb2JhYmx5IHNlbmQgYQ0KPiBz
-bWFsbCBkcmFmdCBmaXJzdC4NCj4gDQo+IEkgd2lsbCBzZW5kIHRoZSBMaW51eCBkcml2ZXIgc29v
-bi4gSW4gdGhlIG1lYW50aW1lIHlvdSBjYW4gZmV0Y2ggaXQgb24gbXkNCj4gZGV2ZWxvcG1lbnQg
-YnJhbmNoZXMsIGJhc2VkIG9uIG5leHQtMjAxODAyMDYuDQo+IA0KPiBnaXQ6Ly9saW51eC1hcm0u
-b3JnL2xpbnV4LWpwYi5naXQgdmlydGlvLWlvbW11L2RldmVsDQo+IGdpdDovL2xpbnV4LWFybS5v
-cmcva3ZtdG9vbC1qcGIuZ2l0IHZpcnRpby1pb21tdS9kZXZlbA0KPiANCj4gQW55IGNvbW1lbnRz
-IHdlbGNvbWUhDQo+IA0KPiBUaGFua3MsDQo+IEplYW4NCj4gDQo+IFsxXSBodHRwczovL3d3dy5z
-cGluaWNzLm5ldC9saXN0cy9rdm0vbXNnMTU3NDAyLmh0bWwNCg0Kc29tZSBjb21tZW50cyBoZXJl
-Og0KDQotLQ0KDQpCWVBBU1MgZmVhdHVyZSBiaXQgaXMgbm90IGNvdmVyZWQgaW4gIjIuMy4xLzIu
-My4yLzIuMy4zIiIuIElzIGl0IA0KaW50ZW5kZWQ/DQoNCi0tMi42LjIgRGV2aWNlIFJlcXVpcmVt
-ZW50czogRGV2aWNlIG9wZXJhdGlvbnMtLQ0KDQoiSWYgdGhlIFZJUlRJT19JT01NVV9GX0lOUFVU
-X1JBTkdFIGZlYXR1cmUgaXMgb++sgGVyZWQsIA0KdGhlIGRldmljZSBNVVNUIHRydW5jYXRlIHRo
-ZSByYW5nZSBkZXNjcmliZWQgYnkgdmlydF9zdGFydCANCmFuZCB2aXJ0X2VuZCBpbiByZXF1ZXN0
-cyB0byBmdCBpbiB0aGUgcmFuZ2UgZGVzY3JpYmVkIGJ5IA0KaW5wdXRfcmFuZ2UuIg0KDQoiSWYg
-dGhlIFZJUlRJT19JT01NVV9GX0RPTUFJTl9CSVRTIGlzIG/vrIBlcmVkLCB0aGUgZGV2aWNlIA0K
-TVVTVCBpZ25vcmUgYml0cyBhYm92ZSBkb21haW5fYml0cyBpbiBmaWVsZCBkb21haW4gb2YgcmVx
-dWVzdHMuIg0KDQpzaG91bGRuJ3QgZGV2aWNlIHJldHVybiBlcnJvciB1cG9uIGFib3ZlIHNpdHVh
-dGlvbiBpbnN0ZWFkDQpvZiBjb250aW51aW5nIG9wZXJhdGlvbiB3aXRoIG1vZGlmaWVkIHZhbHVl
-Pw0KDQotLTIuNi40IERFVEFDSCByZXF1ZXN0LS0NCg0KIiBEZXRhY2ggYW4gZW5kcG9pbnQgZnJv
-bSBpdHMgZG9tYWluLiBXaGVuIHRoaXMgcmVxdWVzdCANCmNvbXBsZXRlcywgdGhlIGVuZHBvaW50
-IGNhbm5vdCBhY2Nlc3MgYW55IG1hcHBpbmcgZnJvbSB0aGF0IA0KZG9tYWluIGFueW1vcmUgIg0K
-DQpEb2VzIGl0IG1ha2Ugc2Vuc2UgdG8gbWVudGlvbiBCWVBBU1Mgc2l0dWF0aW9uIHVwb24gdGhp
-cyByZXF1ZXN0Pw0KDQotLTIuNi44LjIgUHJvcGVydHkgUkVTVl9NRU0gLS0NCg0KIlZJUlRJT19J
-T01NVV9SRVNWX01FTV9UX1JFU0VSVkVEICgwKSBBY2Nlc3NlcyB0byANCnZpcnR1YWwgYWRkcmVz
-c2VzIGluIHRoaXMgcmVnaW9uIGFyZSBub3QgdHJhbnNsYXRlZCBieSB0aGUgZGV2aWNlLiANClRo
-ZXkgbWF5IGVpdGhlciBiZSBhYm9ydGVkIGJ5IHRoZSBkZXZpY2UgKG9yIHRoZSB1bmRlcmx5aW5n
-IA0KSU9NTVUpLCBieXBhc3MgaXQsIG9yIG5ldmVyIGV2ZW4gcmVhY2ggaXQiDQoNCmluIDMuMyBo
-YXJkd2FyZSBkZXZpY2UgYXNzaWdubWVudCB5b3UgZGVzY3JpYmVkIGFuIGV4YW1wbGUgDQp0aGF0
-IGEgcmVzZXJ2ZWQgcmFuZ2UgaXMgc3RvbGVuIGJ5IGhvc3QgdG8gbWFwIHRoZSBNU0kgDQpkb29y
-YmVsbC4uLiBzdWNoIG1hcCBiZWhhdmlvciBpcyBub3QgZGVzY3JpYmVkIGFib3ZlLg0KDQpUaGVu
-IGNvbWVzIGEgcXVlc3Rpb24gZm9yIFZJUlRJT19JT01NVV9SRVNWX01FTV9UX01TSS4NCkkga25v
-dyB0aGVyZSB3ZXJlIHF1aXRlIHNvbWUgZGlzY3Vzc2lvbiBhcm91bmQgdGhpcyBmbGFnIGJlZm9y
-ZSwNCmJ1dCBteSBtZW50YWwgcGljdHVyZSBub3cgc3RpbGwgaXMgYSBiaXQgZGlmZmljdWx0IHRv
-IHVuZGVyc3RhbmQgaXRzDQp1c2FnZSBiYXNlZCBvbiBleGFtcGxlcyBpbiBpbXBsZW1lbnRhdGlv
-biBub3RlczoNCg0KCS0gZm9yIHg4NiwgeW91IGRlc2NyaWJlIGl0IGFzIGluZGljYXRpbmcgTVNJ
-IGJ5cGFzcyBmb3INCm94ZmVleHh4eHguIEhvd2V2ZXIgZ3Vlc3QgZG9lc24ndCBuZWVkIHRvIGtu
-b3cgdGhpcyBmYWN0LiBPbmx5DQpyZXF1aXJlbWVudCBpcyB0byB0cmVhdCBpdCBhcyByZXNlcnZl
-ZCByYW5nZSAoYXMgb24gYmFyZSBtZXRhbCkNCnRoZW4gVF9SRVNFUlZFRCBpcyBzdWZmaWNpZW50
-IGZvciB0aGlzIHB1cnBvc2UNCg0KCS0gZm9yIEFSTSwgZWl0aGVyIGxldCBndWVzdCBvciBsZXQg
-aG9zdCB0byBjaG9vc2UgYSB2aXJ0dWFsDQphZGRyZXNzIGZvciBtYXBwaW5nIHRvIE1TSSBkb29y
-YmVsbC4gdGhlIGZvcm1lciBkb2Vzbid0IHJlcXVpcmUNCmEgcmVzZXJ2ZWQgcmFuZ2UuIGZvciB0
-aGUgbGF0dGVyIGFsc28gVF9SRVNFUlZFRCBpcyBlbm91Z2ggYXMNCnRoZSBleGFtcGxlIGluIGhh
-cmR3YXJlIGRldmljZSBhc3NpZ25tZW50IHNlY3Rpb24uDQoNClRoZW4gd2hhdCdzIHRoZSByZWFs
-IHBvaW50IG9mIGRpZmZlcmVudGlhdGluZyBNU0kgYnlwYXNzIGZyb20NCm5vcm1hbCByZXNlcnZl
-ZCByYW5nZT8gSXMgdGhlcmUgb3RoZXIgZXhhbXBsZSB3aGVyZSBndWVzdA0KbWF5IHVzZSBzdWNo
-IGluZm8gdG8gZG8gc3BlY2lhbCB0aGluZz8NCg0KLS0gMy4yIE1lc3NhZ2UgU2lnbmFsZWQgSW50
-ZXJydXB0cyAtLQ0KDQoiIFNlY3Rpb24gMy4yLjIgZGVzY3JpYmVzIHRoZSBhZGRlZCBjb21wbGV4
-aXR5IChmcm9tIHRoZSBob3N0IA0KcG9pbnQgb2Ygdmlldykgb2YgdHJhbnNsYXRpbmcgdGhlIElS
-USBjaGlwIGRvb3JiZWxsICINCg0KaG93ZXZlciBsYXRlciAzLjIuMiBvbmx5IHNheXMgb25lIHNl
-bnRlbmNlIGFib3V0IGhvc3QNCmNvbXBsZXhpdHkgLSAiIEhvd2V2ZXIsIHRoaXMgbW9kZSBvZiBv
-cGVyYXRpb25zIG1heSBhZGQgDQpzaWduaWZpY2FudCBjb21wbGV4aXR5IGluIHRoZSBob3N0IGlt
-cGxlbWVudGF0aW9uIi4gSWYgeW91IHBsYW4NCnRvIGVsYWJvcmF0ZSB0aGF0IHBhcnQgaW4gdGhl
-IGZ1dHVyZSwgcGxlYXNlIGFkZCBhIG5vdGUuIDotKQ0KDQpUaGFua3MNCktldmluDQo=
+Hi Kevin,
+
+Thanks for the comments
+
+On 19/03/18 10:03, Tian, Kevin wrote:
+> BYPASS feature bit is not covered in "2.3.1/2.3.2/2.3.3"". Is it 
+> intended?
+
+In my opinion BYPASS is a bit different from the other features: while the
+others are needed for correctness, this one is optional and even if the
+guest supports BYPASS, it should be allowed not to accept it. For security
+reasons it may not want to let endpoints access the whole guest-physical
+address space.
+
+> --2.6.2 Device Requirements: Device operations--
+> 
+> "If the VIRTIO_IOMMU_F_INPUT_RANGE feature is oﬀered, 
+> the device MUST truncate the range described by virt_start 
+> and virt_end in requests to ft in the range described by 
+> input_range."
+> 
+> "If the VIRTIO_IOMMU_F_DOMAIN_BITS is oﬀered, the device 
+> MUST ignore bits above domain_bits in field domain of requests."
+> 
+> shouldn't device return error upon above situation instead
+> of continuing operation with modified value?
+
+The intent was to allow device and driver to pass metadata in the top bits
+of pointers and domain IDs, perhaps for a future extension or for
+debugging. I'm not convinced it's useful anymore (and do wonder what my
+initial reasoning was...) Such extension would be determined by a new
+feature bit and the device would know that the fields contain additional
+info, if the driver accepted that feature.
+
+> --2.6.4 DETACH request--
+> 
+> " Detach an endpoint from its domain. When this request 
+> completes, the endpoint cannot access any mapping from that 
+> domain anymore "
+> 
+> Does it make sense to mention BYPASS situation upon this request?
+
+Sure, I'll add something to clarify that situation
+
+> --2.6.8.2 Property RESV_MEM --
+> 
+> "VIRTIO_IOMMU_RESV_MEM_T_RESERVED (0) Accesses to 
+> virtual addresses in this region are not translated by the device. 
+> They may either be aborted by the device (or the underlying 
+> IOMMU), bypass it, or never even reach it"
+> 
+> in 3.3 hardware device assignment you described an example 
+> that a reserved range is stolen by host to map the MSI 
+> doorbell... such map behavior is not described above.
+
+Right, we can say that accesses to the region may be used for host translation
+
+> Then comes a question for VIRTIO_IOMMU_RESV_MEM_T_MSI.
+> I know there were quite some discussion around this flag before,
+> but my mental picture now still is a bit difficult to understand its
+> usage based on examples in implementation notes:
+> 
+> 	- for x86, you describe it as indicating MSI bypass for
+> oxfeexxxxx. However guest doesn't need to know this fact. Only
+> requirement is to treat it as reserved range (as on bare metal)
+> then T_RESERVED is sufficient for this purpose>
+> 	- for ARM, either let guest or let host to choose a virtual
+> address for mapping to MSI doorbell. the former doesn't require
+> a reserved range. for the latter also T_RESERVED is enough as
+> the example in hardware device assignment section.
+
+It might be nicer to have the host decide it, but when the physical IOMMU
+is ARM SMMU, nesting translation complicates things, because the guest
+*has* to create a mapping:
+
+* The guest is in charge of stage-1. It creates IOVA->GPA mapping for the
+  MSI doorbell. The GPA is mapped to the physical MSI doorbell at
+  stage-2 by the host.
+
+* when it writes that IOVA in the virtual MSI-X tables, the host updates
+  the physical MSI-X tables using an ioctl (it can't map the physical
+  tables into the guest, because MSI-X vector data also contain physical
+  device info that shouldn't be known by the guest.)
+
+So we need support for software-mapped MSIs in the guest anyway. In Linux
+the virtio-iommu driver can use existing plumbing for that, no change
+needed in the guest.
+
+> Then what's the real point of differentiating MSI bypass from
+> normal reserved range? Is there other example where guest
+> may use such info to do special thing?
+
+The presence of an MSI bypass regions allows the driver and the DMA layer
+(in Linux iommu_dma_map_msi_msg) to know whether it needs to create a
+mapping or if it's bypassed. When writing the entry into the MSI-X table,
+if the address in the MSI vector already corresponds to an MSI bypass
+region, then there is no need to create a mapping. Making the bypass MSI
+region a normal RESV range hides that information.
+
+Another way of choosing would be with #ifdef CONFIG_ARM64, CONFIG_X86 etc,
+but I find it nasty, and I personally prefer using MSI bypass for ARM when
+possible.
+
+> -- 3.2 Message Signaled Interrupts --
+> 
+> " Section 3.2.2 describes the added complexity (from the host 
+> point of view) of translating the IRQ chip doorbell "
+> 
+> however later 3.2.2 only says one sentence about host
+> complexity - " However, this mode of operations may add 
+> significant complexity in the host implementation". If you plan
+> to elaborate that part in the future, please add a note. :-)
+
+Oh right, I don't really want to elaborate, I'll try to reword 3.2. The
+kvmtool patches have support for both MSI bypass and translation
+(selectable with a cmdline flag), which I think is good enough. I'd rather
+read a code example than some clumsy prose describing it.
+
+Thanks,
+Jean
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
