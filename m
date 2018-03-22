@@ -1,149 +1,148 @@
-Return-Path: virtio-dev-return-3623-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3628-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 21CBB5818F5E
-	for <virtio-dev@lists.oasis-open.org>; Wed, 21 Mar 2018 06:10:23 -0700 (PDT)
+	by lists.oasis-open.org (Postfix) with ESMTP id 332F25818FBB
+	for <virtio-dev@lists.oasis-open.org>; Thu, 22 Mar 2018 02:44:26 -0700 (PDT)
+From: "Tian, Kevin" <kevin.tian@intel.com>
+Date: Thu, 22 Mar 2018 09:44:12 +0000
+Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D19108DBDD@SHSMSX101.ccr.corp.intel.com>
 References: <20180206181106.21815-1-jean-philippe.brucker@arm.com>
  <AADFC41AFE54684AB9EE6CBC0274A5D191085A76@SHSMSX101.ccr.corp.intel.com>
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Message-ID: <3575fbb8-36a9-ef38-8234-6adf6a573b3e@arm.com>
-Date: Wed, 21 Mar 2018 13:13:30 +0000
-MIME-Version: 1.0
-In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D191085A76@SHSMSX101.ccr.corp.intel.com>
-Content-Type: text/plain; charset="utf-8"
+ <3575fbb8-36a9-ef38-8234-6adf6a573b3e@arm.com>
+In-Reply-To: <3575fbb8-36a9-ef38-8234-6adf6a573b3e@arm.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-Subject: Re: [virtio-dev] [RFC] virtio-iommu version 0.6
-To: "Tian, Kevin" <kevin.tian@intel.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+Subject: RE: [virtio-dev] [RFC] virtio-iommu version 0.6
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>
 Cc: "eric.auger@redhat.com" <eric.auger@redhat.com>, "bharat.bhushan@nxp.com" <bharat.bhushan@nxp.com>, "eric.auger.pro@gmail.com" <eric.auger.pro@gmail.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Hi Kevin,
-
-Thanks for the comments
-
-On 19/03/18 10:03, Tian, Kevin wrote:
-> BYPASS feature bit is not covered in "2.3.1/2.3.2/2.3.3"". Is it 
-> intended?
-
-In my opinion BYPASS is a bit different from the other features: while the
-others are needed for correctness, this one is optional and even if the
-guest supports BYPASS, it should be allowed not to accept it. For security
-reasons it may not want to let endpoints access the whole guest-physical
-address space.
-
-> --2.6.2 Device Requirements: Device operations--
-> 
-> "If the VIRTIO_IOMMU_F_INPUT_RANGE feature is oﬀered, 
-> the device MUST truncate the range described by virt_start 
-> and virt_end in requests to ft in the range described by 
-> input_range."
-> 
-> "If the VIRTIO_IOMMU_F_DOMAIN_BITS is oﬀered, the device 
-> MUST ignore bits above domain_bits in field domain of requests."
-> 
-> shouldn't device return error upon above situation instead
-> of continuing operation with modified value?
-
-The intent was to allow device and driver to pass metadata in the top bits
-of pointers and domain IDs, perhaps for a future extension or for
-debugging. I'm not convinced it's useful anymore (and do wonder what my
-initial reasoning was...) Such extension would be determined by a new
-feature bit and the device would know that the fields contain additional
-info, if the driver accepted that feature.
-
-> --2.6.4 DETACH request--
-> 
-> " Detach an endpoint from its domain. When this request 
-> completes, the endpoint cannot access any mapping from that 
-> domain anymore "
-> 
-> Does it make sense to mention BYPASS situation upon this request?
-
-Sure, I'll add something to clarify that situation
-
-> --2.6.8.2 Property RESV_MEM --
-> 
-> "VIRTIO_IOMMU_RESV_MEM_T_RESERVED (0) Accesses to 
-> virtual addresses in this region are not translated by the device. 
-> They may either be aborted by the device (or the underlying 
-> IOMMU), bypass it, or never even reach it"
-> 
-> in 3.3 hardware device assignment you described an example 
-> that a reserved range is stolen by host to map the MSI 
-> doorbell... such map behavior is not described above.
-
-Right, we can say that accesses to the region may be used for host translation
-
-> Then comes a question for VIRTIO_IOMMU_RESV_MEM_T_MSI.
-> I know there were quite some discussion around this flag before,
-> but my mental picture now still is a bit difficult to understand its
-> usage based on examples in implementation notes:
-> 
-> 	- for x86, you describe it as indicating MSI bypass for
-> oxfeexxxxx. However guest doesn't need to know this fact. Only
-> requirement is to treat it as reserved range (as on bare metal)
-> then T_RESERVED is sufficient for this purpose>
-> 	- for ARM, either let guest or let host to choose a virtual
-> address for mapping to MSI doorbell. the former doesn't require
-> a reserved range. for the latter also T_RESERVED is enough as
-> the example in hardware device assignment section.
-
-It might be nicer to have the host decide it, but when the physical IOMMU
-is ARM SMMU, nesting translation complicates things, because the guest
-*has* to create a mapping:
-
-* The guest is in charge of stage-1. It creates IOVA->GPA mapping for the
-  MSI doorbell. The GPA is mapped to the physical MSI doorbell at
-  stage-2 by the host.
-
-* when it writes that IOVA in the virtual MSI-X tables, the host updates
-  the physical MSI-X tables using an ioctl (it can't map the physical
-  tables into the guest, because MSI-X vector data also contain physical
-  device info that shouldn't be known by the guest.)
-
-So we need support for software-mapped MSIs in the guest anyway. In Linux
-the virtio-iommu driver can use existing plumbing for that, no change
-needed in the guest.
-
-> Then what's the real point of differentiating MSI bypass from
-> normal reserved range? Is there other example where guest
-> may use such info to do special thing?
-
-The presence of an MSI bypass regions allows the driver and the DMA layer
-(in Linux iommu_dma_map_msi_msg) to know whether it needs to create a
-mapping or if it's bypassed. When writing the entry into the MSI-X table,
-if the address in the MSI vector already corresponds to an MSI bypass
-region, then there is no need to create a mapping. Making the bypass MSI
-region a normal RESV range hides that information.
-
-Another way of choosing would be with #ifdef CONFIG_ARM64, CONFIG_X86 etc,
-but I find it nasty, and I personally prefer using MSI bypass for ARM when
-possible.
-
-> -- 3.2 Message Signaled Interrupts --
-> 
-> " Section 3.2.2 describes the added complexity (from the host 
-> point of view) of translating the IRQ chip doorbell "
-> 
-> however later 3.2.2 only says one sentence about host
-> complexity - " However, this mode of operations may add 
-> significant complexity in the host implementation". If you plan
-> to elaborate that part in the future, please add a note. :-)
-
-Oh right, I don't really want to elaborate, I'll try to reword 3.2. The
-kvmtool patches have support for both MSI bypass and translation
-(selectable with a cmdline flag), which I think is good enough. I'd rather
-read a code example than some clumsy prose describing it.
-
-Thanks,
-Jean
-
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+PiBGcm9tOiBKZWFuLVBoaWxpcHBlIEJydWNrZXIgW21haWx0bzpqZWFuLXBoaWxpcHBlLmJydWNr
+ZXJAYXJtLmNvbV0NCj4gU2VudDogV2VkbmVzZGF5LCBNYXJjaCAyMSwgMjAxOCA5OjE0IFBNDQo+
+IA0KPiBIaSBLZXZpbiwNCj4gDQo+IFRoYW5rcyBmb3IgdGhlIGNvbW1lbnRzDQo+IA0KPiBPbiAx
+OS8wMy8xOCAxMDowMywgVGlhbiwgS2V2aW4gd3JvdGU6DQo+ID4gQllQQVNTIGZlYXR1cmUgYml0
+IGlzIG5vdCBjb3ZlcmVkIGluICIyLjMuMS8yLjMuMi8yLjMuMyIiLiBJcyBpdA0KPiA+IGludGVu
+ZGVkPw0KPiANCj4gSW4gbXkgb3BpbmlvbiBCWVBBU1MgaXMgYSBiaXQgZGlmZmVyZW50IGZyb20g
+dGhlIG90aGVyIGZlYXR1cmVzOiB3aGlsZSB0aGUNCj4gb3RoZXJzIGFyZSBuZWVkZWQgZm9yIGNv
+cnJlY3RuZXNzLCB0aGlzIG9uZSBpcyBvcHRpb25hbCBhbmQgZXZlbiBpZiB0aGUNCj4gZ3Vlc3Qg
+c3VwcG9ydHMgQllQQVNTLCBpdCBzaG91bGQgYmUgYWxsb3dlZCBub3QgdG8gYWNjZXB0IGl0LiBG
+b3Igc2VjdXJpdHkNCj4gcmVhc29ucyBpdCBtYXkgbm90IHdhbnQgdG8gbGV0IGVuZHBvaW50cyBh
+Y2Nlc3MgdGhlIHdob2xlIGd1ZXN0LXBoeXNpY2FsDQo+IGFkZHJlc3Mgc3BhY2UuDQoNCm9rLCBw
+b3NzaWJseSBiZWNhdXNlIEknbSBub3QgZmFtaWxpYXIgd2l0aCB2aXJ0aW8gc3BlYyBjb252ZW50
+aW9uLg0KTXkgb3JpZ2luYWwgZmVlbGluZyBpcyB0aGF0IGVhY2ggZmVhdHVyZSBiaXQgd2lsbCBo
+YXZlIGEgYmVoYXZpb3INCmRlc2NyaXB0aW9uIHJlZ2FyZGluZyB0byB3aGV0aGVyIGRldmljZSBy
+ZXBvcnRzIGFuZCB3aGV0aGVyIA0KZHJpdmVyIGFjY2VwdHMuIElmIG5vIG5lZWQgdG8gY292ZXIg
+b3B0aW9uYWwgZmVhdHVyZSwgdGhlbiBpdCdzIGZpbmUNCnRvIG1lLiA6LSkNCg0KPiANCj4gPiAt
+LTIuNi4yIERldmljZSBSZXF1aXJlbWVudHM6IERldmljZSBvcGVyYXRpb25zLS0NCj4gPg0KPiA+
+ICJJZiB0aGUgVklSVElPX0lPTU1VX0ZfSU5QVVRfUkFOR0UgZmVhdHVyZSBpcyBv76yAZXJlZCwN
+Cj4gPiB0aGUgZGV2aWNlIE1VU1QgdHJ1bmNhdGUgdGhlIHJhbmdlIGRlc2NyaWJlZCBieSB2aXJ0
+X3N0YXJ0DQo+ID4gYW5kIHZpcnRfZW5kIGluIHJlcXVlc3RzIHRvIGZ0IGluIHRoZSByYW5nZSBk
+ZXNjcmliZWQgYnkNCj4gPiBpbnB1dF9yYW5nZS4iDQo+ID4NCj4gPiAiSWYgdGhlIFZJUlRJT19J
+T01NVV9GX0RPTUFJTl9CSVRTIGlzIG/vrIBlcmVkLCB0aGUgZGV2aWNlDQo+ID4gTVVTVCBpZ25v
+cmUgYml0cyBhYm92ZSBkb21haW5fYml0cyBpbiBmaWVsZCBkb21haW4gb2YgcmVxdWVzdHMuIg0K
+PiA+DQo+ID4gc2hvdWxkbid0IGRldmljZSByZXR1cm4gZXJyb3IgdXBvbiBhYm92ZSBzaXR1YXRp
+b24gaW5zdGVhZA0KPiA+IG9mIGNvbnRpbnVpbmcgb3BlcmF0aW9uIHdpdGggbW9kaWZpZWQgdmFs
+dWU/DQo+IA0KPiBUaGUgaW50ZW50IHdhcyB0byBhbGxvdyBkZXZpY2UgYW5kIGRyaXZlciB0byBw
+YXNzIG1ldGFkYXRhIGluIHRoZSB0b3AgYml0cw0KPiBvZiBwb2ludGVycyBhbmQgZG9tYWluIElE
+cywgcGVyaGFwcyBmb3IgYSBmdXR1cmUgZXh0ZW5zaW9uIG9yIGZvcg0KPiBkZWJ1Z2dpbmcuIEkn
+bSBub3QgY29udmluY2VkIGl0J3MgdXNlZnVsIGFueW1vcmUgKGFuZCBkbyB3b25kZXIgd2hhdCBt
+eQ0KPiBpbml0aWFsIHJlYXNvbmluZyB3YXMuLi4pIFN1Y2ggZXh0ZW5zaW9uIHdvdWxkIGJlIGRl
+dGVybWluZWQgYnkgYSBuZXcNCj4gZmVhdHVyZSBiaXQgYW5kIHRoZSBkZXZpY2Ugd291bGQga25v
+dyB0aGF0IHRoZSBmaWVsZHMgY29udGFpbiBhZGRpdGlvbmFsDQo+IGluZm8sIGlmIHRoZSBkcml2
+ZXIgYWNjZXB0ZWQgdGhhdCBmZWF0dXJlLg0KPiANCj4gPiAtLTIuNi40IERFVEFDSCByZXF1ZXN0
+LS0NCj4gPg0KPiA+ICIgRGV0YWNoIGFuIGVuZHBvaW50IGZyb20gaXRzIGRvbWFpbi4gV2hlbiB0
+aGlzIHJlcXVlc3QNCj4gPiBjb21wbGV0ZXMsIHRoZSBlbmRwb2ludCBjYW5ub3QgYWNjZXNzIGFu
+eSBtYXBwaW5nIGZyb20gdGhhdA0KPiA+IGRvbWFpbiBhbnltb3JlICINCj4gPg0KPiA+IERvZXMg
+aXQgbWFrZSBzZW5zZSB0byBtZW50aW9uIEJZUEFTUyBzaXR1YXRpb24gdXBvbiB0aGlzIHJlcXVl
+c3Q/DQo+IA0KPiBTdXJlLCBJJ2xsIGFkZCBzb21ldGhpbmcgdG8gY2xhcmlmeSB0aGF0IHNpdHVh
+dGlvbg0KPiANCj4gPiAtLTIuNi44LjIgUHJvcGVydHkgUkVTVl9NRU0gLS0NCj4gPg0KPiA+ICJW
+SVJUSU9fSU9NTVVfUkVTVl9NRU1fVF9SRVNFUlZFRCAoMCkgQWNjZXNzZXMgdG8NCj4gPiB2aXJ0
+dWFsIGFkZHJlc3NlcyBpbiB0aGlzIHJlZ2lvbiBhcmUgbm90IHRyYW5zbGF0ZWQgYnkgdGhlIGRl
+dmljZS4NCj4gPiBUaGV5IG1heSBlaXRoZXIgYmUgYWJvcnRlZCBieSB0aGUgZGV2aWNlIChvciB0
+aGUgdW5kZXJseWluZw0KPiA+IElPTU1VKSwgYnlwYXNzIGl0LCBvciBuZXZlciBldmVuIHJlYWNo
+IGl0Ig0KPiA+DQo+ID4gaW4gMy4zIGhhcmR3YXJlIGRldmljZSBhc3NpZ25tZW50IHlvdSBkZXNj
+cmliZWQgYW4gZXhhbXBsZQ0KPiA+IHRoYXQgYSByZXNlcnZlZCByYW5nZSBpcyBzdG9sZW4gYnkg
+aG9zdCB0byBtYXAgdGhlIE1TSQ0KPiA+IGRvb3JiZWxsLi4uIHN1Y2ggbWFwIGJlaGF2aW9yIGlz
+IG5vdCBkZXNjcmliZWQgYWJvdmUuDQo+IA0KPiBSaWdodCwgd2UgY2FuIHNheSB0aGF0IGFjY2Vz
+c2VzIHRvIHRoZSByZWdpb24gbWF5IGJlIHVzZWQgZm9yIGhvc3QNCj4gdHJhbnNsYXRpb24NCj4g
+DQo+ID4gVGhlbiBjb21lcyBhIHF1ZXN0aW9uIGZvciBWSVJUSU9fSU9NTVVfUkVTVl9NRU1fVF9N
+U0kuDQo+ID4gSSBrbm93IHRoZXJlIHdlcmUgcXVpdGUgc29tZSBkaXNjdXNzaW9uIGFyb3VuZCB0
+aGlzIGZsYWcgYmVmb3JlLA0KPiA+IGJ1dCBteSBtZW50YWwgcGljdHVyZSBub3cgc3RpbGwgaXMg
+YSBiaXQgZGlmZmljdWx0IHRvIHVuZGVyc3RhbmQgaXRzDQo+ID4gdXNhZ2UgYmFzZWQgb24gZXhh
+bXBsZXMgaW4gaW1wbGVtZW50YXRpb24gbm90ZXM6DQo+ID4NCj4gPiAJLSBmb3IgeDg2LCB5b3Ug
+ZGVzY3JpYmUgaXQgYXMgaW5kaWNhdGluZyBNU0kgYnlwYXNzIGZvcg0KPiA+IG94ZmVleHh4eHgu
+IEhvd2V2ZXIgZ3Vlc3QgZG9lc24ndCBuZWVkIHRvIGtub3cgdGhpcyBmYWN0LiBPbmx5DQo+ID4g
+cmVxdWlyZW1lbnQgaXMgdG8gdHJlYXQgaXQgYXMgcmVzZXJ2ZWQgcmFuZ2UgKGFzIG9uIGJhcmUg
+bWV0YWwpDQo+ID4gdGhlbiBUX1JFU0VSVkVEIGlzIHN1ZmZpY2llbnQgZm9yIHRoaXMgcHVycG9z
+ZT4NCj4gPiAJLSBmb3IgQVJNLCBlaXRoZXIgbGV0IGd1ZXN0IG9yIGxldCBob3N0IHRvIGNob29z
+ZSBhIHZpcnR1YWwNCj4gPiBhZGRyZXNzIGZvciBtYXBwaW5nIHRvIE1TSSBkb29yYmVsbC4gdGhl
+IGZvcm1lciBkb2Vzbid0IHJlcXVpcmUNCj4gPiBhIHJlc2VydmVkIHJhbmdlLiBmb3IgdGhlIGxh
+dHRlciBhbHNvIFRfUkVTRVJWRUQgaXMgZW5vdWdoIGFzDQo+ID4gdGhlIGV4YW1wbGUgaW4gaGFy
+ZHdhcmUgZGV2aWNlIGFzc2lnbm1lbnQgc2VjdGlvbi4NCj4gDQo+IEl0IG1pZ2h0IGJlIG5pY2Vy
+IHRvIGhhdmUgdGhlIGhvc3QgZGVjaWRlIGl0LCBidXQgd2hlbiB0aGUgcGh5c2ljYWwgSU9NTVUN
+Cj4gaXMgQVJNIFNNTVUsIG5lc3RpbmcgdHJhbnNsYXRpb24gY29tcGxpY2F0ZXMgdGhpbmdzLCBi
+ZWNhdXNlIHRoZSBndWVzdA0KPiAqaGFzKiB0byBjcmVhdGUgYSBtYXBwaW5nOg0KDQpjb25maXJt
+IG9uZSB0aGluZyBmaXJzdC4gdjAuNiBkb2Vzbid0IHN1cHBvcnQgYmluZGluZyB0byBndWVzdCBJ
+T1ZBDQpwYWdlIHRhYmxlIHlldC4gU28gYmFzZWQgb24gY3VycmVudCBtYXAvdW5tYXAgaW50ZXJm
+YWNlLCB0aGVyZSBpcyANCm5vIHN1Y2ggY29tcGxpY2l0eSByaWdodD8gc3RhZ2UtMSBpcyBqdXN0
+IGEgc2hhZG93ZWQgdHJhbnNsYXRpb24gKElPVkENCi0+SFBBKSB0byBndWVzdCBzaWRlIChJT1ZB
+LT5HUEEpIHdpdGggbmVzdGluZyBkaXNhYmxlZC4gSW4gdGhhdCBjYXNlDQp0aGUgZGVmYXVsdCBi
+ZWhhdmlvciBpcyBob3N0LXJlc2VydmVkIHN0eWxlLg0KDQpUaGVuIGNvbWVzIG5lc3RlZCBzY2Vu
+YXJpbzoNCg0KPiANCj4gKiBUaGUgZ3Vlc3QgaXMgaW4gY2hhcmdlIG9mIHN0YWdlLTEuIEl0IGNy
+ZWF0ZXMgSU9WQS0+R1BBIG1hcHBpbmcgZm9yIHRoZQ0KPiAgIE1TSSBkb29yYmVsbC4gVGhlIEdQ
+QSBpcyBtYXBwZWQgdG8gdGhlIHBoeXNpY2FsIE1TSSBkb29yYmVsbCBhdA0KPiAgIHN0YWdlLTIg
+YnkgdGhlIGhvc3QuDQoNCklzIGl0IGEgbXVzdCB0aGF0IGFib3ZlIEdQQSBpcyBtYXBwZWQgdG8g
+cGh5c2ljYWwgTVNJIGRvb3JiZWxsPw0KDQpJZGVhbGx5Og0KDQoxKSBIb3N0IHJlc2VydmVzIHNv
+bWUgSU9WQSByYW5nZSBmb3IgbWFwcGluZyBNU0kgZG9vcmJlbGwNCjIpIHRoZSByYW5nZSBpcyBy
+ZXBvcnRlZCB0byB1c2VyIHNwYWNlDQozKSBRZW11IHJlcG9ydGVkIHRoZSByYW5nZSBhcyByZXNl
+cnZlZCBvbiBlbmRwb2ludHMsIG1hcmtlZA0KYXMgVF9JREVOVElUWSAoYSBuZXcgdHlwZSB0byBi
+ZSBpbnRyb2R1Y2VkKSwgbWVhbmluZyBndWVzdA0KbmVlZHMgc2V0dXAgaWRlbnRpdHkgbWFwcGlu
+ZyBpbiBzdGFnZS0xDQo0KSBUaGVuIGRldmljZSBzaG91bGQgYmUgYWJsZSB0byByaW5nIHBoeXNp
+Y2FsIE1TSSBkb29yYmVsbA0KNSkgSSdtIG5vdCBzdXJlIHdoZXRoZXIgZ3Vlc3Qgc3RpbGwgbmVl
+ZHMgdG8gYWxsb2NhdGUgaXRzIG93bg0KSU9WQSBhbmQgbWFwcGluZyB0byB2R0lDIGRvb3JiZWxs
+IGluIHN1Y2ggY2FzZS4uLg0KDQo+IA0KPiAqIHdoZW4gaXQgd3JpdGVzIHRoYXQgSU9WQSBpbiB0
+aGUgdmlydHVhbCBNU0ktWCB0YWJsZXMsIHRoZSBob3N0IHVwZGF0ZXMNCj4gICB0aGUgcGh5c2lj
+YWwgTVNJLVggdGFibGVzIHVzaW5nIGFuIGlvY3RsIChpdCBjYW4ndCBtYXAgdGhlIHBoeXNpY2Fs
+DQo+ICAgdGFibGVzIGludG8gdGhlIGd1ZXN0LCBiZWNhdXNlIE1TSS1YIHZlY3RvciBkYXRhIGFs
+c28gY29udGFpbiBwaHlzaWNhbA0KPiAgIGRldmljZSBpbmZvIHRoYXQgc2hvdWxkbid0IGJlIGtu
+b3duIGJ5IHRoZSBndWVzdC4pDQo+IA0KPiBTbyB3ZSBuZWVkIHN1cHBvcnQgZm9yIHNvZnR3YXJl
+LW1hcHBlZCBNU0lzIGluIHRoZSBndWVzdCBhbnl3YXkuIEluDQo+IExpbnV4DQo+IHRoZSB2aXJ0
+aW8taW9tbXUgZHJpdmVyIGNhbiB1c2UgZXhpc3RpbmcgcGx1bWJpbmcgZm9yIHRoYXQsIG5vIGNo
+YW5nZQ0KPiBuZWVkZWQgaW4gdGhlIGd1ZXN0Lg0KPiANCj4gPiBUaGVuIHdoYXQncyB0aGUgcmVh
+bCBwb2ludCBvZiBkaWZmZXJlbnRpYXRpbmcgTVNJIGJ5cGFzcyBmcm9tDQo+ID4gbm9ybWFsIHJl
+c2VydmVkIHJhbmdlPyBJcyB0aGVyZSBvdGhlciBleGFtcGxlIHdoZXJlIGd1ZXN0DQo+ID4gbWF5
+IHVzZSBzdWNoIGluZm8gdG8gZG8gc3BlY2lhbCB0aGluZz8NCj4gDQo+IFRoZSBwcmVzZW5jZSBv
+ZiBhbiBNU0kgYnlwYXNzIHJlZ2lvbnMgYWxsb3dzIHRoZSBkcml2ZXIgYW5kIHRoZSBETUEgbGF5
+ZXINCj4gKGluIExpbnV4IGlvbW11X2RtYV9tYXBfbXNpX21zZykgdG8ga25vdyB3aGV0aGVyIGl0
+IG5lZWRzIHRvIGNyZWF0ZSBhDQo+IG1hcHBpbmcgb3IgaWYgaXQncyBieXBhc3NlZC4gV2hlbiB3
+cml0aW5nIHRoZSBlbnRyeSBpbnRvIHRoZSBNU0ktWCB0YWJsZSwNCj4gaWYgdGhlIGFkZHJlc3Mg
+aW4gdGhlIE1TSSB2ZWN0b3IgYWxyZWFkeSBjb3JyZXNwb25kcyB0byBhbiBNU0kgYnlwYXNzDQo+
+IHJlZ2lvbiwgdGhlbiB0aGVyZSBpcyBubyBuZWVkIHRvIGNyZWF0ZSBhIG1hcHBpbmcuIE1ha2lu
+ZyB0aGUgYnlwYXNzIE1TSQ0KPiByZWdpb24gYSBub3JtYWwgUkVTViByYW5nZSBoaWRlcyB0aGF0
+IGluZm9ybWF0aW9uLg0KDQpvaywgd2lsbCB0YWtlIGEgbG9vayB0byB1bmRlcnN0YW5kIHRoaXMg
+cGFydC4NCg0KPiANCj4gQW5vdGhlciB3YXkgb2YgY2hvb3Npbmcgd291bGQgYmUgd2l0aCAjaWZk
+ZWYgQ09ORklHX0FSTTY0LA0KPiBDT05GSUdfWDg2IGV0YywNCj4gYnV0IEkgZmluZCBpdCBuYXN0
+eSwgYW5kIEkgcGVyc29uYWxseSBwcmVmZXIgdXNpbmcgTVNJIGJ5cGFzcyBmb3IgQVJNIHdoZW4N
+Cj4gcG9zc2libGUuDQoNCmhvd2V2ZXIgZnJvbSBjdXJyZW50IHYwLjYgZXhhbXBsZXMsIEJZUEFT
+UyBpcyBvbmx5IGxpc3RlZCBmb3IgeDg2DQpjYXNlLiBBUk0gdXNhZ2UgaXMgdGhlIG1pc3Npbmcg
+cGllY2UgbWFraW5nIG1lIGNvbmZ1c2VkLiANCg0KPiANCj4gPiAtLSAzLjIgTWVzc2FnZSBTaWdu
+YWxlZCBJbnRlcnJ1cHRzIC0tDQo+ID4NCj4gPiAiIFNlY3Rpb24gMy4yLjIgZGVzY3JpYmVzIHRo
+ZSBhZGRlZCBjb21wbGV4aXR5IChmcm9tIHRoZSBob3N0DQo+ID4gcG9pbnQgb2Ygdmlldykgb2Yg
+dHJhbnNsYXRpbmcgdGhlIElSUSBjaGlwIGRvb3JiZWxsICINCj4gPg0KPiA+IGhvd2V2ZXIgbGF0
+ZXIgMy4yLjIgb25seSBzYXlzIG9uZSBzZW50ZW5jZSBhYm91dCBob3N0DQo+ID4gY29tcGxleGl0
+eSAtICIgSG93ZXZlciwgdGhpcyBtb2RlIG9mIG9wZXJhdGlvbnMgbWF5IGFkZA0KPiA+IHNpZ25p
+ZmljYW50IGNvbXBsZXhpdHkgaW4gdGhlIGhvc3QgaW1wbGVtZW50YXRpb24iLiBJZiB5b3UgcGxh
+bg0KPiA+IHRvIGVsYWJvcmF0ZSB0aGF0IHBhcnQgaW4gdGhlIGZ1dHVyZSwgcGxlYXNlIGFkZCBh
+IG5vdGUuIDotKQ0KPiANCj4gT2ggcmlnaHQsIEkgZG9uJ3QgcmVhbGx5IHdhbnQgdG8gZWxhYm9y
+YXRlLCBJJ2xsIHRyeSB0byByZXdvcmQgMy4yLiBUaGUNCj4ga3ZtdG9vbCBwYXRjaGVzIGhhdmUg
+c3VwcG9ydCBmb3IgYm90aCBNU0kgYnlwYXNzIGFuZCB0cmFuc2xhdGlvbg0KPiAoc2VsZWN0YWJs
+ZSB3aXRoIGEgY21kbGluZSBmbGFnKSwgd2hpY2ggSSB0aGluayBpcyBnb29kIGVub3VnaC4gSSdk
+IHJhdGhlcg0KPiByZWFkIGEgY29kZSBleGFtcGxlIHRoYW4gc29tZSBjbHVtc3kgcHJvc2UgZGVz
+Y3JpYmluZyBpdC4NCj4gDQoNCnNvdW5kcyBnb29kLg0KDQpUaGFua3MNCktldmluDQo=
 
