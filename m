@@ -1,279 +1,142 @@
-Return-Path: virtio-dev-return-3597-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3632-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 9F8FE5819034
-	for <virtio-dev@lists.oasis-open.org>; Mon, 19 Mar 2018 00:17:40 -0700 (PDT)
-From: Tiwei Bie <tiwei.bie@intel.com>
-Date: Mon, 19 Mar 2018 15:15:33 +0800
-Message-Id: <20180319071537.28649-3-tiwei.bie@intel.com>
-In-Reply-To: <20180319071537.28649-1-tiwei.bie@intel.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id E08BA5819045
+	for <virtio-dev@lists.oasis-open.org>; Thu, 22 Mar 2018 08:13:56 -0700 (PDT)
+Date: Thu, 22 Mar 2018 17:13:41 +0200
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20180322165800-mutt-send-email-mst@kernel.org>
 References: <20180319071537.28649-1-tiwei.bie@intel.com>
-Subject: [virtio-dev] [PATCH v2 2/6] vhost-user: introduce shared vhost-user state
-To: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, mst@redhat.com, alex.williamson@redhat.com, jasowang@redhat.com, pbonzini@redhat.com, stefanha@redhat.com
-Cc: cunming.liang@intel.com, dan.daly@intel.com, jianfeng.tan@intel.com, zhihong.wang@intel.com, xiao.w.wang@intel.com, tiwei.bie@intel.com
+ <20180319071537.28649-3-tiwei.bie@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20180319071537.28649-3-tiwei.bie@intel.com>
+Subject: [virtio-dev] Re: [PATCH v2 2/6] vhost-user: introduce shared vhost-user state
+To: Tiwei Bie <tiwei.bie@intel.com>
+Cc: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, alex.williamson@redhat.com, jasowang@redhat.com, pbonzini@redhat.com, stefanha@redhat.com, cunming.liang@intel.com, dan.daly@intel.com, jianfeng.tan@intel.com, zhihong.wang@intel.com, xiao.w.wang@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-When multi-queue is enabled for virtio-net, each virtio
-queue pair will have a vhost_dev, and the only thing they
-share currently is the chardev. This patch introduces a
-vhost-user state structure which will be shared by all
-virtio queue pairs of the same virtio device.
+On Mon, Mar 19, 2018 at 03:15:33PM +0800, Tiwei Bie wrote:
+> @@ -22,7 +23,7 @@
+>  
+>  typedef struct VhostUserState {
+>      NetClientState nc;
+> -    CharBackend chr; /* only queue index 0 */
+> +    VhostUser vhost_user; /* only queue index 0 */
+>      VHostNetState *vhost_net;
+>      guint watch;
+>      uint64_t acked_features;
 
-Signed-off-by: Tiwei Bie <tiwei.bie@intel.com>
----
- hw/scsi/vhost-user-scsi.c       |  6 +++---
- hw/virtio/vhost-user.c          |  9 +++++----
- include/hw/virtio/vhost-user.h  | 17 +++++++++++++++++
- include/hw/virtio/virtio-scsi.h |  6 +++++-
- net/vhost-user.c                | 30 ++++++++++++++++--------------
- 5 files changed, 46 insertions(+), 22 deletions(-)
- create mode 100644 include/hw/virtio/vhost-user.h
+Is the comment still valid?
 
-diff --git a/hw/scsi/vhost-user-scsi.c b/hw/scsi/vhost-user-scsi.c
-index 9389ed48e0..64972bdd7d 100644
---- a/hw/scsi/vhost-user-scsi.c
-+++ b/hw/scsi/vhost-user-scsi.c
-@@ -72,7 +72,7 @@ static void vhost_user_scsi_realize(DeviceState *dev, Error **errp)
-     Error *err = NULL;
-     int ret;
- 
--    if (!vs->conf.chardev.chr) {
-+    if (!vs->conf.vhost_user.chr.chr) {
-         error_setg(errp, "vhost-user-scsi: missing chardev");
-         return;
-     }
-@@ -90,7 +90,7 @@ static void vhost_user_scsi_realize(DeviceState *dev, Error **errp)
-     vsc->dev.vq_index = 0;
-     vsc->dev.backend_features = 0;
- 
--    ret = vhost_dev_init(&vsc->dev, (void *)&vs->conf.chardev,
-+    ret = vhost_dev_init(&vsc->dev, (void *)&vs->conf.vhost_user,
-                          VHOST_BACKEND_TYPE_USER, 0);
-     if (ret < 0) {
-         error_setg(errp, "vhost-user-scsi: vhost initialization failed: %s",
-@@ -131,7 +131,7 @@ static uint64_t vhost_user_scsi_get_features(VirtIODevice *vdev,
- }
- 
- static Property vhost_user_scsi_properties[] = {
--    DEFINE_PROP_CHR("chardev", VirtIOSCSICommon, conf.chardev),
-+    DEFINE_PROP_CHR("chardev", VirtIOSCSICommon, conf.vhost_user.chr),
-     DEFINE_PROP_UINT32("boot_tpgt", VirtIOSCSICommon, conf.boot_tpgt, 0),
-     DEFINE_PROP_UINT32("num_queues", VirtIOSCSICommon, conf.num_queues, 1),
-     DEFINE_PROP_UINT32("virtqueue_size", VirtIOSCSICommon, conf.virtqueue_size,
-diff --git a/hw/virtio/vhost-user.c b/hw/virtio/vhost-user.c
-index 1ad6caa6a3..b228994ffd 100644
---- a/hw/virtio/vhost-user.c
-+++ b/hw/virtio/vhost-user.c
-@@ -12,6 +12,7 @@
- #include "qapi/error.h"
- #include "hw/virtio/vhost.h"
- #include "hw/virtio/vhost-backend.h"
-+#include "hw/virtio/vhost-user.h"
- #include "hw/virtio/virtio-net.h"
- #include "chardev/char-fe.h"
- #include "sysemu/kvm.h"
-@@ -164,7 +165,7 @@ static VhostUserMsg m __attribute__ ((unused));
- #define VHOST_USER_VERSION    (0x1)
- 
- struct vhost_user {
--    CharBackend *chr;
-+    VhostUser *shared;
-     int slave_fd;
- };
- 
-@@ -176,7 +177,7 @@ static bool ioeventfd_enabled(void)
- static int vhost_user_read(struct vhost_dev *dev, VhostUserMsg *msg)
- {
-     struct vhost_user *u = dev->opaque;
--    CharBackend *chr = u->chr;
-+    CharBackend *chr = &u->shared->chr;
-     uint8_t *p = (uint8_t *) msg;
-     int r, size = VHOST_USER_HDR_SIZE;
- 
-@@ -262,7 +263,7 @@ static int vhost_user_write(struct vhost_dev *dev, VhostUserMsg *msg,
-                             int *fds, int fd_num)
- {
-     struct vhost_user *u = dev->opaque;
--    CharBackend *chr = u->chr;
-+    CharBackend *chr = &u->shared->chr;
-     int ret, size = VHOST_USER_HDR_SIZE + msg->hdr.size;
- 
-     /*
-@@ -839,7 +840,7 @@ static int vhost_user_init(struct vhost_dev *dev, void *opaque)
-     assert(dev->vhost_ops->backend_type == VHOST_BACKEND_TYPE_USER);
- 
-     u = g_new0(struct vhost_user, 1);
--    u->chr = opaque;
-+    u->shared = opaque;
-     u->slave_fd = -1;
-     dev->opaque = u;
- 
-diff --git a/include/hw/virtio/vhost-user.h b/include/hw/virtio/vhost-user.h
-new file mode 100644
-index 0000000000..4f5a1477d1
---- /dev/null
-+++ b/include/hw/virtio/vhost-user.h
-@@ -0,0 +1,17 @@
-+/*
-+ * Copyright (c) 2017-2018 Intel Corporation
-+ *
-+ * This work is licensed under the terms of the GNU GPL, version 2.
-+ * See the COPYING file in the top-level directory.
-+ */
-+
-+#ifndef HW_VIRTIO_VHOST_USER_H
-+#define HW_VIRTIO_VHOST_USER_H
-+
-+#include "chardev/char-fe.h"
-+
-+typedef struct VhostUser {
-+    CharBackend chr;
-+} VhostUser;
-+
-+#endif
-diff --git a/include/hw/virtio/virtio-scsi.h b/include/hw/virtio/virtio-scsi.h
-index 4c0bcdb788..885c3e84b5 100644
---- a/include/hw/virtio/virtio-scsi.h
-+++ b/include/hw/virtio/virtio-scsi.h
-@@ -19,6 +19,7 @@
- #define VIRTIO_SCSI_SENSE_SIZE 0
- #include "standard-headers/linux/virtio_scsi.h"
- #include "hw/virtio/virtio.h"
-+#include "hw/virtio/vhost-user.h"
- #include "hw/pci/pci.h"
- #include "hw/scsi/scsi.h"
- #include "chardev/char-fe.h"
-@@ -54,7 +55,10 @@ struct VirtIOSCSIConf {
-     char *vhostfd;
-     char *wwpn;
- #endif
--    CharBackend chardev;
-+    union {
-+        VhostUser vhost_user;
-+        CharBackend chardev;
-+    };
-     uint32_t boot_tpgt;
-     IOThread *iothread;
- };
-diff --git a/net/vhost-user.c b/net/vhost-user.c
-index e0f16c895b..49ee72bd42 100644
---- a/net/vhost-user.c
-+++ b/net/vhost-user.c
-@@ -12,6 +12,7 @@
- #include "clients.h"
- #include "net/vhost_net.h"
- #include "net/vhost-user.h"
-+#include "hw/virtio/vhost-user.h"
- #include "chardev/char-fe.h"
- #include "qapi/error.h"
- #include "qapi/qapi-commands-net.h"
-@@ -22,7 +23,7 @@
- 
- typedef struct VhostUserState {
-     NetClientState nc;
--    CharBackend chr; /* only queue index 0 */
-+    VhostUser vhost_user; /* only queue index 0 */
-     VHostNetState *vhost_net;
-     guint watch;
-     uint64_t acked_features;
-@@ -64,7 +65,7 @@ static void vhost_user_stop(int queues, NetClientState *ncs[])
-     }
- }
- 
--static int vhost_user_start(int queues, NetClientState *ncs[], CharBackend *be)
-+static int vhost_user_start(int queues, NetClientState *ncs[], void *be)
- {
-     VhostNetOptions options;
-     struct vhost_net *net = NULL;
-@@ -158,7 +159,7 @@ static void vhost_user_cleanup(NetClientState *nc)
-             g_source_remove(s->watch);
-             s->watch = 0;
-         }
--        qemu_chr_fe_deinit(&s->chr, true);
-+        qemu_chr_fe_deinit(&s->vhost_user.chr, true);
-     }
- 
-     qemu_purge_queued_packets(nc);
-@@ -192,7 +193,7 @@ static gboolean net_vhost_user_watch(GIOChannel *chan, GIOCondition cond,
- {
-     VhostUserState *s = opaque;
- 
--    qemu_chr_fe_disconnect(&s->chr);
-+    qemu_chr_fe_disconnect(&s->vhost_user.chr);
- 
-     return TRUE;
- }
-@@ -217,7 +218,8 @@ static void chr_closed_bh(void *opaque)
-     qmp_set_link(name, false, &err);
-     vhost_user_stop(queues, ncs);
- 
--    qemu_chr_fe_set_handlers(&s->chr, NULL, NULL, net_vhost_user_event,
-+    qemu_chr_fe_set_handlers(&s->vhost_user.chr, NULL, NULL,
-+                             net_vhost_user_event,
-                              NULL, opaque, NULL, true);
- 
-     if (err) {
-@@ -240,15 +242,15 @@ static void net_vhost_user_event(void *opaque, int event)
-     assert(queues < MAX_QUEUE_NUM);
- 
-     s = DO_UPCAST(VhostUserState, nc, ncs[0]);
--    chr = qemu_chr_fe_get_driver(&s->chr);
-+    chr = qemu_chr_fe_get_driver(&s->vhost_user.chr);
-     trace_vhost_user_event(chr->label, event);
-     switch (event) {
-     case CHR_EVENT_OPENED:
--        if (vhost_user_start(queues, ncs, &s->chr) < 0) {
--            qemu_chr_fe_disconnect(&s->chr);
-+        if (vhost_user_start(queues, ncs, &s->vhost_user) < 0) {
-+            qemu_chr_fe_disconnect(&s->vhost_user.chr);
-             return;
-         }
--        s->watch = qemu_chr_fe_add_watch(&s->chr, G_IO_HUP,
-+        s->watch = qemu_chr_fe_add_watch(&s->vhost_user.chr, G_IO_HUP,
-                                          net_vhost_user_watch, s);
-         qmp_set_link(name, true, &err);
-         s->started = true;
-@@ -264,8 +266,8 @@ static void net_vhost_user_event(void *opaque, int event)
- 
-             g_source_remove(s->watch);
-             s->watch = 0;
--            qemu_chr_fe_set_handlers(&s->chr, NULL, NULL, NULL, NULL,
--                                     NULL, NULL, false);
-+            qemu_chr_fe_set_handlers(&s->vhost_user.chr, NULL, NULL, NULL,
-+                                     NULL, NULL, NULL, false);
- 
-             aio_bh_schedule_oneshot(ctx, chr_closed_bh, opaque);
-         }
-@@ -297,7 +299,7 @@ static int net_vhost_user_init(NetClientState *peer, const char *device,
-         if (!nc0) {
-             nc0 = nc;
-             s = DO_UPCAST(VhostUserState, nc, nc);
--            if (!qemu_chr_fe_init(&s->chr, chr, &err)) {
-+            if (!qemu_chr_fe_init(&s->vhost_user.chr, chr, &err)) {
-                 error_report_err(err);
-                 return -1;
-             }
-@@ -307,11 +309,11 @@ static int net_vhost_user_init(NetClientState *peer, const char *device,
- 
-     s = DO_UPCAST(VhostUserState, nc, nc0);
-     do {
--        if (qemu_chr_fe_wait_connected(&s->chr, &err) < 0) {
-+        if (qemu_chr_fe_wait_connected(&s->vhost_user.chr, &err) < 0) {
-             error_report_err(err);
-             return -1;
-         }
--        qemu_chr_fe_set_handlers(&s->chr, NULL, NULL,
-+        qemu_chr_fe_set_handlers(&s->vhost_user.chr, NULL, NULL,
-                                  net_vhost_user_event, NULL, nc0->name, NULL,
-                                  true);
-     } while (!s->started);
--- 
-2.11.0
+> @@ -64,7 +65,7 @@ static void vhost_user_stop(int queues, NetClientState *ncs[])
+>      }
+>  }
+>  
+> -static int vhost_user_start(int queues, NetClientState *ncs[], CharBackend *be)
+> +static int vhost_user_start(int queues, NetClientState *ncs[], void *be)
+>  {
+>      VhostNetOptions options;
+>      struct vhost_net *net = NULL;
 
+Type safety going away here. This is actually pretty scary:
+are we sure no users cast this pointer to CharBackend?
+
+For example it seems that vhost_user_init does exactly that.
+
+Need to find a way to add type safety before making
+such a change.
+
+
+> @@ -158,7 +159,7 @@ static void vhost_user_cleanup(NetClientState *nc)
+>              g_source_remove(s->watch);
+>              s->watch = 0;
+>          }
+> -        qemu_chr_fe_deinit(&s->chr, true);
+> +        qemu_chr_fe_deinit(&s->vhost_user.chr, true);
+>      }
+>  
+>      qemu_purge_queued_packets(nc);
+> @@ -192,7 +193,7 @@ static gboolean net_vhost_user_watch(GIOChannel *chan, GIOCondition cond,
+>  {
+>      VhostUserState *s = opaque;
+>  
+> -    qemu_chr_fe_disconnect(&s->chr);
+> +    qemu_chr_fe_disconnect(&s->vhost_user.chr);
+>  
+>      return TRUE;
+>  }
+> @@ -217,7 +218,8 @@ static void chr_closed_bh(void *opaque)
+>      qmp_set_link(name, false, &err);
+>      vhost_user_stop(queues, ncs);
+>  
+> -    qemu_chr_fe_set_handlers(&s->chr, NULL, NULL, net_vhost_user_event,
+> +    qemu_chr_fe_set_handlers(&s->vhost_user.chr, NULL, NULL,
+> +                             net_vhost_user_event,
+>                               NULL, opaque, NULL, true);
+>  
+>      if (err) {
+> @@ -240,15 +242,15 @@ static void net_vhost_user_event(void *opaque, int event)
+>      assert(queues < MAX_QUEUE_NUM);
+>  
+>      s = DO_UPCAST(VhostUserState, nc, ncs[0]);
+> -    chr = qemu_chr_fe_get_driver(&s->chr);
+> +    chr = qemu_chr_fe_get_driver(&s->vhost_user.chr);
+>      trace_vhost_user_event(chr->label, event);
+>      switch (event) {
+>      case CHR_EVENT_OPENED:
+> -        if (vhost_user_start(queues, ncs, &s->chr) < 0) {
+> -            qemu_chr_fe_disconnect(&s->chr);
+> +        if (vhost_user_start(queues, ncs, &s->vhost_user) < 0) {
+> +            qemu_chr_fe_disconnect(&s->vhost_user.chr);
+>              return;
+>          }
+> -        s->watch = qemu_chr_fe_add_watch(&s->chr, G_IO_HUP,
+> +        s->watch = qemu_chr_fe_add_watch(&s->vhost_user.chr, G_IO_HUP,
+>                                           net_vhost_user_watch, s);
+>          qmp_set_link(name, true, &err);
+>          s->started = true;
+> @@ -264,8 +266,8 @@ static void net_vhost_user_event(void *opaque, int event)
+>  
+>              g_source_remove(s->watch);
+>              s->watch = 0;
+> -            qemu_chr_fe_set_handlers(&s->chr, NULL, NULL, NULL, NULL,
+> -                                     NULL, NULL, false);
+> +            qemu_chr_fe_set_handlers(&s->vhost_user.chr, NULL, NULL, NULL,
+> +                                     NULL, NULL, NULL, false);
+>  
+>              aio_bh_schedule_oneshot(ctx, chr_closed_bh, opaque);
+>          }
+> @@ -297,7 +299,7 @@ static int net_vhost_user_init(NetClientState *peer, const char *device,
+>          if (!nc0) {
+>              nc0 = nc;
+>              s = DO_UPCAST(VhostUserState, nc, nc);
+> -            if (!qemu_chr_fe_init(&s->chr, chr, &err)) {
+> +            if (!qemu_chr_fe_init(&s->vhost_user.chr, chr, &err)) {
+>                  error_report_err(err);
+>                  return -1;
+>              }
+> @@ -307,11 +309,11 @@ static int net_vhost_user_init(NetClientState *peer, const char *device,
+>  
+>      s = DO_UPCAST(VhostUserState, nc, nc0);
+>      do {
+> -        if (qemu_chr_fe_wait_connected(&s->chr, &err) < 0) {
+> +        if (qemu_chr_fe_wait_connected(&s->vhost_user.chr, &err) < 0) {
+>              error_report_err(err);
+>              return -1;
+>          }
+> -        qemu_chr_fe_set_handlers(&s->chr, NULL, NULL,
+> +        qemu_chr_fe_set_handlers(&s->vhost_user.chr, NULL, NULL,
+>                                   net_vhost_user_event, NULL, nc0->name, NULL,
+>                                   true);
+>      } while (!s->started);
+> -- 
+> 2.11.0
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
