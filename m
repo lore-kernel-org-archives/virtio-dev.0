@@ -1,50 +1,77 @@
-Return-Path: virtio-dev-return-3645-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3646-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 2990C1CB8078
-	for <virtio-dev@lists.oasis-open.org>; Mon, 26 Mar 2018 03:55:25 -0700 (PDT)
-Message-ID: <5AB8D24F.8020304@intel.com>
-Date: Mon, 26 Mar 2018 18:58:23 +0800
-From: Wei Wang <wei.w.wang@intel.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 7B2295818DC6
+	for <virtio-dev@lists.oasis-open.org>; Mon, 26 Mar 2018 07:54:59 -0700 (PDT)
+From: "Wang, Wei W" <wei.w.wang@intel.com>
+Date: Mon, 26 Mar 2018 14:54:45 +0000
+Message-ID: <286AC319A985734F985F78AFA26841F739485EE3@shsmsx102.ccr.corp.intel.com>
+References: <1521197309-13544-5-git-send-email-wei.w.wang@intel.com>
+ <20180316165319-mutt-send-email-mst@kernel.org> <5AAE4124.5010602@intel.com>
+ <20180319062023-mutt-send-email-mst@kernel.org> <5AAF7C72.5070403@intel.com>
+ <20180320004900-mutt-send-email-mst@kernel.org> <5AB06EE9.1030306@intel.com>
+ <20180320045134-mutt-send-email-mst@kernel.org> <5AB07D7F.90205@intel.com>
+ <20180320051840-mutt-send-email-mst@kernel.org>
+ <20180326110904.GI19266@redhat.com>
+In-Reply-To: <20180326110904.GI19266@redhat.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <1521197309-13544-1-git-send-email-wei.w.wang@intel.com> <1521197309-13544-5-git-send-email-wei.w.wang@intel.com> <20180316165319-mutt-send-email-mst@kernel.org> <5AAE4124.5010602@intel.com> <20180319062023-mutt-send-email-mst@kernel.org> <5AAF7C72.5070403@intel.com> <20180320004900-mutt-send-email-mst@kernel.org> <5AB06EE9.1030306@intel.com> <20180320045134-mutt-send-email-mst@kernel.org> <5AB07D7F.90205@intel.com> <20180320051840-mutt-send-email-mst@kernel.org> <5AB31F68.8000605@intel.com>
-In-Reply-To: <5AB31F68.8000605@intel.com>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [virtio-dev] Re: [PATCH v5 4/5] virtio-balloon: VIRTIO_BALLOON_F_FREE_PAGE_HINT
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, quintela@redhat.com, dgilbert@redhat.com, pbonzini@redhat.com, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu0@gmail.com, nilal@redhat.com, riel@redhat.com
+Subject: [virtio-dev] RE: [Qemu-devel] [virtio-dev] Re: [PATCH v5 4/5] virtio-balloon:
+ VIRTIO_BALLOON_F_FREE_PAGE_HINT
+To: =?utf-8?B?RGFuaWVsIFAuIEJlcnJhbmfDqQ==?= <berrange@redhat.com>, "Michael
+ S. Tsirkin" <mst@redhat.com>
+Cc: "yang.zhang.wz@gmail.com" <yang.zhang.wz@gmail.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "quan.xu0@gmail.com" <quan.xu0@gmail.com>, "quintela@redhat.com" <quintela@redhat.com>, "liliang.opensource@gmail.com" <liliang.opensource@gmail.com>, "qemu-devel@nongnu.org" <qemu-devel@nongnu.org>, "dgilbert@redhat.com" <dgilbert@redhat.com>, "pbonzini@redhat.com" <pbonzini@redhat.com>, "nilal@redhat.com" <nilal@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 03/22/2018 11:13 AM, Wei Wang wrote:
->
-> OK. I've tried to implement it this way: create an iothread via the 
-> qemu cmdline option: --device 
-> virtio-balloon,free-page-hint=true,iothread=iothread10, and schedule a 
-> BH to run in the iothread context when free_page_start() is called.
->
-> I think the drawback of this method is that the iothread exists during 
-> the whole QEMU lifetime, which wastes CPU cycles (e.g. when live 
-> migration isn't in progress). The method in v5 is like migration 
-> thread, which comes only when the migration request is received and 
-> goes when migration is done. Any thought?
->
-
-Hi Michael,
-
-Would it be acceptable to go with the thread creation method for now? I 
-would prefer that method for the above reasons. If you are very 
-confident about the iothread method, I can also send out the patches 
-with that implementation. Hope we could finish this feature soon. Thanks.
-
-Best,
-Wei
-
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+T24gTW9uZGF5LCBNYXJjaCAyNiwgMjAxOCA3OjA5IFBNLCBEYW5pZWwgUC4gQmVycmFuZ8OpIHdy
+b3RlOg0KPiANCj4gQXMgZmFyIGFzIGxpYnZpcnQgaXMgY29uY2VybmVkIHRoZXJlIGFyZSB0aHJl
+ZSBzZXRzIG9mIHRocmVhZHMgaXQgcHJvdmlkZXMNCj4gY29udHJvbCBvdmVyDQo+IA0KPiAgLSB2
+Q1BVcyAtIGVhY2ggVkNQVSBpbiBLVk0gaGFzIGEgdGhyZWFkLiBMaWJ2aXJ0IHByb3ZpZGVzIHBl
+ci10aHJlYWQNCj4gICAgdHVuYWJsZSBjb250cm9sDQo+IA0KPiAgLSBJT1RocmVhZHMgLSBlYWNo
+IG5hbWVkIEkvTyB0aHJlYWQgY2FuIGJlIGFzc29jaWF0ZWQgd2l0aCBvbmUgb3IgbW9yZQ0KPiAg
+ICBkZXZpY2VzLiBMaWJ2aXJ0IHByb3ZpZGVzIHBlci10aHJlYWQgdHVuYWJsZSBjb250cm9sLg0K
+PiANCj4gIC0gRW11bGF0b3IgLSBhbnkgb3RoZXIgUUVNVSB0aHJlYWQgd2hpY2ggaXNuJ3QgYW4g
+dkNQVSB0aHJlYWQgb3IgSU8gdGhyZWFkDQo+ICAgIGdldHMgY2FsbGVkIGFuIGVtdWxhdG9yIHRo
+cmVhZCBieSBsaWJ2aXJ0LiBUaGVyZSBpcyBuby1wZXIgdGhyZWFkDQo+ICAgIHR1bmFibGUgY29u
+dHJvbCAtIHdlIGNhbiBzZXQgdHVuYWJsZXMgZm9yIGVudGlyZSBzZXQgb2YgZW11bGF0b3IgdGhy
+ZWFkcw0KPiAgICBhdCBvbmNlLg0KPiANCg0KDQpIaSBEYW5pZWwsDQpUaGFua3MgZm9yIHNoYXJp
+bmcgdGhlIGRldGFpbHMsIHRoZXkgYXJlIHZlcnkgaGVscGZ1bC4gSSBzdGlsbCBoYXZlIGEgcXVl
+c3Rpb246DQoNClRoZXJlIGlzIG5vIGZ1bmRhbWVudGFsIGRpZmZlcmVuY2UgYmV0d2VlbiBpb3Ro
+cmVhZCBhbmQgb3VyIG9wdGltaXphdGlvbiB0aHJlYWQgKGl0IGlzIHNpbWlsYXIgdG8gdGhlIG1p
+Z3JhdGlvbiB0aHJlYWQsIHdoaWNoIGlzIGNyZWF0ZWQgd2hlbiBtaWdyYXRpb24gYmVnaW5zIGFu
+ZCB0ZXJtaW5hdGVkIHdoZW4gbWlncmF0aW9uIGlzIGRvbmUpIC0gYm90aCBvZiB0aGVtIGFyZSBw
+dGhyZWFkcyBhbmQgZWFjaCBoYXMgYSBuYW1lLiBDb3VsZCB3ZSBhbHNvIGFkZCB0aGUgc2ltaWxh
+ciBwZXItdGhyZWFkIHR1bmFibGUgY29udHJvbCBpbiBsaWJ2aXJ0IGZvciBzdWNoIHRocmVhZHM/
+DQoNCkZvciBleGFtcGxlLCBpbiBRRU1VIHdlIGNhbiBhZGQgYSBuZXcgbWlncmF0aW9uIHFtcCBj
+b21tYW5kLCBtaWdyYXRlX2VuYWJsZV9mcmVlX3BhZ2Vfb3B0aW1pemF0aW9uIChqdXN0IGxpa2Ug
+b3RoZXIgY29tbWFuZHMgbWlncmF0ZV9zZXRfc3BlZWQgMTBHKSwgdGhpcyBjb21tYW5kIHdpbGwg
+Y3JlYXRlIHRoZSBvcHRpbWl6YXRpb24gdGhyZWFkLiBJbiB0aGlzIHdheSwgY3JlYXRpb24gb2Yg
+dGhlIHRocmVhZCBpcyBpbiBsaWJ2aXJ0J3MgY29udHJvbCwgYW5kIGxpYnZpcnQgY2FuIHRoZW4g
+c3VwcG9ydCB0dW5pbmcgdGhlIHRocmVhZCAoZS5nLiBwaW4gaXQgdG8gYW55IHBDUFUpLCByaWdo
+dD8NCg0KDQo+IFNvLCBpZiB0aGlzIGJhbGxvb24gZHJpdmVyIHRocmVhZCBuZWVkcyB0byBzdXBw
+b3J0IHR1bmluZyBjb250cm9scyBzZXBhcmF0ZWx5DQo+IGZyb20gb3RoZXIgZ2VuZXJhbCBwdXJw
+b3NlIFFFTVUgdGhyZWFkcywgdGhlbiBpdCB3b3VsZCBpZGVhbGx5IHVzZQ0KPiBpb3RocmVhZCBp
+bmZyYXN0cnVjdHVyZS4NCj4gDQo+IEkgZG9uJ3QgcGFydGljdWxhcmx5IHVuZGVyc3RhbmQgd2hh
+dCB0aGlzIGNvZGUgaXMgZG9pbmcsIGJ1dCBwbGVhc2UgY29uc2lkZXINCj4gd2hldGhlciBOVU1B
+IGhhcyBhbnkgaW1wYWN0IG9uIHRoZSB3b3JrIGRvbmUgaW4gdGhpcyB0aHJlYWQuIFNwZWNpZmlj
+YWxseQ0KPiB3aGVuIHRoZSBndWVzdCBoYXMgbXVsdGlwbGUgdmlydHVhbCBOVU1BIG5vZGVzLCBl
+YWNoIGFzc29jaWF0ZWQgd2l0aCBhDQo+IHNwZWNpZmljIGhvc3QgTlVNQSBub2RlLiBJZiB0aGVy
+ZSBpcyBhbnkgbWVtb3J5IGludGVuc2l2ZSB3b3JrIGJlaW5nIGRvbmUNCj4gaGVyZSwgdGhlbiBp
+dCBtaWdodCBuZWVkIHRvIGJlIGV4ZWN1dGVkIG9uIHRoZSBjb3JyZWN0IGhvc3QgTlVNQSBub2Rl
+DQo+IGFjY29yZGluZyB0byB0aGUgbWVtb3J5IHJlZ2lvbiBiZWluZyB0b3VjaGVkLg0KPiANCiAN
+CkkgdGhpbmsgaXQgd291bGQgbm90IGJlIHNpZ25pZmljYW50bHkgaW1wYWN0ZWQgYnkgTlVNQSwg
+YmVjYXVzZSB0aGlzIG9wdGltaXphdGlvbiB0aHJlYWQgZG9lc27igJl0IGFjY2VzcyB0byB0aGUg
+Z3Vlc3QgbWVtb3J5IGEgbG90IGV4Y2VwdCB0aGUgdmlydHF1ZXVlIChldmVuIHdpdGggaW90aHJl
+YWQsIHdlIG1heSBzdGlsbCBub3Qga25vdyB3aGljaCBwQ1BVIHRvIHBpbiB0byBtYXRjaCB2aXJ0
+cXVldWUgaW4gdGhlIHZOVU1BIGNhc2UpLiBFc3NlbnRpYWxseSwgaXQgZ2V0cyB0aGUgZnJlZSBw
+YWdlIGFkZHJlc3MgYW5kIGxlbmd0aCwgdGhlbiBjbGVhcnMgYml0cyBmcm9tIHRoZSBtaWdyYXRp
+b24gZGlydHkgYml0bWFwLCB3aGljaCBpcyBhbGxvY2F0ZWQgYnkgUUVNVSBpdHNlbGYuDQpTbywg
+SSB0aGluayBhZGRpbmcgdGhlIHR1bmFibGUgc3VwcG9ydCBpcyBuaWNlciwgYnV0IEknbSBub3Qg
+c3VyZSBpZiB0aGF0IHdvdWxkIGJlIHJlcXVpcmVkLg0KDQpCZXN0LA0KV2VpDQo=
 
