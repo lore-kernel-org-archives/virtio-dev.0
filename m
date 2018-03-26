@@ -1,157 +1,133 @@
-Return-Path: virtio-dev-return-3637-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3639-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id A06A71CB807E
-	for <virtio-dev@lists.oasis-open.org>; Fri, 23 Mar 2018 01:27:27 -0700 (PDT)
-From: "Tian, Kevin" <kevin.tian@intel.com>
-Date: Fri, 23 Mar 2018 08:27:10 +0000
-Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D191090157@SHSMSX101.ccr.corp.intel.com>
-References: <20180214145340.1223-1-jean-philippe.brucker@arm.com>
- <20180214145340.1223-2-jean-philippe.brucker@arm.com>
- <AADFC41AFE54684AB9EE6CBC0274A5D19108B0FE@SHSMSX101.ccr.corp.intel.com>
- <a11f1b52-c031-014c-8c23-1732f3d4666c@arm.com>
- <739fbfdf-1651-8036-367a-52940b93dee6@arm.com>
- <AADFC41AFE54684AB9EE6CBC0274A5D19108DC42@SHSMSX101.ccr.corp.intel.com>
-In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D19108DC42@SHSMSX101.ccr.corp.intel.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-Subject: [virtio-dev] RE: [PATCH 1/4] iommu: Add virtio-iommu driver
-To: 'Robin Murphy' <robin.murphy@arm.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>
-Cc: "jayachandran.nair@cavium.com" <jayachandran.nair@cavium.com>, "tnowicki@caviumnetworks.com" <tnowicki@caviumnetworks.com>, "mst@redhat.com" <mst@redhat.com>, Marc Zyngier <Marc.Zyngier@arm.com>, "jasowang@redhat.com" <jasowang@redhat.com>, Will Deacon <Will.Deacon@arm.com>, "jintack@cs.columbia.edu" <jintack@cs.columbia.edu>, "eric.auger.pro@gmail.com" <eric.auger.pro@gmail.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 7925C5818F4C
+	for <virtio-dev@lists.oasis-open.org>; Sun, 25 Mar 2018 19:58:53 -0700 (PDT)
+From: Wei Wang <wei.w.wang@intel.com>
+Date: Mon, 26 Mar 2018 10:39:50 +0800
+Message-Id: <1522031994-7246-1-git-send-email-wei.w.wang@intel.com>
+Subject: [virtio-dev] [PATCH v29 0/4] Virtio-balloon: support free page reporting
+To: virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, linux-mm@kvack.org, mst@redhat.com, mhocko@kernel.org, akpm@linux-foundation.org
+Cc: pbonzini@redhat.com, wei.w.wang@intel.com, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu0@gmail.com, nilal@redhat.com, riel@redhat.com, huangzhichao@huawei.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-PiBGcm9tOiBUaWFuLCBLZXZpbg0KPiBTZW50OiBUaHVyc2RheSwgTWFyY2ggMjIsIDIwMTggNjow
-NiBQTQ0KPiANCj4gPiBGcm9tOiBSb2JpbiBNdXJwaHkgW21haWx0bzpyb2Jpbi5tdXJwaHlAYXJt
-LmNvbV0NCj4gPiBTZW50OiBXZWRuZXNkYXksIE1hcmNoIDIxLCAyMDE4IDEwOjI0IFBNDQo+ID4N
-Cj4gPiBPbiAyMS8wMy8xOCAxMzoxNCwgSmVhbi1QaGlsaXBwZSBCcnVja2VyIHdyb3RlOg0KPiA+
-ID4gT24gMjEvMDMvMTggMDY6NDMsIFRpYW4sIEtldmluIHdyb3RlOg0KPiA+ID4gWy4uLl0NCj4g
-PiA+Pj4gKw0KPiA+ID4+PiArI2luY2x1ZGUgPHVhcGkvbGludXgvdmlydGlvX2lvbW11Lmg+DQo+
-ID4gPj4+ICsNCj4gPiA+Pj4gKyNkZWZpbmUgTVNJX0lPVkFfQkFTRQkJCTB4ODAwMDAwMA0KPiA+
-ID4+PiArI2RlZmluZSBNU0lfSU9WQV9MRU5HVEgJCQkweDEwMDAwMA0KPiA+ID4+DQo+ID4gPj4g
-dGhpcyBpcyBBUk0gc3BlY2lmaWMsIGFuZCBhY2NvcmRpbmcgdG8gdmlydGlvLWlvbW11IHNwZWMg
-aXNuJ3QgaXQNCj4gPiA+PiBiZXR0ZXIgcHJvYmVkIG9uIHRoZSBlbmRwb2ludCBpbnN0ZWFkIG9m
-IGhhcmQtY29kaW5nIGhlcmU/DQo+ID4gPg0KPiA+ID4gVGhlc2UgdmFsdWVzIGFyZSBhcmJpdHJh
-cnksIG5vdCByZWFsbHkgQVJNLXNwZWNpZmljIGV2ZW4gaWYgQVJNIGlzIHRoZQ0KPiA+ID4gb25s
-eSB1c2VyIHlldDogd2UncmUganVzdCByZXNlcnZpbmcgYSByYW5kb20gSU9WQSByZWdpb24gZm9y
-IG1hcHBpbmcNCj4gPiBNU0lzLg0KPiA+ID4gSXQgaXMgaGFyZC1jb2RlZCBiZWNhdXNlIG9mIHRo
-ZSB3YXkgaW9tbXUtZG1hLmMgd29ya3MsIGJ1dCBJIGRvbid0DQo+ID4gcXVpdGUNCj4gPiA+IHJl
-bWVtYmVyIHdoeSB0aGF0IGFsbG9jYXRpb24gaXNuJ3QgZHluYW1pYy4NCj4gPg0KPiA+IFRoZSBo
-b3N0IGtlcm5lbCBuZWVkcyB0byBoYXZlICpzb21lKiBNU0kgcmVnaW9uIGluIHBsYWNlIGJlZm9y
-ZSB0aGUNCj4gPiBndWVzdCBjYW4gc3RhcnQgY29uZmlndXJpbmcgaW50ZXJydXB0cywgb3RoZXJ3
-aXNlIGl0IHdvbid0IGtub3cgd2hhdA0KPiA+IGFkZHJlc3MgdG8gZ2l2ZSB0byB0aGUgdW5kZXJs
-eWluZyBoYXJkd2FyZS4gSG93ZXZlciwgYXMgc29vbiBhcyB0aGUgaG9zdA0KPiA+IGtlcm5lbCBo
-YXMgcGlja2VkIGEgcmVnaW9uLCBob3N0IHVzZXJzcGFjZSBuZWVkcyB0byBrbm93IHRoYXQgaXQg
-Y2FuIG5vDQo+ID4gbG9uZ2VyIHVzZSBhZGRyZXNzZXMgaW4gdGhhdCByZWdpb24gZm9yIERNQS1h
-YmxlIGd1ZXN0IG1lbW9yeS4gSXQncyBhDQo+ID4gbG90IGVhc2llciB3aGVuIHRoZSBhZGRyZXNz
-IGlzIGZpeGVkIGluIGhhcmR3YXJlIGFuZCB0aGUgaG9zdCB1c2Vyc3BhY2UNCj4gPiB3aWxsIG5l
-dmVyIGJlIHN0dXBpZCBlbm91Z2ggdG8gdHJ5IGFuZCBWRklPX0lPTU1VX0RNQV9NQVAgaXQsIGJ1
-dCBpbg0KPiA+IHRoZQ0KPiA+IG1vcmUgZ2VuZXJhbCBjYXNlIHdoZXJlIE1TSSB3cml0ZXMgdW5k
-ZXJnbyBJT01NVSBhZGRyZXNzIHRyYW5zbGF0aW9uDQo+ID4gc28NCj4gPiBpdCdzIGFuIGFyYml0
-cmFyeSBJT1ZBLCB0aGlzIGhhcyB0aGUgcG90ZW50aWFsIHRvIGNvbmZsaWN0IHdpdGggc3R1ZmYN
-Cj4gPiBsaWtlIGd1ZXN0IG1lbW9yeSBob3RwbHVnLg0KPiA+DQo+ID4gV2hhdCB3ZSBjdXJyZW50
-bHkgaGF2ZSBpcyBqdXN0IHRoZSBzaW1wbGVzdCBvcHRpb24sIHdpdGggdGhlIGhvc3Qga2VybmVs
-DQo+ID4ganVzdCBwaWNraW5nIHNvbWV0aGluZyB1cC1mcm9udCBhbmQgcHJldGVuZGluZyB0byBo
-b3N0IHVzZXJzcGFjZSB0aGF0DQo+ID4gaXQncyBhIGZpeGVkIGhhcmR3YXJlIGFkZHJlc3MuIFRo
-ZXJlJ3MgY2VydGFpbmx5IHNjb3BlIGZvciBpdCB0byBiZSBhDQo+ID4gYml0IG1vcmUgZHluYW1p
-YyBpbiB0aGUgc2Vuc2Ugb2YgYWRkaW5nIGFuIGludGVyZmFjZSB0byBsZXQgdXNlcnNwYWNlDQo+
-ID4gbW92ZSBpdCBhcm91bmQgKGJlZm9yZSBhdHRhY2hpbmcgYW55IGRldmljZXMsIGF0IGxlYXN0
-KSwgYnV0IEkgZG9uJ3QNCj4gPiB0aGluayBpdCdzIGZlYXNpYmxlIGZvciB0aGUgaG9zdCBrZXJu
-ZWwgdG8gc2Vjb25kLWd1ZXNzIHVzZXJzcGFjZSBlbm91Z2gNCj4gPiB0byBtYWtlIGl0IGVudGly
-ZWx5IHRyYW5zcGFyZW50IGxpa2UgaXQgaXMgaW4gdGhlIERNQSBBUEkgZG9tYWluIGNhc2UuDQo+
-ID4NCj4gPiBPZiBjb3Vyc2UsIHRoYXQncyBhbGwgYXNzdW1pbmcgdGhlIGhvc3QgaXRzZWxmIGlz
-IHVzaW5nIGEgdmlydGlvLWlvbW11DQo+ID4gKGUuZy4gaW4gYSBuZXN0ZWQgdmlydCBvciBlbXVs
-YXRpb24gc2NlbmFyaW8pLiBXaGVuIGl0J3MgcHVyZWx5IHdpdGhpbiBhDQo+ID4gZ3Vlc3QgdGhl
-biBhbiBNU0kgcmVzZXJ2YXRpb24gc2hvdWxkbid0IG1hdHRlciBzbyBtdWNoLCBzaW5jZSB0aGUg
-Z3Vlc3QNCj4gPiB3b24ndCBiZSBhbnl3aGVyZSBuZWFyIHRoZSByZWFsIGhhcmR3YXJlIGNvbmZp
-Z3VyYXRpb24gYW55d2F5Lg0KPiA+DQo+ID4gUm9iaW4uDQo+IA0KPiBDdXJpb3VzIHNpbmNlIGFu
-eXdheSB3ZSBhcmUgZGVmaW5pbmcgYSBuZXcgaW9tbXUgYXJjaGl0ZWN0dXJlDQo+IGlzIGl0IHBv
-c3NpYmxlIHRvIGF2b2lkIHRob3NlIEFSTS1zcGVjaWZpYyBidXJkZW4gY29tcGxldGVseT8NCj4g
-DQoNCk9LLCBhZnRlciBzb21lIHN0dWR5IGFyb3VuZCB0aG9zZSB0cmlja3MgYmVsb3cgaXMgbXkg
-bGVhcm5pbmc6DQoNCi0gTVNJX0lPVkEgd2luZG93IGlzIHVzZWQgb25seSBvbiByZXF1ZXN0IChp
-b21tdV9kbWFfZ2V0DQpfbXNpX3BhZ2UpLCBub3QgbWVhbnQgdG8gdGFrZSBlZmZlY3Qgb24gYWxs
-IGFyY2hpdGVjdHVyZXMgb25jZSANCmluaXRpYWxpemVkLiBlLmcuIEFSTSBHSUMgZG9lcyBpdCBi
-dXQgbm90IHg4Ni4gU28gaXQgaXMgcmVhc29uYWJsZSANCmZvciB2aXJ0aW8taW9tbXUgZHJpdmVy
-IHRvIGltcGxlbWVudCBzdWNoIGNhcGFiaWxpdHk7DQoNCi0gSSB0aG91Z2h0IHdoZXRoZXIgaGFy
-ZHdhcmUgTVNJIGRvb3JiZWxsIGNhbiBiZSBhbHdheXMgcmVwb3J0ZWQNCm9uIHZpcnRpby1pb21t
-dSBzaW5jZSBpdCdzIG5ld2x5IGRlZmluZWQuIExvb2tzIHRoZXJlIGlzIGEgcHJvYmxlbQ0KaWYg
-dW5kZXJseWluZyBJT01NVSBpcyBzdy1tYW5hZ2VkIE1TSSBzdHlsZSAtIHZhbGlkIG1hcHBpbmcg
-aXMNCmV4cGVjdGVkIGluIGFsbCBsZXZlbCBvZiB0cmFuc2xhdGlvbnMsIG1lYW5pbmcgZ3Vlc3Qg
-aGFzIHRvIG1hbmFnZQ0Kc3RhZ2UtMSBtYXBwaW5nIGluIG5lc3RlZCBjb25maWd1cmF0aW9uIHNp
-bmNlIHN0YWdlLTEgaXMgb3duZWQNCmJ5IGd1ZXN0LiANCg0KVGhlbiB2aXJ0aW8taW9tbXUgaXMg
-bmF0dXJhbGx5IGV4cGVjdGVkIHRvIHJlcG9ydCB0aGUgc2FtZSBNU0kgDQptb2RlbCBhcyBzdXBw
-b3J0ZWQgYnkgdW5kZXJseWluZyBoYXJkd2FyZS4gQmVsb3cgYXJlIHNvbWUNCmZ1cnRoZXIgdGhv
-dWdodHMgYWxvbmcgdGhpcyByb3V0ZSAodXNlICdJT01NVScgdG8gcmVwcmVzZW50IHRoZQ0KcGh5
-c2ljYWwgb25lIGFuZCAndmlydGlvLWlvbW11JyBmb3IgdmlydHVhbCBvbmUpOg0KDQotLS0tDQoN
-CkluIHRoZSBzY29wZSBvZiBjdXJyZW50IHZpcnRpby1pb21tdSBzcGVjIHYuNiwgdGhlcmUgaXMg
-bm8gbmVzdGVkDQpjb25zaWRlcmF0aW9uIHlldC4gR3Vlc3QgZHJpdmVyIGlzIGV4cGVjdGVkIHRv
-IHVzZSBNQVAvVU5NQVANCmludGVyZmFjZSBvbiBhc3NpZ25lZCBlbmRwb2ludHMuIEluIHRoaXMg
-Y2FzZSB0aGUgTUFQIHJlcXVlc3RzDQooSU9WQS0+R1BBKSBpcyBjYXVnaHQgYW5kIG1haW50YWlu
-ZWQgd2l0aGluIFFlbXUgd2hpY2ggdGhlbiANCmZ1cnRoZXIgdGFsa3MgdG8gVkZJTyB0byBtYXAg
-SU9WQS0+SFBBIGluIElPTU1VLg0KDQpRZW11IGNhbiBsZWFybiB0aGUgTVNJIG1vZGVsIG9mIElP
-TU1VIGZyb20gc3lzZnMuDQoNCkZvciBoYXJkd2FyZSBNU0kgZG9vcmJlbGwgKHg4NiBhbmQgc29t
-ZSBBUk0pOg0KKiBIb3N0IGtlcm5lbCByZXBvcnRzIHRvIFFlbXUgYXMgSU9NTVVfUkVTVl9NU0kN
-CiogUWVtdSByZXBvcnQgdG8gZ3Vlc3QgYXMgVklSVElPX0lPTU1VX1JFU1ZfTUVNX1RfTVNJDQoq
-IEd1ZXN0IHRha2VzIHRoZSByYW5nZSBhcyBJT01NVV9SRVNWX01TSS4gcmVzZXJ2ZWQNCiogUWVt
-dSBNQVAgZGF0YWJhc2UgaGFzIG5vIG1hcHBpbmcgZm9yIHRoZSBkb29yYmVsbA0KKiBQaHlzaWNh
-bCBJT01NVSBwYWdlIHRhYmxlIGhhcyBubyBtYXBwaW5nIGZvciB0aGUgZG9vcmJlbGwNCiogTVNJ
-IGZyb20gcGFzc3Rocm91Z2ggZGV2aWNlIGJ5cGFzcyBJT01NVQ0KKiBNU0kgZnJvbSBlbXVsYXRl
-ZCBkZXZpY2UgYnlwYXNzIHZpcnRpby1pb21tdQ0KDQpGb3Igc29mdHdhcmUgTVNJIGRvb3JiZWxs
-IChtb3N0IEFSTSk6DQoqIEhvc3Qga2VybmVsIHJlcG9ydHMgdG8gUWVtdSBhcyBJT01NVV9SRVNW
-X1NXX01TSQ0KKiBRZW11IHJlcG9ydCB0byBndWVzdCBhcyBWSVJUSU9fSU9NTVVfUkVTVl9NRU1f
-VF9SRVNFUlZFRA0KKiBHdWVzdCB0YWtlcyB0aGUgcmFuZ2UgYXMgSU9NTVVfUkVTVl9SRVNFUlZF
-RA0KKiB2R0lDIHJlcXVlc3RzIHRvIG1hcCAnR1BBIG9mIHRoZSB2aXJ0dWFsIGRvb3JiZWxsJw0K
-KiBhIG1hcCByZXF1ZXN0IChJT1ZBLT5HUEEpIHNlbnQgb24gZW5kcG9pbnQNCiogUWVtdSBtYWlu
-dGFpbnMgdGhlIG1hcHBpbmcgaW4gTUFQIGRhdGFiYXNlDQoJKiBidXQgbm8gVkZJT19NQVAgcmVx
-dWVzdCBzaW5jZSBpdCdzIHB1cmVseSB2aXJ0dWFsDQoqIEdJQyByZXF1ZXN0cyB0byBtYXAgJ0hQ
-QSBvZiB0aGUgcGh5c2ljYWwgZG9vcmJlbGwnDQoJKiBlLmcuIHRyaWdnZXJlZCBieSBWRklPIGVu
-YWJsZSBtc2kNCiogSU9NTVUgbm93IGluY2x1ZGVzIGEgdmFsaWQgbWFwcGluZyAoSU9WQS0+SFBB
-KQ0KKiBNU0kgZnJvbSBlbXVsYXRlZCBkZXZpY2UgZ28gdGhyb3VnaCBRZW11IE1BUA0KZGF0YWJh
-c2UgKElPVkEtPidHUEEgb2YgdmlydHVhbCBkb29yYmVsbCcpIGFuZCB0aGVuIGhpdCB2R0lDDQoq
-IE1TSSBmcm9tIHBhc3N0aHJvdWdoIGRldmljZSBnbyB0aHJvdWdoIElPTU1VDQooSU9WQS0+J0hQ
-QSBvZiBwaHlzaWNhbCBkb29yYmVsbCcpIGFuZCB0aGVuIGhpdCBHSUMNCg0KSW4gdGhpcyBjYXNl
-LCBob3N0IGRvb3JiZWxsIGlzIHRyZWF0ZWQgYXMgcmVzZXJ2ZWQgcmVzb3VyY2UgaW4NCmd1ZXN0
-IHNpZGUuIEd1ZXN0IGhhcyBpdHMgb3duIHN3LW1hbmFnZW1lbnQgZm9yIHZpcnR1YWwNCmRvb3Ji
-ZWxsIHdoaWNoIGlzIG9ubHkgdXNlZCBmb3IgZW11bGF0ZWQgZGV2aWNlLiB0d28gcGF0aHMgDQph
-cmUgY29tcGxldGVseSBzZXBhcmF0ZWQuDQoNCklmIGFib3ZlIGNhcHR1cmVzIHRoZSByaWdodCBm
-bG93LCBjdXJyZW50IHYwLjYgc3BlYyBpcyBjb21wbGV0ZQ0KcmVnYXJkaW5nIHRvIHJlcXVpcmVk
-IGZ1bmN0aW9uIGRlZmluaXRpb24uDQoNCi0tLS0NCg0KVGhlbiBjb21lcyBuZXN0ZWQgY2FzZSwg
-d2l0aCB0d28gbGV2ZWwgcGFnZSB0YWJsZXMgKHN0YWdlLTENCmFuZCBzdGFnZS0yKSBpbiBJT01N
-VS4gc3RhZ2UtMSBpcyBmb3IgSU9WQS0+R1BBIGFuZCBzdGFnZS0yDQppcyBmb3IgR1BBLT5IUEEu
-IFZGSU8gbWFwL3VubWFwIGhhcHBlbnMgb24gc3RhZ2UtMiwgDQp3aGlsZSBzdGFnZS0xIGlzIGRp
-cmVjdGx5IG1hbmFnZWQgYnkgZ3Vlc3QgKGFuZCBib3VuZCB0bw0KSU9NTVUgd2hpY2ggZW5hYmxl
-cyBuZXN0ZWQgdHJhbnNsYXRpb24gZnJvbSBJT1ZBLT5HUEENCi0+SFBBKS4NCg0KRm9yIGhhcmR3
-YXJlIE1TSSwgdGhlcmUgaXMgbm90aGluZyBzcGVjaWFsIGNvbXBhcmVkIHRvDQpwcmV2aW91cyBy
-ZXF1aXJlbWVudC4gQm90aCBob3N0L2d1ZXN0IHRyZWF0IHRoZSBkb29yYmVsbA0KYXMgcmVzZXJ2
-ZWQgYW5kIGd1YXJhbnRlZSBubyBtYXBwaW5nIGluIGVpdGhlciBzdGFnZS0xIG9yIA0Kc3RhZ2Ut
-Mi4gDQoNCkZvciBzb2Z0d2FyZSBNU0ksIG1vcmUgY29uc2lkZXJhdGlvbiBpcyByZXF1aXJlZDoN
-Cg0KKiBmb3IgZW11bGF0ZWQgZGV2aWNlIGl0IGlzIGp1c3QgZmluZSBhcyBsb25nIGFzIGd1ZXN0
-IGtlZXBzDQpJT1ZBLT4nR1BBIG9mIHZpcnR1YWwgZG9vcmJlbGwnIGluIHN0YWdlLTEuIFFlbXUg
-aXMgZXhwZWN0ZWQNCnRvIHdhbGsgc3RhZ2UtMSBwYWdlIHRhYmxlIHVwb24gTVNJIHJlcXVlc3Qg
-ZnJvbSBlbXVsYXRlZA0KZGV2aWNlIHRvIGhpdCB2R0lDOw0KDQoqIGZvciBwYXNzdGhyb3VnaCBk
-ZXZpY2UgaG93ZXZlciB0aGVyZSBpcyBhIHByb2JsZW0uIFdlDQpuZWVkIHZhbGlkIG1hcHBpbmcg
-aW4gYm90aCBzdGFnZS0xIGFuZCBzdGFnZS0yLCB3aGlsZSBob3N0DQprZXJuZWwgaXMgb25seSBy
-ZXNwb25zaWJsZSBmb3Igc3RhZ2UtMjoNCg0KCTEpIGlmIHdlIGV4cGVjdCB0byBrZWVwIHNhbWUg
-aXNvbGF0aW9uIHBvbGljeSAoaS5lLg0KaG9zdCBNU0kgZnVsbHkgbWFuYWdlZCBieSBob3N0IGtl
-cm5lbCksIHRoZW4gYW4gaWRlbnRpdHkNCm1hcHBpbmcgZm9yIGhvc3QtcmVwb3J0ZWQgTVNJIHJh
-bmdlIGlzIGV4cGVjdGVkIGluIHN0YWdlLTEuDQpJbiBzdWNoIGNhc2Ugd2UgbmVlZCBhIG5ldyB0
-eXBlIFZJUlRJT19JT01NVV9SRVNWXw0KTUVNX1RfRElSRUNUIHRvIHRlYWNoIGd1ZXN0IHNldHVw
-IGlkZW50aXR5IG1hcHBpbmcuDQppdCBzaG91bGQgYmUgdGhlIHJpZ2h0IHRoaW5nIHRvIGFkZCBz
-aW5jZSBhbnl3YXkgdGhlcmUgbWlnaHQNCmJlIHRydWUgSU9NTVVfUkVTVl9ESVJFQ1QgcmFuZ2Ug
-cmVwb3J0ZWQgZnJvbSBob3N0DQp3aGljaCBhbHNvIHNob3VsZCBiZSBoYW5kbGVkLg0KDQoJMikg
-QWx0ZXJuYXRpdmVseSB3ZSBjb3VsZCBpbnN0ZWFkIGFsbG93IFFlbXUgdG8NCnJlcXVlc3QgZHlu
-YW1pYyBjaGFuZ2Ugb2YgcGh5c2ljYWwgZG9vcmJlbGwgbWFwcGluZyBpbiANCnN0YWdlMiwgZS5n
-LiBmcm9tIEdQQSBvZiB2aXJ0dWFsIGRvb3JiZWxsIHRvIEhQQSBvZiBwaHlzaWNhbCANCmRvb3Ji
-ZWxsLiBCdXQgaXQgZG9lc24ndCBsaWtlIGEgZ29vZCBkZXNpZ24gLSBWRklPIGRvZXNuJ3QNCmFz
-c2lnbiBpbnRlcnJ1cHQgY29udHJvbGxlciB0byB1c2VyIHNwYWNlIHRoZW4gd2h5IHNob3VsZCAN
-ClZGSU8gYWxsb3cgdXNlciBtYXBwaW5nIHRvIGRvb3JiZWxsLi4uDQoNCmlmIDEpIGlzIGFncmVl
-ZCwgbG9va3MgdGhlIG1pc3NpbmcgcGFydCBpbiBzcGVjIGlzIGp1c3QgVklSVElPXw0KSU9NTVVf
-UkVTVl9NRU1fVF9ESVJFQ1QsIHRob3VnaCB0aGUgd2hvbGUgc3RvcnkgDQppcyBsZW5ndGh5IGFu
-ZCBmdWxseSBlbmFibGluZyBuZXN0ZWQgcmVxdWlyZSBtYW55IG90aGVyDQp3b3Jrcy4gOi0pDQoN
-ClRoYW5rcw0KS2V2aW4NCg0K
+This patch series is separated from the previous "Virtio-balloon
+Enhancement" series. The new feature, VIRTIO_BALLOON_F_FREE_PAGE_HINT,  
+implemented by this series enables the virtio-balloon driver to report
+hints of guest free pages to the host. It can be used to accelerate live
+migration of VMs. Here is an introduction of this usage:
+
+Live migration needs to transfer the VM's memory from the source machine
+to the destination round by round. For the 1st round, all the VM's memory
+is transferred. From the 2nd round, only the pieces of memory that were
+written by the guest (after the 1st round) are transferred. One method
+that is popularly used by the hypervisor to track which part of memory is
+written is to write-protect all the guest memory.
+
+This feature enables the optimization by skipping the transfer of guest
+free pages during VM live migration. It is not concerned that the memory
+pages are used after they are given to the hypervisor as a hint of the
+free pages, because they will be tracked by the hypervisor and transferred
+in the subsequent round if they are used and written.
+
+* Tests
+- Test Environment
+    Host: Intel(R) Xeon(R) CPU E5-2699 v4 @ 2.20GHz
+    Guest: 8G RAM, 4 vCPU
+    Migration setup: migrate_set_speed 100G, migrate_set_downtime 2 second
+
+- Test Results
+    - Idle Guest Live Migration Time (results are averaged over 10 runs)
+        - Optimization v.s. Legacy = 261ms vs 1769ms --> ~86% reduction
+    - Guest with Linux Compilation Workload (make bzImage -j4):
+        - Live Migration Time (average)
+          Optimization v.s. Legacy = 1260ms v.s. 2634ms --> ~51% reduction
+        - Linux Compilation Time
+          Optimization v.s. Legacy = 4min58s v.s. 5min3s
+          --> no obvious difference
+
+ChangeLog:
+v28->v29:
+    - mm/page_poison: only expose page_poison_enabled(), rather than more
+      changes did in v28, as we are not 100% confident about that for now.
+    - virtio-balloon: use a separate buffer for the stop cmd, instead of
+      having the start and stop cmd use the same buffer. This avoids the
+      corner case that the start cmd is overridden by the stop cmd when
+      the host has a delay in reading the start cmd.
+v27->v28:
+    - mm/page_poison: Move PAGE_POISON to page_poison.c and add a function
+      to expose page poison val to kernel modules.
+v26->v27:
+    - add a new patch to expose page_poisoning_enabled to kernel modules
+    - virtio-balloon: set poison_val to 0xaaaaaaaa, instead of 0xaa
+v25->v26: virtio-balloon changes only
+    - remove kicking free page vq since the host now polls the vq after
+      initiating the reporting
+    - report_free_page_func: detach all the used buffers after sending
+      the stop cmd id. This avoids leaving the detaching burden (i.e.
+      overhead) to the next cmd id. Detaching here isn't considered
+      overhead since the stop cmd id has been sent, and host has already
+      moved formard.
+v24->v25:
+    - mm: change walk_free_mem_block to return 0 (instead of true) on
+          completing the report, and return a non-zero value from the
+          callabck, which stops the reporting.
+    - virtio-balloon:
+        - use enum instead of define for VIRTIO_BALLOON_VQ_INFLATE etc.
+        - avoid __virtio_clear_bit when bailing out;
+        - a new method to avoid reporting the some cmd id to host twice
+        - destroy_workqueue can cancel free page work when the feature is
+          negotiated;
+        - fail probe when the free page vq size is less than 2.
+v23->v24:
+    - change feature name VIRTIO_BALLOON_F_FREE_PAGE_VQ to
+      VIRTIO_BALLOON_F_FREE_PAGE_HINT
+    - kick when vq->num_free < half full, instead of "= half full"
+    - replace BUG_ON with bailing out
+    - check vb->balloon_wq in probe(), if null, bail out
+    - add a new feature bit for page poisoning
+    - solve the corner case that one cmd id being sent to host twice
+v22->v23:
+    - change to kick the device when the vq is half-way full;
+    - open-code batch_free_page_sg into add_one_sg;
+    - change cmd_id from "uint32_t" to "__virtio32";
+    - reserver one entry in the vq for the driver to send cmd_id, instead
+      of busywaiting for an available entry;
+    - add "stop_update" check before queue_work for prudence purpose for
+      now, will have a separate patch to discuss this flag check later;
+    - init_vqs: change to put some variables on stack to have simpler
+      implementation;
+    - add destroy_workqueue(vb->balloon_wq);
+
+v21->v22:
+    - add_one_sg: some code and comment re-arrangement
+    - send_cmd_id: handle a cornercase
+
+For previous ChangeLog, please reference
+https://lwn.net/Articles/743660/
+
+Wei Wang (4):
+  mm: support reporting free page blocks
+  virtio-balloon: VIRTIO_BALLOON_F_FREE_PAGE_HINT
+  mm/page_poison: expose page_poisoning_enabled to kernel modules
+  virtio-balloon: VIRTIO_BALLOON_F_PAGE_POISON
+
+ drivers/virtio/virtio_balloon.c     | 267 +++++++++++++++++++++++++++++++-----
+ include/linux/mm.h                  |   6 +
+ include/uapi/linux/virtio_balloon.h |   7 +
+ mm/page_alloc.c                     |  96 +++++++++++++
+ mm/page_poison.c                    |   6 +
+ 5 files changed, 346 insertions(+), 36 deletions(-)
+
+-- 
+2.7.4
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
