@@ -1,102 +1,126 @@
-Return-Path: virtio-dev-return-3671-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3659-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 4D5561CB80EF
-	for <virtio-dev@lists.oasis-open.org>; Wed, 28 Mar 2018 21:16:26 -0700 (PDT)
-Date: Thu, 29 Mar 2018 07:16:14 +0300
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20180329071003-mutt-send-email-mst@kernel.org>
-References: <20180319071537.28649-1-tiwei.bie@intel.com>
- <20180322181952-mutt-send-email-mst@kernel.org>
- <20180328122407.gc6yba26gijlm5g6@debian>
- <20180328183159-mutt-send-email-mst@kernel.org>
- <20180329033329.ucnx34nzimgec7pp@debian>
+	by lists.oasis-open.org (Postfix) with ESMTP id 78C431CB8080
+	for <virtio-dev@lists.oasis-open.org>; Tue, 27 Mar 2018 16:01:03 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20180329033329.ucnx34nzimgec7pp@debian>
-Subject: Re: [virtio-dev] Re: [PATCH v2 0/6] Extend vhost-user to support
- VFIO based accelerators
-To: Tiwei Bie <tiwei.bie@intel.com>
-Cc: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, alex.williamson@redhat.com, jasowang@redhat.com, pbonzini@redhat.com, stefanha@redhat.com, cunming.liang@intel.com, dan.daly@intel.com, jianfeng.tan@intel.com, zhihong.wang@intel.com, xiao.w.wang@intel.com
+From: Alexander Duyck <alexander.duyck@gmail.com>
+Date: Tue, 27 Mar 2018 16:00:51 -0700
+Message-ID: <CAKgT0Ude4C774sB22XG08-YoJ-4uSEB45b-RcM+eNnhyfuyQnw@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: [virtio-dev] Re: [pci PATCH v7 0/5] Add support for unmanaged SR-IOV
+To: Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org
+Cc: "Duyck, Alexander H" <alexander.h.duyck@intel.com>, virtio-dev@lists.oasis-open.org, kvm@vger.kernel.org, Netdev <netdev@vger.kernel.org>, "Daly, Dan" <dan.daly@intel.com>, LKML <linux-kernel@vger.kernel.org>, linux-nvme@lists.infradead.org, Keith Busch <keith.busch@intel.com>, netanel@amazon.com, Maximilian Heyne <mheyne@amazon.de>, "Wang, Liang-min" <liang-min.wang@intel.com>, "Rustad, Mark D" <mark.d.rustad@intel.com>, David Woodhouse <dwmw2@infradead.org>, Christoph Hellwig <hch@lst.de>, dwmw@amazon.co.uk, Don Dutile <ddutile@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Thu, Mar 29, 2018 at 11:33:29AM +0800, Tiwei Bie wrote:
-> On Wed, Mar 28, 2018 at 06:33:01PM +0300, Michael S. Tsirkin wrote:
-> > On Wed, Mar 28, 2018 at 08:24:07PM +0800, Tiwei Bie wrote:
-> > > > > Update notes
-> > > > > ============
-> > > > > 
-> > > > > IOMMU feature bit check is removed in this version, because:
-> > > > > 
-> > > > > The IOMMU feature is negotiable, when an accelerator is used and
-> > > > > it doesn't support virtual IOMMU, its driver just won't provide
-> > > > > this feature bit when vhost library querying its features. And if
-> > > > > it supports the virtual IOMMU, its driver can provide this feature
-> > > > > bit. It's not reasonable to add this limitation in this patch set.
-> > > > 
-> > > > Fair enough. Still:
-> > > > Can hardware on intel platforms actually support IOTLB requests?
-> > > > Don't you need to add support for vIOMMU shadowing instead?
-> > > > 
-> > > 
-> > > For the hardware I have, I guess they can't for now.
-> > 
-> > So VFIO in QEMU has support for vIOMMU shadowing.
-> > Can you use that somehow?
-> 
-> Yeah, I guess we can use it in some way. Actually supporting
-> vIOMMU is a quite interesting feature. It would provide
-> better security, and for the hardware backend case there
-> would be no performance penalty with static mapping after
-> the backend got all the mappings. I think it could be done
-> as another work. Based on your previous suggestion in this
-> thread, I have split the guest notification offload and host
-> notification offload (I'll send the new version very soon).
-> And I plan to let this patch set just focus on fixing the
-> most critical performance issue - the host notification offload.
-> With this fix, using hardware backend in vhost-user could get
-> a very big performance boost and become much more practicable.
-> So maybe we can focus on fixing this critical performance issue
-> first. How do you think?
+On Fri, Mar 16, 2018 at 2:42 PM, Don Dutile <ddutile@redhat.com> wrote:
+> On 03/15/2018 02:40 PM, Alexander Duyck wrote:
+>>
+>> This series is meant to add support for SR-IOV on devices when the VFs are
+>> not managed by the kernel. Examples of recent patches attempting to do
+>> this
+>> include:
+>> virto - https://patchwork.kernel.org/patch/10241225/
+>> pci-stub - https://patchwork.kernel.org/patch/10109935/
+>> vfio - https://patchwork.kernel.org/patch/10103353/
+>> uio - https://patchwork.kernel.org/patch/9974031/
+>>
+>> Since this is quickly blowing up into a multi-driver problem it is
+>> probably
+>> best to implement this solution as generically as possible.
+>>
+>> This series is an attempt to do that. What we do with this patch set is
+>> provide a generic framework to enable SR-IOV in the case that the PF
+>> driver
+>> doesn't support managing the VFs itself.
+>>
+>> I based my patch set originally on the patch by Mark Rustad but there
+>> isn't
+>> much left after going through and cleaning out the bits that were no
+>> longer
+>> needed, and after incorporating the feedback from David Miller. At this
+>> point
+>> the only items to be fully reused was his patch description which is now
+>> present in patch 3 of the set.
+>>
+>> This solution is limited in scope to just adding support for devices that
+>> provide no functionality for SR-IOV other than allocating the VFs by
+>> calling pci_enable_sriov. Previous sets had included patches for VFIO, but
+>> for now I am dropping that as the scope of that work is larger then I
+>> think I can take on at this time.
+>>
+>> v2: Reduced scope back to just virtio_pci and vfio-pci
+>>      Broke into 3 patch set from single patch
+>>      Changed autoprobe behavior to always set when num_vfs is set non-zero
+>> v3: Updated Documentation to clarify when sriov_unmanaged_autoprobe is
+>> used
+>>      Wrapped vfio_pci_sriov_configure to fix build errors w/o SR-IOV in
+>> kernel
+>> v4: Dropped vfio-pci patch
+>>      Added ena and nvme to drivers now using pci_sriov_configure_unmanaged
+>>      Dropped pci_disable_sriov call in virtio_pci to be consistent with
+>> ena
+>> v5: Dropped sriov_unmanaged_autoprobe and pci_sriov_conifgure_unmanaged
+>>      Added new patch that enables pci_sriov_configure_simple
+>>      Updated drivers to use pci_sriov_configure_simple
+>> v6: Defined pci_sriov_configure_simple as NULL when SR-IOV is not enabled
+>>      Updated drivers to drop "#ifdef" checks for IOV
+>>      Added pci-pf-stub as place for PF-only drivers to add support
+>> v7: Dropped pci_id table explanation from pci-pf-stub driver
+>>      Updated pci_sriov_configure_simple to drop need for err value
+>>      Fixed comment explaining why pci_sriov_configure_simple is NULL
+>>
+>> Cc: Mark Rustad <mark.d.rustad@intel.com>
+>> Cc: Maximilian Heyne <mheyne@amazon.de>
+>> Cc: Liang-Min Wang <liang-min.wang@intel.com>
+>> Cc: David Woodhouse <dwmw@amazon.co.uk>
+>>
+>> ---
+>>
+>> Alexander Duyck (5):
+>>        pci: Add pci_sriov_configure_simple for PFs that don't manage VF
+>> resources
+>>        virtio_pci: Add support for unmanaged SR-IOV on virtio_pci devices
+>>        ena: Migrate over to unmanaged SR-IOV support
+>>        nvme: Migrate over to unmanaged SR-IOV support
+>>        pci-pf-stub: Add PF driver stub for PFs that function only to
+>> enable VFs
+>>
+>>
+>>   drivers/net/ethernet/amazon/ena/ena_netdev.c |   28 -------------
+>>   drivers/nvme/host/pci.c                      |   20 ----------
+>>   drivers/pci/Kconfig                          |   12 ++++++
+>>   drivers/pci/Makefile                         |    2 +
+>>   drivers/pci/iov.c                            |   31 +++++++++++++++
+>>   drivers/pci/pci-pf-stub.c                    |   54
+>> ++++++++++++++++++++++++++
+>>   drivers/virtio/virtio_pci_common.c           |    1
+>>   include/linux/pci.h                          |    3 +
+>>   include/linux/pci_ids.h                      |    2 +
+>>   9 files changed, 107 insertions(+), 46 deletions(-)
+>>   create mode 100644 drivers/pci/pci-pf-stub.c
+>>
+>> --
+>>
+> For what it's worth.
+>
+> Good, simpler start for this type of support/effort.
+> Thanks for the multiple versions to get to this point.
+>
+> Reviewed-by: Donald Dutile <ddutile@redhat.com>
 
-I think correctness and security go first before performance.
-vIOMMU goes under security.
+Any issues with getting this pulled into the linux-pci tree? When I
+submitted these that was the original target for this set, or do I
+need to look at breaking them up and/or submitting them submitted
+somewhere else?
 
-> > 
-> > Ability to run dpdk within guest seems important.
-> 
-> I think vIOMMU isn't a must to run DPDK in guest.
+Thanks.
 
-Oh yes it is.
-
-> For Linux
-> guest we also have igb_uio and uio_pci_generic to run DPDK,
-> for FreeBSD guest we have nic_uio.
-
-These hacks offer no protection from a buggy userspace corrupting guest
-kernel memory. Given DPDK is routinely linked into closed source
-applications, this is not a configuration anyone can support.
-
-
-> They don't need vIOMMU,
-> and they could offer the best performance.
-> 
-> Best regards,
-> Tiwei Bie
-> 
-> > 
-> > -- 
-> > MST
-> > 
-> > ---------------------------------------------------------------------
-> > To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> > For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
-> > 
+- Alex
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
