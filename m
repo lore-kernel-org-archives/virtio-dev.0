@@ -1,148 +1,247 @@
-Return-Path: virtio-dev-return-3628-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 332F25818FBB
-	for <virtio-dev@lists.oasis-open.org>; Thu, 22 Mar 2018 02:44:26 -0700 (PDT)
-From: "Tian, Kevin" <kevin.tian@intel.com>
-Date: Thu, 22 Mar 2018 09:44:12 +0000
-Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D19108DBDD@SHSMSX101.ccr.corp.intel.com>
-References: <20180206181106.21815-1-jean-philippe.brucker@arm.com>
- <AADFC41AFE54684AB9EE6CBC0274A5D191085A76@SHSMSX101.ccr.corp.intel.com>
- <3575fbb8-36a9-ef38-8234-6adf6a573b3e@arm.com>
-In-Reply-To: <3575fbb8-36a9-ef38-8234-6adf6a573b3e@arm.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Return-Path: virtio-return-3028-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio@lists.oasis-open.org>
+List-Post: <mailto:virtio@lists.oasis-open.org>
+List-Help: <mailto:virtio-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
+Date: Tue, 27 Mar 2018 19:37:22 +0300
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <1522168507-58698-1-git-send-email-mst@redhat.com>
 MIME-Version: 1.0
-Subject: RE: [virtio-dev] [RFC] virtio-iommu version 0.6
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>
-Cc: "eric.auger@redhat.com" <eric.auger@redhat.com>, "bharat.bhushan@nxp.com" <bharat.bhushan@nxp.com>, "eric.auger.pro@gmail.com" <eric.auger.pro@gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Subject: [virtio] [PATCH v12] VIRTIO_F_NOTIFICATION_DATA: extra data to devices
+To: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+Cc: Cornelia Huck <cohuck@redhat.com>, Halil Pasic <pasic@linux.vnet.ibm.com>, Tiwei Bie <tiwei.bie@intel.com>, Stefan Hajnoczi <stefanha@redhat.com>, "Dhanoa, Kully" <kully.dhanoa@intel.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-PiBGcm9tOiBKZWFuLVBoaWxpcHBlIEJydWNrZXIgW21haWx0bzpqZWFuLXBoaWxpcHBlLmJydWNr
-ZXJAYXJtLmNvbV0NCj4gU2VudDogV2VkbmVzZGF5LCBNYXJjaCAyMSwgMjAxOCA5OjE0IFBNDQo+
-IA0KPiBIaSBLZXZpbiwNCj4gDQo+IFRoYW5rcyBmb3IgdGhlIGNvbW1lbnRzDQo+IA0KPiBPbiAx
-OS8wMy8xOCAxMDowMywgVGlhbiwgS2V2aW4gd3JvdGU6DQo+ID4gQllQQVNTIGZlYXR1cmUgYml0
-IGlzIG5vdCBjb3ZlcmVkIGluICIyLjMuMS8yLjMuMi8yLjMuMyIiLiBJcyBpdA0KPiA+IGludGVu
-ZGVkPw0KPiANCj4gSW4gbXkgb3BpbmlvbiBCWVBBU1MgaXMgYSBiaXQgZGlmZmVyZW50IGZyb20g
-dGhlIG90aGVyIGZlYXR1cmVzOiB3aGlsZSB0aGUNCj4gb3RoZXJzIGFyZSBuZWVkZWQgZm9yIGNv
-cnJlY3RuZXNzLCB0aGlzIG9uZSBpcyBvcHRpb25hbCBhbmQgZXZlbiBpZiB0aGUNCj4gZ3Vlc3Qg
-c3VwcG9ydHMgQllQQVNTLCBpdCBzaG91bGQgYmUgYWxsb3dlZCBub3QgdG8gYWNjZXB0IGl0LiBG
-b3Igc2VjdXJpdHkNCj4gcmVhc29ucyBpdCBtYXkgbm90IHdhbnQgdG8gbGV0IGVuZHBvaW50cyBh
-Y2Nlc3MgdGhlIHdob2xlIGd1ZXN0LXBoeXNpY2FsDQo+IGFkZHJlc3Mgc3BhY2UuDQoNCm9rLCBw
-b3NzaWJseSBiZWNhdXNlIEknbSBub3QgZmFtaWxpYXIgd2l0aCB2aXJ0aW8gc3BlYyBjb252ZW50
-aW9uLg0KTXkgb3JpZ2luYWwgZmVlbGluZyBpcyB0aGF0IGVhY2ggZmVhdHVyZSBiaXQgd2lsbCBo
-YXZlIGEgYmVoYXZpb3INCmRlc2NyaXB0aW9uIHJlZ2FyZGluZyB0byB3aGV0aGVyIGRldmljZSBy
-ZXBvcnRzIGFuZCB3aGV0aGVyIA0KZHJpdmVyIGFjY2VwdHMuIElmIG5vIG5lZWQgdG8gY292ZXIg
-b3B0aW9uYWwgZmVhdHVyZSwgdGhlbiBpdCdzIGZpbmUNCnRvIG1lLiA6LSkNCg0KPiANCj4gPiAt
-LTIuNi4yIERldmljZSBSZXF1aXJlbWVudHM6IERldmljZSBvcGVyYXRpb25zLS0NCj4gPg0KPiA+
-ICJJZiB0aGUgVklSVElPX0lPTU1VX0ZfSU5QVVRfUkFOR0UgZmVhdHVyZSBpcyBv76yAZXJlZCwN
-Cj4gPiB0aGUgZGV2aWNlIE1VU1QgdHJ1bmNhdGUgdGhlIHJhbmdlIGRlc2NyaWJlZCBieSB2aXJ0
-X3N0YXJ0DQo+ID4gYW5kIHZpcnRfZW5kIGluIHJlcXVlc3RzIHRvIGZ0IGluIHRoZSByYW5nZSBk
-ZXNjcmliZWQgYnkNCj4gPiBpbnB1dF9yYW5nZS4iDQo+ID4NCj4gPiAiSWYgdGhlIFZJUlRJT19J
-T01NVV9GX0RPTUFJTl9CSVRTIGlzIG/vrIBlcmVkLCB0aGUgZGV2aWNlDQo+ID4gTVVTVCBpZ25v
-cmUgYml0cyBhYm92ZSBkb21haW5fYml0cyBpbiBmaWVsZCBkb21haW4gb2YgcmVxdWVzdHMuIg0K
-PiA+DQo+ID4gc2hvdWxkbid0IGRldmljZSByZXR1cm4gZXJyb3IgdXBvbiBhYm92ZSBzaXR1YXRp
-b24gaW5zdGVhZA0KPiA+IG9mIGNvbnRpbnVpbmcgb3BlcmF0aW9uIHdpdGggbW9kaWZpZWQgdmFs
-dWU/DQo+IA0KPiBUaGUgaW50ZW50IHdhcyB0byBhbGxvdyBkZXZpY2UgYW5kIGRyaXZlciB0byBw
-YXNzIG1ldGFkYXRhIGluIHRoZSB0b3AgYml0cw0KPiBvZiBwb2ludGVycyBhbmQgZG9tYWluIElE
-cywgcGVyaGFwcyBmb3IgYSBmdXR1cmUgZXh0ZW5zaW9uIG9yIGZvcg0KPiBkZWJ1Z2dpbmcuIEkn
-bSBub3QgY29udmluY2VkIGl0J3MgdXNlZnVsIGFueW1vcmUgKGFuZCBkbyB3b25kZXIgd2hhdCBt
-eQ0KPiBpbml0aWFsIHJlYXNvbmluZyB3YXMuLi4pIFN1Y2ggZXh0ZW5zaW9uIHdvdWxkIGJlIGRl
-dGVybWluZWQgYnkgYSBuZXcNCj4gZmVhdHVyZSBiaXQgYW5kIHRoZSBkZXZpY2Ugd291bGQga25v
-dyB0aGF0IHRoZSBmaWVsZHMgY29udGFpbiBhZGRpdGlvbmFsDQo+IGluZm8sIGlmIHRoZSBkcml2
-ZXIgYWNjZXB0ZWQgdGhhdCBmZWF0dXJlLg0KPiANCj4gPiAtLTIuNi40IERFVEFDSCByZXF1ZXN0
-LS0NCj4gPg0KPiA+ICIgRGV0YWNoIGFuIGVuZHBvaW50IGZyb20gaXRzIGRvbWFpbi4gV2hlbiB0
-aGlzIHJlcXVlc3QNCj4gPiBjb21wbGV0ZXMsIHRoZSBlbmRwb2ludCBjYW5ub3QgYWNjZXNzIGFu
-eSBtYXBwaW5nIGZyb20gdGhhdA0KPiA+IGRvbWFpbiBhbnltb3JlICINCj4gPg0KPiA+IERvZXMg
-aXQgbWFrZSBzZW5zZSB0byBtZW50aW9uIEJZUEFTUyBzaXR1YXRpb24gdXBvbiB0aGlzIHJlcXVl
-c3Q/DQo+IA0KPiBTdXJlLCBJJ2xsIGFkZCBzb21ldGhpbmcgdG8gY2xhcmlmeSB0aGF0IHNpdHVh
-dGlvbg0KPiANCj4gPiAtLTIuNi44LjIgUHJvcGVydHkgUkVTVl9NRU0gLS0NCj4gPg0KPiA+ICJW
-SVJUSU9fSU9NTVVfUkVTVl9NRU1fVF9SRVNFUlZFRCAoMCkgQWNjZXNzZXMgdG8NCj4gPiB2aXJ0
-dWFsIGFkZHJlc3NlcyBpbiB0aGlzIHJlZ2lvbiBhcmUgbm90IHRyYW5zbGF0ZWQgYnkgdGhlIGRl
-dmljZS4NCj4gPiBUaGV5IG1heSBlaXRoZXIgYmUgYWJvcnRlZCBieSB0aGUgZGV2aWNlIChvciB0
-aGUgdW5kZXJseWluZw0KPiA+IElPTU1VKSwgYnlwYXNzIGl0LCBvciBuZXZlciBldmVuIHJlYWNo
-IGl0Ig0KPiA+DQo+ID4gaW4gMy4zIGhhcmR3YXJlIGRldmljZSBhc3NpZ25tZW50IHlvdSBkZXNj
-cmliZWQgYW4gZXhhbXBsZQ0KPiA+IHRoYXQgYSByZXNlcnZlZCByYW5nZSBpcyBzdG9sZW4gYnkg
-aG9zdCB0byBtYXAgdGhlIE1TSQ0KPiA+IGRvb3JiZWxsLi4uIHN1Y2ggbWFwIGJlaGF2aW9yIGlz
-IG5vdCBkZXNjcmliZWQgYWJvdmUuDQo+IA0KPiBSaWdodCwgd2UgY2FuIHNheSB0aGF0IGFjY2Vz
-c2VzIHRvIHRoZSByZWdpb24gbWF5IGJlIHVzZWQgZm9yIGhvc3QNCj4gdHJhbnNsYXRpb24NCj4g
-DQo+ID4gVGhlbiBjb21lcyBhIHF1ZXN0aW9uIGZvciBWSVJUSU9fSU9NTVVfUkVTVl9NRU1fVF9N
-U0kuDQo+ID4gSSBrbm93IHRoZXJlIHdlcmUgcXVpdGUgc29tZSBkaXNjdXNzaW9uIGFyb3VuZCB0
-aGlzIGZsYWcgYmVmb3JlLA0KPiA+IGJ1dCBteSBtZW50YWwgcGljdHVyZSBub3cgc3RpbGwgaXMg
-YSBiaXQgZGlmZmljdWx0IHRvIHVuZGVyc3RhbmQgaXRzDQo+ID4gdXNhZ2UgYmFzZWQgb24gZXhh
-bXBsZXMgaW4gaW1wbGVtZW50YXRpb24gbm90ZXM6DQo+ID4NCj4gPiAJLSBmb3IgeDg2LCB5b3Ug
-ZGVzY3JpYmUgaXQgYXMgaW5kaWNhdGluZyBNU0kgYnlwYXNzIGZvcg0KPiA+IG94ZmVleHh4eHgu
-IEhvd2V2ZXIgZ3Vlc3QgZG9lc24ndCBuZWVkIHRvIGtub3cgdGhpcyBmYWN0LiBPbmx5DQo+ID4g
-cmVxdWlyZW1lbnQgaXMgdG8gdHJlYXQgaXQgYXMgcmVzZXJ2ZWQgcmFuZ2UgKGFzIG9uIGJhcmUg
-bWV0YWwpDQo+ID4gdGhlbiBUX1JFU0VSVkVEIGlzIHN1ZmZpY2llbnQgZm9yIHRoaXMgcHVycG9z
-ZT4NCj4gPiAJLSBmb3IgQVJNLCBlaXRoZXIgbGV0IGd1ZXN0IG9yIGxldCBob3N0IHRvIGNob29z
-ZSBhIHZpcnR1YWwNCj4gPiBhZGRyZXNzIGZvciBtYXBwaW5nIHRvIE1TSSBkb29yYmVsbC4gdGhl
-IGZvcm1lciBkb2Vzbid0IHJlcXVpcmUNCj4gPiBhIHJlc2VydmVkIHJhbmdlLiBmb3IgdGhlIGxh
-dHRlciBhbHNvIFRfUkVTRVJWRUQgaXMgZW5vdWdoIGFzDQo+ID4gdGhlIGV4YW1wbGUgaW4gaGFy
-ZHdhcmUgZGV2aWNlIGFzc2lnbm1lbnQgc2VjdGlvbi4NCj4gDQo+IEl0IG1pZ2h0IGJlIG5pY2Vy
-IHRvIGhhdmUgdGhlIGhvc3QgZGVjaWRlIGl0LCBidXQgd2hlbiB0aGUgcGh5c2ljYWwgSU9NTVUN
-Cj4gaXMgQVJNIFNNTVUsIG5lc3RpbmcgdHJhbnNsYXRpb24gY29tcGxpY2F0ZXMgdGhpbmdzLCBi
-ZWNhdXNlIHRoZSBndWVzdA0KPiAqaGFzKiB0byBjcmVhdGUgYSBtYXBwaW5nOg0KDQpjb25maXJt
-IG9uZSB0aGluZyBmaXJzdC4gdjAuNiBkb2Vzbid0IHN1cHBvcnQgYmluZGluZyB0byBndWVzdCBJ
-T1ZBDQpwYWdlIHRhYmxlIHlldC4gU28gYmFzZWQgb24gY3VycmVudCBtYXAvdW5tYXAgaW50ZXJm
-YWNlLCB0aGVyZSBpcyANCm5vIHN1Y2ggY29tcGxpY2l0eSByaWdodD8gc3RhZ2UtMSBpcyBqdXN0
-IGEgc2hhZG93ZWQgdHJhbnNsYXRpb24gKElPVkENCi0+SFBBKSB0byBndWVzdCBzaWRlIChJT1ZB
-LT5HUEEpIHdpdGggbmVzdGluZyBkaXNhYmxlZC4gSW4gdGhhdCBjYXNlDQp0aGUgZGVmYXVsdCBi
-ZWhhdmlvciBpcyBob3N0LXJlc2VydmVkIHN0eWxlLg0KDQpUaGVuIGNvbWVzIG5lc3RlZCBzY2Vu
-YXJpbzoNCg0KPiANCj4gKiBUaGUgZ3Vlc3QgaXMgaW4gY2hhcmdlIG9mIHN0YWdlLTEuIEl0IGNy
-ZWF0ZXMgSU9WQS0+R1BBIG1hcHBpbmcgZm9yIHRoZQ0KPiAgIE1TSSBkb29yYmVsbC4gVGhlIEdQ
-QSBpcyBtYXBwZWQgdG8gdGhlIHBoeXNpY2FsIE1TSSBkb29yYmVsbCBhdA0KPiAgIHN0YWdlLTIg
-YnkgdGhlIGhvc3QuDQoNCklzIGl0IGEgbXVzdCB0aGF0IGFib3ZlIEdQQSBpcyBtYXBwZWQgdG8g
-cGh5c2ljYWwgTVNJIGRvb3JiZWxsPw0KDQpJZGVhbGx5Og0KDQoxKSBIb3N0IHJlc2VydmVzIHNv
-bWUgSU9WQSByYW5nZSBmb3IgbWFwcGluZyBNU0kgZG9vcmJlbGwNCjIpIHRoZSByYW5nZSBpcyBy
-ZXBvcnRlZCB0byB1c2VyIHNwYWNlDQozKSBRZW11IHJlcG9ydGVkIHRoZSByYW5nZSBhcyByZXNl
-cnZlZCBvbiBlbmRwb2ludHMsIG1hcmtlZA0KYXMgVF9JREVOVElUWSAoYSBuZXcgdHlwZSB0byBi
-ZSBpbnRyb2R1Y2VkKSwgbWVhbmluZyBndWVzdA0KbmVlZHMgc2V0dXAgaWRlbnRpdHkgbWFwcGlu
-ZyBpbiBzdGFnZS0xDQo0KSBUaGVuIGRldmljZSBzaG91bGQgYmUgYWJsZSB0byByaW5nIHBoeXNp
-Y2FsIE1TSSBkb29yYmVsbA0KNSkgSSdtIG5vdCBzdXJlIHdoZXRoZXIgZ3Vlc3Qgc3RpbGwgbmVl
-ZHMgdG8gYWxsb2NhdGUgaXRzIG93bg0KSU9WQSBhbmQgbWFwcGluZyB0byB2R0lDIGRvb3JiZWxs
-IGluIHN1Y2ggY2FzZS4uLg0KDQo+IA0KPiAqIHdoZW4gaXQgd3JpdGVzIHRoYXQgSU9WQSBpbiB0
-aGUgdmlydHVhbCBNU0ktWCB0YWJsZXMsIHRoZSBob3N0IHVwZGF0ZXMNCj4gICB0aGUgcGh5c2lj
-YWwgTVNJLVggdGFibGVzIHVzaW5nIGFuIGlvY3RsIChpdCBjYW4ndCBtYXAgdGhlIHBoeXNpY2Fs
-DQo+ICAgdGFibGVzIGludG8gdGhlIGd1ZXN0LCBiZWNhdXNlIE1TSS1YIHZlY3RvciBkYXRhIGFs
-c28gY29udGFpbiBwaHlzaWNhbA0KPiAgIGRldmljZSBpbmZvIHRoYXQgc2hvdWxkbid0IGJlIGtu
-b3duIGJ5IHRoZSBndWVzdC4pDQo+IA0KPiBTbyB3ZSBuZWVkIHN1cHBvcnQgZm9yIHNvZnR3YXJl
-LW1hcHBlZCBNU0lzIGluIHRoZSBndWVzdCBhbnl3YXkuIEluDQo+IExpbnV4DQo+IHRoZSB2aXJ0
-aW8taW9tbXUgZHJpdmVyIGNhbiB1c2UgZXhpc3RpbmcgcGx1bWJpbmcgZm9yIHRoYXQsIG5vIGNo
-YW5nZQ0KPiBuZWVkZWQgaW4gdGhlIGd1ZXN0Lg0KPiANCj4gPiBUaGVuIHdoYXQncyB0aGUgcmVh
-bCBwb2ludCBvZiBkaWZmZXJlbnRpYXRpbmcgTVNJIGJ5cGFzcyBmcm9tDQo+ID4gbm9ybWFsIHJl
-c2VydmVkIHJhbmdlPyBJcyB0aGVyZSBvdGhlciBleGFtcGxlIHdoZXJlIGd1ZXN0DQo+ID4gbWF5
-IHVzZSBzdWNoIGluZm8gdG8gZG8gc3BlY2lhbCB0aGluZz8NCj4gDQo+IFRoZSBwcmVzZW5jZSBv
-ZiBhbiBNU0kgYnlwYXNzIHJlZ2lvbnMgYWxsb3dzIHRoZSBkcml2ZXIgYW5kIHRoZSBETUEgbGF5
-ZXINCj4gKGluIExpbnV4IGlvbW11X2RtYV9tYXBfbXNpX21zZykgdG8ga25vdyB3aGV0aGVyIGl0
-IG5lZWRzIHRvIGNyZWF0ZSBhDQo+IG1hcHBpbmcgb3IgaWYgaXQncyBieXBhc3NlZC4gV2hlbiB3
-cml0aW5nIHRoZSBlbnRyeSBpbnRvIHRoZSBNU0ktWCB0YWJsZSwNCj4gaWYgdGhlIGFkZHJlc3Mg
-aW4gdGhlIE1TSSB2ZWN0b3IgYWxyZWFkeSBjb3JyZXNwb25kcyB0byBhbiBNU0kgYnlwYXNzDQo+
-IHJlZ2lvbiwgdGhlbiB0aGVyZSBpcyBubyBuZWVkIHRvIGNyZWF0ZSBhIG1hcHBpbmcuIE1ha2lu
-ZyB0aGUgYnlwYXNzIE1TSQ0KPiByZWdpb24gYSBub3JtYWwgUkVTViByYW5nZSBoaWRlcyB0aGF0
-IGluZm9ybWF0aW9uLg0KDQpvaywgd2lsbCB0YWtlIGEgbG9vayB0byB1bmRlcnN0YW5kIHRoaXMg
-cGFydC4NCg0KPiANCj4gQW5vdGhlciB3YXkgb2YgY2hvb3Npbmcgd291bGQgYmUgd2l0aCAjaWZk
-ZWYgQ09ORklHX0FSTTY0LA0KPiBDT05GSUdfWDg2IGV0YywNCj4gYnV0IEkgZmluZCBpdCBuYXN0
-eSwgYW5kIEkgcGVyc29uYWxseSBwcmVmZXIgdXNpbmcgTVNJIGJ5cGFzcyBmb3IgQVJNIHdoZW4N
-Cj4gcG9zc2libGUuDQoNCmhvd2V2ZXIgZnJvbSBjdXJyZW50IHYwLjYgZXhhbXBsZXMsIEJZUEFT
-UyBpcyBvbmx5IGxpc3RlZCBmb3IgeDg2DQpjYXNlLiBBUk0gdXNhZ2UgaXMgdGhlIG1pc3Npbmcg
-cGllY2UgbWFraW5nIG1lIGNvbmZ1c2VkLiANCg0KPiANCj4gPiAtLSAzLjIgTWVzc2FnZSBTaWdu
-YWxlZCBJbnRlcnJ1cHRzIC0tDQo+ID4NCj4gPiAiIFNlY3Rpb24gMy4yLjIgZGVzY3JpYmVzIHRo
-ZSBhZGRlZCBjb21wbGV4aXR5IChmcm9tIHRoZSBob3N0DQo+ID4gcG9pbnQgb2Ygdmlldykgb2Yg
-dHJhbnNsYXRpbmcgdGhlIElSUSBjaGlwIGRvb3JiZWxsICINCj4gPg0KPiA+IGhvd2V2ZXIgbGF0
-ZXIgMy4yLjIgb25seSBzYXlzIG9uZSBzZW50ZW5jZSBhYm91dCBob3N0DQo+ID4gY29tcGxleGl0
-eSAtICIgSG93ZXZlciwgdGhpcyBtb2RlIG9mIG9wZXJhdGlvbnMgbWF5IGFkZA0KPiA+IHNpZ25p
-ZmljYW50IGNvbXBsZXhpdHkgaW4gdGhlIGhvc3QgaW1wbGVtZW50YXRpb24iLiBJZiB5b3UgcGxh
-bg0KPiA+IHRvIGVsYWJvcmF0ZSB0aGF0IHBhcnQgaW4gdGhlIGZ1dHVyZSwgcGxlYXNlIGFkZCBh
-IG5vdGUuIDotKQ0KPiANCj4gT2ggcmlnaHQsIEkgZG9uJ3QgcmVhbGx5IHdhbnQgdG8gZWxhYm9y
-YXRlLCBJJ2xsIHRyeSB0byByZXdvcmQgMy4yLiBUaGUNCj4ga3ZtdG9vbCBwYXRjaGVzIGhhdmUg
-c3VwcG9ydCBmb3IgYm90aCBNU0kgYnlwYXNzIGFuZCB0cmFuc2xhdGlvbg0KPiAoc2VsZWN0YWJs
-ZSB3aXRoIGEgY21kbGluZSBmbGFnKSwgd2hpY2ggSSB0aGluayBpcyBnb29kIGVub3VnaC4gSSdk
-IHJhdGhlcg0KPiByZWFkIGEgY29kZSBleGFtcGxlIHRoYW4gc29tZSBjbHVtc3kgcHJvc2UgZGVz
-Y3JpYmluZyBpdC4NCj4gDQoNCnNvdW5kcyBnb29kLg0KDQpUaGFua3MNCktldmluDQo=
+Some devices benefit from ability to find out the number of available
+descriptors in the ring: for efficiency or as a debugging aid.
+
+To help with these optimizations, add a new feature:
+VIRTIO_F_NOTIFICATION_DATA. When negotiated, driver notifications to the
+device include this extra information.
+
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+---
+
+v11 -> v12
+	add missing 'the' article
+	drop duplicate text sections
+	use separate listing files for BE and LE, making
+	format explicit.
+
+v10 -> v11:
+        drop mention of interrupts: current proposal does not include
+        this interrupt related information
+        drop unrelated introduction sections
+
+
+
+ content.tex        | 109 ++++++++++++++++++++++++++++++++++++++++++++++++++---
+ notifications-be.c |   5 +++
+ notifications-le.c |   5 +++
+ 3 files changed, 113 insertions(+), 6 deletions(-)
+ create mode 100644 notifications-be.c
+ create mode 100644 notifications-le.c
+
+diff --git a/content.tex b/content.tex
+index 7a92cb1..ae5fa4c 100644
+--- a/content.tex
++++ b/content.tex
+@@ -283,9 +283,49 @@ Packed Virtqueues}).
+ Every driver and device supports either the Packed or the Split
+ Virtqueue format, or both.
+ 
++\subsection{Driver notifications} \label{sec:Virtqueues / Driver notifications}
++The driver is sometimes required to notify the device after
++making changes to the virtqueue.
++
++When VIRTIO_F_NOTIFICATION_DATA has not been negotiated,
++this notification involves sending the
++virtqueue number to the device (method depending on the transport).
++
++However, some devices benefit from the ability to find out the number of
++available descriptors in the ring without accessing the virtqueue in memory:
++for efficiency or as a debugging aid.
++
++To help with these optimizations, when VIRTIO_F_NOTIFICATION_DATA
++has been negotiated, driver notifications to the device include
++the following information:
++
++\begin{description}
++\item [VQ number]
++\item [Offset]
++      Within the ring where the next available ring entry
++      will be written.
++      Without VIRTIO_F_RING_PACKED this refers to the
++      15 least significant bits of the available index.
++      With VIRTIO_F_RING_PACKED this refers to the offset
++      (in units of descriptor entries)
++      within the descriptor ring where the next available
++      descriptor will be written.
++\item [Wrap Counter]
++      With VIRTIO_F_RING_PACKED this is the wrap counter
++      referring to the next available descriptor.
++      Without VIRTIO_F_RING_PACKED this is the most significant bit
++      of the available index.
++\end{description}
++
++Note that the driver can trigger multiple notifications even without
++making any more changes to the ring. When VIRTIO_F_NOTIFICATION_DATA
++has been negotiated, these notifications would then have
++identical \field{Offset} and \field{Wrap Counter} values.
++
+ \input{split-ring.tex}
+ 
+ \input{packed-ring.tex}
++
+ \chapter{General Initialization And Device Operation}\label{sec:General Initialization And Device Operation}
+ 
+ We start with an overview of device initialization, then expand on the
+@@ -862,7 +902,9 @@ the same Queue Notify address for all queues.
+ \devicenormative{\paragraph}{Notification capability}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Notification capability}
+ The device MUST present at least one notification capability.
+ 
+-The \field{cap.offset} MUST be 2-byte aligned.  
++For devices not offering VIRTIO_F_NOTIFICATION_DATA:
++
++The \field{cap.offset} MUST be 2-byte aligned.
+ 
+ The device MUST either present \field{notify_off_multiplier} as an even power of 2,
+ or present \field{notify_off_multiplier} as 0.
+@@ -876,6 +918,23 @@ For all queues, the value \field{cap.length} presented by the device MUST satisf
+ cap.length >= queue_notify_off * notify_off_multiplier + 2
+ \end{lstlisting}
+ 
++For devices offering VIRTIO_F_NOTIFICATION_DATA:
++
++The device MUST either present \field{notify_off_multiplier} as a
++number that is a power of 2 that is also a multiple 4,
++or present \field{notify_off_multiplier} as 0.
++
++The \field{cap.offset} MUST be 4-byte aligned.
++
++The value \field{cap.length} presented by the device MUST be at least 4
++and MUST be large enough to support queue notification offsets
++for all supported queues in all possible configurations.
++
++For all queues, the value \field{cap.length} presented by the device MUST satisfy:
++\begin{lstlisting}
++cap.length >= queue_notify_off * notify_off_multiplier + 4
++\end{lstlisting}
++
+ \subsubsection{ISR status capability}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / ISR status capability}
+ 
+ The VIRTIO_PCI_CAP_ISR_CFG capability
+@@ -1268,8 +1327,21 @@ separate cache lines.
+ 
+ \subsubsection{Notifying The Device}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Notifying The Device}
+ 
+-The driver notifies the device by writing the 16-bit virtqueue index
+-of this virtqueue to the Queue Notify address.  See \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Notification capability} for how to calculate this address.
++When VIRTIO_F_NOTIFICATION_DATA has not been negotiated,
++the driver notifies the device by writing the 16-bit virtqueue index
++of this virtqueue (in little-endian byte order format)
++to the Queue Notify address.
++
++When VIRTIO_F_NOTIFICATION_DATA has been negotiated,
++the driver notifies the device by writing the following
++32-bit value to the Queue Notify address:
++\lstinputlisting{notifications-le.c}
++
++See \ref{sec:Virtqueues / Driver notifications}~\nameref{sec:Virtqueues / Driver notifications}
++for the definition of the components.
++
++See \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Notification capability} for how to calculate the
++Queue Notify address.
+ 
+ \subsubsection{Virtqueue Interrupts From The Device}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Virtqueue Interrupts From The Device}
+ 
+@@ -1500,8 +1572,19 @@ All register values are organized as Little Endian.
+   }
+   \hline 
+   \mmioreg{QueueNotify}{Queue notifier}{0x050}{W}{%
+-    Writing a queue index to this register notifies the device that
+-    there are new buffers to process in the queue.
++    Writing a value this register notifies the device that
++    there are new buffers to process in a queue.
++
++    When VIRTIO_F_NOTIFICATION_DATA has not been negotiated,
++    the value written is the queue index.
++
++    When VIRTIO_F_NOTIFICATION_DATA has been negotiated,
++    the value has the following format:
++
++    \lstinputlisting{notifications-le.c}
++
++    See \ref{sec:Virtqueues / Driver notifications}~\nameref{sec:Virtqueues / Driver notifications}
++    for the definition of the components.
+   }
+   \hline 
+   \mmioreg{InterruptStatus}{Interrupt status}{0x60}{R}{%
+@@ -2340,12 +2423,22 @@ GPR  &   Input Value     & Output Value \\
+ \hline
+   2   &  Subchannel ID    & Host Cookie  \\
+ \hline
+-  3   & Virtqueue number  &              \\
++  3   & Notification data &              \\
+ \hline
+   4   &   Host Cookie     &              \\
+ \hline
+ \end{tabular}
+ 
++When VIRTIO_F_NOTIFICATION_DATA has not been negotiated,
++the \field{Notification data} contains the Virtqueue number.
++
++When VIRTIO_F_NOTIFICATION_DATA has been negotiated,
++the value has the following format:
++\lstinputlisting{notifications-be.c}
++
++See \ref{sec:Virtqueues / Driver notifications}~\nameref{sec:Virtqueues / Driver notifications}
++for the definition of the components.
++
+ \devicenormative{\paragraph}{Guest->Host Notification}{Virtio Transport Options / Virtio over channel I/O / Device Operation / Guest->Host Notification}
+ The device MUST ignore bits 0-31 (counting from the left) of GPR2.
+ This aligns passing the subchannel ID with the way it is passed
+@@ -5348,6 +5441,10 @@ Descriptors} and \ref{sec:Packed Virtqueues / Indirect Flag: Scatter-Gather Supp
+   \item[VIRTIO_F_IN_ORDER(35)] This feature indicates
+   that all buffers are used by the device in the same
+   order in which they have been made available.
++  \item[VIRTIO_F_NOTIFICATION_DATA(36)] This feature indicates
++  that drivers pass extra data (besides identifying the Virtqueue)
++  in their device notifications.
++  See \ref{sec:Virtqueues / Driver notifications}~\nameref{sec:Virtqueues / Driver notifications}.
+ \end{description}
+ 
+ \drivernormative{\section}{Reserved Feature Bits}{Reserved Feature Bits}
+diff --git a/notifications-be.c b/notifications-be.c
+new file mode 100644
+index 0000000..5be947e
+--- /dev/null
++++ b/notifications-be.c
+@@ -0,0 +1,5 @@
++be32 {
++	vqn : 16;
++	next_off : 15;
++	next_wrap : 1;
++};
+diff --git a/notifications-le.c b/notifications-le.c
+new file mode 100644
+index 0000000..fe51267
+--- /dev/null
++++ b/notifications-le.c
+@@ -0,0 +1,5 @@
++le32 {
++	vqn : 16;
++	next_off : 15;
++	next_wrap : 1;
++};
+-- 
+MST
+
+---------------------------------------------------------------------
+To unsubscribe from this mail list, you must leave the OASIS TC that 
+generates this mail.  Follow this link to all your TCs in OASIS at:
+https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
 
