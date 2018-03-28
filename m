@@ -1,109 +1,86 @@
-Return-Path: virtio-dev-return-3574-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3667-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 3C1015818F05
-	for <virtio-dev@lists.oasis-open.org>; Thu, 15 Mar 2018 11:41:29 -0700 (PDT)
-From: Alexander Duyck <alexander.duyck@gmail.com>
-Date: Thu, 15 Mar 2018 11:41:25 -0700
-Message-ID: <20180315184055.3102.2435.stgit@localhost.localdomain>
-In-Reply-To: <20180315183449.3102.64791.stgit@localhost.localdomain>
+	by lists.oasis-open.org (Postfix) with ESMTP id B0E6F1CB80EE
+	for <virtio-dev@lists.oasis-open.org>; Wed, 28 Mar 2018 14:30:33 -0700 (PDT)
+From: "Rustad, Mark D" <mark.d.rustad@intel.com>
+Date: Wed, 28 Mar 2018 21:30:29 +0000
+Message-ID: <C573B44F-097F-45D2-AB4C-B8BCCBCC2C4F@intel.com>
 References: <20180315183449.3102.64791.stgit@localhost.localdomain>
+ <20180315184055.3102.2435.stgit@localhost.localdomain>
+In-Reply-To: <20180315184055.3102.2435.stgit@localhost.localdomain>
+Content-Language: en-US
+Content-Type: multipart/signed;
+	boundary="Apple-Mail=_BBED0712-6906-4470-94B1-31A72AA8A265";
+	protocol="application/pgp-signature"; micalg=pgp-sha256
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Subject: [virtio-dev] [pci PATCH v7 1/5] pci: Add pci_sriov_configure_simple for PFs that
- don't manage VF resources
-To: bhelgaas@google.com, alexander.h.duyck@intel.com, linux-pci@vger.kernel.org
-Cc: virtio-dev@lists.oasis-open.org, kvm@vger.kernel.org, netdev@vger.kernel.org, dan.daly@intel.com, linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org, keith.busch@intel.com, netanel@amazon.com, ddutile@redhat.com, mheyne@amazon.de, liang-min.wang@intel.com, mark.d.rustad@intel.com, dwmw2@infradead.org, hch@lst.de, dwmw@amazon.co.uk
+Subject: Re: [virtio-dev] [pci PATCH v7 1/5] pci: Add
+ pci_sriov_configure_simple for PFs that don't manage VF resources
+To: Alexander Duyck <alexander.duyck@gmail.com>
+Cc: "bhelgaas@google.com" <bhelgaas@google.com>, "Duyck, Alexander H" <alexander.h.duyck@intel.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, Netdev <netdev@vger.kernel.org>, "Daly, Dan" <dan.daly@intel.com>, LKML <linux-kernel@vger.kernel.org>, "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>, "Busch,
+ Keith" <keith.busch@intel.com>, "netanel@amazon.com" <netanel@amazon.com>, "ddutile@redhat.com" <ddutile@redhat.com>, "mheyne@amazon.de" <mheyne@amazon.de>, "Wang, Liang-min" <liang-min.wang@intel.com>, "dwmw2@infradead.org" <dwmw2@infradead.org>, "hch@lst.de" <hch@lst.de>, "dwmw@amazon.co.uk" <dwmw@amazon.co.uk>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-From: Alexander Duyck <alexander.h.duyck@intel.com>
+--Apple-Mail=_BBED0712-6906-4470-94B1-31A72AA8A265
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain;
+	charset=us-ascii
 
-This patch adds a common configuration function called
-pci_sriov_configure_simple that will allow for managing VFs on devices
-where the PF is not capable of managing VF resources.
+On Mar 15, 2018, at 11:41 AM, Alexander Duyck <alexander.duyck@gmail.com> wrote:
 
-Signed-off-by: Alexander Duyck <alexander.h.duyck@intel.com>
----
+> From: Alexander Duyck <alexander.h.duyck@intel.com>
+> 
+> This patch adds a common configuration function called
+> pci_sriov_configure_simple that will allow for managing VFs on devices
+> where the PF is not capable of managing VF resources.
+> 
+> Signed-off-by: Alexander Duyck <alexander.h.duyck@intel.com>
+> ---
+> 
+> v5: New patch replacing pci_sriov_configure_unmanaged with
+>       pci_sriov_configure_simple
+>     Dropped bits related to autoprobe changes
+> v6: Defined pci_sriov_configure_simple as NULL if IOV is disabled
+> v7: Updated pci_sriov_configure_simple to drop need for err value
+>     Fixed comment explaining why pci_sriov_configure_simple is NULL
+> 
+>  drivers/pci/iov.c   |   31 +++++++++++++++++++++++++++++++
+>  include/linux/pci.h |    3 +++
+>  2 files changed, 34 insertions(+)
 
-v5: New patch replacing pci_sriov_configure_unmanaged with
-      pci_sriov_configure_simple
-    Dropped bits related to autoprobe changes
-v6: Defined pci_sriov_configure_simple as NULL if IOV is disabled
-v7: Updated pci_sriov_configure_simple to drop need for err value
-    Fixed comment explaining why pci_sriov_configure_simple is NULL
+Tested with the device identified in patch #2.
 
- drivers/pci/iov.c   |   31 +++++++++++++++++++++++++++++++
- include/linux/pci.h |    3 +++
- 2 files changed, 34 insertions(+)
+Tested-by: Mark Rustad <mark.d.rustad@intel.com>
 
-diff --git a/drivers/pci/iov.c b/drivers/pci/iov.c
-index 677924ae0350..3e0a7fdff3e9 100644
---- a/drivers/pci/iov.c
-+++ b/drivers/pci/iov.c
-@@ -807,3 +807,34 @@ int pci_sriov_get_totalvfs(struct pci_dev *dev)
- 	return dev->sriov->total_VFs;
- }
- EXPORT_SYMBOL_GPL(pci_sriov_get_totalvfs);
-+
-+/**
-+ * pci_sriov_configure_simple - helper to configure unmanaged SR-IOV
-+ * @dev: the PCI device
-+ * @nr_virtfn: number of virtual functions to enable, 0 to disable
-+ *
-+ * Used to provide generic enable/disable SR-IOV option for devices
-+ * that do not manage the VFs generated by their driver. Return value
-+ * is negative on error, or number of VFs allocated on success.
-+ */
-+int pci_sriov_configure_simple(struct pci_dev *dev, int nr_virtfn)
-+{
-+	might_sleep();
-+
-+	if (!dev->is_physfn)
-+		return -ENODEV;
-+
-+	if (pci_vfs_assigned(dev)) {
-+		pci_warn(dev,
-+			 "Cannot modify SR-IOV while VFs are assigned\n");
-+		return -EPERM;
-+	}
-+
-+	if (!nr_virtfn) {
-+		sriov_disable(dev);
-+		return 0;
-+	}
-+
-+	return sriov_enable(dev, nr_virtfn) ? : nr_virtfn;
-+}
-+EXPORT_SYMBOL_GPL(pci_sriov_configure_simple);
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 024a1beda008..992202449829 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -1953,6 +1953,7 @@ static inline void pci_mmcfg_late_init(void) { }
- int pci_vfs_assigned(struct pci_dev *dev);
- int pci_sriov_set_totalvfs(struct pci_dev *dev, u16 numvfs);
- int pci_sriov_get_totalvfs(struct pci_dev *dev);
-+int pci_sriov_configure_simple(struct pci_dev *dev, int nr_virtfn);
- resource_size_t pci_iov_resource_size(struct pci_dev *dev, int resno);
- void pci_vf_drivers_autoprobe(struct pci_dev *dev, bool probe);
- #else
-@@ -1980,6 +1981,8 @@ static inline int pci_sriov_set_totalvfs(struct pci_dev *dev, u16 numvfs)
- { return 0; }
- static inline int pci_sriov_get_totalvfs(struct pci_dev *dev)
- { return 0; }
-+/* this is expected to be used as a function pointer, just define as NULL */
-+#define pci_sriov_configure_simple NULL
- static inline resource_size_t pci_iov_resource_size(struct pci_dev *dev, int resno)
- { return 0; }
- static inline void pci_vf_drivers_autoprobe(struct pci_dev *dev, bool probe) { }
+--
+Mark Rustad, Networking Division, Intel Corporation
 
+--Apple-Mail=_BBED0712-6906-4470-94B1-31A72AA8A265
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment; filename="signature.asc"
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Message signed with OpenPGP
 
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+-----BEGIN PGP SIGNATURE-----
+Comment: GPGTools - http://gpgtools.org
 
+iQIzBAEBCAAdFiEE6ug8b0Wg+ULmnksNPA7/547j7m4FAlq8CXQACgkQPA7/547j
+7m6pew/8CP45+0ywjt3/o6XIMCG2lY8I4kEyzMy+qDRd6Enk2kQkcORMhSxNOrwF
+MXK7CSa01s3Y0AwjHuy+0d+/jDvxyUGuhw0Tb98DkL3T9OQDhgCuTPTC8/wu9XYS
+AoACL8alz4pouJM/P9VT24pGIkwbEWl0bE/LZ0fZvhOkVjLBp6f3E5aqgcMZlI4V
+uAEDdP/AHdessoOktzRWxmlEFJdBN/TDkobLM0I+ipI2VIJh+Wu8n2Cb9nT9ZrFz
+bgOVdwJMloky6CF23XHu/R+vrfmtQJf7/OKpI63it2ryX9g0c2ZKTw3RhqrBCR+c
+470ZslFbxfQTMNZnI/+6pU5/mriHtEuN+X/Pyr0UVgjDezjtiId9bwNxbRUsZrvF
+MvzfHBixgYmtRa+cBguiV48qfkWrfXdmhteqYta786+Tr0zvKX833WAydO+/V6bx
+ZiBaZEa3LoSuOhGbzRjPxyMIy6nrkVYKvulm/N1G4iTzgs1Lj5heWiH6onW1y32o
+sLyEYpLVLHAEGVtHEUTxJU4xIbyW5hvY/dUqjOiXnvcIdP7yc+bo9s3kLiuEVn81
+r8/VkR1W6+q1r5J/ED9iWEt7D7BkOBdH9THRIQIDq3O1vSzX6m+Pvhw2mjLcsY9U
+A5ABZsKAF+7gYtNlM4X5bl8tXhzNOJo4pP7zAHTOqffxeOIYD0A=
+=39ai
+-----END PGP SIGNATURE-----
+
+--Apple-Mail=_BBED0712-6906-4470-94B1-31A72AA8A265--
