@@ -1,73 +1,127 @@
-Return-Path: virtio-dev-return-3647-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3688-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 64F495818DC6
-	for <virtio-dev@lists.oasis-open.org>; Mon, 26 Mar 2018 08:35:38 -0700 (PDT)
-From: "Wang, Wei W" <wei.w.wang@intel.com>
-Date: Mon, 26 Mar 2018 15:35:34 +0000
-Message-ID: <286AC319A985734F985F78AFA26841F739486FFD@shsmsx102.ccr.corp.intel.com>
-References: <5AAE4124.5010602@intel.com>
- <20180319062023-mutt-send-email-mst@kernel.org> <5AAF7C72.5070403@intel.com>
- <20180320004900-mutt-send-email-mst@kernel.org> <5AB06EE9.1030306@intel.com>
- <20180320045134-mutt-send-email-mst@kernel.org> <5AB07D7F.90205@intel.com>
- <20180320051840-mutt-send-email-mst@kernel.org>
- <20180326110904.GI19266@redhat.com>
- <286AC319A985734F985F78AFA26841F739485EE3@shsmsx102.ccr.corp.intel.com>
- <20180326150403.GN19266@redhat.com>
-In-Reply-To: <20180326150403.GN19266@redhat.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	by lists.oasis-open.org (Postfix) with ESMTP id D3CF858191A8
+	for <virtio-dev@lists.oasis-open.org>; Fri, 30 Mar 2018 02:49:29 -0700 (PDT)
+Message-ID: <5ABE08E7.2060108@intel.com>
+Date: Fri, 30 Mar 2018 17:52:39 +0800
+From: Wei Wang <wei.w.wang@intel.com>
 MIME-Version: 1.0
-Subject: [virtio-dev] RE: [Qemu-devel] [virtio-dev] Re: [PATCH v5 4/5] virtio-balloon:
- VIRTIO_BALLOON_F_FREE_PAGE_HINT
-To: =?utf-8?B?RGFuaWVsIFAuIEJlcnJhbmfDqQ==?= <berrange@redhat.com>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>, "yang.zhang.wz@gmail.com" <yang.zhang.wz@gmail.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "quan.xu0@gmail.com" <quan.xu0@gmail.com>, "quintela@redhat.com" <quintela@redhat.com>, "liliang.opensource@gmail.com" <liliang.opensource@gmail.com>, "qemu-devel@nongnu.org" <qemu-devel@nongnu.org>, "dgilbert@redhat.com" <dgilbert@redhat.com>, "pbonzini@redhat.com" <pbonzini@redhat.com>, "nilal@redhat.com" <nilal@redhat.com>
+References: <1521197309-13544-1-git-send-email-wei.w.wang@intel.com> <1521197309-13544-5-git-send-email-wei.w.wang@intel.com> <20180316165319-mutt-send-email-mst@kernel.org> <5AAE4124.5010602@intel.com> <20180319062023-mutt-send-email-mst@kernel.org> <5AAF7C72.5070403@intel.com> <20180320004900-mutt-send-email-mst@kernel.org> <5AB06EE9.1030306@intel.com> <20180320045134-mutt-send-email-mst@kernel.org> <5AB07D7F.90205@intel.com> <20180320051840-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20180320051840-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [virtio-dev] Re: [PATCH v5 4/5] virtio-balloon: VIRTIO_BALLOON_F_FREE_PAGE_HINT
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, quintela@redhat.com, dgilbert@redhat.com, pbonzini@redhat.com, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu0@gmail.com, nilal@redhat.com, riel@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-T24gTW9uZGF5LCBNYXJjaCAyNiwgMjAxOCAxMTowNCBQTSwgRGFuaWVsIFAuIEJlcnJhbmfDqSB3
-cm90ZToNCj4gT24gTW9uLCBNYXIgMjYsIDIwMTggYXQgMDI6NTQ6NDVQTSArMDAwMCwgV2FuZywg
-V2VpIFcgd3JvdGU6DQo+ID4gT24gTW9uZGF5LCBNYXJjaCAyNiwgMjAxOCA3OjA5IFBNLCBEYW5p
-ZWwgUC4gQmVycmFuZ8OpIHdyb3RlOg0KPiA+ID4NCj4gPiA+IEFzIGZhciBhcyBsaWJ2aXJ0IGlz
-IGNvbmNlcm5lZCB0aGVyZSBhcmUgdGhyZWUgc2V0cyBvZiB0aHJlYWRzIGl0DQo+ID4gPiBwcm92
-aWRlcyBjb250cm9sIG92ZXINCj4gPiA+DQo+ID4gPiAgLSB2Q1BVcyAtIGVhY2ggVkNQVSBpbiBL
-Vk0gaGFzIGEgdGhyZWFkLiBMaWJ2aXJ0IHByb3ZpZGVzIHBlci10aHJlYWQNCj4gPiA+ICAgIHR1
-bmFibGUgY29udHJvbA0KPiA+ID4NCj4gPiA+ICAtIElPVGhyZWFkcyAtIGVhY2ggbmFtZWQgSS9P
-IHRocmVhZCBjYW4gYmUgYXNzb2NpYXRlZCB3aXRoIG9uZSBvciBtb3JlDQo+ID4gPiAgICBkZXZp
-Y2VzLiBMaWJ2aXJ0IHByb3ZpZGVzIHBlci10aHJlYWQgdHVuYWJsZSBjb250cm9sLg0KPiA+ID4N
-Cj4gPiA+ICAtIEVtdWxhdG9yIC0gYW55IG90aGVyIFFFTVUgdGhyZWFkIHdoaWNoIGlzbid0IGFu
-IHZDUFUgdGhyZWFkIG9yIElPDQo+IHRocmVhZA0KPiA+ID4gICAgZ2V0cyBjYWxsZWQgYW4gZW11
-bGF0b3IgdGhyZWFkIGJ5IGxpYnZpcnQuIFRoZXJlIGlzIG5vLXBlciB0aHJlYWQNCj4gPiA+ICAg
-IHR1bmFibGUgY29udHJvbCAtIHdlIGNhbiBzZXQgdHVuYWJsZXMgZm9yIGVudGlyZSBzZXQgb2Yg
-ZW11bGF0b3IgdGhyZWFkcw0KPiA+ID4gICAgYXQgb25jZS4NCj4gPiA+DQo+ID4NCj4gPg0KPiA+
-IEhpIERhbmllbCwNCj4gPiBUaGFua3MgZm9yIHNoYXJpbmcgdGhlIGRldGFpbHMsIHRoZXkgYXJl
-IHZlcnkgaGVscGZ1bC4gSSBzdGlsbCBoYXZlIGEgcXVlc3Rpb246DQo+ID4NCj4gPiBUaGVyZSBp
-cyBubyBmdW5kYW1lbnRhbCBkaWZmZXJlbmNlIGJldHdlZW4gaW90aHJlYWQgYW5kIG91cg0KPiA+
-IG9wdGltaXphdGlvbiB0aHJlYWQgKGl0IGlzIHNpbWlsYXIgdG8gdGhlIG1pZ3JhdGlvbiB0aHJl
-YWQsIHdoaWNoIGlzDQo+ID4gY3JlYXRlZCB3aGVuIG1pZ3JhdGlvbiBiZWdpbnMgYW5kIHRlcm1p
-bmF0ZWQgd2hlbiBtaWdyYXRpb24gaXMgZG9uZSkgLQ0KPiA+IGJvdGggb2YgdGhlbSBhcmUgcHRo
-cmVhZHMgYW5kIGVhY2ggaGFzIGEgbmFtZS4gQ291bGQgd2UgYWxzbyBhZGQgdGhlDQo+ID4gc2lt
-aWxhciBwZXItdGhyZWFkIHR1bmFibGUgY29udHJvbCBpbiBsaWJ2aXJ0IGZvciBzdWNoIHRocmVh
-ZHM/DQo+ID4NCj4gPiBGb3IgZXhhbXBsZSwgaW4gUUVNVSB3ZSBjYW4gYWRkIGEgbmV3IG1pZ3Jh
-dGlvbiBxbXAgY29tbWFuZCwNCj4gPiBtaWdyYXRlX2VuYWJsZV9mcmVlX3BhZ2Vfb3B0aW1pemF0
-aW9uIChqdXN0IGxpa2Ugb3RoZXIgY29tbWFuZHMNCj4gPiBtaWdyYXRlX3NldF9zcGVlZCAxMEcp
-LCB0aGlzIGNvbW1hbmQgd2lsbCBjcmVhdGUgdGhlIG9wdGltaXphdGlvbiB0aHJlYWQuDQo+ID4g
-SW4gdGhpcyB3YXksIGNyZWF0aW9uIG9mIHRoZSB0aHJlYWQgaXMgaW4gbGlidmlydCdzIGNvbnRy
-b2wsIGFuZA0KPiA+IGxpYnZpcnQgY2FuIHRoZW4gc3VwcG9ydCB0dW5pbmcgdGhlIHRocmVhZCAo
-ZS5nLiBwaW4gaXQgdG8gYW55IHBDUFUpLCByaWdodD8NCj4gDQo+IEFueXRoaW5nIGlzIHBvc3Np
-YmxlIGZyb20gYSB0ZWNobmljYWwgbGV2ZWwsIGJ1dCBmcm9tIGEgZGVzaWduIFBPViB3ZSB3b3Vs
-ZA0KPiByYXRoZXIgbm90IHN0YXJ0IGV4cG9zaW5nIHR1bmFibGVzIGZvciBhcmJpdHJhcnkgZGV2
-aWNlIHR5cGUgc3BlY2lmaWMgdGhyZWFkcw0KPiBhcyB0aGV5IGFyZSBpbmhlcmFudGx5IG5vbi1w
-b3J0YWJsZSBhbmQgbWF5IG5vdCBldmVuIGV4aXN0IGluIFFFTVUgbG9uZw0KPiB0ZXJtIGFzIGl0
-IGlzIGp1c3QgYW4gYXJ0aWZhY3Qgb2YgdGhlIGN1cnJlbnQgUUVNVSBpbXBsZW1lbnRhdGlvbi4N
-Cj4gDQoNCk9LLiBNeSBhY3R1YWwgY29uY2VybiB3aXRoIGlvdGhyZWFkIGlzIHRoYXQgaXQgZXhp
-c3RzIGR1cmluZyB0aGUgd2hvbGUgUUVNVSBsaWZlY3ljbGUuIEJsb2NrIGRldmljZSB1c2luZyBp
-dCBpcyBmaW5lIHNpbmNlIGJsb2NrIGRldmljZSBhY2Nlc3MgaGFwcGVucyBmcmVxdWVudGx5IGR1
-cmluZyB0aGUgUUVNVSBsaWZlY3ljbGUuIFVzYWdlcyBsaWtlIGxpdmUgbWlncmF0aW9uLCBpZiB0
-aGV5IGhhcHBlbiBvbmNlIHBlciBkYXksIHJ1bm5pbmcgdGhpcyBpb3RocmVhZCB3b3VsZCBiZSBh
-IHdhc3RlIG9mIENQVSBjeWNsZXMuDQoNCkJlc3QsDQpXZWkNCiANCg==
+On 03/20/2018 11:24 AM, Michael S. Tsirkin wrote:
+> On Tue, Mar 20, 2018 at 11:18:23AM +0800, Wei Wang wrote:
+>> On 03/20/2018 10:59 AM, Michael S. Tsirkin wrote:
+>>> On Tue, Mar 20, 2018 at 10:16:09AM +0800, Wei Wang wrote:
+>>>> On 03/20/2018 06:55 AM, Michael S. Tsirkin wrote:
+>>>>> On Mon, Mar 19, 2018 at 05:01:38PM +0800, Wei Wang wrote:
+>>>>>> On 03/19/2018 12:24 PM, Michael S. Tsirkin wrote:
+>>>>>>> On Sun, Mar 18, 2018 at 06:36:20PM +0800, Wei Wang wrote:
+>>>>>>>> On 03/16/2018 11:16 PM, Michael S. Tsirkin wrote:
+>>>>>>>>> On Fri, Mar 16, 2018 at 06:48:28PM +0800, Wei Wang wrote:
+>>>>>>> OTOH it seems that if thread stops nothing will wake it up
+>>>>>>> whem vm is restarted. Such bahaviour change across vmstop/vmstart
+>>>>>>> is unexpected.
+>>>>>>> I do not understand why we want to increment the counter
+>>>>>>> on vm stop though. It does make sense to stop the thread
+>>>>>>> but why not resume where we left off when vm is resumed?
+>>>>>>>
+>>>>>> I'm not sure which counter we incremented. But it would be clear if we have
+>>>>>> a high level view of how it works (it is symmetric actually). Basically, we
+>>>>>> start the optimization when each round starts and stop it at the end of each
+>>>>>> round (i.e. before we do the bitmap sync), as shown below:
+>>>>>>
+>>>>>> 1) 1st Round starts --> free_page_start
+>>>>>> 2) 1st Round in progress..
+>>>>>> 3) 1st Round ends  --> free_page_stop
+>>>>>> 4) 2nd Round starts --> free_page_start
+>>>>>> 5) 2nd Round in progress..
+>>>>>> 6) 2nd Round ends --> free_page_stop
+>>>>>> ......
+>>>>>>
+>>>>>> For example, in 2), the VM is stopped. virtio_balloon_poll_free_page_hints
+>>>>>> finds the vq is empty (i.e. elem == NULL) and the runstate is stopped, the
+>>>>>> optimization thread exits immediately. That is, this optimization thread is
+>>>>>> gone forever (the optimization we can do for this round is done). We won't
+>>>>>> know when would the VM be woken up:
+>>>>>> A) If the VM is woken up very soon when the migration thread is still in
+>>>>>> progress of 2), then in 4) a new optimization thread (not the same one for
+>>>>>> the first round) will be created and start the optimization for the 2nd
+>>>>>> round as usual (If you have questions about 3) in this case, that
+>>>>>> free_page_stop will do nothing than just return, since the optimization
+>>>>>> thread has exited) ;
+>>>>>> B) If the VM is woken up after the whole migration has ended, there is still
+>>>>>> no point in resuming the optimization.
+>>>>>>
+>>>>>> I think this would be the simple design for the first release of this
+>>>>>> optimization. There are possibilities to improve case A) above by continuing
+>>>>>> optimization for the 1st Round as it is still in progress, but I think
+>>>>>> adding that complexity for this rare case wouldn't be worthwhile (at least
+>>>>>> for now). What would you think?
+>>>>>>
+>>>>>>
+>>>>>> Best,
+>>>>>> Wei
+>>>>> In my opinion this just makes the patch very messy.
+>>>>>
+>>>>> E.g. attempts to attach a debugger to the guest will call vmstop and
+>>>>> then behaviour changes. This is a receipe for heisenbugs which are then
+>>>>> extremely painful to debug.
+>>>>>
+>>>>> It is not really hard to make things symmetrical:
+>>>>> e.g. if you stop on vmstop then you should start on vmstart, etc.
+>>>>> And stopping thread should not involve a bunch of state
+>>>>> changes, just stop it and that's it.
+>>>>>
+>>>> "stop it" - do you mean to
+>>>> 1) make the thread exit (i.e.make virtio_balloon_poll_free_page_hints exit
+>>>> the while loop and return NULL); or
+>>>> 2) keep the thread staying in the while loop but yield running (e.g.
+>>>> sleep(1) or block on a mutex)? (or please let me know if you suggested a
+>>>> different implementation about stopping the thread)
+>>> I would say it makes more sense to make it block on something.
+>>>
+>>> BTW I still think you are engaging in premature optimization here.
+>>> What you are doing here is a "data plane for balloon".
+>>> I would make the feature work first by processing this in a BH.
+>>> Creating threads immediately opens up questions of isolation,
+>>> cgroups etc.
+>>>
+>> Could you please share more about how creating threads affects isolation and
+>> cgroup?
+> When threads are coming and going, they are hard to control.
+>
+> Consider the rich API libvirt exposes for controlling the io threads:
+>
+> https://libvirt.org/formatdomain.html#elementsIOThreadsAllocation
+>
+>
+>> and how does BH solve it? Thanks.
+>> Best,
+>> Wei
+> It's late at night so I don't remember whether it's the emulator
+> or the io thread that runs the BH, but the point is it's
+> already controlled by libvirt.
+>
+
+Thanks all for reviewing the patches. I've changed to use iothread in 
+the new version. Please have a check if that would be good enough.
+
+Best,
+Wei
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
