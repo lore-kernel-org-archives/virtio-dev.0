@@ -1,53 +1,60 @@
-Return-Path: virtio-return-3044-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-return-3042-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio@lists.oasis-open.org>
 List-Post: <mailto:virtio@lists.oasis-open.org>
 List-Help: <mailto:virtio-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Tue, 3 Apr 2018 16:32:53 +0200
-From: Cornelia Huck <cohuck@redhat.com>
-Message-ID: <20180403163253.29d207d3.cohuck@redhat.com>
-In-Reply-To: <28a35397-b62a-0c5d-ad77-c8a6f308dd5f@linux.vnet.ibm.com>
 References: <1522168507-58698-1-git-send-email-mst@redhat.com>
-	<94d79449-4d96-82b5-f046-f5bf6c47a7bb@linux.vnet.ibm.com>
-	<20180328200739-mutt-send-email-mst@kernel.org>
-	<20180329110555.708a88b9.cohuck@redhat.com>
-	<c5dd1c7e-30e6-119e-d06b-fc8cee0d671c@linux.vnet.ibm.com>
-	<20180329171705-mutt-send-email-mst@kernel.org>
-	<28a35397-b62a-0c5d-ad77-c8a6f308dd5f@linux.vnet.ibm.com>
+ <94d79449-4d96-82b5-f046-f5bf6c47a7bb@linux.vnet.ibm.com>
+ <20180329012805-mutt-send-email-mst@kernel.org>
+From: Halil Pasic <pasic@linux.vnet.ibm.com>
+Date: Tue, 3 Apr 2018 02:11:56 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20180329012805-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: [virtio] Re: [virtio-dev] Re: [virtio] [PATCH v12]
- VIRTIO_F_NOTIFICATION_DATA: extra data to devices
-To: Halil Pasic <pasic@linux.vnet.ibm.com>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>, virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, Tiwei Bie <tiwei.bie@intel.com>, Stefan Hajnoczi <stefanha@redhat.com>, "Dhanoa, Kully" <kully.dhanoa@intel.com>
+Message-Id: <e2d7b3fe-2fa7-888a-6dcc-947fe50f6349@linux.vnet.ibm.com>
+Subject: Re: [virtio] on spec clarifications
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Mon, 2 Apr 2018 17:34:50 +0200
-Halil Pasic <pasic@linux.vnet.ibm.com> wrote:
 
-> On 03/29/2018 04:30 PM, Michael S. Tsirkin wrote:
-> > On Thu, Mar 29, 2018 at 04:15:19PM +0200, Halil Pasic wrote:  
-> >>  
-> [..]
-> >>
-> >> I don't have a good solution, otherwise I would have proposed already.
-> >> Maybe something like 'available notification' and 'used notification' is
-> >> worth considering. I don't like that one can read available and used
-> >> as normal English (that is a notification that is available and not
-> >> a notification that buffers were made available at the given virtqueue).  
-> > 
-> > I think I like this.
-> > 
-> > Available buffer / used buffer notifications?
-> >   
+
+On 03/29/2018 12:30 AM, Michael S. Tsirkin wrote:
+> Halil, 
+> in the past you mentioned that you see some parts of the specification
+> as unclear.
 > 
-> I will do it!
-> @Connie: if you have concerns or something even better in mind
-> please do tell.
+> Will you have the time to look into this and send patches, or even just
+> open github issues?
+> 
+> I'd like us to start looking at wrapping up the next spec version.
+> 
 
-No further comments from me.
+There are a couple of I would have preferred done differently. Yet
+my estimate regarding the pain/gain ratio for fixing most of the things
+I dislike tells me: careful much pain and little gain. I'm a terrible
+writer, and that does not make things easier.
+
+I intend cook up some patches for the smaller things (the notifications
+terminology, and AFAIR there was some stuff I noticed while reviewing packed)
+this week. 
+
+I was also pondering about the structure and what guarantees does
+the specification provide for the correct implementations (e.g. interoperability
+with any other correct implementation). I'm not sure I'm willing to
+to muster the effort to try to improve these aspects. If I will probably
+start with an RFC summarizing the issues and some ideas on what can be done.
+Anyway I don't see this block as something that should delay the next
+release.
+
+Regards,
+Halil
+
+
+
 
 ---------------------------------------------------------------------
 To unsubscribe from this mail list, you must leave the OASIS TC that 
