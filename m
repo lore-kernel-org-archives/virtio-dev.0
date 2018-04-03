@@ -1,61 +1,134 @@
-Return-Path: virtio-return-3046-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio@lists.oasis-open.org>
-List-Post: <mailto:virtio@lists.oasis-open.org>
-List-Help: <mailto:virtio-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-From: Halil Pasic <pasic@linux.vnet.ibm.com>
-References: <1522168507-58698-1-git-send-email-mst@redhat.com>
- <94d79449-4d96-82b5-f046-f5bf6c47a7bb@linux.vnet.ibm.com>
- <20180329012805-mutt-send-email-mst@kernel.org>
- <e2d7b3fe-2fa7-888a-6dcc-947fe50f6349@linux.vnet.ibm.com>
-Date: Sun, 8 Apr 2018 22:57:52 +0200
-MIME-Version: 1.0
-In-Reply-To: <e2d7b3fe-2fa7-888a-6dcc-947fe50f6349@linux.vnet.ibm.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Message-Id: <dcb52d37-1b62-0102-27af-f4b3465427a3@linux.vnet.ibm.com>
-Subject: Re: [virtio] on spec clarifications
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+Return-Path: virtio-dev-return-3698-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
+	by lists.oasis-open.org (Postfix) with ESMTP id DE3415818F63
+	for <virtio-dev@lists.oasis-open.org>; Tue,  3 Apr 2018 01:28:55 -0700 (PDT)
+From: Wei Wang <wei.w.wang@intel.com>
+Date: Wed,  4 Apr 2018 00:10:01 +0800
+Message-Id: <1522771805-78927-1-git-send-email-wei.w.wang@intel.com>
+Subject: [virtio-dev] [PATCH v30 0/4] Virtio-balloon: support free page reporting
+To: virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, linux-mm@kvack.org, mst@redhat.com, mhocko@kernel.org, akpm@linux-foundation.org
+Cc: pbonzini@redhat.com, wei.w.wang@intel.com, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu0@gmail.com, nilal@redhat.com, riel@redhat.com, huangzhichao@huawei.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+This patch series is separated from the previous "Virtio-balloon
+Enhancement" series. The new feature, VIRTIO_BALLOON_F_FREE_PAGE_HINT,  
+implemented by this series enables the virtio-balloon driver to report
+hints of guest free pages to the host. It can be used to accelerate live
+migration of VMs. Here is an introduction of this usage:
 
+Live migration needs to transfer the VM's memory from the source machine
+to the destination round by round. For the 1st round, all the VM's memory
+is transferred. From the 2nd round, only the pieces of memory that were
+written by the guest (after the 1st round) are transferred. One method
+that is popularly used by the hypervisor to track which part of memory is
+written is to write-protect all the guest memory.
 
-On 04/03/2018 02:11 AM, Halil Pasic wrote:
->> Halil, 
->> in the past you mentioned that you see some parts of the specification
->> as unclear.
->>
->> Will you have the time to look into this and send patches, or even just
->> open github issues?
->>
->> I'd like us to start looking at wrapping up the next spec version.
->>
-> There are a couple of I would have preferred done differently. Yet
-> my estimate regarding the pain/gain ratio for fixing most of the things
-> I dislike tells me: careful much pain and little gain. I'm a terrible
-> writer, and that does not make things easier.
-> 
-> I intend cook up some patches for the smaller things (the notifications
-> terminology, and AFAIR there was some stuff I noticed while reviewing packed)
-> this week. 
+This feature enables the optimization by skipping the transfer of guest
+free pages during VM live migration. It is not concerned that the memory
+pages are used after they are given to the hypervisor as a hint of the
+free pages, because they will be tracked by the hypervisor and transferred
+in the subsequent round if they are used and written.
 
-Sorry , till the end of the week did not work out. This 'available/used
-buffer notification' change turned out for me surprisingly invasive and something
-came up so I could not invest all the time I was intending to. But I did manage
-to some hours on the spec.
+* Tests
+- Test Environment
+    Host: Intel(R) Xeon(R) CPU E5-2699 v4 @ 2.20GHz
+    Guest: 8G RAM, 4 vCPU
+    Migration setup: migrate_set_speed 100G, migrate_set_downtime 2 second
 
-I will try to send out an incomplete RFC on 'available/used buffer notification'
-to get some feedback is it really what we want before going all the way.
+- Test Results
+    - Idle Guest Live Migration Time (results are averaged over 10 runs):
+        - Optimization v.s. Legacy = 271ms vs 1769ms --> ~86% reduction
+    - Guest with Linux Compilation Workload (make bzImage -j4):
+        - Live Migration Time (average)
+          Optimization v.s. Legacy = 1265ms v.s. 2634ms --> ~51% reduction
+        - Linux Compilation Time
+          Optimization v.s. Legacy = 4min56s v.s. 5min3s
+          --> no obvious difference
 
-Regards,
-Halil
+ChangeLog:
+v29->v30:
+    - mm/walk_free_mem_block: add cond_sched() for each order
+v28->v29:
+    - mm/page_poison: only expose page_poison_enabled(), rather than more
+      changes did in v28, as we are not 100% confident about that for now.
+    - virtio-balloon: use a separate buffer for the stop cmd, instead of
+      having the start and stop cmd use the same buffer. This avoids the
+      corner case that the start cmd is overridden by the stop cmd when
+      the host has a delay in reading the start cmd.
+v27->v28:
+    - mm/page_poison: Move PAGE_POISON to page_poison.c and add a function
+      to expose page poison val to kernel modules.
+v26->v27:
+    - add a new patch to expose page_poisoning_enabled to kernel modules
+    - virtio-balloon: set poison_val to 0xaaaaaaaa, instead of 0xaa
+v25->v26: virtio-balloon changes only
+    - remove kicking free page vq since the host now polls the vq after
+      initiating the reporting
+    - report_free_page_func: detach all the used buffers after sending
+      the stop cmd id. This avoids leaving the detaching burden (i.e.
+      overhead) to the next cmd id. Detaching here isn't considered
+      overhead since the stop cmd id has been sent, and host has already
+      moved formard.
+v24->v25:
+    - mm: change walk_free_mem_block to return 0 (instead of true) on
+          completing the report, and return a non-zero value from the
+          callabck, which stops the reporting.
+    - virtio-balloon:
+        - use enum instead of define for VIRTIO_BALLOON_VQ_INFLATE etc.
+        - avoid __virtio_clear_bit when bailing out;
+        - a new method to avoid reporting the some cmd id to host twice
+        - destroy_workqueue can cancel free page work when the feature is
+          negotiated;
+        - fail probe when the free page vq size is less than 2.
+v23->v24:
+    - change feature name VIRTIO_BALLOON_F_FREE_PAGE_VQ to
+      VIRTIO_BALLOON_F_FREE_PAGE_HINT
+    - kick when vq->num_free < half full, instead of "= half full"
+    - replace BUG_ON with bailing out
+    - check vb->balloon_wq in probe(), if null, bail out
+    - add a new feature bit for page poisoning
+    - solve the corner case that one cmd id being sent to host twice
+v22->v23:
+    - change to kick the device when the vq is half-way full;
+    - open-code batch_free_page_sg into add_one_sg;
+    - change cmd_id from "uint32_t" to "__virtio32";
+    - reserver one entry in the vq for the driver to send cmd_id, instead
+      of busywaiting for an available entry;
+    - add "stop_update" check before queue_work for prudence purpose for
+      now, will have a separate patch to discuss this flag check later;
+    - init_vqs: change to put some variables on stack to have simpler
+      implementation;
+    - add destroy_workqueue(vb->balloon_wq);
+v21->v22:
+    - add_one_sg: some code and comment re-arrangement
+    - send_cmd_id: handle a cornercase
+
+For previous ChangeLog, please reference
+https://lwn.net/Articles/743660/
+
+Wei Wang (4):
+  mm: support reporting free page blocks
+  virtio-balloon: VIRTIO_BALLOON_F_FREE_PAGE_HINT
+  mm/page_poison: expose page_poisoning_enabled to kernel modules
+  virtio-balloon: VIRTIO_BALLOON_F_PAGE_POISON
+
+ drivers/virtio/virtio_balloon.c     | 267 +++++++++++++++++++++++++++++++-----
+ include/linux/mm.h                  |   6 +
+ include/uapi/linux/virtio_balloon.h |   7 +
+ mm/page_alloc.c                     |  97 +++++++++++++
+ mm/page_poison.c                    |   6 +
+ 5 files changed, 347 insertions(+), 36 deletions(-)
+
+-- 
+1.8.3.1
 
 
 ---------------------------------------------------------------------
-To unsubscribe from this mail list, you must leave the OASIS TC that 
-generates this mail.  Follow this link to all your TCs in OASIS at:
-https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
