@@ -1,124 +1,92 @@
-Return-Path: virtio-dev-return-3929-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3714-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id BCDAE5818FA1
-	for <virtio-dev@lists.oasis-open.org>; Fri, 20 Apr 2018 09:15:08 -0700 (PDT)
-Date: Fri, 20 Apr 2018 19:14:51 +0300
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20180420191055-mutt-send-email-mst@kernel.org>
-References: <20180316183042-mutt-send-email-mst@kernel.org>
+	by lists.oasis-open.org (Postfix) with ESMTP id 02F385818017
+	for <virtio-dev@lists.oasis-open.org>; Tue,  3 Apr 2018 12:26:23 -0700 (PDT)
+From: "Rustad, Mark D" <mark.d.rustad@intel.com>
+Date: Tue, 3 Apr 2018 19:18:23 +0000
+Message-ID: <0927465E-0B56-4903-9F5E-288A7D9C46E6@intel.com>
+References: <20180315183449.3102.64791.stgit@localhost.localdomain>
+ <20180315184132.3102.90947.stgit@localhost.localdomain>
+ <20180316183042-mutt-send-email-mst@kernel.org>
  <CAKgT0UfgZ2gAdiAbCe4MTOr3o9cqq1q-mykCQsw68p2F-QEC8g@mail.gmail.com>
  <20180403161151-mutt-send-email-mst@kernel.org>
  <CAKgT0UfeSmG=xsd6sTkg4cOMnZ0QiqtCRDt4PynpF3d6nvvFCA@mail.gmail.com>
  <20180403212503-mutt-send-email-mst@kernel.org>
- <CAKgT0Ude79FYrK4qA0OKRJ1NackyqPi-hZ8Zh3WSdLDFxoOosQ@mail.gmail.com>
- <20180420030640-mutt-send-email-mst@kernel.org>
- <CAKgT0Ucpw9D1u8MYoEX5KOij6sxs-5O9gPFTmOVq=Dgt=HUJ=g@mail.gmail.com>
- <20180420180839-mutt-send-email-mst@kernel.org>
- <CAKgT0UeWzK=_8m9hhWfaKyYB02WXDsuCkgowS4hgQ9GkLMcAMA@mail.gmail.com>
+In-Reply-To: <20180403212503-mutt-send-email-mst@kernel.org>
+Content-Language: en-US
+Content-Type: multipart/signed;
+	boundary="Apple-Mail=_C63078D8-EFD9-47F7-B81E-F2320701BA1F";
+	protocol="application/pgp-signature"; micalg=pgp-sha256
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAKgT0UeWzK=_8m9hhWfaKyYB02WXDsuCkgowS4hgQ9GkLMcAMA@mail.gmail.com>
 Subject: Re: [virtio-dev] [pci PATCH v7 2/5] virtio_pci: Add support for
  unmanaged SR-IOV on virtio_pci devices
-To: Alexander Duyck <alexander.duyck@gmail.com>
-Cc: "Daly, Dan" <dan.daly@intel.com>, "Rustad, Mark D" <mark.d.rustad@intel.com>, Bjorn Helgaas <bhelgaas@google.com>, "Duyck, Alexander H" <alexander.h.duyck@intel.com>, linux-pci@vger.kernel.org, virtio-dev@lists.oasis-open.org, kvm@vger.kernel.org, Netdev <netdev@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>, linux-nvme@lists.infradead.org, Keith Busch <keith.busch@intel.com>, netanel@amazon.com, Don Dutile <ddutile@redhat.com>, Maximilian Heyne <mheyne@amazon.de>, "Wang, Liang-min" <liang-min.wang@intel.com>, David Woodhouse <dwmw2@infradead.org>, Christoph Hellwig <hch@lst.de>, dwmw@amazon.co.uk
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: Alexander Duyck <alexander.duyck@gmail.com>, "Daly, Dan" <dan.daly@intel.com>, Bjorn Helgaas <bhelgaas@google.com>, "Duyck, Alexander
+ H" <alexander.h.duyck@intel.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, kvm-devel <kvm@vger.kernel.org>, Netdev <netdev@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>, "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>, "Busch,
+ Keith" <keith.busch@intel.com>, "netanel@amazon.com" <netanel@amazon.com>, Don Dutile <ddutile@redhat.com>, Maximilian Heyne <mheyne@amazon.de>, "Wang,
+ Liang-min" <liang-min.wang@intel.com>, David Woodhouse <dwmw2@infradead.org>, Christoph Hellwig <hch@lst.de>, "dwmw@amazon.co.uk" <dwmw@amazon.co.uk>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Fri, Apr 20, 2018 at 09:08:51AM -0700, Alexander Duyck wrote:
-> On Fri, Apr 20, 2018 at 8:28 AM, Michael S. Tsirkin <mst@redhat.com> wrote:
-> > On Fri, Apr 20, 2018 at 07:56:14AM -0700, Alexander Duyck wrote:
-> >> > I think for virtio it should include the feature bit, yes.
-> >> > Adding feature bit is very easy - post a patch to the virtio TC mailing
-> >> > list, wait about a week to give people time to respond (two weeks if it
-> >> > is around holidays and such).
-> >>
-> >> The problem is we are talking about hardware/FPGA, not software.
-> >> Adding a feature bit means going back and updating RTL. The software
-> >> side of things is easy, re-validating things after a hardware/FPGA
-> >> change not so much.
-> >>
-> >> If this is a hard requirement I may just drop the virtio patch, push
-> >> what I have, and leave it to Mark/Dan to deal with the necessary RTL
-> >> and code changes needed to support Virtio as I don't expect the
-> >> turnaround to be as easy as just a patch.
-> >>
-> >> Thanks.
-> >>
-> >> - Alex
-> >
-> > Let's focus on virtio in this thread.
-> 
-> That is kind of what I was thinking, and why I was thinking it might
-> make sense to make the virtio specific changes a separate patch set. I
-> could get the PCI bits taken care of in the meantime since they effect
-> genetic PCI, NVMe, and the Amazon ENA interfaces.
-> 
-> > Involving the virtio TC in host/guest interface changes is a
-> > hard requirement. It's just too easy to create conflicts otherwise.
-> >
-> > So you guys should have just sent the proposal to the TC when you
-> > were doing your RTL and you would have been in the clear.
-> 
-> Agreed. I believe I brought this up when I was originally asked to
-> look into the coding for this.
-> 
-> > Generally adding a feature bit with any extension is a good idea:
-> > this way you merely reserve a feature bit for your feature through
-> > the TC and are more or less sure of forward and backward compatibility.
-> > It's incredibly easy.
-> 
-> Agreed, though in this case I am not sure it makes sense since this
-> isn't necessarily something that is a Virtio feature itself. It is
-> just a side effect of the fact that they are adding SR-IOV support to
-> a device that happens to emulate Virtio NET and apparently their PF
-> has to be identical to the VF other than the PCIe extended config
-> space.
+--Apple-Mail=_C63078D8-EFD9-47F7-B81E-F2320701BA1F
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain;
+	charset=us-ascii;
+	delsp=yes;
+	format=flowed
 
-I got that. My point is not everyone implementing SR-IOV will
-want to do it like this. Others might want to have VFs
-be different from PFs somehow. Feature bits ensure forward
-not just backward compatibility.
+On Apr 3, 2018, at 11:27 AM, Michael S. Tsirkin <mst@redhat.com> wrote:
 
+>> I'm not sure why you would need a feature bit. The capability is
+>> controlled via PCI configuration space. If it is present the device
+>> has the capability. If it is not then it does not.
+>>
+>> Basically if the PCI configuration space is not present then the sysfs
+>> entries will not be spawned and nothing will attempt to use this
+>> function.
+>>
+>> - ALex
+>
+> It's about compability with older guests which ignore the
+> capability.
+>
+> The feature is thus helpful so host knows whether guest supports VFs.
 
-> > But maybe it's not needed here.  I am not making the decisions myself.
-> > Not too late: post to the TC list and let's see what the response is.
-> > Without a feature bit you are making a change affecting all future
-> > implementations without exception so the bar is a bit higher: you need
-> > to actually post a spec text proposal not just a patch showing how to
-> > use the feature, and TC needs to vote on it. Voting takes a week,
-> > review a week or two depending on change complexity.
-> >
-> > Hope this helps,
-> >
-> > --
-> > MST
-> 
-> I think I will leave this for Dan and Mark to handle since I am still
-> not all that familiar with the hardware in use here. Once a decision
-> has been made him and Mark could look at pushing either the one line
-> patch or something more complex involving a feature flag.
-> 
-> Thanks.
-> 
-> Alex
+This is not about a guest creating its own VFs. This is about a host PF  
+that happens to have a virtio interface to be able to create virtio VFs  
+that can be assigned to guests. Nothing changes at all from a guest  
+perspective. Or maybe I am not understanding what you mean by "whether  
+guest supports VFs".
 
-As long as the TC is involved.
+--
+Mark Rustad, Networking Division, Intel Corporation
 
-I know it's a bit of a strange thing to block it at the driver level,
-the issue is with the device, but it's literally the only handle I have
-to prevent people from doing out of spec hacks then pushing it all on us
-to maintain.
+--Apple-Mail=_C63078D8-EFD9-47F7-B81E-F2320701BA1F
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment; filename="signature.asc"
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Message signed with OpenPGP
 
--- 
-MST
+-----BEGIN PGP SIGNATURE-----
+Comment: GPGTools - http://gpgtools.org
 
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+iQIzBAEBCAAdFiEE6ug8b0Wg+ULmnksNPA7/547j7m4FAlrD034ACgkQPA7/547j
+7m5NWBAAwS8hSMcLsTqh7qp59nFGFZgOM91t49d2Hh4eZI2XOtGG/4uKk7oiQx6/
+S6p8c3FnA2IFPKSc3HpGk4lha6JL45LE6emSeYmGoyOTaUR+u48HrB65IIPbLjJA
+8B8X+do+vtLyp31t61UH1BcO6oYwgRnAIojrKFjM7ga8fnbn0YprCDuGxIeDF/QY
+iXZ373KYf8rbPDIDt9I9USntO6Id47/usTVeTAiyn6Fvjp0AxWm0/JRdOZvoNn2D
+ZEpugdAm3oPG59IZSk9zQzh61VxAL7qOIsGBON60tYQZsHpJKLmsiwwksW3hhmCB
+cE6bcSKmHA5KkA230UtHVizVnja7zJ4TC5luJmctQ1uNzxUL5kMqDuGpCxpGaBml
+7JlF6mhyTGuz3ZgkOkUaH+flpU2AXJ91kxAw1yB9cjZQ17S7ZHO0ke5/lyhzBV1Y
+oz+02LIpgN6KkSuKWS8M1jSDzWpTt7XXJII5ZdcOn8DYrguW2541vltoZlTh1B71
+rCZgT1RfUjktaEaUlGJ7yZ6f4hPtI5cAdfLXw7BHOZNZgkJNxjCKO3Vvi/HRiyQJ
+KdE4pmd4cwOey0NKwcDR3wdYG1/dKrlQCGzb2siaOiCrdIK46FHA3Ubg8PmA1qNk
+3xdRPPTgy3c8iGGWFnUyOTgLPMgPavz+fsZmtQrzBg4L3QV/CS4=
+=0tdq
+-----END PGP SIGNATURE-----
 
+--Apple-Mail=_C63078D8-EFD9-47F7-B81E-F2320701BA1F--
