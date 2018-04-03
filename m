@@ -1,101 +1,291 @@
-Return-Path: virtio-dev-return-3701-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3696-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 0DC941CB807D
-	for <virtio-dev@lists.oasis-open.org>; Tue,  3 Apr 2018 01:29:05 -0700 (PDT)
-From: Wei Wang <wei.w.wang@intel.com>
-Date: Wed,  4 Apr 2018 00:10:05 +0800
-Message-Id: <1522771805-78927-5-git-send-email-wei.w.wang@intel.com>
-In-Reply-To: <1522771805-78927-1-git-send-email-wei.w.wang@intel.com>
-References: <1522771805-78927-1-git-send-email-wei.w.wang@intel.com>
-Subject: [virtio-dev] [PATCH v30 4/4] virtio-balloon: VIRTIO_BALLOON_F_PAGE_POISON
-To: virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, linux-mm@kvack.org, mst@redhat.com, mhocko@kernel.org, akpm@linux-foundation.org
-Cc: pbonzini@redhat.com, wei.w.wang@intel.com, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu0@gmail.com, nilal@redhat.com, riel@redhat.com, huangzhichao@huawei.com
+From: Lars Ganrot <lga@napatech.com>
+Date: Tue, 3 Apr 2018 07:19:47 +0000
+Message-ID: <0314ad39fb614c4d836fc77a6b42fc4c@napatech.com>
+References: <1520629942-36324-1-git-send-email-mst@redhat.com>
+ <1520629942-36324-14-git-send-email-mst@redhat.com>
+ <ee81d80dd7d4497a97f924be66e17227@napatech.com>
+ <20180328173142-mutt-send-email-mst@kernel.org>
+ <a3ab2d6229cb49b09d27d067ca74b9a9@napatech.com>
+ <20180329173105-mutt-send-email-mst@kernel.org>
+ <2552bfc5d77e4b789d08d3479c3baf01@napatech.com>
+ <20180329215452-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20180329215452-mutt-send-email-mst@kernel.org>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+Subject: RE: [virtio-dev] [PATCH v10 13/13] split-ring: in order feature
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: "virtio@lists.oasis-open.org" <virtio@lists.oasis-open.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-The VIRTIO_BALLOON_F_PAGE_POISON feature bit is used to indicate if the
-guest is using page poisoning. Guest writes to the poison_val config
-field to tell host about the page poisoning value in use.
+> From: virtio-dev@lists.oasis-open.org <virtio-dev@lists.oasis-open.org> O=
+n
+> Behalf Of Michael S. Tsirkin
+> Sent: 29. marts 2018 21:13
+>=20
+> On Thu, Mar 29, 2018 at 06:23:28PM +0000, Lars Ganrot wrote:
+> >
+> >
+> > > From: Michael S. Tsirkin <mst@redhat.com>
+> > > Sent: 29. marts 2018 16:42
+> > >
+> > > On Wed, Mar 28, 2018 at 04:12:10PM +0000, Lars Ganrot wrote:
+> > > > Missed replying to the lists. Sorry.
+> > > >
+> > > > > From: Michael S. Tsirkin <mst@redhat.com>
+> > > > > Sent: 28. marts 2018 16:39
+> > > > >
+> > > > > On Wed, Mar 28, 2018 at 08:23:38AM +0000, Lars Ganrot wrote:
+> > > > > > Hi Michael et al
+> > > > > >
+> > > > > > > Behalf Of Michael S. Tsirkin
+> > > > > > > Sent: 9. marts 2018 22:24
+> > > > > > >
+> > > > > > > For a split ring, require that drivers use descriptors in ord=
+er too.
+> > > > > > > This allows devices to skip reading the available ring.
+> > > > > > >
+> > > > > > > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+> > > > > > > Reviewed-by: Cornelia Huck <cohuck@redhat.com>
+> > > > > > > Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+> > > > > > > ---
+> > > > > > [snip]
+> > > > > > >
+> > > > > > > +If VIRTIO_F_IN_ORDER has been negotiated, and when making a
+> > > > > > > +descriptor with VRING_DESC_F_NEXT set in \field{flags} at
+> > > > > > > +offset $x$ in the table available to the device, driver
+> > > > > > > +MUST set \field{next} to $0$ for the last descriptor in the
+> > > > > > > +table (where $x =3D queue\_size - 1$) and to $x + 1$ for the
+> > > > > > > +rest of the
+> > > descriptors.
+> > > > > > > +
+> > > > > > >  \subsubsection{Indirect Descriptors}\label{sec:Basic
+> > > > > > > Facilities of a Virtio Device / Virtqueues / The Virtqueue
+> > > > > > > Descriptor Table / Indirect Descriptors}
+> > > > > > >
+> > > > > > >  Some devices benefit by concurrently dispatching a large
+> > > > > > > number @@
+> > > > > > > -247,6
+> > > > > > > +257,10 @@ chained by \field{next}. An indirect descriptor
+> > > > > > > +without a valid
+> > > > > > > \field{next}  A single indirect descriptor  table can
+> > > > > > > include both
+> > > > > > > device- readable and device-writable descriptors.
+> > > > > > >
+> > > > > > > +If VIRTIO_F_IN_ORDER has been negotiated, indirect
+> > > > > > > +descriptors use sequential indices, in-order: index 0
+> > > > > > > +followed by index 1 followed by index 2, etc.
+> > > > > > > +
+> > > > > > >  \drivernormative{\paragraph}{Indirect Descriptors}{Basic
+> > > > > > > Facilities of a Virtio Device / Virtqueues / The Virtqueue
+> > > > > > > Descriptor Table / Indirect Descriptors} The driver MUST NOT
+> > > > > > > set the
+> > > > > VIRTQ_DESC_F_INDIRECT flag unless the
+> > > > > > >  VIRTIO_F_INDIRECT_DESC feature was negotiated.   The driver
+> MUST
+> > > > > NOT
+> > > > > > > @@ -259,6 +273,10 @@ the device.
+> > > > > > >  A driver MUST NOT set both VIRTQ_DESC_F_INDIRECT and
+> > > > > > > VIRTQ_DESC_F_NEXT  in \field{flags}.
+> > > > > > >
+> > > > > > > +If VIRTIO_F_IN_ORDER has been negotiated, indirect
+> > > > > > > +descriptors MUST appear sequentially, with \field{next}
+> > > > > > > +taking the value of
+> > > > > > > +1 for the 1st descriptor, 2 for the 2nd one, etc.
+> > > > > > > +
+> > > > > > >  \devicenormative{\paragraph}{Indirect Descriptors}{Basic
+> > > > > > > Facilities of a Virtio Device / Virtqueues / The Virtqueue
+> > > > > > > Descriptor Table / Indirect Descriptors} The device MUST
+> > > > > > > ignore the write-only flag
+> > > > > > > (\field{flags}\&VIRTQ_DESC_F_WRITE) in the descriptor that
+> > > > > > > refers to an indirect table.
+> > > > > > >
+> > > > > >
+> > > > > > The use of VIRTIO_F_IN_ORDER for split-ring can eliminate some
+> > > > > > accesses
+> > > > > to the virtq_avail.ring and virtq_used.ring. However I'm
+> > > > > wondering if the proposed descriptor ordering for multi-element
+> > > > > buffers couldn't be tweaked to be more HW friendly.  Currently
+> > > > > even with the VIRTIO_F_IN_ORDER negotiated, there is no way of
+> > > > > knowing if, or how many chained descriptors follow the
+> > > > > descriptor pointed to by the virtq_avail.idx. A chain has to be
+> > > > > inspected one descriptor at a time until
+> > > > > virtq_desc.flags[VIRTQ_DESC_F_NEXT]=3D0. This is awkward for HW
+> > > > > offload, where you want to DMA all available descriptors in one
+> > > > > shot, instead of iterating based on the contents of received DMA
+> > > > > data. As currently defined, HW would have to find a compromise
+> between likely chain length, and cost of additional DMA transfers.
+> > > > > This leads to a performance penalty for all chained descriptors,
+> > > > > and in case the length assumption is wrong the impact can be
+> significant.
+> > > > > >
+> > > > > > Now, what if the VIRTIO_F_IN_ORDER instead required chained
+> > > > > > buffers to
+> > > > > place the last element at the lowest index, and the head-element
+> > > > > (to which virtq_avail.idx points) at the highest index? Then all
+> > > > > the chained element descriptors would be included in a DMA of
+> > > > > the descriptor table from the previous virtq_avail.idx+1 to the
+> > > > > current
+> > > virtq_avail.idx. The "backward"
+> > > > > order of the chained descriptors shouldn't pose an issue as such
+> > > > > (at least not in HW).
+> > > > > >
+> > > > > > Best Regards,
+> > > > > >
+> > > > > > -Lars
+> > > > >
+> > > > > virtq_avail.idx is still an index into the available ring.
+> > > > >
+> > > > > I don't really see how you can use virtq_avail.idx to guess the
+> > > > > placement of a descriptor.
+> > > > >
+> > > > > I suspect the best way to optimize this is to include the
+> > > > > relevant data with the VIRTIO_F_NOTIFICATION_DATA feature.
+> > > > >
+> > > >
+> > > > Argh, naturally.
+> > >
+> > > BTW, for split rings VIRTIO_F_NOTIFICATION_DATA just copies the
+> > > index right now.
+> > >
+> > > Do you have an opinion on whether we should change that for in-order?
+> > >
+> >
+> > Maybe I should think more about this, however adding the last element
+> descriptor index, would be useful to accelerate interfaces that frequentl=
+y
+> use chaining (from a HW DMA perspective at least).
+> >
+> > > > For HW offload I'd want to avoid notifications for buffer transfer
+> > > > from host
+> > > to device, and hoped to just poll virtq_avail.idx directly.
+> > > >
+> > > > A split virtqueue with VITRIO_F_IN_ORDER will maintain
+> > > virtq_avail.idx=3D=3Dvirtq_avail.ring[idx] as long as there is no
+> > > chaining. It would be nice to allow negotiating away chaining, i.e
+> > > add a VIRTIO_F_NO_CHAIN. If negotiated, the driver agrees not to use
+> > > chaining, and as a result (of IN_ORDER and NO_CHAIN) both device and
+> > > driver can ignore the virtq_avail.ring[].
+> > >
+> > > My point was that device can just assume no chains, and then fall
+> > > back on doing extra reads upon encountering a chain.
+> > >
+> >
+> > Yes, you are correct that the HW can speculatively use virtq_avail.idx =
+as the
+> >direct index to the descriptor table, and if it encounters a chain, reve=
+rt to
+> >using the virtq_avail.ring[] in the traditional way, and this would work
+> >without the feature-bit.
+>=20
+> Sorry that was not my idea.
+>=20
+> Device should not need to read the ring at all.
+> It reads the descriptor table and counts the descriptors without the next=
+ bit.
+> Once the count reaches the available index, it stops.
+>=20
 
-Signed-off-by: Wei Wang <wei.w.wang@intel.com>
-Suggested-by: Michael S. Tsirkin <mst@redhat.com>
-Cc: Michael S. Tsirkin <mst@redhat.com>
-Cc: Michal Hocko <mhocko@suse.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>
----
- drivers/virtio/virtio_balloon.c     | 10 ++++++++++
- include/uapi/linux/virtio_balloon.h |  3 +++
- 2 files changed, 13 insertions(+)
+Agreed, that would work as well, with the benefit of keeping the ring out o=
+f=20
+the loop.
 
-diff --git a/drivers/virtio/virtio_balloon.c b/drivers/virtio/virtio_balloon.c
-index 18d24a4..6de9339 100644
---- a/drivers/virtio/virtio_balloon.c
-+++ b/drivers/virtio/virtio_balloon.c
-@@ -699,6 +699,7 @@ static struct dentry *balloon_mount(struct file_system_type *fs_type,
- static int virtballoon_probe(struct virtio_device *vdev)
- {
- 	struct virtio_balloon *vb;
-+	__u32 poison_val;
- 	int err;
- 
- 	if (!vdev->config->get) {
-@@ -744,6 +745,11 @@ static int virtballoon_probe(struct virtio_device *vdev)
- 		vb->stop_cmd_id = cpu_to_virtio32(vb->vdev,
- 				VIRTIO_BALLOON_FREE_PAGE_REPORT_STOP_ID);
- 		INIT_WORK(&vb->report_free_page_work, report_free_page_func);
-+		if (virtio_has_feature(vdev, VIRTIO_BALLOON_F_PAGE_POISON)) {
-+			memset(&poison_val, PAGE_POISON, sizeof(poison_val));
-+			virtio_cwrite(vb->vdev, struct virtio_balloon_config,
-+				      poison_val, &poison_val);
-+		}
- 	}
- 
- 	vb->nb.notifier_call = virtballoon_oom_notify;
-@@ -862,6 +868,9 @@ static int virtballoon_restore(struct virtio_device *vdev)
- 
- static int virtballoon_validate(struct virtio_device *vdev)
- {
-+	if (!page_poisoning_enabled())
-+		__virtio_clear_bit(vdev, VIRTIO_BALLOON_F_PAGE_POISON);
-+
- 	__virtio_clear_bit(vdev, VIRTIO_F_IOMMU_PLATFORM);
- 	return 0;
- }
-@@ -871,6 +880,7 @@ static int virtballoon_validate(struct virtio_device *vdev)
- 	VIRTIO_BALLOON_F_STATS_VQ,
- 	VIRTIO_BALLOON_F_DEFLATE_ON_OOM,
- 	VIRTIO_BALLOON_F_FREE_PAGE_HINT,
-+	VIRTIO_BALLOON_F_PAGE_POISON,
- };
- 
- static struct virtio_driver virtio_balloon_driver = {
-diff --git a/include/uapi/linux/virtio_balloon.h b/include/uapi/linux/virtio_balloon.h
-index b2d86c2..8b93581 100644
---- a/include/uapi/linux/virtio_balloon.h
-+++ b/include/uapi/linux/virtio_balloon.h
-@@ -35,6 +35,7 @@
- #define VIRTIO_BALLOON_F_STATS_VQ	1 /* Memory Stats virtqueue */
- #define VIRTIO_BALLOON_F_DEFLATE_ON_OOM	2 /* Deflate balloon on OOM */
- #define VIRTIO_BALLOON_F_FREE_PAGE_HINT	3 /* VQ to report free pages */
-+#define VIRTIO_BALLOON_F_PAGE_POISON	4 /* Guest is using page poisoning */
- 
- /* Size of a PFN in the balloon interface. */
- #define VIRTIO_BALLOON_PFN_SHIFT 12
-@@ -47,6 +48,8 @@ struct virtio_balloon_config {
- 	__u32 actual;
- 	/* Free page report command id, readonly by guest */
- 	__u32 free_page_report_cmd_id;
-+	/* Stores PAGE_POISON if page poisoning is in use */
-+	__u32 poison_val;
- };
- 
- #define VIRTIO_BALLOON_S_SWAP_IN  0   /* Amount of memory swapped in */
--- 
-1.8.3.1
+>=20
+> > However the driver would not be able to optimize away the writing of
+> > the virtq_avail.ring[] (=3Dcache miss)
+>=20
+>=20
+> BTW writing is a separate question (there is no provision in the spec to =
+skip
+> writes) but device does not have to read the ring.
+>=20
+
+Yes, I understand the spec currently does not allow writes to be skipped, b=
+ut=20
+I'm wondering if that ought to be reconsidered for optimization features su=
+ch=20
+as IN_ORDER and NO_CHAIN? By opting for such features, both driver and=20
+device acknowledge their willingness to accept reduced flexibility for=20
+improved performance. Why not then make sure they get the biggest bang for=
+=20
+their buck? I would expect up to 20% improvement over PCIe (virtio-net,=20
+single 64B packet), if the device does not have to write to virtq_used.ring=
+[] on=20
+transmit, and bandwidth over PCI is a very precious resource in e.g. virtua=
+l=20
+switch offload with east-west acceleration (for a discussion see Intel's wh=
+ite-
+paper 335625-001).
+
+> Without device accesses ring will not be invaliated in cache so no misses
+> hopefully.
+>=20
+> > unless a NO_CHAIN feature has
+> > been negotiated.
+> > The IN_ORDER by itself has already eliminated the need to maintain the
+> > TX virtq_used.ring[], since the buffer order is always known by the
+> > driver.
+> > With a NO_CHAIN feature-bit both RX and TX virtq_avail.ring[] related
+> > cache-misses could be eliminated. I.e.
+> > looping a packet over a split virtqueue would just experience 7 driver
+> > cache misses, down from 10 in Virtio v1.0. Multi-element buffers would
+> > still be possible provided INDIRECT is negotiated.
+>=20
+>=20
+> NO_CHAIN might be a valid optimization, it is just unfortunately somewhat
+> narrow in that devices that need to mix write and read descriptors in the
+> same ring (e.g. storage) can not use this feature.
+>=20
+
+Yes, if there was a way of making indirect buffers support it, that would b=
+e=20
+ideal. However I don't see how that can be done without inline headers in
+elements to hold their written length.=20
+
+At the same time storage would not be hurt by it even if they are unable to=
+=20
+benefit from this particular optimization, and as long as there is a substa=
+ntial=20
+use case/space that benefit from an optimization, it ought to be considered=
+.=20
+I believe virtual switching offload with virtio-net devices over PCIe is su=
+ch a=20
+key use-case.
+
+>=20
+> > >
+> > >
+> > > > >
+> > > > > > --------------------------------------------------------------
+> > > > > > ----
+> > > > > > --- To unsubscribe, e-mail:
+> > > > > > virtio-dev-unsubscribe@lists.oasis-open.org
+> > > > > > For additional commands, e-mail:
+> > > > > > virtio-dev-help@lists.oasis-open.org
+> > > >
+> > > > ------------------------------------------------------------------
+> > > > --- To unsubscribe, e-mail:
+> > > > virtio-dev-unsubscribe@lists.oasis-open.org
+> > > > For additional commands, e-mail:
+> > > > virtio-dev-help@lists.oasis-open.org
+> > Disclaimer: This email and any files transmitted with it may contain
+> confidential information intended for the addressee(s) only. The informat=
+ion
+> is not to be surrendered or copied to unauthorized persons. If you have
+> received this communication in error, please notify the sender immediatel=
+y
+> and delete this e-mail from your system.
+>=20
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
 
 ---------------------------------------------------------------------
