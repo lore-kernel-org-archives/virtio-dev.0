@@ -1,92 +1,92 @@
-Return-Path: virtio-dev-return-3714-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3706-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 02F385818017
-	for <virtio-dev@lists.oasis-open.org>; Tue,  3 Apr 2018 12:26:23 -0700 (PDT)
-From: "Rustad, Mark D" <mark.d.rustad@intel.com>
-Date: Tue, 3 Apr 2018 19:18:23 +0000
-Message-ID: <0927465E-0B56-4903-9F5E-288A7D9C46E6@intel.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id B00955818F03
+	for <virtio-dev@lists.oasis-open.org>; Tue,  3 Apr 2018 06:11:38 -0700 (PDT)
+Date: Tue, 3 Apr 2018 16:11:33 +0300
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20180403160847-mutt-send-email-mst@kernel.org>
 References: <20180315183449.3102.64791.stgit@localhost.localdomain>
  <20180315184132.3102.90947.stgit@localhost.localdomain>
- <20180316183042-mutt-send-email-mst@kernel.org>
- <CAKgT0UfgZ2gAdiAbCe4MTOr3o9cqq1q-mykCQsw68p2F-QEC8g@mail.gmail.com>
- <20180403161151-mutt-send-email-mst@kernel.org>
- <CAKgT0UfeSmG=xsd6sTkg4cOMnZ0QiqtCRDt4PynpF3d6nvvFCA@mail.gmail.com>
- <20180403212503-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20180403212503-mutt-send-email-mst@kernel.org>
-Content-Language: en-US
-Content-Type: multipart/signed;
-	boundary="Apple-Mail=_C63078D8-EFD9-47F7-B81E-F2320701BA1F";
-	protocol="application/pgp-signature"; micalg=pgp-sha256
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20180315184132.3102.90947.stgit@localhost.localdomain>
 Subject: Re: [virtio-dev] [pci PATCH v7 2/5] virtio_pci: Add support for
  unmanaged SR-IOV on virtio_pci devices
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Alexander Duyck <alexander.duyck@gmail.com>, "Daly, Dan" <dan.daly@intel.com>, Bjorn Helgaas <bhelgaas@google.com>, "Duyck, Alexander
- H" <alexander.h.duyck@intel.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, kvm-devel <kvm@vger.kernel.org>, Netdev <netdev@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>, "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>, "Busch,
- Keith" <keith.busch@intel.com>, "netanel@amazon.com" <netanel@amazon.com>, Don Dutile <ddutile@redhat.com>, Maximilian Heyne <mheyne@amazon.de>, "Wang,
- Liang-min" <liang-min.wang@intel.com>, David Woodhouse <dwmw2@infradead.org>, Christoph Hellwig <hch@lst.de>, "dwmw@amazon.co.uk" <dwmw@amazon.co.uk>
+To: Alexander Duyck <alexander.duyck@gmail.com>
+Cc: bhelgaas@google.com, alexander.h.duyck@intel.com, linux-pci@vger.kernel.org, virtio-dev@lists.oasis-open.org, kvm@vger.kernel.org, netdev@vger.kernel.org, dan.daly@intel.com, linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org, keith.busch@intel.com, netanel@amazon.com, ddutile@redhat.com, mheyne@amazon.de, liang-min.wang@intel.com, mark.d.rustad@intel.com, dwmw2@infradead.org, hch@lst.de, dwmw@amazon.co.uk
 List-ID: <virtio-dev.lists.oasis-open.org>
 
---Apple-Mail=_C63078D8-EFD9-47F7-B81E-F2320701BA1F
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain;
-	charset=us-ascii;
-	delsp=yes;
-	format=flowed
+On Thu, Mar 15, 2018 at 11:42:41AM -0700, Alexander Duyck wrote:
+> From: Alexander Duyck <alexander.h.duyck@intel.com>
+> 
+> Hardware-realized virtio_pci devices can implement SR-IOV, so this
+> patch enables its use. The device in question is an upcoming Intel
+> NIC that implements both a virtio_net PF and virtio_net VFs. These
+> are hardware realizations of what has been up to now been a software
+> interface.
+> 
+> The device in question has the following 4-part PCI IDs:
+> 
+> PF: vendor: 1af4 device: 1041 subvendor: 8086 subdevice: 15fe
+> VF: vendor: 1af4 device: 1041 subvendor: 8086 subdevice: 05fe
+> 
+> The patch currently needs no check for device ID, because the callback
+> will never be made for devices that do not assert the capability or
+> when run on a platform incapable of SR-IOV.
+> 
+> One reason for this patch is because the hardware requires the
+> vendor ID of a VF to be the same as the vendor ID of the PF that
+> created it. So it seemed logical to simply have a fully-functioning
+> virtio_net PF create the VFs. This patch makes that possible.
+> 
+> Reviewed-by: Christoph Hellwig <hch@lst.de>
+> Signed-off-by: Mark Rustad <mark.d.rustad@intel.com>
+> Signed-off-by: Alexander Duyck <alexander.h.duyck@intel.com>
 
-On Apr 3, 2018, at 11:27 AM, Michael S. Tsirkin <mst@redhat.com> wrote:
+I thought hard about this, and I think we need a feature
+bit for this. This way host can detect support,
+and we can also change our minds later if we need
+to modify the interface and manage VFs after all.
 
->> I'm not sure why you would need a feature bit. The capability is
->> controlled via PCI configuration space. If it is present the device
->> has the capability. If it is not then it does not.
->>
->> Basically if the PCI configuration space is not present then the sysfs
->> entries will not be spawned and nothing will attempt to use this
->> function.
->>
->> - ALex
->
-> It's about compability with older guests which ignore the
-> capability.
->
-> The feature is thus helpful so host knows whether guest supports VFs.
+It seems PCI specific so non pci transports would disable the feature
+for now.
 
-This is not about a guest creating its own VFs. This is about a host PF  
-that happens to have a virtio interface to be able to create virtio VFs  
-that can be assigned to guests. Nothing changes at all from a guest  
-perspective. Or maybe I am not understanding what you mean by "whether  
-guest supports VFs".
+> ---
+> 
+> v4: Dropped call to pci_disable_sriov in virtio_pci_remove function
+> v5: Replaced call to pci_sriov_configure_unmanaged with
+>         pci_sriov_configure_simple
+> v6: Dropped "#ifdef" checks for IOV wrapping sriov_configure definition
+> v7: No code change, added Reviewed-by
+> 
+>  drivers/virtio/virtio_pci_common.c |    1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/virtio/virtio_pci_common.c b/drivers/virtio/virtio_pci_common.c
+> index 48d4d1cf1cb6..67a227fd7aa0 100644
+> --- a/drivers/virtio/virtio_pci_common.c
+> +++ b/drivers/virtio/virtio_pci_common.c
+> @@ -596,6 +596,7 @@ static void virtio_pci_remove(struct pci_dev *pci_dev)
+>  #ifdef CONFIG_PM_SLEEP
+>  	.driver.pm	= &virtio_pci_pm_ops,
+>  #endif
+> +	.sriov_configure = pci_sriov_configure_simple,
+>  };
+>  
+>  module_pci_driver(virtio_pci_driver);
+> 
+> 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
---
-Mark Rustad, Networking Division, Intel Corporation
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
---Apple-Mail=_C63078D8-EFD9-47F7-B81E-F2320701BA1F
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment; filename="signature.asc"
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Message signed with OpenPGP
-
------BEGIN PGP SIGNATURE-----
-Comment: GPGTools - http://gpgtools.org
-
-iQIzBAEBCAAdFiEE6ug8b0Wg+ULmnksNPA7/547j7m4FAlrD034ACgkQPA7/547j
-7m5NWBAAwS8hSMcLsTqh7qp59nFGFZgOM91t49d2Hh4eZI2XOtGG/4uKk7oiQx6/
-S6p8c3FnA2IFPKSc3HpGk4lha6JL45LE6emSeYmGoyOTaUR+u48HrB65IIPbLjJA
-8B8X+do+vtLyp31t61UH1BcO6oYwgRnAIojrKFjM7ga8fnbn0YprCDuGxIeDF/QY
-iXZ373KYf8rbPDIDt9I9USntO6Id47/usTVeTAiyn6Fvjp0AxWm0/JRdOZvoNn2D
-ZEpugdAm3oPG59IZSk9zQzh61VxAL7qOIsGBON60tYQZsHpJKLmsiwwksW3hhmCB
-cE6bcSKmHA5KkA230UtHVizVnja7zJ4TC5luJmctQ1uNzxUL5kMqDuGpCxpGaBml
-7JlF6mhyTGuz3ZgkOkUaH+flpU2AXJ91kxAw1yB9cjZQ17S7ZHO0ke5/lyhzBV1Y
-oz+02LIpgN6KkSuKWS8M1jSDzWpTt7XXJII5ZdcOn8DYrguW2541vltoZlTh1B71
-rCZgT1RfUjktaEaUlGJ7yZ6f4hPtI5cAdfLXw7BHOZNZgkJNxjCKO3Vvi/HRiyQJ
-KdE4pmd4cwOey0NKwcDR3wdYG1/dKrlQCGzb2siaOiCrdIK46FHA3Ubg8PmA1qNk
-3xdRPPTgy3c8iGGWFnUyOTgLPMgPavz+fsZmtQrzBg4L3QV/CS4=
-=0tdq
------END PGP SIGNATURE-----
-
---Apple-Mail=_C63078D8-EFD9-47F7-B81E-F2320701BA1F--
