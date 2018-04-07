@@ -1,61 +1,93 @@
-Return-Path: virtio-dev-return-3716-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3745-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 4F9F55819049
-	for <virtio-dev@lists.oasis-open.org>; Wed,  4 Apr 2018 00:36:46 -0700 (PDT)
+	by lists.oasis-open.org (Postfix) with ESMTP id 4847C58191BC
+	for <virtio-dev@lists.oasis-open.org>; Fri,  6 Apr 2018 19:32:17 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <3bdfc39f-4935-2433-7982-9ce28c3aa166@gmail.com>
-References: <1522573990-5242-1-git-send-email-si-wei.liu@oracle.com>
- <1522573990-5242-3-git-send-email-si-wei.liu@oracle.com> <8b589cd2-1abc-59c2-99f1-96df8174bb6b@gmail.com>
- <20180403154210.GK3313@nanopsycho> <3bdfc39f-4935-2433-7982-9ce28c3aa166@gmail.com>
+In-Reply-To: <20180404.133749.1802514210170809419.davem@davemloft.net>
+References: <3bdfc39f-4935-2433-7982-9ce28c3aa166@gmail.com>
+ <CADGSJ23Zr7_CLMr1W9qhcWux59+aCvFdTg_nQ7Mmp5B-FWL8=Q@mail.gmail.com>
+ <54accf73-e6cc-e03f-6a1c-34e1bbd78047@gmail.com> <20180404.133749.1802514210170809419.davem@davemloft.net>
 From: Siwei Liu <loseweigh@gmail.com>
-Date: Wed, 4 Apr 2018 00:36:34 -0700
-Message-ID: <CADGSJ23Zr7_CLMr1W9qhcWux59+aCvFdTg_nQ7Mmp5B-FWL8=Q@mail.gmail.com>
+Date: Fri, 6 Apr 2018 19:32:05 -0700
+Message-ID: <CADGSJ206RKi704uoLe3xVs6PyWpURPLb75OPCM_YO9DfnnEzpw@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Subject: [virtio-dev] Re: [RFC PATCH 2/3] netdev: kernel-only IFF_HIDDEN netdevice
-To: David Ahern <dsahern@gmail.com>
-Cc: Jiri Pirko <jiri@resnulli.us>, Si-Wei Liu <si-wei.liu@oracle.com>, "Michael S. Tsirkin" <mst@redhat.com>, Stephen Hemminger <stephen@networkplumber.org>, Alexander Duyck <alexander.h.duyck@intel.com>, David Miller <davem@davemloft.net>, "Brandeburg, Jesse" <jesse.brandeburg@intel.com>, Jakub Kicinski <kubakici@wp.pl>, Jason Wang <jasowang@redhat.com>, "Samudrala, Sridhar" <sridhar.samudrala@intel.com>, Netdev <netdev@vger.kernel.org>, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org
+To: David Miller <davem@davemloft.net>
+Cc: David Ahern <dsahern@gmail.com>, Jiri Pirko <jiri@resnulli.us>, si-wei liu <si-wei.liu@oracle.com>, "Michael S. Tsirkin" <mst@redhat.com>, Stephen Hemminger <stephen@networkplumber.org>, Alexander Duyck <alexander.h.duyck@intel.com>, "Brandeburg, Jesse" <jesse.brandeburg@intel.com>, Jakub Kicinski <kubakici@wp.pl>, Jason Wang <jasowang@redhat.com>, "Samudrala, Sridhar" <sridhar.samudrala@intel.com>, Netdev <netdev@vger.kernel.org>, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Tue, Apr 3, 2018 at 6:04 PM, David Ahern <dsahern@gmail.com> wrote:
-> On 4/3/18 9:42 AM, Jiri Pirko wrote:
->>>
->>> There are other use cases that want to hide a device from userspace. I
->>
->> What usecases do you have in mind?
+On Wed, Apr 4, 2018 at 10:37 AM, David Miller <davem@davemloft.net> wrote:
+> From: David Ahern <dsahern@gmail.com>
+> Date: Wed, 4 Apr 2018 11:21:54 -0600
 >
-> As mentioned in a previous response some kernel drivers create control
-> netdevs. Just as in this case users should not be mucking with it, and
-> S/W like lldpd should ignore it.
+>> It is a netdev so there is no reason to have a separate ip command to
+>> inspect it. 'ip link' is the right place.
 >
->>
->>> would prefer a better solution than playing games with name prefixes and
->>> one that includes an API for users to list all devices -- even ones
->>> hidden by default.
->>
->> Netdevice hiding feels a bit scarry for me. This smells like a workaround
->> for userspace issues. Why can't the netdevice be visible always and
->> userspace would know what is it and what should it do with it?
->>
->> Once we start with hiding, there are other things related to that which
->> appear. Like who can see what, levels of visibility etc...
->>
->
-> I would not advocate for any API that does not allow users to have full
-> introspection. The intent is to hide the netdev by default but have an
-> option to see it.
+> I agree on this.
 
-I'm fine with having a link dump API to inspect the hidden netdev. As
-said, the name for hidden netdevs should be in a separate device
-namespace, and we did not even get closer to what it should look like
-as I don't want to make it just an option for ip link. Perhaps a new
-set of sub-commands of, say, 'ip device'.
+I'm completely fine of having an API for inspection purpose. The thing
+is that we'd perhaps need to go for the namespace approach, for which
+I think everyone seems to agree not to fiddle with the ":" prefix, but
+rather have a new class of network subsystem under /sys/class thus a
+separate device namespace e.g. /sys/class/net-kernel for those
+auto-managed lower netdevs is needed.
 
+And I assume everyone here understands the use case for live migration
+(in the context of providing cloud service) is very different, and we
+have to hide the netdevs. If not, I'm more than happy to clarify.
+
+With that in mind, if having a new class of net-kernel namespace, we
+can name the kernel device elaborately which is not neccessarily equal
+to the device name exposed to userspace. For example, we can use
+driver name as the prefix as opposed to "eth" or ":eth". And we don't
+need to have auto-managed netdevs locked into the ":" prefix at all (I
+intentionally left it out in the this RFC patch to ask for comments on
+the namespace solution which is much cleaner). That said, an userpsace
+named device through udev may call something like ens3 and
+switch1-port2, but in the kernel-net namespace, it may look like
+ixgbevf0 and mlxsw1p2.
+
+So if we all agree introducing a new namespace is the rigth thing to
+do, `ip link' will no longer serve the purpose of displaying the
+information for kernel-net devnames for the sake of avoiding ambiguity
+and namespace collision: it's entirely possible the ip link name could
+collide with a kernel-net devname, it's become unclear which name of a
+netdev object the command is expected to operate on. That's why I
+thought showing the kernel-only netdevs using a separate subcommand
+makes more sense.
+
+Thoughts and comments? Please let me know.
+
+Thanks,
 -Siwei
+
+>
+> What I really don't understand still is the use case... really.
+>
+> So there are control netdevs, what exactly is the problem with that?
+>
+> Are we not exporting enough information for applications to handle
+> these devices sanely?  If so, then's let add that information.
+>
+> We can set netdev->type to ETH_P_LINUXCONTROL or something like that.
+>
+> Another alternative is to add an interface flag like IFF_CONTROL or
+> similar, and that probably is much nicer.
+>
+> Hiding the devices means that we acknowledge that applications are
+> currently broken with control netdevs... and we want them to stay
+> broken!
+>
+> That doesn't sound like a good plan to me.
+>
+> So let's fix handling of control netdevs instead of hiding them.
+>
+> Thanks.
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
