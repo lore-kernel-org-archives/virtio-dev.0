@@ -1,45 +1,67 @@
-Return-Path: virtio-return-3088-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-return-3050-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio@lists.oasis-open.org>
 List-Post: <mailto:virtio@lists.oasis-open.org>
 List-Help: <mailto:virtio-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Fri, 20 Apr 2018 19:28:58 +0300
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20180420192339-mutt-send-email-mst@kernel.org>
+From: Halil Pasic <pasic@linux.vnet.ibm.com>
+Date: Mon,  9 Apr 2018 20:58:42 +0200
+In-Reply-To: <1523300322-21989-1-git-send-email-pasic@linux.vnet.ibm.com>
 References: <1523300322-21989-1-git-send-email-pasic@linux.vnet.ibm.com>
- <1523300322-21989-5-git-send-email-pasic@linux.vnet.ibm.com>
- <79445753-5c65-3ffb-f84d-578a50037561@redhat.com>
- <e5e2df6e-59cf-9a97-861c-53b0e5160a79@linux.vnet.ibm.com>
- <2b0c61bd-d2f9-3bdb-32de-789e65a5a703@redhat.com>
- <29af1c28-c7b0-a461-3c53-9b029512c6d7@linux.vnet.ibm.com>
- <20180420184651-mutt-send-email-mst@kernel.org>
- <b3946831-bdb2-b1c4-5c47-b917363b0893@linux.ibm.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b3946831-bdb2-b1c4-5c47-b917363b0893@linux.ibm.com>
-Subject: Re: [virtio] [PATCH 4/5] packed-ring: reposition drivernormative on
- driver notifications
-To: Halil Pasic <pasic@linux.ibm.com>
-Cc: Halil Pasic <pasic@linux.vnet.ibm.com>, Paolo Bonzini <pbonzini@redhat.com>, virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, Cornelia Huck <cohuck@redhat.com>
+Message-Id: <1523300322-21989-6-git-send-email-pasic@linux.vnet.ibm.com>
+Subject: [virtio] [PATCH 5/5] packed-ring: tweak driver code example
+To: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+Cc: "Michael S. Tsirkin" <mst@redhat.com>, Cornelia Huck <cohuck@redhat.com>, Halil Pasic <pasic@linux.vnet.ibm.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Fri, Apr 20, 2018 at 06:22:40PM +0200, Halil Pasic wrote:
-> Was, kind of, the point I tried to make. I've (for myself) given up on
-> these ideals. That's why I did not bother to think about isn't that sentence
-> normative section material. And I don't intend to clean up normative
-> vs non-normative.
+This patch does three things. Emphasises that the example is pseudo-code
+as we tend to stick to C otherwise and tweaks the wording, fixes
+a typo in the pseudo code, and removes a line of code that I neither can
+see the necessity for nor the sense of.
 
-Makes sense.
+Signed-off-by: Halil Pasic <pasic@linux.vnet.ibm.com>
+---
+ packed-ring.tex |    9 +++++----
+ 1 files changed, 5 insertions(+), 4 deletions(-)
 
-We do need to keep RFC2119 keywords out of the rest of the text simply to
-avoid confusing people - from experience if we don't then during public
-review people jump on it immediately and say hey this must go into the
-normative section. It's just something that's easy to spot :)
-
+diff --git a/packed-ring.tex b/packed-ring.tex
+index 388850b..f619069 100644
+--- a/packed-ring.tex
++++ b/packed-ring.tex
+@@ -604,9 +604,11 @@ value before checking if notifications are suppressed.
+ The driver MUST perform a suitable memory barrier before reading
+ the Driver Event Suppression structure, to avoid missing a notification.
+ 
+-\subsubsection{Implementation Example}\label{sec:Basic Facilities of a Virtio Device / Packed Virtqueues / Supplying Buffers to The Device / Implementation Example}
++\subsubsection{Pseudo-Code Example}\label{sec:Basic Facilities of a
++Virtio Device / Packed Virtqueues / Supplying Buffers to The Device /
++Pseudo-Code Example}
+ 
+-Below is a driver code example. It does not attempt to reduce
++Below is driver pseudo-code example supplying buffers to the device. It does not attempt to reduce
+ the number of device interrupts, neither does it support
+ the VIRTIO_F_RING_EVENT_IDX feature.
+ 
+@@ -621,7 +623,6 @@ sgs = 0;
+ for (each buffer element b) {
+         sgs++;
+ 
+-        vq->ids[vq->next_avail] = -1;
+         vq->desc[vq->next_avail].address = get_addr(b);
+         vq->desc[vq->next_avail].len = get_len(b);
+ 
+@@ -645,7 +646,7 @@ for (each buffer element b) {
+ 
+         if (vq->next_avail >= vq->size) {
+                 vq->next_avail = 0;
+-                vq->avail_wrap_count \^= 1;
++                vq->avail_wrap_count ^= 1;
+         }
+ }
+ vq->sgs[id] = sgs;
 -- 
-MST
+1.7.1
+
 
 ---------------------------------------------------------------------
 To unsubscribe from this mail list, you must leave the OASIS TC that 
