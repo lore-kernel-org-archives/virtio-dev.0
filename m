@@ -1,39 +1,51 @@
-Return-Path: virtio-return-3052-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-return-3047-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio@lists.oasis-open.org>
 List-Post: <mailto:virtio@lists.oasis-open.org>
 List-Help: <mailto:virtio-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
 From: Halil Pasic <pasic@linux.vnet.ibm.com>
-Date: Mon,  9 Apr 2018 20:58:37 +0200
-Message-Id: <1523300322-21989-1-git-send-email-pasic@linux.vnet.ibm.com>
-Subject: [virtio] [PATCH 0/5] fixes and tweaks for virtio v1.1 
+Date: Mon,  9 Apr 2018 20:58:38 +0200
+In-Reply-To: <1523300322-21989-1-git-send-email-pasic@linux.vnet.ibm.com>
+References: <1523300322-21989-1-git-send-email-pasic@linux.vnet.ibm.com>
+Message-Id: <1523300322-21989-2-git-send-email-pasic@linux.vnet.ibm.com>
+Subject: [virtio] [PATCH 1/5] packed-ring: fix used descriptors but meant buffers
 To: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
 Cc: "Michael S. Tsirkin" <mst@redhat.com>, Cornelia Huck <cohuck@redhat.com>, Halil Pasic <pasic@linux.vnet.ibm.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Some of these are more and some are less important. Please
-be careful, there is always a chance that I misunderstood something
-and that I'm trying to change for the worse.
+The subsection is talking about virtio buffers, that is possibly as
+scatter-gather list mapped by multiple descriptors. Mistakenly we
+at places we say descriptors instead of buffers.
 
-I've identified some other weak point's too, but tried to
-proceed in order the more grave and the better I think I
-understand it (and thus propose a fix) the higher the priority.
+While at it fix the title case capitalization. We seem to use
+title case capitalization for subsections in most cases.
 
-Some stuff I've left for my notifiers patch set. This one
-and that one will have to get merged if both turn out to
-be good.
+Signed-off-by: Halil Pasic <pasic@linux.vnet.ibm.com>
+---
+ packed-ring.tex |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
 
-Halil Pasic (5):
-  packed-ring: fix used descriptors but meant buffers
-  consistency: clean up stale  wording for v1.1 terms
-  packed-packed: fix supplying buffers description
-  packed-ring: reposition drivernormative on driver notifications
-  packed-ring: tweak driver code example
-
- content.tex     |   14 ++++----
- packed-ring.tex |   96 +++++++++++++++++++++++++++++-------------------------
- 2 files changed, 59 insertions(+), 51 deletions(-)
+diff --git a/packed-ring.tex b/packed-ring.tex
+index 2ef9559..eb006b0 100644
+--- a/packed-ring.tex
++++ b/packed-ring.tex
+@@ -272,10 +272,10 @@ Buffer ID is also reserved and is ignored by the device.
+ In descriptors with VIRTQ_DESC_F_INDIRECT set VIRTQ_DESC_F_WRITE
+ is reserved and is ignored by the device.
+ 
+-\subsection{In-order use of descriptors}
+-\label{sec:Packed Virtqueues / In-order use of descriptors}
++\subsection{In-Order Use of Buffers}
++\label{sec:Packed Virtqueues / In-Order Use of Buffers}
+ 
+-Some devices always use descriptors in the same order in which
++Some devices always use buffers in the same order in which
+ they have been made available. These devices can offer the
+ VIRTIO_F_IN_ORDER feature. If negotiated, this knowledge allows
+ devices to notify the use of a batch of buffers to the driver by
+-- 
+1.7.1
 
 
 ---------------------------------------------------------------------
