@@ -1,93 +1,82 @@
-Return-Path: virtio-dev-return-3745-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3762-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 4847C58191BC
-	for <virtio-dev@lists.oasis-open.org>; Fri,  6 Apr 2018 19:32:17 -0700 (PDT)
+	by lists.oasis-open.org (Postfix) with ESMTP id A387358191E6
+	for <virtio-dev@lists.oasis-open.org>; Mon,  9 Apr 2018 15:07:40 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20180404.133749.1802514210170809419.davem@davemloft.net>
+In-Reply-To: <20180407031919.GB11029@lunn.ch>
 References: <3bdfc39f-4935-2433-7982-9ce28c3aa166@gmail.com>
  <CADGSJ23Zr7_CLMr1W9qhcWux59+aCvFdTg_nQ7Mmp5B-FWL8=Q@mail.gmail.com>
  <54accf73-e6cc-e03f-6a1c-34e1bbd78047@gmail.com> <20180404.133749.1802514210170809419.davem@davemloft.net>
+ <CADGSJ206RKi704uoLe3xVs6PyWpURPLb75OPCM_YO9DfnnEzpw@mail.gmail.com> <20180407031919.GB11029@lunn.ch>
 From: Siwei Liu <loseweigh@gmail.com>
-Date: Fri, 6 Apr 2018 19:32:05 -0700
-Message-ID: <CADGSJ206RKi704uoLe3xVs6PyWpURPLb75OPCM_YO9DfnnEzpw@mail.gmail.com>
+Date: Mon, 9 Apr 2018 15:07:26 -0700
+Message-ID: <CADGSJ211kA5ktADbwv2f4ma_ooBmYW4r7YwzGD2G_Gw5+wv5rw@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Subject: [virtio-dev] Re: [RFC PATCH 2/3] netdev: kernel-only IFF_HIDDEN netdevice
-To: David Miller <davem@davemloft.net>
-Cc: David Ahern <dsahern@gmail.com>, Jiri Pirko <jiri@resnulli.us>, si-wei liu <si-wei.liu@oracle.com>, "Michael S. Tsirkin" <mst@redhat.com>, Stephen Hemminger <stephen@networkplumber.org>, Alexander Duyck <alexander.h.duyck@intel.com>, "Brandeburg, Jesse" <jesse.brandeburg@intel.com>, Jakub Kicinski <kubakici@wp.pl>, Jason Wang <jasowang@redhat.com>, "Samudrala, Sridhar" <sridhar.samudrala@intel.com>, Netdev <netdev@vger.kernel.org>, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org
+To: Andrew Lunn <andrew@lunn.ch>
+Cc: David Miller <davem@davemloft.net>, David Ahern <dsahern@gmail.com>, Jiri Pirko <jiri@resnulli.us>, si-wei liu <si-wei.liu@oracle.com>, "Michael S. Tsirkin" <mst@redhat.com>, Stephen Hemminger <stephen@networkplumber.org>, Alexander Duyck <alexander.h.duyck@intel.com>, "Brandeburg, Jesse" <jesse.brandeburg@intel.com>, Jakub Kicinski <kubakici@wp.pl>, Jason Wang <jasowang@redhat.com>, "Samudrala, Sridhar" <sridhar.samudrala@intel.com>, Netdev <netdev@vger.kernel.org>, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, Apr 4, 2018 at 10:37 AM, David Miller <davem@davemloft.net> wrote:
-> From: David Ahern <dsahern@gmail.com>
-> Date: Wed, 4 Apr 2018 11:21:54 -0600
+On Fri, Apr 6, 2018 at 8:19 PM, Andrew Lunn <andrew@lunn.ch> wrote:
+> Hi Siwei
 >
->> It is a netdev so there is no reason to have a separate ip command to
->> inspect it. 'ip link' is the right place.
+>> I think everyone seems to agree not to fiddle with the ":" prefix, but
+>> rather have a new class of network subsystem under /sys/class thus a
+>> separate device namespace e.g. /sys/class/net-kernel for those
+>> auto-managed lower netdevs is needed.
 >
-> I agree on this.
+> How do you get a device into this new class? I don't know the Linux
+> driver model too well, but to get a device out of one class and into
+> another, i think you need to device_del(dev). modify dev->class and
+> then device_add(dev). However, device_add() says you are not allowed
+> to do this.
 
-I'm completely fine of having an API for inspection purpose. The thing
-is that we'd perhaps need to go for the namespace approach, for which
-I think everyone seems to agree not to fiddle with the ":" prefix, but
-rather have a new class of network subsystem under /sys/class thus a
-separate device namespace e.g. /sys/class/net-kernel for those
-auto-managed lower netdevs is needed.
+No, implementation wise I'd avoid changing the class on the fly. What
+I'm looking to is a means to add a secondary class or class aliasing
+mechanism for netdevs that allows mapping for a kernel device
+namespace (/class/net-kernel) to userspace (/class/net). Imagine
+creating symlinks between these two namespaces as an analogy. All
+userspace visible netdevs today will have both a kernel name and a
+userspace visible name, having one (/class/net) referecing the other
+(/class/net-kernel) in its own namespace. The newly introduced
+IFF_AUTO_MANAGED device will have a kernel name only
+(/class/net-kernel). As a result, the existing applications using
+/class/net don't break, while we're adding the kernel namespace that
+allows IFF_AUTO_MANAGED devices which will not be exposed to userspace
+at all.
 
-And I assume everyone here understands the use case for live migration
-(in the context of providing cloud service) is very different, and we
-have to hide the netdevs. If not, I'm more than happy to clarify.
+As this requires changing the internals of driver model core it's a
+rather big hammer approach I'd think. If there exists a better
+implementation than this to allow adding a separate layer of in-kernel
+device namespace, I'd more than welcome to hear about.
 
-With that in mind, if having a new class of net-kernel namespace, we
-can name the kernel device elaborately which is not neccessarily equal
-to the device name exposed to userspace. For example, we can use
-driver name as the prefix as opposed to "eth" or ":eth". And we don't
-need to have auto-managed netdevs locked into the ":" prefix at all (I
-intentionally left it out in the this RFC patch to ask for comments on
-the namespace solution which is much cleaner). That said, an userpsace
-named device through udev may call something like ens3 and
-switch1-port2, but in the kernel-net namespace, it may look like
-ixgbevf0 and mlxsw1p2.
+>
+> And i don't even see how this helps. Are you also not going to call
+> list_netdevice()? Are you going to add some other list for these
+> devices in a different class?
 
-So if we all agree introducing a new namespace is the rigth thing to
-do, `ip link' will no longer serve the purpose of displaying the
-information for kernel-net devnames for the sake of avoiding ambiguity
-and namespace collision: it's entirely possible the ip link name could
-collide with a kernel-net devname, it's become unclear which name of a
-netdev object the command is expected to operate on. That's why I
-thought showing the kernel-only netdevs using a separate subcommand
-makes more sense.
+list_netdevice() is still called. I think with the current RFC patch,
+I've added two lists for netdevs under the kernel namespace:
+dev_cmpl_list and name_cmpl_hlist. As a result of that, all userspace
+netdevs get registered will be added to two types of lists: the
+userspace list for e.g. dev_list, and also the kernelspace list e.g.
+dev_cmpl_list (I can rename it to something more accurate). The
+IFF_AUTO_MANAGED device will be only added to kernelspace list e.g.
+dev_cmpl_list.
 
-Thoughts and comments? Please let me know.
+Hope all your questions are answered.
 
 Thanks,
 -Siwei
 
+
 >
-> What I really don't understand still is the use case... really.
->
-> So there are control netdevs, what exactly is the problem with that?
->
-> Are we not exporting enough information for applications to handle
-> these devices sanely?  If so, then's let add that information.
->
-> We can set netdev->type to ETH_P_LINUXCONTROL or something like that.
->
-> Another alternative is to add an interface flag like IFF_CONTROL or
-> similar, and that probably is much nicer.
->
-> Hiding the devices means that we acknowledge that applications are
-> currently broken with control netdevs... and we want them to stay
-> broken!
->
-> That doesn't sound like a good plan to me.
->
-> So let's fix handling of control netdevs instead of hiding them.
->
-> Thanks.
+>    Andrew
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
