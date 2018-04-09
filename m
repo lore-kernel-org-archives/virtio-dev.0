@@ -1,97 +1,43 @@
-Return-Path: virtio-dev-return-3942-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 808D71CB80EF
-	for <virtio-dev@lists.oasis-open.org>; Mon, 23 Apr 2018 18:42:35 -0700 (PDT)
-Date: Tue, 24 Apr 2018 04:42:22 +0300
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20180424043042-mutt-send-email-mst@kernel.org>
-References: <1524188524-28411-1-git-send-email-sridhar.samudrala@intel.com>
- <1524188524-28411-5-git-send-email-sridhar.samudrala@intel.com>
- <20180420082802.6ca37e4c@xeon-e3>
- <20180420160058.GB2150@nanopsycho.orion>
- <20180423100406.71b95f74@xeon-e3>
- <20180423202204-mutt-send-email-mst@kernel.org>
- <20180423104440.2fe6cfd2@xeon-e3>
- <20180423205019-mutt-send-email-mst@kernel.org>
- <CADGSJ20ge75T+ddxtUBT4d9m1i3=HLOAHJEoS7Cg0bqnXrutwA@mail.gmail.com>
- <20180423182503.353180c9@xeon-e3>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20180423182503.353180c9@xeon-e3>
-Subject: [virtio-dev] Re: [PATCH v7 net-next 4/4] netvsc: refactor notifier/event handling
- code to use the failover framework
-To: Stephen Hemminger <stephen@networkplumber.org>
-Cc: Siwei Liu <loseweigh@gmail.com>, Jiri Pirko <jiri@resnulli.us>, Sridhar Samudrala <sridhar.samudrala@intel.com>, David Miller <davem@davemloft.net>, Netdev <netdev@vger.kernel.org>, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, "Brandeburg, Jesse" <jesse.brandeburg@intel.com>, Alexander Duyck <alexander.h.duyck@intel.com>, Jakub Kicinski <kubakici@wp.pl>, Jason Wang <jasowang@redhat.com>
+Return-Path: virtio-return-3052-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio@lists.oasis-open.org>
+List-Post: <mailto:virtio@lists.oasis-open.org>
+List-Help: <mailto:virtio-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
+From: Halil Pasic <pasic@linux.vnet.ibm.com>
+Date: Mon,  9 Apr 2018 20:58:37 +0200
+Message-Id: <1523300322-21989-1-git-send-email-pasic@linux.vnet.ibm.com>
+Subject: [virtio] [PATCH 0/5] fixes and tweaks for virtio v1.1 
+To: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+Cc: "Michael S. Tsirkin" <mst@redhat.com>, Cornelia Huck <cohuck@redhat.com>, Halil Pasic <pasic@linux.vnet.ibm.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Mon, Apr 23, 2018 at 06:25:03PM -0700, Stephen Hemminger wrote:
-> On Mon, 23 Apr 2018 12:44:39 -0700
-> Siwei Liu <loseweigh@gmail.com> wrote:
-> 
-> > On Mon, Apr 23, 2018 at 10:56 AM, Michael S. Tsirkin <mst@redhat.com> wrote:
-> > > On Mon, Apr 23, 2018 at 10:44:40AM -0700, Stephen Hemminger wrote:  
-> > >> On Mon, 23 Apr 2018 20:24:56 +0300
-> > >> "Michael S. Tsirkin" <mst@redhat.com> wrote:
-> > >>  
-> > >> > On Mon, Apr 23, 2018 at 10:04:06AM -0700, Stephen Hemminger wrote:  
-> > >> > > > >
-> > >> > > > >I will NAK patches to change to common code for netvsc especially the
-> > >> > > > >three device model.  MS worked hard with distro vendors to support transparent
-> > >> > > > >mode, ans we really can't have a new model; or do backport.
-> > >> > > > >
-> > >> > > > >Plus, DPDK is now dependent on existing model.  
-> > >> > > >
-> > >> > > > Sorry, but nobody here cares about dpdk or other similar oddities.  
-> > >> > >
-> > >> > > The network device model is a userspace API, and DPDK is a userspace application.  
-> > >> >
-> > >> > It is userspace but are you sure dpdk is actually poking at netdevs?
-> > >> > AFAIK it's normally banging device registers directly.
-> > >> >  
-> > >> > > You can't go breaking userspace even if you don't like the application.  
-> > >> >
-> > >> > Could you please explain how is the proposed patchset breaking
-> > >> > userspace? Ignoring DPDK for now, I don't think it changes the userspace
-> > >> > API at all.
-> > >> >  
-> > >>
-> > >> The DPDK has a device driver vdev_netvsc which scans the Linux network devices
-> > >> to look for Linux netvsc device and the paired VF device and setup the
-> > >> DPDK environment.  This setup creates a DPDK failsafe (bondingish) instance
-> > >> and sets up TAP support over the Linux netvsc device as well as the Mellanox
-> > >> VF device.
-> > >>
-> > >> So it depends on existing 2 device model. You can't go to a 3 device model
-> > >> or start hiding devices from userspace.  
-> > >
-> > > Okay so how does the existing patch break that? IIUC does not go to
-> > > a 3 device model since netvsc calls failover_register directly.
-> > >  
-> > >> Also, I am working on associating netvsc and VF device based on serial number
-> > >> rather than MAC address. The serial number is how Windows works now, and it makes
-> > >> sense for Linux and Windows to use the same mechanism if possible.  
-> > >
-> > > Maybe we should support same for virtio ...
-> > > Which serial do you mean? From vpd?
-> > >
-> > > I guess you will want to keep supporting MAC for old hypervisors?
-> 
-> The serial number has always been in the hypervisor since original support of SR-IOV
-> in WS2008.  So no backward compatibility special cases would be needed.
+Some of these are more and some are less important. Please
+be careful, there is always a chance that I misunderstood something
+and that I'm trying to change for the worse.
 
-Is that a serial from real hardware or a hypervisor thing?
+I've identified some other weak point's too, but tried to
+proceed in order the more grave and the better I think I
+understand it (and thus propose a fix) the higher the priority.
 
+Some stuff I've left for my notifiers patch set. This one
+and that one will have to get merged if both turn out to
+be good.
 
--- 
-MST
+Halil Pasic (5):
+  packed-ring: fix used descriptors but meant buffers
+  consistency: clean up stale  wording for v1.1 terms
+  packed-packed: fix supplying buffers description
+  packed-ring: reposition drivernormative on driver notifications
+  packed-ring: tweak driver code example
+
+ content.tex     |   14 ++++----
+ packed-ring.tex |   96 +++++++++++++++++++++++++++++-------------------------
+ 2 files changed, 59 insertions(+), 51 deletions(-)
+
 
 ---------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+To unsubscribe from this mail list, you must leave the OASIS TC that 
+generates this mail.  Follow this link to all your TCs in OASIS at:
+https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
 
