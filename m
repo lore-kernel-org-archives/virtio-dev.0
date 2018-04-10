@@ -1,47 +1,75 @@
-Return-Path: virtio-dev-return-3774-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3775-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 1A9AF58191AE
-	for <virtio-dev@lists.oasis-open.org>; Tue, 10 Apr 2018 00:53:28 -0700 (PDT)
+	by lists.oasis-open.org (Postfix) with ESMTP id 36A3258191F8
+	for <virtio-dev@lists.oasis-open.org>; Tue, 10 Apr 2018 02:24:13 -0700 (PDT)
+From: "Liang, Cunming" <cunming.liang@intel.com>
+Date: Tue, 10 Apr 2018 09:23:53 +0000
+Message-ID: <D0158A423229094DA7ABF71CF2FA0DA34E9222F4@SHSMSX104.ccr.corp.intel.com>
 References: <20180402152330.4158-1-tiwei.bie@intel.com>
  <622f4bd7-1249-5545-dc5a-5a92b64f5c26@redhat.com>
  <20180410045723.rftsb7l4l3ip2ioi@debian>
-From: Paolo Bonzini <pbonzini@redhat.com>
-Message-ID: <7ee31a12-a370-fc43-82a6-2235f598e970@redhat.com>
-Date: Tue, 10 Apr 2018 09:51:43 +0200
-MIME-Version: 1.0
-In-Reply-To: <20180410045723.rftsb7l4l3ip2ioi@debian>
-Content-Type: text/plain; charset=utf-8
+ <7ee31a12-a370-fc43-82a6-2235f598e970@redhat.com>
+In-Reply-To: <7ee31a12-a370-fc43-82a6-2235f598e970@redhat.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [virtio-dev] Re: [RFC] vhost: introduce mdev based hardware vhost
- backend
-To: Tiwei Bie <tiwei.bie@intel.com>, Jason Wang <jasowang@redhat.com>
-Cc: mst@redhat.com, alex.williamson@redhat.com, ddutile@redhat.com, alexander.h.duyck@intel.com, virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org, virtualization@lists.linux-foundation.org, netdev@vger.kernel.org, dan.daly@intel.com, cunming.liang@intel.com, zhihong.wang@intel.com, jianfeng.tan@intel.com, xiao.w.wang@intel.com
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+Subject: RE: [virtio-dev] Re: [RFC] vhost: introduce mdev based hardware
+ vhost backend
+To: Paolo Bonzini <pbonzini@redhat.com>, "Bie, Tiwei" <tiwei.bie@intel.com>, Jason Wang <jasowang@redhat.com>
+Cc: "mst@redhat.com" <mst@redhat.com>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "ddutile@redhat.com" <ddutile@redhat.com>, "Duyck, Alexander H" <alexander.h.duyck@intel.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>, "Daly, Dan" <dan.daly@intel.com>, "Wang, Zhihong" <zhihong.wang@intel.com>, "Tan, Jianfeng" <jianfeng.tan@intel.com>, "Wang,
+ Xiao W" <xiao.w.wang@intel.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 10/04/2018 06:57, Tiwei Bie wrote:
->> So you just move the abstraction layer from qemu to kernel, and you still
->> need different drivers in kernel for different device interfaces of
->> accelerators. This looks even more complex than leaving it in qemu. As you
->> said, another idea is to implement userspace vhost backend for accelerators
->> which seems easier and could co-work with other parts of qemu without
->> inventing new type of messages.
-> 
-> I'm not quite sure. Do you think it's acceptable to
-> add various vendor specific hardware drivers in QEMU?
-
-I think so.  We have vendor-specific quirks, and at some point there was
-an idea of using quirks to implement (vendor-specific) live migration
-support for assigned devices.
-
-Paolo
-
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogUGFvbG8gQm9uemluaSBb
+bWFpbHRvOnBib256aW5pQHJlZGhhdC5jb21dDQo+IFNlbnQ6IFR1ZXNkYXksIEFwcmlsIDEwLCAy
+MDE4IDM6NTIgUE0NCj4gVG86IEJpZSwgVGl3ZWkgPHRpd2VpLmJpZUBpbnRlbC5jb20+OyBKYXNv
+biBXYW5nIDxqYXNvd2FuZ0ByZWRoYXQuY29tPg0KPiBDYzogbXN0QHJlZGhhdC5jb207IGFsZXgu
+d2lsbGlhbXNvbkByZWRoYXQuY29tOyBkZHV0aWxlQHJlZGhhdC5jb207DQo+IER1eWNrLCBBbGV4
+YW5kZXIgSCA8YWxleGFuZGVyLmguZHV5Y2tAaW50ZWwuY29tPjsgdmlydGlvLWRldkBsaXN0cy5v
+YXNpcy0NCj4gb3Blbi5vcmc7IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmc7IGt2bUB2Z2Vy
+Lmtlcm5lbC5vcmc7DQo+IHZpcnR1YWxpemF0aW9uQGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3Jn
+OyBuZXRkZXZAdmdlci5rZXJuZWwub3JnOyBEYWx5LCBEYW4NCj4gPGRhbi5kYWx5QGludGVsLmNv
+bT47IExpYW5nLCBDdW5taW5nIDxjdW5taW5nLmxpYW5nQGludGVsLmNvbT47IFdhbmcsDQo+IFpo
+aWhvbmcgPHpoaWhvbmcud2FuZ0BpbnRlbC5jb20+OyBUYW4sIEppYW5mZW5nIDxqaWFuZmVuZy50
+YW5AaW50ZWwuY29tPjsNCj4gV2FuZywgWGlhbyBXIDx4aWFvLncud2FuZ0BpbnRlbC5jb20+DQo+
+IFN1YmplY3Q6IFJlOiBbdmlydGlvLWRldl0gUmU6IFtSRkNdIHZob3N0OiBpbnRyb2R1Y2UgbWRl
+diBiYXNlZCBoYXJkd2FyZQ0KPiB2aG9zdCBiYWNrZW5kDQo+IA0KPiBPbiAxMC8wNC8yMDE4IDA2
+OjU3LCBUaXdlaSBCaWUgd3JvdGU6DQo+ID4+IFNvIHlvdSBqdXN0IG1vdmUgdGhlIGFic3RyYWN0
+aW9uIGxheWVyIGZyb20gcWVtdSB0byBrZXJuZWwsIGFuZCB5b3UNCj4gPj4gc3RpbGwgbmVlZCBk
+aWZmZXJlbnQgZHJpdmVycyBpbiBrZXJuZWwgZm9yIGRpZmZlcmVudCBkZXZpY2UNCj4gPj4gaW50
+ZXJmYWNlcyBvZiBhY2NlbGVyYXRvcnMuIFRoaXMgbG9va3MgZXZlbiBtb3JlIGNvbXBsZXggdGhh
+biBsZWF2aW5nDQo+ID4+IGl0IGluIHFlbXUuIEFzIHlvdSBzYWlkLCBhbm90aGVyIGlkZWEgaXMg
+dG8gaW1wbGVtZW50IHVzZXJzcGFjZSB2aG9zdA0KPiA+PiBiYWNrZW5kIGZvciBhY2NlbGVyYXRv
+cnMgd2hpY2ggc2VlbXMgZWFzaWVyIGFuZCBjb3VsZCBjby13b3JrIHdpdGgNCj4gPj4gb3RoZXIg
+cGFydHMgb2YgcWVtdSB3aXRob3V0IGludmVudGluZyBuZXcgdHlwZSBvZiBtZXNzYWdlcy4NCj4g
+Pg0KPiA+IEknbSBub3QgcXVpdGUgc3VyZS4gRG8geW91IHRoaW5rIGl0J3MgYWNjZXB0YWJsZSB0
+byBhZGQgdmFyaW91cyB2ZW5kb3INCj4gPiBzcGVjaWZpYyBoYXJkd2FyZSBkcml2ZXJzIGluIFFF
+TVU/DQo+IA0KPiBJIHRoaW5rIHNvLiAgV2UgaGF2ZSB2ZW5kb3Itc3BlY2lmaWMgcXVpcmtzLCBh
+bmQgYXQgc29tZSBwb2ludCB0aGVyZSB3YXMgYW4NCj4gaWRlYSBvZiB1c2luZyBxdWlya3MgdG8g
+aW1wbGVtZW50ICh2ZW5kb3Itc3BlY2lmaWMpIGxpdmUgbWlncmF0aW9uIHN1cHBvcnQgZm9yDQo+
+IGFzc2lnbmVkIGRldmljZXMuDQoNClZlbmRvci1zcGVjaWZpYyBxdWlya3Mgb2YgYWNjZXNzaW5n
+IFZHQSBpcyBhIHNtYWxsIHBvcnRpb24uIE90aGVyIG1ham9yIHBvcnRpb25zIGFyZSBzdGlsbCBo
+YW5kbGVkIGJ5IGd1ZXN0IGRyaXZlci4NCg0KV2hpbGUgaW4gdGhpcyBjYXNlLCB3aGVuIHNheWlu
+ZyB2YXJpb3VzIHZlbmRvciBzcGVjaWZpYyBkcml2ZXJzIGluIFFFTVUsIGl0IHNheXMgUUVNVSB0
+YWtlcyBvdmVyIGFuZCBwcm92aWRlcyB0aGUgZW50aXJlIHVzZXIgc3BhY2UgZGV2aWNlIGRyaXZl
+cnMuIFNvbWUgcGFydHMgYXJlIGV2ZW4gbm90IHJlbGV2YW50IHRvIHZob3N0LCB0aGV5J3JlIGJh
+c2ljIGRldmljZSBmdW5jdGlvbiBlbmFibGluZy4gTW9yZW92ZXIsIGl0IGNvdWxkIGJlIGRpZmZl
+cmVudCBraW5kcyBvZiBkZXZpY2VzKG5ldHdvcmsvYmxvY2svLi4uKSB1bmRlciB2aG9zdC4gTm8g
+bWF0dGVyICMgb2YgdmVuZG9ycyBvciAjIG9mIHR5cGVzLCB0b3RhbCBMT0MgaXMgbm90IHNtYWxs
+Lg0KDQpUaGUgaWRlYSBpcyB0byBhdm9pZCBpbnRyb2R1Y2luZyB0aGVzZSBleHRyYSBjb21wbGV4
+aXR5IG91dCBvZiBRRU1VLCBrZWVwaW5nIHZob3N0IGFkYXB0ZXIgc2ltcGxlLiBBcyB2aG9zdCBw
+cm90b2NvbCBpcyBkZSBmYWN0b3Igc3RhbmRhcmQsIGl0IGxldmVyYWdlcyBrZXJuZWwgZGV2aWNl
+IGRyaXZlciB0byBwcm92aWRlIHRoZSBkaXZlcnNpdHkuIENoYW5naW5nIG9uY2UgaW4gUUVNVSwg
+dGhlbiBpdCBzdXBwb3J0cyBtdWx0aS12ZW5kb3IgZGV2aWNlcyB3aG9zZSBkcml2ZXJzIG5hdHVy
+YWxseSBwcm92aWRpbmcga2VybmVsIGRyaXZlciB0aGVyZS4NCg0KSWYgUUVNVSBpcyBnb2luZyB0
+byBidWlsZCBhIHVzZXIgc3BhY2UgZHJpdmVyIGZyYW1ld29yayB0aGVyZSwgd2UncmUgb3BlbiBt
+aW5kIG9uIHRoYXQsIGV2ZW4gbGV2ZXJhZ2luZyBEUERLIGFzIHRoZSB1bmRlcmxheSBsaWJyYXJ5
+LiBMb29raW5nIGZvcndhcmQgdG8gbW9yZSBvdGhlcnMnIGNvbW1lbnRzIGZyb20gY29tbXVuaXR5
+Lg0KDQpTdGV2ZQ0KDQo+IA0KPiBQYW9sbw0K
 
