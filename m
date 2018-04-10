@@ -1,164 +1,377 @@
-Return-Path: virtio-dev-return-3793-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3791-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 8F1CA1CB80ED
-	for <virtio-dev@lists.oasis-open.org>; Tue, 10 Apr 2018 12:00:02 -0700 (PDT)
+	by lists.oasis-open.org (Postfix) with ESMTP id 405C01CB80EE
+	for <virtio-dev@lists.oasis-open.org>; Tue, 10 Apr 2018 11:59:54 -0700 (PDT)
 From: Sridhar Samudrala <sridhar.samudrala@intel.com>
-Date: Tue, 10 Apr 2018 11:59:49 -0700
-Message-Id: <1523386790-12396-4-git-send-email-sridhar.samudrala@intel.com>
+Date: Tue, 10 Apr 2018 11:59:50 -0700
+Message-Id: <1523386790-12396-5-git-send-email-sridhar.samudrala@intel.com>
 In-Reply-To: <1523386790-12396-1-git-send-email-sridhar.samudrala@intel.com>
 References: <1523386790-12396-1-git-send-email-sridhar.samudrala@intel.com>
-Subject: [virtio-dev] [RFC PATCH net-next v6 3/4] virtio_net: Extend virtio to use VF datapath when available
+Subject: [virtio-dev] [RFC PATCH net-next v6 4/4] netvsc: refactor notifier/event handling code to use the bypass framework
 To: mst@redhat.com, stephen@networkplumber.org, davem@davemloft.net, netdev@vger.kernel.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, jesse.brandeburg@intel.com, alexander.h.duyck@intel.com, kubakici@wp.pl, sridhar.samudrala@intel.com, jasowang@redhat.com, loseweigh@gmail.com, jiri@resnulli.us
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-This patch enables virtio_net to switch over to a VF datapath when a VF
-netdev is present with the same MAC address. It allows live migration
-of a VM with a direct attached VF without the need to setup a bond/team
-between a VF and virtio net device in the guest.
-
-The hypervisor needs to enable only one datapath at any time so that
-packets don't get looped back to the VM over the other datapath. When a VF
-is plugged, the virtio datapath link state can be marked as down. The
-hypervisor needs to unplug the VF device from the guest on the source host
-and reset the MAC filter of the VF to initiate failover of datapath to
-virtio before starting the migration. After the migration is completed,
-the destination hypervisor sets the MAC filter on the VF and plugs it back
-to the guest to switch over to VF datapath.
-
-It uses the generic bypass framework that provides 2 functions to create
-and destroy a master bypass netdev. When BACKUP feature is enabled, an
-additional netdev(bypass netdev) is created that acts as a master device
-and tracks the state of the 2 lower netdevs. The original virtio_net netdev
-is marked as 'backup' netdev and a passthru device with the same MAC is
-registered as 'active' netdev.
-
-This patch is based on the discussion initiated by Jesse on this thread.
-https://marc.info/?l=linux-virtualization&m=151189725224231&w=2
+Use the registration/notification framework supported by the generic
+bypass infrastructure.
 
 Signed-off-by: Sridhar Samudrala <sridhar.samudrala@intel.com>
 ---
- drivers/net/Kconfig      |  1 +
- drivers/net/virtio_net.c | 36 +++++++++++++++++++++++++++++++++++-
- 2 files changed, 36 insertions(+), 1 deletion(-)
+ drivers/net/hyperv/Kconfig      |   1 +
+ drivers/net/hyperv/hyperv_net.h |   2 +
+ drivers/net/hyperv/netvsc_drv.c | 208 ++++++++++------------------------------
+ 3 files changed, 55 insertions(+), 156 deletions(-)
 
-diff --git a/drivers/net/Kconfig b/drivers/net/Kconfig
-index 891846655000..9e2cf61fd1c1 100644
---- a/drivers/net/Kconfig
-+++ b/drivers/net/Kconfig
-@@ -331,6 +331,7 @@ config VETH
- config VIRTIO_NET
- 	tristate "Virtio network driver"
- 	depends on VIRTIO
+diff --git a/drivers/net/hyperv/Kconfig b/drivers/net/hyperv/Kconfig
+index 936968d23559..cc3a721baa18 100644
+--- a/drivers/net/hyperv/Kconfig
++++ b/drivers/net/hyperv/Kconfig
+@@ -1,5 +1,6 @@
+ config HYPERV_NET
+ 	tristate "Microsoft Hyper-V virtual network driver"
+ 	depends on HYPERV
 +	depends on MAY_USE_BYPASS
- 	---help---
- 	  This is the virtual network driver for virtio.  It can be used with
- 	  QEMU based VMMs (like KVM or Xen).  Say Y or M.
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index befb5944f3fd..99aa52d5ac9b 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -30,8 +30,11 @@
- #include <linux/cpu.h>
- #include <linux/average.h>
- #include <linux/filter.h>
-+#include <linux/netdevice.h>
-+#include <linux/pci.h>
- #include <net/route.h>
- #include <net/xdp.h>
-+#include <net/bypass.h>
- 
- static int napi_weight = NAPI_POLL_WEIGHT;
- module_param(napi_weight, int, 0444);
-@@ -206,6 +209,9 @@ struct virtnet_info {
- 	u32 speed;
- 
- 	unsigned long guest_offloads;
+ 	help
+ 	  Select this option to enable the Hyper-V virtual network driver.
+diff --git a/drivers/net/hyperv/hyperv_net.h b/drivers/net/hyperv/hyperv_net.h
+index 960f06141472..5f8137bc5c1c 100644
+--- a/drivers/net/hyperv/hyperv_net.h
++++ b/drivers/net/hyperv/hyperv_net.h
+@@ -768,6 +768,8 @@ struct net_device_context {
+ 	u32 vf_alloc;
+ 	/* Serial number of the VF to team with */
+ 	u32 vf_serial;
 +
-+	/* bypass_master created when BACKUP feature enabled */
 +	struct bypass_master *bypass_master;
  };
  
- struct padded_vnet_hdr {
-@@ -2275,6 +2281,22 @@ static int virtnet_xdp(struct net_device *dev, struct netdev_bpf *xdp)
- 	}
+ /* Per channel data */
+diff --git a/drivers/net/hyperv/netvsc_drv.c b/drivers/net/hyperv/netvsc_drv.c
+index ecc84954c511..87c2a276e62f 100644
+--- a/drivers/net/hyperv/netvsc_drv.c
++++ b/drivers/net/hyperv/netvsc_drv.c
+@@ -43,6 +43,7 @@
+ #include <net/pkt_sched.h>
+ #include <net/checksum.h>
+ #include <net/ip6_checksum.h>
++#include <net/bypass.h>
+ 
+ #include "hyperv_net.h"
+ 
+@@ -1763,46 +1764,6 @@ static void netvsc_link_change(struct work_struct *w)
+ 	rtnl_unlock();
  }
  
-+static int virtnet_get_phys_port_name(struct net_device *dev, char *buf,
-+				      size_t len)
+-static struct net_device *get_netvsc_bymac(const u8 *mac)
+-{
+-	struct net_device *dev;
+-
+-	ASSERT_RTNL();
+-
+-	for_each_netdev(&init_net, dev) {
+-		if (dev->netdev_ops != &device_ops)
+-			continue;	/* not a netvsc device */
+-
+-		if (ether_addr_equal(mac, dev->perm_addr))
+-			return dev;
+-	}
+-
+-	return NULL;
+-}
+-
+-static struct net_device *get_netvsc_byref(struct net_device *vf_netdev)
+-{
+-	struct net_device *dev;
+-
+-	ASSERT_RTNL();
+-
+-	for_each_netdev(&init_net, dev) {
+-		struct net_device_context *net_device_ctx;
+-
+-		if (dev->netdev_ops != &device_ops)
+-			continue;	/* not a netvsc device */
+-
+-		net_device_ctx = netdev_priv(dev);
+-		if (!rtnl_dereference(net_device_ctx->nvdev))
+-			continue;	/* device is removed */
+-
+-		if (rtnl_dereference(net_device_ctx->vf_netdev) == vf_netdev)
+-			return dev;	/* a match */
+-	}
+-
+-	return NULL;
+-}
+-
+ /* Called when VF is injecting data into network stack.
+  * Change the associated network device from VF to netvsc.
+  * note: already called with rcu_read_lock
+@@ -1829,39 +1790,15 @@ static int netvsc_vf_join(struct net_device *vf_netdev,
+ 			  struct net_device *ndev)
+ {
+ 	struct net_device_context *ndev_ctx = netdev_priv(ndev);
+-	int ret;
+-
+-	ret = netdev_rx_handler_register(vf_netdev,
+-					 netvsc_vf_handle_frame, ndev);
+-	if (ret != 0) {
+-		netdev_err(vf_netdev,
+-			   "can not register netvsc VF receive handler (err = %d)\n",
+-			   ret);
+-		goto rx_handler_failed;
+-	}
+-
+-	ret = netdev_upper_dev_link(vf_netdev, ndev, NULL);
+-	if (ret != 0) {
+-		netdev_err(vf_netdev,
+-			   "can not set master device %s (err = %d)\n",
+-			   ndev->name, ret);
+-		goto upper_link_failed;
+-	}
+-
+-	/* set slave flag before open to prevent IPv6 addrconf */
+-	vf_netdev->flags |= IFF_SLAVE;
+ 
+ 	schedule_delayed_work(&ndev_ctx->vf_takeover, VF_TAKEOVER_INT);
+ 
+-	call_netdevice_notifiers(NETDEV_JOIN, vf_netdev);
+-
+ 	netdev_info(vf_netdev, "joined to %s\n", ndev->name);
+-	return 0;
+ 
+-upper_link_failed:
+-	netdev_rx_handler_unregister(vf_netdev);
+-rx_handler_failed:
+-	return ret;
++	dev_hold(vf_netdev);
++	rcu_assign_pointer(ndev_ctx->vf_netdev, vf_netdev);
++
++	return 0;
+ }
+ 
+ static void __netvsc_vf_setup(struct net_device *ndev,
+@@ -1914,85 +1851,82 @@ static void netvsc_vf_setup(struct work_struct *w)
+ 	rtnl_unlock();
+ }
+ 
+-static int netvsc_register_vf(struct net_device *vf_netdev)
++static int netvsc_vf_pre_register(struct net_device *vf_netdev,
++				  struct net_device *ndev)
+ {
+-	struct net_device *ndev;
+ 	struct net_device_context *net_device_ctx;
+ 	struct netvsc_device *netvsc_dev;
+ 
+-	if (vf_netdev->addr_len != ETH_ALEN)
+-		return NOTIFY_DONE;
+-
+-	/*
+-	 * We will use the MAC address to locate the synthetic interface to
+-	 * associate with the VF interface. If we don't find a matching
+-	 * synthetic interface, move on.
+-	 */
+-	ndev = get_netvsc_bymac(vf_netdev->perm_addr);
+-	if (!ndev)
+-		return NOTIFY_DONE;
+-
+ 	net_device_ctx = netdev_priv(ndev);
+ 	netvsc_dev = rtnl_dereference(net_device_ctx->nvdev);
+ 	if (!netvsc_dev || rtnl_dereference(net_device_ctx->vf_netdev))
+-		return NOTIFY_DONE;
+-
+-	if (netvsc_vf_join(vf_netdev, ndev) != 0)
+-		return NOTIFY_DONE;
++		return -EEXIST;
+ 
+ 	netdev_info(ndev, "VF registering: %s\n", vf_netdev->name);
+ 
+-	dev_hold(vf_netdev);
+-	rcu_assign_pointer(net_device_ctx->vf_netdev, vf_netdev);
+-	return NOTIFY_OK;
++	return 0;
+ }
+ 
+ /* VF up/down change detected, schedule to change data path */
+-static int netvsc_vf_changed(struct net_device *vf_netdev)
++static int netvsc_vf_changed(struct net_device *vf_netdev,
++			     struct net_device *ndev)
+ {
+ 	struct net_device_context *net_device_ctx;
+ 	struct netvsc_device *netvsc_dev;
+-	struct net_device *ndev;
+ 	bool vf_is_up = netif_running(vf_netdev);
+ 
+-	ndev = get_netvsc_byref(vf_netdev);
+-	if (!ndev)
+-		return NOTIFY_DONE;
+-
+ 	net_device_ctx = netdev_priv(ndev);
+ 	netvsc_dev = rtnl_dereference(net_device_ctx->nvdev);
+ 	if (!netvsc_dev)
+-		return NOTIFY_DONE;
++		return -EINVAL;
+ 
+ 	netvsc_switch_datapath(ndev, vf_is_up);
+ 	netdev_info(ndev, "Data path switched %s VF: %s\n",
+ 		    vf_is_up ? "to" : "from", vf_netdev->name);
+ 
+-	return NOTIFY_OK;
++	return 0;
+ }
+ 
+-static int netvsc_unregister_vf(struct net_device *vf_netdev)
++static int netvsc_vf_release(struct net_device *vf_netdev,
++			     struct net_device *ndev)
+ {
+-	struct net_device *ndev;
+ 	struct net_device_context *net_device_ctx;
+ 
+-	ndev = get_netvsc_byref(vf_netdev);
+-	if (!ndev)
+-		return NOTIFY_DONE;
+-
+ 	net_device_ctx = netdev_priv(ndev);
+-	cancel_delayed_work_sync(&net_device_ctx->vf_takeover);
++	if (vf_netdev != rtnl_dereference(net_device_ctx->vf_netdev))
++		return -EINVAL;
+ 
+-	netdev_info(ndev, "VF unregistering: %s\n", vf_netdev->name);
++	cancel_delayed_work_sync(&net_device_ctx->vf_takeover);
+ 
+-	netdev_rx_handler_unregister(vf_netdev);
+-	netdev_upper_dev_unlink(vf_netdev, ndev);
+ 	RCU_INIT_POINTER(net_device_ctx->vf_netdev, NULL);
+ 	dev_put(vf_netdev);
+ 
+-	return NOTIFY_OK;
++	return 0;
+ }
+ 
++static int netvsc_vf_pre_unregister(struct net_device *vf_netdev,
++				    struct net_device *ndev)
 +{
-+	struct virtnet_info *vi = netdev_priv(dev);
-+	int ret;
++	struct net_device_context *net_device_ctx;
 +
-+	if (!virtio_has_feature(vi->vdev, VIRTIO_NET_F_BACKUP))
-+		return -EOPNOTSUPP;
++	net_device_ctx = netdev_priv(ndev);
++	if (vf_netdev != rtnl_dereference(net_device_ctx->vf_netdev))
++		return -EINVAL;
 +
-+	ret = snprintf(buf, len, "_bkup");
-+	if (ret >= len)
-+		return -EOPNOTSUPP;
++	netdev_info(ndev, "VF unregistering: %s\n", vf_netdev->name);
 +
 +	return 0;
 +}
 +
- static const struct net_device_ops virtnet_netdev = {
- 	.ndo_open            = virtnet_open,
- 	.ndo_stop   	     = virtnet_close,
-@@ -2292,6 +2314,7 @@ static const struct net_device_ops virtnet_netdev = {
- 	.ndo_xdp_xmit		= virtnet_xdp_xmit,
- 	.ndo_xdp_flush		= virtnet_xdp_flush,
- 	.ndo_features_check	= passthru_features_check,
-+	.ndo_get_phys_port_name	= virtnet_get_phys_port_name,
- };
- 
- static void virtnet_config_changed_work(struct work_struct *work)
-@@ -2839,10 +2862,16 @@ static int virtnet_probe(struct virtio_device *vdev)
- 
- 	virtnet_init_settings(dev);
- 
-+	if (virtio_has_feature(vdev, VIRTIO_NET_F_BACKUP)) {
-+		err = bypass_master_create(vi->dev, &vi->bypass_master);
-+		if (err)
-+			goto free_vqs;
-+	}
++static struct bypass_ops netvsc_bypass_ops = {
++	.slave_pre_register	= netvsc_vf_pre_register,
++	.slave_join		= netvsc_vf_join,
++	.slave_pre_unregister	= netvsc_vf_pre_unregister,
++	.slave_release		= netvsc_vf_release,
++	.slave_link_change	= netvsc_vf_changed,
++	.handle_frame		= netvsc_vf_handle_frame,
++};
 +
- 	err = register_netdev(dev);
- 	if (err) {
- 		pr_debug("virtio_net: registering device failed\n");
--		goto free_vqs;
-+		goto free_bypass;
+ static int netvsc_probe(struct hv_device *dev,
+ 			const struct hv_vmbus_device_id *dev_id)
+ {
+@@ -2082,8 +2016,15 @@ static int netvsc_probe(struct hv_device *dev,
+ 		goto register_failed;
  	}
  
- 	virtio_device_ready(vdev);
-@@ -2879,6 +2908,8 @@ static int virtnet_probe(struct virtio_device *vdev)
- 	vi->vdev->config->reset(vdev);
- 
- 	unregister_netdev(dev);
-+free_bypass:
-+	bypass_master_destroy(vi->bypass_master);
- free_vqs:
- 	cancel_delayed_work_sync(&vi->refill);
- 	free_receive_page_frags(vi);
-@@ -2913,6 +2944,8 @@ static void virtnet_remove(struct virtio_device *vdev)
- 
- 	unregister_netdev(vi->dev);
- 
-+	bypass_master_destroy(vi->bypass_master);
++	ret = bypass_master_register(net, &netvsc_bypass_ops,
++				     &net_device_ctx->bypass_master);
++	if (ret != 0)
++		goto err_bypass;
 +
- 	remove_vq_common(vi);
+ 	return ret;
  
- 	free_netdev(vi->dev);
-@@ -3010,6 +3043,7 @@ static __init int virtio_net_driver_init(void)
-         ret = register_virtio_driver(&virtio_net_driver);
++err_bypass:
++	unregister_netdev(net);
+ register_failed:
+ 	rndis_filter_device_remove(dev, nvdev);
+ rndis_failed:
+@@ -2124,13 +2065,15 @@ static int netvsc_remove(struct hv_device *dev)
+ 	rtnl_lock();
+ 	vf_netdev = rtnl_dereference(ndev_ctx->vf_netdev);
+ 	if (vf_netdev)
+-		netvsc_unregister_vf(vf_netdev);
++		bypass_slave_unregister(vf_netdev);
+ 
+ 	if (nvdev)
+ 		rndis_filter_device_remove(dev, nvdev);
+ 
+ 	unregister_netdevice(net);
+ 
++	bypass_master_unregister(ndev_ctx->bypass_master);
++
+ 	rtnl_unlock();
+ 	rcu_read_unlock();
+ 
+@@ -2157,54 +2100,8 @@ static struct  hv_driver netvsc_drv = {
+ 	.remove = netvsc_remove,
+ };
+ 
+-/*
+- * On Hyper-V, every VF interface is matched with a corresponding
+- * synthetic interface. The synthetic interface is presented first
+- * to the guest. When the corresponding VF instance is registered,
+- * we will take care of switching the data path.
+- */
+-static int netvsc_netdev_event(struct notifier_block *this,
+-			       unsigned long event, void *ptr)
+-{
+-	struct net_device *event_dev = netdev_notifier_info_to_dev(ptr);
+-
+-	/* Skip our own events */
+-	if (event_dev->netdev_ops == &device_ops)
+-		return NOTIFY_DONE;
+-
+-	/* Avoid non-Ethernet type devices */
+-	if (event_dev->type != ARPHRD_ETHER)
+-		return NOTIFY_DONE;
+-
+-	/* Avoid Vlan dev with same MAC registering as VF */
+-	if (is_vlan_dev(event_dev))
+-		return NOTIFY_DONE;
+-
+-	/* Avoid Bonding master dev with same MAC registering as VF */
+-	if ((event_dev->priv_flags & IFF_BONDING) &&
+-	    (event_dev->flags & IFF_MASTER))
+-		return NOTIFY_DONE;
+-
+-	switch (event) {
+-	case NETDEV_REGISTER:
+-		return netvsc_register_vf(event_dev);
+-	case NETDEV_UNREGISTER:
+-		return netvsc_unregister_vf(event_dev);
+-	case NETDEV_UP:
+-	case NETDEV_DOWN:
+-		return netvsc_vf_changed(event_dev);
+-	default:
+-		return NOTIFY_DONE;
+-	}
+-}
+-
+-static struct notifier_block netvsc_netdev_notifier = {
+-	.notifier_call = netvsc_netdev_event,
+-};
+-
+ static void __exit netvsc_drv_exit(void)
+ {
+-	unregister_netdevice_notifier(&netvsc_netdev_notifier);
+ 	vmbus_driver_unregister(&netvsc_drv);
+ }
+ 
+@@ -2224,7 +2121,6 @@ static int __init netvsc_drv_init(void)
  	if (ret)
- 		goto err_virtio;
-+
+ 		return ret;
+ 
+-	register_netdevice_notifier(&netvsc_netdev_notifier);
  	return 0;
- err_virtio:
- 	cpuhp_remove_multi_state(CPUHP_VIRT_NET_DEAD);
+ }
+ 
 -- 
 2.14.3
 
