@@ -1,379 +1,75 @@
-Return-Path: virtio-dev-return-3791-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3799-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 405C01CB80EE
-	for <virtio-dev@lists.oasis-open.org>; Tue, 10 Apr 2018 11:59:54 -0700 (PDT)
-From: Sridhar Samudrala <sridhar.samudrala@intel.com>
-Date: Tue, 10 Apr 2018 11:59:50 -0700
-Message-Id: <1523386790-12396-5-git-send-email-sridhar.samudrala@intel.com>
-In-Reply-To: <1523386790-12396-1-git-send-email-sridhar.samudrala@intel.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id AEA0B5818038
+	for <virtio-dev@lists.oasis-open.org>; Tue, 10 Apr 2018 15:56:35 -0700 (PDT)
 References: <1523386790-12396-1-git-send-email-sridhar.samudrala@intel.com>
-Subject: [virtio-dev] [RFC PATCH net-next v6 4/4] netvsc: refactor notifier/event handling code to use the bypass framework
-To: mst@redhat.com, stephen@networkplumber.org, davem@davemloft.net, netdev@vger.kernel.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, jesse.brandeburg@intel.com, alexander.h.duyck@intel.com, kubakici@wp.pl, sridhar.samudrala@intel.com, jasowang@redhat.com, loseweigh@gmail.com, jiri@resnulli.us
+ <1523386790-12396-5-git-send-email-sridhar.samudrala@intel.com>
+ <20180410142608.50f15b45@xeon-e3>
+From: "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
+Message-ID: <857f55f1-9d55-1c44-16e0-683ba2e3f2ec@intel.com>
+Date: Tue, 10 Apr 2018 15:56:23 -0700
+MIME-Version: 1.0
+In-Reply-To: <20180410142608.50f15b45@xeon-e3>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+Subject: [virtio-dev] Re: [RFC PATCH net-next v6 4/4] netvsc: refactor notifier/event
+ handling code to use the bypass framework
+To: Stephen Hemminger <stephen@networkplumber.org>
+Cc: mst@redhat.com, davem@davemloft.net, netdev@vger.kernel.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, jesse.brandeburg@intel.com, alexander.h.duyck@intel.com, kubakici@wp.pl, jasowang@redhat.com, loseweigh@gmail.com, jiri@resnulli.us
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Use the registration/notification framework supported by the generic
-bypass infrastructure.
+On 4/10/2018 2:26 PM, Stephen Hemminger wrote:
+> On Tue, 10 Apr 2018 11:59:50 -0700
+> Sridhar Samudrala <sridhar.samudrala@intel.com> wrote:
+>
+>> Use the registration/notification framework supported by the generic
+>> bypass infrastructure.
+>>
+>> Signed-off-by: Sridhar Samudrala <sridhar.samudrala@intel.com>
+>> ---
+> Thanks for doing this.  Your current version has couple show stopper
+> issues.
+>
+> First, the slave device is instantly taking over the slave.
+> This doesn't allow udev/systemd to do its device rename of the slave
+> device. Netvsc uses a delayed work to workaround this.
 
-Signed-off-by: Sridhar Samudrala <sridhar.samudrala@intel.com>
----
- drivers/net/hyperv/Kconfig      |   1 +
- drivers/net/hyperv/hyperv_net.h |   2 +
- drivers/net/hyperv/netvsc_drv.c | 208 ++++++++++------------------------------
- 3 files changed, 55 insertions(+), 156 deletions(-)
+OK. I guess you are referring to the dev_set_mtu() and dev_open() calls that are
+made in bypass_slave_register() and you want to defer them to be done after
+a delay.  I could avoid these calls in case of netvsc based on bypass_ops.
 
-diff --git a/drivers/net/hyperv/Kconfig b/drivers/net/hyperv/Kconfig
-index 936968d23559..cc3a721baa18 100644
---- a/drivers/net/hyperv/Kconfig
-+++ b/drivers/net/hyperv/Kconfig
-@@ -1,5 +1,6 @@
- config HYPERV_NET
- 	tristate "Microsoft Hyper-V virtual network driver"
- 	depends on HYPERV
-+	depends on MAY_USE_BYPASS
- 	help
- 	  Select this option to enable the Hyper-V virtual network driver.
-diff --git a/drivers/net/hyperv/hyperv_net.h b/drivers/net/hyperv/hyperv_net.h
-index 960f06141472..5f8137bc5c1c 100644
---- a/drivers/net/hyperv/hyperv_net.h
-+++ b/drivers/net/hyperv/hyperv_net.h
-@@ -768,6 +768,8 @@ struct net_device_context {
- 	u32 vf_alloc;
- 	/* Serial number of the VF to team with */
- 	u32 vf_serial;
-+
-+	struct bypass_master *bypass_master;
- };
- 
- /* Per channel data */
-diff --git a/drivers/net/hyperv/netvsc_drv.c b/drivers/net/hyperv/netvsc_drv.c
-index ecc84954c511..87c2a276e62f 100644
---- a/drivers/net/hyperv/netvsc_drv.c
-+++ b/drivers/net/hyperv/netvsc_drv.c
-@@ -43,6 +43,7 @@
- #include <net/pkt_sched.h>
- #include <net/checksum.h>
- #include <net/ip6_checksum.h>
-+#include <net/bypass.h>
- 
- #include "hyperv_net.h"
- 
-@@ -1763,46 +1764,6 @@ static void netvsc_link_change(struct work_struct *w)
- 	rtnl_unlock();
- }
- 
--static struct net_device *get_netvsc_bymac(const u8 *mac)
--{
--	struct net_device *dev;
--
--	ASSERT_RTNL();
--
--	for_each_netdev(&init_net, dev) {
--		if (dev->netdev_ops != &device_ops)
--			continue;	/* not a netvsc device */
--
--		if (ether_addr_equal(mac, dev->perm_addr))
--			return dev;
--	}
--
--	return NULL;
--}
--
--static struct net_device *get_netvsc_byref(struct net_device *vf_netdev)
--{
--	struct net_device *dev;
--
--	ASSERT_RTNL();
--
--	for_each_netdev(&init_net, dev) {
--		struct net_device_context *net_device_ctx;
--
--		if (dev->netdev_ops != &device_ops)
--			continue;	/* not a netvsc device */
--
--		net_device_ctx = netdev_priv(dev);
--		if (!rtnl_dereference(net_device_ctx->nvdev))
--			continue;	/* device is removed */
--
--		if (rtnl_dereference(net_device_ctx->vf_netdev) == vf_netdev)
--			return dev;	/* a match */
--	}
--
--	return NULL;
--}
--
- /* Called when VF is injecting data into network stack.
-  * Change the associated network device from VF to netvsc.
-  * note: already called with rcu_read_lock
-@@ -1829,39 +1790,15 @@ static int netvsc_vf_join(struct net_device *vf_netdev,
- 			  struct net_device *ndev)
- {
- 	struct net_device_context *ndev_ctx = netdev_priv(ndev);
--	int ret;
--
--	ret = netdev_rx_handler_register(vf_netdev,
--					 netvsc_vf_handle_frame, ndev);
--	if (ret != 0) {
--		netdev_err(vf_netdev,
--			   "can not register netvsc VF receive handler (err = %d)\n",
--			   ret);
--		goto rx_handler_failed;
--	}
--
--	ret = netdev_upper_dev_link(vf_netdev, ndev, NULL);
--	if (ret != 0) {
--		netdev_err(vf_netdev,
--			   "can not set master device %s (err = %d)\n",
--			   ndev->name, ret);
--		goto upper_link_failed;
--	}
--
--	/* set slave flag before open to prevent IPv6 addrconf */
--	vf_netdev->flags |= IFF_SLAVE;
- 
- 	schedule_delayed_work(&ndev_ctx->vf_takeover, VF_TAKEOVER_INT);
- 
--	call_netdevice_notifiers(NETDEV_JOIN, vf_netdev);
--
- 	netdev_info(vf_netdev, "joined to %s\n", ndev->name);
--	return 0;
- 
--upper_link_failed:
--	netdev_rx_handler_unregister(vf_netdev);
--rx_handler_failed:
--	return ret;
-+	dev_hold(vf_netdev);
-+	rcu_assign_pointer(ndev_ctx->vf_netdev, vf_netdev);
-+
-+	return 0;
- }
- 
- static void __netvsc_vf_setup(struct net_device *ndev,
-@@ -1914,85 +1851,82 @@ static void netvsc_vf_setup(struct work_struct *w)
- 	rtnl_unlock();
- }
- 
--static int netvsc_register_vf(struct net_device *vf_netdev)
-+static int netvsc_vf_pre_register(struct net_device *vf_netdev,
-+				  struct net_device *ndev)
- {
--	struct net_device *ndev;
- 	struct net_device_context *net_device_ctx;
- 	struct netvsc_device *netvsc_dev;
- 
--	if (vf_netdev->addr_len != ETH_ALEN)
--		return NOTIFY_DONE;
--
--	/*
--	 * We will use the MAC address to locate the synthetic interface to
--	 * associate with the VF interface. If we don't find a matching
--	 * synthetic interface, move on.
--	 */
--	ndev = get_netvsc_bymac(vf_netdev->perm_addr);
--	if (!ndev)
--		return NOTIFY_DONE;
--
- 	net_device_ctx = netdev_priv(ndev);
- 	netvsc_dev = rtnl_dereference(net_device_ctx->nvdev);
- 	if (!netvsc_dev || rtnl_dereference(net_device_ctx->vf_netdev))
--		return NOTIFY_DONE;
--
--	if (netvsc_vf_join(vf_netdev, ndev) != 0)
--		return NOTIFY_DONE;
-+		return -EEXIST;
- 
- 	netdev_info(ndev, "VF registering: %s\n", vf_netdev->name);
- 
--	dev_hold(vf_netdev);
--	rcu_assign_pointer(net_device_ctx->vf_netdev, vf_netdev);
--	return NOTIFY_OK;
-+	return 0;
- }
- 
- /* VF up/down change detected, schedule to change data path */
--static int netvsc_vf_changed(struct net_device *vf_netdev)
-+static int netvsc_vf_changed(struct net_device *vf_netdev,
-+			     struct net_device *ndev)
- {
- 	struct net_device_context *net_device_ctx;
- 	struct netvsc_device *netvsc_dev;
--	struct net_device *ndev;
- 	bool vf_is_up = netif_running(vf_netdev);
- 
--	ndev = get_netvsc_byref(vf_netdev);
--	if (!ndev)
--		return NOTIFY_DONE;
--
- 	net_device_ctx = netdev_priv(ndev);
- 	netvsc_dev = rtnl_dereference(net_device_ctx->nvdev);
- 	if (!netvsc_dev)
--		return NOTIFY_DONE;
-+		return -EINVAL;
- 
- 	netvsc_switch_datapath(ndev, vf_is_up);
- 	netdev_info(ndev, "Data path switched %s VF: %s\n",
- 		    vf_is_up ? "to" : "from", vf_netdev->name);
- 
--	return NOTIFY_OK;
-+	return 0;
- }
- 
--static int netvsc_unregister_vf(struct net_device *vf_netdev)
-+static int netvsc_vf_release(struct net_device *vf_netdev,
-+			     struct net_device *ndev)
- {
--	struct net_device *ndev;
- 	struct net_device_context *net_device_ctx;
- 
--	ndev = get_netvsc_byref(vf_netdev);
--	if (!ndev)
--		return NOTIFY_DONE;
--
- 	net_device_ctx = netdev_priv(ndev);
--	cancel_delayed_work_sync(&net_device_ctx->vf_takeover);
-+	if (vf_netdev != rtnl_dereference(net_device_ctx->vf_netdev))
-+		return -EINVAL;
- 
--	netdev_info(ndev, "VF unregistering: %s\n", vf_netdev->name);
-+	cancel_delayed_work_sync(&net_device_ctx->vf_takeover);
- 
--	netdev_rx_handler_unregister(vf_netdev);
--	netdev_upper_dev_unlink(vf_netdev, ndev);
- 	RCU_INIT_POINTER(net_device_ctx->vf_netdev, NULL);
- 	dev_put(vf_netdev);
- 
--	return NOTIFY_OK;
-+	return 0;
- }
- 
-+static int netvsc_vf_pre_unregister(struct net_device *vf_netdev,
-+				    struct net_device *ndev)
-+{
-+	struct net_device_context *net_device_ctx;
-+
-+	net_device_ctx = netdev_priv(ndev);
-+	if (vf_netdev != rtnl_dereference(net_device_ctx->vf_netdev))
-+		return -EINVAL;
-+
-+	netdev_info(ndev, "VF unregistering: %s\n", vf_netdev->name);
-+
-+	return 0;
-+}
-+
-+static struct bypass_ops netvsc_bypass_ops = {
-+	.slave_pre_register	= netvsc_vf_pre_register,
-+	.slave_join		= netvsc_vf_join,
-+	.slave_pre_unregister	= netvsc_vf_pre_unregister,
-+	.slave_release		= netvsc_vf_release,
-+	.slave_link_change	= netvsc_vf_changed,
-+	.handle_frame		= netvsc_vf_handle_frame,
-+};
-+
- static int netvsc_probe(struct hv_device *dev,
- 			const struct hv_vmbus_device_id *dev_id)
- {
-@@ -2082,8 +2016,15 @@ static int netvsc_probe(struct hv_device *dev,
- 		goto register_failed;
- 	}
- 
-+	ret = bypass_master_register(net, &netvsc_bypass_ops,
-+				     &net_device_ctx->bypass_master);
-+	if (ret != 0)
-+		goto err_bypass;
-+
- 	return ret;
- 
-+err_bypass:
-+	unregister_netdev(net);
- register_failed:
- 	rndis_filter_device_remove(dev, nvdev);
- rndis_failed:
-@@ -2124,13 +2065,15 @@ static int netvsc_remove(struct hv_device *dev)
- 	rtnl_lock();
- 	vf_netdev = rtnl_dereference(ndev_ctx->vf_netdev);
- 	if (vf_netdev)
--		netvsc_unregister_vf(vf_netdev);
-+		bypass_slave_unregister(vf_netdev);
- 
- 	if (nvdev)
- 		rndis_filter_device_remove(dev, nvdev);
- 
- 	unregister_netdevice(net);
- 
-+	bypass_master_unregister(ndev_ctx->bypass_master);
-+
- 	rtnl_unlock();
- 	rcu_read_unlock();
- 
-@@ -2157,54 +2100,8 @@ static struct  hv_driver netvsc_drv = {
- 	.remove = netvsc_remove,
- };
- 
--/*
-- * On Hyper-V, every VF interface is matched with a corresponding
-- * synthetic interface. The synthetic interface is presented first
-- * to the guest. When the corresponding VF instance is registered,
-- * we will take care of switching the data path.
-- */
--static int netvsc_netdev_event(struct notifier_block *this,
--			       unsigned long event, void *ptr)
--{
--	struct net_device *event_dev = netdev_notifier_info_to_dev(ptr);
--
--	/* Skip our own events */
--	if (event_dev->netdev_ops == &device_ops)
--		return NOTIFY_DONE;
--
--	/* Avoid non-Ethernet type devices */
--	if (event_dev->type != ARPHRD_ETHER)
--		return NOTIFY_DONE;
--
--	/* Avoid Vlan dev with same MAC registering as VF */
--	if (is_vlan_dev(event_dev))
--		return NOTIFY_DONE;
--
--	/* Avoid Bonding master dev with same MAC registering as VF */
--	if ((event_dev->priv_flags & IFF_BONDING) &&
--	    (event_dev->flags & IFF_MASTER))
--		return NOTIFY_DONE;
--
--	switch (event) {
--	case NETDEV_REGISTER:
--		return netvsc_register_vf(event_dev);
--	case NETDEV_UNREGISTER:
--		return netvsc_unregister_vf(event_dev);
--	case NETDEV_UP:
--	case NETDEV_DOWN:
--		return netvsc_vf_changed(event_dev);
--	default:
--		return NOTIFY_DONE;
--	}
--}
--
--static struct notifier_block netvsc_netdev_notifier = {
--	.notifier_call = netvsc_netdev_event,
--};
--
- static void __exit netvsc_drv_exit(void)
- {
--	unregister_netdevice_notifier(&netvsc_netdev_notifier);
- 	vmbus_driver_unregister(&netvsc_drv);
- }
- 
-@@ -2224,7 +2121,6 @@ static int __init netvsc_drv_init(void)
- 	if (ret)
- 		return ret;
- 
--	register_netdevice_notifier(&netvsc_netdev_notifier);
- 	return 0;
- }
- 
--- 
-2.14.3
+
+>
+> Secondly, the select queue needs to call queue selection in VF.
+> The bonding/teaming logic doesn't work well for UDP flows.
+> Commit b3bf5666a510 ("hv_netvsc: defer queue selection to VF")
+> fixed this performance problem.
+
+netvsc should not be using bypass_select_queue() as  that ndo op gets used
+only with 3-netdev model.
+Anyway, will look into updating bypass_select_queue() based on your fix.
+
+>
+> Lastly, more indirection is bad in current climate.
+>
+> I am not completely adverse to this but it needs to be fast, simple
+> and completely transparent.
+
+Not sure we can avoid this indirection if we want to commonize the code,  but use
+different models for virtio-net and netvsc.
+
+On the other hand, these patches avoid calls to get_netvsc_bymac() and
+get_netvsc_by_ref() that go through all the devices for all the netdev events.
+netvsc lookups should be much faster.
+
+Thanks
+Sridhar
 
 
 ---------------------------------------------------------------------
