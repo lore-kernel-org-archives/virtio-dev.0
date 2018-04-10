@@ -1,67 +1,121 @@
-Return-Path: virtio-return-2954-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio@lists.oasis-open.org>
-List-Post: <mailto:virtio@lists.oasis-open.org>
-List-Help: <mailto:virtio-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-References: <20180301005944-mutt-send-email-mst@kernel.org>
-From: Halil Pasic <pasic@linux.vnet.ibm.com>
-Date: Thu, 1 Mar 2018 17:13:46 +0100
-MIME-Version: 1.0
-In-Reply-To: <20180301005944-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-Message-Id: <abced806-38f8-6cf2-7fb0-b2f29996d665@linux.vnet.ibm.com>
-Subject: [virtio] Re: [virtio-dev] [PATCH v8 to v9 incremental] packed ring layout spec
-To: "Michael S. Tsirkin" <mst@redhat.com>, virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
-Cc: Cornelia Huck <cohuck@redhat.com>, Tiwei Bie <tiwei.bie@intel.com>, Stefan Hajnoczi <stefanha@redhat.com>, "Dhanoa, Kully" <kully.dhanoa@intel.com>
+Return-Path: virtio-dev-return-3790-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
+	by lists.oasis-open.org (Postfix) with ESMTP id 890571CB8078
+	for <virtio-dev@lists.oasis-open.org>; Tue, 10 Apr 2018 11:59:52 -0700 (PDT)
+From: Sridhar Samudrala <sridhar.samudrala@intel.com>
+Date: Tue, 10 Apr 2018 11:59:46 -0700
+Message-Id: <1523386790-12396-1-git-send-email-sridhar.samudrala@intel.com>
+Subject: [virtio-dev] [RFC PATCH net-next v6 0/4] Enable virtio_net to act as a backup for a passthru device 
+To: mst@redhat.com, stephen@networkplumber.org, davem@davemloft.net, netdev@vger.kernel.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, jesse.brandeburg@intel.com, alexander.h.duyck@intel.com, kubakici@wp.pl, sridhar.samudrala@intel.com, jasowang@redhat.com, loseweigh@gmail.com, jiri@resnulli.us
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+The main motivation for this patch is to enable cloud service providers
+to provide an accelerated datapath to virtio-net enabled VMs in a 
+transparent manner with no/minimal guest userspace changes. This also
+enables hypervisor controlled live migration to be supported with VMs that
+have direct attached SR-IOV VF devices.
 
+Patch 1 introduces a new feature bit VIRTIO_NET_F_BACKUP that can be
+used by hypervisor to indicate that virtio_net interface should act as
+a backup for another device with the same MAC address.
 
-On 03/01/2018 12:10 AM, Michael S. Tsirkin wrote:
-> Here's an incremental patch since v8, for ease of review.
-> I did my best to address all outstanding comments.
-> 
-> Changelog:
-> 
->  packed-ring: clarify wording on s/g conformance
->  split-ring: typo: aligment
->  packed-ring: typo: aligment
->  packed-ring: clarify multi-buffer requests
->  packed-ring: necessary, not sufficient condition
->  packed-ring: support skipping used descritors
->  packed-ring: fix pseudo code
->  packed-ring: format pseudocode using spaces
->  packed-ring: drop << in pseudocode
->  packed-ring: clarify event suppression format
->  packed-ring: chained descriptors are always on
->  VIRTIO_F_NOTIFICATION_DATA: switch to bitfields
->  introduction: document bitfield notation
->  VIRTIO_F_NOTIFICATION_DATA: minor cleanups
->  content: VIRTIO_F_NOTIFICATION_DATA is option
->  VIRTIO_F_NOTIFICATION_DATA: improve formatting
-> 
-> Note that I had to move notification format for ccw and mmio out to a
-> separate file - latex seems to get confused otherwise.  A clean patchset
-> to follow.
-> 
-> Incrementally redlined pdf is available at the
-> virtio-doc repository as virtio-v1.1-w08-to-wd09-diff.pdf
-> 
-> ---
->
+Patch 2 introduces a bypass module that provides a generic interface for 
+paravirtual drivers to listen for netdev register/unregister/link change
+events from pci ethernet devices with the same MAC and takeover their
+datapath. The notifier and event handling code is based on the existing
+netvsc implementation. It provides 2 sets of interfaces to paravirtual 
+drivers to support 2-netdev(netvsc) and 3-netdev(virtio_net) models.
 
-Run trough this. My first impression is changes look good. I will try to
-go trough the whole thing again during the next days.
+Patch 3 extends virtio_net to use alternate datapath when available and
+registered. When BACKUP feature is enabled, virtio_net driver creates
+an additional 'bypass' netdev that acts as a master device and controls
+2 slave devices.  The original virtio_net netdev is registered as
+'backup' netdev and a passthru/vf device with the same MAC gets
+registered as 'active' netdev. Both 'bypass' and 'backup' netdevs are
+associated with the same 'pci' device.  The user accesses the network
+interface via 'bypass' netdev. The 'bypass' netdev chooses 'active' netdev
+as default for transmits when it is available with link up and running.
 
-Regards,
-Halil
+Patch 4 refactors netvsc to use the registration/notification framework
+supported by bypass module.
 
+As this patch series is initially focusing on usecases where hypervisor 
+fully controls the VM networking and the guest is not expected to directly 
+configure any hardware settings, it doesn't expose all the ndo/ethtool ops
+that are supported by virtio_net at this time. To support additional usecases,
+it should be possible to enable additional ops later by caching the state
+in virtio netdev and replaying when the 'active' netdev gets registered. 
+ 
+The hypervisor needs to enable only one datapath at any time so that packets
+don't get looped back to the VM over the other datapath. When a VF is
+plugged, the virtio datapath link state can be marked as down.
+At the time of live migration, the hypervisor needs to unplug the VF device
+from the guest on the source host and reset the MAC filter of the VF to
+initiate failover of datapath to virtio before starting the migration. After
+the migration is completed, the destination hypervisor sets the MAC filter
+on the VF and plugs it back to the guest to switch over to VF datapath.
+
+This patch is based on the discussion initiated by Jesse on this thread.
+https://marc.info/?l=linux-virtualization&m=151189725224231&w=2
+
+v6 RFC:
+  Simplified virtio_net changes by moving all the ndo_ops of the 
+  bypass_netdev and create/destroy of bypass_netdev to 'bypass' module.
+  avoided 2 phase registration(driver + instances).
+  introduced IFF_BYPASS/IFF_BYPASS_SLAVE dev->priv_flags 
+  replaced mutex with a spinlock
+
+v5 RFC:
+  Based on Jiri's comments, moved the common functionality to a 'bypass'
+  module so that the same notifier and event handlers to handle child
+  register/unregister/link change events can be shared between virtio_net
+  and netvsc.
+  Improved error handling based on Siwei's comments.
+v4:
+- Based on the review comments on the v3 version of the RFC patch and
+  Jakub's suggestion for the naming issue with 3 netdev solution,
+  proposed 3 netdev in-driver bonding solution for virtio-net.
+v3 RFC:
+- Introduced 3 netdev model and pointed out a couple of issues with
+  that model and proposed 2 netdev model to avoid these issues.
+- Removed broadcast/multicast optimization and only use virtio as
+  backup path when VF is unplugged.
+v2 RFC:
+- Changed VIRTIO_NET_F_MASTER to VIRTIO_NET_F_BACKUP (mst)
+- made a small change to the virtio-net xmit path to only use VF datapath
+  for unicasts. Broadcasts/multicasts use virtio datapath. This avoids
+  east-west broadcasts to go over the PCI link.
+- added suppport for the feature bit in qemu
+
+Sridhar Samudrala (4):
+  virtio_net: Introduce VIRTIO_NET_F_BACKUP feature bit
+  net: Introduce generic bypass module
+  virtio_net: Extend virtio to use VF datapath when available
+  netvsc: refactor notifier/event handling code to use the bypass
+    framework
+
+ drivers/net/Kconfig             |   1 +
+ drivers/net/hyperv/Kconfig      |   1 +
+ drivers/net/hyperv/netvsc_drv.c | 219 ++++----------
+ drivers/net/virtio_net.c        | 614 +++++++++++++++++++++++++++++++++++++++-
+ include/net/bypass.h            |  80 ++++++
+ include/uapi/linux/virtio_net.h |   3 +
+ net/Kconfig                     |  18 ++
+ net/core/Makefile               |   1 +
+ net/core/bypass.c               | 406 ++++++++++++++++++++++++++
+ 9 files changed, 1184 insertions(+), 159 deletions(-)
+ create mode 100644 include/net/bypass.h
+ create mode 100644 net/core/bypass.c
+
+-- 
+2.14.3
 
 ---------------------------------------------------------------------
-To unsubscribe from this mail list, you must leave the OASIS TC that 
-generates this mail.  Follow this link to all your TCs in OASIS at:
-https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
