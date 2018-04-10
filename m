@@ -1,184 +1,144 @@
-Return-Path: virtio-dev-return-3788-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3766-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 468D91CB8078
-	for <virtio-dev@lists.oasis-open.org>; Tue, 10 Apr 2018 09:19:13 -0700 (PDT)
-Date: Tue, 10 Apr 2018 17:18:53 +0100
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Message-ID: <235fd63b-ff33-9907-3516-38e9ef3ba007@arm.com>
-References: <20180206181106.21815-1-jean-philippe.brucker@arm.com>
- <AADFC41AFE54684AB9EE6CBC0274A5D191085A76@SHSMSX101.ccr.corp.intel.com>
- <3575fbb8-36a9-ef38-8234-6adf6a573b3e@arm.com>
- <AADFC41AFE54684AB9EE6CBC0274A5D19108DBDD@SHSMSX101.ccr.corp.intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D19108DBDD@SHSMSX101.ccr.corp.intel.com>
-Content-Language: en-US
-Subject: Re: [virtio-dev] [RFC] virtio-iommu version 0.6
-To: "Tian, Kevin" <kevin.tian@intel.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>
-Cc: "eric.auger@redhat.com" <eric.auger@redhat.com>, "bharat.bhushan@nxp.com" <bharat.bhushan@nxp.com>, "eric.auger.pro@gmail.com" <eric.auger.pro@gmail.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 40A8358191FC
+	for <virtio-dev@lists.oasis-open.org>; Mon,  9 Apr 2018 19:09:06 -0700 (PDT)
+From: Wei Wang <wei.w.wang@intel.com>
+Date: Tue, 10 Apr 2018 09:50:05 +0800
+Message-Id: <1523325009-29763-1-git-send-email-wei.w.wang@intel.com>
+Subject: [virtio-dev] [PATCH v32 0/4] Virtio-balloon: support free page reporting
+To: virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, linux-mm@kvack.org, mst@redhat.com, mhocko@kernel.org, akpm@linux-foundation.org
+Cc: pbonzini@redhat.com, wei.w.wang@intel.com, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu0@gmail.com, nilal@redhat.com, riel@redhat.com, huangzhichao@huawei.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 22/03/18 09:44, Tian, Kevin wrote:
->> From: Jean-Philippe Brucker [mailto:jean-philippe.brucker@arm.com]
->> Sent: Wednesday, March 21, 2018 9:14 PM
->>
->> Hi Kevin,
->>
->> Thanks for the comments
->>
->> On 19/03/18 10:03, Tian, Kevin wrote:
->>> BYPASS feature bit is not covered in "2.3.1/2.3.2/2.3.3"". Is it
->>> intended?
->>
->> In my opinion BYPASS is a bit different from the other features: while the
->> others are needed for correctness, this one is optional and even if the
->> guest supports BYPASS, it should be allowed not to accept it. For security
->> reasons it may not want to let endpoints access the whole guest-physical
->> address space.
-> 
-> ok, possibly because I'm not familiar with virtio spec convention.
-> My original feeling is that each feature bit will have a behavior
-> description regarding to whether device reports and whether 
-> driver accepts. If no need to cover optional feature, then it's fine
-> to me. :-)
+This patch series is separated from the previous "Virtio-balloon
+Enhancement" series. The new feature, VIRTIO_BALLOON_F_FREE_PAGE_HINT,  
+implemented by this series enables the virtio-balloon driver to report
+hints of guest free pages to the host. It can be used to accelerate live
+migration of VMs. Here is an introduction of this usage:
 
-I think the virtio spec allows the reader to choose how to implement any
-behavior that isn't explicitly described. Whenever a SHOULD or MUST
-isn't stated in a requirement section, the spec implies "feature X MAY
-be enabled if offered".
+Live migration needs to transfer the VM's memory from the source machine
+to the destination round by round. For the 1st round, all the VM's memory
+is transferred. From the 2nd round, only the pieces of memory that were
+written by the guest (after the 1st round) are transferred. One method
+that is popularly used by the hypervisor to track which part of memory is
+written is to write-protect all the guest memory.
 
-Looking at the virtio-net specification, optional features such as
-VIRTIO_NET_F_VLAN aren't mentioned in driver requirements. On the other
-hand, features that the device needs in order to function properly are
-explicitly stated, for example VIRTIO_NET_F_MAC.
+This feature enables the optimization by skipping the transfer of guest
+free pages during VM live migration. It is not concerned that the memory
+pages are used after they are given to the hypervisor as a hint of the
+free pages, because they will be tracked by the hypervisor and transferred
+in the subsequent round if they are used and written.
 
->> [...]
->>> Then comes a question for VIRTIO_IOMMU_RESV_MEM_T_MSI.
->>> I know there were quite some discussion around this flag before,
->>> but my mental picture now still is a bit difficult to understand its
->>> usage based on examples in implementation notes:
->>>
->>> 	- for x86, you describe it as indicating MSI bypass for
->>> oxfeexxxxx. However guest doesn't need to know this fact. Only
->>> requirement is to treat it as reserved range (as on bare metal)
->>> then T_RESERVED is sufficient for this purpose>
->>> 	- for ARM, either let guest or let host to choose a virtual
->>> address for mapping to MSI doorbell. the former doesn't require
->>> a reserved range. for the latter also T_RESERVED is enough as
->>> the example in hardware device assignment section.
->>
->> It might be nicer to have the host decide it, but when the physical IOMMU
->> is ARM SMMU, nesting translation complicates things, because the guest
->> *has* to create a mapping:
-> 
-> confirm one thing first. v0.6 doesn't support binding to guest IOVA
-> page table yet. So based on current map/unmap interface, there is 
-> no such complicity right? stage-1 is just a shadowed translation (IOVA
-> ->HPA) to guest side (IOVA->GPA) with nesting disabled. In that case
-> the default behavior is host-reserved style.
+* Tests
+- Test Environment
+    Host: Intel(R) Xeon(R) CPU E5-2699 v4 @ 2.20GHz
+    Guest: 8G RAM, 4 vCPU
+    Migration setup: migrate_set_speed 100G, migrate_set_downtime 2 second
 
-Yes, with v0.6 the host chooses whether to translate or bypass the MSIs.
+- Test Results
+    - Idle Guest Live Migration Time (results are averaged over 10 runs):
+        - Optimization v.s. Legacy = 271ms vs 1769ms --> ~86% reduction
+    - Guest with Linux Compilation Workload (make bzImage -j4):
+        - Live Migration Time (average)
+          Optimization v.s. Legacy = 1265ms v.s. 2634ms --> ~51% reduction
+        - Linux Compilation Time
+          Optimization v.s. Legacy = 4min56s v.s. 5min3s
+          --> no obvious difference
 
-> Then comes nested scenario:
-> 
->>
->> * The guest is in charge of stage-1. It creates IOVA->GPA mapping for the
->>   MSI doorbell. The GPA is mapped to the physical MSI doorbell at
->>   stage-2 by the host.
-> 
-> Is it a must that above GPA is mapped to physical MSI doorbell?
-> 
-> Ideally:
-> 
-> 1) Host reserves some IOVA range for mapping MSI doorbell
-> 2) the range is reported to user space
-> 3) Qemu reported the range as reserved on endpoints, marked
-> as T_IDENTITY (a new type to be introduced), meaning guest
-> needs setup identity mapping in stage-1
+ChangeLog:
+v31->v32:
+    - virtio-balloon:
+        - rename cmd_id_use to cmd_id_active;
+        - report_free_page_func: detach used buffers after host sends a vq
+          interrupt, instead of busy waiting for used buffers.
+v30->v31:
+    - virtio-balloon:
+        - virtio_balloon_send_free_pages: return -EINTR rather than 1 to
+          indicate an active stop requested by host; and add more
+          comments to explain about access to cmd_id_received without
+          locks;
+        -  add_one_sg: add TODO to comments about possible improvement.
+v29->v30:
+    - mm/walk_free_mem_block: add cond_sched() for each order
+v28->v29:
+    - mm/page_poison: only expose page_poison_enabled(), rather than more
+      changes did in v28, as we are not 100% confident about that for now.
+    - virtio-balloon: use a separate buffer for the stop cmd, instead of
+      having the start and stop cmd use the same buffer. This avoids the
+      corner case that the start cmd is overridden by the stop cmd when
+      the host has a delay in reading the start cmd.
+v27->v28:
+    - mm/page_poison: Move PAGE_POISON to page_poison.c and add a function
+      to expose page poison val to kernel modules.
+v26->v27:
+    - add a new patch to expose page_poisoning_enabled to kernel modules
+    - virtio-balloon: set poison_val to 0xaaaaaaaa, instead of 0xaa
+v25->v26: virtio-balloon changes only
+    - remove kicking free page vq since the host now polls the vq after
+      initiating the reporting
+    - report_free_page_func: detach all the used buffers after sending
+      the stop cmd id. This avoids leaving the detaching burden (i.e.
+      overhead) to the next cmd id. Detaching here isn't considered
+      overhead since the stop cmd id has been sent, and host has already
+      moved formard.
+v24->v25:
+    - mm: change walk_free_mem_block to return 0 (instead of true) on
+          completing the report, and return a non-zero value from the
+          callabck, which stops the reporting.
+    - virtio-balloon:
+        - use enum instead of define for VIRTIO_BALLOON_VQ_INFLATE etc.
+        - avoid __virtio_clear_bit when bailing out;
+        - a new method to avoid reporting the some cmd id to host twice
+        - destroy_workqueue can cancel free page work when the feature is
+          negotiated;
+        - fail probe when the free page vq size is less than 2.
+v23->v24:
+    - change feature name VIRTIO_BALLOON_F_FREE_PAGE_VQ to
+      VIRTIO_BALLOON_F_FREE_PAGE_HINT
+    - kick when vq->num_free < half full, instead of "= half full"
+    - replace BUG_ON with bailing out
+    - check vb->balloon_wq in probe(), if null, bail out
+    - add a new feature bit for page poisoning
+    - solve the corner case that one cmd id being sent to host twice
+v22->v23:
+    - change to kick the device when the vq is half-way full;
+    - open-code batch_free_page_sg into add_one_sg;
+    - change cmd_id from "uint32_t" to "__virtio32";
+    - reserver one entry in the vq for the driver to send cmd_id, instead
+      of busywaiting for an available entry;
+    - add "stop_update" check before queue_work for prudence purpose for
+      now, will have a separate patch to discuss this flag check later;
+    - init_vqs: change to put some variables on stack to have simpler
+      implementation;
+    - add destroy_workqueue(vb->balloon_wq);
+v21->v22:
+    - add_one_sg: some code and comment re-arrangement
+    - send_cmd_id: handle a cornercase
 
-I think it works, and is saner than my idea. I had one concern (thought
-I had more but can't find any in my notes; they might resurface when
-prototyping): the MSI doorbell has to be mapped with device attributes
-(MMIO) to ensure proper interrupt delivery. I think it's fine because
-the host maps the doorbell with the right attributes at stage-2, which
-will take precedence over what the guest uses for stage-1 according to
-the Arm architecture.
+For previous ChangeLog, please reference
+https://lwn.net/Articles/743660/
 
-So I don't think T_IDENTITY requires arch-specific attributes for now
-but there should definitely be space for extension. I also noticed that
-Intel and AMD drivers in Linux don't add any special attribute or
-protection to identity mappings (RESV_DIRECT in Linux), apart from
-READ/WRITE.
+Wei Wang (4):
+  mm: support reporting free page blocks
+  virtio-balloon: VIRTIO_BALLOON_F_FREE_PAGE_HINT
+  mm/page_poison: expose page_poisoning_enabled to kernel modules
+  virtio-balloon: VIRTIO_BALLOON_F_PAGE_POISON
 
-For reference the previous discussion about T_IDENTITY is here:
-https://www.spinics.net/lists/kvm/msg155240.html
+ drivers/virtio/virtio_balloon.c     | 298 +++++++++++++++++++++++++++++++-----
+ include/linux/mm.h                  |   6 +
+ include/uapi/linux/virtio_balloon.h |   7 +
+ mm/page_alloc.c                     |  97 ++++++++++++
+ mm/page_poison.c                    |   6 +
+ 5 files changed, 378 insertions(+), 36 deletions(-)
 
-One problem with my idea was that if the device is behind multiple IRQ
-chips, the host cannot know which IRQ chip the IOVA corresponds to, when
-reading the MSI-X tables. Then again I don't know why multiple IRQ chips
-per device would be desirable, but it's allowed.
+-- 
+2.7.4
 
-> 4) Then device should be able to ring physical MSI doorbell
-> 5) I'm not sure whether guest still needs to allocate its own
-> IOVA and mapping to vGIC doorbell in such case...
-
-I don't think it matters, because the host MSI infrastructure is
-decoupled from the guest's. The host programs the physical MSI-X tables
-and only needs the guest to create a stage-1 mappings for those, which
-is done with T_IDENTITY. The guest doesn't know what the T_IDENTITY
-mapping is for.
-
-Then QEMU can choose whether to map or bypass the vGIC MSI doorbell.
-With MSI bypass, guest writes a GPA into the virtual MSI-X table,
-and QEMU sets up the IRQ routing.
-
-With mapped MSI
-- The guest creates a dangling stage-1 mapping for the vGIC doorbell.
-  The vGIC doorbell isn't mapped at stage-2, so accessing it from the
-  IOVA would fault. It doesn't matter because the host programs a valid
-  value into the physical MSI-X table.
-- The guest writes an IOVA into the virtual MSI-X table. The host can't
-  know which doorbell it corresponds to, because it doesn't walk pIOMMU
-  page tables. It has to guess.
-
-So I advise to use bypass. Mapped MSI prevents from having multiple IRQ
-chips for one device. Although we probably don't care about this, we
-should aim to avoid any guessing in the host.
-
-
->> [...]
->> Another way of choosing would be with #ifdef CONFIG_ARM64,
->> CONFIG_X86 etc,
->> but I find it nasty, and I personally prefer using MSI bypass for ARM when
->> possible.
-> 
-> however from current v0.6 examples, BYPASS is only listed for x86
-> case. ARM usage is the missing piece making me confused. 
-
-Are you referring to "3.3 - Hardware device assignment" or "3.2 Message
-Signaled Interrupts"?
-
-3.2.2 gives "ARM-based platforms" as an example for MSI address
-translation because all physical Arm platforms (except one that has to
-work around an erratum) use translated MSIs, and I don't think others do
-this. Bypass isn't possible because the GIC interface can be anywhere in
-the physical address space, and therefore the PCI RC or the SMMU cannot
-distinguish MSIs from other memory accesses.
-
-The virtual platform is a bit different, in that it doesn't need to
-perform DMA writes for MSIs. Instead it can create eventfd routes
-beforehand, maybe making it easier to support bypass. That is for vhost
-and vfio, but I think for userspace devices QEMU performs a normal DMA
-write that goes through the IOMMU followed by the GIC.
-
-Thanks,
-Jean
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
