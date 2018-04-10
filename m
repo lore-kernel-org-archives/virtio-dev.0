@@ -1,95 +1,89 @@
-Return-Path: virtio-dev-return-3764-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3772-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 9A3445818F75
-	for <virtio-dev@lists.oasis-open.org>; Mon,  9 Apr 2018 16:31:53 -0700 (PDT)
+	by lists.oasis-open.org (Postfix) with ESMTP id 2550958191F8
+	for <virtio-dev@lists.oasis-open.org>; Mon,  9 Apr 2018 23:49:06 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20180409160348.12f8a6d9@xeon-e3>
-References: <3bdfc39f-4935-2433-7982-9ce28c3aa166@gmail.com>
- <CADGSJ23Zr7_CLMr1W9qhcWux59+aCvFdTg_nQ7Mmp5B-FWL8=Q@mail.gmail.com>
- <54accf73-e6cc-e03f-6a1c-34e1bbd78047@gmail.com> <20180404.133749.1802514210170809419.davem@davemloft.net>
- <CADGSJ206RKi704uoLe3xVs6PyWpURPLb75OPCM_YO9DfnnEzpw@mail.gmail.com>
- <20180407031919.GB11029@lunn.ch> <CADGSJ211kA5ktADbwv2f4ma_ooBmYW4r7YwzGD2G_Gw5+wv5rw@mail.gmail.com>
- <20180409221523.GH562@lunn.ch> <CADGSJ23RnioMdi0U0yeOBKuM-9QUZ3S33as693xzs0VWQbuVcA@mail.gmail.com>
- <20180409160348.12f8a6d9@xeon-e3>
+In-Reply-To: <20180408.123207.2294740686493951200.davem@davemloft.net>
+References: <54accf73-e6cc-e03f-6a1c-34e1bbd78047@gmail.com>
+ <20180404.133749.1802514210170809419.davem@davemloft.net> <CADGSJ206RKi704uoLe3xVs6PyWpURPLb75OPCM_YO9DfnnEzpw@mail.gmail.com>
+ <20180408.123207.2294740686493951200.davem@davemloft.net>
 From: Siwei Liu <loseweigh@gmail.com>
-Date: Mon, 9 Apr 2018 16:31:50 -0700
-Message-ID: <CADGSJ21_MRJwjMRyLMBLJ=BFM9thEvSwBtyutNXcW=RtmJJ3Dg@mail.gmail.com>
+Date: Mon, 9 Apr 2018 23:48:52 -0700
+Message-ID: <CADGSJ233AmbBrTP-A_u3-5fkr=HUJka_xcSNWxO1HWGua1J92Q@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Subject: [virtio-dev] Re: [RFC PATCH 2/3] netdev: kernel-only IFF_HIDDEN netdevice
-To: Stephen Hemminger <stephen@networkplumber.org>
-Cc: Andrew Lunn <andrew@lunn.ch>, David Miller <davem@davemloft.net>, David Ahern <dsahern@gmail.com>, Jiri Pirko <jiri@resnulli.us>, si-wei liu <si-wei.liu@oracle.com>, "Michael S. Tsirkin" <mst@redhat.com>, Alexander Duyck <alexander.h.duyck@intel.com>, "Brandeburg, Jesse" <jesse.brandeburg@intel.com>, Jakub Kicinski <kubakici@wp.pl>, Jason Wang <jasowang@redhat.com>, "Samudrala, Sridhar" <sridhar.samudrala@intel.com>, Netdev <netdev@vger.kernel.org>, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org
+To: David Miller <davem@davemloft.net>
+Cc: David Ahern <dsahern@gmail.com>, Jiri Pirko <jiri@resnulli.us>, si-wei liu <si-wei.liu@oracle.com>, "Michael S. Tsirkin" <mst@redhat.com>, Stephen Hemminger <stephen@networkplumber.org>, Alexander Duyck <alexander.h.duyck@intel.com>, "Brandeburg, Jesse" <jesse.brandeburg@intel.com>, Jakub Kicinski <kubakici@wp.pl>, Jason Wang <jasowang@redhat.com>, "Samudrala, Sridhar" <sridhar.samudrala@intel.com>, Netdev <netdev@vger.kernel.org>, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Mon, Apr 9, 2018 at 4:03 PM, Stephen Hemminger
-<stephen@networkplumber.org> wrote:
-> On Mon, 9 Apr 2018 15:30:42 -0700
-> Siwei Liu <loseweigh@gmail.com> wrote:
+On Sun, Apr 8, 2018 at 9:32 AM, David Miller <davem@davemloft.net> wrote:
+> From: Siwei Liu <loseweigh@gmail.com>
+> Date: Fri, 6 Apr 2018 19:32:05 -0700
 >
->> On Mon, Apr 9, 2018 at 3:15 PM, Andrew Lunn <andrew@lunn.ch> wrote:
->> >> No, implementation wise I'd avoid changing the class on the fly. What
->> >> I'm looking to is a means to add a secondary class or class aliasing
->> >> mechanism for netdevs that allows mapping for a kernel device
->> >> namespace (/class/net-kernel) to userspace (/class/net). Imagine
->> >> creating symlinks between these two namespaces as an analogy. All
->> >> userspace visible netdevs today will have both a kernel name and a
->> >> userspace visible name, having one (/class/net) referecing the other
->> >> (/class/net-kernel) in its own namespace. The newly introduced
->> >> IFF_AUTO_MANAGED device will have a kernel name only
->> >> (/class/net-kernel). As a result, the existing applications using
->> >> /class/net don't break, while we're adding the kernel namespace that
->> >> allows IFF_AUTO_MANAGED devices which will not be exposed to userspace
->> >> at all.
->> >
->> > My gut feeling is this whole scheme will not fly. You really should be
->> > talking to GregKH.
->>
->> Will do. Before spreading it out loudly I'd run it within netdev to
->> clarify the need for why not exposing the lower netdevs is critical
->> for cloud service providers in the face of introducing a new feature,
->> and we are not hiding anything but exposing it in a way that don't
->> break existing userspace applications while introducing feature is
->> possible with the limitation of keeping old userspace still.
->>
->> >
->> > Anyway, please remember that IFF_AUTO_MANAGED will need to be dynamic.
->> > A device can start out as a normal device, and will change to being
->> > automatic later, when the user on top of it probes.
->>
->> Sure. In whatever form it's still a netdev, and changing the namespace
->> should be more dynamic than changing the class.
->>
->> Thanks a lot,
->> -Siwei
->>
->> >
->> >         Andrew
+>> And I assume everyone here understands the use case for live
+>> migration (in the context of providing cloud service) is very
+>> different, and we have to hide the netdevs. If not, I'm more than
+>> happy to clarify.
 >
-> Also, remember for netdev's /sys is really a third class API.
-> The primary API's are netlink and ioctl. Also why not use existing
-> network namespaces rather than inventing a new abstraction?
+> I think you still need to clarify.
 
-Because we want to leave old userspace unmodified while making SR-IOV
-live migration transparent to users. Specifically, we'd want old udevd
-to skip through uevents for the lower netdevs, while also making new
-udevd able to name the bypass_master interface by referencing the pci
-slot information which is only present in the sysfs entry for
-IFF_AUTO_MANAGED net device.
+OK. The short answer is cloud users really want *transparent* live migration.
 
-The problem of using network namespace is that, no sysfs entry will be
-around for IFF_AUTO_MANAGED netdev if we isolate it out to a separate
-netns, unless we generalize the scope for what netns is designed for
-(isolation I mean). For auto-managed netdevs we don't neccessarily
-wants strict isolation, but rather a way of sticking to 1-netdev model
-for strict backward compatibility requiement of the old userspace,
-while exposing the information in a way new userspace understands.
+By being transparent it means they don't and shouldn't care about the
+existence and the occurence of live migration, but they do if
+userspace toolstack and libraries have to be updated or modified,
+which means potential dependency brokeness of their applications. They
+don't like any change to the userspace envinroment (existing apps
+lift-and-shift, no recompilation, no re-packaging, no re-certification
+needed), while no one barely cares about ABI or API compatibility in
+the kernel level, as long as their applications don't break.
+
+I agree the current bypass solution for SR-IOV live migration requires
+guest cooperation. Though it doesn't mean guest *userspace*
+cooperation. As a matter of fact, techinically it shouldn't invovle
+userspace at all to get SR-IOV migration working. It's the kernel that
+does the real work. If I understand the goal of this in-kernel
+approach correctly, it was meant to save userspace from modification
+or corresponding toolstack support, as those additional 2 interfaces
+is more a side product of this approach, rather than being neccessary
+for users to be aware of. All what the user needs to deal with is one
+single interface, and that's what they care about. It's more a trouble
+than help when they see 2 extra interfaces are present. Management
+tools in the old distros don't recoginze them and try to bring up
+those extra interfaces for its own. Various odd warnings start to spew
+out, and there's a lot of caveats for the users to get around...
+
+On the other hand, if we "teach" those cloud users to update the
+userspace toolstack just for trading a feature they don't need, no one
+is likely going to embrace the change. As such there's just no real
+value of adopting this in-kernel bypass facility for any cloud service
+provider. It does not look more appealing than just configure generic
+bonding using its own set of daemons or scripts. But again, cloud
+users don't welcome that facility. And basically it would get to
+nearly the same set of problems if leaving userspace alone.
+
+IMHO we're not hiding the devices, think it the way we're adding a
+feature transparent to user. Those auto-managed slaves are ones users
+don't care about much. And user is still able to see and configure the
+lower netdevs if they really desires to do so. But generally the
+target user for this feature won't need to know that. Why they care
+how many interfaces a VM virtually has rather than how many interfaces
+are actually _useable_ to them??
 
 Thanks,
 -Siwei
+
+
+>
+> netdevs are netdevs.  If they have special attributes, mark them as
+> such and the tools base their actions upon that.
+>
+> "Hiding", or changing classes, doesn't make any sense to me still.
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
