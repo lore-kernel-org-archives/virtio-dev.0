@@ -1,99 +1,50 @@
-Return-Path: virtio-dev-return-3899-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id AE7A05819139
-	for <virtio-dev@lists.oasis-open.org>; Thu, 19 Apr 2018 17:46:49 -0700 (PDT)
-Date: Fri, 20 Apr 2018 03:46:46 +0300
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20180420034106-mutt-send-email-mst@kernel.org>
-References: <20180315183449.3102.64791.stgit@localhost.localdomain>
- <CAKgT0UdTANRo3xnr89aWdfSPmMg81-W2H-ZcJUdC=5nUkf9RAw@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAKgT0UdTANRo3xnr89aWdfSPmMg81-W2H-ZcJUdC=5nUkf9RAw@mail.gmail.com>
-Subject: [virtio-dev] Re: [pci PATCH v7 0/5] Add support for unmanaged SR-IOV
-To: Alexander Duyck <alexander.duyck@gmail.com>
-Cc: Bjorn Helgaas <bhelgaas@google.com>, "Duyck, Alexander H" <alexander.h.duyck@intel.com>, linux-pci@vger.kernel.org, virtio-dev@lists.oasis-open.org, kvm@vger.kernel.org, Netdev <netdev@vger.kernel.org>, "Daly, Dan" <dan.daly@intel.com>, LKML <linux-kernel@vger.kernel.org>, linux-nvme@lists.infradead.org, Keith Busch <keith.busch@intel.com>, netanel@amazon.com, Don Dutile <ddutile@redhat.com>, Maximilian Heyne <mheyne@amazon.de>, "Wang, Liang-min" <liang-min.wang@intel.com>, "Rustad, Mark D" <mark.d.rustad@intel.com>, David Woodhouse <dwmw2@infradead.org>, Christoph Hellwig <hch@lst.de>, dwmw@amazon.co.uk
+Return-Path: virtio-return-3061-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio@lists.oasis-open.org>
+List-Post: <mailto:virtio@lists.oasis-open.org>
+List-Help: <mailto:virtio-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
+From: Halil Pasic <pasic@linux.vnet.ibm.com>
+Date: Wed, 11 Apr 2018 00:11:24 +0200
+Message-Id: <1523398287-25480-1-git-send-email-pasic@linux.vnet.ibm.com>
+Subject: [virtio] [RFC PATCH 0/3] rework notifications terminology
+To: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+Cc: "Michael S. Tsirkin" <mst@redhat.com>, Cornelia Huck <cohuck@redhat.com>, Halil Pasic <pasic@linux.vnet.ibm.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Thu, Apr 19, 2018 at 03:54:49PM -0700, Alexander Duyck wrote:
-> On Thu, Mar 15, 2018 at 11:40 AM, Alexander Duyck
-> <alexander.duyck@gmail.com> wrote:
-> > This series is meant to add support for SR-IOV on devices when the VFs are
-> > not managed by the kernel. Examples of recent patches attempting to do this
-> > include:
-> > virto - https://patchwork.kernel.org/patch/10241225/
-> > pci-stub - https://patchwork.kernel.org/patch/10109935/
-> > vfio - https://patchwork.kernel.org/patch/10103353/
-> > uio - https://patchwork.kernel.org/patch/9974031/
-> >
-> > Since this is quickly blowing up into a multi-driver problem it is probably
-> > best to implement this solution as generically as possible.
-> >
-> > This series is an attempt to do that. What we do with this patch set is
-> > provide a generic framework to enable SR-IOV in the case that the PF driver
-> > doesn't support managing the VFs itself.
-> >
-> > I based my patch set originally on the patch by Mark Rustad but there isn't
-> > much left after going through and cleaning out the bits that were no longer
-> > needed, and after incorporating the feedback from David Miller. At this point
-> > the only items to be fully reused was his patch description which is now
-> > present in patch 3 of the set.
-> >
-> > This solution is limited in scope to just adding support for devices that
-> > provide no functionality for SR-IOV other than allocating the VFs by
-> > calling pci_enable_sriov. Previous sets had included patches for VFIO, but
-> > for now I am dropping that as the scope of that work is larger then I
-> > think I can take on at this time.
-> >
-> > v2: Reduced scope back to just virtio_pci and vfio-pci
-> >     Broke into 3 patch set from single patch
-> >     Changed autoprobe behavior to always set when num_vfs is set non-zero
-> > v3: Updated Documentation to clarify when sriov_unmanaged_autoprobe is used
-> >     Wrapped vfio_pci_sriov_configure to fix build errors w/o SR-IOV in kernel
-> > v4: Dropped vfio-pci patch
-> >     Added ena and nvme to drivers now using pci_sriov_configure_unmanaged
-> >     Dropped pci_disable_sriov call in virtio_pci to be consistent with ena
-> > v5: Dropped sriov_unmanaged_autoprobe and pci_sriov_conifgure_unmanaged
-> >     Added new patch that enables pci_sriov_configure_simple
-> >     Updated drivers to use pci_sriov_configure_simple
-> > v6: Defined pci_sriov_configure_simple as NULL when SR-IOV is not enabled
-> >     Updated drivers to drop "#ifdef" checks for IOV
-> >     Added pci-pf-stub as place for PF-only drivers to add support
-> > v7: Dropped pci_id table explanation from pci-pf-stub driver
-> >     Updated pci_sriov_configure_simple to drop need for err value
-> >     Fixed comment explaining why pci_sriov_configure_simple is NULL
-> >
-> 
-> Just following up since this has been sitting in patchwork for just
-> over a month now
-> (https://patchwork.ozlabs.org/project/linux-pci/list/?series=34034).
-> I'm just wondering what the expectation is on getting these pulled
-> into the pci tree? I'm assuming that is the best place for these
-> patches. Are there any concerns I still need to address or are these
-> going to be pulled in at some point, and if so is there any ETA on
-> when that will be?
-> 
-> Thanks.
-> 
-> - Alex
+While discussing XXXX using available and used buffer notifications
+consistently for virqueue notifications (driver to device and vice versa
+respectively) seemed like a good idea.
 
-Sorry I didn't notice you had more questions. I have responded
-hopefully explaining my concerns. Summary:
+It turned out surprisingly invasive however, and I find it necessary to
+confirm, this is really the path we want to walk, before investing even more
+time.
 
-- For virtio we should add this with a feature bit.
-- I am worried about security of this for the stub, but I am
-  not the maintainer there.
+This series limits itself to the core and to the ccw transport. It ain't
+typical to the device types to make statements about notifications, but at
+least net has some words on interrupts. I did not get these immediately so I've
+left that out for now. 
 
--- 
-MST
+I choose ccw as demonstrator on how to bridge the abstract with the transport
+specific, because that is the transport I'm most familiar with. I do not expect
+difficulties with the other ones.
+
+
+Halil Pasic (3):
+  notifications: unify notifications wording in core
+  notifications:notifications as basic virtio facility
+  ccw: map common notifications terminology to ccw
+
+ cl-os.tex       |    2 +-
+ conformance.tex |    8 ++--
+ content.tex     |   92 ++++++++++++++++++++++++++++++++++++++++++++++++++-----
+ packed-ring.tex |   59 +++++++++++++++++++---------------
+ split-ring.tex  |   72 +++++++++++++++++++++++++------------------
+ 5 files changed, 164 insertions(+), 69 deletions(-)
+
 
 ---------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+To unsubscribe from this mail list, you must leave the OASIS TC that 
+generates this mail.  Follow this link to all your TCs in OASIS at:
+https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
 
