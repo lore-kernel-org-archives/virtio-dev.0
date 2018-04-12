@@ -1,67 +1,103 @@
-Return-Path: virtio-dev-return-3949-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3828-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 94E0A5818F80
-	for <virtio-dev@lists.oasis-open.org>; Mon, 23 Apr 2018 23:39:35 -0700 (PDT)
-Message-ID: <5ADED1EA.2000608@intel.com>
-Date: Tue, 24 Apr 2018 14:42:50 +0800
-From: Wei Wang <wei.w.wang@intel.com>
-MIME-Version: 1.0
-References: <1524550428-27173-1-git-send-email-wei.w.wang@intel.com>
-In-Reply-To: <1524550428-27173-1-git-send-email-wei.w.wang@intel.com>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: [virtio-dev] Re: [PATCH v7 0/5] virtio-balloon: free page hint reporting support
-To: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, mst@redhat.com, quintela@redhat.com, dgilbert@redhat.com
-Cc: pbonzini@redhat.com, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu0@gmail.com, nilal@redhat.com, riel@redhat.com
+	by lists.oasis-open.org (Postfix) with ESMTP id D934E1CB80EE
+	for <virtio-dev@lists.oasis-open.org>; Thu, 12 Apr 2018 08:14:57 -0700 (PDT)
+From: Tiwei Bie <tiwei.bie@intel.com>
+Date: Thu, 12 Apr 2018 23:12:26 +0800
+Message-Id: <20180412151232.17506-1-tiwei.bie@intel.com>
+Subject: [virtio-dev] [PATCH v3 0/6] Extend vhost-user to support registering external host notifiers
+To: mst@redhat.com, jasowang@redhat.com, alex.williamson@redhat.com, pbonzini@redhat.com, stefanha@redhat.com, qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org
+Cc: cunming.liang@intel.com, dan.daly@intel.com, jianfeng.tan@intel.com, zhihong.wang@intel.com, xiao.w.wang@intel.com, tiwei.bie@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 04/24/2018 02:13 PM, Wei Wang wrote:
-> This is the deivce part implementation to add a new feature,
-> VIRTIO_BALLOON_F_FREE_PAGE_HINT to the virtio-balloon device. The device
-> receives the guest free page hints from the driver and clears the
-> corresponding bits in the dirty bitmap, so that those free pages are
-> not transferred by the migration thread to the destination.
->
-> - Test Environment
->      Host: Intel(R) Xeon(R) CPU E5-2699 v4 @ 2.20GHz
->      Guest: 8G RAM, 4 vCPU
->      Migration setup: migrate_set_speed 100G, migrate_set_downtime 2 second
->
-> - Test Results
->      - Idle Guest Live Migration Time (results are averaged over 10 runs):
->          - Optimization v.s. Legacy = 271ms vs 1769ms --> ~86% reduction
->      - Guest with Linux Compilation Workload (make bzImage -j4):
->          - Live Migration Time (average)
->            Optimization v.s. Legacy = 1265ms v.s. 2634ms --> ~51% reduction
->          - Linux Compilation Time
->            Optimization v.s. Legacy = 4min56s v.s. 5min3s
->            --> no obvious difference
->
-> - Source Code
->      - QEMU:  https://github.com/wei-w-wang/qemu-free-page-lm.git
->      - Linux: https://github.com/wei-w-wang/linux-free-page-lm.git
->
-> ChangeLog:
-> v6->v7:
->        virtio-balloon/virtio_balloo_poll_free_page_hints:
->            - add virtio_notify() at the end to notify the driver that
->              the optimization is done, which indicates that the entries
->              have all been put back to the vq and ready to detach them.
+The original subject is: Extend vhost-user to support VFIO based accelerators
 
-Hi Dave,
+Update notes
+============
 
-Thanks for reviewing this patch series. Do you have more comments on 
-them? If no, would it be possible to get your reviewed-by?
-The current kernel part is done already. Hope we could finish the QEMU 
-part soon, and have people start to use this feature. Thanks.
+Now, this patch set just focuses on adding the support for
+registering memory region based host notifiers. With this
+support, guest driver in the VM will be able to notify the
+hardware device at the vhost backend directly.
 
-Best,
-Wei
+It's one of the most important things in vDPA -- the host
+notification offload. Because, normally, the hardware device
+heavily depends on the notifications. Without this support,
+there will be a lot of VM-Exit happen due to the notifications
+from guest driver (it will drop the VM performance) and a
+lot of CPU resources wasted to do the notification relay
+(it will make the hardware offload less attractive, because
+one important goal of hardware offload is to free the CPU
+resources).
+
+More backgrounds of this patch set can be found from the
+cover letter of the previous versions:
+
+RFC: http://lists.nongnu.org/archive/html/qemu-devel/2017-12/msg04844.html
+v1:  http://lists.nongnu.org/archive/html/qemu-devel/2018-01/msg06028.html
+v2:  http://lists.nongnu.org/archive/html/qemu-devel/2018-03/msg05009.html
+
+v2 -> v3:
+- A better implementation of the shared vhost-user state (MST);
+- Use bus callback to add/delete subregions for notification (MST);
+- Refine APIs' names which add/delete subregions for notification (MST);
+- Refine the doc of the new vhost-user types and messages (MST);
+- Separate host notification offload from the guest notification offload (MST);
+- Drop the guest notification offload support from this patch;
+- Add memory filter for vhost backend to filter the sections they can handle;
+
+v1 -> v2:
+- Add some explanations about why extend vhost-user in commit log (Paolo);
+- Bug fix in slave_read() according to Stefan's fix in DPDK;
+- Remove IOMMU feature check and related commit log;
+- Some minor refinements;
+- Rebase to the latest QEMU;
+
+RFC -> v1:
+- Add some details about how vDPA works in cover letter (Alexey)
+- Add some details about the OVS offload use-case in cover letter (Jason)
+- Move PCI specific stuffs out of vhost-user (Jason)
+- Handle the virtual IOMMU case (Jason)
+- Move VFIO group management code into vfio/common.c (Alex)
+- Various refinements;
+(approximately sorted by comment posting time)
+
+Tiwei Bie (6):
+  vhost-user: add Net prefix to internal state structure
+  vhost-user: introduce shared vhost-user state
+  vhost-user: support receiving file descriptors in slave_read
+  virtio: support setting memory region based host notifier
+  vhost: allow backends to filter memory sections
+  vhost-user: support registering external host notifiers
+
+ backends/cryptodev-vhost-user.c     |  20 +++-
+ docs/interop/vhost-user.txt         |  33 ++++++
+ hw/block/vhost-user-blk.c           |  22 +++-
+ hw/scsi/vhost-user-scsi.c           |  20 +++-
+ hw/virtio/Makefile.objs             |   2 +-
+ hw/virtio/vhost-stub.c              |  10 ++
+ hw/virtio/vhost-user.c              | 206 ++++++++++++++++++++++++++++++++++--
+ hw/virtio/vhost.c                   |   9 +-
+ hw/virtio/virtio-pci.c              |  22 ++++
+ hw/virtio/virtio.c                  |  13 +++
+ include/hw/virtio/vhost-backend.h   |   4 +
+ include/hw/virtio/vhost-user-blk.h  |   2 +
+ include/hw/virtio/vhost-user-scsi.h |   2 +
+ include/hw/virtio/vhost-user.h      |  28 +++++
+ include/hw/virtio/virtio-bus.h      |   2 +
+ include/hw/virtio/virtio.h          |   2 +
+ net/vhost-user.c                    |  78 +++++++++-----
+ 17 files changed, 433 insertions(+), 42 deletions(-)
+ create mode 100644 include/hw/virtio/vhost-user.h
+
+-- 
+2.11.0
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
