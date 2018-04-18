@@ -1,366 +1,184 @@
-Return-Path: virtio-dev-return-4006-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3857-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 59E705818F01
-	for <virtio-dev@lists.oasis-open.org>; Sun, 29 Apr 2018 03:16:29 -0700 (PDT)
-MIME-Version: 1.0
-In-Reply-To: <5d19b913-7ab3-c69e-4882-09a4de961605@oracle.com>
-References: <20180418104656.1450-1-sameeh@daynix.com> <20180418104656.1450-2-sameeh@daynix.com>
- <5d19b913-7ab3-c69e-4882-09a4de961605@oracle.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 6AEC05818F80
+	for <virtio-dev@lists.oasis-open.org>; Wed, 18 Apr 2018 03:47:35 -0700 (PDT)
 From: Sameeh Jubran <sameeh@daynix.com>
-Date: Sun, 29 Apr 2018 13:16:16 +0300
-Message-ID: <CAKPgXcF1hHRDVtAOZ=oxBV2z56WyS+m6L=SA7S+MoG6Je4=kfA@mail.gmail.com>
-Content-Type: multipart/alternative; boundary="000000000000165f26056afa07f7"
-Subject: Re: [virtio-dev] [PATCH v3 1/2] content: net: Add VIRTIO_NET_F_CTRL_STEERING_MODE
- feature
-To: Vijayabhaskar Balakrishna <vijay.balakrishna@oracle.com>
-Cc: virtio-dev <virtio-dev@lists.oasis-open.org>, Amnon Ilan <ailan@redhat.com>, Yan Vugenfirer <yan@daynix.com>
+Date: Wed, 18 Apr 2018 13:46:56 +0300
+Message-Id: <20180418104656.1450-3-sameeh@daynix.com>
+In-Reply-To: <20180418104656.1450-1-sameeh@daynix.com>
+References: <20180418104656.1450-1-sameeh@daynix.com>
+Subject: [virtio-dev] [PATCH v3 2/2] content: net: steering mode: Add RSS
+To: virtio-dev@lists.oasis-open.org
+Cc: Amnon Ilan <ailan@redhat.com>, Yan Vugenfirer <yan@daynix.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
---000000000000165f26056afa07f7
-Content-Type: text/plain; charset="UTF-8"
+From: Sameeh Jubran <sjubran@redhat.com>
 
-On Fri, Apr 27, 2018 at 9:17 PM, Vijayabhaskar Balakrishna <
-vijay.balakrishna@oracle.com> wrote:
+This commit introduces the RSS feature into virtio-net. It is introduced
+as a sub mode for a general command which configures the steering mode.
 
-> Hi Sameeh,
->
-> See inline..
->
-> On 4/18/2018 3:46 AM, Sameeh Jubran wrote:
->
->> From: Sameeh Jubran <sameeh.j@gmail.com>
->>
->> This commit introduces steering mode into network device. Steering
->> mode is a general infrastructure for various steering modes that can
->> be implemented on top of it such as Automatic and RSS.
->>
->> Signed-off-by: Sameeh Jubran <sjubran@redhat.com>
->> ---
->>   content.tex | 61 ++++++++++++++++++++++++++++++
->> +++++++++++++++++++++++++++++++
->>   1 file changed, 61 insertions(+)
->>
->> diff --git a/content.tex b/content.tex
->> index c840588..6b1f7ca 100644
->> --- a/content.tex
->> +++ b/content.tex
->> @@ -3115,6 +3115,9 @@ features.
->>     \item[VIRTIO_NET_F_CTRL_MAC_ADDR(23)] Set MAC address through control
->>       channel.
->> +
->> +\item[VIRTIO_NET_F_CTRL_STEERING_MODE(60)] Device supports configurable
->> steering
->> +    mode.
->>   \end{description}
->>     \subsubsection{Feature bit requirements}\label{sec:Device Types /
->> Network Device / Feature bits / Feature bit requirements}
->> @@ -3317,6 +3320,8 @@ struct virtio_net_hdr {
->>           le16 csum_start;
->>           le16 csum_offset;
->>           le16 num_buffers;
->> +// Only if VIRTIO_NET_F_CTRL_STEERING_MODE has been negotiated
->> +        le64 hash;
->>   };
->>   \end{lstlisting}
->>   @@ -4013,6 +4018,62 @@ MUST format \field{virtqueue_pairs}
->>   according to the native endian of the guest rather than
->>   (necessarily when not using the legacy interface) little-endian.
->>   +\paragraph{Steering mode}\label{sec:Device Types / Network Device /
->> Device Operation / Control Virtqueue / Steering mode}
->> +
->> +\begin{lstlisting}
->> +// steering mode flags
->> +#define STEERING_MODE_AUTO          0x1
->> +
->> +// Used by the devide for returning to the driver the supported steering
->> modes
->> +struct virtio_net_steering_modes {
->> +le32 steering_modes;
->> +};
->> +
->> +struct virtio_net_steering_mode {
->> +le32 steering_mode;
->> +le32 command;
->> +
->> +// A union which can be used for passing structures to one of the sub
->> modes
->> +    union {
->> +    }
->> +};
->> +
->> +#define VIRTIO_NET_F_CTRL_STEERING_MODE     27
->> +
->> +#define VIRTIO_NET_CTRL_STEERING_MODE                7
->> +#define VIRTIO_NET_CTRL_SM_GET_SUPPORTED_MODES        0
->> +#define VIRTIO_NET_CTRL_SM_CONTROL                    1
->> +\end{lstlisting}
->> +
->> +If the VIRTIO_NET_F_CTRL_STEERING_MODE is negotiated the driver can
->> send control commands for the
->> +configuring the steering mode. There are multiple steering modes and
->> they can be configured using
->> +the VIRTIO_NET_CTRL_SM_CONTROL command. Each mode has it's own set of
->> commands.
->> +
->> +The auto steering mode is the default mode if nothing else has been
->> configured by the driver
->> +and the VIRTIO_NET_F_CTRL_STEERING_MODE feature is acked by the driver.
->> +
->> +The class VIRTIO_NET_CTRL_STEERING_MODE has two commands:
->> +
->> +\begin{enumerate}
->> +
->> +\item VIRTIO_NET_CTRL_SM_GET_SUPPORTED_MODES is used for getting the
->> supported steering modes by the device.
->> +       The command should be executed by the driver before attempting to
->> configure the steering mode. Once the device
->> +       receives this command it should fill the
->> virtio_net_steering_modes structure with the supported steering mode
->> +       flags.
->> +
->> +\item The command VIRTIO_NET_CTRL_SM_CONTROL is used for controlling the
->> different steering modes. Each steering mode
->> +       has its own set of commands. When executing this command the
->> structure virtio_net_steering_mode should be used as follows:
->> +       the \field{steering_mode} should be filled with one of the
->> steering mode flags along with an appropriate command from the chosen
->>
-> should we say? should be filled with one of the supported steering mode
+Most modern high end network devices today support configurable hash functions,
+this commit introduces RSS - Receive Side Scaling - [1] to virtio net device.
 
-since it is more accurate, we can do that
+The RSS is a technology from Microsoft that boosts network device performance
+by efficiently distributing the traffic among the CPUs in a multiprocessor
+system.
 
-> +       steering mode. The union of virtio_net_steering_mode should be
->> used and filled as the mode's command suggests.
->> +\end{enumerate}
->> +
->> +If this feature has been negotiated, the virtio header has an additional
->>
-> should say:
-> virtio net header has an additional
+This feature is supported in most of the modern network cards as well as most
+modern OSes including Linux and Windows. It is worth mentioning that both DPDK
+and Hyper-v support RSS too.
 
-True, I'll change that
+[1] https://docs.microsoft.com/en-us/windows-hardware/drivers/network/ndis-receive-side-scaling2
 
->
-> +\field{hash} field attached to it.
->> +
->> +\subparagraph{Automatic Receive Steering}{Device Types / Network Device
->> / Device Operation / Control Virtqueue / Steering mode / Automatic Receive
->> Steering}
->> +
->> +This is the default steering mode, please refer to the "Automatic
->> receive steering in multiqueue" section.
->>
-> I see referred section named in the spec as "Automatic receive steering in
-> multiqueue mode".
+Signed-off-by: Sameeh Jubran <sjubran@redhat.com>
+---
+ content.tex | 109 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 109 insertions(+)
 
-I'll add "mode" to this, thanks for catching that
-
-> +
->>   \paragraph{Offloads State Configuration}\label{sec:Device Types /
->> Network Device / Device Operation / Control Virtqueue / Offloads State
->> Configuration}
->>     If the VIRTIO_NET_F_CTRL_GUEST_OFFLOADS feature is negotiated, the
->> driver can
->>
->
->
-
-
+diff --git a/content.tex b/content.tex
+index 6b1f7ca..3ea2b6a 100644
+--- a/content.tex
++++ b/content.tex
+@@ -4023,6 +4023,7 @@ according to the native endian of the guest rather than
+ \begin{lstlisting}
+ // steering mode flags
+ #define STEERING_MODE_AUTO          0x1
++#define STEERING_MODE_RSS           0x2
+ 
+ // Used by the devide for returning to the driver the supported steering modes
+ struct virtio_net_steering_modes {
+@@ -4035,6 +4036,7 @@ le32 command;
+ 
+ // A union which can be used for passing structures to one of the sub modes
+     union {
++    struct virtio_net_rss rss_conf;
+     }
+ };
+ 
+@@ -4074,6 +4076,113 @@ If this feature has been negotiated, the virtio header has an additional
+ 
+ This is the default steering mode, please refer to the "Automatic receive steering in multiqueue" section.
+ 
++\subparagraph{Receive Side Scaling}{Device Types / Network Device / Device Operation / Control Virtqueue / Steering mode / Receive Side Scaling}
++
++\begin{lstlisting}
++#define RSS_HASH_FUNCTION_TOEPLITZ  0x1
++#define RSS_HASH_FUNCTION_SYMMETRIC 0x2
++
++// Hash function fields
++#define RSS_HASH_FIELDS_IPV4          0x00000100
++#define RSS_HASH_FIELDS_TCP_IPV4      0x00000200
++#define RSS_HASH_FIELDS_IPV6          0x00000400
++#define RSS_HASH_FIELDS_IPV6_EX       0x00000800
++#define RSS_HASH_FIELDS_TCP_IPV6      0x00001000
++#define RSS_HASH_FIELDS_TCP_IPV6_EX   0x00002000
++
++struct virtio_net_rss_supported_hash{
++le32 hash_function;
++}
++
++struct virtio_net_rss {
++le32 hash_function;
++le32 hash_function_flags;
++le32 hash_key_length;
++le32 indirection_table_length;
++	struct {
++		le32 hash_key[hash_key_length];
++		le32 indirection_table[indirection_table_length];
++	}
++};
++
++#define VIRTIO_NET_SM_CTRL_RSS_GET_SUPPORTED_FUNCTIONS   0
++#define VIRTIO_NET_SM_CTRL_RSS_SET                       1
++\end{lstlisting}
++
++If the VIRTIO_NET_F_CTRL_STEERING_MODE is negotiated the driver can send control
++commands using the VIRTIO_NET_CTRL_SM_CONTROL command along with the STEERING_MODE_RSS
++flag for configuring RSS the virtio_net_steering_mode should be filled. The
++\field{steering_mode} field should be filled with the STEERING_MODE_RSS flag along
++with one of the VIRTIO_NET_SM_CTRL_RSS commands in the \field{command} field. The
++\field{rss_conf} field should be used.
++
++The class VIRTIO_NET_CTRL_RSS has two commands:
++
++\begin{enumerate}
++\item VIRTIO_NET_SM_CTRL_RSS_GET_SUPPORTED_FUNCTIONS returns the hash functions
++	supported by the device to the driver.
++\item VIRTIO_NET_SM_CTRL_RSS_SET applies the new RSS configuration. The command is
++	used by the driver for setting RSS hash function, hash key and
++	indirection table in the device.
++\end{enumerate}
++
++\devicenormative{\subparagraph}{Receive Side Scaling}{Device Types / Network Device / Device Operation / Control Virtqueue / Steering mode / Receive Side Scaling}
++
++The device MUST fill the virtio_net_rss_supported_hash structure with the hash
++functions it supports and return the structure to the driver. One or more
++flags of the RSS_HASH_FUNCTION flags MUST be used to fill the \field{hash_function}
++field.
++
++The device MUST drop all previous RSS configuration upon receiving
++VIRTIO_NET_SM_CTRL_RSS_SET command.
++
++The device MUST set the RSS configuration according to the settings provided as
++follows, once the configuration process is completed the device SHOULD apply
++the hash function to each of the incoming packets with regards to the flags in
++the \field{hash_function_flags} fields and distribute the packets through the
++virqueues using the calculated hash and the indirection table that were earlier
++provided by the driver.
++
++Setting RSS configuration
++\begin{enumerate}
++\item The driver fills all of the fields and passes them through the control
++	queue to the device.
++
++\item The device sets the RSS configuration as provided by the driver.
++
++\item If the device successfully applied the configuration, on each packet
++	received the device MUST calculate the hash for the packet using
++	the fields specified in \field{hash_function_flags} and store it in the
++	virtio-net header in the \field{hash} field and the hash fields
++	used in the calculation.
++\end{enumerate}
++
++\drivernormative{\subparagraph}{Receive Side Scaling}{Device Types / Network Device / Device Operation / Control Virtqueue / Steering mode / Receive Side Scaling}
++
++If the driver wants to set RSS hash it should fill the RSS structure fields
++as follows:
++
++\begin{itemize}
++\item The driver SHOULD choose the hash function that SHOULD be used and fill
++	it in the \field{hash_function} field along with the appropriate flags
++	in the \field{hash_function_flags} field. These flags indicate to the
++	device which packet fields MUST be used in the calculation process of
++	the hash.
++\item Once the hash function has been chosen a hash key should also be set by
++	the driver in the \field{hash_key} field, the length of the key should
++	be stored in the \field{hash_key_length} field.
++\item Lastly the driver should fill the indirection table array in the
++	\field{indirection_table} field while setting the array length in
++	\field{indirection_table_length}. This structure is used by the device
++	for determining in which RX virt queue the packet should be placed.
++\end{itemize}
++Once the configuration phase is over successfully, the packets SHOULD have the
++\field{hash} field with the hash value that was calculated by the device.
++
++Whenever the driver wants to stop performing RSS, it can switch back to
++Automatic Steering Mode using the VIRTIO_NET_CTRL_SM_CONTROL command along with
++the STEERING_MODE_AUTO flag.
++
+ \paragraph{Offloads State Configuration}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Offloads State Configuration}
+ 
+ If the VIRTIO_NET_F_CTRL_GUEST_OFFLOADS feature is negotiated, the driver can
 -- 
-Respectfully,
-*Sameeh Jubran*
-*Linkedin <https://il.linkedin.com/pub/sameeh-jubran/87/747/a8a>*
-*Software Engineer @ Daynix <http://www.daynix.com>.*
+2.13.6
 
---000000000000165f26056afa07f7
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr"><br><div class=3D"gmail_extra"><br><div class=3D"gmail_quo=
-te">On Fri, Apr 27, 2018 at 9:17 PM, Vijayabhaskar Balakrishna <span dir=3D=
-"ltr">&lt;<a href=3D"mailto:vijay.balakrishna@oracle.com" target=3D"_blank"=
->vijay.balakrishna@oracle.com</a>&gt;</span> wrote:<br><blockquote class=3D=
-"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding=
--left:1ex">Hi Sameeh,<br>
-<br>
-See inline..<div><div class=3D"h5"><br>
-On 4/18/2018 3:46 AM, Sameeh Jubran wrote:<br>
-<blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1p=
-x #ccc solid;padding-left:1ex">
-From: Sameeh Jubran &lt;<a href=3D"mailto:sameeh.j@gmail.com" target=3D"_bl=
-ank">sameeh.j@gmail.com</a>&gt;<br>
-<br>
-This commit introduces steering mode into network device. Steering<br>
-mode is a general infrastructure for various steering modes that can<br>
-be implemented on top of it such as Automatic and RSS.<br>
-<br>
-Signed-off-by: Sameeh Jubran &lt;<a href=3D"mailto:sjubran@redhat.com" targ=
-et=3D"_blank">sjubran@redhat.com</a>&gt;<br>
----<br>
-=C2=A0 content.tex | 61 ++++++++++++++++++++++++++++++<wbr>++++++++++++++++=
-++++++++++++++<wbr>+<br>
-=C2=A0 1 file changed, 61 insertions(+)<br>
-<br>
-diff --git a/content.tex b/content.tex<br>
-index c840588..6b1f7ca 100644<br>
---- a/content.tex<br>
-+++ b/content.tex<br>
-@@ -3115,6 +3115,9 @@ features.<br>
-=C2=A0 =C2=A0 \item[VIRTIO_NET_F_CTRL_MAC_AD<wbr>DR(23)] Set MAC address th=
-rough control<br>
-=C2=A0 =C2=A0 =C2=A0 channel.<br>
-+<br>
-+\item[VIRTIO_NET_F_CTRL_STEER<wbr>ING_MODE(60)] Device supports configurab=
-le steering<br>
-+=C2=A0 =C2=A0 mode.<br>
-=C2=A0 \end{description}<br>
-=C2=A0 =C2=A0 \subsubsection{Feature bit requirements}\label{sec:Device Typ=
-es / Network Device / Feature bits / Feature bit requirements}<br>
-@@ -3317,6 +3320,8 @@ struct virtio_net_hdr {<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 le16 csum_start;<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 le16 csum_offset;<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 le16 num_buffers;<br>
-+// Only if VIRTIO_NET_F_CTRL_STEERING_MOD<wbr>E has been negotiated<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 le64 hash;<br>
-=C2=A0 };<br>
-=C2=A0 \end{lstlisting}<br>
-=C2=A0 @@ -4013,6 +4018,62 @@ MUST format \field{virtqueue_pairs}<br>
-=C2=A0 according to the native endian of the guest rather than<br>
-=C2=A0 (necessarily when not using the legacy interface) little-endian.<br>
-=C2=A0 +\paragraph{Steering mode}\label{sec:Device Types / Network Device /=
- Device Operation / Control Virtqueue / Steering mode}<br>
-+<br>
-+\begin{lstlisting}<br>
-+// steering mode flags<br>
-+#define STEERING_MODE_AUTO=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 0x1<br>
-+<br>
-+// Used by the devide for returning to the driver the supported steering m=
-odes<br>
-+struct virtio_net_steering_modes {<br>
-+le32 steering_modes;<br>
-+};<br>
-+<br>
-+struct virtio_net_steering_mode {<br>
-+le32 steering_mode;<br>
-+le32 command;<br>
-+<br>
-+// A union which can be used for passing structures to one of the sub mode=
-s<br>
-+=C2=A0 =C2=A0 union {<br>
-+=C2=A0 =C2=A0 }<br>
-+};<br>
-+<br>
-+#define VIRTIO_NET_F_CTRL_STEERING_MOD<wbr>E=C2=A0 =C2=A0 =C2=A027<br>
-+<br>
-+#define VIRTIO_NET_CTRL_STEERING_MODE=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 =C2=A0 =C2=A0 7<br>
-+#define VIRTIO_NET_CTRL_SM_GET_SUPPORT<wbr>ED_MODES=C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 0<br>
-+#define VIRTIO_NET_CTRL_SM_CONTROL=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 1<br>
-+\end{lstlisting}<br>
-+<br>
-+If the VIRTIO_NET_F_CTRL_STEERING_MOD<wbr>E is negotiated the driver can s=
-end control commands for the<br>
-+configuring the steering mode. There are multiple steering modes and they =
-can be configured using<br>
-+the VIRTIO_NET_CTRL_SM_CONTROL command. Each mode has it&#39;s own set of =
-commands.<br>
-+<br>
-+The auto steering mode is the default mode if nothing else has been config=
-ured by the driver<br>
-+and the VIRTIO_NET_F_CTRL_STEERING_MOD<wbr>E feature is acked by the drive=
-r.<br>
-+<br>
-+The class VIRTIO_NET_CTRL_STEERING_MODE has two commands:<br>
-+<br>
-+\begin{enumerate}<br>
-+<br>
-+\item VIRTIO_NET_CTRL_SM_GET_SUPPORT<wbr>ED_MODES is used for getting the =
-supported steering modes by the device.<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0The command should be executed by the driver be=
-fore attempting to configure the steering mode. Once the device<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0receives this command it should fill the virtio=
-_net_steering_modes structure with the supported steering mode<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0flags.<br>
-+<br>
-+\item The command VIRTIO_NET_CTRL_SM_CONTROL is used for controlling the d=
-ifferent steering modes. Each steering mode<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0has its own set of commands. When executing thi=
-s command the structure virtio_net_steering_mode should be used as follows:=
-<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0the \field{steering_mode} should be filled with=
- one of the steering mode flags along with an appropriate command from the =
-chosen<br>
-</blockquote></div></div>
-should we say? should be filled with one of the supported steering mode</bl=
-ockquote><div>since it is more accurate, we can do that=C2=A0</div><blockqu=
-ote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px=
- solid rgb(204,204,204);padding-left:1ex"><span class=3D""><blockquote clas=
-s=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid r=
-gb(204,204,204);padding-left:1ex">+=C2=A0 =C2=A0 =C2=A0 =C2=A0steering mode=
-. The union of virtio_net_steering_mode should be used and filled as the mo=
-de&#39;s command suggests.<br>
-+\end{enumerate}<br>
-+<br>
-+If this feature has been negotiated, the virtio header has an additional<b=
-r>
-</blockquote></span>
-should say:<br>
-virtio net header has an additional</blockquote><div>True, I&#39;ll change =
-that=C2=A0</div><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8e=
-x;border-left:1px #ccc solid;padding-left:1ex"><span class=3D""><br>
-<blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1p=
-x #ccc solid;padding-left:1ex">
-+\field{hash} field attached to it.<br>
-+<br>
-+\subparagraph{Automatic Receive Steering}{Device Types / Network Device / =
-Device Operation / Control Virtqueue / Steering mode / Automatic Receive St=
-eering}<br>
-+<br>
-+This is the default steering mode, please refer to the &quot;Automatic rec=
-eive steering in multiqueue&quot; section.<br>
-</blockquote></span>
-I see referred section named in the spec as &quot;Automatic receive steerin=
-g in multiqueue mode&quot;.</blockquote><div>I&#39;ll add &quot;mode&quot; =
-to this, thanks for catching that=C2=A0</div><blockquote class=3D"gmail_quo=
-te" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204=
-);padding-left:1ex"><div class=3D"HOEnZb"><div class=3D"h5">
-<blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1p=
-x #ccc solid;padding-left:1ex">
-+<br>
-=C2=A0 \paragraph{Offloads State Configuration}\label{sec:Devic<wbr>e Types=
- / Network Device / Device Operation / Control Virtqueue / Offloads State C=
-onfiguration}<br>
-=C2=A0 =C2=A0 If the VIRTIO_NET_F_CTRL_GUEST_OFFLOA<wbr>DS feature is negot=
-iated, the driver can<br>
-</blockquote>
-<br>
-</div></div></blockquote></div><br><br clear=3D"all"><div><br></div>-- <br>=
-<div class=3D"gmail_signature" data-smartmail=3D"gmail_signature"><div dir=
-=3D"ltr"><div><div dir=3D"ltr"><div><div dir=3D"ltr"><div><div dir=3D"ltr">=
-<font size=3D"4" color=3D"#0b5394" face=3D"times new roman, serif">Respectf=
-ully,<br></font><div style=3D"font-size:12.8px;color:rgb(136,136,136)"><fon=
-t size=3D"4" color=3D"#0b5394" face=3D"times new roman, serif"><b><i>Sameeh=
- Jubran</i></b></font></div><div style=3D"font-size:12.8px;color:rgb(136,13=
-6,136)"><i style=3D"color:rgb(7,55,99);font-family:&quot;times new roman&qu=
-ot;,serif;font-size:large"><span style=3D"line-height:15px"><a href=3D"http=
-s://il.linkedin.com/pub/sameeh-jubran/87/747/a8a" title=3D"View public prof=
-ile" name=3D"UNIQUE_ID_SafeHtmlFilter_UNIQUE_ID_SafeHtmlFilter_UNIQUE_ID_Sa=
-feHtmlFilter_UNIQUE_ID_SafeHtmlFilter_UNIQUE_ID_SafeHtmlFilter_14e2c1de96f8=
-c195_UNIQUE_ID_SafeHtmlFilter_SafeHtmlFilter_SafeHtmlFilter_webProfileURL" =
-style=3D"color:rgb(17,85,204);margin:0px;padding:0px;border-width:0px;outli=
-ne:none;vertical-align:baseline;text-decoration:none" target=3D"_blank">Lin=
-kedin</a></span></i><br></div><div style=3D"font-size:12.8px;color:rgb(136,=
-136,136)"><font size=3D"4" face=3D"times new roman, serif" color=3D"#073763=
-"><i>Software Engineer @ <a href=3D"http://www.daynix.com" target=3D"_blank=
-">Daynix</a>.</i></font></div></div></div></div></div></div></div></div></d=
-iv>
-</div></div>
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
---000000000000165f26056afa07f7--
