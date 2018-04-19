@@ -1,15 +1,12 @@
-Return-Path: virtio-dev-return-3888-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3890-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 419D158191A0
-	for <virtio-dev@lists.oasis-open.org>; Thu, 19 Apr 2018 09:52:34 -0700 (PDT)
-From: "Liang, Cunming" <cunming.liang@intel.com>
-Date: Thu, 19 Apr 2018 16:52:20 +0000
-Message-ID: <D0158A423229094DA7ABF71CF2FA0DA34E950C67@SHSMSX104.ccr.corp.intel.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 1FDF358191A2
+	for <virtio-dev@lists.oasis-open.org>; Thu, 19 Apr 2018 09:59:59 -0700 (PDT)
 References: <20180412151232.17506-1-tiwei.bie@intel.com>
  <20180412151232.17506-7-tiwei.bie@intel.com>
  <20180418192154-mutt-send-email-mst@kernel.org>
@@ -17,46 +14,49 @@ References: <20180412151232.17506-1-tiwei.bie@intel.com>
  <D0158A423229094DA7ABF71CF2FA0DA34E94E895@SHSMSX104.ccr.corp.intel.com>
  <20180419182035-mutt-send-email-mst@kernel.org>
  <f123c3a5-f7a3-a0e3-ffc7-b57e19610a9b@redhat.com>
-In-Reply-To: <f123c3a5-f7a3-a0e3-ffc7-b57e19610a9b@redhat.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <D0158A423229094DA7ABF71CF2FA0DA34E950C67@SHSMSX104.ccr.corp.intel.com>
+From: Paolo Bonzini <pbonzini@redhat.com>
+Message-ID: <28ab1675-15ae-dab4-fd71-7632666f57fc@redhat.com>
+Date: Thu, 19 Apr 2018 18:59:39 +0200
 MIME-Version: 1.0
-Subject: [virtio-dev] RE: [PATCH v3 6/6] vhost-user: support registering external host
- notifiers
-To: Paolo Bonzini <pbonzini@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>
-Cc: "Bie, Tiwei" <tiwei.bie@intel.com>, "jasowang@redhat.com" <jasowang@redhat.com>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "stefanha@redhat.com" <stefanha@redhat.com>, "qemu-devel@nongnu.org" <qemu-devel@nongnu.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "Daly,
- Dan" <dan.daly@intel.com>, "Tan, Jianfeng" <jianfeng.tan@intel.com>, "Wang,
- Zhihong" <zhihong.wang@intel.com>, "Wang, Xiao W" <xiao.w.wang@intel.com>
+In-Reply-To: <D0158A423229094DA7ABF71CF2FA0DA34E950C67@SHSMSX104.ccr.corp.intel.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: Re: [virtio-dev] RE: [PATCH v3 6/6] vhost-user: support registering
+ external host notifiers
+To: "Liang, Cunming" <cunming.liang@intel.com>, "Michael S. Tsirkin" <mst@redhat.com>
+Cc: "Bie, Tiwei" <tiwei.bie@intel.com>, "jasowang@redhat.com" <jasowang@redhat.com>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "stefanha@redhat.com" <stefanha@redhat.com>, "qemu-devel@nongnu.org" <qemu-devel@nongnu.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "Daly, Dan" <dan.daly@intel.com>, "Tan, Jianfeng" <jianfeng.tan@intel.com>, "Wang, Zhihong" <zhihong.wang@intel.com>, "Wang, Xiao W" <xiao.w.wang@intel.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogUGFvbG8gQm9uemluaSBb
-bWFpbHRvOnBib256aW5pQHJlZGhhdC5jb21dDQo+IFNlbnQ6IFRodXJzZGF5LCBBcHJpbCAxOSwg
-MjAxOCAxMTo1MiBQTQ0KPiBUbzogTWljaGFlbCBTLiBUc2lya2luIDxtc3RAcmVkaGF0LmNvbT47
-IExpYW5nLCBDdW5taW5nDQo+IDxjdW5taW5nLmxpYW5nQGludGVsLmNvbT4NCj4gQ2M6IEJpZSwg
-VGl3ZWkgPHRpd2VpLmJpZUBpbnRlbC5jb20+OyBqYXNvd2FuZ0ByZWRoYXQuY29tOw0KPiBhbGV4
-LndpbGxpYW1zb25AcmVkaGF0LmNvbTsgc3RlZmFuaGFAcmVkaGF0LmNvbTsgcWVtdS1kZXZlbEBu
-b25nbnUub3JnOw0KPiB2aXJ0aW8tZGV2QGxpc3RzLm9hc2lzLW9wZW4ub3JnOyBEYWx5LCBEYW4g
-PGRhbi5kYWx5QGludGVsLmNvbT47IFRhbiwgSmlhbmZlbmcNCj4gPGppYW5mZW5nLnRhbkBpbnRl
-bC5jb20+OyBXYW5nLCBaaGlob25nIDx6aGlob25nLndhbmdAaW50ZWwuY29tPjsgV2FuZywNCj4g
-WGlhbyBXIDx4aWFvLncud2FuZ0BpbnRlbC5jb20+DQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0ggdjMg
-Ni82XSB2aG9zdC11c2VyOiBzdXBwb3J0IHJlZ2lzdGVyaW5nIGV4dGVybmFsIGhvc3QNCj4gbm90
-aWZpZXJzDQo+IA0KPiBPbiAxOS8wNC8yMDE4IDE3OjQyLCBNaWNoYWVsIFMuIFRzaXJraW4gd3Jv
-dGU6DQo+ID4+IEEgY29tcGlsZXIgYmFycmllciBpcyBlbm91Z2ggb24gc3Ryb25nbHktb3JkZXJl
-ZCBtZW1vcnkgcGxhdGZvcm0uDQo+ID4+IEFzIGl0IGRvZXNuJ3QgcmUtb3JkZXIgc3RvcmUsIFBD
-SSBkZXZpY2Ugd29uJ3Qgc2VlIGEgc3RhbGUgaW5kZXgNCj4gPj4gdmFsdWUuIEJ1dCBhIHdlYWts
-eS1vcmRlcmVkIG1lbW9yeSBuZWVkcyBzZmVuY2UuDQo+ID4NCj4gPiBPaCB5b3UgYXJlIHJpZ2h0
-Lg0KPiA+DQo+ID4gU28gaXQncyBvbmx5IG5lZWRlZCBmb3Igbm9uLWludGVsIHBsYXRmb3JtcyBv
-ciB3aGVuIHBhY2tldHMgYXJlIGluIFdDDQo+ID4gbWVtb3J5IHRoZW4uIEFuZCBJIGRvbid0IGtu
-b3cgd2hldGhlciBkcGRrIGV2ZXIgcHV0cyBwYWNrZXRzIGluIFdDDQo+ID4gbWVtb3J5Lg0KPiA+
-DQo+ID4gSSBndWVzcyB3ZSdsbCBjcm9zcyB0aGlzIGJyaWRnZSB3aGVuIHdlIGdldCB0byBpdC4N
-Cj4gDQo+IE5vbi1UU08gYXJjaGl0ZWN0dXJlcyBzZWVtIGltcG9ydGFudC4uLg0KDQpJJ20gbm90
-IGZhbWlsaWFyIHdpdGggTm9uLVRTTywgdHJ5aW5nIHRvIHVuZGVyc3RhbmQgdGhlIGRpZmZlcmVu
-Y2UgYWNjb3JkaW5nIHRvIHRoZSBmZWF0dXJlIHNldC4gTGV0J3Mgc2F5IG5vbi1UU08gYXJjaGl0
-ZWN0dXJlcyBkbyBub3Qgc2V0ICd3ZWFrX2JhcnJpZXJzJy4gVGhlbiBtYW5kYXRvcnkgYmFycmll
-ciBpcyB1c2VkIGZvciBzb2Z0d2FyZS4gSFcgb2ZmbG9hZCBvbiB0aGF0IHBsYXRmb3JtIHdvdWxk
-IGNob29zZSBkaWZmZXJlbnQgZmVhdHVyZSBzZXQgYWdhaW5zdCBzb2Z0d2FyZT8gDQpJZiBpdCdz
-IG5vdCwgZXNzZW50aWFsbHkgd2UncmUgd29ycmllZCBhYm91dCBsaXZlIG1pZ3JhdGlvbiBmcm9t
-IGEgVFNPIHRvIGEgbm9uLVRTTyBhcmNoaXRlY3R1cmVzIHBsYXRmb3JtPw0KDQo+IA0KPiBQYW9s
-bw0K
+On 19/04/2018 18:52, Liang, Cunming wrote:
+>>> Oh you are right.
+>>> 
+>>> So it's only needed for non-intel platforms or when packets are
+>>> in WC memory then. And I don't know whether dpdk ever puts
+>>> packets in WC memory.
+>>> 
+>>> I guess we'll cross this bridge when we get to it.
+>> Non-TSO architectures seem important...
+>
+> I'm not familiar with Non-TSO, trying to understand the difference
+> according to the feature set. Let's say non-TSO architectures do not
+> set 'weak_barriers'. Then mandatory barrier is used for software. HW
+> offload on that platform would choose different feature set against
+> software? If it's not, essentially we're worried about live migration
+> from a TSO to a non-TSO architectures platform?
+
+I'm worried about live migration from software virtio to hardware virtio
+on non-TSO architectures.  For example, on ARM you would have a "dmb
+ishst" (smp_wmb) for software virtio and a "dsb st" (wmb) or "dmb oshst"
+(dma_wmb) for hardware virtio.
+
+For this to work, you would have to set up the VM so that it uses the
+heavier barriers from the beginning, even when backed by software virtio.
+
+Paolo
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
