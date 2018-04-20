@@ -1,81 +1,131 @@
-Return-Path: virtio-dev-return-3998-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3904-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 6F37F5818E8A
-	for <virtio-dev@lists.oasis-open.org>; Fri, 27 Apr 2018 18:42:08 -0700 (PDT)
-Date: Sat, 28 Apr 2018 09:42:42 +0800
-From: Tiwei Bie <tiwei.bie@intel.com>
-Message-ID: <20180428014242.msbdw25kmvx2gabi@debian>
-References: <20180425082312.32244-1-tiwei.bie@intel.com>
- <20180427130246.GA11150@stefanha-x1.localdomain>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20180427130246.GA11150@stefanha-x1.localdomain>
-Subject: [virtio-dev] Re: [RFC] VIRTIO_F_IO_BARRIER: use I/O barriers in driver
-To: Stefan Hajnoczi <stefanha@redhat.com>
-Cc: mst@redhat.com, pbonzini@redhat.com, jasowang@redhat.com, virtio-dev@lists.oasis-open.org, cunming.liang@intel.com
+	by lists.oasis-open.org (Postfix) with ESMTP id 78F48581916B
+	for <virtio-dev@lists.oasis-open.org>; Thu, 19 Apr 2018 18:42:15 -0700 (PDT)
+From: Sridhar Samudrala <sridhar.samudrala@intel.com>
+Date: Thu, 19 Apr 2018 18:42:00 -0700
+Message-Id: <1524188524-28411-1-git-send-email-sridhar.samudrala@intel.com>
+Subject: [virtio-dev] [PATCH net-next v7 0/4] Enable virtio_net to act as a standby for a passthru device
+To: mst@redhat.com, stephen@networkplumber.org, davem@davemloft.net, netdev@vger.kernel.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, jesse.brandeburg@intel.com, alexander.h.duyck@intel.com, kubakici@wp.pl, sridhar.samudrala@intel.com, jasowang@redhat.com, loseweigh@gmail.com, jiri@resnulli.us
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Fri, Apr 27, 2018 at 02:02:46PM +0100, Stefan Hajnoczi wrote:
-> On Wed, Apr 25, 2018 at 04:23:12PM +0800, Tiwei Bie wrote:
-> > There will be hardware virtio devices in the future, which
-> > require drivers to use the barriers suitable for I/O device,
-> > compared with software virtio devices which just require
-> > drivers to use the barriers suitable for CPU core.
-> > 
-> > To fix the ordering issue for hardware virtio devices, add
-> > a new feature: VIRTIO_F_IO_BARRIER. When negotiated, driver
-> > will use the barriers suitable for I/O device.
-> > 
-> > Signed-off-by: Tiwei Bie <tiwei.bie@intel.com>
-> > ---
-> >  content.tex | 9 +++++++++
-> >  1 file changed, 9 insertions(+)
-> > 
-> > diff --git a/content.tex b/content.tex
-> > index ae5fa4c..f24e320 100644
-> > --- a/content.tex
-> > +++ b/content.tex
-> > @@ -5445,6 +5445,8 @@ Descriptors} and \ref{sec:Packed Virtqueues / Indirect Flag: Scatter-Gather Supp
-> >    that drivers pass extra data (besides identifying the Virtqueue)
-> >    in their device notifications.
-> >    See \ref{sec:Virtqueues / Driver notifications}~\nameref{sec:Virtqueues / Driver notifications}.
-> > +  \item[VIRTIO_F_IO_BARRIER(37)] This feature indicates that the device
-> > +  needs the driver to use the barriers suitable for hardware device.
-> 
-> s/hardware device/hardware devices/ (plural)
-> 
-> >  \end{description}
-> >  
-> >  \drivernormative{\section}{Reserved Feature Bits}{Reserved Feature Bits}
-> > @@ -5460,6 +5462,10 @@ addresses to the device.
-> >  
-> >  A driver SHOULD accept VIRTIO_F_RING_PACKED if it is offered.
-> >  
-> > +A driver SHOULD accept VIRTIO_F_IO_BARRIER if it is offered.
-> > +If VIRTIO_F_IO_BARRIER has been negotiated, a driver MUST use
-> > +the barriers suitable for hardware device.
-> 
-> s/hardware device/hardware devices/ (plural)
-> 
-> Please add a little context so the purpose is clear to readers (I
-> wouldn't be 100% sure what the spec means without more detail):
-> 
->   Some transports require barriers to ensure hardware devices have a
->   consistent view of memory.  When devices are implemented in software a
->   weaker form of barrier may be sufficient and yield better performance.
->   This feature bit indicates whether the full hardware barrier is
->   necessary.
+The main motivation for this patch is to enable cloud service providers
+to provide an accelerated datapath to virtio-net enabled VMs in a 
+transparent manner with no/minimal guest userspace changes. This also
+enables hypervisor controlled live migration to be supported with VMs that
+have direct attached SR-IOV VF devices.
 
-Thank you very much for the review and suggestion! :)
+Patch 1 introduces a new feature bit VIRTIO_NET_F_STANDBY that can be
+used by hypervisor to indicate that virtio_net interface should act as
+a standby for another device with the same MAC address.
 
-Best regards,
-Tiwei Bie
+Patch 2 introduces a failover module that provides a generic interface for 
+paravirtual drivers to listen for netdev register/unregister/link change
+events from pci ethernet devices with the same MAC and takeover their
+datapath. The notifier and event handling code is based on the existing
+netvsc implementation. It provides 2 sets of interfaces to paravirtual 
+drivers to support 2-netdev(netvsc) and 3-netdev(virtio_net) models.
+
+Patch 3 extends virtio_net to use alternate datapath when available and
+registered. When STANDBY feature is enabled, virtio_net driver creates
+an additional 'failover' netdev that acts as a master device and controls
+2 slave devices.  The original virtio_net netdev is registered as
+'standby' netdev and a passthru/vf device with the same MAC gets
+registered as 'primary' netdev. Both 'standby' and 'primary' netdevs are
+associated with the same 'pci' device.  The user accesses the network
+interface via 'failover' netdev. The 'failover' netdev chooses 'primary'
+netdev as default for transmits when it is available with link up and
+running.
+
+Patch 4 refactors netvsc to use the registration/notification framework
+supported by failover module.
+
+As this patch series is initially focusing on usecases where hypervisor 
+fully controls the VM networking and the guest is not expected to directly 
+configure any hardware settings, it doesn't expose all the ndo/ethtool ops
+that are supported by virtio_net at this time. To support additional usecases,
+it should be possible to enable additional ops later by caching the state
+in virtio netdev and replaying when the 'primary' netdev gets registered. 
+ 
+The hypervisor needs to enable only one datapath at any time so that packets
+don't get looped back to the VM over the other datapath. When a VF is
+plugged, the virtio datapath link state can be marked as down.
+At the time of live migration, the hypervisor needs to unplug the VF device
+from the guest on the source host and reset the MAC filter of the VF to
+initiate failover of datapath to virtio before starting the migration. After
+the migration is completed, the destination hypervisor sets the MAC filter
+on the VF and plugs it back to the guest to switch over to VF datapath.
+
+This patch is based on the discussion initiated by Jesse on this thread.
+https://marc.info/?l=linux-virtualization&m=151189725224231&w=2
+
+v7
+- Rename 'bypass/active/backup' terminology with 'failover/primary/standy'
+  (jiri, mst)
+- re-arranged dev_open() and dev_set_mtu() calls in the register routines
+  so that they don't get called for 2-netdev model. (stephen)
+- fixed select_queue() routine to do queue selection based on VF if it is
+  registered as primary. (stephen)
+-  minor bugfixes
+
+v6 RFC:
+  Simplified virtio_net changes by moving all the ndo_ops of the 
+  bypass_netdev and create/destroy of bypass_netdev to 'bypass' module.
+  avoided 2 phase registration(driver + instances).
+  introduced IFF_BYPASS/IFF_BYPASS_SLAVE dev->priv_flags 
+  replaced mutex with a spinlock
+
+v5 RFC:
+  Based on Jiri's comments, moved the common functionality to a 'bypass'
+  module so that the same notifier and event handlers to handle child
+  register/unregister/link change events can be shared between virtio_net
+  and netvsc.
+  Improved error handling based on Siwei's comments.
+v4:
+- Based on the review comments on the v3 version of the RFC patch and
+  Jakub's suggestion for the naming issue with 3 netdev solution,
+  proposed 3 netdev in-driver bonding solution for virtio-net.
+v3 RFC:
+- Introduced 3 netdev model and pointed out a couple of issues with
+  that model and proposed 2 netdev model to avoid these issues.
+- Removed broadcast/multicast optimization and only use virtio as
+  backup path when VF is unplugged.
+v2 RFC:
+- Changed VIRTIO_NET_F_MASTER to VIRTIO_NET_F_BACKUP (mst)
+- made a small change to the virtio-net xmit path to only use VF datapath
+  for unicasts. Broadcasts/multicasts use virtio datapath. This avoids
+  east-west broadcasts to go over the PCI link.
+- added suppport for the feature bit in qemu
+
+Sridhar Samudrala (4):
+  virtio_net: Introduce VIRTIO_NET_F_STANDBY feature bit
+  net: Introduce generic failover module
+  virtio_net: Extend virtio to use VF datapath when available
+  netvsc: refactor notifier/event handling code to use the failover
+    framework
+
+ drivers/net/Kconfig             |   1 +
+ drivers/net/hyperv/Kconfig      |   1 +
+ drivers/net/hyperv/hyperv_net.h |   2 +
+ drivers/net/hyperv/netvsc_drv.c | 208 +++-------
+ drivers/net/virtio_net.c        |  38 +-
+ include/linux/netdevice.h       |  16 +
+ include/net/failover.h          |  96 +++++
+ include/uapi/linux/virtio_net.h |   3 +
+ net/Kconfig                     |  18 +
+ net/core/Makefile               |   1 +
+ net/core/failover.c             | 844 ++++++++++++++++++++++++++++++++++++++++
+ 11 files changed, 1070 insertions(+), 158 deletions(-)
+ create mode 100644 include/net/failover.h
+ create mode 100644 net/core/failover.c
+
+-- 
+2.14.3
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
