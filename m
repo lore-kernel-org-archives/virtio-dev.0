@@ -1,77 +1,120 @@
-Return-Path: virtio-dev-return-3895-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3908-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 830C458191A7
-	for <virtio-dev@lists.oasis-open.org>; Thu, 19 Apr 2018 11:40:35 -0700 (PDT)
-Date: Thu, 19 Apr 2018 21:40:23 +0300
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20180419212911-mutt-send-email-mst@kernel.org>
+	by lists.oasis-open.org (Postfix) with ESMTP id 7797D5818EF8
+	for <virtio-dev@lists.oasis-open.org>; Thu, 19 Apr 2018 20:27:33 -0700 (PDT)
+Date: Fri, 20 Apr 2018 11:28:07 +0800
+From: Tiwei Bie <tiwei.bie@intel.com>
+Message-ID: <20180420032806.i3jy7xb7emgil6eu@debian>
 References: <20180402152330.4158-1-tiwei.bie@intel.com>
  <622f4bd7-1249-5545-dc5a-5a92b64f5c26@redhat.com>
  <20180410045723.rftsb7l4l3ip2ioi@debian>
  <30a63fff-7599-640a-361f-a27e5783012a@redhat.com>
+ <20180419212911-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <30a63fff-7599-640a-361f-a27e5783012a@redhat.com>
+In-Reply-To: <20180419212911-mutt-send-email-mst@kernel.org>
 Subject: [virtio-dev] Re: [RFC] vhost: introduce mdev based hardware vhost backend
-To: Jason Wang <jasowang@redhat.com>
-Cc: Tiwei Bie <tiwei.bie@intel.com>, alex.williamson@redhat.com, ddutile@redhat.com, alexander.h.duyck@intel.com, virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org, virtualization@lists.linux-foundation.org, netdev@vger.kernel.org, dan.daly@intel.com, cunming.liang@intel.com, zhihong.wang@intel.com, jianfeng.tan@intel.com, xiao.w.wang@intel.com
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: Jason Wang <jasowang@redhat.com>, alex.williamson@redhat.com, ddutile@redhat.com, alexander.h.duyck@intel.com, virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org, virtualization@lists.linux-foundation.org, netdev@vger.kernel.org, dan.daly@intel.com, cunming.liang@intel.com, zhihong.wang@intel.com, jianfeng.tan@intel.com, xiao.w.wang@intel.com, kevin.tian@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Tue, Apr 10, 2018 at 03:25:45PM +0800, Jason Wang wrote:
-> > > > One problem is that, different virtio ring compatible devices
-> > > > may have different device interfaces. That is to say, we will
-> > > > need different drivers in QEMU. It could be troublesome. And
-> > > > that's what this patch trying to fix. The idea behind this
-> > > > patch is very simple: mdev is a standard way to emulate device
-> > > > in kernel.
-> > > So you just move the abstraction layer from qemu to kernel, and you still
-> > > need different drivers in kernel for different device interfaces of
-> > > accelerators. This looks even more complex than leaving it in qemu. As you
-> > > said, another idea is to implement userspace vhost backend for accelerators
-> > > which seems easier and could co-work with other parts of qemu without
-> > > inventing new type of messages.
-> > I'm not quite sure. Do you think it's acceptable to
-> > add various vendor specific hardware drivers in QEMU?
+On Thu, Apr 19, 2018 at 09:40:23PM +0300, Michael S. Tsirkin wrote:
+> On Tue, Apr 10, 2018 at 03:25:45PM +0800, Jason Wang wrote:
+> > > > > One problem is that, different virtio ring compatible devices
+> > > > > may have different device interfaces. That is to say, we will
+> > > > > need different drivers in QEMU. It could be troublesome. And
+> > > > > that's what this patch trying to fix. The idea behind this
+> > > > > patch is very simple: mdev is a standard way to emulate device
+> > > > > in kernel.
+> > > > So you just move the abstraction layer from qemu to kernel, and you still
+> > > > need different drivers in kernel for different device interfaces of
+> > > > accelerators. This looks even more complex than leaving it in qemu. As you
+> > > > said, another idea is to implement userspace vhost backend for accelerators
+> > > > which seems easier and could co-work with other parts of qemu without
+> > > > inventing new type of messages.
+> > > I'm not quite sure. Do you think it's acceptable to
+> > > add various vendor specific hardware drivers in QEMU?
+> > > 
 > > 
+> > I don't object but we need to figure out the advantages of doing it in qemu
+> > too.
+> > 
+> > Thanks
 > 
-> I don't object but we need to figure out the advantages of doing it in qemu
-> too.
+> To be frank kernel is exactly where device drivers belong.  DPDK did
+> move them to userspace but that's merely a requirement for data path.
+> *If* you can have them in kernel that is best:
+> - update kernel and there's no need to rebuild userspace
+> - apps can be written in any language no need to maintain multiple
+>   libraries or add wrappers
+> - security concerns are much smaller (ok people are trying to
+>   raise the bar with IOMMUs and such, but it's already pretty
+>   good even without)
 > 
-> Thanks
+> The biggest issue is that you let userspace poke at the
+> device which is also allowed by the IOMMU to poke at
+> kernel memory (needed for kernel driver to work).
 
-To be frank kernel is exactly where device drivers belong.  DPDK did
-move them to userspace but that's merely a requirement for data path.
-*If* you can have them in kernel that is best:
-- update kernel and there's no need to rebuild userspace
-- apps can be written in any language no need to maintain multiple
-  libraries or add wrappers
-- security concerns are much smaller (ok people are trying to
-  raise the bar with IOMMUs and such, but it's already pretty
-  good even without)
+I think the device won't and shouldn't be allowed to
+poke at kernel memory. Its kernel driver needs some
+kernel memory to work. But the device doesn't have
+the access to them. Instead, the device only has the
+access to:
 
-The biggest issue is that you let userspace poke at the
-device which is also allowed by the IOMMU to poke at
-kernel memory (needed for kernel driver to work).
+(1) the entire memory of the VM (if vIOMMU isn't used)
+or
+(2) the memory belongs to the guest virtio device (if
+    vIOMMU is being used).
 
-Yes, maybe if device is not buggy it's all fine, but
-it's better if we do not have to trust the device
-otherwise the security picture becomes more murky.
+Below is the reason:
 
-I suggested attaching a PASID to (some) queues - see my old post "using
-PASIDs to enable a safe variant of direct ring access".
+For the first case, we should program the IOMMU for
+the hardware device based on the info in the memory
+table which is the entire memory of the VM.
 
-Then using IOMMU with VFIO to limit access through queue to corrent
-ranges of memory.
+For the second case, we should program the IOMMU for
+the hardware device based on the info in the shadow
+page table of the vIOMMU.
 
+So the memory can be accessed by the device is limited,
+it should be safe especially for the second case.
 
--- 
-MST
+My concern is that, in this RFC, we don't program the
+IOMMU for the mdev device in the userspace via the VFIO
+API directly. Instead, we pass the memory table to the
+kernel driver via the mdev device (BAR0) and ask the
+driver to do the IOMMU programming. Someone may don't
+like it. The main reason why we don't program IOMMU via
+VFIO API in userspace directly is that, currently IOMMU
+drivers don't support mdev bus.
+
+> 
+> Yes, maybe if device is not buggy it's all fine, but
+> it's better if we do not have to trust the device
+> otherwise the security picture becomes more murky.
+> 
+> I suggested attaching a PASID to (some) queues - see my old post "using
+> PASIDs to enable a safe variant of direct ring access".
+
+It's pretty cool. We also have some similar ideas.
+Cunming will talk more about this.
+
+Best regards,
+Tiwei Bie
+
+> 
+> Then using IOMMU with VFIO to limit access through queue to corrent
+> ranges of memory.
+> 
+> 
+> -- 
+> MST
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
