@@ -1,64 +1,58 @@
-Return-Path: virtio-dev-return-3802-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3932-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id F0D87581806F
-	for <virtio-dev@lists.oasis-open.org>; Tue, 10 Apr 2018 16:44:50 -0700 (PDT)
+	by lists.oasis-open.org (Postfix) with ESMTP id DDCBF5818FA8
+	for <virtio-dev@lists.oasis-open.org>; Fri, 20 Apr 2018 13:01:20 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20180411022807-mutt-send-email-mst@kernel.org>
-References: <1523386790-12396-1-git-send-email-sridhar.samudrala@intel.com>
- <1523386790-12396-5-git-send-email-sridhar.samudrala@intel.com>
- <20180410142608.50f15b45@xeon-e3> <20180411022807-mutt-send-email-mst@kernel.org>
-From: Siwei Liu <loseweigh@gmail.com>
-Date: Tue, 10 Apr 2018 16:44:47 -0700
-Message-ID: <CADGSJ22rVsC0TDTd6OKVnwbx0ExoQ8xWXBMumKB-OFH4sX=yaQ@mail.gmail.com>
+In-Reply-To: <5fc62d10-790f-2356-c2f6-fd49f542dd3c@infradead.org>
+References: <20180420162633.46077.49012.stgit@ahduyck-green-test.jf.intel.com> <5fc62d10-790f-2356-c2f6-fd49f542dd3c@infradead.org>
+From: Alexander Duyck <alexander.duyck@gmail.com>
+Date: Fri, 20 Apr 2018 13:01:07 -0700
+Message-ID: <CAKgT0UewuO7LWc8wkHPTv2cksF39-8+5nFfEP_DmXVRQtgOWdg@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-Subject: [virtio-dev] Re: [RFC PATCH net-next v6 4/4] netvsc: refactor notifier/event
- handling code to use the bypass framework
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Stephen Hemminger <stephen@networkplumber.org>, Sridhar Samudrala <sridhar.samudrala@intel.com>, David Miller <davem@davemloft.net>, Netdev <netdev@vger.kernel.org>, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, "Brandeburg, Jesse" <jesse.brandeburg@intel.com>, Alexander Duyck <alexander.h.duyck@intel.com>, Jakub Kicinski <kubakici@wp.pl>, Jason Wang <jasowang@redhat.com>, Jiri Pirko <jiri@resnulli.us>
+Subject: [virtio-dev] Re: [pci PATCH v8 0/4] Add support for unmanaged SR-IOV
+To: Randy Dunlap <rdunlap@infradead.org>
+Cc: Alexander Duyck <alexander.h.duyck@intel.com>, Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org, virtio-dev@lists.oasis-open.org, kvm@vger.kernel.org, Netdev <netdev@vger.kernel.org>, "Daly, Dan" <dan.daly@intel.com>, LKML <linux-kernel@vger.kernel.org>, linux-nvme@lists.infradead.org, Keith Busch <keith.busch@intel.com>, netanel@amazon.com, Don Dutile <ddutile@redhat.com>, Maximilian Heyne <mheyne@amazon.de>, "Wang, Liang-min" <liang-min.wang@intel.com>, "Rustad, Mark D" <mark.d.rustad@intel.com>, David Woodhouse <dwmw2@infradead.org>, Christoph Hellwig <hch@lst.de>, dwmw@amazon.co.uk
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Tue, Apr 10, 2018 at 4:28 PM, Michael S. Tsirkin <mst@redhat.com> wrote:
-> On Tue, Apr 10, 2018 at 02:26:08PM -0700, Stephen Hemminger wrote:
->> On Tue, 10 Apr 2018 11:59:50 -0700
->> Sridhar Samudrala <sridhar.samudrala@intel.com> wrote:
->>
->> > Use the registration/notification framework supported by the generic
->> > bypass infrastructure.
->> >
->> > Signed-off-by: Sridhar Samudrala <sridhar.samudrala@intel.com>
->> > ---
->>
->> Thanks for doing this.  Your current version has couple show stopper
->> issues.
->>
->> First, the slave device is instantly taking over the slave.
->> This doesn't allow udev/systemd to do its device rename of the slave
->> device. Netvsc uses a delayed work to workaround this.
+On Fri, Apr 20, 2018 at 10:23 AM, Randy Dunlap <rdunlap@infradead.org> wrote:
+> On 04/20/18 09:28, Alexander Duyck wrote:
+>> This series is meant to add support for SR-IOV on devices when the VFs are
+>> not managed by the kernel. Examples of recent patches attempting to do this
+>> include:
+>> virto - https://patchwork.kernel.org/patch/10241225/
+>> pci-stub - https://patchwork.kernel.org/patch/10109935/
+>> vfio - https://patchwork.kernel.org/patch/10103353/
+>> uio - https://patchwork.kernel.org/patch/9974031/
 >
-> Interesting. Does this mean udev must act within a specific time window
-> then?
-
-Sighs, lots of hacks. Why propgating this from driver to a common
-module. We really need a clean solution.
-
--Siwei
-
-
+> Hi,
 >
->> Secondly, the select queue needs to call queue selection in VF.
->> The bonding/teaming logic doesn't work well for UDP flows.
->> Commit b3bf5666a510 ("hv_netvsc: defer queue selection to VF")
->> fixed this performance problem.
->>
->> Lastly, more indirection is bad in current climate.
->>
->> I am not completely adverse to this but it needs to be fast, simple
->> and completely transparent.
+> Somewhere in this patch series it would be nice to tell us what the heck
+> a "PF" is.  :)
+>
+> Thanks.
+
+Sorry, I was kind of operating on the assumption of everyone
+understanding SR-IOV nomenclature.
+
+A "PF" is a PCIe Physical Function. When you bring up a PCIe device
+that supports SR-IOV it is the device that is there to begin with.
+
+A "VF" is a PCIe Virtual Function. You could think of as a logical
+device that is spawned from the physical function using a combination
+of hardware configuration via the SR-IOV block in the PCIe extended
+configuration space and kernel/driver features.
+
+There are also a number of online resources you could use to research
+SR-IOV further. Hope that helps to clarify some of this.
+
+Thanks.
+
+Alex
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
