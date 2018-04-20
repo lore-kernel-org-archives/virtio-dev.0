@@ -1,74 +1,63 @@
-Return-Path: virtio-return-3075-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-return-3082-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio@lists.oasis-open.org>
 List-Post: <mailto:virtio@lists.oasis-open.org>
 List-Help: <mailto:virtio-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Fri, 13 Apr 2018 11:47:20 +0200
-From: Cornelia Huck <cohuck@redhat.com>
-Message-ID: <20180413114720.11f13983.cohuck@redhat.com>
-In-Reply-To: <4c3f5299-c745-2ec7-3ecd-9ab7b2dbb667@linux.vnet.ibm.com>
 References: <1523398287-25480-1-git-send-email-pasic@linux.vnet.ibm.com>
-	<1523398287-25480-4-git-send-email-pasic@linux.vnet.ibm.com>
-	<20180411095018.61b0caed.cohuck@redhat.com>
-	<82689e84-227f-38d2-713a-b81ef8e1dc1e@linux.vnet.ibm.com>
-	<20180411180052.52616c91.cohuck@redhat.com>
-	<4c3f5299-c745-2ec7-3ecd-9ab7b2dbb667@linux.vnet.ibm.com>
+From: Halil Pasic <pasic@linux.ibm.com>
+Date: Fri, 20 Apr 2018 16:53:24 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <1523398287-25480-1-git-send-email-pasic@linux.vnet.ibm.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: Re: [virtio] Re: [virtio-dev] Re: [RFC PATCH 3/3] ccw: map common
- notifications terminology to ccw
-To: Halil Pasic <pasic@linux.vnet.ibm.com>
-Cc: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, "Michael
- S. Tsirkin" <mst@redhat.com>
+Message-Id: <cf5ccd16-65dd-bcb1-27c9-650545d49a6c@linux.ibm.com>
+Subject: [virtio] Re: [RFC PATCH 0/3] rework notifications terminology
+To: Halil Pasic <pasic@linux.vnet.ibm.com>, virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+Cc: "Michael S. Tsirkin" <mst@redhat.com>, Cornelia Huck <cohuck@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Thu, 12 Apr 2018 13:12:09 +0200
-Halil Pasic <pasic@linux.vnet.ibm.com> wrote:
+ping
 
-> On 04/11/2018 06:00 PM, Cornelia Huck wrote:
-> > On Wed, 11 Apr 2018 15:42:34 +0200
-> > Halil Pasic <pasic@linux.vnet.ibm.com> wrote:
-> >   
-> >> On 04/11/2018 09:50 AM, Cornelia Huck wrote:  
-> >>> On Wed, 11 Apr 2018 00:11:27 +0200
-> >>> Halil Pasic <pasic@linux.vnet.ibm.com> wrote:  
-> >   
-> >>>> +\item Notifications (via hypercall and virtual interrupts).    
-> >>>
-> >>> Why 'virtual' interrupts? Better call this 'I/O interrupts' (includes
-> >>> both classic and adapter interrupts)?
-> >>>     
-> >>
-> >> The idea was 'hypercall' and 'virtual' should harmonize well. These
-> >> I/O interrupts are kind of 'real' from the perspective of the virtual
-> >> machine, but are 'virtual' from the perspective of HW and AR perspective.   
-> > 
-> > Yes, but that's an implementation detail. I/O interrupts follow the
-> > same architecture in any case, there's nothing special about I/O
-> > interrupts for virtio.
-> >   
+@Michael: Any feedback from you or should I prepare a non-rfc that
+deals with the other transports too.
+
+On 04/11/2018 12:11 AM, Halil Pasic wrote:
+> While discussing XXXX using available and used buffer notifications
+
+s;XXXX;'https://www.mail-archive.com/virtio-dev@lists.oasis-open.org/msg02774.html
+
+> consistently for virqueue notifications (driver to device and vice versa
+> respectively) seemed like a good idea.
 > 
-> I'm not sure about that. For instance, there is this check your
-> notifiers unsolicited subchannel associated I/O interruption. I don't
-> think this is just plain old channel I/O interrupt handling.
+> It turned out surprisingly invasive however, and I find it necessary to
+> confirm, this is really the path we want to walk, before investing even more
+> time.
+> 
+> This series limits itself to the core and to the ccw transport. It ain't
+> typical to the device types to make statements about notifications, but at
+> least net has some words on interrupts. I did not get these immediately so I've
+> left that out for now.
+> 
+> I choose ccw as demonstrator on how to bridge the abstract with the transport
+> specific, because that is the transport I'm most familiar with. I do not expect
+> difficulties with the other ones.
+> 
+> 
+> Halil Pasic (3):
+>    notifications: unify notifications wording in core
+>    notifications:notifications as basic virtio facility
+>    ccw: map common notifications terminology to ccw
+> 
+>   cl-os.tex       |    2 +-
+>   conformance.tex |    8 ++--
+>   content.tex     |   92 ++++++++++++++++++++++++++++++++++++++++++++++++++-----
+>   packed-ring.tex |   59 +++++++++++++++++++---------------
+>   split-ring.tex  |   72 +++++++++++++++++++++++++------------------
+>   5 files changed, 164 insertions(+), 69 deletions(-)
+> 
 
-I/O interrupts are I/O interrupts, just as in the architecture.
-Indicators are additional data, and there's even precedence for that
-(that's why I chose that approach in the first place).
-
-[The fact that nothing about those other indicator users is documented
-in public beyond some Linux et al. source code is not really the
-problem of this spec. And I'm sure people who know me are aware of my
-opinions in that regard; so let's not go down that particular rabbit
-hole.]
-
-> But you seem bothered by this 'virtual' and I respect that. So how about
-> 'Notifications (via hypercall and a combination of I/O interrupts and
-> indicator bits).'?
-
-Fine with me.
 
 ---------------------------------------------------------------------
 To unsubscribe from this mail list, you must leave the OASIS TC that 
