@@ -1,66 +1,62 @@
-Return-Path: virtio-return-3050-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-return-3083-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio@lists.oasis-open.org>
 List-Post: <mailto:virtio@lists.oasis-open.org>
 List-Help: <mailto:virtio-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-From: Halil Pasic <pasic@linux.vnet.ibm.com>
-Date: Mon,  9 Apr 2018 20:58:42 +0200
-In-Reply-To: <1523300322-21989-1-git-send-email-pasic@linux.vnet.ibm.com>
 References: <1523300322-21989-1-git-send-email-pasic@linux.vnet.ibm.com>
-Message-Id: <1523300322-21989-6-git-send-email-pasic@linux.vnet.ibm.com>
-Subject: [virtio] [PATCH 5/5] packed-ring: tweak driver code example
-To: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
-Cc: "Michael S. Tsirkin" <mst@redhat.com>, Cornelia Huck <cohuck@redhat.com>, Halil Pasic <pasic@linux.vnet.ibm.com>
+From: Halil Pasic <pasic@linux.ibm.com>
+Date: Fri, 20 Apr 2018 17:00:41 +0200
+MIME-Version: 1.0
+In-Reply-To: <1523300322-21989-1-git-send-email-pasic@linux.vnet.ibm.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Message-Id: <6b8b5a58-3440-0974-3de2-10046fb13f8c@linux.ibm.com>
+Subject: Re: [virtio] [PATCH 0/5] fixes and tweaks for virtio v1.1
+To: Halil Pasic <pasic@linux.vnet.ibm.com>, virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+Cc: "Michael S. Tsirkin" <mst@redhat.com>, Cornelia Huck <cohuck@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-This patch does three things. Emphasises that the example is pseudo-code
-as we tend to stick to C otherwise and tweaks the wording, fixes
-a typo in the pseudo code, and removes a line of code that I neither can
-see the necessity for nor the sense of.
+ping
 
-Signed-off-by: Halil Pasic <pasic@linux.vnet.ibm.com>
----
- packed-ring.tex |    9 +++++----
- 1 files changed, 5 insertions(+), 4 deletions(-)
+Some of the patches received feedback suggesting changes are to
+be pursued. Some patches did not receive any.
 
-diff --git a/packed-ring.tex b/packed-ring.tex
-index 388850b..f619069 100644
---- a/packed-ring.tex
-+++ b/packed-ring.tex
-@@ -604,9 +604,11 @@ value before checking if notifications are suppressed.
- The driver MUST perform a suitable memory barrier before reading
- the Driver Event Suppression structure, to avoid missing a notification.
- 
--\subsubsection{Implementation Example}\label{sec:Basic Facilities of a Virtio Device / Packed Virtqueues / Supplying Buffers to The Device / Implementation Example}
-+\subsubsection{Pseudo-Code Example}\label{sec:Basic Facilities of a
-+Virtio Device / Packed Virtqueues / Supplying Buffers to The Device /
-+Pseudo-Code Example}
- 
--Below is a driver code example. It does not attempt to reduce
-+Below is driver pseudo-code example supplying buffers to the device. It does not attempt to reduce
- the number of device interrupts, neither does it support
- the VIRTIO_F_RING_EVENT_IDX feature.
- 
-@@ -621,7 +623,6 @@ sgs = 0;
- for (each buffer element b) {
-         sgs++;
- 
--        vq->ids[vq->next_avail] = -1;
-         vq->desc[vq->next_avail].address = get_addr(b);
-         vq->desc[vq->next_avail].len = get_len(b);
- 
-@@ -645,7 +646,7 @@ for (each buffer element b) {
- 
-         if (vq->next_avail >= vq->size) {
-                 vq->next_avail = 0;
--                vq->avail_wrap_count \^= 1;
-+                vq->avail_wrap_count ^= 1;
-         }
- }
- vq->sgs[id] = sgs;
--- 
-1.7.1
+I would prefer having at least a 'the right direction'/'seems wrong' type
+of feedback for each patch before sending a non RFC with the requests
+made here addressed.
+
+On 04/09/2018 08:58 PM, Halil Pasic wrote:
+> Some of these are more and some are less important. Please
+> be careful, there is always a chance that I misunderstood something
+> and that I'm trying to change for the worse.
+> 
+> I've identified some other weak point's too, but tried to
+> proceed in order the more grave and the better I think I
+> understand it (and thus propose a fix) the higher the priority.
+> 
+> Some stuff I've left for my notifiers patch set. This one
+> and that one will have to get merged if both turn out to
+> be good.
+> 
+> Halil Pasic (5):
+>    packed-ring: fix used descriptors but meant buffers
+>    consistency: clean up stale  wording for v1.1 terms
+>    packed-packed: fix supplying buffers description
+>    packed-ring: reposition drivernormative on driver notifications
+>    packed-ring: tweak driver code example
+> 
+>   content.tex     |   14 ++++----
+>   packed-ring.tex |   96 +++++++++++++++++++++++++++++-------------------------
+>   2 files changed, 59 insertions(+), 51 deletions(-)
+> 
+> 
+> ---------------------------------------------------------------------
+> To unsubscribe from this mail list, you must leave the OASIS TC that
+> generates this mail.  Follow this link to all your TCs in OASIS at:
+> https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php
+> 
 
 
 ---------------------------------------------------------------------
