@@ -1,50 +1,80 @@
-Return-Path: virtio-dev-return-3938-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3939-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 7728358191AE
-	for <virtio-dev@lists.oasis-open.org>; Mon, 23 Apr 2018 10:25:08 -0700 (PDT)
-Date: Mon, 23 Apr 2018 20:24:56 +0300
+	by lists.oasis-open.org (Postfix) with ESMTP id BA8231CB80EF
+	for <virtio-dev@lists.oasis-open.org>; Mon, 23 Apr 2018 10:56:22 -0700 (PDT)
+Date: Mon, 23 Apr 2018 20:56:09 +0300
 From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20180423202204-mutt-send-email-mst@kernel.org>
+Message-ID: <20180423205019-mutt-send-email-mst@kernel.org>
 References: <1524188524-28411-1-git-send-email-sridhar.samudrala@intel.com>
  <1524188524-28411-5-git-send-email-sridhar.samudrala@intel.com>
  <20180420082802.6ca37e4c@xeon-e3>
  <20180420160058.GB2150@nanopsycho.orion>
  <20180423100406.71b95f74@xeon-e3>
+ <20180423202204-mutt-send-email-mst@kernel.org>
+ <20180423104440.2fe6cfd2@xeon-e3>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20180423100406.71b95f74@xeon-e3>
+In-Reply-To: <20180423104440.2fe6cfd2@xeon-e3>
 Subject: [virtio-dev] Re: [PATCH v7 net-next 4/4] netvsc: refactor notifier/event handling
  code to use the failover framework
 To: Stephen Hemminger <stephen@networkplumber.org>
 Cc: Jiri Pirko <jiri@resnulli.us>, Sridhar Samudrala <sridhar.samudrala@intel.com>, davem@davemloft.net, netdev@vger.kernel.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, jesse.brandeburg@intel.com, alexander.h.duyck@intel.com, kubakici@wp.pl, jasowang@redhat.com, loseweigh@gmail.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Mon, Apr 23, 2018 at 10:04:06AM -0700, Stephen Hemminger wrote:
-> > >
-> > >I will NAK patches to change to common code for netvsc especially the
-> > >three device model.  MS worked hard with distro vendors to support transparent
-> > >mode, ans we really can't have a new model; or do backport.
-> > >
-> > >Plus, DPDK is now dependent on existing model.  
-> > 
-> > Sorry, but nobody here cares about dpdk or other similar oddities.
+On Mon, Apr 23, 2018 at 10:44:40AM -0700, Stephen Hemminger wrote:
+> On Mon, 23 Apr 2018 20:24:56 +0300
+> "Michael S. Tsirkin" <mst@redhat.com> wrote:
 > 
-> The network device model is a userspace API, and DPDK is a userspace application.
+> > On Mon, Apr 23, 2018 at 10:04:06AM -0700, Stephen Hemminger wrote:
+> > > > >
+> > > > >I will NAK patches to change to common code for netvsc especially the
+> > > > >three device model.  MS worked hard with distro vendors to support transparent
+> > > > >mode, ans we really can't have a new model; or do backport.
+> > > > >
+> > > > >Plus, DPDK is now dependent on existing model.    
+> > > > 
+> > > > Sorry, but nobody here cares about dpdk or other similar oddities.  
+> > > 
+> > > The network device model is a userspace API, and DPDK is a userspace application.  
+> > 
+> > It is userspace but are you sure dpdk is actually poking at netdevs?
+> > AFAIK it's normally banging device registers directly.
+> > 
+> > > You can't go breaking userspace even if you don't like the application.  
+> > 
+> > Could you please explain how is the proposed patchset breaking
+> > userspace? Ignoring DPDK for now, I don't think it changes the userspace
+> > API at all.
+> > 
+> 
+> The DPDK has a device driver vdev_netvsc which scans the Linux network devices
+> to look for Linux netvsc device and the paired VF device and setup the
+> DPDK environment.  This setup creates a DPDK failsafe (bondingish) instance
+> and sets up TAP support over the Linux netvsc device as well as the Mellanox
+> VF device.
+> 
+> So it depends on existing 2 device model. You can't go to a 3 device model
+> or start hiding devices from userspace.
 
-It is userspace but are you sure dpdk is actually poking at netdevs?
-AFAIK it's normally banging device registers directly.
+Okay so how does the existing patch break that? IIUC does not go to
+a 3 device model since netvsc calls failover_register directly.
 
-> You can't go breaking userspace even if you don't like the application.
+> Also, I am working on associating netvsc and VF device based on serial number
+> rather than MAC address. The serial number is how Windows works now, and it makes
+> sense for Linux and Windows to use the same mechanism if possible.
 
-Could you please explain how is the proposed patchset breaking
-userspace? Ignoring DPDK for now, I don't think it changes the userspace
-API at all.
+Maybe we should support same for virtio ...
+Which serial do you mean? From vpd?
+
+I guess you will want to keep supporting MAC for old hypervisors?
+
+It all seems like a reasonable thing to support in the generic core.
 
 -- 
 MST
