@@ -1,57 +1,54 @@
-Return-Path: virtio-dev-return-3943-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3944-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id F39D95818FAC
-	for <virtio-dev@lists.oasis-open.org>; Mon, 23 Apr 2018 23:32:34 -0700 (PDT)
+	by lists.oasis-open.org (Postfix) with ESMTP id 14AD75818FAC
+	for <virtio-dev@lists.oasis-open.org>; Mon, 23 Apr 2018 23:32:37 -0700 (PDT)
 From: Wei Wang <wei.w.wang@intel.com>
-Date: Tue, 24 Apr 2018 14:13:44 +0800
-Message-Id: <1524550428-27173-2-git-send-email-wei.w.wang@intel.com>
+Date: Tue, 24 Apr 2018 14:13:45 +0800
+Message-Id: <1524550428-27173-3-git-send-email-wei.w.wang@intel.com>
 In-Reply-To: <1524550428-27173-1-git-send-email-wei.w.wang@intel.com>
 References: <1524550428-27173-1-git-send-email-wei.w.wang@intel.com>
-Subject: [virtio-dev] [PATCH v7 1/5] bitmap: bitmap_count_one_with_offset
+Subject: [virtio-dev] [PATCH v7 2/5] migration: use bitmap_mutex in migration_bitmap_clear_dirty
 To: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, mst@redhat.com, quintela@redhat.com, dgilbert@redhat.com
 Cc: pbonzini@redhat.com, wei.w.wang@intel.com, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu0@gmail.com, nilal@redhat.com, riel@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Count the number of 1s in a bitmap starting from an offset.
+The bitmap mutex is used to synchronize threads to update the dirty
+bitmap and the migration_dirty_pages counter. This patch makes
+migration_bitmap_clear_dirty update the bitmap and counter under the
+mutex.
 
 Signed-off-by: Wei Wang <wei.w.wang@intel.com>
 CC: Dr. David Alan Gilbert <dgilbert@redhat.com>
 CC: Juan Quintela <quintela@redhat.com>
 CC: Michael S. Tsirkin <mst@redhat.com>
-Reviewed-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
 ---
- include/qemu/bitmap.h | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ migration/ram.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/include/qemu/bitmap.h b/include/qemu/bitmap.h
-index 509eedd..e3f31f1 100644
---- a/include/qemu/bitmap.h
-+++ b/include/qemu/bitmap.h
-@@ -228,6 +228,19 @@ static inline long bitmap_count_one(const unsigned long *bitmap, long nbits)
+diff --git a/migration/ram.c b/migration/ram.c
+index 0e90efa..9a72b1a 100644
+--- a/migration/ram.c
++++ b/migration/ram.c
+@@ -795,11 +795,14 @@ static inline bool migration_bitmap_clear_dirty(RAMState *rs,
+ {
+     bool ret;
+ 
++    qemu_mutex_lock(&rs->bitmap_mutex);
+     ret = test_and_clear_bit(page, rb->bmap);
+ 
+     if (ret) {
+         rs->migration_dirty_pages--;
      }
++    qemu_mutex_unlock(&rs->bitmap_mutex);
++
+     return ret;
  }
  
-+static inline long bitmap_count_one_with_offset(const unsigned long *bitmap,
-+                                                long offset, long nbits)
-+{
-+    long aligned_offset = QEMU_ALIGN_DOWN(offset, BITS_PER_LONG);
-+    long redundant_bits = offset - aligned_offset;
-+    long bits_to_count = nbits + redundant_bits;
-+    const unsigned long *bitmap_start = bitmap +
-+                                        aligned_offset / BITS_PER_LONG;
-+
-+    return bitmap_count_one(bitmap_start, bits_to_count) -
-+           bitmap_count_one(bitmap_start, redundant_bits);
-+}
-+
- void bitmap_set(unsigned long *map, long i, long len);
- void bitmap_set_atomic(unsigned long *map, long i, long len);
- void bitmap_clear(unsigned long *map, long start, long nr);
 -- 
 1.8.3.1
 
