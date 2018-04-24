@@ -1,111 +1,67 @@
-Return-Path: virtio-dev-return-3948-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3949-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id B54575818FAC
-	for <virtio-dev@lists.oasis-open.org>; Mon, 23 Apr 2018 23:32:53 -0700 (PDT)
+	by lists.oasis-open.org (Postfix) with ESMTP id 94E0A5818F80
+	for <virtio-dev@lists.oasis-open.org>; Mon, 23 Apr 2018 23:39:35 -0700 (PDT)
+Message-ID: <5ADED1EA.2000608@intel.com>
+Date: Tue, 24 Apr 2018 14:42:50 +0800
 From: Wei Wang <wei.w.wang@intel.com>
-Date: Tue, 24 Apr 2018 14:13:48 +0800
-Message-Id: <1524550428-27173-6-git-send-email-wei.w.wang@intel.com>
-In-Reply-To: <1524550428-27173-1-git-send-email-wei.w.wang@intel.com>
+MIME-Version: 1.0
 References: <1524550428-27173-1-git-send-email-wei.w.wang@intel.com>
-Subject: [virtio-dev] [PATCH v7 5/5] migration: use the free page hint feature from balloon
+In-Reply-To: <1524550428-27173-1-git-send-email-wei.w.wang@intel.com>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [virtio-dev] Re: [PATCH v7 0/5] virtio-balloon: free page hint reporting support
 To: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, mst@redhat.com, quintela@redhat.com, dgilbert@redhat.com
-Cc: pbonzini@redhat.com, wei.w.wang@intel.com, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu0@gmail.com, nilal@redhat.com, riel@redhat.com
+Cc: pbonzini@redhat.com, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu0@gmail.com, nilal@redhat.com, riel@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Start the free page optimization after the migration bitmap is
-synchronized. This can't be used in the stop&copy phase since the guest
-is paused. Make sure the guest reporting has stopped before
-synchronizing the migration dirty bitmap. Currently, the optimization is
-added to precopy only.
+On 04/24/2018 02:13 PM, Wei Wang wrote:
+> This is the deivce part implementation to add a new feature,
+> VIRTIO_BALLOON_F_FREE_PAGE_HINT to the virtio-balloon device. The device
+> receives the guest free page hints from the driver and clears the
+> corresponding bits in the dirty bitmap, so that those free pages are
+> not transferred by the migration thread to the destination.
+>
+> - Test Environment
+>      Host: Intel(R) Xeon(R) CPU E5-2699 v4 @ 2.20GHz
+>      Guest: 8G RAM, 4 vCPU
+>      Migration setup: migrate_set_speed 100G, migrate_set_downtime 2 second
+>
+> - Test Results
+>      - Idle Guest Live Migration Time (results are averaged over 10 runs):
+>          - Optimization v.s. Legacy = 271ms vs 1769ms --> ~86% reduction
+>      - Guest with Linux Compilation Workload (make bzImage -j4):
+>          - Live Migration Time (average)
+>            Optimization v.s. Legacy = 1265ms v.s. 2634ms --> ~51% reduction
+>          - Linux Compilation Time
+>            Optimization v.s. Legacy = 4min56s v.s. 5min3s
+>            --> no obvious difference
+>
+> - Source Code
+>      - QEMU:  https://github.com/wei-w-wang/qemu-free-page-lm.git
+>      - Linux: https://github.com/wei-w-wang/linux-free-page-lm.git
+>
+> ChangeLog:
+> v6->v7:
+>        virtio-balloon/virtio_balloo_poll_free_page_hints:
+>            - add virtio_notify() at the end to notify the driver that
+>              the optimization is done, which indicates that the entries
+>              have all been put back to the vq and ready to detach them.
 
-Signed-off-by: Wei Wang <wei.w.wang@intel.com>
-CC: Dr. David Alan Gilbert <dgilbert@redhat.com>
-CC: Juan Quintela <quintela@redhat.com>
-CC: Michael S. Tsirkin <mst@redhat.com>
----
- migration/ram.c | 26 +++++++++++++++++++++++++-
- 1 file changed, 25 insertions(+), 1 deletion(-)
+Hi Dave,
 
-diff --git a/migration/ram.c b/migration/ram.c
-index 0147548..1d85ffa 100644
---- a/migration/ram.c
-+++ b/migration/ram.c
-@@ -51,6 +51,7 @@
- #include "qemu/rcu_queue.h"
- #include "migration/colo.h"
- #include "migration/block.h"
-+#include "sysemu/balloon.h"
- 
- /***********************************************************/
- /* ram save/restore */
-@@ -213,6 +214,8 @@ struct RAMState {
-     uint32_t last_version;
-     /* We are in the first round */
-     bool ram_bulk_stage;
-+    /* The free pages optimization feature is supported */
-+    bool free_page_support;
-     /* How many times we have dirty too many pages */
-     int dirty_rate_high_cnt;
-     /* these variables are used for bitmap sync */
-@@ -841,6 +844,10 @@ static void migration_bitmap_sync(RAMState *rs)
-     int64_t end_time;
-     uint64_t bytes_xfer_now;
- 
-+    if (rs->free_page_support) {
-+        balloon_free_page_stop();
-+    }
-+
-     ram_counters.dirty_sync_count++;
- 
-     if (!rs->time_last_bitmap_sync) {
-@@ -907,6 +914,10 @@ static void migration_bitmap_sync(RAMState *rs)
-     if (migrate_use_events()) {
-         qapi_event_send_migration_pass(ram_counters.dirty_sync_count, NULL);
-     }
-+
-+    if (rs->free_page_support) {
-+        balloon_free_page_start();
-+    }
- }
- 
- /**
-@@ -1663,7 +1674,17 @@ static void ram_state_reset(RAMState *rs)
-     rs->last_sent_block = NULL;
-     rs->last_page = 0;
-     rs->last_version = ram_list.version;
--    rs->ram_bulk_stage = true;
-+    rs->free_page_support = balloon_free_page_support() && !migrate_postcopy();
-+    if (rs->free_page_support) {
-+        /*
-+         * When the free page optimization is used, not all the pages are
-+         * treated as dirty pages (via migration_bitmap_find_dirty), which need
-+         * to be sent. So disable ram_bulk_stage in this case.
-+         */
-+        rs->ram_bulk_stage = false;
-+    } else {
-+        rs->ram_bulk_stage = true;
-+    }
- }
- 
- #define MAX_WAIT 50 /* ms, half buffered_file limit */
-@@ -2369,6 +2390,9 @@ out:
- 
-     ret = qemu_file_get_error(f);
-     if (ret < 0) {
-+        if (rs->free_page_support) {
-+            balloon_free_page_stop();
-+        }
-         return ret;
-     }
- 
--- 
-1.8.3.1
+Thanks for reviewing this patch series. Do you have more comments on 
+them? If no, would it be possible to get your reviewed-by?
+The current kernel part is done already. Hope we could finish the QEMU 
+part soon, and have people start to use this feature. Thanks.
 
+Best,
+Wei
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
