@@ -1,168 +1,156 @@
-Return-Path: virtio-dev-return-3936-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-3945-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 7FE835818F75
-	for <virtio-dev@lists.oasis-open.org>; Mon, 23 Apr 2018 08:47:51 -0700 (PDT)
-MIME-Version: 1.0
-In-Reply-To: <84adb7c2-bcf7-5e17-a9d0-482416e2d26c@redhat.com>
-References: <20180420162633.46077.49012.stgit@ahduyck-green-test.jf.intel.com>
- <20180421203437.GW28657@bhelgaas-glaptop.roam.corp.google.com> <84adb7c2-bcf7-5e17-a9d0-482416e2d26c@redhat.com>
-From: Alexander Duyck <alexander.duyck@gmail.com>
-Date: Mon, 23 Apr 2018 08:47:39 -0700
-Message-ID: <CAKgT0Uca2ZoXWjF5Upa+-dwHPfvrd4H6usmmr8GgB0FkkciWsQ@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Subject: [virtio-dev] Re: [pci PATCH v8 0/4] Add support for unmanaged SR-IOV
-To: Don Dutile <ddutile@redhat.com>
-Cc: Bjorn Helgaas <helgaas@kernel.org>, Alexander Duyck <alexander.h.duyck@intel.com>, Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org, virtio-dev@lists.oasis-open.org, kvm@vger.kernel.org, Netdev <netdev@vger.kernel.org>, "Daly, Dan" <dan.daly@intel.com>, LKML <linux-kernel@vger.kernel.org>, linux-nvme@lists.infradead.org, Keith Busch <keith.busch@intel.com>, netanel@amazon.com, Maximilian Heyne <mheyne@amazon.de>, "Wang, Liang-min" <liang-min.wang@intel.com>, "Rustad, Mark D" <mark.d.rustad@intel.com>, David Woodhouse <dwmw2@infradead.org>, Christoph Hellwig <hch@lst.de>, dwmw@amazon.co.uk
+	by lists.oasis-open.org (Postfix) with ESMTP id 643581CB80F1
+	for <virtio-dev@lists.oasis-open.org>; Mon, 23 Apr 2018 23:32:43 -0700 (PDT)
+From: Wei Wang <wei.w.wang@intel.com>
+Date: Tue, 24 Apr 2018 14:13:43 +0800
+Message-Id: <1524550428-27173-1-git-send-email-wei.w.wang@intel.com>
+Subject: [virtio-dev] [PATCH v7 0/5] virtio-balloon: free page hint reporting support
+To: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, mst@redhat.com, quintela@redhat.com, dgilbert@redhat.com
+Cc: pbonzini@redhat.com, wei.w.wang@intel.com, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu0@gmail.com, nilal@redhat.com, riel@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Mon, Apr 23, 2018 at 8:21 AM, Don Dutile <ddutile@redhat.com> wrote:
-> On 04/21/2018 04:34 PM, Bjorn Helgaas wrote:
->>
->> On Fri, Apr 20, 2018 at 12:28:08PM -0400, Alexander Duyck wrote:
->>>
->>> This series is meant to add support for SR-IOV on devices when the VFs
->>> are
->>> not managed by the kernel. Examples of recent patches attempting to do
->>> this
->>> include:
->>> virto - https://patchwork.kernel.org/patch/10241225/
->>> pci-stub - https://patchwork.kernel.org/patch/10109935/
->>> vfio - https://patchwork.kernel.org/patch/10103353/
->>> uio - https://patchwork.kernel.org/patch/9974031/
->>>
->>> Since this is quickly blowing up into a multi-driver problem it is
->>> probably
->>> best to implement this solution as generically as possible.
->>>
->>> This series is an attempt to do that. What we do with this patch set is
->>> provide a generic framework to enable SR-IOV in the case that the PF
->>> driver
->>> doesn't support managing the VFs itself.
->>>
->>> I based my patch set originally on the patch by Mark Rustad but there
->>> isn't
->>> much left after going through and cleaning out the bits that were no
->>> longer
->>> needed, and after incorporating the feedback from David Miller. At this
->>> point
->>> the only items to be fully reused was his patch description which is now
->>> present in patch 3 of the set.
->>>
->>> This solution is limited in scope to just adding support for devices that
->>> provide no functionality for SR-IOV other than allocating the VFs by
->>> calling pci_enable_sriov. Previous sets had included patches for VFIO,
->>> but
->>> for now I am dropping that as the scope of that work is larger then I
->>> think I can take on at this time.
->>>
->>> v2: Reduced scope back to just virtio_pci and vfio-pci
->>>      Broke into 3 patch set from single patch
->>>      Changed autoprobe behavior to always set when num_vfs is set
->>> non-zero
->>> v3: Updated Documentation to clarify when sriov_unmanaged_autoprobe is
->>> used
->>>      Wrapped vfio_pci_sriov_configure to fix build errors w/o SR-IOV in
->>> kernel
->>> v4: Dropped vfio-pci patch
->>>      Added ena and nvme to drivers now using
->>> pci_sriov_configure_unmanaged
->>>      Dropped pci_disable_sriov call in virtio_pci to be consistent with
->>> ena
->>> v5: Dropped sriov_unmanaged_autoprobe and pci_sriov_conifgure_unmanaged
->>>      Added new patch that enables pci_sriov_configure_simple
->>>      Updated drivers to use pci_sriov_configure_simple
->>> v6: Defined pci_sriov_configure_simple as NULL when SR-IOV is not enabled
->>>      Updated drivers to drop "#ifdef" checks for IOV
->>>      Added pci-pf-stub as place for PF-only drivers to add support
->>> v7: Dropped pci_id table explanation from pci-pf-stub driver
->>>      Updated pci_sriov_configure_simple to drop need for err value
->>>      Fixed comment explaining why pci_sriov_configure_simple is NULL
->>> v8: Dropped virtio from the set, support to be added later after TC
->>> approval
->>>
->>> Cc: Mark Rustad <mark.d.rustad@intel.com>
->>> Cc: Maximilian Heyne <mheyne@amazon.de>
->>> Cc: Liang-Min Wang <liang-min.wang@intel.com>
->>> Cc: David Woodhouse <dwmw@amazon.co.uk>
->>>
->>> ---
->>>
->>> Alexander Duyck (4):
->>>        pci: Add pci_sriov_configure_simple for PFs that don't manage VF
->>> resources
->>>        ena: Migrate over to unmanaged SR-IOV support
->>>        nvme: Migrate over to unmanaged SR-IOV support
->>>        pci-pf-stub: Add PF driver stub for PFs that function only to
->>> enable VFs
->>>
->>>
->>>   drivers/net/ethernet/amazon/ena/ena_netdev.c |   28 -------------
->>>   drivers/nvme/host/pci.c                      |   20 ----------
->>>   drivers/pci/Kconfig                          |   12 ++++++
->>>   drivers/pci/Makefile                         |    2 +
->>>   drivers/pci/iov.c                            |   31 +++++++++++++++
->>>   drivers/pci/pci-pf-stub.c                    |   54
->>> ++++++++++++++++++++++++++
->>>   include/linux/pci.h                          |    3 +
->>>   include/linux/pci_ids.h                      |    2 +
->>>   8 files changed, 106 insertions(+), 46 deletions(-)
->>>   create mode 100644 drivers/pci/pci-pf-stub.c
->>
->>
->> I tentatively applied these to pci/virtualization-review.
->>
->> The code changes look fine, but I want to flesh out the changelogs a
->> little bit before merging them.
->>
->> For example, I'm not sure what you mean by "devices where the PF is
->> not capable of managing VF resources."
->>
-> I agree w/Bjorn's assessment of the changelog.
-> The VF's are (minimally) assigned via the pf-stub driver, so they are
-> 'managed by the kernel'.
-> The security model is the same as the existing one, which was the issue we
-> resolved in the previous set(s) of patches.
->
-> I am hoping that something like vfio will be used to deal with the VF
-> ownership
-> and the reset mechanisms during assignement & de-assignment to 'guests'
-> (qemu-kvm, DPDK, or whatever user-process),
-> so the known, existing security model(s) is(are) maintained as well.
-> If so, it'd be good to add such verbage somewhere (as 0/n is not kept in
-> anything but possibly Bjorn's patchwork, or whatever patch mgmt tool he
-> uses, and future reference would be good to have) say, an update to
-> Documentation/PCI/pci-iov-howto.txt.
->
-> So... the 'unmanaged SR-IOV' Subject, IMO, is not a valid Subject for the
-> patch series any longer.
->
-> No objections to the patch series, as Bjorn noted, just the commit
-> log(s)/nomenclature of what is really being done.
-> The expectation of VF enablement via the PF was born out of the fairly
-> complicated, and unique PF vs VF drivers of the first implementations, which
-> AlexD knows so well.  This "VFs act just like PFs without SRIOV
-> capabilities" support is what this patch set enables with a much lighter
-> configuration mechanism.
-> So, maybe the patch set ought to be 'lightweight SRIOV enablement'.
->
-> --dd
+This is the deivce part implementation to add a new feature,
+VIRTIO_BALLOON_F_FREE_PAGE_HINT to the virtio-balloon device. The device
+receives the guest free page hints from the driver and clears the
+corresponding bits in the dirty bitmap, so that those free pages are
+not transferred by the migration thread to the destination.
 
-I'd be good with this being referred to as "lightweight SRIOV enablement".
+- Test Environment
+    Host: Intel(R) Xeon(R) CPU E5-2699 v4 @ 2.20GHz
+    Guest: 8G RAM, 4 vCPU
+    Migration setup: migrate_set_speed 100G, migrate_set_downtime 2 second
 
-The only reason why I was referring to it as "unmanaged" was because I
-am used to drivers that use the PF MMIO registers to manage VF
-resources and that doesn't exist in this model. Obviously this is all
-still managed via the extended PCIe configuration though so there is
-still some management taking place by the PCI subsystem in the kernel.
+- Test Results
+    - Idle Guest Live Migration Time (results are averaged over 10 runs):
+        - Optimization v.s. Legacy = 271ms vs 1769ms --> ~86% reduction
+    - Guest with Linux Compilation Workload (make bzImage -j4):
+        - Live Migration Time (average)
+          Optimization v.s. Legacy = 1265ms v.s. 2634ms --> ~51% reduction
+        - Linux Compilation Time
+          Optimization v.s. Legacy = 4min56s v.s. 5min3s
+          --> no obvious difference
 
-Thanks.
+- Source Code
+    - QEMU:  https://github.com/wei-w-wang/qemu-free-page-lm.git
+    - Linux: https://github.com/wei-w-wang/linux-free-page-lm.git
 
-- Alex
+ChangeLog:
+v6->v7:
+      virtio-balloon/virtio_balloo_poll_free_page_hints:
+          - add virtio_notify() at the end to notify the driver that
+            the optimization is done, which indicates that the entries
+            have all been put back to the vq and ready to detach them.
+v5->v6:
+      virtio-balloon: use iothread to get free page hint
+v4->v5:
+    1) migration:
+        - bitmap_clear_dirty: update the dirty bitmap and dirty page
+          count under the bitmap mutex as what other functions are doing;
+        - qemu_guest_free_page_hint:
+            - add comments for this function;
+            - check the !block case;
+            - check "offset > block->used_length" before proceed;
+            - assign used_len inside the for{} body;
+            - update the dirty bitmap and dirty page counter under the
+              bitmap mutex;
+        - ram_state_reset:
+            - rs->free_page_support: && with use "migrate_postcopy"
+              instead of migration_in_postcopy;
+            - clear the ram_bulk_stage flag if free_page_support is true;
+    2) balloon:
+         - add the usage documentation of balloon_free_page_start and
+           balloon_free_page_stop in code;
+         - the optimization thread is named "balloon_fpo" to meet the
+           requirement of "less than 14 characters";
+         - virtio_balloon_poll_free_page_hints:
+             - run on condition when runstate_is_running() is true;
+             - add a qemu spin lock to synchronize accesses to the free
+               page reporting related fields shared among the migration
+               thread and the optimization thread;
+          - virtio_balloon_free_page_start: just return if
+            runstate_is_running is false;
+          - virtio_balloon_free_page_stop: access to the free page
+            reporting related fields under a qemu spin lock;
+          - virtio_balloon_device_unrealize/reset: call
+            virtio_balloon_free_page_stop is the free page hint feature is
+            used;
+          - virtio_balloon_set_status: call irtio_balloon_free_page_stop
+            in case the guest is stopped by qmp when the optimization is
+            running;
+v3->v4:
+    1) bitmap: add a new API to count 1s starting from an offset of a
+       bitmap
+    2) migration:
+        - qemu_guest_free_page_hint: calculate
+          ram_state->migration_dirty_pages by counting how many bits of
+          free pages are truely cleared. If some of the bits were
+          already 0, they shouldn't be deducted by
+          ram_state->migration_dirty_pages. This wasn't needed for
+          previous versions since we optimized bulk stage only,
+          where all bits are guaranteed to be set. It's needed now
+          because we extened the usage of this optimizaton to all stages
+          except the last stop&copy stage. From 2nd stage onward, there
+          are possibilities that some bits of free pages are already 0.
+     3) virtio-balloon:
+         - virtio_balloon_free_page_report_status: introduce a new status,
+           FREE_PAGE_REPORT_S_EXIT. This status indicates that the
+           optimization thread has exited. FREE_PAGE_REPORT_S_STOP means
+           the reporting is stopped, but the optimization thread still needs
+           to be joined by the migration thread.
+v2->v3:
+    1) virtio-balloon
+        - virtio_balloon_free_page_start: poll the hints using a new
+          thread;
+        - use cmd id between [0x80000000, UINT_MAX];
+        - virtio_balloon_poll_free_page_hints:
+            - stop the optimization only when it has started;
+            - don't skip free pages when !poison_val;
+        - add poison_val to vmsd to migrate;
+        - virtio_balloon_get_features: add the F_PAGE_POISON feature when
+          host has F_FREE_PAGE_HINT;
+        - remove the timer patch which is not needed now.
+    2) migration
+       - new api, qemu_guest_free_page_hint;
+       - rs->free_page_support set only in the precopy case;
+       - use the new balloon APIs.
+v1->v2: 
+    1) virtio-balloon
+        - use subsections to save free_page_report_cmd_id;
+        - poll the free page vq after sending a cmd id to the driver;
+        - change the free page vq size to VIRTQUEUE_MAX_SIZE;
+        - virtio_balloon_poll_free_page_hints: handle the corner case
+          that the free page block reported from the driver may cross
+          the RAMBlock boundary.
+    2) migration/ram.c
+        - use balloon_free_page_poll to start the optimization
+
+
+Wei Wang (5):
+  bitmap: bitmap_count_one_with_offset
+  migration: use bitmap_mutex in migration_bitmap_clear_dirty
+  migration: API to clear bits of guest free pages from the dirty bitmap
+  virtio-balloon: VIRTIO_BALLOON_F_FREE_PAGE_HINT
+  migration: use the free page hint feature from balloon
+
+ balloon.c                                       |  58 +++++-
+ hw/virtio/virtio-balloon.c                      | 241 ++++++++++++++++++++++--
+ include/hw/virtio/virtio-balloon.h              |  27 ++-
+ include/migration/misc.h                        |   2 +
+ include/qemu/bitmap.h                           |  13 ++
+ include/standard-headers/linux/virtio_balloon.h |   7 +
+ include/sysemu/balloon.h                        |  15 +-
+ migration/ram.c                                 |  73 ++++++-
+ 8 files changed, 406 insertions(+), 30 deletions(-)
+
+-- 
+1.8.3.1
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
