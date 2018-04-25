@@ -1,70 +1,57 @@
-Return-Path: virtio-return-3097-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio@lists.oasis-open.org>
-List-Post: <mailto:virtio@lists.oasis-open.org>
-List-Help: <mailto:virtio-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-From: Halil Pasic <pasic@linux.ibm.com>
-References: <1523300322-21989-1-git-send-email-pasic@linux.vnet.ibm.com>
- <6b8b5a58-3440-0974-3de2-10046fb13f8c@linux.ibm.com>
-Date: Fri, 27 Apr 2018 18:07:51 +0200
+Return-Path: virtio-dev-return-3952-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
+	by lists.oasis-open.org (Postfix) with ESMTP id C856B1CB80F3
+	for <virtio-dev@lists.oasis-open.org>; Wed, 25 Apr 2018 03:34:48 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <6b8b5a58-3440-0974-3de2-10046fb13f8c@linux.ibm.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-Message-Id: <2caf27b9-7a40-9c6d-9b68-8b0df0a30363@linux.ibm.com>
-Subject: Re: [virtio] [PATCH 0/5] fixes and tweaks for virtio v1.1
-To: Halil Pasic <pasic@linux.vnet.ibm.com>, virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
-Cc: "Michael S. Tsirkin" <mst@redhat.com>, Cornelia Huck <cohuck@redhat.com>
+From: Nirmalanand J <nirmalanand.jebakumar@gmail.com>
+Date: Wed, 25 Apr 2018 16:04:37 +0530
+Message-ID: <CAEuE-LgihoR4EY9Crhwym0+dduSqh48sZf5r3bg-YukW91os2w@mail.gmail.com>
+Content-Type: multipart/alternative; boundary="001a113d77ea573a57056aa9d1ed"
+Subject: [virtio-dev] Handling large VIRTIO_PCI_QUEUE_NUM values on Google Cloud Platform (GCP)
+To: virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+--001a113d77ea573a57056aa9d1ed
+Content-Type: text/plain; charset="UTF-8"
 
-I've decided not send a v1 until the fate of the notifications
-series gets deiced (so I can hopefully base these on those). So,
-some more time for comments.
+Hello experts,
+
+Have a query on the following:
+
+1) The number of descriptor count returned by the back-end through
+VIRTIO_PCI_QUEUE_NUM, is that negotiable with the backend? In some
+platforms like Google Cloud Platform (GCP) the value returned is 4096.
+
+2) In case it is not negotiable with the back-end and unable to allocate
+data buffers on the Rx side for 4096 descriptors, is there a workaround to
+manage with fewer buffers like 256?
+
+Additional info:
+This is a FreeBSD VM running on GCP.
+
+Please let me know.
 
 Regards,
-Halil
+Nirmal
 
+--001a113d77ea573a57056aa9d1ed
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 04/20/2018 05:00 PM, Halil Pasic wrote:
-> ping
-> 
-> Some of the patches received feedback suggesting changes are to
-> be pursued. Some patches did not receive any.
-> 
-> I would prefer having at least a 'the right direction'/'seems wrong' type
-> of feedback for each patch before sending a non RFC with the requests
-> made here addressed.
-> 
-> On 04/09/2018 08:58 PM, Halil Pasic wrote:
->> Some of these are more and some are less important. Please
->> be careful, there is always a chance that I misunderstood something
->> and that I'm trying to change for the worse.
->>
->> I've identified some other weak point's too, but tried to
->> proceed in order the more grave and the better I think I
->> understand it (and thus propose a fix) the higher the priority.
->>
->> Some stuff I've left for my notifiers patch set. This one
->> and that one will have to get merged if both turn out to
->> be good.
->>
->> Halil Pasic (5):
->>    packed-ring: fix used descriptors but meant buffers
->>    consistency: clean up stale  wording for v1.1 terms
->>    packed-packed: fix supplying buffers description
->>    packed-ring: reposition drivernormative on driver notifications
->>    packed-ring: tweak driver code example
->>
->>   content.tex     |   14 ++++----
->>   packed-ring.tex |   96 +++++++++++++++++++++++++++++-------------------------
->>   2 files changed, 59 insertions(+), 51 deletions(-) 
+<div dir=3D"ltr">Hello experts,<div><br></div><div>Have a query on the foll=
+owing:</div><div><br></div><div>1) The number of descriptor count returned =
+by the back-end through VIRTIO_PCI_QUEUE_NUM, is that negotiable with the b=
+ackend? In some platforms like Google Cloud Platform (GCP) the value return=
+ed is 4096.</div><div><br></div><div>2) In case it is not negotiable with t=
+he back-end and unable to allocate data buffers on the Rx side for 4096 des=
+criptors, is there a workaround to manage with fewer buffers like 256?</div=
+><div><br></div><div>Additional info:</div><div>This is a FreeBSD VM runnin=
+g on GCP.</div><div><br></div><div>Please let me know.=C2=A0</div><div><br>=
+</div><div>Regards,</div><div>Nirmal</div></div>
 
-
----------------------------------------------------------------------
-To unsubscribe from this mail list, you must leave the OASIS TC that 
-generates this mail.  Follow this link to all your TCs in OASIS at:
-https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
-
+--001a113d77ea573a57056aa9d1ed--
