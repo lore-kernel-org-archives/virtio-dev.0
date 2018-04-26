@@ -1,15 +1,15 @@
-Return-Path: virtio-return-3096-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-return-3094-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio@lists.oasis-open.org>
 List-Post: <mailto:virtio@lists.oasis-open.org>
 List-Help: <mailto:virtio-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
 From: Halil Pasic <pasic@linux.ibm.com>
-Date: Thu, 26 Apr 2018 12:59:59 +0200
+Date: Thu, 26 Apr 2018 13:00:00 +0200
 In-Reply-To: <1524740402-18934-1-git-send-email-pasic@linux.ibm.com>
 References: <1524740402-18934-1-git-send-email-pasic@linux.ibm.com>
-Message-Id: <1524740402-18934-4-git-send-email-pasic@linux.ibm.com>
-Subject: [virtio] [PATCH 3/6] ccw: map common notifications terminology to ccw
+Message-Id: <1524740402-18934-5-git-send-email-pasic@linux.ibm.com>
+Subject: [virtio] [PATCH 4/6] pci: map common notifications terminology to PCI
 To: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
 Cc: "Michael S. Tsirkin" <mst@redhat.com>, Cornelia Huck <cohuck@redhat.com>, Pawel Moll <pawel.moll@arm.com>, Halil Pasic <pasic@linux.ibm.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
@@ -19,78 +19,70 @@ The various notifications are introduced and specified in the common
 notifications are realised for a given transport is something each
 transport has to specify.
 
-Let's make the relationship between the virtio-ccw terms and the common
+Let's make the relationship between the PCI terms and the common
 terms more obvious.
 
 Signed-off-by: Halil Pasic <pasic@linux.ibm.com>
 ---
-Changelog:
-* implemented Connie's suggestions (typos, grammar)
-* avoided 'realized using virtual interrupts'
----
- content.tex |   42 ++++++++++++++++++++++++++++++++++++++++++
- 1 files changed, 42 insertions(+), 0 deletions(-)
+ conformance.tex |    2 +-
+ content.tex     |   13 +++++++------
+ 2 files changed, 8 insertions(+), 7 deletions(-)
 
+diff --git a/conformance.tex b/conformance.tex
+index de33396..29969f1 100644
+--- a/conformance.tex
++++ b/conformance.tex
+@@ -180,7 +180,7 @@ A PCI device MUST conform to the following normative statements:
+ \item \ref{devicenormative:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / PCI configuration access capability}
+ \item \ref{devicenormative:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / Non-transitional Device With Legacy Driver}
+ \item \ref{devicenormative:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / MSI-X Vector Configuration}
+-\item \ref{devicenormative:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Virtqueue Interrupts From The Device}
++\item \ref{devicenormative:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Used Buffer Notifications}
+ \item \ref{devicenormative:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Notification of Device Configuration Changes}
+ \end{itemize}
+ 
 diff --git a/content.tex b/content.tex
-index d7e2b18..e5b2499 100644
+index e5b2499..ffd0c94 100644
 --- a/content.tex
 +++ b/content.tex
-@@ -1943,6 +1943,18 @@ Bytes & Description & Contents \\
- \hline
- \end{tabular}
+@@ -941,7 +941,7 @@ causes the device to de-assert the interrupt.
+ In this way, driver read of ISR status causes the device to de-assert
+ an interrupt.
  
-+A virtio-ccw proxy device facilitates:
-+\begin{itemize} 
-+\item Discovery and attachment of  virtio devices (as described above).
-+\item Initialization of virtqueues and transport specific facilities (using
-+      virtio-specific channel commands).
-+\item Notifications (via hypercall and a combination of I/O interrupts
-+      and indicator bits).
-+\end{itemize} 
-+
-+\subsubsection{Channel Commands for Virtio}\label{sec:Virtio Transport Options / Virtio
-+over channel I/O / Basic Concepts/ Channel Commands for Virtio}
-+
- In addition to the basic channel commands, virtio-ccw defines a
- set of channel commands related to configuration and operation of
- virtio:
-@@ -1963,6 +1975,36 @@ virtio:
- #define CCW_CMD_READ_STATUS 0x72
- \end{lstlisting}
+-See sections \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Virtqueue Interrupts From The Device} and \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Notification of Device Configuration Changes} for how this is used.
++See sections \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Used Buffer Notifications} and \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Notification of Device Configuration Changes} for how this is used.
  
-+\subsubsection{Notifications}\label{sec:Virtio Transport Options / Virtio
-+over channel I/O / Basic Concepts/ Notifications}
-+
-+Available buffer notifications are realized as a hypercall. No additional
-+setup by the driver is needed. The operation of available buffer
-+notifications is described in section \ref{sec:Virtio Transport Options /
-+Virtio over channel I/O / Device Operation / Guest->Host Notification}.
-+
-+Used buffer notifications are realized either as so-called classic or
-+adapter I/O interrupts depending on a transport level negotiation. The
-+initialization is described in sections \ref{sec:Virtio Transport Options
-+/ Virtio over channel I/O / Device Initialization / Setting Up Indicators
-+/ Setting Up Classic Queue Indicators} and \ref{sec:Virtio Transport
-+Options / Virtio over channel I/O / Device Initialization / Setting Up
-+Indicators / Setting Up Two-Stage Queue Indicators} respectively.  The
-+operation of each flavor is described in sections \ref{sec:Virtio
-+Transport Options / Virtio over channel I/O / Device Operation /
-+Host->Guest Notification / Notification via Classic I/O Interrupts} and
-+\ref{sec:Virtio Transport Options / Virtio over channel I/O / Device
-+Operation / Host->Guest Notification / Notification via Adapter I/O
-+Interrupts} respectively. 
-+
-+Configuration change notifications are done using so-called classic I/O
-+interrupts. The initialization is described in section \ref{sec:Virtio
-+Transport Options / Virtio over channel I/O / Device Initialization /
-+Setting Up Indicators / Setting Up Configuration Change Indicators} and
-+the operation in section \ref{sec:Virtio Transport Options / Virtio over
-+channel I/O / Device Operation / Host->Guest Notification / Notification
-+via Classic I/O Interrupts}.
-+
- \devicenormative{\subsubsection}{Basic Concepts}{Virtio Transport Options / Virtio over channel I/O / Basic Concepts}
+ \devicenormative{\paragraph}{ISR status capability}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / ISR status capability}
  
- The virtio-ccw device acts like a normal channel device, as specified
+@@ -1306,14 +1306,15 @@ enough to ensure that the separate parts of the virtqueue are on
+ separate cache lines.
+ }.  There was no mechanism to negotiate the queue size.
+ 
+-\subsubsection{Notifying The Device}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Notifying The Device}
++\subsubsection{Available Buffer Notifications}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Available Buffer Notifications}
+ 
+-The driver notifies the device by writing the 16-bit virtqueue index
++The driver sends an available buffer notification the device by writing
++the 16-bit virtqueue index
+ of this virtqueue to the Queue Notify address.  See \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Notification capability} for how to calculate this address.
+ 
+-\subsubsection{Virtqueue Interrupts From The Device}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Virtqueue Interrupts From The Device}
++\subsubsection{Used Buffer Notifications}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Used Buffer Notifications}
+ 
+-If an interrupt is necessary for a virtqueue, the device would typically act as follows:
++If an used buffer notification is necessary for a virtqueue, the device would typically act as follows:
+ 
+ \begin{itemize}
+   \item If MSI-X capability is disabled:
+@@ -1332,7 +1333,7 @@ If an interrupt is necessary for a virtqueue, the device would typically act as
+     \end{enumerate}
+ \end{itemize}
+ 
+-\devicenormative{\paragraph}{Virtqueue Interrupts From The Device}{Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Virtqueue Interrupts From The Device}
++\devicenormative{\paragraph}{Used Buffer Notifications}{Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Used Buffer Notifications}
+ 
+ If MSI-X capability is enabled and \field{queue_msix_vector} is
+ NO_VECTOR for a virtqueue, the device MUST NOT deliver an interrupt
 -- 
 1.7.1
 
