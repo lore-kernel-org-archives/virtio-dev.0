@@ -1,62 +1,102 @@
-Return-Path: virtio-dev-return-4052-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4065-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 5026D5818EFF
-	for <virtio-dev@lists.oasis-open.org>; Mon,  7 May 2018 16:10:05 -0700 (PDT)
-From: Sridhar Samudrala <sridhar.samudrala@intel.com>
-Date: Mon,  7 May 2018 16:09:54 -0700
-Message-Id: <1525734594-11134-1-git-send-email-sridhar.samudrala@intel.com>
-Subject: [virtio-dev] [PATCH] qemu: Introduce VIRTIO_NET_F_STANDBY feature bit to virtio_net
-To: mst@redhat.com, netdev@vger.kernel.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, jesse.brandeburg@intel.com, alexander.h.duyck@intel.com, kubakici@wp.pl, sridhar.samudrala@intel.com, jasowang@redhat.com, loseweigh@gmail.com, jiri@resnulli.us, aaron.f.brown@intel.com, qemu-devel@nongnu.org
+	by lists.oasis-open.org (Postfix) with ESMTP id 538915819121
+	for <virtio-dev@lists.oasis-open.org>; Thu, 10 May 2018 08:41:04 -0700 (PDT)
+From: Tiwei Bie <tiwei.bie@intel.com>
+Date: Thu, 10 May 2018 23:41:26 +0800
+Message-Id: <20180510154126.4062-1-tiwei.bie@intel.com>
+Subject: [virtio-dev] [PATCH v3] VIRTIO_F_IO_BARRIER: use I/O barriers in driver
+To: mst@redhat.com, pbonzini@redhat.com, stefanha@redhat.com, jasowang@redhat.com, virtio-dev@lists.oasis-open.org
+Cc: dan.daly@intel.com, cunming.liang@intel.com, zhihong.wang@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-This feature bit can be used by hypervisor to indicate virtio_net device to
-act as a standby for another device with the same MAC address.
+There will be hardware virtio devices in the future, which
+require drivers to use the barriers suitable for I/O devices,
+compared with software virtio devices which just require
+drivers to use the barriers suitable for CPU cores.
 
-I tested this with a small change to the patch to mark the STANDBY feature 'true'
-by default as i am using libvirt to start the VMs.
-Is there a way to pass the newly added feature bit 'standby' to qemu via libvirt
-XML file?
+To fix the ordering issue for hardware virtio devices, add
+a new feature: VIRTIO_F_IO_BARRIER. When negotiated, driver
+will use the barriers suitable for I/O devices.
 
-Signed-off-by: Sridhar Samudrala <sridhar.samudrala@intel.com>
+Signed-off-by: Tiwei Bie <tiwei.bie@intel.com>
+Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
 ---
- hw/net/virtio-net.c                         | 2 ++
- include/standard-headers/linux/virtio_net.h | 3 +++
- 2 files changed, 5 insertions(+)
+v2 -> v3:
+- Update the feature bits allocation (Stefan);
 
-diff --git a/hw/net/virtio-net.c b/hw/net/virtio-net.c
-index 90502fca7c..38b3140670 100644
---- a/hw/net/virtio-net.c
-+++ b/hw/net/virtio-net.c
-@@ -2198,6 +2198,8 @@ static Property virtio_net_properties[] = {
-                      true),
-     DEFINE_PROP_INT32("speed", VirtIONet, net_conf.speed, SPEED_UNKNOWN),
-     DEFINE_PROP_STRING("duplex", VirtIONet, net_conf.duplex_str),
-+    DEFINE_PROP_BIT64("standby", VirtIONet, host_features, VIRTIO_NET_F_STANDBY,
-+                      false),
-     DEFINE_PROP_END_OF_LIST(),
- };
+v1 -> v2:
+- Rebase to the latest spec (MST);
+- Use a smaller textwidth (according to _vimrc);
+
+RFC -> v1:
+- Use plural (Stefan);
+- Add more details (Stefan);
+
+ content.tex | 20 ++++++++++++++++++--
+ 1 file changed, 18 insertions(+), 2 deletions(-)
+
+diff --git a/content.tex b/content.tex
+index 7a92cb1..95c243f 100644
+--- a/content.tex
++++ b/content.tex
+@@ -95,10 +95,10 @@ Feature bits are allocated as follows:
+ \begin{description}
+ \item[0 to 23] Feature bits for the specific device type
  
-diff --git a/include/standard-headers/linux/virtio_net.h b/include/standard-headers/linux/virtio_net.h
-index e9f255ea3f..01ec09684c 100644
---- a/include/standard-headers/linux/virtio_net.h
-+++ b/include/standard-headers/linux/virtio_net.h
-@@ -57,6 +57,9 @@
- 					 * Steering */
- #define VIRTIO_NET_F_CTRL_MAC_ADDR 23	/* Set MAC address */
+-\item[24 to 33] Feature bits reserved for extensions to the queue and
++\item[24 to 36] Feature bits reserved for extensions to the queue and
+   feature negotiation mechanisms
  
-+#define VIRTIO_NET_F_STANDBY      62    /* Act as standby for another device
-+                                         * with the same MAC.
-+                                         */
- #define VIRTIO_NET_F_SPEED_DUPLEX 63	/* Device set linkspeed and duplex */
+-\item[34 and above] Feature bits reserved for future extensions.
++\item[37 and above] Feature bits reserved for future extensions.
+ \end{description}
  
- #ifndef VIRTIO_NET_NO_LEGACY
+ \begin{note}
+@@ -5348,6 +5348,15 @@ Descriptors} and \ref{sec:Packed Virtqueues / Indirect Flag: Scatter-Gather Supp
+   \item[VIRTIO_F_IN_ORDER(35)] This feature indicates
+   that all buffers are used by the device in the same
+   order in which they have been made available.
++  \item[VIRTIO_F_IO_BARRIER(36)] This feature indicates
++  that the device needs the driver to use the barriers
++  suitable for hardware devices.  Some transports require
++  barriers to ensure devices have a consistent view of
++  memory.  When devices are implemented in software a
++  weaker form of barrier may be sufficient and yield
++  better performance.  This feature indicates whether
++  a stronger form of barrier suitable for hardware
++  devices is necessary.
+ \end{description}
+ 
+ \drivernormative{\section}{Reserved Feature Bits}{Reserved Feature Bits}
+@@ -5363,6 +5372,10 @@ addresses to the device.
+ 
+ A driver SHOULD accept VIRTIO_F_RING_PACKED if it is offered.
+ 
++A driver SHOULD accept VIRTIO_F_IO_BARRIER if it is offered.
++If VIRTIO_F_IO_BARRIER has been negotiated, a driver MUST use
++the barriers suitable for hardware devices.
++
+ \devicenormative{\section}{Reserved Feature Bits}{Reserved Feature Bits}
+ 
+ A device MUST offer VIRTIO_F_VERSION_1.  A device MAY fail to operate further
+@@ -5376,6 +5389,9 @@ accepted.
+ If VIRTIO_F_IN_ORDER has been negotiated, a device MUST use
+ buffers in the same order in which they have been available.
+ 
++A device MAY fail to operate further if VIRTIO_F_IO_BARRIER
++is not accepted.
++
+ \section{Legacy Interface: Reserved Feature Bits}\label{sec:Reserved Feature Bits / Legacy Interface: Reserved Feature Bits}
+ 
+ Transitional devices MAY offer the following:
 -- 
-2.14.3
+2.11.0
 
 
 ---------------------------------------------------------------------
