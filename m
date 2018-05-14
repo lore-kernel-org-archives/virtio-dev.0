@@ -1,79 +1,139 @@
-Return-Path: virtio-return-3105-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-return-3099-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio@lists.oasis-open.org>
 List-Post: <mailto:virtio@lists.oasis-open.org>
 List-Help: <mailto:virtio-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Tue, 15 May 2018 10:09:06 +0100
+Date: Mon, 14 May 2018 18:24:49 +0100
 From: Stefan Hajnoczi <stefanha@redhat.com>
-Message-ID: <20180515090906.GA14755@stefanha-x1.localdomain>
+Message-ID: <20180514172449.GS5182@stefanha-x1.localdomain>
 References: <1524740402-18934-1-git-send-email-pasic@linux.ibm.com>
- <1524740402-18934-2-git-send-email-pasic@linux.ibm.com>
- <20180514163659.GR5182@stefanha-x1.localdomain>
- <bfecd798-33bd-a08b-59af-27af699e32ed@linux.ibm.com>
+ <1524740402-18934-3-git-send-email-pasic@linux.ibm.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="nFreZHaLTZJo0R7j"
+	protocol="application/pgp-signature"; boundary="MT9SxUWSsctiw0kG"
 Content-Disposition: inline
-In-Reply-To: <bfecd798-33bd-a08b-59af-27af699e32ed@linux.ibm.com>
-Subject: [virtio] Re: [virtio-dev] [PATCH 1/6] notifications: unify notifications
- wording in core
+In-Reply-To: <1524740402-18934-3-git-send-email-pasic@linux.ibm.com>
+Subject: [virtio] Re: [virtio-dev] [PATCH 2/6] notifications: notifications as basic
+ virtio facility
 To: Halil Pasic <pasic@linux.ibm.com>
 Cc: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, "Michael S. Tsirkin" <mst@redhat.com>, Cornelia Huck <cohuck@redhat.com>, Pawel Moll <pawel.moll@arm.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
---nFreZHaLTZJo0R7j
+--MT9SxUWSsctiw0kG
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, May 14, 2018 at 09:40:43PM +0200, Halil Pasic wrote:
-> On 05/14/2018 06:36 PM, Stefan Hajnoczi wrote:
-> > On Thu, Apr 26, 2018 at 12:59:57PM +0200, Halil Pasic wrote:
-> > > @@ -235,12 +236,13 @@ transmit and one for receive.}.
-> > >   Driver makes requests available to device by adding
-> > >   an available buffer to the queue - i.e. adding a buffer
-> > >   describing the request to a virtqueue, and optionally triggering
-> > > -a driver event - i.e. sending a notification to the device.
-> > > +a driver event - i.e. sending an available buffer notification
-> > > +to the device.
-> > >   Device executes the requests and - when complete - adds
-> > >   a used buffer to the queue - i.e. lets the driver
-> > >   know by marking the buffer as used. Device can then trigger
-> > > -a device event - i.e. send an interrupt to the driver.
-> > > +a device event - i.e. send an used buffer notification to the driver.
-> >=20
-> > I would say "a used buffer notification".  "A" vs "an" depends on the
-> > sound of the initial syllable, not the spelling.  So "a used car" vs "an
-> > upper body".
-> >=20
-> > There are several instances of this in this patch.
-> >=20
+On Thu, Apr 26, 2018 at 12:59:58PM +0200, Halil Pasic wrote:
+> Let's introduce notifications as basic virtio facility early on. This
+> shall not only increase the cohesion between core and transport
+> description by having a well-defined  place where notifications are
+> introduced, but also give us the opportunity to explain some
+> discrepancies.
 >=20
-> Right. Will try to hunt all of them down.
+> Namely notifications sent by the device to the driver were often called
+> interrupts prior to v1.1. Getting completely rid of that terminology is
+> however not viable in case of some names.
+>=20
+> Signed-off-by: Halil Pasic <pasic@linux.ibm.com>
+> ---
+> Changelog:
+> RFC -> v1:
+> * implemented Connies suggestions (thanks Connie)
+> ---
+>  content.tex |   36 ++++++++++++++++++++++++++++++++++++
+>  1 files changed, 36 insertions(+), 0 deletions(-)
+>=20
+> diff --git a/content.tex b/content.tex
+> index 2e103cf..d7e2b18 100644
+> --- a/content.tex
+> +++ b/content.tex
+> @@ -8,6 +8,7 @@ device consists of the following parts:
+>  \begin{itemize}
+>  \item Device status field
+>  \item Feature bits
+> +\item Notifications
+>  \item Device Configuration space
+>  \item One or more virtqueues
+>  \end{itemize}
+> @@ -150,6 +151,41 @@ requirements documented within these legacy interfac=
+e sections.
+>  Specification text within these sections generally does not apply
+>  to non-transitional devices.
+> =20
+> +\section{Notifications}\label{sec:Basic Facilities of a Virtio Device
+> +/ Notifications}
+> +
+> +The notion of sending a notification (driver to device or device
+> +to driver) plays an important role in this specification. The
+> +modus operandi of the notifications is transport specific.
+> +
+> +There are three types of notifications:=20
+> +\begin{itemize}
+> +\item device configuration space notification
+> +\item available buffers notification
+> +\item used buffer notifications.=20
+> +\end{itemize}
 
-I noticed other patches with hunks like this:
+"buffers" vs "buffer"; singular vs plural is likely to be used
+inconsistently.  Please choose one (either works).
 
- ... an
--interrupt ...
-+used buffer notification ...
+The previous patch said "the term configuration change notification in
+kept where called so and consolidated where it's called configuration
+change interrupt or similar", but here you say "device configuration
+space notification".  Please choose one name and use it consistently.
 
-So there are cases that are harder to find due to line-wrapping.  It
-should be easy to find them with a Ctrl+F "an used" search in the HTML
-version of the document though, or with a multi-line regular expression.
+> +
+> +Device configuration space notifications and used buffer notifications
+> +are sent by the device, the recipient is the driver. A device
+> +configuration space notification indicates that a configuration space
+> +has changed; a used buffer notification indicates that a buffer may
+> +have been made used on the virtqueue designated by the notification.
+> +
+> +Available buffer notifications are sent by the driver, the recipient is
+> +the device. This type of notification indicates that a buffer may have
+> +been made available on the virtqueue designated by the notification.
+> +
+> +The semantic, the transport-specific implementations and other
+> +important aspects of the different notifications are specified in detail
+> +in the following chapters
 
---nFreZHaLTZJo0R7j
+Missing period.
+
+> +
+> +Most transports implement notifications sent by the device to the
+> +driver using interrupts. Therefore, in previous versions of this
+> +specification, these notifications were often called interrupts.
+> +Some names defined in this specification still retain this interrupt
+> +terminology. Occasionally, the term event is used to refer to
+> +a notification or a receipt of a notification.
+> +
+>  \section{Device Configuration Space}\label{sec:Basic Facilities of a Vir=
+tio Device / Device Configuration Space}
+> =20
+>  Device configuration space is generally used for rarely-changing or
+> --=20
+> 1.7.1
+>=20
+>=20
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+>=20
+
+--MT9SxUWSsctiw0kG
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEcBAEBAgAGBQJa+qOyAAoJEJykq7OBq3PIILEIAMm6/p70KT59+sRASa5PAT44
-L/XO6a9fZ7wCFzzSIrWvPsePytw4UEiJFtfK4BkOoYeCbQkMrjBKjvJxDQHpeaXe
-n5T2QjWGXdFkEQj4xeIJha58CqDOfYjfmWlWjssHAQxmvhBDaWkLtTzvyofBsPlS
-KysT97sMyeyeVSLySVLZVX5sABNdLLC8xkIRtCk7vWmuS+Wgae/eo48ucpZxinxd
-OVHyCkSJvw6SXPdZENEeMuH/RXue3vJD32B5P7jpUXH6us9GKQSE4Apg2wgSHtRD
-WcwB6goDnvUXg31TSaX/yUMYqnr/xejRqi2qjdD+IkMHtoVqwHFg71/X1hQWXPg=
-=aYQM
+iQEcBAEBAgAGBQJa+cZhAAoJEJykq7OBq3PIumQIAI0sNMpVVn89KZPu7xNTvtzo
+hmmmFryFEJS7uA4mqI3jJOxFRcleTPO0yeUsRudfCPxjtzIltXplKJM6v4CnUCuV
+tFSS7NDHU8glvw8cWFLUjSwZjCTT4+R4xBABPMPahUTQnczFcKQCWXKPAeT/IH0S
+9MK/8Fn/RjXujgLKoaw/6KVyYx8PDxeHk1atwdFmYdxo3tyIfyahmPhGwRf2hH+4
+Sof0ObOEaaLELThN05CWHvwFsu7yVw5coaIjJiWEAUHJFDRnR1/L5QsX85tTf2Bz
+Kv6jwa1UI82cMu69hRAkOKKj7auvvcCxDOub/jxCH/WQcaurCXN+6a0y136z72w=
+=MytM
 -----END PGP SIGNATURE-----
 
---nFreZHaLTZJo0R7j--
+--MT9SxUWSsctiw0kG--
