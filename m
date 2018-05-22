@@ -1,212 +1,98 @@
-Return-Path: virtio-dev-return-4156-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4113-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 00AB41CB80F3
-	for <virtio-dev@lists.oasis-open.org>; Thu, 24 May 2018 03:33:44 -0700 (PDT)
+	by lists.oasis-open.org (Postfix) with ESMTP id 736B7581803B
+	for <virtio-dev@lists.oasis-open.org>; Tue, 22 May 2018 03:26:10 -0700 (PDT)
 From: Tiwei Bie <tiwei.bie@intel.com>
-Date: Thu, 24 May 2018 18:33:36 +0800
-Message-Id: <20180524103336.21233-7-tiwei.bie@intel.com>
-In-Reply-To: <20180524103336.21233-1-tiwei.bie@intel.com>
-References: <20180524103336.21233-1-tiwei.bie@intel.com>
-Subject: [virtio-dev] [PATCH 6/6] vhost-user-bridge: support host notifier
-To: mst@redhat.com, jasowang@redhat.com, qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org
-Cc: tiwei.bie@intel.com
+Date: Tue, 22 May 2018 18:26:15 +0800
+Message-Id: <20180522102615.21339-1-tiwei.bie@intel.com>
+Subject: [virtio-dev] [PATCH v3] content: support SR-IOV
+To: mst@redhat.com, cohuck@redhat.com, stefanha@redhat.com, pbonzini@redhat.com, virtio-dev@lists.oasis-open.org
+Cc: dan.daly@intel.com, alexander.h.duyck@intel.com, mark.d.rustad@intel.com, cunming.liang@intel.com, zhihong.wang@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-This patch introduces the host notifier support in
-vhost-user-bridge. A new option (-H) is added to use
-the host notifier. This is mainly used to test the
-host notifier implementation in vhost user.
+Allocate a feature bit for virtio devices which support SR-IOV.
 
+Suggested-by: Michael S. Tsirkin <mst@redhat.com>
 Signed-off-by: Tiwei Bie <tiwei.bie@intel.com>
+Fixes: https://github.com/oasis-tcs/virtio-spec/issues/11
 ---
- tests/vhost-user-bridge.c | 98 +++++++++++++++++++++++++++++++++++++--
- 1 file changed, 95 insertions(+), 3 deletions(-)
+More details can be found from this thread:
+https://patchwork.kernel.org/patch/10285541/
 
-diff --git a/tests/vhost-user-bridge.c b/tests/vhost-user-bridge.c
-index e0605a529e..0884294141 100644
---- a/tests/vhost-user-bridge.c
-+++ b/tests/vhost-user-bridge.c
-@@ -29,6 +29,7 @@
+This patch needs below patch applied first:
+https://github.com/oasis-tcs/virtio-spec/issues/10
+https://lists.oasis-open.org/archives/virtio-dev/201805/msg00046.html
+
+v2 -> v3:
+- Improve the wording (Cornelia);
+
+v1 -> v2:
+- s/Reserve/Allocate/ (MST);
+- Add a Fixes tag (MST);
+- Be more explicit in driver requirement (MST);
+- Remove the "device MAY fail" description (MST);
+- Rebase on IO_BARRIER patch;
+
+RFC -> v1:
+- Mention PCI in the description (Cornelia);
+
+ content.tex | 15 +++++++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
+
+diff --git a/content.tex b/content.tex
+index 95c243f..e9e6f9a 100644
+--- a/content.tex
++++ b/content.tex
+@@ -95,10 +95,10 @@ Feature bits are allocated as follows:
+ \begin{description}
+ \item[0 to 23] Feature bits for the specific device type
  
- #define _FILE_OFFSET_BITS 64
+-\item[24 to 36] Feature bits reserved for extensions to the queue and
++\item[24 to 37] Feature bits reserved for extensions to the queue and
+   feature negotiation mechanisms
  
-+#include "qemu/atomic.h"
- #include "qemu/osdep.h"
- #include "qemu/iov.h"
- #include "standard-headers/linux/virtio_net.h"
-@@ -65,6 +66,11 @@ typedef struct VubrDev {
-     int sock;
-     int ready;
-     int quit;
-+    struct {
-+        int fd;
-+        void *addr;
-+        pthread_t thread;
-+    } notifier;
- } VubrDev;
+-\item[37 and above] Feature bits reserved for future extensions.
++\item[38 and above] Feature bits reserved for future extensions.
+ \end{description}
  
- static void
-@@ -445,14 +451,22 @@ static uint64_t
- vubr_get_features(VuDev *dev)
- {
-     return 1ULL << VIRTIO_NET_F_GUEST_ANNOUNCE |
--        1ULL << VIRTIO_NET_F_MRG_RXBUF;
-+        1ULL << VIRTIO_NET_F_MRG_RXBUF |
-+        1ULL << VIRTIO_F_VERSION_1;
- }
+ \begin{note}
+@@ -5357,6 +5357,9 @@ Descriptors} and \ref{sec:Packed Virtqueues / Indirect Flag: Scatter-Gather Supp
+   better performance.  This feature indicates whether
+   a stronger form of barrier suitable for hardware
+   devices is necessary.
++  \item[VIRTIO_F_SR_IOV(37)] This feature indicates that
++  the device supports Single Root I/O Virtualization.
++  Currently only PCI devices support this feature.
+ \end{description}
  
- static void
- vubr_queue_set_started(VuDev *dev, int qidx, bool started)
- {
-+    VubrDev *vubr = container_of(dev, VubrDev, vudev);
-     VuVirtq *vq = vu_get_queue(dev, qidx);
+ \drivernormative{\section}{Reserved Feature Bits}{Reserved Feature Bits}
+@@ -5376,6 +5379,11 @@ A driver SHOULD accept VIRTIO_F_IO_BARRIER if it is offered.
+ If VIRTIO_F_IO_BARRIER has been negotiated, a driver MUST use
+ the barriers suitable for hardware devices.
  
-+    if (started && vubr->notifier.fd >= 0) {
-+        vu_set_queue_host_notifier(dev, vq, vubr->notifier.fd,
-+                                   getpagesize(),
-+                                   qidx * getpagesize());
-+    }
++A driver SHOULD accept VIRTIO_F_SR_IOV if it is offered.
++If VIRTIO_F_SR_IOV has been negotiated, a driver can
++enable virtual functions through the device's PCI SR-IOV
++capability structure.
 +
-     if (qidx % 2 == 1) {
-         vu_set_queue_handler(dev, vq, started ? vubr_handle_tx : NULL);
-     }
-@@ -522,6 +536,8 @@ vubr_new(const char *path, bool client)
-         vubr_die("socket");
-     }
+ \devicenormative{\section}{Reserved Feature Bits}{Reserved Feature Bits}
  
-+    dev->notifier.fd = -1;
-+
-     un.sun_family = AF_UNIX;
-     strcpy(un.sun_path, path);
-     len = sizeof(un.sun_family) + strlen(path);
-@@ -559,6 +575,73 @@ vubr_new(const char *path, bool client)
-     return dev;
- }
+ A device MUST offer VIRTIO_F_VERSION_1.  A device MAY fail to operate further
+@@ -5392,6 +5400,9 @@ buffers in the same order in which they have been available.
+ A device MAY fail to operate further if VIRTIO_F_IO_BARRIER
+ is not accepted.
  
-+static void *notifier_thread(void *arg)
-+{
-+    VuDev *dev = (VuDev *)arg;
-+    VubrDev *vubr = container_of(dev, VubrDev, vudev);
-+    int pagesize = getpagesize();
-+    int qidx;
++A device SHOULD offer VIRTIO_F_SR_IOV if it presents a PCI
++SR-IOV capability structure.
 +
-+    while (true) {
-+        for (qidx = 0; qidx < VHOST_MAX_NR_VIRTQUEUE; qidx++) {
-+            uint16_t *n = vubr->notifier.addr + pagesize * qidx;
-+
-+            if (*n == qidx) {
-+                *n = 0xffff;
-+                /* We won't miss notifications if we reset
-+                 * the memory first. */
-+                smp_mb();
-+
-+                DPRINT("Got a notification for queue%d via host notifier.\n",
-+                       qidx);
-+
-+                if (qidx % 2 == 1) {
-+                    vubr_handle_tx(dev, qidx);
-+                }
-+            }
-+            usleep(1000);
-+        }
-+    }
-+
-+    return NULL;
-+}
-+
-+static void
-+vubr_host_notifier_setup(VubrDev *dev)
-+{
-+    char template[] = "/tmp/vubr-XXXXXX";
-+    pthread_t thread;
-+    size_t length;
-+    void *addr;
-+    int fd;
-+
-+    length = getpagesize() * VHOST_MAX_NR_VIRTQUEUE;
-+
-+    fd = mkstemp(template);
-+    if (fd < 0) {
-+        vubr_die("mkstemp()");
-+    }
-+
-+    if (posix_fallocate(fd, 0, length) != 0) {
-+        vubr_die("posix_fallocate()");
-+    }
-+
-+    addr = mmap(NULL, length, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-+    if (addr == MAP_FAILED) {
-+        vubr_die("mmap()");
-+    }
-+
-+    memset(addr, 0xff, length);
-+
-+    if (pthread_create(&thread, NULL, notifier_thread, &dev->vudev) != 0) {
-+        vubr_die("pthread_create()");
-+    }
-+
-+    dev->notifier.fd = fd;
-+    dev->notifier.addr = addr;
-+    dev->notifier.thread = thread;
-+}
-+
- static void
- vubr_set_host(struct sockaddr_in *saddr, const char *host)
- {
-@@ -673,8 +756,9 @@ main(int argc, char *argv[])
-     VubrDev *dev;
-     int opt;
-     bool client = false;
-+    bool host_notifier = false;
+ \section{Legacy Interface: Reserved Feature Bits}\label{sec:Reserved Feature Bits / Legacy Interface: Reserved Feature Bits}
  
--    while ((opt = getopt(argc, argv, "l:r:u:c")) != -1) {
-+    while ((opt = getopt(argc, argv, "l:r:u:cH")) != -1) {
- 
-         switch (opt) {
-         case 'l':
-@@ -693,6 +777,9 @@ main(int argc, char *argv[])
-         case 'c':
-             client = true;
-             break;
-+        case 'H':
-+            host_notifier = true;
-+            break;
-         default:
-             goto out;
-         }
-@@ -708,6 +795,10 @@ main(int argc, char *argv[])
-         return 1;
-     }
- 
-+    if (host_notifier) {
-+        vubr_host_notifier_setup(dev);
-+    }
-+
-     vubr_backend_udp_setup(dev, lhost, lport, rhost, rport);
-     vubr_run(dev);
- 
-@@ -717,7 +808,7 @@ main(int argc, char *argv[])
- 
- out:
-     fprintf(stderr, "Usage: %s ", argv[0]);
--    fprintf(stderr, "[-c] [-u ud_socket_path] [-l lhost:lport] [-r rhost:rport]\n");
-+    fprintf(stderr, "[-c] [-H] [-u ud_socket_path] [-l lhost:lport] [-r rhost:rport]\n");
-     fprintf(stderr, "\t-u path to unix doman socket. default: %s\n",
-             DEFAULT_UD_SOCKET);
-     fprintf(stderr, "\t-l local host and port. default: %s:%s\n",
-@@ -725,6 +816,7 @@ out:
-     fprintf(stderr, "\t-r remote host and port. default: %s:%s\n",
-             DEFAULT_RHOST, DEFAULT_RPORT);
-     fprintf(stderr, "\t-c client mode\n");
-+    fprintf(stderr, "\t-H use host notifier\n");
- 
-     return 1;
- }
+ Transitional devices MAY offer the following:
 -- 
 2.17.0
 
