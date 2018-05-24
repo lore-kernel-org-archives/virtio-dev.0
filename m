@@ -1,148 +1,192 @@
-Return-Path: virtio-dev-return-4226-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4175-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 0A9735818CC0
-	for <virtio-dev@lists.oasis-open.org>; Thu, 31 May 2018 19:30:11 -0700 (PDT)
-Date: Fri, 1 Jun 2018 10:30:14 +0800
-From: Tiwei Bie <tiwei.bie@intel.com>
-Message-ID: <20180601023014.GA31226@debian>
-References: <20180530085521.26583-1-tiwei.bie@intel.com>
- <20180530192010-mutt-send-email-mst@kernel.org>
- <414C18B1-30FA-4AC0-B47D-F0FBF9832737@intel.com>
- <1527699273.29907.2.camel@intel.com>
- <5063D90B-7955-4F1E-85A2-D8AFD661ACB7@intel.com>
- <20180531032049.GB15516@debian>
- <CAKgT0Ud1QmotAXGOi1ORA79rYLFzofDZWPiJtPj=MBg4zxiSdw@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <CAKgT0Ud1QmotAXGOi1ORA79rYLFzofDZWPiJtPj=MBg4zxiSdw@mail.gmail.com>
-Subject: [virtio-dev] Re: [PATCH] virtio_pci: support enabling VFs
-To: Alexander Duyck <alexander.duyck@gmail.com>
-Cc: "Duyck, Alexander H" <alexander.h.duyck@intel.com>, "Rustad, Mark D" <mark.d.rustad@intel.com>, "mst@redhat.com" <mst@redhat.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "Daly, Dan" <dan.daly@intel.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "bhelgaas@google.com" <bhelgaas@google.com>, "Liang, Cunming" <cunming.liang@intel.com>, "Wang, Zhihong" <zhihong.wang@intel.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 061E85818F23
+	for <virtio-dev@lists.oasis-open.org>; Thu, 24 May 2018 09:55:29 -0700 (PDT)
+From: Sridhar Samudrala <sridhar.samudrala@intel.com>
+Date: Thu, 24 May 2018 09:55:12 -0700
+Message-Id: <1527180917-39737-1-git-send-email-sridhar.samudrala@intel.com>
+Subject: [virtio-dev] [PATCH net-next v12 0/5] Enable virtio_net to act as a standby for a passthru device
+To: mst@redhat.com, stephen@networkplumber.org, davem@davemloft.net, netdev@vger.kernel.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, jesse.brandeburg@intel.com, alexander.h.duyck@intel.com, kubakici@wp.pl, sridhar.samudrala@intel.com, jasowang@redhat.com, loseweigh@gmail.com, jiri@resnulli.us, aaron.f.brown@intel.com, anjali.singhai@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Thu, May 31, 2018 at 07:27:43AM -0700, Alexander Duyck wrote:
-> On Wed, May 30, 2018 at 8:20 PM, Tiwei Bie <tiwei.bie@intel.com> wrote:
-> > On Thu, May 31, 2018 at 01:11:37AM +0800, Rustad, Mark D wrote:
-> >> On May 30, 2018, at 9:54 AM, Duyck, Alexander H
-> >> <alexander.h.duyck@intel.com> wrote:
-> >>
-> >> > On Wed, 2018-05-30 at 09:44 -0700, Rustad, Mark D wrote:
-> >> > > On May 30, 2018, at 9:22 AM, Michael S. Tsirkin <mst@redhat.com> wrote:
-> >> > >
-> >> > > > > +static int virtio_pci_sriov_configure(struct pci_dev *pci_dev, int
-> >> > > > > num_vfs)
-> >> > > > > +{
-> >> > > > > +     struct virtio_pci_device *vp_dev = pci_get_drvdata(pci_dev);
-> >> > > > > +     struct virtio_device *vdev = &vp_dev->vdev;
-> >> > > > > +     int (*sriov_configure)(struct pci_dev *pci_dev, int num_vfs);
-> >> > > > > +
-> >> > > > > +     if (!(vdev->config->get_status(vdev) & VIRTIO_CONFIG_S_DRIVER_OK))
-> >> > > > > +             return -EBUSY;
-> >> > > > > +
-> >> > > > > +     if (!__virtio_test_bit(vdev, VIRTIO_F_SR_IOV))
-> >> > > > > +             return -EINVAL;
-> >> > > > > +
-> >> > > > > +     sriov_configure = pci_sriov_configure_simple;
-> >> > > > > +     if (sriov_configure == NULL)
-> >> > > > > +             return -ENOENT;
-> >> > > >
-> >> > > > BTW what is all this trickery in aid of?
-> >> > >
-> >> > > When SR-IOV support is not compiled into the kernel,
-> >> > > pci_sriov_configure_simple is #defined as NULL. This allows it to compile
-> >> > > in that case, even though there is utterly no way for it to be called in
-> >> > > that case. It is an alternative to #ifs in the code.
-> >> >
-> >> > Why even have the call though? I would wrap all of this in an #ifdef
-> >> > and strip it out since you couldn't support SR-IOV if it isn't present
-> >> > in the kernel anyway.
-> >>
-> >> I am inclined to agree. In this case, the presence of #ifdefs I think would
-> >> be clearer. As written, someone will want to get rid of the pointer only to
-> >> create a build problem when SR-IOV is not configured.
-> >
-> > In my opinion, maybe it would be better to make
-> > pci_sriov_configure_simple() always available
-> > just like other sriov functions.
-> >
-> > Based on the comments in the original patch:
-> >
-> > https://patchwork.kernel.org/patch/10353197/
-> > """
-> > +/* this is expected to be used as a function pointer, just define as NULL */
-> > +#define pci_sriov_configure_simple NULL
-> > """
-> >
-> > This function could be defined as NULL just because
-> > it was expected to be used as a function pointer.
-> > But actually it could be called directly as a
-> > function, just like this case.
-> >
-> > So I prefer to make this function always available
-> > just like other sriov functions.
-> >
-> > Best regards,
-> > Tiwei Bie
-> 
-> The fact that you are having to add additional code kind of implies
-> that maybe this doesn't fall into the pci_sriov_configure_simple case
-> anymore. The PF itself is defining what the VF can and can't do via
-> the feature flags you are testing for.
+The main motivation for this patch is to enable cloud service providers
+to provide an accelerated datapath to virtio-net enabled VMs in a 
+transparent manner with no/minimal guest userspace changes. This also
+enables hypervisor controlled live migration to be supported with VMs that
+have direct attached SR-IOV VF devices.
 
-I think you're right about pci_sriov_configure_simple
-isn't designed for this case. I dropped the use of
-pci_sriov_configure_simple in v2. Thanks!
+Patch 1 introduces a failover module that provides a generic interface for 
+paravirtual drivers to listen for netdev register/unregister/link change
+events from pci ethernet devices with the same MAC and takeover their
+datapath. The notifier and event handling code is based on the existing
+netvsc implementation. 
 
-> 
-> For example how is the bit of code below valid if the kernel itself
-> doesn't support SR-IOV:
-> +static void vp_transport_features(struct virtio_device *vdev, u64 features)
-> +{
-> +       struct virtio_pci_device *vp_dev = to_vp_device(vdev);
-> +       struct pci_dev *pci_dev = vp_dev->pci_dev;
-> +
-> +       if ((features & BIT_ULL(VIRTIO_F_SR_IOV)) &&
-> +                       pci_find_ext_capability(pci_dev, PCI_EXT_CAP_ID_SRIOV))
-> +               __virtio_set_bit(vdev, VIRTIO_F_SR_IOV);
-> +}
-> +
-> 
-> It really seems like we should be wrapping these functions at the very
-> minimum so that they don't imply you have SR-IOV support when it isn't
-> supported in the kernel.
+Patch 2 refactors netvsc to use the registration/notification framework
+introduced by failover module.
 
-I think it's OK to accept this feature bit in this case.
-The IOV support not enabled in kernel just means there is
-no way for users to use SR-IOV. But it doesn't mean that
-the virtio driver doesn't understand *this feature bit*.
-Even if the IOV support is enabled in kernel, there is
-still no way for virtio driver to know whether users will
-enable VFs or not. Accepting this feature is to tell the
-device the virtio driver understands this feature (i.e.
-this is not an incompatible virtio driver). And it's not
-to tell the device whether users will enable VFs or not,
-or how many VFs will be enabled.
+Patch 3 introduces a net_failover driver that provides an automated
+failover mechanism to paravirtual drivers via APIs to create and destroy
+a failover master netdev and mananges a primary and standby slave netdevs
+that get registered via the generic failover infrastructure.
 
-> 
-> Also it seems like we should be disabling the VFs if the driver is
-> unbound from this interface. We need to add logic to disable SR-IOV if
-> the driver is removed. What we don't want to do is leave VFs allocated
-> and then have the potential for us to unbind/rebind the driver as the
-> new driver may change the negotiated features.
+Patch 4 introduces a new feature bit VIRTIO_NET_F_STANDBY to virtio-net
+that can be used by hypervisor to indicate that virtio_net interface
+should act as a standby for another device with the same MAC address.
 
-Right. Thanks!
+Patch 5 extends virtio_net to use alternate datapath when available and
+registered. When STANDBY feature is enabled, virtio_net driver uese the
+net_failover API to create an additional 'failover' netdev that acts as
+a master device and controls 2 slave devices.  The original virtio_net
+netdev is registered as 'standby' netdev and a passthru/vf device with
+the same MAC gets registered as 'primary' netdev. Both 'standby' and
+'failover' netdevs are associated with the same 'pci' device.  The user
+accesses the network interface via 'failover' netdev. The 'failover'
+netdev chooses 'primary' netdev as default for transmits when it is
+available with link up and running.
 
-FYI, here is v2:
-https://lists.oasis-open.org/archives/virtio-dev/201805/msg00206.html
+As this patch series is initially focusing on usecases where hypervisor 
+fully controls the VM networking and the guest is not expected to directly 
+configure any hardware settings, it doesn't expose all the ndo/ethtool ops
+that are supported by virtio_net at this time. To support additional usecases,
+it should be possible to enable additional ops later by caching the state
+in failover netdev and replaying when the 'primary' netdev gets registered. 
+ 
+At the time of live migration, the hypervisor needs to unplug the VF device
+from the guest on the source host and reset the MAC filter of the VF to
+initiate failover of datapath to virtio before starting the migration. After
+the migration is completed, the destination hypervisor sets the MAC filter
+on the VF and plugs it back to the guest to switch over to VF datapath.
 
-Best regards,
-Tiwei Bie
+This patch is based on the discussion initiated by Jesse on this thread.
+https://marc.info/?l=linux-virtualization&m=151189725224231&w=2
+
+v12:
+- Tested live migration with virtio-net/AVF(i40evf) configured in failover
+  mode while running iperf in background. Tried static ip and dhcp
+  configurations using 'network' scripts and Network Manager.
+- Build tested netvsc module.
+Updates:
+- Extended generic failover module to do common functions like setting
+  FAILOVER_SLAVE flag, registering rx-handler and linking to upper dev in
+  the generic register/unregister handlers.
+  This required adding 3 additional failover ops pre_register, pre_unregister
+  and handle_frame.  netvsc and net_failover drivers are updated to support
+  these ops.
+
+v11:
+- Split net_failover module into 2 components.
+  1. 'failover' module that provides generic failover infrastructure
+  to register a failover instance and listen for slave events.
+  2. 'net_failover' driver that provides APIs to create/destroy upper
+  netdev and supports 3-netdev model used by virtio-net.
+- Added documentation
+
+v10:
+- fix net_failover_open() to update failover CARRIER correctly based on
+  standby and primary states. 
+- fix net_failover_handle_frame() to handle frames received on standby
+  when primary is present.
+- replace netdev_upper_dev_link with netdev_master_upper_dev_link and
+  handle lower dev state changes.
+- fix net_failver_create() and net_failover_register() interfaces to
+  use ERR_PTR and avoid arg **
+- disable setting mac address when virtio-net in STANDBY mode
+- document exported symbols
+- added entry to MAINTAINERS file
+
+v9:
+Select NET_FAILOVER automatically when VIRTIO_NET/HYPERV_NET 
+are enabled. (stephen)
+
+v8:
+- Made the failover managment routines more robust by updating the feature 
+  bits/other fields in the failover netdev when slave netdevs are 
+  registered/unregistered. (mst)
+- added support for handling vlans.
+- Limited the changes in netvsc to only use the notifier/event/lookups
+  from the failover module. The slave register/unregister/link-change 
+  handlers are only updated to use the getbymac routine to get the 
+  upper netdev. There is no change in their functionality. (stephen)
+- renamed structs/function/file names to use net_failover prefix. (mst)
+
+v7
+- Rename 'bypass/active/backup' terminology with 'failover/primary/standy'
+  (jiri, mst)
+- re-arranged dev_open() and dev_set_mtu() calls in the register routines
+  so that they don't get called for 2-netdev model. (stephen)
+- fixed select_queue() routine to do queue selection based on VF if it is
+  registered as primary. (stephen)
+-  minor bugfixes
+
+v6 RFC:
+  Simplified virtio_net changes by moving all the ndo_ops of the 
+  bypass_netdev and create/destroy of bypass_netdev to 'bypass' module.
+  avoided 2 phase registration(driver + instances).
+  introduced IFF_BYPASS/IFF_BYPASS_SLAVE dev->priv_flags 
+  replaced mutex with a spinlock
+
+v5 RFC:
+  Based on Jiri's comments, moved the common functionality to a 'bypass'
+  module so that the same notifier and event handlers to handle child
+  register/unregister/link change events can be shared between virtio_net
+  and netvsc.
+  Improved error handling based on Siwei's comments.
+v4:
+- Based on the review comments on the v3 version of the RFC patch and
+  Jakub's suggestion for the naming issue with 3 netdev solution,
+  proposed 3 netdev in-driver bonding solution for virtio-net.
+v3 RFC:
+- Introduced 3 netdev model and pointed out a couple of issues with
+  that model and proposed 2 netdev model to avoid these issues.
+- Removed broadcast/multicast optimization and only use virtio as
+  backup path when VF is unplugged.
+v2 RFC:
+- Changed VIRTIO_NET_F_MASTER to VIRTIO_NET_F_BACKUP (mst)
+- made a small change to the virtio-net xmit path to only use VF datapath
+  for unicasts. Broadcasts/multicasts use virtio datapath. This avoids
+  east-west broadcasts to go over the PCI link.
+- added suppport for the feature bit in qemu
+
+Sridhar Samudrala (5):
+  net: Introduce generic failover module
+  netvsc: refactor notifier/event handling code to use the failover
+    framework
+  net: Introduce net_failover driver
+  virtio_net: Introduce VIRTIO_NET_F_STANDBY feature bit
+  virtio_net: Extend virtio to use VF datapath when available
+
+ Documentation/networking/failover.rst     |  18 +
+ Documentation/networking/net_failover.rst | 116 +++++
+ MAINTAINERS                               |  16 +
+ drivers/net/Kconfig                       |  13 +
+ drivers/net/Makefile                      |   1 +
+ drivers/net/hyperv/Kconfig                |   1 +
+ drivers/net/hyperv/hyperv_net.h           |   2 +
+ drivers/net/hyperv/netvsc_drv.c           | 222 ++------
+ drivers/net/net_failover.c                | 836 ++++++++++++++++++++++++++++++
+ drivers/net/virtio_net.c                  |  40 +-
+ include/linux/netdevice.h                 |  16 +
+ include/net/failover.h                    |  36 ++
+ include/net/net_failover.h                |  40 ++
+ include/uapi/linux/virtio_net.h           |   3 +
+ net/Kconfig                               |  13 +
+ net/core/Makefile                         |   1 +
+ net/core/failover.c                       | 315 +++++++++++
+ 17 files changed, 1522 insertions(+), 167 deletions(-)
+ create mode 100644 Documentation/networking/failover.rst
+ create mode 100644 Documentation/networking/net_failover.rst
+ create mode 100644 drivers/net/net_failover.c
+ create mode 100644 include/net/failover.h
+ create mode 100644 include/net/net_failover.h
+ create mode 100644 net/core/failover.c
+
+-- 
+2.14.3
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
