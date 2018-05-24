@@ -1,188 +1,222 @@
-Return-Path: virtio-dev-return-4146-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4148-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 9CA285818F62
-	for <virtio-dev@lists.oasis-open.org>; Wed, 23 May 2018 16:20:43 -0700 (PDT)
-Date: Thu, 24 May 2018 07:21:01 +0800
+	by lists.oasis-open.org (Postfix) with ESMTP id E33415818F13
+	for <virtio-dev@lists.oasis-open.org>; Wed, 23 May 2018 19:24:32 -0700 (PDT)
+Date: Thu, 24 May 2018 10:24:40 +0800
 From: Tiwei Bie <tiwei.bie@intel.com>
-Message-ID: <20180523232101.GB15604@debian>
+Message-ID: <20180524022440.GA20792@debian>
 References: <20180412151232.17506-1-tiwei.bie@intel.com>
  <20180412151232.17506-3-tiwei.bie@intel.com>
  <20180523163116-mutt-send-email-mst@kernel.org>
  <20180523183444-mutt-send-email-mst@kernel.org>
  <20180523184001-mutt-send-email-mst@kernel.org>
+ <20180523232101.GB15604@debian>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20180523184001-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20180523232101.GB15604@debian>
 Subject: [virtio-dev] Re: [PATCH v3 2/6] vhost-user: introduce shared vhost-user state
 To: "Michael S. Tsirkin" <mst@redhat.com>
 Cc: jasowang@redhat.com, alex.williamson@redhat.com, pbonzini@redhat.com, stefanha@redhat.com, qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, cunming.liang@intel.com, dan.daly@intel.com, jianfeng.tan@intel.com, zhihong.wang@intel.com, xiao.w.wang@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, May 23, 2018 at 06:43:29PM +0300, Michael S. Tsirkin wrote:
-> On Wed, May 23, 2018 at 06:36:05PM +0300, Michael S. Tsirkin wrote:
-> > On Wed, May 23, 2018 at 04:44:51PM +0300, Michael S. Tsirkin wrote:
-> > > On Thu, Apr 12, 2018 at 11:12:28PM +0800, Tiwei Bie wrote:
-> > > > When multi queue is enabled e.g. for a virtio-net device,
-> > > > each queue pair will have a vhost_dev, and the only thing
-> > > > shared between vhost devs currently is the chardev. This
-> > > > patch introduces a vhost-user state structure which will
-> > > > be shared by all vhost devs of the same virtio device.
+On Thu, May 24, 2018 at 07:21:01AM +0800, Tiwei Bie wrote:
+> On Wed, May 23, 2018 at 06:43:29PM +0300, Michael S. Tsirkin wrote:
+> > On Wed, May 23, 2018 at 06:36:05PM +0300, Michael S. Tsirkin wrote:
+> > > On Wed, May 23, 2018 at 04:44:51PM +0300, Michael S. Tsirkin wrote:
+> > > > On Thu, Apr 12, 2018 at 11:12:28PM +0800, Tiwei Bie wrote:
+> > > > > When multi queue is enabled e.g. for a virtio-net device,
+> > > > > each queue pair will have a vhost_dev, and the only thing
+> > > > > shared between vhost devs currently is the chardev. This
+> > > > > patch introduces a vhost-user state structure which will
+> > > > > be shared by all vhost devs of the same virtio device.
+> > > > > 
+> > > > > Signed-off-by: Tiwei Bie <tiwei.bie@intel.com>
 > > > > 
-> > > > Signed-off-by: Tiwei Bie <tiwei.bie@intel.com>
+> > > > Unfortunately this patch seems to cause crashes.
+> > > > To reproduce, simply run
+> > > > make check-qtest-x86_64
+> > > > 
+> > > > Sorry that it took me a while to find - it triggers 90% of runs but not
+> > > > 100% which complicates bisection somewhat.
+> 
+> It's my fault to not notice this bug before.
+> I'm very sorry. Thank you so much for finding
+> the root cause!
+> 
+> > > > 
+> > > > > ---
+> > > > >  backends/cryptodev-vhost-user.c     | 20 ++++++++++++++++++-
+> > > > >  hw/block/vhost-user-blk.c           | 22 +++++++++++++++++++-
+> > > > >  hw/scsi/vhost-user-scsi.c           | 20 ++++++++++++++++++-
+> > > > >  hw/virtio/Makefile.objs             |  2 +-
+> > > > >  hw/virtio/vhost-stub.c              | 10 ++++++++++
+> > > > >  hw/virtio/vhost-user.c              | 31 +++++++++++++++++++---------
+> > > > >  include/hw/virtio/vhost-user-blk.h  |  2 ++
+> > > > >  include/hw/virtio/vhost-user-scsi.h |  2 ++
+> > > > >  include/hw/virtio/vhost-user.h      | 20 +++++++++++++++++++
+> > > > >  net/vhost-user.c                    | 40 ++++++++++++++++++++++++++++++-------
+> > > > >  10 files changed, 149 insertions(+), 20 deletions(-)
+> > > > >  create mode 100644 include/hw/virtio/vhost-user.h
+> [...]
+> > > > >          qemu_chr_fe_set_handlers(&s->chr, NULL, NULL,
+> > > > >                                   net_vhost_user_event, NULL, nc0->name, NULL,
+> > > > > @@ -319,6 +336,15 @@ static int net_vhost_user_init(NetClientState *peer, const char *device,
+> > > > >      assert(s->vhost_net);
+> > > > >  
+> > > > >      return 0;
+> > > > > +
+> > > > > +err:
+> > > > > +    if (user) {
+> > > > > +        vhost_user_cleanup(user);
+> > > > > +        g_free(user);
+> > > > > +        s->vhost_user = NULL;
+> > > > > +    }
+> > > > > +
+> > > > > +    return -1;
+> > > > >  }
+> > > > >  
+> > > > >  static Chardev *net_vhost_claim_chardev(
+> > > > > -- 
+> > > > > 2.11.0
 > > > 
-> > > Unfortunately this patch seems to cause crashes.
-> > > To reproduce, simply run
-> > > make check-qtest-x86_64
+> > > So far I figured out that commenting the free of
+> > > the structure removes the crash, so we seem to
+> > > be dealing with a use-after free here.
+> > > I suspect that in a MQ situation, one queue gets
+> > > closed and attempts to free the structure
+> > > while others still use it.
 > > > 
-> > > Sorry that it took me a while to find - it triggers 90% of runs but not
-> > > 100% which complicates bisection somewhat.
-
-It's my fault to not notice this bug before.
-I'm very sorry. Thank you so much for finding
-the root cause!
-
-> > > 
-> > > > ---
-> > > >  backends/cryptodev-vhost-user.c     | 20 ++++++++++++++++++-
-> > > >  hw/block/vhost-user-blk.c           | 22 +++++++++++++++++++-
-> > > >  hw/scsi/vhost-user-scsi.c           | 20 ++++++++++++++++++-
-> > > >  hw/virtio/Makefile.objs             |  2 +-
-> > > >  hw/virtio/vhost-stub.c              | 10 ++++++++++
-> > > >  hw/virtio/vhost-user.c              | 31 +++++++++++++++++++---------
-> > > >  include/hw/virtio/vhost-user-blk.h  |  2 ++
-> > > >  include/hw/virtio/vhost-user-scsi.h |  2 ++
-> > > >  include/hw/virtio/vhost-user.h      | 20 +++++++++++++++++++
-> > > >  net/vhost-user.c                    | 40 ++++++++++++++++++++++++++++++-------
-> > > >  10 files changed, 149 insertions(+), 20 deletions(-)
-> > > >  create mode 100644 include/hw/virtio/vhost-user.h
-[...]
-> > > >          qemu_chr_fe_set_handlers(&s->chr, NULL, NULL,
-> > > >                                   net_vhost_user_event, NULL, nc0->name, NULL,
-> > > > @@ -319,6 +336,15 @@ static int net_vhost_user_init(NetClientState *peer, const char *device,
-> > > >      assert(s->vhost_net);
-> > > >  
-> > > >      return 0;
-> > > > +
-> > > > +err:
-> > > > +    if (user) {
-> > > > +        vhost_user_cleanup(user);
-> > > > +        g_free(user);
-> > > > +        s->vhost_user = NULL;
-> > > > +    }
-> > > > +
-> > > > +    return -1;
-> > > >  }
-> > > >  
-> > > >  static Chardev *net_vhost_claim_chardev(
-> > > > -- 
-> > > > 2.11.0
+> > > diff --git a/net/vhost-user.c b/net/vhost-user.c
+> > > index 525a061..6a1573b 100644
+> > > --- a/net/vhost-user.c
+> > > +++ b/net/vhost-user.c
+> > > @@ -157,8 +157,8 @@ static void net_vhost_user_cleanup(NetClientState *nc)
+> > >          s->vhost_net = NULL;
+> > >      }
+> > >      if (s->vhost_user) {
+> > > -        vhost_user_cleanup(s->vhost_user);
+> > > -        g_free(s->vhost_user);
+> > > +        //vhost_user_cleanup(s->vhost_user);
+> > > +        //g_free(s->vhost_user);
+> > >          s->vhost_user = NULL;
+> > >      }
+> > >      if (nc->queue_index == 0) {
+> > > @@ -339,8 +339,8 @@ static int net_vhost_user_init(NetClientState *peer, const char *device,
+> > >  
+> > >  err:
+> > >      if (user) {
+> > > -        vhost_user_cleanup(user);
+> > > -        g_free(user);
+> > > +        //vhost_user_cleanup(user);
+> > > +        //g_free(user);
+> > >          s->vhost_user = NULL;
+> > >      }
+> > >  
 > > 
-> > So far I figured out that commenting the free of
-> > the structure removes the crash, so we seem to
-> > be dealing with a use-after free here.
-> > I suspect that in a MQ situation, one queue gets
-> > closed and attempts to free the structure
-> > while others still use it.
+> > 
+> > So the following at least gets rid of the crashes.
+> > I am not sure it does not leak memory though,
+> > and not sure there aren't any configurations where
+> > the 1st queue gets cleaned up first.
+> > 
+> > Thoughts?
+> 
+> Thank you so much for catching it and fixing
+> it! I'll keep your SoB there. Thank you so
+> much! I do appreciate it!
+> 
+> You are right. This structure is freed multiple
+> times when multi-queue is enabled.
+
+After a deeper digging, I got your point now..
+It could be a use-after-free instead of a double
+free.. As it's safe to deinit the char which is
+shared by all queue pairs when cleanup the 1st
+queue pair, it should be safe to free vhost-user
+structure there too.
+
+> 
+> I think it's safe to let the first queue pair
+> free the vhost-user structure, because it won't
+> be touched by other queue pairs during cleanup.
+> 
+> Best regards,
+> Tiwei Bie
+> 
+> 
+> > 
+> > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+> > 
+> > ---
 > > 
 > > diff --git a/net/vhost-user.c b/net/vhost-user.c
-> > index 525a061..6a1573b 100644
+> > index 525a061..7549d25 100644
 > > --- a/net/vhost-user.c
 > > +++ b/net/vhost-user.c
-> > @@ -157,8 +157,8 @@ static void net_vhost_user_cleanup(NetClientState *nc)
+> > @@ -156,19 +156,20 @@ static void net_vhost_user_cleanup(NetClientState *nc)
+> >          g_free(s->vhost_net);
 > >          s->vhost_net = NULL;
 > >      }
-> >      if (s->vhost_user) {
+> > -    if (s->vhost_user) {
 > > -        vhost_user_cleanup(s->vhost_user);
 > > -        g_free(s->vhost_user);
-> > +        //vhost_user_cleanup(s->vhost_user);
-> > +        //g_free(s->vhost_user);
-> >          s->vhost_user = NULL;
-> >      }
+> > -        s->vhost_user = NULL;
+> > -    }
 > >      if (nc->queue_index == 0) {
-> > @@ -339,8 +339,8 @@ static int net_vhost_user_init(NetClientState *peer, const char *device,
-> >  
-> >  err:
-> >      if (user) {
-> > -        vhost_user_cleanup(user);
-> > -        g_free(user);
-> > +        //vhost_user_cleanup(user);
-> > +        //g_free(user);
-> >          s->vhost_user = NULL;
+> >          if (s->watch) {
+> >              g_source_remove(s->watch);
+> >              s->watch = 0;
+> >          }
+> >          qemu_chr_fe_deinit(&s->chr, true);
+> > +        if (s->vhost_user) {
+> > +            vhost_user_cleanup(s->vhost_user);
+> > +            g_free(s->vhost_user);
+> > +        }
 > >      }
 > >  
-> 
-> 
-> So the following at least gets rid of the crashes.
-> I am not sure it does not leak memory though,
-> and not sure there aren't any configurations where
-> the 1st queue gets cleaned up first.
-> 
-> Thoughts?
+> > +    s->vhost_user = NULL;
 
-Thank you so much for catching it and fixing
-it! I'll keep your SoB there. Thank you so
-much! I do appreciate it!
+Maybe we should move above line, like:
 
-You are right. This structure is freed multiple
-times when multi-queue is enabled.
+     if (nc->queue_index == 0) {
+         if (s->watch) {
+             g_source_remove(s->watch);
+             s->watch = 0;
+         }
+         qemu_chr_fe_deinit(&s->chr, true);
++        if (s->vhost_user) {
++            vhost_user_cleanup(s->vhost_user);
++            g_free(s->vhost_user);
++            s->vhost_user = NULL;
++        }
+     }
 
-I think it's safe to let the first queue pair
-free the vhost-user structure, because it won't
-be touched by other queue pairs during cleanup.
+otherwise s->vhost_user may not be freed.
+
+> > +
+> >      qemu_purge_queued_packets(nc);
+> >  }
+> >  
+> > @@ -341,7 +342,6 @@ err:
+> >      if (user) {
+> >          vhost_user_cleanup(user);
+> >          g_free(user);
+> > -        s->vhost_user = NULL;
+
+I don't get why cannot zero it in this case.
+
+> >      }
+> >  
+> >      return -1;
 
 Best regards,
 Tiwei Bie
-
-
-> 
-> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> 
-> ---
-> 
-> diff --git a/net/vhost-user.c b/net/vhost-user.c
-> index 525a061..7549d25 100644
-> --- a/net/vhost-user.c
-> +++ b/net/vhost-user.c
-> @@ -156,19 +156,20 @@ static void net_vhost_user_cleanup(NetClientState *nc)
->          g_free(s->vhost_net);
->          s->vhost_net = NULL;
->      }
-> -    if (s->vhost_user) {
-> -        vhost_user_cleanup(s->vhost_user);
-> -        g_free(s->vhost_user);
-> -        s->vhost_user = NULL;
-> -    }
->      if (nc->queue_index == 0) {
->          if (s->watch) {
->              g_source_remove(s->watch);
->              s->watch = 0;
->          }
->          qemu_chr_fe_deinit(&s->chr, true);
-> +        if (s->vhost_user) {
-> +            vhost_user_cleanup(s->vhost_user);
-> +            g_free(s->vhost_user);
-> +        }
->      }
->  
-> +    s->vhost_user = NULL;
-> +
->      qemu_purge_queued_packets(nc);
->  }
->  
-> @@ -341,7 +342,6 @@ err:
->      if (user) {
->          vhost_user_cleanup(user);
->          g_free(user);
-> -        s->vhost_user = NULL;
->      }
->  
->      return -1;
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
