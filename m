@@ -1,321 +1,748 @@
-Return-Path: virtio-dev-return-4176-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4189-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 6F5205818F7B
-	for <virtio-dev@lists.oasis-open.org>; Thu, 24 May 2018 09:55:29 -0700 (PDT)
-From: Sridhar Samudrala <sridhar.samudrala@intel.com>
-Date: Thu, 24 May 2018 09:55:13 -0700
-Message-Id: <1527180917-39737-2-git-send-email-sridhar.samudrala@intel.com>
-In-Reply-To: <1527180917-39737-1-git-send-email-sridhar.samudrala@intel.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id C56F958191AC
+	for <virtio-dev@lists.oasis-open.org>; Fri, 25 May 2018 16:04:46 -0700 (PDT)
 References: <1527180917-39737-1-git-send-email-sridhar.samudrala@intel.com>
-Subject: [virtio-dev] [PATCH net-next v12 1/5] net: Introduce generic failover module
-To: mst@redhat.com, stephen@networkplumber.org, davem@davemloft.net, netdev@vger.kernel.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, jesse.brandeburg@intel.com, alexander.h.duyck@intel.com, kubakici@wp.pl, sridhar.samudrala@intel.com, jasowang@redhat.com, loseweigh@gmail.com, jiri@resnulli.us, aaron.f.brown@intel.com, anjali.singhai@intel.com
+ <1527180917-39737-2-git-send-email-sridhar.samudrala@intel.com>
+ <20180525153744.2b53c449@xeon-e3>
+From: "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
+Message-ID: <ca759c7a-c185-c40b-081b-c5c2a835fbdf@intel.com>
+Date: Fri, 25 May 2018 16:04:33 -0700
+MIME-Version: 1.0
+In-Reply-To: <20180525153744.2b53c449@xeon-e3>
+Content-Type: multipart/alternative;
+ boundary="------------1B0AD3C788667269D61CF141"
+Content-Language: en-US
+Subject: [virtio-dev] Re: [PATCH net-next v12 1/5] net: Introduce generic failover module
+To: Stephen Hemminger <stephen@networkplumber.org>
+Cc: mst@redhat.com, davem@davemloft.net, netdev@vger.kernel.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, jesse.brandeburg@intel.com, alexander.h.duyck@intel.com, kubakici@wp.pl, jasowang@redhat.com, loseweigh@gmail.com, jiri@resnulli.us, aaron.f.brown@intel.com, anjali.singhai@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-The failover module provides a generic interface for paravirtual drivers
-to register a netdev and a set of ops with a failover instance. The ops
-are used as event handlers that get called to handle netdev register/
-unregister/link change/name change events on slave pci ethernet devices
-with the same mac address as the failover netdev.
+--------------1B0AD3C788667269D61CF141
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-This enables paravirtual drivers to use a VF as an accelerated low latency
-datapath. It also allows migration of VMs with direct attached VFs by
-failing over to the paravirtual datapath when the VF is unplugged.
 
-Signed-off-by: Sridhar Samudrala <sridhar.samudrala@intel.com>
----
- Documentation/networking/failover.rst |  18 ++
- MAINTAINERS                           |   8 +
- include/linux/netdevice.h             |  16 ++
- include/net/failover.h                |  36 ++++
- net/Kconfig                           |  13 ++
- net/core/Makefile                     |   1 +
- net/core/failover.c                   | 315 ++++++++++++++++++++++++++++++++++
- 7 files changed, 407 insertions(+)
- create mode 100644 Documentation/networking/failover.rst
- create mode 100644 include/net/failover.h
- create mode 100644 net/core/failover.c
 
-diff --git a/Documentation/networking/failover.rst b/Documentation/networking/failover.rst
-new file mode 100644
-index 000000000000..f0c8483cdbf5
---- /dev/null
-+++ b/Documentation/networking/failover.rst
-@@ -0,0 +1,18 @@
-+.. SPDX-License-Identifier: GPL-2.0
-+
-+========
-+FAILOVER
-+========
-+
-+Overview
-+========
-+
-+The failover module provides a generic interface for paravirtual drivers
-+to register a netdev and a set of ops with a failover instance. The ops
-+are used as event handlers that get called to handle netdev register/
-+unregister/link change/name change events on slave pci ethernet devices
-+with the same mac address as the failover netdev.
-+
-+This enables paravirtual drivers to use a VF as an accelerated low latency
-+datapath. It also allows live migration of VMs with direct attached VFs by
-+failing over to the paravirtual datapath when the VF is unplugged.
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 032807a95558..ee0ce10b2a8d 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -5412,6 +5412,14 @@ S:	Maintained
- F:	Documentation/hwmon/f71805f
- F:	drivers/hwmon/f71805f.c
- 
-+FAILOVER MODULE
-+M:	Sridhar Samudrala <sridhar.samudrala@intel.com>
-+L:	netdev@vger.kernel.org
-+S:	Supported
-+F:	net/core/failover.c
-+F:	include/net/failover.h
-+F:	Documentation/networking/failover.rst
-+
- FANOTIFY
- M:	Jan Kara <jack@suse.cz>
- R:	Amir Goldstein <amir73il@gmail.com>
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 03ed492c4e14..0f4ba52b641d 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -1421,6 +1421,8 @@ struct net_device_ops {
-  *	entity (i.e. the master device for bridged veth)
-  * @IFF_MACSEC: device is a MACsec device
-  * @IFF_NO_RX_HANDLER: device doesn't support the rx_handler hook
-+ * @IFF_FAILOVER: device is a failover master device
-+ * @IFF_FAILOVER_SLAVE: device is lower dev of a failover master device
-  */
- enum netdev_priv_flags {
- 	IFF_802_1Q_VLAN			= 1<<0,
-@@ -1450,6 +1452,8 @@ enum netdev_priv_flags {
- 	IFF_PHONY_HEADROOM		= 1<<24,
- 	IFF_MACSEC			= 1<<25,
- 	IFF_NO_RX_HANDLER		= 1<<26,
-+	IFF_FAILOVER			= 1<<27,
-+	IFF_FAILOVER_SLAVE		= 1<<28,
- };
- 
- #define IFF_802_1Q_VLAN			IFF_802_1Q_VLAN
-@@ -1478,6 +1482,8 @@ enum netdev_priv_flags {
- #define IFF_RXFH_CONFIGURED		IFF_RXFH_CONFIGURED
- #define IFF_MACSEC			IFF_MACSEC
- #define IFF_NO_RX_HANDLER		IFF_NO_RX_HANDLER
-+#define IFF_FAILOVER			IFF_FAILOVER
-+#define IFF_FAILOVER_SLAVE		IFF_FAILOVER_SLAVE
- 
- /**
-  *	struct net_device - The DEVICE structure.
-@@ -4321,6 +4327,16 @@ static inline bool netif_is_rxfh_configured(const struct net_device *dev)
- 	return dev->priv_flags & IFF_RXFH_CONFIGURED;
- }
- 
-+static inline bool netif_is_failover(const struct net_device *dev)
-+{
-+	return dev->priv_flags & IFF_FAILOVER;
-+}
-+
-+static inline bool netif_is_failover_slave(const struct net_device *dev)
-+{
-+	return dev->priv_flags & IFF_FAILOVER_SLAVE;
-+}
-+
- /* This device needs to keep skb dst for qdisc enqueue or ndo_start_xmit() */
- static inline void netif_keep_dst(struct net_device *dev)
- {
-diff --git a/include/net/failover.h b/include/net/failover.h
-new file mode 100644
-index 000000000000..bb15438f39c7
---- /dev/null
-+++ b/include/net/failover.h
-@@ -0,0 +1,36 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright (c) 2018, Intel Corporation. */
-+
-+#ifndef _FAILOVER_H
-+#define _FAILOVER_H
-+
-+#include <linux/netdevice.h>
-+
-+struct failover_ops {
-+	int (*slave_pre_register)(struct net_device *slave_dev,
-+				  struct net_device *failover_dev);
-+	int (*slave_register)(struct net_device *slave_dev,
-+			      struct net_device *failover_dev);
-+	int (*slave_pre_unregister)(struct net_device *slave_dev,
-+				    struct net_device *failover_dev);
-+	int (*slave_unregister)(struct net_device *slave_dev,
-+				struct net_device *failover_dev);
-+	int (*slave_link_change)(struct net_device *slave_dev,
-+				 struct net_device *failover_dev);
-+	int (*slave_name_change)(struct net_device *slave_dev,
-+				 struct net_device *failover_dev);
-+	rx_handler_result_t (*slave_handle_frame)(struct sk_buff **pskb);
-+};
-+
-+struct failover {
-+	struct list_head list;
-+	struct net_device __rcu *failover_dev;
-+	struct failover_ops __rcu *ops;
-+};
-+
-+struct failover *failover_register(struct net_device *dev,
-+				   struct failover_ops *ops);
-+void failover_unregister(struct failover *failover);
-+int failover_slave_unregister(struct net_device *slave_dev);
-+
-+#endif /* _FAILOVER_H */
-diff --git a/net/Kconfig b/net/Kconfig
-index df8d45ef47d8..d581c4f0f1c4 100644
---- a/net/Kconfig
-+++ b/net/Kconfig
-@@ -430,6 +430,19 @@ config MAY_USE_DEVLINK
- config PAGE_POOL
-        bool
- 
-+config FAILOVER
-+	tristate "Generic failover module"
-+	help
-+	  The failover module provides a generic interface for paravirtual
-+	  drivers to register a netdev and a set of ops with a failover
-+	  instance. The ops are used as event handlers that get called to
-+	  handle netdev register/unregister/link change/name change events
-+	  on slave pci ethernet devices with the same mac address as the
-+	  failover netdev. This enables paravirtual drivers to use a
-+	  VF as an accelerated low latency datapath. It also allows live
-+	  migration of VMs with direct attached VFs by failing over to the
-+	  paravirtual datapath when the VF is unplugged.
-+
- endif   # if NET
- 
- # Used by archs to tell that they support BPF JIT compiler plus which flavour.
-diff --git a/net/core/Makefile b/net/core/Makefile
-index 7080417f8bc8..80175e6a2eb8 100644
---- a/net/core/Makefile
-+++ b/net/core/Makefile
-@@ -31,3 +31,4 @@ obj-$(CONFIG_DST_CACHE) += dst_cache.o
- obj-$(CONFIG_HWBM) += hwbm.o
- obj-$(CONFIG_NET_DEVLINK) += devlink.o
- obj-$(CONFIG_GRO_CELLS) += gro_cells.o
-+obj-$(CONFIG_FAILOVER) += failover.o
-diff --git a/net/core/failover.c b/net/core/failover.c
-new file mode 100644
-index 000000000000..4a92a98ccce9
---- /dev/null
-+++ b/net/core/failover.c
-@@ -0,0 +1,315 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2018, Intel Corporation. */
-+
-+/* A common module to handle registrations and notifications for paravirtual
-+ * drivers to enable accelerated datapath and support VF live migration.
-+ *
-+ * The notifier and event handling code is based on netvsc driver.
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/etherdevice.h>
-+#include <uapi/linux/if_arp.h>
-+#include <linux/rtnetlink.h>
-+#include <linux/if_vlan.h>
-+#include <net/failover.h>
-+
-+static LIST_HEAD(failover_list);
-+static DEFINE_SPINLOCK(failover_lock);
-+
-+static struct net_device *failover_get_bymac(u8 *mac, struct failover_ops **ops)
-+{
-+	struct net_device *failover_dev;
-+	struct failover *failover;
-+
-+	spin_lock(&failover_lock);
-+	list_for_each_entry(failover, &failover_list, list) {
-+		failover_dev = rtnl_dereference(failover->failover_dev);
-+		if (ether_addr_equal(failover_dev->perm_addr, mac)) {
-+			*ops = rtnl_dereference(failover->ops);
-+			spin_unlock(&failover_lock);
-+			return failover_dev;
-+		}
-+	}
-+	spin_unlock(&failover_lock);
-+	return NULL;
-+}
-+
-+/**
-+ * failover_slave_register - Register a slave netdev
-+ *
-+ * @slave_dev: slave netdev that is being registered
-+ *
-+ * Registers a slave device to a failover instance. Only ethernet devices
-+ * are supported.
-+ */
-+static int failover_slave_register(struct net_device *slave_dev)
-+{
-+	struct netdev_lag_upper_info lag_upper_info;
-+	struct net_device *failover_dev;
-+	struct failover_ops *fops;
-+	int err;
-+
-+	if (slave_dev->type != ARPHRD_ETHER)
-+		goto done;
-+
-+	ASSERT_RTNL();
-+
-+	failover_dev = failover_get_bymac(slave_dev->perm_addr, &fops);
-+	if (!failover_dev)
-+		goto done;
-+
-+	if (fops && fops->slave_pre_register &&
-+	    fops->slave_pre_register(slave_dev, failover_dev))
-+		goto done;
-+
-+	err = netdev_rx_handler_register(slave_dev, fops->slave_handle_frame,
-+					 failover_dev);
-+	if (err) {
-+		netdev_err(slave_dev, "can not register failover rx handler (err = %d)\n",
-+			   err);
-+		goto done;
-+	}
-+
-+	lag_upper_info.tx_type = NETDEV_LAG_TX_TYPE_ACTIVEBACKUP;
-+	err = netdev_master_upper_dev_link(slave_dev, failover_dev, NULL,
-+					   &lag_upper_info, NULL);
-+	if (err) {
-+		netdev_err(slave_dev, "can not set failover device %s (err = %d)\n",
-+			   failover_dev->name, err);
-+		goto err_upper_link;
-+	}
-+
-+	slave_dev->priv_flags |= IFF_FAILOVER_SLAVE;
-+
-+	if (fops && fops->slave_register &&
-+	    !fops->slave_register(slave_dev, failover_dev))
-+		return NOTIFY_OK;
-+
-+	netdev_upper_dev_unlink(slave_dev, failover_dev);
-+	slave_dev->priv_flags &= ~IFF_FAILOVER_SLAVE;
-+err_upper_link:
-+	netdev_rx_handler_unregister(slave_dev);
-+done:
-+	return NOTIFY_DONE;
-+}
-+
-+/**
-+ * failover_slave_unregister - Unregister a slave netdev
-+ *
-+ * @slave_dev: slave netdev that is being unregistered
-+ *
-+ * Unregisters a slave device from a failover instance.
-+ */
-+int failover_slave_unregister(struct net_device *slave_dev)
+On 5/25/2018 3:37 PM, Stephen Hemminger wrote:
+> On Thu, 24 May 2018 09:55:13 -0700
+> Sridhar Samudrala <sridhar.samudrala@intel.com> wrote:
+>
+>
+>> +	spin_lock(&failover_lock);
+> Since register is not in fast path, this should be a mutex?
+
+This is Jiri's comment which made me to switch to spinlock from mutex
+
+   >> Why mutex? Apparently you don't need to sleep while holding a lock.
+   >> Simple spinlock would do.
+
+>
+>
+>> +int failover_slave_unregister(struct net_device *slave_dev)
+>> +{
+>> +	struct net_device *failover_dev;
+>> +	struct failover_ops *fops;
+>> +
+>> +	if (!netif_is_failover_slave(slave_dev))
+>> +		goto done;
+>> +
+>> +	ASSERT_RTNL();
+>> +
+>> +	failover_dev = failover_get_bymac(slave_dev->perm_addr, &fops);
+>> +	if (!failover_dev)
+>> +		goto done;
+> Since the slave device must have a master device set already, why not use
+> that instead of searching by MAC address on unregister or link change.
+>
+We also need to get the fops(failover_ops)
+
+
+--------------1B0AD3C788667269D61CF141
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: 7bit
+
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  </head>
+  <body text="#000000" bgcolor="#FFFFFF">
+    <p><br>
+    </p>
+    <br>
+    <div class="moz-cite-prefix">On 5/25/2018 3:37 PM, Stephen Hemminger
+      wrote:<br>
+    </div>
+    <blockquote type="cite" cite="mid:20180525153744.2b53c449@xeon-e3">
+      <pre wrap="">On Thu, 24 May 2018 09:55:13 -0700
+Sridhar Samudrala <a class="moz-txt-link-rfc2396E" href="mailto:sridhar.samudrala@intel.com">&lt;sridhar.samudrala@intel.com&gt;</a> wrote:
+
+
+</pre>
+      <blockquote type="cite">
+        <pre wrap="">+	spin_lock(&amp;failover_lock);
+</pre>
+      </blockquote>
+      <pre wrap="">
+Since register is not in fast path, this should be a mutex?</pre>
+    </blockquote>
+    <!--[if gte mso 9]><xml>
+ <o:OfficeDocumentSettings>
+  <o:AllowPNG/>
+ </o:OfficeDocumentSettings>
+</xml><![endif]-->
+    <pre class="MsoPlainText">
+This is Jiri's comment which made me to switch to spinlock from mutex
+
+  &gt;&gt; Why mutex? Apparently you don't need to sleep while holding a lock.
+  &gt;&gt; Simple spinlock would do.
+
+</pre>
+    <!--[if gte mso 9]><xml>
+ <w:WordDocument>
+  <w:View>Normal</w:View>
+  <w:Zoom>0</w:Zoom>
+  <w:TrackMoves/>
+  <w:TrackFormatting/>
+  <w:PunctuationKerning/>
+  <w:ValidateAgainstSchemas/>
+  <w:SaveIfXMLInvalid>false</w:SaveIfXMLInvalid>
+  <w:IgnoreMixedContent>false</w:IgnoreMixedContent>
+  <w:AlwaysShowPlaceholderText>false</w:AlwaysShowPlaceholderText>
+  <w:DoNotPromoteQF/>
+  <w:LidThemeOther>EN-US</w:LidThemeOther>
+  <w:LidThemeAsian>X-NONE</w:LidThemeAsian>
+  <w:LidThemeComplexScript>X-NONE</w:LidThemeComplexScript>
+  <w:Compatibility>
+   <w:BreakWrappedTables/>
+   <w:SnapToGridInCell/>
+   <w:WrapTextWithPunct/>
+   <w:UseAsianBreakRules/>
+   <w:DontGrowAutofit/>
+   <w:SplitPgBreakAndParaMark/>
+   <w:EnableOpenTypeKerning/>
+   <w:DontFlipMirrorIndents/>
+   <w:OverrideTableStyleHps/>
+  </w:Compatibility>
+  <w:DoNotOptimizeForBrowser/>
+  <m:mathPr>
+   <m:mathFont m:val="Cambria Math"/>
+   <m:brkBin m:val="before"/>
+   <m:brkBinSub m:val="&#45;-"/>
+   <m:smallFrac m:val="off"/>
+   <m:dispDef/>
+   <m:lMargin m:val="0"/>
+   <m:rMargin m:val="0"/>
+   <m:defJc m:val="centerGroup"/>
+   <m:wrapIndent m:val="1440"/>
+   <m:intLim m:val="subSup"/>
+   <m:naryLim m:val="undOvr"/>
+  </m:mathPr></w:WordDocument>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <w:LatentStyles DefLockedState="false" DefUnhideWhenUsed="false"
+  DefSemiHidden="false" DefQFormat="false" DefPriority="99"
+  LatentStyleCount="371">
+  <w:LsdException Locked="false" Priority="0" QFormat="true" Name="Normal"/>
+  <w:LsdException Locked="false" Priority="9" QFormat="true" Name="heading 1"/>
+  <w:LsdException Locked="false" Priority="9" SemiHidden="true"
+   UnhideWhenUsed="true" QFormat="true" Name="heading 2"/>
+  <w:LsdException Locked="false" Priority="9" SemiHidden="true"
+   UnhideWhenUsed="true" QFormat="true" Name="heading 3"/>
+  <w:LsdException Locked="false" Priority="9" SemiHidden="true"
+   UnhideWhenUsed="true" QFormat="true" Name="heading 4"/>
+  <w:LsdException Locked="false" Priority="9" SemiHidden="true"
+   UnhideWhenUsed="true" QFormat="true" Name="heading 5"/>
+  <w:LsdException Locked="false" Priority="9" SemiHidden="true"
+   UnhideWhenUsed="true" QFormat="true" Name="heading 6"/>
+  <w:LsdException Locked="false" Priority="9" SemiHidden="true"
+   UnhideWhenUsed="true" QFormat="true" Name="heading 7"/>
+  <w:LsdException Locked="false" Priority="9" SemiHidden="true"
+   UnhideWhenUsed="true" QFormat="true" Name="heading 8"/>
+  <w:LsdException Locked="false" Priority="9" SemiHidden="true"
+   UnhideWhenUsed="true" QFormat="true" Name="heading 9"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="index 1"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="index 2"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="index 3"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="index 4"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="index 5"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="index 6"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="index 7"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="index 8"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="index 9"/>
+  <w:LsdException Locked="false" Priority="39" SemiHidden="true"
+   UnhideWhenUsed="true" Name="toc 1"/>
+  <w:LsdException Locked="false" Priority="39" SemiHidden="true"
+   UnhideWhenUsed="true" Name="toc 2"/>
+  <w:LsdException Locked="false" Priority="39" SemiHidden="true"
+   UnhideWhenUsed="true" Name="toc 3"/>
+  <w:LsdException Locked="false" Priority="39" SemiHidden="true"
+   UnhideWhenUsed="true" Name="toc 4"/>
+  <w:LsdException Locked="false" Priority="39" SemiHidden="true"
+   UnhideWhenUsed="true" Name="toc 5"/>
+  <w:LsdException Locked="false" Priority="39" SemiHidden="true"
+   UnhideWhenUsed="true" Name="toc 6"/>
+  <w:LsdException Locked="false" Priority="39" SemiHidden="true"
+   UnhideWhenUsed="true" Name="toc 7"/>
+  <w:LsdException Locked="false" Priority="39" SemiHidden="true"
+   UnhideWhenUsed="true" Name="toc 8"/>
+  <w:LsdException Locked="false" Priority="39" SemiHidden="true"
+   UnhideWhenUsed="true" Name="toc 9"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Normal Indent"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="footnote text"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="annotation text"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="header"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="footer"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="index heading"/>
+  <w:LsdException Locked="false" Priority="35" SemiHidden="true"
+   UnhideWhenUsed="true" QFormat="true" Name="caption"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="table of figures"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="envelope address"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="envelope return"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="footnote reference"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="annotation reference"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="line number"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="page number"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="endnote reference"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="endnote text"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="table of authorities"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="macro"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="toa heading"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="List"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="List Bullet"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="List Number"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="List 2"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="List 3"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="List 4"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="List 5"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="List Bullet 2"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="List Bullet 3"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="List Bullet 4"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="List Bullet 5"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="List Number 2"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="List Number 3"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="List Number 4"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="List Number 5"/>
+  <w:LsdException Locked="false" Priority="10" QFormat="true" Name="Title"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Closing"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Signature"/>
+  <w:LsdException Locked="false" Priority="1" SemiHidden="true"
+   UnhideWhenUsed="true" Name="Default Paragraph Font"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Body Text"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Body Text Indent"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="List Continue"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="List Continue 2"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="List Continue 3"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="List Continue 4"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="List Continue 5"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Message Header"/>
+  <w:LsdException Locked="false" Priority="11" QFormat="true" Name="Subtitle"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Salutation"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Date"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Body Text First Indent"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Body Text First Indent 2"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Note Heading"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Body Text 2"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Body Text 3"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Body Text Indent 2"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Body Text Indent 3"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Block Text"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Hyperlink"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="FollowedHyperlink"/>
+  <w:LsdException Locked="false" Priority="22" QFormat="true" Name="Strong"/>
+  <w:LsdException Locked="false" Priority="20" QFormat="true" Name="Emphasis"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Document Map"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Plain Text"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="E-mail Signature"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="HTML Top of Form"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="HTML Bottom of Form"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Normal (Web)"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="HTML Acronym"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="HTML Address"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="HTML Cite"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="HTML Code"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="HTML Definition"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="HTML Keyboard"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="HTML Preformatted"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="HTML Sample"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="HTML Typewriter"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="HTML Variable"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Normal Table"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="annotation subject"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="No List"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Outline List 1"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Outline List 2"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Outline List 3"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Table Simple 1"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Table Simple 2"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Table Simple 3"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Table Classic 1"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Table Classic 2"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Table Classic 3"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Table Classic 4"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Table Colorful 1"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Table Colorful 2"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Table Colorful 3"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Table Columns 1"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Table Columns 2"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Table Columns 3"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Table Columns 4"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Table Columns 5"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Table Grid 1"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Table Grid 2"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Table Grid 3"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Table Grid 4"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Table Grid 5"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Table Grid 6"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Table Grid 7"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Table Grid 8"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Table List 1"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Table List 2"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Table List 3"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Table List 4"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Table List 5"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Table List 6"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Table List 7"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Table List 8"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Table 3D effects 1"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Table 3D effects 2"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Table 3D effects 3"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Table Contemporary"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Table Elegant"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Table Professional"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Table Subtle 1"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Table Subtle 2"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Table Web 1"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Table Web 2"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Table Web 3"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Balloon Text"/>
+  <w:LsdException Locked="false" Priority="39" Name="Table Grid"/>
+  <w:LsdException Locked="false" SemiHidden="true" UnhideWhenUsed="true"
+   Name="Table Theme"/>
+  <w:LsdException Locked="false" SemiHidden="true" Name="Placeholder Text"/>
+  <w:LsdException Locked="false" Priority="1" QFormat="true" Name="No Spacing"/>
+  <w:LsdException Locked="false" Priority="60" Name="Light Shading"/>
+  <w:LsdException Locked="false" Priority="61" Name="Light List"/>
+  <w:LsdException Locked="false" Priority="62" Name="Light Grid"/>
+  <w:LsdException Locked="false" Priority="63" Name="Medium Shading 1"/>
+  <w:LsdException Locked="false" Priority="64" Name="Medium Shading 2"/>
+  <w:LsdException Locked="false" Priority="65" Name="Medium List 1"/>
+  <w:LsdException Locked="false" Priority="66" Name="Medium List 2"/>
+  <w:LsdException Locked="false" Priority="67" Name="Medium Grid 1"/>
+  <w:LsdException Locked="false" Priority="68" Name="Medium Grid 2"/>
+  <w:LsdException Locked="false" Priority="69" Name="Medium Grid 3"/>
+  <w:LsdException Locked="false" Priority="70" Name="Dark List"/>
+  <w:LsdException Locked="false" Priority="71" Name="Colorful Shading"/>
+  <w:LsdException Locked="false" Priority="72" Name="Colorful List"/>
+  <w:LsdException Locked="false" Priority="73" Name="Colorful Grid"/>
+  <w:LsdException Locked="false" Priority="60" Name="Light Shading Accent 1"/>
+  <w:LsdException Locked="false" Priority="61" Name="Light List Accent 1"/>
+  <w:LsdException Locked="false" Priority="62" Name="Light Grid Accent 1"/>
+  <w:LsdException Locked="false" Priority="63" Name="Medium Shading 1 Accent 1"/>
+  <w:LsdException Locked="false" Priority="64" Name="Medium Shading 2 Accent 1"/>
+  <w:LsdException Locked="false" Priority="65" Name="Medium List 1 Accent 1"/>
+  <w:LsdException Locked="false" SemiHidden="true" Name="Revision"/>
+  <w:LsdException Locked="false" Priority="34" QFormat="true"
+   Name="List Paragraph"/>
+  <w:LsdException Locked="false" Priority="29" QFormat="true" Name="Quote"/>
+  <w:LsdException Locked="false" Priority="30" QFormat="true"
+   Name="Intense Quote"/>
+  <w:LsdException Locked="false" Priority="66" Name="Medium List 2 Accent 1"/>
+  <w:LsdException Locked="false" Priority="67" Name="Medium Grid 1 Accent 1"/>
+  <w:LsdException Locked="false" Priority="68" Name="Medium Grid 2 Accent 1"/>
+  <w:LsdException Locked="false" Priority="69" Name="Medium Grid 3 Accent 1"/>
+  <w:LsdException Locked="false" Priority="70" Name="Dark List Accent 1"/>
+  <w:LsdException Locked="false" Priority="71" Name="Colorful Shading Accent 1"/>
+  <w:LsdException Locked="false" Priority="72" Name="Colorful List Accent 1"/>
+  <w:LsdException Locked="false" Priority="73" Name="Colorful Grid Accent 1"/>
+  <w:LsdException Locked="false" Priority="60" Name="Light Shading Accent 2"/>
+  <w:LsdException Locked="false" Priority="61" Name="Light List Accent 2"/>
+  <w:LsdException Locked="false" Priority="62" Name="Light Grid Accent 2"/>
+  <w:LsdException Locked="false" Priority="63" Name="Medium Shading 1 Accent 2"/>
+  <w:LsdException Locked="false" Priority="64" Name="Medium Shading 2 Accent 2"/>
+  <w:LsdException Locked="false" Priority="65" Name="Medium List 1 Accent 2"/>
+  <w:LsdException Locked="false" Priority="66" Name="Medium List 2 Accent 2"/>
+  <w:LsdException Locked="false" Priority="67" Name="Medium Grid 1 Accent 2"/>
+  <w:LsdException Locked="false" Priority="68" Name="Medium Grid 2 Accent 2"/>
+  <w:LsdException Locked="false" Priority="69" Name="Medium Grid 3 Accent 2"/>
+  <w:LsdException Locked="false" Priority="70" Name="Dark List Accent 2"/>
+  <w:LsdException Locked="false" Priority="71" Name="Colorful Shading Accent 2"/>
+  <w:LsdException Locked="false" Priority="72" Name="Colorful List Accent 2"/>
+  <w:LsdException Locked="false" Priority="73" Name="Colorful Grid Accent 2"/>
+  <w:LsdException Locked="false" Priority="60" Name="Light Shading Accent 3"/>
+  <w:LsdException Locked="false" Priority="61" Name="Light List Accent 3"/>
+  <w:LsdException Locked="false" Priority="62" Name="Light Grid Accent 3"/>
+  <w:LsdException Locked="false" Priority="63" Name="Medium Shading 1 Accent 3"/>
+  <w:LsdException Locked="false" Priority="64" Name="Medium Shading 2 Accent 3"/>
+  <w:LsdException Locked="false" Priority="65" Name="Medium List 1 Accent 3"/>
+  <w:LsdException Locked="false" Priority="66" Name="Medium List 2 Accent 3"/>
+  <w:LsdException Locked="false" Priority="67" Name="Medium Grid 1 Accent 3"/>
+  <w:LsdException Locked="false" Priority="68" Name="Medium Grid 2 Accent 3"/>
+  <w:LsdException Locked="false" Priority="69" Name="Medium Grid 3 Accent 3"/>
+  <w:LsdException Locked="false" Priority="70" Name="Dark List Accent 3"/>
+  <w:LsdException Locked="false" Priority="71" Name="Colorful Shading Accent 3"/>
+  <w:LsdException Locked="false" Priority="72" Name="Colorful List Accent 3"/>
+  <w:LsdException Locked="false" Priority="73" Name="Colorful Grid Accent 3"/>
+  <w:LsdException Locked="false" Priority="60" Name="Light Shading Accent 4"/>
+  <w:LsdException Locked="false" Priority="61" Name="Light List Accent 4"/>
+  <w:LsdException Locked="false" Priority="62" Name="Light Grid Accent 4"/>
+  <w:LsdException Locked="false" Priority="63" Name="Medium Shading 1 Accent 4"/>
+  <w:LsdException Locked="false" Priority="64" Name="Medium Shading 2 Accent 4"/>
+  <w:LsdException Locked="false" Priority="65" Name="Medium List 1 Accent 4"/>
+  <w:LsdException Locked="false" Priority="66" Name="Medium List 2 Accent 4"/>
+  <w:LsdException Locked="false" Priority="67" Name="Medium Grid 1 Accent 4"/>
+  <w:LsdException Locked="false" Priority="68" Name="Medium Grid 2 Accent 4"/>
+  <w:LsdException Locked="false" Priority="69" Name="Medium Grid 3 Accent 4"/>
+  <w:LsdException Locked="false" Priority="70" Name="Dark List Accent 4"/>
+  <w:LsdException Locked="false" Priority="71" Name="Colorful Shading Accent 4"/>
+  <w:LsdException Locked="false" Priority="72" Name="Colorful List Accent 4"/>
+  <w:LsdException Locked="false" Priority="73" Name="Colorful Grid Accent 4"/>
+  <w:LsdException Locked="false" Priority="60" Name="Light Shading Accent 5"/>
+  <w:LsdException Locked="false" Priority="61" Name="Light List Accent 5"/>
+  <w:LsdException Locked="false" Priority="62" Name="Light Grid Accent 5"/>
+  <w:LsdException Locked="false" Priority="63" Name="Medium Shading 1 Accent 5"/>
+  <w:LsdException Locked="false" Priority="64" Name="Medium Shading 2 Accent 5"/>
+  <w:LsdException Locked="false" Priority="65" Name="Medium List 1 Accent 5"/>
+  <w:LsdException Locked="false" Priority="66" Name="Medium List 2 Accent 5"/>
+  <w:LsdException Locked="false" Priority="67" Name="Medium Grid 1 Accent 5"/>
+  <w:LsdException Locked="false" Priority="68" Name="Medium Grid 2 Accent 5"/>
+  <w:LsdException Locked="false" Priority="69" Name="Medium Grid 3 Accent 5"/>
+  <w:LsdException Locked="false" Priority="70" Name="Dark List Accent 5"/>
+  <w:LsdException Locked="false" Priority="71" Name="Colorful Shading Accent 5"/>
+  <w:LsdException Locked="false" Priority="72" Name="Colorful List Accent 5"/>
+  <w:LsdException Locked="false" Priority="73" Name="Colorful Grid Accent 5"/>
+  <w:LsdException Locked="false" Priority="60" Name="Light Shading Accent 6"/>
+  <w:LsdException Locked="false" Priority="61" Name="Light List Accent 6"/>
+  <w:LsdException Locked="false" Priority="62" Name="Light Grid Accent 6"/>
+  <w:LsdException Locked="false" Priority="63" Name="Medium Shading 1 Accent 6"/>
+  <w:LsdException Locked="false" Priority="64" Name="Medium Shading 2 Accent 6"/>
+  <w:LsdException Locked="false" Priority="65" Name="Medium List 1 Accent 6"/>
+  <w:LsdException Locked="false" Priority="66" Name="Medium List 2 Accent 6"/>
+  <w:LsdException Locked="false" Priority="67" Name="Medium Grid 1 Accent 6"/>
+  <w:LsdException Locked="false" Priority="68" Name="Medium Grid 2 Accent 6"/>
+  <w:LsdException Locked="false" Priority="69" Name="Medium Grid 3 Accent 6"/>
+  <w:LsdException Locked="false" Priority="70" Name="Dark List Accent 6"/>
+  <w:LsdException Locked="false" Priority="71" Name="Colorful Shading Accent 6"/>
+  <w:LsdException Locked="false" Priority="72" Name="Colorful List Accent 6"/>
+  <w:LsdException Locked="false" Priority="73" Name="Colorful Grid Accent 6"/>
+  <w:LsdException Locked="false" Priority="19" QFormat="true"
+   Name="Subtle Emphasis"/>
+  <w:LsdException Locked="false" Priority="21" QFormat="true"
+   Name="Intense Emphasis"/>
+  <w:LsdException Locked="false" Priority="31" QFormat="true"
+   Name="Subtle Reference"/>
+  <w:LsdException Locked="false" Priority="32" QFormat="true"
+   Name="Intense Reference"/>
+  <w:LsdException Locked="false" Priority="33" QFormat="true" Name="Book Title"/>
+  <w:LsdException Locked="false" Priority="37" SemiHidden="true"
+   UnhideWhenUsed="true" Name="Bibliography"/>
+  <w:LsdException Locked="false" Priority="39" SemiHidden="true"
+   UnhideWhenUsed="true" QFormat="true" Name="TOC Heading"/>
+  <w:LsdException Locked="false" Priority="41" Name="Plain Table 1"/>
+  <w:LsdException Locked="false" Priority="42" Name="Plain Table 2"/>
+  <w:LsdException Locked="false" Priority="43" Name="Plain Table 3"/>
+  <w:LsdException Locked="false" Priority="44" Name="Plain Table 4"/>
+  <w:LsdException Locked="false" Priority="45" Name="Plain Table 5"/>
+  <w:LsdException Locked="false" Priority="40" Name="Grid Table Light"/>
+  <w:LsdException Locked="false" Priority="46" Name="Grid Table 1 Light"/>
+  <w:LsdException Locked="false" Priority="47" Name="Grid Table 2"/>
+  <w:LsdException Locked="false" Priority="48" Name="Grid Table 3"/>
+  <w:LsdException Locked="false" Priority="49" Name="Grid Table 4"/>
+  <w:LsdException Locked="false" Priority="50" Name="Grid Table 5 Dark"/>
+  <w:LsdException Locked="false" Priority="51" Name="Grid Table 6 Colorful"/>
+  <w:LsdException Locked="false" Priority="52" Name="Grid Table 7 Colorful"/>
+  <w:LsdException Locked="false" Priority="46"
+   Name="Grid Table 1 Light Accent 1"/>
+  <w:LsdException Locked="false" Priority="47" Name="Grid Table 2 Accent 1"/>
+  <w:LsdException Locked="false" Priority="48" Name="Grid Table 3 Accent 1"/>
+  <w:LsdException Locked="false" Priority="49" Name="Grid Table 4 Accent 1"/>
+  <w:LsdException Locked="false" Priority="50" Name="Grid Table 5 Dark Accent 1"/>
+  <w:LsdException Locked="false" Priority="51"
+   Name="Grid Table 6 Colorful Accent 1"/>
+  <w:LsdException Locked="false" Priority="52"
+   Name="Grid Table 7 Colorful Accent 1"/>
+  <w:LsdException Locked="false" Priority="46"
+   Name="Grid Table 1 Light Accent 2"/>
+  <w:LsdException Locked="false" Priority="47" Name="Grid Table 2 Accent 2"/>
+  <w:LsdException Locked="false" Priority="48" Name="Grid Table 3 Accent 2"/>
+  <w:LsdException Locked="false" Priority="49" Name="Grid Table 4 Accent 2"/>
+  <w:LsdException Locked="false" Priority="50" Name="Grid Table 5 Dark Accent 2"/>
+  <w:LsdException Locked="false" Priority="51"
+   Name="Grid Table 6 Colorful Accent 2"/>
+  <w:LsdException Locked="false" Priority="52"
+   Name="Grid Table 7 Colorful Accent 2"/>
+  <w:LsdException Locked="false" Priority="46"
+   Name="Grid Table 1 Light Accent 3"/>
+  <w:LsdException Locked="false" Priority="47" Name="Grid Table 2 Accent 3"/>
+  <w:LsdException Locked="false" Priority="48" Name="Grid Table 3 Accent 3"/>
+  <w:LsdException Locked="false" Priority="49" Name="Grid Table 4 Accent 3"/>
+  <w:LsdException Locked="false" Priority="50" Name="Grid Table 5 Dark Accent 3"/>
+  <w:LsdException Locked="false" Priority="51"
+   Name="Grid Table 6 Colorful Accent 3"/>
+  <w:LsdException Locked="false" Priority="52"
+   Name="Grid Table 7 Colorful Accent 3"/>
+  <w:LsdException Locked="false" Priority="46"
+   Name="Grid Table 1 Light Accent 4"/>
+  <w:LsdException Locked="false" Priority="47" Name="Grid Table 2 Accent 4"/>
+  <w:LsdException Locked="false" Priority="48" Name="Grid Table 3 Accent 4"/>
+  <w:LsdException Locked="false" Priority="49" Name="Grid Table 4 Accent 4"/>
+  <w:LsdException Locked="false" Priority="50" Name="Grid Table 5 Dark Accent 4"/>
+  <w:LsdException Locked="false" Priority="51"
+   Name="Grid Table 6 Colorful Accent 4"/>
+  <w:LsdException Locked="false" Priority="52"
+   Name="Grid Table 7 Colorful Accent 4"/>
+  <w:LsdException Locked="false" Priority="46"
+   Name="Grid Table 1 Light Accent 5"/>
+  <w:LsdException Locked="false" Priority="47" Name="Grid Table 2 Accent 5"/>
+  <w:LsdException Locked="false" Priority="48" Name="Grid Table 3 Accent 5"/>
+  <w:LsdException Locked="false" Priority="49" Name="Grid Table 4 Accent 5"/>
+  <w:LsdException Locked="false" Priority="50" Name="Grid Table 5 Dark Accent 5"/>
+  <w:LsdException Locked="false" Priority="51"
+   Name="Grid Table 6 Colorful Accent 5"/>
+  <w:LsdException Locked="false" Priority="52"
+   Name="Grid Table 7 Colorful Accent 5"/>
+  <w:LsdException Locked="false" Priority="46"
+   Name="Grid Table 1 Light Accent 6"/>
+  <w:LsdException Locked="false" Priority="47" Name="Grid Table 2 Accent 6"/>
+  <w:LsdException Locked="false" Priority="48" Name="Grid Table 3 Accent 6"/>
+  <w:LsdException Locked="false" Priority="49" Name="Grid Table 4 Accent 6"/>
+  <w:LsdException Locked="false" Priority="50" Name="Grid Table 5 Dark Accent 6"/>
+  <w:LsdException Locked="false" Priority="51"
+   Name="Grid Table 6 Colorful Accent 6"/>
+  <w:LsdException Locked="false" Priority="52"
+   Name="Grid Table 7 Colorful Accent 6"/>
+  <w:LsdException Locked="false" Priority="46" Name="List Table 1 Light"/>
+  <w:LsdException Locked="false" Priority="47" Name="List Table 2"/>
+  <w:LsdException Locked="false" Priority="48" Name="List Table 3"/>
+  <w:LsdException Locked="false" Priority="49" Name="List Table 4"/>
+  <w:LsdException Locked="false" Priority="50" Name="List Table 5 Dark"/>
+  <w:LsdException Locked="false" Priority="51" Name="List Table 6 Colorful"/>
+  <w:LsdException Locked="false" Priority="52" Name="List Table 7 Colorful"/>
+  <w:LsdException Locked="false" Priority="46"
+   Name="List Table 1 Light Accent 1"/>
+  <w:LsdException Locked="false" Priority="47" Name="List Table 2 Accent 1"/>
+  <w:LsdException Locked="false" Priority="48" Name="List Table 3 Accent 1"/>
+  <w:LsdException Locked="false" Priority="49" Name="List Table 4 Accent 1"/>
+  <w:LsdException Locked="false" Priority="50" Name="List Table 5 Dark Accent 1"/>
+  <w:LsdException Locked="false" Priority="51"
+   Name="List Table 6 Colorful Accent 1"/>
+  <w:LsdException Locked="false" Priority="52"
+   Name="List Table 7 Colorful Accent 1"/>
+  <w:LsdException Locked="false" Priority="46"
+   Name="List Table 1 Light Accent 2"/>
+  <w:LsdException Locked="false" Priority="47" Name="List Table 2 Accent 2"/>
+  <w:LsdException Locked="false" Priority="48" Name="List Table 3 Accent 2"/>
+  <w:LsdException Locked="false" Priority="49" Name="List Table 4 Accent 2"/>
+  <w:LsdException Locked="false" Priority="50" Name="List Table 5 Dark Accent 2"/>
+  <w:LsdException Locked="false" Priority="51"
+   Name="List Table 6 Colorful Accent 2"/>
+  <w:LsdException Locked="false" Priority="52"
+   Name="List Table 7 Colorful Accent 2"/>
+  <w:LsdException Locked="false" Priority="46"
+   Name="List Table 1 Light Accent 3"/>
+  <w:LsdException Locked="false" Priority="47" Name="List Table 2 Accent 3"/>
+  <w:LsdException Locked="false" Priority="48" Name="List Table 3 Accent 3"/>
+  <w:LsdException Locked="false" Priority="49" Name="List Table 4 Accent 3"/>
+  <w:LsdException Locked="false" Priority="50" Name="List Table 5 Dark Accent 3"/>
+  <w:LsdException Locked="false" Priority="51"
+   Name="List Table 6 Colorful Accent 3"/>
+  <w:LsdException Locked="false" Priority="52"
+   Name="List Table 7 Colorful Accent 3"/>
+  <w:LsdException Locked="false" Priority="46"
+   Name="List Table 1 Light Accent 4"/>
+  <w:LsdException Locked="false" Priority="47" Name="List Table 2 Accent 4"/>
+  <w:LsdException Locked="false" Priority="48" Name="List Table 3 Accent 4"/>
+  <w:LsdException Locked="false" Priority="49" Name="List Table 4 Accent 4"/>
+  <w:LsdException Locked="false" Priority="50" Name="List Table 5 Dark Accent 4"/>
+  <w:LsdException Locked="false" Priority="51"
+   Name="List Table 6 Colorful Accent 4"/>
+  <w:LsdException Locked="false" Priority="52"
+   Name="List Table 7 Colorful Accent 4"/>
+  <w:LsdException Locked="false" Priority="46"
+   Name="List Table 1 Light Accent 5"/>
+  <w:LsdException Locked="false" Priority="47" Name="List Table 2 Accent 5"/>
+  <w:LsdException Locked="false" Priority="48" Name="List Table 3 Accent 5"/>
+  <w:LsdException Locked="false" Priority="49" Name="List Table 4 Accent 5"/>
+  <w:LsdException Locked="false" Priority="50" Name="List Table 5 Dark Accent 5"/>
+  <w:LsdException Locked="false" Priority="51"
+   Name="List Table 6 Colorful Accent 5"/>
+  <w:LsdException Locked="false" Priority="52"
+   Name="List Table 7 Colorful Accent 5"/>
+  <w:LsdException Locked="false" Priority="46"
+   Name="List Table 1 Light Accent 6"/>
+  <w:LsdException Locked="false" Priority="47" Name="List Table 2 Accent 6"/>
+  <w:LsdException Locked="false" Priority="48" Name="List Table 3 Accent 6"/>
+  <w:LsdException Locked="false" Priority="49" Name="List Table 4 Accent 6"/>
+  <w:LsdException Locked="false" Priority="50" Name="List Table 5 Dark Accent 6"/>
+  <w:LsdException Locked="false" Priority="51"
+   Name="List Table 6 Colorful Accent 6"/>
+  <w:LsdException Locked="false" Priority="52"
+   Name="List Table 7 Colorful Accent 6"/>
+ </w:LatentStyles>
+</xml><![endif]--><!--[if gte mso 10]>
+<style>
+ /* Style Definitions */
+ table.MsoNormalTable
+	{mso-style-name:"Table Normal";
+	mso-tstyle-rowband-size:0;
+	mso-tstyle-colband-size:0;
+	mso-style-noshow:yes;
+	mso-style-priority:99;
+	mso-style-parent:"";
+	mso-padding-alt:0in 5.4pt 0in 5.4pt;
+	mso-para-margin:0in;
+	mso-para-margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:11.0pt;
+	font-family:"Calibri",sans-serif;
+	mso-ascii-font-family:Calibri;
+	mso-ascii-theme-font:minor-latin;
+	mso-hansi-font-family:Calibri;
+	mso-hansi-theme-font:minor-latin;
+	mso-bidi-font-family:"Times New Roman";
+	mso-bidi-theme-font:minor-bidi;}
+</style>
+<![endif]-->
+    <blockquote type="cite" cite="mid:20180525153744.2b53c449@xeon-e3">
+      <pre wrap="">
+
+
+</pre>
+      <blockquote type="cite">
+        <pre wrap="">+int failover_slave_unregister(struct net_device *slave_dev)
 +{
 +	struct net_device *failover_dev;
 +	struct failover_ops *fops;
@@ -325,213 +752,21 @@ index 000000000000..4a92a98ccce9
 +
 +	ASSERT_RTNL();
 +
-+	failover_dev = failover_get_bymac(slave_dev->perm_addr, &fops);
++	failover_dev = failover_get_bymac(slave_dev-&gt;perm_addr, &amp;fops);
 +	if (!failover_dev)
 +		goto done;
-+
-+	if (fops && fops->slave_pre_unregister &&
-+	    fops->slave_pre_unregister(slave_dev, failover_dev))
-+		goto done;
-+
-+	netdev_rx_handler_unregister(slave_dev);
-+	netdev_upper_dev_unlink(slave_dev, failover_dev);
-+	slave_dev->priv_flags &= ~IFF_FAILOVER_SLAVE;
-+
-+	if (fops && fops->slave_unregister &&
-+	    !fops->slave_unregister(slave_dev, failover_dev))
-+		return NOTIFY_OK;
-+
-+done:
-+	return NOTIFY_DONE;
-+}
-+EXPORT_SYMBOL_GPL(failover_slave_unregister);
-+
-+static int failover_slave_link_change(struct net_device *slave_dev)
-+{
-+	struct net_device *failover_dev;
-+	struct failover_ops *fops;
-+
-+	if (!netif_is_failover_slave(slave_dev))
-+		goto done;
-+
-+	ASSERT_RTNL();
-+
-+	failover_dev = failover_get_bymac(slave_dev->perm_addr, &fops);
-+	if (!failover_dev)
-+		goto done;
-+
-+	if (!netif_running(failover_dev))
-+		goto done;
-+
-+	if (fops && fops->slave_link_change &&
-+	    !fops->slave_link_change(slave_dev, failover_dev))
-+		return NOTIFY_OK;
-+
-+done:
-+	return NOTIFY_DONE;
-+}
-+
-+static int failover_slave_name_change(struct net_device *slave_dev)
-+{
-+	struct net_device *failover_dev;
-+	struct failover_ops *fops;
-+
-+	if (!netif_is_failover_slave(slave_dev))
-+		goto done;
-+
-+	ASSERT_RTNL();
-+
-+	failover_dev = failover_get_bymac(slave_dev->perm_addr, &fops);
-+	if (!failover_dev)
-+		goto done;
-+
-+	if (!netif_running(failover_dev))
-+		goto done;
-+
-+	if (fops && fops->slave_name_change &&
-+	    !fops->slave_name_change(slave_dev, failover_dev))
-+		return NOTIFY_OK;
-+
-+done:
-+	return NOTIFY_DONE;
-+}
-+
-+static int
-+failover_event(struct notifier_block *this, unsigned long event, void *ptr)
-+{
-+	struct net_device *event_dev = netdev_notifier_info_to_dev(ptr);
-+
-+	/* Skip parent events */
-+	if (netif_is_failover(event_dev))
-+		return NOTIFY_DONE;
-+
-+	switch (event) {
-+	case NETDEV_REGISTER:
-+		return failover_slave_register(event_dev);
-+	case NETDEV_UNREGISTER:
-+		return failover_slave_unregister(event_dev);
-+	case NETDEV_UP:
-+	case NETDEV_DOWN:
-+	case NETDEV_CHANGE:
-+		return failover_slave_link_change(event_dev);
-+	case NETDEV_CHANGENAME:
-+		return failover_slave_name_change(event_dev);
-+	default:
-+		return NOTIFY_DONE;
-+	}
-+}
-+
-+static struct notifier_block failover_notifier = {
-+	.notifier_call = failover_event,
-+};
-+
-+static void
-+failover_existing_slave_register(struct net_device *failover_dev)
-+{
-+	struct net *net = dev_net(failover_dev);
-+	struct net_device *dev;
-+
-+	rtnl_lock();
-+	for_each_netdev(net, dev) {
-+		if (netif_is_failover(dev))
-+			continue;
-+		if (ether_addr_equal(failover_dev->perm_addr, dev->perm_addr))
-+			failover_slave_register(dev);
-+	}
-+	rtnl_unlock();
-+}
-+
-+/**
-+ * failover_register - Register a failover instance
-+ *
-+ * @dev: failover netdev
-+ * @ops: failover ops
-+ *
-+ * Allocate and register a failover instance for a failover netdev. ops
-+ * provides handlers for slave device register/unregister/link change/
-+ * name change events.
-+ *
-+ * Return: pointer to failover instance
-+ */
-+struct failover *failover_register(struct net_device *dev,
-+				   struct failover_ops *ops)
-+{
-+	struct failover *failover;
-+
-+	if (dev->type != ARPHRD_ETHER)
-+		return ERR_PTR(-EINVAL);
-+
-+	failover = kzalloc(sizeof(*failover), GFP_KERNEL);
-+	if (!failover)
-+		return ERR_PTR(-ENOMEM);
-+
-+	rcu_assign_pointer(failover->ops, ops);
-+	dev_hold(dev);
-+	dev->priv_flags |= IFF_FAILOVER;
-+	rcu_assign_pointer(failover->failover_dev, dev);
-+
-+	spin_lock(&failover_lock);
-+	list_add_tail(&failover->list, &failover_list);
-+	spin_unlock(&failover_lock);
-+
-+	netdev_info(dev, "failover master:%s registered\n", dev->name);
-+
-+	failover_existing_slave_register(dev);
-+
-+	return failover;
-+}
-+EXPORT_SYMBOL_GPL(failover_register);
-+
-+/**
-+ * failover_unregister - Unregister a failover instance
-+ *
-+ * @failover: pointer to failover instance
-+ *
-+ * Unregisters and frees a failover instance.
-+ */
-+void failover_unregister(struct failover *failover)
-+{
-+	struct net_device *failover_dev;
-+
-+	failover_dev = rcu_dereference(failover->failover_dev);
-+
-+	netdev_info(failover_dev, "failover master:%s unregistered\n",
-+		    failover_dev->name);
-+
-+	failover_dev->priv_flags &= ~IFF_FAILOVER;
-+	dev_put(failover_dev);
-+
-+	spin_lock(&failover_lock);
-+	list_del(&failover->list);
-+	spin_unlock(&failover_lock);
-+
-+	kfree(failover);
-+}
-+EXPORT_SYMBOL_GPL(failover_unregister);
-+
-+static __init int
-+failover_init(void)
-+{
-+	register_netdevice_notifier(&failover_notifier);
-+
-+	return 0;
-+}
-+module_init(failover_init);
-+
-+static __exit
-+void failover_exit(void)
-+{
-+	unregister_netdevice_notifier(&failover_notifier);
-+}
-+module_exit(failover_exit);
-+
-+MODULE_DESCRIPTION("Generic failover infrastructure/interface");
-+MODULE_LICENSE("GPL v2");
--- 
-2.14.3
+</pre>
+      </blockquote>
+      <pre wrap="">
+Since the slave device must have a master device set already, why not use
+that instead of searching by MAC address on unregister or link change.
 
+</pre>
+    </blockquote>
+    <pre>We also need to get the fops(failover_ops)
+</pre>
+  </body>
+</html>
 
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+--------------1B0AD3C788667269D61CF141--
 
