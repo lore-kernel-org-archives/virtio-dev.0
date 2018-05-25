@@ -1,58 +1,115 @@
-Return-Path: virtio-dev-return-4180-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4184-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 888C758191DB
-	for <virtio-dev@lists.oasis-open.org>; Fri, 25 May 2018 04:04:36 -0700 (PDT)
+	by lists.oasis-open.org (Postfix) with ESMTP id 66CBE58191AB
+	for <virtio-dev@lists.oasis-open.org>; Fri, 25 May 2018 04:04:37 -0700 (PDT)
 From: Tiwei Bie <tiwei.bie@intel.com>
-Date: Fri, 25 May 2018 19:04:36 +0800
-Message-Id: <20180525110441.7185-1-tiwei.bie@intel.com>
-Subject: [virtio-dev] [PATCH v2 0/5] Support host notifiers in vhost-user
+Date: Fri, 25 May 2018 19:04:37 +0800
+Message-Id: <20180525110441.7185-2-tiwei.bie@intel.com>
+In-Reply-To: <20180525110441.7185-1-tiwei.bie@intel.com>
+References: <20180525110441.7185-1-tiwei.bie@intel.com>
+Subject: [virtio-dev] [PATCH v2 1/5] vhost: allow backends to filter memory sections
 To: mst@redhat.com, jasowang@redhat.com, qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org
 Cc: tiwei.bie@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-More details about this patch set can be found from:
+This patch introduces a vhost op for vhost backends to allow
+them to filter the memory sections that they can handle.
 
-http://lists.gnu.org/archive/html/qemu-devel/2018-04/msg01779.html
-http://lists.gnu.org/archive/html/qemu-devel/2018-04/msg04626.html
+Signed-off-by: Tiwei Bie <tiwei.bie@intel.com>
+---
+ hw/virtio/vhost-user.c            | 11 +++++++++++
+ hw/virtio/vhost.c                 |  9 +++++++--
+ include/hw/virtio/vhost-backend.h |  4 ++++
+ 3 files changed, 22 insertions(+), 2 deletions(-)
 
-v1 -> v2:
-- Drop the VHOST_USER_PROTOCOL_F_SLAVE_SEND_FD patch; (MST)
-- In PATCH 2/5, for net/vhost-user, only save VhostUserState
-  in queue index 0, i.e. where `chr` is saved;
-- In PATCH 4/5, check VHOST_USER_PROTOCOL_F_HOST_NOTIFIER
-  before sending msg (including fd) to master; (MST)
-
-Tiwei Bie (5):
-  vhost: allow backends to filter memory sections
-  vhost-user: introduce shared vhost-user state
-  vhost-user: support registering external host notifiers
-  libvhost-user: support host notifier
-  vhost-user-bridge: support host notifier
-
- backends/cryptodev-vhost-user.c       |  20 +++-
- contrib/libvhost-user/libvhost-user.c |  80 +++++++++++--
- contrib/libvhost-user/libvhost-user.h |  31 +++++
- docs/interop/vhost-user.txt           |  33 ++++++
- hw/block/vhost-user-blk.c             |  22 +++-
- hw/scsi/vhost-user-scsi.c             |  20 +++-
- hw/virtio/Makefile.objs               |   2 +-
- hw/virtio/vhost-stub.c                |  10 ++
- hw/virtio/vhost-user.c                | 165 ++++++++++++++++++++++++--
- hw/virtio/vhost.c                     |   9 +-
- include/hw/virtio/vhost-backend.h     |   4 +
- include/hw/virtio/vhost-user-blk.h    |   2 +
- include/hw/virtio/vhost-user-scsi.h   |   2 +
- include/hw/virtio/vhost-user.h        |  28 +++++
- net/vhost-user.c                      |  57 ++++++---
- tests/vhost-user-bridge.c             |  98 ++++++++++++++-
- 16 files changed, 542 insertions(+), 41 deletions(-)
- create mode 100644 include/hw/virtio/vhost-user.h
-
+diff --git a/hw/virtio/vhost-user.c b/hw/virtio/vhost-user.c
+index ca554d4ff1..da0756effe 100644
+--- a/hw/virtio/vhost-user.c
++++ b/hw/virtio/vhost-user.c
+@@ -1620,6 +1620,16 @@ vhost_user_crypto_close_session(struct vhost_dev *dev, uint64_t session_id)
+     return 0;
+ }
+ 
++static bool vhost_user_mem_section_filter(struct vhost_dev *dev,
++                                          MemoryRegionSection *section)
++{
++    bool result;
++
++    result = memory_region_get_fd(section->mr) >= 0;
++
++    return result;
++}
++
+ const VhostOps user_ops = {
+         .backend_type = VHOST_BACKEND_TYPE_USER,
+         .vhost_backend_init = vhost_user_init,
+@@ -1650,4 +1660,5 @@ const VhostOps user_ops = {
+         .vhost_set_config = vhost_user_set_config,
+         .vhost_crypto_create_session = vhost_user_crypto_create_session,
+         .vhost_crypto_close_session = vhost_user_crypto_close_session,
++        .vhost_backend_mem_section_filter = vhost_user_mem_section_filter,
+ };
+diff --git a/hw/virtio/vhost.c b/hw/virtio/vhost.c
+index b08290036d..624ade9682 100644
+--- a/hw/virtio/vhost.c
++++ b/hw/virtio/vhost.c
+@@ -386,7 +386,7 @@ static int vhost_verify_ring_mappings(struct vhost_dev *dev,
+     return r;
+ }
+ 
+-static bool vhost_section(MemoryRegionSection *section)
++static bool vhost_section(struct vhost_dev *dev, MemoryRegionSection *section)
+ {
+     bool result;
+     bool log_dirty = memory_region_get_dirty_log_mask(section->mr) &
+@@ -399,6 +399,11 @@ static bool vhost_section(MemoryRegionSection *section)
+      */
+     result &= !log_dirty;
+ 
++    if (result && dev->vhost_ops->vhost_backend_mem_section_filter) {
++        result &=
++            dev->vhost_ops->vhost_backend_mem_section_filter(dev, section);
++    }
++
+     trace_vhost_section(section->mr->name, result);
+     return result;
+ }
+@@ -632,7 +637,7 @@ static void vhost_region_addnop(MemoryListener *listener,
+     struct vhost_dev *dev = container_of(listener, struct vhost_dev,
+                                          memory_listener);
+ 
+-    if (!vhost_section(section)) {
++    if (!vhost_section(dev, section)) {
+         return;
+     }
+     vhost_region_add_section(dev, section);
+diff --git a/include/hw/virtio/vhost-backend.h b/include/hw/virtio/vhost-backend.h
+index 5dac61f9ea..81283ec50f 100644
+--- a/include/hw/virtio/vhost-backend.h
++++ b/include/hw/virtio/vhost-backend.h
+@@ -101,6 +101,9 @@ typedef int (*vhost_crypto_create_session_op)(struct vhost_dev *dev,
+ typedef int (*vhost_crypto_close_session_op)(struct vhost_dev *dev,
+                                              uint64_t session_id);
+ 
++typedef bool (*vhost_backend_mem_section_filter_op)(struct vhost_dev *dev,
++                                                MemoryRegionSection *section);
++
+ typedef struct VhostOps {
+     VhostBackendType backend_type;
+     vhost_backend_init vhost_backend_init;
+@@ -138,6 +141,7 @@ typedef struct VhostOps {
+     vhost_set_config_op vhost_set_config;
+     vhost_crypto_create_session_op vhost_crypto_create_session;
+     vhost_crypto_close_session_op vhost_crypto_close_session;
++    vhost_backend_mem_section_filter_op vhost_backend_mem_section_filter;
+ } VhostOps;
+ 
+ extern const VhostOps user_ops;
 -- 
 2.17.0
 
