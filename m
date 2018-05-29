@@ -1,23 +1,23 @@
-Return-Path: virtio-dev-return-4194-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4195-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 3AAA358191B6
-	for <virtio-dev@lists.oasis-open.org>; Tue, 29 May 2018 06:28:36 -0700 (PDT)
-Date: Tue, 29 May 2018 16:28:23 +0300
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20180529162811-mutt-send-email-mst@kernel.org>
+	by lists.oasis-open.org (Postfix) with ESMTP id 46D3D58191B6
+	for <virtio-dev@lists.oasis-open.org>; Tue, 29 May 2018 06:41:08 -0700 (PDT)
+Date: Tue, 29 May 2018 21:41:22 +0800
+From: Tiwei Bie <tiwei.bie@intel.com>
+Message-ID: <20180529134121.GA12322@debian>
 References: <20180524164951.3102-1-tiwei.bie@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 In-Reply-To: <20180524164951.3102-1-tiwei.bie@intel.com>
 Subject: Re: [virtio-dev] [PATCH v4] content: support SR-IOV
-To: Tiwei Bie <tiwei.bie@intel.com>
-Cc: cohuck@redhat.com, stefanha@redhat.com, pbonzini@redhat.com, virtio-dev@lists.oasis-open.org, dan.daly@intel.com, alexander.h.duyck@intel.com, mark.d.rustad@intel.com, cunming.liang@intel.com, zhihong.wang@intel.com
+To: mst@redhat.com, cohuck@redhat.com, stefanha@redhat.com, pbonzini@redhat.com, virtio-dev@lists.oasis-open.org
+Cc: dan.daly@intel.com, alexander.h.duyck@intel.com, mark.d.rustad@intel.com, cunming.liang@intel.com, zhihong.wang@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
 On Fri, May 25, 2018 at 12:49:51AM +0800, Tiwei Bie wrote:
@@ -27,7 +27,10 @@ On Fri, May 25, 2018 at 12:49:51AM +0800, Tiwei Bie wrote:
 > Signed-off-by: Tiwei Bie <tiwei.bie@intel.com>
 > Fixes: https://github.com/oasis-tcs/virtio-spec/issues/11
 
-Acked-by: Michael S. Tsirkin <mst@redhat.com>
+Please start the voting for this proposal. Thanks!
+
+Best regards,
+Tiwei Bie
 
 > ---
 > More details can be found from this thread:
@@ -114,6 +117,7 @@ Acked-by: Michael S. Tsirkin <mst@redhat.com>
 > ---------------------------------------------------------------------
 > To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
 > For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+> 
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
