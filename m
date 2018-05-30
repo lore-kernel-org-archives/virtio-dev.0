@@ -1,148 +1,87 @@
-Return-Path: virtio-dev-return-4208-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4209-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 8EBEE58191C3
-	for <virtio-dev@lists.oasis-open.org>; Wed, 30 May 2018 09:22:12 -0700 (PDT)
-Date: Wed, 30 May 2018 19:22:10 +0300
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20180530192010-mutt-send-email-mst@kernel.org>
+	by lists.oasis-open.org (Postfix) with ESMTP id 607A758191C6
+	for <virtio-dev@lists.oasis-open.org>; Wed, 30 May 2018 09:44:22 -0700 (PDT)
+From: "Rustad, Mark D" <mark.d.rustad@intel.com>
+Date: Wed, 30 May 2018 16:44:07 +0000
+Message-ID: <414C18B1-30FA-4AC0-B47D-F0FBF9832737@intel.com>
 References: <20180530085521.26583-1-tiwei.bie@intel.com>
+ <20180530192010-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20180530192010-mutt-send-email-mst@kernel.org>
+Content-Language: en-US
+Content-Type: multipart/signed;
+	boundary="Apple-Mail=_FB4DAD04-C672-49EE-BC0F-E8F33D4948E7";
+	protocol="application/pgp-signature"; micalg=pgp-sha256
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20180530085521.26583-1-tiwei.bie@intel.com>
 Subject: [virtio-dev] Re: [PATCH] virtio_pci: support enabling VFs
-To: Tiwei Bie <tiwei.bie@intel.com>
-Cc: bhelgaas@google.com, virtualization@lists.linux-foundation.org, linux-kernel@vger.kernel.org, virtio-dev@lists.oasis-open.org, linux-pci@vger.kernel.org, dan.daly@intel.com, mark.d.rustad@intel.com, alexander.h.duyck@intel.com, cunming.liang@intel.com, zhihong.wang@intel.com
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: "Bie, Tiwei" <tiwei.bie@intel.com>, Bjorn Helgaas <bhelgaas@google.com>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "Daly, Dan" <dan.daly@intel.com>, "Duyck,
+ Alexander H" <alexander.h.duyck@intel.com>, "Liang, Cunming" <cunming.liang@intel.com>, "Wang, Zhihong" <zhihong.wang@intel.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, May 30, 2018 at 04:55:21PM +0800, Tiwei Bie wrote:
-> There is a new feature bit allocated in virtio spec to
-> support SR-IOV (Single Root I/O Virtualization):
-> 
-> https://github.com/oasis-tcs/virtio-spec/issues/11
-> 
-> This patch enables the support for this feature bit in
-> virtio driver.
-> 
-> Signed-off-by: Tiwei Bie <tiwei.bie@intel.com>
-> ---
-> This patch depends on below proposal:
-> https://lists.oasis-open.org/archives/virtio-dev/201805/msg00154.html
-> 
-> This patch depends on below patch:
-> https://git.kernel.org/pub/scm/linux/kernel/git/helgaas/pci.git/commit/?h=pci/virtualization&id=8effc395c2097e258fcedfc02ed4a66d45fb4238
-> 
->  drivers/virtio/virtio_pci_common.c | 20 ++++++++++++++++++++
->  drivers/virtio/virtio_pci_modern.c | 14 ++++++++++++++
->  include/uapi/linux/virtio_config.h |  7 ++++++-
->  3 files changed, 40 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/virtio/virtio_pci_common.c b/drivers/virtio/virtio_pci_common.c
-> index 48d4d1cf1cb6..023da80a7a3e 100644
-> --- a/drivers/virtio/virtio_pci_common.c
-> +++ b/drivers/virtio/virtio_pci_common.c
-> @@ -588,6 +588,25 @@ static void virtio_pci_remove(struct pci_dev *pci_dev)
->  	put_device(dev);
->  }
->  
-> +static int virtio_pci_sriov_configure(struct pci_dev *pci_dev, int num_vfs)
-> +{
-> +	struct virtio_pci_device *vp_dev = pci_get_drvdata(pci_dev);
-> +	struct virtio_device *vdev = &vp_dev->vdev;
-> +	int (*sriov_configure)(struct pci_dev *pci_dev, int num_vfs);
-> +
-> +	if (!(vdev->config->get_status(vdev) & VIRTIO_CONFIG_S_DRIVER_OK))
-> +		return -EBUSY;
-> +
-> +	if (!__virtio_test_bit(vdev, VIRTIO_F_SR_IOV))
-> +		return -EINVAL;
-> +
-> +	sriov_configure = pci_sriov_configure_simple;
-> +	if (sriov_configure == NULL)
-> +		return -ENOENT;
+--Apple-Mail=_FB4DAD04-C672-49EE-BC0F-E8F33D4948E7
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain;
+	charset=us-ascii;
+	delsp=yes;
+	format=flowed
 
-BTW what is all this trickery in aid of?
+On May 30, 2018, at 9:22 AM, Michael S. Tsirkin <mst@redhat.com> wrote:
 
-> +
-> +	return sriov_configure(pci_dev, num_vfs);
-> +}
-> +
->  static struct pci_driver virtio_pci_driver = {
->  	.name		= "virtio-pci",
->  	.id_table	= virtio_pci_id_table,
-> @@ -596,6 +615,7 @@ static struct pci_driver virtio_pci_driver = {
->  #ifdef CONFIG_PM_SLEEP
->  	.driver.pm	= &virtio_pci_pm_ops,
->  #endif
-> +	.sriov_configure = virtio_pci_sriov_configure,
->  };
->  
->  module_pci_driver(virtio_pci_driver);
-> diff --git a/drivers/virtio/virtio_pci_modern.c b/drivers/virtio/virtio_pci_modern.c
-> index 2555d80f6eec..07571daccfec 100644
-> --- a/drivers/virtio/virtio_pci_modern.c
-> +++ b/drivers/virtio/virtio_pci_modern.c
-> @@ -153,14 +153,28 @@ static u64 vp_get_features(struct virtio_device *vdev)
->  	return features;
->  }
->  
-> +static void vp_transport_features(struct virtio_device *vdev, u64 features)
-> +{
-> +	struct virtio_pci_device *vp_dev = to_vp_device(vdev);
-> +	struct pci_dev *pci_dev = vp_dev->pci_dev;
-> +
-> +	if ((features & BIT_ULL(VIRTIO_F_SR_IOV)) &&
-> +			pci_find_ext_capability(pci_dev, PCI_EXT_CAP_ID_SRIOV))
-> +		__virtio_set_bit(vdev, VIRTIO_F_SR_IOV);
-> +}
-> +
->  /* virtio config->finalize_features() implementation */
->  static int vp_finalize_features(struct virtio_device *vdev)
->  {
->  	struct virtio_pci_device *vp_dev = to_vp_device(vdev);
-> +	u64 features = vdev->features;
->  
->  	/* Give virtio_ring a chance to accept features. */
->  	vring_transport_features(vdev);
->  
-> +	/* Give virtio_pci a chance to accept features. */
-> +	vp_transport_features(vdev, features);
-> +
->  	if (!__virtio_test_bit(vdev, VIRTIO_F_VERSION_1)) {
->  		dev_err(&vdev->dev, "virtio: device uses modern interface "
->  			"but does not have VIRTIO_F_VERSION_1\n");
-> diff --git a/include/uapi/linux/virtio_config.h b/include/uapi/linux/virtio_config.h
-> index 308e2096291f..b7c1f4e7d59e 100644
-> --- a/include/uapi/linux/virtio_config.h
-> +++ b/include/uapi/linux/virtio_config.h
-> @@ -49,7 +49,7 @@
->   * transport being used (eg. virtio_ring), the rest are per-device feature
->   * bits. */
->  #define VIRTIO_TRANSPORT_F_START	28
-> -#define VIRTIO_TRANSPORT_F_END		34
-> +#define VIRTIO_TRANSPORT_F_END		38
->  
->  #ifndef VIRTIO_CONFIG_NO_LEGACY
->  /* Do we get callbacks when the ring is completely used, even if we've
-> @@ -71,4 +71,9 @@
->   * this is for compatibility with legacy systems.
->   */
->  #define VIRTIO_F_IOMMU_PLATFORM		33
-> +
-> +/*
-> + * Does the device support Single Root I/O Virtualization?
-> + */
-> +#define VIRTIO_F_SR_IOV			37
->  #endif /* _UAPI_LINUX_VIRTIO_CONFIG_H */
-> -- 
-> 2.17.0
+>> +static int virtio_pci_sriov_configure(struct pci_dev *pci_dev, int  
+>> num_vfs)
+>> +{
+>> +	struct virtio_pci_device *vp_dev = pci_get_drvdata(pci_dev);
+>> +	struct virtio_device *vdev = &vp_dev->vdev;
+>> +	int (*sriov_configure)(struct pci_dev *pci_dev, int num_vfs);
+>> +
+>> +	if (!(vdev->config->get_status(vdev) & VIRTIO_CONFIG_S_DRIVER_OK))
+>> +		return -EBUSY;
+>> +
+>> +	if (!__virtio_test_bit(vdev, VIRTIO_F_SR_IOV))
+>> +		return -EINVAL;
+>> +
+>> +	sriov_configure = pci_sriov_configure_simple;
+>> +	if (sriov_configure == NULL)
+>> +		return -ENOENT;
+>
+> BTW what is all this trickery in aid of?
 
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+When SR-IOV support is not compiled into the kernel,  
+pci_sriov_configure_simple is #defined as NULL. This allows it to compile  
+in that case, even though there is utterly no way for it to be called in  
+that case. It is an alternative to #ifs in the code.
 
+--
+Mark Rustad, Networking Division, Intel Corporation
+
+--Apple-Mail=_FB4DAD04-C672-49EE-BC0F-E8F33D4948E7
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment; filename="signature.asc"
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Message signed with OpenPGP
+
+-----BEGIN PGP SIGNATURE-----
+Comment: GPGTools - http://gpgtools.org
+
+iQIzBAEBCAAdFiEE6ug8b0Wg+ULmnksNPA7/547j7m4FAlsO1NQACgkQPA7/547j
+7m7fOBAApqkdKjNkDMyc4Fo/KLviVZCiv3VXJ6ftdR6iQcJPCj4fBJQkHYcs9hoH
+FUc4GIuo6hFl84OgsbvVDfCQFg0yaO+rZp2lSNjTrEQ+By6Oh4vXe6wCPcu7/sDE
+IDFR04g3U5dm/HohkQbbcNW/Um/CcBLdHgmJXWpsifNr8j+Au3SafiFbalfv7UFr
+WUSGPKwCPzGJoGYIia824sWkUI/HdGRrhvxXefnq3DSObrxxX+Hj7lqxgfg7r8c7
+CfZ0NmeykKIyuGLHZLyKhOispM3cw9145QiquP8tHVnvxUTqrYNhzMiSZTYqsBY2
+VQSGCf+paHgFPIKqJIZpNIAN/A3YKynFZA+qq8XrDr5AT5UA9HrLbe8fheooamV5
+r21k4+05AIwDOTV1AlYMHdpzUTNs8SLe5mwNL+4RpvQlKV3Kptv2NFzv13fmSPEo
+SHcRexSpBP4eSxVOIhW3j64M4aY7vg5MQshD+geqhgA4wVpb6Wqct3GHdnxqSoEt
+z5wQrQD8jB8glt8HpIrWzMDyp774QKYnqlpddA6U9keUYP1NS5iNMzbCdT2/TZIx
+s266G3ckoi0E5qs72bEgYSyd2g4yvmLl7vZ+FWJqpypFUE4Dj7cbGXlBu4Ib8haq
+IZBRPVopLACSRpAl2exZXwnT41mvznompRSHxigfe79w64JHwgM=
+=kV9d
+-----END PGP SIGNATURE-----
+
+--Apple-Mail=_FB4DAD04-C672-49EE-BC0F-E8F33D4948E7--
