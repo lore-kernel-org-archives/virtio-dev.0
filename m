@@ -1,86 +1,95 @@
-Return-Path: virtio-dev-return-4205-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4213-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id D5F7858191C3
-	for <virtio-dev@lists.oasis-open.org>; Wed, 30 May 2018 09:09:39 -0700 (PDT)
-Date: Wed, 30 May 2018 19:09:37 +0300
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20180530190819-mutt-send-email-mst@kernel.org>
+	by lists.oasis-open.org (Postfix) with ESMTP id E85601CB807B
+	for <virtio-dev@lists.oasis-open.org>; Wed, 30 May 2018 19:54:58 -0700 (PDT)
+Date: Thu, 31 May 2018 10:55:02 +0800
+From: Tiwei Bie <tiwei.bie@intel.com>
+Message-ID: <20180531025502.GA15516@debian>
 References: <20180530085521.26583-1-tiwei.bie@intel.com>
  <D7004E41-C23D-48B7-94A4-ACBBA06B021D@intel.com>
+ <20180530190819-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <D7004E41-C23D-48B7-94A4-ACBBA06B021D@intel.com>
+In-Reply-To: <20180530190819-mutt-send-email-mst@kernel.org>
 Subject: Re: [virtio-dev] [PATCH] virtio_pci: support enabling VFs
-To: "Rustad, Mark D" <mark.d.rustad@intel.com>
-Cc: "Bie, Tiwei" <tiwei.bie@intel.com>, Bjorn Helgaas <bhelgaas@google.com>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, LKML <linux-kernel@vger.kernel.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "Daly, Dan" <dan.daly@intel.com>, "Duyck, Alexander H" <alexander.h.duyck@intel.com>, "Liang, Cunming" <cunming.liang@intel.com>, "Wang, Zhihong" <zhihong.wang@intel.com>
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: "Rustad, Mark D" <mark.d.rustad@intel.com>, Bjorn Helgaas <bhelgaas@google.com>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, LKML <linux-kernel@vger.kernel.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "Daly, Dan" <dan.daly@intel.com>, "Duyck, Alexander H" <alexander.h.duyck@intel.com>, "Liang, Cunming" <cunming.liang@intel.com>, "Wang, Zhihong" <zhihong.wang@intel.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, May 30, 2018 at 04:03:37PM +0000, Rustad, Mark D wrote:
-> On May 30, 2018, at 1:55 AM, Tiwei Bie <tiwei.bie@intel.com> wrote:
+On Wed, May 30, 2018 at 07:09:37PM +0300, Michael S. Tsirkin wrote:
+> On Wed, May 30, 2018 at 04:03:37PM +0000, Rustad, Mark D wrote:
+> > On May 30, 2018, at 1:55 AM, Tiwei Bie <tiwei.bie@intel.com> wrote:
+> > 
+> > > There is a new feature bit allocated in virtio spec to
+> > > support SR-IOV (Single Root I/O Virtualization):
+> > > 
+> > > https://github.com/oasis-tcs/virtio-spec/issues/11
+> > > 
+> > > This patch enables the support for this feature bit in
+> > > virtio driver.
+> > > 
+> > > Signed-off-by: Tiwei Bie <tiwei.bie@intel.com>
+> > > ---
+> > > This patch depends on below proposal:
+> > > https://lists.oasis-open.org/archives/virtio-dev/201805/msg00154.html
+> > > 
+> > > This patch depends on below patch:
+> > > https://git.kernel.org/pub/scm/linux/kernel/git/helgaas/pci.git/commit/?h=pci/virtualization&id=8effc395c2097e258fcedfc02ed4a66d45fb4238
+> > > 
+> > >  drivers/virtio/virtio_pci_common.c | 20 ++++++++++++++++++++
+> > >  drivers/virtio/virtio_pci_modern.c | 14 ++++++++++++++
+> > >  include/uapi/linux/virtio_config.h |  7 ++++++-
+> > >  3 files changed, 40 insertions(+), 1 deletion(-)
+> > > 
+> > 
+> > <snip>
+> > 
+> > > diff --git a/include/uapi/linux/virtio_config.h
+> > > b/include/uapi/linux/virtio_config.h
+> > > index 308e2096291f..b7c1f4e7d59e 100644
+> > > --- a/include/uapi/linux/virtio_config.h
+> > > +++ b/include/uapi/linux/virtio_config.h
+> > > @@ -49,7 +49,7 @@
+> > 
+> > There is a value in the comment directly before this that should
+> > be updated as well to be consistent with the new value for
+> > VIRTIO_TRANSPORT_F_END below.
 > 
-> > There is a new feature bit allocated in virtio spec to
-> > support SR-IOV (Single Root I/O Virtualization):
-> > 
-> > https://github.com/oasis-tcs/virtio-spec/issues/11
-> > 
-> > This patch enables the support for this feature bit in
-> > virtio driver.
-> > 
-> > Signed-off-by: Tiwei Bie <tiwei.bie@intel.com>
-> > ---
-> > This patch depends on below proposal:
-> > https://lists.oasis-open.org/archives/virtio-dev/201805/msg00154.html
-> > 
-> > This patch depends on below patch:
-> > https://git.kernel.org/pub/scm/linux/kernel/git/helgaas/pci.git/commit/?h=pci/virtualization&id=8effc395c2097e258fcedfc02ed4a66d45fb4238
-> > 
-> >  drivers/virtio/virtio_pci_common.c | 20 ++++++++++++++++++++
-> >  drivers/virtio/virtio_pci_modern.c | 14 ++++++++++++++
-> >  include/uapi/linux/virtio_config.h |  7 ++++++-
-> >  3 files changed, 40 insertions(+), 1 deletion(-)
-> > 
-> 
-> <snip>
-> 
-> > diff --git a/include/uapi/linux/virtio_config.h
-> > b/include/uapi/linux/virtio_config.h
-> > index 308e2096291f..b7c1f4e7d59e 100644
-> > --- a/include/uapi/linux/virtio_config.h
-> > +++ b/include/uapi/linux/virtio_config.h
-> > @@ -49,7 +49,7 @@
-> 
-> There is a value in the comment directly before this that should
-> be updated as well to be consistent with the new value for
-> VIRTIO_TRANSPORT_F_END below.
+> It hasn't been updated to 34 yet.
+> I suggest a separate patch to replace the numbers with
+> VIRTIO_TRANSPORT_F_START and VIRTIO_TRANSPORT_F_END
+> in the comment.
+> Maybe replace "e.g. virtio_ring" with "e.g. virtio_ring,
+> virtio_pci etc." as well.
 
-It hasn't been updated to 34 yet.
-I suggest a separate patch to replace the numbers with
-VIRTIO_TRANSPORT_F_START and VIRTIO_TRANSPORT_F_END
-in the comment.
-Maybe replace "e.g. virtio_ring" with "e.g. virtio_ring,
-virtio_pci etc." as well.
+Good idea! Thanks for the suggestion! I'll do it.
 
-> >   * transport being used (eg. virtio_ring), the rest are per-device feature
-> >   * bits. */
-> >  #define VIRTIO_TRANSPORT_F_START	28
-> > -#define VIRTIO_TRANSPORT_F_END		34
-> > +#define VIRTIO_TRANSPORT_F_END		38
-> > 
-> >  #ifndef VIRTIO_CONFIG_NO_LEGACY
-> >  /* Do we get callbacks when the ring is completely used, even if we've
-> 
-> <snip>
-> 
-> --
-> Mark Rustad, Networking Division, Intel Corporation
+Best regards,
+Tiwei Bie
 
 
+> 
+> > >   * transport being used (eg. virtio_ring), the rest are per-device feature
+> > >   * bits. */
+> > >  #define VIRTIO_TRANSPORT_F_START	28
+> > > -#define VIRTIO_TRANSPORT_F_END		34
+> > > +#define VIRTIO_TRANSPORT_F_END		38
+> > > 
+> > >  #ifndef VIRTIO_CONFIG_NO_LEGACY
+> > >  /* Do we get callbacks when the ring is completely used, even if we've
+> > 
+> > <snip>
+> > 
+> > --
+> > Mark Rustad, Networking Division, Intel Corporation
+> 
+> 
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
