@@ -1,51 +1,70 @@
-Return-Path: virtio-dev-return-4215-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4218-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 64E451CB8078
-	for <virtio-dev@lists.oasis-open.org>; Wed, 30 May 2018 20:03:23 -0700 (PDT)
+	by lists.oasis-open.org (Postfix) with ESMTP id 20999581806F
+	for <virtio-dev@lists.oasis-open.org>; Thu, 31 May 2018 10:34:16 -0700 (PDT)
+Date: Thu, 31 May 2018 20:34:03 +0300
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20180531203301-mutt-send-email-mst@kernel.org>
 References: <1527180917-39737-1-git-send-email-sridhar.samudrala@intel.com>
  <1527180917-39737-3-git-send-email-sridhar.samudrala@intel.com>
  <20180530220635.206ee6d7@shemminger-XPS-13-9360>
-From: "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
-Message-ID: <274f0b84-07f1-5cd5-e256-ce4b71358c14@intel.com>
-Date: Wed, 30 May 2018 20:03:11 -0700
+ <274f0b84-07f1-5cd5-e256-ce4b71358c14@intel.com>
+ <20180531085812.0b13afef@shemminger-XPS-13-9360>
 MIME-Version: 1.0
-In-Reply-To: <20180530220635.206ee6d7@shemminger-XPS-13-9360>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-Subject: [virtio-dev] Re: [PATCH net-next v12 2/5] netvsc: refactor notifier/event handling
- code to use the failover framework
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20180531085812.0b13afef@shemminger-XPS-13-9360>
+Subject: [virtio-dev] Re: [PATCH net-next v12 2/5] netvsc: refactor notifier/event
+ handling code to use the failover framework
 To: Stephen Hemminger <stephen@networkplumber.org>
-Cc: mst@redhat.com, davem@davemloft.net, netdev@vger.kernel.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, jesse.brandeburg@intel.com, alexander.h.duyck@intel.com, kubakici@wp.pl, jasowang@redhat.com, loseweigh@gmail.com, jiri@resnulli.us, aaron.f.brown@intel.com, anjali.singhai@intel.com
+Cc: "Samudrala, Sridhar" <sridhar.samudrala@intel.com>, davem@davemloft.net, netdev@vger.kernel.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, jesse.brandeburg@intel.com, alexander.h.duyck@intel.com, kubakici@wp.pl, jasowang@redhat.com, loseweigh@gmail.com, jiri@resnulli.us, aaron.f.brown@intel.com, anjali.singhai@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+On Thu, May 31, 2018 at 08:58:12AM -0400, Stephen Hemminger wrote:
+> On Wed, 30 May 2018 20:03:11 -0700
+> "Samudrala, Sridhar" <sridhar.samudrala@intel.com> wrote:
+> 
+> > On 5/30/2018 7:06 PM, Stephen Hemminger wrote:
+> > > On Thu, 24 May 2018 09:55:14 -0700
+> > > Sridhar Samudrala <sridhar.samudrala@intel.com> wrote:
+> > >  
+> > >> Use the registration/notification framework supported by the generic
+> > >> failover infrastructure.
+> > >>
+> > >> Signed-off-by: Sridhar Samudrala <sridhar.samudrala@intel.com>  
+> > > Why was this merged? It was never signed off by any of the netvsc maintainers,
+> > > and there were still issues unresolved.
+> > >
+> > > There are also namespaces issues I am fixing and this breaks them.
+> > > Will start my patch set with a revert for this. Sorry  
+> > 
+> > I would appreciate if you can make the fixes on top of this patch series. I tried hard
+> > to make sure that netvsc functionality and behavior doesn't change.
+> > 
+> > It is possible that there could be some bugs introduced, but they can be fixed.
+> > Looks like Wei already found a bug and submitted a fix for that.
+> > 
+> 
+> Ok, but several of these may clash with what you want for virtio.
+> Like:
+> 	- VF should be moved to namespace of virt device
+> 	- VF should be associated based on message from host with serial # not
+> 	  registration notifier and MAC address.
+> 	- control operations should use master device reference rather than
+> 	  searching based on MAC.
+> 
+> As you can see these are structural changes.
 
+We might want to do these for virtio as well, at least as
+an option.
 
-On 5/30/2018 7:06 PM, Stephen Hemminger wrote:
-> On Thu, 24 May 2018 09:55:14 -0700
-> Sridhar Samudrala <sridhar.samudrala@intel.com> wrote:
->
->> Use the registration/notification framework supported by the generic
->> failover infrastructure.
->>
->> Signed-off-by: Sridhar Samudrala <sridhar.samudrala@intel.com>
-> Why was this merged? It was never signed off by any of the netvsc maintainers,
-> and there were still issues unresolved.
->
-> There are also namespaces issues I am fixing and this breaks them.
-> Will start my patch set with a revert for this. Sorry
-
-I would appreciate if you can make the fixes on top of this patch series. I tried hard
-to make sure that netvsc functionality and behavior doesn't change.
-
-It is possible that there could be some bugs introduced, but they can be fixed.
-Looks like Wei already found a bug and submitted a fix for that.
-
+-- 
+MST
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
