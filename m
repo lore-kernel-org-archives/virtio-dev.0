@@ -1,172 +1,91 @@
-Return-Path: virtio-dev-return-4269-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4244-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id E2E76581916C
-	for <virtio-dev@lists.oasis-open.org>; Mon,  4 Jun 2018 11:13:27 -0700 (PDT)
-Date: Mon, 4 Jun 2018 13:13:12 -0500
-From: Venu Busireddy <venu.busireddy@oracle.com>
-Message-ID: <20180604181312.GA17741@troi>
-References: <20180523151613.3914-1-venu.busireddy@oracle.com>
- <20180601184033-mutt-send-email-mst@kernel.org>
- <20180601170126.GA10908@vbusired-vm>
- <20180601230119-mutt-send-email-mst@kernel.org>
- <20180601205043.GA5944@vbusired-vm>
- <20180602000506-mutt-send-email-mst@kernel.org>
- <20180602000956-mutt-send-email-mst@kernel.org>
- <20180604164440.GA17028@troi>
- <20180604203316-mutt-send-email-mst@kernel.org>
+	by lists.oasis-open.org (Postfix) with ESMTP id 18BAA5818F0F
+	for <virtio-dev@lists.oasis-open.org>; Fri,  1 Jun 2018 08:26:15 -0700 (PDT)
+References: <20180601012832.GA7888@vbusired-vm>
+From: "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
+Message-ID: <a6447880-2d72-efaa-7935-3e9776738a48@intel.com>
+Date: Fri, 1 Jun 2018 08:26:03 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20180604203316-mutt-send-email-mst@kernel.org>
-Subject: Re: [virtio-dev] [PATCH 0/1] Add "Group Identifier" to virtio PCI
- capabilities.
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: virtio-dev@lists.oasis-open.org
+In-Reply-To: <20180601012832.GA7888@vbusired-vm>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+Subject: Re: [virtio-dev] RFC: Use of bridge devices to store pairing
+ information...
+To: Venu Busireddy <venu.busireddy@oracle.com>, virtio-dev@lists.oasis-open.org
+Cc: "Michael S. Tsirkin" <mst@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 2018-06-04 20:42:45 +0300, Michael S. Tsirkin wrote:
-> On Mon, Jun 04, 2018 at 11:44:40AM -0500, Venu Busireddy wrote:
-> > On 2018-06-02 00:10:31 +0300, Michael S. Tsirkin wrote:
-> > > On Sat, Jun 02, 2018 at 12:09:35AM +0300, Michael S. Tsirkin wrote:
-> > > > On Fri, Jun 01, 2018 at 03:50:43PM -0500, Venu Busireddy wrote:
-> > > > > On 2018-06-01 23:03:16 +0300, Michael S. Tsirkin wrote:
-> > > > > > On Fri, Jun 01, 2018 at 12:01:26PM -0500, Venu Busireddy wrote:
-> > > > > > > On 2018-06-01 18:42:06 +0300, Michael S. Tsirkin wrote:
-> > > > > > > > On Wed, May 23, 2018 at 11:16:12AM -0400, Venu Busireddy wrote:
-> > > > > > > > > During live migration involving passthrough devices, the guest needs
-> > > > > > > > > to know which virtio device will be a fail-over device for a given
-> > > > > > > > > passthrough device.
-> > > > > > > > > 
-> > > > > > > > > Extending the virtio specification with a new "Group Identifier"
-> > > > > > > > > capability allows qemu to set up the grouping at the time the guest
-> > > > > > > > > is created. The "Group Identifier" can be as simple as a number, or an
-> > > > > > > > > UUID. The driver can use the group identifier to pair the virtio device
-> > > > > > > > > with the passthrough device. The passthrough device can contain the
-> > > > > > > > > group identifier in the PCIe bridge to which it is attached.
-> > > > > > > > > 
-> > > > > > > > > Venu Busireddy (1):
-> > > > > > > > >   Add "Group Identifier" to virtio PCI capabilities.
-> > > > > > > > > 
-> > > > > > > > >  content.tex | 43 +++++++++++++++++++++++++++++++++++++++++++
-> > > > > > > > >  1 file changed, 43 insertions(+)
-> > > > > > > > 
-> > > > > > > > Is this a PCI thing, or can this somehow be used with non-PCI
-> > > > > > > 
-> > > > > > > This is applicable to all virtio PCI devices, but not to non-PCI
-> > > > > > > devices.
-> > > > > > > 
-> > > > > > > > devices? If PCI, we can just add a PCI UUID capability to
-> > > > > > > > virtio without need to worry about the spec.
-> > > > > > > 
-> > > > > > > What is a "PCI UUID capability?" "PCI Local Bus Specification
-> > > > > > > Revision 3.0, Appendix H" does not list any such capability.
-> > > > > > > 
-> > > > > > > Regards,
-> > > > > > > 
-> > > > > > > Venu
-> > > > > > 
-> > > > > > Sorry that I'm unclear. What I meant is the
-> > > > > > PCI Express serial number capability (0003h).
-> > > > > 
-> > > > > 0003h is the VPD capability.
-> > > > 
-> > > > You are talking about the PCI capabilities.
-> > > > I'm talking about PCI Extended capabilities.
-> > > > 
-> > > > These are not the same thing.
-> > > > 
-> > > > > Serial Number ("SN") is part of the VPD. QEMU
-> > > > > does not support VPD, and adding the VPD capability to QEMU is lot more
-> > > > > involved than storing the UUID in Vendor-Specific capability.
-> > > > 
-> > > > Formatting VPD is not so hard really. Another question would be how hard
-> > > > is it to parse VPD in guests? It might be hard e.g. for windows drivers.
-> > > > 
-> > > > > Do you strongly believe that adding VPD is required? Or, can we live
-> > > > > with using Vendor-Specific capability? The bridge device is going to be
-> > > > > QEMU specific device anyway, so there should be no ambiguity of mixing
-> > > > > up with other bridges.
-> > > > > 
-> > > > > Thanks,
-> > > > > 
-> > > > > Venu
-> > > > 
-> > > > I'm inclined to say use the serial number extended capability.
-> > > > If not, I'd look at how hard it is to parse VPD.
-> > > > 
-> > > > Standard cap is better in that guests will be able to show it more
-> > > > easily.
-> > > 
-> > > But yes, it's not a very strong preference. If you strongly
-> > > believe we must use a vendor specific cap, I can live with
-> > > that decision.
-> > 
-> > Let me summarize the discussion so far...
-> > 
-> > One of the suggestions was to use the "Device Serial Number" PCIe
-> > extended capability. The problem I see with that is that, by default,
-> > virtio devices are exposed as PCI devices, not as PCIe devices (bit 4 in
-> > the Status Register in the configuration space is set to 0). As a result,
-> > there is no extended configuration space.
-> > 
-> > Do we want to modify QEMU to expose all virtio devices as PCI express
-> > devices? This may have backward compatibility issues!
-> 
-> Not all but it's a reasonable limitation to say that if you want to use
-> failover you use a pci express device.
+On 5/31/2018 6:28 PM, Venu Busireddy wrote:
+> I looked at the discussion in the threads [1] and [2], where it was
+> suggested placing the passthrough device behind one bridge, and the virtio
+> device behind another bridge, and storing in those bridges' configuration
+> space some unique identifier that can be used to pair the two devices.
+>
+> After some discussions with Si-Wei Liu and others, we believe that the
+> following scheme may be a viable approach. Please take a look at this
+> proposal and provide your thoughts.
+>
+> 1. Enhance the QEMU CLI to include a "group_id" option to the bridge
+>     devices for Q35 as well as i440FX models. I have already made changes
+>     for the Q35 model (ioh3420 bridge).
+>
+> 2. When the guest is created, the operator creates two bridge devices
+>     (for example, using '-device ioh3420,group_id="string"'), and specifies
+>     a unique identifier string for both bridges. This identifier can be
+>     the UUID generated by 'uuidgen' command.
+>
+> 3. QEMU places this unique identifier in the PCI configuration space of
+>     the bridge as Vendor-Specific capability (0x09). The "Vendor" here is
+>     not to be confused with a specific organization. Instead, the vendor
+>     of the bridge is QEMU (with vendor ID 0x8086 and device ID 0x3420).
+>
+> 4. The operator places the passthrough device behind one of the bridges,
+>     and the virtio device behind the other bridge.
+>
+> 5. Patch 4 in patch series [3] should be modified to use the unique
+>     identifier string stored in the bridges' configuration space instead
+>     of the MAC address for pairing the devices.
 
-I am with you on that. We could always say that virtio devices must be
-PCIe devices for Live Migration involving passthrough devices to work.
-However, we need to go this route only if we throw out the other
-alternative being discussed below, right?
+This should be an alternate option that allows failover slaves to be registered
+based on MAC and ID.
 
-> > The other suggestion was to use VPD. Implementing VPD support into
-> > QEMU will be a lot harder than adding a new virtio PCI capability. A
-> > quick look at the VPD format, and the handshake mechanism involved in
-> > exchanging the VPD, will be sufficient to see how complicated it will be.
-> 
-> Well QEMU does not need to compile a generic VPD - just generate a
-> specific record.  It's not all that complicated.
 
-Even to support a single field (such as "SN"), the entire VPD
-framework needs to be implemented. And implementing that framework is
-difficult. Once the framework is implemented, adding another field (say,
-"PN", or "MN", or whatever) will be very simple.
+>
+> If it is desirable to create only one bridge instead of two (to conserve
+> the  number of devices in the system), then the passthrough device can be
+> attached to that single bridge (with the identifier), and the identifier
+> for the virtio device can be stored in the virtio device's configuration
+> space itself. To do that, we need to update the virtio specification,
+> and I have sent a proposal [4] to the OASIS team to update the virtio
+> specification. If that proposal is accepted, then we can modify QEMU to
+> use the virtio device's configuration space instead of the second bridge
+> to store the unique identifier.
 
-> > Therefore, shall we go ahead with the current proposal to add
-> > VIRTIO_PCI_CAP_GROUP_ID_CFG to the virtio PCI capability list?
-> 
-> I won't nack it, I just wanted you to consider the alternatives.
+I think one bridge solution is much cleaner than having to use 2 bridges.
 
-Great! What is the next step for me to get the VIRTIO_PCI_CAP_GROUP_ID_CFG
-capability into the virtio specification?
 
-> > Please note that VIRTIO_PCI_CAP_GROUP_ID_CFG is a capability that "may be
-> > present." If we enhance QEMU to support VPD in the future, we can switch
-> > to using that. The driver in the guest should be coded to look for the
-> > VPD, and if it not present, look for the VIRTIO_PCI_CAP_GROUP_ID_CFG
-> > capability.
-> > 
-> > Thanks,
-> > 
-> > Venu
-> 
-> I'm not sure we should code up things that we didn't even test.
-> How likely are they to work flawlessly?
-
-Makes sense. We could try to make it flawless, but no guarantee. Also,
-we may never need to update either QEMU or the driver, if we decide use
-the VIRTIO_PCI_CAP_GROUP_ID_CFG capability. Therefore, please ignore
-this last suggestion.
-
-Thanks,
-
-Venu
+>
+> Thank you for sparing the time.
+>
+> Venu
+>
+> [1] https://www.spinics.net/lists/linux-virtualization/msg33518.html
+> [2] https://www.spinics.net/lists/netdev/msg499011.html
+> [3] https://patchwork.ozlabs.org/cover/920005/
+> [4] https://lists.oasis-open.org/archives/virtio-dev/201805/msg00118.html
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+>
 
 
 ---------------------------------------------------------------------
