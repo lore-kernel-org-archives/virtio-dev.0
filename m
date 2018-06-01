@@ -1,132 +1,52 @@
-Return-Path: virtio-dev-return-4270-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4245-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id F3036581916C
-	for <virtio-dev@lists.oasis-open.org>; Mon,  4 Jun 2018 18:30:41 -0700 (PDT)
-Date: Tue, 5 Jun 2018 09:30:42 +0800
-From: Tiwei Bie <tiwei.bie@intel.com>
-Message-ID: <20180605013042.GA953@debian>
-References: <20180524164951.3102-1-tiwei.bie@intel.com>
- <20180604155945-mutt-send-email-mst@kernel.org>
+	by lists.oasis-open.org (Postfix) with ESMTP id 664E75818F1F
+	for <virtio-dev@lists.oasis-open.org>; Fri,  1 Jun 2018 08:42:17 -0700 (PDT)
+Date: Fri, 1 Jun 2018 18:42:06 +0300
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20180601184033-mutt-send-email-mst@kernel.org>
+References: <20180523151613.3914-1-venu.busireddy@oracle.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20180604155945-mutt-send-email-mst@kernel.org>
-Subject: [virtio-dev] Re: [PATCH v4] content: support SR-IOV
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: cohuck@redhat.com, stefanha@redhat.com, pbonzini@redhat.com, virtio-dev@lists.oasis-open.org, dan.daly@intel.com, alexander.h.duyck@intel.com, mark.d.rustad@intel.com, cunming.liang@intel.com, zhihong.wang@intel.com
+In-Reply-To: <20180523151613.3914-1-venu.busireddy@oracle.com>
+Subject: Re: [virtio-dev] [PATCH 0/1] Add "Group Identifier" to virtio PCI
+ capabilities.
+To: Venu Busireddy <venu.busireddy@oracle.com>
+Cc: virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Mon, Jun 04, 2018 at 04:01:56PM +0300, Michael S. Tsirkin wrote:
-> On Fri, May 25, 2018 at 12:49:51AM +0800, Tiwei Bie wrote:
-> > Allocate a feature bit for virtio devices which support SR-IOV.
-> > 
-> > Suggested-by: Michael S. Tsirkin <mst@redhat.com>
-> > Signed-off-by: Tiwei Bie <tiwei.bie@intel.com>
-> > Fixes: https://github.com/oasis-tcs/virtio-spec/issues/11
+On Wed, May 23, 2018 at 11:16:12AM -0400, Venu Busireddy wrote:
+> During live migration involving passthrough devices, the guest needs
+> to know which virtio device will be a fail-over device for a given
+> passthrough device.
 > 
-> I have a question on this: how exactly is reset handled?
-> Does reset disable IOV?
+> Extending the virtio specification with a new "Group Identifier"
+> capability allows qemu to set up the grouping at the time the guest
+> is created. The "Group Identifier" can be as simple as a number, or an
+> UUID. The driver can use the group identifier to pair the virtio device
+> with the passthrough device. The passthrough device can contain the
+> group identifier in the PCIe bridge to which it is attached.
+> 
+> Venu Busireddy (1):
+>   Add "Group Identifier" to virtio PCI capabilities.
+> 
+>  content.tex | 43 +++++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 43 insertions(+)
 
-I think a reset doesn't have to disable IOV. Because PF
-and VFs are managed by PCI core. They are independent
-from the driver's point of view. Once VFs are allocated,
-PF and VFs can be bound to different drivers and used
-independently. So a driver reset on PF doesn't have to
-disable IOV. The proposal is just to provide a feature
-bit based virtio way for virtio drivers to know whether
-a virtio device is SR-IOV capable (and virtio drivers
-can support configuring SR-IOV based on the feature bit
-negotiation result).
-
-Best regards,
-Tiwei Bie
+Is this a PCI thing, or can this somehow be used with non-PCI
+devices? If PCI, we can just add a PCI UUID capability to
+virtio without need to worry about the spec.
 
 > 
-> > ---
-> > More details can be found from this thread:
-> > https://patchwork.kernel.org/patch/10285541/
-> > 
-> > v3 -> v4:
-> > - Limit the feature to PCI devices with SR-IOV cap (MST);
-> > 
-> > v2 -> v3:
-> > - Improve the wording (Cornelia);
-> > 
-> > v1 -> v2:
-> > - s/Reserve/Allocate/ (MST);
-> > - Add a Fixes tag (MST);
-> > - Be more explicit in driver requirement (MST);
-> > - Remove the "device MAY fail" description (MST);
-> > - Rebase on IO_BARRIER patch;
-> > 
-> > RFC -> v1:
-> > - Mention PCI in the description (Cornelia);
-> > 
-> >  content.tex | 21 +++++++++++++++++++--
-> >  1 file changed, 19 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/content.tex b/content.tex
-> > index c4b3b5c..beec6c1 100644
-> > --- a/content.tex
-> > +++ b/content.tex
-> > @@ -95,10 +95,10 @@ Feature bits are allocated as follows:
-> >  \begin{description}
-> >  \item[0 to 23] Feature bits for the specific device type
-> >  
-> > -\item[24 to 36] Feature bits reserved for extensions to the queue and
-> > +\item[24 to 37] Feature bits reserved for extensions to the queue and
-> >    feature negotiation mechanisms
-> >  
-> > -\item[37 and above] Feature bits reserved for future extensions.
-> > +\item[38 and above] Feature bits reserved for future extensions.
-> >  \end{description}
-> >  
-> >  \begin{note}
-> > @@ -5365,6 +5365,9 @@ Descriptors} and \ref{sec:Packed Virtqueues / Indirect Flag: Scatter-Gather Supp
-> >    better performance.  This feature indicates whether
-> >    a stronger form of barrier suitable for hardware
-> >    devices is necessary.
-> > +  \item[VIRTIO_F_SR_IOV(37)] This feature indicates that
-> > +  the device supports Single Root I/O Virtualization.
-> > +  Currently only PCI devices support this feature.
-> >  \end{description}
-> >  
-> >  \drivernormative{\section}{Reserved Feature Bits}{Reserved Feature Bits}
-> > @@ -5384,6 +5387,16 @@ A driver SHOULD accept VIRTIO_F_IO_BARRIER if it is offered.
-> >  If VIRTIO_F_IO_BARRIER has been negotiated, a driver MUST use
-> >  the barriers suitable for hardware devices.
-> >  
-> > +If VIRTIO_F_SR_IOV has been negotiated, a driver can enable
-> > +virtual functions through the device's PCI SR-IOV capability
-> > +structure.  A driver MUST NOT negotiate VIRTIO_F_SR_IOV if
-> > +the device does not have a PCI SR-IOV capability structure
-> > +or is not a PCI device.  A driver MUST negotiate
-> > +VIRTIO_F_SR_IOV and complete the feature negotiation
-> > +(including setting the DRIVER_OK \field{status} bit) before
-> > +enabling virtual functions through the device's PCI SR-IOV
-> > +capability structure.
-> > +
-> >  \devicenormative{\section}{Reserved Feature Bits}{Reserved Feature Bits}
-> >  
-> >  A device MUST offer VIRTIO_F_VERSION_1.  A device MAY fail to operate further
-> > @@ -5400,6 +5413,10 @@ buffers in the same order in which they have been available.
-> >  A device MAY fail to operate further if VIRTIO_F_IO_BARRIER
-> >  is not accepted.
-> >  
-> > +A device SHOULD offer VIRTIO_F_SR_IOV if it is a PCI device
-> > +and presents a PCI SR-IOV capability structure, otherwise
-> > +it MUST NOT offer VIRTIO_F_SR_IOV.
-> > +
-> >  \section{Legacy Interface: Reserved Feature Bits}\label{sec:Reserved Feature Bits / Legacy Interface: Reserved Feature Bits}
-> >  
-> >  Transitional devices MAY offer the following:
-> > -- 
-> > 2.17.0
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
