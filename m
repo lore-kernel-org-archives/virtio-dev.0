@@ -1,90 +1,73 @@
-Return-Path: virtio-dev-return-4136-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4223-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 5996C58191B2
-	for <virtio-dev@lists.oasis-open.org>; Wed, 23 May 2018 08:16:29 -0700 (PDT)
+	by lists.oasis-open.org (Postfix) with ESMTP id C544F58180EF
+	for <virtio-dev@lists.oasis-open.org>; Thu, 31 May 2018 18:28:48 -0700 (PDT)
+Date: Thu, 31 May 2018 20:28:32 -0500
 From: Venu Busireddy <venu.busireddy@oracle.com>
-Date: Wed, 23 May 2018 11:16:13 -0400
-Message-Id: <20180523151613.3914-2-venu.busireddy@oracle.com>
-In-Reply-To: <20180523151613.3914-1-venu.busireddy@oracle.com>
-References: <20180523151613.3914-1-venu.busireddy@oracle.com>
-Subject: [virtio-dev] [PATCH 1/1] Add "Group Identifier" to virtio PCI capabilities.
-To: venu.busireddy@oracle.com, virtio-dev@lists.oasis-open.org
+Message-ID: <20180601012832.GA7888@vbusired-vm>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Subject: [virtio-dev] RFC: Use of bridge devices to store pairing information...
+To: virtio-dev@lists.oasis-open.org
+Cc: "Michael S. Tsirkin" <mst@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Add VIRTIO_PCI_CAP_GROUP_ID_CFG (Group Identifier) capability to the
-virtio PCI capabilities to allow for the grouping of devices.
 
-Signed-off-by: Venu Busireddy <venu.busireddy@oracle.com>
----
- content.tex | 43 +++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 43 insertions(+)
+I looked at the discussion in the threads [1] and [2], where it was
+suggested placing the passthrough device behind one bridge, and the virtio
+device behind another bridge, and storing in those bridges' configuration
+space some unique identifier that can be used to pair the two devices.
 
-diff --git a/content.tex b/content.tex
-index 7a92cb1..7ea6267 100644
---- a/content.tex
-+++ b/content.tex
-@@ -599,6 +599,8 @@ The fields are interpreted as follows:
- #define VIRTIO_PCI_CAP_DEVICE_CFG        4
- /* PCI configuration access */
- #define VIRTIO_PCI_CAP_PCI_CFG           5
-+/* Group Identifier */
-+#define VIRTIO_PCI_CAP_GROUP_ID_CFG      6
- \end{lstlisting}
- 
-         Any other value is reserved for future use.
-@@ -997,6 +999,47 @@ address \field{cap.length} bytes within a BAR range
- specified by some other Virtio Structure PCI Capability
- of type other than \field{VIRTIO_PCI_CAP_PCI_CFG}.
- 
-+\subsubsection{Group Identifier capability}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Group Identifier capability}
-+
-+The VIRTIO_PCI_CAP_GROUP_ID_CFG capability provides means for grouping devices together.
-+
-+The capability is immediately followed by an identifier of arbitrary size as below:
-+
-+\begin{lstlisting}
-+struct virtio_pci_group_id_cap {
-+        struct virtio_pci_cap cap;
-+        u8 group_id[]; /* Group Identifier */
-+};
-+\end{lstlisting}
-+
-+The fields \field{cap.bar}, \field{cap.length}, \field{cap.offset}
-+and \field{group_id} are read-only for the driver.
-+
-+The specification does not impose any restrictions on the size or
-+structure of group_id[]. Vendors are free to declare this array as
-+large as needed, as long as the combined size of all capabilities can
-+be accommodated within the PCI configuration space.
-+
-+If there is enough room in the PCI configuration space to accommodate
-+the group identifier, the fields \field{cap.bar}, \field{cap.offset}
-+and \field{cap.length} should be set to 0.
-+
-+If there isn't enough room, some or all of the group identifier can be
-+presented in the BAR region, in which case the fields \field{cap.bar},
-+\field{cap.offset} and \field{cap.length} should be set appropriately.
-+
-+In either case, the field \field{cap.cap_len} indicates the length of
-+the group identifier information present in the configuration space
-+itself.
-+
-+\devicenormative{\paragraph}{Group Identifier capability}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Group Identifier capability}
-+
-+The device MAY present the VIRTIO_PCI_CAP_GROUP_ID_CFG capability.
-+
-+\drivernormative{\paragraph}{Group Identifier capability}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Group Identifier capability}
-+
-+The driver MUST NOT write to group_id[] area or the BAR region.
-+
- \subsubsection{Legacy Interfaces: A Note on PCI Device Layout}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Legacy Interfaces: A Note on PCI Device Layout}
- 
- Transitional devices MUST present part of configuration
+After some discussions with Si-Wei Liu and others, we believe that the
+following scheme may be a viable approach. Please take a look at this
+proposal and provide your thoughts.
+
+1. Enhance the QEMU CLI to include a "group_id" option to the bridge
+   devices for Q35 as well as i440FX models. I have already made changes
+   for the Q35 model (ioh3420 bridge).
+
+2. When the guest is created, the operator creates two bridge devices
+   (for example, using '-device ioh3420,group_id="string"'), and specifies
+   a unique identifier string for both bridges. This identifier can be
+   the UUID generated by 'uuidgen' command.
+
+3. QEMU places this unique identifier in the PCI configuration space of
+   the bridge as Vendor-Specific capability (0x09). The "Vendor" here is
+   not to be confused with a specific organization. Instead, the vendor
+   of the bridge is QEMU (with vendor ID 0x8086 and device ID 0x3420).
+
+4. The operator places the passthrough device behind one of the bridges,
+   and the virtio device behind the other bridge.
+
+5. Patch 4 in patch series [3] should be modified to use the unique
+   identifier string stored in the bridges' configuration space instead
+   of the MAC address for pairing the devices.
+
+If it is desirable to create only one bridge instead of two (to conserve
+the  number of devices in the system), then the passthrough device can be
+attached to that single bridge (with the identifier), and the identifier
+for the virtio device can be stored in the virtio device's configuration
+space itself. To do that, we need to update the virtio specification,
+and I have sent a proposal [4] to the OASIS team to update the virtio
+specification. If that proposal is accepted, then we can modify QEMU to
+use the virtio device's configuration space instead of the second bridge
+to store the unique identifier.
+
+Thank you for sparing the time.
+
+Venu
+
+[1] https://www.spinics.net/lists/linux-virtualization/msg33518.html
+[2] https://www.spinics.net/lists/netdev/msg499011.html
+[3] https://patchwork.ozlabs.org/cover/920005/
+[4] https://lists.oasis-open.org/archives/virtio-dev/201805/msg00118.html
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
