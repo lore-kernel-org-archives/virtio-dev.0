@@ -1,156 +1,139 @@
-Return-Path: virtio-dev-return-4326-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4234-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id CAD1F58191AD
-	for <virtio-dev@lists.oasis-open.org>; Fri,  8 Jun 2018 05:52:32 -0700 (PDT)
-Date: Fri, 8 Jun 2018 15:52:12 +0300
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20180608154938-mutt-send-email-mst@kernel.org>
-References: <20180608020701.12297-1-tiwei.bie@intel.com>
- <20180608111231.10c7de51.cohuck@redhat.com>
- <20180608150501-mutt-send-email-mst@kernel.org>
- <20180608143624.6ebe94c0.cohuck@redhat.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id F29405818DFE
+	for <virtio-dev@lists.oasis-open.org>; Fri,  1 Jun 2018 00:32:15 -0700 (PDT)
+Message-ID: <5B10F761.60509@intel.com>
+Date: Fri, 01 Jun 2018 15:36:01 +0800
+From: Wei Wang <wei.w.wang@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20180608143624.6ebe94c0.cohuck@redhat.com>
-Subject: [virtio-dev] Re: [PATCH v2] content: document SR-IOV driver requirements
-To: Cornelia Huck <cohuck@redhat.com>
-Cc: Tiwei Bie <tiwei.bie@intel.com>, stefanha@redhat.com, pbonzini@redhat.com, virtio-dev@lists.oasis-open.org, dan.daly@intel.com, alexander.h.duyck@intel.com, mark.d.rustad@intel.com, cunming.liang@intel.com, zhihong.wang@intel.com
+References: <1524550428-27173-1-git-send-email-wei.w.wang@intel.com> <1524550428-27173-4-git-send-email-wei.w.wang@intel.com> <20180601040049.GG14867@xz-mi>
+In-Reply-To: <20180601040049.GG14867@xz-mi>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [virtio-dev] Re: [Qemu-devel] [PATCH v7 3/5] migration: API to clear bits of guest
+ free pages from the dirty bitmap
+To: Peter Xu <peterx@redhat.com>
+Cc: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, mst@redhat.com, quintela@redhat.com, dgilbert@redhat.com, yang.zhang.wz@gmail.com, quan.xu0@gmail.com, liliang.opensource@gmail.com, pbonzini@redhat.com, nilal@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Fri, Jun 08, 2018 at 02:36:24PM +0200, Cornelia Huck wrote:
-> On Fri, 8 Jun 2018 15:13:11 +0300
-> "Michael S. Tsirkin" <mst@redhat.com> wrote:
-> 
-> > On Fri, Jun 08, 2018 at 11:12:31AM +0200, Cornelia Huck wrote:
-> > > On Fri,  8 Jun 2018 10:07:01 +0800
-> > > Tiwei Bie <tiwei.bie@intel.com> wrote:
-> > >   
-> > > > Document the driver requirements for the VIRTIO_F_SR_IOV
-> > > > feature bit.
-> > > > 
-> > > > Suggested-by: Michael S. Tsirkin <mst@redhat.com>
-> > > > Signed-off-by: Tiwei Bie <tiwei.bie@intel.com>
-> > > > Fixes: https://github.com/oasis-tcs/virtio-spec/issues/13
-> > > > ---
-> > > > v2:
-> > > > - Fix the commit message (MST);
-> > > > - Improve the wording (MST);
-> > > > - Drop unnecessary parts (MST);
-> > > > 
-> > > >  content.tex | 15 +++++++++++++++
-> > > >  1 file changed, 15 insertions(+)
-> > > > 
-> > > > diff --git a/content.tex b/content.tex
-> > > > index be18234..f996fad 100644
-> > > > --- a/content.tex
-> > > > +++ b/content.tex
-> > > > @@ -5387,6 +5387,21 @@ A driver SHOULD accept VIRTIO_F_IO_BARRIER if it is offered.
-> > > >  If VIRTIO_F_IO_BARRIER has been negotiated, a driver MUST use
-> > > >  the barriers suitable for hardware devices.
-> > > >  
-> > > > +If VIRTIO_F_SR_IOV has been negotiated, a driver MAY enable
-> > > > +virtual functions through the device's PCI SR-IOV capability
-> > > > +structure.  A driver MUST NOT negotiate VIRTIO_F_SR_IOV if
-> > > > +the device does not have a PCI SR-IOV capability structure
-> > > > +or is not a PCI device.  A driver MUST negotiate  
-> > > 
-> > > Maybe I'm missing something obvious, but why should the device offer
-> > > the feature in the first place if it does not support the functionality?  
-> > 
-> > Probably shouldn't, but what if we want to reuse the bit
-> > number for some non pci functionality on other transports?
-> > This text will allow it.
-> 
-> I'm not really a fan of reusing bits for different things.
+On 06/01/2018 12:00 PM, Peter Xu wrote:
+> On Tue, Apr 24, 2018 at 02:13:46PM +0800, Wei Wang wrote:
+>> This patch adds an API to clear bits corresponding to guest free pages
+>> from the dirty bitmap. Spilt the free page block if it crosses the QEMU
+>> RAMBlock boundary.
+>>
+>> Signed-off-by: Wei Wang <wei.w.wang@intel.com>
+>> CC: Dr. David Alan Gilbert <dgilbert@redhat.com>
+>> CC: Juan Quintela <quintela@redhat.com>
+>> CC: Michael S. Tsirkin <mst@redhat.com>
+>> ---
+>>   include/migration/misc.h |  2 ++
+>>   migration/ram.c          | 44 ++++++++++++++++++++++++++++++++++++++++++++
+>>   2 files changed, 46 insertions(+)
+>>
+>> diff --git a/include/migration/misc.h b/include/migration/misc.h
+>> index 4ebf24c..113320e 100644
+>> --- a/include/migration/misc.h
+>> +++ b/include/migration/misc.h
+>> @@ -14,11 +14,13 @@
+>>   #ifndef MIGRATION_MISC_H
+>>   #define MIGRATION_MISC_H
+>>   
+>> +#include "exec/cpu-common.h"
+>>   #include "qemu/notify.h"
+>>   
+>>   /* migration/ram.c */
+>>   
+>>   void ram_mig_init(void);
+>> +void qemu_guest_free_page_hint(void *addr, size_t len);
+>>   
+>>   /* migration/block.c */
+>>   
+>> diff --git a/migration/ram.c b/migration/ram.c
+>> index 9a72b1a..0147548 100644
+>> --- a/migration/ram.c
+>> +++ b/migration/ram.c
+>> @@ -2198,6 +2198,50 @@ static int ram_init_all(RAMState **rsp)
+>>   }
+>>   
+>>   /*
+>> + * This function clears bits of the free pages reported by the caller from the
+>> + * migration dirty bitmap. @addr is the host address corresponding to the
+>> + * start of the continuous guest free pages, and @len is the total bytes of
+>> + * those pages.
+>> + */
+>> +void qemu_guest_free_page_hint(void *addr, size_t len)
+>> +{
+>> +    RAMBlock *block;
+>> +    ram_addr_t offset;
+>> +    size_t used_len, start, npages;
+> Do we need to check here on whether a migration is in progress?  Since
+> if not I'm not sure whether this hint still makes any sense any more,
+> and more importantly it seems to me that block->bmap below at [1] is
+> only valid during a migration.  So I'm not sure whether QEMU will
+> crash if this function is called without a running migration.
 
-Not saying we will but maybe some transport is close enough
-to pci for this to make sense.
+OK. How about just adding comments above to have users noted that this 
+function should be used during migration?
 
-> If we want
-> this, we should specify a transport-specific feature bit range. I'd
-> prefer simply noting that this is PCI-specific (as we do now), though.
+If we want to do a sanity check here, I think it would be easier to just 
+check !block->bmap here.
 
-Yes, it says so in the patch that got applied, but what does
-it mean exactly? I think it means both device and driver
-must ignore it on not pci devices.
 
-> > 
-> > > > +VIRTIO_F_SR_IOV and complete the feature negotiation
-> > > > +(including checking the FEATURES_OK \field{status} bit)
-> > > > +before enabling virtual functions through the device's
-> > > > +PCI SR-IOV capability structure.  After once successfully
-> > > > +negotiating VIRTIO_F_SR_IOV, the driver MAY enable virtual
-> > > > +functions through the device's PCI SR-IOV capability
-> > > > +structure even if the device or the system has been fully
-> > > > +or partially reset, and even without re-negotiating
-> > > > +VIRTIO_F_SR_IOV after the reset.  
-> > > 
-> > > So, what is the general lifetime of this feature supposed to be? As
-> > > written here, the driver needs to negotiate the feature once and then
-> > > may enable virtual functions at any time in all eternity. Is this
-> > > intended to accommodate hardware implementations, where some kind of
-> > > switch is flipped once and then the functionality is available?
-> > > Also, as the device will need to negotiate the feature at least once,
-> > > what is stopping it from negotiating it again in the future? Is this
-> > > wording intended to allow the driver to simply use virtual functions on
-> > > resume etc. prior to feature negotiation?  
-> > 
-> > Yes - it's to accomodate how guest OS-es treat SRIOV capability
-> > on resume, restoring it before they start talking to the driver.
-> > 
-> > Maybe we need a non conformance section explaining about SR-IOV.
-> > Another thing to explain is that all VFs are assumed to be same as the
-> > PF. Also I do not think we can support legacy or transitional VFs.
-> 
-> Yes, I think so.
-> 
-> > 
-> > > It might be helpful to add some explanatory text outside of the
-> > > conformance statement so we don't stumble over this in the future.  
-> > 
-> > Exactly. But in fact same applies to other features we just
-> > do not say this explicitly anywhere. For exactly things won't
-> > work well if you reset device to recover from error
-> > and suddenly it doesn't negotiate the feature.
-> 
-> But "please renegotiate the same feature set" is different from "you
-> can use this even before renegotiating", no?
-> 
-> > 
-> > 
-> > So I suspect we want to add somewhere in the general section:
-> > 
-> > 
-> >         If device has successfully negotiated a set of features at least once
-> >         (by setting the FEATURES_OK \field{status} bit) then it SHOULD NOT
-> >         fail re-negotiation of the same set of features after a device
-> >         or system reset. Failure to do so would interfere with resume
-> >         from suspend and error recovery.
-> > 
-> > would this address your comment?
-> 
-> This is a good idea, and I already reviewed Tiwei's other patch :)
-> 
-> We still need to note that reset doesn't clear this feature explicitly,
-> though, as this is only SHOULD NOT.
+>
+>> +
+>> +    for (; len > 0; len -= used_len) {
+>> +        block = qemu_ram_block_from_host(addr, false, &offset);
+>> +        if (unlikely(!block)) {
+>> +            return;
+> We should never reach here, should we?  Assuming the callers of this
+> function should always pass in a correct host address. If we are very
+> sure that the host addr should be valid, could we just assert?
 
-Well if it does fail then resume fails. It's not data corruption or
-anything but some devices might experience an internal error
-or run out of resources it seems reasonable to fail
-feature negotiation in that case rather than pretend we
-can work and then not work.
+Probably not the case, because of the corner case that the memory would 
+be hot unplugged after the free page is reported to QEMU.
 
-> > 
-> > > > +
-> > > >  \devicenormative{\section}{Reserved Feature Bits}{Reserved Feature Bits}
-> > > >  
-> > > >  A device MUST offer VIRTIO_F_VERSION_1.  A device MAY fail to operate further  
+
+
+>
+>> +        }
+>> +
+>> +        /*
+>> +         * This handles the case that the RAMBlock is resized after the free
+>> +         * page hint is reported.
+>> +         */
+>> +        if (unlikely(offset > block->used_length)) {
+>> +            return;
+>> +        }
+>> +
+>> +        if (len <= block->used_length - offset) {
+>> +            used_len = len;
+>> +        } else {
+>> +            used_len = block->used_length - offset;
+>> +            addr += used_len;
+>> +        }
+>> +
+>> +        start = offset >> TARGET_PAGE_BITS;
+>> +        npages = used_len >> TARGET_PAGE_BITS;
+>> +
+>> +        qemu_mutex_lock(&ram_state->bitmap_mutex);
+> So now I think I understand the lock can still be meaningful since
+> this function now can be called outside the migration thread (e.g., in
+> vcpu thread).  But still it would be nice to mention it somewhere on
+> the truth of the lock.
+>
+
+Yes. Thanks for the reminder. I will add some explanation to the patch 2 
+commit log.
+
+
+Best,
+Wei
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
