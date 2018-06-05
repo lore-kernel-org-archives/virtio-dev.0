@@ -1,55 +1,73 @@
-Return-Path: virtio-dev-return-4582-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4272-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 5453A5819224
-	for <virtio-dev@lists.oasis-open.org>; Wed, 27 Jun 2018 11:57:11 -0700 (PDT)
-Date: Wed, 27 Jun 2018 21:56:59 +0300
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20180627215645-mutt-send-email-mst@kernel.org>
-References: <1462367134-23894-1-git-send-email-kraxel@redhat.com>
- <20160509144316.GI3372@stefanha-x1.localdomain>
- <1462874939.8035.52.camel@redhat.com>
- <1462879537.8035.53.camel@redhat.com>
- <20180620061438-mutt-send-email-mst@kernel.org>
- <20180627061508.ka3j47vlbidmve3q@sirius.home.kraxel.org>
+	by lists.oasis-open.org (Postfix) with ESMTP id 90B49581916C
+	for <virtio-dev@lists.oasis-open.org>; Mon,  4 Jun 2018 18:42:00 -0700 (PDT)
+References: <1525734594-11134-1-git-send-email-sridhar.samudrala@intel.com>
+From: "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
+Message-ID: <fcefe501-b410-f1ec-829c-68199edcdbef@intel.com>
+Date: Mon, 4 Jun 2018 18:41:48 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20180627061508.ka3j47vlbidmve3q@sirius.home.kraxel.org>
-Subject: Re: [virtio-dev] [PATCH] Add virtio gpu device specification.
-To: Gerd Hoffmann <kraxel@redhat.com>
-Cc: Stefan Hajnoczi <stefanha@redhat.com>, virtio-dev@lists.oasis-open.org, qemu-devel@nongnu.org
+In-Reply-To: <1525734594-11134-1-git-send-email-sridhar.samudrala@intel.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+Subject: [virtio-dev] Re: [PATCH] qemu: Introduce VIRTIO_NET_F_STANDBY feature bit to
+ virtio_net
+To: mst@redhat.com, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, jesse.brandeburg@intel.com, alexander.h.duyck@intel.com, jasowang@redhat.com, qemu-devel@nongnu.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, Jun 27, 2018 at 08:15:08AM +0200, Gerd Hoffmann wrote:
->   Hi,
-> 
-> > > > > >   https://www.kraxel.org/virtio/virtio-v1.0-cs03-virtio-gpu.html#x1-2800007
-> 
-> > Is there a chance you could rebase and post?
-> > This is used widely, I think we shoould have it in 1.1
-> > if at all possible.
-> 
-> https://www.kraxel.org/virtio/virtio-v1.0-cs04-virtio-gpu.html#x1-3150007
-> 
-> Repost will follow in a moment.
-> 
-> For virtio-input I don't have the latest version at hand,
-> Ladi worked on it last.
-> 
-> cheers,
->   Gerd
+Ping on this patch now that the kernel patches are accepted into davem's net-next tree.
+https://patchwork.ozlabs.org/cover/920005/
 
-Resent to you in a private mail.
 
-> 
-> ---------------------------------------------------------------------
-> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+On 5/7/2018 4:09 PM, Sridhar Samudrala wrote:
+> This feature bit can be used by hypervisor to indicate virtio_net device to
+> act as a standby for another device with the same MAC address.
+>
+> I tested this with a small change to the patch to mark the STANDBY feature 'true'
+> by default as i am using libvirt to start the VMs.
+> Is there a way to pass the newly added feature bit 'standby' to qemu via libvirt
+> XML file?
+>
+> Signed-off-by: Sridhar Samudrala <sridhar.samudrala@intel.com>
+> ---
+>   hw/net/virtio-net.c                         | 2 ++
+>   include/standard-headers/linux/virtio_net.h | 3 +++
+>   2 files changed, 5 insertions(+)
+>
+> diff --git a/hw/net/virtio-net.c b/hw/net/virtio-net.c
+> index 90502fca7c..38b3140670 100644
+> --- a/hw/net/virtio-net.c
+> +++ b/hw/net/virtio-net.c
+> @@ -2198,6 +2198,8 @@ static Property virtio_net_properties[] = {
+>                        true),
+>       DEFINE_PROP_INT32("speed", VirtIONet, net_conf.speed, SPEED_UNKNOWN),
+>       DEFINE_PROP_STRING("duplex", VirtIONet, net_conf.duplex_str),
+> +    DEFINE_PROP_BIT64("standby", VirtIONet, host_features, VIRTIO_NET_F_STANDBY,
+> +                      false),
+>       DEFINE_PROP_END_OF_LIST(),
+>   };
+>   
+> diff --git a/include/standard-headers/linux/virtio_net.h b/include/standard-headers/linux/virtio_net.h
+> index e9f255ea3f..01ec09684c 100644
+> --- a/include/standard-headers/linux/virtio_net.h
+> +++ b/include/standard-headers/linux/virtio_net.h
+> @@ -57,6 +57,9 @@
+>   					 * Steering */
+>   #define VIRTIO_NET_F_CTRL_MAC_ADDR 23	/* Set MAC address */
+>   
+> +#define VIRTIO_NET_F_STANDBY      62    /* Act as standby for another device
+> +                                         * with the same MAC.
+> +                                         */
+>   #define VIRTIO_NET_F_SPEED_DUPLEX 63	/* Device set linkspeed and duplex */
+>   
+>   #ifndef VIRTIO_NET_NO_LEGACY
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
