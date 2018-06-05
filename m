@@ -1,133 +1,54 @@
-Return-Path: virtio-dev-return-4242-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4277-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id EBBF15818EFF
-	for <virtio-dev@lists.oasis-open.org>; Fri,  1 Jun 2018 05:28:07 -0700 (PDT)
-Message-ID: <5B113CB8.40607@intel.com>
-Date: Fri, 01 Jun 2018 20:31:52 +0800
-From: Wei Wang <wei.w.wang@intel.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id B8FEC5818DC6
+	for <virtio-dev@lists.oasis-open.org>; Tue,  5 Jun 2018 07:39:48 -0700 (PDT)
+Date: Tue, 5 Jun 2018 17:39:34 +0300
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20180605173342-mutt-send-email-mst@kernel.org>
+References: <1524550428-27173-1-git-send-email-wei.w.wang@intel.com>
+ <20180601045824.GH14867@xz-mi>
+ <5B10F412.8050900@intel.com>
+ <20180601104005.GL14867@xz-mi>
+ <20180601153328.GC2531@work-vm>
 MIME-Version: 1.0
-References: <1524550428-27173-1-git-send-email-wei.w.wang@intel.com> <20180601045824.GH14867@xz-mi> <20180601050709.GI14867@xz-mi> <5B10F5E9.8070702@intel.com> <20180601100234.GJ14867@xz-mi>
-In-Reply-To: <20180601100234.GJ14867@xz-mi>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: [virtio-dev] Re: [Qemu-devel] [PATCH v7 0/5] virtio-balloon: free page hint reporting
- support
-To: Peter Xu <peterx@redhat.com>
-Cc: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, mst@redhat.com, quintela@redhat.com, dgilbert@redhat.com, yang.zhang.wz@gmail.com, quan.xu0@gmail.com, liliang.opensource@gmail.com, pbonzini@redhat.com, nilal@redhat.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20180601153328.GC2531@work-vm>
+Subject: [virtio-dev] Re: [Qemu-devel] [PATCH v7 0/5] virtio-balloon: free page hint
+ reporting support
+To: "Dr. David Alan Gilbert" <dgilbert@redhat.com>
+Cc: Peter Xu <peterx@redhat.com>, Wei Wang <wei.w.wang@intel.com>, qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, quintela@redhat.com, yang.zhang.wz@gmail.com, quan.xu0@gmail.com, liliang.opensource@gmail.com, pbonzini@redhat.com, nilal@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 06/01/2018 06:02 PM, Peter Xu wrote:
-> On Fri, Jun 01, 2018 at 03:29:45PM +0800, Wei Wang wrote:
->> On 06/01/2018 01:07 PM, Peter Xu wrote:
->>> On Fri, Jun 01, 2018 at 12:58:24PM +0800, Peter Xu wrote:
->>>> On Tue, Apr 24, 2018 at 02:13:43PM +0800, Wei Wang wrote:
->>>>> This is the deivce part implementation to add a new feature,
->>>>> VIRTIO_BALLOON_F_FREE_PAGE_HINT to the virtio-balloon device. The device
->>>>> receives the guest free page hints from the driver and clears the
->>>>> corresponding bits in the dirty bitmap, so that those free pages are
->>>>> not transferred by the migration thread to the destination.
->>>>>
->>>>> - Test Environment
->>>>>       Host: Intel(R) Xeon(R) CPU E5-2699 v4 @ 2.20GHz
->>>>>       Guest: 8G RAM, 4 vCPU
->>>>>       Migration setup: migrate_set_speed 100G, migrate_set_downtime 2 second
->>>>>
->>>>> - Test Results
->>>>>       - Idle Guest Live Migration Time (results are averaged over 10 runs):
->>>>>           - Optimization v.s. Legacy = 271ms vs 1769ms --> ~86% reduction
->>>>>       - Guest with Linux Compilation Workload (make bzImage -j4):
->>>>>           - Live Migration Time (average)
->>>>>             Optimization v.s. Legacy = 1265ms v.s. 2634ms --> ~51% reduction
->>>>>           - Linux Compilation Time
->>>>>             Optimization v.s. Legacy = 4min56s v.s. 5min3s
->>>>>             --> no obvious difference
->>>>>
->>>>> - Source Code
->>>>>       - QEMU:  https://github.com/wei-w-wang/qemu-free-page-lm.git
->>>>>       - Linux: https://github.com/wei-w-wang/linux-free-page-lm.git
->>>> Hi, Wei,
->>>>
->>>> I have a very high-level question to the series.
->>>>
->>>> IIUC the core idea for this series is that we can avoid sending some
->>>> of the pages if we know that we don't need to send them.  I think this
->>>> is based on the fact that on the destination side all the pages are by
->>>> default zero after they are malloced.  While before this series, IIUC
->>>> any migration will send every single page to destination, no matter
->>>> whether it's zeroed or not.  So I'm uncertain about whether this will
->>>> affect the received bitmap on the destination side.  Say, before this
->>>> series, the received bitmap will directly cover the whole RAM bitmap
->>>> after migration is finished, now it's won't.  Will there be any side
->>>> effect?  I don't see obvious issue now, but just raise this question
->>>> up.
->>>>
->>>> Meanwhile, this reminds me about a more funny idea: whether we can
->>>> just avoid sending the zero pages directly from QEMU's perspective.
->>>> In other words, can we just do nothing if save_zero_page() detected
->>>> that the page is zero (I guess the is_zero_range() can be fast too,
->>>> but I don't know exactly how fast it is)?  And how that would be
->>>> differed from this page hinting way in either performance and other
->>>> aspects.
->>> I noticed a problem (after I wrote the above paragraph 5 minutes
->>> ago...): when a page was valid and sent to the destination (with
->>> non-zero data), however after a while that page was zeroed.  Then if
->>> we don't send zero pages at all, we won't send the page after it's
->>> zeroed.  Then on the destination side we'll have a stale non-zero
->>> page.  Is my understanding correct?  Will that be a problem to this
->>> series too where a valid page can be possibly freed and hinted?
->> I think that won't be an issue either for zero page optimization or this
->> free page optimization.
->>
->> For the zero page optimization, QEMU always sends compressed 0s to the
->> destination. The zero page is detected at the time QEMU checks it (before
->> sending the page). if it is a 0 page, QEMU compresses all 0s (actually just
->> a flag) and send it.
-> what I meant is, can we just do not even send that ZERO flag at all? :)
+On Fri, Jun 01, 2018 at 04:33:29PM +0100, Dr. David Alan Gilbert wrote:
+> I think the answer is no - it doesn't matter; by telling the hypervisor
+> the page is 'free' the kernel gives freedom to the hypervisor to
+> discard the page contents.
 
-I think you just figured out that zero pages and free pages are not 
-completely the same case. So I guess this question is done :)
-Please let me know if not.
+I'd like to call attention to this since it's easy to get confused.
 
->
->> For the free page optimization, we skip free pages (could be thought of as 0
->> pages in this context). The zero pages are detected at the time guest
->> reports it QEMU. The page won't be reported if it is non-zero (i.e. used).
-> Sorry I must have not explained myself well.  Let's assume the page
-> hint is used.  I meant this:
->
-> - start precopy, page P is non-zero (let's say, page has content P1,
->    which is non-zero)
-> - we send page P with content P1 on src, then latest destination cache
->    of page P is P1
-> - page P is freed by the guest, then it becomes zero, dirty bitmap of
->    P is set since it's changed (from P1 to zeroed page)
+That's not exactly true in the current interface.
 
-The page doesn't become 0 itself when it stays on the free page list. 
-Probably the above referred to this:
-#1 memset(pageP, 0, PAGE_SIZE);
-#2 kfree(pageP);
+It's a *hint* not a guarantee.
 
-#1 causes the page to be tracked in the bitmap, and #2 may cause the 
-page to be cleared from the bitmap. This is no different than the 
-general case, a page is used, written to any value, and then freed.
-Essentially, this leads to the question asked in another thread: does 
-the data in free pages matter?
+Let me explain.
 
-As far as I know, Linux treats values in free pages as garbage. People 
-don't rely on values from free pages. It is similar as the case when we 
-use an uninitialized variable, the compiler pops out a warning (not a 
-correct behavior).
+It all starts with a request from hypervisor and each free page report
+is matched to a request.  What the report says is that the page was free
+*sometime after the request was sent to guest*.  If hypervisor was
+tracking changes to page all the time since before sending the request,
+it can conclude that page was free and can discard the contents.  If it
+wasn't then it can't be sure and can not discard the page, it can maybe
+use the hint for other decisions (e.g. unused => should be sent before
+other pages).
 
-Best,
-Wei
-
-
-
+-- 
+MST
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
