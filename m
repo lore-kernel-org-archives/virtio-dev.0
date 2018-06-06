@@ -1,49 +1,131 @@
-Return-Path: virtio-dev-return-4379-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4284-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id AF6FC58191F2
-	for <virtio-dev@lists.oasis-open.org>; Wed, 13 Jun 2018 17:56:17 -0700 (PDT)
-MIME-Version: 1.0
-In-Reply-To: <20180612143554-mutt-send-email-mst@kernel.org>
+	by lists.oasis-open.org (Postfix) with ESMTP id C4B605818F05
+	for <virtio-dev@lists.oasis-open.org>; Tue,  5 Jun 2018 19:29:23 -0700 (PDT)
 References: <1525734594-11134-1-git-send-email-sridhar.samudrala@intel.com>
- <fcefe501-b410-f1ec-829c-68199edcdbef@intel.com> <20180605152344-mutt-send-email-mst@kernel.org>
- <CADGSJ21Qf6KpLzr+og5DOFjMPqu69n6dWRLvvj1FGAR5kVRNew@mail.gmail.com>
- <20180606002650-mutt-send-email-mst@kernel.org> <CADGSJ21AMp02vV+qxa+DuyvAUCCsXUFwV7wjzQ1Vy1jKV=n1HA@mail.gmail.com>
- <20180612143554-mutt-send-email-mst@kernel.org>
-From: Siwei Liu <loseweigh@gmail.com>
-Date: Wed, 13 Jun 2018 17:56:06 -0700
-Message-ID: <CADGSJ21gEYTMQv+-nOxXiwKmFp0c5EDqfCXHqy2EbF3iLZfuXg@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Subject: Re: [virtio-dev] Re: [PATCH] qemu: Introduce VIRTIO_NET_F_STANDBY
- feature bit to virtio_net
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: "Samudrala, Sridhar" <sridhar.samudrala@intel.com>, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, "Brandeburg, Jesse" <jesse.brandeburg@intel.com>, Alexander Duyck <alexander.h.duyck@intel.com>, Jason Wang <jasowang@redhat.com>, qemu-devel@nongnu.org
+ <fcefe501-b410-f1ec-829c-68199edcdbef@intel.com>
+ <20180605152344-mutt-send-email-mst@kernel.org>
+From: Jason Wang <jasowang@redhat.com>
+Message-ID: <a45625c9-d2cd-f8f7-ce31-37c558e70b88@redhat.com>
+Date: Wed, 6 Jun 2018 10:29:03 +0800
+MIME-Version: 1.0
+In-Reply-To: <20180605152344-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+Subject: [virtio-dev] Re: [PATCH] qemu: Introduce VIRTIO_NET_F_STANDBY feature bit to
+ virtio_net
+To: "Michael S. Tsirkin" <mst@redhat.com>, "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
+Cc: virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, jesse.brandeburg@intel.com, alexander.h.duyck@intel.com, qemu-devel@nongnu.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Tue, Jun 12, 2018 at 4:47 AM, Michael S. Tsirkin <mst@redhat.com> wrote:
-> On Tue, Jun 05, 2018 at 03:09:26PM -0700, Siwei Liu wrote:
->> The thing is cloud service provider might prefer sticking to the same
->> level of service agreement (SLA) of keeping VF over migration,
+
+
+On 2018年06月05日 20:33, Michael S. Tsirkin wrote:
+> I don't think this is sufficient.
 >
-> That requirement is trivially satisfied by just a single VF :) If your
-> SLA does not require live migration, you should do just that.
+> If both primary and standby devices are present, a legacy guest without
+> support for the feature might see two devices with same mac and get
+> confused.
+>
+> I think that we should only make primary visible after guest acked the
+> backup feature bit.
 
-The requirement is enable live migration by default without getting
-user too much attention. Migration should be attempted if guest is
-live migratable. If not, present a single VF to legacy guest.
+I think we want exactly the reverse? E.g fail the negotiation when guest 
+does not ack backup feature.
 
-You seem to think it's not a valid use case? Or impossible to do so?
-What if I have something in mind that can support my theory as well?
-
--Siwei
+Otherwise legacy guest won't even have the chance to see primary device 
+in the guest.
 
 >
-> --
-> MST
+> And on reset or when backup is cleared in some other way, unplug the
+> primary.
+
+What if guest does not support hotplug?
+
+>
+> Something like the below will do the job:
+>
+> Primary device is added with a special "primary-failover" flag.
+> A virtual machine is then initialized with just a standby virtio
+> device. Primary is not yet added.
+
+A question is how to do the matching? Qemu knows nothing about e.g mac 
+address of a pass-through device I believe?
+
+>
+> Later QEMU detects that guest driver device set DRIVER_OK.
+> It then exposes the primary device to the guest, and triggers
+> a device addition event (hot-plug event) for it.
+
+Do you mean we won't have primary device in the initial qemu cli?
+
+>
+> If QEMU detects guest driver removal, it initiates a hot-unplug sequence
+> to remove the primary driver.  In particular, if QEMU detects guest
+> re-initialization (e.g. by detecting guest reset) it immediately removes
+> the primary device.
+
+I believe guest failover module should handle this gracefully?
+
+Thanks
+
+>
+> We can move some of this code to management as well, architecturally it
+> does not make too much sense but it might be easier implementation-wise.
+>
+> HTH
+>
+> On Mon, Jun 04, 2018 at 06:41:48PM -0700, Samudrala, Sridhar wrote:
+>> Ping on this patch now that the kernel patches are accepted into davem's net-next tree.
+>> https://patchwork.ozlabs.org/cover/920005/
+>>
+>>
+>> On 5/7/2018 4:09 PM, Sridhar Samudrala wrote:
+>>> This feature bit can be used by hypervisor to indicate virtio_net device to
+>>> act as a standby for another device with the same MAC address.
+>>>
+>>> I tested this with a small change to the patch to mark the STANDBY feature 'true'
+>>> by default as i am using libvirt to start the VMs.
+>>> Is there a way to pass the newly added feature bit 'standby' to qemu via libvirt
+>>> XML file?
+>>>
+>>> Signed-off-by: Sridhar Samudrala <sridhar.samudrala@intel.com>
+>>> ---
+>>>    hw/net/virtio-net.c                         | 2 ++
+>>>    include/standard-headers/linux/virtio_net.h | 3 +++
+>>>    2 files changed, 5 insertions(+)
+>>>
+>>> diff --git a/hw/net/virtio-net.c b/hw/net/virtio-net.c
+>>> index 90502fca7c..38b3140670 100644
+>>> --- a/hw/net/virtio-net.c
+>>> +++ b/hw/net/virtio-net.c
+>>> @@ -2198,6 +2198,8 @@ static Property virtio_net_properties[] = {
+>>>                         true),
+>>>        DEFINE_PROP_INT32("speed", VirtIONet, net_conf.speed, SPEED_UNKNOWN),
+>>>        DEFINE_PROP_STRING("duplex", VirtIONet, net_conf.duplex_str),
+>>> +    DEFINE_PROP_BIT64("standby", VirtIONet, host_features, VIRTIO_NET_F_STANDBY,
+>>> +                      false),
+>>>        DEFINE_PROP_END_OF_LIST(),
+>>>    };
+>>> diff --git a/include/standard-headers/linux/virtio_net.h b/include/standard-headers/linux/virtio_net.h
+>>> index e9f255ea3f..01ec09684c 100644
+>>> --- a/include/standard-headers/linux/virtio_net.h
+>>> +++ b/include/standard-headers/linux/virtio_net.h
+>>> @@ -57,6 +57,9 @@
+>>>    					 * Steering */
+>>>    #define VIRTIO_NET_F_CTRL_MAC_ADDR 23	/* Set MAC address */
+>>> +#define VIRTIO_NET_F_STANDBY      62    /* Act as standby for another device
+>>> +                                         * with the same MAC.
+>>> +                                         */
+>>>    #define VIRTIO_NET_F_SPEED_DUPLEX 63	/* Device set linkspeed and duplex */
+>>>    #ifndef VIRTIO_NET_NO_LEGACY
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
