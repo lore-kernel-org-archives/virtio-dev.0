@@ -1,57 +1,119 @@
-Return-Path: virtio-dev-return-4308-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4286-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id C0B0158191AD
-	for <virtio-dev@lists.oasis-open.org>; Fri,  8 Jun 2018 00:28:17 -0700 (PDT)
-Message-ID: <5B1A30ED.6040906@intel.com>
-Date: Fri, 08 Jun 2018 15:31:57 +0800
+	by lists.oasis-open.org (Postfix) with ESMTP id D2A865818F86
+	for <virtio-dev@lists.oasis-open.org>; Wed,  6 Jun 2018 03:08:02 -0700 (PDT)
+Message-ID: <5B17B366.5030802@intel.com>
+Date: Wed, 06 Jun 2018 18:11:50 +0800
 From: Wei Wang <wei.w.wang@intel.com>
 MIME-Version: 1.0
-References: <20180529181221-mutt-send-email-mst@kernel.org> <5B0E6AE9.2030505@intel.com> <20180530154325-mutt-send-email-mst@kernel.org> <5B14F2A3.9010805@intel.com> <20180605065857.GC9216@xz-mi> <5B168EAB.7090607@intel.com> <20180606054227.GA7815@xz-mi> <5B17B1A7.8060307@intel.com> <20180606110217.GF7815@xz-mi> <5B18C18D.3070007@intel.com> <20180607063241.GA750@xz-mi>
-In-Reply-To: <20180607063241.GA750@xz-mi>
+References: <1524550428-27173-1-git-send-email-wei.w.wang@intel.com> <1524550428-27173-5-git-send-email-wei.w.wang@intel.com> <20180606064315.GB7815@xz-mi>
+In-Reply-To: <20180606064315.GB7815@xz-mi>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: [virtio-dev] Re: [PATCH v7 4/5] virtio-balloon: VIRTIO_BALLOON_F_FREE_PAGE_HINT
+Subject: [virtio-dev] Re: [Qemu-devel] [PATCH v7 4/5] virtio-balloon: VIRTIO_BALLOON_F_FREE_PAGE_HINT
 To: Peter Xu <peterx@redhat.com>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>, qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, quintela@redhat.com, dgilbert@redhat.com, pbonzini@redhat.com, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu0@gmail.com, nilal@redhat.com, riel@redhat.com, zhang.zhanghailiang@huawei.com
+Cc: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, mst@redhat.com, quintela@redhat.com, dgilbert@redhat.com, yang.zhang.wz@gmail.com, quan.xu0@gmail.com, liliang.opensource@gmail.com, pbonzini@redhat.com, nilal@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 06/07/2018 02:32 PM, Peter Xu wrote:
->>>> Btw, the migration_state_notifiers is already there, but seems not really
->>>> used (I only tracked spice-core.c called
->>>> add_migration_state_change_notifier). I thought adding new migration states
->>>> can reuse all that we have.
->>>> What's your real concern about that? (not sure how defining new events would
->>>> make a difference)
->>> Migration state is exposed via control path (QMP).  Adding new states
->>> mean that the QMP clients will see more.  IMO that's not really
->>> anything that a QMP client will need to know, instead we can keep it
->>> internally.  That's a reason from compatibility pov.
->>>
->>> Meanwhile, it's not really a state-thing at all for me.  It looks
->>> really more like hook or event (start/stop of sync).
->> Thanks for sharing your concerns in detail, which are quite helpful for the
->> discussion. To reuse 99a0db9b, we can also add sub-states (or say events),
->> instead of new migration states.
->> For example, we can still define "enum RamSaveState" as above, which can be
->> an indication for the notifier queued on the 99a0db9b notider_list to decide
->> whether to call start or stop.
->> Does this solve your concern?
-> Frankly speaking I don't fully understand how you would add that
-> sub-state.  If you are confident with the idea, maybe you can post
-> your new version with the change, then I can read the code.
+On 06/06/2018 02:43 PM, Peter Xu wrote:
+> On Tue, Apr 24, 2018 at 02:13:47PM +0800, Wei Wang wrote:
+>
+> [...]
+>
+> +        if (elem->out_num) {
+> +            size = iov_to_buf(elem->out_sg, elem->out_num, 0, &id, sizeof(id));
+> +            virtqueue_push(vq, elem, size);
+> Silly question: is this sending the same id back to guest?  Why?
 
-Reusing 99a0db9b functions well, but I find it is more clear to let ram 
-save state have it's own notifier list..will show how that works in v8.
+No. It's just giving back the used buffer.
+
+>
+>> +            g_free(elem);
+>> +
+>> +            virtio_tswap32s(vdev, &id);
+>> +            if (unlikely(size != sizeof(id))) {
+>> +                virtio_error(vdev, "received an incorrect cmd id");
+> Forgot to unlock?
+>
+> Maybe we can just move the lock operations outside:
+>
+>    mutex_lock();
+>    while (1) {
+>      ...
+>      if (block) {
+>        qemu_cond_wait();
+>      }
+>      ...
+>      if (skip) {
+>        continue;
+>      }
+>      ...
+>      if (error) {
+>        break;
+>      }
+>      ...
+>    }
+>    mutex_unlock();
+
+
+I got similar comments from Michael, and it will be
+while (1) {
+lock;
+func();
+unlock();
+}
+
+All the unlock inside the body will be gone.
+
+> [...]
+>> +static const VMStateDescription vmstate_virtio_balloon_free_page_report = {
+>> +    .name = "virtio-balloon-device/free-page-report",
+>> +    .version_id = 1,
+>> +    .minimum_version_id = 1,
+>> +    .needed = virtio_balloon_free_page_support,
+>> +    .fields = (VMStateField[]) {
+>> +        VMSTATE_UINT32(free_page_report_cmd_id, VirtIOBalloon),
+>> +        VMSTATE_UINT32(poison_val, VirtIOBalloon),
+> (could we move all the poison-related lines into another patch or
+>   postpone?  after all we don't support it yet, do we?)
+>
+
+  We don't support migrating poison value, but guest maybe use it, so we 
+are actually disabling this feature in that case. Probably good to leave 
+the code together to handle that case.
+
+
+>> +    if (virtio_has_feature(s->host_features,
+>> +                           VIRTIO_BALLOON_F_FREE_PAGE_HINT)) {
+>> +        s->free_page_vq = virtio_add_queue(vdev, VIRTQUEUE_MAX_SIZE, NULL);
+>> +        s->free_page_report_status = FREE_PAGE_REPORT_S_STOP;
+>> +        s->free_page_report_cmd_id =
+>> +                           VIRTIO_BALLOON_FREE_PAGE_REPORT_CMD_ID_MIN - 1;
+> Why explicitly -1?  I thought ID_MIN would be fine too?
+
+Yes, that will also be fine. Since we states that the cmd id will be 
+from [MIN, MAX], and we make s->free_page_report_cmd_id++ in start(), 
+using VIRTIO_BALLOON_FREE_PAGE_REPORT_CMD_ID_MIN here will make it [MIN 
++ 1, MAX].
+
+>
+>> +        if (s->iothread) {
+>> +            object_ref(OBJECT(s->iothread));
+>> +            s->free_page_bh = aio_bh_new(iothread_get_aio_context(s->iothread),
+>> +                                       virtio_balloon_poll_free_page_hints, s);
+> Just to mention that now we can create internal iothreads.  Please
+> have a look at iothread_create().
+
+Thanks. I noticed that, but I think configuring via the cmd line can let 
+people share the iothread with other devices that need it.
 
 Best,
 Wei
-
-
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
