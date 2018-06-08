@@ -1,61 +1,51 @@
-Return-Path: virtio-dev-return-4362-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4311-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id A3E491CB807D
-	for <virtio-dev@lists.oasis-open.org>; Wed, 13 Jun 2018 02:13:16 -0700 (PDT)
-Date: Wed, 13 Jun 2018 17:13:08 +0800
+	by lists.oasis-open.org (Postfix) with ESMTP id B9B9F58191AE
+	for <virtio-dev@lists.oasis-open.org>; Fri,  8 Jun 2018 01:12:57 -0700 (PDT)
 From: Tiwei Bie <tiwei.bie@intel.com>
-Message-ID: <20180613091308.GA2692@debian>
-References: <20180612053221.22925-1-tiwei.bie@intel.com>
- <20180613110552.7a097717.cohuck@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20180613110552.7a097717.cohuck@redhat.com>
-Subject: [virtio-dev] Re: [RFC] content: use a consistent wording for device status
-To: Cornelia Huck <cohuck@redhat.com>
-Cc: mst@redhat.com, stefanha@redhat.com, pbonzini@redhat.com, virtio-dev@lists.oasis-open.org, dan.daly@intel.com, cunming.liang@intel.com, zhihong.wang@intel.com
+Date: Fri,  8 Jun 2018 16:12:36 +0800
+Message-Id: <20180608081236.7789-1-tiwei.bie@intel.com>
+Subject: [virtio-dev] [PATCH v2] content: enhance device requirements for feature bits
+To: mst@redhat.com, cohuck@redhat.com, stefanha@redhat.com, pbonzini@redhat.com, virtio-dev@lists.oasis-open.org
+Cc: dan.daly@intel.com, cunming.liang@intel.com, zhihong.wang@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, Jun 13, 2018 at 11:05:52AM +0200, Cornelia Huck wrote:
-> On Tue, 12 Jun 2018 13:32:21 +0800
-> Tiwei Bie <tiwei.bie@intel.com> wrote:
-> 
-> > There is a part called "device status field" in a
-> > Virtio device. Currently, both of \field{status}
-> > and \field{device status} are used to refer to it,
-> > which is a bit confusing. This patch changes spec
-> > to use \field{device status} consistently.
-> > 
-> > Suggested-by: Michael S. Tsirkin <mst@redhat.com>
-> > Signed-off-by: Tiwei Bie <tiwei.bie@intel.com>
-> > ---
-> > If we want this change, I'll open an issue and
-> > send a formal patch.
-> 
-> Sounds good, given that there are some device-type specific 'status'
-> fields, which makes things confusing.
-> 
-> > 
-> >  content.tex | 21 ++++++++++++---------
-> >  1 file changed, 12 insertions(+), 9 deletions(-)
-> 
-> Patch looks good.
-> 
-> Reviewed-by: Cornelia Huck <cohuck@redhat.com>
+Suggested-by: Michael S. Tsirkin <mst@redhat.com>
+Signed-off-by: Tiwei Bie <tiwei.bie@intel.com>
+Fixes: https://github.com/oasis-tcs/virtio-spec/issues/14
+---
+v2:
+- Refine the wording (Cornelia);
 
-Thank you very much for the review! :)
+ content.tex | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-I'll open an issue and send a new patch (just
-to drop the "RFC" from the subject) with your
-Reviewed-by.
+diff --git a/content.tex b/content.tex
+index f996fad..41cba41 100644
+--- a/content.tex
++++ b/content.tex
+@@ -125,6 +125,13 @@ which was not offered.  The device SHOULD accept any valid subset
+ of features the driver accepts, otherwise it MUST fail to set the
+ FEATURES_OK \field{device status} bit when the driver writes it.
+ 
++If a device has successfully negotiated a set of features
++at least once (by succeeding to set the FEATURES_OK
++\field{device status} bit when the driver writes it), then
++it SHOULD NOT fail re-negotiation of the same set of features
++after a device or system reset.  Failure to do so would
++interfere with resuming from suspend and error recovery.
++
+ \subsection{Legacy Interface: A Note on Feature
+ Bits}\label{sec:Basic Facilities of a Virtio Device / Feature
+ Bits / Legacy Interface: A Note on Feature Bits}
+-- 
+2.17.0
 
-Best regards,
-Tiwei Bie
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
