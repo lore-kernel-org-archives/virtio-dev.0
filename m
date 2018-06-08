@@ -1,47 +1,60 @@
-Return-Path: virtio-dev-return-4306-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4309-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 808B558180D0
-	for <virtio-dev@lists.oasis-open.org>; Thu,  7 Jun 2018 23:59:38 -0700 (PDT)
-From: Tiwei Bie <tiwei.bie@intel.com>
-Date: Fri,  8 Jun 2018 14:59:28 +0800
-Message-Id: <20180608065928.2456-1-tiwei.bie@intel.com>
-Subject: [virtio-dev] [PATCH] content: enhance device requirements for feature bits
-To: mst@redhat.com, cohuck@redhat.com, stefanha@redhat.com, pbonzini@redhat.com, virtio-dev@lists.oasis-open.org
-Cc: dan.daly@intel.com, cunming.liang@intel.com, zhihong.wang@intel.com
+	by lists.oasis-open.org (Postfix) with ESMTP id 4A1675818FAD
+	for <virtio-dev@lists.oasis-open.org>; Fri,  8 Jun 2018 00:36:37 -0700 (PDT)
+Date: Fri, 8 Jun 2018 09:36:17 +0200
+From: Cornelia Huck <cohuck@redhat.com>
+Message-ID: <20180608093617.3fc9b951.cohuck@redhat.com>
+In-Reply-To: <20180608065928.2456-1-tiwei.bie@intel.com>
+References: <20180608065928.2456-1-tiwei.bie@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Subject: [virtio-dev] Re: [PATCH] content: enhance device requirements for feature bits
+To: Tiwei Bie <tiwei.bie@intel.com>
+Cc: mst@redhat.com, stefanha@redhat.com, pbonzini@redhat.com, virtio-dev@lists.oasis-open.org, dan.daly@intel.com, cunming.liang@intel.com, zhihong.wang@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Suggested-by: Michael S. Tsirkin <mst@redhat.com>
-Signed-off-by: Tiwei Bie <tiwei.bie@intel.com>
-Fixes: https://github.com/oasis-tcs/virtio-spec/issues/14
----
- content.tex | 7 +++++++
- 1 file changed, 7 insertions(+)
+On Fri,  8 Jun 2018 14:59:28 +0800
+Tiwei Bie <tiwei.bie@intel.com> wrote:
 
-diff --git a/content.tex b/content.tex
-index f996fad..8374d3f 100644
---- a/content.tex
-+++ b/content.tex
-@@ -125,6 +125,13 @@ which was not offered.  The device SHOULD accept any valid subset
- of features the driver accepts, otherwise it MUST fail to set the
- FEATURES_OK \field{device status} bit when the driver writes it.
- 
-+If a device has successfully negotiated a set of features
-+at least once (by setting the FEATURES_OK \field{device
-+status} bit when the driver writes it), then it SHOULD NOT
-+fail re-negotiation of the same set of features after a
-+device or system reset.  Failure to do so would interfere
-+with the resuming from suspend and error recovery.
-+
- \subsection{Legacy Interface: A Note on Feature
- Bits}\label{sec:Basic Facilities of a Virtio Device / Feature
- Bits / Legacy Interface: A Note on Feature Bits}
--- 
-2.17.0
+> Suggested-by: Michael S. Tsirkin <mst@redhat.com>
+> Signed-off-by: Tiwei Bie <tiwei.bie@intel.com>
+> Fixes: https://github.com/oasis-tcs/virtio-spec/issues/14
+> ---
+>  content.tex | 7 +++++++
+>  1 file changed, 7 insertions(+)
+> 
+> diff --git a/content.tex b/content.tex
+> index f996fad..8374d3f 100644
+> --- a/content.tex
+> +++ b/content.tex
+> @@ -125,6 +125,13 @@ which was not offered.  The device SHOULD accept any valid subset
+>  of features the driver accepts, otherwise it MUST fail to set the
+>  FEATURES_OK \field{device status} bit when the driver writes it.
+>  
+> +If a device has successfully negotiated a set of features
+> +at least once (by setting the FEATURES_OK \field{device
+> +status} bit when the driver writes it), then it SHOULD NOT
+
+Hm, it's the driver that sets FEATURES_OK, not the device. What about
+"by succeeding to set"?
+
+> +fail re-negotiation of the same set of features after a
+> +device or system reset.  Failure to do so would interfere
+> +with the resuming from suspend and error recovery.
+
+s/the resuming/resuming/
+
+> +
+>  \subsection{Legacy Interface: A Note on Feature
+>  Bits}\label{sec:Basic Facilities of a Virtio Device / Feature
+>  Bits / Legacy Interface: A Note on Feature Bits}
 
 
 ---------------------------------------------------------------------
