@@ -1,168 +1,129 @@
-Return-Path: virtio-return-3134-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-return-3131-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio@lists.oasis-open.org>
 List-Post: <mailto:virtio@lists.oasis-open.org>
 List-Help: <mailto:virtio-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
+Date: Wed, 13 Jun 2018 14:04:05 +0100
+From: Stefan Hajnoczi <stefanha@redhat.com>
+Message-ID: <20180613130405.GE24528@stefanha-x1.localdomain>
 References: <1528733518-24950-1-git-send-email-pasic@linux.ibm.com>
  <1528733518-24950-2-git-send-email-pasic@linux.ibm.com>
- <20180613114443.4f7a6bba.cohuck@redhat.com>
-From: Halil Pasic <pasic@linux.ibm.com>
-Date: Wed, 13 Jun 2018 15:14:53 +0200
 MIME-Version: 1.0
-In-Reply-To: <20180613114443.4f7a6bba.cohuck@redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Message-Id: <efc28085-6388-782f-07d7-73fa788cdf04@linux.ibm.com>
-Subject: Re: [virtio] Re: [PATCH v2 1/6] notifications: unify notifications
- wording in core
-To: Cornelia Huck <cohuck@redhat.com>
-Cc: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, "Michael S. Tsirkin" <mst@redhat.com>, Pawel Moll <pawel.moll@arm.com>, Stefan Hajnoczi <stefanha@redhat.com>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="k3qmt+ucFURmlhDS"
+Content-Disposition: inline
+In-Reply-To: <1528733518-24950-2-git-send-email-pasic@linux.ibm.com>
+Subject: [virtio] Re: [PATCH v2 1/6] notifications: unify notifications wording in core
+To: Halil Pasic <pasic@linux.ibm.com>
+Cc: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, "Michael S. Tsirkin" <mst@redhat.com>, Cornelia Huck <cohuck@redhat.com>, Pawel Moll <pawel.moll@arm.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+--k3qmt+ucFURmlhDS
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
+On Mon, Jun 11, 2018 at 06:11:53PM +0200, Halil Pasic wrote:
+> @@ -65,11 +65,12 @@ in which their processing is complete.
+> =20
+>  The Device Event Suppression data structure is write-only by the
+>  device. It includes information for reducing the number of
+> -device events - i.e. driver notifications to device.
+> +device events - i.e. sending an available buffer notification
+> +to the device.
+> =20
+>  The Driver Event Suppression data structure is read-only by the
+>  device. It includes information for reducing the number of
+> -driver events - i.e. device interrupts to driver.
+> +driver events - i.e. send a used buffer notification to the driver.
 
-On 06/13/2018 11:44 AM, Cornelia Huck wrote:
-> On Mon, 11 Jun 2018 18:11:53 +0200
-> Halil Pasic <pasic@linux.ibm.com> wrote:
-> 
->> Let us unify the wording when talking about notifications. This change
->> establishes the terms available buffer notification for what was usually
->> simply called notification or virtqueue notification in v1.0 and used
->> buffer notification for what was usually called interrupt.
->>
->> The term configuration change notification in kept where called so and
->> consolidated where it's called configuration change interrupt or
->> similar.
->>
->> The changes done here are limited to the core part, and don't
->> conceptually involve neither the transports nor the devices (references
->> are updated though). Future changes should address these parts.
->>
->> Signed-off-by: Halil Pasic <pasic@linux.ibm.com>
->> ---
->>   cl-os.tex       |    2 +-
->>   conformance.tex |    8 +++---
->>   content.tex     |   26 +++++++++++--------
->>   packed-ring.tex |   61 ++++++++++++++++++++++++++--------------------
->>   split-ring.tex  |   72 ++++++++++++++++++++++++++++++++-----------------------
->>   5 files changed, 96 insertions(+), 73 deletions(-)
->>
-> 
->> diff --git a/content.tex b/content.tex
->> index be18234..e1dcaea 100644
->> --- a/content.tex
->> +++ b/content.tex
-> 
-> (...)
-> 
->> @@ -388,10 +391,11 @@ reads unless notified.
->>   
->>   \subsection{Notification of Device Configuration Changes}\label{sec:General Initialization And Device Operation / Device Operation / Notification of Device Configuration Changes}
->>   
->> -For devices where the device-specific configuration information can be changed, an
->> -interrupt is delivered when a device-specific configuration change occurs.
->> +For devices where the device-specific configuration information can be
->> +changed, a configuration change notification is delivered when a
-> 
-> Perhaps better "is sent", to keep in line with the used/available
-> buffer notifications?
-> 
+This makes the "i.e." more natural:
 
-I agree, it sounds better. I kept 'delivered' without thinking about it.
-I will change this for v3.
+"sending fewer used buffer notifications to the driver"
 
->> +device-specific configuration change occurs.
->>   
->> -In addition, this interrupt is triggered by the device setting
->> +In addition, this notification is triggered by the device setting
->>   DEVICE_NEEDS_RESET (see \ref{sec:Basic Facilities of a Virtio Device / Device Status Field / DEVICENEEDSRESET}).
->>   
->>   \section{Device Cleanup}\label{sec:General Initialization And Device Operation / Device Cleanup}
-> 
-> (...)
-> 
->> @@ -309,22 +310,20 @@ in the ring.
->>   
->>   \subsection{Driver and Device Event Suppression}
->>   \label{sec:Packed Virtqueues / Driver and Device Event Suppression}
->> -In many systems driver and device notifications involve
->> +In many systems used and available buffer notifications involve
->>   significant overhead. To mitigate this overhead,
->>   each virtqueue includes two identical structures used for
->>   controlling notifications between the device and the driver.
->>   
->>   The Driver Event Suppression structure is read-only by the
->> -device and controls the events sent by the device
->> -to the driver (e.g. interrupts).
->> +device and controls the used buffer notifications (sent by the device
->> +to the driver).
-> 
-> Drop the brackets?
-> 
+because the "send a used buffer notification to the driver" phrase
+doesn't directly relate to any preceding subphrase ("driver events",
+"number of driver events", or "reducing the number of driver events").
 
-Can do (if nobody complains).
+> =20
+>  \subsection{Driver and Device Ring Wrap Counters}
+>  \label{sec:Packed Virtqueues / Driver and Device Ring Wrap Counters}
+> @@ -309,22 +310,20 @@ in the ring.
+> =20
+>  \subsection{Driver and Device Event Suppression}
+>  \label{sec:Packed Virtqueues / Driver and Device Event Suppression}
+> -In many systems driver and device notifications involve
+> +In many systems used and available buffer notifications involve
+>  significant overhead. To mitigate this overhead,
+>  each virtqueue includes two identical structures used for
+>  controlling notifications between the device and the driver.
+> =20
+>  The Driver Event Suppression structure is read-only by the
+> -device and controls the events sent by the device
+> -to the driver (e.g. interrupts).
+> +device and controls the used buffer notifications (sent by the device
+> +to the driver).
+> =20
+>  The Device Event Suppression structure is read-only by
+> -the driver and controls the events sent by the driver
+> -to the device (e.g. IO).
+> +the driver and controls the available buffer notifications (sent by the
+> +driver to the device).
+> =20
+> -Each of these Event Suppression structures controls
+> -both Descriptor Ring events and structure events, and
+> -each includes the following fields:
+> +Each of these Event Suppression includes the following fields:
 
->>   
->>   The Device Event Suppression structure is read-only by
->> -the driver and controls the events sent by the driver
->> -to the device (e.g. IO).
->> +the driver and controls the available buffer notifications (sent by the
->> +driver to the device).
-> 
-> Here as well.
-> 
+Something is missing, "these" is plural but Event Suppression is
+singular:
 
-Nod.
+Each of these Event Suppression structures ...
 
->>   
->> -Each of these Event Suppression structures controls
->> -both Descriptor Ring events and structure events, and
->> -each includes the following fields:
->> +Each of these Event Suppression includes the following fields:
-> 
-> "Event Suppression" what? Keep "structures"?
-> 
+>  Otherwise, if the VIRTIO_F_EVENT_IDX feature bit is negotiated:
+>  \begin{itemize}
+>  \item The driver MUST set \field{flags} to 0.
+> -\item The driver MAY use \field{used_event} to advise the device that in=
+terrupts are unnecessary until the device writes entry with an index specif=
+ied by \field{used_event} into the used ring (equivalently, until \field{id=
+x} in the
+> +\item The driver MAY use \field{used_event} to advise the device that
+> +notifications are unnecessary until the device writes entry with an inde=
+x specified by \field{used_event} into the used ring (equivalently, until \=
+field{idx} in the
 
-Oh that was unintended.
+Pre-existing issue:
 
->>   
->>   \begin{description}
->>   \item [Descriptor Ring Change Event Flags] Takes values:
->> @@ -352,9 +351,9 @@ matches this value and a descriptor is
->>   made available/used respectively.
->>   \end{description}
->>   
->> -After writing out some descriptors, both the device and the driver
->> +After writing out some descriptors, the device/driver
-> 
-> Keep this unchanged?
-> 
->>   are expected to consult the relevant structure to find out
->> -whether an interrupt/notification should be sent.
->> +whether a(n) used/available buffer notification should be sent.
-> 
-> "whether a used respectively an available buffer notification..."?
-> 
+  the device writes *an* entry
 
-I wasn't really satisfied with my sentence. Now I see that
-my initial concern with 'both' (which I tried to avoid) is not valid.
+> @@ -562,8 +570,8 @@ The driver offers buffers to one of the device's virt=
+queues as follows:
+>  \item The driver performs a suitable memory barrier to ensure that it up=
+dates
+>    the \field{idx} field before checking for notification suppression.
+> =20
+> -\item If notifications are not suppressed, the driver notifies the device
+> -    of the new available buffers.
+> +\item The driver sends an available buffers notification to the device if
+> +    such notifications are not suppressed.
 
-I will change it.
+For consistency:
 
-Thanks for your review!
+s/available buffers notification/available buffer notification/
 
-Halil
+--k3qmt+ucFURmlhDS
+Content-Type: application/pgp-signature; name="signature.asc"
 
->>   
->>   \subsubsection{Structure Size and Alignment}
->>   \label{sec:Packed Virtqueues / Structure Size and Alignment}
-> 
+-----BEGIN PGP SIGNATURE-----
 
+iQEcBAEBAgAGBQJbIRZFAAoJEJykq7OBq3PIjP8H/1AaEKHzazwstsaJ7Cnx3oBC
+x3X4fnV7F+LtifNnzMRN1WzHWzyGUQ4JrNUFZN3w6rsWFLIKRymmgQLj+MpVkGDl
+QhWgor85hAXmg3qtnUDHVfR86mtQeI4Hnyjty9xk4s/xMrEJx65csviw3lv7tTJT
+eP/7eUiwg7ZIkR2UmG4Bj4j3fC16ZBrT85631Vtu2DL11ewhEYw8tIsxt73rF26S
+IiUb+KuBuCfVenTO3hL0W6le+nxf1ScyN/o4n21IXG+gDvSM/Gpk+QLkaCJQ+ycB
+13BisxjC3HPFt29aaL6kCmWSZzn8w7vZdcW7vn7kpa+joBZp+TWwcy7C2moRHLI=
+=wLHt
+-----END PGP SIGNATURE-----
 
----------------------------------------------------------------------
-To unsubscribe from this mail list, you must leave the OASIS TC that 
-generates this mail.  Follow this link to all your TCs in OASIS at:
-https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
-
+--k3qmt+ucFURmlhDS--
