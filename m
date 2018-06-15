@@ -1,104 +1,62 @@
-Return-Path: virtio-dev-return-4459-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4386-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 1F3D058191A5
-	for <virtio-dev@lists.oasis-open.org>; Wed, 20 Jun 2018 07:14:55 -0700 (PDT)
-Date: Wed, 20 Jun 2018 17:14:41 +0300
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20180620171320-mutt-send-email-mst@kernel.org>
-References: <20180615144000-mutt-send-email-mst@kernel.org>
- <286AC319A985734F985F78AFA26841F7396A3D04@shsmsx102.ccr.corp.intel.com>
- <20180615171635-mutt-send-email-mst@kernel.org>
- <286AC319A985734F985F78AFA26841F7396A5CB0@shsmsx102.ccr.corp.intel.com>
- <20180618051637-mutt-send-email-mst@kernel.org>
- <286AC319A985734F985F78AFA26841F7396AA10C@shsmsx102.ccr.corp.intel.com>
- <20180619055449-mutt-send-email-mst@kernel.org>
- <5B28F371.9020308@intel.com>
- <20180619173256-mutt-send-email-mst@kernel.org>
- <286AC319A985734F985F78AFA26841F7396AE2EC@shsmsx102.ccr.corp.intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <286AC319A985734F985F78AFA26841F7396AE2EC@shsmsx102.ccr.corp.intel.com>
-Subject: Re: [virtio-dev] Re: [PATCH v33 2/4] virtio-balloon:
- VIRTIO_BALLOON_F_FREE_PAGE_HINT
-To: "Wang, Wei W" <wei.w.wang@intel.com>
-Cc: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "mhocko@kernel.org" <mhocko@kernel.org>, "akpm@linux-foundation.org" <akpm@linux-foundation.org>, "torvalds@linux-foundation.org" <torvalds@linux-foundation.org>, "pbonzini@redhat.com" <pbonzini@redhat.com>, "liliang.opensource@gmail.com" <liliang.opensource@gmail.com>, "yang.zhang.wz@gmail.com" <yang.zhang.wz@gmail.com>, "quan.xu0@gmail.com" <quan.xu0@gmail.com>, "nilal@redhat.com" <nilal@redhat.com>, "riel@redhat.com" <riel@redhat.com>, "peterx@redhat.com" <peterx@redhat.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 07201581809C
+	for <virtio-dev@lists.oasis-open.org>; Thu, 14 Jun 2018 22:08:45 -0700 (PDT)
+From: Wei Wang <wei.w.wang@intel.com>
+Date: Fri, 15 Jun 2018 12:43:12 +0800
+Message-Id: <1529037793-35521-4-git-send-email-wei.w.wang@intel.com>
+In-Reply-To: <1529037793-35521-1-git-send-email-wei.w.wang@intel.com>
+References: <1529037793-35521-1-git-send-email-wei.w.wang@intel.com>
+Subject: [virtio-dev] [PATCH v33 3/4] mm/page_poison: expose page_poisoning_enabled to kernel modules
+To: virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, linux-mm@kvack.org, mst@redhat.com, mhocko@kernel.org, akpm@linux-foundation.org
+Cc: torvalds@linux-foundation.org, pbonzini@redhat.com, wei.w.wang@intel.com, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu0@gmail.com, nilal@redhat.com, riel@redhat.com, peterx@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, Jun 20, 2018 at 09:11:39AM +0000, Wang, Wei W wrote:
-> On Tuesday, June 19, 2018 10:43 PM, Michael S. Tsirk wrote:
-> > On Tue, Jun 19, 2018 at 08:13:37PM +0800, Wei Wang wrote:
-> > > On 06/19/2018 11:05 AM, Michael S. Tsirkin wrote:
-> > > > On Tue, Jun 19, 2018 at 01:06:48AM +0000, Wang, Wei W wrote:
-> > > > > On Monday, June 18, 2018 10:29 AM, Michael S. Tsirkin wrote:
-> > > > > > On Sat, Jun 16, 2018 at 01:09:44AM +0000, Wang, Wei W wrote:
-> > > > > > > Not necessarily, I think. We have min(4m_page_blocks / 512,
-> > > > > > > 1024) above,
-> > > > > > so the maximum memory that can be reported is 2TB. For larger
-> > guests, e.g.
-> > > > > > 4TB, the optimization can still offer 2TB free memory (better
-> > > > > > than no optimization).
-> > > > > >
-> > > > > > Maybe it's better, maybe it isn't. It certainly muddies the waters even
-> > more.
-> > > > > > I'd rather we had a better plan. From that POV I like what
-> > > > > > Matthew Wilcox suggested for this which is to steal the necessary # of
-> > entries off the list.
-> > > > > Actually what Matthew suggested doesn't make a difference here.
-> > > > > That method always steal the first free page blocks, and sure can
-> > > > > be changed to take more. But all these can be achieved via kmalloc
-> > > > I'd do get_user_pages really. You don't want pages split, etc.
-> > 
-> > Oops sorry. I meant get_free_pages .
-> 
-> Yes, we can use __get_free_pages, and the max allocation is MAX_ORDER - 1, which can report up to 2TB free memory. 
-> 
-> "getting two pages isn't harder", do you mean passing two arrays (two allocations by get_free_pages(,MAX_ORDER -1)) to the mm API?
+In some usages, e.g. virtio-balloon, a kernel module needs to know if
+page poisoning is in use. This patch exposes the page_poisoning_enabled
+function to kernel modules.
 
-Yes, or generally a list of pages with as many as needed.
+Signed-off-by: Wei Wang <wei.w.wang@intel.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Michal Hocko <mhocko@kernel.org>
+Cc: Michael S. Tsirkin <mst@redhat.com>
+Acked-by: Andrew Morton <akpm@linux-foundation.org>
+---
+ mm/page_poison.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-
-> Please see if the following logic aligns to what you think:
-> 
->         uint32_t i, max_hints, hints_per_page, hints_per_array, total_arrays;
->         unsigned long *arrays;
->  
->      /*
->          * Each array size is MAX_ORDER_NR_PAGES. If one array is not enough to
->          * store all the hints, we need to allocate multiple arrays.
->          * max_hints: the max number of 4MB free page blocks
->          * hints_per_page: the number of hints each page can store
->          * hints_per_array: the number of hints an array can store
->          * total_arrays: the number of arrays we need
->          */
->         max_hints = totalram_pages / MAX_ORDER_NR_PAGES;
->         hints_per_page = PAGE_SIZE / sizeof(__le64);
->         hints_per_array = hints_per_page * MAX_ORDER_NR_PAGES;
->         total_arrays = max_hints /  hints_per_array +
->                        !!(max_hints % hints_per_array);
->         arrays = kmalloc(total_arrays * sizeof(unsigned long), GFP_KERNEL);
->         for (i = 0; i < total_arrays; i++) {
->                 arrays[i] = __get_free_pages(__GFP_ATOMIC | __GFP_NOMEMALLOC, MAX_ORDER - 1);
-> 
->               if (!arrays[i])
->                       goto out;
->         }
-> 
-> 
-> - the mm API needs to be changed to support storing hints to multiple separated arrays offered by the caller.
-> 
-> Best,
-> Wei
-
-Yes. And add an API to just count entries so we know how many arrays to allocate.
-
+diff --git a/mm/page_poison.c b/mm/page_poison.c
+index aa2b3d3..830f604 100644
+--- a/mm/page_poison.c
++++ b/mm/page_poison.c
+@@ -17,6 +17,11 @@ static int __init early_page_poison_param(char *buf)
+ }
+ early_param("page_poison", early_page_poison_param);
+ 
++/**
++ * page_poisoning_enabled - check if page poisoning is enabled
++ *
++ * Return true if page poisoning is enabled, or false if not.
++ */
+ bool page_poisoning_enabled(void)
+ {
+ 	/*
+@@ -29,6 +34,7 @@ bool page_poisoning_enabled(void)
+ 		(!IS_ENABLED(CONFIG_ARCH_SUPPORTS_DEBUG_PAGEALLOC) &&
+ 		debug_pagealloc_enabled()));
+ }
++EXPORT_SYMBOL_GPL(page_poisoning_enabled);
+ 
+ static void poison_page(struct page *page)
+ {
 -- 
-MST
+2.7.4
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
