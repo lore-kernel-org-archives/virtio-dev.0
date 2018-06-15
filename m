@@ -1,240 +1,319 @@
-Return-Path: virtio-dev-return-4407-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4410-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 63E05581810D
-	for <virtio-dev@lists.oasis-open.org>; Fri, 15 Jun 2018 08:36:38 -0700 (PDT)
-Date: Fri, 15 Jun 2018 18:36:24 +0300
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20180615181054-mutt-send-email-mst@kernel.org>
+	by lists.oasis-open.org (Postfix) with ESMTP id 5C6DD5818DC6
+	for <virtio-dev@lists.oasis-open.org>; Fri, 15 Jun 2018 11:07:14 -0700 (PDT)
 References: <20180611075640.19751-1-tiwei.bie@intel.com>
  <2eb17c91-9158-c14f-e582-223dd6e5c6d2@linux.ibm.com>
  <20180615151329-mutt-send-email-mst@kernel.org>
  <545e8649-8029-d135-e927-3ad11f4eb29d@linux.ibm.com>
  <20180615133911.GA30056@debian>
  <7f20c1cb-f36b-3651-7445-a7ac2cdc65f0@linux.ibm.com>
+ <20180615181054-mutt-send-email-mst@kernel.org>
+From: Halil Pasic <pasic@linux.ibm.com>
+Date: Fri, 15 Jun 2018 20:06:53 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7f20c1cb-f36b-3651-7445-a7ac2cdc65f0@linux.ibm.com>
+In-Reply-To: <20180615181054-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Message-Id: <31c19378-5b16-28a4-058e-bdfda718142d@linux.ibm.com>
 Subject: Re: [virtio-dev] [PATCH v3] content: enhance device requirements for
  feature bits
-To: Halil Pasic <pasic@linux.ibm.com>
+To: "Michael S. Tsirkin" <mst@redhat.com>
 Cc: Tiwei Bie <tiwei.bie@intel.com>, cohuck@redhat.com, stefanha@redhat.com, pbonzini@redhat.com, virtio-dev@lists.oasis-open.org, dan.daly@intel.com, cunming.liang@intel.com, zhihong.wang@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Fri, Jun 15, 2018 at 04:21:32PM +0200, Halil Pasic wrote:
+
+
+On 06/15/2018 05:36 PM, Michael S. Tsirkin wrote:
+> On Fri, Jun 15, 2018 at 04:21:32PM +0200, Halil Pasic wrote:
+>>
+>>
+>> On 06/15/2018 03:39 PM, Tiwei Bie wrote:
+>>> On Fri, Jun 15, 2018 at 02:42:58PM +0200, Halil Pasic wrote:
+>>>> On 06/15/2018 02:19 PM, Michael S. Tsirkin wrote:
+>>>>> On Fri, Jun 15, 2018 at 02:10:11PM +0200, Halil Pasic wrote:
+>>>>>>
+>>>>>>
+>>>>>> On 06/11/2018 09:56 AM, Tiwei Bie wrote:
+>>>>>>> Suggested-by: Michael S. Tsirkin <mst@redhat.com>
+>>>>>>> Signed-off-by: Tiwei Bie <tiwei.bie@intel.com>
+>>>>>>> Fixes: https://github.com/oasis-tcs/virtio-spec/issues/14
+>>>>>>> ---
+>>>>>>> v2:
+>>>>>>> - Refine the wording (Cornelia);
+>>>>>>>
+>>>>>>> v3:
+>>>>>>> - Refine the wording (MST);
+>>>>>>>
+>>>>>>>      content.tex | 7 +++++++
+>>>>>>>      1 file changed, 7 insertions(+)
+>>>>>>>
+>>>>>>> diff --git a/content.tex b/content.tex
+>>>>>>> index f996fad..3c7d67d 100644
+>>>>>>> --- a/content.tex
+>>>>>>> +++ b/content.tex
+>>>>>>> @@ -125,6 +125,13 @@ which was not offered.  The device SHOULD accept any valid subset
+>>>>>>>      of features the driver accepts, otherwise it MUST fail to set the
+>>>>>>>      FEATURES_OK \field{device status} bit when the driver writes it.
+>>>>>>> +If a device has successfully negotiated a set of features
+>>>>>>> +at least once (by accepting the FEATURES_OK \field{device
+>>>>>>> +status} bit during device initialization), then it SHOULD
+>>>>>>> +NOT fail re-negotiation of the same set of features after
+>>>>>>> +a device or system reset.  Failure to do so would interfere
+>>>>>>> +with resuming from suspend and error recovery.
+>>>>>>> +
+>>>>>>
+>>>>>>
+>>>>>> Sorry people but I don't get it. I mean it is kind of reasonable
+>>>>>> to assume that with a given device and a given driver (given, i.e.
+>>>>>> nothing changes) the two will always negotiate the same features
+>>>>>> (including the extremal case where the negotiation fails).
+>>>>>>
+>>>>>> Either the device or a driver rolling a dice to make feature negotiation
+>>>>>> more fun seems quite unreasonable. So I assume this is not what we are
+>>>>>> bothering to soft prohibit here.
+>>>>>>
+>>>>>> So the interesting scenario seems to be when stuff changes. When
+>>>>>> migrating the implementation of the device could change. Or something
+>>>>>> changes regarding the resources used to provide the virtual device.
+>>>>>>
+>>>>>> But then, if the device really can not support the set of features
+>>>>>> it used to be able, I guess the SHOULD does not take effect (I guess
+>>>>>> that is the difference compared to MUST).
+>>>>>>
+>>>>>> Bottom line is: I tried to figure out what is this about, but I failed.
+>>>>>> I've read https://github.com/oasis-tcs/virtio-spec/issues/14 too but
+>>>>>> it did not click. I would appreciate some assistance.
+>>>>>
+>>>>> It's exactly what it says. Let's say you negotiated a feature and then
+>>>>> device sets NEED_RESET.  Driver must now reset the device and put it
+>>>>> back in the same state it had before the reset, then resubmit
+>>>>> requests that were available but never used.
+>>>>>
+>>>>> What if any of the features changed? Device suddenly
+>>>>> needs to check for requests which do not match the
+>>>>> features.
+>>>>>
+>>>>> Suspend is similar: guests tend to assume hardware
+>>>>> does not change across suspend/resume, any changes
+>>>>> tend to make resume fail.
+>>>>>
+>>>>
+>>>> Thank you very much! But it still does not answer why would a device
+>>>> want to do that (fail to negotiate a feature that it was able
+>>>> to negotiate before). So I'm still in the dark about what are we
+>>>> trading for what.
+>>>
+>>> Hi Halil,
+>>>
+>>> Just like what you said, normally there is no reason
+>>> for a device to fail to negotiate a feature that it
+>>> was able to negotiate before. But the spec doesn't
+>>> forbid devices to do this , i.e. the spec allows a
+>>> device to fail to negotiate a feature that it was
+>>> able to negotiate before, which could cause problems
+>>> in some cases. Although everything works fine in
+>>> reality because there is no device would really do
+>>> this, it would be better to make spec to explicitly
+>>> forbid devices to do this in the necessary cases.
+>>>
+>>> Best regards,
+>>> Tiwei Bie
+>>>
+>>
+>> I think we have most of it already covered with 'The device SHOULD
+>> accept any valid subset of features the driver accepts'.
+>>
+>> IMHO what we add with your proposed normative statement is that
+>> if the device used to offer a feature bit it SHOULD keep offering it.
+>> That's clearly not covered by the by what I've cited.
+>>
+>> But it's kind of covered by a non-normative statement 'Each virtio
+>> device offers all the features it understands.'
+> 
+> Well one has to squint very hard to understand it.
+> And note that "understands" is not the same as "supports". Device can
+> still fail to set FEATURES_OK.
+> 
+
+But I guess it should not. I don't know what is the driver supposed
+to do in the scenario you describe: The device offered me (the driver) a set
+of features, I the driver accepted them *all*. The device failed to
+set FEATURES_OK, because there was *one feature that it "understands"
+but does not "support". Should I (the driver) start a backtracking feature
+negotiation to figure out the difference between "understands"
+and "supports".
+
+> 
+>> This seems most relevant in case of migration. That is device
+>> implementation S(ource) and device implementation T(arget) are
+>> migration compatible. But hey, features that are present
+>> in S and not present in T are of concern  for migration compatibility. AFAIK
+>> the VIRTIO specification does not make claims about migration
+>> compatibility.
+>>
+>> So if I think QEMU, and somebody (maintainer) is deciding to remove support for
+>> of a certain device for a certain feature bit in the next version,
+>> he better thinks hard how could this breakmigration. I don't think
+>> the proposed normative statement with it's SHOULD would make the the
+>> guy more careful.
+>>
+>> What is even more interesting is the scenario where the new version of
+>> the device does not remove support for a feature, but adds support for
+>> one, let's call it F_N.
+>>
+>> The scenario is the following we have systems O(ld) and N(ew). We
+>> start on O then we migrate to new. There some reset of concern happens.
+>> Features get re-negotiated and we start exploiting F_N. In my reading
+>> of your addition, this is legit. But then we migrate back from N to O.
+>> No re-negotiation happens (because it is not obligatory), and things
+>> explode (hopefully, just migration fails, and not guest dies) because
+>> O does not have support for F_N. Your normative statement was nowhere
+>> violated as far as I can tell.
+> 
+> Oops I shouldn't even have started about migration.  Let's forget
+> migration. It's a simple question on what we can assume after we reset
+> device.
+> 
+> Some people want to be able to change features dynamically.
+> Is that OK? This text clarifies that no, it isn't.
+> 
+
+That's a very reasonable question, and a straight answer. Yet I think
+the normative statement is not good enough. In a sense, that it does
+not say 'it is not OK to change features dynamically'. IMHO to express
+that we should state something like: 'For a life-time of a virtio device
+(which transcends device resets) each subsequent feature re-negotiation
+SHOULD result in the exact same set of features being negotiated as the
+first successful negotiation.'
+
+In my reading the normative statement discussed here says features are
+not allowed to 'disappear' dynamically. But does not say a thing about
+new features 'appearing' dynamically.
+
+
+About features 'appearing' dynamically, AFAIR there was a virtio-crypto feature
+that changed the request format (if negotiated). So IFAIR if we
+were to re-submit the requests unchanged after gaining this feature,
+we would end up having the problem you described.
+
+However if both add and remove are unsafe, then 'The only way
+to renegotiate is to reset the device.' is misleading IMHO.
+
+
+>> Bottom line is, I still don't know what benefit does this addition
+>> to the standard have to the implementer of the standard.
+> 
+> A question was asked. On suspend we save features and try to
+> restore them. Should driver handle device not offering some of these
+> features after resume? What this offers is a simple answer: don't
+> worry about it too much, devices have been warned that it's not a
+> good idea.
+> 
+
+I don't know enough about suspend/resume. I will try to catch up. But
+I think I'm slowly starting to understand the problem. My guess is that
+there is some sort of reset involved in the procedure that could affect
+what QEMU calls the host_features, but would not affect the requests on
+the queue.
+
+The questions still remains: Why would the device want to take away a
+feature? What should the device do (respecting the warning given here)
+instead of taking away the feature (if the need arises) ?
+
 > 
 > 
-> On 06/15/2018 03:39 PM, Tiwei Bie wrote:
-> > On Fri, Jun 15, 2018 at 02:42:58PM +0200, Halil Pasic wrote:
-> > > On 06/15/2018 02:19 PM, Michael S. Tsirkin wrote:
-> > > > On Fri, Jun 15, 2018 at 02:10:11PM +0200, Halil Pasic wrote:
-> > > > > 
-> > > > > 
-> > > > > On 06/11/2018 09:56 AM, Tiwei Bie wrote:
-> > > > > > Suggested-by: Michael S. Tsirkin <mst@redhat.com>
-> > > > > > Signed-off-by: Tiwei Bie <tiwei.bie@intel.com>
-> > > > > > Fixes: https://github.com/oasis-tcs/virtio-spec/issues/14
-> > > > > > ---
-> > > > > > v2:
-> > > > > > - Refine the wording (Cornelia);
-> > > > > > 
-> > > > > > v3:
-> > > > > > - Refine the wording (MST);
-> > > > > > 
-> > > > > >     content.tex | 7 +++++++
-> > > > > >     1 file changed, 7 insertions(+)
-> > > > > > 
-> > > > > > diff --git a/content.tex b/content.tex
-> > > > > > index f996fad..3c7d67d 100644
-> > > > > > --- a/content.tex
-> > > > > > +++ b/content.tex
-> > > > > > @@ -125,6 +125,13 @@ which was not offered.  The device SHOULD accept any valid subset
-> > > > > >     of features the driver accepts, otherwise it MUST fail to set the
-> > > > > >     FEATURES_OK \field{device status} bit when the driver writes it.
-> > > > > > +If a device has successfully negotiated a set of features
-> > > > > > +at least once (by accepting the FEATURES_OK \field{device
-> > > > > > +status} bit during device initialization), then it SHOULD
-> > > > > > +NOT fail re-negotiation of the same set of features after
-> > > > > > +a device or system reset.  Failure to do so would interfere
-> > > > > > +with resuming from suspend and error recovery.
-> > > > > > +
-> > > > > 
-> > > > > 
-> > > > > Sorry people but I don't get it. I mean it is kind of reasonable
-> > > > > to assume that with a given device and a given driver (given, i.e.
-> > > > > nothing changes) the two will always negotiate the same features
-> > > > > (including the extremal case where the negotiation fails).
-> > > > > 
-> > > > > Either the device or a driver rolling a dice to make feature negotiation
-> > > > > more fun seems quite unreasonable. So I assume this is not what we are
-> > > > > bothering to soft prohibit here.
-> > > > > 
-> > > > > So the interesting scenario seems to be when stuff changes. When
-> > > > > migrating the implementation of the device could change. Or something
-> > > > > changes regarding the resources used to provide the virtual device.
-> > > > > 
-> > > > > But then, if the device really can not support the set of features
-> > > > > it used to be able, I guess the SHOULD does not take effect (I guess
-> > > > > that is the difference compared to MUST).
-> > > > > 
-> > > > > Bottom line is: I tried to figure out what is this about, but I failed.
-> > > > > I've read https://github.com/oasis-tcs/virtio-spec/issues/14 too but
-> > > > > it did not click. I would appreciate some assistance.
-> > > > 
-> > > > It's exactly what it says. Let's say you negotiated a feature and then
-> > > > device sets NEED_RESET.  Driver must now reset the device and put it
-> > > > back in the same state it had before the reset, then resubmit
-> > > > requests that were available but never used.
-> > > > 
-> > > > What if any of the features changed? Device suddenly
-> > > > needs to check for requests which do not match the
-> > > > features.
-> > > > 
-> > > > Suspend is similar: guests tend to assume hardware
-> > > > does not change across suspend/resume, any changes
-> > > > tend to make resume fail.
-> > > > 
-> > > 
-> > > Thank you very much! But it still does not answer why would a device
-> > > want to do that (fail to negotiate a feature that it was able
-> > > to negotiate before). So I'm still in the dark about what are we
-> > > trading for what.
-> > 
-> > Hi Halil,
-> > 
-> > Just like what you said, normally there is no reason
-> > for a device to fail to negotiate a feature that it
-> > was able to negotiate before. But the spec doesn't
-> > forbid devices to do this , i.e. the spec allows a
-> > device to fail to negotiate a feature that it was
-> > able to negotiate before, which could cause problems
-> > in some cases. Although everything works fine in
-> > reality because there is no device would really do
-> > this, it would be better to make spec to explicitly
-> > forbid devices to do this in the necessary cases.
-> > 
-> > Best regards,
-> > Tiwei Bie
-> > 
+>> In my opinion
+>> it's just another chunk of text that is hard to figure out. It's hard
+>> to tell what is the device
 > 
-> I think we have most of it already covered with 'The device SHOULD
-> accept any valid subset of features the driver accepts'.
+> Most people know this I think
 > 
-> IMHO what we add with your proposed normative statement is that
-> if the device used to offer a feature bit it SHOULD keep offering it.
-> That's clearly not covered by the by what I've cited.
+
+I mean the same device. If I migrate back and forth in the spirit of the
+normative statement the device is still the same device. When I think QEMU
+however,we would end up realizing a device each time we spin up a QEMU at the
+target host. So the life-cycle of the QEMU device and of the virtio device
+ends up being a different one.
+
+>> and what is before
 > 
-> But it's kind of covered by a non-normative statement 'Each virtio
-> device offers all the features it understands.'
-
-Well one has to squint very hard to understand it.
-And note that "understands" is not the same as "supports". Device can
-still fail to set FEATURES_OK.
-
-
-> This seems most relevant in case of migration. That is device
-> implementation S(ource) and device implementation T(arget) are
-> migration compatible. But hey, features that are present
-> in S and not present in T are of concern  for migration compatibility. AFAIK
-> the VIRTIO specification does not make claims about migration
-> compatibility.
+> Sorry before what?
 > 
-> So if I think QEMU, and somebody (maintainer) is deciding to remove support for
-> of a certain device for a certain feature bit in the next version,
-> he better thinks hard how could this breakmigration. I don't think
-> the proposed normative statement with it's SHOULD would make the the
-> guy more careful.
+
+My bad. The original text does not use 'before' just 'after'. For some
+strange reason I started thinking about sequences of re-negotiations and
+there 'before' slipped in...
+
 > 
-> What is even more interesting is the scenario where the new version of
-> the device does not remove support for a feature, but adds support for
-> one, let's call it F_N.
+>> , what is system reset.
 > 
-> The scenario is the following we have systems O(ld) and N(ew). We
-> start on O then we migrate to new. There some reset of concern happens.
-> Features get re-negotiated and we start exploiting F_N. In my reading
-> of your addition, this is legit. But then we migrate back from N to O.
-> No re-negotiation happens (because it is not obligatory), and things
-> explode (hopefully, just migration fails, and not guest dies) because
-> O does not have support for F_N. Your normative statement was nowhere
-> violated as far as I can tell.
-
-Oops I shouldn't even have started about migration.  Let's forget
-migration. It's a simple question on what we can assume after we reset
-device.
-
-Some people want to be able to change features dynamically.
-Is that OK? This text clarifies that no, it isn't.
-
-> Bottom line is, I still don't know what benefit does this addition
-> to the standard have to the implementer of the standard.
-
-A question was asked. On suspend we save features and try to
-restore them. Should driver handle device not offering some of these
-features after resume? What this offers is a simple answer: don't
-worry about it too much, devices have been warned that it's not a
-good idea.
-
-
-
-> In my opinion
-> it's just another chunk of text that is hard to figure out. It's hard
-> to tell what is the device
-
-Most people know this I think
-
-> and what is before
-
-Sorry before what?
-
-
->, what is system reset.
-
-I think many people do know what is a system reset.
-It's an attempt to cover suspend to disk. How would you put it?
-
-
-> If
-> we were to make the spec complete with spelling out every 'don't make
-> anything stupid' I'm under the impression there is a lot of work to
-> do. I had a discussion here on the completeness of this spec, and
-> completeness does not seem to be a primary goal. I'm still not
-> sold on this one.
+> I think many people do know what is a system reset.
+> It's an attempt to cover suspend to disk. How would you put it?
 > 
-> Regards,
-> Halil
 
-Yea, it's just that it's not clear that changing feature
-bits when device is reset is all that stupid, since it
-does after all lose its state.
+At this point I think I have enough understanding of what is behind,
+to make a step back, and do the research and the thinking. Thanks
+for your patience.
 
+But let me carry on with my answer without doing the research
+for now. Having a notion of system reset and specifying how virio facilities
+relate to it (affected, unaffected) seems very reasonable. But I think
+it is a new thing in the spec. I don't think solely adding tihs
+normative statement is sufficient to achieve that.
 
+> 
+>> If
+>> we were to make the spec complete with spelling out every 'don't make
+>> anything stupid' I'm under the impression there is a lot of work to
+>> do. I had a discussion here on the completeness of this spec, and
+>> completeness does not seem to be a primary goal. I'm still not
+>> sold on this one.
+>>
+>> Regards,
+>> Halil
+> 
+> Yea, it's just that it's not clear that changing feature
+> bits when device is reset is all that stupid, since it
+> does after all lose its state.
+> 
 
-> > > 
-> > > Is there somewhere a patch that fixes such a bug? Maybe that would
-> > > help me understand what can be done at the device to avoid the
-> > > problem.
-> > > 
-> > > Regards,
-> > > Halil
-> > > 
-> > > 
-> > > > > 
-> > > > > >     \subsection{Legacy Interface: A Note on Feature
-> > > > > >     Bits}\label{sec:Basic Facilities of a Virtio Device / Feature
-> > > > > >     Bits / Legacy Interface: A Note on Feature Bits}
-> > > > > > 
-> > > > 
-> > > > ---------------------------------------------------------------------
-> > > > To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> > > > For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
-> > > > 
-> > > 
-> > 
+My intuition was that this should be a part of describing
+what a device reset is. It seems the device does not loose all
+state though -- otherwise I don't understand the problem with the
+available but not yet used requests.
+
+Anyway many thanks for having this discussion with me. My initial
+problem was that I could not relate this to anything sane. Now
+I have to learn more about suspend/resume.
+
+A  quick recap at the end.  This is about 'Should driver handle
+device not offering some of these features after resume?' This paragraph
+is supposed to tell the driver developer don't bother. And I guess it's
+also supposed to tell the device developer: fail to resume (e.g. migrate)
+the device if you realize if some features negotiated before can not be
+supported any more.
+
+Like this if it is a suspend/resume we still end up not being able to resume
+the device or the whole guest. But at least no funny things will happen
+if the driver does try to use the feature that went away.
+
+My intuitions is, that handling such feature changes in the guest would be
+cleaner. The guest has all the information it needs at it's disposal (e.g.
+are requests in flight, do these depend on some feature that went away or
+the opposite, can we let the upper layer re-submit the requests and just
+give up on the ones that stuck available). But I have to the gaps in
+my understanding before having any.
+
+Regards,
+Halil
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
