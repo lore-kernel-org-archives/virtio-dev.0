@@ -1,118 +1,93 @@
-Return-Path: virtio-dev-return-4573-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4385-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 34AAC5818F80
-	for <virtio-dev@lists.oasis-open.org>; Wed, 27 Jun 2018 00:03:39 -0700 (PDT)
+	by lists.oasis-open.org (Postfix) with ESMTP id 74E405818038
+	for <virtio-dev@lists.oasis-open.org>; Thu, 14 Jun 2018 19:34:37 -0700 (PDT)
+Date: Fri, 15 Jun 2018 05:34:24 +0300
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20180615052743-mutt-send-email-mst@kernel.org>
+References: <1525734594-11134-1-git-send-email-sridhar.samudrala@intel.com>
+ <20180611202207-mutt-send-email-mst@kernel.org>
+ <dc8b1669-b8b6-fb59-94e2-6e4de6b96572@redhat.com>
+ <20180612051432-mutt-send-email-mst@kernel.org>
+ <23fc4aa4-ec41-d6e2-3354-10cbfc13b7ec@intel.com>
+ <20180612142557-mutt-send-email-mst@kernel.org>
+ <b9c88515-cf41-2a9a-078e-9c9e5adbbf14@intel.com>
+ <CADGSJ213f8tJpNXuOhv8qRew-Y5VZAwA+srNMrLZYnKdVGLdAA@mail.gmail.com>
+ <20180614120231.0a72bd5f.cohuck@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <19654612-a321-2ce9-9c1c-bcbae3a10e2f@intel.com>
-References: <CADGSJ23SBEFJCD50K-F-Gt86Q1-i_6iHTmSSjdXDzNnnpWZ_oQ@mail.gmail.com>
- <CADGSJ22nLcz_XaJNzUUdpjQaJY8b5wZs=ohm=B7c2qf2K7_yGA@mail.gmail.com>
- <20180623002628-mutt-send-email-mst@kernel.org> <CADGSJ20td7b6He6S1PBSJjCq=bNvgqMGbOjiho2eeQm2pgpK3g@mail.gmail.com>
- <20180623012406-mutt-send-email-mst@kernel.org> <CADGSJ211pWKYnuuzcgUqJZiHU+=7H3oQSpp1TnE=+EBjkdmCSQ@mail.gmail.com>
- <CADGSJ22DX8=rNPY+gNS_q=LCYLR5ieoE7oD8p4+8AnpzQsWSCg@mail.gmail.com>
- <da144f8f-65cd-45d9-3c81-6c8ca1fb25fe@intel.com> <20180626044650-mutt-send-email-mst@kernel.org>
- <CADGSJ204fgdnafRsrzMVh+SeBCj3-z_twS9B+7g8iiOaUQGW5g@mail.gmail.com>
- <20180627032825-mutt-send-email-mst@kernel.org> <CADGSJ22Sv_AFUkDou6hdq9++RNC40BTB-puS9209tOqzGLFJ-g@mail.gmail.com>
- <19654612-a321-2ce9-9c1c-bcbae3a10e2f@intel.com>
-From: Siwei Liu <loseweigh@gmail.com>
-Date: Wed, 27 Jun 2018 00:03:26 -0700
-Message-ID: <CADGSJ20jt8Ln_xcB4B9GD5dizSMNEDiSwvx5P0Mbg=aT-MQ2TQ@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20180614120231.0a72bd5f.cohuck@redhat.com>
 Subject: Re: [virtio-dev] Re: [Qemu-devel] [PATCH] qemu: Introduce
  VIRTIO_NET_F_STANDBY feature bit to virtio_net
-To: "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>, Cornelia Huck <cohuck@redhat.com>, Alexander Duyck <alexander.h.duyck@intel.com>, virtio-dev@lists.oasis-open.org, aaron.f.brown@intel.com, Jiri Pirko <jiri@resnulli.us>, Jakub Kicinski <kubakici@wp.pl>, Netdev <netdev@vger.kernel.org>, qemu-devel@nongnu.org, virtualization@lists.linux-foundation.org, konrad.wilk@oracle.com, boris.ostrovsky@oracle.com, Joao Martins <joao.m.martins@oracle.com>, Venu Busireddy <venu.busireddy@oracle.com>, vijay.balakrishna@oracle.com
+To: Cornelia Huck <cohuck@redhat.com>
+Cc: Siwei Liu <loseweigh@gmail.com>, "Samudrala, Sridhar" <sridhar.samudrala@intel.com>, Alexander Duyck <alexander.h.duyck@intel.com>, virtio-dev@lists.oasis-open.org, aaron.f.brown@intel.com, Jiri Pirko <jiri@resnulli.us>, Jakub Kicinski <kubakici@wp.pl>, Netdev <netdev@vger.kernel.org>, qemu-devel@nongnu.org, virtualization@lists.linux-foundation.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Tue, Jun 26, 2018 at 11:49 PM, Samudrala, Sridhar
-<sridhar.samudrala@intel.com> wrote:
-> On 6/26/2018 11:21 PM, Siwei Liu wrote:
->>
->> On Tue, Jun 26, 2018 at 5:29 PM, Michael S. Tsirkin <mst@redhat.com>
->> wrote:
->>>
->>> On Tue, Jun 26, 2018 at 04:38:26PM -0700, Siwei Liu wrote:
->>>>
->>>> On Mon, Jun 25, 2018 at 6:50 PM, Michael S. Tsirkin <mst@redhat.com>
->>>> wrote:
->>>>>
->>>>> On Mon, Jun 25, 2018 at 10:54:09AM -0700, Samudrala, Sridhar wrote:
->>>>>>>>>>
->>>>>>>>>> Might not neccessarily be something wrong, but it's very limited
->>>>>>>>>> to
->>>>>>>>>> prohibit the MAC of VF from changing when enslaved by failover.
->>>>>>>>>
->>>>>>>>> You mean guest changing MAC? I'm not sure why we prohibit that.
->>>>>>>>
->>>>>>>> I think Sridhar and Jiri might be better person to answer it. My
->>>>>>>> impression was that sync'ing the MAC address change between all 3
->>>>>>>> devices is challenging, as the failover driver uses MAC address to
->>>>>>>> match net_device internally.
->>>>>>
->>>>>> Yes. The MAC address is assigned by the hypervisor and it needs to
->>>>>> manage the movement
->>>>>> of the MAC between the PF and VF.  Allowing the guest to change the
->>>>>> MAC will require
->>>>>> synchronization between the hypervisor and the PF/VF drivers. Most of
->>>>>> the VF drivers
->>>>>> don't allow changing guest MAC unless it is a trusted VF.
->>>>>
->>>>> OK but it's a policy thing. Maybe it's a trusted VF. Who knows?
->>>>> For example I can see host just
->>>>> failing VIRTIO_NET_CTRL_MAC_ADDR_SET if it wants to block it.
->>>>> I'm not sure why VIRTIO_NET_F_STANDBY has to block it in the guest.
->>>>
->>>> That's why I think pairing using MAC is fragile IMHO. When VF's MAC
->>>> got changed before virtio attempts to match and pair the device, it
->>>> ends up with no pairing found out at all.
->>>
->>> Guest seems to match on the hardware mac and ignore whatever
->>> is set by user. Makes sense to me and should not be fragile.
->>
->> Host can change the hardware mac for VF any time.
->
->
-> Live migration is initiated and controlled by the Host,  So the Source Host
-> will
-> reset the MAC during live migration after unplugging the VF. This is to
-> redirect the
-> VMs frames towards PF so that they can be received via virtio-net standby
-> interface.
-> The destination host will set the VF MAC and plug the VF after live
-> migration is
-> completed.
->
-> Allowing the guest to change the MAC will require the qemu/libvirt/mgmt
-> layers to
-> track the MAC changes and replay that change after live migration.
->
-If the failover's MAC is kept in sync with VF's MAC address change,
-the VF on destination host can be paired using the permanent address
-after plugging in, while failover interface will resync the MAC to the
-current one in use when enslaving the VF. I think similar is done for
-multicast and unicast address list on VF's registration, right? No
-need of QEMU or mgmt software keep track of MAC changes.
+On Thu, Jun 14, 2018 at 12:02:31PM +0200, Cornelia Huck wrote:
+> So, do you know from the outset that there will be such a coupled
+> device? I.e., is it a property of the VM definition?
+> 
+> Can there be a 'prepared' virtio-net device that presents the STANDBY
+> feature even if there currently is no vfio-handled device available --
+> but making it possible to simply hotplug that device later?
+> Should it be possible to add a virtio/vfio pair later on?
 
--Siwei
+Yes, that's the plan, more or less.
 
->
->
->>
->> -Siwei
->>>
->>>
->>>> UUID is better.
->>>>
->>>> -Siwei
->>>>
->>>>> --
->>>>> MST
->
->
+> > >>> I think Qemu should check if guest virtio-net supports this feature and
+> > >>> provide a mechanism for
+> > >>> an upper layer indicating if the STANDBY feature is successfully
+> > >>> negotiated or not.
+> > >>> The upper layer can then decide if it should hot plug a VF with the same
+> > >>> MAC and manage the 2 links.
+> > >>> If VF is successfully hot plugged, virtio-net link should be disabled.  
+
+BTW I see no reason to do this last part. The role of the
+standby device is to be always there.
+
+> > >>
+> > >> Did you even talk to upper layer management about it?
+> > >> Just list the steps they need to do and you will see
+> > >> that's a lot of machinery to manage by the upper layer.
+> > >>
+> > >> What do we gain in flexibility? As far as I can see the
+> > >> only gain is some resources saved for legacy VMs.
+> > >>
+> > >> That's not a lot as tenant of the upper layer probably already has
+> > >> at least a hunch that it's a new guest otherwise
+> > >> why bother specifying the feature at all - you
+> > >> save even more resources without it.
+> > >>  
+> > >
+> > > I am not all that familiar with how Qemu manages network devices. If we can
+> > > do all the
+> > > required management of the primary/standby devices within Qemu, that is
+> > > definitely a better
+> > > approach without upper layer involvement.  
+> > 
+> > Right. I would imagine in the extreme case the upper layer doesn't
+> > have to be involved at all if QEMU manages all hot plug/unplug logic.
+> > The management tool can supply passthrough device and virtio with the
+> > same group UUID, QEMU auto-manages the presence of the primary, and
+> > hot plug the device as needed before or after the migration.
+> 
+> I do not really see how you can manage that kind of stuff in QEMU only.
+
+So right now failover is limited to pci passthrough devices only.
+The idea is to realize the vfio device but not expose it
+to guest. Have a separate command to expose it to guest.
+Hotunplug would also hide it from guest but not unrealize it.
+
+This will help ensure that e.g. on migration failure we can
+re-expose the device without risk of running out of resources.
+-- 
+MST
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
