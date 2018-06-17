@@ -1,39 +1,156 @@
-Return-Path: virtio-dev-return-4412-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4413-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 8ADD65818D8E
-	for <virtio-dev@lists.oasis-open.org>; Fri, 15 Jun 2018 18:19:50 -0700 (PDT)
+	by lists.oasis-open.org (Postfix) with ESMTP id 96CDF581809C
+	for <virtio-dev@lists.oasis-open.org>; Sat, 16 Jun 2018 17:07:46 -0700 (PDT)
 From: "Wang, Wei W" <wei.w.wang@intel.com>
-Date: Sat, 16 Jun 2018 01:19:36 +0000
-Message-ID: <286AC319A985734F985F78AFA26841F7396A5CDB@shsmsx102.ccr.corp.intel.com>
+Date: Sun, 17 Jun 2018 00:07:40 +0000
+Message-ID: <286AC319A985734F985F78AFA26841F7396A6415@shsmsx102.ccr.corp.intel.com>
 References: <1529037793-35521-1-git-send-email-wei.w.wang@intel.com>
  <1529037793-35521-2-git-send-email-wei.w.wang@intel.com>
- <CA+55aFzhuGKinEq5udPsk_uYHShkQxJYqcPO=tLCkT-oxpsgPg@mail.gmail.com>
-In-Reply-To: <CA+55aFzhuGKinEq5udPsk_uYHShkQxJYqcPO=tLCkT-oxpsgPg@mail.gmail.com>
+ <20180616045005.GA14936@bombadil.infradead.org>
+In-Reply-To: <20180616045005.GA14936@bombadil.infradead.org>
 Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 Subject: [virtio-dev] RE: [PATCH v33 1/4] mm: add a function to get free page blocks
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, virtualization <virtualization@lists.linux-foundation.org>, KVM list <kvm@vger.kernel.org>, linux-mm <linux-mm@kvack.org>, "Michael S. Tsirkin" <mst@redhat.com>, Michal Hocko <mhocko@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Paolo Bonzini <pbonzini@redhat.com>, "liliang.opensource@gmail.com" <liliang.opensource@gmail.com>, "yang.zhang.wz@gmail.com" <yang.zhang.wz@gmail.com>, "quan.xu0@gmail.com" <quan.xu0@gmail.com>, "nilal@redhat.com" <nilal@redhat.com>, Rik van Riel <riel@redhat.com>, "peterx@redhat.com" <peterx@redhat.com>
+To: 'Matthew Wilcox' <willy@infradead.org>
+Cc: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "mst@redhat.com" <mst@redhat.com>, "mhocko@kernel.org" <mhocko@kernel.org>, "akpm@linux-foundation.org" <akpm@linux-foundation.org>, "torvalds@linux-foundation.org" <torvalds@linux-foundation.org>, "pbonzini@redhat.com" <pbonzini@redhat.com>, "liliang.opensource@gmail.com" <liliang.opensource@gmail.com>, "yang.zhang.wz@gmail.com" <yang.zhang.wz@gmail.com>, "quan.xu0@gmail.com" <quan.xu0@gmail.com>, "nilal@redhat.com" <nilal@redhat.com>, "riel@redhat.com" <riel@redhat.com>, "peterx@redhat.com" <peterx@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-T24gU2F0dXJkYXksIEp1bmUgMTYsIDIwMTggNzowOSBBTSwgTGludXMgVG9ydmFsZHMgd3JvdGU6
-DQo+IE9uIEZyaSwgSnVuIDE1LCAyMDE4IGF0IDI6MDggUE0gV2VpIFdhbmcgPHdlaS53LndhbmdA
-aW50ZWwuY29tPiB3cm90ZToNCj4gPg0KPiA+IFRoaXMgcGF0Y2ggYWRkcyBhIGZ1bmN0aW9uIHRv
-IGdldCBmcmVlIHBhZ2VzIGJsb2NrcyBmcm9tIGEgZnJlZSBwYWdlDQo+ID4gbGlzdC4gVGhlIG9i
-dGFpbmVkIGZyZWUgcGFnZSBibG9ja3MgYXJlIGhpbnRzIGFib3V0IGZyZWUgcGFnZXMsDQo+ID4g
-YmVjYXVzZSB0aGVyZSBpcyBubyBndWFyYW50ZWUgdGhhdCB0aGV5IGFyZSBzdGlsbCBvbiB0aGUg
-ZnJlZSBwYWdlDQo+ID4gbGlzdCBhZnRlciB0aGUgZnVuY3Rpb24gcmV0dXJucy4NCj4gDQo+IEFj
-ay4gVGhpcyBpcyB0aGUga2luZCBvZiBzaW1wbGUgaW50ZXJmYWNlIHdoZXJlIEkgZG9uJ3QgbmVl
-ZCB0byB3b3JyeSBhYm91dA0KPiB0aGUgTU0gY29kZSBjYWxsaW5nIG91dCB0byByYW5kb20gZHJp
-dmVycyBvciBzdWJzeXN0ZW1zLg0KPiANCj4gSSB0aGluayB0aGF0ICJvcmRlciIgc2hvdWxkIGJl
-IGNoZWNrZWQgZm9yIHZhbGlkaXR5LCBidXQgZnJvbSBhIE1NIHN0YW5kcG9pbnQNCj4gSSB0aGlu
-ayB0aGlzIGlzIGZpbmUuDQo+IA0KDQpUaGFua3MsIHdpbGwgYWRkIGEgdmFsaWRpdHkgY2hlY2sg
-Zm9yICJvcmRlciIuDQoNCkJlc3QsDQpXZWkNCg==
+On Saturday, June 16, 2018 12:50 PM, Matthew Wilcox wrote:
+> On Fri, Jun 15, 2018 at 12:43:10PM +0800, Wei Wang wrote:
+> > +/**
+> > + * get_from_free_page_list - get free page blocks from a free page
+> > +list
+> > + * @order: the order of the free page list to check
+> > + * @buf: the array to store the physical addresses of the free page
+> > +blocks
+> > + * @size: the array size
+> > + *
+> > + * This function offers hints about free pages. There is no guarantee
+> > +that
+> > + * the obtained free pages are still on the free page list after the
+> > +function
+> > + * returns. pfn_to_page on the obtained free pages is strongly
+> > +discouraged
+> > + * and if there is an absolute need for that, make sure to contact MM
+> > +people
+> > + * to discuss potential problems.
+> > + *
+> > + * The addresses are currently stored to the array in little endian.
+> > +This
+> > + * avoids the overhead of converting endianness by the caller who
+> > +needs data
+> > + * in the little endian format. Big endian support can be added on
+> > +demand in
+> > + * the future.
+> > + *
+> > + * Return the number of free page blocks obtained from the free page l=
+ist.
+> > + * The maximum number of free page blocks that can be obtained is
+> > +limited to
+> > + * the caller's array size.
+> > + */
+>=20
+> Please use:
+>=20
+>  * Return: The number of free page blocks obtained from the free page lis=
+t.
+>=20
+> Also, please include a
+>=20
+>  * Context: Any context.
+>=20
+> or
+>=20
+>  * Context: Process context.
+>=20
+> or whatever other conetext this function can be called from.  Since you'r=
+e
+> taking the lock irqsafe, I assume this can be called from any context, bu=
+t I
+> wonder if it makes sense to have this function callable from interrupt co=
+ntext.
+> Maybe this should be callable from process context only.
+
+Thanks, sounds better to make it process context only.
+
+>=20
+> > +uint32_t get_from_free_page_list(int order, __le64 buf[], uint32_t
+> > +size) {
+> > +	struct zone *zone;
+> > +	enum migratetype mt;
+> > +	struct page *page;
+> > +	struct list_head *list;
+> > +	unsigned long addr, flags;
+> > +	uint32_t index =3D 0;
+> > +
+> > +	for_each_populated_zone(zone) {
+> > +		spin_lock_irqsave(&zone->lock, flags);
+> > +		for (mt =3D 0; mt < MIGRATE_TYPES; mt++) {
+> > +			list =3D &zone->free_area[order].free_list[mt];
+> > +			list_for_each_entry(page, list, lru) {
+> > +				addr =3D page_to_pfn(page) << PAGE_SHIFT;
+> > +				if (likely(index < size)) {
+> > +					buf[index++] =3D cpu_to_le64(addr);
+> > +				} else {
+> > +					spin_unlock_irqrestore(&zone->lock,
+> > +							       flags);
+> > +					return index;
+> > +				}
+> > +			}
+> > +		}
+> > +		spin_unlock_irqrestore(&zone->lock, flags);
+> > +	}
+> > +
+> > +	return index;
+> > +}
+>=20
+> I wonder if (to address Michael's concern), you shouldn't instead use the=
+ first
+> free chunk of pages to return the addresses of all the pages.
+> ie something like this:
+>=20
+> 	__le64 *ret =3D NULL;
+> 	unsigned int max =3D (PAGE_SIZE << order) / sizeof(__le64);
+>=20
+> 	for_each_populated_zone(zone) {
+> 		spin_lock_irq(&zone->lock);
+> 		for (mt =3D 0; mt < MIGRATE_TYPES; mt++) {
+> 			list =3D &zone->free_area[order].free_list[mt];
+> 			list_for_each_entry_safe(page, list, lru, ...) {
+> 				if (index =3D=3D size)
+> 					break;
+> 				addr =3D page_to_pfn(page) << PAGE_SHIFT;
+> 				if (!ret) {
+> 					list_del(...);
+
+Thanks for sharing. But probably we would not take this approach for the re=
+asons below:
+
+1) I'm not sure if getting a block of free pages to use could be that simpl=
+e (just pluck it from the list as above). I think it is more prudent to let=
+ the callers allocate the array via the regular allocation functions.=20
+
+2) Callers may need to use this with their own defined protocols, and they =
+want the header and payload (i.e. the obtained hints) to locate in physical=
+ly continuous memory (there are tricks they can use to make it work with no=
+n-physically continuous memory, but that would just complicate all the thin=
+gs) . In this case, it is better to have callers allocate the memory on the=
+ir own, and pass the payload part memory to this API to get the payload fil=
+led.
+
+Best,
+Wei
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
