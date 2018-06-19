@@ -1,134 +1,91 @@
-Return-Path: virtio-dev-return-4430-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4431-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 5AD59581916B
-	for <virtio-dev@lists.oasis-open.org>; Tue, 19 Jun 2018 09:33:13 -0700 (PDT)
+	by lists.oasis-open.org (Postfix) with ESMTP id A8D4A581916A
+	for <virtio-dev@lists.oasis-open.org>; Tue, 19 Jun 2018 09:33:18 -0700 (PDT)
 From: Venu Busireddy <venu.busireddy@oracle.com>
-Date: Tue, 19 Jun 2018 11:32:27 -0500
-Message-Id: <20180619163228.13790-4-venu.busireddy@oracle.com>
+Date: Tue, 19 Jun 2018 11:32:28 -0500
+Message-Id: <20180619163228.13790-5-venu.busireddy@oracle.com>
 In-Reply-To: <20180619163228.13790-1-venu.busireddy@oracle.com>
 References: <20180619163228.13790-1-venu.busireddy@oracle.com>
-Subject: [virtio-dev] [PATCH 3/3] Add "Group Identifier" support to virtio devices.
+Subject: [virtio-dev] [PATCH virtio 1/1] Add "Group Identifier" support to virtio PCI capabilities.
 To: venu.busireddy@oracle.com, "Michael S . Tsirkin" <mst@redhat.com>, Marcel Apfelbaum <marcel@redhat.com>
 Cc: virtio-dev@lists.oasis-open.org, qemu-devel@nongnu.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Use the virtio PCI capability "VIRTIO_PCI_CAP_GROUP_ID_CFG" to store the
-"Group Identifier" (UUID) specified via the command line option "uuid"
-for the virtio device. The capability will be present in the virtio
-device's configuration space iff the "uuid" option is specified.
-
-Group Identifier is used to pair a virtio device with a passthrough
-device.
+Add VIRTIO_PCI_CAP_GROUP_ID_CFG (Group Identifier) capability to the
+virtio PCI capabilities to allow for the grouping of devices.
 
 Signed-off-by: Venu Busireddy <venu.busireddy@oracle.com>
 ---
- hw/virtio/virtio-pci.c                      | 15 +++++++++++++++
- hw/virtio/virtio-pci.h                      |  3 ++-
- include/standard-headers/linux/virtio_pci.h |  8 ++++++++
- 3 files changed, 25 insertions(+), 1 deletion(-)
+ content.tex | 43 +++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 43 insertions(+)
 
-diff --git a/hw/virtio/virtio-pci.c b/hw/virtio/virtio-pci.c
-index 3a01fe90f0..9c2ef16773 100644
---- a/hw/virtio/virtio-pci.c
-+++ b/hw/virtio/virtio-pci.c
-@@ -36,6 +36,7 @@
- #include "qemu/range.h"
- #include "hw/virtio/virtio-bus.h"
- #include "qapi/visitor.h"
-+#include "qemu/uuid.h"
- 
- #define VIRTIO_PCI_REGION_SIZE(dev)     VIRTIO_PCI_CONFIG_OFF(msix_present(dev))
- 
-@@ -1638,6 +1639,10 @@ static void virtio_pci_device_plugged(DeviceState *d, Error **errp)
-             .cap.cap_len = sizeof cfg,
-             .cap.cfg_type = VIRTIO_PCI_CAP_PCI_CFG,
-         };
-+        struct virtio_pci_group_id_cap group = {
-+            .cap.cap_len = sizeof group,
-+            .cap.cfg_type = VIRTIO_PCI_CAP_GROUP_ID_CFG,
-+        };
-         struct virtio_pci_notify_cap notify_pio = {
-             .cap.cap_len = sizeof notify,
-             .notify_off_multiplier = cpu_to_le32(0x0),
-@@ -1647,6 +1652,11 @@ static void virtio_pci_device_plugged(DeviceState *d, Error **errp)
- 
-         virtio_pci_modern_regions_init(proxy);
- 
-+        if (!qemu_uuid_is_null(&proxy->pci_dev.uuid)) {
-+            memcpy(group.group_id, &proxy->pci_dev.uuid, sizeof(QemuUUID));
-+            virtio_pci_modern_mem_region_map(proxy, &proxy->group, &group.cap);
-+        }
-+
-         virtio_pci_modern_mem_region_map(proxy, &proxy->common, &cap);
-         virtio_pci_modern_mem_region_map(proxy, &proxy->isr, &cap);
-         virtio_pci_modern_mem_region_map(proxy, &proxy->device, &cap);
-@@ -1763,6 +1773,10 @@ static void virtio_pci_realize(PCIDevice *pci_dev, Error **errp)
-     proxy->device.size = 0x1000;
-     proxy->device.type = VIRTIO_PCI_CAP_DEVICE_CFG;
- 
-+    proxy->group.offset = 0;
-+    proxy->group.size = 0;
-+    proxy->group.type = VIRTIO_PCI_CAP_GROUP_ID_CFG;
-+
-     proxy->notify.offset = 0x3000;
-     proxy->notify.size = virtio_pci_queue_mem_mult(proxy) * VIRTIO_QUEUE_MAX;
-     proxy->notify.type = VIRTIO_PCI_CAP_NOTIFY_CFG;
-@@ -1898,6 +1912,7 @@ static Property virtio_pci_properties[] = {
-                     VIRTIO_PCI_FLAG_INIT_LNKCTL_BIT, true),
-     DEFINE_PROP_BIT("x-pcie-pm-init", VirtIOPCIProxy, flags,
-                     VIRTIO_PCI_FLAG_INIT_PM_BIT, true),
-+    DEFINE_PROP_UUID("uuid", PCIDevice, uuid, false),
-     DEFINE_PROP_END_OF_LIST(),
- };
- 
-diff --git a/hw/virtio/virtio-pci.h b/hw/virtio/virtio-pci.h
-index 813082b0d7..e4592e90bf 100644
---- a/hw/virtio/virtio-pci.h
-+++ b/hw/virtio/virtio-pci.h
-@@ -164,10 +164,11 @@ struct VirtIOPCIProxy {
-             VirtIOPCIRegion common;
-             VirtIOPCIRegion isr;
-             VirtIOPCIRegion device;
-+            VirtIOPCIRegion group;
-             VirtIOPCIRegion notify;
-             VirtIOPCIRegion notify_pio;
-         };
--        VirtIOPCIRegion regs[5];
-+        VirtIOPCIRegion regs[6];
-     };
-     MemoryRegion modern_bar;
-     MemoryRegion io_bar;
-diff --git a/include/standard-headers/linux/virtio_pci.h b/include/standard-headers/linux/virtio_pci.h
-index 9262acd130..e5b6c6f3a6 100644
---- a/include/standard-headers/linux/virtio_pci.h
-+++ b/include/standard-headers/linux/virtio_pci.h
-@@ -113,6 +113,8 @@
- #define VIRTIO_PCI_CAP_DEVICE_CFG	4
+diff --git a/content.tex b/content.tex
+index 7a92cb1..7ea6267 100644
+--- a/content.tex
++++ b/content.tex
+@@ -599,6 +599,8 @@ The fields are interpreted as follows:
+ #define VIRTIO_PCI_CAP_DEVICE_CFG        4
  /* PCI configuration access */
- #define VIRTIO_PCI_CAP_PCI_CFG		5
+ #define VIRTIO_PCI_CAP_PCI_CFG           5
 +/* Group Identifier */
-+#define VIRTIO_PCI_CAP_GROUP_ID_CFG	6
++#define VIRTIO_PCI_CAP_GROUP_ID_CFG      6
+ \end{lstlisting}
  
- /* This is the PCI capability header: */
- struct virtio_pci_cap {
-@@ -163,6 +165,12 @@ struct virtio_pci_cfg_cap {
- 	uint8_t pci_cfg_data[4]; /* Data for BAR access. */
- };
+         Any other value is reserved for future use.
+@@ -997,6 +999,47 @@ address \field{cap.length} bytes within a BAR range
+ specified by some other Virtio Structure PCI Capability
+ of type other than \field{VIRTIO_PCI_CAP_PCI_CFG}.
  
-+/* Fields in VIRTIO_PCI_CAP_GROUP_ID_CFG: */
-+struct virtio_pci_group_id_cap {
-+	struct virtio_pci_cap cap;
-+	uint8_t group_id[16];
-+};
++\subsubsection{Group Identifier capability}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Group Identifier capability}
 +
- /* Macro versions of offsets for the Old Timers! */
- #define VIRTIO_PCI_CAP_VNDR		0
- #define VIRTIO_PCI_CAP_NEXT		1
++The VIRTIO_PCI_CAP_GROUP_ID_CFG capability provides means for grouping devices together.
++
++The capability is immediately followed by an identifier of arbitrary size as below:
++
++\begin{lstlisting}
++struct virtio_pci_group_id_cap {
++        struct virtio_pci_cap cap;
++        u8 group_id[]; /* Group Identifier */
++};
++\end{lstlisting}
++
++The fields \field{cap.bar}, \field{cap.length}, \field{cap.offset}
++and \field{group_id} are read-only for the driver.
++
++The specification does not impose any restrictions on the size or
++structure of group_id[]. Vendors are free to declare this array as
++large as needed, as long as the combined size of all capabilities can
++be accommodated within the PCI configuration space.
++
++If there is enough room in the PCI configuration space to accommodate
++the group identifier, the fields \field{cap.bar}, \field{cap.offset}
++and \field{cap.length} should be set to 0.
++
++If there isn't enough room, some or all of the group identifier can be
++presented in the BAR region, in which case the fields \field{cap.bar},
++\field{cap.offset} and \field{cap.length} should be set appropriately.
++
++In either case, the field \field{cap.cap_len} indicates the length of
++the group identifier information present in the configuration space
++itself.
++
++\devicenormative{\paragraph}{Group Identifier capability}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Group Identifier capability}
++
++The device MAY present the VIRTIO_PCI_CAP_GROUP_ID_CFG capability.
++
++\drivernormative{\paragraph}{Group Identifier capability}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Group Identifier capability}
++
++The driver MUST NOT write to group_id[] area or the BAR region.
++
+ \subsubsection{Legacy Interfaces: A Note on PCI Device Layout}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Legacy Interfaces: A Note on PCI Device Layout}
+ 
+ Transitional devices MUST present part of configuration
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
