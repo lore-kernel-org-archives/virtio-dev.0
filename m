@@ -1,301 +1,134 @@
-Return-Path: virtio-dev-return-4442-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4430-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 4435E581916B
-	for <virtio-dev@lists.oasis-open.org>; Tue, 19 Jun 2018 12:10:55 -0700 (PDT)
-Date: Tue, 19 Jun 2018 22:10:52 +0300
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20180619220720-mutt-send-email-mst@kernel.org>
+	by lists.oasis-open.org (Postfix) with ESMTP id 5AD59581916B
+	for <virtio-dev@lists.oasis-open.org>; Tue, 19 Jun 2018 09:33:13 -0700 (PDT)
+From: Venu Busireddy <venu.busireddy@oracle.com>
+Date: Tue, 19 Jun 2018 11:32:27 -0500
+Message-Id: <20180619163228.13790-4-venu.busireddy@oracle.com>
+In-Reply-To: <20180619163228.13790-1-venu.busireddy@oracle.com>
 References: <20180619163228.13790-1-venu.busireddy@oracle.com>
- <20180619163228.13790-3-venu.busireddy@oracle.com>
- <20180619202118-mutt-send-email-mst@kernel.org>
- <20180619181406.GA14456@lt>
- <20180619211709-mutt-send-email-mst@kernel.org>
- <20180619183617.GA14746@lt>
- <20180619215130-mutt-send-email-mst@kernel.org>
- <20180619190209.GA15541@lt>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20180619190209.GA15541@lt>
-Subject: Re: [virtio-dev] Re: [PATCH 2/3] Add "Group Identifier" support to
- PCIe bridges.
-To: Venu Busireddy <venu.busireddy@oracle.com>
-Cc: Marcel Apfelbaum <marcel@redhat.com>, virtio-dev@lists.oasis-open.org, qemu-devel@nongnu.org
+Subject: [virtio-dev] [PATCH 3/3] Add "Group Identifier" support to virtio devices.
+To: venu.busireddy@oracle.com, "Michael S . Tsirkin" <mst@redhat.com>, Marcel Apfelbaum <marcel@redhat.com>
+Cc: virtio-dev@lists.oasis-open.org, qemu-devel@nongnu.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Tue, Jun 19, 2018 at 02:02:10PM -0500, Venu Busireddy wrote:
-> On 2018-06-19 21:53:01 +0300, Michael S. Tsirkin wrote:
-> > On Tue, Jun 19, 2018 at 01:36:17PM -0500, Venu Busireddy wrote:
-> > > On 2018-06-19 21:21:23 +0300, Michael S. Tsirkin wrote:
-> > > > On Tue, Jun 19, 2018 at 01:14:06PM -0500, Venu Busireddy wrote:
-> > > > > On 2018-06-19 20:24:12 +0300, Michael S. Tsirkin wrote:
-> > > > > > On Tue, Jun 19, 2018 at 11:32:26AM -0500, Venu Busireddy wrote:
-> > > > > > > Add a "Vendor-Specific" capability to the PCIe bridge, to contain the
-> > > > > > > "Group Identifier" (UUID) that will be used to pair a virtio device with
-> > > > > > > the passthrough device attached to that bridge.
-> > > > > > > 
-> > > > > > > This capability is added to the bridge iff the "uuid" option is specified
-> > > > > > > for the bridge device, via the qemu command line. Also, the bridge's
-> > > > > > > Device ID is changed to PCI_VENDOR_ID_REDHAT, and Vendor ID is changed
-> > > > > > > to PCI_DEVICE_ID_REDHAT_PCIE_BRIDGE (from the default values), when the
-> > > > > > > "uuid" option is present.
-> > > > > > > 
-> > > > > > > Signed-off-by: Venu Busireddy <venu.busireddy@oracle.com>
-> > > > > > 
-> > > > > > I don't see why we should add it to all bridges.
-> > > > > > Let's just add it to ones that already have the RH vendor ID?
-> > > > > 
-> > > > > No. I am not adding the capability to all bridges.
-> > > > > 
-> > > > > In the earlier discussions, we agreed that the bridge be left as
-> > > > > Intel bridge if we do not intend to use it for storing the pairing
-> > > > > information. If we do intend to store the pairing information in the
-> > > > > bridge, we wanted to change the bridge's Vendor ID to RH Vendor ID to
-> > > > > avoid confusion. In other words, bridge's with RH Vendor ID come into
-> > > > > existence only when there is an intent to store the pairing information
-> > > > > in the bridge.
-> > > > > 
-> > > > > Accordingly, if the "uuid" option is specified for the bridge, it
-> > > > > is assumed that the user intends to use the bridge for storing the
-> > > > > pairing information, and hence, the capability is added to the bridge,
-> > > > > and the Vendor ID is changed to RH Vendor ID. If the "uuid" option
-> > > > > is not specified, the bridge remains as Intel bridge, and without the
-> > > > > vendor-specific capability.
-> > > > > 
-> > > > > Venu
-> > > > 
-> > > > Yes but the way to do it is not to tweak the vendor and device ID,
-> > > > instead, just add the UUID property to bridges that already have the
-> > > > correct vendor and device id.
-> > > 
-> > > I was using ioh3420 as the bridge device, because that is what is
-> > > recommended here:
-> > > 
-> > >   https://git.qemu.org/?p=qemu.git;a=blob_plain;f=docs/pcie.txt;hb=HEAD
-> > > 
-> > > ioh3420 defaults to the Intel Vendor ID. Hence the tweak to change the
-> > > Vendor ID to RH Vendor ID.
-> > > 
-> > > Is there another bridge device other than ioh3420 that I should use?
-> > > what device do you suggest? 
-> > > 
-> > > Thanks,
-> > > 
-> > > Venu
-> > 
-> > For pci, use hw/pci-bridge/pci_bridge_dev.c
-> > Maybe allocate a special ID for grouping bridges.
-> > 
-> > For express, add your own downstream port.
-> 
-> Specifically, on the command line, what device does the user specify?
-> For example:
-> 
->  qemu-system-x86_64 --device ${Bridge_Device},uuid="uuid string",<blah blah>
-> 
-> What does the user specify for ${Bridge_Device} from the following:
-> 
-> "i82801b11-bridge", bus PCI
-> "ioh3420", bus PCI, desc "Intel IOH device id 3420 PCIE Root Port"
-> "pci-bridge", bus PCI, desc "Standard PCI Bridge"
+Use the virtio PCI capability "VIRTIO_PCI_CAP_GROUP_ID_CFG" to store the
+"Group Identifier" (UUID) specified via the command line option "uuid"
+for the virtio device. The capability will be present in the virtio
+device's configuration space iff the "uuid" option is specified.
 
-This one. Or add pci-bridge-group.
+Group Identifier is used to pair a virtio device with a passthrough
+device.
 
-> "pci-bridge-seat", bus PCI, desc "Standard PCI Bridge (multiseat)"
-> "pcie-pci-bridge", bus PCI
-> "pcie-root-port", bus PCI, desc "PCI Express Root Port"
-> "pxb", bus PCI, desc "PCI Expander Bridge"
-> "pxb-pcie", bus PCI, desc "PCI Express Expander Bridge"
-> "usb-host", bus usb-bus
-> "usb-hub", bus usb-bus
-> "vfio-pci-igd-lpc-bridge", bus PCI, desc "VFIO dummy ISA/LPC bridge for IGD assignment"
-> "x3130-upstream", bus PCI, desc "TI X3130 Upstream Port of PCI Express Switch"
-> "xio3130-downstream", bus PCI, desc "TI X3130 Downstream Port of PCI Express Switch"
-> 
-> Or, are you suggesting that I add a new type of device? If latter, what
-> should it be called?
-> 
-> Thanks,
-> 
+Signed-off-by: Venu Busireddy <venu.busireddy@oracle.com>
+---
+ hw/virtio/virtio-pci.c                      | 15 +++++++++++++++
+ hw/virtio/virtio-pci.h                      |  3 ++-
+ include/standard-headers/linux/virtio_pci.h |  8 ++++++++
+ 3 files changed, 25 insertions(+), 1 deletion(-)
 
-For express, add pcie-downstream or pcie-downstream-group.
-
-> 
-> > 
-> > 
-> > > > 
-> > > > 
-> > > > > > 
-> > > > > > 
-> > > > > > > ---
-> > > > > > >  hw/pci-bridge/ioh3420.c        |  2 ++
-> > > > > > >  hw/pci-bridge/pcie_root_port.c |  7 +++++++
-> > > > > > >  hw/pci/pci_bridge.c            | 32 ++++++++++++++++++++++++++++++++
-> > > > > > >  include/hw/pci/pci.h           |  2 ++
-> > > > > > >  include/hw/pci/pcie.h          |  1 +
-> > > > > > >  include/hw/pci/pcie_port.h     |  1 +
-> > > > > > >  6 files changed, 45 insertions(+)
-> > > > > > > 
-> > > > > > > diff --git a/hw/pci-bridge/ioh3420.c b/hw/pci-bridge/ioh3420.c
-> > > > > > > index a451d74ee6..b6b9ebc726 100644
-> > > > > > > --- a/hw/pci-bridge/ioh3420.c
-> > > > > > > +++ b/hw/pci-bridge/ioh3420.c
-> > > > > > > @@ -35,6 +35,7 @@
-> > > > > > >  #define IOH_EP_MSI_SUPPORTED_FLAGS      PCI_MSI_FLAGS_MASKBIT
-> > > > > > >  #define IOH_EP_MSI_NR_VECTOR            2
-> > > > > > >  #define IOH_EP_EXP_OFFSET               0x90
-> > > > > > > +#define IOH_EP_VENDOR_OFFSET            0xCC
-> > > > > > >  #define IOH_EP_AER_OFFSET               0x100
-> > > > > > >  
-> > > > > > >  /*
-> > > > > > > @@ -111,6 +112,7 @@ static void ioh3420_class_init(ObjectClass *klass, void *data)
-> > > > > > >      rpc->exp_offset = IOH_EP_EXP_OFFSET;
-> > > > > > >      rpc->aer_offset = IOH_EP_AER_OFFSET;
-> > > > > > >      rpc->ssvid_offset = IOH_EP_SSVID_OFFSET;
-> > > > > > > +    rpc->vendor_offset = IOH_EP_VENDOR_OFFSET;
-> > > > > > >      rpc->ssid = IOH_EP_SSVID_SSID;
-> > > > > > >  }
-> > > > > > >  
-> > > > > > > diff --git a/hw/pci-bridge/pcie_root_port.c b/hw/pci-bridge/pcie_root_port.c
-> > > > > > > index 45f9e8cd4a..ba470c7fda 100644
-> > > > > > > --- a/hw/pci-bridge/pcie_root_port.c
-> > > > > > > +++ b/hw/pci-bridge/pcie_root_port.c
-> > > > > > > @@ -71,6 +71,12 @@ static void rp_realize(PCIDevice *d, Error **errp)
-> > > > > > >          goto err_bridge;
-> > > > > > >      }
-> > > > > > >  
-> > > > > > > +    rc = pci_bridge_vendor_init(d, rpc->vendor_offset, errp);
-> > > > > > > +    if (rc < 0) {
-> > > > > > > +        error_append_hint(errp, "Can't init group ID, error %d\n", rc);
-> > > > > > > +        goto err_bridge;
-> > > > > > > +    }
-> > > > > > > +
-> > > > > > >      if (rpc->interrupts_init) {
-> > > > > > >          rc = rpc->interrupts_init(d, errp);
-> > > > > > >          if (rc < 0) {
-> > > > > > > @@ -137,6 +143,7 @@ static void rp_exit(PCIDevice *d)
-> > > > > > >  static Property rp_props[] = {
-> > > > > > >      DEFINE_PROP_BIT(COMPAT_PROP_PCP, PCIDevice, cap_present,
-> > > > > > >                      QEMU_PCIE_SLTCAP_PCP_BITNR, true),
-> > > > > > > +    DEFINE_PROP_UUID(COMPAT_PROP_UUID, PCIDevice, uuid, false),
-> > > > > > >      DEFINE_PROP_END_OF_LIST()
-> > > > > > >  };
-> > > > > > >  
-> > > > > > > diff --git a/hw/pci/pci_bridge.c b/hw/pci/pci_bridge.c
-> > > > > > > index 40a39f57cb..c63bc439f7 100644
-> > > > > > > --- a/hw/pci/pci_bridge.c
-> > > > > > > +++ b/hw/pci/pci_bridge.c
-> > > > > > > @@ -34,12 +34,17 @@
-> > > > > > >  #include "hw/pci/pci_bus.h"
-> > > > > > >  #include "qemu/range.h"
-> > > > > > >  #include "qapi/error.h"
-> > > > > > > +#include "qemu/uuid.h"
-> > > > > > >  
-> > > > > > >  /* PCI bridge subsystem vendor ID helper functions */
-> > > > > > >  #define PCI_SSVID_SIZEOF        8
-> > > > > > >  #define PCI_SSVID_SVID          4
-> > > > > > >  #define PCI_SSVID_SSID          6
-> > > > > > >  
-> > > > > > > +#define PCI_VENDOR_SIZEOF             20
-> > > > > > > +#define PCI_VENDOR_CAP_LEN_OFFSET      2
-> > > > > > > +#define PCI_VENDOR_GROUP_ID_OFFSET     4
-> > > > > > > +
-> > > > > > >  int pci_bridge_ssvid_init(PCIDevice *dev, uint8_t offset,
-> > > > > > >                            uint16_t svid, uint16_t ssid,
-> > > > > > >                            Error **errp)
-> > > > > > > @@ -57,6 +62,33 @@ int pci_bridge_ssvid_init(PCIDevice *dev, uint8_t offset,
-> > > > > > >      return pos;
-> > > > > > >  }
-> > > > > > >  
-> > > > > > > +int pci_bridge_vendor_init(PCIDevice *d, uint8_t offset, Error **errp)
-> > > > > > > +{
-> > > > > > > +    int pos;
-> > > > > > > +    PCIDeviceClass *dc = PCI_DEVICE_GET_CLASS(d);
-> > > > > > > +
-> > > > > > > +    if (qemu_uuid_is_null(&d->uuid)) {
-> > > > > > > +        return 0;
-> > > > > > > +    }
-> > > > > > > +
-> > > > > > > +    pos = pci_add_capability(d, PCI_CAP_ID_VNDR, offset, PCI_VENDOR_SIZEOF,
-> > > > > > > +            errp);
-> > > > > > > +    if (pos < 0) {
-> > > > > > > +        return pos;
-> > > > > > > +    }
-> > > > > > > +
-> > > > > > > +    dc->vendor_id = PCI_VENDOR_ID_REDHAT;
-> > > > > > > +    dc->device_id = PCI_DEVICE_ID_REDHAT_PCIE_BRIDGE;
-> > > > > > > +    pci_set_word(d->config + PCI_VENDOR_ID, PCI_VENDOR_ID_REDHAT);
-> > > > > > > +    pci_set_word(d->config + PCI_DEVICE_ID, PCI_DEVICE_ID_REDHAT_PCIE_BRIDGE);
-> > > > > > > +
-> > > > > > > +    pci_set_word(d->config + pos + PCI_VENDOR_CAP_LEN_OFFSET,
-> > > > > > > +            PCI_VENDOR_SIZEOF);
-> > > > > > > +    memcpy(d->config + offset + PCI_VENDOR_GROUP_ID_OFFSET, &d->uuid,
-> > > > > > > +            sizeof(QemuUUID));
-> > > > > > > +    return pos;
-> > > > > > > +}
-> > > > > > > +
-> > > > > > >  /* Accessor function to get parent bridge device from pci bus. */
-> > > > > > >  PCIDevice *pci_bridge_get_device(PCIBus *bus)
-> > > > > > >  {
-> > > > > > > diff --git a/include/hw/pci/pci.h b/include/hw/pci/pci.h
-> > > > > > > index 990d6fcbde..ee234c5a6f 100644
-> > > > > > > --- a/include/hw/pci/pci.h
-> > > > > > > +++ b/include/hw/pci/pci.h
-> > > > > > > @@ -4,6 +4,7 @@
-> > > > > > >  #include "hw/qdev.h"
-> > > > > > >  #include "exec/memory.h"
-> > > > > > >  #include "sysemu/dma.h"
-> > > > > > > +#include "qemu/uuid.h"
-> > > > > > >  
-> > > > > > >  /* PCI includes legacy ISA access.  */
-> > > > > > >  #include "hw/isa/isa.h"
-> > > > > > > @@ -343,6 +344,7 @@ struct PCIDevice {
-> > > > > > >      bool has_rom;
-> > > > > > >      MemoryRegion rom;
-> > > > > > >      uint32_t rom_bar;
-> > > > > > > +    QemuUUID uuid;
-> > > > > > >  
-> > > > > > >      /* INTx routing notifier */
-> > > > > > >      PCIINTxRoutingNotifier intx_routing_notifier;
-> > > > > > > diff --git a/include/hw/pci/pcie.h b/include/hw/pci/pcie.h
-> > > > > > > index b71e369703..b4189d0ce3 100644
-> > > > > > > --- a/include/hw/pci/pcie.h
-> > > > > > > +++ b/include/hw/pci/pcie.h
-> > > > > > > @@ -82,6 +82,7 @@ struct PCIExpressDevice {
-> > > > > > >  };
-> > > > > > >  
-> > > > > > >  #define COMPAT_PROP_PCP "power_controller_present"
-> > > > > > > +#define COMPAT_PROP_UUID "uuid"
-> > > > > > >  
-> > > > > > >  /* PCI express capability helper functions */
-> > > > > > >  int pcie_cap_init(PCIDevice *dev, uint8_t offset, uint8_t type,
-> > > > > > > diff --git a/include/hw/pci/pcie_port.h b/include/hw/pci/pcie_port.h
-> > > > > > > index 0736014bfd..40db6dbbe7 100644
-> > > > > > > --- a/include/hw/pci/pcie_port.h
-> > > > > > > +++ b/include/hw/pci/pcie_port.h
-> > > > > > > @@ -74,6 +74,7 @@ typedef struct PCIERootPortClass {
-> > > > > > >      int exp_offset;
-> > > > > > >      int aer_offset;
-> > > > > > >      int ssvid_offset;
-> > > > > > > +    int vendor_offset;
-> > > > > > >      int ssid;
-> > > > > > >  } PCIERootPortClass;
-> > > > > > >  
-> > > > > > 
-> > > > > > ---------------------------------------------------------------------
-> > > > > > To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> > > > > > For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
-> > > > > > 
-> > 
-> > ---------------------------------------------------------------------
-> > To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> > For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
-> > 
+diff --git a/hw/virtio/virtio-pci.c b/hw/virtio/virtio-pci.c
+index 3a01fe90f0..9c2ef16773 100644
+--- a/hw/virtio/virtio-pci.c
++++ b/hw/virtio/virtio-pci.c
+@@ -36,6 +36,7 @@
+ #include "qemu/range.h"
+ #include "hw/virtio/virtio-bus.h"
+ #include "qapi/visitor.h"
++#include "qemu/uuid.h"
+ 
+ #define VIRTIO_PCI_REGION_SIZE(dev)     VIRTIO_PCI_CONFIG_OFF(msix_present(dev))
+ 
+@@ -1638,6 +1639,10 @@ static void virtio_pci_device_plugged(DeviceState *d, Error **errp)
+             .cap.cap_len = sizeof cfg,
+             .cap.cfg_type = VIRTIO_PCI_CAP_PCI_CFG,
+         };
++        struct virtio_pci_group_id_cap group = {
++            .cap.cap_len = sizeof group,
++            .cap.cfg_type = VIRTIO_PCI_CAP_GROUP_ID_CFG,
++        };
+         struct virtio_pci_notify_cap notify_pio = {
+             .cap.cap_len = sizeof notify,
+             .notify_off_multiplier = cpu_to_le32(0x0),
+@@ -1647,6 +1652,11 @@ static void virtio_pci_device_plugged(DeviceState *d, Error **errp)
+ 
+         virtio_pci_modern_regions_init(proxy);
+ 
++        if (!qemu_uuid_is_null(&proxy->pci_dev.uuid)) {
++            memcpy(group.group_id, &proxy->pci_dev.uuid, sizeof(QemuUUID));
++            virtio_pci_modern_mem_region_map(proxy, &proxy->group, &group.cap);
++        }
++
+         virtio_pci_modern_mem_region_map(proxy, &proxy->common, &cap);
+         virtio_pci_modern_mem_region_map(proxy, &proxy->isr, &cap);
+         virtio_pci_modern_mem_region_map(proxy, &proxy->device, &cap);
+@@ -1763,6 +1773,10 @@ static void virtio_pci_realize(PCIDevice *pci_dev, Error **errp)
+     proxy->device.size = 0x1000;
+     proxy->device.type = VIRTIO_PCI_CAP_DEVICE_CFG;
+ 
++    proxy->group.offset = 0;
++    proxy->group.size = 0;
++    proxy->group.type = VIRTIO_PCI_CAP_GROUP_ID_CFG;
++
+     proxy->notify.offset = 0x3000;
+     proxy->notify.size = virtio_pci_queue_mem_mult(proxy) * VIRTIO_QUEUE_MAX;
+     proxy->notify.type = VIRTIO_PCI_CAP_NOTIFY_CFG;
+@@ -1898,6 +1912,7 @@ static Property virtio_pci_properties[] = {
+                     VIRTIO_PCI_FLAG_INIT_LNKCTL_BIT, true),
+     DEFINE_PROP_BIT("x-pcie-pm-init", VirtIOPCIProxy, flags,
+                     VIRTIO_PCI_FLAG_INIT_PM_BIT, true),
++    DEFINE_PROP_UUID("uuid", PCIDevice, uuid, false),
+     DEFINE_PROP_END_OF_LIST(),
+ };
+ 
+diff --git a/hw/virtio/virtio-pci.h b/hw/virtio/virtio-pci.h
+index 813082b0d7..e4592e90bf 100644
+--- a/hw/virtio/virtio-pci.h
++++ b/hw/virtio/virtio-pci.h
+@@ -164,10 +164,11 @@ struct VirtIOPCIProxy {
+             VirtIOPCIRegion common;
+             VirtIOPCIRegion isr;
+             VirtIOPCIRegion device;
++            VirtIOPCIRegion group;
+             VirtIOPCIRegion notify;
+             VirtIOPCIRegion notify_pio;
+         };
+-        VirtIOPCIRegion regs[5];
++        VirtIOPCIRegion regs[6];
+     };
+     MemoryRegion modern_bar;
+     MemoryRegion io_bar;
+diff --git a/include/standard-headers/linux/virtio_pci.h b/include/standard-headers/linux/virtio_pci.h
+index 9262acd130..e5b6c6f3a6 100644
+--- a/include/standard-headers/linux/virtio_pci.h
++++ b/include/standard-headers/linux/virtio_pci.h
+@@ -113,6 +113,8 @@
+ #define VIRTIO_PCI_CAP_DEVICE_CFG	4
+ /* PCI configuration access */
+ #define VIRTIO_PCI_CAP_PCI_CFG		5
++/* Group Identifier */
++#define VIRTIO_PCI_CAP_GROUP_ID_CFG	6
+ 
+ /* This is the PCI capability header: */
+ struct virtio_pci_cap {
+@@ -163,6 +165,12 @@ struct virtio_pci_cfg_cap {
+ 	uint8_t pci_cfg_data[4]; /* Data for BAR access. */
+ };
+ 
++/* Fields in VIRTIO_PCI_CAP_GROUP_ID_CFG: */
++struct virtio_pci_group_id_cap {
++	struct virtio_pci_cap cap;
++	uint8_t group_id[16];
++};
++
+ /* Macro versions of offsets for the Old Timers! */
+ #define VIRTIO_PCI_CAP_VNDR		0
+ #define VIRTIO_PCI_CAP_NEXT		1
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
