@@ -1,108 +1,47 @@
-Return-Path: virtio-return-3152-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio@lists.oasis-open.org>
-List-Post: <mailto:virtio@lists.oasis-open.org>
-List-Help: <mailto:virtio-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-From: Halil Pasic <pasic@linux.ibm.com>
-Date: Mon, 25 Jun 2018 14:21:32 +0200
-In-Reply-To: <1529929292-11900-1-git-send-email-pasic@linux.ibm.com>
-References: <1529929292-11900-1-git-send-email-pasic@linux.ibm.com>
-Message-Id: <1529929292-11900-7-git-send-email-pasic@linux.ibm.com>
-Subject: [virtio] [PATCH v3 6/6] notifications: update notifications terminology for devices
-To: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
-Cc: "Michael S. Tsirkin" <mst@redhat.com>, Cornelia Huck <cohuck@redhat.com>, Pawel Moll <pawel.moll@arm.com>, Stefan Hajnoczi <stefanha@redhat.com>, Halil Pasic <pasic@linux.ibm.com>
+Return-Path: virtio-dev-return-4450-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
+	by lists.oasis-open.org (Postfix) with ESMTP id 405FF5819139
+	for <virtio-dev@lists.oasis-open.org>; Tue, 19 Jun 2018 20:34:43 -0700 (PDT)
+Date: Wed, 20 Jun 2018 06:34:24 +0300
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20180620063204-mutt-send-email-mst@kernel.org>
+References: <1514626559-162312-1-git-send-email-longpeng2@huawei.com>
+ <1514626559-162312-2-git-send-email-longpeng2@huawei.com>
+ <fcb63fc3-22eb-7f6c-2014-744ee75784eb@linux.vnet.ibm.com>
+ <5A55AA45.9090004@huawei.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5A55AA45.9090004@huawei.com>
+Subject: Re: [virtio-dev] Re: [Qemu-devel] [v23 1/2] virtio-crypto: Add
+ virtio crypto device specification
+To: "Longpeng (Mike)" <longpeng2@huawei.com>
+Cc: Halil Pasic <pasic@linux.vnet.ibm.com>, qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, luonengjun@huawei.com, cornelia.huck@de.ibm.com, stefanha@redhat.com, denglingli@chinamobile.com, Jani.Kokkonen@huawei.com, Ola.Liljedahl@arm.com, Varun.Sethi@freescale.com, xin.zeng@intel.com, brian.a.keating@intel.com, liang.j.ma@intel.com, john.griffin@intel.com, weidong.huang@huawei.com, agraf@suse.de, jasowang@redhat.com, vincent.jardin@6wind.com, arei.gonglei@huawei.com, wangxinxin.wang@huawei.com, jianjay.zhou@huawei.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-The specifications of some virtio device types are still using the old
-terminology for used buffer notifications and configuration change
-notifications calling these interrupts.
+On Wed, Jan 10, 2018 at 01:53:09PM +0800, Longpeng (Mike) wrote:
+> Hi Halil,
+> 
+> We are fixing the Intel BUG these days, so I will go through your comments after
+> we're done. Thanks.
 
-Let us fix that.
+All right - are you guys done with meltdown/spectre? I'd like us
+to start finally getting parts of this in the spec.
+This is already used in the field - let's get into spec
+whatever is already out there.
 
-Signed-off-by: Halil Pasic <pasic@linux.ibm.com>
-Reviewed-by: Cornelia Huck <cohuck@redhat.com>
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
----
- content.tex |   22 +++++++++++-----------
- 1 files changed, 11 insertions(+), 11 deletions(-)
+Argue about future enhancements later.
 
-diff --git a/content.tex b/content.tex
-index 5919cc1..097af44 100644
---- a/content.tex
-+++ b/content.tex
-@@ -3043,9 +3043,9 @@ if VIRTIO_NET_F_MRG_RXBUF is not negotiated.}
- \label{sec:Device Types / Network Device / Device Operation / Processing of Packets}%old label for latexdiff
- 
- When a packet is copied into a buffer in the receiveq, the
--optimal path is to disable further interrupts for the receiveq
--and process
--packets until no more are found, then re-enable them.
-+optimal path is to disable further used buffer notifications for the
-+receiveq and process packets until no more are found, then re-enable
-+them.
- 
- Processing incoming packets involves:
- 
-@@ -3885,7 +3885,7 @@ The device SHOULD clear the \field{write_zeroes_may_unmap} field of the
- virtio configuration space if and only if a write zeroes request cannot
- result in deallocating one or more sectors.  The device MAY change the
- content of the field during operation of the device; when this happens,
--the device SHOULD trigger a configuration change interrupt.
-+the device SHOULD trigger a configuration change notification.
- 
- A write is considered volatile when it is submitted; the contents of
- sectors covered by a volatile write are undefined in persistent device
-@@ -4177,20 +4177,20 @@ an appropriate log or output method.
- \begin{enumerate}
- \item For output, a buffer containing the characters is placed in
-   the port's transmitq\footnote{Because this is high importance and low bandwidth, the current
--Linux implementation polls for the buffer to be used, rather than
--waiting for an interrupt, simplifying the implementation
-+Linux implementation polls for the buffer to become used, rather than
-+waiting for a used buffer notification, simplifying the implementation
- significantly. However, for generic serial ports with the
- O_NONBLOCK flag set, the polling limitation is relaxed and the
- consumed buffers are freed upon the next write or poll call or
- when a port is closed or hot-unplugged.
- }.
- 
--\item When a buffer is used in the receiveq (signalled by an
--  interrupt), the contents is the input to the port associated
-+\item When a buffer is used in the receiveq (signalled by a
-+  used buffer notification), the contents is the input to the port associated
-   with the virtqueue for which the notification was received.
- 
- \item If the driver negotiated the VIRTIO_CONSOLE_F_SIZE feature, a
--  configuration change interrupt indicates that the updated size can
-+  configuration change notification indicates that the updated size can
-   be read from the configuration fields.  This size applies to port 0 only.
- 
- \item If the driver negotiated the VIRTIO_CONSOLE_F_MULTIPORT
-@@ -4433,7 +4433,7 @@ The device initialization process is outlined below:
- \subsection{Device Operation}\label{sec:Device Types / Memory Balloon Device / Device Operation}
- 
- The device is driven either by the receipt of a configuration
--change interrupt, or by changing guest memory needs, such as
-+change notification, or by changing guest memory needs, such as
- performing memory compaction or responding to out of memory
- conditions.
- 
-@@ -4570,7 +4570,7 @@ and notifies the device. A request for memory statistics proceeds
- as follows:
- 
- \begin{enumerate}
--\item The device uses the buffer and sends an interrupt.
-+\item The device uses the buffer and sends a used buffer notification.
- 
- \item The driver pops the used buffer and discards it.
- 
+
 -- 
-1.7.1
-
+MST
 
 ---------------------------------------------------------------------
-To unsubscribe from this mail list, you must leave the OASIS TC that 
-generates this mail.  Follow this link to all your TCs in OASIS at:
-https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
