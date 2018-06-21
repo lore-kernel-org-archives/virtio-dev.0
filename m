@@ -1,64 +1,128 @@
-Return-Path: virtio-dev-return-4373-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4471-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id C66D958191EF
-	for <virtio-dev@lists.oasis-open.org>; Wed, 13 Jun 2018 06:12:21 -0700 (PDT)
-Date: Wed, 13 Jun 2018 14:12:09 +0100
-From: Stefan Hajnoczi <stefanha@redhat.com>
-Message-ID: <20180613131209.GH24528@stefanha-x1.localdomain>
-References: <20180613092702.5544-1-tiwei.bie@intel.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 4FEC158191C4
+	for <virtio-dev@lists.oasis-open.org>; Thu, 21 Jun 2018 12:12:04 -0700 (PDT)
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Date: Thu, 21 Jun 2018 20:06:50 +0100
+Message-Id: <20180621190655.56391-1-jean-philippe.brucker@arm.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="K1n7F7fSdjvFAEnM"
-Content-Disposition: inline
-In-Reply-To: <20180613092702.5544-1-tiwei.bie@intel.com>
-Subject: [virtio-dev] Re: [PATCH v1] content: use a consistent wording for device status
-To: Tiwei Bie <tiwei.bie@intel.com>
-Cc: mst@redhat.com, cohuck@redhat.com, pbonzini@redhat.com, virtio-dev@lists.oasis-open.org, dan.daly@intel.com, cunming.liang@intel.com, zhihong.wang@intel.com
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Subject: [virtio-dev] [PATCH v2 0/5] Add virtio-iommu driver
+To: iommu@lists.linux-foundation.org, kvm@vger.kernel.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, devicetree@vger.kernel.org, kvmarm@lists.cs.columbia.edu
+Cc: joro@8bytes.org, alex.williamson@redhat.com, robh+dt@kernel.org, mark.rutland@arm.com, mst@redhat.com, jasowang@redhat.com, marc.zyngier@arm.com, robin.murphy@arm.com, will.deacon@arm.com, lorenzo.pieralisi@arm.com, eric.auger@redhat.com, peterx@redhat.com, bharat.bhushan@nxp.com, tnowicki@caviumnetworks.com, jayachandran.nair@cavium.com, kevin.tian@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
---K1n7F7fSdjvFAEnM
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Implement the base virtio-iommu driver, following version 0.7 of the
+specification [1].
 
-On Wed, Jun 13, 2018 at 05:27:02PM +0800, Tiwei Bie wrote:
-> There is a part called "device status field" in a
-> Virtio device. Currently, both of \field{status}
-> and \field{device status} are used to refer to it,
-> which is a bit confusing. This patch changes spec
-> to use \field{device status} consistently.
->=20
-> Suggested-by: Michael S. Tsirkin <mst@redhat.com>
-> Signed-off-by: Tiwei Bie <tiwei.bie@intel.com>
-> Fixes: https://github.com/oasis-tcs/virtio-spec/issues/15
-> Reviewed-by: Cornelia Huck <cohuck@redhat.com>
-> ---
-> v1:
-> - Drop RFC from subject;
-> - Add Fixes tag;
->=20
->  content.tex | 21 ++++++++++++---------
->  1 file changed, 12 insertions(+), 9 deletions(-)
+Changes since last version [2]:
+* Address comments, thanks again for the review.
+* As suggested, add a DT binding description in patch 1.
+* Depend on VIRTIO_MMIO=y to fix a build failure¹
+* Switch to v0.7 of the spec, which changes resv_mem parameters and adds
+  an MMIO flag. These are trivial but not backward compatible. Once
+  device or driver is upstream, updates to the spec will rely on feature
+  bits to stay compatible with this code.
+* Implement the new tlb_sync interface, by splitting add_req() and
+  sync_req(). I noticed a small improvement on netperf stream because
+  the synchronous iommu_unmap() also benefits from this. Other
+  experiments, such as using kmem_cache for requests instead of kmalloc,
+  didn't show any improvement.
 
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+Driver is available on branch virtio-iommu/v0.7 [3], and the x86+ACPI
+prototype is on branch virtio-iommu/devel. That x86 code hasn't changed,
+it still requires the DMA ifdeffery and I lack the expertise to tidy it
+up. The kvmtool example device has been cleaned up and is available on
+branch virtio-iommu/v0.7 [4].
 
---K1n7F7fSdjvFAEnM
-Content-Type: application/pgp-signature; name="signature.asc"
+Feedback welcome!
 
------BEGIN PGP SIGNATURE-----
+Thanks,
+Jean
 
-iQEcBAEBAgAGBQJbIRgpAAoJEJykq7OBq3PITq8H/3xYd9R/GYIVENV/2608oAI6
-YHxRrwVhj1mJr1/mVso4FVs8SxmkuaumXSinYxMF+uB7FGz9j0wPYRjIOou9R2oK
-zMhQY7FODavkH7WQc2AlaoMfM9sEzyXmYwZhXuGB0prYOijGEhfO28sqNn8sK0T5
-2WaOmeFkQ25RQ9rnRtw+E3q0VxNRYvmlHpz3I3RGImc2X4p+vCCyzkIYwV718YAW
-PwU4a9FXwfuEerxrasjN07zvgHZMQzJ3HhrH01IaIr35BIq+IIKLpYyYcZ5ZIUHc
-FZWnp6yz5Ga+I8b7nHE4/ld7XUYb029PyM03BnSZlqwgj2TRh4fEzOrAUgsS/RQ=
-=sR/v
------END PGP SIGNATURE-----
+[1] virtio-iommu specification v0.7
+    https://www.spinics.net/lists/linux-virtualization/msg34127.html
+[2] virtio-iommu driver v1
+    https://www.spinics.net/lists/kvm/msg164322.html
+[3] git://linux-arm.org/linux-jpb.git virtio-iommu/v0.7
+    http://www.linux-arm.org/git?p=linux-jpb.git;a=shortlog;h=refs/heads/virtio-iommu/v0.7
+[4] git://linux-arm.org/kvmtool-jpb.git virtio-iommu/v0.7 
 
---K1n7F7fSdjvFAEnM--
+                                  ---
+¹ A word on the module story. Because of complex dependencies IOMMU
+drivers cannot yet be .ko modules. Enabling it is outside the scope of
+this series but I have a small prototype on branch virtio-iommu/
+module-devel. It seems desirable since some distros currently ship the
+transport code as module and are unlikely to change this on our account.
+Note that this series works fine with arm64 defconfig, which selects
+VIRTIO_MMIO=y.
+
+I could use some help to clean this up. Currently my solution is to split
+virtio-iommu into a module and a 3-lines built-in stub, which isn't
+graceful but could have been worse.
+
+Keeping the whole virtio-iommu driver as builtin would require accessing
+any virtio utility through get_symbol. So far we only have seven of
+those and could keep a list of pointer ops, but I find this solution
+terrible. If virtio or virtio_mmio is a module, virtio-iommu also needs
+to be one.
+
+The minimal set of changes to make a module out of an OF-based IOMMU
+driver seems to be:
+* Export IOMMU symbols used by drivers
+* Don't give up deferring probe in of_iommu
+* Move IOMMU OF tables to .rodata
+* Create a static virtio-iommu stub that declares the virtio-iommu OF
+  table entry. The build system doesn't pick up IOMMU_OF_DECLARE when
+  done from an object destined to be built as module :(
+* Create a device_link between endpoint and IOMMU, to ensure that
+  removing the IOMMU driver also unbinds the endpoint driver. Putting
+  this in IOMMU core seems like a better approach since even when not
+  built as module, unbinding an IOMMU device via sysfs will cause
+  crashes.
+
+With this, as long as virtio-mmio isn't loaded, the OF code defers probe
+of endpoints that depend on virtio-iommu. Once virtio-mmio is loaded,
+the probe is still deferred until virtio-iommu registers itself to the
+virtio bus. Once virtio-iommu is loaded, probe of endpoints managed by
+the IOMMU follows.
+
+I'll investigate ACPI IORT when I find some time, though I don't expect
+much complication and suggest we tackle one problem at a time. Since it
+is a luxury that requires changes to the IOMMU core, module support is
+left as a future improvement.
+                                  ---
+
+Jean-Philippe Brucker (5):
+  dt-bindings: virtio: Specify #iommu-cells value for a virtio-iommu
+  iommu: Add virtio-iommu driver
+  iommu/virtio: Add probe request
+  iommu/virtio: Add event queue
+  vfio: Allow type-1 IOMMU instantiation for ARM
+
+ .../devicetree/bindings/virtio/mmio.txt       |    8 +
+ MAINTAINERS                                   |    6 +
+ drivers/iommu/Kconfig                         |   11 +
+ drivers/iommu/Makefile                        |    1 +
+ drivers/iommu/virtio-iommu.c                  | 1164 +++++++++++++++++
+ drivers/vfio/Kconfig                          |    2 +-
+ include/uapi/linux/virtio_ids.h               |    1 +
+ include/uapi/linux/virtio_iommu.h             |  172 +++
+ 8 files changed, 1364 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/iommu/virtio-iommu.c
+ create mode 100644 include/uapi/linux/virtio_iommu.h
+
+-- 
+2.17.0
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+
