@@ -1,15 +1,15 @@
-Return-Path: virtio-dev-return-4480-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4482-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id AA9921CB80EF
-	for <virtio-dev@lists.oasis-open.org>; Thu, 21 Jun 2018 19:26:49 -0700 (PDT)
-Date: Thu, 21 Jun 2018 21:25:31 -0500
-From: Venu Busireddy <venu.busireddy@oracle.com>
-Message-ID: <20180622022531.GA9732@vbusired-vm>
+	by lists.oasis-open.org (Postfix) with ESMTP id D21511CB80EF
+	for <virtio-dev@lists.oasis-open.org>; Thu, 21 Jun 2018 19:32:39 -0700 (PDT)
+Date: Fri, 22 Jun 2018 05:32:28 +0300
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20180622053141-mutt-send-email-mst@kernel.org>
 References: <20180615134815.6613620e.cohuck@redhat.com>
  <CADGSJ208NRp=bjhSkzF2K5Ft94TwdRs73WfSp4h-_vXvEKwgiQ@mail.gmail.com>
  <20180619125453.2d2dfb2d.cohuck@redhat.com>
@@ -27,10 +27,10 @@ In-Reply-To: <CADGSJ22B39JiS14L0yCYQ720-fZcwyUt1wCX1YO-6Y9FhmDKZg@mail.gmail.com
 Subject: Re: [virtio-dev] Re: [Qemu-devel] [PATCH] qemu: Introduce
  VIRTIO_NET_F_STANDBY feature bit to virtio_net
 To: Siwei Liu <loseweigh@gmail.com>
-Cc: Cornelia Huck <cohuck@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>, "Samudrala, Sridhar" <sridhar.samudrala@intel.com>, Alexander Duyck <alexander.h.duyck@intel.com>, virtio-dev@lists.oasis-open.org, aaron.f.brown@intel.com, Jiri Pirko <jiri@resnulli.us>, Jakub Kicinski <kubakici@wp.pl>, Netdev <netdev@vger.kernel.org>, qemu-devel@nongnu.org, virtualization@lists.linux-foundation.org, konrad.wilk@oracle.com, boris.ostrovsky@oracle.com, Joao Martins <joao.m.martins@oracle.com>, vijay.balakrishna@oracle.com
+Cc: Cornelia Huck <cohuck@redhat.com>, "Samudrala, Sridhar" <sridhar.samudrala@intel.com>, Alexander Duyck <alexander.h.duyck@intel.com>, virtio-dev@lists.oasis-open.org, aaron.f.brown@intel.com, Jiri Pirko <jiri@resnulli.us>, Jakub Kicinski <kubakici@wp.pl>, Netdev <netdev@vger.kernel.org>, qemu-devel@nongnu.org, virtualization@lists.linux-foundation.org, konrad.wilk@oracle.com, boris.ostrovsky@oracle.com, Joao Martins <joao.m.martins@oracle.com>, Venu Busireddy <venu.busireddy@oracle.com>, vijay.balakrishna@oracle.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 2018-06-21 18:21:55 -0700, Siwei Liu wrote:
+On Thu, Jun 21, 2018 at 06:21:55PM -0700, Siwei Liu wrote:
 > On Thu, Jun 21, 2018 at 7:59 AM, Cornelia Huck <cohuck@redhat.com> wrote:
 > > On Wed, 20 Jun 2018 22:48:58 +0300
 > > "Michael S. Tsirkin" <mst@redhat.com> wrote:
@@ -58,23 +58,18 @@ On 2018-06-21 18:21:55 -0700, Siwei Liu wrote:
 > If feature negotiation fails on VIRTIO_NET_F_STANDBY_UUID, is it safe
 > to still expose UUID in the config space on virtio-pci?
 
-Why is it not safe? When we expose VIRTIO_NET_F_STANDBY_UUID, it is up
-to the driver to decide if it wants to use it or not. If it does not
-want to use the feature, it would also imply that the driver will not
-be interested in the UUID value in the config space. So, the UUID will
-be some piece of data that simply sits around; nobody cares for it.
+
+Yes but guest is not supposed to read it.
 
 > I'm not even sure if it's sane to expose group UUID on the PCI bridge
 > where the corresponding vfio-pci device attached to for a guest which
 > doesn't support the feature (legacy).
+> 
+> -Siwei
 
-Unfortunately, you don't know beforehand if the guest will be a legacy
-guest that doesn't support the feature. As is the case with the UUID in
-the virtio-pci device's config space, the UUID in the bridge's config
-space will/should be ignored by the legacy guest.
+Yes but you won't add the primary behind such a bridge.
 
-Venu
-
+> 
 > > - in the guest, use the uuid from the virtio-net device's config space
 > >   if applicable; else, fall back to matching by MAC as done today
 > >
