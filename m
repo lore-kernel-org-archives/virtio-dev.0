@@ -1,532 +1,177 @@
-Return-Path: virtio-dev-return-4570-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4512-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 7E48A1CB807B
-	for <virtio-dev@lists.oasis-open.org>; Tue, 26 Jun 2018 23:15:46 -0700 (PDT)
-From: Gerd Hoffmann <kraxel@redhat.com>
-Date: Wed, 27 Jun 2018 08:15:25 +0200
-Message-Id: <20180627061525.32537-1-kraxel@redhat.com>
-Subject: [virtio-dev] [PATCH] Add virtio gpu device specification.
-To: virtio-dev@lists.oasis-open.org
-Cc: "Michael S. Tsirkin" <mst@redhat.com>, Gerd Hoffmann <kraxel@redhat.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 70DD658191E5
+	for <virtio-dev@lists.oasis-open.org>; Mon, 25 Jun 2018 05:30:43 -0700 (PDT)
+From: Wei Wang <wei.w.wang@intel.com>
+Date: Mon, 25 Jun 2018 20:05:08 +0800
+Message-Id: <1529928312-30500-1-git-send-email-wei.w.wang@intel.com>
+Subject: [virtio-dev] [PATCH v34 0/4] Virtio-balloon: support free page reporting
+To: virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, linux-mm@kvack.org, mst@redhat.com, mhocko@kernel.org, akpm@linux-foundation.org
+Cc: torvalds@linux-foundation.org, pbonzini@redhat.com, wei.w.wang@intel.com, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu0@gmail.com, nilal@redhat.com, riel@redhat.com, peterx@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Support for 2d mode (3d/virgl mode is not covered by this patch) has
-been added to the linux kernel version 4.2 and to qemu version 2.4.
+This patch series is separated from the previous "Virtio-balloon
+Enhancement" series. The new feature, VIRTIO_BALLOON_F_FREE_PAGE_HINT,  
+implemented by this series enables the virtio-balloon driver to report
+hints of guest free pages to the host. It can be used to accelerate live
+migration of VMs. Here is an introduction of this usage:
 
-Signed-off-by: Gerd Hoffmann <kraxel@redhat.com>
----
- content.tex    |   2 +
- virtio-gpu.tex | 481 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 483 insertions(+)
- create mode 100644 virtio-gpu.tex
+Live migration needs to transfer the VM's memory from the source machine
+to the destination round by round. For the 1st round, all the VM's memory
+is transferred. From the 2nd round, only the pieces of memory that were
+written by the guest (after the 1st round) are transferred. One method
+that is popularly used by the hypervisor to track which part of memory is
+written is to write-protect all the guest memory.
 
-diff --git a/content.tex b/content.tex
-index be1823431d..d41c2f8d76 100644
---- a/content.tex
-+++ b/content.tex
-@@ -5325,6 +5325,8 @@ descriptor for the \field{sense_len}, \field{residual},
- \field{status_qualifier}, \field{status}, \field{response} and
- \field{sense} fields.
- 
-+\input{virtio-gpu.tex}
-+
- \chapter{Reserved Feature Bits}\label{sec:Reserved Feature Bits}
- 
- Currently these device-independent feature bits defined:
-diff --git a/virtio-gpu.tex b/virtio-gpu.tex
-new file mode 100644
-index 0000000000..34cf493bbc
---- /dev/null
-+++ b/virtio-gpu.tex
-@@ -0,0 +1,481 @@
-+\section{GPU Device}\label{sec:Device Types / GPU Device}
-+
-+virtio-gpu is a virtio based graphics adapter.  It can operate in 2D
-+mode and in 3D (virgl) mode.  3D mode will offload rendering ops to
-+the host gpu and therefore requires a gpu with 3D support on the host
-+machine.
-+
-+3D mode is not covered (yet) in this specification, even though it is
-+mentioned here and there due to some details of the virtual hardware
-+being designed with 3D mode in mind.
-+
-+In 2D mode the virtio-gpu device provides support for ARGB Hardware
-+cursors and multiple scanouts (aka heads).
-+
-+\subsection{Device ID}\label{sec:Device Types / GPU Device / Device ID}
-+
-+16
-+
-+\subsection{Virtqueues}\label{sec:Device Types / GPU Device / Virtqueues}
-+
-+\begin{description}
-+\item[0] controlq - queue for sending control commands
-+\item[1] cursorq - queue for sending cursor updates
-+\end{description}
-+
-+Both queues have the same format.  Each request and each response have
-+a fixed header, followed by command specific data fields.  The
-+separate cursor queue is the "fast track" for cursor commands
-+(VIRTIO_GPU_CMD_UPDATE_CURSOR and VIRTIO_GPU_CMD_MOVE_CURSOR), so they
-+go though without being delayed by time-consuming commands in the
-+control queue.
-+
-+\subsection{Feature bits}\label{sec:Device Types / GPU Device / Feature bits}
-+
-+\begin{description}
-+\item[VIRTIO_GPU_F_VIRGL (0)] virgl 3D mode is supported.
-+\end{description}
-+
-+\subsection{Device configuration layout}\label{sec:Device Types / GPU Device / Device configuration layout}
-+
-+\begin{lstlisting}
-+#define VIRTIO_GPU_EVENT_DISPLAY (1 << 0)
-+
-+struct virtio_gpu_config {
-+        le32 events_read;
-+        le32 events_clear;
-+        le32 num_scanouts;
-+        le32 reserved;
-+}
-+\end{lstlisting}
-+
-+\subsubsection{Device configuration fields}
-+
-+\begin{description}
-+\item[\field{events_read}] signals pending events to the driver.  The
-+  driver MUST NOT write to this field.
-+\item[\field{events_clear}] clears pending events in the device.
-+  Writing a '1' into a bit will clear the corresponding bit in
-+  \field{events_read}, mimicking write-to-clear behavior.
-+\item[\field{num_scanouts}] specifies the maximum number of scanouts
-+  supported by the device.  Minimum value is 1, maximum value is 16.
-+\end{description}
-+
-+\subsubsection{Events}
-+
-+\begin{description}
-+\item[VIRTIO_GPU_EVENT_DISPLAY] Display configuration has changed.
-+  The driver SHOULD use the VIRTIO_GPU_CMD_GET_DISPLAY_INFO command to
-+  fetch the information from the device.
-+\end{description}
-+
-+\devicenormative{\subsection}{Device Initialization}{Device Types / GPU Device / Device Initialization}
-+
-+The driver SHOULD query the display information from the device using
-+the VIRTIO_GPU_CMD_GET_DISPLAY_INFO command and use that information
-+for the initial scanout setup.  In case no information is available or
-+all displays are disabled the driver MAY choose to use a fallback,
-+such as 1024x768 at display 0.
-+
-+\subsection{Device Operation}\label{sec:Device Types / GPU Device / Device Operation}
-+
-+The virtio-gpu is based around the concept of resources private to the
-+host, the guest must DMA transfer into these resources. This is a
-+design requirement in order to interface with future 3D rendering. In
-+the unaccelerated 2D mode there is no support for DMA transfers from
-+resources, just to them.
-+
-+Resources are initially simple 2D resources, consisting of a width,
-+height and format along with an identifier. The guest must then attach
-+backing store to the resources in order for DMA transfers to
-+work. This is like a GART in a real GPU.
-+
-+\subsubsection{Device Operation: Create a framebuffer and configure scanout}
-+
-+\begin{itemize*}
-+\item Create a host resource using VIRTIO_GPU_CMD_RESOURCE_CREATE_2D.
-+\item Allocate a framebuffer from guest ram, and attach it as backing
-+  storage to the resource just created, using
-+  VIRTIO_GPU_CMD_RESOURCE_ATTACH_BACKING.  Scatter lists are
-+  supported, so the framebuffer doesn't need to be contignous in guest
-+  physical memory.
-+\item Use VIRTIO_GPU_CMD_SET_SCANOUT to link the framebuffer to
-+  a display scanout.
-+\end{itemize*}
-+
-+\subsubsection{Device Operation: Update a framebuffer and scanout}
-+
-+\begin{itemize*}
-+\item Render to your framebuffer memory.
-+\item Use VIRTIO_GPU_CMD_TRANSFER_SEND_2D to update the host resource
-+  from guest memory.
-+\item Use VIRTIO_GPU_CMD_RESOURCE_FLUSH to flush the updated resource
-+  to the display.
-+\end{itemize*}
-+
-+\subsubsection{Device Operation: Using pageflip}
-+
-+It is possible to create multiple framebuffers, flip between them
-+using VIRTIO_GPU_CMD_SET_SCANOUT and VIRTIO_GPU_CMD_RESOURCE_FLUSH,
-+and update the invisible framebuffer using
-+VIRTIO_GPU_CMD_TRANSFER_SEND_2D.
-+
-+\subsubsection{Device Operation: Multihead setup}
-+
-+In case two or more displays are present there are different ways to
-+configure things:
-+
-+\begin{itemize*}
-+\item Create a single framebuffer, link it to all displays
-+  (mirroring).
-+\item Create an framebuffer for each display.
-+\item Create one big framebuffer, configure scanouts to display a
-+  different rectangle of that framebuffer each.
-+\end{itemize*}
-+
-+\devicenormative{\subsubsection}{Device Operation: Command lifecycle and fencing}{Device Types / GPU Device / Device Operation / Device Operation: Command lifecycle and fencing}
-+
-+The device MAY process controlq commands asyncronously and return them
-+to the driver before the processing is complete.  If the driver needs
-+to know when the processing is finished it can set the
-+VIRTIO_GPU_FLAG_FENCE flag in the request.  The device MUST finish the
-+processing before returning the command then.
-+
-+Note: current qemu implementation does asyncrounous processing only in
-+3d mode, when offloading the processing to the host gpu.
-+
-+\subsubsection{Device Operation: Configure mouse cursor}
-+
-+The mouse cursor image is a normal resource, except that it must be
-+64x64 in size.  The driver MUST create and populate the resource
-+(using the usual VIRTIO_GPU_CMD_RESOURCE_CREATE_2D,
-+VIRTIO_GPU_CMD_RESOURCE_ATTACH_BACKING and
-+VIRTIO_GPU_CMD_TRANSFER_SEND_2D controlq commands) and make sure they
-+are completed (using VIRTIO_GPU_FLAG_FENCE).
-+
-+Then VIRTIO_GPU_CMD_UPDATE_CURSOR can be sent to the cursorq to set
-+the pointer shape and position.  To move the pointer without updating
-+the shape use VIRTIO_GPU_CMD_MOVE_CURSOR instead.
-+
-+\subsubsection{Device Operation: Request header}\label{sec:Device Types / GPU Device / Device Operation / Device Operation: Request header}
-+
-+\begin{lstlisting}
-+enum virtio_gpu_ctrl_type {
-+
-+        /* 2d commands */
-+        VIRTIO_GPU_CMD_GET_DISPLAY_INFO = 0x0100,
-+        VIRTIO_GPU_CMD_RESOURCE_CREATE_2D,
-+        VIRTIO_GPU_CMD_RESOURCE_UNREF,
-+        VIRTIO_GPU_CMD_SET_SCANOUT,
-+        VIRTIO_GPU_CMD_RESOURCE_FLUSH,
-+        VIRTIO_GPU_CMD_TRANSFER_TO_HOST_2D,
-+        VIRTIO_GPU_CMD_RESOURCE_ATTACH_BACKING,
-+        VIRTIO_GPU_CMD_RESOURCE_DETACH_BACKING,
-+
-+        /* cursor commands */
-+        VIRTIO_GPU_CMD_UPDATE_CURSOR = 0x0300,
-+        VIRTIO_GPU_CMD_MOVE_CURSOR,
-+
-+        /* success responses */
-+        VIRTIO_GPU_RESP_OK_NODATA = 0x1100,
-+        VIRTIO_GPU_RESP_OK_DISPLAY_INFO,
-+
-+        /* error responses */
-+        VIRTIO_GPU_RESP_ERR_UNSPEC = 0x1200,
-+        VIRTIO_GPU_RESP_ERR_OUT_OF_MEMORY,
-+        VIRTIO_GPU_RESP_ERR_INVALID_SCANOUT_ID,
-+        VIRTIO_GPU_RESP_ERR_INVALID_RESOURCE_ID,
-+        VIRTIO_GPU_RESP_ERR_INVALID_CONTEXT_ID,
-+        VIRTIO_GPU_RESP_ERR_INVALID_PARAMETER,
-+};
-+
-+#define VIRTIO_GPU_FLAG_FENCE (1 << 0)
-+
-+struct virtio_gpu_ctrl_hdr {
-+        le32 type;
-+        le32 flags;
-+        le64 fence_id;
-+        le32 ctx_id;
-+        le32 padding;
-+};
-+\end{lstlisting}
-+
-+All requests and responses on the virt queues have the fixed header
-+\field{struct virtio_gpu_ctrl_hdr}.
-+
-+\begin{description}
-+\item[\field{type}] specifies the type of the driver request
-+  (VIRTIO_GPU_CMD_*) or device response (VIRTIO_GPU_RESP_*).
-+\item[\field{flags}] request / response flags.
-+\item[\field{fence_id}] If the driver sets the VIRTIO_GPU_FLAG_FENCE
-+  bit in the request \field{flags} field the device MUST:
-+  \begin{itemize*}
-+  \item set VIRTIO_GPU_FLAG_FENCE bit in the response,
-+  \item copy the content of the \field{fence_id} field from the
-+    request to the response, and
-+  \item send the response only after command processing is complete.
-+  \end{itemize*}
-+\item[\field{ctx_id}] Rendering context (used in 3D mode only).
-+\end{description}
-+
-+On success the device will return VIRTIO_GPU_RESP_OK_NODATA in
-+case there is no payload.  Otherwise the \field{type} field will
-+indicate the kind of payload.
-+
-+On error the device will return one of the
-+VIRTIO_GPU_RESP_ERR_* error codes.
-+
-+\subsubsection{Device Operation: controlq}\label{sec:Device Types / GPU Device / Device Operation / Device Operation: controlq}
-+
-+For any coordinates given 0,0 is top left, larger x moves right,
-+larger y moves down.
-+
-+\begin{description}
-+
-+\item[VIRTIO_GPU_CMD_GET_DISPLAY_INFO] Retrieve the current output
-+  configuration.  No request data (just bare \field{struct
-+    virtio_gpu_ctrl_hdr}).  Response type is
-+  VIRTIO_GPU_RESP_OK_DISPLAY_INFO, response data is \field{struct
-+    virtio_gpu_resp_display_info}.
-+
-+\begin{lstlisting}
-+#define VIRTIO_GPU_MAX_SCANOUTS 16
-+
-+struct virtio_gpu_rect {
-+        le32 x;
-+        le32 y;
-+        le32 width;
-+        le32 height;
-+};
-+
-+struct virtio_gpu_resp_display_info {
-+        struct virtio_gpu_ctrl_hdr hdr;
-+        struct virtio_gpu_display_one {
-+                struct virtio_gpu_rect r;
-+                le32 enabled;
-+                le32 flags;
-+        } pmodes[VIRTIO_GPU_MAX_SCANOUTS];
-+};
-+\end{lstlisting}
-+
-+The response contains a list of per-scanout information.  The info
-+contains whether the scanout is enabled and what its preferred
-+position and size is.
-+
-+The size (fields \field{width} and \field{height}) is similar to the
-+native panel resolution in EDID display information, except that in
-+the virtual machine case the size can change when the host window
-+representing the guest display is gets resized.
-+
-+The position (fields \field{x} and \field{y}) describe how the
-+displays are arranged (i.e. which is -- for example -- the left
-+display).
-+
-+The \field{enabled} field is set when the user enabled the display.
-+It is roughly the same as the connected state of a phyiscal display
-+connector.
-+
-+\item[VIRTIO_GPU_CMD_RESOURCE_CREATE_2D] Create a 2D resource on the
-+  host.  Request data is \field{struct virtio_gpu_resource_create_2d}.
-+  Response type is VIRTIO_GPU_RESP_OK_NODATA.
-+
-+\begin{lstlisting}
-+enum virtio_gpu_formats {
-+        VIRTIO_GPU_FORMAT_B8G8R8A8_UNORM  = 1,
-+        VIRTIO_GPU_FORMAT_B8G8R8X8_UNORM  = 2,
-+        VIRTIO_GPU_FORMAT_A8R8G8B8_UNORM  = 3,
-+        VIRTIO_GPU_FORMAT_X8R8G8B8_UNORM  = 4,
-+
-+        VIRTIO_GPU_FORMAT_R8G8B8A8_UNORM  = 67,
-+        VIRTIO_GPU_FORMAT_X8B8G8R8_UNORM  = 68,
-+
-+        VIRTIO_GPU_FORMAT_A8B8G8R8_UNORM  = 121,
-+        VIRTIO_GPU_FORMAT_R8G8B8X8_UNORM  = 134,
-+};
-+
-+struct virtio_gpu_resource_create_2d {
-+        struct virtio_gpu_ctrl_hdr hdr;
-+        le32 resource_id;
-+        le32 format;
-+        le32 width;
-+        le32 height;
-+};
-+\end{lstlisting}
-+
-+This creates a 2D resource on the host with the specified width,
-+height and format.  The resource ids are generated by the guest.
-+
-+\item[VIRTIO_GPU_CMD_RESOURCE_UNREF] Destroy a resource.  Request data
-+  is \field{struct virtio_gpu_resource_unref}.  Response type is
-+  VIRTIO_GPU_RESP_OK_NODATA.
-+
-+\begin{lstlisting}
-+struct virtio_gpu_resource_unref {
-+        struct virtio_gpu_ctrl_hdr hdr;
-+        le32 resource_id;
-+        le32 padding;
-+};
-+\end{lstlisting}
-+
-+This informs the host that a resource is no longer required by the
-+guest.
-+
-+\item[VIRTIO_GPU_CMD_SET_SCANOUT] Set the scanout parameters for a
-+  single output.  Request data is \field{struct
-+    virtio_gpu_set_scanout}.  Response type is
-+  VIRTIO_GPU_RESP_OK_NODATA.
-+
-+\begin{lstlisting}
-+struct virtio_gpu_set_scanout {
-+        struct virtio_gpu_ctrl_hdr hdr;
-+        struct virtio_gpu_rect r;
-+        le32 scanout_id;
-+        le32 resource_id;
-+};
-+\end{lstlisting}
-+
-+This sets the scanout parameters for a single scanout. The resource_id
-+is the resource to be scanned out from, along with a rectangle.
-+
-+Scanout rectangles must be completely covered by the underlying
-+resource.  Overlapping (or identical) scanouts are allowed, typical
-+use case is screen mirroring.
-+
-+The driver can use resource_id = 0 to disable a scanout.
-+
-+\item[VIRTIO_GPU_CMD_RESOURCE_FLUSH] Flush a scanout resource Request
-+  data is \field{struct virtio_gpu_resource_flush}.  Response type is
-+  VIRTIO_GPU_RESP_OK_NODATA.
-+
-+\begin{lstlisting}
-+struct virtio_gpu_resource_flush {
-+        struct virtio_gpu_ctrl_hdr hdr;
-+        struct virtio_gpu_rect r;
-+        le32 resource_id;
-+        le32 padding;
-+};
-+\end{lstlisting}
-+
-+This flushes a resource to screen.  It takes a rectangle and a
-+resource id, and flushes any scanouts the resource is being used on.
-+
-+\item[VIRTIO_GPU_CMD_TRANSFER_TO_HOST_2D] Transfer from guest memory
-+  to host resource.  Request data is \field{struct
-+    virtio_gpu_transfer_to_host_2d}.  Response type is
-+  VIRTIO_GPU_RESP_OK_NODATA.
-+
-+\begin{lstlisting}
-+struct virtio_gpu_transfer_to_host_2d {
-+        struct virtio_gpu_ctrl_hdr hdr;
-+        struct virtio_gpu_rect r;
-+        le64 offset;
-+        le32 resource_id;
-+        le32 padding;
-+};
-+\end{lstlisting}
-+
-+This takes a resource id along with an destination offset into the
-+resource, and a box to transfer to the host backing for the resource.
-+
-+\item[VIRTIO_GPU_CMD_RESOURCE_ATTACH_BACKING] Assign backing pages to
-+  a resource.  Request data is \field{struct
-+    virtio_gpu_resource_attach_backing}, followed by \field{struct
-+    virtio_gpu_mem_entry} entries.  Response type is
-+  VIRTIO_GPU_RESP_OK_NODATA.
-+
-+\begin{lstlisting}
-+struct virtio_gpu_resource_attach_backing {
-+        struct virtio_gpu_ctrl_hdr hdr;
-+        le32 resource_id;
-+        le32 nr_entries;
-+};
-+
-+struct virtio_gpu_mem_entry {
-+        le64 addr;
-+        le32 length;
-+        le32 padding;
-+};
-+\end{lstlisting}
-+
-+This assign an array of guest pages as the backing store for a
-+resource. These pages are then used for the transfer operations for
-+that resource from that point on.
-+
-+\item[VIRTIO_GPU_CMD_RESOURCE_DETACH_BACKING] Detach backing pages
-+  from a resource.  Request data is \field{struct
-+    virtio_gpu_resource_detach_backing}.  Response type is
-+  VIRTIO_GPU_RESP_OK_NODATA.
-+
-+\begin{lstlisting}
-+struct virtio_gpu_resource_detach_backing {
-+        struct virtio_gpu_ctrl_hdr hdr;
-+        le32 resource_id;
-+        le32 padding;
-+};
-+\end{lstlisting}
-+
-+This detaches any backing pages from a resource, to be used in case of
-+guest swapping or object destruction.
-+
-+\end{description}
-+
-+\subsubsection{Device Operation: cursorq}\label{sec:Device Types / GPU Device / Device Operation / Device Operation: cursorq}
-+
-+Both cursorq commands use the same command struct.
-+
-+\begin{lstlisting}
-+struct virtio_gpu_cursor_pos {
-+        le32 scanout_id;
-+        le32 x;
-+        le32 y;
-+        le32 padding;
-+};
-+
-+struct virtio_gpu_update_cursor {
-+        struct virtio_gpu_ctrl_hdr hdr;
-+        struct virtio_gpu_cursor_pos pos;
-+        le32 resource_id;
-+        le32 hot_x;
-+        le32 hot_y;
-+        le32 padding;
-+};
-+\end{lstlisting}
-+
-+\begin{description}
-+
-+\item[VIRTIO_GPU_CMD_UPDATE_CURSOR]
-+Update cursor.
-+Request data is \field{struct virtio_gpu_update_cursor}.
-+Response type is VIRTIO_GPU_RESP_OK_NODATA.
-+
-+Full cursor update.  Cursor will be loaded from the specified
-+\field{resource_id} and will be moved to \field{pos}.  The driver must
-+transfer the cursor into the resource beforehand (using control queue
-+commands) and make sure the commands to fill the resource are actually
-+processed (using fencing).
-+
-+\item[VIRTIO_GPU_CMD_MOVE_CURSOR]
-+Move cursor.
-+Request data is \field{struct virtio_gpu_update_cursor}.
-+Response type is VIRTIO_GPU_RESP_OK_NODATA.
-+
-+Move cursor to the place specified in \field{pos}.  The other fields
-+are not used and will be ignored by the device.
-+
-+\end{description}
-+
-+\subsection{VGA Compatibility}\label{sec:Device Types / GPU Device / VGA Compatibility}
-+
-+Applies to Virtio Over PCI only.  The GPU device can come with and
-+without VGA compatibility.  The PCI class should be DISPLAY_VGA if VGA
-+compatibility is present and DISPLAY_OTHER otherwise.
-+
-+VGA compatibility: PCI region 0 has the linear framebuffer, standard
-+vga registers are present.  Configuring a scanout
-+(VIRTIO_GPU_CMD_SET_SCANOUT) switches the device from vga
-+compatibility mode into native virtio mode.  A reset switches it back
-+into vga compatibility mode.
-+
-+Note: qemu implementation also provides bochs dispi interface io ports
-+and mmio bar at pci region 1 and is therefore fully compatible with
-+the qemu stdvga (see \href{http://git.qemu-project.org/?p=qemu.git;a=blob;f=docs/specs/standard-vga.txt;hb=HEAD}{docs/specs/standard-vga.txt} in the qemu source tree).
+This feature enables the optimization by skipping the transfer of guest
+free pages during VM live migration. It is not concerned that the memory
+pages are used after they are given to the hypervisor as a hint of the
+free pages, because they will be tracked by the hypervisor and transferred
+in the subsequent round if they are used and written.
+
+* Tests
+- Test Environment
+    Host: Intel(R) Xeon(R) CPU E5-2699 v4 @ 2.20GHz
+    Guest: 8G RAM, 4 vCPU
+    Migration setup: migrate_set_speed 100G, migrate_set_downtime 2 second
+
+- Test Results
+    - Idle Guest Live Migration Time (results are averaged over 10 runs):
+        - Optimization v.s. Legacy = 284ms vs 1757ms --> ~84% reduction
+    - Guest with Linux Compilation Workload (make bzImage -j4):
+        - Live Migration Time (average)
+          Optimization v.s. Legacy = 1402ms v.s. 2528ms --> ~44% reduction
+        - Linux Compilation Time
+          Optimization v.s. Legacy = 5min6s v.s. 5min12s
+          --> no obvious difference
+
+ChangeLog:
+v33->v34:
+    - mm:
+        - add a new API max_free_page_blocks, which estimates the max
+          number of free page blocks that a free page list may have
+        - get_from_free_page_list: store addresses to multiple arrays,
+          instead of just one array. This removes the limitation of being
+          able to report only 2TB free memory (the largest array memory
+          that can be allocated on x86 is 4MB, which can store 2^19
+          addresses of 4MB free page blocks).
+    - virtio-balloon:
+        - Allocate multiple arrays to load free page hints;
+        - Use the same method in v32 to do guest/host interaction, the
+          differeces are
+              - the hints are tranferred array by array, instead of
+                one by one.
+	      - send the free page block size of a hint along with the cmd
+                id to host, so that host knows each address represents e.g.
+                a 4MB memory in our case. 
+v32->v33:
+    - mm/get_from_free_page_list: The new implementation to get free page
+      hints based on the suggestions from Linus:
+      https://lkml.org/lkml/2018/6/11/764
+      This avoids the complex call chain, and looks more prudent.
+    - virtio-balloon: 
+      - use a fix-sized buffer to get free page hints;
+      - remove the cmd id related interface. Now host can just send a free
+        page hint command to the guest (via the host_cmd config register)
+        to start the reporting. Currentlty the guest reports only the max
+        order free page hints to host, which has generated similar good
+        results as before. But the interface used by virtio-balloon to
+        report can support reporting more orders in the future when there
+        is a need.
+v31->v32:
+    - virtio-balloon:
+        - rename cmd_id_use to cmd_id_active;
+        - report_free_page_func: detach used buffers after host sends a vq
+          interrupt, instead of busy waiting for used buffers.
+v30->v31:
+    - virtio-balloon:
+        - virtio_balloon_send_free_pages: return -EINTR rather than 1 to
+          indicate an active stop requested by host; and add more
+          comments to explain about access to cmd_id_received without
+          locks;
+        -  add_one_sg: add TODO to comments about possible improvement.
+v29->v30:
+    - mm/walk_free_mem_block: add cond_sched() for each order
+v28->v29:
+    - mm/page_poison: only expose page_poison_enabled(), rather than more
+      changes did in v28, as we are not 100% confident about that for now.
+    - virtio-balloon: use a separate buffer for the stop cmd, instead of
+      having the start and stop cmd use the same buffer. This avoids the
+      corner case that the start cmd is overridden by the stop cmd when
+      the host has a delay in reading the start cmd.
+v27->v28:
+    - mm/page_poison: Move PAGE_POISON to page_poison.c and add a function
+      to expose page poison val to kernel modules.
+v26->v27:
+    - add a new patch to expose page_poisoning_enabled to kernel modules
+    - virtio-balloon: set poison_val to 0xaaaaaaaa, instead of 0xaa
+v25->v26: virtio-balloon changes only
+    - remove kicking free page vq since the host now polls the vq after
+      initiating the reporting
+    - report_free_page_func: detach all the used buffers after sending
+      the stop cmd id. This avoids leaving the detaching burden (i.e.
+      overhead) to the next cmd id. Detaching here isn't considered
+      overhead since the stop cmd id has been sent, and host has already
+      moved formard.
+v24->v25:
+    - mm: change walk_free_mem_block to return 0 (instead of true) on
+          completing the report, and return a non-zero value from the
+          callabck, which stops the reporting.
+    - virtio-balloon:
+        - use enum instead of define for VIRTIO_BALLOON_VQ_INFLATE etc.
+        - avoid __virtio_clear_bit when bailing out;
+        - a new method to avoid reporting the some cmd id to host twice
+        - destroy_workqueue can cancel free page work when the feature is
+          negotiated;
+        - fail probe when the free page vq size is less than 2.
+v23->v24:
+    - change feature name VIRTIO_BALLOON_F_FREE_PAGE_VQ to
+      VIRTIO_BALLOON_F_FREE_PAGE_HINT
+    - kick when vq->num_free < half full, instead of "= half full"
+    - replace BUG_ON with bailing out
+    - check vb->balloon_wq in probe(), if null, bail out
+    - add a new feature bit for page poisoning
+    - solve the corner case that one cmd id being sent to host twice
+v22->v23:
+    - change to kick the device when the vq is half-way full;
+    - open-code batch_free_page_sg into add_one_sg;
+    - change cmd_id from "uint32_t" to "__virtio32";
+    - reserver one entry in the vq for the driver to send cmd_id, instead
+      of busywaiting for an available entry;
+    - add "stop_update" check before queue_work for prudence purpose for
+      now, will have a separate patch to discuss this flag check later;
+    - init_vqs: change to put some variables on stack to have simpler
+      implementation;
+    - add destroy_workqueue(vb->balloon_wq);
+v21->v22:
+    - add_one_sg: some code and comment re-arrangement
+    - send_cmd_id: handle a cornercase
+
+For previous ChangeLog, please reference
+https://lwn.net/Articles/743660/
+
+
+
+Wei Wang (4):
+  mm: support to get hints of free page blocks
+  virtio-balloon: VIRTIO_BALLOON_F_FREE_PAGE_HINT
+  mm/page_poison: expose page_poisoning_enabled to kernel modules
+  virtio-balloon: VIRTIO_BALLOON_F_PAGE_POISON
+
+ drivers/virtio/virtio_balloon.c     | 357 ++++++++++++++++++++++++++++++++----
+ include/linux/mm.h                  |   3 +
+ include/uapi/linux/virtio_balloon.h |  14 ++
+ mm/page_alloc.c                     |  82 +++++++++
+ mm/page_poison.c                    |   6 +
+ 5 files changed, 426 insertions(+), 36 deletions(-)
+
 -- 
-2.9.3
+2.7.4
 
 
 ---------------------------------------------------------------------
