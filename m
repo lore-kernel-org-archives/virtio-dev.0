@@ -1,56 +1,71 @@
-Return-Path: virtio-dev-return-4472-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4547-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 4364B58191C6
-	for <virtio-dev@lists.oasis-open.org>; Thu, 21 Jun 2018 12:12:07 -0700 (PDT)
+	by lists.oasis-open.org (Postfix) with ESMTP id D2CF41CB807B
+	for <virtio-dev@lists.oasis-open.org>; Tue, 26 Jun 2018 10:59:26 -0700 (PDT)
 From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Date: Thu, 21 Jun 2018 20:06:51 +0100
-Message-Id: <20180621190655.56391-2-jean-philippe.brucker@arm.com>
-In-Reply-To: <20180621190655.56391-1-jean-philippe.brucker@arm.com>
 References: <20180621190655.56391-1-jean-philippe.brucker@arm.com>
-Subject: [virtio-dev] [PATCH v2 1/5] dt-bindings: virtio: Specify #iommu-cells value for a virtio-iommu
-To: iommu@lists.linux-foundation.org, kvm@vger.kernel.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, devicetree@vger.kernel.org, kvmarm@lists.cs.columbia.edu
-Cc: joro@8bytes.org, alex.williamson@redhat.com, robh+dt@kernel.org, mark.rutland@arm.com, mst@redhat.com, jasowang@redhat.com, marc.zyngier@arm.com, robin.murphy@arm.com, will.deacon@arm.com, lorenzo.pieralisi@arm.com, eric.auger@redhat.com, peterx@redhat.com, bharat.bhushan@nxp.com, tnowicki@caviumnetworks.com, jayachandran.nair@cavium.com, kevin.tian@intel.com
+ <20180621190655.56391-2-jean-philippe.brucker@arm.com>
+ <20180625192753.GA22351@rob-hp-laptop>
+Message-ID: <89d31865-ee35-ef8c-f7b3-f3acf2bbd30e@arm.com>
+Date: Tue, 26 Jun 2018 18:58:58 +0100
+MIME-Version: 1.0
+In-Reply-To: <20180625192753.GA22351@rob-hp-laptop>
+Content-Type: text/plain; charset=windows-1252
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: [virtio-dev] Re: [PATCH v2 1/5] dt-bindings: virtio: Specify #iommu-cells value
+ for a virtio-iommu
+To: Rob Herring <robh@kernel.org>
+Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>, "joro@8bytes.org" <joro@8bytes.org>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, Mark Rutland <Mark.Rutland@arm.com>, "mst@redhat.com" <mst@redhat.com>, "jasowang@redhat.com" <jasowang@redhat.com>, Marc Zyngier <Marc.Zyngier@arm.com>, Robin Murphy <Robin.Murphy@arm.com>, Will Deacon <Will.Deacon@arm.com>, Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>, "peterx@redhat.com" <peterx@redhat.com>, "bharat.bhushan@nxp.com" <bharat.bhushan@nxp.com>, "tnowicki@caviumnetworks.com" <tnowicki@caviumnetworks.com>, "jayachandran.nair@cavium.com" <jayachandran.nair@cavium.com>, "kevin.tian@intel.com" <kevin.tian@intel.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-A virtio-mmio node may represent a virtio-iommu device. This is discovered
-by the virtio driver at probe time, but the DMA topology isn't
-discoverable and must be described by firmware. For DT the standard IOMMU
-description is used, as specified in bindings/iommu/iommu.txt and
-bindings/pci/pci-iommu.txt. Like many other IOMMUs, virtio-iommu
-distinguishes masters by their endpoint IDs, which requires one IOMMU cell
-in the "iommus" property.
+On 25/06/18 20:27, Rob Herring wrote:
+> On Thu, Jun 21, 2018 at 08:06:51PM +0100, Jean-Philippe Brucker wrote:
+>> A virtio-mmio node may represent a virtio-iommu device. This is discovered
+>> by the virtio driver at probe time, but the DMA topology isn't
+>> discoverable and must be described by firmware. For DT the standard IOMMU
+>> description is used, as specified in bindings/iommu/iommu.txt and
+>> bindings/pci/pci-iommu.txt. Like many other IOMMUs, virtio-iommu
+>> distinguishes masters by their endpoint IDs, which requires one IOMMU cell
+>> in the "iommus" property.
+>>
+>> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+>> ---
+>>  Documentation/devicetree/bindings/virtio/mmio.txt | 8 ++++++++
+>>  1 file changed, 8 insertions(+)
+>>
+>> diff --git a/Documentation/devicetree/bindings/virtio/mmio.txt b/Documentation/devicetree/bindings/virtio/mmio.txt
+>> index 5069c1b8e193..337da0e3a87f 100644
+>> --- a/Documentation/devicetree/bindings/virtio/mmio.txt
+>> +++ b/Documentation/devicetree/bindings/virtio/mmio.txt
+>> @@ -8,6 +8,14 @@ Required properties:
+>>  - reg:		control registers base address and size including configuration space
+>>  - interrupts:	interrupt generated by the device
+>>  
+>> +Required properties for virtio-iommu:
+>> +
+>> +- #iommu-cells:	When the node describes a virtio-iommu device, it is
+>> +		linked to DMA masters using the "iommus" property as
+>> +		described in devicetree/bindings/iommu/iommu.txt. For
+>> +		virtio-iommu #iommu-cells must be 1, each cell describing
+>> +		a single endpoint ID.
+> 
+> The iommus property should also be documented for the client side.
 
-Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
----
- Documentation/devicetree/bindings/virtio/mmio.txt | 8 ++++++++
- 1 file changed, 8 insertions(+)
+Isn't section "IOMMU master node" of iommu.txt sufficient? Since the
+iommus property applies to any DMA master, not only virtio-mmio devices,
+the canonical description in iommu.txt seems the best place for it, and
+I'm not sure what to add in this file. Maybe a short example below the
+virtio_block one?
 
-diff --git a/Documentation/devicetree/bindings/virtio/mmio.txt b/Documentation/devicetree/bindings/virtio/mmio.txt
-index 5069c1b8e193..337da0e3a87f 100644
---- a/Documentation/devicetree/bindings/virtio/mmio.txt
-+++ b/Documentation/devicetree/bindings/virtio/mmio.txt
-@@ -8,6 +8,14 @@ Required properties:
- - reg:		control registers base address and size including configuration space
- - interrupts:	interrupt generated by the device
- 
-+Required properties for virtio-iommu:
-+
-+- #iommu-cells:	When the node describes a virtio-iommu device, it is
-+		linked to DMA masters using the "iommus" property as
-+		described in devicetree/bindings/iommu/iommu.txt. For
-+		virtio-iommu #iommu-cells must be 1, each cell describing
-+		a single endpoint ID.
-+
- Example:
- 
- 	virtio_block@3000 {
--- 
-2.17.0
+Thanks,
+Jean
+
 
 
 ---------------------------------------------------------------------
