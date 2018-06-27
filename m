@@ -1,112 +1,533 @@
-Return-Path: virtio-dev-return-4586-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4570-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 6B2CC5819221
-	for <virtio-dev@lists.oasis-open.org>; Wed, 27 Jun 2018 12:59:49 -0700 (PDT)
-Date: Wed, 27 Jun 2018 22:59:39 +0300
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20180627224801-mutt-send-email-mst@kernel.org>
-References: <20180621190655.56391-1-jean-philippe.brucker@arm.com>
- <20180626210132-mutt-send-email-mst@kernel.org>
- <2bcda195-d2c6-fbf0-322e-d91756fc3547@arm.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2bcda195-d2c6-fbf0-322e-d91756fc3547@arm.com>
-Subject: [virtio-dev] Re: [PATCH v2 0/5] Add virtio-iommu driver
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>, "joro@8bytes.org" <joro@8bytes.org>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "robh+dt@kernel.org" <robh+dt@kernel.org>, Mark Rutland <Mark.Rutland@arm.com>, "jasowang@redhat.com" <jasowang@redhat.com>, Marc Zyngier <Marc.Zyngier@arm.com>, Robin Murphy <Robin.Murphy@arm.com>, Will Deacon <Will.Deacon@arm.com>, Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>, "peterx@redhat.com" <peterx@redhat.com>, "bharat.bhushan@nxp.com" <bharat.bhushan@nxp.com>, "tnowicki@caviumnetworks.com" <tnowicki@caviumnetworks.com>, "jayachandran.nair@cavium.com" <jayachandran.nair@cavium.com>, "kevin.tian@intel.com" <kevin.tian@intel.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 7E48A1CB807B
+	for <virtio-dev@lists.oasis-open.org>; Tue, 26 Jun 2018 23:15:46 -0700 (PDT)
+From: Gerd Hoffmann <kraxel@redhat.com>
+Date: Wed, 27 Jun 2018 08:15:25 +0200
+Message-Id: <20180627061525.32537-1-kraxel@redhat.com>
+Subject: [virtio-dev] [PATCH] Add virtio gpu device specification.
+To: virtio-dev@lists.oasis-open.org
+Cc: "Michael S. Tsirkin" <mst@redhat.com>, Gerd Hoffmann <kraxel@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, Jun 27, 2018 at 07:04:46PM +0100, Jean-Philippe Brucker wrote:
-> On 26/06/18 19:07, Michael S. Tsirkin wrote:
-> > So as I pointed out new virtio 0 device isn't really welcome ;)
-> 
-> Agreed, virtio-iommu is expected to be implemented on virtio 1 and
-> later. I'll remove the two legacy-related paragraph from the spec and
-> add a check in the driver as you suggested, to avoid giving the wrong idea.
-> 
-> > No one bothered implementing virtio 1 in MMIO for all the work
-> > that was put in defining it.
-> 
-> That is curious, given that the virtio_mmio driver supports virtio 1 and
-> from my own experience, porting the MMIO transport to virtio 1 only
-> requires updating a few registers, when ANY_LAYOUT, modern virtqueue and
-> status are already implemented.
-> 
-> > The fact that the MMIO part of the
-> > spec doesn't seem to allow for transitional devices might
-> > or might not have something to do with this.
-> 
-> Sorry, which part do you have in mind? The spec does provide both a
-> legacy and modern register layout, with version numbers to differentiate
-> them.
+Support for 2d mode (3d/virgl mode is not covered by this patch) has
+been added to the linux kernel version 4.2 and to qemu version 2.4.
 
-Yes but there's no way to implement a transitional virtio mmio
-device. The version is either "legacy" or "modern".
+Signed-off-by: Gerd Hoffmann <kraxel@redhat.com>
+---
+ content.tex    |   2 +
+ virtio-gpu.tex | 481 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 483 insertions(+)
+ create mode 100644 virtio-gpu.tex
 
-So if you implement a modern device old guests won't work with it.
-
-> > So why make it an MMIO device at all? A system with an IOMMU
-> > will have a PCI bus, won't it? And it's pretty common to
-> > have the IOMMU be a PCI device on the root bus.
-> Having the IOMMU outside PCI seems more common though. On Arm and Intel
-> the IOMMU doesn't have a PCI config space, BARs or capabilities, just a
-> plain MMIO region and a static number of interrupts. However the AMD
-> IOMMU appears as a PCI device with additional MMIO registers. I would be
-> interested in implementing virtio-iommu as a PCI dev at some point, at
-> least so that we can use MSI-X.
-> 
-> The problem is that it requires invasive changes in the firmware
-> interfaces and drivers. They need to describe relationship between IOMMU
-> and endpoint, and DT or ACPI IORT don't expect the programming interface
-> to be inside the PCI bus that the IOMMU manages.
-
-They don't particularly care IMHO.
-
-> Describing it as a
-> peripheral is more natural. For AMD it is implemented in their driver
-> using IVHD tables that can't be reused. Right now I don't expect any
-> success in proposing changes to firmware interfaces or drivers, because
-> the device is new and paravirtualized, and works out of the box with
-> MMIO. Hopefully that will change in the future, perhaps when someone
-> supports DT for AMD IOMMU (they do describe bindings at the end of the
-> spec, but I don't think it can work in Linux with the existing
-> infrastructure)
-
-That's a bit abstract, I don't really understand the issues involved.
-ACPI is formatted by QEMU, so firmware does not need to care.
-And is there even a DT for intel?
-
-> Another reason to keep the MMIO transport option is that one
-> virtio-iommu can manage DMA from endpoints on multiple PCI domains at
-> the same time, as well as platform devices. Some VMMs might want that,
-> in which case the IOMMU would be a separate platform device.
-
-Which buses are managed by the IOMMU is separate from the bus
-on which it's programming interface resides.
-
-> > Will remove need to bother with dt bindings etc.
-> That's handled by the firmware drivers and IOMMU layer, there shouldn't
-> be any special treatment at the virtio layer. In general removal of an
-> IOMMU needs to be done after removal of all endpoints connected to it,
-> which should be described using device_link from the driver core. DT or
-> ACPI is only used to tell drivers where to find resources, and to
-> describe the DMA topology.
-> 
-> Thanks,
-> Jean
-
-My point was virtio mmio isn't widely used outside of ARM.
-Rather than try to make everyone use it, IMHO it's better
-to start with PCI.
-
+diff --git a/content.tex b/content.tex
+index be1823431d..d41c2f8d76 100644
+--- a/content.tex
++++ b/content.tex
+@@ -5325,6 +5325,8 @@ descriptor for the \field{sense_len}, \field{residual},
+ \field{status_qualifier}, \field{status}, \field{response} and
+ \field{sense} fields.
+ 
++\input{virtio-gpu.tex}
++
+ \chapter{Reserved Feature Bits}\label{sec:Reserved Feature Bits}
+ 
+ Currently these device-independent feature bits defined:
+diff --git a/virtio-gpu.tex b/virtio-gpu.tex
+new file mode 100644
+index 0000000000..34cf493bbc
+--- /dev/null
++++ b/virtio-gpu.tex
+@@ -0,0 +1,481 @@
++\section{GPU Device}\label{sec:Device Types / GPU Device}
++
++virtio-gpu is a virtio based graphics adapter.  It can operate in 2D
++mode and in 3D (virgl) mode.  3D mode will offload rendering ops to
++the host gpu and therefore requires a gpu with 3D support on the host
++machine.
++
++3D mode is not covered (yet) in this specification, even though it is
++mentioned here and there due to some details of the virtual hardware
++being designed with 3D mode in mind.
++
++In 2D mode the virtio-gpu device provides support for ARGB Hardware
++cursors and multiple scanouts (aka heads).
++
++\subsection{Device ID}\label{sec:Device Types / GPU Device / Device ID}
++
++16
++
++\subsection{Virtqueues}\label{sec:Device Types / GPU Device / Virtqueues}
++
++\begin{description}
++\item[0] controlq - queue for sending control commands
++\item[1] cursorq - queue for sending cursor updates
++\end{description}
++
++Both queues have the same format.  Each request and each response have
++a fixed header, followed by command specific data fields.  The
++separate cursor queue is the "fast track" for cursor commands
++(VIRTIO_GPU_CMD_UPDATE_CURSOR and VIRTIO_GPU_CMD_MOVE_CURSOR), so they
++go though without being delayed by time-consuming commands in the
++control queue.
++
++\subsection{Feature bits}\label{sec:Device Types / GPU Device / Feature bits}
++
++\begin{description}
++\item[VIRTIO_GPU_F_VIRGL (0)] virgl 3D mode is supported.
++\end{description}
++
++\subsection{Device configuration layout}\label{sec:Device Types / GPU Device / Device configuration layout}
++
++\begin{lstlisting}
++#define VIRTIO_GPU_EVENT_DISPLAY (1 << 0)
++
++struct virtio_gpu_config {
++        le32 events_read;
++        le32 events_clear;
++        le32 num_scanouts;
++        le32 reserved;
++}
++\end{lstlisting}
++
++\subsubsection{Device configuration fields}
++
++\begin{description}
++\item[\field{events_read}] signals pending events to the driver.  The
++  driver MUST NOT write to this field.
++\item[\field{events_clear}] clears pending events in the device.
++  Writing a '1' into a bit will clear the corresponding bit in
++  \field{events_read}, mimicking write-to-clear behavior.
++\item[\field{num_scanouts}] specifies the maximum number of scanouts
++  supported by the device.  Minimum value is 1, maximum value is 16.
++\end{description}
++
++\subsubsection{Events}
++
++\begin{description}
++\item[VIRTIO_GPU_EVENT_DISPLAY] Display configuration has changed.
++  The driver SHOULD use the VIRTIO_GPU_CMD_GET_DISPLAY_INFO command to
++  fetch the information from the device.
++\end{description}
++
++\devicenormative{\subsection}{Device Initialization}{Device Types / GPU Device / Device Initialization}
++
++The driver SHOULD query the display information from the device using
++the VIRTIO_GPU_CMD_GET_DISPLAY_INFO command and use that information
++for the initial scanout setup.  In case no information is available or
++all displays are disabled the driver MAY choose to use a fallback,
++such as 1024x768 at display 0.
++
++\subsection{Device Operation}\label{sec:Device Types / GPU Device / Device Operation}
++
++The virtio-gpu is based around the concept of resources private to the
++host, the guest must DMA transfer into these resources. This is a
++design requirement in order to interface with future 3D rendering. In
++the unaccelerated 2D mode there is no support for DMA transfers from
++resources, just to them.
++
++Resources are initially simple 2D resources, consisting of a width,
++height and format along with an identifier. The guest must then attach
++backing store to the resources in order for DMA transfers to
++work. This is like a GART in a real GPU.
++
++\subsubsection{Device Operation: Create a framebuffer and configure scanout}
++
++\begin{itemize*}
++\item Create a host resource using VIRTIO_GPU_CMD_RESOURCE_CREATE_2D.
++\item Allocate a framebuffer from guest ram, and attach it as backing
++  storage to the resource just created, using
++  VIRTIO_GPU_CMD_RESOURCE_ATTACH_BACKING.  Scatter lists are
++  supported, so the framebuffer doesn't need to be contignous in guest
++  physical memory.
++\item Use VIRTIO_GPU_CMD_SET_SCANOUT to link the framebuffer to
++  a display scanout.
++\end{itemize*}
++
++\subsubsection{Device Operation: Update a framebuffer and scanout}
++
++\begin{itemize*}
++\item Render to your framebuffer memory.
++\item Use VIRTIO_GPU_CMD_TRANSFER_SEND_2D to update the host resource
++  from guest memory.
++\item Use VIRTIO_GPU_CMD_RESOURCE_FLUSH to flush the updated resource
++  to the display.
++\end{itemize*}
++
++\subsubsection{Device Operation: Using pageflip}
++
++It is possible to create multiple framebuffers, flip between them
++using VIRTIO_GPU_CMD_SET_SCANOUT and VIRTIO_GPU_CMD_RESOURCE_FLUSH,
++and update the invisible framebuffer using
++VIRTIO_GPU_CMD_TRANSFER_SEND_2D.
++
++\subsubsection{Device Operation: Multihead setup}
++
++In case two or more displays are present there are different ways to
++configure things:
++
++\begin{itemize*}
++\item Create a single framebuffer, link it to all displays
++  (mirroring).
++\item Create an framebuffer for each display.
++\item Create one big framebuffer, configure scanouts to display a
++  different rectangle of that framebuffer each.
++\end{itemize*}
++
++\devicenormative{\subsubsection}{Device Operation: Command lifecycle and fencing}{Device Types / GPU Device / Device Operation / Device Operation: Command lifecycle and fencing}
++
++The device MAY process controlq commands asyncronously and return them
++to the driver before the processing is complete.  If the driver needs
++to know when the processing is finished it can set the
++VIRTIO_GPU_FLAG_FENCE flag in the request.  The device MUST finish the
++processing before returning the command then.
++
++Note: current qemu implementation does asyncrounous processing only in
++3d mode, when offloading the processing to the host gpu.
++
++\subsubsection{Device Operation: Configure mouse cursor}
++
++The mouse cursor image is a normal resource, except that it must be
++64x64 in size.  The driver MUST create and populate the resource
++(using the usual VIRTIO_GPU_CMD_RESOURCE_CREATE_2D,
++VIRTIO_GPU_CMD_RESOURCE_ATTACH_BACKING and
++VIRTIO_GPU_CMD_TRANSFER_SEND_2D controlq commands) and make sure they
++are completed (using VIRTIO_GPU_FLAG_FENCE).
++
++Then VIRTIO_GPU_CMD_UPDATE_CURSOR can be sent to the cursorq to set
++the pointer shape and position.  To move the pointer without updating
++the shape use VIRTIO_GPU_CMD_MOVE_CURSOR instead.
++
++\subsubsection{Device Operation: Request header}\label{sec:Device Types / GPU Device / Device Operation / Device Operation: Request header}
++
++\begin{lstlisting}
++enum virtio_gpu_ctrl_type {
++
++        /* 2d commands */
++        VIRTIO_GPU_CMD_GET_DISPLAY_INFO = 0x0100,
++        VIRTIO_GPU_CMD_RESOURCE_CREATE_2D,
++        VIRTIO_GPU_CMD_RESOURCE_UNREF,
++        VIRTIO_GPU_CMD_SET_SCANOUT,
++        VIRTIO_GPU_CMD_RESOURCE_FLUSH,
++        VIRTIO_GPU_CMD_TRANSFER_TO_HOST_2D,
++        VIRTIO_GPU_CMD_RESOURCE_ATTACH_BACKING,
++        VIRTIO_GPU_CMD_RESOURCE_DETACH_BACKING,
++
++        /* cursor commands */
++        VIRTIO_GPU_CMD_UPDATE_CURSOR = 0x0300,
++        VIRTIO_GPU_CMD_MOVE_CURSOR,
++
++        /* success responses */
++        VIRTIO_GPU_RESP_OK_NODATA = 0x1100,
++        VIRTIO_GPU_RESP_OK_DISPLAY_INFO,
++
++        /* error responses */
++        VIRTIO_GPU_RESP_ERR_UNSPEC = 0x1200,
++        VIRTIO_GPU_RESP_ERR_OUT_OF_MEMORY,
++        VIRTIO_GPU_RESP_ERR_INVALID_SCANOUT_ID,
++        VIRTIO_GPU_RESP_ERR_INVALID_RESOURCE_ID,
++        VIRTIO_GPU_RESP_ERR_INVALID_CONTEXT_ID,
++        VIRTIO_GPU_RESP_ERR_INVALID_PARAMETER,
++};
++
++#define VIRTIO_GPU_FLAG_FENCE (1 << 0)
++
++struct virtio_gpu_ctrl_hdr {
++        le32 type;
++        le32 flags;
++        le64 fence_id;
++        le32 ctx_id;
++        le32 padding;
++};
++\end{lstlisting}
++
++All requests and responses on the virt queues have the fixed header
++\field{struct virtio_gpu_ctrl_hdr}.
++
++\begin{description}
++\item[\field{type}] specifies the type of the driver request
++  (VIRTIO_GPU_CMD_*) or device response (VIRTIO_GPU_RESP_*).
++\item[\field{flags}] request / response flags.
++\item[\field{fence_id}] If the driver sets the VIRTIO_GPU_FLAG_FENCE
++  bit in the request \field{flags} field the device MUST:
++  \begin{itemize*}
++  \item set VIRTIO_GPU_FLAG_FENCE bit in the response,
++  \item copy the content of the \field{fence_id} field from the
++    request to the response, and
++  \item send the response only after command processing is complete.
++  \end{itemize*}
++\item[\field{ctx_id}] Rendering context (used in 3D mode only).
++\end{description}
++
++On success the device will return VIRTIO_GPU_RESP_OK_NODATA in
++case there is no payload.  Otherwise the \field{type} field will
++indicate the kind of payload.
++
++On error the device will return one of the
++VIRTIO_GPU_RESP_ERR_* error codes.
++
++\subsubsection{Device Operation: controlq}\label{sec:Device Types / GPU Device / Device Operation / Device Operation: controlq}
++
++For any coordinates given 0,0 is top left, larger x moves right,
++larger y moves down.
++
++\begin{description}
++
++\item[VIRTIO_GPU_CMD_GET_DISPLAY_INFO] Retrieve the current output
++  configuration.  No request data (just bare \field{struct
++    virtio_gpu_ctrl_hdr}).  Response type is
++  VIRTIO_GPU_RESP_OK_DISPLAY_INFO, response data is \field{struct
++    virtio_gpu_resp_display_info}.
++
++\begin{lstlisting}
++#define VIRTIO_GPU_MAX_SCANOUTS 16
++
++struct virtio_gpu_rect {
++        le32 x;
++        le32 y;
++        le32 width;
++        le32 height;
++};
++
++struct virtio_gpu_resp_display_info {
++        struct virtio_gpu_ctrl_hdr hdr;
++        struct virtio_gpu_display_one {
++                struct virtio_gpu_rect r;
++                le32 enabled;
++                le32 flags;
++        } pmodes[VIRTIO_GPU_MAX_SCANOUTS];
++};
++\end{lstlisting}
++
++The response contains a list of per-scanout information.  The info
++contains whether the scanout is enabled and what its preferred
++position and size is.
++
++The size (fields \field{width} and \field{height}) is similar to the
++native panel resolution in EDID display information, except that in
++the virtual machine case the size can change when the host window
++representing the guest display is gets resized.
++
++The position (fields \field{x} and \field{y}) describe how the
++displays are arranged (i.e. which is -- for example -- the left
++display).
++
++The \field{enabled} field is set when the user enabled the display.
++It is roughly the same as the connected state of a phyiscal display
++connector.
++
++\item[VIRTIO_GPU_CMD_RESOURCE_CREATE_2D] Create a 2D resource on the
++  host.  Request data is \field{struct virtio_gpu_resource_create_2d}.
++  Response type is VIRTIO_GPU_RESP_OK_NODATA.
++
++\begin{lstlisting}
++enum virtio_gpu_formats {
++        VIRTIO_GPU_FORMAT_B8G8R8A8_UNORM  = 1,
++        VIRTIO_GPU_FORMAT_B8G8R8X8_UNORM  = 2,
++        VIRTIO_GPU_FORMAT_A8R8G8B8_UNORM  = 3,
++        VIRTIO_GPU_FORMAT_X8R8G8B8_UNORM  = 4,
++
++        VIRTIO_GPU_FORMAT_R8G8B8A8_UNORM  = 67,
++        VIRTIO_GPU_FORMAT_X8B8G8R8_UNORM  = 68,
++
++        VIRTIO_GPU_FORMAT_A8B8G8R8_UNORM  = 121,
++        VIRTIO_GPU_FORMAT_R8G8B8X8_UNORM  = 134,
++};
++
++struct virtio_gpu_resource_create_2d {
++        struct virtio_gpu_ctrl_hdr hdr;
++        le32 resource_id;
++        le32 format;
++        le32 width;
++        le32 height;
++};
++\end{lstlisting}
++
++This creates a 2D resource on the host with the specified width,
++height and format.  The resource ids are generated by the guest.
++
++\item[VIRTIO_GPU_CMD_RESOURCE_UNREF] Destroy a resource.  Request data
++  is \field{struct virtio_gpu_resource_unref}.  Response type is
++  VIRTIO_GPU_RESP_OK_NODATA.
++
++\begin{lstlisting}
++struct virtio_gpu_resource_unref {
++        struct virtio_gpu_ctrl_hdr hdr;
++        le32 resource_id;
++        le32 padding;
++};
++\end{lstlisting}
++
++This informs the host that a resource is no longer required by the
++guest.
++
++\item[VIRTIO_GPU_CMD_SET_SCANOUT] Set the scanout parameters for a
++  single output.  Request data is \field{struct
++    virtio_gpu_set_scanout}.  Response type is
++  VIRTIO_GPU_RESP_OK_NODATA.
++
++\begin{lstlisting}
++struct virtio_gpu_set_scanout {
++        struct virtio_gpu_ctrl_hdr hdr;
++        struct virtio_gpu_rect r;
++        le32 scanout_id;
++        le32 resource_id;
++};
++\end{lstlisting}
++
++This sets the scanout parameters for a single scanout. The resource_id
++is the resource to be scanned out from, along with a rectangle.
++
++Scanout rectangles must be completely covered by the underlying
++resource.  Overlapping (or identical) scanouts are allowed, typical
++use case is screen mirroring.
++
++The driver can use resource_id = 0 to disable a scanout.
++
++\item[VIRTIO_GPU_CMD_RESOURCE_FLUSH] Flush a scanout resource Request
++  data is \field{struct virtio_gpu_resource_flush}.  Response type is
++  VIRTIO_GPU_RESP_OK_NODATA.
++
++\begin{lstlisting}
++struct virtio_gpu_resource_flush {
++        struct virtio_gpu_ctrl_hdr hdr;
++        struct virtio_gpu_rect r;
++        le32 resource_id;
++        le32 padding;
++};
++\end{lstlisting}
++
++This flushes a resource to screen.  It takes a rectangle and a
++resource id, and flushes any scanouts the resource is being used on.
++
++\item[VIRTIO_GPU_CMD_TRANSFER_TO_HOST_2D] Transfer from guest memory
++  to host resource.  Request data is \field{struct
++    virtio_gpu_transfer_to_host_2d}.  Response type is
++  VIRTIO_GPU_RESP_OK_NODATA.
++
++\begin{lstlisting}
++struct virtio_gpu_transfer_to_host_2d {
++        struct virtio_gpu_ctrl_hdr hdr;
++        struct virtio_gpu_rect r;
++        le64 offset;
++        le32 resource_id;
++        le32 padding;
++};
++\end{lstlisting}
++
++This takes a resource id along with an destination offset into the
++resource, and a box to transfer to the host backing for the resource.
++
++\item[VIRTIO_GPU_CMD_RESOURCE_ATTACH_BACKING] Assign backing pages to
++  a resource.  Request data is \field{struct
++    virtio_gpu_resource_attach_backing}, followed by \field{struct
++    virtio_gpu_mem_entry} entries.  Response type is
++  VIRTIO_GPU_RESP_OK_NODATA.
++
++\begin{lstlisting}
++struct virtio_gpu_resource_attach_backing {
++        struct virtio_gpu_ctrl_hdr hdr;
++        le32 resource_id;
++        le32 nr_entries;
++};
++
++struct virtio_gpu_mem_entry {
++        le64 addr;
++        le32 length;
++        le32 padding;
++};
++\end{lstlisting}
++
++This assign an array of guest pages as the backing store for a
++resource. These pages are then used for the transfer operations for
++that resource from that point on.
++
++\item[VIRTIO_GPU_CMD_RESOURCE_DETACH_BACKING] Detach backing pages
++  from a resource.  Request data is \field{struct
++    virtio_gpu_resource_detach_backing}.  Response type is
++  VIRTIO_GPU_RESP_OK_NODATA.
++
++\begin{lstlisting}
++struct virtio_gpu_resource_detach_backing {
++        struct virtio_gpu_ctrl_hdr hdr;
++        le32 resource_id;
++        le32 padding;
++};
++\end{lstlisting}
++
++This detaches any backing pages from a resource, to be used in case of
++guest swapping or object destruction.
++
++\end{description}
++
++\subsubsection{Device Operation: cursorq}\label{sec:Device Types / GPU Device / Device Operation / Device Operation: cursorq}
++
++Both cursorq commands use the same command struct.
++
++\begin{lstlisting}
++struct virtio_gpu_cursor_pos {
++        le32 scanout_id;
++        le32 x;
++        le32 y;
++        le32 padding;
++};
++
++struct virtio_gpu_update_cursor {
++        struct virtio_gpu_ctrl_hdr hdr;
++        struct virtio_gpu_cursor_pos pos;
++        le32 resource_id;
++        le32 hot_x;
++        le32 hot_y;
++        le32 padding;
++};
++\end{lstlisting}
++
++\begin{description}
++
++\item[VIRTIO_GPU_CMD_UPDATE_CURSOR]
++Update cursor.
++Request data is \field{struct virtio_gpu_update_cursor}.
++Response type is VIRTIO_GPU_RESP_OK_NODATA.
++
++Full cursor update.  Cursor will be loaded from the specified
++\field{resource_id} and will be moved to \field{pos}.  The driver must
++transfer the cursor into the resource beforehand (using control queue
++commands) and make sure the commands to fill the resource are actually
++processed (using fencing).
++
++\item[VIRTIO_GPU_CMD_MOVE_CURSOR]
++Move cursor.
++Request data is \field{struct virtio_gpu_update_cursor}.
++Response type is VIRTIO_GPU_RESP_OK_NODATA.
++
++Move cursor to the place specified in \field{pos}.  The other fields
++are not used and will be ignored by the device.
++
++\end{description}
++
++\subsection{VGA Compatibility}\label{sec:Device Types / GPU Device / VGA Compatibility}
++
++Applies to Virtio Over PCI only.  The GPU device can come with and
++without VGA compatibility.  The PCI class should be DISPLAY_VGA if VGA
++compatibility is present and DISPLAY_OTHER otherwise.
++
++VGA compatibility: PCI region 0 has the linear framebuffer, standard
++vga registers are present.  Configuring a scanout
++(VIRTIO_GPU_CMD_SET_SCANOUT) switches the device from vga
++compatibility mode into native virtio mode.  A reset switches it back
++into vga compatibility mode.
++
++Note: qemu implementation also provides bochs dispi interface io ports
++and mmio bar at pci region 1 and is therefore fully compatible with
++the qemu stdvga (see \href{http://git.qemu-project.org/?p=qemu.git;a=blob;f=docs/specs/standard-vga.txt;hb=HEAD}{docs/specs/standard-vga.txt} in the qemu source tree).
 -- 
-MST
+2.9.3
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
