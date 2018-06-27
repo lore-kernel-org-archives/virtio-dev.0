@@ -1,59 +1,75 @@
-Return-Path: virtio-dev-return-4532-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4583-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id BDCDA58180D0
-	for <virtio-dev@lists.oasis-open.org>; Mon, 25 Jun 2018 18:55:42 -0700 (PDT)
-Date: Tue, 26 Jun 2018 04:55:26 +0300
+	by lists.oasis-open.org (Postfix) with ESMTP id 285E85819221
+	for <virtio-dev@lists.oasis-open.org>; Wed, 27 Jun 2018 12:07:21 -0700 (PDT)
+Date: Wed, 27 Jun 2018 22:07:02 +0300
 From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20180626045118-mutt-send-email-mst@kernel.org>
+Message-ID: <20180627220402-mutt-send-email-mst@kernel.org>
 References: <1529037793-35521-1-git-send-email-wei.w.wang@intel.com>
  <1529037793-35521-2-git-send-email-wei.w.wang@intel.com>
  <CA+55aFzhuGKinEq5udPsk_uYHShkQxJYqcPO=tLCkT-oxpsgPg@mail.gmail.com>
+ <20180626045118-mutt-send-email-mst@kernel.org>
+ <CA+55aFwFpDPvfL=KPdabO-x1r0FnwpfPk5oN8+e01TKqAPNYbw@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CA+55aFzhuGKinEq5udPsk_uYHShkQxJYqcPO=tLCkT-oxpsgPg@mail.gmail.com>
+In-Reply-To: <CA+55aFwFpDPvfL=KPdabO-x1r0FnwpfPk5oN8+e01TKqAPNYbw@mail.gmail.com>
 Subject: [virtio-dev] Re: [PATCH v33 1/4] mm: add a function to get free page blocks
 To: Linus Torvalds <torvalds@linux-foundation.org>
 Cc: wei.w.wang@intel.com, virtio-dev@lists.oasis-open.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, virtualization <virtualization@lists.linux-foundation.org>, KVM list <kvm@vger.kernel.org>, linux-mm <linux-mm@kvack.org>, Michal Hocko <mhocko@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Paolo Bonzini <pbonzini@redhat.com>, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu0@gmail.com, nilal@redhat.com, Rik van Riel <riel@redhat.com>, peterx@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Sat, Jun 16, 2018 at 08:08:53AM +0900, Linus Torvalds wrote:
-> On Fri, Jun 15, 2018 at 2:08 PM Wei Wang <wei.w.wang@intel.com> wrote:
+On Wed, Jun 27, 2018 at 09:05:39AM -0700, Linus Torvalds wrote:
+> [ Sorry for slow reply, my travels have made a mess of my inbox ]
+> 
+> On Mon, Jun 25, 2018 at 6:55 PM Michael S. Tsirkin <mst@redhat.com> wrote:
 > >
-> > This patch adds a function to get free pages blocks from a free page
-> > list. The obtained free page blocks are hints about free pages, because
-> > there is no guarantee that they are still on the free page list after
-> > the function returns.
-
-...
-
-> > +uint32_t get_from_free_page_list(int order, __le64 buf[], uint32_t size)
-
-...
-
+> > Linus, do you think it would be ok to have get_from_free_page_list
+> > actually pop entries from the free list and use them as the buffer
+> > to store PAs?
 > 
-> Ack. This is the kind of simple interface where I don't need to worry
-> about the MM code calling out to random drivers or subsystems.
+> Honestly, what I think the best option would be is to get rid of this
+> interface *entirely*, and just have the balloon code do
 > 
-> I think that "order" should be checked for validity, but from a MM
-> standpoint I think this is fine.
+>     #define GFP_MINFLAGS (__GFP_NORETRY | __GFP_NOWARN |
+> __GFP_THISNODE | __GFP_NOMEMALLOC)
 > 
->                 Linus
+>     struct page *page =  alloc_pages(GFP_MINFLAGS, MAX_ORDER-1);
+> 
+>  which is not a new interface, and simply removes the max-order page
+> from the list if at all possible.
+> 
+> The above has the advantage of "just working", and not having any races.
+> 
+> Now, because you don't want to necessarily *entirely* deplete the max
+> order, I'd suggest that the *one* new interface you add is just a "how
+> many max-order pages are there" interface. So then you can query
+> (either before or after getting the max-order page) just how many of
+> them there were and whether you want to give that page back.
+> 
+> Notice? No need for any page lists or physical addresses. No races. No
+> complex new functions.
+> 
+> The physical address you can just get from the "struct page" you got.
+> 
+> And if you run out of memory because of getting a page, you get all
+> the usual "hey, we ran out of memory" responses..
+> 
+> Wouldn't the above be sufficient?
+> 
+>             Linus
 
-The only issue seems to be getting hold of buf that's large enough -
-and we don't really know what the size is, or whether one
-buf would be enough.
+I think so, thanks!
 
-Linus, do you think it would be ok to have get_from_free_page_list
-actually pop entries from the free list and use them as the buffer
-to store PAs?
-
-Caller would be responsible for freeing the returned entries.
+Wei, to put it in balloon terms, I think there's one thing we missed: if
+you do manage to allocate a page, and you don't have a use for it, then
+hey, you can just give it to the host because you know it's free - you
+are going to return it to the free list.
 
 -- 
 MST
