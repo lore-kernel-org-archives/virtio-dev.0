@@ -1,155 +1,132 @@
-Return-Path: virtio-dev-return-4558-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4560-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id B26AA1CB80ED
-	for <virtio-dev@lists.oasis-open.org>; Tue, 26 Jun 2018 20:50:02 -0700 (PDT)
+	by lists.oasis-open.org (Postfix) with ESMTP id D500B1CB80EE
+	for <virtio-dev@lists.oasis-open.org>; Tue, 26 Jun 2018 20:50:05 -0700 (PDT)
 From: Venu Busireddy <venu.busireddy@oracle.com>
-Date: Tue, 26 Jun 2018 22:49:32 -0500
-Message-Id: <20180627034935.20276-3-venu.busireddy@oracle.com>
+Date: Tue, 26 Jun 2018 22:49:33 -0500
+Message-Id: <20180627034935.20276-4-venu.busireddy@oracle.com>
 In-Reply-To: <20180627034935.20276-1-venu.busireddy@oracle.com>
 References: <20180627034935.20276-1-venu.busireddy@oracle.com>
-Subject: [virtio-dev] [PATCH v2 2/4] Add "Group Identifier" support to virtio devices.
+Subject: [virtio-dev] [PATCH v2 3/4] Add "Group Identifier" support to Red Hat PCI bridge.
 To: venu.busireddy@oracle.com, "Michael S . Tsirkin" <mst@redhat.com>, Marcel Apfelbaum <marcel@redhat.com>
 Cc: virtio-dev@lists.oasis-open.org, qemu-devel@nongnu.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Use the virtio PCI capability "VIRTIO_PCI_CAP_GROUP_ID_CFG" to store the
-"Group Identifier" (UUID) specified via the command line option "uuid"
-for the virtio device. The capability will be present in the virtio
-device's configuration space iff the "uuid" option is specified.
+Add the "Vendor-Specific" capability to the Red Hat PCI bridge device
+"pci-bridge", to contain the "Group Identifier" (UUID) that will be
+used to pair a virtio device with the passthrough device attached to
+that bridge.
 
-Group Identifier is used to pair a virtio device with a passthrough
-device.
+This capability is added to the bridge iff the "uuid" option is specified
+for the bridge.
 
 Signed-off-by: Venu Busireddy <venu.busireddy@oracle.com>
 ---
- hw/virtio/virtio-pci.c                      | 15 +++++++++++++++
- hw/virtio/virtio-pci.h                      |  3 ++-
- include/hw/pci/pci.h                        |  2 ++
- include/standard-headers/linux/virtio_pci.h |  8 ++++++++
- 4 files changed, 27 insertions(+), 1 deletion(-)
+ hw/pci-bridge/pci_bridge_dev.c |  8 ++++++++
+ hw/pci/pci_bridge.c            | 26 ++++++++++++++++++++++++++
+ include/hw/pci/pcie.h          |  1 +
+ 3 files changed, 35 insertions(+)
 
-diff --git a/hw/virtio/virtio-pci.c b/hw/virtio/virtio-pci.c
-index 3a01fe90f0..42703a5567 100644
---- a/hw/virtio/virtio-pci.c
-+++ b/hw/virtio/virtio-pci.c
-@@ -36,6 +36,7 @@
- #include "qemu/range.h"
- #include "hw/virtio/virtio-bus.h"
- #include "qapi/visitor.h"
-+#include "qemu/uuid.h"
+diff --git a/hw/pci-bridge/pci_bridge_dev.c b/hw/pci-bridge/pci_bridge_dev.c
+index b2d861d216..bbbc6fa1c6 100644
+--- a/hw/pci-bridge/pci_bridge_dev.c
++++ b/hw/pci-bridge/pci_bridge_dev.c
+@@ -71,6 +71,12 @@ static void pci_bridge_dev_realize(PCIDevice *dev, Error **errp)
+         bridge_dev->msi = ON_OFF_AUTO_OFF;
+     }
  
- #define VIRTIO_PCI_REGION_SIZE(dev)     VIRTIO_PCI_CONFIG_OFF(msix_present(dev))
- 
-@@ -1638,6 +1639,10 @@ static void virtio_pci_device_plugged(DeviceState *d, Error **errp)
-             .cap.cap_len = sizeof cfg,
-             .cap.cfg_type = VIRTIO_PCI_CAP_PCI_CFG,
-         };
-+        struct virtio_pci_group_id_cap group = {
-+            .cap.cap_len = sizeof group,
-+            .cap.cfg_type = VIRTIO_PCI_CAP_GROUP_ID_CFG,
-+        };
-         struct virtio_pci_notify_cap notify_pio = {
-             .cap.cap_len = sizeof notify,
-             .notify_off_multiplier = cpu_to_le32(0x0),
-@@ -1647,6 +1652,11 @@ static void virtio_pci_device_plugged(DeviceState *d, Error **errp)
- 
-         virtio_pci_modern_regions_init(proxy);
- 
-+        if (!qemu_uuid_is_null(&proxy->pci_dev.uuid)) {
-+            memcpy(group.uuid, &proxy->pci_dev.uuid, sizeof(QemuUUID));
-+            virtio_pci_modern_mem_region_map(proxy, &proxy->group, &group.cap);
-+        }
++    err = pci_bridge_vendor_init(dev, 0, errp);
++    if (err < 0) {
++        error_append_hint(errp, "Can't init group ID, error %d\n", err);
++        goto vendor_cap_err;
++    }
 +
-         virtio_pci_modern_mem_region_map(proxy, &proxy->common, &cap);
-         virtio_pci_modern_mem_region_map(proxy, &proxy->isr, &cap);
-         virtio_pci_modern_mem_region_map(proxy, &proxy->device, &cap);
-@@ -1763,6 +1773,10 @@ static void virtio_pci_realize(PCIDevice *pci_dev, Error **errp)
-     proxy->device.size = 0x1000;
-     proxy->device.type = VIRTIO_PCI_CAP_DEVICE_CFG;
- 
-+    proxy->group.offset = 0;
-+    proxy->group.size = 0;
-+    proxy->group.type = VIRTIO_PCI_CAP_GROUP_ID_CFG;
-+
-     proxy->notify.offset = 0x3000;
-     proxy->notify.size = virtio_pci_queue_mem_mult(proxy) * VIRTIO_QUEUE_MAX;
-     proxy->notify.type = VIRTIO_PCI_CAP_NOTIFY_CFG;
-@@ -1898,6 +1912,7 @@ static Property virtio_pci_properties[] = {
-                     VIRTIO_PCI_FLAG_INIT_LNKCTL_BIT, true),
-     DEFINE_PROP_BIT("x-pcie-pm-init", VirtIOPCIProxy, flags,
-                     VIRTIO_PCI_FLAG_INIT_PM_BIT, true),
-+    DEFINE_PROP_UUID("uuid", PCIDevice, uuid, false),
+     err = slotid_cap_init(dev, 0, bridge_dev->chassis_nr, 0, errp);
+     if (err) {
+         goto slotid_error;
+@@ -109,6 +115,7 @@ slotid_error:
+     if (shpc_present(dev)) {
+         shpc_cleanup(dev, &bridge_dev->bar);
+     }
++vendor_cap_err:
+ shpc_error:
+     pci_bridge_exitfn(dev);
+ }
+@@ -162,6 +169,7 @@ static Property pci_bridge_dev_properties[] = {
+                             ON_OFF_AUTO_AUTO),
+     DEFINE_PROP_BIT(PCI_BRIDGE_DEV_PROP_SHPC, PCIBridgeDev, flags,
+                     PCI_BRIDGE_DEV_F_SHPC_REQ, true),
++    DEFINE_PROP_UUID(COMPAT_PROP_UUID, PCIDevice, uuid, false),
      DEFINE_PROP_END_OF_LIST(),
  };
  
-diff --git a/hw/virtio/virtio-pci.h b/hw/virtio/virtio-pci.h
-index 813082b0d7..e4592e90bf 100644
---- a/hw/virtio/virtio-pci.h
-+++ b/hw/virtio/virtio-pci.h
-@@ -164,10 +164,11 @@ struct VirtIOPCIProxy {
-             VirtIOPCIRegion common;
-             VirtIOPCIRegion isr;
-             VirtIOPCIRegion device;
-+            VirtIOPCIRegion group;
-             VirtIOPCIRegion notify;
-             VirtIOPCIRegion notify_pio;
-         };
--        VirtIOPCIRegion regs[5];
-+        VirtIOPCIRegion regs[6];
-     };
-     MemoryRegion modern_bar;
-     MemoryRegion io_bar;
-diff --git a/include/hw/pci/pci.h b/include/hw/pci/pci.h
-index 990d6fcbde..ee234c5a6f 100644
---- a/include/hw/pci/pci.h
-+++ b/include/hw/pci/pci.h
-@@ -4,6 +4,7 @@
- #include "hw/qdev.h"
- #include "exec/memory.h"
- #include "sysemu/dma.h"
+diff --git a/hw/pci/pci_bridge.c b/hw/pci/pci_bridge.c
+index 40a39f57cb..cb8b3dad2a 100644
+--- a/hw/pci/pci_bridge.c
++++ b/hw/pci/pci_bridge.c
+@@ -34,12 +34,17 @@
+ #include "hw/pci/pci_bus.h"
+ #include "qemu/range.h"
+ #include "qapi/error.h"
 +#include "qemu/uuid.h"
  
- /* PCI includes legacy ISA access.  */
- #include "hw/isa/isa.h"
-@@ -343,6 +344,7 @@ struct PCIDevice {
-     bool has_rom;
-     MemoryRegion rom;
-     uint32_t rom_bar;
-+    QemuUUID uuid;
+ /* PCI bridge subsystem vendor ID helper functions */
+ #define PCI_SSVID_SIZEOF        8
+ #define PCI_SSVID_SVID          4
+ #define PCI_SSVID_SSID          6
  
-     /* INTx routing notifier */
-     PCIINTxRoutingNotifier intx_routing_notifier;
-diff --git a/include/standard-headers/linux/virtio_pci.h b/include/standard-headers/linux/virtio_pci.h
-index 9262acd130..f6de333f1d 100644
---- a/include/standard-headers/linux/virtio_pci.h
-+++ b/include/standard-headers/linux/virtio_pci.h
-@@ -113,6 +113,8 @@
- #define VIRTIO_PCI_CAP_DEVICE_CFG	4
- /* PCI configuration access */
- #define VIRTIO_PCI_CAP_PCI_CFG		5
-+/* Group Identifier */
-+#define VIRTIO_PCI_CAP_GROUP_ID_CFG	6
++#define PCI_VENDOR_SIZEOF             20
++#define PCI_VENDOR_CAP_LEN_OFFSET      2
++#define PCI_VENDOR_GROUP_ID_OFFSET     4
++
+ int pci_bridge_ssvid_init(PCIDevice *dev, uint8_t offset,
+                           uint16_t svid, uint16_t ssid,
+                           Error **errp)
+@@ -57,6 +62,27 @@ int pci_bridge_ssvid_init(PCIDevice *dev, uint8_t offset,
+     return pos;
+ }
  
- /* This is the PCI capability header: */
- struct virtio_pci_cap {
-@@ -163,6 +165,12 @@ struct virtio_pci_cfg_cap {
- 	uint8_t pci_cfg_data[4]; /* Data for BAR access. */
++int pci_bridge_vendor_init(PCIDevice *d, uint8_t offset, Error **errp)
++{
++    int pos;
++
++    if (qemu_uuid_is_null(&d->uuid)) {
++        return 0;
++    }
++
++    pos = pci_add_capability(d, PCI_CAP_ID_VNDR, offset, PCI_VENDOR_SIZEOF,
++            errp);
++    if (pos < 0) {
++        return pos;
++    }
++
++    pci_set_word(d->config + pos + PCI_VENDOR_CAP_LEN_OFFSET,
++            PCI_VENDOR_SIZEOF);
++    memcpy(d->config + pos + PCI_VENDOR_GROUP_ID_OFFSET, &d->uuid,
++            sizeof(QemuUUID));
++    return pos;
++}
++
+ /* Accessor function to get parent bridge device from pci bus. */
+ PCIDevice *pci_bridge_get_device(PCIBus *bus)
+ {
+diff --git a/include/hw/pci/pcie.h b/include/hw/pci/pcie.h
+index b71e369703..b4189d0ce3 100644
+--- a/include/hw/pci/pcie.h
++++ b/include/hw/pci/pcie.h
+@@ -82,6 +82,7 @@ struct PCIExpressDevice {
  };
  
-+/* Fields in VIRTIO_PCI_CAP_GROUP_ID_CFG: */
-+struct virtio_pci_group_id_cap {
-+	struct virtio_pci_cap cap;
-+	uint8_t uuid[16];
-+};
-+
- /* Macro versions of offsets for the Old Timers! */
- #define VIRTIO_PCI_CAP_VNDR		0
- #define VIRTIO_PCI_CAP_NEXT		1
+ #define COMPAT_PROP_PCP "power_controller_present"
++#define COMPAT_PROP_UUID "uuid"
+ 
+ /* PCI express capability helper functions */
+ int pcie_cap_init(PCIDevice *dev, uint8_t offset, uint8_t type,
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
