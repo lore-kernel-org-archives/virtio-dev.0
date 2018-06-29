@@ -1,45 +1,126 @@
-Return-Path: virtio-dev-return-4450-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4616-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 405FF5819139
-	for <virtio-dev@lists.oasis-open.org>; Tue, 19 Jun 2018 20:34:43 -0700 (PDT)
-Date: Wed, 20 Jun 2018 06:34:24 +0300
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20180620063204-mutt-send-email-mst@kernel.org>
-References: <1514626559-162312-1-git-send-email-longpeng2@huawei.com>
- <1514626559-162312-2-git-send-email-longpeng2@huawei.com>
- <fcb63fc3-22eb-7f6c-2014-744ee75784eb@linux.vnet.ibm.com>
- <5A55AA45.9090004@huawei.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5A55AA45.9090004@huawei.com>
-Subject: Re: [virtio-dev] Re: [Qemu-devel] [v23 1/2] virtio-crypto: Add
- virtio crypto device specification
-To: "Longpeng (Mike)" <longpeng2@huawei.com>
-Cc: Halil Pasic <pasic@linux.vnet.ibm.com>, qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, luonengjun@huawei.com, cornelia.huck@de.ibm.com, stefanha@redhat.com, denglingli@chinamobile.com, Jani.Kokkonen@huawei.com, Ola.Liljedahl@arm.com, Varun.Sethi@freescale.com, xin.zeng@intel.com, brian.a.keating@intel.com, liang.j.ma@intel.com, john.griffin@intel.com, weidong.huang@huawei.com, agraf@suse.de, jasowang@redhat.com, vincent.jardin@6wind.com, arei.gonglei@huawei.com, wangxinxin.wang@huawei.com, jianjay.zhou@huawei.com
+	by lists.oasis-open.org (Postfix) with ESMTP id 7E0AE58191CF
+	for <virtio-dev@lists.oasis-open.org>; Fri, 29 Jun 2018 15:19:31 -0700 (PDT)
+From: Venu Busireddy <venu.busireddy@oracle.com>
+Date: Fri, 29 Jun 2018 17:19:03 -0500
+Message-Id: <20180629221907.3662-1-venu.busireddy@oracle.com>
+Subject: [virtio-dev] [PATCH v3 0/3] Use of unique identifier for pairing virtio and passthrough devices...
+To: venu.busireddy@oracle.com, "Michael S . Tsirkin" <mst@redhat.com>, Marcel Apfelbaum <marcel@redhat.com>
+Cc: virtio-dev@lists.oasis-open.org, qemu-devel@nongnu.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, Jan 10, 2018 at 01:53:09PM +0800, Longpeng (Mike) wrote:
-> Hi Halil,
-> 
-> We are fixing the Intel BUG these days, so I will go through your comments after
-> we're done. Thanks.
+The patch set "Enable virtio_net to act as a standby for a passthru
+device" [1] deals with live migration of guests that use passthrough
+devices. However, that scheme uses the MAC address for pairing
+the virtio device and the passthrough device. The thread "netvsc:
+refactor notifier/event handling code to use the failover framework"
+[2] discusses an alternate mechanism, such as using an UUID, for pairing
+the devices. Based on that discussion, proposals "Add "Group Identifier"
+to virtio PCI capabilities." [3] and "RFC: Use of bridge devices to
+store pairing information..." [4] were made.
 
-All right - are you guys done with meltdown/spectre? I'd like us
-to start finally getting parts of this in the spec.
-This is already used in the field - let's get into spec
-whatever is already out there.
+The current patch set includes all the feedback received for proposals [3]
+and [4]. For the sake of completeness, patch for the virtio specification
+is also included here. Following is the updated proposal.
 
-Argue about future enhancements later.
+1. Extend the virtio specification to include a new virtio PCI capability
+   "VIRTIO_PCI_CAP_GROUP_ID_CFG".
 
+2. Enhance the QEMU CLI to include a "failover-group-id" option to the
+   virtio device. The "failover-group-id" is a 64 bit value.
 
--- 
-MST
+3. Enhance the QEMU CLI to include a "failover-group-id" option to the
+   Red Hat PCI bridge device (support for the i440FX model).
+
+4. Add a new "pcie-downstream" device, with the option
+   "failover-group-id" (support for the Q35 model).
+
+5. The operator creates a 64 bit unique identifier, failover-group-id.
+
+6. When the virtio device is created, the operator uses the
+   "failover-group-id" option (for example, '-device
+   virtio-net-pci,failover-group-id=<identifier>') and specifies the
+   failover-group-id created in step 4.
+
+   QEMU stores the failover-group-id in the virtio device's configuration
+   space in the capability "VIRTIO_PCI_CAP_GROUP_ID_CFG".
+
+7. When assigning a PCI device to the guest in passthrough mode, the
+   operator first creates a bridge using the "failover-group-id" option
+   (for example, '-device pcie-downstream,failover-group-id=<identifier>')
+   to specify the failover-group-id created in step 4, and then attaches
+   the passthrough device to the bridge.
+
+   QEMU stores the failover-group-id in the configuration space of the
+   bridge as Vendor-Specific capability (0x09). The "Vendor" here is
+   not to be confused with a specific organization. Instead, the vendor
+   of the bridge is QEMU.
+
+8. Patch 4 in patch series "Enable virtio_net to act as a standby for
+   a passthru device" [1] needs to be modified to use the UUID values
+   present in the bridge's configuration space and the virtio device's
+   configuration space instead of the MAC address for pairing the devices.
+
+Thanks!
+
+Venu
+
+[1] https://lists.oasis-open.org/archives/virtio-dev/201805/msg00156.html
+[2] https://www.spinics.net/lists/netdev/msg499011.html
+[3] https://lists.oasis-open.org/archives/virtio-dev/201805/msg00118.html
+[4] https://lists.oasis-open.org/archives/virtio-dev/201805/msg00204.html
+
+Changes in v3:
+  - As Michael Tsirkin suggested:
+    * Changed the failover group identifier from UUID to a 64-bit value.
+    * Changed the command line option from "uuid" to "failover-group-id".
+    * Tweaked the "pci-bridge" device's Device ID to
+      PCI_DEVICE_ID_REDHAT_BRIDGE_FAILOVER.
+    * Added to new device "pcie-downstream" with Device ID
+      PCI_DEVICE_ID_REDHAT_DOWNPORT_FAILOVER (to support the PCIe case).
+  - Changed the patch for virtio specification to reflect the above
+    changes.
+
+Changes in v2:
+  - As Michael Tsirkin suggested, changed the virtio specification
+    to restrict the group identifier to be a 16-byte field, presented
+    entirely in the virtio device's configuration space.
+  - As Michael Tsirkin suggested, instead of tweaking the ioh3420
+    device with Red Hat vendor ID, create a new PCIe bridge device
+    named "pcie-downstream" with Red Hat Vendor ID, and include the
+    group identifier in this device.
+  - Added a new patch to enhance the "pci-bridge" device to support
+    the group identifier (for the i440FX model).
+
+Venu Busireddy (3):
+  Add "Group Identifier" support to virtio devices.
+  Add "Group Identifier" support to Red Hat PCI bridge.
+  Add "Group Identifier" support to Red Hat PCI Express bridge.
+
+ default-configs/arm-softmmu.mak             |   1 +
+ default-configs/i386-softmmu.mak            |   1 +
+ default-configs/x86_64-softmmu.mak          |   1 +
+ hw/pci-bridge/Makefile.objs                 |   1 +
+ hw/pci-bridge/pci_bridge_dev.c              |  10 +
+ hw/pci-bridge/pcie_downstream.c             | 220 ++++++++++++++++++++
+ hw/pci-bridge/pcie_downstream.h             |  10 +
+ hw/pci/pci_bridge.c                         |  34 +++
+ hw/virtio/virtio-pci.c                      |  15 ++
+ hw/virtio/virtio-pci.h                      |   3 +-
+ include/hw/pci/pci.h                        |  37 ++--
+ include/hw/pci/pci_bridge.h                 |   2 +
+ include/hw/pci/pcie.h                       |   1 +
+ include/standard-headers/linux/virtio_pci.h |   8 +
+ 14 files changed, 326 insertions(+), 18 deletions(-)
+ create mode 100644 hw/pci-bridge/pcie_downstream.c
+ create mode 100644 hw/pci-bridge/pcie_downstream.h
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
