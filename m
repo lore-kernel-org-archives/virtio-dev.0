@@ -1,85 +1,50 @@
-Return-Path: virtio-dev-return-4673-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4637-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 648D6985B2A
-	for <virtio-dev@lists.oasis-open.org>; Wed, 11 Jul 2018 01:07:51 +0000 (UTC)
-Date: Wed, 11 Jul 2018 09:07:30 +0800
-From: Tiwei Bie <tiwei.bie@intel.com>
-Message-ID: <20180711010730.GA28235@debian>
-References: <20180709072241.8886-1-tiwei.bie@intel.com>
- <20180709072241.8886-6-tiwei.bie@intel.com>
- <27ae72ad-247b-e8f0-aa37-a75a719e0e01@redhat.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 15808985B5E
+	for <virtio-dev@lists.oasis-open.org>; Wed,  4 Jul 2018 11:25:48 +0000 (UTC)
+References: <20180621190655.56391-1-jean-philippe.brucker@arm.com>
+ <20180626210132-mutt-send-email-mst@kernel.org>
+ <2bcda195-d2c6-fbf0-322e-d91756fc3547@arm.com>
+ <20180627224801-mutt-send-email-mst@kernel.org>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Message-ID: <98512e15-fd51-e4b2-1d9d-2c9cf9c863b8@arm.com>
+Date: Wed, 4 Jul 2018 12:25:26 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <27ae72ad-247b-e8f0-aa37-a75a719e0e01@redhat.com>
-Subject: [virtio-dev] Re: [PATCH net-next v1 5/5] virtio_ring: enable packed ring
-To: Jason Wang <jasowang@redhat.com>
-Cc: mst@redhat.com, virtualization@lists.linux-foundation.org, linux-kernel@vger.kernel.org, netdev@vger.kernel.org, virtio-dev@lists.oasis-open.org, wexu@redhat.com, jfreimann@redhat.com
+In-Reply-To: <20180627224801-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=windows-1252
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: [virtio-dev] Re: [PATCH v2 0/5] Add virtio-iommu driver
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>, "joro@8bytes.org" <joro@8bytes.org>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "robh+dt@kernel.org" <robh+dt@kernel.org>, Mark Rutland <Mark.Rutland@arm.com>, "jasowang@redhat.com" <jasowang@redhat.com>, Marc Zyngier <Marc.Zyngier@arm.com>, Robin Murphy <Robin.Murphy@arm.com>, Will Deacon <Will.Deacon@arm.com>, Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>, "peterx@redhat.com" <peterx@redhat.com>, "bharat.bhushan@nxp.com" <bharat.bhushan@nxp.com>, "tnowicki@caviumnetworks.com" <tnowicki@caviumnetworks.com>, "jayachandran.nair@cavium.com" <jayachandran.nair@cavium.com>, "kevin.tian@intel.com" <kevin.tian@intel.com>, peter.maydell@linaro.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Tue, Jul 10, 2018 at 01:51:20PM +0800, Jason Wang wrote:
-> On 2018年07月09日 15:22, Tiwei Bie wrote:
-> > Signed-off-by: Tiwei Bie <tiwei.bie@intel.com>
-> > ---
-> >   drivers/s390/virtio/virtio_ccw.c | 8 ++++++++
-> >   drivers/virtio/virtio_ring.c     | 2 ++
-> >   2 files changed, 10 insertions(+)
-> > 
-> > diff --git a/drivers/s390/virtio/virtio_ccw.c b/drivers/s390/virtio/virtio_ccw.c
-> > index 8f5c1d7f751a..ff5b85736d8d 100644
-> > --- a/drivers/s390/virtio/virtio_ccw.c
-> > +++ b/drivers/s390/virtio/virtio_ccw.c
-> > @@ -765,6 +765,11 @@ static u64 virtio_ccw_get_features(struct virtio_device *vdev)
-> >   	return rc;
-> >   }
-> > +static void ccw_transport_features(struct virtio_device *vdev)
-> > +{
-> > +	__virtio_clear_bit(vdev, VIRTIO_F_RING_PACKED);
-> > +}
+On 27/06/18 20:59, Michael S. Tsirkin wrote:
+>> Another reason to keep the MMIO transport option is that one
+>> virtio-iommu can manage DMA from endpoints on multiple PCI domains at
+>> the same time, as well as platform devices. Some VMMs might want that,
+>> in which case the IOMMU would be a separate platform device.
 > 
-> I think we need a better comment to explain why it was disabled here.
+> Which buses are managed by the IOMMU is separate from the bus
+> on which it's programming interface resides.
 
-Yeah, I'll do it!
+Sorry I didn't get this. We probably don't want to instantiate a PCI
+root complex just for the IOMMU, so it needs to be in the same PCI
+segment as managed endpoints. For example in my VM the AMD IOMMU is
+presented as 00:02.0, between other devices on PCI bus 00.
 
-Best regards,
-Tiwei Bie
+In any case, I have a solution for virtio-pci that works with DT and
+ACPI, and isn't excessively awful. I'll probably send it as part of the
+next version.
 
-> 
-> Thanks
-> 
-> > +
-> >   static int virtio_ccw_finalize_features(struct virtio_device *vdev)
-> >   {
-> >   	struct virtio_ccw_device *vcdev = to_vc_device(vdev);
-> > @@ -791,6 +796,9 @@ static int virtio_ccw_finalize_features(struct virtio_device *vdev)
-> >   	/* Give virtio_ring a chance to accept features. */
-> >   	vring_transport_features(vdev);
-> > +	/* Give virtio_ccw a chance to accept features. */
-> > +	ccw_transport_features(vdev);
-> > +
-> >   	features->index = 0;
-> >   	features->features = cpu_to_le32((u32)vdev->features);
-> >   	/* Write the first half of the feature bits to the host. */
-> > diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
-> > index 4b3f9e1a3cab..64f20023f088 100644
-> > --- a/drivers/virtio/virtio_ring.c
-> > +++ b/drivers/virtio/virtio_ring.c
-> > @@ -1968,6 +1968,8 @@ void vring_transport_features(struct virtio_device *vdev)
-> >   			break;
-> >   		case VIRTIO_F_IOMMU_PLATFORM:
-> >   			break;
-> > +		case VIRTIO_F_RING_PACKED:
-> > +			break;
-> >   		default:
-> >   			/* We don't understand this bit. */
-> >   			__virtio_clear_bit(vdev, i);
-> 
+Thanks,
+Jean
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
