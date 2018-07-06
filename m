@@ -1,120 +1,162 @@
-Return-Path: virtio-dev-return-4638-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4640-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id CFEF39858B6
-	for <virtio-dev@lists.oasis-open.org>; Wed,  4 Jul 2018 12:15:27 +0000 (UTC)
-Date: Wed, 4 Jul 2018 14:15:23 +0200
-From: Cornelia Huck <cohuck@redhat.com>
-Message-ID: <20180704141523.377cb66d.cohuck@redhat.com>
-In-Reply-To: <CADGSJ23+sZiMCx=n=DytZ=TT2z7i0sMhrmnPuFYtuZhSc=qA+Q@mail.gmail.com>
-References: <20180629221907.3662-1-venu.busireddy@oracle.com>
-	<20180702161404.GA2339@rkaganb.sw.ru>
-	<449f1449-ddf6-cd95-976c-14d04d8d503a@oracle.com>
-	<20180703095825.GC30904@rkaganb.sw.ru>
-	<20180703142817.GA3088@vbusired-vm>
-	<20180703165200.180c93bb.cohuck@redhat.com>
-	<CADGSJ23+sZiMCx=n=DytZ=TT2z7i0sMhrmnPuFYtuZhSc=qA+Q@mail.gmail.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 335DE985B5C
+	for <virtio-dev@lists.oasis-open.org>; Fri,  6 Jul 2018 00:49:13 +0000 (UTC)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <20180704141523.377cb66d.cohuck@redhat.com>
+References: <20180629221907.3662-1-venu.busireddy@oracle.com>
+ <20180702161404.GA2339@rkaganb.sw.ru> <449f1449-ddf6-cd95-976c-14d04d8d503a@oracle.com>
+ <20180703095825.GC30904@rkaganb.sw.ru> <20180703142817.GA3088@vbusired-vm>
+ <20180703165200.180c93bb.cohuck@redhat.com> <CADGSJ23+sZiMCx=n=DytZ=TT2z7i0sMhrmnPuFYtuZhSc=qA+Q@mail.gmail.com>
+ <20180704141523.377cb66d.cohuck@redhat.com>
+From: Siwei Liu <loseweigh@gmail.com>
+Date: Thu, 5 Jul 2018 17:49:10 -0700
+Message-ID: <CADGSJ206U4x0UNTEKu0Lt9K9qA025ajtmnj6ym4PDz4Q-c8RKA@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Subject: Re: [virtio-dev] Re: [Qemu-devel] [PATCH v3 0/3] Use of unique
  identifier for pairing virtio and passthrough devices...
-To: Siwei Liu <loseweigh@gmail.com>
-Cc: Venu Busireddy <venu.busireddy@oracle.com>, Roman Kagan <rkagan@virtuozzo.com>, si-wei liu <si-wei.liu@oracle.com>, "Michael S .
- Tsirkin" <mst@redhat.com>, Marcel Apfelbaum <marcel@redhat.com>, virtio-dev@lists.oasis-open.org, qemu-devel@nongnu.org
+To: Cornelia Huck <cohuck@redhat.com>
+Cc: Venu Busireddy <venu.busireddy@oracle.com>, Roman Kagan <rkagan@virtuozzo.com>, si-wei liu <si-wei.liu@oracle.com>, "Michael S . Tsirkin" <mst@redhat.com>, Marcel Apfelbaum <marcel@redhat.com>, virtio-dev@lists.oasis-open.org, qemu-devel@nongnu.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Tue, 3 Jul 2018 16:31:03 -0700
-Siwei Liu <loseweigh@gmail.com> wrote:
+On Wed, Jul 4, 2018 at 5:15 AM, Cornelia Huck <cohuck@redhat.com> wrote:
+> On Tue, 3 Jul 2018 16:31:03 -0700
+> Siwei Liu <loseweigh@gmail.com> wrote:
+>
+>> On Tue, Jul 3, 2018 at 7:52 AM, Cornelia Huck <cohuck@redhat.com> wrote:
+>> > From my point of view, there are several concerns:
+>> > - This approach assumes a homogeneous pairing (same transport), and
+>> >   even more, it assumes that this transport is pci.
+>>
+>> Not really.
+>>
+>> There could be some other place to define a generic (transport
+>> independent) virtio feature, whereas the data (group ID) can be stored
+>> in transport specific way. That generic virtio feature and the way to
+>> specify target transport to group with is yet to be defined. I don't
+>> see this patch is in conflict with that direction.
+>
+> Sorry, but I really do not see how this is not pci-specific.
+>
+> - One of your components is a bridge. A transport does not necessarily
+>   have that concept, at least not in a way meaningful for this approach
+>   to work.
 
-> On Tue, Jul 3, 2018 at 7:52 AM, Cornelia Huck <cohuck@redhat.com> wrote:
-> > From my point of view, there are several concerns:
-> > - This approach assumes a homogeneous pairing (same transport), and
-> >   even more, it assumes that this transport is pci.  
-> 
-> Not really.
-> 
-> There could be some other place to define a generic (transport
-> independent) virtio feature, whereas the data (group ID) can be stored
-> in transport specific way. That generic virtio feature and the way to
-> specify target transport to group with is yet to be defined. I don't
-> see this patch is in conflict with that direction.
+Assuming we have a transport agnostic high-level virtio feature to
+indicate that the target type for the to-be-paired device is PCI, then
+we have to use the data stored in a PC bridge to pair the device. It
+does not associate transport of virtio itself with the type of target
+device, right. The introduction of PCI bridge is just for storing the
+group ID data for the PCI passthrough device case, while one may
+define and introduce other means to retrieve the info if target device
+type is not PCI e.g. a special instruction to get group ID on s390x
+zPCI.
 
-Sorry, but I really do not see how this is not pci-specific.
+> - Even if we can introduce transport-specific ways for other
+>   transports, the bridge concept still means that the pairing cannot be
+>   cross-transport.
 
-- One of your components is a bridge. A transport does not necessarily
-  have that concept, at least not in a way meaningful for this approach
-  to work.
-- Even if we can introduce transport-specific ways for other
-  transports, the bridge concept still means that the pairing cannot be
-  cross-transport.
+Sorry, I did not get this. A bridge is PCI specific concept indeed,
+but the virtio iteself can be of other transport. Why it matters? I
+guess a higher-level feature is needed to define the target transport
+for the to-be-paired device. The group ID info can reside on the
+transport specific area on virtio itself though. E.g. for virtio-pci,
+get it on the vendor specific capability in the PCI configuration
+space.
+For virtio-ccw, you may come up with CCW specific way to get the group
+ID data. Is this not what you had in mind?
 
-I think we should be clear what we want from a generic
-(transport-agnostic) virtio feature first. Probably some way to relay
-an identifier of the to-be-paired device (transport-specific +
-information what the transport is?)
+>
+> I think we should be clear what we want from a generic
+> (transport-agnostic) virtio feature first. Probably some way to relay
+> an identifier of the to-be-paired device (transport-specific +
+> information what the transport is?)
+>
+Are we talking about the transport of the virtio itself or the target
+device? Note the virtio feature must always be retrieved using
+transport specific way, although the semantics of the feauture can be
+transport independent/agnostic. Once a virtio driver instace gets to
+the point to read feature bits from the device, the transport of that
+virtio device is determined and cannot be changed later.
 
-> > - It won't work for zPCI (although zPCI is really strange) -- this
-> >   means it will be completely unusable on s390x.  
-> I still need more information about this use case. First off, does
-> zPCI support all the hot plug semantics or functionality the same way
-> as PCI? Or there has to be some platform or firmeware support like
-> ACPI hotplug? Does QEMU have all the pieces ready for s390 zPCI
-> hotplug?
 
-zPCI is a strange beast, so first a pointer to a writeup I did:
-https://virtualpenguins.blogspot.de/2018/02/notes-on-pci-on-s390x.html
+>> > - It won't work for zPCI (although zPCI is really strange) -- this
+>> >   means it will be completely unusable on s390x.
+>> I still need more information about this use case. First off, does
+>> zPCI support all the hot plug semantics or functionality the same way
+>> as PCI? Or there has to be some platform or firmeware support like
+>> ACPI hotplug? Does QEMU have all the pieces ready for s390 zPCI
+>> hotplug?
+>
+> zPCI is a strange beast, so first a pointer to a writeup I did:
+> https://virtualpenguins.blogspot.de/2018/02/notes-on-pci-on-s390x.html
+>
+> It does support hotplug, within the s390 architectural context, but
+> that should be fine for our needs here.
+>
+> My concern comes from the 'no topology' issue. We build a fake topology
+> in QEMU (to use the generic pci infrastructure), but the guest does not
+> see any of this. It issues an instruction and gets a list of functions.
+> This means any bridge information is not accessible to the guest.
 
-It does support hotplug, within the s390 architectural context, but
-that should be fine for our needs here.
+That is the reason why I prefer leaving it to specific transport
+(zPCI) to define its own means to present and retrieve the group ID
+information. The high-level feature bit just provides the indirection
+to the target transport (for the to-be-paired device), while seperate
+transport can have a way of its own to present/retrieve the group ID
+data.
 
-My concern comes from the 'no topology' issue. We build a fake topology
-in QEMU (to use the generic pci infrastructure), but the guest does not
-see any of this. It issues an instruction and gets a list of functions.
-This means any bridge information is not accessible to the guest.
+I don't know where to present that group ID data on s390 zPCI though
+to be honest. But I doubt we can come up with a very general
+transport-agnostic way to present the data for both (and pontentially
+ALL) bus architectures.
 
-> 
-> Does the s390x use case in your mind concerns with VFIO migraition, or
-> replacement of a PT device with backup virtio-ccw path? Or something
-> else?
+-Siwei
 
-Migration with vfio is the case most likely to be relevant. I'm mostly
-concerned with not needlessly closing doors, though.
-
-> 
-> As the assumption of SR-IOV migration is that, hotplug is used as an
-> inidicator for datapath switch - which maps to moving MAC address or
-> VLAN filter around between PV and VF. I am not sure how that maps to
-> s390x and zPCI with regard to host coordination.
-
-If we can move MAC addresses or VLAN filters on Linux/QEMU/libvirt in
-general, there's no inherent reason why we shouldn't be able to do so
-on s390 as well. What matters more is probably which pci network cards
-are supported (currently Mellanox AFAIK, not sure if there are others).
-
-> 
-> -Siwei
-> 
-> > - It is too focused on a narrow use case. How is it supposed to be
-> >   extended?
-> >
-> > What I would prefer:
-> > - Implement a pairing id support that does not rely on a certain
-> >   transport, but leverages virtio (which is in the game anyway). We'd
-> >   get at least the "virtio-net device paired with vfio" use case, which
-> >   is what is currently implemented in the Linux kernel.
-> > - Think about a more generic way to relay configuration metadata to the
-> >   host.
-> >
-> > ---------------------------------------------------------------------
-> > To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> > For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
-> >  
-
+>
+>>
+>> Does the s390x use case in your mind concerns with VFIO migraition, or
+>> replacement of a PT device with backup virtio-ccw path? Or something
+>> else?
+>
+> Migration with vfio is the case most likely to be relevant. I'm mostly
+> concerned with not needlessly closing doors, though.
+>
+>>
+>> As the assumption of SR-IOV migration is that, hotplug is used as an
+>> inidicator for datapath switch - which maps to moving MAC address or
+>> VLAN filter around between PV and VF. I am not sure how that maps to
+>> s390x and zPCI with regard to host coordination.
+>
+> If we can move MAC addresses or VLAN filters on Linux/QEMU/libvirt in
+> general, there's no inherent reason why we shouldn't be able to do so
+> on s390 as well. What matters more is probably which pci network cards
+> are supported (currently Mellanox AFAIK, not sure if there are others).
+>
+>>
+>> -Siwei
+>>
+>> > - It is too focused on a narrow use case. How is it supposed to be
+>> >   extended?
+>> >
+>> > What I would prefer:
+>> > - Implement a pairing id support that does not rely on a certain
+>> >   transport, but leverages virtio (which is in the game anyway). We'd
+>> >   get at least the "virtio-net device paired with vfio" use case, which
+>> >   is what is currently implemented in the Linux kernel.
+>> > - Think about a more generic way to relay configuration metadata to the
+>> >   host.
+>> >
+>> > ---------------------------------------------------------------------
+>> > To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+>> > For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+>> >
+>
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
