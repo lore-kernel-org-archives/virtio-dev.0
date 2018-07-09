@@ -1,48 +1,31 @@
-Return-Path: SRS0=cDPr=PQ=linuxfoundation.org=gregkh@kernel.org
-Date: Tue, 08 Jan 2019 00:10:50 -0700
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v4 3/3] virtio_balloon: remove the unnecessary 0-initialization
-Message-ID: <20190108071049.GC32048@kroah.com>
-References: <1546923005-40517-1-git-send-email-wei.w.wang@intel.com> <1546923005-40517-4-git-send-email-wei.w.wang@intel.com>
+Return-Path: rkagan@virtuozzo.com
+Date: Mon, 09 Jul 2018 06:14:19 -0700
+From: Roman Kagan <rkagan@virtuozzo.com>
+Subject: Re: [virtio-dev] Re: [Qemu-devel] [PATCH v3 0/3] Use of unique
+ identifier for pairing virtio and passthrough devices...
+Message-ID: <20180709131419.GB6271@rkaganb.sw.ru>
+References: <20180629221907.3662-1-venu.busireddy@oracle.com> <20180702161404.GA2339@rkaganb.sw.ru>
+ <449f1449-ddf6-cd95-976c-14d04d8d503a@oracle.com> <20180703095825.GC30904@rkaganb.sw.ru>
+ <20180703142817.GA3088@vbusired-vm> <20180703165200.180c93bb.cohuck@redhat.com>
+ <CADGSJ23+sZiMCx=n=DytZ=TT2z7i0sMhrmnPuFYtuZhSc=qA+Q@mail.gmail.com> <20180704141523.377cb66d.cohuck@redhat.com>
+ <CADGSJ206U4x0UNTEKu0Lt9K9qA025ajtmnj6ym4PDz4Q-c8RKA@mail.gmail.com> <20180706155406.0587733c.cohuck@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1546923005-40517-4-git-send-email-wei.w.wang@intel.com>
-To: Wei Wang <wei.w.wang@intel.com>
-Cc: virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, stable@vger.kernel.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, mst@redhat.com, cohuck@redhat.com, borntraeger@de.ibm.com, pbonzini@redhat.com, dgilbert@redhat.com, pasic@linux.ibm.com
+In-Reply-To: <20180706155406.0587733c.cohuck@redhat.com>
+To: Cornelia Huck <cohuck@redhat.com>
+Cc: Siwei Liu <loseweigh@gmail.com>, Venu Busireddy <venu.busireddy@oracle.com>, si-wei liu <si-wei.liu@oracle.com>, "Michael S . Tsirkin" <mst@redhat.com>, Marcel Apfelbaum <marcel@redhat.com>, virtio-dev@lists.oasis-open.org, qemu-devel@nongnu.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Tue, Jan 08, 2019 at 12:50:05PM +0800, Wei Wang wrote:
-> We've changed to kzalloc the vb struct, so no need to 0-initialize
-> this field one more time.
-> 
-> Signed-off-by: Wei Wang <wei.w.wang@intel.com>
-> Reviewed-by: Cornelia Huck <cohuck@redhat.com>
-> ---
->  drivers/virtio/virtio_balloon.c | 1 -
->  1 file changed, 1 deletion(-)
-> 
-> diff --git a/drivers/virtio/virtio_balloon.c b/drivers/virtio/virtio_balloon.c
-> index d48c12c..048959a 100644
-> --- a/drivers/virtio/virtio_balloon.c
-> +++ b/drivers/virtio/virtio_balloon.c
-> @@ -925,7 +925,6 @@ static int virtballoon_probe(struct virtio_device *vdev)
->  						  VIRTIO_BALLOON_CMD_ID_STOP);
->  		vb->cmd_id_stop = cpu_to_virtio32(vb->vdev,
->  						  VIRTIO_BALLOON_CMD_ID_STOP);
-> -		vb->num_free_page_blocks = 0;
->  		spin_lock_init(&vb->free_page_list_lock);
->  		INIT_LIST_HEAD(&vb->free_page_list);
->  		if (virtio_has_feature(vdev, VIRTIO_BALLOON_F_PAGE_POISON)) {
-> -- 
-> 2.7.4
-> 
+On Fri, Jul 06, 2018 at 03:54:06PM +0200, Cornelia Huck wrote:
+> If we want to extend that to other device types, we can add the field
+> in their config space; but I'd rather prefer a more generic "host
+> relays config metainformation" approach.
 
-<formletter>
+The problem with this approach is that it's too generic and poorly
+scoped.  As a result I guess it's likely to take ages to converge.
 
-This is not the correct way to submit patches for inclusion in the
-stable kernel tree.  Please read:
-    https://www.kernel.org/doc/html/latest/process/stable-kernel-rules.html
-for how to do this properly.
+See for instance the discussion on including vm config metadata in qcow2
+images: I think it's similar in scope (or the absense thereof).
 
-</formletter>
+Roman.
