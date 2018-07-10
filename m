@@ -1,57 +1,56 @@
-Return-Path: virtio-dev-return-4692-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4668-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 9807D985C07
-	for <virtio-dev@lists.oasis-open.org>; Thu, 12 Jul 2018 11:30:13 +0000 (UTC)
-Message-ID: <5B473CB8.1050306@intel.com>
-Date: Thu, 12 Jul 2018 19:34:16 +0800
+	by lists.oasis-open.org (Postfix) with ESMTP id A4A51985BE7
+	for <virtio-dev@lists.oasis-open.org>; Tue, 10 Jul 2018 09:56:55 +0000 (UTC)
 From: Wei Wang <wei.w.wang@intel.com>
-MIME-Version: 1.0
-References: <1531215067-35472-1-git-send-email-wei.w.wang@intel.com> <1531215067-35472-2-git-send-email-wei.w.wang@intel.com> <CA+55aFz9a=D-kquM=sG5uhV_HrBAw+VAhcJmtPNz+howy4j9ow@mail.gmail.com> <5B455D50.90902@intel.com> <CA+55aFzqj8wxXnHAdUTiOomipgFONVbqKMjL_tfk7e5ar1FziQ@mail.gmail.com> <20180711092152.GE20050@dhcp22.suse.cz> <CA+55aFwku2tDH4+rfaC67xc4-cEwSrXgnQaci=e2id5ZCRE9JQ@mail.gmail.com> <5B46BB46.2080802@intel.com> <CA+55aFxyv=EUAJFUSio=k+pm3ddteojshP7Radjia5ZRgm53zQ@mail.gmail.com> <5B46C258.40601@intel.com> <20180712081317.GD32648@dhcp22.suse.cz>
-In-Reply-To: <20180712081317.GD32648@dhcp22.suse.cz>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: [virtio-dev] Re: [PATCH v35 1/5] mm: support to get hints of free page blocks
-To: Michal Hocko <mhocko@kernel.org>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, virtio-dev@lists.oasis-open.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, virtualization <virtualization@lists.linux-foundation.org>, KVM list <kvm@vger.kernel.org>, linux-mm <linux-mm@kvack.org>, "Michael S. Tsirkin" <mst@redhat.com>, Andrew Morton <akpm@linux-foundation.org>, Paolo Bonzini <pbonzini@redhat.com>, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu0@gmail.com, nilal@redhat.com, Rik van Riel <riel@redhat.com>, peterx@redhat.com
+Date: Tue, 10 Jul 2018 17:31:04 +0800
+Message-Id: <1531215067-35472-3-git-send-email-wei.w.wang@intel.com>
+In-Reply-To: <1531215067-35472-1-git-send-email-wei.w.wang@intel.com>
+References: <1531215067-35472-1-git-send-email-wei.w.wang@intel.com>
+Subject: [virtio-dev] [PATCH v35 2/5] virtio-balloon: remove BUG() in init_vqs
+To: virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, linux-mm@kvack.org, mst@redhat.com, mhocko@kernel.org, akpm@linux-foundation.org
+Cc: torvalds@linux-foundation.org, pbonzini@redhat.com, wei.w.wang@intel.com, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu0@gmail.com, nilal@redhat.com, riel@redhat.com, peterx@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 07/12/2018 04:13 PM, Michal Hocko wrote:
-> On Thu 12-07-18 10:52:08, Wei Wang wrote:
->> On 07/12/2018 10:30 AM, Linus Torvalds wrote:
->>> On Wed, Jul 11, 2018 at 7:17 PM Wei Wang <wei.w.wang@intel.com> wrote:
->>>> Would it be better to remove __GFP_THISNODE? We actually want to get all
->>>> the guest free pages (from all the nodes).
->>> Maybe. Or maybe it would be better to have the memory balloon logic be
->>> per-node? Maybe you don't want to remove too much memory from one
->>> node? I think it's one of those "play with it" things.
->>>
->>> I don't think that's the big issue, actually. I think the real issue
->>> is how to react quickly and gracefully to "oops, I'm trying to give
->>> memory away, but now the guest wants it back" while you're in the
->>> middle of trying to create that 2TB list of pages.
->> OK. virtio-balloon has already registered an oom notifier
->> (virtballoon_oom_notify). I plan to add some control there. If oom happens,
->> - stop the page allocation;
->> - immediately give back the allocated pages to mm.
-> Please don't. Oom notifier is an absolutely hideous interface which
-> should go away sooner or later (I would much rather like the former) so
-> do not build a new logic on top of it. I would appreciate if you
-> actually remove the notifier much more.
->
-> You can give memory back from the standard shrinker interface. If we are
-> reaching low reclaim priorities then we are struggling to reclaim memory
-> and then you can start returning pages back.
+It's a bit overkill to use BUG when failing to add an entry to the
+stats_vq in init_vqs. So remove it and just return the error to the
+caller to bail out nicely.
 
-OK. Just curious why oom notifier is thought to be hideous, and has it 
-been a consensus?
+Signed-off-by: Wei Wang <wei.w.wang@intel.com>
+Cc: Michael S. Tsirkin <mst@redhat.com>
+---
+ drivers/virtio/virtio_balloon.c | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
-Best,
-Wei
+diff --git a/drivers/virtio/virtio_balloon.c b/drivers/virtio/virtio_balloon.c
+index 6b237e3..9356a1a 100644
+--- a/drivers/virtio/virtio_balloon.c
++++ b/drivers/virtio/virtio_balloon.c
+@@ -455,9 +455,13 @@ static int init_vqs(struct virtio_balloon *vb)
+ 		num_stats = update_balloon_stats(vb);
+ 
+ 		sg_init_one(&sg, vb->stats, sizeof(vb->stats[0]) * num_stats);
+-		if (virtqueue_add_outbuf(vb->stats_vq, &sg, 1, vb, GFP_KERNEL)
+-		    < 0)
+-			BUG();
++		err = virtqueue_add_outbuf(vb->stats_vq, &sg, 1, vb,
++					   GFP_KERNEL);
++		if (err) {
++			dev_warn(&vb->vdev->dev, "%s: add stat_vq failed\n",
++				 __func__);
++			return err;
++		}
+ 		virtqueue_kick(vb->stats_vq);
+ 	}
+ 	return 0;
+-- 
+2.7.4
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
