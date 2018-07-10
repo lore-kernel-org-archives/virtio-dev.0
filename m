@@ -1,123 +1,191 @@
-Return-Path: virtio-dev-return-4706-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4664-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id A62AD985C22
-	for <virtio-dev@lists.oasis-open.org>; Mon, 16 Jul 2018 11:11:28 +0000 (UTC)
-Date: Mon, 16 Jul 2018 19:11:10 +0800
-From: Tiwei Bie <tiwei.bie@intel.com>
-Message-ID: <20180716111110.GB27375@debian>
-References: <20180613092702.5544-1-tiwei.bie@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20180613092702.5544-1-tiwei.bie@intel.com>
-Subject: Re: [virtio-dev] [PATCH v1] content: use a consistent wording for
- device status
-To: mst@redhat.com, cohuck@redhat.com, stefanha@redhat.com, pbonzini@redhat.com, virtio-dev@lists.oasis-open.org
-Cc: dan.daly@intel.com, cunming.liang@intel.com, zhihong.wang@intel.com
+	by lists.oasis-open.org (Postfix) with ESMTP id 325C4985B04
+	for <virtio-dev@lists.oasis-open.org>; Tue, 10 Jul 2018 09:56:37 +0000 (UTC)
+From: Wei Wang <wei.w.wang@intel.com>
+Date: Tue, 10 Jul 2018 17:31:02 +0800
+Message-Id: <1531215067-35472-1-git-send-email-wei.w.wang@intel.com>
+Subject: [virtio-dev] [PATCH v35 0/5] Virtio-balloon: support free page reporting
+To: virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, linux-mm@kvack.org, mst@redhat.com, mhocko@kernel.org, akpm@linux-foundation.org
+Cc: torvalds@linux-foundation.org, pbonzini@redhat.com, wei.w.wang@intel.com, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu0@gmail.com, nilal@redhat.com, riel@redhat.com, peterx@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, Jun 13, 2018 at 05:27:02PM +0800, Tiwei Bie wrote:
-> There is a part called "device status field" in a
-> Virtio device. Currently, both of \field{status}
-> and \field{device status} are used to refer to it,
-> which is a bit confusing. This patch changes spec
-> to use \field{device status} consistently.
-> 
-> Suggested-by: Michael S. Tsirkin <mst@redhat.com>
-> Signed-off-by: Tiwei Bie <tiwei.bie@intel.com>
-> Fixes: https://github.com/oasis-tcs/virtio-spec/issues/15
-> Reviewed-by: Cornelia Huck <cohuck@redhat.com>
+This patch series is separated from the previous "Virtio-balloon
+Enhancement" series. The new feature, VIRTIO_BALLOON_F_FREE_PAGE_HINT,  
+implemented by this series enables the virtio-balloon driver to report
+hints of guest free pages to the host. It can be used to accelerate live
+migration of VMs. Here is an introduction of this usage:
 
-Please start the voting for this proposal. Thanks!
+Live migration needs to transfer the VM's memory from the source machine
+to the destination round by round. For the 1st round, all the VM's memory
+is transferred. From the 2nd round, only the pieces of memory that were
+written by the guest (after the 1st round) are transferred. One method
+that is popularly used by the hypervisor to track which part of memory is
+written is to write-protect all the guest memory.
 
-Best regards,
-Tiwei Bie
+This feature enables the optimization by skipping the transfer of guest
+free pages during VM live migration. It is not concerned that the memory
+pages are used after they are given to the hypervisor as a hint of the
+free pages, because they will be tracked by the hypervisor and transferred
+in the subsequent round if they are used and written.
 
-> ---
-> v1:
-> - Drop RFC from subject;
-> - Add Fixes tag;
-> 
->  content.tex | 21 ++++++++++++---------
->  1 file changed, 12 insertions(+), 9 deletions(-)
-> 
-> diff --git a/content.tex b/content.tex
-> index be18234..b8f7b0a 100644
-> --- a/content.tex
-> +++ b/content.tex
-> @@ -2099,7 +2099,7 @@ value.
->  
->  As described in
->  \ref{devicenormative:Basic Facilities of a Virtio Device / Feature Bits},
-> -a device sometimes fails to set the \field{status} field: For example, it
-> +a device sometimes fails to set the \field{device status} field: For example, it
->  might fail to accept the FEATURES_OK status bit during device initialization.
->  
->  With revision 2, CCW_CMD_READ_STATUS is defined: It reads an 8 bit status
-> @@ -2109,10 +2109,11 @@ value from the device and acts as a reverse operation to CCW_CMD_WRITE_STATUS.
->  
->  If the device posts a unit check with command reject in response to the
->  CCW_CMD_WRITE_STATUS command, the driver MUST assume that the device failed
-> -to set the status and the \field{status} field retained its previous value.
-> +to set the status and the \field{device status} field retained
-> +its previous value.
->  
->  If at least revision 2 has been negotiated, the driver SHOULD use the
-> -CCW_CMD_READ_STATUS command to retrieve the \field{status} field after
-> +CCW_CMD_READ_STATUS command to retrieve the \field{device status} field after
->  a configuration change has been detected.
->  
->  If not at least revision 2 has been negotiated, the driver MUST NOT attempt
-> @@ -2120,12 +2121,14 @@ to issue the CCW_CMD_READ_STATUS command.
->  
->  \devicenormative{\paragraph}{Communicating Status Information}{Virtio Transport Options / Virtio over channel I/O / Device Initialization / Communicating Status Information}
->  
-> -If the device fails to set the \field{status} field to the value written by
-> -the driver, the device MUST assure that the \field{status} field is left
-> -unchanged and MUST post a unit check with command reject.
-> +If the device fails to set the \field{device status} field
-> +to the value written by the driver, the device MUST assure
-> +that the \field{device status} field is left unchanged and
-> +MUST post a unit check with command reject.
->  
->  If at least revision 2 has been negotiated, the device MUST return the
-> -current \field{status} field if the CCW_CMD_READ_STATUS command is issued.
-> +current \field{device status} field if the CCW_CMD_READ_STATUS
-> +command is issued.
->  
->  \subsubsection{Handling Device Features}\label{sec:Virtio Transport Options / Virtio over channel I/O / Device Initialization / Handling Device Features}
->  
-> @@ -3665,7 +3668,7 @@ If VIRTIO_BLK_F_CONFIG_WCE was not negotiated but VIRTIO_BLK_F_FLUSH was,
->  the driver SHOULD assume presence of a writeback cache.
->  
->  The driver MUST NOT read \field{writeback} before setting
-> -the FEATURES_OK \field{status} bit.
-> +the FEATURES_OK \field{device status} bit.
->  
->  \devicenormative{\subsubsection}{Device Initialization}{Device Types / Block Device / Device Initialization}
->  
-> @@ -3687,7 +3690,7 @@ legacy interface:
->  
->  \begin{itemize}
->  \item the driver MAY read or write \field{writeback} before setting
-> -  the DRIVER or DRIVER_OK \field{status} bit
-> +  the DRIVER or DRIVER_OK \field{device status} bit
->  
->  \item the device MUST NOT modify the cache mode (and \field{writeback})
->    as a result of a driver setting a status bit, unless
-> -- 
-> 2.17.0
-> 
-> 
-> ---------------------------------------------------------------------
-> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
-> 
+* Tests
+- Test Environment
+    Host: Intel(R) Xeon(R) CPU E5-2699 v4 @ 2.20GHz
+    Guest: 8G RAM, 4 vCPU
+    Migration setup: migrate_set_speed 100G, migrate_set_downtime 2 second
+
+- Test Results
+    - Idle Guest Live Migration Time (results are averaged over 10 runs):
+        - Optimization v.s. Legacy = 291ms vs 1757ms --> ~84% reduction
+	(setting page poisoning zero and enabling ksm don't affect the
+         comparison result)
+    - Guest with Linux Compilation Workload (make bzImage -j4):
+        - Live Migration Time (average)
+          Optimization v.s. Legacy = 1420ms v.s. 2528ms --> ~44% reduction
+        - Linux Compilation Time
+          Optimization v.s. Legacy = 5min8s v.s. 5min12s
+          --> no obvious difference
+
+ChangeLog:
+v34->v35:
+    - mm:
+       - get_from_free_page_list: use a list of page blocks as buffers to
+        store addresses, instead of an array of buffers.
+    - virtio-balloon:
+        - Allocate a list of buffers, instead of an array of buffers.
+        - Used buffers are freed after host puts the buffer to the used
+          ring; unused buffers are freed immediately when guest finishes
+          reporting.
+        - change uint32_t to u32;
+        - patch 2 is split out as an independent patch, as it's unrelated
+          to the free page hinting feature.
+v33->v34:
+    - mm:
+        - add a new API max_free_page_blocks, which estimates the max
+          number of free page blocks that a free page list may have
+        - get_from_free_page_list: store addresses to multiple arrays,
+          instead of just one array. This removes the limitation of being
+          able to report only 2TB free memory (the largest array memory
+          that can be allocated on x86 is 4MB, which can store 2^19
+          addresses of 4MB free page blocks).
+    - virtio-balloon:
+        - Allocate multiple arrays to load free page hints;
+        - Use the same method in v32 to do guest/host interaction, the
+          differeces are
+              - the hints are tranferred array by array, instead of
+                one by one.
+	      - send the free page block size of a hint along with the cmd
+                id to host, so that host knows each address represents e.g.
+                a 4MB memory in our case. 
+v32->v33:
+    - mm/get_from_free_page_list: The new implementation to get free page
+      hints based on the suggestions from Linus:
+      https://lkml.org/lkml/2018/6/11/764
+      This avoids the complex call chain, and looks more prudent.
+    - virtio-balloon: 
+      - use a fix-sized buffer to get free page hints;
+      - remove the cmd id related interface. Now host can just send a free
+        page hint command to the guest (via the host_cmd config register)
+        to start the reporting. Currentlty the guest reports only the max
+        order free page hints to host, which has generated similar good
+        results as before. But the interface used by virtio-balloon to
+        report can support reporting more orders in the future when there
+        is a need.
+v31->v32:
+    - virtio-balloon:
+        - rename cmd_id_use to cmd_id_active;
+        - report_free_page_func: detach used buffers after host sends a vq
+          interrupt, instead of busy waiting for used buffers.
+v30->v31:
+    - virtio-balloon:
+        - virtio_balloon_send_free_pages: return -EINTR rather than 1 to
+          indicate an active stop requested by host; and add more
+          comments to explain about access to cmd_id_received without
+          locks;
+        -  add_one_sg: add TODO to comments about possible improvement.
+v29->v30:
+    - mm/walk_free_mem_block: add cond_sched() for each order
+v28->v29:
+    - mm/page_poison: only expose page_poison_enabled(), rather than more
+      changes did in v28, as we are not 100% confident about that for now.
+    - virtio-balloon: use a separate buffer for the stop cmd, instead of
+      having the start and stop cmd use the same buffer. This avoids the
+      corner case that the start cmd is overridden by the stop cmd when
+      the host has a delay in reading the start cmd.
+v27->v28:
+    - mm/page_poison: Move PAGE_POISON to page_poison.c and add a function
+      to expose page poison val to kernel modules.
+v26->v27:
+    - add a new patch to expose page_poisoning_enabled to kernel modules
+    - virtio-balloon: set poison_val to 0xaaaaaaaa, instead of 0xaa
+v25->v26: virtio-balloon changes only
+    - remove kicking free page vq since the host now polls the vq after
+      initiating the reporting
+    - report_free_page_func: detach all the used buffers after sending
+      the stop cmd id. This avoids leaving the detaching burden (i.e.
+      overhead) to the next cmd id. Detaching here isn't considered
+      overhead since the stop cmd id has been sent, and host has already
+      moved formard.
+v24->v25:
+    - mm: change walk_free_mem_block to return 0 (instead of true) on
+          completing the report, and return a non-zero value from the
+          callabck, which stops the reporting.
+    - virtio-balloon:
+        - use enum instead of define for VIRTIO_BALLOON_VQ_INFLATE etc.
+        - avoid __virtio_clear_bit when bailing out;
+        - a new method to avoid reporting the some cmd id to host twice
+        - destroy_workqueue can cancel free page work when the feature is
+          negotiated;
+        - fail probe when the free page vq size is less than 2.
+v23->v24:
+    - change feature name VIRTIO_BALLOON_F_FREE_PAGE_VQ to
+      VIRTIO_BALLOON_F_FREE_PAGE_HINT
+    - kick when vq->num_free < half full, instead of "= half full"
+    - replace BUG_ON with bailing out
+    - check vb->balloon_wq in probe(), if null, bail out
+    - add a new feature bit for page poisoning
+    - solve the corner case that one cmd id being sent to host twice
+v22->v23:
+    - change to kick the device when the vq is half-way full;
+    - open-code batch_free_page_sg into add_one_sg;
+    - change cmd_id from "uint32_t" to "__virtio32";
+    - reserver one entry in the vq for the driver to send cmd_id, instead
+      of busywaiting for an available entry;
+    - add "stop_update" check before queue_work for prudence purpose for
+      now, will have a separate patch to discuss this flag check later;
+    - init_vqs: change to put some variables on stack to have simpler
+      implementation;
+    - add destroy_workqueue(vb->balloon_wq);
+v21->v22:
+    - add_one_sg: some code and comment re-arrangement
+    - send_cmd_id: handle a cornercase
+
+For previous ChangeLog, please reference
+https://lwn.net/Articles/743660/
+
+Wei Wang (5):
+  mm: support to get hints of free page blocks
+  virtio-balloon: remove BUG() in init_vqs
+  virtio-balloon: VIRTIO_BALLOON_F_FREE_PAGE_HINT
+  mm/page_poison: expose page_poisoning_enabled to kernel modules
+  virtio-balloon: VIRTIO_BALLOON_F_PAGE_POISON
+
+ drivers/virtio/virtio_balloon.c     | 419 +++++++++++++++++++++++++++++++++---
+ include/linux/mm.h                  |   3 +
+ include/uapi/linux/virtio_balloon.h |  14 ++
+ mm/page_alloc.c                     |  98 +++++++++
+ mm/page_poison.c                    |   6 +
+ 5 files changed, 511 insertions(+), 29 deletions(-)
+
+-- 
+2.7.4
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
