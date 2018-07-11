@@ -1,84 +1,106 @@
-Return-Path: virtio-dev-return-4230-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4676-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis-open.org [66.179.20.138])
-	by lists.oasis-open.org (Postfix) with ESMTP id 207495818DDE
-	for <virtio-dev@lists.oasis-open.org>; Thu, 31 May 2018 21:00:09 -0700 (PDT)
-Date: Fri, 1 Jun 2018 12:00:07 +0800
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id DA305985B2A
+	for <virtio-dev@lists.oasis-open.org>; Wed, 11 Jul 2018 02:27:38 +0000 (UTC)
 From: Tiwei Bie <tiwei.bie@intel.com>
-Message-ID: <20180601040007.GA32070@debian>
-References: <20180601020921.30957-1-tiwei.bie@intel.com>
- <20180601063224-mutt-send-email-mst@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20180601063224-mutt-send-email-mst@kernel.org>
-Subject: [virtio-dev] Re: [PATCH v2] virtio_pci: support enabling VFs
-To: "Michael S. Tsirkin" <mst@redhat.com>, stefanha@redhat.com
-Cc: bhelgaas@google.com, virtualization@lists.linux-foundation.org, linux-kernel@vger.kernel.org, virtio-dev@lists.oasis-open.org, linux-pci@vger.kernel.org, dan.daly@intel.com, mark.d.rustad@intel.com, alexander.h.duyck@intel.com, cunming.liang@intel.com, zhihong.wang@intel.com
+Date: Wed, 11 Jul 2018 10:27:06 +0800
+Message-Id: <20180711022711.7090-1-tiwei.bie@intel.com>
+Subject: [virtio-dev] [PATCH net-next v2 0/5] virtio: support packed ring
+To: mst@redhat.com, jasowang@redhat.com, virtualization@lists.linux-foundation.org, linux-kernel@vger.kernel.org, netdev@vger.kernel.org, virtio-dev@lists.oasis-open.org
+Cc: wexu@redhat.com, jfreimann@redhat.com, tiwei.bie@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Fri, Jun 01, 2018 at 06:47:01AM +0300, Michael S. Tsirkin wrote:
-> On Fri, Jun 01, 2018 at 10:09:21AM +0800, Tiwei Bie wrote:
-> > There is a new feature bit allocated in virtio spec to
-> > support SR-IOV (Single Root I/O Virtualization):
-> > 
-> > https://github.com/oasis-tcs/virtio-spec/issues/11
-> > 
-> > This patch enables the support for this feature bit in
-> > virtio driver.
-> > 
-> > Signed-off-by: Tiwei Bie <tiwei.bie@intel.com>
-> > Acked-by: Stefan Hajnoczi <stefanha@redhat.com>
-> > Acked-by: Michael S. Tsirkin <mst@redhat.com>
-> > ---
-> 
-> Generally you aren't supposed to carry forward acks
-> when you make major changes.
+Hello everyone,
 
-Got it! Thank you very much!
+This patch set implements packed ring support in virtio driver.
 
-> 
-> In this case I'm fine with the patch, so never mind.
+Some functional tests have been done with Jason's
+packed ring implementation in vhost:
 
-Thank you so much! Anyway, it's my fault.
-I'll send a new version dropping all acks.
+https://lkml.org/lkml/2018/7/3/33
 
-> 
-[...]
-> >  
-> > +static int virtio_pci_sriov_configure(struct pci_dev *pci_dev, int num_vfs)
-> > +{
-> > +	struct virtio_pci_device *vp_dev = pci_get_drvdata(pci_dev);
-> > +	struct virtio_device *vdev = &vp_dev->vdev;
-> > +	int ret;
-> > +
-> > +	if (!(vdev->config->get_status(vdev) & VIRTIO_CONFIG_S_DRIVER_OK))
-> > +		return -EBUSY;
-> > +
-> > +	if (!__virtio_test_bit(vdev, VIRTIO_F_SR_IOV))
-> > +		return -EINVAL;
-> > +
-> > +	if (pci_vfs_assigned(pci_dev))
-> > +		return -EPERM;
-> 
-> Not a comment on this patch - existing code has the
-> same race - but generally
-> 
-> 1. this seems racy since assigning vfs does not seem
->    to take device lock
-> 2. does this work correctly for kvm at all?
->    pci_set_dev_assigned seems to be only called by xen.
-> 
-> Can you look at addressing this pls?
+Both of ping and netperf worked as expected.
 
-Sure! I'll do it!
+v1 -> v2:
+- Use READ_ONCE() to read event off_wrap and flags together (Jason);
+- Add comments related to ccw (Jason);
 
-Best regards,
-Tiwei Bie
+RFC (v6) -> v1:
+- Avoid extra virtio_wmb() in virtqueue_enable_cb_delayed_packed()
+  when event idx is off (Jason);
+- Fix bufs calculation in virtqueue_enable_cb_delayed_packed() (Jason);
+- Test the state of the desc at used_idx instead of last_used_idx
+  in virtqueue_enable_cb_delayed_packed() (Jason);
+- Save wrap counter (as part of queue state) in the return value
+  of virtqueue_enable_cb_prepare_packed();
+- Refine the packed ring definitions in uapi;
+- Rebase on the net-next tree;
+
+RFC v5 -> RFC v6:
+- Avoid tracking addr/len/flags when DMA API isn't used (MST/Jason);
+- Define wrap counter as bool (Jason);
+- Use ALIGN() in vring_init_packed() (Jason);
+- Avoid using pointer to track `next` in detach_buf_packed() (Jason);
+- Add comments for barriers (Jason);
+- Don't enable RING_PACKED on ccw for now (noticed by Jason);
+- Refine the memory barrier in virtqueue_poll();
+- Add a missing memory barrier in virtqueue_enable_cb_delayed_packed();
+- Remove the hacks in virtqueue_enable_cb_prepare_packed();
+
+RFC v4 -> RFC v5:
+- Save DMA addr, etc in desc state (Jason);
+- Track used wrap counter;
+
+RFC v3 -> RFC v4:
+- Make ID allocation support out-of-order (Jason);
+- Various fixes for EVENT_IDX support;
+
+RFC v2 -> RFC v3:
+- Split into small patches (Jason);
+- Add helper virtqueue_use_indirect() (Jason);
+- Just set id for the last descriptor of a list (Jason);
+- Calculate the prev in virtqueue_add_packed() (Jason);
+- Fix/improve desc suppression code (Jason/MST);
+- Refine the code layout for XXX_split/packed and wrappers (MST);
+- Fix the comments and API in uapi (MST);
+- Remove the BUG_ON() for indirect (Jason);
+- Some other refinements and bug fixes;
+
+RFC v1 -> RFC v2:
+- Add indirect descriptor support - compile test only;
+- Add event suppression supprt - compile test only;
+- Move vring_packed_init() out of uapi (Jason, MST);
+- Merge two loops into one in virtqueue_add_packed() (Jason);
+- Split vring_unmap_one() for packed ring and split ring (Jason);
+- Avoid using '%' operator (Jason);
+- Rename free_head -> next_avail_idx (Jason);
+- Add comments for virtio_wmb() in virtqueue_add_packed() (Jason);
+- Some other refinements and bug fixes;
+
+Thanks!
+
+Tiwei Bie (5):
+  virtio: add packed ring definitions
+  virtio_ring: support creating packed ring
+  virtio_ring: add packed ring support
+  virtio_ring: add event idx support in packed ring
+  virtio_ring: enable packed ring
+
+ drivers/s390/virtio/virtio_ccw.c   |   14 +
+ drivers/virtio/virtio_ring.c       | 1365 ++++++++++++++++++++++------
+ include/linux/virtio_ring.h        |    8 +-
+ include/uapi/linux/virtio_config.h |    3 +
+ include/uapi/linux/virtio_ring.h   |   43 +
+ 5 files changed, 1157 insertions(+), 276 deletions(-)
+
+-- 
+2.18.0
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
