@@ -1,44 +1,42 @@
-Return-Path: virtio-dev-return-4689-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4690-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 3E83A985C07
-	for <virtio-dev@lists.oasis-open.org>; Thu, 12 Jul 2018 02:17:53 +0000 (UTC)
-Message-ID: <5B46BB46.2080802@intel.com>
-Date: Thu, 12 Jul 2018 10:21:58 +0800
+	by lists.oasis-open.org (Postfix) with ESMTP id 72FB6985C07
+	for <virtio-dev@lists.oasis-open.org>; Thu, 12 Jul 2018 02:48:06 +0000 (UTC)
+Message-ID: <5B46C258.40601@intel.com>
+Date: Thu, 12 Jul 2018 10:52:08 +0800
 From: Wei Wang <wei.w.wang@intel.com>
 MIME-Version: 1.0
-References: <1531215067-35472-1-git-send-email-wei.w.wang@intel.com> <1531215067-35472-2-git-send-email-wei.w.wang@intel.com> <CA+55aFz9a=D-kquM=sG5uhV_HrBAw+VAhcJmtPNz+howy4j9ow@mail.gmail.com> <5B455D50.90902@intel.com> <CA+55aFzqj8wxXnHAdUTiOomipgFONVbqKMjL_tfk7e5ar1FziQ@mail.gmail.com> <20180711092152.GE20050@dhcp22.suse.cz> <CA+55aFwku2tDH4+rfaC67xc4-cEwSrXgnQaci=e2id5ZCRE9JQ@mail.gmail.com>
-In-Reply-To: <CA+55aFwku2tDH4+rfaC67xc4-cEwSrXgnQaci=e2id5ZCRE9JQ@mail.gmail.com>
+References: <1531215067-35472-1-git-send-email-wei.w.wang@intel.com> <1531215067-35472-2-git-send-email-wei.w.wang@intel.com> <CA+55aFz9a=D-kquM=sG5uhV_HrBAw+VAhcJmtPNz+howy4j9ow@mail.gmail.com> <5B455D50.90902@intel.com> <CA+55aFzqj8wxXnHAdUTiOomipgFONVbqKMjL_tfk7e5ar1FziQ@mail.gmail.com> <20180711092152.GE20050@dhcp22.suse.cz> <CA+55aFwku2tDH4+rfaC67xc4-cEwSrXgnQaci=e2id5ZCRE9JQ@mail.gmail.com> <5B46BB46.2080802@intel.com> <CA+55aFxyv=EUAJFUSio=k+pm3ddteojshP7Radjia5ZRgm53zQ@mail.gmail.com>
+In-Reply-To: <CA+55aFxyv=EUAJFUSio=k+pm3ddteojshP7Radjia5ZRgm53zQ@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Subject: [virtio-dev] Re: [PATCH v35 1/5] mm: support to get hints of free page blocks
-To: Linus Torvalds <torvalds@linux-foundation.org>, Michal Hocko <mhocko@kernel.org>
-Cc: virtio-dev@lists.oasis-open.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, virtualization <virtualization@lists.linux-foundation.org>, KVM list <kvm@vger.kernel.org>, linux-mm <linux-mm@kvack.org>, "Michael S. Tsirkin" <mst@redhat.com>, Andrew Morton <akpm@linux-foundation.org>, Paolo Bonzini <pbonzini@redhat.com>, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu0@gmail.com, nilal@redhat.com, Rik van Riel <riel@redhat.com>, peterx@redhat.com
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Michal Hocko <mhocko@kernel.org>, virtio-dev@lists.oasis-open.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, virtualization <virtualization@lists.linux-foundation.org>, KVM list <kvm@vger.kernel.org>, linux-mm <linux-mm@kvack.org>, "Michael S. Tsirkin" <mst@redhat.com>, Andrew Morton <akpm@linux-foundation.org>, Paolo Bonzini <pbonzini@redhat.com>, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu0@gmail.com, nilal@redhat.com, Rik van Riel <riel@redhat.com>, peterx@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 07/12/2018 12:23 AM, Linus Torvalds wrote:
-> On Wed, Jul 11, 2018 at 2:21 AM Michal Hocko <mhocko@kernel.org> wrote:
->> We already have an interface for that. alloc_pages(GFP_NOWAIT, MAX_ORDER -1).
->> So why do we need any array based interface?
-> That was actually my original argument in the original thread - that
-> the only new interface people might want is one that just tells how
-> many of those MAX_ORDER-1 pages there are.
+On 07/12/2018 10:30 AM, Linus Torvalds wrote:
+> On Wed, Jul 11, 2018 at 7:17 PM Wei Wang <wei.w.wang@intel.com> wrote:
+>> Would it be better to remove __GFP_THISNODE? We actually want to get all
+>> the guest free pages (from all the nodes).
+> Maybe. Or maybe it would be better to have the memory balloon logic be
+> per-node? Maybe you don't want to remove too much memory from one
+> node? I think it's one of those "play with it" things.
 >
-> See the thread in v33 with the subject
->
->    "[PATCH v33 1/4] mm: add a function to get free page blocks"
->
-> and look for me suggesting just using
->
->      #define GFP_MINFLAGS (__GFP_NORETRY | __GFP_NOWARN |
-> __GFP_THISNODE | __GFP_NOMEMALLOC)
+> I don't think that's the big issue, actually. I think the real issue
+> is how to react quickly and gracefully to "oops, I'm trying to give
+> memory away, but now the guest wants it back" while you're in the
+> middle of trying to create that 2TB list of pages.
 
-Would it be better to remove __GFP_THISNODE? We actually want to get all 
-the guest free pages (from all the nodes).
+OK. virtio-balloon has already registered an oom notifier 
+(virtballoon_oom_notify). I plan to add some control there. If oom happens,
+- stop the page allocation;
+- immediately give back the allocated pages to mm.
 
 Best,
 Wei
