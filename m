@@ -1,16 +1,16 @@
-Return-Path: virtio-dev-return-4701-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4703-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 135B6985507
-	for <virtio-dev@lists.oasis-open.org>; Fri, 13 Jul 2018 01:20:48 +0000 (UTC)
-References: <20180703095825.GC30904@rkaganb.sw.ru>
- <d5db37d0-5eaf-8942-8ab7-d73057a67e6f@oracle.com>
- <20180709130035.GA6271@rkaganb.sw.ru>
- <9136094e-a510-4201-7c71-d1c49226fa5f@oracle.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id BA32C985509
+	for <virtio-dev@lists.oasis-open.org>; Fri, 13 Jul 2018 03:28:45 +0000 (UTC)
+Date: Fri, 13 Jul 2018 06:28:39 +0300
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20180713062755-mutt-send-email-mst@kernel.org>
+References: <9136094e-a510-4201-7c71-d1c49226fa5f@oracle.com>
  <20180710045101-mutt-send-email-mst@kernel.org>
  <CADGSJ20H1S88S6AsYoLMns3XH+YVKh006Dqu808X7Ug+2Mgdnw@mail.gmail.com>
  <20180711115344.633eba9e.cohuck@redhat.com>
@@ -19,70 +19,70 @@ References: <20180703095825.GC30904@rkaganb.sw.ru>
  <CADGSJ214vdTGC=-hj9pMOTqQNcZ0NaYu_r4cy2=2BB4CausWdw@mail.gmail.com>
  <20180712235500-mutt-send-email-mst@kernel.org>
  <CADGSJ23c4hHAoAwG61xmrRd-OO6EpsHgH9Fd-9R69XQAVkduCA@mail.gmail.com>
-From: "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
-Message-ID: <77823ff9-a02a-808b-e919-b4950a64ae3c@intel.com>
-Date: Thu, 12 Jul 2018 21:20:41 -0400
+ <77823ff9-a02a-808b-e919-b4950a64ae3c@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <CADGSJ23c4hHAoAwG61xmrRd-OO6EpsHgH9Fd-9R69XQAVkduCA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <77823ff9-a02a-808b-e919-b4950a64ae3c@intel.com>
 Subject: Re: [virtio-dev] Re: [Qemu-devel] [PATCH v3 0/3] Use of unique
  identifier for pairing virtio and passthrough devices...
-To: Siwei Liu <loseweigh@gmail.com>, "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Cornelia Huck <cohuck@redhat.com>, si-wei liu <si-wei.liu@oracle.com>, Roman Kagan <rkagan@virtuozzo.com>, Venu Busireddy <venu.busireddy@oracle.com>, Marcel Apfelbaum <marcel@redhat.com>, virtio-dev@lists.oasis-open.org, qemu-devel@nongnu.org, Alexander Duyck <alexander.h.duyck@intel.com>, Netdev <netdev@vger.kernel.org>
+To: "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
+Cc: Siwei Liu <loseweigh@gmail.com>, Cornelia Huck <cohuck@redhat.com>, si-wei liu <si-wei.liu@oracle.com>, Roman Kagan <rkagan@virtuozzo.com>, Venu Busireddy <venu.busireddy@oracle.com>, Marcel Apfelbaum <marcel@redhat.com>, virtio-dev@lists.oasis-open.org, qemu-devel@nongnu.org, Alexander Duyck <alexander.h.duyck@intel.com>, Netdev <netdev@vger.kernel.org>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 7/12/2018 6:19 PM, Siwei Liu wrote:
-> On Thu, Jul 12, 2018 at 2:00 PM, Michael S. Tsirkin <mst@redhat.com> wrote:
->> On Thu, Jul 12, 2018 at 01:52:53PM -0700, Siwei Liu wrote:
->>> The definition is incomplete due to lack of spec. There's no "host"
->>> part defined yet in the host-guest interface. If match by MAC is an
->>> interface, the same must be done on the host(device) side as well,
->>> which has been agreed not the way to go. However, I don't think that's
->>> what the author intends to do by interpreting his QEMU patch - it
->>> missed the other parts as well, such as the feature negotiation and
->>> how it interacts with the paired device.
->>>
->>> What I said is that match by MAC is just a guest implementation that
->>> one can change at any time. We now have the group ID on QEMU, why
->>> still sticking to matching by MAC? It shoulnd't be a host-guest
->>> interface in the first place anyway.
->> I think that match by MAC is a simple portable way to match devices.
->> E.g. it will work seamlessly with niche things like zPCI. However
-> That's a good point. I'm not sure if it's a valid assumption that zPCI
-> should always use the same MAC address as that of virtio. Someone
-> who's more familiar with the use case may decide and work on that. It
-> means VFIO device has to take in the MAC address as an identifier to
-> the "-device vfio-pci,.." QEMU option. I think there's no point to
-> match device using group ID in QEMU while using MAC in the guest.
-> Based on that assumption, I'd go with making VIRTIO_NET_F_STANDBY to
-> match device based on group ID, while someone may come up with another
-> feature bit later, say VIRTIO_NET_F_STANDBY_BY_MAC when its QEMU
-> support is available. Would it make sense?
+On Thu, Jul 12, 2018 at 09:20:41PM -0400, Samudrala, Sridhar wrote:
+> On 7/12/2018 6:19 PM, Siwei Liu wrote:
+> > On Thu, Jul 12, 2018 at 2:00 PM, Michael S. Tsirkin <mst@redhat.com> wrote:
+> > > On Thu, Jul 12, 2018 at 01:52:53PM -0700, Siwei Liu wrote:
+> > > > The definition is incomplete due to lack of spec. There's no "host"
+> > > > part defined yet in the host-guest interface. If match by MAC is an
+> > > > interface, the same must be done on the host(device) side as well,
+> > > > which has been agreed not the way to go. However, I don't think that's
+> > > > what the author intends to do by interpreting his QEMU patch - it
+> > > > missed the other parts as well, such as the feature negotiation and
+> > > > how it interacts with the paired device.
+> > > > 
+> > > > What I said is that match by MAC is just a guest implementation that
+> > > > one can change at any time. We now have the group ID on QEMU, why
+> > > > still sticking to matching by MAC? It shoulnd't be a host-guest
+> > > > interface in the first place anyway.
+> > > I think that match by MAC is a simple portable way to match devices.
+> > > E.g. it will work seamlessly with niche things like zPCI. However
+> > That's a good point. I'm not sure if it's a valid assumption that zPCI
+> > should always use the same MAC address as that of virtio. Someone
+> > who's more familiar with the use case may decide and work on that. It
+> > means VFIO device has to take in the MAC address as an identifier to
+> > the "-device vfio-pci,.." QEMU option. I think there's no point to
+> > match device using group ID in QEMU while using MAC in the guest.
+> > Based on that assumption, I'd go with making VIRTIO_NET_F_STANDBY to
+> > match device based on group ID, while someone may come up with another
+> > feature bit later, say VIRTIO_NET_F_STANDBY_BY_MAC when its QEMU
+> > support is available. Would it make sense?
+> 
+> VIRTIO_NET_F_STANDBY as defined in the guest virtio_net driver supports match
+> by MAC address. I think we should add support for this feature bit in QEMU.
+> If submitting a patch to update the spec is a pre-requisite to add this
+> feature bit to QEMU, i can do that.
 
-VIRTIO_NET_F_STANDBY as defined in the guest virtio_net driver supports match
-by MAC address. I think we should add support for this feature bit in QEMU.
-If submitting a patch to update the spec is a pre-requisite to add this
-feature bit to QEMU, i can do that.
+It's not strictly a prerequisite but we need it in spec all the same, so
+pls do that.
 
-As far as i understand, group id patches to QEMU are still under review.
-Matching by group ID can be another feature bit that could support matching
-by group id as well as MAC.
-
-
-> -Siwei
->
->> there are other niche use-cases that aren't addressed by match by MAC
->> such as PF pass-through as a primary, and the pci bridge trick addresses
->> that at cost of some portability.
->>
->> So I see no issues supporting both mechanisms, but others on the TC
->> might feel differently.
->>
->> --
->> MST
-
+> As far as i understand, group id patches to QEMU are still under review.
+> Matching by group ID can be another feature bit that could support matching
+> by group id as well as MAC.
+> 
+> 
+> > -Siwei
+> > 
+> > > there are other niche use-cases that aren't addressed by match by MAC
+> > > such as PF pass-through as a primary, and the pci bridge trick addresses
+> > > that at cost of some portability.
+> > > 
+> > > So I see no issues supporting both mechanisms, but others on the TC
+> > > might feel differently.
+> > > 
+> > > --
+> > > MST
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
