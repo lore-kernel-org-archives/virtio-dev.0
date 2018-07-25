@@ -1,74 +1,64 @@
-Return-Path: virtio-dev-return-4697-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4737-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id D6D0F984416
-	for <virtio-dev@lists.oasis-open.org>; Thu, 12 Jul 2018 21:01:13 +0000 (UTC)
-Date: Fri, 13 Jul 2018 00:01:10 +0300
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20180713000054-mutt-send-email-mst@kernel.org>
-References: <20180629221907.3662-1-venu.busireddy@oracle.com>
- <20180710050913-mutt-send-email-mst@kernel.org>
- <20180710142857.GA17258@troi>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20180710142857.GA17258@troi>
-Subject: [virtio-dev] Re: [PATCH v3 0/3] Use of unique identifier for pairing virtio and
- passthrough devices...
-To: Venu Busireddy <venu.busireddy@oracle.com>
-Cc: Marcel Apfelbaum <marcel@redhat.com>, virtio-dev@lists.oasis-open.org, qemu-devel@nongnu.org
+	by lists.oasis-open.org (Postfix) with ESMTP id BDD6B985C63
+	for <virtio-dev@lists.oasis-open.org>; Wed, 25 Jul 2018 16:40:42 +0000 (UTC)
+From: Sridhar Samudrala <sridhar.samudrala@intel.com>
+Date: Wed, 25 Jul 2018 09:40:40 -0700
+Message-Id: <1532536840-48601-1-git-send-email-sridhar.samudrala@intel.com>
+Subject: [virtio-dev] [PATCH v3] content: Introduce VIRTIO_NET_F_STANDBY feature
+To: mst@redhat.com, cohuck@redhat.com, virtio-dev@lists.oasis-open.org
+Cc: Sridhar@lists.oasis-open.org, "Samudrala <sridhar.samudrala"@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Tue, Jul 10, 2018 at 09:28:57AM -0500, Venu Busireddy wrote:
-> On 2018-07-10 05:11:18 +0300, Michael S. Tsirkin wrote:
-> > On Fri, Jun 29, 2018 at 05:19:03PM -0500, Venu Busireddy wrote:
-> > > The current patch set includes all the feedback received for proposals [3]
-> > > and [4]. For the sake of completeness, patch for the virtio specification
-> > > is also included here. Following is the updated proposal.
-> > > 
-> > > 1. Extend the virtio specification to include a new virtio PCI capability
-> > >    "VIRTIO_PCI_CAP_GROUP_ID_CFG".
-> > 
-> > ....
-> > 
-> > >  default-configs/arm-softmmu.mak             |   1 +
-> > >  default-configs/i386-softmmu.mak            |   1 +
-> > >  default-configs/x86_64-softmmu.mak          |   1 +
-> > >  hw/pci-bridge/Makefile.objs                 |   1 +
-> > >  hw/pci-bridge/pci_bridge_dev.c              |  10 +
-> > >  hw/pci-bridge/pcie_downstream.c             | 220 ++++++++++++++++++++
-> > >  hw/pci-bridge/pcie_downstream.h             |  10 +
-> > >  hw/pci/pci_bridge.c                         |  34 +++
-> > >  hw/virtio/virtio-pci.c                      |  15 ++
-> > >  hw/virtio/virtio-pci.h                      |   3 +-
-> > >  include/hw/pci/pci.h                        |  37 ++--
-> > >  include/hw/pci/pci_bridge.h                 |   2 +
-> > >  include/hw/pci/pcie.h                       |   1 +
-> > >  include/standard-headers/linux/virtio_pci.h |   8 +
-> > >  14 files changed, 326 insertions(+), 18 deletions(-)
-> > >  create mode 100644 hw/pci-bridge/pcie_downstream.c
-> > >  create mode 100644 hw/pci-bridge/pcie_downstream.h
-> > 
-> > I don't see the spec patch here.
-> 
-> Since the spec patch is in a different repo, I could not get 'git
-> format-patch' to combine them together. As a result, I added the spec
-> patch itself to the patches, but it is not in the cover letter.
-> 
-> I can combine them manually, and repost. Do you want me do that? 
-> 
-> Thanks,
-> 
-> Venu
+VIRTIO_NET_F_STANDBY feature enables hypervisor to indicate virtio_net
+device to act as a standby for another device with the same MAC address.
 
-It's ok, I found it now.
+Signed-off-by: Sridhar Samudrala <sridhar.samudrala@intel.com
+---
+ content.tex | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
+diff --git a/content.tex b/content.tex
+index be18234..42a0e7e 100644
+--- a/content.tex
++++ b/content.tex
+@@ -2525,6 +2525,9 @@ features.
+ 
+ \item[VIRTIO_NET_F_CTRL_MAC_ADDR(23)] Set MAC address through control
+     channel.
++
++\item[VIRTIO_NET_F_STANDBY(62)] Device may act as a standby for a primary
++    device with the same MAC address.
+ \end{description}
+ 
+ \subsubsection{Feature bit requirements}\label{sec:Device Types / Network Device / Feature bits / Feature bit requirements}
+@@ -2614,6 +2617,9 @@ level ethernet header length) size with \field{gso_type} NONE or ECN, and do
+ so without fragmentation, after VIRTIO_NET_F_MTU has been successfully
+ negotiated.
+ 
++If the driver negotiates the VIRTIO_NET_F_STANDBY feature, the device MAY act
++as a standby device for a primary device with the same MAC address.
++
+ \drivernormative{\subsubsection}{Device configuration layout}{Device Types / Network Device / Device configuration layout}
+ 
+ A driver SHOULD negotiate VIRTIO_NET_F_MAC if the device offers it.
+@@ -2636,6 +2642,8 @@ If the driver negotiates VIRTIO_NET_F_MTU, it MUST NOT transmit packets of
+ size exceeding the value of \field{mtu} (plus low level ethernet header length)
+ with \field{gso_type} NONE or ECN.
+ 
++A driver SHOULD negotiate the VIRTIO_NET_F_STANDBY feature if the device offers it.
++
+ \subsubsection{Legacy Interface: Device configuration layout}\label{sec:Device Types / Network Device / Device configuration layout / Legacy Interface: Device configuration layout}
+ \label{sec:Device Types / Block Device / Feature bits / Device configuration layout / Legacy Interface: Device configuration layout}
+ When using the legacy interface, transitional devices and drivers
 -- 
-MST
+2.14.4
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
