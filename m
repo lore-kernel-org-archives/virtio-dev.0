@@ -1,4 +1,4 @@
-Return-Path: virtio-return-3164-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-return-3165-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio@lists.oasis-open.org>
 List-Post: <mailto:virtio@lists.oasis-open.org>
 List-Help: <mailto:virtio-help@lists.oasis-open.org>
@@ -9,13 +9,14 @@ References: <1529929292-11900-1-git-send-email-pasic@linux.ibm.com>
  <20180703030130-mutt-send-email-mst@kernel.org>
  <2cbc368b-de0c-563e-3524-7f54bfe37d1e@linux.ibm.com>
  <71c9fa95-b672-e51e-cc5a-a754fe033ee9@linux.ibm.com>
-Date: Tue, 17 Jul 2018 18:47:11 +0200
+ <a785ef89-ae5d-abe0-4650-9706d5630e8e@linux.ibm.com>
+Date: Fri, 27 Jul 2018 13:33:15 +0200
 MIME-Version: 1.0
-In-Reply-To: <71c9fa95-b672-e51e-cc5a-a754fe033ee9@linux.ibm.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <a785ef89-ae5d-abe0-4650-9706d5630e8e@linux.ibm.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Message-Id: <a785ef89-ae5d-abe0-4650-9706d5630e8e@linux.ibm.com>
+Content-Transfer-Encoding: 8bit
+Message-Id: <477abdb8-93c4-5ff6-17b2-0f3ed1a829a4@linux.ibm.com>
 Subject: [virtio] Re: [virtio-dev] Re: [virtio] Re: [virtio-dev] [PATCH v3 0/6] rework
  notifications terminology
 To: "Michael S. Tsirkin" <mst@redhat.com>
@@ -24,34 +25,22 @@ List-ID: <virtio-dev.lists.oasis-open.org>
 
 
 
-On 07/03/2018 02:07 PM, Halil Pasic wrote:
-> 
-> 
-> On 07/03/2018 11:00 AM, Halil Pasic wrote:
->>
->>
->> On 07/03/2018 02:01 AM, Michael S. Tsirkin wrote:
->>> On Mon, Jun 25, 2018 at 02:21:26PM +0200, Halil Pasic wrote:
->>>> Abstract
->>>> --------
->>>> The terminology around notifications is currently somewhat
->>>> fragmented. Unify notifications terminology using available and used
->>>> buffer notification consistently for the virtqueue notifications.
->>>> Consistent use of the term configuration change notification is of
->>>> concern.
+On 07/17/2018 06:47 PM, Halil Pasic wrote:
+>>>>
+>>>> OK I see there are acks already - do you want to start voting on this?
+>>>>
+>>>>
+>>>>
 >>>
->>> OK I see there are acks already - do you want to start voting on this?
->>>
->>>
+>>> Yes, voting would make sense in my opinion.
 >>>
 >>
->> Yes, voting would make sense in my opinion.
+>>
+>> I've submitted a github issue. Please let me know if further actions are
+>> required.
 >>
 > 
-> 
-> I've submitted a github issue. Please let me know if further actions are
-> required.
-> 
+> ping
 
 ping
 
