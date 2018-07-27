@@ -1,86 +1,35 @@
-Return-Path: virtio-dev-return-4756-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4743-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 76951985CA8
-	for <virtio-dev@lists.oasis-open.org>; Mon, 30 Jul 2018 01:48:14 +0000 (UTC)
-From: "Longpeng(Mike)" <longpeng2@huawei.com>
-Date: Mon, 30 Jul 2018 09:47:45 +0800
-Message-ID: <1532915265-9728-3-git-send-email-longpeng2@huawei.com>
-In-Reply-To: <1532915265-9728-1-git-send-email-longpeng2@huawei.com>
-References: <1532915265-9728-1-git-send-email-longpeng2@huawei.com>
-MIME-Version: 1.0
-Content-Type: text/plain
-Subject: [virtio-dev] [PATCH v24 2/2] virtio-crypto: Add conformance clauses
-To: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org
-Cc: mst@redhat.com, cornelia.huck@de.ibm.com, stefanha@redhat.com, denglingli@chinamobile.com, Jani.Kokkonen@huawei.com, Ola.Liljedahl@arm.com, Varun.Sethi@freescale.com, xin.zeng@intel.com, brian.a.keating@intel.com, liang.j.ma@intel.com, john.griffin@intel.com, weidong.huang@huawei.com, agraf@suse.de, jasowang@redhat.com, vincent.jardin@6wind.com, arei.gonglei@huawei.com, pasic@linux.vnet.ibm.com, wangxinxin.wang@huawei.com, jianjay.zhou@huawei.com, "Longpeng(Mike)" <longpeng2@huawei.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id B652D985CA1
+	for <virtio-dev@lists.oasis-open.org>; Fri, 27 Jul 2018 09:52:48 +0000 (UTC)
+From: Wei Wang <wei.w.wang@intel.com>
+Date: Fri, 27 Jul 2018 17:24:53 +0800
+Message-Id: <1532683495-31974-1-git-send-email-wei.w.wang@intel.com>
+Subject: [virtio-dev] [PATCH v2 0/2] virtio-balloon: some improvements
+To: virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, virtualization@lists.linux-foundation.org, linux-mm@kvack.org, mst@redhat.com, mhocko@kernel.org, akpm@linux-foundation.org
+Cc: wei.w.wang@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-From: Gonglei <arei.gonglei@huawei.com>
+This series is split from the "Virtio-balloon: support free page
+reporting" series to make some improvements.
 
-Add the conformance targets and clauses for
-virtio-crypto device.
+v1->v2 ChangeLog:
+- register the shrinker when VIRTIO_BALLOON_F_DEFLATE_ON_OOM is negotiated.
 
-Signed-off-by: Gonglei <arei.gonglei@huawei.com>
-Signed-off-by: Zhoujian <jianjay.zhou@huawei.com>
-Signed-off-by: Longpeng(Mike) <longpeng2@huawei.com>
----
- conformance.tex | 29 +++++++++++++++++++++++++++++
- 1 file changed, 29 insertions(+)
+Wei Wang (2):
+  virtio-balloon: remove BUG() in init_vqs
+  virtio_balloon: replace oom notifier with shrinker
 
-diff --git a/conformance.tex b/conformance.tex
-index f59e360..cf5f1ac 100644
---- a/conformance.tex
-+++ b/conformance.tex
-@@ -146,6 +146,21 @@ An SCSI host driver MUST conform to the following normative statements:
- \item \ref{drivernormative:Device Types / SCSI Host Device / Device Operation / Device Operation: eventq}
- \end{itemize}
- 
-+\subsection{Crypto Driver Conformance}\label{sec:Conformance / Driver Conformance / Crypto Driver Conformance}
-+
-+A Crypto driver MUST conform to the following normative statements:
-+
-+\begin{itemize}
-+\item \ref{drivernormative:Device Types / Crypto Device / Device configuration layout}
-+\item \ref{drivernormative:Device Types / Crypto Device / Device Initialization}
-+\item \ref{drivernormative:Device Types / Crypto Device / Device Operation / Control Virtqueue / Session operation / Session operation: create session}
-+\item \ref{drivernormative:Device Types / Crypto Device / Device Operation / Control Virtqueue / Session operation / Session operation: destroy session}
-+\item \ref{drivernormative:Device Types / Crypto Device / Device Operation / HASH Service operation}
-+\item \ref{drivernormative:Device Types / Crypto Device / Device Operation / MAC Service operation}
-+\item \ref{drivernormative:Device Types / Crypto Device / Device Operation / Symmetric algorithms Operation}
-+\item \ref{drivernormative:Device Types / Crypto Device / Device Operation / AEAD Service operation}
-+\end{itemize}
-+
- \section{Device Conformance}\label{sec:Conformance / Device Conformance}
- 
- A device MUST conform to the following normative statements:
-@@ -267,6 +282,20 @@ An SCSI host device MUST conform to the following normative statements:
- \item \ref{devicenormative:Device Types / SCSI Host Device / Device Operation / Device Operation: eventq}
- \end{itemize}
- 
-+\subsection{Crypto Device Conformance}\label{sec:Conformance / Device Conformance / Crypto Device Conformance}
-+
-+A Crypto device MUST conform to the following normative statements:
-+
-+\begin{itemize}
-+\item \ref{devicenormative:Device Types / Crypto Device / Device configuration layout}
-+\item \ref{devicenormative:Device Types / Crypto Device / Device Operation / Control Virtqueue / Session operation / Session operation: create session}
-+\item \ref{devicenormative:Device Types / Crypto Device / Device Operation / Control Virtqueue / Session operation / Session operation: destroy session}
-+\item \ref{devicenormative:Device Types / Crypto Device / Device Operation / HASH Service operation}
-+\item \ref{devicenormative:Device Types / Crypto Device / Device Operation / MAC Service operation}
-+\item \ref{devicenormative:Device Types / Crypto Device / Device Operation / Symmetric algorithms Operation}
-+\item \ref{devicenormative:Device Types / Crypto Device / Device Operation / AEAD Service operation}
-+\end{itemize}
-+
- \section{Legacy Interface: Transitional Device and
- Transitional Driver Conformance}\label{sec:Conformance / Legacy
- Interface: Transitional Device and 
+ drivers/virtio/virtio_balloon.c | 125 +++++++++++++++++++++++-----------------
+ 1 file changed, 72 insertions(+), 53 deletions(-)
+
 -- 
-1.8.3.1
-
+2.7.4
 
 
 ---------------------------------------------------------------------
