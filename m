@@ -1,62 +1,66 @@
-Return-Path: virtio-dev-return-4778-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4761-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id B10BF985D21
-	for <virtio-dev@lists.oasis-open.org>; Mon,  6 Aug 2018 14:02:28 +0000 (UTC)
-From: "Wang, Wei W" <wei.w.wang@intel.com>
-Date: Mon, 6 Aug 2018 14:02:05 +0000
-Message-ID: <286AC319A985734F985F78AFA26841F739722502@SHSMSX101.ccr.corp.intel.com>
-References: <1533285146-25212-1-git-send-email-wei.w.wang@intel.com>
- <1533285146-25212-3-git-send-email-wei.w.wang@intel.com>
- <16c56ee5-eef7-dd5f-f2b6-e3c11df2765c@i-love.sakura.ne.jp>
- <5B681B41.6070205@intel.com>
- <c8d25019-1990-f0dd-c83d-e4def5b5f7fe@i-love.sakura.ne.jp>
- <286AC319A985734F985F78AFA26841F7397222E8@SHSMSX101.ccr.corp.intel.com>
- <109ff5ec-692d-67fe-4c5a-2de8b48e8300@i-love.sakura.ne.jp>
-In-Reply-To: <109ff5ec-692d-67fe-4c5a-2de8b48e8300@i-love.sakura.ne.jp>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	by lists.oasis-open.org (Postfix) with ESMTP id DA06F985CD2
+	for <virtio-dev@lists.oasis-open.org>; Wed,  1 Aug 2018 11:08:11 +0000 (UTC)
+Message-ID: <5B619599.1000307@intel.com>
+Date: Wed, 01 Aug 2018 19:12:25 +0800
+From: Wei Wang <wei.w.wang@intel.com>
 MIME-Version: 1.0
-Subject: [virtio-dev] RE: [PATCH v3 2/2] virtio_balloon: replace oom notifier with
- shrinker
-To: Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
-Cc: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "mst@redhat.com" <mst@redhat.com>, "mhocko@kernel.org" <mhocko@kernel.org>, "akpm@linux-foundation.org" <akpm@linux-foundation.org>
+References: <1532683495-31974-1-git-send-email-wei.w.wang@intel.com> <1532683495-31974-3-git-send-email-wei.w.wang@intel.com> <20180730090041.GC24267@dhcp22.suse.cz>
+In-Reply-To: <20180730090041.GC24267@dhcp22.suse.cz>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [virtio-dev] Re: [PATCH v2 2/2] virtio_balloon: replace oom notifier with shrinker
+To: Michal Hocko <mhocko@kernel.org>
+Cc: virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, virtualization@lists.linux-foundation.org, linux-mm@kvack.org, mst@redhat.com, akpm@linux-foundation.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-T24gTW9uZGF5LCBBdWd1c3QgNiwgMjAxOCA5OjI5IFBNLCBUZXRzdW8gSGFuZGEgd3JvdGU6DQo+
-IE9uIDIwMTgvMDgvMDYgMjE6NDQsIFdhbmcsIFdlaSBXIHdyb3RlOg0KPiA+IE9uIE1vbmRheSwg
-QXVndXN0IDYsIDIwMTggNjoyOSBQTSwgVGV0c3VvIEhhbmRhIHdyb3RlOg0KPiA+PiBPbiAyMDE4
-LzA4LzA2IDE4OjU2LCBXZWkgV2FuZyB3cm90ZToNCj4gPj4+IE9uIDA4LzAzLzIwMTggMDg6MTEg
-UE0sIFRldHN1byBIYW5kYSB3cm90ZToNCj4gPj4+PiBPbiAyMDE4LzA4LzAzIDE3OjMyLCBXZWkg
-V2FuZyB3cm90ZToNCj4gPj4+Pj4gK3N0YXRpYyBpbnQgdmlydGlvX2JhbGxvb25fcmVnaXN0ZXJf
-c2hyaW5rZXIoc3RydWN0IHZpcnRpb19iYWxsb29uDQo+ID4+Pj4+ICsqdmIpIHsNCj4gPj4+Pj4g
-K8KgwqDCoCB2Yi0+c2hyaW5rZXIuc2Nhbl9vYmplY3RzID0gdmlydGlvX2JhbGxvb25fc2hyaW5r
-ZXJfc2NhbjsNCj4gPj4+Pj4gK8KgwqDCoCB2Yi0+c2hyaW5rZXIuY291bnRfb2JqZWN0cyA9IHZp
-cnRpb19iYWxsb29uX3Nocmlua2VyX2NvdW50Ow0KPiA+Pj4+PiArwqDCoMKgIHZiLT5zaHJpbmtl
-ci5iYXRjaCA9IDA7DQo+ID4+Pj4+ICvCoMKgwqAgdmItPnNocmlua2VyLnNlZWtzID0gREVGQVVM
-VF9TRUVLUzsNCj4gPj4+PiBXaHkgZmxhZ3MgZmllbGQgaXMgbm90IHNldD8gSWYgdmIgaXMgYWxs
-b2NhdGVkIGJ5DQo+ID4+Pj4ga21hbGxvYyhHRlBfS0VSTkVMKSBhbmQgaXMgbm93aGVyZSB6ZXJv
-LWNsZWFyZWQsIEtBU0FOIHdvdWxkDQo+IGNvbXBsYWluIGl0Lg0KPiA+Pj4NCj4gPj4+IENvdWxk
-IHlvdSBwb2ludCB3aGVyZSBpbiB0aGUgY29kZSB0aGF0IHdvdWxkIGNvbXBsYWluIGl0Pw0KPiA+
-Pj4gSSBvbmx5IHNlZSB0d28gc2hyaW5rZXIgZmxhZ3MgKE5VTUFfQVdBUkUgYW5kIE1FTUNHX0FX
-QVJFKSwgYW5kDQo+ID4+IHRoZXkgc2VlbSBub3QgcmVsYXRlZCB0byB0aGF0Lg0KPiA+Pg0KPiA+
-PiBXaGVyZSBpcyB2Yi0+c2hyaW5rZXIuZmxhZ3MgaW5pdGlhbGl6ZWQ/DQo+ID4NCj4gPiBJcyB0
-aGF0IG1hbmRhdG9yeSB0byBiZSBpbml0aWFsaXplZD8NCj4gDQo+IE9mIGNvdXJzZS4gOy0pDQo+
-IA0KPiA+IEkgZmluZCBpdCdzIG5vdCBpbml0aWFsaXplZCBpbiBtb3N0IHNocmlua2VycyAoZS5n
-LiB6c19yZWdpc3Rlcl9zaHJpbmtlciwNCj4gaHVnZV96ZXJvX3BhZ2Vfc2hyaW5rZXIpLg0KPiAN
-Cj4gQmVjYXVzZSBtb3N0IHNocmlua2VycyBhcmUgInN0YXRpY2FsbHkgaW5pdGlhbGl6ZWQgKHdo
-aWNoIG1lYW5zIHRoYXQNCj4gdW5zcGVjaWZpZWQgZmllbGRzIGFyZSBpbXBsaWNpdGx5IHplcm8t
-Y2xlYXJlZCkiIG9yICJkeW5hbWljYWxseSBhbGxvY2F0ZWQgd2l0aA0KPiBfX0dGUF9aRVJPIG9y
-IHplcm8tY2xlYXJlZCB1c2luZw0KPiBtZW1zZXQoKSAod2hpY2ggbWVhbnMgdGhhdCBhbGwgZmll
-bGRzIGFyZSBvbmNlIHplcm8tY2xlYXJlZCkiLg0KPiANCj4gQW5kIGlmIHlvdSBvbmNlIHplcm8t
-Y2xlYXIgdmIgYXQgYWxsb2NhdGlvbiB0aW1lLCB5b3Ugd2lsbCBnZXQgYSBib251cyB0aGF0DQo+
-IGNhbGxpbmcgdW5yZWdpc3Rlcl9zaHJpbmtlcigpIHdpdGhvdXQgY29ycmVzcG9uZGluZyByZWdp
-c3Rlcl9zaHJpbmtlcigpIGlzIHNhZmUNCj4gKHdoaWNoIHdpbGwgc2ltcGxpZnkgaW5pdGlhbGl6
-YXRpb24gZmFpbHVyZSBwYXRoKS4NCg0KT2gsIEkgc2VlLCB0aGFua3MuIFNvIGl0IHNvdW5kcyBi
-ZXR0ZXIgdG8gZGlyZWN0bHkga3phbGxvYyB2Yi4NCg0KQmVzdCwNCldlaQ0K
+On 07/30/2018 05:00 PM, Michal Hocko wrote:
+> On Fri 27-07-18 17:24:55, Wei Wang wrote:
+>> The OOM notifier is getting deprecated to use for the reasons mentioned
+>> here by Michal Hocko: https://lkml.org/lkml/2018/7/12/314
+>>
+>> This patch replaces the virtio-balloon oom notifier with a shrinker
+>> to release balloon pages on memory pressure.
+> It would be great to document the replacement. This is not a small
+> change...
+
+OK. I plan to document the following to the commit log:
+
+   The OOM notifier is getting deprecated to use for the reasons:
+     - As a callout from the oom context, it is too subtle and easy to
+       generate bugs and corner cases which are hard to track;
+     - It is called too late (after the reclaiming has been performed).
+       Drivers with large amuont of reclaimable memory is expected to be
+       released them at an early age of memory pressure;
+     - The notifier callback isn't aware of the oom contrains;
+     Link: https://lkml.org/lkml/2018/7/12/314
+
+     This patch replaces the virtio-balloon oom notifier with a shrinker
+     to release balloon pages on memory pressure. Users can set the 
+amount of
+     memory pages to release each time a shrinker_scan is called via the
+     module parameter balloon_pages_to_shrink, and the default amount is 256
+     pages. Historically, the feature VIRTIO_BALLOON_F_DEFLATE_ON_OOM has
+     been used to release balloon pages on OOM. We continue to use this
+     feature bit for the shrinker, so the shrinker is only registered when
+     this feature bit has been negotiated with host.
+
+     In addition, the bug in the replaced virtballoon_oom_notify that only
+     VIRTIO_BALLOON_ARRAY_PFNS_MAX (i.e 256) balloon pages can be freed
+     though the user has specified more than that number is fixed in the
+     shrinker_scan function.
+
+
+Best,
+Wei
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
