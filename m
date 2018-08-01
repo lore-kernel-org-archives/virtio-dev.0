@@ -1,110 +1,76 @@
-Return-Path: virtio-return-3169-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio@lists.oasis-open.org>
-List-Post: <mailto:virtio@lists.oasis-open.org>
-List-Help: <mailto:virtio-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-References: <1529929292-11900-1-git-send-email-pasic@linux.ibm.com>
- <20180703030130-mutt-send-email-mst@kernel.org>
- <2cbc368b-de0c-563e-3524-7f54bfe37d1e@linux.ibm.com>
- <71c9fa95-b672-e51e-cc5a-a754fe033ee9@linux.ibm.com>
- <a785ef89-ae5d-abe0-4650-9706d5630e8e@linux.ibm.com>
- <477abdb8-93c4-5ff6-17b2-0f3ed1a829a4@linux.ibm.com>
- <20180727143700-mutt-send-email-mst@kernel.org>
- <38436869-1a5e-9d17-a1fb-a6049f0f8bd5@linux.ibm.com>
- <20180802012748-mutt-send-email-mst@kernel.org>
+Return-Path: virtio-dev-return-4763-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id E59E3985CD7
+	for <virtio-dev@lists.oasis-open.org>; Wed,  1 Aug 2018 20:21:40 +0000 (UTC)
+References: <1514626559-162312-1-git-send-email-longpeng2@huawei.com>
+ <1514626559-162312-2-git-send-email-longpeng2@huawei.com>
+ <fcb63fc3-22eb-7f6c-2014-744ee75784eb@linux.vnet.ibm.com>
+ <5B51CF0B.8020706@huawei.com>
+ <a332a516-16dc-1e50-3ea6-b68571880cb7@linux.ibm.com>
+ <20180727144726-mutt-send-email-mst@kernel.org>
 From: Halil Pasic <pasic@linux.ibm.com>
-Date: Thu, 2 Aug 2018 19:12:19 +0200
+Date: Wed, 1 Aug 2018 22:21:26 +0200
 MIME-Version: 1.0
-In-Reply-To: <20180802012748-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
+In-Reply-To: <20180727144726-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-Message-Id: <96b4f75b-fb11-9c4f-12db-402021c96c03@linux.ibm.com>
-Subject: Re: [virtio] Re: [virtio-dev] Re: [virtio] Re: [virtio-dev] [PATCH v3
- 0/6] rework notifications terminology
+Content-Transfer-Encoding: 7bit
+Message-Id: <47e5bc06-6b4d-aab6-db77-c91313d36d87@linux.ibm.com>
+Subject: [virtio-dev] Re: [Qemu-devel] [virtio-dev] Re: [v23 1/2] virtio-crypto: Add virtio
+ crypto device specification
 To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, Cornelia Huck <cohuck@redhat.com>, Pawel Moll <pawel.moll@arm.com>, Stefan Hajnoczi <stefanha@redhat.com>
+Cc: denglingli@chinamobile.com, virtio-dev@lists.oasis-open.org, Halil Pasic <pasic@linux.vnet.ibm.com>, Ola.Liljedahl@arm.com, brian.a.keating@intel.com, Jani.Kokkonen@huawei.com, xin.zeng@intel.com, wangxinxin.wang@huawei.com, liang.j.ma@intel.com, qemu-devel@nongnu.org, john.griffin@intel.com, agraf@suse.de, arei.gonglei@huawei.com, stefanha@redhat.com, jianjay.zhou@huawei.com, cornelia.huck@de.ibm.com, Varun.Sethi@freescale.com, "Longpeng (Mike)" <longpeng2@huawei.com>, vincent.jardin@6wind.com, jasowang@redhat.com, weidong.huang@huawei.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
 
 
-On 08/02/2018 12:30 AM, Michael S. Tsirkin wrote:
-> On Wed, Aug 01, 2018 at 03:04:54PM +0200, Halil Pasic wrote:
+On 07/27/2018 01:51 PM, Michael S. Tsirkin wrote:
+> On Thu, Jul 26, 2018 at 06:55:44PM +0200, Halil Pasic wrote:
+>> Sorry I did not have any time for this last days. And this
+>> to make it worse this is a follow up to something that was
+>> half a year ago. That means I have to re-familiarize myself
+>> with the topic.
 >>
+>> If I don't get around to answer in couple of weeks, feel
+>> free to ping me.
 >>
->> On 07/27/2018 01:45 PM, Michael S. Tsirkin wrote:
->>> On Fri, Jul 27, 2018 at 01:33:15PM +0200, Halil Pasic wrote:
->>>>
->>>>
->>>> On 07/17/2018 06:47 PM, Halil Pasic wrote:
->>>>>>>>
->>>>>>>> OK I see there are acks already - do you want to start voting on this?
->>>>>>>>
->>>>>>>>
->>>>>>>>
->>>>>>>
->>>>>>> Yes, voting would make sense in my opinion.
->>>>>>>
->>>>>>
->>>>>>
->>>>>> I've submitted a github issue. Please let me know if further actions are
->>>>>> required.
->>>>>>
->>>>>
->>>>> ping
->>>>
->>>> ping
->>>
->>> Oh, sorry, I wasn't clear.
->>> What you want to do is
->>> 1. post the patches including
->>> Fixes: https://github.com/oasis-tcs/virtio-spec/issues/16
->>> in the commit log part.
->>> 2. proposal must link to oasis archive, not mail-archive.
->>>
->>> Anyway, I fixed the link and started voting now.
->>>
+>> Since from what I've seen most of the questions were of type
+>> 'Can we do it like this?', maybe sending out a new version
+>> is the best. So people (like me) can read through the whole
+>> thing and point out problems if any.
 >>
->> Should post a v4 (or a 'REPOST v3') with the r-b's received for
->> v3 and the 'Fixes' tags? I mean the ballot, would not link to the
->> final thread then. I'm a bit confused regarding now, but I
->> think I understood the process.
-> 
-> I think you are right since ballot started no need for v4.
-> 
-
-Thanks!
-
->> FYI I'm on and off starting tomorrow till 5th September. I
->> am very likely to make any ballots though, but longer response
->> times and lower availability are to be expected.
->>
->> Thanks,
+>> Regards,
 >> Halil
 > 
-> What are we going to do about crypto proposals? I think we do want to
-> finalize a draft for public review by september, and it seems
-> very unfortunate not to have that device in the draft at all.
+> 
+> While two weeks for review is borderline reasonable as an exception, it
+> does trouble me that  we are at v23, for something that is used
+> in the field so it's not like we can just change things at will.
+> So I hope everyone concerned makes an effort to try to converge on a spec
+> ASAP.
 > 
 
-As I wrote in the other thread I'm fine either way. But I don't
-think I will be able to muster the time and go trough he spec
-and the code by September. I have a couple of weeks of vacation
-in August, but I intend to stay tuned.
+What I tried to say: I'm busy with other stuff, and I'm not too
+happy to resume a complex topic after 6 months hiatus.
 
-Given the whole situation, I have the feeling merging the thing
-even if it's a bit 'on risk' seems to be the most reasonable option.
-I often tend to regard standards as 'holy cow that is cast in
-stone'. That makes me over-cautious. If something needs to be
-fixed, we can fix it when the need becomes apparent.
+The series is now at v24 and has apparently no acks or r-bs. I don't think
+I'm the only one to blame for that.
 
-Best regards,
+It seems, I won't have the time to do a conscientious review in a
+timely fashion. If the rest of the bunch thinks what we have is good
+enough, I am happy to abstain when voting on this -- and avoiding
+holding it up any further.
+
+Regards,
 Halil
 
 
 ---------------------------------------------------------------------
-To unsubscribe from this mail list, you must leave the OASIS TC that 
-generates this mail.  Follow this link to all your TCs in OASIS at:
-https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
