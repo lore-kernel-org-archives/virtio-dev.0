@@ -1,251 +1,141 @@
-Return-Path: virtio-dev-return-4774-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4775-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id A7C56985D18
-	for <virtio-dev@lists.oasis-open.org>; Fri,  3 Aug 2018 19:15:36 +0000 (UTC)
-Date: Fri, 3 Aug 2018 22:15:31 +0300
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20180803221423-mutt-send-email-mst@kernel.org>
-References: <1533285146-25212-1-git-send-email-wei.w.wang@intel.com>
- <1533285146-25212-3-git-send-email-wei.w.wang@intel.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id EAE67985D1D
+	for <virtio-dev@lists.oasis-open.org>; Mon,  6 Aug 2018 03:25:34 +0000 (UTC)
+Message-ID: <5B67C0B2.3040407@intel.com>
+Date: Mon, 06 Aug 2018 11:29:54 +0800
+From: Wei Wang <wei.w.wang@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1533285146-25212-3-git-send-email-wei.w.wang@intel.com>
+References: <1533285146-25212-1-git-send-email-wei.w.wang@intel.com> <1533285146-25212-3-git-send-email-wei.w.wang@intel.com> <20180803221423-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20180803221423-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
 Subject: [virtio-dev] Re: [PATCH v3 2/2] virtio_balloon: replace oom notifier with shrinker
-To: Wei Wang <wei.w.wang@intel.com>
+To: "Michael S. Tsirkin" <mst@redhat.com>
 Cc: virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, virtualization@lists.linux-foundation.org, linux-mm@kvack.org, mhocko@kernel.org, akpm@linux-foundation.org, penguin-kernel@i-love.sakura.ne.jp
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Fri, Aug 03, 2018 at 04:32:26PM +0800, Wei Wang wrote:
-> The OOM notifier is getting deprecated to use for the reasons:
-> - As a callout from the oom context, it is too subtle and easy to
->   generate bugs and corner cases which are hard to track;
-> - It is called too late (after the reclaiming has been performed).
->   Drivers with large amuont of reclaimable memory is expected to
->   release them at an early stage of memory pressure;
-> - The notifier callback isn't aware of oom contrains;
-> Link: https://lkml.org/lkml/2018/7/12/314
-> 
-> This patch replaces the virtio-balloon oom notifier with a shrinker
-> to release balloon pages on memory pressure. The balloon pages are
-> given back to mm adaptively by returning the number of pages that the
-> reclaimer is asking for (i.e. sc->nr_to_scan).
-> 
-> Currently the max possible value of sc->nr_to_scan passed to the balloon
-> shrinker is SHRINK_BATCH, which is 128. This is smaller than the
-> limitation that only VIRTIO_BALLOON_ARRAY_PFNS_MAX (256) pages can be
-> returned via one invocation of leak_balloon. But this patch still
-> considers the case that SHRINK_BATCH or shrinker->batch could be changed
-> to a value larger than VIRTIO_BALLOON_ARRAY_PFNS_MAX, which will need to
-> do multiple invocations of leak_balloon.
-> 
-> Historically, the feature VIRTIO_BALLOON_F_DEFLATE_ON_OOM has been used
-> to release balloon pages on OOM. We continue to use this feature bit for
-> the shrinker, so the shrinker is only registered when this feature bit
-> has been negotiated with host.
-> 
-> Signed-off-by: Wei Wang <wei.w.wang@intel.com>
-> Cc: Michael S. Tsirkin <mst@redhat.com>
-> Cc: Michal Hocko <mhocko@kernel.org>
-> Cc: Andrew Morton <akpm@linux-foundation.org>
+On 08/04/2018 03:15 AM, Michael S. Tsirkin wrote:
+> On Fri, Aug 03, 2018 at 04:32:26PM +0800, Wei Wang wrote:
+>> The OOM notifier is getting deprecated to use for the reasons:
+>> - As a callout from the oom context, it is too subtle and easy to
+>>    generate bugs and corner cases which are hard to track;
+>> - It is called too late (after the reclaiming has been performed).
+>>    Drivers with large amuont of reclaimable memory is expected to
+>>    release them at an early stage of memory pressure;
+>> - The notifier callback isn't aware of oom contrains;
+>> Link: https://lkml.org/lkml/2018/7/12/314
+>>
+>> This patch replaces the virtio-balloon oom notifier with a shrinker
+>> to release balloon pages on memory pressure. The balloon pages are
+>> given back to mm adaptively by returning the number of pages that the
+>> reclaimer is asking for (i.e. sc->nr_to_scan).
+>>
+>> Currently the max possible value of sc->nr_to_scan passed to the balloon
+>> shrinker is SHRINK_BATCH, which is 128. This is smaller than the
+>> limitation that only VIRTIO_BALLOON_ARRAY_PFNS_MAX (256) pages can be
+>> returned via one invocation of leak_balloon. But this patch still
+>> considers the case that SHRINK_BATCH or shrinker->batch could be changed
+>> to a value larger than VIRTIO_BALLOON_ARRAY_PFNS_MAX, which will need to
+>> do multiple invocations of leak_balloon.
+>>
+>> Historically, the feature VIRTIO_BALLOON_F_DEFLATE_ON_OOM has been used
+>> to release balloon pages on OOM. We continue to use this feature bit for
+>> the shrinker, so the shrinker is only registered when this feature bit
+>> has been negotiated with host.
+>>
+>> Signed-off-by: Wei Wang <wei.w.wang@intel.com>
+>> Cc: Michael S. Tsirkin <mst@redhat.com>
+>> Cc: Michal Hocko <mhocko@kernel.org>
+>> Cc: Andrew Morton <akpm@linux-foundation.org>
+>
+> Could you add data at how was this tested and how did guest
+> behaviour change. Which configurations see an improvement?
+>
+
+Yes. Please see the differences from the "*1" and "*2" cases below.
+
+Taking this chance, I use "*2" and "*3" to show Michal etc the 
+differences of applying and not applying the shrinker fix patch here: 
+https://lkml.org/lkml/2018/8/3/384
 
 
-Could you add data at how was this tested and how did guest
-behaviour change. Which configurations see an improvement?
+*1. V3 patches
+1)After inflating some amount of memory, actual=1000001536 Bytes
+free -m
+               total        used        free      shared buff/cache   
+available
+Mem:           7975        7289         514          10 171         447
+Swap:         10236           0       10236
 
-> ---
->  drivers/virtio/virtio_balloon.c | 111 ++++++++++++++++++++++------------------
->  1 file changed, 60 insertions(+), 51 deletions(-)
-> 
-> diff --git a/drivers/virtio/virtio_balloon.c b/drivers/virtio/virtio_balloon.c
-> index 8100e77..612a359 100644
-> --- a/drivers/virtio/virtio_balloon.c
-> +++ b/drivers/virtio/virtio_balloon.c
-> @@ -27,7 +27,6 @@
->  #include <linux/slab.h>
->  #include <linux/module.h>
->  #include <linux/balloon_compaction.h>
-> -#include <linux/oom.h>
->  #include <linux/wait.h>
->  #include <linux/mm.h>
->  #include <linux/mount.h>
-> @@ -40,13 +39,8 @@
->   */
->  #define VIRTIO_BALLOON_PAGES_PER_PAGE (unsigned)(PAGE_SIZE >> VIRTIO_BALLOON_PFN_SHIFT)
->  #define VIRTIO_BALLOON_ARRAY_PFNS_MAX 256
-> -#define OOM_VBALLOON_DEFAULT_PAGES 256
->  #define VIRTBALLOON_OOM_NOTIFY_PRIORITY 80
->  
-> -static int oom_pages = OOM_VBALLOON_DEFAULT_PAGES;
-> -module_param(oom_pages, int, S_IRUSR | S_IWUSR);
-> -MODULE_PARM_DESC(oom_pages, "pages to free on OOM");
-> -
->  #ifdef CONFIG_BALLOON_COMPACTION
->  static struct vfsmount *balloon_mnt;
->  #endif
-> @@ -86,8 +80,8 @@ struct virtio_balloon {
->  	/* Memory statistics */
->  	struct virtio_balloon_stat stats[VIRTIO_BALLOON_S_NR];
->  
-> -	/* To register callback in oom notifier call chain */
-> -	struct notifier_block nb;
-> +	/* To register a shrinker to shrink memory upon memory pressure */
-> +	struct shrinker shrinker;
->  };
->  
->  static struct virtio_device_id id_table[] = {
-> @@ -365,38 +359,6 @@ static void update_balloon_size(struct virtio_balloon *vb)
->  		      &actual);
->  }
->  
-> -/*
-> - * virtballoon_oom_notify - release pages when system is under severe
-> - *			    memory pressure (called from out_of_memory())
-> - * @self : notifier block struct
-> - * @dummy: not used
-> - * @parm : returned - number of freed pages
-> - *
-> - * The balancing of memory by use of the virtio balloon should not cause
-> - * the termination of processes while there are pages in the balloon.
-> - * If virtio balloon manages to release some memory, it will make the
-> - * system return and retry the allocation that forced the OOM killer
-> - * to run.
-> - */
-> -static int virtballoon_oom_notify(struct notifier_block *self,
-> -				  unsigned long dummy, void *parm)
-> -{
-> -	struct virtio_balloon *vb;
-> -	unsigned long *freed;
-> -	unsigned num_freed_pages;
-> -
-> -	vb = container_of(self, struct virtio_balloon, nb);
-> -	if (!virtio_has_feature(vb->vdev, VIRTIO_BALLOON_F_DEFLATE_ON_OOM))
-> -		return NOTIFY_OK;
-> -
-> -	freed = parm;
-> -	num_freed_pages = leak_balloon(vb, oom_pages);
-> -	update_balloon_size(vb);
-> -	*freed += num_freed_pages;
-> -
-> -	return NOTIFY_OK;
-> -}
-> -
->  static void update_balloon_stats_func(struct work_struct *work)
->  {
->  	struct virtio_balloon *vb;
-> @@ -550,6 +512,53 @@ static struct file_system_type balloon_fs = {
->  
->  #endif /* CONFIG_BALLOON_COMPACTION */
->  
-> +static unsigned long virtio_balloon_shrinker_scan(struct shrinker *shrinker,
-> +						  struct shrink_control *sc)
-> +{
-> +	unsigned long pages_to_free, pages_freed = 0;
-> +	struct virtio_balloon *vb = container_of(shrinker,
-> +					struct virtio_balloon, shrinker);
-> +
-> +	pages_to_free = sc->nr_to_scan * VIRTIO_BALLOON_PAGES_PER_PAGE;
-> +
-> +	/*
-> +	 * One invocation of leak_balloon can deflate at most
-> +	 * VIRTIO_BALLOON_ARRAY_PFNS_MAX balloon pages, so we call it
-> +	 * multiple times to deflate pages till reaching pages_to_free.
-> +	 */
-> +	while (vb->num_pages && pages_to_free) {
-> +		pages_to_free -= pages_freed;
-> +		pages_freed += leak_balloon(vb, pages_to_free);
-> +	}
-> +	update_balloon_size(vb);
-> +
-> +	return pages_freed / VIRTIO_BALLOON_PAGES_PER_PAGE;
-> +}
-> +
-> +static unsigned long virtio_balloon_shrinker_count(struct shrinker *shrinker,
-> +						   struct shrink_control *sc)
-> +{
-> +	struct virtio_balloon *vb = container_of(shrinker,
-> +					struct virtio_balloon, shrinker);
-> +
-> +	return vb->num_pages / VIRTIO_BALLOON_PAGES_PER_PAGE;
-> +}
-> +
-> +static void virtio_balloon_unregister_shrinker(struct virtio_balloon *vb)
-> +{
-> +	unregister_shrinker(&vb->shrinker);
-> +}
-> +
-> +static int virtio_balloon_register_shrinker(struct virtio_balloon *vb)
-> +{
-> +	vb->shrinker.scan_objects = virtio_balloon_shrinker_scan;
-> +	vb->shrinker.count_objects = virtio_balloon_shrinker_count;
-> +	vb->shrinker.batch = 0;
-> +	vb->shrinker.seeks = DEFAULT_SEEKS;
-> +
-> +	return register_shrinker(&vb->shrinker);
-> +}
-> +
->  static int virtballoon_probe(struct virtio_device *vdev)
->  {
->  	struct virtio_balloon *vb;
-> @@ -582,17 +591,10 @@ static int virtballoon_probe(struct virtio_device *vdev)
->  	if (err)
->  		goto out_free_vb;
->  
-> -	vb->nb.notifier_call = virtballoon_oom_notify;
-> -	vb->nb.priority = VIRTBALLOON_OOM_NOTIFY_PRIORITY;
-> -	err = register_oom_notifier(&vb->nb);
-> -	if (err < 0)
-> -		goto out_del_vqs;
-> -
->  #ifdef CONFIG_BALLOON_COMPACTION
->  	balloon_mnt = kern_mount(&balloon_fs);
->  	if (IS_ERR(balloon_mnt)) {
->  		err = PTR_ERR(balloon_mnt);
-> -		unregister_oom_notifier(&vb->nb);
->  		goto out_del_vqs;
->  	}
->  
-> @@ -601,13 +603,20 @@ static int virtballoon_probe(struct virtio_device *vdev)
->  	if (IS_ERR(vb->vb_dev_info.inode)) {
->  		err = PTR_ERR(vb->vb_dev_info.inode);
->  		kern_unmount(balloon_mnt);
-> -		unregister_oom_notifier(&vb->nb);
->  		vb->vb_dev_info.inode = NULL;
->  		goto out_del_vqs;
->  	}
->  	vb->vb_dev_info.inode->i_mapping->a_ops = &balloon_aops;
->  #endif
-> -
-> +	/*
-> +	 * We continue to use VIRTIO_BALLOON_F_DEFLATE_ON_OOM to decide if a
-> +	 * shrinker needs to be registered to relieve memory pressure.
-> +	 */
-> +	if (virtio_has_feature(vb->vdev, VIRTIO_BALLOON_F_DEFLATE_ON_OOM)) {
-> +		err = virtio_balloon_register_shrinker(vb);
-> +		if (err)
-> +			goto out_del_vqs;
-> +	}
->  	virtio_device_ready(vdev);
->  
->  	if (towards_target(vb))
-> @@ -639,8 +648,8 @@ static void virtballoon_remove(struct virtio_device *vdev)
->  {
->  	struct virtio_balloon *vb = vdev->priv;
->  
-> -	unregister_oom_notifier(&vb->nb);
-> -
-> +	if (virtio_has_feature(vb->vdev, VIRTIO_BALLOON_F_DEFLATE_ON_OOM))
-> +		virtio_balloon_unregister_shrinker(vb);
->  	spin_lock_irq(&vb->stop_update_lock);
->  	vb->stop_update = true;
->  	spin_unlock_irq(&vb->stop_update_lock);
-> -- 
-> 2.7.4
+2) dd if=478MB_file of=/dev/null, actual=1058721792 Bytes
+free -m
+               total        used        free      shared buff/cache   
+available
+Mem:           7975        7233         102          10 639         475
+Swap:         10236           0       10236
+
+The advantage is that the inflated pages are given back to mm based on 
+the number, i.e. ~56MB(diff "actual" above) of the reclaimer is asking 
+for. This is more adaptive.
+
+
+
+*2. V2 paches, balloon_pages_to_shrink=1000000 pages (around 4GB), with 
+the shrinker fix patches applied.
+1)After inflating some amount of memory, actual=1000001536 Bytes
+free -m
+               total        used        free      shared buff/cache   
+available
+Mem:           7975        7288         530          10 157         455
+Swap:         10236           0       10236
+
+2)dd if=478MB_file of=/dev/null, actual=5096001536 Bytes
+free -m
+               total        used        free      shared buff/cache   
+available
+Mem:           7975        3381        3953          10 640        4327
+Swap:         10236           0       10236
+
+In the above example, we set 4GB to shrink to make the difference 
+obvious. Though the claimer only needs to reclaim ~56MB memory, 4GB 
+inflated pages are given back to mm, which is unnecessary. From the 
+user's perspective, it has no idea of how many pages to given back at 
+the time of setting the module parameter (balloon_pages_to_shrink). So I 
+think the above "*1" is better.
+
+
+
+*3.  V2 paches, balloon_pages_to_shrink=1000000 pages (around 4GB), 
+without the shrinker fix patches applied.
+1) After inflating some amount of memory, actual=1000001536 Bytes
+free -m
+                total        used        free      shared buff/cache   
+available
+Mem:           7975        7292         524          10 158         450
+Swap:         10236           0       10236
+
+2) dd if=478MB_file of=/dev/null, actual=8589934592 Bytes
+free -m
+              total        used        free      shared  buff/cache 
+available
+Mem:           7975          53        7281          10 640        7656
+Swap:         10236           0       10236
+
+Compared to *2, all the balloon pages are shrunk, but users expect 4GB 
+to shrink. The reason is that do_slab_shrink has a mistake in 
+calculating schrinkctl->nr_scanned, which should be the actual number of 
+pages that the shrinker has freed, but do slab_shrink still treat that 
+value as 128 (but 4GB has actually been freed).
+
+
+Best,
+Wei
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
