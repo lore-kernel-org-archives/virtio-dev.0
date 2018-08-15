@@ -1,101 +1,64 @@
-Return-Path: virtio-dev-return-4798-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4782-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 5FDBD985C34
-	for <virtio-dev@lists.oasis-open.org>; Mon, 27 Aug 2018 02:02:09 +0000 (UTC)
-From: Wei Wang <wei.w.wang@intel.com>
-Date: Mon, 27 Aug 2018 09:32:19 +0800
-Message-Id: <1535333539-32420-4-git-send-email-wei.w.wang@intel.com>
-In-Reply-To: <1535333539-32420-1-git-send-email-wei.w.wang@intel.com>
-References: <1535333539-32420-1-git-send-email-wei.w.wang@intel.com>
-Subject: [virtio-dev] [PATCH v37 3/3] virtio-balloon: VIRTIO_BALLOON_F_PAGE_POISON
-To: virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, linux-mm@kvack.org, mst@redhat.com, mhocko@kernel.org, akpm@linux-foundation.org, dgilbert@redhat.com
-Cc: torvalds@linux-foundation.org, pbonzini@redhat.com, wei.w.wang@intel.com, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu0@gmail.com, nilal@redhat.com, riel@redhat.com, peterx@redhat.com, quintela@redhat.com
+	by lists.oasis-open.org (Postfix) with ESMTP id 5AD37985C1F
+	for <virtio-dev@lists.oasis-open.org>; Wed, 15 Aug 2018 18:49:17 +0000 (UTC)
+From: Sridhar Samudrala <sridhar.samudrala@intel.com>
+Date: Wed, 15 Aug 2018 11:49:15 -0700
+Message-Id: <1534358955-35869-1-git-send-email-sridhar.samudrala@intel.com>
+Subject: [virtio-dev] [PATCH v4] content: Introduce VIRTIO_NET_F_STANDBY feature
+To: mst@redhat.com, cohuck@redhat.com, virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-The VIRTIO_BALLOON_F_PAGE_POISON feature bit is used to indicate if the
-guest is using page poisoning. Guest writes to the poison_val config
-field to tell host about the page poisoning value that is in use.
+VIRTIO_NET_F_STANDBY feature enables hypervisor to indicate virtio_net
+device to act as a standby for another device with the same MAC address.
 
-Suggested-by: Michael S. Tsirkin <mst@redhat.com>
-Signed-off-by: Wei Wang <wei.w.wang@intel.com>
-Cc: Michael S. Tsirkin <mst@redhat.com>
-Cc: Michal Hocko <mhocko@suse.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Sridhar Samudrala <sridhar.samudrala@intel.com>
+Acked-by: Cornelia Huck <cohuck@redhat.com>
+Fixes: https://github.com/oasis-tcs/virtio-spec/issues/18
 ---
- drivers/virtio/virtio_balloon.c     | 10 ++++++++++
- include/uapi/linux/virtio_balloon.h |  3 +++
- 2 files changed, 13 insertions(+)
+ content.tex | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/drivers/virtio/virtio_balloon.c b/drivers/virtio/virtio_balloon.c
-index a185678..728ecd1 100644
---- a/drivers/virtio/virtio_balloon.c
-+++ b/drivers/virtio/virtio_balloon.c
-@@ -825,6 +825,7 @@ static int virtio_balloon_register_shrinker(struct virtio_balloon *vb)
- static int virtballoon_probe(struct virtio_device *vdev)
- {
- 	struct virtio_balloon *vb;
-+	__u32 poison_val;
- 	int err;
+diff --git a/content.tex b/content.tex
+index be18234..42a0e7e 100644
+--- a/content.tex
++++ b/content.tex
+@@ -2525,6 +2525,9 @@ features.
  
- 	if (!vdev->config->get) {
-@@ -892,6 +893,11 @@ static int virtballoon_probe(struct virtio_device *vdev)
- 		vb->num_free_page_blocks = 0;
- 		spin_lock_init(&vb->free_page_list_lock);
- 		INIT_LIST_HEAD(&vb->free_page_list);
-+		if (virtio_has_feature(vdev, VIRTIO_BALLOON_F_PAGE_POISON)) {
-+			memset(&poison_val, PAGE_POISON, sizeof(poison_val));
-+			virtio_cwrite(vb->vdev, struct virtio_balloon_config,
-+				      poison_val, &poison_val);
-+		}
- 	}
- 	/*
- 	 * We continue to use VIRTIO_BALLOON_F_DEFLATE_ON_OOM to decide if a
-@@ -992,6 +998,9 @@ static int virtballoon_restore(struct virtio_device *vdev)
- 
- static int virtballoon_validate(struct virtio_device *vdev)
- {
-+	if (!page_poisoning_enabled())
-+		__virtio_clear_bit(vdev, VIRTIO_BALLOON_F_PAGE_POISON);
+ \item[VIRTIO_NET_F_CTRL_MAC_ADDR(23)] Set MAC address through control
+     channel.
 +
- 	__virtio_clear_bit(vdev, VIRTIO_F_IOMMU_PLATFORM);
- 	return 0;
- }
-@@ -1001,6 +1010,7 @@ static unsigned int features[] = {
- 	VIRTIO_BALLOON_F_STATS_VQ,
- 	VIRTIO_BALLOON_F_DEFLATE_ON_OOM,
- 	VIRTIO_BALLOON_F_FREE_PAGE_HINT,
-+	VIRTIO_BALLOON_F_PAGE_POISON,
- };
++\item[VIRTIO_NET_F_STANDBY(62)] Device may act as a standby for a primary
++    device with the same MAC address.
+ \end{description}
  
- static struct virtio_driver virtio_balloon_driver = {
-diff --git a/include/uapi/linux/virtio_balloon.h b/include/uapi/linux/virtio_balloon.h
-index 47c9eb4..a1966cd7 100644
---- a/include/uapi/linux/virtio_balloon.h
-+++ b/include/uapi/linux/virtio_balloon.h
-@@ -35,6 +35,7 @@
- #define VIRTIO_BALLOON_F_STATS_VQ	1 /* Memory Stats virtqueue */
- #define VIRTIO_BALLOON_F_DEFLATE_ON_OOM	2 /* Deflate balloon on OOM */
- #define VIRTIO_BALLOON_F_FREE_PAGE_HINT	3 /* VQ to report free pages */
-+#define VIRTIO_BALLOON_F_PAGE_POISON	4 /* Guest is using page poisoning */
+ \subsubsection{Feature bit requirements}\label{sec:Device Types / Network Device / Feature bits / Feature bit requirements}
+@@ -2614,6 +2617,9 @@ level ethernet header length) size with \field{gso_type} NONE or ECN, and do
+ so without fragmentation, after VIRTIO_NET_F_MTU has been successfully
+ negotiated.
  
- /* Size of a PFN in the balloon interface. */
- #define VIRTIO_BALLOON_PFN_SHIFT 12
-@@ -48,6 +49,8 @@ struct virtio_balloon_config {
- 	__u32 actual;
- 	/* Free page report command id, readonly by guest */
- 	__u32 free_page_report_cmd_id;
-+	/* Stores PAGE_POISON if page poisoning is in use */
-+	__u32 poison_val;
- };
++If the driver negotiates the VIRTIO_NET_F_STANDBY feature, the device MAY act
++as a standby device for a primary device with the same MAC address.
++
+ \drivernormative{\subsubsection}{Device configuration layout}{Device Types / Network Device / Device configuration layout}
  
- #define VIRTIO_BALLOON_S_SWAP_IN  0   /* Amount of memory swapped in */
+ A driver SHOULD negotiate VIRTIO_NET_F_MAC if the device offers it.
+@@ -2636,6 +2642,8 @@ If the driver negotiates VIRTIO_NET_F_MTU, it MUST NOT transmit packets of
+ size exceeding the value of \field{mtu} (plus low level ethernet header length)
+ with \field{gso_type} NONE or ECN.
+ 
++A driver SHOULD negotiate the VIRTIO_NET_F_STANDBY feature if the device offers it.
++
+ \subsubsection{Legacy Interface: Device configuration layout}\label{sec:Device Types / Network Device / Device configuration layout / Legacy Interface: Device configuration layout}
+ \label{sec:Device Types / Block Device / Feature bits / Device configuration layout / Legacy Interface: Device configuration layout}
+ When using the legacy interface, transitional devices and drivers
 -- 
-2.7.4
+2.14.4
 
 
 ---------------------------------------------------------------------
