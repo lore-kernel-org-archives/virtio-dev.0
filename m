@@ -1,68 +1,95 @@
-Return-Path: virtio-dev-return-4784-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4785-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 2B60D985C1F
-	for <virtio-dev@lists.oasis-open.org>; Thu, 16 Aug 2018 00:25:09 +0000 (UTC)
-From: "Liu, Changpeng" <changpeng.liu@intel.com>
-Date: Thu, 16 Aug 2018 00:25:05 +0000
-Message-ID: <FF7FC980937D6342B9D289F5F3C7C2625B713CF1@SHSMSX103.ccr.corp.intel.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id C3FA0985C1F
+	for <virtio-dev@lists.oasis-open.org>; Thu, 16 Aug 2018 06:56:43 +0000 (UTC)
 References: <f9a2a8b4-440a-cdb7-87c3-0b2ea7a66c90@kernkonzept.com>
  <09a45081-54e3-a55c-1f14-36893bdc663b@redhat.com>
  <88724ffb-1548-ed50-ea4c-b612fa056d09@kernkonzept.com>
-In-Reply-To: <88724ffb-1548-ed50-ea4c-b612fa056d09@kernkonzept.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <FF7FC980937D6342B9D289F5F3C7C2625B713CF1@SHSMSX103.ccr.corp.intel.com>
+From: Jakub Jermar <jakub.jermar@kernkonzept.com>
+Message-ID: <99f2c075-a4ee-77a2-b9a6-f8b91541fe33@kernkonzept.com>
+Date: Thu, 16 Aug 2018 08:56:40 +0200
 MIME-Version: 1.0
-Subject: RE: [virtio-dev] Clarifications for the new DISCARD and WRITE
- ZEROES commands
-To: Jakub Jermar <jakub.jermar@kernkonzept.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
+In-Reply-To: <FF7FC980937D6342B9D289F5F3C7C2625B713CF1@SHSMSX103.ccr.corp.intel.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: Re: [virtio-dev] Clarifications for the new DISCARD and WRITE ZEROES
+ commands
+To: virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-SGkgSmFrdWIsDQoNClRoZSBsYXRlc3QgcGF0Y2ggc2V0IGZvciBhZGRpbmcgRElTQ0FSRCBhbmQg
-V1JJVEUgWkVST0VTIHRvIHZpcnRpby1ibGsgbG9jYXRlcyBoZXJlLCANCmh0dHBzOi8vbGlzdHMu
-bGludXhmb3VuZGF0aW9uLm9yZy9waXBlcm1haWwvdmlydHVhbGl6YXRpb24vMjAxOC1KdW5lLzAz
-ODI5OS5odG1sDQoNCg0KDQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IHZp
-cnRpby1kZXZAbGlzdHMub2FzaXMtb3Blbi5vcmcgW21haWx0bzp2aXJ0aW8tZGV2QGxpc3RzLm9h
-c2lzLW9wZW4ub3JnXSBPbg0KPiBCZWhhbGYgT2YgSmFrdWIgSmVybWFyDQo+IFNlbnQ6IFRodXJz
-ZGF5LCBBdWd1c3QgMTYsIDIwMTggNTozMyBBTQ0KPiBUbzogdmlydGlvLWRldkBsaXN0cy5vYXNp
-cy1vcGVuLm9yZw0KPiBTdWJqZWN0OiBSZTogW3ZpcnRpby1kZXZdIENsYXJpZmljYXRpb25zIGZv
-ciB0aGUgbmV3IERJU0NBUkQgYW5kIFdSSVRFIFpFUk9FUw0KPiBjb21tYW5kcw0KPiANCj4gT24g
-MDgvMTUvMjAxOCAwNTo0NyBQTSwgUGFvbG8gQm9uemluaSB3cm90ZToNCj4gPiBPbiAxNS8wOC8y
-MDE4IDE3OjEyLCBKYWt1YiBKZXJtYXIgd3JvdGU6DQo+ID4+IEluIHRoZSBhYnNlbmNlIG9mIHN1
-Y2ggYSBjb25mb3JtaW5nIHBhdGNoLCBJIHdvdWxkIGtpbmRseSBhc2sgc29tZW9uZSB0bw0KPiA+
-PiBjbGFyaWZ5IHRoZSByZWxhdGlvbnNoaXAgYmV0d2VlbiB0aGUgdmlydGlvX2Jsa19kaXNjYXJk
-X3dyaXRlX3plcm9lcw0KPiA+PiBzdHJ1Y3R1cmVzIGFuZCB0aGUgdmlydGlvIGRlc2NyaXB0b3Iu
-IFsxXSBzZWVtcyB0byBpbmRpY2F0ZSB0aGF0IHRoZXJlDQo+ID4+IGlzIGFsd2F5cyBvbmUgc3Ry
-dWN0IHZpcnRpb19ibGtfZGlzY2FyZF93cml0ZV96ZXJvZXMgcGVyIGRlc2NyaXB0b3IsIGJ1dA0K
-PiA+PiB0aGUgd29yZGluZyBpcyBub3QgdmVyeSBjbGVhci4gSWYgdGhlIGNvbnRhaW5pbmcgZGVz
-Y3JpcHRvciBtdXN0IGJlIGENCj4gPj4gbXVsdGlwbGUgb2YgNTEyIGluIHNpemUgKGJlY2F1c2Ug
-b2YgdTggZGF0YVtdWzUxMl0pLA0KPiA+DQo+ID4gVGhlIGRlc2NyaXB0b3JzIGFyZSBpbnRlbmRl
-ZCB0byBiZSBhIG11bHRpcGxlIG9mIDE2IGJ5dGVzIGluIHNpemUgZm9yDQo+ID4gZGlzY2FyZCBh
-bmQgd3JpdGUgemVyb2VzLg0KPiA+DQo+ID4gSW4gZmFjdCwgZXZlbiBmb3IgcmVhZHMvd3JpdGVz
-IHRoZSBkZXNjcmlwdG9ycyBhcmUgYSBtdWx0aXBsZSBvZiB0aGUNCj4gPiBsb2dpY2FsIGJsb2Nr
-IHNpemUsIG5vdCBvZiA1MTIuICBUaGF0IG91Z2h0IHRvIGJlIGNvcnJlY3RlZCBhcyB3ZWxsLg0K
-PiA+DQo+ID4+IHRoZXJlIGlzIG5vIHdheSB0bw0KPiA+PiBmaWd1cmUgb3V0IGhvdyBtYW55IG9m
-IHRoZXNlIHN0cnVjdHMgaXQgY29udGFpbnMuIFNvIHRoZXJlIG11c3QgYmUgb25seQ0KPiA+PiBv
-bmUgYW5kIHRoZSBvbmx5IHdheSB0byBhZGQgYSBzZWdtZW50IGlzIHRvIGNoYWluIGRlc2NyaXB0
-b3JzLg0KPiA+DQo+ID4gTm8sIGl0IGRvZXMgbm90IG1hdHRlciBob3cgZGVzY3JpcHRvcnMgYXJl
-IGNoYWluZWQuICBEYXRhIGlzIGFsd2F5cw0KPiA+IHRyZWF0ZWQgYXMgaWYgaXQgd2FzIGp1c3Qg
-b25lIGRlc2NyaXB0b3IuDQo+ID4NCj4gPj4gVW5sZXNzDQo+ID4+IHRoZSBkZXNjcmlwdG9yIHNp
-emUgaXMgc29tZWhvdyBhbGxvd2VkIHRvIGJlIGEgbXVsdGlwbGUgb2Ygc2l6ZW9mKHN0cnVjdA0K
-PiA+PiB2aXJ0aW9fYmxrX2Rpc2NhcmRfd3JpdGVfemVyb2VzKSBpbiB3aGljaCBjYXNlIGl0IGNv
-dWxkIGJlIGRldGVybWluZWQNCj4gPj4gYW5kIHRoZXJlIG1heSBiZSBzZXZlcmFsIG9mIHRoZXNl
-IHN0cnVjdHVyZXMgcGVyIGRlc2NyaXB0b3IuDQo+ID4+DQo+ID4+IEFsc28sIHdoeSBpcyBpdCB0
-aGF0IHRoZXJlIGlzIGRpc2NhcmRfc2VjdG9yX2FsaWdubWVudCBidXQgbm8NCj4gPj4gd3JpdGVf
-emVyb2VzX3NlY3Rvcl9hbGlnbm1lbnQ/DQo+ID4NCj4gPiBZb3UgY2FuIHVzZSBkaXNjYXJkX3pl
-cm9lc19hbGlnbm1lbnQgdG9vIGlmIHVubWFwPTEgaW4gdGhlIGRlc2NyaXB0b3Incw0KPiA+IGZs
-YWdzLiAgSWYgdW5tYXA9MCwgaXQgZG9lc24ndCBtYXR0ZXIuDQo+IA0KPiBUaGFuayB5b3UsIHRo
-YXQgd2FzIHF1aXRlIGhlbHBmdWwuDQo+IA0KPiBKYWt1Yg0KPiANCj4gLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tDQo+
-IFRvIHVuc3Vic2NyaWJlLCBlLW1haWw6IHZpcnRpby1kZXYtdW5zdWJzY3JpYmVAbGlzdHMub2Fz
-aXMtb3Blbi5vcmcNCj4gRm9yIGFkZGl0aW9uYWwgY29tbWFuZHMsIGUtbWFpbDogdmlydGlvLWRl
-di1oZWxwQGxpc3RzLm9hc2lzLW9wZW4ub3JnDQoNCg==
+On 08/16/2018 02:25 AM, Liu, Changpeng wrote:
+> The latest patch set for adding DISCARD and WRITE ZEROES to virtio-blk locates here, 
+> https://lists.linuxfoundation.org/pipermail/virtualization/2018-June/038299.html
+
+Wonderful, thanks!
+
+Jakub
+
+> 
+> 
+> 
+>> -----Original Message-----
+>> From: virtio-dev@lists.oasis-open.org [mailto:virtio-dev@lists.oasis-open.org] On
+>> Behalf Of Jakub Jermar
+>> Sent: Thursday, August 16, 2018 5:33 AM
+>> To: virtio-dev@lists.oasis-open.org
+>> Subject: Re: [virtio-dev] Clarifications for the new DISCARD and WRITE ZEROES
+>> commands
+>>
+>> On 08/15/2018 05:47 PM, Paolo Bonzini wrote:
+>>> On 15/08/2018 17:12, Jakub Jermar wrote:
+>>>> In the absence of such a conforming patch, I would kindly ask someone to
+>>>> clarify the relationship between the virtio_blk_discard_write_zeroes
+>>>> structures and the virtio descriptor. [1] seems to indicate that there
+>>>> is always one struct virtio_blk_discard_write_zeroes per descriptor, but
+>>>> the wording is not very clear. If the containing descriptor must be a
+>>>> multiple of 512 in size (because of u8 data[][512]),
+>>>
+>>> The descriptors are intended to be a multiple of 16 bytes in size for
+>>> discard and write zeroes.
+>>>
+>>> In fact, even for reads/writes the descriptors are a multiple of the
+>>> logical block size, not of 512.  That ought to be corrected as well.
+>>>
+>>>> there is no way to
+>>>> figure out how many of these structs it contains. So there must be only
+>>>> one and the only way to add a segment is to chain descriptors.
+>>>
+>>> No, it does not matter how descriptors are chained.  Data is always
+>>> treated as if it was just one descriptor.
+>>>
+>>>> Unless
+>>>> the descriptor size is somehow allowed to be a multiple of sizeof(struct
+>>>> virtio_blk_discard_write_zeroes) in which case it could be determined
+>>>> and there may be several of these structures per descriptor.
+>>>>
+>>>> Also, why is it that there is discard_sector_alignment but no
+>>>> write_zeroes_sector_alignment?
+>>>
+>>> You can use discard_zeroes_alignment too if unmap=1 in the descriptor's
+>>> flags.  If unmap=0, it doesn't matter.
+>>
+>> Thank you, that was quite helpful.
+>>
+>> Jakub
+>>
+>> ---------------------------------------------------------------------
+>> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+>> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+> 
+
+-- 
+Kernkonzept GmbH at Dresden, Germany, HRB 31129, CEO Dr.-Ing. Michael
+Hohmuth
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
