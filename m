@@ -1,144 +1,120 @@
-Return-Path: virtio-dev-return-4813-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4792-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 1FDFB985EC1
-	for <virtio-dev@lists.oasis-open.org>; Wed, 29 Aug 2018 12:20:32 +0000 (UTC)
-From: Gerd Hoffmann <kraxel@redhat.com>
-Date: Wed, 29 Aug 2018 14:20:26 +0200
-Message-Id: <20180829122026.27012-3-kraxel@redhat.com>
-In-Reply-To: <20180829122026.27012-1-kraxel@redhat.com>
-References: <20180829122026.27012-1-kraxel@redhat.com>
-Subject: [virtio-dev] [PATCH 2/2] drm/virtio: add iommu support.
-To: dri-devel@lists.freedesktop.org, virtio-dev@lists.oasis-open.org
-Cc: Gerd Hoffmann <kraxel@redhat.com>, David Airlie <airlied@linux.ie>, "open list:VIRTIO GPU DRIVER" <virtualization@lists.linux-foundation.org>, open list <linux-kernel@vger.kernel.org>
+	by lists.oasis-open.org (Postfix) with ESMTP id 6E0E1985E90
+	for <virtio-dev@lists.oasis-open.org>; Fri, 24 Aug 2018 00:44:00 +0000 (UTC)
+From: "Longpeng(Mike)" <longpeng2@huawei.com>
+Date: Fri, 24 Aug 2018 08:43:34 +0800
+Message-ID: <1535071416-212072-1-git-send-email-longpeng2@huawei.com>
+MIME-Version: 1.0
+Content-Type: text/plain
+Subject: [virtio-dev] [PATCH v25 0/2] virtio-crypto: virtio crypto device specification
+To: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org
+Cc: mst@redhat.com, cohuck@redhat.com, stefanha@redhat.com, denglingli@chinamobile.com, Jani.Kokkonen@huawei.com, Ola.Liljedahl@arm.com, Varun.Sethi@freescale.com, xin.zeng@intel.com, brian.a.keating@intel.com, liang.j.ma@intel.com, john.griffin@intel.com, agraf@suse.de, jasowang@redhat.com, vincent.jardin@6wind.com, arei.gonglei@huawei.com, pasic@linux.vnet.ibm.com, weidong.huang@huawei.com, wangxinxin.wang@huawei.com, jianjay.zhou@huawei.com, "Longpeng(Mike)" <longpeng2@huawei.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Use the dma mapping api and properly add iommu mappings for
-objects, unless virtio is in iommu quirk mode.
-
-Signed-off-by: Gerd Hoffmann <kraxel@redhat.com>
 ---
- drivers/gpu/drm/virtio/virtgpu_drv.h |  1 +
- drivers/gpu/drm/virtio/virtgpu_vq.c  | 46 +++++++++++++++++++++++++++++-------
- 2 files changed, 38 insertions(+), 9 deletions(-)
+v25 -> v24
+ - fix some typos and letex grammar.
 
-diff --git a/drivers/gpu/drm/virtio/virtgpu_drv.h b/drivers/gpu/drm/virtio/virtgpu_drv.h
-index cbbff01077..ec9a38f995 100644
---- a/drivers/gpu/drm/virtio/virtgpu_drv.h
-+++ b/drivers/gpu/drm/virtio/virtgpu_drv.h
-@@ -57,6 +57,7 @@ struct virtio_gpu_object {
- 	uint32_t hw_res_handle;
- 
- 	struct sg_table *pages;
-+	uint32_t mapped;
- 	void *vmap;
- 	bool dumb;
- 	struct ttm_place                placement_code;
-diff --git a/drivers/gpu/drm/virtio/virtgpu_vq.c b/drivers/gpu/drm/virtio/virtgpu_vq.c
-index af24e91267..bf631d32d4 100644
---- a/drivers/gpu/drm/virtio/virtgpu_vq.c
-+++ b/drivers/gpu/drm/virtio/virtgpu_vq.c
-@@ -424,7 +424,8 @@ void virtio_gpu_cmd_unref_resource(struct virtio_gpu_device *vgdev,
- }
- 
- static void virtio_gpu_cmd_resource_inval_backing(struct virtio_gpu_device *vgdev,
--						  uint32_t resource_id)
-+						  uint32_t resource_id,
-+						  struct virtio_gpu_fence **fence)
- {
- 	struct virtio_gpu_resource_detach_backing *cmd_p;
- 	struct virtio_gpu_vbuffer *vbuf;
-@@ -435,7 +436,7 @@ static void virtio_gpu_cmd_resource_inval_backing(struct virtio_gpu_device *vgde
- 	cmd_p->hdr.type = cpu_to_le32(VIRTIO_GPU_CMD_RESOURCE_DETACH_BACKING);
- 	cmd_p->resource_id = cpu_to_le32(resource_id);
- 
--	virtio_gpu_queue_ctrl_buffer(vgdev, vbuf);
-+	virtio_gpu_queue_fenced_ctrl_buffer(vgdev, vbuf, &cmd_p->hdr, fence);
- }
- 
- void virtio_gpu_cmd_set_scanout(struct virtio_gpu_device *vgdev,
-@@ -848,9 +849,10 @@ int virtio_gpu_object_attach(struct virtio_gpu_device *vgdev,
- 			     uint32_t resource_id,
- 			     struct virtio_gpu_fence **fence)
- {
-+	bool use_dma_api = !virtio_has_iommu_quirk(vgdev->vdev);
- 	struct virtio_gpu_mem_entry *ents;
- 	struct scatterlist *sg;
--	int si;
-+	int si, nents;
- 
- 	if (!obj->pages) {
- 		int ret;
-@@ -860,23 +862,33 @@ int virtio_gpu_object_attach(struct virtio_gpu_device *vgdev,
- 			return ret;
- 	}
- 
-+	if (use_dma_api) {
-+		obj->mapped = dma_map_sg(vgdev->vdev->dev.parent,
-+					 obj->pages->sgl, obj->pages->nents,
-+					 DMA_TO_DEVICE);
-+		nents = obj->mapped;
-+	} else {
-+		nents = obj->pages->nents;
-+	}
-+
- 	/* gets freed when the ring has consumed it */
--	ents = kmalloc_array(obj->pages->nents,
--			     sizeof(struct virtio_gpu_mem_entry),
-+	ents = kmalloc_array(nents, sizeof(struct virtio_gpu_mem_entry),
- 			     GFP_KERNEL);
- 	if (!ents) {
- 		DRM_ERROR("failed to allocate ent list\n");
- 		return -ENOMEM;
- 	}
- 
--	for_each_sg(obj->pages->sgl, sg, obj->pages->nents, si) {
--		ents[si].addr = cpu_to_le64(sg_phys(sg));
-+	for_each_sg(obj->pages->sgl, sg, nents, si) {
-+		ents[si].addr = cpu_to_le64(use_dma_api
-+					    ? sg_dma_address(sg)
-+					    : sg_phys(sg));
- 		ents[si].length = cpu_to_le32(sg->length);
- 		ents[si].padding = 0;
- 	}
- 
- 	virtio_gpu_cmd_resource_attach_backing(vgdev, resource_id,
--					       ents, obj->pages->nents,
-+					       ents, nents,
- 					       fence);
- 	obj->hw_res_handle = resource_id;
- 	return 0;
-@@ -885,7 +897,23 @@ int virtio_gpu_object_attach(struct virtio_gpu_device *vgdev,
- void virtio_gpu_object_detach(struct virtio_gpu_device *vgdev,
- 			      struct virtio_gpu_object *obj)
- {
--	virtio_gpu_cmd_resource_inval_backing(vgdev, obj->hw_res_handle);
-+	bool use_dma_api = !virtio_has_iommu_quirk(vgdev->vdev);
-+	struct virtio_gpu_fence *fence;
-+
-+	if (use_dma_api && obj->mapped) {
-+		/* detach backing and wait for the host process it ... */
-+		virtio_gpu_cmd_resource_inval_backing(vgdev, obj->hw_res_handle, &fence);
-+		dma_fence_wait(&fence->f, true);
-+		dma_fence_put(&fence->f);
-+
-+		/* ... then tear down iommu mappings */
-+		dma_unmap_sg(vgdev->vdev->dev.parent,
-+			     obj->pages->sgl, obj->mapped,
-+			     DMA_TO_DEVICE);
-+		obj->mapped = 0;
-+	} else {
-+		virtio_gpu_cmd_resource_inval_backing(vgdev, obj->hw_res_handle, NULL);
-+	}
- }
- 
- void virtio_gpu_cursor_ping(struct virtio_gpu_device *vgdev,
+v24 -> v23
+ - Some enhancements based on Halil's suggestion. [Halil]
+
+v23 -> v22
+ - rename MUX_MODE to REVISION_1 [Halil]
+ - fixed-length paramenters' instead of 'header' and
+   'variable-length parameters' instead of 'extra parameters' [Halil]
+ - add guidance about VIRTIO_CRYPTO_FLAG_SESSION_MODE [Halil]
+ - other fixes. [Longpeng]
+
+v22 -> v21
+ - fix some typos and grammar fixes [Halil, Stefan]
+ - reorder names in alphabetical order [Stefan]
+ - redescribe the date format [Halil]
+
+v21 -> v20
+ - rename 'queue_id' to 'reserved' [Halil]
+ - redescribe the format of the structures which using 'union'
+   in the previous version [Halil]
+
+v20 -> v19
+ - fix some typos and grammar fixes [Halil]
+ - make queue_id reserved [Halil]
+ - remove 'Steps of Operation'
+
+v19 -> v18:
+ - fix some typos and grammar fixes [Stefan, Halil]
+ - rename VIRTIO_CRYPTO_F_STATELESS_MODE to VIRTIO_CRYPTO_F_MUX_MODE
+ - describe the VIRTIO_CRYPTO_STATUS in detial. [Halil]
+ - refactor and redescribe the controlq/dataq request's format
+   of mux mode. [Halil]
+ - other small fixes. [Halil]
+
+v18 -> v17:
+ - fix many English grammar problems suggested by Stefan, Thanks a lot!
+
+v17 -> v16:
+ - Some grammar fixes [Stefan, Halil, Michael]
+ - add a section named "Supported crypto services" in order to explain bit
+   numbers and valuse clearly. [Halil, Cornelia]
+ - avoid word reptition [Halil]
+ - rename non-session mode to stateless mode [Halil]
+ - change descriptions for all elements in struct virtio_crypto_config [Halil]
+ - add Halil as a reviewer in the ackonwledgement part, thanks for his work.
+ - other fixes here and there.
+
+Changes since v15:
+ - use feature bits for non-session mode in order to keep compatibility with
+   pre-existing code. [Halil & Michael]
+ - introduce VIRTIO_CRYPTO_F_ NON_SESSION_MODE feature bit to control all other
+   non-session mode feature bits.
+ - fix some typos. [Stefan]
+ - introduce struct virtio_crypto_op_data_req_mux to support both session
+   and non-session based crypto operations and keep compatibility with
+   pre-existing code.
+
+Changes since v14:
+ - drop VIRTIO_CRYPTO_S_STARTED status [Halil & Cornelia]
+ - correct a sentence about dataqueue and controlq in the first paragraph. 
+[Halil]
+ - change a MAY to MUST about max_dataqueues. [Halil]
+ - add non-session mode support
+   a) add four features for different crypto services to identify wheather 
+support session mode.
+   b) rewrite some
+
+For pervious versions of virtio crypto spec, Pls see:
+
+[v18]:
+https://www.mail-archive.com/qemu-devel@nongnu.org/msg444897.html
+
+[v14]:
+https://lists.gnu.org/archive/html/qemu-devel/2016-11/msg02212.html
+
+[v13]:
+https://lists.gnu.org/archive/html/qemu-devel/2016-10/msg07348.html
+
+For more information, please see:
+ http://qemu-project.org/Features/VirtioCrypto
+
+Longpeng(Mike) (2):
+  virtio-crypto: Add virtio crypto device specification
+  virtio-crypto: Add conformance clauses
+
+ acknowledgements.tex |    4 +
+ conformance.tex      |   29 +
+ content.tex          |    2 +
+ virtio-crypto.tex    | 1533 ++++++++++++++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 1568 insertions(+)
+ create mode 100644 virtio-crypto.tex
+
 -- 
-2.9.3
+1.8.3.1
+
 
 
 ---------------------------------------------------------------------
