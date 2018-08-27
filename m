@@ -1,97 +1,112 @@
-Return-Path: virtio-dev-return-4807-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4805-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 5DF9F985EA2
-	for <virtio-dev@lists.oasis-open.org>; Tue, 28 Aug 2018 12:05:32 +0000 (UTC)
-Date: Tue, 28 Aug 2018 08:05:24 -0400
+	by lists.oasis-open.org (Postfix) with ESMTP id 5B74A985C6D
+	for <virtio-dev@lists.oasis-open.org>; Mon, 27 Aug 2018 18:36:52 +0000 (UTC)
+Date: Mon, 27 Aug 2018 14:36:46 -0400
 From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20180828080457-mutt-send-email-mst@kernel.org>
-References: <1490350679-19068-1-git-send-email-lprosek@redhat.com>
- <20170324234220-mutt-send-email-mst@kernel.org>
- <CABdb736T+YRoAdze-LYYqy+gZ495CnRXvi7cqS3gffhL9OoCYw@mail.gmail.com>
- <20170406011025-mutt-send-email-mst@kernel.org>
- <CABdb734uWaa8CUZ-WbHJ-70MONB+WUDfPHbmGYEXXa3AjPZotg@mail.gmail.com>
- <1491484886.12607.57.camel@redhat.com>
- <20180620061219-mutt-send-email-mst@kernel.org>
+Message-ID: <20180827133424-mutt-send-email-mst@kernel.org>
+References: <20180625122442.22432-1-tiwei.bie@intel.com>
+ <20180625204233-mutt-send-email-mst@kernel.org>
+ <87208c5b-6f51-4a58-6078-5de694d93552@linux.ibm.com>
+ <20180626181922.GA28773@debian>
+ <20180626212448-mutt-send-email-mst@kernel.org>
+ <20180627180803.708b4ed3.cohuck@redhat.com>
+ <20180628085234.GA18042@debian>
+ <20180629070426-mutt-send-email-mst@kernel.org>
+ <20180716110419.GA27375@debian>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20180620061219-mutt-send-email-mst@kernel.org>
-Subject: Re: [virtio-dev] Re: [PATCH] Update virtio input device specification
-To: Gerd Hoffmann <kraxel@redhat.com>
-Cc: Ladi Prosek <lprosek@redhat.com>, virtio-dev@lists.oasis-open.org, Stefan Hajnoczi <stefanha@redhat.com>
+In-Reply-To: <20180716110419.GA27375@debian>
+Subject: Re: [virtio-dev] Re: [RFC] content: tweak VIRTIO_F_IO_BARRIER
+To: Tiwei Bie <tiwei.bie@intel.com>
+Cc: Cornelia Huck <cohuck@redhat.com>, Halil Pasic <pasic@linux.ibm.com>, stefanha@redhat.com, pbonzini@redhat.com, jasowang@redhat.com, pasic@linux.vnet.ibm.com, virtio-dev@lists.oasis-open.org, dan.daly@intel.com, cunming.liang@intel.com, zhihong.wang@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, Jun 20, 2018 at 06:13:35AM +0300, Michael S. Tsirkin wrote:
-> On Thu, Apr 06, 2017 at 03:21:26PM +0200, Gerd Hoffmann wrote:
-> >   Hi,
-> > 
-> > > The downside is that this is hard to specify formally, the same way we
-> > > do other devices. Say we do that and point to a fixed version of the
-> > > relevant Linux headers and the headers evolve and add or change
-> > > something. Then we would either go change the spec to be in sync with
-> > > the headers or build a compatibility layer in the implementation.
-> > 
-> > Highly unlikely that the structs and ioctls in linux header change.
-> > It's userspace <=> kernel abi.  And even if they change some days it
-> > would have to happen in a backward compatible way.  So I think
-> > documenting the ioctl structs we have today is reasonable.  If new
-> > ioctls for new device types show up we probably need a virtio feature
-> > flag anyway to properly support them.
-> > 
-> > Events (new key codes for example) are added now and then.  So for them
-> > we might continue referencing the include file with the codes instead of
-> > copying them into the spec.
-> > 
-> > > because evdev
-> > > needs to maintain some reasonable backwards compatibility by itself so
-> > > it's very unlikely that things would break.
-> > 
-> > Yep.  Unknown events can simply be ignored.  And you can query the
-> > device to figure which events (aka keys / axis / ...) are supported
-> > (ioctl in evdev, config space in virtio).  So that level of
-> > compatibility is already taken care of, in both evdev and virtio.
-> > 
-> > > > Let's assume linux gains ability to generate new events on top of old
-> > > > ones.
-> > > > Do you want to send both in all cases?
-> > > > If you only send multitouch how do you handle old guests?
-> > > > If you send both how does new guest know it should
-> > > > ignore old  events?
+On Mon, Jul 16, 2018 at 07:04:19PM +0800, Tiwei Bie wrote:
+> > > > So, do we still consider VIRTIO_F_IO_BARRIER useful with its current
+> > > > definition? Do we need to clarify assumptions, start afresh, or add a
+> > > > new feature? This is not clear to me from the discussion.
 > > > 
-> > > I think that these are valid concerns but they need to be addressed at
-> > > the evdev layer, not in virtio.
-> > 
-> > Indeed.  And I think multitouch is addressed by simply sending both.
-> > Apps without multitouch support simply ignore the multitouch events.
-> > Apps with multitouch support can figure this is a multitouch-capable
-> > device and ignore the old events on those.
-> > 
-> > cheers,
-> >   Gerd
+> > > The discussion is to talk about how to fix the potential
+> > > problems that currently may happen when the virtio devices
+> > > (which need to bypass the IOMMU) work on the platforms
+> > > (which have DMA limitations).
+> > > 
+> > > Currently,
+> > > 
+> > > - IO_BARRIER is just to tell drivers which type of barriers
+> > >   should be used.
+> > > 
+> > > - IOMMU_PLATFORM (from my understanding) is to tell drivers
+> > >   whether the devices need to bypass the IOMMU.
+> > > 
+> > > Michael is asking whether we should tweak above two bits
+> > > or whether we should do something else to solve this problem.
+> > > 
+> > > If we want to tweak above two bits, they may become
+> > > something like:
+> > > 
+> > > - PLATFORM_CACHE (from IO_BARRIER): about the memory
+> > >    operations visibility between driver and device.
 > 
-> 
-> Gerd is there a chance you could try and address whatever
-> you think needs to be addressed and repost?
-> 
-> Would be nice to have this in 1.1 and I think it's better
-> to have an incomplete description than none.
+> Should the driver always try to determine device's
+> DMA-coherence in the platform specific way?
 
-Ping.
+Point is, some systems don't have any PV interfaces
+besides virtio. These need a virtio way to discover
+coherence as long as we don't emulate the more expensive
+platform specific one.
 
-> 
+> > > 
+> > > - PLATFORM_IOMMU (from IOMMU_PLATFORM):
 > > 
-> > ---------------------------------------------------------------------
-> > To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> > For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+> > I'm not sure we necessarily need to swap the name
+> > around like that.
+> > 
+> > > about whether
+> > >    the DMA addr passed to the device should be prepared
+> > >    (because e.g. the device is behind an IOMMU, or the
+> > >    device can only access parts of system memory).
 > 
-> ---------------------------------------------------------------------
-> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+> For the case that device can only access parts of system
+> memory, if we need virtio device to support this, it seems
+> that we also need to provide a way for virtio driver to
+> know the inaccessible memory range?
+
+I guess at this point people seem to be happy with
+a platform-specific way to discover this.
+
+> > 
+> > Maybe we want to also include the case where device IO
+> > addresses don't match physical addresses (e.g. include
+> > an offset).
+> > 
+> >
+> 
+> It seems that above idea doesn't fix all the problems,
+> e.g. the case mentioned by Jason, that virtio driver
+> cannot use swiotlb (which is transparent to the device)
+> when the IOMMU_PLATFORM bit isn't offered by the device.
+
+Right so is this a real use-case?
+Are there platforms where
+- it is hard to make virtio appear not behind an iommu
+- iommu can not support a passthrough mode
+- virtio addressing needs to be limited
+
+
+
+
+
+
+-- 
+MST
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
