@@ -1,157 +1,94 @@
-Return-Path: virtio-dev-return-4825-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4815-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 6A29A985B32
-	for <virtio-dev@lists.oasis-open.org>; Mon, 10 Sep 2018 00:54:45 +0000 (UTC)
-Message-ID: <5B95C0BE.7060108@huawei.com>
-Date: Mon, 10 Sep 2018 08:54:22 +0800
-From: "Longpeng (Mike)" <longpeng2@huawei.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 8EF4F985FB1
+	for <virtio-dev@lists.oasis-open.org>; Thu,  6 Sep 2018 12:13:35 +0000 (UTC)
+Message-ID: <5B911B03.2060602@intel.com>
+Date: Thu, 06 Sep 2018 20:18:11 +0800
+From: Wei Wang <wei.w.wang@intel.com>
 MIME-Version: 1.0
-References: <1535071416-212072-1-git-send-email-longpeng2@huawei.com> <20180907173002-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20180907173002-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset="ISO-8859-1"
+References: <1532075585-39067-1-git-send-email-wei.w.wang@intel.com> <20180723122342-mutt-send-email-mst@kernel.org> <20180723143604.GB2457@work-vm>
+In-Reply-To: <20180723143604.GB2457@work-vm>
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [virtio-dev] [PATCH v25 0/2] virtio-crypto: virtio crypto device
- specification
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, cohuck@redhat.com, stefanha@redhat.com, denglingli@chinamobile.com, Jani.Kokkonen@huawei.com, Ola.Liljedahl@arm.com, Varun.Sethi@freescale.com, xin.zeng@intel.com, brian.a.keating@intel.com, liang.j.ma@intel.com, john.griffin@intel.com, agraf@suse.de, jasowang@redhat.com, vincent.jardin@6wind.com, arei.gonglei@huawei.com, pasic@linux.vnet.ibm.com, weidong.huang@huawei.com, wangxinxin.wang@huawei.com, jianjay.zhou@huawei.com
+Subject: [virtio-dev] Re: [PATCH v36 0/5] Virtio-balloon: support free page reporting
+To: "Dr. David Alan Gilbert" <dgilbert@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>
+Cc: virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, linux-mm@kvack.org, mhocko@kernel.org, akpm@linux-foundation.org, torvalds@linux-foundation.org, pbonzini@redhat.com, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu0@gmail.com, nilal@redhat.com, riel@redhat.com, peterx@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Hi Michael,
+On 07/23/2018 10:36 PM, Dr. David Alan Gilbert wrote:
+> * Michael S. Tsirkin (mst@redhat.com) wrote:
+>> On Fri, Jul 20, 2018 at 04:33:00PM +0800, Wei Wang wrote:
+>>> This patch series is separated from the previous "Virtio-balloon
+>>> Enhancement" series. The new feature, VIRTIO_BALLOON_F_FREE_PAGE_HINT,
+>>> implemented by this series enables the virtio-balloon driver to report
+>>> hints of guest free pages to the host. It can be used to accelerate live
+>>> migration of VMs. Here is an introduction of this usage:
+>>>
+>>> Live migration needs to transfer the VM's memory from the source machine
+>>> to the destination round by round. For the 1st round, all the VM's memory
+>>> is transferred. From the 2nd round, only the pieces of memory that were
+>>> written by the guest (after the 1st round) are transferred. One method
+>>> that is popularly used by the hypervisor to track which part of memory is
+>>> written is to write-protect all the guest memory.
+>>>
+>>> This feature enables the optimization by skipping the transfer of guest
+>>> free pages during VM live migration. It is not concerned that the memory
+>>> pages are used after they are given to the hypervisor as a hint of the
+>>> free pages, because they will be tracked by the hypervisor and transferred
+>>> in the subsequent round if they are used and written.
+>>>
+>>> * Tests
+>>> - Test Environment
+>>>      Host: Intel(R) Xeon(R) CPU E5-2699 v4 @ 2.20GHz
+>>>      Guest: 8G RAM, 4 vCPU
+>>>      Migration setup: migrate_set_speed 100G, migrate_set_downtime 2 second
+>>>
+>>> - Test Results
+>>>      - Idle Guest Live Migration Time (results are averaged over 10 runs):
+>>>          - Optimization v.s. Legacy = 409ms vs 1757ms --> ~77% reduction
+>>> 	(setting page poisoning zero and enabling ksm don't affect the
+>>>           comparison result)
+>>>      - Guest with Linux Compilation Workload (make bzImage -j4):
+>>>          - Live Migration Time (average)
+>>>            Optimization v.s. Legacy = 1407ms v.s. 2528ms --> ~44% reduction
+>>>          - Linux Compilation Time
+>>>            Optimization v.s. Legacy = 5min4s v.s. 5min12s
+>>>            --> no obvious difference
+>> I'd like to see dgilbert's take on whether this kind of gain
+>> justifies adding a PV interfaces, and what kind of guest workload
+>> is appropriate.
+>>
+>> Cc'd.
+> Well, 44% is great ... although the measurement is a bit weird.
+>
+> a) A 2 second downtime is very large; 300-500ms is more normal
+> b) I'm not sure what the 'average' is  - is that just between a bunch of
+> repeated migrations?
+> c) What load was running in the guest during the live migration?
+>
+> An interesting measurement to add would be to do the same test but
+> with a VM with a lot more RAM but the same load;  you'd hope the gain
+> would be even better.
+> It would be interesting, especially because the users who are interested
+> are people creating VMs allocated with lots of extra memory (for the
+> worst case) but most of the time migrating when it's fairly idle.
+>
+> Dave
+>
 
-On 2018/9/8 5:30, Michael S. Tsirkin wrote:
+Hi Dave,
 
-> OK it is time to apply this.
+The results of the added experiments have been shown in the v37 cover 
+letter.
+Could you have a look at https://lkml.org/lkml/2018/8/27/29 . Thanks.
 
-
-Thanks.
-
-> If I do I get latex errors (undefined and multiple-defined
-> labels). Please post patches on top to fix this up,
-> I will squash.
-> 
-
-OK.
-
-I'll keep working with the virtio-crypto spec and code.
-
-> 
-> On Fri, Aug 24, 2018 at 08:43:34AM +0800, Longpeng(Mike) wrote:
->> ---
->> v25 -> v24
->>  - fix some typos and letex grammar.
->>
->> v24 -> v23
->>  - Some enhancements based on Halil's suggestion. [Halil]
->>
->> v23 -> v22
->>  - rename MUX_MODE to REVISION_1 [Halil]
->>  - fixed-length paramenters' instead of 'header' and
->>    'variable-length parameters' instead of 'extra parameters' [Halil]
->>  - add guidance about VIRTIO_CRYPTO_FLAG_SESSION_MODE [Halil]
->>  - other fixes. [Longpeng]
->>
->> v22 -> v21
->>  - fix some typos and grammar fixes [Halil, Stefan]
->>  - reorder names in alphabetical order [Stefan]
->>  - redescribe the date format [Halil]
->>
->> v21 -> v20
->>  - rename 'queue_id' to 'reserved' [Halil]
->>  - redescribe the format of the structures which using 'union'
->>    in the previous version [Halil]
->>
->> v20 -> v19
->>  - fix some typos and grammar fixes [Halil]
->>  - make queue_id reserved [Halil]
->>  - remove 'Steps of Operation'
->>
->> v19 -> v18:
->>  - fix some typos and grammar fixes [Stefan, Halil]
->>  - rename VIRTIO_CRYPTO_F_STATELESS_MODE to VIRTIO_CRYPTO_F_MUX_MODE
->>  - describe the VIRTIO_CRYPTO_STATUS in detial. [Halil]
->>  - refactor and redescribe the controlq/dataq request's format
->>    of mux mode. [Halil]
->>  - other small fixes. [Halil]
->>
->> v18 -> v17:
->>  - fix many English grammar problems suggested by Stefan, Thanks a lot!
->>
->> v17 -> v16:
->>  - Some grammar fixes [Stefan, Halil, Michael]
->>  - add a section named "Supported crypto services" in order to explain bit
->>    numbers and valuse clearly. [Halil, Cornelia]
->>  - avoid word reptition [Halil]
->>  - rename non-session mode to stateless mode [Halil]
->>  - change descriptions for all elements in struct virtio_crypto_config [Halil]
->>  - add Halil as a reviewer in the ackonwledgement part, thanks for his work.
->>  - other fixes here and there.
->>
->> Changes since v15:
->>  - use feature bits for non-session mode in order to keep compatibility with
->>    pre-existing code. [Halil & Michael]
->>  - introduce VIRTIO_CRYPTO_F_ NON_SESSION_MODE feature bit to control all other
->>    non-session mode feature bits.
->>  - fix some typos. [Stefan]
->>  - introduce struct virtio_crypto_op_data_req_mux to support both session
->>    and non-session based crypto operations and keep compatibility with
->>    pre-existing code.
->>
->> Changes since v14:
->>  - drop VIRTIO_CRYPTO_S_STARTED status [Halil & Cornelia]
->>  - correct a sentence about dataqueue and controlq in the first paragraph. 
->> [Halil]
->>  - change a MAY to MUST about max_dataqueues. [Halil]
->>  - add non-session mode support
->>    a) add four features for different crypto services to identify wheather 
->> support session mode.
->>    b) rewrite some
->>
->> For pervious versions of virtio crypto spec, Pls see:
->>
->> [v18]:
->> https://www.mail-archive.com/qemu-devel@nongnu.org/msg444897.html
->>
->> [v14]:
->> https://lists.gnu.org/archive/html/qemu-devel/2016-11/msg02212.html
->>
->> [v13]:
->> https://lists.gnu.org/archive/html/qemu-devel/2016-10/msg07348.html
->>
->> For more information, please see:
->>  http://qemu-project.org/Features/VirtioCrypto
->>
->> Longpeng(Mike) (2):
->>   virtio-crypto: Add virtio crypto device specification
->>   virtio-crypto: Add conformance clauses
->>
->>  acknowledgements.tex |    4 +
->>  conformance.tex      |   29 +
->>  content.tex          |    2 +
->>  virtio-crypto.tex    | 1533 ++++++++++++++++++++++++++++++++++++++++++++++++++
->>  4 files changed, 1568 insertions(+)
->>  create mode 100644 virtio-crypto.tex
->>
->> -- 
->> 1.8.3.1
->>
->>
->>
->> ---------------------------------------------------------------------
->> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
->> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
-> 
-> .
-> 
-
-
--- 
-Regards,
-Longpeng(Mike)
+Best,
+Wei
 
 
 ---------------------------------------------------------------------
