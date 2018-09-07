@@ -1,293 +1,136 @@
-Return-Path: virtio-dev-return-4841-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4822-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 24D98985D0B
-	for <virtio-dev@lists.oasis-open.org>; Wed, 12 Sep 2018 15:22:45 +0000 (UTC)
-Date: Wed, 12 Sep 2018 11:22:43 -0400
+	by lists.oasis-open.org (Postfix) with ESMTP id 9BBFA985FED
+	for <virtio-dev@lists.oasis-open.org>; Fri,  7 Sep 2018 21:31:06 +0000 (UTC)
+Date: Fri, 7 Sep 2018 17:30:58 -0400
 From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20180912112228-mutt-send-email-mst@kernel.org>
-References: <df44ecd7-4d0b-2e72-6781-82a081807c8a@solarflare.com>
+Message-ID: <20180907173002-mutt-send-email-mst@kernel.org>
+References: <1535071416-212072-1-git-send-email-longpeng2@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <df44ecd7-4d0b-2e72-6781-82a081807c8a@solarflare.com>
-Subject: Re: [virtio-dev] [PATCH v11] VIRTIO_F_NOTIFICATION_DATA: extra data
- to devices
-To: David Riddoch <driddoch@solarflare.com>
-Cc: virtio-dev@lists.oasis-open.org
+In-Reply-To: <1535071416-212072-1-git-send-email-longpeng2@huawei.com>
+Subject: Re: [virtio-dev] [PATCH v25 0/2] virtio-crypto: virtio crypto device
+ specification
+To: "Longpeng(Mike)" <longpeng2@huawei.com>
+Cc: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, cohuck@redhat.com, stefanha@redhat.com, denglingli@chinamobile.com, Jani.Kokkonen@huawei.com, Ola.Liljedahl@arm.com, Varun.Sethi@freescale.com, xin.zeng@intel.com, brian.a.keating@intel.com, liang.j.ma@intel.com, john.griffin@intel.com, agraf@suse.de, jasowang@redhat.com, vincent.jardin@6wind.com, arei.gonglei@huawei.com, pasic@linux.vnet.ibm.com, weidong.huang@huawei.com, wangxinxin.wang@huawei.com, jianjay.zhou@huawei.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Sounds good, I will rebase this and start voting.
+OK it is time to apply this.
+If I do I get latex errors (undefined and multiple-defined
+labels). Please post patches on top to fix this up,
+I will squash.
 
-On Wed, Sep 12, 2018 at 04:20:20PM +0100, David Riddoch wrote:
-> All,
->=20
-> Sorry for resurrecting an old thread.=A0 I implement the sort of devices =
-that
-> would benefit from this feature, so just want to express my support.=A0 It
-> will simplify implementation and improve performance.=A0 The mechanism
-> proposed below works for me.
->=20
-> David
->=20
->=20
-> > On Tue, 27 Mar 2018 05:59:27 +0300
-> > "Michael S. Tsirkin" <m...@redhat.com> wrote:
-> > Some devices benefit from ability to find out the number of available
-> > descriptors in the ring: for efficiency or as a debugging aid.
-> > To help with these optimizations, add a new feature:
-> > VIRTIO_F_NOTIFICATION_DATA. When negotiated, driver notifications to the
-> > device include this extra information.
-> >=20
-> > Signed-off-by: Michael S. Tsirkin <m...@redhat.com>
-> > ---
-> >=20
-> > v10 -> v11:
-> >          drop mention of interrupts: current proposal does not include
-> >          this interrupt related information
-> >          drop unrelated introduction sections
-> >=20
-> >   content.tex | 139 +++++++++++++++++++++++++++++++++++++++++++++++++++=
-++++++---
-> >   1 file changed, 133 insertions(+), 6 deletions(-)
-> >=20
-> > diff --git a/content.tex b/content.tex
-> > index 7a92cb1..95e9b82 100644
-> > --- a/content.tex
-> > +++ b/content.tex
-> > @@ -283,9 +283,75 @@ Packed Virtqueues}).
-> >   Every driver and device supports either the Packed or the Split
-> >   Virtqueue format, or both.
-> > +\subsection{Driver notifications} \label{sec:Virtqueues / Driver notif=
-ications}
-> > +Driver is sometimes required to notify the device after
-> > +making changes to the virtqueue.
-> > +
-> > +When VIRTIO_F_NOTIFICATION_DATA has not been negotiated,
-> > +this notification involves sending the
-> > +virtqueue number to the device (depending on the transport).
-> > +
-> > +However, some devices benefit from ability to find out the number of
-> > +available descriptors in the ring without accessing virtqueue in memor=
-y:
-> > +for efficiency or as a debugging aid.
-> > +
-> > +To help with these optimizations, when VIRTIO_F_NOTIFICATION_DATA
-> > +has been negotiated, driver notifications to the device include
-> > +the following information:
-> > +
-> > +\begin{description}
-> > +\item [VQ number]
-> > +\item [Offset]
-> > +      Within the ring where the next available ring entry
-> > +      will be written.
-> > +      Without VIRTIO_F_RING_PACKED this refers to the
-> > +      15 least significant bits of the available index.
-> > +      With VIRTIO_F_RING_PACKED this refers to the offset
-> > +      (in units of descritor entries)
-> > +      within the descriptor ring where the next available
-> > +      descriptor will be written.
-> > +\item [Wrap Counter]
-> > +      With VIRTIO_F_RING_PACKED this is the wrap counter
-> > +      referring to the next available descriptor.
-> > +      Without VIRTIO_F_RING_PACKED this is the most significant bit
-> > +      of the available index.
-> > +\end{description}
-> > +
-> > +Note that driver can trigger multiple notifications even without
-> > +making any more changes to the ring. When VIRTIO_F_NOTIFICATION_DATA
-> > +has been negotiated, these notifications would then have
-> > +identical \field{Offset} and \field{Wrap Counter} values.
-> > +
-> >   \input{split-ring.tex}
-> >   \input{packed-ring.tex}
-> > +
-> > +\subsubsection{Driver notifications}
-> > +
-> > +\label{sec:Packed Virtqueues / Driver notifications}
-> > +Whenever not suppressed by Device Event Suppression,
-> > +driver is required to notify the device after
-> > +making changes to the virtqueue.
-> > +
-> > +Some devices benefit from ability to find out the number of
-> > +available descriptors in the ring without accessing virtqueue in memor=
-y:
-> > +for efficiency or as a debugging aid.
-> > +
-> > +To help with these optimizations, driver notifications
-> > +to the device include the following information:
-> > +
-> > +\begin{itemize}
-> > +\item VQ number
-> > +\item Offset (in units of descriptor size) within the ring
-> > +      where the next available descriptor will be written
-> > +\item Wrap Counter referring to the next available
-> > +      descriptor
-> > +\end{itemize}
-> > +
-> > +Note that driver can trigger multiple notifications even without
-> > +making any more changes to the ring. These would then have
-> > +identical \field{Offset} and \field{Wrap Counter} values.
-> > +
-> >   \chapter{General Initialization And Device Operation}\label{sec:Gener=
-al
-> > Initialization And Device Operation}
-> >   We start with an overview of device initialization, then expand on the
-> > @@ -862,7 +928,9 @@ the same Queue Notify address for all queues.
-> >   \devicenormative{\paragraph}{Notification capability}{Virtio Transpor=
-t Options
-> > / Virtio Over PCI Bus / PCI Device Layout / Notification capability}
-> >   The device MUST present at least one notification capability.
-> > -The \field{cap.offset} MUST be 2-byte aligned.
-> > +For devices not offering VIRTIO_F_NOTIFICATION_DATA:
-> > +
-> > +The \field{cap.offset} MUST be 2-byte aligned.
-> >   The device MUST either present \field{notify_off_multiplier} as an ev=
-en power
-> > of 2,
-> >   or present \field{notify_off_multiplier} as 0.
-> > @@ -876,6 +944,23 @@ For all queues, the value \field{cap.length} prese=
-nted by
-> > the device MUST satisf
-> >   cap.length >=3D queue_notify_off * notify_off_multiplier + 2
-> >   \end{lstlisting}
-> > +For devices offering VIRTIO_F_NOTIFICATION_DATA:
-> > +
-> > +The device MUST either present \field{notify_off_multiplier} as a
-> > +number that is a power of 2 that is also a multiple 4,
-> > +or present \field{notify_off_multiplier} as 0.
-> > +
-> > +The \field{cap.offset} MUST be 4-byte aligned.
-> > +
-> > +The value \field{cap.length} presented by the device MUST be at least 4
-> > +and MUST be large enough to support queue notification offsets
-> > +for all supported queues in all possible configurations.
-> > +
-> > +For all queues, the value \field{cap.length} presented by the device M=
-UST
-> > satisfy:
-> > +\begin{lstlisting}
-> > +cap.length >=3D queue_notify_off * notify_off_multiplier + 4
-> > +\end{lstlisting}
-> > +
-> >   \subsubsection{ISR status capability}\label{sec:Virtio Transport Opti=
-ons /
-> > Virtio Over PCI Bus / PCI Device Layout / ISR status capability}
-> >   The VIRTIO_PCI_CAP_ISR_CFG capability
-> > @@ -1268,8 +1353,25 @@ separate cache lines.
-> >   \subsubsection{Notifying The Device}\label{sec:Virtio Transport Optio=
-ns /
-> > Virtio Over PCI Bus / PCI-specific Initialization And Device Operation /
-> > Notifying The Device}
-> > -The driver notifies the device by writing the 16-bit virtqueue index
-> > -of this virtqueue to the Queue Notify address.  See \ref{sec:Virtio Tr=
-ansport
-> > Options / Virtio Over PCI Bus / PCI Device Layout / Notification capabi=
-lity}
-> > for how to calculate this address.
-> > +When VIRTIO_F_NOTIFICATION_DATA has not been negotiated,
-> > +the driver notifies the device by writing the 16-bit virtqueue index
-> > +of this virtqueue (in little-endian byte order format)
-> > +to the Queue Notify address.
-> > +
-> > +When VIRTIO_F_NOTIFICATION_DATA has been negotiated,
-> > +the driver notifies the device by writing the following
-> > +32-bit value to the Queue Notify address:
-> > +\begin{lstlisting}
-> > +le32 vqn : 16,
-> > +     next_off : 15,
-> > +     next_wrap : 1;
-> > +\end{lstlisting}
-> > +
-> > +See \ref{sec:Virtqueues / Driver notifications}~\nameref{sec:Virtqueue=
-s /
-> > Driver notifications}
-> > +for the definition of the components.
-> > +
-> > +See \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Devi=
-ce
-> > Layout / Notification capability} for how to calculate the
-> > +Queue Notify address.
-> >   \subsubsection{Virtqueue Interrupts From The Device}\label{sec:Virtio
-> > Transport Options / Virtio Over PCI Bus / PCI-specific Initialization A=
-nd
-> > Device Operation / Virtqueue Interrupts From The Device}
-> > @@ -1500,8 +1602,19 @@ All register values are organized as Little Endi=
-an.
-> >     }
-> >     \hline
-> >     \mmioreg{QueueNotify}{Queue notifier}{0x050}{W}{%
-> > -    Writing a queue index to this register notifies the device that
-> > -    there are new buffers to process in the queue.
-> > +    Writing a value this register notifies the device that
-> > +    there are new buffers to process in a queue.
-> > +
-> > +    When VIRTIO_F_NOTIFICATION_DATA has not been negotiated,
-> > +    the value written is the queue index.
-> > +
-> > +    When VIRTIO_F_NOTIFICATION_DATA has been negotiated,
-> > +    the value has the following format:
-> > +
-> > +    \lstinputlisting{notifications.c}
-> > +
-> > +    See \ref{sec:Virtqueues / Driver notifications}~\nameref{sec:Virtq=
-ueues /
-> > Driver notifications}
-> > +    for the definition of the components.
-> >     }
-> >     \hline
-> >     \mmioreg{InterruptStatus}{Interrupt status}{0x60}{R}{%
-> > @@ -2340,12 +2453,22 @@ GPR  &   Input Value     & Output Value \\
-> >   \hline
-> >     2   &  Subchannel ID    & Host Cookie  \\
-> >   \hline
-> > -  3   & Virtqueue number  &              \\
-> > +  3   & Notification data &              \\
-> >   \hline
-> >     4   &   Host Cookie     &              \\
-> >   \hline
-> >   \end{tabular}
-> > +When VIRTIO_F_NOTIFICATION_DATA has not been negotiated,
-> > +the \field{Notification data} includes the Virtqueue number.
-> > +
-> > +When VIRTIO_F_NOTIFICATION_DATA has been negotiated,
-> > +the value has the following format:
-> > +\lstinputlisting{notifications.c}
-> > +
-> > +See \ref{sec:Virtqueues / Driver notifications}~\nameref{sec:Virtqueue=
-s /
-> > Driver notifications}
-> > +for the definition of the components.
-> > +
-> >   \devicenormative{\paragraph}{Guest->Host Notification}{Virtio Transpo=
-rt
-> > Options / Virtio over channel I/O / Device Operation / Guest->Host Noti=
-fication}
-> >   The device MUST ignore bits 0-31 (counting from the left) of GPR2.
-> >   This aligns passing the subchannel ID with the way it is passed
-> > @@ -5348,6 +5471,10 @@ Descriptors} and \ref{sec:Packed Virtqueues / In=
-direct
-> > Flag: Scatter-Gather Supp
-> >     \item[VIRTIO_F_IN_ORDER(35)] This feature indicates
-> >     that all buffers are used by the device in the same
-> >     order in which they have been made available.
-> > +  \item[VIRTIO_F_NOTIFICATION_DATA(36)] This feature indicates
-> > +  that drivers pass extra data (besides identifying the Virtqueue)
-> > +  in their device notifications.
-> > +  See \ref{sec:Virtqueues / Driver notifications}~\nameref{sec:Virtque=
-ues /
-> > Driver notifications}.
-> >   \end{description}
-> >   \drivernormative{\section}{Reserved Feature Bits}{Reserved Feature Bi=
-ts}
->=20
-> --=20
-> David Riddoch  <driddoch@solarflare.com> -- Chief Architect, Solarflare
+
+On Fri, Aug 24, 2018 at 08:43:34AM +0800, Longpeng(Mike) wrote:
+> ---
+> v25 -> v24
+>  - fix some typos and letex grammar.
+> 
+> v24 -> v23
+>  - Some enhancements based on Halil's suggestion. [Halil]
+> 
+> v23 -> v22
+>  - rename MUX_MODE to REVISION_1 [Halil]
+>  - fixed-length paramenters' instead of 'header' and
+>    'variable-length parameters' instead of 'extra parameters' [Halil]
+>  - add guidance about VIRTIO_CRYPTO_FLAG_SESSION_MODE [Halil]
+>  - other fixes. [Longpeng]
+> 
+> v22 -> v21
+>  - fix some typos and grammar fixes [Halil, Stefan]
+>  - reorder names in alphabetical order [Stefan]
+>  - redescribe the date format [Halil]
+> 
+> v21 -> v20
+>  - rename 'queue_id' to 'reserved' [Halil]
+>  - redescribe the format of the structures which using 'union'
+>    in the previous version [Halil]
+> 
+> v20 -> v19
+>  - fix some typos and grammar fixes [Halil]
+>  - make queue_id reserved [Halil]
+>  - remove 'Steps of Operation'
+> 
+> v19 -> v18:
+>  - fix some typos and grammar fixes [Stefan, Halil]
+>  - rename VIRTIO_CRYPTO_F_STATELESS_MODE to VIRTIO_CRYPTO_F_MUX_MODE
+>  - describe the VIRTIO_CRYPTO_STATUS in detial. [Halil]
+>  - refactor and redescribe the controlq/dataq request's format
+>    of mux mode. [Halil]
+>  - other small fixes. [Halil]
+> 
+> v18 -> v17:
+>  - fix many English grammar problems suggested by Stefan, Thanks a lot!
+> 
+> v17 -> v16:
+>  - Some grammar fixes [Stefan, Halil, Michael]
+>  - add a section named "Supported crypto services" in order to explain bit
+>    numbers and valuse clearly. [Halil, Cornelia]
+>  - avoid word reptition [Halil]
+>  - rename non-session mode to stateless mode [Halil]
+>  - change descriptions for all elements in struct virtio_crypto_config [Halil]
+>  - add Halil as a reviewer in the ackonwledgement part, thanks for his work.
+>  - other fixes here and there.
+> 
+> Changes since v15:
+>  - use feature bits for non-session mode in order to keep compatibility with
+>    pre-existing code. [Halil & Michael]
+>  - introduce VIRTIO_CRYPTO_F_ NON_SESSION_MODE feature bit to control all other
+>    non-session mode feature bits.
+>  - fix some typos. [Stefan]
+>  - introduce struct virtio_crypto_op_data_req_mux to support both session
+>    and non-session based crypto operations and keep compatibility with
+>    pre-existing code.
+> 
+> Changes since v14:
+>  - drop VIRTIO_CRYPTO_S_STARTED status [Halil & Cornelia]
+>  - correct a sentence about dataqueue and controlq in the first paragraph. 
+> [Halil]
+>  - change a MAY to MUST about max_dataqueues. [Halil]
+>  - add non-session mode support
+>    a) add four features for different crypto services to identify wheather 
+> support session mode.
+>    b) rewrite some
+> 
+> For pervious versions of virtio crypto spec, Pls see:
+> 
+> [v18]:
+> https://www.mail-archive.com/qemu-devel@nongnu.org/msg444897.html
+> 
+> [v14]:
+> https://lists.gnu.org/archive/html/qemu-devel/2016-11/msg02212.html
+> 
+> [v13]:
+> https://lists.gnu.org/archive/html/qemu-devel/2016-10/msg07348.html
+> 
+> For more information, please see:
+>  http://qemu-project.org/Features/VirtioCrypto
+> 
+> Longpeng(Mike) (2):
+>   virtio-crypto: Add virtio crypto device specification
+>   virtio-crypto: Add conformance clauses
+> 
+>  acknowledgements.tex |    4 +
+>  conformance.tex      |   29 +
+>  content.tex          |    2 +
+>  virtio-crypto.tex    | 1533 ++++++++++++++++++++++++++++++++++++++++++++++++++
+>  4 files changed, 1568 insertions(+)
+>  create mode 100644 virtio-crypto.tex
+> 
+> -- 
+> 1.8.3.1
+> 
+> 
+> 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
