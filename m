@@ -1,94 +1,40 @@
-Return-Path: virtio-dev-return-4765-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4845-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id E4011985BA1
-	for <virtio-dev@lists.oasis-open.org>; Thu,  2 Aug 2018 01:57:03 +0000 (UTC)
-Message-ID: <5B6264E2.2060407@huawei.com>
-Date: Thu, 2 Aug 2018 09:56:50 +0800
-From: "Longpeng (Mike)" <longpeng2@huawei.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id C3E8E985D26
+	for <virtio-dev@lists.oasis-open.org>; Wed, 12 Sep 2018 16:41:13 +0000 (UTC)
+From: David Riddoch <driddoch@solarflare.com>
+Message-ID: <0f4e7431-3c87-f783-579a-7e9fe6bc20d2@solarflare.com>
+Date: Wed, 12 Sep 2018 17:41:07 +0100
 MIME-Version: 1.0
-References: <1514626559-162312-1-git-send-email-longpeng2@huawei.com> <1514626559-162312-2-git-send-email-longpeng2@huawei.com> <fcb63fc3-22eb-7f6c-2014-744ee75784eb@linux.vnet.ibm.com> <5B51CF0B.8020706@huawei.com> <a332a516-16dc-1e50-3ea6-b68571880cb7@linux.ibm.com> <20180727144726-mutt-send-email-mst@kernel.org> <47e5bc06-6b4d-aab6-db77-c91313d36d87@linux.ibm.com>
-In-Reply-To: <47e5bc06-6b4d-aab6-db77-c91313d36d87@linux.ibm.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Subject: [virtio-dev] Re: [Qemu-devel] [virtio-dev] Re: [v23 1/2] virtio-crypto: Add virtio
- crypto device specification
-To: Halil Pasic <pasic@linux.ibm.com>, "Michael S. Tsirkin" <mst@redhat.com>, arei.gonglei@huawei.com, stefanha@redhat.com
-Cc: denglingli@chinamobile.com, virtio-dev@lists.oasis-open.org, Halil
- Pasic <pasic@linux.vnet.ibm.com>, Ola.Liljedahl@arm.com, brian.a.keating@intel.com, Jani.Kokkonen@huawei.com, xin.zeng@intel.com, wangxinxin.wang@huawei.com, liang.j.ma@intel.com, qemu-devel@nongnu.org, john.griffin@intel.com, agraf@suse.de, jianjay.zhou@huawei.com, cornelia.huck@de.ibm.com, Varun.Sethi@freescale.com, vincent.jardin@6wind.com, jasowang@redhat.com, weidong.huang@huawei.com
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+Subject: [virtio-dev] Device-to-driver notification management for hardware implementations
+To: virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Hi Halil,
+All,
 
-On 2018/8/2 4:21, Halil Pasic wrote:
+The VIRTIO_F_NOTIFICATION_DATA feature helps hardware implementations by 
+telling them directly how many descriptors are available in the ring, 
+saving speculative reads.  There is a related issue with interrupts: As 
+things stand, after writing 'used' descriptors into the ring (packed or 
+split) the device has to read the event idx to determine whether a 
+device-to-driver notification (interrupt) is needed.
 
-> 
-> 
-> On 07/27/2018 01:51 PM, Michael S. Tsirkin wrote:
->> On Thu, Jul 26, 2018 at 06:55:44PM +0200, Halil Pasic wrote:
->>> Sorry I did not have any time for this last days. And this
->>> to make it worse this is a follow up to something that was
->>> half a year ago. That means I have to re-familiarize myself
->>> with the topic.
->>>
->>> If I don't get around to answer in couple of weeks, feel
->>> free to ping me.
->>>
->>> Since from what I've seen most of the questions were of type
->>> 'Can we do it like this?', maybe sending out a new version
->>> is the best. So people (like me) can read through the whole
->>> thing and point out problems if any.
->>>
->>> Regards,
->>> Halil
->>
->>
->> While two weeks for review is borderline reasonable as an exception, it
->> does trouble me that  we are at v23, for something that is used
->> in the field so it's not like we can just change things at will.
->> So I hope everyone concerned makes an effort to try to converge on a spec
->> ASAP.
->>
-> 
-> What I tried to say: I'm busy with other stuff, and I'm not too
-> happy to resume a complex topic after 6 months hiatus.
-> 
-> The series is now at v24 and has apparently no acks or r-bs. I don't think
-> I'm the only one to blame for that.
-> 
+It would be very helpful to a hardware implementation if the event idx 
+could be written directly to the device.  Has anyone proposed an 
+extension to address this already?  (I have some thoughts on how to do 
+this if we don't have a proposal yet).
 
-> It seems, I won't have the time to do a conscientious review in a
-> timely fashion. If the rest of the bunch thinks what we have is good
-> enough, I am happy to abstain when voting on this -- and avoiding
-> holding it up any further.
-> 
+Best,
+David
 
-Thanks for your conscientious reviews on previous versions and your suggestions
-are really useful to make the spec better. I'm sorry that I should be to blame
-for the half a year hiatus, not you.
-
-I've do some offline discussions with Gonglei and Intel guys, it seems that
-there is no big arguments on v23 and the following small problems can be fixed
-by follow-up patches.
-
-I hope guys who care about this spec could post your opinion, I'll suggest
-Gonglei to start a vote for the spec if no.
-
-> Regards,
-> Halil
-> 
-> 
-> .
-> 
-
-
--- 
-Regards,
-Longpeng(Mike)
 
 
 ---------------------------------------------------------------------
