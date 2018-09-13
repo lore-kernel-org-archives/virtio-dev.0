@@ -1,94 +1,36 @@
-Return-Path: virtio-dev-return-4850-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4846-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 74BB9985D43
-	for <virtio-dev@lists.oasis-open.org>; Thu, 13 Sep 2018 08:51:45 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id A9214985D42
+	for <virtio-dev@lists.oasis-open.org>; Thu, 13 Sep 2018 08:13:03 +0000 (UTC)
 From: Gerd Hoffmann <kraxel@redhat.com>
-Date: Thu, 13 Sep 2018 10:51:34 +0200
-Message-Id: <20180913085134.31027-1-kraxel@redhat.com>
-Subject: [virtio-dev] [PATCH] Add VIRTIO_GPU_F_EDID to virtio-gpu.
-To: virtio-dev@lists.oasis-open.org
+Date: Thu, 13 Sep 2018 10:12:55 +0200
+Message-Id: <20180913081259.27457-1-kraxel@redhat.com>
+Subject: [virtio-dev] [PATCH 0/3] virtio-gpu: add VIRTIO_GPU_F_EDID feature
+To: virtio-dev@lists.oasis-open.org, dri-devel@lists.freedesktop.org
 Cc: Gerd Hoffmann <kraxel@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-The feature allows the guest request an EDID blob (describing monitor
-capabilities) for a given scanout (aka virtual monitor connector).
 
-It brings a new command message, which has just a scanout field (beside
-the standard virtio-gpu header) and a response message which carries the
-EDID data.
 
-Signed-off-by: Gerd Hoffmann <kraxel@redhat.com>
----
- virtio-gpu.tex | 30 ++++++++++++++++++++++++++++++
- 1 file changed, 30 insertions(+)
+Gerd Hoffmann (3):
+  drm: virtual connectors can have edid too
+  virtio-gpu: add VIRTIO_GPU_F_EDID feature
+  drm/virtio: add edid support
 
-diff --git a/virtio-gpu.tex b/virtio-gpu.tex
-index 5d4709ad30..c64ecfe859 100644
---- a/virtio-gpu.tex
-+++ b/virtio-gpu.tex
-@@ -34,6 +34,7 @@ control queue.
- 
- \begin{description}
- \item[VIRTIO_GPU_F_VIRGL (0)] virgl 3D mode is supported.
-+\item[VIRTIO_GPU_F_EDID  (1)] EDID is supported.
- \end{description}
- 
- \subsection{Device configuration layout}\label{sec:Device Types / GPU Device / Device configuration layout}
-@@ -171,6 +172,9 @@ enum virtio_gpu_ctrl_type {
-         VIRTIO_GPU_CMD_TRANSFER_TO_HOST_2D,
-         VIRTIO_GPU_CMD_RESOURCE_ATTACH_BACKING,
-         VIRTIO_GPU_CMD_RESOURCE_DETACH_BACKING,
-+        VIRTIO_GPU_CMD_GET_CAPSET_INFO,
-+        VIRTIO_GPU_CMD_GET_CAPSET,
-+        VIRTIO_GPU_CMD_GET_EDID,
- 
-         /* cursor commands */
-         VIRTIO_GPU_CMD_UPDATE_CURSOR = 0x0300,
-@@ -179,6 +183,9 @@ enum virtio_gpu_ctrl_type {
-         /* success responses */
-         VIRTIO_GPU_RESP_OK_NODATA = 0x1100,
-         VIRTIO_GPU_RESP_OK_DISPLAY_INFO,
-+        VIRTIO_GPU_RESP_OK_CAPSET_INFO,
-+        VIRTIO_GPU_RESP_OK_CAPSET,
-+        VIRTIO_GPU_RESP_OK_EDID,
- 
-         /* error responses */
-         VIRTIO_GPU_RESP_ERR_UNSPEC = 0x1200,
-@@ -275,6 +282,29 @@ The \field{enabled} field is set when the user enabled the display.
- It is roughly the same as the connected state of a phyiscal display
- connector.
- 
-+\item[VIRTIO_GPU_CMD_GET_EDID] Retrieve the EDID data for a given
-+  scanout.  Request data is \field{struct virtio_gpu_get_edid}).
-+  Response type is VIRTIO_GPU_RESP_OK_EDID, response data is
-+  \field{struct virtio_gpu_resp_EDID}.  Support is optional and
-+  negotiated using the VIRTIO_GPU_F_EDID feature flag.
-+
-+\begin{lstlisting}
-+struct virtio_gpu_get_edid {
-+        struct virtio_gpu_ctrl_hdr hdr;
-+        le32 scanout;
-+};
-+
-+struct virtio_gpu_resp_edid {
-+        struct virtio_gpu_ctrl_hdr hdr;
-+        le32 scanout;
-+        le32 size;
-+        u8 edid[512];
-+};
-+\end{lstlisting}
-+
-+The response contains the EDID display data blob (as specified by
-+VESA) for the scanout.
-+
- \item[VIRTIO_GPU_CMD_RESOURCE_CREATE_2D] Create a 2D resource on the
-   host.  Request data is \field{struct virtio_gpu_resource_create_2d}.
-   Response type is VIRTIO_GPU_RESP_OK_NODATA.
+ drivers/gpu/drm/virtio/virtgpu_drv.h     |  3 ++
+ include/uapi/linux/virtio_gpu.h          | 17 +++++++++
+ drivers/gpu/drm/drm_connector.c          |  3 +-
+ drivers/gpu/drm/virtio/virtgpu_display.c |  6 ++++
+ drivers/gpu/drm/virtio/virtgpu_drv.c     |  1 +
+ drivers/gpu/drm/virtio/virtgpu_kms.c     |  8 +++++
+ drivers/gpu/drm/virtio/virtgpu_vq.c      | 59 ++++++++++++++++++++++++++++++++
+ 7 files changed, 95 insertions(+), 2 deletions(-)
+
 -- 
 2.9.3
 
