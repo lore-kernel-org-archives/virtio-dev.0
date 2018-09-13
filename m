@@ -1,52 +1,96 @@
-Return-Path: virtio-dev-return-4873-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4850-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id EE2E0985B6F
-	for <virtio-dev@lists.oasis-open.org>; Fri, 21 Sep 2018 05:47:56 +0000 (UTC)
-Date: Fri, 21 Sep 2018 07:47:52 +0200
+	by lists.oasis-open.org (Postfix) with ESMTP id 74BB9985D43
+	for <virtio-dev@lists.oasis-open.org>; Thu, 13 Sep 2018 08:51:45 +0000 (UTC)
 From: Gerd Hoffmann <kraxel@redhat.com>
-Message-ID: <20180921054752.gjeaznoboqf2giit@sirius.home.kraxel.org>
-References: <CAPM=9tyXc41DAkgjCRojrqH28qkirxgrpgNmrwu4WAeLpg7tAw@mail.gmail.com>
- <9bf20fa1-3752-edd1-588c-e38cd166c3af@amd.com>
- <20180912072541.nagfrr2dgy34szcx@sirius.home.kraxel.org>
- <5684a3fc-3605-7bb0-b0be-418c2ae702b5@amd.com>
- <20180919044600.utvnu5l6fvvi2qi4@sirius.home.kraxel.org>
- <d4c25272-9df8-33d6-d310-964b17a8c80d@amd.com>
- <20180919113807.6mwqxkdg6f55h6fg@sirius.home.kraxel.org>
- <bb7b8676-cf39-3144-2de1-389f4b0a70b3@amd.com>
- <20180920063201.nt7kw555s4clshzr@sirius.home.kraxel.org>
- <95778dd4-8aca-eff6-f84a-c8efdd3b355d@amd.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <95778dd4-8aca-eff6-f84a-c8efdd3b355d@amd.com>
-Subject: Re: [virtio-dev] [PATCH 2/2] drm/virtio: add iommu support.
-To: Jiandi An <jiandi@amd.com>
-Cc: Dave Airlie <airlied@gmail.com>, dri-devel <dri-devel@lists.freedesktop.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Dave Airlie <airlied@linux.ie>, "open list:VIRTIO CORE, NET..." <virtualization@lists.linux-foundation.org>, LKML <linux-kernel@vger.kernel.org>, "Lendacky, Thomas" <Thomas.Lendacky@amd.com>, "Singh, Brijesh" <brijesh.singh@amd.com>
+Date: Thu, 13 Sep 2018 10:51:34 +0200
+Message-Id: <20180913085134.31027-1-kraxel@redhat.com>
+Subject: [virtio-dev] [PATCH] Add VIRTIO_GPU_F_EDID to virtio-gpu.
+To: virtio-dev@lists.oasis-open.org
+Cc: Gerd Hoffmann <kraxel@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-  Hi,
+The feature allows the guest request an EDID blob (describing monitor
+capabilities) for a given scanout (aka virtual monitor connector).
 
-> > Just pass it down, the call sites all know it (see patch just sent).
-> 
-> Tested that patch you sent.  Together with this patch it also resolves
-> the virtio gpu graphical display issue for SEV guest.
+It brings a new command message, which has just a scanout field (beside
+the standard virtio-gpu header) and a response message which carries the
+EDID data.
 
-Cool.  Can you ack or review the patch so I can commit it?
+Signed-off-by: Gerd Hoffmann <kraxel@redhat.com>
+---
+ virtio-gpu.tex | 30 ++++++++++++++++++++++++++++++
+ 1 file changed, 30 insertions(+)
 
-> Is there a way to optimize the dma_sync_sg to only sync on the pages
-> being updated instead of all the pages in the obj sgl list every time?
-
-Well, the rectangle is passed to virtio_gpu_cmd_transfer_to_host_2d, so
-it should be possible to figure which pages are affected and trim the
-scatter list accordingly.
-
-cheers,
-  Gerd
+diff --git a/virtio-gpu.tex b/virtio-gpu.tex
+index 5d4709ad30..c64ecfe859 100644
+--- a/virtio-gpu.tex
++++ b/virtio-gpu.tex
+@@ -34,6 +34,7 @@ control queue.
+ 
+ \begin{description}
+ \item[VIRTIO_GPU_F_VIRGL (0)] virgl 3D mode is supported.
++\item[VIRTIO_GPU_F_EDID  (1)] EDID is supported.
+ \end{description}
+ 
+ \subsection{Device configuration layout}\label{sec:Device Types / GPU Device / Device configuration layout}
+@@ -171,6 +172,9 @@ enum virtio_gpu_ctrl_type {
+         VIRTIO_GPU_CMD_TRANSFER_TO_HOST_2D,
+         VIRTIO_GPU_CMD_RESOURCE_ATTACH_BACKING,
+         VIRTIO_GPU_CMD_RESOURCE_DETACH_BACKING,
++        VIRTIO_GPU_CMD_GET_CAPSET_INFO,
++        VIRTIO_GPU_CMD_GET_CAPSET,
++        VIRTIO_GPU_CMD_GET_EDID,
+ 
+         /* cursor commands */
+         VIRTIO_GPU_CMD_UPDATE_CURSOR = 0x0300,
+@@ -179,6 +183,9 @@ enum virtio_gpu_ctrl_type {
+         /* success responses */
+         VIRTIO_GPU_RESP_OK_NODATA = 0x1100,
+         VIRTIO_GPU_RESP_OK_DISPLAY_INFO,
++        VIRTIO_GPU_RESP_OK_CAPSET_INFO,
++        VIRTIO_GPU_RESP_OK_CAPSET,
++        VIRTIO_GPU_RESP_OK_EDID,
+ 
+         /* error responses */
+         VIRTIO_GPU_RESP_ERR_UNSPEC = 0x1200,
+@@ -275,6 +282,29 @@ The \field{enabled} field is set when the user enabled the display.
+ It is roughly the same as the connected state of a phyiscal display
+ connector.
+ 
++\item[VIRTIO_GPU_CMD_GET_EDID] Retrieve the EDID data for a given
++  scanout.  Request data is \field{struct virtio_gpu_get_edid}).
++  Response type is VIRTIO_GPU_RESP_OK_EDID, response data is
++  \field{struct virtio_gpu_resp_EDID}.  Support is optional and
++  negotiated using the VIRTIO_GPU_F_EDID feature flag.
++
++\begin{lstlisting}
++struct virtio_gpu_get_edid {
++        struct virtio_gpu_ctrl_hdr hdr;
++        le32 scanout;
++};
++
++struct virtio_gpu_resp_edid {
++        struct virtio_gpu_ctrl_hdr hdr;
++        le32 scanout;
++        le32 size;
++        u8 edid[512];
++};
++\end{lstlisting}
++
++The response contains the EDID display data blob (as specified by
++VESA) for the scanout.
++
+ \item[VIRTIO_GPU_CMD_RESOURCE_CREATE_2D] Create a 2D resource on the
+   host.  Request data is \field{struct virtio_gpu_resource_create_2d}.
+   Response type is VIRTIO_GPU_RESP_OK_NODATA.
+-- 
+2.9.3
 
 
 ---------------------------------------------------------------------
