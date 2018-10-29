@@ -1,52 +1,55 @@
-Return-Path: virtio-dev-return-4926-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4917-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 83F5A9812BE
-	for <virtio-dev@lists.oasis-open.org>; Tue, 30 Oct 2018 11:06:56 +0000 (UTC)
-Date: Tue, 30 Oct 2018 11:06:39 +0000
-From: Stefan Hajnoczi <stefanha@redhat.com>
-Message-ID: <20181030110639.GC3743@stefanha-x1.localdomain>
-References: <1540891712-10001-1-git-send-email-danielm@mellanox.com>
- <1540891712-10001-3-git-send-email-danielm@mellanox.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id D7A04985A5C
+	for <virtio-dev@lists.oasis-open.org>; Mon, 29 Oct 2018 21:49:03 +0000 (UTC)
+Date: Mon, 29 Oct 2018 22:49:00 +0100
+From: Jens Freimann <jfreimann@redhat.com>
+Message-ID: <20181029214900.hr6r6gkubfmgxr7f@jenstp.localdomain>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="7qSK/uQB79J36Y4o"
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <1540891712-10001-3-git-send-email-danielm@mellanox.com>
-Subject: Re: [virtio-dev] [PATCH 2/2] queue_size: renamed "hypervisor" to
- "device"
-To: Daniel Marcovitch <danielm@mellanox.com>
-Cc: mst@redhat.com, virtio-dev@lists.oasis-open.org
+Subject: [virtio-dev] Minutes from Virtio BoF at KVM Forum
+To: virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
---7qSK/uQB79J36Y4o
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Hi,
 
-On Tue, Oct 30, 2018 at 11:28:32AM +0200, Daniel Marcovitch wrote:
-> fixed to be consistent with the device/driver terminology in other surrounding descriptions
-> ---
->  content.tex | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+I took some notes during the BoF. Please correct me if I got something
+wrong or missed something:
 
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+* Participants liked idea of weekly(?) "snapshots"/drafts of the VIRTIO spec
+  in PDF format that are also versioned in some way
+* If there is interest in a regular VIRTIO call or IRC meeting let MST
+  know. There is also a "DPDK-Virtio" call which happens monthly and is
+  currently used both to discuss implementation progress and questions
+  about Virtio in general. Maybe we could just rename it to "Virtio
+  call"?.
+* Virtio 1.1 could be released now if someone states that they like it
+  as is. Otherwise we will fix some more things and do it in a few
+  weeks.
+* A question was raised how to get a new feature into the spec. MST
+  explained the process. Request a feature bit via a
+  patch to the mailing list, create github issue, discuss, ask for
+  ballot. 
+* someone from OpenSynergy reported that Virtio is used heavily in the
+  automotive industry and that there is work being done on virtio-audio
+* status update on vDPA by Steve
+* status update on failover by Sameeh
+* brief discussion about what would be needed to save more pci
+  transactions with packed virtqueues for hardware implementations. I
+  don't remember many details, agreed to have further discussion on
+  mailing list.
 
---7qSK/uQB79J36Y4o
-Content-Type: application/pgp-signature; name="signature.asc"
 
------BEGIN PGP SIGNATURE-----
+regards,
+Jens 
 
-iQEcBAEBAgAGBQJb2Ds/AAoJEJykq7OBq3PIgpoH/ibfqqXToZ4OK+LBqc06GW+5
-/yGImh2VdttWpkpm/soX6I6uj/1ffJWbr4ZNUH+sevcgsZzGR4PWq/WPOyBdyjL6
-AsldiA2Z5F5x4PC+QvlN9iTJyXWajZwNxO8tBurKJEhFybaS8T4rcR9uRMOybPof
-GHbtibcz78Jy88UtmfQwdSLZ1bZcvJvcn0EE3dxJtnOxO5Nn1iHUaquWCgWe9dWh
-gsSFZSuowDMuZxkmdoq73ug8kEUnfuzn+lO5MjCcuW9YpMojJHSYj0sKKgjjKBWg
-CllYz0fK3RnaNqs/SAa3gAGoYFyRXBZXES6YkKhFF4u0datTmn91nSFzLaICh+Q=
-=PngR
------END PGP SIGNATURE-----
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
---7qSK/uQB79J36Y4o--
