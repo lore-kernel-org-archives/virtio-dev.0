@@ -1,45 +1,85 @@
-Return-Path: virtio-dev-return-4918-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4920-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 009BC985A65
-	for <virtio-dev@lists.oasis-open.org>; Tue, 30 Oct 2018 06:32:11 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 37DF5985A5E
+	for <virtio-dev@lists.oasis-open.org>; Tue, 30 Oct 2018 06:32:14 +0000 (UTC)
 From: Gerd Hoffmann <kraxel@redhat.com>
-Date: Tue, 30 Oct 2018 07:32:04 +0100
-Message-Id: <20181030063206.19528-1-kraxel@redhat.com>
-Subject: [virtio-dev] [PATCH v4 0/2] virtio-gpu: add VIRTIO_GPU_F_EDID feature
+Date: Tue, 30 Oct 2018 07:32:05 +0100
+Message-Id: <20181030063206.19528-2-kraxel@redhat.com>
+In-Reply-To: <20181030063206.19528-1-kraxel@redhat.com>
+References: <20181030063206.19528-1-kraxel@redhat.com>
+Subject: [virtio-dev] [PATCH v4 1/2] virtio-gpu: add VIRTIO_GPU_F_EDID feature
 To: virtio-dev@lists.oasis-open.org, dri-devel@lists.freedesktop.org
-Cc: Gerd Hoffmann <kraxel@redhat.com>
+Cc: Gerd Hoffmann <kraxel@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, David Airlie <airlied@linux.ie>, "open list:VIRTIO CORE, NET AND BLOCK DRIVERS" <virtualization@lists.linux-foundation.org>, open list <linux-kernel@vger.kernel.org>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-This little patch series implements the VIRTIO_GPU_F_EDID feature for
-linux.  Patch #1 updates the virtio_gpu header file according to the
-specification, patch #3 is the actual implementation.
+The feature allows the guest request an EDID blob (describing monitor
+capabilities) for a given scanout (aka virtual monitor connector).
 
-The spec update patch is here:
-  https://lists.oasis-open.org/archives/virtio-dev/201810/msg00028.html
+It brings a new command message, which has just a scanout field (beside
+the standard virtio-gpu header) and a response message which carries the
+EDID data.
 
-Qemu branch for testing is here:
-  https://git.kraxel.org/cgit/qemu/log/?h=sirius/edid
+Signed-off-by: Gerd Hoffmann <kraxel@redhat.com>
+Reviewed-by: Dave Airlie <airlied@redhat.com>
+---
+ include/uapi/linux/virtio_gpu.h | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
 
-cheers,
-  Gerd
-
-Gerd Hoffmann (2):
-  virtio-gpu: add VIRTIO_GPU_F_EDID feature
-  drm/virtio: add edid support
-
- drivers/gpu/drm/virtio/virtgpu_drv.h     |  3 ++
- include/uapi/linux/virtio_gpu.h          | 18 +++++++++
- drivers/gpu/drm/virtio/virtgpu_display.c | 12 ++++++
- drivers/gpu/drm/virtio/virtgpu_drv.c     |  1 +
- drivers/gpu/drm/virtio/virtgpu_kms.c     |  8 ++++
- drivers/gpu/drm/virtio/virtgpu_vq.c      | 67 ++++++++++++++++++++++++++++++++
- 6 files changed, 109 insertions(+)
-
+diff --git a/include/uapi/linux/virtio_gpu.h b/include/uapi/linux/virtio_gpu.h
+index f43c3c6171..8e88eba1fa 100644
+--- a/include/uapi/linux/virtio_gpu.h
++++ b/include/uapi/linux/virtio_gpu.h
+@@ -41,6 +41,7 @@
+ #include <linux/types.h>
+ 
+ #define VIRTIO_GPU_F_VIRGL 0
++#define VIRTIO_GPU_F_EDID  1
+ 
+ enum virtio_gpu_ctrl_type {
+ 	VIRTIO_GPU_UNDEFINED = 0,
+@@ -56,6 +57,7 @@ enum virtio_gpu_ctrl_type {
+ 	VIRTIO_GPU_CMD_RESOURCE_DETACH_BACKING,
+ 	VIRTIO_GPU_CMD_GET_CAPSET_INFO,
+ 	VIRTIO_GPU_CMD_GET_CAPSET,
++	VIRTIO_GPU_CMD_GET_EDID,
+ 
+ 	/* 3d commands */
+ 	VIRTIO_GPU_CMD_CTX_CREATE = 0x0200,
+@@ -76,6 +78,7 @@ enum virtio_gpu_ctrl_type {
+ 	VIRTIO_GPU_RESP_OK_DISPLAY_INFO,
+ 	VIRTIO_GPU_RESP_OK_CAPSET_INFO,
+ 	VIRTIO_GPU_RESP_OK_CAPSET,
++	VIRTIO_GPU_RESP_OK_EDID,
+ 
+ 	/* error responses */
+ 	VIRTIO_GPU_RESP_ERR_UNSPEC = 0x1200,
+@@ -291,6 +294,21 @@ struct virtio_gpu_resp_capset {
+ 	__u8 capset_data[];
+ };
+ 
++/* VIRTIO_GPU_CMD_GET_EDID */
++struct virtio_gpu_cmd_get_edid {
++	struct virtio_gpu_ctrl_hdr hdr;
++	__le32 scanout;
++	__le32 padding;
++};
++
++/* VIRTIO_GPU_RESP_OK_EDID */
++struct virtio_gpu_resp_edid {
++	struct virtio_gpu_ctrl_hdr hdr;
++	__le32 size;
++	__le32 padding;
++	__u8 edid[1024];
++};
++
+ #define VIRTIO_GPU_EVENT_DISPLAY (1 << 0)
+ 
+ struct virtio_gpu_config {
 -- 
 2.9.3
 
