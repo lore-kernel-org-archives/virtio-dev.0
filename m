@@ -1,54 +1,52 @@
-Return-Path: virtio-dev-return-4925-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4926-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 9B46E985B7B
-	for <virtio-dev@lists.oasis-open.org>; Tue, 30 Oct 2018 11:01:34 +0000 (UTC)
-Date: Tue, 30 Oct 2018 12:01:20 +0100
-From: Cornelia Huck <cohuck@redhat.com>
-Message-ID: <20181030120120.0d0fddf6.cohuck@redhat.com>
-In-Reply-To: <1540891712-10001-3-git-send-email-danielm@mellanox.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 83F5A9812BE
+	for <virtio-dev@lists.oasis-open.org>; Tue, 30 Oct 2018 11:06:56 +0000 (UTC)
+Date: Tue, 30 Oct 2018 11:06:39 +0000
+From: Stefan Hajnoczi <stefanha@redhat.com>
+Message-ID: <20181030110639.GC3743@stefanha-x1.localdomain>
 References: <1540891712-10001-1-git-send-email-danielm@mellanox.com>
-	<1540891712-10001-3-git-send-email-danielm@mellanox.com>
+ <1540891712-10001-3-git-send-email-danielm@mellanox.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="7qSK/uQB79J36Y4o"
+Content-Disposition: inline
+In-Reply-To: <1540891712-10001-3-git-send-email-danielm@mellanox.com>
 Subject: Re: [virtio-dev] [PATCH 2/2] queue_size: renamed "hypervisor" to
  "device"
 To: Daniel Marcovitch <danielm@mellanox.com>
 Cc: mst@redhat.com, virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Tue, 30 Oct 2018 11:28:32 +0200
-Daniel Marcovitch <danielm@mellanox.com> wrote:
+--7qSK/uQB79J36Y4o
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
+On Tue, Oct 30, 2018 at 11:28:32AM +0200, Daniel Marcovitch wrote:
 > fixed to be consistent with the device/driver terminology in other surrounding descriptions
 > ---
 >  content.tex | 2 +-
 >  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/content.tex b/content.tex
-> index fb168a0..3ae3eb2 100644
-> --- a/content.tex
-> +++ b/content.tex
-> @@ -794,7 +794,7 @@ struct virtio_pci_common_cfg {
->  
->  \item[\field{queue_size}]
->          Queue Size.  On reset, specifies the maximum queue size supported by
-> -        the hypervisor. This can be modified by driver to reduce memory requirements.
-> +        the device. This can be modified by driver to reduce memory requirements.
 
-Makes sense. But perhaps s/driver/the driver/ as well?
+Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
 
->          A 0 means the queue is unavailable.
->  
->  \item[\field{queue_msix_vector}]
+--7qSK/uQB79J36Y4o
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
 
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+iQEcBAEBAgAGBQJb2Ds/AAoJEJykq7OBq3PIgpoH/ibfqqXToZ4OK+LBqc06GW+5
+/yGImh2VdttWpkpm/soX6I6uj/1ffJWbr4ZNUH+sevcgsZzGR4PWq/WPOyBdyjL6
+AsldiA2Z5F5x4PC+QvlN9iTJyXWajZwNxO8tBurKJEhFybaS8T4rcR9uRMOybPof
+GHbtibcz78Jy88UtmfQwdSLZ1bZcvJvcn0EE3dxJtnOxO5Nn1iHUaquWCgWe9dWh
+gsSFZSuowDMuZxkmdoq73ug8kEUnfuzn+lO5MjCcuW9YpMojJHSYj0sKKgjjKBWg
+CllYz0fK3RnaNqs/SAa3gAGoYFyRXBZXES6YkKhFF4u0datTmn91nSFzLaICh+Q=
+=PngR
+-----END PGP SIGNATURE-----
 
+--7qSK/uQB79J36Y4o--
