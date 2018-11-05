@@ -1,88 +1,67 @@
-Return-Path: virtio-dev-return-4898-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4933-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 74E92985E79
-	for <virtio-dev@lists.oasis-open.org>; Thu, 18 Oct 2018 06:40:49 +0000 (UTC)
-From: Gerd Hoffmann <kraxel@redhat.com>
-Date: Thu, 18 Oct 2018 08:39:46 +0200
-Message-Id: <20181018063946.22919-2-kraxel@redhat.com>
-In-Reply-To: <20181018063946.22919-1-kraxel@redhat.com>
-References: <20181018063946.22919-1-kraxel@redhat.com>
-Subject: [virtio-dev] [PATCH v3] virtio-gpu: add VIRTIO_GPU_F_EDID feature
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: dri-devel@lists.freedesktop.org, virtio-dev@lists.oasis-open.org, Gerd Hoffmann <kraxel@redhat.com>, David Airlie <airlied@linux.ie>, Jason Wang <jasowang@redhat.com>, "open list:VIRTIO GPU DRIVER" <virtualization@lists.linux-foundation.org>, open list <linux-kernel@vger.kernel.org>
+	by lists.oasis-open.org (Postfix) with ESMTP id 2415F9842C4
+	for <virtio-dev@lists.oasis-open.org>; Mon,  5 Nov 2018 08:53:41 +0000 (UTC)
+Date: Mon, 5 Nov 2018 08:53:37 +0000
+From: Stefan Hajnoczi <stefanha@redhat.com>
+Message-ID: <20181105085337.GA9934@stefanha-x1.localdomain>
+References: <0f4e7431-3c87-f783-579a-7e9fe6bc20d2@solarflare.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="d6Gm4EdcadzBjdND"
+Content-Disposition: inline
+In-Reply-To: <0f4e7431-3c87-f783-579a-7e9fe6bc20d2@solarflare.com>
+Subject: Re: [virtio-dev] Device-to-driver notification management for
+ hardware implementations
+To: David Riddoch <driddoch@solarflare.com>
+Cc: virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-The feature allows the guest request an EDID blob (describing monitor
-capabilities) for a given scanout (aka virtual monitor connector).
+--d6Gm4EdcadzBjdND
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-It brings a new command message, which has just a scanout field (beside
-the standard virtio-gpu header) and a response message which carries the
-EDID data.
+On Wed, Sep 12, 2018 at 05:41:07PM +0100, David Riddoch wrote:
+> The VIRTIO_F_NOTIFICATION_DATA feature helps hardware implementations by
+> telling them directly how many descriptors are available in the ring, sav=
+ing
+> speculative reads.=A0 There is a related issue with interrupts: As things
+> stand, after writing 'used' descriptors into the ring (packed or split) t=
+he
+> device has to read the event idx to determine whether a device-to-driver
+> notification (interrupt) is needed.
+>=20
+> It would be very helpful to a hardware implementation if the event idx co=
+uld
+> be written directly to the device.=A0 Has anyone proposed an extension to
+> address this already?=A0 (I have some thoughts on how to do this if we do=
+n't
+> have a proposal yet).
 
-Signed-off-by: Gerd Hoffmann <kraxel@redhat.com>
-Reviewed-by: Dave Airlie <airlied@redhat.com>
----
- include/uapi/linux/virtio_gpu.h | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+Hi David,
+Has there been any further discussion on this topic?  It seems like a
+useful feature to have in VIRTIO.
 
-diff --git a/include/uapi/linux/virtio_gpu.h b/include/uapi/linux/virtio_gpu.h
-index f43c3c6171..68198691a6 100644
---- a/include/uapi/linux/virtio_gpu.h
-+++ b/include/uapi/linux/virtio_gpu.h
-@@ -41,6 +41,7 @@
- #include <linux/types.h>
- 
- #define VIRTIO_GPU_F_VIRGL 0
-+#define VIRTIO_GPU_F_EDID  1
- 
- enum virtio_gpu_ctrl_type {
- 	VIRTIO_GPU_UNDEFINED = 0,
-@@ -56,6 +57,7 @@ enum virtio_gpu_ctrl_type {
- 	VIRTIO_GPU_CMD_RESOURCE_DETACH_BACKING,
- 	VIRTIO_GPU_CMD_GET_CAPSET_INFO,
- 	VIRTIO_GPU_CMD_GET_CAPSET,
-+	VIRTIO_GPU_CMD_GET_EDID,
- 
- 	/* 3d commands */
- 	VIRTIO_GPU_CMD_CTX_CREATE = 0x0200,
-@@ -76,6 +78,7 @@ enum virtio_gpu_ctrl_type {
- 	VIRTIO_GPU_RESP_OK_DISPLAY_INFO,
- 	VIRTIO_GPU_RESP_OK_CAPSET_INFO,
- 	VIRTIO_GPU_RESP_OK_CAPSET,
-+	VIRTIO_GPU_RESP_OK_EDID,
- 
- 	/* error responses */
- 	VIRTIO_GPU_RESP_ERR_UNSPEC = 0x1200,
-@@ -291,6 +294,19 @@ struct virtio_gpu_resp_capset {
- 	__u8 capset_data[];
- };
- 
-+/* VIRTIO_GPU_CMD_GET_EDID */
-+struct virtio_gpu_cmd_get_edid {
-+	struct virtio_gpu_ctrl_hdr hdr;
-+	__le32 scanout;
-+};
-+
-+/* VIRTIO_GPU_RESP_OK_EDID */
-+struct virtio_gpu_resp_edid {
-+	struct virtio_gpu_ctrl_hdr hdr;
-+	__le32 size;
-+	__u8 edid[1024];
-+};
-+
- #define VIRTIO_GPU_EVENT_DISPLAY (1 << 0)
- 
- struct virtio_gpu_config {
--- 
-2.9.3
+Stefan
 
+--d6Gm4EdcadzBjdND
+Content-Type: application/pgp-signature; name="signature.asc"
 
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+-----BEGIN PGP SIGNATURE-----
 
+iQEcBAEBAgAGBQJb4AURAAoJEJykq7OBq3PIuhcH/1PzkmAEvu7UJOizfP1zEWXp
+JFLJ+5B1mRvqPqLJs/zPKoUfqm3rfTCw+MLBGBaq4IJb+PDwvMEKMmjRl+gfIPUT
+tiOKlJ5TQvk/e7WtiASIc1oSESVT0jX9dWemmYFNTwvDnRBu+61Y8Y3/PFHesi1y
+vbJzBc9ipSYtBAzYVc0I0zx+flA8rir/WUIUcER9Q9faTNJT91U//gI8S+qKGcdK
+fLpjainO3pYggkG5wHtnkrEe6wHq7HageX8Y1n3agPmd+4vg/iu/JW2wMfdQc6+U
+MlSuj6kbCQM+wjkj51va1DpLQRKDL1PeetC2xVzFdQ8xLvMa78BfKh1RpckURnQ=
+=ORsE
+-----END PGP SIGNATURE-----
+
+--d6Gm4EdcadzBjdND--
