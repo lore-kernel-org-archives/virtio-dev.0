@@ -1,104 +1,176 @@
-Return-Path: virtio-dev-return-4937-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4936-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 171029840FF
-	for <virtio-dev@lists.oasis-open.org>; Wed,  7 Nov 2018 07:20:53 +0000 (UTC)
-From: Tiwei Bie <tiwei.bie@intel.com>
-Date: Wed,  7 Nov 2018 15:18:35 +0800
-Message-Id: <20181107071835.3202-1-tiwei.bie@intel.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id AF018985D54
+	for <virtio-dev@lists.oasis-open.org>; Tue,  6 Nov 2018 09:34:46 +0000 (UTC)
+From: Mario Torrecillas Rodriguez <Mario.Rodriguez@arm.com>
+Date: Tue, 6 Nov 2018 09:34:29 +0000
+Message-ID: <B3982BF1-9A6C-4726-8517-52E71EC7ECFD@arm.com>
+Content-Language: en-US
+Content-Type: multipart/alternative;
+	boundary="_000_B3982BF19A6C4726851752E71EC7ECFDarmcom_"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: [virtio-dev] [PATCH] packed-ring: fix example code
-To: mst@redhat.com, virtio-dev@lists.oasis-open.org
-Cc: tiwei.bie@intel.com
+Subject: [virtio-dev] Virtio Extended Descriptors idea/proposal
+To: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
+Cc: nd <nd@arm.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-We also need to check whether AVAIL bit equals to USED bit
-when checking whether a descriptor is a used descriptor.
-Below is an example:
+--_000_B3982BF19A6C4726851752E71EC7ECFDarmcom_
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 
-Assuming ring size is 4, ring's initial state will be:
+SGVsbG8sDQoNCknigJlkIGxpa2UgdG8gY2lyY3VsYXRlIGFuIGlkZWEgYXJvdW5kIC0gaWYgc29t
+ZXRoaW5nIGxpa2UgdGhpcyBoYXMgYmVlbiBkaXNjdXNzZWQgaW4gdGhlIHBhc3QsIHBsZWFzZSBs
+ZXQgbWUga25vdyAoSSB3YXMgbm90IGFibGUgdG8gZmluZCBhbnl0aGluZyBpbiB0aGUgYXJjaGl2
+ZXMpLg0KDQpJbiB0aGUgcGFja2VkIHZpcnRxdWV1ZSBkZXNpZ24sIGEgc2luZ2xlIGRlc2NyaXB0
+b3IgY29udGFpbnMgYSBidWZmZXIgYWRkcmVzcyBhbG9uZyB3aXRoIGFzc29jaWF0ZWQgbWV0YWRh
+dGEgKElEIGFuZCBsZW5ndGgpIGFzIHdlbGwgYXMgYSBzZXQgb2YgZmxhZ3MuIEFsbCBkZXNjcmlw
+dG9ycyBhcmUgYXNzb2NpYXRlZCB3aXRoIGEgcGllY2Ugb2YgZGF0YSB0aGF0IGlzIGluZGlyZWN0
+bHkgcmVmZXJlbmNlZCBieSB0aGUgZGVzY3JpcHRvciwgYW5kIGhlbmNlIHRoZSByZWNlaXZlciBu
+ZWVkcyB0bzoNCg0KDQogICogICBHZXQgdGhlIGRlc2NyaXB0b3IgZnJvbSBtZW1vcnkNCiAgKiAg
+IERlcmVmZXJlbmNlIHRoZSBidWZmZXIgYWRkcmVzcyBhbmQgcmVhZCB0aGUgdW5kZXJseWluZyBk
+YXRhIGZyb20gbWVtb3J5DQoNClRoaXMgaXMgd2VsbCBzdWl0ZWQgZm9yIGNhc2VzIHdoZXJlIGRh
+dGEgYWxsb2NhdGlvbiBhbmQgdHJhbnNtaXNzaW9uIHRocm91Z2ggdGhlIHZpcnRxdWV1ZSB0YWtl
+IHBsYWNlIGF0IGRpZmZlcmVudCBwb2ludHMgaW4gdGltZSwgb3Igd2hlbiB0aGUgZGF0YSB3aWxs
+IGJlIHBhc3NlZCBhcm91bmQgc2V2ZXJhbCB0aW1lcy4gT25lIGV4YW1wbGUgaXMgbmV0d29ya2lu
+Zywgd2hlcmUgcGFja2V0cyBhcmUgYWxsb2NhdGVkIGF0IHNvbWUgcG9pbnQsIG9wZXJhdGVkIG9u
+IChwb3NzaWJseSBub3QgZXZlbiB3aXRoaW4gYSBzaW5nbGUgdGhyZWFkKSwgYW5kIHRoZW4gZXZl
+bnR1YWxseSBzZW50IG91dCB0byB0aGUgTklDLg0KDQpIb3dldmVyIEkgdGhpbmsgaXQgd291bGQg
+YmUgYmVuZWZpY2lhbCB0byBhbHNvIHN1cHBvcnQgYSBzY2hlbWUgd2hlcmUgZGF0YSBpcyBkaXJl
+Y3RseSBlbWJlZGRlZCBpbiB0aGUgZGVzY3JpcHRvciBpdHNlbGYgKHdoYXQgSSBjYWxsIGhlcmUg
+4oCcZXh0ZW5kZWQgZGVzY3JpcHRvcuKAnSksIHdoaWNoIHdvdWxkIG1ha2UgdmlydGlvIG1vcmUg
+Z2VuZXJpY2FsbHkgYXBwbGljYWJsZS4gVGhpcyB3b3JrcyB3ZWxsIGluIGNhc2VzIHdoZXJlIHRo
+ZSBkYXRhIGlzIGdlbmVyYXRlZCByaWdodCBiZWZvcmUgdGhlIGRlc2NyaXB0b3IgaXMgc2VudCAt
+IGZvciBleGFtcGxlLCBhbGwgY29uZmlndXJhdGlvbi9jb250cm9sIG1lc3NhZ2VzLCBvciB3aGVu
+IHRoZSBhbW91bnQgb2YgZGF0YSB0byBiZSBzZW50IGlzIHZlcnkgc21hbGwgYW5kIGZpeGVkIGlu
+IHNpemUuIENlcnRhaW4gaGFyZHdhcmUgZGV2aWNlcyBtaWdodCBhbHNvIHByZWZlciB0byBvcGVy
+YXRlIHRoaXMgd2F5IHNpbmNlIHRoZXkgZG9u4oCZdCBoYXZlIHRoZSBleHRyYSBsZXZlbCBvZiBp
+bmRpcmVjdGlvbi4NCg0KSW4gc3VjaCBjYXNlcywgc2ltcGxpZmljYXRpb24gYmVuZWZpdHMgYXNp
+ZGUsIHdlIGV4cGVjdCB0aGlzIHNjaGVtZSB0byBwcmVzZW50IGEgbnVtYmVyIG9mIHBlcmZvcm1h
+bmNlIGJlbmVmaXRzOg0KDQoNCiAgKiAgIFdoZW4gdXNpbmcgcmVmZXJlbmNlZCBidWZmZXJzLCBp
+ZiB0aGUgYmFjay1lbmQgaXMgaW1wbGVtZW50ZWQgaW4gaGFyZHdhcmUgd2l0aCBhbiBJT01NVSwg
+YnVmZmVyIGFkZHJlc3NlcyBtdXN0IGJlIGFwcHJvcHJpYXRlbHkgbWFwcGVkIGluIGFkdmFuY2Ug
+c28gdGhhdCB0aGUgZGV2aWNlIGNhbiBkZXJlZmVyZW5jZSB0aGVtLiBUaGlzIGlzIG5vdCByZXF1
+aXJlZCBpZiB0aGUgZGF0YSBpcyBlbWJlZGRlZCBpbiB0aGUgZGVzY3JpcHRvci4NCiAgKiAgIFNt
+YWxsIGVub3VnaCBleHRlbmRlZCBkZXNjcmlwdG9ycyBjb3VsZCBiZSBsYWlkIG91dCBpbiBtZW1v
+cnkgc3VjaCB0aGF0IHRoZXkgZml0IGluIGEgc2luZ2xlIGNhY2hlIGxpbmUuIFRoaXMgd291bGQg
+ZWxpbWluYXRlIHRoZSBuZWVkIHRvIGxvYWQgdGhlIHJlZmVyZW5jZWQgYnVmZmVyIGFuZCBjb25z
+dW1lIGFuIGV4dHJhIGNhY2hlIGxpbmUgLSB3aXRoIGEgc2luZ2xlIGxvYWQgeW91IGNhbiByZXRy
+aWV2ZSBhbGwgdGhlIGluZm9ybWF0aW9uLg0KICAqICAgU2ltaWxhcmx5LCBzaW5jZSBhbiBleHRl
+cm5hbCBidWZmZXIgZG9lcyBub3QgbmVlZCB0byBiZSBhbGxvY2F0ZWQsIHRoZSBUTEIgc2hvdWxk
+IGJlbmVmaXQgZnJvbSB0aGlzLg0KDQpUaGUgaW50ZW50aW9uIG9mIHRoaXMgZW1haWwgaXMgdG8g
+cHJlc2VudCB0aGUgaWRlYSBhbmQgc2VlIHdoYXQgb3RoZXIgcGVvcGxlIHRoaW5rIC0gSSB3b3Vs
+ZCBiZSBoYXBweSB0byB3b3JrIG9uIGEgcGF0Y2ggZm9yIHRoZSBzcGVjaWZpY2F0aW9uIGlmIHRo
+ZXJlIGlzIGludGVyZXN0LCBhbmQgdXNlIGl0IHRvIGRyaXZlIGEgbW9yZSBkZXRhaWxlZCBkaXNj
+dXNzaW9uLiBJbiBzaG9ydCwgSSB0aGluayB0aGUgZm9sbG93aW5nIGNoYW5nZXMgd291bGQgYmUg
+cmVxdWlyZWQ6DQoNCg0KICAqICAgQWRkIGEgZGV2aWNlLWluZGVwZW5kZW50IGZlYXR1cmUgYml0
+IHRvIGNvbnZleSB0aGUgZmFjdCB0aGF0IHRoZSBkZXZpY2UvZHJpdmVyIHN1cHBvcnRzIGV4dGVu
+ZGVkIGRlc2NyaXB0b3JzLiBUaGlzIGZlYXR1cmUgY291bGQgYmUgZGVwZW5kZW50IG9uIFZJUlRJ
+T19GX1JJTkdfUEFDS0VELg0KICAqICAgQWRkIGEgcGVyLXZpcnRxdWV1ZSBjb25maWd1cmF0aW9u
+IHBhcmFtZXRlciB0aGF0IGRlZmluZXMgdGhlIGFtb3VudCBvZiBleHRlbmRlZCBkYXRhIGluIHRo
+ZSBkZXNjcmlwdG9yIChlaXRoZXIgaW4gYnl0ZXMsIG9yIGEgbXVsdGlwbGUgb2Ygc29tZSBvdGhl
+ciB3aWR0aCwgc3VjaCBhcyA2NC1iaXQgd29yZHMgb3IgY2FjaGUgbGluZXMpLg0KICAqICAgQWRk
+IGEgZmxhZyB0byB0aGUgZGVzY3JpcHRvciB0byBkZXRlcm1pbmUgd2hldGhlciBkYXRhIGlzIGJl
+aW5nIHJlZmVyZW5jZWQgYnkgdGhlIGJ1ZmZlciBhZGRyZXNzIG9yIGVtYmVkZGVkIGluIHRoZSBl
+eHRlbmRlZCBkYXRhIHBvcnRpb24gKG5vdGUgdGhhdCwgZXZlbiB3aGVyZSBkYXRhIGlzIHJlZmVy
+ZW5jZWQsIHRoZSBleHRlbmRlZCBkYXRhIHBvcnRpb24gbXVzdCBzdGlsbCBiZSB0aGVyZSwgZXZl
+biBpZiB1bnVzZWQgLSB0aGUgcmVhc29uIGlzIHRoYXQgYWxsIGRlc2NyaXB0b3JzIGluIGEgZ2l2
+ZW4gcXVldWUgc2hvdWxkIGJlIHRoZSBzYW1lIHNpemUgc28gYXMgdG8gbm90IHByZXZlbnQgYmF0
+Y2hpbmcpLg0KDQpXaGVuIHRoaXMgZmVhdHVyZSBpcyBuZWdvdGlhdGVkIGFuZCBlbmFibGVkIGZv
+ciBhIGdpdmVuIHF1ZXVlLCB0aGUgc2l6ZSBvZiB0aGUgZGVzY3JpcHRvciBpcyBlZmZlY3RpdmVs
+eSAoMTYgYnl0ZXMgKyBleHRlbmRlZCBkZXNjcmlwdG9yIHNpemUpIGFuZCBkcml2ZXJzL2Rldmlj
+ZXMgYXJlIGZyZWUgdG8gaW5zZXJ0IGFueSBkZXZpY2Utc3BlY2lmaWMgZGF0YSBpbiB0aGUgZXh0
+ZW5kZWQgcG9ydGlvbiBvZiB0aGUgZGVzY3JpcHRvci4NCg0KTWFyaW8uDQo=
 
-+----+----+----+----+
-| 00 | 00 | 00 | 00 |
-+----+----+----+----+
+--_000_B3982BF19A6C4726851752E71EC7ECFDarmcom_
+Content-Type: text/html; charset="utf-8"
+Content-ID: <F825860429A1504096508A346299D82C@eurprd08.prod.outlook.com>
+Content-Transfer-Encoding: base64
 
-00 means AVAIL=0 USED=0, 01 means AVAIL=0 USED=1
-10 means AVAIL=1 USED=0, 11 means AVAIL=1 USED=1
+PGh0bWw+DQo8aGVhZD4NCjxtZXRhIGh0dHAtZXF1aXY9IkNvbnRlbnQtVHlwZSIgY29udGVudD0i
+dGV4dC9odG1sOyBjaGFyc2V0PXV0Zi04Ij4NCjwvaGVhZD4NCjxib2R5IHN0eWxlPSJ3b3JkLXdy
+YXA6IGJyZWFrLXdvcmQ7IC13ZWJraXQtbmJzcC1tb2RlOiBzcGFjZTsgbGluZS1icmVhazogYWZ0
+ZXItd2hpdGUtc3BhY2U7IiBjbGFzcz0iIj4NCjxkaXYgY2xhc3M9IiI+SGVsbG8sPC9kaXY+DQo8
+ZGl2IGNsYXNzPSIiPjxiciBjbGFzcz0iIj4NCjwvZGl2Pg0KPGRpdiBjbGFzcz0iIj5J4oCZZCBs
+aWtlIHRvIGNpcmN1bGF0ZSBhbiBpZGVhIGFyb3VuZCAtIGlmIHNvbWV0aGluZyBsaWtlIHRoaXMg
+aGFzIGJlZW4gZGlzY3Vzc2VkIGluIHRoZSBwYXN0LCBwbGVhc2UgbGV0IG1lIGtub3cgKEkgd2Fz
+IG5vdCBhYmxlIHRvIGZpbmQgYW55dGhpbmcgaW4gdGhlIGFyY2hpdmVzKS48L2Rpdj4NCjxkaXYg
+Y2xhc3M9IiI+PGJyIGNsYXNzPSIiPg0KPC9kaXY+DQo8ZGl2IGNsYXNzPSIiPkluIHRoZSBwYWNr
+ZWQgdmlydHF1ZXVlIGRlc2lnbiwgYSBzaW5nbGUgZGVzY3JpcHRvciBjb250YWlucyBhIGJ1ZmZl
+ciBhZGRyZXNzIGFsb25nIHdpdGggYXNzb2NpYXRlZCBtZXRhZGF0YSAoSUQgYW5kIGxlbmd0aCkg
+YXMgd2VsbCBhcyBhIHNldCBvZiBmbGFncy4gQWxsIGRlc2NyaXB0b3JzIGFyZSBhc3NvY2lhdGVk
+IHdpdGggYSBwaWVjZSBvZiBkYXRhIHRoYXQgaXMgaW5kaXJlY3RseSByZWZlcmVuY2VkIGJ5IHRo
+ZSBkZXNjcmlwdG9yLA0KIGFuZCBoZW5jZSB0aGUgcmVjZWl2ZXIgbmVlZHMgdG86PC9kaXY+DQo8
+ZGl2IGNsYXNzPSIiPjxiciBjbGFzcz0iIj4NCjwvZGl2Pg0KPGRpdiBjbGFzcz0iIj4NCjx1bCBj
+bGFzcz0iTWFpbE91dGxpbmUiPg0KPGxpIGNsYXNzPSIiPkdldCB0aGUgZGVzY3JpcHRvciBmcm9t
+IG1lbW9yeTwvbGk+PGxpIGNsYXNzPSIiPkRlcmVmZXJlbmNlIHRoZSBidWZmZXIgYWRkcmVzcyBh
+bmQgcmVhZCB0aGUgdW5kZXJseWluZyBkYXRhIGZyb20gbWVtb3J5PC9saT48L3VsPg0KPGRpdiBj
+bGFzcz0iIj48YnIgY2xhc3M9IiI+DQo8L2Rpdj4NCjwvZGl2Pg0KPGRpdiBjbGFzcz0iIj5UaGlz
+IGlzIHdlbGwgc3VpdGVkIGZvciBjYXNlcyB3aGVyZSBkYXRhIGFsbG9jYXRpb24gYW5kIHRyYW5z
+bWlzc2lvbiB0aHJvdWdoIHRoZSB2aXJ0cXVldWUgdGFrZSBwbGFjZSBhdCBkaWZmZXJlbnQgcG9p
+bnRzIGluIHRpbWUsIG9yIHdoZW4gdGhlIGRhdGEgd2lsbCBiZSBwYXNzZWQgYXJvdW5kIHNldmVy
+YWwgdGltZXMuIE9uZSBleGFtcGxlIGlzIG5ldHdvcmtpbmcsIHdoZXJlIHBhY2tldHMgYXJlIGFs
+bG9jYXRlZCBhdA0KIHNvbWUgcG9pbnQsIG9wZXJhdGVkIG9uIChwb3NzaWJseSBub3QgZXZlbiB3
+aXRoaW4gYSBzaW5nbGUgdGhyZWFkKSwgYW5kIHRoZW4gZXZlbnR1YWxseSBzZW50IG91dCB0byB0
+aGUgTklDLjwvZGl2Pg0KPGRpdiBjbGFzcz0iIj48YnIgY2xhc3M9IiI+DQo8L2Rpdj4NCjxkaXYg
+Y2xhc3M9IiI+SG93ZXZlciBJIHRoaW5rIGl0IHdvdWxkIGJlIGJlbmVmaWNpYWwgdG8gYWxzbyBz
+dXBwb3J0IGEgc2NoZW1lIHdoZXJlIGRhdGEgaXMgZGlyZWN0bHkgZW1iZWRkZWQgaW4gdGhlIGRl
+c2NyaXB0b3IgaXRzZWxmICh3aGF0IEkgY2FsbCBoZXJlIOKAnGV4dGVuZGVkIGRlc2NyaXB0b3Li
+gJ0pLCB3aGljaCB3b3VsZCBtYWtlIHZpcnRpbyBtb3JlIGdlbmVyaWNhbGx5IGFwcGxpY2FibGUu
+IFRoaXMgd29ya3Mgd2VsbCBpbiBjYXNlcyB3aGVyZQ0KIHRoZSBkYXRhIGlzIGdlbmVyYXRlZCBy
+aWdodCBiZWZvcmUgdGhlIGRlc2NyaXB0b3IgaXMgc2VudCAtIGZvciBleGFtcGxlLCBhbGwgY29u
+ZmlndXJhdGlvbi9jb250cm9sIG1lc3NhZ2VzLCBvciB3aGVuIHRoZSBhbW91bnQgb2YgZGF0YSB0
+byBiZSBzZW50IGlzIHZlcnkgc21hbGwgYW5kIGZpeGVkIGluIHNpemUuIENlcnRhaW4gaGFyZHdh
+cmUgZGV2aWNlcyBtaWdodCBhbHNvIHByZWZlciB0byBvcGVyYXRlIHRoaXMgd2F5IHNpbmNlIHRo
+ZXkgZG9u4oCZdA0KIGhhdmUgdGhlIGV4dHJhIGxldmVsIG9mIGluZGlyZWN0aW9uLjwvZGl2Pg0K
+PGRpdiBjbGFzcz0iIj48YnIgY2xhc3M9IiI+DQo8L2Rpdj4NCjxkaXYgY2xhc3M9IiI+SW4gc3Vj
+aCBjYXNlcywgc2ltcGxpZmljYXRpb24gYmVuZWZpdHMgYXNpZGUsIHdlIGV4cGVjdCB0aGlzIHNj
+aGVtZSB0byBwcmVzZW50IGEgbnVtYmVyIG9mIHBlcmZvcm1hbmNlIGJlbmVmaXRzOjwvZGl2Pg0K
+PGRpdiBjbGFzcz0iIj48YnIgY2xhc3M9IiI+DQo8L2Rpdj4NCjxkaXYgY2xhc3M9IiI+DQo8dWwg
+Y2xhc3M9Ik1haWxPdXRsaW5lIj4NCjxsaSBjbGFzcz0iIj5XaGVuIHVzaW5nIHJlZmVyZW5jZWQg
+YnVmZmVycywgaWYgdGhlIGJhY2stZW5kIGlzIGltcGxlbWVudGVkIGluIGhhcmR3YXJlIHdpdGgg
+YW4gSU9NTVUsIGJ1ZmZlciBhZGRyZXNzZXMgbXVzdCBiZSBhcHByb3ByaWF0ZWx5IG1hcHBlZCBp
+biBhZHZhbmNlIHNvIHRoYXQgdGhlIGRldmljZSBjYW4gZGVyZWZlcmVuY2UgdGhlbS4gVGhpcyBp
+cyBub3QgcmVxdWlyZWQgaWYgdGhlIGRhdGEgaXMgZW1iZWRkZWQgaW4gdGhlIGRlc2NyaXB0b3Iu
+PC9saT48bGkgY2xhc3M9IiI+U21hbGwgZW5vdWdoIGV4dGVuZGVkIGRlc2NyaXB0b3JzIGNvdWxk
+IGJlIGxhaWQgb3V0IGluIG1lbW9yeSBzdWNoIHRoYXQgdGhleSBmaXQgaW4gYSBzaW5nbGUgY2Fj
+aGUgbGluZS4gVGhpcyB3b3VsZCBlbGltaW5hdGUgdGhlIG5lZWQgdG8gbG9hZCB0aGUgcmVmZXJl
+bmNlZCBidWZmZXIgYW5kIGNvbnN1bWUgYW4gZXh0cmEgY2FjaGUgbGluZSAtIHdpdGggYSBzaW5n
+bGUgbG9hZCB5b3UgY2FuIHJldHJpZXZlIGFsbCB0aGUgaW5mb3JtYXRpb24uPC9saT48bGkgY2xh
+c3M9IiI+U2ltaWxhcmx5LCBzaW5jZSBhbiBleHRlcm5hbCBidWZmZXIgZG9lcyBub3QgbmVlZCB0
+byBiZSBhbGxvY2F0ZWQsIHRoZSBUTEIgc2hvdWxkIGJlbmVmaXQgZnJvbSB0aGlzLjwvbGk+PC91
+bD4NCjwvZGl2Pg0KPGRpdiBjbGFzcz0iIj48YnIgY2xhc3M9IiI+DQo8L2Rpdj4NCjxkaXYgY2xh
+c3M9IiI+VGhlIGludGVudGlvbiBvZiB0aGlzIGVtYWlsIGlzIHRvIHByZXNlbnQgdGhlIGlkZWEg
+YW5kIHNlZSB3aGF0IG90aGVyIHBlb3BsZSB0aGluayAtIEkgd291bGQgYmUgaGFwcHkgdG8gd29y
+ayBvbiBhIHBhdGNoIGZvciB0aGUgc3BlY2lmaWNhdGlvbiBpZiB0aGVyZSBpcyBpbnRlcmVzdCwg
+YW5kIHVzZSBpdCB0byBkcml2ZSBhIG1vcmUgZGV0YWlsZWQgZGlzY3Vzc2lvbi4gSW4gc2hvcnQs
+IEkgdGhpbmsgdGhlIGZvbGxvd2luZw0KIGNoYW5nZXMgd291bGQgYmUgcmVxdWlyZWQ6PC9kaXY+
+DQo8ZGl2IGNsYXNzPSIiPjxiciBjbGFzcz0iIj4NCjwvZGl2Pg0KPGRpdiBjbGFzcz0iIj4NCjx1
+bCBjbGFzcz0iTWFpbE91dGxpbmUiPg0KPGxpIGNsYXNzPSIiPkFkZCBhIGRldmljZS1pbmRlcGVu
+ZGVudCBmZWF0dXJlIGJpdCB0byBjb252ZXkgdGhlIGZhY3QgdGhhdCB0aGUgZGV2aWNlL2RyaXZl
+ciBzdXBwb3J0cyBleHRlbmRlZCBkZXNjcmlwdG9ycy4gVGhpcyBmZWF0dXJlIGNvdWxkIGJlIGRl
+cGVuZGVudCBvbiBWSVJUSU9fRl9SSU5HX1BBQ0tFRC48L2xpPjxsaSBjbGFzcz0iIj5BZGQgYSBw
+ZXItdmlydHF1ZXVlIGNvbmZpZ3VyYXRpb24gcGFyYW1ldGVyIHRoYXQgZGVmaW5lcyB0aGUgYW1v
+dW50IG9mIGV4dGVuZGVkIGRhdGEgaW4gdGhlIGRlc2NyaXB0b3ImbmJzcDsoZWl0aGVyIGluIGJ5
+dGVzLCBvciBhIG11bHRpcGxlIG9mIHNvbWUgb3RoZXIgd2lkdGgsIHN1Y2ggYXMgNjQtYml0IHdv
+cmRzIG9yIGNhY2hlIGxpbmVzKS48L2xpPjxsaSBjbGFzcz0iIj5BZGQgYSBmbGFnIHRvIHRoZSBk
+ZXNjcmlwdG9yIHRvIGRldGVybWluZSB3aGV0aGVyIGRhdGEgaXMgYmVpbmcgcmVmZXJlbmNlZCBi
+eSB0aGUgYnVmZmVyIGFkZHJlc3Mgb3IgZW1iZWRkZWQgaW4gdGhlIGV4dGVuZGVkIGRhdGEgcG9y
+dGlvbiAobm90ZSB0aGF0LCBldmVuIHdoZXJlIGRhdGEgaXMgcmVmZXJlbmNlZCwgdGhlIGV4dGVu
+ZGVkIGRhdGEgcG9ydGlvbiBtdXN0IHN0aWxsIGJlIHRoZXJlLCBldmVuIGlmIHVudXNlZCAtDQog
+dGhlIHJlYXNvbiBpcyB0aGF0IGFsbCBkZXNjcmlwdG9ycyBpbiBhIGdpdmVuIHF1ZXVlIHNob3Vs
+ZCBiZSB0aGUgc2FtZSBzaXplIHNvIGFzIHRvIG5vdCBwcmV2ZW50IGJhdGNoaW5nKS48L2xpPjwv
+dWw+DQo8ZGl2IGNsYXNzPSIiPjxiciBjbGFzcz0iIj4NCjwvZGl2Pg0KPC9kaXY+DQo8ZGl2IGNs
+YXNzPSIiPldoZW4gdGhpcyBmZWF0dXJlIGlzIG5lZ290aWF0ZWQgYW5kIGVuYWJsZWQgZm9yIGEg
+Z2l2ZW4gcXVldWUsIHRoZSBzaXplIG9mIHRoZSBkZXNjcmlwdG9yIGlzIGVmZmVjdGl2ZWx5ICgx
+NiBieXRlcyAmIzQzOyBleHRlbmRlZCBkZXNjcmlwdG9yIHNpemUpIGFuZCBkcml2ZXJzL2Rldmlj
+ZXMgYXJlIGZyZWUgdG8gaW5zZXJ0IGFueSBkZXZpY2Utc3BlY2lmaWMgZGF0YSBpbiB0aGUgZXh0
+ZW5kZWQgcG9ydGlvbiBvZiB0aGUgZGVzY3JpcHRvci48L2Rpdj4NCjxkaXYgY2xhc3M9IiI+PGJy
+IGNsYXNzPSIiPg0KPC9kaXY+DQo8ZGl2IGNsYXNzPSIiPk1hcmlvLjwvZGl2Pg0KPC9ib2R5Pg0K
+PC9odG1sPg0K
 
-After driver made two descriptor chains available and each
-chain consists of two descriptors, the ring could be:
-
-+----+-----------+----+-----------+
-| 10 | 10 (id=0) | 10 | 10 (id=1) |
-+----+-----------+----+-----------+
-
-After device processed all the available descriptors and made
-them used (e.g. in order), the ring could be:
-
-+-----------+----+-----------+----+
-| 11 (id=0) | 10 | 11 (id=1) | 10 |
-+-----------+----+-----------+----+
-
-After driver processed all the used descriptors and made
-one descriptor (not chained, just one descriptor) available,
-the ring could be:
-
-+-----------+----+----+----+
-| 01 (id=0) | 10 | 11 | 10 |
-+-----------+----+----+----+
-
-After device made that descriptor used, the ring will be:
-
-+-----------+----+----+----+
-| 00 (id=0) | 10 | 11 | 10 |
-+-----------+----+----+----+
-
-If driver doesn't check whether AVAIL bit equals to USED bit
-when checking whether a descriptor is a used descriptor, after
-checking the first descriptor (whose AVAIL and USED bits are
-0 and 0) and advancing the vq->next_used pointer, it will then
-also treat the next descriptor, i.e. the second descriptor
-(whose AVAIL and USED bits are 1 and 0) as used which is wrong.
-
-Signed-off-by: Tiwei Bie <tiwei.bie@intel.com>
----
- packed-ring.tex | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
-
-diff --git a/packed-ring.tex b/packed-ring.tex
-index ebbad95..ec116d7 100644
---- a/packed-ring.tex
-+++ b/packed-ring.tex
-@@ -688,15 +688,17 @@ for (;;) {
-         struct pvirtq_desc *d = vq->desc[vq->next_used];
- 
-         flags = d->flags;
-+        bool avail = flags & VIRTQ_DESC_F_AVAIL;
-         bool used = flags & VIRTQ_DESC_F_USED;
- 
--        if (used != vq->used_wrap_count) {
-+        if (avail != used || used != vq->used_wrap_count) {
-                 vq->driver_event.flags = RING_EVENT_FLAGS_ENABLE;
-                 memory_barrier();
- 
-                 flags = d->flags;
-+                bool avail = flags & VIRTQ_DESC_F_AVAIL;
-                 bool used = flags & VIRTQ_DESC_F_USED;
--                if (used != vq->used_wrap_count) {
-+                if (avail != used || used != vq->used_wrap_count) {
-                         break;
-                 }
- 
--- 
-2.19.1
-
-
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
-
+--_000_B3982BF19A6C4726851752E71EC7ECFDarmcom_--
