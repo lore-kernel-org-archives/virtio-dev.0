@@ -1,137 +1,102 @@
-Return-Path: virtio-dev-return-4950-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4937-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 4F8E1985DAF
-	for <virtio-dev@lists.oasis-open.org>; Fri,  9 Nov 2018 10:04:55 +0000 (UTC)
-References: <20180711022711.7090-1-tiwei.bie@intel.com>
- <20180711022711.7090-4-tiwei.bie@intel.com>
- <20181107123933-mutt-send-email-mst@kernel.org>
- <20181108013759.GA20591@debian>
- <2d46a41e-bc00-276a-e19a-105c9dffc75a@redhat.com>
- <20181108091337-mutt-send-email-mst@kernel.org>
- <21d6dbd9-8f78-6939-0e80-27b470aeb00a@redhat.com>
- <20181108225555-mutt-send-email-mst@kernel.org>
-From: Jason Wang <jasowang@redhat.com>
-Message-ID: <fb0f3926-3b08-58e6-979c-7edc9307945d@redhat.com>
-Date: Fri, 9 Nov 2018 18:04:42 +0800
+	by lists.oasis-open.org (Postfix) with ESMTP id 171029840FF
+	for <virtio-dev@lists.oasis-open.org>; Wed,  7 Nov 2018 07:20:53 +0000 (UTC)
+From: Tiwei Bie <tiwei.bie@intel.com>
+Date: Wed,  7 Nov 2018 15:18:35 +0800
+Message-Id: <20181107071835.3202-1-tiwei.bie@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <20181108225555-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-Subject: [virtio-dev] Re: [PATCH net-next v2 3/5] virtio_ring: add packed ring support
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Tiwei Bie <tiwei.bie@intel.com>, virtualization@lists.linux-foundation.org, linux-kernel@vger.kernel.org, netdev@vger.kernel.org, virtio-dev@lists.oasis-open.org, wexu@redhat.com, jfreimann@redhat.com
+Subject: [virtio-dev] [PATCH] packed-ring: fix example code
+To: mst@redhat.com, virtio-dev@lists.oasis-open.org
+Cc: tiwei.bie@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+We also need to check whether AVAIL bit equals to USED bit
+when checking whether a descriptor is a used descriptor.
+Below is an example:
 
-On 2018/11/9 上午11:58, Michael S. Tsirkin wrote:
-> On Fri, Nov 09, 2018 at 10:25:28AM +0800, Jason Wang wrote:
->> On 2018/11/8 下午10:14, Michael S. Tsirkin wrote:
->>> On Thu, Nov 08, 2018 at 04:18:25PM +0800, Jason Wang wrote:
->>>> On 2018/11/8 上午9:38, Tiwei Bie wrote:
->>>>>>> +
->>>>>>> +	if (vq->vq.num_free < descs_used) {
->>>>>>> +		pr_debug("Can't add buf len %i - avail = %i\n",
->>>>>>> +			 descs_used, vq->vq.num_free);
->>>>>>> +		/* FIXME: for historical reasons, we force a notify here if
->>>>>>> +		 * there are outgoing parts to the buffer.  Presumably the
->>>>>>> +		 * host should service the ring ASAP. */
->>>>>> I don't think we have a reason to do this for packed ring.
->>>>>> No historical baggage there, right?
->>>>> Based on the original commit log, it seems that the notify here
->>>>> is just an "optimization". But I don't quite understand what does
->>>>> the "the heuristics which KVM uses" refer to. If it's safe to drop
->>>>> this in packed ring, I'd like to do it.
->>>> According to the commit log, it seems like a workaround of lguest networking
->>>> backend. I agree to drop it, we should not have such burden.
->>>>
->>>> But we should notice that, with this removed, the compare between packed vs
->>>> split is kind of unfair.
->>> I don't think this ever triggers to be frank. When would it?
->>
->> I think it can happen e.g in the path of XDP transmission in
->> __virtnet_xdp_xmit_one():
->>
->>
->>          err = virtqueue_add_outbuf(sq->vq, sq->sg, 1, xdpf, GFP_ATOMIC);
->>          if (unlikely(err))
->>                  return -ENOSPC; /* Caller handle free/refcnt */
->>
-> I see. We used to do it for regular xmit but stopped
-> doing it. Is it fine for xdp then?
+Assuming ring size is 4, ring's initial state will be:
 
++----+----+----+----+
+| 00 | 00 | 00 | 00 |
++----+----+----+----+
 
-There's no traffic control in XDP, so it was the only thing we can do.
+00 means AVAIL=0 USED=0, 01 means AVAIL=0 USED=1
+10 means AVAIL=1 USED=0, 11 means AVAIL=1 USED=1
 
+After driver made two descriptor chains available and each
+chain consists of two descriptors, the ring could be:
 
->
->>>> Consider the removal of lguest support recently,
->>>> maybe we can drop this for split ring as well?
->>>>
->>>> Thanks
->>> If it's helpful, then for sure we can drop it for virtio 1.
->>> Can you see any perf differences at all? With which device?
->>
->> I don't test but consider the case of XDP_TX in guest plus vhost_net in
->> host. Since vhost_net is half duplex, it's pretty easier to trigger this
->> condition.
->>
->> Thanks
-> Sounds reasonable. Worth testing before we change things though.
++----+-----------+----+-----------+
+| 10 | 10 (id=0) | 10 | 10 (id=1) |
++----+-----------+----+-----------+
 
+After device processed all the available descriptors and made
+them used (e.g. in order), the ring could be:
 
-Let me test and submit a patch.
++-----------+----+-----------+----+
+| 11 (id=0) | 10 | 11 (id=1) | 10 |
++-----------+----+-----------+----+
 
-Thanks
+After driver processed all the used descriptors and made
+one descriptor (not chained, just one descriptor) available,
+the ring could be:
 
++-----------+----+----+----+
+| 01 (id=0) | 10 | 11 | 10 |
++-----------+----+----+----+
 
->
->>>>> commit 44653eae1407f79dff6f52fcf594ae84cb165ec4
->>>>> Author: Rusty Russell<rusty@rustcorp.com.au>
->>>>> Date:   Fri Jul 25 12:06:04 2008 -0500
->>>>>
->>>>>        virtio: don't always force a notification when ring is full
->>>>>        We force notification when the ring is full, even if the host has
->>>>>        indicated it doesn't want to know.  This seemed like a good idea at
->>>>>        the time: if we fill the transmit ring, we should tell the host
->>>>>        immediately.
->>>>>        Unfortunately this logic also applies to the receiving ring, which is
->>>>>        refilled constantly.  We should introduce real notification thesholds
->>>>>        to replace this logic.  Meanwhile, removing the logic altogether breaks
->>>>>        the heuristics which KVM uses, so we use a hack: only notify if there are
->>>>>        outgoing parts of the new buffer.
->>>>>        Here are the number of exits with lguest's crappy network implementation:
->>>>>        Before:
->>>>>                network xmit 7859051 recv 236420
->>>>>        After:
->>>>>                network xmit 7858610 recv 118136
->>>>>        Signed-off-by: Rusty Russell<rusty@rustcorp.com.au>
->>>>>
->>>>> diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
->>>>> index 72bf8bc09014..21d9a62767af 100644
->>>>> --- a/drivers/virtio/virtio_ring.c
->>>>> +++ b/drivers/virtio/virtio_ring.c
->>>>> @@ -87,8 +87,11 @@ static int vring_add_buf(struct virtqueue *_vq,
->>>>>     	if (vq->num_free < out + in) {
->>>>>     		pr_debug("Can't add buf len %i - avail = %i\n",
->>>>>     			 out + in, vq->num_free);
->>>>> -		/* We notify*even if*  VRING_USED_F_NO_NOTIFY is set here. */
->>>>> -		vq->notify(&vq->vq);
->>>>> +		/* FIXME: for historical reasons, we force a notify here if
->>>>> +		 * there are outgoing parts to the buffer.  Presumably the
->>>>> +		 * host should service the ring ASAP. */
->>>>> +		if (out)
->>>>> +			vq->notify(&vq->vq);
->>>>>     		END_USE(vq);
->>>>>     		return -ENOSPC;
->>>>>     	}
->>>>>
->>>>>
+After device made that descriptor used, the ring will be:
+
++-----------+----+----+----+
+| 00 (id=0) | 10 | 11 | 10 |
++-----------+----+----+----+
+
+If driver doesn't check whether AVAIL bit equals to USED bit
+when checking whether a descriptor is a used descriptor, after
+checking the first descriptor (whose AVAIL and USED bits are
+0 and 0) and advancing the vq->next_used pointer, it will then
+also treat the next descriptor, i.e. the second descriptor
+(whose AVAIL and USED bits are 1 and 0) as used which is wrong.
+
+Signed-off-by: Tiwei Bie <tiwei.bie@intel.com>
+---
+ packed-ring.tex | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/packed-ring.tex b/packed-ring.tex
+index ebbad95..ec116d7 100644
+--- a/packed-ring.tex
++++ b/packed-ring.tex
+@@ -688,15 +688,17 @@ for (;;) {
+         struct pvirtq_desc *d = vq->desc[vq->next_used];
+ 
+         flags = d->flags;
++        bool avail = flags & VIRTQ_DESC_F_AVAIL;
+         bool used = flags & VIRTQ_DESC_F_USED;
+ 
+-        if (used != vq->used_wrap_count) {
++        if (avail != used || used != vq->used_wrap_count) {
+                 vq->driver_event.flags = RING_EVENT_FLAGS_ENABLE;
+                 memory_barrier();
+ 
+                 flags = d->flags;
++                bool avail = flags & VIRTQ_DESC_F_AVAIL;
+                 bool used = flags & VIRTQ_DESC_F_USED;
+-                if (used != vq->used_wrap_count) {
++                if (avail != used || used != vq->used_wrap_count) {
+                         break;
+                 }
+ 
+-- 
+2.19.1
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
