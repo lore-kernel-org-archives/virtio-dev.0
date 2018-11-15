@@ -1,127 +1,345 @@
-Return-Path: virtio-dev-return-5002-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4971-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 017249841EC
-	for <virtio-dev@lists.oasis-open.org>; Wed, 21 Nov 2018 12:22:10 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 4FFA1985E60
+	for <virtio-dev@lists.oasis-open.org>; Thu, 15 Nov 2018 16:58:28 +0000 (UTC)
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Date: Thu, 15 Nov 2018 16:52:33 +0000
+Message-Id: <20181115165234.43990-7-jean-philippe.brucker@arm.com>
+In-Reply-To: <20181115165234.43990-1-jean-philippe.brucker@arm.com>
 References: <20181115165234.43990-1-jean-philippe.brucker@arm.com>
- <20181115165234.43990-6-jean-philippe.brucker@arm.com>
- <64abfb83-c555-c518-1030-cb73846517fc@redhat.com>
- <41460260-417b-762f-f007-ccfd5ac1e8a5@arm.com>
- <6d003fde-9574-0ff9-0bf8-7901d1a4aa5c@arm.com>
-From: Auger Eric <eric.auger@redhat.com>
-Message-ID: <09b4aef3-16e8-e846-9f73-be9c5a4bd805@redhat.com>
-Date: Wed, 21 Nov 2018 13:21:57 +0100
 MIME-Version: 1.0
-In-Reply-To: <6d003fde-9574-0ff9-0bf8-7901d1a4aa5c@arm.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [virtio-dev] Re: [PATCH v4 5/7] iommu: Add virtio-iommu driver
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "joro@8bytes.org" <joro@8bytes.org>, "mst@redhat.com" <mst@redhat.com>
-Cc: Mark Rutland <Mark.Rutland@arm.com>, Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>, "tnowicki@caviumnetworks.com" <tnowicki@caviumnetworks.com>, Marc Zyngier <Marc.Zyngier@arm.com>, Robin Murphy <Robin.Murphy@arm.com>, Will Deacon <Will.Deacon@arm.com>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "bhelgaas@google.com" <bhelgaas@google.com>, "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>
+Content-Transfer-Encoding: 8bit
+Subject: [virtio-dev] [PATCH v4 6/7] iommu/virtio: Add probe request
+To: iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, devicetree@vger.kernel.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, joro@8bytes.org, mst@redhat.com
+Cc: frowand.list@gmail.com, jasowang@redhat.com, robh+dt@kernel.org, mark.rutland@arm.com, bhelgaas@google.com, kvmarm@lists.cs.columbia.edu, eric.auger@redhat.com, tnowicki@caviumnetworks.com, kevin.tian@intel.com, marc.zyngier@arm.com, robin.murphy@arm.com, will.deacon@arm.com, lorenzo.pieralisi@arm.com, bharat.bhushan@nxp.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Hi jean,
+When the device offers the probe feature, send a probe request for each
+device managed by the IOMMU. Extract RESV_MEM information. When we
+encounter a MSI doorbell region, set it up as a IOMMU_RESV_MSI region.
+This will tell other subsystems that there is no need to map the MSI
+doorbell in the virtio-iommu, because MSIs bypass it.
 
-On 11/20/18 6:30 PM, Jean-Philippe Brucker wrote:
-> On 16/11/2018 18:46, Jean-Philippe Brucker wrote:
->>>> +/*
->>>> + * __viommu_sync_req - Complete all in-flight requests
->>>> + *
->>>> + * Wait for all added requests to complete. When this function returns, all
->>>> + * requests that were in-flight at the time of the call have completed.
->>>> + */
->>>> +static int __viommu_sync_req(struct viommu_dev *viommu)
->>>> +{
->>>> +	int ret = 0;
->>>> +	unsigned int len;
->>>> +	size_t write_len;
->>>> +	struct viommu_request *req;
->>>> +	struct virtqueue *vq = viommu->vqs[VIOMMU_REQUEST_VQ];
->>>> +
->>>> +	assert_spin_locked(&viommu->request_lock);
->>>> +
->>>> +	virtqueue_kick(vq);
->>>> +
->>>> +	while (!list_empty(&viommu->requests)) {
->>>> +		len = 0;
->>>> +		req = virtqueue_get_buf(vq, &len);
->>>> +		if (!req)
->>>> +			continue;
->>>> +
->>>> +		if (!len)
->>>> +			viommu_set_req_status(req->buf, req->len,
->>>> +					      VIRTIO_IOMMU_S_IOERR);
->>>> +
->>>> +		write_len = req->len - req->write_offset;
->>>> +		if (req->writeback && len >= write_len)
->>> I don't get "len >= write_len". Is it valid for the device to write more
->>> than write_len? If it writes less than write_len, the status is not set,
->>> is it?
-> 
-> Actually, len could well be three bytes smaller than write_len. The spec
-> doesn't require the device to write the three padding bytes in
-> virtio_iommu_req_tail, after the status byte.
-> 
-> Here the driver just assumes that the device wrote the reserved field.
-> The QEMU device seems to write uninitialized data in there...
+Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+---
+ drivers/iommu/virtio-iommu.c      | 156 ++++++++++++++++++++++++++++--
+ include/uapi/linux/virtio_iommu.h |  38 ++++++++
+ 2 files changed, 188 insertions(+), 6 deletions(-)
 
-Indeed that's incorrect and I should fix it. tail struct should be
-properly initialized to 0. Only probe request implementation is correct.
-> 
-> Any objection to changing the spec to require the device to initialize
-> those bytes to zero? I think it makes things nicer overall and shouldn't
-> have any performance impact.
-No objection from me.
-> 
-> [...]
->>>> +static struct iommu_domain *viommu_domain_alloc(unsigned type)
->>>> +{
->>>> +	struct viommu_domain *vdomain;
->>>> +
->>>> +	if (type != IOMMU_DOMAIN_UNMANAGED && type != IOMMU_DOMAIN_DMA)
->>> smmu drivers also support the IDENTITY type. Don't we want to support it
->>> as well?
->>
->> Eventually yes. The IDENTITY domain is useful when an IOMMU has been
->> forced upon you and gets in the way of performance, in which case you
->> get rid of it with CONFIG_IOMMU_DEFAULT_PASSTHROUGH=y or
->> iommu.passthrough=y. For virtio-iommu though, you could simply not
->> instantiate the device.
->>
->> I don't think it's difficult to add: if the device supports
->> VIRTIO_IOMMU_F_BYPASS, then we simply don't send an ATTACH request.
->> Otherwise after ATTACH we send a MAP for the whole input range. If the
->> change isn't bigger than this, I'll add it to v5.
-> 
-> Not as straightforward as I hoped, when the device doesn't support
-> VIRTIO_IOMMU_F_BYPASS:
-> 
-> * We can't simply create an ID map for the whole input range, we need to
-> carve out the resv_mem regions.
-> 
-> * For a VFIO device, the host has no way of forwarding the identity
-> mapping. For example the guest will attempt to map [0; 0xffffffffffff]
-> -> [0; 0xffffffffffff], but VFIO only allows to map RAM and cannot take
-> such request. One solution is to only create ID mapping for RAM, and
-> register a notifier for memory hotplug, like intel-iommu does for IOMMUs
-> that don't support HW pass-through.
-> 
-> Since it's not completely trivial and - I think - not urgent, I'll leave
-> this for later.
-OK makes sense to me too. It was just a head up.
+diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
+index 2a9cb6285a1e..c547ebd79c43 100644
+--- a/drivers/iommu/virtio-iommu.c
++++ b/drivers/iommu/virtio-iommu.c
+@@ -46,6 +46,7 @@ struct viommu_dev {
+ 	struct iommu_domain_geometry	geometry;
+ 	u64				pgsize_bitmap;
+ 	u8				domain_bits;
++	u32				probe_size;
+ };
+ 
+ struct viommu_mapping {
+@@ -67,8 +68,10 @@ struct viommu_domain {
+ };
+ 
+ struct viommu_endpoint {
++	struct device			*dev;
+ 	struct viommu_dev		*viommu;
+ 	struct viommu_domain		*vdomain;
++	struct list_head		resv_regions;
+ };
+ 
+ struct viommu_request {
+@@ -119,6 +122,9 @@ static off_t viommu_get_req_offset(struct viommu_dev *viommu,
+ {
+ 	size_t tail_size = sizeof(struct virtio_iommu_req_tail);
+ 
++	if (req->type == VIRTIO_IOMMU_T_PROBE)
++		return len - viommu->probe_size - tail_size;
++
+ 	return len - tail_size;
+ }
+ 
+@@ -394,6 +400,110 @@ static int viommu_replay_mappings(struct viommu_domain *vdomain)
+ 	return ret;
+ }
+ 
++static int viommu_add_resv_mem(struct viommu_endpoint *vdev,
++			       struct virtio_iommu_probe_resv_mem *mem,
++			       size_t len)
++{
++	size_t size;
++	u64 start64, end64;
++	phys_addr_t start, end;
++	struct iommu_resv_region *region = NULL;
++	unsigned long prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
++
++	start = start64 = le64_to_cpu(mem->start);
++	end = end64 = le64_to_cpu(mem->end);
++	size = end64 - start64 + 1;
++
++	/* Catch any overflow, including the unlikely end64 - start64 + 1 = 0 */
++	if (start != start64 || end != end64 || size < end64 - start64)
++		return -EOVERFLOW;
++
++	if (len < sizeof(*mem))
++		return -EINVAL;
++
++	switch (mem->subtype) {
++	default:
++		dev_warn(vdev->dev, "unknown resv mem subtype 0x%x\n",
++			 mem->subtype);
++		/* Fall-through */
++	case VIRTIO_IOMMU_RESV_MEM_T_RESERVED:
++		region = iommu_alloc_resv_region(start, size, 0,
++						 IOMMU_RESV_RESERVED);
++		break;
++	case VIRTIO_IOMMU_RESV_MEM_T_MSI:
++		region = iommu_alloc_resv_region(start, size, prot,
++						 IOMMU_RESV_MSI);
++		break;
++	}
++	if (!region)
++		return -ENOMEM;
++
++	list_add(&vdev->resv_regions, &region->list);
++	return 0;
++}
++
++static int viommu_probe_endpoint(struct viommu_dev *viommu, struct device *dev)
++{
++	int ret;
++	u16 type, len;
++	size_t cur = 0;
++	size_t probe_len;
++	struct virtio_iommu_req_probe *probe;
++	struct virtio_iommu_probe_property *prop;
++	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
++	struct viommu_endpoint *vdev = fwspec->iommu_priv;
++
++	if (!fwspec->num_ids)
++		return -EINVAL;
++
++	probe_len = sizeof(*probe) + viommu->probe_size +
++		    sizeof(struct virtio_iommu_req_tail);
++	probe = kzalloc(probe_len, GFP_KERNEL);
++	if (!probe)
++		return -ENOMEM;
++
++	probe->head.type = VIRTIO_IOMMU_T_PROBE;
++	/*
++	 * For now, assume that properties of an endpoint that outputs multiple
++	 * IDs are consistent. Only probe the first one.
++	 */
++	probe->endpoint = cpu_to_le32(fwspec->ids[0]);
++
++	ret = viommu_send_req_sync(viommu, probe, probe_len);
++	if (ret)
++		goto out_free;
++
++	prop = (void *)probe->properties;
++	type = le16_to_cpu(prop->type) & VIRTIO_IOMMU_PROBE_T_MASK;
++
++	while (type != VIRTIO_IOMMU_PROBE_T_NONE &&
++	       cur < viommu->probe_size) {
++		len = le16_to_cpu(prop->length) + sizeof(*prop);
++
++		switch (type) {
++		case VIRTIO_IOMMU_PROBE_T_RESV_MEM:
++			ret = viommu_add_resv_mem(vdev, (void *)prop, len);
++			break;
++		default:
++			dev_err(dev, "unknown viommu prop 0x%x\n", type);
++		}
++
++		if (ret)
++			dev_err(dev, "failed to parse viommu prop 0x%x\n", type);
++
++		cur += len;
++		if (cur >= viommu->probe_size)
++			break;
++
++		prop = (void *)probe->properties + cur;
++		type = le16_to_cpu(prop->type) & VIRTIO_IOMMU_PROBE_T_MASK;
++	}
++
++out_free:
++	kfree(probe);
++	return ret;
++}
++
+ /* IOMMU API */
+ 
+ static struct iommu_domain *viommu_domain_alloc(unsigned type)
+@@ -616,15 +726,33 @@ static void viommu_iotlb_sync(struct iommu_domain *domain)
+ 
+ static void viommu_get_resv_regions(struct device *dev, struct list_head *head)
+ {
+-	struct iommu_resv_region *region;
++	struct iommu_resv_region *entry, *new_entry, *msi = NULL;
++	struct viommu_endpoint *vdev = dev->iommu_fwspec->iommu_priv;
+ 	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
+ 
+-	region = iommu_alloc_resv_region(MSI_IOVA_BASE, MSI_IOVA_LENGTH, prot,
+-					 IOMMU_RESV_SW_MSI);
+-	if (!region)
+-		return;
++	list_for_each_entry(entry, &vdev->resv_regions, list) {
++		if (entry->type == IOMMU_RESV_MSI)
++			msi = entry;
++
++		new_entry = kmemdup(entry, sizeof(*entry), GFP_KERNEL);
++		if (!new_entry)
++			return;
++		list_add_tail(&new_entry->list, head);
++	}
++
++	/*
++	 * If the device didn't register any bypass MSI window, add a
++	 * software-mapped region.
++	 */
++	if (!msi) {
++		msi = iommu_alloc_resv_region(MSI_IOVA_BASE, MSI_IOVA_LENGTH,
++					      prot, IOMMU_RESV_SW_MSI);
++		if (!msi)
++			return;
++
++		list_add_tail(&msi->list, head);
++	}
+ 
+-	list_add_tail(&region->list, head);
+ 	iommu_dma_get_resv_regions(dev, head);
+ }
+ 
+@@ -672,9 +800,18 @@ static int viommu_add_device(struct device *dev)
+ 	if (!vdev)
+ 		return -ENOMEM;
+ 
++	vdev->dev = dev;
+ 	vdev->viommu = viommu;
++	INIT_LIST_HEAD(&vdev->resv_regions);
+ 	fwspec->iommu_priv = vdev;
+ 
++	if (viommu->probe_size) {
++		/* Get additional information for this endpoint */
++		ret = viommu_probe_endpoint(viommu, dev);
++		if (ret)
++			goto err_free_dev;
++	}
++
+ 	ret = iommu_device_link(&viommu->iommu, dev);
+ 	if (ret)
+ 		goto err_free_dev;
+@@ -696,6 +833,7 @@ static int viommu_add_device(struct device *dev)
+ err_unlink_dev:
+ 	iommu_device_unlink(&viommu->iommu, dev);
+ err_free_dev:
++	viommu_put_resv_regions(dev, &vdev->resv_regions);
+ 	kfree(vdev);
+ 
+ 	return ret;
+@@ -713,6 +851,7 @@ static void viommu_remove_device(struct device *dev)
+ 
+ 	iommu_group_remove_device(dev);
+ 	iommu_device_unlink(&vdev->viommu->iommu, dev);
++	viommu_put_resv_regions(dev, &vdev->resv_regions);
+ 	kfree(vdev);
+ }
+ 
+@@ -812,6 +951,10 @@ static int viommu_probe(struct virtio_device *vdev)
+ 			     struct virtio_iommu_config, domain_bits,
+ 			     &viommu->domain_bits);
+ 
++	virtio_cread_feature(vdev, VIRTIO_IOMMU_F_PROBE,
++			     struct virtio_iommu_config, probe_size,
++			     &viommu->probe_size);
++
+ 	viommu->geometry = (struct iommu_domain_geometry) {
+ 		.aperture_start	= input_start,
+ 		.aperture_end	= input_end,
+@@ -893,6 +1036,7 @@ static unsigned int features[] = {
+ 	VIRTIO_IOMMU_F_MAP_UNMAP,
+ 	VIRTIO_IOMMU_F_DOMAIN_BITS,
+ 	VIRTIO_IOMMU_F_INPUT_RANGE,
++	VIRTIO_IOMMU_F_PROBE,
+ };
+ 
+ static struct virtio_device_id id_table[] = {
+diff --git a/include/uapi/linux/virtio_iommu.h b/include/uapi/linux/virtio_iommu.h
+index 2e0bf5792f26..cde2a3409caa 100644
+--- a/include/uapi/linux/virtio_iommu.h
++++ b/include/uapi/linux/virtio_iommu.h
+@@ -14,6 +14,7 @@
+ #define VIRTIO_IOMMU_F_DOMAIN_BITS		1
+ #define VIRTIO_IOMMU_F_MAP_UNMAP		2
+ #define VIRTIO_IOMMU_F_BYPASS			3
++#define VIRTIO_IOMMU_F_PROBE			4
+ 
+ struct virtio_iommu_range {
+ 	__u64					start;
+@@ -28,6 +29,8 @@ struct virtio_iommu_config {
+ 	/* Max domain ID size */
+ 	__u8					domain_bits;
+ 	__u8					padding[3];
++	/* Probe buffer size */
++	__u32					probe_size;
+ };
+ 
+ /* Request types */
+@@ -35,6 +38,7 @@ struct virtio_iommu_config {
+ #define VIRTIO_IOMMU_T_DETACH			0x02
+ #define VIRTIO_IOMMU_T_MAP			0x03
+ #define VIRTIO_IOMMU_T_UNMAP			0x04
++#define VIRTIO_IOMMU_T_PROBE			0x05
+ 
+ /* Status types */
+ #define VIRTIO_IOMMU_S_OK			0x00
+@@ -101,4 +105,38 @@ struct virtio_iommu_req_unmap {
+ 	struct virtio_iommu_req_tail		tail;
+ };
+ 
++#define VIRTIO_IOMMU_PROBE_T_NONE		0
++#define VIRTIO_IOMMU_PROBE_T_RESV_MEM		1
++
++#define VIRTIO_IOMMU_PROBE_T_MASK		0xfff
++
++struct virtio_iommu_probe_property {
++	__le16					type;
++	__le16					length;
++};
++
++#define VIRTIO_IOMMU_RESV_MEM_T_RESERVED	0
++#define VIRTIO_IOMMU_RESV_MEM_T_MSI		1
++
++struct virtio_iommu_probe_resv_mem {
++	struct virtio_iommu_probe_property	head;
++	__u8					subtype;
++	__u8					reserved[3];
++	__le64					start;
++	__le64					end;
++};
++
++struct virtio_iommu_req_probe {
++	struct virtio_iommu_req_head		head;
++	__le32					endpoint;
++	__u8					reserved[64];
++
++	__u8					properties[];
++
++	/*
++	 * Tail follows the variable-length properties array. No padding,
++	 * property lengths are all aligned on 8 bytes.
++	 */
++};
++
+ #endif
+-- 
+2.19.1
 
-Thanks
-
-Eric
-> 
-> Thanks,
-> Jean
-> 
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
