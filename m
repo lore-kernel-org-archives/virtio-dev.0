@@ -1,95 +1,54 @@
-Return-Path: virtio-dev-return-4956-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4957-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 8902F985E33
-	for <virtio-dev@lists.oasis-open.org>; Thu, 15 Nov 2018 10:41:04 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 82B83985E32
+	for <virtio-dev@lists.oasis-open.org>; Thu, 15 Nov 2018 10:41:06 +0000 (UTC)
 From: Wei Wang <wei.w.wang@intel.com>
-Date: Thu, 15 Nov 2018 18:07:56 +0800
-Message-Id: <1542276484-25508-1-git-send-email-wei.w.wang@intel.com>
-Subject: [virtio-dev] [PATCH v9 0/8] virtio-balloon: free page hint support
+Date: Thu, 15 Nov 2018 18:07:57 +0800
+Message-Id: <1542276484-25508-2-git-send-email-wei.w.wang@intel.com>
+In-Reply-To: <1542276484-25508-1-git-send-email-wei.w.wang@intel.com>
+References: <1542276484-25508-1-git-send-email-wei.w.wang@intel.com>
+Subject: [virtio-dev] [PATCH v9 1/8] bitmap: fix bitmap_count_one
 To: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, mst@redhat.com, quintela@redhat.com, dgilbert@redhat.com
 Cc: peterx@redhat.com, pbonzini@redhat.com, liliang.opensource@gmail.com, nilal@redhat.com, riel@redhat.com, wei.w.wang@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-This is the deivce part implementation to add a new feature,
-VIRTIO_BALLOON_F_FREE_PAGE_HINT to the virtio-balloon device. The device
-receives the guest free page hints from the driver and clears the
-corresponding bits in the dirty bitmap, so that those free pages are
-not sent by the migration thread to the destination.
+BITMAP_LAST_WORD_MASK(nbits) returns 0xffffffff when "nbits=0", which
+makes bitmap_count_one fail to handle the "nbits=0" case. It appears to be
+preferred to remain BITMAP_LAST_WORD_MASK identical to the kernel
+implementation that it is ported from.
 
-*Tests
-1 Test Environment
-    Host: Intel(R) Xeon(R) CPU E5-2699 v4 @ 2.20GHz
-    Migration setup: migrate_set_speed 100G, migrate_set_downtime 400ms
+So this patch fixes bitmap_count_one to handle the nbits=0 case.
 
-2 Test Results (results are averaged over several repeated runs)
-    2.1 Guest setup: 8G RAM, 4 vCPU
-        2.1.1 Idle guest live migration time
-            Optimization v.s. Legacy = 620ms vs 2970ms
-            --> ~79% reduction
-        2.1.2 Guest live migration with Linux compilation workload
-          (i.e. make bzImage -j4) running
-          1) Live Migration Time:
-             Optimization v.s. Legacy = 2273ms v.s. 4502ms
-             --> ~50% reduction
-          2) Linux Compilation Time:
-             Optimization v.s. Legacy = 8min42s v.s. 8min43s
-             --> no obvious difference
+Inital Discussion Link:
+https://www.mail-archive.com/qemu-devel@nongnu.org/msg554316.html
+Signed-off-by: Wei Wang <wei.w.wang@intel.com>
+CC: Juan Quintela <quintela@redhat.com>
+CC: Dr. David Alan Gilbert <dgilbert@redhat.com>
+CC: Peter Xu <peterx@redhat.com>
+---
+ include/qemu/bitmap.h | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-    2.2 Guest setup: 128G RAM, 4 vCPU
-        2.2.1 Idle guest live migration time
-            Optimization v.s. Legacy = 5294ms vs 41651ms
-            --> ~87% reduction
-        2.2.2 Guest live migration with Linux compilation workload
-          1) Live Migration Time:
-            Optimization v.s. Legacy = 8816ms v.s. 54201ms
-            --> 84% reduction
-          2) Linux Compilation Time:
-             Optimization v.s. Legacy = 8min30s v.s. 8min36s
-             --> no obvious difference
-
-ChangeLog:
-v8->v9:
-bitmap:
-    - fix bitmap_count_one to handle the nbits=0 case
-migration:
-    - replace the ram save notifier chain with a more general precopy
-      notifier chain, which is similar to the postcopy notifier chain.
-    - Avoid exposing the RAMState struct, and add a function,
-      precopy_disable_bulk_stage, to let the virtio-balloon notifier
-      callback to disable the bulk stage flag.
-virtio-balloon:
-    - Remove VIRTIO_BALLOON_F_PAGE_POISON from this series as it is not
-      a limit to the free page optimization now. Plan to add the device
-      support for VIRTIO_BALLOON_F_PAGE_POISON in another patch later.
-
-Previous changelog:
-https://lists.gnu.org/archive/html/qemu-devel/2018-06/msg01908.html
-
-Wei Wang (8):
-  bitmap: fix bitmap_count_one
-  bitmap: bitmap_count_one_with_offset
-  migration: use bitmap_mutex in migration_bitmap_clear_dirty
-  migration: API to clear bits of guest free pages from the dirty bitmap
-  migration/ram.c: add a notifier chain for precopy
-  migration/ram.c: add a function to disable the bulk stage
-  migration: move migrate_postcopy() to include/migration/misc.h
-  virtio-balloon: VIRTIO_BALLOON_F_FREE_PAGE_HINT
-
- hw/virtio/virtio-balloon.c                      | 255 ++++++++++++++++++++++++
- include/hw/virtio/virtio-balloon.h              |  28 ++-
- include/migration/misc.h                        |  16 ++
- include/qemu/bitmap.h                           |  17 ++
- include/standard-headers/linux/virtio_balloon.h |   5 +
- migration/migration.h                           |   2 -
- migration/ram.c                                 |  91 +++++++++
- vl.c                                            |   1 +
- 8 files changed, 412 insertions(+), 3 deletions(-)
-
+diff --git a/include/qemu/bitmap.h b/include/qemu/bitmap.h
+index 509eedd..679f1bd 100644
+--- a/include/qemu/bitmap.h
++++ b/include/qemu/bitmap.h
+@@ -221,6 +221,10 @@ static inline int bitmap_intersects(const unsigned long *src1,
+ 
+ static inline long bitmap_count_one(const unsigned long *bitmap, long nbits)
+ {
++    if (unlikely(!nbits)) {
++        return 0;
++    }
++
+     if (small_nbits(nbits)) {
+         return ctpopl(*bitmap & BITMAP_LAST_WORD_MASK(nbits));
+     } else {
 -- 
 1.8.3.1
 
