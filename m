@@ -1,262 +1,76 @@
-Return-Path: virtio-return-3190-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio@lists.oasis-open.org>
-List-Post: <mailto:virtio@lists.oasis-open.org>
-List-Help: <mailto:virtio-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Wed, 21 Nov 2018 09:51:28 -0500
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20181121085116-mutt-send-email-mst@kernel.org>
-References: <20181121030702.22703-1-mst@redhat.com>
- <13b18a80-6b54-9656-7872-e91eea811599@redhat.com>
- <20181120234232-mutt-send-email-mst@kernel.org>
- <7ac93c87-d51f-fd70-29cd-fbba950919a7@redhat.com>
- <20181121064815-mutt-send-email-mst@kernel.org>
- <2b3cc5b6-bdb7-1a61-8c54-e2df224a566c@redhat.com>
+Return-Path: virtio-dev-return-4965-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id 54DF6985E5A
+	for <virtio-dev@lists.oasis-open.org>; Thu, 15 Nov 2018 16:58:05 +0000 (UTC)
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Date: Thu, 15 Nov 2018 16:52:27 +0000
+Message-Id: <20181115165234.43990-1-jean-philippe.brucker@arm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <2b3cc5b6-bdb7-1a61-8c54-e2df224a566c@redhat.com>
-Subject: [virtio] Re: [virtio-dev] [PATCH] ACCESS_PLATFORM/ACCESS_ORDER
-To: Jason Wang <jasowang@redhat.com>
-Cc: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, Tiwei Bie <tiwei.bie@intel.com>, cohuck@redhat.com, stefanha@redhat.com, pbonzini@redhat.com, pasic@linux.vnet.ibm.com, dan.daly@intel.com, cunming.liang@intel.com, zhihong.wang@intel.com
+Subject: [virtio-dev] [PATCH v4 0/7] Add virtio-iommu driver
+To: iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, devicetree@vger.kernel.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, joro@8bytes.org, mst@redhat.com
+Cc: frowand.list@gmail.com, jasowang@redhat.com, robh+dt@kernel.org, mark.rutland@arm.com, bhelgaas@google.com, kvmarm@lists.cs.columbia.edu, eric.auger@redhat.com, tnowicki@caviumnetworks.com, kevin.tian@intel.com, marc.zyngier@arm.com, robin.murphy@arm.com, will.deacon@arm.com, lorenzo.pieralisi@arm.com, bharat.bhushan@nxp.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, Nov 21, 2018 at 09:44:02PM +0800, Jason Wang wrote:
-> 
-> On 2018/11/21 下午8:10, Michael S. Tsirkin wrote:
-> > On Wed, Nov 21, 2018 at 03:35:21PM +0800, Jason Wang wrote:
-> > > On 2018/11/21 下午1:11, Michael S. Tsirkin wrote:
-> > > > > A question is. Are you suggesting to have VIRTIO_F_ORDER_PLATFORM for each
-> > > > > hardware implementation?
-> > > > It's not a simple question. There are implementations such as
-> > > > VDPA which have a hardware and a software component.
-> > > > For a hardware only device that is also pluggable into an
-> > > > arbitrary system, it's true.
-> > > > 
-> > > > > If not, can a hardware detect the platform by
-> > > > > itself and advertise this bit automatically?
-> > > > So a mixed software/hardware device might be able to,
-> > > > and e.g. fallback to a software implementation
-> > > > if driver assumes that.
-> > > > 
-> > > > There's actually some text that suggests this - is
-> > > > that not clear then?
-> > > 
-> > > Maybe it's better to add text about the suggestion of hardware
-> > > implementation.
-> > As I tried to explain, what exactly is "hardware implementation"
-> > is very much platform dependent so I don't know how to do that.
-> > Ideas?
-> 
-> 
-> Not a native speaker, but if any part of was done through emulation, it
-> should be treated as a software implementation. Otherwise, it's a hardware
-> emulation.
-> 
-> Or it's a common implication that it's impossible to implement a hardware
-> without ACCESS_PLATFORM (e.g for PCI how can a device bypass IOMMU address
-> translation by its own?).
+Implement the virtio-iommu driver, following specification v0.8 [1].
 
-So VDPA is one example, the IOMMU is emulated but the PCI device
-is passed through.
+Changes since v3 [2]:
+* Rebase onto v4.20-rc2. Patch 3 now touches drivers/of/base.c instead
+  of drivers/pci/of.c, since the map_rid() function has moved.
+* Removed the request timeout, that depended on DEBUG.
+* Other small fixes addressing comments on v3.
 
-> 
-> > > > 
-> > > > > ACCESS_PLATFORM has similar question.
-> > > > That one is a bit different in that guest might rely on e.g.
-> > > > vIOMMU for security.  So depending on platform device might want
-> > > > to fail feature negotiation.
-> > > > 
-> > > > But it's not a problem for e.g. SEV since a legacy non encrypted
-> > > > guest will just work.
-> > > 
-> > > How about a encrypted guest that wants to use software IOTLB?
-> > Software iotlb by itself does not *have* to affect ACCESS_PLATFORM - it is
-> > enough to just avoid giving device any memory outside the IOTLB.
-> 
-> 
-> The problem is, if e.g DMA core can recognize the case of software IOTLB
-> without ACCESS_PLATFORM, it can recognize IOMMU, bounce buffer etc as well.
-> If we can offload those things to platform/DMA codes, there's no need for
-> ACCESS_PLATFORM at all.
+You can find Linux driver and kvmtool device on my virtio-iommu/v0.8.1
+branches [3]. You can also test it with the latest version of Eric's
+QEMU device [4].
 
-I doubt it is possible and it did not happen in X years before
-IOMMU_PLATFORM was introduced. But it seems that you really
-have an issue with IOMMU_PLATFORM. Is ACCESS_PLATFORM making
-things any worse in your opinion?
+[1] Virtio-iommu specification v0.8, sources and pdf
+    git://linux-arm.org/virtio-iommu.git virtio-iommu/v0.8
+    http://jpbrucker.net/virtio-iommu/spec/v0.8/virtio-iommu-v0.8.pdf
 
-Going back to IOMMU_PLATFORM, there are good reasons it was
-introduced.  
-The assumption for years was that device is part of the
-hypervisor which is exactly like driver but even more powerful.
-Platforms used this fact for optimizations.
-Yes they could try to come up with platform specific ways to
-implement these optimizations, a virtio specific one was
-easier for them though.
+[2] [PATCH v3 0/7] Add virtio-iommu driver
+    https://www.spinics.net/lists/linux-pci/msg77110.html
 
-Now there are two ways this can be changing:
-- device access to memory might be limited as compared to driver
-- device access ordering might differ as compared to driver
+[3] git://linux-arm.org/linux-jpb.git virtio-iommu/v0.8.1
+    git://linux-arm.org/kvmtool-jpb.git virtio-iommu/v0.8.1
 
-You are asking why aren't we requiring platforms to come up with platform
-specific ways to optimize the hypervisor case now?
-Because
-- things work for them and its our responsibility not to break
-  them
-- nothing changed, for some platforms it is still hard to come
-  up with such ways
+[4] [RFC v8 00/18] VIRTIO-IOMMU device
+    https://www.mail-archive.com/qemu-devel@nongnu.org/msg572637.html
 
-> 
-> > However it is probably more robust to set ACCESS_PLATFORM in
-> > that setup to avoid any confusion.
-> 
-> 
-> So it's the responsibility of management to detect the case and set the bit
-> or just set it unconditionally.
+Jean-Philippe Brucker (7):
+  dt-bindings: virtio-mmio: Add IOMMU description
+  dt-bindings: virtio: Add virtio-pci-iommu node
+  of: Allow the iommu-map property to omit untranslated devices
+  PCI: OF: Initialize dev->fwnode appropriately
+  iommu: Add virtio-iommu driver
+  iommu/virtio: Add probe request
+  iommu/virtio: Add event queue
 
-If device can't access all memory it's likely a good idea to tell
-driver so, yes. Even though maybe it can also figure this out on
-its own.
+ .../devicetree/bindings/virtio/iommu.txt      |   66 +
+ .../devicetree/bindings/virtio/mmio.txt       |   30 +
+ MAINTAINERS                                   |    7 +
+ drivers/iommu/Kconfig                         |   11 +
+ drivers/iommu/Makefile                        |    1 +
+ drivers/iommu/virtio-iommu.c                  | 1160 +++++++++++++++++
+ drivers/of/base.c                             |   10 +-
+ drivers/pci/of.c                              |    7 +
+ include/uapi/linux/virtio_ids.h               |    1 +
+ include/uapi/linux/virtio_iommu.h             |  161 +++
+ 10 files changed, 1451 insertions(+), 3 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/virtio/iommu.txt
+ create mode 100644 drivers/iommu/virtio-iommu.c
+ create mode 100644 include/uapi/linux/virtio_iommu.h
 
-> 
-> > 
-> > > > Maybe a new section about security might make sense.
-> > > > 
-> > > > > The question is about the necessarily
-> > > > > of duplicating platform specific feature detection into a device feature.
-> > > > Historically the assumption drivers made was that
-> > > > a device is exactly like driver: same physical address,
-> > > > same permissions and ordering for memory accesses.
-> > > > 
-> > > > Nowdays some drivers make the assumptions about ordering
-> > > > but not permissions and physical address.
-> > > > 
-> > > > We can't just ignore existing drivers, can we?
-> > > 
-> > > It can only work if both features were supported and advertised by devices.
-> > > Consider the case that IOMMU is enable but iommu_platform is not,
-> > So this is a critique of existing spec text then?
-> 
-> 
-> No. I meant it only work if ACCESS_PLATFORM and ACCESS_ORDER were set
-> correctly.
+-- 
+2.19.1
 
-In fact all combinations of ACCESS_PLATFORM and ACCESS_ORDER can
-exist in the field, with both software and hardware.
-
-> 
-> > Given plans for an imminent 1.1 release let's focus on
-> > the proposed patch, ok?
-> > 
-> > 
-> > > in this
-> > > case:
-> > > 
-> > > 1) we still can't recognize old guests, so it won't fail gracefully.
-> > > 
-> > > 2) new guests can't work
-> > > 
-> > > 
-> > > It depends on how much we can gain from failing gracefully. I believe we
-> > > don't want to force a software fallback.
-> > iommu_platform fundamentally doesn't support a software fallback,
-> > it's a security feature. So I agree but what gave you the idea that we
-> > force a software fallback?
-> 
-> 
-> I don't suggest a software fallback. I meant without a fallback:
-> 
-> - when IOMMU_PLATFORM is not advertised, there are still cases that
-> IOMMU_PLATFORM can't handle (the above two cases).
-> 
-> - when IOMMU_PLATFORM is advertised (or could not be turned of for e.g
-> hardware implementation), the only difference is a graceful failure or
-> silent failure for old guest, but how much important is the case?
-> 
-> Consider the above cases, is it better just implement the semantics of
-> IOMMU_PLATFORM silently and deprecate it in the future. Then we may only
-> meet one silent failure when driver doesn't correctly detect platform
-> requirements.
-> 
-> 
-> > So ORDER_PLATFORM it seems prodent to
-> > suggest a software fallback given not one driver in the field sets it.
-> > 
-> > Would your comment be addressed if I replace RECOMMENDED with MAY?
-> > 
-> > > So I wonder how bad just let
-> > > existing drivers fail and try to patch and backport the fixes without
-> > > introducing new feature bits. With this we can offload those tasks to
-> > > platform or configuration specific codes instead of our own.
-> > > 
-> > > 
-> > > Another question is whether or not we need two separate feature bits.
-> > Well IOMMU_PLATFORM is already set in the field.
-> > We can't make it also imply strong barriers without
-> > breaking a bunch of existing setups.
-> 
-> 
-> Or just imply the IOMMU_PLATFORM if ACCESS_ORDER is set.
-> 
-> 
-> > 
-> > > E.g
-> > > when should we set one bit but not for another?
-> > I am sorry I don't understand the question.  I did try to
-> > document what does each bit say. Is it completely unclear then?
-> > Could you give some hints on what is unclear? Which kind
-> > of functionality is covered by both such that it's
-> > an open question which one to set?
-> 
-> 
-> I meant, e.g spec allow the case of advertising ACCES_ORDER but not
-> advertising ACCESS_PLATFORM. This sounds somehow ambiguous since both
-> feature are memory related but part were accessed in a way what platform
-> requires but the rest doesn't.
-> 
-> 
-> > 
-> > > > So a device needs to know what it's dealing with, to
-> > > > either fail gracefully or recover by a software fallback.
-> > > > 
-> > > > 
-> > > > > Thanks
-> > > > All good questions, though I'm not sure whether they mean we
-> > > > need to add some text to the spec. Suggestions about
-> > > > what should be documented?
-> > > > 
-> > > Maybe it's better to clarify the suggestion for hardware or mixed
-> > > implementations.
-> > > 
-> > > Thanks
-> > Right but I don't know what to suggest. E.g. intel recently
-> > published data about a hardware vDPA which does not set either
-> > bits.
-> 
-> 
-> So this violates spec. Device actually will go through IOMMU but driver
-> won't use DMA API at all. But since the control path is under the control of
-> software, it's no hard to advertise it I believe. If not, it's another call
-> for clarifying ACCESS_PLATFORM/ACCESS_ORDER is mandatory for hardware.
-> 
-> 
-> > They are working on support for a vIOMMU at which point
-> > they will set IOMMU_PLATFORM. Once they start worrying about
-> > portability they might add ORDER_PLATFORM. But given it's
-> > VDPA they don't necessarily need to fail without even
-> > on weakly ordered platforms.
-> 
-> 
-> If feature bit advertising could be controlled by software it probably won't
-> need any suggestion. We probably need suggest only for full hardware
-> implementation without any software emulation.
-> 
-> Thanks.
 
 ---------------------------------------------------------------------
-To unsubscribe from this mail list, you must leave the OASIS TC that 
-generates this mail.  Follow this link to all your TCs in OASIS at:
-https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
