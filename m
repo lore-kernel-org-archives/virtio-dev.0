@@ -1,46 +1,70 @@
-Return-Path: virtio-dev-return-5088-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4962-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 78F95985D6D
-	for <virtio-dev@lists.oasis-open.org>; Fri, 30 Nov 2018 07:04:57 +0000 (UTC)
-Message-ID: <5C00E243.10409@intel.com>
-Date: Fri, 30 Nov 2018 15:09:55 +0800
+	by lists.oasis-open.org (Postfix) with ESMTP id 21008985E37
+	for <virtio-dev@lists.oasis-open.org>; Thu, 15 Nov 2018 10:41:17 +0000 (UTC)
 From: Wei Wang <wei.w.wang@intel.com>
-MIME-Version: 1.0
-References: <1542276484-25508-1-git-send-email-wei.w.wang@intel.com> <1542276484-25508-6-git-send-email-wei.w.wang@intel.com> <20181127073802.GC3205@xz-x1> <5BFD1BA4.5040202@intel.com> <20181128052655.GC12839@xz-x1> <5BFE596B.1080807@intel.com> <20181128093220.GF12839@xz-x1> <5BFF5FC9.2020402@intel.com> <20181129051014.GC29246@xz-x1> <5C00C52F.20606@intel.com> <20181130055736.GA15865@xz-x1>
-In-Reply-To: <20181130055736.GA15865@xz-x1>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: [virtio-dev] Re: [PATCH v9 5/8] migration/ram.c: add a notifier chain for precopy
-To: Peter Xu <peterx@redhat.com>
-Cc: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, mst@redhat.com, quintela@redhat.com, dgilbert@redhat.com, pbonzini@redhat.com, liliang.opensource@gmail.com, nilal@redhat.com, riel@redhat.com
+Date: Thu, 15 Nov 2018 18:08:02 +0800
+Message-Id: <1542276484-25508-7-git-send-email-wei.w.wang@intel.com>
+In-Reply-To: <1542276484-25508-1-git-send-email-wei.w.wang@intel.com>
+References: <1542276484-25508-1-git-send-email-wei.w.wang@intel.com>
+Subject: [virtio-dev] [PATCH v9 6/8] migration/ram.c: add a function to disable the bulk stage
+To: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, mst@redhat.com, quintela@redhat.com, dgilbert@redhat.com
+Cc: peterx@redhat.com, pbonzini@redhat.com, liliang.opensource@gmail.com, nilal@redhat.com, riel@redhat.com, wei.w.wang@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 11/30/2018 01:57 PM, Peter Xu wrote:
->>
->>
->> Or you can introduce migration_bitmap_sync_precopy() and let precopy
->> code call that one instead.
+This patch adds a function to enable a precopy notifier callback outside
+the migration subsystem to disable the bulk stage flag. This is needed by
+the free page optimization offered by virtio-balloon.
 
-Agree, thanks.
+Signed-off-by: Wei Wang <wei.w.wang@intel.com>
+CC: Dr. David Alan Gilbert <dgilbert@redhat.com>
+CC: Juan Quintela <quintela@redhat.com>
+CC: Michael S. Tsirkin <mst@redhat.com>
+CC: Peter Xu <peterx@redhat.com>
+---
+ include/migration/misc.h | 1 +
+ migration/ram.c          | 9 +++++++++
+ 2 files changed, 10 insertions(+)
 
-> PS. I'm a bit unsure on why we need to sync bitmap in ram_init_bitmaps.
-> I feel like it can be removed...
-
-Seems it was added in early days to fix some bug:
-https://git.virtualopensystems.com/dev/qemu/commit/79536f4f16934d6759a1d67f0342b4e7ceb66671?w=1
-
-Hopefully, Juan could share some details about that.
-
-Best,
-Wei
-
-
-
+diff --git a/include/migration/misc.h b/include/migration/misc.h
+index 0bac623..67cb275 100644
+--- a/include/migration/misc.h
++++ b/include/migration/misc.h
+@@ -30,6 +30,7 @@ typedef enum PrecopyNotifyReason {
+ void precopy_infrastructure_init(void);
+ void precopy_add_notifier(Notifier *n);
+ void precopy_remove_notifier(Notifier *n);
++void precopy_disable_bulk_stage(void);
+ 
+ void ram_mig_init(void);
+ void qemu_guest_free_page_hint(void *addr, size_t len);
+diff --git a/migration/ram.c b/migration/ram.c
+index 65b1223..8745ca3 100644
+--- a/migration/ram.c
++++ b/migration/ram.c
+@@ -352,6 +352,15 @@ static void precopy_notify(PrecopyNotifyReason reason)
+     notifier_list_notify(&precopy_notifier_list, &reason);
+ }
+ 
++void precopy_disable_bulk_stage(void)
++{
++    if (!ram_state) {
++        return;
++    }
++
++    ram_state->ram_bulk_stage = false;
++}
++
+ uint64_t ram_bytes_remaining(void)
+ {
+     return ram_state ? (ram_state->migration_dirty_pages * TARGET_PAGE_SIZE) :
+-- 
+1.8.3.1
 
 
 ---------------------------------------------------------------------
