@@ -1,45 +1,116 @@
-Return-Path: virtio-dev-return-5044-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-4959-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 3EEF7985B91
-	for <virtio-dev@lists.oasis-open.org>; Tue, 27 Nov 2018 10:12:16 +0000 (UTC)
-Message-ID: <5BFD19A9.2010000@intel.com>
-Date: Tue, 27 Nov 2018 18:17:13 +0800
+	by lists.oasis-open.org (Postfix) with ESMTP id 7B1C7985E42
+	for <virtio-dev@lists.oasis-open.org>; Thu, 15 Nov 2018 10:41:12 +0000 (UTC)
 From: Wei Wang <wei.w.wang@intel.com>
-MIME-Version: 1.0
-References: <1542276484-25508-1-git-send-email-wei.w.wang@intel.com> <1542276484-25508-4-git-send-email-wei.w.wang@intel.com> <20181127054056.GA3205@xz-x1> <5BFCDE07.20707@intel.com> <5BFCE052.8070705@intel.com> <20181127074127.GD3205@xz-x1>
-In-Reply-To: <20181127074127.GD3205@xz-x1>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [virtio-dev] Re: [PATCH v9 3/8] migration: use bitmap_mutex in
- migration_bitmap_clear_dirty
-To: Peter Xu <peterx@redhat.com>
-Cc: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, mst@redhat.com, quintela@redhat.com, dgilbert@redhat.com, pbonzini@redhat.com, liliang.opensource@gmail.com, nilal@redhat.com, riel@redhat.com
+Date: Thu, 15 Nov 2018 18:08:00 +0800
+Message-Id: <1542276484-25508-5-git-send-email-wei.w.wang@intel.com>
+In-Reply-To: <1542276484-25508-1-git-send-email-wei.w.wang@intel.com>
+References: <1542276484-25508-1-git-send-email-wei.w.wang@intel.com>
+Subject: [virtio-dev] [PATCH v9 4/8] migration: API to clear bits of guest free pages from the dirty bitmap
+To: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, mst@redhat.com, quintela@redhat.com, dgilbert@redhat.com
+Cc: peterx@redhat.com, pbonzini@redhat.com, liliang.opensource@gmail.com, nilal@redhat.com, riel@redhat.com, wei.w.wang@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 11/27/2018 03:41 PM, Peter Xu wrote:
->
-> Ok then I'm fine with it.  Though you could update the comments too if
-> you like:
->
->      /* protects modification of the bitmap and migration_dirty_pages */
->      QemuMutex bitmap_mutex;
->
-> And it's tricky that sometimes we don't take the lock when reading
-> this variable "migration_dirty_pages".  I don't see obvious issue so
-> far, hope it's true (at least I skipped the colo ones...).
+This patch adds an API to clear bits corresponding to guest free pages
+from the dirty bitmap. Spilt the free page block if it crosses the QEMU
+RAMBlock boundary.
 
-The caller reads the value just to estimate the remaining_size, and
-it seems fine without a lock, because whether it reads a
-value before the update or after the update seem not causing
-an issue.
+Signed-off-by: Wei Wang <wei.w.wang@intel.com>
+CC: Dr. David Alan Gilbert <dgilbert@redhat.com>
+CC: Juan Quintela <quintela@redhat.com>
+CC: Michael S. Tsirkin <mst@redhat.com>
+CC: Peter Xu <peterx@redhat.com>
+---
+ include/migration/misc.h |  2 ++
+ migration/ram.c          | 48 ++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 50 insertions(+)
 
-Best,
-Wei
+diff --git a/include/migration/misc.h b/include/migration/misc.h
+index 4ebf24c..113320e 100644
+--- a/include/migration/misc.h
++++ b/include/migration/misc.h
+@@ -14,11 +14,13 @@
+ #ifndef MIGRATION_MISC_H
+ #define MIGRATION_MISC_H
+ 
++#include "exec/cpu-common.h"
+ #include "qemu/notify.h"
+ 
+ /* migration/ram.c */
+ 
+ void ram_mig_init(void);
++void qemu_guest_free_page_hint(void *addr, size_t len);
+ 
+ /* migration/block.c */
+ 
+diff --git a/migration/ram.c b/migration/ram.c
+index ef69dbe..229b791 100644
+--- a/migration/ram.c
++++ b/migration/ram.c
+@@ -3131,6 +3131,54 @@ static void ram_state_resume_prepare(RAMState *rs, QEMUFile *out)
+ }
+ 
+ /*
++ * This function clears bits of the free pages reported by the caller from the
++ * migration dirty bitmap. @addr is the host address corresponding to the
++ * start of the continuous guest free pages, and @len is the total bytes of
++ * those pages.
++ */
++void qemu_guest_free_page_hint(void *addr, size_t len)
++{
++    RAMBlock *block;
++    ram_addr_t offset;
++    size_t used_len, start, npages;
++    MigrationState *s = migrate_get_current();
++
++    /* This function is currently expected to be used during live migration */
++    if (!migration_is_setup_or_active(s->state)) {
++        return;
++    }
++
++    for (; len > 0; len -= used_len) {
++        block = qemu_ram_block_from_host(addr, false, &offset);
++        assert(block);
++
++        /*
++         * This handles the case that the RAMBlock is resized after the free
++         * page hint is reported.
++         */
++        if (unlikely(offset > block->used_length)) {
++            return;
++        }
++
++        if (len <= block->used_length - offset) {
++            used_len = len;
++        } else {
++            used_len = block->used_length - offset;
++            addr += used_len;
++        }
++
++        start = offset >> TARGET_PAGE_BITS;
++        npages = used_len >> TARGET_PAGE_BITS;
++
++        qemu_mutex_lock(&ram_state->bitmap_mutex);
++        ram_state->migration_dirty_pages -=
++                      bitmap_count_one_with_offset(block->bmap, start, npages);
++        bitmap_clear(block->bmap, start, npages);
++        qemu_mutex_unlock(&ram_state->bitmap_mutex);
++    }
++}
++
++/*
+  * Each of ram_save_setup, ram_save_iterate and ram_save_complete has
+  * long-running RCU critical section.  When rcu-reclaims in the code
+  * start to become numerous it will be necessary to reduce the
+-- 
+1.8.3.1
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
