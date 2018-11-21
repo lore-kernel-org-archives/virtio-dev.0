@@ -1,16 +1,16 @@
-Return-Path: virtio-return-3195-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-return-3187-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio@lists.oasis-open.org>
 List-Post: <mailto:virtio@lists.oasis-open.org>
 List-Help: <mailto:virtio-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Mon, 26 Nov 2018 19:35:50 -0500
+Date: Tue, 20 Nov 2018 22:35:32 -0500
 From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20181127003426.7510-1-mst@redhat.com>
+Message-ID: <20181121033312.23041-1-mst@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Subject: [virtio] [PATCH v3] VIRTIO_F_NOTIFICATION_DATA: extra data to devices
+Subject: [virtio] [PATCH v2] VIRTIO_F_NOTIFICATION_DATA: extra data to devices
 To: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
 Cc: David Riddoch <driddoch@solarflare.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
@@ -22,18 +22,13 @@ To help with these optimizations, add a new feature:
 VIRTIO_F_NOTIFICATION_DATA. When negotiated, driver notifications to the
 device include this extra information.
 
-Fixes: https://github.com/oasis-tcs/virtio-spec/issues/26
 Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 ---
 
-changes from v2:
-- wording changes suggested by Cornelia
 changes from v1:
 - rebased on master
 - included support for MMIO
 - minor wording fixes
-
-
 
  content.tex        | 122 ++++++++++++++++++++++++++++++++++++++++++---
  notifications-be.c |   5 ++
@@ -43,7 +38,7 @@ changes from v1:
  create mode 100644 notifications-le.c
 
 diff --git a/content.tex b/content.tex
-index fe02715..d89504a 100644
+index 4fef3ad..38c9182 100644
 --- a/content.tex
 +++ b/content.tex
 @@ -331,6 +331,46 @@ Virtqueue format, or both.
@@ -165,7 +160,7 @@ index fe02715..d89504a 100644
 +    the value written is the queue index.
 +
 +    When VIRTIO_F_NOTIFICATION_DATA has been negotiated,
-+    the \field{Notification data} value has the following format:
++    the value has the following format:
 +
 +    \lstinputlisting{notifications-le.c}
 +
@@ -210,7 +205,7 @@ index fe02715..d89504a 100644
 +the \field{Notification data} contains the Virtqueue number.
 +
 +When VIRTIO_F_NOTIFICATION_DATA has been negotiated,
-+the value has the following format:
++the \field{Notification data} value has the following format:
 +\lstinputlisting{notifications-be.c}
 +
 +See \ref{sec:Virtqueues / Driver notifications}~\nameref{sec:Virtqueues / Driver notifications}
