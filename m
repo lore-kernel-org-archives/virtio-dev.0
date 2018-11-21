@@ -1,44 +1,133 @@
-Return-Path: virtio-return-3201-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio@lists.oasis-open.org>
-List-Post: <mailto:virtio@lists.oasis-open.org>
-List-Help: <mailto:virtio-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Fri, 30 Nov 2018 09:56:26 +0100
-From: Cornelia Huck <cohuck@redhat.com>
-Message-ID: <20181130095626.11a9cfc1.cohuck@redhat.com>
-In-Reply-To: <20181129194930.17637-1-mst@redhat.com>
-References: <20181129194930.17637-1-mst@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Subject: Re: [virtio] [PATCH] packed-ring: fix queue size for pci
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+Return-Path: virtio-dev-return-4986-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id 44A7B985C92
+	for <virtio-dev@lists.oasis-open.org>; Wed, 21 Nov 2018 10:05:26 +0000 (UTC)
+From: Tiwei Bie <tiwei.bie@intel.com>
+Date: Wed, 21 Nov 2018 18:03:17 +0800
+Message-Id: <20181121100330.24846-1-tiwei.bie@intel.com>
+Subject: [virtio-dev] [PATCH net-next v3 00/13] virtio: support packed ring
+To: mst@redhat.com, jasowang@redhat.com, virtualization@lists.linux-foundation.org, linux-kernel@vger.kernel.org, netdev@vger.kernel.org, virtio-dev@lists.oasis-open.org
+Cc: wexu@redhat.com, jfreimann@redhat.com, maxime.coquelin@redhat.com, tiwei.bie@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Thu, 29 Nov 2018 14:49:32 -0500
-"Michael S. Tsirkin" <mst@redhat.com> wrote:
+Hi,
 
-> PCI is the only transport that has text enforcing
-> a power of two size for VQs. There's no real reason
-> for it to do it, so document that it does not apply
-> with the packed rings.
-> 
-> Accordingly, drop the text "unless enforced by a transport"
-> from packed ring description.
-> 
-> Fixes: https://github.com/oasis-tcs/virtio-spec/issues/28
-> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> ---
->  content.tex     | 11 +++++++++--
->  packed-ring.tex |  2 +-
->  2 files changed, 10 insertions(+), 3 deletions(-)
+This patch set implements packed ring support in virtio driver.
 
-Reviewed-by: Cornelia Huck <cohuck@redhat.com>
+A performance test between pktgen (pktgen_sample03_burst_single_flow.sh)
+and DPDK vhost (testpmd/rxonly/vhost-PMD) has been done, I saw
+~30% performance gain in packed ring in this case.
+
+To make this patch set work with below patch set for vhost,
+some hacks are needed to set the _F_NEXT flag in indirect
+descriptors (this should be fixed in vhost):
+
+https://lkml.org/lkml/2018/7/3/33
+
+v2 -> v3:
+- Use leXX instead of virtioXX (MST);
+- Refactor split ring first (MST);
+- Add debug helpers (MST);
+- Put split/packed ring specific fields in sub structures (MST);
+- Handle normal descriptors and indirect descriptors differently (MST);
+- Track the DMA addr/len related info in a separate structure (MST);
+- Calculate AVAIL/USED flags only when wrap counter wraps (MST);
+- Define a struct/union to read event structure (MST);
+- Define a macro for wrap counter bit in uapi (MST);
+- Define the AVAIL/USED bits as shifts instead of values (MST);
+- s/_F_/_FLAG_/ in VRING_PACKED_EVENT_* as they are values (MST);
+- Drop the notify workaround for QEMU's tx-timer in packed ring (MST);
+
+v1 -> v2:
+- Use READ_ONCE() to read event off_wrap and flags together (Jason);
+- Add comments related to ccw (Jason);
+
+RFC v6 -> v1:
+- Avoid extra virtio_wmb() in virtqueue_enable_cb_delayed_packed()
+  when event idx is off (Jason);
+- Fix bufs calculation in virtqueue_enable_cb_delayed_packed() (Jason);
+- Test the state of the desc at used_idx instead of last_used_idx
+  in virtqueue_enable_cb_delayed_packed() (Jason);
+- Save wrap counter (as part of queue state) in the return value
+  of virtqueue_enable_cb_prepare_packed();
+- Refine the packed ring definitions in uapi;
+- Rebase on the net-next tree;
+
+RFC v5 -> RFC v6:
+- Avoid tracking addr/len/flags when DMA API isn't used (MST/Jason);
+- Define wrap counter as bool (Jason);
+- Use ALIGN() in vring_init_packed() (Jason);
+- Avoid using pointer to track `next` in detach_buf_packed() (Jason);
+- Add comments for barriers (Jason);
+- Don't enable RING_PACKED on ccw for now (noticed by Jason);
+- Refine the memory barrier in virtqueue_poll();
+- Add a missing memory barrier in virtqueue_enable_cb_delayed_packed();
+- Remove the hacks in virtqueue_enable_cb_prepare_packed();
+
+RFC v4 -> RFC v5:
+- Save DMA addr, etc in desc state (Jason);
+- Track used wrap counter;
+
+RFC v3 -> RFC v4:
+- Make ID allocation support out-of-order (Jason);
+- Various fixes for EVENT_IDX support;
+
+RFC v2 -> RFC v3:
+- Split into small patches (Jason);
+- Add helper virtqueue_use_indirect() (Jason);
+- Just set id for the last descriptor of a list (Jason);
+- Calculate the prev in virtqueue_add_packed() (Jason);
+- Fix/improve desc suppression code (Jason/MST);
+- Refine the code layout for XXX_split/packed and wrappers (MST);
+- Fix the comments and API in uapi (MST);
+- Remove the BUG_ON() for indirect (Jason);
+- Some other refinements and bug fixes;
+
+RFC v1 -> RFC v2:
+- Add indirect descriptor support - compile test only;
+- Add event suppression supprt - compile test only;
+- Move vring_packed_init() out of uapi (Jason, MST);
+- Merge two loops into one in virtqueue_add_packed() (Jason);
+- Split vring_unmap_one() for packed ring and split ring (Jason);
+- Avoid using '%' operator (Jason);
+- Rename free_head -> next_avail_idx (Jason);
+- Add comments for virtio_wmb() in virtqueue_add_packed() (Jason);
+- Some other refinements and bug fixes;
+
+
+Tiwei Bie (13):
+  virtio: add packed ring types and macros
+  virtio_ring: add _split suffix for split ring functions
+  virtio_ring: put split ring functions together
+  virtio_ring: put split ring fields in a sub struct
+  virtio_ring: introduce debug helpers
+  virtio_ring: introduce helper for indirect feature
+  virtio_ring: allocate desc state for split ring separately
+  virtio_ring: extract split ring handling from ring creation
+  virtio_ring: cache whether we will use DMA API
+  virtio_ring: introduce packed ring support
+  virtio_ring: leverage event idx in packed ring
+  virtio_ring: disable packed ring on unsupported transports
+  virtio_ring: advertize packed ring layout
+
+ drivers/misc/mic/vop/vop_main.c        |   13 +
+ drivers/remoteproc/remoteproc_virtio.c |   13 +
+ drivers/s390/virtio/virtio_ccw.c       |   14 +
+ drivers/virtio/virtio_ring.c           | 1811 +++++++++++++++++++++++++-------
+ include/uapi/linux/virtio_config.h     |    3 +
+ include/uapi/linux/virtio_ring.h       |   52 +
+ 6 files changed, 1530 insertions(+), 376 deletions(-)
+
+-- 
+2.14.5
+
 
 ---------------------------------------------------------------------
-To unsubscribe from this mail list, you must leave the OASIS TC that 
-generates this mail.  Follow this link to all your TCs in OASIS at:
-https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
