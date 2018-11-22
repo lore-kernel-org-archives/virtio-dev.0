@@ -1,95 +1,78 @@
-Return-Path: virtio-dev-return-4954-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-5014-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id E6A36985DD9
-	for <virtio-dev@lists.oasis-open.org>; Tue, 13 Nov 2018 11:00:48 +0000 (UTC)
-From: Wei Wang <wei.w.wang@intel.com>
-Date: Tue, 13 Nov 2018 18:27:47 +0800
-Message-Id: <1542104867-11143-3-git-send-email-wei.w.wang@intel.com>
-In-Reply-To: <1542104867-11143-1-git-send-email-wei.w.wang@intel.com>
-References: <1542104867-11143-1-git-send-email-wei.w.wang@intel.com>
-Subject: [virtio-dev] [PATCH v1 2/2] content/virtio-balloon: VIRTIO_BALLOON_F_PAGE_POISON
-To: virtio-dev@lists.oasis-open.org, mst@redhat.com
+	by lists.oasis-open.org (Postfix) with ESMTP id 9607B985CB2
+	for <virtio-dev@lists.oasis-open.org>; Thu, 22 Nov 2018 19:39:31 +0000 (UTC)
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Date: Thu, 22 Nov 2018 19:37:54 +0000
+Message-Id: <20181122193801.50510-1-jean-philippe.brucker@arm.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: [virtio-dev] [PATCH v5 0/7] Add virtio-iommu driver
+To: iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, devicetree@vger.kernel.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, joro@8bytes.org, mst@redhat.com
+Cc: jasowang@redhat.com, robh+dt@kernel.org, mark.rutland@arm.com, bhelgaas@google.com, frowand.list@gmail.com, kvmarm@lists.cs.columbia.edu, eric.auger@redhat.com, tnowicki@caviumnetworks.com, kevin.tian@intel.com, marc.zyngier@arm.com, robin.murphy@arm.com, will.deacon@arm.com, lorenzo.pieralisi@arm.com, bharat.bhushan@nxp.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-The VIRTIO_BALLOON_F_PAGE_POISON feature supports guest to report the
-memory poison value to host.
+Implement the virtio-iommu driver, following specification v0.9 [1].
 
-Suggested-by: Michael S. Tsirkin <mst@redhat.com>
-Signed-off-by: Wei Wang <wei.w.wang@intel.com>
----
- content.tex | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+Since v4 [2] I fixed the issues reported by Eric, and added Reviewed-by
+from Eric and Rob. Thanks!
 
-diff --git a/content.tex b/content.tex
-index 673c891..df3c6c2 100644
---- a/content.tex
-+++ b/content.tex
-@@ -4397,6 +4397,8 @@ memory pages to the host when the related features are negotiated.
-     guest out of memory condition.
- \item[VIRTIO_BALLOON_F_FREE_PAGE_HINT(3) ] Guest reports free pages
-     to host.
-+\item[VIRTIO_BALLOON_F_PAGE_POISON(4) ] Indicate if guest is using
-+    page poisoning.
- 
- \end{description}
- 
-@@ -4404,6 +4406,10 @@ memory pages to the host when the related features are negotiated.
- The driver SHOULD accept the VIRTIO_BALLOON_F_MUST_TELL_HOST
- feature if offered by the device.
- 
-+The driver SHOULD accept the VIRTIO_BALLOON_F_PAGE_POISON feature
-+only when the guest is using page poison and the feature is offered
-+by the device.
-+
- \devicenormative{\subsubsection}{Feature bits}{Device Types / Memory Balloon Device / Feature bits}
- If the device offers the VIRTIO_BALLOON_F_MUST_TELL_HOST feature
- bit, and if the driver did not accept this feature bit, the
-@@ -4432,6 +4438,7 @@ struct virtio_balloon_config {
-         le32 num_pages;
-         le32 actual;
-         le32 free_page_report_cmd_id;
-+        le32 poison_val;
- };
- \end{lstlisting}
- 
-@@ -4440,12 +4447,20 @@ struct virtio_balloon_config {
- \field{free_page_report_cmd_id} is available if
- VIRTIO_BALLON_F_FREE_PAGE_HINT negotiated.
- 
-+\field{poison_val} is available if VIRTIO_BALLOON_F_PAGE_POISON
-+negotiated.
-+
- \devicenormative{\subsubsection}{Device configuration layout}{Device Types / Traditional Memory Balloon Device / Device configuration layout}
- 
- The device MUST NOT set \field{free_page_report_cmd_id} to a value
- between \field{VIRTIO_BALLOON_CMD_ID_DONE} and
- \field{VIRTIO_BALLOON_CMD_ID_MIN} exclusive.
- 
-+\drivernormative{\subsubsection}{Device configuration layout}{Device Types / Traditional Memory Balloon Device / Device configuration layout}
-+
-+The driver SHOULD write the guest used poison value to
-+\field{poison_val} if VIRTIO_BALLOON_F_PAGE_POISON negotiated.
-+
- \subparagraph{Legacy Interface: Device configuration layout}\label{sec:Device Types / Memory Balloon Device / Device
- configuration layout / Legacy Interface: Device configuration layout}
- When using the legacy interface, transitional devices and drivers
-@@ -4480,6 +4495,9 @@ The device initialization process is outlined below:
-         migration agent) who will request for the free page reporting
-         from the driver.
-   \end{enumerate}
-+
-+\item If the VIRTIO_BALLOON_F_PAGE_POISON feature bit is negotiated,
-+  write the guest used poison value to \field{poison_val}.
- \end{enumerate}
- 
- 
+I changed the specification to fix one inconsistency discussed in v4.
+That the device fills the probe buffer with zeroes is now a "SHOULD"
+instead of a "MAY", since it's the only way for the driver to know if
+the device wrote the status. Existing devices already do this. In
+addition the device now needs to fill the three padding bytes at the
+tail with zeroes.
+
+You can find Linux driver and kvmtool device on branches
+virtio-iommu/v0.9 [3]. I also lightly tested with Eric's latest QEMU
+device [4].
+
+[1] Virtio-iommu specification v0.9, sources, pdf and diff from v0.8
+    git://linux-arm.org/virtio-iommu.git virtio-iommu/v0.9
+    http://jpbrucker.net/virtio-iommu/spec/v0.9/virtio-iommu-v0.9.pdf
+    http://jpbrucker.net/virtio-iommu/spec/diffs/virtio-iommu-pdf-diff-v0.8-v0.9.pdf
+
+[2] [PATCH v4 0/7] Add virtio-iommu driver
+    https://lists.linuxfoundation.org/pipermail/iommu/2018-November/031074.html
+
+[3] git://linux-arm.org/linux-jpb.git virtio-iommu/v0.9
+    git://linux-arm.org/kvmtool-jpb.git virtio-iommu/v0.9
+
+[4] [RFC v9 00/17] VIRTIO-IOMMU device
+    https://www.mail-archive.com/qemu-devel@nongnu.org/msg575578.html
+
+Jean-Philippe Brucker (7):
+  dt-bindings: virtio-mmio: Add IOMMU description
+  dt-bindings: virtio: Add virtio-pci-iommu node
+  of: Allow the iommu-map property to omit untranslated devices
+  PCI: OF: Initialize dev->fwnode appropriately
+  iommu: Add virtio-iommu driver
+  iommu/virtio: Add probe request
+  iommu/virtio: Add event queue
+
+ .../devicetree/bindings/virtio/iommu.txt      |   66 +
+ .../devicetree/bindings/virtio/mmio.txt       |   30 +
+ MAINTAINERS                                   |    7 +
+ drivers/iommu/Kconfig                         |   11 +
+ drivers/iommu/Makefile                        |    1 +
+ drivers/iommu/virtio-iommu.c                  | 1157 +++++++++++++++++
+ drivers/of/base.c                             |   10 +-
+ drivers/pci/of.c                              |    7 +
+ include/uapi/linux/virtio_ids.h               |    1 +
+ include/uapi/linux/virtio_iommu.h             |  161 +++
+ 10 files changed, 1448 insertions(+), 3 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/virtio/iommu.txt
+ create mode 100644 drivers/iommu/virtio-iommu.c
+ create mode 100644 include/uapi/linux/virtio_iommu.h
+
 -- 
-2.7.4
+2.19.1
 
 
 ---------------------------------------------------------------------
