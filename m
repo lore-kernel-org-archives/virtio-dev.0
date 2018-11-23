@@ -1,30 +1,27 @@
-Return-Path: virtio-dev-return-5022-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-5024-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 28881985CD0
-	for <virtio-dev@lists.oasis-open.org>; Fri, 23 Nov 2018 08:28:08 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 808BD985CBF
+	for <virtio-dev@lists.oasis-open.org>; Fri, 23 Nov 2018 21:49:05 +0000 (UTC)
+Date: Fri, 23 Nov 2018 16:48:55 -0500
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20181123164716-mutt-send-email-mst@kernel.org>
 References: <20181122193801.50510-1-jean-philippe.brucker@arm.com>
  <20181122193801.50510-6-jean-philippe.brucker@arm.com>
-From: Auger Eric <eric.auger@redhat.com>
-Message-ID: <50443d27-f03d-75ac-5fae-13134917f9cd@redhat.com>
-Date: Fri, 23 Nov 2018 09:27:41 +0100
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 In-Reply-To: <20181122193801.50510-6-jean-philippe.brucker@arm.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
 Subject: [virtio-dev] Re: [PATCH v5 5/7] iommu: Add virtio-iommu driver
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, devicetree@vger.kernel.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, joro@8bytes.org, mst@redhat.com
-Cc: jasowang@redhat.com, robh+dt@kernel.org, mark.rutland@arm.com, bhelgaas@google.com, frowand.list@gmail.com, kvmarm@lists.cs.columbia.edu, tnowicki@caviumnetworks.com, kevin.tian@intel.com, marc.zyngier@arm.com, robin.murphy@arm.com, will.deacon@arm.com, lorenzo.pieralisi@arm.com, bharat.bhushan@nxp.com
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Cc: iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, devicetree@vger.kernel.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, joro@8bytes.org, mark.rutland@arm.com, lorenzo.pieralisi@arm.com, tnowicki@caviumnetworks.com, marc.zyngier@arm.com, robin.murphy@arm.com, will.deacon@arm.com, eric.auger@redhat.com, robh+dt@kernel.org, bhelgaas@google.com, kvmarm@lists.cs.columbia.edu
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Hi Jean,
-
-On 11/22/18 8:37 PM, Jean-Philippe Brucker wrote:
+On Thu, Nov 22, 2018 at 07:37:59PM +0000, Jean-Philippe Brucker wrote:
 > The virtio IOMMU is a para-virtualized device, allowing to send IOMMU
 > requests such as map/unmap over virtio transport without emulating page
 > tables. This implementation handles ATTACH, DETACH, MAP and UNMAP
@@ -35,11 +32,6 @@ On 11/22/18 8:37 PM, Jean-Philippe Brucker wrote:
 > instead of page tables.
 > 
 > Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Reviewed-by: Eric Auger <eric.auger@redhat.com>
-
-Thanks
-
-Eric
 > ---
 >  MAINTAINERS                       |   7 +
 >  drivers/iommu/Kconfig             |  11 +
@@ -1067,6 +1059,10 @@ Eric
 > +	/* Max domain ID size */
 > +	__u8					domain_bits;
 > +	__u8					padding[3];
+
+Not enough padding here it seems. Structure is 8 byte
+aligned on 64 bit systems.
+
 > +};
 > +
 > +/* Request types */
@@ -1141,7 +1137,13 @@ Eric
 > +};
 > +
 > +#endif
+> -- 
+> 2.19.1
 > 
+> _______________________________________________
+> Virtualization mailing list
+> Virtualization@lists.linux-foundation.org
+> https://lists.linuxfoundation.org/mailman/listinfo/virtualization
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
