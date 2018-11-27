@@ -1,68 +1,86 @@
-Return-Path: virtio-dev-return-5052-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-5056-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id B7FF4985BBF
-	for <virtio-dev@lists.oasis-open.org>; Tue, 27 Nov 2018 17:55:44 +0000 (UTC)
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 59896985BBF
+	for <virtio-dev@lists.oasis-open.org>; Tue, 27 Nov 2018 18:10:22 +0000 (UTC)
+Date: Tue, 27 Nov 2018 13:10:10 -0500
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20181127130527-mutt-send-email-mst@kernel.org>
 References: <20181122193801.50510-1-jean-philippe.brucker@arm.com>
  <20181122193801.50510-6-jean-philippe.brucker@arm.com>
  <20181123165206-mutt-send-email-mst@kernel.org>
-Message-ID: <e76a51ba-7a0f-3fca-a1ae-640131f9dfe1@arm.com>
-Date: Tue, 27 Nov 2018 17:55:20 +0000
+ <e76a51ba-7a0f-3fca-a1ae-640131f9dfe1@arm.com>
 MIME-Version: 1.0
-In-Reply-To: <20181123165206-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <e76a51ba-7a0f-3fca-a1ae-640131f9dfe1@arm.com>
 Subject: [virtio-dev] Re: [PATCH v5 5/7] iommu: Add virtio-iommu driver
-To: "Michael S. Tsirkin" <mst@redhat.com>
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
 Cc: mark.rutland@arm.com, virtio-dev@lists.oasis-open.org, lorenzo.pieralisi@arm.com, tnowicki@caviumnetworks.com, devicetree@vger.kernel.org, marc.zyngier@arm.com, linux-pci@vger.kernel.org, joro@8bytes.org, will.deacon@arm.com, virtualization@lists.linux-foundation.org, eric.auger@redhat.com, iommu@lists.linux-foundation.org, robh+dt@kernel.org, bhelgaas@google.com, robin.murphy@arm.com, kvmarm@lists.cs.columbia.edu
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 23/11/2018 21:56, Michael S. Tsirkin wrote:
->> +config VIRTIO_IOMMU
->> +	bool "Virtio IOMMU driver"
->> +	depends on VIRTIO=y
->> +	select IOMMU_API
->> +	select INTERVAL_TREE
->> +	select ARM_DMA_USE_IOMMU if ARM
->> +	help
->> +	  Para-virtualised IOMMU driver with virtio.
->> +
->> +	  Say Y here if you intend to run this kernel as a guest.
->> +
+On Tue, Nov 27, 2018 at 05:55:20PM +0000, Jean-Philippe Brucker wrote:
+> On 23/11/2018 21:56, Michael S. Tsirkin wrote:
+> >> +config VIRTIO_IOMMU
+> >> +	bool "Virtio IOMMU driver"
+> >> +	depends on VIRTIO=y
+> >> +	select IOMMU_API
+> >> +	select INTERVAL_TREE
+> >> +	select ARM_DMA_USE_IOMMU if ARM
+> >> +	help
+> >> +	  Para-virtualised IOMMU driver with virtio.
+> >> +
+> >> +	  Say Y here if you intend to run this kernel as a guest.
+> >> +
+> > 
+> > Given it is arm specific right now, shouldn't this depend on ARM?
+> > E.g. there's a hack for x86 right now.
 > 
-> Given it is arm specific right now, shouldn't this depend on ARM?
-> E.g. there's a hack for x86 right now.
-
-Sure, I'll make it depend on ARM64 for now
-
-[..]
->> +static int viommu_probe(struct virtio_device *vdev)
->> +{
->> +	struct device *parent_dev = vdev->dev.parent;
->> +	struct viommu_dev *viommu = NULL;
->> +	struct device *dev = &vdev->dev;
->> +	u64 input_start = 0;
->> +	u64 input_end = -1UL;
->> +	int ret;
->> +
->> +	if (!virtio_has_feature(vdev, VIRTIO_F_VERSION_1) ||
->> +	    !virtio_has_feature(vdev, VIRTIO_IOMMU_F_MAP_UNMAP))
+> Sure, I'll make it depend on ARM64 for now
 > 
-> Why bother with a feature bit for this then btw?
+> [..]
+> >> +static int viommu_probe(struct virtio_device *vdev)
+> >> +{
+> >> +	struct device *parent_dev = vdev->dev.parent;
+> >> +	struct viommu_dev *viommu = NULL;
+> >> +	struct device *dev = &vdev->dev;
+> >> +	u64 input_start = 0;
+> >> +	u64 input_end = -1UL;
+> >> +	int ret;
+> >> +
+> >> +	if (!virtio_has_feature(vdev, VIRTIO_F_VERSION_1) ||
+> >> +	    !virtio_has_feature(vdev, VIRTIO_IOMMU_F_MAP_UNMAP))
+> > 
+> > Why bother with a feature bit for this then btw?
+> 
+> We'll need a new feature bit for sharing page tables with the hardware,
+> because they require different requests (attach_table/invalidate instead
+> of map/unmap.) A future device supporting page table sharing won't
+> necessarily need to support map/unmap.
+> 
+> Thanks,
+> Jean
 
-We'll need a new feature bit for sharing page tables with the hardware,
-because they require different requests (attach_table/invalidate instead
-of map/unmap.) A future device supporting page table sharing won't
-necessarily need to support map/unmap.
+I don't see virtio iommu being extended to support ARM specific
+requests. This just won't scale, too many different
+descriptor formats out there.
 
-Thanks,
-Jean
+If you want to go that way down the road, you should avoid
+virtio iommu, instead emulate and share code with the ARM SMMU (probably
+with a different vendor id so you can implement the
+report on map for devices without PRI).
+
+Others on the TC might feel differently.
+
+If someone's looking into adding virtio iommu support in hardware,
+that's a different matter. Which is it?
+
+-- 
+MST
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
