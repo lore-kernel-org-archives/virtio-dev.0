@@ -1,472 +1,80 @@
-Return-Path: virtio-dev-return-4964-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-5037-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 4000F985E3E
-	for <virtio-dev@lists.oasis-open.org>; Thu, 15 Nov 2018 10:41:21 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 418A8985B00
+	for <virtio-dev@lists.oasis-open.org>; Tue, 27 Nov 2018 03:06:49 +0000 (UTC)
+Message-ID: <5BFCB5F1.1070300@intel.com>
+Date: Tue, 27 Nov 2018 11:11:45 +0800
 From: Wei Wang <wei.w.wang@intel.com>
-Date: Thu, 15 Nov 2018 18:08:04 +0800
-Message-Id: <1542276484-25508-9-git-send-email-wei.w.wang@intel.com>
-In-Reply-To: <1542276484-25508-1-git-send-email-wei.w.wang@intel.com>
+MIME-Version: 1.0
 References: <1542276484-25508-1-git-send-email-wei.w.wang@intel.com>
-Subject: [virtio-dev] [PATCH v9 8/8] virtio-balloon: VIRTIO_BALLOON_F_FREE_PAGE_HINT
+In-Reply-To: <1542276484-25508-1-git-send-email-wei.w.wang@intel.com>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [virtio-dev] Re: [PATCH v9 0/8] virtio-balloon: free page hint support
 To: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, mst@redhat.com, quintela@redhat.com, dgilbert@redhat.com
-Cc: peterx@redhat.com, pbonzini@redhat.com, liliang.opensource@gmail.com, nilal@redhat.com, riel@redhat.com, wei.w.wang@intel.com
+Cc: peterx@redhat.com, pbonzini@redhat.com, liliang.opensource@gmail.com, nilal@redhat.com, riel@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-The new feature enables the virtio-balloon device to receive hints of
-guest free pages from the free page vq.
+On 11/15/2018 06:07 PM, Wei Wang wrote:
+> This is the deivce part implementation to add a new feature,
+> VIRTIO_BALLOON_F_FREE_PAGE_HINT to the virtio-balloon device. The device
+> receives the guest free page hints from the driver and clears the
+> corresponding bits in the dirty bitmap, so that those free pages are
+> not sent by the migration thread to the destination.
+>
+> *Tests
+> 1 Test Environment
+>      Host: Intel(R) Xeon(R) CPU E5-2699 v4 @ 2.20GHz
+>      Migration setup: migrate_set_speed 100G, migrate_set_downtime 400ms
+>
+> 2 Test Results (results are averaged over several repeated runs)
+>      2.1 Guest setup: 8G RAM, 4 vCPU
+>          2.1.1 Idle guest live migration time
+>              Optimization v.s. Legacy = 620ms vs 2970ms
+>              --> ~79% reduction
+>          2.1.2 Guest live migration with Linux compilation workload
+>            (i.e. make bzImage -j4) running
+>            1) Live Migration Time:
+>               Optimization v.s. Legacy = 2273ms v.s. 4502ms
+>               --> ~50% reduction
+>            2) Linux Compilation Time:
+>               Optimization v.s. Legacy = 8min42s v.s. 8min43s
+>               --> no obvious difference
+>
+>      2.2 Guest setup: 128G RAM, 4 vCPU
+>          2.2.1 Idle guest live migration time
+>              Optimization v.s. Legacy = 5294ms vs 41651ms
+>              --> ~87% reduction
+>          2.2.2 Guest live migration with Linux compilation workload
+>            1) Live Migration Time:
+>              Optimization v.s. Legacy = 8816ms v.s. 54201ms
+>              --> 84% reduction
+>            2) Linux Compilation Time:
+>               Optimization v.s. Legacy = 8min30s v.s. 8min36s
+>               --> no obvious difference
+>
+> ChangeLog:
+> v8->v9:
+> bitmap:
+>      - fix bitmap_count_one to handle the nbits=0 case
+> migration:
+>      - replace the ram save notifier chain with a more general precopy
+>        notifier chain, which is similar to the postcopy notifier chain.
+>      - Avoid exposing the RAMState struct, and add a function,
+>        precopy_disable_bulk_stage, to let the virtio-balloon notifier
+>        callback to disable the bulk stage flag.
 
-A notifier is registered to the migration precopy notifier chain. The
-notifier calls free_page_start after the migration thread syncs the dirty
-bitmap, so that the free page optimization starts to clear bits of free
-pages from the bitmap. It calls the free_page_stop before the migration
-thread syncs the bitmap, which is the end of the current round of ram
-save. The free_page_stop is also called to stop the optimization in the
-case when there is an error occurred in the process of ram saving.
+Hi Dave and Peter,
 
-Note: balloon will report pages which were free at the time of this call.
-As the reporting happens asynchronously, dirty bit logging must be
-enabled before this free_page_start call is made. Guest reporting must be
-disabled before the migration dirty bitmap is synchronized.
+Could you continue to review the patches? Thanks!
 
-Signed-off-by: Wei Wang <wei.w.wang@intel.com>
-CC: Michael S. Tsirkin <mst@redhat.com>
-CC: Dr. David Alan Gilbert <dgilbert@redhat.com>
-CC: Juan Quintela <quintela@redhat.com>
-CC: Peter Xu <peterx@redhat.com>
----
- hw/virtio/virtio-balloon.c                      | 255 ++++++++++++++++++++++++
- include/hw/virtio/virtio-balloon.h              |  28 ++-
- include/standard-headers/linux/virtio_balloon.h |   5 +
- 3 files changed, 287 insertions(+), 1 deletion(-)
-
-diff --git a/hw/virtio/virtio-balloon.c b/hw/virtio/virtio-balloon.c
-index 1728e4f..4a3eb30 100644
---- a/hw/virtio/virtio-balloon.c
-+++ b/hw/virtio/virtio-balloon.c
-@@ -27,6 +27,7 @@
- #include "qapi/visitor.h"
- #include "trace.h"
- #include "qemu/error-report.h"
-+#include "migration/misc.h"
- 
- #include "hw/virtio/virtio-bus.h"
- #include "hw/virtio/virtio-access.h"
-@@ -308,6 +309,176 @@ out:
-     }
- }
- 
-+static void virtio_balloon_handle_free_page_vq(VirtIODevice *vdev,
-+                                               VirtQueue *vq)
-+{
-+    VirtIOBalloon *s = VIRTIO_BALLOON(vdev);
-+    qemu_bh_schedule(s->free_page_bh);
-+}
-+
-+static bool get_free_page_hints(VirtIOBalloon *dev)
-+{
-+    VirtQueueElement *elem;
-+    VirtIODevice *vdev = VIRTIO_DEVICE(dev);
-+    VirtQueue *vq = dev->free_page_vq;
-+
-+    while (dev->block_iothread) {
-+        qemu_cond_wait(&dev->free_page_cond, &dev->free_page_lock);
-+    }
-+
-+    elem = virtqueue_pop(vq, sizeof(VirtQueueElement));
-+    if (!elem) {
-+        return false;
-+    }
-+
-+    if (elem->out_num) {
-+        uint32_t id;
-+        size_t size = iov_to_buf(elem->out_sg, elem->out_num, 0,
-+                                 &id, sizeof(id));
-+        virtqueue_push(vq, elem, size);
-+        g_free(elem);
-+
-+        virtio_tswap32s(vdev, &id);
-+        if (unlikely(size != sizeof(id))) {
-+            virtio_error(vdev, "received an incorrect cmd id");
-+            return false;
-+        }
-+        if (id == dev->free_page_report_cmd_id) {
-+            dev->free_page_report_status = FREE_PAGE_REPORT_S_START;
-+        } else {
-+            /*
-+             * Stop the optimization only when it has started. This
-+             * avoids a stale stop sign for the previous command.
-+             */
-+            if (dev->free_page_report_status == FREE_PAGE_REPORT_S_START) {
-+                dev->free_page_report_status = FREE_PAGE_REPORT_S_STOP;
-+            }
-+        }
-+    }
-+
-+    if (elem->in_num) {
-+        if (dev->free_page_report_status == FREE_PAGE_REPORT_S_START) {
-+            qemu_guest_free_page_hint(elem->in_sg[0].iov_base,
-+                                      elem->in_sg[0].iov_len);
-+        }
-+        virtqueue_push(vq, elem, 1);
-+        g_free(elem);
-+    }
-+
-+    return true;
-+}
-+
-+static void virtio_ballloon_get_free_page_hints(void *opaque)
-+{
-+    VirtIOBalloon *dev = opaque;
-+    VirtIODevice *vdev = VIRTIO_DEVICE(dev);
-+    VirtQueue *vq = dev->free_page_vq;
-+    bool continue_to_get_hints;
-+
-+    do {
-+        qemu_mutex_lock(&dev->free_page_lock);
-+        virtio_queue_set_notification(vq, 0);
-+        continue_to_get_hints = get_free_page_hints(dev);
-+        qemu_mutex_unlock(&dev->free_page_lock);
-+        virtio_notify(vdev, vq);
-+      /*
-+       * Start to poll the vq once the reporting started. Otherwise, continue
-+       * only when there are entries on the vq, which need to be given back.
-+       */
-+    } while (continue_to_get_hints ||
-+             dev->free_page_report_status == FREE_PAGE_REPORT_S_START);
-+    virtio_queue_set_notification(vq, 1);
-+}
-+
-+static bool virtio_balloon_free_page_support(void *opaque)
-+{
-+    VirtIOBalloon *s = opaque;
-+    VirtIODevice *vdev = VIRTIO_DEVICE(s);
-+
-+    return virtio_vdev_has_feature(vdev, VIRTIO_BALLOON_F_FREE_PAGE_HINT);
-+}
-+
-+static void virtio_balloon_free_page_start(VirtIOBalloon *s)
-+{
-+    VirtIODevice *vdev = VIRTIO_DEVICE(s);
-+
-+    /* For the stop and copy phase, we don't need to start the optimization */
-+    if (!vdev->vm_running) {
-+        return;
-+    }
-+
-+    if (s->free_page_report_cmd_id == UINT_MAX) {
-+        s->free_page_report_cmd_id =
-+                       VIRTIO_BALLOON_FREE_PAGE_REPORT_CMD_ID_MIN;
-+    } else {
-+        s->free_page_report_cmd_id++;
-+    }
-+
-+    s->free_page_report_status = FREE_PAGE_REPORT_S_REQUESTED;
-+    virtio_notify_config(vdev);
-+}
-+
-+static void virtio_balloon_free_page_stop(VirtIOBalloon *s)
-+{
-+    VirtIODevice *vdev = VIRTIO_DEVICE(s);
-+
-+    if (s->free_page_report_status != FREE_PAGE_REPORT_S_STOP) {
-+        /*
-+         * The lock also guarantees us that the
-+         * virtio_ballloon_get_free_page_hints exits after the
-+         * free_page_report_status is set to S_STOP.
-+         */
-+        qemu_mutex_lock(&s->free_page_lock);
-+        /*
-+         * The guest hasn't done the reporting, so host sends a notification
-+         * to the guest to actively stop the reporting.
-+         */
-+        s->free_page_report_status = FREE_PAGE_REPORT_S_STOP;
-+        qemu_mutex_unlock(&s->free_page_lock);
-+        virtio_notify_config(vdev);
-+    }
-+}
-+
-+static void virtio_balloon_free_page_done(VirtIOBalloon *s)
-+{
-+    VirtIODevice *vdev = VIRTIO_DEVICE(s);
-+
-+    s->free_page_report_status = FREE_PAGE_REPORT_S_DONE;
-+    virtio_notify_config(vdev);
-+}
-+
-+static void virtio_balloon_free_page_report_notify(Notifier *notifier,
-+                                                   void *data)
-+{
-+    VirtIOBalloon *dev = container_of(notifier, VirtIOBalloon,
-+                                      free_page_report_notify);
-+    VirtIODevice *vdev = VIRTIO_DEVICE(dev);
-+    PrecopyNotifyReason reason = *(PrecopyNotifyReason *)data;
-+
-+    if (!virtio_balloon_free_page_support(dev) || migrate_postcopy()) {
-+        return;
-+    }
-+
-+    switch (reason) {
-+    case PRECOPY_NOTIFY_START_ITERATION:
-+        precopy_disable_bulk_stage();
-+        break;
-+    case PRECOPY_NOTIFY_ERR:
-+    case PRECOPY_NOTIFY_BEFORE_SYNC_BITMAP:
-+        virtio_balloon_free_page_stop(dev);
-+        break;
-+    case PRECOPY_NOTIFY_AFTER_SYNC_BITMAP:
-+        if (vdev->vm_running) {
-+            virtio_balloon_free_page_start(dev);
-+        } else {
-+            virtio_balloon_free_page_done(dev);
-+        }
-+        break;
-+    default:
-+        virtio_error(vdev, "%s: %d reason unknown", __func__, reason);
-+    }
-+}
-+
- static void virtio_balloon_get_config(VirtIODevice *vdev, uint8_t *config_data)
- {
-     VirtIOBalloon *dev = VIRTIO_BALLOON(vdev);
-@@ -316,6 +487,17 @@ static void virtio_balloon_get_config(VirtIODevice *vdev, uint8_t *config_data)
-     config.num_pages = cpu_to_le32(dev->num_pages);
-     config.actual = cpu_to_le32(dev->actual);
- 
-+    if (dev->free_page_report_status == FREE_PAGE_REPORT_S_REQUESTED) {
-+        config.free_page_report_cmd_id =
-+                       cpu_to_le32(dev->free_page_report_cmd_id);
-+    } else if (dev->free_page_report_status == FREE_PAGE_REPORT_S_STOP) {
-+        config.free_page_report_cmd_id =
-+                       cpu_to_le32(VIRTIO_BALLOON_FREE_PAGE_REPORT_STOP_ID);
-+    } else if (dev->free_page_report_status == FREE_PAGE_REPORT_S_DONE) {
-+        config.free_page_report_cmd_id =
-+                       cpu_to_le32(VIRTIO_BALLOON_FREE_PAGE_REPORT_DONE_ID);
-+    }
-+
-     trace_virtio_balloon_get_config(config.num_pages, config.actual);
-     memcpy(config_data, &config, sizeof(struct virtio_balloon_config));
- }
-@@ -376,6 +558,7 @@ static uint64_t virtio_balloon_get_features(VirtIODevice *vdev, uint64_t f,
-     VirtIOBalloon *dev = VIRTIO_BALLOON(vdev);
-     f |= dev->host_features;
-     virtio_add_feature(&f, VIRTIO_BALLOON_F_STATS_VQ);
-+
-     return f;
- }
- 
-@@ -412,6 +595,18 @@ static int virtio_balloon_post_load_device(void *opaque, int version_id)
-     return 0;
- }
- 
-+static const VMStateDescription vmstate_virtio_balloon_free_page_report = {
-+    .name = "virtio-balloon-device/free-page-report",
-+    .version_id = 1,
-+    .minimum_version_id = 1,
-+    .needed = virtio_balloon_free_page_support,
-+    .fields = (VMStateField[]) {
-+        VMSTATE_UINT32(free_page_report_cmd_id, VirtIOBalloon),
-+        VMSTATE_UINT32(free_page_report_status, VirtIOBalloon),
-+        VMSTATE_END_OF_LIST()
-+    }
-+};
-+
- static const VMStateDescription vmstate_virtio_balloon_device = {
-     .name = "virtio-balloon-device",
-     .version_id = 1,
-@@ -422,6 +617,10 @@ static const VMStateDescription vmstate_virtio_balloon_device = {
-         VMSTATE_UINT32(actual, VirtIOBalloon),
-         VMSTATE_END_OF_LIST()
-     },
-+    .subsections = (const VMStateDescription * []) {
-+        &vmstate_virtio_balloon_free_page_report,
-+        NULL
-+    }
- };
- 
- static void virtio_balloon_device_realize(DeviceState *dev, Error **errp)
-@@ -446,6 +645,29 @@ static void virtio_balloon_device_realize(DeviceState *dev, Error **errp)
-     s->dvq = virtio_add_queue(vdev, 128, virtio_balloon_handle_output);
-     s->svq = virtio_add_queue(vdev, 128, virtio_balloon_receive_stats);
- 
-+    if (virtio_has_feature(s->host_features,
-+                           VIRTIO_BALLOON_F_FREE_PAGE_HINT)) {
-+        s->free_page_vq = virtio_add_queue(vdev, VIRTQUEUE_MAX_SIZE,
-+                                           virtio_balloon_handle_free_page_vq);
-+        s->free_page_report_status = FREE_PAGE_REPORT_S_STOP;
-+        s->free_page_report_cmd_id =
-+                           VIRTIO_BALLOON_FREE_PAGE_REPORT_CMD_ID_MIN;
-+        s->free_page_report_notify.notify =
-+                                       virtio_balloon_free_page_report_notify;
-+        precopy_add_notifier(&s->free_page_report_notify);
-+        if (s->iothread) {
-+            object_ref(OBJECT(s->iothread));
-+            s->free_page_bh = aio_bh_new(iothread_get_aio_context(s->iothread),
-+                                       virtio_ballloon_get_free_page_hints, s);
-+            qemu_mutex_init(&s->free_page_lock);
-+            qemu_cond_init(&s->free_page_cond);
-+            s->block_iothread = false;
-+        } else {
-+            /* Simply disable this feature if the iothread wasn't created. */
-+            s->host_features &= ~(1 << VIRTIO_BALLOON_F_FREE_PAGE_HINT);
-+            virtio_error(vdev, "iothread is missing");
-+        }
-+    }
-     reset_stats(s);
- }
- 
-@@ -454,6 +676,11 @@ static void virtio_balloon_device_unrealize(DeviceState *dev, Error **errp)
-     VirtIODevice *vdev = VIRTIO_DEVICE(dev);
-     VirtIOBalloon *s = VIRTIO_BALLOON(dev);
- 
-+    if (virtio_balloon_free_page_support(s)) {
-+        qemu_bh_delete(s->free_page_bh);
-+        virtio_balloon_free_page_stop(s);
-+        precopy_remove_notifier(&s->free_page_report_notify);
-+    }
-     balloon_stats_destroy_timer(s);
-     qemu_remove_balloon_handler(s);
-     virtio_cleanup(vdev);
-@@ -463,6 +690,10 @@ static void virtio_balloon_device_reset(VirtIODevice *vdev)
- {
-     VirtIOBalloon *s = VIRTIO_BALLOON(vdev);
- 
-+    if (virtio_balloon_free_page_support(s)) {
-+        virtio_balloon_free_page_stop(s);
-+    }
-+
-     if (s->stats_vq_elem != NULL) {
-         virtqueue_unpop(s->svq, s->stats_vq_elem, 0);
-         g_free(s->stats_vq_elem);
-@@ -480,6 +711,26 @@ static void virtio_balloon_set_status(VirtIODevice *vdev, uint8_t status)
-          * was stopped */
-         virtio_balloon_receive_stats(vdev, s->svq);
-     }
-+
-+    if (virtio_balloon_free_page_support(s)) {
-+        /*
-+         * The VM is woken up and the iothread was blocked, so signal it to
-+         * continue.
-+         */
-+        if (vdev->vm_running && s->block_iothread) {
-+            qemu_mutex_lock(&s->free_page_lock);
-+            s->block_iothread = false;
-+            qemu_cond_signal(&s->free_page_cond);
-+            qemu_mutex_unlock(&s->free_page_lock);
-+        }
-+
-+        /* The VM is stopped, block the iothread. */
-+        if (!vdev->vm_running) {
-+            qemu_mutex_lock(&s->free_page_lock);
-+            s->block_iothread = true;
-+            qemu_mutex_unlock(&s->free_page_lock);
-+        }
-+    }
- }
- 
- static void virtio_balloon_instance_init(Object *obj)
-@@ -508,6 +759,10 @@ static const VMStateDescription vmstate_virtio_balloon = {
- static Property virtio_balloon_properties[] = {
-     DEFINE_PROP_BIT("deflate-on-oom", VirtIOBalloon, host_features,
-                     VIRTIO_BALLOON_F_DEFLATE_ON_OOM, false),
-+    DEFINE_PROP_BIT("free-page-hint", VirtIOBalloon, host_features,
-+                    VIRTIO_BALLOON_F_FREE_PAGE_HINT, false),
-+    DEFINE_PROP_LINK("iothread", VirtIOBalloon, iothread, TYPE_IOTHREAD,
-+                     IOThread *),
-     DEFINE_PROP_END_OF_LIST(),
- };
- 
-diff --git a/include/hw/virtio/virtio-balloon.h b/include/hw/virtio/virtio-balloon.h
-index e0df352..df1d632 100644
---- a/include/hw/virtio/virtio-balloon.h
-+++ b/include/hw/virtio/virtio-balloon.h
-@@ -17,11 +17,14 @@
- 
- #include "standard-headers/linux/virtio_balloon.h"
- #include "hw/virtio/virtio.h"
-+#include "sysemu/iothread.h"
- 
- #define TYPE_VIRTIO_BALLOON "virtio-balloon-device"
- #define VIRTIO_BALLOON(obj) \
-         OBJECT_CHECK(VirtIOBalloon, (obj), TYPE_VIRTIO_BALLOON)
- 
-+#define VIRTIO_BALLOON_FREE_PAGE_REPORT_CMD_ID_MIN 0x80000000
-+
- typedef struct virtio_balloon_stat VirtIOBalloonStat;
- 
- typedef struct virtio_balloon_stat_modern {
-@@ -30,15 +33,38 @@ typedef struct virtio_balloon_stat_modern {
-        uint64_t val;
- } VirtIOBalloonStatModern;
- 
-+enum virtio_balloon_free_page_report_status {
-+    FREE_PAGE_REPORT_S_STOP = 0,
-+    FREE_PAGE_REPORT_S_REQUESTED = 1,
-+    FREE_PAGE_REPORT_S_START = 2,
-+    FREE_PAGE_REPORT_S_DONE = 3,
-+};
-+
- typedef struct VirtIOBalloon {
-     VirtIODevice parent_obj;
--    VirtQueue *ivq, *dvq, *svq;
-+    VirtQueue *ivq, *dvq, *svq, *free_page_vq;
-+    uint32_t free_page_report_status;
-     uint32_t num_pages;
-     uint32_t actual;
-+    uint32_t free_page_report_cmd_id;
-     uint64_t stats[VIRTIO_BALLOON_S_NR];
-     VirtQueueElement *stats_vq_elem;
-     size_t stats_vq_offset;
-     QEMUTimer *stats_timer;
-+    IOThread *iothread;
-+    QEMUBH *free_page_bh;
-+    /*
-+     * Lock to synchronize threads to access the free page reporting related
-+     * fields (e.g. free_page_report_status).
-+     */
-+    QemuMutex free_page_lock;
-+    QemuCond  free_page_cond;
-+    /*
-+     * Set to block iothread to continue reading free page hints as the VM is
-+     * stopped.
-+     */
-+    bool block_iothread;
-+    Notifier free_page_report_notify;
-     int64_t stats_last_update;
-     int64_t stats_poll_interval;
-     uint32_t host_features;
-diff --git a/include/standard-headers/linux/virtio_balloon.h b/include/standard-headers/linux/virtio_balloon.h
-index 4dbb7dc..9eee1c6 100644
---- a/include/standard-headers/linux/virtio_balloon.h
-+++ b/include/standard-headers/linux/virtio_balloon.h
-@@ -34,15 +34,20 @@
- #define VIRTIO_BALLOON_F_MUST_TELL_HOST	0 /* Tell before reclaiming pages */
- #define VIRTIO_BALLOON_F_STATS_VQ	1 /* Memory Stats virtqueue */
- #define VIRTIO_BALLOON_F_DEFLATE_ON_OOM	2 /* Deflate balloon on OOM */
-+#define VIRTIO_BALLOON_F_FREE_PAGE_HINT 3 /* VQ to report free pages */
- 
- /* Size of a PFN in the balloon interface. */
- #define VIRTIO_BALLOON_PFN_SHIFT 12
- 
-+#define VIRTIO_BALLOON_FREE_PAGE_REPORT_STOP_ID 0
-+#define VIRTIO_BALLOON_FREE_PAGE_REPORT_DONE_ID 1
- struct virtio_balloon_config {
- 	/* Number of pages host wants Guest to give up. */
- 	uint32_t num_pages;
- 	/* Number of pages we've actually got in balloon. */
- 	uint32_t actual;
-+	/* Free page report command id, readonly by guest */
-+	uint32_t free_page_report_cmd_id;
- };
- 
- #define VIRTIO_BALLOON_S_SWAP_IN  0   /* Amount of memory swapped in */
--- 
-1.8.3.1
-
+Best,
+Wei
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
