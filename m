@@ -1,180 +1,261 @@
-Return-Path: virtio-return-3194-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-return-3197-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio@lists.oasis-open.org>
 List-Post: <mailto:virtio@lists.oasis-open.org>
 List-Help: <mailto:virtio-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Mon, 26 Nov 2018 19:28:30 -0500
+Date: Mon, 26 Nov 2018 20:02:08 -0500
 From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20181126192821-mutt-send-email-mst@kernel.org>
-References: <20181121173344.475-1-mst@redhat.com>
+Message-ID: <20181127010125.10285-1-mst@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20181121173344.475-1-mst@redhat.com>
-Subject: [virtio] Re: [PATCH v2] ACCESS_PLATFORM/ACCESS_ORDER
+Subject: [virtio] [PATCH v4] VIRTIO_F_NOTIFICATION_DATA: extra data to devices
 To: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
-Cc: Tiwei Bie <tiwei.bie@intel.com>, cohuck@redhat.com, stefanha@redhat.com, pbonzini@redhat.com, jasowang@redhat.com, pasic@linux.vnet.ibm.com, dan.daly@intel.com, cunming.liang@intel.com, zhihong.wang@intel.com
+Cc: David Riddoch <driddoch@solarflare.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, Nov 21, 2018 at 12:38:10PM -0500, Michael S. Tsirkin wrote:
-> This is an attempt to clarify the intent behind
-> VIRTIO_F_IOMMU_PLATFORM and VIRTIO_F_IO_BARRIER
-> which based on recent discussions appear to be hard to understand.
-> 
-> - rename VIRTIO_F_IOMMU_PLATFORM to ACCESS_PLATFORM
->   It is already the fact that the DMA API that Linux
->   uses does more than just IOMMUs - it includes
->   cache flushing, bounce buffers for limited
->   addressing, etc.
->   Update spec to match this reality.
-> 
-> - rename VIRTIO_F_IO_BARRIER to VIRTIO_F_ORDER_PLATFORM
->   this is after all what device is telling driver:
->   its memory accesses are only ordered weakly,
->   this is why a stronger barrier is required.
-> 
-> - Explain that with IO_BARRIER (now ORDER_PLATFORM) not negotiating it
->   is not a good idea *even if it does not fail*: device can
->   have a slower software fallback so that existing drivers
->   aren't broken.
-> 
-> - Recommend that for maximum portability both bits are offered.
-> 
-> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Some devices benefit from ability to find out the number of available
+descriptors in the ring: for efficiency or as a debugging aid.
 
-Fixes: https://github.com/oasis-tcs/virtio-spec/issues/25
+To help with these optimizations, add a new feature:
+VIRTIO_F_NOTIFICATION_DATA. When negotiated, driver notifications to the
+device include this extra information.
 
-> ---
-> 
-> Changes from v1:
-> - try to address comments by Jason Wang
->   add a ote that it is RECOMMENDED that hardware devices offer both bits
-> - soften recommendation to support an emulation mode
->   to MAY
-> 
-> 
->  content.tex | 73 +++++++++++++++++++++++++++++++++++++----------------
->  1 file changed, 51 insertions(+), 22 deletions(-)
-> 
-> diff --git a/content.tex b/content.tex
-> index c346183..fe02715 100644
-> --- a/content.tex
-> +++ b/content.tex
-> @@ -5452,26 +5452,46 @@ Descriptors} and \ref{sec:Packed Virtqueues / Indirect Flag: Scatter-Gather Supp
->    \item[VIRTIO_F_VERSION_1(32)] This indicates compliance with this
->      specification, giving a simple way to detect legacy devices or drivers.
->  
-> -  \item[VIRTIO_F_IOMMU_PLATFORM(33)] This feature indicates that the device is
-> +  \item[VIRTIO_F_ACCESS_PLATFORM(33)] This feature indicates that
-> +  the device can be used in a platform where device access to data
-> +  in memory is limited and/or translated. E.g. this is the case if the device can be located
->    behind an IOMMU that translates bus addresses from the device into physical
-> -  addresses in memory.  If this feature bit is set to 0, then the device emits
-> -  physical addresses which are not translated further, even though an IOMMU
-> -  may be present.
-> +  addresses in memory, if device can be limited to only access
-> +  certain memory addresses or if special commands such as
-> +  a cache flush can be needed to synchronise data in memory with
-> +  the device. Whether accesses are actually limited or translated
-> +  is described by platform-specific means.
-> +  If this feature bit is set to 0, then the device
-> +  has same access to memory addresses supplied to it as the driver.
-> +  In particular it will always use physical addresses
-> +  matching addresses used by driver (typically the CPU)
-> +  and not translated further, and can access any address supplied to it by
-> +  driver. When clear, this overrides any platform-specific description of
-> +  whether device access is limited or translated in any way, e.g.
-> +  whether an IOMMU may be present.
->    \item[VIRTIO_F_RING_PACKED(34)] This feature indicates
->    support for the packed virtqueue layout as described in
->    \ref{sec:Basic Facilities of a Virtio Device / Packed Virtqueues}~\nameref{sec:Basic Facilities of a Virtio Device / Packed Virtqueues}.
->    \item[VIRTIO_F_IN_ORDER(35)] This feature indicates
->    that all buffers are used by the device in the same
->    order in which they have been made available.
-> -  \item[VIRTIO_F_IO_BARRIER(36)] This feature indicates
-> -  that the device needs the driver to use the barriers
-> -  suitable for hardware devices.  Some transports require
-> -  barriers to ensure devices have a consistent view of
-> -  memory.  When devices are implemented in software a
-> -  weaker form of barrier may be sufficient and yield
-> -  better performance.  This feature indicates whether
-> -  a stronger form of barrier suitable for hardware
-> -  devices is necessary.
-> +  \item[VIRTIO_F_ORDER_PLATFORM(36)] This feature indicates
-> +  that memory accesses by driver and device are ordered
-> +  in a way described by the platform.
-> +  If this feature bit is negotiated, then for any memory
-> +  accesses by the driver that need to be ordered
-> +  in a specific way with respect to access by
-> +  the device, the ordering in effect is the one
-> +  suitable for devices described by the platform,
-> +  and he driver needs to use memory barriers
-> +  suitable for devices described by the platform,
-> +  e.g. for the PCI transport, for hardware PCI devices.
-> +  If this feature bit is set to 0, then the device
-> +  and driver are assumed to be implemented in software, that is
-> +  they can be assumed to run on identical CPUs
-> +  in an SMP configuration.
-> +  Thus a weaker form of memory barriers is sufficient
-> +  to yield better performance.
->    \item[VIRTIO_F_SR_IOV(37)] This feature indicates that
->    the device supports Single Root I/O Virtualization.
->    Currently only PCI devices support this feature.
-> @@ -5482,16 +5502,16 @@ Descriptors} and \ref{sec:Packed Virtqueues / Indirect Flag: Scatter-Gather Supp
->  A driver MUST accept VIRTIO_F_VERSION_1 if it is offered.  A driver
->  MAY fail to operate further if VIRTIO_F_VERSION_1 is not offered.
->  
-> -A driver SHOULD accept VIRTIO_F_IOMMU_PLATFORM if it is offered, and it MUST
-> +A driver SHOULD accept VIRTIO_F_ACCESS_PLATFORM if it is offered, and it MUST
->  then either disable the IOMMU or configure the IOMMU to translate bus addresses
->  passed to the device into physical addresses in memory.  If
-> -VIRTIO_F_IOMMU_PLATFORM is not offered, then a driver MUST pass only physical
-> +VIRTIO_F_ACCESS_PLATFORM is not offered, then a driver MUST pass only physical
->  addresses to the device.
->  
->  A driver SHOULD accept VIRTIO_F_RING_PACKED if it is offered.
->  
-> -A driver SHOULD accept VIRTIO_F_IO_BARRIER if it is offered.
-> -If VIRTIO_F_IO_BARRIER has been negotiated, a driver MUST use
-> +A driver SHOULD accept VIRTIO_F_ORDER_PLATFORM if it is offered.
-> +If VIRTIO_F_ORDER_PLATFORM has been negotiated, a driver MUST use
->  the barriers suitable for hardware devices.
->  
->  \devicenormative{\section}{Reserved Feature Bits}{Reserved Feature Bits}
-> @@ -5499,16 +5519,25 @@ the barriers suitable for hardware devices.
->  A device MUST offer VIRTIO_F_VERSION_1.  A device MAY fail to operate further
->  if VIRTIO_F_VERSION_1 is not accepted.
->  
-> -A device SHOULD offer VIRTIO_F_IOMMU_PLATFORM if it is behind an IOMMU that
-> -translates bus addresses from the device into physical addresses in memory.
-> -A device MAY fail to operate further if VIRTIO_F_IOMMU_PLATFORM is not
-> +A device SHOULD offer VIRTIO_F_ACCESS_PLATFORM if it's access to
-> +memory is through bus addresses distinct from and translated
-> +by the platform to physical addresses used by the driver, and/or
-> +if it can only access certain memory addresses with said access
-> +specified and/or granted by the platform.
-> +A device MAY fail to operate further if VIRTIO_F_ACCESS_PLATFORM is not
->  accepted.
->  
->  If VIRTIO_F_IN_ORDER has been negotiated, a device MUST use
->  buffers in the same order in which they have been available.
->  
-> -A device MAY fail to operate further if VIRTIO_F_IO_BARRIER
-> -is not accepted.
-> +A device MAY fail to operate further if
-> +VIRTIO_F_ORDER_PLATFORM is offered but not accepted.
-> +A device MAY operate in a slower emulation mode if
-> +VIRTIO_F_ORDER_PLATFORM is offered but not accepted.
-> +
-> +It is RECOMMENDED that an add-in card based PCI device
-> +offer both VIRTIO_F_ACCESS_PLATFORM and
-> +VIRTIO_F_ORDER_PLATFORM for maximum portability.
->  
->  A device SHOULD offer VIRTIO_F_SR_IOV if it is a PCI device
->  and presents a PCI SR-IOV capability structure, otherwise
-> -- 
-> MST
+Fixes: https://github.com/oasis-tcs/virtio-spec/issues/26
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+---
+
+changes from v3:
+- more wording changes suggested by Cornelia
+changes from v2:
+- wording changes suggested by Cornelia
+changes from v1:
+- rebased on master
+- included support for MMIO
+- minor wording fixes
+
+
+
+ content.tex        | 122 ++++++++++++++++++++++++++++++++++++++++++---
+ notifications-be.c |   5 ++
+ notifications-le.c |   5 ++
+ 3 files changed, 124 insertions(+), 8 deletions(-)
+ create mode 100644 notifications-be.c
+ create mode 100644 notifications-le.c
+
+diff --git a/content.tex b/content.tex
+index 5582c1c..633471e 100644
+--- a/content.tex
++++ b/content.tex
+@@ -331,6 +331,46 @@ Virtqueue format, or both.
+ \input{split-ring.tex}
+ 
+ \input{packed-ring.tex}
++
++\subsection{Driver notifications} \label{sec:Virtqueues / Driver notifications}
++The driver is sometimes required to send an available buffer
++notification to the device.
++
++When VIRTIO_F_NOTIFICATION_DATA has not been negotiated,
++this notification involves sending the
++virtqueue number to the device (method depending on the transport).
++
++However, some devices benefit from the ability to find out the
++amount of available data in the queue without accessing the virtqueue in memory:
++for efficiency or as a debugging aid.
++
++To help with these optimizations, when VIRTIO_F_NOTIFICATION_DATA
++has been negotiated, driver notifications to the device include
++the following information:
++
++\begin{description}
++\item [vqn] VQ number to be notified.
++\item [next_off] Offset
++      within the ring where the next available ring entry
++      will be written.
++      When VIRTIO_F_RING_PACKED has not been negotiated this refers to the
++      15 least significant bits of the available index.
++      When VIRTIO_F_RING_PACKED has been negotiated this refers to the offset
++      (in units of descriptor entries)
++      within the descriptor ring where the next available
++      descriptor will be written.
++\item [next_wrap] Wrap Counter.
++      With VIRTIO_F_RING_PACKED this is the wrap counter
++      referring to the next available descriptor.
++      Without VIRTIO_F_RING_PACKED this is the most significant bit
++      (bit 15) of the available index.
++\end{description}
++
++Note that the driver can send multiple notifications even without
++making any more buffers available. When VIRTIO_F_NOTIFICATION_DATA
++has been negotiated, these notifications would then have
++identical \field{next_off} and \field{next_wrap} values.
++
+ \chapter{General Initialization And Device Operation}\label{sec:General Initialization And Device Operation}
+ 
+ We start with an overview of device initialization, then expand on the
+@@ -909,7 +949,9 @@ the same Queue Notify address for all queues.
+ \devicenormative{\paragraph}{Notification capability}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Notification capability}
+ The device MUST present at least one notification capability.
+ 
+-The \field{cap.offset} MUST be 2-byte aligned.  
++For devices not offering VIRTIO_F_NOTIFICATION_DATA:
++
++The \field{cap.offset} MUST be 2-byte aligned.
+ 
+ The device MUST either present \field{notify_off_multiplier} as an even power of 2,
+ or present \field{notify_off_multiplier} as 0.
+@@ -923,6 +965,23 @@ For all queues, the value \field{cap.length} presented by the device MUST satisf
+ cap.length >= queue_notify_off * notify_off_multiplier + 2
+ \end{lstlisting}
+ 
++For devices offering VIRTIO_F_NOTIFICATION_DATA:
++
++The device MUST either present \field{notify_off_multiplier} as a
++number that is a power of 2 that is also a multiple 4,
++or present \field{notify_off_multiplier} as 0.
++
++The \field{cap.offset} MUST be 4-byte aligned.
++
++The value \field{cap.length} presented by the device MUST be at least 4
++and MUST be large enough to support queue notification offsets
++for all supported queues in all possible configurations.
++
++For all queues, the value \field{cap.length} presented by the device MUST satisfy:
++\begin{lstlisting}
++cap.length >= queue_notify_off * notify_off_multiplier + 4
++\end{lstlisting}
++
+ \subsubsection{ISR status capability}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / ISR status capability}
+ 
+ The VIRTIO_PCI_CAP_ISR_CFG capability
+@@ -1315,9 +1374,21 @@ separate cache lines.
+ 
+ \subsubsection{Available Buffer Notifications}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Available Buffer Notifications}
+ 
+-The driver sends an available buffer notification to the device by writing
++When VIRTIO_F_NOTIFICATION_DATA has not been negotiated,
++the driver sends an available buffer notification to the device by writing
+ the 16-bit virtqueue index
+-of this virtqueue to the Queue Notify address.  See \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Notification capability} for how to calculate this address.
++of this virtqueue to the Queue Notify address.
++
++When VIRTIO_F_NOTIFICATION_DATA has been negotiated,
++the driver sends an available buffer notification to the device by writing
++the following 32-bit value to the Queue Notify address:
++\lstinputlisting{notifications-le.c}
++
++See \ref{sec:Virtqueues / Driver notifications}~\nameref{sec:Virtqueues / Driver notifications}
++for the definition of the components.
++
++See \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Notification capability}
++for how to calculate the Queue Notify address.
+ 
+ \subsubsection{Used Buffer Notifications}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Used Buffer Notifications}
+ 
+@@ -1548,8 +1619,19 @@ All register values are organized as Little Endian.
+   }
+   \hline 
+   \mmioreg{QueueNotify}{Queue notifier}{0x050}{W}{%
+-    Writing a queue index to this register notifies the device that
+-    there are new buffers to process in the queue.
++    Writing a value to this register notifies the device that
++    there are new buffers to process in a queue.
++
++    When VIRTIO_F_NOTIFICATION_DATA has not been negotiated,
++    the value written is the queue index.
++
++    When VIRTIO_F_NOTIFICATION_DATA has been negotiated,
++    the \field{Notification data} value has the following format:
++
++    \lstinputlisting{notifications-le.c}
++
++    See \ref{sec:Virtqueues / Driver notifications}~\nameref{sec:Virtqueues / Driver notifications}
++    for the definition of the components.
+   }
+   \hline 
+   \mmioreg{InterruptStatus}{Interrupt status}{0x60}{R}{%
+@@ -1725,8 +1807,18 @@ The driver will typically initialize the virtual queue in the following way:
+ 
+ \subsubsection{Available Buffer Notifications}\label{sec:Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operation / Available Buffer Notifications}
+ 
+-The driver sends an available buffer notification to the device by
+-writing the index of the queue to be notified to \field{QueueNotify}.
++When VIRTIO_F_NOTIFICATION_DATA has not been negotiated,
++the driver sends an available buffer notification to the device by writing
++the 16-bit virtqueue index
++of the queue to be notified to \field{QueueNotify}.
++
++When VIRTIO_F_NOTIFICATION_DATA has been negotiated,
++the driver sends an available buffer notification to the device by writing
++the following 32-bit value to \field{QueueNotify}:
++\lstinputlisting{notifications-le.c}
++
++See \ref{sec:Virtqueues / Driver notifications}~\nameref{sec:Virtqueues / Driver notifications}
++for the definition of the components.
+ 
+ \subsubsection{Notifications From The Device}\label{sec:Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operation / Notifications From The Device}
+ 
+@@ -2434,12 +2526,22 @@ GPR  &   Input Value     & Output Value \\
+ \hline
+   2   &  Subchannel ID    & Host Cookie  \\
+ \hline
+-  3   & Virtqueue number  &              \\
++  3   & Notification data &              \\
+ \hline
+   4   &   Host Cookie     &              \\
+ \hline
+ \end{tabular}
+ 
++When VIRTIO_F_NOTIFICATION_DATA has not been negotiated,
++the \field{Notification data} contains the Virtqueue number.
++
++When VIRTIO_F_NOTIFICATION_DATA has been negotiated,
++the value has the following format:
++\lstinputlisting{notifications-be.c}
++
++See \ref{sec:Virtqueues / Driver notifications}~\nameref{sec:Virtqueues / Driver notifications}
++for the definition of the components.
++
+ \devicenormative{\paragraph}{Guest->Host Notification}{Virtio Transport Options / Virtio over channel I/O / Device Operation / Guest->Host Notification}
+ The device MUST ignore bits 0-31 (counting from the left) of GPR2.
+ This aligns passing the subchannel ID with the way it is passed
+@@ -5497,6 +5599,10 @@ Descriptors} and \ref{sec:Packed Virtqueues / Indirect Flag: Scatter-Gather Supp
+   \item[VIRTIO_F_SR_IOV(37)] This feature indicates that
+   the device supports Single Root I/O Virtualization.
+   Currently only PCI devices support this feature.
++  \item[VIRTIO_F_NOTIFICATION_DATA(38)] This feature indicates
++  that the driver passes extra data (besides identifying the virtqueue)
++  in its device notifications.
++  See \ref{sec:Virtqueues / Driver notifications}~\nameref{sec:Virtqueues / Driver notifications}.
+ \end{description}
+ 
+ \drivernormative{\section}{Reserved Feature Bits}{Reserved Feature Bits}
+diff --git a/notifications-be.c b/notifications-be.c
+new file mode 100644
+index 0000000..5be947e
+--- /dev/null
++++ b/notifications-be.c
+@@ -0,0 +1,5 @@
++be32 {
++	vqn : 16;
++	next_off : 15;
++	next_wrap : 1;
++};
+diff --git a/notifications-le.c b/notifications-le.c
+new file mode 100644
+index 0000000..fe51267
+--- /dev/null
++++ b/notifications-le.c
+@@ -0,0 +1,5 @@
++le32 {
++	vqn : 16;
++	next_off : 15;
++	next_wrap : 1;
++};
+-- 
+MST
 
 ---------------------------------------------------------------------
 To unsubscribe from this mail list, you must leave the OASIS TC that 
