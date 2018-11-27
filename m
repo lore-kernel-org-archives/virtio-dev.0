@@ -1,219 +1,179 @@
-Return-Path: virtio-dev-return-5087-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 2C838985D6D
-	for <virtio-dev@lists.oasis-open.org>; Fri, 30 Nov 2018 06:21:26 +0000 (UTC)
-Date: Fri, 30 Nov 2018 01:21:21 -0500
+Return-Path: virtio-return-3198-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio@lists.oasis-open.org>
+List-Post: <mailto:virtio@lists.oasis-open.org>
+List-Help: <mailto:virtio-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
+Date: Mon, 26 Nov 2018 20:03:37 -0500
 From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20181130004530-mutt-send-email-mst@kernel.org>
-References: <20181128120516-mutt-send-email-mst@kernel.org>
- <af565813-753c-e4f1-00eb-0b3eb2fb373b@intel.com>
- <20181128123424-mutt-send-email-mst@kernel.org>
- <0a81c110-610e-2183-3483-95faf53c3fce@intel.com>
- <20181128135154-mutt-send-email-mst@kernel.org>
- <1aeab969-f47f-42c3-31a0-b4c5df647d58@oracle.com>
- <20181128195226-mutt-send-email-mst@kernel.org>
- <cca54913-42c0-55bf-986e-8670c49fb8fe@oracle.com>
- <20181129160950-mutt-send-email-mst@kernel.org>
- <2f44fe5e-ee7d-96cd-dd85-f663fa04c7d0@oracle.com>
+Message-ID: <20181127010219.10441-1-mst@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <2f44fe5e-ee7d-96cd-dd85-f663fa04c7d0@oracle.com>
-Subject: Re: [virtio-dev] [PATCH v4] content: Introduce VIRTIO_NET_F_STANDBY
- feature
-To: si-wei liu <si-wei.liu@oracle.com>
-Cc: "Samudrala, Sridhar" <sridhar.samudrala@intel.com>, Carolyn <carolyn.wyborny@intel.com>, Sameeh Jubran <sameeh@daynix.com>, Siwei Liu <loseweigh@gmail.com>, venu.busireddy@oracle.com, cohuck@redhat.com, virtio-dev <virtio-dev@lists.oasis-open.org>, liran.alon@oracle.com, Yan Vugenfirer <yan@daynix.com>, "Brandeburg, Jesse" <jesse.brandeburg@intel.com>, Boris Ostrovsky <boris.ostrovsky@oracle.com>
+Subject: [virtio] [PATCH v3] ACCESS_PLATFORM/ORDER_PLATFORM
+To: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+Cc: Tiwei Bie <tiwei.bie@intel.com>, mst@redhat.com, cohuck@redhat.com, stefanha@redhat.com, pbonzini@redhat.com, jasowang@redhat.com, pasic@linux.vnet.ibm.com, dan.daly@intel.com, cunming.liang@intel.com, zhihong.wang@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Thu, Nov 29, 2018 at 02:53:08PM -0800, si-wei liu wrote:
-> 
-> 
-> On 11/29/2018 1:17 PM, Michael S. Tsirkin wrote:
-> > On Thu, Nov 29, 2018 at 12:14:46PM -0800, si-wei liu wrote:
-> > > 
-> > > On 11/28/2018 5:15 PM, Michael S. Tsirkin wrote:
-> > > > On Wed, Nov 28, 2018 at 12:28:42PM -0800, si-wei liu wrote:
-> > > > > On 11/28/2018 12:06 PM, Michael S. Tsirkin wrote:
-> > > > > > On Wed, Nov 28, 2018 at 10:39:55AM -0800, Samudrala, Sridhar wrote:
-> > > > > > > On 11/28/2018 9:35 AM, Michael S. Tsirkin wrote:
-> > > > > > > > On Wed, Nov 28, 2018 at 09:31:32AM -0800, Samudrala, Sridhar wrote:
-> > > > > > > > > On 11/28/2018 9:08 AM, Michael S. Tsirkin wrote:
-> > > > > > > > > > On Mon, Nov 26, 2018 at 12:22:56PM -0800, Samudrala, Sridhar wrote:
-> > > > > > > > > > > > Update:
-> > > > > > > > > > > > I have just set the vf mac's address to 0 (ip link set ens2f0 vf 1 mac
-> > > > > > > > > > > > 00:00:00:00:00:00) after unplugging it (the primary device) and the
-> > > > > > > > > > > > pings started working again on the failover interface. So it seems
-> > > > > > > > > > > > like the frames were arriving to the vf on the host.
-> > > > > > > > > > > > 
-> > > > > > > > > > > > 
-> > > > > > > > > > > Yes. When the VF is unplugged, you need to reset the VFs MAC so that the packets
-> > > > > > > > > > > with VMs MAC start flowing via VF, bridge and the virtio interface.
-> > > > > > > > > > > 
-> > > > > > > > > > > Have you looked at this documentation that shows a sample script to initiate live
-> > > > > > > > > > > migration?
-> > > > > > > > > > > https://www.kernel.org/doc/html/latest/networking/net_failover.html
-> > > > > > > > > > > 
-> > > > > > > > > > > -Sridhar
-> > > > > > > > > > Interesting I didn't notice it does this. So in fact
-> > > > > > > > > > just defining VF mac will immediately divert packets
-> > > > > > > > > > to the VF? Given guest driver did not initialize VF
-> > > > > > > > > > yet won't a bunch of packets be dropped?
-> > > > > > > > > There is typo in my stmt above (VF->PF)
-> > > > > > > > > When the VF is unplugged, you need to reset the VFs MAC so that the packets
-> > > > > > > > > with VMs MAC start flowing via PF, bridge and the virtio interface.
-> > > > > > > > > 
-> > > > > > > > > When the VF is plugged in, ideally the MAC filter for the VF should be added to
-> > > > > > > > > the HW once the guest driver comes up and can receive packets. Currently with intel
-> > > > > > > > > drivers, the filter gets added to HW as soon as the host admin sets the VFs MAC via
-> > > > > > > > > ndo_set_vf_mac() api. So potentially there could be packet drops until the VF driver
-> > > > > > > > > comes up in the VM.
-> > > > > > > > > 
-> > > > > > > > > 
-> > > > > > > > Can this be fixed in the intel drivers?
-> > > > > > > I just checked and it looks like this seems to have been addressed in the
-> > > > > > > ice 100Gb driver. Will bring this up issue internally to see if we can change this
-> > > > > > > behavior in i40e/ixgbe drivers.
-> > > > > > Also what happens if the mac is programmed both in PF (e.g. with
-> > > > > > macvtap) and VF? Ideally VF will take precedence.
-> > > > > I'm seriously doubtful that legacy Intel NIC hardware can do that instead of
-> > > > > mucking around with software workaround in the PF driver. Actually, the same
-> > > > > applies to other NIC vendors when hardware sees duplicate filters. There's
-> > > > > no such control of precedence on one over the other.
-> > > > > 
-> > > > > 
-> > > > > -Siwei
-> > > > > 
-> > > > > 
-> > > > Well removing a MAC from the PF filter when we are adding it to the VF
-> > > > filter should always be possible. Need to keep it in a separate list and
-> > > > re-add it when removing the MAC from VF filter.  This can be handled in
-> > > > the net core, no need for driver specific hacks.
-> > > So that is what I ever said - essentially what you need is a netdev API,
-> > > rather than to add dirty hacks on each driver. That is fine, but how would
-> > > you implement it? Note there's no equivalent driver level .ndo API to "move"
-> > > filters, and all existing .ndo APIs manipulate at the MAC address level as
-> > > opposed to filters. Are you going to convince netdev this is the right thing
-> > > to do and we should add such API to the net core and each individual driver?
-> > There's no need for a new API IMO.
-> > You drop it from list of uc macs, then call .ndo_set_rx_mode.
-> Then still you need a new netlink API
-> - effectively it alters the running
-> state of macvtap as it steals certain filters out from the NIC that affects
-> the datapath of macvtap. I assume we talk about some kernel mechanism to do
-> automatic datapath switching without involving userspace management
-> stack/orchestration software. In the kernel's (net core's) view that also
-> needs some weak binding/coordination between the VF and the macvtap for
-> which MAC filter needs to be activated. Still this senses to me a new API
-> rather than tweaking the current and long-existing default behavior and
-> making it work transparently just for this case. Otherwise, without
-> introducing a new API, how does the userspace infer that the running kernel
-> supports this new behavior.
+This is an attempt to clarify the intent behind
+VIRTIO_F_IOMMU_PLATFORM and VIRTIO_F_IO_BARRIER
+which based on recent discussions appear to be hard to understand.
 
-I agree. But a single flag is not much of an extension. We don't even
-need it in netlink, can be anywhere in e.g. sysfs.
+- rename VIRTIO_F_IOMMU_PLATFORM to ACCESS_PLATFORM
+  It is already the fact that the DMA API that Linux
+  uses does more than just IOMMUs - it includes
+  cache flushing, bounce buffers for limited
+  addressing, etc.
+  Update spec to match this reality.
 
-> > This can be done without changing existing drivers.
-> > 
-> > > > Still, let's prioritize things correctly.  IMHO it's fine if we
-> > > > initially assume promisc mode on the PF.  macvlan has this mode too
-> > > > after all.
-> > > I'm not sure what promisc mode you talked about. As far as I understand it
-> > > for macvlan/macvtap the NIC is only put into promisc mode when running out
-> > > of MAC filter entries. Before that all MAC addresses will be added to the
-> > > NIC as unicast filters. In addition, people prefer macvlan/macvtap for
-> > > adding isolation in a multi-tenant cloud as well as avoiding performance
-> > > penalty due to noisy neighbors. I'd rather to hear that claim to be that the
-> > > current MAC-based pairing scheme doesn't work well with macvtap and only
-> > > works with bridged setup which has promisc enabled. That would be more
-> > > helpful for people to understand the situation better.
-> > > 
-> > > Thanks,
-> > > -Siwei
-> > > 
-> > As a first step that's fine.
-> Well, I specifically called it out one year ago as this work was started
-> that macvtap is what we look into (we don't care about bridge with
-> promiscuous enabled) and the answer I got at the point was that the current
-> model would work well for macvtap too (which I've been very doubtful from
-> the very beginning).
+- rename VIRTIO_F_IO_BARRIER to VIRTIO_F_ORDER_PLATFORM
+  this is after all what device is telling driver:
+  its memory accesses are only ordered weakly,
+  this is why a stronger barrier is required.
 
-At least I personally did not realize it's about macvtap.  I wish there
-were example command lines showing what's broken.  Liran got hold of me
-at the KVM forum and explained it's about macvlan that's the first I
-heard about it, but that was offline, others might hear just now first.
+- As no one yet implemented IO_BARRIER yet, add a recommendation
+  to have a software fallback so that existing drivers
+  aren't broken.
 
-The issue between macvlan and configuring a VF can be
-tested with a couple of simple commands maybe using e.g. netsniff
-with no need for a VM at all.
-Pity these were never posted - interested in posting a test
-tool that can be used to demonstrate/test the issue on various cards?
+Fixes: https://github.com/oasis-tcs/virtio-spec/issues/25
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+---
 
-> Eventually turns out this is not true and it looks like
-> this is slowly converging to what Hyper-V netvsc already supported quite a
-> few years if not a decade ago, sighs...
-
-Oh we'll see.
-
-Meanwhile what's missing and was missing all along for the change you
-seem to be advocating for to get off the ground is people who
-are ready to actually send e.g. spec, guest driver, test patches.
-
-> >   Still this assumes just creating a VF
-> > doesn't yet program the on-card filter to cause packet drops.
-> Suppose this behavior is fixable in legacy Intel NIC, you would still need
-> to evacuate the filter programmed by macvtap previously when VF's filter
-> gets activated (typically when VF's netdev is netif_running() in a Linux
-> guest). That's what we and NetVSC call as "datapath switching", and where
-> this could be handled (driver, net core, or userspace) is the core for the
-> architectural design that I spent much time on.
-> 
-> Having said it, I don't expect or would desperately wait on one vendor to
-> fix a legacy driver which wasn't quite motivated, then no work would be done
-> on that.
-
-Then that device can't be used with the mechanism in question.
-Or if there are lots of drivers like this maybe someone will be
-motivated enough to post a better implementation with a new
-feature bit. It's not that I'm arguing against that.
-
-But given the options of teaching management to play with
-netlink API in response to guest actions, and with VCPU stopped,
-and doing it all in host kernel drivers, I know I'll prefer host kernel
-changes.
-
-> If you'd go the way, please make sure Intel could change their
-> driver first.
-
-We'll see what happens with that. It's Sridhar from intel that implemented
-the guest changes after all, so I expect he's motivated to make them
-work well.
+Changes from v2:
+- address wording changes suggested by Cornelia
+Changes from v1:
+- try to address comments by Jason Wang
+  add a note that it is RECOMMENDED that hardware devices offer both bits
+- soften recommendation to support an emulation mode
+  to MAY
 
 
-> >   Let's
-> > assume drivers are fixed to do that. How does userspace know
-> > that's the case? We might need some kind of attribute so
-> > userspace can detect it.
-> Where do you envision the new attribute could be at? Supposedly it'd be
-> exposed by the kernel, which constitutes a new API or API changes.
-> 
-> 
-> Thanks,
-> -Siwei
+ content.tex | 75 +++++++++++++++++++++++++++++++++++++----------------
+ 1 file changed, 53 insertions(+), 22 deletions(-)
 
-People add e.g. new attributes in sysfs left and right.  It's unlikely
-to be a matter of serious contention.
-
-> > 
-> > > > Question is how does userspace know driver isn't broken in this respect?
-> > > > Let's add a "vf failover" flag somewhere so this can be probed?
-> > > > 
+diff --git a/content.tex b/content.tex
+index c346183..5582c1c 100644
+--- a/content.tex
++++ b/content.tex
+@@ -5452,26 +5452,48 @@ Descriptors} and \ref{sec:Packed Virtqueues / Indirect Flag: Scatter-Gather Supp
+   \item[VIRTIO_F_VERSION_1(32)] This indicates compliance with this
+     specification, giving a simple way to detect legacy devices or drivers.
+ 
+-  \item[VIRTIO_F_IOMMU_PLATFORM(33)] This feature indicates that the device is
++  \item[VIRTIO_F_ACCESS_PLATFORM(33)] This feature indicates that
++  the device can be used on a platform where device access to data
++  in memory is limited and/or translated. E.g. this is the case if the device can be located
+   behind an IOMMU that translates bus addresses from the device into physical
+-  addresses in memory.  If this feature bit is set to 0, then the device emits
+-  physical addresses which are not translated further, even though an IOMMU
+-  may be present.
++  addresses in memory, if the device can be limited to only access
++  certain memory addresses or if special commands such as
++  a cache flush can be needed to synchronise data in memory with
++  the device. Whether accesses are actually limited or translated
++  is described by platform-specific means.
++  If this feature bit is set to 0, then the device
++  has same access to memory addresses supplied to it as the
++  driver has.
++  In particular, the device will always use physical addresses
++  matching addresses used by the driver (typically meaning
++  physical addresses used by the CPU)
++  and not translated further, and can access any address supplied to it by
++  the driver. When clear, this overrides any platform-specific description of
++  whether device access is limited or translated in any way, e.g.
++  whether an IOMMU may be present.
+   \item[VIRTIO_F_RING_PACKED(34)] This feature indicates
+   support for the packed virtqueue layout as described in
+   \ref{sec:Basic Facilities of a Virtio Device / Packed Virtqueues}~\nameref{sec:Basic Facilities of a Virtio Device / Packed Virtqueues}.
+   \item[VIRTIO_F_IN_ORDER(35)] This feature indicates
+   that all buffers are used by the device in the same
+   order in which they have been made available.
+-  \item[VIRTIO_F_IO_BARRIER(36)] This feature indicates
+-  that the device needs the driver to use the barriers
+-  suitable for hardware devices.  Some transports require
+-  barriers to ensure devices have a consistent view of
+-  memory.  When devices are implemented in software a
+-  weaker form of barrier may be sufficient and yield
+-  better performance.  This feature indicates whether
+-  a stronger form of barrier suitable for hardware
+-  devices is necessary.
++  \item[VIRTIO_F_ORDER_PLATFORM(36)] This feature indicates
++  that memory accesses by the driver and the device are ordered
++  in a way described by the platform.
++
++  If this feature bit is negotiated, the ordering in effect for any
++  memory accesses by the driver that need to be ordered in a specific way
++  with respect to accesses by the device is the one suitable for devices
++  described by the platform. This implies that the driver needs to use
++  memory barriers suitable for devices described by the platform; e.g.
++  for the PCI transport in the case of hardware PCI devices.
++
++  If this feature bit is not negotiated, then the device
++  and driver are assumed to be implemented in software, that is
++  they can be assumed to run on identical CPUs
++  in an SMP configuration.
++  Thus a weaker form of memory barriers is sufficient
++  to yield better performance.
+   \item[VIRTIO_F_SR_IOV(37)] This feature indicates that
+   the device supports Single Root I/O Virtualization.
+   Currently only PCI devices support this feature.
+@@ -5482,16 +5504,16 @@ Descriptors} and \ref{sec:Packed Virtqueues / Indirect Flag: Scatter-Gather Supp
+ A driver MUST accept VIRTIO_F_VERSION_1 if it is offered.  A driver
+ MAY fail to operate further if VIRTIO_F_VERSION_1 is not offered.
+ 
+-A driver SHOULD accept VIRTIO_F_IOMMU_PLATFORM if it is offered, and it MUST
++A driver SHOULD accept VIRTIO_F_ACCESS_PLATFORM if it is offered, and it MUST
+ then either disable the IOMMU or configure the IOMMU to translate bus addresses
+ passed to the device into physical addresses in memory.  If
+-VIRTIO_F_IOMMU_PLATFORM is not offered, then a driver MUST pass only physical
++VIRTIO_F_ACCESS_PLATFORM is not offered, then a driver MUST pass only physical
+ addresses to the device.
+ 
+ A driver SHOULD accept VIRTIO_F_RING_PACKED if it is offered.
+ 
+-A driver SHOULD accept VIRTIO_F_IO_BARRIER if it is offered.
+-If VIRTIO_F_IO_BARRIER has been negotiated, a driver MUST use
++A driver SHOULD accept VIRTIO_F_ORDER_PLATFORM if it is offered.
++If VIRTIO_F_ORDER_PLATFORM has been negotiated, a driver MUST use
+ the barriers suitable for hardware devices.
+ 
+ \devicenormative{\section}{Reserved Feature Bits}{Reserved Feature Bits}
+@@ -5499,16 +5521,25 @@ the barriers suitable for hardware devices.
+ A device MUST offer VIRTIO_F_VERSION_1.  A device MAY fail to operate further
+ if VIRTIO_F_VERSION_1 is not accepted.
+ 
+-A device SHOULD offer VIRTIO_F_IOMMU_PLATFORM if it is behind an IOMMU that
+-translates bus addresses from the device into physical addresses in memory.
+-A device MAY fail to operate further if VIRTIO_F_IOMMU_PLATFORM is not
++A device SHOULD offer VIRTIO_F_ACCESS_PLATFORM if its access to
++memory is through bus addresses distinct from and translated
++by the platform to physical addresses used by the driver, and/or
++if it can only access certain memory addresses with said access
++specified and/or granted by the platform.
++A device MAY fail to operate further if VIRTIO_F_ACCESS_PLATFORM is not
+ accepted.
+ 
+ If VIRTIO_F_IN_ORDER has been negotiated, a device MUST use
+ buffers in the same order in which they have been available.
+ 
+-A device MAY fail to operate further if VIRTIO_F_IO_BARRIER
+-is not accepted.
++A device MAY fail to operate further if
++VIRTIO_F_ORDER_PLATFORM is offered but not accepted.
++A device MAY operate in a slower emulation mode if
++VIRTIO_F_ORDER_PLATFORM is offered but not accepted.
++
++It is RECOMMENDED that an add-in card based PCI device
++offers both VIRTIO_F_ACCESS_PLATFORM and
++VIRTIO_F_ORDER_PLATFORM for maximum portability.
+ 
+ A device SHOULD offer VIRTIO_F_SR_IOV if it is a PCI device
+ and presents a PCI SR-IOV capability structure, otherwise
+-- 
+MST
 
 ---------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+To unsubscribe from this mail list, you must leave the OASIS TC that 
+generates this mail.  Follow this link to all your TCs in OASIS at:
+https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
 
