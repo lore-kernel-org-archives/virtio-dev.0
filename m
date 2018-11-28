@@ -1,190 +1,60 @@
-Return-Path: virtio-dev-return-5047-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-5062-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id A90C3985B92
-	for <virtio-dev@lists.oasis-open.org>; Tue, 27 Nov 2018 11:24:39 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 19213985D04
+	for <virtio-dev@lists.oasis-open.org>; Wed, 28 Nov 2018 17:08:43 +0000 (UTC)
+Date: Wed, 28 Nov 2018 12:08:39 -0500
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20181128120516-mutt-send-email-mst@kernel.org>
+References: <20181005101419-mutt-send-email-mst@kernel.org>
+ <CADGSJ22QYRX3GBjDqGgauwiHi6p4FpbUwpromD0=nY+w2FDm=Q@mail.gmail.com>
+ <20181018233115-mutt-send-email-mst@kernel.org>
+ <CAKPgXcH4mokJd7MeTUNjoGzo6Lbyx72cOQPLfKccQLwVHSMArg@mail.gmail.com>
+ <20181121124246-mutt-send-email-mst@kernel.org>
+ <CAKPgXcH2D4XcUNoS6tvDfLxPAv05u7Yu77OYxRnuFFfgN34A_w@mail.gmail.com>
+ <20181122132626-mutt-send-email-mst@kernel.org>
+ <CAKPgXcHT9rOt=FLSpK1qndJVMe1c7sDDqmHWenXVT5CaXt4Rxg@mail.gmail.com>
+ <CAKPgXcEXVjH6ZHLLYA-rC+4LM43HMmZN2AgsJMpJJjhPm7cK2Q@mail.gmail.com>
+ <25a340eb-62a8-ea90-5f0d-0ee3171479ce@intel.com>
 MIME-Version: 1.0
-References: <20180927121739-mutt-send-email-mst@kernel.org>
- <CADGSJ22JC9asjQ3nVV5e-ajxB-pggJ6ToMGqG072Q5TvFVCKBQ@mail.gmail.com>
- <20181002083928-mutt-send-email-mst@kernel.org> <CADGSJ23NaaPXrgoL1-ySs=SWytE65SORatOFMSapzFsKZUH4yA@mail.gmail.com>
- <20181005101419-mutt-send-email-mst@kernel.org> <CADGSJ22QYRX3GBjDqGgauwiHi6p4FpbUwpromD0=nY+w2FDm=Q@mail.gmail.com>
- <20181018233115-mutt-send-email-mst@kernel.org> <CAKPgXcH4mokJd7MeTUNjoGzo6Lbyx72cOQPLfKccQLwVHSMArg@mail.gmail.com>
- <20181121124246-mutt-send-email-mst@kernel.org> <CAKPgXcH2D4XcUNoS6tvDfLxPAv05u7Yu77OYxRnuFFfgN34A_w@mail.gmail.com>
- <20181122132626-mutt-send-email-mst@kernel.org> <CAKPgXcHT9rOt=FLSpK1qndJVMe1c7sDDqmHWenXVT5CaXt4Rxg@mail.gmail.com>
- <CAKPgXcEXVjH6ZHLLYA-rC+4LM43HMmZN2AgsJMpJJjhPm7cK2Q@mail.gmail.com> <25a340eb-62a8-ea90-5f0d-0ee3171479ce@intel.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 In-Reply-To: <25a340eb-62a8-ea90-5f0d-0ee3171479ce@intel.com>
-From: Sameeh Jubran <sameeh@daynix.com>
-Date: Tue, 27 Nov 2018 13:24:24 +0200
-Message-ID: <CAKPgXcHdin1GoW1dxmQdPb=LkV=9Ru9aeFymTzWtx6jL_E4PPg@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Subject: Re: [virtio-dev] [PATCH v4] content: Introduce VIRTIO_NET_F_STANDBY feature
-To: sridhar.samudrala@intel.com
-Cc: "Michael S. Tsirkin" <mst@redhat.com>, Siwei Liu <loseweigh@gmail.com>, venu.busireddy@oracle.com, cohuck@redhat.com, virtio-dev <virtio-dev@lists.oasis-open.org>, liran.alon@oracle.com, Yan Vugenfirer <yan@daynix.com>
+Subject: Re: [virtio-dev] [PATCH v4] content: Introduce VIRTIO_NET_F_STANDBY
+ feature
+To: "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
+Cc: Sameeh Jubran <sameeh@daynix.com>, Siwei Liu <loseweigh@gmail.com>, venu.busireddy@oracle.com, cohuck@redhat.com, virtio-dev <virtio-dev@lists.oasis-open.org>, liran.alon@oracle.com, Yan Vugenfirer <yan@daynix.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Mon, Nov 26, 2018 at 10:22 PM Samudrala, Sridhar
-<sridhar.samudrala@intel.com> wrote:
->
-> On 11/26/2018 7:43 AM, Sameeh Jubran wrote:
-> > On Mon, Nov 26, 2018 at 5:13 PM Sameeh Jubran <sameeh@daynix.com> wrote:
-> >> On Thu, Nov 22, 2018 at 8:27 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> >>> On Wed, Nov 21, 2018 at 10:04:53PM +0200, Sameeh Jubran wrote:
-> >>>> On Wed, Nov 21, 2018 at 8:41 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> >>>>> Great to see you making progress on this!
-> >>>>> Some comments below:
-> >>>>>
-> >>>>> On Wed, Nov 21, 2018 at 05:39:38PM +0200, Sameeh Jubran wrote:
-> >>>>>> I have created a setup which has two hosts (host A and host B) with X710 10G
-> >>>>>> cards connected back to back. On one host (I'll refer to this host as host A) I
-> >>>>>> have configured a bridge with the PF interface as well as vitio-net's interface
-> >>>>>> (standby) both attached to it.
-> >>>>> ...
-> >>>>>
-> >>>>>> The command line I used:
-> >>>>>>
-> >>>>>> /root/qemu/x86_64-softmmu/qemu-system-x86_64 \
-> >>>>>> -netdev tap,id=hostnet0,script=world_bridge_standalone.sh,downscript=no,ifname=
-> >>>>>> cc17 \
-> >>>>>> -device e1000,netdev=hostnet0,mac=56:cc:c1:01:cc:21,id=cc17 \
-> >>>>> What's e1000 doing here?
-> >>>>> Can this be reason you can not talk to host?
-> >>>> I don't think so, the e1000 is for enabling WAN connection on the
-> >>>> guest for downloading packages and ssh connection. It is connected to
-> >>>> a separate bridge which is connected to the external interface of the
-> >>>> host.
-> >>>>>> -netdev tap,vhost=on,id=hostnet1,script=test_bridge_standalone.sh,downscript=
-> >>>>>> no,ifname=cc1_72,queues=4 \
-> >>>>>> -device virtio-net,host_mtu=1500,netdev=hostnet1,mac=8a:f7:20:29:3b:cb,id=
-> >>>>>> cc1_72,vectors=10,mq=on,primary=cc1_71 \
-> >>>>>> -device vfio-pci,host=65:02.1,id=cc1_71,standby=cc1_72 \
-> >>>>>> -enable-kvm \
-> >>>>>> -name netkvm \
-> >>>>>> -m 3000M \
-> >>>>>> -drive file=/dev/shm/fedora_29.qcow2,if=ide,id=drivex \
-> >>>>>> -smp 4 \
-> >>>>>> -vga qxl \
-> >>>>>> -spice port=6110,disable-ticketing \
-> >>>>>> -device virtio-serial-pci,id=virtio-serial0,max_ports=16,bus=pci.0,addr=0x7 \
-> >>>>>> -chardev spicevmc,name=vdagent,id=vdagent \
-> >>>>>> -device virtserialport,nr=1,bus=virtio-serial0.0,chardev=vdagent,name=
-> >>>>>> com.redhat.spice.0 \
-> >>>>>> -chardev socket,path=/tmp/qga.sock,server,nowait,id=qga0 \
-> >>>>>> -device virtio-serial \
-> >>>>>> -device virtserialport,chardev=qga0,name=org.qemu.guest_agent.0 \
-> >>>>>> -monitor stdio
-> >>>>>
-> >>>>> ...
-> >>>>>
-> >>>>>> Since I couldn't ping from VM to host B, I did an iperf test between the VM and
-> >>>>>> host A with the feature enabled and during the test I have unplugged the sriov
-> >>>>>> device, the device was unplugged successfully and no drops where observed as
-> >>>>>> you can see in the results below:
-> >>>>>>
-> >>>>>> [root@dhcp156-44 ~]# ifconfig
-> >>>>> Well I suspect this won't tell you anything, this shows packet drops at
-> >>>>> the hardware level. When e.g. link is down linux won't send any packets
-> >>>>> out. The simplest test is to monitor latency and throughput and see that
-> >>>>> while it is lower for the duration of migration, there are no huge
-> >>>>> spikes around the switch.
-> >>>> Oh, okay will do that.
-> >>>>
-> >>>> I have noticed some nasty lag when I tried to ssh to the VM using the
-> >>>> failover interface while I didn't experience that with the e1000.
-> >>>> Sridhar Any idea what might be the cause?
-> >>> Try tcpdump?
-> >> I have investigated this and this is what I have so far, maybe you can
-> >> help me with some insights to figure what's going on.
-> >> The setup is as follows:
-> >>
-> >>
-> >>
-> >> |_VM_|
-> >> __||___
-> >> |host A|----X710---------back-to-back--------X710---|host B|
-> >>
-> >> _______________________________________________________________________
-> >> - On the host A:
-> >>
-> >> I have the following interfaces attached to the "test_br0" bridge:
-> >>
-> >> virtio-net's netdev, cc1_72
-> >> X710 device PF interfaces: ens2f0 and ens2f1 (only ens2f0 is connected
-> >> in the back to back setup)
-> >>
-> >> The bridge has the mac address of the PF ens2f0 and ip : 192.168.1.117
-> >> _______________________________________________________________________
-> >> - On the host B:
-> >>
-> >> I have the following interfaces attached to the "test_br0" bridge:
-> >>
-> >> X710 device PF interfaces: ens2f0 and ens2f1 (only ens2f0 is connected
-> >> in the back to back setup)
-> >>
-> >> The bridge has the mac address of the PF ens2f0 and ip : 192.168.1.118
-> >> _______________________________________________________________________
-> >> - On the VM:
-> >> The failover interface has the ip: 192.168.1.17
-> >> _______________________________________________________________________
-> >>
-> >> I can successfully ping 118 from 17. (host B from the VM), however I
-> >> can't see the ICMP requests on host A anywhere!
-> >> I can see them inside host B on ens2f0, I can see them in the VM on
-> >> the failover interface but not on Host A.
-> >> Not on the brdige (test_br0) as I would expect, not on the ens2f0
-> >> interface, not co cc1_72 (virtio-net) interface and of-course not on
-> >> the world interface.
->
-> This is the expected behavior when VF is directly attached to the VM and is
-> being used as the primary interface. You don't see any packets on Host A.
->
-> >> This leads me to think that the icmp requests are send on the "vf"
-> >> interface which I cant see on the host. The thing that further
-> >> confirms my theory is when
-> >> I use device_del to unplug the primary interface, the ping get
-> >> disconnected. Using tcpdump I can see that the ping requests arrive to
-> >> host B and there is a
-> >> suitable ping reply, however the reply is not present on Host A or the
-> >> VM anywhere, moreover, when the primary gets disconnected I start
-> >> seeing the ping
-> >> requests on Host A on the "test_br0" and "ens2f0".
-> >>
-> >> Liran do you think this is related to the mac vtables and vfs issue
-> >> that you've mentioned on the monthly meeting?
-> >>
-> >>
+On Mon, Nov 26, 2018 at 12:22:56PM -0800, Samudrala, Sridhar wrote:
 > > Update:
 > > I have just set the vf mac's address to 0 (ip link set ens2f0 vf 1 mac
 > > 00:00:00:00:00:00) after unplugging it (the primary device) and the
 > > pings started working again on the failover interface. So it seems
 > > like the frames were arriving to the vf on the host.
-> >
-> >
->
+> > 
+> > 
+> 
 > Yes. When the VF is unplugged, you need to reset the VFs MAC so that the packets
 > with VMs MAC start flowing via VF, bridge and the virtio interface.
->
+> 
 > Have you looked at this documentation that shows a sample script to initiate live
 > migration?
 > https://www.kernel.org/doc/html/latest/networking/net_failover.html
-
-This means that we need the management cooperation to do this and
-Qemu-driver implementation only won't suffice. What do you suggest as
-an alternatives?
-Please share your thoughts
->
+> 
 > -Sridhar
->
 
+Interesting I didn't notice it does this. So in fact
+just defining VF mac will immediately divert packets
+to the VF? Given guest driver did not initialize VF
+yet won't a bunch of packets be dropped?
 
 -- 
-Respectfully,
-Sameeh Jubran
-Linkedin
-Software Engineer @ Daynix.
+MST
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
