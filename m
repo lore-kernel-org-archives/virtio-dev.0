@@ -1,12 +1,12 @@
-Return-Path: virtio-dev-return-5076-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-5079-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 2D3049858B5
-	for <virtio-dev@lists.oasis-open.org>; Thu, 29 Nov 2018 06:37:20 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id A0D90985D3A
+	for <virtio-dev@lists.oasis-open.org>; Thu, 29 Nov 2018 20:15:00 +0000 (UTC)
 References: <20181122132626-mutt-send-email-mst@kernel.org>
  <CAKPgXcHT9rOt=FLSpK1qndJVMe1c7sDDqmHWenXVT5CaXt4Rxg@mail.gmail.com>
  <CAKPgXcEXVjH6ZHLLYA-rC+4LM43HMmZN2AgsJMpJJjhPm7cK2Q@mail.gmail.com>
@@ -18,9 +18,9 @@ References: <20181122132626-mutt-send-email-mst@kernel.org>
  <20181128135154-mutt-send-email-mst@kernel.org>
  <1aeab969-f47f-42c3-31a0-b4c5df647d58@oracle.com>
  <20181128195226-mutt-send-email-mst@kernel.org>
-From: "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
-Message-ID: <b2c45f2f-2a88-d9ef-b38c-363672120f77@intel.com>
-Date: Wed, 28 Nov 2018 22:37:16 -0800
+From: si-wei liu <si-wei.liu@oracle.com>
+Message-ID: <cca54913-42c0-55bf-986e-8670c49fb8fe@oracle.com>
+Date: Thu, 29 Nov 2018 12:14:46 -0800
 MIME-Version: 1.0
 In-Reply-To: <20181128195226-mutt-send-email-mst@kernel.org>
 Content-Type: text/plain; charset=utf-8; format=flowed
@@ -28,9 +28,11 @@ Content-Transfer-Encoding: 7bit
 Content-Language: en-US
 Subject: Re: [virtio-dev] [PATCH v4] content: Introduce VIRTIO_NET_F_STANDBY
  feature
-To: "Michael S. Tsirkin" <mst@redhat.com>, si-wei liu <si-wei.liu@oracle.com>
-Cc: Carolyn <carolyn.wyborny@intel.com>, Sameeh Jubran <sameeh@daynix.com>, Siwei Liu <loseweigh@gmail.com>, venu.busireddy@oracle.com, cohuck@redhat.com, virtio-dev <virtio-dev@lists.oasis-open.org>, liran.alon@oracle.com, Yan Vugenfirer <yan@daynix.com>, "Brandeburg, Jesse" <jesse.brandeburg@intel.com>
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: "Samudrala, Sridhar" <sridhar.samudrala@intel.com>, Carolyn <carolyn.wyborny@intel.com>, Sameeh Jubran <sameeh@daynix.com>, Siwei Liu <loseweigh@gmail.com>, venu.busireddy@oracle.com, cohuck@redhat.com, virtio-dev <virtio-dev@lists.oasis-open.org>, liran.alon@oracle.com, Yan Vugenfirer <yan@daynix.com>, "Brandeburg, Jesse" <jesse.brandeburg@intel.com>, Boris Ostrovsky <boris.ostrovsky@oracle.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
+
+
 
 On 11/28/2018 5:15 PM, Michael S. Tsirkin wrote:
 > On Wed, Nov 28, 2018 at 12:28:42PM -0800, si-wei liu wrote:
@@ -90,27 +92,37 @@ On 11/28/2018 5:15 PM, Michael S. Tsirkin wrote:
 > filter should always be possible. Need to keep it in a separate list and
 > re-add it when removing the MAC from VF filter.  This can be handled in
 > the net core, no need for driver specific hacks.
+So that is what I ever said - essentially what you need is a netdev API, 
+rather than to add dirty hacks on each driver. That is fine, but how 
+would you implement it? Note there's no equivalent driver level .ndo API 
+to "move" filters, and all existing .ndo APIs manipulate at the MAC 
+address level as opposed to filters. Are you going to convince netdev 
+this is the right thing to do and we should add such API to the net core 
+and each individual driver?
 
-We don't explicitly add MAC to the PF filter list. Just resetting VFs MAC will cause the
-frames to reach PF as that is the default port.
 
-Also, setting MACs is a privileged operation and i think managing them during live migration
-should be handled by a management layer.
-
-
->
->
 > Still, let's prioritize things correctly.  IMHO it's fine if we
 > initially assume promisc mode on the PF.  macvlan has this mode too
 > after all.
+I'm not sure what promisc mode you talked about. As far as I understand 
+it for macvlan/macvtap the NIC is only put into promisc mode when 
+running out of MAC filter entries. Before that all MAC addresses will be 
+added to the NIC as unicast filters. In addition, people prefer 
+macvlan/macvtap for adding isolation in a multi-tenant cloud as well as 
+avoiding performance penalty due to noisy neighbors. I'd rather to hear 
+that claim to be that the current MAC-based pairing scheme doesn't work 
+well with macvtap and only works with bridged setup which has promisc 
+enabled. That would be more helpful for people to understand the 
+situation better.
 
-Yes. We don't need to explicitly set the MAC on the PF.
+Thanks,
+-Siwei
+
 
 >
 > Question is how does userspace know driver isn't broken in this respect?
 > Let's add a "vf failover" flag somewhere so this can be probed?
-
-I don't understand the need for this additional flag.
+>
 
 
 ---------------------------------------------------------------------
