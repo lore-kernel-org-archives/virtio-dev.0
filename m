@@ -1,136 +1,462 @@
-Return-Path: virtio-dev-return-5054-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-5077-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 6C373985BBF
-	for <virtio-dev@lists.oasis-open.org>; Tue, 27 Nov 2018 18:03:01 +0000 (UTC)
-References: <20181122193801.50510-1-jean-philippe.brucker@arm.com>
- <20181127114402-mutt-send-email-mst@kernel.org>
- <6c061729-c404-ac25-f86f-7fe222bf5bc7@redhat.com>
- <20181127121036-mutt-send-email-mst@kernel.org>
-From: Auger Eric <eric.auger@redhat.com>
-Message-ID: <d3e38d89-46f8-7f82-98cc-5a3b94be26b8@redhat.com>
-Date: Tue, 27 Nov 2018 19:02:53 +0100
+	by lists.oasis-open.org (Postfix) with ESMTP id AB459985D35
+	for <virtio-dev@lists.oasis-open.org>; Thu, 29 Nov 2018 18:17:22 +0000 (UTC)
+From: Stefan Hajnoczi <stefanha@redhat.com>
+Date: Thu, 29 Nov 2018 18:16:59 +0000
+Message-Id: <20181129181659.21284-1-stefanha@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <20181127121036-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: [virtio-dev] Re: [PATCH v5 0/7] Add virtio-iommu driver
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, devicetree@vger.kernel.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, joro@8bytes.org, jasowang@redhat.com, robh+dt@kernel.org, mark.rutland@arm.com, bhelgaas@google.com, frowand.list@gmail.com, kvmarm@lists.cs.columbia.edu, tnowicki@caviumnetworks.com, kevin.tian@intel.com, marc.zyngier@arm.com, robin.murphy@arm.com, will.deacon@arm.com, lorenzo.pieralisi@arm.com, bharat.bhushan@nxp.com
+Content-Transfer-Encoding: 8bit
+Subject: [virtio-dev] [PATCH v10] vsock: add vsock device
+To: virtio-dev@lists.oasis-open.org
+Cc: Claudio Imbrenda <imbrenda@linux.vnet.ibm.com>, "Michael S . Tsirkin" <mst@redhat.com>, Ian Campbell <ian.campbell@docker.com>, Stefan Hajnoczi <stefanha@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Hi Michael,
+The virtio vsock device is a zero-configuration socket communications
+device.  It is designed as a guest<->host management channel suitable
+for communicating with guest agents.
 
-On 11/27/18 6:16 PM, Michael S. Tsirkin wrote:
-> On Tue, Nov 27, 2018 at 06:09:25PM +0100, Auger Eric wrote:
->> Hi Michael,
->>
->> On 11/27/18 5:53 PM, Michael S. Tsirkin wrote:
->>> On Thu, Nov 22, 2018 at 07:37:54PM +0000, Jean-Philippe Brucker wrote:
->>>> Implement the virtio-iommu driver, following specification v0.9 [1].
->>>>
->>>> Since v4 [2] I fixed the issues reported by Eric, and added Reviewed-by
->>>> from Eric and Rob. Thanks!
->>>>
->>>> I changed the specification to fix one inconsistency discussed in v4.
->>>> That the device fills the probe buffer with zeroes is now a "SHOULD"
->>>> instead of a "MAY", since it's the only way for the driver to know if
->>>> the device wrote the status. Existing devices already do this. In
->>>> addition the device now needs to fill the three padding bytes at the
->>>> tail with zeroes.
->>>>
->>>> You can find Linux driver and kvmtool device on branches
->>>> virtio-iommu/v0.9 [3]. I also lightly tested with Eric's latest QEMU
->>>> device [4].
->>>
->>> I tried to get this to work on my x86 box but without
->>> success. Any hints? Does this have to do with the IORT table?
->>> I think we really should just reserve our own table ID
->>> and avoid the pain of trying to add things to the IORT spec.
->>> I'm reluctant to merge lots of code that I can't easily test.
->>> Again, if we found a way to push more configuration into
->>> virtio config space the problem space would be smaller.
->>
->> You can at least test it with QEMU ARM virt in TCG mode.
-> 
-> It's slow enough that I generally just focus on KVM.
-fair enough
-> 
->> Then I have
->> worked on the IORT integration in PC/Q35 but this is not yet functional.
->> I need to debug what's wrong on guest ACPI probing. I plan to work on
->> this this week.
->>
->> Thanks
->>
->> Eric
-> 
-> Sounds good. Did you need to make changes to IORT?  I don't remember. If
-> yes it would be very easy to just have a virtio specific ACPI table -
-> I am assuming ARM guys will be just as hostile to virt changes
-> to IORT as they were to minor changes to ARM vIOMMU.
+vsock is designed with the sockets API in mind and the driver is
+typically implemented as an address family (at the same level as
+AF_INET).  Applications written for the sockets API can be ported with
+minimal changes (similar amount of effort as adding IPv6 support to an
+IPv4 application).
 
-Well the only difference is that on ARM we have 3 nodes in the IORT: the
-root complex node -> the VIRTIO-IOMMU node -> the ITS node. The ITS is
-the ARM MSI controller which does MSI translation. So the ARM IORT
-describes the chained ID mappings from the end point RID through the
-StreamID SMMU input to the device ID MSI controller input. On Intel we
-don't have the last node.
+Unlike the existing console device, which is also used for guest<->host
+communication, multiple clients can connect to a server at the same time
+over vsock.  This limitation requires console-based users to arbitrate
+access through a single client.  In vsock they can connect directly and
+do not have to synchronize with each other.
 
-But again my integration is not yet functional and I don't know yet if I
-have captured the whole picture.
+Unlike network devices, no configuration is necessary because the device
+comes with its address in the configuration space.
 
-Thanks
+The vsock device was prototyped by Gerd Hoffmann and Asias He.  I picked
+the code and design up from them.
 
-Eric
-> 
-> 
->>>
->>>> [1] Virtio-iommu specification v0.9, sources, pdf and diff from v0.8
->>>>     git://linux-arm.org/virtio-iommu.git virtio-iommu/v0.9
->>>>     http://jpbrucker.net/virtio-iommu/spec/v0.9/virtio-iommu-v0.9.pdf
->>>>     http://jpbrucker.net/virtio-iommu/spec/diffs/virtio-iommu-pdf-diff-v0.8-v0.9.pdf
->>>>
->>>> [2] [PATCH v4 0/7] Add virtio-iommu driver
->>>>     https://lists.linuxfoundation.org/pipermail/iommu/2018-November/031074.html
->>>>
->>>> [3] git://linux-arm.org/linux-jpb.git virtio-iommu/v0.9
->>>>     git://linux-arm.org/kvmtool-jpb.git virtio-iommu/v0.9
->>>>
->>>> [4] [RFC v9 00/17] VIRTIO-IOMMU device
->>>>     https://www.mail-archive.com/qemu-devel@nongnu.org/msg575578.html
->>>>
->>>> Jean-Philippe Brucker (7):
->>>>   dt-bindings: virtio-mmio: Add IOMMU description
->>>>   dt-bindings: virtio: Add virtio-pci-iommu node
->>>>   of: Allow the iommu-map property to omit untranslated devices
->>>>   PCI: OF: Initialize dev->fwnode appropriately
->>>>   iommu: Add virtio-iommu driver
->>>>   iommu/virtio: Add probe request
->>>>   iommu/virtio: Add event queue
->>>>
->>>>  .../devicetree/bindings/virtio/iommu.txt      |   66 +
->>>>  .../devicetree/bindings/virtio/mmio.txt       |   30 +
->>>>  MAINTAINERS                                   |    7 +
->>>>  drivers/iommu/Kconfig                         |   11 +
->>>>  drivers/iommu/Makefile                        |    1 +
->>>>  drivers/iommu/virtio-iommu.c                  | 1157 +++++++++++++++++
->>>>  drivers/of/base.c                             |   10 +-
->>>>  drivers/pci/of.c                              |    7 +
->>>>  include/uapi/linux/virtio_ids.h               |    1 +
->>>>  include/uapi/linux/virtio_iommu.h             |  161 +++
->>>>  10 files changed, 1448 insertions(+), 3 deletions(-)
->>>>  create mode 100644 Documentation/devicetree/bindings/virtio/iommu.txt
->>>>  create mode 100644 drivers/iommu/virtio-iommu.c
->>>>  create mode 100644 include/uapi/linux/virtio_iommu.h
->>>>
->>>> -- 
->>>> 2.19.1
+Fixes: https://github.com/oasis-tcs/virtio-spec/issues/27
+Cc: Michael S. Tsirkin <mst@redhat.com>
+Signed-off-by: Stefan Hajnoczi <stefanha@redhat.com>
+---
+v10:
+ * Add GitHub Issue URL [Michael]
+ * Add references from conformance section [Michael]
+
+v9:
+ * There was no discussion on the last revision so I've rebased and
+   intend to raise an issue to merge this on GitHub.
+ * Moved content to virtio-vsock.tex
+
+v8:
+ * Rebased
+ * This version is up-to-date with the Linux drivers
+
+v7:
+ * Add virtqueue flow control section to explain how deadlock is avoided
+   when rings are full [Ian]
+
+v6:
+ * Make CIDs 64-bits but reserve upper 32 bits for now [Michael]
+ * Specify SHUTDOWN -> RST clean disconnect process [Ian]
+
+v5:
+ * Switch to new, unused Device ID 19 [Ian]
+ * Drop unused ctrl virtqueue, no need to reserve last virtqueue [Ian]
+ * Document that VIRTIO_VSOCK_OP_CREDIT_UPDATE packets are valid even if
+   no VIRTIO_VSOCK_OP_CREDIT_REQUEST was previously received. [Ian]
+ * Document that only payload bytes are counted for buffer space
+   management, not header bytes [Ian]
+ * List the reserved CIDs [Ian]
+
+v4:
+ * Add event virtqueue and "Device Events" device operation section that
+   explains how transport reset works for migration.
+ * Reorder virtqueues with rx/tx first, then ctrl/event (similar to
+   virtio-net)
+ * __le32/16 -> le32/16 for consistency with existing code snippets
+ * Add missing conformance.tex subsections for socket device entry in
+   table of contents
+
+v3:
+ * "VSock device" -> "Virtio socket device" in free text [Michael]
+ * Extract normative statements and add references from conformance
+   chapter [Michael]
+v2:
+ * Document guest_cid field
+ * Use MAY/MUST/CAN according to RFC 2119
+ * Remove datagram socket type for the time being.  This can be added in
+   the future but there are currently no applications.
+ * Drop 3-way handshake for stream sockets.  It is not needed since
+   virtio-vsock is reliable, in-order delivery and spoofing source
+   addresses is impossible.
+ * Drop max_virtqueue_pairs configuration space field.  This field was
+   never defined and Linux code does not support multiqueue.  It can be
+   added back later, if necessary.
+---
+ conformance.tex  |  23 +++-
+ content.tex      |   1 +
+ virtio-vsock.tex | 279 +++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 301 insertions(+), 2 deletions(-)
+ create mode 100644 virtio-vsock.tex
+
+diff --git a/conformance.tex b/conformance.tex
+index 24bd8b2..9fa028c 100644
+--- a/conformance.tex
++++ b/conformance.tex
+@@ -15,13 +15,13 @@ Conformance targets:
+   \begin{itemize}
+     \item Clause \ref{sec:Conformance / Driver Conformance},
+     \item One of clauses \ref{sec:Conformance / Driver Conformance / PCI Driver Conformance}, \ref{sec:Conformance / Driver Conformance / MMIO Driver Conformance} or \ref{sec:Conformance / Driver Conformance / Channel I/O Driver Conformance}.
+-    \item One of clauses \ref{sec:Conformance / Driver Conformance / Network Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Block Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Console Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Entropy Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Traditional Memory Balloon Driver Conformance} or \ref{sec:Conformance / Driver Conformance / SCSI Host Driver Conformance}.
++    \item One of clauses \ref{sec:Conformance / Driver Conformance / Network Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Block Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Console Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Entropy Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Traditional Memory Balloon Driver Conformance}, \ref{sec:Conformance / Driver Conformance / SCSI Host Driver Conformance}, or \ref{sec:Conformance / Driver Conformance / Socket Driver Conformance}.
+   \end{itemize}
+ \item[Device] A device MUST conform to three conformance clauses:
+   \begin{itemize}
+     \item Clause \ref{sec:Conformance / Device Conformance},
+     \item One of clauses \ref{sec:Conformance / Device Conformance / PCI Device Conformance}, \ref{sec:Conformance / Device Conformance / MMIO Device Conformance} or \ref{sec:Conformance / Device Conformance / Channel I/O Device Conformance}.
+-    \item One of clauses \ref{sec:Conformance / Device Conformance / Network Device Conformance}, \ref{sec:Conformance / Device Conformance / Block Device Conformance}, \ref{sec:Conformance / Device Conformance / Console Device Conformance}, \ref{sec:Conformance / Device Conformance / Entropy Device Conformance}, \ref{sec:Conformance / Device Conformance / Traditional Memory Balloon Device Conformance} or \ref{sec:Conformance / Device Conformance / SCSI Host Device Conformance}.
++    \item One of clauses \ref{sec:Conformance / Device Conformance / Network Device Conformance}, \ref{sec:Conformance / Device Conformance / Block Device Conformance}, \ref{sec:Conformance / Device Conformance / Console Device Conformance}, \ref{sec:Conformance / Device Conformance / Entropy Device Conformance}, \ref{sec:Conformance / Device Conformance / Traditional Memory Balloon Device Conformance}, \ref{sec:Conformance / Device Conformance / SCSI Host Device Conformance}, or \ref{sec:Conformance / Device Conformance / Socket Device Conformance}.
+   \end{itemize}
+ \end{description}
+ 
+@@ -162,6 +162,16 @@ A Crypto driver MUST conform to the following normative statements:
+ \item \ref{drivernormative:Device Types / Crypto Device / Device Operation / AEAD Service Operation}
+ \end{itemize}
+ 
++\subsection{Socket Driver Conformance}\label{sec:Conformance / Driver Conformance / Socket Driver Conformance}
++
++A socket driver MUST conform to the following normative statements:
++
++\begin{itemize}
++\item \ref{drivernormative:Device Types / Socket Device / Device Operation / Buffer Space Management}
++\item \ref{drivernormative:Device Types / Socket Device / Device Operation / Receive and Transmit}
++\item \ref{drivernormative:Device Types / Socket Device / Device Operation / Device Events}
++\end{itemize}
++
+ \section{Device Conformance}\label{sec:Conformance / Device Conformance}
+ 
+ A device MUST conform to the following normative statements:
+@@ -297,6 +307,15 @@ A Crypto device MUST conform to the following normative statements:
+ \item \ref{devicenormative:Device Types / Crypto Device / Device Operation / AEAD Service Operation}
+ \end{itemize}
+ 
++\subsection{Socket Device Conformance}\label{sec:Conformance / Device Conformance / Socket Device Conformance}
++
++A socket device MUST conform to the following normative statements:
++
++\begin{itemize}
++\item \ref{devicenormative:Device Types / Socket Device / Device Operation / Buffer Space Management}
++\item \ref{devicenormative:Device Types / Socket Device / Device Operation / Receive and Transmit}
++\end{itemize}
++
+ \section{Legacy Interface: Transitional Device and
+ Transitional Driver Conformance}\label{sec:Conformance / Legacy
+ Interface: Transitional Device and 
+diff --git a/content.tex b/content.tex
+index c346183..3bb21c0 100644
+--- a/content.tex
++++ b/content.tex
+@@ -5431,6 +5431,7 @@ descriptor for the \field{sense_len}, \field{residual},
+ 
+ \input{virtio-gpu.tex}
+ \input{virtio-crypto.tex}
++\input{virtio-vsock.tex}
+ 
+ \chapter{Reserved Feature Bits}\label{sec:Reserved Feature Bits}
+ 
+diff --git a/virtio-vsock.tex b/virtio-vsock.tex
+new file mode 100644
+index 0000000..87183ad
+--- /dev/null
++++ b/virtio-vsock.tex
+@@ -0,0 +1,279 @@
++\section{Socket Device}\label{sec:Device Types / Socket Device}
++
++The virtio socket device is a zero-configuration socket communications device.
++It facilitates data transfer between the guest and device without using the
++Ethernet or IP protocols.
++
++\subsection{Device ID}\label{sec:Device Types / Socket Device / Device ID}
++  19
++
++\subsection{Virtqueues}\label{sec:Device Types / Socket Device / Virtqueues}
++\begin{description}
++\item[0] rx
++\item[1] tx
++\item[2] event
++\end{description}
++
++\subsection{Feature bits}\label{sec:Device Types / Socket Device / Feature bits}
++
++\begin{description}
++There are currently no feature bits defined for this device.
++\end{description}
++
++\subsection{Device configuration layout}\label{sec:Device Types / Socket Device / Device configuration layout}
++
++\begin{lstlisting}
++struct virtio_vsock_config {
++	le64 guest_cid;
++};
++\end{lstlisting}
++
++The \field{guest_cid} field contains the guest's context ID, which uniquely
++identifies the device for its lifetime.  The upper 32 bits of the CID are
++reserved and zeroed.
++
++The following CIDs are reserved and cannot be used as the guest's context ID:
++
++\begin{tabular}{|l|l|}
++\hline
++CID    & Notes \\
++\hline \hline
++0                 & Reserved \\
++\hline
++1                 & Reserved \\
++\hline
++2                 & Well-known CID for the host \\
++\hline
++0xffffffff        & Reserved \\
++\hline
++0xffffffffffffffff        & Reserved \\
++\hline
++\end{tabular}
++
++\subsection{Device Initialization}\label{sec:Device Types / Socket Device / Device Initialization}
++
++\begin{enumerate}
++\item The guest's cid is read from \field{guest_cid}.
++
++\item Buffers are added to the event virtqueue to receive events from the device.
++
++\item Buffers are added to the rx virtqueue to start receiving packets.
++\end{enumerate}
++
++\subsection{Device Operation}\label{sec:Device Types / Socket Device / Device Operation}
++
++Packets transmitted or received contain a header before the payload:
++
++\begin{lstlisting}
++struct virtio_vsock_hdr {
++	le64 src_cid;
++	le64 dst_cid;
++	le32 src_port;
++	le32 dst_port;
++	le32 len;
++	le16 type;
++	le16 op;
++	le32 flags;
++	le32 buf_alloc;
++	le32 fwd_cnt;
++};
++\end{lstlisting}
++
++The upper 32 bits of src_cid and dst_cid are reserved and zeroed.
++
++Most packets simply transfer data but control packets are also used for
++connection and buffer space management.  \field{op} is one of the following
++operation constants:
++
++\begin{lstlisting}
++enum {
++	VIRTIO_VSOCK_OP_INVALID = 0,
++
++	/* Connect operations */
++	VIRTIO_VSOCK_OP_REQUEST = 1,
++	VIRTIO_VSOCK_OP_RESPONSE = 2,
++	VIRTIO_VSOCK_OP_RST = 3,
++	VIRTIO_VSOCK_OP_SHUTDOWN = 4,
++
++	/* To send payload */
++	VIRTIO_VSOCK_OP_RW = 5,
++
++	/* Tell the peer our credit info */
++	VIRTIO_VSOCK_OP_CREDIT_UPDATE = 6,
++	/* Request the peer to send the credit info to us */
++	VIRTIO_VSOCK_OP_CREDIT_REQUEST = 7,
++};
++\end{lstlisting}
++
++\subsubsection{Virtqueue Flow Control}\label{sec:Device Types / Socket Device / Device Operation / Virtqueue Flow Control}
++
++The tx virtqueue carries packets initiated by applications and replies to
++received packets.  The rx virtqueue carries packets initiated by the device and
++replies to previously transmitted packets.
++
++If both rx and tx virtqueues are filled by the driver and device at the same
++time then it appears that a deadlock is reached.  The driver has no free tx
++descriptors to send replies.  The device has no free rx descriptors to send
++replies either.  Therefore neither device nor driver can process virtqueues
++since that may involve sending new replies.
++
++This is solved using additional resources outside the virtqueue to hold
++packets.  With additional resources, it becomes possible to process incoming
++packets even when outgoing packets cannot be sent.
++
++Eventually even the additional resources will be exhausted and further
++processing is not possible until the other side processes the virtqueue that
++it has neglected.  This stop to processing prevents one side from causing
++unbounded resource consumption in the other side.
++
++\drivernormative{\paragraph}{Device Operation: Virtqueue Flow Control}{Device Types / Socket Device / Device Operation / Virtqueue Flow Control}
++
++The rx virtqueue MUST be processed even when the tx virtqueue is full so long as there are additional resources available to hold packets outside the tx virtqueue.
++
++\devicenormative{\paragraph}{Device Operation: Virtqueue Flow Control}{Device Types / Socket Device / Device Operation / Virtqueue Flow Control}
++
++The tx virtqueue MUST be processed even when the rx virtqueue is full so long as there are additional resources available to hold packets outside the rx virtqueue.
++
++\subsubsection{Addressing}\label{sec:Device Types / Socket Device / Device Operation / Addressing}
++
++Flows are identified by a (source, destination) address tuple.  An address
++consists of a (cid, port number) tuple. The header fields used for this are
++\field{src_cid}, \field{src_port}, \field{dst_cid}, and \field{dst_port}.
++
++Currently only stream sockets are supported. \field{type} is 1 for stream
++socket types.
++
++Stream sockets provide in-order, guaranteed, connection-oriented delivery
++without message boundaries.
++
++\subsubsection{Buffer Space Management}\label{sec:Device Types / Socket Device / Device Operation / Buffer Space Management}
++\field{buf_alloc} and \field{fwd_cnt} are used for buffer space management of
++stream sockets. The guest and the device publish how much buffer space is
++available per socket. Only payload bytes are counted and header bytes are not
++included. This facilitates flow control so data is never dropped.
++
++\field{buf_alloc} is the total receive buffer space, in bytes, for this socket.
++This includes both free and in-use buffers. \field{fwd_cnt} is the free-running
++bytes received counter. The sender calculates the amount of free receive buffer
++space as follows:
++
++\begin{lstlisting}
++/* tx_cnt is the sender's free-running bytes transmitted counter */
++u32 peer_free = peer_buf_alloc - (tx_cnt - peer_fwd_cnt);
++\end{lstlisting}
++
++If there is insufficient buffer space, the sender waits until virtqueue buffers
++are returned and checks \field{buf_alloc} and \field{fwd_cnt} again. Sending
++the VIRTIO_VSOCK_OP_CREDIT_REQUEST packet queries how much buffer space is
++available. The reply to this query is a VIRTIO_VSOCK_OP_CREDIT_UPDATE packet.
++It is also valid to send a VIRTIO_VSOCK_OP_CREDIT_UPDATE packet without
++previously receiving a VIRTIO_VSOCK_OP_CREDIT_REQUEST packet. This allows
++communicating updates any time a change in buffer space occurs.
++
++\drivernormative{\paragraph}{Device Operation: Buffer Space Management}{Device Types / Socket Device / Device Operation / Buffer Space Management}
++VIRTIO_VSOCK_OP_RW data packets MUST only be transmitted when the peer has
++sufficient free buffer space for the payload.
++
++All packets associated with a stream flow MUST contain valid information in
++\field{buf_alloc} and \field{fwd_cnt} fields.
++
++\devicenormative{\paragraph}{Device Operation: Buffer Space Management}{Device Types / Socket Device / Device Operation / Buffer Space Management}
++VIRTIO_VSOCK_OP_RW data packets MUST only be transmitted when the peer has
++sufficient free buffer space for the payload.
++
++All packets associated with a stream flow MUST contain valid information in
++\field{buf_alloc} and \field{fwd_cnt} fields.
++
++\subsubsection{Receive and Transmit}\label{sec:Device Types / Socket Device / Device Operation / Receive and Transmit}
++The driver queues outgoing packets on the tx virtqueue and incoming packet
++receive buffers on the rx virtqueue. Packets are of the following form:
++
++\begin{lstlisting}
++struct virtio_vsock_packet {
++    struct virtio_vsock_hdr hdr;
++    u8 data[];
++};
++\end{lstlisting}
++
++Virtqueue buffers for outgoing packets are read-only. Virtqueue buffers for
++incoming packets are write-only.
++
++\drivernormative{\paragraph}{Device Operation: Receive and Transmit}{Device Types / Socket Device / Device Operation / Receive and Transmit}
++
++The \field{guest_cid} configuration field MUST be used as the source CID when
++sending outgoing packets.
++
++A VIRTIO_VSOCK_OP_RST reply MUST be sent if a packet is received with an
++unknown \field{type} value.
++
++\devicenormative{\paragraph}{Device Operation: Receive and Transmit}{Device Types / Socket Device / Device Operation / Receive and Transmit}
++
++The \field{guest_cid} configuration field MUST NOT contain a reserved CID as listed in \ref{sec:Device Types / Socket Device / Device configuration layout}.
++
++A VIRTIO_VSOCK_OP_RST reply MUST be sent if a packet is received with an
++unknown \field{type} value.
++
++\subsubsection{Stream Sockets}\label{sec:Device Types / Socket Device / Device Operation / Stream Sockets}
++
++Connections are established by sending a VIRTIO_VSOCK_OP_REQUEST packet. If a
++listening socket exists on the destination a VIRTIO_VSOCK_OP_RESPONSE reply is
++sent and the connection is established.  A VIRTIO_VSOCK_OP_RST reply is sent if
++a listening socket does not exist on the destination or the destination has
++insufficient resources to establish the connection.
++
++When a connected socket receives VIRTIO_VSOCK_OP_SHUTDOWN the header
++\field{flags} field bit 0 indicates that the peer will not receive any more
++data and bit 1 indicates that the peer will not send any more data.  These
++hints are permanent once sent and successive packets with bits clear do not
++reset them.
++
++The VIRTIO_VSOCK_OP_RST packet aborts the connection process or forcibly
++disconnects a connected socket.
++
++Clean disconnect is achieved by one or more VIRTIO_VSOCK_OP_SHUTDOWN packets
++that indicate no more data will be sent and received, followed by a
++VIRTIO_VSOCK_OP_RST response from the peer.  If no VIRTIO_VSOCK_OP_RST response
++is received within an implementation-specific amount of time, a
++VIRTIO_VSOCK_OP_RST packet is sent to forcibly disconnect the socket.
++
++The clean disconnect process ensures that neither peer reuses the (source,
++destination) address tuple for a new connection while the other peer is still
++processing the old connection.
++
++\subsubsection{Device Events}\label{sec:Device Types / Socket Device / Device Operation / Device Events}
++
++Certain events are communicated by the device to the driver using the event
++virtqueue.
++
++The event buffer is as follows:
++
++\begin{lstlisting}
++enum virtio_vsock_event_id {
++        VIRTIO_VSOCK_EVENT_TRANSPORT_RESET = 0,
++};
++
++struct virtio_vsock_event {
++        le32 id;
++};
++\end{lstlisting}
++
++The VIRTIO_VSOCK_EVENT_TRANSPORT_RESET event indicates that communication has
++been interrupted.  This usually occurs if the guest has been physically
++migrated.  The driver shuts down established connections and the
++\field{guest_cid} configuration field is fetched again.  Existing listen
++sockets remain but their CID is updated to reflect the current
++\field{guest_cid}.
++
++\drivernormative{\paragraph}{Device Operation: Device Events}{Device Types / Socket Device / Device Operation / Device Events}
++
++Event virtqueue buffers SHOULD be replenished quickly so that no events are
++missed.
++
++The \field{guest_cid} configuration field MUST be fetched to determine the
++current CID when a VIRTIO_VSOCK_EVENT_TRANSPORT_RESET event is received.
++
++Existing connections MUST be shut down when a
++VIRTIO_VSOCK_EVENT_TRANSPORT_RESET event is received.
++
++Listen connections MUST remain operational with the current CID when a
++VIRTIO_VSOCK_EVENT_TRANSPORT_RESET event is received.
+-- 
+2.19.1
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
