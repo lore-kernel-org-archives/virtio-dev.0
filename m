@@ -1,12 +1,12 @@
-Return-Path: virtio-dev-return-5083-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-5084-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id EE994985D3E
-	for <virtio-dev@lists.oasis-open.org>; Fri, 30 Nov 2018 00:24:26 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 161FF985D6D
+	for <virtio-dev@lists.oasis-open.org>; Fri, 30 Nov 2018 03:08:07 +0000 (UTC)
 References: <CAKPgXcEXVjH6ZHLLYA-rC+4LM43HMmZN2AgsJMpJJjhPm7cK2Q@mail.gmail.com>
  <25a340eb-62a8-ea90-5f0d-0ee3171479ce@intel.com>
  <20181128120516-mutt-send-email-mst@kernel.org>
@@ -20,157 +20,159 @@ References: <CAKPgXcEXVjH6ZHLLYA-rC+4LM43HMmZN2AgsJMpJJjhPm7cK2Q@mail.gmail.com>
  <20181129160950-mutt-send-email-mst@kernel.org>
  <2f44fe5e-ee7d-96cd-dd85-f663fa04c7d0@oracle.com>
  <ff67ecc7-b3c0-658c-ee04-0d349555248d@intel.com>
-From: si-wei liu <si-wei.liu@oracle.com>
-Message-ID: <62fa6e84-54d2-94fa-a32f-325e558db49c@oracle.com>
-Date: Thu, 29 Nov 2018 16:24:14 -0800
+ <62fa6e84-54d2-94fa-a32f-325e558db49c@oracle.com>
+From: "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
+Message-ID: <0f44585c-da6f-ba0e-ea8d-2c681d123a0d@intel.com>
+Date: Thu, 29 Nov 2018 19:08:02 -0800
 MIME-Version: 1.0
-In-Reply-To: <ff67ecc7-b3c0-658c-ee04-0d349555248d@intel.com>
+In-Reply-To: <62fa6e84-54d2-94fa-a32f-325e558db49c@oracle.com>
 Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Transfer-Encoding: 8bit
 Content-Language: en-US
 Subject: Re: [virtio-dev] [PATCH v4] content: Introduce VIRTIO_NET_F_STANDBY
  feature
-To: "Samudrala, Sridhar" <sridhar.samudrala@intel.com>, "Michael S. Tsirkin" <mst@redhat.com>
+To: si-wei liu <si-wei.liu@oracle.com>, "Michael S. Tsirkin" <mst@redhat.com>
 Cc: Carolyn <carolyn.wyborny@intel.com>, Sameeh Jubran <sameeh@daynix.com>, Siwei Liu <loseweigh@gmail.com>, venu.busireddy@oracle.com, cohuck@redhat.com, virtio-dev <virtio-dev@lists.oasis-open.org>, liran.alon@oracle.com, Yan Vugenfirer <yan@daynix.com>, "Brandeburg, Jesse" <jesse.brandeburg@intel.com>, Boris Ostrovsky <boris.ostrovsky@oracle.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-
-
-On 11/29/2018 3:53 PM, Samudrala, Sridhar wrote:
-> On 11/29/2018 2:53 PM, si-wei liu wrote:
->>
->>
->> On 11/29/2018 1:17 PM, Michael S. Tsirkin wrote:
->>> On Thu, Nov 29, 2018 at 12:14:46PM -0800, si-wei liu wrote:
->>>>
->>>> On 11/28/2018 5:15 PM, Michael S. Tsirkin wrote:
->>>>> On Wed, Nov 28, 2018 at 12:28:42PM -0800, si-wei liu wrote:
->>>>>> On 11/28/2018 12:06 PM, Michael S. Tsirkin wrote:
->>>>>>> On Wed, Nov 28, 2018 at 10:39:55AM -0800, Samudrala, Sridhar wrote:
->>>>>>>> On 11/28/2018 9:35 AM, Michael S. Tsirkin wrote:
->>>>>>>>> On Wed, Nov 28, 2018 at 09:31:32AM -0800, Samudrala, Sridhar 
->>>>>>>>> wrote:
->>>>>>>>>> On 11/28/2018 9:08 AM, Michael S. Tsirkin wrote:
->>>>>>>>>>> On Mon, Nov 26, 2018 at 12:22:56PM -0800, Samudrala, Sridhar 
->>>>>>>>>>> wrote:
->>>>>>>>>>>>> Update:
->>>>>>>>>>>>> I have just set the vf mac's address to 0 (ip link set 
->>>>>>>>>>>>> ens2f0 vf 1 mac
->>>>>>>>>>>>> 00:00:00:00:00:00) after unplugging it (the primary 
->>>>>>>>>>>>> device) and the
->>>>>>>>>>>>> pings started working again on the failover interface. So 
->>>>>>>>>>>>> it seems
->>>>>>>>>>>>> like the frames were arriving to the vf on the host.
+On 11/29/2018 4:24 PM, si-wei liu wrote:
+>
+>
+> On 11/29/2018 3:53 PM, Samudrala, Sridhar wrote:
+>> On 11/29/2018 2:53 PM, si-wei liu wrote:
+>>>
+>>>
+>>> On 11/29/2018 1:17 PM, Michael S. Tsirkin wrote:
+>>>> On Thu, Nov 29, 2018 at 12:14:46PM -0800, si-wei liu wrote:
+>>>>>
+>>>>> On 11/28/2018 5:15 PM, Michael S. Tsirkin wrote:
+>>>>>> On Wed, Nov 28, 2018 at 12:28:42PM -0800, si-wei liu wrote:
+>>>>>>> On 11/28/2018 12:06 PM, Michael S. Tsirkin wrote:
+>>>>>>>> On Wed, Nov 28, 2018 at 10:39:55AM -0800, Samudrala, Sridhar 
+>>>>>>>> wrote:
+>>>>>>>>> On 11/28/2018 9:35 AM, Michael S. Tsirkin wrote:
+>>>>>>>>>> On Wed, Nov 28, 2018 at 09:31:32AM -0800, Samudrala, Sridhar 
+>>>>>>>>>> wrote:
+>>>>>>>>>>> On 11/28/2018 9:08 AM, Michael S. Tsirkin wrote:
+>>>>>>>>>>>> On Mon, Nov 26, 2018 at 12:22:56PM -0800, Samudrala, 
+>>>>>>>>>>>> Sridhar wrote:
+>>>>>>>>>>>>>> Update:
+>>>>>>>>>>>>>> I have just set the vf mac's address to 0 (ip link set 
+>>>>>>>>>>>>>> ens2f0 vf 1 mac
+>>>>>>>>>>>>>> 00:00:00:00:00:00) after unplugging it (the primary 
+>>>>>>>>>>>>>> device) and the
+>>>>>>>>>>>>>> pings started working again on the failover interface. So 
+>>>>>>>>>>>>>> it seems
+>>>>>>>>>>>>>> like the frames were arriving to the vf on the host.
+>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>
+>>>>>>>>>>>>> Yes. When the VF is unplugged, you need to reset the VFs 
+>>>>>>>>>>>>> MAC so that the packets
+>>>>>>>>>>>>> with VMs MAC start flowing via VF, bridge and the virtio 
+>>>>>>>>>>>>> interface.
+>>>>>>>>>>>>>
+>>>>>>>>>>>>> Have you looked at this documentation that shows a sample 
+>>>>>>>>>>>>> script to initiate live
+>>>>>>>>>>>>> migration?
+>>>>>>>>>>>>> https://www.kernel.org/doc/html/latest/networking/net_failover.html 
 >>>>>>>>>>>>>
 >>>>>>>>>>>>>
->>>>>>>>>>>> Yes. When the VF is unplugged, you need to reset the VFs 
->>>>>>>>>>>> MAC so that the packets
->>>>>>>>>>>> with VMs MAC start flowing via VF, bridge and the virtio 
->>>>>>>>>>>> interface.
->>>>>>>>>>>>
->>>>>>>>>>>> Have you looked at this documentation that shows a sample 
->>>>>>>>>>>> script to initiate live
->>>>>>>>>>>> migration?
->>>>>>>>>>>> https://www.kernel.org/doc/html/latest/networking/net_failover.html 
->>>>>>>>>>>>
->>>>>>>>>>>>
->>>>>>>>>>>> -Sridhar
->>>>>>>>>>> Interesting I didn't notice it does this. So in fact
->>>>>>>>>>> just defining VF mac will immediately divert packets
->>>>>>>>>>> to the VF? Given guest driver did not initialize VF
->>>>>>>>>>> yet won't a bunch of packets be dropped?
->>>>>>>>>> There is typo in my stmt above (VF->PF)
->>>>>>>>>> When the VF is unplugged, you need to reset the VFs MAC so 
->>>>>>>>>> that the packets
->>>>>>>>>> with VMs MAC start flowing via PF, bridge and the virtio 
->>>>>>>>>> interface.
->>>>>>>>>>
->>>>>>>>>> When the VF is plugged in, ideally the MAC filter for the VF 
->>>>>>>>>> should be added to
->>>>>>>>>> the HW once the guest driver comes up and can receive 
->>>>>>>>>> packets. Currently with intel
->>>>>>>>>> drivers, the filter gets added to HW as soon as the host 
->>>>>>>>>> admin sets the VFs MAC via
->>>>>>>>>> ndo_set_vf_mac() api. So potentially there could be packet 
->>>>>>>>>> drops until the VF driver
->>>>>>>>>> comes up in the VM.
->>>>>>>>>>
->>>>>>>>>>
->>>>>>>>> Can this be fixed in the intel drivers?
->>>>>>>> I just checked and it looks like this seems to have been 
->>>>>>>> addressed in the
->>>>>>>> ice 100Gb driver. Will bring this up issue internally to see if 
->>>>>>>> we can change this
->>>>>>>> behavior in i40e/ixgbe drivers.
->>>>>>> Also what happens if the mac is programmed both in PF (e.g. with
->>>>>>> macvtap) and VF? Ideally VF will take precedence.
->>>>>> I'm seriously doubtful that legacy Intel NIC hardware can do that 
->>>>>> instead of
->>>>>> mucking around with software workaround in the PF driver. 
->>>>>> Actually, the same
->>>>>> applies to other NIC vendors when hardware sees duplicate 
->>>>>> filters. There's
->>>>>> no such control of precedence on one over the other.
->>>>>>
->>>>>>
->>>>>> -Siwei
->>>>>>
->>>>>>
->>>>> Well removing a MAC from the PF filter when we are adding it to 
->>>>> the VF
->>>>> filter should always be possible. Need to keep it in a separate 
->>>>> list and
->>>>> re-add it when removing the MAC from VF filter.  This can be 
->>>>> handled in
->>>>> the net core, no need for driver specific hacks.
->>>> So that is what I ever said - essentially what you need is a netdev 
->>>> API,
->>>> rather than to add dirty hacks on each driver. That is fine, but 
->>>> how would
->>>> you implement it? Note there's no equivalent driver level .ndo API 
->>>> to "move"
->>>> filters, and all existing .ndo APIs manipulate at the MAC address 
->>>> level as
->>>> opposed to filters. Are you going to convince netdev this is the 
->>>> right thing
->>>> to do and we should add such API to the net core and each 
->>>> individual driver?
->>> There's no need for a new API IMO.
->>> You drop it from list of uc macs, then call .ndo_set_rx_mode.
->> Then still you need a new netlink API - effectively it alters the 
->> running state of macvtap as it steals certain filters out from the 
->> NIC that affects the datapath of macvtap. I assume we talk about some 
->> kernel mechanism to do automatic datapath switching without involving 
->> userspace management stack/orchestration software. In the kernel's 
->> (net core's) view that also needs some weak binding/coordination 
->> between the VF and the macvtap for which MAC filter needs to be 
->> activated. Still this senses to me a new API rather than tweaking the 
->> current and long-existing default behavior and making it work 
->> transparently just for this case. Otherwise, without introducing a 
->> new API, how does the userspace infer that the running kernel 
->> supports this new behavior.
->
-> In case of virtio backed by macvtap, you can change the mac address of 
-> the macvtap
-> interface. When VF is plugged in, change macvtap's MAC to an 
-> unassigned MAC and bring
-> the virtio link down.
-> When VF in unplugged, set macvtap's MAC to VMs mac and bring up virtio 
-> link.
->
-This needs management software to orchestrate, right?  What MST and I 
-are discussing is to how to do this switching automatically without 
-involving management software.
+>>>>>>>>>>>>> -Sridhar
+>>>>>>>>>>>> Interesting I didn't notice it does this. So in fact
+>>>>>>>>>>>> just defining VF mac will immediately divert packets
+>>>>>>>>>>>> to the VF? Given guest driver did not initialize VF
+>>>>>>>>>>>> yet won't a bunch of packets be dropped?
+>>>>>>>>>>> There is typo in my stmt above (VF->PF)
+>>>>>>>>>>> When the VF is unplugged, you need to reset the VFs MAC so 
+>>>>>>>>>>> that the packets
+>>>>>>>>>>> with VMs MAC start flowing via PF, bridge and the virtio 
+>>>>>>>>>>> interface.
+>>>>>>>>>>>
+>>>>>>>>>>> When the VF is plugged in, ideally the MAC filter for the VF 
+>>>>>>>>>>> should be added to
+>>>>>>>>>>> the HW once the guest driver comes up and can receive 
+>>>>>>>>>>> packets. Currently with intel
+>>>>>>>>>>> drivers, the filter gets added to HW as soon as the host 
+>>>>>>>>>>> admin sets the VFs MAC via
+>>>>>>>>>>> ndo_set_vf_mac() api. So potentially there could be packet 
+>>>>>>>>>>> drops until the VF driver
+>>>>>>>>>>> comes up in the VM.
+>>>>>>>>>>>
+>>>>>>>>>>>
+>>>>>>>>>> Can this be fixed in the intel drivers?
+>>>>>>>>> I just checked and it looks like this seems to have been 
+>>>>>>>>> addressed in the
+>>>>>>>>> ice 100Gb driver. Will bring this up issue internally to see 
+>>>>>>>>> if we can change this
+>>>>>>>>> behavior in i40e/ixgbe drivers.
+>>>>>>>> Also what happens if the mac is programmed both in PF (e.g. with
+>>>>>>>> macvtap) and VF? Ideally VF will take precedence.
+>>>>>>> I'm seriously doubtful that legacy Intel NIC hardware can do 
+>>>>>>> that instead of
+>>>>>>> mucking around with software workaround in the PF driver. 
+>>>>>>> Actually, the same
+>>>>>>> applies to other NIC vendors when hardware sees duplicate 
+>>>>>>> filters. There's
+>>>>>>> no such control of precedence on one over the other.
+>>>>>>>
+>>>>>>>
+>>>>>>> -Siwei
+>>>>>>>
+>>>>>>>
+>>>>>> Well removing a MAC from the PF filter when we are adding it to 
+>>>>>> the VF
+>>>>>> filter should always be possible. Need to keep it in a separate 
+>>>>>> list and
+>>>>>> re-add it when removing the MAC from VF filter.  This can be 
+>>>>>> handled in
+>>>>>> the net core, no need for driver specific hacks.
+>>>>> So that is what I ever said - essentially what you need is a 
+>>>>> netdev API,
+>>>>> rather than to add dirty hacks on each driver. That is fine, but 
+>>>>> how would
+>>>>> you implement it? Note there's no equivalent driver level .ndo API 
+>>>>> to "move"
+>>>>> filters, and all existing .ndo APIs manipulate at the MAC address 
+>>>>> level as
+>>>>> opposed to filters. Are you going to convince netdev this is the 
+>>>>> right thing
+>>>>> to do and we should add such API to the net core and each 
+>>>>> individual driver?
+>>>> There's no need for a new API IMO.
+>>>> You drop it from list of uc macs, then call .ndo_set_rx_mode.
+>>> Then still you need a new netlink API - effectively it alters the 
+>>> running state of macvtap as it steals certain filters out from the 
+>>> NIC that affects the datapath of macvtap. I assume we talk about 
+>>> some kernel mechanism to do automatic datapath switching without 
+>>> involving userspace management stack/orchestration software. In the 
+>>> kernel's (net core's) view that also needs some weak 
+>>> binding/coordination between the VF and the macvtap for which MAC 
+>>> filter needs to be activated. Still this senses to me a new API 
+>>> rather than tweaking the current and long-existing default behavior 
+>>> and making it work transparently just for this case. Otherwise, 
+>>> without introducing a new API, how does the userspace infer that the 
+>>> running kernel supports this new behavior.
+>>
+>> In case of virtio backed by macvtap, you can change the mac address 
+>> of the macvtap
+>> interface. When VF is plugged in, change macvtap's MAC to an 
+>> unassigned MAC and bring
+>> the virtio link down.
+>> When VF in unplugged, set macvtap's MAC to VMs mac and bring up 
+>> virtio link.
+>>
+> This needs management software to orchestrate, right? 
 
+Yes. Isn't that a good option as live migration is initiated and orchestrated via mgmt. software.
 
--Siwei
+> What MST and I are discussing is to how to do this switching 
+> automatically without involving management software.
 
->
->
-> ---------------------------------------------------------------------
-> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
->
+OK. I agree that it would be nice if we can do all this automatically via Qemu when the orchestration sw
+initiates live migration rather than the mgmt. sw having to do some pre and post migration steps.
+It may be possible to do these pre and post migration steps in qemu via netlink api to the kernel to
+update the MAC addresses as we are now associating the primary and standby interfaces.
+
 
 
 ---------------------------------------------------------------------
