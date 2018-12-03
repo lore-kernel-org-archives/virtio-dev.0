@@ -1,45 +1,110 @@
-Return-Path: virtio-return-3202-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio@lists.oasis-open.org>
-List-Post: <mailto:virtio@lists.oasis-open.org>
-List-Help: <mailto:virtio-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Tue, 4 Dec 2018 12:07:32 +0100
-From: Jens Freimann <jfreimann@redhat.com>
-Message-ID: <20181204110732.ucyyqxdhmlic3z4m@jenstp.localdomain>
-References: <20181129194930.17637-1-mst@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20181129194930.17637-1-mst@redhat.com>
-Subject: Re: [virtio] [PATCH] packed-ring: fix queue size for pci
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+Return-Path: virtio-dev-return-5102-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id 264A8985B2E
+	for <virtio-dev@lists.oasis-open.org>; Mon,  3 Dec 2018 02:51:32 +0000 (UTC)
+From: Wei Wang <wei.w.wang@intel.com>
+Date: Mon,  3 Dec 2018 10:18:24 +0800
+Message-Id: <1543803511-34793-1-git-send-email-wei.w.wang@intel.com>
+Subject: [virtio-dev] [PATCH v10 0/7] virtio-balloon: free page hint support
+To: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, mst@redhat.com, quintela@redhat.com, dgilbert@redhat.com, peterx@redhat.com
+Cc: pbonzini@redhat.com, liliang.opensource@gmail.com, nilal@redhat.com, riel@redhat.com, wei.w.wang@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Thu, Nov 29, 2018 at 02:49:32PM -0500, Michael S. Tsirkin wrote:
->PCI is the only transport that has text enforcing
->a power of two size for VQs. There's no real reason
->for it to do it, so document that it does not apply
->with the packed rings.
->
->Accordingly, drop the text "unless enforced by a transport"
->from packed ring description.
->
->Fixes: https://github.com/oasis-tcs/virtio-spec/issues/28
->Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
->---
-> content.tex     | 11 +++++++++--
-> packed-ring.tex |  2 +-
-> 2 files changed, 10 insertions(+), 3 deletions(-)
->
+This is the deivce part implementation to add a new feature,
+VIRTIO_BALLOON_F_FREE_PAGE_HINT to the virtio-balloon device. The device
+receives the guest free page hints from the driver and clears the
+corresponding bits in the dirty bitmap, so that those free pages are
+not sent by the migration thread to the destination.
 
-Reviewed-by: Jens Freimann <jfreimann@redhat.com>
+*Tests
+1 Test Environment
+    Host: Intel(R) Xeon(R) CPU E5-2699 v4 @ 2.20GHz
+    Migration setup: migrate_set_speed 100G, migrate_set_downtime 400ms
 
+2 Test Results (results are averaged over several repeated runs)
+    2.1 Guest setup: 8G RAM, 4 vCPU
+        2.1.1 Idle guest live migration time
+            Optimization v.s. Legacy = 620ms vs 2970ms
+            --> ~79% reduction
+        2.1.2 Guest live migration with Linux compilation workload
+          (i.e. make bzImage -j4) running
+          1) Live Migration Time:
+             Optimization v.s. Legacy = 2273ms v.s. 4502ms
+             --> ~50% reduction
+          2) Linux Compilation Time:
+             Optimization v.s. Legacy = 8min42s v.s. 8min43s
+             --> no obvious difference
+
+    2.2 Guest setup: 128G RAM, 4 vCPU
+        2.2.1 Idle guest live migration time
+            Optimization v.s. Legacy = 5294ms vs 41651ms
+            --> ~87% reduction
+        2.2.2 Guest live migration with Linux compilation workload
+          1) Live Migration Time:
+            Optimization v.s. Legacy = 8816ms v.s. 54201ms
+            --> 84% reduction
+          2) Linux Compilation Time:
+             Optimization v.s. Legacy = 8min30s v.s. 8min36s
+             --> no obvious difference
+
+ChangeLog:
+v9->v10:
+migration:
+    - qemu_guest_free_page_hint:
+        - move "addr += used_len" to the for() loop;
+        - add some comments about the ram block resize case.
+    - precopy notifier:
+        - enable callbacks to report errors (as the postcopy notifier);
+        - rename the notifier reasons:
+            - PRECOPY_NOTIFY_COMPLETE notifies the callback about the
+              end of precopy;
+            - PRECOPY_NOTIFY_CLEANUP notifies the callback in the case
+              migration is cancelled;
+        - relocate some notifications to the upper layer functions
+          (i.e. qemu_savevm_state_*), which can get the callbacks notified
+          when non-ram-saving code has errors which stops the precopy.
+    - migration_bitmap_sync_precopy to be called by the precopy code path
+      with precopy notifier supported, and migration_bitmap_sync is left
+      for callers without the need of precopy notifier (e.g. some postcopy
+      code).
+    - avoid exposing migrate_postcopy;
+virtio-balloon:
+    - virtio_balloon_free_page_report_notify: remove the migrate_postcopy
+      check becasue the migration code has guaranteed that the notifier
+      callback is invoked when in the precopy mode.
+
+Previous changelog:
+https://lists.gnu.org/archive/html/qemu-devel/2018-11/msg02854.html
+
+Wei Wang (7):
+  bitmap: fix bitmap_count_one
+  bitmap: bitmap_count_one_with_offset
+  migration: use bitmap_mutex in migration_bitmap_clear_dirty
+  migration: API to clear bits of guest free pages from the dirty bitmap
+  migration/ram.c: add a notifier chain for precopy
+  migration/ram.c: add a function to disable the bulk stage
+  virtio-balloon: VIRTIO_BALLOON_F_FREE_PAGE_HINT
+
+ hw/virtio/virtio-balloon.c                      | 263 ++++++++++++++++++++++++
+ include/hw/virtio/virtio-balloon.h              |  28 ++-
+ include/migration/misc.h                        |  22 ++
+ include/qemu/bitmap.h                           |  17 ++
+ include/standard-headers/linux/virtio_balloon.h |   5 +
+ migration/ram.c                                 | 112 +++++++++-
+ migration/savevm.c                              |  15 ++
+ vl.c                                            |   1 +
+ 8 files changed, 458 insertions(+), 5 deletions(-)
+
+-- 
+1.8.3.1
 
 
 ---------------------------------------------------------------------
-To unsubscribe from this mail list, you must leave the OASIS TC that 
-generates this mail.  Follow this link to all your TCs in OASIS at:
-https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
