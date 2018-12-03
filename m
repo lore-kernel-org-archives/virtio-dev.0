@@ -1,150 +1,171 @@
-Return-Path: virtio-dev-return-5176-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-5114-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 1B6C1985C60
-	for <virtio-dev@lists.oasis-open.org>; Tue, 11 Dec 2018 16:30:12 +0000 (UTC)
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 7BB38985B80
+	for <virtio-dev@lists.oasis-open.org>; Mon,  3 Dec 2018 13:27:29 +0000 (UTC)
 References: <20181122193801.50510-1-jean-philippe.brucker@arm.com>
- <20181122193801.50510-6-jean-philippe.brucker@arm.com>
- <20181123165742-mutt-send-email-mst@kernel.org>
- <fd221210-7e12-1d15-0c80-52a761f6893d@arm.com>
- <20181127125424-mutt-send-email-mst@kernel.org>
- <ef97313f-4795-9537-e0b8-8bf6751db6a6@arm.com>
- <20181127131455-mutt-send-email-mst@kernel.org>
- <29bdf062-06cb-4b7d-1753-33fac609ddc3@arm.com>
- <20181210175132-mutt-send-email-mst@kernel.org>
-Message-ID: <2a34ceb8-da24-fd24-f181-7d1ab15be8f8@arm.com>
-Date: Tue, 11 Dec 2018 16:29:37 +0000
+ <20181127114402-mutt-send-email-mst@kernel.org>
+ <6c061729-c404-ac25-f86f-7fe222bf5bc7@redhat.com>
+ <20181127121036-mutt-send-email-mst@kernel.org>
+From: Auger Eric <eric.auger@redhat.com>
+Message-ID: <06b3a869-d109-4be6-f282-e03cfa3c7f2d@redhat.com>
+Date: Mon, 3 Dec 2018 14:27:18 +0100
 MIME-Version: 1.0
-In-Reply-To: <20181210175132-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <20181127121036-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: [virtio-dev] Re: [PATCH v5 5/7] iommu: Add virtio-iommu driver
+Subject: [virtio-dev] Re: [PATCH v5 0/7] Add virtio-iommu driver
 To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Mark Rutland <Mark.Rutland@arm.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>, "tnowicki@caviumnetworks.com" <tnowicki@caviumnetworks.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Marc Zyngier <Marc.Zyngier@arm.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "joro@8bytes.org" <joro@8bytes.org>, Will Deacon <Will.Deacon@arm.com>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "eric.auger@redhat.com" <eric.auger@redhat.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "bhelgaas@google.com" <bhelgaas@google.com>, Robin Murphy <Robin.Murphy@arm.com>, "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>
+Cc: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, devicetree@vger.kernel.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, joro@8bytes.org, jasowang@redhat.com, robh+dt@kernel.org, mark.rutland@arm.com, bhelgaas@google.com, frowand.list@gmail.com, kvmarm@lists.cs.columbia.edu, tnowicki@caviumnetworks.com, kevin.tian@intel.com, marc.zyngier@arm.com, robin.murphy@arm.com, will.deacon@arm.com, lorenzo.pieralisi@arm.com, bharat.bhushan@nxp.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 10/12/2018 22:53, Michael S. Tsirkin wrote:
-> On Mon, Dec 10, 2018 at 03:06:47PM +0000, Jean-Philippe Brucker wrote:
->> On 27/11/2018 18:53, Michael S. Tsirkin wrote:
->>> On Tue, Nov 27, 2018 at 06:10:46PM +0000, Jean-Philippe Brucker wrote:
->>>> On 27/11/2018 18:04, Michael S. Tsirkin wrote:
->>>>> On Tue, Nov 27, 2018 at 05:50:50PM +0000, Jean-Philippe Brucker wrote:
->>>>>> On 23/11/2018 22:02, Michael S. Tsirkin wrote:
->>>>>>>> +/*
->>>>>>>> + * __viommu_sync_req - Complete all in-flight requests
->>>>>>>> + *
->>>>>>>> + * Wait for all added requests to complete. When this function returns, all
->>>>>>>> + * requests that were in-flight at the time of the call have completed.
->>>>>>>> + */
->>>>>>>> +static int __viommu_sync_req(struct viommu_dev *viommu)
->>>>>>>> +{
->>>>>>>> +	int ret = 0;
->>>>>>>> +	unsigned int len;
->>>>>>>> +	size_t write_len;
->>>>>>>> +	struct viommu_request *req;
->>>>>>>> +	struct virtqueue *vq = viommu->vqs[VIOMMU_REQUEST_VQ];
->>>>>>>> +
->>>>>>>> +	assert_spin_locked(&viommu->request_lock);
->>>>>>>> +
->>>>>>>> +	virtqueue_kick(vq);
->>>>>>>> +
->>>>>>>> +	while (!list_empty(&viommu->requests)) {
->>>>>>>> +		len = 0;
->>>>>>>> +		req = virtqueue_get_buf(vq, &len);
->>>>>>>> +		if (!req)
->>>>>>>> +			continue;
->>>>>>>> +
->>>>>>>> +		if (!len)
->>>>>>>> +			viommu_set_req_status(req->buf, req->len,
->>>>>>>> +					      VIRTIO_IOMMU_S_IOERR);
->>>>>>>> +
->>>>>>>> +		write_len = req->len - req->write_offset;
->>>>>>>> +		if (req->writeback && len == write_len)
->>>>>>>> +			memcpy(req->writeback, req->buf + req->write_offset,
->>>>>>>> +			       write_len);
->>>>>>>> +
->>>>>>>> +		list_del(&req->list);
->>>>>>>> +		kfree(req);
->>>>>>>> +	}
->>>>>>>
->>>>>>> I didn't notice this in the past but it seems this will spin
->>>>>>> with interrupts disabled until host handles the request.
->>>>>>> Please do not do this - host execution can be another
->>>>>>> task that needs the same host CPU. This will then disable
->>>>>>> interrupts for a very very long time.
->>>>>>
->>>>>> In the guest yes, but that doesn't prevent the host from running another
->>>>>> task right?
->>>>>
->>>>> Doesn't prevent it but it will delay it significantly
->>>>> until scheduler decides to kick the VCPU task out.
->>>>>
->>>>>> My tests run fine when QEMU is bound to a single CPU, even
->>>>>> though vcpu and viommu run in different threads
->>>>>>
->>>>>>> What to do then? Queue in software and wake up task.
->>>>>>
->>>>>> Unfortunately I can't do anything here, because IOMMU drivers can't
->>>>>> sleep in the iommu_map() or iommu_unmap() path.
->>>>>>
->>>>>> The problem is the same
->>>>>> for all IOMMU drivers. That's because the DMA API allows drivers to call
->>>>>> some functions with interrupts disabled. For example
->>>>>> Documentation/DMA-API-HOWTO.txt allows dma_alloc_coherent() and
->>>>>> dma_unmap_single() to be called in interrupt context.
->>>>>
->>>>> In fact I don't really understand how it's supposed to
->>>>> work at all: you only sync when ring is full.
->>>>> So host may not have seen your map request if ring
->>>>> is not full.
->>>>> Why is it safe to use the address with a device then?
->>>>
->>>> viommu_map() calls viommu_send_req_sync(), which does the sync
->>>> immediately after adding the MAP request.
->>>>
->>>> Thanks,
->>>> Jean
->>>
->>> I see. So it happens on every request. Maybe you should clear
->>> event index then. This way if exits are disabled you know that
->>> host is processing the ring. Event index is good for when
->>> you don't care when it will be processed, you just want
->>> to reduce number of exits as much as possible.
->>>
+Hi Michael,
+
+On 11/27/18 6:16 PM, Michael S. Tsirkin wrote:
+> On Tue, Nov 27, 2018 at 06:09:25PM +0100, Auger Eric wrote:
+>> Hi Michael,
 >>
->> I think that's already the case: since we don't attach a callback to the
->> request queue, VRING_AVAIL_F_NO_INTERRUPT is set in avail_flags_shadow,
->> which causes the used event index to stay clear.
+>> On 11/27/18 5:53 PM, Michael S. Tsirkin wrote:
+>>> On Thu, Nov 22, 2018 at 07:37:54PM +0000, Jean-Philippe Brucker wrote:
+>>>> Implement the virtio-iommu driver, following specification v0.9 [1].
+>>>>
+>>>> Since v4 [2] I fixed the issues reported by Eric, and added Reviewed-by
+>>>> from Eric and Rob. Thanks!
+>>>>
+>>>> I changed the specification to fix one inconsistency discussed in v4.
+>>>> That the device fills the probe buffer with zeroes is now a "SHOULD"
+>>>> instead of a "MAY", since it's the only way for the driver to know if
+>>>> the device wrote the status. Existing devices already do this. In
+>>>> addition the device now needs to fill the three padding bytes at the
+>>>> tail with zeroes.
+>>>>
+>>>> You can find Linux driver and kvmtool device on branches
+>>>> virtio-iommu/v0.9 [3]. I also lightly tested with Eric's latest QEMU
+>>>> device [4].
+>>>
+>>> I tried to get this to work on my x86 box but without
+>>> success. Any hints? Does this have to do with the IORT table?
+>>> I think we really should just reserve our own table ID
+>>> and avoid the pain of trying to add things to the IORT spec.
+>>> I'm reluctant to merge lots of code that I can't easily test.
+>>> Again, if we found a way to push more configuration into
+>>> virtio config space the problem space would be smaller.
 >>
->> Thanks,
->> Jean
+>> You can at least test it with QEMU ARM virt in TCG mode.
 > 
-> VRING_AVAIL_F_NO_INTERRUPT has no effect when the event index
-> feature has been negotiated. In any case, it also does not
-> affect kick notifications from guest - it affects
-> device interrupts.
+> It's slow enough that I generally just focus on KVM.
+> 
+>> Then I have
+>> worked on the IORT integration in PC/Q35 but this is not yet functional.
+>> I need to debug what's wrong on guest ACPI probing. I plan to work on
+>> this this week.
+>>
+>> Thanks
+>>
+>> Eric
+> 
+> Sounds good. Did you need to make changes to IORT?  I don't remember. If
+> yes it would be very easy to just have a virtio specific ACPI table -
+> I am assuming ARM guys will be just as hostile to virt changes
+> to IORT as they were to minor changes to ARM vIOMMU.
 
-Ok, I thought we were talking about the used event. Then this is a
-device-side optimization right?
+I eventually succeeded to prototype the IORT integration on x86. Please
+find below the branches to use for testing:
 
-In QEMU, disabling notifications while processing the queue didn't show
-any difference in netperf. Kvmtool already masks events when processing
-the ring - if the host is still handling requests while the guest adds
-more, then the avail event is at least one behind the new avail index,
-and the guest doesn't kick the host.
+- QEMU: https://github.com/eauger/qemu.git v3.1.0-rc3-virtio-iommu-v0.9-x86
+  On top of "[RFC v9 00/17] VIRTIO-IOMMU device", I added the IORT build
+for pc machine
+- LINUX GUEST: https://github.com/eauger/linux.git
+virtio-iommu-v0.9-iort-x86
+  Jean's virtio-iommu/devel branch + 2 hacks (to be discussed separately)
+  Make sure the CONFIG_VIRTIO_IOMMU config is set
 
-Anyway I think we can look at optimizations later, since I don't think
-there is any trivial one that we can squash into the initial driver.
-I'll resend this series with the Kconfig and header change.
+Used qemu cmd line featuring -device virtio-iommu-pci,addr=0xa:
 
-Thanks,
-Jean
+./x86_64-softmmu/qemu-system-x86_64 -M
+q35,accel=kvm,usb=off,sata=off,dump-guest-core=off -cpu
+Haswell,-hle,-rtm -smp 4,sockets=4,cores=1,threads=1 -m 4G -display none
+--enable-kvm -serial tcp:localhost:4444,server -device
+virtio-iommu-pci,addr=0xa -trace
+events=/home/augere/UPSTREAM/qemu/hw-virtio-iommu -qmp
+unix:/home/augere/TEST/QEMU/qmp-sock,server,nowait -rtc
+base=utc,driftfix=slew -global kvm-pit.lost_tick_policy=delay -realtime
+mlock=off -no-hpet -no-shutdown -device
+virtio-blk-pci,scsi=off,drive=drv0,id=virtio-disk0,bootindex=1,iommu_platform,disable-modern=off,disable-legacy=on
+-drive
+file=/home/augere/VM/IMAGES/vm0.qcow2,format=qcow2,if=none,id=drv0
+-device
+virtio-net-pci,bus=pcie.0,netdev=nic0,mac=6a:f5:10:b1:3d:d2,iommu_platform,disable-modern=off,disable-legacy=on
+-netdev
+tap,id=nic0,script=/home/augere/TEST/SCRIPTS/qemu-ifup,downscript=/home/augere/TEST/SCRIPTS/qemu-ifdown
+-kernel
+/home/augere/VM/BOOT/vmlinuz-4.20.0-rc3-guest-defconfig-virtio-iommu-0.9-x86+
+-initrd
+/home/augere/VM/BOOT/initrd.img-4.20.0-rc3-guest-defconfig-virtio-iommu-0.9-x86+
+-append 'root=/dev/mapper/rhel_dhcp156--238-root ro crashkernel=auto
+rd.lvm.lv=rhel_dhcp156-238/root rd.lvm.lv=rhel_dhcp156-238/swap rw
+ignore_loglevel console=tty0 console=ttyS0,115200n8 serial acpi=force'
+-net none -d guest_errors
+
+I put sata=off otherwise I have early untranslated transactions that
+prevent the guest from booting.
+
+Please let me know if you encounter any issue reproducing the
+environment on your side.
+
+Thanks
+
+Eric
+
+
+> 
+> 
+>>>
+>>>> [1] Virtio-iommu specification v0.9, sources, pdf and diff from v0.8
+>>>>     git://linux-arm.org/virtio-iommu.git virtio-iommu/v0.9
+>>>>     http://jpbrucker.net/virtio-iommu/spec/v0.9/virtio-iommu-v0.9.pdf
+>>>>     http://jpbrucker.net/virtio-iommu/spec/diffs/virtio-iommu-pdf-diff-v0.8-v0.9.pdf
+>>>>
+>>>> [2] [PATCH v4 0/7] Add virtio-iommu driver
+>>>>     https://lists.linuxfoundation.org/pipermail/iommu/2018-November/031074.html
+>>>>
+>>>> [3] git://linux-arm.org/linux-jpb.git virtio-iommu/v0.9
+>>>>     git://linux-arm.org/kvmtool-jpb.git virtio-iommu/v0.9
+>>>>
+>>>> [4] [RFC v9 00/17] VIRTIO-IOMMU device
+>>>>     https://www.mail-archive.com/qemu-devel@nongnu.org/msg575578.html
+>>>>
+>>>> Jean-Philippe Brucker (7):
+>>>>   dt-bindings: virtio-mmio: Add IOMMU description
+>>>>   dt-bindings: virtio: Add virtio-pci-iommu node
+>>>>   of: Allow the iommu-map property to omit untranslated devices
+>>>>   PCI: OF: Initialize dev->fwnode appropriately
+>>>>   iommu: Add virtio-iommu driver
+>>>>   iommu/virtio: Add probe request
+>>>>   iommu/virtio: Add event queue
+>>>>
+>>>>  .../devicetree/bindings/virtio/iommu.txt      |   66 +
+>>>>  .../devicetree/bindings/virtio/mmio.txt       |   30 +
+>>>>  MAINTAINERS                                   |    7 +
+>>>>  drivers/iommu/Kconfig                         |   11 +
+>>>>  drivers/iommu/Makefile                        |    1 +
+>>>>  drivers/iommu/virtio-iommu.c                  | 1157 +++++++++++++++++
+>>>>  drivers/of/base.c                             |   10 +-
+>>>>  drivers/pci/of.c                              |    7 +
+>>>>  include/uapi/linux/virtio_ids.h               |    1 +
+>>>>  include/uapi/linux/virtio_iommu.h             |  161 +++
+>>>>  10 files changed, 1448 insertions(+), 3 deletions(-)
+>>>>  create mode 100644 Documentation/devicetree/bindings/virtio/iommu.txt
+>>>>  create mode 100644 drivers/iommu/virtio-iommu.c
+>>>>  create mode 100644 include/uapi/linux/virtio_iommu.h
+>>>>
+>>>> -- 
+>>>> 2.19.1
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
