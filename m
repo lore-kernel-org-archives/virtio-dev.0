@@ -1,57 +1,127 @@
-Return-Path: virtio-return-3207-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio@lists.oasis-open.org>
-List-Post: <mailto:virtio@lists.oasis-open.org>
-List-Help: <mailto:virtio-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Thu, 6 Dec 2018 13:16:06 -0500
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20181206094016-mutt-send-email-mst@kernel.org>
-References: <20181127010219.10441-1-mst@redhat.com>
- <20181206122432.5op6qcqpp7grtyz6@jenstp.localdomain>
- <20181206090046-mutt-send-email-mst@kernel.org>
- <20181206150904.0b0828b9.cohuck@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20181206150904.0b0828b9.cohuck@redhat.com>
-Subject: [virtio] Re: [virtio-dev] [PATCH v3] ACCESS_PLATFORM/ORDER_PLATFORM
-To: Cornelia Huck <cohuck@redhat.com>
-Cc: Jens Freimann <jfreimann@redhat.com>, virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, Tiwei Bie <tiwei.bie@intel.com>, stefanha@redhat.com, pbonzini@redhat.com, jasowang@redhat.com, pasic@linux.vnet.ibm.com, dan.daly@intel.com, cunming.liang@intel.com, zhihong.wang@intel.com
+Return-Path: virtio-dev-return-5121-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id 2EF3A985ED0
+	for <virtio-dev@lists.oasis-open.org>; Wed,  5 Dec 2018 02:18:52 +0000 (UTC)
+From: Tiwei Bie <tiwei.bie@intel.com>
+Date: Wed,  5 Dec 2018 10:16:51 +0800
+Message-Id: <20181205021651.392-1-tiwei.bie@intel.com>
+Subject: [virtio-dev] [PATCH v3] packed-ring: fix example code
+To: virtio-dev@lists.oasis-open.org
+Cc: mst@redhat.com, cohuck@redhat.com, stefanha@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Thu, Dec 06, 2018 at 03:09:04PM +0100, Cornelia Huck wrote:
-> On Thu, 6 Dec 2018 09:01:08 -0500
-> "Michael S. Tsirkin" <mst@redhat.com> wrote:
-> 
-> > On Thu, Dec 06, 2018 at 01:24:32PM +0100, Jens Freimann wrote:
-> > > On Mon, Nov 26, 2018 at 08:03:37PM -0500, Michael S. Tsirkin wrote:  
-> > > > +  If this feature bit is negotiated, the ordering in effect for any
-> > > > +  memory accesses by the driver that need to be ordered in a specific way
-> > > > +  with respect to accesses by the device is the one suitable for devices
-> > > > +  described by the platform.  
-> > > 
-> > > I had to read this sentence several times. How about: "Some memory
-> > > accesses by the driver need to be ordered in a specific way with
-> > > respect to accesses by the device. If this feature bit is negotiated,
-> > > these accesses need to match the ordering requirements of devices as
-> > > described for the platform."
-> > > 
-> > > In any case:
-> > > 
-> > > Reviewed-by: Jens Freimann <jfreimann@redhat.com>  
-> > 
-> > I think we can make this change under the trivial changes rule, thanks!
-> 
-> I agree, and I think that Jens' wording is easier to read.
+Driver can't just check whether USED bit equals to the used
+wrap counter when checking whether a descriptor is a used
+descriptor, because driver also needs to check whether the
+descriptor has been made available. Below is an example:
 
-Yea sorry, I guess I should read Joyce less :).
+Assuming ring size is 4, ring's initial state will be:
 
++----+----+----+----+
+| 00 | 00 | 00 | 00 |
++----+----+----+----+
+
+00 means AVAIL=0 USED=0, 01 means AVAIL=0 USED=1
+10 means AVAIL=1 USED=0, 11 means AVAIL=1 USED=1
+
+After driver made two descriptor chains available and each
+chain consists of two descriptors, the ring could be:
+
++----+-----------+----+-----------+
+| 10 | 10 (id=0) | 10 | 10 (id=1) |
++----+-----------+----+-----------+
+
+After device processed all the available descriptors and made
+them used (e.g. in order), the ring could be:
+
++-----------+----+-----------+----+
+| 11 (id=0) | 10 | 11 (id=1) | 10 |
++-----------+----+-----------+----+
+
+After driver processed all the used descriptors and made
+one descriptor (not chained, just one descriptor) available,
+the ring could be:
+
++-----------+----+----+----+
+| 01 (id=0) | 10 | 11 | 10 |
++-----------+----+----+----+
+
+After device made that descriptor used, the ring will be:
+
++-----------+----+----+----+
+| 00 (id=0) | 10 | 11 | 10 |
++-----------+----+----+----+
+
+If driver just checks whether USED bit equals to the used
+wrap counter when checking whether a descriptor is a used
+descriptor, after processing the first descriptor (whose
+AVAIL and USED bits are both 0), and advancing vq->next_used
+pointer, it will then also treat the next descriptor, i.e.
+the second descriptor (whose AVAIL and USED bits are 1 and
+0 respectively) as a used descriptor which is wrong.
+
+Fixes: https://github.com/oasis-tcs/virtio-spec/issues/29
+Signed-off-by: Tiwei Bie <tiwei.bie@intel.com>
+---
+v2:
+- Add "Fixes" tag;
+- Refine commit log;
+
+v3:
+- Compare with vq->used_wrap_count (MST);
+- Add comments (MST);
+- Refine commit log;
+
+ packed-ring.tex | 19 ++++++++++++++++---
+ 1 file changed, 16 insertions(+), 3 deletions(-)
+
+diff --git a/packed-ring.tex b/packed-ring.tex
+index f24f49b..c8cd83b 100644
+--- a/packed-ring.tex
++++ b/packed-ring.tex
+@@ -687,16 +687,29 @@ vq->driver_event.flags = RING_EVENT_FLAGS_DISABLE;
+ for (;;) {
+         struct pvirtq_desc *d = vq->desc[vq->next_used];
+ 
++        /*
++         * Check that
++         * 1. Descriptor has been made available.
++         *    Note: there are many other ways to check this, e.g.
++         *    track the number of outstanding available descriptors or buffers
++         *    and check that it's not 0.
++         * 2. Descriptor has been used by device.
++         */
+         flags = d->flags;
++        bool avail = flags & VIRTQ_DESC_F_AVAIL;
+         bool used = flags & VIRTQ_DESC_F_USED;
+-
+-        if (used != vq->used_wrap_count) {
++        if (avail != vq->used_wrap_count || used != vq->used_wrap_count) {
+                 vq->driver_event.flags = RING_EVENT_FLAGS_ENABLE;
+                 memory_barrier();
+ 
++                /*
++                 * Re-test in case another thread submitted more descriptors
++                 * and/or device used more descriptors before driver enabled events.
++                 */
+                 flags = d->flags;
++                bool avail = flags & VIRTQ_DESC_F_AVAIL;
+                 bool used = flags & VIRTQ_DESC_F_USED;
+-                if (used != vq->used_wrap_count) {
++                if (avail != vq->used_wrap_count || used != vq->used_wrap_count) {
+                         break;
+                 }
+ 
 -- 
-MST
+2.17.1
+
 
 ---------------------------------------------------------------------
-To unsubscribe from this mail list, you must leave the OASIS TC that 
-generates this mail.  Follow this link to all your TCs in OASIS at:
-https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
