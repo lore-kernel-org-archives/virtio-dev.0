@@ -1,52 +1,79 @@
-Return-Path: virtio-dev-return-5147-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id D0E13985B20
-	for <virtio-dev@lists.oasis-open.org>; Sat,  8 Dec 2018 13:28:53 +0000 (UTC)
-Date: Sat, 8 Dec 2018 21:26:57 +0800
-From: Tiwei Bie <tiwei.bie@intel.com>
-Message-ID: <20181208132656.GA29772@dpdk-tbie>
-References: <20181207084842.13133-1-tiwei.bie@intel.com>
- <20181207131058-mutt-send-email-mst@kernel.org>
+Return-Path: virtio-return-3208-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio@lists.oasis-open.org>
+List-Post: <mailto:virtio@lists.oasis-open.org>
+List-Help: <mailto:virtio-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
+Date: Thu, 6 Dec 2018 14:18:16 -0500
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20181206191808.15691-1-mst@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20181207131058-mutt-send-email-mst@kernel.org>
-Subject: [virtio-dev] Re: [RFC 0/3] virtio_ring: define flags as shifts consistently
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: jasowang@redhat.com, virtualization@lists.linux-foundation.org, linux-kernel@vger.kernel.org, netdev@vger.kernel.org, virtio-dev@lists.oasis-open.org, wexu@redhat.com, jfreimann@redhat.com, maxime.coquelin@redhat.com
+Subject: [virtio] [PATCH] split-ring: document in-order operation
+To: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+Cc: Jason Wang <jasowang@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Fri, Dec 07, 2018 at 01:11:42PM -0500, Michael S. Tsirkin wrote:
-> On Fri, Dec 07, 2018 at 04:48:39PM +0800, Tiwei Bie wrote:
-> > This is a follow up of the discussion in this thread:
-> > https://patchwork.ozlabs.org/patch/1001015/#2042353
-> 
-> How was this tested? I'd suggest building virtio
-> before and after the changes, stripped binary
-> should be exactly the same.
+The point of in-order for the device is to be able to skip
+writing out some used descriptors, but the documentation
+that we have was put in the packed ring section and
+written in a way specific to the packed ring.
 
-Sure, I will do the test with scripts/objdiff.
+Writing it in a generic way is tricky, for now this patch just copies
+the text from the packed ring to the split ring section, with minor
+tweaks.
 
-> 
-> 
-> > Tiwei Bie (3):
-> >   virtio_ring: define flags as shifts consistently
-> >   virtio_ring: add VIRTIO_RING_NO_LEGACY
-> >   virtio_ring: use new vring flags
-> > 
-> >  drivers/virtio/virtio_ring.c     | 100 ++++++++++++++++++-------------
-> >  include/uapi/linux/virtio_ring.h |  61 +++++++++++++------
-> >  2 files changed, 103 insertions(+), 58 deletions(-)
-> > 
-> > -- 
-> > 2.17.1
+Suggested-by: Jason Wang <jasowang@redhat.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+---
+ split-ring.tex | 28 ++++++++++++++++++++++++++++
+ 1 file changed, 28 insertions(+)
+
+diff --git a/split-ring.tex b/split-ring.tex
+index 6f4a0a6..4e373d6 100644
+--- a/split-ring.tex
++++ b/split-ring.tex
+@@ -466,6 +466,34 @@ that uninitialized memory has been overwritten when it has not.
+ The driver MUST NOT make assumptions about data in device-writable buffers
+ beyond the first \field{len} bytes, and SHOULD ignore this data.
+ 
++\subsection{In-order use of descriptors}
++\label{sec:Basic Facilities of a Virtio Device / Virtqueues / In-order use of descriptors}
++
++Some devices always use descriptors in the same order in which
++they have been made available. These devices can offer the
++VIRTIO_F_IN_ORDER feature. If negotiated, this knowledge allows
++devices to notify the use of a batch of buffers to the driver by
++only writing out a single used ring entry with the \field{id}
++corresponding to the head entry of the
++descriptor chain describing the last buffer in the batch.
++
++The device then skips forward in the ring according to the size of
++the batch. Accordingly, it increments the used \field{idx} by the
++size of the batch.
++
++The driver needs to look up the used \field{id} and
++calculate the batch size to be able to advance to where the next
++used ring entry will be written by the device.
++
++This will result in the used ring entry at an offset matching the
++first available ring entry in the batch, the used ring entry for
++the next batch at an offset matching the first available ring
++entry in the next batch, etc.
++
++The skipped buffers (for which no used ring entry was written)
++are assumed to have been used (read or written) by the
++device completely.
++
+ \subsection{Available Buffer Notification Suppression}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Notification Suppression}
+ 
+ The device can suppress available buffer notifications in a manner
+-- 
+MST
 
 ---------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+To unsubscribe from this mail list, you must leave the OASIS TC that 
+generates this mail.  Follow this link to all your TCs in OASIS at:
+https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
 
