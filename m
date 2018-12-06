@@ -1,104 +1,94 @@
-Return-Path: virtio-dev-return-5137-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id D6B77985AE8
-	for <virtio-dev@lists.oasis-open.org>; Fri,  7 Dec 2018 01:20:08 +0000 (UTC)
-Date: Fri, 7 Dec 2018 09:18:10 +0800
-From: Tiwei Bie <tiwei.bie@intel.com>
-Message-ID: <20181207011810.GA12404@btwcube1>
-References: <20181205162701.14138-1-tiwei.bie@intel.com>
+Return-Path: virtio-return-3203-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio@lists.oasis-open.org>
+List-Post: <mailto:virtio@lists.oasis-open.org>
+List-Help: <mailto:virtio-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
+Date: Thu, 6 Dec 2018 13:24:32 +0100
+From: Jens Freimann <jfreimann@redhat.com>
+Message-ID: <20181206122432.5op6qcqpp7grtyz6@jenstp.localdomain>
+References: <20181127010219.10441-1-mst@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <20181205162701.14138-1-tiwei.bie@intel.com>
-Subject: Re: [virtio-dev] [PATCH v4] packed-ring: fix used descriptor
- checking in example code
-To: virtio-dev@lists.oasis-open.org
-Cc: mst@redhat.com, cohuck@redhat.com, stefanha@redhat.com
+In-Reply-To: <20181127010219.10441-1-mst@redhat.com>
+Subject: [virtio] Re: [virtio-dev] [PATCH v3] ACCESS_PLATFORM/ORDER_PLATFORM
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, Tiwei Bie <tiwei.bie@intel.com>, cohuck@redhat.com, stefanha@redhat.com, pbonzini@redhat.com, jasowang@redhat.com, pasic@linux.vnet.ibm.com, dan.daly@intel.com, cunming.liang@intel.com, zhihong.wang@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Thu, Dec 06, 2018 at 12:27:01AM +0800, Tiwei Bie wrote:
-> When the driver is processing used descriptors in parallel
-> with adding new available descriptors, the driver can't just
-> check whether USED bit equals to the used wrap counter when
-> checking whether a descriptor is a used descriptor, because
-> the driver also needs to check whether the descriptor has
-> been made available. Below is an example:
-> 
-> Assuming ring size is 4, ring's initial state will be:
-> 
-> +----+----+----+----+
-> | 00 | 00 | 00 | 00 |
-> +----+----+----+----+
-> 
-> 00 means AVAIL=0 USED=0, 01 means AVAIL=0 USED=1
-> 10 means AVAIL=1 USED=0, 11 means AVAIL=1 USED=1
-> 
-> After the driver made two descriptor chains available and
-> each chain consists of two descriptors, the ring could be:
-> 
-> +----+-----------+----+-----------+
-> | 10 | 10 (id=0) | 10 | 10 (id=1) |
-> +----+-----------+----+-----------+
-> 
-> After the device processed all the available descriptors and
-> made them used (e.g. in order), the ring could be:
-> 
-> +-----------+----+-----------+----+
-> | 11 (id=0) | 10 | 11 (id=1) | 10 |
-> +-----------+----+-----------+----+
-> 
-> After the driver processed all the used descriptors and made
-> one descriptor (not chained, just one descriptor) available,
-> the ring could be:
-> 
-> +-----------+----+----+----+
-> | 01 (id=0) | 10 | 11 | 10 |
-> +-----------+----+----+----+
-> 
-> After the device made that descriptor used, the ring will be:
-> 
-> +-----------+----+----+----+
-> | 00 (id=0) | 10 | 11 | 10 |
-> +-----------+----+----+----+
-> 
-> If the driver just checks whether USED bit equals to the used
-> wrap counter when checking whether a descriptor is a used
-> descriptor, after processing the first descriptor (whose
-> AVAIL and USED bits are both 0), and advancing vq->next_used
-> pointer, it will then also treat the next descriptor, i.e.
-> the second descriptor (whose AVAIL and USED bits are 1 and
-> 0 respectively) as a used descriptor which is wrong.
-> 
-> Fixes: https://github.com/oasis-tcs/virtio-spec/issues/29
-> Signed-off-by: Tiwei Bie <tiwei.bie@intel.com>
-> ---
-> v2:
-> - Add "Fixes" tag;
-> - Refine commit log;
-> 
-> v3:
-> - Compare with vq->used_wrap_count (MST);
-> - Add comments (MST);
-> - Refine commit log;
-> 
-> v4:
-> - s/device/the device/ (Cornelia);
-> - s/driver/the driver/ (Cornelia);
-> - Improve commit log and comments (MST);
-> - Make commit log title more specific;
-> 
->  packed-ring.tex | 23 ++++++++++++++++++++---
->  1 file changed, 20 insertions(+), 3 deletions(-)
-> 
+On Mon, Nov 26, 2018 at 08:03:37PM -0500, Michael S. Tsirkin wrote:
+>diff --git a/content.tex b/content.tex
+>index c346183..5582c1c 100644
+>--- a/content.tex
+>+++ b/content.tex
+>@@ -5452,26 +5452,48 @@ Descriptors} and \ref{sec:Packed Virtqueues / Indirect Flag: Scatter-Gather Supp
+>   \item[VIRTIO_F_VERSION_1(32)] This indicates compliance with this
+>     specification, giving a simple way to detect legacy devices or drivers.
+>
+>-  \item[VIRTIO_F_IOMMU_PLATFORM(33)] This feature indicates that the device is
+>+  \item[VIRTIO_F_ACCESS_PLATFORM(33)] This feature indicates that
+>+  the device can be used on a platform where device access to data
+>+  in memory is limited and/or translated. E.g. this is the case if the device can be located
+>   behind an IOMMU that translates bus addresses from the device into physical
+>-  addresses in memory.  If this feature bit is set to 0, then the device emits
+>-  physical addresses which are not translated further, even though an IOMMU
+>-  may be present.
+>+  addresses in memory, if the device can be limited to only access
+>+  certain memory addresses or if special commands such as
+>+  a cache flush can be needed to synchronise data in memory with
+>+  the device. Whether accesses are actually limited or translated
+>+  is described by platform-specific means.
+>+  If this feature bit is set to 0, then the device
+>+  has same access to memory addresses supplied to it as the
+>+  driver has.
+>+  In particular, the device will always use physical addresses
+>+  matching addresses used by the driver (typically meaning
+>+  physical addresses used by the CPU)
+>+  and not translated further, and can access any address supplied to it by
+>+  the driver. When clear, this overrides any platform-specific description of
+>+  whether device access is limited or translated in any way, e.g.
+>+  whether an IOMMU may be present.
+>   \item[VIRTIO_F_RING_PACKED(34)] This feature indicates
+>   support for the packed virtqueue layout as described in
+>   \ref{sec:Basic Facilities of a Virtio Device / Packed Virtqueues}~\nameref{sec:Basic Facilities of a Virtio Device / Packed Virtqueues}.
+>   \item[VIRTIO_F_IN_ORDER(35)] This feature indicates
+>   that all buffers are used by the device in the same
+>   order in which they have been made available.
+>-  \item[VIRTIO_F_IO_BARRIER(36)] This feature indicates
+>-  that the device needs the driver to use the barriers
+>-  suitable for hardware devices.  Some transports require
+>-  barriers to ensure devices have a consistent view of
+>-  memory.  When devices are implemented in software a
+>-  weaker form of barrier may be sufficient and yield
+>-  better performance.  This feature indicates whether
+>-  a stronger form of barrier suitable for hardware
+>-  devices is necessary.
+>+  \item[VIRTIO_F_ORDER_PLATFORM(36)] This feature indicates
+>+  that memory accesses by the driver and the device are ordered
+>+  in a way described by the platform.
+>+
+>+  If this feature bit is negotiated, the ordering in effect for any
+>+  memory accesses by the driver that need to be ordered in a specific way
+>+  with respect to accesses by the device is the one suitable for devices
+>+  described by the platform.
 
-Please start the voting on this change. Thanks!
+I had to read this sentence several times. How about: "Some memory
+accesses by the driver need to be ordered in a specific way with
+respect to accesses by the device. If this feature bit is negotiated,
+these accesses need to match the ordering requirements of devices as
+described for the platform."
+
+In any case:
+
+Reviewed-by: Jens Freimann <jfreimann@redhat.com> 
+
+
+regards,
+Jens 
 
 ---------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+To unsubscribe from this mail list, you must leave the OASIS TC that 
+generates this mail.  Follow this link to all your TCs in OASIS at:
+https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
 
