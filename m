@@ -1,29 +1,26 @@
-Return-Path: virtio-return-3206-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-return-3207-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio@lists.oasis-open.org>
 List-Post: <mailto:virtio@lists.oasis-open.org>
 List-Help: <mailto:virtio-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Thu, 6 Dec 2018 16:25:13 +0100
-From: Halil Pasic <pasic@linux.ibm.com>
-In-Reply-To: <20181206150904.0b0828b9.cohuck@redhat.com>
+Date: Thu, 6 Dec 2018 13:16:06 -0500
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20181206094016-mutt-send-email-mst@kernel.org>
 References: <20181127010219.10441-1-mst@redhat.com>
-	<20181206122432.5op6qcqpp7grtyz6@jenstp.localdomain>
-	<20181206090046-mutt-send-email-mst@kernel.org>
-	<20181206150904.0b0828b9.cohuck@redhat.com>
+ <20181206122432.5op6qcqpp7grtyz6@jenstp.localdomain>
+ <20181206090046-mutt-send-email-mst@kernel.org>
+ <20181206150904.0b0828b9.cohuck@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Message-Id: <20181206162513.77aa0418@oc2783563651>
-Subject: Re: [virtio] Re: [virtio-dev] [PATCH v3]
- ACCESS_PLATFORM/ORDER_PLATFORM
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20181206150904.0b0828b9.cohuck@redhat.com>
+Subject: [virtio] Re: [virtio-dev] [PATCH v3] ACCESS_PLATFORM/ORDER_PLATFORM
 To: Cornelia Huck <cohuck@redhat.com>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>, Jens Freimann <jfreimann@redhat.com>, virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, Tiwei Bie <tiwei.bie@intel.com>, stefanha@redhat.com, pbonzini@redhat.com, jasowang@redhat.com, pasic@linux.vnet.ibm.com, dan.daly@intel.com, cunming.liang@intel.com, zhihong.wang@intel.com
+Cc: Jens Freimann <jfreimann@redhat.com>, virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, Tiwei Bie <tiwei.bie@intel.com>, stefanha@redhat.com, pbonzini@redhat.com, jasowang@redhat.com, pasic@linux.vnet.ibm.com, dan.daly@intel.com, cunming.liang@intel.com, zhihong.wang@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Thu, 6 Dec 2018 15:09:04 +0100
-Cornelia Huck <cohuck@redhat.com> wrote:
-
+On Thu, Dec 06, 2018 at 03:09:04PM +0100, Cornelia Huck wrote:
 > On Thu, 6 Dec 2018 09:01:08 -0500
 > "Michael S. Tsirkin" <mst@redhat.com> wrote:
 > 
@@ -47,17 +44,11 @@ Cornelia Huck <cohuck@redhat.com> wrote:
 > > I think we can make this change under the trivial changes rule, thanks!
 > 
 > I agree, and I think that Jens' wording is easier to read.
-> 
 
-I find both of these quite tricky. Yet I consider both versions are good
-enough.
+Yea sorry, I guess I should read Joyce less :).
 
-
-
-
-
-
-
+-- 
+MST
 
 ---------------------------------------------------------------------
 To unsubscribe from this mail list, you must leave the OASIS TC that 
