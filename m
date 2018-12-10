@@ -1,57 +1,47 @@
-Return-Path: virtio-dev-return-5155-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-5157-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id DEF86985B26
-	for <virtio-dev@lists.oasis-open.org>; Mon, 10 Dec 2018 16:16:03 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 2CB4A985B2A
+	for <virtio-dev@lists.oasis-open.org>; Mon, 10 Dec 2018 16:16:13 +0000 (UTC)
 From: Venu Busireddy <venu.busireddy@oracle.com>
-Date: Mon, 10 Dec 2018 11:15:45 -0500
-Message-Id: <1544458548-5986-1-git-send-email-venu.busireddy@oracle.com>
-Subject: [virtio-dev] [PATCH 0/3] Support for datapath switching during live migration
+Date: Mon, 10 Dec 2018 11:15:46 -0500
+Message-Id: <1544458548-5986-2-git-send-email-venu.busireddy@oracle.com>
+In-Reply-To: <1544458548-5986-1-git-send-email-venu.busireddy@oracle.com>
+References: <1544458548-5986-1-git-send-email-venu.busireddy@oracle.com>
+Subject: [virtio-dev] [PATCH 1/3] virtio_net: Add VIRTIO_NET_F_STANDBY feature bit.
 To: venu.busireddy@oracle.com, "Michael S. Tsirkin" <mst@redhat.com>, Marcel Apfelbaum <marcel@redhat.com>
-Cc: virtio-dev@lists.oasis-open.org, qemu-devel@nongnu.org
+Cc: Sridhar Samudrala <sridhar.samudrala@intel.com>, virtio-dev@lists.oasis-open.org, qemu-devel@nongnu.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Implement the infrastructure to support datapath switching during live
-migration involving SR-IOV devices.
+From: Sridhar Samudrala <sridhar.samudrala@intel.com>
 
-1. This patch is based off on the current VIRTIO_NET_F_STANDBY feature
-   bit and MAC address device pairing.
+This feature bit can be used by a hypervisor to indicate to the virtio_net
+device that it can act as a standby for another device with the same MAC
+address.
 
-2. This set of events will be consumed by userspace management software
-   to orchestrate all the hot plug and datapath switching activities.
-   This scheme has the least QEMU modifications while allowing userspace
-   software to build its own intelligence to control the whole process
-   of SR-IOV live migration.
+Signed-off-by: Sridhar Samudrala <sridhar.samudrala@intel.com>
+Signed-off-by: Venu Busireddy <venu.busireddy@oracle.com>
+---
+ hw/net/virtio-net.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-3. While the hidden device model (viz. coupled device model) is still
-   being explored for automatic hot plugging (QEMU) and automatic datapath
-   switching (host-kernel), this series provides a supplemental set
-   of interfaces if management software wants to drive the SR-IOV live
-   migration on its own. It should not conflict with the hidden device
-   model but just offers simplicity of implementation.
-
-Sridhar Samudrala (1):
-  virtio_net: Add VIRTIO_NET_F_STANDBY feature bit.
-
-Venu Busireddy (1):
-  virtio_net: Add support for "Data Path Switching" during Live Migration.
-
-Si-Wei Liu (1):
-  vfio-pci: Add FAILOVER_PRIMARY_CHANGED event to shorten downtime during failover
-
- hw/acpi/pcihp.c                | 27 ++++++++++++++++
- hw/net/virtio-net.c            | 25 +++++++++++++++
- hw/vfio/pci.c                  | 60 ++++++++++++++++++++++++++++++++++++
- hw/vfio/pci.h                  |  1 +
- include/hw/pci/pci.h           |  1 +
- include/hw/virtio/virtio-net.h |  4 +++
- qapi/net.json                  | 70 ++++++++++++++++++++++++++++++++++++++++++
- 7 files changed, 188 insertions(+)
-
+diff --git a/hw/net/virtio-net.c b/hw/net/virtio-net.c
+index 385b1a0..411f8fb 100644
+--- a/hw/net/virtio-net.c
++++ b/hw/net/virtio-net.c
+@@ -2198,6 +2198,8 @@ static Property virtio_net_properties[] = {
+                      true),
+     DEFINE_PROP_INT32("speed", VirtIONet, net_conf.speed, SPEED_UNKNOWN),
+     DEFINE_PROP_STRING("duplex", VirtIONet, net_conf.duplex_str),
++    DEFINE_PROP_BIT64("standby", VirtIONet, host_features, VIRTIO_NET_F_STANDBY,
++                      false),
+     DEFINE_PROP_END_OF_LIST(),
+ };
+ 
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
