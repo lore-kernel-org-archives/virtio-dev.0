@@ -1,46 +1,60 @@
-Return-Path: virtio-dev-return-5200-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-5168-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 61431985E7E
-	for <virtio-dev@lists.oasis-open.org>; Fri, 14 Dec 2018 06:32:26 +0000 (UTC)
-Message-ID: <5C134FAE.9030300@intel.com>
-Date: Fri, 14 Dec 2018 14:37:34 +0800
+	by lists.oasis-open.org (Postfix) with ESMTP id B9CED985C5B
+	for <virtio-dev@lists.oasis-open.org>; Tue, 11 Dec 2018 08:57:56 +0000 (UTC)
 From: Wei Wang <wei.w.wang@intel.com>
-MIME-Version: 1.0
-References: <1544516693-5395-1-git-send-email-wei.w.wang@intel.com> <1544516693-5395-2-git-send-email-wei.w.wang@intel.com> <20181213142800.GO2313@work-vm>
-In-Reply-To: <20181213142800.GO2313@work-vm>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: [virtio-dev] Re: [PATCH v11 1/7] bitmap: fix bitmap_count_one
-To: "Dr. David Alan Gilbert" <dgilbert@redhat.com>
-Cc: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, mst@redhat.com, quintela@redhat.com, peterx@redhat.com, pbonzini@redhat.com, liliang.opensource@gmail.com, nilal@redhat.com, riel@redhat.com
+Date: Tue, 11 Dec 2018 16:24:48 +0800
+Message-Id: <1544516693-5395-3-git-send-email-wei.w.wang@intel.com>
+In-Reply-To: <1544516693-5395-1-git-send-email-wei.w.wang@intel.com>
+References: <1544516693-5395-1-git-send-email-wei.w.wang@intel.com>
+Subject: [virtio-dev] [PATCH v11 2/7] bitmap: bitmap_count_one_with_offset
+To: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, mst@redhat.com, quintela@redhat.com, dgilbert@redhat.com, peterx@redhat.com
+Cc: pbonzini@redhat.com, liliang.opensource@gmail.com, nilal@redhat.com, riel@redhat.com, wei.w.wang@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 12/13/2018 10:28 PM, Dr. David Alan Gilbert wrote:
-> * Wei Wang (wei.w.wang@intel.com) wrote:
->> BITMAP_LAST_WORD_MASK(nbits) returns 0xffffffff when "nbits=0", which
->> makes bitmap_count_one fail to handle the "nbits=0" case. It appears to be
->> preferred to remain BITMAP_LAST_WORD_MASK identical to the kernel
->> implementation that it is ported from.
->>
->> So this patch fixes bitmap_count_one to handle the nbits=0 case.
-> OK; it's a little odd that it's only bitmap_count_one that's being fixed
-> for this case; but OK.
->
->
-> Reviewed-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
-Thanks.
+Count the number of 1s in a bitmap starting from an offset.
 
-We could also help fix other callers outside this series.
-(this one is put here as it helps this optimization feature avoid that 
-issue).
+Signed-off-by: Wei Wang <wei.w.wang@intel.com>
+CC: Dr. David Alan Gilbert <dgilbert@redhat.com>
+CC: Juan Quintela <quintela@redhat.com>
+CC: Michael S. Tsirkin <mst@redhat.com>
+Reviewed-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+---
+ include/qemu/bitmap.h | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-Best,
-Wei
+diff --git a/include/qemu/bitmap.h b/include/qemu/bitmap.h
+index 679f1bd..5c31334 100644
+--- a/include/qemu/bitmap.h
++++ b/include/qemu/bitmap.h
+@@ -232,6 +232,19 @@ static inline long bitmap_count_one(const unsigned long *bitmap, long nbits)
+     }
+ }
+ 
++static inline long bitmap_count_one_with_offset(const unsigned long *bitmap,
++                                                long offset, long nbits)
++{
++    long aligned_offset = QEMU_ALIGN_DOWN(offset, BITS_PER_LONG);
++    long redundant_bits = offset - aligned_offset;
++    long bits_to_count = nbits + redundant_bits;
++    const unsigned long *bitmap_start = bitmap +
++                                        aligned_offset / BITS_PER_LONG;
++
++    return bitmap_count_one(bitmap_start, bits_to_count) -
++           bitmap_count_one(bitmap_start, redundant_bits);
++}
++
+ void bitmap_set(unsigned long *map, long i, long len);
+ void bitmap_set_atomic(unsigned long *map, long i, long len);
+ void bitmap_clear(unsigned long *map, long start, long nr);
+-- 
+1.8.3.1
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
