@@ -1,57 +1,66 @@
-Return-Path: virtio-dev-return-5168-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-5171-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id B9CED985C5B
-	for <virtio-dev@lists.oasis-open.org>; Tue, 11 Dec 2018 08:57:56 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 42DE4985C81
+	for <virtio-dev@lists.oasis-open.org>; Tue, 11 Dec 2018 08:57:59 +0000 (UTC)
 From: Wei Wang <wei.w.wang@intel.com>
-Date: Tue, 11 Dec 2018 16:24:48 +0800
-Message-Id: <1544516693-5395-3-git-send-email-wei.w.wang@intel.com>
+Date: Tue, 11 Dec 2018 16:24:49 +0800
+Message-Id: <1544516693-5395-4-git-send-email-wei.w.wang@intel.com>
 In-Reply-To: <1544516693-5395-1-git-send-email-wei.w.wang@intel.com>
 References: <1544516693-5395-1-git-send-email-wei.w.wang@intel.com>
-Subject: [virtio-dev] [PATCH v11 2/7] bitmap: bitmap_count_one_with_offset
+Subject: [virtio-dev] [PATCH v11 3/7] migration: use bitmap_mutex in migration_bitmap_clear_dirty
 To: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, mst@redhat.com, quintela@redhat.com, dgilbert@redhat.com, peterx@redhat.com
 Cc: pbonzini@redhat.com, liliang.opensource@gmail.com, nilal@redhat.com, riel@redhat.com, wei.w.wang@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Count the number of 1s in a bitmap starting from an offset.
+The bitmap mutex is used to synchronize threads to update the dirty
+bitmap and the migration_dirty_pages counter. For example, the free
+page optimization clears bits of free pages from the bitmap in an
+iothread context. This patch makes migration_bitmap_clear_dirty update
+the bitmap and counter under the mutex.
 
 Signed-off-by: Wei Wang <wei.w.wang@intel.com>
 CC: Dr. David Alan Gilbert <dgilbert@redhat.com>
 CC: Juan Quintela <quintela@redhat.com>
 CC: Michael S. Tsirkin <mst@redhat.com>
-Reviewed-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+CC: Peter Xu <peterx@redhat.com>
+Reviewed-by: Peter Xu <peterx@redhat.com>
 ---
- include/qemu/bitmap.h | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ migration/ram.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/include/qemu/bitmap.h b/include/qemu/bitmap.h
-index 679f1bd..5c31334 100644
---- a/include/qemu/bitmap.h
-+++ b/include/qemu/bitmap.h
-@@ -232,6 +232,19 @@ static inline long bitmap_count_one(const unsigned long *bitmap, long nbits)
+diff --git a/migration/ram.c b/migration/ram.c
+index 7e7deec..01d267f 100644
+--- a/migration/ram.c
++++ b/migration/ram.c
+@@ -316,7 +316,7 @@ struct RAMState {
+     uint64_t target_page_count;
+     /* number of dirty bits in the bitmap */
+     uint64_t migration_dirty_pages;
+-    /* protects modification of the bitmap */
++    /* Protects modification of the bitmap and migration dirty pages */
+     QemuMutex bitmap_mutex;
+     /* The RAMBlock used in the last src_page_requests */
+     RAMBlock *last_req_rb;
+@@ -1556,11 +1556,14 @@ static inline bool migration_bitmap_clear_dirty(RAMState *rs,
+ {
+     bool ret;
+ 
++    qemu_mutex_lock(&rs->bitmap_mutex);
+     ret = test_and_clear_bit(page, rb->bmap);
+ 
+     if (ret) {
+         rs->migration_dirty_pages--;
      }
++    qemu_mutex_unlock(&rs->bitmap_mutex);
++
+     return ret;
  }
  
-+static inline long bitmap_count_one_with_offset(const unsigned long *bitmap,
-+                                                long offset, long nbits)
-+{
-+    long aligned_offset = QEMU_ALIGN_DOWN(offset, BITS_PER_LONG);
-+    long redundant_bits = offset - aligned_offset;
-+    long bits_to_count = nbits + redundant_bits;
-+    const unsigned long *bitmap_start = bitmap +
-+                                        aligned_offset / BITS_PER_LONG;
-+
-+    return bitmap_count_one(bitmap_start, bits_to_count) -
-+           bitmap_count_one(bitmap_start, redundant_bits);
-+}
-+
- void bitmap_set(unsigned long *map, long i, long len);
- void bitmap_set_atomic(unsigned long *map, long i, long len);
- void bitmap_clear(unsigned long *map, long start, long nr);
 -- 
 1.8.3.1
 
