@@ -1,54 +1,71 @@
-Return-Path: virtio-dev-return-5193-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-5177-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 7822C985D7B
-	for <virtio-dev@lists.oasis-open.org>; Wed, 12 Dec 2018 15:38:37 +0000 (UTC)
-Date: Wed, 12 Dec 2018 16:38:33 +0100
-From: Cornelia Huck <cohuck@redhat.com>
-Message-ID: <20181212163833.02c430b4.cohuck@redhat.com>
-In-Reply-To: <20181212152754.12285-1-stefanha@redhat.com>
-References: <20181212152754.12285-1-stefanha@redhat.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 7260A985C75
+	for <virtio-dev@lists.oasis-open.org>; Tue, 11 Dec 2018 18:26:45 +0000 (UTC)
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Date: Tue, 11 Dec 2018 18:20:57 +0000
+Message-Id: <20181211182104.18241-1-jean-philippe.brucker@arm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Subject: [virtio-dev] Re: [PATCH] content: reserve virtio device ID for file system
- devices
-To: Stefan Hajnoczi <stefanha@redhat.com>
-Cc: virtio-dev@lists.oasis-open.org
+Content-Transfer-Encoding: 8bit
+Subject: [virtio-dev] [PATCH v6 0/7] Add virtio-iommu driver
+To: iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, devicetree@vger.kernel.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, joro@8bytes.org, mst@redhat.com
+Cc: jasowang@redhat.com, robh+dt@kernel.org, mark.rutland@arm.com, bhelgaas@google.com, frowand.list@gmail.com, kvmarm@lists.cs.columbia.edu, eric.auger@redhat.com, tnowicki@caviumnetworks.com, kevin.tian@intel.com, marc.zyngier@arm.com, robin.murphy@arm.com, will.deacon@arm.com, lorenzo.pieralisi@arm.com, bharat.bhushan@nxp.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, 12 Dec 2018 15:27:54 +0000
-Stefan Hajnoczi <stefanha@redhat.com> wrote:
+Implement the virtio-iommu driver, following specification v0.9 [1].
 
-> Reserve device ID 26 for virtio-fs devices.
-> 
-> Fixes: https://github.com/oasis-tcs/virtio-spec/issues/31
-> Signed-off-by: Stefan Hajnoczi <stefanha@redhat.com>
-> ---
->  content.tex | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/content.tex b/content.tex
-> index b101d1b..f8d0afb 100644
-> --- a/content.tex
-> +++ b/content.tex
-> @@ -2528,6 +2528,8 @@ Device ID  &  Virtio Device    \\
->  \hline
->  24         &   Memory device \\
->  \hline
-> +26         &   file system device \\
-> +\hline
->  \end{tabular}
->  
->  Some of the devices above are unspecified by this document,
+Only minor changes since v5 [2]. I fixed issues reported by Michael and
+added tags from Eric and Bharat. Thanks!
 
-Reviewed-by: Cornelia Huck <cohuck@redhat.com>
+You can find Linux driver and kvmtool device on v0.9 branches [3],
+module and x86 support on virtio-iommu/devel. Also tested with Eric's
+QEMU device [4].
 
-[Does anyone remember what 25 was supposed to be?]
+[1] Virtio-iommu specification v0.9, sources and pdf
+    git://linux-arm.org/virtio-iommu.git virtio-iommu/v0.9
+    http://jpbrucker.net/virtio-iommu/spec/v0.9/virtio-iommu-v0.9.pdf
+
+[2] [PATCH v5 0/7] Add virtio-iommu driver
+    https://www.spinics.net/lists/linux-pci/msg78158.html
+
+[3] git://linux-arm.org/linux-jpb.git virtio-iommu/v0.9.1
+    git://linux-arm.org/kvmtool-jpb.git virtio-iommu/v0.9
+
+[4] [RFC v9 00/17] VIRTIO-IOMMU device
+    https://www.mail-archive.com/qemu-devel@nongnu.org/msg575578.html
+
+Jean-Philippe Brucker (7):
+  dt-bindings: virtio-mmio: Add IOMMU description
+  dt-bindings: virtio: Add virtio-pci-iommu node
+  of: Allow the iommu-map property to omit untranslated devices
+  PCI: OF: Initialize dev->fwnode appropriately
+  iommu: Add virtio-iommu driver
+  iommu/virtio: Add probe request
+  iommu/virtio: Add event queue
+
+ .../devicetree/bindings/virtio/iommu.txt      |   66 +
+ .../devicetree/bindings/virtio/mmio.txt       |   30 +
+ MAINTAINERS                                   |    7 +
+ drivers/iommu/Kconfig                         |   11 +
+ drivers/iommu/Makefile                        |    1 +
+ drivers/iommu/virtio-iommu.c                  | 1157 +++++++++++++++++
+ drivers/of/base.c                             |   10 +-
+ drivers/pci/of.c                              |    7 +
+ include/uapi/linux/virtio_ids.h               |    1 +
+ include/uapi/linux/virtio_iommu.h             |  161 +++
+ 10 files changed, 1448 insertions(+), 3 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/virtio/iommu.txt
+ create mode 100644 drivers/iommu/virtio-iommu.c
+ create mode 100644 include/uapi/linux/virtio_iommu.h
+
+-- 
+2.19.1
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
