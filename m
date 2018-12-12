@@ -1,45 +1,64 @@
-Return-Path: virtio-dev-return-5186-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-5188-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id B1A8B985CE8
-	for <virtio-dev@lists.oasis-open.org>; Wed, 12 Dec 2018 00:39:33 +0000 (UTC)
-Date: Tue, 11 Dec 2018 19:39:28 -0500
+	by lists.oasis-open.org (Postfix) with ESMTP id EB878985D78
+	for <virtio-dev@lists.oasis-open.org>; Wed, 12 Dec 2018 14:35:27 +0000 (UTC)
+Date: Wed, 12 Dec 2018 09:35:19 -0500
 From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20181211193249-mutt-send-email-mst@kernel.org>
+Message-ID: <20181212093413-mutt-send-email-mst@kernel.org>
 References: <20181211182104.18241-1-jean-philippe.brucker@arm.com>
- <20181211183101.GA31936@infradead.org>
+ <20181212103545.GV16835@8bytes.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20181211183101.GA31936@infradead.org>
+In-Reply-To: <20181212103545.GV16835@8bytes.org>
 Subject: [virtio-dev] Re: [PATCH v6 0/7] Add virtio-iommu driver
-To: Christoph Hellwig <hch@infradead.org>
-Cc: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, devicetree@vger.kernel.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, joro@8bytes.org, mark.rutland@arm.com, kevin.tian@intel.com, tnowicki@caviumnetworks.com, marc.zyngier@arm.com, robin.murphy@arm.com, jasowang@redhat.com, will.deacon@arm.com, robh+dt@kernel.org, bhelgaas@google.com, frowand.list@gmail.com, kvmarm@lists.cs.columbia.edu
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, devicetree@vger.kernel.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, jasowang@redhat.com, robh+dt@kernel.org, mark.rutland@arm.com, bhelgaas@google.com, frowand.list@gmail.com, kvmarm@lists.cs.columbia.edu, eric.auger@redhat.com, tnowicki@caviumnetworks.com, kevin.tian@intel.com, marc.zyngier@arm.com, robin.murphy@arm.com, will.deacon@arm.com, lorenzo.pieralisi@arm.com, bharat.bhushan@nxp.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Tue, Dec 11, 2018 at 10:31:01AM -0800, Christoph Hellwig wrote:
-> On Tue, Dec 11, 2018 at 06:20:57PM +0000, Jean-Philippe Brucker wrote:
-> > Implement the virtio-iommu driver, following specification v0.9 [1].
-> > 
-> > Only minor changes since v5 [2]. I fixed issues reported by Michael and
-> > added tags from Eric and Bharat. Thanks!
-> > 
-> > You can find Linux driver and kvmtool device on v0.9 branches [3],
-> > module and x86 support on virtio-iommu/devel. Also tested with Eric's
-> > QEMU device [4].
+On Wed, Dec 12, 2018 at 11:35:45AM +0100, Joerg Roedel wrote:
+> Hi,
 > 
-> Just curious, what is the use case for it?
+> to make progress on this, we should first agree on the protocol used
+> between guest and host. I have a few points to discuss on the protocol
+> first.
+> 
+> On Tue, Dec 11, 2018 at 06:20:57PM +0000, Jean-Philippe Brucker wrote:
+> > [1] Virtio-iommu specification v0.9, sources and pdf
+> >     git://linux-arm.org/virtio-iommu.git virtio-iommu/v0.9
+> >     http://jpbrucker.net/virtio-iommu/spec/v0.9/virtio-iommu-v0.9.pdf
+> 
+> Looking at this I wonder why it doesn't make the IOTLB visible to the
+> guest. the UNMAP requests seem to require that the TLB is already
+> flushed to make the unmap visible.
+> 
+> I think that will cost significant performance for both, vfio and
+> dma-iommu use-cases which both do (vfio at least to some degree),
+> deferred flushing.
+> 
+> I also wonder whether the protocol should implement a
+> protocol version handshake
 
-If what I saw is any indication, it allows a very simple implementation
-of page table shadowing on the host, at the cost of not being able to
-accelerate with a hardware nested page tables support when available.
+virtio has a builtin version handshake so devices don't need to.
 
--- 
-MST
+> and iommu-feature set queries.
+> 
+> > [3] git://linux-arm.org/linux-jpb.git virtio-iommu/v0.9.1
+> >     git://linux-arm.org/kvmtool-jpb.git virtio-iommu/v0.9
+> 
+> Unfortunatly gitweb seems to be broken on linux-arm.org. What is missing
+> in this patch-set to make this work on x86?
+
+And I wonder about pcc too.
+
+> Regards,
+> 
+> 	Joerg
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
