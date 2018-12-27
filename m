@@ -1,106 +1,138 @@
-Return-Path: virtio-dev-return-5205-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-5206-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 4E76E985E2B
-	for <virtio-dev@lists.oasis-open.org>; Thu, 27 Dec 2018 11:31:23 +0000 (UTC)
-References: <1535333539-32420-1-git-send-email-wei.w.wang@intel.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 1DEEA985E2B
+	for <virtio-dev@lists.oasis-open.org>; Thu, 27 Dec 2018 11:59:20 +0000 (UTC)
 From: Christian Borntraeger <borntraeger@de.ibm.com>
-Date: Thu, 27 Dec 2018 12:31:11 +0100
-In-Reply-To: <1535333539-32420-1-git-send-email-wei.w.wang@intel.com>
+References: <1535333539-32420-1-git-send-email-wei.w.wang@intel.com>
+ <0661b05a-d9d0-d374-44e8-2583463e94c2@de.ibm.com>
+Date: Thu, 27 Dec 2018 12:59:04 +0100
+In-Reply-To: <0661b05a-d9d0-d374-44e8-2583463e94c2@de.ibm.com>
 Content-Language: en-US
-Message-Id: <0661b05a-d9d0-d374-44e8-2583463e94c2@de.ibm.com>
+Message-Id: <de167161-b586-6aee-d6a5-a90d47bbe1d4@de.ibm.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: Quoted-printable
 MIME-Version: 1.0
 Subject: [virtio-dev] Re: [PATCH v37 0/3] Virtio-balloon: support free page reporting
 To: Wei Wang <wei.w.wang@intel.com>, virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, linux-mm@kvack.org, mst@redhat.com, mhocko@kernel.org, akpm@linux-foundation.org, dgilbert@redhat.com
-Cc: torvalds@linux-foundation.org, pbonzini@redhat.com, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu0@gmail.com, nilal@redhat.com, riel@redhat.com, peterx@redhat.com, quintela@redhat.com
+Cc: torvalds@linux-foundation.org, pbonzini@redhat.com, liliang.opensource@gmail.com, yang.zhang.wz@gmail.com, quan.xu0@gmail.com, nilal@redhat.com, riel@redhat.com, peterx@redhat.com, quintela@redhat.com, Halil Pasic <pasic@linux.ibm.com>, Cornelia Huck <cohuck@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-This patch triggers random crashes in the guest kernel on s390 early during=
- boot.
-No migration and no setting of the balloon is involved.
+On 27.12.2018 12:31, Christian Borntraeger wrote:
+> This patch triggers random crashes in the guest kernel on s390 early duri=
+ng boot.
+> No migration and no setting of the balloon is involved.
+>=20
+
+Adding Conny and Halil,
+
+As the QEMU provides no PAGE_HINT feature yet, this quick hack makes the
+guest boot fine again:
 
 
+diff --git a/drivers/virtio/virtio_balloon.c b/drivers/virtio/virtio_balloo=
+n.c
+index 728ecd1eea305..aa2e1864c5736 100644
+--- a/drivers/virtio/virtio_balloon.c
++++ b/drivers/virtio/virtio_balloon.c
+@@ -492,7 +492,7 @@ static int init_vqs(struct virtio_balloon *vb)
+                callbacks[VIRTIO_BALLOON_VQ_FREE_PAGE] =3D NULL;
+        }
+=20
+-       err =3D vb->vdev->config->find_vqs(vb->vdev, VIRTIO_BALLOON_VQ_MAX,
++       err =3D vb->vdev->config->find_vqs(vb->vdev, 3, //VIRTIO_BALLOON_VQ=
+_MAX,
+                                         vqs, callbacks, names, NULL, NULL);
+        if (err)
+                return err;
 
 
-On 27.08.2018 03:32, Wei Wang wrote:
-> The new feature, VIRTIO_BALLOON_F_FREE_PAGE_HINT, implemented by this
-> series enables the virtio-balloon driver to report hints of guest free
-> pages to host. It can be used to accelerate virtual machine (VM) live
-> migration. Here is an introduction of this usage:
+To me it looks like that virtio_ccw_find_vqs will abort if any of the virtq=
+ueues=20
+that it is been asked for does not exist (including the earlier ones).
+
+
+Christian
+
 >=20
-> Live migration needs to transfer the VM's memory from the source machine
-> to the destination round by round. For the 1st round, all the VM's memory
-> is transferred. From the 2nd round, only the pieces of memory that were
-> written by the guest (after the 1st round) are transferred. One method
-> that is popularly used by the hypervisor to track which part of memory is
-> written is to have the hypervisor write-protect all the guest memory.
->=20
-> This feature enables the optimization by skipping the transfer of guest
-> free pages during VM live migration. It is not concerned that the memory
-> pages are used after they are given to the hypervisor as a hint of the
-> free pages, because they will be tracked by the hypervisor and transferred
-> in the subsequent round if they are used and written.
->=20
-> * Tests
-> 1 Test Environment
->     Host: Intel(R) Xeon(R) CPU E5-2699 v4 @ 2.20GHz
->     Migration setup: migrate_set_speed 100G, migrate_set_downtime 400ms
->=20
-> 2 Test Results (results are averaged over several repeated runs)
->     2.1 Guest setup: 8G RAM, 4 vCPU
->         2.1.1 Idle guest live migration time
->             Optimization v.s. Legacy =3D 620ms vs 2970ms
->             --> ~79% reduction
->         2.1.2 Guest live migration with Linux compilation workload
->           (i.e. make bzImage -j4) running
->           1) Live Migration Time:
->              Optimization v.s. Legacy =3D 2273ms v.s. 4502ms
->              --> ~50% reduction
->           2) Linux Compilation Time:
->              Optimization v.s. Legacy =3D 8min42s v.s. 8min43s
->              --> no obvious difference
->=20
->     2.2 Guest setup: 128G RAM, 4 vCPU
->         2.2.1 Idle guest live migration time
->             Optimization v.s. Legacy =3D 5294ms vs 41651ms
->             --> ~87% reduction
->         2.2.2 Guest live migration with Linux compilation workload
->           1) Live Migration Time:
->             Optimization v.s. Legacy =3D 8816ms v.s. 54201ms
->             --> 84% reduction
->           2) Linux Compilation Time:
->              Optimization v.s. Legacy =3D 8min30s v.s. 8min36s
->              --> no obvious difference
->=20
-> ChangeLog:
-> v36->v37:
->     - free the reported pages to mm when receives a DONE cmd from host.
->       Please see patch 1's commit log for reasons. Please see patch 1's
->       commit for detailed explanations.
->=20
-> For ChangeLogs from v22 to v36, please reference
-> https://lkml.org/lkml/2018/7/20/199
->=20
-> For ChangeLogs before v21, please reference
-> https://lwn.net/Articles/743660/
->=20
-> Wei Wang (3):
->   virtio-balloon: VIRTIO_BALLOON_F_FREE_PAGE_HINT
->   mm/page_poison: expose page_poisoning_enabled to kernel modules
->   virtio-balloon: VIRTIO_BALLOON_F_PAGE_POISON
->=20
->  drivers/virtio/virtio_balloon.c     | 374 ++++++++++++++++++++++++++++++=
-++----
->  include/uapi/linux/virtio_balloon.h |   8 +
->  mm/page_poison.c                    |   6 +
->  3 files changed, 355 insertions(+), 33 deletions(-)
->=20
+> On 27.08.2018 03:32, Wei Wang wrote:
+>> The new feature, VIRTIO_BALLOON_F_FREE_PAGE_HINT, implemented by this
+>> series enables the virtio-balloon driver to report hints of guest free
+>> pages to host. It can be used to accelerate virtual machine (VM) live
+>> migration. Here is an introduction of this usage:
+>>
+>> Live migration needs to transfer the VM's memory from the source machine
+>> to the destination round by round. For the 1st round, all the VM's memory
+>> is transferred. From the 2nd round, only the pieces of memory that were
+>> written by the guest (after the 1st round) are transferred. One method
+>> that is popularly used by the hypervisor to track which part of memory is
+>> written is to have the hypervisor write-protect all the guest memory.
+>>
+>> This feature enables the optimization by skipping the transfer of guest
+>> free pages during VM live migration. It is not concerned that the memory
+>> pages are used after they are given to the hypervisor as a hint of the
+>> free pages, because they will be tracked by the hypervisor and transferr=
+ed
+>> in the subsequent round if they are used and written.
+>>
+>> * Tests
+>> 1 Test Environment
+>>     Host: Intel(R) Xeon(R) CPU E5-2699 v4 @ 2.20GHz
+>>     Migration setup: migrate_set_speed 100G, migrate_set_downtime 400ms
+>>
+>> 2 Test Results (results are averaged over several repeated runs)
+>>     2.1 Guest setup: 8G RAM, 4 vCPU
+>>         2.1.1 Idle guest live migration time
+>>             Optimization v.s. Legacy =3D 620ms vs 2970ms
+>>             --> ~79% reduction
+>>         2.1.2 Guest live migration with Linux compilation workload
+>>           (i.e. make bzImage -j4) running
+>>           1) Live Migration Time:
+>>              Optimization v.s. Legacy =3D 2273ms v.s. 4502ms
+>>              --> ~50% reduction
+>>           2) Linux Compilation Time:
+>>              Optimization v.s. Legacy =3D 8min42s v.s. 8min43s
+>>              --> no obvious difference
+>>
+>>     2.2 Guest setup: 128G RAM, 4 vCPU
+>>         2.2.1 Idle guest live migration time
+>>             Optimization v.s. Legacy =3D 5294ms vs 41651ms
+>>             --> ~87% reduction
+>>         2.2.2 Guest live migration with Linux compilation workload
+>>           1) Live Migration Time:
+>>             Optimization v.s. Legacy =3D 8816ms v.s. 54201ms
+>>             --> 84% reduction
+>>           2) Linux Compilation Time:
+>>              Optimization v.s. Legacy =3D 8min30s v.s. 8min36s
+>>              --> no obvious difference
+>>
+>> ChangeLog:
+>> v36->v37:
+>>     - free the reported pages to mm when receives a DONE cmd from host.
+>>       Please see patch 1's commit log for reasons. Please see patch 1's
+>>       commit for detailed explanations.
+>>
+>> For ChangeLogs from v22 to v36, please reference
+>> https://lkml.org/lkml/2018/7/20/199
+>>
+>> For ChangeLogs before v21, please reference
+>> https://lwn.net/Articles/743660/
+>>
+>> Wei Wang (3):
+>>   virtio-balloon: VIRTIO_BALLOON_F_FREE_PAGE_HINT
+>>   mm/page_poison: expose page_poisoning_enabled to kernel modules
+>>   virtio-balloon: VIRTIO_BALLOON_F_PAGE_POISON
+>>
+>>  drivers/virtio/virtio_balloon.c     | 374 +++++++++++++++++++++++++++++=
++++----
+>>  include/uapi/linux/virtio_balloon.h |   8 +
+>>  mm/page_poison.c                    |   6 +
+>>  3 files changed, 355 insertions(+), 33 deletions(-)
+>>
 
 
 ---------------------------------------------------------------------
