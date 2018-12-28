@@ -1,37 +1,76 @@
-Return-Path: virtio-dev-return-5209-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-5210-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 0758D985E31
-	for <virtio-dev@lists.oasis-open.org>; Fri, 28 Dec 2018 03:01:31 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id D6AEA985E31
+	for <virtio-dev@lists.oasis-open.org>; Fri, 28 Dec 2018 03:01:32 +0000 (UTC)
 From: Wei Wang <wei.w.wang@intel.com>
-Date: Fri, 28 Dec 2018 10:26:24 +0800
-Message-Id: <1545963986-11280-1-git-send-email-wei.w.wang@intel.com>
-Subject: [virtio-dev] [PATCH v1 0/2] Virtio: fix some vq allocation issues
+Date: Fri, 28 Dec 2018 10:26:25 +0800
+Message-Id: <1545963986-11280-2-git-send-email-wei.w.wang@intel.com>
+In-Reply-To: <1545963986-11280-1-git-send-email-wei.w.wang@intel.com>
+References: <1545963986-11280-1-git-send-email-wei.w.wang@intel.com>
+Subject: [virtio-dev] [PATCH v1 1/2] virtio_pci: use queue idx instead of array idx to set up the vq
 To: virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, mst@redhat.com, cohuck@redhat.com
 Cc: borntraeger@de.ibm.com, pbonzini@redhat.com, dgilbert@redhat.com, wei.w.wang@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Some vqs don't need to be allocated when the related feature bits are
-disabled. Callers notice the vq allocation layer by setting the related
-names[i] to be NULL.
+When find_vqs, there will be no vq[i] allocation if its corresponding
+names[i] is NULL. For example, the caller may pass in names[i] (i=4)
+with names[2] being NULL because the related feature bit is turned off,
+so technically there are 3 queues on the device, and name[4] should
+correspond to the 3rd queue on the device.
 
-This patch series fixes the find_vqs implementations to handle this case.
+So we use queue_idx as the queue index, which is increased only when the
+queue exists.
 
-Wei Wang (2):
-  virtio_pci: use queue idx instead of array idx to set up the vq
-  virtio: don't allocate vqs when names[i] = NULL
+Signed-off-by: Wei Wang <wei.w.wang@intel.com>
+---
+ drivers/virtio/virtio_pci_common.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
- drivers/misc/mic/vop/vop_main.c        |  9 +++++++--
- drivers/remoteproc/remoteproc_virtio.c |  9 +++++++--
- drivers/s390/virtio/virtio_ccw.c       | 12 +++++++++---
- drivers/virtio/virtio_mmio.c           |  9 +++++++--
- drivers/virtio/virtio_pci_common.c     |  8 ++++----
- 5 files changed, 34 insertions(+), 13 deletions(-)
-
+diff --git a/drivers/virtio/virtio_pci_common.c b/drivers/virtio/virtio_pci_common.c
+index 465a6f5..d0584c0 100644
+--- a/drivers/virtio/virtio_pci_common.c
++++ b/drivers/virtio/virtio_pci_common.c
+@@ -285,7 +285,7 @@ static int vp_find_vqs_msix(struct virtio_device *vdev, unsigned nvqs,
+ {
+ 	struct virtio_pci_device *vp_dev = to_vp_device(vdev);
+ 	u16 msix_vec;
+-	int i, err, nvectors, allocated_vectors;
++	int i, err, nvectors, allocated_vectors, queue_idx = 0;
+ 
+ 	vp_dev->vqs = kcalloc(nvqs, sizeof(*vp_dev->vqs), GFP_KERNEL);
+ 	if (!vp_dev->vqs)
+@@ -321,7 +321,7 @@ static int vp_find_vqs_msix(struct virtio_device *vdev, unsigned nvqs,
+ 			msix_vec = allocated_vectors++;
+ 		else
+ 			msix_vec = VP_MSIX_VQ_VECTOR;
+-		vqs[i] = vp_setup_vq(vdev, i, callbacks[i], names[i],
++		vqs[i] = vp_setup_vq(vdev, queue_idx++, callbacks[i], names[i],
+ 				     ctx ? ctx[i] : false,
+ 				     msix_vec);
+ 		if (IS_ERR(vqs[i])) {
+@@ -356,7 +356,7 @@ static int vp_find_vqs_intx(struct virtio_device *vdev, unsigned nvqs,
+ 		const char * const names[], const bool *ctx)
+ {
+ 	struct virtio_pci_device *vp_dev = to_vp_device(vdev);
+-	int i, err;
++	int i, err, queue_idx = 0;
+ 
+ 	vp_dev->vqs = kcalloc(nvqs, sizeof(*vp_dev->vqs), GFP_KERNEL);
+ 	if (!vp_dev->vqs)
+@@ -374,7 +374,7 @@ static int vp_find_vqs_intx(struct virtio_device *vdev, unsigned nvqs,
+ 			vqs[i] = NULL;
+ 			continue;
+ 		}
+-		vqs[i] = vp_setup_vq(vdev, i, callbacks[i], names[i],
++		vqs[i] = vp_setup_vq(vdev, queue_idx++, callbacks[i], names[i],
+ 				     ctx ? ctx[i] : false,
+ 				     VIRTIO_MSI_NO_VECTOR);
+ 		if (IS_ERR(vqs[i])) {
 -- 
 2.7.4
 
