@@ -1,143 +1,120 @@
-Return-Path: virtio-dev-return-5211-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-5214-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id A72A2985E35
-	for <virtio-dev@lists.oasis-open.org>; Fri, 28 Dec 2018 03:01:34 +0000 (UTC)
-From: Wei Wang <wei.w.wang@intel.com>
-Date: Fri, 28 Dec 2018 10:26:26 +0800
-Message-Id: <1545963986-11280-3-git-send-email-wei.w.wang@intel.com>
-In-Reply-To: <1545963986-11280-1-git-send-email-wei.w.wang@intel.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 79B5E985E31
+	for <virtio-dev@lists.oasis-open.org>; Fri, 28 Dec 2018 07:57:26 +0000 (UTC)
 References: <1545963986-11280-1-git-send-email-wei.w.wang@intel.com>
-Subject: [virtio-dev] [PATCH v1 2/2] virtio: don't allocate vqs when names[i] = NULL
-To: virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, mst@redhat.com, cohuck@redhat.com
-Cc: borntraeger@de.ibm.com, pbonzini@redhat.com, dgilbert@redhat.com, wei.w.wang@intel.com
+From: Christian Borntraeger <borntraeger@de.ibm.com>
+Date: Fri, 28 Dec 2018 08:57:16 +0100
+MIME-Version: 1.0
+In-Reply-To: <1545963986-11280-1-git-send-email-wei.w.wang@intel.com>
+Content-Language: en-US
+Message-Id: <c6746307-fae5-7652-af8d-19f560fc31d9@de.ibm.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Subject: [virtio-dev] Re: [PATCH v1 0/2] Virtio: fix some vq allocation issues
+To: Wei Wang <wei.w.wang@intel.com>, virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, mst@redhat.com, cohuck@redhat.com
+Cc: pbonzini@redhat.com, dgilbert@redhat.com, Halil Pasic <pasic@linux.ibm.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Some vqs may not need to be allocated when their related feature bits
-are disabled. So callers may pass in such vqs with "names = NULL".
-Then we skip such vq allocations.
 
-Signed-off-by: Wei Wang <wei.w.wang@intel.com>
----
- drivers/misc/mic/vop/vop_main.c        |  9 +++++++--
- drivers/remoteproc/remoteproc_virtio.c |  9 +++++++--
- drivers/s390/virtio/virtio_ccw.c       | 12 +++++++++---
- drivers/virtio/virtio_mmio.c           |  9 +++++++--
- 4 files changed, 30 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/misc/mic/vop/vop_main.c b/drivers/misc/mic/vop/vop_main.c
-index 6b212c8..2bfa3a9 100644
---- a/drivers/misc/mic/vop/vop_main.c
-+++ b/drivers/misc/mic/vop/vop_main.c
-@@ -394,16 +394,21 @@ static int vop_find_vqs(struct virtio_device *dev, unsigned nvqs,
- 	struct _vop_vdev *vdev = to_vopvdev(dev);
- 	struct vop_device *vpdev = vdev->vpdev;
- 	struct mic_device_ctrl __iomem *dc = vdev->dc;
--	int i, err, retry;
-+	int i, err, retry, queue_idx = 0;
- 
- 	/* We must have this many virtqueues. */
- 	if (nvqs > ioread8(&vdev->desc->num_vq))
- 		return -ENOENT;
- 
- 	for (i = 0; i < nvqs; ++i) {
-+		if (!names[i]) {
-+			vqs[i] = NULL;
-+			continue;
-+		}
-+
- 		dev_dbg(_vop_dev(vdev), "%s: %d: %s\n",
- 			__func__, i, names[i]);
--		vqs[i] = vop_find_vq(dev, i, callbacks[i], names[i],
-+		vqs[i] = vop_find_vq(dev, queue_idx++, callbacks[i], names[i],
- 				     ctx ? ctx[i] : false);
- 		if (IS_ERR(vqs[i])) {
- 			err = PTR_ERR(vqs[i]);
-diff --git a/drivers/remoteproc/remoteproc_virtio.c b/drivers/remoteproc/remoteproc_virtio.c
-index 183fc42..2d7cd344 100644
---- a/drivers/remoteproc/remoteproc_virtio.c
-+++ b/drivers/remoteproc/remoteproc_virtio.c
-@@ -153,10 +153,15 @@ static int rproc_virtio_find_vqs(struct virtio_device *vdev, unsigned int nvqs,
- 				 const bool * ctx,
- 				 struct irq_affinity *desc)
- {
--	int i, ret;
-+	int i, ret, queue_idx = 0;
- 
- 	for (i = 0; i < nvqs; ++i) {
--		vqs[i] = rp_find_vq(vdev, i, callbacks[i], names[i],
-+		if (!names[i]) {
-+			vqs[i] = NULL;
-+			continue;
-+		}
-+
-+		vqs[i] = rp_find_vq(vdev, queue_idx++, callbacks[i], names[i],
- 				    ctx ? ctx[i] : false);
- 		if (IS_ERR(vqs[i])) {
- 			ret = PTR_ERR(vqs[i]);
-diff --git a/drivers/s390/virtio/virtio_ccw.c b/drivers/s390/virtio/virtio_ccw.c
-index fc9dbad..ae1d56d 100644
---- a/drivers/s390/virtio/virtio_ccw.c
-+++ b/drivers/s390/virtio/virtio_ccw.c
-@@ -635,7 +635,7 @@ static int virtio_ccw_find_vqs(struct virtio_device *vdev, unsigned nvqs,
- {
- 	struct virtio_ccw_device *vcdev = to_vc_device(vdev);
- 	unsigned long *indicatorp = NULL;
--	int ret, i;
-+	int ret, i, queue_idx = 0;
- 	struct ccw1 *ccw;
- 
- 	ccw = kzalloc(sizeof(*ccw), GFP_DMA | GFP_KERNEL);
-@@ -643,8 +643,14 @@ static int virtio_ccw_find_vqs(struct virtio_device *vdev, unsigned nvqs,
- 		return -ENOMEM;
- 
- 	for (i = 0; i < nvqs; ++i) {
--		vqs[i] = virtio_ccw_setup_vq(vdev, i, callbacks[i], names[i],
--					     ctx ? ctx[i] : false, ccw);
-+		if (!names[i]) {
-+			vqs[i] = NULL;
-+			continue;
-+		}
-+
-+		vqs[i] = virtio_ccw_setup_vq(vdev, queue_idx++, callbacks[i],
-+					     names[i], ctx ? ctx[i] : false,
-+					     ccw);
- 		if (IS_ERR(vqs[i])) {
- 			ret = PTR_ERR(vqs[i]);
- 			vqs[i] = NULL;
-diff --git a/drivers/virtio/virtio_mmio.c b/drivers/virtio/virtio_mmio.c
-index 4cd9ea5..d9dd0f78 100644
---- a/drivers/virtio/virtio_mmio.c
-+++ b/drivers/virtio/virtio_mmio.c
-@@ -468,7 +468,7 @@ static int vm_find_vqs(struct virtio_device *vdev, unsigned nvqs,
- {
- 	struct virtio_mmio_device *vm_dev = to_virtio_mmio_device(vdev);
- 	unsigned int irq = platform_get_irq(vm_dev->pdev, 0);
--	int i, err;
-+	int i, err, queue_idx = 0;
- 
- 	err = request_irq(irq, vm_interrupt, IRQF_SHARED,
- 			dev_name(&vdev->dev), vm_dev);
-@@ -476,7 +476,12 @@ static int vm_find_vqs(struct virtio_device *vdev, unsigned nvqs,
- 		return err;
- 
- 	for (i = 0; i < nvqs; ++i) {
--		vqs[i] = vm_setup_vq(vdev, i, callbacks[i], names[i],
-+		if (!names[i]) {
-+			vqs[i] = NULL;
-+			continue;
-+		}
-+
-+		vqs[i] = vm_setup_vq(vdev, queue_idx++, callbacks[i], names[i],
- 				     ctx ? ctx[i] : false);
- 		if (IS_ERR(vqs[i])) {
- 			vm_del_vqs(vdev);
--- 
-2.7.4
+On 28.12.2018 03:26, Wei Wang wrote:
+> Some vqs don't need to be allocated when the related feature bits are
+> disabled. Callers notice the vq allocation layer by setting the related
+> names[i] to be NULL.
+> 
+> This patch series fixes the find_vqs implementations to handle this case.
+
+So the random crashes during boot are gone.
+What still does not work is actually using the balloon.
+
+So in the qemu monitor using lets say "balloon 1000"  will hang the guest.
+Seems to be a deadlock in the virtio-ccw code.  We seem to call the
+config code in the interrupt handler.
+
+crash> bt
+PID: 0      TASK: d9a400            CPU: 0   COMMAND: "swapper/0"
+ LOWCORE INFO:
+  -psw      : 0x0404c00180000000 0x0000000000116472
+  -function : smp_yield_cpu at 116472
+  -prefix   : 0x7fffc000
+  -cpu timer: 0x7fffffcc8c0af5be
+  -clock cmp: 0x720a4e4002831000
+  -general registers:
+     000000000000000000 000000000000000000
+     0x000000000000009c 0x0000000000fac2b0
+     0x0000000000000015 0xffffffffffffffe2
+     0x000003e000100000 0x0000000000000001
+     000000000000000000 0x0000000000000001
+     0x00000000000003e8 0x000000000f85c020
+     000000000000000000 0x0000000000000001
+     0x0000000000116464 0x000003e00035fad0
+  -access registers:
+     0000000000 0000000000 0000000000 0000000000
+     0000000000 0000000000 0000000000 0000000000
+     0000000000 0000000000 0000000000 0000000000
+     0000000000 0000000000 0000000000 0000000000
+  -control registers:
+     0x0080000014866a10 0x0000000000fbc007
+     0x0000000000100140 000000000000000000
+     0x000000000000ffff 0x0000000000100140
+     0x0000000031000000 0x000000000f9281c3
+     000000000000000000 000000000000000000
+     000000000000000000 000000000000000000
+     000000000000000000 0x0000000000fbc007
+     0x00000000db000000 0x0000000000100280
+  -floating point registers:
+     000000000000000000 0x000002aa374b0298
+     0x0000000000000001 0x0000000000000010
+     0x00000000000001ae 0x000000000000000f
+     0x000002aa46056010 0x000002aa460681c0
+     0x000003ffd867d590 0x000003ffdca7c818
+     0x000003ffd867d58f 0x000003fff6ffdc60
+     0x000003ffd867dad8 0x000003ffdca7c5e8
+     0x000003ffd867dadc 0x000003ffdca7c818
+
+ #0 [3e00035faf8] arch_spin_lock_wait at a7bd52
+ #1 [3e00035fb50] ccw_io_helper at 9130ea
+ #2 [3e00035fbd0] virtio_ccw_get_config at 914a28
+ #3 [3e00035fc30] virtballoon_changed at 76e776
+ #4 [3e00035fc70] virtio_config_changed at 76aabc
+ #5 [3e00035fca8] virtio_ccw_int_handler at 914ede
+ #6 [3e00035fd18] ccw_device_irq at 8941d4
+ #7 [3e00035fd48] do_cio_interrupt at 885906
+ #8 [3e00035fd80] __handle_irq_event_percpu at 1b3c22
+ #9 [3e00035fdf0] handle_irq_event_percpu at 1b3e1e
+#10 [3e00035fe28] handle_percpu_irq at 1b87d8
+#11 [3e00035fe58] generic_handle_irq at 1b2ce6
+#12 [3e00035fe70] do_IRQ at 10c3b2
+#13 [3e00035fea8] io_int_handler at a86b3c
+ PSW:  0404c00180000000 00000000001034f6 (enabled_wait+70)
+ GPRS: ffffffffffffffff 0000000000000000 000000007ff70200 0706c00180000000 
+       000000000000000c 000001bf6f331c58 ffffffffffffffff 0000000000000000 
+       0000000000000000 0000000000000000 0000000000000000 0000000000000001 
+       000000007ff70200 0000000000a8b2f0 00000000001034f6 000003e000317e00 
+ #0 [3e000317e28] arch_cpu_idle at 103842
+ #1 [3e000317e48] do_idle at 17ad18
+ #2 [3e000317e80] cpu_startup_entry at 17af16
+ #3 [3e000317ea8] arch_call_rest_init at eac934
+
+
+> 
+> Wei Wang (2):
+>   virtio_pci: use queue idx instead of array idx to set up the vq
+>   virtio: don't allocate vqs when names[i] = NULL
+> 
+>  drivers/misc/mic/vop/vop_main.c        |  9 +++++++--
+>  drivers/remoteproc/remoteproc_virtio.c |  9 +++++++--
+>  drivers/s390/virtio/virtio_ccw.c       | 12 +++++++++---
+>  drivers/virtio/virtio_mmio.c           |  9 +++++++--
+>  drivers/virtio/virtio_pci_common.c     |  8 ++++----
+>  5 files changed, 34 insertions(+), 13 deletions(-)
+> 
 
 
 ---------------------------------------------------------------------
