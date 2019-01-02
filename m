@@ -1,15 +1,15 @@
-Return-Path: virtio-dev-return-5225-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-5222-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id D7FDC985BBE
-	for <virtio-dev@lists.oasis-open.org>; Wed,  2 Jan 2019 19:13:49 +0000 (UTC)
-Date: Wed, 2 Jan 2019 20:13:41 +0100
+	by lists.oasis-open.org (Postfix) with ESMTP id 5F8C9985B95
+	for <virtio-dev@lists.oasis-open.org>; Wed,  2 Jan 2019 13:57:02 +0000 (UTC)
+Date: Wed, 2 Jan 2019 14:56:52 +0100
 From: Halil Pasic <pasic@linux.ibm.com>
-In-Reply-To: <20190102190233.69b267fb.cohuck@redhat.com>
+In-Reply-To: <20190102105314.0b4e2485.cohuck@redhat.com>
 References: <1545963986-11280-1-git-send-email-wei.w.wang@intel.com>
 	<c6746307-fae5-7652-af8d-19f560fc31d9@de.ibm.com>
 	<286AC319A985734F985F78AFA26841F73DEEA8E9@shsmsx102.ccr.corp.intel.com>
@@ -17,70 +17,126 @@ References: <1545963986-11280-1-git-send-email-wei.w.wang@intel.com>
 	<286AC319A985734F985F78AFA26841F73DEEC8DF@shsmsx102.ccr.corp.intel.com>
 	<20190101004019.7f20aafa@oc2783563651>
 	<20190102105314.0b4e2485.cohuck@redhat.com>
-	<20190102142338.15bfe876.cohuck@redhat.com>
-	<20190102165919.0cd9365a@oc2783563651>
-	<20190102190233.69b267fb.cohuck@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Message-Id: <20190102201341.28bf9378@oc2783563651>
+Message-Id: <20190102145652.02b1046c@oc2783563651>
 Subject: Re: [virtio-dev] RE: [PATCH v1 0/2] Virtio: fix some vq allocation
  issues
 To: Cornelia Huck <cohuck@redhat.com>
 Cc: "Wang, Wei W" <wei.w.wang@intel.com>, Christian Borntraeger <borntraeger@de.ibm.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "mst@redhat.com" <mst@redhat.com>, "pbonzini@redhat.com" <pbonzini@redhat.com>, "dgilbert@redhat.com" <dgilbert@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, 2 Jan 2019 19:02:33 +0100
+On Wed, 2 Jan 2019 10:53:14 +0100
 Cornelia Huck <cohuck@redhat.com> wrote:
 
-> On Wed, 2 Jan 2019 16:59:19 +0100
+> On Tue, 1 Jan 2019 00:40:19 +0100
 > Halil Pasic <pasic@linux.ibm.com> wrote:
 > 
-> > On Wed, 2 Jan 2019 14:23:38 +0100
-> > Cornelia Huck <cohuck@redhat.com> wrote:
+> > On Mon, 31 Dec 2018 06:03:51 +0000
+> > "Wang, Wei W" <wei.w.wang@intel.com> wrote:
 > > 
-> > > On Wed, 2 Jan 2019 10:53:14 +0100
-> > > Cornelia Huck <cohuck@redhat.com> wrote:
-> > >   
-> > > > On Tue, 1 Jan 2019 00:40:19 +0100
-> > > > Halil Pasic <pasic@linux.ibm.com> wrote:  
-> 
-> > > > > AFAICT tweaking the balloon code may be simpler than tweaking the
-> > > > > virtio-ccw (transport code). ccw_io_helper() relies on getting
-> > > > > an interrupt when the issued IO is done. If virtio-ccw is buggy, it
-> > > > > needs to be fixed, but I'm not sure it is.    
+> > > On Sunday, December 30, 2018 2:06 PM, Halil Pasic wrote:  
 > > > > 
-> > > > I would not call virtio-ccw buggy, but it has some constraints that
-> > > > virtio-pci apparently doesn't have (and which did not show up so far;
-> > > > e.g. virtio-blk schedules a work item on config change, so there's no
-> > > > deadlock there.)
-> > > > 
-> > > > One way to get out of that constraint (don't interact with the config
-> > > > space directly in the config changed handler) would be to schedule a
-> > > > work item in virtio-ccw that calls virtio_config_changed() for the
-> > > > device. My understanding is that delaying the notification to a work
-> > > > queue would be fine.  
+> > > > I guess you are the first one trying to read virtio config from within interrupt
+> > > > context. AFAICT this never worked.  
 > > > 
-> > > Unfortunately, calling virtio_config_changed() from a work item is not
-> > > enough: That function takes the config_lock, and the virtio-ccw code to
-> > > get the config both needs to allocate some memory and call schedule :/
-> > > 
-> > > The best option really seems to be
-> > > - have virtio-balloon move the handling of the config change onto a
-> > >   workqueue or something like that, and
-> > > - document that you cannot read/write the virtio config space from an
-> > >   atomic context
-> > > 
-> > > Unless someone has a better idea?
-> > >   
+> > > I'm not sure about "never worked". It seems to work well with virtio-pci.
+> > > But looking forward to hearing a solid reason why reading config inside
+> > > the handler is forbidden (if that's true).  
 > > 
-> > I wonder, would making config_lock a mutex suffice?
+> > By "never worked" I meant "never worked with virtio-ccw". Sorry
+> > about the misunderstanding. Seems I've also failed to convey that I don't
+> > know if reading config inside the handler is forbidden or not. So please
+> > don't expect me providing the solid reasons you are looking forward to.
 > 
-> Unless I'm mistaken, you can't take a mutex in an interrupt path.
->
+> It won't work with the current code, and this is all a bit ugly :( More
+> verbose explanation below.
+> 
+> > 
+> > >   
+> > > > About what happens. The apidoc of ccw_device_start() says it needs to be
+> > > > called with the ccw device lock held, so ccw_io_helper() tries to take it (since
+> > > > forever I guess). OTOH do_cio_interrupt() takes the subchannel lock and
+> > > > io_subchannel_initialize_dev() makes the ccw device lock be the subchannel
+> > > > lock. That means when one tries to get virtio config form within a cio
+> > > > interrupt context we deadlock, because we try to take a lock we already have.
+> > > > 
+> > > > That said, I don't think this limitation is by design (i.e. intended).
+> > > > Maybe Connie can help us with that question. AFAIK we have nothing
+> > > > documented regarding this (neither that can nor can't).
+> 
+> The main problem is that channel I/O is a fundamentally asynchronous
+> mechanism. As channel devices don't have the concept of config spaces
+> (or some other things that virtio needs), I decided to map
+> reading/writing the config space to channel commands. Starting I/O on a
+> subchannel always needs the lock (to avoid races on the subchannel),
+> and the asynchronous interrupt for that I/O needs the lock as well (for
+> the same reason; things like the scsw contain state that you want to
+> access without races). A config change also means that the subchannel
+> becomes state pending (and an interrupt is made pending), so the
+> subchannel lock is taken for that path as well. (Virtqueue
+> notifications are handled differently on modern QEMU, but that does not
+> come into play here.)
+> 
 
-I was too focused on virtio-ccw. We have the workqueue now, so it would
-not be a problem for us, but for the other transports. Grrr
+Besides locking (thinking along the lines that we work around the
+lock problem somehow) there is also the new PSW which masks IO
+interrupts. As I said, doing something about this seems non-trivial at
+least.
+
+> > > > 
+> > > > Obviously, there are multiple ways around this problem, and at the moment
+> > > > I can't tell which would be my preferred one.  
+> > > 
+> > > Yes, it's also not difficult to tweak the virtio-balloon code to avoid that issue.
+> > > But if that's just an issue with ccw itself, I think it's better to tweak ccw and
+> > > remain virtio-balloon unchanged.
+> > >   
+> > 
+> > As I said, at the moment I don't have a preference regarding the fix,
+> > partly because I'm not sure if "reading config inside the handler" is OK
+> > or not. Maybe Connie or Michael can help us here. I'm however sure that
+> > commit 86a5597 "virtio-balloon: VIRTIO_BALLOON_F_FREE_PAGE_HINT"
+> > breaks virtio-balloon with the ccw transport (i.e. effectively breaks 
+> > virtio-balloon on s390): it used to work before and does not work
+> > after.
+> 
+> Yes, that's unfortunate.
+> 
+> > 
+> > AFAICT tweaking the balloon code may be simpler than tweaking the
+> > virtio-ccw (transport code). ccw_io_helper() relies on getting
+> > an interrupt when the issued IO is done. If virtio-ccw is buggy, it
+> > needs to be fixed, but I'm not sure it is.
+> 
+> I would not call virtio-ccw buggy, but it has some constraints that
+> virtio-pci apparently doesn't have (and which did not show up so far;
+> e.g. virtio-blk schedules a work item on config change, so there's no
+> deadlock there.)
+
+IMHO it is an internal API design thing. From the spirit of the virtio
+standard perspective  a virtio-ccw device is a ccw device, and acts like
+one. We don't support new IO form ccw device interrupt handler. So that's
+quite OK. OTOH we probably do want a coherent in kernel virtio
+interface. And if that one needs to account for all the quirks of any
+transport, that is quite ugly.
+
+> 
+> One way to get out of that constraint (don't interact with the config
+> space directly in the config changed handler) would be to schedule a
+> work item in virtio-ccw that calls virtio_config_changed() for the
+> device. My understanding is that delaying the notification to a work
+> queue would be fine.
+> 
+
+That would get us out of irq context, but I read you found other
+problems.
+
+[..]
+
+Regards,
+Halil
 
 
 ---------------------------------------------------------------------
