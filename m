@@ -1,152 +1,131 @@
-Return-Path: virtio-dev-return-5306-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-5220-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id AED08985D1F
-	for <virtio-dev@lists.oasis-open.org>; Wed,  9 Jan 2019 16:30:27 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id D000B985B95
+	for <virtio-dev@lists.oasis-open.org>; Wed,  2 Jan 2019 09:53:22 +0000 (UTC)
+Date: Wed, 2 Jan 2019 10:53:14 +0100
+From: Cornelia Huck <cohuck@redhat.com>
+Message-ID: <20190102105314.0b4e2485.cohuck@redhat.com>
+In-Reply-To: <20190101004019.7f20aafa@oc2783563651>
 References: <1545963986-11280-1-git-send-email-wei.w.wang@intel.com>
- <1545963986-11280-3-git-send-email-wei.w.wang@intel.com>
-From: Christian Borntraeger <borntraeger@de.ibm.com>
-Date: Wed, 9 Jan 2019 17:30:17 +0100
+	<c6746307-fae5-7652-af8d-19f560fc31d9@de.ibm.com>
+	<286AC319A985734F985F78AFA26841F73DEEA8E9@shsmsx102.ccr.corp.intel.com>
+	<20181230070600.512bbb8b@oc2783563651>
+	<286AC319A985734F985F78AFA26841F73DEEC8DF@shsmsx102.ccr.corp.intel.com>
+	<20190101004019.7f20aafa@oc2783563651>
 MIME-Version: 1.0
-In-Reply-To: <1545963986-11280-3-git-send-email-wei.w.wang@intel.com>
-Content-Language: en-US
-Message-Id: <3b3b43c4-de92-8093-096b-0d3783409391@de.ibm.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Subject: [virtio-dev] Re: [PATCH v1 2/2] virtio: don't allocate vqs when names[i] = NULL
-To: Wei Wang <wei.w.wang@intel.com>, virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, mst@redhat.com, cohuck@redhat.com
-Cc: pbonzini@redhat.com, dgilbert@redhat.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [virtio-dev] RE: [PATCH v1 0/2] Virtio: fix some vq allocation
+ issues
+To: Halil Pasic <pasic@linux.ibm.com>
+Cc: "Wang, Wei W" <wei.w.wang@intel.com>, Christian Borntraeger <borntraeger@de.ibm.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "mst@redhat.com" <mst@redhat.com>, "pbonzini@redhat.com" <pbonzini@redhat.com>, "dgilbert@redhat.com" <dgilbert@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Cc: stable@vger.kernel.org
-Fixes: 86a559787e6f ("virtio-balloon: VIRTIO_BALLOON_F_FREE_PAGE_HINT")
+On Tue, 1 Jan 2019 00:40:19 +0100
+Halil Pasic <pasic@linux.ibm.com> wrote:
 
-On 28.12.2018 03:26, Wei Wang wrote:
-> Some vqs may not need to be allocated when their related feature bits
-> are disabled. So callers may pass in such vqs with "names = NULL".
-> Then we skip such vq allocations.
-> 
-> Signed-off-by: Wei Wang <wei.w.wang@intel.com>
-> ---
->  drivers/misc/mic/vop/vop_main.c        |  9 +++++++--
->  drivers/remoteproc/remoteproc_virtio.c |  9 +++++++--
->  drivers/s390/virtio/virtio_ccw.c       | 12 +++++++++---
->  drivers/virtio/virtio_mmio.c           |  9 +++++++--
->  4 files changed, 30 insertions(+), 9 deletions(-)
-> 
-> diff --git a/drivers/misc/mic/vop/vop_main.c b/drivers/misc/mic/vop/vop_main.c
-> index 6b212c8..2bfa3a9 100644
-> --- a/drivers/misc/mic/vop/vop_main.c
-> +++ b/drivers/misc/mic/vop/vop_main.c
-> @@ -394,16 +394,21 @@ static int vop_find_vqs(struct virtio_device *dev, unsigned nvqs,
->  	struct _vop_vdev *vdev = to_vopvdev(dev);
->  	struct vop_device *vpdev = vdev->vpdev;
->  	struct mic_device_ctrl __iomem *dc = vdev->dc;
-> -	int i, err, retry;
-> +	int i, err, retry, queue_idx = 0;
->  
->  	/* We must have this many virtqueues. */
->  	if (nvqs > ioread8(&vdev->desc->num_vq))
->  		return -ENOENT;
->  
->  	for (i = 0; i < nvqs; ++i) {
-> +		if (!names[i]) {
-> +			vqs[i] = NULL;
-> +			continue;
-> +		}
-> +
->  		dev_dbg(_vop_dev(vdev), "%s: %d: %s\n",
->  			__func__, i, names[i]);
-> -		vqs[i] = vop_find_vq(dev, i, callbacks[i], names[i],
-> +		vqs[i] = vop_find_vq(dev, queue_idx++, callbacks[i], names[i],
->  				     ctx ? ctx[i] : false);
->  		if (IS_ERR(vqs[i])) {
->  			err = PTR_ERR(vqs[i]);
-> diff --git a/drivers/remoteproc/remoteproc_virtio.c b/drivers/remoteproc/remoteproc_virtio.c
-> index 183fc42..2d7cd344 100644
-> --- a/drivers/remoteproc/remoteproc_virtio.c
-> +++ b/drivers/remoteproc/remoteproc_virtio.c
-> @@ -153,10 +153,15 @@ static int rproc_virtio_find_vqs(struct virtio_device *vdev, unsigned int nvqs,
->  				 const bool * ctx,
->  				 struct irq_affinity *desc)
->  {
-> -	int i, ret;
-> +	int i, ret, queue_idx = 0;
->  
->  	for (i = 0; i < nvqs; ++i) {
-> -		vqs[i] = rp_find_vq(vdev, i, callbacks[i], names[i],
-> +		if (!names[i]) {
-> +			vqs[i] = NULL;
-> +			continue;
-> +		}
-> +
-> +		vqs[i] = rp_find_vq(vdev, queue_idx++, callbacks[i], names[i],
->  				    ctx ? ctx[i] : false);
->  		if (IS_ERR(vqs[i])) {
->  			ret = PTR_ERR(vqs[i]);
-> diff --git a/drivers/s390/virtio/virtio_ccw.c b/drivers/s390/virtio/virtio_ccw.c
-> index fc9dbad..ae1d56d 100644
-> --- a/drivers/s390/virtio/virtio_ccw.c
-> +++ b/drivers/s390/virtio/virtio_ccw.c
-> @@ -635,7 +635,7 @@ static int virtio_ccw_find_vqs(struct virtio_device *vdev, unsigned nvqs,
->  {
->  	struct virtio_ccw_device *vcdev = to_vc_device(vdev);
->  	unsigned long *indicatorp = NULL;
-> -	int ret, i;
-> +	int ret, i, queue_idx = 0;
->  	struct ccw1 *ccw;
->  
->  	ccw = kzalloc(sizeof(*ccw), GFP_DMA | GFP_KERNEL);
-> @@ -643,8 +643,14 @@ static int virtio_ccw_find_vqs(struct virtio_device *vdev, unsigned nvqs,
->  		return -ENOMEM;
->  
->  	for (i = 0; i < nvqs; ++i) {
-> -		vqs[i] = virtio_ccw_setup_vq(vdev, i, callbacks[i], names[i],
-> -					     ctx ? ctx[i] : false, ccw);
-> +		if (!names[i]) {
-> +			vqs[i] = NULL;
-> +			continue;
-> +		}
-> +
-> +		vqs[i] = virtio_ccw_setup_vq(vdev, queue_idx++, callbacks[i],
-> +					     names[i], ctx ? ctx[i] : false,
-> +					     ccw);
->  		if (IS_ERR(vqs[i])) {
->  			ret = PTR_ERR(vqs[i]);
->  			vqs[i] = NULL;
-> diff --git a/drivers/virtio/virtio_mmio.c b/drivers/virtio/virtio_mmio.c
-> index 4cd9ea5..d9dd0f78 100644
-> --- a/drivers/virtio/virtio_mmio.c
-> +++ b/drivers/virtio/virtio_mmio.c
-> @@ -468,7 +468,7 @@ static int vm_find_vqs(struct virtio_device *vdev, unsigned nvqs,
->  {
->  	struct virtio_mmio_device *vm_dev = to_virtio_mmio_device(vdev);
->  	unsigned int irq = platform_get_irq(vm_dev->pdev, 0);
-> -	int i, err;
-> +	int i, err, queue_idx = 0;
->  
->  	err = request_irq(irq, vm_interrupt, IRQF_SHARED,
->  			dev_name(&vdev->dev), vm_dev);
-> @@ -476,7 +476,12 @@ static int vm_find_vqs(struct virtio_device *vdev, unsigned nvqs,
->  		return err;
->  
->  	for (i = 0; i < nvqs; ++i) {
-> -		vqs[i] = vm_setup_vq(vdev, i, callbacks[i], names[i],
-> +		if (!names[i]) {
-> +			vqs[i] = NULL;
-> +			continue;
-> +		}
-> +
-> +		vqs[i] = vm_setup_vq(vdev, queue_idx++, callbacks[i], names[i],
->  				     ctx ? ctx[i] : false);
->  		if (IS_ERR(vqs[i])) {
->  			vm_del_vqs(vdev);
-> 
+> On Mon, 31 Dec 2018 06:03:51 +0000
+> "Wang, Wei W" <wei.w.wang@intel.com> wrote:
+>=20
+> > On Sunday, December 30, 2018 2:06 PM, Halil Pasic wrote: =20
+> > >=20
+> > > I guess you are the first one trying to read virtio config from withi=
+n interrupt
+> > > context. AFAICT this never worked. =20
+> >=20
+> > I'm not sure about "never worked". It seems to work well with virtio-pc=
+i.
+> > But looking forward to hearing a solid reason why reading config inside
+> > the handler is forbidden (if that's true). =20
+>=20
+> By "never worked" I meant "never worked with virtio-ccw". Sorry
+> about the misunderstanding. Seems I've also failed to convey that I don't
+> know if reading config inside the handler is forbidden or not. So please
+> don't expect me providing the solid reasons you are looking forward to.
 
+It won't work with the current code, and this is all a bit ugly :( More
+verbose explanation below.
+
+>=20
+> >  =20
+> > > About what happens. The apidoc of ccw_device_start() says it needs to=
+ be
+> > > called with the ccw device lock held, so ccw_io_helper() tries to tak=
+e it (since
+> > > forever I guess). OTOH do_cio_interrupt() takes the subchannel lock a=
+nd
+> > > io_subchannel_initialize_dev() makes the ccw device lock be the subch=
+annel
+> > > lock. That means when one tries to get virtio config form within a cio
+> > > interrupt context we deadlock, because we try to take a lock we alrea=
+dy have.
+> > >=20
+> > > That said, I don't think this limitation is by design (i.e. intended).
+> > > Maybe Connie can help us with that question. AFAIK we have nothing
+> > > documented regarding this (neither that can nor can't).
+
+The main problem is that channel I/O is a fundamentally asynchronous
+mechanism. As channel devices don't have the concept of config spaces
+(or some other things that virtio needs), I decided to map
+reading/writing the config space to channel commands. Starting I/O on a
+subchannel always needs the lock (to avoid races on the subchannel),
+and the asynchronous interrupt for that I/O needs the lock as well (for
+the same reason; things like the scsw contain state that you want to
+access without races). A config change also means that the subchannel
+becomes state pending (and an interrupt is made pending), so the
+subchannel lock is taken for that path as well. (Virtqueue
+notifications are handled differently on modern QEMU, but that does not
+come into play here.)
+
+> > >=20
+> > > Obviously, there are multiple ways around this problem, and at the mo=
+ment
+> > > I can't tell which would be my preferred one. =20
+> >=20
+> > Yes, it's also not difficult to tweak the virtio-balloon code to avoid =
+that issue.
+> > But if that's just an issue with ccw itself, I think it's better to twe=
+ak ccw and
+> > remain virtio-balloon unchanged.
+> >  =20
+>=20
+> As I said, at the moment I don't have a preference regarding the fix,
+> partly because I'm not sure if "reading config inside the handler" is OK
+> or not. Maybe Connie or Michael can help us here. I'm however sure that
+> commit 86a5597 "virtio-balloon: VIRTIO_BALLOON_F_FREE_PAGE_HINT"
+> breaks virtio-balloon with the ccw transport (i.e. effectively breaks=20
+> virtio-balloon on s390): it used to work before and does not work
+> after.
+
+Yes, that's unfortunate.
+
+>=20
+> AFAICT tweaking the balloon code may be simpler than tweaking the
+> virtio-ccw (transport code). ccw_io_helper() relies on getting
+> an interrupt when the issued IO is done. If virtio-ccw is buggy, it
+> needs to be fixed, but I'm not sure it is.
+
+I would not call virtio-ccw buggy, but it has some constraints that
+virtio-pci apparently doesn't have (and which did not show up so far;
+e.g. virtio-blk schedules a work item on config change, so there's no
+deadlock there.)
+
+One way to get out of that constraint (don't interact with the config
+space directly in the config changed handler) would be to schedule a
+work item in virtio-ccw that calls virtio_config_changed() for the
+device. My understanding is that delaying the notification to a work
+queue would be fine.
+
+=46rom what I can see, that should make us safe on any modern QEMU (that
+uses adapter interrupts). There still might be problems if we are using
+classic subchannel interrupts for virtqueue notifications and the
+handler interacts with the config space, but I'm not sure whether it is
+worth spending time on that.
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
