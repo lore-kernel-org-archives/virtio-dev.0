@@ -1,87 +1,38 @@
-Return-Path: virtio-dev-return-5271-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-5245-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 7BB12985AAA
-	for <virtio-dev@lists.oasis-open.org>; Mon,  7 Jan 2019 17:55:27 +0000 (UTC)
-From: Venu Busireddy <venu.busireddy@oracle.com>
-Date: Mon,  7 Jan 2019 12:54:50 -0500
-Message-Id: <1546883690-17798-6-git-send-email-venu.busireddy@oracle.com>
-In-Reply-To: <1546883690-17798-1-git-send-email-venu.busireddy@oracle.com>
-References: <1546883690-17798-1-git-send-email-venu.busireddy@oracle.com>
-Subject: [virtio-dev] [PATCH v2 5/5] pci: query command extension to check the bus master enabling status of the failover-primary device
-To: venu.busireddy@oracle.com, "Michael S. Tsirkin" <mst@redhat.com>, Marcel Apfelbaum <marcel@redhat.com>
-Cc: Si-Wei Liu <si-wei.liu@oracle.com>, virtio-dev@lists.oasis-open.org, qemu-devel@nongnu.org
+	by lists.oasis-open.org (Postfix) with ESMTP id 6FE86985D8B
+	for <virtio-dev@lists.oasis-open.org>; Fri,  4 Jan 2019 07:46:56 +0000 (UTC)
+From: Wei Wang <wei.w.wang@intel.com>
+Date: Fri,  4 Jan 2019 15:11:51 +0800
+Message-Id: <1546585913-34804-1-git-send-email-wei.w.wang@intel.com>
+Subject: [virtio-dev] [PATCH v2 0/2] virtio-balloon: tweak config_changed
+To: virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, mst@redhat.com, cohuck@redhat.com, pasic@linux.ibm.com, borntraeger@de.ibm.com
+Cc: pbonzini@redhat.com, dgilbert@redhat.com, wei.w.wang@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-From: Si-Wei Liu <si-wei.liu@oracle.com>
+Since virtio-ccw doesn't work with accessing to the config space
+inside an interrupt context, this patch series avoids that issue by
+moving the config register accesses to the related workqueue contexts.
 
-Signed-off-by: Si-Wei Liu <si-wei.liu@oracle.com>
-Signed-off-by: Venu Busireddy <venu.busireddy@oracle.com>
----
- hmp.c          | 5 +++++
- hw/pci/pci.c   | 5 +++++
- qapi/misc.json | 5 ++++-
- 3 files changed, 14 insertions(+), 1 deletion(-)
+v1->v2 ChangeLog:
+    - add config_read_bitmap to indicate to the workqueue callbacks about
+      the necessity of reading the related config fields.
 
-diff --git a/hmp.c b/hmp.c
-index 7828f93..7a75c93 100644
---- a/hmp.c
-+++ b/hmp.c
-@@ -890,6 +890,11 @@ static void hmp_info_pci_device(Monitor *mon, const PciDeviceInfo *dev)
-         }
-     }
- 
-+    if (dev->has_failover_status) {
-+        monitor_printf(mon, "      Failover primary, bus master %s.\n",
-+                       dev->failover_status ? "enabled" : "disabled");
-+    }
-+
-     monitor_printf(mon, "      id \"%s\"\n", dev->qdev_id);
- 
-     if (dev->has_pci_bridge) {
-diff --git a/hw/pci/pci.c b/hw/pci/pci.c
-index 56b13b3..9da49fd 100644
---- a/hw/pci/pci.c
-+++ b/hw/pci/pci.c
-@@ -1761,6 +1761,11 @@ static PciDeviceInfo *qmp_query_pci_device(PCIDevice *dev, PCIBus *bus,
-             pci_get_word(dev->config + PCI_CB_SUBSYSTEM_VENDOR_ID);
-     }
- 
-+    if (dev->failover_primary) {
-+        info->has_failover_status = true;
-+        info->failover_status = dev->bus_master_enable_region.enabled;
-+    }
-+
-     return info;
- }
- 
-diff --git a/qapi/misc.json b/qapi/misc.json
-index 6c1c5c0..05f003e 100644
---- a/qapi/misc.json
-+++ b/qapi/misc.json
-@@ -865,6 +865,9 @@
- #
- # @regions: a list of the PCI I/O regions associated with the device
- #
-+# @failover_status: if 'failover-primary' property is 'true', true if PCI
-+#                   bus master bit on the device is enabled
-+#
- # Notes: the contents of @class_info.desc are not stable and should only be
- #        treated as informational.
- #
-@@ -874,7 +877,7 @@
-   'data': {'bus': 'int', 'slot': 'int', 'function': 'int',
-            'class_info': 'PciDeviceClass', 'id': 'PciDeviceId',
-            '*irq': 'int', 'qdev_id': 'str', '*pci_bridge': 'PciBridgeInfo',
--           'regions': ['PciMemoryRegion']} }
-+           'regions': ['PciMemoryRegion'], '*failover_status': 'bool'} }
- 
- ##
- # @PciInfo:
+Wei Wang (2):
+  virtio-balloon: tweak config_changed implementation
+  virtio-balloon: improve update_balloon_size_func
+
+ drivers/virtio/virtio_balloon.c | 86 +++++++++++++++++++++++++++--------------
+ 1 file changed, 57 insertions(+), 29 deletions(-)
+
+-- 
+2.7.4
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
