@@ -1,28 +1,31 @@
-Return-Path: virtio-dev-return-5262-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-5264-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id EB7F6984257
-	for <virtio-dev@lists.oasis-open.org>; Mon,  7 Jan 2019 13:47:23 +0000 (UTC)
-Date: Mon, 7 Jan 2019 08:47:20 -0500
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20190107084555-mutt-send-email-mst@kernel.org>
+	by lists.oasis-open.org (Postfix) with ESMTP id 3EF5B984257
+	for <virtio-dev@lists.oasis-open.org>; Mon,  7 Jan 2019 13:54:06 +0000 (UTC)
 References: <1546844466-38079-1-git-send-email-wei.w.wang@intel.com>
  <1546844466-38079-2-git-send-email-wei.w.wang@intel.com>
+From: Christian Borntraeger <borntraeger@de.ibm.com>
+Date: Mon, 7 Jan 2019 14:49:03 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
 In-Reply-To: <1546844466-38079-2-git-send-email-wei.w.wang@intel.com>
+Content-Language: en-US
+Message-Id: <4ea022d4-6b89-b481-5747-871e154dd21a@de.ibm.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Subject: [virtio-dev] Re: [PATCH v3 1/3] virtio-balloon: tweak config_changed
  implementation
-To: Wei Wang <wei.w.wang@intel.com>
-Cc: virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, cohuck@redhat.com, borntraeger@de.ibm.com, pbonzini@redhat.com, dgilbert@redhat.com, pasic@linux.ibm.com
+To: Wei Wang <wei.w.wang@intel.com>, virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, mst@redhat.com, cohuck@redhat.com
+Cc: pbonzini@redhat.com, dgilbert@redhat.com, pasic@linux.ibm.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Mon, Jan 07, 2019 at 03:01:04PM +0800, Wei Wang wrote:
+
+
+On 07.01.2019 08:01, Wei Wang wrote:
 > virtio-ccw has deadlock issues with reading the config space inside the
 > interrupt context, so we tweak the virtballoon_changed implementation
 > by moving the config read operations into the related workqueue contexts.
@@ -37,8 +40,14 @@ On Mon, Jan 07, 2019 at 03:01:04PM +0800, Wei Wang wrote:
 > Reviewed-by: Cornelia Huck <cohuck@redhat.com>
 > Reviewed-by: Halil Pasic <pasic@linux.ibm.com>
 
-Please include a Fixes tag to list the problematic commit.
-See Documentation/process/submitting-patches.rst for the appropriate format.
+Together with 
+  virtio_pci: use queue idx instead of array idx to set up the vq
+  virtio: don't allocate vqs when names[i] = NULL
+
+Tested-by: Christian Borntraeger <borntraeger@de.ibm.com>
+
+as already said, would be good to add cc stable (and a Fixes: tag)
+
 
 > ---
 >  drivers/virtio/virtio_balloon.c | 98 +++++++++++++++++++++++++++--------------
@@ -223,8 +232,8 @@ See Documentation/process/submitting-patches.rst for the appropriate format.
 >  		vb->cmd_id_active = cpu_to_virtio32(vb->vdev,
 >  						  VIRTIO_BALLOON_CMD_ID_STOP);
 >  		vb->cmd_id_stop = cpu_to_virtio32(vb->vdev,
-> -- 
-> 2.7.4
+> 
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
