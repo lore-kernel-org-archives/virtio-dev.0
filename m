@@ -1,15 +1,15 @@
-Return-Path: virtio-dev-return-5260-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-5262-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 661B9984257
-	for <virtio-dev@lists.oasis-open.org>; Mon,  7 Jan 2019 13:44:58 +0000 (UTC)
-Date: Mon, 7 Jan 2019 08:44:54 -0500
+	by lists.oasis-open.org (Postfix) with ESMTP id EB7F6984257
+	for <virtio-dev@lists.oasis-open.org>; Mon,  7 Jan 2019 13:47:23 +0000 (UTC)
+Date: Mon, 7 Jan 2019 08:47:20 -0500
 From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20190107084203-mutt-send-email-mst@kernel.org>
+Message-ID: <20190107084555-mutt-send-email-mst@kernel.org>
 References: <1546844466-38079-1-git-send-email-wei.w.wang@intel.com>
  <1546844466-38079-2-git-send-email-wei.w.wang@intel.com>
 MIME-Version: 1.0
@@ -36,6 +36,10 @@ On Mon, Jan 07, 2019 at 03:01:04PM +0800, Wei Wang wrote:
 > Signed-off-by: Wei Wang <wei.w.wang@intel.com>
 > Reviewed-by: Cornelia Huck <cohuck@redhat.com>
 > Reviewed-by: Halil Pasic <pasic@linux.ibm.com>
+
+Please include a Fixes tag to list the problematic commit.
+See Documentation/process/submitting-patches.rst for the appropriate format.
+
 > ---
 >  drivers/virtio/virtio_balloon.c | 98 +++++++++++++++++++++++++++--------------
 >  1 file changed, 65 insertions(+), 33 deletions(-)
@@ -160,13 +164,6 @@ On Mon, Jan 07, 2019 at 03:01:04PM +0800, Wei Wang wrote:
 > -	vb->cmd_id_active = cpu_to_virtio32(vb->vdev, vb->cmd_id_received);
 > +	vb->cmd_id_active = virtio32_to_cpu(vb->vdev,
 > +					virtio_balloon_cmd_id_received(vb));
-
-
-You switches cpu_to_virtio32 to over to virtio32_to_cpu.
-That will produce a sparse warning I think.
-Pls always run the static checker when you submit patches.
-
-
 >  	sg_init_one(&sg, &vb->cmd_id_active, sizeof(vb->cmd_id_active));
 >  	err = virtqueue_add_outbuf(vq, &sg, 1, &vb->cmd_id_active, GFP_KERNEL);
 >  	if (!err)
