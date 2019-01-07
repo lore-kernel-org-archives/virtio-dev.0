@@ -1,135 +1,236 @@
-Return-Path: virtio-dev-return-5314-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-5277-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id E5C58985DBD
-	for <virtio-dev@lists.oasis-open.org>; Fri, 11 Jan 2019 07:09:17 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 1ABBC985B80
+	for <virtio-dev@lists.oasis-open.org>; Mon,  7 Jan 2019 22:30:19 +0000 (UTC)
+From: Venu Busireddy <venu.busireddy@oracle.com>
+Date: Mon,  7 Jan 2019 17:29:42 -0500
+Message-Id: <1546900184-27403-4-git-send-email-venu.busireddy@oracle.com>
+In-Reply-To: <1546900184-27403-1-git-send-email-venu.busireddy@oracle.com>
 References: <1546900184-27403-1-git-send-email-venu.busireddy@oracle.com>
- <1546900184-27403-3-git-send-email-venu.busireddy@oracle.com>
- <20190109105223-mutt-send-email-mst@kernel.org>
- <e496ce78-462d-7675-9e97-6cbac2038489@oracle.com>
- <20190110220906-mutt-send-email-mst@kernel.org>
-From: si-wei liu <si-wei.liu@oracle.com>
-Message-ID: <85064076-89af-028d-a614-e20f64830a66@oracle.com>
-Date: Thu, 10 Jan 2019 23:09:09 -0800
-MIME-Version: 1.0
-In-Reply-To: <20190110220906-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-Subject: Re: [virtio-dev] Re: [Qemu-devel] [PATCH v3 2/5] virtio_net: Add
- support for "Data Path Switching" during Live Migration.
-To: "Michael S. Tsirkin" <mst@redhat.com>, Venu Busireddy <venu.busireddy@oracle.com>
-Cc: Marcel Apfelbaum <marcel@redhat.com>, virtio-dev@lists.oasis-open.org, qemu-devel@nongnu.org
+Subject: [virtio-dev] [PATCH v3 3/5] virtio_net: Add a query command for FAILOVER_STANDBY_CHANGED event.
+To: venu.busireddy@oracle.com, "Michael S. Tsirkin" <mst@redhat.com>, Marcel Apfelbaum <marcel@redhat.com>
+Cc: virtio-dev@lists.oasis-open.org, qemu-devel@nongnu.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+Add a query command to check the status of the FAILOVER_STANDBY_CHANGED
+state of the virtio_net devices.
 
+Signed-off-by: Venu Busireddy <venu.busireddy@oracle.com>
+---
+ hw/net/virtio-net.c            | 16 +++++++++++
+ include/hw/virtio/virtio-net.h |  1 +
+ include/net/net.h              |  2 ++
+ net/net.c                      | 61 ++++++++++++++++++++++++++++++++++++++++++
+ qapi/net.json                  | 46 +++++++++++++++++++++++++++++++
+ 5 files changed, 126 insertions(+)
 
-On 01/10/2019 07:20 PM, Michael S. Tsirkin wrote:
-> On Thu, Jan 10, 2019 at 06:09:23PM -0800, si-wei liu wrote:
->>
->> On 01/09/2019 07:56 AM, Michael S. Tsirkin wrote:
->>> On Mon, Jan 07, 2019 at 05:29:41PM -0500, Venu Busireddy wrote:
->>>> diff --git a/hw/acpi/pcihp.c b/hw/acpi/pcihp.c
->>>> index 80d42e1..2a3ffd3 100644
->>>> --- a/hw/acpi/pcihp.c
->>>> +++ b/hw/acpi/pcihp.c
->>>> @@ -176,6 +176,25 @@ static void acpi_pcihp_eject_slot(AcpiPciHpState *s, unsigned bsel, unsigned slo
->>>>        }
->>>>    }
->>>> +static void acpi_pcihp_cleanup_failover_primary(AcpiPciHpState *s, int bsel)
->>>> +{
->>>> +    BusChild *kid, *next;
->>>> +    PCIBus *bus = acpi_pcihp_find_hotplug_bus(s, bsel);
->>>> +
->>>> +    if (!bus) {
->>>> +        return;
->>>> +    }
->>>> +    QTAILQ_FOREACH_SAFE(kid, &bus->qbus.children, sibling, next) {
->>>> +        DeviceState *qdev = kid->child;
->>>> +        PCIDevice *pdev = PCI_DEVICE(qdev);
->>>> +        int slot = PCI_SLOT(pdev->devfn);
->>>> +
->>>> +        if (pdev->failover_primary) {
->>>> +            s->acpi_pcihp_pci_status[bsel].down |= (1U << slot);
->>>> +        }
->>>> +    }
->>>> +}
->>>> +
->>>>    static void acpi_pcihp_update_hotplug_bus(AcpiPciHpState *s, int bsel)
->>>>    {
->>>>        BusChild *kid, *next;
->>> So the result here will be that device will be deleted completely,
->>> and will not reappear after guest reboot.
->> The management stack will replug the VF until seeing the STANDBY_CHANGED
->> "enabled" event after guest driver finishes feature negotiation and sets
->> driver_ok.
->>
->>> I don't think this is what we wanted.
->>> I think we wanted a special state that will hide device from guest until
->>> guest acks the failover bit.
->> What do we get by hiding? On the next reboot after system reset guest may
->> load an older OS instance without standby advertised. The VF can't be
->> plugged out then?
->>
->> The model we adopt here doesn't pair virtio with VF in the QEMU level. If
->> the VF isn't being used by guest, it would make sense to notify management
->> to release VF anyways.
-> Hmm it's different from what I envisioned and more work for management,
-> but maybe it's ok ... I will need to think about it.
->
->>>
->>>> @@ -207,6 +226,14 @@ static void acpi_pcihp_update(AcpiPciHpState *s)
->>>>        int i;
->>>>        for (i = 0; i < ACPI_PCIHP_MAX_HOTPLUG_BUS; ++i) {
->>>> +        /*
->>>> +         * Set the acpi_pcihp_pci_status[].down bits of all the
->>>> +         * failover_primary devices so that the devices are ejected
->>>> +         * from the guest. We can't use the qdev_unplug() as well as the
->>>> +         * hotplug_handler to unplug the devices, because the guest may
->>>> +         * not be in a state to cooperate.
->>>> +         */
->>>> +        acpi_pcihp_cleanup_failover_primary(s, i);
->>>>            acpi_pcihp_update_hotplug_bus(s, i);
->>>>        }
->>>>    }
->>> I really don't want acpi to know anything about failover.
->>>
->>> All that needs to happen is sending a device delete request
->>> to guest. Should work with any hotplug removal:
->>> pci standard,acpi, etc.
->>>
->> As the code comments above indicated, there was issue uncovered that the
->> guest may not be in a state to respond to interrupt during reboot.
-> If you request removal then hotplug machinery normally will eject
-> the device on system reset. You need to request it early enough though.
-With asynchronous nature of interrupt injection and guest handling, 
-there's no way you can guarantee it's early enough, do you?
-
-Surely that's why I said the event is in a "performance" path that has 
-to be handled as fast as possible by management.
-
-> I guess this missing is what happened.
->
->> Actually
->> management stack running fast enough is supposed to do this graceful hot
->> plug removal upon receiving the STANDBY_CHANGED "disabled" event. However,
->> if management stack's unable to do so, the code here makes sure the VF can
->> be deleted and won't be seen by an older kernel after reboot.
->>
->> -Siwei
-> I'm sorry I don't understand.  On a system with PCIe native hotplug
-> poking at ACPI is just wrong.
-Venu, what's your plan to add the SHPC and PCIe native hotplug support? 
-People starts to get confusing. I did not see you mentioned it in the 
-cover letter.
-
-Thanks,
--Siwei
-
+diff --git a/hw/net/virtio-net.c b/hw/net/virtio-net.c
+index 7b1bcde..a4e07ac 100644
+--- a/hw/net/virtio-net.c
++++ b/hw/net/virtio-net.c
+@@ -263,9 +263,11 @@ static void virtio_net_failover_notify_event(VirtIONet *n, uint8_t status)
+          */
+         if ((status & VIRTIO_CONFIG_S_DRIVER_OK) &&
+                 (!(vdev->status & VIRTIO_CONFIG_S_DRIVER_OK))) {
++            n->standby_enabled = true;
+             qapi_event_send_failover_standby_changed(!!ncn, ncn, path, true);
+         } else if ((!(status & VIRTIO_CONFIG_S_DRIVER_OK)) &&
+                 (vdev->status & VIRTIO_CONFIG_S_DRIVER_OK)) {
++            n->standby_enabled = false;
+             qapi_event_send_failover_standby_changed(!!ncn, ncn, path, false);
+         }
+     }
+@@ -448,6 +450,19 @@ static RxFilterInfo *virtio_net_query_rxfilter(NetClientState *nc)
+     return info;
+ }
+ 
++static StandbyStatusInfo *virtio_net_query_standby_status(NetClientState *nc)
++{
++    StandbyStatusInfo *info;
++    VirtIONet *n = qemu_get_nic_opaque(nc);
++
++    info = g_malloc0(sizeof(*info));
++    info->device = g_strdup(n->netclient_name);
++    info->path = g_strdup(object_get_canonical_path(OBJECT(n->qdev)));
++    info->enabled = n->standby_enabled;
++
++    return info;
++}
++
+ static void virtio_net_reset(VirtIODevice *vdev)
+ {
+     VirtIONet *n = VIRTIO_NET(vdev);
+@@ -1923,6 +1938,7 @@ static NetClientInfo net_virtio_info = {
+     .receive = virtio_net_receive,
+     .link_status_changed = virtio_net_set_link_status,
+     .query_rx_filter = virtio_net_query_rxfilter,
++    .query_standby_status = virtio_net_query_standby_status,
+ };
+ 
+ static bool virtio_net_guest_notifier_pending(VirtIODevice *vdev, int idx)
+diff --git a/include/hw/virtio/virtio-net.h b/include/hw/virtio/virtio-net.h
+index 4d7f3c8..9071e96 100644
+--- a/include/hw/virtio/virtio-net.h
++++ b/include/hw/virtio/virtio-net.h
+@@ -103,6 +103,7 @@ typedef struct VirtIONet {
+     int announce_counter;
+     bool needs_vnet_hdr_swap;
+     bool mtu_bypass_backend;
++    bool standby_enabled;
+ } VirtIONet;
+ 
+ void virtio_net_set_netclient_name(VirtIONet *n, const char *name,
+diff --git a/include/net/net.h b/include/net/net.h
+index ec13702..61e8513 100644
+--- a/include/net/net.h
++++ b/include/net/net.h
+@@ -50,6 +50,7 @@ typedef void (NetCleanup) (NetClientState *);
+ typedef void (LinkStatusChanged)(NetClientState *);
+ typedef void (NetClientDestructor)(NetClientState *);
+ typedef RxFilterInfo *(QueryRxFilter)(NetClientState *);
++typedef StandbyStatusInfo *(QueryStandbyStatus)(NetClientState *);
+ typedef bool (HasUfo)(NetClientState *);
+ typedef bool (HasVnetHdr)(NetClientState *);
+ typedef bool (HasVnetHdrLen)(NetClientState *, int);
+@@ -71,6 +72,7 @@ typedef struct NetClientInfo {
+     NetCleanup *cleanup;
+     LinkStatusChanged *link_status_changed;
+     QueryRxFilter *query_rx_filter;
++    QueryStandbyStatus *query_standby_status;
+     NetPoll *poll;
+     HasUfo *has_ufo;
+     HasVnetHdr *has_vnet_hdr;
+diff --git a/net/net.c b/net/net.c
+index 1f7d626..fbf288e 100644
+--- a/net/net.c
++++ b/net/net.c
+@@ -1320,6 +1320,67 @@ RxFilterInfoList *qmp_query_rx_filter(bool has_name, const char *name,
+     return filter_list;
+ }
+ 
++StandbyStatusInfoList *qmp_query_standby_status(bool has_device,
++                                                const char *device,
++                                                Error **errp)
++{
++    NetClientState *nc;
++    StandbyStatusInfoList *status_list = NULL, *last_entry = NULL;
++
++    QTAILQ_FOREACH(nc, &net_clients, next) {
++        StandbyStatusInfoList *entry;
++        StandbyStatusInfo *info;
++
++        if (has_device && strcmp(nc->name, device) != 0) {
++            continue;
++        }
++
++        /* only query standby status information of NIC */
++        if (nc->info->type != NET_CLIENT_DRIVER_NIC) {
++            if (has_device) {
++                error_setg(errp, "net client(%s) isn't a NIC", device);
++                return NULL;
++            }
++            continue;
++        }
++
++        /*
++         * only query information on queue 0 since the info is per nic,
++         * not per queue.
++         */
++        if (nc->queue_index != 0) {
++            continue;
++        }
++
++        if (nc->info->query_standby_status) {
++            info = nc->info->query_standby_status(nc);
++            entry = g_malloc0(sizeof(*entry));
++            entry->value = info;
++
++            if (!status_list) {
++                status_list = entry;
++            } else {
++                last_entry->next = entry;
++            }
++            last_entry = entry;
++        } else if (has_device) {
++            error_setg(errp, "net client(%s) doesn't support"
++                       " standby status querying", device);
++            return NULL;
++        }
++
++        if (has_device) {
++            break;
++        }
++    }
++
++    if (status_list == NULL && has_device) {
++        error_setg(errp, "invalid net client name: %s", device);
++    }
++
++    return status_list;
++}
++
+ void hmp_info_network(Monitor *mon, const QDict *qdict)
+ {
+     NetClientState *nc, *peer;
+diff --git a/qapi/net.json b/qapi/net.json
+index 6a6d6fe..633ac87 100644
+--- a/qapi/net.json
++++ b/qapi/net.json
+@@ -711,3 +711,49 @@
+ ##
+ { 'event': 'FAILOVER_STANDBY_CHANGED',
+   'data': {'*device': 'str', 'path': 'str', 'enabled': 'bool'} }
++
++##
++# @StandbyStatusInfo:
++#
++# Standby status information for a virtio_net device.
++#
++# @device: Indicates the virtio_net device.
++#
++# @path: Indicates the device path.
++#
++# @enabled: true if the virtio_net driver is loaded.
++#           false if the virtio_net driver is unloaded or the guest rebooted.
++#
++# Since: 4.0
++##
++{ 'struct': 'StandbyStatusInfo',
++  'data': {'device': 'str', 'path': 'str', 'enabled': 'bool'} }
++
++##
++# @query-standby-status:
++#
++# Return Standby status information for all virtio_net devices,
++#        or for the given virtio_net device.
++#
++# @device: Name of the virtio_net device.
++#
++# Returns: List of @StandbyStatusInfo for all virtio_net devices,
++#          or for the given virtio_net device.
++#          Returns an error if the given @device doesn't exist.
++#
++# Since: 4.0
++#
++# Example:
++#
++# -> { "execute": "query-standby-status", "arguments": { "device": "net0" } }
++# <- { "return": [
++#                  { 'device': 'net0',
++#                    'path': '/machine/peripheral/net0/virtio-backend',
++#                    'enabled': 'true'
++#                  }
++#                ]
++#    }
++#
++##
++{ 'command': 'query-standby-status', 'data': { '*device': 'str' },
++  'returns': ['StandbyStatusInfo'] }
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
