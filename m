@@ -1,188 +1,87 @@
-Return-Path: virtio-dev-return-5270-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-5271-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 0DC4E985A63
-	for <virtio-dev@lists.oasis-open.org>; Mon,  7 Jan 2019 17:55:23 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 7BB12985AAA
+	for <virtio-dev@lists.oasis-open.org>; Mon,  7 Jan 2019 17:55:27 +0000 (UTC)
 From: Venu Busireddy <venu.busireddy@oracle.com>
-Date: Mon,  7 Jan 2019 12:54:49 -0500
-Message-Id: <1546883690-17798-5-git-send-email-venu.busireddy@oracle.com>
+Date: Mon,  7 Jan 2019 12:54:50 -0500
+Message-Id: <1546883690-17798-6-git-send-email-venu.busireddy@oracle.com>
 In-Reply-To: <1546883690-17798-1-git-send-email-venu.busireddy@oracle.com>
 References: <1546883690-17798-1-git-send-email-venu.busireddy@oracle.com>
-Subject: [virtio-dev] [PATCH v2 4/5] vfio-pci: Add FAILOVER_PRIMARY_CHANGED event to shorten downtime during failover
+Subject: [virtio-dev] [PATCH v2 5/5] pci: query command extension to check the bus master enabling status of the failover-primary device
 To: venu.busireddy@oracle.com, "Michael S. Tsirkin" <mst@redhat.com>, Marcel Apfelbaum <marcel@redhat.com>
 Cc: Si-Wei Liu <si-wei.liu@oracle.com>, virtio-dev@lists.oasis-open.org, qemu-devel@nongnu.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
 From: Si-Wei Liu <si-wei.liu@oracle.com>
 
-When a VF is hotplugged into the guest, datapath switching will be
-performed immediately, which is sub-optimal in terms of timing, and
-could end up with substantial network downtime. One of ways to shorten
-this downtime is to switch the datapath only after the VF is seen to get
-enabled by guest, indicated by the bus master bit in VF's PCI config
-space getting enabled. The FAILOVER_PRIMARY_CHANGED event is emitted
-at that time to indicate this condition. Then management stack can kick
-off datapath switching upon receiving the event.
-
 Signed-off-by: Si-Wei Liu <si-wei.liu@oracle.com>
 Signed-off-by: Venu Busireddy <venu.busireddy@oracle.com>
 ---
- hw/vfio/pci.c | 57 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++
- qapi/net.json | 26 ++++++++++++++++++++++++++
- 2 files changed, 83 insertions(+)
+ hmp.c          | 5 +++++
+ hw/pci/pci.c   | 5 +++++
+ qapi/misc.json | 5 ++++-
+ 3 files changed, 14 insertions(+), 1 deletion(-)
 
-diff --git a/hw/vfio/pci.c b/hw/vfio/pci.c
-index bd83b58..adcc95a 100644
---- a/hw/vfio/pci.c
-+++ b/hw/vfio/pci.c
-@@ -34,6 +34,7 @@
- #include "pci.h"
- #include "trace.h"
- #include "qapi/error.h"
-+#include "qapi/qapi-events-net.h"
- 
- #define MSIX_CAP_LENGTH 12
- 
-@@ -42,6 +43,7 @@
- 
- static void vfio_disable_interrupts(VFIOPCIDevice *vdev);
- static void vfio_mmap_set_enabled(VFIOPCIDevice *vdev, bool enabled);
-+static void vfio_failover_notify(VFIOPCIDevice *vdev, bool status);
- 
- /*
-  * Disabling BAR mmaping can be slow, but toggling it around INTx can
-@@ -1170,6 +1172,8 @@ void vfio_pci_write_config(PCIDevice *pdev,
- {
-     VFIOPCIDevice *vdev = PCI_VFIO(pdev);
-     uint32_t val_le = cpu_to_le32(val);
-+    bool may_notify = false;
-+    bool master_was = false;
- 
-     trace_vfio_pci_write_config(vdev->vbasedev.name, addr, val, len);
- 
-@@ -1180,6 +1184,14 @@ void vfio_pci_write_config(PCIDevice *pdev,
-                      __func__, vdev->vbasedev.name, addr, val, len);
+diff --git a/hmp.c b/hmp.c
+index 7828f93..7a75c93 100644
+--- a/hmp.c
++++ b/hmp.c
+@@ -890,6 +890,11 @@ static void hmp_info_pci_device(Monitor *mon, const PciDeviceInfo *dev)
+         }
      }
  
-+    /* Bus Master Enabling/Disabling */
-+    if (pdev->failover_primary && current_cpu &&
-+        range_covers_byte(addr, len, PCI_COMMAND)) {
-+        master_was = !!(pci_get_word(pdev->config + PCI_COMMAND) &
-+                        PCI_COMMAND_MASTER);
-+        may_notify = true;
++    if (dev->has_failover_status) {
++        monitor_printf(mon, "      Failover primary, bus master %s.\n",
++                       dev->failover_status ? "enabled" : "disabled");
 +    }
 +
-     /* MSI/MSI-X Enabling/Disabling */
-     if (pdev->cap_present & QEMU_PCI_CAP_MSI &&
-         ranges_overlap(addr, len, pdev->msi_cap, vdev->msi_cap_size)) {
-@@ -1235,6 +1247,14 @@ void vfio_pci_write_config(PCIDevice *pdev,
-         /* Write everything to QEMU to keep emulated bits correct */
-         pci_default_write_config(pdev, addr, val, len);
+     monitor_printf(mon, "      id \"%s\"\n", dev->qdev_id);
+ 
+     if (dev->has_pci_bridge) {
+diff --git a/hw/pci/pci.c b/hw/pci/pci.c
+index 56b13b3..9da49fd 100644
+--- a/hw/pci/pci.c
++++ b/hw/pci/pci.c
+@@ -1761,6 +1761,11 @@ static PciDeviceInfo *qmp_query_pci_device(PCIDevice *dev, PCIBus *bus,
+             pci_get_word(dev->config + PCI_CB_SUBSYSTEM_VENDOR_ID);
      }
-+
-+    if (may_notify) {
-+        bool master_now = !!(pci_get_word(pdev->config + PCI_COMMAND) &
-+                             PCI_COMMAND_MASTER);
-+        if (master_was != master_now) {
-+            vfio_failover_notify(vdev, master_now);
-+        }
+ 
++    if (dev->failover_primary) {
++        info->has_failover_status = true;
++        info->failover_status = dev->bus_master_enable_region.enabled;
 +    }
++
+     return info;
  }
  
- /*
-@@ -2801,6 +2821,17 @@ static void vfio_unregister_req_notifier(VFIOPCIDevice *vdev)
-     vdev->req_enabled = false;
- }
+diff --git a/qapi/misc.json b/qapi/misc.json
+index 6c1c5c0..05f003e 100644
+--- a/qapi/misc.json
++++ b/qapi/misc.json
+@@ -865,6 +865,9 @@
+ #
+ # @regions: a list of the PCI I/O regions associated with the device
+ #
++# @failover_status: if 'failover-primary' property is 'true', true if PCI
++#                   bus master bit on the device is enabled
++#
+ # Notes: the contents of @class_info.desc are not stable and should only be
+ #        treated as informational.
+ #
+@@ -874,7 +877,7 @@
+   'data': {'bus': 'int', 'slot': 'int', 'function': 'int',
+            'class_info': 'PciDeviceClass', 'id': 'PciDeviceId',
+            '*irq': 'int', 'qdev_id': 'str', '*pci_bridge': 'PciBridgeInfo',
+-           'regions': ['PciMemoryRegion']} }
++           'regions': ['PciMemoryRegion'], '*failover_status': 'bool'} }
  
-+static void vfio_failover_notify(VFIOPCIDevice *vdev, bool status)
-+{
-+    PCIDevice *pdev = &vdev->pdev;
-+    const char *n;
-+    gchar *path;
-+
-+    n = pdev->qdev.id ? pdev->qdev.id : vdev->vbasedev.name;
-+    path = object_get_canonical_path(OBJECT(vdev));
-+    qapi_event_send_failover_primary_changed(!!n, n, path, status);
-+}
-+
- static void vfio_realize(PCIDevice *pdev, Error **errp)
- {
-     VFIOPCIDevice *vdev = PCI_VFIO(pdev);
-@@ -3109,10 +3140,36 @@ static void vfio_instance_finalize(Object *obj)
-     vfio_put_group(group);
- }
- 
-+static void vfio_exit_failover_notify(VFIOPCIDevice *vdev)
-+{
-+    PCIDevice *pdev = &vdev->pdev;
-+
-+    /*
-+     * Guest driver may not get the chance to disable bus mastering
-+     * before the device object gets to be unrealized. In that event,
-+     * send out a "disabled" notification on behalf of guest driver.
-+     */
-+    if (pdev->failover_primary &&
-+        pdev->bus_master_enable_region.enabled) {
-+        vfio_failover_notify(vdev, false);
-+    }
-+}
-+
- static void vfio_exitfn(PCIDevice *pdev)
- {
-     VFIOPCIDevice *vdev = PCI_VFIO(pdev);
- 
-+    /*
-+     * During the guest reboot sequence, it is sometimes possible that
-+     * the guest may not get sufficient time to complete the entire driver
-+     * removal sequence, near the end of which a PCI config space write to
-+     * disable bus mastering can be intercepted by device. In such cases,
-+     * the FAILOVER_PRIMARY_CHANGED "disable" event will not be emitted. It
-+     * is imperative to generate the event on the guest's behalf if the
-+     * guest fails to make it.
-+     */
-+    vfio_exit_failover_notify(vdev);
-+
-     vfio_unregister_req_notifier(vdev);
-     vfio_unregister_err_notifier(vdev);
-     pci_device_set_intx_routing_notifier(&vdev->pdev, NULL);
-diff --git a/qapi/net.json b/qapi/net.json
-index 633ac87..a5b8d70 100644
---- a/qapi/net.json
-+++ b/qapi/net.json
-@@ -757,3 +757,29 @@
  ##
- { 'command': 'query-standby-status', 'data': { '*device': 'str' },
-   'returns': ['StandbyStatusInfo'] }
-+
-+##
-+# @FAILOVER_PRIMARY_CHANGED:
-+#
-+# Emitted whenever the driver of failover primary is loaded or unloaded
-+# by the guest.
-+#
-+# @device: device name
-+#
-+# @path: device path
-+#
-+# @enabled: true if driver is loaded thus device is enabled in guest
-+#
-+# Since: 3.0
-+#
-+# Example:
-+#
-+# <- { "event": "FAILOVER_PRIMARY_CHANGED",
-+#      "data": { "device": "vfio-0",
-+#                "path": "/machine/peripheral/vfio-0" },
-+#                "enabled": "true" },
-+#      "timestamp": { "seconds": 1539935213, "microseconds": 753529 } }
-+#
-+##
-+{ 'event': 'FAILOVER_PRIMARY_CHANGED',
-+  'data': { '*device': 'str', 'path': 'str', 'enabled': 'bool' } }
+ # @PciInfo:
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
