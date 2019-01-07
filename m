@@ -1,50 +1,75 @@
-Return-Path: virtio-dev-return-5315-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-5274-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id C2A64985DBD
-	for <virtio-dev@lists.oasis-open.org>; Fri, 11 Jan 2019 09:39:23 +0000 (UTC)
-Date: Fri, 11 Jan 2019 09:39:20 +0000
-From: Stefan Hajnoczi <stefanha@redhat.com>
-Message-ID: <20190111093920.GA11043@stefanha-x1.localdomain>
-References: <20190110164531.11049-1-sf@sfritsch.de>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="NzB8fVQJ5HfG6fxh"
-Content-Disposition: inline
-In-Reply-To: <20190110164531.11049-1-sf@sfritsch.de>
-Subject: Re: [virtio-dev] [PATCH] Fix typo
-To: Stefan Fritsch <sf@sfritsch.de>
-Cc: virtio-dev@lists.oasis-open.org
+	by lists.oasis-open.org (Postfix) with ESMTP id 5D2E1985B7E
+	for <virtio-dev@lists.oasis-open.org>; Mon,  7 Jan 2019 22:30:00 +0000 (UTC)
+From: Venu Busireddy <venu.busireddy@oracle.com>
+Date: Mon,  7 Jan 2019 17:29:39 -0500
+Message-Id: <1546900184-27403-1-git-send-email-venu.busireddy@oracle.com>
+Subject: [virtio-dev] [PATCH v3 0/5] Support for datapath switching during live migration
+To: venu.busireddy@oracle.com, "Michael S. Tsirkin" <mst@redhat.com>, Marcel Apfelbaum <marcel@redhat.com>
+Cc: virtio-dev@lists.oasis-open.org, qemu-devel@nongnu.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
---NzB8fVQJ5HfG6fxh
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Implement the infrastructure to support datapath switching during live
+migration involving SR-IOV devices.
 
-On Thu, Jan 10, 2019 at 05:45:31PM +0100, Stefan Fritsch wrote:
-> It's balloon, not ballon.
-> ---
->  content.tex | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+1. This patch is based off on the current VIRTIO_NET_F_STANDBY feature
+   bit and MAC address device pairing.
 
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+2. This set of events will be consumed by userspace management software
+   to orchestrate all the hot plug and datapath switching activities.
+   This scheme has the least QEMU modifications while allowing userspace
+   software to build its own intelligence to control the whole process
+   of SR-IOV live migration.
 
---NzB8fVQJ5HfG6fxh
-Content-Type: application/pgp-signature; name="signature.asc"
+3. While the hidden device model (viz. coupled device model) is still
+   being explored for automatic hot plugging (QEMU) and automatic datapath
+   switching (host-kernel), this series provides a supplemental set
+   of interfaces if management software wants to drive the SR-IOV live
+   migration on its own. It should not conflict with the hidden device
+   model but just offers simplicity of implementation.
 
------BEGIN PGP SIGNATURE-----
 
-iQEcBAEBAgAGBQJcOGRIAAoJEJykq7OBq3PIJq0IAJ5BZZ1QfeF9Yy1EI8/wzVUj
-Bq+YeG6lG/zEId6CK/x2kv54NZBevjK9aMZTQ5WL/tkhXMl/iSjn2b+zg1sedugZ
-4g3REUcWIb850aQsY6xZKLvbFuCqPD/RT3ED3pOxAz2O1LvEuEMPX8aQWlcJ+hV3
-QW4TXg20cu+o+gZCAeLdS2WaFpAcpbrrbvdCS7JeKStDQsoxGQE1xkH9s3NvLP99
-cJYxuZh6wgIZdCwISD+YiEijYYRuIPY3LHXwl4qka2HA4sWyfNjH+XN7EGOmhNKr
-8cfDP2MUdtZMUPpe0YNV2bq6Aj/56N/V8Zs+J8mWVlJS7b8kv1pDwhB5jox64mM=
-=uTTX
------END PGP SIGNATURE-----
+Si-Wei Liu (2):
+  vfio-pci: Add FAILOVER_PRIMARY_CHANGED event to shorten downtime during failover
+  pci: query command extension to check the bus master enabling status of the failover-primary device
 
---NzB8fVQJ5HfG6fxh--
+Sridhar Samudrala (1):
+  virtio_net: Add VIRTIO_NET_F_STANDBY feature bit.
+
+Venu Busireddy (2):
+  virtio_net: Add support for "Data Path Switching" during Live Migration.
+  virtio_net: Add a query command for FAILOVER_STANDBY_CHANGED event.
+
+---
+Changes in v3:
+  Fix issues with coding style in patch 3/5.
+
+Changes in v2:
+  Added a query command for FAILOVER_STANDBY_CHANGED event.
+  Added a query command for FAILOVER_PRIMARY_CHANGED event.
+
+ hmp.c                          |   5 +++
+ hw/acpi/pcihp.c                |  27 +++++++++++
+ hw/net/virtio-net.c            |  42 +++++++++++++++++
+ hw/pci/pci.c                   |   5 +++
+ hw/vfio/pci.c                  |  60 +++++++++++++++++++++++++
+ hw/vfio/pci.h                  |   1 +
+ include/hw/pci/pci.h           |   1 +
+ include/hw/virtio/virtio-net.h |   1 +
+ include/net/net.h              |   2 +
+ net/net.c                      |  61 +++++++++++++++++++++++++
+ qapi/misc.json                 |   5 ++-
+ qapi/net.json                  | 100 +++++++++++++++++++++++++++++++++++++++++
+ 12 files changed, 309 insertions(+), 1 deletion(-)
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+
