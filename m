@@ -1,48 +1,47 @@
-Return-Path: virtio-dev-return-5229-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-5288-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 0FE94983D45
-	for <virtio-dev@lists.oasis-open.org>; Thu,  3 Jan 2019 06:13:00 +0000 (UTC)
-Message-ID: <5C2DA92E.9090503@intel.com>
-Date: Thu, 03 Jan 2019 14:18:22 +0800
+	by lists.oasis-open.org (Postfix) with ESMTP id DDC4F985B81
+	for <virtio-dev@lists.oasis-open.org>; Tue,  8 Jan 2019 05:25:07 +0000 (UTC)
 From: Wei Wang <wei.w.wang@intel.com>
-MIME-Version: 1.0
-References: <1545963986-11280-1-git-send-email-wei.w.wang@intel.com> <c6746307-fae5-7652-af8d-19f560fc31d9@de.ibm.com>
-In-Reply-To: <c6746307-fae5-7652-af8d-19f560fc31d9@de.ibm.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: [virtio-dev] Re: [PATCH v1 0/2] Virtio: fix some vq allocation issues
-To: Christian Borntraeger <borntraeger@de.ibm.com>, virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, mst@redhat.com, cohuck@redhat.com
-Cc: pbonzini@redhat.com, dgilbert@redhat.com, Halil Pasic <pasic@linux.ibm.com>
+Date: Tue,  8 Jan 2019 12:50:02 +0800
+Message-Id: <1546923005-40517-1-git-send-email-wei.w.wang@intel.com>
+Subject: [virtio-dev] [PATCH v4 0/3] virtio-balloon: tweak config_changed
+To: virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, stable@vger.kernel.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, mst@redhat.com, cohuck@redhat.com
+Cc: borntraeger@de.ibm.com, pbonzini@redhat.com, dgilbert@redhat.com, wei.w.wang@intel.com, pasic@linux.ibm.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 12/28/2018 03:57 PM, Christian Borntraeger wrote:
->
-> On 28.12.2018 03:26, Wei Wang wrote:
->> Some vqs don't need to be allocated when the related feature bits are
->> disabled. Callers notice the vq allocation layer by setting the related
->> names[i] to be NULL.
->>
->> This patch series fixes the find_vqs implementations to handle this case.
-> So the random crashes during boot are gone.
-> What still does not work is actually using the balloon.
->
-> So in the qemu monitor using lets say "balloon 1000"  will hang the guest.
-> Seems to be a deadlock in the virtio-ccw code.  We seem to call the
-> config code in the interrupt handler.
+Since virtio-ccw doesn't work with accessing to the config space
+inside an interrupt context, this patch series avoids that issue by
+moving the config register accesses to the related workqueue contexts.
 
-Please try with applying both this series and the "virtio-balloon: tweak 
-config_changed"
-series that I just sent.
-This series fixes the ccw booting issue and that series tries to fix the 
-ccw deadlock issue.
+v3->v4 ChangeLog:
+    - change virtio32_to_cpu to cpu_to_virtio_32 in send_cmd_id_start;
+v2->v3 ChangeLog:
+    - rename cmd_id_received to cmd_id_received_cache, and have call sites
+      read the latest value via virtio_balloon_cmd_id_received. (Still
+      kept Cornelia and Halil's reviewed-by as it's a minor change)
+    - remove zeroing vb->num_free_page_blocks in probe since vb is
+      allocated via kzalloc.
+v1->v2 ChangeLog:
+    - add config_read_bitmap to indicate to the workqueue callbacks about
+      the necessity of reading the related config fields.
 
-Best,
-Wei
+Wei Wang (3):
+  virtio-balloon: tweak config_changed implementation
+  virtio-balloon: improve update_balloon_size_func
+  virtio_balloon: remove the unnecessary 0-initialization
+
+ drivers/virtio/virtio_balloon.c | 104 ++++++++++++++++++++++++++--------------
+ 1 file changed, 69 insertions(+), 35 deletions(-)
+
+-- 
+2.7.4
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
