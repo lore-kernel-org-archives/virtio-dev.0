@@ -1,114 +1,29 @@
-Return-Path: virtio-dev-return-5323-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-5331-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 1C4C6984380
-	for <virtio-dev@lists.oasis-open.org>; Mon, 14 Jan 2019 18:58:25 +0000 (UTC)
-Date: Mon, 14 Jan 2019 13:58:22 -0500
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20190114134147-mutt-send-email-mst@kernel.org>
-References: <1542104867-11143-1-git-send-email-wei.w.wang@intel.com>
- <1542104867-11143-2-git-send-email-wei.w.wang@intel.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 8F2A8985B33
+	for <virtio-dev@lists.oasis-open.org>; Tue, 15 Jan 2019 08:32:11 +0000 (UTC)
+Message-ID: <5C3D9BD8.2020409@intel.com>
+Date: Tue, 15 Jan 2019 16:37:44 +0800
+From: Wei Wang <wei.w.wang@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1542104867-11143-2-git-send-email-wei.w.wang@intel.com>
-Subject: [virtio-dev] Re: [PATCH v1 1/2] content/virtio-balloon:
- VIRTIO_BALLOON_F_FREE_PAGE_HINT
-To: Wei Wang <wei.w.wang@intel.com>
+References: <1542104867-11143-1-git-send-email-wei.w.wang@intel.com> <1542104867-11143-2-git-send-email-wei.w.wang@intel.com> <20190114134147-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20190114134147-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [virtio-dev] Re: [PATCH v1 1/2] content/virtio-balloon: VIRTIO_BALLOON_F_FREE_PAGE_HINT
+To: "Michael S. Tsirkin" <mst@redhat.com>
 Cc: virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Tue, Nov 13, 2018 at 06:27:46PM +0800, Wei Wang wrote:
-> The VIRTIO_BALLOON_F_FREE_PAGE_HINT feature supports driver reporting
-> free page hints to the device.
-> 
-> Live migration can use the virtio-balloon device to get the guest free
-> page hints, and avoid sending those free pages. It is not concerned that
-> the memory pages are used (e.g. guest reclaimed some of them due to memory
-> pressure) after they are given to the device as hints of free pages,
-> because they will be tracked by the hypervisor and transferred in the
-> subsequent round if they are used and written.
-> 
-> Suggested-by: Michael S. Tsirkin <mst@redhat.com>
-> Signed-off-by: Wei Wang <wei.w.wang@intel.com>
-> ---
->  content.tex | 122 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++---
->  1 file changed, 116 insertions(+), 6 deletions(-)
-> 
-> diff --git a/content.tex b/content.tex
-> index c346183..673c891 100644
-> --- a/content.tex
-> +++ b/content.tex
-> @@ -4367,9 +4367,9 @@ The traditional virtio memory balloon device is a primitive device for
->  managing guest memory: the device asks for a certain amount of
->  memory, and the driver supplies it (or withdraws it, if the device
->  has more than it asks for). This allows the guest to adapt to
-> -changes in allowance of underlying physical memory. If the
-> -feature is negotiated, the device can also be used to communicate
-> -guest memory statistics to the host.
-> +changes in allowance of underlying physical memory. The device can
-> +also be used to communicate guest memory statistics and guest free
-> +memory pages to the host when the related features are negotiated.
-
-
-Do we have to mention "pages"? How about "free memory" everywhere?
-
->  
->  \subsection{Device ID}\label{sec:Device Types / Memory Balloon Device / Device ID}
->    5
-> @@ -4378,11 +4378,14 @@ guest memory statistics to the host.
->  \begin{description}
->  \item[0] inflateq
->  \item[1] deflateq
-> -\item[2] statsq.
-> +\item[2] statsq
-> +\item[3] freepageq
->  \end{description}
->  
->    Virtqueue 2 only exists if VIRTIO_BALLON_F_STATS_VQ set.
->  
-> +  Virtqueue 3 only exists if VIRTIO_BALLON_F_FREE_PAGE_HINT set.
-> +
->  \subsection{Feature bits}\label{sec:Device Types / Memory Balloon Device / Feature bits}
->  \begin{description}
->  \item[VIRTIO_BALLOON_F_MUST_TELL_HOST (0)] Host has to be told before
-> @@ -4392,6 +4395,8 @@ guest memory statistics to the host.
->      memory statistics is present.
->  \item[VIRTIO_BALLOON_F_DEFLATE_ON_OOM (2) ] Deflate balloon on
->      guest out of memory condition.
-> +\item[VIRTIO_BALLOON_F_FREE_PAGE_HINT(3) ] Guest reports free pages
-> +    to host.
->  
->  \end{description}
->  
-> @@ -4415,16 +4420,32 @@ allow guest to use memory before notifying host if
->  VIRTIO_BALLOON_F_MUST_TELL_HOST is not negotiated.
->  
->  \subsection{Device configuration layout}\label{sec:Device Types / Memory Balloon Device / Device configuration layout}
-> -  Both fields of this configuration
-> -  are always available.
-> +
-> +\begin{lstlisting}
-> +#define VIRTIO_BALLOON_CMD_ID_MIN 0x80000000
-
-Let's define MAX too for consistency?
-
-> +#define VIRTIO_BALLOON_CMD_ID_STOP 0x0
-> +#define VIRTIO_BALLOON_CMD_ID_DONE 0x1
-> +\end{lstlisting}
->  
->  \begin{lstlisting}
->  struct virtio_balloon_config {
->          le32 num_pages;
->          le32 actual;
-> +        le32 free_page_report_cmd_id;
->  };
->  \end{lstlisting}
->  
+On 01/15/2019 02:58 AM, Michael S. Tsirkin wrote:
+> On Tue, Nov 13, 2018 at 06:27:46PM +0800, Wei Wang wrote:
+>
+>   
 > +\field{num_pages} and \field{actual} are always available.
 > +
 > +\field{free_page_report_cmd_id} is available if
@@ -119,178 +34,171 @@ Let's define MAX too for consistency?
 > +The device MUST NOT set \field{free_page_report_cmd_id} to a value
 > +between \field{VIRTIO_BALLOON_CMD_ID_DONE} and
 > +\field{VIRTIO_BALLOON_CMD_ID_MIN} exclusive.
+> Exclusive is confusing since you can include one edge or
+> both.
+>
+> Let's write it up positively. So the only legal values are
+> VIRTIO_BALLOON_CMD_ID_MIN to VIRTIO_BALLOON_CMD_ID_MAX
+> inclusive or VIRTIO_BALLOON_CMD_ID_STOP?
 
-Exclusive is confusing since you can include one edge or
-both.
+OK, plan to change it:
 
-Let's write it up positively. So the only legal values are
-VIRTIO_BALLOON_CMD_ID_MIN to VIRTIO_BALLOON_CMD_ID_MAX
-inclusive or VIRTIO_BALLOON_CMD_ID_STOP?
-
-> +
->  \subparagraph{Legacy Interface: Device configuration layout}\label{sec:Device Types / Memory Balloon Device / Device
->  configuration layout / Legacy Interface: Device configuration layout}
->  When using the legacy interface, transitional devices and drivers
-> @@ -4448,8 +4469,20 @@ The device initialization process is outlined below:
->    \item DRIVER_OK is set: device operation begins.
->    \item Notify the device about the stats virtqueue buffer.
->    \end{enumerate}
-> +
-> +\item If the VIRTIO_BALLOON_F_FREE_PAGE_HINT feature bit is
-> +  negotiated:
-> +  \begin{enumerate}
-> +  \item Identify the free page virtqueue.
-> +  \item Set \field{free_page_report_cmd_id} to
-> +    \field{VIRTIO_BALLOON_CMD_ID_MIN}.
-
-Does driver does it or the device?
-And does it have to be MIN? Why?
-
-Should not driver *read* the ID instead?
-
-> +  \item Register a notifier with an external component (e.g. a live
-> +        migration agent) who will request for the free page reporting
-> +        from the driver.
-
-Spec only operates in terms of driver and device.
-I don't know what does above mean in these terms
-but please restate it accordingly.
-No notifiers live migration agents and external (to what?) components please.
-
-> +  \end{enumerate}
->  \end{enumerate}
->  
-> +
-
-don't add more empty lines pls.
-
->  \subsection{Device Operation}\label{sec:Device Types / Memory Balloon Device / Device Operation}
->  
->  The device is driven either by the receipt of a configuration
-> @@ -4718,6 +4751,83 @@ first buffer.
->    allocations in the guest.
->  \end{description}
->  
-> +\subsubsection{Free Page Reporting}\label{sec:Device Types / Memory Balloon Device / Device Operation / Free Page Reporting}
-> +
-> +The free page reporting is driven by the device. The device MAY
-> +request the driver to start or stop the free page reporting.
-> +
-> +A request to start the free page reporting proceeds as follows:
-> +
-> +\begin{enumerate}
-> +\item The device updates \field{free_page_report_cmd_id}: if it has
-> +  reached the maximum value, 0xffffffff, resets it to
-> +  \field{VIRTIO_BALLOON_CMD_ID_MIN}. Otherwise, increments it by 1.
-> +\item The device sends a configuration notification to the driver.
-
-that's configuration change notification
-
-> +\item The driver reads \field{free_page_report_cmd_id}: if it is not
-> +  \field{VIRTIO_BALLOON_CMD_ID_STOP},
-> +  \field{VIRTIO_BALLOON_CMD_ID_DONE}, and different from the value it
-> +  read last time, start free page reporting as follows:
-> +  \begin{enumerate}
-> +  \item Write the received \field{free_page_report_cmd_id} to a
-> +    buffer and add it to the free page virtqueue to indicate the start
-> +    of the reporting.
-> +  \item Collect free pages and write each page address into an entry
-> +    of the virtqueue.
-
-Spec does not define terms such as entry for virtqueue or writing
-into virtqueue.
-
-What you mean is add each page as an input buffer to the
-virtqueue I think?
+The device MUST set a legal value to \field{free_page_report_cmd_id}:
+a value between \field{VIRTIO_BALLOON_CMD_ID_MIN} and
+\field{VIRTIO_BALLOON_CMD_ID_MAX} inclusive,
+\field{VIRTIO_BALLOON_CMD_ID_STOP}, or
+\field{VIRTIO_BALLOON_CMD_ID_DONE}.
 
 
-Also are there any alignment assumptions? What does "page" mean here
-generally? A size aligned physically contigious region of free memory?
+
+>> +
+>>   \subparagraph{Legacy Interface: Device configuration layout}\label{sec:Device Types / Memory Balloon Device / Device
+>>   configuration layout / Legacy Interface: Device configuration layout}
+>>   When using the legacy interface, transitional devices and drivers
+>> @@ -4448,8 +4469,20 @@ The device initialization process is outlined below:
+>>     \item DRIVER_OK is set: device operation begins.
+>>     \item Notify the device about the stats virtqueue buffer.
+>>     \end{enumerate}
+>> +
+>> +\item If the VIRTIO_BALLOON_F_FREE_PAGE_HINT feature bit is
+>> +  negotiated:
+>> +  \begin{enumerate}
+>> +  \item Identify the free page virtqueue.
+>> +  \item Set \field{free_page_report_cmd_id} to
+>> +    \field{VIRTIO_BALLOON_CMD_ID_MIN}.
+> Does driver does it or the device?
+> And does it have to be MIN? Why?
+>
+> Should not driver *read* the ID instead?
+
+Yes, the device sets the value and the driver reads it. Probably not 
+necessarily have to be MIN.
+Plan to change:
+
+\item If the VIRTIO_BALLOON_F_FREE_PAGE_HINT feature bit is
+   negotiated:
+   \begin{enumerate}
+   \item Identify the free page virtqueue.
+   \item Set \field{free_page_report_cmd_id} to a legal value.
+   \end{enumerate}
 
 
-> +  \item Write \field{VIRTIO_BALLOON_CMD_ID_STOP} into a buffer and add
-> +    it to the free page virtqueue, which signifies that all the free
-> +    pages are reported.
 
-better "that free page reporting is complete"?
+>
+>> +  \item Register a notifier with an external component (e.g. a live
+>> +        migration agent) who will request for the free page reporting
+>> +        from the driver.
+> Spec only operates in terms of driver and device.
+> I don't know what does above mean in these terms
+> but please restate it accordingly.
+> No notifiers live migration agents and external (to what?) components please.
 
-> +  \end{enumerate}
-> +    A driver to device notification is sent in the above steps after
-> +    adding a buffer or address to the virtqueue if the notification
-> +    is not suppressed.
-> +\item The device pops entries from the virtqueue:
+OK, removed this part.
 
-We don't  define "pops" for devices either.
+>> +\item The driver reads \field{free_page_report_cmd_id}: if it is not
+>> +  \field{VIRTIO_BALLOON_CMD_ID_STOP},
+>> +  \field{VIRTIO_BALLOON_CMD_ID_DONE}, and different from the value it
+>> +  read last time, start free page reporting as follows:
+>> +  \begin{enumerate}
+>> +  \item Write the received \field{free_page_report_cmd_id} to a
+>> +    buffer and add it to the free page virtqueue to indicate the start
+>> +    of the reporting.
+>> +  \item Collect free pages and write each page address into an entry
+>> +    of the virtqueue.
+> Spec does not define terms such as entry for virtqueue or writing
+> into virtqueue.
+>
+> What you mean is add each page as an input buffer to the
+> virtqueue I think?
+>
+>
+> Also are there any alignment assumptions? What does "page" mean here
+> generally? A size aligned physically contigious region of free memory?
+>
 
-The terminology we use is something like
-"processes availble buffers".
+OK, thanks for your suggestions.
 
-Please look at other examples.
+Here is the rewording (changed page to memory):
 
-> it starts to consume
-> +  the addresses
+\begin{enumerate}
+\item The device updates \field{free_page_report_cmd_id}: if it has
+   reached \field{VIRTIO_BALLOON_CMD_ID_MAX}, resets it to
+   \field{VIRTIO_BALLOON_CMD_ID_MIN}. Otherwise, increments it by 1.
+\item The device sends a configuration change notification to the
+   driver.
+\item The driver reads \field{free_page_report_cmd_id}: if it is not
+   \field{VIRTIO_BALLOON_CMD_ID_STOP},
+   \field{VIRTIO_BALLOON_CMD_ID_DONE}, and different from the value it
+   read last time, start free page reporting as follows:
+   \begin{enumerate}
+   \item Write the received \field{free_page_report_cmd_id} to a
+     buffer from the free page virtqueue.
+   \item Write addresses of guest free memory to buffers from the free
+     page virtqueue.
+   \item Write \field{VIRTIO_BALLOON_CMD_ID_STOP} to a buffer from the
+     free page virtqueue, which signifies that the guest free memory
+     reporting is complete.
+   \end{enumerate}
+     A driver to device notification is sent in the above steps after
+     writing a buffer from the free page virtqueue if the notification
+     is not suppressed.
+\item The device processes available buffers from the virtqueue and
+   stops the processing after it reads a buffer which stores
+   \field{VIRTIO_BALLOON_CMD_ID_STOP}.
+\end{enumerate}
 
-Need to define what does "consume" mean here.
+A request to actively stop the free page reporting proceeds as
+follows:
 
-> after it receives the buffer that stores a value which
-> +  equals to \field{free_page_report_cmd_id}, and stops the address
-> +  consumption after receiving a buffer which stores
-> +  \field{VIRTIO_BALLOON_CMD_ID_STOP}.
-> +\end{enumerate}
-> +
-> +A request to actively stop the free page reporting proceeds as
-> +follows:
-> +
-> +\begin{enumerate}
-> +\item The device sets \field{free_page_report_cmd_id} to
-> +  \field{VIRTIO_BALLOON_CMD_ID_STOP}, followed by a configuration
-> +  notification to the driver if not suppressed.
-> +\item The driver reads \field{free_page_report_cmd_id} and identifies
-> +  that it is \field{VIRTIO_BALLOON_CMD_ID_STOP}, then it stops
-> +  collecting free pages.
-> +\item The driver writes \field{VIRTIO_BALLOON_CMD_ID_STOP} into a
-> +  buffer and adds it to the virtqueue.
-> +\item The device stops poping entires from the virtqueue
-> +  after receiving the buffer that stores
-> +  \field{VIRTIO_BALLOON_CMD_ID_STOP}.
-> +\end{enumerate}
-> +
-> +
-> +The device can end the free page reporting by setting
-> +\field{free_page_report_cmd_id} to \field{VIRTIO_BALLOON_CMD_ID_DONE},
-> +followed by a configuration notification to the driver.
-> +
-> +\drivernormative{\paragraph}{Free Page Reporting}{Device Types / Memory Balloon Device / Device Operation / Free Page Reporting}
-> +Normative statements in this section apply if and only if the
-> +VIRTIO_BALLOON_F_FREE_PAGE_HINT feature has been negotiated.
+\begin{enumerate}
+\item The device sets \field{free_page_report_cmd_id} to
+   \field{VIRTIO_BALLOON_CMD_ID_STOP}, followed by a configuration
+   change notification to the driver if not suppressed.
+\item The driver reads \field{free_page_report_cmd_id} and identifies
+   that it is \field{VIRTIO_BALLOON_CMD_ID_STOP}, then it stops
+   adding buffers to the free page virtqueue.
+\item The driver writes \field{VIRTIO_BALLOON_CMD_ID_STOP} into a
+   buffer from virtqueue.
+\item The device stops processing the available buffers from the
+   virtqueue after receiving the buffer that stores
+   \field{VIRTIO_BALLOON_CMD_ID_STOP}.
+\end{enumerate}
 
-So just say
+The device can end the free page reporting by setting
+\field{free_page_report_cmd_id} to \field{VIRTIO_BALLOON_CMD_ID_DONE},
+followed by a configuration notification to the driver.
 
-if VIRTIO_BALLOON_F_FREE_PAGE_HINT has been negotiated:
 
-and then proceed.
 
-> +
-> +The driver SHOULD add the addresses of free pages as input buffers
-> +to the virtqueue.
-> +
-> +The driver SHOULD add the buffer that stores the value of
-> +\field{free_page_report_cmd_id} or \field{VIRTIO_BALLOON_CMD_ID_STOP}
-> +as an output buffer to the virtqueue.
-> +
-> +The driver SHOULD use different buffers to send the the value of
-> +\field{free_page_report_cmd_id} and
-> +\field{VIRTIO_BALLOON_CMD_ID_STOP} to avoid one being overwritten by
-> +another when the device has a delay in reading the command.
-> +
-> +The driver SHOULD release all the collected free pages after receiving
-> +\field{VIRTIO_BALLOON_CMD_ID_DONE}.
-> +
->  \section{SCSI Host Device}\label{sec:Device Types / SCSI Host Device}
->  
->  The virtio SCSI host device groups together one or more virtual
-> -- 
-> 2.7.4
+>> +
+>> +The driver SHOULD add the addresses of free pages as input buffers
+>> +to the virtqueue.
+>> +
+>> +The driver SHOULD add the buffer that stores the value of
+>> +\field{free_page_report_cmd_id} or \field{VIRTIO_BALLOON_CMD_ID_STOP}
+>> +as an output buffer to the virtqueue.
+>> +
+>> +The driver SHOULD use different buffers to send the the value of
+>> +\field{free_page_report_cmd_id} and
+>> +\field{VIRTIO_BALLOON_CMD_ID_STOP} to avoid one being overwritten by
+>> +another when the device has a delay in reading the command.
+>> +
+>> +The driver SHOULD release all the collected free pages after receiving
+>> +\field{VIRTIO_BALLOON_CMD_ID_DONE}.
+>> +
+>>   \section{SCSI Host Device}\label{sec:Device Types / SCSI Host Device}
+>>   
+>>   The virtio SCSI host device groups together one or more virtual
+>> -- 
+>> 2.7.4
+
+The above looks like implementation related, I also plan to remove them.
+
+Thanks for your comments!
+
+Best,
+Wei
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
