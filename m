@@ -1,150 +1,101 @@
-Return-Path: virtio-dev-return-5351-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-5350-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id E630A985F18
-	for <virtio-dev@lists.oasis-open.org>; Tue, 29 Jan 2019 18:54:47 +0000 (UTC)
-Date: Tue, 29 Jan 2019 13:54:42 -0500
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20190129135345-mutt-send-email-mst@kernel.org>
+	by lists.oasis-open.org (Postfix) with ESMTP id 85BF0985F3E
+	for <virtio-dev@lists.oasis-open.org>; Thu, 24 Jan 2019 16:04:18 +0000 (UTC)
 References: <20190115121959.23763-1-jean-philippe.brucker@arm.com>
- <20190118103235-mutt-send-email-mst@kernel.org>
- <0ba215f5-e856-bf31-8dd9-a85710714a7a@arm.com>
+ <20190123083435.x3svwqp472mdgglw@8bytes.org>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Message-ID: <a6315ab3-bffb-7470-365d-b26df6524bda@arm.com>
+Date: Thu, 24 Jan 2019 16:03:55 +0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0ba215f5-e856-bf31-8dd9-a85710714a7a@arm.com>
+In-Reply-To: <20190123083435.x3svwqp472mdgglw@8bytes.org>
+Content-Type: text/plain; charset=windows-1252
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Subject: [virtio-dev] Re: [PATCH v7 0/7] Add virtio-iommu driver
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Cc: mark.rutland@arm.com, virtio-dev@lists.oasis-open.org, kevin.tian@intel.com, tnowicki@caviumnetworks.com, devicetree@vger.kernel.org, marc.zyngier@arm.com, linux-pci@vger.kernel.org, will.deacon@arm.com, robin.murphy@arm.com, virtualization@lists.linux-foundation.org, iommu@lists.linux-foundation.org, robh+dt@kernel.org, kvmarm@lists.cs.columbia.edu, bhelgaas@google.com, frowand.list@gmail.com, jasowang@redhat.com, linuxppc-dev@lists.ozlabs.org, Thiago Jung Bauermann <bauerman@linux.ibm.com>
+To: Joerg Roedel <joro@8bytes.org>
+Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "mst@redhat.com" <mst@redhat.com>, "jasowang@redhat.com" <jasowang@redhat.com>, "robh+dt@kernel.org" <robh+dt@kernel.org>, Mark Rutland <Mark.Rutland@arm.com>, "bhelgaas@google.com" <bhelgaas@google.com>, "frowand.list@gmail.com" <frowand.list@gmail.com>, "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>, "eric.auger@redhat.com" <eric.auger@redhat.com>, "tnowicki@caviumnetworks.com" <tnowicki@caviumnetworks.com>, "kevin.tian@intel.com" <kevin.tian@intel.com>, Marc Zyngier <Marc.Zyngier@arm.com>, Robin Murphy <Robin.Murphy@arm.com>, Will Deacon <Will.Deacon@arm.com>, Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>, "bharat.bhushan@nxp.com" <bharat.bhushan@nxp.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Mon, Jan 21, 2019 at 11:29:05AM +0000, Jean-Philippe Brucker wrote:
-> Hi,
-> 
-> On 18/01/2019 15:51, Michael S. Tsirkin wrote:
-> > 
-> > On Tue, Jan 15, 2019 at 12:19:52PM +0000, Jean-Philippe Brucker wrote:
-> >> Implement the virtio-iommu driver, following specification v0.9 [1].
-> >>
-> >> This is a simple rebase onto Linux v5.0-rc2. We now use the
-> >> dev_iommu_fwspec_get() helper introduced in v5.0 instead of accessing
-> >> dev->iommu_fwspec, but there aren't any functional change from v6 [2].
-> >>
-> >> Our current goal for virtio-iommu is to get a paravirtual IOMMU working
-> >> on Arm, and enable device assignment to guest userspace. In this
-> >> use-case the mappings are static, and don't require optimal performance,
-> >> so this series tries to keep things simple. However there is plenty more
-> >> to do for features and optimizations, and having this base in v5.1 would
-> >> be good. Given that most of the changes are to drivers/iommu, I believe
-> >> the driver and future changes should go via the IOMMU tree.
-> >>
-> >> You can find Linux driver and kvmtool device on v0.9.2 branches [3],
-> >> module and x86 support on virtio-iommu/devel. Also tested with Eric's
-> >> QEMU device [4]. Please note that the series depends on Robin's
-> >> probe-deferral fix [5], which will hopefully land in v5.0.
-> >>
-> >> [1] Virtio-iommu specification v0.9, sources and pdf
-> >>     git://linux-arm.org/virtio-iommu.git virtio-iommu/v0.9
-> >>     http://jpbrucker.net/virtio-iommu/spec/v0.9/virtio-iommu-v0.9.pdf
-> >>
-> >> [2] [PATCH v6 0/7] Add virtio-iommu driver
-> >>     https://lists.linuxfoundation.org/pipermail/iommu/2018-December/032127.html
-> >>
-> >> [3] git://linux-arm.org/linux-jpb.git virtio-iommu/v0.9.2
-> >>     git://linux-arm.org/kvmtool-jpb.git virtio-iommu/v0.9.2
-> >>
-> >> [4] [RFC v9 00/17] VIRTIO-IOMMU device
-> >>     https://www.mail-archive.com/qemu-devel@nongnu.org/msg575578.html
-> >>
-> >> [5] [PATCH] iommu/of: Fix probe-deferral
-> >>     https://www.spinics.net/lists/arm-kernel/msg698371.html
-> > 
-> > Thanks for the work!
-> > So really my only issue with this is that there's no
-> > way for the IOMMU to describe the devices that it
-> > covers.
-> > 
-> > As a result that is then done in a platform-specific way.
-> > 
-> > And this means that for example it does not solve the problem that e.g.
-> > some power people have in that their platform simply does not have a way
-> > to specify which devices are covered by the IOMMU.
-> 
-> Isn't power using device tree? I haven't looked much at power because I
-> was told a while ago that they already paravirtualize their IOMMU and
-> don't need virtio-iommu, except perhaps for some legacy platforms. Or
-> something along those lines. But I would certainly be interested in
-> enabling the IOMMU for more architectures.
+Hi Joerg,
 
-I have CC'd the relevant ppc developers, let's see what do they think.
+On 23/01/2019 08:34, Joerg Roedel wrote:
+> Hi Jean-Philippe,
+> 
+> thanks for all your hard work on this!
+> 
+> On Tue, Jan 15, 2019 at 12:19:52PM +0000, Jean-Philippe Brucker wrote:
+>> Implement the virtio-iommu driver, following specification v0.9 [1].
+> 
+> To make progress on this I think the spec needs to be close to something
+> that can be included into the official virtio-specification. Have you
+> proposed the specification for inclusion there?
+
+I haven't yet. I did send a few drafts of the spec to the mailing list,
+using arbitrary version numbers (0.1 - 0.9), and received excellent
+feedback from Eric, Kevin, Ashok and others [2], but I hadn't formally
+asked for inclusion yet. Since I haven't made any major change to the
+interface in a while, I'll get on that.
+
+> This is because I can't merge a driver that might be incompatible to
+> future implementations because the specification needs to be changed on
+> its way to an official standard.
+
+Makes sense, though I think other virtio devices have been developed a
+little more organically: device and driver code got upstreamed first,
+and then the specification describing their interface got merged into
+the standard. For example I believe that code for crypto, input and GPU
+devices were upstreamed long before the specification was merged. Once
+an implementation is upstream, the interface is expected to be
+backward-compatible (all subsequent changes are introduced using feature
+bits).
+
+So I've been working with this process in mind, also described by Jens
+at KVM forum 2017 [3]:
+(1) Reserve a device ID, and get that merged into virtio (ID 23 for
+virtio-iommu was reserved last year)
+(2) Open-source an implementation (this driver and Eric's device)
+(3) Formalize and upstream the device specification
+
+But I get that some overlap between (2) and (3) would have been better.
+So far the spec document has been reviewed mainly from the IOMMU point
+of view, and might require more changes to be in line with the other
+virtio devices -- hopefully just wording changes. I'll kick off step
+(3), but I think the virtio folks are a bit busy with finalizing the 1.1
+spec so I expect it to take a while.
+
+Thanks,
+Jean
+
+[2] RFC https://markmail.org/thread/l6b2rpc46nua4egs
+    0.4 https://markmail.org/thread/f5k37mab7tnrslin
+    0.5 https://markmail.org/thread/tz65oolu5do7hi6n
+    0.6 https://markmail.org/thread/dppbg6owzrx2km2n
+    0.7 https://markmail.org/thread/dgdy4hicswpakmsq
+
+[3] The future of virtio: riddles, myths and surprises
+    https://www.linux-kvm.org/images/0/03/Virtio_fall_2017.pdf
+    https://www.youtube.com/watch?v=z9cWwgYH97A
 
 
-> As for the enumeration problem, I still don't think we can get much
-> better than DT and ACPI as solutions (and IMO they are necessary to make
-> this device portable). But I believe that getting DT and ACPI support is
-> just a one-off inconvenience. That is, once the required bindings are
-> accepted, any future extension can then be done at the virtio level with
-> feature bits and probe requests, without having to update ACPI or DT.
+> I had a short discussion with Michael S. Tsirkin about that and from
+> what I understood the spec needs to be proposed for inclusion on the
+> virtio-comment[1] mailing list and later the TC needs to vote on it.
+> Please work with Michael on this to get the specification official (or
+> at least pretty close to something that will be part of the official
+> virtio standard).
 > 
-> Thanks,
-> Jean
+> Regards,
 > 
-> > Solving that problem would make me much more excited about
-> > this device.
-> > 
-> > On the other hand I can see that while there have been some
-> > developments most of the code has been stable for quite a while now.
-> > 
-> > So what I am trying to do right about now, is making a small module that
-> > loads early and pokes at the IOMMU sufficiently to get the data about
-> > which devices use the IOMMU out of it using standard virtio config
-> > space.  IIUC it's claimed to be impossible without messy changes to the
-> > boot sequence.
-> > 
-> > If I succeed at least on some platforms I'll ask that this design is
-> > worked into this device, minimizing info that goes through DT/ACPI.  If
-> > I see I can't make it in time to meet the next merge window, I plan
-> > merging the existing patches using DT (barring surprises).
-> > 
-> > As I only have a very small amount of time to spend on this attempt, If
-> > someone else wants to try doing that in parallel, that would be great!
-> > 
-> > 
-> >> Jean-Philippe Brucker (7):
-> >>   dt-bindings: virtio-mmio: Add IOMMU description
-> >>   dt-bindings: virtio: Add virtio-pci-iommu node
-> >>   of: Allow the iommu-map property to omit untranslated devices
-> >>   PCI: OF: Initialize dev->fwnode appropriately
-> >>   iommu: Add virtio-iommu driver
-> >>   iommu/virtio: Add probe request
-> >>   iommu/virtio: Add event queue
-> >>
-> >>  .../devicetree/bindings/virtio/iommu.txt      |   66 +
-> >>  .../devicetree/bindings/virtio/mmio.txt       |   30 +
-> >>  MAINTAINERS                                   |    7 +
-> >>  drivers/iommu/Kconfig                         |   11 +
-> >>  drivers/iommu/Makefile                        |    1 +
-> >>  drivers/iommu/virtio-iommu.c                  | 1158 +++++++++++++++++
-> >>  drivers/of/base.c                             |   10 +-
-> >>  drivers/pci/of.c                              |    7 +
-> >>  include/uapi/linux/virtio_ids.h               |    1 +
-> >>  include/uapi/linux/virtio_iommu.h             |  161 +++
-> >>  10 files changed, 1449 insertions(+), 3 deletions(-)
-> >>  create mode 100644 Documentation/devicetree/bindings/virtio/iommu.txt
-> >>  create mode 100644 drivers/iommu/virtio-iommu.c
-> >>  create mode 100644 include/uapi/linux/virtio_iommu.h
-> >>
-> >> -- 
-> >> 2.19.1
-> > _______________________________________________
-> > iommu mailing list
-> > iommu@lists.linux-foundation.org
-> > https://lists.linuxfoundation.org/mailman/listinfo/iommu
-> > 
+> 	Joerg
+> 
+> [1] https://www.oasis-open.org/committees/comments/index.php?wg_abbrev=virtio
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
