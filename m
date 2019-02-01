@@ -1,103 +1,63 @@
-Return-Path: virtio-comment-return-678-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio-comment@lists.oasis-open.org>
-List-Post: <mailto:virtio-comment@lists.oasis-open.org>
-List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
-Date: Wed, 27 Feb 2019 18:33:13 +0000
-From: "Dr. David Alan Gilbert" <dgilbert@redhat.com>
-Message-ID: <20190227183312.GK2602@work-vm>
-References: <20190222115433.7160-1-dgilbert@redhat.com>
- <20190222115433.7160-4-dgilbert@redhat.com>
- <20190227145050.0038e037.cohuck@redhat.com>
+Return-Path: virtio-dev-return-5362-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id 7AC82985493
+	for <virtio-dev@lists.oasis-open.org>; Fri,  1 Feb 2019 14:24:00 +0000 (UTC)
+From: David Riddoch <driddoch@solarflare.com>
+Message-ID: <2f0de388-de01-1e51-b6b6-339389a2268a@solarflare.com>
+Date: Fri, 1 Feb 2019 14:23:55 +0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190227145050.0038e037.cohuck@redhat.com>
-Subject: [virtio-comment] Re: [virtio-dev] Re: [PATCH v2 3/3] shared memory: Define mmio
- registers
-To: Cornelia Huck <cohuck@redhat.com>
-Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, stefanha@redhat.com
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+Subject: [virtio-dev] RFC: Doorbell suppression, packed-ring mode and hardware offload
+To: Virtio-Dev <virtio-dev@lists.oasis-open.org>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-* Cornelia Huck (cohuck@redhat.com) wrote:
-> On Fri, 22 Feb 2019 11:54:33 +0000
-> "Dr. David Alan Gilbert (git)" <dgilbert@redhat.com> wrote:
-> 
-> > From: "Dr. David Alan Gilbert" <dgilbert@redhat.com>
-> > 
-> > Define an MMIO interface to enumerate and map shared
-> > memory regions.
-> > 
-> > Note: This hasn't been implemented.
-> > 
-> > Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
-> > ---
-> >  content.tex | 32 ++++++++++++++++++++++++++++++++
-> >  1 file changed, 32 insertions(+)
-> 
-> (...)
-> 
-> > @@ -1815,6 +1840,13 @@ If both values are valid, it MUST read \field{DeviceID}
-> >  and if its value is zero (0x0) MUST abort initialization and
-> >  MUST NOT access any other register.
-> >  
-> > +Devices expecting shared memory regions MUST enumerate the
-> > +regions by selecting each region in tern and checking that the
-> 
-> s/tern/turn/
+All,
 
-I'm removing this paragraph; see below.
+I'd like to propose a small extension to the packed virtqueue mode.  My 
+proposal is to add an offset/wrap field, written by the driver, 
+indicating how many available descriptors have been added to the ring.
 
-> > +length is not -1.
-> > +
-> > +Devices not expecting shared memory MUST NOT use the shared
-> > +memory registers.
-> 
-> Isn't that the _driver_ requirements section? These sentences also make
-> more sense if they talk about a driver expecting something.
+The reason for wanting this is to improve performance of hardware 
+devices.  Because of high read latency over a PCIe bus, it is important 
+for hardware devices to read multiple ring entries in parallel.  It is 
+desirable to know how many descriptors are available prior to issuing 
+these reads, else you risk fetching descriptors that are not yet 
+available.  As well as wasting bus bandwidth this adds complexity.
 
-Yes, this should be 'Drivers not expecting ...'
+I'd previously hoped that VIRTIO_F_NOTIFICATION_DATA would solve this 
+problem, but we still have a problem.  If you rely on doorbells to tell 
+you how many descriptors are available, then you have to keep doorbells 
+enabled at all times.  This can result in a very high rate of doorbells 
+with some drivers, which can become a severe bottleneck (because x86 
+CPUs can't emit MMIOs at very high rates).
 
-> What I also find a bit confusing is the requirement that they enumerate
-> all regions (at least, that's how I read it.)
-> 
-> Say we have a device type with shared regions foo, bar, and the
-> optional baz. It should be fine if a driver finds foo, bar, and baz; as
-> well as if a driver only finds foo and bar. Conversely, a driver only
-> looking for foo and bar should work with a device exposing foo, bar,
-> and baz.
+The proposed offset/wrap field allows devices to disable doorbells when 
+appropriate, and determine the latest fill level via a PCIe read.
 
-Yes, I've killed off the paragraph about enumeration.
+I suggest the best place to put this would be in the driver area, 
+immediately after the event suppression structure.
 
-Dave
+Presumably we would like this to be an optional feature, as 
+implementations of packed mode already exist in the wild.  How about 
+VIRTIO_F_RING_PACKED_AVAIL_IDX?
 
-> > +
-> >  Further initialization MUST follow the procedure described in
-> >  \ref{sec:General Initialization And Device Operation / Device Initialization}~\nameref{sec:General Initialization And Device Operation / Device Initialization}.
-> >  
-> 
-> 
-> ---------------------------------------------------------------------
-> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
-> 
---
-Dr. David Alan Gilbert / dgilbert@redhat.com / Manchester, UK
+If I prepare a patch to the spec is there still time to get this into v1.1?
 
-This publicly archived list offers a means to provide input to the
-OASIS Virtual I/O Device (VIRTIO) TC.
+Best,
+David
 
-In order to verify user consent to the Feedback License terms and
-to minimize spam in the list archive, subscription is required
-before posting.
+-- 
+David Riddoch  <driddoch@solarflare.com> -- Chief Architect, Solarflare
 
-Subscribe: virtio-comment-subscribe@lists.oasis-open.org
-Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
-List help: virtio-comment-help@lists.oasis-open.org
-List archive: https://lists.oasis-open.org/archives/virtio-comment/
-Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
-List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
-Committee: https://www.oasis-open.org/committees/virtio/
-Join OASIS: https://www.oasis-open.org/join/
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
