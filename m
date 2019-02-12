@@ -1,106 +1,114 @@
-Return-Path: virtio-dev-return-5477-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-5412-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id C92B29860B7
-	for <virtio-dev@lists.oasis-open.org>; Thu, 21 Feb 2019 06:44:43 +0000 (UTC)
-Date: Thu, 21 Feb 2019 07:44:36 +0100
-From: Gerd Hoffmann <kraxel@redhat.com>
-Message-ID: <20190221064436.ohxad2gonr2akadm@sirius.home.kraxel.org>
-References: <20190212112547.GC2715@work-vm>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id 26B5A985D23
+	for <virtio-dev@lists.oasis-open.org>; Tue, 12 Feb 2019 18:22:59 +0000 (UTC)
+Date: Tue, 12 Feb 2019 13:22:52 -0500
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20190212125701-mutt-send-email-mst@kernel.org>
+References: <CAOGAQepUKjQuqJ9o4_bTwCjT-dJO9=eMBevvrULUW3KgieoXHg@mail.gmail.com>
+ <20190204054053.GE29758@stefanha-x1.localdomain>
+ <20190204101316.4e3e6rj32suwdmur@sirius.home.kraxel.org>
+ <CAOGAQeq3psE=FxnU9+T1G79Y8_9mb3H8LKXWXnzY5-kGcX6RBA@mail.gmail.com>
+ <20190211092943-mutt-send-email-mst@kernel.org>
+ <CAOGAQepzNSZ5c+tB+e-sYRzQMag2Pr+H0ToJhtd-4mLubY9xeA@mail.gmail.com>
+ <20190212112547.GC2715@work-vm>
  <20190212144741.60083682.cohuck@redhat.com>
  <20190212090121-mutt-send-email-mst@kernel.org>
  <CAEkmjvW+bDjKeaoQOVm4CDVBfo-0qQf7uhk=sFMgSzeZTMzLKg@mail.gmail.com>
- <20190212164626.GG2715@work-vm>
- <CAEkmjvUU1VAEV+4Uy+QqYxR_atVVhVRR0XULVDyg+YJXwDYwDQ@mail.gmail.com>
- <20190219075415.v4xlw5ywrtmndew5@sirius.home.kraxel.org>
- <CAEkmjvU+8NXxMa3BYZdzkdvUJOMH315Q=a=U0Y_=D4CSiQNQcQ@mail.gmail.com>
- <20190220062539.toctrkhk67iyzwnk@sirius.home.kraxel.org>
- <CAEkmjvU5tc8tYpbynigVSGqTh5_SyhoMVEAu3Z1wo6vaGBBbVg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Disposition: inline
-In-Reply-To: <CAEkmjvU5tc8tYpbynigVSGqTh5_SyhoMVEAu3Z1wo6vaGBBbVg@mail.gmail.com>
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <CAEkmjvW+bDjKeaoQOVm4CDVBfo-0qQf7uhk=sFMgSzeZTMzLKg@mail.gmail.com>
 Subject: Re: [virtio-dev] Memory sharing device
 To: Frank Yang <lfy@google.com>
-Cc: "Dr. David Alan Gilbert" <dgilbert@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>, Cornelia Huck <cohuck@redhat.com>, Roman Kiryanov <rkir@google.com>, Stefan Hajnoczi <stefanha@redhat.com>, virtio-dev@lists.oasis-open.org, Greg Hartman <ghartman@google.com>
+Cc: Cornelia Huck <cohuck@redhat.com>, "Dr. David Alan Gilbert" <dgilbert@redhat.com>, Roman Kiryanov <rkir@google.com>, Gerd Hoffmann <kraxel@redhat.com>, Stefan Hajnoczi <stefanha@redhat.com>, virtio-dev@lists.oasis-open.org, Greg Hartman <ghartman@google.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-> > Hmm.  I'm wondering whenever you just need a different virtio transport.
-> > Very simliar to virtio-pci, but instead of using all guest ram (modulo
-> > iommu quirks) as address space use a pci memory bar as address space.
-> > virtio rings would live there, all buffers would live there, addresses
-> > passed around would be offsets into that pci bar.  Then your userspace
-> > driver can just mmap() that pci bar and handle (almost?) everything on
-> > its own.  Maybe a little stub driver in the kernel is needed for ring
-> > notifications.
-> >
-> >
-> Yeah, that's (almost?) exactly what we want to do / we're doing already
-> pretty much
-> with the memory sharing scheme we're using currently.
-> 
-> Defining it as a transport would also require definition of another virtio
-> device type
-> that the userspace drivers talk to, right?
+On Tue, Feb 12, 2019 at 07:56:58AM -0800, Frank Yang wrote:
+> Stepping back to standardization and portability concerns, it is also not
+> necessarily desirable to use general pipes to do what we want, because ev=
+en
+> though that device exists and is part of the spec already, that results in
+> _de-facto_ non-portability.
 
-Yes, you still need to define (for example) virtio-sensors.
+That's not different from e.g. TCP.
 
-> As a transport/device pair, would it break down as, the transport ends up
-> restricting what kinds of addresses can be referred to in the ring messages
-> (in the pci memory bar),
-> then the device provides the userspace drivers with
-> implementation of mmap() + memory allocation/sharing ops and notification?
+> If we had some kind of spec to enumerate such
+> 'user-defined' devices, at least we can have _de-jure_ non-portability; an
+> enumerated device doesn't work as advertised.
 
-I'd expect the userspace driver would just mmap the whole pci bar, then
-manage it without the kernel's help.
+I am not sure distinguishing between different types of non portability
+will be in scope for virtio. Actually having devices that are portable
+would be.
 
-> > > Using usb or faking some other transport generally also involves being
-> > > coupled to that set of kernel code in the guest, which introduces
-> > > complexity and overhead.  Exposing RAM can be a more flexible
-> > > abstraction.
-> >
-> > Well, you get guest drivers for free and all existing software will run
-> > just fine out-of-the-box.
-> >
-> > Which is the reason why there is no virtio-usb for example.  xhci has a
-> > hardware design which can be emulated without much overhead, so the
-> > performance benefit of virtio-usb over xhci would be pretty close to
-> > zero.
-> >
-> >
-> That's pretty interesting; from a brief glance at xhci, it looks like what
-> you're proposing
-> is that since there usb passthrough already with xhci,
-> and xhci has something that looks like a virtqueue,
-> perhaps we can create our own USB driver on the host,
-> then pass it through.
-> 
-> It does make things more inconvenient for users though since they would
-> have to install
-> usb drivers out of nowhere. Wonder if a usb forwarder virtual device exists
-> that can talk to some shared library on the host for the xhci queue, though
-> that might be considered an unsafe plugin.
+...
 
-Well, we have virtual emulated devices (hw/usb/dev-*.c in source tree).
-You could add a virtual camera device here ...
+> Note that virtio-serial/virtio-vsock is not considered because they do not
+> standardize the set of devices that operate on top of them, but in practi=
+ce,
+> are often used for fully general devices.=A0 Spec-wise, this is not a gre=
+at
+> situation because we would still have potentially non portable device
+> implementations where there is no standard mechanism to determine whether=
+ or
+> not things are portable.
 
-Alternatively qemu can pass through anything libusb can talk to
-(typically physical devices, but IIRC you can also create virtual ones
-with the kernel's usb gadget drivers).
+Well it's easy to add an enumeration on top of sockets, and several well
+known solutions exist. There's an advantage to just reusing these.
 
-Direct access to the xhci queues/rings isn't available, this is
-abstracted away by the qemu usb subsystem.  The virtual usb devices
-emulation drivers get a iov pointing to the buffers in guest memory for
-a given usb transfer request, no matter whenever uhci, ehci or xhci is
-used.
+>=A0virtio-user provides a device enumeration mechanism
+> to better control this.
 
-cheers,
-  Gerd
+We'll have to see what it all looks like. For virtio pci transport it's
+important that you can reason about the device at a basic level based on
+it's PCI ID, and that is quite fundamental.
 
+Maybe what you are looking for is a new virtio transport then?
+
+
+> In addition, for performance considerations in applications such as graph=
+ics
+> and media, virtio-serial/virtio-vsock have the overhead of sending actual
+> traffic through the virtqueue, while an approach based on shared memory c=
+an
+> result in having fewer copies and virtqueue messages.=A0 virtio-serial is=
+ also
+> limited in being specialized for console forwarding and having a cap on t=
+he
+> number of clients.=A0 virtio-vsock is also not optimal in its choice of s=
+ockets
+> API for transport; shared memory cannot be used, arbitrary strings can be
+> passed without an designation of the device/driver being run de-facto, an=
+d the
+> guest must have additional machinery to handle socket APIs.=A0 In additio=
+n, on
+> the host, sockets are only dependable on Linux, with less predictable beh=
+avior
+> from Windows/macOS regarding Unix sockets.=A0 Waiting for socket traffic =
+on the
+> host also requires a poll() loop, which is suboptimal for latency.=A0 With
+> virtio-user, only the bare set of standard driver calls
+> (open/close/ioctl/mmap/read) is needed, and RAM is a more universal trans=
+port
+> abstraction.=A0 We also explicitly spec out callbacks on host that are tr=
+iggered
+> by virtqueue messages, which results in lower latency and makes it easy to
+> dispatch to a particular device implementation without polling.
+
+open/close/mmap/read seem to make sense. ioctl gives one pause.
+
+Given open/close this begins to look a bit like virtio-fs.
+Have you looked at that?
+
+
+--=20
+MST
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
