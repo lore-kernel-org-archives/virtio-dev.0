@@ -1,15 +1,15 @@
-Return-Path: virtio-dev-return-5396-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-5403-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id D3A69985B32
-	for <virtio-dev@lists.oasis-open.org>; Tue, 12 Feb 2019 12:51:48 +0000 (UTC)
-Date: Tue, 12 Feb 2019 07:51:45 -0500
+	by lists.oasis-open.org (Postfix) with ESMTP id C83B49812AF
+	for <virtio-dev@lists.oasis-open.org>; Tue, 12 Feb 2019 14:01:11 +0000 (UTC)
+Date: Tue, 12 Feb 2019 09:01:05 -0500
 From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20190212074708-mutt-send-email-mst@kernel.org>
+Message-ID: <20190212085415-mutt-send-email-mst@kernel.org>
 References: <2f0de388-de01-1e51-b6b6-339389a2268a@solarflare.com>
  <20190211021124-mutt-send-email-mst@kernel.org>
  <d5d3b7f6-95a3-0d1c-4890-6e72f2e4bfc5@solarflare.com>
@@ -153,10 +153,19 @@ t note
 >=20
 > I think doing the barrier before writing idx is best for speed (see below=
 ).=A0
+
+I don't see it below :(
+
 > But it is really desirable for complexity: Cases like this are easy to
 > handle in software, but much much harder in pipelined hardware
 > implementations.
->=20
+
+Maybe we should use a flag in event suppression structure.
+This way device can switch between being notification driven
+and being driven by index reads.
+
+
+
 > > > Note that drivers could take advantage of this feature to avoid read
 > > > barriers when consuming descriptors: At the moment there is a virtio_=
 rmb()
@@ -184,12 +193,7 @@ ust one
 .=A0
 > I hope that demonstrating improved PV performance would not be a hard gat=
 e.
-
-
-Probably not. I am saying it might make sense to test the specific
-interface to make sure it's in a form that is good for PV.
-
-
+>=20
 > > For the proposed avail idx I think Jason (CC'd) was interested in adding
 > > something like this for vhost.
 > >=20
@@ -228,18 +232,12 @@ om rx
 > virt-queues ahead of packets arriving.=A0 That does not require any chang=
 es to
 > the spec.
-
-net tx too.
-
+>=20
 > I was just making the point that allowing random reads of packed-ring
 > descriptors adds ordering costs when writing descriptors.=A0 I can't see =
 what
 > the benefit would be -- have I missed something?
-
-So on x86 there's no extra ordering cost if you just write
-the flags last since write barriers are not needed.
-
-
+>=20
 > > > > > > > I suggest the best place to put this would be in the driver a=
 rea,
 > > > > > > > immediately after the event suppression structure.
@@ -271,13 +269,21 @@ g X
 > for packed-ring would also necessarily have to implement Y for split-ring
 > and vice versa (if both ring types are supported).
 
-Well if it's a reasonably logical coupling then it makes sense.
-Like e.g. IN_ORDER. If it's a random thing then sure.
+BTW we really need to look more at how can devices support subsets
+of features. Right now devices can fail FEATURES_OK but drivers do
+not recover. Some dependencies are defined by spec and drivers
+can force them but devices can't.
+
 
 
 >=20
 > --=20
 > David Riddoch  <driddoch@solarflare.com> -- Chief Architect, Solarflare
+>=20
+>=20
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
