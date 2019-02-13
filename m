@@ -1,64 +1,70 @@
-Return-Path: virtio-dev-return-5452-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-5429-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id BC501985B56
-	for <virtio-dev@lists.oasis-open.org>; Mon, 18 Feb 2019 14:45:01 +0000 (UTC)
-Date: Mon, 18 Feb 2019 14:44:48 +0000
+	by lists.oasis-open.org (Postfix) with ESMTP id 0E2F5985E0E
+	for <virtio-dev@lists.oasis-open.org>; Wed, 13 Feb 2019 06:33:34 +0000 (UTC)
 From: Stefan Hajnoczi <stefanha@redhat.com>
-Message-ID: <20190218144448.GC29625@stefanha-x1.localdomain>
+Date: Wed, 13 Feb 2019 14:33:22 +0800
+Message-Id: <20190213063322.25099-3-stefanha@redhat.com>
+In-Reply-To: <20190213063322.25099-1-stefanha@redhat.com>
 References: <20190213063322.25099-1-stefanha@redhat.com>
- <20190213063322.25099-2-stefanha@redhat.com>
- <77591e8b-5147-fa0f-27f3-a1cb94c62550@redhat.com>
- <20190214033325.GD21877@stefanha-x1.localdomain>
- <CAOssrKdfYic5bSz-GkfZUbd=OrADwrVXPRTQiVgOFbzpiVwNZg@mail.gmail.com>
- <20190214083637.GC7652@stefanha-x1.localdomain>
- <CAOssrKcXftoaszAoNF3936rTP0KgD6mL4P=hoy54v2i+x-1o8A@mail.gmail.com>
- <20190218102049.GA12256@stefanha-x1.localdomain>
- <CAOssrKeZhTMbKET=MRjDpqmWNMj00b2MG4Gv6MY-kdKYf1=eyA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="uXxzq0nDebZQVNAZ"
-Content-Disposition: inline
-In-Reply-To: <CAOssrKeZhTMbKET=MRjDpqmWNMj00b2MG4Gv6MY-kdKYf1=eyA@mail.gmail.com>
-Subject: Re: [virtio-dev] [PATCH v2 1/2] content: add virtio file system
- device
-To: Miklos Szeredi <mszeredi@redhat.com>
-Cc: virtio-dev@lists.oasis-open.org, Vivek Goyal <vgoyal@redhat.com>, "Dr. David Alan Gilbert" <dgilbert@redhat.com>, Sage Weil <sweil@redhat.com>, Steven Whitehouse <swhiteho@redhat.com>, Paolo Bonzini <pbonzini@redhat.com>
+Content-Transfer-Encoding: 8bit
+Subject: [virtio-dev] [PATCH v2 2/2] virtio-fs: add DAX window
+To: virtio-dev@lists.oasis-open.org
+Cc: Miklos Szeredi <mszeredi@redhat.com>, Vivek Goyal <vgoyal@redhat.com>, "Dr. David Alan Gilbert" <dgilbert@redhat.com>, Sage Weil <sweil@redhat.com>, Steven Whitehouse <swhiteho@redhat.com>, Stefan Hajnoczi <stefanha@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
---uXxzq0nDebZQVNAZ
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Describe how shared memory region ID 0 is the DAX window and how
+FUSE_SETUPMAPPING maps file ranges into the window.
 
-On Mon, Feb 18, 2019 at 11:52:34AM +0100, Miklos Szeredi wrote:
-> Indeed, inotify and friends would need notification support, but at
-> the moment no network filesystem has that and the kernel doesn't have
-> interfaces for filesystems to provide remote notifications, so this is
-> quite theoretical at this point.
+Signed-off-by: Stefan Hajnoczi <stefanha@redhat.com>
+---
+ virtio-fs.tex | 25 +++++++++++++++++++++++++
+ 1 file changed, 25 insertions(+)
 
-This discussion makes me more confident that virtio-fs doesn't need
-notifications yet.
+diff --git a/virtio-fs.tex b/virtio-fs.tex
+index ffbaa46..37ab5ea 100644
+--- a/virtio-fs.tex
++++ b/virtio-fs.tex
+@@ -196,3 +196,28 @@ The device MUST set \field{out.unique} to 0 and set \field{out.error} to a FUSE_
+ The driver MUST verify that \field{out.unique} is 0.
+ 
+ Notifications queue buffers MUST be at least 8192 bytes long.
++
++\subsubsection{Device Operation: DAX Window}\label{sec:Device Types / File System Device / Device Operation / Device Operation: DAX Window}
++
++FUSE\_READ and FUSE\_WRITE requests transfer file contents between the
++driver-provided buffer and the device.  In cases where data transfer is
++undesirable, the device can map file contents into the DAX window shared memory
++region.  The driver then accesses file contents directly in device-owned memory
++without a data transfer.
++
++Shared memory region ID 0 is called the DAX window.  The driver maps a file
++range into the DAX window using the FUSE\_SETUPMAPPING request.  The mapping is
++removed using the FUSE\_REMOVEMAPPING request.
++
++After FUSE\_SETUPMAPPING has completed successfully the file range is accessible
++from the DAX window at the offset provided by the driver in the request.
++
++\devicenormative{\paragraph}{Device Operation: DAX Window}{Device Types / File System Device / Device Operation / Device Operation: DAX Window}
++
++The device MUST allow mappings that completely or partially overlap existing mappings within the DAX window.
++
++The device MUST reject mappings that would go beyond the end of the DAX window.
++
++\drivernormative{\paragraph}{Device Operation: DAX Window}{Device Types / File System Device / Device Operation / Device Operation: DAX Window}
++
++The driver SHOULD be prepared to find shared memory region ID 0 absent and fall back to FUSE\_READ and FUSE\_WRITE requests.
+-- 
+2.20.1
 
-I will remove them from the spec.
 
-Stefan
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
---uXxzq0nDebZQVNAZ
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEcBAEBAgAGBQJcasTgAAoJEJykq7OBq3PI7qQH+gLRAxDDF8npNHPLxNK8s1KY
-ShWYnoHS32ZB5JD6RtaQ53XdeIaKPeAN4PV1InoUroOOw49gA0aPSoPxoi/sae+M
-dJKUYoz0ptnFaeJBV/7jHovNBL4fnZ7TLWq0HXMe6uxW//CejcF2yiYlbVCIWcGZ
-LwxNKQlPkfZcz8iyyjlzMNNbliAiYDXPq+HT1FY4rjLL7uKf02FVUkB2R+U5n06M
-nlY09WipdICw49Y6yeEwWUsNYeh0UoFeCa5Qy6UEbOl9qB75WEgrJ4owB2jfZ1sq
-a3OTC6dQvuMAr+NgaOr2XYsYhkd4M+fWWtXNKAeh2NwQUsFhrgDuRWAWRyOrP7c=
-=a9/p
------END PGP SIGNATURE-----
-
---uXxzq0nDebZQVNAZ--
