@@ -1,90 +1,81 @@
-Return-Path: virtio-dev-return-5484-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-5485-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id C37D69860C4
-	for <virtio-dev@lists.oasis-open.org>; Thu, 21 Feb 2019 16:22:37 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 60932985D1F
+	for <virtio-dev@lists.oasis-open.org>; Thu, 21 Feb 2019 16:22:42 +0000 (UTC)
 From: Stefan Hajnoczi <stefanha@redhat.com>
-Date: Thu, 21 Feb 2019 16:22:15 +0000
-Message-Id: <20190221162219.9790-2-stefanha@redhat.com>
+Date: Thu, 21 Feb 2019 16:22:16 +0000
+Message-Id: <20190221162219.9790-3-stefanha@redhat.com>
 In-Reply-To: <20190221162219.9790-1-stefanha@redhat.com>
 References: <20190221162219.9790-1-stefanha@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: [virtio-dev] [PATCH v3 1/5] virtio-blk: document data[] size constraints
+Subject: [virtio-dev] [PATCH v3 2/5] virtio-blk: move virtio_blk_discard_write_zeroes definition
 To: virtio-dev@lists.oasis-open.org
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, Stefan Hajnoczi <stefanha@redhat.com>, "Michael S . Tsirkin" <mst@redhat.com>, Changpeng Liu <changpeng.liu@intel.com>, Stefano Garzarella <sgarzare@redhat.com>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, Stefan Hajnoczi <stefanha@redhat.com>, "Michael S . Tsirkin" <mst@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-The struct virtio_blk_req->data[] field is a multiple of 512 bytes long
-for read and write requests.  Flush requests don't use data[] at all.
+struct virtio_blk_discard_write_zeroes is defined alongside
+struct virtio_blk_req but only discussed later in the text.  Move it to
+where it belongs.
 
-The new discard and write zeroes requests being introduced in VIRTIO 1.1
-put struct virtio_blk_discard_write_zeroes elements into data[], so it
-must be a multiple of the struct size.
-
-The uint8_t data[][512] pseudo-code makes it look like discard and write
-zeroes requests must pad to 512 bytes.  This wastes memory since struct
-virtio_blk_discard_write_data is only 16 bytes long.
-
-Furthermore, all known implementations wishing to take advantage of this
-upcoming VIRTIO 1.1 feature do not use 512-byte padding (Linux
-virtio_blk.ko, QEMU virtio-blk device emulation, the SPDK virtio-blk
-driver, and the SPDK vhost-user-blk device backend).
-
-This patch documents the data[] size constraints clearly in the driver
-normative section.  This is clearer than the current pseudo-code.
-
-Cc: Michael S. Tsirkin <mst@redhat.com>
-Cc: Changpeng Liu <changpeng.liu@intel.com>
-Cc: Stefano Garzarella <sgarzare@redhat.com>
+Suggested-by: Michael S. Tsirkin <mst@redhat.com>
 Signed-off-by: Stefan Hajnoczi <stefanha@redhat.com>
 ---
- content.tex | 14 +++++++++++++-
- 1 file changed, 13 insertions(+), 1 deletion(-)
+ content.tex | 29 ++++++++++++++++-------------
+ 1 file changed, 16 insertions(+), 13 deletions(-)
 
 diff --git a/content.tex b/content.tex
-index 836ee52..b185bb0 100644
+index b185bb0..4201c7e 100644
 --- a/content.tex
 +++ b/content.tex
-@@ -3941,7 +3941,7 @@ struct virtio_blk_req {
-         le32 type;
-         le32 reserved;
-         le64 sector;
--        u8 data[][512];
-+        u8 data[];
+@@ -3944,15 +3944,6 @@ struct virtio_blk_req {
+         u8 data[];
          u8 status;
  };
+-
+-struct virtio_blk_discard_write_zeroes {
+-       le64 sector;
+-       le32 num_sectors;
+-       struct {
+-               le32 unmap:1;
+-               le32 reserved:31;
+-       } flags;
+-};
+ \end{lstlisting}
  
-@@ -3971,6 +3971,11 @@ The \field{sector} number indicates the offset (multiplied by 512) where
- the read or write is to occur. This field is unused and set to 0 for
- commands other than read or write.
+ The type of the request is either a read (VIRTIO_BLK_T_IN), a write
+@@ -3977,10 +3968,22 @@ requests write the contents of \field{data} to the block device (in multiples
+ of 512 bytes).
  
-+VIRTIO_BLK_T_IN requests populate \field{data} with the contents of sectors
-+read from the block device (in multiples of 512 bytes).  VIRTIO_BLK_T_OUT
-+requests write the contents of \field{data} to the block device (in multiples
-+of 512 bytes).
-+
  The \field{data} used for discard or write zeroes command is described
- by one or more virtio_blk_discard_write_zeroes structs. \field{sector}
- indicates the starting offset (in 512-byte units) of the segment, while
-@@ -3997,6 +4002,13 @@ A driver SHOULD accept the VIRTIO_BLK_F_RO feature if offered.
- A driver MUST set \field{sector} to 0 for a VIRTIO_BLK_T_FLUSH request.
- A driver SHOULD NOT include any data in a VIRTIO_BLK_T_FLUSH request.
+-by one or more virtio_blk_discard_write_zeroes structs. \field{sector}
+-indicates the starting offset (in 512-byte units) of the segment, while
+-\field{num_sectors} indicates the number of sectors in each discarded
+-range. \field{unmap} is only used for write zeroes command.
++by one or more virtio_blk_discard_write_zeroes structs:
++
++\begin{lstlisting}
++struct virtio_blk_discard_write_zeroes {
++       le64 sector;
++       le32 num_sectors;
++       struct {
++               le32 unmap:1;
++               le32 reserved:31;
++       } flags;
++};
++\end{lstlisting}
++
++\field{sector} indicates the starting offset (in 512-byte units) of the
++segment, while \field{num_sectors} indicates the number of sectors in each
++discarded range. \field{unmap} is only used for write zeroes command.
  
-+The length of \field{data} MUST be a multiple of 512 bytes for VIRTIO_BLK_T_IN
-+and VIRTIO_BLK_T_OUT requests.
-+
-+The length of \field{data} MUST be a multiple of the size of struct
-+virtio_blk_discard_write_zeroes for VIRTIO_BLK_T_DISCARD and
-+VIRTIO_BLK_T_WRITE_ZEROES requests.
-+
- If the VIRTIO_BLK_F_CONFIG_WCE feature is negotiated, the driver MAY
- switch to writethrough or writeback mode by writing respectively 0 and
- 1 to the \field{writeback} field.  After writing a 0 to \field{writeback},
+ The final \field{status} byte is written by the device: either
+ VIRTIO_BLK_S_OK for success, VIRTIO_BLK_S_IOERR for device or driver
 -- 
 2.20.1
 
