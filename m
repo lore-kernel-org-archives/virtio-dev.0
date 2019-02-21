@@ -1,69 +1,48 @@
-Return-Path: virtio-dev-return-5397-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-5489-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 30BE29812AF
-	for <virtio-dev@lists.oasis-open.org>; Tue, 12 Feb 2019 13:00:48 +0000 (UTC)
-Date: Tue, 12 Feb 2019 08:00:28 -0500
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20190212075600-mutt-send-email-mst@kernel.org>
-References: <CAOGAQepUKjQuqJ9o4_bTwCjT-dJO9=eMBevvrULUW3KgieoXHg@mail.gmail.com>
- <20190204054053.GE29758@stefanha-x1.localdomain>
- <20190204101316.4e3e6rj32suwdmur@sirius.home.kraxel.org>
- <CAOGAQeq3psE=FxnU9+T1G79Y8_9mb3H8LKXWXnzY5-kGcX6RBA@mail.gmail.com>
- <20190211092943-mutt-send-email-mst@kernel.org>
- <CAOGAQepzNSZ5c+tB+e-sYRzQMag2Pr+H0ToJhtd-4mLubY9xeA@mail.gmail.com>
+Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id 4A97C9860C6
+	for <virtio-dev@lists.oasis-open.org>; Thu, 21 Feb 2019 16:38:21 +0000 (UTC)
+From: Jakub Jermar <jakub.jermar@kernkonzept.com>
+Message-ID: <bd73e7d3-b9ed-24bb-a22d-cd81f0239acd@kernkonzept.com>
+Date: Thu, 21 Feb 2019 17:38:18 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAOGAQepzNSZ5c+tB+e-sYRzQMag2Pr+H0ToJhtd-4mLubY9xeA@mail.gmail.com>
-Subject: Re: [virtio-dev] Memory sharing device
-To: Roman Kiryanov <rkir@google.com>
-Cc: Gerd Hoffmann <kraxel@redhat.com>, Stefan Hajnoczi <stefanha@redhat.com>, virtio-dev@lists.oasis-open.org, "Dr. David Alan Gilbert" <dgilbert@redhat.com>, Lingfeng Yang <lfy@google.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: [virtio-dev] virtio-blk: the nature of discard_sector_alignment
+To: virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Tue, Feb 12, 2019 at 12:27:54AM -0800, Roman Kiryanov wrote:
-> > > Our long term goal is to have as few kernel drivers as possible and to move
-> > > "drivers" into userspace. If we go with the virtqueues, is there
-> > > general a purpose
-> > > device/driver to talk between our host and guest to support custom hardware
-> > > (with own blobs)?
-> >
-> > The challenge is to answer the following question:
-> > how to do this without losing the benefits of standartization?
-> 
-> We looked into UIO and it still requires some kernel driver to tell
-> where the device is, it also has limitations on sharing a device
-> between processes. The benefit of standardization could be in avoiding
-> everybody writing their own UIO drivers for virtual devices.
-> 
-> Our emulator uses a battery, sound, accelerometer and more. We need to
-> support all of this. I looked into the spec, "5 Device types", and
-> seems "battery" is not there. We can invent our own drivers but we see
-> having one flexible driver is a better idea.
+Hello,
 
-So it sounds like you should use virtio-vsock or a serial device
-for most of your needs. For gpu, I'd use virtio-gpu probably improving
-it as IIUC you have concerns about resource management.
+my device enforces the discard_sector_alignment on the request (both
+sector and num_sectors), but for some reason the blkdiscard command and
+Linux driver issue requests that do not honor this alignment.
 
-> Yes, I realize that a guest could think it is using the same device as
-> the host advertised (because strings matched) while it is not. We
-> control both the host and the guest and we can live with this.
-> 
-> Regards,
-> Roman.
+Does discard_sector_alignment represent a strict requirement that must
+be always honored or is it rather a hint to the driver? The wording in
+the spec seems to be more lenient while in Linux the field is documented
+rather strictly:
 
-I suggest you layer on top of some other existing device then.
-Most people don't build their own transport layer on a whim
-just because they control both communicating sides.
-There should be more of a reason for this.
+/* Discard commands must be aligned to this number of sectors. */
+__u32 discard_sector_alignment;
 
+Also, is it reasonable to assume that discard_sector_alignment should be
+enforced also on request's num_sectors. It seems to me like one can
+theoretically have requests that have num_sectors aligned to
+sector-size, but not to discard_sector_alignment.
+
+Thanks in advance,
+Jakub
 
 -- 
-MST
+Kernkonzept GmbH at Dresden, Germany, HRB 31129, CEO Dr.-Ing. Michael
+Hohmuth
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
