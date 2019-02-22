@@ -1,15 +1,15 @@
-Return-Path: virtio-dev-return-5464-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-5493-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 29FEA985D01
-	for <virtio-dev@lists.oasis-open.org>; Wed, 20 Feb 2019 03:50:04 +0000 (UTC)
-Date: Tue, 19 Feb 2019 22:49:59 -0500
+	by lists.oasis-open.org (Postfix) with ESMTP id 70D879860E5
+	for <virtio-dev@lists.oasis-open.org>; Fri, 22 Feb 2019 05:53:46 +0000 (UTC)
+Date: Fri, 22 Feb 2019 00:53:42 -0500
 From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20190219224753-mutt-send-email-mst@kernel.org>
+Message-ID: <20190222005312-mutt-send-email-mst@kernel.org>
 References: <20190131023617.23007-1-stefanha@redhat.com>
  <20190131023617.23007-2-stefanha@redhat.com>
  <20190130231152-mutt-send-email-mst@kernel.org>
@@ -107,9 +107,7 @@ On Mon, Feb 18, 2019 at 02:04:20PM +0000, Stefan Hajnoczi wrote:
 > 
 > A failure for any segment causes the entire request to fail with no
 > information about which segments completed or failed.
-
-And what's the status?
-
+> 
 > > What happened with this comment? I don't see a follow-up nor a resolution
 > > elsewhere, just the opening of issue #32 for voting. Please clarify.
 > 
@@ -138,10 +136,8 @@ And what's the status?
 > 
 > Stefan
 
-Also pls include explanation about failure mode.
+Jan could you confirm please? Let's create an issue and close this.
 
--- 
-MST
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
