@@ -1,155 +1,89 @@
-Return-Path: virtio-comment-return-662-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-comment-return-639-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-comment@lists.oasis-open.org>
 List-Post: <mailto:virtio-comment@lists.oasis-open.org>
 List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
-Date: Tue, 26 Feb 2019 16:43:47 +0100
-From: Cornelia Huck <cohuck@redhat.com>
-Message-ID: <20190226164347.617e80c5.cohuck@redhat.com>
-In-Reply-To: <20190226151133.GI2721@work-vm>
+From: "Dr. David Alan Gilbert (git)" <dgilbert@redhat.com>
+Date: Fri, 22 Feb 2019 11:54:32 +0000
+Message-Id: <20190222115433.7160-3-dgilbert@redhat.com>
+In-Reply-To: <20190222115433.7160-1-dgilbert@redhat.com>
 References: <20190222115433.7160-1-dgilbert@redhat.com>
-	<20190222115433.7160-2-dgilbert@redhat.com>
-	<20190222134839.7e0ef3e7.cohuck@redhat.com>
-	<20190226151133.GI2721@work-vm>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Subject: [virtio-comment] Re: [virtio-dev] Re: [PATCH v2 1/3] shared memory: Define shared
- memory regions
-To: "Dr. David Alan Gilbert" <dgilbert@redhat.com>
-Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, stefanha@redhat.com
+Content-Transfer-Encoding: 8bit
+Subject: [virtio-comment] [PATCH v2 2/3] shared memory: Define PCI capability
+To: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+Cc: stefanha@redhat.com, cohuck@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Tue, 26 Feb 2019 15:11:34 +0000
-"Dr. David Alan Gilbert" <dgilbert@redhat.com> wrote:
+From: "Dr. David Alan Gilbert" <dgilbert@redhat.com>
 
-> * Cornelia Huck (cohuck@redhat.com) wrote:
-> > On Fri, 22 Feb 2019 11:54:31 +0000
-> > "Dr. David Alan Gilbert (git)" <dgilbert@redhat.com> wrote:
-> >   
-> > > From: "Dr. David Alan Gilbert" <dgilbert@redhat.com>
-> > > 
-> > > Define the requirements and idea behind shared memory regions.
-> > > 
-> > > Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
-> > > ---
-> > >  content.tex    |  2 ++
-> > >  shared-mem.tex | 33 +++++++++++++++++++++++++++++++++
-> > >  2 files changed, 35 insertions(+)
-> > >  create mode 100644 shared-mem.tex
-> > > 
-> > > diff --git a/content.tex b/content.tex
-> > > index 836ee52..3dd504c 100644
-> > > --- a/content.tex
-> > > +++ b/content.tex
-> > > @@ -371,6 +371,8 @@ making any more buffers available. When VIRTIO_F_NOTIFICATION_DATA
-> > >  has been negotiated, these notifications would then have
-> > >  identical \field{next_off} and \field{next_wrap} values.
-> > >  
-> > > +\input{shared-mem.tex}
-> > > +
-> > >  \chapter{General Initialization And Device Operation}\label{sec:General Initialization And Device Operation}
-> > >  
-> > >  We start with an overview of device initialization, then expand on the
-> > > diff --git a/shared-mem.tex b/shared-mem.tex
-> > > new file mode 100644
-> > > index 0000000..85b0c55
-> > > --- /dev/null
-> > > +++ b/shared-mem.tex
-> > > @@ -0,0 +1,33 @@
-> > > +\section{Shared Memory Regions}\label{sec:Basic Facilities of a Virtio Device / Shared Memory Regions}
-> > > +
-> > > +Shared memory regions are an additional facility
-> > > +available to devices that need a region of memory that's
-> > > +continuously shared between the host and the guest, rather
-> > > +than passed between them in the way virtqueue elements are.
-> > > +
-> > > +Example uses include shared caches and version pools for versioned
-> > > +data structures.
-> > > +
-> > > +The region is chosen by the host and presented to the guest, as
-> > > +such it is useful in situations where the memory is accessed on
-> > > +the host by other libraries that can't safely access guest RAM.  
-> > 
-> > This explanation looks good to me.
-> >   
-> > > +
-> > > +Shared memory regions MUST NOT be used to control the operation
-> > > +of the device, nor to stream data; those should still be performed
-> > > +using virtqueues.  
-> > 
-> > The 'MUST NOT' makes it look like a normative statement; however, this
-> > is more like design advice?  
-> 
-> Hmm I'm not sure - the intention of this line is to try and stop people
-> using it as a hack to avoid standardising protocol for no good reason.
+Define the PCI capability used for enumerating shared memory regions.
 
-I've looked through the spec again and it seems the best place for this
-would indeed be a device-normative section for shared regions; it would
-imply that a device needs to comply with this statement, or it is not
-conformant.
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+---
+ content.tex | 37 +++++++++++++++++++++++++++++++++++++
+ 1 file changed, 37 insertions(+)
 
-It would need some tweaking, however. Perhaps something like the
-following:
+diff --git a/content.tex b/content.tex
+index 3dd504c..9838208 100644
+--- a/content.tex
++++ b/content.tex
+@@ -688,6 +688,8 @@ The fields are interpreted as follows:
+ #define VIRTIO_PCI_CAP_DEVICE_CFG        4
+ /* PCI configuration access */
+ #define VIRTIO_PCI_CAP_PCI_CFG           5
++/* Shared memory region */
++#define VIRTIO_PCI_CAP_SHARED_MEMORY_CFG 8
+ \end{lstlisting}
+ 
+         Any other value is reserved for future use.
+@@ -1052,6 +1054,41 @@ any device type which has a device-specific configuration.
+ 
+ The \field{offset} for the device-specific configuration MUST be 4-byte aligned.
+ 
++\subsubsection{Shared memory capability}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Shared memory capability}
++
++Shared memory regions \ref{sec:Basic Facilities of a Virtio
++Device / Shared Memory Regions} are enumerated on the PCI transport
++as a sequence of VIRTIO_PCI_CAP_SHARED_MEMORY_CFG capabilities, one per region.
++
++The capability is immediately followed by an additional field like so:
++
++\begin{lstlisting}
++struct virtio_pci_shm_cap {
++        struct virtio_pci_cap cap;
++        u32 offset_hi;
++        u32 length_hi;
++        u8  id;
++};
++\end{lstlisting}
++
++Given that the \field{cap.length} and \field{cap.offset} fields
++are only 32 bit, the additional \field{offset_hi} and \field {length_hi}
++fields provide the most significant 32 bits of a total 64 bit offset and
++length within the bar specified by \field{cap.bar}.  \field{id}
++uniquely identifies the given shared memory region using a device
++specific identifier.
++
++While most capabilities can not be repeated, multiple
++VIRTIO_PCI_CAP_SHARED_MEMORY_CFG capabilities are allowed as long
++as the \field{id} is unique.
++
++\devicenormative{\paragraph}{Device-specific configuration}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Shared memory capability}
++
++The region defined by the combination of the offsets and length
++fields MUST be contained within the declared bar.
++
++The \field{id} MUST be unique for any one device instance.
++
+ \subsubsection{PCI configuration access capability}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / PCI configuration access capability}
+ 
+ The VIRTIO_PCI_CAP_PCI_CFG capability
+-- 
+2.20.1
 
-"The device MUST NOT expose shared memory regions which are used to
-control the operation of the device, or to stream data."
-
-Not sure where to put the pointer to use virtqueues for that.
-
-> 
-> > > +
-> > > +A device may have multiple shared memory regions associated with
-> > > +it.  Each region has a \field{shmid} to identify it, the meaning
-> > > +of which is device-specific.
-> > > +
-> > > +Enumeration and location of shared memory regions is performed
-> > > +using a transport-specific data structure and mechanism.
-> > > +
-> > > +Memory consistency rules vary depending on the region and the
-> > > +device.  Devices MUST define the required behaviour for each
-> > > +region.  
-> > 
-> > Same here.  
-> 
-> OK, so should I reword this?
-
-Maybe put into the device normative section:
-
-"A device MUST define the required behaviour for each region."
-
-But I'm not sure whether this is a good normative statement... it's
-more that the regions have specific requirements, which both the device
-and the driver need to fulfill, and those requirements obviously need
-to be put down somewhere.
-
-> 
-> > > +
-> > > +The guest physical address and the host virtual address MUST NOT
-> > > +be used to identify structures within the memory regions; all
-> > > +addressing MUST be relative to the start of a particular region.
-> > > +  
-> > 
-> > For that high-level overview, I'm not sure if any normative statements
-> > are needed/wanted, or whether those should be confined to the individual
-> > transport or device type definitions...  
-> 
-> I think this one is stronger than the previous two; if people start
-> passing GPA/HVA in the underlying structures things are going to get
-> messy.
-
-What about
-
-"The device MUST handle any access to the memory region as addressed
-relatively to the beginning of the region, regardless whether it
-accesses the region itself or the driver does so."
-
-"The driver MUST address any particular region relatively to the start
-of that region."
-
-for device and driver normative statements, respectively. Better
-wordings welcome.
 
 This publicly archived list offers a means to provide input to the
 OASIS Virtual I/O Device (VIRTIO) TC.
