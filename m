@@ -1,299 +1,140 @@
-Return-Path: virtio-dev-return-5459-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-5505-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 7EE5E9812AE
-	for <virtio-dev@lists.oasis-open.org>; Tue, 19 Feb 2019 14:27:48 +0000 (UTC)
-Date: Tue, 19 Feb 2019 09:27:44 -0500
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20190219092333-mutt-send-email-mst@kernel.org>
-References: <20190211233612-mutt-send-email-mst@kernel.org>
- <02809024-c99c-caf5-5ec4-98ee96ca6cd5@solarflare.com>
- <20190212085415-mutt-send-email-mst@kernel.org>
- <15b8c0b7-643d-d9c2-f05c-0f5d8c8169c3@solarflare.com>
- <20190212122619-mutt-send-email-mst@kernel.org>
- <f120aec1-60d7-33e2-9188-4abbdd887532@redhat.com>
- <20190213121733-mutt-send-email-mst@kernel.org>
- <d01ae149-2074-fe50-5dc2-2c5f0391f624@redhat.com>
- <20190213224204-mutt-send-email-mst@kernel.org>
- <e6535c70-32ed-1213-3f2c-fcfc05ec107a@redhat.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 4237E9860E5
+	for <virtio-dev@lists.oasis-open.org>; Fri, 22 Feb 2019 12:18:40 +0000 (UTC)
+References: <20190115121959.23763-1-jean-philippe.brucker@arm.com>
+ <20190123083435.x3svwqp472mdgglw@8bytes.org>
+ <a6315ab3-bffb-7470-365d-b26df6524bda@arm.com>
+ <878sy8bx9o.fsf@morokweng.localdomain>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Message-ID: <76121ff1-0777-085a-5b38-d38b2c6cb25f@arm.com>
+Date: Fri, 22 Feb 2019 12:18:17 +0000
 MIME-Version: 1.0
+In-Reply-To: <878sy8bx9o.fsf@morokweng.localdomain>
 Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <e6535c70-32ed-1213-3f2c-fcfc05ec107a@redhat.com>
-Subject: Re: [virtio-dev] RFC: Doorbell suppression, packed-ring mode and
- hardware offload
-To: Jason Wang <jasowang@redhat.com>
-Cc: David Riddoch <driddoch@solarflare.com>, Virtio-Dev <virtio-dev@lists.oasis-open.org>
+Subject: [virtio-dev] Re: [PATCH v7 0/7] Add virtio-iommu driver
+To: Thiago Jung Bauermann <bauerman@linux.ibm.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Mark Rutland <Mark.Rutland@arm.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "kevin.tian@intel.com" <kevin.tian@intel.com>, "tnowicki@caviumnetworks.com" <tnowicki@caviumnetworks.com>, "mst@redhat.com" <mst@redhat.com>, Marc Zyngier <Marc.Zyngier@arm.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "jasowang@redhat.com" <jasowang@redhat.com>, Will Deacon <Will.Deacon@arm.com>, Robin Murphy <Robin.Murphy@arm.com>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "bhelgaas@google.com" <bhelgaas@google.com>, "frowand.list@gmail.com" <frowand.list@gmail.com>, "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Tue, Feb 19, 2019 at 02:33:04PM +0800, Jason Wang wrote:
-> 
-> On 2019/2/14 下午12:04, Michael S. Tsirkin wrote:
-> > On Thu, Feb 14, 2019 at 11:34:22AM +0800, Jason Wang wrote:
-> > > On 2019/2/14 上午1:30, Michael S. Tsirkin wrote:
-> > > > On Wed, Feb 13, 2019 at 06:33:50PM +0800, Jason Wang wrote:
-> > > > > On 2019/2/13 上午1:35, Michael S. Tsirkin wrote:
-> > > > > > On Tue, Feb 12, 2019 at 04:47:08PM +0000, David Riddoch wrote:
-> > > > > > > > > > > I would prefer to have the write barrier before writing the idx.
-> > > > > > > > > > Well that's driver overhead for something device might never utilise in
-> > > > > > > > > > a given workload. If we are optimizing let's optimize for speed.
-> > > > > > > > > I think doing the barrier before writing idx is best for speed (see below).
-> > > > > > > > I don't see it below:(
-> > > > > > > Sorry, I'm not being clear.  If the write barrier is before the idx, then a
-> > > > > > > PV device can read the idx, do a single rmb and read a whole bunch of
-> > > > > > > descriptors.  As things stand today a PV device has to do an rmb for each
-> > > > > > > descriptor that it reads.
-> > > > > > > 
-> > > > > > > I'm not sure, but this may be what Jason meant when he said "prefetch".
-> > > > > Yes.
-> > > > > 
-> > > > > 
-> > > > > > Oh. Right. So for PV it's easy to convert an rmb to a data dependency
-> > > > > > instead.  It remains to be seen whether an extra cache miss per
-> > > > > > batch is cheaper or more expensive than such a dependency
-> > > > > > per descriptor.
-> > > > > > 
-> > > > > > I hope Jason can experiment and let us know.
-> > > > > > 
-> > > > > > 
-> > > > > To clarify, actually I did play someting like:
-> > > > > 
-> > > > > 
-> > > > > if (desc_is_avail((last_avail + 32) % size))
-> > > > > 
-> > > > >       [last_avail, last_avail + 32] is avail [1]
-> > > > > 
-> > > > > else if (desc_is_avail(last_avail + 1) % size))
-> > > > > 
-> > > > >       last_avail is avail
-> > > > > 
-> > > > > else
-> > > > > 
-> > > > >      no new
-> > > > > 
-> > > > > 
-> > > > > And looks like [1] depends on the driver to do:
-> > > > > 
-> > > > > for all descriptors
-> > > > > 
-> > > > >       update desc (but not make it available for the flag)
-> > > > > 
-> > > > > wmb()
-> > > > > 
-> > > > > for all descriptors
-> > > > > 
-> > > > >       update desc.flag
-> > > > > 
-> > > > > 
-> > > > > This means if last_avail + 32 is avail, no need to check flags of
-> > > > > [last_avail, last_avail + 31] since the descriptor content (except for the
-> > > > > flag) is guaranteed to be correct.
-> > > > We can try looking into that, sure. It's not just wmb though which is
-> > > > anyway free on x86. There are cases of e.g. chained descriptors
-> > > > to consider where we do not want device to see a partial chain.
-> > > 
-> > > If we saw the last descriptor is in a chain, it's still doesn't harm, just
-> > > read more?
-> > So it's possible to add a variant that sticks a wmb after each flag
-> > update for sure. However if you are writing out batches that's an
-> > upfront cost and what you gain is prefetch on the other side which is
-> > speculative.
-> 
-> 
-> Yes.
-> 
-> 
-> > 
-> > 
-> > > > 
-> > > > > I get ~10% PPS improvement.
-> > > > > 
-> > > > > Thanks
-> > > > I suspect most of the gain isn't in the check at all though.
-> > > 
-> > > The gain was:
-> > > 
-> > > 1) batching reading descriptors, saving the times of userspace access
-> > Yes that needs to be fixed. The way linux vhost driver does userspace
-> > accesses right now with stac/clac and memory barriers within a loop is
-> > plain silly.  Designing a host/guest interface to work around that kind
-> > of inefficiency makes no sense, it's purely an implementation issue.
-> 
-> 
-> Actually, it has other advantages, consider the case when driver is faster,
-> batch reading may reduce the cache contention on the descriptor ring (when
-> the ring is almost full).
+Hi Thiago,
 
-A shared index implies always doing a cache miss though.
-By comparison speculating a read ahead of a cache line
-will sometimes bring you a cache.
+On 21/02/2019 22:18, Thiago Jung Bauermann wrote:
+> 
+> Hello Jean-Philippe,
+> 
+> Jean-Philippe Brucker <jean-philippe.brucker@arm.com> writes:
+>> Makes sense, though I think other virtio devices have been developed a
+>> little more organically: device and driver code got upstreamed first,
+>> and then the specification describing their interface got merged into
+>> the standard. For example I believe that code for crypto, input and GPU
+>> devices were upstreamed long before the specification was merged. Once
+>> an implementation is upstream, the interface is expected to be
+>> backward-compatible (all subsequent changes are introduced using feature
+>> bits).
+>>
+>> So I've been working with this process in mind, also described by Jens
+>> at KVM forum 2017 [3]:
+>> (1) Reserve a device ID, and get that merged into virtio (ID 23 for
+>> virtio-iommu was reserved last year)
+>> (2) Open-source an implementation (this driver and Eric's device)
+>> (3) Formalize and upstream the device specification
+>>
+>> But I get that some overlap between (2) and (3) would have been better.
+>> So far the spec document has been reviewed mainly from the IOMMU point
+>> of view, and might require more changes to be in line with the other
+>> virtio devices -- hopefully just wording changes. I'll kick off step
+>> (3), but I think the virtio folks are a bit busy with finalizing the 1.1
+>> spec so I expect it to take a while.
+> 
+> I read v0.9 of the spec and have some minor comments, hope this is a
+> good place to send them:
 
-> 
-> > 
-> > > 2) reduce the rmb(), otherwise you need rmb per descriptor
-> > Well not really, you can
-> > - validate a batch then do a single rmb
-> > - replace rmb with a dependency
-> > 
-> > > > It's probably reading descriptors and maybe loop unrolling.
-> > > 
-> > > I'm not quite understand why unrolling help in this case.
-> > The amount of operations in this loop is tiny but not tiny
-> > enough for gcc to decide it's free. Take a look
-> > 
-> > 
-> > #include <stdio.h>
-> > 
-> > struct desc {
-> >          unsigned long long a;
-> >          unsigned len;
-> >          unsigned short type;
-> >          unsigned short flags;
-> > };
-> > #ifdef UNROLL
-> > __attribute__((optimize("unroll-loops")))
-> > #endif
-> > int foo(struct desc *desc)
-> > {
-> >       unsigned short aflags = 0xffff;
-> >       unsigned short oflags = 0x0;
-> > 
-> >       int i;
-> > 
-> >          for (i=0; i < 4; ++i) {
-> >               aflags &= desc[i].flags;
-> >               oflags |= desc[i].flags;
-> >          }
-> > 
-> >          return aflags == oflags;
-> > }
-> > 
-> > $ gcc -Wall -DUNROLL -O2 -c l.c
-> 
-> 
-> I think you mean without -DUNROLL.
+Thanks a lot, I'll fix them in my next posting. Note that I recently
+sent v0.10 to virtio-comment, to request inclusion into the standard [1]
+but your comments still apply to v0.10.
 
+[1]
+https://lists.oasis-open.org/archives/virtio-comment/201901/msg00016.html
 
-Since there's a jump I think you are right.
+> 1. In section 2.6.2, one reads
+> 
+>     If the VIRTIO_IOMMU_F_INPUT_RANGE feature is offered and the range
+>     described by fields virt_start and virt_end doesn’t fit in the range
+>     described by input_range, the device MAY set status to VIRTIO_-
+>     IOMMU_S_RANGE and ignore the request.
+> 
+> Shouldn't int say "If the VIRTIO_IOMMU_F_INPUT_RANGE feature is
+> negotiated" instead?
 
-> 
-> > 
-> > 0000000000000000 <foo>:
-> > foo():
-> >     0:   48 8d 47 0e             lea    0xe(%rdi),%rax
-> >     4:   31 c9                   xor    %ecx,%ecx
-> >     6:   48 83 c7 4e             add    $0x4e,%rdi
-> >     a:   be ff ff ff ff          mov    $0xffffffff,%esi
-> >     f:   0f b7 10                movzwl (%rax),%edx
-> >    12:   48 83 c0 10             add    $0x10,%rax
-> >    16:   21 d6                   and    %edx,%esi
-> >    18:   09 d1                   or     %edx,%ecx
-> >    1a:   48 39 f8                cmp    %rdi,%rax
-> >    1d:   75 f0                   jne    f <foo+0xf>
-> >    1f:   31 c0                   xor    %eax,%eax
-> >    21:   66 39 ce                cmp    %cx,%si
-> >    24:   0f 94 c0                sete   %al
-> >    27:   c3                      retq
-> > 
-> > 
-> > 
-> > $ gcc -Wall -DUNROLL -O2 -c l.c
-> > 
-> > Disassembly of section .text:
-> > 
-> > 0000000000000000 <foo>:
-> > foo():
-> >     0:   0f b7 47 1e             movzwl 0x1e(%rdi),%eax
-> >     4:   0f b7 77 2e             movzwl 0x2e(%rdi),%esi
-> >     8:   0f b7 4f 0e             movzwl 0xe(%rdi),%ecx
-> >     c:   89 c2                   mov    %eax,%edx
-> >     e:   09 f0                   or     %esi,%eax
-> >    10:   21 f2                   and    %esi,%edx
-> >    12:   09 c8                   or     %ecx,%eax
-> >    14:   21 ca                   and    %ecx,%edx
-> >    16:   0f b7 4f 3e             movzwl 0x3e(%rdi),%ecx
-> >    1a:   09 c8                   or     %ecx,%eax
-> >    1c:   21 ca                   and    %ecx,%edx
-> >    1e:   66 39 c2                cmp    %ax,%dx
-> >    21:   0f 94 c0                sete   %al
-> >    24:   0f b6 c0                movzbl %al,%eax
-> >    27:   c3                      retq
-> > 
-> > 
-> > See? gcc just does not unroll agressively enough.
-> 
-> 
-> Ok, so this is just for avoiding branches.
+Yes, that seems clearer and more consistent with other devices, I'll
+change it. In this case "offered" is equivalent to "negotiated", because
+the driver SHOULD accept the feature or else the device may refuse to
+set FEATURES_OK. A valid input_range field generally indicates that the
+device is incapable of creating mappings outside this range, and it's
+important that the driver acknowledges it.
 
-Which is important for a variety of reasons, e.g. linux adds in tricks
-to block speculation so branches might not be predicted even on intel.
-A pipeline stall on each read isn't good for speed.
+> 2. There's a typo at the end of section 2.6.5:
+> 
+>     The VIRTIO_IOMMU_MAP_F_MMIO flag is a memory type rather than a
+>     protection lag.
+> 
+> s/lag/flag/
 
+Fixed in v0.10
+
+> 3. In section 3.1.2.1.1, the viommu compatible field says "virtio,mmio".
+> Shouldn't it say "virtio,mmio-iommu" instead, to be consistent with
+> "virtio,pci-iommu"?
+
+"virtio,mmio" already exists, and allows the virtio-mmio driver to pick
+up any virtio device. The device type is then discovered while probing,
+and doesn't need to be in the compatible string.
+
+"virtio,pci-iommu" is something I introduced specifically for the
+virtio-iommu, since it's the only virtio-pci device that requires a
+device tree node - to describe the IOMMU topology earlier than the PCI
+probe. If we want symmetry I'd rather replace "virtio,pci-iommu" with
+"virtio,pci", but it wouldn't be used by other virtio device types. And
+I have to admit I'm reluctant to change this binding now, given that it
+has been reviewed (patch 2/7) and is ready to go.
+
+> 4. There's a typo in section 3.3:
 > 
-> > 
-> > > > Something like:
-> > > > 
-> > > > __attribute__((optimize("unroll-loops")))
-> > > > bool fast_get_descriptors(vq, desc)
-> > > > {
-> > > > 
-> > > > 	copy X descriptors
-> > > > 	u16 aflags = 0xffff;
-> > > > 	u16 oflags = 0x0;
-> > > > 	for (i = 0; i < X; ++i) {
-> > > > 		aflags &= desc[i].flags;
-> > > > 		oflags |= desc[i].flags;
-> > > > 	}
-> > > > 	/* all flags must be same */
-> > > > 	if (aflags != oflags)
-> > > > 		return false;
-> > > > 
-> > > > 	return is_avail(vq->wrapcount, aflags);
-> > > > }
-> > > 
-> > > This may work. It should be a little bit less efficient but without any
-> > > assumption of driver if I understand correctly.
-> > > 
-> > > 
-> > > > 
-> > > > I also think 32 is very aggressive, I would start with 8.
-> > > 
-> > > Maybe, or adding some heuristic to predict it.
-> > > 
-> > > Thanks
-> > The reason I say 8 is because it's two cache lines which
-> > is typically what cpu pulls in anyway (1+linear pfetch).
-> > Anything more might have more cost as it might
-> > put more pressure on the cache. Further
-> > static sized short loops can be unrolled by compiler if
-> > you ask it nicely, which saves a bunch of branching,
-> > speculation etc. Dynamic sized ones can't,
-> > you end up with extra math and branches in the loop.
+>     A host bridge may limit the input address space – transaction
+>     accessing some addresses won’t reach the physical IOMMU.
 > 
-> 
-> You're probably right here, but need some benchmark to check.
-> 
-> Thanks
-> 
-> 
-> > 
-> > 
-> > > > 
-> > > > With above, you could try:
-> > > > 
-> > > > 	if (fast_get_descriptors(vq, desc))
-> > > > 	     [last_avail, last_avail + 32] is avail [1]
-> > > > 	else if (desc_is_avail(last_avail + 1) % size))
-> > > > 	     last_avail is avail
-> > > > 	 else
-> > > >    	 	no new
-> > > > 
-> > > > 
+> s/transaction/transactions/
+
+I'll fix it, thanks
+
+> I also have one last comment which you may freely ignore, considering
+> it's clearly just personal opinion and also considering that the
+> specification is mature at this point: it specifies memory ranges by
+> specifying start and end addresses. My experience has been that this is
+> error prone, leading to confusion and bugs regarding whether the end
+> address is inclusive or exclusive. I tend to prefer expressing memory
+> ranges by specifying a start address and a length, which eliminates
+> ambiguity.
+
+While the initial versions had start and length, I changed it because it
+cannot express the whole 64-bit range. If the guest wants to do
+unmap-all (and the input range is 64-bit), then it can send a single
+UNMAP request with start=0, end=~0ULL, which wouldn't be possible with
+start and length. Arguably a very rare use-case, but one I've tried to
+implement at least twice with VFIO :) I'll see if I can make it more
+obvious that end is inclusive, since the word doesn't appear at all in
+the current draft.
+
+Thanks,
+Jean
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
