@@ -1,105 +1,60 @@
-Return-Path: virtio-dev-return-5512-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-5520-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id C06669860E5
-	for <virtio-dev@lists.oasis-open.org>; Fri, 22 Feb 2019 15:01:16 +0000 (UTC)
-Date: Fri, 22 Feb 2019 10:01:13 -0500
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20190222100008-mutt-send-email-mst@kernel.org>
+	by lists.oasis-open.org (Postfix) with ESMTP id 85853985AA7
+	for <virtio-dev@lists.oasis-open.org>; Mon, 25 Feb 2019 16:54:07 +0000 (UTC)
+Date: Mon, 25 Feb 2019 16:54:00 +0000
+From: Stefan Hajnoczi <stefanha@redhat.com>
+Message-ID: <20190225165400.GF379@stefanha-x1.localdomain>
 References: <20190221162219.9790-1-stefanha@redhat.com>
  <20190221162219.9790-6-stefanha@redhat.com>
+ <20190222100008-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="KuLpqunXa7jZSBt+"
 Content-Disposition: inline
-In-Reply-To: <20190221162219.9790-6-stefanha@redhat.com>
+In-Reply-To: <20190222100008-mutt-send-email-mst@kernel.org>
 Subject: Re: [virtio-dev] [PATCH v3 5/5] virtio-blk: clarify semantics of
  multi-segment discard/write zeroes commands
-To: Stefan Hajnoczi <stefanha@redhat.com>
+To: "Michael S. Tsirkin" <mst@redhat.com>
 Cc: virtio-dev@lists.oasis-open.org, Jan Kiszka <jan.kiszka@siemens.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Thu, Feb 21, 2019 at 04:22:19PM +0000, Stefan Hajnoczi wrote:
-> Describe the failure case and maximum number of segments in a
-> multi-segment discard/write zeroes command.
-> 
-> Signed-off-by: Stefan Hajnoczi <stefanha@redhat.com>
+--KuLpqunXa7jZSBt+
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-OK so just making sure.  Patches 1-4 have already been approved, so I
-should apply them. Patch 5 needs another vote. Is that right?
+On Fri, Feb 22, 2019 at 10:01:13AM -0500, Michael S. Tsirkin wrote:
+> On Thu, Feb 21, 2019 at 04:22:19PM +0000, Stefan Hajnoczi wrote:
+> > Describe the failure case and maximum number of segments in a
+> > multi-segment discard/write zeroes command.
+> >=20
+> > Signed-off-by: Stefan Hajnoczi <stefanha@redhat.com>
+>=20
+> OK so just making sure.  Patches 1-4 have already been approved, so I
+> should apply them. Patch 5 needs another vote. Is that right?
 
+Yes, sorry for combining it all into a single series.
 
-> ---
->  content.tex | 23 +++++++++++++++++++++--
->  1 file changed, 21 insertions(+), 2 deletions(-)
-> 
-> diff --git a/content.tex b/content.tex
-> index c5fdc34..7bfcc78 100644
-> --- a/content.tex
-> +++ b/content.tex
-> @@ -3967,8 +3967,10 @@ read from the block device (in multiples of 512 bytes).  VIRTIO_BLK_T_OUT
->  requests write the contents of \field{data} to the block device (in multiples
->  of 512 bytes).
->  
-> -The \field{data} used for discard or write zeroes command is described
-> -by one or more virtio_blk_discard_write_zeroes structs:
-> +The \field{data} used for discard or write zeroes commands consists of one or
-> +more segments.  The maximum number of segments is \field{max_discard_seg} for
-> +discard commands and \field{max_write_zeroes_seg} for write zeroes commands.
-> +Each segment is of form:
->  
->  \begin{lstlisting}
->  struct virtio_blk_discard_write_zeroes {
-> @@ -3997,6 +3999,10 @@ error or VIRTIO_BLK_S_UNSUPP for a request unsupported by device:
->  #define VIRTIO_BLK_S_UNSUPP    2
->  \end{lstlisting}
->  
-> +The status of individual segments is indeterminate when a discard or write zero
-> +command produces VIRTIO_BLK_S_IOERR.  A segment may have completed
-> +successfully, failed, or not been processed by the device.
-> +
->  \drivernormative{\subsubsection}{Device Operation}{Device Types / Block Device / Device Operation}
->  
->  A driver MUST NOT submit a request which would cause a read or write
-> @@ -4014,6 +4020,14 @@ The length of \field{data} MUST be a multiple of the size of struct
->  virtio_blk_discard_write_zeroes for VIRTIO_BLK_T_DISCARD and
->  VIRTIO_BLK_T_WRITE_ZEROES requests.
->  
-> +VIRTIO_BLK_T_DISCARD requests MUST NOT contain more than
-> +\field{max_discard_seg} struct virtio_blk_discard_write_zeroes segments in
-> +\field{data}.
-> +
-> +VIRTIO_BLK_T_WRITE_ZEROES requests MUST NOT contain more than
-> +\field{max_write_zeroes_seg} struct virtio_blk_discard_write_zeroes segments in
-> +\field{data}.
-> +
->  If the VIRTIO_BLK_F_CONFIG_WCE feature is negotiated, the driver MAY
->  switch to writethrough or writeback mode by writing respectively 0 and
->  1 to the \field{writeback} field.  After writing a 0 to \field{writeback},
-> @@ -4024,6 +4038,11 @@ The \field{unmap} bit MUST be zero for discard commands.  The driver
->  MUST NOT assume anything about the data returned by read requests after
->  a range of sectors has been discarded.
->  
-> +A driver MUST NOT assume that individual segments in a multi-segment
-> +VIRTIO_BLK_T_DISCARD or VIRTIO_BLK_T_WRITE_ZEROES request completed
-> +successfully, failed, or were processed by the device at all if the request
-> +failed with VIRTIO_BLK_S_IOERR.
-> +
->  \devicenormative{\subsubsection}{Device Operation}{Device Types / Block Device / Device Operation}
->  
->  A device MUST set the \field{status} byte to VIRTIO_BLK_S_IOERR
-> -- 
-> 2.20.1
-> 
-> 
-> ---------------------------------------------------------------------
-> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+Stefan
 
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+--KuLpqunXa7jZSBt+
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+
+iQEcBAEBAgAGBQJcdB2oAAoJEJykq7OBq3PIKqYIAJvqbBRY0KpyJoWK7U1xFY0B
+/PbqhR4Lw368iAJ0p6DNkcvCD+R/Yg1zpEPCeK11i56MFjgJFRF6f/cU93jcYb+B
+NjoTBt6u0clBYDkaj9xpD+jxBu6UU9FoswMyJhsbeAbfujNYp6GbNITRwFepIXqA
+UmeDeGwqFTGt9/aajHSb0uix/O5u91A/c+NlvyYF1pYD7PWmERjp5IUOBfsD8iQJ
+xF3EE1BuV3PHSz7ILS33GP73Vc7iQRqbXA1BOzg3qkicnW/Wrzu+3x+p8rGgW5jI
+9MW6y1O+Oa7WQ/GQPjTCLohowz8Qpgc5S17TlEoMBgaj5vc52G62A8/Rq6l65Y0=
+=5F7b
+-----END PGP SIGNATURE-----
+
+--KuLpqunXa7jZSBt+--
