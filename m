@@ -1,107 +1,86 @@
-Return-Path: virtio-comment-return-641-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-comment-return-651-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-comment@lists.oasis-open.org>
 List-Post: <mailto:virtio-comment@lists.oasis-open.org>
 List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
-From: "Dr. David Alan Gilbert (git)" <dgilbert@redhat.com>
-Date: Fri, 22 Feb 2019 11:54:33 +0000
-Message-Id: <20190222115433.7160-4-dgilbert@redhat.com>
-In-Reply-To: <20190222115433.7160-1-dgilbert@redhat.com>
+Date: Mon, 25 Feb 2019 16:50:14 +0000
+From: Stefan Hajnoczi <stefanha@redhat.com>
+Message-ID: <20190225165014.GE379@stefanha-x1.localdomain>
 References: <20190222115433.7160-1-dgilbert@redhat.com>
+ <20190222115433.7160-4-dgilbert@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: [virtio-comment] [PATCH v2 3/3] shared memory: Define mmio registers
-To: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
-Cc: stefanha@redhat.com, cohuck@redhat.com
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="bjuZg6miEcdLYP6q"
+Content-Disposition: inline
+In-Reply-To: <20190222115433.7160-4-dgilbert@redhat.com>
+Subject: [virtio-comment] Re: [PATCH v2 3/3] shared memory: Define mmio registers
+To: "Dr. David Alan Gilbert (git)" <dgilbert@redhat.com>
+Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, cohuck@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-From: "Dr. David Alan Gilbert" <dgilbert@redhat.com>
+--bjuZg6miEcdLYP6q
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Define an MMIO interface to enumerate and map shared
-memory regions.
+On Fri, Feb 22, 2019 at 11:54:33AM +0000, Dr. David Alan Gilbert (git) wrot=
+e:
+> diff --git a/content.tex b/content.tex
+> index 9838208..c3070bd 100644
+> --- a/content.tex
+> +++ b/content.tex
+> @@ -1726,6 +1726,28 @@ All register values are organized as Little Endian.
+>      selected by writing to \field{QueueSel}.
+>    }
+>    \hline=20
+> +  \mmioreg{SHMId}{Shared memory id}{0x0ac}{W}{%
+> +    Writing to this register selects the shared memory region \ref{sec:B=
+asic Facilities of a Virtio Device / Shared Memory Regions}
+> +    following operations on \field{SHMLenLow}, \field{SHMLenHigh},
+> +    \field{SHMBaseLow} and \field{SHMBaseHigh} apply to.
+> +  }
+> +  \hline=20
+> +  \mmiodreg{SHMLenLow}{SHMLenHigh}{Shared memory region 64 bit long leng=
+th}{0x0b0}{0x0xb4}{R}{%
 
-Note: This hasn't been implemented.
+QueueDescLow/High explicitly documents the low and high 32 bits
+relationship of these two registers.  Please do the same of
+SHMLenLow/High and SHMBaseLow/High for clarity and consistency.  That
+way readers know the purpose of Low and High.
 
-Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
----
- content.tex | 32 ++++++++++++++++++++++++++++++++
- 1 file changed, 32 insertions(+)
+> +    These registers return the length of the shared memory
 
-diff --git a/content.tex b/content.tex
-index 9838208..c3070bd 100644
---- a/content.tex
-+++ b/content.tex
-@@ -1726,6 +1726,28 @@ All register values are organized as Little Endian.
-     selected by writing to \field{QueueSel}.
-   }
-   \hline 
-+  \mmioreg{SHMId}{Shared memory id}{0x0ac}{W}{%
-+    Writing to this register selects the shared memory region \ref{sec:Basic Facilities of a Virtio Device / Shared Memory Regions}
-+    following operations on \field{SHMLenLow}, \field{SHMLenHigh},
-+    \field{SHMBaseLow} and \field{SHMBaseHigh} apply to.
-+  }
-+  \hline 
-+  \mmiodreg{SHMLenLow}{SHMLenHigh}{Shared memory region 64 bit long length}{0x0b0}{0x0xb4}{R}{%
-+    These registers return the length of the shared memory
-+    region, as defined by the device for the region selected by
-+    the \field{SHMId} register.  Reading from a non-existent
-+    region (i.e. where the ID written to \field{SHMId} is unused)
-+    results in a length of -1.
-+  }
-+  \hline 
-+  \mmiodreg{SHMBaseLow}{SHMBaseHigh}{Shared memory region 64 bit long physical address}{0x0b8}{0x0xbc}{W}{%
-+    The driver writes these registers to indicate where it wishes
-+    the device to map the shared memory region currently
-+    selected.  The driver shall write \field{SHMBaseLow} first
-+    and then \field{SHMBaseHigh}.  To avoid multiple remappings, the device shall not change
-+    the mapping until it sees the write to \field{SHMBaseHigh}.
-+  }
-+  \hline 
-   \mmioreg{ConfigGeneration}{Configuration atomicity value}{0x0fc}{R}{
-     Reading from this register returns a value describing a version of the device-specific configuration space (see \field{Config}).
-     The driver can then access the configuration space and, when finished, read \field{ConfigGeneration} again.
-@@ -1761,6 +1783,9 @@ driver seeing an inconsistent configuration state.
- 
- The device MUST NOT access virtual queue contents when \field{QueueReady} is zero (0x0).
- 
-+The device MUST NOT respond to SHM Base writes for none-existent
-+shared memory regions.
-+
- \drivernormative{\subsubsection}{MMIO Device Register Layout}{Virtio Transport Options / Virtio Over MMIO / MMIO Device Register Layout}
- The driver MUST NOT access memory locations not described in the
- table \ref{tab:Virtio Trasport Options / Virtio Over MMIO / MMIO Device Register Layout}
-@@ -1815,6 +1840,13 @@ If both values are valid, it MUST read \field{DeviceID}
- and if its value is zero (0x0) MUST abort initialization and
- MUST NOT access any other register.
- 
-+Devices expecting shared memory regions MUST enumerate the
-+regions by selecting each region in tern and checking that the
-+length is not -1.
-+
-+Devices not expecting shared memory MUST NOT use the shared
-+memory registers.
-+
- Further initialization MUST follow the procedure described in
- \ref{sec:General Initialization And Device Operation / Device Initialization}~\nameref{sec:General Initialization And Device Operation / Device Initialization}.
- 
--- 
-2.20.1
+Adding "in bytes" makes the units explicit.
 
+> +    region, as defined by the device for the region selected by
+> +    the \field{SHMId} register.  Reading from a non-existent
+> +    region (i.e. where the ID written to \field{SHMId} is unused)
+> +    results in a length of -1.
 
-This publicly archived list offers a means to provide input to the
-OASIS Virtual I/O Device (VIRTIO) TC.
+-1 is used to indicate the absence of a region, does 0 have a meaning?
 
-In order to verify user consent to the Feedback License terms and
-to minimize spam in the list archive, subscription is required
-before posting.
+> @@ -1761,6 +1783,9 @@ driver seeing an inconsistent configuration state.
+> =20
+>  The device MUST NOT access virtual queue contents when \field{QueueReady=
+} is zero (0x0).
+> =20
+> +The device MUST NOT respond to SHM Base writes for none-existent
 
-Subscribe: virtio-comment-subscribe@lists.oasis-open.org
-Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
-List help: virtio-comment-help@lists.oasis-open.org
-List archive: https://lists.oasis-open.org/archives/virtio-comment/
-Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
-List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
-Committee: https://www.oasis-open.org/committees/virtio/
-Join OASIS: https://www.oasis-open.org/join/
+s/none/non/
 
+--bjuZg6miEcdLYP6q
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEcBAEBAgAGBQJcdBzGAAoJEJykq7OBq3PISn8IAMCydtEtsrMVS5ZpfiqRjLk8
+rK0s3L8Ql8qWHu7F9DI/YAGhnjnQEPJtffUhGVpbr37Sz8N8t+8aJ+i9XfhXnGxS
+BoXd2yhpI1iD6Bw28rVY3MZpXBXJNPMqgyexDCQy36Js8F4by5wBBTgG7g4Qrpfz
+SXEesUNDdA6wNIBSPxWmO64C5b6qPaRrd6trLHCVp63fcdx9p5vWek3UwGpC+Xzz
+0pF08Ynk1QQz43d1MWgvNQS+5VPvHXfZbPS7qUfL1WlMC3LfzEgZ4oJmA/3YQrg5
+9v8ey7/CBvlIZXxdmXADCsJ00dzQ/YCw/PvLfAKpBHuvvvUnka5eIBmF6i2JRHc=
+=Zje8
+-----END PGP SIGNATURE-----
+
+--bjuZg6miEcdLYP6q--
