@@ -1,11 +1,12 @@
-Return-Path: virtio-comment-return-661-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-comment-return-662-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-comment@lists.oasis-open.org>
 List-Post: <mailto:virtio-comment@lists.oasis-open.org>
 List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
-Date: Tue, 26 Feb 2019 16:40:57 +0100
-From: Halil Pasic <pasic@linux.ibm.com>
+Date: Tue, 26 Feb 2019 16:43:47 +0100
+From: Cornelia Huck <cohuck@redhat.com>
+Message-ID: <20190226164347.617e80c5.cohuck@redhat.com>
 In-Reply-To: <20190226151133.GI2721@work-vm>
 References: <20190222115433.7160-1-dgilbert@redhat.com>
 	<20190222115433.7160-2-dgilbert@redhat.com>
@@ -14,11 +15,10 @@ References: <20190222115433.7160-1-dgilbert@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Message-Id: <20190226164057.7318d265@oc2783563651>
-Subject: Re: [virtio-comment] Re: [virtio-dev] Re: [PATCH v2 1/3] shared
- memory: Define shared memory regions
+Subject: [virtio-comment] Re: [virtio-dev] Re: [PATCH v2 1/3] shared memory: Define shared
+ memory regions
 To: "Dr. David Alan Gilbert" <dgilbert@redhat.com>
-Cc: Cornelia Huck <cohuck@redhat.com>, virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, stefanha@redhat.com
+Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, stefanha@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
 On Tue, 26 Feb 2019 15:11:34 +0000
@@ -27,7 +27,7 @@ On Tue, 26 Feb 2019 15:11:34 +0000
 > * Cornelia Huck (cohuck@redhat.com) wrote:
 > > On Fri, 22 Feb 2019 11:54:31 +0000
 > > "Dr. David Alan Gilbert (git)" <dgilbert@redhat.com> wrote:
-> > 
+> >   
 > > > From: "Dr. David Alan Gilbert" <dgilbert@redhat.com>
 > > > 
 > > > Define the requirements and idea behind shared memory regions.
@@ -70,27 +70,35 @@ On Tue, 26 Feb 2019 15:11:34 +0000
 > > > +
 > > > +The region is chosen by the host and presented to the guest, as
 > > > +such it is useful in situations where the memory is accessed on
-> > > +the host by other libraries that can't safely access guest RAM.
+> > > +the host by other libraries that can't safely access guest RAM.  
 > > 
 > > This explanation looks good to me.
-> > 
+> >   
 > > > +
 > > > +Shared memory regions MUST NOT be used to control the operation
 > > > +of the device, nor to stream data; those should still be performed
-> > > +using virtqueues.
+> > > +using virtqueues.  
 > > 
 > > The 'MUST NOT' makes it look like a normative statement; however, this
-> > is more like design advice?
+> > is more like design advice?  
 > 
 > Hmm I'm not sure - the intention of this line is to try and stop people
 > using it as a hack to avoid standardising protocol for no good reason.
+
+I've looked through the spec again and it seems the best place for this
+would indeed be a device-normative section for shared regions; it would
+imply that a device needs to comply with this statement, or it is not
+conformant.
+
+It would need some tweaking, however. Perhaps something like the
+following:
+
+"The device MUST NOT expose shared memory regions which are used to
+control the operation of the device, or to stream data."
+
+Not sure where to put the pointer to use virtqueues for that.
+
 > 
-
-I had the same thoughts as Stefan but he was faster. I think his concern
-regarding the formalism -- mine is for sure.
-
-IMHO you making it a normative statement is a good idea. 
-
 > > > +
 > > > +A device may have multiple shared memory regions associated with
 > > > +it.  Each region has a \field{shmid} to identify it, the meaning
@@ -101,66 +109,47 @@ IMHO you making it a normative statement is a good idea.
 > > > +
 > > > +Memory consistency rules vary depending on the region and the
 > > > +device.  Devices MUST define the required behaviour for each
-> > > +region.
+> > > +region.  
 > > 
-> > Same here.
+> > Same here.  
 > 
 > OK, so should I reword this?
+
+Maybe put into the device normative section:
+
+"A device MUST define the required behaviour for each region."
+
+But I'm not sure whether this is a good normative statement... it's
+more that the regions have specific requirements, which both the device
+and the driver need to fulfill, and those requirements obviously need
+to be put down somewhere.
+
 > 
-
-Same here. 
-
 > > > +
 > > > +The guest physical address and the host virtual address MUST NOT
 > > > +be used to identify structures within the memory regions; all
 > > > +addressing MUST be relative to the start of a particular region.
-> > > +
+> > > +  
 > > 
 > > For that high-level overview, I'm not sure if any normative statements
 > > are needed/wanted, or whether those should be confined to the individual
-> > transport or device type definitions...
+> > transport or device type definitions...  
 > 
 > I think this one is stronger than the previous two; if people start
 > passing GPA/HVA in the underlying structures things are going to get
 > messy.
->
 
-And here. If it is supposed to be normative (and I think it is) it
-should be made formally look like a normative statement. How to do it
-exactly, no idea :(.
+What about
 
-Regards,
-Halil
+"The device MUST handle any access to the memory region as addressed
+relatively to the beginning of the region, regardless whether it
+accesses the region itself or the driver does so."
 
- 
-> Dave
-> 
-> > The text on its own looks good to me.
-> > 
-> > ---------------------------------------------------------------------
-> > To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> > For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
-> > 
-> --
-> Dr. David Alan Gilbert / dgilbert@redhat.com / Manchester, UK
-> 
-> This publicly archived list offers a means to provide input to the
-> OASIS Virtual I/O Device (VIRTIO) TC.
-> 
-> In order to verify user consent to the Feedback License terms and
-> to minimize spam in the list archive, subscription is required
-> before posting.
-> 
-> Subscribe: virtio-comment-subscribe@lists.oasis-open.org
-> Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
-> List help: virtio-comment-help@lists.oasis-open.org
-> List archive: https://lists.oasis-open.org/archives/virtio-comment/
-> Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
-> List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
-> Committee: https://www.oasis-open.org/committees/virtio/
-> Join OASIS: https://www.oasis-open.org/join/
-> 
+"The driver MUST address any particular region relatively to the start
+of that region."
 
+for device and driver normative statements, respectively. Better
+wordings welcome.
 
 This publicly archived list offers a means to provide input to the
 OASIS Virtual I/O Device (VIRTIO) TC.
