@@ -1,112 +1,117 @@
-Return-Path: virtio-dev-return-5557-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-5556-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 657DD985DEA
-	for <virtio-dev@lists.oasis-open.org>; Fri,  1 Mar 2019 01:31:09 +0000 (UTC)
-References: <20190222100753-mutt-send-email-mst@kernel.org>
- <e6a53bd1-83ab-f170-406a-03276e8c87e2@oracle.com>
- <20190225210529-mutt-send-email-mst@kernel.org>
- <d1060c75-eaba-ab6f-ff31-38cb3a47c711@oracle.com>
- <20190227173710-mutt-send-email-mst@kernel.org>
+	by lists.oasis-open.org (Postfix) with ESMTP id CE6A2985DE5
+	for <virtio-dev@lists.oasis-open.org>; Thu, 28 Feb 2019 19:37:01 +0000 (UTC)
+Date: Thu, 28 Feb 2019 14:36:56 -0500
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20190228143511-mutt-send-email-mst@kernel.org>
+References: <20190227173710-mutt-send-email-mst@kernel.org>
  <c72ce9eb-254c-cc3e-1969-f7f108506d5e@oracle.com>
  <20190227184601-mutt-send-email-mst@kernel.org>
  <a617ce13-4114-469d-ef33-a1c91150eeca@oracle.com>
  <20190227193923-mutt-send-email-mst@kernel.org>
- <36901346-e3d5-4e51-6a8d-678eb5b9e352@oracle.com>
- <20190228091119-mutt-send-email-mst@kernel.org>
-From: si-wei liu <si-wei.liu@oracle.com>
-Message-ID: <8a387954-1e21-947b-a5a9-c49adaea2e81@oracle.com>
-Date: Thu, 28 Feb 2019 17:30:56 -0800
+ <20190227165205.307ed83c@cakuba.netronome.com>
+ <20190227201857-mutt-send-email-mst@kernel.org>
+ <20190227175218.736e13b6@cakuba.netronome.com>
+ <20190227233812-mutt-send-email-mst@kernel.org>
+ <20190228101356.39ac70aa@cakuba.netronome.com>
 MIME-Version: 1.0
-In-Reply-To: <20190228091119-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190228101356.39ac70aa@cakuba.netronome.com>
 Subject: Re: [virtio-dev] Re: net_failover slave udev renaming (was Re: [RFC
  PATCH net-next v6 4/4] netvsc: refactor notifier/event handling code to use
  the bypass framework)
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: "Samudrala, Sridhar" <sridhar.samudrala@intel.com>, Siwei Liu <loseweigh@gmail.com>, Jiri Pirko <jiri@resnulli.us>, Stephen Hemminger <stephen@networkplumber.org>, David Miller <davem@davemloft.net>, Netdev <netdev@vger.kernel.org>, virtualization@lists.linux-foundation.org, virtio-dev <virtio-dev@lists.oasis-open.org>, "Brandeburg, Jesse" <jesse.brandeburg@intel.com>, Alexander Duyck <alexander.h.duyck@intel.com>, Jakub Kicinski <kubakici@wp.pl>, Jason Wang <jasowang@redhat.com>, liran.alon@oracle.com
+To: Jakub Kicinski <kubakici@wp.pl>
+Cc: si-wei liu <si-wei.liu@oracle.com>, "Samudrala, Sridhar" <sridhar.samudrala@intel.com>, Siwei Liu <loseweigh@gmail.com>, Jiri Pirko <jiri@resnulli.us>, Stephen Hemminger <stephen@networkplumber.org>, David Miller <davem@davemloft.net>, Netdev <netdev@vger.kernel.org>, virtualization@lists.linux-foundation.org, virtio-dev <virtio-dev@lists.oasis-open.org>, "Brandeburg, Jesse" <jesse.brandeburg@intel.com>, Alexander Duyck <alexander.h.duyck@intel.com>, Jason Wang <jasowang@redhat.com>, liran.alon@oracle.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+On Thu, Feb 28, 2019 at 10:13:56AM -0800, Jakub Kicinski wrote:
+> On Wed, 27 Feb 2019 23:47:33 -0500, Michael S. Tsirkin wrote:
+> > On Wed, Feb 27, 2019 at 05:52:18PM -0800, Jakub Kicinski wrote:
+> > > > > Can the users who care about the naming put net_failover into
+> > > > > "user space will do the bond enslavement" mode, and do the bond
+> > > > > creation/management themselves from user space (in systemd/ 
+> > > > > Network Manager) based on the failover flag?    
+> > > > 
+> > > > Putting issues of compatibility aside (userspace tends to be confused if
+> > > > you give it two devices with same MAC), how would you have it work in
+> > > > practice? Timer based hacks like netvsc where if userspace didn't
+> > > > respond within X seconds we assume it won't and do everything ourselves?  
+> > > 
+> > > Well, what I'm saying is basically if user space knows how to deal with
+> > > the auto-bonding, we can put aside net_failover for the most part.  It
+> > > can either be blacklisted or it can have some knob which will
+> > > effectively disable the auto-enslavement.  
+> > 
+> > OK I guess we could add a module parameter to skip this.
+> > Is this what you mean?
+> 
+> Yup.
+> 
+> > > Auto-bonding capable user space can do the renames, spawn the bond,
+> > > etc. all by itself.  I'm basically going back to my initial proposal
+> > > here :)  There is a RedHat bugzilla for the NetworkManager team to do
+> > > this, but we merged net_failover before those folks got around to
+> > > implementing it.  
+> > 
+> > In particular because there's no policy involved whatsoever
+> > here so it's just mechanism being pushed up to userspace.
+> > 
+> > > IOW if NM/systemd is capable of doing the auto-bonding itself it can
+> > > disable the kernel mechanism and take care of it all.  If kernel is
+> > > booted with an old user space which doesn't have capable NM/systemd -
+> > > net_failover will kick in and do its best.  
+> > 
+> > Sure - it's just 2 lines of code, see below.
+> > 
+> > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+> > 
+> > But I don't intend to bother until there's actual interest from
+> > userspace developers to bother. In particular it is not just NM/systemd
+> > even on Fedora - e.g. you will need to teach dracut to somehow detect
+> > and handle this - right now it gets confused if there are two devices
+> > with same MAC addresses.
+> 
+> It is a bit of a the chicken or the egg situation ;)  But users can
+> just blacklist, too.  Anyway, I think this is far better than module
+> parameters
 
+Sorry I'm a bit confused. What is better than what?
 
-On 2/28/2019 6:26 AM, Michael S. Tsirkin wrote:
-> On Thu, Feb 28, 2019 at 01:32:12AM -0800, si-wei liu wrote:
->>>> Will the
->>>> change break userspace further?
->>>>
->>>> -Siwei
->>> Didn't you show userspace is already broken. You can't "further
->>> break it", rename already fails.
->> It's a race, userspace tends to give slave a user(space) desired name but
->> sometimes may fail due to this race. Today if failover master is not up,
->> rename would succeed anyway. While what you proposed prohibits user from
->> providing a name in all circumstances if I understand you correctly. That's
->> what I meant of breaking userspace further. On the other hand, you seem to
->> tighten the kernel default naming to udev predictable names, which is
->> derived from only recent systemd-udevd, while there exists many possible
->> userspace naming schemes out of that. Users today who deliberately chooses
->> to disable predictable naming (net.ifnames=0 biosdevname=0) and fall back to
->> kernel provided names would expect the ethX pattern, with this change
->> admin/user scripts which matches the ethX pattern could potentially break.
-> Whatever crashes with a name not matching ethX will crash on the
-> standby interface *anyway*.
-With udev predictable naming disabled they should not. It's not hard for 
-user to look for device attribute to persistent the name well, in a 
-consistent and reliable way.
+> for twiddling kernel-based interface naming policy.. :S
 
->
-> So I think what you are saying is that someone might have already
-> written scripts and gotten them to work on v4.17 when STANDBY was
-> included and these scripts rely on ethX. Now these scripts
-> will break.
-The controversial part is the new kernel naming pattern. Initially I 
-thought there shouldn't be such crazy scripts relying on the pattern, 
-but when I worked on cloud-init it I realized that there's already a lot 
-of software taking assumption around the 'eth0' name. In the past I've 
-seen random scripts that parses the ethX name assumes (incorrectly) the 
-name ends up with digits, or even the digits and name are 1:1 mapped. Of 
-course, you can say these are bugs in scripts themselves.
+I see your point. But my point is slave names don't really matter, only
+master name matters.  So I am not sure there's any policy worth talking
+about here.
 
-Anyway, I'll let others in the netdev to comment on this new scheme, 
-maybe that's the concern of merely myself. The good part of your 
-proposal is that we can get consistent slave name, which still plays its 
-role until we move towards making slave names less relevant, i.e. 
-ideally a 1-netdev model. I think we both agree that the master matters 
-more than the slave names.
-
->
-> Maybe it is still early enough (just half a year passed) that the
-> number of these users would be small.  So how about a kernel config
-> option and maybe a module parameter to rename the primary?  People can
-> then opt in to the old broken behaviour.
-Were I could I would ask  why a similar opt-in (kernel config or module 
-parameter) couldn't be implemented to open up the rename restriction on 
-slave, net_failover in particular. What I felt about this rename 
-restriction was more because of historical reason than anything else, 
-while net_failover is comparatively a new type of link that we are now 
-designing proper use case it should support, and can get it shaped to 
-whatever it fits. My personal view is that the slave can't be renamed 
-when master is running is just implementation details that got 
-incorrectly exposed to userspace apps for many years. It's old behavior 
-with historical reason for sure, but I don't think this applies to 
-net_failover.
-
-(FWIW as one previous bond maintainer for another OS, we relieved the 
-rename restriction slaves 13 year ago, while no single complaint or 
-issue was ever raised because of this change over the years, neither 
-from the customers of tens of millions of installation base, nor the 
-FOSS software running atop. Of course, Linux is different so that 
-experience doesn't count.)
-
-Thanks,
--Siwei
-
-
+> > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> > index 955b3e76eb8d..dd2b2c370003 100644
+> > --- a/drivers/net/virtio_net.c
+> > +++ b/drivers/net/virtio_net.c
+> > @@ -43,6 +43,7 @@ static bool csum = true, gso = true, napi_tx;
+> >  module_param(csum, bool, 0444);
+> >  module_param(gso, bool, 0444);
+> >  module_param(napi_tx, bool, 0644);
+> > +module_param(disable_failover, bool, 0644);
+> >  
+> >  /* FIXME: MTU in config. */
+> >  #define GOOD_PACKET_LEN (ETH_HLEN + VLAN_HLEN + ETH_DATA_LEN)
+> > @@ -3163,6 +3164,7 @@ static int virtnet_probe(struct virtio_device *vdev)
+> >  	virtnet_init_settings(dev);
+> >  
+> > -	if (virtio_has_feature(vdev, VIRTIO_NET_F_STANDBY)) {
+> > +	if (virtio_has_feature(vdev, VIRTIO_NET_F_STANDBY) &&
+> > +		!disable_failover) {
+> >  		vi->failover = net_failover_create(vi->dev);
+> >  		if (IS_ERR(vi->failover)) {
+> >  			err = PTR_ERR(vi->failover);
+> > 
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
