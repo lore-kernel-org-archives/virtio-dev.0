@@ -1,71 +1,96 @@
-Return-Path: virtio-comment-return-704-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-comment-return-685-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-comment@lists.oasis-open.org>
 List-Post: <mailto:virtio-comment@lists.oasis-open.org>
 List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
-Date: Fri, 8 Mar 2019 09:19:32 +0000
-From: Stefan Hajnoczi <stefanha@redhat.com>
-Message-ID: <20190308091932.GB12318@stefanha-x1.localdomain>
+From: "Dr. David Alan Gilbert (git)" <dgilbert@redhat.com>
+Date: Mon,  4 Mar 2019 13:25:31 +0000
+Message-Id: <20190304132531.10507-4-dgilbert@redhat.com>
+In-Reply-To: <20190304132531.10507-1-dgilbert@redhat.com>
 References: <20190304132531.10507-1-dgilbert@redhat.com>
- <20190304132531.10507-3-dgilbert@redhat.com>
- <20190307162811.GI2843@stefanha-x1.localdomain>
- <20190307182457.GM2811@work-vm>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="xgyAXRrhYN0wYx8y"
-Content-Disposition: inline
-In-Reply-To: <20190307182457.GM2811@work-vm>
-Subject: [virtio-comment] Re: [PATCH v3 2/3] shared memory: Define PCI capability
-To: "Dr. David Alan Gilbert" <dgilbert@redhat.com>
-Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, cohuck@redhat.com, sebastien.boeuf@intel.com
+Content-Transfer-Encoding: 8bit
+Subject: [virtio-comment] [PATCH v3 3/3] shared memory: Define mmio registers
+To: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+Cc: stefanha@redhat.com, cohuck@redhat.com, sebastien.boeuf@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
---xgyAXRrhYN0wYx8y
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+From: "Dr. David Alan Gilbert" <dgilbert@redhat.com>
 
-On Thu, Mar 07, 2019 at 06:24:57PM +0000, Dr. David Alan Gilbert wrote:
-> * Stefan Hajnoczi (stefanha@redhat.com) wrote:
-> > On Mon, Mar 04, 2019 at 01:25:30PM +0000, Dr. David Alan Gilbert (git) =
-wrote:
-> > > +\begin{lstlisting}
-> > > +struct virtio_pci_shm_cap {
-> > > +        struct virtio_pci_cap cap;
-> > > +        u32 offset_hi;
-> > > +        u32 length_hi;
-> > > +        u8  id;
-> > > +};
-> > > +\end{lstlisting}
-> >=20
-> > Are there any alignment requirements for PCI capability structures?
->=20
-> The PCI spec says 'Each capability must be DWORD aligned. '
->=20
-> > This struct ends with a u8, which might be a problem if 32-bit or 64-bit
-> > alignemnt is required by something.
->=20
-> It doesn't seem to be unusual, for example the MSI capability structure
-> seems to be 10 or 14 bytes even with the DWORD alignement restriction
-> for the start of it.
+Define an MMIO interface to discover and map shared
+memory regions.
 
-Sounds good.  Just wanted to check.
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+---
+ content.tex | 30 ++++++++++++++++++++++++++++++
+ 1 file changed, 30 insertions(+)
 
-Stefan
+diff --git a/content.tex b/content.tex
+index 9838208..7696337 100644
+--- a/content.tex
++++ b/content.tex
+@@ -1726,6 +1726,33 @@ All register values are organized as Little Endian.
+     selected by writing to \field{QueueSel}.
+   }
+   \hline 
++  \mmioreg{SHMSel}{Shared memory id}{0x0ac}{W}{%
++    Writing to this register selects the shared memory region \ref{sec:Basic Facilities of a Virtio Device / Shared Memory Regions}
++    following operations on \field{SHMLenLow}, \field{SHMLenHigh},
++    \field{SHMBaseLow} and \field{SHMBaseHigh} apply to.
++  }
++  \hline 
++  \mmiodreg{SHMLenLow}{SHMLenHigh}{Shared memory region 64 bit long length}{0x0b0}{0x0xb4}{R}{%
++    These registers return the length of the shared memory
++    region in bytes, as defined by the device for the region selected by
++    the \field{SHMSel} register.  The lower 32 bits of the length
++    are read from \field{SHMLenLow} and the higher 32 bits from
++    \field{SHMLenHigh}.  Reading from a non-existent
++    region (i.e. where the ID written to \field{SHMSel} is unused)
++    results in a length of -1.
++  }
++  \hline 
++  \mmiodreg{SHMBaseLow}{SHMBaseHigh}{Shared memory region 64 bit long physical address}{0x0b8}{0x0xbc}{R}{%
++    The driver reads these registers to discover the base address
++    of the region in physical address space.  This address is
++    chosen by the device (or other part of the VMM).
++    The lower 32 bits of the address are read from \field{SHMBaseLow}
++    with the higher 32 bits from \field{SHMBaseHigh}.  Reading
++    from a non-existent region (i.e. where the ID written to
++    \field{SHMSel} is unused) results in a base address of
++    0xffffffffffffffff.
++  }
++  \hline 
+   \mmioreg{ConfigGeneration}{Configuration atomicity value}{0x0fc}{R}{
+     Reading from this register returns a value describing a version of the device-specific configuration space (see \field{Config}).
+     The driver can then access the configuration space and, when finished, read \field{ConfigGeneration} again.
+@@ -1815,6 +1842,9 @@ If both values are valid, it MUST read \field{DeviceID}
+ and if its value is zero (0x0) MUST abort initialization and
+ MUST NOT access any other register.
+ 
++Drivers not expecting shared memory MUST NOT use the shared
++memory registers.
++
+ Further initialization MUST follow the procedure described in
+ \ref{sec:General Initialization And Device Operation / Device Initialization}~\nameref{sec:General Initialization And Device Operation / Device Initialization}.
+ 
+-- 
+2.20.1
 
---xgyAXRrhYN0wYx8y
-Content-Type: application/pgp-signature; name="signature.asc"
 
------BEGIN PGP SIGNATURE-----
+This publicly archived list offers a means to provide input to the
+OASIS Virtual I/O Device (VIRTIO) TC.
 
-iQEcBAEBAgAGBQJcgjOkAAoJEJykq7OBq3PIH+oIALa2LNGJ/fOMUzEPaQkvVsTP
-X0R6PjTqK2rl5gS4AZYnoEVg1oQPbHyWF6UgmwSrvhE6Rpl4jm/Y96VGF8H1XFeU
-xdcBkbbehxtbCQO26WVKC4rKp3jyqZpO6f9dx98ElozJuHzHEtPJhjJNPEFB/t9u
-wounuTfd4TABKz7Vldb07CIRpoqubghEJt+Nby7sbJA+6kLrg0uPDUWCZJyk0DVx
-HDH7ocXRCFHRExiH+YKNiH8mJ7138wViMOvdJZg77Kh0/V7MlwOKYHXSowlTDuxA
-iG02tG+9ROON0PQpuiCWDf/9+kGTlhki3SWZOdnpTbgU9RPcll79hO8THrQLIc8=
-=3xq/
------END PGP SIGNATURE-----
+In order to verify user consent to the Feedback License terms and
+to minimize spam in the list archive, subscription is required
+before posting.
 
---xgyAXRrhYN0wYx8y--
+Subscribe: virtio-comment-subscribe@lists.oasis-open.org
+Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
+List help: virtio-comment-help@lists.oasis-open.org
+List archive: https://lists.oasis-open.org/archives/virtio-comment/
+Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
+List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
+Committee: https://www.oasis-open.org/committees/virtio/
+Join OASIS: https://www.oasis-open.org/join/
+
