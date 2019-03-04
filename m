@@ -1,53 +1,67 @@
-Return-Path: virtio-return-3258-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio@lists.oasis-open.org>
-List-Post: <mailto:virtio@lists.oasis-open.org>
-List-Help: <mailto:virtio-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Fri, 8 Mar 2019 10:07:29 +0000
-From: Stefan Hajnoczi <stefanha@redhat.com>
-Message-ID: <20190308100729.GD12318@stefanha-x1.localdomain>
-References: <20190308054122.8834-1-mst@redhat.com>
+Return-Path: virtio-comment-return-686-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-comment@lists.oasis-open.org>
+List-Post: <mailto:virtio-comment@lists.oasis-open.org>
+List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
+From: "Dr. David Alan Gilbert (git)" <dgilbert@redhat.com>
+Date: Mon,  4 Mar 2019 13:25:28 +0000
+Message-Id: <20190304132531.10507-1-dgilbert@redhat.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="IDYEmSnFhs3mNXr+"
-Content-Disposition: inline
-In-Reply-To: <20190308054122.8834-1-mst@redhat.com>
-Subject: [virtio] Re: [virtio-dev] [PATCH] format: replace "- i.e." with ", i.e.,"
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+Content-Transfer-Encoding: 8bit
+Subject: [virtio-comment] [PATCH v3 0/3] Large shared memory regions
+To: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+Cc: stefanha@redhat.com, cohuck@redhat.com, sebastien.boeuf@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
---IDYEmSnFhs3mNXr+
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+From: "Dr. David Alan Gilbert" <dgilbert@redhat.com>
 
-On Fri, Mar 08, 2019 at 12:41:26AM -0500, Michael S. Tsirkin wrote:
-> This seems to be preferred by native speakers, and
-> seems just as effective as a sentence device.
->=20
-> Fixes: https://issues.oasis-open.org/browse/VIRTIO-171
-> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> ---
->  content.tex     | 12 ++++++------
->  packed-ring.tex |  4 ++--
->  2 files changed, 8 insertions(+), 8 deletions(-)
+  This series formalises the idea of shared memory regions I'd
+previously discussed and is intended for use with virtio-fs.
 
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+I've split it into three parts:
 
---IDYEmSnFhs3mNXr+
-Content-Type: application/pgp-signature; name="signature.asc"
+  a) A general definition of the idea
 
------BEGIN PGP SIGNATURE-----
+  b) A definition on virtio-pci using the layout previously
+discussed; this still uses the list of capabilities.
 
-iQEcBAEBAgAGBQJcgj7gAAoJEJykq7OBq3PIa5UIAKIsU6DMY/mPlYLUH2AA9Spy
-xH6A0u81tf3tiZY4LX46eN75UaJFSVw067M1pAtJUAVlClfg4ryJ1778Yp2d1IGD
-L2MtGhFCk1vo6uks4bFl030piOHKqIT8KXNozprtKMa58pBbz6P8c3HaN0SS3NLR
-lnd6hMwg4lxGd+7DR07IUPsT7nqq2d73x7Nsi5F+mCVil15Kl+VSfW3XvdqOcO3e
-sC63SQCE/qNjzZYU1hKOFuQDvJ/EHqX4bJCddEAjzNyNnMwnxPS2yaK4rOV9CIlA
-U1/tl6QmqVKvLLD32n/5G8AgkriPrQgL7lU2NwJxXsskV5BujfJAjMGA041Me1U=
-=esGs
------END PGP SIGNATURE-----
+  c) A definition on virtio-mmio.
 
---IDYEmSnFhs3mNXr+--
+This v3 addresses most feedback on v2.  The MMIO registers have
+changed a bit based on feedback (in particular from Sebastien
+who has been trying it out).
+
+Dave
+
+Dr. David Alan Gilbert (3):
+  shared memory: Define shared memory regions
+  shared memory: Define PCI capability
+  shared memory: Define mmio registers
+
+ conformance.tex |  1 +
+ content.tex     | 69 +++++++++++++++++++++++++++++++++++++++++++++++++
+ shared-mem.tex  | 40 ++++++++++++++++++++++++++++
+ 3 files changed, 110 insertions(+)
+ create mode 100644 shared-mem.tex
+
+-- 
+2.20.1
+
+
+This publicly archived list offers a means to provide input to the
+OASIS Virtual I/O Device (VIRTIO) TC.
+
+In order to verify user consent to the Feedback License terms and
+to minimize spam in the list archive, subscription is required
+before posting.
+
+Subscribe: virtio-comment-subscribe@lists.oasis-open.org
+Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
+List help: virtio-comment-help@lists.oasis-open.org
+List archive: https://lists.oasis-open.org/archives/virtio-comment/
+Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
+List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
+Committee: https://www.oasis-open.org/committees/virtio/
+Join OASIS: https://www.oasis-open.org/join/
+
