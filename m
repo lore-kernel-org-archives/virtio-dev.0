@@ -1,189 +1,176 @@
-Return-Path: virtio-comment-return-682-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-comment-return-688-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-comment@lists.oasis-open.org>
 List-Post: <mailto:virtio-comment@lists.oasis-open.org>
 List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
-Date: Mon, 4 Mar 2019 12:46:20 +0000
-From: "Dr. David Alan Gilbert" <dgilbert@redhat.com>
-Message-ID: <20190304124619.GA2596@work-vm>
-References: <20190222115433.7160-1-dgilbert@redhat.com>
- <20190222115433.7160-2-dgilbert@redhat.com>
- <20190222134839.7e0ef3e7.cohuck@redhat.com>
- <20190226151133.GI2721@work-vm>
- <20190226164347.617e80c5.cohuck@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190226164347.617e80c5.cohuck@redhat.com>
-Subject: [virtio-comment] Re: [virtio-dev] Re: [PATCH v2 1/3] shared memory: Define shared
- memory regions
-To: Cornelia Huck <cohuck@redhat.com>
-Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, stefanha@redhat.com
+References: <20190222115433.7160-1-dgilbert@redhat.com>
+In-Reply-To: <20190222115433.7160-1-dgilbert@redhat.com>
+From: Frank Yang <lfy@google.com>
+Date: Tue, 5 Mar 2019 07:47:52 -0800
+Message-ID: <CAEkmjvU5q46v0cvFx31jfjHZuih8hyxF=9f-h8BdALb4k+bzdg@mail.gmail.com>
+Content-Type: multipart/alternative; boundary="0000000000006700e705835accc0"
+Subject: Re: [virtio-comment] [PATCH v2 0/3] Large shared memory regions
+To: "Dr. David Alan Gilbert (git)" <dgilbert@redhat.com>
+Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, Stefan Hajnoczi <stefanha@redhat.com>, Cornelia Huck <cohuck@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-* Cornelia Huck (cohuck@redhat.com) wrote:
-> On Tue, 26 Feb 2019 15:11:34 +0000
-> "Dr. David Alan Gilbert" <dgilbert@redhat.com> wrote:
-> 
-> > * Cornelia Huck (cohuck@redhat.com) wrote:
-> > > On Fri, 22 Feb 2019 11:54:31 +0000
-> > > "Dr. David Alan Gilbert (git)" <dgilbert@redhat.com> wrote:
-> > >   
-> > > > From: "Dr. David Alan Gilbert" <dgilbert@redhat.com>
-> > > > 
-> > > > Define the requirements and idea behind shared memory regions.
-> > > > 
-> > > > Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
-> > > > ---
-> > > >  content.tex    |  2 ++
-> > > >  shared-mem.tex | 33 +++++++++++++++++++++++++++++++++
-> > > >  2 files changed, 35 insertions(+)
-> > > >  create mode 100644 shared-mem.tex
-> > > > 
-> > > > diff --git a/content.tex b/content.tex
-> > > > index 836ee52..3dd504c 100644
-> > > > --- a/content.tex
-> > > > +++ b/content.tex
-> > > > @@ -371,6 +371,8 @@ making any more buffers available. When VIRTIO_F_NOTIFICATION_DATA
-> > > >  has been negotiated, these notifications would then have
-> > > >  identical \field{next_off} and \field{next_wrap} values.
-> > > >  
-> > > > +\input{shared-mem.tex}
-> > > > +
-> > > >  \chapter{General Initialization And Device Operation}\label{sec:General Initialization And Device Operation}
-> > > >  
-> > > >  We start with an overview of device initialization, then expand on the
-> > > > diff --git a/shared-mem.tex b/shared-mem.tex
-> > > > new file mode 100644
-> > > > index 0000000..85b0c55
-> > > > --- /dev/null
-> > > > +++ b/shared-mem.tex
-> > > > @@ -0,0 +1,33 @@
-> > > > +\section{Shared Memory Regions}\label{sec:Basic Facilities of a Virtio Device / Shared Memory Regions}
-> > > > +
-> > > > +Shared memory regions are an additional facility
-> > > > +available to devices that need a region of memory that's
-> > > > +continuously shared between the host and the guest, rather
-> > > > +than passed between them in the way virtqueue elements are.
-> > > > +
-> > > > +Example uses include shared caches and version pools for versioned
-> > > > +data structures.
-> > > > +
-> > > > +The region is chosen by the host and presented to the guest, as
-> > > > +such it is useful in situations where the memory is accessed on
-> > > > +the host by other libraries that can't safely access guest RAM.  
-> > > 
-> > > This explanation looks good to me.
-> > >   
-> > > > +
-> > > > +Shared memory regions MUST NOT be used to control the operation
-> > > > +of the device, nor to stream data; those should still be performed
-> > > > +using virtqueues.  
-> > > 
-> > > The 'MUST NOT' makes it look like a normative statement; however, this
-> > > is more like design advice?  
-> > 
-> > Hmm I'm not sure - the intention of this line is to try and stop people
-> > using it as a hack to avoid standardising protocol for no good reason.
-> 
-> I've looked through the spec again and it seems the best place for this
-> would indeed be a device-normative section for shared regions; it would
-> imply that a device needs to comply with this statement, or it is not
-> conformant.
-> 
-> It would need some tweaking, however. Perhaps something like the
-> following:
-> 
-> "The device MUST NOT expose shared memory regions which are used to
-> control the operation of the device, or to stream data."
+--0000000000006700e705835accc0
+Content-Type: text/plain; charset="UTF-8"
 
-> Not sure where to put the pointer to use virtqueues for that.
+On Fri, Feb 22, 2019 at 3:54 AM Dr. David Alan Gilbert (git) <
+dgilbert@redhat.com> wrote:
 
-Thanks I've turned that into a device normative section and dropped the
-explicit mention of virtqueues.
-
-> 
-> > 
-> > > > +
-> > > > +A device may have multiple shared memory regions associated with
-> > > > +it.  Each region has a \field{shmid} to identify it, the meaning
-> > > > +of which is device-specific.
-> > > > +
-> > > > +Enumeration and location of shared memory regions is performed
-> > > > +using a transport-specific data structure and mechanism.
-> > > > +
-> > > > +Memory consistency rules vary depending on the region and the
-> > > > +device.  Devices MUST define the required behaviour for each
-> > > > +region.  
-> > > 
-> > > Same here.  
-> > 
-> > OK, so should I reword this?
-> 
-> Maybe put into the device normative section:
-> 
-> "A device MUST define the required behaviour for each region."
-> 
-> But I'm not sure whether this is a good normative statement... it's
-> more that the regions have specific requirements, which both the device
-> and the driver need to fulfill, and those requirements obviously need
-> to be put down somewhere.
-> 
-> > 
-> > > > +
-> > > > +The guest physical address and the host virtual address MUST NOT
-> > > > +be used to identify structures within the memory regions; all
-> > > > +addressing MUST be relative to the start of a particular region.
-> > > > +  
-> > > 
-> > > For that high-level overview, I'm not sure if any normative statements
-> > > are needed/wanted, or whether those should be confined to the individual
-> > > transport or device type definitions...  
-> > 
-> > I think this one is stronger than the previous two; if people start
-> > passing GPA/HVA in the underlying structures things are going to get
-> > messy.
-> 
-> What about
-> 
-> "The device MUST handle any access to the memory region as addressed
-> relatively to the beginning of the region, regardless whether it
-> accesses the region itself or the driver does so."
-> 
-> "The driver MUST address any particular region relatively to the start
-> of that region."
-> 
-> for device and driver normative statements, respectively. Better
-> wordings welcome.
-
-What I've done here is turn this into just a subsection describing
-how it should work and stopped using the magic MUST.
-It's not really a requirement on the device - it's more an indication
-of how to design a device.
+> From: "Dr. David Alan Gilbert" <dgilbert@redhat.com>
+>
+> Hi,
+>   This series formalises the idea of shared memory regions I'd
+> previously discussed and is intended for use with virtio-fs.
+>
+> I've split it into three parts:
+>
+>   a) A general definition of the idea
+>
+>   b) A definition on virtio-pci using the layout previously
+> discussed; this still uses the list of capabilities.
+>
+>   c) A definition on virtio-mmio; this is untested
+> however I thought best to include it since it shows that
+> it isn't tied to PCI.
+>
+>
+> This v2 addresses (hopefully all) comments from the initial posting,
+> except for CCW and the GPU/dynamic usage currently being
+> discussed by Frank.  Cornelia has a suggested approach for CCW
+> that is being discussed, so it looks like we're getting there on
+> that.  The GPU usage being discussed by Frank is diverging to a
+> very different usage.
+>
+>
+I've modified the virtio-hostmem stuff to not be dynamic (and posted it);
+I think we can get that kind of usage using your current definitions.
 
 Dave
+>
+> Dr. David Alan Gilbert (3):
+>   shared memory: Define shared memory regions
+>   shared memory: Define PCI capability
+>   shared memory: Define mmio registers
+>
+>  content.tex    | 71 ++++++++++++++++++++++++++++++++++++++++++++++++++
+>  shared-mem.tex | 33 +++++++++++++++++++++++
+>  2 files changed, 104 insertions(+)
+>  create mode 100644 shared-mem.tex
+>
+> --
+> 2.20.1
+>
+>
+> This publicly archived list offers a means to provide input to the
+> OASIS Virtual I/O Device (VIRTIO) TC.
+>
+> In order to verify user consent to the Feedback License terms and
+> to minimize spam in the list archive, subscription is required
+> before posting.
+>
+> Subscribe: virtio-comment-subscribe@lists.oasis-open.org
+> Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
+> List help: virtio-comment-help@lists.oasis-open.org
+> List archive: https://lists.oasis-open.org/archives/virtio-comment/
+> Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
+> List Guidelines:
+> https://www.oasis-open.org/policies-guidelines/mailing-lists
+> Committee: https://www.oasis-open.org/committees/virtio/
+> Join OASIS: https://www.oasis-open.org/join/
+>
+>
 
-> ---------------------------------------------------------------------
-> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
-> 
---
-Dr. David Alan Gilbert / dgilbert@redhat.com / Manchester, UK
+--0000000000006700e705835accc0
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-This publicly archived list offers a means to provide input to the
-OASIS Virtual I/O Device (VIRTIO) TC.
+<div dir=3D"ltr"><div dir=3D"ltr"><br></div><br><div class=3D"gmail_quote">=
+<div dir=3D"ltr" class=3D"gmail_attr">On Fri, Feb 22, 2019 at 3:54 AM Dr. D=
+avid Alan Gilbert (git) &lt;<a href=3D"mailto:dgilbert@redhat.com">dgilbert=
+@redhat.com</a>&gt; wrote:<br></div><blockquote class=3D"gmail_quote" style=
+=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding=
+-left:1ex">From: &quot;Dr. David Alan Gilbert&quot; &lt;<a href=3D"mailto:d=
+gilbert@redhat.com" target=3D"_blank">dgilbert@redhat.com</a>&gt;<br>
+<br>
+Hi,<br>
+=C2=A0 This series formalises the idea of shared memory regions I&#39;d<br>
+previously discussed and is intended for use with virtio-fs.<br>
+<br>
+I&#39;ve split it into three parts:<br>
+<br>
+=C2=A0 a) A general definition of the idea<br>
+<br>
+=C2=A0 b) A definition on virtio-pci using the layout previously<br>
+discussed; this still uses the list of capabilities.<br>
+<br>
+=C2=A0 c) A definition on virtio-mmio; this is untested<br>
+however I thought best to include it since it shows that<br>
+it isn&#39;t tied to PCI.<br>
+<br>
+<br>
+This v2 addresses (hopefully all) comments from the initial posting,<br>
+except for CCW and the GPU/dynamic usage currently being<br>
+discussed by Frank.=C2=A0 Cornelia has a suggested approach for CCW<br>
+that is being discussed, so it looks like we&#39;re getting there on<br>
+that.=C2=A0 The GPU usage being discussed by Frank is diverging to a<br>
+very different usage.<br>
+<br></blockquote><div>=C2=A0</div><div>I&#39;ve modified the virtio-hostmem=
+ stuff to not be dynamic (and posted it);</div><div>I think we can get that=
+ kind of usage using your current definitions.</div><div><br></div><blockqu=
+ote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px=
+ solid rgb(204,204,204);padding-left:1ex">
+Dave<br>
+<br>
+Dr. David Alan Gilbert (3):<br>
+=C2=A0 shared memory: Define shared memory regions<br>
+=C2=A0 shared memory: Define PCI capability<br>
+=C2=A0 shared memory: Define mmio registers<br>
+<br>
+=C2=A0content.tex=C2=A0 =C2=A0 | 71 +++++++++++++++++++++++++++++++++++++++=
++++++++++++<br>
+=C2=A0shared-mem.tex | 33 +++++++++++++++++++++++<br>
+=C2=A02 files changed, 104 insertions(+)<br>
+=C2=A0create mode 100644 shared-mem.tex<br>
+<br>
+-- <br>
+2.20.1<br>
+<br>
+<br>
+This publicly archived list offers a means to provide input to the<br>
+OASIS Virtual I/O Device (VIRTIO) TC.<br>
+<br>
+In order to verify user consent to the Feedback License terms and<br>
+to minimize spam in the list archive, subscription is required<br>
+before posting.<br>
+<br>
+Subscribe: <a href=3D"mailto:virtio-comment-subscribe@lists.oasis-open.org"=
+ target=3D"_blank">virtio-comment-subscribe@lists.oasis-open.org</a><br>
+Unsubscribe: <a href=3D"mailto:virtio-comment-unsubscribe@lists.oasis-open.=
+org" target=3D"_blank">virtio-comment-unsubscribe@lists.oasis-open.org</a><=
+br>
+List help: <a href=3D"mailto:virtio-comment-help@lists.oasis-open.org" targ=
+et=3D"_blank">virtio-comment-help@lists.oasis-open.org</a><br>
+List archive: <a href=3D"https://lists.oasis-open.org/archives/virtio-comme=
+nt/" rel=3D"noreferrer" target=3D"_blank">https://lists.oasis-open.org/arch=
+ives/virtio-comment/</a><br>
+Feedback License: <a href=3D"https://www.oasis-open.org/who/ipr/feedback_li=
+cense.pdf" rel=3D"noreferrer" target=3D"_blank">https://www.oasis-open.org/=
+who/ipr/feedback_license.pdf</a><br>
+List Guidelines: <a href=3D"https://www.oasis-open.org/policies-guidelines/=
+mailing-lists" rel=3D"noreferrer" target=3D"_blank">https://www.oasis-open.=
+org/policies-guidelines/mailing-lists</a><br>
+Committee: <a href=3D"https://www.oasis-open.org/committees/virtio/" rel=3D=
+"noreferrer" target=3D"_blank">https://www.oasis-open.org/committees/virtio=
+/</a><br>
+Join OASIS: <a href=3D"https://www.oasis-open.org/join/" rel=3D"noreferrer"=
+ target=3D"_blank">https://www.oasis-open.org/join/</a><br>
+<br>
+</blockquote></div></div>
 
-In order to verify user consent to the Feedback License terms and
-to minimize spam in the list archive, subscription is required
-before posting.
-
-Subscribe: virtio-comment-subscribe@lists.oasis-open.org
-Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
-List help: virtio-comment-help@lists.oasis-open.org
-List archive: https://lists.oasis-open.org/archives/virtio-comment/
-Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
-List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
-Committee: https://www.oasis-open.org/committees/virtio/
-Join OASIS: https://www.oasis-open.org/join/
-
+--0000000000006700e705835accc0--
