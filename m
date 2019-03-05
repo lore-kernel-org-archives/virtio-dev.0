@@ -1,87 +1,59 @@
-Return-Path: virtio-dev-return-5571-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-5567-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id CC0EF985E5F
-	for <virtio-dev@lists.oasis-open.org>; Wed,  6 Mar 2019 01:59:48 +0000 (UTC)
-Message-ID: <5C7F2AC6.4080602@intel.com>
-Date: Wed, 06 Mar 2019 10:04:54 +0800
-From: Wei Wang <wei.w.wang@intel.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 0E733985E59
+	for <virtio-dev@lists.oasis-open.org>; Tue,  5 Mar 2019 16:12:40 +0000 (UTC)
+From: Stefan Hajnoczi <stefanha@redhat.com>
+Date: Tue,  5 Mar 2019 16:12:34 +0000
+Message-Id: <20190305161236.15402-1-stefanha@redhat.com>
 MIME-Version: 1.0
-References: <1544516693-5395-1-git-send-email-wei.w.wang@intel.com> <1544516693-5395-8-git-send-email-wei.w.wang@intel.com> <20190305145034.GF9811@work-vm>
-In-Reply-To: <20190305145034.GF9811@work-vm>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: [virtio-dev] Re: [Qemu-devel] [PATCH v11 7/7] virtio-balloon: VIRTIO_BALLOON_F_FREE_PAGE_HINT
-To: "Dr. David Alan Gilbert" <dgilbert@redhat.com>
-Cc: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, mst@redhat.com, quintela@redhat.com, peterx@redhat.com, pbonzini@redhat.com, liliang.opensource@gmail.com, nilal@redhat.com, riel@redhat.com
+Content-Transfer-Encoding: 8bit
+Subject: [virtio-dev] [PATCH v4 0/2] virtio-fs: add virtio file system device
+To: virtio-dev@lists.oasis-open.org
+Cc: Vivek Goyal <vgoyal@redhat.com>, Miklos Szeredi <mszeredi@redhat.com>, "Dr. David Alan Gilbert" <dgilbert@redhat.com>, Steven Whitehouse <swhiteho@redhat.com>, Sage Weil <sweil@redhat.com>, Paolo Bonzini <pbonzini@redhat.com>, Stefan Hajnoczi <stefanha@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 03/05/2019 10:50 PM, Dr. David Alan Gilbert wrote:
-> * Wei Wang (wei.w.wang@intel.com) wrote:
->> The new feature enables the virtio-balloon device to receive hints of
->> guest free pages from the free page vq.
->>
->> A notifier is registered to the migration precopy notifier chain. The
->> notifier calls free_page_start after the migration thread syncs the dirty
->> bitmap, so that the free page optimization starts to clear bits of free
->> pages from the bitmap. It calls the free_page_stop before the migration
->> thread syncs the bitmap, which is the end of the current round of ram
->> save. The free_page_stop is also called to stop the optimization in the
->> case when there is an error occurred in the process of ram saving.
->>
->> Note: balloon will report pages which were free at the time of this call.
->> As the reporting happens asynchronously, dirty bit logging must be
->> enabled before this free_page_start call is made. Guest reporting must be
->> disabled before the migration dirty bitmap is synchronized.
->>
->> Signed-off-by: Wei Wang <wei.w.wang@intel.com>
->> CC: Michael S. Tsirkin <mst@redhat.com>
->> CC: Dr. David Alan Gilbert <dgilbert@redhat.com>
->> CC: Juan Quintela <quintela@redhat.com>
->> CC: Peter Xu <peterx@redhat.com>
->> ---
->>   hw/virtio/virtio-balloon.c                      | 263 ++++++++++++++++++++++++
->>   include/hw/virtio/virtio-balloon.h              |  28 ++-
->>   include/standard-headers/linux/virtio_balloon.h |   5 +
->>   3 files changed, 295 insertions(+), 1 deletion(-)
->>
->> diff --git a/hw/virtio/virtio-balloon.c b/hw/virtio/virtio-balloon.c
->> +    if (dev->free_page_report_status == FREE_PAGE_REPORT_S_REQUESTED) {
->> +        config.free_page_report_cmd_id =
->> +                       cpu_to_le32(dev->free_page_report_cmd_id);
->> +    } else if (dev->free_page_report_status == FREE_PAGE_REPORT_S_STOP) {
->> +        config.free_page_report_cmd_id =
->> +                       cpu_to_le32(VIRTIO_BALLOON_FREE_PAGE_REPORT_STOP_ID);
->> +    } else if (dev->free_page_report_status == FREE_PAGE_REPORT_S_DONE) {
->> +        config.free_page_report_cmd_id =
->> +                       cpu_to_le32(VIRTIO_BALLOON_FREE_PAGE_REPORT_DONE_ID);
->> +    }
-> It looks like somewhere in the last 3 months the name in the kernel
-> changed; so I think I've fixed this correctly but please shout if it's
-> wrong:
->
->      if (dev->free_page_report_status == FREE_PAGE_REPORT_S_REQUESTED) {
->          config.free_page_report_cmd_id =
->                         cpu_to_le32(dev->free_page_report_cmd_id);
->      } else if (dev->free_page_report_status == FREE_PAGE_REPORT_S_STOP) {
->          config.free_page_report_cmd_id =
->                         cpu_to_le32(VIRTIO_BALLOON_CMD_ID_STOP);
->      } else if (dev->free_page_report_status == FREE_PAGE_REPORT_S_DONE) {
->          config.free_page_report_cmd_id =
->                         cpu_to_le32(VIRTIO_BALLOON_CMD_ID_DONE);
->      }
->
-> and I've dropped the kernel header update since it's already there.
->
+v4:
+ * Clarify that there are no request ordering guarantees between requests in a
+   single queue [vgoyal]
+ * Add explanation of FUSE session endianness detection [dgilbert]
 
-Looks good. Thanks for the update.
+v3:
+ * Remove notifications virtqueue, it's unimplemented and can be added when
+   needed [Miklos]
+ * Add Security Considerations and Live Migration Considerations sections
+   [Michael]
+v2:
+ * Clean up core virtio file system device spec
+ * Add DAX window
 
-Best,
-Wei
+These patches add the virtio file system device, which is based on Linux FUSE
+but includes the DAX window extension.  Similar to virtio-scsi, which
+transports SCSI commands, virtio-fs transports FUSE requests and the protocol
+documentation is not duplicated here.
+
+The DAX window allows file contents to be accessed directly from shared memory.
+This eliminates copying of data, reduces the number of vmexits, and reduces the
+guest's memory footprint.  It also allows coherent mmap MAP_SHARED semantics
+between guests on the same host.
+
+Stefan Hajnoczi (2):
+  content: add virtio file system device
+  virtio-fs: add DAX window
+
+ content.tex      |   3 +
+ introduction.tex |   3 +
+ virtio-fs.tex    | 226 +++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 232 insertions(+)
+ create mode 100644 virtio-fs.tex
+
+-- 
+2.20.1
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
