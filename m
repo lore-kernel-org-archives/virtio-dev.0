@@ -1,55 +1,312 @@
-Return-Path: virtio-comment-return-697-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio-comment@lists.oasis-open.org>
-List-Post: <mailto:virtio-comment@lists.oasis-open.org>
-List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
-Date: Thu, 7 Mar 2019 16:28:42 +0000
-From: Stefan Hajnoczi <stefanha@redhat.com>
-Message-ID: <20190307162842.GJ2843@stefanha-x1.localdomain>
-References: <20190304132531.10507-1-dgilbert@redhat.com>
- <20190304132531.10507-4-dgilbert@redhat.com>
+Return-Path: virtio-dev-return-5565-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id 19901985E59
+	for <virtio-dev@lists.oasis-open.org>; Tue,  5 Mar 2019 14:50:50 +0000 (UTC)
+Date: Tue, 5 Mar 2019 14:50:35 +0000
+From: "Dr. David Alan Gilbert" <dgilbert@redhat.com>
+Message-ID: <20190305145034.GF9811@work-vm>
+References: <1544516693-5395-1-git-send-email-wei.w.wang@intel.com>
+ <1544516693-5395-8-git-send-email-wei.w.wang@intel.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="HSQ3hISbU3Um6hch"
-Content-Disposition: inline
-In-Reply-To: <20190304132531.10507-4-dgilbert@redhat.com>
-Subject: [virtio-comment] Re: [PATCH v3 3/3] shared memory: Define mmio registers
-To: "Dr. David Alan Gilbert (git)" <dgilbert@redhat.com>
-Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, cohuck@redhat.com, sebastien.boeuf@intel.com
-List-ID: <virtio-dev.lists.oasis-open.org>
-
---HSQ3hISbU3Um6hch
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <1544516693-5395-8-git-send-email-wei.w.wang@intel.com>
+Subject: [virtio-dev] Re: [Qemu-devel] [PATCH v11 7/7] virtio-balloon:
+ VIRTIO_BALLOON_F_FREE_PAGE_HINT
+To: Wei Wang <wei.w.wang@intel.com>
+Cc: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, mst@redhat.com, quintela@redhat.com, peterx@redhat.com, pbonzini@redhat.com, liliang.opensource@gmail.com, nilal@redhat.com, riel@redhat.com
+List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Mon, Mar 04, 2019 at 01:25:31PM +0000, Dr. David Alan Gilbert (git) wrot=
-e:
-> From: "Dr. David Alan Gilbert" <dgilbert@redhat.com>
->=20
-> Define an MMIO interface to discover and map shared
-> memory regions.
->=20
-> Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+* Wei Wang (wei.w.wang@intel.com) wrote:
+> The new feature enables the virtio-balloon device to receive hints of
+> guest free pages from the free page vq.
+> 
+> A notifier is registered to the migration precopy notifier chain. The
+> notifier calls free_page_start after the migration thread syncs the dirty
+> bitmap, so that the free page optimization starts to clear bits of free
+> pages from the bitmap. It calls the free_page_stop before the migration
+> thread syncs the bitmap, which is the end of the current round of ram
+> save. The free_page_stop is also called to stop the optimization in the
+> case when there is an error occurred in the process of ram saving.
+> 
+> Note: balloon will report pages which were free at the time of this call.
+> As the reporting happens asynchronously, dirty bit logging must be
+> enabled before this free_page_start call is made. Guest reporting must be
+> disabled before the migration dirty bitmap is synchronized.
+> 
+> Signed-off-by: Wei Wang <wei.w.wang@intel.com>
+> CC: Michael S. Tsirkin <mst@redhat.com>
+> CC: Dr. David Alan Gilbert <dgilbert@redhat.com>
+> CC: Juan Quintela <quintela@redhat.com>
+> CC: Peter Xu <peterx@redhat.com>
 > ---
->  content.tex | 30 ++++++++++++++++++++++++++++++
->  1 file changed, 30 insertions(+)
+>  hw/virtio/virtio-balloon.c                      | 263 ++++++++++++++++++++++++
+>  include/hw/virtio/virtio-balloon.h              |  28 ++-
+>  include/standard-headers/linux/virtio_balloon.h |   5 +
+>  3 files changed, 295 insertions(+), 1 deletion(-)
+> 
+> diff --git a/hw/virtio/virtio-balloon.c b/hw/virtio/virtio-balloon.c
 
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+> +    if (dev->free_page_report_status == FREE_PAGE_REPORT_S_REQUESTED) {
+> +        config.free_page_report_cmd_id =
+> +                       cpu_to_le32(dev->free_page_report_cmd_id);
+> +    } else if (dev->free_page_report_status == FREE_PAGE_REPORT_S_STOP) {
+> +        config.free_page_report_cmd_id =
+> +                       cpu_to_le32(VIRTIO_BALLOON_FREE_PAGE_REPORT_STOP_ID);
+> +    } else if (dev->free_page_report_status == FREE_PAGE_REPORT_S_DONE) {
+> +        config.free_page_report_cmd_id =
+> +                       cpu_to_le32(VIRTIO_BALLOON_FREE_PAGE_REPORT_DONE_ID);
+> +    }
 
---HSQ3hISbU3Um6hch
-Content-Type: application/pgp-signature; name="signature.asc"
+It looks like somewhere in the last 3 months the name in the kernel
+changed; so I think I've fixed this correctly but please shout if it's
+wrong:
 
------BEGIN PGP SIGNATURE-----
+    if (dev->free_page_report_status == FREE_PAGE_REPORT_S_REQUESTED) {
+        config.free_page_report_cmd_id =
+                       cpu_to_le32(dev->free_page_report_cmd_id);
+    } else if (dev->free_page_report_status == FREE_PAGE_REPORT_S_STOP) {
+        config.free_page_report_cmd_id =
+                       cpu_to_le32(VIRTIO_BALLOON_CMD_ID_STOP);
+    } else if (dev->free_page_report_status == FREE_PAGE_REPORT_S_DONE) {
+        config.free_page_report_cmd_id =
+                       cpu_to_le32(VIRTIO_BALLOON_CMD_ID_DONE);
+    }
 
-iQEcBAEBAgAGBQJcgUa6AAoJEJykq7OBq3PIvP8IAL9cxDxiDnlEa9Yab0NqOaPh
-j7oJpVVS1K/u1s7vGlDn1HbVK1CcRMC8MVDJza9NNC+q5vV2606HctyHUjh/iMwz
-6bVGl4S1MWmPxSHKruU4grByg9KmjhHtPZpjgv/lB7JNy62NbroEjlNNmibF9PPT
-yo5H1BrlWyjmIhYyIjSN9fUfu3Uk/X18SAs2XOlIwD6bR7w78KUkAeHGu0iDu4Wa
-SmldN+xnyxUnwgiXDQBi5TzwN9F8ZVoIJ6ukiTFPaEwlm2oO/VZ/IsDDktYfMr9Q
-7AMqL8nDfCyyZgn/G6SMgrswFIVL3/NlWeOjDOAdhxn0BDyULjcNa0NhyP8imLE=
-=mQC0
------END PGP SIGNATURE-----
+and I've dropped the kernel header update since it's already there.
 
---HSQ3hISbU3Um6hch--
+Dave
+
+> +
+>      trace_virtio_balloon_get_config(config.num_pages, config.actual);
+>      memcpy(config_data, &config, sizeof(struct virtio_balloon_config));
+>  }
+> @@ -376,6 +566,7 @@ static uint64_t virtio_balloon_get_features(VirtIODevice *vdev, uint64_t f,
+>      VirtIOBalloon *dev = VIRTIO_BALLOON(vdev);
+>      f |= dev->host_features;
+>      virtio_add_feature(&f, VIRTIO_BALLOON_F_STATS_VQ);
+> +
+>      return f;
+>  }
+>  
+> @@ -412,6 +603,18 @@ static int virtio_balloon_post_load_device(void *opaque, int version_id)
+>      return 0;
+>  }
+>  
+> +static const VMStateDescription vmstate_virtio_balloon_free_page_report = {
+> +    .name = "virtio-balloon-device/free-page-report",
+> +    .version_id = 1,
+> +    .minimum_version_id = 1,
+> +    .needed = virtio_balloon_free_page_support,
+> +    .fields = (VMStateField[]) {
+> +        VMSTATE_UINT32(free_page_report_cmd_id, VirtIOBalloon),
+> +        VMSTATE_UINT32(free_page_report_status, VirtIOBalloon),
+> +        VMSTATE_END_OF_LIST()
+> +    }
+> +};
+> +
+>  static const VMStateDescription vmstate_virtio_balloon_device = {
+>      .name = "virtio-balloon-device",
+>      .version_id = 1,
+> @@ -422,6 +625,10 @@ static const VMStateDescription vmstate_virtio_balloon_device = {
+>          VMSTATE_UINT32(actual, VirtIOBalloon),
+>          VMSTATE_END_OF_LIST()
+>      },
+> +    .subsections = (const VMStateDescription * []) {
+> +        &vmstate_virtio_balloon_free_page_report,
+> +        NULL
+> +    }
+>  };
+>  
+>  static void virtio_balloon_device_realize(DeviceState *dev, Error **errp)
+> @@ -446,6 +653,29 @@ static void virtio_balloon_device_realize(DeviceState *dev, Error **errp)
+>      s->dvq = virtio_add_queue(vdev, 128, virtio_balloon_handle_output);
+>      s->svq = virtio_add_queue(vdev, 128, virtio_balloon_receive_stats);
+>  
+> +    if (virtio_has_feature(s->host_features,
+> +                           VIRTIO_BALLOON_F_FREE_PAGE_HINT)) {
+> +        s->free_page_vq = virtio_add_queue(vdev, VIRTQUEUE_MAX_SIZE,
+> +                                           virtio_balloon_handle_free_page_vq);
+> +        s->free_page_report_status = FREE_PAGE_REPORT_S_STOP;
+> +        s->free_page_report_cmd_id =
+> +                           VIRTIO_BALLOON_FREE_PAGE_REPORT_CMD_ID_MIN;
+> +        s->free_page_report_notify.notify =
+> +                                       virtio_balloon_free_page_report_notify;
+> +        precopy_add_notifier(&s->free_page_report_notify);
+> +        if (s->iothread) {
+> +            object_ref(OBJECT(s->iothread));
+> +            s->free_page_bh = aio_bh_new(iothread_get_aio_context(s->iothread),
+> +                                       virtio_ballloon_get_free_page_hints, s);
+> +            qemu_mutex_init(&s->free_page_lock);
+> +            qemu_cond_init(&s->free_page_cond);
+> +            s->block_iothread = false;
+> +        } else {
+> +            /* Simply disable this feature if the iothread wasn't created. */
+> +            s->host_features &= ~(1 << VIRTIO_BALLOON_F_FREE_PAGE_HINT);
+> +            virtio_error(vdev, "iothread is missing");
+> +        }
+> +    }
+>      reset_stats(s);
+>  }
+>  
+> @@ -454,6 +684,11 @@ static void virtio_balloon_device_unrealize(DeviceState *dev, Error **errp)
+>      VirtIODevice *vdev = VIRTIO_DEVICE(dev);
+>      VirtIOBalloon *s = VIRTIO_BALLOON(dev);
+>  
+> +    if (virtio_balloon_free_page_support(s)) {
+> +        qemu_bh_delete(s->free_page_bh);
+> +        virtio_balloon_free_page_stop(s);
+> +        precopy_remove_notifier(&s->free_page_report_notify);
+> +    }
+>      balloon_stats_destroy_timer(s);
+>      qemu_remove_balloon_handler(s);
+>      virtio_cleanup(vdev);
+> @@ -463,6 +698,10 @@ static void virtio_balloon_device_reset(VirtIODevice *vdev)
+>  {
+>      VirtIOBalloon *s = VIRTIO_BALLOON(vdev);
+>  
+> +    if (virtio_balloon_free_page_support(s)) {
+> +        virtio_balloon_free_page_stop(s);
+> +    }
+> +
+>      if (s->stats_vq_elem != NULL) {
+>          virtqueue_unpop(s->svq, s->stats_vq_elem, 0);
+>          g_free(s->stats_vq_elem);
+> @@ -480,6 +719,26 @@ static void virtio_balloon_set_status(VirtIODevice *vdev, uint8_t status)
+>           * was stopped */
+>          virtio_balloon_receive_stats(vdev, s->svq);
+>      }
+> +
+> +    if (virtio_balloon_free_page_support(s)) {
+> +        /*
+> +         * The VM is woken up and the iothread was blocked, so signal it to
+> +         * continue.
+> +         */
+> +        if (vdev->vm_running && s->block_iothread) {
+> +            qemu_mutex_lock(&s->free_page_lock);
+> +            s->block_iothread = false;
+> +            qemu_cond_signal(&s->free_page_cond);
+> +            qemu_mutex_unlock(&s->free_page_lock);
+> +        }
+> +
+> +        /* The VM is stopped, block the iothread. */
+> +        if (!vdev->vm_running) {
+> +            qemu_mutex_lock(&s->free_page_lock);
+> +            s->block_iothread = true;
+> +            qemu_mutex_unlock(&s->free_page_lock);
+> +        }
+> +    }
+>  }
+>  
+>  static void virtio_balloon_instance_init(Object *obj)
+> @@ -508,6 +767,10 @@ static const VMStateDescription vmstate_virtio_balloon = {
+>  static Property virtio_balloon_properties[] = {
+>      DEFINE_PROP_BIT("deflate-on-oom", VirtIOBalloon, host_features,
+>                      VIRTIO_BALLOON_F_DEFLATE_ON_OOM, false),
+> +    DEFINE_PROP_BIT("free-page-hint", VirtIOBalloon, host_features,
+> +                    VIRTIO_BALLOON_F_FREE_PAGE_HINT, false),
+> +    DEFINE_PROP_LINK("iothread", VirtIOBalloon, iothread, TYPE_IOTHREAD,
+> +                     IOThread *),
+>      DEFINE_PROP_END_OF_LIST(),
+>  };
+>  
+> diff --git a/include/hw/virtio/virtio-balloon.h b/include/hw/virtio/virtio-balloon.h
+> index e0df352..503349a 100644
+> --- a/include/hw/virtio/virtio-balloon.h
+> +++ b/include/hw/virtio/virtio-balloon.h
+> @@ -17,11 +17,14 @@
+>  
+>  #include "standard-headers/linux/virtio_balloon.h"
+>  #include "hw/virtio/virtio.h"
+> +#include "sysemu/iothread.h"
+>  
+>  #define TYPE_VIRTIO_BALLOON "virtio-balloon-device"
+>  #define VIRTIO_BALLOON(obj) \
+>          OBJECT_CHECK(VirtIOBalloon, (obj), TYPE_VIRTIO_BALLOON)
+>  
+> +#define VIRTIO_BALLOON_FREE_PAGE_REPORT_CMD_ID_MIN 0x80000000
+> +
+>  typedef struct virtio_balloon_stat VirtIOBalloonStat;
+>  
+>  typedef struct virtio_balloon_stat_modern {
+> @@ -30,15 +33,38 @@ typedef struct virtio_balloon_stat_modern {
+>         uint64_t val;
+>  } VirtIOBalloonStatModern;
+>  
+> +enum virtio_balloon_free_page_report_status {
+> +    FREE_PAGE_REPORT_S_STOP = 0,
+> +    FREE_PAGE_REPORT_S_REQUESTED = 1,
+> +    FREE_PAGE_REPORT_S_START = 2,
+> +    FREE_PAGE_REPORT_S_DONE = 3,
+> +};
+> +
+>  typedef struct VirtIOBalloon {
+>      VirtIODevice parent_obj;
+> -    VirtQueue *ivq, *dvq, *svq;
+> +    VirtQueue *ivq, *dvq, *svq, *free_page_vq;
+> +    uint32_t free_page_report_status;
+>      uint32_t num_pages;
+>      uint32_t actual;
+> +    uint32_t free_page_report_cmd_id;
+>      uint64_t stats[VIRTIO_BALLOON_S_NR];
+>      VirtQueueElement *stats_vq_elem;
+>      size_t stats_vq_offset;
+>      QEMUTimer *stats_timer;
+> +    IOThread *iothread;
+> +    QEMUBH *free_page_bh;
+> +    /*
+> +     * Lock to synchronize threads to access the free page reporting related
+> +     * fields (e.g. free_page_report_status).
+> +     */
+> +    QemuMutex free_page_lock;
+> +    QemuCond  free_page_cond;
+> +    /*
+> +     * Set to block iothread to continue reading free page hints as the VM is
+> +     * stopped.
+> +     */
+> +    bool block_iothread;
+> +    NotifierWithReturn free_page_report_notify;
+>      int64_t stats_last_update;
+>      int64_t stats_poll_interval;
+>      uint32_t host_features;
+> diff --git a/include/standard-headers/linux/virtio_balloon.h b/include/standard-headers/linux/virtio_balloon.h
+> index 4dbb7dc..9eee1c6 100644
+> --- a/include/standard-headers/linux/virtio_balloon.h
+> +++ b/include/standard-headers/linux/virtio_balloon.h
+> @@ -34,15 +34,20 @@
+>  #define VIRTIO_BALLOON_F_MUST_TELL_HOST	0 /* Tell before reclaiming pages */
+>  #define VIRTIO_BALLOON_F_STATS_VQ	1 /* Memory Stats virtqueue */
+>  #define VIRTIO_BALLOON_F_DEFLATE_ON_OOM	2 /* Deflate balloon on OOM */
+> +#define VIRTIO_BALLOON_F_FREE_PAGE_HINT 3 /* VQ to report free pages */
+>  
+>  /* Size of a PFN in the balloon interface. */
+>  #define VIRTIO_BALLOON_PFN_SHIFT 12
+>  
+> +#define VIRTIO_BALLOON_FREE_PAGE_REPORT_STOP_ID 0
+> +#define VIRTIO_BALLOON_FREE_PAGE_REPORT_DONE_ID 1
+>  struct virtio_balloon_config {
+>  	/* Number of pages host wants Guest to give up. */
+>  	uint32_t num_pages;
+>  	/* Number of pages we've actually got in balloon. */
+>  	uint32_t actual;
+> +	/* Free page report command id, readonly by guest */
+> +	uint32_t free_page_report_cmd_id;
+>  };
+>  
+>  #define VIRTIO_BALLOON_S_SWAP_IN  0   /* Amount of memory swapped in */
+> -- 
+> 1.8.3.1
+> 
+> 
+--
+Dr. David Alan Gilbert / dgilbert@redhat.com / Manchester, UK
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+
