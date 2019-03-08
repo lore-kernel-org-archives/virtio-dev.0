@@ -1,88 +1,48 @@
-Return-Path: virtio-return-3269-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-return-3259-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio@lists.oasis-open.org>
 List-Post: <mailto:virtio@lists.oasis-open.org>
 List-Help: <mailto:virtio-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Mon, 11 Mar 2019 11:52:54 -0400
+Date: Fri, 8 Mar 2019 09:11:23 -0500
 From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20190311115240-mutt-send-email-mst@kernel.org>
-References: <20190311150945.28622-1-mst@redhat.com>
+Message-ID: <20190308141120.19066-1-mst@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190311150945.28622-1-mst@redhat.com>
-Subject: [virtio] Re: [PATCH v2] conformance: clarify transitional/non-transitional
+Subject: [virtio] [PATCH] conformance: add links to crypto and input devices
 To: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Mon, Mar 11, 2019 at 11:10:32AM -0400, Michael S. Tsirkin wrote:
-> Clarify that:
-> - non-transitional just satisfy 3 main clauses
-> - transitional also has a legacy interface:
->   however note that it's not an optional component
->   *for transitional devices* so MAY is inappropriate
-> - legacy device descriptions are non-normative.
->   In fact virtio 0.9 is non-normative as a whole
->   and always was by design: it was early days and
->   spec evolved to document bugs in implementations.
-> 
-> VIRTIO-167
-> 
-> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+VIRTIO-174
 
-oops sent too soon. sorry will resend. pls ignore.
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+---
+ conformance.tex | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-> ---
-> 
-> Changes from v1:
-> 
-> Accept all changes proposed by Cornelia Huck <cohuck@redhat.com>
-> 
->  conformance.tex | 26 ++++++++++++++++++--------
->  1 file changed, 18 insertions(+), 8 deletions(-)
-> 
-> diff --git a/conformance.tex b/conformance.tex
-> index 1577c0c..518b9c7 100644
-> --- a/conformance.tex
-> +++ b/conformance.tex
-> @@ -344,16 +344,26 @@ Interface: Terminology}.
->  
->  A non-transitional implementation conforms to this specification
->  if it satisfies all of the MUST or REQUIRED level requirements
-> -defined above.
-> +defined in section \ref{sec:Conformance / Conformance Targets} above.
->  
-> -An implementation MAY choose to implement OPTIONAL support for the
-> -legacy interface, including support for legacy drivers
-> -or devices, by additionally conforming to all of the MUST or
-> -REQUIRED level requirements for the legacy interface
-> -for the transitional devices and drivers.
-> +A transitional implementation conforms to this specification
-> +if it satisfies all of the MUST or REQUIRED level requirements
-> +defined in section \ref{sec:Conformance / Conformance Targets} above
-> +and additionally implements the legacy interface
-> +for the transitional devices and drivers, described in
-> +\hyperref[intro:Virtio PCI Draft]{[Virtio PCI Draft]}.
->  
-> -The requirements for the legacy interface for transitional implementations
-> -are located in sections named ``Legacy Interface'' listed below:
-> +\begin{note}
-> +No normative specification for the legacy interface exists,
-> +instead device and driver's ability to interoperate with
-> +the existing body of installed devices and drivers is a quality
-> +of implementation issue.
-> +\begin{note}
-> +
-> +To facilitate creating transitional implementations, as well as
-> +assist in converting legacy interfaces to conforming ones,
-> +the requirements for the legacy interface for transitional implementations
-> +are located in non-normative sections named ``Legacy Interface'' listed below:
->  \begin{itemize}
->  \item Section \ref{sec:Basic Facilities of a Virtio Device /
->  Feature Bits / Legacy Interface: A Note on Feature Bits}
-> -- 
-> MST
+diff --git a/conformance.tex b/conformance.tex
+index ad7e82e..1577c0c 100644
+--- a/conformance.tex
++++ b/conformance.tex
+@@ -15,13 +15,13 @@ Conformance targets:
+   \begin{itemize}
+     \item Clause \ref{sec:Conformance / Driver Conformance},
+     \item One of clauses \ref{sec:Conformance / Driver Conformance / PCI Driver Conformance}, \ref{sec:Conformance / Driver Conformance / MMIO Driver Conformance} or \ref{sec:Conformance / Driver Conformance / Channel I/O Driver Conformance}.
+-    \item One of clauses \ref{sec:Conformance / Driver Conformance / Network Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Block Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Console Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Entropy Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Traditional Memory Balloon Driver Conformance}, \ref{sec:Conformance / Driver Conformance / SCSI Host Driver Conformance}, or \ref{sec:Conformance / Driver Conformance / Socket Driver Conformance}.
++    \item One of clauses \ref{sec:Conformance / Driver Conformance / Network Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Block Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Console Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Entropy Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Traditional Memory Balloon Driver Conformance}, \ref{sec:Conformance / Driver Conformance / SCSI Host Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Input Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Crypto Driver Conformance} or \ref{sec:Conformance / Driver Conformance / Socket Driver Conformance}.
+   \end{itemize}
+ \item[Device] A device MUST conform to three conformance clauses:
+   \begin{itemize}
+     \item Clause \ref{sec:Conformance / Device Conformance},
+     \item One of clauses \ref{sec:Conformance / Device Conformance / PCI Device Conformance}, \ref{sec:Conformance / Device Conformance / MMIO Device Conformance} or \ref{sec:Conformance / Device Conformance / Channel I/O Device Conformance}.
+-    \item One of clauses \ref{sec:Conformance / Device Conformance / Network Device Conformance}, \ref{sec:Conformance / Device Conformance / Block Device Conformance}, \ref{sec:Conformance / Device Conformance / Console Device Conformance}, \ref{sec:Conformance / Device Conformance / Entropy Device Conformance}, \ref{sec:Conformance / Device Conformance / Traditional Memory Balloon Device Conformance}, \ref{sec:Conformance / Device Conformance / SCSI Host Device Conformance}, or \ref{sec:Conformance / Device Conformance / Socket Device Conformance}.
++    \item One of clauses \ref{sec:Conformance / Device Conformance / Network Device Conformance}, \ref{sec:Conformance / Device Conformance / Block Device Conformance}, \ref{sec:Conformance / Device Conformance / Console Device Conformance}, \ref{sec:Conformance / Device Conformance / Entropy Device Conformance}, \ref{sec:Conformance / Device Conformance / Traditional Memory Balloon Device Conformance}, \ref{sec:Conformance / Device Conformance / SCSI Host Device Conformance}, \ref{sec:Conformance / Device Conformance / Input Device Conformance}, \ref{sec:Conformance / Device Conformance / Crypto Device Conformance} or \ref{sec:Conformance / Device Conformance / Socket Device Conformance}.
+   \end{itemize}
+ \end{description}
+ 
+-- 
+MST
 
 ---------------------------------------------------------------------
 To unsubscribe from this mail list, you must leave the OASIS TC that 
