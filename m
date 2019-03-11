@@ -1,61 +1,69 @@
-Return-Path: virtio-return-3307-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-return-3284-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio@lists.oasis-open.org>
 List-Post: <mailto:virtio@lists.oasis-open.org>
 List-Help: <mailto:virtio-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Wed, 13 Mar 2019 15:49:36 +0000
-From: Stefan Hajnoczi <stefanha@redhat.com>
-Message-ID: <20190313154936.GJ22919@stefanha-x1.localdomain>
-References: <20190311181809.7970-1-mst@redhat.com>
+Date: Mon, 11 Mar 2019 15:06:38 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20190311190545.10816-1-mst@redhat.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="sdJFN6SSISdF2ksn"
-Content-Disposition: inline
-In-Reply-To: <20190311181809.7970-1-mst@redhat.com>
-Subject: [virtio] Re: [virtio-dev] [PATCH v2] signal start and end of structures
- consistently
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
-List-ID: <virtio-dev.lists.oasis-open.org>
-
---sdJFN6SSISdF2ksn
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Subject: [virtio] [PATCH] editorial: upgrade links to https
+To: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Mon, Mar 11, 2019 at 02:18:48PM -0400, Michael S. Tsirkin wrote:
-> Make sure all structs have the format:
->=20
-> struct X {
-> ...
-> };
->=20
-> VIRTIO-170
->=20
-> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> ---
-> Changes since v1:
-> 	no text changes, fix typo in commit log reported by Cornelia
->=20
->  content.tex    | 11 +++++------
->  virtio-gpu.tex |  2 +-
->  2 files changed, 6 insertions(+), 7 deletions(-)
+Several links have been upgraded and now redirect to the https
+version. Upgrade our version accordingly.
 
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+Note that some other links use the status 301 - moved permanently
+apparently in error (e.g. for a language specific redirect), not
+updating these.
 
---sdJFN6SSISdF2ksn
-Content-Type: application/pgp-signature; name="signature.asc"
+VIRTIO-173
 
------BEGIN PGP SIGNATURE-----
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+---
+ title.tex      | 6 +++---
+ virtio-gpu.tex | 2 +-
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
-iQEcBAEBAgAGBQJciSaQAAoJEJykq7OBq3PItG0H/0qPxMvih+niZUc5pCOWGsGm
-fsdHSs20eICQsYDdNmCIsnKbdDxaPqkmLDyc/Sb+ZOaBB0DSB8DcMpE7OK57aR2z
-W4jM2gr9KoaXQh5OVIJra6XJ24ItqWfLx1WAc6p2Xs2QelCFiuYQMwTpFxrVXXN8
-0Ogy6ItAoh5ihVsyh0qbVJ1rhQWawaU8wPMX3Jt8jPR07SrfkVNr+5kxS7qZfZ7H
-lhi6M7Tt8p+KLVGctx0D+Ul9f62V+NaOHZwhlk9GFe5tv52AiMyXwuv5Tp5prnT3
-3YQ3V5H9/uj4ThYEDxzzM687M1Y9VmoqfaEPuzp0tjA/EDRR2wSOmvreLbofIGE=
-=Bekk
------END PGP SIGNATURE-----
+diff --git a/title.tex b/title.tex
+index 5b42e76..180b21f 100644
+--- a/title.tex
++++ b/title.tex
+@@ -33,12 +33,12 @@ N/A
+ \end{oasistitlesection}
+ 
+ \begin{oasistitlesection}{Chair}
+-Michael S. Tsirkin (\href{mailto:mst@redhat.com}{mst@redhat.com}), \href{http://www.redhat.com/}{Red Hat}\newline
++Michael S. Tsirkin (\href{mailto:mst@redhat.com}{mst@redhat.com}), \href{https://www.redhat.com/}{Red Hat}\newline
+ \end{oasistitlesection}
+ 
+ \begin{oasistitlesection}{Editors}
+-Michael S. Tsirkin (\href{mailto:mst@redhat.com}{mst@redhat.com}), \href{http://www.redhat.com/}{Red Hat}\newline
+-Cornelia Huck (\href{mailto:cohuck@redhat.com}{cohuck@redhat.com}), \href{http://www.redhat.com/}{Red Hat}\newline
++Michael S. Tsirkin (\href{mailto:mst@redhat.com}{mst@redhat.com}), \href{https://www.redhat.com/}{Red Hat}\newline
++Cornelia Huck (\href{mailto:cohuck@redhat.com}{cohuck@redhat.com}), \href{https://www.redhat.com/}{Red Hat}\newline
+ \end{oasistitlesection}
+ 
+ 
+diff --git a/virtio-gpu.tex b/virtio-gpu.tex
+index 8687231..af4ca61 100644
+--- a/virtio-gpu.tex
++++ b/virtio-gpu.tex
+@@ -515,4 +515,4 @@ into vga compatibility mode.
+ 
+ Note: qemu implementation also provides bochs dispi interface io ports
+ and mmio bar at pci region 1 and is therefore fully compatible with
+-the qemu stdvga (see \href{http://git.qemu-project.org/?p=qemu.git;a=blob;f=docs/specs/standard-vga.txt;hb=HEAD}{docs/specs/standard-vga.txt} in the qemu source tree).
++the qemu stdvga (see \href{https://git.qemu-project.org/?p=qemu.git;a=blob;f=docs/specs/standard-vga.txt;hb=HEAD}{docs/specs/standard-vga.txt} in the qemu source tree).
+-- 
+MST
 
---sdJFN6SSISdF2ksn--
+---------------------------------------------------------------------
+To unsubscribe from this mail list, you must leave the OASIS TC that 
+generates this mail.  Follow this link to all your TCs in OASIS at:
+https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
+
