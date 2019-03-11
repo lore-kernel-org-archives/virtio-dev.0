@@ -1,58 +1,47 @@
-Return-Path: virtio-return-3306-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-return-3283-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio@lists.oasis-open.org>
 List-Post: <mailto:virtio@lists.oasis-open.org>
 List-Help: <mailto:virtio-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Wed, 13 Mar 2019 15:46:29 +0000
-From: Stefan Hajnoczi <stefanha@redhat.com>
-Message-ID: <20190313154629.GH22919@stefanha-x1.localdomain>
-References: <20190311190545.10816-1-mst@redhat.com>
+Date: Mon, 11 Mar 2019 14:44:58 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20190311184457.9805-1-mst@redhat.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="nOM8ykUjac0mNN89"
-Content-Disposition: inline
-In-Reply-To: <20190311190545.10816-1-mst@redhat.com>
-Subject: Re: [virtio] [PATCH] editorial: upgrade links to https
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
-List-ID: <virtio-dev.lists.oasis-open.org>
-
---nOM8ykUjac0mNN89
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Subject: [virtio] [PATCH] introduction: update link to IEEE 802
+To: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Mon, Mar 11, 2019 at 03:06:38PM -0400, Michael S. Tsirkin wrote:
-> Several links have been upgraded and now redirect to the https
-> version. Upgrade our version accordingly.
->=20
-> Note that some other links use the status 301 - moved permanently
-> apparently in error (e.g. for a language specific redirect), not
-> updating these.
->=20
-> VIRTIO-173
->=20
-> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> ---
->  title.tex      | 6 +++---
->  virtio-gpu.tex | 2 +-
->  2 files changed, 4 insertions(+), 4 deletions(-)
+Looks like all GETIEEE links got broken.
+Let's just point to their main page.
 
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+VIRTIO-175
 
---nOM8ykUjac0mNN89
-Content-Type: application/pgp-signature; name="signature.asc"
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+---
+ introduction.tex | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
------BEGIN PGP SIGNATURE-----
+diff --git a/introduction.tex b/introduction.tex
+index c5ccd89..f073898 100644
+--- a/introduction.tex
++++ b/introduction.tex
+@@ -52,7 +52,7 @@ Levels'', BCP 14, RFC 2119, March 1997. \newline\url{http://www.ietf.org/rfc/rfc
+ 	PCI-SIG\\
+ 	\phantomsection\label{intro:IEEE 802}\textbf{[IEEE 802]} &
+ 	IEEE Standard for Local and Metropolitan Area Networks: Overview and Architecture,
+-	\newline\url{http://standards.ieee.org/about/get/802/802.html},
++	\newline\url{http://www.ieee802.org/},
+ 	IEEE\\
+ 	\phantomsection\label{intro:SAM}\textbf{[SAM]} &
+         SCSI Architectural Model,
+-- 
+MST
 
-iQEcBAEBAgAGBQJciSXVAAoJEJykq7OBq3PIqZoIAJaXJ9LcJsWpYiHTnPO+Uhw2
-LloajdhXVtZXcpN3qC7b4FZBzuey1P5y+47hJGqzyw1I5CAmls4sBGniY6DNaCL5
-TySI4caTRUuHvTRV13Tk3k6SK5izrk+/5SR/x/GiH4Y7RBlxYbecii8SejhgQVf1
-OIScrMzjHYwnZMG4T7jpuvNkBZM4s7TbRMoZpgLhPP0mnsz0osrynCdJ3x0rZzVa
-zKcyQYPjVwusS8lFOi3RMTJQGeofdzl7sl+7gtLs2yt8FLNPW5ly1/0hg16E0cot
-GSML91W38whFcBwh/rHNpbA+vvQ5HxL2kD469BLReujrmloOJBn7F6si3wDHKLY=
-=bNqv
------END PGP SIGNATURE-----
+---------------------------------------------------------------------
+To unsubscribe from this mail list, you must leave the OASIS TC that 
+generates this mail.  Follow this link to all your TCs in OASIS at:
+https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
 
---nOM8ykUjac0mNN89--
