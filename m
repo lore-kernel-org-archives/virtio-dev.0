@@ -1,85 +1,80 @@
-Return-Path: virtio-dev-return-5600-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 170AA985E40
-	for <virtio-dev@lists.oasis-open.org>; Tue, 12 Mar 2019 10:11:11 +0000 (UTC)
-From: Wei Wang <wei.w.wang@intel.com>
-Date: Tue, 12 Mar 2019 17:34:40 +0800
-Message-Id: <1552383280-4122-1-git-send-email-wei.w.wang@intel.com>
-Subject: [virtio-dev] [PATCH] virtio-balloon: fix a use-after-free case
-To: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, mst@redhat.com, quintela@redhat.com, dgilbert@redhat.com, peterx@redhat.com
-Cc: peter.maydell@linaro.org
+Return-Path: virtio-return-3263-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio@lists.oasis-open.org>
+List-Post: <mailto:virtio@lists.oasis-open.org>
+List-Help: <mailto:virtio-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
+Date: Mon, 11 Mar 2019 09:20:49 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20190311132045.25232-1-mst@redhat.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Subject: [virtio] [PATCH] conformance: clarify transitional/non-transitional
+To: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-The elem could theorically contain both outbuf and inbufs. We move the
-free operation to the end of this function to avoid using elem->in_sg
-while elem has been freed.
+Clarify that:
+- non-transitional just satisfy 3 main clauses
+- transitional also has a legacy interface:
+  however note that it's not an optional component
+  *for transitional devices* so MAY is inappropriate
+- legacy device descriptions are non-normative.
+  In fact virtio 0.9 is non-normative as a whole
+  and always was by design: it was early days and
+  spec evolved to document bugs in implementations.
 
-Fixes: c13c4153f7
-("virtio-balloon: VIRTIO_BALLOON_F_FREE_PAGE_HINT")
-Reported-by: Peter Maydell <peter.maydell@linaro.org>
-Signed-off-by: Wei Wang <wei.w.wang@intel.com>
-CC: Michael S. Tsirkin <mst@redhat.com>
-CC: Dr. David Alan Gilbert <dgilbert@redhat.com>
-CC: Juan Quintela <quintela@redhat.com>
-CC: Peter Xu <peterx@redhat.com>
+VIRTIO-167
+
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 ---
- hw/virtio/virtio-balloon.c | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+ conformance.tex | 26 ++++++++++++++++++--------
+ 1 file changed, 18 insertions(+), 8 deletions(-)
 
-diff --git a/hw/virtio/virtio-balloon.c b/hw/virtio/virtio-balloon.c
-index e3a6594..b614552 100644
---- a/hw/virtio/virtio-balloon.c
-+++ b/hw/virtio/virtio-balloon.c
-@@ -391,6 +391,7 @@ static bool get_free_page_hints(VirtIOBalloon *dev)
-     VirtQueueElement *elem;
-     VirtIODevice *vdev = VIRTIO_DEVICE(dev);
-     VirtQueue *vq = dev->free_page_vq;
-+    bool ret = true;
+diff --git a/conformance.tex b/conformance.tex
+index 1577c0c..518b9c7 100644
+--- a/conformance.tex
++++ b/conformance.tex
+@@ -344,16 +344,26 @@ Interface: Terminology}.
  
-     while (dev->block_iothread) {
-         qemu_cond_wait(&dev->free_page_cond, &dev->free_page_lock);
-@@ -405,13 +406,12 @@ static bool get_free_page_hints(VirtIOBalloon *dev)
-         uint32_t id;
-         size_t size = iov_to_buf(elem->out_sg, elem->out_num, 0,
-                                  &id, sizeof(id));
--        virtqueue_push(vq, elem, size);
--        g_free(elem);
+ A non-transitional implementation conforms to this specification
+ if it satisfies all of the MUST or REQUIRED level requirements
+-defined above.
++defined in section \ref{sec:Conformance / Conformance Targets} above.
  
-         virtio_tswap32s(vdev, &id);
-         if (unlikely(size != sizeof(id))) {
-             virtio_error(vdev, "received an incorrect cmd id");
--            return false;
-+            ret = false;
-+            goto out;
-         }
-         if (id == dev->free_page_report_cmd_id) {
-             dev->free_page_report_status = FREE_PAGE_REPORT_S_START;
-@@ -431,11 +431,12 @@ static bool get_free_page_hints(VirtIOBalloon *dev)
-             qemu_guest_free_page_hint(elem->in_sg[0].iov_base,
-                                       elem->in_sg[0].iov_len);
-         }
--        virtqueue_push(vq, elem, 1);
--        g_free(elem);
-     }
+-An implementation MAY choose to implement OPTIONAL support for the
+-legacy interface, including support for legacy drivers
+-or devices, by additionally conforming to all of the MUST or
+-REQUIRED level requirements for the legacy interface
+-for the transitional devices and drivers.
++A transitional implementation conforms to this specification
++if it satisfies all of the MUST or REQUIRED level requirements
++defined in section \ref{sec:Conformance / Conformance Targets} above
++and additionally implements the legacy interface
++for the transitional devices and drivers, described in
++\hyperref[intro:Virtio PCI Draft]{[Virtio PCI Draft]}.
  
--    return true;
-+out:
-+    virtqueue_push(vq, elem, 1);
-+    g_free(elem);
-+    return ret;
- }
- 
- static void virtio_ballloon_get_free_page_hints(void *opaque)
+-The requirements for the legacy interface for transitional implementations
+-are located in sections named ``Legacy Interface'' listed below:
++\begin{note}
++No normative specification for the legacy interface exists,
++instead device and driver's ability to interoperate with
++the existing body of installed devices and drivers is a quality
++of implementation issue.
++\begin{note}
++
++To facilitate creating transitional implementations, as well as
++assist in converting legacy interfaces to conforming ones,
++the requirements for the legacy interface for transitional implementations
++are located in non-normative sections named ``Legacy Interface'' listed below:
+ \begin{itemize}
+ \item Section \ref{sec:Basic Facilities of a Virtio Device /
+ Feature Bits / Legacy Interface: A Note on Feature Bits}
 -- 
-1.8.3.1
-
+MST
 
 ---------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+To unsubscribe from this mail list, you must leave the OASIS TC that 
+generates this mail.  Follow this link to all your TCs in OASIS at:
+https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
 
