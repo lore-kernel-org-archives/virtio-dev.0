@@ -1,63 +1,101 @@
-Return-Path: virtio-return-3274-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-return-3268-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio@lists.oasis-open.org>
 List-Post: <mailto:virtio@lists.oasis-open.org>
 List-Help: <mailto:virtio-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Mon, 11 Mar 2019 16:07:59 +0000
-From: Stefan Hajnoczi <stefanha@redhat.com>
-Message-ID: <20190311160759.GB4315@stefanha-x1.localdomain>
-References: <20190311132045.25232-1-mst@redhat.com>
+Date: Mon, 11 Mar 2019 11:50:00 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20190311154950.29507-1-mst@redhat.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="kXdP64Ggrk/fb43R"
-Content-Disposition: inline
-In-Reply-To: <20190311132045.25232-1-mst@redhat.com>
-Subject: Re: [virtio] [PATCH] conformance: clarify
- transitional/non-transitional
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
-List-ID: <virtio-dev.lists.oasis-open.org>
-
---kXdP64Ggrk/fb43R
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Subject: [virtio] [PATCH] signal start and end of structures consistently
+To: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Mon, Mar 11, 2019 at 09:20:49AM -0400, Michael S. Tsirkin wrote:
-> Clarify that:
-> - non-transitional just satisfy 3 main clauses
-> - transitional also has a legacy interface:
->   however note that it's not an optional component
->   *for transitional devices* so MAY is inappropriate
-> - legacy device descriptions are non-normative.
->   In fact virtio 0.9 is non-normative as a whole
->   and always was by design: it was early days and
->   spec evolved to document bugs in implementations.
->=20
-> VIRTIO-167
->=20
-> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> ---
->  conformance.tex | 26 ++++++++++++++++++--------
->  1 file changed, 18 insertions(+), 8 deletions(-)
+Make sure all structs have the format:
 
-Aside from the \end{note} issue Cornelia mentioned:
+struct X [
+...
+];
 
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+VIRTIO-170
 
---kXdP64Ggrk/fb43R
-Content-Type: application/pgp-signature; name="signature.asc"
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+---
+ content.tex    | 11 +++++------
+ virtio-gpu.tex |  2 +-
+ 2 files changed, 6 insertions(+), 7 deletions(-)
 
------BEGIN PGP SIGNATURE-----
+diff --git a/content.tex b/content.tex
+index 4180296..f40d4fc 100644
+--- a/content.tex
++++ b/content.tex
+@@ -5272,8 +5272,7 @@ The following commands are defined:
+ #define VIRTIO_SCSI_T_TMF_QUERY_TASK           6
+ #define VIRTIO_SCSI_T_TMF_QUERY_TASK_SET       7
+ 
+-struct virtio_scsi_ctrl_tmf
+-{
++struct virtio_scsi_ctrl_tmf {
+         // Device-readable part
+         le32 type;
+         le32 subtype;
+@@ -5281,7 +5280,7 @@ struct virtio_scsi_ctrl_tmf
+         le64 id;
+         // Device-writable part
+         u8   response;
+-}
++};
+ 
+ /* command-specific response values */
+ #define VIRTIO_SCSI_S_FUNCTION_COMPLETE        0
+@@ -5328,7 +5327,7 @@ struct virtio_scsi_ctrl_an {
+     // Device-writable part
+     le32 event_actual;
+     u8   response;
+-}
++};
+ 
+ #define VIRTIO_SCSI_EVT_ASYNC_OPERATIONAL_CHANGE  2
+ #define VIRTIO_SCSI_EVT_ASYNC_POWER_MGMT          4
+@@ -5363,7 +5362,7 @@ struct virtio_scsi_ctrl_an {
+         // Device-writable part
+         le32 event_actual;
+         u8   response;
+-}
++};
+ \end{lstlisting}
+ 
+   By sending this command, the driver asks the specified LUN to
+@@ -5415,7 +5414,7 @@ struct virtio_scsi_event {
+         le32 event;
+         u8  lun[8];
+         le32 reason;
+-}
++};
+ \end{lstlisting}
+ 
+ The devices sets bit 31 in \field{event} to report lost events
+diff --git a/virtio-gpu.tex b/virtio-gpu.tex
+index 0cf2209..992d4e6 100644
+--- a/virtio-gpu.tex
++++ b/virtio-gpu.tex
+@@ -47,7 +47,7 @@ struct virtio_gpu_config {
+         le32 events_clear;
+         le32 num_scanouts;
+         le32 reserved;
+-}
++};
+ \end{lstlisting}
+ 
+ \subsubsection{Device configuration fields}
+-- 
+MST
 
-iQEcBAEBAgAGBQJchoffAAoJEJykq7OBq3PI4N4H/A63ZE7+YNkPpO5VZnB+8NmV
-K5RokGp0xk5B0ou9gStsR6jeJpWo4NdTDknCA8CqTywA41q3bJvgdwz+KFuoqiPF
-wnh5guMa2oI6Om+ZeYA7wMmx+p7To9Fk3cM6+bf0SDPa9JNRaj676O9wR7/0Lcfp
-IQqwjD9QdFL/KxZ/+b0KVinrPPqomT56VSLJeoZw3ZMHo+vhvS8QJLxwdyx7A0+4
-kIOmcd0TdWhNfD8gi9PhDR1Tg8qLKK2q0FN4NrHnJl+T7pqVqdSrJa1npEASREd/
-h0ycD8ezF3g9OAIMJoWJKuaWU6ynDxCRMXiGkt2sWGr2R90SbjeaJbWu2nXmU/c=
-=f+NA
------END PGP SIGNATURE-----
+---------------------------------------------------------------------
+To unsubscribe from this mail list, you must leave the OASIS TC that 
+generates this mail.  Follow this link to all your TCs in OASIS at:
+https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
 
---kXdP64Ggrk/fb43R--
