@@ -1,163 +1,101 @@
-Return-Path: virtio-return-3311-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-return-3282-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio@lists.oasis-open.org>
 List-Post: <mailto:virtio@lists.oasis-open.org>
 List-Help: <mailto:virtio-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Thu, 14 Mar 2019 14:33:36 -0400
+Date: Mon, 11 Mar 2019 14:18:48 -0400
 From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20190314142912-mutt-send-email-mst@kernel.org>
-References: <20190313014750.3438-1-mst@redhat.com>
- <20190313130836.3b5294c4@oc2783563651>
- <20190314065825-mutt-send-email-mst@kernel.org>
- <20190314190617.6c02225b@oc2783563651>
+Message-ID: <20190311181809.7970-1-mst@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190314190617.6c02225b@oc2783563651>
-Subject: Re: [virtio] [PATCH v4] conformance: clarify
- transitional/non-transitional
-To: Halil Pasic <pasic@linux.ibm.com>
-Cc: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+Subject: [virtio] [PATCH v2] signal start and end of structures consistently
+To: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Thu, Mar 14, 2019 at 07:06:17PM +0100, Halil Pasic wrote:
-> On Thu, 14 Mar 2019 07:06:07 -0400
-> "Michael S. Tsirkin" <mst@redhat.com> wrote:
-> 
-> > On Wed, Mar 13, 2019 at 01:08:36PM +0100, Halil Pasic wrote:
-> > > On Tue, 12 Mar 2019 21:48:13 -0400
-> > > "Michael S. Tsirkin" <mst@redhat.com> wrote:
-> > > 
-> > > > We already have a specification for conformance targets for
-> > > > non-transitional devices.
-> > > > Just add another clause that transitional devices satisfy.
-> > > > 
-> > > > VIRTIO-167
-> > > > 
-> > > > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> > > > ---
-> [..]
-> > > 
-> > > Hm, I actually liked that v3 spelled out, that legacy is not
-> > > standardized (no normative exists).
-> > 
-> > Right but then I started worrying that
-> > - this was not actually what the defect report said.
-> >   it was basically just complaining that this chapter was not
-> >   linked into any conformance targets.
-> 
-> I think whether legacy is a normative or a non-normative part of the
-> virtio spec is what we need to decide on in the first place.
+Make sure all structs have the format:
 
-I agree it's a defect that it's unclear but I do not feel that
-we need to decide this at this point in time before 1.1.
+struct X {
+...
+};
 
+VIRTIO-170
 
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+---
+Changes since v1:
+	no text changes, fix typo in commit log reported by Cornelia
 
+ content.tex    | 11 +++++------
+ virtio-gpu.tex |  2 +-
+ 2 files changed, 6 insertions(+), 7 deletions(-)
 
-> If it is normative it needs to get linked to some conformance targets.
-> If it isn't normative, it should not be a part of the conformance
-> chapter.
-> 
-> I think the latter is closer to how we as a community see this, but I'm
-> not sure.
-> 
-> In any case if we decide legacy is normative then we need to change "7.1
-> Conformance Targets" or change the conformance statements.
-> 
-> Let me explain. Currently we have the conformance targets "driver"
-> and "device". We would need to change this to something like
-> "non-transitional driver", "transitional driver", "non-transitional
-> device" and "non-transitional device" if we decide to change the targets,
-> or declare that there is a variable e.g. called 'transitional' which may
-> take the values 'transitional' and 'non-transitional'. But then we would
-> need to convert the 'Legacy Interface' sections to 'if transitional
-> has the value transitional' parts of the respective normative statements.
->
-> In any case making legacy interface a normative part of the spec requires
-> IMHO more work than this patch does.
-> 
-> 
-> >   so it's an unrelated concern - why not defer it to 1.2?
-> 
-> I'm all for deferring VIRTIO-167.
-
-OK before we do this let me try one more time, with
-a minimally invasive change.
-
-
-
-> > - can one argue that this is a material change?
-> >   we don't want to come up with these at this stage
-> 
-> I would argue that making legacy interface a normative part of the spec
-> is a material change.
-> 
-> > - we actually specified quite a lot about legacy interfaces.
-> >   so since we did the work already, why through it away?
-> > 
-> 
-> IMHO we should not throw it away. But we should make the form suit the
-> intention. The intention of the conformance targets of virtio
-> specification is a standard that guarantees conforming
-> implementations are interoperable.
-> 
-> The intention behind the description of the legacy interface is not to
-> standardize it, but to help people cope with the virtio stuff that
-> emerged before virtio 1.0.
-> 
-> > > v4 makes things look like
-> > > 'transitional' is a separate conformance profile, and that the
-> > > description of  the legacy interface is normative.
-> > 
-> > 
-> > I think it kind of is, isn't it?
-> > 
-> 
-> The blurb of your v3 states the opposite:
-> """
-> ... legacy device descriptions are non-normative.
->   In fact virtio 0.9 is non-normative as a whole
->   and always was by design: it was early days and
->   spec evolved to document bugs in implementations.
-> """
-> 
-> And I believe this is the truth. We certainly can make legacy interface
-> normative, but then we need to take care of the formal requirements.
-> 
-> I see no benefit in making the legacy interface normative, because
-> AFAIU we don't expect legacy implementations to get fixed if they don't
-> conform to what is written in 'Legacy Interface'. AFAIU this is about
-> helping people to deal with legacy, but not about claims that something
-> is compliant to the legacy profile.
-> 
-> 
-> > > I took the liberty and tweaked your v3. As stated before, I don't think
-> > > transitional vs non-transitional is a big issue. I'm basically fine with
-> > > anything.
-> > > 
-> > > Regards,
-> > > Halil
-> > 
-> > Yea me too. For reasons above I prefer the more limited change in v4.
-> > But if you prefer pls post your version separately as a patch and we
-> > can have the TC choose by a ballot.
-> > 
-> 
-> I've just sent out a modified version of it. It ain't perfect. As said
-> before my preferred course of action would be:
-> * defer resolving VIRTIO-167
-> * figure out how do we want to resolve VIRTIO-167 by figuring out do we
-> want to have a normative description of the legacy interface or not
-> * figure out how to change the spec accordingly (remove legacy form
->   conformance; or add a variable or add more conformance targets that
->   cover legacy)
-> 
-> Cheers,
-> Halil
-> 
-> [..]
+diff --git a/content.tex b/content.tex
+index 4180296..f40d4fc 100644
+--- a/content.tex
++++ b/content.tex
+@@ -5272,8 +5272,7 @@ The following commands are defined:
+ #define VIRTIO_SCSI_T_TMF_QUERY_TASK           6
+ #define VIRTIO_SCSI_T_TMF_QUERY_TASK_SET       7
+ 
+-struct virtio_scsi_ctrl_tmf
+-{
++struct virtio_scsi_ctrl_tmf {
+         // Device-readable part
+         le32 type;
+         le32 subtype;
+@@ -5281,7 +5280,7 @@ struct virtio_scsi_ctrl_tmf
+         le64 id;
+         // Device-writable part
+         u8   response;
+-}
++};
+ 
+ /* command-specific response values */
+ #define VIRTIO_SCSI_S_FUNCTION_COMPLETE        0
+@@ -5328,7 +5327,7 @@ struct virtio_scsi_ctrl_an {
+     // Device-writable part
+     le32 event_actual;
+     u8   response;
+-}
++};
+ 
+ #define VIRTIO_SCSI_EVT_ASYNC_OPERATIONAL_CHANGE  2
+ #define VIRTIO_SCSI_EVT_ASYNC_POWER_MGMT          4
+@@ -5363,7 +5362,7 @@ struct virtio_scsi_ctrl_an {
+         // Device-writable part
+         le32 event_actual;
+         u8   response;
+-}
++};
+ \end{lstlisting}
+ 
+   By sending this command, the driver asks the specified LUN to
+@@ -5415,7 +5414,7 @@ struct virtio_scsi_event {
+         le32 event;
+         u8  lun[8];
+         le32 reason;
+-}
++};
+ \end{lstlisting}
+ 
+ The devices sets bit 31 in \field{event} to report lost events
+diff --git a/virtio-gpu.tex b/virtio-gpu.tex
+index 0cf2209..992d4e6 100644
+--- a/virtio-gpu.tex
++++ b/virtio-gpu.tex
+@@ -47,7 +47,7 @@ struct virtio_gpu_config {
+         le32 events_clear;
+         le32 num_scanouts;
+         le32 reserved;
+-}
++};
+ \end{lstlisting}
+ 
+ \subsubsection{Device configuration fields}
+-- 
+MST
 
 ---------------------------------------------------------------------
 To unsubscribe from this mail list, you must leave the OASIS TC that 
