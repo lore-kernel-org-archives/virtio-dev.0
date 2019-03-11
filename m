@@ -1,109 +1,82 @@
-Return-Path: virtio-return-3271-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-return-3267-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio@lists.oasis-open.org>
 List-Post: <mailto:virtio@lists.oasis-open.org>
 List-Help: <mailto:virtio-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Mon, 11 Mar 2019 17:00:35 +0100
-From: Cornelia Huck <cohuck@redhat.com>
-Message-ID: <20190311170035.7c7eb5c0.cohuck@redhat.com>
-In-Reply-To: <20190311154950.29507-1-mst@redhat.com>
-References: <20190311154950.29507-1-mst@redhat.com>
+Date: Mon, 11 Mar 2019 11:10:32 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20190311150945.28622-1-mst@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Subject: Re: [virtio] [PATCH] signal start and end of structures
- consistently
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Subject: [virtio] [PATCH v2] conformance: clarify transitional/non-transitional
+To: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Mon, 11 Mar 2019 11:50:00 -0400
-"Michael S. Tsirkin" <mst@redhat.com> wrote:
+Clarify that:
+- non-transitional just satisfy 3 main clauses
+- transitional also has a legacy interface:
+  however note that it's not an optional component
+  *for transitional devices* so MAY is inappropriate
+- legacy device descriptions are non-normative.
+  In fact virtio 0.9 is non-normative as a whole
+  and always was by design: it was early days and
+  spec evolved to document bugs in implementations.
 
-> Make sure all structs have the format:
-> 
-> struct X [
-> ...
-> ];
+VIRTIO-167
 
-[] or {}?
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+---
 
-(either will work, I guess)
+Changes from v1:
 
-> 
-> VIRTIO-170
-> 
-> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> ---
->  content.tex    | 11 +++++------
->  virtio-gpu.tex |  2 +-
->  2 files changed, 6 insertions(+), 7 deletions(-)
-> 
-> diff --git a/content.tex b/content.tex
-> index 4180296..f40d4fc 100644
-> --- a/content.tex
-> +++ b/content.tex
-> @@ -5272,8 +5272,7 @@ The following commands are defined:
->  #define VIRTIO_SCSI_T_TMF_QUERY_TASK           6
->  #define VIRTIO_SCSI_T_TMF_QUERY_TASK_SET       7
->  
-> -struct virtio_scsi_ctrl_tmf
-> -{
-> +struct virtio_scsi_ctrl_tmf {
->          // Device-readable part
->          le32 type;
->          le32 subtype;
-> @@ -5281,7 +5280,7 @@ struct virtio_scsi_ctrl_tmf
->          le64 id;
->          // Device-writable part
->          u8   response;
-> -}
-> +};
->  
->  /* command-specific response values */
->  #define VIRTIO_SCSI_S_FUNCTION_COMPLETE        0
-> @@ -5328,7 +5327,7 @@ struct virtio_scsi_ctrl_an {
->      // Device-writable part
->      le32 event_actual;
->      u8   response;
-> -}
-> +};
->  
->  #define VIRTIO_SCSI_EVT_ASYNC_OPERATIONAL_CHANGE  2
->  #define VIRTIO_SCSI_EVT_ASYNC_POWER_MGMT          4
-> @@ -5363,7 +5362,7 @@ struct virtio_scsi_ctrl_an {
->          // Device-writable part
->          le32 event_actual;
->          u8   response;
-> -}
-> +};
->  \end{lstlisting}
->  
->    By sending this command, the driver asks the specified LUN to
-> @@ -5415,7 +5414,7 @@ struct virtio_scsi_event {
->          le32 event;
->          u8  lun[8];
->          le32 reason;
-> -}
-> +};
->  \end{lstlisting}
->  
->  The devices sets bit 31 in \field{event} to report lost events
-> diff --git a/virtio-gpu.tex b/virtio-gpu.tex
-> index 0cf2209..992d4e6 100644
-> --- a/virtio-gpu.tex
-> +++ b/virtio-gpu.tex
-> @@ -47,7 +47,7 @@ struct virtio_gpu_config {
->          le32 events_clear;
->          le32 num_scanouts;
->          le32 reserved;
-> -}
-> +};
->  \end{lstlisting}
->  
->  \subsubsection{Device configuration fields}
+Accept all changes proposed by Cornelia Huck <cohuck@redhat.com>
 
+ conformance.tex | 26 ++++++++++++++++++--------
+ 1 file changed, 18 insertions(+), 8 deletions(-)
+
+diff --git a/conformance.tex b/conformance.tex
+index 1577c0c..518b9c7 100644
+--- a/conformance.tex
++++ b/conformance.tex
+@@ -344,16 +344,26 @@ Interface: Terminology}.
+ 
+ A non-transitional implementation conforms to this specification
+ if it satisfies all of the MUST or REQUIRED level requirements
+-defined above.
++defined in section \ref{sec:Conformance / Conformance Targets} above.
+ 
+-An implementation MAY choose to implement OPTIONAL support for the
+-legacy interface, including support for legacy drivers
+-or devices, by additionally conforming to all of the MUST or
+-REQUIRED level requirements for the legacy interface
+-for the transitional devices and drivers.
++A transitional implementation conforms to this specification
++if it satisfies all of the MUST or REQUIRED level requirements
++defined in section \ref{sec:Conformance / Conformance Targets} above
++and additionally implements the legacy interface
++for the transitional devices and drivers, described in
++\hyperref[intro:Virtio PCI Draft]{[Virtio PCI Draft]}.
+ 
+-The requirements for the legacy interface for transitional implementations
+-are located in sections named ``Legacy Interface'' listed below:
++\begin{note}
++No normative specification for the legacy interface exists,
++instead device and driver's ability to interoperate with
++the existing body of installed devices and drivers is a quality
++of implementation issue.
++\begin{note}
++
++To facilitate creating transitional implementations, as well as
++assist in converting legacy interfaces to conforming ones,
++the requirements for the legacy interface for transitional implementations
++are located in non-normative sections named ``Legacy Interface'' listed below:
+ \begin{itemize}
+ \item Section \ref{sec:Basic Facilities of a Virtio Device /
+ Feature Bits / Legacy Interface: A Note on Feature Bits}
+-- 
+MST
 
 ---------------------------------------------------------------------
 To unsubscribe from this mail list, you must leave the OASIS TC that 
