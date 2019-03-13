@@ -1,31 +1,35 @@
-Return-Path: virtio-return-3276-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-return-3303-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio@lists.oasis-open.org>
 List-Post: <mailto:virtio@lists.oasis-open.org>
 List-Help: <mailto:virtio-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Mon, 11 Mar 2019 18:10:02 +0100
-From: Cornelia Huck <cohuck@redhat.com>
-Message-ID: <20190311181002.697fc724.cohuck@redhat.com>
-In-Reply-To: <20190311155947.29822-1-mst@redhat.com>
+Date: Wed, 13 Mar 2019 15:40:13 +0000
+From: Stefan Hajnoczi <stefanha@redhat.com>
+Message-ID: <20190313154013.GE22919@stefanha-x1.localdomain>
 References: <20190311155947.29822-1-mst@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="BQPnanjtCNWHyqYD"
+Content-Disposition: inline
+In-Reply-To: <20190311155947.29822-1-mst@redhat.com>
 Subject: Re: [virtio] [PATCH] editorial: explain each structure before use
 To: "Michael S. Tsirkin" <mst@redhat.com>
 Cc: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Mon, 11 Mar 2019 11:59:50 -0400
-"Michael S. Tsirkin" <mst@redhat.com> wrote:
+--BQPnanjtCNWHyqYD
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
+On Mon, Mar 11, 2019 at 11:59:50AM -0400, Michael S. Tsirkin wrote:
 > Several structures are listed before they are
 > introduced in some way. Add a sentence before each one
 > so they don't appear prior to any prose.
-> 
+>=20
 > VIRTIO-166
-> 
+>=20
 > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 > ---
 >  content.tex       |  3 +++
@@ -35,10 +39,20 @@ On Mon, 11 Mar 2019 11:59:50 -0400
 >  virtio-vsock.tex  |  2 ++
 >  5 files changed, 19 insertions(+), 2 deletions(-)
 
-Reviewed-by: Cornelia Huck <cohuck@redhat.com>
+Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
 
----------------------------------------------------------------------
-To unsubscribe from this mail list, you must leave the OASIS TC that 
-generates this mail.  Follow this link to all your TCs in OASIS at:
-https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
+--BQPnanjtCNWHyqYD
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+
+iQEcBAEBAgAGBQJciSRdAAoJEJykq7OBq3PIZPYH+wfY/pVHt7OAKm36UZJFEGuV
+i2Q9DGaEqwvRhFph3wpO7qqea8OrhrLBFZkSCD9NJnCJU5XQH41lQLanzMuCFqTY
+N7D/659p+J63K0Avp6cFBrBuDObq+sq2wBUeV3SC7M4zai02qI8zssl3Bm9lgt9i
+ENKjb0Lz4zyzuVrTJSlh2Oq6hPyDRt7MbdgWD9IIVYIQBd1B7XjAPRy6/9xd+gu3
+F0eJAoZ8gphZhE4zTUuqUqTJS0JNoyA44dXbN6XfCxVovFSr+2dj3RcNcFI3B14s
+sDPl94MeuOH1h5rzlNm/XTV7LmMY00VaWSzgGAMynmhebfzUN34N5ic/drLIXkU=
+=dfXM
+-----END PGP SIGNATURE-----
+
+--BQPnanjtCNWHyqYD--
