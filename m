@@ -1,12 +1,12 @@
-Return-Path: virtio-return-3312-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-return-3314-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio@lists.oasis-open.org>
 List-Post: <mailto:virtio@lists.oasis-open.org>
 List-Help: <mailto:virtio-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Thu, 14 Mar 2019 14:35:33 -0400
+Date: Thu, 14 Mar 2019 16:26:56 -0400
 From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20190314143412-mutt-send-email-mst@kernel.org>
+Message-ID: <20190314162440-mutt-send-email-mst@kernel.org>
 References: <1552584494-10592-1-git-send-email-pasic@linux.ibm.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -29,12 +29,12 @@ On Thu, Mar 14, 2019 at 06:28:14PM +0100, Halil Pasic wrote:
 > Suggested-by: Michael S. Tsirkin <mst@redhat.com>
 > Signed-off-by: Halil Pasic <pasic@linux.ibm.com>
 
+OK so we have two proposals on the table: this one and v5
+that I sent.
 
-OK it's an option but I really don't like such a big change in 1.1.
-Let me try again with a minimal change and the rest we can
-leave for 1.2. For this one would you like to create a
-github issue? It wasn't reported during review period
-either so we do not need to vote on deferring it formally.
+If we can't resolve it I'll just do a ballot on both
+and simple majority will decide.
+
 
 > ---
 > 
