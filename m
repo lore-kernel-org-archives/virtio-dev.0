@@ -1,87 +1,68 @@
-Return-Path: virtio-return-3320-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio@lists.oasis-open.org>
-List-Post: <mailto:virtio@lists.oasis-open.org>
-List-Help: <mailto:virtio-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Fri, 15 Mar 2019 14:59:53 +0100
-From: Halil Pasic <pasic@linux.ibm.com>
-In-Reply-To: <20190314184224.19110-1-mst@redhat.com>
-References: <20190314184224.19110-1-mst@redhat.com>
+Return-Path: virtio-dev-return-5627-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id 7BE83985F80
+	for <virtio-dev@lists.oasis-open.org>; Fri, 15 Mar 2019 11:00:53 +0000 (UTC)
+Date: Fri, 15 Mar 2019 07:00:51 -0400 (EDT)
+From: Pankaj Gupta <pagupta@redhat.com>
+Message-ID: <1473488054.12940616.1552647651571.JavaMail.zimbra@redhat.com>
+In-Reply-To: <20180518044106.31357-1-pagupta@redhat.com>
+References: <20180518044106.31357-1-pagupta@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Message-Id: <20190315145953.4072c907@oc2783563651>
-Subject: Re: [virtio] [PATCH v5] conformance: fix confusion about legacy
- interface
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+Subject: Re: [virtio-dev] [PATCH] content: reserve device ID for virtio-pmem
+ devices
+To: virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Thu, 14 Mar 2019 14:44:02 -0400
-"Michael S. Tsirkin" <mst@redhat.com> wrote:
 
-> Supercedes:
-> 	"conformance: clarify transitional/non-transitional"
+ping. 
 
-I don't think this is ought to be a part of the commit message.
+I have also opened a github issue[1] for the same.
 
-> 
-> The text describing the legacy interface also obliquely refers to a
-> non-transitional implementation. This seems to cause confusion
-> and there's no good reason to do it here: this section
-> is about legacy interface and transitional devices,
-> it add not value at all. Just drop it. We need to tweak
-> wording in the next paragraph to avoid saying "additionally"
-> since there's nothing to add to anymore.
-> 
-> Note: the spec does not make it clear whether description of the legacy
-> interface is normative or not, and in particular, this section is not
-> linked to from any conformance targets.
-> Resolving that is left for after 1.1 since the text is not new
-> and was already there in 1.0.
+[1] https://github.com/oasis-tcs/virtio-spec/issues/38
 
-Sounds good.
+Thanks,
+Pankaj
 
 > 
-> VIRTIO-167
+> We need a device ID for virtio-pmem devices. As 24 is already
+> requested by virtio-mem, so requesting next available(25)
 > 
-> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+> Signed-off-by: Pankaj Gupta <pagupta@redhat.com>
 > ---
->  conformance.tex | 6 +-----
->  1 file changed, 1 insertion(+), 5 deletions(-)
+>  content.tex | 2 ++
+>  1 file changed, 2 insertions(+)
 > 
-> diff --git a/conformance.tex b/conformance.tex
-> index 6df113b..ce51463 100644
-> --- a/conformance.tex
-> +++ b/conformance.tex
-> @@ -341,13 +341,9 @@ A conformant implementation MUST be either transitional or
->  non-transitional, see \ref{intro:Legacy
->  Interface: Terminology}.
+> diff --git a/content.tex b/content.tex
+> index 7a92cb1..ef75dc5 100644
+> --- a/content.tex
+> +++ b/content.tex
+> @@ -2432,6 +2432,8 @@ Device ID  &  Virtio Device    \\
+>  \hline
+>  23         &   IOMMU device \\
+>  \hline
+> +25         &   PMEM device \\
+> +\hline
+>  \end{tabular}
 >  
-> -A non-transitional implementation conforms to this specification
-> -if it satisfies all of the MUST or REQUIRED level requirements
-> -defined above.
-> -
->  An implementation MAY choose to implement OPTIONAL support for the
->  legacy interface, including support for legacy drivers
-> -or devices, by additionally conforming to all of the MUST or
-> +or devices, by conforming to all of the MUST or
->  REQUIRED level requirements for the legacy interface
->  for the transitional devices and drivers.
->  
-
-I pointed out some issues with the resulting text, but these are
-remaining issues and not issues introduced by this change.
-
-I'm quite happy with this change. With the commit message tweak:
-
-Acked-by: Halil Pasic <pasic@linux.ibm.com>
-
-
+>  Some of the devices above are unspecified by this document,
+> --
+> 2.14.3
+> 
+> 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+> 
+> 
 
 ---------------------------------------------------------------------
-To unsubscribe from this mail list, you must leave the OASIS TC that 
-generates this mail.  Follow this link to all your TCs in OASIS at:
-https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
