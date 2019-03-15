@@ -1,18 +1,18 @@
-Return-Path: virtio-return-3319-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-return-3320-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio@lists.oasis-open.org>
 List-Post: <mailto:virtio@lists.oasis-open.org>
 List-Help: <mailto:virtio-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Thu, 14 Mar 2019 23:11:39 +0100
-From: Cornelia Huck <cohuck@redhat.com>
-Message-ID: <20190314231139.323ba725.cohuck@redhat.com>
+Date: Fri, 15 Mar 2019 14:59:53 +0100
+From: Halil Pasic <pasic@linux.ibm.com>
 In-Reply-To: <20190314184224.19110-1-mst@redhat.com>
 References: <20190314184224.19110-1-mst@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Subject: [virtio] Re: [virtio-dev] [PATCH v5] conformance: fix confusion about legacy
+Message-Id: <20190315145953.4072c907@oc2783563651>
+Subject: Re: [virtio] [PATCH v5] conformance: fix confusion about legacy
  interface
 To: "Michael S. Tsirkin" <mst@redhat.com>
 Cc: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
@@ -23,6 +23,9 @@ On Thu, 14 Mar 2019 14:44:02 -0400
 
 > Supercedes:
 > 	"conformance: clarify transitional/non-transitional"
+
+I don't think this is ought to be a part of the commit message.
+
 > 
 > The text describing the legacy interface also obliquely refers to a
 > non-transitional implementation. This seems to cause confusion
@@ -37,6 +40,9 @@ On Thu, 14 Mar 2019 14:44:02 -0400
 > linked to from any conformance targets.
 > Resolving that is left for after 1.1 since the text is not new
 > and was already there in 1.0.
+
+Sounds good.
+
 > 
 > VIRTIO-167
 > 
@@ -65,10 +71,14 @@ On Thu, 14 Mar 2019 14:44:02 -0400
 >  for the transitional devices and drivers.
 >  
 
-It's probably best we can do right now if we don't want to do more
-invasive changes... fine with me as well.
+I pointed out some issues with the resulting text, but these are
+remaining issues and not issues introduced by this change.
 
-Reviewed-by: Cornelia Huck <cohuck@redhat.com>
+I'm quite happy with this change. With the commit message tweak:
+
+Acked-by: Halil Pasic <pasic@linux.ibm.com>
+
+
 
 ---------------------------------------------------------------------
 To unsubscribe from this mail list, you must leave the OASIS TC that 
