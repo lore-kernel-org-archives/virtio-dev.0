@@ -1,105 +1,87 @@
-Return-Path: virtio-comment-return-708-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-comment-return-710-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-comment@lists.oasis-open.org>
 List-Post: <mailto:virtio-comment@lists.oasis-open.org>
 List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
 From: "Dr. David Alan Gilbert (git)" <dgilbert@redhat.com>
-Date: Wed, 20 Mar 2019 12:07:38 +0000
-Message-Id: <20190320120740.8514-2-dgilbert@redhat.com>
+Date: Wed, 20 Mar 2019 12:07:39 +0000
+Message-Id: <20190320120740.8514-3-dgilbert@redhat.com>
 In-Reply-To: <20190320120740.8514-1-dgilbert@redhat.com>
 References: <20190320120740.8514-1-dgilbert@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: [virtio-comment] [PATCH v4 1/3] shared memory: Define shared memory regions
+Subject: [virtio-comment] [PATCH v4 2/3] shared memory: Define PCI capability
 To: virtio-dev@lists.oasis-open.org, virtio-comment@lists.oasis-open.org
 Cc: stefanha@redha.com, cohuck@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
 From: "Dr. David Alan Gilbert" <dgilbert@redhat.com>
 
-Define the requirements and idea behind shared memory regions.
+Define the PCI capability used for enumerating shared memory regions.
 
 Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
 Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+Reviewed-by: Cornelia Huck <cohuck@redhat.com>
 ---
- conformance.tex |  1 +
- content.tex     |  2 ++
- shared-mem.tex  | 40 ++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 43 insertions(+)
- create mode 100644 shared-mem.tex
+ content.tex | 37 +++++++++++++++++++++++++++++++++++++
+ 1 file changed, 37 insertions(+)
 
-diff --git a/conformance.tex b/conformance.tex
-index ad7e82e..f6c0d50 100644
---- a/conformance.tex
-+++ b/conformance.tex
-@@ -195,6 +195,7 @@ A device MUST conform to the following normative statements:
- \item \ref{devicenormative:Basic Facilities of a Virtio Device / Virtqueues / Used Buffer Notification Suppression}
- \item \ref{devicenormative:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Used Ring}
- \item \ref{devicenormative:Basic Facilities of a Virtio Device / Virtqueues / Available Buffer Notification Suppression}
-+\item \ref{devicenormative:Basic Facilities of a Virtio Device / Shared Memory Regions}
- \item \ref{devicenormative:Reserved Feature Bits}
- \end{itemize}
- 
 diff --git a/content.tex b/content.tex
-index ede0ef6..8cd1a38 100644
+index 8cd1a38..ddbf949 100644
 --- a/content.tex
 +++ b/content.tex
-@@ -371,6 +371,8 @@ making any more buffers available. When VIRTIO_F_NOTIFICATION_DATA
- has been negotiated, these notifications would then have
- identical \field{next_off} and \field{next_wrap} values.
+@@ -688,6 +688,8 @@ The fields are interpreted as follows:
+ #define VIRTIO_PCI_CAP_DEVICE_CFG        4
+ /* PCI configuration access */
+ #define VIRTIO_PCI_CAP_PCI_CFG           5
++/* Shared memory region */
++#define VIRTIO_PCI_CAP_SHARED_MEMORY_CFG 8
+ \end{lstlisting}
  
-+\input{shared-mem.tex}
-+
- \chapter{General Initialization And Device Operation}\label{sec:General Initialization And Device Operation}
+         Any other value is reserved for future use.
+@@ -1052,6 +1054,41 @@ any device type which has a device-specific configuration.
  
- We start with an overview of device initialization, then expand on the
-diff --git a/shared-mem.tex b/shared-mem.tex
-new file mode 100644
-index 0000000..6dc506a
---- /dev/null
-+++ b/shared-mem.tex
-@@ -0,0 +1,40 @@
-+\section{Shared Memory Regions}\label{sec:Basic Facilities of a Virtio Device / Shared Memory Regions}
+ The \field{offset} for the device-specific configuration MUST be 4-byte aligned.
+ 
++\subsubsection{Shared memory capability}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Shared memory capability}
 +
-+Shared memory regions are an additional facility
-+available to devices that need a region of memory that's
-+continuously shared between the host and the guest, rather
-+than passed between them in the way virtqueue elements are.
++Shared memory regions \ref{sec:Basic Facilities of a Virtio
++Device / Shared Memory Regions} are enumerated on the PCI transport
++as a sequence of VIRTIO_PCI_CAP_SHARED_MEMORY_CFG capabilities, one per region.
 +
-+Example uses include shared caches and version pools for versioned
-+data structures.
++The capability is immediately followed by an additional field like so:
 +
-+The region is chosen by the host and presented to the guest, as
-+such it is useful in situations where the memory is accessed on
-+the host by other libraries that can't safely access guest RAM.
++\begin{lstlisting}
++struct virtio_pci_shm_cap {
++        struct virtio_pci_cap cap;
++        u32 offset_hi;
++        u32 length_hi;
++        u8  id;
++};
++\end{lstlisting}
 +
-+A device may have multiple shared memory regions associated with
-+it.  Each region has a \field{shmid} to identify it, the meaning
-+of which is device-specific.
++Given that the \field{cap.length} and \field{cap.offset} fields
++are only 32 bit, the additional \field{offset_hi} and \field {length_hi}
++fields provide the most significant 32 bits of a total 64 bit offset and
++length within the bar specified by \field{cap.bar}.  \field{id}
++uniquely identifies the given shared memory region using a device
++specific identifier.
 +
-+Enumeration and location of shared memory regions is performed
-+using a transport-specific data structure and mechanism.
++While most capabilities can not be repeated, multiple
++VIRTIO_PCI_CAP_SHARED_MEMORY_CFG capabilities are allowed as long
++as the \field{id} is unique.
 +
-+Memory consistency rules vary depending on the region and the
-+device and they will be specified as required by each device.
++\devicenormative{\paragraph}{Device-specific configuration}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Shared memory capability}
 +
-+\subsection{Addressing within regions}\label{sec:Basic Facilities of a Virtio Device / Shared Memory Regions / Addressing within regions }
++The region defined by the combination of the offsets and length
++fields MUST be contained within the declared bar.
 +
-+References into shared memory regions are represented as offsets from
-+the beginning of the region instead of absolute memory addresses.
-+Offsets are used both for references between structures stored
-+within shared memory and for requests placed in virtqueues that
-+refer to shared memory.
-+The \field{shmid} may be explicit or may be inferred from the
-+context of the reference.
++The \field{id} MUST be unique for any one device instance.
 +
-+\devicenormative{\subsection}{Shared Memory Regions}{Basic Facilities of a Virtio
-+Device / Shared Memory Regions}
-+Shared memory regions MUST NOT expose shared memory regions which
-+are used to control the operation of the device, nor to stream
-+data.
-+
+ \subsubsection{PCI configuration access capability}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / PCI configuration access capability}
+ 
+ The VIRTIO_PCI_CAP_PCI_CFG capability
 -- 
 2.20.1
 
