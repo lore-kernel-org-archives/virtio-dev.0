@@ -1,65 +1,42 @@
-Return-Path: virtio-dev-return-5641-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-5639-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id B463F985E06
-	for <virtio-dev@lists.oasis-open.org>; Tue, 26 Mar 2019 19:51:56 +0000 (UTC)
-From: "Tian, Kevin" <kevin.tian@intel.com>
-Date: Tue, 26 Mar 2019 19:51:48 +0000
-Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D19C9AB847@SHSMSX104.ccr.corp.intel.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id E7ED6985CAC
+	for <virtio-dev@lists.oasis-open.org>; Tue, 26 Mar 2019 12:19:48 +0000 (UTC)
+Date: Tue, 26 Mar 2019 13:19:44 +0100
+From: Jens Freimann <jfreimann@redhat.com>
+Message-ID: <20190326121944.3uyr25k6kfklhqe7@jenstp.localdomain>
 References: <20190324043339.GA1884@localhost>
  <20190324045118.GC1916@localhost>
- <60d7d47b-7ece-fe13-1784-831394807018@redhat.com>
- <20190326004759.GD1872@localhost>
- <2541c721-0b13-3c41-7a94-2fd8fe1ad640@redhat.com>
-In-Reply-To: <2541c721-0b13-3c41-7a94-2fd8fe1ad640@redhat.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Subject: RE: [virtio-dev] Would there be virtio-audio spec in future for
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20190324045118.GC1916@localhost>
+Subject: Re: [virtio-dev] Would there be virtio-audio spec in future for
  clean audio interface
-To: Paolo Bonzini <pbonzini@redhat.com>, vlse <vlse@veera.biz>
-Cc: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "xionghu.luo@intel.com" <xionghu.luo@intel.com>, "Dong, Eddie" <eddie.dong@intel.com>, "acrn-dev@lists.projectacrn.org" <acrn-dev@lists.projectacrn.org>
+To: vlse <vlse@veera.biz>
+Cc: virtio-dev@lists.oasis-open.org, Matti.Moell@opensynergy.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Q0MgYWNybiBjb21tdW5pdHkuIA0KDQpUaGVyZSBhcmUgcXVpdGUgc29tZSBuZXcgdmlydGlvIGRl
-dmljZXMgKGF1ZGlvLCBncGlvLCBpMmMsIGV0YykgaW5jbHVkZWQgaW4NCmFjcm4gcHJvamVjdCwg
-YXMgcmVxdWlyZWQgaW4gYXV0b21vdGl2ZS9lbWJlZGRlZCB1c2FnZXMuIEkga25vdyB0aGV5IA0K
-aGF2ZSBwbGFuIHRvIHVwc3RyZWFtIHRob3NlIGJpdHMsIGFuZCBub3cgbWlnaHQgYmUgYSBnb29k
-IHRpbWUgdG8gdGFsaw0KYWJvdXQgdGhlIHBsYW4uIDotKQ0KDQpUaGFua3MNCktldmluDQoNCj4g
-LS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogdmlydGlvLWRldkBsaXN0cy5vYXNp
-cy1vcGVuLm9yZyBbbWFpbHRvOnZpcnRpby1kZXZAbGlzdHMub2FzaXMtb3Blbi5vcmddDQo+IE9u
-IEJlaGFsZiBPZiBQYW9sbyBCb256aW5pDQo+IFNlbnQ6IFR1ZXNkYXksIE1hcmNoIDI2LCAyMDE5
-IDU6MzkgUE0NCj4gVG86IHZsc2UgPHZsc2VAdmVlcmEuYml6Pg0KPiBDYzogdmlydGlvLWRldkBs
-aXN0cy5vYXNpcy1vcGVuLm9yZzsgeGlvbmdodS5sdW9AaW50ZWwuY29tDQo+IFN1YmplY3Q6IFJl
-OiBbdmlydGlvLWRldl0gV291bGQgdGhlcmUgYmUgdmlydGlvLWF1ZGlvIHNwZWMgaW4gZnV0dXJl
-IGZvciBjbGVhbg0KPiBhdWRpbyBpbnRlcmZhY2UNCj4gDQo+IE9uIDI2LzAzLzE5IDAxOjQ4LCB2
-bHNlIHdyb3RlOg0KPiA+IE9uIE1vbiwgTWFyIDI1LCAyMDE5IGF0IDAyOjEzOjUxUE0gKzAxMDAs
-IFBhb2xvIEJvbnppbmkgd3JvdGU6DQo+ID4gSGksDQo+ID4NCj4gPiBObyBJIGRvbid0IGhhdmUg
-YSBjb250YWN0IHdpdGggUHJvamVjdCBBQ1JOLg0KPiA+DQo+ID4gQUNSTiBpcyBhIExpbnV4IEZv
-dW5kYXRpb24gUHJvamVjdC4gSW5pdGlhbGx5IGl0IHdhcyBieSBJbnRlbC4NCj4gPiBJdCBpcyBh
-IGh5cGVydmlzb3IgZm9yIGVtYmVkZGVkIGRldmljZXMuDQo+ID4gV2Vic2l0ZSBpcyBodHRwczov
-L3Byb2plY3RhY3JuLm9yZy8uDQo+ID4NCj4gPiBUaGVpciBzdXBwb3J0ZWQgdmlydGlvLWF1ZGlv
-IGRldGFpbHM6DQo+ID4gIFZlbmRvciBJRDogMHg4MDg2DQo+ID4gIERldmljZSBJRDogMHg4NjAz
-DQo+ID4gIFN1YnZlbmRvciBJRDogMHg4MDg2DQo+ID4gIFN1YmRldmljZSBJRDogMHhGRkZEDQo+
-ID4NCj4gPiBBbm90aGVyIGltcGxlbWVudGF0aW9uIGZyb20gYW5vdGhlciBkZXZlbG9wZXIgZnJv
-bSBJbnRlbC4NCj4gPiBXZWJzaXRlOiBodHRwczovL3BhdGNod29yay5mcmVlZGVza3RvcC5vcmcv
-cGF0Y2gvMTc0MDEzLw0KPiA+IEF1dGhvcjogTHVvIFhpb25naHUgPHhpb25naHUubHVvQGludGVs
-LmNvbT4NCj4gPg0KPiA+IENvbW1lbnRzIGJ5IEF1dGhvcjogdGhpcyBwYXRjaCBvbmx5IGFkZCBh
-dWRpbyBkZXZpY2UgcGNpIHJlZ2lzdHJhdGlvbi4NCj4gPiAgICAgICAgICAgICAgICAgICAgIG5l
-ZWQgYWRkIGF1ZGlvIHBhcnQgdG8gY2FsbCBhdWRpbyBCYWNrZW5kIGRyaXZlciBsYXRlci4NCj4g
-DQo+IFRoYW5rcywgdGhhdCdzIHVzZWZ1bC4gIFhpb25naHUsIGlzIHRoZXJlIGEgcHVibGljIHNw
-ZWMgZm9yDQo+IHZpcnRpby1hdWRpbywgYW5kL29yIGRvZXMgSW50ZWwgaW50ZW5kIHRvIGNvbnRy
-aWJ1dGUgaXQgdG8gdGhlIHZpcnRpbw0KPiBzcGVjaWZpY2F0aW9uPw0KPiANCj4gVW5mb3J0dW5h
-dGVseSBkZXZpY2UgaWQgMjEgaXMgYWxyZWFkeSB0YWtlbi4gIEknbGwgc2VuZCBhIHBhdGNoIHRv
-IHRoZQ0KPiBzcGVjaWZpY2F0aW9uIHRoYXQgcmVzZXJ2ZXMgaWQgMjUgZm9yIHZpcnRpby1hdWRp
-by4NCj4gDQo+IFRoYW5rcywNCj4gDQo+IFBhb2xvDQo+IA0KPiAtLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0NCj4gVG8g
-dW5zdWJzY3JpYmUsIGUtbWFpbDogdmlydGlvLWRldi11bnN1YnNjcmliZUBsaXN0cy5vYXNpcy1v
-cGVuLm9yZw0KPiBGb3IgYWRkaXRpb25hbCBjb21tYW5kcywgZS1tYWlsOiB2aXJ0aW8tZGV2LWhl
-bHBAbGlzdHMub2FzaXMtb3Blbi5vcmcNCg0K
+On Sun, Mar 24, 2019 at 10:21:21AM +0530, vlse wrote:
+>Hello,
+>
+>Would there be virtio-audio spec in future for clean audio interface?
+>
+>Projectacrn.github.io provides one virtio-audio interface for automotive sytems.
+
+Matti, IIRC you talked about virtio-audio as well at KVM Forum
+Virtio BoF? 
+
+
+regards,
+Jens 
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
