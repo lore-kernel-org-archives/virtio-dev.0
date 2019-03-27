@@ -1,131 +1,149 @@
-Return-Path: virtio-return-3333-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-return-3327-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio@lists.oasis-open.org>
 List-Post: <mailto:virtio@lists.oasis-open.org>
 List-Help: <mailto:virtio-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Thu, 28 Mar 2019 15:13:28 -0400
+Date: Wed, 27 Mar 2019 18:33:22 -0400
 From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20190328151221-mutt-send-email-mst@kernel.org>
-References: <20190328191135.25628-1-mst@redhat.com>
+Message-ID: <20190327223250.11292-1-mst@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20190328191135.25628-1-mst@redhat.com>
-Subject: [virtio] Re: [PATCH] acknowledgements: add commenters from mailing list
+Subject: [virtio] [PATCH v2] acknowledgements: add members and non-members
 To: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Thu, Mar 28, 2019 at 03:11:39PM -0400, Michael S. Tsirkin wrote:
-> Not all commenters sent an orderly "Reviewed-by" tag.  Some just
-> contributed to the discussion on the mailing list.
-> Add their names and affiliation from the mailing list archives.
-> 
-> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> ---
+Add all current members as participants.
+Add all participant names collected from list, jira and github.
 
-Note: this is not yet in the latest draft, but since this is
-trivially non-material I intend to add this change before
-we vote on 1.1-cs01
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+---
 
->  acknowledgements.tex | 45 ++++++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 45 insertions(+)
-> 
-> diff --git a/acknowledgements.tex b/acknowledgements.tex
-> index b2feeaf..1dcbe44 100644
-> --- a/acknowledgements.tex
-> +++ b/acknowledgements.tex
-> @@ -65,42 +65,87 @@ \chapter{Acknowledgements}\label{chap:Acknowledgements}
->  
->  \begin{oasistitlesection}{Reviewers}
->  Aaron Conole,	Red Hat	\newline
-> +Adam Tao,	Huawei	\newline
-> +Alexander Duyck,	Intel	\newline
-> +Andreas Pape,	ADITG/ESB	\newline
->  Andrew Thornton,  Google \newline
->  Arun Subbarao,	LynuxWorks	\newline
->  Baptiste Reynal,	Virtual Open Systems	\newline
-> +Bharat Bhushan,	NXP Semiconductors	\newline
->  Brian Foley,  ARM \newline
-> +Chandra Thyamagondlu,	Xilinx	\newline
->  Changpeng Liu,	Intel	\newline
->  Christian Pinto,	Virtual Open Systems	\newline
->  Christoffer Dall,	ARM	\newline
-> +Christoph Hellwig,	Individual \newline
->  Christian Borntraeger,	IBM	\newline
->  Daniel Marcovitch,	Mellanox	\newline
->  David Alan Gilbert, Red Hat \newline
->  David Hildenbrand,	Red Hat	\newline
-> +David Riddoch,	Solarflare	\newline
-> +Denis V. Lunev,	OpenVZ	\newline
-> +Dmitry Fleytman,	Red Hat	\newline
-> +Don Wallwork,	Broadcom	\newline
-> +Emily Drea,	ARM	\newline
-> +Eric Auger,	Red Hat	\newline
->  Fam Zheng, Red Hat	\newline
-> +Francesco Fusco,	Red Hat	\newline
-> +Frank Yang,	Google	\newline
->  Gil Savir,	Intel	\newline
->  Gonglei (Arei),	Huawei	\newline
-> +Greg Kurz,	IBM	\newline
->  Hannes Reiencke, SUSE	\newline
-> +Ian Campbell,	Docker	\newline
-> +Ilya Lesokhin,	Mellanox	\newline
->  Jacques Durand,	Fujutsu	\newline
-> +Jakub Jermar,	Kernkonzept	\newline
-> +Jan Scheurich,	Ericsson	\newline
-> +Jason Baron,	Akamai	\newline
->  Jason Wang, Red Hat \newline
->  Jean-Philippe Brucker,	ARM	\newline
-> +Jianfeng Tan,	intel	\newline
->  Jonathan Helman,	Oracle	\newline
-> +Karandeep Chahal,	DDN	\newline
->  Kevin Lo,	MSI	\newline
-> +Kevin Tian,	Intel	\newline
-> +Kully Dhanoa,	Intel	\newline
->  Laura Novich, Red Hat	\newline
->  Ladi Prosek,	Red Hat	\newline
-> +Lars Ganrot,	Napatech	\newline
->  Longpeng (Mike),	Huawei	\newline
-> +Mario Torrecillas Rodriguez,	ARM	\newline
-> +Mark Rustad,	Intel	\newline
->  Maxime Coquelin,	Red Hat	\newline
->  Namhyung Kim,	LG	\newline
-> +Ola Liljedahl,	ARM	\newline
-> +Pankaj Gupta,	Red Hat	\newline
->  Patrick Durusau,	Technical Advisory Board, OASIS	\newline
-> +Pierre Pfister,	Cisco	\newline
-> +Pranavkumar Sawargaonkar,	Linaro	\newline
-> +Rauchfuss Holm,	Huawei	\newline
-> +Rob Miller,	Broadcom	\newline
-> +Roman Kiryanov,	Google	\newline
->  Robin Cover,	Technical Advisory Board, OASIS	\newline
-> +Roger S Chien,	Intel	\newline
->  Sameeh Jubran,	Red Hat / Daynix	\newline
-> +Si-Wei Liu,	Oracle	\newline
->  Sridhar Samudrala,	Intel	\newline
-> +Stefan Fritsch,	Individual \newline
->  Stefano Garzarella,	Red Hat	\newline
-> +Steven Luong,	Cisco	\newline
->  Thomas Huth,	Red Hat	\newline
->  Tiwei Bie,	Intel	\newline
->  Tomáš Golembiovský,	Red Hat	\newline
-> +Venu Busireddy,	Oracle	\newline
->  Victor Kaplansky,	Red Hat	\newline
-> +Vijayabhaskar Balakrishna,	Oracle	\newline
-> +Vlad Yasevich,	Red Hat	\newline
->  Yan Vugenfirer, Red Hat / Daynix	\newline
-> +Wei Xu,	Red Hat	\newline
->  Will Deacon,	ARM	\newline
-> +Willem de Bruijn,	Google	\newline
-> +Yuanhan Liu,	Intel	\newline
->  Yuri Benditovich,	Red Hat / Daynix	\newline
-> +Zhi Yong Wu,	IBM	\newline
->  Zhoujian,	Huawei	\newline
->  \end{oasistitlesection}
-> -- 
-> MST
+Fixes from v1:
+	add two reporters from mailing list (mellanox)
+
+ acknowledgements.tex | 72 ++++++++++++++++++++++++++++++++++++++------
+ 1 file changed, 63 insertions(+), 9 deletions(-)
+
+diff --git a/acknowledgements.tex b/acknowledgements.tex
+index 233e4a1..b2feeaf 100644
+--- a/acknowledgements.tex
++++ b/acknowledgements.tex
+@@ -6,47 +6,101 @@ \chapter{Acknowledgements}\label{chap:Acknowledgements}
+ The following individuals have participated in the creation of this specification and are gratefully acknowledged:
+ 
+ \begin{oasistitlesection}{Participants}
++Allen Chia, Oracle	\newline
+ Amit Shah,	Red Hat	\newline
+ Amos Kong,	Red Hat	\newline
+ Anthony Liguori,	IBM	\newline
+-Bruce Rogers,	Novell	\newline
++Bruce Rogers, SUSE	\newline
+ Bryan Venteicher,	NetApp	\newline
++Chandra Thyamagondlu, Xilinx	\newline
++Chet Ensign, OASIS	\newline
+ Cornelia Huck,	Red Hat	\newline
++Cunming, Liang, Intel	\newline
++Damjan, Marion, Cisco	\newline
+ Daniel Kiper,	Oracle	\newline
++Fang Chen, Huawei	\newline
++Fang You, Huawei	\newline
+ Geoff Brown,	Machine-to-Machine Intelligence (M2MI) Corporation	\newline
++Gerd Hoffmann, Red Hat	\newline
+ Gershon Janssen,	Individual Member	\newline
++Grant Likely, ARM	\newline
++Haggai Eran,	Mellanox	\newline
+ Halil Pasic,	IBM	\newline
+ James Bottomley,	Parallels IP Holdings GmbH	\newline
++Jani Kokkonen, Huawei	\newline
++Jan Kiszka,	Siemens AG	\newline
++Jens Freimann, Red Hat	\newline
+ Jian Zhou,	Huawei	\newline
++Karen Xie, Xilinx	\newline
++Kumar Sanghvi, Xilinx	\newline
+ Lei Gong,	Huawei	\newline
++Lior Narkis,	Mellanox	\newline
+ Luiz Capitulino,	Red Hat	\newline
++Marc-André Lureau, Red Hat	\newline
++Mark Gray, Intel	\newline
+ Michael S. Tsirkin,	Red Hat	\newline
++Mihai Carabas,	Oracle	\newline
++Nishank Trivedi, NetApp	\newline
+ Paolo Bonzini,	Red Hat	\newline
+-Pawel Moll,	ARM \newline
++Paul Mundt, Huawei	\newline
++Pawel Moll,	ARM	\newline
+ Peng Long,	Huawei	\newline
+-Richard Sohn,	Alcatel-Lucent \newline
++Piotr Uminski, Intel	\newline
++Qian Xum, Intel	\newline
++Richard Sohn,	Alcatel-Lucent	\newline
+ Rusty Russell,	IBM	\newline
+ Sasha Levin,	Oracle	\newline
+ Sergey Tverdyshev,	Thales e-Security	\newline
+ Stefan Hajnoczi,	Red Hat	\newline
++Sundar Mohan, Xilinx	\newline
+ Tom Lyon,	Samya Systems, Inc.	\newline
++Victor Kaplansky, Red Hat	\newline
++Vijay Balakrishna,	Oracle	\newline
++Wei Wang, Intel	\newline
++Xin Zeng, Intel	\newline
+ \end{oasistitlesection}
+ 
+ The following non-members have provided valuable feedback on this
+ specification and are gratefully acknowledged:
+ 
+ \begin{oasistitlesection}{Reviewers}
++Aaron Conole,	Red Hat	\newline
+ Andrew Thornton,  Google \newline
+ Arun Subbarao,	LynuxWorks	\newline
++Baptiste Reynal,	Virtual Open Systems	\newline
+ Brian Foley,  ARM \newline
++Changpeng Liu,	Intel	\newline
++Christian Pinto,	Virtual Open Systems	\newline
++Christoffer Dall,	ARM	\newline
++Christian Borntraeger,	IBM	\newline
++Daniel Marcovitch,	Mellanox	\newline
+ David Alan Gilbert, Red Hat \newline
++David Hildenbrand,	Red Hat	\newline
+ Fam Zheng, Red Hat	\newline
+-Gerd Hoffmann, Red Hat	\newline
+-Halil Pasic,	IBM	\newline
++Gil Savir,	Intel	\newline
++Gonglei (Arei),	Huawei	\newline
++Hannes Reiencke, SUSE	\newline
++Jacques Durand,	Fujutsu	\newline
+ Jason Wang, Red Hat \newline
+-Laura Novich, Red Hat	\newline
+-Patrick Durusau,	Technical Advisory Board, OASIS	\newline
+-Thomas Huth,	Red Hat	\newline
+-Yan Vugenfirer, Red Hat / Daynix	\newline
++Jean-Philippe Brucker,	ARM	\newline
++Jonathan Helman,	Oracle	\newline
+ Kevin Lo,	MSI	\newline
++Laura Novich, Red Hat	\newline
++Ladi Prosek,	Red Hat	\newline
++Longpeng (Mike),	Huawei	\newline
++Maxime Coquelin,	Red Hat	\newline
++Namhyung Kim,	LG	\newline
++Patrick Durusau,	Technical Advisory Board, OASIS	\newline
++Robin Cover,	Technical Advisory Board, OASIS	\newline
++Sameeh Jubran,	Red Hat / Daynix	\newline
++Sridhar Samudrala,	Intel	\newline
++Stefano Garzarella,	Red Hat	\newline
++Thomas Huth,	Red Hat	\newline
++Tiwei Bie,	Intel	\newline
++Tomáš Golembiovský,	Red Hat	\newline
++Victor Kaplansky,	Red Hat	\newline
++Yan Vugenfirer, Red Hat / Daynix	\newline
++Will Deacon,	ARM	\newline
++Yuri Benditovich,	Red Hat / Daynix	\newline
++Zhoujian,	Huawei	\newline
+ \end{oasistitlesection}
+-- 
+MST
 
 ---------------------------------------------------------------------
 To unsubscribe from this mail list, you must leave the OASIS TC that 
