@@ -1,60 +1,108 @@
-Return-Path: virtio-dev-return-5670-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-5649-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id CB5E8985EC8
-	for <virtio-dev@lists.oasis-open.org>; Thu, 18 Apr 2019 04:39:17 +0000 (UTC)
-Date: Thu, 18 Apr 2019 00:39:15 -0400 (EDT)
-From: Pankaj Gupta <pagupta@redhat.com>
-Message-ID: <943759229.22370968.1555562355322.JavaMail.zimbra@redhat.com>
-In-Reply-To: <20190415135439.GF29134@stefanha-x1.localdomain>
-References: <20190412050306.31874-1-pagupta@redhat.com> <20190415135439.GF29134@stefanha-x1.localdomain>
+From: Lars Ganrot <lga@napatech.com>
+Date: Tue, 2 Apr 2019 18:29:50 +0000
+Message-ID: <36c45416af1b4d4e94ed184b916b3e61@napatech.com>
+References: <20190328191135.25628-1-mst@redhat.com>
+ <20190328151221-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20190328151221-mutt-send-email-mst@kernel.org>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [virtio-dev] Re: [PATCH] content: reserve device ID for
- virtio-pmem devices
-To: Stefan Hajnoczi <stefanha@redhat.com>
-Cc: virtio-dev@lists.oasis-open.org, mst@redhat.com, cohuck@redhat.com
+Subject: RE: [virtio-dev] Re: [PATCH] acknowledgements: add commenters from
+ mailing list
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: "virtio@lists.oasis-open.org" <virtio@lists.oasis-open.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-
-Hi Stefan,
-
-Thank you for the review. 
-
-After sending this patch I realized device ID 26 is already requested
-by virtio-fs. So, I sent a v2[1] with a request to reserve id 27.
-Could you please review this.
-
-[1]
-[PATCH v2] content: reserve device ID for virtio-pmem devices
-
-
-Thanks,
-Pankaj 
-
-> 
-> On Fri, Apr 12, 2019 at 10:33:06AM +0530, Pankaj Gupta wrote:
-> > We need a device ID for virtio-pmem devices. As 25 is
-> > requested by audio device, so requesting next available(26).
-> > Also, updated the previously requested github issue[1] for
-> > voting.
-> > 
-> > [1] https://github.com/oasis-tcs/virtio-spec/issues/38
-> > 
-> > Signed-off-by: Pankaj Gupta <pagupta@redhat.com>
-> > ---
-> >  content.tex | 2 ++
-> >  1 file changed, 2 insertions(+)
-> 
-> Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
-> 
-
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+SGkgTWljaGFlbCwNCg0KVGhlIHJlY2VudCBjb21taXQ6DQoNCmh0dHBzOi8vZ2l0aHViLmNvbS9v
+YXNpcy10Y3MvdmlydGlvLWRvY3MvY29tbWl0LzQxMDhjMDdiNzM4MjkxMWE5ZGZlYTIxZDM1YTc2
+NWQ3ZGE5OTliYTMNCg0KcDE2MCBvZiB0aGUgcGRmIHNlZW1zIHRvIGJlIGJhZGx5IGZvcm1hdHRl
+ZC4gVGhlIGxpc3Qgb2YgQWNrbm93bGVkZ2VtZW50cyBzcGlsbHMgb3ZlciB0aGUgcGFnZSBlbmQu
+IFNlZW4gaW4gYm90aCBFZGdlIGFuZCBBY3JvYmF0Lg0KDQpCUiwNCg0KLUxhcnMNCg0KLS0tLS1P
+cmlnaW5hbCBNZXNzYWdlLS0tLS0NCkZyb206IHZpcnRpby1kZXZAbGlzdHMub2FzaXMtb3Blbi5v
+cmcgPHZpcnRpby1kZXZAbGlzdHMub2FzaXMtb3Blbi5vcmc+IE9uIEJlaGFsZiBPZiBNaWNoYWVs
+IFMuIFRzaXJraW4NClNlbnQ6IDI4LiBtYXJ0cyAyMDE5IDIwOjEzDQpUbzogdmlydGlvQGxpc3Rz
+Lm9hc2lzLW9wZW4ub3JnOyB2aXJ0aW8tZGV2QGxpc3RzLm9hc2lzLW9wZW4ub3JnDQpTdWJqZWN0
+OiBbdmlydGlvLWRldl0gUmU6IFtQQVRDSF0gYWNrbm93bGVkZ2VtZW50czogYWRkIGNvbW1lbnRl
+cnMgZnJvbSBtYWlsaW5nIGxpc3QNCg0KT24gVGh1LCBNYXIgMjgsIDIwMTkgYXQgMDM6MTE6MzlQ
+TSAtMDQwMCwgTWljaGFlbCBTLiBUc2lya2luIHdyb3RlOg0KPiBOb3QgYWxsIGNvbW1lbnRlcnMg
+c2VudCBhbiBvcmRlcmx5ICJSZXZpZXdlZC1ieSIgdGFnLiAgU29tZSBqdXN0IA0KPiBjb250cmli
+dXRlZCB0byB0aGUgZGlzY3Vzc2lvbiBvbiB0aGUgbWFpbGluZyBsaXN0Lg0KPiBBZGQgdGhlaXIg
+bmFtZXMgYW5kIGFmZmlsaWF0aW9uIGZyb20gdGhlIG1haWxpbmcgbGlzdCBhcmNoaXZlcy4NCj4g
+DQo+IFNpZ25lZC1vZmYtYnk6IE1pY2hhZWwgUy4gVHNpcmtpbiA8bXN0QHJlZGhhdC5jb20+DQo+
+IC0tLQ0KDQpOb3RlOiB0aGlzIGlzIG5vdCB5ZXQgaW4gdGhlIGxhdGVzdCBkcmFmdCwgYnV0IHNp
+bmNlIHRoaXMgaXMgdHJpdmlhbGx5IG5vbi1tYXRlcmlhbCBJIGludGVuZCB0byBhZGQgdGhpcyBj
+aGFuZ2UgYmVmb3JlIHdlIHZvdGUgb24gMS4xLWNzMDENCg0KPiAgYWNrbm93bGVkZ2VtZW50cy50
+ZXggfCA0NSANCj4gKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysN
+Cj4gIDEgZmlsZSBjaGFuZ2VkLCA0NSBpbnNlcnRpb25zKCspDQo+IA0KPiBkaWZmIC0tZ2l0IGEv
+YWNrbm93bGVkZ2VtZW50cy50ZXggYi9hY2tub3dsZWRnZW1lbnRzLnRleCBpbmRleCANCj4gYjJm
+ZWVhZi4uMWRjYmU0NCAxMDA2NDQNCj4gLS0tIGEvYWNrbm93bGVkZ2VtZW50cy50ZXgNCj4gKysr
+IGIvYWNrbm93bGVkZ2VtZW50cy50ZXgNCj4gQEAgLTY1LDQyICs2NSw4NyBAQCANCj4gXGNoYXB0
+ZXJ7QWNrbm93bGVkZ2VtZW50c31cbGFiZWx7Y2hhcDpBY2tub3dsZWRnZW1lbnRzfQ0KPiAgDQo+
+ICBcYmVnaW57b2FzaXN0aXRsZXNlY3Rpb259e1Jldmlld2Vyc30NCj4gIEFhcm9uIENvbm9sZSwJ
+UmVkIEhhdAlcbmV3bGluZQ0KPiArQWRhbSBUYW8sCUh1YXdlaQlcbmV3bGluZQ0KPiArQWxleGFu
+ZGVyIER1eWNrLAlJbnRlbAlcbmV3bGluZQ0KPiArQW5kcmVhcyBQYXBlLAlBRElURy9FU0IJXG5l
+d2xpbmUNCj4gIEFuZHJldyBUaG9ybnRvbiwgIEdvb2dsZSBcbmV3bGluZQ0KPiAgQXJ1biBTdWJi
+YXJhbywJTHludXhXb3JrcwlcbmV3bGluZQ0KPiAgQmFwdGlzdGUgUmV5bmFsLAlWaXJ0dWFsIE9w
+ZW4gU3lzdGVtcwlcbmV3bGluZQ0KPiArQmhhcmF0IEJodXNoYW4sCU5YUCBTZW1pY29uZHVjdG9y
+cwlcbmV3bGluZQ0KPiAgQnJpYW4gRm9sZXksICBBUk0gXG5ld2xpbmUNCj4gK0NoYW5kcmEgVGh5
+YW1hZ29uZGx1LAlYaWxpbngJXG5ld2xpbmUNCj4gIENoYW5ncGVuZyBMaXUsCUludGVsCVxuZXds
+aW5lDQo+ICBDaHJpc3RpYW4gUGludG8sCVZpcnR1YWwgT3BlbiBTeXN0ZW1zCVxuZXdsaW5lDQo+
+ICBDaHJpc3RvZmZlciBEYWxsLAlBUk0JXG5ld2xpbmUNCj4gK0NocmlzdG9waCBIZWxsd2lnLAlJ
+bmRpdmlkdWFsIFxuZXdsaW5lDQo+ICBDaHJpc3RpYW4gQm9ybnRyYWVnZXIsCUlCTQlcbmV3bGlu
+ZQ0KPiAgRGFuaWVsIE1hcmNvdml0Y2gsCU1lbGxhbm94CVxuZXdsaW5lDQo+ICBEYXZpZCBBbGFu
+IEdpbGJlcnQsIFJlZCBIYXQgXG5ld2xpbmUNCj4gIERhdmlkIEhpbGRlbmJyYW5kLAlSZWQgSGF0
+CVxuZXdsaW5lDQo+ICtEYXZpZCBSaWRkb2NoLAlTb2xhcmZsYXJlCVxuZXdsaW5lDQo+ICtEZW5p
+cyBWLiBMdW5ldiwJT3BlblZaCVxuZXdsaW5lDQo+ICtEbWl0cnkgRmxleXRtYW4sCVJlZCBIYXQJ
+XG5ld2xpbmUNCj4gK0RvbiBXYWxsd29yaywJQnJvYWRjb20JXG5ld2xpbmUNCj4gK0VtaWx5IERy
+ZWEsCUFSTQlcbmV3bGluZQ0KPiArRXJpYyBBdWdlciwJUmVkIEhhdAlcbmV3bGluZQ0KPiAgRmFt
+IFpoZW5nLCBSZWQgSGF0CVxuZXdsaW5lDQo+ICtGcmFuY2VzY28gRnVzY28sCVJlZCBIYXQJXG5l
+d2xpbmUNCj4gK0ZyYW5rIFlhbmcsCUdvb2dsZQlcbmV3bGluZQ0KPiAgR2lsIFNhdmlyLAlJbnRl
+bAlcbmV3bGluZQ0KPiAgR29uZ2xlaSAoQXJlaSksCUh1YXdlaQlcbmV3bGluZQ0KPiArR3JlZyBL
+dXJ6LAlJQk0JXG5ld2xpbmUNCj4gIEhhbm5lcyBSZWllbmNrZSwgU1VTRQlcbmV3bGluZQ0KPiAr
+SWFuIENhbXBiZWxsLAlEb2NrZXIJXG5ld2xpbmUNCj4gK0lseWEgTGVzb2toaW4sCU1lbGxhbm94
+CVxuZXdsaW5lDQo+ICBKYWNxdWVzIER1cmFuZCwJRnVqdXRzdQlcbmV3bGluZQ0KPiArSmFrdWIg
+SmVybWFyLAlLZXJua29uemVwdAlcbmV3bGluZQ0KPiArSmFuIFNjaGV1cmljaCwJRXJpY3Nzb24J
+XG5ld2xpbmUNCj4gK0phc29uIEJhcm9uLAlBa2FtYWkJXG5ld2xpbmUNCj4gIEphc29uIFdhbmcs
+IFJlZCBIYXQgXG5ld2xpbmUNCj4gIEplYW4tUGhpbGlwcGUgQnJ1Y2tlciwJQVJNCVxuZXdsaW5l
+DQo+ICtKaWFuZmVuZyBUYW4sCWludGVsCVxuZXdsaW5lDQo+ICBKb25hdGhhbiBIZWxtYW4sCU9y
+YWNsZQlcbmV3bGluZQ0KPiArS2FyYW5kZWVwIENoYWhhbCwJREROCVxuZXdsaW5lDQo+ICBLZXZp
+biBMbywJTVNJCVxuZXdsaW5lDQo+ICtLZXZpbiBUaWFuLAlJbnRlbAlcbmV3bGluZQ0KPiArS3Vs
+bHkgRGhhbm9hLAlJbnRlbAlcbmV3bGluZQ0KPiAgTGF1cmEgTm92aWNoLCBSZWQgSGF0CVxuZXds
+aW5lDQo+ICBMYWRpIFByb3NlaywJUmVkIEhhdAlcbmV3bGluZQ0KPiArTGFycyBHYW5yb3QsCU5h
+cGF0ZWNoCVxuZXdsaW5lDQo+ICBMb25ncGVuZyAoTWlrZSksCUh1YXdlaQlcbmV3bGluZQ0KPiAr
+TWFyaW8gVG9ycmVjaWxsYXMgUm9kcmlndWV6LAlBUk0JXG5ld2xpbmUNCj4gK01hcmsgUnVzdGFk
+LAlJbnRlbAlcbmV3bGluZQ0KPiAgTWF4aW1lIENvcXVlbGluLAlSZWQgSGF0CVxuZXdsaW5lDQo+
+ICBOYW1oeXVuZyBLaW0sCUxHCVxuZXdsaW5lDQo+ICtPbGEgTGlsamVkYWhsLAlBUk0JXG5ld2xp
+bmUNCj4gK1BhbmthaiBHdXB0YSwJUmVkIEhhdAlcbmV3bGluZQ0KPiAgUGF0cmljayBEdXJ1c2F1
+LAlUZWNobmljYWwgQWR2aXNvcnkgQm9hcmQsIE9BU0lTCVxuZXdsaW5lDQo+ICtQaWVycmUgUGZp
+c3RlciwJQ2lzY28JXG5ld2xpbmUNCj4gK1ByYW5hdmt1bWFyIFNhd2FyZ2FvbmthciwJTGluYXJv
+CVxuZXdsaW5lDQo+ICtSYXVjaGZ1c3MgSG9sbSwJSHVhd2VpCVxuZXdsaW5lDQo+ICtSb2IgTWls
+bGVyLAlCcm9hZGNvbQlcbmV3bGluZQ0KPiArUm9tYW4gS2lyeWFub3YsCUdvb2dsZQlcbmV3bGlu
+ZQ0KPiAgUm9iaW4gQ292ZXIsCVRlY2huaWNhbCBBZHZpc29yeSBCb2FyZCwgT0FTSVMJXG5ld2xp
+bmUNCj4gK1JvZ2VyIFMgQ2hpZW4sCUludGVsCVxuZXdsaW5lDQo+ICBTYW1lZWggSnVicmFuLAlS
+ZWQgSGF0IC8gRGF5bml4CVxuZXdsaW5lDQo+ICtTaS1XZWkgTGl1LAlPcmFjbGUJXG5ld2xpbmUN
+Cj4gIFNyaWRoYXIgU2FtdWRyYWxhLAlJbnRlbAlcbmV3bGluZQ0KPiArU3RlZmFuIEZyaXRzY2gs
+CUluZGl2aWR1YWwgXG5ld2xpbmUNCj4gIFN0ZWZhbm8gR2FyemFyZWxsYSwJUmVkIEhhdAlcbmV3
+bGluZQ0KPiArU3RldmVuIEx1b25nLAlDaXNjbwlcbmV3bGluZQ0KPiAgVGhvbWFzIEh1dGgsCVJl
+ZCBIYXQJXG5ld2xpbmUNCj4gIFRpd2VpIEJpZSwJSW50ZWwJXG5ld2xpbmUNCj4gIFRvbcOhxaEg
+R29sZW1iaW92c2vDvSwJUmVkIEhhdAlcbmV3bGluZQ0KPiArVmVudSBCdXNpcmVkZHksCU9yYWNs
+ZQlcbmV3bGluZQ0KPiAgVmljdG9yIEthcGxhbnNreSwJUmVkIEhhdAlcbmV3bGluZQ0KPiArVmlq
+YXlhYmhhc2thciBCYWxha3Jpc2huYSwJT3JhY2xlCVxuZXdsaW5lDQo+ICtWbGFkIFlhc2V2aWNo
+LAlSZWQgSGF0CVxuZXdsaW5lDQo+ICBZYW4gVnVnZW5maXJlciwgUmVkIEhhdCAvIERheW5peAlc
+bmV3bGluZQ0KPiArV2VpIFh1LAlSZWQgSGF0CVxuZXdsaW5lDQo+ICBXaWxsIERlYWNvbiwJQVJN
+CVxuZXdsaW5lDQo+ICtXaWxsZW0gZGUgQnJ1aWpuLAlHb29nbGUJXG5ld2xpbmUNCj4gK1l1YW5o
+YW4gTGl1LAlJbnRlbAlcbmV3bGluZQ0KPiAgWXVyaSBCZW5kaXRvdmljaCwJUmVkIEhhdCAvIERh
+eW5peAlcbmV3bGluZQ0KPiArWmhpIFlvbmcgV3UsCUlCTQlcbmV3bGluZQ0KPiAgWmhvdWppYW4s
+CUh1YXdlaQlcbmV3bGluZQ0KPiAgXGVuZHtvYXNpc3RpdGxlc2VjdGlvbn0NCj4gLS0NCj4gTVNU
+DQoNCi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLQ0KVG8gdW5zdWJzY3JpYmUsIGUtbWFpbDogdmlydGlvLWRldi11bnN1
+YnNjcmliZUBsaXN0cy5vYXNpcy1vcGVuLm9yZw0KRm9yIGFkZGl0aW9uYWwgY29tbWFuZHMsIGUt
+bWFpbDogdmlydGlvLWRldi1oZWxwQGxpc3RzLm9hc2lzLW9wZW4ub3JnDQoNCg==
 
