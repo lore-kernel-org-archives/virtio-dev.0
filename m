@@ -1,131 +1,193 @@
-Return-Path: virtio-dev-return-5653-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-From: Lars Ganrot <lga@napatech.com>
-Date: Wed, 3 Apr 2019 05:36:30 +0000
-Message-ID: <5b2944c69c14455990241d4e9e831ef1@napatech.com>
+Return-Path: virtio-return-3348-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio@lists.oasis-open.org>
+List-Post: <mailto:virtio@lists.oasis-open.org>
+List-Help: <mailto:virtio-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
+Date: Wed, 3 Apr 2019 16:10:58 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20190403161049-mutt-send-email-mst@kernel.org>
 References: <20190328191135.25628-1-mst@redhat.com>
  <20190328151221-mutt-send-email-mst@kernel.org>
  <36c45416af1b4d4e94ed184b916b3e61@napatech.com>
  <20190402154537-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20190402154537-mutt-send-email-mst@kernel.org>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <5b2944c69c14455990241d4e9e831ef1@napatech.com>
 MIME-Version: 1.0
-Subject: RE: [virtio-dev] Re: [PATCH] acknowledgements: add commenters from
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <5b2944c69c14455990241d4e9e831ef1@napatech.com>
+Subject: [virtio] Re: [virtio-dev] Re: [PATCH] acknowledgements: add commenters from
  mailing list
-To: "Michael S. Tsirkin" <mst@redhat.com>
+To: Lars Ganrot <lga@napatech.com>
 Cc: "virtio@lists.oasis-open.org" <virtio@lists.oasis-open.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-TG9va2luZyBhdCB0aGUgdXBkYXRlZCBjb21taXQ6DQoNCmh0dHBzOi8vZ2l0aHViLmNvbS9vYXNp
-cy10Y3MvdmlydGlvLWRvY3MvY29tbWl0L2UyZmI5ODIzZjMwY2NjMzk3MjVkNDc0OTYxMDlkYzNl
-ZTg3MDY5YjQNCg0KSSdtIGNvbmZ1c2VkLiBJdCBpcyBiYWNrLWRhdGVkIHRvIDIwIERlY2VtYmVy
-IDIwMTgsIGFuZCB0aGUgQWNrbm93bGVkZ2VtZW50cyBhcmUgcmV2ZXJ0ZWQgYmFjayB0byB0aGUg
-c2hvcnQgbGlzdCBwcmlvciB0byB0aGUgY2hhbmdlIHllc3RlcmRheS4NCg0KQlIsDQoNCi1MYXJz
-DQoNCi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQpGcm9tOiBNaWNoYWVsIFMuIFRzaXJraW4g
-PG1zdEByZWRoYXQuY29tPiANClNlbnQ6IDIuIGFwcmlsIDIwMTkgMjE6NDYNClRvOiBMYXJzIEdh
-bnJvdCA8bGdhQG5hcGF0ZWNoLmNvbT4NCkNjOiB2aXJ0aW9AbGlzdHMub2FzaXMtb3Blbi5vcmc7
-IHZpcnRpby1kZXZAbGlzdHMub2FzaXMtb3Blbi5vcmcNClN1YmplY3Q6IFJlOiBbdmlydGlvLWRl
-dl0gUmU6IFtQQVRDSF0gYWNrbm93bGVkZ2VtZW50czogYWRkIGNvbW1lbnRlcnMgZnJvbSBtYWls
-aW5nIGxpc3QNCg0KVGhhbmtzIQ0KRml4ZWQgdXAgaW4gdGhlIGxhdGVzIGNzMDEgZG9jIGFuZCB1
-cGxvYWRlZCB0byB2aXJ0aW8tZG9jcy4NCkNoZWNrIGl0IG91dCENCg0KDQpPbiBUdWUsIEFwciAw
-MiwgMjAxOSBhdCAwNjoyOTo1MFBNICswMDAwLCBMYXJzIEdhbnJvdCB3cm90ZToNCj4gSGkgTWlj
-aGFlbCwNCj4gDQo+IFRoZSByZWNlbnQgY29tbWl0Og0KPiANCj4gaHR0cHM6Ly9naXRodWIuY29t
-L29hc2lzLXRjcy92aXJ0aW8tZG9jcy9jb21taXQvNDEwOGMwN2I3MzgyOTExYTlkZmVhMg0KPiAx
-ZDM1YTc2NWQ3ZGE5OTliYTMNCj4gDQo+IHAxNjAgb2YgdGhlIHBkZiBzZWVtcyB0byBiZSBiYWRs
-eSBmb3JtYXR0ZWQuIFRoZSBsaXN0IG9mIEFja25vd2xlZGdlbWVudHMgc3BpbGxzIG92ZXIgdGhl
-IHBhZ2UgZW5kLiBTZWVuIGluIGJvdGggRWRnZSBhbmQgQWNyb2JhdC4NCj4gDQo+IEJSLA0KPiAN
-Cj4gLUxhcnMNCj4gDQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IHZpcnRp
-by1kZXZAbGlzdHMub2FzaXMtb3Blbi5vcmcgDQo+IDx2aXJ0aW8tZGV2QGxpc3RzLm9hc2lzLW9w
-ZW4ub3JnPiBPbiBCZWhhbGYgT2YgTWljaGFlbCBTLiBUc2lya2luDQo+IFNlbnQ6IDI4LiBtYXJ0
-cyAyMDE5IDIwOjEzDQo+IFRvOiB2aXJ0aW9AbGlzdHMub2FzaXMtb3Blbi5vcmc7IHZpcnRpby1k
-ZXZAbGlzdHMub2FzaXMtb3Blbi5vcmcNCj4gU3ViamVjdDogW3ZpcnRpby1kZXZdIFJlOiBbUEFU
-Q0hdIGFja25vd2xlZGdlbWVudHM6IGFkZCBjb21tZW50ZXJzIA0KPiBmcm9tIG1haWxpbmcgbGlz
-dA0KPiANCj4gT24gVGh1LCBNYXIgMjgsIDIwMTkgYXQgMDM6MTE6MzlQTSAtMDQwMCwgTWljaGFl
-bCBTLiBUc2lya2luIHdyb3RlOg0KPiA+IE5vdCBhbGwgY29tbWVudGVycyBzZW50IGFuIG9yZGVy
-bHkgIlJldmlld2VkLWJ5IiB0YWcuICBTb21lIGp1c3QgDQo+ID4gY29udHJpYnV0ZWQgdG8gdGhl
-IGRpc2N1c3Npb24gb24gdGhlIG1haWxpbmcgbGlzdC4NCj4gPiBBZGQgdGhlaXIgbmFtZXMgYW5k
-IGFmZmlsaWF0aW9uIGZyb20gdGhlIG1haWxpbmcgbGlzdCBhcmNoaXZlcy4NCj4gPg0KPiA+IFNp
-Z25lZC1vZmYtYnk6IE1pY2hhZWwgUy4gVHNpcmtpbiA8bXN0QHJlZGhhdC5jb20+DQo+ID4gLS0t
-DQo+IA0KPiBOb3RlOiB0aGlzIGlzIG5vdCB5ZXQgaW4gdGhlIGxhdGVzdCBkcmFmdCwgYnV0IHNp
-bmNlIHRoaXMgaXMgdHJpdmlhbGx5IA0KPiBub24tbWF0ZXJpYWwgSSBpbnRlbmQgdG8gYWRkIHRo
-aXMgY2hhbmdlIGJlZm9yZSB3ZSB2b3RlIG9uIDEuMS1jczAxDQo+IA0KPiA+ICBhY2tub3dsZWRn
-ZW1lbnRzLnRleCB8IDQ1DQo+ID4gKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysr
-KysrKysrKysNCj4gPiAgMSBmaWxlIGNoYW5nZWQsIDQ1IGluc2VydGlvbnMoKykNCj4gPg0KPiA+
-IGRpZmYgLS1naXQgYS9hY2tub3dsZWRnZW1lbnRzLnRleCBiL2Fja25vd2xlZGdlbWVudHMudGV4
-IGluZGV4DQo+ID4gYjJmZWVhZi4uMWRjYmU0NCAxMDA2NDQNCj4gPiAtLS0gYS9hY2tub3dsZWRn
-ZW1lbnRzLnRleA0KPiA+ICsrKyBiL2Fja25vd2xlZGdlbWVudHMudGV4DQo+ID4gQEAgLTY1LDQy
-ICs2NSw4NyBAQA0KPiA+IFxjaGFwdGVye0Fja25vd2xlZGdlbWVudHN9XGxhYmVse2NoYXA6QWNr
-bm93bGVkZ2VtZW50c30NCj4gPg0KPiA+ICBcYmVnaW57b2FzaXN0aXRsZXNlY3Rpb259e1Jldmll
-d2Vyc30NCj4gPiAgQWFyb24gQ29ub2xlLFJlZCBIYXRcbmV3bGluZQ0KPiA+ICtBZGFtIFRhbyxI
-dWF3ZWlcbmV3bGluZQ0KPiA+ICtBbGV4YW5kZXIgRHV5Y2ssSW50ZWxcbmV3bGluZQ0KPiA+ICtB
-bmRyZWFzIFBhcGUsQURJVEcvRVNCXG5ld2xpbmUNCj4gPiAgQW5kcmV3IFRob3JudG9uLCAgR29v
-Z2xlIFxuZXdsaW5lDQo+ID4gIEFydW4gU3ViYmFyYW8sTHludXhXb3Jrc1xuZXdsaW5lDQo+ID4g
-IEJhcHRpc3RlIFJleW5hbCxWaXJ0dWFsIE9wZW4gU3lzdGVtc1xuZXdsaW5lDQo+ID4gK0JoYXJh
-dCBCaHVzaGFuLE5YUCBTZW1pY29uZHVjdG9yc1xuZXdsaW5lDQo+ID4gIEJyaWFuIEZvbGV5LCAg
-QVJNIFxuZXdsaW5lDQo+ID4gK0NoYW5kcmEgVGh5YW1hZ29uZGx1LFhpbGlueFxuZXdsaW5lDQo+
-ID4gIENoYW5ncGVuZyBMaXUsSW50ZWxcbmV3bGluZQ0KPiA+ICBDaHJpc3RpYW4gUGludG8sVmly
-dHVhbCBPcGVuIFN5c3RlbXNcbmV3bGluZSAgQ2hyaXN0b2ZmZXIgDQo+ID4gRGFsbCxBUk1cbmV3
-bGluZQ0KPiA+ICtDaHJpc3RvcGggSGVsbHdpZyxJbmRpdmlkdWFsIFxuZXdsaW5lDQo+ID4gIENo
-cmlzdGlhbiBCb3JudHJhZWdlcixJQk1cbmV3bGluZQ0KPiA+ICBEYW5pZWwgTWFyY292aXRjaCxN
-ZWxsYW5veFxuZXdsaW5lDQo+ID4gIERhdmlkIEFsYW4gR2lsYmVydCwgUmVkIEhhdCBcbmV3bGlu
-ZSAgRGF2aWQgSGlsZGVuYnJhbmQsUmVkIA0KPiA+IEhhdFxuZXdsaW5lDQo+ID4gK0RhdmlkIFJp
-ZGRvY2gsU29sYXJmbGFyZVxuZXdsaW5lDQo+ID4gK0RlbmlzIFYuIEx1bmV2LE9wZW5WWlxuZXds
-aW5lDQo+ID4gK0RtaXRyeSBGbGV5dG1hbixSZWQgSGF0XG5ld2xpbmUNCj4gPiArRG9uIFdhbGx3
-b3JrLEJyb2FkY29tXG5ld2xpbmUNCj4gPiArRW1pbHkgRHJlYSxBUk1cbmV3bGluZQ0KPiA+ICtF
-cmljIEF1Z2VyLFJlZCBIYXRcbmV3bGluZQ0KPiA+ICBGYW0gWmhlbmcsIFJlZCBIYXRcbmV3bGlu
-ZQ0KPiA+ICtGcmFuY2VzY28gRnVzY28sUmVkIEhhdFxuZXdsaW5lDQo+ID4gK0ZyYW5rIFlhbmcs
-R29vZ2xlXG5ld2xpbmUNCj4gPiAgR2lsIFNhdmlyLEludGVsXG5ld2xpbmUNCj4gPiAgR29uZ2xl
-aSAoQXJlaSksSHVhd2VpXG5ld2xpbmUNCj4gPiArR3JlZyBLdXJ6LElCTVxuZXdsaW5lDQo+ID4g
-IEhhbm5lcyBSZWllbmNrZSwgU1VTRVxuZXdsaW5lDQo+ID4gK0lhbiBDYW1wYmVsbCxEb2NrZXJc
-bmV3bGluZQ0KPiA+ICtJbHlhIExlc29raGluLE1lbGxhbm94XG5ld2xpbmUNCj4gPiAgSmFjcXVl
-cyBEdXJhbmQsRnVqdXRzdVxuZXdsaW5lDQo+ID4gK0pha3ViIEplcm1hcixLZXJua29uemVwdFxu
-ZXdsaW5lDQo+ID4gK0phbiBTY2hldXJpY2gsRXJpY3Nzb25cbmV3bGluZQ0KPiA+ICtKYXNvbiBC
-YXJvbixBa2FtYWlcbmV3bGluZQ0KPiA+ICBKYXNvbiBXYW5nLCBSZWQgSGF0IFxuZXdsaW5lDQo+
-ID4gIEplYW4tUGhpbGlwcGUgQnJ1Y2tlcixBUk1cbmV3bGluZQ0KPiA+ICtKaWFuZmVuZyBUYW4s
-aW50ZWxcbmV3bGluZQ0KPiA+ICBKb25hdGhhbiBIZWxtYW4sT3JhY2xlXG5ld2xpbmUNCj4gPiAr
-S2FyYW5kZWVwIENoYWhhbCxERE5cbmV3bGluZQ0KPiA+ICBLZXZpbiBMbyxNU0lcbmV3bGluZQ0K
-PiA+ICtLZXZpbiBUaWFuLEludGVsXG5ld2xpbmUNCj4gPiArS3VsbHkgRGhhbm9hLEludGVsXG5l
-d2xpbmUNCj4gPiAgTGF1cmEgTm92aWNoLCBSZWQgSGF0XG5ld2xpbmUNCj4gPiAgTGFkaSBQcm9z
-ZWssUmVkIEhhdFxuZXdsaW5lDQo+ID4gK0xhcnMgR2Fucm90LE5hcGF0ZWNoXG5ld2xpbmUNCj4g
-PiAgTG9uZ3BlbmcgKE1pa2UpLEh1YXdlaVxuZXdsaW5lDQo+ID4gK01hcmlvIFRvcnJlY2lsbGFz
-IFJvZHJpZ3VleixBUk1cbmV3bGluZSBNYXJrIFJ1c3RhZCxJbnRlbFxuZXdsaW5lDQo+ID4gIE1h
-eGltZSBDb3F1ZWxpbixSZWQgSGF0XG5ld2xpbmUNCj4gPiAgTmFtaHl1bmcgS2ltLExHXG5ld2xp
-bmUNCj4gPiArT2xhIExpbGplZGFobCxBUk1cbmV3bGluZQ0KPiA+ICtQYW5rYWogR3VwdGEsUmVk
-IEhhdFxuZXdsaW5lDQo+ID4gIFBhdHJpY2sgRHVydXNhdSxUZWNobmljYWwgQWR2aXNvcnkgQm9h
-cmQsIE9BU0lTXG5ld2xpbmUNCj4gPiArUGllcnJlIFBmaXN0ZXIsQ2lzY29cbmV3bGluZQ0KPiA+
-ICtQcmFuYXZrdW1hciBTYXdhcmdhb25rYXIsTGluYXJvXG5ld2xpbmUgUmF1Y2hmdXNzIA0KPiA+
-ICtIb2xtLEh1YXdlaVxuZXdsaW5lIFJvYiBNaWxsZXIsQnJvYWRjb21cbmV3bGluZSBSb21hbiAN
-Cj4gPiArS2lyeWFub3YsR29vZ2xlXG5ld2xpbmUNCj4gPiAgUm9iaW4gQ292ZXIsVGVjaG5pY2Fs
-IEFkdmlzb3J5IEJvYXJkLCBPQVNJU1xuZXdsaW5lDQo+ID4gK1JvZ2VyIFMgQ2hpZW4sSW50ZWxc
-bmV3bGluZQ0KPiA+ICBTYW1lZWggSnVicmFuLFJlZCBIYXQgLyBEYXluaXhcbmV3bGluZQ0KPiA+
-ICtTaS1XZWkgTGl1LE9yYWNsZVxuZXdsaW5lDQo+ID4gIFNyaWRoYXIgU2FtdWRyYWxhLEludGVs
-XG5ld2xpbmUNCj4gPiArU3RlZmFuIEZyaXRzY2gsSW5kaXZpZHVhbCBcbmV3bGluZQ0KPiA+ICBT
-dGVmYW5vIEdhcnphcmVsbGEsUmVkIEhhdFxuZXdsaW5lDQo+ID4gK1N0ZXZlbiBMdW9uZyxDaXNj
-b1xuZXdsaW5lDQo+ID4gIFRob21hcyBIdXRoLFJlZCBIYXRcbmV3bGluZQ0KPiA+ICBUaXdlaSBC
-aWUsSW50ZWxcbmV3bGluZQ0KPiA+ICBUb23DocWhIEdvbGVtYmlvdnNrw70sUmVkIEhhdFxuZXds
-aW5lDQo+ID4gK1ZlbnUgQnVzaXJlZGR5LE9yYWNsZVxuZXdsaW5lDQo+ID4gIFZpY3RvciBLYXBs
-YW5za3ksUmVkIEhhdFxuZXdsaW5lDQo+ID4gK1ZpamF5YWJoYXNrYXIgQmFsYWtyaXNobmEsT3Jh
-Y2xlXG5ld2xpbmUgVmxhZCBZYXNldmljaCxSZWQgDQo+ID4gK0hhdFxuZXdsaW5lDQo+ID4gIFlh
-biBWdWdlbmZpcmVyLCBSZWQgSGF0IC8gRGF5bml4XG5ld2xpbmUNCj4gPiArV2VpIFh1LFJlZCBI
-YXRcbmV3bGluZQ0KPiA+ICBXaWxsIERlYWNvbixBUk1cbmV3bGluZQ0KPiA+ICtXaWxsZW0gZGUg
-QnJ1aWpuLEdvb2dsZVxuZXdsaW5lDQo+ID4gK1l1YW5oYW4gTGl1LEludGVsXG5ld2xpbmUNCj4g
-PiAgWXVyaSBCZW5kaXRvdmljaCxSZWQgSGF0IC8gRGF5bml4XG5ld2xpbmUNCj4gPiArWmhpIFlv
-bmcgV3UsSUJNXG5ld2xpbmUNCj4gPiAgWmhvdWppYW4sSHVhd2VpXG5ld2xpbmUNCj4gPiAgXGVu
-ZHtvYXNpc3RpdGxlc2VjdGlvbn0NCj4gPiAtLQ0KPiA+IE1TVA0KPiANCj4gLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-DQo+IFRvIHVuc3Vic2NyaWJlLCBlLW1haWw6IHZpcnRpby1kZXYtdW5zdWJzY3JpYmVAbGlzdHMu
-b2FzaXMtb3Blbi5vcmcNCj4gRm9yIGFkZGl0aW9uYWwgY29tbWFuZHMsIGUtbWFpbDogdmlydGlv
-LWRldi1oZWxwQGxpc3RzLm9hc2lzLW9wZW4ub3JnDQo+IA0KPiBEaXNjbGFpbWVyOiBUaGlzIGVt
-YWlsIGFuZCBhbnkgZmlsZXMgdHJhbnNtaXR0ZWQgd2l0aCBpdCBtYXkgY29udGFpbiBjb25maWRl
-bnRpYWwgaW5mb3JtYXRpb24gaW50ZW5kZWQgZm9yIHRoZSBhZGRyZXNzZWUocykgb25seS4gVGhl
-IGluZm9ybWF0aW9uIGlzIG5vdCB0byBiZSBzdXJyZW5kZXJlZCBvciBjb3BpZWQgdG8gdW5hdXRo
-b3JpemVkIHBlcnNvbnMuIElmIHlvdSBoYXZlIHJlY2VpdmVkIHRoaXMgY29tbXVuaWNhdGlvbiBp
-biBlcnJvciwgcGxlYXNlIG5vdGlmeSB0aGUgc2VuZGVyIGltbWVkaWF0ZWx5IGFuZCBkZWxldGUg
-dGhpcyBlLW1haWwgZnJvbSB5b3VyIHN5c3RlbS4NCg==
+Should be fixed up now.
+
+On Wed, Apr 03, 2019 at 05:36:30AM +0000, Lars Ganrot wrote:
+> Looking at the updated commit:
+> 
+> https://github.com/oasis-tcs/virtio-docs/commit/e2fb9823f30ccc39725d47496109dc3ee87069b4
+> 
+> I'm confused. It is back-dated to 20 December 2018, and the Acknowledgements are reverted back to the short list prior to the change yesterday.
+> 
+> BR,
+> 
+> -Lars
+> 
+> -----Original Message-----
+> From: Michael S. Tsirkin <mst@redhat.com>
+> Sent: 2. april 2019 21:46
+> To: Lars Ganrot <lga@napatech.com>
+> Cc: virtio@lists.oasis-open.org; virtio-dev@lists.oasis-open.org
+> Subject: Re: [virtio-dev] Re: [PATCH] acknowledgements: add commenters from mailing list
+> 
+> Thanks!
+> Fixed up in the lates cs01 doc and uploaded to virtio-docs.
+> Check it out!
+> 
+> 
+> On Tue, Apr 02, 2019 at 06:29:50PM +0000, Lars Ganrot wrote:
+> > Hi Michael,
+> >
+> > The recent commit:
+> >
+> > https://github.com/oasis-tcs/virtio-docs/commit/4108c07b7382911a9dfea2
+> > 1d35a765d7da999ba3
+> >
+> > p160 of the pdf seems to be badly formatted. The list of Acknowledgements spills over the page end. Seen in both Edge and Acrobat.
+> >
+> > BR,
+> >
+> > -Lars
+> >
+> > -----Original Message-----
+> > From: virtio-dev@lists.oasis-open.org
+> > <virtio-dev@lists.oasis-open.org> On Behalf Of Michael S. Tsirkin
+> > Sent: 28. marts 2019 20:13
+> > To: virtio@lists.oasis-open.org; virtio-dev@lists.oasis-open.org
+> > Subject: [virtio-dev] Re: [PATCH] acknowledgements: add commenters
+> > from mailing list
+> >
+> > On Thu, Mar 28, 2019 at 03:11:39PM -0400, Michael S. Tsirkin wrote:
+> > > Not all commenters sent an orderly "Reviewed-by" tag.  Some just
+> > > contributed to the discussion on the mailing list.
+> > > Add their names and affiliation from the mailing list archives.
+> > >
+> > > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+> > > ---
+> >
+> > Note: this is not yet in the latest draft, but since this is trivially
+> > non-material I intend to add this change before we vote on 1.1-cs01
+> >
+> > >  acknowledgements.tex | 45
+> > > ++++++++++++++++++++++++++++++++++++++++++++
+> > >  1 file changed, 45 insertions(+)
+> > >
+> > > diff --git a/acknowledgements.tex b/acknowledgements.tex index
+> > > b2feeaf..1dcbe44 100644
+> > > --- a/acknowledgements.tex
+> > > +++ b/acknowledgements.tex
+> > > @@ -65,42 +65,87 @@
+> > > \chapter{Acknowledgements}\label{chap:Acknowledgements}
+> > >
+> > >  \begin{oasistitlesection}{Reviewers}
+> > >  Aaron Conole,Red Hat\newline
+> > > +Adam Tao,Huawei\newline
+> > > +Alexander Duyck,Intel\newline
+> > > +Andreas Pape,ADITG/ESB\newline
+> > >  Andrew Thornton,  Google \newline
+> > >  Arun Subbarao,LynuxWorks\newline
+> > >  Baptiste Reynal,Virtual Open Systems\newline
+> > > +Bharat Bhushan,NXP Semiconductors\newline
+> > >  Brian Foley,  ARM \newline
+> > > +Chandra Thyamagondlu,Xilinx\newline
+> > >  Changpeng Liu,Intel\newline
+> > >  Christian Pinto,Virtual Open Systems\newline  Christoffer
+> > > Dall,ARM\newline
+> > > +Christoph Hellwig,Individual \newline
+> > >  Christian Borntraeger,IBM\newline
+> > >  Daniel Marcovitch,Mellanox\newline
+> > >  David Alan Gilbert, Red Hat \newline  David Hildenbrand,Red
+> > > Hat\newline
+> > > +David Riddoch,Solarflare\newline
+> > > +Denis V. Lunev,OpenVZ\newline
+> > > +Dmitry Fleytman,Red Hat\newline
+> > > +Don Wallwork,Broadcom\newline
+> > > +Emily Drea,ARM\newline
+> > > +Eric Auger,Red Hat\newline
+> > >  Fam Zheng, Red Hat\newline
+> > > +Francesco Fusco,Red Hat\newline
+> > > +Frank Yang,Google\newline
+> > >  Gil Savir,Intel\newline
+> > >  Gonglei (Arei),Huawei\newline
+> > > +Greg Kurz,IBM\newline
+> > >  Hannes Reiencke, SUSE\newline
+> > > +Ian Campbell,Docker\newline
+> > > +Ilya Lesokhin,Mellanox\newline
+> > >  Jacques Durand,Fujutsu\newline
+> > > +Jakub Jermar,Kernkonzept\newline
+> > > +Jan Scheurich,Ericsson\newline
+> > > +Jason Baron,Akamai\newline
+> > >  Jason Wang, Red Hat \newline
+> > >  Jean-Philippe Brucker,ARM\newline
+> > > +Jianfeng Tan,intel\newline
+> > >  Jonathan Helman,Oracle\newline
+> > > +Karandeep Chahal,DDN\newline
+> > >  Kevin Lo,MSI\newline
+> > > +Kevin Tian,Intel\newline
+> > > +Kully Dhanoa,Intel\newline
+> > >  Laura Novich, Red Hat\newline
+> > >  Ladi Prosek,Red Hat\newline
+> > > +Lars Ganrot,Napatech\newline
+> > >  Longpeng (Mike),Huawei\newline
+> > > +Mario Torrecillas Rodriguez,ARM\newline Mark Rustad,Intel\newline
+> > >  Maxime Coquelin,Red Hat\newline
+> > >  Namhyung Kim,LG\newline
+> > > +Ola Liljedahl,ARM\newline
+> > > +Pankaj Gupta,Red Hat\newline
+> > >  Patrick Durusau,Technical Advisory Board, OASIS\newline
+> > > +Pierre Pfister,Cisco\newline
+> > > +Pranavkumar Sawargaonkar,Linaro\newline Rauchfuss
+> > > +Holm,Huawei\newline Rob Miller,Broadcom\newline Roman
+> > > +Kiryanov,Google\newline
+> > >  Robin Cover,Technical Advisory Board, OASIS\newline
+> > > +Roger S Chien,Intel\newline
+> > >  Sameeh Jubran,Red Hat / Daynix\newline
+> > > +Si-Wei Liu,Oracle\newline
+> > >  Sridhar Samudrala,Intel\newline
+> > > +Stefan Fritsch,Individual \newline
+> > >  Stefano Garzarella,Red Hat\newline
+> > > +Steven Luong,Cisco\newline
+> > >  Thomas Huth,Red Hat\newline
+> > >  Tiwei Bie,Intel\newline
+> > >  Tomáš Golembiovský,Red Hat\newline
+> > > +Venu Busireddy,Oracle\newline
+> > >  Victor Kaplansky,Red Hat\newline
+> > > +Vijayabhaskar Balakrishna,Oracle\newline Vlad Yasevich,Red
+> > > +Hat\newline
+> > >  Yan Vugenfirer, Red Hat / Daynix\newline
+> > > +Wei Xu,Red Hat\newline
+> > >  Will Deacon,ARM\newline
+> > > +Willem de Bruijn,Google\newline
+> > > +Yuanhan Liu,Intel\newline
+> > >  Yuri Benditovich,Red Hat / Daynix\newline
+> > > +Zhi Yong Wu,IBM\newline
+> > >  Zhoujian,Huawei\newline
+> > >  \end{oasistitlesection}
+> > > --
+> > > MST
+> >
+> > ---------------------------------------------------------------------
+> > To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+> > For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+> >
+> > Disclaimer: This email and any files transmitted with it may contain confidential information intended for the addressee(s) only. The information is not to be surrendered or copied to unauthorized persons. If you have received this communication in error, please notify the sender immediately and delete this e-mail from your system.
+> Disclaimer: This email and any files transmitted with it may contain confidential information intended for the addressee(s) only. The information is not to be surrendered or copied to unauthorized persons. If you have received this communication in error, please notify the sender immediately and delete this e-mail from your system.
+
+---------------------------------------------------------------------
+To unsubscribe from this mail list, you must leave the OASIS TC that 
+generates this mail.  Follow this link to all your TCs in OASIS at:
+https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
 
