@@ -1,129 +1,293 @@
-Return-Path: virtio-dev-return-5559-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-5656-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id B174E985E13
-	for <virtio-dev@lists.oasis-open.org>; Fri,  1 Mar 2019 20:55:20 +0000 (UTC)
-References: <20190225210529-mutt-send-email-mst@kernel.org>
- <d1060c75-eaba-ab6f-ff31-38cb3a47c711@oracle.com>
- <20190227173710-mutt-send-email-mst@kernel.org>
- <c72ce9eb-254c-cc3e-1969-f7f108506d5e@oracle.com>
- <20190227184601-mutt-send-email-mst@kernel.org>
- <a617ce13-4114-469d-ef33-a1c91150eeca@oracle.com>
- <20190227193923-mutt-send-email-mst@kernel.org>
- <36901346-e3d5-4e51-6a8d-678eb5b9e352@oracle.com>
- <20190228091119-mutt-send-email-mst@kernel.org>
- <8a387954-1e21-947b-a5a9-c49adaea2e81@oracle.com>
- <20190301082448-mutt-send-email-mst@kernel.org>
-From: si-wei liu <si-wei.liu@oracle.com>
-Message-ID: <32dbd963-b4ca-5f05-3259-89594c55e911@oracle.com>
-Date: Fri, 1 Mar 2019 12:55:02 -0800
+	by lists.oasis-open.org (Postfix) with ESMTP id 749AD985E02
+	for <virtio-dev@lists.oasis-open.org>; Wed, 10 Apr 2019 10:03:02 +0000 (UTC)
+Date: Wed, 10 Apr 2019 12:02:44 +0200
+From: Cornelia Huck <cohuck@redhat.com>
+Message-ID: <20190410120244.3c0288d4.cohuck@redhat.com>
+In-Reply-To: <20190326143507.12607-1-pagupta@redhat.com>
+References: <20190326143507.12607-1-pagupta@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <20190301082448-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Subject: Re: [virtio-dev] Re: net_failover slave udev renaming (was Re: [RFC
- PATCH net-next v6 4/4] netvsc: refactor notifier/event handling code to use
- the bypass framework)
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: "Samudrala, Sridhar" <sridhar.samudrala@intel.com>, Siwei Liu <loseweigh@gmail.com>, Jiri Pirko <jiri@resnulli.us>, Stephen Hemminger <stephen@networkplumber.org>, David Miller <davem@davemloft.net>, Netdev <netdev@vger.kernel.org>, virtualization@lists.linux-foundation.org, virtio-dev <virtio-dev@lists.oasis-open.org>, "Brandeburg, Jesse" <jesse.brandeburg@intel.com>, Alexander Duyck <alexander.h.duyck@intel.com>, Jakub Kicinski <kubakici@wp.pl>, Jason Wang <jasowang@redhat.com>, liran.alon@oracle.com
+Subject: [virtio-dev] Re: [RFC] virtio-pmem: PMEM device spec
+To: Pankaj Gupta <pagupta@redhat.com>
+Cc: virtio-dev@lists.oasis-open.org, mst@redhat.com, david@redhat.com, riel@surriel.com, stefanha@redhat.com, dan.j.williams@intel.com, aarcange@redhat.com, lcapitulino@redhat.com, nilal@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+On Tue, 26 Mar 2019 20:05:07 +0530
+Pankaj Gupta <pagupta@redhat.com> wrote:
 
+> This patch proposes a virtio specification for new
+> virtio pmem device. Virtio pmem is a paravirtualized 
+> device which allows the guest to bypass page cache.
+> Previous posting of kernel driver is [1] and Qemu 
+> device is [2]. Specification has introduction of 
+> virtio pmem device with other implementation details. 
+> 
+> I have also listed concerns with page cache side channel
+> attacks in previous kernel driver posting [1] and 
+> possible countermeasures based on discussion [4].
+> I have also created an virtio-spec issue [5] for this.
+> 
+> Request to provide feedback on device specification.
+> 
+> [1] https://lkml.org/lkml/2019/1/9/471 
+> [2] https://marc.info/?l=qemu-devel&m=153555721901824&w=2
+> [3] https://lkml.org/lkml/2019/1/9/541
+> [4] https://lkml.org/lkml/2019/2/4/1151
+> [5] https://github.com/oasis-tcs/virtio-spec/issues/38
+> 
+> Signed-off-by: Pankaj Gupta <pagupta@redhat.com>
+> ---
+>  conformance.tex |  14 ++++++
+>  content.tex     |   3 ++
+>  virtio-pmem.tex | 134 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 151 insertions(+)
+>  create mode 100644 virtio-pmem.tex
+> 
+> diff --git a/conformance.tex b/conformance.tex
+> index ad7e82e..2133a7c 100644
+> --- a/conformance.tex
+> +++ b/conformance.tex
+> @@ -181,6 +181,20 @@ A socket driver MUST conform to the following normative statements:
+>  \item \ref{drivernormative:Device Types / Socket Device / Device Operation / Device Events}
+>  \end{itemize}
+>  
+> +\subsection{PMEM Driver Conformance}\label{sec:Conformance / Driver Conformance / PMEM Driver Conformance}
+> +
+> +A PMEM driver MUST conform to the following normative statements:
+> +
+> +\begin{itemize}
+> +\item \ref{devicenormative:Device Types / PMEM Device / Device Initialization}
+> +\item \ref{drivernormative:Device Types / PMEM Driver / Driver Initialization / Direct access}
+> +\item \ref{drivernormative:Device Types / PMEM Driver / Driver Initialization / Virtio flush}
+> +\item \ref{drivernormative:Device Types / PMEM Driver / Driver Operation / Virtqueue command}
+> +\item \ref{devicenormative:Device Types / PMEM Device / Device Operation / Virtqueue flush}
+> +\item \ref{devicenormative:Device Types / PMEM Device / Device Operation / Virtqueue return}
 
-On 3/1/2019 5:27 AM, Michael S. Tsirkin wrote:
-> On Thu, Feb 28, 2019 at 05:30:56PM -0800, si-wei liu wrote:
->>
->> On 2/28/2019 6:26 AM, Michael S. Tsirkin wrote:
->>> On Thu, Feb 28, 2019 at 01:32:12AM -0800, si-wei liu wrote:
->>>>>> Will the
->>>>>> change break userspace further?
->>>>>>
->>>>>> -Siwei
->>>>> Didn't you show userspace is already broken. You can't "further
->>>>> break it", rename already fails.
->>>> It's a race, userspace tends to give slave a user(space) desired name but
->>>> sometimes may fail due to this race. Today if failover master is not up,
->>>> rename would succeed anyway. While what you proposed prohibits user from
->>>> providing a name in all circumstances if I understand you correctly. That's
->>>> what I meant of breaking userspace further. On the other hand, you seem to
->>>> tighten the kernel default naming to udev predictable names, which is
->>>> derived from only recent systemd-udevd, while there exists many possible
->>>> userspace naming schemes out of that. Users today who deliberately chooses
->>>> to disable predictable naming (net.ifnames=0 biosdevname=0) and fall back to
->>>> kernel provided names would expect the ethX pattern, with this change
->>>> admin/user scripts which matches the ethX pattern could potentially break.
->>> Whatever crashes with a name not matching ethX will crash on the
->>> standby interface *anyway*.
->> With udev predictable naming disabled they should not. It's not hard for
->> user to look for device attribute to persistent the name well, in a
->> consistent and reliable way.
-> Well that's special code for failover already. So far we just
-> taught userspace to skip renaming slave interfaces.
-I think today kernel provided names never collapse, e.g. master gets 
-eth0 then standby will get eth1. It's the userspace specified name that 
-suffers name clashing, mostly the default predictable naming pattern 
-from systemd-udevd.
+This section must only list the _driver_normative statements. The
+devicenormative statements must be moved to a PMEM device conformance
+section below.
 
-Kernel should not assume there's only one naming pattern in userspace. 
-Users can customize naming with udev rules in /etc which do not conform 
-to the default udevd pattern at all. It's pretty legitimate use case.
+> +\end{itemize}
+> +
+> +
+>  \section{Device Conformance}\label{sec:Conformance / Device Conformance}
+>  
+>  A device MUST conform to the following normative statements:
+> diff --git a/content.tex b/content.tex
+> index ede0ef6..6077d32 100644
+> --- a/content.tex
+> +++ b/content.tex
+> @@ -2634,6 +2634,8 @@ Device ID  &  Virtio Device    \\
+>  \hline
+>  24         &   Memory device \\
+>  \hline
+> +25         &   PMEM device \\
+> +\hline
 
+Probably better to split this out, as you already sent a out a patch
+reserving the id.
 
->
->>> So I think what you are saying is that someone might have already
->>> written scripts and gotten them to work on v4.17 when STANDBY was
->>> included and these scripts rely on ethX. Now these scripts
->>> will break.
->> The controversial part is the new kernel naming pattern. Initially I thought
->> there shouldn't be such crazy scripts relying on the pattern, but when I
->> worked on cloud-init it I realized that there's already a lot of software
->> taking assumption around the 'eth0' name. In the past I've seen random
->> scripts that parses the ethX name assumes (incorrectly) the name ends up
->> with digits, or even the digits and name are 1:1 mapped. Of course, you can
->> say these are bugs in scripts themselves.
-> No what I say is that they will crash on rename of standby too.
-What do you mean crashing on standby rename? First off, if master is not 
-up, rename on both standby and primary should not fail. If master is up, 
-the standby should be named before userspace brings up the master, so 
-what's the issue you talked about?
+I sure hope we'll be able to process the outstanding device id
+reservations quickly once 1.1 is out of the door :/ 
 
-Thanks,
--Siwei
+>  \end{tabular}
+>  
+>  Some of the devices above are unspecified by this document,
+> @@ -5595,6 +5597,7 @@ descriptor for the \field{sense_len}, \field{residual},
+>  \input{virtio-input.tex}
+>  \input{virtio-crypto.tex}
+>  \input{virtio-vsock.tex}
+> +\input{virtio-pmem.tex}
+>  
+>  \chapter{Reserved Feature Bits}\label{sec:Reserved Feature Bits}
+>  
+> diff --git a/virtio-pmem.tex b/virtio-pmem.tex
+> new file mode 100644
+> index 0000000..04e07bb
+> --- /dev/null
+> +++ b/virtio-pmem.tex
+> @@ -0,0 +1,134 @@
+> +\section{PMEM Device}\label{sec:Device Types / PMEM Device}
+> +
+> +The virtio pmem is a fake persistent memory (NVDIMM) device
+> +used to bypass the guest page cache and provide a virtio
+> +based asynchronous flush mechanism. This avoids the need
+> +of a separate page cache in guest and keeps page cache only
 
->
->> Anyway, I'll let others in the netdev to comment on this new scheme, maybe
->> that's the concern of merely myself. The good part of your proposal is that
->> we can get consistent slave name, which still plays its role until we move
->> towards making slave names less relevant, i.e. ideally a 1-netdev model. I
->> think we both agree that the master matters more than the slave names.
->>> Maybe it is still early enough (just half a year passed) that the
->>> number of these users would be small.  So how about a kernel config
->>> option and maybe a module parameter to rename the primary?  People can
->>> then opt in to the old broken behaviour.
->> Were I could I would ask  why a similar opt-in (kernel config or module
->> parameter) couldn't be implemented to open up the rename restriction on
->> slave, net_failover in particular. What I felt about this rename restriction
->> was more because of historical reason than anything else, while net_failover
->> is comparatively a new type of link that we are now designing proper use
->> case it should support, and can get it shaped to whatever it fits. My
->> personal view is that the slave can't be renamed when master is running is
->> just implementation details that got incorrectly exposed to userspace apps
->> for many years. It's old behavior with historical reason for sure, but I
->> don't think this applies to net_failover.
->>
->> (FWIW as one previous bond maintainer for another OS, we relieved the rename
->> restriction slaves 13 year ago, while no single complaint or issue was ever
->> raised because of this change over the years, neither from the customers of
->> tens of millions of installation base, nor the FOSS software running atop.
->> Of course, Linux is different so that experience doesn't count.)
->>
->> Thanks,
->> -Siwei
->>
+s/of/for/
+s/guest/the guest/
+s/page cache/the page cache/
+
+> +in the host. Under memory pressure, the host makes use of
+
+s/makes use/is expected to make use/
+?
+
+> +effecient memory reclaim decisions for page cache pages
+> +of all the guests. This helps to reduce the memory footprint
+> +and fit more guests in the host system.
+> +
+> +\subsection{Device ID}\label{sec:Device Types / PMEM Device / Device ID}
+> +  25
+> +
+> +\subsection{Virtqueues}\label{sec:Device Types / PMEM Device / Virtqueues}
+> +\begin{description}
+> +\item[0] req_vq
+> +\end{description}
+> +
+> +\subsection{Feature bits}\label{sec:Device Types / PMEM Device / Feature bits}
+> +
+> +There are currently no feature bits defined for this device.
+> +
+> +\subsection{Device configuration layout}\label{sec:Device Types / PMEM Device / Device configuration layout}
+> +
+> +\begin{lstlisting}
+> +struct virtio_pmem_config {
+> +	le64 start;
+> +	le64 size;
+> +};
+> +\end{lstlisting}
+> +
+> +\field{start} contains the guest physical address of the start of the
+> +physical address range to be hotplugged into the guest address space
+> +using the pmem API.
+
+I think we need a reference to what the pmem API is somewhere.
+
+> +\field{size} contains the length of this address range.
+> +
+> +\subsection{Device Initialization}\label{sec:Device Types / PMEM Device / Device Initialization}
+> +
+> +Device hotplugs physical memory to guest address space. Persistent memory device
+
+s/Device/The device/
+
+> +is emulated with file backed memory at host side.
+
+Is "file backed memory" generic enough, or is the concept too
+unix-specific?
+
+(I won't comment further on the memory-specific wording in here, will
+leave that to folks more familiar with that area.)
+
+> +
+> +\begin{enumerate}
+> +\item Guest vpmem start is read from \field{start}.
+> +\item Guest vpmem end is read from \field{size}.
+> +\end{enumerate}
+> +
+> +\devicenormative{\subsubsection}{Device Initialization}{Device Types / PMEM Device / Device Initialization}
+> +
+> +File backed memory SHOULD be memory mapped to guest address space with SHARED
+> +memory mapping.
+> +
+> +\subsection{Driver Initialization}\label{sec:Device Types / PMEM Driver / Driver Initialization}
+> +
+> +Driver hotplugs the physical memory and registers associated
+
+s/Driver/The driver/
+
+(more instances of that below)
+
+> +region with the pmem API. Also, configures a flush callback
+> +function with the corresponding region.
+> +
+> +\drivernormative{\subsubsection}{Driver Initialization: Filesystem direct access}{Device Types / PMEM Driver / Driver Initialization / Direct access}
+> +
+> +Driver SHOULD enable filesystem direct access operations for
+> +read/write on the device.
+> +
+> +\drivernormative{\subsubsection}{Driver Initialization: Virtio flush}{Device Types / PMEM Driver / Driver Initialization / Virtio flush}
+> +
+> +Driver SHOULD add implement a virtio based flush callback.
+> +Driver SHOULD disable other FLUSH/SYNC mechanisms for the device
+> +when virtio flush is configured.
+> +
+> +\subsection{Driver Operations}\label{sec:Device Types / PMEM Driver / Driver Operation}
+> +\drivernormative{\subsubsection}{Driver Operation: Virtqueue command}{Device Types / PMEM Driver / Driver Operation / Virtqueue command}
+> +
+> +Driver SHOULD send VIRTIO_FLUSH command on request virtqueue,
+> +blocks guest userspace process utill host completes fsync/flush.
+
+s/utill/until/
+
+> +Driver SHOULD handle multiple fsync requests on files present
+> +on the device.
+> +
+> +\subsection{Device Operations}\label{sec:Device Types / PMEM Driver / Device Operation}
+> +
+> +\devicenormative{\subsubsection}{Device Operations}{Device Types / PMEM Device / Device Operation / Virtqueue flush}
+> +
+> +Device SHOULD handle multiple flush requests simultaneously using
+
+s/Device/The device/
+
+(more below)
+
+> +host filesystem fsync/flush call.
+> +
+> +\devicenormative{\subsubsection}{Device operations}{Device Types / PMEM Device / Device Operation / Virtqueue return}
+> +
+> +Device SHOULD return integer '0' for success and '-1' for failure.
+> +These errors are converted to corresponding error codes by guest as
+> +per architecture.
+
+I think that is an implementation-specific detail that does not touch
+the device/driver interface?
+
+> +
+> +\subsection{Possible security implications}\label{sec:Device Types / PMEM Device / Possible Security Implications}
+> +
+> +There could be potential security implications depending on how
+> +memory mapped host backing file is used. By default device emulation
+> +is done with SHARED mapping. There is a contract between guest and host
+> +process to access same backing file for read/write operations.
+> +
+> +If a malicious guest or host userspace map the same backing file,
+> +attacking process can make use of known cache side channel attacks
+> +to predict the current state of shared page cache page. If both
+> +attacker and victim somehow execute same shared code after a
+> +flush/evict call, with difference in execution timing attacker
+> +could infer another guest local data or host data. Though this is
+> +not easy and same challenges exist as with bare metal host system
+> +when userspace share same backing file.
+> +
+> +\subsection{Countermeasures}\label{sec:Device Types / PMEM Device / Possible Security Implications / Countermeasures}
+> +
+> +\subsubsection{ With SHARED mapping}\label{sec:Device Types / PMEM Device / Possible Security Implications / Countermeasures / SHARED}
+> +
+> +If device backing backing file is shared with multiple guests or host
+> +processes, this may act as a metric for page cache side channel attack.
+> +As a counter measure every guest should have its own(not shared with
+> +another guest) SHARED backing file and gets populated a per host process
+> +page cache pages.
+> +
+> +\subsubsection{ With PRIVATE mapping}\label{sec:Device Types / PMEM Device / Possible Security Implications / Countermeasures / PRIVATE}
+> +There maybe be chances of side channels attack with PRIVATE
+> +memory mapping similar to SHARED with read-only shared mappings.
+> +PRIVATE is not used for virtio pmem making this usecase
+> +irrelevant.
+> +
+> +\subsubsection{ Workload specific mapping}\label{sec:Device Types / PMEM Device / Possible Security Implications / Countermeasures / Workload}
+> +For SHARED mapping, if workload is single application inside
+> +guest and there is no risk with sharing of data between guests.
+> +Guest sharing same backing file with SHARED mapping can be
+> +used as a valid configuration.
+> +
+> +\subsubsection{ Prevent cache eviction}\label{sec:Device Types / PMEM Device / Possible Security Implications / Countermeasures / Cache eviction}
+> +Don't allow cache evict from guest filesystem trim/discard command
+> +with virtio pmem. This rules out any possibility of evict-reload
+> +page cache side channel attacks if backing disk is shared(SHARED)
+> +with mutliple guests. Though if we use per device backing file with
+> +shared mapping this countermeasure is not required.
 
 
 ---------------------------------------------------------------------
