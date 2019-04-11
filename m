@@ -1,78 +1,64 @@
-Return-Path: virtio-dev-return-5662-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-5663-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 29939985E1D
-	for <virtio-dev@lists.oasis-open.org>; Thu, 11 Apr 2019 09:14:20 +0000 (UTC)
-References: <20190326143507.12607-1-pagupta@redhat.com>
- <20190410144245.GD9868@stefanha-x1.localdomain>
- <5b0ca542-eec9-f79a-6b63-c07f375f3fa0@redhat.com>
- <1281031095.20992727.1554973927928.JavaMail.zimbra@redhat.com>
-From: David Hildenbrand <david@redhat.com>
-Message-ID: <f72cb6cc-397a-4472-165b-1b897e4f67df@redhat.com>
-Date: Thu, 11 Apr 2019 11:14:07 +0200
+	by lists.oasis-open.org (Postfix) with ESMTP id 42D61985E1D
+	for <virtio-dev@lists.oasis-open.org>; Thu, 11 Apr 2019 09:35:58 +0000 (UTC)
+Date: Thu, 11 Apr 2019 05:35:56 -0400 (EDT)
+From: Pankaj Gupta <pagupta@redhat.com>
+Message-ID: <464466266.20997635.1554975356303.JavaMail.zimbra@redhat.com>
+In-Reply-To: <f72cb6cc-397a-4472-165b-1b897e4f67df@redhat.com>
+References: <20190326143507.12607-1-pagupta@redhat.com> <20190410144245.GD9868@stefanha-x1.localdomain> <5b0ca542-eec9-f79a-6b63-c07f375f3fa0@redhat.com> <1281031095.20992727.1554973927928.JavaMail.zimbra@redhat.com> <f72cb6cc-397a-4472-165b-1b897e4f67df@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <1281031095.20992727.1554973927928.JavaMail.zimbra@redhat.com>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: [virtio-dev] Re: [RFC] virtio-pmem: PMEM device spec
-To: Pankaj Gupta <pagupta@redhat.com>
+Subject: Re: [virtio-dev] Re: [RFC] virtio-pmem: PMEM device spec
+To: David Hildenbrand <david@redhat.com>
 Cc: Stefan Hajnoczi <stefanha@redhat.com>, virtio-dev@lists.oasis-open.org, mst@redhat.com, riel@surriel.com, dan j williams <dan.j.williams@intel.com>, aarcange@redhat.com, cohuck@redhat.com, lcapitulino@redhat.com, nilal@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 11.04.19 11:12, Pankaj Gupta wrote:
-> 
->>>> new file mode 100644
->>>> index 0000000..04e07bb
->>>> --- /dev/null
->>>> +++ b/virtio-pmem.tex
->>>> @@ -0,0 +1,134 @@
->>>> +\section{PMEM Device}\label{sec:Device Types / PMEM Device}
->>>> +
->>>> +The virtio pmem is a fake persistent memory (NVDIMM) device
->>>> +used to bypass the guest page cache and provide a virtio
->>>> +based asynchronous flush mechanism. This avoids the need
->>>
->>> Is there anything "fake" about virtio-pmem from the perspective of the
->>> device interface?
->>>
->>> What you are describing is one use case.  But on a platform that doesn't
->>> have existing physical NVDIMM interfaces, ACPI, etc maybe virtio-pmem
->>> would be used to pass through physical NVDIMMs from the host?  If you
->>> agree, then it might make sense to describe the device simply as a
->>> persistent memory device and give "fake NVDIMM" as an example use case
->>> in a separate paragraph.  This would make the text more future-proof.
->>
->> Very good point. E.g. on x86-64, we might want to pass a real NVDIMM to
->> the guest using virtio-pmem, if our guest VM e.g. has no ACPI configured.
->>
->> In this case, it would be helpful to indicate if the flushing interface
->> is to be used, or if other flushing (e.g. like NVDIMMs) is to be used.
->>
-> 
-> Yes. Agree. This is a very good point, will consider pass-through of 
-> real NVDIMM device for architectures don't support ACPI.
-> 
-> Yes, corresponding flushing mechanism should be mentioned but I am not sure
-> if it should be mentioned in device specification?
 
-Well there has to be a way to indicate how to flush writes, no?
-
+> >>>> --- /dev/null
+> >>>> +++ b/virtio-pmem.tex
+> >>>> @@ -0,0 +1,134 @@
+> >>>> +\section{PMEM Device}\label{sec:Device Types / PMEM Device}
+> >>>> +
+> >>>> +The virtio pmem is a fake persistent memory (NVDIMM) device
+> >>>> +used to bypass the guest page cache and provide a virtio
+> >>>> +based asynchronous flush mechanism. This avoids the need
+> >>>
+> >>> Is there anything "fake" about virtio-pmem from the perspective of the
+> >>> device interface?
+> >>>
+> >>> What you are describing is one use case.  But on a platform that doesn't
+> >>> have existing physical NVDIMM interfaces, ACPI, etc maybe virtio-pmem
+> >>> would be used to pass through physical NVDIMMs from the host?  If you
+> >>> agree, then it might make sense to describe the device simply as a
+> >>> persistent memory device and give "fake NVDIMM" as an example use case
+> >>> in a separate paragraph.  This would make the text more future-proof.
+> >>
+> >> Very good point. E.g. on x86-64, we might want to pass a real NVDIMM to
+> >> the guest using virtio-pmem, if our guest VM e.g. has no ACPI configured.
+> >>
+> >> In this case, it would be helpful to indicate if the flushing interface
+> >> is to be used, or if other flushing (e.g. like NVDIMMs) is to be used.
+> >>
+> > 
+> > Yes. Agree. This is a very good point, will consider pass-through of
+> > real NVDIMM device for architectures don't support ACPI.
+> > 
+> > Yes, corresponding flushing mechanism should be mentioned but I am not sure
+> > if it should be mentioned in device specification?
 > 
-> Thanks,
-> Pankaj   
-> 
+> Well there has to be a way to indicate how to flush writes, no?
 
-
--- 
+yes. 
 
 Thanks,
-
-David / dhildenb
+Pankaj
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
