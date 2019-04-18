@@ -1,36 +1,61 @@
-Return-Path: virtio-dev-return-5675-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-5671-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id EA138985EDF
-	for <virtio-dev@lists.oasis-open.org>; Sun, 21 Apr 2019 02:08:50 +0000 (UTC)
-Date: Sat, 20 Apr 2019 22:08:45 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20190420220659-mutt-send-email-mst@kernel.org>
+	by lists.oasis-open.org (Postfix) with ESMTP id 33E2B985ECE
+	for <virtio-dev@lists.oasis-open.org>; Thu, 18 Apr 2019 13:57:57 +0000 (UTC)
+From: Stefan Hajnoczi <stefanha@redhat.com>
+Date: Thu, 18 Apr 2019 14:57:45 +0100
+Message-Id: <20190418135747.26109-1-stefanha@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Subject: [virtio-dev] some comments on virtio crypto device specification
-To: "Longpeng (Mike)" <longpeng2@huawei.com>
-Cc: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, cohuck@redhat.com, stefanha@redhat.com, denglingli@chinamobile.com, Jani.Kokkonen@huawei.com, Ola.Liljedahl@arm.com, Varun.Sethi@freescale.com, xin.zeng@intel.com, brian.a.keating@intel.com, liang.j.ma@intel.com, john.griffin@intel.com, agraf@suse.de, jasowang@redhat.com, vincent.jardin@6wind.com, arei.gonglei@huawei.com, pasic@linux.vnet.ibm.com, weidong.huang@huawei.com, wangxinxin.wang@huawei.com, jianjay.zhou@huawei.com
+Content-Transfer-Encoding: 8bit
+Subject: [virtio-dev] [PATCH RESEND v4 0/2] virtio-fs: add virtio file system device
+To: virtio-dev@lists.oasis-open.org
+Cc: "Dr. David Alan Gilbert" <dgilbert@redhat.com>, Steven Whitehouse <swhiteho@redhat.com>, Sage Weil <sweil@redhat.com>, Vivek Goyal <vgoyal@redhat.com>, Miklos Szeredi <mszeredi@redhat.com>, Stefan Hajnoczi <stefanha@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Hi guys!
-Some comments about things to improve in the virtio
-crypto device part of the spec:
-https://news.ycombinator.com/item?id=19698399#19706987
+Resending now that VIRTIO 1.1 has been published.
 
-It would be great if someone translated this to
-github issues and tried to improve the spec by
-addressing them.
+v4:
+ * Clarify that there are no request ordering guarantees between requests in a
+   single queue [vgoyal]
+ * Add explanation of FUSE session endianness detection [dgilbert]
 
-Thanks!
+v3:
+ * Remove notifications virtqueue, it's unimplemented and can be added when
+   needed [Miklos]
+ * Add Security Considerations and Live Migration Considerations sections
+   [Michael]
+v2:
+ * Clean up core virtio file system device spec
+ * Add DAX window
+
+These patches add the virtio file system device, which is based on Linux FUSE
+but includes the DAX window extension.  Similar to virtio-scsi, which
+transports SCSI commands, virtio-fs transports FUSE requests and the protocol
+documentation is not duplicated here.
+
+The DAX window allows file contents to be accessed directly from shared memory.
+This eliminates copying of data, reduces the number of vmexits, and reduces the
+guest's memory footprint.  It also allows coherent mmap MAP_SHARED semantics
+between guests on the same host.
+
+Stefan Hajnoczi (2):
+  content: add virtio file system device
+  virtio-fs: add DAX window
+
+ content.tex      |   3 +
+ introduction.tex |   3 +
+ virtio-fs.tex    | 226 +++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 232 insertions(+)
+ create mode 100644 virtio-fs.tex
 
 -- 
-MST
+2.20.1
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
