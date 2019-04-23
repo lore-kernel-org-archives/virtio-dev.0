@@ -1,51 +1,87 @@
-Return-Path: virtio-dev-return-5687-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-5686-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 54260985EDB
-	for <virtio-dev@lists.oasis-open.org>; Wed, 24 Apr 2019 19:32:28 +0000 (UTC)
-Date: Wed, 24 Apr 2019 20:32:25 +0100
-From: Stefan Hajnoczi <stefanha@redhat.com>
-Message-ID: <20190424193225.GB31664@stefanha-x1.localdomain>
+	by lists.oasis-open.org (Postfix) with ESMTP id CFEDD985CB0
+	for <virtio-dev@lists.oasis-open.org>; Tue, 23 Apr 2019 15:18:36 +0000 (UTC)
+From: Nikos Dragazis <ndragazis@arrikto.com>
+Date: Tue, 23 Apr 2019 18:18:18 +0300
+Message-Id: <1556032699-22135-4-git-send-email-ndragazis@arrikto.com>
+In-Reply-To: <1556032699-22135-1-git-send-email-ndragazis@arrikto.com>
 References: <1556032699-22135-1-git-send-email-ndragazis@arrikto.com>
- <1556032699-22135-3-git-send-email-ndragazis@arrikto.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="ftEhullJWpWg/VHq"
-Content-Disposition: inline
-In-Reply-To: <1556032699-22135-3-git-send-email-ndragazis@arrikto.com>
-Subject: Re: [virtio-dev] [PATCH 2/4] vhost-user: minor fixes
-To: Nikos Dragazis <ndragazis@arrikto.com>
-Cc: virtio-dev@lists.oasis-open.org, Stefan Hajnoczi <stefanha@gmail.com>, Vangelis Koukis <vkoukis@arrikto.com>
+Subject: [virtio-dev] [PATCH 3/4] vhost-user: add requirements for the notification capability
+To: virtio-dev@lists.oasis-open.org
+Cc: Stefan Hajnoczi <stefanha@gmail.com>, Vangelis Koukis <vkoukis@arrikto.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
---ftEhullJWpWg/VHq
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+The configuration structure for the notification capability has certain
+device/driver requirements, similar to those of the MSI-X vector
+configuration. Add these requirements to the device spec.
 
-On Tue, Apr 23, 2019 at 06:18:17PM +0300, Nikos Dragazis wrote:
-> Signed-off-by: Nikos Dragazis <ndragazis@arrikto.com>
-> ---
->  virtio-vhost-user.tex | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+Signed-off-by: Nikos Dragazis <ndragazis@arrikto.com>
+---
+ virtio-vhost-user.tex | 40 ++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 40 insertions(+)
 
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+diff --git a/virtio-vhost-user.tex b/virtio-vhost-user.tex
+index 0bfc48d..605272f 100644
+--- a/virtio-vhost-user.tex
++++ b/virtio-vhost-user.tex
+@@ -275,6 +275,46 @@ \subsubsection{Notification structure layout}\label{sec:Device Types / Vhost-use
+ \field{VIRTIO_MSI_NO_VECTOR} to \field{notification_msix_vector} to change the
+ MSI-X vector for that notification.
+ 
++\devicenormative{\paragraph}{Notification capability}{Device Types / Vhost-user Device Backend / Additional Device Resources over PCI / Notification capability}
++
++If MSI-X is available, device MUST support mapping any master queue
++event to any valid vector 0 to MSI-X \field{Table Size}. The valid
++vectors are reported in \field{Table Size} in the MSI-X Capability as
++specified in \hyperref[intro:PCI]{[PCI]}.
++
++Device MUST support unmapping any master queue event.
++
++The device MUST return vector mapped to a given master queue event,
++(\field{NO_VECTOR} if unmapped) on read of
++\field{notification_msix_vector}. The device MUST have all master queue
++events unmapped upon reset.
++
++Devices SHOULD NOT cause mapping an event to vector to fail unless it is
++impossible for the device to satisfy the mapping request. Devices MUST
++report mapping failures by returning the \field{NO_VECTOR} value when
++the relevant \field{notification_msix_vector} field is read.
++
++\drivernormative{\paragraph}{Notification capability}{Device Types /
++Vhost-user Device Backend / Additional Device Resources over PCI /
++Noification capability}
++
++Driver MUST support device with any MSI-X Table Size 0 to 0x7FF. Driver
++MAY fall back on using INT\#x interrupts for a device which only
++supports one MSI-X vector (MSI-X Table Size = 0).
++
++Driver MAY intepret the \field{Table Size} as a hint from the device for
++the suggested number of MSI-X vectors to use.
++
++Driver MUST NOT attempt to map an event to a vector outside the MSI-X
++Table supported by the device, as reported by \field{Table Size} in the
++MSI-X Capability.
++
++After mapping an event to vector, the driver MUST verify success by
++reading the Vector field value: on success, the previously written value
++is returned, and on failure, \field{NO_VECTOR} is returned. If a mapping
++failure is detected, the driver MAY retry mapping with fewer vectors,
++disable MSI-X or report device failure.
++
+ \subsubsection{Shared memory capability}\label{sec:Device Types / Vhost-user Device Backend / Additional Device Resources over PCI / Shared Memory capability}
+ 
+ The shared memory location is found using the VIRTIO_PCI_CAP_SHARED_MEMORY_CFG
+-- 
+2.7.4
 
---ftEhullJWpWg/VHq
-Content-Type: application/pgp-signature; name="signature.asc"
 
------BEGIN PGP SIGNATURE-----
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
-iQEcBAEBAgAGBQJcwLnJAAoJEJykq7OBq3PITB8H/i6qXc5VsfiBZ3K417J8t08k
-fv+Ok/nJ6bL/OE1HlxJ2uCgVH96Az6twvwGRy64NFRfSBhX1L7Zx7VbClbMiaTf+
-braxzNBGphJjfN5UiIAT7xX/OBOLvjPCJ927Z3czZjqN/5uOITFnuSrYU1BHVW6L
-Bxhpg9M4u9kggGZtJ5h78uAn+TrDt+syzD6Ec2DdIJ751qg376WSFtrz5NsS83p0
-NO1yJEXZszWeiCrNBDy+6AvSAFx4DLcUB6hWwUs4mob6LmmjOtBucYnSz1tsPDJk
-bz5Zvq1tkW2QKZktaONlnMt+7s8GR7Hpk2WnxA8epxozYgslT6wmyaky/6xYhus=
-=qZuN
------END PGP SIGNATURE-----
-
---ftEhullJWpWg/VHq--
