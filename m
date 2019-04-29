@@ -1,117 +1,102 @@
-Return-Path: virtio-dev-return-5692-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-5699-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 58ADE985F67
-	for <virtio-dev@lists.oasis-open.org>; Fri, 26 Apr 2019 14:14:19 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 0FD45984358
+	for <virtio-dev@lists.oasis-open.org>; Mon, 29 Apr 2019 13:03:02 +0000 (UTC)
+Date: Mon, 29 Apr 2019 09:02:51 -0400
+From: Stefan Hajnoczi <stefanha@redhat.com>
+Message-ID: <20190429130251.GD7587@stefanha-x1.localdomain>
 References: <1556032699-22135-1-git-send-email-ndragazis@arrikto.com>
  <1556032699-22135-4-git-send-email-ndragazis@arrikto.com>
  <20190424193655.GD31664@stefanha-x1.localdomain>
-From: Nikos Dragazis <ndragazis@arrikto.com>
-Message-ID: <31204c59-a155-dc97-be49-0d47088499d3@arrikto.com>
-Date: Fri, 26 Apr 2019 17:14:15 +0300
+ <31204c59-a155-dc97-be49-0d47088499d3@arrikto.com>
 MIME-Version: 1.0
-In-Reply-To: <20190424193655.GD31664@stefanha-x1.localdomain>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="8nsIa27JVQLqB7/C"
+Content-Disposition: inline
+In-Reply-To: <31204c59-a155-dc97-be49-0d47088499d3@arrikto.com>
 Subject: Re: [virtio-dev] [PATCH 3/4] vhost-user: add requirements for the
  notification capability
-To: Stefan Hajnoczi <stefanha@redhat.com>
+To: Nikos Dragazis <ndragazis@arrikto.com>
 Cc: virtio-dev@lists.oasis-open.org, Vangelis Koukis <vkoukis@arrikto.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 24/4/19 10:36 μ.μ., Stefan Hajnoczi wrote:
+--8nsIa27JVQLqB7/C
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> On Tue, Apr 23, 2019 at 06:18:18PM +0300, Nikos Dragazis wrote:
->> The configuration structure for the notification capability has certain
->> device/driver requirements, similar to those of the MSI-X vector
->> configuration. Add these requirements to the device spec.
->>
->> Signed-off-by: Nikos Dragazis <ndragazis@arrikto.com>
->> ---
->>  virtio-vhost-user.tex | 40 ++++++++++++++++++++++++++++++++++++++++
->>  1 file changed, 40 insertions(+)
->>
->> diff --git a/virtio-vhost-user.tex b/virtio-vhost-user.tex
->> index 0bfc48d..605272f 100644
->> --- a/virtio-vhost-user.tex
->> +++ b/virtio-vhost-user.tex
->> @@ -275,6 +275,46 @@ \subsubsection{Notification structure layout}\label{sec:Device Types / Vhost-use
->>  \field{VIRTIO_MSI_NO_VECTOR} to \field{notification_msix_vector} to change the
->>  MSI-X vector for that notification.
->>  
->> +\devicenormative{\paragraph}{Notification capability}{Device Types / Vhost-user Device Backend / Additional Device Resources over PCI / Notification capability}
->> +
->> +If MSI-X is available, device MUST support mapping any master queue
->> +event to any valid vector 0 to MSI-X \field{Table Size}. The valid
-> Do you mean Table Size - 1 since vector numbering is zero-based?
+On Fri, Apr 26, 2019 at 05:14:15PM +0300, Nikos Dragazis wrote:
+> On 24/4/19 10:36 =CE=BC.=CE=BC., Stefan Hajnoczi wrote:
+>=20
+> > On Tue, Apr 23, 2019 at 06:18:18PM +0300, Nikos Dragazis wrote:
+> >> The configuration structure for the notification capability has certain
+> >> device/driver requirements, similar to those of the MSI-X vector
+> >> configuration. Add these requirements to the device spec.
+> >>
+> >> Signed-off-by: Nikos Dragazis <ndragazis@arrikto.com>
+> >> ---
+> >>  virtio-vhost-user.tex | 40 ++++++++++++++++++++++++++++++++++++++++
+> >>  1 file changed, 40 insertions(+)
+> >>
+> >> diff --git a/virtio-vhost-user.tex b/virtio-vhost-user.tex
+> >> index 0bfc48d..605272f 100644
+> >> --- a/virtio-vhost-user.tex
+> >> +++ b/virtio-vhost-user.tex
+> >> @@ -275,6 +275,46 @@ \subsubsection{Notification structure layout}\lab=
+el{sec:Device Types / Vhost-use
+> >>  \field{VIRTIO_MSI_NO_VECTOR} to \field{notification_msix_vector} to c=
+hange the
+> >>  MSI-X vector for that notification.
+> >> =20
+> >> +\devicenormative{\paragraph}{Notification capability}{Device Types / =
+Vhost-user Device Backend / Additional Device Resources over PCI / Notifica=
+tion capability}
+> >> +
+> >> +If MSI-X is available, device MUST support mapping any master queue
+> >> +event to any valid vector 0 to MSI-X \field{Table Size}. The valid
+> > Do you mean Table Size - 1 since vector numbering is zero-based?
+>=20
+> According to the PCI Spec, the "Table Size", which is a portion of the
+> Message Control Register of the MSI-X capability structure, is encoded
+> as <n-1>, where <n> is the actual table size.=C2=A0 For example, a return=
+ed
+> value of 2047 indicates a table size of 2048, which in turn implies that
+> this PCI function supports vectors 0-2047.=C2=A0 So, I think it is correc=
+t.
+>=20
+> To be honest, I haven't read the actual spec, but this is my
+> understanding based on the following sources:
+>=20
+> https://fpgawiki.intel.com/wiki/Implementing_MSI-X_for_PCI_Express_in_Alt=
+era_FPGA_Devices#MSI-X_Capability_and_Table_Structures_Programming
+>=20
+> https://www.intel.com/content/www/us/en/programmable/documentation/lbl141=
+5123763821.html#nik1410564944281
 
-According to the PCI Spec, the "Table Size", which is a portion of the
-Message Control Register of the MSI-X capability structure, is encoded
-as <n-1>, where <n> is the actual table size.  For example, a returned
-value of 2047 indicates a table size of 2048, which in turn implies that
-this PCI function supports vectors 0-2047.  So, I think it is correct.
+Thanks, I have confirmed this by checking the PCI Express specification.
 
-To be honest, I haven't read the actual spec, but this is my
-understanding based on the following sources:
+It would be nice to clarify that you mean the n-1 encoded table size,
+and not the actual table size here.
 
-https://fpgawiki.intel.com/wiki/Implementing_MSI-X_for_PCI_Express_in_Altera_FPGA_Devices#MSI-X_Capability_and_Table_Structures_Programming
+Stefan
 
-https://www.intel.com/content/www/us/en/programmable/documentation/lbl1415123763821.html#nik1410564944281
+--8nsIa27JVQLqB7/C
+Content-Type: application/pgp-signature; name="signature.asc"
 
->> +vectors are reported in \field{Table Size} in the MSI-X Capability as
->> +specified in \hyperref[intro:PCI]{[PCI]}.
->> +
->> +Device MUST support unmapping any master queue event.
->> +
->> +The device MUST return vector mapped to a given master queue event,
->> +(\field{NO_VECTOR} if unmapped) on read of
->> +\field{notification_msix_vector}. The device MUST have all master queue
->> +events unmapped upon reset.
->> +
->> +Devices SHOULD NOT cause mapping an event to vector to fail unless it is
->> +impossible for the device to satisfy the mapping request. Devices MUST
->> +report mapping failures by returning the \field{NO_VECTOR} value when
->> +the relevant \field{notification_msix_vector} field is read.
->> +
->> +\drivernormative{\paragraph}{Notification capability}{Device Types /
->> +Vhost-user Device Backend / Additional Device Resources over PCI /
->> +Noification capability}
->> +
->> +Driver MUST support device with any MSI-X Table Size 0 to 0x7FF. Driver
->> +MAY fall back on using INT\#x interrupts for a device which only
->> +supports one MSI-X vector (MSI-X Table Size = 0).
->> +
->> +Driver MAY intepret the \field{Table Size} as a hint from the device for
->> +the suggested number of MSI-X vectors to use.
->> +
->> +Driver MUST NOT attempt to map an event to a vector outside the MSI-X
->> +Table supported by the device, as reported by \field{Table Size} in the
->> +MSI-X Capability.
->> +
->> +After mapping an event to vector, the driver MUST verify success by
->> +reading the Vector field value: on success, the previously written value
->> +is returned, and on failure, \field{NO_VECTOR} is returned. If a mapping
->> +failure is detected, the driver MAY retry mapping with fewer vectors,
->> +disable MSI-X or report device failure.
->> +
->>  \subsubsection{Shared memory capability}\label{sec:Device Types / Vhost-user Device Backend / Additional Device Resources over PCI / Shared Memory capability}
->>  
->>  The shared memory location is found using the VIRTIO_PCI_CAP_SHARED_MEMORY_CFG
->> -- 
->> 2.7.4
->>
->>
->> ---------------------------------------------------------------------
->> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
->> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
->>
+-----BEGIN PGP SIGNATURE-----
 
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+iQEcBAEBAgAGBQJcxvX7AAoJEJykq7OBq3PIMoMIAMnG5zw3c0EJgeNtz/jV3uBe
+n0lSjZjfL701x59fSIaK4P27bjA/T+62n/tTZTtvjQwd1Hsoaak2M26BdtXyziAM
+THY/MI3ifdsZHVo9lRdvAAjfvj724OX6PawCYxsm2nP+Quwj1SK3MXmKE2ytsYoy
+9QTs5KqHAxnjsWhO4Sd5qZJlJrJ3cv9+5XrLppGDrQ+J5LqiHkY90zWyobPJrThW
+Qs2sG1/8OG/yi1jDKfgCUoLxR7KE8/FdOLgHdOfmZF5CAdXOWcd5OLQEdfHxmZkM
+7z3Sh6GNSvwzie6rCLg5X3ZCARAt/86P9XhBFwpDrifZCVUM8uJZBCV8MNnHnIY=
+=VtRF
+-----END PGP SIGNATURE-----
 
+--8nsIa27JVQLqB7/C--
