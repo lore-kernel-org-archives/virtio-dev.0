@@ -1,12 +1,12 @@
-Return-Path: virtio-comment-return-717-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-comment-return-718-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-comment@lists.oasis-open.org>
 List-Post: <mailto:virtio-comment@lists.oasis-open.org>
 List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
-Date: Tue, 30 Apr 2019 08:41:54 -0400
+Date: Tue, 30 Apr 2019 08:45:04 -0400
 From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20190430084125-mutt-send-email-mst@kernel.org>
+Message-ID: <20190430084321-mutt-send-email-mst@kernel.org>
 References: <20190314153253.50945-1-jean-philippe.brucker@arm.com>
  <9ff6957a-b7bc-27e8-a7d1-cf9e3c956aa1@arm.com>
  <80ccc3c1-4e2d-7ee1-97c8-a2e13a90053c@redhat.com>
@@ -41,8 +41,11 @@ On Thu, Apr 25, 2019 at 01:29:17PM +0200, Auger Eric wrote:
 > > v5.2, but I'm hoping to get something in v5.3.
 > Is there any calendar for the "OASIS Virtual I/O Device (VIRTIO) TC" votes?
 
-All active and past ballots are here:
-https://www.oasis-open.org/committees/ballots.php?wg_abbrev=virtio
+I started the vote but had to withdraw the ballot as the issue does not link to
+the latest proposal (is v2 the correct one?). Please edit the issue to
+link to latest proposal and request the vote again.
+
+Thanks!
 
 >  I think the QEMU device
 > > will follow the Linux driver since it depends on API headers.
