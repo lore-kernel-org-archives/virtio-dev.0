@@ -1,15 +1,15 @@
-Return-Path: virtio-dev-return-5727-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-5728-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 514F3985DFA
-	for <virtio-dev@lists.oasis-open.org>; Fri, 10 May 2019 12:17:02 +0000 (UTC)
-Date: Fri, 10 May 2019 14:16:56 +0200
-From: Gerd Hoffmann <kraxel@redhat.com>
-Message-ID: <20190510121656.3ab7w5xef6io764o@sirius.home.kraxel.org>
+	by lists.oasis-open.org (Postfix) with ESMTP id 9C1D4985DFA
+	for <virtio-dev@lists.oasis-open.org>; Fri, 10 May 2019 14:15:47 +0000 (UTC)
+From: Anton Yakovlev <Anton.Yakovlev@opensynergy.com>
+Date: Fri, 10 May 2019 14:15:00 +0000
+Message-ID: <76D732A88286A1478FFA94B453B715C1EEA25DD4@MXS02.open-synergy.com>
 References: <20190429134754.GI7587@stefanha-x1.localdomain>
  <4fcd7456-de22-7f6d-d5ef-939cd3d7cf95@13byte.com>
  <20190501170525.GB22391@stefanha-x1.localdomain>
@@ -19,157 +19,206 @@ References: <20190429134754.GI7587@stefanha-x1.localdomain>
  <20190506052715.vkdopunuauyhl22m@sirius.home.kraxel.org>
  <7ac2ae97-bcb7-22cc-272a-723e7209910c@13byte.com>
  <20190509122710.rfhfnhqez2u7inju@sirius.home.kraxel.org>
- <5d316321-2c48-342b-f2ce-359e3596dae0@opensynergy.com>
+ <5d316321-2c48-342b-f2ce-359e3596dae0@opensynergy.com>,<20190510121656.3ab7w5xef6io764o@sirius.home.kraxel.org>
+In-Reply-To: <20190510121656.3ab7w5xef6io764o@sirius.home.kraxel.org>
+Content-Language: en-US
+Content-Type: text/plain; charset="iso-8859-2"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5d316321-2c48-342b-f2ce-359e3596dae0@opensynergy.com>
-Subject: Re: [virtio-dev] Request for a new device number for a virtio-audio
+Subject: RE: [virtio-dev] Request for a new device number for a virtio-audio
  device.
-To: Mikhail Golubev <mikhail.golubev@opensynergy.com>
-Cc: Marco Martinelli - 13Byte srl <marco@13byte.com>, virtio-dev@lists.oasis-open.org, Stefan Hajnoczi <stefanha@redhat.com>, =?utf-8?B?S8WRdsOhZ8OzIFpvbHTDoW4=?= <dirty.ice.hu@gmail.com>
+To: Gerd Hoffmann <kraxel@redhat.com>, Mikhail Golubev <Mikhail.Golubev@opensynergy.com>
+Cc: Marco Martinelli - 13Byte srl <marco@13byte.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Stefan
+ Hajnoczi <stefanha@redhat.com>, =?iso-8859-2?Q?K=F5v=E1g=F3_Zolt=E1n?= <dirty.ice.hu@gmail.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Fri, May 10, 2019 at 11:45:24AM +0200, Mikhail Golubev wrote:
-> Hi all!
-> 
-> Sorry for breaking in the middle of the virtio audio driver and device
-> development discussion. But we are developing a virtio sound card prototype for
-> a while and we would like to share our specification draft and public header
-> file (attaching 'virtio_snd.h' and 'virtio-snd-spec-draft.md'). The PoC for
-> proposed approach was tested with virtio audio driver in Linux and in Windows 10
-> as well.
-> 
-> It would be really great if we can collaborate on this topic. I would be happy
-> to answer any questions.
+Hi Gerd! My name is Anton and I'm the original author of this draft. Thanks=
+ for comments!
 
-Wow.  That looks pretty complete already ...
+>> Configuration space provides a maximum amount of available virtual queue=
+s. The
+>> nqueues value MUST be at least one.
+>>
+>> ```
+>> struct virtio_snd_config
+>> {
+>>     le32 nqueues;
+>> };
+>> ```
 
-> Configuration space provides a maximum amount of available virtual queues. The
-> nqueues value MUST be at least one.
-> 
-> ```
-> struct virtio_snd_config
-> {
->     le32 nqueues;
-> };
-> ```
+> Including or excluding the control queue?
 
-Including or excluding the control queue?
+Including the control queue.
 
-> Each request begins with a 2-byte field that identifies a recipient function
-> followed by a 2-byte field that identifies a function-specific request type.
-> 
-> Each response begins with a 4-byte field that contains a status code. The values
-> 0-31 are reserved for common status codes, a function can define function-specific
-> status codes starting from 32.
 
-I'd suggest to use a common scheme with a single le32 field for both
-requests and responses.
+>> Each request begins with a 2-byte field that identifies a recipient func=
+tion
+>> followed by a 2-byte field that identifies a function-specific request t=
+ype.
+>>
+>> Each response begins with a 4-byte field that contains a status code. Th=
+e values
+>> 0-31 are reserved for common status codes, a function can define functio=
+n-specific
+>> status codes starting from 32.
 
-#define VIRTIO_SND_BASE_OFFSET 0x10000
-#define VIRTIO_SND_PCM_OFFSET  0x20000
+> I'd suggest to use a common scheme with a single le32 field for both
+> requests and responses.
+> ...
+> (maybe just drop the single-element structs and use the enums directly).
 
-enum virtio_sound_request {
-	VIRTIO_SND_BASE_REQ1 = VIRTIO_SND_BASE_OFFSET,
-        VIRTIO_SND_BASE_REQ2,
-	[ ... ]
-	VIRTIO_SND_PCM_REQ1 = VIRTIO_SND_PCM_OFFSET,
-	VIRTIO_SND_PCM_REQ2,
-	[ ... ]
-};
+IMO, both options are quite fine. We decided to choose separate namespaces =
+because it's more flexible approach.
 
-enum virtio_sound_response {
-	VIRTIO_SND_E_SUCCESS,
 
-	VIRTIO_SND_E_GENERAL = VIRTIO_SND_BASE_OFFSET,
-	VIRTIO_SND_E_NOTSUPPORTED,
-	[ ... ]
-	VIRTIO_SND_PCM_E_NOT_READY = VIRTIO_SND_PCM_OFFSET,
-	[ ... ]
-};
+>> ### Device Configuration
+>> ...
+>> struct virtio_snd_generic_desc
+>> {
+>>     u8 length;
+>>     u8 type;
+>>     u16 padding;
+>
+> I'd make length and type u16 and drop the padding.
 
-> struct virtio_snd_req
-> {
-	enum virtio_sound_request;
+Well, it's a possible option. We just didn't want to waste additional space=
+ here.
 
-> struct virtio_snd_rsp
-> {
-	enum virtio_sound_response;
 
-(maybe just drop the single-element structs and use the enums directly).
+>> With the exception of the base function, all implemented functions MUST =
+define
+>> its own descriptor(s) format (either presented in this specification or
+>> vendor-specific) and MUST includes these in configuration only if a part=
+icular
+>> function (or part of its functionality) is enabled in the device.
+>
+> I don't think it is a good idea to allow vendor-specific descriptors
+> here.  It should all be in the virtio spec.  We might want reserve a
+> sub-range of "type" for experimental/development purposes though.
 
-> ### Device Configuration
-> 
-> The device reports its configuration using descriptors. A descriptor is a data
-> structure with a defined format. Each descriptor begins with a byte-wide field
-> that contains the total number of bytes in the descriptor followed by a byte-wide
-> field that identifies the descriptor type.
-> 
-> ```
-> struct virtio_snd_generic_desc
-> {
->     u8 length;
->     u8 type;
->     u16 padding;
+Yeah, an ability to define some experimental extensions was one of the targ=
+ets here (like adding sound controls, non-PCM streams, MIDI and so on). Als=
+o, this spec targeted the widest possible range of cases. Like, some hardwa=
+re has very tricky features which can not be (or just has no point to be) d=
+efined in common specification. One example is to allow switching between s=
+peaker and bluetooth output. Ususally you don't need it, but if you want to=
+ provide such feature to the guest, it's better to implement this as a cust=
+om extension.
 
-I'd make length and type u16 and drop the padding.
 
-> With the exception of the base function, all implemented functions MUST define
-> its own descriptor(s) format (either presented in this specification or
-> vendor-specific) and MUST includes these in configuration only if a particular
-> function (or part of its functionality) is enabled in the device.
 
-I don't think it is a good idea to allow vendor-specific descriptors
-here.  It should all be in the virtio spec.  We might want reserve a
-sub-range of "type" for experimental/development purposes though.
+>> ### Function Operation
+>>
+>> #### Get Device Configuration
+>>
+>> The driver sends the VIRTIO_SND_BASE_R_GET_CFG generic request, the devi=
+ce
+>> answers with a response containing device configuration.
+>
+> Which is a list of descriptors I assume?
 
-> ### Function Operation
-> 
-> #### Get Device Configuration
-> 
-> The driver sends the VIRTIO_SND_BASE_R_GET_CFG generic request, the device
-> answers with a response containing device configuration.
+You are right.
 
-Which is a list of descriptors I assume?
 
-> #### Suspend
-> 
-> The driver sends the VIRTIO_SND_BASE_R_SUSPEND generic request, the device
-> answers with a generic response. For each initialized function, the device SHOULD
-> be able to preserve its runtime state and MUST put it into function-specific
-> suspended state.
-> 
-> #### Resume
-> 
-> The driver sends the VIRTIO_SND_BASE_R_RESUME generic request, the device
-> answers with a generic response. For each initialized function, the device SHOULD
-> be able to restore its runtime state and MUST put it into function-specific
-> non-suspended state.
+>> #### Suspend
+>>
+>> ...
+>>
+>> #### Resume
+>>
+>> ...
+>>
+>
+> Why these two are needed?
 
-Why these two are needed?
+I would say, that some virtualization platforms either do not notify your b=
+ackend about guest suspend/resume or it's very tricky to distinguish such c=
+onditions from other shutdown/initialization types. According to my practic=
+e, it's always better to notify device side in explicit way, because the dr=
+iver always know what is going now.
 
-Also restoring state as optional device feature doesn't look useful to
-me.
+> Also restoring state as optional device feature doesn't look useful to
+> me.
 
-> - *Manual mode*: the driver assigns a dedicated virtual queue for a PCM substream
-> and use it to transmit data buffers to the device. The device writes/reads PCM
-> frames only upon receiving a buffer from the driver.
+Well, restoring active playback or capturing is not impossible thing at all=
+. From other side, maybe some device implementors might not want/need such =
+functionality. So I'm not sure, what is better here.
 
-That is how I expect a virtio-audio device work.
 
-> - *Automatic mode*: the driver allocates and shares with the device a pseudophysically
-> continuous memory area containing runtime control registers and data buffer itself.
+>> - *Manual mode*: the driver assigns a dedicated virtual queue for a PCM =
+substream
+>> and use it to transmit data buffers to the device. The device writes/rea=
+ds PCM
+>> frames only upon receiving a buffer from the driver.
+>
+> That is how I expect a virtio-audio device work.
 
-What is "pseudophysically continuous memory"?
-Why do you think this is needed?
+Yeah, I understand. But it's the very beginning of the road (see below).
 
-> Regardless of the mode of operation, the device MAY require to specify an
-> approximate data buffer update frequency. In such case, the driver MUST specify
-> an approximate update frequency (expressed in both microseconds and bytes units)
-> before starting a PCM substream.
 
-Why both microseconds and bytes?  Isn't that redundant?
+>> - *Automatic mode*: the driver allocates and shares with the device a ps=
+eudophysically
+>> continuous memory area containing runtime control registers and data buf=
+fer itself.
+>
+> What is "pseudophysically continuous memory"?
+
+This memory is physically continuous from the driver's point of view.
+
+> Why do you think this is needed?
+
+When you implement an audio device, you usually start with what we call "ma=
+nual mode". It works, but only for simple use cases. There're two major cha=
+llenges here.
+
+1) An application can use audio device in many different ways. It may fill =
+the entire buffer with frames and let it draining. It may provides data in =
+form of relatively big chunks. But usually you will face with so called "lo=
+w latency" applications. These try to reduce result latency by providing sm=
+all chunks of data. In extreme cases, the driver may receive requests conta=
+ining only 5-10 frames. It means an amount of both system calls and request=
+s to the device will grow. At some point this rate may become quite noticab=
+le. But things may become even worse, if an application activates both stre=
+ams (playback and capture) at the same time. For example, voice chat applic=
+ations (trying to reduce latency as much as possible) may hang you VM becau=
+se of huge amount of small requests on both PCM streams. Thus, no requests/=
+traps/hypercalls to the device while a stream is running - no problems here=
+.
+
+2) Everybody wants to reduce a latency as much as possible. One of the most=
+ logical way is to allow to mmap data buffer into the user space memory. (A=
+ctually, in some cases you even have no choice here, like in case of the Wa=
+veRT interface in Windows.) But memory mapped buffer means, that you either=
+ have a very little or have not at all an idea what is going on with buffer=
+ content. Even if you have information about when and where an application =
+writes to or reads from the buffer (ALSA enforces an application to maintai=
+n its appl_ptr value), you will have a lot of headache with tracking the re=
+wind/forward cases. I can't say for everyone, but our experiments with usin=
+g "manual mode" here all failed. From other side, the isochronous nature of=
+ PCM stream and the nature of sound card itself suggest you right solution.=
+ You don't need to care about what and how an application does with a buffe=
+r. Since it's expected from the device to read/write data with constant rat=
+e. Thus, you can do the same in your virtual audio device. And it works lik=
+e a charm!
+
+We wanted to be ready for every possible use case, that's why we combined s=
+olutions for described issues into what we call "automatic mode". The funni=
+est thing is, according to our tests, in automatic mode you can have stable=
+ and clean playback/capturing even under the very high CPU pressure.
+
+
+>> Regardless of the mode of operation, the device MAY require to specify a=
+n
+>> approximate data buffer update frequency. In such case, the driver MUST =
+specify
+>> an approximate update frequency (expressed in both microseconds and byte=
+s units)
+>> before starting a PCM substream.
+>
+> Why both microseconds and bytes?  Isn't that redundant?
+
+Just to be sure that both ends have exactly the same ideas.
+
 
 > /* a PCM function descriptor */
 > struct virtio_snd_pcm_desc
@@ -180,163 +229,122 @@ Why both microseconds and bytes?  Isn't that redundant?
 >     u8 type;
 >     /* a PCM function ID (assigned by the device) */
 >     u8 pcm_id;
->     /* # of PCM stream descriptors in the configuration (one per supported PCM stream type) */
+>     /* # of PCM stream descriptors in the configuration (one per supporte=
+d PCM stream type) */
 >     u8 nstreams;
 > };
 
 > /* supported PCM sample formats */
-> #define VIRTIO_SND_PCM_FMT_MU_LAW       0
-> #define VIRTIO_SND_PCM_FMT_A_LAW        1
-> #define VIRTIO_SND_PCM_FMT_S8           2
-> #define VIRTIO_SND_PCM_FMT_U8           3
-> #define VIRTIO_SND_PCM_FMT_S16_LE       4
-> #define VIRTIO_SND_PCM_FMT_S16_BE       5
-> #define VIRTIO_SND_PCM_FMT_U16_LE       6
-> #define VIRTIO_SND_PCM_FMT_U16_BE       7
-> #define VIRTIO_SND_PCM_FMT_S24_LE       8
-> #define VIRTIO_SND_PCM_FMT_S24_BE       9
-> #define VIRTIO_SND_PCM_FMT_U24_LE       10
-> #define VIRTIO_SND_PCM_FMT_U24_BE       11
-> #define VIRTIO_SND_PCM_FMT_S32_LE       12
-> #define VIRTIO_SND_PCM_FMT_S32_BE       13
-> #define VIRTIO_SND_PCM_FMT_U32_LE       14
-> #define VIRTIO_SND_PCM_FMT_U32_BE       15
-> #define VIRTIO_SND_PCM_FMT_FLOAT_LE     16
-> #define VIRTIO_SND_PCM_FMT_FLOAT_BE     17
-> #define VIRTIO_SND_PCM_FMT_FLOAT64_LE   18
-> #define VIRTIO_SND_PCM_FMT_FLOAT64_BE   19
-> #define VIRTIO_SND_PCM_FMT_S20_LE       20
-> #define VIRTIO_SND_PCM_FMT_S20_BE       21
-> #define VIRTIO_SND_PCM_FMT_U20_LE       22
-> #define VIRTIO_SND_PCM_FMT_U20_BE       23
-> #define VIRTIO_SND_PCM_FMT_S24_3LE      24
-> #define VIRTIO_SND_PCM_FMT_S24_3BE      25
-> #define VIRTIO_SND_PCM_FMT_U24_3LE      26
-> #define VIRTIO_SND_PCM_FMT_U24_3BE      27
-> #define VIRTIO_SND_PCM_FMT_S20_3LE      28
-> #define VIRTIO_SND_PCM_FMT_S20_3BE      29
-> #define VIRTIO_SND_PCM_FMT_U20_3LE      30
-> #define VIRTIO_SND_PCM_FMT_U20_3BE      31
-> #define VIRTIO_SND_PCM_FMT_S18_3LE      32
-> #define VIRTIO_SND_PCM_FMT_U18_3LE      33
-> #define VIRTIO_SND_PCM_FMT_S18_3BE      34
-> #define VIRTIO_SND_PCM_FMT_U18_3BE      35
+> ...
+>
+> That looks a bit over-engineered to me.
+>
+> First, virtio uses little endian.  How about dropping all bigendian
+> formats?
+>
+> Are 8-bit formats are still used in practice?
 
-That looks a bit over-engineered to me.
+Actually, yeah. I saw quite recent chipsets with the U8 format support. Any=
+way, is it a big issue? It costs zero to support additional formats, so why=
+ not?
 
-First, virtio uses little endian.  How about dropping all bigendian
-formats?
 
-Are 8-bit formats are still used in practice?
+> What are VIRTIO_SND_PCM_FMT_{S,U}20_LE ?
+>
+> What are VIRTIO_SND_PCM_FMT_*_3BE ?
+>
+> Which of these formats are actually implemented in your prototype?
 
-What are VIRTIO_SND_PCM_FMT_{S,U}20_LE ?
+Some format's physical width is not multiple of 8. Such samples are kept in=
+ "a storage" which width is multiple of 8 (like 20-bit samples are kept eit=
+her in 24-bit or in 32-bit storage).
 
-What are VIRTIO_SND_PCM_FMT_*_3BE ?
+Both Linux (ALSA) and Windows (WaveXXX interfaces) just expect from you to =
+report support of these formats. You don't need to do anything special in o=
+rder to implemented them. So, yes, we can support them in the prototype.
 
-Which of these formats are actually implemented in your prototype?
 
-> /* supported PCM frame rates */
-> #define VIRTIO_SND_PCM_RATE_5512        0
-> #define VIRTIO_SND_PCM_RATE_8000        1
-> #define VIRTIO_SND_PCM_RATE_11025       2
-> #define VIRTIO_SND_PCM_RATE_16000       3
-> #define VIRTIO_SND_PCM_RATE_22050       4
-> #define VIRTIO_SND_PCM_RATE_32000       5
-> #define VIRTIO_SND_PCM_RATE_44100       6
-> #define VIRTIO_SND_PCM_RATE_48000       7
-> #define VIRTIO_SND_PCM_RATE_64000       8
-> #define VIRTIO_SND_PCM_RATE_88200       9
-> #define VIRTIO_SND_PCM_RATE_96000       10
-> #define VIRTIO_SND_PCM_RATE_176400      11
-> #define VIRTIO_SND_PCM_RATE_192000      12
+>> /* supported PCM frame rates */
+>> ...
+>
+> Same question: Do we actually need all those?  My impression is that
+> these days 48000 is pretty much standard.  96000 + 192000 for higher
+> quality.  44100 sometimes still because it happens to be the CD sample
+> rate.  Maybe 32000/16000/8000 for low bandwidth codecs.
+>
+> But 5512, 11025 & friends?
 
-Same question: Do we actually need all those?  My impression is that
-these days 48000 is pretty much standard.  96000 + 192000 for higher
-quality.  44100 sometimes still because it happens to be the CD sample
-rate.  Maybe 32000/16000/8000 for low bandwidth codecs.
+Same answer: why not? :)
 
-But 5512, 11025 & friends?
 
-> The driver gets the VIRTIO_SND_PCM_FEAT_CHANNEL_MAP feature value in order to obtain
-> a channel map with specified index, the device answers with the virtio_snd_pcm_chmap
-> PCM response.
-> 
-> If channel map type allows to swap channels, the driver can set the VIRTIO_SND_PCM_FEAT_CHANNEL_MAP
-> feature value specifying selected channel map data as a request argument. The
-> device answers with a generic response.
-> 
-> ```
-> /* a PCM channel map definitions */
-> 
-> /* All channels have fixed channel positions */
-> #define VIRTIO_SND_PCM_CHMAP_FIXED      0
-> /* All channels are swappable (e.g. {FL/FR/RL/RR} -> {RR/RL/FR/FL}) */
-> #define VIRTIO_SND_PCM_CHMAP_VARIABLE   1
-> /* Only pair-wise channels are swappable (e.g. {FL/FR/RL/RR} -> {RL/RR/FL/FR}) */
-> #define VIRTIO_SND_PCM_CHMAP_PAIRED     2
+>> /* a PCM channel map definitions */
+>>
+>> /* All channels have fixed channel positions */
+>> #define VIRTIO_SND_PCM_CHMAP_FIXED      0
+>> /* All channels are swappable (e.g. {FL/FR/RL/RR} -> {RR/RL/FR/FL}) */
+>> #define VIRTIO_SND_PCM_CHMAP_VARIABLE   1
+>> /* Only pair-wise channels are swappable (e.g. {FL/FR/RL/RR} -> {RL/RR/F=
+L/FR}) */
+>> #define VIRTIO_SND_PCM_CHMAP_PAIRED     2
+>
+> What this is good for?  How would a driver ask the device to actually
+> swap the channels?  And isn't it easier to have the device provide a
+> complete list of possible channel maps and let the driver simply pick
+> one?
 
-What this is good for?  How would a driver ask the device to actually
-swap the channels?  And isn't it easier to have the device provide a
-complete list of possible channel maps and let the driver simply pick
-one?
+Basically, we were inspired how ALSA handles these and reused the same appr=
+oach here. How: a hardware can have internal router/mixer to allow flexible=
+ configuration, there's nothing special. About how to provide a list of cha=
+nnel maps - it's a matter of responsibilities. I would like to stick to har=
+dware-like approach, when hardware just reports minimum amount of capabilit=
+ies, and it's up to the driver what to do with it.
 
-> /* Standard channel position definition */
-> #define VIRTIO_SND_PCM_CH_NONE          0   /* undefined */
-> #define VIRTIO_SND_PCM_CH_NA            1   /* silent */
-> #define VIRTIO_SND_PCM_CH_MONO          2   /* mono stream */
-> #define VIRTIO_SND_PCM_CH_FL            3   /* front left */
-> #define VIRTIO_SND_PCM_CH_FR            4   /* front right */
-> #define VIRTIO_SND_PCM_CH_RL            5   /* rear left */
-> #define VIRTIO_SND_PCM_CH_RR            6   /* rear right */
-> #define VIRTIO_SND_PCM_CH_FC            7   /* front center */
-> #define VIRTIO_SND_PCM_CH_LFE           8   /* low frequency (LFE) */
-> #define VIRTIO_SND_PCM_CH_SL            9   /* side left */
-> #define VIRTIO_SND_PCM_CH_SR            10  /* side right */
-> #define VIRTIO_SND_PCM_CH_RC            11  /* rear center */
-> #define VIRTIO_SND_PCM_CH_FLC           12  /* front left center */
-> #define VIRTIO_SND_PCM_CH_FRC           13  /* front right center */
-> #define VIRTIO_SND_PCM_CH_RLC           14  /* rear left center */
-> #define VIRTIO_SND_PCM_CH_RRC           15  /* rear right center */
-> #define VIRTIO_SND_PCM_CH_FLW           16  /* front left wide */
-> #define VIRTIO_SND_PCM_CH_FRW           17  /* front right wide */
-> #define VIRTIO_SND_PCM_CH_FLH           18  /* front left high */
-> #define VIRTIO_SND_PCM_CH_FCH           19  /* front center high */
-> #define VIRTIO_SND_PCM_CH_FRH           20  /* front right high */
-> #define VIRTIO_SND_PCM_CH_TC            21  /* top center */
-> #define VIRTIO_SND_PCM_CH_TFL           22  /* top front left */
-> #define VIRTIO_SND_PCM_CH_TFR           23  /* top front right */
-> #define VIRTIO_SND_PCM_CH_TFC           24  /* top front center */
-> #define VIRTIO_SND_PCM_CH_TRL           25  /* top rear left */
-> #define VIRTIO_SND_PCM_CH_TRR           26  /* top rear right */
-> #define VIRTIO_SND_PCM_CH_TRC           27  /* top rear center */
-> #define VIRTIO_SND_PCM_CH_TFLC          28  /* top front left center */
-> #define VIRTIO_SND_PCM_CH_TFRC          29  /* top front right center */
-> #define VIRTIO_SND_PCM_CH_TSL           30  /* top side left */
-> #define VIRTIO_SND_PCM_CH_TSR           31  /* top side right */
-> #define VIRTIO_SND_PCM_CH_LLFE          32  /* left LFE */
-> #define VIRTIO_SND_PCM_CH_RLFE          33  /* right LFE */
-> #define VIRTIO_SND_PCM_CH_BC            34  /* bottom center */
-> #define VIRTIO_SND_PCM_CH_BLC           35  /* bottom left center */
-> #define VIRTIO_SND_PCM_CH_BRC           36  /* bottom right center */
 
-Wow.  What is the use case for all those channels?  cinema sound?
+>> /* Standard channel position definition */
+>> ...
+>
+> Wow.  What is the use case for all those channels?  cinema sound?
 
-> #### Prepare
-> 
-> The driver MUST send the VIRTIO_SND_PCM_R_PREPARE generic PCM request to prepare
-> a substream for running, the device answers with a generic response.
-> 
-> #### Start
-> 
-> The driver sends the VIRTIO_SND_PCM_R_START generic PCM request, the device
-> answers with a generic response.
+Virtual cinema sound!
 
-So I guess the way to start a stream is (a) prepare, (b) queue some
-buffers, (c) start.  Correct?
+
+>> #### Prepare
+>> ...
+>> #### Start
+>> ...
+>
+> So I guess the way to start a stream is (a) prepare, (b) queue some
+> buffers, (c) start.  Correct?
+
+Yeap!
+
+
 
 cheers,
   Gerd
 
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+
+--
+Anton Yakovlev
+Senior Software Engineer
+
+OpenSynergy GmbH
+Rotherstr. 20, 10245 Berlin
+
+www.opensynergy.com
+
+Please mind our privacy notice<https://www.opensynergy.com/datenschutzerkla=
+erung/privacy-notice-for-business-partners-pursuant-to-article-13-of-the-ge=
+neral-data-protection-regulation-gdpr/> pursuant to Art. 13 GDPR. // Unsere=
+ Hinweise zum Datenschutz gem. Art. 13 DSGVO finden Sie hier.<https://www.o=
+pensynergy.com/de/datenschutzerklaerung/datenschutzhinweise-fuer-geschaefts=
+partner-gem-art-13-dsgvo/>
+COQOS Hypervisor certified by T=DCV S=DCD
+                [COQOS Hypervisor certified by T=DCV S=DCD]
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
