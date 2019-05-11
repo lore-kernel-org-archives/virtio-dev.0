@@ -1,64 +1,81 @@
-Return-Path: virtio-return-3343-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio@lists.oasis-open.org>
-List-Post: <mailto:virtio@lists.oasis-open.org>
-List-Help: <mailto:virtio-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Tue, 2 Apr 2019 15:37:41 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20190402193737.29330-1-mst@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Subject: [virtio] [PATCH] acknowledgements: fix spill over
-To: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+Return-Path: virtio-dev-return-5732-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id 2851B985E0E
+	for <virtio-dev@lists.oasis-open.org>; Sat, 11 May 2019 18:48:21 +0000 (UTC)
+From: Nikos Dragazis <ndragazis@arrikto.com>
+Date: Sat, 11 May 2019 21:47:36 +0300
+Message-Id: <1557600460-18966-1-git-send-email-ndragazis@arrikto.com>
+Subject: [virtio-dev] [PATCH v3 0/4] introduce virtio vhost-user backend device type
+To: virtio-dev@lists.oasis-open.org
+Cc: Stefan Hajnoczi <stefanha@gmail.com>, "Dr . David Alan Gilbert" <dgilbert@redhat.com>, Vangelis Koukis <vkoukis@arrikto.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Use a subsection instead of a title page, otherwise
-list of acknowledged people spills over to the next page.
+Hi everyone,
 
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
----
- acknowledgements.tex | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+this PATCH presents an updated version of the RFC virtio device spec for
+the virtio-vhost-user device. The initial RFC implementation can be
+found here: [1].
 
-diff --git a/acknowledgements.tex b/acknowledgements.tex
-index b2feeaf..557874e 100644
---- a/acknowledgements.tex
-+++ b/acknowledgements.tex
-@@ -5,7 +5,7 @@ \chapter{Acknowledgements}\label{chap:Acknowledgements}
- 
- The following individuals have participated in the creation of this specification and are gratefully acknowledged:
- 
--\begin{oasistitlesection}{Participants}
-+\subsection*{Participants}
- Allen Chia, Oracle	\newline
- Amit Shah,	Red Hat	\newline
- Amos Kong,	Red Hat	\newline
-@@ -58,12 +58,11 @@ \chapter{Acknowledgements}\label{chap:Acknowledgements}
- Vijay Balakrishna,	Oracle	\newline
- Wei Wang, Intel	\newline
- Xin Zeng, Intel	\newline
--\end{oasistitlesection}
- 
- The following non-members have provided valuable feedback on this
- specification and are gratefully acknowledged:
- 
--\begin{oasistitlesection}{Reviewers}
-+\subsection*{Reviewers}
- Aaron Conole,	Red Hat	\newline
- Andrew Thornton,  Google \newline
- Arun Subbarao,	LynuxWorks	\newline
-@@ -103,4 +102,3 @@ \chapter{Acknowledgements}\label{chap:Acknowledgements}
- Will Deacon,	ARM	\newline
- Yuri Benditovich,	Red Hat / Daynix	\newline
- Zhoujian,	Huawei	\newline
--\end{oasistitlesection}
+This PATCH is split into four parts:
+
+1. the first commit is just a refactored version of the initial RFC
+implementation [1]. I just moved the device spec into a separate .tex
+file and changed the device id from #24 to #28 since the ids #24-#27 are
+reserved.
+
+2. the second commit fixes some minor issues with the device spec. This
+is quite straightforward.
+
+3. the third commit enhances the notification capability with some
+device/driver requirements. This makes sense because the notification
+capability behaves similarly to the MSI-X capability, thereby having
+some requirements that need to be mentioned.
+
+4. the fourth commit synchronizes the shared memory capability with a
+recent patch [2] that attempts to standardize a standalone
+SHARED_MEMORY_CFG virtio capability.
+
+v3 changes:
+ * Device Requirements for the Notification Capability: point out the
+   difference between the MSI-X Table Size stored in the Message Control
+   register of the MSI-X capability structure and the actual MSI-X Table
+   Size
+
+v2 changes:
+ * Change device id from #25 to #28
+
+Looking forward to your comments.
+
+Thanks,
+Nikos
+
+[1] https://lists.oasis-open.org/archives/virtio-dev/201801/msg00110.html
+[2] https://lists.oasis-open.org/archives/virtio-dev/201902/msg00142.html
+
+Nikos Dragazis (3):
+  vhost-user: minor fixes
+  vhost-user: add requirements for the notification capability
+  vhost-user: update shared memory capability
+
+Stefan Hajnoczi (1):
+  vhost-user: add vhost-user device type
+
+ content.tex           |   3 +
+ introduction.tex      |   1 +
+ virtio-vhost-user.tex | 349 ++++++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 353 insertions(+)
+ create mode 100644 virtio-vhost-user.tex
+
 -- 
-MST
+2.7.4
+
 
 ---------------------------------------------------------------------
-To unsubscribe from this mail list, you must leave the OASIS TC that 
-generates this mail.  Follow this link to all your TCs in OASIS at:
-https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
