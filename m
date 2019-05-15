@@ -1,169 +1,108 @@
-Return-Path: virtio-comment-return-727-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio-comment@lists.oasis-open.org>
-List-Post: <mailto:virtio-comment@lists.oasis-open.org>
-List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Return-Path: virtio-dev-return-5745-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+From: "Tian, Kevin" <kevin.tian@intel.com>
+Date: Wed, 15 May 2019 05:08:30 +0000
+Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D19CA31661@SHSMSX104.ccr.corp.intel.com>
 References: <20190430135648.38369-1-jean-philippe.brucker@arm.com>
  <20190503102720-mutt-send-email-mst@kernel.org>
  <14cb84e1-ceb1-e489-f29a-8d77d542561a@arm.com>
  <20190510122220-mutt-send-email-mst@kernel.org>
-Message-ID: <18182871-5a30-9ef4-e6bc-73f5ad32b7e8@arm.com>
-Date: Tue, 14 May 2019 17:07:45 +0100
-MIME-Version: 1.0
-In-Reply-To: <20190510122220-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=utf-8
+ <18182871-5a30-9ef4-e6bc-73f5ad32b7e8@arm.com>
+In-Reply-To: <18182871-5a30-9ef4-e6bc-73f5ad32b7e8@arm.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: [virtio-comment] Re: [virtio-dev] Re: [PATCH v3] Add virtio-iommu device specification
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, joro@8bytes.org, tnowicki@caviumnetworks.com, eric.auger@redhat.com, kevin.tian@intel.com, lorenzo.pieralisi@arm.com, bharat.bhushan@nxp.com, bauerman@linux.ibm.com
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+Subject: RE: [virtio-dev] Re: [PATCH v3] Add virtio-iommu device
+ specification
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, "Michael S.
+ Tsirkin" <mst@redhat.com>
+Cc: "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "joro@8bytes.org" <joro@8bytes.org>, "tnowicki@caviumnetworks.com" <tnowicki@caviumnetworks.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>, "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>, "bharat.bhushan@nxp.com" <bharat.bhushan@nxp.com>, "bauerman@linux.ibm.com" <bauerman@linux.ibm.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 10/05/2019 17:52, Michael S. Tsirkin wrote:
->>>> +/* Flags are: */
->>>> +#define VIRTIO_IOMMU_MAP_F_READ   (1 << 0)
->>>> +#define VIRTIO_IOMMU_MAP_F_WRITE  (1 << 1)
->>>> +#define VIRTIO_IOMMU_MAP_F_EXEC   (1 << 2)
->>>
->>> what is exec? pls add some comments near all flags.
->>
->> Exec means instruction fetch. Some systems have different transaction
->> flags for read and exec (PCI only supports that in the PASID TLP prefix)
->> and some page tables have a "no exec" bit.
-> 
-> So let's say I don't set EXEC on such a system. Is EXEC allowed or not?
-> 
-> Maybe we can ask user to always set EXEC is exec is needed,
-> but then say we can not promise instruction fetch will fail
-> if exec is not set.
-
-So the semantics could be:
-* device sets EXEC feature bit
-  - driver sets EXEC flag in MAP, instruction fetch succeeds
-  - driver doesn't set EXEC flag in MAP, instructions fetch will fail
-* device doesn't set EXEC feature bit, then driver cannot set EXEC flag
-but instruction fetch may not fail.
-
-But I'm tempted to just remove the EXEC flag for now, I don't think
-anyone needs it at the moment (and VFIO doesn't support it). I'd add it
-back as NO_EXEC which is closer to what IOMMUs offer.
-
-
->>>> +\begin{description}
->>>> +  \item[VIRTIO_IOMMU_RESV_MEM_T_RESERVED (0)]
->>>> +    Accesses to virtual addresses in this region have undefined behavior.
->>>
->>> undefined?  how can platforms with such a property coexist with untrusted
->>> devices?
->>
->> It is "undefined" because I can't enumerate all cases (don't know about
->> all of them). This would contain for example the RMRR regions of VT-d
->> (the BIOS reserving some DMA regions for itself), regions allocated for
->> host-managed MSIs on arm platforms, and some PCI bridge windows
->> (although they removed those from the Linux resv regions recently, not
->> certain why). Ideally we wouldn't have any, but some special cases make
->> it necessary.
->>
->> In general having reserved regions is incompatible with untrusted
->> devices, and in some cases incompatible with untrusted guests. But
->> choosing the policy about which devices to present to guest is up to the
->> platform. The host knows what the resv regions are used for, and if they
->> are safe enough. The guest just need to knows what to avoid.
-> 
-> Yes but ... if you trust driver and device then what's the
-> point of the iommu?
-
-Improving memory allocation. The guest can do scatter-gather for large
-buffers, instead of allocating big contiguous chunks of guest-physical
-addresses. And with device pass-through, any memory used for DMA has to
-be pinned (since devices generally don't support page faults). So when
-assigning an endpoint to a guest, without a vIOMMU all of the guest
-memory has to be pinned upfront. With an IOMMU only the memory that will
-actually be used for DMA is pinned.
-
-> RMRR access basically fails with translation right?
-> Not undefined.
-
-From section 3.15 of VT-d rev3.0, it looks like they are translated
-
-"Requests to these reserved regions may either occur as a result of
-operations performed by the system software driver (for example in the
-case of DMA from unified memory access (UMA) graphics controllers to
-graphics reserved memory), or may be initiated by non system software
-(for example in case of DMA performed by a USB controller under BIOS SMM
-control for legacy keyboard emulation)."
-
-> What happens with MSIs on ARM?
-
-On Arm platforms it's the IRQ chip rather than the IOMMU that performs
-MSI isolation - ensure that an endpoint doesn't trigger MSIs for another
-endpoint. The SMMU doesn't differentiate an MSI from a normal write,
-unlike x86 which has a special address range. MSI-X tables for a
-pass-through device are managed by the host, and a virtual MSI-X table
-is presented to the guest. So the host allocates a VA range and use it
-to map the MSI doorbell in the SMMU. It then reports that VA range as
-reserved to the guest. If the endpoint did write to the region, nothing
-bad would happen, it would simply trigger an MSI as if it had triggered
-via the MSI-X table. But the guest can't use that region for normal
-memory mapping.
-
->>>> or never even reach it.
->>>
->>> that's ok
->>
->> We could be losing isolation if some bridge is intercepting accesses to
->> a range of addresses.
-> 
-> hmm sorry not sure I understand.
-
-After reading a bit more about this, I don't think this is relevant here.
-
-This was about lack of ACS isolation allowing endpoints to do p2p by
-writing to some specific MMIO region, but we already deal with this in
-the ATTACH section - either endpoints are properly isolated with ACS, or
-the platform describes them as being in the same IOMMU group and they
-cannot be isolated from each other. We don't need to care about reserved
-MMIO ranges on top of that.
-
-RESV_MEM is used for MSI and RMRR-style regions for now, so I'll
-reformulate this paragraph. I'll also require that accesses to RESV
-regions don't affect anything else than the endpoint and the SW that
-owns it.
-
-
->>>> +The driver SHOULD treat any \field{subtype} it doesn't recognize as if it
->>>> +was VIRTIO_IOMMU_RESV_MEM_T_RESERVED.
->>>
->>> why is that a good idea?
->>
->> Some future version might add a new reserved type that provides more
->> details. For a driver that doesn't recognize it but would still work
->> without the additional details, it's better to treat it as a reserved
->> region than try to map it.
-> 
-> confused. didn't we say we never map these addresses?
-> if we just ignore a type then we will map the virtual address no?
-
-Yes, that's why we require the driver not to ignore the region
-
-Thanks,
-Jean
-
-This publicly archived list offers a means to provide input to the
-OASIS Virtual I/O Device (VIRTIO) TC.
-
-In order to verify user consent to the Feedback License terms and
-to minimize spam in the list archive, subscription is required
-before posting.
-
-Subscribe: virtio-comment-subscribe@lists.oasis-open.org
-Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
-List help: virtio-comment-help@lists.oasis-open.org
-List archive: https://lists.oasis-open.org/archives/virtio-comment/
-Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
-List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
-Committee: https://www.oasis-open.org/committees/virtio/
-Join OASIS: https://www.oasis-open.org/join/
+PiBGcm9tOiBKZWFuLVBoaWxpcHBlIEJydWNrZXIgDQo+IFNlbnQ6IFdlZG5lc2RheSwgTWF5IDE1
+LCAyMDE5IDEyOjA4IEFNDQo+IA0KPiBPbiAxMC8wNS8yMDE5IDE3OjUyLCBNaWNoYWVsIFMuIFRz
+aXJraW4gd3JvdGU6DQo+ID4+Pj4gKy8qIEZsYWdzIGFyZTogKi8NCj4gPj4+PiArI2RlZmluZSBW
+SVJUSU9fSU9NTVVfTUFQX0ZfUkVBRCAgICgxIDw8IDApDQo+ID4+Pj4gKyNkZWZpbmUgVklSVElP
+X0lPTU1VX01BUF9GX1dSSVRFICAoMSA8PCAxKQ0KPiA+Pj4+ICsjZGVmaW5lIFZJUlRJT19JT01N
+VV9NQVBfRl9FWEVDICAgKDEgPDwgMikNCj4gPj4+DQo+ID4+PiB3aGF0IGlzIGV4ZWM/IHBscyBh
+ZGQgc29tZSBjb21tZW50cyBuZWFyIGFsbCBmbGFncy4NCj4gPj4NCj4gPj4gRXhlYyBtZWFucyBp
+bnN0cnVjdGlvbiBmZXRjaC4gU29tZSBzeXN0ZW1zIGhhdmUgZGlmZmVyZW50IHRyYW5zYWN0aW9u
+DQo+ID4+IGZsYWdzIGZvciByZWFkIGFuZCBleGVjIChQQ0kgb25seSBzdXBwb3J0cyB0aGF0IGlu
+IHRoZSBQQVNJRCBUTFAgcHJlZml4KQ0KPiA+PiBhbmQgc29tZSBwYWdlIHRhYmxlcyBoYXZlIGEg
+Im5vIGV4ZWMiIGJpdC4NCj4gPg0KPiA+IFNvIGxldCdzIHNheSBJIGRvbid0IHNldCBFWEVDIG9u
+IHN1Y2ggYSBzeXN0ZW0uIElzIEVYRUMgYWxsb3dlZCBvciBub3Q/DQo+ID4NCj4gPiBNYXliZSB3
+ZSBjYW4gYXNrIHVzZXIgdG8gYWx3YXlzIHNldCBFWEVDIGlzIGV4ZWMgaXMgbmVlZGVkLA0KPiA+
+IGJ1dCB0aGVuIHNheSB3ZSBjYW4gbm90IHByb21pc2UgaW5zdHJ1Y3Rpb24gZmV0Y2ggd2lsbCBm
+YWlsDQo+ID4gaWYgZXhlYyBpcyBub3Qgc2V0Lg0KPiANCj4gU28gdGhlIHNlbWFudGljcyBjb3Vs
+ZCBiZToNCj4gKiBkZXZpY2Ugc2V0cyBFWEVDIGZlYXR1cmUgYml0DQo+ICAgLSBkcml2ZXIgc2V0
+cyBFWEVDIGZsYWcgaW4gTUFQLCBpbnN0cnVjdGlvbiBmZXRjaCBzdWNjZWVkcw0KPiAgIC0gZHJp
+dmVyIGRvZXNuJ3Qgc2V0IEVYRUMgZmxhZyBpbiBNQVAsIGluc3RydWN0aW9ucyBmZXRjaCB3aWxs
+IGZhaWwNCj4gKiBkZXZpY2UgZG9lc24ndCBzZXQgRVhFQyBmZWF0dXJlIGJpdCwgdGhlbiBkcml2
+ZXIgY2Fubm90IHNldCBFWEVDIGZsYWcNCj4gYnV0IGluc3RydWN0aW9uIGZldGNoIG1heSBub3Qg
+ZmFpbC4NCj4gDQo+IEJ1dCBJJ20gdGVtcHRlZCB0byBqdXN0IHJlbW92ZSB0aGUgRVhFQyBmbGFn
+IGZvciBub3csIEkgZG9uJ3QgdGhpbmsNCj4gYW55b25lIG5lZWRzIGl0IGF0IHRoZSBtb21lbnQg
+KGFuZCBWRklPIGRvZXNuJ3Qgc3VwcG9ydCBpdCkuIEknZCBhZGQgaXQNCj4gYmFjayBhcyBOT19F
+WEVDIHdoaWNoIGlzIGNsb3NlciB0byB3aGF0IElPTU1VcyBvZmZlci4NCg0KQWdyZWUuIEl0J3Mg
+bW9yZSBmb3IgUEFTSUQtYmFzZWQgdXNhZ2UgZS5nLiBzaGFyaW5nIENQVSBwYWdlIHRhYmxlDQp3
+aXRoIGRldmljZSBpbiBTVkEuIE5vdyB0aGlzIHZlcnNpb24gaXMgcHVyZWx5IGFib3V0IE1BUC9V
+Tk1BUC4NCk9uIEludGVsIFZULWQsIEVYRUMgaXMgaWdub3JlZCBmb3IgcmVxdWVzdC13aXRob3V0
+LVBBU0lELg0KDQo+IA0KPiANCj4gPj4+PiArXGJlZ2lue2Rlc2NyaXB0aW9ufQ0KPiA+Pj4+ICsg
+IFxpdGVtW1ZJUlRJT19JT01NVV9SRVNWX01FTV9UX1JFU0VSVkVEICgwKV0NCj4gPj4+PiArICAg
+IEFjY2Vzc2VzIHRvIHZpcnR1YWwgYWRkcmVzc2VzIGluIHRoaXMgcmVnaW9uIGhhdmUgdW5kZWZp
+bmVkIGJlaGF2aW9yLg0KPiA+Pj4NCj4gPj4+IHVuZGVmaW5lZD8gIGhvdyBjYW4gcGxhdGZvcm1z
+IHdpdGggc3VjaCBhIHByb3BlcnR5IGNvZXhpc3Qgd2l0aA0KPiB1bnRydXN0ZWQNCj4gPj4+IGRl
+dmljZXM/DQo+ID4+DQo+ID4+IEl0IGlzICJ1bmRlZmluZWQiIGJlY2F1c2UgSSBjYW4ndCBlbnVt
+ZXJhdGUgYWxsIGNhc2VzIChkb24ndCBrbm93IGFib3V0DQo+ID4+IGFsbCBvZiB0aGVtKS4gVGhp
+cyB3b3VsZCBjb250YWluIGZvciBleGFtcGxlIHRoZSBSTVJSIHJlZ2lvbnMgb2YgVlQtZA0KPiA+
+PiAodGhlIEJJT1MgcmVzZXJ2aW5nIHNvbWUgRE1BIHJlZ2lvbnMgZm9yIGl0c2VsZiksIHJlZ2lv
+bnMgYWxsb2NhdGVkIGZvcg0KPiA+PiBob3N0LW1hbmFnZWQgTVNJcyBvbiBhcm0gcGxhdGZvcm1z
+LCBhbmQgc29tZSBQQ0kgYnJpZGdlIHdpbmRvd3MNCj4gPj4gKGFsdGhvdWdoIHRoZXkgcmVtb3Zl
+ZCB0aG9zZSBmcm9tIHRoZSBMaW51eCByZXN2IHJlZ2lvbnMgcmVjZW50bHksIG5vdA0KPiA+PiBj
+ZXJ0YWluIHdoeSkuIElkZWFsbHkgd2Ugd291bGRuJ3QgaGF2ZSBhbnksIGJ1dCBzb21lIHNwZWNp
+YWwgY2FzZXMgbWFrZQ0KPiA+PiBpdCBuZWNlc3NhcnkuDQo+ID4+DQo+ID4+IEluIGdlbmVyYWwg
+aGF2aW5nIHJlc2VydmVkIHJlZ2lvbnMgaXMgaW5jb21wYXRpYmxlIHdpdGggdW50cnVzdGVkDQo+
+ID4+IGRldmljZXMsIGFuZCBpbiBzb21lIGNhc2VzIGluY29tcGF0aWJsZSB3aXRoIHVudHJ1c3Rl
+ZCBndWVzdHMuIEJ1dA0KPiA+PiBjaG9vc2luZyB0aGUgcG9saWN5IGFib3V0IHdoaWNoIGRldmlj
+ZXMgdG8gcHJlc2VudCB0byBndWVzdCBpcyB1cCB0byB0aGUNCj4gPj4gcGxhdGZvcm0uIFRoZSBo
+b3N0IGtub3dzIHdoYXQgdGhlIHJlc3YgcmVnaW9ucyBhcmUgdXNlZCBmb3IsIGFuZCBpZiB0aGV5
+DQo+ID4+IGFyZSBzYWZlIGVub3VnaC4gVGhlIGd1ZXN0IGp1c3QgbmVlZCB0byBrbm93cyB3aGF0
+IHRvIGF2b2lkLg0KPiA+DQo+ID4gWWVzIGJ1dCAuLi4gaWYgeW91IHRydXN0IGRyaXZlciBhbmQg
+ZGV2aWNlIHRoZW4gd2hhdCdzIHRoZQ0KPiA+IHBvaW50IG9mIHRoZSBpb21tdT8NCj4gDQo+IElt
+cHJvdmluZyBtZW1vcnkgYWxsb2NhdGlvbi4gVGhlIGd1ZXN0IGNhbiBkbyBzY2F0dGVyLWdhdGhl
+ciBmb3IgbGFyZ2UNCj4gYnVmZmVycywgaW5zdGVhZCBvZiBhbGxvY2F0aW5nIGJpZyBjb250aWd1
+b3VzIGNodW5rcyBvZiBndWVzdC1waHlzaWNhbA0KPiBhZGRyZXNzZXMuIEFuZCB3aXRoIGRldmlj
+ZSBwYXNzLXRocm91Z2gsIGFueSBtZW1vcnkgdXNlZCBmb3IgRE1BIGhhcyB0bw0KPiBiZSBwaW5u
+ZWQgKHNpbmNlIGRldmljZXMgZ2VuZXJhbGx5IGRvbid0IHN1cHBvcnQgcGFnZSBmYXVsdHMpLiBT
+byB3aGVuDQo+IGFzc2lnbmluZyBhbiBlbmRwb2ludCB0byBhIGd1ZXN0LCB3aXRob3V0IGEgdklP
+TU1VIGFsbCBvZiB0aGUgZ3Vlc3QNCj4gbWVtb3J5IGhhcyB0byBiZSBwaW5uZWQgdXBmcm9udC4g
+V2l0aCBhbiBJT01NVSBvbmx5IHRoZSBtZW1vcnkgdGhhdCB3aWxsDQo+IGFjdHVhbGx5IGJlIHVz
+ZWQgZm9yIERNQSBpcyBwaW5uZWQuDQoNCkknZCBub3Qgdm90ZSB1c2luZyBjdXJyZW50IHZJT01N
+VSBqdXN0IGZvciBhdm9pZGluZyBwaW4gaW5zdGVhZCBvZiBmb3INCmlzb2xhdGlvbiBwdXJwb3Nl
+Li4uIHRoZSBtYXAvdW5tYXAgb3ZlcmhlYWQgaXMgaGlnaCBleGNlcHQgeW91IG9ubHkgDQp0YWxr
+aW5nIGFib3V0IHN0YXRpYyBtYXBwaW5nIGUuZy4gaW4gZ3Vlc3QgdXNlciBzcGFjZSBkcml2ZXIg
+KGUuZy4gRFBESykgDQooYnV0IHRoZW4gaXQncyBhY3R1YWxseSBmb3IgaXNvbGF0aW9uIHB1cnBv
+c2UgYmV0d2VlbiB1c2VyIGFuZCBrZXJuZWwpLg0KIGJ0dyB3ZSBhcmUgd29ya2luZyBvbiBhIGxp
+Z2h0ZXItd2VpZ2h0IGFwcHJvYWNoIChhaW0gPDUlIHBlcmYgZHJvcA0KZm9yIG1vc3QgY2FzZXMp
+IHdoaWxlIGFsbG93aW5nIGhvc3QgdG8gZnVsbHkgaW50cm9zcGVjdCBndWVzdCBETUEgYWN0aXZp
+dGllcy4gDQpMaWtlbHkgd2UnbGwgaW50cm9kdWNlIGEgbmV3IHZpcnRpby1pb21tdSBjYXBhYmls
+aXR5IGZvciB0aGlzIHB1cnBvc2UsIA0KaW5zdGVhZCBvZiB1c2luZyBjdXJyZW50IE1BUC9VTk1B
+UCBwcmltaXRpdmVzLiBTdGF5IHR1bmVkIGFuZCB3ZSdsbCANCnNlbmQgb3V0IFJGQyBzb29uIG9u
+Y2UgZ2V0dGluZyBnb29kIHJlc3VsdC4gOi0pDQoNCkFuZCBJIGRvbid0IHRoaW5rIGhhdmluZyBy
+ZXNlcnZlZCByZWdpb25zIGlzIGluY29tcGF0aWJsZSB3aXRoIHVudHJ1c3RlZA0KZGV2aWNlcy4g
+RmF2b3JpbmcgcmVzZXJ2ZWQgcmVnaW9uIGlzIGEgZnVuY3Rpb25hbCByZXF1aXJlbWVudCBzbyBn
+dWVzdA0KZHJpdmVyIGNhbiBvcGVyYXRlIGFzc2lnbmVkIGRldmljZSBpbiBhIGdvb2Qgc2hhcGUu
+IFZpb2xhdGluZyByZXNlcnZlZA0KcmVnaW9uIHJlcXVpcmVtZW50IChlLmcuIG1hcCBndWVzdCBt
+ZW1vcnkgcGFnZSB0byByZXNlcnZlZCByZWdpb24pIGp1c3QNCm1lYW5zIGRldmljZSBhY2Nlc3Mg
+dG8gdGhpcyBwYWdlIGRvZXNuJ3QgcHJvdmlkZSBkZXNpcmVkIGJlaGF2aW9yLCBzaW5jZQ0KaG9z
+dCB3aWxsIGFsd2F5cyBndWFyYW50ZWUgc2FmZSBiZWhhdmlvciBpbiBwaHlzaWNhbCBJT01NVSBv
+biB0aG9zZQ0KcmVnaW9uczoNCg0KLSBpdCBpcyBlaXRoZXIgbWFwcGVkIHRvIGZpeGVkIHJlc291
+cmNlIChlLmcgQVJNIE1TSSBkb29yYmVsbCkNCndoaWNoIGlzIGFzc29jaWF0ZWQgd2l0aCB0aGlz
+IGRldmljZSBhbmQgdGh1cyBzYWZlDQotIG9yIG1hcCB0byBub3RoaW5nDQoNCkkgZG9uJ3QgdGhp
+bmsgYXJjaGl0ZWN0dXJhbGx5IHdlIGJyZWFrIGFueSBpc29sYXRpb24gaW1wbGljYXRpb24gb24N
+CklPTU1VIGhlcmUuDQoNClRoYW5rcw0KS2V2aW4NCg==
 
