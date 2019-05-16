@@ -1,106 +1,152 @@
-Return-Path: virtio-dev-return-5746-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-From: "Tian, Kevin" <kevin.tian@intel.com>
-Date: Wed, 15 May 2019 05:30:54 +0000
-Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D19CA317AC@SHSMSX104.ccr.corp.intel.com>
+Return-Path: virtio-comment-return-729-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-comment@lists.oasis-open.org>
+List-Post: <mailto:virtio-comment@lists.oasis-open.org>
+List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
 References: <20190430135648.38369-1-jean-philippe.brucker@arm.com>
  <20190503102720-mutt-send-email-mst@kernel.org>
  <14cb84e1-ceb1-e489-f29a-8d77d542561a@arm.com>
  <20190510122220-mutt-send-email-mst@kernel.org>
  <18182871-5a30-9ef4-e6bc-73f5ad32b7e8@arm.com>
  <AADFC41AFE54684AB9EE6CBC0274A5D19CA3166E@SHSMSX104.ccr.corp.intel.com>
-In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D19CA3166E@SHSMSX104.ccr.corp.intel.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <AADFC41AFE54684AB9EE6CBC0274A5D19CA317AC@SHSMSX104.ccr.corp.intel.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Message-ID: <89129122-c8e5-17c8-8590-2a6a9f9bf09b@arm.com>
+Date: Thu, 16 May 2019 12:46:43 +0100
 MIME-Version: 1.0
-Subject: RE: [virtio-dev] Re: [PATCH v3] Add virtio-iommu device
- specification
-To: 'Jean-Philippe Brucker' <jean-philippe.brucker@arm.com>, "Michael S.
- Tsirkin" <mst@redhat.com>
+In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D19CA317AC@SHSMSX104.ccr.corp.intel.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: [virtio-comment] Re: [virtio-dev] Re: [PATCH v3] Add virtio-iommu device specification
+To: "Tian, Kevin" <kevin.tian@intel.com>, "Michael S. Tsirkin" <mst@redhat.com>
 Cc: "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "joro@8bytes.org" <joro@8bytes.org>, "tnowicki@caviumnetworks.com" <tnowicki@caviumnetworks.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>, "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>, "bharat.bhushan@nxp.com" <bharat.bhushan@nxp.com>, "bauerman@linux.ibm.com" <bauerman@linux.ibm.com>, "Alex Williamson (alex.williamson@redhat.com)" <alex.williamson@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-PiBGcm9tOiBUaWFuLCBLZXZpbg0KPiBTZW50OiBXZWRuZXNkYXksIE1heSAxNSwgMjAxOSAxOjA4
-IFBNDQo+IFRvOiBKZWFuLVBoaWxpcHBlIEJydWNrZXIgPGplYW4tcGhpbGlwcGUuYnJ1Y2tlckBh
-cm0uY29tPjsgTWljaGFlbCBTLg0KPiBUc2lya2luIDxtc3RAcmVkaGF0LmNvbT4NCj4gPg0KPiA+
-DQo+ID4gPj4+PiArXGJlZ2lue2Rlc2NyaXB0aW9ufQ0KPiA+ID4+Pj4gKyAgXGl0ZW1bVklSVElP
-X0lPTU1VX1JFU1ZfTUVNX1RfUkVTRVJWRUQgKDApXQ0KPiA+ID4+Pj4gKyAgICBBY2Nlc3NlcyB0
-byB2aXJ0dWFsIGFkZHJlc3NlcyBpbiB0aGlzIHJlZ2lvbiBoYXZlIHVuZGVmaW5lZA0KPiBiZWhh
-dmlvci4NCj4gPiA+Pj4NCj4gPiA+Pj4gdW5kZWZpbmVkPyAgaG93IGNhbiBwbGF0Zm9ybXMgd2l0
-aCBzdWNoIGEgcHJvcGVydHkgY29leGlzdCB3aXRoDQo+ID4gdW50cnVzdGVkDQo+ID4gPj4+IGRl
-dmljZXM/DQo+ID4gPj4NCj4gPiA+PiBJdCBpcyAidW5kZWZpbmVkIiBiZWNhdXNlIEkgY2FuJ3Qg
-ZW51bWVyYXRlIGFsbCBjYXNlcyAoZG9uJ3Qga25vdyBhYm91dA0KPiA+ID4+IGFsbCBvZiB0aGVt
-KS4gVGhpcyB3b3VsZCBjb250YWluIGZvciBleGFtcGxlIHRoZSBSTVJSIHJlZ2lvbnMgb2YgVlQt
-ZA0KPiA+ID4+ICh0aGUgQklPUyByZXNlcnZpbmcgc29tZSBETUEgcmVnaW9ucyBmb3IgaXRzZWxm
-KSwgcmVnaW9ucyBhbGxvY2F0ZWQgZm9yDQo+ID4gPj4gaG9zdC1tYW5hZ2VkIE1TSXMgb24gYXJt
-IHBsYXRmb3JtcywgYW5kIHNvbWUgUENJIGJyaWRnZSB3aW5kb3dzDQo+ID4gPj4gKGFsdGhvdWdo
-IHRoZXkgcmVtb3ZlZCB0aG9zZSBmcm9tIHRoZSBMaW51eCByZXN2IHJlZ2lvbnMgcmVjZW50bHks
-IG5vdA0KPiA+ID4+IGNlcnRhaW4gd2h5KS4gSWRlYWxseSB3ZSB3b3VsZG4ndCBoYXZlIGFueSwg
-YnV0IHNvbWUgc3BlY2lhbCBjYXNlcyBtYWtlDQo+ID4gPj4gaXQgbmVjZXNzYXJ5Lg0KDQorQWxl
-eC4NCg0KQWN0dWFsbHkgSSBkb24ndCB0aGluayBSTVJSIGlzIHJpZ2h0IGV4YW1wbGUgaGVyZSAo
-c29ycnkgaWYgaXQncyBteSBpbnB1dCBpbg0Kb3VyIHByZXZpb3VzIGRpc2N1c3Npb24pLiBUaGVy
-ZSB3YXMgY29uY2VybiBvbiBSTVJSIHByb3ZpZGluZyBhIHNoYXJlZA0KbWVtb3J5IHJlZ2lvbiBi
-ZXR3ZWVuIGRldmljZSBhbmQgcGxhdGZvcm0gY29udHJvbGxlciwgdGh1cyBtYXkgY2F1c2UNCmlz
-b2xhdGlvbiBpc3N1ZToNCglodHRwczovL2FjY2Vzcy5yZWRoYXQuY29tL3NpdGVzL2RlZmF1bHQv
-ZmlsZXMvYXR0YWNobWVudHMvcm1yci13cDEucGRmDQoNClNvIHRoZSBiYXNpYyBwb2xpY3kgZm9y
-IGRldmljZXMgd2l0aCBSTVJSIGlzLCBleGNsdWRpbmcgdGhlbSBmcm9tIGRldmljZQ0KYXNzaWdu
-bWVudCwgZXhjZXB0IGZvciBJbnRlbCBHUFUgYW5kIFVTQi4gVGhlIGxhdHRlciB0d28gaGFzIHdl
-bGwtdW5kZXJzdG9vZA0KYmVoYXZpb3Igb24gUk1SUiwgdGh1cyB0aGV5IGNhbiBiZSBzYWZlbHkg
-YXNzaWduZWQgd2l0aCBSTVJSIGlnbm9yZWQNCihpLmUuIFJNUlIgcmVnaW9uIGNhbiBiZSByZXVz
-ZWQgYXMgdmFsaWQgSU9WQSByZWdpb24pLiAgDQoNCkFzIEkgY29tbWVudGVkIGJlbG93LCBJIHRo
-aW5rIGl0J3Mgc2FmZSB0byBkZXNjcmliZSByZXNlcnZlZCByZWdpb24gYmVoYXZpb3INCmFzIGVp
-dGhlciBzdWNjZWVkIHdpdGggdW5kZWZpbmVkIGJlaGF2aW9yIChlLmcuIGluIEFSTSBNU0kgZG9v
-cmJlbGwgY2FzZSwgDQp3aGVyZSBhIHNwdXJpb3VzIGludGVycnVwdCBvbiBhbGxvY2F0ZWQgZG9v
-cmJlbGwgZm9yIHRoaXMgZGV2aWNlIGlzIHRyaWdnZXJlZCANCmluc3RlYWQgb2YgZGVzaXJlZCBE
-TUEgYWNjZXNzKSwgb3IgY2F1c2UgdklPTU1VIHVucmVjb3ZlcmFibGUgZmF1bHQgZHVlIA0KdG8g
-aW52YWxpZCBtYXBwaW5ncy4gQW4gdW50cnVzdGVkIGRldmljZSBjYW4gbmV2ZXIgdXNlIHJlc2Vy
-dmVkIHJlZ2lvbiB0byANCmVzY2FwZSBzaW5jZSBwaHlzaWNhbGx5IElPTU1VIG9ubHkgY29udGFp
-bnMgdmVyaWZpZWQgbWFwcGluZyB0byBncmFudGVkDQpyZXNvdXJjZSAoTVNJKSBvciBub3RoaW5n
-Lg0KDQo+ID4gPj4NCj4gPiA+PiBJbiBnZW5lcmFsIGhhdmluZyByZXNlcnZlZCByZWdpb25zIGlz
-IGluY29tcGF0aWJsZSB3aXRoIHVudHJ1c3RlZA0KPiA+ID4+IGRldmljZXMsIGFuZCBpbiBzb21l
-IGNhc2VzIGluY29tcGF0aWJsZSB3aXRoIHVudHJ1c3RlZCBndWVzdHMuIEJ1dA0KPiA+ID4+IGNo
-b29zaW5nIHRoZSBwb2xpY3kgYWJvdXQgd2hpY2ggZGV2aWNlcyB0byBwcmVzZW50IHRvIGd1ZXN0
-IGlzIHVwIHRvIHRoZQ0KPiA+ID4+IHBsYXRmb3JtLiBUaGUgaG9zdCBrbm93cyB3aGF0IHRoZSBy
-ZXN2IHJlZ2lvbnMgYXJlIHVzZWQgZm9yLCBhbmQgaWYgdGhleQ0KPiA+ID4+IGFyZSBzYWZlIGVu
-b3VnaC4gVGhlIGd1ZXN0IGp1c3QgbmVlZCB0byBrbm93cyB3aGF0IHRvIGF2b2lkLg0KPiA+ID4N
-Cj4gPiA+IFllcyBidXQgLi4uIGlmIHlvdSB0cnVzdCBkcml2ZXIgYW5kIGRldmljZSB0aGVuIHdo
-YXQncyB0aGUNCj4gPiA+IHBvaW50IG9mIHRoZSBpb21tdT8NCj4gPg0KPiA+IEltcHJvdmluZyBt
-ZW1vcnkgYWxsb2NhdGlvbi4gVGhlIGd1ZXN0IGNhbiBkbyBzY2F0dGVyLWdhdGhlciBmb3IgbGFy
-Z2UNCj4gPiBidWZmZXJzLCBpbnN0ZWFkIG9mIGFsbG9jYXRpbmcgYmlnIGNvbnRpZ3VvdXMgY2h1
-bmtzIG9mIGd1ZXN0LXBoeXNpY2FsDQo+ID4gYWRkcmVzc2VzLiBBbmQgd2l0aCBkZXZpY2UgcGFz
-cy10aHJvdWdoLCBhbnkgbWVtb3J5IHVzZWQgZm9yIERNQSBoYXMgdG8NCj4gPiBiZSBwaW5uZWQg
-KHNpbmNlIGRldmljZXMgZ2VuZXJhbGx5IGRvbid0IHN1cHBvcnQgcGFnZSBmYXVsdHMpLiBTbyB3
-aGVuDQo+ID4gYXNzaWduaW5nIGFuIGVuZHBvaW50IHRvIGEgZ3Vlc3QsIHdpdGhvdXQgYSB2SU9N
-TVUgYWxsIG9mIHRoZSBndWVzdA0KPiA+IG1lbW9yeSBoYXMgdG8gYmUgcGlubmVkIHVwZnJvbnQu
-IFdpdGggYW4gSU9NTVUgb25seSB0aGUgbWVtb3J5IHRoYXQNCj4gd2lsbA0KPiA+IGFjdHVhbGx5
-IGJlIHVzZWQgZm9yIERNQSBpcyBwaW5uZWQuDQo+IA0KPiBJJ2Qgbm90IHZvdGUgdXNpbmcgY3Vy
-cmVudCB2SU9NTVUganVzdCBmb3IgYXZvaWRpbmcgcGluIGluc3RlYWQgb2YgZm9yDQo+IGlzb2xh
-dGlvbiBwdXJwb3NlLi4uIHRoZSBtYXAvdW5tYXAgb3ZlcmhlYWQgaXMgaGlnaCBleGNlcHQgeW91
-IG9ubHkNCj4gdGFsa2luZyBhYm91dCBzdGF0aWMgbWFwcGluZyBlLmcuIGluIGd1ZXN0IHVzZXIg
-c3BhY2UgZHJpdmVyIChlLmcuIERQREspDQo+IChidXQgdGhlbiBpdCdzIGFjdHVhbGx5IGZvciBp
-c29sYXRpb24gcHVycG9zZSBiZXR3ZWVuIHVzZXIgYW5kIGtlcm5lbCkuDQo+ICBidHcgd2UgYXJl
-IHdvcmtpbmcgb24gYSBsaWdodGVyLXdlaWdodCBhcHByb2FjaCAoYWltIDw1JSBwZXJmIGRyb3AN
-Cj4gZm9yIG1vc3QgY2FzZXMpIHdoaWxlIGFsbG93aW5nIGhvc3QgdG8gZnVsbHkgaW50cm9zcGVj
-dCBndWVzdCBETUEgYWN0aXZpdGllcy4NCj4gTGlrZWx5IHdlJ2xsIGludHJvZHVjZSBhIG5ldyB2
-aXJ0aW8taW9tbXUgY2FwYWJpbGl0eSBmb3IgdGhpcyBwdXJwb3NlLA0KPiBpbnN0ZWFkIG9mIHVz
-aW5nIGN1cnJlbnQgTUFQL1VOTUFQIHByaW1pdGl2ZXMuIFN0YXkgdHVuZWQgYW5kIHdlJ2xsDQo+
-IHNlbmQgb3V0IFJGQyBzb29uIG9uY2UgZ2V0dGluZyBnb29kIHJlc3VsdC4gOi0pDQo+IA0KPiBB
-bmQgSSBkb24ndCB0aGluayBoYXZpbmcgcmVzZXJ2ZWQgcmVnaW9ucyBpcyBpbmNvbXBhdGlibGUg
-d2l0aCB1bnRydXN0ZWQNCj4gZGV2aWNlcy4gRmF2b3JpbmcgcmVzZXJ2ZWQgcmVnaW9uIGlzIGEg
-ZnVuY3Rpb25hbCByZXF1aXJlbWVudCBzbyBndWVzdA0KPiBkcml2ZXIgY2FuIG9wZXJhdGUgYXNz
-aWduZWQgZGV2aWNlIGluIGEgZ29vZCBzaGFwZS4gVmlvbGF0aW5nIHJlc2VydmVkDQo+IHJlZ2lv
-biByZXF1aXJlbWVudCAoZS5nLiBtYXAgZ3Vlc3QgbWVtb3J5IHBhZ2UgdG8gcmVzZXJ2ZWQgcmVn
-aW9uKSBqdXN0DQo+IG1lYW5zIGRldmljZSBhY2Nlc3MgdG8gdGhpcyBwYWdlIGRvZXNuJ3QgcHJv
-dmlkZSBkZXNpcmVkIGJlaGF2aW9yLCBzaW5jZQ0KPiBob3N0IHdpbGwgYWx3YXlzIGd1YXJhbnRl
-ZSBzYWZlIGJlaGF2aW9yIGluIHBoeXNpY2FsIElPTU1VIG9uIHRob3NlDQo+IHJlZ2lvbnM6DQo+
-IA0KPiAtIGl0IGlzIGVpdGhlciBtYXBwZWQgdG8gZml4ZWQgcmVzb3VyY2UgKGUuZyBBUk0gTVNJ
-IGRvb3JiZWxsKQ0KPiB3aGljaCBpcyBhc3NvY2lhdGVkIHdpdGggdGhpcyBkZXZpY2UgYW5kIHRo
-dXMgc2FmZQ0KPiAtIG9yIG1hcCB0byBub3RoaW5nDQo+IA0KPiBJIGRvbid0IHRoaW5rIGFyY2hp
-dGVjdHVyYWxseSB3ZSBicmVhayBhbnkgaXNvbGF0aW9uIGltcGxpY2F0aW9uIG9uDQo+IElPTU1V
-IGhlcmUuDQo+IA0KPiBUaGFua3MNCj4gS2V2aW4NCg==
+On 15/05/2019 06:30, Tian, Kevin wrote:
+>> From: Tian, Kevin
+>> Sent: Wednesday, May 15, 2019 1:08 PM
+>> To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>; Michael S.
+>> Tsirkin <mst@redhat.com>
+>>>
+>>>
+>>>>>>> +\begin{description}
+>>>>>>> +  \item[VIRTIO_IOMMU_RESV_MEM_T_RESERVED (0)]
+>>>>>>> +    Accesses to virtual addresses in this region have undefined
+>> behavior.
+>>>>>>
+>>>>>> undefined?  how can platforms with such a property coexist with
+>>> untrusted
+>>>>>> devices?
+>>>>>
+>>>>> It is "undefined" because I can't enumerate all cases (don't know about
+>>>>> all of them). This would contain for example the RMRR regions of VT-d
+>>>>> (the BIOS reserving some DMA regions for itself), regions allocated for
+>>>>> host-managed MSIs on arm platforms, and some PCI bridge windows
+>>>>> (although they removed those from the Linux resv regions recently, not
+>>>>> certain why). Ideally we wouldn't have any, but some special cases make
+>>>>> it necessary.
+> 
+> +Alex.
+> 
+> Actually I don't think RMRR is right example here (sorry if it's my input in
+> our previous discussion). There was concern on RMRR providing a shared
+> memory region between device and platform controller, thus may cause
+> isolation issue:
+> 	https://access.redhat.com/sites/default/files/attachments/rmrr-wp1.pdf
+> 
+> So the basic policy for devices with RMRR is, excluding them from device
+> assignment, except for Intel GPU and USB. The latter two has well-understood
+> behavior on RMRR, thus they can be safely assigned with RMRR ignored
+> (i.e. RMRR region can be reused as valid IOVA region).  
+
+Ah I see, seems like a good policy.
+
+> As I commented below, I think it's safe to describe reserved region behavior
+> as either succeed with undefined behavior (e.g. in ARM MSI doorbell case, 
+> where a spurious interrupt on allocated doorbell for this device is triggered 
+> instead of desired DMA access), or cause vIOMMU unrecoverable fault due 
+> to invalid mappings. An untrusted device can never use reserved region to 
+> escape since physically IOMMU only contains verified mapping to granted
+> resource (MSI) or nothing.
+
+Yes, I will add that as a requirement in next version: reserved regions
+are okay as long as they don't allow a device to escape isolation.
+Finding the right wording without being too vague is a bit tough for
+this one.
+
+>>>>>
+>>>>> In general having reserved regions is incompatible with untrusted
+>>>>> devices, and in some cases incompatible with untrusted guests. But
+>>>>> choosing the policy about which devices to present to guest is up to the
+>>>>> platform. The host knows what the resv regions are used for, and if they
+>>>>> are safe enough. The guest just need to knows what to avoid.
+>>>>
+>>>> Yes but ... if you trust driver and device then what's the
+>>>> point of the iommu?
+>>>
+>>> Improving memory allocation. The guest can do scatter-gather for large
+>>> buffers, instead of allocating big contiguous chunks of guest-physical
+>>> addresses. And with device pass-through, any memory used for DMA has to
+>>> be pinned (since devices generally don't support page faults). So when
+>>> assigning an endpoint to a guest, without a vIOMMU all of the guest
+>>> memory has to be pinned upfront. With an IOMMU only the memory that
+>> will
+>>> actually be used for DMA is pinned.
+>>
+>> I'd not vote using current vIOMMU just for avoiding pin instead of for
+>> isolation purpose... the map/unmap overhead is high except you only
+>> talking about static mapping e.g. in guest user space driver (e.g. DPDK)
+>> (but then it's actually for isolation purpose between user and kernel).
+>>  btw we are working on a lighter-weight approach (aim <5% perf drop
+>> for most cases) while allowing host to fully introspect guest DMA activities.
+>> Likely we'll introduce a new virtio-iommu capability for this purpose,
+>> instead of using current MAP/UNMAP primitives. Stay tuned and we'll
+>> send out RFC soon once getting good result. :-)
+
+Sounds great, I'd like to hear more about this. I also have some drafts
+for performance improvement and SVA, but haven't found time to progress
+on that in a while. For SVA however, introspection seems nearly
+impossible (on Arm the host may not even see invalidation commands from
+the guest).
+
+Thanks,
+Jean
+
+>>
+>> And I don't think having reserved regions is incompatible with untrusted
+>> devices. Favoring reserved region is a functional requirement so guest
+>> driver can operate assigned device in a good shape. Violating reserved
+>> region requirement (e.g. map guest memory page to reserved region) just
+>> means device access to this page doesn't provide desired behavior, since
+>> host will always guarantee safe behavior in physical IOMMU on those
+>> regions:
+>>
+>> - it is either mapped to fixed resource (e.g ARM MSI doorbell)
+>> which is associated with this device and thus safe
+>> - or map to nothing
+>>
+>> I don't think architecturally we break any isolation implication on
+>> IOMMU here.
+>>
+>> Thanks
+>> Kevin
+
+
+This publicly archived list offers a means to provide input to the
+OASIS Virtual I/O Device (VIRTIO) TC.
+
+In order to verify user consent to the Feedback License terms and
+to minimize spam in the list archive, subscription is required
+before posting.
+
+Subscribe: virtio-comment-subscribe@lists.oasis-open.org
+Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
+List help: virtio-comment-help@lists.oasis-open.org
+List archive: https://lists.oasis-open.org/archives/virtio-comment/
+Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
+List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
+Committee: https://www.oasis-open.org/committees/virtio/
+Join OASIS: https://www.oasis-open.org/join/
 
