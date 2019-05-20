@@ -1,88 +1,92 @@
-Return-Path: virtio-dev-return-5767-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-5753-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id EB60C986015
-	for <virtio-dev@lists.oasis-open.org>; Fri, 31 May 2019 16:59:32 +0000 (UTC)
-Date: Fri, 31 May 2019 17:59:18 +0100
-From: "Dr. David Alan Gilbert" <dgilbert@redhat.com>
-Message-ID: <20190531165918.GL3169@work-vm>
+	by lists.oasis-open.org (Postfix) with ESMTP id 47B1C985E6A
+	for <virtio-dev@lists.oasis-open.org>; Mon, 20 May 2019 22:03:21 +0000 (UTC)
+From: Nikos Dragazis <ndragazis@arrikto.com>
 References: <1557600460-18966-1-git-send-email-ndragazis@arrikto.com>
- <1557600460-18966-5-git-send-email-ndragazis@arrikto.com>
+Message-ID: <05fba85f-62c4-deae-f98c-493e6e374f8f@arrikto.com>
+Date: Tue, 21 May 2019 01:03:18 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1557600460-18966-5-git-send-email-ndragazis@arrikto.com>
-Subject: [virtio-dev] Re: [PATCH v3 4/4] vhost-user: update shared memory capability
-To: Nikos Dragazis <ndragazis@arrikto.com>
-Cc: virtio-dev@lists.oasis-open.org, Stefan Hajnoczi <stefanha@gmail.com>, Vangelis Koukis <vkoukis@arrikto.com>
+In-Reply-To: <1557600460-18966-1-git-send-email-ndragazis@arrikto.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+Subject: Re: [virtio-dev] [PATCH v3 0/4] introduce virtio vhost-user backend
+ device type
+To: virtio-dev@lists.oasis-open.org
+Cc: Stefan Hajnoczi <stefanha@gmail.com>, "Dr . David Alan Gilbert" <dgilbert@redhat.com>, Vangelis Koukis <vkoukis@arrikto.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-* Nikos Dragazis (ndragazis@arrikto.com) wrote:
-> The virtio vhost-user device has shared memory resources. Therefore, it
-> uses the VIRTIO_PCI_CAP_SHARED_MEMORY_CFG capability to standardize
-> those resources through the PCI Configuration Space. This patch
-> synchronizes the virtio vhost-user device spec with the following shared
-> memory resources PATCH:
-> 
-> https://lists.oasis-open.org/archives/virtio-dev/201902/msg00142.html
-> 
-> Cc: Dr. David Alan Gilbert <dgilbert@redhat.com>
-> Signed-off-by: Nikos Dragazis <ndragazis@arrikto.com>
-> ---
->  virtio-vhost-user.tex | 17 ++++++++++++++++-
->  1 file changed, 16 insertions(+), 1 deletion(-)
-> 
-> diff --git a/virtio-vhost-user.tex b/virtio-vhost-user.tex
-> index 7a8cd9c..d1305dd 100644
-> --- a/virtio-vhost-user.tex
-> +++ b/virtio-vhost-user.tex
-> @@ -320,7 +320,22 @@ \subsubsection{Notification structure layout}\label{sec:Device Types / Vhost-use
->  \subsubsection{Shared memory capability}\label{sec:Device Types / Vhost-user Device Backend / Additional Device Resources over PCI / Shared Memory capability}
->  
->  The shared memory location is found using the VIRTIO_PCI_CAP_SHARED_MEMORY_CFG
-> -capability.
-> +capability. Using the additional \field{offset_hi} and \field{length_hi}
-> +fields following the SHARED_MEMORY_CFG capability structure, the shared
-> +memory region's 64-bit BAR offset is calculated as follows:
-> +
-> +\begin{lstlisting}
-> +        offset_hi << 32 + cap.offset
-> +\end{lstlisting}
-> +
-> +and the shared memory region's 64-bit length is calculated as follows:
-> +
-> +\begin{lstlisting}
-> +        length_hi << 32 + cap.length
-> +\end{lstlisting}
-> +
-> +The \field{cap.offset} and \field{cap.length} fields are taken from the
-> +SHARED_MEMORY_CFG capability structure.
+Hi all,
 
-Yes, or this could just reference the:
-{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Shared memory capability}
+This is a kind reminder to solicit comments on this patchset, and ask
+for next steps. What can I do to help with the process of merging this?
 
-section once it's merged.
+Best regards,
+Nikos
 
-Do you actually need to specify that it's found by PCI though?
-Could you just define it as using Shared Memory Regions,
-reference {sec:Basic Facilities of a Virtio Device / Shared Memory Regions}
-and then it would be defined to work with PCI, MMIO or CCW if they
-define the shared memory region support.
-
-Dave
-
-
->  \devicenormative{\paragraph}{Shared Memory capability}{Device Types / Vhost-user Device Backend / Additional Device Resources over PCI / Shared Memory capability}
->  The device MUST present exactly one shared memory capability.
-> -- 
-> 2.7.4
-> 
---
-Dr. David Alan Gilbert / dgilbert@redhat.com / Manchester, UK
+On 11/5/19 9:47 μ.μ., Nikos Dragazis wrote:
+> Hi everyone,
+>
+> this PATCH presents an updated version of the RFC virtio device spec for
+> the virtio-vhost-user device. The initial RFC implementation can be
+> found here: [1].
+>
+> This PATCH is split into four parts:
+>
+> 1. the first commit is just a refactored version of the initial RFC
+> implementation [1]. I just moved the device spec into a separate .tex
+> file and changed the device id from #24 to #28 since the ids #24-#27 are
+> reserved.
+>
+> 2. the second commit fixes some minor issues with the device spec. This
+> is quite straightforward.
+>
+> 3. the third commit enhances the notification capability with some
+> device/driver requirements. This makes sense because the notification
+> capability behaves similarly to the MSI-X capability, thereby having
+> some requirements that need to be mentioned.
+>
+> 4. the fourth commit synchronizes the shared memory capability with a
+> recent patch [2] that attempts to standardize a standalone
+> SHARED_MEMORY_CFG virtio capability.
+>
+> v3 changes:
+>  * Device Requirements for the Notification Capability: point out the
+>    difference between the MSI-X Table Size stored in the Message Control
+>    register of the MSI-X capability structure and the actual MSI-X Table
+>    Size
+>
+> v2 changes:
+>  * Change device id from #25 to #28
+>
+> Looking forward to your comments.
+>
+> Thanks,
+> Nikos
+>
+> [1] https://lists.oasis-open.org/archives/virtio-dev/201801/msg00110.html
+> [2] https://lists.oasis-open.org/archives/virtio-dev/201902/msg00142.html
+>
+> Nikos Dragazis (3):
+>   vhost-user: minor fixes
+>   vhost-user: add requirements for the notification capability
+>   vhost-user: update shared memory capability
+>
+> Stefan Hajnoczi (1):
+>   vhost-user: add vhost-user device type
+>
+>  content.tex           |   3 +
+>  introduction.tex      |   1 +
+>  virtio-vhost-user.tex | 349 ++++++++++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 353 insertions(+)
+>  create mode 100644 virtio-vhost-user.tex
+>
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
