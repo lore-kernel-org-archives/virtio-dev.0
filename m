@@ -1,39 +1,118 @@
-Return-Path: virtio-dev-return-5771-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-5769-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 00810985A99
-	for <virtio-dev@lists.oasis-open.org>; Tue, 11 Jun 2019 06:55:10 +0000 (UTC)
-From: Tiwei Bie <tiwei.bie@intel.com>
-Date: Tue, 11 Jun 2019 14:53:04 +0800
-Message-Id: <20190611065304.16880-1-tiwei.bie@intel.com>
-Subject: [virtio-dev] [PATCH] content: fix typo in feature bit name
-To: mst@redhat.com, virtio-dev@lists.oasis-open.org
+	by lists.oasis-open.org (Postfix) with ESMTP id 578B798601A
+	for <virtio-dev@lists.oasis-open.org>; Fri,  7 Jun 2019 12:05:39 +0000 (UTC)
+References: <1557600460-18966-1-git-send-email-ndragazis@arrikto.com>
+ <1557600460-18966-5-git-send-email-ndragazis@arrikto.com>
+ <20190531165918.GL3169@work-vm>
+From: Nikos Dragazis <ndragazis@arrikto.com>
+Message-ID: <30952f43-31c3-784c-d114-e7381be66e48@arrikto.com>
+Date: Fri, 7 Jun 2019 15:05:36 +0300
+MIME-Version: 1.0
+In-Reply-To: <20190531165918.GL3169@work-vm>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+Subject: Re: [virtio-dev] Re: [PATCH v3 4/4] vhost-user: update shared memory
+ capability
+To: "Dr. David Alan Gilbert" <dgilbert@redhat.com>
+Cc: virtio-dev@lists.oasis-open.org, Stefan Hajnoczi <stefanha@gmail.com>, Vangelis Koukis <vkoukis@arrikto.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Signed-off-by: Tiwei Bie <tiwei.bie@intel.com>
----
- content.tex | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On 31/5/19 7:59 μ.μ., Dr. David Alan Gilbert wrote:
+> * Nikos Dragazis (ndragazis@arrikto.com) wrote:
+>> The virtio vhost-user device has shared memory resources. Therefore, it
+>> uses the VIRTIO_PCI_CAP_SHARED_MEMORY_CFG capability to standardize
+>> those resources through the PCI Configuration Space. This patch
+>> synchronizes the virtio vhost-user device spec with the following shared
+>> memory resources PATCH:
+>>
+>> https://lists.oasis-open.org/archives/virtio-dev/201902/msg00142.html
+>>
+>> Cc: Dr. David Alan Gilbert <dgilbert@redhat.com>
+>> Signed-off-by: Nikos Dragazis <ndragazis@arrikto.com>
+>> ---
+>>  virtio-vhost-user.tex | 17 ++++++++++++++++-
+>>  1 file changed, 16 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/virtio-vhost-user.tex b/virtio-vhost-user.tex
+>> index 7a8cd9c..d1305dd 100644
+>> --- a/virtio-vhost-user.tex
+>> +++ b/virtio-vhost-user.tex
+>> @@ -320,7 +320,22 @@ \subsubsection{Notification structure layout}\label{sec:Device Types / Vhost-use
+>>  \subsubsection{Shared memory capability}\label{sec:Device Types / Vhost-user Device Backend / Additional Device Resources over PCI / Shared Memory capability}
+>>  
+>>  The shared memory location is found using the VIRTIO_PCI_CAP_SHARED_MEMORY_CFG
+>> -capability.
+>> +capability. Using the additional \field{offset_hi} and \field{length_hi}
+>> +fields following the SHARED_MEMORY_CFG capability structure, the shared
+>> +memory region's 64-bit BAR offset is calculated as follows:
+>> +
+>> +\begin{lstlisting}
+>> +        offset_hi << 32 + cap.offset
+>> +\end{lstlisting}
+>> +
+>> +and the shared memory region's 64-bit length is calculated as follows:
+>> +
+>> +\begin{lstlisting}
+>> +        length_hi << 32 + cap.length
+>> +\end{lstlisting}
+>> +
+>> +The \field{cap.offset} and \field{cap.length} fields are taken from the
+>> +SHARED_MEMORY_CFG capability structure.
+> Yes, or this could just reference the:
+> {sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Shared memory capability}
+>
+> section once it's merged.
 
-diff --git a/content.tex b/content.tex
-index 193b6e1..a143d91 100644
---- a/content.tex
-+++ b/content.tex
-@@ -3523,7 +3523,7 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
- 
- \paragraph{VLAN Filtering}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / VLAN Filtering}
- 
--If the driver negotiates the VIRTION_NET_F_CTRL_VLAN feature, it
-+If the driver negotiates the VIRTIO_NET_F_CTRL_VLAN feature, it
- can control a VLAN filter table in the device.
- 
- \begin{lstlisting}
--- 
-2.17.1
+That makes sense.
+
+>
+> Do you actually need to specify that it's found by PCI though?
+> Could you just define it as using Shared Memory Regions,
+> reference {sec:Basic Facilities of a Virtio Device / Shared Memory Regions}
+> and then it would be defined to work with PCI, MMIO or CCW if they
+> define the shared memory region support.
+
+As you may have noticed, the virtio-vhost-user device, in contrast to
+the other devices, needs some additional resources (doorbells,
+notifications, shared memory), including of course the shared memory
+regions which you are attempting to standardize. So, this device can
+only be supported by transports that can somehow export all of these
+resources, not just the shared memory resource.
+
+In contrast to the shared memory region, the doorbells and notifications
+resources are not standardized. Therefore, this patchset offers a
+straightforward mapping of all these resources to the PCI transport via
+virtio PCI capabilities. I am not sure about how the other virtio
+transports could possibly support these resources.
+
+Hope this makes sense :)
+Any suggestions are welcome.
+
+--
+Nikos
+
+>
+> Dave
+>
+>
+>>  \devicenormative{\paragraph}{Shared Memory capability}{Device Types / Vhost-user Device Backend / Additional Device Resources over PCI / Shared Memory capability}
+>>  The device MUST present exactly one shared memory capability.
+>> -- 
+>> 2.7.4
+>>
+> --
+> Dr. David Alan Gilbert / dgilbert@redhat.com / Manchester, UK
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
 
 ---------------------------------------------------------------------
