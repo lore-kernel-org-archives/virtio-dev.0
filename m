@@ -1,92 +1,43 @@
-Return-Path: virtio-dev-return-5772-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-5770-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 6B5CA985CD4
-	for <virtio-dev@lists.oasis-open.org>; Thu, 13 Jun 2019 15:54:40 +0000 (UTC)
-References: <20190530170929.19366-1-jean-philippe.brucker@arm.com>
-From: Auger Eric <eric.auger@redhat.com>
-Message-ID: <42408240-81a1-fe25-72da-5a93c9e1cb89@redhat.com>
-Date: Thu, 13 Jun 2019 17:54:13 +0200
+	by lists.oasis-open.org (Postfix) with ESMTP id 71D9F984346
+	for <virtio-dev@lists.oasis-open.org>; Mon, 10 Jun 2019 10:36:57 +0000 (UTC)
+Date: Mon, 10 Jun 2019 11:36:39 +0100
+From: "Dr. David Alan Gilbert" <dgilbert@redhat.com>
+Message-ID: <20190610103638.GC22439@work-vm>
 MIME-Version: 1.0
-In-Reply-To: <20190530170929.19366-1-jean-philippe.brucker@arm.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: [virtio-dev] Re: [PATCH v8 0/7] Add virtio-iommu driver
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, joro@8bytes.org, mst@redhat.com
-Cc: iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, devicetree@vger.kernel.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, jasowang@redhat.com, robh+dt@kernel.org, mark.rutland@arm.com, Lorenzo.Pieralisi@arm.com, robin.murphy@arm.com, bhelgaas@google.com, frowand.list@gmail.com, kvmarm@lists.cs.columbia.edu, Tomasz Nowicki <tn@semihalf.com>, kevin.tian@intel.com, bauerman@linux.ibm.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Subject: [virtio-dev] ping: virtio-fs stuff
+To: virtio-dev@lists.oasis-open.org
+Cc: mst@redhat.com, cohuck@redhat.com, stefanha@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
 Hi,
+  Can I give a gentle ping for the set of virtio-fs related things;
 
-On 5/30/19 7:09 PM, Jean-Philippe Brucker wrote:
-> Implement the virtio-iommu driver, following specification v0.12 [1].
-> Since last version [2] we've worked on improving the specification,
-> which resulted in the following changes to the interface:
-> * Remove the EXEC flag.
-> * Add feature bit for the MMIO flag.
-> * Change domain_bits to domain_range.
-> 
-> Given that there were small changes to patch 5/7, I removed the review
-> and test tags. Please find the code at [3].
-> 
-> [1] Virtio-iommu specification v0.12, sources and pdf
->     git://linux-arm.org/virtio-iommu.git virtio-iommu/v0.12
->     http://jpbrucker.net/virtio-iommu/spec/v0.12/virtio-iommu-v0.12.pdf
->     http://jpbrucker.net/virtio-iommu/spec/diffs/virtio-iommu-dev-diff-v0.11-v0.12.pdf
-> 
-> [2] [PATCH v7 0/7] Add virtio-iommu driver
->     https://lore.kernel.org/linux-pci/0ba215f5-e856-bf31-8dd9-a85710714a7a@arm.com/T/
-> 
-> [3] git://linux-arm.org/linux-jpb.git virtio-iommu/v0.12
->     git://linux-arm.org/kvmtool-jpb.git virtio-iommu/v0.12
+a) Reservation of an ID
+   https://github.com/oasis-tcs/virtio-spec/issues/31
 
-SERIES
-Tested-by: Eric Auger <eric.auger@redhat.com>
+b) Shared memory regions
+   https://github.com/oasis-tcs/virtio-spec/issues/40
 
-with QEMU branch:
-https://github.com/eauger/qemu/tree/v4.0-virtio-iommu-v0.12
+c) Review of the virito-fs spec
+  https://lists.oasis-open.org/archives/virtio-dev/201904/msg00022.html
 
-and kernel branch:
-https://github.com/eauger/linux/tree/virtio-iommu-v0.12
-(where I just added the rebased iort patches on top of Jean-Philippe's
-virtio-iommu/v0.12 branch). So I also tested the ACPI boot.
+(a) is just a reservation - so should be pretty easy?
+(b) I've seen other suggested uses, but I don't think I've
+seen any other suggestions for changes.
 
-I will formally submit the QEMU series ASAP.
+Dave
 
-Thanks
-
-Eric
-
-> 
-> Jean-Philippe Brucker (7):
->   dt-bindings: virtio-mmio: Add IOMMU description
->   dt-bindings: virtio: Add virtio-pci-iommu node
->   of: Allow the iommu-map property to omit untranslated devices
->   PCI: OF: Initialize dev->fwnode appropriately
->   iommu: Add virtio-iommu driver
->   iommu/virtio: Add probe request
->   iommu/virtio: Add event queue
-> 
->  .../devicetree/bindings/virtio/iommu.txt      |   66 +
->  .../devicetree/bindings/virtio/mmio.txt       |   30 +
->  MAINTAINERS                                   |    7 +
->  drivers/iommu/Kconfig                         |   11 +
->  drivers/iommu/Makefile                        |    1 +
->  drivers/iommu/virtio-iommu.c                  | 1176 +++++++++++++++++
->  drivers/of/base.c                             |   10 +-
->  drivers/pci/of.c                              |    6 +
->  include/uapi/linux/virtio_ids.h               |    1 +
->  include/uapi/linux/virtio_iommu.h             |  165 +++
->  10 files changed, 1470 insertions(+), 3 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/virtio/iommu.txt
->  create mode 100644 drivers/iommu/virtio-iommu.c
->  create mode 100644 include/uapi/linux/virtio_iommu.h
-> 
+--
+Dr. David Alan Gilbert / dgilbert@redhat.com / Manchester, UK
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
