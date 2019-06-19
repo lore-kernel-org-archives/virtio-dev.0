@@ -1,110 +1,84 @@
-Return-Path: virtio-dev-return-5807-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id C6B11985A3D
-	for <virtio-dev@lists.oasis-open.org>; Mon, 24 Jun 2019 23:30:08 +0000 (UTC)
-From: Nikos Dragazis <ndragazis@arrikto.com>
-Date: Tue, 25 Jun 2019 02:29:57 +0300
-Message-Id: <1561418997-24608-6-git-send-email-ndragazis@arrikto.com>
-In-Reply-To: <1561418997-24608-1-git-send-email-ndragazis@arrikto.com>
-References: <1561418997-24608-1-git-send-email-ndragazis@arrikto.com>
-Subject: [virtio-dev] [PATCH v4 5/5] vhost-user: add conformance targets and clauses
-To: virtio-dev@lists.oasis-open.org
-Cc: Stefan Hajnoczi <stefanha@redhat.com>, "Dr . David Alan Gilbert" <dgilbert@redhat.com>, Vangelis Koukis <vkoukis@arrikto.com>
+Return-Path: virtio-return-3377-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio@lists.oasis-open.org>
+List-Post: <mailto:virtio@lists.oasis-open.org>
+List-Help: <mailto:virtio-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
+Date: Tue, 18 Jun 2019 20:38:05 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20190619003657.9637-1-mst@redhat.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Subject: [virtio] [PATCH] README.md: describe preferred flow for comments
+To: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+Cc: aadam@redhat.com, ybettan@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Signed-off-by: Nikos Dragazis <ndragazis@arrikto.com>
+We prefer receiving comments as patches.
+Describe how to generate them.
+
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 ---
- conformance.tex       | 24 ++++++++++++++++++++++--
- virtio-vhost-user.tex |  4 ++--
- 2 files changed, 24 insertions(+), 4 deletions(-)
 
-diff --git a/conformance.tex b/conformance.tex
-index 42f702a..e83cd5c 100644
---- a/conformance.tex
-+++ b/conformance.tex
-@@ -15,14 +15,14 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
-   \begin{itemize}
-     \item Clause \ref{sec:Conformance / Driver Conformance}.
-     \item One of clauses \ref{sec:Conformance / Driver Conformance / PCI Driver Conformance}, \ref{sec:Conformance / Driver Conformance / MMIO Driver Conformance} or \ref{sec:Conformance / Driver Conformance / Channel I/O Driver Conformance}.
--    \item One of clauses \ref{sec:Conformance / Driver Conformance / Network Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Block Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Console Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Entropy Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Traditional Memory Balloon Driver Conformance}, \ref{sec:Conformance / Driver Conformance / SCSI Host Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Input Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Crypto Driver Conformance} or \ref{sec:Conformance / Driver Conformance / Socket Driver Conformance}.
-+    \item One of clauses \ref{sec:Conformance / Driver Conformance / Network Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Block Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Console Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Entropy Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Traditional Memory Balloon Driver Conformance}, \ref{sec:Conformance / Driver Conformance / SCSI Host Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Input Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Crypto Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Socket Driver Conformance} or \ref{sec:Conformance / Driver Conformance / Vhost-user Backend Driver Conformance}.
-     \item Clause \ref{sec:Conformance / Legacy Interface: Transitional Device and Transitional Driver Conformance}.
-   \end{itemize}
- \item[Device] A device MUST conform to four conformance clauses:
-   \begin{itemize}
-     \item Clause \ref{sec:Conformance / Device Conformance}.
-     \item One of clauses \ref{sec:Conformance / Device Conformance / PCI Device Conformance}, \ref{sec:Conformance / Device Conformance / MMIO Device Conformance} or \ref{sec:Conformance / Device Conformance / Channel I/O Device Conformance}.
--    \item One of clauses \ref{sec:Conformance / Device Conformance / Network Device Conformance}, \ref{sec:Conformance / Device Conformance / Block Device Conformance}, \ref{sec:Conformance / Device Conformance / Console Device Conformance}, \ref{sec:Conformance / Device Conformance / Entropy Device Conformance}, \ref{sec:Conformance / Device Conformance / Traditional Memory Balloon Device Conformance}, \ref{sec:Conformance / Device Conformance / SCSI Host Device Conformance}, \ref{sec:Conformance / Device Conformance / Input Device Conformance}, \ref{sec:Conformance / Device Conformance / Crypto Device Conformance} or \ref{sec:Conformance / Device Conformance / Socket Device Conformance}.
-+    \item One of clauses \ref{sec:Conformance / Device Conformance / Network Device Conformance}, \ref{sec:Conformance / Device Conformance / Block Device Conformance}, \ref{sec:Conformance / Device Conformance / Console Device Conformance}, \ref{sec:Conformance / Device Conformance / Entropy Device Conformance}, \ref{sec:Conformance / Device Conformance / Traditional Memory Balloon Device Conformance}, \ref{sec:Conformance / Device Conformance / SCSI Host Device Conformance}, \ref{sec:Conformance / Device Conformance / Input Device Conformance}, \ref{sec:Conformance / Device Conformance / Crypto Device Conformance}, \ref{sec:Conformance / Device Conformance / Socket Device Conformance} or \ref{sec:Conformance / Device Conformance / Vhost-user Backend Device Conformance}.
-     \item Clause \ref{sec:Conformance / Legacy Interface: Transitional Device and Transitional Driver Conformance}.
-   \end{itemize}
- \end{description}
-@@ -183,6 +183,15 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
- \item \ref{drivernormative:Device Types / Socket Device / Device Operation / Device Events}
- \end{itemize}
+Ariel, Yoni, does the following seem helpful to you?
+Any comments?
+
+ README.md | 33 +++++++++++++++++++++++++++++++--
+ 1 file changed, 31 insertions(+), 2 deletions(-)
+
+diff --git a/README.md b/README.md
+index d40f095..3de0c1e 100644
+--- a/README.md
++++ b/README.md
+@@ -30,11 +30,40 @@
  
-+\conformance{\subsection}{Vhost-user Backend Driver Conformance}\label{sec:Conformance / Driver Conformance / Vhost-user Backend Driver Conformance}
-+
-+A vhost-user backend driver MUST conform to the following normative statements:
-+
-+\begin{itemize}
-+\item \ref{drivernormative:Device Types / Vhost-user Device Backend / Device configuration layout}
-+\item \ref{drivernormative:Device Types / Vhost-user Device Backend / Additional Device Resources over PCI / Notification capability}
-+\end{itemize}
-+
- \conformance{\section}{Device Conformance}\label{sec:Conformance / Device Conformance}
- 
- A device MUST conform to the following normative statements:
-@@ -336,6 +345,17 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
- \item \ref{devicenormative:Device Types / Socket Device / Device Operation / Receive and Transmit}
- \end{itemize}
- 
-+\conformance{\subsection}{Vhost-user Backend Device Conformance}\label{sec:Conformance / Device Conformance / Vhost-user Backend Device Conformance}
-+
-+A vhost-user backend device MUST conform to the following normative statements:
-+
-+\begin{itemize}
-+\item \ref{devicenormative:Device Types / Vhost-user Device Backend / Device Initialization}
-+\item \ref{devicenormative:Device Types / Vhost-user Device Backend / Additional Device Resources over PCI / Doorbell capability}
-+\item \ref{devicenormative:Device Types / Vhost-user Device Backend / Additional Device Resources over PCI / Notification capability}
-+\item \ref{devicenormative:Device Types / Vhost-user Device Backend / Additional Device Resources over PCI / Shared memory capability}
-+\end{itemize}
-+
- \conformance{\section}{Legacy Interface: Transitional Device and Transitional Driver Conformance}\label{sec:Conformance / Legacy Interface: Transitional Device and Transitional Driver Conformance}
- A conformant implementation MUST be either transitional or
- non-transitional, see \ref{intro:Legacy
-diff --git a/virtio-vhost-user.tex b/virtio-vhost-user.tex
-index d1305dd..678d018 100644
---- a/virtio-vhost-user.tex
-+++ b/virtio-vhost-user.tex
-@@ -298,7 +298,7 @@ \subsubsection{Notification structure layout}\label{sec:Device Types / Vhost-use
- 
- \drivernormative{\paragraph}{Notification capability}{Device Types /
- Vhost-user Device Backend / Additional Device Resources over PCI /
--Noification capability}
-+Notification capability}
- 
- Driver MUST support device with any MSI-X Table Size 0 to 0x7FF. Driver
- MAY fall back on using INT\#x interrupts for a device which only
-@@ -337,7 +337,7 @@ \subsubsection{Shared memory capability}\label{sec:Device Types / Vhost-user Dev
- The \field{cap.offset} and \field{cap.length} fields are taken from the
- SHARED_MEMORY_CFG capability structure.
- 
--\devicenormative{\paragraph}{Shared Memory capability}{Device Types / Vhost-user Device Backend / Additional Device Resources over PCI / Shared Memory capability}
-+\devicenormative{\paragraph}{Shared memory capability}{Device Types / Vhost-user Device Backend / Additional Device Resources over PCI / Shared memory capability}
- The device MUST present exactly one shared memory capability.
- 
- The device MUST locate shared memory in a Memory Space BAR.
+ <h3>Further Description of this Repository</h3>
+ <h4>Providing Feedback</h4>
++Feedback must be provided the <strong>virtio-comment</strong> mailing list,
++and archived in the mailing list archives.
+ <p>See <A
+ HREF="https://www.oasis-open.org/committees/tc_home.php?wg_abbrev=virtio#feedback">
+ https://www.oasis-open.org/committees/tc_home.php?wg_abbrev=virtio#feedback</A>
+-<h4>Note for Contributors</h4>
+-<p>Contributors should review TC specific
++<p>Note that only plain text part of the message is archived, and all
++attachments are stripped. Accordingly, messages sent to the
++mailing list should use text/plain encoding and not
++have any attachments.
++<p>The preferred form of providing feedback is in form of a patch.
++A patch can be generated and sent by cloning the spec repository,
++creating a commit, formatting it as a patch and then sending it.
++For example:
++<code>
++<p>
++git clone https://github.com/oasis-tcs/virtio-spec.git<br>
++... edit spec text, and save ...<br>
++<p>
++git commit -a<br>
++... describe the proposed change, in the following format:<br>
++single line summary<br>
++<br>
++detailed description, including motivation for the change<br>
++<br>
++Signed-off-by: Name &lt;email&gt;<br>
++... then save and close the editor ... <br>
++<p>
++git format-patch -o proposal1/ HEAD~1..<br>
++... generates a new directory proposal1/ and a file starting with 0001- ...<br>
++<p>
++git send-email --to=virtio-comment@lists.oasis-open.org proposal1/0001-*
++</code>
++<h4>Note for TC Members</h4>
++<p>TC Members should review TC specific
+ process rules under "Further Description of this Repository"
+ in <A
+ HREF="https://github.com/oasis-tcs/virtio-admin">https://github.com/oasis-tcs/virtio-admin</A>.
 -- 
-2.7.4
-
+MST
 
 ---------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+To unsubscribe from this mail list, you must leave the OASIS TC that 
+generates this mail.  Follow this link to all your TCs in OASIS at:
+https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
 
