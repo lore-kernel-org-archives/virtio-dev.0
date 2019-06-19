@@ -1,121 +1,88 @@
-Return-Path: virtio-dev-return-5769-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-5785-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 578B798601A
-	for <virtio-dev@lists.oasis-open.org>; Fri,  7 Jun 2019 12:05:39 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id D3A78985D77
+	for <virtio-dev@lists.oasis-open.org>; Wed, 19 Jun 2019 14:54:41 +0000 (UTC)
+Date: Wed, 19 Jun 2019 15:54:30 +0100
+From: Stefan Hajnoczi <stefanha@redhat.com>
+Message-ID: <20190619145430.GA1232@stefanha-x1.localdomain>
 References: <1557600460-18966-1-git-send-email-ndragazis@arrikto.com>
- <1557600460-18966-5-git-send-email-ndragazis@arrikto.com>
- <20190531165918.GL3169@work-vm>
-From: Nikos Dragazis <ndragazis@arrikto.com>
-Message-ID: <30952f43-31c3-784c-d114-e7381be66e48@arrikto.com>
-Date: Fri, 7 Jun 2019 15:05:36 +0300
 MIME-Version: 1.0
-In-Reply-To: <20190531165918.GL3169@work-vm>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-Subject: Re: [virtio-dev] Re: [PATCH v3 4/4] vhost-user: update shared memory
- capability
-To: "Dr. David Alan Gilbert" <dgilbert@redhat.com>
-Cc: virtio-dev@lists.oasis-open.org, Stefan Hajnoczi <stefanha@gmail.com>, Vangelis Koukis <vkoukis@arrikto.com>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="uAKRQypu60I7Lcqm"
+Content-Disposition: inline
+In-Reply-To: <1557600460-18966-1-git-send-email-ndragazis@arrikto.com>
+Subject: Re: [virtio-dev] [PATCH v3 0/4] introduce virtio vhost-user backend
+ device type
+To: Nikos Dragazis <ndragazis@arrikto.com>
+Cc: virtio-dev@lists.oasis-open.org, Stefan Hajnoczi <stefanha@gmail.com>, "Dr . David Alan Gilbert" <dgilbert@redhat.com>, Vangelis Koukis <vkoukis@arrikto.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 31/5/19 7:59 μ.μ., Dr. David Alan Gilbert wrote:
-> * Nikos Dragazis (ndragazis@arrikto.com) wrote:
->> The virtio vhost-user device has shared memory resources. Therefore, it
->> uses the VIRTIO_PCI_CAP_SHARED_MEMORY_CFG capability to standardize
->> those resources through the PCI Configuration Space. This patch
->> synchronizes the virtio vhost-user device spec with the following shared
->> memory resources PATCH:
->>
->> https://lists.oasis-open.org/archives/virtio-dev/201902/msg00142.html
->>
->> Cc: Dr. David Alan Gilbert <dgilbert@redhat.com>
->> Signed-off-by: Nikos Dragazis <ndragazis@arrikto.com>
->> ---
->>  virtio-vhost-user.tex | 17 ++++++++++++++++-
->>  1 file changed, 16 insertions(+), 1 deletion(-)
->>
->> diff --git a/virtio-vhost-user.tex b/virtio-vhost-user.tex
->> index 7a8cd9c..d1305dd 100644
->> --- a/virtio-vhost-user.tex
->> +++ b/virtio-vhost-user.tex
->> @@ -320,7 +320,22 @@ \subsubsection{Notification structure layout}\label{sec:Device Types / Vhost-use
->>  \subsubsection{Shared memory capability}\label{sec:Device Types / Vhost-user Device Backend / Additional Device Resources over PCI / Shared Memory capability}
->>  
->>  The shared memory location is found using the VIRTIO_PCI_CAP_SHARED_MEMORY_CFG
->> -capability.
->> +capability. Using the additional \field{offset_hi} and \field{length_hi}
->> +fields following the SHARED_MEMORY_CFG capability structure, the shared
->> +memory region's 64-bit BAR offset is calculated as follows:
->> +
->> +\begin{lstlisting}
->> +        offset_hi << 32 + cap.offset
->> +\end{lstlisting}
->> +
->> +and the shared memory region's 64-bit length is calculated as follows:
->> +
->> +\begin{lstlisting}
->> +        length_hi << 32 + cap.length
->> +\end{lstlisting}
->> +
->> +The \field{cap.offset} and \field{cap.length} fields are taken from the
->> +SHARED_MEMORY_CFG capability structure.
-> Yes, or this could just reference the:
-> {sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Shared memory capability}
->
-> section once it's merged.
+--uAKRQypu60I7Lcqm
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-That makes sense.
+On Sat, May 11, 2019 at 09:47:36PM +0300, Nikos Dragazis wrote:
+> Hi everyone,
+>=20
+> this PATCH presents an updated version of the RFC virtio device spec for
+> the virtio-vhost-user device. The initial RFC implementation can be
+> found here: [1].
+>=20
+> This PATCH is split into four parts:
+>=20
+> 1. the first commit is just a refactored version of the initial RFC
+> implementation [1]. I just moved the device spec into a separate .tex
+> file and changed the device id from #24 to #28 since the ids #24-#27 are
+> reserved.
+>=20
+> 2. the second commit fixes some minor issues with the device spec. This
+> is quite straightforward.
+>=20
+> 3. the third commit enhances the notification capability with some
+> device/driver requirements. This makes sense because the notification
+> capability behaves similarly to the MSI-X capability, thereby having
+> some requirements that need to be mentioned.
+>=20
+> 4. the fourth commit synchronizes the shared memory capability with a
+> recent patch [2] that attempts to standardize a standalone
+> SHARED_MEMORY_CFG virtio capability.
+>=20
+> v3 changes:
+>  * Device Requirements for the Notification Capability: point out the
+>    difference between the MSI-X Table Size stored in the Message Control
+>    register of the MSI-X capability structure and the actual MSI-X Table
+>    Size
+>=20
+> v2 changes:
+>  * Change device id from #25 to #28
+>=20
+> Looking forward to your comments.
 
->
-> Do you actually need to specify that it's found by PCI though?
-> Could you just define it as using Shared Memory Regions,
-> reference {sec:Basic Facilities of a Virtio Device / Shared Memory Regions}
-> and then it would be defined to work with PCI, MMIO or CCW if they
-> define the shared memory region support.
+I'm happy with v3.
 
-As you may have noticed, the virtio-vhost-user device, in contrast to
-the other devices, needs some additional resources (doorbells,
-notifications, shared memory), including of course the shared memory
-regions which you are attempting to standardize. So, this device can
-only be supported by transports that can somehow export all of these
-resources, not just the shared memory resource.
+Any other comments or shall we proceed to a vote?
 
-In contrast to the shared memory region, the doorbells and notifications
-resources are not standardized. Therefore, this patchset offers a
-straightforward mapping of all these resources to the PCI transport via
-virtio PCI capabilities. I am not sure about how the other virtio
-transports could possibly support these resources.
+Stefan
 
-Hope this makes sense :)
-Any suggestions are welcome.
+--uAKRQypu60I7Lcqm
+Content-Type: application/pgp-signature; name="signature.asc"
 
---
-Nikos
+-----BEGIN PGP SIGNATURE-----
 
->
-> Dave
->
->
->>  \devicenormative{\paragraph}{Shared Memory capability}{Device Types / Vhost-user Device Backend / Additional Device Resources over PCI / Shared Memory capability}
->>  The device MUST present exactly one shared memory capability.
->> -- 
->> 2.7.4
->>
-> --
-> Dr. David Alan Gilbert / dgilbert@redhat.com / Manchester, UK
->
-> ---------------------------------------------------------------------
-> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAl0KTKYACgkQnKSrs4Gr
+c8ionwf/cZlh8ttDKAvQXx9wa4CwUsgs5Njbz9ZbYraLvxx+LJNsJCk0v+IXvqIe
+N6nmB9Oog2haKMCFwnZ5dPQMgMcjyQPqZyrK4mDg7MbigmCnCOcWLQgRsFq8gpJb
+w/6p8pOSAvKVyT/VO5EknPNf7ow602FtkhC+t3Ow8QWTqKH3/mOeWLBSkHpE0NSB
+nAI6EVH7LViVGoBvulspbVDaP3YqaaHwpSPRAUVu/VsGCq9G1JCbwVkygl3rn1QU
+11vMl5ztOwAmlZ/0jJX9dtBdE7jWbZ40PoMXhpN+fLWP7a0MQ2r9N/OPujNxOK/M
+r6L0zTTN49QSzQhascyPNthUTmDq6A==
+=iTP3
+-----END PGP SIGNATURE-----
 
-
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
-
+--uAKRQypu60I7Lcqm--
