@@ -1,12 +1,12 @@
-Return-Path: virtio-comment-return-756-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-comment-return-757-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-comment@lists.oasis-open.org>
 List-Post: <mailto:virtio-comment@lists.oasis-open.org>
 List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
-Date: Thu, 20 Jun 2019 01:45:07 -0400
+Date: Fri, 21 Jun 2019 16:38:11 -0400
 From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20190620014413-mutt-send-email-mst@kernel.org>
+Message-ID: <20190621163503-mutt-send-email-mst@kernel.org>
 References: <20190320120740.8514-1-dgilbert@redhat.com>
  <20190320120740.8514-3-dgilbert@redhat.com>
  <20190617143100-mutt-send-email-mst@kernel.org>
@@ -16,8 +16,8 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 In-Reply-To: <20190619171316.GF2844@work-vm>
-Subject: Re: [virtio-comment] Re: [virtio-dev] [PATCH v4 2/3] shared memory:
- Define PCI capability
+Subject: [virtio-comment] Re: [virtio-dev] Re: [virtio-comment] Re: [virtio-dev] [PATCH v4
+ 2/3] shared memory: Define PCI capability
 To: "Dr. David Alan Gilbert" <dgilbert@redhat.com>
 Cc: virtio-dev@lists.oasis-open.org, virtio-comment@lists.oasis-open.org, stefanha@redha.com, cohuck@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
@@ -90,15 +90,26 @@ On Wed, Jun 19, 2019 at 06:13:17PM +0100, Dr. David Alan Gilbert wrote:
 > > And maybe we should set a bit in some other reserved byte
 > > so people can generally use 64 bit offsets/lengths?
 > 
-> Is it actually any cleaner? I don't know - where would you put that bit?
+> Is it actually any cleaner?
 > 
 > Dave
 
-We'd put it either in bar or cfg type.
+I am just saying this: let's assume some other config type will also
+want to use 64 bit offsets down the road. If we do it will be nice
+to be able, down the line, to write
+if (bit set)
+	64 bit
+else
+	32 bit
 
-No, I'm not sure it's strictly required.
-It saves a bit of config space but increases
-complexity for guests ....
+without special-casing this config type.
+
+
+> I don't know - where would you put that bit?
+
+options include cfg type and bar.
+I think I prefer bar since their number is definitely limited by pci
+spec.
 
 > > > 
 > > > > +
@@ -149,6 +160,10 @@ complexity for guests ....
 > > > Join OASIS: https://www.oasis-open.org/join/
 > --
 > Dr. David Alan Gilbert / dgilbert@redhat.com / Manchester, UK
+> 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
 This publicly archived list offers a means to provide input to the
 OASIS Virtual I/O Device (VIRTIO) TC.
