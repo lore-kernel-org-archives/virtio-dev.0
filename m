@@ -1,12 +1,12 @@
-Return-Path: virtio-comment-return-755-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-comment-return-758-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-comment@lists.oasis-open.org>
 List-Post: <mailto:virtio-comment@lists.oasis-open.org>
 List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
-Date: Thu, 20 Jun 2019 01:43:55 -0400
+Date: Fri, 21 Jun 2019 16:39:18 -0400
 From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20190620014102-mutt-send-email-mst@kernel.org>
+Message-ID: <20190621163834-mutt-send-email-mst@kernel.org>
 References: <20190320120740.8514-1-dgilbert@redhat.com>
  <20190320120740.8514-3-dgilbert@redhat.com>
  <20190617143100-mutt-send-email-mst@kernel.org>
@@ -82,9 +82,7 @@ On Wed, Jun 19, 2019 at 06:10:45PM +0100, Dr. David Alan Gilbert wrote:
 >         __le32 offset;          /* Offset within bar. */
 >         __le32 length;          /* Length of the structure, in bytes. */
 > };
-
-Something like this, yes.
-
+> 
 > > > +};
 > > > +\end{lstlisting}
 > > > +
@@ -102,10 +100,7 @@ Something like this, yes.
 > Would we then just rename virtio_pci_shm_cap to virtio_pci_cap64 after
 > moving the id to virito_pci_cap?
 
-Right except we then need to document that only shm uses cap64, others
-use cap. And I guess for forward compatibility set a bit somewhere - within bar maybe?
-
-Overall I'm no longer sure it's a good idea. you decide.
+yes. and for simplicity we can for now specify that only shmem can be 64 bit.
 
 > > 
 > > 
@@ -133,10 +128,7 @@ Overall I'm no longer sure it's a good idea. you decide.
 > {cap.length_hi} fields MUST be contained within the declared bar.
 > 
 > is that right, but the base and hi are in separate structures.
-
-
-ok
-
+> 
 > > >MUST be contained within the declared bar.
 > > > +
 > > > +The \field{id} MUST be unique for any one device instance.
@@ -153,6 +145,10 @@ ok
 > > > For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 > --
 > Dr. David Alan Gilbert / dgilbert@redhat.com / Manchester, UK
+> 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
 This publicly archived list offers a means to provide input to the
 OASIS Virtual I/O Device (VIRTIO) TC.
