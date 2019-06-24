@@ -1,73 +1,71 @@
-Return-Path: virtio-dev-return-5814-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-5804-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id F28C5985BD6
-	for <virtio-dev@lists.oasis-open.org>; Tue, 25 Jun 2019 11:27:41 +0000 (UTC)
-References: <20190625151535.GB25390@intel.com>
- <4b2e0488-38c0-3aba-a23b-567fc895fb85@redhat.com>
- <20190625191742.GA22520@intel.com>
-From: Paolo Bonzini <pbonzini@redhat.com>
-Message-ID: <a95c6de2-212d-e034-d4e6-dc476917f62f@redhat.com>
-Date: Tue, 25 Jun 2019 13:27:39 +0200
-MIME-Version: 1.0
-In-Reply-To: <20190625191742.GA22520@intel.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-Subject: Re: [virtio-dev] [RFC] Add polling mode feature bit
-To: Conghui Chen <conghui.chen@intel.com>
-Cc: virtio-dev@lists.oasis-open.org, shuo.a.liu@intel.com, yu1.wang@intel.com
+	by lists.oasis-open.org (Postfix) with ESMTP id D20E7985A46
+	for <virtio-dev@lists.oasis-open.org>; Mon, 24 Jun 2019 23:30:06 +0000 (UTC)
+From: Nikos Dragazis <ndragazis@arrikto.com>
+Date: Tue, 25 Jun 2019 02:29:52 +0300
+Message-Id: <1561418997-24608-1-git-send-email-ndragazis@arrikto.com>
+Subject: [virtio-dev] [PATCH v4 0/5] introduce virtio vhost-user backend device type
+To: virtio-dev@lists.oasis-open.org
+Cc: Stefan Hajnoczi <stefanha@redhat.com>, "Dr . David Alan Gilbert" <dgilbert@redhat.com>, Vangelis Koukis <vkoukis@arrikto.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 25/06/19 21:17, Conghui Chen wrote:
-> On Tue 25.Jun'19 at  9:32:13 +0200, Paolo Bonzini wrote:
->> On 25/06/19 17:15, Conghui Chen wrote:
->>> Hi,
->>>
->>> We are working on enable VIRTIO on RTVMs. For RT requirements and some
->>> security reasons, the VIRTIO interrupts are not allowed to inject to
->>> guest OS, and the notify flow may bring some uncertain delay, so the
->>> polling mode for VIRTIO device is taken into consideration. And in some
->>> open source projects, like DPDK and OVMF, the polling mode is
->>> implemented on device level, but if a system need all the VIRTIO devices
->>> work on polling mode, then we should support it for each VIRTIO device
->>> type. That will take lots of effort and may not able to upstream, such
->>> as in RT-Linux. So, we wonder that, if we could support polling mode on
->>> VIRTIO framework level?
->>>
->>> We have a proposal:
->>> Add a new feature bit: VIRTIO_F_PMD(39)
->>> This feature indicates that the driver should work in polling mode, and
->>> the device will not inject interrupt to Guest OS.
->>
->> How would it work?  Is this a feature that, if acknowledged by the
->> driver, causes the device to disable all interrupts?  It's quite
->> possible that there are drivers in the wild that blindly accept all
->> features proposed by the device, and which would break with such a
->> feature.
->>
-> Hi Paolo,
-> 
-> I'm not sure if my understand is correct.
-> The case you mentioned, the FE driver accept all feature bits without
-> checking. I felt that it is incorrect behavior... As there is
-> description in VIRTIO spec that driver MUST read device feature bits,
-> and write the subset of feature bits understood by the OS and driver to
-> the device. BE export new feature bits shouldn't depend on any FE driver
-> changes, otherwise the new features will cause unexpected behaviors.
+Hi everyone,
 
-It is indeed incorrect.  VIRTIO_F_VERSION_1 is probably not the best
-example, because virtio 0.9 only had room for 32 feature bits.  But
-packed virtqueues certainly would break  existing drivers, so there is a
-precedent.
+this PATCH presents an updated version of the RFC virtio device spec for
+the virtio-vhost-user device. The initial RFC implementation can be
+found here: [1].
 
-Thanks!
+In this fourth version of the patch series I have added comformance
+targets for the virtio-vhost-user device via a separate commit. I have
+also updated the link for the vhost-user protocol specification located
+in QEMU's git repo, since it has been reformatted from plain text into
+restructured text.
 
-Paolo
+v4 changes:
+ * Add comformance targets for the virtio-vhost-user device.
+ * Update the reference link for the vhost-user protocol specification.
+
+v3 changes:
+ * Device Requirements for the Notification Capability: point out the
+   difference between the MSI-X Table Size stored in the Message Control
+   register of the MSI-X capability structure and the actual MSI-X Table
+   Size
+
+v2 changes:
+ * Change device id from #25 to #28
+
+Looking forward to your comments.
+
+Thanks,
+Nikos
+
+[1] https://lists.oasis-open.org/archives/virtio-dev/201801/msg00110.html
+
+Nikos Dragazis (4):
+  vhost-user: minor fixes
+  vhost-user: add requirements for the notification capability
+  vhost-user: update shared memory capability
+  vhost-user: add conformance targets and clauses
+
+Stefan Hajnoczi (1):
+  vhost-user: add vhost-user device type
+
+ conformance.tex       |  24 +++-
+ content.tex           |   3 +
+ introduction.tex      |   1 +
+ virtio-vhost-user.tex | 349 ++++++++++++++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 375 insertions(+), 2 deletions(-)
+ create mode 100644 virtio-vhost-user.tex
+
+-- 
+2.7.4
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
