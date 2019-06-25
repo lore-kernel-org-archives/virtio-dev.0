@@ -1,168 +1,90 @@
-Return-Path: virtio-comment-return-758-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio-comment@lists.oasis-open.org>
-List-Post: <mailto:virtio-comment@lists.oasis-open.org>
-List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
-Date: Fri, 21 Jun 2019 16:39:18 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20190621163834-mutt-send-email-mst@kernel.org>
-References: <20190320120740.8514-1-dgilbert@redhat.com>
- <20190320120740.8514-3-dgilbert@redhat.com>
- <20190617143100-mutt-send-email-mst@kernel.org>
- <20190619171045.GE2844@work-vm>
+Return-Path: virtio-dev-return-5815-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id 5B0B6985BDB
+	for <virtio-dev@lists.oasis-open.org>; Tue, 25 Jun 2019 15:15:49 +0000 (UTC)
+Date: Tue, 25 Jun 2019 17:15:41 +0200
+From: Cornelia Huck <cohuck@redhat.com>
+Message-ID: <20190625171541.05528049.cohuck@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190619171045.GE2844@work-vm>
-Subject: [virtio-comment] Re: [virtio-dev] [PATCH v4 2/3] shared memory: Define PCI capability
-To: "Dr. David Alan Gilbert" <dgilbert@redhat.com>
-Cc: virtio-dev@lists.oasis-open.org, virtio-comment@lists.oasis-open.org, stefanha@redha.com, cohuck@redhat.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Subject: [virtio-dev] Sleeping while atomic in virtio-gpu edid handling
+To: Gerd Hoffmann <kraxel@redhat.com>
+Cc: virtio-dev@lists.oasis-open.org, dri-devel@lists.freedesktop.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, Jun 19, 2019 at 06:10:45PM +0100, Dr. David Alan Gilbert wrote:
-> * Michael S. Tsirkin (mst@redhat.com) wrote:
-> > On Wed, Mar 20, 2019 at 12:07:39PM +0000, Dr. David Alan Gilbert (git) wrote:
-> > > From: "Dr. David Alan Gilbert" <dgilbert@redhat.com>
-> > > 
-> > > Define the PCI capability used for enumerating shared memory regions.
-> > > 
-> > > Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
-> > > Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
-> > > Reviewed-by: Cornelia Huck <cohuck@redhat.com>
-> > > ---
-> > >  content.tex | 37 +++++++++++++++++++++++++++++++++++++
-> > >  1 file changed, 37 insertions(+)
-> > > 
-> > > diff --git a/content.tex b/content.tex
-> > > index 8cd1a38..ddbf949 100644
-> > > --- a/content.tex
-> > > +++ b/content.tex
-> > > @@ -688,6 +688,8 @@ The fields are interpreted as follows:
-> > >  #define VIRTIO_PCI_CAP_DEVICE_CFG        4
-> > >  /* PCI configuration access */
-> > >  #define VIRTIO_PCI_CAP_PCI_CFG           5
-> > > +/* Shared memory region */
-> > > +#define VIRTIO_PCI_CAP_SHARED_MEMORY_CFG 8
-> > >  \end{lstlisting}
-> > >  
-> > >          Any other value is reserved for future use.
-> > > @@ -1052,6 +1054,41 @@ any device type which has a device-specific configuration.
-> > >  
-> > >  The \field{offset} for the device-specific configuration MUST be 4-byte aligned.
-> > >  
-> > > +\subsubsection{Shared memory capability}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Shared memory capability}
-> > > +
-> > > +Shared memory regions \ref{sec:Basic Facilities of a Virtio
-> > > +Device / Shared Memory Regions} are enumerated on the PCI transport
-> > > +as a sequence of VIRTIO_PCI_CAP_SHARED_MEMORY_CFG capabilities, one per region.
-> > > +
-> > > +The capability is immediately followed by an additional field like so:
-> > > +
-> > > +\begin{lstlisting}
-> > > +struct virtio_pci_shm_cap {
-> > > +        struct virtio_pci_cap cap;
-> > > +        u32 offset_hi;
-> > > +        u32 length_hi;
-> > > +        u8  id;
-> > 
-> > Pls pad, pci capabilities must be a multiple of 4 bytes.
-> > BTW virtio_pci_cap has 3 bytes of padding.
-> > We can stick the id there maybe?
-> 
-> Do you mean changing the def of virtio_pci_cap to: ?
-> struct virtio_pci_cap {
->         __u8 cap_vndr;          /* Generic PCI field: PCI_CAP_ID_VNDR */
->         __u8 cap_next;          /* Generic PCI field: next ptr. */
->         __u8 cap_len;           /* Generic PCI field: capability length */
->         __u8 cfg_type;          /* Identifies the structure. */
->         __u8 bar;               /* Where to find it. */
->         __u8 id;                /* Unique ID for this region */
->         __u8 padding[2];        /* Pad to full dword. */
->         __le32 offset;          /* Offset within bar. */
->         __le32 length;          /* Length of the structure, in bytes. */
-> };
-> 
-> > > +};
-> > > +\end{lstlisting}
-> > > +
-> > > +Given that the \field{cap.length} and \field{cap.offset} fields
-> > > +are only 32 bit, the additional \field{offset_hi} and \field {length_hi}
-> > > +fields provide the most significant 32 bits of a total 64 bit offset and
-> > > +length within the bar specified by \field{cap.bar}.  \field{id}
-> > > +uniquely identifies the given shared memory region using a device
-> > > +specific identifier.
-> > 
-> > I didn't realize we will ever need so much space.  I think I prefer
-> > moving offset_hi/length_hi to a general virtio_pci_cap64 that others can
-> > reuse.
-> 
-> Would we then just rename virtio_pci_shm_cap to virtio_pci_cap64 after
-> moving the id to virito_pci_cap?
+Hi Gerd,
 
-yes. and for simplicity we can for now specify that only shmem can be 64 bit.
+flipping the virtio-gpu edid support in QEMU to default enabled exposed
+the following backtrace in my guest (from my bisect run down to the
+initial commit in Linux):
 
-> > 
-> > 
-> > > +
-> > > +While most capabilities can not be repeated,
-> > 
-> > I'd drop this part.
-> 
-> Done.
-> 
-> > > multiple
-> > > +VIRTIO_PCI_CAP_SHARED_MEMORY_CFG capabilities are allowed as long
-> > > +as the \field{id} is unique.
-> > > +
-> > > +\devicenormative{\paragraph}{Device-specific configuration}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Shared memory capability}
-> > > +
-> > > +The region defined by the combination of the offsets and length
-> > > +fields 
-> > 
-> > let's do \field{cap.length} \field{cap.offset} etc.
-> 
-> I've done that as:
-> The region defined by the combination of the \field {cap.offset},  
-> \field {cap.offset_hi}, and \field {cap.length}, \field
-> {cap.length_hi} fields MUST be contained within the declared bar.
-> 
-> is that right, but the base and hi are in separate structures.
-> 
-> > >MUST be contained within the declared bar.
-> > > +
-> > > +The \field{id} MUST be unique for any one device instance.
-> > > +
-> > >  \subsubsection{PCI configuration access capability}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / PCI configuration access capability}
-> > >  
-> > >  The VIRTIO_PCI_CAP_PCI_CFG capability
-> > > -- 
-> > > 2.20.1
-> > > 
-> > > 
-> > > ---------------------------------------------------------------------
-> > > To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> > > For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
-> --
-> Dr. David Alan Gilbert / dgilbert@redhat.com / Manchester, UK
-> 
-> ---------------------------------------------------------------------
-> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+[drm] virgl 3d acceleration not supported by guest
+[drm] EDID support available.
+[drm] number of scanouts: 1
+[drm] number of cap sets: 0
+BUG: sleeping function called from invalid context at mm/slab.h:421
+in_atomic(): 1, irqs_disabled(): 0, pid: 7, name: kworker/0:1
+3 locks held by kworker/0:1/7:
+ #0: (____ptrval____) ((wq_completion)"events"){+.+.}, at: process_one_work+0x1c8/0x618
+ #1: (____ptrval____) ((work_completion)(&vgvq->dequeue_work)){+.+.}, at: process_one_work+0x1c8/0x618
+ #2: (____ptrval____) (&(&vgdev->display_info_lock)->rlock){+.+.}, at: virtio_gpu_cmd_get_edid_cb+0x6e/0xc0
+CPU: 0 PID: 7 Comm: kworker/0:1 Tainted: G        W         4.20.0-rc1+ #142
+Hardware name: QEMU 2964 QEMU (KVM/Linux)
+Workqueue: events virtio_gpu_dequeue_ctrl_func
+Call Trace:
+([<0000000000112a2c>] show_stack+0x54/0xd0)
+ [<0000000000ba7bd0>] dump_stack+0x90/0xc8 
+ [<00000000001a8cf8>] ___might_sleep+0x240/0x258 
+ [<00000000003560e6>] __kmalloc_node+0x2de/0x478 
+ [<00000000007e0f64>] drm_property_create_blob.part.0+0x3c/0x138 
+ [<00000000007e1bfe>] drm_property_replace_global_blob+0xb6/0x118 
+ [<00000000007dedac>] drm_connector_update_edid_property+0x8c/0xb0 
+ [<00000000007febe8>] virtio_gpu_cmd_get_edid_cb+0x88/0xc0 
+ [<00000000007ff03a>] virtio_gpu_dequeue_ctrl_func+0x142/0x200 
+ [<000000000018fdbc>] process_one_work+0x284/0x618 
+ [<000000000019019a>] worker_thread+0x4a/0x3f0 
+ [<0000000000197c92>] kthread+0x152/0x170 
+ [<0000000000bcac76>] kernel_thread_starter+0x6/0xc 
+ [<0000000000bcac70>] kernel_thread_starter+0x0/0xc 
+3 locks held by kworker/0:1/7:
+ #0: (____ptrval____) ((wq_completion)"events"){+.+.}, at: process_one_work+0x1c8/0x618
+ #1: (____ptrval____) ((work_completion)(&vgvq->dequeue_work)){+.+.}, at: process_one_work+0x1c8/0x618
+ #2: (____ptrval____) (&(&vgdev->display_info_lock)->rlock){+.+.}, at: virtio_gpu_cmd_get_edid_cb+0x6e/0xc0
+virtio_gpu virtio5: fb1: virtiodrmfb frame buffer device
+[drm] Initialized virtio_gpu 0.1.0 0 for virtio5 on minor 1
 
-This publicly archived list offers a means to provide input to the
-OASIS Virtual I/O Device (VIRTIO) TC.
+This is an s390x guest, run via tcg; the stack trace is triggered both
+for virtio-gpu-ccw and virtio-gpu-pci devices, so it's probably
+something generic. The device seems to initialize fine, but I have not
+tried to actually use it (I simply keep a virtio-gpu device in my QEMU
+command line for sanity checking.)
 
-In order to verify user consent to the Feedback License terms and
-to minimize spam in the list archive, subscription is required
-before posting.
+As said, I bisected this down to the initial commit
 
-Subscribe: virtio-comment-subscribe@lists.oasis-open.org
-Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
-List help: virtio-comment-help@lists.oasis-open.org
-List archive: https://lists.oasis-open.org/archives/virtio-comment/
-Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
-List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
-Committee: https://www.oasis-open.org/committees/virtio/
-Join OASIS: https://www.oasis-open.org/join/
+commit b4b01b4995fb15b55a2d067eb405917f5ab32709 (refs/bisect/bad)
+Author: Gerd Hoffmann <kraxel@redhat.com>
+Date:   Tue Oct 30 07:32:06 2018 +0100
+
+    drm/virtio: add edid support
+    
+    linux guest driver implementation of the VIRTIO_GPU_F_EDID feature.
+    
+    Signed-off-by: Gerd Hoffmann <kraxel@redhat.com>
+    Acked-by: Daniel Vetter <daniel@ffwll.ch>
+    Link: http://patchwork.freedesktop.org/patch/msgid/20181030063206.19528-3-kraxel@redhat.com
+
+so it seems to have always been present, but I just noticed it now that
+the default for edid in QEMU has changed.
+
+I have not tried it with a non-s390x guest, though.
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
