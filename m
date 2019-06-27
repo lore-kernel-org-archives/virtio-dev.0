@@ -1,68 +1,80 @@
-Return-Path: virtio-comment-return-772-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-comment-return-771-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-comment@lists.oasis-open.org>
 List-Post: <mailto:virtio-comment@lists.oasis-open.org>
 List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
 From: "Dr. David Alan Gilbert (git)" <dgilbert@redhat.com>
-Date: Thu, 27 Jun 2019 20:28:29 +0100
-Message-Id: <20190627192830.5285-5-dgilbert@redhat.com>
+Date: Thu, 27 Jun 2019 20:28:30 +0100
+Message-Id: <20190627192830.5285-6-dgilbert@redhat.com>
 In-Reply-To: <20190627192830.5285-1-dgilbert@redhat.com>
 References: <20190627192830.5285-1-dgilbert@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: [virtio-comment] [PATCH v5 4/5] shared memory: Define PCI capability
+Subject: [virtio-comment] [PATCH v5 5/5] shared memory: Define mmio registers
 To: virtio-dev@lists.oasis-open.org, virtio-comment@lists.oasis-open.org, stefanha@redhat.com, cohuck@redhat.com
 Cc: vgoyal@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
 From: "Dr. David Alan Gilbert" <dgilbert@redhat.com>
 
-Define the PCI capability used for enumerating shared memory regions.
+Define an MMIO interface to discover and map shared
+memory regions.
 
 Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
 ---
- content.tex | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
+ content.tex | 30 ++++++++++++++++++++++++++++++
+ 1 file changed, 30 insertions(+)
 
 diff --git a/content.tex b/content.tex
-index 63e9179..fcf0d81 100644
+index fcf0d81..588b299 100644
 --- a/content.tex
 +++ b/content.tex
-@@ -689,6 +689,8 @@ \subsection{Virtio Structure PCI Capabilities}\label{sec:Virtio Transport Option
- #define VIRTIO_PCI_CAP_DEVICE_CFG        4
- /* PCI configuration access */
- #define VIRTIO_PCI_CAP_PCI_CFG           5
-+/* Shared memory region */
-+#define VIRTIO_PCI_CAP_SHARED_MEMORY_CFG 8
- \end{lstlisting}
+@@ -1732,6 +1732,33 @@ \subsection{MMIO Device Register Layout}\label{sec:Virtio Transport Options / Vi
+     selected by writing to \field{QueueSel}.
+   }
+   \hline 
++  \mmioreg{SHMSel}{Shared memory id}{0x0ac}{W}{%
++    Writing to this register selects the shared memory region \ref{sec:Basic Facilities of a Virtio Device / Shared Memory Regions}
++    following operations on \field{SHMLenLow}, \field{SHMLenHigh},
++    \field{SHMBaseLow} and \field{SHMBaseHigh} apply to.
++  }
++  \hline 
++  \mmiodreg{SHMLenLow}{SHMLenHigh}{Shared memory region 64 bit long length}{0x0b0}{0x0xb4}{R}{%
++    These registers return the length of the shared memory
++    region in bytes, as defined by the device for the region selected by
++    the \field{SHMSel} register.  The lower 32 bits of the length
++    are read from \field{SHMLenLow} and the higher 32 bits from
++    \field{SHMLenHigh}.  Reading from a non-existent
++    region (i.e. where the ID written to \field{SHMSel} is unused)
++    results in a length of -1.
++  }
++  \hline 
++  \mmiodreg{SHMBaseLow}{SHMBaseHigh}{Shared memory region 64 bit long physical address}{0x0b8}{0x0xbc}{R}{%
++    The driver reads these registers to discover the base address
++    of the region in physical address space.  This address is
++    chosen by the device (or other part of the VMM).
++    The lower 32 bits of the address are read from \field{SHMBaseLow}
++    with the higher 32 bits from \field{SHMBaseHigh}.  Reading
++    from a non-existent region (i.e. where the ID written to
++    \field{SHMSel} is unused) results in a base address of
++    0xffffffffffffffff.
++  }
++  \hline 
+   \mmioreg{ConfigGeneration}{Configuration atomicity value}{0x0fc}{R}{
+     Reading from this register returns a value describing a version of the device-specific configuration space (see \field{Config}).
+     The driver can then access the configuration space and, when finished, read \field{ConfigGeneration} again.
+@@ -1821,6 +1848,9 @@ \subsubsection{Device Initialization}\label{sec:Virtio Transport Options / Virti
+ and if its value is zero (0x0) MUST abort initialization and
+ MUST NOT access any other register.
  
-         Any other value is reserved for future use.
-@@ -1075,6 +1077,24 @@ \subsubsection{Device-specific configuration}\label{sec:Virtio Transport Options
++Drivers not expecting shared memory MUST NOT use the shared
++memory registers.
++
+ Further initialization MUST follow the procedure described in
+ \ref{sec:General Initialization And Device Operation / Device Initialization}~\nameref{sec:General Initialization And Device Operation / Device Initialization}.
  
- The \field{offset} for the device-specific configuration MUST be 4-byte aligned.
- 
-+\subsubsection{Shared memory capability}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Shared memory capability}
-+
-+Shared memory regions \ref{sec:Basic Facilities of a Virtio
-+Device / Shared Memory Regions} are enumerated on the PCI transport
-+as a sequence of VIRTIO_PCI_CAP_SHARED_MEMORY_CFG capabilities, one per region.
-+
-+The capability is defined by a struct virtio_pci_cap64 and
-+utilises the \field{cap.id} to allow multiple shared memory
-+regions per device.
-+
-+\devicenormative{\paragraph}{Device-specific configuration}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Shared memory capability}
-+
-+The region defined by the combination of the \field {cap.offset},
-+\field {cap.offset_hi}, and \field {cap.length}, \field
-+{cap.length_hi} fields MUST be contained within the declared bar.
-+
-+The \field{cap.id} MUST be unique for any one device instance.
-+
- \subsubsection{PCI configuration access capability}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / PCI configuration access capability}
- 
- The VIRTIO_PCI_CAP_PCI_CFG capability
 -- 
 2.21.0
 
