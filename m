@@ -1,65 +1,71 @@
-Return-Path: virtio-dev-return-5865-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 8EF1B985EE4
-	for <virtio-dev@lists.oasis-open.org>; Thu, 18 Jul 2019 07:47:35 +0000 (UTC)
-Date: Thu, 18 Jul 2019 03:47:22 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20190718034715-mutt-send-email-mst@kernel.org>
-References: <20190718070047.7402-1-tiwei.bie@intel.com>
+Return-Path: virtio-comment-return-790-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-comment@lists.oasis-open.org>
+List-Post: <mailto:virtio-comment@lists.oasis-open.org>
+List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
+From: "Dr. David Alan Gilbert (git)" <dgilbert@redhat.com>
+Date: Wed, 10 Jul 2019 19:32:07 +0100
+Message-Id: <20190710183212.29420-1-dgilbert@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190718070047.7402-1-tiwei.bie@intel.com>
-Subject: [virtio-dev] Re: [RFC] content: explicitly document the VLAN filtering as
- best-effort
-To: Tiwei Bie <tiwei.bie@intel.com>
-Cc: virtio-dev@lists.oasis-open.org, cohuck@redhat.com, stefanha@redhat.com, jasowang@redhat.com
+Content-Transfer-Encoding: 8bit
+Subject: [virtio-comment] [PATCH v6 0/5]  Large shared memory regions
+To: virtio-dev@lists.oasis-open.org, virtio-comment@lists.oasis-open.org, stefanha@redhat.com, cohuck@redhat.com
+Cc: vgoyal@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Thu, Jul 18, 2019 at 03:00:47PM +0800, Tiwei Bie wrote:
-> Similar to the MAC address based filtering, the VLAN filtering
-> is also best-effort in implementations, but it's not quite clear
-> in the spec. So document this behaviour explicitly to reflect
-> the way implementations behave.
-> 
-> Signed-off-by: Tiwei Bie <tiwei.bie@intel.com>
+From: "Dr. David Alan Gilbert" <dgilbert@redhat.com>
 
-fine by me.
-Acked-by: Michael S. Tsirkin <mst@redhat.com>
+  This series formalises the idea of shared memory regions I'd
+previously discussed and is intended for use with virtio-fs.
 
-> ---
-> This is a RFC for now (Comments would be appreciated!).
-> More details can be found here:
-> https://patchwork.ozlabs.org/patch/1113538/
-> 
->  content.tex | 5 +++++
->  1 file changed, 5 insertions(+)
-> 
-> diff --git a/content.tex b/content.tex
-> index 8f0498e..783322b 100644
-> --- a/content.tex
-> +++ b/content.tex
-> @@ -3530,6 +3530,11 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
->  If the driver negotiates the VIRTION_NET_F_CTRL_VLAN feature, it
->  can control a VLAN filter table in the device.
->  
-> +\begin{note}
-> +Similar to the MAC address based filtering, the VLAN filtering
-> +is also best-effort: unwanted packets could still arrive.
-> +\end{note}
-> +
->  \begin{lstlisting}
->  #define VIRTIO_NET_CTRL_VLAN       2
->   #define VIRTIO_NET_CTRL_VLAN_ADD             0
-> -- 
-> 2.17.1
+I've split it into five parts:
 
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+  a) A general definition of the idea
+
+  b) An addition of an 'id' field to allow multiple distinct
+     capabilities of the same type.
+
+  c) An addition of a 64bit capability type.
+
+  d) A definition on virtio-pci using the layout previously
+discussed.
+
+  e) A definition on virtio-mmio.
+
+v6:
+  Modifications from Cornelia's review
+
+Dr. David Alan Gilbert (5):
+  shared memory: Define shared memory regions
+  pci: Define id field
+  pci: Define virtio_pci_cap64
+  shared memory: Define PCI capability
+  shared memory: Define mmio registers
+
+ conformance.tex |  1 +
+ content.tex     | 83 +++++++++++++++++++++++++++++++++++++++++++++++--
+ shared-mem.tex  | 42 +++++++++++++++++++++++++
+ 3 files changed, 124 insertions(+), 2 deletions(-)
+ create mode 100644 shared-mem.tex
+
+-- 
+2.21.0
+
+
+This publicly archived list offers a means to provide input to the
+OASIS Virtual I/O Device (VIRTIO) TC.
+
+In order to verify user consent to the Feedback License terms and
+to minimize spam in the list archive, subscription is required
+before posting.
+
+Subscribe: virtio-comment-subscribe@lists.oasis-open.org
+Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
+List help: virtio-comment-help@lists.oasis-open.org
+List archive: https://lists.oasis-open.org/archives/virtio-comment/
+Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
+List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
+Committee: https://www.oasis-open.org/committees/virtio/
+Join OASIS: https://www.oasis-open.org/join/
 
