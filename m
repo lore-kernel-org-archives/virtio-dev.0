@@ -1,105 +1,122 @@
-Return-Path: virtio-comment-return-778-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-comment-return-788-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-comment@lists.oasis-open.org>
 List-Post: <mailto:virtio-comment@lists.oasis-open.org>
 List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
-Date: Wed, 3 Jul 2019 15:04:42 +0200
-From: Cornelia Huck <cohuck@redhat.com>
-Message-ID: <20190703150442.43b85b87.cohuck@redhat.com>
-In-Reply-To: <20190628133614.GF2922@work-vm>
+Date: Wed, 10 Jul 2019 18:45:27 +0100
+From: "Dr. David Alan Gilbert" <dgilbert@redhat.com>
+Message-ID: <20190710174527.GA27706@work-vm>
 References: <20190627192830.5285-1-dgilbert@redhat.com>
-	<20190627192830.5285-3-dgilbert@redhat.com>
-	<20190628120018.2bc8c387.cohuck@redhat.com>
-	<20190628133614.GF2922@work-vm>
+ <20190627192830.5285-3-dgilbert@redhat.com>
+ <20190628120018.2bc8c387.cohuck@redhat.com>
+ <20190628133614.GF2922@work-vm>
+ <20190703150442.43b85b87.cohuck@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190703150442.43b85b87.cohuck@redhat.com>
 Subject: [virtio-comment] Re: [virtio-dev] Re: [PATCH v5 2/5] pci: Define id field
-To: "Dr. David Alan Gilbert" <dgilbert@redhat.com>
+To: Cornelia Huck <cohuck@redhat.com>
 Cc: virtio-dev@lists.oasis-open.org, virtio-comment@lists.oasis-open.org, stefanha@redhat.com, vgoyal@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Fri, 28 Jun 2019 14:36:14 +0100
-"Dr. David Alan Gilbert" <dgilbert@redhat.com> wrote:
-
-> * Cornelia Huck (cohuck@redhat.com) wrote:
-> > On Thu, 27 Jun 2019 20:28:27 +0100
-> > "Dr. David Alan Gilbert (git)" <dgilbert@redhat.com> wrote:
-> >   
-> > > From: "Dr. David Alan Gilbert" <dgilbert@redhat.com>
+* Cornelia Huck (cohuck@redhat.com) wrote:
+> On Fri, 28 Jun 2019 14:36:14 +0100
+> "Dr. David Alan Gilbert" <dgilbert@redhat.com> wrote:
+> 
+> > * Cornelia Huck (cohuck@redhat.com) wrote:
+> > > On Thu, 27 Jun 2019 20:28:27 +0100
+> > > "Dr. David Alan Gilbert (git)" <dgilbert@redhat.com> wrote:
+> > >   
+> > > > From: "Dr. David Alan Gilbert" <dgilbert@redhat.com>
+> > > > 
+> > > > For the virtio-fs device we require multiple large shared memory
+> > > > regions.  Differentiate these by an 'id' field in the base capability.
+> > > > 
+> > > > Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+> > > > ---
+> > > >  content.tex | 8 +++++++-
+> > > >  1 file changed, 7 insertions(+), 1 deletion(-)
+> > > > 
+> > > > diff --git a/content.tex b/content.tex
+> > > > index 6433226..41926c0 100644
+> > > > --- a/content.tex
+> > > > +++ b/content.tex
+> > > > @@ -651,7 +651,8 @@ \subsection{Virtio Structure PCI Capabilities}\label{sec:Virtio Transport Option
+> > > >          u8 cap_len;     /* Generic PCI field: capability length */
+> > > >          u8 cfg_type;    /* Identifies the structure. */
+> > > >          u8 bar;         /* Where to find it. */
+> > > > -        u8 padding[3];  /* Pad to full dword. */
+> > > > +        u8 id;          /* Multiple capabilities of the same type */
+> > > > +        u8 padding[2];  /* Pad to full dword. */
+> > > >          le32 offset;    /* Offset within bar. */
+> > > >          le32 length;    /* Length of the structure, in bytes. */
+> > > >  };
+> > > > @@ -716,6 +717,11 @@ \subsection{Virtio Structure PCI Capabilities}\label{sec:Virtio Transport Option
+> > > >  
+> > > >          Any other value is reserved for future use.
+> > > >  
+> > > > +\item[\field{id}]
+> > > > +        Multiple capabilities of the same type can exist as long
+> > > > +        as they each have a unique \field{id}.  The specific  
 > > > 
-> > > For the virtio-fs device we require multiple large shared memory
-> > > regions.  Differentiate these by an 'id' field in the base capability.
-> > > 
-> > > Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
-> > > ---
-> > >  content.tex | 8 +++++++-
-> > >  1 file changed, 7 insertions(+), 1 deletion(-)
-> > > 
-> > > diff --git a/content.tex b/content.tex
-> > > index 6433226..41926c0 100644
-> > > --- a/content.tex
-> > > +++ b/content.tex
-> > > @@ -651,7 +651,8 @@ \subsection{Virtio Structure PCI Capabilities}\label{sec:Virtio Transport Option
-> > >          u8 cap_len;     /* Generic PCI field: capability length */
-> > >          u8 cfg_type;    /* Identifies the structure. */
-> > >          u8 bar;         /* Where to find it. */
-> > > -        u8 padding[3];  /* Pad to full dword. */
-> > > +        u8 id;          /* Multiple capabilities of the same type */
-> > > +        u8 padding[2];  /* Pad to full dword. */
-> > >          le32 offset;    /* Offset within bar. */
-> > >          le32 length;    /* Length of the structure, in bytes. */
-> > >  };
-> > > @@ -716,6 +717,11 @@ \subsection{Virtio Structure PCI Capabilities}\label{sec:Virtio Transport Option
-> > >  
-> > >          Any other value is reserved for future use.
-> > >  
-> > > +\item[\field{id}]
-> > > +        Multiple capabilities of the same type can exist as long
-> > > +        as they each have a unique \field{id}.  The specific  
+> > > The requirement for id is new, isn't it? Shouldn't it rather be
+> > > optional?  
 > > 
-> > The requirement for id is new, isn't it? Shouldn't it rather be
-> > optional?  
-> 
-> Yes it is; this comes from moving it from the new structure we had it in
-> the previous version, into the main _cap.
-> 
-> Can I just say that only some devices use it, or do I need something
-> more?   Can I assume that 'id' is 0 for existing devices or is it
-> undefined?
-
-Maybe something like the following?
-
-"Used by some device types to uniquely identify multiple capabilities
-of a certain type. If the device type does not specify the meaning of
-this field, its contents are undefined."
-
-We should not make any assumptions here, I think.
-
-> 
-> > > +        meaning of the field is different for each device type.
-> > > +
-> > >  \item[\field{offset}]
-> > >          indicates where the structure begins relative to the base address associated
-> > >          with the BAR.  The alignment requirements of \field{offset} are indicated  
+> > Yes it is; this comes from moving it from the new structure we had it in
+> > the previous version, into the main _cap.
 > > 
-> > The current specification for cfg_type defines a kind of hierarchy for
-> > capabilities of the same type (first one is preferred). We probably
-> > need to be more explicit how id may interact with that (even if it is
-> > device type specific).  
+> > Can I just say that only some devices use it, or do I need something
+> > more?   Can I assume that 'id' is 0 for existing devices or is it
+> > undefined?
 > 
-> One way I was thinking was to say that the hierarchy now applies to
-> pairs of {cfg_type, id} rather than just cfg_type; but that depends on
-> the answer to the previous question to avoid breaking any existing
-> hierarchies.
+> Maybe something like the following?
+> 
+> "Used by some device types to uniquely identify multiple capabilities
+> of a certain type. If the device type does not specify the meaning of
+> this field, its contents are undefined."
+> 
 
-If we make the meaning of id device type specific, we also need to make
-its effects on the ordering device type specific.
+Thanks; slotted that in.
 
-What about keeping the hierarchy, but specifying that a device type may
-override it if it specifies usage of the id field? Each device type
-using id would need to explicitly specify the ordering in that case.
+> We should not make any assumptions here, I think.
+
+> > 
+> > > > +        meaning of the field is different for each device type.
+> > > > +
+> > > >  \item[\field{offset}]
+> > > >          indicates where the structure begins relative to the base address associated
+> > > >          with the BAR.  The alignment requirements of \field{offset} are indicated  
+> > > 
+> > > The current specification for cfg_type defines a kind of hierarchy for
+> > > capabilities of the same type (first one is preferred). We probably
+> > > need to be more explicit how id may interact with that (even if it is
+> > > device type specific).  
+> > 
+> > One way I was thinking was to say that the hierarchy now applies to
+> > pairs of {cfg_type, id} rather than just cfg_type; but that depends on
+> > the answer to the previous question to avoid breaking any existing
+> > hierarchies.
+> 
+> If we make the meaning of id device type specific, we also need to make
+> its effects on the ordering device type specific.
+> 
+> What about keeping the hierarchy, but specifying that a device type may
+> override it if it specifies usage of the id field? Each device type
+> using id would need to explicitly specify the ordering in that case.
+
+OK, I've gone with:
+         The device MAY offer more than one structure of any type - this makes it
+         possible for the device to expose multiple interfaces to drivers.  The order of
+         the capabilities in the capability list specifies the order of preference
+-        suggested by the device.
++        suggested by the device.  A device may specify that this ordering mechanism be
++        overridden by the use of the \field{id} field.
+         \begin{note}
+
+--
+Dr. David Alan Gilbert / dgilbert@redhat.com / Manchester, UK
 
 This publicly archived list offers a means to provide input to the
 OASIS Virtual I/O Device (VIRTIO) TC.
