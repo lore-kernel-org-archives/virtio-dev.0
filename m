@@ -1,51 +1,100 @@
-Return-Path: virtio-dev-return-5905-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 8806D985BC1
-	for <virtio-dev@lists.oasis-open.org>; Wed, 31 Jul 2019 12:18:12 +0000 (UTC)
-Date: Wed, 31 Jul 2019 14:18:06 +0200
-From: Cornelia Huck <cohuck@redhat.com>
-Message-ID: <20190731141806.141ef751.cohuck@redhat.com>
-In-Reply-To: <20190731121214.14099-1-ndragazis@arrikto.com>
-References: <20190729154841.GH2756@work-vm>
-	<20190731121214.14099-1-ndragazis@arrikto.com>
+Return-Path: virtio-comment-return-802-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-comment@lists.oasis-open.org>
+List-Post: <mailto:virtio-comment@lists.oasis-open.org>
+List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
+From: "Dr. David Alan Gilbert (git)" <dgilbert@redhat.com>
+Date: Fri, 12 Jul 2019 13:20:01 +0100
+Message-Id: <20190712122002.10793-5-dgilbert@redhat.com>
+In-Reply-To: <20190712122002.10793-1-dgilbert@redhat.com>
+References: <20190712122002.10793-1-dgilbert@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Subject: Re: [virtio-dev] [PATCH] content: fix typo
-To: Nikos Dragazis <ndragazis@arrikto.com>
-Cc: virtio-dev@lists.oasis-open.org, dgilbert@redhat.com, stefanha@redhat.com, vgoyal@redhat.com
+Content-Transfer-Encoding: 8bit
+Subject: [virtio-comment] [PATCH v7 4/5] shared memory: Define PCI capability
+To: virtio-dev@lists.oasis-open.org, virtio-comment@lists.oasis-open.org, stefanha@redhat.com, cohuck@redhat.com
+Cc: vgoyal@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, 31 Jul 2019 15:12:14 +0300
-Nikos Dragazis <ndragazis@arrikto.com> wrote:
+From: "Dr. David Alan Gilbert" <dgilbert@redhat.com>
 
-> Signed-off-by: Nikos Dragazis <ndragazis@arrikto.com>
-> ---
->  content.tex | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/content.tex b/content.tex
-> index ee0d7c9..f8ebf14 100644
-> --- a/content.tex
-> +++ b/content.tex
-> @@ -749,7 +749,7 @@ \subsection{Virtio Structure PCI Capabilities}\label{sec:Virtio Transport Option
->  \end{description}
->  
->  A variant of this type, struct virtio_pci_cap64, is defined for
-> -those capaibilites that require offsets or lengths larger than
-> +those capabilities that require offsets or lengths larger than
->  4GiB:
->  
->  \begin{lstlisting}
+Define the PCI capability used for enumerating shared memory regions.
 
-Reviewed-by: Cornelia Huck <cohuck@redhat.com>
+Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+---
+ conformance.tex |  1 +
+ content.tex     | 22 ++++++++++++++++++++++
+ 2 files changed, 23 insertions(+)
 
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+diff --git a/conformance.tex b/conformance.tex
+index 4524237..0ac58aa 100644
+--- a/conformance.tex
++++ b/conformance.tex
+@@ -214,6 +214,7 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
+ \item \ref{devicenormative:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Notification capability}
+ \item \ref{devicenormative:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / ISR status capability}
+ \item \ref{devicenormative:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Device-specific configuration}
++\item \ref{devicenormative:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Shared memory capability}
+ \item \ref{devicenormative:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / PCI configuration access capability}
+ \item \ref{devicenormative:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / Non-transitional Device With Legacy Driver}
+ \item \ref{devicenormative:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / MSI-X Vector Configuration}
+diff --git a/content.tex b/content.tex
+index d481359..1476b0e 100644
+--- a/content.tex
++++ b/content.tex
+@@ -689,6 +689,8 @@ \subsection{Virtio Structure PCI Capabilities}\label{sec:Virtio Transport Option
+ #define VIRTIO_PCI_CAP_DEVICE_CFG        4
+ /* PCI configuration access */
+ #define VIRTIO_PCI_CAP_PCI_CFG           5
++/* Shared memory region */
++#define VIRTIO_PCI_CAP_SHARED_MEMORY_CFG 8
+ \end{lstlisting}
+ 
+         Any other value is reserved for future use.
+@@ -1077,6 +1079,26 @@ \subsubsection{Device-specific configuration}\label{sec:Virtio Transport Options
+ 
+ The \field{offset} for the device-specific configuration MUST be 4-byte aligned.
+ 
++\subsubsection{Shared memory capability}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Shared memory capability}
++
++Shared memory regions \ref{sec:Basic Facilities of a Virtio
++Device / Shared Memory Regions} are enumerated on the PCI transport
++as a sequence of VIRTIO_PCI_CAP_SHARED_MEMORY_CFG capabilities, one per region.
++
++The capability is defined by a struct virtio_pci_cap64 and
++utilises the \field{cap.id} to allow multiple shared memory
++regions per device.
++The identifier in \field{cap.id} does not denote a certain order of
++preference; it is only used to uniquely identify a region.
++
++\devicenormative{\paragraph}{Device-specific configuration}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Shared memory capability}
++
++The region defined by the combination of the \field {cap.offset},
++\field {cap.offset_hi}, and \field {cap.length}, \field
++{cap.length_hi} fields MUST be contained within the declared bar.
++
++The \field{cap.id} MUST be unique for any one device instance.
++
+ \subsubsection{PCI configuration access capability}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / PCI configuration access capability}
+ 
+ The VIRTIO_PCI_CAP_PCI_CFG capability
+-- 
+2.21.0
+
+
+This publicly archived list offers a means to provide input to the
+OASIS Virtual I/O Device (VIRTIO) TC.
+
+In order to verify user consent to the Feedback License terms and
+to minimize spam in the list archive, subscription is required
+before posting.
+
+Subscribe: virtio-comment-subscribe@lists.oasis-open.org
+Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
+List help: virtio-comment-help@lists.oasis-open.org
+List archive: https://lists.oasis-open.org/archives/virtio-comment/
+Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
+List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
+Committee: https://www.oasis-open.org/committees/virtio/
+Join OASIS: https://www.oasis-open.org/join/
 
