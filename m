@@ -1,55 +1,63 @@
-Return-Path: virtio-comment-return-797-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-comment-return-798-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-comment@lists.oasis-open.org>
 List-Post: <mailto:virtio-comment@lists.oasis-open.org>
 List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
-Date: Fri, 12 Jul 2019 11:01:41 +0200
-From: Cornelia Huck <cohuck@redhat.com>
-Message-ID: <20190712110141.072c1365.cohuck@redhat.com>
-In-Reply-To: <20190710183212.29420-5-dgilbert@redhat.com>
+Date: Fri, 12 Jul 2019 13:16:56 +0100
+From: "Dr. David Alan Gilbert" <dgilbert@redhat.com>
+Message-ID: <20190712121656.GI2730@work-vm>
 References: <20190710183212.29420-1-dgilbert@redhat.com>
-	<20190710183212.29420-5-dgilbert@redhat.com>
+ <20190710183212.29420-5-dgilbert@redhat.com>
+ <20190712110141.072c1365.cohuck@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190712110141.072c1365.cohuck@redhat.com>
 Subject: [virtio-comment] Re: [PATCH v6 4/5] shared memory: Define PCI capability
-To: "Dr. David Alan Gilbert (git)" <dgilbert@redhat.com>
+To: Cornelia Huck <cohuck@redhat.com>
 Cc: virtio-dev@lists.oasis-open.org, virtio-comment@lists.oasis-open.org, stefanha@redhat.com, vgoyal@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, 10 Jul 2019 19:32:11 +0100
-"Dr. David Alan Gilbert (git)" <dgilbert@redhat.com> wrote:
-
-> From: "Dr. David Alan Gilbert" <dgilbert@redhat.com>
+* Cornelia Huck (cohuck@redhat.com) wrote:
+> On Wed, 10 Jul 2019 19:32:11 +0100
+> "Dr. David Alan Gilbert (git)" <dgilbert@redhat.com> wrote:
 > 
-> Define the PCI capability used for enumerating shared memory regions.
+> > From: "Dr. David Alan Gilbert" <dgilbert@redhat.com>
+> > 
+> > Define the PCI capability used for enumerating shared memory regions.
+> > 
+> > Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
+> > ---
+> >  content.tex | 22 ++++++++++++++++++++++
+> >  1 file changed, 22 insertions(+)
+> > 
 > 
-> Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
-> ---
->  content.tex | 22 ++++++++++++++++++++++
->  1 file changed, 22 insertions(+)
+> (...)
 > 
+> > +\devicenormative{\paragraph}{Device-specific configuration}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Shared memory capability}
+> 
+> Sorry about not noticing that before, but doesn't that need to be
+> referenced in the conformance section somewhere?
 
-(...)
+OK, new version coming up.
 
-> +\devicenormative{\paragraph}{Device-specific configuration}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Shared memory capability}
+Dave
 
-Sorry about not noticing that before, but doesn't that need to be
-referenced in the conformance section somewhere?
-
-> +
-> +The region defined by the combination of the \field {cap.offset},
-> +\field {cap.offset_hi}, and \field {cap.length}, \field
-> +{cap.length_hi} fields MUST be contained within the declared bar.
-> +
-> +The \field{cap.id} MUST be unique for any one device instance.
-> +
->  \subsubsection{PCI configuration access capability}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / PCI configuration access capability}
->  
->  The VIRTIO_PCI_CAP_PCI_CFG capability
-
-Otherwise, looks good.
+> > +
+> > +The region defined by the combination of the \field {cap.offset},
+> > +\field {cap.offset_hi}, and \field {cap.length}, \field
+> > +{cap.length_hi} fields MUST be contained within the declared bar.
+> > +
+> > +The \field{cap.id} MUST be unique for any one device instance.
+> > +
+> >  \subsubsection{PCI configuration access capability}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / PCI configuration access capability}
+> >  
+> >  The VIRTIO_PCI_CAP_PCI_CFG capability
+> 
+> Otherwise, looks good.
+--
+Dr. David Alan Gilbert / dgilbert@redhat.com / Manchester, UK
 
 This publicly archived list offers a means to provide input to the
 OASIS Virtual I/O Device (VIRTIO) TC.
