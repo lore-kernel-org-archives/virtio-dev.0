@@ -1,98 +1,115 @@
-Return-Path: virtio-comment-return-803-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio-comment@lists.oasis-open.org>
-List-Post: <mailto:virtio-comment@lists.oasis-open.org>
-List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
-From: "Dr. David Alan Gilbert (git)" <dgilbert@redhat.com>
-Date: Fri, 12 Jul 2019 13:20:02 +0100
-Message-Id: <20190712122002.10793-6-dgilbert@redhat.com>
-In-Reply-To: <20190712122002.10793-1-dgilbert@redhat.com>
-References: <20190712122002.10793-1-dgilbert@redhat.com>
+Return-Path: virtio-dev-return-5870-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id 1FBC4984363
+	for <virtio-dev@lists.oasis-open.org>; Mon, 22 Jul 2019 05:10:30 +0000 (UTC)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: [virtio-comment] [PATCH v7 5/5] shared memory: Define mmio registers
-To: virtio-dev@lists.oasis-open.org, virtio-comment@lists.oasis-open.org, stefanha@redhat.com, cohuck@redhat.com
-Cc: vgoyal@redhat.com
+References: <20190719133135.32418-1-lifei.shirley@bytedance.com>
+ <20190719110852-mutt-send-email-mst@kernel.org> <CA+=e4K5rn7-avNT3e07dfXkh=ZO2+RvthjqW15gZv-uFYrCs3A@mail.gmail.com>
+In-Reply-To: <CA+=e4K5rn7-avNT3e07dfXkh=ZO2+RvthjqW15gZv-uFYrCs3A@mail.gmail.com>
+From: =?UTF-8?B?5p2O6I+y?= <lifei.shirley@bytedance.com>
+Date: Mon, 22 Jul 2019 13:10:17 +0800
+Message-ID: <CA+=e4K5RBRs3FoBBH-UPqhL1gm3mQ7+cVZg4xBh++bVr_mHbQw@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Subject: [virtio-dev] Fwd: [External Email] Re: [PATCH v1 0/2] virtio-mmio: support
+ multiple interrupt vectors
+To: virtio-dev@lists.oasis-open.org, Xiongchun Duan <duanxiongchun@bytedance.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-From: "Dr. David Alan Gilbert" <dgilbert@redhat.com>
-
-Define an MMIO interface to discover and map shared
-memory regions.
-
-Signed-off-by: Dr. David Alan Gilbert <dgilbert@redhat.com>
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
-Reviewed-by: Cornelia Huck <cohuck@redhat.com>
----
- content.tex | 30 ++++++++++++++++++++++++++++++
- 1 file changed, 30 insertions(+)
-
-diff --git a/content.tex b/content.tex
-index 1476b0e..ee0d7c9 100644
---- a/content.tex
-+++ b/content.tex
-@@ -1736,6 +1736,33 @@ \subsection{MMIO Device Register Layout}\label{sec:Virtio Transport Options / Vi
-     selected by writing to \field{QueueSel}.
-   }
-   \hline 
-+  \mmioreg{SHMSel}{Shared memory id}{0x0ac}{W}{%
-+    Writing to this register selects the shared memory region \ref{sec:Basic Facilities of a Virtio Device / Shared Memory Regions}
-+    following operations on \field{SHMLenLow}, \field{SHMLenHigh},
-+    \field{SHMBaseLow} and \field{SHMBaseHigh} apply to.
-+  }
-+  \hline 
-+  \mmiodreg{SHMLenLow}{SHMLenHigh}{Shared memory region 64 bit long length}{0x0b0}{0x0xb4}{R}{%
-+    These registers return the length of the shared memory
-+    region in bytes, as defined by the device for the region selected by
-+    the \field{SHMSel} register.  The lower 32 bits of the length
-+    are read from \field{SHMLenLow} and the higher 32 bits from
-+    \field{SHMLenHigh}.  Reading from a non-existent
-+    region (i.e. where the ID written to \field{SHMSel} is unused)
-+    results in a length of -1.
-+  }
-+  \hline 
-+  \mmiodreg{SHMBaseLow}{SHMBaseHigh}{Shared memory region 64 bit long physical address}{0x0b8}{0x0xbc}{R}{%
-+    The driver reads these registers to discover the base address
-+    of the region in physical address space.  This address is
-+    chosen by the device (or other part of the VMM).
-+    The lower 32 bits of the address are read from \field{SHMBaseLow}
-+    with the higher 32 bits from \field{SHMBaseHigh}.  Reading
-+    from a non-existent region (i.e. where the ID written to
-+    \field{SHMSel} is unused) results in a base address of
-+    0xffffffffffffffff.
-+  }
-+  \hline 
-   \mmioreg{ConfigGeneration}{Configuration atomicity value}{0x0fc}{R}{
-     Reading from this register returns a value describing a version of the device-specific configuration space (see \field{Config}).
-     The driver can then access the configuration space and, when finished, read \field{ConfigGeneration} again.
-@@ -1825,6 +1852,9 @@ \subsubsection{Device Initialization}\label{sec:Virtio Transport Options / Virti
- and if its value is zero (0x0) MUST abort initialization and
- MUST NOT access any other register.
- 
-+Drivers not expecting shared memory MUST NOT use the shared
-+memory registers.
-+
- Further initialization MUST follow the procedure described in
- \ref{sec:General Initialization And Device Operation / Device Initialization}~\nameref{sec:General Initialization And Device Operation / Device Initialization}.
- 
--- 
-2.21.0
+---------- Forwarded message ---------
+From: =E6=9D=8E=E8=8F=B2 <lifei.shirley@bytedance.com>
+Date: Mon, Jul 22, 2019 at 11:22 AM
+Subject: Re: [External Email] Re: [PATCH v1 0/2] virtio-mmio: support
+multiple interrupt vectors
+To: Michael S. Tsirkin <mst@redhat.com>, <virtio-dev@lists.oasis-open.org>
+Cc: <linux-kernel@vger.kernel.org>, Jason Wang <jasowang@redhat.com>,
+Pawel Moll <pawel.moll@arm.com>, Suzuki K Poulose
+<suzuki.poulose@arm.com>, Fam Zheng <zhengfeiran@bytedance.com>
 
 
-This publicly archived list offers a means to provide input to the
-OASIS Virtual I/O Device (VIRTIO) TC.
+On Fri, Jul 19, 2019 at 11:14 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+>
+> On Fri, Jul 19, 2019 at 09:31:33PM +0800, Fei Li wrote:
+> > Hi,
+> >
+> > This patch series implements multiple interrupt vectors support for
+> > virtio-mmio device. This is especially useful for multiqueue vhost-net
+> > device when using firecracker micro-vms as the guest.
+> >
+> > Test result:
+> > With 8 vcpus & 8 net queues set, one vhost-net device with 8 irqs can
+> > receive 9 times more pps comparing with only one irq:
+> > - 564830.38 rxpck/s for 8 irqs on
+> > - 67665.06 rxpck/s for 1 irq on
+> >
+> > Please help to review, thanks!
+> >
+> > Have a nice day
+> > Fei
+>
+>
+> Interesting. The spec says though:
+>
+>         4.2.3.4
+>         Notifications From The Device
+>         The memory mapped virtio device is using a single, dedicated inte=
+rrupt signal, which is asserted when at
+>         least one of the bits described in the description of InterruptSt=
+atus is set. This is how the device sends a
+>         used buffer notification or a configuration change notification t=
+o the device.
+>
+Yes, the spec needs to be updated if we want to use mult-irqs.
+>
+> So I'm guessing we need to change the host/guest interface?
+Just to confirm, does the "the host/guest interface" you mentioned mean how=
+ to
+pass the irq information from the user space tool to guest kernel?
+In this patch, we do this by passing the [irq_start, irq_end]
+interface via setting guest
+kernel command line, that is done in vm_cmdline_set().
+Also there is another way to do this: add two new registers describing irq =
+info
+(irq_start & irq_end OR irq_start & irq_numbers) to the virtio config space=
+.
 
-In order to verify user consent to the Feedback License terms and
-to minimize spam in the list archive, subscription is required
-before posting.
+Which one do you prefer?
 
-Subscribe: virtio-comment-subscribe@lists.oasis-open.org
-Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
-List help: virtio-comment-help@lists.oasis-open.org
-List archive: https://lists.oasis-open.org/archives/virtio-comment/
-Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
-List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
-Committee: https://www.oasis-open.org/committees/virtio/
-Join OASIS: https://www.oasis-open.org/join/
+> If true pls cc virtio-dev.
+Sure.
+>
+> Also, do we need to update dt bindings documentation?
+You mean the following doc? Sure. :)
+https://github.com/torvalds/linux/blob/master/Documentation/devicetree/bind=
+ings/virtio/mmio.txt
+
+Thanks for the review!
+
+Have a nice day
+Fei
+
+
+>
+> >
+> > Fam Zheng (1):
+> >   virtio-mmio: Process vrings more proactively
+> >
+> > Fei Li (1):
+> >   virtio-mmio: support multiple interrupt vectors
+> >
+> >  drivers/virtio/virtio_mmio.c | 238 +++++++++++++++++++++++++++++++++++=
+--------
+> >  1 file changed, 196 insertions(+), 42 deletions(-)
+> >
+> > --
+> > 2.11.0
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
