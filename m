@@ -1,106 +1,68 @@
-Return-Path: virtio-dev-return-5880-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 422E0985D57
-	for <virtio-dev@lists.oasis-open.org>; Wed, 24 Jul 2019 08:33:20 +0000 (UTC)
-Date: Wed, 24 Jul 2019 09:33:14 +0100
-From: Stefan Hajnoczi <stefanha@redhat.com>
-Message-ID: <20190724083314.GA11957@stefanha-x1.localdomain>
-References: <20190618213147-mutt-send-email-mst@kernel.org>
- <20190624135808.GC3833@stefanha-x1.localdomain>
- <20190624100448-mutt-send-email-mst@kernel.org>
- <20190625095515.GG3226@work-vm>
- <20190627100346-mutt-send-email-mst@kernel.org>
- <20190717124258.GA13761@redhat.com>
- <20190723133227.GG5445@stefanha-x1.localdomain>
- <20190723140855.GA11628@redhat.com>
- <20190723145250.GA8124@stefanha-x1.localdomain>
- <20190723155623.GA19189@redhat.com>
+Return-Path: virtio-return-3379-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio@lists.oasis-open.org>
+List-Post: <mailto:virtio@lists.oasis-open.org>
+List-Help: <mailto:virtio-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
+Date: Mon, 22 Jul 2019 16:39:39 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20190722203854.16494-1-mst@redhat.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="n8g4imXOkfNTN/H1"
-Content-Disposition: inline
-In-Reply-To: <20190723155623.GA19189@redhat.com>
-Subject: Re: [virtio-dev] [PATCH v3 2/2] virtio-fs: add DAX window
-To: Vivek Goyal <vgoyal@redhat.com>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>, "Dr. David Alan Gilbert" <dgilbert@redhat.com>, virtio-dev@lists.oasis-open.org, Miklos Szeredi <mszeredi@redhat.com>, Sage Weil <sweil@redhat.com>, Steven Whitehouse <swhiteho@redhat.com>, Paolo Bonzini <pbonzini@redhat.com>
-List-ID: <virtio-dev.lists.oasis-open.org>
-
---n8g4imXOkfNTN/H1
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Subject: [virtio] [PATCH] README.md: document github use
+To: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Tue, Jul 23, 2019 at 11:56:23AM -0400, Vivek Goyal wrote:
-> On Tue, Jul 23, 2019 at 03:52:50PM +0100, Stefan Hajnoczi wrote:
-> > On Tue, Jul 23, 2019 at 10:08:55AM -0400, Vivek Goyal wrote:
-> > > On Tue, Jul 23, 2019 at 02:32:27PM +0100, Stefan Hajnoczi wrote:
-> > > > On Wed, Jul 17, 2019 at 08:42:58AM -0400, Vivek Goyal wrote:
-> > > > > On Thu, Jun 27, 2019 at 10:09:16AM -0400, Michael S. Tsirkin wrot=
-e:
-> > > > >=20
-> > > > > [..]
-> > > > > > Well it allocates resources on the host. If you don't
-> > > > > > contain qemu then even just allocating virtual memory
-> > > > > > can make host swap, right? If you contain it then
-> > > > > > qemu will get killed instead but then you need to tell
-> > > > > > guest what not to do so as not to get qemu killed.
-> > > > >=20
-> > > > > How is it different than running a malicious unpriviliged process=
- on host?
-> > > > >=20
-> > > > > Denial of service should be mitigated by per process resource lim=
-its which
-> > > > > will be true in this case as well.
-> > > > >=20
-> > > > > I am not sure I understand the concern here.
-> > > >=20
-> > > > There is a practical problem that the QEMU process may hit the mmap
-> > > > limit and be unable to perform its own mmaps due to the DAX Window.=
-  A
-> > > > limit must be enforced on the host so that QEMU's internal mmaps
-> > > > succeed.
-> > >=20
-> > > But number of mmaps are already limited by dax window size which is
-> > > controlled by virtiofsd. So all user has to do is start with smaller
-> > > dax window size if this ever becomes a concern.
-> >=20
-> > Yes, the DAX Window size sets a hard limit on the number of mappings
-> > (window_size / page_size).  I think we should still communicate a
-> > maximum number of mappings to provide more control for cases where the
-> > page size and DAX Window size don't produce a desirable number.
-> >=20
-> > Consider that window_size =3D 8 GB and page_size =3D 4 KB already yields
-> > 2,097,152 maximum mappings.  Oops, that number is too large!
->=20
-> Ok, so that's something which will be in virtiofsd where maximum number
-> of outstanding can be configured by user and if we cross that limit,
-> FUSE_SETUPMAPPING will be returned with some error?
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+---
+ README.md | 28 ++++++++++++++++++++++++++++
+ 1 file changed, 28 insertions(+)
 
-Yes, virtiofsd will enforce the limit.
+diff --git a/README.md b/README.md
+index 3de0c1e..0aceb75 100644
+--- a/README.md
++++ b/README.md
+@@ -69,6 +69,34 @@ in <A
+ HREF="https://github.com/oasis-tcs/virtio-admin">https://github.com/oasis-tcs/virtio-admin</A>.
+ 
+ </div>
++<h4>Use of github issues</h4>
++Note: according to the virtio TC rules, all official TC communication
++is taking on one of the TC mailing lists.
++In particular, all comments must be provided on
++one of the TC mailing lists. Accordingly, the TC will not respond
++to comments provided in github issues: github issues are
++used solely to track integration of comments into the
++specification.<p>
++To request a TC vote on resolving a specific comment:
++<ol>
++<li>Create a github issue, or edit an existing issue, with
++a short summary of the comment.
++The issue MUST specify
++the link to the latest proposal in the TC mailing list
++archives. <em>Note:</em> the link MUST be in the issue description itself -
++<em>not</em> in the comments.</li>
++<li>Reply by email to the comment email, requesting that the TC vote
++on resolving the issue.
++The mail requesting the vote should include the following, on a line by itself:<br>
++<code>
++Fixes: https://github.com/oasis-tcs/virtio-spec/issues/NNN
++</code>
++(NNN is the issue number)</li>
++<li>Please make sure to allow time after a comment resolving
++an issue is posted and
++before asking for a vote.</li>
++</ol>
++
+ <h3>Contact</h3>
+ <p>Please send questions or comments about <a href="https://www.oasis-open.org/resources/tcadmin/github-repositories-for-oasis-tc-members-chartered-work">OASIS TC GitHub repositories</a> to <a href="mailto:robin@oasis-open.org">Robin Cover</a> and <a href="mailto:chet.ensign@oasis-open.org">Chet Ensign</a>.  For questions about content in this repository, please contact the TC Chair or Co-Chairs as listed on the the virtio TC's <a href="https://www.oasis-open.org/committees/virtio/">home page</a>.</p>
+ </div>
+-- 
+MST
 
-The guest driver will also be aware of the limit via VIRTIO
-configuration space.
+---------------------------------------------------------------------
+To unsubscribe from this mail list, you must leave the OASIS TC that 
+generates this mail.  Follow this link to all your TCs in OASIS at:
+https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
 
-Stefan
-
---n8g4imXOkfNTN/H1
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAl04F6gACgkQnKSrs4Gr
-c8gJTAf/aNuYZOklxWCFB+0p726vVqFKjn/NVR85hc2smqhTxJYd1LI5+S5OZtnD
-sow6pj8DXMVWnskdvR0Rr2usCq9wzG6SLdrEL5u6WirBzISS/Q8uG5uOeasMDGaH
-TPr7kGwjUrQU++q8hscIgLeu1clbIbHGt70u1HWF2mjLLWhne4oWofdXcPbnD5x1
-UthVqxO3xpCJo2Uc7z4C4gEi9dAXkply0DjC17HNdyBkMD5NgsSHRiIP86hAOHA0
-W1uQOgZIqgpqo37T2zFKxcHWKEpoBvfO3MFn8y8GAGhf5z0LUyfs9vW9BVKRFoKJ
-tkVG3bcWsmLUC/9lU/RC/VUQXu5dDA==
-=lF2H
------END PGP SIGNATURE-----
-
---n8g4imXOkfNTN/H1--
