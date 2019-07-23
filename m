@@ -1,103 +1,70 @@
-Return-Path: virtio-dev-return-5890-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-5879-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 3A304984342
-	for <virtio-dev@lists.oasis-open.org>; Mon, 29 Jul 2019 11:20:44 +0000 (UTC)
-Date: Mon, 29 Jul 2019 07:20:37 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20190729062417-mutt-send-email-mst@kernel.org>
-References: <20190326094106.17760-1-pbonzini@redhat.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 600BA985D3F
+	for <virtio-dev@lists.oasis-open.org>; Tue, 23 Jul 2019 15:58:07 +0000 (UTC)
+Date: Tue, 23 Jul 2019 16:58:01 +0100
+From: Stefan Hajnoczi <stefanha@redhat.com>
+Message-ID: <20190723155801.GH5445@stefanha-x1.localdomain>
+References: <20190220124613.22661-1-stefanha@redhat.com>
+ <20190220124613.22661-2-stefanha@redhat.com>
+ <20190618210753-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="ewQ5hdP4CtoTt3oD"
 Content-Disposition: inline
-In-Reply-To: <20190326094106.17760-1-pbonzini@redhat.com>
-Subject: [virtio-dev] reserving virtio device IDs (was Re: [virtio] [PATCH] Reserve id for
- virtio-audio device)
-To: Paolo Bonzini <pbonzini@redhat.com>
-Cc: virtio-dev@lists.oasis-open.org, Paolo Bonzini <bonzini@gnu.org>, anthony.xu@intel.com, acrn-dev@lists.projectacrn.org, acrn-tsc@lists.projectacrn.org, wei.a.deng@intel.com
+In-Reply-To: <20190618210753-mutt-send-email-mst@kernel.org>
+Subject: Re: [virtio-dev] [PATCH v3 1/2] content: add virtio file system
+ device
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: virtio-dev@lists.oasis-open.org, Miklos Szeredi <mszeredi@redhat.com>, Sage Weil <sweil@redhat.com>, Vivek Goyal <vgoyal@redhat.com>, Steven Whitehouse <swhiteho@redhat.com>, "Dr. David Alan Gilbert" <dgilbert@redhat.com>, Paolo Bonzini <pbonzini@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Tue, Mar 26, 2019 at 10:41:06AM +0100, Paolo Bonzini wrote:
-> From: Paolo Bonzini <bonzini@gnu.org>
-> 
-> Project ACRN has a virtio-audio device. Unfortunately, the id they are using is
-> already reserved in the virtio specification, but it is nevertheless useful to
-> have one.
-> 
-> Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-> ---
->  content.tex | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/content.tex b/content.tex
-> index ede0ef6..96e2bad 100644
-> --- a/content.tex
-> +++ b/content.tex
-> @@ -2634,6 +2634,8 @@ Device ID  &  Virtio Device    \\
->  \hline
->  24         &   Memory device \\
->  \hline
-> +25         &   Audio device \\
-> +\hline
->  \end{tabular}
->  
->  Some of the devices above are unspecified by this document,
+--ewQ5hdP4CtoTt3oD
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
+On Tue, Jun 18, 2019 at 09:29:13PM -0400, Michael S. Tsirkin wrote:
+> On Wed, Feb 20, 2019 at 12:46:12PM +0000, Stefan Hajnoczi wrote:
+> > +\begin{description}
+> > +\item[\field{tag}] is the name associated with this file system.  The =
+tag is
+> > +    encoded in UTF-8 and padded with NUL bytes if shorter than the
+> > +    available space.  This field is not NUL-terminated if the encoded =
+bytes
+> > +    take up the entire field.
+> > +\item[\field{num_queues}] is the total number of request virtqueues ex=
+posed by
+> > +    the device. The driver MAY use only one request queue,
+> > +    or it can use more to achieve better performance.
+>=20
+> Pls copy instances of MAY,SHOULD,MUST into conformance sections.
+> Pls convert text outside of conformance sections to "can"
+> or "is allowed to" etc.
 
-Below's the list of virtio ids used by project ACRN.
+Thanks for your feedback.  All of these comments will be addressed in
+the next revision.
 
-Dear project acrn developers, would you like to reserve virtio device
-IDs in use by your project?  The process is quite easy, minimally
-subscribe to virtio-comment and then email virtio-comment mailing list.
+Stefan
 
-If you want to go the extra mile you can prepare a spec patch along the
-lines shown above by Paolo.
+--ewQ5hdP4CtoTt3oD
+Content-Type: application/pgp-signature; name="signature.asc"
 
-This of course only makes sense assumes you are ready to settle on
-specific IDs and interested in interoperating with drivers written by
-others.  If not I wonder whether your purpose could be best served by the
-experimental range.
+-----BEGIN PGP SIGNATURE-----
 
+iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAl03LogACgkQnKSrs4Gr
+c8hNQwgArLD+W+vj2GEw9923KUPVES0bgK3HoKPtNTUvgswRNRtxFRbwg0oSi2kc
+rNcdZ+LGl4h3jO1ZLOPdL6hXy1z49NkU75gSmrKcd8myJbtS6zlhqCea1g3CRrL+
+31GpjAWjee93bkPowRh56sB04p4uCxkfAQOf0CoNNfL4KrWOwP5vdEKbVnPihuMo
+toBBhmiA0z1mk7peFepQV1sPo9zQu5mUL+rGoz+FomBZlwyfcLXmWf8pmlntuxRu
+QRnXTVYkj2+4eO3brmGx53Qdun6gQQ1MV8ylbamoK+tq9fMRYInUcf/n3B/QZyu2
+JZ/fYMEsFslRgXrd0xej0H1lC/4P7w==
+=kzIj
+-----END PGP SIGNATURE-----
 
-I am concerned that projects assigning themselves IDs without being
-listed in a central place will sooner or later lead to incorrect drivers
-loading on incorrect devices.
-
-More specifically, it looks like you are implementing legacy virtio
-devices (not 1.0 spec compliant) in the hypervisor. That's of course
-your choice but in that case I think it would be preferable to use ID
-values below 0x1040, which have been reserved for this purpose. In
-particular that will allow adding virtio 1.0 support with minimal pain
-down the road.
-
-Here's a list of IDs I found in the source:
-
-
-#define	VIRTIO_DEV_RPMB		0x8601
-#define	VIRTIO_DEV_HECI		0x8602
-#define	VIRTIO_DEV_AUDIO	0x8603
-#define	VIRTIO_DEV_IPU		0x8604
-#define	VIRTIO_DEV_TSN		0x8605
-#define	VIRTIO_DEV_HYPERDMABUF	0x8606
-#define	VIRTIO_DEV_HDCP		0x8607
-#define	VIRTIO_DEV_COREU	0x8608
-#define	VIRTIO_DEV_GPIO		0x8609
-#define VIRTIO_DEV_I2C		0x860a
-
-
-Does this reflect what you are using now?  Also, would you happen to
-know whether the ID 25 is used anywhere?  That would correspond to PCI
-IDs 0x1059 (modern) or 0x19 (legacy/transitional).
-
-Thanks in advance!
--- 
-MST
-
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
-
+--ewQ5hdP4CtoTt3oD--
