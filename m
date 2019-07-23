@@ -1,15 +1,15 @@
-Return-Path: virtio-dev-return-5861-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-5877-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id D951E985C86
-	for <virtio-dev@lists.oasis-open.org>; Wed, 17 Jul 2019 10:48:45 +0000 (UTC)
-Date: Wed, 17 Jul 2019 11:48:40 +0100
+	by lists.oasis-open.org (Postfix) with ESMTP id 51FF4985D3F
+	for <virtio-dev@lists.oasis-open.org>; Tue, 23 Jul 2019 13:32:32 +0000 (UTC)
+Date: Tue, 23 Jul 2019 14:32:27 +0100
 From: Stefan Hajnoczi <stefanha@redhat.com>
-Message-ID: <20190717104840.GF7341@stefanha-x1.localdomain>
+Message-ID: <20190723133227.GG5445@stefanha-x1.localdomain>
 References: <20190220124613.22661-1-stefanha@redhat.com>
  <20190220124613.22661-3-stefanha@redhat.com>
  <20190618213147-mutt-send-email-mst@kernel.org>
@@ -17,115 +17,59 @@ References: <20190220124613.22661-1-stefanha@redhat.com>
  <20190624100448-mutt-send-email-mst@kernel.org>
  <20190625095515.GG3226@work-vm>
  <20190627100346-mutt-send-email-mst@kernel.org>
+ <20190717124258.GA13761@redhat.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="aZoGpuMECXJckB41"
+	protocol="application/pgp-signature"; boundary="cyV/sMl4KAhiehtf"
 Content-Disposition: inline
-In-Reply-To: <20190627100346-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20190717124258.GA13761@redhat.com>
 Subject: Re: [virtio-dev] [PATCH v3 2/2] virtio-fs: add DAX window
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: "Dr. David Alan Gilbert" <dgilbert@redhat.com>, virtio-dev@lists.oasis-open.org, Miklos Szeredi <mszeredi@redhat.com>, Sage Weil <sweil@redhat.com>, Vivek Goyal <vgoyal@redhat.com>, Steven Whitehouse <swhiteho@redhat.com>, Paolo Bonzini <pbonzini@redhat.com>
+To: Vivek Goyal <vgoyal@redhat.com>
+Cc: "Michael S. Tsirkin" <mst@redhat.com>, "Dr. David Alan Gilbert" <dgilbert@redhat.com>, virtio-dev@lists.oasis-open.org, Miklos Szeredi <mszeredi@redhat.com>, Sage Weil <sweil@redhat.com>, Steven Whitehouse <swhiteho@redhat.com>, Paolo Bonzini <pbonzini@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
---aZoGpuMECXJckB41
+--cyV/sMl4KAhiehtf
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Jun 27, 2019 at 10:09:16AM -0400, Michael S. Tsirkin wrote:
-> On Tue, Jun 25, 2019 at 10:55:15AM +0100, Dr. David Alan Gilbert wrote:
-> > * Michael S. Tsirkin (mst@redhat.com) wrote:
-> > > On Mon, Jun 24, 2019 at 02:58:08PM +0100, Stefan Hajnoczi wrote:
-> > > > On Tue, Jun 18, 2019 at 09:41:25PM -0400, Michael S. Tsirkin wrote:
-> > > > > On Wed, Feb 20, 2019 at 12:46:13PM +0000, Stefan Hajnoczi wrote:
-> > > > > > +
-> > > > > > +\devicenormative{\paragraph}{Device Operation: DAX Window}{Dev=
-ice Types / File System Device / Device Operation / Device Operation: DAX W=
-indow}
-> > > > > > +
-> > > > > > +The device MUST allow mappings that completely or partially ov=
-erlap existing mappings within the DAX window.
-> > > > >=20
-> > > > >=20
-> > > > > Any alignment requirements?
-> > > >=20
-> > > > Good point.  There are alignment requirements and the driver has no=
- way
-> > > > of knowing what they are.  I'll find a way to communicate them into=
- the
-> > > > guest, either via virtio or via FUSE.
-> > > >=20
-> > > > > Also, with no limit on mappings, it looks like guest can use up l=
-ots of
-> > > > > host VMAs quickly. Shouldn't there be a limit on # of mappings?
-> > > >=20
-> > > > The VM can only deteriorate its own performance, right?
-> > >=20
-> > > Only if QEMU is put in a container where virtual memory is
-> > > limited.
-> > > It's generally not a good idea where the only way for
-> > > host to make progress is to allocate more memory
-> > > without any limit.
-> > >=20
-> > > If we are in a situation where we need to either kill
-> > > the guest or hit swap, none of the choices is good.
-> >=20
-> > There is a bound; it's cache region size / page size - so
-> > that's ~1M mappings worst case (e.g. 4GB cache, 4kB page size)
-> > That limit can be bought down if we impose a larger granularity
-> > somewhere (and the reality is our kernel uses 2MB mapping chunks I
-> > think).
-> >=20
-> > > > We haven't seen catastrophic problems that bring the system to it's
-> > > > knees.
-> > >=20
-> > > Because you are not running malicious guests?
-> >=20
-> > Hmm, I didn't realise a process having an excessive number of mappings
-> > could harm any other process.
-> >=20
-> > Dave
+On Wed, Jul 17, 2019 at 08:42:58AM -0400, Vivek Goyal wrote:
+> On Thu, Jun 27, 2019 at 10:09:16AM -0400, Michael S. Tsirkin wrote:
 >=20
-> Well it allocates resources on the host. If you don't
-> contain qemu then even just allocating virtual memory
-> can make host swap, right? If you contain it then
-> qemu will get killed instead but then you need to tell
-> guest what not to do so as not to get qemu killed.
+> [..]
+> > Well it allocates resources on the host. If you don't
+> > contain qemu then even just allocating virtual memory
+> > can make host swap, right? If you contain it then
+> > qemu will get killed instead but then you need to tell
+> > guest what not to do so as not to get qemu killed.
+>=20
+> How is it different than running a malicious unpriviliged process on host?
+>=20
+> Denial of service should be mitigated by per process resource limits which
+> will be true in this case as well.
+>=20
+> I am not sure I understand the concern here.
 
-I investigated a little.  Linux has a maximum VMA count sysctl that is
-affected by mmap and any other places that add/split VMAs:
-
-  vm.max_map_count =3D 65530
-
-This is a sysctl tunable and is kept below 65536 for legacy reasons.
-ELF coredumps used to only support ~65536 sections.
-
-The QEMU process needs its own VMAs for shared libraries and other
-purposes, so each virtio-fs device should expose a significantly lower
-DAX Window mapping limit to the driver.  Let's add a configuration space
-field as Michael has suggested.
-
-Regarding denial of service, the DAX Window size determines the overall
-amount of host page cache that is accessible by the driver.  Together
-with an enforced maximum map count we can allow the administrator to
-configure devices so they only provide access to a fraction of the host
-page cache, mitigating denial of service issues.
+There is a practical problem that the QEMU process may hit the mmap
+limit and be unable to perform its own mmaps due to the DAX Window.  A
+limit must be enforced on the host so that QEMU's internal mmaps
+succeed.
 
 Stefan
 
---aZoGpuMECXJckB41
+--cyV/sMl4KAhiehtf
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAl0u/QgACgkQnKSrs4Gr
-c8ge4AgAvpEku+f+4H0i7z5A7Y3Va+Q/j/nYYCREEXUfTHD1ieUsU09nkdaskmiO
-IeRPnBuTk/unaRjkBJijdW4rC9xC/SuBYYY7kxvaGtUGDsNnPQeTLYt8HeuDaazg
-N4SiQPUr4SlX62QD+l5Z5bVq2C2yzK59YeF7QA4idDURRjsdbkOD94ZOREv9Z9OK
-m/iv/X+h5dy6z3n5H7/av7XECLClzLswxP55vWbl3KPsOR02Dxqm2P/YhgzpU99M
-8Qde4r3IPTRKrhLUPcrsLhOjGGDcFpVLkzv6qc6J/+A1EAQxmyt+p044lGo+IeWa
-esWAjVnEhXEW9+7MLGUi9C6cYDRiig==
-=Rogr
+iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAl03DGoACgkQnKSrs4Gr
+c8h2gggAvhIBjzHALGMvka+iGKh+vGTZ78VonJ9VA6SMAh/j3h6JnUVvBvO0jRE0
+Pkd6muEfqIuDw4hN/aLz4L8lB0PqG+NDbx6D51SIlqLEiqyk6fHPk3ylirSry2NJ
+H7SDTXSBF8Xag2g5Q+A5RvYmxFLW4uw0KYlfr/Cf1BNy5r5R9RjdHIC96USODCnX
+JsgEINjLaU7drAxiWKqaf7AgP4ZMf8fiYvJruCLL9wyeTPMlV0NcmUy/ZBWMphhZ
+yzIT8ZWjpgkxDTjZNcAONA6iwv/M+hK8cjjWtHdy94vKCuDDKfdc7Y5hw5q8eQem
+C6PiE/j+LWXcBOKhrltSe6V1a+Klzg==
+=bQ4a
 -----END PGP SIGNATURE-----
 
---aZoGpuMECXJckB41--
+--cyV/sMl4KAhiehtf--
