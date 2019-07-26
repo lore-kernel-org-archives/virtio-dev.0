@@ -1,103 +1,108 @@
-Return-Path: virtio-dev-return-5884-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-5885-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 5F3D6985E3D
-	for <virtio-dev@lists.oasis-open.org>; Fri, 26 Jul 2019 11:42:05 +0000 (UTC)
-Date: Fri, 26 Jul 2019 07:41:57 -0400
+	by lists.oasis-open.org (Postfix) with ESMTP id 5AA89985E3D
+	for <virtio-dev@lists.oasis-open.org>; Fri, 26 Jul 2019 12:28:05 +0000 (UTC)
+Date: Fri, 26 Jul 2019 08:27:57 -0400
 From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20190726074048-mutt-send-email-mst@kernel.org>
+Message-ID: <20190726082553-mutt-send-email-mst@kernel.org>
 References: <20190726095338.24991-1-stefanha@redhat.com>
- <20190726095338.24991-3-stefanha@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190726095338.24991-3-stefanha@redhat.com>
-Subject: [virtio-dev] Re: [PATCH v5 2/2] virtio-fs: add DAX window
+In-Reply-To: <20190726095338.24991-1-stefanha@redhat.com>
+Subject: [virtio-dev] Re: [PATCH v5 0/2] virtio-fs: add virtio file system device
 To: Stefan Hajnoczi <stefanha@redhat.com>
 Cc: virtio-dev@lists.oasis-open.org, Sage Weil <sweil@redhat.com>, Steven Whitehouse <swhiteho@redhat.com>, Miklos Szeredi <mszeredi@redhat.com>, Vivek Goyal <vgoyal@redhat.com>, "Dr. David Alan Gilbert" <dgilbert@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Fri, Jul 26, 2019 at 10:53:38AM +0100, Stefan Hajnoczi wrote:
-> Describe how shared memory region ID 0 is the DAX window and how
-> FUSE_SETUPMAPPING maps file ranges into the window.
-> 
-> Signed-off-by: Stefan Hajnoczi <stefanha@redhat.com>
-> ---
+Didn't look at the spec yet, but I have a question:
 
-Are there any security considerations with this memory sharing?
-If yes it might be a good idea to add a chapter about that,
-and functionality/performance/security tradeoffs involved.
+On Fri, Jul 26, 2019 at 10:53:36AM +0100, Stefan Hajnoczi wrote:
+> v5:
+>  * Explain multiqueue semantics: no ordering, identical functionality on each queue, one FUSE session state shared between all queues
+>  * Explain how the FUSE session is started with a FUSE_INIT request
+>  * Consistently use "submit" vs "made available" and "complete" vs "used" terminology [Michael]
+>  * Explain endianness [Michael]
+>  * Clarify hiprio vs normal queue usage [Michael]
+>  * Move SHOULD, MUST, etc wording into normative sections [Michael]
+>  * Mention that FUSE_INIT negotiated state needs to be transferred during live migration [Michael]
+>  * State that the DAX window is mapped with writeback caching like RAM [Michael]
+>  * Mention DAX window mapping alignment constraints (they are communicated via the FUSE protocol) [Michael]
+>  * Explain that FUSE_SETUPMAPPING fails when device resources are exhausted and that splitting mappings consumes resources too [Michael]
+>  * Clarify access rules to DAX window - only touch memory that has a mapping establised
+>  * Document that DAX data persistence is achieved via FUSE_FSYNC
 
-> Note that this depends on the shared memory resource specification
-> extension that David Gilbert is working on.
-> https://lists.oasis-open.org/archives/virtio-comment/201901/msg00000.html
+
+The following was raised during v4 review:
+
+	> > > > There is a practical problem that the QEMU process may hit the mmap
+	> > > > limit and be unable to perform its own mmaps due to the DAX Window.  A
+	> > > > limit must be enforced on the host so that QEMU's internal mmaps
+	> > > > succeed.
+	> > >
+	> > > But number of mmaps are already limited by dax window size which is
+	> > > controlled by virtiofsd. So all user has to do is start with smaller
+	> > > dax window size if this ever becomes a concern.
+	> >
+	> > Yes, the DAX Window size sets a hard limit on the number of mappings
+	> > (window_size / page_size).  I think we should still communicate a
+	> > maximum number of mappings to provide more control for cases where the
+	> > page size and DAX Window size don't produce a desirable number.
+	> >
+	> > Consider that window_size = 8 GB and page_size = 4 KB already yields
+	> > 2,097,152 maximum mappings.  Oops, that number is too large!
+	>
+	> Ok, so that's something which will be in virtiofsd where maximum number
+	> of outstanding can be configured by user and if we cross that limit,
+	> FUSE_SETUPMAPPING will be returned with some error?
+
+	Yes, virtiofsd will enforce the limit.
+
+	The guest driver will also be aware of the limit via VIRTIO
+	configuration space.
+
+was this addressed?
+
+
+> v4:
+>  * Clarify that there are no request ordering guarantees between requests in a
+>    single queue [vgoyal]
+>  * Add explanation of FUSE session endianness detection [dgilbert]
 > 
-> The FUSE_SETUPMAPPING message is part of the virtio-fs Linux patches:
-> https://gitlab.com/virtio-fs/linux/blob/virtio-fs/include/uapi/linux/fuse.h
-> ---
->  virtio-fs.tex | 45 +++++++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 45 insertions(+)
+> v3:
+>  * Remove notifications virtqueue, it's unimplemented and can be added when
+>    needed [Miklos]
+>  * Add Security Considerations and Live Migration Considerations sections
+>    [Michael]
+> v2:
+>  * Clean up core virtio file system device spec
+>  * Add DAX window
 > 
-> diff --git a/virtio-fs.tex b/virtio-fs.tex
-> index a9f47ce..2d01a51 100644
-> --- a/virtio-fs.tex
-> +++ b/virtio-fs.tex
-> @@ -170,6 +170,51 @@ \subsubsection{Device Operation: High Priority Queue}\label{sec:Device Types / F
->  
->  The driver MUST anticipate that request queues are processed concurrently with the hiprio queue.
->  
-> +\subsubsection{Device Operation: DAX Window}\label{sec:Device Types / File System Device / Device Operation / Device Operation: DAX Window}
-> +
-> +FUSE\_READ and FUSE\_WRITE requests transfer file contents between the
-> +driver-provided buffer and the device.  In cases where data transfer is
-> +undesirable, the device can map file contents into the DAX window shared memory
-> +region.  The driver then accesses file contents directly in device-owned memory
-> +without a data transfer.
-> +
-> +Shared memory region ID 0 is called the DAX window.  Drivers map this shared
-> +memory region with writeback caching as if it were regular RAM.  The contents
-> +of the DAX window are undefined unless a mapping exists for that range.
-> +
-> +The driver maps a file range into the DAX window using the FUSE\_SETUPMAPPING
-> +request.  Alignment constraints for FUSE\_SETUPMAPPING and FUSE\_REMOVEMAPPING
-> +requests are communicated during FUSE\_INIT negotiation.
-> +
-> +When a FUSE\_SETUPMAPPING request perfectly overlaps a previous mapping, the
-> +previous mapping is replaced.  When a mapping partially overlaps a previous
-> +mapping, the previous mapping is split into one or two smaller mappings.  When
-> +a mapping is partially unmapped it is also split into one or two smaller
-> +mappings.
-> +
-> +Establishing new mappings or splitting existing mappings consumes resources.
-> +If the device runs out of resources the FUSE\_SETUPMAPPING request fails until
-> +resources are available again following FUSE\_REMOVEMAPPING.
-> +
-> +After FUSE\_SETUPMAPPING has completed successfully the file range is
-> +accessible from the DAX window at the offset provided by the driver in the
-> +request.  A mapping is removed using the FUSE\_REMOVEMAPPING request.
-> +
-> +Data is only guaranteed to be persistent when a FUSE\_FSYNC request is used by
-> +the device after having been made available by the driver following the write.
-> +
-> +\devicenormative{\paragraph}{Device Operation: DAX Window}{Device Types / File System Device / Device Operation / Device Operation: DAX Window}
-> +
-> +The device MUST allow mappings that completely or partially overlap existing mappings within the DAX window.
-> +
-> +The device MUST reject mappings that would go beyond the end of the DAX window.
-> +
-> +\drivernormative{\paragraph}{Device Operation: DAX Window}{Device Types / File System Device / Device Operation / Device Operation: DAX Window}
-> +
-> +The driver SHOULD be prepared to find shared memory region ID 0 absent and fall back to FUSE\_READ and FUSE\_WRITE requests.
-> +
-> +The driver MUST NOT access DAX window areas that have not been mapped.
-> +
->  \subsubsection{Security Considerations}\label{sec:Device Types / File System Device / Security Considerations}
->  
->  The device provides access to a file system containing files owned by one or
+> These patches add the virtio file system device, which is based on Linux FUSE
+> but includes the DAX window extension.  Similar to virtio-scsi, which
+> transports SCSI commands, virtio-fs transports FUSE requests and the protocol
+> documentation is not duplicated here.
+> 
+> The DAX window allows file contents to be accessed directly from shared memory.
+> This eliminates copying of data, reduces the number of vmexits, and reduces the
+> guest's memory footprint.  It also allows coherent mmap MAP_SHARED semantics
+> between guests on the same host.
+> 
+> Stefan Hajnoczi (2):
+>   content: add virtio file system device
+>   virtio-fs: add DAX window
+> 
+>  content.tex      |   1 +
+>  introduction.tex |   3 +
+>  virtio-fs.tex    | 259 +++++++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 263 insertions(+)
+>  create mode 100644 virtio-fs.tex
+> 
 > -- 
 > 2.21.0
 
