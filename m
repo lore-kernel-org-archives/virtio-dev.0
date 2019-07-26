@@ -1,62 +1,73 @@
-Return-Path: virtio-dev-return-5869-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-5881-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id C14FF985EE3
-	for <virtio-dev@lists.oasis-open.org>; Fri, 19 Jul 2019 10:25:34 +0000 (UTC)
-Date: Fri, 19 Jul 2019 06:25:33 -0400 (EDT)
-From: Pankaj Gupta <pagupta@redhat.com>
-Message-ID: <936007544.1644199.1563531933010.JavaMail.zimbra@redhat.com>
-In-Reply-To: <20190719122316.785f90e5.cohuck@redhat.com>
-References: <20190717070916.16196-1-pagupta@redhat.com> <20190719122316.785f90e5.cohuck@redhat.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 79B05985E3D
+	for <virtio-dev@lists.oasis-open.org>; Fri, 26 Jul 2019 09:53:46 +0000 (UTC)
+From: Stefan Hajnoczi <stefanha@redhat.com>
+Date: Fri, 26 Jul 2019 10:53:36 +0100
+Message-Id: <20190726095338.24991-1-stefanha@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Subject: [virtio-dev] Re: [PATCH v3] add virtio-pmem device specification
-To: Cornelia Huck <cohuck@redhat.com>
-Cc: virtio-dev@lists.oasis-open.org, nilal@redhat.com, riel@surriel.com, stefanha@redhat.com, aarcange@redhat.com, david@redhat.com, mst@redhat.com, lcapitulino@redhat.com
+Content-Transfer-Encoding: 8bit
+Subject: [virtio-dev] [PATCH v5 0/2] virtio-fs: add virtio file system device
+To: virtio-dev@lists.oasis-open.org
+Cc: Sage Weil <sweil@redhat.com>, Steven Whitehouse <swhiteho@redhat.com>, Miklos Szeredi <mszeredi@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>, Vivek Goyal <vgoyal@redhat.com>, "Dr. David Alan Gilbert" <dgilbert@redhat.com>, Stefan Hajnoczi <stefanha@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+v5:
+ * Explain multiqueue semantics: no ordering, identical functionality on each queue, one FUSE session state shared between all queues
+ * Explain how the FUSE session is started with a FUSE_INIT request
+ * Consistently use "submit" vs "made available" and "complete" vs "used" terminology [Michael]
+ * Explain endianness [Michael]
+ * Clarify hiprio vs normal queue usage [Michael]
+ * Move SHOULD, MUST, etc wording into normative sections [Michael]
+ * Mention that FUSE_INIT negotiated state needs to be transferred during live migration [Michael]
+ * State that the DAX window is mapped with writeback caching like RAM [Michael]
+ * Mention DAX window mapping alignment constraints (they are communicated via the FUSE protocol) [Michael]
+ * Explain that FUSE_SETUPMAPPING fails when device resources are exhausted and that splitting mappings consumes resources too [Michael]
+ * Clarify access rules to DAX window - only touch memory that has a mapping establised
+ * Document that DAX data persistence is achieved via FUSE_FSYNC
 
+v4:
+ * Clarify that there are no request ordering guarantees between requests in a
+   single queue [vgoyal]
+ * Add explanation of FUSE session endianness detection [dgilbert]
 
-> 
-> > This patch proposes a virtio specification for new
-> > virtio pmem device. Virtio pmem is a paravirtualized
-> > device which solves two problems:
-> > 
-> > - Provides emulation of persistent memory on host regular
-> >   (non NVDIMM) storage.
-> > - Allows the guest to bypass the page cache.
-> > 
-> > Signed-off-by: Pankaj Gupta <pagupta@redhat.com>
-> > ---
-> > This is changed version from previous v2 [1], as per suggestions by
-> > cornelia. Incorporated v2 changes suggested by Stefan, Michael &
-> > Cornerlia in RFC[2].
-> > 
-> > [1] https://lists.oasis-open.org/archives/virtio-dev/201907/msg00007.html
-> > [2] https://lists.oasis-open.org/archives/virtio-dev/201903/msg00083.html
-> > 
-> >  conformance.tex |  22 ++++++++++--
-> >  content.tex     |   1 +
-> >  virtio-pmem.tex | 109
-> >  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-> >  3 files changed, 130 insertions(+), 2 deletions(-)
-> >  create mode 100644 virtio-pmem.tex
-> > 
-> 
-> This looks good from my perspective now; but review from someone more
-> familiar with pmem per se would be good as well.
+v3:
+ * Remove notifications virtqueue, it's unimplemented and can be added when
+   needed [Miklos]
+ * Add Security Considerations and Live Migration Considerations sections
+   [Michael]
+v2:
+ * Clean up core virtio file system device spec
+ * Add DAX window
 
-o.k. Thank you!
+These patches add the virtio file system device, which is based on Linux FUSE
+but includes the DAX window extension.  Similar to virtio-scsi, which
+transports SCSI commands, virtio-fs transports FUSE requests and the protocol
+documentation is not duplicated here.
 
-Best regards,
-Pankaj
+The DAX window allows file contents to be accessed directly from shared memory.
+This eliminates copying of data, reduces the number of vmexits, and reduces the
+guest's memory footprint.  It also allows coherent mmap MAP_SHARED semantics
+between guests on the same host.
 
-> 
+Stefan Hajnoczi (2):
+  content: add virtio file system device
+  virtio-fs: add DAX window
+
+ content.tex      |   1 +
+ introduction.tex |   3 +
+ virtio-fs.tex    | 259 +++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 263 insertions(+)
+ create mode 100644 virtio-fs.tex
+
+-- 
+2.21.0
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
