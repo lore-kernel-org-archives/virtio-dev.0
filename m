@@ -1,48 +1,40 @@
-Return-Path: virtio-comment-return-825-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-comment-return-820-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-comment@lists.oasis-open.org>
 List-Post: <mailto:virtio-comment@lists.oasis-open.org>
 List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
-Date: Tue, 30 Jul 2019 02:49:59 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20190730023141-mutt-send-email-mst@kernel.org>
 References: <1564386494-2296-1-git-send-email-yang.huang@intel.com>
- <1564386494-2296-2-git-send-email-yang.huang@intel.com>
- <20190729104802-mutt-send-email-mst@kernel.org>
- <0B92A36466FABC4D99BAF0BDB1FA8BBC4157267E@shsmsx102.ccr.corp.intel.com>
+From: Paolo Bonzini <pbonzini@redhat.com>
+Message-ID: <4ecbc7e5-4539-d1f7-eabd-240f5ddd38c5@redhat.com>
+Date: Mon, 29 Jul 2019 11:19:25 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0B92A36466FABC4D99BAF0BDB1FA8BBC4157267E@shsmsx102.ccr.corp.intel.com>
-Subject: Re: [virtio-comment] Re: [PATCH] Add virtio rpmb device specification
-To: "Huang, Yang" <yang.huang@intel.com>
-Cc: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "Zhu, Bing" <bing.zhu@intel.com>, "Winkler, Tomas" <tomas.winkler@intel.com>
+In-Reply-To: <1564386494-2296-1-git-send-email-yang.huang@intel.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: Re: [virtio-comment] [PATCH] Add virtio rpmb device specification
+To: Huang Yang <yang.huang@intel.com>, virtio-dev@lists.oasis-open.org
+Cc: virtio-comment@lists.oasis-open.org, mst@redhat.com, bing.zhu@intel.com, tomas.winkler@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Tue, Jul 30, 2019 at 05:51:24AM +0000, Huang, Yang wrote:
-> > > +\item The device MUST authenticate write operation by MAC calculated
-> > > +   by authentication key and monotonic write counter .
-> > 
-> > authenticate how?
+On 29/07/19 09:48, Huang Yang wrote:
+>  
+> But virtualization software like Qemu doesn't provide eMMC/UFS/NVMe
+> RPMB emulation. It blocks the OS like Trusty or OP-TEE running in a
+> virtualization environment. For instance, Google right now uses another
+> way to work around RPMB emulation issue when running Trusty in ARM Qemu:
+> https://android.googlesource.com/trusty/external/trusty/+/refs/heads/master/test-runner/
 > 
-> 1. compare the monotonic write counter in RPMB frame with the one recorded in device. Make sure the two values are equal. This counter protects from replay attack.
-> 2. calculate the MAC by RPMB key(recorded by device at the first program key request from guest) and the RPMB frame received from driver. Compare this MAC with the MAC in RPMB frame. Make sure the two MACs are same. It protects data from tampering by the attacks who doesn't have RPMB key.
-> After 1&2 are authenticated, a write operation will be performed.
-> 
-> Should include these details into spec?
+> Virtio RPMB standardization will definitely benefit OP-TEE,
+> Google Trusty TEE, Qemu, OVMF or other modules to develop the RPMB
+> based secure storage in virtualization.
+>  
 
-Looks more like validation.
+Is there any reason to use a new virtio-blk device, and not add this
+functionality to virtio-blk?
 
-So if you add a conformance statement you need
-to explain what is the device supposed to do.
-
-E.g if you talk about write counter define what it is previously.
-
-
-
--- 
-MST
+Paolo
 
 This publicly archived list offers a means to provide input to the
 OASIS Virtual I/O Device (VIRTIO) TC.
