@@ -1,54 +1,52 @@
-Return-Path: virtio-comment-return-820-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-comment-return-823-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-comment@lists.oasis-open.org>
 List-Post: <mailto:virtio-comment@lists.oasis-open.org>
 List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
+From: "Huang, Yang" <yang.huang@intel.com>
+Date: Tue, 30 Jul 2019 00:33:17 +0000
+Message-ID: <0B92A36466FABC4D99BAF0BDB1FA8BBC4157221D@shsmsx102.ccr.corp.intel.com>
 References: <1564386494-2296-1-git-send-email-yang.huang@intel.com>
-From: Paolo Bonzini <pbonzini@redhat.com>
-Message-ID: <4ecbc7e5-4539-d1f7-eabd-240f5ddd38c5@redhat.com>
-Date: Mon, 29 Jul 2019 11:19:25 +0200
-MIME-Version: 1.0
-In-Reply-To: <1564386494-2296-1-git-send-email-yang.huang@intel.com>
-Content-Type: text/plain; charset=utf-8
+ <4ecbc7e5-4539-d1f7-eabd-240f5ddd38c5@redhat.com>
+In-Reply-To: <4ecbc7e5-4539-d1f7-eabd-240f5ddd38c5@redhat.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [virtio-comment] [PATCH] Add virtio rpmb device specification
-To: Huang Yang <yang.huang@intel.com>, virtio-dev@lists.oasis-open.org
-Cc: virtio-comment@lists.oasis-open.org, mst@redhat.com, bing.zhu@intel.com, tomas.winkler@intel.com
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+Subject: RE: [virtio-comment] [PATCH] Add virtio rpmb device specification
+To: Paolo Bonzini <pbonzini@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
+Cc: "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "mst@redhat.com" <mst@redhat.com>, "Zhu, Bing" <bing.zhu@intel.com>, "Winkler, Tomas" <tomas.winkler@intel.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 29/07/19 09:48, Huang Yang wrote:
->  
-> But virtualization software like Qemu doesn't provide eMMC/UFS/NVMe
-> RPMB emulation. It blocks the OS like Trusty or OP-TEE running in a
-> virtualization environment. For instance, Google right now uses another
-> way to work around RPMB emulation issue when running Trusty in ARM Qemu:
-> https://android.googlesource.com/trusty/external/trusty/+/refs/heads/master/test-runner/
-> 
-> Virtio RPMB standardization will definitely benefit OP-TEE,
-> Google Trusty TEE, Qemu, OVMF or other modules to develop the RPMB
-> based secure storage in virtualization.
->  
-
-Is there any reason to use a new virtio-blk device, and not add this
-functionality to virtio-blk?
-
-Paolo
-
-This publicly archived list offers a means to provide input to the
-OASIS Virtual I/O Device (VIRTIO) TC.
-
-In order to verify user consent to the Feedback License terms and
-to minimize spam in the list archive, subscription is required
-before posting.
-
-Subscribe: virtio-comment-subscribe@lists.oasis-open.org
-Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
-List help: virtio-comment-help@lists.oasis-open.org
-List archive: https://lists.oasis-open.org/archives/virtio-comment/
-Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
-List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
-Committee: https://www.oasis-open.org/committees/virtio/
-Join OASIS: https://www.oasis-open.org/join/
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogdmlydGlvLWNvbW1lbnRA
+bGlzdHMub2FzaXMtb3Blbi5vcmcgW21haWx0bzp2aXJ0aW8tY29tbWVudEBsaXN0cy5vYXNpcy0N
+Cj4gb3Blbi5vcmddIE9uIEJlaGFsZiBPZiBQYW9sbyBCb256aW5pDQo+IFNlbnQ6IE1vbmRheSwg
+SnVseSAyOSwgMjAxOSAxNzoxOQ0KPiBUbzogSHVhbmcsIFlhbmcgPHlhbmcuaHVhbmdAaW50ZWwu
+Y29tPjsgdmlydGlvLWRldkBsaXN0cy5vYXNpcy1vcGVuLm9yZw0KPiBDYzogdmlydGlvLWNvbW1l
+bnRAbGlzdHMub2FzaXMtb3Blbi5vcmc7IG1zdEByZWRoYXQuY29tOyBaaHUsIEJpbmcNCj4gPGJp
+bmcuemh1QGludGVsLmNvbT47IFdpbmtsZXIsIFRvbWFzIDx0b21hcy53aW5rbGVyQGludGVsLmNv
+bT4NCj4gU3ViamVjdDogUmU6IFt2aXJ0aW8tY29tbWVudF0gW1BBVENIXSBBZGQgdmlydGlvIHJw
+bWIgZGV2aWNlIHNwZWNpZmljYXRpb24NCj4gDQo+IE9uIDI5LzA3LzE5IDA5OjQ4LCBIdWFuZyBZ
+YW5nIHdyb3RlOg0KPiA+DQo+ID4gQnV0IHZpcnR1YWxpemF0aW9uIHNvZnR3YXJlIGxpa2UgUWVt
+dSBkb2Vzbid0IHByb3ZpZGUgZU1NQy9VRlMvTlZNZQ0KPiA+IFJQTUIgZW11bGF0aW9uLiBJdCBi
+bG9ja3MgdGhlIE9TIGxpa2UgVHJ1c3R5IG9yIE9QLVRFRSBydW5uaW5nIGluIGENCj4gPiB2aXJ0
+dWFsaXphdGlvbiBlbnZpcm9ubWVudC4gRm9yIGluc3RhbmNlLCBHb29nbGUgcmlnaHQgbm93IHVz
+ZXMNCj4gPiBhbm90aGVyIHdheSB0byB3b3JrIGFyb3VuZCBSUE1CIGVtdWxhdGlvbiBpc3N1ZSB3
+aGVuIHJ1bm5pbmcgVHJ1c3R5IGluDQo+IEFSTSBRZW11Og0KPiA+IGh0dHBzOi8vYW5kcm9pZC5n
+b29nbGVzb3VyY2UuY29tL3RydXN0eS9leHRlcm5hbC90cnVzdHkvKy9yZWZzL2hlYWRzL20NCj4g
+PiBhc3Rlci90ZXN0LXJ1bm5lci8NCj4gPg0KPiA+IFZpcnRpbyBSUE1CIHN0YW5kYXJkaXphdGlv
+biB3aWxsIGRlZmluaXRlbHkgYmVuZWZpdCBPUC1URUUsIEdvb2dsZQ0KPiA+IFRydXN0eSBURUUs
+IFFlbXUsIE9WTUYgb3Igb3RoZXIgbW9kdWxlcyB0byBkZXZlbG9wIHRoZSBSUE1CIGJhc2VkDQo+
+ID4gc2VjdXJlIHN0b3JhZ2UgaW4gdmlydHVhbGl6YXRpb24uDQo+ID4NCj4gDQo+IElzIHRoZXJl
+IGFueSByZWFzb24gdG8gdXNlIGEgbmV3IHZpcnRpby1ibGsgZGV2aWNlLCBhbmQgbm90IGFkZCB0
+aGlzIGZ1bmN0aW9uYWxpdHkNCj4gdG8gdmlydGlvLWJsaz8NCj4gDQo+IFBhb2xvDQoNClJQTUIg
+ZG9lcyBub3QgYmVoYXZlIGFzIGEgYmxrIGRldmljZS4gSXQgZG9lc24ndCBoYXZlIGJsb2NrIGRl
+dmljZSBBUElzLg0KQ3VycmVudCB2aXJ0aW8gYmxrIGZlYXR1cmVzIG9yIGRlZmluaXRpb25zIGlu
+IHNwZWMgYXJlIG1vc3RseSB1c2VsZXNzIG9yIGluYXBwbGljYWJsZSB0byB2aXJ0aW8gcnBtYi4N
+Ckl0IHBlcmZvcm1zIGEgZGlmZmVyZW50IGJlaGF2aW9ycyBmcm9tIHRoZSBvcGVyYXRpb25zIG9u
+IGEgYmxrIGRldmljZS4gDQpLZXksIHdyaXRlciBjb3VudGVyIG9yIG5vbmNlIGFyZSByZXF1aXJl
+ZCB0byByZWFkL3dyaXRlIG9uIGl0Lg0KSWYgYWRkIGl0IHRvIGJsayBkZXZpY2UsIGl0IHdpbGwg
+bm90IG9ubHkgY2F1c2UgdG8gYSBoaWdoZXIgY29tcGxleGl0eSwgYnV0IGFsc28gY2F1c2UgdG8g
+dHdvIGRpZmZlcmVudCBiZWhhdmlvcnMgb24gYSBzYW1lIGRldmljZS4NCg0K
 
