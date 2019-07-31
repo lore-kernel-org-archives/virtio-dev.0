@@ -1,52 +1,91 @@
-Return-Path: virtio-comment-return-823-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio-comment@lists.oasis-open.org>
-List-Post: <mailto:virtio-comment@lists.oasis-open.org>
-List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
-From: "Huang, Yang" <yang.huang@intel.com>
-Date: Tue, 30 Jul 2019 00:33:17 +0000
-Message-ID: <0B92A36466FABC4D99BAF0BDB1FA8BBC4157221D@shsmsx102.ccr.corp.intel.com>
-References: <1564386494-2296-1-git-send-email-yang.huang@intel.com>
- <4ecbc7e5-4539-d1f7-eabd-240f5ddd38c5@redhat.com>
-In-Reply-To: <4ecbc7e5-4539-d1f7-eabd-240f5ddd38c5@redhat.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Return-Path: virtio-dev-return-5907-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id 2187E985BCA
+	for <virtio-dev@lists.oasis-open.org>; Wed, 31 Jul 2019 14:50:00 +0000 (UTC)
+References: <1557600460-18966-1-git-send-email-ndragazis@arrikto.com>
+ <20190619145430.GA1232@stefanha-x1.localdomain>
+ <20190621164315-mutt-send-email-mst@kernel.org>
+From: Nikos Dragazis <ndragazis@arrikto.com>
+Message-ID: <d37d5a6e-f591-5156-126c-bf9ee07ec4aa@arrikto.com>
+Date: Wed, 31 Jul 2019 17:49:57 +0300
 MIME-Version: 1.0
-Subject: RE: [virtio-comment] [PATCH] Add virtio rpmb device specification
-To: Paolo Bonzini <pbonzini@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
-Cc: "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "mst@redhat.com" <mst@redhat.com>, "Zhu, Bing" <bing.zhu@intel.com>, "Winkler, Tomas" <tomas.winkler@intel.com>
+In-Reply-To: <20190621164315-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+Subject: Re: [virtio-dev] [PATCH v3 0/4] introduce virtio vhost-user backend
+ device type
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: virtio-dev@lists.oasis-open.org, Stefan Hajnoczi <stefanha@gmail.com>, "Dr . David Alan Gilbert" <dgilbert@redhat.com>, Vangelis Koukis <vkoukis@arrikto.com>, Stojaczyk Dariusz <dariusz.stojaczyk@intel.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogdmlydGlvLWNvbW1lbnRA
-bGlzdHMub2FzaXMtb3Blbi5vcmcgW21haWx0bzp2aXJ0aW8tY29tbWVudEBsaXN0cy5vYXNpcy0N
-Cj4gb3Blbi5vcmddIE9uIEJlaGFsZiBPZiBQYW9sbyBCb256aW5pDQo+IFNlbnQ6IE1vbmRheSwg
-SnVseSAyOSwgMjAxOSAxNzoxOQ0KPiBUbzogSHVhbmcsIFlhbmcgPHlhbmcuaHVhbmdAaW50ZWwu
-Y29tPjsgdmlydGlvLWRldkBsaXN0cy5vYXNpcy1vcGVuLm9yZw0KPiBDYzogdmlydGlvLWNvbW1l
-bnRAbGlzdHMub2FzaXMtb3Blbi5vcmc7IG1zdEByZWRoYXQuY29tOyBaaHUsIEJpbmcNCj4gPGJp
-bmcuemh1QGludGVsLmNvbT47IFdpbmtsZXIsIFRvbWFzIDx0b21hcy53aW5rbGVyQGludGVsLmNv
-bT4NCj4gU3ViamVjdDogUmU6IFt2aXJ0aW8tY29tbWVudF0gW1BBVENIXSBBZGQgdmlydGlvIHJw
-bWIgZGV2aWNlIHNwZWNpZmljYXRpb24NCj4gDQo+IE9uIDI5LzA3LzE5IDA5OjQ4LCBIdWFuZyBZ
-YW5nIHdyb3RlOg0KPiA+DQo+ID4gQnV0IHZpcnR1YWxpemF0aW9uIHNvZnR3YXJlIGxpa2UgUWVt
-dSBkb2Vzbid0IHByb3ZpZGUgZU1NQy9VRlMvTlZNZQ0KPiA+IFJQTUIgZW11bGF0aW9uLiBJdCBi
-bG9ja3MgdGhlIE9TIGxpa2UgVHJ1c3R5IG9yIE9QLVRFRSBydW5uaW5nIGluIGENCj4gPiB2aXJ0
-dWFsaXphdGlvbiBlbnZpcm9ubWVudC4gRm9yIGluc3RhbmNlLCBHb29nbGUgcmlnaHQgbm93IHVz
-ZXMNCj4gPiBhbm90aGVyIHdheSB0byB3b3JrIGFyb3VuZCBSUE1CIGVtdWxhdGlvbiBpc3N1ZSB3
-aGVuIHJ1bm5pbmcgVHJ1c3R5IGluDQo+IEFSTSBRZW11Og0KPiA+IGh0dHBzOi8vYW5kcm9pZC5n
-b29nbGVzb3VyY2UuY29tL3RydXN0eS9leHRlcm5hbC90cnVzdHkvKy9yZWZzL2hlYWRzL20NCj4g
-PiBhc3Rlci90ZXN0LXJ1bm5lci8NCj4gPg0KPiA+IFZpcnRpbyBSUE1CIHN0YW5kYXJkaXphdGlv
-biB3aWxsIGRlZmluaXRlbHkgYmVuZWZpdCBPUC1URUUsIEdvb2dsZQ0KPiA+IFRydXN0eSBURUUs
-IFFlbXUsIE9WTUYgb3Igb3RoZXIgbW9kdWxlcyB0byBkZXZlbG9wIHRoZSBSUE1CIGJhc2VkDQo+
-ID4gc2VjdXJlIHN0b3JhZ2UgaW4gdmlydHVhbGl6YXRpb24uDQo+ID4NCj4gDQo+IElzIHRoZXJl
-IGFueSByZWFzb24gdG8gdXNlIGEgbmV3IHZpcnRpby1ibGsgZGV2aWNlLCBhbmQgbm90IGFkZCB0
-aGlzIGZ1bmN0aW9uYWxpdHkNCj4gdG8gdmlydGlvLWJsaz8NCj4gDQo+IFBhb2xvDQoNClJQTUIg
-ZG9lcyBub3QgYmVoYXZlIGFzIGEgYmxrIGRldmljZS4gSXQgZG9lc24ndCBoYXZlIGJsb2NrIGRl
-dmljZSBBUElzLg0KQ3VycmVudCB2aXJ0aW8gYmxrIGZlYXR1cmVzIG9yIGRlZmluaXRpb25zIGlu
-IHNwZWMgYXJlIG1vc3RseSB1c2VsZXNzIG9yIGluYXBwbGljYWJsZSB0byB2aXJ0aW8gcnBtYi4N
-Ckl0IHBlcmZvcm1zIGEgZGlmZmVyZW50IGJlaGF2aW9ycyBmcm9tIHRoZSBvcGVyYXRpb25zIG9u
-IGEgYmxrIGRldmljZS4gDQpLZXksIHdyaXRlciBjb3VudGVyIG9yIG5vbmNlIGFyZSByZXF1aXJl
-ZCB0byByZWFkL3dyaXRlIG9uIGl0Lg0KSWYgYWRkIGl0IHRvIGJsayBkZXZpY2UsIGl0IHdpbGwg
-bm90IG9ubHkgY2F1c2UgdG8gYSBoaWdoZXIgY29tcGxleGl0eSwgYnV0IGFsc28gY2F1c2UgdG8g
-dHdvIGRpZmZlcmVudCBiZWhhdmlvcnMgb24gYSBzYW1lIGRldmljZS4NCg0K
+On 21/6/19 11:43 μ.μ., Michael S. Tsirkin wrote:
+> On Wed, Jun 19, 2019 at 03:54:30PM +0100, Stefan Hajnoczi wrote:
+>> On Sat, May 11, 2019 at 09:47:36PM +0300, Nikos Dragazis wrote:
+>>> Hi everyone,
+>>>
+>>> this PATCH presents an updated version of the RFC virtio device spec for
+>>> the virtio-vhost-user device. The initial RFC implementation can be
+>>> found here: [1].
+>>>
+>>> This PATCH is split into four parts:
+>>>
+>>> 1. the first commit is just a refactored version of the initial RFC
+>>> implementation [1]. I just moved the device spec into a separate .tex
+>>> file and changed the device id from #24 to #28 since the ids #24-#27 are
+>>> reserved.
+>>>
+>>> 2. the second commit fixes some minor issues with the device spec. This
+>>> is quite straightforward.
+>>>
+>>> 3. the third commit enhances the notification capability with some
+>>> device/driver requirements. This makes sense because the notification
+>>> capability behaves similarly to the MSI-X capability, thereby having
+>>> some requirements that need to be mentioned.
+>>>
+>>> 4. the fourth commit synchronizes the shared memory capability with a
+>>> recent patch [2] that attempts to standardize a standalone
+>>> SHARED_MEMORY_CFG virtio capability.
+>>>
+>>> v3 changes:
+>>>  * Device Requirements for the Notification Capability: point out the
+>>>    difference between the MSI-X Table Size stored in the Message Control
+>>>    register of the MSI-X capability structure and the actual MSI-X Table
+>>>    Size
+>>>
+>>> v2 changes:
+>>>  * Change device id from #25 to #28
+>>>
+>>> Looking forward to your comments.
+>> I'm happy with v3.
+>>
+>> Any other comments or shall we proceed to a vote?
+>>
+>> Stefan
+> I think we need to wait for shared memory part to be finalized, right?
+>
+
+Michael,
+
+given that David's patchset for the shared memory regions has been
+approved, I think we can start discussing on the spec for the
+virtio-vhost-user device. A link to the latest version is here: [1].
+
+I really think that this device is useful and should be part of the
+VIRTIO specification. I will submit a fifth version of the patchset soon
+with some minor changes that seem reasonable to me.
+
+Best regards,
+Nikos
+
+[1] https://lists.oasis-open.org/archives/virtio-dev/201906/msg00036.html
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
