@@ -1,585 +1,337 @@
-Return-Path: cdupontd@redhat.com
-From: Christophe de Dinechin <cdupontd@redhat.com>
-Message-ID: <55EF6822-2B1A-4564-ADF6-D06244DED0D8@redhat.com>
-Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.80.23.2.2\))
-Subject: Re: [virtio-dev] On doorbells (queue notifications)
-Date: Thu, 16 Jul 2020 16:31:47 +0200
-In-Reply-To: <20200716141930.GA114428@stefanha-x1.localdomain>
-References: <87r1tdydpz.fsf@linaro.org> <20200715114855.GF18817@stefanha-x1.localdomain>
- <877dv4ykin.fsf@linaro.org> <20200715154732.GC47883@stefanha-x1.localdomain>
- <871rlcybni.fsf@linaro.org> <20200716100051.GC85868@stefanha-x1.localdomain>
- <CDD16024-AAA9-4631-82A8-479C8579D737@redhat.com> <20200716141930.GA114428@stefanha-x1.localdomain>
-Content-Type: multipart/alternative; boundary="Apple-Mail=_F0D894EB-17FA-4632-8E34-AA339BFC305F"
-To: Stefan Hajnoczi <stefanha@redhat.com>
-Cc: =?utf-8?Q?Alex_Benn=C3=A9e?= <alex.bennee@linaro.org>, virtio-dev@lists.oasis-open.org, Zha Bin <zhabin@linux.alibaba.com>, Jing Liu <jing2.liu@linux.intel.com>, Chao Peng <chao.p.peng@linux.intel.com>, Cornelia Huck <cohuck@redhat.com>, Jan Kiszka <jan.kiszka@siemens.com>, "Michael S. Tsirkin" <mst@redhat.com>
+Return-Path: tomas.winkler@intel.com
+From: "Winkler, Tomas" <tomas.winkler@intel.com>
+Subject: RE: [virtio-dev] [PATCH v2] Add virtio rpmb device specification
+Date: Thu, 01 Aug 2019 06:19:21 -0700
+Message-ID: <5B8DA87D05A7694D9FA63FD143655C1B9DC8664F@hasmsx108.ger.corp.intel.com>
+References: <1564494374-16147-1-git-send-email-yang.huang@intel.com> <20190731141629.2cfd5bc7.cohuck@redhat.com>
+ <0B92A36466FABC4D99BAF0BDB1FA8BBC41572FB3@shsmsx102.ccr.corp.intel.com>
+ <20190731162310-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20190731162310-mutt-send-email-mst@kernel.org>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+To: "Michael S. Tsirkin" <mst@redhat.com>, "Huang, Yang" <yang.huang@intel.com>
+Cc: Cornelia Huck <cohuck@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "Zhu, Bing" <bing.zhu@intel.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
---Apple-Mail=_F0D894EB-17FA-4632-8E34-AA339BFC305F
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=utf-8
-
-
-
-> On 16 Jul 2020, at 16:19, Stefan Hajnoczi <stefanha@redhat.com> wrote:
->=20
-> On Thu, Jul 16, 2020 at 01:25:37PM +0200, Christophe de Dinechin wrote:
->>=20
->>=20
->>> On 16 Jul 2020, at 12:00, Stefan Hajnoczi <stefanha@redhat.com> wrote:
->>>=20
->>> On Wed, Jul 15, 2020 at 05:40:33PM +0100, Alex Benn=C3=A9e wrote:
->>>>=20
->>>> Stefan Hajnoczi <stefanha@redhat.com> writes:
->>>>=20
->>>>> On Wed, Jul 15, 2020 at 02:29:04PM +0100, Alex Benn=C3=A9e wrote:
->>>>>> Stefan Hajnoczi <stefanha@redhat.com> writes:
->>>>>>> On Tue, Jul 14, 2020 at 10:43:36PM +0100, Alex Benn=C3=A9e wrote:
->>>>>>>> Finally I'm curious if this is just a problem avoided by the s390
->>>>>>>> channel approach? Does the use of messages over a channel just avo=
-id the
->>>>>>>> sort of bouncing back and forth that other hypervisors have to do =
-when
->>>>>>>> emulating a device?
->>>>>>>=20
->>>>>>> What does "bouncing back and forth" mean exactly?
->>>>>>=20
->>>>>> Context switching between guest and hypervisor.
->>>>>=20
->>>>> I have CCed Cornelia Huck, who can explain the lifecycle of an I/O
->>>>> request on s390 channel I/O.
->>>>=20
->>>> Thanks.
->>>>=20
->>>> I was also wondering about the efficiency of doorbells/notifications t=
-he
->>>> other way. AFAIUI for both PCI and MMIO only a single write is require=
-d
->>>> to the notify flag which causes a trap to the hypervisor and the rest =
-of
->>>> the processing. The hypervisor doesn't have the cost multiple exits to
->>>> read the guest state although it obviously wants to be as efficient as
->>>> possible passing the data back up to what ever is handling the backend
->>>> of the device so it doesn't need to do multiple context switches.
->>>>=20
->>>> Has there been any investigation into other mechanisms for notifying t=
-he
->>>> hypervisor of an event - for example using a HYP call or similar
->>>> mechanism?
->>>>=20
->>>> My gut tells me this probably doesn't make any difference as a trap to
->>>> the hypervisor is likely to cost the same either way because you still
->>>> need to save the guest context before actioning something but it would
->>>> be interesting to know if anyone has looked at it. Perhaps there is a
->>>> benefit in partitioned systems where core running the guest can return
->>>> straight away after initiating what it needs to internally in the
->>>> hypervisor to pass the notification to something that can deal with it=
-?
->>>=20
->>> It's very architecture-specific. This is something Michael Tsirkin
->>> looked in in the past. He found that MMIO and PIO perform differently o=
-n
->>> x86. VIRTIO supports both so the device can be configured optimally.
->>> There was an old discussion from 2013 here:
->>> https://lkml.org/lkml/2013/4/4/299 <https://lkml.org/lkml/2013/4/4/299>=
- <https://lkml.org/lkml/2013/4/4/299 <https://lkml.org/lkml/2013/4/4/299>>
->>>=20
->>> Without nested page tables MMIO was slower than PIO. But with nested
->>> page tables it was faster.
->>>=20
->>> Another option on x86 is using Model-Specific Registers (for hypercalls=
-)
->>> but this doesn't fit into the PCI device model.
->>=20
->> (Warning: What I write below is based on experience with very different
->> architectures, both CPU and hypervisor; your mileage may vary)
->>=20
->> It looks to me like the discussion so far is mostly focused on a "synchr=
-onous"
->> model where presumably the same CPU is switching context between
->> guest and (host) device emulation.
->>=20
->> However, I/O devices on real hardware are asynchronous by construction.
->> They do their thing while the CPU processes stuff. So at least theoretic=
-ally,
->> there is no reason to context switch on the same CPU. You could very wel=
-l
->> have an I/O thread on some other CPU doing its thing. This allows to
->> do something some of you may have heard me talk about, called
->> "interrupt coalescing".
->>=20
->> As Stefan noted, this is not always a win, as it may introduce latency.
->> There are at least two cases where this latency really hurts:
->>=20
->> 1. When the I/O thread is in some kind of deep sleep, e.g. because it
->> was not active recently. Everything from cache to TLB may hit you here,
->> but that normally happens when there isn't much I/O activity, so this ca=
-se
->> in practice does not hurt that much, or rather it hurts in a case where
->> don't really care.
->>=20
->> 2. When the I/O thread is preempted, or not given enough cycles to do it=
-s
->> stuff. This happens when the system is both CPU and I/O bound, and
->> addressing that is mostly a scheduling issue. A CPU thread could hand-of=
-f
->> to a specific I/O thread, reducing that case to the kind of context swit=
-ch
->> Alex was mentioning, but I'm not sure how feasible it is to implement
->> that on Linux / kvm.
->>=20
->> In such cases, you have to pay for context switch. I'm not sure if that
->> context switch is markedly more expensive than a "vmexit". On at least
->> that alien architecture I was familiar with, there was little difference=
- between
->> switching to "your" host CPU thread and switching to "another" host
->> I/O thread. But then the context switch was all in software, so we had
->> designed it that way.
->>=20
->> So let's assume now that you run your device emulation fully in an I/O
->> thread, which we will assume for simplicity sits mostly in host user-spa=
-ce,
->> and your guest I/O code runs in a CPU thread, which we will assume
->> sits mostly in guest user/kernel space.
->>=20
->> It is possible to share two-way doorbells / IRQ queues on some memory
->> page, very similar to a virtqueue. When you want to "doorbell" your devi=
-ce,
->> you simply write to that page. The device threads picks it up by reading
->> the same page, and posts I/O completions on the same page, with simple
->> memory writes.
->>=20
->> Consider this I/O exchange buffer as having (at least) a writer and read=
-er
->> index for both doorbells and virtual interrupts. In the explanation
->> below, I will call them "dwi", "dri", "iwi", "iri" for doorbell / interr=
-upt read
->> and write index. (Note that as a key optimization, you really
->> don't want dwi and dri to be in the same cache line, since different
->> CPUs are going to read and write them)
->>=20
->> You obviously still need to "kick" the I/O or CPU thread, and we are
->> talking about an IPI here since you don't know which CPU that other
->> thread is sitting on. But the interesting property is that you only need
->> to do that when dwi=3D=3Ddri or iwi=3D=3Diri, because if not, the other =
-side
->> has already been "kicked" and will keep working, i.e. incrementing
->> dri or iri, until it reaches back that state.
->>=20
->> The real "interrupt coalescing" trick can happen here. In some
->> cases, you can decide to update your dwi or iwi without kicking,
->> as long as you know that you will need to kick later. That requires
->> some heavy cooperation from guest drivers, though, and is a
->> second-order optimization.
->>=20
->> With a scheme like this, you replace a systematic context switch
->> for each device interrupt with a memory write and a "fire and forget"
->> kick IPI that only happens when the system is not already busy
->> processing I/Os, so that it can be eliminated when the system is
->> most busy. With interrupt coalescing, you can send IPIs at a rate
->> much lower than the actual I/O rate.
->>=20
->> Not sure how difficult it is to adapt a scheme like this to the current
->> state of qemu / kvm, but I'm pretty sure it works well if you implement
->> it correctly ;-)
->>=20
->>>=20
->>> A bigger issue than vmexit latency is device emulation thread wakeup
->>> latency. There is a thread (QEMU, vhost-user, vhost, etc) monitoring th=
+> >
+> >
+> > > > ---
+> > > >  conformance.tex |  19 ++++++++++-
+> > > >  content.tex     |   3 ++
+> > > >  virtio-rpmb.tex | 100
+> > > > ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+> > > >  3 files changed, 121 insertions(+), 1 deletion(-)  create mode
+> > > > 100644 virtio-rpmb.tex
+> > > >
+> > >
+> > > (...)
+> >
+> > Sorry, what do you mean?
+> >
+> > >
+> > > > diff --git a/content.tex b/content.tex index ee0d7c9..7f54f94
+> > > > 100644
+> > > > --- a/content.tex
+> > > > +++ b/content.tex
+> > > > @@ -2717,6 +2717,8 @@ \chapter{Device Types}\label{sec:Device
+> > > > Types} \hline
+> > > >  27         &   PMEM device \\
+> > > >  \hline
+> > > > +28         &   RPMB device \\
+> > >
+> > > Depending on how long it will take to get this into shape, it might
+> > > be a good idea to reserve the id separately.
+> >
+> > Thanks. I will remove this change at current phase.
+> >
+> > > > +\hline
+> > > >  \end{tabular}
+> > > >
+> > > >  Some of the devices above are unspecified by this document, @@
+> > > > -5677,6 +5679,7 @@ \subsubsection{Legacy Interface: Framing
+> > > > Requirements}\label{sec:Device  \input{virtio-input.tex}
+> > > > \input{virtio-crypto.tex}  \input{virtio-vsock.tex}
+> > > > +\input{virtio-rpmb.tex}
+> > > >
+> > > >  \chapter{Reserved Feature Bits}\label{sec:Reserved Feature Bits}
+> > > >
+> > > > diff --git a/virtio-rpmb.tex b/virtio-rpmb.tex new file mode
+> > > > 100644 index 0000000..aa113bb
+> > > > --- /dev/null
+> > > > +++ b/virtio-rpmb.tex
+> > > > @@ -0,0 +1,100 @@
+> > > > +\section{RPMB Device}\label{sec:Device Types / RPMB Device}
+> > > > +
+> > > > +virtio-rpmb is a virtio based RPMB (Replay Protected Memory
+> > > > +Block) device. It is used as a tamper-resistant and anti-replay st=
+orage.
+> > > > +It supports four command requests including read, write, get
+> > > > +write counter and program key. They are placed in the queue.
+> > >
+> > > What about replacing the last two sentences with:
+> > >
+> > > "The device is driven via requests including read, write, get write
+> > > counter, and program key, which are submitted via a request queue." ?
+> >
+> > I will update it.
+> >
+> > > > +
+> > > > +\subsection{Device ID}\label{sec:Device Types / RPMB Device /
+> > > > +Device ID}
+> > > > +
+> > > > +28
+> > > > +
+> > > > +\subsection{Virtqueues}\label{sec:Device Types / RPMB Device /
+> > > > +Virtqueues}
+> > > > +
+> > > > +\begin{description}
+> > > > +\item[0] requestq
+> > > > +\end{description}
+> > > > +
+> > > > +\subsection{Feature bits}\label{sec:Device Types / RPMB Device /
+> > > > +Feature bits}
+> > > > +
+> > > > +None.
+> > > > +
+> > > > +\subsection{Device configuration layout}\label{sec:Device Types /
+> > > > +RPMB Device / Device configuration layout}
+> > > > +
+> > > > +None.
+> > > > +
+> > > > +\devicenormative{\subsection}{Device Initialization}{Device Types
+> > > > +/ RPMB Device / Device Initialization}
+> > > > +
+> > > > +\begin{enumerate}
+> > > > +\item The virtqueue is initialized.
+> > > > +\item The authentication key of device SHOULD NOT be programmed
+> > > > +at the
+> > > first device initialization.
+> > > > +\item The device capacity SHOULD be initialized to a multiple of
+> > > > +128 Kbytes
+> > > and up to 16Mbytes.
+> > > > +\end{enumerate}
+> > >
+> > > I would place a slightly more verbose description of how the device
+> > > should be initialized into a descriptive section and only leave the
+> > > normative statements here.
+> > >
+> > > Also, why SHOULD/SHOULD NOT instead of MUST/MUST NOT? Especially
+> the
+> > > device capacity requirements feel like something that should not be
+> > > too loosely defined.
+> >
+> > Agree.
+> >
+> > > Would it make sense to expose the capacity through the config space?
+> >
+> > Normally, an application could read the address from 16MB to 8MB, 4MB,
+> 2MB ...
+> > to get the correct capacity from the error code of result.
+> > But I agree that setting the capacity as an always present config is be=
+tter.
+> >
+> > >
+> > > > +
+> > > > +\subsection{Device Operation}\label{sec:Device Types / RPMB
+> > > > +Device / Device Operation}
+> > > > +
+> > > > +The operation of a virtio RPMB device is driven by the requests
+> > > > +placed on the
+> > > virtqueue.
+> > > > +  The type of the request can be program key
+> > > > +(VIRTIO_RPMB_REQ_PROGRAM_KEY),
+> > > > +  get write counter (VIRTIO_RPMB_REQ_GET_WRITE_COUNTER),
+> > > > +  write (VIRTIO_RPMB_REQ_DATA_WRITE), and read
+> > > (VIRTIO_RPMB_REQ_DATA_READ).
+> > > > +  A program key or write request can also combine with a  result
+> > > > + read (VIRTIO_RPMB_REQ_RESULT_READ) for a returned result.
+> > > > +
+> > > > +\begin{lstlisting}
+> > > > +#define VIRTIO_RPMB_REQ_PROGRAM_KEY        0x0001
+> > > > +#define VIRTIO_RPMB_REQ_GET_WRITE_COUNTER  0x0002
+> > > > +#define VIRTIO_RPMB_REQ_DATA_WRITE         0x0003
+> > > > +#define VIRTIO_RPMB_REQ_DATA_READ          0x0004
+> > > > +#define VIRTIO_RPMB_REQ_RESULT_READ        0x0005
+> > > > +\end{lstlisting}
+> > >
+> > > What form do the requests that are placed on the queue take?
+> >
+> > This is defined by spec, like eMMC spec:
+> > https://www.jedec.org/sites/default/files/docs/JESD84-B51.pdf,
+> > at Chapter 6.6.22: Replay Protected Memory Block.
+> > It acts as req_resp  of RPMB frame:
+> > /**
+> >  * struct rpmb_frame_jdec - rpmb frame as defined by JDEC specs
+> >  *
+> >  * @stuff        : stuff bytes
+> >  * @key_mac      : The authentication key or the message authentication
+> >  *                 code (MAC) depending on the request/response type.
+> >  *                 The MAC will be delivered in the last (or the only)
+> >  *                 block of data.
+> >  * @data         : Data to be written or read by signed access.
+> >  * @nonce        : Random number generated by the host for the requests
+> >  *                 and copied to the response by the RPMB engine.
+> >  * @write_counter: Counter value for the total amount of the successful
+> >  *                 authenticated data write requests made by the host.
+> >  * @addr         : Address of the data to be programmed to or read
+> >  *                 from the RPMB. Address is the serial number of
+> >  *                 the accessed block (half sector 256B).
+> >  * @block_count  : Number of blocks (half sectors, 256B) requested to b=
 e
->>> ioeventfd but it may be descheduled. Its physical CPU may be in a low
->>> power state. I ran a benchmark late last year with QEMU's AioContext
->>> adaptive polling disabled so we can measure the wakeup latency:
->>>=20
->>>      CPU 0/KVM 26102 [000] 85626.737072:       kvm:kvm_fast_mmio:
->>> fast mmio at gpa 0xfde03000
->>>   IO iothread1 26099 [001] 85626.737076: syscalls:sys_exit_ppoll: 0x1
->>>                  4 microseconds ------^
+> >  *                 read/programmed.
+> >  * @result       : Includes information about the status of the write c=
+ounter
+> >  *                 (valid, expired) and result of the access made to th=
+e RPMB.
+> >  * @req_resp     : Defines the type of request and response to/from the
+> memory.
+> >  */
+> > struct rpmb_frame_jdec {
+> >         __u8   stuff[196];
+> >         __u8   key_mac[32];
+> >         __u8   data[256];
+> >         __u8   nonce[16];
+> >         __be32 write_counter;
+> >         __be16 addr;
+> >         __be16 block_count;
+> >         __be16 result;
+> >         __be16 req_resp;
+> > }
+> >
+> > A user should fill the rpmb frame per his request and send it to virtio=
+ rpmb
+> driver.
+> > The driver then format it to virtqueue and send it to device.
+> >
+> > Is it necessary to mention this rpmb frame?
+> > > > +
+> > > > +\drivernormative{\subsubsection}{Device Operation}{Device Types /
+> > > > +RPMB Device / Device Operation}
+> > > > +
+> > > > +The driver MUST configure and initialize all virtqueues for the
+> > > > +requests
+> > > received.
+> > >
+> > > But there is only a single virtqueue, isn't there? This requirement l=
+ooks a
+> bit odd.
+> >
+> > Agree. I will update it.
+> >
+> > > > +
+> > > > +\devicenormative{\subsubsection}{Device Operation}{Device Types /
+> > > > +RPMB Device / Device Operation}
+> > > > +
+> > > > +The device provides a simulated RPMB backed by ordinary file or
+> > > > +  other medium in host. It SHOULD keep consistent behaviors with
+> > > > +  hardware, including but not limited to:
+> > >
+> > > If this device is supposed to simulate the behaviour of a real
+> > > device, the virtio spec needs to point to a specification of that
+> > > behaviour as a normative reference. From the information contained
+> > > here, I would have no clue how to actually produce a conforming devic=
+e
+> or driver implementation.
+> >
+> > I think the spec of eMMC RPMB could be a reference:
+> > https://www.jedec.org/sites/default/files/docs/JESD84-B51.pdf
 >=20
-> Hi Christophe,
-> QEMU/KVM does something similar to what you described. In the perf
-> output above the vmexit kvm_fast_mmio event occurs on physical CPU
-> "[000]".  The IOThread wakes up on physical CPU "[001]". Physical CPU#0
-> resumes guest execution immediately after marking the ioeventfd ready.
-> There is no context switch to the IOThread or a return from
-> ioctl(KVM_RUN) on CPU#0.
+>=20
+>=20
+> I wonder whether a 32 bit key is always enough
+> (e.g. a bigger key might make sense with a
+>  different authentication method).
 
-Oh, that's good.
-
-But then the conclusion that the 4us delay limits us to 250kIOPS
-is incorrect, no? Is there anything that would prevent multiple
-I/O events (doorbell or interrupt) to be in flight at the same time?
+In JDEC specs no, but in NVMe spec, it is extensible=20
 
 >=20
-> The IOThread reads the eventfd. An eventfd is a counter that is reset to
-> 0 on read. Because it's a counter you get coalescing: if the guest
-> performs multiple MMIO writes the ioeventfd counter increases but the
-> IOThread only wakes up once and reads the ioeventfd.
 >=20
-> VIRTIO itself also has a mechanism for suppressing notifications called
-> EVENT_IDX. It allows the driver to let the device know that it does not
-> require interrupts, and the device to let the driver know it does not
-> require virtqueue kicks. This reminds me a bit of the mitigation
-> mechanism you described.
 >=20
-> Stefan
+>=20
+> > > > +\begin{enumerate}
+> > > > +\item The device maintains an authentication key. Once the first
+> > > > +   successful key programming is performed, the authentication
+> > > > +   key MUST be kept unchanged during device lifecycle.
+>=20
+> I wonder what is a lifecycle from point of view of virtualization.
 
 
---Apple-Mail=_F0D894EB-17FA-4632-8E34-AA339BFC305F
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/html; charset=utf-8
+> For example, how is a state that can not be rolled back compatible
+> with snapshoting?
+>=20
+> How about migration?
 
-<html><head><meta http-equiv=3D"Content-Type" content=3D"text/html; charset=
-=3Dutf-8"></head><body style=3D"word-wrap: break-word; -webkit-nbsp-mode: s=
-pace; line-break: after-white-space;" class=3D""><br class=3D""><div><br cl=
-ass=3D""><blockquote type=3D"cite" class=3D""><div class=3D"">On 16 Jul 202=
-0, at 16:19, Stefan Hajnoczi &lt;<a href=3D"mailto:stefanha@redhat.com" cla=
-ss=3D"">stefanha@redhat.com</a>&gt; wrote:</div><br class=3D"Apple-intercha=
-nge-newline"><div class=3D""><span style=3D"caret-color: rgb(0, 0, 0); font=
--family: Helvetica; font-size: 18px; font-style: normal; font-variant-caps:=
- normal; font-weight: normal; letter-spacing: normal; text-align: start; te=
-xt-indent: 0px; text-transform: none; white-space: normal; word-spacing: 0p=
-x; -webkit-text-stroke-width: 0px; text-decoration: none; float: none; disp=
-lay: inline !important;" class=3D"">On Thu, Jul 16, 2020 at 01:25:37PM +020=
-0, Christophe de Dinechin wrote:</span><br style=3D"caret-color: rgb(0, 0, =
-0); font-family: Helvetica; font-size: 18px; font-style: normal; font-varia=
-nt-caps: normal; font-weight: normal; letter-spacing: normal; text-align: s=
-tart; text-indent: 0px; text-transform: none; white-space: normal; word-spa=
-cing: 0px; -webkit-text-stroke-width: 0px; text-decoration: none;" class=3D=
-""><blockquote type=3D"cite" style=3D"font-family: Helvetica; font-size: 18=
-px; font-style: normal; font-variant-caps: normal; font-weight: normal; let=
-ter-spacing: normal; orphans: auto; text-align: start; text-indent: 0px; te=
-xt-transform: none; white-space: normal; widows: auto; word-spacing: 0px; -=
-webkit-text-size-adjust: auto; -webkit-text-stroke-width: 0px; text-decorat=
-ion: none;" class=3D""><br class=3D""><br class=3D""><blockquote type=3D"ci=
-te" class=3D"">On 16 Jul 2020, at 12:00, Stefan Hajnoczi &lt;<a href=3D"mai=
-lto:stefanha@redhat.com" class=3D"">stefanha@redhat.com</a>&gt; wrote:<br c=
-lass=3D""><br class=3D"">On Wed, Jul 15, 2020 at 05:40:33PM +0100, Alex Ben=
-n=C3=A9e wrote:<br class=3D""><blockquote type=3D"cite" class=3D""><br clas=
-s=3D"">Stefan Hajnoczi &lt;<a href=3D"mailto:stefanha@redhat.com" class=3D"=
-">stefanha@redhat.com</a>&gt; writes:<br class=3D""><br class=3D""><blockqu=
-ote type=3D"cite" class=3D"">On Wed, Jul 15, 2020 at 02:29:04PM +0100, Alex=
- Benn=C3=A9e wrote:<br class=3D""><blockquote type=3D"cite" class=3D"">Stef=
-an Hajnoczi &lt;<a href=3D"mailto:stefanha@redhat.com" class=3D"">stefanha@=
-redhat.com</a>&gt; writes:<br class=3D""><blockquote type=3D"cite" class=3D=
-"">On Tue, Jul 14, 2020 at 10:43:36PM +0100, Alex Benn=C3=A9e wrote:<br cla=
-ss=3D""><blockquote type=3D"cite" class=3D"">Finally I'm curious if this is=
- just a problem avoided by the s390<br class=3D"">channel approach? Does th=
-e use of messages over a channel just avoid the<br class=3D"">sort of bounc=
-ing back and forth that other hypervisors have to do when<br class=3D"">emu=
-lating a device?<br class=3D""></blockquote><br class=3D"">What does "bounc=
-ing back and forth" mean exactly?<br class=3D""></blockquote><br class=3D""=
->Context switching between guest and hypervisor.<br class=3D""></blockquote=
-><br class=3D"">I have CCed Cornelia Huck, who can explain the lifecycle of=
- an I/O<br class=3D"">request on s390 channel I/O.<br class=3D""></blockquo=
-te><br class=3D"">Thanks.<br class=3D""><br class=3D"">I was also wondering=
- about the efficiency of doorbells/notifications the<br class=3D"">other wa=
-y. AFAIUI for both PCI and MMIO only a single write is required<br class=3D=
-"">to the notify flag which causes a trap to the hypervisor and the rest of=
-<br class=3D"">the processing. The hypervisor doesn't have the cost multipl=
-e exits to<br class=3D"">read the guest state although it obviously wants t=
-o be as efficient as<br class=3D"">possible passing the data back up to wha=
-t ever is handling the backend<br class=3D"">of the device so it doesn't ne=
-ed to do multiple context switches.<br class=3D""><br class=3D"">Has there =
-been any investigation into other mechanisms for notifying the<br class=3D"=
-">hypervisor of an event - for example using a HYP call or similar<br class=
-=3D"">mechanism?<br class=3D""><br class=3D"">My gut tells me this probably=
- doesn't make any difference as a trap to<br class=3D"">the hypervisor is l=
-ikely to cost the same either way because you still<br class=3D"">need to s=
-ave the guest context before actioning something but it would<br class=3D""=
->be interesting to know if anyone has looked at it. Perhaps there is a<br c=
-lass=3D"">benefit in partitioned systems where core running the guest can r=
-eturn<br class=3D"">straight away after initiating what it needs to interna=
-lly in the<br class=3D"">hypervisor to pass the notification to something t=
-hat can deal with it?<br class=3D""></blockquote><br class=3D"">It's very a=
-rchitecture-specific. This is something Michael Tsirkin<br class=3D"">looke=
-d in in the past. He found that MMIO and PIO perform differently on<br clas=
-s=3D"">x86. VIRTIO supports both so the device can be configured optimally.=
-<br class=3D"">There was an old discussion from 2013 here:<br class=3D""><a=
- href=3D"https://lkml.org/lkml/2013/4/4/299" class=3D"">https://lkml.org/lk=
-ml/2013/4/4/299</a><span class=3D"Apple-converted-space">&nbsp;</span>&lt;<=
-a href=3D"https://lkml.org/lkml/2013/4/4/299" class=3D"">https://lkml.org/l=
-kml/2013/4/4/299</a>&gt;<br class=3D""><br class=3D"">Without nested page t=
-ables MMIO was slower than PIO. But with nested<br class=3D"">page tables i=
-t was faster.<br class=3D""><br class=3D"">Another option on x86 is using M=
-odel-Specific Registers (for hypercalls)<br class=3D"">but this doesn't fit=
- into the PCI device model.<br class=3D""></blockquote><br class=3D"">(Warn=
-ing: What I write below is based on experience with very different<br class=
-=3D"">architectures, both CPU and hypervisor; your mileage may vary)<br cla=
-ss=3D""><br class=3D"">It looks to me like the discussion so far is mostly =
-focused on a "synchronous"<br class=3D"">model where presumably the same CP=
-U is switching context between<br class=3D"">guest and (host) device emulat=
-ion.<br class=3D""><br class=3D"">However, I/O devices on real hardware are=
- asynchronous by construction.<br class=3D"">They do their thing while the =
-CPU processes stuff. So at least theoretically,<br class=3D"">there is no r=
-eason to context switch on the same CPU. You could very well<br class=3D"">=
-have an I/O thread on some other CPU doing its thing. This allows to<br cla=
-ss=3D"">do something some of you may have heard me talk about, called<br cl=
-ass=3D"">"interrupt coalescing".<br class=3D""><br class=3D"">As Stefan not=
-ed, this is not always a win, as it may introduce latency.<br class=3D"">Th=
-ere are at least two cases where this latency really hurts:<br class=3D""><=
-br class=3D"">1. When the I/O thread is in some kind of deep sleep, e.g. be=
-cause it<br class=3D"">was not active recently. Everything from cache to TL=
-B may hit you here,<br class=3D"">but that normally happens when there isn'=
-t much I/O activity, so this case<br class=3D"">in practice does not hurt t=
-hat much, or rather it hurts in a case where<br class=3D"">don't really car=
-e.<br class=3D""><br class=3D"">2. When the I/O thread is preempted, or not=
- given enough cycles to do its<br class=3D"">stuff. This happens when the s=
-ystem is both CPU and I/O bound, and<br class=3D"">addressing that is mostl=
-y a scheduling issue. A CPU thread could hand-off<br class=3D"">to a specif=
-ic I/O thread, reducing that case to the kind of context switch<br class=3D=
-"">Alex was mentioning, but I'm not sure how feasible it is to implement<br=
- class=3D"">that on Linux / kvm.<br class=3D""><br class=3D"">In such cases=
-, you have to pay for context switch. I'm not sure if that<br class=3D"">co=
-ntext switch is markedly more expensive than a "vmexit". On at least<br cla=
-ss=3D"">that alien architecture I was familiar with, there was little diffe=
-rence between<br class=3D"">switching to "your" host CPU thread and switchi=
-ng to "another" host<br class=3D"">I/O thread. But then the context switch =
-was all in software, so we had<br class=3D"">designed it that way.<br class=
-=3D""><br class=3D"">So let's assume now that you run your device emulation=
- fully in an I/O<br class=3D"">thread, which we will assume for simplicity =
-sits mostly in host user-space,<br class=3D"">and your guest I/O code runs =
-in a CPU thread, which we will assume<br class=3D"">sits mostly in guest us=
-er/kernel space.<br class=3D""><br class=3D"">It is possible to share two-w=
-ay doorbells / IRQ queues on some memory<br class=3D"">page, very similar t=
-o a virtqueue. When you want to "doorbell" your device,<br class=3D"">you s=
-imply write to that page. The device threads picks it up by reading<br clas=
-s=3D"">the same page, and posts I/O completions on the same page, with simp=
-le<br class=3D"">memory writes.<br class=3D""><br class=3D"">Consider this =
-I/O exchange buffer as having (at least) a writer and reader<br class=3D"">=
-index for both doorbells and virtual interrupts. In the explanation<br clas=
-s=3D"">below, I will call them "dwi", "dri", "iwi", "iri" for doorbell / in=
-terrupt read<br class=3D"">and write index. (Note that as a key optimizatio=
-n, you really<br class=3D"">don't want dwi and dri to be in the same cache =
-line, since different<br class=3D"">CPUs are going to read and write them)<=
-br class=3D""><br class=3D"">You obviously still need to "kick" the I/O or =
-CPU thread, and we are<br class=3D"">talking about an IPI here since you do=
-n't know which CPU that other<br class=3D"">thread is sitting on. But the i=
-nteresting property is that you only need<br class=3D"">to do that when dwi=
-=3D=3Ddri or iwi=3D=3Diri, because if not, the other side<br class=3D"">has=
- already been "kicked" and will keep working, i.e. incrementing<br class=3D=
-"">dri or iri, until it reaches back that state.<br class=3D""><br class=3D=
-"">The real "interrupt coalescing" trick can happen here. In some<br class=
-=3D"">cases, you can decide to update your dwi or iwi without kicking,<br c=
-lass=3D"">as long as you know that you will need to kick later. That requir=
-es<br class=3D"">some heavy cooperation from guest drivers, though, and is =
-a<br class=3D"">second-order optimization.<br class=3D""><br class=3D"">Wit=
-h a scheme like this, you replace a systematic context switch<br class=3D""=
->for each device interrupt with a memory write and a "fire and forget"<br c=
-lass=3D"">kick IPI that only happens when the system is not already busy<br=
- class=3D"">processing I/Os, so that it can be eliminated when the system i=
-s<br class=3D"">most busy. With interrupt coalescing, you can send IPIs at =
-a rate<br class=3D"">much lower than the actual I/O rate.<br class=3D""><br=
- class=3D"">Not sure how difficult it is to adapt a scheme like this to the=
- current<br class=3D"">state of qemu / kvm, but I'm pretty sure it works we=
-ll if you implement<br class=3D"">it correctly ;-)<br class=3D""><br class=
-=3D""><blockquote type=3D"cite" class=3D""><br class=3D"">A bigger issue th=
-an vmexit latency is device emulation thread wakeup<br class=3D"">latency. =
-There is a thread (QEMU, vhost-user, vhost, etc) monitoring the<br class=3D=
-"">ioeventfd but it may be descheduled. Its physical CPU may be in a low<br=
- class=3D"">power state. I ran a benchmark late last year with QEMU's AioCo=
-ntext<br class=3D"">adaptive polling disabled so we can measure the wakeup =
-latency:<br class=3D""><br class=3D"">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CPU 0/K=
-VM 26102 [000] 85626.737072: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;kvm:kvm_fa=
-st_mmio:<br class=3D"">fast mmio at gpa 0xfde03000<br class=3D"">&nbsp;&nbs=
-p;IO iothread1 26099 [001] 85626.737076: syscalls:sys_exit_ppoll: 0x1<br cl=
-ass=3D"">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4 microseconds ------^<br class=3D""></=
-blockquote></blockquote><br style=3D"caret-color: rgb(0, 0, 0); font-family=
-: Helvetica; font-size: 18px; font-style: normal; font-variant-caps: normal=
-; font-weight: normal; letter-spacing: normal; text-align: start; text-inde=
-nt: 0px; text-transform: none; white-space: normal; word-spacing: 0px; -web=
-kit-text-stroke-width: 0px; text-decoration: none;" class=3D""><span style=
-=3D"caret-color: rgb(0, 0, 0); font-family: Helvetica; font-size: 18px; fon=
-t-style: normal; font-variant-caps: normal; font-weight: normal; letter-spa=
-cing: normal; text-align: start; text-indent: 0px; text-transform: none; wh=
-ite-space: normal; word-spacing: 0px; -webkit-text-stroke-width: 0px; text-=
-decoration: none; float: none; display: inline !important;" class=3D"">Hi C=
-hristophe,</span><br style=3D"caret-color: rgb(0, 0, 0); font-family: Helve=
-tica; font-size: 18px; font-style: normal; font-variant-caps: normal; font-=
-weight: normal; letter-spacing: normal; text-align: start; text-indent: 0px=
-; text-transform: none; white-space: normal; word-spacing: 0px; -webkit-tex=
-t-stroke-width: 0px; text-decoration: none;" class=3D""><span style=3D"care=
-t-color: rgb(0, 0, 0); font-family: Helvetica; font-size: 18px; font-style:=
- normal; font-variant-caps: normal; font-weight: normal; letter-spacing: no=
-rmal; text-align: start; text-indent: 0px; text-transform: none; white-spac=
-e: normal; word-spacing: 0px; -webkit-text-stroke-width: 0px; text-decorati=
-on: none; float: none; display: inline !important;" class=3D"">QEMU/KVM doe=
-s something similar to what you described. In the perf</span><br style=3D"c=
-aret-color: rgb(0, 0, 0); font-family: Helvetica; font-size: 18px; font-sty=
-le: normal; font-variant-caps: normal; font-weight: normal; letter-spacing:=
- normal; text-align: start; text-indent: 0px; text-transform: none; white-s=
-pace: normal; word-spacing: 0px; -webkit-text-stroke-width: 0px; text-decor=
-ation: none;" class=3D""><span style=3D"caret-color: rgb(0, 0, 0); font-fam=
-ily: Helvetica; font-size: 18px; font-style: normal; font-variant-caps: nor=
-mal; font-weight: normal; letter-spacing: normal; text-align: start; text-i=
-ndent: 0px; text-transform: none; white-space: normal; word-spacing: 0px; -=
-webkit-text-stroke-width: 0px; text-decoration: none; float: none; display:=
- inline !important;" class=3D"">output above the vmexit kvm_fast_mmio event=
- occurs on physical CPU</span><br style=3D"caret-color: rgb(0, 0, 0); font-=
-family: Helvetica; font-size: 18px; font-style: normal; font-variant-caps: =
-normal; font-weight: normal; letter-spacing: normal; text-align: start; tex=
-t-indent: 0px; text-transform: none; white-space: normal; word-spacing: 0px=
-; -webkit-text-stroke-width: 0px; text-decoration: none;" class=3D""><span =
-style=3D"caret-color: rgb(0, 0, 0); font-family: Helvetica; font-size: 18px=
-; font-style: normal; font-variant-caps: normal; font-weight: normal; lette=
-r-spacing: normal; text-align: start; text-indent: 0px; text-transform: non=
-e; white-space: normal; word-spacing: 0px; -webkit-text-stroke-width: 0px; =
-text-decoration: none; float: none; display: inline !important;" class=3D""=
->"[000]". &nbsp;The IOThread wakes up on physical CPU "[001]". Physical CPU=
-#0</span><br style=3D"caret-color: rgb(0, 0, 0); font-family: Helvetica; fo=
-nt-size: 18px; font-style: normal; font-variant-caps: normal; font-weight: =
-normal; letter-spacing: normal; text-align: start; text-indent: 0px; text-t=
-ransform: none; white-space: normal; word-spacing: 0px; -webkit-text-stroke=
--width: 0px; text-decoration: none;" class=3D""><span style=3D"caret-color:=
- rgb(0, 0, 0); font-family: Helvetica; font-size: 18px; font-style: normal;=
- font-variant-caps: normal; font-weight: normal; letter-spacing: normal; te=
-xt-align: start; text-indent: 0px; text-transform: none; white-space: norma=
-l; word-spacing: 0px; -webkit-text-stroke-width: 0px; text-decoration: none=
-; float: none; display: inline !important;" class=3D"">resumes guest execut=
-ion immediately after marking the ioeventfd ready.</span><br style=3D"caret=
--color: rgb(0, 0, 0); font-family: Helvetica; font-size: 18px; font-style: =
-normal; font-variant-caps: normal; font-weight: normal; letter-spacing: nor=
-mal; text-align: start; text-indent: 0px; text-transform: none; white-space=
-: normal; word-spacing: 0px; -webkit-text-stroke-width: 0px; text-decoratio=
-n: none;" class=3D""><span style=3D"caret-color: rgb(0, 0, 0); font-family:=
- Helvetica; font-size: 18px; font-style: normal; font-variant-caps: normal;=
- font-weight: normal; letter-spacing: normal; text-align: start; text-inden=
-t: 0px; text-transform: none; white-space: normal; word-spacing: 0px; -webk=
-it-text-stroke-width: 0px; text-decoration: none; float: none; display: inl=
-ine !important;" class=3D"">There is no context switch to the IOThread or a=
- return from</span><br style=3D"caret-color: rgb(0, 0, 0); font-family: Hel=
-vetica; font-size: 18px; font-style: normal; font-variant-caps: normal; fon=
-t-weight: normal; letter-spacing: normal; text-align: start; text-indent: 0=
-px; text-transform: none; white-space: normal; word-spacing: 0px; -webkit-t=
-ext-stroke-width: 0px; text-decoration: none;" class=3D""><span style=3D"ca=
-ret-color: rgb(0, 0, 0); font-family: Helvetica; font-size: 18px; font-styl=
-e: normal; font-variant-caps: normal; font-weight: normal; letter-spacing: =
-normal; text-align: start; text-indent: 0px; text-transform: none; white-sp=
-ace: normal; word-spacing: 0px; -webkit-text-stroke-width: 0px; text-decora=
-tion: none; float: none; display: inline !important;" class=3D"">ioctl(KVM_=
-RUN) on CPU#0.</span><br style=3D"caret-color: rgb(0, 0, 0); font-family: H=
-elvetica; font-size: 18px; font-style: normal; font-variant-caps: normal; f=
-ont-weight: normal; letter-spacing: normal; text-align: start; text-indent:=
- 0px; text-transform: none; white-space: normal; word-spacing: 0px; -webkit=
--text-stroke-width: 0px; text-decoration: none;" class=3D""></div></blockqu=
-ote><div><br class=3D""></div><div>Oh, that's good.</div><div><br class=3D"=
-"></div><div>But then the conclusion that the 4us delay limits us to 250kIO=
-PS</div><div>is incorrect, no? Is there anything that would prevent multipl=
-e</div><div>I/O events (doorbell or interrupt) to be in flight at the same =
-time?</div><br class=3D""><blockquote type=3D"cite" class=3D""><div class=
-=3D""><br style=3D"caret-color: rgb(0, 0, 0); font-family: Helvetica; font-=
-size: 18px; font-style: normal; font-variant-caps: normal; font-weight: nor=
-mal; letter-spacing: normal; text-align: start; text-indent: 0px; text-tran=
-sform: none; white-space: normal; word-spacing: 0px; -webkit-text-stroke-wi=
-dth: 0px; text-decoration: none;" class=3D""><span style=3D"caret-color: rg=
-b(0, 0, 0); font-family: Helvetica; font-size: 18px; font-style: normal; fo=
-nt-variant-caps: normal; font-weight: normal; letter-spacing: normal; text-=
-align: start; text-indent: 0px; text-transform: none; white-space: normal; =
-word-spacing: 0px; -webkit-text-stroke-width: 0px; text-decoration: none; f=
-loat: none; display: inline !important;" class=3D"">The IOThread reads the =
-eventfd. An eventfd is a counter that is reset to</span><br style=3D"caret-=
-color: rgb(0, 0, 0); font-family: Helvetica; font-size: 18px; font-style: n=
-ormal; font-variant-caps: normal; font-weight: normal; letter-spacing: norm=
-al; text-align: start; text-indent: 0px; text-transform: none; white-space:=
- normal; word-spacing: 0px; -webkit-text-stroke-width: 0px; text-decoration=
-: none;" class=3D""><span style=3D"caret-color: rgb(0, 0, 0); font-family: =
-Helvetica; font-size: 18px; font-style: normal; font-variant-caps: normal; =
-font-weight: normal; letter-spacing: normal; text-align: start; text-indent=
-: 0px; text-transform: none; white-space: normal; word-spacing: 0px; -webki=
-t-text-stroke-width: 0px; text-decoration: none; float: none; display: inli=
-ne !important;" class=3D"">0 on read. Because it's a counter you get coales=
-cing: if the guest</span><br style=3D"caret-color: rgb(0, 0, 0); font-famil=
-y: Helvetica; font-size: 18px; font-style: normal; font-variant-caps: norma=
-l; font-weight: normal; letter-spacing: normal; text-align: start; text-ind=
-ent: 0px; text-transform: none; white-space: normal; word-spacing: 0px; -we=
-bkit-text-stroke-width: 0px; text-decoration: none;" class=3D""><span style=
-=3D"caret-color: rgb(0, 0, 0); font-family: Helvetica; font-size: 18px; fon=
-t-style: normal; font-variant-caps: normal; font-weight: normal; letter-spa=
-cing: normal; text-align: start; text-indent: 0px; text-transform: none; wh=
-ite-space: normal; word-spacing: 0px; -webkit-text-stroke-width: 0px; text-=
-decoration: none; float: none; display: inline !important;" class=3D"">perf=
-orms multiple MMIO writes the ioeventfd counter increases but the</span><br=
- style=3D"caret-color: rgb(0, 0, 0); font-family: Helvetica; font-size: 18p=
-x; font-style: normal; font-variant-caps: normal; font-weight: normal; lett=
-er-spacing: normal; text-align: start; text-indent: 0px; text-transform: no=
-ne; white-space: normal; word-spacing: 0px; -webkit-text-stroke-width: 0px;=
- text-decoration: none;" class=3D""><span style=3D"caret-color: rgb(0, 0, 0=
-); font-family: Helvetica; font-size: 18px; font-style: normal; font-varian=
-t-caps: normal; font-weight: normal; letter-spacing: normal; text-align: st=
-art; text-indent: 0px; text-transform: none; white-space: normal; word-spac=
-ing: 0px; -webkit-text-stroke-width: 0px; text-decoration: none; float: non=
-e; display: inline !important;" class=3D"">IOThread only wakes up once and =
-reads the ioeventfd.</span><br style=3D"caret-color: rgb(0, 0, 0); font-fam=
-ily: Helvetica; font-size: 18px; font-style: normal; font-variant-caps: nor=
-mal; font-weight: normal; letter-spacing: normal; text-align: start; text-i=
-ndent: 0px; text-transform: none; white-space: normal; word-spacing: 0px; -=
-webkit-text-stroke-width: 0px; text-decoration: none;" class=3D""><br style=
-=3D"caret-color: rgb(0, 0, 0); font-family: Helvetica; font-size: 18px; fon=
-t-style: normal; font-variant-caps: normal; font-weight: normal; letter-spa=
-cing: normal; text-align: start; text-indent: 0px; text-transform: none; wh=
-ite-space: normal; word-spacing: 0px; -webkit-text-stroke-width: 0px; text-=
-decoration: none;" class=3D""><span style=3D"caret-color: rgb(0, 0, 0); fon=
-t-family: Helvetica; font-size: 18px; font-style: normal; font-variant-caps=
-: normal; font-weight: normal; letter-spacing: normal; text-align: start; t=
-ext-indent: 0px; text-transform: none; white-space: normal; word-spacing: 0=
-px; -webkit-text-stroke-width: 0px; text-decoration: none; float: none; dis=
-play: inline !important;" class=3D"">VIRTIO itself also has a mechanism for=
- suppressing notifications called</span><br style=3D"caret-color: rgb(0, 0,=
- 0); font-family: Helvetica; font-size: 18px; font-style: normal; font-vari=
-ant-caps: normal; font-weight: normal; letter-spacing: normal; text-align: =
-start; text-indent: 0px; text-transform: none; white-space: normal; word-sp=
-acing: 0px; -webkit-text-stroke-width: 0px; text-decoration: none;" class=
-=3D""><span style=3D"caret-color: rgb(0, 0, 0); font-family: Helvetica; fon=
-t-size: 18px; font-style: normal; font-variant-caps: normal; font-weight: n=
-ormal; letter-spacing: normal; text-align: start; text-indent: 0px; text-tr=
-ansform: none; white-space: normal; word-spacing: 0px; -webkit-text-stroke-=
-width: 0px; text-decoration: none; float: none; display: inline !important;=
-" class=3D"">EVENT_IDX. It allows the driver to let the device know that it=
- does not</span><br style=3D"caret-color: rgb(0, 0, 0); font-family: Helvet=
-ica; font-size: 18px; font-style: normal; font-variant-caps: normal; font-w=
-eight: normal; letter-spacing: normal; text-align: start; text-indent: 0px;=
- text-transform: none; white-space: normal; word-spacing: 0px; -webkit-text=
--stroke-width: 0px; text-decoration: none;" class=3D""><span style=3D"caret=
--color: rgb(0, 0, 0); font-family: Helvetica; font-size: 18px; font-style: =
-normal; font-variant-caps: normal; font-weight: normal; letter-spacing: nor=
-mal; text-align: start; text-indent: 0px; text-transform: none; white-space=
-: normal; word-spacing: 0px; -webkit-text-stroke-width: 0px; text-decoratio=
-n: none; float: none; display: inline !important;" class=3D"">require inter=
-rupts, and the device to let the driver know it does not</span><br style=3D=
-"caret-color: rgb(0, 0, 0); font-family: Helvetica; font-size: 18px; font-s=
-tyle: normal; font-variant-caps: normal; font-weight: normal; letter-spacin=
-g: normal; text-align: start; text-indent: 0px; text-transform: none; white=
--space: normal; word-spacing: 0px; -webkit-text-stroke-width: 0px; text-dec=
-oration: none;" class=3D""><span style=3D"caret-color: rgb(0, 0, 0); font-f=
-amily: Helvetica; font-size: 18px; font-style: normal; font-variant-caps: n=
-ormal; font-weight: normal; letter-spacing: normal; text-align: start; text=
--indent: 0px; text-transform: none; white-space: normal; word-spacing: 0px;=
- -webkit-text-stroke-width: 0px; text-decoration: none; float: none; displa=
-y: inline !important;" class=3D"">require virtqueue kicks. This reminds me =
-a bit of the mitigation</span><br style=3D"caret-color: rgb(0, 0, 0); font-=
-family: Helvetica; font-size: 18px; font-style: normal; font-variant-caps: =
-normal; font-weight: normal; letter-spacing: normal; text-align: start; tex=
-t-indent: 0px; text-transform: none; white-space: normal; word-spacing: 0px=
-; -webkit-text-stroke-width: 0px; text-decoration: none;" class=3D""><span =
-style=3D"caret-color: rgb(0, 0, 0); font-family: Helvetica; font-size: 18px=
-; font-style: normal; font-variant-caps: normal; font-weight: normal; lette=
-r-spacing: normal; text-align: start; text-indent: 0px; text-transform: non=
-e; white-space: normal; word-spacing: 0px; -webkit-text-stroke-width: 0px; =
-text-decoration: none; float: none; display: inline !important;" class=3D""=
->mechanism you described.</span><br style=3D"caret-color: rgb(0, 0, 0); fon=
-t-family: Helvetica; font-size: 18px; font-style: normal; font-variant-caps=
-: normal; font-weight: normal; letter-spacing: normal; text-align: start; t=
-ext-indent: 0px; text-transform: none; white-space: normal; word-spacing: 0=
-px; -webkit-text-stroke-width: 0px; text-decoration: none;" class=3D""><br =
-style=3D"caret-color: rgb(0, 0, 0); font-family: Helvetica; font-size: 18px=
-; font-style: normal; font-variant-caps: normal; font-weight: normal; lette=
-r-spacing: normal; text-align: start; text-indent: 0px; text-transform: non=
-e; white-space: normal; word-spacing: 0px; -webkit-text-stroke-width: 0px; =
-text-decoration: none;" class=3D""><span style=3D"caret-color: rgb(0, 0, 0)=
-; font-family: Helvetica; font-size: 18px; font-style: normal; font-variant=
--caps: normal; font-weight: normal; letter-spacing: normal; text-align: sta=
-rt; text-indent: 0px; text-transform: none; white-space: normal; word-spaci=
-ng: 0px; -webkit-text-stroke-width: 0px; text-decoration: none; float: none=
-; display: inline !important;" class=3D"">Stefan</span></div></blockquote><=
-/div><br class=3D""></body></html>
---Apple-Mail=_F0D894EB-17FA-4632-8E34-AA339BFC305F--
+This can really vary, in virtualized environment that can be per guest boot=
+,  but in that case the master key/seed has to be shared OOB.=20
+>=20
+>=20
+>=20
+> > It cannot
+> > > > +   be overwritten, erased or read. This key MUST be kept regardles=
+s
+> > > > +   of device reset or reboot.
+> > > > +\item The device maintains a monotonic write counter. It MUST be
+> > > > +   initialized to zero and added by one automatically after each
+> > > > +   successful write operation. The value cannot be reset. After
+> > > > +   the counter has reached its maximum value 0xFFFFFFFF, it will
+> > > > +   not be incremented anymore. This counter MUST be kept regardles=
+s
+> > > > +   of device reset or reboot.
+> > > > +\item The RPMB device cannot be successfully accessed until RPMB
+> > > > +   authentication key is programmed. For any operation (read, writ=
+e,
+> > > > +   program key, get write counter) done to virtio RPMB device afte=
+r
+> > > > +   authentication key is programmed successfully, the device respo=
+nds
+> > > > +   with a MAC calculated by HMAC-SHA with authentication key to
+> driver.
+> > > > +\item For write operation, the device MUST compare the writer
+> counter
+> > > > +   it receives with the one it maintained internally. If the two a=
+re
+> > > > +   not equal, a VIRTIO_RPMB_RES_COUNT_FAILURE SHOULD be
+> returned as
+> > > > +   the result. The device MUST calculate the MAC using HMAC-SHA.
+> The
+> > > > +   authentication key acts as an input of the calculation. If the =
+MAC
+> > > > +   are not equal to the one it received, a
+> VIRTIO_RPMB_RES_AUTH_FAILURE
+> > > > +   SHOULD be returned as the result.
+> > > > +\item
+> > > > +\end{enumerate}
+> > >
+> > > I think the spec would again benefit from putting the verbose descrip=
+tion
+> of
+> > > what the driver needs to do to access the device and how the device
+> needs to
+> > > react into a descriptive section, and only keep some simple normative
+> > > statements here.
+> >
+> > What the driver need to do is pretty simple. It just need to format the
+> RPMB frames
+> > sent from user to virtqueue, and send it to device.
+> > While what the device need to do is pretty complex. Besides providing
+> RPMB spec,
+> > is it necessary to illustrate the behaviors of four requests that devic=
+e
+> should react?
+> >
+> > > > +
+> > > > +One of the below error codes MUST be returned to the driver
+> > > > +  based on the operation result.
+> > > > +
+> > > > +\begin{lstlisting}
+> > > > +#define VIRTIO_RPMB_RES_OK                     0x0000
+> > > > +#define VIRTIO_RPMB_RES_GENERAL_FAILURE        0x0001
+> > > > +#define VIRTIO_RPMB_RES_AUTH_FAILURE           0x0002
+> > > > +#define VIRTIO_RPMB_RES_COUNT_FAILURE          0x0003
+> > > > +#define VIRTIO_RPMB_RES_ADDR_FAILURE           0x0004
+> > > > +#define VIRTIO_RPMB_RES_WRITE_FAILURE          0x0005
+> > > > +#define VIRTIO_RPMB_RES_READ_FAILURE           0x0006
+> > > > +#define VIRTIO_RPMB_RES_NO_AUTH_KEY            0x0007
+> > > > +#define VIRTIO_RPMB_RES_WRITE_COUNTER_EXPIRED  0x0080
