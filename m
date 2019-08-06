@@ -1,594 +1,468 @@
-Return-Path: virtio-dev-return-5932-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-5933-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 168DC985D66
-	for <virtio-dev@lists.oasis-open.org>; Tue,  6 Aug 2019 11:24:23 +0000 (UTC)
-Date: Tue, 6 Aug 2019 07:24:13 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20190806045914-mutt-send-email-mst@kernel.org>
+	by lists.oasis-open.org (Postfix) with ESMTP id 94B9E985D77
+	for <virtio-dev@lists.oasis-open.org>; Tue,  6 Aug 2019 17:38:29 +0000 (UTC)
+From: "Zhu, Bing" <bing.zhu@intel.com>
+Date: Tue, 6 Aug 2019 17:38:21 +0000
+Message-ID: <A3DEEEBB19900C48B49572CB9C2891C987908FDA@SHSMSX108.ccr.corp.intel.com>
 References: <1565064256-13530-1-git-send-email-yang.huang@intel.com>
-MIME-Version: 1.0
+ <20190806045914-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20190806045914-mutt-send-email-mst@kernel.org>
+Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <1565064256-13530-1-git-send-email-yang.huang@intel.com>
-Subject: [virtio-dev] Re: [PATCH v3] It is a virtio based RPMB (Replay Protected Memory
- Block) device.
-To: Huang Yang <yang.huang@intel.com>
-Cc: virtio-dev@lists.oasis-open.org, cohuck@redhat.com, bing.zhu@intel.com, tomas.winkler@intel.com, peter.fang@intel.com
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+Subject: RE: [virtio-dev] Re: [PATCH v3] It is a virtio based RPMB (Replay
+ Protected Memory Block) device.
+To: "Michael S. Tsirkin" <mst@redhat.com>, "Huang, Yang" <yang.huang@intel.com>
+Cc: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "cohuck@redhat.com" <cohuck@redhat.com>, "Winkler, Tomas" <tomas.winkler@intel.com>, "Fang, Peter" <peter.fang@intel.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Tue, Aug 06, 2019 at 12:04:16PM +0800, Huang Yang wrote:
-> Signed-off-by: Yang Huang <yang.huang@intel.com>
-> Reviewed-by: Bing Zhu <bing.zhu@intel.com>
-> Reviewed-by: Tomas Winkler <tomas.winkler@intel.com>
-> 
-> v2 -> v3:
-> 1. Remove conformance changes temporarily
->    since the draft requires reviews and updates at this phase.
-> 2. Add eMMC, UFS and NVMe as Normative References.
-> 3. Add more details on:
->    RPMB frame
->    Request Type/Response Type
-> 4. Add differentiation JEDEC RPMB and NVMe RPMB.
-> 5. Define config layout
-> 6. Illustrate behaviors of all RPMB requests
-> 7. Remove RPMB device ID reservation,
->    it will be submitted with an independent patch.
-> ---
->  content.tex      |   1 +
->  introduction.tex |   9 ++
->  virtio-rpmb.tex  | 269 +++++++++++++++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 279 insertions(+)
->  create mode 100644 virtio-rpmb.tex
-> 
-> diff --git a/content.tex b/content.tex
-> index ee0d7c9..2573bd5 100644
-> --- a/content.tex
-> +++ b/content.tex
-> @@ -5677,6 +5677,7 @@ \subsubsection{Legacy Interface: Framing Requirements}\label{sec:Device
->  \input{virtio-input.tex}
->  \input{virtio-crypto.tex}
->  \input{virtio-vsock.tex}
-> +\input{virtio-rpmb.tex}
->  
->  \chapter{Reserved Feature Bits}\label{sec:Reserved Feature Bits}
->  
-> diff --git a/introduction.tex b/introduction.tex
-> index c96acf9..2579bf3 100644
-> --- a/introduction.tex
-> +++ b/introduction.tex
-> @@ -60,6 +60,15 @@ \section{Normative References}\label{sec:Normative References}
->  	\phantomsection\label{intro:SCSI MMC}\textbf{[SCSI MMC]} &
->          SCSI Multimedia Commands,
->          \newline\url{http://www.t10.org/cgi-bin/ac.pl?t=f&f=mmc6r00.pdf}\\
-> +        \phantomsection\label{intro:eMMC}\textbf{[eMMC]} &
-> +        eMMC Electrical Standard (5.1),
-> +        \newline\url{https://www.jedec.org/standards-documents/docs/jesd84-b51}\\
-> +        \phantomsection\label{intro:UFS}\textbf{[UFS]} &
-> +        UNIVERSAL FLASH STORAGE (UFS), Version 3.0,
-> +        \newline\url{https://www.jedec.org/standards-documents/docs/jesd220c}\\
-> +        \phantomsection\label{intro:NVMe}\textbf{[NVMe]} &
-> +        NVM Express, Revision 1.3
-> +        \newline\url{https://www.nvmexpress.org/wp-content/uploads/NVM_Express_Revision_1.3.pdf}\\
->  
->  \end{longtable}
->  
-
-At this stage I suggest we avoid nvme. Mix of LE and BE
-in the frame is just too nasty. And ATM Linux only supports
-UFS/MMC.
-
-
-
-Second, please assess the relevance of anything you copy to virtual
-devices. Copying things like padding does not buy us anything,
-and just creates work where we need to zero this out.
-
-The only thing that must match if you are passing
-through a hardware device is the size and order of
-keys.
-
-
-
-> diff --git a/virtio-rpmb.tex b/virtio-rpmb.tex
-> new file mode 100644
-> index 0000000..c2357af
-> --- /dev/null
-> +++ b/virtio-rpmb.tex
-> @@ -0,0 +1,269 @@
-> +\section{RPMB Device}\label{sec:Device Types / RPMB Device}
-> +
-> +virtio-rpmb is a virtio based RPMB (Replay Protected Memory Block)
-> +device. It is used as a tamper-resistant and anti-replay storage.
-> +The device is driven via requests including read, write, get write
-> +counter and program key, which are submitted via a request queue.
-> +This section relies on definitions from paragraph 6.6.22 of
-> +\hyperref[intro:eMMC]{eMMC}, 12.4 of \hyperref[intro:UFS]{UFS}
-> +and 8.10 of \hyperref[intro:NVMe]{NVMe}.
-
-
-
-
-
-
-
-> +\subsection{Device ID}\label{sec:Device Types / RPMB Device / Device ID}
-> +
-> +28
-> +
-> +\subsection{Virtqueues}\label{sec:Device Types / RPMB Device / Virtqueues}
-> +
-> +\begin{description}
-> +\item[0] requestq
-> +\end{description}
-> +
-> +\subsection{Feature bits}\label{sec:Device Types / RPMB Device / Feature bits}
-> +
-> +None.
-> +
-> +\subsection{Device configuration layout}\label{sec:Device Types / RPMB Device / Device configuration layout}
-> +
-> +All fields of this configuration are always available.
-> +
-> +\begin{lstlisting}
-> +enum virtio_rpmb_type {
-> +        RPMB_TYPE_JEDEC,
-> +        RPMB_TYPE_NVME,
-
-enum {} has no meaning in spec. any constants must be defined.
-
-> +};
-> +
-
-Do we have to expose the type?  I think we need feature bits
-for various things so we can split them out later.
-
-
-
-> +struct virtio_rpmb_config {
-> +        u8 capacity;
-> +        u8 max_wr_cnt;
-> +        u8 max_rd_cnt;
-> +        u8 id;
-> +        u8 type;
-> +}
-
-How about adding a key programmed state here?
-
-
-> +\end{lstlisting}
-
-
-Why not put the counter here?
-
-Are all fields read-only?
-
-> +
-> +\begin{description}
-> +\item[\field{capacity}] is the capacity of the device (expressed in 128KB units).
-> +   The values MUST range between 0x00 and 0x80 inclusive for JEDEC device, and
-> +   0x00 and 0xFF inclusive for NVMe device.
-
-I'd just drop this. u8 so up to 0xff anyway, and I don't think
-any users care that there are a couple of extra bytes.
-
-Thinking about it, 32Mbytes isn't huge at all. Why not allow larger
-capacity?
-
-
-
-
-> +\item[\field{max_wr_cnt and max_rd_cnt}] are the maximum numbers of RPMB
-> +   block count that can be performed to device in one request. 0 implies
-> +   no limitation.
-
-I don't understand what does block count mean in this context.
-
-> +\item[\field{id}] is the identifier of RPMB partitions.
-
-What does this mean? what are the partitions? Did you mean of the device?
-
-I suspect what is going on is there's an actual device behind this,
-and this is its ID. Which again begs the question whether this
-should just be a part of a blk or scsi device.
-
-
-> +\item[\field{type}] is the rpmb type that device emulates. RPMB_TYPE_JEDEC
-> +   refers to eMMC or UFS while RPMB_TYPE_NVME refers to NVMe.
-> +\end{description}
-
-Does not look like we emulate anything.
-
-> +
-> +\devicenormative{\subsection}{Device Initialization}{Device Types / RPMB Device / Device Initialization}
-> +
-> +\begin{enumerate}
-> +\item The virtqueue is initialized.
-> +\item The authentication key of device MUST NOT be programmed at the first device initialization.
-
-What is "first device initialization"? The concept does not seem to apply
-to virtual devices. How about we just have device pre-initialized to
-some key? Or maybe device can be in two states, key programming
-and operation?
-
-
-All conformance clauses belong in conformance sections.  here and elsewhere.
-
-> +\item The device capacity MUST be initialized to a multiple of 128Kbytes and up to
-> +    16Mbytes/32Mbytes (JEDEC/NVMe device respectively).
-> +\end{enumerate}
-
-So instead of blindly copying limitations of physical devices,
-we can just allow hypervisor to set any capacity.
-
-> +
-> +\subsection{Device Operation}\label{sec:Device Types / RPMB Device / Device Operation}
-> +
-> +The operation of a virtio RPMB device is driven by the requests placed on the virtqueue.
-> +  The type of the request can be program key (VIRTIO_RPMB_REQ_PROGRAM_KEY),
-> +  get write counter (VIRTIO_RPMB_REQ_GET_WRITE_COUNTER),
-> +  write (VIRTIO_RPMB_REQ_DATA_WRITE), and read (VIRTIO_RPMB_REQ_DATA_READ).
-> +  A program key or write request can also combine with a
-> +  result read (VIRTIO_RPMB_REQ_RESULT_READ) for a returned result.
-> +
-> +\begin{lstlisting}
-> +/* RPMB Request Types */
-> +#define VIRTIO_RPMB_REQ_PROGRAM_KEY        0x0001
-> +#define VIRTIO_RPMB_REQ_GET_WRITE_COUNTER  0x0002
-> +#define VIRTIO_RPMB_REQ_DATA_WRITE         0x0003
-> +#define VIRTIO_RPMB_REQ_DATA_READ          0x0004
-> +#define VIRTIO_RPMB_REQ_RESULT_READ        0x0005
-> +\end{lstlisting}
-> +
-> +\subsubsection{Device Operation: Request Queue}\label{sec:Device Types / RPMB Device / Device Operation / Device Operation: Request Queue}
-> +
-> +The request information is delivered in RPMB frame.
-> +The frame is in size of 512B for JEDEC RPMB, and in size of 256B plus
-> +multiple 512B for NVMe RPMB depending on the variable data size.
-
-Again this is just messy. Let's come up with a minimal spec.
-See end of the message pls.
-
-> +
-> +\begin{lstlisting}
-> +struct virtio_rpmb_frame_jedec {
-> +        u8 stuff[196];
-> +        u8 key_mac[32];
-> +        u8 data[256];
-> +        u8 nonce[16];
-> +        be32 write_counter;
-> +        be16 address;
-> +        be16 block_count;
-> +        be16 result;
-> +        be16 req_resp;
-> +};
-> +
-> +struct virtio_rpmb_frame_nvme {
-> +        u8 stuff [191];
-> +        u8 key_mac[32];
-> +        u8 rpmb_target;
-> +        u8 nonce[16];
-> +        le32 write_counter;
-> +        le32 address;
-> +        le32 block_count;
-> +        le16 result;
-> +        le16 req_resp;
-> +        u8 data[0];
-> +};
-
-Oh fun, a mix of LE and BE.
-
-Let's make everything consistent.
-
-Why do we need the "stuff" field? It helps align the size to 256
-byte boundary - but why do we care?
-
-
-
-> +
-> +/* RPMB Response Types */
-> +#define VIRTIO_RPMB_RESP_PROGRAM_KEY           0x0100
-> +#define VIRTIO_RPMB_RESP_GET_COUNTER           0x0200
-> +#define VIRTIO_RPMB_RESP_DATA_WRITE            0x0300
-> +#define VIRTIO_RPMB_RESP_DATA_READ             0x0400
-> +
-> +/* RPMB Operation Results */
-> +#define VIRTIO_RPMB_RES_OK                     0x0000
-> +#define VIRTIO_RPMB_RES_GENERAL_FAILURE        0x0001
-> +#define VIRTIO_RPMB_RES_AUTH_FAILURE           0x0002
-> +#define VIRTIO_RPMB_RES_COUNT_FAILURE          0x0003
-> +#define VIRTIO_RPMB_RES_ADDR_FAILURE           0x0004
-> +#define VIRTIO_RPMB_RES_WRITE_FAILURE          0x0005
-> +#define VIRTIO_RPMB_RES_READ_FAILURE           0x0006
-> +#define VIRTIO_RPMB_RES_NO_AUTH_KEY            0x0007
-> +#define VIRTIO_RPMB_RES_WRITE_COUNTER_EXPIRED  0x0080
-> +\end{lstlisting}
-> +
-> +\begin{description}
-> +\item[\field{stuff}] Padding for the frame.
-> +
-> +\item[\field{key_mac}] is the authentication key or the message
-> +   authentication code (MAC) depending on the request/response type.
-> +   If the request is VIRTIO_RPMB_REQ_PROGRAM_KEY, it's used as
-> +   authentication key. Otherwise, it's used as MAC. The MAC is calculated
-> +   using HMAC SHA-256.
-
-SHA-256 is pretty old. Not being a cryptographer I don't really
-know whether it's still a good mac to use in 2019.
-
-Generally security considerations should probably be presented
-with anything dealing with crypto.
-In this case, I'd do a feature bit so we can change the crypto
-down the road.
-
-
-> It takes as input a key and a message. The key
-> +   used for the MAC calculation is always the 256 bit RPMB authentication
-> +   key. The message used as input to the MAC calculation is the
-> +   concatenation of the fields in the RPMB frames excluding stuff bytes
-> +   and the MAC itself.
-> +
-> +\item[\field{rpmb_target}] is the exclusive item for NVMe device. It is
-> +   the RPMB target to access.
-
-There are multiple targets too?
-
-> +
-> +\item[\field{data}] is used to be written or read by signed access.
-
-What does signed access mean?
-
-> It's
-> +   fixed 256B for JEDEC device while variable sized payload
-> +   512 * \field{block_count} for NVMe device.
-> +
-> +\item[\field{nonce}] is a random number
-
-
-random how? I think it can just be anything.
-
-
-> generated by user for the read or
-> +   get write counter requests and copied to the response by device.
-> +
-> +\item[\field{writer_counter}] is the counter value for the total amount of
-> +   the successful authenticated data write requests.
-> +
-> +\item[\field{address}] is the address of the data to be written to or read
-> +   from the RPMB virtio device. It is the serial number of the accessed
-> +   half sector (256B for JEDEC device) or sector (512B for NVMe device).
-
-serial number?
-
-> +
-> +\item[\field{block_count}] is the number of blocks (256B for JEDEC and 512B
-> +   for NVMe) requested to be read/written.
-
-can't this be intuited from the buffer size somehow?
-
-I don't really understand how can you both have block_count
-and a fixed size data. how does this make sense?
-
-
-> +
-> +\item[\field{result}] includes information about the status of access made
-> +   to the device.
-> +
-
-So I am guessing result is written by the device?
-And type is written by the driver?
-this does not play well with virtio where write
-fields are followed by read fields.
-
-
-> +\item[\field{req_resp}] is the type of request or response, as defined above,
-> +   to/from the device.
-
-this seems to be the 1st definition. Please avoid "above" and "below",
-just link to the definition.
-
-> +\end{description}
-> +
-> +\devicenormative{\paragraph}{Device Operation: Request Queue}{Device Types / RPMB Device / Device Operation / Device Operation: Request Queue}
-> +
-> +The device MUST parse the request from the request queue and emulate the behaviours described in paragraph
-> +6.6.22 of \hyperref[intro:eMMC]{eMMC}, 12.4 of \hyperref[intro:UFS]{UFS} or 8.10 of \hyperref[intro:NVMe]{NVMe}:
-
-If you are going to emulate existing specs, then why not just emulate an
-existing spec? Why bother with virtio at all? You gain ability to use
-existing drivers.
-
-If the reason is to make a clean abstraction, then IMHO this falls short
-of this goal, carrying on all kind of baggage from hardware specs.
-
-> +
-> +\begin{description}
-> +
-> +\item[VIRTIO_RPMB_REQ_PROGRAM_KEY] If block count has not been set to 1
-> +   then VIRTIO_RPMB_RES_GENERAL_FAILURE is responded. If programming of
-> +   authentication key fails then returned result is VIRTIO_RPMB_RES_WRITE_FAILURE.
-> +   If some other error occurs then returned result is VIRTIO_RPMB_RES_GENERAL_FAILURE.
-> +   The \field{req_resp} value VIRTIO_RPMB_RESP_PROGRAM_KEY corresponds to
-> +   the key programming request.
-> +
-> +   If VIRTIO_RPMB_REQ_RESULT_READ is requested, the device returns the RPMB frame
-> +   with response (VIRTIO_RPMB_RESP_PROGRAM_KEY), the calculated MAC and the result.
-
-I don't see what does VIRTIO_RPMB_REQ_RESULT_READ buy us.
-I guess it proves key has been programmed - but if someone
-can snoop on programming then for sure he has the key
-and won't have trouble faking the mac.
-
-> +
-> +\item[VIRTIO_RPMB_REQ_GET_WRITE_COUNTE] If the authentication key is not yet
-> +   programmed then VIRTIO_RPMB_RES_NO_AUTH_KEY is returned in \field{result}.
-> +   If block count has not been set to 1 then VIRTIO_RPMB_RES_GENERAL_FAILURE
-> +   SHOULD be responded.
-> +
-> +   The device returns the RPMB frame with response (VIRTIO_RPMB_RESP_GET_COUNTER),
-> +   the writer counter, a copy of the nonce received in the request, the calculated
-> +   MAC and the result.
-> +
-> +\item[VIRTIO_RPMB_REQ_DATA_WRITE] If the authentication key is not yet programmed
-> +   then VIRTIO_RPMB_RES_NO_AUTH_KEY is returned in \field{result}. If block count
-> +   is zero or greater than \field{max_wr_cnt} then VIRTIO_RPMB_RES_GENERAL_FAILURE
-> +   MUST be responded. The device MUST check whether the write counter has expired.
-> +   If the write counter is expired then sets the \field{result} to
-> +   VIRTIO_RPMB_RES_WRITE_COUNTER_EXPIRED. If there is an error in the address
-> +   (out of range) then the \field{result} is set to VIRTIO_RPMB_RES_ADDR_FAILURE.
-> +   The device MUST calculate the MAC taking authentication key and frame as input,
-> +   and compares this with the MAC in the request. If the two MAC’s are different
-> +   then VIRTIO_RPMB_RES_AUTH_FAILURE is returned.
-> +
-> +   If the writer counter in the request with is different from the one maintained
-> +   by device then VIRTIO_RPMB_RES_COUNT_FAILURE is returned in \field{result}.
-> +   If the MAC and write counter comparisons are successful then the write request
-> +   is considered to be authenticated. The data from the request are written to the
-> +   address indicated in the request and the write counter is incremented by 1.
-> +   If write fails then returned result is VIRTIO_RPMB_RES_WRITE_FAILURE. If some
-> +   other error occurs during the write procedure then returned result is
-> +   VIRTIO_RPMB_RES_GENERAL_FAILURE.
-> +
-> +   If VIRTIO_RPMB_REQ_RESULT_READ is requested, the device returns the RPMB data
-> +   frame with response (VIRTIO_RPMB_RESP_DATA_WRITE), the incremented counter value,
-> +   the data address, the calculated MAC and result.
-> +
-> +\item[VIRTIO_RPMB_REQ_DATA_READ] If the authentication key is not yet programmed
-> +   then VIRTIO_RPMB_RES_NO_AUTH_KEY is returned in \field{result}. If block count
-> +   has not been set to 1 then VIRTIO_RPMB_RES_GENERAL_FAILURE MUST be responded.
-> +   If there is an error in the address (out of range) then the \field{result} is
-> +   set to VIRTIO_RPMB_RES_ADDR_FAILURE. If data fetch from addressed location inside
-> +   device fails then returned result is VIRTIO_RPMB_RES_READ_FAILURE. If some other
-> +   error occurs during the read procedure then returned result is
-> +   VIRTIO_RPMB_RES_GENERAL_FAILURE.
-> +
-> +   The device returns the RPMB frame with response (VIRTIO_RPMB_RESP_DATA_READ),
-> +   the block count, a copy of the nonce received in the request, the address,
-> +   the data, the calculated MAC, and the result.
-> +
-> +\item[VIRTIO_RPMB_REQ_RESULT_READ] It is used following with the other request
-> +   types for returned result in one or multiple RPMB frames.
-
-So each write request must be followed by a status request.  This just
-seems like a waste. Why not return the result immediately with the
-operation?  Maybe UFS doesn't support this but virtio sure does.
-
-
-Does device have to maintain the last request in non-volatile memory and
-persist across resets?  You do not list it as being
-persistent below. So I would just drop this request type
-and have driver maintain it in guest memory.
-
-> For
-> +   VIRTIO_RPMB_REQ_PROGRAM_KEY and VIRTIO_RPMB_REQ_DATA_WRITE, if block count has
-> +   not been set to 1 of VIRTIO_RPMB_REQ_RESULT_READ request, then
-> +   VIRTIO_RPMB_RES_GENERAL_FAILURE SHALL be indicated.
-> +
-> +\end{description}
-> +If authetication key was programmed successfully, the device SHALL return with a MAC for any operation requests.
-
-Lots of typos above make it pretty hard to figure out.
-
-> +
-> +\drivernormative{\subsubsection}{Device Operation}{Device Types / RPMB Device / Device Operation}
-> +
-> +The driver MUST configure and initialize virtqueue for the requests received.
-
-received where? why isn't it legal to e.g. check feature bits and
-then reset?
-
-> +
-> +\devicenormative{\subsubsection}{Device Operation}{Device Types / RPMB Device / Device Operation}
-> +
-> +The virtio-rpmb device could be backed in a number of ways. It SHOULD
-> +   keep consistent behaviors with hardware as described in paragraph
-> +   6.6.22 of \hyperref[intro:eMMC]{eMMC}, 12.4 of \hyperref[intro:UFS]{UFS}
-> +   or 8.10 of \hyperref[intro:NVMe]{NVMe}.
-> Some elements are maintained
-> +   by the device:
-> +\begin{enumerate}
-> +\item The device maintains an one time programmable authentication key.
-> +   It cannot be overwritten, erased or read. The key is used to
-> +   authenticate the accesses when MAC is calculated. This key MUST be
-> +   kept regardless of device reset or reboot.
-> +\item The device maintains a read-only monotonic write counter. It MUST
-> +   be initialized to zero and added by one automatically along with
-> +   successful write operation. The value cannot be reset. After
-> +   the counter has reached its maximum value 0xFFFF FFFF, it will
-> +   not be incremented anymore. This counter MUST be kept regardless
-> +   of device reset or reboot.
-> +\item The device maintains the data for read/write via authenticated
-> +   access.
-> +\end{enumerate}
-> +
-
-
-
-What I have gathered from above is really just a counter and a key
-added to a storage device.
-
-	Key: you must have the key to write. It's programmed into the
-	device at some point by manufacturer.
-	So later, only someone who got key from manufacturer can write.
-	Data is also authenticated with the key, so if you got
-	the key from manufacturer you can verify it's valid.
-
-	What if you didn't get the key but you steal the data
-	in transit to storage device somehow? You could
-	replay it to the device and overwrite valid data.
-	To this end device maintains write counter,
-	so you can't.
-
-	What if you can pretend write failed, or filter out writes to pretend
-	they succeeded? First write counter will be wrong, but it's tricky for
-	applications to verify the counter: after all an application can crash.
-	So each write is followed by a response and users must validate MAC to
-	make sure write made it to the device.
-
-
-	On the other hand, what if again you didn't get the key but you steal
-	the read response?  You could replay that to the application.  To this
-	end read requests include a random value and it's copied to the
-	response. Application can put e.g. a counter there.
-
-
-
-I think we are coming back full circle and I would
-like to ask: so why does it not make sense to add this functionality to
-a block device, or a scsi device? We'd get lots of goodies such
-as multiqueue, for free.
-
-
-If we implement above in a hypervisor in software, we can just ignore
-all random hardware limitations, and support e.g. arbitrary size of
-writes, arbitrary hash etc etc.
-
-So I think this is the reason you are making it a separate device and
-are trying to support so many messy formats is because you are thinking
-about pass-through.
-
-However, I note that neither driver nor the hypervisor really
-care about things like order of fields or endian-ness.
-It's only the MAC calculations that are affected.
-
-So my suggestion is, for now just define a clean minimal interface, with
-some kind of enumerator for an application to discover the specific MAC
-used.  And when hypervisor is forwarding the data to the device, it can
-move fields around, swap endian-ness or whatever.  Will cost some
-performance but it does not look like this device is fast path anyway.
-
-And I am guessing most people do trust the hypervisor and so they will
-happily just use a clean software implementation.
-
-> -- 
-> 2.7.4
-
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogdmlydGlvLWRldkBsaXN0
+cy5vYXNpcy1vcGVuLm9yZyBbbWFpbHRvOnZpcnRpby1kZXZAbGlzdHMub2FzaXMtb3Blbi5vcmdd
+IE9uDQo+IEJlaGFsZiBPZiBNaWNoYWVsIFMuIFRzaXJraW4NCj4gU2VudDogVHVlc2RheSwgQXVn
+dXN0IDYsIDIwMTkgMDQ6MjQgQU0NCj4gVG86IEh1YW5nLCBZYW5nIDx5YW5nLmh1YW5nQGludGVs
+LmNvbT4NCj4gQ2M6IHZpcnRpby1kZXZAbGlzdHMub2FzaXMtb3Blbi5vcmc7IGNvaHVja0ByZWRo
+YXQuY29tOyBaaHUsIEJpbmcNCj4gPGJpbmcuemh1QGludGVsLmNvbT47IFdpbmtsZXIsIFRvbWFz
+IDx0b21hcy53aW5rbGVyQGludGVsLmNvbT47IEZhbmcsIFBldGVyDQo+IDxwZXRlci5mYW5nQGlu
+dGVsLmNvbT4NCj4gU3ViamVjdDogW3ZpcnRpby1kZXZdIFJlOiBbUEFUQ0ggdjNdIEl0IGlzIGEg
+dmlydGlvIGJhc2VkIFJQTUIgKFJlcGxheSBQcm90ZWN0ZWQNCj4gTWVtb3J5IEJsb2NrKSBkZXZp
+Y2UuDQo+IA0KPiBPbiBUdWUsIEF1ZyAwNiwgMjAxOSBhdCAxMjowNDoxNlBNICswODAwLCBIdWFu
+ZyBZYW5nIHdyb3RlOg0KPiA+IFNpZ25lZC1vZmYtYnk6IFlhbmcgSHVhbmcgPHlhbmcuaHVhbmdA
+aW50ZWwuY29tPg0KPiA+IFJldmlld2VkLWJ5OiBCaW5nIFpodSA8YmluZy56aHVAaW50ZWwuY29t
+Pg0KPiA+IFJldmlld2VkLWJ5OiBUb21hcyBXaW5rbGVyIDx0b21hcy53aW5rbGVyQGludGVsLmNv
+bT4NCj4gPg0KPiA+IHYyIC0+IHYzOg0KPiA+IDEuIFJlbW92ZSBjb25mb3JtYW5jZSBjaGFuZ2Vz
+IHRlbXBvcmFyaWx5DQo+ID4gICAgc2luY2UgdGhlIGRyYWZ0IHJlcXVpcmVzIHJldmlld3MgYW5k
+IHVwZGF0ZXMgYXQgdGhpcyBwaGFzZS4NCj4gPiAyLiBBZGQgZU1NQywgVUZTIGFuZCBOVk1lIGFz
+IE5vcm1hdGl2ZSBSZWZlcmVuY2VzLg0KPiA+IDMuIEFkZCBtb3JlIGRldGFpbHMgb246DQo+ID4g
+ICAgUlBNQiBmcmFtZQ0KPiA+ICAgIFJlcXVlc3QgVHlwZS9SZXNwb25zZSBUeXBlDQo+ID4gNC4g
+QWRkIGRpZmZlcmVudGlhdGlvbiBKRURFQyBSUE1CIGFuZCBOVk1lIFJQTUIuDQo+ID4gNS4gRGVm
+aW5lIGNvbmZpZyBsYXlvdXQNCj4gPiA2LiBJbGx1c3RyYXRlIGJlaGF2aW9ycyBvZiBhbGwgUlBN
+QiByZXF1ZXN0cyA3LiBSZW1vdmUgUlBNQiBkZXZpY2UgSUQNCj4gPiByZXNlcnZhdGlvbiwNCj4g
+PiAgICBpdCB3aWxsIGJlIHN1Ym1pdHRlZCB3aXRoIGFuIGluZGVwZW5kZW50IHBhdGNoLg0KPiA+
+IC0tLQ0KPiA+ICBjb250ZW50LnRleCAgICAgIHwgICAxICsNCj4gPiAgaW50cm9kdWN0aW9uLnRl
+eCB8ICAgOSArKw0KPiA+ICB2aXJ0aW8tcnBtYi50ZXggIHwgMjY5DQo+ID4gKysrKysrKysrKysr
+KysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKw0KPiA+ICAzIGZpbGVz
+IGNoYW5nZWQsIDI3OSBpbnNlcnRpb25zKCspDQo+ID4gIGNyZWF0ZSBtb2RlIDEwMDY0NCB2aXJ0
+aW8tcnBtYi50ZXgNCj4gPg0KPiA+IGRpZmYgLS1naXQgYS9jb250ZW50LnRleCBiL2NvbnRlbnQu
+dGV4IGluZGV4IGVlMGQ3YzkuLjI1NzNiZDUgMTAwNjQ0DQo+ID4gLS0tIGEvY29udGVudC50ZXgN
+Cj4gPiArKysgYi9jb250ZW50LnRleA0KPiA+IEBAIC01Njc3LDYgKzU2NzcsNyBAQCBcc3Vic3Vi
+c2VjdGlvbntMZWdhY3kgSW50ZXJmYWNlOiBGcmFtaW5nDQo+ID4gUmVxdWlyZW1lbnRzfVxsYWJl
+bHtzZWM6RGV2aWNlICBcaW5wdXR7dmlydGlvLWlucHV0LnRleH0NCj4gPiBcaW5wdXR7dmlydGlv
+LWNyeXB0by50ZXh9ICBcaW5wdXR7dmlydGlvLXZzb2NrLnRleH0NCj4gPiArXGlucHV0e3ZpcnRp
+by1ycG1iLnRleH0NCj4gPg0KPiA+ICBcY2hhcHRlcntSZXNlcnZlZCBGZWF0dXJlIEJpdHN9XGxh
+YmVse3NlYzpSZXNlcnZlZCBGZWF0dXJlIEJpdHN9DQo+ID4NCj4gPiBkaWZmIC0tZ2l0IGEvaW50
+cm9kdWN0aW9uLnRleCBiL2ludHJvZHVjdGlvbi50ZXggaW5kZXgNCj4gPiBjOTZhY2Y5Li4yNTc5
+YmYzIDEwMDY0NA0KPiA+IC0tLSBhL2ludHJvZHVjdGlvbi50ZXgNCj4gPiArKysgYi9pbnRyb2R1
+Y3Rpb24udGV4DQo+ID4gQEAgLTYwLDYgKzYwLDE1IEBAIFxzZWN0aW9ue05vcm1hdGl2ZSBSZWZl
+cmVuY2VzfVxsYWJlbHtzZWM6Tm9ybWF0aXZlDQo+IFJlZmVyZW5jZXN9DQo+ID4gIAlccGhhbnRv
+bXNlY3Rpb25cbGFiZWx7aW50cm86U0NTSSBNTUN9XHRleHRiZntbU0NTSSBNTUNdfSAmDQo+ID4g
+ICAgICAgICAgU0NTSSBNdWx0aW1lZGlhIENvbW1hbmRzLA0KPiA+DQo+ID4gXG5ld2xpbmVcdXJs
+e2h0dHA6Ly93d3cudDEwLm9yZy9jZ2ktYmluL2FjLnBsP3Q9ZiZmPW1tYzZyMDAucGRmfVxcDQo+
+ID4gKyAgICAgICAgXHBoYW50b21zZWN0aW9uXGxhYmVse2ludHJvOmVNTUN9XHRleHRiZntbZU1N
+Q119ICYNCj4gPiArICAgICAgICBlTU1DIEVsZWN0cmljYWwgU3RhbmRhcmQgKDUuMSksDQo+ID4g
+KyAgICAgICAgXG5ld2xpbmVcdXJse2h0dHBzOi8vd3d3LmplZGVjLm9yZy9zdGFuZGFyZHMtZG9j
+dW1lbnRzL2RvY3MvamVzZDg0LQ0KPiBiNTF9XFwNCj4gPiArICAgICAgICBccGhhbnRvbXNlY3Rp
+b25cbGFiZWx7aW50cm86VUZTfVx0ZXh0YmZ7W1VGU119ICYNCj4gPiArICAgICAgICBVTklWRVJT
+QUwgRkxBU0ggU1RPUkFHRSAoVUZTKSwgVmVyc2lvbiAzLjAsDQo+ID4gKyAgICAgICAgXG5ld2xp
+bmVcdXJse2h0dHBzOi8vd3d3LmplZGVjLm9yZy9zdGFuZGFyZHMtDQo+IGRvY3VtZW50cy9kb2Nz
+L2plc2QyMjBjfVxcDQo+ID4gKyAgICAgICAgXHBoYW50b21zZWN0aW9uXGxhYmVse2ludHJvOk5W
+TWV9XHRleHRiZntbTlZNZV19ICYNCj4gPiArICAgICAgICBOVk0gRXhwcmVzcywgUmV2aXNpb24g
+MS4zDQo+ID4gKw0KPiA+ICsgXG5ld2xpbmVcdXJse2h0dHBzOi8vd3d3Lm52bWV4cHJlc3Mub3Jn
+L3dwLWNvbnRlbnQvdXBsb2Fkcy9OVk1fRXhwcmUNCj4gPiArIHNzX1JldmlzaW9uXzEuMy5wZGZ9
+XFwNCj4gPg0KPiA+ICBcZW5ke2xvbmd0YWJsZX0NCj4gPg0KPiANCj4gQXQgdGhpcyBzdGFnZSBJ
+IHN1Z2dlc3Qgd2UgYXZvaWQgbnZtZS4gTWl4IG9mIExFIGFuZCBCRSBpbiB0aGUgZnJhbWUgaXMg
+anVzdCB0b28NCj4gbmFzdHkuIEFuZCBBVE0gTGludXggb25seSBzdXBwb3J0cyBVRlMvTU1DLg0K
+PiANCj4gDQo+IA0KPiBTZWNvbmQsIHBsZWFzZSBhc3Nlc3MgdGhlIHJlbGV2YW5jZSBvZiBhbnl0
+aGluZyB5b3UgY29weSB0byB2aXJ0dWFsIGRldmljZXMuDQo+IENvcHlpbmcgdGhpbmdzIGxpa2Ug
+cGFkZGluZyBkb2VzIG5vdCBidXkgdXMgYW55dGhpbmcsIGFuZCBqdXN0IGNyZWF0ZXMgd29yayB3
+aGVyZQ0KPiB3ZSBuZWVkIHRvIHplcm8gdGhpcyBvdXQuDQo+IA0KPiBUaGUgb25seSB0aGluZyB0
+aGF0IG11c3QgbWF0Y2ggaWYgeW91IGFyZSBwYXNzaW5nIHRocm91Z2ggYSBoYXJkd2FyZSBkZXZp
+Y2UgaXMNCj4gdGhlIHNpemUgYW5kIG9yZGVyIG9mIGtleXMuDQo+IA0KPiANCj4gDQo+ID4gZGlm
+ZiAtLWdpdCBhL3ZpcnRpby1ycG1iLnRleCBiL3ZpcnRpby1ycG1iLnRleCBuZXcgZmlsZSBtb2Rl
+IDEwMDY0NA0KPiA+IGluZGV4IDAwMDAwMDAuLmMyMzU3YWYNCj4gPiAtLS0gL2Rldi9udWxsDQo+
+ID4gKysrIGIvdmlydGlvLXJwbWIudGV4DQo+ID4gQEAgLTAsMCArMSwyNjkgQEANCj4gPiArXHNl
+Y3Rpb257UlBNQiBEZXZpY2V9XGxhYmVse3NlYzpEZXZpY2UgVHlwZXMgLyBSUE1CIERldmljZX0N
+Cj4gPiArDQo+ID4gK3ZpcnRpby1ycG1iIGlzIGEgdmlydGlvIGJhc2VkIFJQTUIgKFJlcGxheSBQ
+cm90ZWN0ZWQgTWVtb3J5IEJsb2NrKQ0KPiA+ICtkZXZpY2UuIEl0IGlzIHVzZWQgYXMgYSB0YW1w
+ZXItcmVzaXN0YW50IGFuZCBhbnRpLXJlcGxheSBzdG9yYWdlLg0KPiA+ICtUaGUgZGV2aWNlIGlz
+IGRyaXZlbiB2aWEgcmVxdWVzdHMgaW5jbHVkaW5nIHJlYWQsIHdyaXRlLCBnZXQgd3JpdGUNCj4g
+PiArY291bnRlciBhbmQgcHJvZ3JhbSBrZXksIHdoaWNoIGFyZSBzdWJtaXR0ZWQgdmlhIGEgcmVx
+dWVzdCBxdWV1ZS4NCj4gPiArVGhpcyBzZWN0aW9uIHJlbGllcyBvbiBkZWZpbml0aW9ucyBmcm9t
+IHBhcmFncmFwaCA2LjYuMjIgb2YNCj4gPiArXGh5cGVycmVmW2ludHJvOmVNTUNde2VNTUN9LCAx
+Mi40IG9mIFxoeXBlcnJlZltpbnRybzpVRlNde1VGU30gYW5kDQo+ID4gKzguMTAgb2YgXGh5cGVy
+cmVmW2ludHJvOk5WTWVde05WTWV9Lg0KPiANCj4gDQo+IA0KPiANCj4gDQo+IA0KPiANCj4gPiAr
+XHN1YnNlY3Rpb257RGV2aWNlIElEfVxsYWJlbHtzZWM6RGV2aWNlIFR5cGVzIC8gUlBNQiBEZXZp
+Y2UgLyBEZXZpY2UNCj4gPiArSUR9DQo+ID4gKw0KPiA+ICsyOA0KPiA+ICsNCj4gPiArXHN1YnNl
+Y3Rpb257VmlydHF1ZXVlc31cbGFiZWx7c2VjOkRldmljZSBUeXBlcyAvIFJQTUIgRGV2aWNlIC8N
+Cj4gPiArVmlydHF1ZXVlc30NCj4gPiArDQo+ID4gK1xiZWdpbntkZXNjcmlwdGlvbn0NCj4gPiAr
+XGl0ZW1bMF0gcmVxdWVzdHENCj4gPiArXGVuZHtkZXNjcmlwdGlvbn0NCj4gPiArDQo+ID4gK1xz
+dWJzZWN0aW9ue0ZlYXR1cmUgYml0c31cbGFiZWx7c2VjOkRldmljZSBUeXBlcyAvIFJQTUIgRGV2
+aWNlIC8NCj4gPiArRmVhdHVyZSBiaXRzfQ0KPiA+ICsNCj4gPiArTm9uZS4NCj4gPiArDQo+ID4g
+K1xzdWJzZWN0aW9ue0RldmljZSBjb25maWd1cmF0aW9uIGxheW91dH1cbGFiZWx7c2VjOkRldmlj
+ZSBUeXBlcyAvDQo+ID4gK1JQTUIgRGV2aWNlIC8gRGV2aWNlIGNvbmZpZ3VyYXRpb24gbGF5b3V0
+fQ0KPiA+ICsNCj4gPiArQWxsIGZpZWxkcyBvZiB0aGlzIGNvbmZpZ3VyYXRpb24gYXJlIGFsd2F5
+cyBhdmFpbGFibGUuDQo+ID4gKw0KPiA+ICtcYmVnaW57bHN0bGlzdGluZ30NCj4gPiArZW51bSB2
+aXJ0aW9fcnBtYl90eXBlIHsNCj4gPiArICAgICAgICBSUE1CX1RZUEVfSkVERUMsDQo+ID4gKyAg
+ICAgICAgUlBNQl9UWVBFX05WTUUsDQo+IA0KPiBlbnVtIHt9IGhhcyBubyBtZWFuaW5nIGluIHNw
+ZWMuIGFueSBjb25zdGFudHMgbXVzdCBiZSBkZWZpbmVkLg0KPiANCj4gPiArfTsNCj4gPiArDQo+
+IA0KPiBEbyB3ZSBoYXZlIHRvIGV4cG9zZSB0aGUgdHlwZT8gIEkgdGhpbmsgd2UgbmVlZCBmZWF0
+dXJlIGJpdHMgZm9yIHZhcmlvdXMgdGhpbmdzIHNvDQo+IHdlIGNhbiBzcGxpdCB0aGVtIG91dCBs
+YXRlci4NCj4gDQo+IA0KPiANCj4gPiArc3RydWN0IHZpcnRpb19ycG1iX2NvbmZpZyB7DQo+ID4g
+KyAgICAgICAgdTggY2FwYWNpdHk7DQo+ID4gKyAgICAgICAgdTggbWF4X3dyX2NudDsNCj4gPiAr
+ICAgICAgICB1OCBtYXhfcmRfY250Ow0KPiA+ICsgICAgICAgIHU4IGlkOw0KPiA+ICsgICAgICAg
+IHU4IHR5cGU7DQo+ID4gK30NCj4gDQo+IEhvdyBhYm91dCBhZGRpbmcgYSBrZXkgcHJvZ3JhbW1l
+ZCBzdGF0ZSBoZXJlPw0KPiANCj4gDQo+ID4gK1xlbmR7bHN0bGlzdGluZ30NCj4gDQo+IA0KPiBX
+aHkgbm90IHB1dCB0aGUgY291bnRlciBoZXJlPw0KPiANCj4gQXJlIGFsbCBmaWVsZHMgcmVhZC1v
+bmx5Pw0KPiANCj4gPiArDQo+ID4gK1xiZWdpbntkZXNjcmlwdGlvbn0NCj4gPiArXGl0ZW1bXGZp
+ZWxke2NhcGFjaXR5fV0gaXMgdGhlIGNhcGFjaXR5IG9mIHRoZSBkZXZpY2UgKGV4cHJlc3NlZCBp
+biAxMjhLQiB1bml0cykuDQo+ID4gKyAgIFRoZSB2YWx1ZXMgTVVTVCByYW5nZSBiZXR3ZWVuIDB4
+MDAgYW5kIDB4ODAgaW5jbHVzaXZlIGZvciBKRURFQyBkZXZpY2UsDQo+IGFuZA0KPiA+ICsgICAw
+eDAwIGFuZCAweEZGIGluY2x1c2l2ZSBmb3IgTlZNZSBkZXZpY2UuDQo+IA0KPiBJJ2QganVzdCBk
+cm9wIHRoaXMuIHU4IHNvIHVwIHRvIDB4ZmYgYW55d2F5LCBhbmQgSSBkb24ndCB0aGluayBhbnkg
+dXNlcnMgY2FyZSB0aGF0DQo+IHRoZXJlIGFyZSBhIGNvdXBsZSBvZiBleHRyYSBieXRlcy4NCj4g
+DQo+IFRoaW5raW5nIGFib3V0IGl0LCAzMk1ieXRlcyBpc24ndCBodWdlIGF0IGFsbC4gV2h5IG5v
+dCBhbGxvdyBsYXJnZXIgY2FwYWNpdHk/DQo+IA0KPiANCj4gDQo+IA0KPiA+ICtcaXRlbVtcZmll
+bGR7bWF4X3dyX2NudCBhbmQgbWF4X3JkX2NudH1dIGFyZSB0aGUgbWF4aW11bSBudW1iZXJzIG9m
+IFJQTUINCj4gPiArICAgYmxvY2sgY291bnQgdGhhdCBjYW4gYmUgcGVyZm9ybWVkIHRvIGRldmlj
+ZSBpbiBvbmUgcmVxdWVzdC4gMCBpbXBsaWVzDQo+ID4gKyAgIG5vIGxpbWl0YXRpb24uDQo+IA0K
+PiBJIGRvbid0IHVuZGVyc3RhbmQgd2hhdCBkb2VzIGJsb2NrIGNvdW50IG1lYW4gaW4gdGhpcyBj
+b250ZXh0Lg0KPiANCj4gPiArXGl0ZW1bXGZpZWxke2lkfV0gaXMgdGhlIGlkZW50aWZpZXIgb2Yg
+UlBNQiBwYXJ0aXRpb25zLg0KPiANCj4gV2hhdCBkb2VzIHRoaXMgbWVhbj8gd2hhdCBhcmUgdGhl
+IHBhcnRpdGlvbnM/IERpZCB5b3UgbWVhbiBvZiB0aGUgZGV2aWNlPw0KDQppZiB0aGlzIGlzIGZv
+ciBtdWx0aXBsZSBSUE1CIHRhcmdldHMgb3IgdW5pdHMgaW4gc2luZ2xlIHN0b3JhZ2UgZGV2aWNl
+IHdoaWNoIGFyZSBhdmFpbGFibGUvc3VwcG9ydGVkIGluIHJlYWwgVUZTMy4wIG9yIE5WTWUgc3Rv
+cmFnZSBkZXZpY2UsLCBJIGRvbid0IHRoaW5rIHdlIG5lZWQgdG8gaW1wbGVtZW50IHRoaXMgY2Fw
+YWJpbGl0eSBpbiB2aXJ0aW8tcnBtYiBkZXZpY2UuICBCZWNhdXNlIEkgZG9uJ3QgdGhpbmsgd2Ug
+d2lsbCBoYXZlIHJlYWwgdXNhZ2UgbGlrZSB0aGF0IGluIHZpcnR1YWxpemF0aW9uIGVudmlyb25t
+ZW50LiBTbyB3ZSBjYW4ganVzdCBzaW1wbHkgZW11bGF0ZSBhIHNpbmdsZS1SUE1CIHZpcnR1YWwg
+c3RvcmFnZS4gDQpAVG9tYXMsIGRvZXMgdGhpcyBtYWtlIHNlbnNlPw0KDQo+IA0KPiBJIHN1c3Bl
+Y3Qgd2hhdCBpcyBnb2luZyBvbiBpcyB0aGVyZSdzIGFuIGFjdHVhbCBkZXZpY2UgYmVoaW5kIHRo
+aXMsIGFuZCB0aGlzIGlzIGl0cyBJRC4NCj4gV2hpY2ggYWdhaW4gYmVncyB0aGUgcXVlc3Rpb24g
+d2hldGhlciB0aGlzIHNob3VsZCBqdXN0IGJlIGEgcGFydCBvZiBhIGJsayBvciBzY3NpDQo+IGRl
+dmljZS4NCj4gDQo+IA0KPiA+ICtcaXRlbVtcZmllbGR7dHlwZX1dIGlzIHRoZSBycG1iIHR5cGUg
+dGhhdCBkZXZpY2UgZW11bGF0ZXMuIFJQTUJfVFlQRV9KRURFQw0KPiA+ICsgICByZWZlcnMgdG8g
+ZU1NQyBvciBVRlMgd2hpbGUgUlBNQl9UWVBFX05WTUUgcmVmZXJzIHRvIE5WTWUuDQo+ID4gK1xl
+bmR7ZGVzY3JpcHRpb259DQo+IA0KPiBEb2VzIG5vdCBsb29rIGxpa2Ugd2UgZW11bGF0ZSBhbnl0
+aGluZy4NCj4gDQo+ID4gKw0KPiA+ICtcZGV2aWNlbm9ybWF0aXZle1xzdWJzZWN0aW9ufXtEZXZp
+Y2UgSW5pdGlhbGl6YXRpb259e0RldmljZSBUeXBlcyAvDQo+ID4gK1JQTUIgRGV2aWNlIC8gRGV2
+aWNlIEluaXRpYWxpemF0aW9ufQ0KPiA+ICsNCj4gPiArXGJlZ2lue2VudW1lcmF0ZX0NCj4gPiAr
+XGl0ZW0gVGhlIHZpcnRxdWV1ZSBpcyBpbml0aWFsaXplZC4NCj4gPiArXGl0ZW0gVGhlIGF1dGhl
+bnRpY2F0aW9uIGtleSBvZiBkZXZpY2UgTVVTVCBOT1QgYmUgcHJvZ3JhbW1lZCBhdCB0aGUgZmly
+c3QNCj4gZGV2aWNlIGluaXRpYWxpemF0aW9uLg0KPiANCj4gV2hhdCBpcyAiZmlyc3QgZGV2aWNl
+IGluaXRpYWxpemF0aW9uIj8gVGhlIGNvbmNlcHQgZG9lcyBub3Qgc2VlbSB0byBhcHBseSB0byB2
+aXJ0dWFsDQo+IGRldmljZXMuIEhvdyBhYm91dCB3ZSBqdXN0IGhhdmUgZGV2aWNlIHByZS1pbml0
+aWFsaXplZCB0byBzb21lIGtleT8gT3IgbWF5YmUNCj4gZGV2aWNlIGNhbiBiZSBpbiB0d28gc3Rh
+dGVzLCBrZXkgcHJvZ3JhbW1pbmcgYW5kIG9wZXJhdGlvbj8NCj4gDQo+IA0KPiBBbGwgY29uZm9y
+bWFuY2UgY2xhdXNlcyBiZWxvbmcgaW4gY29uZm9ybWFuY2Ugc2VjdGlvbnMuICBoZXJlIGFuZCBl
+bHNld2hlcmUuDQo+IA0KPiA+ICtcaXRlbSBUaGUgZGV2aWNlIGNhcGFjaXR5IE1VU1QgYmUgaW5p
+dGlhbGl6ZWQgdG8gYSBtdWx0aXBsZSBvZiAxMjhLYnl0ZXMgYW5kDQo+IHVwIHRvDQo+ID4gKyAg
+ICAxNk1ieXRlcy8zMk1ieXRlcyAoSkVERUMvTlZNZSBkZXZpY2UgcmVzcGVjdGl2ZWx5KS4NCj4g
+PiArXGVuZHtlbnVtZXJhdGV9DQo+IA0KPiBTbyBpbnN0ZWFkIG9mIGJsaW5kbHkgY29weWluZyBs
+aW1pdGF0aW9ucyBvZiBwaHlzaWNhbCBkZXZpY2VzLCB3ZSBjYW4ganVzdCBhbGxvdw0KPiBoeXBl
+cnZpc29yIHRvIHNldCBhbnkgY2FwYWNpdHkuDQo+IA0KPiA+ICsNCj4gPiArXHN1YnNlY3Rpb257
+RGV2aWNlIE9wZXJhdGlvbn1cbGFiZWx7c2VjOkRldmljZSBUeXBlcyAvIFJQTUIgRGV2aWNlIC8N
+Cj4gPiArRGV2aWNlIE9wZXJhdGlvbn0NCj4gPiArDQo+ID4gK1RoZSBvcGVyYXRpb24gb2YgYSB2
+aXJ0aW8gUlBNQiBkZXZpY2UgaXMgZHJpdmVuIGJ5IHRoZSByZXF1ZXN0cyBwbGFjZWQgb24gdGhl
+DQo+IHZpcnRxdWV1ZS4NCj4gPiArICBUaGUgdHlwZSBvZiB0aGUgcmVxdWVzdCBjYW4gYmUgcHJv
+Z3JhbSBrZXkNCj4gPiArKFZJUlRJT19SUE1CX1JFUV9QUk9HUkFNX0tFWSksDQo+ID4gKyAgZ2V0
+IHdyaXRlIGNvdW50ZXIgKFZJUlRJT19SUE1CX1JFUV9HRVRfV1JJVEVfQ09VTlRFUiksDQo+ID4g
+KyAgd3JpdGUgKFZJUlRJT19SUE1CX1JFUV9EQVRBX1dSSVRFKSwgYW5kIHJlYWQNCj4gKFZJUlRJ
+T19SUE1CX1JFUV9EQVRBX1JFQUQpLg0KPiA+ICsgIEEgcHJvZ3JhbSBrZXkgb3Igd3JpdGUgcmVx
+dWVzdCBjYW4gYWxzbyBjb21iaW5lIHdpdGggYQ0KPiA+ICsgIHJlc3VsdCByZWFkIChWSVJUSU9f
+UlBNQl9SRVFfUkVTVUxUX1JFQUQpIGZvciBhIHJldHVybmVkIHJlc3VsdC4NCj4gPiArDQo+ID4g
+K1xiZWdpbntsc3RsaXN0aW5nfQ0KPiA+ICsvKiBSUE1CIFJlcXVlc3QgVHlwZXMgKi8NCj4gPiAr
+I2RlZmluZSBWSVJUSU9fUlBNQl9SRVFfUFJPR1JBTV9LRVkgICAgICAgIDB4MDAwMQ0KPiA+ICsj
+ZGVmaW5lIFZJUlRJT19SUE1CX1JFUV9HRVRfV1JJVEVfQ09VTlRFUiAgMHgwMDAyDQo+ID4gKyNk
+ZWZpbmUgVklSVElPX1JQTUJfUkVRX0RBVEFfV1JJVEUgICAgICAgICAweDAwMDMNCj4gPiArI2Rl
+ZmluZSBWSVJUSU9fUlBNQl9SRVFfREFUQV9SRUFEICAgICAgICAgIDB4MDAwNA0KPiA+ICsjZGVm
+aW5lIFZJUlRJT19SUE1CX1JFUV9SRVNVTFRfUkVBRCAgICAgICAgMHgwMDA1DQo+ID4gK1xlbmR7
+bHN0bGlzdGluZ30NCj4gPiArDQo+ID4gK1xzdWJzdWJzZWN0aW9ue0RldmljZSBPcGVyYXRpb246
+IFJlcXVlc3QgUXVldWV9XGxhYmVse3NlYzpEZXZpY2UNCj4gPiArVHlwZXMgLyBSUE1CIERldmlj
+ZSAvIERldmljZSBPcGVyYXRpb24gLyBEZXZpY2UgT3BlcmF0aW9uOiBSZXF1ZXN0DQo+ID4gK1F1
+ZXVlfQ0KPiA+ICsNCj4gPiArVGhlIHJlcXVlc3QgaW5mb3JtYXRpb24gaXMgZGVsaXZlcmVkIGlu
+IFJQTUIgZnJhbWUuDQo+ID4gK1RoZSBmcmFtZSBpcyBpbiBzaXplIG9mIDUxMkIgZm9yIEpFREVD
+IFJQTUIsIGFuZCBpbiBzaXplIG9mIDI1NkIgcGx1cw0KPiA+ICttdWx0aXBsZSA1MTJCIGZvciBO
+Vk1lIFJQTUIgZGVwZW5kaW5nIG9uIHRoZSB2YXJpYWJsZSBkYXRhIHNpemUuDQo+IA0KPiBBZ2Fp
+biB0aGlzIGlzIGp1c3QgbWVzc3kuIExldCdzIGNvbWUgdXAgd2l0aCBhIG1pbmltYWwgc3BlYy4N
+Cj4gU2VlIGVuZCBvZiB0aGUgbWVzc2FnZSBwbHMuDQo+IA0KPiA+ICsNCj4gPiArXGJlZ2lue2xz
+dGxpc3Rpbmd9DQo+ID4gK3N0cnVjdCB2aXJ0aW9fcnBtYl9mcmFtZV9qZWRlYyB7DQo+ID4gKyAg
+ICAgICAgdTggc3R1ZmZbMTk2XTsNCj4gPiArICAgICAgICB1OCBrZXlfbWFjWzMyXTsNCj4gPiAr
+ICAgICAgICB1OCBkYXRhWzI1Nl07DQo+ID4gKyAgICAgICAgdTggbm9uY2VbMTZdOw0KPiA+ICsg
+ICAgICAgIGJlMzIgd3JpdGVfY291bnRlcjsNCj4gPiArICAgICAgICBiZTE2IGFkZHJlc3M7DQo+
+ID4gKyAgICAgICAgYmUxNiBibG9ja19jb3VudDsNCj4gPiArICAgICAgICBiZTE2IHJlc3VsdDsN
+Cj4gPiArICAgICAgICBiZTE2IHJlcV9yZXNwOw0KPiA+ICt9Ow0KPiA+ICsNCj4gPiArc3RydWN0
+IHZpcnRpb19ycG1iX2ZyYW1lX252bWUgew0KPiA+ICsgICAgICAgIHU4IHN0dWZmIFsxOTFdOw0K
+PiA+ICsgICAgICAgIHU4IGtleV9tYWNbMzJdOw0KPiA+ICsgICAgICAgIHU4IHJwbWJfdGFyZ2V0
+Ow0KPiA+ICsgICAgICAgIHU4IG5vbmNlWzE2XTsNCj4gPiArICAgICAgICBsZTMyIHdyaXRlX2Nv
+dW50ZXI7DQo+ID4gKyAgICAgICAgbGUzMiBhZGRyZXNzOw0KPiA+ICsgICAgICAgIGxlMzIgYmxv
+Y2tfY291bnQ7DQo+ID4gKyAgICAgICAgbGUxNiByZXN1bHQ7DQo+ID4gKyAgICAgICAgbGUxNiBy
+ZXFfcmVzcDsNCj4gPiArICAgICAgICB1OCBkYXRhWzBdOw0KPiA+ICt9Ow0KPiANCj4gT2ggZnVu
+LCBhIG1peCBvZiBMRSBhbmQgQkUuDQo+IA0KPiBMZXQncyBtYWtlIGV2ZXJ5dGhpbmcgY29uc2lz
+dGVudC4NCj4gDQo+IFdoeSBkbyB3ZSBuZWVkIHRoZSAic3R1ZmYiIGZpZWxkPyBJdCBoZWxwcyBh
+bGlnbiB0aGUgc2l6ZSB0byAyNTYgYnl0ZSBib3VuZGFyeSAtIGJ1dA0KPiB3aHkgZG8gd2UgY2Fy
+ZT8NCj4gDQo+IA0KPiANCj4gPiArDQo+ID4gKy8qIFJQTUIgUmVzcG9uc2UgVHlwZXMgKi8NCj4g
+PiArI2RlZmluZSBWSVJUSU9fUlBNQl9SRVNQX1BST0dSQU1fS0VZICAgICAgICAgICAweDAxMDAN
+Cj4gPiArI2RlZmluZSBWSVJUSU9fUlBNQl9SRVNQX0dFVF9DT1VOVEVSICAgICAgICAgICAweDAy
+MDANCj4gPiArI2RlZmluZSBWSVJUSU9fUlBNQl9SRVNQX0RBVEFfV1JJVEUgICAgICAgICAgICAw
+eDAzMDANCj4gPiArI2RlZmluZSBWSVJUSU9fUlBNQl9SRVNQX0RBVEFfUkVBRCAgICAgICAgICAg
+ICAweDA0MDANCj4gPiArDQo+ID4gKy8qIFJQTUIgT3BlcmF0aW9uIFJlc3VsdHMgKi8NCj4gPiAr
+I2RlZmluZSBWSVJUSU9fUlBNQl9SRVNfT0sgICAgICAgICAgICAgICAgICAgICAweDAwMDANCj4g
+PiArI2RlZmluZSBWSVJUSU9fUlBNQl9SRVNfR0VORVJBTF9GQUlMVVJFICAgICAgICAweDAwMDEN
+Cj4gPiArI2RlZmluZSBWSVJUSU9fUlBNQl9SRVNfQVVUSF9GQUlMVVJFICAgICAgICAgICAweDAw
+MDINCj4gPiArI2RlZmluZSBWSVJUSU9fUlBNQl9SRVNfQ09VTlRfRkFJTFVSRSAgICAgICAgICAw
+eDAwMDMNCj4gPiArI2RlZmluZSBWSVJUSU9fUlBNQl9SRVNfQUREUl9GQUlMVVJFICAgICAgICAg
+ICAweDAwMDQNCj4gPiArI2RlZmluZSBWSVJUSU9fUlBNQl9SRVNfV1JJVEVfRkFJTFVSRSAgICAg
+ICAgICAweDAwMDUNCj4gPiArI2RlZmluZSBWSVJUSU9fUlBNQl9SRVNfUkVBRF9GQUlMVVJFICAg
+ICAgICAgICAweDAwMDYNCj4gPiArI2RlZmluZSBWSVJUSU9fUlBNQl9SRVNfTk9fQVVUSF9LRVkg
+ICAgICAgICAgICAweDAwMDcNCj4gPiArI2RlZmluZSBWSVJUSU9fUlBNQl9SRVNfV1JJVEVfQ09V
+TlRFUl9FWFBJUkVEICAweDAwODANCj4gPiArXGVuZHtsc3RsaXN0aW5nfQ0KPiA+ICsNCj4gPiAr
+XGJlZ2lue2Rlc2NyaXB0aW9ufQ0KPiA+ICtcaXRlbVtcZmllbGR7c3R1ZmZ9XSBQYWRkaW5nIGZv
+ciB0aGUgZnJhbWUuDQo+ID4gKw0KPiA+ICtcaXRlbVtcZmllbGR7a2V5X21hY31dIGlzIHRoZSBh
+dXRoZW50aWNhdGlvbiBrZXkgb3IgdGhlIG1lc3NhZ2UNCj4gPiArICAgYXV0aGVudGljYXRpb24g
+Y29kZSAoTUFDKSBkZXBlbmRpbmcgb24gdGhlIHJlcXVlc3QvcmVzcG9uc2UgdHlwZS4NCj4gPiAr
+ICAgSWYgdGhlIHJlcXVlc3QgaXMgVklSVElPX1JQTUJfUkVRX1BST0dSQU1fS0VZLCBpdCdzIHVz
+ZWQgYXMNCj4gPiArICAgYXV0aGVudGljYXRpb24ga2V5LiBPdGhlcndpc2UsIGl0J3MgdXNlZCBh
+cyBNQUMuIFRoZSBNQUMgaXMgY2FsY3VsYXRlZA0KPiA+ICsgICB1c2luZyBITUFDIFNIQS0yNTYu
+DQo+IA0KPiBTSEEtMjU2IGlzIHByZXR0eSBvbGQuIE5vdCBiZWluZyBhIGNyeXB0b2dyYXBoZXIg
+SSBkb24ndCByZWFsbHkga25vdyB3aGV0aGVyIGl0J3MNCj4gc3RpbGwgYSBnb29kIG1hYyB0byB1
+c2UgaW4gMjAxOS4NCg0KDQpZZXMsIFNIQS0yNTYgaXMgcHJldHR5IG9sZCwgU0hBLTM4NCBvciBs
+YXJnZXIgd291bGQgYmUgZ29vZCwgYnV0IGFjdHVhbGx5IF5ITUFDXiB3LyBTSEEtMjU2IGlzIHN0
+aWxsIHNhZmUgKGF0IGxlYXN0IGJlZm9yZSB5ZWFyIDIwMzAgYWNjb3JkaW5nIHRvIG91ciBjcnlw
+dG8gZXhwZXJ0cykgLiBhbHNvLCByaWdodCBub3cgZU1NQy9VRlMgb25seSBkZWZpbmVzIEhNQUMg
+U0hBMjU2LiBOVk1lIGNhbiBvcHRpb25hbGx5IHN1cHBvcnQgaGlnaGVyLg0KDQpCdXQgbm90IHN1
+cmUgaWYgaXQgaXMgcG9zc2libGUgdG8gZXh0ZW5kIHRoaXMgaW4gdGhlIGZ1dHVyZSB1cGdyYWRl
+LiANCg0KPiBHZW5lcmFsbHkgc2VjdXJpdHkgY29uc2lkZXJhdGlvbnMgc2hvdWxkIHByb2JhYmx5
+IGJlIHByZXNlbnRlZCB3aXRoIGFueXRoaW5nDQo+IGRlYWxpbmcgd2l0aCBjcnlwdG8uDQo+IElu
+IHRoaXMgY2FzZSwgSSdkIGRvIGEgZmVhdHVyZSBiaXQgc28gd2UgY2FuIGNoYW5nZSB0aGUgY3J5
+cHRvIGRvd24gdGhlIHJvYWQuDQo+IA0KPiANCj4gPiBJdCB0YWtlcyBhcyBpbnB1dCBhIGtleSBh
+bmQgYSBtZXNzYWdlLiBUaGUga2V5DQo+ID4gKyAgIHVzZWQgZm9yIHRoZSBNQUMgY2FsY3VsYXRp
+b24gaXMgYWx3YXlzIHRoZSAyNTYgYml0IFJQTUIgYXV0aGVudGljYXRpb24NCj4gPiArICAga2V5
+LiBUaGUgbWVzc2FnZSB1c2VkIGFzIGlucHV0IHRvIHRoZSBNQUMgY2FsY3VsYXRpb24gaXMgdGhl
+DQo+ID4gKyAgIGNvbmNhdGVuYXRpb24gb2YgdGhlIGZpZWxkcyBpbiB0aGUgUlBNQiBmcmFtZXMg
+ZXhjbHVkaW5nIHN0dWZmIGJ5dGVzDQo+ID4gKyAgIGFuZCB0aGUgTUFDIGl0c2VsZi4NCj4gPiAr
+DQo+ID4gK1xpdGVtW1xmaWVsZHtycG1iX3RhcmdldH1dIGlzIHRoZSBleGNsdXNpdmUgaXRlbSBm
+b3IgTlZNZSBkZXZpY2UuIEl0IGlzDQo+ID4gKyAgIHRoZSBSUE1CIHRhcmdldCB0byBhY2Nlc3Mu
+DQo+IA0KPiBUaGVyZSBhcmUgbXVsdGlwbGUgdGFyZ2V0cyB0b28/DQo+IA0KPiA+ICsNCj4gPiAr
+XGl0ZW1bXGZpZWxke2RhdGF9XSBpcyB1c2VkIHRvIGJlIHdyaXR0ZW4gb3IgcmVhZCBieSBzaWdu
+ZWQgYWNjZXNzLg0KPiANCj4gV2hhdCBkb2VzIHNpZ25lZCBhY2Nlc3MgbWVhbj8NCj4gDQo+ID4g
+SXQncw0KPiA+ICsgICBmaXhlZCAyNTZCIGZvciBKRURFQyBkZXZpY2Ugd2hpbGUgdmFyaWFibGUg
+c2l6ZWQgcGF5bG9hZA0KPiA+ICsgICA1MTIgKiBcZmllbGR7YmxvY2tfY291bnR9IGZvciBOVk1l
+IGRldmljZS4NCj4gPiArDQo+ID4gK1xpdGVtW1xmaWVsZHtub25jZX1dIGlzIGEgcmFuZG9tIG51
+bWJlcg0KPiANCj4gDQo+IHJhbmRvbSBob3c/IEkgdGhpbmsgaXQgY2FuIGp1c3QgYmUgYW55dGhp
+bmcuDQo+IA0KPiANCj4gPiBnZW5lcmF0ZWQgYnkgdXNlciBmb3IgdGhlIHJlYWQgb3INCj4gPiAr
+ICAgZ2V0IHdyaXRlIGNvdW50ZXIgcmVxdWVzdHMgYW5kIGNvcGllZCB0byB0aGUgcmVzcG9uc2Ug
+YnkgZGV2aWNlLg0KPiA+ICsNCj4gPiArXGl0ZW1bXGZpZWxke3dyaXRlcl9jb3VudGVyfV0gaXMg
+dGhlIGNvdW50ZXIgdmFsdWUgZm9yIHRoZSB0b3RhbCBhbW91bnQgb2YNCj4gPiArICAgdGhlIHN1
+Y2Nlc3NmdWwgYXV0aGVudGljYXRlZCBkYXRhIHdyaXRlIHJlcXVlc3RzLg0KPiA+ICsNCj4gPiAr
+XGl0ZW1bXGZpZWxke2FkZHJlc3N9XSBpcyB0aGUgYWRkcmVzcyBvZiB0aGUgZGF0YSB0byBiZSB3
+cml0dGVuIHRvIG9yIHJlYWQNCj4gPiArICAgZnJvbSB0aGUgUlBNQiB2aXJ0aW8gZGV2aWNlLiBJ
+dCBpcyB0aGUgc2VyaWFsIG51bWJlciBvZiB0aGUgYWNjZXNzZWQNCj4gPiArICAgaGFsZiBzZWN0
+b3IgKDI1NkIgZm9yIEpFREVDIGRldmljZSkgb3Igc2VjdG9yICg1MTJCIGZvciBOVk1lIGRldmlj
+ZSkuDQo+IA0KPiBzZXJpYWwgbnVtYmVyPw0KPiANCj4gPiArDQo+ID4gK1xpdGVtW1xmaWVsZHti
+bG9ja19jb3VudH1dIGlzIHRoZSBudW1iZXIgb2YgYmxvY2tzICgyNTZCIGZvciBKRURFQyBhbmQg
+NTEyQg0KPiA+ICsgICBmb3IgTlZNZSkgcmVxdWVzdGVkIHRvIGJlIHJlYWQvd3JpdHRlbi4NCj4g
+DQo+IGNhbid0IHRoaXMgYmUgaW50dWl0ZWQgZnJvbSB0aGUgYnVmZmVyIHNpemUgc29tZWhvdz8N
+Cj4gDQo+IEkgZG9uJ3QgcmVhbGx5IHVuZGVyc3RhbmQgaG93IGNhbiB5b3UgYm90aCBoYXZlIGJs
+b2NrX2NvdW50IGFuZCBhIGZpeGVkIHNpemUgZGF0YS4NCj4gaG93IGRvZXMgdGhpcyBtYWtlIHNl
+bnNlPw0KPiANCj4gDQo+ID4gKw0KPiA+ICtcaXRlbVtcZmllbGR7cmVzdWx0fV0gaW5jbHVkZXMg
+aW5mb3JtYXRpb24gYWJvdXQgdGhlIHN0YXR1cyBvZiBhY2Nlc3MgbWFkZQ0KPiA+ICsgICB0byB0
+aGUgZGV2aWNlLg0KPiA+ICsNCj4gDQo+IFNvIEkgYW0gZ3Vlc3NpbmcgcmVzdWx0IGlzIHdyaXR0
+ZW4gYnkgdGhlIGRldmljZT8NCj4gQW5kIHR5cGUgaXMgd3JpdHRlbiBieSB0aGUgZHJpdmVyPw0K
+PiB0aGlzIGRvZXMgbm90IHBsYXkgd2VsbCB3aXRoIHZpcnRpbyB3aGVyZSB3cml0ZSBmaWVsZHMg
+YXJlIGZvbGxvd2VkIGJ5IHJlYWQgZmllbGRzLg0KPiANCj4gDQo+ID4gK1xpdGVtW1xmaWVsZHty
+ZXFfcmVzcH1dIGlzIHRoZSB0eXBlIG9mIHJlcXVlc3Qgb3IgcmVzcG9uc2UsIGFzIGRlZmluZWQg
+YWJvdmUsDQo+ID4gKyAgIHRvL2Zyb20gdGhlIGRldmljZS4NCj4gDQo+IHRoaXMgc2VlbXMgdG8g
+YmUgdGhlIDFzdCBkZWZpbml0aW9uLiBQbGVhc2UgYXZvaWQgImFib3ZlIiBhbmQgImJlbG93Iiwg
+anVzdCBsaW5rIHRvDQo+IHRoZSBkZWZpbml0aW9uLg0KPiANCj4gPiArXGVuZHtkZXNjcmlwdGlv
+bn0NCj4gPiArDQo+ID4gK1xkZXZpY2Vub3JtYXRpdmV7XHBhcmFncmFwaH17RGV2aWNlIE9wZXJh
+dGlvbjogUmVxdWVzdCBRdWV1ZX17RGV2aWNlDQo+ID4gK1R5cGVzIC8gUlBNQiBEZXZpY2UgLyBE
+ZXZpY2UgT3BlcmF0aW9uIC8gRGV2aWNlIE9wZXJhdGlvbjogUmVxdWVzdA0KPiA+ICtRdWV1ZX0N
+Cj4gPiArDQo+ID4gK1RoZSBkZXZpY2UgTVVTVCBwYXJzZSB0aGUgcmVxdWVzdCBmcm9tIHRoZSBy
+ZXF1ZXN0IHF1ZXVlIGFuZCBlbXVsYXRlDQo+ID4gK3RoZSBiZWhhdmlvdXJzIGRlc2NyaWJlZCBp
+biBwYXJhZ3JhcGgNCj4gPiArNi42LjIyIG9mIFxoeXBlcnJlZltpbnRybzplTU1DXXtlTU1DfSwg
+MTIuNCBvZiBcaHlwZXJyZWZbaW50cm86VUZTXXtVRlN9IG9yDQo+IDguMTAgb2YgXGh5cGVycmVm
+W2ludHJvOk5WTWVde05WTWV9Og0KPiANCj4gSWYgeW91IGFyZSBnb2luZyB0byBlbXVsYXRlIGV4
+aXN0aW5nIHNwZWNzLCB0aGVuIHdoeSBub3QganVzdCBlbXVsYXRlIGFuIGV4aXN0aW5nDQo+IHNw
+ZWM/IFdoeSBib3RoZXIgd2l0aCB2aXJ0aW8gYXQgYWxsPyBZb3UgZ2FpbiBhYmlsaXR5IHRvIHVz
+ZSBleGlzdGluZyBkcml2ZXJzLg0KPiANCj4gSWYgdGhlIHJlYXNvbiBpcyB0byBtYWtlIGEgY2xl
+YW4gYWJzdHJhY3Rpb24sIHRoZW4gSU1ITyB0aGlzIGZhbGxzIHNob3J0IG9mIHRoaXMgZ29hbCwN
+Cj4gY2Fycnlpbmcgb24gYWxsIGtpbmQgb2YgYmFnZ2FnZSBmcm9tIGhhcmR3YXJlIHNwZWNzLg0K
+PiANCj4gPiArDQo+ID4gK1xiZWdpbntkZXNjcmlwdGlvbn0NCj4gPiArDQo+ID4gK1xpdGVtW1ZJ
+UlRJT19SUE1CX1JFUV9QUk9HUkFNX0tFWV0gSWYgYmxvY2sgY291bnQgaGFzIG5vdCBiZWVuIHNl
+dCB0byAxDQo+ID4gKyAgIHRoZW4gVklSVElPX1JQTUJfUkVTX0dFTkVSQUxfRkFJTFVSRSBpcyBy
+ZXNwb25kZWQuIElmIHByb2dyYW1taW5nIG9mDQo+ID4gKyAgIGF1dGhlbnRpY2F0aW9uIGtleSBm
+YWlscyB0aGVuIHJldHVybmVkIHJlc3VsdCBpcw0KPiBWSVJUSU9fUlBNQl9SRVNfV1JJVEVfRkFJ
+TFVSRS4NCj4gPiArICAgSWYgc29tZSBvdGhlciBlcnJvciBvY2N1cnMgdGhlbiByZXR1cm5lZCBy
+ZXN1bHQgaXMNCj4gVklSVElPX1JQTUJfUkVTX0dFTkVSQUxfRkFJTFVSRS4NCj4gPiArICAgVGhl
+IFxmaWVsZHtyZXFfcmVzcH0gdmFsdWUgVklSVElPX1JQTUJfUkVTUF9QUk9HUkFNX0tFWSBjb3Jy
+ZXNwb25kcyB0bw0KPiA+ICsgICB0aGUga2V5IHByb2dyYW1taW5nIHJlcXVlc3QuDQo+ID4gKw0K
+PiA+ICsgICBJZiBWSVJUSU9fUlBNQl9SRVFfUkVTVUxUX1JFQUQgaXMgcmVxdWVzdGVkLCB0aGUg
+ZGV2aWNlIHJldHVybnMgdGhlDQo+IFJQTUIgZnJhbWUNCj4gPiArICAgd2l0aCByZXNwb25zZSAo
+VklSVElPX1JQTUJfUkVTUF9QUk9HUkFNX0tFWSksIHRoZSBjYWxjdWxhdGVkIE1BQyBhbmQNCj4g
+dGhlIHJlc3VsdC4NCj4gDQo+IEkgZG9uJ3Qgc2VlIHdoYXQgZG9lcyBWSVJUSU9fUlBNQl9SRVFf
+UkVTVUxUX1JFQUQgYnV5IHVzLg0KPiBJIGd1ZXNzIGl0IHByb3ZlcyBrZXkgaGFzIGJlZW4gcHJv
+Z3JhbW1lZCAtIGJ1dCBpZiBzb21lb25lIGNhbiBzbm9vcCBvbg0KPiBwcm9ncmFtbWluZyB0aGVu
+IGZvciBzdXJlIGhlIGhhcyB0aGUga2V5IGFuZCB3b24ndCBoYXZlIHRyb3VibGUgZmFraW5nIHRo
+ZSBtYWMuDQo+IA0KPiA+ICsNCj4gPiArXGl0ZW1bVklSVElPX1JQTUJfUkVRX0dFVF9XUklURV9D
+T1VOVEVdIElmIHRoZSBhdXRoZW50aWNhdGlvbiBrZXkgaXMNCj4gbm90IHlldA0KPiA+ICsgICBw
+cm9ncmFtbWVkIHRoZW4gVklSVElPX1JQTUJfUkVTX05PX0FVVEhfS0VZIGlzIHJldHVybmVkIGlu
+DQo+IFxmaWVsZHtyZXN1bHR9Lg0KPiA+ICsgICBJZiBibG9jayBjb3VudCBoYXMgbm90IGJlZW4g
+c2V0IHRvIDEgdGhlbg0KPiBWSVJUSU9fUlBNQl9SRVNfR0VORVJBTF9GQUlMVVJFDQo+ID4gKyAg
+IFNIT1VMRCBiZSByZXNwb25kZWQuDQo+ID4gKw0KPiA+ICsgICBUaGUgZGV2aWNlIHJldHVybnMg
+dGhlIFJQTUIgZnJhbWUgd2l0aCByZXNwb25zZQ0KPiAoVklSVElPX1JQTUJfUkVTUF9HRVRfQ09V
+TlRFUiksDQo+ID4gKyAgIHRoZSB3cml0ZXIgY291bnRlciwgYSBjb3B5IG9mIHRoZSBub25jZSBy
+ZWNlaXZlZCBpbiB0aGUgcmVxdWVzdCwgdGhlDQo+IGNhbGN1bGF0ZWQNCj4gPiArICAgTUFDIGFu
+ZCB0aGUgcmVzdWx0Lg0KPiA+ICsNCj4gPiArXGl0ZW1bVklSVElPX1JQTUJfUkVRX0RBVEFfV1JJ
+VEVdIElmIHRoZSBhdXRoZW50aWNhdGlvbiBrZXkgaXMgbm90IHlldA0KPiBwcm9ncmFtbWVkDQo+
+ID4gKyAgIHRoZW4gVklSVElPX1JQTUJfUkVTX05PX0FVVEhfS0VZIGlzIHJldHVybmVkIGluIFxm
+aWVsZHtyZXN1bHR9LiBJZiBibG9jaw0KPiBjb3VudA0KPiA+ICsgICBpcyB6ZXJvIG9yIGdyZWF0
+ZXIgdGhhbiBcZmllbGR7bWF4X3dyX2NudH0gdGhlbg0KPiBWSVJUSU9fUlBNQl9SRVNfR0VORVJB
+TF9GQUlMVVJFDQo+ID4gKyAgIE1VU1QgYmUgcmVzcG9uZGVkLiBUaGUgZGV2aWNlIE1VU1QgY2hl
+Y2sgd2hldGhlciB0aGUgd3JpdGUgY291bnRlciBoYXMNCj4gZXhwaXJlZC4NCj4gPiArICAgSWYg
+dGhlIHdyaXRlIGNvdW50ZXIgaXMgZXhwaXJlZCB0aGVuIHNldHMgdGhlIFxmaWVsZHtyZXN1bHR9
+IHRvDQo+ID4gKyAgIFZJUlRJT19SUE1CX1JFU19XUklURV9DT1VOVEVSX0VYUElSRUQuIElmIHRo
+ZXJlIGlzIGFuIGVycm9yIGluIHRoZQ0KPiBhZGRyZXNzDQo+ID4gKyAgIChvdXQgb2YgcmFuZ2Up
+IHRoZW4gdGhlIFxmaWVsZHtyZXN1bHR9IGlzIHNldCB0bw0KPiBWSVJUSU9fUlBNQl9SRVNfQURE
+Ul9GQUlMVVJFLg0KPiA+ICsgICBUaGUgZGV2aWNlIE1VU1QgY2FsY3VsYXRlIHRoZSBNQUMgdGFr
+aW5nIGF1dGhlbnRpY2F0aW9uIGtleSBhbmQgZnJhbWUgYXMNCj4gaW5wdXQsDQo+ID4gKyAgIGFu
+ZCBjb21wYXJlcyB0aGlzIHdpdGggdGhlIE1BQyBpbiB0aGUgcmVxdWVzdC4gSWYgdGhlIHR3byBN
+QUPigJlzIGFyZQ0KPiBkaWZmZXJlbnQNCj4gPiArICAgdGhlbiBWSVJUSU9fUlBNQl9SRVNfQVVU
+SF9GQUlMVVJFIGlzIHJldHVybmVkLg0KPiA+ICsNCj4gPiArICAgSWYgdGhlIHdyaXRlciBjb3Vu
+dGVyIGluIHRoZSByZXF1ZXN0IHdpdGggaXMgZGlmZmVyZW50IGZyb20gdGhlIG9uZQ0KPiBtYWlu
+dGFpbmVkDQo+ID4gKyAgIGJ5IGRldmljZSB0aGVuIFZJUlRJT19SUE1CX1JFU19DT1VOVF9GQUlM
+VVJFIGlzIHJldHVybmVkIGluDQo+IFxmaWVsZHtyZXN1bHR9Lg0KPiA+ICsgICBJZiB0aGUgTUFD
+IGFuZCB3cml0ZSBjb3VudGVyIGNvbXBhcmlzb25zIGFyZSBzdWNjZXNzZnVsIHRoZW4gdGhlIHdy
+aXRlDQo+IHJlcXVlc3QNCj4gPiArICAgaXMgY29uc2lkZXJlZCB0byBiZSBhdXRoZW50aWNhdGVk
+LiBUaGUgZGF0YSBmcm9tIHRoZSByZXF1ZXN0IGFyZSB3cml0dGVuIHRvDQo+IHRoZQ0KPiA+ICsg
+ICBhZGRyZXNzIGluZGljYXRlZCBpbiB0aGUgcmVxdWVzdCBhbmQgdGhlIHdyaXRlIGNvdW50ZXIg
+aXMgaW5jcmVtZW50ZWQgYnkgMS4NCj4gPiArICAgSWYgd3JpdGUgZmFpbHMgdGhlbiByZXR1cm5l
+ZCByZXN1bHQgaXMgVklSVElPX1JQTUJfUkVTX1dSSVRFX0ZBSUxVUkUuIElmDQo+IHNvbWUNCj4g
+PiArICAgb3RoZXIgZXJyb3Igb2NjdXJzIGR1cmluZyB0aGUgd3JpdGUgcHJvY2VkdXJlIHRoZW4g
+cmV0dXJuZWQgcmVzdWx0IGlzDQo+ID4gKyAgIFZJUlRJT19SUE1CX1JFU19HRU5FUkFMX0ZBSUxV
+UkUuDQo+ID4gKw0KPiA+ICsgICBJZiBWSVJUSU9fUlBNQl9SRVFfUkVTVUxUX1JFQUQgaXMgcmVx
+dWVzdGVkLCB0aGUgZGV2aWNlIHJldHVybnMgdGhlDQo+IFJQTUIgZGF0YQ0KPiA+ICsgICBmcmFt
+ZSB3aXRoIHJlc3BvbnNlIChWSVJUSU9fUlBNQl9SRVNQX0RBVEFfV1JJVEUpLCB0aGUgaW5jcmVt
+ZW50ZWQNCj4gY291bnRlciB2YWx1ZSwNCj4gPiArICAgdGhlIGRhdGEgYWRkcmVzcywgdGhlIGNh
+bGN1bGF0ZWQgTUFDIGFuZCByZXN1bHQuDQo+ID4gKw0KPiA+ICtcaXRlbVtWSVJUSU9fUlBNQl9S
+RVFfREFUQV9SRUFEXSBJZiB0aGUgYXV0aGVudGljYXRpb24ga2V5IGlzIG5vdCB5ZXQNCj4gcHJv
+Z3JhbW1lZA0KPiA+ICsgICB0aGVuIFZJUlRJT19SUE1CX1JFU19OT19BVVRIX0tFWSBpcyByZXR1
+cm5lZCBpbiBcZmllbGR7cmVzdWx0fS4gSWYgYmxvY2sNCj4gY291bnQNCj4gPiArICAgaGFzIG5v
+dCBiZWVuIHNldCB0byAxIHRoZW4gVklSVElPX1JQTUJfUkVTX0dFTkVSQUxfRkFJTFVSRSBNVVNU
+IGJlDQo+IHJlc3BvbmRlZC4NCj4gPiArICAgSWYgdGhlcmUgaXMgYW4gZXJyb3IgaW4gdGhlIGFk
+ZHJlc3MgKG91dCBvZiByYW5nZSkgdGhlbiB0aGUgXGZpZWxke3Jlc3VsdH0gaXMNCj4gPiArICAg
+c2V0IHRvIFZJUlRJT19SUE1CX1JFU19BRERSX0ZBSUxVUkUuIElmIGRhdGEgZmV0Y2ggZnJvbSBh
+ZGRyZXNzZWQNCj4gbG9jYXRpb24gaW5zaWRlDQo+ID4gKyAgIGRldmljZSBmYWlscyB0aGVuIHJl
+dHVybmVkIHJlc3VsdCBpcyBWSVJUSU9fUlBNQl9SRVNfUkVBRF9GQUlMVVJFLiBJZg0KPiBzb21l
+IG90aGVyDQo+ID4gKyAgIGVycm9yIG9jY3VycyBkdXJpbmcgdGhlIHJlYWQgcHJvY2VkdXJlIHRo
+ZW4gcmV0dXJuZWQgcmVzdWx0IGlzDQo+ID4gKyAgIFZJUlRJT19SUE1CX1JFU19HRU5FUkFMX0ZB
+SUxVUkUuDQo+ID4gKw0KPiA+ICsgICBUaGUgZGV2aWNlIHJldHVybnMgdGhlIFJQTUIgZnJhbWUg
+d2l0aCByZXNwb25zZQ0KPiAoVklSVElPX1JQTUJfUkVTUF9EQVRBX1JFQUQpLA0KPiA+ICsgICB0
+aGUgYmxvY2sgY291bnQsIGEgY29weSBvZiB0aGUgbm9uY2UgcmVjZWl2ZWQgaW4gdGhlIHJlcXVl
+c3QsIHRoZSBhZGRyZXNzLA0KPiA+ICsgICB0aGUgZGF0YSwgdGhlIGNhbGN1bGF0ZWQgTUFDLCBh
+bmQgdGhlIHJlc3VsdC4NCj4gPiArDQo+ID4gK1xpdGVtW1ZJUlRJT19SUE1CX1JFUV9SRVNVTFRf
+UkVBRF0gSXQgaXMgdXNlZCBmb2xsb3dpbmcgd2l0aCB0aGUgb3RoZXINCj4gcmVxdWVzdA0KPiA+
+ICsgICB0eXBlcyBmb3IgcmV0dXJuZWQgcmVzdWx0IGluIG9uZSBvciBtdWx0aXBsZSBSUE1CIGZy
+YW1lcy4NCj4gDQo+IFNvIGVhY2ggd3JpdGUgcmVxdWVzdCBtdXN0IGJlIGZvbGxvd2VkIGJ5IGEg
+c3RhdHVzIHJlcXVlc3QuICBUaGlzIGp1c3Qgc2VlbXMgbGlrZQ0KPiBhIHdhc3RlLiBXaHkgbm90
+IHJldHVybiB0aGUgcmVzdWx0IGltbWVkaWF0ZWx5IHdpdGggdGhlIG9wZXJhdGlvbj8gIE1heWJl
+IFVGUw0KPiBkb2Vzbid0IHN1cHBvcnQgdGhpcyBidXQgdmlydGlvIHN1cmUgZG9lcy4NCj4gDQo+
+IA0KPiBEb2VzIGRldmljZSBoYXZlIHRvIG1haW50YWluIHRoZSBsYXN0IHJlcXVlc3QgaW4gbm9u
+LXZvbGF0aWxlIG1lbW9yeSBhbmQgcGVyc2lzdA0KPiBhY3Jvc3MgcmVzZXRzPyAgWW91IGRvIG5v
+dCBsaXN0IGl0IGFzIGJlaW5nIHBlcnNpc3RlbnQgYmVsb3cuIFNvIEkgd291bGQganVzdCBkcm9w
+DQo+IHRoaXMgcmVxdWVzdCB0eXBlIGFuZCBoYXZlIGRyaXZlciBtYWludGFpbiBpdCBpbiBndWVz
+dCBtZW1vcnkuDQo+IA0KPiA+IEZvcg0KPiA+ICsgICBWSVJUSU9fUlBNQl9SRVFfUFJPR1JBTV9L
+RVkgYW5kIFZJUlRJT19SUE1CX1JFUV9EQVRBX1dSSVRFLCBpZg0KPiBibG9jayBjb3VudCBoYXMN
+Cj4gPiArICAgbm90IGJlZW4gc2V0IHRvIDEgb2YgVklSVElPX1JQTUJfUkVRX1JFU1VMVF9SRUFE
+IHJlcXVlc3QsIHRoZW4NCj4gPiArICAgVklSVElPX1JQTUJfUkVTX0dFTkVSQUxfRkFJTFVSRSBT
+SEFMTCBiZSBpbmRpY2F0ZWQuDQo+ID4gKw0KPiA+ICtcZW5ke2Rlc2NyaXB0aW9ufQ0KPiA+ICtJ
+ZiBhdXRoZXRpY2F0aW9uIGtleSB3YXMgcHJvZ3JhbW1lZCBzdWNjZXNzZnVsbHksIHRoZSBkZXZp
+Y2UgU0hBTEwgcmV0dXJuDQo+IHdpdGggYSBNQUMgZm9yIGFueSBvcGVyYXRpb24gcmVxdWVzdHMu
+DQo+IA0KPiBMb3RzIG9mIHR5cG9zIGFib3ZlIG1ha2UgaXQgcHJldHR5IGhhcmQgdG8gZmlndXJl
+IG91dC4NCj4gDQo+ID4gKw0KPiA+ICtcZHJpdmVybm9ybWF0aXZle1xzdWJzdWJzZWN0aW9ufXtE
+ZXZpY2UgT3BlcmF0aW9ufXtEZXZpY2UgVHlwZXMgLw0KPiA+ICtSUE1CIERldmljZSAvIERldmlj
+ZSBPcGVyYXRpb259DQo+ID4gKw0KPiA+ICtUaGUgZHJpdmVyIE1VU1QgY29uZmlndXJlIGFuZCBp
+bml0aWFsaXplIHZpcnRxdWV1ZSBmb3IgdGhlIHJlcXVlc3RzIHJlY2VpdmVkLg0KPiANCj4gcmVj
+ZWl2ZWQgd2hlcmU/IHdoeSBpc24ndCBpdCBsZWdhbCB0byBlLmcuIGNoZWNrIGZlYXR1cmUgYml0
+cyBhbmQgdGhlbiByZXNldD8NCj4gDQo+ID4gKw0KPiA+ICtcZGV2aWNlbm9ybWF0aXZle1xzdWJz
+dWJzZWN0aW9ufXtEZXZpY2UgT3BlcmF0aW9ufXtEZXZpY2UgVHlwZXMgLw0KPiA+ICtSUE1CIERl
+dmljZSAvIERldmljZSBPcGVyYXRpb259DQo+ID4gKw0KPiA+ICtUaGUgdmlydGlvLXJwbWIgZGV2
+aWNlIGNvdWxkIGJlIGJhY2tlZCBpbiBhIG51bWJlciBvZiB3YXlzLiBJdCBTSE9VTEQNCj4gPiAr
+ICAga2VlcCBjb25zaXN0ZW50IGJlaGF2aW9ycyB3aXRoIGhhcmR3YXJlIGFzIGRlc2NyaWJlZCBp
+biBwYXJhZ3JhcGgNCj4gPiArICAgNi42LjIyIG9mIFxoeXBlcnJlZltpbnRybzplTU1DXXtlTU1D
+fSwgMTIuNCBvZiBcaHlwZXJyZWZbaW50cm86VUZTXXtVRlN9DQo+ID4gKyAgIG9yIDguMTAgb2Yg
+XGh5cGVycmVmW2ludHJvOk5WTWVde05WTWV9Lg0KPiA+IFNvbWUgZWxlbWVudHMgYXJlIG1haW50
+YWluZWQNCj4gPiArICAgYnkgdGhlIGRldmljZToNCj4gPiArXGJlZ2lue2VudW1lcmF0ZX0NCj4g
+PiArXGl0ZW0gVGhlIGRldmljZSBtYWludGFpbnMgYW4gb25lIHRpbWUgcHJvZ3JhbW1hYmxlIGF1
+dGhlbnRpY2F0aW9uIGtleS4NCj4gPiArICAgSXQgY2Fubm90IGJlIG92ZXJ3cml0dGVuLCBlcmFz
+ZWQgb3IgcmVhZC4gVGhlIGtleSBpcyB1c2VkIHRvDQo+ID4gKyAgIGF1dGhlbnRpY2F0ZSB0aGUg
+YWNjZXNzZXMgd2hlbiBNQUMgaXMgY2FsY3VsYXRlZC4gVGhpcyBrZXkgTVVTVCBiZQ0KPiA+ICsg
+ICBrZXB0IHJlZ2FyZGxlc3Mgb2YgZGV2aWNlIHJlc2V0IG9yIHJlYm9vdC4NCj4gPiArXGl0ZW0g
+VGhlIGRldmljZSBtYWludGFpbnMgYSByZWFkLW9ubHkgbW9ub3RvbmljIHdyaXRlIGNvdW50ZXIu
+IEl0IE1VU1QNCj4gPiArICAgYmUgaW5pdGlhbGl6ZWQgdG8gemVybyBhbmQgYWRkZWQgYnkgb25l
+IGF1dG9tYXRpY2FsbHkgYWxvbmcgd2l0aA0KPiA+ICsgICBzdWNjZXNzZnVsIHdyaXRlIG9wZXJh
+dGlvbi4gVGhlIHZhbHVlIGNhbm5vdCBiZSByZXNldC4gQWZ0ZXINCj4gPiArICAgdGhlIGNvdW50
+ZXIgaGFzIHJlYWNoZWQgaXRzIG1heGltdW0gdmFsdWUgMHhGRkZGIEZGRkYsIGl0IHdpbGwNCj4g
+PiArICAgbm90IGJlIGluY3JlbWVudGVkIGFueW1vcmUuIFRoaXMgY291bnRlciBNVVNUIGJlIGtl
+cHQgcmVnYXJkbGVzcw0KPiA+ICsgICBvZiBkZXZpY2UgcmVzZXQgb3IgcmVib290Lg0KPiA+ICtc
+aXRlbSBUaGUgZGV2aWNlIG1haW50YWlucyB0aGUgZGF0YSBmb3IgcmVhZC93cml0ZSB2aWEgYXV0
+aGVudGljYXRlZA0KPiA+ICsgICBhY2Nlc3MuDQo+ID4gK1xlbmR7ZW51bWVyYXRlfQ0KPiA+ICsN
+Cj4gDQo+IA0KPiANCj4gV2hhdCBJIGhhdmUgZ2F0aGVyZWQgZnJvbSBhYm92ZSBpcyByZWFsbHkg
+anVzdCBhIGNvdW50ZXIgYW5kIGEga2V5IGFkZGVkIHRvIGENCj4gc3RvcmFnZSBkZXZpY2UuDQo+
+IA0KPiAJS2V5OiB5b3UgbXVzdCBoYXZlIHRoZSBrZXkgdG8gd3JpdGUuIEl0J3MgcHJvZ3JhbW1l
+ZCBpbnRvIHRoZQ0KPiAJZGV2aWNlIGF0IHNvbWUgcG9pbnQgYnkgbWFudWZhY3R1cmVyLg0KPiAJ
+U28gbGF0ZXIsIG9ubHkgc29tZW9uZSB3aG8gZ290IGtleSBmcm9tIG1hbnVmYWN0dXJlciBjYW4g
+d3JpdGUuDQo+IAlEYXRhIGlzIGFsc28gYXV0aGVudGljYXRlZCB3aXRoIHRoZSBrZXksIHNvIGlm
+IHlvdSBnb3QNCj4gCXRoZSBrZXkgZnJvbSBtYW51ZmFjdHVyZXIgeW91IGNhbiB2ZXJpZnkgaXQn
+cyB2YWxpZC4NCj4gDQo+IAlXaGF0IGlmIHlvdSBkaWRuJ3QgZ2V0IHRoZSBrZXkgYnV0IHlvdSBz
+dGVhbCB0aGUgZGF0YQ0KPiAJaW4gdHJhbnNpdCB0byBzdG9yYWdlIGRldmljZSBzb21laG93PyBZ
+b3UgY291bGQNCj4gCXJlcGxheSBpdCB0byB0aGUgZGV2aWNlIGFuZCBvdmVyd3JpdGUgdmFsaWQg
+ZGF0YS4NCj4gCVRvIHRoaXMgZW5kIGRldmljZSBtYWludGFpbnMgd3JpdGUgY291bnRlciwNCj4g
+CXNvIHlvdSBjYW4ndC4NCj4gDQo+IAlXaGF0IGlmIHlvdSBjYW4gcHJldGVuZCB3cml0ZSBmYWls
+ZWQsIG9yIGZpbHRlciBvdXQgd3JpdGVzIHRvIHByZXRlbmQNCj4gCXRoZXkgc3VjY2VlZGVkPyBG
+aXJzdCB3cml0ZSBjb3VudGVyIHdpbGwgYmUgd3JvbmcsIGJ1dCBpdCdzIHRyaWNreSBmb3INCj4g
+CWFwcGxpY2F0aW9ucyB0byB2ZXJpZnkgdGhlIGNvdW50ZXI6IGFmdGVyIGFsbCBhbiBhcHBsaWNh
+dGlvbiBjYW4gY3Jhc2guDQo+IAlTbyBlYWNoIHdyaXRlIGlzIGZvbGxvd2VkIGJ5IGEgcmVzcG9u
+c2UgYW5kIHVzZXJzIG11c3QgdmFsaWRhdGUgTUFDIHRvDQo+IAltYWtlIHN1cmUgd3JpdGUgbWFk
+ZSBpdCB0byB0aGUgZGV2aWNlLg0KPiANCj4gDQo+IAlPbiB0aGUgb3RoZXIgaGFuZCwgd2hhdCBp
+ZiBhZ2FpbiB5b3UgZGlkbid0IGdldCB0aGUga2V5IGJ1dCB5b3Ugc3RlYWwNCj4gCXRoZSByZWFk
+IHJlc3BvbnNlPyAgWW91IGNvdWxkIHJlcGxheSB0aGF0IHRvIHRoZSBhcHBsaWNhdGlvbi4gIFRv
+IHRoaXMNCj4gCWVuZCByZWFkIHJlcXVlc3RzIGluY2x1ZGUgYSByYW5kb20gdmFsdWUgYW5kIGl0
+J3MgY29waWVkIHRvIHRoZQ0KPiAJcmVzcG9uc2UuIEFwcGxpY2F0aW9uIGNhbiBwdXQgZS5nLiBh
+IGNvdW50ZXIgdGhlcmUuDQo+IA0KUmlnaHQsIHJlYWQgdXNlcyByYW5kb20gdmFsdWUgZm9yIGFu
+dGktcmVwbGF5LCB3aGlsZSB3cml0ZSB1c2VzIGNvdW50ZXIgZm9yIGFudGktcmVwbGF5Lg0KPiAN
+Cj4gSSB0aGluayB3ZSBhcmUgY29taW5nIGJhY2sgZnVsbCBjaXJjbGUgYW5kIEkgd291bGQgbGlr
+ZSB0byBhc2s6IHNvIHdoeSBkb2VzIGl0IG5vdA0KPiBtYWtlIHNlbnNlIHRvIGFkZCB0aGlzIGZ1
+bmN0aW9uYWxpdHkgdG8gYSBibG9jayBkZXZpY2UsIG9yIGEgc2NzaSBkZXZpY2U/IFdlJ2QgZ2V0
+DQo+IGxvdHMgb2YgZ29vZGllcyBzdWNoIGFzIG11bHRpcXVldWUsIGZvciBmcmVlLg0KPiANCj4g
+DQo+IElmIHdlIGltcGxlbWVudCBhYm92ZSBpbiBhIGh5cGVydmlzb3IgaW4gc29mdHdhcmUsIHdl
+IGNhbiBqdXN0IGlnbm9yZSBhbGwgcmFuZG9tDQo+IGhhcmR3YXJlIGxpbWl0YXRpb25zLCBhbmQg
+c3VwcG9ydCBlLmcuIGFyYml0cmFyeSBzaXplIG9mIHdyaXRlcywgYXJiaXRyYXJ5IGhhc2ggZXRj
+DQo+IGV0Yy4NCj4gDQo+IFNvIEkgdGhpbmsgdGhpcyBpcyB0aGUgcmVhc29uIHlvdSBhcmUgbWFr
+aW5nIGl0IGEgc2VwYXJhdGUgZGV2aWNlIGFuZCBhcmUgdHJ5aW5nIHRvDQo+IHN1cHBvcnQgc28g
+bWFueSBtZXNzeSBmb3JtYXRzIGlzIGJlY2F1c2UgeW91IGFyZSB0aGlua2luZyBhYm91dCBwYXNz
+LXRocm91Z2guDQo+IA0KPiBIb3dldmVyLCBJIG5vdGUgdGhhdCBuZWl0aGVyIGRyaXZlciBub3Ig
+dGhlIGh5cGVydmlzb3IgcmVhbGx5IGNhcmUgYWJvdXQgdGhpbmdzDQo+IGxpa2Ugb3JkZXIgb2Yg
+ZmllbGRzIG9yIGVuZGlhbi1uZXNzLg0KPiBJdCdzIG9ubHkgdGhlIE1BQyBjYWxjdWxhdGlvbnMg
+dGhhdCBhcmUgYWZmZWN0ZWQuDQoNCk1heWJlIHdlIGNhbiBzaW1wbHkgdGhpcyBieSBvbmx5IHN1
+cHBvcnRpbmcgb25lIHNpbmdsZSBycG1iLCBhbmQgb25lIHNpbmdsZSB0eXBlIG9mIHJwbWIgKGxp
+a2UgVUZTKSA/Pw0KDQo+IA0KPiBTbyBteSBzdWdnZXN0aW9uIGlzLCBmb3Igbm93IGp1c3QgZGVm
+aW5lIGEgY2xlYW4gbWluaW1hbCBpbnRlcmZhY2UsIHdpdGggc29tZQ0KPiBraW5kIG9mIGVudW1l
+cmF0b3IgZm9yIGFuIGFwcGxpY2F0aW9uIHRvIGRpc2NvdmVyIHRoZSBzcGVjaWZpYyBNQUMgdXNl
+ZC4gIEFuZA0KPiB3aGVuIGh5cGVydmlzb3IgaXMgZm9yd2FyZGluZyB0aGUgZGF0YSB0byB0aGUg
+ZGV2aWNlLCBpdCBjYW4gbW92ZSBmaWVsZHMgYXJvdW5kLA0KPiBzd2FwIGVuZGlhbi1uZXNzIG9y
+IHdoYXRldmVyLiAgV2lsbCBjb3N0IHNvbWUgcGVyZm9ybWFuY2UgYnV0IGl0IGRvZXMgbm90IGxv
+b2sNCj4gbGlrZSB0aGlzIGRldmljZSBpcyBmYXN0IHBhdGggYW55d2F5Lg0KPiANCj4gQW5kIEkg
+YW0gZ3Vlc3NpbmcgbW9zdCBwZW9wbGUgZG8gdHJ1c3QgdGhlIGh5cGVydmlzb3IgYW5kIHNvIHRo
+ZXkgd2lsbCBoYXBwaWx5DQo+IGp1c3QgdXNlIGEgY2xlYW4gc29mdHdhcmUgaW1wbGVtZW50YXRp
+b24uDQo+IA0KPiA+IC0tDQo+ID4gMi43LjQNCj4gDQo+IC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQ0KPiBUbyB1bnN1
+YnNjcmliZSwgZS1tYWlsOiB2aXJ0aW8tZGV2LXVuc3Vic2NyaWJlQGxpc3RzLm9hc2lzLW9wZW4u
+b3JnDQo+IEZvciBhZGRpdGlvbmFsIGNvbW1hbmRzLCBlLW1haWw6IHZpcnRpby1kZXYtaGVscEBs
+aXN0cy5vYXNpcy1vcGVuLm9yZw0KDQo=
 
