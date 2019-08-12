@@ -1,118 +1,97 @@
-Return-Path: virtio-dev-return-5957-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-5949-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id D3B82985E09
-	for <virtio-dev@lists.oasis-open.org>; Mon, 12 Aug 2019 22:49:42 +0000 (UTC)
-MIME-Version: 1.0
-References: <20190812213158.22097.30576.stgit@localhost.localdomain>
- <20190812213324.22097.30886.stgit@localhost.localdomain> <CAPcyv4jEvPL3qQffDsJxKxkCJLo19FN=gd4+LtZ1FnARCr5wBw@mail.gmail.com>
-In-Reply-To: <CAPcyv4jEvPL3qQffDsJxKxkCJLo19FN=gd4+LtZ1FnARCr5wBw@mail.gmail.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id CA5C6985E00
+	for <virtio-dev@lists.oasis-open.org>; Mon, 12 Aug 2019 21:33:33 +0000 (UTC)
 From: Alexander Duyck <alexander.duyck@gmail.com>
-Date: Mon, 12 Aug 2019 15:49:30 -0700
-Message-ID: <CAKgT0UeHAXCM+aXL=SYXqVym=Vy3av21Vc6VY-rWQYE13-MNKg@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Subject: [virtio-dev] Re: [PATCH v5 1/6] mm: Adjust shuffle code to allow for future coalescing
-To: Dan Williams <dan.j.williams@intel.com>
-Cc: Nitesh Narayan Lal <nitesh@redhat.com>, KVM list <kvm@vger.kernel.org>, "Michael S. Tsirkin" <mst@redhat.com>, David Hildenbrand <david@redhat.com>, Dave Hansen <dave.hansen@intel.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Matthew Wilcox <willy@infradead.org>, Michal Hocko <mhocko@kernel.org>, Linux MM <linux-mm@kvack.org>, Andrew Morton <akpm@linux-foundation.org>, virtio-dev@lists.oasis-open.org, Oscar Salvador <osalvador@suse.de>, Yang Zhang <yang.zhang.wz@gmail.com>, Pankaj Gupta <pagupta@redhat.com>, Rik van Riel <riel@surriel.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, lcapitulino@redhat.com, "Wang, Wei W" <wei.w.wang@intel.com>, Andrea Arcangeli <aarcange@redhat.com>, Paolo Bonzini <pbonzini@redhat.com>, Alexander Duyck <alexander.h.duyck@linux.intel.com>
+Date: Mon, 12 Aug 2019 14:33:31 -0700
+Message-ID: <20190812213331.22097.94620.stgit@localhost.localdomain>
+In-Reply-To: <20190812213158.22097.30576.stgit@localhost.localdomain>
+References: <20190812213158.22097.30576.stgit@localhost.localdomain>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Subject: [virtio-dev] [PATCH v5 2/6] mm: Move set/get_pcppage_migratetype to mmzone.h
+To: nitesh@redhat.com, kvm@vger.kernel.org, mst@redhat.com, david@redhat.com, dave.hansen@intel.com, linux-kernel@vger.kernel.org, willy@infradead.org, mhocko@kernel.org, linux-mm@kvack.org, akpm@linux-foundation.org, virtio-dev@lists.oasis-open.org, osalvador@suse.de
+Cc: yang.zhang.wz@gmail.com, pagupta@redhat.com, riel@surriel.com, konrad.wilk@oracle.com, lcapitulino@redhat.com, wei.w.wang@intel.com, aarcange@redhat.com, pbonzini@redhat.com, dan.j.williams@intel.com, alexander.h.duyck@linux.intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Mon, Aug 12, 2019 at 3:24 PM Dan Williams <dan.j.williams@intel.com> wrote:
->
-> On Mon, Aug 12, 2019 at 2:33 PM Alexander Duyck
-> <alexander.duyck@gmail.com> wrote:
-> >
-> > From: Alexander Duyck <alexander.h.duyck@linux.intel.com>
-> >
-> > This patch is meant to move the head/tail adding logic out of the shuffle
->
-> s/This patch is meant to move/Move/
+From: Alexander Duyck <alexander.h.duyck@linux.intel.com>
 
-I'll update that on next submission.
+In order to support page reporting it will be necessary to store and
+retrieve the migratetype of a page. To enable that I am moving the set and
+get operations for pcppage_migratetype into the mm/internal.h header so
+that they can be used outside of the page_alloc.c file.
 
-> > code and into the __free_one_page function since ultimately that is where
-> > it is really needed anyway. By doing this we should be able to reduce the
-> > overhead
->
-> Is the overhead benefit observable? I would expect the overhead of
-> get_random_u64() dominates.
->
-> > and can consolidate all of the list addition bits in one spot.
->
-> This sounds the better argument.
+Signed-off-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
+---
+ mm/internal.h   |   18 ++++++++++++++++++
+ mm/page_alloc.c |   18 ------------------
+ 2 files changed, 18 insertions(+), 18 deletions(-)
 
-Actually the overhead is the bit where we have to setup the arguments
-and call the function. There is only one spot where this function is
-ever called and that is in __free_one_page.
+diff --git a/mm/internal.h b/mm/internal.h
+index 0d5f720c75ab..e4a1a57bbd40 100644
+--- a/mm/internal.h
++++ b/mm/internal.h
+@@ -549,6 +549,24 @@ static inline bool is_migrate_highatomic_page(struct page *page)
+ 	return get_pageblock_migratetype(page) == MIGRATE_HIGHATOMIC;
+ }
+ 
++/*
++ * A cached value of the page's pageblock's migratetype, used when the page is
++ * put on a pcplist. Used to avoid the pageblock migratetype lookup when
++ * freeing from pcplists in most cases, at the cost of possibly becoming stale.
++ * Also the migratetype set in the page does not necessarily match the pcplist
++ * index, e.g. page might have MIGRATE_CMA set but be on a pcplist with any
++ * other index - this ensures that it will be put on the correct CMA freelist.
++ */
++static inline int get_pcppage_migratetype(struct page *page)
++{
++	return page->index;
++}
++
++static inline void set_pcppage_migratetype(struct page *page, int migratetype)
++{
++	page->index = migratetype;
++}
++
+ void setup_zone_pageset(struct zone *zone);
+ extern struct page *alloc_new_node_page(struct page *page, unsigned long node);
+ #endif	/* __MM_INTERNAL_H */
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index e3cb6e7aa296..f04192f5ec3c 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -185,24 +185,6 @@ static int __init early_init_on_free(char *buf)
+ }
+ early_param("init_on_free", early_init_on_free);
+ 
+-/*
+- * A cached value of the page's pageblock's migratetype, used when the page is
+- * put on a pcplist. Used to avoid the pageblock migratetype lookup when
+- * freeing from pcplists in most cases, at the cost of possibly becoming stale.
+- * Also the migratetype set in the page does not necessarily match the pcplist
+- * index, e.g. page might have MIGRATE_CMA set but be on a pcplist with any
+- * other index - this ensures that it will be put on the correct CMA freelist.
+- */
+-static inline int get_pcppage_migratetype(struct page *page)
+-{
+-	return page->index;
+-}
+-
+-static inline void set_pcppage_migratetype(struct page *page, int migratetype)
+-{
+-	page->index = migratetype;
+-}
+-
+ #ifdef CONFIG_PM_SLEEP
+ /*
+  * The following functions are used by the suspend/hibernate code to temporarily
 
-> [..]
-> > diff --git a/mm/shuffle.h b/mm/shuffle.h
-> > index 777a257a0d2f..add763cc0995 100644
-> > --- a/mm/shuffle.h
-> > +++ b/mm/shuffle.h
-> > @@ -3,6 +3,7 @@
-> >  #ifndef _MM_SHUFFLE_H
-> >  #define _MM_SHUFFLE_H
-> >  #include <linux/jump_label.h>
-> > +#include <linux/random.h>
-> >
-> >  /*
-> >   * SHUFFLE_ENABLE is called from the command line enabling path, or by
-> > @@ -43,6 +44,32 @@ static inline bool is_shuffle_order(int order)
-> >                 return false;
-> >         return order >= SHUFFLE_ORDER;
-> >  }
-> > +
-> > +static inline bool shuffle_add_to_tail(void)
-> > +{
-> > +       static u64 rand;
-> > +       static u8 rand_bits;
-> > +       u64 rand_old;
-> > +
-> > +       /*
-> > +        * The lack of locking is deliberate. If 2 threads race to
-> > +        * update the rand state it just adds to the entropy.
-> > +        */
-> > +       if (rand_bits-- == 0) {
-> > +               rand_bits = 64;
-> > +               rand = get_random_u64();
-> > +       }
-> > +
-> > +       /*
-> > +        * Test highest order bit while shifting our random value. This
-> > +        * should result in us testing for the carry flag following the
-> > +        * shift.
-> > +        */
-> > +       rand_old = rand;
-> > +       rand <<= 1;
-> > +
-> > +       return rand < rand_old;
-> > +}
->
-> This function seems too involved to be a static inline and I believe
-> each compilation unit that might call this routine gets it's own copy
-> of 'rand' and 'rand_bits' when the original expectation is that they
-> are global. How about leave this bit to mm/shuffle.c and rename it
-> coin_flip(), or something more generic, since it does not
-> 'add_to_tail'? The 'add_to_tail' action is something the caller
-> decides.
-
-The thing is there is only one caller to this function, and that is
-__free_one_page. That is why I made it a static inline since that way
-we can avoid having to call this as a function at all and can just
-inline the code into __free_one_page.
-
-As far as making this more generic I guess I can look into that. Maybe
-I will look at trying to implement something like get_random_bool()
-and then just do a macro to point to that. One other things that
-occurs to me now that I am looking over the code is that I am not sure
-the original or this modified version actually provide all that much
-randomness if multiple threads have access to it at the same time. If
-rand_bits races past the 0 you can end up getting streaks of 0s for
-256+ bits.
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
