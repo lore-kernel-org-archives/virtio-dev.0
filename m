@@ -1,68 +1,113 @@
-Return-Path: virtio-dev-return-5917-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-5959-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 10739985DB0
-	for <virtio-dev@lists.oasis-open.org>; Sat,  3 Aug 2019 21:12:21 +0000 (UTC)
-Date: Sat, 3 Aug 2019 17:12:15 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20190803170121-mutt-send-email-mst@kernel.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id 2D792985E43
+	for <virtio-dev@lists.oasis-open.org>; Tue, 13 Aug 2019 09:07:14 +0000 (UTC)
+Date: Tue, 13 Aug 2019 10:07:11 +0100
+From: Stefan Hajnoczi <stefanha@redhat.com>
+Message-ID: <20190813090711.GN9959@stefanha-x1.localdomain>
 References: <20190726095338.24991-1-stefanha@redhat.com>
  <20190726095338.24991-2-stefanha@redhat.com>
+ <20190803170121-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="4OpS+d6oOtUQaRm1"
 Content-Disposition: inline
-In-Reply-To: <20190726095338.24991-2-stefanha@redhat.com>
+In-Reply-To: <20190803170121-mutt-send-email-mst@kernel.org>
 Subject: Re: [virtio-dev] [PATCH v5 1/2] content: add virtio file system
  device
-To: Stefan Hajnoczi <stefanha@redhat.com>
+To: "Michael S. Tsirkin" <mst@redhat.com>
 Cc: virtio-dev@lists.oasis-open.org, Sage Weil <sweil@redhat.com>, Steven Whitehouse <swhiteho@redhat.com>, Miklos Szeredi <mszeredi@redhat.com>, Vivek Goyal <vgoyal@redhat.com>, "Dr. David Alan Gilbert" <dgilbert@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Fri, Jul 26, 2019 at 10:53:37AM +0100, Stefan Hajnoczi wrote:
-> +\subsubsection{Live migration considerations}\label{sec:Device Types / File System Device / Live Migration Considerations}
-> +
-> +When a guest is migrated to a new host
+--4OpS+d6oOtUQaRm1
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Please use driver and device here and elsewhere.
+On Sat, Aug 03, 2019 at 05:12:15PM -0400, Michael S. Tsirkin wrote:
+> On Fri, Jul 26, 2019 at 10:53:37AM +0100, Stefan Hajnoczi wrote:
+> > +\subsubsection{Live migration considerations}\label{sec:Device Types /=
+ File System Device / Live Migration Considerations}
+> > +
+> > +When a guest is migrated to a new host
+>=20
+> Please use driver and device here and elsewhere.
 
-> it is necessary to consider the FUSE
-> +session and its state.  The continuity of FUSE inode numbers (also known as
-> +nodeids) and fh values is necessary so the driver can continue operation
-> +without disruption.
-> +
-> +It is possible to maintain the FUSE session across live migration either by
-> +transferring the state or by redirecting requests from the new host to the old
-> +host where the state resides.  The details of how to achieve this are
-> +implementation-dependent and are not visible at the device interface level.
-> +
-> +Maintaining version and feature information negotiated by FUSE\_INIT is
-> +necessary so that no FUSE protocol feature changes are visible to the driver
-> +across live migration.  The FUSE\_INIT information forms part of the FUSE
-> +session state that needs to be transferred during live migration.
+Will fix.
 
-It bothers me that it's implicit, and is not exposed easily at the
-virtio level, so one has to bind a virtqueue and run buffers over it to
-even just check whether a given device supports a specific interface and
-can be migrated to.
+> > it is necessary to consider the FUSE
+> > +session and its state.  The continuity of FUSE inode numbers (also kno=
+wn as
+> > +nodeids) and fh values is necessary so the driver can continue operati=
+on
+> > +without disruption.
+> > +
+> > +It is possible to maintain the FUSE session across live migration eith=
+er by
+> > +transferring the state or by redirecting requests from the new host to=
+ the old
+> > +host where the state resides.  The details of how to achieve this are
+> > +implementation-dependent and are not visible at the device interface l=
+evel.
+> > +
+> > +Maintaining version and feature information negotiated by FUSE\_INIT is
+> > +necessary so that no FUSE protocol feature changes are visible to the =
+driver
+> > +across live migration.  The FUSE\_INIT information forms part of the F=
+USE
+> > +session state that needs to be transferred during live migration.
+>=20
+> It bothers me that it's implicit, and is not exposed easily at the
+> virtio level, so one has to bind a virtqueue and run buffers over it to
+> even just check whether a given device supports a specific interface and
+> can be migrated to.
+>=20
+> How about exposing the version of the device in the config space?
+> Spec can require that it matches the contents of the INIT command.
 
-How about exposing the version of the device in the config space?
-Spec can require that it matches the contents of the INIT command.
+FUSE_INIT works like this:
 
-....
+1. The client sends FUSE_INIT with the supported highest protocol
+   version.
+2. If the server supports the client's version, it replies with the same
+   version number and fills in the FUSE_INIT parameters.
 
-> -- 
-> 2.21.0
-> 
-> 
-> ---------------------------------------------------------------------
-> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+   Otherwise the server lowers the version number and replies to the
+   client, and the client will resend FUSE_INIT with the lower version
+   number to acknowledge that it supports the lower version.  Go to step
+   1.
 
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+With regards to live migration the server's FUSE_INIT reply structure
+needs to be sent to the destination if a FUSE session has been
+established.  If the destination does not support this protocol version
+then live migration fails.
 
+If management tools want to ensure that migration always succeeds then I
+think the way to do that is not via virtio config space (they would
+still need to start a guest in order to access it!).
+
+I don't understand the benefit of exposing the device's version in the
+config space?  Do you mean the negotiated version of the current FUSE
+session or the highest FUSE protocol version supported by the device?
+
+--4OpS+d6oOtUQaRm1
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAl1Sfb8ACgkQnKSrs4Gr
+c8ha2ggAph0TLgQslayCjOJaQVxMBFDkx8/IbjYIIijNM3bAiQvGsaWHmqd/RkB5
+6QHWdjcqWgTCMc2TyKsR+K1M+/rNEqi1jetFjgbLpA4Se3dmF4verYfDF2BGPTZ7
+wubcXzC4Z+rEvs9oTdvo+cUlWwNYCHxvvFc3II/k3Fe9DmjvDxgoVbVggSYAWbjm
+qreFpqjzQnNE6lO8uAD7njpAxov+QKzu9TiYwm8vcn+jK6mg/ssZREbfIc47XPwX
+f4fLbfncQZGGwHFji0JsHtUKzOX01PV9pnyOi/zUrk9rF9qtTpP/8gX00Y1NNxmr
+qKd9OztPOoTjYSxPzqdKca3Bm+k7FA==
+=21GY
+-----END PGP SIGNATURE-----
+
+--4OpS+d6oOtUQaRm1--
