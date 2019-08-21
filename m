@@ -1,149 +1,339 @@
-Return-Path: virtio-dev-return-6012-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-5995-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 094A0985CF5
-	for <virtio-dev@lists.oasis-open.org>; Fri, 23 Aug 2019 14:58:50 +0000 (UTC)
-Date: Fri, 23 Aug 2019 15:58:44 +0100
-From: Stefan Hajnoczi <stefanha@redhat.com>
-Message-ID: <20190823145844.GA27586@stefanha-x1.localdomain>
-References: <20190813131320.30829-1-stefanha@redhat.com>
- <20190813131320.30829-3-stefanha@redhat.com>
- <20190822133405.7a0fb101.cohuck@redhat.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id F1776985C06
+	for <virtio-dev@lists.oasis-open.org>; Wed, 21 Aug 2019 08:03:19 +0000 (UTC)
+Date: Wed, 21 Aug 2019 04:03:17 -0400 (EDT)
+From: Pankaj Gupta <pagupta@redhat.com>
+Message-ID: <1589398338.9627688.1566374597846.JavaMail.zimbra@redhat.com>
+In-Reply-To: <20190717070916.16196-1-pagupta@redhat.com>
+References: <20190717070916.16196-1-pagupta@redhat.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="8t9RHnE3ZwKMSgU+"
-Content-Disposition: inline
-In-Reply-To: <20190822133405.7a0fb101.cohuck@redhat.com>
-Subject: Re: [virtio-dev] [PATCH v6 2/2] virtio-fs: add DAX window
-To: Cornelia Huck <cohuck@redhat.com>
-Cc: virtio-dev@lists.oasis-open.org, Sage Weil <sweil@redhat.com>, "Dr. David Alan Gilbert" <dgilbert@redhat.com>, Vivek Goyal <vgoyal@redhat.com>, Steven Whitehouse <swhiteho@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>, Miklos Szeredi <mszeredi@redhat.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [virtio-dev] [PATCH v3] add virtio-pmem device specification
+To: virtio-dev@lists.oasis-open.org
+Cc: nilal@redhat.com, riel@surriel.com, stefanha@redhat.com, aarcange@redhat.com, david@redhat.com, mst@redhat.com, cohuck@redhat.com, lcapitulino@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
---8t9RHnE3ZwKMSgU+
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-On Thu, Aug 22, 2019 at 01:34:05PM +0200, Cornelia Huck wrote:
-> On Tue, 13 Aug 2019 14:13:20 +0100
-> Stefan Hajnoczi <stefanha@redhat.com> wrote:
->=20
-> > Describe how shared memory region ID 0 is the DAX window and how
-> > FUSE_SETUPMAPPING maps file ranges into the window.
-> >=20
-> > Signed-off-by: Stefan Hajnoczi <stefanha@redhat.com>
-> > ---
-> > The FUSE_SETUPMAPPING message is part of the virtio-fs Linux patches:
-> > https://gitlab.com/virtio-fs/linux/blob/virtio-fs/include/uapi/linux/fu=
-se.h
-> >=20
-> > v6:
-> >  * Document timing side-channel attacks [Michael]
-> > ---
-> >  virtio-fs.tex | 55 +++++++++++++++++++++++++++++++++++++++++++++++++++
-> >  1 file changed, 55 insertions(+)
-> >=20
-> > diff --git a/virtio-fs.tex b/virtio-fs.tex
-> > index 81adf85..154b043 100644
-> > --- a/virtio-fs.tex
-> > +++ b/virtio-fs.tex
-> > @@ -178,6 +178,51 @@ \subsubsection{Device Operation: High Priority Que=
-ue}\label{sec:Device Types / F
-> > =20
-> >  The driver MUST anticipate that request queues are processed concurren=
-tly with the hiprio queue.
-> > =20
-> > +\subsubsection{Device Operation: DAX Window}\label{sec:Device Types / =
-File System Device / Device Operation / Device Operation: DAX Window}
-> > +
-> > +FUSE\_READ and FUSE\_WRITE requests transfer file contents between the
-> > +driver-provided buffer and the device.  In cases where data transfer is
-> > +undesirable, the device can map file contents into the DAX window shar=
-ed memory
-> > +region.  The driver then accesses file contents directly in device-own=
-ed memory
-> > +without a data transfer.
-> > +
-> > +Shared memory region ID 0 is called the DAX window.  Drivers map this =
-shared
-> > +memory region with writeback caching as if it were regular RAM.  The c=
-ontents
-> > +of the DAX window are undefined unless a mapping exists for that range.
->=20
-> Are drivers still free to use FUSE_{READ,WRITE}?
 
-Yes.  Will mention it in the next revision.
+Ping.
 
-> > +
-> > +The driver maps a file range into the DAX window using the FUSE\_SETUP=
-MAPPING
-> > +request.  Alignment constraints for FUSE\_SETUPMAPPING and FUSE\_REMOV=
-EMAPPING
-> > +requests are communicated during FUSE\_INIT negotiation.
-> > +
-> > +When a FUSE\_SETUPMAPPING request perfectly overlaps a previous mappin=
-g, the
-> > +previous mapping is replaced.  When a mapping partially overlaps a pre=
-vious
-> > +mapping, the previous mapping is split into one or two smaller mapping=
-s.  When
-> > +a mapping is partially unmapped it is also split into one or two small=
-er
-> > +mappings.
-> > +
-> > +Establishing new mappings or splitting existing mappings consumes reso=
-urces.
-> > +If the device runs out of resources the FUSE\_SETUPMAPPING request fai=
-ls until
-> > +resources are available again following FUSE\_REMOVEMAPPING.
-> > +
-> > +After FUSE\_SETUPMAPPING has completed successfully the file range is
-> > +accessible from the DAX window at the offset provided by the driver in=
- the
-> > +request.  A mapping is removed using the FUSE\_REMOVEMAPPING request.
-> > +
-> > +Data is only guaranteed to be persistent when a FUSE\_FSYNC request is=
- used by
-> > +the device after having been made available by the driver following th=
-e write.
-> > +
-> > +\devicenormative{\paragraph}{Device Operation: DAX Window}{Device Type=
-s / File System Device / Device Operation / Device Operation: DAX Window}
-> > +
-> > +The device MUST allow mappings that completely or partially overlap ex=
-isting mappings within the DAX window.
-> > +
-> > +The device MUST reject mappings that would go beyond the end of the DA=
-X window.
-> > +
-> > +\drivernormative{\paragraph}{Device Operation: DAX Window}{Device Type=
-s / File System Device / Device Operation / Device Operation: DAX Window}
-> > +
-> > +The driver SHOULD be prepared to find shared memory region ID 0 absent=
- and fall back to FUSE\_READ and FUSE\_WRITE requests.
->=20
-> Should the _device_ also be prepared that the driver does not use the
-> dax window? Likely yes (old drivers etc.); do we need to spell it out?
+Cornelia, reviewed the spec except pmem specific changes.
+Incorporated all the review suggestions.
 
-Yes, will fix in the next revision.
+Thanks,
+Pankaj  
 
---8t9RHnE3ZwKMSgU+
-Content-Type: application/pgp-signature; name="signature.asc"
+> 
+> This patch proposes a virtio specification for new
+> virtio pmem device. Virtio pmem is a paravirtualized
+> device which solves two problems:
+> 
+> - Provides emulation of persistent memory on host regular
+>   (non NVDIMM) storage.
+> - Allows the guest to bypass the page cache.
+> 
+> Signed-off-by: Pankaj Gupta <pagupta@redhat.com>
+> ---
+> This is changed version from previous v2 [1], as per suggestions by
+> cornelia. Incorporated v2 changes suggested by Stefan, Michael &
+> Cornerlia in RFC[2].
+> 
+> [1] https://lists.oasis-open.org/archives/virtio-dev/201907/msg00007.html
+> [2] https://lists.oasis-open.org/archives/virtio-dev/201903/msg00083.html
+> 
+>  conformance.tex |  22 ++++++++++--
+>  content.tex     |   1 +
+>  virtio-pmem.tex | 109
+>  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 130 insertions(+), 2 deletions(-)
+>  create mode 100644 virtio-pmem.tex
+> 
+> diff --git a/conformance.tex b/conformance.tex
+> index 42f702a..b383ef3 100644
+> --- a/conformance.tex
+> +++ b/conformance.tex
+> @@ -15,14 +15,14 @@ \section{Conformance Targets}\label{sec:Conformance /
+> Conformance Targets}
+>    \begin{itemize}
+>      \item Clause \ref{sec:Conformance / Driver Conformance}.
+>      \item One of clauses \ref{sec:Conformance / Driver Conformance / PCI
+>      Driver Conformance}, \ref{sec:Conformance / Driver Conformance / MMIO
+>      Driver Conformance} or \ref{sec:Conformance / Driver Conformance /
+>      Channel I/O Driver Conformance}.
+> -    \item One of clauses \ref{sec:Conformance / Driver Conformance / Network
+> Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Block
+> Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Console
+> Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Entropy
+> Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Traditional
+> Memory Balloon Driver Conformance}, \ref{sec:Conformance / Driver
+> Conformance / SCSI Host Driver Conformance}, \ref{sec:Conformance / Driver
+> Conformance / Input Driver Conformance}, \ref{sec:Conformance / Driver
+> Conformance / Crypto Driver Conformance} or \ref{sec:Conformance / Driver
+> Conformance / Socket Driver Conformance}.
+> +    \item One of clauses \ref{sec:Conformance / Driver Conformance / Network
+> Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Block
+> Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Console
+> Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Entropy
+> Driver Conformance}, \ref{sec:Conformance / Driver Conformance / Traditional
+> Memory Balloon Driver Conformance}, \ref{sec:Conformance / Driver
+> Conformance / SCSI Host Driver Conformance}, \ref{sec:Conformance / Driver
+> Conformance / Input Driver Conformance}, \ref{sec:Conformance / Driver
+> Conformance / Crypto Driver Conformance}, \ref{sec:Conformance / Driver
+> Conformance / Socket Driver Conformance} or \ref{sec:Conformance / Driver
+> Conformance / PMEM Driver Conformance}.
+>      \item Clause \ref{sec:Conformance / Legacy Interface: Transitional
+>      Device and Transitional Driver Conformance}.
+>    \end{itemize}
+>  \item[Device] A device MUST conform to four conformance clauses:
+>    \begin{itemize}
+>      \item Clause \ref{sec:Conformance / Device Conformance}.
+>      \item One of clauses \ref{sec:Conformance / Device Conformance / PCI
+>      Device Conformance}, \ref{sec:Conformance / Device Conformance / MMIO
+>      Device Conformance} or \ref{sec:Conformance / Device Conformance /
+>      Channel I/O Device Conformance}.
+> -    \item One of clauses \ref{sec:Conformance / Device Conformance / Network
+> Device Conformance}, \ref{sec:Conformance / Device Conformance / Block
+> Device Conformance}, \ref{sec:Conformance / Device Conformance / Console
+> Device Conformance}, \ref{sec:Conformance / Device Conformance / Entropy
+> Device Conformance}, \ref{sec:Conformance / Device Conformance / Traditional
+> Memory Balloon Device Conformance}, \ref{sec:Conformance / Device
+> Conformance / SCSI Host Device Conformance}, \ref{sec:Conformance / Device
+> Conformance / Input Device Conformance}, \ref{sec:Conformance / Device
+> Conformance / Crypto Device Conformance} or \ref{sec:Conformance / Device
+> Conformance / Socket Device Conformance}.
+> +    \item One of clauses \ref{sec:Conformance / Device Conformance / Network
+> Device Conformance}, \ref{sec:Conformance / Device Conformance / Block
+> Device Conformance}, \ref{sec:Conformance / Device Conformance / Console
+> Device Conformance}, \ref{sec:Conformance / Device Conformance / Entropy
+> Device Conformance}, \ref{sec:Conformance / Device Conformance / Traditional
+> Memory Balloon Device Conformance}, \ref{sec:Conformance / Device
+> Conformance / SCSI Host Device Conformance}, \ref{sec:Conformance / Device
+> Conformance / Input Device Conformance}, \ref{sec:Conformance / Device
+> Conformance / Crypto Device Conformance}, \ref{sec:Conformance / Device
+> Conformance / Socket Device Conformance} or \ref{sec:Conformance / Device
+> Conformance / PMEM Device Conformance}.
+>      \item Clause \ref{sec:Conformance / Legacy Interface: Transitional
+>      Device and Transitional Driver Conformance}.
+>    \end{itemize}
+>  \end{description}
+> @@ -183,6 +183,14 @@ \section{Conformance Targets}\label{sec:Conformance /
+> Conformance Targets}
+>  \item \ref{drivernormative:Device Types / Socket Device / Device Operation /
+>  Device Events}
+>  \end{itemize}
+>  
+> +\conformance{\subsection}{PMEM Driver Conformance}\label{sec:Conformance /
+> Driver Conformance / PMEM Driver Conformance}
+> +
+> +A PMEM driver MUST conform to the following normative statements:
+> +
+> +\begin{itemize}
+> +\item \ref{drivernormative:Device Types / PMEM Driver / Driver Operation /
+> Virtqueue command}
+> +\end{itemize}
+> +
+>  \conformance{\section}{Device Conformance}\label{sec:Conformance / Device
+>  Conformance}
+>  
+>  A device MUST conform to the following normative statements:
+> @@ -336,6 +344,16 @@ \section{Conformance Targets}\label{sec:Conformance /
+> Conformance Targets}
+>  \item \ref{devicenormative:Device Types / Socket Device / Device Operation /
+>  Receive and Transmit}
+>  \end{itemize}
+>  
+> +\conformance{\subsection}{PMEM Device Conformance}\label{sec:Conformance /
+> Device Conformance / PMEM Device Conformance}
+> +
+> +A PMEM device MUST conform to the following normative statements:
+> +
+> +\begin{itemize}
+> +\item \ref{devicenormative:Device Types / PMEM Device / Device
+> Initialization}
+> +\item \ref{devicenormative:Device Types / PMEM Device / Device Operation /
+> Virtqueue flush}
+> +\item \ref{devicenormative:Device Types / PMEM Device / Device Operation /
+> Virtqueue return}
+> +\end{itemize}
+> +
+>  \conformance{\section}{Legacy Interface: Transitional Device and
+>  Transitional Driver Conformance}\label{sec:Conformance / Legacy Interface:
+>  Transitional Device and Transitional Driver Conformance}
+>  A conformant implementation MUST be either transitional or
+>  non-transitional, see \ref{intro:Legacy
+> diff --git a/content.tex b/content.tex
+> index 8f0498e..28e747c 100644
+> --- a/content.tex
+> +++ b/content.tex
+> @@ -5598,6 +5598,7 @@ \subsubsection{Legacy Interface: Framing
+> Requirements}\label{sec:Device
+>  \input{virtio-input.tex}
+>  \input{virtio-crypto.tex}
+>  \input{virtio-vsock.tex}
+> +\input{virtio-pmem.tex}
+>  
+>  \chapter{Reserved Feature Bits}\label{sec:Reserved Feature Bits}
+>  
+> diff --git a/virtio-pmem.tex b/virtio-pmem.tex
+> new file mode 100644
+> index 0000000..b824ffe
+> --- /dev/null
+> +++ b/virtio-pmem.tex
+> @@ -0,0 +1,109 @@
+> +\section{PMEM Device}\label{sec:Device Types / PMEM Device}
+> +
+> +virtio pmem is an emulated persistent memory device using virtio.
+> +
+> +The device works as fake nvdimm device when emulated on a host regular
+> +(non NVDIMM) device. The device provides a virtio based asynchronous
+> +flush mechanism to persist the guest writes. This avoids the
+> +need of separate caching inside the guest and host side caching
+> +is used. Under memory pressure, the host makes efficient memory
+> +reclaim decisions on uniform view of memory.
+> +
+> +\subsection{Device ID}\label{sec:Device Types / PMEM Device / Device ID}
+> +  27
+> +
+> +\subsection{Virtqueues}\label{sec:Device Types / PMEM Device / Virtqueues}
+> +\begin{description}
+> +\item[0] req_vq
+> +\end{description}
+> +
+> +\subsection{Feature bits}\label{sec:Device Types / PMEM Device / Feature
+> bits}
+> +
+> +There are currently no feature bits defined for this device.
+> +
+> +\subsection{Device configuration layout}\label{sec:Device Types / PMEM
+> Device / Device configuration layout}
+> +
+> +\begin{lstlisting}
+> +struct virtio_pmem_config {
+> +        uint64_t start;
+> +        uint64_t size;
+> +};
+> +\end{lstlisting}
+> +
+> +\field{start} contains the physical address of the start of the persistent
+> memory range.
+> +\field{size} contains the length of address range in bytes.
+> +
+> +\subsection{Device Initialization}\label{sec:Device Types / PMEM Device /
+> Device Initialization}
+> +
+> +The device hot-plugs physical memory to guest address space. The persistent
+> memory device
+> +is emulated at host side.
+> +
+> +\begin{enumerate}
+> +  \item The driver reads the physical start address from \field{start}.
+> +  \item The driver reads the length of the persistent memory range from
+> \field{size}.
+> +  \end{enumerate}
+> +
+> +\devicenormative{\subsubsection}{Device Initialization}{Device Types / PMEM
+> Device / Device Initialization}
+> +
+> +The host memory region MUST be mapped to guest address space in a
+> +way so that updates are visible to other processes mapping the
+> +same memory region.
+> +
+> +\subsection{Driver Initialization}\label{sec:Device Types / PMEM Driver /
+> Driver Initialization}
+> +
+> +Memory stores to the persistent memory range are not guaranteed to be
+> +persistent without further action. An explicit flush command is
+> +required to ensure persistence. The req_vq is used to perform flush
+> +commands.
+> +
+> +\subsection{Driver Operations}\label{sec:Device Types / PMEM Driver / Driver
+> Operation}
+> +
+> +The VIRTIO_PMEM_REQ_TYPE_FLUSH command persists all memory writes that were
+> performed
+> +before the command was submitted. Once the command completes those writes
+> are guaranteed
+> +to be persistent.
+> +
+> +\drivernormative{\subsubsection}{Driver Operation: Virtqueue command}{Device
+> Types / PMEM Driver / Driver Operation / Virtqueue command}
+> +
+> +The driver MUST submit a VIRTIO_PMEM_REQ_TYPE_FLUSH command after performing
+> memory writes
+> +that require persistence.
+> +
+> +The driver MUST wait for the VIRTIO_PMEM_REQ_TYPE_FLUSH command to complete
+> before
+> +assuming previous writes are persistent.
+> +
+> +\subsection{Device Operations}\label{sec:Device Types / PMEM Driver / Device
+> Operation}
+> +
+> +\devicenormative{\subsubsection}{Device Operations: Virtqueue flush}{Device
+> Types / PMEM Device / Device Operation / Virtqueue flush}
+> +
+> +The device SHOULD handle multiple flush requests simultaneously using
+> +corresponding host flush mechanisms.
+> +
+> +\devicenormative{\subsubsection}{Device operations: Virtqueue return}{Device
+> Types / PMEM Device / Device Operation / Virtqueue return}
+> +
+> +The device MUST return integer '0' for success and '!0' for failure.
+> +
+> +\subsection{Possible security implications}\label{sec:Device Types / PMEM
+> Device / Possible Security Implications}
+> +
+> +Two devices actually sharing the same memory creates a potential information
+> +leak; as access patterns of one driver could be observable by another
+> driver.
+> +
+> +This can happen for example if two devices are implemented in software
+> +by a hypervisor, and two drivers are parts of VMs running on the
+> +hypervisor. In this case, the timing of access to device memory
+> +might leak information about access patterns from one VM to another.
+> +
+> +This can include, but might not be limited to:
+> +\begin{enumerate}
+> +\item Configurations sharing a single region of device memory (even in a
+> read-only configuration)
+> +\item Configurations with a shared cache between devices (e.g. Linux page
+> cache)
+> +\item Configurations with memory deduplication techniques such as KSM;
+> similar side-channels
+> + might be present if the device memory is shared with another system, e.g.
+> information about
+> + the hypervisor/host page cache might leak into a VM guest.
+> +\end{enumerate}
+> +
+> +\subsection{Countermeasures}\label{sec:Device Types / PMEM Device / Possible
+> Security Implications / Countermeasures}
+> +Solution is to avoid sharing resources between devices.
+> +\begin{enumerate}
+> +\item Each VM must have its own device memory, not shared with any other VM
+> or process.
+> +\item If the VM workload is a special application and there is no risk, it
+> is okay to share the device memory.
+> +\item Don't allow host cache eviction from VM when device memory is shared
+> with other VM or host process.
+> +\end{enumerate}
+> --
+> 2.14.5
+> 
+> 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+> 
+> 
 
------BEGIN PGP SIGNATURE-----
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAl1f/yQACgkQnKSrs4Gr
-c8jDzAf/YKJhND2SeDs4povfGzYpmwVpYJUEBOlYCnh4OBTMU8fBq0U2mYRgf2C2
-qyD4IEv3DGzNcRBrdf/b5+837VfDjpp+Stp56oZ14Op0thppOReh7zFC0VaT5COe
-7aHaJLjtnbyWb6nzIqRE0L7tkHYQGYAxSXKEBxuT0XMhL7O6U9c0UyaASRYrvJOV
-A6qy29EyVa+V2DxVFiuuZu5U8gIMWNTn4O6SPvv8WAb1YiX5iiDC9ML4Vyk2k2Lx
-yoSIGBByacAxkRbkMnADzJO1/ZQ/q/A4tgqVsuyMaGGbIW7hJmFl+5vJuxOSBjhs
-iIQj5UUkPZv0P/dKm86EYDGxg9ToRw==
-=n4eH
------END PGP SIGNATURE-----
-
---8t9RHnE3ZwKMSgU+--
