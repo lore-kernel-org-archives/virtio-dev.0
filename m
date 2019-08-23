@@ -1,144 +1,88 @@
-Return-Path: virtio-dev-return-5955-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-6015-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 13FBA985E26
-	for <virtio-dev@lists.oasis-open.org>; Mon, 12 Aug 2019 21:34:48 +0000 (UTC)
-From: Alexander Duyck <alexander.duyck@gmail.com>
-Date: Mon, 12 Aug 2019 14:34:45 -0700
-Message-ID: <20190812213445.22552.15744.stgit@localhost.localdomain>
-In-Reply-To: <20190812213158.22097.30576.stgit@localhost.localdomain>
-References: <20190812213158.22097.30576.stgit@localhost.localdomain>
+	by lists.oasis-open.org (Postfix) with ESMTP id D6B0F985CF5
+	for <virtio-dev@lists.oasis-open.org>; Fri, 23 Aug 2019 15:39:50 +0000 (UTC)
+From: Stefan Hajnoczi <stefanha@redhat.com>
+Date: Fri, 23 Aug 2019 16:39:38 +0100
+Message-Id: <20190823153940.28795-1-stefanha@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Subject: [virtio-dev] [PATCH v5 QEMU 3/3] virtio-balloon: Provide a interface for unused
- page reporting
-To: nitesh@redhat.com, kvm@vger.kernel.org, mst@redhat.com, david@redhat.com, dave.hansen@intel.com, linux-kernel@vger.kernel.org, linux-mm@kvack.org, akpm@linux-foundation.org, virtio-dev@lists.oasis-open.org
-Cc: yang.zhang.wz@gmail.com, pagupta@redhat.com, riel@surriel.com, konrad.wilk@oracle.com, willy@infradead.org, lcapitulino@redhat.com, wei.w.wang@intel.com, aarcange@redhat.com, pbonzini@redhat.com, dan.j.williams@intel.com, mhocko@kernel.org, alexander.h.duyck@linux.intel.com, osalvador@suse.de
+Content-Transfer-Encoding: 8bit
+Subject: [virtio-dev] [PATCH v7 0/2] virtio-fs: add virtio file system device
+To: virtio-dev@lists.oasis-open.org
+Cc: "Michael S. Tsirkin" <mst@redhat.com>, Sage Weil <sweil@redhat.com>, "Dr. David Alan Gilbert" <dgilbert@redhat.com>, Vivek Goyal <vgoyal@redhat.com>, Steven Whitehouse <swhiteho@redhat.com>, Miklos Szeredi <mszeredi@redhat.com>, Stefan Hajnoczi <stefanha@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-From: Alexander Duyck <alexander.h.duyck@linux.intel.com>
+v7:
+ * Rename num_queues to num_request_queues [Cornelia]
+ * Clarify that endianness is chosen by the guest driver in the
+   FUSE_INIT message [Cornelia]
+ * Clarify that the DAX Window is optional and can be used together with
+   FUSE_READ/FUSE_WRITE requests [Cornelia]
 
-Add support for what I am referring to as "unused page reporting".
-Basically the idea is to function very similar to how the balloon works
-in that we basically end up madvising the page as not being used. However
-we don't really need to bother with any deflate type logic since the page
-will be faulted back into the guest when it is read or written to.
+v6:
+ * Clarify that num_queues only counts request queues [Cornelia]
+ * State that only high priority requests go on the hiprio queue [Cornelia]
+ * Expand on how endianness works [Cornelia]
+ * Use "driver" and "device" instead of "guest" and "host" [Michael]
+ * Explain how setuid files and device nodes can be a security issue [Michael]
+ * Clarify that security issues with shared file systems involve multiple machines [Michael]
+ * Document timing side-channel attacks [Michael]
 
-This is meant to be a simplification of the existing balloon interface
-to use for providing hints to what memory needs to be freed. I am assuming
-this is safe to do as the deflate logic does not actually appear to do very
-much other than tracking what subpages have been released and which ones
-haven't.
+v5:
+ * Explain multiqueue semantics: no ordering, identical functionality on each queue, one FUSE session state shared between all queues
+ * Explain how the FUSE session is started with a FUSE_INIT request
+ * Consistently use "submit" vs "made available" and "complete" vs "used" terminology [Michael]
+ * Explain endianness [Michael]
+ * Clarify hiprio vs normal queue usage [Michael]
+ * Move SHOULD, MUST, etc wording into normative sections [Michael]
+ * Mention that FUSE_INIT negotiated state needs to be transferred during live migration [Michael]
+ * State that the DAX window is mapped with writeback caching like RAM [Michael]
+ * Mention DAX window mapping alignment constraints (they are communicated via the FUSE protocol) [Michael]
+ * Explain that FUSE_SETUPMAPPING fails when device resources are exhausted and that splitting mappings consumes resources too [Michael]
+ * Clarify access rules to DAX window - only touch memory that has a mapping establised
+ * Document that DAX data persistence is achieved via FUSE_FSYNC
 
-Signed-off-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
----
- hw/virtio/virtio-balloon.c         |   46 ++++++++++++++++++++++++++++++++++--
- include/hw/virtio/virtio-balloon.h |    2 +-
- 2 files changed, 45 insertions(+), 3 deletions(-)
+v4:
+ * Clarify that there are no request ordering guarantees between requests in a
+   single queue [vgoyal]
+ * Add explanation of FUSE session endianness detection [dgilbert]
 
-diff --git a/hw/virtio/virtio-balloon.c b/hw/virtio/virtio-balloon.c
-index 003b3ebcfdfb..7a30df63bc77 100644
---- a/hw/virtio/virtio-balloon.c
-+++ b/hw/virtio/virtio-balloon.c
-@@ -320,6 +320,40 @@ static void balloon_stats_set_poll_interval(Object *obj, Visitor *v,
-     balloon_stats_change_timer(s, 0);
- }
- 
-+static void virtio_balloon_handle_report(VirtIODevice *vdev, VirtQueue *vq)
-+{
-+    VirtIOBalloon *dev = VIRTIO_BALLOON(vdev);
-+    VirtQueueElement *elem;
-+
-+    while ((elem = virtqueue_pop(vq, sizeof(VirtQueueElement)))) {
-+    	unsigned int i;
-+
-+        for (i = 0; i < elem->in_num; i++) {
-+            void *addr = elem->in_sg[i].iov_base;
-+            size_t size = elem->in_sg[i].iov_len;
-+            ram_addr_t ram_offset;
-+            size_t rb_page_size;
-+            RAMBlock *rb;
-+
-+            if (qemu_balloon_is_inhibited() || dev->poison_val)
-+                continue;
-+
-+            rb = qemu_ram_block_from_host(addr, false, &ram_offset);
-+            rb_page_size = qemu_ram_pagesize(rb);
-+
-+            /* For now we will simply ignore unaligned memory regions */
-+            if ((ram_offset | size) & (rb_page_size - 1))
-+                continue;
-+
-+            ram_block_discard_range(rb, ram_offset, size);
-+        }
-+
-+        virtqueue_push(vq, elem, 0);
-+        virtio_notify(vdev, vq);
-+        g_free(elem);
-+    }
-+}
-+
- static void virtio_balloon_handle_output(VirtIODevice *vdev, VirtQueue *vq)
- {
-     VirtIOBalloon *s = VIRTIO_BALLOON(vdev);
-@@ -627,7 +661,8 @@ static size_t virtio_balloon_config_size(VirtIOBalloon *s)
-         return sizeof(struct virtio_balloon_config);
-     }
-     if (virtio_has_feature(features, VIRTIO_BALLOON_F_PAGE_POISON) ||
--        virtio_has_feature(features, VIRTIO_BALLOON_F_FREE_PAGE_HINT)) {
-+        virtio_has_feature(features, VIRTIO_BALLOON_F_FREE_PAGE_HINT) ||
-+        virtio_has_feature(features, VIRTIO_BALLOON_F_REPORTING)) {
-         return sizeof(struct virtio_balloon_config);
-     }
-     return offsetof(struct virtio_balloon_config, free_page_report_cmd_id);
-@@ -715,7 +750,8 @@ static uint64_t virtio_balloon_get_features(VirtIODevice *vdev, uint64_t f,
-     VirtIOBalloon *dev = VIRTIO_BALLOON(vdev);
-     f |= dev->host_features;
-     virtio_add_feature(&f, VIRTIO_BALLOON_F_STATS_VQ);
--    if (virtio_has_feature(f, VIRTIO_BALLOON_F_FREE_PAGE_HINT)) {
-+    if (virtio_has_feature(f, VIRTIO_BALLOON_F_FREE_PAGE_HINT) ||
-+        virtio_has_feature(f, VIRTIO_BALLOON_F_REPORTING)) {
-         virtio_add_feature(&f, VIRTIO_BALLOON_F_PAGE_POISON);
-     }
- 
-@@ -805,6 +841,10 @@ static void virtio_balloon_device_realize(DeviceState *dev, Error **errp)
-     s->dvq = virtio_add_queue(vdev, 128, virtio_balloon_handle_output);
-     s->svq = virtio_add_queue(vdev, 128, virtio_balloon_receive_stats);
- 
-+    if (virtio_has_feature(s->host_features, VIRTIO_BALLOON_F_REPORTING)) {
-+        s->rvq = virtio_add_queue(vdev, 32, virtio_balloon_handle_report);
-+    }
-+
-     if (virtio_has_feature(s->host_features,
-                            VIRTIO_BALLOON_F_FREE_PAGE_HINT)) {
-         s->free_page_vq = virtio_add_queue(vdev, VIRTQUEUE_MAX_SIZE,
-@@ -931,6 +971,8 @@ static Property virtio_balloon_properties[] = {
-      */
-     DEFINE_PROP_BOOL("qemu-4-0-config-size", VirtIOBalloon,
-                      qemu_4_0_config_size, false),
-+    DEFINE_PROP_BIT("unused-page-reporting", VirtIOBalloon, host_features,
-+                    VIRTIO_BALLOON_F_REPORTING, true),
-     DEFINE_PROP_LINK("iothread", VirtIOBalloon, iothread, TYPE_IOTHREAD,
-                      IOThread *),
-     DEFINE_PROP_END_OF_LIST(),
-diff --git a/include/hw/virtio/virtio-balloon.h b/include/hw/virtio/virtio-balloon.h
-index 7fe78e5c14d7..db5bf7127112 100644
---- a/include/hw/virtio/virtio-balloon.h
-+++ b/include/hw/virtio/virtio-balloon.h
-@@ -42,7 +42,7 @@ enum virtio_balloon_free_page_report_status {
- 
- typedef struct VirtIOBalloon {
-     VirtIODevice parent_obj;
--    VirtQueue *ivq, *dvq, *svq, *free_page_vq;
-+    VirtQueue *ivq, *dvq, *svq, *free_page_vq, *rvq;
-     uint32_t free_page_report_status;
-     uint32_t num_pages;
-     uint32_t actual;
+v3:
+ * Remove notifications virtqueue, it's unimplemented and can be added when
+   needed [Miklos]
+ * Add Security Considerations and Live Migration Considerations sections
+   [Michael]
+v2:
+ * Clean up core virtio file system device spec
+ * Add DAX window
+
+These patches add the virtio file system device, which is based on Linux FUSE
+but includes the DAX window extension.  Similar to virtio-scsi, which
+transports SCSI commands, virtio-fs transports FUSE requests and the protocol
+documentation is not duplicated here.
+
+The DAX window allows file contents to be accessed directly from shared memory.
+This eliminates copying of data, reduces the number of vmexits, and reduces the
+guest's memory footprint.  It also allows coherent mmap MAP_SHARED semantics
+between guests on the same host.
+
+Stefan Hajnoczi (2):
+  content: add virtio file system device
+  virtio-fs: add DAX window
+
+ content.tex      |   1 +
+ introduction.tex |   3 +
+ virtio-fs.tex    | 291 +++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 295 insertions(+)
+ create mode 100644 virtio-fs.tex
+
+-- 
+2.21.0
 
 
 ---------------------------------------------------------------------
