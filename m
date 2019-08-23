@@ -1,62 +1,128 @@
-Return-Path: virtio-dev-return-6018-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-6017-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id E817F9841E7
-	for <virtio-dev@lists.oasis-open.org>; Mon, 26 Aug 2019 13:20:16 +0000 (UTC)
-Date: Mon, 26 Aug 2019 15:19:49 +0200
-From: Cornelia Huck <cohuck@redhat.com>
-Message-ID: <20190826151949.27aaf2ed.cohuck@redhat.com>
-In-Reply-To: <20190823153940.28795-2-stefanha@redhat.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id E5310985CF5
+	for <virtio-dev@lists.oasis-open.org>; Fri, 23 Aug 2019 15:40:14 +0000 (UTC)
+From: Stefan Hajnoczi <stefanha@redhat.com>
+Date: Fri, 23 Aug 2019 16:39:40 +0100
+Message-Id: <20190823153940.28795-3-stefanha@redhat.com>
+In-Reply-To: <20190823153940.28795-1-stefanha@redhat.com>
 References: <20190823153940.28795-1-stefanha@redhat.com>
-	<20190823153940.28795-2-stefanha@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Subject: Re: [virtio-dev] [PATCH v7 1/2] content: add virtio file system
- device
-To: Stefan Hajnoczi <stefanha@redhat.com>
-Cc: virtio-dev@lists.oasis-open.org, "Michael S. Tsirkin" <mst@redhat.com>, Sage Weil <sweil@redhat.com>, "Dr. David Alan Gilbert" <dgilbert@redhat.com>, Vivek Goyal <vgoyal@redhat.com>, Steven Whitehouse <swhiteho@redhat.com>, Miklos Szeredi <mszeredi@redhat.com>
+Content-Transfer-Encoding: 8bit
+Subject: [virtio-dev] [PATCH v7 2/2] virtio-fs: add DAX window
+To: virtio-dev@lists.oasis-open.org
+Cc: "Michael S. Tsirkin" <mst@redhat.com>, Sage Weil <sweil@redhat.com>, "Dr. David Alan Gilbert" <dgilbert@redhat.com>, Vivek Goyal <vgoyal@redhat.com>, Steven Whitehouse <swhiteho@redhat.com>, Miklos Szeredi <mszeredi@redhat.com>, Stefan Hajnoczi <stefanha@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Fri, 23 Aug 2019 16:39:39 +0100
-Stefan Hajnoczi <stefanha@redhat.com> wrote:
+Describe how shared memory region ID 0 is the DAX window and how
+FUSE_SETUPMAPPING maps file ranges into the window.
 
-> The virtio file system device transports Linux FUSE requests between a
-> FUSE daemon running on the host and the FUSE driver inside the guest.
-> 
-> The actual FUSE request definitions are not duplicated in the virtio
-> specification, similar to how virtio-scsi does not document SCSI
-> command details.  FUSE request definitions are available here:
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/uapi/linux/fuse.h
-> 
-> This patch documents the core virtio file system device, which is
-> functional but lacks the DAX feature introduced in the next patch.
-> 
-> Signed-off-by: Stefan Hajnoczi <stefanha@redhat.com>
-> ---
-> v7:
->  * Rename num_queues to num_request_queues [Cornelia]
->  * Clarify that endianness is chosen by the guest driver in the
->    FUSE_INIT message
-> v6:
->  * Clarify that num_queues only counts request queues [Cornelia]
->  * State that only high priority requests go on the hiprio queue [Cornelia]
->  * Expand on how endianness works [Cornelia]
->  * Use "driver" and "device" instead of "guest" and "host" [Michael]
->  * Explain how setuid files and device nodes can be a security issue [Michael]
->  * Clarify that security issues with shared file systems involve multiple machines [Michael]
-> ---
->  content.tex      |   1 +
->  introduction.tex |   3 +
->  virtio-fs.tex    | 225 +++++++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 229 insertions(+)
->  create mode 100644 virtio-fs.tex
+Signed-off-by: Stefan Hajnoczi <stefanha@redhat.com>
+---
+The FUSE_SETUPMAPPING message is part of the virtio-fs Linux patches:
+https://gitlab.com/virtio-fs/linux/blob/virtio-fs/include/uapi/linux/fuse.h
 
-Reviewed-by: Cornelia Huck <cohuck@redhat.com>
+v7:
+ * Clarify that the DAX Window is optional and can be used together with
+   FUSE_READ/FUSE_WRITE requests [Cornelia]
+v6:
+ * Document timing side-channel attacks [Michael]
+---
+ virtio-fs.tex | 66 +++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 66 insertions(+)
+
+diff --git a/virtio-fs.tex b/virtio-fs.tex
+index 1ae17f8..5300b1c 100644
+--- a/virtio-fs.tex
++++ b/virtio-fs.tex
+@@ -179,6 +179,62 @@ \subsubsection{Device Operation: High Priority Queue}\label{sec:Device Types / F
+ 
+ The driver MUST anticipate that request queues are processed concurrently with the hiprio queue.
+ 
++\subsubsection{Device Operation: DAX Window}\label{sec:Device Types / File System Device / Device Operation / Device Operation: DAX Window}
++
++FUSE\_READ and FUSE\_WRITE requests transfer file contents between the
++driver-provided buffer and the device.  In cases where data transfer is
++undesirable, the device can map file contents into the DAX window shared memory
++region.  The driver then accesses file contents directly in device-owned memory
++without a data transfer.
++
++The DAX Window is an alternative mechanism for accessing file contents.
++FUSE\_READ/FUSE\_WRITE requests and DAX Window accesses are possible at the
++same time.  Providing the DAX Window is optional for devices.  Using the DAX
++Window is optional for drivers.
++
++Shared memory region ID 0 is called the DAX window.  Drivers map this shared
++memory region with writeback caching as if it were regular RAM.  The contents
++of the DAX window are undefined unless a mapping exists for that range.
++
++The driver maps a file range into the DAX window using the FUSE\_SETUPMAPPING
++request.  Alignment constraints for FUSE\_SETUPMAPPING and FUSE\_REMOVEMAPPING
++requests are communicated during FUSE\_INIT negotiation.
++
++When a FUSE\_SETUPMAPPING request perfectly overlaps a previous mapping, the
++previous mapping is replaced.  When a mapping partially overlaps a previous
++mapping, the previous mapping is split into one or two smaller mappings.  When
++a mapping is partially unmapped it is also split into one or two smaller
++mappings.
++
++Establishing new mappings or splitting existing mappings consumes resources.
++If the device runs out of resources the FUSE\_SETUPMAPPING request fails until
++resources are available again following FUSE\_REMOVEMAPPING.
++
++After FUSE\_SETUPMAPPING has completed successfully the file range is
++accessible from the DAX window at the offset provided by the driver in the
++request.  A mapping is removed using the FUSE\_REMOVEMAPPING request.
++
++Data is only guaranteed to be persistent when a FUSE\_FSYNC request is used by
++the device after having been made available by the driver following the write.
++
++\devicenormative{\paragraph}{Device Operation: DAX Window}{Device Types / File System Device / Device Operation / Device Operation: DAX Window}
++
++The device MAY provide the DAX Window to memory-mapped access to file contents.  If present, the DAX Window MUST be shared memory region ID 0.
++
++The device MUST support FUSE\_READ and FUSE\_WRITE requests regardless of whether the DAX Window is being used or not.
++
++The device MUST allow mappings that completely or partially overlap existing mappings within the DAX window.
++
++The device MUST reject mappings that would go beyond the end of the DAX window.
++
++\drivernormative{\paragraph}{Device Operation: DAX Window}{Device Types / File System Device / Device Operation / Device Operation: DAX Window}
++
++The driver SHOULD be prepared to find shared memory region ID 0 absent and fall back to FUSE\_READ and FUSE\_WRITE requests.
++
++The driver MAY use FUSE\_READ and FUSE\_WRITE requests and also access file contents through the DAX Window.
++
++The driver MUST NOT access DAX window areas that have not been mapped.
++
+ \subsubsection{Security Considerations}\label{sec:Device Types / File System Device / Security Considerations}
+ 
+ The device provides access to a file system containing files owned by one or
+@@ -207,6 +263,16 @@ \subsubsection{Security Considerations}\label{sec:Device Types / File System Dev
+ virtio-fs.  They are typically managed at the file system administration level
+ by providing shared access only to mutually trusted users.
+ 
++Multiple machines sharing access to a file system are susceptible to timing
++side-channel attacks.  By measuring the latency of accesses to file contents or
++file system metadata it is possible to infer whether other machines also
++accessed the same information.  Short latencies indicate that the information
++was cached due to a previous access.  This can reveal sensitive information,
++such as whether certain code paths were taken.  The DAX Window provides direct
++access to file contents and is therefore a likely target of such attacks.
++These attacks are also possible with traditional FUSE requests.  The safest
++approach is to avoid sharing file systems between untrusted machines.
++
+ \subsubsection{Live migration considerations}\label{sec:Device Types / File System Device / Live Migration Considerations}
+ 
+ When a driver is migrated to a new device it is necessary to consider the FUSE
+-- 
+2.21.0
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
