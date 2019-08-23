@@ -1,176 +1,135 @@
-Return-Path: virtio-dev-return-6006-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-6011-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 8E6B3985C7E
-	for <virtio-dev@lists.oasis-open.org>; Thu, 22 Aug 2019 10:43:17 +0000 (UTC)
-Date: Thu, 22 Aug 2019 06:43:13 -0400 (EDT)
+	by lists.oasis-open.org (Postfix) with ESMTP id 76DD1985CEE
+	for <virtio-dev@lists.oasis-open.org>; Fri, 23 Aug 2019 05:16:39 +0000 (UTC)
+Date: Fri, 23 Aug 2019 01:16:34 -0400 (EDT)
 From: Pankaj Gupta <pagupta@redhat.com>
-Message-ID: <1297409377.9866813.1566470593223.JavaMail.zimbra@redhat.com>
-In-Reply-To: <20190821145806.20926.22448.stgit@localhost.localdomain>
-References: <20190821145806.20926.22448.stgit@localhost.localdomain>
+Message-ID: <860165703.10076075.1566537394212.JavaMail.zimbra@redhat.com>
+In-Reply-To: <31b75078d004a1ccf77b710b35b8f847f404de9a.camel@linux.intel.com>
+References: <20190821145806.20926.22448.stgit@localhost.localdomain> <1297409377.9866813.1566470593223.JavaMail.zimbra@redhat.com> <31b75078d004a1ccf77b710b35b8f847f404de9a.camel@linux.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 Subject: [virtio-dev] Re: [PATCH v6 0/6] mm / virtio: Provide support for unused page
  reporting
-To: Alexander Duyck <alexander.duyck@gmail.com>
-Cc: nitesh@redhat.com, kvm@vger.kernel.org, mst@redhat.com, david@redhat.com, dave hansen <dave.hansen@intel.com>, linux-kernel@vger.kernel.org, willy@infradead.org, mhocko@kernel.org, linux-mm@kvack.org, akpm@linux-foundation.org, virtio-dev@lists.oasis-open.org, osalvador@suse.de, yang zhang wz <yang.zhang.wz@gmail.com>, riel@surriel.com, konrad wilk <konrad.wilk@oracle.com>, lcapitulino@redhat.com, wei w wang <wei.w.wang@intel.com>, aarcange@redhat.com, pbonzini@redhat.com, dan j williams <dan.j.williams@intel.com>, alexander h duyck <alexander.h.duyck@linux.intel.com>
+To: Alexander Duyck <alexander.h.duyck@linux.intel.com>
+Cc: Alexander Duyck <alexander.duyck@gmail.com>, nitesh@redhat.com, kvm@vger.kernel.org, mst@redhat.com, david@redhat.com, dave hansen <dave.hansen@intel.com>, linux-kernel@vger.kernel.org, willy@infradead.org, mhocko@kernel.org, linux-mm@kvack.org, akpm@linux-foundation.org, virtio-dev@lists.oasis-open.org, osalvador@suse.de, yang zhang wz <yang.zhang.wz@gmail.com>, riel@surriel.com, konrad wilk <konrad.wilk@oracle.com>, lcapitulino@redhat.com, wei w wang <wei.w.wang@intel.com>, aarcange@redhat.com, pbonzini@redhat.com, dan j williams <dan.j.williams@intel.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
 
+> On Thu, 2019-08-22 at 06:43 -0400, Pankaj Gupta wrote:
+> > > This series provides an asynchronous means of reporting to a hypervisor
+> > > that a guest page is no longer in use and can have the data associated
+> > > with it dropped. To do this I have implemented functionality that allows
+> > > for what I am referring to as unused page reporting
+> > > 
+> > > The functionality for this is fairly simple. When enabled it will
+> > > allocate
+> > > statistics to track the number of reported pages in a given free area.
+> > > When the number of free pages exceeds this value plus a high water value,
+> > > currently 32, it will begin performing page reporting which consists of
+> > > pulling pages off of free list and placing them into a scatter list. The
+> > > scatterlist is then given to the page reporting device and it will
+> > > perform
+> > > the required action to make the pages "reported", in the case of
+> > > virtio-balloon this results in the pages being madvised as MADV_DONTNEED
+> > > and as such they are forced out of the guest. After this they are placed
+> > > back on the free list, and an additional bit is added if they are not
+> > > merged indicating that they are a reported buddy page instead of a
+> > > standard buddy page. The cycle then repeats with additional non-reported
+> > > pages being pulled until the free areas all consist of reported pages.
+> > > 
+> > > I am leaving a number of things hard-coded such as limiting the lowest
+> > > order processed to PAGEBLOCK_ORDER, and have left it up to the guest to
+> > > determine what the limit is on how many pages it wants to allocate to
+> > > process the hints. The upper limit for this is based on the size of the
+> > > queue used to store the scattergather list.
+> > > 
+> > > My primary testing has just been to verify the memory is being freed
+> > > after
+> > > allocation by running memhog 40g on a 40g guest and watching the total
+> > > free memory via /proc/meminfo on the host. With this I have verified most
+> > > of the memory is freed after each iteration.
+> > 
+> > I tried to go through the entire patch series. I can see you reported a
+> > -3.27 drop from the baseline. If its because of re-faulting the page after
+> > host has freed them? Can we avoid freeing all the pages from the guest
+> > free_area
+> > and keep some pages(maybe some mixed order), so that next allocation is
+> > done from
+> > the guest itself than faulting to host. This will work with real workload
+> > where
+> > allocation and deallocation happen at regular intervals.
+> > 
+> > This can be further optimized based on other factors like host memory
+> > pressure etc.
+> > 
+> > Thanks,
+> > Pankaj
 > 
-> This series provides an asynchronous means of reporting to a hypervisor
-> that a guest page is no longer in use and can have the data associated
-> with it dropped. To do this I have implemented functionality that allows
-> for what I am referring to as unused page reporting
+> When I originally started implementing and testing this code I was seeing
+> less than a 1% regression. I didn't feel like that was really an accurate
+> result since it wasn't putting much stress on the changed code so I have
+> modified my tests and kernel so that I have memory shuffting and THP
+> enabled. In addition I have gone out of my way to lock things down to a
+> single NUMA node on my host system as the code I had would sometimes
+> perform better than baseline when running the test due to the fact that
+> memory was being freed back to the hose and then reallocated which
+> actually allowed for better NUMA locality.
 > 
-> The functionality for this is fairly simple. When enabled it will allocate
-> statistics to track the number of reported pages in a given free area.
-> When the number of free pages exceeds this value plus a high water value,
-> currently 32, it will begin performing page reporting which consists of
-> pulling pages off of free list and placing them into a scatter list. The
-> scatterlist is then given to the page reporting device and it will perform
-> the required action to make the pages "reported", in the case of
-> virtio-balloon this results in the pages being madvised as MADV_DONTNEED
-> and as such they are forced out of the guest. After this they are placed
-> back on the free list, and an additional bit is added if they are not
-> merged indicating that they are a reported buddy page instead of a
-> standard buddy page. The cycle then repeats with additional non-reported
-> pages being pulled until the free areas all consist of reported pages.
-> 
-> I am leaving a number of things hard-coded such as limiting the lowest
-> order processed to PAGEBLOCK_ORDER, and have left it up to the guest to
-> determine what the limit is on how many pages it wants to allocate to
-> process the hints. The upper limit for this is based on the size of the
-> queue used to store the scattergather list.
-> 
-> My primary testing has just been to verify the memory is being freed after
-> allocation by running memhog 40g on a 40g guest and watching the total
-> free memory via /proc/meminfo on the host. With this I have verified most
-> of the memory is freed after each iteration. 
+> The general idea was I wanted to know what the worst case penalty would be
+> for running this code, and it turns out most of that is just the cost of
+> faulting back in the pages. By enabling memory shuffling I am forcing the
+> memory to churn as pages are added to both the head and tail of the
+> free_list. The test itself was modified so that it didn't allocate order 0
+> pages and instead was allocating transparent huge pages so the effects
+> were as visible as possible. Without that the page faulting overhead would
+> mostly fall into the noise of having to allocate the memory as order 0
+> pages, that is what I had essentially seen earlier when I was running the
+> stock page_fault1 test.
 
-I tried to go through the entire patch series. I can see you reported a
--3.27 drop from the baseline. If its because of re-faulting the page after
-host has freed them? Can we avoid freeing all the pages from the guest free_area
-and keep some pages(maybe some mixed order), so that next allocation is done from
-the guest itself than faulting to host. This will work with real workload where
-allocation and deallocation happen at regular intervals. 
+Right. I think the reason is this test is allocating THP's in guest, host side
+you are still using order 0 pages, I assume?
 
-This can be further optimized based on other factors like host memory pressure etc.
+> 
+> This code does no hinting on anything smaller than either MAX_ORDER - 1 or
+> HUGETLB_PAGE_ORDER pages, and it only starts when there are at least 32 of
+> them available to hint on. This results in us not starting to perform the
+> hinting until there is 64MB to 128MB of memory sitting in the higher order
+> regions of the zone.
 
-Thanks,
-Pankaj       
+o.k
 
-As far as performance I have
-> been mainly focusing on the will-it-scale/page_fault1 test running with
-> 16 vcpus. I have modified it to use Transparent Huge Pages. With this I
-> see almost no difference, -0.08%, with the patches applied and the feature
-> disabled. I see a regression of -0.86% with the feature enabled, but the
-> madvise disabled in the hypervisor due to a device being assigned. With
-> the feature fully enabled I see a regression of -3.27% versus the baseline
-> without these patches applied. In my testing I found that most of the
-> overhead was due to the page zeroing that comes as a result of the pages
-> having to be faulted back into the guest.
 > 
-> One side effect of these patches is that the guest becomes much more
-> resilient in terms of NUMA locality. With the pages being freed and then
-> reallocated when used it allows for the pages to be much closer to the
-> active thread, and as a result there can be situations where this patch
-> set will out-perform the stock kernel when the guest memory is not local
-> to the guest vCPUs. To avoid that in my testing I set the affinity of all
-> the vCPUs and QEMU instance to the same node.
+> The hinting itself stops as soon as we run out of unhinted pages to pull
+> from. When this occurs we let any pages that are freed after that
+> accumulate until we get back to 32 pages being free in a given order.
+> During this time we should build up the cache of warm pages that you
+> mentioned, assuming that shuffling is not enabled.
+
+I was thinking about something like retaining pages to a lower watermark here.
+Looks like we still might have few lower order pages in free list if they are
+not merged to orders which are hinted. 
+
 > 
-> Changes from the RFC:
-> https://lore.kernel.org/lkml/20190530215223.13974.22445.stgit@localhost.localdomain/
-> Moved aeration requested flag out of aerator and into zone->flags.
-> Moved boundary out of free_area and into local variables for aeration.
-> Moved aeration cycle out of interrupt and into workqueue.
-> Left nr_free as total pages instead of splitting it between raw and aerated.
-> Combined size and physical address values in virtio ring into one 64b value.
+> As far as further optimizations I don't think there is anything here that
+> prevents us from doing that. For now I am focused on just getting the
+> basics in place so we have a foundation to start from.
+
+Agree. Thanks for explaining.
+
+Best rgards,
+Pankaj
+
 > 
-> Changes from v1:
-> https://lore.kernel.org/lkml/20190619222922.1231.27432.stgit@localhost.localdomain/
-> Dropped "waste page treatment" in favor of "page hinting"
-> Renamed files and functions from "aeration" to "page_hinting"
-> Moved from page->lru list to scatterlist
-> Replaced wait on refcnt in shutdown with RCU and cancel_delayed_work_sync
-> Virtio now uses scatterlist directly instead of intermediate array
-> Moved stats out of free_area, now in separate area and pointed to from zone
-> Merged patch 5 into patch 4 to improve review-ability
-> Updated various code comments throughout
+> Thanks.
 > 
-> Changes from v2:
-> https://lore.kernel.org/lkml/20190724165158.6685.87228.stgit@localhost.localdomain/
-> Dropped "page hinting" in favor of "page reporting"
-> Renamed files from "hinting" to "reporting"
-> Replaced "Hinted" page type with "Reported" page flag
-> Added support for page poisoning while hinting is active
-> Add QEMU patch that implements PAGE_POISON feature
-> 
-> Changes from v3:
-> https://lore.kernel.org/lkml/20190801222158.22190.96964.stgit@localhost.localdomain/
-> Added mutex lock around page reporting startup and shutdown
-> Fixed reference to "page aeration" in patch 2
-> Split page reporting function bit out into separate QEMU patch
-> Limited capacity of scatterlist to vq size - 1 instead of vq size
-> Added exception handling for case of virtio descriptor allocation failure
-> 
-> Changes from v4:
-> https://lore.kernel.org/lkml/20190807224037.6891.53512.stgit@localhost.localdomain/
-> Replaced spin_(un)lock with spin_(un)lock_irq in page_reporting_cycle()
-> Dropped if/continue for ternary operator in page_reporting_process()
-> Added checks for isolate and cma types to
-> for_each_reporting_migratetype_order
-> Added virtio-dev, Michal Hocko, and Oscar Salvador to to:/cc:
-> Rebased on latest linux-next and QEMU git trees
-> 
-> Changes from v5:
-> https://lore.kernel.org/lkml/20190812213158.22097.30576.stgit@localhost.localdomain/
-> Replaced spin_(un)lock with spin_(un)lock_irq in page_reporting_startup()
-> Updated shuffle code to use "shuffle_pick_tail" and updated patch description
-> Dropped storage of order and migratettype while page is being reported
-> Used get_pfnblock_migratetype to determine migratetype of page
-> Renamed put_reported_page to free_reported_page, added order as argument
-> Dropped check for CMA type as I believe we should be reporting those
-> Added code to allow moving of reported pages into and out of isolation
-> Defined page reporting order as minimum of Huge Page size vs MAX_ORDER - 1
-> Cleaned up use of static branch usage for page_reporting_notify_enabled
-> 
-> ---
-> 
-> Alexander Duyck (6):
->       mm: Adjust shuffle code to allow for future coalescing
->       mm: Move set/get_pcppage_migratetype to mmzone.h
->       mm: Use zone and order instead of free area in free_list manipulators
->       mm: Introduce Reported pages
->       virtio-balloon: Pull page poisoning config out of free page hinting
->       virtio-balloon: Add support for providing unused page reports to host
-> 
-> 
->  drivers/virtio/Kconfig              |    1
->  drivers/virtio/virtio_balloon.c     |   84 ++++++++-
->  include/linux/mmzone.h              |  124 ++++++++-----
->  include/linux/page-flags.h          |   11 +
->  include/linux/page_reporting.h      |  177 ++++++++++++++++++
->  include/uapi/linux/virtio_balloon.h |    1
->  mm/Kconfig                          |    5 +
->  mm/Makefile                         |    1
->  mm/internal.h                       |   18 ++
->  mm/memory_hotplug.c                 |    1
->  mm/page_alloc.c                     |  216 ++++++++++++++++-------
->  mm/page_reporting.c                 |  336
->  +++++++++++++++++++++++++++++++++++
->  mm/shuffle.c                        |   40 +++-
->  mm/shuffle.h                        |   12 +
->  14 files changed, 896 insertions(+), 131 deletions(-)
->  create mode 100644 include/linux/page_reporting.h
->  create mode 100644 mm/page_reporting.c
-> 
-> --
+> - Alex
 > 
 > 
 
