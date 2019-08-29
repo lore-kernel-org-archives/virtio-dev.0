@@ -1,33 +1,42 @@
-Return-Path: virtio-dev-return-6023-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-6024-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 78732985CDA
-	for <virtio-dev@lists.oasis-open.org>; Thu, 29 Aug 2019 13:52:14 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 4EB24985CDA
+	for <virtio-dev@lists.oasis-open.org>; Thu, 29 Aug 2019 13:52:21 +0000 (UTC)
 From: Stefan Hajnoczi <stefanha@redhat.com>
-Date: Thu, 29 Aug 2019 14:52:04 +0100
-Message-Id: <20190829135206.24231-1-stefanha@redhat.com>
+Date: Thu, 29 Aug 2019 14:52:05 +0100
+Message-Id: <20190829135206.24231-2-stefanha@redhat.com>
+In-Reply-To: <20190829135206.24231-1-stefanha@redhat.com>
+References: <20190829135206.24231-1-stefanha@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: [virtio-dev] [PATCH v8 0/2] virtio-fs: add virtio file system device
+Subject: [virtio-dev] [PATCH v8 1/2] content: add virtio file system device
 To: virtio-dev@lists.oasis-open.org
-Cc: Miklos Szeredi <mszeredi@redhat.com>, Steven Whitehouse <swhiteho@redhat.com>, Vivek Goyal <vgoyal@redhat.com>, "Dr. David Alan Gilbert" <dgilbert@redhat.com>, Sage Weil <sweil@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>, Stefan Hajnoczi <stefanha@redhat.com>
+Cc: Miklos Szeredi <mszeredi@redhat.com>, Steven Whitehouse <swhiteho@redhat.com>, Vivek Goyal <vgoyal@redhat.com>, "Dr. David Alan Gilbert" <dgilbert@redhat.com>, Sage Weil <sweil@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>, Stefan Hajnoczi <stefanha@redhat.com>, Cornelia Huck <cohuck@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-v8:
- * Make language about using both FUSE_READ/FUSE_WRITE and the DAX
-   Window clearer [Cornelia]
+The virtio file system device transports Linux FUSE requests between a
+FUSE daemon running on the host and the FUSE driver inside the guest.
 
+The actual FUSE request definitions are not duplicated in the virtio
+specification, similar to how virtio-scsi does not document SCSI
+command details.  FUSE request definitions are available here:
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/uapi/linux/fuse.h
+
+This patch documents the core virtio file system device, which is
+functional but lacks the DAX feature introduced in the next patch.
+
+Signed-off-by: Stefan Hajnoczi <stefanha@redhat.com>
+Reviewed-by: Cornelia Huck <cohuck@redhat.com>
+---
 v7:
  * Rename num_queues to num_request_queues [Cornelia]
  * Clarify that endianness is chosen by the guest driver in the
-   FUSE_INIT message [Cornelia]
- * Clarify that the DAX Window is optional and can be used together with
-   FUSE_READ/FUSE_WRITE requests [Cornelia]
-
+   FUSE_INIT message
 v6:
  * Clarify that num_queues only counts request queues [Cornelia]
  * State that only high priority requests go on the hiprio queue [Cornelia]
@@ -35,56 +44,270 @@ v6:
  * Use "driver" and "device" instead of "guest" and "host" [Michael]
  * Explain how setuid files and device nodes can be a security issue [Michael]
  * Clarify that security issues with shared file systems involve multiple machines [Michael]
- * Document timing side-channel attacks [Michael]
-
-v5:
- * Explain multiqueue semantics: no ordering, identical functionality on each queue, one FUSE session state shared between all queues
- * Explain how the FUSE session is started with a FUSE_INIT request
- * Consistently use "submit" vs "made available" and "complete" vs "used" terminology [Michael]
- * Explain endianness [Michael]
- * Clarify hiprio vs normal queue usage [Michael]
- * Move SHOULD, MUST, etc wording into normative sections [Michael]
- * Mention that FUSE_INIT negotiated state needs to be transferred during live migration [Michael]
- * State that the DAX window is mapped with writeback caching like RAM [Michael]
- * Mention DAX window mapping alignment constraints (they are communicated via the FUSE protocol) [Michael]
- * Explain that FUSE_SETUPMAPPING fails when device resources are exhausted and that splitting mappings consumes resources too [Michael]
- * Clarify access rules to DAX window - only touch memory that has a mapping establised
- * Document that DAX data persistence is achieved via FUSE_FSYNC
-
-v4:
- * Clarify that there are no request ordering guarantees between requests in a
-   single queue [vgoyal]
- * Add explanation of FUSE session endianness detection [dgilbert]
-
-v3:
- * Remove notifications virtqueue, it's unimplemented and can be added when
-   needed [Miklos]
- * Add Security Considerations and Live Migration Considerations sections
-   [Michael]
-v2:
- * Clean up core virtio file system device spec
- * Add DAX window
-
-These patches add the virtio file system device, which is based on Linux FUSE
-but includes the DAX window extension.  Similar to virtio-scsi, which
-transports SCSI commands, virtio-fs transports FUSE requests and the protocol
-documentation is not duplicated here.
-
-The DAX window allows file contents to be accessed directly from shared memory.
-This eliminates copying of data, reduces the number of vmexits, and reduces the
-guest's memory footprint.  It also allows coherent mmap MAP_SHARED semantics
-between guests on the same host.
-
-Stefan Hajnoczi (2):
-  content: add virtio file system device
-  virtio-fs: add DAX window
-
+---
  content.tex      |   1 +
  introduction.tex |   3 +
- virtio-fs.tex    | 291 +++++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 295 insertions(+)
+ virtio-fs.tex    | 225 +++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 229 insertions(+)
  create mode 100644 virtio-fs.tex
 
+diff --git a/content.tex b/content.tex
+index ee0d7c9..c14e953 100644
+--- a/content.tex
++++ b/content.tex
+@@ -5677,6 +5677,7 @@ \subsubsection{Legacy Interface: Framing Requirements}\label{sec:Device
+ \input{virtio-input.tex}
+ \input{virtio-crypto.tex}
+ \input{virtio-vsock.tex}
++\input{virtio-fs.tex}
+ 
+ \chapter{Reserved Feature Bits}\label{sec:Reserved Feature Bits}
+ 
+diff --git a/introduction.tex b/introduction.tex
+index c96acf9..40f16f8 100644
+--- a/introduction.tex
++++ b/introduction.tex
+@@ -60,6 +60,9 @@ \section{Normative References}\label{sec:Normative References}
+ 	\phantomsection\label{intro:SCSI MMC}\textbf{[SCSI MMC]} &
+         SCSI Multimedia Commands,
+         \newline\url{http://www.t10.org/cgi-bin/ac.pl?t=f&f=mmc6r00.pdf}\\
++	\phantomsection\label{intro:FUSE}\textbf{[FUSE]} &
++	Linux FUSE interface,
++	\newline\url{https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/uapi/linux/fuse.h}\\
+ 
+ \end{longtable}
+ 
+diff --git a/virtio-fs.tex b/virtio-fs.tex
+new file mode 100644
+index 0000000..1ae17f8
+--- /dev/null
++++ b/virtio-fs.tex
+@@ -0,0 +1,225 @@
++\section{File System Device}\label{sec:Device Types / File System Device}
++
++The virtio file system device provides file system access.  The device either
++directly manages a file system or it acts as a gateway to a remote file system.
++The details of how the device implementation accesses files are hidden by the
++device interface, allowing for a range of use cases.
++
++Unlike block-level storage devices such as virtio block and SCSI, the virtio
++file system device provides file-level access to data.  The device interface is
++based on the Linux Filesystem in Userspace (FUSE) protocol.  This consists of
++requests for file system traversal and access the files and directories within
++it.  The protocol details are defined by \hyperref[intro:FUSE]{FUSE}.
++
++The device acts as the FUSE file system daemon and the driver acts as the FUSE
++client mounting the file system.  The virtio file system device provides the
++mechanism for transporting FUSE requests, much like /dev/fuse in a traditional
++FUSE application.
++
++This section relies on definitions from \hyperref[intro:FUSE]{FUSE}.
++
++\subsection{Device ID}\label{sec:Device Types / File System Device / Device ID}
++  26
++
++\subsection{Virtqueues}\label{sec:Device Types / File System Device / Virtqueues}
++
++\begin{description}
++\item[0] hiprio
++\item[1\ldots n] request queues
++\end{description}
++
++\subsection{Feature bits}\label{sec:Device Types / File System Device / Feature bits}
++
++There are currently no feature bits defined.
++
++\subsection{Device configuration layout}\label{sec:Device Types / File System Device / Device configuration layout}
++
++All fields of this configuration are always available.
++
++\begin{lstlisting}
++struct virtio_fs_config {
++        char tag[36];
++        le32 num_request_queues;
++};
++\end{lstlisting}
++
++\begin{description}
++\item[\field{tag}] is the name associated with this file system.  The tag is
++    encoded in UTF-8 and padded with NUL bytes if shorter than the
++    available space.  This field is not NUL-terminated if the encoded bytes
++    take up the entire field.
++\item[\field{num_request_queues}] is the total number of request virtqueues
++    exposed by the device.  Each virtqueue offers identical functionality and
++    there are no ordering guarantees between requests made available on
++    different queues.  Use of multiple queues is intended to increase
++    performance.
++\end{description}
++
++\drivernormative{\subsubsection}{Device configuration layout}{Device Types / File System Device / Device configuration layout}
++
++The driver MUST NOT write to device configuration fields.
++
++The driver MAY use from one up to \field{num_request_queues} request virtqueues.
++
++\devicenormative{\subsubsection}{Device configuration layout}{Device Types / File System Device / Device configuration layout}
++
++The device MUST set \field{num_request_queues} to 1 or greater.
++
++\subsection{Device Initialization}\label{Device Types / File System Device / Device Initialization}
++
++On initialization the driver first discovers the device's virtqueues.  The FUSE
++session is started by sending a FUSE\_INIT request as defined by the FUSE
++protocol on one request virtqueue.  All virtqueues provide access to the same
++FUSE session and therefore only one FUSE\_INIT request is required regardless
++of the number of available virtqueues.
++
++\subsection{Device Operation}\label{sec:Device Types / File System Device / Device Operation}
++
++Device operation consists of operating the virtqueues to facilitate file system
++access.
++
++The FUSE request types are as follows:
++\begin{itemize}
++\item Normal requests are made available by the driver on request queues and
++      are used by the device.
++\item High priority requests (FUSE\_INTERRUPT, FUSE\_FORGET, and
++      FUSE\_BATCH\_FORGET) are made available by the driver on the hiprio queue
++      so the device is able to process them even if the request queues are
++      full.
++\end{itemize}
++
++Note that FUSE notification requests are not supported.
++
++\subsubsection{Device Operation: Request Queues}\label{sec:Device Types / File System Device / Device Operation / Device Operation: Request Queues}
++
++The driver enqueues normal requests on an arbitrary request queue. High
++priority requests are not placed on request queues.  The device processes
++requests in any order.  The driver is responsible for ensuring that ordering
++constraints are met by making available a dependent request only after its
++prerequisite request has been used.
++
++Requests have the following format with endianness chosen by the driver in the
++FUSE\_INIT request used to initiate the session as detailed below:
++
++\begin{lstlisting}
++struct virtio_fs_req {
++        // Device-readable part
++        struct fuse_in_header in;
++        u8 datain[];
++
++        // Device-writable part
++        struct fuse_out_header out;
++        u8 dataout[];
++};
++\end{lstlisting}
++
++Note that the words "in" and "out" follow the FUSE meaning and do not indicate
++the direction of data transfer under VIRTIO.  "In" means input to a request and
++"out" means output from processing a request.
++
++\field{in} is the common header for all types of FUSE requests.
++
++\field{datain} consists of request-specific data, if any.  This is identical to
++the data read from the /dev/fuse device by a FUSE daemon.
++
++\field{out} is the completion header common to all types of FUSE requests.
++
++\field{dataout} consists of request-specific data, if any.  This is identical
++to the data written to the /dev/fuse device by a FUSE daemon.
++
++For example, the full layout of a FUSE\_READ request is as follows:
++
++\begin{lstlisting}
++struct virtio_fs_read_req {
++        // Device-readable part
++        struct fuse_in_header in;
++        union {
++                struct fuse_read_in readin;
++                u8 datain[sizeof(struct fuse_read_in)];
++        };
++
++        // Device-writable part
++        struct fuse_out_header out;
++        u8 dataout[out.len - sizeof(struct fuse_out_header)];
++};
++\end{lstlisting}
++
++The FUSE protocol documented in \hyperref[intro:FUSE]{FUSE} specifies the set
++of request types and their contents.
++
++The endianness of the FUSE protocol session is detectable by inspecting the
++uint32\_t \field{in.opcode} field of the FUSE\_INIT request sent by the driver
++to the device.  This allows the device to determine whether the session is
++little-endian or big-endian.  The next FUSE\_INIT message terminates the
++current session and starts a new session with the possibility of changing
++endianness.
++
++\subsubsection{Device Operation: High Priority Queue}\label{sec:Device Types / File System Device / Device Operation / Device Operation: High Priority Queue}
++
++The hiprio queue follows the same request format as the request queues.  This
++queue only contains FUSE\_INTERRUPT, FUSE\_FORGET, and FUSE\_BATCH\_FORGET
++requests.
++
++Interrupt and forget requests have a higher priority than normal requests.  The
++separate hiprio queue is used for these requests to ensure they can be
++delivered even when all request queues are full.
++
++\devicenormative{\paragraph}{Device Operation: High Priority Queue}{Device Types / File System Device / Device Operation / Device Operation: High Priority Queue}
++
++The device MUST NOT pause processing of the hiprio queue due to activity on a
++normal request queue.
++
++The device MAY process request queues concurrently with the hiprio queue.
++
++\drivernormative{\paragraph}{Device Operation: High Priority Queue}{Device Types / File System Device / Device Operation / Device Operation: High Priority Queue}
++
++The driver MUST submit FUSE\_INTERRUPT, FUSE\_FORGET, and FUSE\_BATCH\_FORGET requests solely on the hiprio queue.
++
++The driver MUST not submit normal requests on the hiprio queue.
++
++The driver MUST anticipate that request queues are processed concurrently with the hiprio queue.
++
++\subsubsection{Security Considerations}\label{sec:Device Types / File System Device / Security Considerations}
++
++The device provides access to a file system containing files owned by one or
++more POSIX user ids and group ids.  The device has no secure way of
++differentiating between users originating requests via the driver.  Therefore
++the device accepts the POSIX user ids and group ids provided by the driver and
++security is enforced by the driver rather than the device.  It is nevertheless
++possible for devices to implement POSIX user id and group id mapping or
++whitelisting to control the ownership and access available to the driver.
++
++File systems containing special files including device nodes and setuid
++executable files pose a security concern.  These properties are defined by the
++file type and mode, which are set by the driver when creating new files or by
++changes at a later time.  These special files present a security risk when the
++file system is shared with another machine.  A setuid executable or a device
++node placed by a malicious machine make it possible for unprivileged users on
++other machines to elevate their privileges through the shared file system.
++This issue can be solved on some operating systems using mount options that
++ignore special files.  It is also possible for devices to implement
++restrictions on special files by refusing their creation.
++
++When the device provides shared access to a file system between multiple
++machines, symlink race conditions, exhausting file system capacity, and
++overwriting or deleting files used by others are factors to consider.  These
++issues have a long history in multi-user operating systems and also apply to
++virtio-fs.  They are typically managed at the file system administration level
++by providing shared access only to mutually trusted users.
++
++\subsubsection{Live migration considerations}\label{sec:Device Types / File System Device / Live Migration Considerations}
++
++When a driver is migrated to a new device it is necessary to consider the FUSE
++session and its state.  The continuity of FUSE inode numbers (also known as
++nodeids) and fh values is necessary so the driver can continue operation
++without disruption.
++
++It is possible to maintain the FUSE session across live migration either by
++transferring the state or by redirecting requests from the new device to the
++old device where the state resides.  The details of how to achieve this are
++implementation-dependent and are not visible at the device interface level.
++
++Maintaining version and feature information negotiated by FUSE\_INIT is
++necessary so that no FUSE protocol feature changes are visible to the driver
++across live migration.  The FUSE\_INIT information forms part of the FUSE
++session state that needs to be transferred during live migration.
 -- 
 2.21.0
 
