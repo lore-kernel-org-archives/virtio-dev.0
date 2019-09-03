@@ -1,171 +1,226 @@
-Return-Path: virtio-dev-return-6046-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-6030-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id B6B03985EA1
-	for <virtio-dev@lists.oasis-open.org>; Wed,  4 Sep 2019 19:20:11 +0000 (UTC)
-Date: Wed, 4 Sep 2019 15:20:01 -0400
+	by lists.oasis-open.org (Postfix) with ESMTP id A7CA9985C6B
+	for <virtio-dev@lists.oasis-open.org>; Tue,  3 Sep 2019 07:32:21 +0000 (UTC)
+Date: Tue, 3 Sep 2019 03:32:10 -0400
 From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20190904151905-mutt-send-email-mst@kernel.org>
-References: <20190904150920.13848.32271.stgit@localhost.localdomain>
+Message-ID: <20190903032759-mutt-send-email-mst@kernel.org>
+References: <20190812213158.22097.30576.stgit@localhost.localdomain>
+ <20190812213356.22097.20751.stgit@localhost.localdomain>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190904150920.13848.32271.stgit@localhost.localdomain>
-Subject: [virtio-dev] Re: [PATCH v7 0/6] mm / virtio: Provide support for unused page
- reporting
+In-Reply-To: <20190812213356.22097.20751.stgit@localhost.localdomain>
+Subject: [virtio-dev] Re: [PATCH v5 6/6] virtio-balloon: Add support for providing unused
+ page reports to host
 To: Alexander Duyck <alexander.duyck@gmail.com>
 Cc: nitesh@redhat.com, kvm@vger.kernel.org, david@redhat.com, dave.hansen@intel.com, linux-kernel@vger.kernel.org, willy@infradead.org, mhocko@kernel.org, linux-mm@kvack.org, akpm@linux-foundation.org, virtio-dev@lists.oasis-open.org, osalvador@suse.de, yang.zhang.wz@gmail.com, pagupta@redhat.com, riel@surriel.com, konrad.wilk@oracle.com, lcapitulino@redhat.com, wei.w.wang@intel.com, aarcange@redhat.com, pbonzini@redhat.com, dan.j.williams@intel.com, alexander.h.duyck@linux.intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, Sep 04, 2019 at 08:10:24AM -0700, Alexander Duyck wrote:
-> This series provides an asynchronous means of reporting to a hypervisor
-> that a guest page is no longer in use and can have the data associated
-> with it dropped. To do this I have implemented functionality that allows
-> for what I am referring to as unused page reporting
+On Mon, Aug 12, 2019 at 02:33:56PM -0700, Alexander Duyck wrote:
+> From: Alexander Duyck <alexander.h.duyck@linux.intel.com>
 > 
-> The functionality for this is fairly simple. When enabled it will allocate
-> statistics to track the number of reported pages in a given free area.
-> When the number of free pages exceeds this value plus a high water value,
-> currently 32, it will begin performing page reporting which consists of
-> pulling pages off of free list and placing them into a scatter list. The
-> scatterlist is then given to the page reporting device and it will perform
-> the required action to make the pages "reported", in the case of
-> virtio-balloon this results in the pages being madvised as MADV_DONTNEED
-> and as such they are forced out of the guest. After this they are placed
-> back on the free list, and an additional bit is added if they are not
-> merged indicating that they are a reported buddy page instead of a
-> standard buddy page. The cycle then repeats with additional non-reported
-> pages being pulled until the free areas all consist of reported pages.
+> Add support for the page reporting feature provided by virtio-balloon.
+> Reporting differs from the regular balloon functionality in that is is
+> much less durable than a standard memory balloon. Instead of creating a
+> list of pages that cannot be accessed the pages are only inaccessible
+> while they are being indicated to the virtio interface. Once the
+> interface has acknowledged them they are placed back into their respective
+> free lists and are once again accessible by the guest system.
 > 
-> I am leaving a number of things hard-coded such as limiting the lowest
-> order processed to PAGEBLOCK_ORDER, and have left it up to the guest to
-> determine what the limit is on how many pages it wants to allocate to
-> process the hints. The upper limit for this is based on the size of the
-> queue used to store the scattergather list.
-> 
-> My primary testing has just been to verify the memory is being freed after
-> allocation by running memhog 40g on a 40g guest and watching the total
-> free memory via /proc/meminfo on the host. With this I have verified most
-> of the memory is freed after each iteration. As far as performance I have
-> been mainly focusing on the will-it-scale/page_fault1 test running with
-> 16 vcpus. I have modified it to use Transparent Huge Pages. With this I
-> see almost no difference, -0.08%, with the patches applied and the feature
-> disabled. I see a regression of -0.86% with the feature enabled, but the
-> madvise disabled in the hypervisor due to a device being assigned. With
-> the feature fully enabled I see a regression of -3.27% versus the baseline
-> without these patches applied. In my testing I found that most of the
-> overhead was due to the page zeroing that comes as a result of the pages
-> having to be faulted back into the guest.
-> 
-> One side effect of these patches is that the guest becomes much more
-> resilient in terms of NUMA locality. With the pages being freed and then
-> reallocated when used it allows for the pages to be much closer to the
-> active thread, and as a result there can be situations where this patch
-> set will out-perform the stock kernel when the guest memory is not local
-> to the guest vCPUs. To avoid that in my testing I set the affinity of all
-> the vCPUs and QEMU instance to the same node.
-
-
-So the virtio side looks good to me. But we need mm faulks to ack the mm
-changes. And maybe merge all of this ...
-
-
-> Changes from the RFC:
-> https://lore.kernel.org/lkml/20190530215223.13974.22445.stgit@localhost.localdomain/
-> Moved aeration requested flag out of aerator and into zone->flags.
-> Moved boundary out of free_area and into local variables for aeration.
-> Moved aeration cycle out of interrupt and into workqueue.
-> Left nr_free as total pages instead of splitting it between raw and aerated.
-> Combined size and physical address values in virtio ring into one 64b value.
-> 
-> Changes from v1:
-> https://lore.kernel.org/lkml/20190619222922.1231.27432.stgit@localhost.localdomain/
-> Dropped "waste page treatment" in favor of "page hinting"
-> Renamed files and functions from "aeration" to "page_hinting"
-> Moved from page->lru list to scatterlist
-> Replaced wait on refcnt in shutdown with RCU and cancel_delayed_work_sync
-> Virtio now uses scatterlist directly instead of intermediate array
-> Moved stats out of free_area, now in separate area and pointed to from zone
-> Merged patch 5 into patch 4 to improve review-ability
-> Updated various code comments throughout
-> 
-> Changes from v2:
-> https://lore.kernel.org/lkml/20190724165158.6685.87228.stgit@localhost.localdomain/
-> Dropped "page hinting" in favor of "page reporting"
-> Renamed files from "hinting" to "reporting"
-> Replaced "Hinted" page type with "Reported" page flag
-> Added support for page poisoning while hinting is active
-> Add QEMU patch that implements PAGE_POISON feature
-> 
-> Changes from v3:
-> https://lore.kernel.org/lkml/20190801222158.22190.96964.stgit@localhost.localdomain/
-> Added mutex lock around page reporting startup and shutdown
-> Fixed reference to "page aeration" in patch 2
-> Split page reporting function bit out into separate QEMU patch
-> Limited capacity of scatterlist to vq size - 1 instead of vq size
-> Added exception handling for case of virtio descriptor allocation failure
-> 
-> Changes from v4:
-> https://lore.kernel.org/lkml/20190807224037.6891.53512.stgit@localhost.localdomain/
-> Replaced spin_(un)lock with spin_(un)lock_irq in page_reporting_cycle()
-> Dropped if/continue for ternary operator in page_reporting_process()
-> Added checks for isolate and cma types to for_each_reporting_migratetype_order
-> Added virtio-dev, Michal Hocko, and Oscar Salvador to to:/cc:
-> Rebased on latest linux-next and QEMU git trees
-> 
-> Changes from v5:
-> https://lore.kernel.org/lkml/20190812213158.22097.30576.stgit@localhost.localdomain/
-> Replaced spin_(un)lock with spin_(un)lock_irq in page_reporting_startup()
-> Updated shuffle code to use "shuffle_pick_tail" and updated patch description
-> Dropped storage of order and migratettype while page is being reported
-> Used get_pfnblock_migratetype to determine migratetype of page
-> Renamed put_reported_page to free_reported_page, added order as argument
-> Dropped check for CMA type as I believe we should be reporting those
-> Added code to allow moving of reported pages into and out of isolation
-> Defined page reporting order as minimum of Huge Page size vs MAX_ORDER - 1
-> Cleaned up use of static branch usage for page_reporting_notify_enabled
-> 
-> Changes from v6:
-> https://lore.kernel.org/lkml/20190821145806.20926.22448.stgit@localhost.localdomain/
-> Rebased on linux-next for 20190903
-> Added jump label to __page_reporting_request so we release RCU read lock
-> Removed "- 1" from capacity limit based on virtio ring
-> Added code to verify capacity is non-zero or return error on startup
-> 
+> Signed-off-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
 > ---
+>  drivers/virtio/Kconfig              |    1 +
+>  drivers/virtio/virtio_balloon.c     |   65 +++++++++++++++++++++++++++++++++++
+>  include/uapi/linux/virtio_balloon.h |    1 +
+>  3 files changed, 67 insertions(+)
 > 
-> Alexander Duyck (6):
->       mm: Adjust shuffle code to allow for future coalescing
->       mm: Move set/get_pcppage_migratetype to mmzone.h
->       mm: Use zone and order instead of free area in free_list manipulators
->       mm: Introduce Reported pages
->       virtio-balloon: Pull page poisoning config out of free page hinting
->       virtio-balloon: Add support for providing unused page reports to host
-> 
-> 
->  drivers/virtio/Kconfig              |    1 
->  drivers/virtio/virtio_balloon.c     |   84 ++++++++-
->  include/linux/mmzone.h              |  124 ++++++++-----
->  include/linux/page-flags.h          |   11 +
->  include/linux/page_reporting.h      |  177 ++++++++++++++++++
->  include/uapi/linux/virtio_balloon.h |    1 
->  mm/Kconfig                          |    5 +
->  mm/Makefile                         |    1 
->  mm/internal.h                       |   18 ++
->  mm/memory_hotplug.c                 |    1 
->  mm/page_alloc.c                     |  216 ++++++++++++++++------
->  mm/page_reporting.c                 |  340 +++++++++++++++++++++++++++++++++++
->  mm/shuffle.c                        |   40 ++--
->  mm/shuffle.h                        |   12 +
->  14 files changed, 900 insertions(+), 131 deletions(-)
->  create mode 100644 include/linux/page_reporting.h
->  create mode 100644 mm/page_reporting.c
-> 
-> --
+> diff --git a/drivers/virtio/Kconfig b/drivers/virtio/Kconfig
+> index 078615cf2afc..4b2dd8259ff5 100644
+> --- a/drivers/virtio/Kconfig
+> +++ b/drivers/virtio/Kconfig
+> @@ -58,6 +58,7 @@ config VIRTIO_BALLOON
+>  	tristate "Virtio balloon driver"
+>  	depends on VIRTIO
+>  	select MEMORY_BALLOON
+> +	select PAGE_REPORTING
+>  	---help---
+>  	 This driver supports increasing and decreasing the amount
+>  	 of memory within a KVM guest.
+> diff --git a/drivers/virtio/virtio_balloon.c b/drivers/virtio/virtio_balloon.c
+> index 2c19457ab573..52f9eeda1877 100644
+> --- a/drivers/virtio/virtio_balloon.c
+> +++ b/drivers/virtio/virtio_balloon.c
+> @@ -19,6 +19,7 @@
+>  #include <linux/mount.h>
+>  #include <linux/magic.h>
+>  #include <linux/pseudo_fs.h>
+> +#include <linux/page_reporting.h>
+>  
+>  /*
+>   * Balloon device works in 4K page units.  So each page is pointed to by
+> @@ -37,6 +38,9 @@
+>  #define VIRTIO_BALLOON_FREE_PAGE_SIZE \
+>  	(1 << (VIRTIO_BALLOON_FREE_PAGE_ORDER + PAGE_SHIFT))
+>  
+> +/*  limit on the number of pages that can be on the reporting vq */
+> +#define VIRTIO_BALLOON_VRING_HINTS_MAX	16
+> +
+>  #ifdef CONFIG_BALLOON_COMPACTION
+>  static struct vfsmount *balloon_mnt;
+>  #endif
+> @@ -46,6 +50,7 @@ enum virtio_balloon_vq {
+>  	VIRTIO_BALLOON_VQ_DEFLATE,
+>  	VIRTIO_BALLOON_VQ_STATS,
+>  	VIRTIO_BALLOON_VQ_FREE_PAGE,
+> +	VIRTIO_BALLOON_VQ_REPORTING,
+>  	VIRTIO_BALLOON_VQ_MAX
+>  };
+>  
+> @@ -113,6 +118,10 @@ struct virtio_balloon {
+>  
+>  	/* To register a shrinker to shrink memory upon memory pressure */
+>  	struct shrinker shrinker;
+> +
+> +	/* Unused page reporting device */
+> +	struct virtqueue *reporting_vq;
+> +	struct page_reporting_dev_info ph_dev_info;
+>  };
+>  
+>  static struct virtio_device_id id_table[] = {
+> @@ -152,6 +161,32 @@ static void tell_host(struct virtio_balloon *vb, struct virtqueue *vq)
+>  
+>  }
+>  
+> +void virtballoon_unused_page_report(struct page_reporting_dev_info *ph_dev_info,
+> +				    unsigned int nents)
+> +{
+> +	struct virtio_balloon *vb =
+> +		container_of(ph_dev_info, struct virtio_balloon, ph_dev_info);
+> +	struct virtqueue *vq = vb->reporting_vq;
+> +	unsigned int unused, err;
+> +
+> +	/* We should always be able to add these buffers to an empty queue. */
+> +	err = virtqueue_add_inbuf(vq, ph_dev_info->sg, nents, vb,
+> +				  GFP_NOWAIT | __GFP_NOWARN);
+> +
+> +	/*
+> +	 * In the extremely unlikely case that something has changed and we
+> +	 * are able to trigger an error we will simply display a warning
+> +	 * and exit without actually processing the pages.
+> +	 */
+> +	if (WARN_ON(err))
+> +		return;
+> +
+> +	virtqueue_kick(vq);
+> +
+> +	/* When host has read buffer, this completes via balloon_ack */
+> +	wait_event(vb->acked, virtqueue_get_buf(vq, &unused));
+> +}
+> +
+>  static void set_page_pfns(struct virtio_balloon *vb,
+>  			  __virtio32 pfns[], struct page *page)
+>  {
+> @@ -476,6 +511,7 @@ static int init_vqs(struct virtio_balloon *vb)
+>  	names[VIRTIO_BALLOON_VQ_DEFLATE] = "deflate";
+>  	names[VIRTIO_BALLOON_VQ_STATS] = NULL;
+>  	names[VIRTIO_BALLOON_VQ_FREE_PAGE] = NULL;
+> +	names[VIRTIO_BALLOON_VQ_REPORTING] = NULL;
+>  
+>  	if (virtio_has_feature(vb->vdev, VIRTIO_BALLOON_F_STATS_VQ)) {
+>  		names[VIRTIO_BALLOON_VQ_STATS] = "stats";
+> @@ -487,11 +523,19 @@ static int init_vqs(struct virtio_balloon *vb)
+>  		callbacks[VIRTIO_BALLOON_VQ_FREE_PAGE] = NULL;
+>  	}
+>  
+> +	if (virtio_has_feature(vb->vdev, VIRTIO_BALLOON_F_REPORTING)) {
+> +		names[VIRTIO_BALLOON_VQ_REPORTING] = "reporting_vq";
+> +		callbacks[VIRTIO_BALLOON_VQ_REPORTING] = balloon_ack;
+> +	}
+> +
+>  	err = vb->vdev->config->find_vqs(vb->vdev, VIRTIO_BALLOON_VQ_MAX,
+>  					 vqs, callbacks, names, NULL, NULL);
+>  	if (err)
+>  		return err;
+>  
+> +	if (virtio_has_feature(vb->vdev, VIRTIO_BALLOON_F_REPORTING))
+> +		vb->reporting_vq = vqs[VIRTIO_BALLOON_VQ_REPORTING];
+> +
+>  	vb->inflate_vq = vqs[VIRTIO_BALLOON_VQ_INFLATE];
+>  	vb->deflate_vq = vqs[VIRTIO_BALLOON_VQ_DEFLATE];
+>  	if (virtio_has_feature(vb->vdev, VIRTIO_BALLOON_F_STATS_VQ)) {
+> @@ -931,12 +975,30 @@ static int virtballoon_probe(struct virtio_device *vdev)
+>  		if (err)
+>  			goto out_del_balloon_wq;
+>  	}
+> +
+> +	vb->ph_dev_info.report = virtballoon_unused_page_report;
+> +	if (virtio_has_feature(vb->vdev, VIRTIO_BALLOON_F_REPORTING)) {
+> +		unsigned int capacity;
+> +
+> +		capacity = min_t(unsigned int,
+> +				 virtqueue_get_vring_size(vb->reporting_vq) - 1,
+> +				 VIRTIO_BALLOON_VRING_HINTS_MAX);
+
+Hmm why - 1 exactly?
+This might end up being 0 in the unusual configuration of vq size 1.
+Also, VIRTIO_BALLOON_VRING_HINTS_MAX is a power of 2 but
+virtqueue_get_vring_size(vb->reporting_vq) - 1 won't
+be if we are using split rings - donnu if that matters.
+
+> +		vb->ph_dev_info.capacity = capacity;
+> +
+> +		err = page_reporting_startup(&vb->ph_dev_info);
+> +		if (err)
+> +			goto out_unregister_shrinker;
+> +	}
+> +
+>  	virtio_device_ready(vdev);
+>  
+>  	if (towards_target(vb))
+>  		virtballoon_changed(vdev);
+>  	return 0;
+>  
+> +out_unregister_shrinker:
+> +	if (virtio_has_feature(vb->vdev, VIRTIO_BALLOON_F_DEFLATE_ON_OOM))
+> +		virtio_balloon_unregister_shrinker(vb);
+>  out_del_balloon_wq:
+>  	if (virtio_has_feature(vdev, VIRTIO_BALLOON_F_FREE_PAGE_HINT))
+>  		destroy_workqueue(vb->balloon_wq);
+> @@ -965,6 +1027,8 @@ static void virtballoon_remove(struct virtio_device *vdev)
+>  {
+>  	struct virtio_balloon *vb = vdev->priv;
+>  
+> +	if (virtio_has_feature(vb->vdev, VIRTIO_BALLOON_F_REPORTING))
+> +		page_reporting_shutdown(&vb->ph_dev_info);
+>  	if (virtio_has_feature(vb->vdev, VIRTIO_BALLOON_F_DEFLATE_ON_OOM))
+>  		virtio_balloon_unregister_shrinker(vb);
+>  	spin_lock_irq(&vb->stop_update_lock);
+> @@ -1034,6 +1098,7 @@ static int virtballoon_validate(struct virtio_device *vdev)
+>  	VIRTIO_BALLOON_F_DEFLATE_ON_OOM,
+>  	VIRTIO_BALLOON_F_FREE_PAGE_HINT,
+>  	VIRTIO_BALLOON_F_PAGE_POISON,
+> +	VIRTIO_BALLOON_F_REPORTING,
+>  };
+>  
+>  static struct virtio_driver virtio_balloon_driver = {
+> diff --git a/include/uapi/linux/virtio_balloon.h b/include/uapi/linux/virtio_balloon.h
+> index a1966cd7b677..19974392d324 100644
+> --- a/include/uapi/linux/virtio_balloon.h
+> +++ b/include/uapi/linux/virtio_balloon.h
+> @@ -36,6 +36,7 @@
+>  #define VIRTIO_BALLOON_F_DEFLATE_ON_OOM	2 /* Deflate balloon on OOM */
+>  #define VIRTIO_BALLOON_F_FREE_PAGE_HINT	3 /* VQ to report free pages */
+>  #define VIRTIO_BALLOON_F_PAGE_POISON	4 /* Guest is using page poisoning */
+> +#define VIRTIO_BALLOON_F_REPORTING	5 /* Page reporting virtqueue */
+>  
+>  /* Size of a PFN in the balloon interface. */
+>  #define VIRTIO_BALLOON_PFN_SHIFT 12
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
