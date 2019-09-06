@@ -1,64 +1,171 @@
-Return-Path: virtio-dev-return-6076-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-6052-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id BB3D7984076
-	for <virtio-dev@lists.oasis-open.org>; Sun,  8 Sep 2019 13:42:31 +0000 (UTC)
-Date: Sun, 8 Sep 2019 09:42:23 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20190908094155-mutt-send-email-mst@kernel.org>
-References: <20190611065304.16880-1-tiwei.bie@intel.com>
- <20190717100426.GC7341@stefanha-x1.localdomain>
- <20190717065901-mutt-send-email-mst@kernel.org>
+	by lists.oasis-open.org (Postfix) with ESMTP id 97551985EC6
+	for <virtio-dev@lists.oasis-open.org>; Fri,  6 Sep 2019 14:53:24 +0000 (UTC)
+From: Alexander Duyck <alexander.duyck@gmail.com>
+Date: Fri, 06 Sep 2019 07:53:21 -0700
+Message-ID: <20190906145213.32552.30160.stgit@localhost.localdomain>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190717065901-mutt-send-email-mst@kernel.org>
-Subject: Re: [virtio-dev] [PATCH] content: fix typo in feature bit name
-To: Stefan Hajnoczi <stefanha@redhat.com>
-Cc: Tiwei Bie <tiwei.bie@intel.com>, virtio-dev@lists.oasis-open.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Subject: [virtio-dev] [PATCH v8 0/7] mm / virtio: Provide support for unused page
+ reporting
+To: nitesh@redhat.com, kvm@vger.kernel.org, mst@redhat.com, david@redhat.com, dave.hansen@intel.com, linux-kernel@vger.kernel.org, willy@infradead.org, mhocko@kernel.org, linux-mm@kvack.org, akpm@linux-foundation.org, virtio-dev@lists.oasis-open.org, osalvador@suse.de
+Cc: yang.zhang.wz@gmail.com, pagupta@redhat.com, riel@surriel.com, konrad.wilk@oracle.com, lcapitulino@redhat.com, wei.w.wang@intel.com, aarcange@redhat.com, pbonzini@redhat.com, dan.j.williams@intel.com, alexander.h.duyck@linux.intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, Jul 17, 2019 at 06:59:08AM -0400, Michael S. Tsirkin wrote:
-> On Wed, Jul 17, 2019 at 11:04:26AM +0100, Stefan Hajnoczi wrote:
-> > On Tue, Jun 11, 2019 at 02:53:04PM +0800, Tiwei Bie wrote:
-> > > Signed-off-by: Tiwei Bie <tiwei.bie@intel.com>
-> > > ---
-> > >  content.tex | 2 +-
-> > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > > 
-> > > diff --git a/content.tex b/content.tex
-> > > index 193b6e1..a143d91 100644
-> > > --- a/content.tex
-> > > +++ b/content.tex
-> > > @@ -3523,7 +3523,7 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
-> > >  
-> > >  \paragraph{VLAN Filtering}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / VLAN Filtering}
-> > >  
-> > > -If the driver negotiates the VIRTION_NET_F_CTRL_VLAN feature, it
-> > > +If the driver negotiates the VIRTIO_NET_F_CTRL_VLAN feature, it
-> > >  can control a VLAN filter table in the device.
-> > >  
-> > >  \begin{lstlisting}
-> > > -- 
-> > > 2.17.1
-> > 
-> > I have opened a GitHub Issue so this can be voted on and merged:
-> > https://github.com/oasis-tcs/virtio-spec/issues/46
-> 
-> Thanks!
+This series provides an asynchronous means of reporting to a hypervisor
+that a guest page is no longer in use and can have the data associated
+with it dropped. To do this I have implemented functionality that allows
+for what I am referring to as unused page reporting
 
-For the future the way to record this is by writing:
+The functionality for this is fairly simple. When enabled it will allocate
+statistics to track the number of reported pages in a given free area.
+When the number of free pages exceeds this value plus a high water value,
+currently 32, it will begin performing page reporting which consists of
+pulling pages off of free list and placing them into a scatter list. The
+scatterlist is then given to the page reporting device and it will perform
+the required action to make the pages "reported", in the case of
+virtio-balloon this results in the pages being madvised as MADV_DONTNEED
+and as such they are forced out of the guest. After this they are placed
+back on the free list, and an additional bit is added if they are not
+merged indicating that they are a reported buddy page instead of a
+standard buddy page. The cycle then repeats with additional non-reported
+pages being pulled until the free areas all consist of reported pages.
 
-Fixes: https://github.com/oasis-tcs/virtio-spec/issues/46
+I am leaving a number of things hard-coded such as limiting the lowest
+order processed to PAGEBLOCK_ORDER, and have left it up to the guest to
+determine what the limit is on how many pages it wants to allocate to
+process the hints. The upper limit for this is based on the size of the
+queue used to store the scattergather list.
+
+My primary testing has just been to verify the memory is being freed after
+allocation by running memhog 40g on a 40g guest and watching the total
+free memory via /proc/meminfo on the host. With this I have verified most
+of the memory is freed after each iteration. As far as performance I have
+been mainly focusing on the will-it-scale/page_fault1 test running with
+16 vcpus. I have modified it to use Transparent Huge Pages. With this I
+see almost no difference, -0.08%, with the patches applied and the feature
+disabled. I see a regression of -0.86% with the feature enabled, but the
+madvise disabled in the hypervisor due to a device being assigned. With
+the feature fully enabled I see a regression of -3.27% versus the baseline
+without these patches applied. In my testing I found that most of the
+overhead was due to the page zeroing that comes as a result of the pages
+having to be faulted back into the guest.
+
+One side effect of these patches is that the guest becomes much more
+resilient in terms of NUMA locality. With the pages being freed and then
+reallocated when used it allows for the pages to be much closer to the
+active thread, and as a result there can be situations where this patch
+set will out-perform the stock kernel when the guest memory is not local
+to the guest vCPUs. To avoid that in my testing I set the affinity of all
+the vCPUs and QEMU instance to the same node.
+
+Changes from the RFC:
+https://lore.kernel.org/lkml/20190530215223.13974.22445.stgit@localhost.localdomain/
+Moved aeration requested flag out of aerator and into zone->flags.
+Moved boundary out of free_area and into local variables for aeration.
+Moved aeration cycle out of interrupt and into workqueue.
+Left nr_free as total pages instead of splitting it between raw and aerated.
+Combined size and physical address values in virtio ring into one 64b value.
+
+Changes from v1:
+https://lore.kernel.org/lkml/20190619222922.1231.27432.stgit@localhost.localdomain/
+Dropped "waste page treatment" in favor of "page hinting"
+Renamed files and functions from "aeration" to "page_hinting"
+Moved from page->lru list to scatterlist
+Replaced wait on refcnt in shutdown with RCU and cancel_delayed_work_sync
+Virtio now uses scatterlist directly instead of intermediate array
+Moved stats out of free_area, now in separate area and pointed to from zone
+Merged patch 5 into patch 4 to improve review-ability
+Updated various code comments throughout
+
+Changes from v2:
+https://lore.kernel.org/lkml/20190724165158.6685.87228.stgit@localhost.localdomain/
+Dropped "page hinting" in favor of "page reporting"
+Renamed files from "hinting" to "reporting"
+Replaced "Hinted" page type with "Reported" page flag
+Added support for page poisoning while hinting is active
+Add QEMU patch that implements PAGE_POISON feature
+
+Changes from v3:
+https://lore.kernel.org/lkml/20190801222158.22190.96964.stgit@localhost.localdomain/
+Added mutex lock around page reporting startup and shutdown
+Fixed reference to "page aeration" in patch 2
+Split page reporting function bit out into separate QEMU patch
+Limited capacity of scatterlist to vq size - 1 instead of vq size
+Added exception handling for case of virtio descriptor allocation failure
+
+Changes from v4:
+https://lore.kernel.org/lkml/20190807224037.6891.53512.stgit@localhost.localdomain/
+Replaced spin_(un)lock with spin_(un)lock_irq in page_reporting_cycle()
+Dropped if/continue for ternary operator in page_reporting_process()
+Added checks for isolate and cma types to for_each_reporting_migratetype_order
+Added virtio-dev, Michal Hocko, and Oscar Salvador to to:/cc:
+Rebased on latest linux-next and QEMU git trees
+
+Changes from v5:
+https://lore.kernel.org/lkml/20190812213158.22097.30576.stgit@localhost.localdomain/
+Replaced spin_(un)lock with spin_(un)lock_irq in page_reporting_startup()
+Updated shuffle code to use "shuffle_pick_tail" and updated patch description
+Dropped storage of order and migratettype while page is being reported
+Used get_pfnblock_migratetype to determine migratetype of page
+Renamed put_reported_page to free_reported_page, added order as argument
+Dropped check for CMA type as I believe we should be reporting those
+Added code to allow moving of reported pages into and out of isolation
+Defined page reporting order as minimum of Huge Page size vs MAX_ORDER - 1
+Cleaned up use of static branch usage for page_reporting_notify_enabled
+
+Changes from v6:
+https://lore.kernel.org/lkml/20190821145806.20926.22448.stgit@localhost.localdomain/
+Rebased on linux-next for 20190903
+Added jump label to __page_reporting_request so we release RCU read lock
+Removed "- 1" from capacity limit based on virtio ring
+Added code to verify capacity is non-zero or return error on startup
+
+Changes from v7:
+https://lore.kernel.org/lkml/20190904150920.13848.32271.stgit@localhost.localdomain/
+Updated poison fixes to clear flag if "nosanity" is enabled in kernel config
+Split shuffle per-cpu optimization into seperate patch
+Moved check for !phdev->capacity into reporting patch where it belongs
+Added Reviewed-by tags received for v7
+
+---
+
+Alexander Duyck (7):
+      mm: Add per-cpu logic to page shuffling
+      mm: Adjust shuffle code to allow for future coalescing
+      mm: Move set/get_pcppage_migratetype to mmzone.h
+      mm: Use zone and order instead of free area in free_list manipulators
+      mm: Introduce Reported pages
+      virtio-balloon: Pull page poisoning config out of free page hinting
+      virtio-balloon: Add support for providing unused page reports to host
 
 
-> ---------------------------------------------------------------------
-> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+ drivers/virtio/Kconfig              |    1 
+ drivers/virtio/virtio_balloon.c     |   87 ++++++++-
+ include/linux/mmzone.h              |  124 ++++++++-----
+ include/linux/page-flags.h          |   11 +
+ include/linux/page_reporting.h      |  177 ++++++++++++++++++
+ include/uapi/linux/virtio_balloon.h |    1 
+ mm/Kconfig                          |    5 +
+ mm/Makefile                         |    1 
+ mm/internal.h                       |   18 ++
+ mm/memory_hotplug.c                 |    1 
+ mm/page_alloc.c                     |  216 ++++++++++++++++------
+ mm/page_reporting.c                 |  340 +++++++++++++++++++++++++++++++++++
+ mm/shuffle.c                        |   40 ++--
+ mm/shuffle.h                        |   12 +
+ 14 files changed, 902 insertions(+), 132 deletions(-)
+ create mode 100644 include/linux/page_reporting.h
+ create mode 100644 mm/page_reporting.c
+
+--
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
