@@ -1,29 +1,28 @@
-Return-Path: virtio-dev-return-6050-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-6051-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 989BC985EC1
-	for <virtio-dev@lists.oasis-open.org>; Fri,  6 Sep 2019 09:51:58 +0000 (UTC)
-References: <20190904150920.13848.32271.stgit@localhost.localdomain>
- <20190904151043.13848.23471.stgit@localhost.localdomain>
-From: David Hildenbrand <david@redhat.com>
-Message-ID: <ce85c93e-f655-2255-8f1d-07825f3fb0dd@redhat.com>
-Date: Fri, 6 Sep 2019 11:51:42 +0200
-MIME-Version: 1.0
+	by lists.oasis-open.org (Postfix) with ESMTP id AF21E985EC1
+	for <virtio-dev@lists.oasis-open.org>; Fri,  6 Sep 2019 10:08:27 +0000 (UTC)
+Date: Fri, 6 Sep 2019 06:08:25 -0400 (EDT)
+From: Pankaj Gupta <pagupta@redhat.com>
+Message-ID: <176802096.13025056.1567764505728.JavaMail.zimbra@redhat.com>
 In-Reply-To: <20190904151043.13848.23471.stgit@localhost.localdomain>
+References: <20190904150920.13848.32271.stgit@localhost.localdomain> <20190904151043.13848.23471.stgit@localhost.localdomain>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Subject: [virtio-dev] Re: [PATCH v7 3/6] mm: Use zone and order instead of free area in
  free_list manipulators
-To: Alexander Duyck <alexander.duyck@gmail.com>, nitesh@redhat.com, kvm@vger.kernel.org, mst@redhat.com, dave.hansen@intel.com, linux-kernel@vger.kernel.org, willy@infradead.org, mhocko@kernel.org, linux-mm@kvack.org, akpm@linux-foundation.org, virtio-dev@lists.oasis-open.org, osalvador@suse.de
-Cc: yang.zhang.wz@gmail.com, pagupta@redhat.com, riel@surriel.com, konrad.wilk@oracle.com, lcapitulino@redhat.com, wei.w.wang@intel.com, aarcange@redhat.com, pbonzini@redhat.com, dan.j.williams@intel.com, alexander.h.duyck@linux.intel.com
+To: Alexander Duyck <alexander.duyck@gmail.com>
+Cc: nitesh@redhat.com, kvm@vger.kernel.org, mst@redhat.com, david@redhat.com, dave hansen <dave.hansen@intel.com>, linux-kernel@vger.kernel.org, willy@infradead.org, mhocko@kernel.org, linux-mm@kvack.org, akpm@linux-foundation.org, virtio-dev@lists.oasis-open.org, osalvador@suse.de, yang zhang wz <yang.zhang.wz@gmail.com>, riel@surriel.com, konrad wilk <konrad.wilk@oracle.com>, lcapitulino@redhat.com, wei w wang <wei.w.wang@intel.com>, aarcange@redhat.com, pbonzini@redhat.com, dan j williams <dan.j.williams@intel.com>, alexander h duyck <alexander.h.duyck@linux.intel.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 04.09.19 17:10, Alexander Duyck wrote:
+
+> 
 > From: Alexander Duyck <alexander.h.duyck@linux.intel.com>
 > 
 > In order to enable the use of the zone from the list manipulator functions
@@ -39,7 +38,8 @@ On 04.09.19 17:10, Alexander Duyck wrote:
 > Reviewed-by: Dan Williams <dan.j.williams@intel.com>
 > Signed-off-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
 > ---
->  include/linux/mmzone.h |   70 ++++++++++++++++++++++++++----------------------
+>  include/linux/mmzone.h |   70
+>  ++++++++++++++++++++++++++----------------------
 >  mm/page_alloc.c        |   30 ++++++++-------------
 >  2 files changed, 49 insertions(+), 51 deletions(-)
 > 
@@ -52,7 +52,8 @@ On 04.09.19 17:10, Alexander Duyck wrote:
 >  };
 >  
 > -/* Used for pages not on another list */
-> -static inline void add_to_free_area(struct page *page, struct free_area *area,
+> -static inline void add_to_free_area(struct page *page, struct free_area
+> *area,
 > -			     int migratetype)
 > -{
 > -	list_add(&page->lru, &area->free_list[migratetype]);
@@ -60,7 +61,8 @@ On 04.09.19 17:10, Alexander Duyck wrote:
 > -}
 > -
 > -/* Used for pages not on another list */
-> -static inline void add_to_free_area_tail(struct page *page, struct free_area *area,
+> -static inline void add_to_free_area_tail(struct page *page, struct free_area
+> *area,
 > -				  int migratetype)
 > -{
 > -	list_add_tail(&page->lru, &area->free_list[migratetype]);
@@ -68,7 +70,8 @@ On 04.09.19 17:10, Alexander Duyck wrote:
 > -}
 > -
 > -/* Used for pages which are on another list */
-> -static inline void move_to_free_area(struct page *page, struct free_area *area,
+> -static inline void move_to_free_area(struct page *page, struct free_area
+> *area,
 > -			     int migratetype)
 > -{
 > -	list_move(&page->lru, &area->free_list[migratetype]);
@@ -77,7 +80,8 @@ On 04.09.19 17:10, Alexander Duyck wrote:
 >  static inline struct page *get_page_from_free_area(struct free_area *area,
 >  					    int migratetype)
 >  {
-> @@ -130,15 +107,6 @@ static inline struct page *get_page_from_free_area(struct free_area *area,
+> @@ -130,15 +107,6 @@ static inline struct page
+> *get_page_from_free_area(struct free_area *area,
 >  					struct page, lru);
 >  }
 >  
@@ -108,7 +112,8 @@ On 04.09.19 17:10, Alexander Duyck wrote:
 > +}
 > +
 > +/* Used for pages not on another list */
-> +static inline void add_to_free_list_tail(struct page *page, struct zone *zone,
+> +static inline void add_to_free_list_tail(struct page *page, struct zone
+> *zone,
 > +					 unsigned int order, int migratetype)
 > +{
 > +	struct free_area *area = &zone->free_area[order];
@@ -126,7 +131,8 @@ On 04.09.19 17:10, Alexander Duyck wrote:
 > +	list_move(&page->lru, &area->free_list[migratetype]);
 > +}
 > +
-> +static inline void del_page_from_free_list(struct page *page, struct zone *zone,
+> +static inline void del_page_from_free_list(struct page *page, struct zone
+> *zone,
 > +					   unsigned int order)
 > +{
 > +	list_del(&page->lru);
@@ -174,7 +180,8 @@ On 04.09.19 17:10, Alexander Duyck wrote:
 >  }
 >  
 >  /*
-> @@ -2001,13 +1999,11 @@ void __init init_cma_reserved_pageblock(struct page *page)
+> @@ -2001,13 +1999,11 @@ void __init init_cma_reserved_pageblock(struct page
+> *page)
 >   * -- nyc
 >   */
 >  static inline void expand(struct zone *zone, struct page *page,
@@ -189,7 +196,8 @@ On 04.09.19 17:10, Alexander Duyck wrote:
 >  		high--;
 >  		size >>= 1;
 >  		VM_BUG_ON_PAGE(bad_range(zone, &page[size]), &page[size]);
-> @@ -2021,7 +2017,7 @@ static inline void expand(struct zone *zone, struct page *page,
+> @@ -2021,7 +2017,7 @@ static inline void expand(struct zone *zone, struct
+> page *page,
 >  		if (set_page_guard(zone, &page[size], high, migratetype))
 >  			continue;
 >  
@@ -198,7 +206,8 @@ On 04.09.19 17:10, Alexander Duyck wrote:
 >  		set_page_order(&page[size], high);
 >  	}
 >  }
-> @@ -2179,8 +2175,8 @@ struct page *__rmqueue_smallest(struct zone *zone, unsigned int order,
+> @@ -2179,8 +2175,8 @@ struct page *__rmqueue_smallest(struct zone *zone,
+> unsigned int order,
 >  		page = get_page_from_free_area(area, migratetype);
 >  		if (!page)
 >  			continue;
@@ -209,7 +218,8 @@ On 04.09.19 17:10, Alexander Duyck wrote:
 >  		set_pcppage_migratetype(page, migratetype);
 >  		return page;
 >  	}
-> @@ -2188,7 +2184,6 @@ struct page *__rmqueue_smallest(struct zone *zone, unsigned int order,
+> @@ -2188,7 +2184,6 @@ struct page *__rmqueue_smallest(struct zone *zone,
+> unsigned int order,
 >  	return NULL;
 >  }
 >  
@@ -226,7 +236,8 @@ On 04.09.19 17:10, Alexander Duyck wrote:
 >  		page += 1 << order;
 >  		pages_moved += 1 << order;
 >  	}
-> @@ -2370,7 +2365,6 @@ static void steal_suitable_fallback(struct zone *zone, struct page *page,
+> @@ -2370,7 +2365,6 @@ static void steal_suitable_fallback(struct zone *zone,
+> struct page *page,
 >  		unsigned int alloc_flags, int start_type, bool whole_block)
 >  {
 >  	unsigned int current_order = page_order(page);
@@ -234,7 +245,8 @@ On 04.09.19 17:10, Alexander Duyck wrote:
 >  	int free_pages, movable_pages, alike_pages;
 >  	int old_block_type;
 >  
-> @@ -2441,8 +2435,7 @@ static void steal_suitable_fallback(struct zone *zone, struct page *page,
+> @@ -2441,8 +2435,7 @@ static void steal_suitable_fallback(struct zone *zone,
+> struct page *page,
 >  	return;
 >  
 >  single_page:
@@ -252,7 +264,8 @@ On 04.09.19 17:10, Alexander Duyck wrote:
 >  	unsigned long watermark;
 >  	struct zone *zone;
 >  	int mt;
-> @@ -3139,7 +3131,7 @@ int __isolate_free_page(struct page *page, unsigned int order)
+> @@ -3139,7 +3131,7 @@ int __isolate_free_page(struct page *page, unsigned int
+> order)
 >  
 >  	/* Remove page from free list */
 >  
@@ -271,16 +284,11 @@ On 04.09.19 17:10, Alexander Duyck wrote:
 >  			SetPageReserved((page+i));
 >  		pfn += (1 << order);
 > 
+> 
 
-Looks like a nice cleanup to me.
+Reviewed-by: Pankaj Gupta <pagupta@redhat.com>
 
-Reviewed-by: David Hildenbrand <david@redhat.com>
-
--- 
-
-Thanks,
-
-David / dhildenb
+> 
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
