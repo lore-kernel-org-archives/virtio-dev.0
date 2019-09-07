@@ -1,235 +1,222 @@
-Return-Path: virtio-dev-return-6145-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-6066-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 9443A984354
-	for <virtio-dev@lists.oasis-open.org>; Mon, 23 Sep 2019 08:44:02 +0000 (UTC)
-From: "Huang, Yang" <yang.huang@intel.com>
-Date: Mon, 23 Sep 2019 08:43:54 +0000
-Message-ID: <0B92A36466FABC4D99BAF0BDB1FA8BBC415902DF@shsmsx102.ccr.corp.intel.com>
-References: <1565064256-13530-1-git-send-email-yang.huang@intel.com>
- <20190806045914-mutt-send-email-mst@kernel.org>
- <0B92A36466FABC4D99BAF0BDB1FA8BBC41576425@shsmsx102.ccr.corp.intel.com>
- <20190908094435-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20190908094435-mutt-send-email-mst@kernel.org>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	by lists.oasis-open.org (Postfix) with ESMTP id 6F100985ECF
+	for <virtio-dev@lists.oasis-open.org>; Sat,  7 Sep 2019 17:25:09 +0000 (UTC)
+From: Alexander Duyck <alexander.duyck@gmail.com>
+Date: Sat, 07 Sep 2019 10:25:03 -0700
+Message-ID: <20190907172225.10910.34302.stgit@localhost.localdomain>
 MIME-Version: 1.0
-Subject: RE: [virtio-dev] RE: [PATCH v3] It is a virtio based RPMB (Replay
- Protected Memory Block) device.
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "cohuck@redhat.com" <cohuck@redhat.com>, "Zhu, Bing" <bing.zhu@intel.com>, "Winkler, Tomas" <tomas.winkler@intel.com>, "Fang, Peter" <peter.fang@intel.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Subject: [virtio-dev] [PATCH v9 0/8] stg mail -e --version=v9 \
+To: virtio-dev@lists.oasis-open.org, kvm@vger.kernel.org, mst@redhat.com, catalin.marinas@arm.com, david@redhat.com, dave.hansen@intel.com, linux-kernel@vger.kernel.org, willy@infradead.org, mhocko@kernel.org, linux-mm@kvack.org, akpm@linux-foundation.org, will@kernel.org, linux-arm-kernel@lists.infradead.org, osalvador@suse.de
+Cc: yang.zhang.wz@gmail.com, pagupta@redhat.com, konrad.wilk@oracle.com, nitesh@redhat.com, riel@surriel.com, lcapitulino@redhat.com, wei.w.wang@intel.com, aarcange@redhat.com, ying.huang@intel.com, pbonzini@redhat.com, dan.j.williams@intel.com, fengguang.wu@intel.com, alexander.h.duyck@linux.intel.com, kirill.shutemov@linux.intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-DQoNCj4gPiA+ID4gKyBcbmV3bGluZVx1cmx7aHR0cHM6Ly93d3cubnZtZXhwcmVzcy5vcmcvd3At
-Y29udGVudC91cGxvYWRzL05WTV9FDQo+ID4gPiA+ICsgeHByZQ0KPiA+ID4gPiArIHNzX1Jldmlz
-aW9uXzEuMy5wZGZ9XFwNCj4gPiA+ID4NCj4gPiA+ID4gIFxlbmR7bG9uZ3RhYmxlfQ0KPiA+ID4g
-Pg0KPiA+ID4NCj4gPiA+IEF0IHRoaXMgc3RhZ2UgSSBzdWdnZXN0IHdlIGF2b2lkIG52bWUuIE1p
-eCBvZiBMRSBhbmQgQkUgaW4gdGhlIGZyYW1lDQo+ID4gPiBpcyBqdXN0IHRvbyBuYXN0eS4gQW5k
-IEFUTSBMaW51eCBvbmx5IHN1cHBvcnRzIFVGUy9NTUMuDQo+ID4gPg0KPiA+DQo+ID4gUmVtb3Zl
-IGFsbCBjb250ZW50cyBvZiBOVk1lIFJQTUIgYXQgdGhpcyBwaGFzZSB0byBzaW1wbGlmeSB0aGUg
-c3BlYz8NCj4gDQo+IFdoeSBub3QuDQoNCkl0J3MgcmVtb3ZlZCBpbiBWNC4NCg0KDQo+ID4gPiA+
-ICtcaXRlbVtcZmllbGR7aWR9XSBpcyB0aGUgaWRlbnRpZmllciBvZiBSUE1CIHBhcnRpdGlvbnMu
-DQo+ID4gPg0KPiA+ID4gV2hhdCBkb2VzIHRoaXMgbWVhbj8gd2hhdCBhcmUgdGhlIHBhcnRpdGlv
-bnM/IERpZCB5b3UgbWVhbiBvZiB0aGUgZGV2aWNlPw0KPiA+ID4NCj4gPiA+IEkgc3VzcGVjdCB3
-aGF0IGlzIGdvaW5nIG9uIGlzIHRoZXJlJ3MgYW4gYWN0dWFsIGRldmljZSBiZWhpbmQgdGhpcywg
-YW5kIHRoaXMgaXMNCj4gaXRzIElELg0KPiA+ID4gV2hpY2ggYWdhaW4gYmVncyB0aGUgcXVlc3Rp
-b24gd2hldGhlciB0aGlzIHNob3VsZCBqdXN0IGJlIGEgcGFydCBvZg0KPiA+ID4gYSBibGsgb3Ig
-c2NzaSBkZXZpY2UuDQo+ID4NCj4gPiBJdCdzIGZvciBtdWx0aXBsZSBSUE1CIHJlZ2lvbnMuIFJQ
-TUIgc3VwcG9ydHMgdXAgdG8gNCByZWdpb25zIGZvciBVRlMgMy4wIG9yDQo+IE5WTWUgMS4zLg0K
-PiANCj4gU28gYSBkZXZpY2Ugd2l0aCAxIHJlZ2lvbiBpdCdzIGFsd2F5cyAwPw0KPiANCg0KRm9y
-IHRoZSBkZXZpY2Ugd2l0aCBvbmx5IDEgcmVnaW9uLCBubyBzdWNoIGl0ZW0gcmVxdWlyZWQuDQpU
-aGlzIGlzIHJlbW92ZWQgaW4gVjQgZm9yIHNpbXBsaWNpdHkuIA0KDQoNCj4gPiA+ID4gK1xkZXZp
-Y2Vub3JtYXRpdmV7XHN1YnNlY3Rpb259e0RldmljZSBJbml0aWFsaXphdGlvbn17RGV2aWNlIFR5
-cGVzDQo+ID4gPiA+ICsvIFJQTUIgRGV2aWNlIC8gRGV2aWNlIEluaXRpYWxpemF0aW9ufQ0KPiA+
-ID4gPiArDQo+ID4gPiA+ICtcYmVnaW57ZW51bWVyYXRlfQ0KPiA+ID4gPiArXGl0ZW0gVGhlIHZp
-cnRxdWV1ZSBpcyBpbml0aWFsaXplZC4NCj4gPiA+ID4gK1xpdGVtIFRoZSBhdXRoZW50aWNhdGlv
-biBrZXkgb2YgZGV2aWNlIE1VU1QgTk9UIGJlIHByb2dyYW1tZWQgYXQNCj4gPiA+ID4gK3RoZQ0K
-PiA+ID4gZmlyc3QgZGV2aWNlIGluaXRpYWxpemF0aW9uLg0KPiA+ID4NCj4gPiA+IFdoYXQgaXMg
-ImZpcnN0IGRldmljZSBpbml0aWFsaXphdGlvbiI/IFRoZSBjb25jZXB0IGRvZXMgbm90IHNlZW0g
-dG8NCj4gPiA+IGFwcGx5IHRvIHZpcnR1YWwgZGV2aWNlcy4gSG93IGFib3V0IHdlIGp1c3QgaGF2
-ZSBkZXZpY2UNCj4gPiA+IHByZS1pbml0aWFsaXplZCB0byBzb21lIGtleT8gT3IgbWF5YmUgZGV2
-aWNlIGNhbiBiZSBpbiB0d28gc3RhdGVzLCBrZXkNCj4gcHJvZ3JhbW1pbmcgYW5kIG9wZXJhdGlv
-bj8NCj4gPg0KPiA+IEkgd2lsbCBjaGFuZ2UgdGhlIHN0YXRlbWVudC4NCj4gPiBEZXZpY2UgTVVT
-VCBOT1QgcHJlLWluaXRpYWxpemVkIGEgUlBNQiBrZXkuDQo+ID4gVGhlIG9ubHkgc291cmNlIG9m
-IHRoZSBrZXkgaXMgZnJvbSBWSVJUSU9fUlBNQl9SRVFfUFJPR1JBTV9LRVkNCj4gcmVxdWVzdC4N
-Cj4gPiBCZWZvcmUgUlBNQiBpcyBwcm9ncmFtbWVkLCByZWFkL3dyaXRlL3JlYWQgd3JpdGUgY291
-bnRlciB3aWxsIGZhaWwgd2l0aA0KPiAweDAwMDcuDQo+ID4NCj4gPiA+DQo+ID4gPiBBbGwgY29u
-Zm9ybWFuY2UgY2xhdXNlcyBiZWxvbmcgaW4gY29uZm9ybWFuY2Ugc2VjdGlvbnMuICBoZXJlIGFu
-ZA0KPiBlbHNld2hlcmUuDQo+ID4NCj4gPiBUaGFua3MuIEkgd2lsbCBhZGQgaXQgYWZ0ZXIgdGhl
-IHNrZWxldG9uIGlzIHN0YWJsZS4NCj4gDQo+IEknZCByYXRoZXIgd2UgdHJ5IHRvIGZpbmFsaXpl
-IGl0IGFsbCBpbiBvbmUgZ28sIGRvbid0IGhhdmUgdGhlIHRpbWUgdG8gcmV2aWV3DQo+IGV2ZXJ5
-dGhpbmcgdHdpY2UgOikNCg0KDQpTdXJlLiBJdCdzIGFkZGVkIHRvIFY0IHdoaWNoIGhhZCBiZWVu
-IHNlbnQgb3V0Lg0KDQoNCg0KPiA+ID4gPiArXGl0ZW1bXGZpZWxke25vbmNlfV0gaXMgYSByYW5k
-b20gbnVtYmVyDQo+ID4gPg0KPiA+ID4NCj4gPiA+IHJhbmRvbSBob3c/IEkgdGhpbmsgaXQgY2Fu
-IGp1c3QgYmUgYW55dGhpbmcuDQo+ID4NCj4gPiBJIHdpbGwgZGV0YWlsIGl0Lg0KPiA+IEl0IHVz
-ZWQgYnkgdXNlciB3aG8gcmVxdWVzdCBmb3IgcmVhZC9yZWFkX3dyaXRlX2NvdW50ZXIgdG8gcHJv
-dGVjdCByZXBsYXkNCj4gYXR0YWNrLg0KPiANCj4gT2ggc28gaWYgb25lIGNhcmVzIGFib3V0IHJl
-cGxheSwgaXQgbmVlZHMgdG8gYmUgaGFyZCB0byBwcmVkaWN0Lg0KPiANCg0KWWVzLiBUaGlzIGlz
-IHRoZSByZXNwb25zaWJpbGl0eSBmb3IgdGhlIGNhbGxlciB0byBmaWxsIGEgcmFuZG9tIHRvIHBy
-b3RlY3QgZnJvbSByZXBsYXkgYXR0YWNrLg0KDQoNCj4gPiA+ID4gK1xpdGVtW1xmaWVsZHtibG9j
-a19jb3VudH1dIGlzIHRoZSBudW1iZXIgb2YgYmxvY2tzICgyNTZCIGZvciBKRURFQyBhbmQNCj4g
-NTEyQg0KPiA+ID4gPiArICAgZm9yIE5WTWUpIHJlcXVlc3RlZCB0byBiZSByZWFkL3dyaXR0ZW4u
-DQo+ID4gPg0KPiA+ID4gY2FuJ3QgdGhpcyBiZSBpbnR1aXRlZCBmcm9tIHRoZSBidWZmZXIgc2l6
-ZSBzb21laG93Pw0KPiA+ID4NCj4gPiA+IEkgZG9uJ3QgcmVhbGx5IHVuZGVyc3RhbmQgaG93IGNh
-biB5b3UgYm90aCBoYXZlIGJsb2NrX2NvdW50IGFuZCBhDQo+ID4gPiBmaXhlZCBzaXplIGRhdGEu
-IGhvdyBkb2VzIHRoaXMgbWFrZSBzZW5zZT8NCj4gPg0KPiA+IFRoZSBmaXhlZCBkYXRhIHJlZmVy
-IHRvIHRoZSBzaXplIG9mIG9uZSBibG9jayBjYW4gYmUgcmVhZC93cml0dGVuLg0KPiA+IFRoZSBi
-bG9jayBjb3VudCByZWZlcnMgdG8gaG93IG1hbnkgMjU2IHVuaXRzIGFyZSByZXF1ZXN0ZWQgaW4g
-b25lIHJlYWQvd3JpdGUNCj4gcmVxdWVzdC4NCj4gPg0KPiA+IEV4YW1wbGUsIHJlYWQgcmVxdWVz
-dCBvbiBKRURFQyBSUE1CIHdpdGggdHdvIGJsb2NrcyAoMjU2QioyKToNCj4gPiBVc2VyIHdpbGwg
-c2VuZCAzIGZyYW1lcywgdGhlIGZpcnN0IGlzIHRoZSBmcmFtZSBmaWxsZWQgYnkgdXNlciwgd2l0
-aCByZXF1ZXN0IHR5cGUsDQo+IGFkZHJlc3MsIG5vbmNlIGV0Yy4NCj4gPiBUaGUgbGFzdCAyIGZy
-YW1lcyBhcmUgZmlsbGVkIGJ5IGRldmljZSB3aXRoIGRhdGEsIE1BQywgbm9uY2UsIHJlc3VsdCBl
-dGMuDQo+IA0KPiANCj4gU28gcGxlYXNlIG1hcCB0aGlzIHRvIHZpcnRpbyBidWZmZXJzIGFuZCBk
-b2N1bWVudCB0aGUgbWFwcGluZy4NCj4gDQoNCk5vdCBpbmNsdWRlZCBpbiBWNC4gV2lsbCBtZW50
-aW9uIGl0IGluIFY1DQoNCg0KDQo+ID4gPiA+ICtcaXRlbVtWSVJUSU9fUlBNQl9SRVFfUkVTVUxU
-X1JFQURdIEl0IGlzIHVzZWQgZm9sbG93aW5nIHdpdGggdGhlDQo+ID4gPiA+ICtvdGhlcg0KPiA+
-ID4gcmVxdWVzdA0KPiA+ID4gPiArICAgdHlwZXMgZm9yIHJldHVybmVkIHJlc3VsdCBpbiBvbmUg
-b3IgbXVsdGlwbGUgUlBNQiBmcmFtZXMuDQo+ID4gPg0KPiA+ID4gU28gZWFjaCB3cml0ZSByZXF1
-ZXN0IG11c3QgYmUgZm9sbG93ZWQgYnkgYSBzdGF0dXMgcmVxdWVzdC4gIFRoaXMNCj4gPiA+IGp1
-c3Qgc2VlbXMgbGlrZSBhIHdhc3RlLiBXaHkgbm90IHJldHVybiB0aGUgcmVzdWx0IGltbWVkaWF0
-ZWx5IHdpdGgNCj4gPiA+IHRoZSBvcGVyYXRpb24/ICBNYXliZSBVRlMgZG9lc24ndCBzdXBwb3J0
-IHRoaXMgYnV0IHZpcnRpbyBzdXJlIGRvZXMuDQo+ID4gPg0KPiA+ID4gRG9lcyBkZXZpY2UgaGF2
-ZSB0byBtYWludGFpbiB0aGUgbGFzdCByZXF1ZXN0IGluIG5vbi12b2xhdGlsZSBtZW1vcnkNCj4g
-PiA+IGFuZCBwZXJzaXN0IGFjcm9zcyByZXNldHM/ICBZb3UgZG8gbm90IGxpc3QgaXQgYXMgYmVp
-bmcgcGVyc2lzdGVudA0KPiA+ID4gYmVsb3cuIFNvIEkgd291bGQganVzdCBkcm9wIHRoaXMgcmVx
-dWVzdCB0eXBlIGFuZCBoYXZlIGRyaXZlciBtYWludGFpbiBpdCBpbg0KPiBndWVzdCBtZW1vcnku
-DQo+ID4NCj4gPiBJZiBWSVJUSU9fUlBNQl9SRVFfUkVTVUxUX1JFQUQgaXMgbm90IHJlcXVlc3Qg
-Zm9yIHdyaXRlL3Byb2dyYW1fa2V5LA0KPiBvcGVyYXRpb24gd2lsbCBiZSBwZXJmb3JtZWQgYnV0
-IG5vIHJlc3VsdCByZXR1cm5lZC4NCj4gPiBJdOKAmXMgZm9sbG93ZWQgYnkgd3JpdGUvcHJvZ3Jh
-bV9rZXkgcmVxdWVzdCBpbiBtb3N0IGNhc2VzLiBEZXZpY2UgZG9lcyBub3QNCj4gbmVlZCB0byBt
-YWludGFpbiBpdCBpZiB1c2VyIGRvZXMgbm90IHJlcXVlc3QgZm9yIGl0Lg0KPiA+IEtlZXBpbmcg
-aXQgZm9yIGNvbXBhdGliaWxpdHkgd2l0aCBoYXJkd2FyZSBkb2VzIG1ha2Ugc2Vuc2UgZm9yIGEg
-dW5pZmllZA0KPiBzb2x1dGlvbiByZWdhcmRsZXNzIGJhcmUgbWV0YWwgb3IgdmlydHVhbGl6YXRp
-b24uDQo+IA0KPiANCj4gDQo+IFNvIHdoYXQgaXMgd3Jvbmcgd2l0aCBkcml2ZXIgZG9pbmcgaXQ/
-DQoNCg0KVG8gYW5zd2VyIHlvdXIgcHJldmlvdXMgcXVlc3Rpb24gZmlyc3RseToNCkkgZG9uJ3Qg
-dGhpbmsgdGhlIGRldmljZSBzaG91bGQgbWFpbnRhaW4gdGhlIGxhc3QgcmVxdWVzdCBpbiBtZW1v
-cnkgYW5kIHBlcnNpc3QgYWNyb3NzIHJlc2V0cy4gDQpCZWNhdXNlIHRoZSBWSVJUSU9fUlBNQl9S
-RVFfUkVTVUxUX1JFQUQgcmVxdWVzdCBpcyBzZW50IHRvIHRoZSBkZXZpY2UgdG9nZXRoZXIgd2l0
-aCB0aGUgb3RoZXIgcmVxdWVzdHMgbGlrZSBWSVJUSU9fUlBNQl9SRVFfUFJPR1JBTV9LRVkgb3Ig
-VklSVElPX1JQTUJfUkVRX0RBVEFfV1JJVEUuDQpUaGUgZGV2aWNlIGNhbiBjaGVjayB0aGUgVklS
-VElPX1JQTUJfUkVRX1JFU1VMVF9SRUFEIGlzIHJlcXVlc3RlZCB3aGVuIGl0IHJlY2VpdmVzIHRo
-ZSB0d28gcmVxdWVzdHMuDQpObyBzdWNoIHVzYWdlIHRoYXQgc2VuZGluZyBWSVJUSU9fUlBNQl9S
-RVFfUkVTVUxUX1JFQUQgYXQgZmlyc3QgYW5kIFZJUlRJT19SUE1CX1JFUV9SRVNVTFRfUkVBRCB0
-aGUgc2Vjb25kIGZvciBzb21lIHRpbWUuDQpCZWNhdXNlIG5vYm9keSBwcm9taXNlcyBubyBhbnkg
-bmV3IHJlcXVlc3RzIG9wZXJhdGVkIGR1cmluZyB0aGUgdGltZSBpbnRlcnZhbC4NCg0KRm9yIHlv
-dXIgc2Vjb25kIHF1ZXN0aW9uOg0KVGhlIHJlcXVpcmVtZW50IGFsd2F5cyBkZXBlbmRzIG9uIHRo
-ZSBjYWxsZXIuIFRoaXMgYWxpZ25zIHdpdGggdGhlIG5hdGl2ZSwgYW5kIG1ha2UgdGhlIGRyaXZl
-ciBwdXJlLiANClRoZSBkcml2ZXIganVzdCBkb2VzIG9uZSB0aGluZzogZm9ybWF0IHRoZSByZXF1
-ZXN0IGZyYW1lcyB0byB2aXJ0cXVldWUgYnV0IG5vdCBhY2Nlc3MgdGhlIGNvbnRlbnQgb2YgdGhl
-IGZyYW1lLg0KDQoNCg0KPiA+ID4gPiBGb3INCj4gPiA+ID4gKyAgIFZJUlRJT19SUE1CX1JFUV9Q
-Uk9HUkFNX0tFWSBhbmQNCj4gVklSVElPX1JQTUJfUkVRX0RBVEFfV1JJVEUsDQo+ID4gPiBpZiBi
-bG9jayBjb3VudCBoYXMNCj4gPiA+ID4gKyAgIG5vdCBiZWVuIHNldCB0byAxIG9mIFZJUlRJT19S
-UE1CX1JFUV9SRVNVTFRfUkVBRCByZXF1ZXN0LCB0aGVuDQo+ID4gPiA+ICsgICBWSVJUSU9fUlBN
-Ql9SRVNfR0VORVJBTF9GQUlMVVJFIFNIQUxMIGJlIGluZGljYXRlZC4NCj4gPiA+ID4gKw0KPiA+
-ID4gPiArXGVuZHtkZXNjcmlwdGlvbn0NCj4gPiA+ID4gK0lmIGF1dGhldGljYXRpb24ga2V5IHdh
-cyBwcm9ncmFtbWVkIHN1Y2Nlc3NmdWxseSwgdGhlIGRldmljZQ0KPiA+ID4gPiArU0hBTEwgcmV0
-dXJuDQo+ID4gPiB3aXRoIGEgTUFDIGZvciBhbnkgb3BlcmF0aW9uIHJlcXVlc3RzLg0KPiA+ID4N
-Cj4gPiA+IExvdHMgb2YgdHlwb3MgYWJvdmUgbWFrZSBpdCBwcmV0dHkgaGFyZCB0byBmaWd1cmUg
-b3V0Lg0KPiA+ID4NCj4gPiA+ID4gKw0KPiA+ID4gPiArXGRyaXZlcm5vcm1hdGl2ZXtcc3Vic3Vi
-c2VjdGlvbn17RGV2aWNlIE9wZXJhdGlvbn17RGV2aWNlIFR5cGVzIC8NCj4gPiA+ID4gK1JQTUIg
-RGV2aWNlIC8gRGV2aWNlIE9wZXJhdGlvbn0NCj4gPiA+ID4gKw0KPiA+ID4gPiArVGhlIGRyaXZl
-ciBNVVNUIGNvbmZpZ3VyZSBhbmQgaW5pdGlhbGl6ZSB2aXJ0cXVldWUgZm9yIHRoZSByZXF1ZXN0
-cw0KPiByZWNlaXZlZC4NCj4gPiA+DQo+ID4gPiByZWNlaXZlZCB3aGVyZT8gd2h5IGlzbid0IGl0
-IGxlZ2FsIHRvIGUuZy4gY2hlY2sgZmVhdHVyZSBiaXRzIGFuZCB0aGVuIHJlc2V0Pw0KPiA+DQo+
-ID4gUmVjZWl2ZWQgZnJvbSBvdGhlciBtb2R1bGVzIHdobyBjYWxscyB2aXJ0aW8gcnBtYiBkcml2
-ZXIuDQo+ID4gQmVjYXVzZSBSUE1CIGZyYW1lcyBhcmUgbm90IHBhY2tlZCBieSBkcml2ZXIuDQo+
-ID4gV2hhdCBkcml2ZXIgc2hvdWxkIGRvIGlzIGZvcm1hdCB0aGUgUlBNQiBmcmFtZXMgaXQgcmVj
-ZWl2ZWQgYW5kIGZvciBpdCB0bw0KPiB2aXJ0cXVldWUsIHRoZW4gc2VuZCB0byBkZXZpY2UuDQo+
-IA0KPiBPSyBwbHMgd3JpdGUgdGhpcyB1cCBpbiB0aGUgc3BlYy4NCj4gDQoNCk9LLiBOb3QgaW5j
-bHVkZWQgaW4gVjQuIFdpbGwgYWRkIGl0IHRvIFY1Lg0KDQoNCj4gPiA+ID4gKw0KPiA+ID4gPiAr
-XGRldmljZW5vcm1hdGl2ZXtcc3Vic3Vic2VjdGlvbn17RGV2aWNlIE9wZXJhdGlvbn17RGV2aWNl
-IFR5cGVzIC8NCj4gPiA+ID4gK1JQTUIgRGV2aWNlIC8gRGV2aWNlIE9wZXJhdGlvbn0NCj4gPiA+
-ID4gKw0KPiA+ID4gPiArVGhlIHZpcnRpby1ycG1iIGRldmljZSBjb3VsZCBiZSBiYWNrZWQgaW4g
-YSBudW1iZXIgb2Ygd2F5cy4gSXQgU0hPVUxEDQo+ID4gPiA+ICsgICBrZWVwIGNvbnNpc3RlbnQg
-YmVoYXZpb3JzIHdpdGggaGFyZHdhcmUgYXMgZGVzY3JpYmVkIGluIHBhcmFncmFwaA0KPiA+ID4g
-PiArICAgNi42LjIyIG9mIFxoeXBlcnJlZltpbnRybzplTU1DXXtlTU1DfSwgMTIuNCBvZg0KPiBc
-aHlwZXJyZWZbaW50cm86VUZTXXtVRlN9DQo+ID4gPiA+ICsgICBvciA4LjEwIG9mIFxoeXBlcnJl
-ZltpbnRybzpOVk1lXXtOVk1lfS4NCj4gPiA+ID4gU29tZSBlbGVtZW50cyBhcmUgbWFpbnRhaW5l
-ZA0KPiA+ID4gPiArICAgYnkgdGhlIGRldmljZToNCj4gPiA+ID4gK1xiZWdpbntlbnVtZXJhdGV9
-DQo+ID4gPiA+ICtcaXRlbSBUaGUgZGV2aWNlIG1haW50YWlucyBhbiBvbmUgdGltZSBwcm9ncmFt
-bWFibGUgYXV0aGVudGljYXRpb24ga2V5Lg0KPiA+ID4gPiArICAgSXQgY2Fubm90IGJlIG92ZXJ3
-cml0dGVuLCBlcmFzZWQgb3IgcmVhZC4gVGhlIGtleSBpcyB1c2VkIHRvDQo+ID4gPiA+ICsgICBh
-dXRoZW50aWNhdGUgdGhlIGFjY2Vzc2VzIHdoZW4gTUFDIGlzIGNhbGN1bGF0ZWQuIFRoaXMga2V5
-IE1VU1QgYmUNCj4gPiA+ID4gKyAgIGtlcHQgcmVnYXJkbGVzcyBvZiBkZXZpY2UgcmVzZXQgb3Ig
-cmVib290Lg0KPiA+ID4gPiArXGl0ZW0gVGhlIGRldmljZSBtYWludGFpbnMgYSByZWFkLW9ubHkg
-bW9ub3RvbmljIHdyaXRlIGNvdW50ZXIuIEl0IE1VU1QNCj4gPiA+ID4gKyAgIGJlIGluaXRpYWxp
-emVkIHRvIHplcm8gYW5kIGFkZGVkIGJ5IG9uZSBhdXRvbWF0aWNhbGx5IGFsb25nIHdpdGgNCj4g
-PiA+ID4gKyAgIHN1Y2Nlc3NmdWwgd3JpdGUgb3BlcmF0aW9uLiBUaGUgdmFsdWUgY2Fubm90IGJl
-IHJlc2V0LiBBZnRlcg0KPiA+ID4gPiArICAgdGhlIGNvdW50ZXIgaGFzIHJlYWNoZWQgaXRzIG1h
-eGltdW0gdmFsdWUgMHhGRkZGIEZGRkYsIGl0IHdpbGwNCj4gPiA+ID4gKyAgIG5vdCBiZSBpbmNy
-ZW1lbnRlZCBhbnltb3JlLiBUaGlzIGNvdW50ZXIgTVVTVCBiZSBrZXB0IHJlZ2FyZGxlc3MNCj4g
-PiA+ID4gKyAgIG9mIGRldmljZSByZXNldCBvciByZWJvb3QuDQo+ID4gPiA+ICtcaXRlbSBUaGUg
-ZGV2aWNlIG1haW50YWlucyB0aGUgZGF0YSBmb3IgcmVhZC93cml0ZSB2aWEgYXV0aGVudGljYXRl
-ZA0KPiA+ID4gPiArICAgYWNjZXNzLg0KPiA+ID4gPiArXGVuZHtlbnVtZXJhdGV9DQo+ID4gPiA+
-ICsNCj4gPiA+DQo+ID4gPg0KPiA+ID4NCj4gPiA+IFdoYXQgSSBoYXZlIGdhdGhlcmVkIGZyb20g
-YWJvdmUgaXMgcmVhbGx5IGp1c3QgYSBjb3VudGVyIGFuZCBhIGtleQ0KPiA+ID4gYWRkZWQgdG8g
-YSBzdG9yYWdlIGRldmljZS4NCj4gPiA+DQo+ID4gPiAJS2V5OiB5b3UgbXVzdCBoYXZlIHRoZSBr
-ZXkgdG8gd3JpdGUuIEl0J3MgcHJvZ3JhbW1lZCBpbnRvIHRoZQ0KPiA+ID4gCWRldmljZSBhdCBz
-b21lIHBvaW50IGJ5IG1hbnVmYWN0dXJlci4NCj4gPiA+IAlTbyBsYXRlciwgb25seSBzb21lb25l
-IHdobyBnb3Qga2V5IGZyb20gbWFudWZhY3R1cmVyIGNhbiB3cml0ZS4NCj4gPiA+IAlEYXRhIGlz
-IGFsc28gYXV0aGVudGljYXRlZCB3aXRoIHRoZSBrZXksIHNvIGlmIHlvdSBnb3QNCj4gPiA+IAl0
-aGUga2V5IGZyb20gbWFudWZhY3R1cmVyIHlvdSBjYW4gdmVyaWZ5IGl0J3MgdmFsaWQuDQo+ID4g
-Pg0KPiA+ID4gCVdoYXQgaWYgeW91IGRpZG4ndCBnZXQgdGhlIGtleSBidXQgeW91IHN0ZWFsIHRo
-ZSBkYXRhDQo+ID4gPiAJaW4gdHJhbnNpdCB0byBzdG9yYWdlIGRldmljZSBzb21laG93PyBZb3Ug
-Y291bGQNCj4gPiA+IAlyZXBsYXkgaXQgdG8gdGhlIGRldmljZSBhbmQgb3ZlcndyaXRlIHZhbGlk
-IGRhdGEuDQo+ID4gPiAJVG8gdGhpcyBlbmQgZGV2aWNlIG1haW50YWlucyB3cml0ZSBjb3VudGVy
-LA0KPiA+ID4gCXNvIHlvdSBjYW4ndC4NCj4gPiA+DQo+ID4gPiAJV2hhdCBpZiB5b3UgY2FuIHBy
-ZXRlbmQgd3JpdGUgZmFpbGVkLCBvciBmaWx0ZXIgb3V0IHdyaXRlcyB0byBwcmV0ZW5kDQo+ID4g
-PiAJdGhleSBzdWNjZWVkZWQ/IEZpcnN0IHdyaXRlIGNvdW50ZXIgd2lsbCBiZSB3cm9uZywgYnV0
-IGl0J3MgdHJpY2t5IGZvcg0KPiA+ID4gCWFwcGxpY2F0aW9ucyB0byB2ZXJpZnkgdGhlIGNvdW50
-ZXI6IGFmdGVyIGFsbCBhbiBhcHBsaWNhdGlvbiBjYW4gY3Jhc2guDQo+ID4gPiAJU28gZWFjaCB3
-cml0ZSBpcyBmb2xsb3dlZCBieSBhIHJlc3BvbnNlIGFuZCB1c2VycyBtdXN0IHZhbGlkYXRlIE1B
-QyB0bw0KPiA+ID4gCW1ha2Ugc3VyZSB3cml0ZSBtYWRlIGl0IHRvIHRoZSBkZXZpY2UuDQo+ID4g
-Pg0KPiA+ID4NCj4gPiA+IAlPbiB0aGUgb3RoZXIgaGFuZCwgd2hhdCBpZiBhZ2FpbiB5b3UgZGlk
-bid0IGdldCB0aGUga2V5IGJ1dCB5b3Ugc3RlYWwNCj4gPiA+IAl0aGUgcmVhZCByZXNwb25zZT8g
-IFlvdSBjb3VsZCByZXBsYXkgdGhhdCB0byB0aGUgYXBwbGljYXRpb24uICBUbyB0aGlzDQo+ID4g
-PiAJZW5kIHJlYWQgcmVxdWVzdHMgaW5jbHVkZSBhIHJhbmRvbSB2YWx1ZSBhbmQgaXQncyBjb3Bp
-ZWQgdG8gdGhlDQo+ID4gPiAJcmVzcG9uc2UuIEFwcGxpY2F0aW9uIGNhbiBwdXQgZS5nLiBhIGNv
-dW50ZXIgdGhlcmUuDQo+ID4gPg0KPiA+ID4NCj4gPiA+DQo+ID4gPiBJIHRoaW5rIHdlIGFyZSBj
-b21pbmcgYmFjayBmdWxsIGNpcmNsZSBhbmQgSSB3b3VsZCBsaWtlIHRvIGFzazogc28NCj4gPiA+
-IHdoeSBkb2VzIGl0IG5vdCBtYWtlIHNlbnNlIHRvIGFkZCB0aGlzIGZ1bmN0aW9uYWxpdHkgdG8g
-YSBibG9jaw0KPiA+ID4gZGV2aWNlLCBvciBhIHNjc2kgZGV2aWNlPyBXZSdkIGdldCBsb3RzIG9m
-IGdvb2RpZXMgc3VjaCBhcyBtdWx0aXF1ZXVlLCBmb3INCj4gZnJlZS4NCj4gPiA+DQo+ID4gPg0K
-PiA+ID4gSWYgd2UgaW1wbGVtZW50IGFib3ZlIGluIGEgaHlwZXJ2aXNvciBpbiBzb2Z0d2FyZSwg
-d2UgY2FuIGp1c3QNCj4gPiA+IGlnbm9yZSBhbGwgcmFuZG9tIGhhcmR3YXJlIGxpbWl0YXRpb25z
-LCBhbmQgc3VwcG9ydCBlLmcuIGFyYml0cmFyeQ0KPiA+ID4gc2l6ZSBvZiB3cml0ZXMsIGFyYml0
-cmFyeSBoYXNoIGV0YyBldGMuDQo+ID4gPg0KPiA+ID4gU28gSSB0aGluayB0aGlzIGlzIHRoZSBy
-ZWFzb24geW91IGFyZSBtYWtpbmcgaXQgYSBzZXBhcmF0ZSBkZXZpY2UNCj4gPiA+IGFuZCBhcmUg
-dHJ5aW5nIHRvIHN1cHBvcnQgc28gbWFueSBtZXNzeSBmb3JtYXRzIGlzIGJlY2F1c2UgeW91IGFy
-ZSB0aGlua2luZw0KPiBhYm91dCBwYXNzLXRocm91Z2guDQo+ID4gPg0KPiA+ID4gSG93ZXZlciwg
-SSBub3RlIHRoYXQgbmVpdGhlciBkcml2ZXIgbm9yIHRoZSBoeXBlcnZpc29yIHJlYWxseSBjYXJl
-DQo+ID4gPiBhYm91dCB0aGluZ3MgbGlrZSBvcmRlciBvZiBmaWVsZHMgb3IgZW5kaWFuLW5lc3Mu
-DQo+ID4gPiBJdCdzIG9ubHkgdGhlIE1BQyBjYWxjdWxhdGlvbnMgdGhhdCBhcmUgYWZmZWN0ZWQu
-DQo+ID4gPg0KPiA+ID4gU28gbXkgc3VnZ2VzdGlvbiBpcywgZm9yIG5vdyBqdXN0IGRlZmluZSBh
-IGNsZWFuIG1pbmltYWwgaW50ZXJmYWNlLA0KPiA+ID4gd2l0aCBzb21lIGtpbmQgb2YgZW51bWVy
-YXRvciBmb3IgYW4gYXBwbGljYXRpb24gdG8gZGlzY292ZXIgdGhlDQo+ID4gPiBzcGVjaWZpYyBN
-QUMgdXNlZC4gIEFuZCB3aGVuIGh5cGVydmlzb3IgaXMgZm9yd2FyZGluZyB0aGUgZGF0YSB0bw0K
-PiA+ID4gdGhlIGRldmljZSwgaXQgY2FuIG1vdmUgZmllbGRzIGFyb3VuZCwgc3dhcCBlbmRpYW4t
-bmVzcyBvciB3aGF0ZXZlci4NCj4gPiA+IFdpbGwgY29zdCBzb21lIHBlcmZvcm1hbmNlIGJ1dCBp
-dCBkb2VzIG5vdCBsb29rIGxpa2UgdGhpcyBkZXZpY2UgaXMgZmFzdCBwYXRoDQo+IGFueXdheS4N
-Cj4gPiA+DQo+ID4gPiBBbmQgSSBhbSBndWVzc2luZyBtb3N0IHBlb3BsZSBkbyB0cnVzdCB0aGUg
-aHlwZXJ2aXNvciBhbmQgc28gdGhleQ0KPiA+ID4gd2lsbCBoYXBwaWx5IGp1c3QgdXNlIGEgY2xl
-YW4gc29mdHdhcmUgaW1wbGVtZW50YXRpb24uDQo+ID4gPg0KPiA+DQo+ID4gV2UgY2FuIHNpbXBs
-aWZ5IHRoZSBzcGVjIGJ5IHN1cHBvcnRpbmcgSkVERUMgb25seSwgc2luZ2xlIFJQTUIgcGFydGl0
-aW9uLg0KPiA+IEJ1dCBjb21wYXRpYmlsaXR5IHdpdGggaGFyZHdhcmUgUlBNQiB3aWxsIGJlbmVm
-aXQgZGV2ZWxvcGVyL3VzZXIgdG8NCj4gPiBtYWludGFpbiBhIHNhbWUgc3VpdGUgb2YgUlBNQiBB
-UElzLCAgc3RydWN0dXJlcywgb3BlcmF0aW9ucyBpbiBib3RoDQo+IHZpcnR1YWxpemF0aW9uIGFu
-ZCBiYXJlIG1ldGFsLg0KPiA+IFdlIGNhbiBhZGQgc29tZSBmZWF0dXJlIGJpdHMgZm9yIGV4dGVu
-ZGVkIG9wdGltaXphdGlvbiByZXF1aXJlbWVudHMuDQo+IA0KPiBJIGRvbid0IGtub3csIHRoaXMg
-cGlja3MgYW5kIGNob29zZXMgaGFyZHdhcmUgcGFydHMgdG8gY29weSBhbmQgSSdtIG5vdCBzdXJl
-DQo+IHdoYXQgZG8geW91IGJhc2Ugd2hhdCB0byBlbXVsYXRlIG9uLg0KPiBFLmcuIGRvZXNuJ3Qg
-dXNlcnNwYWNlIGFsc28gYXNzdW1lIFJQTUIgaXMgcGFydCBvZiBhIHN0b3JhZ2UgZGV2aWNlPw0K
-PiANCj4gSXQgd291bGQgbWFrZSBzZW5zZSB0byBtZSBpZiB5b3UganVzdCBlbXVsYXRlZCBlbmNy
-eXB0ZWQgcGFydHMuDQo+IA0KDQpXaGF0IGRvIHlvdSByZWZlciB0bywgZm9yIHRoZSBlbmNyeXB0
-ZWQgcGFydHM/DQoNCkhWIGNhbiBiZSByZWdhcmRlZCBhcyBhIHBhcnQgb2YgVENCIG5vcm1hbGx5
-Lg0KU28gSFYgZW11bGF0ZWQgcnBtYiBkZXZpY2UgcHJvdmlkZXMgZ3Vlc3RzIHdpdGggc2VjdXJp
-dHkgaW4gc29tZSBjb250ZW50Lg0KUlBNQiBzdXBwb3J0IGRlcGVuZHMgb24gdGhlIHNvbWUgc3Bl
-Y2lmaWVkIG1lZGlhLiBJZiBIViBjb3VsZCBlbXVsYXRlcyBpdCwgaXQgcHJvdmlkZXMgZ3JlYXQg
-ZmxleGliaWxpdHkgZm9yIHRoZSBHdWVzdC4NCg0KDQoNCg==
+--to=kvm@vger.kernel.org \
+--to=linux-kernel@vger.kernel.org \
+--to=linux-mm@kvack.org \
+--to=virtio-dev@lists.oasis-open.org \
+--to=linux-arm-kernel@lists.infradead.org \
+--to=mst@redhat.com \
+--to=david@redhat.com \
+--to=dave.hansen@intel.com \
+--to=akpm@linux-foundation.org \
+--cc=nitesh@redhat.com \
+--cc=dan.j.williams@intel.com \
+--cc=pbonzini@redhat.com \
+--cc=lcapitulino@redhat.com \
+--cc=pagupta@redhat.com \
+--cc=wei.w.wang@intel.com \
+--cc=yang.zhang.wz@gmail.com \
+--cc=riel@surriel.com \
+--cc=konrad.wilk@oracle.com \
+--cc=aarcange@redhat.com \
+--to=willy@infradead.org \
+--to=mhocko@kernel.org \
+--to=osalvador@suse.de \
+--to=catalin.marinas@arm.com \
+--to=will@kernel.org \
+--cc=kirill.shutemov@linux.intel.com  \
+--cc=fengguang.wu@intel.com \
+--cc=ying.huang@intel.com \
+--cc=alexander.h.duyck@linux.intel.com \
+01-mm-add-per-cpu-logic-to-page..08-virtio-balloon-add-support-for
+
+mm / virtio: Provide support for unused page reporting
+
+This series provides an asynchronous means of reporting to a hypervisor
+that a guest page is no longer in use and can have the data associated
+with it dropped. To do this I have implemented functionality that allows
+for what I am referring to as unused page reporting
+
+The functionality for this is fairly simple. When enabled it will allocate
+statistics to track the number of reported pages in a given free area.
+When the number of free pages exceeds this value plus a high water value,
+currently 32, it will begin performing page reporting which consists of
+pulling pages off of free list and placing them into a scatter list. The
+scatterlist is then given to the page reporting device and it will perform
+the required action to make the pages "reported", in the case of
+virtio-balloon this results in the pages being madvised as MADV_DONTNEED
+and as such they are forced out of the guest. After this they are placed
+back on the free list, and an additional bit is added if they are not
+merged indicating that they are a reported buddy page instead of a
+standard buddy page. The cycle then repeats with additional non-reported
+pages being pulled until the free areas all consist of reported pages.
+
+I am leaving a number of things hard-coded such as limiting the lowest
+order processed to PAGEBLOCK_ORDER, and have left it up to the guest to
+determine what the limit is on how many pages it wants to allocate to
+process the hints. The upper limit for this is based on the size of the
+queue used to store the scattergather list.
+
+My primary testing has just been to verify the memory is being freed after
+allocation by running memhog 40g on a 40g guest and watching the total
+free memory via /proc/meminfo on the host. With this I have verified most
+of the memory is freed after each iteration. As far as performance I have
+been mainly focusing on the will-it-scale/page_fault1 test running with
+16 vcpus. I have modified it to use Transparent Huge Pages. With this I
+see almost no difference, -0.08%, with the patches applied and the feature
+disabled. I see a regression of -0.86% with the feature enabled, but the
+madvise disabled in the hypervisor due to a device being assigned. With
+the feature fully enabled I see a regression of -3.27% versus the baseline
+without these patches applied. In my testing I found that most of the
+overhead was due to the page zeroing that comes as a result of the pages
+having to be faulted back into the guest.
+
+One side effect of these patches is that the guest becomes much more
+resilient in terms of NUMA locality. With the pages being freed and then
+reallocated when used it allows for the pages to be much closer to the
+active thread, and as a result there can be situations where this patch
+set will out-perform the stock kernel when the guest memory is not local
+to the guest vCPUs. To avoid that in my testing I set the affinity of all
+the vCPUs and QEMU instance to the same node.
+
+I have not included the QEMU patches with this set as they haven't really
+changed in the last several revisions. If needed they can be located with
+the v8 patchset.
+
+Changes from the RFC:
+https://lore.kernel.org/lkml/20190530215223.13974.22445.stgit@localhost.localdomain/
+Moved aeration requested flag out of aerator and into zone->flags.
+Moved boundary out of free_area and into local variables for aeration.
+Moved aeration cycle out of interrupt and into workqueue.
+Left nr_free as total pages instead of splitting it between raw and aerated.
+Combined size and physical address values in virtio ring into one 64b value.
+
+Changes from v1:
+https://lore.kernel.org/lkml/20190619222922.1231.27432.stgit@localhost.localdomain/
+Dropped "waste page treatment" in favor of "page hinting"
+Renamed files and functions from "aeration" to "page_hinting"
+Moved from page->lru list to scatterlist
+Replaced wait on refcnt in shutdown with RCU and cancel_delayed_work_sync
+Virtio now uses scatterlist directly instead of intermediate array
+Moved stats out of free_area, now in separate area and pointed to from zone
+Merged patch 5 into patch 4 to improve review-ability
+Updated various code comments throughout
+
+Changes from v2:
+https://lore.kernel.org/lkml/20190724165158.6685.87228.stgit@localhost.localdomain/
+Dropped "page hinting" in favor of "page reporting"
+Renamed files from "hinting" to "reporting"
+Replaced "Hinted" page type with "Reported" page flag
+Added support for page poisoning while hinting is active
+Add QEMU patch that implements PAGE_POISON feature
+
+Changes from v3:
+https://lore.kernel.org/lkml/20190801222158.22190.96964.stgit@localhost.localdomain/
+Added mutex lock around page reporting startup and shutdown
+Fixed reference to "page aeration" in patch 2
+Split page reporting function bit out into separate QEMU patch
+Limited capacity of scatterlist to vq size - 1 instead of vq size
+Added exception handling for case of virtio descriptor allocation failure
+
+Changes from v4:
+https://lore.kernel.org/lkml/20190807224037.6891.53512.stgit@localhost.localdomain/
+Replaced spin_(un)lock with spin_(un)lock_irq in page_reporting_cycle()
+Dropped if/continue for ternary operator in page_reporting_process()
+Added checks for isolate and cma types to for_each_reporting_migratetype_order
+Added virtio-dev, Michal Hocko, and Oscar Salvador to to:/cc:
+Rebased on latest linux-next and QEMU git trees
+
+Changes from v5:
+https://lore.kernel.org/lkml/20190812213158.22097.30576.stgit@localhost.localdomain/
+Replaced spin_(un)lock with spin_(un)lock_irq in page_reporting_startup()
+Updated shuffle code to use "shuffle_pick_tail" and updated patch description
+Dropped storage of order and migratettype while page is being reported
+Used get_pfnblock_migratetype to determine migratetype of page
+Renamed put_reported_page to free_reported_page, added order as argument
+Dropped check for CMA type as I believe we should be reporting those
+Added code to allow moving of reported pages into and out of isolation
+Defined page reporting order as minimum of Huge Page size vs MAX_ORDER - 1
+Cleaned up use of static branch usage for page_reporting_notify_enabled
+
+Changes from v6:
+https://lore.kernel.org/lkml/20190821145806.20926.22448.stgit@localhost.localdomain/
+Rebased on linux-next for 20190903
+Added jump label to __page_reporting_request so we release RCU read lock
+Removed "- 1" from capacity limit based on virtio ring
+Added code to verify capacity is non-zero or return error on startup
+
+Changes from v7:
+https://lore.kernel.org/lkml/20190904150920.13848.32271.stgit@localhost.localdomain/
+Updated poison fixes to clear flag if "nosanity" is enabled in kernel config
+Split shuffle per-cpu optimization into separate patch
+Moved check for !phdev->capacity into reporting patch where it belongs
+Added Reviewed-by tags received for v7
+
+Changes from v8:
+https://lore.kernel.org/lkml/20190906145213.32552.30160.stgit@localhost.localdomain/
+Added patch that moves HPAGE_SIZE definition for ARM64 to match other archs
+Switch back to using pageblock_order instead of HUGETLB_ORDER and MAX_ORDER - 1
+Boundary allocation now dynamic to support HUGETLB_PAGE_SIZE_VARIABLE option
+Made use of existing code/functions to reduce size of move_to_boundary function
+Dropped unused zone pointer from add_to/del_from_boundary functions
+Added additional possible mm and arm64 people as reviewers to Cc
+Added Reviewed-by tags received for v8
+Fixed missing parameter in kerneldoc
+
+---
+
+Alexander Duyck (8):
+      mm: Add per-cpu logic to page shuffling
+      mm: Adjust shuffle code to allow for future coalescing
+      mm: Move set/get_pcppage_migratetype to mmzone.h
+      mm: Use zone and order instead of free area in free_list manipulators
+      arm64: Move hugetlb related definitions out of pgtable.h to page-defs.h
+      mm: Introduce Reported pages
+      virtio-balloon: Pull page poisoning config out of free page hinting
+      virtio-balloon: Add support for providing unused page reports to host
+
+
+ arch/arm64/include/asm/page-def.h   |    9 +
+ arch/arm64/include/asm/pgtable.h    |    9 -
+ drivers/virtio/Kconfig              |    1 
+ drivers/virtio/virtio_balloon.c     |   87 ++++++++-
+ include/linux/mmzone.h              |  124 ++++++++----
+ include/linux/page-flags.h          |   11 +
+ include/linux/page_reporting.h      |  178 +++++++++++++++++
+ include/uapi/linux/virtio_balloon.h |    1 
+ mm/Kconfig                          |    5 
+ mm/Makefile                         |    1 
+ mm/internal.h                       |   18 ++
+ mm/memory_hotplug.c                 |    1 
+ mm/page_alloc.c                     |  217 +++++++++++++++------
+ mm/page_reporting.c                 |  358 +++++++++++++++++++++++++++++++++++
+ mm/shuffle.c                        |   40 ++--
+ mm/shuffle.h                        |   12 +
+ 16 files changed, 931 insertions(+), 141 deletions(-)
+ create mode 100644 include/linux/page_reporting.h
+ create mode 100644 mm/page_reporting.c
+
+--
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
