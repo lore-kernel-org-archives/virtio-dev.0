@@ -1,18 +1,18 @@
-Return-Path: virtio-dev-return-6064-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-6065-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id A28D9985EC6
-	for <virtio-dev@lists.oasis-open.org>; Fri,  6 Sep 2019 15:25:56 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 70BEA985ECF
+	for <virtio-dev@lists.oasis-open.org>; Sat,  7 Sep 2019 03:15:32 +0000 (UTC)
 MIME-Version: 1.0
 References: <20190906145213.32552.30160.stgit@localhost.localdomain> <20190906112155-mutt-send-email-mst@kernel.org>
 In-Reply-To: <20190906112155-mutt-send-email-mst@kernel.org>
 From: Alexander Duyck <alexander.duyck@gmail.com>
-Date: Fri, 6 Sep 2019 08:25:43 -0700
-Message-ID: <CAKgT0UcXLesZ2tBwp9u05OpBJpVDFL61qX9Qpj7VUqdRqw=U_Q@mail.gmail.com>
+Date: Fri, 6 Sep 2019 20:15:20 -0700
+Message-ID: <CAKgT0UcuZQPzcQ6cA5tKPG3+4yQP2jk+AHYcjoyrMXq0pBAiBw@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Subject: [virtio-dev] Re: [PATCH v8 0/7] mm / virtio: Provide support for unused page reporting
 To: "Michael S. Tsirkin" <mst@redhat.com>
@@ -50,8 +50,11 @@ On Fri, Sep 6, 2019 at 8:23 AM Michael S. Tsirkin <mst@redhat.com> wrote:
 > I queued this  so this gets tested on linux-next but the mm core changes
 > need acks from appropriate people.
 
-Thanks. I will see what I can do to get some more mm people reviewing
-these changes.
+Looks like there was a couple issues on arm64 and ia64 architectures.
+I believe I have those fixed up and will submit a v9 in the morning
+after my test runs have completed.
+
+Thanks.
 
 - Alex
 
