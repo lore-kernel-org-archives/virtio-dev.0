@@ -1,15 +1,15 @@
-Return-Path: virtio-dev-return-6090-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-6091-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id BD40098436F
-	for <virtio-dev@lists.oasis-open.org>; Mon,  9 Sep 2019 15:43:11 +0000 (UTC)
-Date: Mon, 9 Sep 2019 11:43:03 -0400
+	by lists.oasis-open.org (Postfix) with ESMTP id 0855D98436F
+	for <virtio-dev@lists.oasis-open.org>; Mon,  9 Sep 2019 15:48:58 +0000 (UTC)
+Date: Mon, 9 Sep 2019 11:48:49 -0400
 From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20190909114143-mutt-send-email-mst@kernel.org>
+Message-ID: <20190909114844-mutt-send-email-mst@kernel.org>
 References: <20190829135206.24231-1-stefanha@redhat.com>
  <20190909152734.GB20875@stefanha-x1.localdomain>
 MIME-Version: 1.0
@@ -98,10 +98,7 @@ On Mon, Sep 09, 2019 at 05:27:34PM +0200, Stefan Hajnoczi wrote:
 > 
 > Stefan
 
-Does not look like github knows how to parse this. Should be:
-
-Fixes: https://github.com/oasis-tcs/virtio-spec/issues/49
-
+vote started.
 
 
 ---------------------------------------------------------------------
