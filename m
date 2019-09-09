@@ -1,107 +1,108 @@
-Return-Path: virtio-dev-return-6082-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-6088-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 0BF3898431C
-	for <virtio-dev@lists.oasis-open.org>; Mon,  9 Sep 2019 08:59:32 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 0FC1F98436F
+	for <virtio-dev@lists.oasis-open.org>; Mon,  9 Sep 2019 15:31:53 +0000 (UTC)
+Message-ID: <f9c1abd93b9546885eb10d0cd62ee7421b484ba2.camel@linux.intel.com>
+From: Alexander Duyck <alexander.h.duyck@linux.intel.com>
+Date: Mon, 09 Sep 2019 08:31:51 -0700
+In-Reply-To: <4dfcf372-97be-65ab-1349-75f24aa4f98a@redhat.com>
 References: <20190907172225.10910.34302.stgit@localhost.localdomain>
- <20190907172601.10910.95355.stgit@localhost.localdomain>
-From: David Hildenbrand <david@redhat.com>
-Message-ID: <4dfcf372-97be-65ab-1349-75f24aa4f98a@redhat.com>
-Date: Mon, 9 Sep 2019 10:59:08 +0200
+	 <20190907172601.10910.95355.stgit@localhost.localdomain>
+	 <4dfcf372-97be-65ab-1349-75f24aa4f98a@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 MIME-Version: 1.0
-In-Reply-To: <20190907172601.10910.95355.stgit@localhost.localdomain>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: [virtio-dev] Re: [PATCH v9 7/8] virtio-balloon: Pull page poisoning config out of
- free page hinting
-To: Alexander Duyck <alexander.duyck@gmail.com>, virtio-dev@lists.oasis-open.org, kvm@vger.kernel.org, mst@redhat.com, catalin.marinas@arm.com, dave.hansen@intel.com, linux-kernel@vger.kernel.org, willy@infradead.org, mhocko@kernel.org, linux-mm@kvack.org, akpm@linux-foundation.org, will@kernel.org, linux-arm-kernel@lists.infradead.org, osalvador@suse.de
-Cc: yang.zhang.wz@gmail.com, pagupta@redhat.com, konrad.wilk@oracle.com, nitesh@redhat.com, riel@surriel.com, lcapitulino@redhat.com, wei.w.wang@intel.com, aarcange@redhat.com, ying.huang@intel.com, pbonzini@redhat.com, dan.j.williams@intel.com, fengguang.wu@intel.com, alexander.h.duyck@linux.intel.com, kirill.shutemov@linux.intel.com
+Subject: [virtio-dev] Re: [PATCH v9 7/8] virtio-balloon: Pull page poisoning config out
+ of free page hinting
+To: David Hildenbrand <david@redhat.com>, Alexander Duyck <alexander.duyck@gmail.com>, virtio-dev@lists.oasis-open.org, kvm@vger.kernel.org, mst@redhat.com, catalin.marinas@arm.com, dave.hansen@intel.com, linux-kernel@vger.kernel.org, willy@infradead.org, mhocko@kernel.org, linux-mm@kvack.org, akpm@linux-foundation.org, will@kernel.org, linux-arm-kernel@lists.infradead.org, osalvador@suse.de
+Cc: yang.zhang.wz@gmail.com, pagupta@redhat.com, konrad.wilk@oracle.com, nitesh@redhat.com, riel@surriel.com, lcapitulino@redhat.com, wei.w.wang@intel.com, aarcange@redhat.com, ying.huang@intel.com, pbonzini@redhat.com, dan.j.williams@intel.com, fengguang.wu@intel.com, kirill.shutemov@linux.intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 07.09.19 19:26, Alexander Duyck wrote:
-> From: Alexander Duyck <alexander.h.duyck@linux.intel.com>
+On Mon, 2019-09-09 at 10:59 +0200, David Hildenbrand wrote:
+> On 07.09.19 19:26, Alexander Duyck wrote:
+> > From: Alexander Duyck <alexander.h.duyck@linux.intel.com>
+> > 
+> > Currently the page poisoning setting wasn't being enabled unless free page
+> > hinting was enabled. However we will need the page poisoning tracking logic
+> > as well for unused page reporting. As such pull it out and make it a
+> > separate bit of config in the probe function.
+> > 
+> > In addition we can actually wrap the code in a check for NO_SANITY. If we
+> > don't care what is actually in the page we can just default to 0 and leave
+> > it there.
+> > 
+> > Signed-off-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
+> > ---
+> >  drivers/virtio/virtio_balloon.c |   22 +++++++++++++++-------
+> >  1 file changed, 15 insertions(+), 7 deletions(-)
+> > 
+> > diff --git a/drivers/virtio/virtio_balloon.c b/drivers/virtio/virtio_balloon.c
+> > index 226fbb995fb0..d2547df7de93 100644
+> > --- a/drivers/virtio/virtio_balloon.c
+> > +++ b/drivers/virtio/virtio_balloon.c
+> > @@ -842,7 +842,6 @@ static int virtio_balloon_register_shrinker(struct virtio_balloon *vb)
+> >  static int virtballoon_probe(struct virtio_device *vdev)
+> >  {
+> >  	struct virtio_balloon *vb;
+> > -	__u32 poison_val;
+> >  	int err;
+> >  
+> >  	if (!vdev->config->get) {
+> > @@ -909,11 +908,18 @@ static int virtballoon_probe(struct virtio_device *vdev)
+> >  						  VIRTIO_BALLOON_CMD_ID_STOP);
+> >  		spin_lock_init(&vb->free_page_list_lock);
+> >  		INIT_LIST_HEAD(&vb->free_page_list);
+> > -		if (virtio_has_feature(vdev, VIRTIO_BALLOON_F_PAGE_POISON)) {
+> > -			memset(&poison_val, PAGE_POISON, sizeof(poison_val));
+> > -			virtio_cwrite(vb->vdev, struct virtio_balloon_config,
+> > -				      poison_val, &poison_val);
+> > -		}
+> > +	}
+> > +	if (virtio_has_feature(vdev, VIRTIO_BALLOON_F_PAGE_POISON)) {
+> > +		__u32 poison_val;
+> > +
+> > +		/*
+> > +		 * Let hypervisor know that we are expecting a specific
+> > +		 * value to be written back in unused pages.
+> > +		 */
 > 
-> Currently the page poisoning setting wasn't being enabled unless free page
-> hinting was enabled. However we will need the page poisoning tracking logic
-> as well for unused page reporting. As such pull it out and make it a
-> separate bit of config in the probe function.
+> "Let the hypervisor know" ... ?
 > 
-> In addition we can actually wrap the code in a check for NO_SANITY. If we
-> don't care what is actually in the page we can just default to 0 and leave
-> it there.
+> > +		memset(&poison_val, PAGE_POISON, sizeof(poison_val));
+> > +
+> > +		virtio_cwrite(vb->vdev, struct virtio_balloon_config,
+> > +			      poison_val, &poison_val);
+> >  	}
+> >  	/*
+> >  	 * We continue to use VIRTIO_BALLOON_F_DEFLATE_ON_OOM to decide if a
+> > @@ -1014,7 +1020,9 @@ static int virtballoon_restore(struct virtio_device *vdev)
+> >  
+> >  static int virtballoon_validate(struct virtio_device *vdev)
+> >  {
+> > -	if (!page_poisoning_enabled())
+> > +	/* Notify host if we care about poison value */
 > 
-> Signed-off-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
-> ---
->  drivers/virtio/virtio_balloon.c |   22 +++++++++++++++-------
->  1 file changed, 15 insertions(+), 7 deletions(-)
+> "Tell the host whether we care about poisoned pages." ?
 > 
-> diff --git a/drivers/virtio/virtio_balloon.c b/drivers/virtio/virtio_balloon.c
-> index 226fbb995fb0..d2547df7de93 100644
-> --- a/drivers/virtio/virtio_balloon.c
-> +++ b/drivers/virtio/virtio_balloon.c
-> @@ -842,7 +842,6 @@ static int virtio_balloon_register_shrinker(struct virtio_balloon *vb)
->  static int virtballoon_probe(struct virtio_device *vdev)
->  {
->  	struct virtio_balloon *vb;
-> -	__u32 poison_val;
->  	int err;
->  
->  	if (!vdev->config->get) {
-> @@ -909,11 +908,18 @@ static int virtballoon_probe(struct virtio_device *vdev)
->  						  VIRTIO_BALLOON_CMD_ID_STOP);
->  		spin_lock_init(&vb->free_page_list_lock);
->  		INIT_LIST_HEAD(&vb->free_page_list);
-> -		if (virtio_has_feature(vdev, VIRTIO_BALLOON_F_PAGE_POISON)) {
-> -			memset(&poison_val, PAGE_POISON, sizeof(poison_val));
-> -			virtio_cwrite(vb->vdev, struct virtio_balloon_config,
-> -				      poison_val, &poison_val);
-> -		}
-> +	}
-> +	if (virtio_has_feature(vdev, VIRTIO_BALLOON_F_PAGE_POISON)) {
-> +		__u32 poison_val;
-> +
-> +		/*
-> +		 * Let hypervisor know that we are expecting a specific
-> +		 * value to be written back in unused pages.
-> +		 */
-
-"Let the hypervisor know" ... ?
-
-> +		memset(&poison_val, PAGE_POISON, sizeof(poison_val));
-> +
-> +		virtio_cwrite(vb->vdev, struct virtio_balloon_config,
-> +			      poison_val, &poison_val);
->  	}
->  	/*
->  	 * We continue to use VIRTIO_BALLOON_F_DEFLATE_ON_OOM to decide if a
-> @@ -1014,7 +1020,9 @@ static int virtballoon_restore(struct virtio_device *vdev)
->  
->  static int virtballoon_validate(struct virtio_device *vdev)
->  {
-> -	if (!page_poisoning_enabled())
-> +	/* Notify host if we care about poison value */
-
-"Tell the host whether we care about poisoned pages." ?
-
-> +	if (IS_ENABLED(CONFIG_PAGE_POISONING_NO_SANITY) ||
-> +	    !page_poisoning_enabled())
->  		__virtio_clear_bit(vdev, VIRTIO_BALLOON_F_PAGE_POISON);
->  
->  	__virtio_clear_bit(vdev, VIRTIO_F_IOMMU_PLATFORM);
+> > +	if (IS_ENABLED(CONFIG_PAGE_POISONING_NO_SANITY) ||
+> > +	    !page_poisoning_enabled())
+> >  		__virtio_clear_bit(vdev, VIRTIO_BALLOON_F_PAGE_POISON);
+> >  
+> >  	__virtio_clear_bit(vdev, VIRTIO_F_IOMMU_PLATFORM);
+> > 
+> 
+> Reviewed-by: David Hildenbrand <david@redhat.com>
 > 
 
-Reviewed-by: David Hildenbrand <david@redhat.com>
+Thanks. I will update the comments for v10.
 
--- 
+- Alex
 
-Thanks,
-
-David / dhildenb
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
