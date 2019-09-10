@@ -1,117 +1,102 @@
-Return-Path: virtio-return-3384-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio@lists.oasis-open.org>
-List-Post: <mailto:virtio@lists.oasis-open.org>
-List-Help: <mailto:virtio-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Wed, 25 Sep 2019 07:53:05 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20190925115223.8365-1-mst@redhat.com>
+Return-Path: virtio-dev-return-6096-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id 3934C985A23
+	for <virtio-dev@lists.oasis-open.org>; Tue, 10 Sep 2019 12:00:58 +0000 (UTC)
+Date: Tue, 10 Sep 2019 14:00:46 +0200
+From: Halil Pasic <pasic@linux.ibm.com>
+In-Reply-To: <20190829135206.24231-3-stefanha@redhat.com>
+References: <20190829135206.24231-1-stefanha@redhat.com>
+	<20190829135206.24231-3-stefanha@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-Subject: [virtio] [PATCH v2] README.md: clean up build instructions
-To: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
+Message-Id: <20190910140046.57ba86e1.pasic@linux.ibm.com>
+Subject: Re: [virtio-dev] [PATCH v8 2/2] virtio-fs: add DAX window
+To: Stefan Hajnoczi <stefanha@redhat.com>, Cornelia Huck <cohuck@redhat.com>, Christian Borntraeger <borntraeger@de.ibm.com>
+Cc: virtio-dev@lists.oasis-open.org, Miklos Szeredi <mszeredi@redhat.com>, Steven Whitehouse <swhiteho@redhat.com>, Vivek Goyal <vgoyal@redhat.com>, "Dr. David Alan Gilbert" <dgilbert@redhat.com>, Sage Weil <sweil@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>, Pierre Morel1 <Pierre.Morel1@ibm.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Switch to <DL> from manual formatting with <BR> and <P>.
-Clarify wording a bit.
-Add hints on what to do in case of missing fonts.
+On Thu, 29 Aug 2019 14:52:06 +0100
+Stefan Hajnoczi <stefanha@redhat.com> wrote:
 
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
----
+> Describe how shared memory region ID 0 is the DAX window and how
+> FUSE_SETUPMAPPING maps file ranges into the window.
+> 
+> Signed-off-by: Stefan Hajnoczi <stefanha@redhat.com>
+> ---
+> The FUSE_SETUPMAPPING message is part of the virtio-fs Linux patches:
+> https://gitlab.com/virtio-fs/linux/blob/virtio-fs/include/uapi/linux/fuse.h
+> 
+> v8:
+>  * Make language about using both FUSE_READ/FUSE_WRITE and the DAX
+>    Window clearer [Cornelia]
+> v7:
+>  * Clarify that the DAX Window is optional and can be used together with
+>    FUSE_READ/FUSE_WRITE requests [Cornelia]
+> v6:
+>  * Document timing side-channel attacks [Michael]
+> ---
+>  virtio-fs.tex | 66 +++++++++++++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 66 insertions(+)
+> 
+> diff --git a/virtio-fs.tex b/virtio-fs.tex
+> index 1ae17f8..158d066 100644
+> --- a/virtio-fs.tex
+> +++ b/virtio-fs.tex
+> @@ -179,6 +179,62 @@ \subsubsection{Device Operation: High Priority Queue}\label{sec:Device Types / F
+>  
+>  The driver MUST anticipate that request queues are processed concurrently with the hiprio queue.
+>  
+> +\subsubsection{Device Operation: DAX Window}\label{sec:Device Types / File System Device / Device Operation / Device Operation: DAX Window}
+> +
+> +FUSE\_READ and FUSE\_WRITE requests transfer file contents between the
+> +driver-provided buffer and the device.  In cases where data transfer is
+> +undesirable, the device can map file contents into the DAX window shared memory
+> +region.  The driver then accesses file contents directly in device-owned memory
+> +without a data transfer.
+> +
+> +The DAX Window is an alternative mechanism for accessing file contents.
+> +FUSE\_READ/FUSE\_WRITE requests and DAX Window accesses are possible at the
+> +same time.  Providing the DAX Window is optional for devices.  Using the DAX
+> +Window is optional for drivers.
+> +
+> +Shared memory region ID 0 is called the DAX window.  Drivers map this shared
+> +memory region with writeback caching as if it were regular RAM.  The contents
+> +of the DAX window are undefined unless a mapping exists for that range.
 
-changes from v1:
-- drop TeX link as it's confusing (you want TeX live)
-- MacTex-> MacTeX
+This last paragraph is a bit concerning form s390x perspective. In case
+of a PCI transport the shared memory region is a chunk of PCI memory (and
+must be contained within the declared bar, as mandated by commit
+855ad7af2bd6).
 
- README.md | 56 ++++++++++++++++++++++++++++++++++++-------------------
- 1 file changed, 37 insertions(+), 19 deletions(-)
+The PCI architecture on s390x is at the moment such, that PCI memory
+*can't be accessed like regular RAM* but specialized instructions have
+to be used. I've tried to rise concern about this multiple times. Thus
+the virtio spec would contradict itself a little (at least on s390x).
 
-diff --git a/README.md b/README.md
-index 5ac84f9..96d41c0 100644
---- a/README.md
-+++ b/README.md
-@@ -30,33 +30,51 @@
-=20
- <h3>Further Description of this Repository</h3>
- <h4>Building Instructions</h4>
--<p>In order to build the spec you will need <a href=3D"https://www.tug.org=
-/texlive/">Tex-Live</a>.
--Installing it can be done via:<br>
--Fedora:
-+Authoritative version of the specification is maintained in the
-+TeX document format. PDF and HTML versions are made available for
-+ease of use and review.
-+In order to build the HTML and PDF versions of the spec you will need the
-+<a href=3D"https://www.tug.org/"> TeX document production system</a>.
-+The easiest way to get it up and running is probably by installing
-+<a href=3D"https://www.tug.org/texlive/">Tex-Live</a>.
-+
-+<dl>Installation cheat sheet:
-+<dt>Fedora:</dt>
-+<dd>
- <code>
- sudo dnf install texlive-scheme-full
--</code><br>
--Ubuntu:
-+</code></dd>
-+<dt>
-+Ubuntu and other Debian derivatives:
-+</dt>
-+<dd>
- <code>
- sudo apt-get install texlive-full
--</code><br></p>
--<p>OSX users don't need to install Tex-Live because they already have
-+</code></dd>
-+<dt>OSX:<dt>
-+<dd>OSX users don't need to install Tex-Live because they already have
- <a href=3D"http://www.tug.org/mactex/">MacTex</a> installed.
--
--<p>The building proccess is done with
-+</dd>
-+</dl>
-+<dl>The build process generates a ZIP package file including the
-+original TeX sources, as well as HTML and PDF formatted
-+versions of the specification.
-+<dt>To generate the ZIP package, run:<dt>
-+<dd>
- <code>
- ./makeall.sh
- </code>
--and it contains 3 main parts:
--<code>
--makezip.sh
--</code>,
--<code>
--makehtml.sh
--</code>,
--<code>
--makepdf.sh
--</code>.
-+</dd>
-+<dt>Troubleshooting notes:</dt>
-+<dd> PDFs of the specification can be generated with
-+either MicroSoft's Core fonts for the Web: Arial and Courier New,
-+or Liberation fonts: Liberation Sans and Liberation Mono.
-+Most systems come with one of these two variants included:
-+should you get an error message about missing fonts,
-+you will need to downloads and install one of the above
-+font packages.
-+<dd>
-+</dl>
- <h4>Providing Feedback</h4>
- Feedback must be provided the <strong>virtio-comment</strong> mailing list=
-,
- and archived in the mailing list archives.
---=20
-MST
+Of course for virtual zPCI devices we can make this work. But including
+this paragraph in the VIRTIO specification would mean if one were to
+implement this in HW it would not work for s390.
+
+I don't have a anything better to propose, so I intend to vote yes
+for this. I just wanted to make sure, we all are aware of the
+consequences.
+
+Sorry for bringing this up again so late.
+
+Adding Christian and Pierre as cc.
+
+Regards,
+Halil
+
 
 
 ---------------------------------------------------------------------
-To unsubscribe from this mail list, you must leave the OASIS TC that 
-generates this mail.  Follow this link to all your TCs in OASIS at:
-https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
