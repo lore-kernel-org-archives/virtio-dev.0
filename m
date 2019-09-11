@@ -1,89 +1,106 @@
-Return-Path: virtio-dev-return-6121-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-6122-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 3FB2F985C72
-	for <virtio-dev@lists.oasis-open.org>; Wed, 11 Sep 2019 15:12:16 +0000 (UTC)
-MIME-Version: 1.0
-References: <20190907172225.10910.34302.stgit@localhost.localdomain>
- <20190910124209.GY2063@dhcp22.suse.cz> <CAKgT0Udr6nYQFTRzxLbXk41SiJ-pcT_bmN1j1YR4deCwdTOaUQ@mail.gmail.com>
- <20190910144713.GF2063@dhcp22.suse.cz> <CAKgT0UdB4qp3vFGrYEs=FwSXKpBEQ7zo7DV55nJRO2C-KCEOrw@mail.gmail.com>
- <20190910175213.GD4023@dhcp22.suse.cz> <1d7de9f9f4074f67c567dbb4cc1497503d739e30.camel@linux.intel.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id B311E985C72
+	for <virtio-dev@lists.oasis-open.org>; Wed, 11 Sep 2019 16:03:02 +0000 (UTC)
+References: <CAKgT0UdB4qp3vFGrYEs=FwSXKpBEQ7zo7DV55nJRO2C-KCEOrw@mail.gmail.com>
+ <20190910175213.GD4023@dhcp22.suse.cz>
+ <1d7de9f9f4074f67c567dbb4cc1497503d739e30.camel@linux.intel.com>
  <20190911113619.GP4023@dhcp22.suse.cz>
-In-Reply-To: <20190911113619.GP4023@dhcp22.suse.cz>
-From: Alexander Duyck <alexander.duyck@gmail.com>
-Date: Wed, 11 Sep 2019 08:12:03 -0700
-Message-ID: <CAKgT0UfOp1c+ov=3pBD72EkSB9Vm7mG5G6zJj4=j=UH7zCgg2Q@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+ <20190911080804-mutt-send-email-mst@kernel.org>
+ <20190911121941.GU4023@dhcp22.suse.cz> <20190911122526.GV4023@dhcp22.suse.cz>
+ <4748a572-57b3-31da-0dde-30138e550c3a@redhat.com>
+ <20190911125413.GY4023@dhcp22.suse.cz>
+ <736594d6-b9ae-ddb9-2b96-85648728ef33@redhat.com>
+ <20190911132002.GA4023@dhcp22.suse.cz>
+From: David Hildenbrand <david@redhat.com>
+Message-ID: <6b4451e9-7f62-bb84-1604-a4aebc907766@redhat.com>
+Date: Wed, 11 Sep 2019 18:02:46 +0200
+MIME-Version: 1.0
+In-Reply-To: <20190911132002.GA4023@dhcp22.suse.cz>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Subject: [virtio-dev] Re: [PATCH v9 0/8] stg mail -e --version=v9 \
 To: Michal Hocko <mhocko@kernel.org>
-Cc: Alexander Duyck <alexander.h.duyck@linux.intel.com>, virtio-dev@lists.oasis-open.org, kvm list <kvm@vger.kernel.org>, "Michael S. Tsirkin" <mst@redhat.com>, Catalin Marinas <catalin.marinas@arm.com>, David Hildenbrand <david@redhat.com>, Dave Hansen <dave.hansen@intel.com>, LKML <linux-kernel@vger.kernel.org>, Matthew Wilcox <willy@infradead.org>, linux-mm <linux-mm@kvack.org>, Andrew Morton <akpm@linux-foundation.org>, will@kernel.org, linux-arm-kernel@lists.infradead.org, Oscar Salvador <osalvador@suse.de>, Yang Zhang <yang.zhang.wz@gmail.com>, Pankaj Gupta <pagupta@redhat.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Nitesh Narayan Lal <nitesh@redhat.com>, Rik van Riel <riel@surriel.com>, lcapitulino@redhat.com, "Wang, Wei W" <wei.w.wang@intel.com>, Andrea Arcangeli <aarcange@redhat.com>, ying.huang@intel.com, Paolo Bonzini <pbonzini@redhat.com>, Dan Williams <dan.j.williams@intel.com>, Fengguang Wu <fengguang.wu@intel.com>, "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Cc: "Michael S. Tsirkin" <mst@redhat.com>, Alexander Duyck <alexander.h.duyck@linux.intel.com>, Alexander Duyck <alexander.duyck@gmail.com>, virtio-dev@lists.oasis-open.org, kvm list <kvm@vger.kernel.org>, Catalin Marinas <catalin.marinas@arm.com>, Dave Hansen <dave.hansen@intel.com>, LKML <linux-kernel@vger.kernel.org>, Matthew Wilcox <willy@infradead.org>, linux-mm <linux-mm@kvack.org>, Andrew Morton <akpm@linux-foundation.org>, will@kernel.org, linux-arm-kernel@lists.infradead.org, Oscar Salvador <osalvador@suse.de>, Yang Zhang <yang.zhang.wz@gmail.com>, Pankaj Gupta <pagupta@redhat.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Nitesh Narayan Lal <nitesh@redhat.com>, Rik van Riel <riel@surriel.com>, lcapitulino@redhat.com, "Wang, Wei W" <wei.w.wang@intel.com>, Andrea Arcangeli <aarcange@redhat.com>, ying.huang@intel.com, Paolo Bonzini <pbonzini@redhat.com>, Dan Williams <dan.j.williams@intel.com>, Fengguang Wu <fengguang.wu@intel.com>, "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, Sep 11, 2019 at 4:36 AM Michal Hocko <mhocko@kernel.org> wrote:
->
-> On Tue 10-09-19 14:23:40, Alexander Duyck wrote:
-> [...]
-> > We don't put any limitations on the allocator other then that it needs to
-> > clean up the metadata on allocation, and that it cannot allocate a page
-> > that is in the process of being reported since we pulled it from the
-> > free_list. If the page is a "Reported" page then it decrements the
-> > reported_pages count for the free_area and makes sure the page doesn't
-> > exist in the "Boundary" array pointer value, if it does it moves the
-> > "Boundary" since it is pulling the page.
->
-> This is still a non-trivial limitation on the page allocation from an
-> external code IMHO. I cannot give any explicit reason why an ordering on
-> the free list might matter (well except for page shuffling which uses it
-> to make physical memory pattern allocation more random) but the
-> architecture seems hacky and dubious to be honest. It shoulds like the
-> whole interface has been developed around a very particular and single
-> purpose optimization.
+>> Something slightly similar is being performed by Nitesh's patch set. On
+>> every free of a certain granularity, he records it in the bitmap. These
+>> bits are "hints of free pages".
+>>
+>> A thread then walks over the bitmap and tries to allocate the "hints".
+>> If the pages were already reused, the bit is silently cleared.
+>>
+>> Instead of allocating/freeing, we could only try to isolate the
+>> pageblock, then test if free. (One of the usual issues to work around is
+>> MAX_ORDER-1 crossing pageblocks, that might need special care)
+> 
+> OK, cool that I have reinvented the wheel ;). Allocation is indeed not
+> necessary as long as pages are isolated because nobody will allocate
+> them.
 
-How is this any different then the code that moves a page that will
-likely be merged to the tail though?
+It's always good if you come to the same conclusion ;)
 
-In our case the "Reported" page is likely going to be much more
-expensive to allocate and use then a standard page because it will be
-faulted back in. In such a case wouldn't it make sense for us to want
-to keep the pages that don't require faults ahead of those pages in
-the free_list so that they are more likely to be allocated? All we are
-doing with the boundary list is preventing still resident pages from
-being deferred behind pages that would require a page fault to get
-access to.
+>  
+>> I think you should have a look at the rough idea of Nitesh's patch set
+>> to see if something like that is going into a better direction. The
+>> bitmap part is in place to do bulk reporting and avoid duplicate reports.
+> 
+> Let's see how much time I can find for that in my endless inbox whack a mole.
 
-> I remember that there was an attempt to report free memory that provided
-> a callback mechanism [1], which was much less intrusive to the internals
-> of the allocator yet it should provide a similar functionality. Did you
-> see that approach? How does this compares to it? Or am I completely off
-> when comparing them?
->
-> [1] mostly likely not the latest version of the patchset
-> http://lkml.kernel.org/r/1502940416-42944-5-git-send-email-wei.w.wang@intel.com
+Can totally understand - it's only a single patch.
 
-There have been a few comparisons between this patch set and the ones
-from Wei Wang. In regards to the one you are pointing to the main
-difference is that I am not permanently locking memory. Basically what
-happens is that the iterator will take the lock, pull a few pages,
-release the lock while reporting them, and then take the lock to
-return those pages, grab some more, and repeat.
+>  
+>> I think main points we want (and what I am missing from callback idea
+>> being discussed) are
+>> 1. Do bulk reporting only when a certain threshold is reached
+> 
+> Is a time based approach too coarse?
 
-I was actually influenced somewhat by the suggestions that patchset
-received, specifically I believe it resembles something like what was
-suggested by Linus in response to v35 of that patch set:
-https://lore.kernel.org/linux-mm/CA+55aFzqj8wxXnHAdUTiOomipgFONVbqKMjL_tfk7e5ar1FziQ@mail.gmail.com/
+Usually that's then another parameter to fine tune, something to avoid
+when just reporting continuously. I wouldn't say it's a no go, but at
+least I would prefer right now to do it continuously.
 
-Basically where the feature Wei Wang was working on differs from this
-patch set is that I need this to run continually, his only needed to
-run periodically as he was just trying to identify free pages at a
-fixed point in time. My goal is to identify pages that have been freed
-since the last time I reported them. To do that I need a flag in the
-page to identify those pages, and an iterator in the form of a
-boundary pointer so that I can incrementally walk through the list
-without losing track of freed pages.
+> 
+>> 2. Report only bigger granularities (especially, avoid THP splits in the
+>> hypervisor - >= 2MB proofed to be effective)
+> 
+> the callback has supported order based scan in some of its iteration.
+
+Missed that. But yeah, the other points are more important :)
+
+> 
+>> 3. Avoid reporting what has just been reported.
+> 
+> Is the overhead of checking a pfn range in a bitmask that much of an
+> overhead to really care?
+
+It's all about remembering what has already been reported. Nitesh solved
+that via the bitmap. So he does exactly that. If we can optimize the
+bitmap out - perfect - but I don't see an easy way to do that :)
+
+> 
+>> 4. Continuously report, not the "one time report everything" approach.
+> 
+> So you mean the allocator reporting this rather than an external code to
+> poll right? I do not know, how much this is nice to have than must have?
+
+I guess it is debatable - but I don't consider this one of the
+fundamental issues. How to identify what to report and remember what has
+already been reported is the main issue. Polling vs. notification is
+just the cherry on top - IMHO.
+
+-- 
+
+Thanks,
+
+David / dhildenb
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
