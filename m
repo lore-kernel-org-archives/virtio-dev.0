@@ -1,67 +1,99 @@
-Return-Path: virtio-dev-return-6123-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-6126-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 14488985C72
-	for <virtio-dev@lists.oasis-open.org>; Wed, 11 Sep 2019 16:09:31 +0000 (UTC)
-References: <20190910175213.GD4023@dhcp22.suse.cz>
- <1d7de9f9f4074f67c567dbb4cc1497503d739e30.camel@linux.intel.com>
- <20190911113619.GP4023@dhcp22.suse.cz>
- <20190911080804-mutt-send-email-mst@kernel.org>
- <20190911121941.GU4023@dhcp22.suse.cz> <20190911122526.GV4023@dhcp22.suse.cz>
- <4748a572-57b3-31da-0dde-30138e550c3a@redhat.com>
- <20190911125413.GY4023@dhcp22.suse.cz>
- <736594d6-b9ae-ddb9-2b96-85648728ef33@redhat.com>
- <20190911132002.GA4023@dhcp22.suse.cz> <20190911135100.GC4023@dhcp22.suse.cz>
-From: David Hildenbrand <david@redhat.com>
-Message-ID: <abea20a0-463c-68c0-e810-2e341d971b30@redhat.com>
-Date: Wed, 11 Sep 2019 18:09:18 +0200
+	by lists.oasis-open.org (Postfix) with ESMTP id 09432985D38
+	for <virtio-dev@lists.oasis-open.org>; Thu, 12 Sep 2019 15:42:13 +0000 (UTC)
+Message-ID: <b84a3916202a67bcf36da0b6f0e833eb3408339a.camel@linux.intel.com>
+From: Alexander Duyck <alexander.h.duyck@linux.intel.com>
+Date: Thu, 12 Sep 2019 08:42:08 -0700
+In-Reply-To: <20190912091925.GM4023@dhcp22.suse.cz>
+References: <20190907172225.10910.34302.stgit@localhost.localdomain>
+	 <20190910124209.GY2063@dhcp22.suse.cz>
+	 <CAKgT0Udr6nYQFTRzxLbXk41SiJ-pcT_bmN1j1YR4deCwdTOaUQ@mail.gmail.com>
+	 <20190910144713.GF2063@dhcp22.suse.cz>
+	 <CAKgT0UdB4qp3vFGrYEs=FwSXKpBEQ7zo7DV55nJRO2C-KCEOrw@mail.gmail.com>
+	 <20190910175213.GD4023@dhcp22.suse.cz>
+	 <1d7de9f9f4074f67c567dbb4cc1497503d739e30.camel@linux.intel.com>
+	 <20190911113619.GP4023@dhcp22.suse.cz>
+	 <CAKgT0UfOp1c+ov=3pBD72EkSB9Vm7mG5G6zJj4=j=UH7zCgg2Q@mail.gmail.com>
+	 <20190912091925.GM4023@dhcp22.suse.cz>
+Content-Type: text/plain; charset="UTF-8"
 MIME-Version: 1.0
-In-Reply-To: <20190911135100.GC4023@dhcp22.suse.cz>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Subject: [virtio-dev] Re: [PATCH v9 0/8] stg mail -e --version=v9 \
-To: Michal Hocko <mhocko@kernel.org>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>, Alexander Duyck <alexander.h.duyck@linux.intel.com>, Alexander Duyck <alexander.duyck@gmail.com>, virtio-dev@lists.oasis-open.org, kvm list <kvm@vger.kernel.org>, Catalin Marinas <catalin.marinas@arm.com>, Dave Hansen <dave.hansen@intel.com>, LKML <linux-kernel@vger.kernel.org>, Matthew Wilcox <willy@infradead.org>, linux-mm <linux-mm@kvack.org>, Andrew Morton <akpm@linux-foundation.org>, will@kernel.org, linux-arm-kernel@lists.infradead.org, Oscar Salvador <osalvador@suse.de>, Yang Zhang <yang.zhang.wz@gmail.com>, Pankaj Gupta <pagupta@redhat.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Nitesh Narayan Lal <nitesh@redhat.com>, Rik van Riel <riel@surriel.com>, lcapitulino@redhat.com, "Wang, Wei W" <wei.w.wang@intel.com>, Andrea Arcangeli <aarcange@redhat.com>, ying.huang@intel.com, Paolo Bonzini <pbonzini@redhat.com>, Dan Williams <dan.j.williams@intel.com>, Fengguang Wu <fengguang.wu@intel.com>, "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+To: Michal Hocko <mhocko@kernel.org>, Alexander Duyck <alexander.duyck@gmail.com>
+Cc: virtio-dev@lists.oasis-open.org, kvm list <kvm@vger.kernel.org>, "Michael S. Tsirkin" <mst@redhat.com>, Catalin Marinas <catalin.marinas@arm.com>, David Hildenbrand <david@redhat.com>, Dave Hansen <dave.hansen@intel.com>, LKML <linux-kernel@vger.kernel.org>, Matthew Wilcox <willy@infradead.org>, linux-mm <linux-mm@kvack.org>, Andrew Morton <akpm@linux-foundation.org>, will@kernel.org, linux-arm-kernel@lists.infradead.org, Oscar Salvador <osalvador@suse.de>, Yang Zhang <yang.zhang.wz@gmail.com>, Pankaj Gupta <pagupta@redhat.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Nitesh Narayan Lal <nitesh@redhat.com>, Rik van Riel <riel@surriel.com>, lcapitulino@redhat.com, "Wang, Wei W" <wei.w.wang@intel.com>, Andrea Arcangeli <aarcange@redhat.com>, ying.huang@intel.com, Paolo Bonzini <pbonzini@redhat.com>, Dan Williams <dan.j.williams@intel.com>, Fengguang Wu <fengguang.wu@intel.com>, "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>, Mel Gorman <mgorman@suse.de>, Vlastimil Babka <vbabka@suse.cz>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 11.09.19 15:51, Michal Hocko wrote:
-> On Wed 11-09-19 15:20:02, Michal Hocko wrote:
-> [...]
->>> 4. Continuously report, not the "one time report everything" approach.
->>
->> So you mean the allocator reporting this rather than an external code to
->> poll right? I do not know, how much this is nice to have than must have?
+On Thu, 2019-09-12 at 11:19 +0200, Michal Hocko wrote:
+> On Wed 11-09-19 08:12:03, Alexander Duyck wrote:
+> > On Wed, Sep 11, 2019 at 4:36 AM Michal Hocko <mhocko@kernel.org> wrote:
+> > > On Tue 10-09-19 14:23:40, Alexander Duyck wrote:
+> > > [...]
+> > > > We don't put any limitations on the allocator other then that it needs to
+> > > > clean up the metadata on allocation, and that it cannot allocate a page
+> > > > that is in the process of being reported since we pulled it from the
+> > > > free_list. If the page is a "Reported" page then it decrements the
+> > > > reported_pages count for the free_area and makes sure the page doesn't
+> > > > exist in the "Boundary" array pointer value, if it does it moves the
+> > > > "Boundary" since it is pulling the page.
+> > > 
+> > > This is still a non-trivial limitation on the page allocation from an
+> > > external code IMHO. I cannot give any explicit reason why an ordering on
+> > > the free list might matter (well except for page shuffling which uses it
+> > > to make physical memory pattern allocation more random) but the
+> > > architecture seems hacky and dubious to be honest. It shoulds like the
+> > > whole interface has been developed around a very particular and single
+> > > purpose optimization.
+> > 
+> > How is this any different then the code that moves a page that will
+> > likely be merged to the tail though?
 > 
-> Another idea that I haven't really thought through so it might turned
-> out to be completely bogus but let's try anyway. Your "report everything"
-> just made me look and realize that free_pages_prepare already performs
-> stuff that actually does something similar yet unrelated.
+> I guess you are referring to the page shuffling. If that is the case
+> then this is an integral part of the allocator for a reason and it is
+> very well obvious in the code including the consequences. I do not
+> really like an idea of hiding similar constrains behind a generic
+> looking feature which is completely detached from the allocator and so
+> any future change of the allocator might subtly break it.
 > 
-> We do report to special page poisoning, zeroying or
-> CONFIG_DEBUG_PAGEALLOC to unmap the address from the kernel address
-> space. This sounds like something fitting your model no?
+> > In our case the "Reported" page is likely going to be much more
+> > expensive to allocate and use then a standard page because it will be
+> > faulted back in. In such a case wouldn't it make sense for us to want
+> > to keep the pages that don't require faults ahead of those pages in
+> > the free_list so that they are more likely to be allocated?
 > 
+> OK, I was suspecting this would pop out. And this is exactly why I
+> didn't like an idea of an external code imposing a non obvious constrains
+> to the allocator. You simply cannot count with any ordering with the
+> page allocator. We used to distinguish cache hot/cold pages in the past
+> and pushed pages to the specific end of the free list but that has been
+> removed. There are other potential changes like that possible. Shuffling
+> is a good recent example.
+> 
+> Anyway I am not a maintainer of this code. I would really like to hear
+> opinions from Mel and Vlastimil here (now CCed - the thread starts
+> http://lkml.kernel.org/r/20190907172225.10910.34302.stgit@localhost.localdomain.
 
-AFAIKS, the poisoning/unmapping is done whenever a page is freed. I
-don't quite see yet how that would help to remember if a page was
-already reported. After reporting the page we would have to switch some
-state (Nitesh: bitmap bit, Alexander: page flag) to identify that.
+One alternative I could do if we are wanting to make things more obvious
+would be to add yet another add_to_free_list_XXX function that would be
+used specifically for reported pages. The only real requirement I have is
+that we have to insert reported pages such that we generate a continuous
+block without interleaving non-reported pages in between. So as long as
+reported pages are always inserted at the boundary/iterator when we are
+actively reporting on a section then I can guarantee the list won't have
+gaps formed.
 
-Of course, we could map the page and treat that as "the state" when we
-reported it, but I am not sure that's such a good idea :)
+Also as far as the concerns about this being an external user, one thing I
+can do is break up the headers a bit and define an internal header in mm/
+that defines all the items used by the page allocator, and another in
+include/linux/ that defines what is used by devices when receiving the
+notifications. It would then help to reduce the likelihood of an outside
+entity messing with the page allocator too much.
 
-As always, I might be very wrong ...
-
--- 
-
-Thanks,
-
-David / dhildenb
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
