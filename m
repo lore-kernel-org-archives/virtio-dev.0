@@ -1,66 +1,155 @@
-Return-Path: virtio-dev-return-6114-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-6124-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id ACA08985B47
-	for <virtio-dev@lists.oasis-open.org>; Wed, 11 Sep 2019 12:08:50 +0000 (UTC)
-Date: Wed, 11 Sep 2019 08:08:38 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20190911080804-mutt-send-email-mst@kernel.org>
-References: <20190907172225.10910.34302.stgit@localhost.localdomain>
- <20190910124209.GY2063@dhcp22.suse.cz>
- <CAKgT0Udr6nYQFTRzxLbXk41SiJ-pcT_bmN1j1YR4deCwdTOaUQ@mail.gmail.com>
- <20190910144713.GF2063@dhcp22.suse.cz>
- <CAKgT0UdB4qp3vFGrYEs=FwSXKpBEQ7zo7DV55nJRO2C-KCEOrw@mail.gmail.com>
- <20190910175213.GD4023@dhcp22.suse.cz>
- <1d7de9f9f4074f67c567dbb4cc1497503d739e30.camel@linux.intel.com>
- <20190911113619.GP4023@dhcp22.suse.cz>
+	by lists.oasis-open.org (Postfix) with ESMTP id 82980985D2F
+	for <virtio-dev@lists.oasis-open.org>; Thu, 12 Sep 2019 07:47:47 +0000 (UTC)
+References: <20190911113619.GP4023@dhcp22.suse.cz>
+ <20190911080804-mutt-send-email-mst@kernel.org>
+ <20190911121941.GU4023@dhcp22.suse.cz> <20190911122526.GV4023@dhcp22.suse.cz>
+ <4748a572-57b3-31da-0dde-30138e550c3a@redhat.com>
+ <20190911125413.GY4023@dhcp22.suse.cz>
+ <736594d6-b9ae-ddb9-2b96-85648728ef33@redhat.com>
+ <20190911132002.GA4023@dhcp22.suse.cz> <20190911135100.GC4023@dhcp22.suse.cz>
+ <abea20a0-463c-68c0-e810-2e341d971b30@redhat.com>
+ <20190912071633.GL4023@dhcp22.suse.cz>
+From: David Hildenbrand <david@redhat.com>
+Message-ID: <ef460202-cebd-c6d2-19f3-e8a82a3d3cbd@redhat.com>
+Date: Thu, 12 Sep 2019 09:47:30 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190911113619.GP4023@dhcp22.suse.cz>
+In-Reply-To: <20190912071633.GL4023@dhcp22.suse.cz>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Subject: [virtio-dev] Re: [PATCH v9 0/8] stg mail -e --version=v9 \
 To: Michal Hocko <mhocko@kernel.org>
-Cc: Alexander Duyck <alexander.h.duyck@linux.intel.com>, Alexander Duyck <alexander.duyck@gmail.com>, virtio-dev@lists.oasis-open.org, kvm list <kvm@vger.kernel.org>, Catalin Marinas <catalin.marinas@arm.com>, David Hildenbrand <david@redhat.com>, Dave Hansen <dave.hansen@intel.com>, LKML <linux-kernel@vger.kernel.org>, Matthew Wilcox <willy@infradead.org>, linux-mm <linux-mm@kvack.org>, Andrew Morton <akpm@linux-foundation.org>, will@kernel.org, linux-arm-kernel@lists.infradead.org, Oscar Salvador <osalvador@suse.de>, Yang Zhang <yang.zhang.wz@gmail.com>, Pankaj Gupta <pagupta@redhat.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Nitesh Narayan Lal <nitesh@redhat.com>, Rik van Riel <riel@surriel.com>, lcapitulino@redhat.com, "Wang, Wei W" <wei.w.wang@intel.com>, Andrea Arcangeli <aarcange@redhat.com>, ying.huang@intel.com, Paolo Bonzini <pbonzini@redhat.com>, Dan Williams <dan.j.williams@intel.com>, Fengguang Wu <fengguang.wu@intel.com>, "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Cc: "Michael S. Tsirkin" <mst@redhat.com>, Alexander Duyck <alexander.h.duyck@linux.intel.com>, Alexander Duyck <alexander.duyck@gmail.com>, virtio-dev@lists.oasis-open.org, kvm list <kvm@vger.kernel.org>, Catalin Marinas <catalin.marinas@arm.com>, Dave Hansen <dave.hansen@intel.com>, LKML <linux-kernel@vger.kernel.org>, Matthew Wilcox <willy@infradead.org>, linux-mm <linux-mm@kvack.org>, Andrew Morton <akpm@linux-foundation.org>, will@kernel.org, linux-arm-kernel@lists.infradead.org, Oscar Salvador <osalvador@suse.de>, Yang Zhang <yang.zhang.wz@gmail.com>, Pankaj Gupta <pagupta@redhat.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Nitesh Narayan Lal <nitesh@redhat.com>, Rik van Riel <riel@surriel.com>, lcapitulino@redhat.com, "Wang, Wei W" <wei.w.wang@intel.com>, Andrea Arcangeli <aarcange@redhat.com>, ying.huang@intel.com, Paolo Bonzini <pbonzini@redhat.com>, Dan Williams <dan.j.williams@intel.com>, Fengguang Wu <fengguang.wu@intel.com>, "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, Sep 11, 2019 at 01:36:19PM +0200, Michal Hocko wrote:
-> On Tue 10-09-19 14:23:40, Alexander Duyck wrote:
-> [...]
-> > We don't put any limitations on the allocator other then that it needs to
-> > clean up the metadata on allocation, and that it cannot allocate a page
-> > that is in the process of being reported since we pulled it from the
-> > free_list. If the page is a "Reported" page then it decrements the
-> > reported_pages count for the free_area and makes sure the page doesn't
-> > exist in the "Boundary" array pointer value, if it does it moves the
-> > "Boundary" since it is pulling the page.
+On 12.09.19 09:16, Michal Hocko wrote:
+> On Wed 11-09-19 18:09:18, David Hildenbrand wrote:
+>> On 11.09.19 15:51, Michal Hocko wrote:
+>>> On Wed 11-09-19 15:20:02, Michal Hocko wrote:
+>>> [...]
+>>>>> 4. Continuously report, not the "one time report everything" approach.
+>>>>
+>>>> So you mean the allocator reporting this rather than an external code to
+>>>> poll right? I do not know, how much this is nice to have than must have?
+>>>
+>>> Another idea that I haven't really thought through so it might turned
+>>> out to be completely bogus but let's try anyway. Your "report everything"
+>>> just made me look and realize that free_pages_prepare already performs
+>>> stuff that actually does something similar yet unrelated.
+>>>
+>>> We do report to special page poisoning, zeroying or
+>>> CONFIG_DEBUG_PAGEALLOC to unmap the address from the kernel address
+>>> space. This sounds like something fitting your model no?
+>>>
+>>
+>> AFAIKS, the poisoning/unmapping is done whenever a page is freed. I
+>> don't quite see yet how that would help to remember if a page was
+>> already reported.
 > 
-> This is still a non-trivial limitation on the page allocation from an
-> external code IMHO. I cannot give any explicit reason why an ordering on
-> the free list might matter (well except for page shuffling which uses it
-> to make physical memory pattern allocation more random) but the
-> architecture seems hacky and dubious to be honest. It shoulds like the
-> whole interface has been developed around a very particular and single
-> purpose optimization.
-> 
-> I remember that there was an attempt to report free memory that provided
-> a callback mechanism [1], which was much less intrusive to the internals
-> of the allocator yet it should provide a similar functionality. Did you
-> see that approach? How does this compares to it? Or am I completely off
-> when comparing them?
-> 
-> [1] mostly likely not the latest version of the patchset
-> http://lkml.kernel.org/r/1502940416-42944-5-git-send-email-wei.w.wang@intel.com
-> 
-> -- 
-> Michal Hocko
-> SUSE Labs
+> Do you still have to differ that state when each page is reported?
 
-Linus nacked that one. He thinks invoking callbacks with lots of
-internal mm locks is too fragile.
+Ah, very good point. I can see that the reason for this was not
+discussed in this thread so far. (Alexander, Nitesh, please correct me
+if I am wrong). It's buried in the long history of free page
+hinting/reporting.
+
+Some early patch sets tried to report during every free synchronously.
+Free a page, report them to the hypervisor. This resulted in some issues
+(especially, locking-related and the virtio + the hypervisor being
+involved, resulting in unpredictable delays, quite some overhead ...).
+It was no good.
+
+One design decision then was to not report single pages, but a bunch of
+pages at once. This made it necessary to "remember" the pages to be
+reported and to temporarily block them from getting allocated while
+reporting.
+
+Nitesh implemented (at least) two "capture PFNs of free pages in an
+array when freeing" approaches. One being synchronous from the freeing
+CPU once the list was full (having similar issues as plain synchronous
+reporting) and one being asynchronous by a separate thread (which solved
+many locking issues).
+
+Turned out the a simple array can quickly lead to us having to drop
+"reports" to the hypervisor because the array is full and the reporting
+thread was not able to keep up. Not good as well. Especially, if some
+process frees a lot of memory this can happen quickly and Nitesh wa
+sable to trigger this scenario frequently.
+
+Finally, Nitesh decided to use the bitmap instead to keep track of pages
+to report. I'd like to note that this approach could still be combined
+with an "array of potentially free PFNs". Only when the array/circular
+buffer runs out of entries ("reporting thread cannot keep up"), we would
+have to go back to scanning the bitmap.
+
+That was also the point where Alexander decided to look into integrating
+tracking/handling reported/unreported pages directly in the buddy.
+
+> 
+>> After reporting the page we would have to switch some
+>> state (Nitesh: bitmap bit, Alexander: page flag) to identify that.
+> 
+> Yes, you can either store the state somewhere.
+> 
+>> Of course, we could map the page and treat that as "the state" when we
+>> reported it, but I am not sure that's such a good idea :)
+>>
+>> As always, I might be very wrong ...
+> 
+> I still do not fully understand the usecase so I might be equally wrong.
+> My thinking is along these lines. Why should you scan free pages when
+> you can effectively capture each freed page? If you go one step further
+> then post_alloc_hook would be the counterpart to know that your page has
+> been allocated.
+
+I'd like to note that Nitesh's patch set contains the following hunk,
+which is roughly what you were thinking :)
+
+
+-static inline void __free_one_page(struct page *page,
++inline void __free_one_page(struct page *page,
+ 		unsigned long pfn,
+ 		struct zone *zone, unsigned int order,
+-		int migratetype)
++		int migratetype, bool hint)
+ {
+ 	unsigned long combined_pfn;
+ 	unsigned long uninitialized_var(buddy_pfn);
+@@ -980,7 +981,8 @@ static inline void __free_one_page(struct page *page,
+ 				migratetype);
+ 	else
+ 		add_to_free_area(page, &zone->free_area[order], migratetype);
+-
++	if (hint)
++		page_hinting_enqueue(page, order);
+ }
+
+
+(ignore the hint parameter, when he would switch to a isolate vs.
+alloc/free, that can go away and all we left is the enqueue part)
+
+
+Inside that callback we can remember the pages any way we want. Right
+now in a bitmap. Maybe later in a array + bitmap (as discussed above).
+Another idea I had was to simply go over all pages and report them when
+running into this "array full" condition. But I am not yet sure about
+the performance implications on rather large machines. So the bitmap
+idea might have some other limitations but seems to do its job.
+
+Hoe that makes things clearer and am not missing something.
+
+-- 
+
+Thanks,
+
+David / dhildenb
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
