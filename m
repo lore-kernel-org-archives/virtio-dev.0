@@ -1,105 +1,140 @@
-Return-Path: virtio-dev-return-6091-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-6129-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 0855D98436F
-	for <virtio-dev@lists.oasis-open.org>; Mon,  9 Sep 2019 15:48:58 +0000 (UTC)
-Date: Mon, 9 Sep 2019 11:48:49 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20190909114844-mutt-send-email-mst@kernel.org>
-References: <20190829135206.24231-1-stefanha@redhat.com>
- <20190909152734.GB20875@stefanha-x1.localdomain>
+	by lists.oasis-open.org (Postfix) with ESMTP id EC6AE985E17
+	for <virtio-dev@lists.oasis-open.org>; Wed, 18 Sep 2019 17:52:29 +0000 (UTC)
+From: Alexander Duyck <alexander.duyck@gmail.com>
+Date: Wed, 18 Sep 2019 10:52:25 -0700
+Message-ID: <20190918175109.23474.67039.stgit@localhost.localdomain>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190909152734.GB20875@stefanha-x1.localdomain>
-Subject: [virtio-dev] Re: [PATCH v8 0/2] virtio-fs: add virtio file system device
-To: Stefan Hajnoczi <stefanha@redhat.com>
-Cc: virtio-dev@lists.oasis-open.org, Miklos Szeredi <mszeredi@redhat.com>, Steven Whitehouse <swhiteho@redhat.com>, Vivek Goyal <vgoyal@redhat.com>, "Dr. David Alan Gilbert" <dgilbert@redhat.com>, Sage Weil <sweil@redhat.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Subject: [virtio-dev] [PATCH v10 0/6] mm / virtio: Provide support for unused page
+ reporting
+To: virtio-dev@lists.oasis-open.org, kvm@vger.kernel.org, mst@redhat.com, david@redhat.com, dave.hansen@intel.com, linux-kernel@vger.kernel.org, willy@infradead.org, mhocko@kernel.org, linux-mm@kvack.org, vbabka@suse.cz, akpm@linux-foundation.org, mgorman@techsingularity.net, linux-arm-kernel@lists.infradead.org, osalvador@suse.de
+Cc: yang.zhang.wz@gmail.com, pagupta@redhat.com, konrad.wilk@oracle.com, nitesh@redhat.com, riel@surriel.com, lcapitulino@redhat.com, wei.w.wang@intel.com, aarcange@redhat.com, pbonzini@redhat.com, dan.j.williams@intel.com, alexander.h.duyck@linux.intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Mon, Sep 09, 2019 at 05:27:34PM +0200, Stefan Hajnoczi wrote:
-> On Thu, Aug 29, 2019 at 02:52:04PM +0100, Stefan Hajnoczi wrote:
-> > v8:
-> >  * Make language about using both FUSE_READ/FUSE_WRITE and the DAX
-> >    Window clearer [Cornelia]
-> > 
-> > v7:
-> >  * Rename num_queues to num_request_queues [Cornelia]
-> >  * Clarify that endianness is chosen by the guest driver in the
-> >    FUSE_INIT message [Cornelia]
-> >  * Clarify that the DAX Window is optional and can be used together with
-> >    FUSE_READ/FUSE_WRITE requests [Cornelia]
-> > 
-> > v6:
-> >  * Clarify that num_queues only counts request queues [Cornelia]
-> >  * State that only high priority requests go on the hiprio queue [Cornelia]
-> >  * Expand on how endianness works [Cornelia]
-> >  * Use "driver" and "device" instead of "guest" and "host" [Michael]
-> >  * Explain how setuid files and device nodes can be a security issue [Michael]
-> >  * Clarify that security issues with shared file systems involve multiple machines [Michael]
-> >  * Document timing side-channel attacks [Michael]
-> > 
-> > v5:
-> >  * Explain multiqueue semantics: no ordering, identical functionality on each queue, one FUSE session state shared between all queues
-> >  * Explain how the FUSE session is started with a FUSE_INIT request
-> >  * Consistently use "submit" vs "made available" and "complete" vs "used" terminology [Michael]
-> >  * Explain endianness [Michael]
-> >  * Clarify hiprio vs normal queue usage [Michael]
-> >  * Move SHOULD, MUST, etc wording into normative sections [Michael]
-> >  * Mention that FUSE_INIT negotiated state needs to be transferred during live migration [Michael]
-> >  * State that the DAX window is mapped with writeback caching like RAM [Michael]
-> >  * Mention DAX window mapping alignment constraints (they are communicated via the FUSE protocol) [Michael]
-> >  * Explain that FUSE_SETUPMAPPING fails when device resources are exhausted and that splitting mappings consumes resources too [Michael]
-> >  * Clarify access rules to DAX window - only touch memory that has a mapping establised
-> >  * Document that DAX data persistence is achieved via FUSE_FSYNC
-> > 
-> > v4:
-> >  * Clarify that there are no request ordering guarantees between requests in a
-> >    single queue [vgoyal]
-> >  * Add explanation of FUSE session endianness detection [dgilbert]
-> > 
-> > v3:
-> >  * Remove notifications virtqueue, it's unimplemented and can be added when
-> >    needed [Miklos]
-> >  * Add Security Considerations and Live Migration Considerations sections
-> >    [Michael]
-> > v2:
-> >  * Clean up core virtio file system device spec
-> >  * Add DAX window
-> > 
-> > These patches add the virtio file system device, which is based on Linux FUSE
-> > but includes the DAX window extension.  Similar to virtio-scsi, which
-> > transports SCSI commands, virtio-fs transports FUSE requests and the protocol
-> > documentation is not duplicated here.
-> > 
-> > The DAX window allows file contents to be accessed directly from shared memory.
-> > This eliminates copying of data, reduces the number of vmexits, and reduces the
-> > guest's memory footprint.  It also allows coherent mmap MAP_SHARED semantics
-> > between guests on the same host.
-> > 
-> > Stefan Hajnoczi (2):
-> >   content: add virtio file system device
-> >   virtio-fs: add DAX window
-> > 
-> >  content.tex      |   1 +
-> >  introduction.tex |   3 +
-> >  virtio-fs.tex    | 291 +++++++++++++++++++++++++++++++++++++++++++++++
-> >  3 files changed, 295 insertions(+)
-> >  create mode 100644 virtio-fs.tex
-> 
-> Fixes: #49
-> (https://github.com/oasis-tcs/virtio-spec/issues/49)
-> 
-> I propose a vote.
-> 
-> Stefan
+This series provides an asynchronous means of reporting to a hypervisor
+that a guest page is no longer in use and can have the data associated
+with it dropped. To do this I have implemented functionality that allows
+for what I am referring to as unused page reporting. The advantage of
+unused page reporting is that we can support a significant amount of
+memory over-commit with improved performance as we can avoid having to
+write/read memory from swap as the VM will instead actively participate
+in freeing unused memory so it doesn't have to be written.
 
-vote started.
+The functionality for this is fairly simple. When enabled it will allocate
+statistics to track the number of reported pages in a given free area.
+When the number of free pages exceeds this value plus a high water value,
+currently 32, it will begin performing page reporting which consists of
+pulling non-reported pages off of the free lists of a given zone and
+placing them into a scatterlist. The scatterlist is then given to the page
+reporting device and it will perform the required action to make the pages
+"reported", in the case of virtio-balloon this results in the pages being
+madvised as MADV_DONTNEED. After this they are placed back on their
+original free list. If they are not merged in freeing an additional bit is
+set indicating that they are a "reported" buddy page instead of a standard
+buddy page. The cycle then repeats with additional non-reported pages
+being pulled until the free areas all consist of reported pages.
 
+In order to try and keep the time needed to find a non-reported page to
+a minimum we maintain a "reported_boundary" pointer. This pointer is used
+by the get_unreported_pages iterator to determine at what point it should
+resume searching for non-reported pages. In order to guarantee pages do
+not get past the scan I have modified add_to_free_list_tail so that it
+will not insert pages behind the reported_boundary.
+
+If another process needs to perform a massive manipulation of the free
+list, such as compaction, it can either reset a given individual boundary
+which will push the boundary back to the list_head, or it can clear the
+bit indicating the zone is actively processing which will result in the
+reporting process resetting all of the boundaries for a given zone.
+
+I am leaving a number of things hard-coded such as limiting the lowest
+order processed to pageblock_order, and have left it up to the guest to
+determine what the limit is on how many pages it wants to allocate to
+process the hints. The upper limit for this is based on the size of the
+queue used to store the scatterlist.
+
+I wanted to avoid gaming the performance testing for this. As far as
+possible gain a significant performance improvement should be visible in
+cases where guests are forced to write/read from swap. As such, testing
+it would be more of a benchmark of copying a page from swap versus just
+allocating a zero page. I have been verifying that the memory is being
+freed using memhog to allocate all the memory on the guest, and then
+watching /proc/meminfo to verify the host sees the memory returned after
+the test completes.
+
+As far as possible regressions I have focused on cases where performing
+the hinting would be non-optimal, such as cases where the code isn't
+needed as memory is not over-committed, or the functionality is not in
+use. I have been using the will-it-scale/page_fault1 test running with 16
+vcpus and have modified it to use Transparent Huge Pages. With this I see
+almost no difference with the patches applied and the feature disabled.
+Likewise I see almost no difference with the feature enabled, but the
+madvise disabled in the hypervisor due to a device being assigned. With
+the feature fully enabled in both guest and hypervisor I see a regression
+between -1.86% and -8.84% versus the baseline. I found that most of the
+overhead was due to the page faulting/zeroing that comes as a result of
+the pages having been evicted from the guest.
+
+For info on earlier versions you will need to follow the links provided
+with the respective versions.
+
+Changes from v9:
+https://lore.kernel.org/lkml/20190907172225.10910.34302.stgit@localhost.localdomain/
+Updated cover page
+Dropped per-cpu page randomization entropy patch
+Added "to_tail" boolean value to __free_one_page to improve readability
+Renamed __shuffle_pick_tail to shuffle_pick_tail, avoiding extra inline function
+Dropped arm64 HUGLE_TLB_ORDER movement patch since it is no longer needed
+Significant rewrite of page reporting functionality
+  Updated logic to support interruptions from compaction
+  get_unreported_page will now walk through reported sections
+  Moved free_list manipulators out of mmzone.h and into page_alloc.c
+  Removed page_reporting.h include from mmzone.h
+  Split page_reporting.h between include/linux/ and mm/
+  Added #include <asm/pgtable.h>" to mm/page_reporting.h
+  Renamed page_reporting_startup/shutdown to page_reporting_register/unregister
+Updated comments related to virtio page poison tracking feature
+
+---
+
+Alexander Duyck (6):
+      mm: Adjust shuffle code to allow for future coalescing
+      mm: Use zone and order instead of free area in free_list manipulators
+      mm: Introduce Reported pages
+      mm: Add device side and notifier for unused page reporting
+      virtio-balloon: Pull page poisoning config out of free page hinting
+      virtio-balloon: Add support for providing unused page reports to host
+
+
+ drivers/virtio/Kconfig              |    1 
+ drivers/virtio/virtio_balloon.c     |   87 ++++++++-
+ include/linux/mmzone.h              |   60 ++----
+ include/linux/page-flags.h          |   11 +
+ include/linux/page_reporting.h      |   31 +++
+ include/uapi/linux/virtio_balloon.h |    1 
+ mm/Kconfig                          |   11 +
+ mm/Makefile                         |    1 
+ mm/compaction.c                     |    5 +
+ mm/memory_hotplug.c                 |    2 
+ mm/page_alloc.c                     |  194 +++++++++++++++----
+ mm/page_reporting.c                 |  350 +++++++++++++++++++++++++++++++++++
+ mm/page_reporting.h                 |  224 ++++++++++++++++++++++
+ mm/shuffle.c                        |   12 +
+ mm/shuffle.h                        |    6 +
+ 15 files changed, 893 insertions(+), 103 deletions(-)
+ create mode 100644 include/linux/page_reporting.h
+ create mode 100644 mm/page_reporting.c
+ create mode 100644 mm/page_reporting.h
+
+--
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
