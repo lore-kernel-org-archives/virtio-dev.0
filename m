@@ -1,709 +1,235 @@
-Return-Path: virtio-dev-return-6077-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-6145-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id AFF92984076
-	for <virtio-dev@lists.oasis-open.org>; Sun,  8 Sep 2019 14:04:13 +0000 (UTC)
-Date: Sun, 8 Sep 2019 10:04:03 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20190908094435-mutt-send-email-mst@kernel.org>
+	by lists.oasis-open.org (Postfix) with ESMTP id 9443A984354
+	for <virtio-dev@lists.oasis-open.org>; Mon, 23 Sep 2019 08:44:02 +0000 (UTC)
+From: "Huang, Yang" <yang.huang@intel.com>
+Date: Mon, 23 Sep 2019 08:43:54 +0000
+Message-ID: <0B92A36466FABC4D99BAF0BDB1FA8BBC415902DF@shsmsx102.ccr.corp.intel.com>
 References: <1565064256-13530-1-git-send-email-yang.huang@intel.com>
  <20190806045914-mutt-send-email-mst@kernel.org>
  <0B92A36466FABC4D99BAF0BDB1FA8BBC41576425@shsmsx102.ccr.corp.intel.com>
-MIME-Version: 1.0
+ <20190908094435-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20190908094435-mutt-send-email-mst@kernel.org>
+Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <0B92A36466FABC4D99BAF0BDB1FA8BBC41576425@shsmsx102.ccr.corp.intel.com>
-Subject: Re: [virtio-dev] RE: [PATCH v3] It is a virtio based RPMB (Replay
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+Subject: RE: [virtio-dev] RE: [PATCH v3] It is a virtio based RPMB (Replay
  Protected Memory Block) device.
-To: "Huang, Yang" <yang.huang@intel.com>
+To: "Michael S. Tsirkin" <mst@redhat.com>
 Cc: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "cohuck@redhat.com" <cohuck@redhat.com>, "Zhu, Bing" <bing.zhu@intel.com>, "Winkler, Tomas" <tomas.winkler@intel.com>, "Fang, Peter" <peter.fang@intel.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, Aug 07, 2019 at 02:36:02AM +0000, Huang, Yang wrote:
-> Hi, 
-> I got your points on padding, SHA256, VIRTIO_RPMB_REQ_RESULT_READ  etc.
-> But it cannot keep compatibility with native softwares who also runs on hardware RPMB.
-> 
-> Because RPMB frames are packed by other modules who owns RPMB key, but not by virtio driver.
-> We hope a seamless usage, same APIs, same software to access RPMB under both native or virtualized env. 
-> The expectation is to use a same software to access RPMB by calling different drivers obeying same rules in spec.
-> 
-> 
-> > > + \newline\url{https://www.nvmexpress.org/wp-content/uploads/NVM_Expre
-> > > + ss_Revision_1.3.pdf}\\
-> > >
-> > >  \end{longtable}
-> > >
-> > 
-> > At this stage I suggest we avoid nvme. Mix of LE and BE in the frame is just too
-> > nasty. And ATM Linux only supports UFS/MMC.
-> > 
-> 
-> Remove all contents of NVMe RPMB at this phase to simplify the spec?
-
-Why not.
-
-> > 
-> > Second, please assess the relevance of anything you copy to virtual devices.
-> > Copying things like padding does not buy us anything, and just creates work
-> > where we need to zero this out.
-> > 
-> > The only thing that must match if you are passing through a hardware device is
-> > the size and order of keys.
-> > 
-> >
-> > 
-> > > diff --git a/virtio-rpmb.tex b/virtio-rpmb.tex new file mode 100644
-> > > index 0000000..c2357af
-> > > --- /dev/null
-> > > +++ b/virtio-rpmb.tex
-> > > @@ -0,0 +1,269 @@
-> > > +\section{RPMB Device}\label{sec:Device Types / RPMB Device}
-> > > +
-> > > +virtio-rpmb is a virtio based RPMB (Replay Protected Memory Block)
-> > > +device. It is used as a tamper-resistant and anti-replay storage.
-> > > +The device is driven via requests including read, write, get write
-> > > +counter and program key, which are submitted via a request queue.
-> > > +This section relies on definitions from paragraph 6.6.22 of
-> > > +\hyperref[intro:eMMC]{eMMC}, 12.4 of \hyperref[intro:UFS]{UFS} and
-> > > +8.10 of \hyperref[intro:NVMe]{NVMe}.
-> > 
-> > 
-> > 
-> > 
-> > 
-> > 
-> > 
-> > > +\subsection{Device ID}\label{sec:Device Types / RPMB Device / Device
-> > > +ID}
-> > > +
-> > > +28
-> > > +
-> > > +\subsection{Virtqueues}\label{sec:Device Types / RPMB Device /
-> > > +Virtqueues}
-> > > +
-> > > +\begin{description}
-> > > +\item[0] requestq
-> > > +\end{description}
-> > > +
-> > > +\subsection{Feature bits}\label{sec:Device Types / RPMB Device /
-> > > +Feature bits}
-> > > +
-> > > +None.
-> > > +
-> > > +\subsection{Device configuration layout}\label{sec:Device Types /
-> > > +RPMB Device / Device configuration layout}
-> > > +
-> > > +All fields of this configuration are always available.
-> > > +
-> > > +\begin{lstlisting}
-> > > +enum virtio_rpmb_type {
-> > > +        RPMB_TYPE_JEDEC,
-> > > +        RPMB_TYPE_NVME,
-> > 
-> > enum {} has no meaning in spec. any constants must be defined.
-> > 
-> > > +};
-> > > +
-> > 
-> > Do we have to expose the type?  I think we need feature bits for various things
-> > so we can split them out later.
-> > 
-> > 
-> > 
-> > > +struct virtio_rpmb_config {
-> > > +        u8 capacity;
-> > > +        u8 max_wr_cnt;
-> > > +        u8 max_rd_cnt;
-> > > +        u8 id;
-> > > +        u8 type;
-> > > +}
-> > 
-> > How about adding a key programmed state here?
-> 
-> The state here is not trusted.
-> User can get this state via read counter/read/write RPMB requests.
-> If the result is NOT 0007(VIRTIO_RPMB_RES_NO_AUTH_KEY), it implies it has been programmed successfully.
-> And user can authenticate the result by MAC for the case key has been programmed.
-> 
-> > 
-> > > +\end{lstlisting}
-> > 
-> > 
-> > Why not put the counter here?
-> 
-> Same reason. Counter here cannot be trusted.
-> 
-> > Are all fields read-only?
-> 
-> Yes.  I will add it.
->  
-> > > +
-> > > +\begin{description}
-> > > +\item[\field{capacity}] is the capacity of the device (expressed in 128KB units).
-> > > +   The values MUST range between 0x00 and 0x80 inclusive for JEDEC device,
-> > and
-> > > +   0x00 and 0xFF inclusive for NVMe device.
-> > 
-> > I'd just drop this. u8 so up to 0xff anyway, and I don't think any users care that
-> > there are a couple of extra bytes.
-> > 
-> > Thinking about it, 32Mbytes isn't huge at all. Why not allow larger capacity?
-> > 
-> 
-> For JEDEC, the address in RPMB frame is 2Bytes. And the data[] (block size) is 256B.
-> It indicates the maximum capacity is 256B * 2^16 = 16MB
-> For NVMe, I think it's OK. because it's 4B address.
-> > 
-> > 
-> > > +\item[\field{max_wr_cnt and max_rd_cnt}] are the maximum numbers of
-> > RPMB
-> > > +   block count that can be performed to device in one request. 0 implies
-> > > +   no limitation.
-> > 
-> > I don't understand what does block count mean in this context.
-> 
-> It refers to the number of blocks (256B for JEDEC and 512B for NVMe) requested to be read/written.
-> 
-> Example, if max_wr_cnt is 2 for a eMMC device, it can write RPMB with 2*256B in one request.
-> It can send up to two RPMB write frames (including two data[256]) to device.
-> 
-> > > +\item[\field{id}] is the identifier of RPMB partitions.
-> > 
-> > What does this mean? what are the partitions? Did you mean of the device?
-> > 
-> > I suspect what is going on is there's an actual device behind this, and this is its ID.
-> > Which again begs the question whether this should just be a part of a blk or scsi
-> > device.
-> 
-> It's for multiple RPMB regions. RPMB supports up to 4 regions for UFS 3.0 or NVMe 1.3.
-
-So a device with 1 region it's always 0?
-
-
-> > 
-> > > +\item[\field{type}] is the rpmb type that device emulates. RPMB_TYPE_JEDEC
-> > > +   refers to eMMC or UFS while RPMB_TYPE_NVME refers to NVMe.
-> > > +\end{description}
-> > 
-> > Does not look like we emulate anything.
-> 
-> Simplify by removing NVMe at current phase.
-> 
-> > > +
-> > > +\devicenormative{\subsection}{Device Initialization}{Device Types /
-> > > +RPMB Device / Device Initialization}
-> > > +
-> > > +\begin{enumerate}
-> > > +\item The virtqueue is initialized.
-> > > +\item The authentication key of device MUST NOT be programmed at the
-> > first device initialization.
-> > 
-> > What is "first device initialization"? The concept does not seem to apply to
-> > virtual devices. How about we just have device pre-initialized to some key? Or
-> > maybe device can be in two states, key programming and operation?
-> 
-> I will change the statement.
-> Device MUST NOT pre-initialized a RPMB key.
-> The only source of the key is from VIRTIO_RPMB_REQ_PROGRAM_KEY request.
-> Before RPMB is programmed, read/write/read write counter will fail with 0x0007.
-> 
-> > 
-> > All conformance clauses belong in conformance sections.  here and elsewhere.
-> 
-> Thanks. I will add it after the skeleton is stable.
-
-I'd rather we try to finalize it all in one go, don't
-have the time to review everything twice :)
-
-> > > +\item The device capacity MUST be initialized to a multiple of 128Kbytes and
-> > up to
-> > > +    16Mbytes/32Mbytes (JEDEC/NVMe device respectively).
-> > > +\end{enumerate}
-> > 
-> > So instead of blindly copying limitations of physical devices, we can just allow
-> > hypervisor to set any capacity.
-> 
-> As mentioned above, 16MB is limited by 2B address in RPMB frame.
-> 
-> > > +
-> > > +\subsection{Device Operation}\label{sec:Device Types / RPMB Device /
-> > > +Device Operation}
-> > > +
-> > > +The operation of a virtio RPMB device is driven by the requests placed on the
-> > virtqueue.
-> > > +  The type of the request can be program key
-> > > +(VIRTIO_RPMB_REQ_PROGRAM_KEY),
-> > > +  get write counter (VIRTIO_RPMB_REQ_GET_WRITE_COUNTER),
-> > > +  write (VIRTIO_RPMB_REQ_DATA_WRITE), and read
-> > (VIRTIO_RPMB_REQ_DATA_READ).
-> > > +  A program key or write request can also combine with a
-> > > +  result read (VIRTIO_RPMB_REQ_RESULT_READ) for a returned result.
-> > > +
-> > > +\begin{lstlisting}
-> > > +/* RPMB Request Types */
-> > > +#define VIRTIO_RPMB_REQ_PROGRAM_KEY        0x0001
-> > > +#define VIRTIO_RPMB_REQ_GET_WRITE_COUNTER  0x0002
-> > > +#define VIRTIO_RPMB_REQ_DATA_WRITE         0x0003
-> > > +#define VIRTIO_RPMB_REQ_DATA_READ          0x0004
-> > > +#define VIRTIO_RPMB_REQ_RESULT_READ        0x0005
-> > > +\end{lstlisting}
-> > > +
-> > > +\subsubsection{Device Operation: Request Queue}\label{sec:Device
-> > > +Types / RPMB Device / Device Operation / Device Operation: Request
-> > > +Queue}
-> > > +
-> > > +The request information is delivered in RPMB frame.
-> > > +The frame is in size of 512B for JEDEC RPMB, and in size of 256B plus
-> > > +multiple 512B for NVMe RPMB depending on the variable data size.
-> > 
-> > Again this is just messy. Let's come up with a minimal spec.
-> > See end of the message pls.
-> > 
-> > > +
-> > > +\begin{lstlisting}
-> > > +struct virtio_rpmb_frame_jedec {
-> > > +        u8 stuff[196];
-> > > +        u8 key_mac[32];
-> > > +        u8 data[256];
-> > > +        u8 nonce[16];
-> > > +        be32 write_counter;
-> > > +        be16 address;
-> > > +        be16 block_count;
-> > > +        be16 result;
-> > > +        be16 req_resp;
-> > > +};
-> > > +
-> > > +struct virtio_rpmb_frame_nvme {
-> > > +        u8 stuff [191];
-> > > +        u8 key_mac[32];
-> > > +        u8 rpmb_target;
-> > > +        u8 nonce[16];
-> > > +        le32 write_counter;
-> > > +        le32 address;
-> > > +        le32 block_count;
-> > > +        le16 result;
-> > > +        le16 req_resp;
-> > > +        u8 data[0];
-> > > +};
-> > 
-> > Oh fun, a mix of LE and BE.
-> > 
-> > Let's make everything consistent.
-> > 
-> > Why do we need the "stuff" field? It helps align the size to 256 byte boundary -
-> > but why do we care?
-> > 
-> > > 
-> > > +
-> > > +/* RPMB Response Types */
-> > > +#define VIRTIO_RPMB_RESP_PROGRAM_KEY           0x0100
-> > > +#define VIRTIO_RPMB_RESP_GET_COUNTER           0x0200
-> > > +#define VIRTIO_RPMB_RESP_DATA_WRITE            0x0300
-> > > +#define VIRTIO_RPMB_RESP_DATA_READ             0x0400
-> > > +
-> > > +/* RPMB Operation Results */
-> > > +#define VIRTIO_RPMB_RES_OK                     0x0000
-> > > +#define VIRTIO_RPMB_RES_GENERAL_FAILURE        0x0001
-> > > +#define VIRTIO_RPMB_RES_AUTH_FAILURE           0x0002
-> > > +#define VIRTIO_RPMB_RES_COUNT_FAILURE          0x0003
-> > > +#define VIRTIO_RPMB_RES_ADDR_FAILURE           0x0004
-> > > +#define VIRTIO_RPMB_RES_WRITE_FAILURE          0x0005
-> > > +#define VIRTIO_RPMB_RES_READ_FAILURE           0x0006
-> > > +#define VIRTIO_RPMB_RES_NO_AUTH_KEY            0x0007
-> > > +#define VIRTIO_RPMB_RES_WRITE_COUNTER_EXPIRED  0x0080
-> > > +\end{lstlisting}
-> > > +
-> > > +\begin{description}
-> > > +\item[\field{stuff}] Padding for the frame.
-> > > +
-> > > +\item[\field{key_mac}] is the authentication key or the message
-> > > +   authentication code (MAC) depending on the request/response type.
-> > > +   If the request is VIRTIO_RPMB_REQ_PROGRAM_KEY, it's used as
-> > > +   authentication key. Otherwise, it's used as MAC. The MAC is calculated
-> > > +   using HMAC SHA-256.
-> > 
-> > SHA-256 is pretty old. Not being a cryptographer I don't really know whether it's
-> > still a good mac to use in 2019.
-> > 
-> > Generally security considerations should probably be presented with anything
-> > dealing with crypto.
-> > In this case, I'd do a feature bit so we can change the crypto down the road.
-> > 
-> > 
-> > > It takes as input a key and a message. The key
-> > > +   used for the MAC calculation is always the 256 bit RPMB authentication
-> > > +   key. The message used as input to the MAC calculation is the
-> > > +   concatenation of the fields in the RPMB frames excluding stuff bytes
-> > > +   and the MAC itself.
-> > > +
-> > > +\item[\field{rpmb_target}] is the exclusive item for NVMe device. It is
-> > > +   the RPMB target to access.
-> > 
-> > There are multiple targets too?
-> 
-> Yes.
-> 
-> > > +
-> > > +\item[\field{data}] is used to be written or read by signed access.
-> > 
-> > What does signed access mean?
-> 
-> It means read/write is in a authenticated way with MAC.
-> I can add more descriptions.
-> 
-> > > It's
-> > > +   fixed 256B for JEDEC device while variable sized payload
-> > > +   512 * \field{block_count} for NVMe device.
-> > > +
-> > > +\item[\field{nonce}] is a random number
-> > 
-> > 
-> > random how? I think it can just be anything.
-> 
-> I will detail it.
-> It used by user who request for read/read_write_counter to protect replay attack.
-
-Oh so if one cares about replay, it needs to be hard to predict.
-
-> > 
-> > > generated by user for the read or
-> > > +   get write counter requests and copied to the response by device.
-> > > +
-> > > +\item[\field{writer_counter}] is the counter value for the total amount of
-> > > +   the successful authenticated data write requests.
-> > > +
-> > > +\item[\field{address}] is the address of the data to be written to or read
-> > > +   from the RPMB virtio device. It is the serial number of the accessed
-> > > +   half sector (256B for JEDEC device) or sector (512B for NVMe device).
-> > 
-> > serial number?
-> 
-> Will modify it. Ignore "serial". 
-> 
-> > > +
-> > > +\item[\field{block_count}] is the number of blocks (256B for JEDEC and 512B
-> > > +   for NVMe) requested to be read/written.
-> > 
-> > can't this be intuited from the buffer size somehow?
-> > 
-> > I don't really understand how can you both have block_count and a fixed size
-> > data. how does this make sense?
-> 
-> The fixed data refer to the size of one block can be read/written.
-> The block count refers to how many 256 units are requested in one read/write request.
-> 
-> Example, read request on JEDEC RPMB with two blocks (256B*2):
-> User will send 3 frames, the first is the frame filled by user, with request type, address, nonce etc.
-> The last 2 frames are filled by device with data, MAC, nonce, result etc.
-
-
-So please map this to virtio buffers and document the mapping.
-
-
-> > 
-> > > +
-> > > +\item[\field{result}] includes information about the status of access made
-> > > +   to the device.
-> > > +
-> > 
-> > So I am guessing result is written by the device?
-> > And type is written by the driver?
-> > this does not play well with virtio where write fields are followed by read fields.
-> > 
-> > 
-> > > +\item[\field{req_resp}] is the type of request or response, as defined above,
-> > > +   to/from the device.
-> > 
-> > this seems to be the 1st definition. Please avoid "above" and "below", just link to
-> > the definition.
-> 
-> Thanks.
-> 
-> > > +\end{description}
-> > > +
-> > > +\devicenormative{\paragraph}{Device Operation: Request Queue}{Device
-> > > +Types / RPMB Device / Device Operation / Device Operation: Request
-> > > +Queue}
-> > > +
-> > > +The device MUST parse the request from the request queue and emulate
-> > > +the behaviours described in paragraph
-> > > +6.6.22 of \hyperref[intro:eMMC]{eMMC}, 12.4 of \hyperref[intro:UFS]{UFS}
-> > or 8.10 of \hyperref[intro:NVMe]{NVMe}:
-> > 
-> > If you are going to emulate existing specs, then why not just emulate an existing
-> > spec? Why bother with virtio at all? You gain ability to use existing drivers.
-> > 
-> > If the reason is to make a clean abstraction, then IMHO this falls short of this
-> > goal, carrying on all kind of baggage from hardware specs.
-> 
-> Based on the different behaviors.
-
-I think what you are saying is there's all kind of hardware and
-it's useful to abstract it away?
-
-
-> Or let's discuss it after the skeleton of this device is almost finalized?
-> 
-> > > +
-> > > +\begin{description}
-> > > +
-> > > +\item[VIRTIO_RPMB_REQ_PROGRAM_KEY] If block count has not been set to
-> > 1
-> > > +   then VIRTIO_RPMB_RES_GENERAL_FAILURE is responded. If programming
-> > of
-> > > +   authentication key fails then returned result is
-> > VIRTIO_RPMB_RES_WRITE_FAILURE.
-> > > +   If some other error occurs then returned result is
-> > VIRTIO_RPMB_RES_GENERAL_FAILURE.
-> > > +   The \field{req_resp} value VIRTIO_RPMB_RESP_PROGRAM_KEY
-> > corresponds to
-> > > +   the key programming request.
-> > > +
-> > > +   If VIRTIO_RPMB_REQ_RESULT_READ is requested, the device returns the
-> > RPMB frame
-> > > +   with response (VIRTIO_RPMB_RESP_PROGRAM_KEY), the calculated MAC
-> > and the result.
-> > 
-> > I don't see what does VIRTIO_RPMB_REQ_RESULT_READ buy us.
-> > I guess it proves key has been programmed - but if someone can snoop on
-> > programming then for sure he has the key and won't have trouble faking the
-> > mac.
-> > 
-> 
-> Maybe I could add more about it. It's used by write/program_key for a returned frame.
-> 
-> Example, write request on JEDEC RPMB with TWO blocks (256B*2):
-> User will send 4 frames, the first two are the frames filled by user, with request type, counter, MAC, address, data[] etc.
-> The third frame is filled with VIRTIO_RPMB_REQ_RESULT_READ request.
-> And the last is for device to write with MAC, result, etc. If VIRTIO_RPMB_REQ_RESULT_READ is not requested in the 3rd frame, device will not return the result in the 4th frame.
-> 
-> Read/read write counter does not require VIRTIO_RPMB_REQ_RESULT_READ because READ indicates a result frame by default.
-> 
-> > > +
-> > > +\item[VIRTIO_RPMB_REQ_GET_WRITE_COUNTE] If the authentication key is
-> > not yet
-> > > +   programmed then VIRTIO_RPMB_RES_NO_AUTH_KEY is returned in
-> > \field{result}.
-> > > +   If block count has not been set to 1 then
-> > VIRTIO_RPMB_RES_GENERAL_FAILURE
-> > > +   SHOULD be responded.
-> > > +
-> > > +   The device returns the RPMB frame with response
-> > (VIRTIO_RPMB_RESP_GET_COUNTER),
-> > > +   the writer counter, a copy of the nonce received in the request, the
-> > calculated
-> > > +   MAC and the result.
-> > > +
-> > > +\item[VIRTIO_RPMB_REQ_DATA_WRITE] If the authentication key is not yet
-> > programmed
-> > > +   then VIRTIO_RPMB_RES_NO_AUTH_KEY is returned in \field{result}. If
-> > block count
-> > > +   is zero or greater than \field{max_wr_cnt} then
-> > VIRTIO_RPMB_RES_GENERAL_FAILURE
-> > > +   MUST be responded. The device MUST check whether the write counter has
-> > expired.
-> > > +   If the write counter is expired then sets the \field{result} to
-> > > +   VIRTIO_RPMB_RES_WRITE_COUNTER_EXPIRED. If there is an error in the
-> > address
-> > > +   (out of range) then the \field{result} is set to
-> > VIRTIO_RPMB_RES_ADDR_FAILURE.
-> > > +   The device MUST calculate the MAC taking authentication key and frame as
-> > input,
-> > > +   and compares this with the MAC in the request. If the two MAC’s are
-> > different
-> > > +   then VIRTIO_RPMB_RES_AUTH_FAILURE is returned.
-> > > +
-> > > +   If the writer counter in the request with is different from the one
-> > maintained
-> > > +   by device then VIRTIO_RPMB_RES_COUNT_FAILURE is returned in
-> > \field{result}.
-> > > +   If the MAC and write counter comparisons are successful then the write
-> > request
-> > > +   is considered to be authenticated. The data from the request are written to
-> > the
-> > > +   address indicated in the request and the write counter is incremented by 1.
-> > > +   If write fails then returned result is VIRTIO_RPMB_RES_WRITE_FAILURE. If
-> > some
-> > > +   other error occurs during the write procedure then returned result is
-> > > +   VIRTIO_RPMB_RES_GENERAL_FAILURE.
-> > > +
-> > > +   If VIRTIO_RPMB_REQ_RESULT_READ is requested, the device returns the
-> > RPMB data
-> > > +   frame with response (VIRTIO_RPMB_RESP_DATA_WRITE), the incremented
-> > counter value,
-> > > +   the data address, the calculated MAC and result.
-> > > +
-> > > +\item[VIRTIO_RPMB_REQ_DATA_READ] If the authentication key is not yet
-> > programmed
-> > > +   then VIRTIO_RPMB_RES_NO_AUTH_KEY is returned in \field{result}. If
-> > block count
-> > > +   has not been set to 1 then VIRTIO_RPMB_RES_GENERAL_FAILURE MUST be
-> > responded.
-> > > +   If there is an error in the address (out of range) then the \field{result} is
-> > > +   set to VIRTIO_RPMB_RES_ADDR_FAILURE. If data fetch from addressed
-> > location inside
-> > > +   device fails then returned result is VIRTIO_RPMB_RES_READ_FAILURE. If
-> > some other
-> > > +   error occurs during the read procedure then returned result is
-> > > +   VIRTIO_RPMB_RES_GENERAL_FAILURE.
-> > > +
-> > > +   The device returns the RPMB frame with response
-> > (VIRTIO_RPMB_RESP_DATA_READ),
-> > > +   the block count, a copy of the nonce received in the request, the address,
-> > > +   the data, the calculated MAC, and the result.
-> > > +
-> > > +\item[VIRTIO_RPMB_REQ_RESULT_READ] It is used following with the other
-> > request
-> > > +   types for returned result in one or multiple RPMB frames.
-> > 
-> > So each write request must be followed by a status request.  This just seems like
-> > a waste. Why not return the result immediately with the operation?  Maybe UFS
-> > doesn't support this but virtio sure does.
-> > 
-> > Does device have to maintain the last request in non-volatile memory and
-> > persist across resets?  You do not list it as being persistent below. So I would just
-> > drop this request type and have driver maintain it in guest memory.
-> 
-> If VIRTIO_RPMB_REQ_RESULT_READ is not request for write/program_key, operation will be performed but no result returned.
-> It’s followed by write/program_key request in most cases. Device does not need to maintain it if user does not request for it.
-> Keeping it for compatibility with hardware does make sense for a unified solution regardless bare metal or virtualization.
-
-
-
-So what is wrong with driver doing it?
-
-> > > For
-> > > +   VIRTIO_RPMB_REQ_PROGRAM_KEY and VIRTIO_RPMB_REQ_DATA_WRITE,
-> > if block count has
-> > > +   not been set to 1 of VIRTIO_RPMB_REQ_RESULT_READ request, then
-> > > +   VIRTIO_RPMB_RES_GENERAL_FAILURE SHALL be indicated.
-> > > +
-> > > +\end{description}
-> > > +If authetication key was programmed successfully, the device SHALL return
-> > with a MAC for any operation requests.
-> > 
-> > Lots of typos above make it pretty hard to figure out.
-> > 
-> > > +
-> > > +\drivernormative{\subsubsection}{Device Operation}{Device Types /
-> > > +RPMB Device / Device Operation}
-> > > +
-> > > +The driver MUST configure and initialize virtqueue for the requests received.
-> > 
-> > received where? why isn't it legal to e.g. check feature bits and then reset?
-> 
-> Received from other modules who calls virtio rpmb driver.
-> Because RPMB frames are not packed by driver.
-> What driver should do is format the RPMB frames it received and for it to virtqueue, then send to device.
-
-OK pls write this up in the spec.
-
-
-> > > +
-> > > +\devicenormative{\subsubsection}{Device Operation}{Device Types /
-> > > +RPMB Device / Device Operation}
-> > > +
-> > > +The virtio-rpmb device could be backed in a number of ways. It SHOULD
-> > > +   keep consistent behaviors with hardware as described in paragraph
-> > > +   6.6.22 of \hyperref[intro:eMMC]{eMMC}, 12.4 of \hyperref[intro:UFS]{UFS}
-> > > +   or 8.10 of \hyperref[intro:NVMe]{NVMe}.
-> > > Some elements are maintained
-> > > +   by the device:
-> > > +\begin{enumerate}
-> > > +\item The device maintains an one time programmable authentication key.
-> > > +   It cannot be overwritten, erased or read. The key is used to
-> > > +   authenticate the accesses when MAC is calculated. This key MUST be
-> > > +   kept regardless of device reset or reboot.
-> > > +\item The device maintains a read-only monotonic write counter. It MUST
-> > > +   be initialized to zero and added by one automatically along with
-> > > +   successful write operation. The value cannot be reset. After
-> > > +   the counter has reached its maximum value 0xFFFF FFFF, it will
-> > > +   not be incremented anymore. This counter MUST be kept regardless
-> > > +   of device reset or reboot.
-> > > +\item The device maintains the data for read/write via authenticated
-> > > +   access.
-> > > +\end{enumerate}
-> > > +
-> > 
-> > 
-> > 
-> > What I have gathered from above is really just a counter and a key added to a
-> > storage device.
-> > 
-> > 	Key: you must have the key to write. It's programmed into the
-> > 	device at some point by manufacturer.
-> > 	So later, only someone who got key from manufacturer can write.
-> > 	Data is also authenticated with the key, so if you got
-> > 	the key from manufacturer you can verify it's valid.
-> > 
-> > 	What if you didn't get the key but you steal the data
-> > 	in transit to storage device somehow? You could
-> > 	replay it to the device and overwrite valid data.
-> > 	To this end device maintains write counter,
-> > 	so you can't.
-> > 
-> > 	What if you can pretend write failed, or filter out writes to pretend
-> > 	they succeeded? First write counter will be wrong, but it's tricky for
-> > 	applications to verify the counter: after all an application can crash.
-> > 	So each write is followed by a response and users must validate MAC to
-> > 	make sure write made it to the device.
-> > 
-> > 
-> > 	On the other hand, what if again you didn't get the key but you steal
-> > 	the read response?  You could replay that to the application.  To this
-> > 	end read requests include a random value and it's copied to the
-> > 	response. Application can put e.g. a counter there.
-> > 
-> > 
-> > 
-> > I think we are coming back full circle and I would like to ask: so why does it not
-> > make sense to add this functionality to a block device, or a scsi device? We'd get
-> > lots of goodies such as multiqueue, for free.
-> > 
-> > 
-> > If we implement above in a hypervisor in software, we can just ignore all
-> > random hardware limitations, and support e.g. arbitrary size of writes, arbitrary
-> > hash etc etc.
-> > 
-> > So I think this is the reason you are making it a separate device and are trying to
-> > support so many messy formats is because you are thinking about pass-through.
-> > 
-> > However, I note that neither driver nor the hypervisor really care about things
-> > like order of fields or endian-ness.
-> > It's only the MAC calculations that are affected.
-> > 
-> > So my suggestion is, for now just define a clean minimal interface, with some
-> > kind of enumerator for an application to discover the specific MAC used.  And
-> > when hypervisor is forwarding the data to the device, it can move fields around,
-> > swap endian-ness or whatever.  Will cost some performance but it does not look
-> > like this device is fast path anyway.
-> > 
-> > And I am guessing most people do trust the hypervisor and so they will happily
-> > just use a clean software implementation.
-> > 
-> 
-> We can simplify the spec by supporting JEDEC only, single RPMB partition.
-> But compatibility with hardware RPMB will benefit developer/user to maintain
-> a same suite of RPMB APIs,  structures, operations in both virtualization and bare metal.
-> We can add some feature bits for extended optimization requirements.
-
-I don't know, this picks and chooses hardware parts to copy
-and I'm not sure what do you base what to emulate on.
-E.g. doesn't userspace also assume RPMB is part of a storage device?
-
-It would make sense to me if you just emulated encrypted parts.
-
-
--- 
-MST
-
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+DQoNCj4gPiA+ID4gKyBcbmV3bGluZVx1cmx7aHR0cHM6Ly93d3cubnZtZXhwcmVzcy5vcmcvd3At
+Y29udGVudC91cGxvYWRzL05WTV9FDQo+ID4gPiA+ICsgeHByZQ0KPiA+ID4gPiArIHNzX1Jldmlz
+aW9uXzEuMy5wZGZ9XFwNCj4gPiA+ID4NCj4gPiA+ID4gIFxlbmR7bG9uZ3RhYmxlfQ0KPiA+ID4g
+Pg0KPiA+ID4NCj4gPiA+IEF0IHRoaXMgc3RhZ2UgSSBzdWdnZXN0IHdlIGF2b2lkIG52bWUuIE1p
+eCBvZiBMRSBhbmQgQkUgaW4gdGhlIGZyYW1lDQo+ID4gPiBpcyBqdXN0IHRvbyBuYXN0eS4gQW5k
+IEFUTSBMaW51eCBvbmx5IHN1cHBvcnRzIFVGUy9NTUMuDQo+ID4gPg0KPiA+DQo+ID4gUmVtb3Zl
+IGFsbCBjb250ZW50cyBvZiBOVk1lIFJQTUIgYXQgdGhpcyBwaGFzZSB0byBzaW1wbGlmeSB0aGUg
+c3BlYz8NCj4gDQo+IFdoeSBub3QuDQoNCkl0J3MgcmVtb3ZlZCBpbiBWNC4NCg0KDQo+ID4gPiA+
+ICtcaXRlbVtcZmllbGR7aWR9XSBpcyB0aGUgaWRlbnRpZmllciBvZiBSUE1CIHBhcnRpdGlvbnMu
+DQo+ID4gPg0KPiA+ID4gV2hhdCBkb2VzIHRoaXMgbWVhbj8gd2hhdCBhcmUgdGhlIHBhcnRpdGlv
+bnM/IERpZCB5b3UgbWVhbiBvZiB0aGUgZGV2aWNlPw0KPiA+ID4NCj4gPiA+IEkgc3VzcGVjdCB3
+aGF0IGlzIGdvaW5nIG9uIGlzIHRoZXJlJ3MgYW4gYWN0dWFsIGRldmljZSBiZWhpbmQgdGhpcywg
+YW5kIHRoaXMgaXMNCj4gaXRzIElELg0KPiA+ID4gV2hpY2ggYWdhaW4gYmVncyB0aGUgcXVlc3Rp
+b24gd2hldGhlciB0aGlzIHNob3VsZCBqdXN0IGJlIGEgcGFydCBvZg0KPiA+ID4gYSBibGsgb3Ig
+c2NzaSBkZXZpY2UuDQo+ID4NCj4gPiBJdCdzIGZvciBtdWx0aXBsZSBSUE1CIHJlZ2lvbnMuIFJQ
+TUIgc3VwcG9ydHMgdXAgdG8gNCByZWdpb25zIGZvciBVRlMgMy4wIG9yDQo+IE5WTWUgMS4zLg0K
+PiANCj4gU28gYSBkZXZpY2Ugd2l0aCAxIHJlZ2lvbiBpdCdzIGFsd2F5cyAwPw0KPiANCg0KRm9y
+IHRoZSBkZXZpY2Ugd2l0aCBvbmx5IDEgcmVnaW9uLCBubyBzdWNoIGl0ZW0gcmVxdWlyZWQuDQpU
+aGlzIGlzIHJlbW92ZWQgaW4gVjQgZm9yIHNpbXBsaWNpdHkuIA0KDQoNCj4gPiA+ID4gK1xkZXZp
+Y2Vub3JtYXRpdmV7XHN1YnNlY3Rpb259e0RldmljZSBJbml0aWFsaXphdGlvbn17RGV2aWNlIFR5
+cGVzDQo+ID4gPiA+ICsvIFJQTUIgRGV2aWNlIC8gRGV2aWNlIEluaXRpYWxpemF0aW9ufQ0KPiA+
+ID4gPiArDQo+ID4gPiA+ICtcYmVnaW57ZW51bWVyYXRlfQ0KPiA+ID4gPiArXGl0ZW0gVGhlIHZp
+cnRxdWV1ZSBpcyBpbml0aWFsaXplZC4NCj4gPiA+ID4gK1xpdGVtIFRoZSBhdXRoZW50aWNhdGlv
+biBrZXkgb2YgZGV2aWNlIE1VU1QgTk9UIGJlIHByb2dyYW1tZWQgYXQNCj4gPiA+ID4gK3RoZQ0K
+PiA+ID4gZmlyc3QgZGV2aWNlIGluaXRpYWxpemF0aW9uLg0KPiA+ID4NCj4gPiA+IFdoYXQgaXMg
+ImZpcnN0IGRldmljZSBpbml0aWFsaXphdGlvbiI/IFRoZSBjb25jZXB0IGRvZXMgbm90IHNlZW0g
+dG8NCj4gPiA+IGFwcGx5IHRvIHZpcnR1YWwgZGV2aWNlcy4gSG93IGFib3V0IHdlIGp1c3QgaGF2
+ZSBkZXZpY2UNCj4gPiA+IHByZS1pbml0aWFsaXplZCB0byBzb21lIGtleT8gT3IgbWF5YmUgZGV2
+aWNlIGNhbiBiZSBpbiB0d28gc3RhdGVzLCBrZXkNCj4gcHJvZ3JhbW1pbmcgYW5kIG9wZXJhdGlv
+bj8NCj4gPg0KPiA+IEkgd2lsbCBjaGFuZ2UgdGhlIHN0YXRlbWVudC4NCj4gPiBEZXZpY2UgTVVT
+VCBOT1QgcHJlLWluaXRpYWxpemVkIGEgUlBNQiBrZXkuDQo+ID4gVGhlIG9ubHkgc291cmNlIG9m
+IHRoZSBrZXkgaXMgZnJvbSBWSVJUSU9fUlBNQl9SRVFfUFJPR1JBTV9LRVkNCj4gcmVxdWVzdC4N
+Cj4gPiBCZWZvcmUgUlBNQiBpcyBwcm9ncmFtbWVkLCByZWFkL3dyaXRlL3JlYWQgd3JpdGUgY291
+bnRlciB3aWxsIGZhaWwgd2l0aA0KPiAweDAwMDcuDQo+ID4NCj4gPiA+DQo+ID4gPiBBbGwgY29u
+Zm9ybWFuY2UgY2xhdXNlcyBiZWxvbmcgaW4gY29uZm9ybWFuY2Ugc2VjdGlvbnMuICBoZXJlIGFu
+ZA0KPiBlbHNld2hlcmUuDQo+ID4NCj4gPiBUaGFua3MuIEkgd2lsbCBhZGQgaXQgYWZ0ZXIgdGhl
+IHNrZWxldG9uIGlzIHN0YWJsZS4NCj4gDQo+IEknZCByYXRoZXIgd2UgdHJ5IHRvIGZpbmFsaXpl
+IGl0IGFsbCBpbiBvbmUgZ28sIGRvbid0IGhhdmUgdGhlIHRpbWUgdG8gcmV2aWV3DQo+IGV2ZXJ5
+dGhpbmcgdHdpY2UgOikNCg0KDQpTdXJlLiBJdCdzIGFkZGVkIHRvIFY0IHdoaWNoIGhhZCBiZWVu
+IHNlbnQgb3V0Lg0KDQoNCg0KPiA+ID4gPiArXGl0ZW1bXGZpZWxke25vbmNlfV0gaXMgYSByYW5k
+b20gbnVtYmVyDQo+ID4gPg0KPiA+ID4NCj4gPiA+IHJhbmRvbSBob3c/IEkgdGhpbmsgaXQgY2Fu
+IGp1c3QgYmUgYW55dGhpbmcuDQo+ID4NCj4gPiBJIHdpbGwgZGV0YWlsIGl0Lg0KPiA+IEl0IHVz
+ZWQgYnkgdXNlciB3aG8gcmVxdWVzdCBmb3IgcmVhZC9yZWFkX3dyaXRlX2NvdW50ZXIgdG8gcHJv
+dGVjdCByZXBsYXkNCj4gYXR0YWNrLg0KPiANCj4gT2ggc28gaWYgb25lIGNhcmVzIGFib3V0IHJl
+cGxheSwgaXQgbmVlZHMgdG8gYmUgaGFyZCB0byBwcmVkaWN0Lg0KPiANCg0KWWVzLiBUaGlzIGlz
+IHRoZSByZXNwb25zaWJpbGl0eSBmb3IgdGhlIGNhbGxlciB0byBmaWxsIGEgcmFuZG9tIHRvIHBy
+b3RlY3QgZnJvbSByZXBsYXkgYXR0YWNrLg0KDQoNCj4gPiA+ID4gK1xpdGVtW1xmaWVsZHtibG9j
+a19jb3VudH1dIGlzIHRoZSBudW1iZXIgb2YgYmxvY2tzICgyNTZCIGZvciBKRURFQyBhbmQNCj4g
+NTEyQg0KPiA+ID4gPiArICAgZm9yIE5WTWUpIHJlcXVlc3RlZCB0byBiZSByZWFkL3dyaXR0ZW4u
+DQo+ID4gPg0KPiA+ID4gY2FuJ3QgdGhpcyBiZSBpbnR1aXRlZCBmcm9tIHRoZSBidWZmZXIgc2l6
+ZSBzb21laG93Pw0KPiA+ID4NCj4gPiA+IEkgZG9uJ3QgcmVhbGx5IHVuZGVyc3RhbmQgaG93IGNh
+biB5b3UgYm90aCBoYXZlIGJsb2NrX2NvdW50IGFuZCBhDQo+ID4gPiBmaXhlZCBzaXplIGRhdGEu
+IGhvdyBkb2VzIHRoaXMgbWFrZSBzZW5zZT8NCj4gPg0KPiA+IFRoZSBmaXhlZCBkYXRhIHJlZmVy
+IHRvIHRoZSBzaXplIG9mIG9uZSBibG9jayBjYW4gYmUgcmVhZC93cml0dGVuLg0KPiA+IFRoZSBi
+bG9jayBjb3VudCByZWZlcnMgdG8gaG93IG1hbnkgMjU2IHVuaXRzIGFyZSByZXF1ZXN0ZWQgaW4g
+b25lIHJlYWQvd3JpdGUNCj4gcmVxdWVzdC4NCj4gPg0KPiA+IEV4YW1wbGUsIHJlYWQgcmVxdWVz
+dCBvbiBKRURFQyBSUE1CIHdpdGggdHdvIGJsb2NrcyAoMjU2QioyKToNCj4gPiBVc2VyIHdpbGwg
+c2VuZCAzIGZyYW1lcywgdGhlIGZpcnN0IGlzIHRoZSBmcmFtZSBmaWxsZWQgYnkgdXNlciwgd2l0
+aCByZXF1ZXN0IHR5cGUsDQo+IGFkZHJlc3MsIG5vbmNlIGV0Yy4NCj4gPiBUaGUgbGFzdCAyIGZy
+YW1lcyBhcmUgZmlsbGVkIGJ5IGRldmljZSB3aXRoIGRhdGEsIE1BQywgbm9uY2UsIHJlc3VsdCBl
+dGMuDQo+IA0KPiANCj4gU28gcGxlYXNlIG1hcCB0aGlzIHRvIHZpcnRpbyBidWZmZXJzIGFuZCBk
+b2N1bWVudCB0aGUgbWFwcGluZy4NCj4gDQoNCk5vdCBpbmNsdWRlZCBpbiBWNC4gV2lsbCBtZW50
+aW9uIGl0IGluIFY1DQoNCg0KDQo+ID4gPiA+ICtcaXRlbVtWSVJUSU9fUlBNQl9SRVFfUkVTVUxU
+X1JFQURdIEl0IGlzIHVzZWQgZm9sbG93aW5nIHdpdGggdGhlDQo+ID4gPiA+ICtvdGhlcg0KPiA+
+ID4gcmVxdWVzdA0KPiA+ID4gPiArICAgdHlwZXMgZm9yIHJldHVybmVkIHJlc3VsdCBpbiBvbmUg
+b3IgbXVsdGlwbGUgUlBNQiBmcmFtZXMuDQo+ID4gPg0KPiA+ID4gU28gZWFjaCB3cml0ZSByZXF1
+ZXN0IG11c3QgYmUgZm9sbG93ZWQgYnkgYSBzdGF0dXMgcmVxdWVzdC4gIFRoaXMNCj4gPiA+IGp1
+c3Qgc2VlbXMgbGlrZSBhIHdhc3RlLiBXaHkgbm90IHJldHVybiB0aGUgcmVzdWx0IGltbWVkaWF0
+ZWx5IHdpdGgNCj4gPiA+IHRoZSBvcGVyYXRpb24/ICBNYXliZSBVRlMgZG9lc24ndCBzdXBwb3J0
+IHRoaXMgYnV0IHZpcnRpbyBzdXJlIGRvZXMuDQo+ID4gPg0KPiA+ID4gRG9lcyBkZXZpY2UgaGF2
+ZSB0byBtYWludGFpbiB0aGUgbGFzdCByZXF1ZXN0IGluIG5vbi12b2xhdGlsZSBtZW1vcnkNCj4g
+PiA+IGFuZCBwZXJzaXN0IGFjcm9zcyByZXNldHM/ICBZb3UgZG8gbm90IGxpc3QgaXQgYXMgYmVp
+bmcgcGVyc2lzdGVudA0KPiA+ID4gYmVsb3cuIFNvIEkgd291bGQganVzdCBkcm9wIHRoaXMgcmVx
+dWVzdCB0eXBlIGFuZCBoYXZlIGRyaXZlciBtYWludGFpbiBpdCBpbg0KPiBndWVzdCBtZW1vcnku
+DQo+ID4NCj4gPiBJZiBWSVJUSU9fUlBNQl9SRVFfUkVTVUxUX1JFQUQgaXMgbm90IHJlcXVlc3Qg
+Zm9yIHdyaXRlL3Byb2dyYW1fa2V5LA0KPiBvcGVyYXRpb24gd2lsbCBiZSBwZXJmb3JtZWQgYnV0
+IG5vIHJlc3VsdCByZXR1cm5lZC4NCj4gPiBJdOKAmXMgZm9sbG93ZWQgYnkgd3JpdGUvcHJvZ3Jh
+bV9rZXkgcmVxdWVzdCBpbiBtb3N0IGNhc2VzLiBEZXZpY2UgZG9lcyBub3QNCj4gbmVlZCB0byBt
+YWludGFpbiBpdCBpZiB1c2VyIGRvZXMgbm90IHJlcXVlc3QgZm9yIGl0Lg0KPiA+IEtlZXBpbmcg
+aXQgZm9yIGNvbXBhdGliaWxpdHkgd2l0aCBoYXJkd2FyZSBkb2VzIG1ha2Ugc2Vuc2UgZm9yIGEg
+dW5pZmllZA0KPiBzb2x1dGlvbiByZWdhcmRsZXNzIGJhcmUgbWV0YWwgb3IgdmlydHVhbGl6YXRp
+b24uDQo+IA0KPiANCj4gDQo+IFNvIHdoYXQgaXMgd3Jvbmcgd2l0aCBkcml2ZXIgZG9pbmcgaXQ/
+DQoNCg0KVG8gYW5zd2VyIHlvdXIgcHJldmlvdXMgcXVlc3Rpb24gZmlyc3RseToNCkkgZG9uJ3Qg
+dGhpbmsgdGhlIGRldmljZSBzaG91bGQgbWFpbnRhaW4gdGhlIGxhc3QgcmVxdWVzdCBpbiBtZW1v
+cnkgYW5kIHBlcnNpc3QgYWNyb3NzIHJlc2V0cy4gDQpCZWNhdXNlIHRoZSBWSVJUSU9fUlBNQl9S
+RVFfUkVTVUxUX1JFQUQgcmVxdWVzdCBpcyBzZW50IHRvIHRoZSBkZXZpY2UgdG9nZXRoZXIgd2l0
+aCB0aGUgb3RoZXIgcmVxdWVzdHMgbGlrZSBWSVJUSU9fUlBNQl9SRVFfUFJPR1JBTV9LRVkgb3Ig
+VklSVElPX1JQTUJfUkVRX0RBVEFfV1JJVEUuDQpUaGUgZGV2aWNlIGNhbiBjaGVjayB0aGUgVklS
+VElPX1JQTUJfUkVRX1JFU1VMVF9SRUFEIGlzIHJlcXVlc3RlZCB3aGVuIGl0IHJlY2VpdmVzIHRo
+ZSB0d28gcmVxdWVzdHMuDQpObyBzdWNoIHVzYWdlIHRoYXQgc2VuZGluZyBWSVJUSU9fUlBNQl9S
+RVFfUkVTVUxUX1JFQUQgYXQgZmlyc3QgYW5kIFZJUlRJT19SUE1CX1JFUV9SRVNVTFRfUkVBRCB0
+aGUgc2Vjb25kIGZvciBzb21lIHRpbWUuDQpCZWNhdXNlIG5vYm9keSBwcm9taXNlcyBubyBhbnkg
+bmV3IHJlcXVlc3RzIG9wZXJhdGVkIGR1cmluZyB0aGUgdGltZSBpbnRlcnZhbC4NCg0KRm9yIHlv
+dXIgc2Vjb25kIHF1ZXN0aW9uOg0KVGhlIHJlcXVpcmVtZW50IGFsd2F5cyBkZXBlbmRzIG9uIHRo
+ZSBjYWxsZXIuIFRoaXMgYWxpZ25zIHdpdGggdGhlIG5hdGl2ZSwgYW5kIG1ha2UgdGhlIGRyaXZl
+ciBwdXJlLiANClRoZSBkcml2ZXIganVzdCBkb2VzIG9uZSB0aGluZzogZm9ybWF0IHRoZSByZXF1
+ZXN0IGZyYW1lcyB0byB2aXJ0cXVldWUgYnV0IG5vdCBhY2Nlc3MgdGhlIGNvbnRlbnQgb2YgdGhl
+IGZyYW1lLg0KDQoNCg0KPiA+ID4gPiBGb3INCj4gPiA+ID4gKyAgIFZJUlRJT19SUE1CX1JFUV9Q
+Uk9HUkFNX0tFWSBhbmQNCj4gVklSVElPX1JQTUJfUkVRX0RBVEFfV1JJVEUsDQo+ID4gPiBpZiBi
+bG9jayBjb3VudCBoYXMNCj4gPiA+ID4gKyAgIG5vdCBiZWVuIHNldCB0byAxIG9mIFZJUlRJT19S
+UE1CX1JFUV9SRVNVTFRfUkVBRCByZXF1ZXN0LCB0aGVuDQo+ID4gPiA+ICsgICBWSVJUSU9fUlBN
+Ql9SRVNfR0VORVJBTF9GQUlMVVJFIFNIQUxMIGJlIGluZGljYXRlZC4NCj4gPiA+ID4gKw0KPiA+
+ID4gPiArXGVuZHtkZXNjcmlwdGlvbn0NCj4gPiA+ID4gK0lmIGF1dGhldGljYXRpb24ga2V5IHdh
+cyBwcm9ncmFtbWVkIHN1Y2Nlc3NmdWxseSwgdGhlIGRldmljZQ0KPiA+ID4gPiArU0hBTEwgcmV0
+dXJuDQo+ID4gPiB3aXRoIGEgTUFDIGZvciBhbnkgb3BlcmF0aW9uIHJlcXVlc3RzLg0KPiA+ID4N
+Cj4gPiA+IExvdHMgb2YgdHlwb3MgYWJvdmUgbWFrZSBpdCBwcmV0dHkgaGFyZCB0byBmaWd1cmUg
+b3V0Lg0KPiA+ID4NCj4gPiA+ID4gKw0KPiA+ID4gPiArXGRyaXZlcm5vcm1hdGl2ZXtcc3Vic3Vi
+c2VjdGlvbn17RGV2aWNlIE9wZXJhdGlvbn17RGV2aWNlIFR5cGVzIC8NCj4gPiA+ID4gK1JQTUIg
+RGV2aWNlIC8gRGV2aWNlIE9wZXJhdGlvbn0NCj4gPiA+ID4gKw0KPiA+ID4gPiArVGhlIGRyaXZl
+ciBNVVNUIGNvbmZpZ3VyZSBhbmQgaW5pdGlhbGl6ZSB2aXJ0cXVldWUgZm9yIHRoZSByZXF1ZXN0
+cw0KPiByZWNlaXZlZC4NCj4gPiA+DQo+ID4gPiByZWNlaXZlZCB3aGVyZT8gd2h5IGlzbid0IGl0
+IGxlZ2FsIHRvIGUuZy4gY2hlY2sgZmVhdHVyZSBiaXRzIGFuZCB0aGVuIHJlc2V0Pw0KPiA+DQo+
+ID4gUmVjZWl2ZWQgZnJvbSBvdGhlciBtb2R1bGVzIHdobyBjYWxscyB2aXJ0aW8gcnBtYiBkcml2
+ZXIuDQo+ID4gQmVjYXVzZSBSUE1CIGZyYW1lcyBhcmUgbm90IHBhY2tlZCBieSBkcml2ZXIuDQo+
+ID4gV2hhdCBkcml2ZXIgc2hvdWxkIGRvIGlzIGZvcm1hdCB0aGUgUlBNQiBmcmFtZXMgaXQgcmVj
+ZWl2ZWQgYW5kIGZvciBpdCB0bw0KPiB2aXJ0cXVldWUsIHRoZW4gc2VuZCB0byBkZXZpY2UuDQo+
+IA0KPiBPSyBwbHMgd3JpdGUgdGhpcyB1cCBpbiB0aGUgc3BlYy4NCj4gDQoNCk9LLiBOb3QgaW5j
+bHVkZWQgaW4gVjQuIFdpbGwgYWRkIGl0IHRvIFY1Lg0KDQoNCj4gPiA+ID4gKw0KPiA+ID4gPiAr
+XGRldmljZW5vcm1hdGl2ZXtcc3Vic3Vic2VjdGlvbn17RGV2aWNlIE9wZXJhdGlvbn17RGV2aWNl
+IFR5cGVzIC8NCj4gPiA+ID4gK1JQTUIgRGV2aWNlIC8gRGV2aWNlIE9wZXJhdGlvbn0NCj4gPiA+
+ID4gKw0KPiA+ID4gPiArVGhlIHZpcnRpby1ycG1iIGRldmljZSBjb3VsZCBiZSBiYWNrZWQgaW4g
+YSBudW1iZXIgb2Ygd2F5cy4gSXQgU0hPVUxEDQo+ID4gPiA+ICsgICBrZWVwIGNvbnNpc3RlbnQg
+YmVoYXZpb3JzIHdpdGggaGFyZHdhcmUgYXMgZGVzY3JpYmVkIGluIHBhcmFncmFwaA0KPiA+ID4g
+PiArICAgNi42LjIyIG9mIFxoeXBlcnJlZltpbnRybzplTU1DXXtlTU1DfSwgMTIuNCBvZg0KPiBc
+aHlwZXJyZWZbaW50cm86VUZTXXtVRlN9DQo+ID4gPiA+ICsgICBvciA4LjEwIG9mIFxoeXBlcnJl
+ZltpbnRybzpOVk1lXXtOVk1lfS4NCj4gPiA+ID4gU29tZSBlbGVtZW50cyBhcmUgbWFpbnRhaW5l
+ZA0KPiA+ID4gPiArICAgYnkgdGhlIGRldmljZToNCj4gPiA+ID4gK1xiZWdpbntlbnVtZXJhdGV9
+DQo+ID4gPiA+ICtcaXRlbSBUaGUgZGV2aWNlIG1haW50YWlucyBhbiBvbmUgdGltZSBwcm9ncmFt
+bWFibGUgYXV0aGVudGljYXRpb24ga2V5Lg0KPiA+ID4gPiArICAgSXQgY2Fubm90IGJlIG92ZXJ3
+cml0dGVuLCBlcmFzZWQgb3IgcmVhZC4gVGhlIGtleSBpcyB1c2VkIHRvDQo+ID4gPiA+ICsgICBh
+dXRoZW50aWNhdGUgdGhlIGFjY2Vzc2VzIHdoZW4gTUFDIGlzIGNhbGN1bGF0ZWQuIFRoaXMga2V5
+IE1VU1QgYmUNCj4gPiA+ID4gKyAgIGtlcHQgcmVnYXJkbGVzcyBvZiBkZXZpY2UgcmVzZXQgb3Ig
+cmVib290Lg0KPiA+ID4gPiArXGl0ZW0gVGhlIGRldmljZSBtYWludGFpbnMgYSByZWFkLW9ubHkg
+bW9ub3RvbmljIHdyaXRlIGNvdW50ZXIuIEl0IE1VU1QNCj4gPiA+ID4gKyAgIGJlIGluaXRpYWxp
+emVkIHRvIHplcm8gYW5kIGFkZGVkIGJ5IG9uZSBhdXRvbWF0aWNhbGx5IGFsb25nIHdpdGgNCj4g
+PiA+ID4gKyAgIHN1Y2Nlc3NmdWwgd3JpdGUgb3BlcmF0aW9uLiBUaGUgdmFsdWUgY2Fubm90IGJl
+IHJlc2V0LiBBZnRlcg0KPiA+ID4gPiArICAgdGhlIGNvdW50ZXIgaGFzIHJlYWNoZWQgaXRzIG1h
+eGltdW0gdmFsdWUgMHhGRkZGIEZGRkYsIGl0IHdpbGwNCj4gPiA+ID4gKyAgIG5vdCBiZSBpbmNy
+ZW1lbnRlZCBhbnltb3JlLiBUaGlzIGNvdW50ZXIgTVVTVCBiZSBrZXB0IHJlZ2FyZGxlc3MNCj4g
+PiA+ID4gKyAgIG9mIGRldmljZSByZXNldCBvciByZWJvb3QuDQo+ID4gPiA+ICtcaXRlbSBUaGUg
+ZGV2aWNlIG1haW50YWlucyB0aGUgZGF0YSBmb3IgcmVhZC93cml0ZSB2aWEgYXV0aGVudGljYXRl
+ZA0KPiA+ID4gPiArICAgYWNjZXNzLg0KPiA+ID4gPiArXGVuZHtlbnVtZXJhdGV9DQo+ID4gPiA+
+ICsNCj4gPiA+DQo+ID4gPg0KPiA+ID4NCj4gPiA+IFdoYXQgSSBoYXZlIGdhdGhlcmVkIGZyb20g
+YWJvdmUgaXMgcmVhbGx5IGp1c3QgYSBjb3VudGVyIGFuZCBhIGtleQ0KPiA+ID4gYWRkZWQgdG8g
+YSBzdG9yYWdlIGRldmljZS4NCj4gPiA+DQo+ID4gPiAJS2V5OiB5b3UgbXVzdCBoYXZlIHRoZSBr
+ZXkgdG8gd3JpdGUuIEl0J3MgcHJvZ3JhbW1lZCBpbnRvIHRoZQ0KPiA+ID4gCWRldmljZSBhdCBz
+b21lIHBvaW50IGJ5IG1hbnVmYWN0dXJlci4NCj4gPiA+IAlTbyBsYXRlciwgb25seSBzb21lb25l
+IHdobyBnb3Qga2V5IGZyb20gbWFudWZhY3R1cmVyIGNhbiB3cml0ZS4NCj4gPiA+IAlEYXRhIGlz
+IGFsc28gYXV0aGVudGljYXRlZCB3aXRoIHRoZSBrZXksIHNvIGlmIHlvdSBnb3QNCj4gPiA+IAl0
+aGUga2V5IGZyb20gbWFudWZhY3R1cmVyIHlvdSBjYW4gdmVyaWZ5IGl0J3MgdmFsaWQuDQo+ID4g
+Pg0KPiA+ID4gCVdoYXQgaWYgeW91IGRpZG4ndCBnZXQgdGhlIGtleSBidXQgeW91IHN0ZWFsIHRo
+ZSBkYXRhDQo+ID4gPiAJaW4gdHJhbnNpdCB0byBzdG9yYWdlIGRldmljZSBzb21laG93PyBZb3Ug
+Y291bGQNCj4gPiA+IAlyZXBsYXkgaXQgdG8gdGhlIGRldmljZSBhbmQgb3ZlcndyaXRlIHZhbGlk
+IGRhdGEuDQo+ID4gPiAJVG8gdGhpcyBlbmQgZGV2aWNlIG1haW50YWlucyB3cml0ZSBjb3VudGVy
+LA0KPiA+ID4gCXNvIHlvdSBjYW4ndC4NCj4gPiA+DQo+ID4gPiAJV2hhdCBpZiB5b3UgY2FuIHBy
+ZXRlbmQgd3JpdGUgZmFpbGVkLCBvciBmaWx0ZXIgb3V0IHdyaXRlcyB0byBwcmV0ZW5kDQo+ID4g
+PiAJdGhleSBzdWNjZWVkZWQ/IEZpcnN0IHdyaXRlIGNvdW50ZXIgd2lsbCBiZSB3cm9uZywgYnV0
+IGl0J3MgdHJpY2t5IGZvcg0KPiA+ID4gCWFwcGxpY2F0aW9ucyB0byB2ZXJpZnkgdGhlIGNvdW50
+ZXI6IGFmdGVyIGFsbCBhbiBhcHBsaWNhdGlvbiBjYW4gY3Jhc2guDQo+ID4gPiAJU28gZWFjaCB3
+cml0ZSBpcyBmb2xsb3dlZCBieSBhIHJlc3BvbnNlIGFuZCB1c2VycyBtdXN0IHZhbGlkYXRlIE1B
+QyB0bw0KPiA+ID4gCW1ha2Ugc3VyZSB3cml0ZSBtYWRlIGl0IHRvIHRoZSBkZXZpY2UuDQo+ID4g
+Pg0KPiA+ID4NCj4gPiA+IAlPbiB0aGUgb3RoZXIgaGFuZCwgd2hhdCBpZiBhZ2FpbiB5b3UgZGlk
+bid0IGdldCB0aGUga2V5IGJ1dCB5b3Ugc3RlYWwNCj4gPiA+IAl0aGUgcmVhZCByZXNwb25zZT8g
+IFlvdSBjb3VsZCByZXBsYXkgdGhhdCB0byB0aGUgYXBwbGljYXRpb24uICBUbyB0aGlzDQo+ID4g
+PiAJZW5kIHJlYWQgcmVxdWVzdHMgaW5jbHVkZSBhIHJhbmRvbSB2YWx1ZSBhbmQgaXQncyBjb3Bp
+ZWQgdG8gdGhlDQo+ID4gPiAJcmVzcG9uc2UuIEFwcGxpY2F0aW9uIGNhbiBwdXQgZS5nLiBhIGNv
+dW50ZXIgdGhlcmUuDQo+ID4gPg0KPiA+ID4NCj4gPiA+DQo+ID4gPiBJIHRoaW5rIHdlIGFyZSBj
+b21pbmcgYmFjayBmdWxsIGNpcmNsZSBhbmQgSSB3b3VsZCBsaWtlIHRvIGFzazogc28NCj4gPiA+
+IHdoeSBkb2VzIGl0IG5vdCBtYWtlIHNlbnNlIHRvIGFkZCB0aGlzIGZ1bmN0aW9uYWxpdHkgdG8g
+YSBibG9jaw0KPiA+ID4gZGV2aWNlLCBvciBhIHNjc2kgZGV2aWNlPyBXZSdkIGdldCBsb3RzIG9m
+IGdvb2RpZXMgc3VjaCBhcyBtdWx0aXF1ZXVlLCBmb3INCj4gZnJlZS4NCj4gPiA+DQo+ID4gPg0K
+PiA+ID4gSWYgd2UgaW1wbGVtZW50IGFib3ZlIGluIGEgaHlwZXJ2aXNvciBpbiBzb2Z0d2FyZSwg
+d2UgY2FuIGp1c3QNCj4gPiA+IGlnbm9yZSBhbGwgcmFuZG9tIGhhcmR3YXJlIGxpbWl0YXRpb25z
+LCBhbmQgc3VwcG9ydCBlLmcuIGFyYml0cmFyeQ0KPiA+ID4gc2l6ZSBvZiB3cml0ZXMsIGFyYml0
+cmFyeSBoYXNoIGV0YyBldGMuDQo+ID4gPg0KPiA+ID4gU28gSSB0aGluayB0aGlzIGlzIHRoZSBy
+ZWFzb24geW91IGFyZSBtYWtpbmcgaXQgYSBzZXBhcmF0ZSBkZXZpY2UNCj4gPiA+IGFuZCBhcmUg
+dHJ5aW5nIHRvIHN1cHBvcnQgc28gbWFueSBtZXNzeSBmb3JtYXRzIGlzIGJlY2F1c2UgeW91IGFy
+ZSB0aGlua2luZw0KPiBhYm91dCBwYXNzLXRocm91Z2guDQo+ID4gPg0KPiA+ID4gSG93ZXZlciwg
+SSBub3RlIHRoYXQgbmVpdGhlciBkcml2ZXIgbm9yIHRoZSBoeXBlcnZpc29yIHJlYWxseSBjYXJl
+DQo+ID4gPiBhYm91dCB0aGluZ3MgbGlrZSBvcmRlciBvZiBmaWVsZHMgb3IgZW5kaWFuLW5lc3Mu
+DQo+ID4gPiBJdCdzIG9ubHkgdGhlIE1BQyBjYWxjdWxhdGlvbnMgdGhhdCBhcmUgYWZmZWN0ZWQu
+DQo+ID4gPg0KPiA+ID4gU28gbXkgc3VnZ2VzdGlvbiBpcywgZm9yIG5vdyBqdXN0IGRlZmluZSBh
+IGNsZWFuIG1pbmltYWwgaW50ZXJmYWNlLA0KPiA+ID4gd2l0aCBzb21lIGtpbmQgb2YgZW51bWVy
+YXRvciBmb3IgYW4gYXBwbGljYXRpb24gdG8gZGlzY292ZXIgdGhlDQo+ID4gPiBzcGVjaWZpYyBN
+QUMgdXNlZC4gIEFuZCB3aGVuIGh5cGVydmlzb3IgaXMgZm9yd2FyZGluZyB0aGUgZGF0YSB0bw0K
+PiA+ID4gdGhlIGRldmljZSwgaXQgY2FuIG1vdmUgZmllbGRzIGFyb3VuZCwgc3dhcCBlbmRpYW4t
+bmVzcyBvciB3aGF0ZXZlci4NCj4gPiA+IFdpbGwgY29zdCBzb21lIHBlcmZvcm1hbmNlIGJ1dCBp
+dCBkb2VzIG5vdCBsb29rIGxpa2UgdGhpcyBkZXZpY2UgaXMgZmFzdCBwYXRoDQo+IGFueXdheS4N
+Cj4gPiA+DQo+ID4gPiBBbmQgSSBhbSBndWVzc2luZyBtb3N0IHBlb3BsZSBkbyB0cnVzdCB0aGUg
+aHlwZXJ2aXNvciBhbmQgc28gdGhleQ0KPiA+ID4gd2lsbCBoYXBwaWx5IGp1c3QgdXNlIGEgY2xl
+YW4gc29mdHdhcmUgaW1wbGVtZW50YXRpb24uDQo+ID4gPg0KPiA+DQo+ID4gV2UgY2FuIHNpbXBs
+aWZ5IHRoZSBzcGVjIGJ5IHN1cHBvcnRpbmcgSkVERUMgb25seSwgc2luZ2xlIFJQTUIgcGFydGl0
+aW9uLg0KPiA+IEJ1dCBjb21wYXRpYmlsaXR5IHdpdGggaGFyZHdhcmUgUlBNQiB3aWxsIGJlbmVm
+aXQgZGV2ZWxvcGVyL3VzZXIgdG8NCj4gPiBtYWludGFpbiBhIHNhbWUgc3VpdGUgb2YgUlBNQiBB
+UElzLCAgc3RydWN0dXJlcywgb3BlcmF0aW9ucyBpbiBib3RoDQo+IHZpcnR1YWxpemF0aW9uIGFu
+ZCBiYXJlIG1ldGFsLg0KPiA+IFdlIGNhbiBhZGQgc29tZSBmZWF0dXJlIGJpdHMgZm9yIGV4dGVu
+ZGVkIG9wdGltaXphdGlvbiByZXF1aXJlbWVudHMuDQo+IA0KPiBJIGRvbid0IGtub3csIHRoaXMg
+cGlja3MgYW5kIGNob29zZXMgaGFyZHdhcmUgcGFydHMgdG8gY29weSBhbmQgSSdtIG5vdCBzdXJl
+DQo+IHdoYXQgZG8geW91IGJhc2Ugd2hhdCB0byBlbXVsYXRlIG9uLg0KPiBFLmcuIGRvZXNuJ3Qg
+dXNlcnNwYWNlIGFsc28gYXNzdW1lIFJQTUIgaXMgcGFydCBvZiBhIHN0b3JhZ2UgZGV2aWNlPw0K
+PiANCj4gSXQgd291bGQgbWFrZSBzZW5zZSB0byBtZSBpZiB5b3UganVzdCBlbXVsYXRlZCBlbmNy
+eXB0ZWQgcGFydHMuDQo+IA0KDQpXaGF0IGRvIHlvdSByZWZlciB0bywgZm9yIHRoZSBlbmNyeXB0
+ZWQgcGFydHM/DQoNCkhWIGNhbiBiZSByZWdhcmRlZCBhcyBhIHBhcnQgb2YgVENCIG5vcm1hbGx5
+Lg0KU28gSFYgZW11bGF0ZWQgcnBtYiBkZXZpY2UgcHJvdmlkZXMgZ3Vlc3RzIHdpdGggc2VjdXJp
+dHkgaW4gc29tZSBjb250ZW50Lg0KUlBNQiBzdXBwb3J0IGRlcGVuZHMgb24gdGhlIHNvbWUgc3Bl
+Y2lmaWVkIG1lZGlhLiBJZiBIViBjb3VsZCBlbXVsYXRlcyBpdCwgaXQgcHJvdmlkZXMgZ3JlYXQg
+ZmxleGliaWxpdHkgZm9yIHRoZSBHdWVzdC4NCg0KDQoNCg==
 
