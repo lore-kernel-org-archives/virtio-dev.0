@@ -1,117 +1,517 @@
-Return-Path: virtio-dev-return-5913-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-6160-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id DE4A2985CF9
-	for <virtio-dev@lists.oasis-open.org>; Thu,  1 Aug 2019 09:21:44 +0000 (UTC)
-Date: Thu, 1 Aug 2019 10:21:39 +0100
-From: Stefan Hajnoczi <stefanha@redhat.com>
-Message-ID: <20190801092139.GD15179@stefanha-x1.localdomain>
-References: <1564494374-16147-1-git-send-email-yang.huang@intel.com>
- <20190731145723.GA7363@stefanha-x1.localdomain>
- <0B92A36466FABC4D99BAF0BDB1FA8BBC415730B4@shsmsx102.ccr.corp.intel.com>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id B92A7985DCA
+	for <virtio-dev@lists.oasis-open.org>; Tue, 24 Sep 2019 14:43:43 +0000 (UTC)
+From: Mikhail Golubev <Mikhail.Golubev@opensynergy.com>
+Date: Tue, 24 Sep 2019 16:43:23 +0200
+Message-ID: <20190924144323.4590-1-Mikhail.Golubev@opensynergy.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="EP0wieDxd4TSJjHq"
-Content-Disposition: inline
-In-Reply-To: <0B92A36466FABC4D99BAF0BDB1FA8BBC415730B4@shsmsx102.ccr.corp.intel.com>
-Subject: Re: [virtio-dev] [PATCH v2] Add virtio rpmb device specification
-To: "Huang, Yang" <yang.huang@intel.com>
-Cc: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "mst@redhat.com" <mst@redhat.com>, "Zhu, Bing" <bing.zhu@intel.com>, "Winkler, Tomas" <tomas.winkler@intel.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+Subject: [virtio-dev] [PATCH] snd: Add virtio sound device specification
+To: virtio-dev@lists.oasis-open.org
+Cc: Anton Yakovlev <Anton.Yakovlev@opensynergy.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
---EP0wieDxd4TSJjHq
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+From: Anton Yakovlev <Anton.Yakovlev@opensynergy.com>
 
-On Thu, Aug 01, 2019 at 01:14:11AM +0000, Huang, Yang wrote:
-> > -----Original Message-----
-> > From: virtio-dev@lists.oasis-open.org [mailto:virtio-dev@lists.oasis-op=
-en.org]
-> > On Behalf Of Stefan Hajnoczi
-> > Sent: Wednesday, July 31, 2019 22:57
-> > To: Huang, Yang <yang.huang@intel.com>
-> > Cc: virtio-dev@lists.oasis-open.org; mst@redhat.com; Zhu, Bing
-> > <bing.zhu@intel.com>; Winkler, Tomas <tomas.winkler@intel.com>
-> > Subject: Re: [virtio-dev] [PATCH v2] Add virtio rpmb device specificati=
-on
-> >=20
-> > On Tue, Jul 30, 2019 at 09:46:14PM +0800, Huang Yang wrote:
-> > > It is a virtio based RPMB (Replay Protected Memory Block) device.
-> >=20
-> > Please include the request structs.  There is not enough information in=
- this spec
-> > to implement the device.
->=20
-> OK.
->=20
-> > > +\devicenormative{\subsubsection}{Device Operation}{Device Types /
-> > > +RPMB Device / Device Operation}
-> > > +
-> > > +The device provides a simulated RPMB backed by ordinary file or
-> > > +  other medium in host. It SHOULD keep consistent behaviors with
-> >=20
-> > Or it could be a real hardware?  The specification shouldn't discuss th=
-ese
-> > implementation details except to say that virtio-rpmb could be backed i=
-n a
-> > number of ways.
->=20
-> This is a good catch.=20
->=20
-> But how to implement a physical RPMB backed solution is out of scope.
->=20
-> If there are multiple guests who want to use RPMB. And their devices are =
-backed by a same physical RPMB.
-> 1. Who owns key, who owns RPMB. They should share a same key. If Guest1 p=
-rogrammed a Key1, the Guest2 MUST use the same Key1.
-> 2. Device SHOULD  isolate the RPMB space to protect from overwritten betw=
-een guests.
->     But address remapping cannot work. Because address remapping by virti=
-o device will cause to a wrong MAC, it will result to write failure.
-> 3. RPMB capacity is limited up to 16MB. It cannot support the sharing amo=
-ng a large number of guests.
->=20
-> If users want to implement it backed by hardware RPMB, they should have a=
- whole picture design, which is out of scope of the spec.
-> Of course, physical backed RPMB still adapts to the rules of the spec.
-> I will change it to "could be backed in a number of ways."
+This patch proposes virtio specification for new virtio sound device.
 
-Yes, all of this is out of scope.  I think the VIRTIO spec should avoid
-saying "guest" and "host" whenever possible and just stick to "driver"
-and "device".
+The virtio sound card is a virtual audio device supporting output and
+input PCM streams.
 
-VIRTIO is used in other contexts too, like hardware PCI devices or for
-cross-CPU communication without virtualization, so it's nice to be as
-general as we can.
+Signed-off-by: Anton Yakovlev <Anton.Yakovlev@opensynergy.com>
+Signed-off-by: Mikhail Golubev <Mikhail.Golubev@opensynergy.com>
+---
+Fixes from RFC:
+ * Use fixed virtqueue numbers for the control and PCM queues
+ * Use device feature bits to indicate available input/output PCM streams
+ * Place PCM stream configuration into the device configuration space
+ * Add sound device and driver requirements into the "Device Initialization"
+  subsection
+ * Add sound device and driver requirements into the "Device Operation" subsection
+ * Add sound device and driver conformance subsections
 
-> Both simulated and physical RPMB backed solution are implemented on Proje=
-ct ACRN.
-> If you are interested, "Secure Storage Virtualization" in this slide show=
-s a high level design of physical RPMB backed solution:=20
-> https://events.linuxfoundation.org/wp-content/uploads/2017/12/Implement-A=
-ndroid-Tamper-Resistant-Secure-Storage-Bing-Zhu_and-Secure-it-in-Virtualiza=
-tion-Bing-Zhu-Intel-Corporation.pdf
+RFC link:
+https://lists.oasis-open.org/archives/virtio-dev/201908/msg00078.html
 
-Thanks for the link!
+ conformance.tex  |  20 +++
+ content.tex      |   1 +
+ virtio-sound.tex | 405 +++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 426 insertions(+)
+ create mode 100644 virtio-sound.tex
 
---EP0wieDxd4TSJjHq
-Content-Type: application/pgp-signature; name="signature.asc"
+diff --git a/conformance.tex b/conformance.tex
+index 0ac58aa..31595bf 100644
+--- a/conformance.tex
++++ b/conformance.tex
+@@ -183,6 +183,16 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
+ \item \ref{drivernormative:Device Types / Socket Device / Device Operation / Device Events}
+ \end{itemize}
+ 
++\conformance{\subsection}{Sound Driver Conformance}\label{sec:Conformance / Driver Conformance / Sound Driver Conformance}
++
++A sound driver MUST conform to the following normative statements:
++
++\begin{itemize}
++\item \ref{drivernormative:Device Types / Sound Device / Device Initialization}
++\item \ref{drivernormative:Device Types / Sound Device / PCM control requests}
++\item \ref{drivernormative:Device Types / Sound Device / PCM IO requests}
++\end{itemize}
++
+ \conformance{\section}{Device Conformance}\label{sec:Conformance / Device Conformance}
+ 
+ A device MUST conform to the following normative statements:
+@@ -338,6 +348,16 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
+ \item \ref{devicenormative:Device Types / Socket Device / Device Operation / Receive and Transmit}
+ \end{itemize}
+ 
++\conformance{\subsection}{Sound Device Conformance}\label{sec:Conformance / Device Conformance / Sound Device Conformance}
++
++A sound device MUST conform to the following normative statements:
++
++\begin{itemize}
++\item \ref{devicenormative:Device Types / Sound Device / Device Initialization}
++\item \ref{devicenormative:Device Types / Sound Device / PCM control requests}
++\item \ref{devicenormative:Device Types / Sound Device / PCM IO requests}
++\end{itemize}
++
+ \conformance{\section}{Legacy Interface: Transitional Device and Transitional Driver Conformance}\label{sec:Conformance / Legacy Interface: Transitional Device and Transitional Driver Conformance}
+ A conformant implementation MUST be either transitional or
+ non-transitional, see \ref{intro:Legacy
+diff --git a/content.tex b/content.tex
+index 37a2190..4a00884 100644
+--- a/content.tex
++++ b/content.tex
+@@ -5682,6 +5682,7 @@ \subsubsection{Legacy Interface: Framing Requirements}\label{sec:Device
+ \input{virtio-input.tex}
+ \input{virtio-crypto.tex}
+ \input{virtio-vsock.tex}
++\input{virtio-sound.tex}
+ 
+ \chapter{Reserved Feature Bits}\label{sec:Reserved Feature Bits}
+ 
+diff --git a/virtio-sound.tex b/virtio-sound.tex
+new file mode 100644
+index 0000000..68a606e
+--- /dev/null
++++ b/virtio-sound.tex
+@@ -0,0 +1,405 @@
++\section{Sound Device}\label{sec:Device Types / Sound Device}
++
++The virtio sound card is a virtual audio device supporting output and input PCM
++streams. All device control requests are placed into the control virtqueue, all
++I/O requests are placed into the PCM virtqueue.
++
++\subsection{Device ID}\label{sec:Device Types / Sound Device / Device ID}
++
++25
++
++\subsection{Virtqueues}\label{sec:Device Types / Sound Device / Virtqueues}
++
++\begin{description}
++\item[0] controlq
++\item[1] pcmq
++\end{description}
++
++The controlq virtqueue always exists, the pcmq virtqueue only exists if
++the VIRTIO_SND_F_PCM_OUTPUT and/or VIRTIO_SND_F_PCM_INPUT feature is negotiated.
++
++\subsection{Feature bits}\label{sec:Device Types / Sound Device / Feature bits}
++
++\begin{description}
++\item[VIRTIO_SND_F_PCM_OUTPUT (0)] Output PCM stream support.
++\item[VIRTIO_SND_F_PCM_INPUT (1)] Input PCM stream support.
++\end{description}
++
++\subsection{Device configuration layout}\label{sec:Device Types / Sound Device / Device configuration layout}
++
++\begin{lstlisting}
++/* supported PCM sample formats */
++enum {
++    VIRTIO_SND_PCM_FMT_S8 = 0,
++    VIRTIO_SND_PCM_FMT_U8,
++    VIRTIO_SND_PCM_FMT_S16,
++    VIRTIO_SND_PCM_FMT_U16,
++    VIRTIO_SND_PCM_FMT_S32,
++    VIRTIO_SND_PCM_FMT_U32,
++    VIRTIO_SND_PCM_FMT_FLOAT,
++    VIRTIO_SND_PCM_FMT_FLOAT64
++};
++
++/* supported PCM frame rates */
++enum {
++    VIRTIO_SND_PCM_RATE_8000 = 0,
++    VIRTIO_SND_PCM_RATE_11025,
++    VIRTIO_SND_PCM_RATE_16000,
++    VIRTIO_SND_PCM_RATE_22050,
++    VIRTIO_SND_PCM_RATE_32000,
++    VIRTIO_SND_PCM_RATE_44100,
++    VIRTIO_SND_PCM_RATE_48000,
++    VIRTIO_SND_PCM_RATE_64000,
++    VIRTIO_SND_PCM_RATE_88200,
++    VIRTIO_SND_PCM_RATE_96000,
++    VIRTIO_SND_PCM_RATE_176400,
++    VIRTIO_SND_PCM_RATE_192000
++};
++
++/* a PCM stream configuration */
++struct virtio_pcm_stream_config {
++    u8 channels_min;
++    u8 channels_max;
++    le16 formats; /* 1 << VIRTIO_SND_PCM_FMT_XXX */
++    le16 rates; /* 1 << VIRTIO_SND_PCM_RATE_XXX */
++    u16 padding;
++};
++
++/* a device configuration space */
++struct virtio_snd_config {
++    struct virtio_pcm_config {
++        struct virtio_pcm_stream_config output;
++        struct virtio_pcm_stream_config input;
++    } pcm;
++};
++\end{lstlisting}
++
++\subsubsection{Device configuration fields}
++
++The \field{pcm.output} and \field{pcm.input} fields contain PCM stream
++configuration:
++
++\begin{description}
++\item[\field{channels_min}] (driver-read-only) is a minimum number of supported
++channels.
++\item[\field{channels_max}] (driver-read-only) is a maximum number of supported
++channels.
++\item[\field{formats}] (driver-read-only) is supported sample format bit map.
++\item[\field{rates}] (driver-read-only) is supported frame rate bit map.
++\end{description}
++
++\subsection{Device Initialization}
++
++\begin{enumerate}
++\item If the VIRTIO_SND_F_PCM_OUTPUT feature is negotiated, \field{pcm.output}
++contains valid output PCM stream configuration.
++\item If the VIRTIO_SND_F_PCM_INPUT feature is negotiated, \field{pcm.input}
++contains valid input PCM stream configuration.
++\end{enumerate}
++
++\devicenormative{\subsubsection}{Device Initialization}{Device Types / Sound Device / Device Initialization}
++
++\begin{enumerate}
++\item The device MUST NOT set the not defined format and rate bits.
++\item The device MUST initialize padding bytes \field{pcm.output.padding} and
++\field{pcm.input.padding} to 0.
++\end{enumerate}
++
++\drivernormative{\subsubsection}{Device Initialization}{Device Types / Sound Device / Device Initialization}
++
++\begin{enumerate}
++\item The driver MUST configure and initialize all virtqueues.
++\item The driver SHOULD ignore the not defined format and rate bits.
++\end{enumerate}
++
++\subsection{Device Operation}\label{sec:Device Types / Sound Device / Device Operation}
++
++All control messages are placed into the controlq virtqueue and use the following
++layout structure and definitions:
++
++\begin{lstlisting}
++enum {
++    /* PCM control request types */
++    VIRTIO_SND_R_PCM_CHMAP_INFO = 0,
++    VIRTIO_SND_R_PCM_SET_FORMAT,
++    VIRTIO_SND_R_PCM_PREPARE,
++    VIRTIO_SND_R_PCM_START,
++    VIRTIO_SND_R_PCM_STOP,
++    VIRTIO_SND_R_PCM_PAUSE,
++    VIRTIO_SND_R_PCM_UNPAUSE,
++
++    /* generic status codes */
++    VIRTIO_SND_S_OK = 0x8000,
++    VIRTIO_SND_S_BAD_MSG,
++    VIRTIO_SND_S_NOT_SUPP,
++    VIRTIO_SND_S_IO_ERR
++};
++
++struct virtio_snd_ctl_msg {
++    /* device-read-only data */
++    le32 request_code;
++    u8 request_payload[];
++    /* device-writable data */
++    le32 response_status;
++    u8 response_payload[];
++};
++\end{lstlisting}
++
++A generic control message consists of request and response parts and contains
++the following fields:
++
++\begin{description}
++\item[\field{request_code}] (device-read-only) specifies a device request code
++(VIRTIO_SND_R_*).
++\item[\field{request_payload}] (device-read-only) contains request-specific
++data.
++\item[\field{response_status}] (device-writable) specifies a device response
++status (VIRTIO_SND_S_*).
++\item[\field{response_payload}] (device-writable) contains response-specific
++data.
++\end{description}
++
++Unless stated otherwise, the \field{request_payload} and \field{response_payload}
++fields are empty.
++
++The \field{response_status} field contains one of the following values:
++
++\begin{itemize*}
++\item VIRTIO_SND_S_OK: success.
++\item VIRTIO_SND_S_BAD_MSG: a control message is malformed or contains invalid
++parameters.
++\item VIRTIO_SND_S_NOT_SUPP: requested operation or parameters are not supported.
++\item VIRTIO_SND_S_IO_ERR: an I/O error occurred.
++\end{itemize*}
++
++\subsubsection{Device Operation: PCM control requests}
++
++A PCM stream has the following command lifecycle:
++
++\begin{enumerate}
++\item Set format
++\item Prepare
++\item Output only: transfer data for prebuffing
++\item Start
++\item Transfer data to/from the PCM device
++\begin{enumerate}
++	\item Pause
++	\item Unpause
++\end{enumerate}
++\item Stop
++\end{enumerate}
++
++PCM control requests have or consist of a fixed header with the following
++layout structure:
++
++\begin{lstlisting}
++/* supported PCM stream types */
++enum {
++    VIRTIO_SND_PCM_T_OUTPUT = 0,
++    VIRTIO_SND_PCM_T_INPUT
++};
++
++/* PCM control request header */
++struct virtio_snd_pcm_hdr {
++    le32 code;
++    le32 stream;
++};
++\end{lstlisting}
++
++PCM control request fields:
++
++\begin{description}
++\item[\field{code}] (device-read-only) specifies a PCM device request code
++(VIRTIO_SND_R_PCM_*).
++\item[\field{stream}] (device-read-only) specifies a PCM stream type
++(VIRTIO_SND_PCM_T_*).
++\end{description}
++
++\begin{description}
++
++\item[VIRTIO_SND_R_PCM_CHMAP_INFO]
++Query a PCM channel map information for specified stream type.
++
++A response uses the following layout structure and definitions:
++
++\begin{lstlisting}
++/* standard channel position definition */
++enum {
++    VIRTIO_SND_PCM_CH_NONE = 0, /* undefined */
++    VIRTIO_SND_PCM_CH_NA,       /* silent */
++    VIRTIO_SND_PCM_CH_MONO,     /* mono stream */
++    VIRTIO_SND_PCM_CH_FL,       /* front left */
++    VIRTIO_SND_PCM_CH_FR,       /* front right */
++    VIRTIO_SND_PCM_CH_RL,       /* rear left */
++    VIRTIO_SND_PCM_CH_RR,       /* rear right */
++    VIRTIO_SND_PCM_CH_FC,       /* front center */
++    VIRTIO_SND_PCM_CH_LFE,      /* low frequency (LFE) */
++    VIRTIO_SND_PCM_CH_SL,       /* side left */
++    VIRTIO_SND_PCM_CH_SR,       /* side right */
++    VIRTIO_SND_PCM_CH_RC,       /* rear center */
++    VIRTIO_SND_PCM_CH_FLC,      /* front left center */
++    VIRTIO_SND_PCM_CH_FRC,      /* front right center */
++    VIRTIO_SND_PCM_CH_RLC,      /* rear left center */
++    VIRTIO_SND_PCM_CH_RRC,      /* rear right center */
++    VIRTIO_SND_PCM_CH_FLW,      /* front left wide */
++    VIRTIO_SND_PCM_CH_FRW,      /* front right wide */
++    VIRTIO_SND_PCM_CH_FLH,      /* front left high */
++    VIRTIO_SND_PCM_CH_FCH,      /* front center high */
++    VIRTIO_SND_PCM_CH_FRH,      /* front right high */
++    VIRTIO_SND_PCM_CH_TC,       /* top center */
++    VIRTIO_SND_PCM_CH_TFL,      /* top front left */
++    VIRTIO_SND_PCM_CH_TFR,      /* top front right */
++    VIRTIO_SND_PCM_CH_TFC,      /* top front center */
++    VIRTIO_SND_PCM_CH_TRL,      /* top rear left */
++    VIRTIO_SND_PCM_CH_TRR,      /* top rear right */
++    VIRTIO_SND_PCM_CH_TRC,      /* top rear center */
++    VIRTIO_SND_PCM_CH_TFLC,     /* top front left center */
++    VIRTIO_SND_PCM_CH_TFRC,     /* top front right center */
++    VIRTIO_SND_PCM_CH_TSL,      /* top side left */
++    VIRTIO_SND_PCM_CH_TSR,      /* top side right */
++    VIRTIO_SND_PCM_CH_LLFE,     /* left LFE */
++    VIRTIO_SND_PCM_CH_RLFE,     /* right LFE */
++    VIRTIO_SND_PCM_CH_BC,       /* bottom center */
++    VIRTIO_SND_PCM_CH_BLC,      /* bottom left center */
++    VIRTIO_SND_PCM_CH_BRC       /* bottom right center */
++};
++
++/* a maximum possible number of channels */
++#define VIRTIO_SND_PCM_CH_MAX		256
++
++/* response containing a PCM channel map information */
++struct virtio_snd_pcm_chmap_info {
++    le32 status;
++    le32 npositions;
++    u8 positions[VIRTIO_SND_PCM_CH_MAX];
++};
++\end{lstlisting}
++
++PCM channel map information fields:
++
++\begin{description}
++\item[\field{status}] (device-writable) specifies a device response status
++(VIRTIO_SND_S_*).
++\item[\field{npositions}] (device-writable) is a number of valid entries in
++the \field{positions} array.
++\item[\field{positions}] (device-writable) contains PCM channel positions
++(VIRTIO_SND_PCM_CH_*).
++\end{description}
++
++\item[VIRTIO_SND_R_PCM_SET_FORMAT]
++Set selected PCM format.
++
++\begin{lstlisting}
++struct virtio_snd_pcm_set_format {
++    struct virtio_snd_pcm_hdr hdr;
++    le16 channels;
++    le16 format;
++    le16 rate;
++    u16 padding;
++};
++\end{lstlisting}
++
++PCM control request fields:
++
++\begin{description}
++\item[\field{hdr}] (device-read-only) is a PCM control request header.
++\item[\field{channels}] (device-read-only) specifies a desired number of channels.
++\item[\field{format}] (device-read-only) specifies a desired PCM sample format
++(VIRTIO_SND_PCM_FMT_*).
++\item[\field{rate}] (device-read-only) specifies a desired PCM frame rate
++(VIRTIO_SND_PCM_RATE_*).
++\end{description}
++
++\item[VIRTIO_SND_R_PCM_PREPARE]
++Prepare the PCM device.
++
++\item[VIRTIO_SND_R_PCM_START]
++Start the PCM device.
++
++\item[VIRTIO_SND_R_PCM_STOP]
++Stop the PCM device.
++
++\item[VIRTIO_SND_R_PCM_PAUSE]
++Set the PCM device on pause.
++
++\item[VIRTIO_SND_R_PCM_UNPAUSE]
++Unset the PCM device from pause.
++
++\end{description}
++
++\devicenormative{\subsubsection}{PCM control requests}{Device Types / Sound Device / PCM control requests}
++
++In a VIRTIO_SND_R_PCM_CHMAP_INFO request:
++
++\begin{itemize*}
++\item the device MUST return the VIRTIO_SND_S_NOT_SUPP status code, if it does not
++support a channel map for a specified stream type;
++\item the device MUST set the \field{npositions} field to 0, if the operation
++failed.
++\end{itemize*}
++
++\drivernormative{\subsubsection}{PCM control requests}{Device Types / Sound Device / PCM control requests}
++
++The driver MUST NOT specify VIRTIO_SND_PCM_T_OUTPUT as a stream type if
++the VIRTIO_SND_F_PCM_OUTPUT feature is not negotiated.
++
++The driver MUST NOT specify VIRTIO_SND_PCM_T_INPUT as a stream type if
++the VIRTIO_SND_F_PCM_INPUT feature is not negotiated.
++
++In a VIRTIO_SND_R_PCM_SET_FORMAT request:
++
++\begin{itemize*}
++\item the driver MUST NOT specify the \field{channels} value less than the \field{channels_min}
++or greater than the \field{channels_max} values reported in stream configuration;
++\item the driver MUST specify the \field{format} and \field{rate} values according
++to the \field{formats} and \field{rates} values reported in stream configuration;
++\item the driver MUST NOT specify the not defined format and rate values;
++\item the driver MUST initialize \field{padding} bytes to 0.
++\end{itemize*}
++
++\subsubsection{Device Operation: PCM I/O requests}
++
++All I/O requests are placed into the pcmq virtqueue. Each request is of form:
++
++\begin{lstlisting}
++struct virtio_snd_pcm_xfer {
++    le32 stream;
++    u8 data[];
++    le32 status;
++    le32 actual_length;
++};
++\end{lstlisting}
++
++I/O request fields:
++
++\begin{description}
++\item[\field{stream}] (device-read-only) specifies a PCM stream type
++(VIRTIO_SND_PCM_T_*).
++\item[\field{data}]
++\begin{enumerate}
++\item Output: (device-read-only) a buffer with PCM frames to be written to the
++device.
++\item Input: (device-writable) a buffer to be filled with PCM frames from the
++device.
++\end{enumerate}
++\item[\field{status}] (device-writable) contains VIRTIO_SND_S_OK if an operation
++is successful, and VIRTIO_SND_S_IO_ERR otherwise.
++\item[\field{actual_length}] (device-writable) specifies an actual amount of
++bytes read from/written to the \field{data} field.
++\end{description}
++
++\devicenormative{\subsubsection}{PCM I/O requests}{Device Types / Sound Device / PCM IO requests}
++
++\begin{enumerate}
++\item The device MUST set the \field{actual_length} field to 0, if the operation
++failed.
++\end{enumerate}
++
++\drivernormative{\subsubsection}{PCM I/O requests}{Device Types / Sound Device / PCM IO requests}
++
++\begin{enumerate}
++\item The driver MUST NOT specify VIRTIO_SND_PCM_T_OUTPUT as a stream type if
++the VIRTIO_SND_F_PCM_OUTPUT feature is not negotiated.
++\item The driver MUST NOT specify VIRTIO_SND_PCM_T_INPUT as a stream type if
++the VIRTIO_SND_F_PCM_INPUT feature is not negotiated.
++\end{enumerate}
+-- 
+2.23.0
 
------BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAl1CryMACgkQnKSrs4Gr
-c8hbAAf+OG2ii/1y6CuluvleyVr2WOVDlAa2AW4zNrXPF1q5uhCFoqxzHBDYK0W8
-hr+OMXoC61kCWMfqRpo8hjHAp6cfzdJ4yXggoQ7ogztHBvwlskhmK2F6ZNWMEJ75
-DU8fJRuj3sZfIEHGafRLpkid+cKBSX3Brx9TsN9PQpthAptLf7dfPffrQkqGDKTC
-R5tchu3ZFuWo9sc82mplVyE/spYGJ3MiccmuBEV1KXHj2fs1b1tB7jRbHFHF3aNv
-vLbVh2vlaYkHnWx+iga3UCeGsyCwR4RLEPlFdvHYfDQlSFNnTy2XjWmYfBXa4OnW
-sTjp4x+XCpkHGx0IVHEBuDBOLDBgWw==
-=VSjQ
------END PGP SIGNATURE-----
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
---EP0wieDxd4TSJjHq--
