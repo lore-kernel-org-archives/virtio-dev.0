@@ -1,54 +1,112 @@
-Return-Path: virtio-dev-return-6171-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id B1C6C985E44
-	for <virtio-dev@lists.oasis-open.org>; Thu, 26 Sep 2019 03:22:06 +0000 (UTC)
-From: "Huang, Yang" <yang.huang@intel.com>
-Date: Thu, 26 Sep 2019 03:18:22 +0000
-Message-ID: <0B92A36466FABC4D99BAF0BDB1FA8BBC41591202@shsmsx102.ccr.corp.intel.com>
-References: <1569296893-26006-1-git-send-email-yang.huang@intel.com>
- <1569296893-26006-2-git-send-email-yang.huang@intel.com>
- <20190924073457-mutt-send-email-mst@kernel.org>
- <0B92A36466FABC4D99BAF0BDB1FA8BBC41590D15@shsmsx102.ccr.corp.intel.com>
- <20190925055102-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20190925055102-mutt-send-email-mst@kernel.org>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Return-Path: virtio-return-3383-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio@lists.oasis-open.org>
+List-Post: <mailto:virtio@lists.oasis-open.org>
+List-Help: <mailto:virtio-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
+Date: Wed, 25 Sep 2019 07:50:52 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20190925115047.8278-1-mst@redhat.com>
 MIME-Version: 1.0
-Subject: [virtio-dev] RE: [PATCH v5] Add virtio rpmb device specification
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "cohuck@redhat.com" <cohuck@redhat.com>, "Zhu, Bing" <bing.zhu@intel.com>, "Winkler, Tomas" <tomas.winkler@intel.com>, "Fang, Peter" <peter.fang@intel.com>
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+Subject: [virtio] [PATCH] README.md: clean up build instructions
+To: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-PiA+ID4gSSBoYXZlIHRyb3VibGUganVzdGlmeWluZyBsYXlvdXQgb3V0IG1vcmUgdGhhbiAkMzAw
-IGZvciB0aGlzLg0KPiA+ID4gRG8gd2UgbmVlZCB0aGUgbGF0ZXN0IHZlcnNpb24/IEVhcmxpZXIg
-b25lcyBhcmUgZnJlZS4NCj4gPiA+IEUuZy4gZm9yIGVNTUM6DQo+ID4gPiBodHRwOi8vd3d3Lmpl
-ZGVjLm9yZy9zaXRlcy9kZWZhdWx0L2ZpbGVzL2RvY3MvSkVTRDg0LUI1MS5wZGYNCj4gPiA+DQo+
-ID4gPiBBbmQgZm9yIFVGUzoNCj4gPiA+IGh0dHBzOi8vd3d3LmplZGVjLm9yZy9zaXRlcy9kZWZh
-dWx0L2ZpbGVzL2RvY3MvSkVTRDIyMEMucGRmDQo+ID4NCj4gPg0KPiA+IFVGUyAyLjEsIGVNTUMg
-NC41MSwgNS4wIGFyZSBhbGwgT0suDQo+ID4gVGhlIGxhdGVzdCB2ZXJzaW9uIGhhcyBwdWJsaXNo
-ZWQgZm9yIDMrIHllYXJzLg0KPiA+IFJlZ2lzdGVyIEpFREVDIGFuZCB0aGVuIGZyZWUgdG8gZG93
-bmxvYWQ6DQo+ID4gaHR0cHM6Ly93d3cuamVkZWMub3JnL3VzZXIvcmVnaXN0ZXINCj4gPiBQbGVh
-c2UgbGV0IG1lIGtub3cgaWYgeW91IHN0aWxsIGNhbm5vdCBkb3dubG9hZCB0aGVtLiBUaGFua3Mu
-DQo+IA0KPiBTbyBlTU1DIDUuMSByZXZpc2lvbiBKRVNEODQtQjUxQSBhdA0KPiBodHRwczovL3d3
-dy5qZWRlYy5vcmcvc3RhbmRhcmRzLWRvY3VtZW50cy9kb2NzL2plc2Q4NC1iNTENCj4gZnJvbSBK
-YW4gMjAxOSBpcyBub3QgZnJlZWx5IGF2YWlsYWJsZS4NCj4gDQo+IEFuIGVhcmxpZXIgdmVyc2lv
-biBKRVNEODQtQjUxIGZyb20gRmVicnVhcnkgMjAxNSBhdA0KPiBodHRwOi8vd3d3LmplZGVjLm9y
-Zy9zaXRlcy9kZWZhdWx0L2ZpbGVzL2RvY3MvSkVTRDg0LUI1MS5wZGYNCj4gaXMgZnJlZWx5IGF2
-YWlsYWJsZS4NCj4gDQo+IEhvdyBhYm91dCB3ZSBkZWNpZGUgb24gb25lIHNwZWMgdmVyc2lvbiBh
-bmQgcmVmZXIgdG8gdGhhdD8NCj4gRS5nLiBqdXN0IFVGUyBvciBqdXN0IGVNTUM/DQoNClN1cmUu
-ICBJIHdpbGwga2VlcCBlTU1DIGFzIHJlZmVyZW5jZS4NClRoZSByZXZpc2lvbiBvZiAyMDE1IGlz
-IGZpbmUgZW5vdWdoOg0KaHR0cDovL3d3dy5qZWRlYy5vcmcvc2l0ZXMvZGVmYXVsdC9maWxlcy9k
-b2NzL0pFU0Q4NC1CNTEucGRmDQoNCg0KKC4uKQ0KDQo+IGlmIHlvdSBwdXQgZXZlcnl0aGluZyBp
-biBhIG5vcm1hdGl2ZSBzZWN0aW9uIHRoZW4geW91IGFyZSBub3Qgd3JpdGluZyBlbm91Z2gNCj4g
-cHJvc2UuIFBscyB0YWtlIGEgbG9vayBhdCBob3cgb2xkZXIgZGV2aWNlcyBzdWNoIGFzIHRoZSBu
-ZXR3b3JrIGRldmljZSBhcmUNCj4gZG9jdW1lbnRlZC4gWW91IHdyaXRlIG91dCBnZW5lcmFsIGRl
-c2NyaXB0aW9uIGluIGEgbm9uIG5vcm1hdGl2ZSBzZWN0aW9uLCB0aGVuDQo+IGEgc2hvcnQgbGlz
-dCBvZiByZXF1aXJlbWVudHMgaW4gdGhlIG5vcm1hdGl2ZSBvbmUuDQoNCk9LLiBJIHdpbGwgcmVm
-ZXIgdG8gaXQuDQpUaGFua3MuDQoNCg0KDQo=
+Switch to <DL> from manual formatting with <BR> and <P>.
+Clarify wording a bit.
+Add hints on what to do in case of missing fonts.
+
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+---
+ README.md | 56 ++++++++++++++++++++++++++++++++++++-------------------
+ 1 file changed, 37 insertions(+), 19 deletions(-)
+
+diff --git a/README.md b/README.md
+index 5ac84f9..96d41c0 100644
+--- a/README.md
++++ b/README.md
+@@ -30,33 +30,51 @@
+=20
+ <h3>Further Description of this Repository</h3>
+ <h4>Building Instructions</h4>
+-<p>In order to build the spec you will need <a href=3D"https://www.tug.org=
+/texlive/">Tex-Live</a>.
+-Installing it can be done via:<br>
+-Fedora:
++Authoritative version of the specification is maintained in the
++TeX document format. PDF and HTML versions are made available for
++ease of use and review.
++In order to build the HTML and PDF versions of the spec you will need the
++<a href=3D"https://www.tug.org/"> TeX document production system</a>.
++The easiest way to get it up and running is probably by installing
++<a href=3D"https://www.tug.org/texlive/">Tex-Live</a>.
++
++<dl>Installation cheat sheet:
++<dt>Fedora:</dt>
++<dd>
+ <code>
+ sudo dnf install texlive-scheme-full
+-</code><br>
+-Ubuntu:
++</code></dd>
++<dt>
++Ubuntu and other Debian derivatives:
++</dt>
++<dd>
+ <code>
+ sudo apt-get install texlive-full
+-</code><br></p>
+-<p>OSX users don't need to install Tex-Live because they already have
++</code></dd>
++<dt>OSX:<dt>
++<dd>OSX users don't need to install Tex-Live because they already have
+ <a href=3D"http://www.tug.org/mactex/">MacTex</a> installed.
+-
+-<p>The building proccess is done with
++</dd>
++</dl>
++<dl>The build process generates a ZIP package file including the
++original TeX sources, as well as HTML and PDF formatted
++versions of the specification.
++<dt>To generate the ZIP package, run:<dt>
++<dd>
+ <code>
+ ./makeall.sh
+ </code>
+-and it contains 3 main parts:
+-<code>
+-makezip.sh
+-</code>,
+-<code>
+-makehtml.sh
+-</code>,
+-<code>
+-makepdf.sh
+-</code>.
++</dd>
++<dt>Troubleshooting notes:</dt>
++<dd> PDFs of the specification can be generated with
++either MicroSoft's Core fonts for the Web: Arial and Courier New,
++or Liberation fonts: Liberation Sans and Liberation Mono.
++Most systems come with one of these two variants included:
++should you get an error message about missing fonts,
++you will need to downloads and install one of the above
++font packages.
++<dd>
++</dl>
+ <h4>Providing Feedback</h4>
+ Feedback must be provided the <strong>virtio-comment</strong> mailing list=
+,
+ and archived in the mailing list archives.
+--=20
+MST
+
+
+---------------------------------------------------------------------
+To unsubscribe from this mail list, you must leave the OASIS TC that 
+generates this mail.  Follow this link to all your TCs in OASIS at:
+https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
 
