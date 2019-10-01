@@ -1,58 +1,154 @@
-Return-Path: virtio-return-3385-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio@lists.oasis-open.org>
-List-Post: <mailto:virtio@lists.oasis-open.org>
-List-Help: <mailto:virtio-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Wed, 9 Oct 2019 18:34:03 +0100
-From: Stefan Hajnoczi <stefanha@redhat.com>
-Message-ID: <20191009173403.GG13568@stefanha-x1.localdomain>
-References: <20190925115223.8365-1-mst@redhat.com>
+Return-Path: virtio-dev-return-6173-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id 74083985FA9
+	for <virtio-dev@lists.oasis-open.org>; Tue,  1 Oct 2019 15:29:18 +0000 (UTC)
+From: Alexander Duyck <alexander.duyck@gmail.com>
+Date: Tue, 01 Oct 2019 08:29:14 -0700
+Message-ID: <20191001152441.27008.99285.stgit@localhost.localdomain>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="RMedoP2+Pr6Rq0N2"
-Content-Disposition: inline
-In-Reply-To: <20190925115223.8365-1-mst@redhat.com>
-Subject: Re: [virtio] [PATCH v2] README.md: clean up build instructions
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Subject: [virtio-dev] [PATCH v11 0/6] mm / virtio: Provide support for unused page
+ reporting
+To: virtio-dev@lists.oasis-open.org, kvm@vger.kernel.org, mst@redhat.com, david@redhat.com, dave.hansen@intel.com, linux-kernel@vger.kernel.org, willy@infradead.org, mhocko@kernel.org, linux-mm@kvack.org, akpm@linux-foundation.org, mgorman@techsingularity.net, vbabka@suse.cz, osalvador@suse.de
+Cc: yang.zhang.wz@gmail.com, pagupta@redhat.com, konrad.wilk@oracle.com, nitesh@redhat.com, riel@surriel.com, lcapitulino@redhat.com, wei.w.wang@intel.com, aarcange@redhat.com, pbonzini@redhat.com, dan.j.williams@intel.com, alexander.h.duyck@linux.intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
---RMedoP2+Pr6Rq0N2
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+This series provides an asynchronous means of reporting to a hypervisor
+that a guest page is no longer in use and can have the data associated
+with it dropped. To do this I have implemented functionality that allows
+for what I am referring to as unused page reporting. The advantage of
+unused page reporting is that we can support a significant amount of
+memory over-commit with improved performance as we can avoid having to
+write/read memory from swap as the VM will instead actively participate
+in freeing unused memory so it doesn't have to be written.
 
-On Wed, Sep 25, 2019 at 07:53:05AM -0400, Michael S. Tsirkin wrote:
-> Switch to <DL> from manual formatting with <BR> and <P>.
-> Clarify wording a bit.
-> Add hints on what to do in case of missing fonts.
->=20
-> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> ---
->=20
-> changes from v1:
-> - drop TeX link as it's confusing (you want TeX live)
-> - MacTex-> MacTeX
->=20
->  README.md | 56 ++++++++++++++++++++++++++++++++++++-------------------
->  1 file changed, 37 insertions(+), 19 deletions(-)
+The functionality for this is fairly simple. When enabled it will allocate
+statistics to track the number of reported pages in a given free area.
+When the number of free pages exceeds this value plus a high water value,
+currently 32, it will begin performing page reporting which consists of
+pulling non-reported pages off of the free lists of a given zone and
+placing them into a scatterlist. The scatterlist is then given to the page
+reporting device and it will perform the required action to make the pages
+"reported", in the case of virtio-balloon this results in the pages being
+madvised as MADV_DONTNEED. After this they are placed back on their
+original free list. If they are not merged in freeing an additional bit is
+set indicating that they are a "reported" buddy page instead of a standard
+buddy page. The cycle then repeats with additional non-reported pages
+being pulled until the free areas all consist of reported pages.
 
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+In order to try and keep the time needed to find a non-reported page to
+a minimum we maintain a "reported_boundary" pointer. This pointer is used
+by the get_unreported_pages iterator to determine at what point it should
+resume searching for non-reported pages. In order to guarantee pages do
+not get past the scan I have modified add_to_free_list_tail so that it
+will not insert pages behind the reported_boundary. Doing this allows us
+to keep the overhead to a minimum as re-walking the list without the
+boundary will result in as much as 18% additional overhead on a 32G VM.
 
---RMedoP2+Pr6Rq0N2
-Content-Type: application/pgp-signature; name="signature.asc"
+If another process needs to perform a massive manipulation of the free
+list, such as compaction, it can either reset a given individual boundary
+which will push the boundary back to the list_head, or it can clear the
+bit indicating the zone is actively processing which will result in the
+reporting process resetting all of the boundaries for a given zone.
 
------BEGIN PGP SIGNATURE-----
+I am leaving a number of things hard-coded such as limiting the lowest
+order processed to pageblock_order, and have left it up to the guest to
+determine what the limit is on how many pages it wants to allocate to
+process the hints. The upper limit for this is based on the size of the
+queue used to store the scatterlist.
 
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAl2eGgsACgkQnKSrs4Gr
-c8hXCAgAszp9SMWG9AHCxp9atZRBsDb0+3mwa35jWQhlXpbukY+fm8EN7BsA4w6Y
-cnwIy2l0Xvg2axERNlnpHb/gv5LNnZupP1eExZxPuQc8qs+QZhHUzGmWhWuTG2cU
-+WOAAdN29XGxrzeSMsuQsNgktms1/ujFRljagajNqGl+XqwIGwisTEw203H3kFpA
-2c9xdA8YRCZWu3Z4khvmZySK4ADhccHZ8Zs+h0hyNoPCOtk8RIpLO7lX9btswNZU
-3H4B6wFXQPYu9X3QT0flGLjX5DzYbxoYaKTtcG8/y/eutx/BIptSngn83RZgS1P2
-klmAT5Q8Nxl7x1oLRsE64gnhWf/jsQ==
-=GQWi
------END PGP SIGNATURE-----
+I wanted to avoid gaming the performance testing for this. As far as
+possible gain a significant performance improvement should be visible in
+cases where guests are forced to write/read from swap. As such, testing
+it would be more of a benchmark of copying a page from swap versus just
+allocating a zero page. I have been verifying that the memory is being
+freed using memhog to allocate all the memory on the guest, and then
+watching /proc/meminfo to verify the host sees the memory returned after
+the test completes.
 
---RMedoP2+Pr6Rq0N2--
+As far as possible regressions I have focused on cases where performing
+the hinting would be non-optimal, such as cases where the code isn't
+needed as memory is not over-committed, or the functionality is not in
+use. I have been using the will-it-scale/page_fault1 test running with 16
+vcpus and have modified it to use Transparent Huge Pages. With this I see
+almost no difference with the patches applied and the feature disabled.
+Likewise I see almost no difference with the feature enabled, but the
+madvise disabled in the hypervisor due to a device being assigned. With
+the feature fully enabled in both guest and hypervisor I see a regression
+between -1.86% and -8.84% versus the baseline. I found that most of the
+overhead was due to the page faulting/zeroing that comes as a result of
+the pages having been evicted from the guest.
+
+For info on earlier versions you will need to follow the links provided
+with the respective versions.
+
+Changes from v9:
+https://lore.kernel.org/lkml/20190907172225.10910.34302.stgit@localhost.localdomain/
+Updated cover page
+Dropped per-cpu page randomization entropy patch
+Added "to_tail" boolean value to __free_one_page to improve readability
+Renamed __shuffle_pick_tail to shuffle_pick_tail, avoiding extra inline function
+Dropped arm64 HUGLE_TLB_ORDER movement patch since it is no longer needed
+Significant rewrite of page reporting functionality
+  Updated logic to support interruptions from compaction
+  get_unreported_page will now walk through reported sections
+  Moved free_list manipulators out of mmzone.h and into page_alloc.c
+  Removed page_reporting.h include from mmzone.h
+  Split page_reporting.h between include/linux/ and mm/
+  Added #include <asm/pgtable.h>" to mm/page_reporting.h
+  Renamed page_reporting_startup/shutdown to page_reporting_register/unregister
+Updated comments related to virtio page poison tracking feature
+
+Changes from v10:
+https://lore.kernel.org/lkml/20190918175109.23474.67039.stgit@localhost.localdomain/
+Rebased on "Add linux-next specific files for 20190930"
+Added page_is_reported() macro to prevent unneeded testing of PageReported bit
+Fixed several spots where comments referred to older aeration naming
+Set upper limit for phdev->capacity to page reporting high water mark
+Updated virtio page poison detection logic to also cover init_on_free
+Tweaked page_reporting_notify_free to reduce code size
+Removed dead code in non-reporting path
+
+---
+
+Alexander Duyck (6):
+      mm: Adjust shuffle code to allow for future coalescing
+      mm: Use zone and order instead of free area in free_list manipulators
+      mm: Introduce Reported pages
+      mm: Add device side and notifier for unused page reporting
+      virtio-balloon: Pull page poisoning config out of free page hinting
+      virtio-balloon: Add support for providing unused page reports to host
+
+
+ drivers/virtio/Kconfig              |    1 
+ drivers/virtio/virtio_balloon.c     |   88 ++++++++-
+ include/linux/mmzone.h              |   60 ++----
+ include/linux/page-flags.h          |   11 +
+ include/linux/page_reporting.h      |   31 +++
+ include/uapi/linux/virtio_balloon.h |    1 
+ mm/Kconfig                          |   11 +
+ mm/Makefile                         |    1 
+ mm/compaction.c                     |    5 +
+ mm/memory_hotplug.c                 |    2 
+ mm/page_alloc.c                     |  194 +++++++++++++++----
+ mm/page_reporting.c                 |  350 +++++++++++++++++++++++++++++++++++
+ mm/page_reporting.h                 |  225 +++++++++++++++++++++++
+ mm/shuffle.c                        |   12 +
+ mm/shuffle.h                        |    6 +
+ 15 files changed, 896 insertions(+), 102 deletions(-)
+ create mode 100644 include/linux/page_reporting.h
+ create mode 100644 mm/page_reporting.c
+ create mode 100644 mm/page_reporting.h
+
+--
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+
