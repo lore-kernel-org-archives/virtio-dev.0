@@ -1,81 +1,132 @@
-Return-Path: virtio-dev-return-6258-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-6199-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id A8379983E7E
-	for <virtio-dev@lists.oasis-open.org>; Sun, 27 Oct 2019 11:39:19 +0000 (UTC)
-Date: Sun, 27 Oct 2019 07:39:09 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20191027073842-mutt-send-email-mst@kernel.org>
-References: <9c7a1f52-c9bf-7360-557f-3b5a53ea2b9e@siemens.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id C2627986003
+	for <virtio-dev@lists.oasis-open.org>; Sat,  5 Oct 2019 06:08:30 +0000 (UTC)
 MIME-Version: 1.0
-In-Reply-To: <9c7a1f52-c9bf-7360-557f-3b5a53ea2b9e@siemens.com>
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-Subject: Re: [virtio-dev] virtio-console: initial size retrieval, port
- parameter reporting
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
+References: <20190919093404.182015-1-keiichiw@chromium.org> <20190923085637.bsaevedklweijgya@sirius.home.kraxel.org>
+In-Reply-To: <20190923085637.bsaevedklweijgya@sirius.home.kraxel.org>
+From: Tomasz Figa <tfiga@chromium.org>
+Date: Sat, 5 Oct 2019 15:08:12 +0900
+Message-ID: <CAAFQd5Ba-REZU9=rdm3J6NRqqeAUFdCV7SJ_WdO2BHyKNBN7TQ@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [virtio-dev] [PATCH] [RFC RESEND] vdec: Add virtio video decode
+ device specification
+To: Gerd Hoffmann <kraxel@redhat.com>
+Cc: Keiichi Watanabe <keiichiw@chromium.org>, virtio-dev@lists.oasis-open.org, Alexandre Courbot <acourbot@chromium.org>, alexlau@chromium.org, dgreid@chromium.org, =?UTF-8?Q?St=C3=A9phane_Marchesin?= <marcheu@chromium.org>, Pawel Osciak <posciak@chromium.org>, stevensd@chromium.org, Hans Verkuil <hverkuil@xs4all.nl>, Linux Media Mailing List <linux-media@vger.kernel.org>, Daniel Vetter <daniel@ffwll.ch>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Sun, Oct 13, 2019 at 07:48:09PM +0200, Jan Kiszka wrote:
-> Hi all,
->=20
-> while implementing a basic virtio-console backend, I noticed some grey
-> area regarding when and how the initial console size should be read by
-> the driver.
->=20
-> Linux currently only does that sizing when the device signals a config
-> change, either via a config interrupt (non-multiport) or by sending a
-> VIRTIO_CONSOLE_RESIZE control message. But the spec is not clear whether
-> a device is supposed to do exactly that.
->=20
-> Let's look at the two cases, first without VIRTIO_CONSOLE_F_MULTIPORT:
-> I would have expected that the driver can find the console size in the
-> configuration early, even before FEATURES_OK. And I would have expected
-> that Linux evaluates that value during probe. Again, the spec does not
-> tell us whether the device must send that initial config update to
-> declare the size information valid.
->=20
-> Now with VIRTIO_CONSOLE_F_MULTIPORT:
-> Here, the device can only signal the dimensions for ports > 0 via a
-> control message. This suggests (but the spec does not state it
-> explicitly) that the device will likely send VIRTIO_CONSOLE_RESIZE
-> message after VIRTIO_CONSOLE_PORT_READY. And that also for port 0,
-> although its size is available also via the config. BTW, is a device in
-> that case also supposed to signal a config change? Or should a device
-> never offer F_MULTIPORT and F_SIZE at the same time?
->=20
-> In general, the spec does not state when a device should (or rather
-> must) send any of the _CONSOLE_PORT, _RESIZE and _PORT_NAME messages. I
-> assume they are meant to be sent after _PORT_READY from the driver
-> because the spec says:
->=20
-> "After creating and initializing each port, a VIRTIO_CONSOLE_PORT_READY
-> control message is sent to the device for that port so the device can
-> let the driver know of any additional configuration options set for that
-> port."
->=20
-> If my assumption is correct, that ordering should be stated more
-> explicitly in the spec.
->=20
-> Jan
+Hi Gerd,
 
-Makes sense to me.
+On Mon, Sep 23, 2019 at 5:56 PM Gerd Hoffmann <kraxel@redhat.com> wrote:
+>
+>   Hi,
+>
+> > Our prototype implementation uses [4], which allows the virtio-vdec
+> > device to use buffers allocated by virtio-gpu device.
+>
+> > [4] https://lkml.org/lkml/2019/9/12/157
 
+First of all, thanks for taking a look at this RFC and for valuable
+feedback. Sorry for the late reply.
 
-> --=20
-> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-> Corporate Competence Center Embedded Linux
->=20
-> ---------------------------------------------------------------------
-> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+For reference, Keiichi is working with me and David Stevens on
+accelerated video support for virtual machines and integration with
+other virtual devices, like virtio-gpu for rendering or our
+currently-downstream virtio-wayland for display (I believe there is
+ongoing work to solve this problem in upstream too).
 
+>
+> Well.  I think before even discussing the protocol details we need a
+> reasonable plan for buffer handling.  I think using virtio-gpu buffers
+> should be an optional optimization and not a requirement.  Also the
+> motivation for that should be clear (Let the host decoder write directly
+> to virtio-gpu resources, to display video without copying around the
+> decoded framebuffers from one device to another).
+
+Just to make sure we're on the same page, what would the buffers come
+from if we don't use this optimization?
+
+I can imagine a setup like this;
+ 1) host device allocates host memory appropriate for usage with host
+video decoder,
+ 2) guest driver allocates arbitrary guest pages for storage
+accessible to the guest software,
+ 3) guest userspace writes input for the decoder to guest pages,
+ 4) guest driver passes the list of pages for the input and output
+buffers to the host device
+ 5) host device copies data from input guest pages to host buffer
+ 6) host device runs the decoding
+ 7) host device copies decoded frame to output guest pages
+ 8) guest userspace can access decoded frame from those pages; back to 3
+
+Is that something you have in mind?
+
+>
+> Referencing virtio-gpu buffers needs a better plan than just re-using
+> virtio-gpu resource handles.  The handles are device-specific.  What if
+> there are multiple virtio-gpu devices present in the guest?
+>
+> I think we need a framework for cross-device buffer sharing.  One
+> possible option would be to have some kind of buffer registry, where
+> buffers can be registered for cross-device sharing and get a unique
+> id (a uuid maybe?).  Drivers would typically register buffers on
+> dma-buf export.
+
+This approach could possibly let us handle this transparently to
+importers, which would work for guest kernel subsystems that rely on
+the ability to handle buffers like native memory (e.g. having a
+sgtable or DMA address) for them.
+
+How about allocating guest physical addresses for memory corresponding
+to those buffers? On the virtio-gpu example, that could work like
+this:
+ - by default a virtio-gpu buffer has only a resource handle,
+ - VIRTIO_GPU_RESOURCE_EXPORT command could be called to have the
+virtio-gpu device export the buffer to a host framework (inside the
+VMM) that would allocate guest page addresses for it, which the
+command would return in a response to the guest,
+ - virtio-gpu driver could then create a regular DMA-buf object for
+such memory, because it's just backed by pages (even though they may
+not be accessible to the guest; just like in the case of TrustZone
+memory protection on bare metal systems),
+ - any consumer would be able to handle such buffer like a regular
+guest memory, passing low-level scatter-gather tables to the host as
+buffer descriptors - this would nicely integrate with the basic case
+without buffer sharing, as described above.
+
+Another interesting side effect of the above approach would be the
+ease of integration with virtio-iommu. If the virtio master device is
+put behind a virtio-iommu, the guest page addresses become the input
+to iommu page tables and IOVA addresses go to the host via the virtio
+master device protocol, inside the low-level scatter-gather tables.
+
+What do you think?
+
+Best regards,
+Tomasz
+
+>
+> Another option would be to pass around both buffer handle and buffer
+> owner, i.e. instead of "u32 handle" have something like this:
+>
+> struct buffer_reference {
+>         enum device_type; /* pci, virtio-mmio, ... */
+>         union device_address {
+>                 struct pci_address pci_addr;
+>                 u64 virtio_mmio_addr;
+>                 [ ... ]
+>         };
+>         u64 device_buffer_handle; /* device-specific, virtio-gpu could use resource ids here */
+> };
+>
+> cheers,
+>   Gerd
+>
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
