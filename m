@@ -1,117 +1,179 @@
-Return-Path: virtio-dev-return-6201-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-6205-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 5F22098406A
-	for <virtio-dev@lists.oasis-open.org>; Mon,  7 Oct 2019 12:29:26 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id B106E98406D
+	for <virtio-dev@lists.oasis-open.org>; Mon,  7 Oct 2019 15:33:07 +0000 (UTC)
+Message-ID: <d96f744d2c48f5a96c6962c6a0a89d2429e5cab8.camel@linux.intel.com>
+From: Alexander Duyck <alexander.h.duyck@linux.intel.com>
+Date: Mon, 07 Oct 2019 08:33:04 -0700
+In-Reply-To: <0a16b11e-ec3b-7196-5b7f-e7395876cf28@redhat.com>
 References: <20191001152441.27008.99285.stgit@localhost.localdomain>
- <7233498c-2f64-d661-4981-707b59c78fd5@redhat.com>
- <1ea1a4e11617291062db81f65745b9c95fd0bb30.camel@linux.intel.com>
- <8bd303a6-6e50-b2dc-19ab-4c3f176c4b02@redhat.com>
- <CAKgT0Uf37xAFK2CWqUZJgn7bWznSAi6qncLxBpC55oSpBMG1HQ@mail.gmail.com>
- <c06b68cb-5e94-ae3e-f84e-48087d675a8f@redhat.com>
- <CAKgT0Ud6TT=XxqFx6ePHzbUYqMp5FHVPozRvnNZK3tKV7j2xjg@mail.gmail.com>
-From: Nitesh Narayan Lal <nitesh@redhat.com>
-Message-ID: <0a16b11e-ec3b-7196-5b7f-e7395876cf28@redhat.com>
-Date: Mon, 7 Oct 2019 08:29:05 -0400
+	 <7233498c-2f64-d661-4981-707b59c78fd5@redhat.com>
+	 <1ea1a4e11617291062db81f65745b9c95fd0bb30.camel@linux.intel.com>
+	 <8bd303a6-6e50-b2dc-19ab-4c3f176c4b02@redhat.com>
+	 <CAKgT0Uf37xAFK2CWqUZJgn7bWznSAi6qncLxBpC55oSpBMG1HQ@mail.gmail.com>
+	 <c06b68cb-5e94-ae3e-f84e-48087d675a8f@redhat.com>
+	 <CAKgT0Ud6TT=XxqFx6ePHzbUYqMp5FHVPozRvnNZK3tKV7j2xjg@mail.gmail.com>
+	 <0a16b11e-ec3b-7196-5b7f-e7395876cf28@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 MIME-Version: 1.0
-In-Reply-To: <CAKgT0Ud6TT=XxqFx6ePHzbUYqMp5FHVPozRvnNZK3tKV7j2xjg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: base64
-Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Subject: [virtio-dev] Re: [PATCH v11 0/6] mm / virtio: Provide support for unused page
  reporting
-To: LKML <linux-kernel@vger.kernel.org>, linux-mm <linux-mm@kvack.org>
-Cc: Alexander Duyck <alexander.duyck@gmail.com>, Alexander Duyck <alexander.h.duyck@linux.intel.com>, David Hildenbrand <david@redhat.com>, virtio-dev@lists.oasis-open.org, kvm list <kvm@vger.kernel.org>, "Michael S. Tsirkin" <mst@redhat.com>, Dave Hansen <dave.hansen@intel.com>, Matthew Wilcox <willy@infradead.org>, Michal Hocko <mhocko@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Mel Gorman <mgorman@techsingularity.net>, Vlastimil Babka <vbabka@suse.cz>, Oscar Salvador <osalvador@suse.de>, Yang Zhang <yang.zhang.wz@gmail.com>, Pankaj Gupta <pagupta@redhat.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Rik van Riel <riel@surriel.com>, lcapitulino@redhat.com, "Wang, Wei W" <wei.w.wang@intel.com>, Andrea Arcangeli <aarcange@redhat.com>, Paolo Bonzini <pbonzini@redhat.com>, Dan Williams <dan.j.williams@intel.com>
+To: Nitesh Narayan Lal <nitesh@redhat.com>, LKML <linux-kernel@vger.kernel.org>, linux-mm <linux-mm@kvack.org>
+Cc: Alexander Duyck <alexander.duyck@gmail.com>, David Hildenbrand <david@redhat.com>, virtio-dev@lists.oasis-open.org, kvm list <kvm@vger.kernel.org>, "Michael S. Tsirkin" <mst@redhat.com>, Dave Hansen <dave.hansen@intel.com>, Matthew Wilcox <willy@infradead.org>, Michal Hocko <mhocko@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Mel Gorman <mgorman@techsingularity.net>, Vlastimil Babka <vbabka@suse.cz>, Oscar Salvador <osalvador@suse.de>, Yang Zhang <yang.zhang.wz@gmail.com>, Pankaj Gupta <pagupta@redhat.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Rik van Riel <riel@surriel.com>, lcapitulino@redhat.com, "Wang, Wei W" <wei.w.wang@intel.com>, Andrea Arcangeli <aarcange@redhat.com>, Paolo Bonzini <pbonzini@redhat.com>, Dan Williams <dan.j.williams@intel.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Ck9uIDEwLzIvMTkgMTA6MjUgQU0sIEFsZXhhbmRlciBEdXljayB3cm90ZToKClsuLi5dCj4+
-PiBNeSBzdWdnZXN0aW9uIHdvdWxkIGJlIHRvIGxvb2sgYXQgcmV3b3JraW5nIHRoZSBwYXRj
-aCBzZXQgYW5kCj4+PiBwb3N0IG51bWJlcnMgZm9yIG15IHBhdGNoIHNldCB2ZXJzdXMgdGhl
-IGJpdG1hcCBhcHByb2FjaCBhbmQgd2UgY2FuCj4+PiBsb29rIGF0IHRoZW0gdGhlbi4KPj4g
-QWdyZWVkLiBIb3dldmVyLCBpbiBvcmRlciB0byBmaXggYW4gaXNzdWUgSSBoYXZlIHRvIHJl
-cHJvZHVjZSBpdCBmaXJzdC4KPiBXaXRoIHRoZSB0d2VhayBJIGhhdmUgc3VnZ2VzdGVkIGFi
-b3ZlIGl0IHNob3VsZCBtYWtlIGl0IG11Y2ggZWFzaWVyIHRvCj4gcmVwcm9kdWNlLiBCYXNp
-Y2FsbHkgYWxsIHlvdSBuZWVkIGlzIHRvIGhhdmUgdGhlIGFsbG9jYXRpb24gY29tcGV0aW5n
-Cj4gYWdhaW5zdCBoaW50aW5nLiBDdXJyZW50bHkgdGhlIGhpbnRpbmcgaXNuJ3QgZG9pbmcg
-dGhpcyBiZWNhdXNlIHRoZQo+IGFsbG9jYXRpb25zIGFyZSBtb3N0bHkgY29taW5nIG91dCBv
-ZiA0SyBwYWdlcyBpbnN0ZWFkIG9mIGhpZ2hlciBvcmRlcgo+IG9uZXMuCj4KPiBBbHRlcm5h
-dGl2ZWx5IHlvdSBjb3VsZCBqdXN0IG1ha2UgdGhlIHN1Z2dlc3Rpb24gSSBoYWQgcHJvcG9z
-ZWQgYWJvdXQKPiB1c2luZyBzcGluX2xvY2svdW5sb2NrX2lycSBpbiB5b3VyIHdvcmtlciB0
-aHJlYWQgYW5kIHRoYXQgcmVzb2x2ZWQgaXQKPiBmb3IgbWUuCj4KPj4+ICBJIHdvdWxkIHBy
-ZWZlciBub3QgdG8gc3BlbmQgbXkgdGltZSBmaXhpbmcgYW5kCj4+PiB0dW5pbmcgYSBwYXRj
-aCBzZXQgdGhhdCBJIGFtIHN0aWxsIG5vdCBjb252aW5jZWQgaXMgdmlhYmxlLgo+PiBZb3Ug
-IGRvbid0IGhhdmUgdG8sIEkgY2FuIGZpeCB0aGUgaXNzdWVzIGluIG15IHBhdGNoLXNldC4g
-OikKPiBTb3VuZHMgZ29vZC4gSG9wZWZ1bGx5IHRoZSBzdHVmZiBJIHBvaW50ZWQgb3V0IGFi
-b3ZlIGhlbHBzIHlvdSB0byBnZXQKPiBhIHJlcHJvZHVjdGlvbiBhbmQgcmVzb2x2ZSB0aGUg
-aXNzdWVzLgoKClNvIEkgZGlkIG9ic2VydmUgYSBzaWduaWZpY2FudCBkcm9wIGluIHJ1bm5p
-bmcgbXkgdjEyIHBhdGgtc2V0IFsxXSB3aXRoIHRoZQpzdWdnZXN0ZWQgdGVzdCBzZXR1cC4g
-SG93ZXZlciwgb24gbWFraW5nIGNlcnRhaW4gY2hhbmdlcyB0aGUgcGVyZm9ybWFuY2UKaW1w
-cm92ZWQgc2lnbmlmaWNhbnRseS4KCkkgdXNlZCBteSB2MTIgcGF0Y2gtc2V0IHdoaWNoIEkg
-aGF2ZSBwb3N0ZWQgZWFybGllciBhbmQgbWFkZSB0aGUgZm9sbG93aW5nCmNoYW5nZXM6CjEu
-IFN0YXJ0ZWQgcmVwb3J0aW5nIG9ubHkgKE1BWF9PUkRFUiAtIDEpIHBhZ2VzIGFuZCBpbmNy
-ZWFzZWQgdGhlIG51bWJlciBvZgrCoMKgwqAgcGFnZXMgdGhhdCBjYW4gYmUgcmVwb3J0ZWQg
-YXQgYSB0aW1lIHRvIDMyIGZyb20gMTYuIFRoZSBpbnRlbnQgb2YgbWFraW5nCsKgwqDCoCB0
-aGVzZSBjaGFuZ2VzIHdhcyB0byBicmluZyBteSBjb25maWd1cmF0aW9uIGNsb3NlciB0byB3
-aGF0IEFsZXhhbmRlciBpcwrCoMKgwqAgdXNpbmcuCjIuIEkgbWFkZSBhbiBhZGRpdGlvbmFs
-IGNoYW5nZSBpbiBteSBiaXRtYXAgc2Nhbm5pbmcgbG9naWMgdG8gcHJldmVudCBhY3F1aXJp
-bmcKwqDCoMKgIHNwaW5sb2NrIGlmIHRoZSBwYWdlIGlzIGFscmVhZHkgYWxsb2NhdGVkLgoK
-ClNldHVwOgpPbiBhIDE2IHZDUFUgMzAgR0Igc2luZ2xlIE5VTUEgZ3Vlc3QgYWZmaW5lZCB0
-byBhIHNpbmdsZSBob3N0IE5VTUEsIEkgcmFuIHRoZQptb2RpZmllZCB3aWxsLWl0LXNjYWxl
-L3BhZ2VfZmF1bHQgbnVtYmVyIG9mIHRpbWVzIGFuZCBjYWxjdWxhdGVkIHRoZSBhdmVyYWdl
-Cm9mIHRoZSBudW1iZXIgb2YgcHJvY2VzcyBhbmQgdGhyZWFkcyBsYXVuY2hlZCBvbiB0aGUg
-MTZ0aCBjb3JlIHRvIGNvbXBhcmUgdGhlCmltcGFjdCBvZiBteSBwYXRjaC1zZXQgYWdhaW5z
-dCBhbiB1bm1vZGlmaWVkIGtlcm5lbC4KCgpDb25jbHVzaW9uOgolRHJvcCBpbiBudW1iZXIg
-b2YgcHJvY2Vzc2VzIGxhdW5jaGVkIG9uIDE2dGggdkNQVSA9wqDCoMKgwqAgMS0yJQolRHJv
-cCBpbiBudW1iZXIgb2YgdGhyZWFkcyBsYXVuY2hlZCBvbiAxNnRoIHZDUFXCoMKgwqDCoCA9
-wqDCoMKgwqAgNS02JQoKCk90aGVyIG9ic2VydmF0aW9uczoKLSBJIGFsc28gdHJpZWQgcnVu
-bmluZyBBbGV4YW5kZXIncyBsYXRlc3QgdjExIHBhZ2UtcmVwb3J0aW5nIHBhdGNoIHNldCBh
-bmQKwqAgb2JzZXJ2ZSBhIHNpbWlsYXIgYW1vdW50IG9mIGF2ZXJhZ2UgZGVncmFkYXRpb24g
-aW4gdGhlIG51bWJlciBvZiBwcm9jZXNzZXMKwqAgYW5kIHRocmVhZHMuCi0gSSBkaWRuJ3Qg
-aW5jbHVkZSB0aGUgbGluZWFyIGNvbXBvbmVudCByZWNvcmRlZCBieSB3aWxsLWl0LXNjYWxl
-IGJlY2F1c2UgZm9yCsKgIHNvbWUgcmVhc29uIGl0IHdhcyBmbHVjdHVhdGluZyB0b28gbXVj
-aCBldmVuIHdoZW4gSSB3YXMgdXNpbmcgYW4gdW5tb2RpZmllZArCoCBrZXJuZWwuIElmIHJl
-cXVpcmVkIEkgY2FuIGludmVzdGlnYXRlIHRoaXMgZnVydGhlci4KCk5vdGU6IElmIHRoZXJl
-IGlzIGEgYmV0dGVyIHdheSB0byBhbmFseXplIHRoZSB3aWxsLWl0LXNjYWxlL3BhZ2VfZmF1
-bHQgcmVzdWx0cwp0aGVuIHBsZWFzZSBkbyBsZXQgbWUga25vdy4KCgpPdGhlciBzZXR1cCBk
-ZXRhaWxzOgpGb2xsb3dpbmcgYXJlIHRoZSBjb25maWd1cmF0aW9ucyB3aGljaCBJIGVuYWJs
-ZWQgdG8gcnVuIG15IHRlc3RzOgotIEVuYWJsZWQ6IENPTkZJR19TTEFCX0ZSRUVMSVNUX1JB
-TkRPTSAmIENPTkZJR19TSFVGRkxFX1BBR0VfQUxMT0NBVE9SCi0gU2V0IGhvc3QgVEhQIHRv
-IGFsd2F5cwotIFNldCBndWVzdCBUSFAgdG8gbWFkdmlzZQotIEFkZGVkIHRoZSBzdWdnZXN0
-ZWQgbWFkdmlzZSBjYWxsIGluIHBhZ2VfZmF1bHQgc291cmNlIGNvZGUuCkBBbGV4YW5kZXIg
-cGxlYXNlIGxldCBtZSBrbm93IGlmIEkgbWlzc2VkIHNvbWV0aGluZy4KCgpUaGUgY3VycmVu
-dCBzdGF0ZSBvZiBteSB2MTM6Ckkgc3RpbGwgaGF2ZSB0byBsb29rIGludG8gTWljaGFsJ3Mg
-c3VnZ2VzdGlvbiBvZiB1c2luZyBwYWdlLWlzb2xhdGlvbiBBUEkncwppbnN0ZWFkIG9mIGlz
-b2xhdGluZyB0aGUgcGFnZS4gSG93ZXZlciwgSSBiZWxpZXZlIGF0IHRoaXMgbW9tZW50IG91
-ciBvYmplY3RpdmUKaXMgdG8gZGVjaWRlIHdpdGggd2hpY2ggYXBwcm9hY2ggd2UgY2FuIHBy
-b2NlZWQgYW5kIHRoYXQncyB3aHkgSSBkZWNpZGVkIHRvCnBvc3QgdGhlIG51bWJlcnMgYnkg
-bWFraW5nIHNtYWxsIHJlcXVpcmVkIGNoYW5nZXMgaW4gdjEyIGluc3RlYWQgb2YgcG9zdGlu
-ZyBhCm5ldyBzZXJpZXMuCgoKRm9sbG93aW5nIGFyZSB0aGUgY2hhbmdlcyB3aGljaCBJIGhh
-dmUgbWFkZSBvbiB0b3Agb2YgbXkgdjEyOgoKcGFnZV9yZXBvcnRpbmcuaCBjaGFuZ2U6Ci0j
-ZGVmaW5lIFBBR0VfUkVQT1JUSU5HX01JTl9PUkRFUsKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqAgKE1BWF9PUkRFUiAtIDIpCi0jZGVmaW5lIFBBR0VfUkVQT1JUSU5HX01BWF9QQUdF
-U8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgMTYKKyNkZWZpbmUgUEFHRV9SRVBPUlRJ
-TkdfTUlOX09SREVSwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgKE1BWF9PUkRFUiAtIDEp
-CisjZGVmaW5lIFBBR0VfUkVQT1JUSU5HX01BWF9QQUdFU8KgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgIDMyCgpwYWdlX3JlcG9ydGluZy5jIGNoYW5nZToKQEAgLTEwMSw4ICsxMDEsMTIg
-QEAgc3RhdGljIHZvaWQgc2Nhbl96b25lX2JpdG1hcChzdHJ1Y3QgcGFnZV9yZXBvcnRpbmdf
-Y29uZmlnCipwaGNvbmYsCsKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAvKiBQcm9j
-ZXNzIG9ubHkgaWYgdGhlIHBhZ2UgaXMgc3RpbGwgb25saW5lICovCsKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoCBwYWdlID0gcGZuX3RvX29ubGluZV9wYWdlKChzZXRiaXQgPDwg
-UEFHRV9SRVBPUlRJTkdfTUlOX09SREVSKSArCsKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqAgem9uZS0+YmFzZV9wZm4pOwotwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBpZiAo
-IXBhZ2UpCivCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGlmICghcGFnZSB8fCAhUGFn
-ZUJ1ZGR5KHBhZ2UpKSB7CivCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoCBjbGVhcl9iaXQoc2V0Yml0LCB6b25lLT5iaXRtYXApOworwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgYXRvbWljX2RlYygmem9uZS0+ZnJl
-ZV9wYWdlcyk7CsKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqAgY29udGludWU7CivCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIH0KCkBBbGV4YW5k
-ZXIgaW4gY2FzZSB5b3UgZGVjaWRlIHRvIGdpdmUgaXQgYSB0cnkgYW5kIGZpbmQgZGlmZmVy
-ZW50IHJlc3VsdHMsCnBsZWFzZSBkbyBsZXQgbWUga25vdy4KClsxXSBodHRwczovL2xvcmUu
-a2VybmVsLm9yZy9sa21sLzIwMTkwODEyMTMxMjM1LjI3MjQ0LTEtbml0ZXNoQHJlZGhhdC5j
-b20vCgoKLS0gClRoYW5rcwpOaXRlc2gK
+On Mon, 2019-10-07 at 08:29 -0400, Nitesh Narayan Lal wrote:
+> On 10/2/19 10:25 AM, Alexander Duyck wrote:
+> 
+> [...]
+> > > > My suggestion would be to look at reworking the patch set and
+> > > > post numbers for my patch set versus the bitmap approach and we can
+> > > > look at them then.
+> > > Agreed. However, in order to fix an issue I have to reproduce it first.
+> > With the tweak I have suggested above it should make it much easier to
+> > reproduce. Basically all you need is to have the allocation competing
+> > against hinting. Currently the hinting isn't doing this because the
+> > allocations are mostly coming out of 4K pages instead of higher order
+> > ones.
+> > 
+> > Alternatively you could just make the suggestion I had proposed about
+> > using spin_lock/unlock_irq in your worker thread and that resolved it
+> > for me.
+> > 
+> > > >  I would prefer not to spend my time fixing and
+> > > > tuning a patch set that I am still not convinced is viable.
+> > > You  don't have to, I can fix the issues in my patch-set. :)
+> > Sounds good. Hopefully the stuff I pointed out above helps you to get
+> > a reproduction and resolve the issues.
+> 
+> So I did observe a significant drop in running my v12 path-set [1] with the
+> suggested test setup. However, on making certain changes the performance
+> improved significantly.
+> 
+> I used my v12 patch-set which I have posted earlier and made the following
+> changes:
+> 1. Started reporting only (MAX_ORDER - 1) pages and increased the number of
+>     pages that can be reported at a time to 32 from 16. The intent of making
+>     these changes was to bring my configuration closer to what Alexander is
+>     using.
+
+The increase from 16 to 32 is valid. No point in working in too small of
+batches. However tightening the order to only test for MAX_ORDER - 1 seems
+like a step in the wrong direction. The bitmap approach doesn't have much
+value if it can only work with the highest order page. I realize it is
+probably necessary in order to make the trick for checking on page_buddy
+work, but it seems very limiting.
+
+> 2. I made an additional change in my bitmap scanning logic to prevent acquiring
+>     spinlock if the page is already allocated.
+
+Again, not a fan. It basically means you can only work with MAX_ORDER - 1
+and there will be no ability to work with anything smaller.
+
+> 
+> Setup:
+> On a 16 vCPU 30 GB single NUMA guest affined to a single host NUMA, I ran the
+> modified will-it-scale/page_fault number of times and calculated the average
+> of the number of process and threads launched on the 16th core to compare the
+> impact of my patch-set against an unmodified kernel.
+> 
+> 
+> Conclusion:
+> %Drop in number of processes launched on 16th vCPU =     1-2%
+> %Drop in number of threads launched on 16th vCPU     =     5-6%
+
+These numbers don't make that much sense to me. Are you talking about a
+fully functioning setup that is madvsing away the memory in the
+hypervisor? If so I would have expected a much higher difference versus
+baseline as zeroing/faulting the pages in the host gets expensive fairly
+quick. What is the host kernel you are running your test on? I'm just
+wondering if there is some additional overhead currently limiting your
+setup. My host kernel was just the same kernel I was running in the guest,
+just built without the patches applied.
+
+> Other observations:
+> - I also tried running Alexander's latest v11 page-reporting patch set and
+>   observe a similar amount of average degradation in the number of processes
+>   and threads.
+> - I didn't include the linear component recorded by will-it-scale because for
+>   some reason it was fluctuating too much even when I was using an unmodified
+>   kernel. If required I can investigate this further.
+> 
+> Note: If there is a better way to analyze the will-it-scale/page_fault results
+> then please do let me know.
+
+Honestly I have mostly just focused on the processes performance. There is
+usually a fair bit of variability but a pattern forms after a few runs so
+you can generally tell if a configuration is an improvement or not.
+
+> Other setup details:
+> Following are the configurations which I enabled to run my tests:
+> - Enabled: CONFIG_SLAB_FREELIST_RANDOM & CONFIG_SHUFFLE_PAGE_ALLOCATOR
+> - Set host THP to always
+> - Set guest THP to madvise
+> - Added the suggested madvise call in page_fault source code.
+> @Alexander please let me know if I missed something.
+
+This seems about right.
+
+> The current state of my v13:
+> I still have to look into Michal's suggestion of using page-isolation API's
+> instead of isolating the page. However, I believe at this moment our objective
+> is to decide with which approach we can proceed and that's why I decided to
+> post the numbers by making small required changes in v12 instead of posting a
+> new series.
+> 
+> 
+> Following are the changes which I have made on top of my v12:
+> 
+> page_reporting.h change:
+> -#define PAGE_REPORTING_MIN_ORDER               (MAX_ORDER - 2)
+> -#define PAGE_REPORTING_MAX_PAGES               16
+> +#define PAGE_REPORTING_MIN_ORDER              (MAX_ORDER - 1)
+> +#define PAGE_REPORTING_MAX_PAGES              32
+> 
+> page_reporting.c change:
+> @@ -101,8 +101,12 @@ static void scan_zone_bitmap(struct page_reporting_config
+> *phconf,
+>                 /* Process only if the page is still online */
+>                 page = pfn_to_online_page((setbit << PAGE_REPORTING_MIN_ORDER) +
+>                                           zone->base_pfn);
+> -               if (!page)
+> +               if (!page || !PageBuddy(page)) {
+> +                       clear_bit(setbit, zone->bitmap);
+> +                       atomic_dec(&zone->free_pages);
+>                         continue;
+> +               }
+> 
+
+I suspect the zone->free_pages is going to be expensive for you to deal
+with. It is a global atomic value and is going to have the cacheline
+bouncing that it is contained in. As a result thinks like setting the
+bitmap with be more expensive as every tome a CPU increments free_pages it
+will likely have to take the cache line containing the bitmap pointer as
+well.
+
+> @Alexander in case you decide to give it a try and find different results,
+> please do let me know.
+> 
+> [1] https://lore.kernel.org/lkml/20190812131235.27244-1-nitesh@redhat.com/
+> 
+> 
+
+If I have some free time I will take a look. However one thing that
+concerns me about this change is that it will limit things much further in
+terms of how much memory can ultimately be freed since you are now only
+working with the highest order page and that becomes a hard requirement
+for your design.
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
