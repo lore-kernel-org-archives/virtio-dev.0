@@ -1,12 +1,12 @@
-Return-Path: virtio-dev-return-6196-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-6201-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 3C79E985FDA
-	for <virtio-dev@lists.oasis-open.org>; Wed,  2 Oct 2019 14:37:21 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 5F22098406A
+	for <virtio-dev@lists.oasis-open.org>; Mon,  7 Oct 2019 12:29:26 +0000 (UTC)
 References: <20191001152441.27008.99285.stgit@localhost.localdomain>
  <7233498c-2f64-d661-4981-707b59c78fd5@redhat.com>
  <1ea1a4e11617291062db81f65745b9c95fd0bb30.camel@linux.intel.com>
@@ -15,120 +15,103 @@ References: <20191001152441.27008.99285.stgit@localhost.localdomain>
  <c06b68cb-5e94-ae3e-f84e-48087d675a8f@redhat.com>
  <CAKgT0Ud6TT=XxqFx6ePHzbUYqMp5FHVPozRvnNZK3tKV7j2xjg@mail.gmail.com>
 From: Nitesh Narayan Lal <nitesh@redhat.com>
-Message-ID: <10e1f17f-db99-a723-97e2-1ae292fff408@redhat.com>
-Date: Wed, 2 Oct 2019 10:36:58 -0400
+Message-ID: <0a16b11e-ec3b-7196-5b7f-e7395876cf28@redhat.com>
+Date: Mon, 7 Oct 2019 08:29:05 -0400
 MIME-Version: 1.0
 In-Reply-To: <CAKgT0Ud6TT=XxqFx6ePHzbUYqMp5FHVPozRvnNZK3tKV7j2xjg@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: base64
 Content-Language: en-US
 Subject: [virtio-dev] Re: [PATCH v11 0/6] mm / virtio: Provide support for unused page
  reporting
-To: Alexander Duyck <alexander.duyck@gmail.com>
-Cc: Alexander Duyck <alexander.h.duyck@linux.intel.com>, David Hildenbrand <david@redhat.com>, virtio-dev@lists.oasis-open.org, kvm list <kvm@vger.kernel.org>, "Michael S. Tsirkin" <mst@redhat.com>, Dave Hansen <dave.hansen@intel.com>, LKML <linux-kernel@vger.kernel.org>, Matthew Wilcox <willy@infradead.org>, Michal Hocko <mhocko@kernel.org>, linux-mm <linux-mm@kvack.org>, Andrew Morton <akpm@linux-foundation.org>, Mel Gorman <mgorman@techsingularity.net>, Vlastimil Babka <vbabka@suse.cz>, Oscar Salvador <osalvador@suse.de>, Yang Zhang <yang.zhang.wz@gmail.com>, Pankaj Gupta <pagupta@redhat.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Rik van Riel <riel@surriel.com>, lcapitulino@redhat.com, "Wang, Wei W" <wei.w.wang@intel.com>, Andrea Arcangeli <aarcange@redhat.com>, Paolo Bonzini <pbonzini@redhat.com>, Dan Williams <dan.j.williams@intel.com>
+To: LKML <linux-kernel@vger.kernel.org>, linux-mm <linux-mm@kvack.org>
+Cc: Alexander Duyck <alexander.duyck@gmail.com>, Alexander Duyck <alexander.h.duyck@linux.intel.com>, David Hildenbrand <david@redhat.com>, virtio-dev@lists.oasis-open.org, kvm list <kvm@vger.kernel.org>, "Michael S. Tsirkin" <mst@redhat.com>, Dave Hansen <dave.hansen@intel.com>, Matthew Wilcox <willy@infradead.org>, Michal Hocko <mhocko@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Mel Gorman <mgorman@techsingularity.net>, Vlastimil Babka <vbabka@suse.cz>, Oscar Salvador <osalvador@suse.de>, Yang Zhang <yang.zhang.wz@gmail.com>, Pankaj Gupta <pagupta@redhat.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Rik van Riel <riel@surriel.com>, lcapitulino@redhat.com, "Wang, Wei W" <wei.w.wang@intel.com>, Andrea Arcangeli <aarcange@redhat.com>, Paolo Bonzini <pbonzini@redhat.com>, Dan Williams <dan.j.williams@intel.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-
-On 10/2/19 10:25 AM, Alexander Duyck wrote:
-> On Wed, Oct 2, 2019 at 3:37 AM Nitesh Narayan Lal <nitesh@redhat.com> w=
-rote:
->>
->> On 10/1/19 8:55 PM, Alexander Duyck wrote:
->>> On Tue, Oct 1, 2019 at 12:16 PM Nitesh Narayan Lal <nitesh@redhat.com=
-> wrote:
->>>> On 10/1/19 12:21 PM, Alexander Duyck wrote:
->>>>> On Tue, 2019-10-01 at 17:35 +0200, David Hildenbrand wrote:
->>>>>> On 01.10.19 17:29, Alexander Duyck wrote:
-> <snip>
->
->>>>> Do we have a working patch set for Nitesh's code? The last time I t=
-ried
->>>>> running his patch set I ran into issues with kernel panics. If we h=
-ave a
->>>>> known working/stable patch set I can give it a try.
->>>> Did you try the v12 patch-set [1]?
->>>> I remember that you reported the CPU stall issue, which I fixed in t=
-he v12.
->>>>
->>>> [1] https://lkml.org/lkml/2019/8/12/593
->>> So I tried testing with the spin_lock calls replaced with spin_lock
->>> _irq to resolve the IRQ issue. I also had shuffle enabled in order to=
-
->>> increase the number of pages being dirtied.
->>>
->>> With that setup the bitmap approach is running significantly worse
->>> then my approach, even with the boundary removed. Since I had to
->>> modify the code to even getting working I am not comfortable posting
->>> numbers.
->> I didn't face any issue in getting the code work or compile.
->> Before my v12 posting, I did try your previously suggested test
->> (will-it-scale/page_fault1 for 12 hours on a 60 GB) and didn't see any=
- issues.
->> I think it would help more if you can share the setup which you are ru=
-nning.
-> So one issue with the standard page_fault1 is that it is only
-> operating at the 4K page level. You won't see much impact from you
-> patches with that as the overhead of splitting a MAX_ORDER - 2 page
-> down to a 4K page will end up being the biggest thing you are
-> benchmarking.
->
-> I think I have brought it up before but I am running with the
-> page_fault1 modified to use THP. Making the change is pretty
-> straightforward as  all you have to do is add an madvise to the test
-> code. All that is needed is to add "madvise(c, MEMSIZE,
-> MADV_HUGEPAGE);" between the assert and the for loop in the
-> page_fault1 code and then rebuild the test. I actually copied
-> page_fault1.c into a file I named page_fault4.c and added the line. As
-> a result it seems like the code will build it as an additional test.
-
-Thanks for explaining.
-
->
-> The only other alteration I can think of that might have much impact
-> would be to enable the page shuffling. The idea is that it will cause
-> us to use more pages because half of the pages freed are dumped to the
-> tail of the list so we are constantly churning the memory.
->
->>> My suggestion would be to look at reworking the patch set and
->>> post numbers for my patch set versus the bitmap approach and we can
->>> look at them then.
->> Agreed. However, in order to fix an issue I have to reproduce it first=
-=2E
-> With the tweak I have suggested above it should make it much easier to
-> reproduce. Basically all you need is to have the allocation competing
-> against hinting. Currently the hinting isn't doing this because the
-> allocations are mostly coming out of 4K pages instead of higher order
-> ones.
-
-Understood.
-
->
-> Alternatively you could just make the suggestion I had proposed about
-> using spin_lock/unlock_irq in your worker thread and that resolved it
-> for me.
-
-I will first reproduce as you suggested and then make the change.
-That will help me to understand the issue in a better way.
-
->
->>>  I would prefer not to spend my time fixing and
->>> tuning a patch set that I am still not convinced is viable.
->> You  don't have to, I can fix the issues in my patch-set. :)
-> Sounds good. Hopefully the stuff I pointed out above helps you to get
-> a reproduction and resolve the issues.
-
-Indeed, I will try these suggestions and fix this issue.
-Did you run into any other issues while building or running?
-
->
-> - Alex
-
---=20
-Thanks
-Nitesh
-
-
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+Ck9uIDEwLzIvMTkgMTA6MjUgQU0sIEFsZXhhbmRlciBEdXljayB3cm90ZToKClsuLi5dCj4+
+PiBNeSBzdWdnZXN0aW9uIHdvdWxkIGJlIHRvIGxvb2sgYXQgcmV3b3JraW5nIHRoZSBwYXRj
+aCBzZXQgYW5kCj4+PiBwb3N0IG51bWJlcnMgZm9yIG15IHBhdGNoIHNldCB2ZXJzdXMgdGhl
+IGJpdG1hcCBhcHByb2FjaCBhbmQgd2UgY2FuCj4+PiBsb29rIGF0IHRoZW0gdGhlbi4KPj4g
+QWdyZWVkLiBIb3dldmVyLCBpbiBvcmRlciB0byBmaXggYW4gaXNzdWUgSSBoYXZlIHRvIHJl
+cHJvZHVjZSBpdCBmaXJzdC4KPiBXaXRoIHRoZSB0d2VhayBJIGhhdmUgc3VnZ2VzdGVkIGFi
+b3ZlIGl0IHNob3VsZCBtYWtlIGl0IG11Y2ggZWFzaWVyIHRvCj4gcmVwcm9kdWNlLiBCYXNp
+Y2FsbHkgYWxsIHlvdSBuZWVkIGlzIHRvIGhhdmUgdGhlIGFsbG9jYXRpb24gY29tcGV0aW5n
+Cj4gYWdhaW5zdCBoaW50aW5nLiBDdXJyZW50bHkgdGhlIGhpbnRpbmcgaXNuJ3QgZG9pbmcg
+dGhpcyBiZWNhdXNlIHRoZQo+IGFsbG9jYXRpb25zIGFyZSBtb3N0bHkgY29taW5nIG91dCBv
+ZiA0SyBwYWdlcyBpbnN0ZWFkIG9mIGhpZ2hlciBvcmRlcgo+IG9uZXMuCj4KPiBBbHRlcm5h
+dGl2ZWx5IHlvdSBjb3VsZCBqdXN0IG1ha2UgdGhlIHN1Z2dlc3Rpb24gSSBoYWQgcHJvcG9z
+ZWQgYWJvdXQKPiB1c2luZyBzcGluX2xvY2svdW5sb2NrX2lycSBpbiB5b3VyIHdvcmtlciB0
+aHJlYWQgYW5kIHRoYXQgcmVzb2x2ZWQgaXQKPiBmb3IgbWUuCj4KPj4+ICBJIHdvdWxkIHBy
+ZWZlciBub3QgdG8gc3BlbmQgbXkgdGltZSBmaXhpbmcgYW5kCj4+PiB0dW5pbmcgYSBwYXRj
+aCBzZXQgdGhhdCBJIGFtIHN0aWxsIG5vdCBjb252aW5jZWQgaXMgdmlhYmxlLgo+PiBZb3Ug
+IGRvbid0IGhhdmUgdG8sIEkgY2FuIGZpeCB0aGUgaXNzdWVzIGluIG15IHBhdGNoLXNldC4g
+OikKPiBTb3VuZHMgZ29vZC4gSG9wZWZ1bGx5IHRoZSBzdHVmZiBJIHBvaW50ZWQgb3V0IGFi
+b3ZlIGhlbHBzIHlvdSB0byBnZXQKPiBhIHJlcHJvZHVjdGlvbiBhbmQgcmVzb2x2ZSB0aGUg
+aXNzdWVzLgoKClNvIEkgZGlkIG9ic2VydmUgYSBzaWduaWZpY2FudCBkcm9wIGluIHJ1bm5p
+bmcgbXkgdjEyIHBhdGgtc2V0IFsxXSB3aXRoIHRoZQpzdWdnZXN0ZWQgdGVzdCBzZXR1cC4g
+SG93ZXZlciwgb24gbWFraW5nIGNlcnRhaW4gY2hhbmdlcyB0aGUgcGVyZm9ybWFuY2UKaW1w
+cm92ZWQgc2lnbmlmaWNhbnRseS4KCkkgdXNlZCBteSB2MTIgcGF0Y2gtc2V0IHdoaWNoIEkg
+aGF2ZSBwb3N0ZWQgZWFybGllciBhbmQgbWFkZSB0aGUgZm9sbG93aW5nCmNoYW5nZXM6CjEu
+IFN0YXJ0ZWQgcmVwb3J0aW5nIG9ubHkgKE1BWF9PUkRFUiAtIDEpIHBhZ2VzIGFuZCBpbmNy
+ZWFzZWQgdGhlIG51bWJlciBvZgrCoMKgwqAgcGFnZXMgdGhhdCBjYW4gYmUgcmVwb3J0ZWQg
+YXQgYSB0aW1lIHRvIDMyIGZyb20gMTYuIFRoZSBpbnRlbnQgb2YgbWFraW5nCsKgwqDCoCB0
+aGVzZSBjaGFuZ2VzIHdhcyB0byBicmluZyBteSBjb25maWd1cmF0aW9uIGNsb3NlciB0byB3
+aGF0IEFsZXhhbmRlciBpcwrCoMKgwqAgdXNpbmcuCjIuIEkgbWFkZSBhbiBhZGRpdGlvbmFs
+IGNoYW5nZSBpbiBteSBiaXRtYXAgc2Nhbm5pbmcgbG9naWMgdG8gcHJldmVudCBhY3F1aXJp
+bmcKwqDCoMKgIHNwaW5sb2NrIGlmIHRoZSBwYWdlIGlzIGFscmVhZHkgYWxsb2NhdGVkLgoK
+ClNldHVwOgpPbiBhIDE2IHZDUFUgMzAgR0Igc2luZ2xlIE5VTUEgZ3Vlc3QgYWZmaW5lZCB0
+byBhIHNpbmdsZSBob3N0IE5VTUEsIEkgcmFuIHRoZQptb2RpZmllZCB3aWxsLWl0LXNjYWxl
+L3BhZ2VfZmF1bHQgbnVtYmVyIG9mIHRpbWVzIGFuZCBjYWxjdWxhdGVkIHRoZSBhdmVyYWdl
+Cm9mIHRoZSBudW1iZXIgb2YgcHJvY2VzcyBhbmQgdGhyZWFkcyBsYXVuY2hlZCBvbiB0aGUg
+MTZ0aCBjb3JlIHRvIGNvbXBhcmUgdGhlCmltcGFjdCBvZiBteSBwYXRjaC1zZXQgYWdhaW5z
+dCBhbiB1bm1vZGlmaWVkIGtlcm5lbC4KCgpDb25jbHVzaW9uOgolRHJvcCBpbiBudW1iZXIg
+b2YgcHJvY2Vzc2VzIGxhdW5jaGVkIG9uIDE2dGggdkNQVSA9wqDCoMKgwqAgMS0yJQolRHJv
+cCBpbiBudW1iZXIgb2YgdGhyZWFkcyBsYXVuY2hlZCBvbiAxNnRoIHZDUFXCoMKgwqDCoCA9
+wqDCoMKgwqAgNS02JQoKCk90aGVyIG9ic2VydmF0aW9uczoKLSBJIGFsc28gdHJpZWQgcnVu
+bmluZyBBbGV4YW5kZXIncyBsYXRlc3QgdjExIHBhZ2UtcmVwb3J0aW5nIHBhdGNoIHNldCBh
+bmQKwqAgb2JzZXJ2ZSBhIHNpbWlsYXIgYW1vdW50IG9mIGF2ZXJhZ2UgZGVncmFkYXRpb24g
+aW4gdGhlIG51bWJlciBvZiBwcm9jZXNzZXMKwqAgYW5kIHRocmVhZHMuCi0gSSBkaWRuJ3Qg
+aW5jbHVkZSB0aGUgbGluZWFyIGNvbXBvbmVudCByZWNvcmRlZCBieSB3aWxsLWl0LXNjYWxl
+IGJlY2F1c2UgZm9yCsKgIHNvbWUgcmVhc29uIGl0IHdhcyBmbHVjdHVhdGluZyB0b28gbXVj
+aCBldmVuIHdoZW4gSSB3YXMgdXNpbmcgYW4gdW5tb2RpZmllZArCoCBrZXJuZWwuIElmIHJl
+cXVpcmVkIEkgY2FuIGludmVzdGlnYXRlIHRoaXMgZnVydGhlci4KCk5vdGU6IElmIHRoZXJl
+IGlzIGEgYmV0dGVyIHdheSB0byBhbmFseXplIHRoZSB3aWxsLWl0LXNjYWxlL3BhZ2VfZmF1
+bHQgcmVzdWx0cwp0aGVuIHBsZWFzZSBkbyBsZXQgbWUga25vdy4KCgpPdGhlciBzZXR1cCBk
+ZXRhaWxzOgpGb2xsb3dpbmcgYXJlIHRoZSBjb25maWd1cmF0aW9ucyB3aGljaCBJIGVuYWJs
+ZWQgdG8gcnVuIG15IHRlc3RzOgotIEVuYWJsZWQ6IENPTkZJR19TTEFCX0ZSRUVMSVNUX1JB
+TkRPTSAmIENPTkZJR19TSFVGRkxFX1BBR0VfQUxMT0NBVE9SCi0gU2V0IGhvc3QgVEhQIHRv
+IGFsd2F5cwotIFNldCBndWVzdCBUSFAgdG8gbWFkdmlzZQotIEFkZGVkIHRoZSBzdWdnZXN0
+ZWQgbWFkdmlzZSBjYWxsIGluIHBhZ2VfZmF1bHQgc291cmNlIGNvZGUuCkBBbGV4YW5kZXIg
+cGxlYXNlIGxldCBtZSBrbm93IGlmIEkgbWlzc2VkIHNvbWV0aGluZy4KCgpUaGUgY3VycmVu
+dCBzdGF0ZSBvZiBteSB2MTM6Ckkgc3RpbGwgaGF2ZSB0byBsb29rIGludG8gTWljaGFsJ3Mg
+c3VnZ2VzdGlvbiBvZiB1c2luZyBwYWdlLWlzb2xhdGlvbiBBUEkncwppbnN0ZWFkIG9mIGlz
+b2xhdGluZyB0aGUgcGFnZS4gSG93ZXZlciwgSSBiZWxpZXZlIGF0IHRoaXMgbW9tZW50IG91
+ciBvYmplY3RpdmUKaXMgdG8gZGVjaWRlIHdpdGggd2hpY2ggYXBwcm9hY2ggd2UgY2FuIHBy
+b2NlZWQgYW5kIHRoYXQncyB3aHkgSSBkZWNpZGVkIHRvCnBvc3QgdGhlIG51bWJlcnMgYnkg
+bWFraW5nIHNtYWxsIHJlcXVpcmVkIGNoYW5nZXMgaW4gdjEyIGluc3RlYWQgb2YgcG9zdGlu
+ZyBhCm5ldyBzZXJpZXMuCgoKRm9sbG93aW5nIGFyZSB0aGUgY2hhbmdlcyB3aGljaCBJIGhh
+dmUgbWFkZSBvbiB0b3Agb2YgbXkgdjEyOgoKcGFnZV9yZXBvcnRpbmcuaCBjaGFuZ2U6Ci0j
+ZGVmaW5lIFBBR0VfUkVQT1JUSU5HX01JTl9PUkRFUsKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqAgKE1BWF9PUkRFUiAtIDIpCi0jZGVmaW5lIFBBR0VfUkVQT1JUSU5HX01BWF9QQUdF
+U8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgMTYKKyNkZWZpbmUgUEFHRV9SRVBPUlRJ
+TkdfTUlOX09SREVSwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgKE1BWF9PUkRFUiAtIDEp
+CisjZGVmaW5lIFBBR0VfUkVQT1JUSU5HX01BWF9QQUdFU8KgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgIDMyCgpwYWdlX3JlcG9ydGluZy5jIGNoYW5nZToKQEAgLTEwMSw4ICsxMDEsMTIg
+QEAgc3RhdGljIHZvaWQgc2Nhbl96b25lX2JpdG1hcChzdHJ1Y3QgcGFnZV9yZXBvcnRpbmdf
+Y29uZmlnCipwaGNvbmYsCsKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAvKiBQcm9j
+ZXNzIG9ubHkgaWYgdGhlIHBhZ2UgaXMgc3RpbGwgb25saW5lICovCsKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoCBwYWdlID0gcGZuX3RvX29ubGluZV9wYWdlKChzZXRiaXQgPDwg
+UEFHRV9SRVBPUlRJTkdfTUlOX09SREVSKSArCsKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqAgem9uZS0+YmFzZV9wZm4pOwotwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBpZiAo
+IXBhZ2UpCivCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGlmICghcGFnZSB8fCAhUGFn
+ZUJ1ZGR5KHBhZ2UpKSB7CivCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoCBjbGVhcl9iaXQoc2V0Yml0LCB6b25lLT5iaXRtYXApOworwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgYXRvbWljX2RlYygmem9uZS0+ZnJl
+ZV9wYWdlcyk7CsKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqAgY29udGludWU7CivCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIH0KCkBBbGV4YW5k
+ZXIgaW4gY2FzZSB5b3UgZGVjaWRlIHRvIGdpdmUgaXQgYSB0cnkgYW5kIGZpbmQgZGlmZmVy
+ZW50IHJlc3VsdHMsCnBsZWFzZSBkbyBsZXQgbWUga25vdy4KClsxXSBodHRwczovL2xvcmUu
+a2VybmVsLm9yZy9sa21sLzIwMTkwODEyMTMxMjM1LjI3MjQ0LTEtbml0ZXNoQHJlZGhhdC5j
+b20vCgoKLS0gClRoYW5rcwpOaXRlc2gK
 
