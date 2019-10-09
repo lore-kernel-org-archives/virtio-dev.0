@@ -1,60 +1,58 @@
-Return-Path: virtio-dev-return-6221-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id AE660985DBE
-	for <virtio-dev@lists.oasis-open.org>; Fri, 11 Oct 2019 08:49:18 +0000 (UTC)
-Date: Fri, 11 Oct 2019 09:49:13 +0100
+Return-Path: virtio-return-3385-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio@lists.oasis-open.org>
+List-Post: <mailto:virtio@lists.oasis-open.org>
+List-Help: <mailto:virtio-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
+Date: Wed, 9 Oct 2019 18:34:03 +0100
 From: Stefan Hajnoczi <stefanha@redhat.com>
-Message-ID: <20191011084913.GB2848@stefanha-x1.localdomain>
-References: <1463684030-23555-1-git-send-email-stefanha@redhat.com>
- <dd3b5bfb-af0e-5d19-e208-c5f59e3895d7@opensynergy.com>
+Message-ID: <20191009173403.GG13568@stefanha-x1.localdomain>
+References: <20190925115223.8365-1-mst@redhat.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="+g7M9IMkV8truYOl"
+	protocol="application/pgp-signature"; boundary="RMedoP2+Pr6Rq0N2"
 Content-Disposition: inline
-In-Reply-To: <dd3b5bfb-af0e-5d19-e208-c5f59e3895d7@opensynergy.com>
-Subject: Re: [virtio-dev] Re: [PATCH] virtio-blk: document VIRTIO_BLK_F_MQ
- multiqueue feature
-To: Matti Moell <Matti.Moell@opensynergy.com>
-Cc: virtio-dev@lists.oasis-open.org, "Michael S. Tsirkin" <mst@redhat.com>, Ming Lei <ming.lei@canonical.com>
+In-Reply-To: <20190925115223.8365-1-mst@redhat.com>
+Subject: Re: [virtio] [PATCH v2] README.md: clean up build instructions
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
---+g7M9IMkV8truYOl
+--RMedoP2+Pr6Rq0N2
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Oct 07, 2019 at 07:29:49PM +0200, Matti Moell wrote:
-> I wasn't able to find any discussion about not including multiqueue in the
-> spec and this patch was never applied, is there any particular reason why=
- it
-> wasn't added?
+On Wed, Sep 25, 2019 at 07:53:05AM -0400, Michael S. Tsirkin wrote:
+> Switch to <DL> from manual formatting with <BR> and <P>.
+> Clarify wording a bit.
+> Add hints on what to do in case of missing fonts.
 >=20
-> Should it even be added to the spec?
+> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+> ---
+>=20
+> changes from v1:
+> - drop TeX link as it's confusing (you want TeX live)
+> - MacTex-> MacTeX
+>=20
+>  README.md | 56 ++++++++++++++++++++++++++++++++++++-------------------
+>  1 file changed, 37 insertions(+), 19 deletions(-)
 
-Yes, it should be added to the spec.  Eugenio Perez has recently sent a
-new patch to fix this:
-https://lists.oasis-open.org/archives/virtio-comment/201909/msg00004.html
+Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
 
-Stefan
-
---+g7M9IMkV8truYOl
+--RMedoP2+Pr6Rq0N2
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAl2gQgkACgkQnKSrs4Gr
-c8hBkQgAnhUqMuTMeAhR17tZWAlI9qcCvbPaz4izSUq1qyVNkj7AMLLAGYRGP79x
-YaCNlMA8Ug9AribZsjpeQW3S0I9x/b8HjMUqPUNAPkW+3HZsnV0va80fxJ7PNDCe
-5rLx/I8fpphd9/NWOKY2PcyPj7UiUmPlbNmO/q03/AqgduFjZRTMDpVwl/PFeLHy
-u9h//XqHdqCgYEwc5xBOb0JysWCDGOcJeUFKURMXGt6NpICEKvDSR9ZwIeSlhazX
-l5wwA8Dc96TOqF3wwFBSzoMGL7N8tgtUiV+QjYBba2o7FJaZhb3rjdzh6rt6L5TZ
-eXMexU6IHaqEDewlO56GLgxGoq5RHg==
-=mGO8
+iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAl2eGgsACgkQnKSrs4Gr
+c8hXCAgAszp9SMWG9AHCxp9atZRBsDb0+3mwa35jWQhlXpbukY+fm8EN7BsA4w6Y
+cnwIy2l0Xvg2axERNlnpHb/gv5LNnZupP1eExZxPuQc8qs+QZhHUzGmWhWuTG2cU
++WOAAdN29XGxrzeSMsuQsNgktms1/ujFRljagajNqGl+XqwIGwisTEw203H3kFpA
+2c9xdA8YRCZWu3Z4khvmZySK4ADhccHZ8Zs+h0hyNoPCOtk8RIpLO7lX9btswNZU
+3H4B6wFXQPYu9X3QT0flGLjX5DzYbxoYaKTtcG8/y/eutx/BIptSngn83RZgS1P2
+klmAT5Q8Nxl7x1oLRsE64gnhWf/jsQ==
+=GQWi
 -----END PGP SIGNATURE-----
 
---+g7M9IMkV8truYOl--
+--RMedoP2+Pr6Rq0N2--
