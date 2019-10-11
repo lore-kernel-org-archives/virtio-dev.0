@@ -1,59 +1,58 @@
-Return-Path: virtio-dev-return-6235-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-6226-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 33DB1984346
-	for <virtio-dev@lists.oasis-open.org>; Mon, 14 Oct 2019 09:54:56 +0000 (UTC)
-Date: Mon, 14 Oct 2019 10:54:53 +0100
-From: Stefan Hajnoczi <stefanha@redhat.com>
-Message-ID: <20191014095453.GJ22963@stefanha-x1.localdomain>
-References: <977476fd-34f9-057a-f6f7-81cfdc2f9d94@siemens.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 870C0985DD5
+	for <virtio-dev@lists.oasis-open.org>; Fri, 11 Oct 2019 11:43:44 +0000 (UTC)
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <1170e604-7d65-1c97-33f7-741054ecf5e0@siemens.com>
+Date: Fri, 11 Oct 2019 13:43:41 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="dwWFXG4JqVa0wfCP"
-Content-Disposition: inline
-In-Reply-To: <977476fd-34f9-057a-f6f7-81cfdc2f9d94@siemens.com>
-Subject: Re: [virtio-dev] [PATCH] Lift "Driver Notifications" to section level
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: [virtio-dev] [PATCH] Fix ^= in example code
+To: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
---dwWFXG4JqVa0wfCP
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-On Fri, Oct 11, 2019 at 01:50:53PM +0200, Jan Kiszka wrote:
-> From: Jan Kiszka <jan.kiszka@siemens.com>
->=20
-> Currently, it slips under the Packed Virtqueues section while it is not
-> specific to this format.
->=20
-> At this chance, capitalize "Notifications".
->=20
-> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-> ---
->  content.tex | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+Trying to escaping ^ here only leaves the backslash in the output.
 
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ packed-ring.tex | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---dwWFXG4JqVa0wfCP
-Content-Type: application/pgp-signature; name="signature.asc"
+diff --git a/packed-ring.tex b/packed-ring.tex
+index caf47a5..ea92543 100644
+--- a/packed-ring.tex
++++ b/packed-ring.tex
+@@ -634,7 +634,7 @@ \subsubsection{Implementation Example}\label{sec:Basic Facilities of a Virtio De
+ 
+         if (vq->next_avail >= vq->size) {
+                 vq->next_avail = 0;
+-                vq->avail_wrap_count \^= 1;
++                vq->avail_wrap_count ^= 1;
+         }
+ }
+ vq->sgs[id] = sgs;
+@@ -727,7 +727,7 @@ \subsection{Receiving Used Buffers From The Device}\label{sec:Basic Facilities o
+         vq->next_used += sgs;
+         if (vq->next_used >= vq->size) {
+                 vq->next_used -= vq->size;
+-                vq->used_wrap_count \^= 1;
++                vq->used_wrap_count ^= 1;
+         }
+ 
+         free_id(vq, id);
+-- 
+2.16.4
 
------BEGIN PGP SIGNATURE-----
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAl2kRe0ACgkQnKSrs4Gr
-c8gFlwf/TfUwpBusuUloqw6qzs2qQUw47goK9h9THGA0mrK6XDIrvHcPu8NkACy2
-/5cKLWYunHXF9mguRLQ+b5uR9Ti6wB/X937S8nBSOvENfhgbBkEFr+YjuVbbkGrX
-CvjkvkMUrUVCIzUmXSiBPD4cxkQRko9CTDKW1CFNh4Qun7/UXKSK+oeKjCamSSXk
-yyLQcpOL+dXpoAN548Kvt0K4bynGN/uVFuLPpSciHZx8nTf0z1A8e5Bfu43e7TRq
-DUehtf2yPhvVRL0Xe8cFGvd6piwBBk2S7OphOi2t3gQSVOE0lrlenizL0VEicP3m
-DGI/Ssb0W3pRwzTK07cFag+fE6XKYQ==
-=7/LG
------END PGP SIGNATURE-----
-
---dwWFXG4JqVa0wfCP--
