@@ -1,50 +1,48 @@
-Return-Path: virtio-return-3387-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio@lists.oasis-open.org>
-List-Post: <mailto:virtio@lists.oasis-open.org>
-List-Help: <mailto:virtio-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Mon, 28 Oct 2019 06:48:46 +0100
-From: Stefan Hajnoczi <stefanha@redhat.com>
-Message-ID: <20191028054846.GA11125@stefanha-x1.localdomain>
-References: <20191027130529.29882-1-mst@redhat.com>
+Return-Path: virtio-dev-return-6229-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id 35B5D985E3C
+	for <virtio-dev@lists.oasis-open.org>; Sat, 12 Oct 2019 07:09:31 +0000 (UTC)
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <6c2e6e45-6b73-2fdd-c3d2-27fe8b6e640e@siemens.com>
+Date: Sat, 12 Oct 2019 09:09:16 +0200
 MIME-Version: 1.0
-In-Reply-To: <20191027130529.29882-1-mst@redhat.com>
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="0F1p//8PRICkK4MW"
-Content-Disposition: inline
-Subject: Re: [virtio] [PATCH] README.md: document the minor cleanups standing
- rule
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: [virtio-dev] [PATCH] Console Device: Add a missing word
+To: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
---0F1p//8PRICkK4MW
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-On Sun, Oct 27, 2019 at 09:05:31AM -0400, Michael S. Tsirkin wrote:
-> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> ---
->  README.md | 15 +++++++++++++++
->  1 file changed, 15 insertions(+)
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ content.tex | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+diff --git a/content.tex b/content.tex
+index f55e23f..a0435b9 100644
+--- a/content.tex
++++ b/content.tex
+@@ -4471,7 +4471,7 @@ \subsection{Device Operation}\label{sec:Device Types / Console Device / Device O
+ 
+ \drivernormative{\subsubsection}{Device Operation}{Device Types / Console Device / Device Operation}
+ 
+-The driver MUST NOT put a device-readable in a receiveq. The driver
++The driver MUST NOT put a device-readable buffer in a receiveq. The driver
+ MUST NOT put a device-writable buffer in a transmitq.
+ 
+ \subsubsection{Multiport Device Operation}\label{sec:Device Types / Console Device / Device Operation / Multiport Device Operation}
+-- 
+2.16.4
 
---0F1p//8PRICkK4MW
-Content-Type: application/pgp-signature; name="signature.asc"
 
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAl22gT4ACgkQnKSrs4Gr
-c8i9gAf8CvnqvBuRO+iMVVFvboLKygkFCnH16c9Ku7b+IRP9Cxic1jMTBaC4TfPi
-53mSfyYBfrlFIP1d07Vgd54esxMDQ763HDVG8hyL8EfcgJ2bXC44UrOsEk06iONI
-5m3mcMrZ/sM5LLM/DS+4z5hef0vNOlukjU90V3HDGvcIf6ieCiiMBBC9FqfKm0+0
-5K7Kp5wn1Uy9pYkiHCpNEJEy7g1a7NMUr5sDPz1Nq2Jq5bUe5++O+u8Op+f8xCTn
-OQihFkCUbpqF3Gyn8lUOwl95EhIyZbsD1dIYb34V4AjIZlve5oLW+AyiYCSHJ1nP
-rR9c6uUq+kPP8Bv/PbnMEG+BMfjLOg==
-=8CvG
------END PGP SIGNATURE-----
-
---0F1p//8PRICkK4MW--
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
