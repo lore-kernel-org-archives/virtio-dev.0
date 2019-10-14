@@ -1,77 +1,60 @@
-Return-Path: virtio-dev-return-6200-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-6233-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id AC54C983B7F
-	for <virtio-dev@lists.oasis-open.org>; Sun,  6 Oct 2019 16:41:35 +0000 (UTC)
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <e0fb8838-c6c2-4c1e-4a14-d0b2671c524a@siemens.com>
-Date: Sun, 6 Oct 2019 18:41:32 +0200
+	by lists.oasis-open.org (Postfix) with ESMTP id 2DBDE984325
+	for <virtio-dev@lists.oasis-open.org>; Mon, 14 Oct 2019 08:45:05 +0000 (UTC)
+Date: Mon, 14 Oct 2019 09:45:02 +0100
+From: Stefan Hajnoczi <stefanha@redhat.com>
+Message-ID: <20191014084502.GG22963@stefanha-x1.localdomain>
+References: <e0fb8838-c6c2-4c1e-4a14-d0b2671c524a@siemens.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: [virtio-dev] [PATCH] virtio-mmio: Rename remaining QueueAvail/Used references
-To: virtio-dev@lists.oasis-open.org
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="WkfBGePaEyrk4zXB"
+Content-Disposition: inline
+In-Reply-To: <e0fb8838-c6c2-4c1e-4a14-d0b2671c524a@siemens.com>
+Subject: Re: [virtio-dev] [PATCH] virtio-mmio: Rename remaining
+ QueueAvail/Used references
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+--WkfBGePaEyrk4zXB
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-These have been changed in ae98c6bc21bc. Convert the rest.
+On Sun, Oct 06, 2019 at 06:41:32PM +0200, Jan Kiszka wrote:
+> From: Jan Kiszka <jan.kiszka@siemens.com>
+>=20
+> These have been changed in ae98c6bc21bc. Convert the rest.
+>=20
+> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+> ---
+>  content.tex | 10 +++++-----
+>  1 file changed, 5 insertions(+), 5 deletions(-)
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- content.tex | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
 
-diff --git a/content.tex b/content.tex
-index 679391e..2325236 100644
---- a/content.tex
-+++ b/content.tex
-@@ -1645,8 +1645,8 @@ \subsection{MMIO Device Register Layout}\label{sec:Virtio Transport Options / Vi
-   \mmioreg{QueueSel}{Virtual queue index}{0x030}{W}{%
-     Writing to this register selects the virtual queue that the
-     following operations on \field{QueueNumMax}, \field{QueueNum}, \field{QueueReady},
--    \field{QueueDescLow}, \field{QueueDescHigh}, \field{QueueAvailLow}, \field{QueueAvailHigh},
--    \field{QueueUsedLow} and \field{QueueUsedHigh} apply to. The index
-+    \field{QueueDescLow}, \field{QueueDescHigh}, \field{QueueDriverlLow}, \field{QueueDriverHigh},
-+    \field{QueueDeviceLow} and \field{QueueDeviceHigh} apply to. The index
-     number of the first queue is zero (0x0). 
-   }
-   \hline 
-@@ -1724,14 +1724,14 @@ \subsection{MMIO Device Register Layout}\label{sec:Virtio Transport Options / Vi
-   \hline 
-   \mmiodreg{QueueDriverLow}{QueueDriverHigh}{Virtual queue's Driver Area 64 bit long physical address}{0x090}{0x094}{W}{%
-     Writing to these two registers (lower 32 bits of the address
--    to \field{QueueAvailLow}, higher 32 bits to \field{QueueAvailHigh}) notifies
-+    to \field{QueueDriverLow}, higher 32 bits to \field{QueueDriverHigh}) notifies
-     the device about location of the Driver Area of the queue
-     selected by writing to \field{QueueSel}.
-   }
-   \hline 
-   \mmiodreg{QueueDeviceLow}{QueueDeviceHigh}{Virtual queue's Device Area 64 bit long physical address}{0x0a0}{0x0a4}{W}{%
-     Writing to these two registers (lower 32 bits of the address
--    to \field{QueueUsedLow}, higher 32 bits to \field{QueueUsedHigh}) notifies
-+    to \field{QueueDeviceLow}, higher 32 bits to \field{QueueDeviceHigh}) notifies
-     the device about location of the Device Area of the queue
-     selected by writing to \field{QueueSel}.
-   }
-@@ -1829,7 +1829,7 @@ \subsection{MMIO Device Register Layout}\label{sec:Virtio Transport Options / Vi
- 
- When \field{QueueReady} is not zero, the driver MUST NOT access
- \field{QueueNum}, \field{QueueDescLow}, \field{QueueDescHigh},
--\field{QueueAvailLow}, \field{QueueAvailHigh}, \field{QueueUsedLow}, \field{QueueUsedHigh}.
-+\field{QueueDriverLow}, \field{QueueDriverHigh}, \field{QueueDeviceLow}, \field{QueueDeviceHigh}.
- 
- To stop using the queue the driver MUST write zero (0x0) to this
- \field{QueueReady} and MUST read the value back to ensure
--- 
-2.16.4
+Please create a GitHub Issue so that a vote can be started:
+https://github.com/oasis-tcs/virtio-spec/issues
 
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+--WkfBGePaEyrk4zXB
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAl2kNY4ACgkQnKSrs4Gr
+c8jqowf/QgPGMkigApi2Fb5XRTyfSUSlznWqrxuhFP9/jvuyeTE+NzqHEgZyqZCz
+9DZ52PnQC74rr2YmZbFWkheqcwSRx3OjrhrWXprfKlrpPp+muK5dUd+4+C3m9mgO
+H6B1pV9SWoWwtW8fG4N6Tqu+m8rThKUUvwLBbd6OPDlbvxRMpcCSCh7VMPR1HQKR
+u2xqZnqgSu7giGBVS6lh1kDjtW6QVvV7OYUEjHhcbVyxug4P+OsXCoygqzhe1nOl
+8GDXtZCMK45ajb8GyXZWQB5YQBD4S5QEJJlB8qH7W74/5ak/deLVBpyO7IHy9lLs
+lGuvMGW5eEeaPPypn4olDdVOqIydBA==
+=otG+
+-----END PGP SIGNATURE-----
+
+--WkfBGePaEyrk4zXB--
