@@ -1,15 +1,15 @@
-Return-Path: virtio-dev-return-6260-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-6261-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 78734983E7E
-	for <virtio-dev@lists.oasis-open.org>; Sun, 27 Oct 2019 11:48:22 +0000 (UTC)
-Date: Sun, 27 Oct 2019 07:48:13 -0400
+	by lists.oasis-open.org (Postfix) with ESMTP id B322F983E7E
+	for <virtio-dev@lists.oasis-open.org>; Sun, 27 Oct 2019 11:49:34 +0000 (UTC)
+Date: Sun, 27 Oct 2019 07:49:25 -0400
 From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20191027074518-mutt-send-email-mst@kernel.org>
+Message-ID: <20191027074834-mutt-send-email-mst@kernel.org>
 References: <1570588611-12187-1-git-send-email-yang.huang@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
@@ -36,10 +36,9 @@ On Wed, Oct 09, 2019 at 10:36:51AM +0800, Huang Yang wrote:
 >    and rewrite text to Device Operation section.
 > 5. Update conformance.
 
-Looks reasonable at this point. Feel free to create a github
-issue and request a vote as documented here:
-https://github.com/oasis-tcs/virtio-spec/README.md
-see section "use of github issues".
+
+Just one point, pls send comments to virtio-comment in the future.
+virtio-dev is more for implementation discussions.
 
 > ---
 >  conformance.tex  |  24 ++++-
