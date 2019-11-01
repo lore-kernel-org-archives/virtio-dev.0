@@ -1,86 +1,99 @@
-Return-Path: virtio-dev-return-6282-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 203AB985B20
-	for <virtio-dev@lists.oasis-open.org>; Mon,  4 Nov 2019 09:47:52 +0000 (UTC)
-Date: Mon, 4 Nov 2019 10:47:41 +0100
-From: Stefan Hajnoczi <stefanha@redhat.com>
-Message-ID: <20191104094741.GD4682@stefanha-x1.localdomain>
-References: <20191101075615.2780-1-sf@sfritsch.de>
+Return-Path: virtio-return-3390-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio@lists.oasis-open.org>
+List-Post: <mailto:virtio@lists.oasis-open.org>
+List-Help: <mailto:virtio-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
+Date: Fri, 1 Nov 2019 04:23:45 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20191101082342.18687-1-mst@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <20191101075615.2780-1-sf@sfritsch.de>
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="DrWhICOqskFTAXiy"
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
-Subject: Re: [virtio-dev] [PATCH] Fix typo
-To: Stefan Fritsch <sf@sfritsch.de>
-Cc: virtio-dev@lists.oasis-open.org, "Michael S. Tsirkin" <mst@redhat.com>
+Subject: [virtio] [PATCH] content: document speed, dupex
+To: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
---DrWhICOqskFTAXiy
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Document as used by Linux.
 
-On Fri, Nov 01, 2019 at 08:56:15AM +0100, Stefan Fritsch wrote:
-> It's balloon, not ballon.
->=20
-> Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+---
+ content.tex | 25 +++++++++++++++++++++++++
+ 1 file changed, 25 insertions(+)
 
-Looks good, thanks!  Typo fixes are merged directly by Michael Tsirkin
-without the need for a GitHub Issue or committee vote.
+diff --git a/content.tex b/content.tex
+index bff80d0..e89ae44 100644
+--- a/content.tex
++++ b/content.tex
+@@ -2951,12 +2951,29 @@ \subsection{Device configuration layout}\label{sec:=
+Device Types / Network Device
+ VIRTIO_NET_F_MTU is set. This field specifies the maximum MTU for the driv=
+er to
+ use.
+=20
++The following two fields, \field{speed} and \field{duplex} only
++exist if VIRTIO_NET_F_SPEED_DUPLEX is set.
++
++\field{speed} is the device speed, in units of 1MByte, 0 to
++0x7FFFF. Driver MUST also treat any
++other value as representing an unknown duplex state.
++
++\field{duplex} has the values of 0x00 for full duplex, 0x01 for
++half duplex and 0xff for unknown. Driver MUST also treat any
++other value as representing an unknown duplex state.
++
++Neither \field{speed} not \field{duplex} changes as long as
++VIRTIO_NET_S_LINK_UP is set.
++
+ \begin{lstlisting}
+ struct virtio_net_config {
+         u8 mac[6];
+         le16 status;
+         le16 max_virtqueue_pairs;
+         le16 mtu;
++        le32 speed;
++        u8 duplex;
++
+ };
+ \end{lstlisting}
+=20
+@@ -2985,6 +3002,10 @@ \subsection{Device configuration layout}\label{sec:D=
+evice Types / Network Device
+ If the driver negotiates the VIRTIO_NET_F_STANDBY feature, the device MAY =
+act
+ as a standby device for a primary device with the same MAC address.
+=20
++Device MUST NOT change the \field{speed} and \field{duplex}
++fields as long as VIRTIO_NET_S_LINK_UP is set in the
++\field{status}.
++
+ \drivernormative{\subsubsection}{Device configuration layout}{Device Types=
+ / Network Device / Device configuration layout}
+=20
+ A driver SHOULD negotiate VIRTIO_NET_F_MAC if the device offers it.
+@@ -3009,6 +3030,10 @@ \subsection{Device configuration layout}\label{sec:D=
+evice Types / Network Device
+=20
+ A driver SHOULD negotiate the VIRTIO_NET_F_STANDBY feature if the device o=
+ffers it.
+=20
++A driver MUST treat a value of \field{speed} above
++0x000000007fffffff as well as a value of \field{duplex} not
++matching 0x0 or 0x1 as an unknown value.
++
+ \subsubsection{Legacy Interface: Device configuration layout}\label{sec:De=
+vice Types / Network Device / Device configuration layout / Legacy Interfac=
+e: Device configuration layout}
+ \label{sec:Device Types / Block Device / Feature bits / Device configurati=
+on layout / Legacy Interface: Device configuration layout}
+ When using the legacy interface, transitional devices and drivers
+--=20
+MST
 
-Also "hi!", I think I saw you at KVM Forum :).
 
-Stefan
-
-> Signed-off-by: Stefan Fritsch <sf@sfritsch.de>
-> ---
->  content.tex | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/content.tex b/content.tex
-> index b1ea9b9..d73182f 100644
-> --- a/content.tex
-> +++ b/content.tex
-> @@ -4646,7 +4646,7 @@ \subsection{Virtqueues}\label{sec:Device Types / Me=
-mory Balloon Device / Virtque
->  \item[2] statsq.
->  \end{description}
-> =20
-> -  Virtqueue 2 only exists if VIRTIO_BALLON_F_STATS_VQ set.
-> +  Virtqueue 2 only exists if VIRTIO_BALLOON_F_STATS_VQ set.
-> =20
->  \subsection{Feature bits}\label{sec:Device Types / Memory Balloon Device=
- / Feature bits}
->  \begin{description}
-> --=20
-> 2.20.1
->=20
->=20
-> ---------------------------------------------------------------------
-> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
->=20
-
---DrWhICOqskFTAXiy
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAl2/870ACgkQnKSrs4Gr
-c8j59Af/ePKN5uIE7sPtB0JgEuB8KpjGgfODeEhEqnsYIQ+S4rdrWfLGjLp4v51C
-D3BGbqFOj51hyLGvW9NP5ZZToVUdqKjpGX0ECrq2zm2qcjv/24urI/f7L0++H7Vy
-R5TLO5yVkX5vtWOc6lEKYYMsX4kzZScDzWb6aY31mvI3vfqZoOuLQJ6XG5/+0V1P
-1kaYc40kuF6rGsBlHiX4KRp+/OBXRzZankpQuAJ7J0WDEHElxQaybuWJqxINBP5y
-/FOKtGjZOpxlmqFDB6L8CFWnkYCn70umFd92XiOtJvU7D24rQsem3HGOQq0/86fz
-N7iOPfrJ7CBE8Ue4S70FkPRpJWwy5w==
-=siK7
------END PGP SIGNATURE-----
-
---DrWhICOqskFTAXiy--
+---------------------------------------------------------------------
+To unsubscribe from this mail list, you must leave the OASIS TC that 
+generates this mail.  Follow this link to all your TCs in OASIS at:
+https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
 
