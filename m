@@ -1,65 +1,82 @@
-Return-Path: virtio-dev-return-6405-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-6283-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id CE516985DB8
-	for <virtio-dev@lists.oasis-open.org>; Mon, 25 Nov 2019 18:02:51 +0000 (UTC)
-Date: Mon, 25 Nov 2019 19:02:47 +0100
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Message-ID: <20191125180247.GD945122@lophozonia>
-References: <20191122105000.800410-1-jean-philippe@linaro.org>
- <20191122160102.00004489@intel.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id E492B985E9B
+	for <virtio-dev@lists.oasis-open.org>; Tue,  5 Nov 2019 10:55:05 +0000 (UTC)
+Date: Tue, 5 Nov 2019 11:54:56 +0100
+From: Gerd Hoffmann <kraxel@redhat.com>
+Message-ID: <20191105105456.7xbhtistnbp272lj@sirius.home.kraxel.org>
 MIME-Version: 1.0
-In-Reply-To: <20191122160102.00004489@intel.com>
-Subject: [virtio-dev] Re: [RFC 00/13] virtio-iommu on non-devicetree platforms
 Content-Type: text/plain; charset=WINDOWS-1252
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
-To: "Jacob Pan (Jun)" <jacob.jun.pan@intel.com>
-Cc: linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, virtualization@lists.linux-foundation.org, linux-pci@vger.kernel.org, virtio-dev@lists.oasis-open.org, rjw@rjwysocki.net, lenb@kernel.org, lorenzo.pieralisi@arm.com, guohanjun@huawei.com, sudeep.holla@arm.com, gregkh@linuxfoundation.org, joro@8bytes.org, bhelgaas@google.com, mst@redhat.com, jasowang@redhat.com, eric.auger@redhat.com, sebastien.boeuf@intel.com, kevin.tian@intel.com
+Subject: [virtio-dev] guest / host buffer sharing ...
+To: Keiichi Watanabe <keiichiw@chromium.org>
+Cc: David Stevens <stevensd@chromium.org>, Tomasz Figa <tfiga@chromium.org>, Dmitry Morozov <dmitry.morozov@opensynergy.com>, Alexandre Courbot <acourbot@chromium.org>, Alex Lau <alexlau@chromium.org>, Dylan Reid <dgreid@chromium.org>, =?utf-8?B?U3TDqXBoYW5l?= Marchesin <marcheu@chromium.org>, Pawel Osciak <posciak@chromium.org>, Hans Verkuil <hverkuil@xs4all.nl>, Daniel Vetter <daniel@ffwll.ch>, geoff@hostfission.com, Gurchetan Singh <gurchetansingh@chromium.org>, Linux Media Mailing List <linux-media@vger.kernel.org>, virtio-dev@lists.oasis-open.org, qemu-devel@nongnu.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Fri, Nov 22, 2019 at 04:01:02PM -0800, Jacob Pan (Jun) wrote:
-> > (1) ACPI has one table per vendor (DMAR for Intel, IVRS for AMD and
-> > IORT for Arm). From my point of view IORT is easier to extend, since
-> > we just need to introduce a new node type. There are no dependencies
-> > to Arm in the Linux IORT driver, so it works well with CONFIG_X86.
-> >=20
-> From my limited understanding, IORT and VIOT is to solve device topology
-> enumeration only? I am not sure how it can be expanded to cover
-> information beyond device topology. e.g. DMAR has NUMA information and
-> root port ATS, I guess they are not used today in the guest but might
-> be additions in the future.
+  Hi folks,
 
-The PCI root-complex node of IORT has an ATS attribute, which we can
-already use. However its scope is the root complex, not individual root
-ports like with DMAR.
+The issue of sharing buffers between guests and hosts keeps poping
+up again and again in different contexts.  Most recently here:
 
-I'm not very familiar with NUMA, but it looks like we just need to specify
-a proximity domain in relation to the SRAT table, for each viommu? The
-SMMUv3 node in IORT has a 4-bytes "proximity domain" field for this. We
-can add the same to the VIOT virtio-iommu nodes later, since the
-structures are extensible.
+https://www.mail-archive.com/qemu-devel@nongnu.org/msg656685.html
 
-But it might be better to keep the bare minimum information in the FW
-descriptor, and put the rest in the virtio-iommu. So yes topology
-enumeration is something the device cannot do itself (not fully that is,
-see (2)) but for the rest, virtio-iommu's PROBE request can provide
-details about each endpoint in relation to their physical IOMMU.
+So, I'm grabbing the recipient list of the virtio-vdec thread and some
+more people I know might be interested in this, hoping to have everyone
+included.
 
-We could for example add a bit in a PROBE property saying that the whole
-path between the IOMMU and the endpoint supports ATS. For NUMA it might
-also be more interesting to have a finer granularity, since one viommu
-could be managing endpoints that are behind different physical IOMMUs. If
-in the future we want to allocate page tables close to the physical IOMMU
-for example, we might need to describe multiple NUMA nodes per viommu,
-using the PROBE request.
+Reason is:  Meanwhile I'm wondering whenever "just use virtio-gpu
+resources" is really a good answer for all the different use cases
+we have collected over time.  Maybe it is better to have a dedicated
+buffer sharing virtio device?  Here is the rough idea:
 
-Thanks,
-Jean
+
+(1) The virtio device
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+
+Has a single virtio queue, so the guest can send commands to register
+and unregister buffers.  Buffers are allocated in guest ram.  Each buffer
+has a list of memory ranges for the data.  Each buffer also has some
+properties to carry metadata, some fixed (id, size, application), but
+also allow free form (name =3D value, framebuffers would have
+width/height/stride/format for example).
+
+
+(2) The linux guest implementation
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D
+
+I guess I'd try to make it a drm driver, so we can re-use drm
+infrastructure (shmem helpers for example).  Buffers are dumb drm
+buffers.  dma-buf import and export is supported (shmem helpers
+get us that for free).  Some device-specific ioctls to get/set
+properties and to register/unregister the buffers on the host.
+
+
+(3) The qemu host implementation
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D
+
+qemu (likewise other vmms) can use the udmabuf driver to create
+host-side dma-bufs for the buffers.  The dma-bufs can be passed to
+anyone interested, inside and outside qemu.  We'll need some protocol
+for communication between qemu and external users interested in those
+buffers, to receive dma-bufs (via unix file descriptor passing) and
+update notifications.  Dispatching updates could be done based on the
+application property, which could be "virtio-vdec" or "wayland-proxy"
+for example.
+
+
+commments?
+
+cheers,
+  Gerd
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
