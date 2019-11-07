@@ -1,88 +1,251 @@
-Return-Path: virtio-dev-return-6316-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-6294-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 6D168985DE9
-	for <virtio-dev@lists.oasis-open.org>; Mon, 11 Nov 2019 17:23:50 +0000 (UTC)
-References: <9c7a1f52-c9bf-7360-557f-3b5a53ea2b9e@siemens.com>
- <20191027073842-mutt-send-email-mst@kernel.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <5ecafcb0-824e-6dfc-c962-04010aeb9a11@siemens.com>
-Date: Mon, 11 Nov 2019 18:23:48 +0100
+	by lists.oasis-open.org (Postfix) with ESMTP id 3987A985EFA
+	for <virtio-dev@lists.oasis-open.org>; Thu,  7 Nov 2019 08:29:20 +0000 (UTC)
 MIME-Version: 1.0
-In-Reply-To: <20191027073842-mutt-send-email-mst@kernel.org>
-Content-Language: en-US
-Subject: Re: [virtio-dev] virtio-console: initial size retrieval, port
- parameter reporting
-Content-Type: text/plain; charset=WINDOWS-1252; format=flowed
-Content-Transfer-Encoding: quoted-printable
-To: "Michael S. Tsirkin" <mst@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
+References: <20190919093404.182015-1-keiichiw@chromium.org>
+ <4037801.MZecyecTDs@os-lin-dmo> <CAAFQd5CfNK1oisDaOWaW+9NTQOLn1EHPrPzvxMPcSxLkBgv3Ww@mail.gmail.com>
+ <15135216.K0K410U5qv@os-lin-dmo> <CAAFQd5DuChujakwmhtQ8v2CSLFqVYjLz9eGHuqrQnJ7apft+3Q@mail.gmail.com>
+ <20191017071952.s3dq2oxdiy3khp5w@sirius.home.kraxel.org> <CAAFQd5ByuyTDqwiBeT7U7cVA8omOPGRRxb2tB8=J-u7WYU-urQ@mail.gmail.com>
+ <20191017101304.pbjoj3knyveuacqm@sirius.home.kraxel.org> <CAD=HUj7-q4+L0JTauSg-CU-jVGzgWAFVdHa78QdfDUo8FH_YKw@mail.gmail.com>
+In-Reply-To: <CAD=HUj7-q4+L0JTauSg-CU-jVGzgWAFVdHa78QdfDUo8FH_YKw@mail.gmail.com>
+From: Keiichi Watanabe <keiichiw@chromium.org>
+Date: Thu, 7 Nov 2019 17:29:07 +0900
+Message-ID: <CAD90VcYSD8JAi_K48be5=tuKfiyfgRvt4FrQjoJRbvmLPZ9FFQ@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [virtio-dev] [PATCH] [RFC RESEND] vdec: Add virtio video decode
+ device specification
+To: David Stevens <stevensd@chromium.org>
+Cc: Gerd Hoffmann <kraxel@redhat.com>, Tomasz Figa <tfiga@chromium.org>, Dmitry Morozov <dmitry.morozov@opensynergy.com>, virtio-dev@lists.oasis-open.org, Alexandre Courbot <acourbot@chromium.org>, Alex Lau <alexlau@chromium.org>, Dylan Reid <dgreid@chromium.org>, =?UTF-8?Q?St=C3=A9phane_Marchesin?= <marcheu@chromium.org>, Pawel Osciak <posciak@chromium.org>, Hans Verkuil <hverkuil@xs4all.nl>, Linux Media Mailing List <linux-media@vger.kernel.org>, Daniel Vetter <daniel@ffwll.ch>, nicolas.dufresne@collabora.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 27.10.19 12:39, Michael S. Tsirkin wrote:
-> On Sun, Oct 13, 2019 at 07:48:09PM +0200, Jan Kiszka wrote:
->> Hi all,
->>
->> while implementing a basic virtio-console backend, I noticed some grey
->> area regarding when and how the initial console size should be read by
->> the driver.
->>
->> Linux currently only does that sizing when the device signals a config
->> change, either via a config interrupt (non-multiport) or by sending a
->> VIRTIO_CONSOLE_RESIZE control message. But the spec is not clear whether
->> a device is supposed to do exactly that.
->>
->> Let's look at the two cases, first without VIRTIO_CONSOLE_F_MULTIPORT:
->> I would have expected that the driver can find the console size in the
->> configuration early, even before FEATURES_OK. And I would have expected
->> that Linux evaluates that value during probe. Again, the spec does not
->> tell us whether the device must send that initial config update to
->> declare the size information valid.
->>
->> Now with VIRTIO_CONSOLE_F_MULTIPORT:
->> Here, the device can only signal the dimensions for ports > 0 via a
+Hi everyone,
 
-That "only" was meant to go before the "via": Dimenations for port 1..n=20
-imply control messages.
+Thanks for all the comments.
 
->> control message. This suggests (but the spec does not state it
->> explicitly) that the device will likely send VIRTIO_CONSOLE_RESIZE
->> message after VIRTIO_CONSOLE_PORT_READY. And that also for port 0,
->> although its size is available also via the config. BTW, is a device in
->> that case also supposed to signal a config change? Or should a device
->> never offer F_MULTIPORT and F_SIZE at the same time?
+As Gerd created a separate thread for buffer sharing
+(https://markmail.org/message/jeh5xjjxvylyrbur), I wonder if we can start a
+discussion on the protocol details in this thread now. I think the details of
+buffer sharing shouldn't affect overall design of the virtio-vdec protocol so
+much.
 
-These two questions are still open.
+Any feedback would be greatly appreciated. Thanks in advance.
 
->>
->> In general, the spec does not state when a device should (or rather
->> must) send any of the _CONSOLE_PORT, _RESIZE and _PORT_NAME messages. I
->> assume they are meant to be sent after _PORT_READY from the driver
->> because the spec says:
->>
->> "After creating and initializing each port, a VIRTIO_CONSOLE_PORT_READY
->> control message is sent to the device for that port so the device can
->> let the driver know of any additional configuration options set for that
->> port."
->>
->> If my assumption is correct, that ordering should be stated more
->> explicitly in the spec.
->>
->> Jan
->=20
-> Makes sense to me.
+Best regards,
+Keiichi
 
-I will try to clarify the spec in that direction, I just need some hint=20
-regarding the open point above.
-
-Jan
-
---=20
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+On Thu, Oct 31, 2019 at 6:11 PM David Stevens <stevensd@chromium.org> wrote:
+>
+> [Resending after subscribing to virtio-dev, sorry for the noise]
+>
+> > When running drm-misc-next you should be able to test whenever that'll
+> > actually work without any virtio-gpu driver changes.
+>
+> I did some experimentation with the Chrome OS kernel-next branch
+> (based on v5.4-rc3) plus drm-misc-next. I looked at both the chromeos
+> downstream virtio-wayland driver as well as the virtio-vdec driver
+> that was recently proposed to upstream.
+>
+> Using the dma address of buffers generally works. However, it does
+> require the addition of some synchronization in the virtio-gpu driver
+> to prevent races between the virtio-gpu device registering the buffer
+> with the guest dma address (which happens with the ATTACH_BACKING
+> command) and other virtio devices using the guest dma address as a
+> buffer identifier. I've included a patch that adds this
+> synchronization.
+>
+> Signed-off-by: David Stevens <stevensd@chromium.org>
+> ---
+>  drivers/gpu/drm/virtio/virtgpu_drv.h    |  2 +
+>  drivers/gpu/drm/virtio/virtgpu_object.c | 15 +++++-
+>  drivers/gpu/drm/virtio/virtgpu_vq.c     | 64 +++++++++++++++++++++----
+>  3 files changed, 71 insertions(+), 10 deletions(-)
+>
+> diff --git a/drivers/gpu/drm/virtio/virtgpu_drv.h
+> b/drivers/gpu/drm/virtio/virtgpu_drv.h
+> index 314e02f94d9c4..00a2c0e6b6382 100644
+> --- a/drivers/gpu/drm/virtio/virtgpu_drv.h
+> +++ b/drivers/gpu/drm/virtio/virtgpu_drv.h
+> @@ -72,6 +72,8 @@ struct virtio_gpu_object {
+>         uint32_t mapped;
+>         bool dumb;
+>         bool created;
+> +
+> +       bool attach_backing_complete;
+>  };
+>  #define gem_to_virtio_gpu_obj(gobj) \
+>         container_of((gobj), struct virtio_gpu_object, base.base)
+> diff --git a/drivers/gpu/drm/virtio/virtgpu_object.c
+> b/drivers/gpu/drm/virtio/virtgpu_object.c
+> index 017a9e0fc3bb8..812a0a48f6385 100644
+> --- a/drivers/gpu/drm/virtio/virtgpu_object.c
+> +++ b/drivers/gpu/drm/virtio/virtgpu_object.c
+> @@ -75,13 +75,26 @@ static void virtio_gpu_free_object(struct
+> drm_gem_object *obj)
+>         drm_gem_shmem_free_object(obj);
+>  }
+>
+> +int virtio_gpu_gem_object_pin(struct drm_gem_object *obj)
+> +{
+> +       struct virtio_gpu_object *bo = gem_to_virtio_gpu_obj(obj);
+> +       struct virtio_gpu_device *vgdev = obj->dev->dev_private;
+> +
+> +       if (!bo->attach_backing_complete)
+> +               wait_event(vgdev->resp_wq, bo->attach_backing_complete);
+> +       if (!bo->attach_backing_complete)
+> +               return -EFAULT;
+> +
+> +       return drm_gem_shmem_pin(obj);
+> +}
+> +
+>  static const struct drm_gem_object_funcs virtio_gpu_gem_funcs = {
+>         .free = virtio_gpu_free_object,
+>         .open = virtio_gpu_gem_object_open,
+>         .close = virtio_gpu_gem_object_close,
+>
+>         .print_info = drm_gem_shmem_print_info,
+> -       .pin = drm_gem_shmem_pin,
+> +       .pin = virtio_gpu_gem_object_pin,
+>         .unpin = drm_gem_shmem_unpin,
+>         .get_sg_table = drm_gem_shmem_get_sg_table,
+>         .vmap = drm_gem_shmem_vmap,
+> diff --git a/drivers/gpu/drm/virtio/virtgpu_vq.c
+> b/drivers/gpu/drm/virtio/virtgpu_vq.c
+> index 80176f379ad51..8bc2359a6d625 100644
+> --- a/drivers/gpu/drm/virtio/virtgpu_vq.c
+> +++ b/drivers/gpu/drm/virtio/virtgpu_vq.c
+> @@ -579,26 +579,42 @@ void virtio_gpu_cmd_transfer_to_host_2d(struct
+> virtio_gpu_device *vgdev,
+>         virtio_gpu_queue_fenced_ctrl_buffer(vgdev, vbuf, &cmd_p->hdr, fence);
+>  }
+>
+> +static void
+> +virtio_gpu_cmd_resource_attach_backing_cb(struct virtio_gpu_device *vgdev,
+> +                                         struct virtio_gpu_vbuffer *vbuf)
+> +{
+> +       struct virtio_gpu_object_array *objs = vbuf->objs;
+> +       struct virtio_gpu_object *bo = gem_to_virtio_gpu_obj(objs->objs[0]);
+> +
+> +       bo->attach_backing_complete = true;
+> +       wake_up_all(&vgdev->resp_wq);
+> +}
+> +
+>  static void
+>  virtio_gpu_cmd_resource_attach_backing(struct virtio_gpu_device *vgdev,
+> -                                      uint32_t resource_id,
+> +                                      struct virtio_gpu_object *bo,
+>                                        struct virtio_gpu_mem_entry *ents,
+>                                        uint32_t nents,
+> +                                      struct virtio_gpu_object_array *objs,
+>                                        struct virtio_gpu_fence *fence)
+>  {
+>         struct virtio_gpu_resource_attach_backing *cmd_p;
+>         struct virtio_gpu_vbuffer *vbuf;
+>
+> -       cmd_p = virtio_gpu_alloc_cmd(vgdev, &vbuf, sizeof(*cmd_p));
+> +       cmd_p = virtio_gpu_alloc_cmd_resp(
+> +               vgdev, virtio_gpu_cmd_resource_attach_backing_cb, &vbuf,
+> +               sizeof(*cmd_p), sizeof(struct virtio_gpu_ctrl_hdr), NULL);
+>         memset(cmd_p, 0, sizeof(*cmd_p));
+>
+>         cmd_p->hdr.type = cpu_to_le32(VIRTIO_GPU_CMD_RESOURCE_ATTACH_BACKING);
+> -       cmd_p->resource_id = cpu_to_le32(resource_id);
+> +       cmd_p->resource_id = cpu_to_le32(bo->hw_res_handle);
+>         cmd_p->nr_entries = cpu_to_le32(nents);
+>
+>         vbuf->data_buf = ents;
+>         vbuf->data_size = sizeof(*ents) * nents;
+>
+> +       vbuf->objs = objs;
+> +
+>         virtio_gpu_queue_fenced_ctrl_buffer(vgdev, vbuf, &cmd_p->hdr, fence);
+>  }
+>
+> @@ -1048,9 +1064,10 @@ int virtio_gpu_object_attach(struct
+> virtio_gpu_device *vgdev,
+>                              struct virtio_gpu_fence *fence)
+>  {
+>         bool use_dma_api = !virtio_has_iommu_quirk(vgdev->vdev);
+> +       struct virtio_gpu_object_array *objs = NULL;
+>         struct virtio_gpu_mem_entry *ents;
+>         struct scatterlist *sg;
+> -       int si, nents, ret;
+> +       int si, nents, ret = 0;
+>
+>         if (WARN_ON_ONCE(!obj->created))
+>                 return -EINVAL;
+> @@ -1063,8 +1080,8 @@ int virtio_gpu_object_attach(struct
+> virtio_gpu_device *vgdev,
+>
+>         obj->pages = drm_gem_shmem_get_sg_table(&obj->base.base);
+>         if (obj->pages == NULL) {
+> -               drm_gem_shmem_unpin(&obj->base.base);
+> -               return -EINVAL;
+> +               ret = -EINVAL;
+> +               goto err_unpin;
+>         }
+>
+>         if (use_dma_api) {
+> @@ -1081,7 +1098,8 @@ int virtio_gpu_object_attach(struct
+> virtio_gpu_device *vgdev,
+>                              GFP_KERNEL);
+>         if (!ents) {
+>                 DRM_ERROR("failed to allocate ent list\n");
+> -               return -ENOMEM;
+> +               ret = -ENOMEM;
+> +               goto err_unmap;
+>         }
+>
+>         for_each_sg(obj->pages->sgl, sg, nents, si) {
+> @@ -1092,10 +1110,38 @@ int virtio_gpu_object_attach(struct
+> virtio_gpu_device *vgdev,
+>                 ents[si].padding = 0;
+>         }
+>
+> -       virtio_gpu_cmd_resource_attach_backing(vgdev, obj->hw_res_handle,
+> +       objs = virtio_gpu_array_alloc(1);
+> +       if (!objs) {
+> +               ret = -ENOMEM;
+> +               goto err_free_ents;
+> +       }
+> +       virtio_gpu_array_add_obj(objs, &obj->base.base);
+> +
+> +       if (fence) {
+> +               ret = virtio_gpu_array_lock_resv(objs);
+> +               if (ret != 0)
+> +                       goto err_put_objs;
+> +       }
+> +
+> +       virtio_gpu_cmd_resource_attach_backing(vgdev, obj,
+>                                                ents, nents,
+> -                                              fence);
+> +                                              objs, fence);
+>         return 0;
+> +
+> +err_put_objs:
+> +       virtio_gpu_array_put_free(objs);
+> +err_free_ents:
+> +       kfree(ents);
+> +err_unmap:
+> +       if (use_dma_api) {
+> +               dma_unmap_sg(vgdev->vdev->dev.parent,
+> +                            obj->pages->sgl, obj->pages->nents,
+> +                            DMA_TO_DEVICE);
+> +               obj->mapped = 0;
+> +       }
+> +err_unpin:
+> +       drm_gem_shmem_unpin(&obj->base.base);
+> +       return ret;
+>  }
+>
+>  void virtio_gpu_object_detach(struct virtio_gpu_device *vgdev,
+> --
+> 2.24.0.rc0.303.g954a862665-goog
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
