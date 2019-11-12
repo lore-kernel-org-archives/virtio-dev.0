@@ -1,978 +1,370 @@
-Return-Path: virtio-dev-return-6320-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-6324-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id BFB0E985E61
-	for <virtio-dev@lists.oasis-open.org>; Tue, 12 Nov 2019 12:45:56 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id A1812985E61
+	for <virtio-dev@lists.oasis-open.org>; Tue, 12 Nov 2019 15:16:35 +0000 (UTC)
+Message-ID: <394b40a75959454bc634636d9c99bf9bca98454d.camel@linux.intel.com>
+From: Liam Girdwood <liam.r.girdwood@linux.intel.com>
+Date: Tue, 12 Nov 2019 15:16:28 +0000
+In-Reply-To: <050946d2-e55e-1104-96ff-a63862c154ab@opensynergy.com>
 References: <20190924144323.4590-1-Mikhail.Golubev@opensynergy.com>
- <6a4978e85505ae00ca9e2b170f5e893a064c03d2.camel@linux.intel.com>
- <568f32dc-8d82-a189-469f-5cb3a0140b8c@opensynergy.com>
- <0cc8007b70f4f5984223703313730d8e066006a7.camel@linux.intel.com>
-From: Anton Yakovlev <anton.yakovlev@opensynergy.com>
-Message-ID: <050946d2-e55e-1104-96ff-a63862c154ab@opensynergy.com>
-Date: Tue, 12 Nov 2019 13:45:50 +0100
-MIME-Version: 1.0
-In-Reply-To: <0cc8007b70f4f5984223703313730d8e066006a7.camel@linux.intel.com>
-Content-Language: en-US
+	 <6a4978e85505ae00ca9e2b170f5e893a064c03d2.camel@linux.intel.com>
+	 <568f32dc-8d82-a189-469f-5cb3a0140b8c@opensynergy.com>
+	 <0cc8007b70f4f5984223703313730d8e066006a7.camel@linux.intel.com>
+	 <050946d2-e55e-1104-96ff-a63862c154ab@opensynergy.com>
+Mime-Version: 1.0
 Subject: Re: [virtio-dev] [PATCH] snd: Add virtio sound device specification
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-To: Liam Girdwood <liam.r.girdwood@linux.intel.com>, Mikhail Golubev <Mikhail.Golubev@opensynergy.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
+To: Anton Yakovlev <anton.yakovlev@opensynergy.com>, Mikhail Golubev <Mikhail.Golubev@opensynergy.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
 Cc: Takashi Iwai <tiwai@suse.de>, Mark Brown <broonie@kernel.org>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 11.11.2019 16:20, Liam Girdwood wrote:
-> On Tue, 2019-10-29 at 10:42 +0100, Anton Yakovlev wrote:
->> Hi Liam,
->>
->> Thank you for comments! Please, take a look at our answers below.
+On Tue, 2019-11-12 at 13:45 +0100, Anton Yakovlev wrote:
+> On 11.11.2019 16:20, Liam Girdwood wrote:
+> > On Tue, 2019-10-29 at 10:42 +0100, Anton Yakovlev wrote:
+> > > Hi Liam,
+> > >=20
+> > > Thank you for comments! Please, take a look at our answers below.
+> >=20
+> > Apologies, been travelling. More comments below.
+> >=20
+> > >=20
+> > >=20
+> > > On 28.10.2019 17:05, Liam Girdwood wrote:
+> > > > On Tue, 2019-09-24 at 15:43 +0100, Mikhail Golubev wrote:
+> > > > > From: Anton Yakovlev <Anton.Yakovlev@opensynergy.com>
+> > > > >=20
+> > > > >=20
+
+snip
+
+> > > > > diff --git a/virtio-sound.tex b/virtio-sound.tex
+> > > > > new file mode 100644
+> > > > > index 0000000..68a606e
+> > > > > --- /dev/null
+> > > > > +++ b/virtio-sound.tex
+> > > > > @@ -0,0 +1,405 @@
+> > > > > +\section{Sound Device}\label{sec:Device Types / Sound
+> > > > > Device}
+> > > > > +
+> > > > > +The virtio sound card is a virtual audio device supporting
+> > > > > output
+> > > > > and input PCM
+> > > > > +streams. All device control requests are placed into the
+> > > > > control
+> > > > > virtqueue, all
+> > > > > +I/O requests are placed into the PCM virtqueue.
+> > > >=20
+> > > > Where are stream position updates placed ? These are usually
+> > > > synchronous from the driver and enable the player application
+> > > > to
+> > > > render
+> > > > or read data from the correct locations in the buffers. This is
+> > > > latency
+> > > > sensitive data.
+> > >=20
+> > > It happens in an interrupt handler. Since PCM frame transfer is
+> > > message based,
+> > > the only possible way to figure out consumed or captured amount
+> > > of
+> > > frames is
+> > > to take a look into a message response.
+> > >=20
+> >=20
+> > Ok, this is what I thought. This wont work for low latency audio
+> > use
+> > cases since the buffers and position responses are queued (voice
+> > calls,
+> > some gaming, some system notifications like keypress or volume
+> > change).
 >=20
-> Apologies, been travelling. More comments below.
->=20
->>
->>
->> On 28.10.2019 17:05, Liam Girdwood wrote:
->>> On Tue, 2019-09-24 at 15:43 +0100, Mikhail Golubev wrote:
->>>> From: Anton Yakovlev <Anton.Yakovlev@opensynergy.com>
->>>>
->>>> This patch proposes virtio specification for new virtio sound
->>>> device.
->>>>
->>>> The virtio sound card is a virtual audio device supporting output
->>>> and
->>>> input PCM streams.
->>>>
->>>
->>> Apologies for the delay in response, I've just been made aware of
->>> this
->>> spec proposal on this list. I've also added Mark and Takashi.
->>>
->>> Just to make you aware I'm working on a spec for DSP
->>> virtualisation,
->>> where the DSP can do more than just simple audio uses cases. I
->>> intend
->>> to support this spec as a fallback for guests who request non DSP
->>> audio
->>> functionality, hence my interest :)
->>>
->>> This spec looks in the right direction for virtualising non DSP
->>> audio
->>> devices (where we have HW for DMAC, I2S/HDA and a codec IC). There
->>> are
->>> a few opens that I've detailed below.
->>
->> Originally, this spec was supposed to be extendable. Since PCM is the
->> simplest
->> and most demandable feature, we decided to start only with this one.
->>
->>
->>>> Signed-off-by: Anton Yakovlev <Anton.Yakovlev@opensynergy.com>
->>>> Signed-off-by: Mikhail Golubev <Mikhail.Golubev@opensynergy.com>
->>>> ---
->>>> Fixes from RFC:
->>>>    * Use fixed virtqueue numbers for the control and PCM queues
->>>>    * Use device feature bits to indicate available input/output
->>>> PCM
->>>> streams
->>>>    * Place PCM stream configuration into the device configuration
->>>> space
->>>>    * Add sound device and driver requirements into the "Device
->>>> Initialization"
->>>>     subsection
->>>>    * Add sound device and driver requirements into the "Device
->>>> Operation" subsection
->>>>    * Add sound device and driver conformance subsections
->>>>
->>>> RFC link:
->>>>
-> https://lists.oasis-open.org/archives/virtio-dev/201908/msg00078.html
->>>>
->>>>    conformance.tex  |  20 +++
->>>>    content.tex      |   1 +
->>>>    virtio-sound.tex | 405
->>>> +++++++++++++++++++++++++++++++++++++++++++++++
->>>>    3 files changed, 426 insertions(+)
->>>>    create mode 100644 virtio-sound.tex
->>>>
->>>> diff --git a/conformance.tex b/conformance.tex
->>>> index 0ac58aa..31595bf 100644
->>>> --- a/conformance.tex
->>>> +++ b/conformance.tex
->>>> @@ -183,6 +183,16 @@ \section{Conformance
->>>> Targets}\label{sec:Conformance / Conformance Targets}
->>>>    \item \ref{drivernormative:Device Types / Socket Device /
->>>> Device
->>>> Operation / Device Events}
->>>>    \end{itemize}
->>>>
->>>> +\conformance{\subsection}{Sound Driver
->>>> Conformance}\label{sec:Conformance / Driver Conformance / Sound
->>>> Driver Conformance}
->>>> +
->>>> +A sound driver MUST conform to the following normative
->>>> statements:
->>>> +
->>>> +\begin{itemize}
->>>> +\item \ref{drivernormative:Device Types / Sound Device / Device
->>>> Initialization}
->>>> +\item \ref{drivernormative:Device Types / Sound Device / PCM
->>>> control
->>>> requests}
->>>> +\item \ref{drivernormative:Device Types / Sound Device / PCM IO
->>>> requests}
->>>> +\end{itemize}
->>>> +
->>>>    \conformance{\section}{Device
->>>> Conformance}\label{sec:Conformance /
->>>> Device Conformance}
->>>>
->>>>    A device MUST conform to the following normative statements:
->>>> @@ -338,6 +348,16 @@ \section{Conformance
->>>> Targets}\label{sec:Conformance / Conformance Targets}
->>>>    \item \ref{devicenormative:Device Types / Socket Device /
->>>> Device
->>>> Operation / Receive and Transmit}
->>>>    \end{itemize}
->>>>
->>>> +\conformance{\subsection}{Sound Device
->>>> Conformance}\label{sec:Conformance / Device Conformance / Sound
->>>> Device Conformance}
->>>> +
->>>> +A sound device MUST conform to the following normative
->>>> statements:
->>>> +
->>>> +\begin{itemize}
->>>> +\item \ref{devicenormative:Device Types / Sound Device / Device
->>>> Initialization}
->>>> +\item \ref{devicenormative:Device Types / Sound Device / PCM
->>>> control
->>>> requests}
->>>> +\item \ref{devicenormative:Device Types / Sound Device / PCM IO
->>>> requests}
->>>> +\end{itemize}
->>>> +
->>>>    \conformance{\section}{Legacy Interface: Transitional Device
->>>> and
->>>> Transitional Driver Conformance}\label{sec:Conformance / Legacy
->>>> Interface: Transitional Device and Transitional Driver
->>>> Conformance}
->>>>    A conformant implementation MUST be either transitional or
->>>>    non-transitional, see \ref{intro:Legacy
->>>> diff --git a/content.tex b/content.tex
->>>> index 37a2190..4a00884 100644
->>>> --- a/content.tex
->>>> +++ b/content.tex
->>>> @@ -5682,6 +5682,7 @@ \subsubsection{Legacy Interface: Framing
->>>> Requirements}\label{sec:Device
->>>>    \input{virtio-input.tex}
->>>>    \input{virtio-crypto.tex}
->>>>    \input{virtio-vsock.tex}
->>>> +\input{virtio-sound.tex}
->>>>
->>>>    \chapter{Reserved Feature Bits}\label{sec:Reserved Feature
->>>> Bits}
->>>>
->>>> diff --git a/virtio-sound.tex b/virtio-sound.tex
->>>> new file mode 100644
->>>> index 0000000..68a606e
->>>> --- /dev/null
->>>> +++ b/virtio-sound.tex
->>>> @@ -0,0 +1,405 @@
->>>> +\section{Sound Device}\label{sec:Device Types / Sound Device}
->>>> +
->>>> +The virtio sound card is a virtual audio device supporting
->>>> output
->>>> and input PCM
->>>> +streams. All device control requests are placed into the control
->>>> virtqueue, all
->>>> +I/O requests are placed into the PCM virtqueue.
->>>
->>> Where are stream position updates placed ? These are usually
->>> synchronous from the driver and enable the player application to
->>> render
->>> or read data from the correct locations in the buffers. This is
->>> latency
->>> sensitive data.
->>
->> It happens in an interrupt handler. Since PCM frame transfer is
->> message based,
->> the only possible way to figure out consumed or captured amount of
->> frames is
->> to take a look into a message response.
->>
->=20
-> Ok, this is what I thought. This wont work for low latency audio use
-> cases since the buffers and position responses are queued (voice calls,
-> some gaming, some system notifications like keypress or volume
-> change).
+> But it's not different from typical HW. A driver receives an
+> interrupt once=20
+> DMA transaction is finished (i.e. some part of data was copied
+> to/from host).=20
+> And hardware pointer value usually is extrapolated based on some
+> internal=20
+> device state.=20
 
-But it's not different from typical HW. A driver receives an interrupt once=
-=20
-DMA transaction is finished (i.e. some part of data was copied to/from host=
-).=20
-And hardware pointer value usually is extrapolated based on some internal=
-=20
-device state. A virtio driver could do something similar: it could either=
-=20
-return "real" pointer value (i.e. what it internally uses) or could show fa=
-ke=20
-"extrapolated" value (like frame_rate * elappsed_time). Although, it's a=20
-different story.
+Modern HW can usually provide the HW position to the nearest word. Some
+older/bad HW provides to the nearest period though and this is when we
+have to estimate.
 
+Native (non virtual) audio device drivers typically have no latency
+reading the stream position and it's read at the same time as the
+system clock. Reading the same clocks together is important as it means
+the relationship between the two is deterministic and not subject to
+any jitter (which can be introduced by reading stream position over
+virtio). =20
 
-> However, it's probably tolerable for most other use cases. What use
-> cases have you tried in your testing ?
-
-All typical cases: multimedia (video + audio or audio only), network=20
-streaming, video calls, system events, volume changing and so on.
-
-By the way, could you define the "low latency" term that we are talking abo=
-ut?=20
-Just to be on the same wave.
-
-
->>
->>>> +
->>>> +\subsection{Device ID}\label{sec:Device Types / Sound Device /
->>>> Device ID}
->>>> +
->>>> +25
->>>> +
->>>> +\subsection{Virtqueues}\label{sec:Device Types / Sound Device /
->>>> Virtqueues}
->>>> +
->>>> +\begin{description}
->>>> +\item[0] controlq
->>>> +\item[1] pcmq
->>>> +\end{description}
->>>> +
->>>> +The controlq virtqueue always exists, the pcmq virtqueue only
->>>> exists
->>>> if
->>>> +the VIRTIO_SND_F_PCM_OUTPUT and/or VIRTIO_SND_F_PCM_INPUT
->>>> feature is
->>>> negotiated.
->>>> +
->>>> +\subsection{Feature bits}\label{sec:Device Types / Sound Device
->>>> /
->>>> Feature bits}
->>>> +
->>>> +\begin{description}
->>>> +\item[VIRTIO_SND_F_PCM_OUTPUT (0)] Output PCM stream support.
->>>> +\item[VIRTIO_SND_F_PCM_INPUT (1)] Input PCM stream support.
->>>> +\end{description}
->>>> +
->>>> +\subsection{Device configuration layout}\label{sec:Device Types
->>>> /
->>>> Sound Device / Device configuration layout}
->>>> +
->>>> +\begin{lstlisting}
->>>> +/* supported PCM sample formats */
->>>> +enum {
->>>> +    VIRTIO_SND_PCM_FMT_S8 =3D 0,
->>>> +    VIRTIO_SND_PCM_FMT_U8,
->>>> +    VIRTIO_SND_PCM_FMT_S16,
->>>> +    VIRTIO_SND_PCM_FMT_U16,
->=20
-> 24 bit.
-
-These kinds of sample (18/20/24-bit) were discussed here earlier and caused=
-=20
-some concerns (regarding supporting in a guest, testing and so on), so they=
-=20
-were removed for simplicity.
-
- From other side, if we are up to add these, maybe it's better not to hardc=
-ode=20
-format names and use some kind of generic description instead? Something li=
-ke
-
-struct {
-   kind; /* S/U/F */
-   significant_bits;
-   storage_bits;
-}
-
-It allows to describe formats like 24 and 24_3 in unified way and to add=20
-future formats without changing the protocol. What do you think?
-
-
->>>> +    VIRTIO_SND_PCM_FMT_S32,
->>>> +    VIRTIO_SND_PCM_FMT_U32,
->>>> +    VIRTIO_SND_PCM_FMT_FLOAT,
->>>> +    VIRTIO_SND_PCM_FMT_FLOAT64
->>>> +};
->>>> +
->>>> +/* supported PCM frame rates */
->>>> +enum {
->>>> +    VIRTIO_SND_PCM_RATE_8000 =3D 0,
->>>> +    VIRTIO_SND_PCM_RATE_11025,
->>>> +    VIRTIO_SND_PCM_RATE_16000,
->>>> +    VIRTIO_SND_PCM_RATE_22050,
->>>> +    VIRTIO_SND_PCM_RATE_32000,
->>>> +    VIRTIO_SND_PCM_RATE_44100,
->>>> +    VIRTIO_SND_PCM_RATE_48000,
->>>> +    VIRTIO_SND_PCM_RATE_64000,
->>>> +    VIRTIO_SND_PCM_RATE_88200,
->>>> +    VIRTIO_SND_PCM_RATE_96000,
->>>> +    VIRTIO_SND_PCM_RATE_176400,
->>>> +    VIRTIO_SND_PCM_RATE_192000
->>>
->>> It may be best to use the same rates and format from the ALSA spec,
->>> this covers any holes (like rates that are not in the above list).
->>
->> These rates are from ALSA definitions. And what formats should be
->> added?
->>
->=20
-> Rate, Knot - I would copy ALSA supported rates and formats just like
-> with the channel maps.
-
-See a comment above.
-
-
->>
->>>> +};
->>>> +
->>>> +/* a PCM stream configuration */
->>>> +struct virtio_pcm_stream_config {
->>>> +    u8 channels_min;
->>>> +    u8 channels_max;
->>>> +    le16 formats; /* 1 << VIRTIO_SND_PCM_FMT_XXX */
->>>> +    le16 rates; /* 1 << VIRTIO_SND_PCM_RATE_XXX */
->>>> +    u16 padding;
->>>> +};
->>>
->>> Should this be packed ? Btw, padding alignment is to a non 32bit
->>> size ?
->>
->> It should be naturally packed if padding is correct. And do you mean
->> 8 and
->> 16-bit fields? You can read one or two bytes from device
->> configuration space,
->> it should not be a problem.
->>
->>
->>> What about buffer/period formats e.g interleaved ?
->>
->> Yeah, support only for interleaved layout previously was stated in
->> the
->> specification but occasionally was lost. Will be fixed!
->>
->>
->>>
->>>> +
->>>> +/* a device configuration space */
->>>> +struct virtio_snd_config {
->>>> +    struct virtio_pcm_config {
->>>> +        struct virtio_pcm_stream_config output;
->>>> +        struct virtio_pcm_stream_config input;
->>>> +    } pcm;
->>>> +};
->>>> +\end{lstlisting}
->>>
->>> I assuming this is sent to configure PCM capabilities ?
->>
->> Yes, minimum amount of information required to setup a PCM stream in
->> any kind
->> of guest.
->>
->>
->>> What about buffer and period size capabilities ?
->>
->> In this specification we assume that buffer size is up to guest
->> decision.
->> Also, period size is ALSA-only conception and should not be mentioned
->> here at
->> all (we are not stick only to ALSA).
->>
->>
->=20
-> Period size =3D=3D fragment size =3D=3D block size (probably a few other =
-naming
-> conventions too), we should be able to tell the device VM our
-> period/block/fragment size so we can configure the HW appropriately.
-> This can also be used to make our stream copying more efficient too.
-
-Then let's talk about playback. As I can understand, you are describing a=
-=20
-case, when
-1. ALSA application sets some period size
-2. fills the whole buffer with non-silence frames
-3. upon every period notification, provides next period-sized part of data
-
-It's one of use cases, but quite rare. More often (especially if we are=20
-talking about latency control and low latency audio) things will be
-1. an application fills the whole buffer with silence
-2. suppresses period notifications
-3. starts stream and almost immediatly seeks to near hw position
-4. puts non-silence frames there (size is set according to desired latency)
-5. provides new frames at some interval (usually in 5-10ms)
-
-It's how software mixers usually work: PulseAudio, Windows in-kernel mixer,=
-=20
-new Android system mixer and so on. Also, you can find such approach in low=
-=20
-latency player applications (when they work directly with device).
-
-The point is they do not rely on notifications from the driver and use thei=
-r=20
-own timers. The only thing they querying is current hw position.
-
-The point is we could have period notifications from the device. But it see=
-ms=20
-they will be useful only in minority of cases. Also, for example, Windows=
-=20
-audio driver has no such concept at all.
-
-
->>>> +
->>>> +\subsubsection{Device configuration fields}
->>>> +
->>>> +The \field{pcm.output} and \field{pcm.input} fields contain PCM
->>>> stream
->>>> +configuration:
->>>> +
->>>> +\begin{description}
->>>> +\item[\field{channels_min}] (driver-read-only) is a minimum
->>>> number
->>>> of supported
->>>> +channels.
->>>> +\item[\field{channels_max}] (driver-read-only) is a maximum
->>>> number
->>>> of supported
->>>> +channels.
->>>> +\item[\field{formats}] (driver-read-only) is supported sample
->>>> format
->>>> bit map.
->>>> +\item[\field{rates}] (driver-read-only) is supported frame rate
->>>> bit
->>>> map.
->>>> +\end{description}
->>>> +
->>>> +\subsection{Device Initialization}
->>>> +
->>>> +\begin{enumerate}
->>>> +\item If the VIRTIO_SND_F_PCM_OUTPUT feature is negotiated,
->>>> \field{pcm.output}
->>>> +contains valid output PCM stream configuration.
->>>> +\item If the VIRTIO_SND_F_PCM_INPUT feature is negotiated,
->>>> \field{pcm.input}
->>>> +contains valid input PCM stream configuration.
->>>> +\end{enumerate}
->>>> +
->>>> +\devicenormative{\subsubsection}{Device Initialization}{Device
->>>> Types
->>>> / Sound Device / Device Initialization}
->>>> +
->>>> +\begin{enumerate}
->>>> +\item The device MUST NOT set the not defined format and rate
->>>> bits.
->>>> +\item The device MUST initialize padding bytes
->>>> \field{pcm.output.padding} and
->>>> +\field{pcm.input.padding} to 0.
->>>> +\end{enumerate}
->>>> +
->>>> +\drivernormative{\subsubsection}{Device Initialization}{Device
->>>> Types
->>>> / Sound Device / Device Initialization}
->>>> +
->>>> +\begin{enumerate}
->>>> +\item The driver MUST configure and initialize all virtqueues.
->>>> +\item The driver SHOULD ignore the not defined format and rate
->>>> bits.
->>>> +\end{enumerate}
->>>> +
->>>> +\subsection{Device Operation}\label{sec:Device Types / Sound
->>>> Device
->>>> / Device Operation}
->>>> +
->>>> +All control messages are placed into the controlq virtqueue and
->>>> use
->>>> the following
->>>> +layout structure and definitions:
->>>> +
->>>> +\begin{lstlisting}
->>>> +enum {
->>>> +    /* PCM control request types */
->>>> +    VIRTIO_SND_R_PCM_CHMAP_INFO =3D 0,
->>>> +    VIRTIO_SND_R_PCM_SET_FORMAT,
->>>> +    VIRTIO_SND_R_PCM_PREPARE,
->>>> +    VIRTIO_SND_R_PCM_START,
->>>> +    VIRTIO_SND_R_PCM_STOP,
->>>> +    VIRTIO_SND_R_PCM_PAUSE,
->>>> +    VIRTIO_SND_R_PCM_UNPAUSE,
->>>> +
->>>> +    /* generic status codes */
->>>> +    VIRTIO_SND_S_OK =3D 0x8000,
->>>> +    VIRTIO_SND_S_BAD_MSG,
->>>> +    VIRTIO_SND_S_NOT_SUPP,
->>>> +    VIRTIO_SND_S_IO_ERR
->>>> +};
->>>> +
->>>> +struct virtio_snd_ctl_msg {
->>>> +    /* device-read-only data */
->>>> +    le32 request_code;
->>>> +    u8 request_payload[];
->>>
->>> How do I know how much data to read here ? Is size embedded in
->>> request_code ?
->>
->> Yes, you are right. Actual request/response length can be easily
->> derived from
->> a request_code.
->>
->=20
-> Nak, please use a separate size and type code otherwise we will have
-> real problems in the future when we come to add new features (with new
-> codes or bigger sizes).
-
-But virtqueue descriptors already contain size information. Usually, there'=
-s=20
-API for getting readable/writable size in virtqueue sg-chains. And it's=20
-possible to get request size using something like
-
-vq_readable_size(...) - sizeof(request_code)
-
-and the same for response size
-
-vq_writable_size(...) - sizeof(response_status)
-
-Originally, the proposed spec contained separate size fields. But these see=
-m=20
-redundant, since virtqueue does all the work.
-
-
->>
->>>
->>>> +    /* device-writable data */
->>>> +    le32 response_status;
->>>> +    u8 response_payload[];
->>>> +};
->>>> +\end{lstlisting}
->>>> +
->>>> +A generic control message consists of request and response parts
->>>> and
->>>> contains
->>>> +the following fields:
->>>> +
->>>> +\begin{description}
->>>> +\item[\field{request_code}] (device-read-only) specifies a
->>>> device
->>>> request code
->>>> +(VIRTIO_SND_R_*).
->>>> +\item[\field{request_payload}] (device-read-only) contains
->>>> request-
->>>> specific
->>>> +data.
->>>> +\item[\field{response_status}] (device-writable) specifies a
->>>> device
->>>> response
->>>> +status (VIRTIO_SND_S_*).
->>>> +\item[\field{response_payload}] (device-writable) contains
->>>> response-
->>>> specific
->>>> +data.
->>>> +\end{description}
->>>> +
->>>> +Unless stated otherwise, the \field{request_payload} and
->>>> \field{response_payload}
->>>> +fields are empty.
->>>> +
->>>> +The \field{response_status} field contains one of the following
->>>> values:
->>>> +
->>>> +\begin{itemize*}
->>>> +\item VIRTIO_SND_S_OK: success.
->>>> +\item VIRTIO_SND_S_BAD_MSG: a control message is malformed or
->>>> contains invalid
->>>> +parameters.
->>>> +\item VIRTIO_SND_S_NOT_SUPP: requested operation or parameters
->>>> are
->>>> not supported.
->>>> +\item VIRTIO_SND_S_IO_ERR: an I/O error occurred.
->>>> +\end{itemize*}
->>>> +
->>>> +\subsubsection{Device Operation: PCM control requests}
->>>> +
->>>> +A PCM stream has the following command lifecycle:
->>>> +
->>>> +\begin{enumerate}
->>>> +\item Set format
->>>> +\item Prepare
->>>> +\item Output only: transfer data for prebuffing
->>>> +\item Start
->>>> +\item Transfer data to/from the PCM device
->>>> +\begin{enumerate}
->>>> +       \item Pause
->>>> +       \item Unpause
->>>> +\end{enumerate}
->>>> +\item Stop
->>>> +\end{enumerate}
->>>> +
->>>> +PCM control requests have or consist of a fixed header with the
->>>> following
->>>> +layout structure:
->>>> +
->>>> +\begin{lstlisting}
->>>> +/* supported PCM stream types */
->>>> +enum {
->>>> +    VIRTIO_SND_PCM_T_OUTPUT =3D 0,
->>>> +    VIRTIO_SND_PCM_T_INPUT
->>>
->>> Can we rename these PLAYBACK and CAPTURE
->>
->> Playback and capture are used in ALSA drivers, sink and source are
->> used in
->> Windows drivers. We decided to stick to something obvious in-between
->> (and it's
->> just shorter). Although, it's still discussable topic.
->>
->>
->>>> +};
->>>> +
->>>> +/* PCM control request header */
->>>> +struct virtio_snd_pcm_hdr {
->>>> +    le32 code;
->>>> +    le32 stream;
->>>> +};
->>>> +\end{lstlisting}
->>>> +
->>>> +PCM control request fields:
->>>> +
->>>> +\begin{description}
->>>> +\item[\field{code}] (device-read-only) specifies a PCM device
->>>> request code
->>>> +(VIRTIO_SND_R_PCM_*).
->>>> +\item[\field{stream}] (device-read-only) specifies a PCM stream
->>>> type
->>>> +(VIRTIO_SND_PCM_T_*).
->>>> +\end{description}
->>>> +
->>>> +\begin{description}
->>>> +
->>>> +\item[VIRTIO_SND_R_PCM_CHMAP_INFO]
->>>> +Query a PCM channel map information for specified stream type.
->>>> +
->>>> +A response uses the following layout structure and definitions:
->>>> +
->>>> +\begin{lstlisting}
->>>> +/* standard channel position definition */
->>>> +enum {
->>>> +    VIRTIO_SND_PCM_CH_NONE =3D 0, /* undefined */
->>>> +    VIRTIO_SND_PCM_CH_NA,       /* silent */
->>>> +    VIRTIO_SND_PCM_CH_MONO,     /* mono stream */
->>>> +    VIRTIO_SND_PCM_CH_FL,       /* front left */
->>>> +    VIRTIO_SND_PCM_CH_FR,       /* front right */
->>>> +    VIRTIO_SND_PCM_CH_RL,       /* rear left */
->>>> +    VIRTIO_SND_PCM_CH_RR,       /* rear right */
->>>> +    VIRTIO_SND_PCM_CH_FC,       /* front center */
->>>> +    VIRTIO_SND_PCM_CH_LFE,      /* low frequency (LFE) */
->>>> +    VIRTIO_SND_PCM_CH_SL,       /* side left */
->>>> +    VIRTIO_SND_PCM_CH_SR,       /* side right */
->>>> +    VIRTIO_SND_PCM_CH_RC,       /* rear center */
->>>> +    VIRTIO_SND_PCM_CH_FLC,      /* front left center */
->>>> +    VIRTIO_SND_PCM_CH_FRC,      /* front right center */
->>>> +    VIRTIO_SND_PCM_CH_RLC,      /* rear left center */
->>>> +    VIRTIO_SND_PCM_CH_RRC,      /* rear right center */
->>>> +    VIRTIO_SND_PCM_CH_FLW,      /* front left wide */
->>>> +    VIRTIO_SND_PCM_CH_FRW,      /* front right wide */
->>>> +    VIRTIO_SND_PCM_CH_FLH,      /* front left high */
->>>> +    VIRTIO_SND_PCM_CH_FCH,      /* front center high */
->>>> +    VIRTIO_SND_PCM_CH_FRH,      /* front right high */
->>>> +    VIRTIO_SND_PCM_CH_TC,       /* top center */
->>>> +    VIRTIO_SND_PCM_CH_TFL,      /* top front left */
->>>> +    VIRTIO_SND_PCM_CH_TFR,      /* top front right */
->>>> +    VIRTIO_SND_PCM_CH_TFC,      /* top front center */
->>>> +    VIRTIO_SND_PCM_CH_TRL,      /* top rear left */
->>>> +    VIRTIO_SND_PCM_CH_TRR,      /* top rear right */
->>>> +    VIRTIO_SND_PCM_CH_TRC,      /* top rear center */
->>>> +    VIRTIO_SND_PCM_CH_TFLC,     /* top front left center */
->>>> +    VIRTIO_SND_PCM_CH_TFRC,     /* top front right center */
->>>> +    VIRTIO_SND_PCM_CH_TSL,      /* top side left */
->>>> +    VIRTIO_SND_PCM_CH_TSR,      /* top side right */
->>>> +    VIRTIO_SND_PCM_CH_LLFE,     /* left LFE */
->>>> +    VIRTIO_SND_PCM_CH_RLFE,     /* right LFE */
->>>> +    VIRTIO_SND_PCM_CH_BC,       /* bottom center */
->>>> +    VIRTIO_SND_PCM_CH_BLC,      /* bottom left center */
->>>> +    VIRTIO_SND_PCM_CH_BRC       /* bottom right center */
->>>> +};
->>>> +
->>>> +/* a maximum possible number of channels */
->>>> +#define VIRTIO_SND_PCM_CH_MAX          256
->>>> +
->>>> +/* response containing a PCM channel map information */
->>>> +struct virtio_snd_pcm_chmap_info {
->>>> +    le32 status;
->>>> +    le32 npositions;
->>>> +    u8 positions[VIRTIO_SND_PCM_CH_MAX];
->>>> +};
->>>> +\end{lstlisting}
->>>> +
->>>> +PCM channel map information fields:
->>>> +
->>>> +\begin{description}
->>>> +\item[\field{status}] (device-writable) specifies a device
->>>> response
->>>> status
->>>> +(VIRTIO_SND_S_*).
->>>> +\item[\field{npositions}] (device-writable) is a number of valid
->>>> entries in
->>>> +the \field{positions} array.
->>>> +\item[\field{positions}] (device-writable) contains PCM channel
->>>> positions
->>>> +(VIRTIO_SND_PCM_CH_*).
->>>> +\end{description}
->>>> +
->>>> +\item[VIRTIO_SND_R_PCM_SET_FORMAT]
->>>> +Set selected PCM format.
->>>> +
->>>> +\begin{lstlisting}
->>>> +struct virtio_snd_pcm_set_format {
->>>> +    struct virtio_snd_pcm_hdr hdr;
->>>> +    le16 channels;
->>>> +    le16 format;
->>>> +    le16 rate;
->>>> +    u16 padding;
->>>> +};
->>>> +\end{lstlisting}
->>>> +
->>>> +PCM control request fields:
->>>> +
->>>> +\begin{description}
->>>> +\item[\field{hdr}] (device-read-only) is a PCM control request
->>>> header.
->>>> +\item[\field{channels}] (device-read-only) specifies a desired
->>>> number of channels.
->>>> +\item[\field{format}] (device-read-only) specifies a desired PCM
->>>> sample format
->>>> +(VIRTIO_SND_PCM_FMT_*).
->>>> +\item[\field{rate}] (device-read-only) specifies a desired PCM
->>>> frame
->>>> rate
->>>> +(VIRTIO_SND_PCM_RATE_*).
->>>> +\end{description}
->>>> +
->>>> +\item[VIRTIO_SND_R_PCM_PREPARE]
->>>> +Prepare the PCM device.
->>>> +
->>>> +\item[VIRTIO_SND_R_PCM_START]
->>>> +Start the PCM device.
->>>> +
->>>> +\item[VIRTIO_SND_R_PCM_STOP]
->>>> +Stop the PCM device.
->>>> +
->>>> +\item[VIRTIO_SND_R_PCM_PAUSE]
->>>> +Set the PCM device on pause.
->>>> +
->>>> +\item[VIRTIO_SND_R_PCM_UNPAUSE]
->>>> +Unset the PCM device from pause.
->>>> +
->>>> +\end{description}
->>>> +
->>>> +\devicenormative{\subsubsection}{PCM control requests}{Device
->>>> Types
->>>> / Sound Device / PCM control requests}
->>>> +
->>>> +In a VIRTIO_SND_R_PCM_CHMAP_INFO request:
->>>> +
->>>> +\begin{itemize*}
->>>> +\item the device MUST return the VIRTIO_SND_S_NOT_SUPP status
->>>> code,
->>>> if it does not
->>>> +support a channel map for a specified stream type;
->>>> +\item the device MUST set the \field{npositions} field to 0, if
->>>> the
->>>> operation
->>>> +failed.
->>>> +\end{itemize*}
->>>> +
->>>> +\drivernormative{\subsubsection}{PCM control requests}{Device
->>>> Types
->>>> / Sound Device / PCM control requests}
->>>> +
->>>> +The driver MUST NOT specify VIRTIO_SND_PCM_T_OUTPUT as a stream
->>>> type
->>>> if
->>>> +the VIRTIO_SND_F_PCM_OUTPUT feature is not negotiated.
->>>> +
->>>> +The driver MUST NOT specify VIRTIO_SND_PCM_T_INPUT as a stream
->>>> type
->>>> if
->>>> +the VIRTIO_SND_F_PCM_INPUT feature is not negotiated.
->>>> +
->>>> +In a VIRTIO_SND_R_PCM_SET_FORMAT request:
->>>> +
->>>> +\begin{itemize*}
->>>> +\item the driver MUST NOT specify the \field{channels} value
->>>> less
->>>> than the \field{channels_min}
->>>> +or greater than the \field{channels_max} values reported in
->>>> stream
->>>> configuration;
->>>> +\item the driver MUST specify the \field{format} and
->>>> \field{rate}
->>>> values according
->>>> +to the \field{formats} and \field{rates} values reported in
->>>> stream
->>>> configuration;
->>>> +\item the driver MUST NOT specify the not defined format and
->>>> rate
->>>> values;
->>>> +\item the driver MUST initialize \field{padding} bytes to 0.
->>>> +\end{itemize*}
->>>> +
->>>> +\subsubsection{Device Operation: PCM I/O requests}
->>>> +
->>>> +All I/O requests are placed into the pcmq virtqueue. Each
->>>> request is
->>>> of form:
->>>> +
->>>> +\begin{lstlisting}
->>>> +struct virtio_snd_pcm_xfer {
->>>> +    le32 stream;
->>>> +    u8 data[];
->>>> +    le32 status;
->>>> +    le32 actual_length;
->>>
->>> Not following this, is actual_length the size of data[]. If so, it
->>> must
->>> preceed data[].
->>
->> No, the actual_length field is supposed to be used by device side to
->> report
->> actual amount of bytes read from/written to a buffer. In real world
->> scenario,
->> if an I/O request contains N bytes, a device can play/capture *up to*
->> N bytes.
->> Thus, it's required to report this length back to a driver.
->>
->=20
-> This is not how PCM audio buffering works. I don't copy extra padding
-> if I dont need to, I only copy when my buffer is full. See the need for
-> period size in earlier comments.
-
-Originally, it was intended to handle a case when there's less space in dev=
-ice=20
-playback buffer than was expected, or when there's less available data in=
-=20
-device capturing buffer than was expected.
-
-
->>
->>>
->>>> +};
->>>> +\end{lstlisting}
->>>> +
->>>> +I/O request fields:
->>>> +
->>>> +\begin{description}
->>>> +\item[\field{stream}] (device-read-only) specifies a PCM stream
->>>> type
->>>> +(VIRTIO_SND_PCM_T_*).
->>>> +\item[\field{data}]
->>>> +\begin{enumerate}
->>>> +\item Output: (device-read-only) a buffer with PCM frames to be
->>>> written to the
->>>> +device.
->>>> +\item Input: (device-writable) a buffer to be filled with PCM
->>>> frames
->>>> from the
->>>> +device.
->>>> +\end{enumerate}
->>>> +\item[\field{status}] (device-writable) contains VIRTIO_SND_S_OK
->>>> if
->>>> an operation
->>>> +is successful, and VIRTIO_SND_S_IO_ERR otherwise.
->>>> +\item[\field{actual_length}] (device-writable) specifies an
->>>> actual
->>>> amount of
->>>> +bytes read from/written to the \field{data} field.
->>>> +\end{description}
->>>> +
->>>> +\devicenormative{\subsubsection}{PCM I/O requests}{Device Types
->>>> /
->>>> Sound Device / PCM IO requests}
->>>> +
->>>> +\begin{enumerate}
->>>> +\item The device MUST set the \field{actual_length} field to 0,
->>>> if
->>>> the operation
->>>> +failed.
->>>> +\end{enumerate}
->>>> +
->>>> +\drivernormative{\subsubsection}{PCM I/O requests}{Device Types
->>>> /
->>>> Sound Device / PCM IO requests}
->>>> +
->>>> +\begin{enumerate}
->>>> +\item The driver MUST NOT specify VIRTIO_SND_PCM_T_OUTPUT as a
->>>> stream type if
->>>> +the VIRTIO_SND_F_PCM_OUTPUT feature is not negotiated.
->>>> +\item The driver MUST NOT specify VIRTIO_SND_PCM_T_INPUT as a
->>>> stream
->>>> type if
->>>> +the VIRTIO_SND_F_PCM_INPUT feature is not negotiated.
->>>> +\end{enumerate}
->>>> --
->>>> 2.23.0
->>>>
->>>
->>> I don't see anything in here about dealing with
->>>
->>> 1) Underruns and overruns. i.e. how do we recover and resync audio
->>> between guests.
->>
->> Since xrun conditions are higher level conceptions, we decided to
->> delegate
->> such issues to guest application itself. It helps to make overall
->> design
->> simpler. And it seems there's not so much we can do if xrun condition
->> is
->> happened on the device side.
->=20
-> We can inform the guest. The guest userspace can then take any remedial
-> action if needed.
-
-Then, we need the third queue for notifications.
-
-
->>
->>
->>> 2) Zero copy of audio data and stream positions. Essential for any
->>> low
->>> latency audio use cases (if supported by HW, hypervisor, VM
->>> framework).
->>
->> What do you mean by zero-copy? Shared memory between device and
->> driver sides?
->=20
-> Yes, but I see this is now a separate thread as it used by others too.
-
-Shared memory based approach was proposed in the very first version of the=
-=20
-spec (and we are rooting for this). Then there was discussion and it was=20
-postponed for some future virtio device. One of the reason - it's not suita=
-ble=20
-for arch with non-coherent memory between host and guest.
-
-
->=20
-> Thanks
->=20
-> Liam
+> A virtio driver could do something similar: it could either=20
+> return "real" pointer value (i.e. what it internally uses) or could
+> show fake=20
+> "extrapolated" value (like frame_rate * elappsed_time). Although,
+> it's a=20
+> different story.
 >=20
 >=20
 
---=20
-Anton Yakovlev
-Senior Software Engineer
+Virtio driver should return real stream position alongside real common
+system time (of when stream position was read).=20
 
-OpenSynergy GmbH
-Rotherstr. 20, 10245 Berlin
+> > However, it's probably tolerable for most other use cases. What use
+> > cases have you tried in your testing ?
+>=20
+> All typical cases: multimedia (video + audio or audio only), network=20
+> streaming, video calls, system events, volume changing and so on.
+>=20
+> By the way, could you define the "low latency" term that we are
+> talking about?=20
+> Just to be on the same wave.
+>=20
+
+Low latency audio is when any application or processing can render data
+very close to the HW stream R/W position (typically low or sub
+millisecond). This needs zero copy buffering to HW on host/VM/user side
+and also timely and accurate stream positions.=20
+
+> es
+> > > > > /
+> > > > > Sound Device / Device configuration layout}
+> > > > > +
+> > > > > +\begin{lstlisting}
+> > > > > +/* supported PCM sample formats */
+> > > > > +enum {
+> > > > > +    VIRTIO_SND_PCM_FMT_S8 =3D 0,
+> > > > > +    VIRTIO_SND_PCM_FMT_U8,
+> > > > > +    VIRTIO_SND_PCM_FMT_S16,
+> > > > > +    VIRTIO_SND_PCM_FMT_U16,
+> >=20
+> > 24 bit.
+>=20
+> These kinds of sample (18/20/24-bit) were discussed here earlier and
+> caused=20
+> some concerns (regarding supporting in a guest, testing and so on),
+> so they=20
+> were removed for simplicity.
+>=20
+>  From other side, if we are up to add these, maybe it's better not to
+> hardcode=20
+> format names and use some kind of generic description instead?
+> Something like
+>=20
+> struct {
+>    kind; /* S/U/F */
+>    significant_bits;
+>    storage_bits;
+> }
+>=20
+> It allows to describe formats like 24 and 24_3 in unified way and to
+> add=20
+> future formats without changing the protocol. What do you think?
+>=20
+
+I would recommend copying the exact formats used by ALSA, these formats
+are industry standard (although naming will be different on other
+OSes).
+
+>=20
+> > > > > +    VIRTIO_SND_PCM_FMT_S32,
+> > > > > +    VIRTIO_SND_PCM_FMT_U32,
+> > > > > +    VIRTIO_SND_PCM_FMT_FLOAT,
+> > > > > +    VIRTIO_SND_PCM_FMT_FLOAT64
+> > > > > +};
+> > > > > +
+> > > > > +/* supported PCM frame rates */
+> > > > > +enum {
+> > > > > +    VIRTIO_SND_PCM_RATE_8000 =3D 0,
+> > > > > +    VIRTIO_SND_PCM_RATE_11025,
+> > > > > +    VIRTIO_SND_PCM_RATE_16000,
+> > > > > +    VIRTIO_SND_PCM_RATE_22050,
+> > > > > +    VIRTIO_SND_PCM_RATE_32000,
+> > > > > +    VIRTIO_SND_PCM_RATE_44100,
+> > > > > +    VIRTIO_SND_PCM_RATE_48000,
+> > > > > +    VIRTIO_SND_PCM_RATE_64000,
+> > > > > +    VIRTIO_SND_PCM_RATE_88200,
+> > > > > +    VIRTIO_SND_PCM_RATE_96000,
+> > > > > +    VIRTIO_SND_PCM_RATE_176400,
+> > > > > +    VIRTIO_SND_PCM_RATE_192000
+> > > >=20
+> > > > It may be best to use the same rates and format from the ALSA
+> > > > spec,
+> > > > this covers any holes (like rates that are not in the above
+> > > > list).
+> > >=20
+> > > These rates are from ALSA definitions. And what formats should be
+> > > added?
+> > >=20
+> >=20
+> > Rate, Knot - I would copy ALSA supported rates and formats just
+> > like
+> > with the channel maps.
+>=20
+> See a comment above.
+>=20
+
+See comment above :)
+>=20
+> > > >=20
+> > > > > +
+> > > > > +/* a device configuration space */
+> > > > > +struct virtio_snd_config {
+> > > > > +    struct virtio_pcm_config {
+> > > > > +        struct virtio_pcm_stream_config output;
+> > > > > +        struct virtio_pcm_stream_config input;
+> > > > > +    } pcm;
+> > > > > +};
+> > > > > +\end{lstlisting}
+> > > >=20
+> > > > I assuming this is sent to configure PCM capabilities ?
+> > >=20
+> > > Yes, minimum amount of information required to setup a PCM stream
+> > > in
+> > > any kind
+> > > of guest.
+> > >=20
+> > >=20
+> > > > What about buffer and period size capabilities ?
+> > >=20
+> > > In this specification we assume that buffer size is up to guest
+> > > decision.
+> > > Also, period size is ALSA-only conception and should not be
+> > > mentioned
+> > > here at
+> > > all (we are not stick only to ALSA).
+> > >=20
+> > >=20
+> >=20
+> > Period size =3D=3D fragment size =3D=3D block size (probably a few othe=
+r
+> > naming
+> > conventions too), we should be able to tell the device VM our
+> > period/block/fragment size so we can configure the HW
+> > appropriately.
+> > This can also be used to make our stream copying more efficient
+> > too.
+>=20
+> Then let's talk about playback. As I can understand, you are
+> describing a=20
+> case, when
+> 1. ALSA application sets some period size
+> 2. fills the whole buffer with non-silence frames
+> 3. upon every period notification, provides next period-sized part of
+> data
+>=20
+> It's one of use cases, but quite rare.=20
+
+Ehm, it's bog standard file R/W (non mmap()) audio and extremely common
+on Linux and derivatives.
+
+Step 4 is
+
+4) Unblock and wake userspace R/W for next period/block/fragment.
+
+> More often (especially if we are=20
+> talking about latency control and low latency audio) things will be
+> 1. an application fills the whole buffer with silence
+> 2. suppresses period notifications
+> 3. starts stream and almost immediatly seeks to near hw position
+> 4. puts non-silence frames there (size is set according to desired
+> latency)
+> 5. provides new frames at some interval (usually in 5-10ms)
+
+So this describes mmap() audio where we block by poll()ing, read HW
+ptr, and the write new frames.=20
+
+This proposal needs to support both operating modes and there is
+nothing I can see with virtio and some minor changes to this proposal
+that would prevent that ?
+
+>=20
+> It's how software mixers usually work: PulseAudio, Windows in-kernel
+> mixer,=20
+> new Android system mixer and so on. Also, you can find such approach
+> in low=20
+> latency player applications (when they work directly with device).
+>=20
+> The point is they do not rely on notifications from the driver and
+> use their=20
+> own timers. The only thing they querying is current hw position.
+>=20
+> The point is we could have period notifications from the device. But
+> it seems=20
+> they will be useful only in minority of cases. Also, for example,
+> Windows=20
+> audio driver has no such concept at all.
+
+Windows does not need to use periodic mode, but a lot of Linux
+userspace will use it and this will currently will break those
+applications.=20
+
+> > >=20
+> > > Since xrun conditions are higher level conceptions, we decided to
+> > > delegate
+> > > such issues to guest application itself. It helps to make overall
+> > > design
+> > > simpler. And it seems there's not so much we can do if xrun
+> > > condition
+> > > is
+> > > happened on the device side.
+> >=20
+> > We can inform the guest. The guest userspace can then take any
+> > remedial
+> > action if needed.
+>=20
+> Then, we need the third queue for notifications.
+
+Why, this should go in the queue that's used for stream position ?
+
+>=20
+>=20
+> > >=20
+> > >=20
+> > > > 2) Zero copy of audio data and stream positions. Essential for
+> > > > any
+> > > > low
+> > > > latency audio use cases (if supported by HW, hypervisor, VM
+> > > > framework).
+> > >=20
+> > > What do you mean by zero-copy? Shared memory between device and
+> > > driver sides?
+> >=20
+> > Yes, but I see this is now a separate thread as it used by others
+> > too.
+>=20
+> Shared memory based approach was proposed in the very first version
+> of the=20
+> spec (and we are rooting for this). Then there was discussion and it
+> was=20
+> postponed for some future virtio device. One of the reason - it's not
+> suitable=20
+> for arch with non-coherent memory between host and guest.
+
+I'm rooting for this too. I do think we need to be a bit more flexible
+so we can deal with non coherent architectures via a SW virtio copy and
+support coherent architectures via zero copy.=20
+
+We should be good as long as we can leave some configuration
+space/types in the stream config to allow mapping of operating modes
+(zero copy, periodic, mmap etc). The device driver should also send
+it's capabilities during init so that guests will know what use cases
+and modes are supported.
+
+Btw, please don't take my comments as trying to block your proposal. I
+am behind this work, I'll likely be one of the first users. My
+intention is to help provide something that is both flexible enough to
+cater for all current OS users/use cases on HDA like hardware and has
+scope for future enhancements.
+
+Thanks
+
+Liam
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
