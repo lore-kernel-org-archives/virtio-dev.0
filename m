@@ -1,103 +1,100 @@
-Return-Path: virtio-dev-return-6300-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-6352-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 8D1C2985F34
-	for <virtio-dev@lists.oasis-open.org>; Fri,  8 Nov 2019 06:46:02 +0000 (UTC)
-Date: Fri, 8 Nov 2019 07:45:52 +0100
-From: Gerd Hoffmann <kraxel@redhat.com>
-Message-ID: <20191108064552.hel54p6vvdpir2dp@sirius.home.kraxel.org>
-References: <20191105105456.7xbhtistnbp272lj@sirius.home.kraxel.org>
- <20191106084344.GB189998@stefanha-x1.localdomain>
- <20191106095122.jju7eo57scfoat6a@sirius.home.kraxel.org>
- <20191106101057.GC2802@work-vm>
- <20191107111119.qgr2qxgdf64jurin@sirius.home.kraxel.org>
- <20191107111618.GE2816@work-vm>
+	by lists.oasis-open.org (Postfix) with ESMTP id 687CF985E71
+	for <virtio-dev@lists.oasis-open.org>; Wed, 20 Nov 2019 12:11:26 +0000 (UTC)
 MIME-Version: 1.0
-In-Reply-To: <20191107111618.GE2816@work-vm>
-Content-Type: text/plain; charset=WINDOWS-1252
+References: <20191105105456.7xbhtistnbp272lj@sirius.home.kraxel.org>
+ <20191106084344.GB189998@stefanha-x1.localdomain> <20191106095122.jju7eo57scfoat6a@sirius.home.kraxel.org>
+In-Reply-To: <20191106095122.jju7eo57scfoat6a@sirius.home.kraxel.org>
+From: Tomasz Figa <tfiga@chromium.org>
+Date: Wed, 20 Nov 2019 21:11:12 +0900
+Message-ID: <CAAFQd5BVXv7SU2JWf_pa__tWydd6UqNpMo6aQHLDjjU+Vch75A@mail.gmail.com>
+Subject: [virtio-dev] Re: guest / host buffer sharing ...
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-Subject: Re: [virtio-dev] Re: guest / host buffer sharing ...
-To: "Dr. David Alan Gilbert" <dgilbert@redhat.com>
-Cc: Stefan Hajnoczi <stefanha@gmail.com>, geoff@hostfission.com, virtio-dev@lists.oasis-open.org, Alex Lau <alexlau@chromium.org>, Daniel Vetter <daniel@ffwll.ch>, Alexandre Courbot <acourbot@chromium.org>, qemu-devel@nongnu.org, Tomasz Figa <tfiga@chromium.org>, Keiichi Watanabe <keiichiw@chromium.org>, David Stevens <stevensd@chromium.org>, Hans Verkuil <hverkuil@xs4all.nl>, =?utf-8?B?U3TDqXBoYW5l?= Marchesin <marcheu@chromium.org>, Dylan Reid <dgreid@chromium.org>, Gurchetan Singh <gurchetansingh@chromium.org>, Dmitry Morozov <dmitry.morozov@opensynergy.com>, Pawel Osciak <posciak@chromium.org>, Linux Media Mailing List <linux-media@vger.kernel.org>
+To: Gerd Hoffmann <kraxel@redhat.com>
+Cc: Stefan Hajnoczi <stefanha@gmail.com>, geoff@hostfission.com, virtio-dev@lists.oasis-open.org, Alex Lau <alexlau@chromium.org>, Daniel Vetter <daniel@ffwll.ch>, Alexandre Courbot <acourbot@chromium.org>, qemu-devel <qemu-devel@nongnu.org>, Keiichi Watanabe <keiichiw@chromium.org>, David Stevens <stevensd@chromium.org>, Hans Verkuil <hverkuil@xs4all.nl>, =?UTF-8?Q?St=C3=A9phane_Marchesin?= <marcheu@chromium.org>, Dylan Reid <dgreid@chromium.org>, Gurchetan Singh <gurchetansingh@chromium.org>, Dmitry Morozov <dmitry.morozov@opensynergy.com>, Pawel Osciak <posciak@chromium.org>, Linux Media Mailing List <linux-media@vger.kernel.org>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Thu, Nov 07, 2019 at 11:16:18AM +0000, Dr. David Alan Gilbert wrote:
-> * Gerd Hoffmann (kraxel@redhat.com) wrote:
-> >   Hi,
-> >=20
-> > > > This is not about host memory, buffers are in guest ram, everything=
- else
-> > > > would make sharing those buffers between drivers inside the guest (=
-as
-> > > > dma-buf) quite difficult.
-> > >=20
-> > > Given it's just guest memory, can the guest just have a virt queue on
-> > > which it places pointers to the memory it wants to share as elements =
-in
-> > > the queue?
-> >=20
-> > Well, good question.  I'm actually wondering what the best approach is
-> > to handle long-living, large buffers in virtio ...
-> >=20
-> > virtio-blk (and others) are using the approach you describe.  They put =
-a
-> > pointer to the io request header, followed by pointer(s) to the io
-> > buffers directly into the virtqueue.  That works great with storage for
-> > example.  The queue entries are tagged being "in" or "out" (driver to
-> > device or visa-versa), so the virtio transport can set up dma mappings
-> > accordingly or even transparently copy data if needed.
-> >=20
-> > For long-living buffers where data can potentially flow both ways this
-> > model doesn't fit very well though.  So what virtio-gpu does instead is
-> > transferring the scatter list as virtio payload.  Does feel a bit
-> > unclean as it doesn't really fit the virtio architecture.  It assumes
-> > the host can directly access guest memory for example (which is usually
-> > the case but explicitly not required by virtio).  It also requires
-> > quirks in virtio-gpu to handle VIRTIO_F_IOMMU_PLATFORM properly, which
-> > in theory should be handled fully transparently by the virtio-pci
-> > transport.
-> >=20
-> > We could instead have a "create-buffer" command which adds the buffer
-> > pointers as elements to the virtqueue as you describe.  Then simply
-> > continue using the buffer even after completing the "create-buffer"
-> > command.  Which isn't exactly clean either.  It would likewise assume
-> > direct access to guest memory, and it would likewise need quirks for
-> > VIRTIO_F_IOMMU_PLATFORM as the virtio-pci transport tears down the dma
-> > mappings for the virtqueue entries after command completion.
-> >=20
-> > Comments, suggestions, ideas?
->=20
-> What about not completing the command while the device is using the
-> memory?
+On Wed, Nov 6, 2019 at 6:51 PM Gerd Hoffmann <kraxel@redhat.com> wrote:
+>
+>   Hi,
+>
+> > > Reason is:  Meanwhile I'm wondering whenever "just use virtio-gpu
+> > > resources" is really a good answer for all the different use cases
+> > > we have collected over time.  Maybe it is better to have a dedicated
+> > > buffer sharing virtio device?  Here is the rough idea:
+> >
+> > My concern is that buffer sharing isn't a "device".  It's a primitive
+> > used in building other devices.  When someone asks for just buffer
+> > sharing it's often because they do not intend to upstream a
+> > specification for their device.
+>
+> Well, "vsock" isn't a classic device (aka nic/storage/gpu/...) either.
+> It is more a service to allow communication between host and guest
+>
+> That buffer sharing device falls into the same category.  Maybe it even
+> makes sense to build that as virtio-vsock extension.  Not sure how well
+> that would work with the multi-transport architecture of vsock though.
+>
+> > If this buffer sharing device's main purpose is for building proprietar=
+y
+> > devices without contributing to VIRTIO, then I don't think it makes
+> > sense for the VIRTIO community to assist in its development.
+>
+> One possible use case would be building a wayland proxy, using vsock for
+> the wayland protocol messages and virtio-buffers for the shared buffers
+> (wayland client window content).
+>
+> It could also simplify buffer sharing between devices (feed decoded
+> video frames from decoder to gpu), although in that case it is less
+> clear that it'll actually simplify things because virtio-gpu is
+> involved anyway.
+>
+> We can't prevent people from using that for proprietary stuff (same goes
+> for vsock).
+>
+> There is the option to use virtio-gpu instead, i.e. add support to qemu
+> to export dma-buf handles for virtio-gpu resources to other processes
+> (such as a wayland proxy).  That would provide very similar
+> functionality (and thereby create the same loophole).
+>
+> > VIRTIO recently gained a shared memory resource concept for access to
+> > host memory.  It is being used in virtio-pmem and virtio-fs (and
+> > virtio-gpu?).
+>
+> virtio-gpu is in progress still unfortunately (all kinds of fixes for
+> the qemu drm drivers and virtio-gpu guest driver refactoring kept me
+> busy for quite a while ...).
+>
+> > If another flavor of shared memory is required it can be
+> > added to the spec and new VIRTIO device types can use it.  But it's not
+> > clear why this should be its own device.
+>
+> This is not about host memory, buffers are in guest ram, everything else
+> would make sharing those buffers between drivers inside the guest (as
+> dma-buf) quite difficult.
 
-Thought about that too, but I don't think this is a good idea for
-buffers which exist for a long time.
+I wonder if we're not forgetting about the main reason we ended up
+with all this chaos - the host-allocated buffers. ;)
 
-Example #1:  A video decoder would setup a bunch of buffers and use
-them robin-round, so they would exist until the video playback is
-finished.
+Do we really have an issue with sharing guest memory between different
+virtio devices? Each of those devices could just accept a scatterlist
+of guest pages and import that memory to whatever host component it's
+backed by.
 
-Example #2:  virtio-gpu creates a framebuffer for fbcon which exists
-forever.  And virtio-gpu potentially needs lots of buffers.  With 3d
-active there can be tons of objects.  Although they typically don't
-stay around that long we would still need a pretty big virtqueue to
-store them all I guess.
+The case that really needs some support from VIRTIO is when the
+buffers are allocated in the host. Sharing buffers from virtio-gpu
+with a virtio video decoder or Wayland (be it a dedicated virtio
+device or vsock) are some of the examples.
 
-And it also doesn't fully match the virtio spirit, it still assumes
-direct guest memory access.  Without direct guest memory access
-updates to the fbcon object would never reach the host for example.
-In case a iommu is present we might need additional dma map flushes
-for updates happening after submitting the lingering "create-buffer"
-command.
-
-cheers,
-  Gerd
-
+Best regards,
+Tomasz
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
