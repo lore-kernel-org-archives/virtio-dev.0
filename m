@@ -1,120 +1,119 @@
-Return-Path: virtio-dev-return-6371-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-6369-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id F2AA9985F32
-	for <virtio-dev@lists.oasis-open.org>; Fri, 22 Nov 2019 10:50:58 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 727AA985FD5
+	for <virtio-dev@lists.oasis-open.org>; Fri, 22 Nov 2019 10:50:59 +0000 (UTC)
 From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Date: Fri, 22 Nov 2019 11:49:50 +0100
-Message-Id: <20191122105000.800410-4-jean-philippe@linaro.org>
+Date: Fri, 22 Nov 2019 11:49:51 +0100
+Message-Id: <20191122105000.800410-5-jean-philippe@linaro.org>
 In-Reply-To: <20191122105000.800410-1-jean-philippe@linaro.org>
 References: <20191122105000.800410-1-jean-philippe@linaro.org>
 MIME-Version: 1.0
-Subject: [virtio-dev] [RFC 03/13] ACPI/IORT: Allow registration of external tables
+Subject: [virtio-dev] [RFC 04/13] ACPI/IORT: Add node categories
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: quoted-printable
 To: linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, virtualization@lists.linux-foundation.org, linux-pci@vger.kernel.org, virtio-dev@lists.oasis-open.org
 Cc: rjw@rjwysocki.net, lenb@kernel.org, lorenzo.pieralisi@arm.com, guohanjun@huawei.com, sudeep.holla@arm.com, gregkh@linuxfoundation.org, joro@8bytes.org, bhelgaas@google.com, mst@redhat.com, jasowang@redhat.com, jacob.jun.pan@intel.com, eric.auger@redhat.com, sebastien.boeuf@intel.com, kevin.tian@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Add a function to register an IORT table from an external source.
+The current node filtering won't work when introducing node types
+greater than 63 (such as the virtio-iommu nodes). Add
+node_type_matches() to filter nodes by category.
 
 Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 ---
- drivers/acpi/iort.c       | 22 ++++++++++++++++++++--
- include/linux/acpi_iort.h | 10 ++++++++++
- 2 files changed, 30 insertions(+), 2 deletions(-)
+ drivers/acpi/iort.c | 34 ++++++++++++++++++++++++----------
+ 1 file changed, 24 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/acpi/iort.c b/drivers/acpi/iort.c
-index d62a9ea26fae..9c6c91e06f8f 100644
+index 9c6c91e06f8f..1d43fbc0001f 100644
 --- a/drivers/acpi/iort.c
 +++ b/drivers/acpi/iort.c
-@@ -144,6 +144,7 @@ typedef acpi_status (*iort_find_node_callback)
+@@ -18,10 +18,10 @@
+ #include <linux/platform_device.h>
+ #include <linux/slab.h>
 =20
- /* Root pointer to the mapped IORT table */
- static struct acpi_table_header *iort_table;
-+static enum iort_table_source iort_table_source;
+-#define IORT_TYPE_MASK(type)=09(1 << (type))
+-#define IORT_MSI_TYPE=09=09(1 << ACPI_IORT_NODE_ITS_GROUP)
+-#define IORT_IOMMU_TYPE=09=09((1 << ACPI_IORT_NODE_SMMU) |=09\
+-=09=09=09=09(1 << ACPI_IORT_NODE_SMMU_V3))
++enum iort_node_category {
++=09IORT_MSI_TYPE,
++=09IORT_IOMMU_TYPE,
++};
 =20
- static LIST_HEAD(iort_msi_chip_list);
- static DEFINE_SPINLOCK(iort_msi_chip_lock);
-@@ -1617,11 +1618,28 @@ static void __init iort_init_platform_devices(void)
- =09}
- }
+ struct iort_its_msi_chip {
+ =09struct list_head=09list;
+@@ -38,6 +38,20 @@ struct iort_fwnode {
+ static LIST_HEAD(iort_fwnode_list);
+ static DEFINE_SPINLOCK(iort_fwnode_lock);
 =20
-+void __init acpi_iort_register_table(struct acpi_table_header *table,
-+=09=09=09=09     enum iort_table_source source)
++static bool iort_type_matches(u8 type, enum iort_node_category category)
 +{
-+=09/*
-+=09 * Firmware or hypervisor should know better than give us two IORT
-+=09 * tables.
-+=09 */
-+=09if (WARN_ON(iort_table))
-+=09=09return;
-+
-+=09iort_table =3D table;
-+=09iort_table_source =3D source;
-+
-+=09iort_init_platform_devices();
++=09switch (category) {
++=09case IORT_IOMMU_TYPE:
++=09=09return type =3D=3D ACPI_IORT_NODE_SMMU ||
++=09=09       type =3D=3D ACPI_IORT_NODE_SMMU_V3;
++=09case IORT_MSI_TYPE:
++=09=09return type =3D=3D ACPI_IORT_NODE_ITS_GROUP;
++=09default:
++=09=09WARN_ON(1);
++=09=09return false;
++=09}
 +}
 +
- void __init acpi_iort_init(void)
+ /**
+  * iort_set_fwnode() - Create iort_fwnode and use it to register
+  *=09=09       iommu data in the iort_fwnode_list
+@@ -397,7 +411,7 @@ static int iort_get_id_mapping_index(struct acpi_iort_n=
+ode *node)
+=20
+ static struct acpi_iort_node *iort_node_map_id(struct acpi_iort_node *node=
+,
+ =09=09=09=09=09       u32 id_in, u32 *id_out,
+-=09=09=09=09=09       u8 type_mask)
++=09=09=09=09=09       enum iort_node_category category)
  {
- =09acpi_status status;
-+=09static struct acpi_table_header *table;
+ =09u32 id =3D id_in;
 =20
--=09status =3D acpi_get_table(ACPI_SIG_IORT, 0, &iort_table);
-+=09status =3D acpi_get_table(ACPI_SIG_IORT, 0, &table);
- =09if (ACPI_FAILURE(status)) {
- =09=09if (status !=3D AE_NOT_FOUND) {
- =09=09=09const char *msg =3D acpi_format_exception(status);
-@@ -1632,5 +1650,5 @@ void __init acpi_iort_init(void)
- =09=09return;
- =09}
+@@ -406,7 +420,7 @@ static struct acpi_iort_node *iort_node_map_id(struct a=
+cpi_iort_node *node,
+ =09=09struct acpi_iort_id_mapping *map;
+ =09=09int i, index;
 =20
--=09iort_init_platform_devices();
-+=09acpi_iort_register_table(table, IORT_SOURCE_IORT);
+-=09=09if (IORT_TYPE_MASK(node->type) & type_mask) {
++=09=09if (iort_type_matches(node->type, category)) {
+ =09=09=09if (id_out)
+ =09=09=09=09*id_out =3D id;
+ =09=09=09return node;
+@@ -458,8 +472,8 @@ static struct acpi_iort_node *iort_node_map_id(struct a=
+cpi_iort_node *node,
  }
-diff --git a/include/linux/acpi_iort.h b/include/linux/acpi_iort.h
-index 8e7e2ec37f1b..f4db5fff07cf 100644
---- a/include/linux/acpi_iort.h
-+++ b/include/linux/acpi_iort.h
-@@ -11,6 +11,11 @@
- #include <linux/fwnode.h>
- #include <linux/irqdomain.h>
 =20
-+enum iort_table_source {
-+=09IORT_SOURCE_IORT,=09/* The Real Thing */
-+=09IORT_SOURCE_VIOT,=09/* Paravirtual extensions */
-+};
-+
- #define IORT_IRQ_MASK(irq)=09=09(irq & 0xffffffffULL)
- #define IORT_IRQ_TRIGGER_MASK(irq)=09((irq >> 32) & 0xffffffffULL)
-=20
-@@ -27,6 +32,8 @@ int iort_register_domain_token(int trans_id, phys_addr_t =
-base,
- void iort_deregister_domain_token(int trans_id);
- struct fwnode_handle *iort_find_domain_token(int trans_id);
- #ifdef CONFIG_ACPI_IORT
-+void acpi_iort_register_table(struct acpi_table_header *table,
-+=09=09=09      enum iort_table_source source);
- void acpi_iort_init(void);
- u32 iort_msi_map_rid(struct device *dev, u32 req_id);
- struct irq_domain *iort_get_device_domain(struct device *dev, u32 req_id);
-@@ -37,6 +44,9 @@ void iort_dma_setup(struct device *dev, u64 *dma_addr, u6=
-4 *size);
- const struct iommu_ops *iort_iommu_configure(struct device *dev);
- int iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *=
-head);
- #else
-+static void acpi_iort_register_table(struct acpi_table_header *table,
-+=09=09=09=09     enum iort_table_source source)
-+{ }
- static inline void acpi_iort_init(void) { }
- static inline u32 iort_msi_map_rid(struct device *dev, u32 req_id)
- { return req_id; }
+ static struct acpi_iort_node *iort_node_map_platform_id(
+-=09=09struct acpi_iort_node *node, u32 *id_out, u8 type_mask,
+-=09=09int index)
++=09=09struct acpi_iort_node *node, u32 *id_out,
++=09=09enum iort_node_category category, int index)
+ {
+ =09struct acpi_iort_node *parent;
+ =09u32 id;
+@@ -475,8 +489,8 @@ static struct acpi_iort_node *iort_node_map_platform_id=
+(
+ =09 * as NC (named component) -> SMMU -> ITS. If the type is matched,
+ =09 * return the initial dev id and its parent pointer directly.
+ =09 */
+-=09if (!(IORT_TYPE_MASK(parent->type) & type_mask))
+-=09=09parent =3D iort_node_map_id(parent, id, id_out, type_mask);
++=09if (!iort_type_matches(parent->type, category))
++=09=09parent =3D iort_node_map_id(parent, id, id_out, category);
+ =09else
+ =09=09if (id_out)
+ =09=09=09*id_out =3D id;
 --=20
 2.24.0
 
