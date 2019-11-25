@@ -1,74 +1,113 @@
-Return-Path: virtio-dev-return-6361-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-6392-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 1F5BF985E8D
-	for <virtio-dev@lists.oasis-open.org>; Thu, 21 Nov 2019 08:56:40 +0000 (UTC)
-Date: Thu, 21 Nov 2019 09:56:25 +0100
-From: Cornelia Huck <cohuck@redhat.com>
-Message-ID: <20191121095625.610d1716.cohuck@redhat.com>
-In-Reply-To: <20191120174451.GB89876@lophozonia>
+	by lists.oasis-open.org (Postfix) with ESMTP id 0D705985CAF
+	for <virtio-dev@lists.oasis-open.org>; Mon, 25 Nov 2019 07:30:47 +0000 (UTC)
 References: <20191120151903.175110-1-jean-philippe@linaro.org>
-	<20191120151903.175110-2-jean-philippe@linaro.org>
-	<20191120182734.7d6ec586.cohuck@redhat.com>
-	<20191120174451.GB89876@lophozonia>
+ <20191120151903.175110-2-jean-philippe@linaro.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <19a7ef47-29b8-f1ff-822a-afc974b2a314@siemens.com>
+Date: Mon, 25 Nov 2019 08:30:29 +0100
 MIME-Version: 1.0
+In-Reply-To: <20191120151903.175110-2-jean-philippe@linaro.org>
+Content-Language: en-US
 Subject: Re: [virtio-dev] [PATCH RESEND v4 1/1] Add virtio-iommu device
  specification
-Content-Type: text/plain; charset=WINDOWS-1252
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: quoted-printable
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Cc: virtio-dev@lists.oasis-open.org, joro@8bytes.org, tnowicki@marvell.com, eric.auger@redhat.com, kevin.tian@intel.com, lorenzo.pieralisi@arm.com, mst@redhat.com, bauerman@linux.ibm.com
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>, virtio-dev@lists.oasis-open.org
+Cc: joro@8bytes.org, tnowicki@marvell.com, eric.auger@redhat.com, kevin.tian@intel.com, lorenzo.pieralisi@arm.com, mst@redhat.com, bauerman@linux.ibm.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, 20 Nov 2019 18:44:51 +0100
-Jean-Philippe Brucker <jean-philippe@linaro.org> wrote:
-
-> On Wed, Nov 20, 2019 at 06:27:34PM +0100, Cornelia Huck wrote:
-> > > +\begin{lstlisting}
-> > > +struct virtio_iommu_config {
-> > > +  le64 page_size_mask;
-> > > +  struct virtio_iommu_range_64 {
-> > > +    le64 start;
-> > > +    le64 end;
-> > > +  } input_range;
-> > > +  struct virtio_iommu_range_32 {
-> > > +    le32 start;
-> > > +    le32 end;
-> > > +  } domain_range;
-> > > +  le32 probe_size;
-> > > +};
-> > > +\end{lstlisting}
-> > > +
-> > > +\drivernormative{\subsubsection}{Device configuration layout}{Device=
- Types / IOMMU Device / Device configuration layout}
-> > > +
-> > > +The driver MUST NOT write to device configuration fields.
-> > > +
-> > > +\devicenormative{\subsubsection}{Device configuration layout}{Device=
- Types / IOMMU Device / Device configuration layout}
-> > > +
-> > > +The device SHOULD set \field{padding} to zero. =20
-> >=20
-> > I don't see any field named 'padding' -- is that a leftover from an
-> > earlier version? =20
+On 20.11.19 16:19, Jean-Philippe Brucker wrote:
+> The IOMMU device allows a guest to manage DMA mappings for physical,
+> emulated and paravirtualized endpoints. Add device description for the
+> virtio-iommu device and driver. Introduce PROBE, ATTACH, DETACH, MAP and
+> UNMAP requests, as well as translation error reporting.
 >=20
-> Oh right, it is. The previous version had an 1-byte field before
-> probe_size, so the structure needed 3 bytes of padding. Since we replaced
-> that field by domain_range in v4, padding is gone.
->=20
-> > If it is, we can probably remove it as a trivial change on top after
-> > this change went in. =20
->=20
-> I can also send a new version (after waiting a few days for other
-> comments), please let me know what you prefer.
+> Fixes: https://github.com/oasis-tcs/virtio-spec/issues/37
+> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
 
-If nothing else turns up (I didn't spot anything), I think we can just
-remove this sentence on top, no need to restart the voting IMHO.
+...
 
+> +
+> +\subsubsection{Fault reporting}\label{sev:Device Types / IOMMU Device / =
+Device operations / Fault reporting}
+> +
+> +The device can report translation faults and other significant
+> +asynchronous events on the event virtqueue. The driver initially populat=
+es
+> +the queue with device-writeable buffers. When the device needs to report
+> +an event, it fills a buffer and notifies the driver. The driver consumes
+> +the report and adds a new buffer to the virtqueue.
+> +
+> +If no buffer is available, the device can either wait for one to be
+> +consumed, or drop the event.
+> +
+> +\begin{lstlisting}
+> +struct virtio_iommu_fault {
+> +  u8    reason;
+> +  u8    reserved[3];
+> +  le32  flags;
+> +  le32  endpoint;
+> +  le32  reserved1;
+> +  le64  address;
+> +};
+> +
+> +#define VIRTIO_IOMMU_FAULT_F_READ     (1 << 0)
+> +#define VIRTIO_IOMMU_FAULT_F_WRITE    (1 << 1)
+> +#define VIRTIO_IOMMU_FAULT_F_ADDRESS  (1 << 8)
+> +\end{lstlisting}
+> +
+> +\begin{description}
+> +  \item[\field{reason}] The reason for this report. It may have the
+> +    following values:
+> +    \begin{description}
+> +      \item[VIRTIO_IOMMU_FAULT_R_UNKNOWN (0)] An internal error happened=
+, or
+> +        an error that cannot be described with the following reasons.
+> +      \item[VIRTIO_IOMMU_FAULT_R_DOMAIN (1)] The endpoint attempted to
+> +        access \field{address} without being attached to a domain.
+> +      \item[VIRTIO_IOMMU_FAULT_R_MAPPING (2)] The endpoint attempted to
+> +        access \field{address}, which wasn't mapped in the domain or
+> +        didn't have the correct protection flags.
+> +    \end{description}
+> +  \item[\field{flags}] Information about the fault context.
+> +  \item[\field{endpoint}] The endpoint causing the fault.
+> +  \item[\field{reserved} and \field{reserved1}] Should be zero.
+> +  \item[\field{address}] If VIRTIO_IOMMU_FAULT_F_ADDRESS is set, the
+> +    address causing the fault.
+> +\end{description}
+> +
+> +When the fault is reported by a physical IOMMU, the fault reasons may no=
+t
+> +match exactly the reason of the original fault report. The device does i=
+ts
+> +best to find the closest match.
+> +
+> +If the device encounters an internal error that wasn't caused by a
+> +specific endpoint, it is unlikely that the driver would be able to do
+> +anything else than print the fault and stop using the device, so reporti=
+ng
+> +the fault on the event queue isn't useful. In that case, we recommend
+> +using the DEVICE_NEEDS_RESET status bit.
+
+What's the impact of a fault on the device(s) under the IOMMU regime?=20
+Can they recover? Or will they get DEVICE_NEEDS_RESET as well? With PCI=20
+device behind real IOMMUs, it's normal that they need a reset after=20
+having caused a fault. I'm not sure if this is described in the related=20
+specs for them, but it should be clarify for the virtual IOMMU. But this=20
+can be done on top, IMHO.
+
+Jan
+
+--=20
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
