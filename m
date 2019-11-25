@@ -1,37 +1,38 @@
-Return-Path: virtio-return-3400-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-return-3403-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio@lists.oasis-open.org>
 List-Post: <mailto:virtio@lists.oasis-open.org>
 List-Help: <mailto:virtio-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Sun, 24 Nov 2019 07:32:36 -0500
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20191124073211-mutt-send-email-mst@kernel.org>
 References: <20191028105508.31769-1-mst@redhat.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <e4cc37c2-ac51-6260-b615-67222bbad1a5@siemens.com>
+Date: Mon, 25 Nov 2019 08:45:52 +0100
 MIME-Version: 1.0
 In-Reply-To: <20191028105508.31769-1-mst@redhat.com>
-Subject: [virtio] Re: [PATCH] content: add vendor specific cfg type
-Content-Type: text/plain; charset=WINDOWS-1252
+Content-Language: en-US
+Subject: [virtio] Re: [virtio-dev] [PATCH] content: add vendor specific cfg type
+Content-Type: text/plain; charset=WINDOWS-1252; format=flowed
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-To: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, virtio-comment@lists.oasis-open.org
+To: "Michael S. Tsirkin" <mst@redhat.com>, virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, virtio-comment@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Mon, Oct 28, 2019 at 06:55:42AM -0400, Michael S. Tsirkin wrote:
+On 28.10.19 11:55, Michael S. Tsirkin wrote:
 > Vendors might want to add their own capability
 > in the PCI capability list. However, Virtio already
 > uses the vendor specific capability ID (0x09)
 > for its own purposes.
+
+Did some vendor express that need, or do we only assume it so far? IOW:=20
+Do we know at least once concrete use case?
+
 >=20
 > Provide a structure for vendor specific extensions.
 >=20
 > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-Fixes: https://github.com/oasis-tcs/virtio-spec/issues/62
-
 > ---
->  content.tex | 80 +++++++++++++++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 80 insertions(+)
+>   content.tex | 80 +++++++++++++++++++++++++++++++++++++++++++++++++++++
+>   1 file changed, 80 insertions(+)
 >=20
 > diff --git a/content.tex b/content.tex
 > index b1ea9b9..8a79b03 100644
@@ -39,19 +40,19 @@ Fixes: https://github.com/oasis-tcs/virtio-spec/issues/62
 > +++ b/content.tex
 > @@ -691,6 +691,8 @@ \subsection{Virtio Structure PCI Capabilities}\label{=
 sec:Virtio Transport Option
->  #define VIRTIO_PCI_CAP_PCI_CFG           5
->  /* Shared memory region */
->  #define VIRTIO_PCI_CAP_SHARED_MEMORY_CFG 8
+>   #define VIRTIO_PCI_CAP_PCI_CFG           5
+>   /* Shared memory region */
+>   #define VIRTIO_PCI_CAP_SHARED_MEMORY_CFG 8
 > +/* Vendor-specific data */
 > +#define VIRTIO_PCI_CAP_VENDOR_CFG        9
->  \end{lstlisting}
-> =20
->          Any other value is reserved for future use.
+>   \end{lstlisting}
+>  =20
+>           Any other value is reserved for future use.
 > @@ -1099,6 +1101,84 @@ \subsubsection{Shared memory capability}\label{sec=
 :Virtio Transport Options / Vi
-> =20
->  The \field{cap.id} MUST be unique for any one device instance.
-> =20
+>  =20
+>   The \field{cap.id} MUST be unique for any one device instance.
+>  =20
 > +\devicenormative{\paragraph}{Device-specific configuration}{Virtio Trans=
 port Options / Virtio Over PCI Bus / PCI Device Layout / Shared memory capa=
 bility}
@@ -128,18 +129,27 @@ bility}
 > +
 > +The driver SHOULD NOT use the Vendor data capability except
 > +for debugging and reporting purposes.
+
+Every vendor is free to mess up the device behavior by adding more to=20
+this than the spec defines. Still, I'm undecided if this shouldn't be=20
+stronger.
+
+Jan
+
 > +
 > +The driver MUST qualify the \field{vendor_id} before
 > +interpreting or writing into the Vendor data capability.
 > +
->  \subsubsection{PCI configuration access capability}\label{sec:Virtio Tra=
-nsport Options / Virtio Over PCI Bus / PCI Device Layout / PCI configuratio=
-n access capability}
-> =20
->  The VIRTIO_PCI_CAP_PCI_CFG capability
-> --=20
-> MST
+>   \subsubsection{PCI configuration access capability}\label{sec:Virtio Tr=
+ansport Options / Virtio Over PCI Bus / PCI Device Layout / PCI configurati=
+on access capability}
+>  =20
+>   The VIRTIO_PCI_CAP_PCI_CFG capability
+>=20
 
+--=20
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
 ---------------------------------------------------------------------
 To unsubscribe from this mail list, you must leave the OASIS TC that=20
