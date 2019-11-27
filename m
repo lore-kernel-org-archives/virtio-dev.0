@@ -1,88 +1,119 @@
-Return-Path: virtio-dev-return-6346-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id CDB58985E68
-	for <virtio-dev@lists.oasis-open.org>; Wed, 20 Nov 2019 09:32:43 +0000 (UTC)
-Date: Wed, 20 Nov 2019 10:32:38 +0100
-From: Gerd Hoffmann <kraxel@redhat.com>
-Message-ID: <20191120093238.mvf7myei2oxvrlyq@sirius.home.kraxel.org>
-References: <20190924144323.4590-1-Mikhail.Golubev@opensynergy.com>
- <6a4978e85505ae00ca9e2b170f5e893a064c03d2.camel@linux.intel.com>
- <568f32dc-8d82-a189-469f-5cb3a0140b8c@opensynergy.com>
- <0cc8007b70f4f5984223703313730d8e066006a7.camel@linux.intel.com>
- <050946d2-e55e-1104-96ff-a63862c154ab@opensynergy.com>
- <394b40a75959454bc634636d9c99bf9bca98454d.camel@linux.intel.com>
- <b2e8d449-93d6-3452-097b-9df9aa0785cb@opensynergy.com>
- <cf8ca463c132c059ed3c1083af1f278d4568f600.camel@linux.intel.com>
+Return-Path: virtio-return-3411-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio@lists.oasis-open.org>
+List-Post: <mailto:virtio@lists.oasis-open.org>
+List-Help: <mailto:virtio-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
+Date: Wed, 27 Nov 2019 08:07:47 -0500
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20191127130727.20971-1-mst@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <cf8ca463c132c059ed3c1083af1f278d4568f600.camel@linux.intel.com>
-Subject: Re: [virtio-dev] [PATCH] snd: Add virtio sound device specification
-Content-Type: text/plain; charset=WINDOWS-1252
+Subject: [virtio] [PATCH] content: document speed, duplex
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
-To: Liam Girdwood <liam.r.girdwood@linux.intel.com>
-Cc: Anton Yakovlev <anton.yakovlev@opensynergy.com>, Mikhail Golubev <Mikhail.Golubev@opensynergy.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Takashi Iwai <tiwai@suse.de>, Mark Brown <broonie@kernel.org>
+To: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+Cc: virtio@lists.oasis-open.org, Cornelia Huck <cohuck@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-> > Then, the I/O queue will multiplex already three things: read
-> > requests, write=20
-> > requests and notifications. The question is how rational is it.
->=20
-> If there is no multiplexing, then we probably need 4 queues per virtual
-> PCM:
->=20
-> 1) Playback data
-> 2) Playback notifications
-> 3) Capture data
-> 4) Capture notifications
->=20
-> additionally, if we include a controls (like volume, mixer etc) we can
-> also include:
->=20
-> 5) control W data
-> 6) control R data
->=20
-> Latency is important for 1 - 4 (where multiplexing may not be
-> desirable), but 5 & 6 can be easily multiplexed for multiple controls.
+Document as used by Linux.
 
-You need:
+Fixes: https://github.com/oasis-tcs/virtio-spec/issues/59
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Reviewed-by: Cornelia Huck <cohuck@redhat.com>
+---
+ content.tex | 33 +++++++++++++++++++++++++++++++++
+ 1 file changed, 33 insertions(+)
 
-  (1) control queue (guest -> host commands)
-  (2) events queue (host -> guest notifications, but see below)
-  (3) tx queue (playback)
-  (4) rx queue (recording)
-
-You can allow multiple rx/tx pairs, not sure multiqueue support buys us
-much for audio though.
-
-The tx/rx queue requests should have three elements: a small request
-header (out), a small request status (in), and one (or more) data
-buffers (out for tx, in for rx) for the actual sample data (see also
-the more verbose comment elsewhere in this thread).
-
-The request status can probably be used to notify the guest about
-overruns and underruns, so maybe the event queue is not needed.
-
-> > Yes, we can use device feature bits for this.
->=20
-> Can we also include some reserved words to ease spec updates ? e.g.
-> guest is using older version of spec than device driver but we still
-> want working audio.
-
-feature bits handle this.  The device knows which features are supported
-by the driver and can act accordingly.  Reserved fields in structs might
-make sense to simplify that (avoid struct layout change depending on
-feature bits).
-
-cheers,
-  Gerd
+diff --git a/content.tex b/content.tex
+index 9157717..6acbb19 100644
+--- a/content.tex
++++ b/content.tex
+@@ -2899,6 +2899,7 @@ \subsection{Feature bits}\label{sec:Device Types / Ne=
+twork Device / Feature bits
+=20
+ \item[VIRTIO_NET_F_STANDBY(62)] Device may act as a standby for a primary
+     device with the same MAC address.
++\item[VIRTIO_NET_F_SPEED_DUPLEX(63)] Device reports speed and duplex.
+ \end{description}
+=20
+ \subsubsection{Feature bit requirements}\label{sec:Device Types / Network =
+Device / Feature bits / Feature bit requirements}
+@@ -2958,12 +2959,27 @@ \subsection{Device configuration layout}\label{sec:=
+Device Types / Network Device
+ VIRTIO_NET_F_MTU is set. This field specifies the maximum MTU for the driv=
+er to
+ use.
+=20
++The following two fields, \field{speed} and \field{duplex}, only
++exist if VIRTIO_NET_F_SPEED_DUPLEX is set.
++
++\field{speed} contains the device speed, in units of 1 MByte, 0
++to 0x7ffffffff, or 0xfffffffff for unknown speed.
++
++\field{duplex} has the values of 0x00 for full duplex, 0x01 for
++half duplex and 0xff for unknown duplex state.
++
++Neither \field{speed} nor \field{duplex} changes as long as
++VIRTIO_NET_S_LINK_UP is set.
++
+ \begin{lstlisting}
+ struct virtio_net_config {
+         u8 mac[6];
+         le16 status;
+         le16 max_virtqueue_pairs;
+         le16 mtu;
++        le32 speed;
++        u8 duplex;
++
+ };
+ \end{lstlisting}
+=20
+@@ -2992,6 +3008,18 @@ \subsection{Device configuration layout}\label{sec:D=
+evice Types / Network Device
+ If the driver negotiates the VIRTIO_NET_F_STANDBY feature, the device MAY =
+act
+ as a standby device for a primary device with the same MAC address.
+=20
++If VIRTIO_NET_F_SPEED_DUPLEX has been negotiated, \field{speed}
++MUST contain the device speed, in units of 1 MByte, 0 to
++0x7ffffffff, or 0xfffffffff for unknown.
++
++If VIRTIO_NET_F_SPEED_DUPLEX has been negotiated, \field{duplex}
++MUST have the values of 0x00 for full duplex, 0x01 for half
++duplex, or 0xff for unknown.
++
++If VIRTIO_NET_F_SPEED_DUPLEX has been negotiated, the device MUST
++NOT change the \field{speed} and \field{duplex} fields as long as
++VIRTIO_NET_S_LINK_UP is set in the \field{status}.
++
+ \drivernormative{\subsubsection}{Device configuration layout}{Device Types=
+ / Network Device / Device configuration layout}
+=20
+ A driver SHOULD negotiate VIRTIO_NET_F_MAC if the device offers it.
+@@ -3016,6 +3044,11 @@ \subsection{Device configuration layout}\label{sec:D=
+evice Types / Network Device
+=20
+ A driver SHOULD negotiate the VIRTIO_NET_F_STANDBY feature if the device o=
+ffers it.
+=20
++If VIRTIO_NET_F_SPEED_DUPLEX has been negotiated,
++the driver MUST treat any value of \field{speed} above
++0x7fffffff as well as any value of \field{duplex} not
++matching 0x00 or 0x01 as an unknown value.
++
+ \subsubsection{Legacy Interface: Device configuration layout}\label{sec:De=
+vice Types / Network Device / Device configuration layout / Legacy Interfac=
+e: Device configuration layout}
+ \label{sec:Device Types / Block Device / Feature bits / Device configurati=
+on layout / Legacy Interface: Device configuration layout}
+ When using the legacy interface, transitional devices and drivers
+--=20
+MST
 
 
 ---------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+To unsubscribe from this mail list, you must leave the OASIS TC that=20
+generates this mail.  Follow this link to all your TCs in OASIS at:
+https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php=20
 
