@@ -1,66 +1,77 @@
-Return-Path: virtio-dev-return-6430-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 864BB986015
-	for <virtio-dev@lists.oasis-open.org>; Sat, 30 Nov 2019 17:07:02 +0000 (UTC)
-References: <20170421111259.4b900b6b.cornelia.huck@de.ibm.com>
- <20170428124909.GH7270@stefanha-x1.localdomain>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <a056497e-dbd6-749c-fa1a-c3d48edcbafa@siemens.com>
-Date: Sat, 30 Nov 2019 18:06:48 +0100
+Return-Path: virtio-return-3417-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio@lists.oasis-open.org>
+List-Post: <mailto:virtio@lists.oasis-open.org>
+List-Help: <mailto:virtio-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
+Date: Wed, 27 Nov 2019 16:33:07 -0500
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20191127213240.34106-1-mst@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <20170428124909.GH7270@stefanha-x1.localdomain>
-Content-Language: en-US
-Subject: Re: [virtio-dev] virtio-blk: What's up with VIRTIO_BLK_T_GET_ID (8)?
-Content-Type: text/plain; charset=WINDOWS-1252; format=flowed
+Subject: [virtio] [PATCH v2] virtio_pci_cap64: bar/BAR cleanups
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: quoted-printable
-To: Stefan Hajnoczi <stefanha@redhat.com>, Cornelia Huck <cornelia.huck@de.ibm.com>
-Cc: virtio-dev@lists.oasis-open.org
+Content-Disposition: inline
+To: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+Cc: virtio@lists.oasis-open.org, Christophe de Dinechin <cdupontd@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 28.04.17 14:49, Stefan Hajnoczi wrote:
-> On Fri, Apr 21, 2017 at 11:12:59AM +0200, Cornelia Huck wrote:
->> I see the request type in $SUBJECT implemented in both Linux and QEMU,
->> but I can't find it in the standard.
->>
->> If we believe that getting a s/n is useful, we should spec it;
->> otherwise, if we consider it just a legacy request type, it wouldn't
->> hurt to mention it in the legacy section.
->=20
-> It's not a legacy request type.
->=20
-> Alexey Zaytev documented it in 2012:
->=20
-> https://lists.linuxfoundation.org/pipermail/virtualization/2012-December/=
-022313.html
->=20
-> It was in the VIRTIO <1.0 spec:
->=20
-> https://github.com/rustyrussell/virtio-spec/blob/master/virtio-spec.lyx
->=20
-> I don't understand why it wasn't part of VIRTIO 1.0... :/
->=20
-> It's worth sending a patch to add the request type to the spec again.
->=20
+When we mean PCI register we should say BAR.
+When we mean a virtio config register we should say \field{cap.bar}.
 
-What happened with this? I was already searching for weired queue=20
-corruptions in my implementation when I suddenly got this unspecified=20
-request type.
+Finally, offset_hi/length_hi are not within the cap structure.
 
-How should this be added? With a feature bit? Or just document the given=20
-reality (mandatory)?
+Tweak wording slightly: "A,B,C" are fields, there's no need
+to say that.
 
-Jan
+Reported-by: Christophe de Dinechin <cdupontd@redhat.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+---
 
+changes from v1:
+=09minor wording tweak
+
+ content.tex | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/content.tex b/content.tex
+index f808c61..a7f4f27 100644
+--- a/content.tex
++++ b/content.tex
+@@ -765,7 +765,7 @@ \subsection{Virtio Structure PCI Capabilities}\label{se=
+c:Virtio Transport Option
+ Given that the \field{cap.length} and \field{cap.offset} fields
+ are only 32 bit, the additional \field{offset_hi} and \field {length_hi}
+ fields provide the most significant 32 bits of a total 64 bit offset and
+-length within the bar specified by \field{cap.bar}.
++length within the BAR specified by \field{cap.bar}.
+=20
+ \drivernormative{\subsubsection}{Virtio Structure PCI Capabilities}{Virtio=
+ Transport Options / Virtio Over PCI Bus / Virtio Structure PCI Capabilitie=
+s}
+=20
+@@ -1095,9 +1095,9 @@ \subsubsection{Shared memory capability}\label{sec:Vi=
+rtio Transport Options / Vi
+=20
+ \devicenormative{\paragraph}{Device-specific configuration}{Virtio Transpo=
+rt Options / Virtio Over PCI Bus / PCI Device Layout / Shared memory capabi=
+lity}
+=20
+-The region defined by the combination of the \field {cap.offset},
+-\field {cap.offset_hi}, and \field {cap.length}, \field
+-{cap.length_hi} fields MUST be contained within the declared bar.
++The region defined by the combination of \field{cap.offset},
++\field{offset_hi}, and \field {cap.length}, \field{length_hi}
++MUST be contained within the BAR specified by \field{cap.bar}.
+=20
+ The \field{cap.id} MUST be unique for any one device instance.
+=20
 --=20
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+MST
+
 
 ---------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+To unsubscribe from this mail list, you must leave the OASIS TC that=20
+generates this mail.  Follow this link to all your TCs in OASIS at:
+https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php=20
 
