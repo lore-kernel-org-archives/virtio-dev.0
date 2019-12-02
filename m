@@ -1,67 +1,89 @@
-Return-Path: virtio-return-3420-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio@lists.oasis-open.org>
-List-Post: <mailto:virtio@lists.oasis-open.org>
-List-Help: <mailto:virtio-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Mon, 2 Dec 2019 12:08:30 -0500
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20191202170827.256143-1-mst@redhat.com>
+Return-Path: virtio-dev-return-6431-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id 4422A985A86
+	for <virtio-dev@lists.oasis-open.org>; Mon,  2 Dec 2019 10:02:24 +0000 (UTC)
+From: Stefan Hajnoczi <stefanha@redhat.com>
+Date: Mon,  2 Dec 2019 10:02:16 +0000
+Message-Id: <20191202100216.133556-1-stefanha@redhat.com>
 MIME-Version: 1.0
-Subject: [virtio] [PATCH] README.md: document use of virtio-dev
-Content-Type: text/plain; charset=us-ascii
+Subject: [virtio-dev] [PATCH] virtio-blk: document VIRTIO_BLK_T_GET_ID
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-To: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
-Cc: virtio@lists.oasis-open.org
+To: virtio-dev@lists.oasis-open.org
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, Stefan Hajnoczi <stefanha@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-People still seem to be confused which list is for what.
-Add a bit more text.
+The VIRTIO_BLK_T_GET_ID request type was implemented in Linux and QEMU
+in 2010.  It does not have a feature bit but devices respond with
+VIRTIO_BLK_S_UNSUPP if a request type is unimplemented.
 
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+This patch documents the VIRTIO_BLK_T_GET_ID request type as currently
+implemented in Linux and QEMU.
+
+Suggested-by: Jan Kiszka <jan.kiszka@siemens.com>
+Signed-off-by: Stefan Hajnoczi <stefanha@redhat.com>
 ---
- README.md | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ content.tex | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/README.md b/README.md
-index ffafb9b..1b72dc3 100644
---- a/README.md
-+++ b/README.md
-@@ -157,6 +157,17 @@ issue is resolved under the minor cleanups standing ru=
-le.
- and asking for a commit. </li>
- </ol>
+diff --git a/content.tex b/content.tex
+index d68cfaf..b8baaad 100644
+--- a/content.tex
++++ b/content.tex
+@@ -4094,12 +4094,14 @@ \subsection{Device Operation}\label{sec:Device Type=
+s / Block Device / Device Ope
 =20
-+<h4>Implementation discussion</h4>
-+Implementations should be discussed on the <strong>virtio-dev</strong> mai=
-ling list,
-+and are archived in the mailing list archives.
-+<p>See <A
-+HREF=3D"https://www.oasis-open.org/committees/tc_home.php?wg_abbrev=3Dvirt=
-io#feedback">
-+https://www.oasis-open.org/committees/tc_home.php?wg_abbrev=3Dvirtio#feedb=
-ack</A>
-+<p>This is the correct list to copy on Linux virtio UAPI change proposals.
-+<p>Note that only plain text part of the message is archived, and all
-+attachments are stripped. Accordingly, messages sent to the
-+mailing list should use text/plain encoding and not
-+have any attachments.
- <h3>Contact</h3>
- <p>Please send questions or comments about <a href=3D"https://www.oasis-op=
-en.org/resources/tcadmin/github-repositories-for-oasis-tc-members-chartered=
--work">OASIS TC GitHub repositories</a> to <a href=3D"mailto:robin@oasis-op=
-en.org">Robin Cover</a> and <a href=3D"mailto:chet.ensign@oasis-open.org">C=
-het Ensign</a>.  For questions about content in this repository, please con=
-tact the TC Chair or Co-Chairs as listed on the the virtio TC's <a href=3D"=
-https://www.oasis-open.org/committees/virtio/">home page</a>.</p>
- </div>
+ The type of the request is either a read (VIRTIO_BLK_T_IN), a write
+ (VIRTIO_BLK_T_OUT), a discard (VIRTIO_BLK_T_DISCARD), a write zeroes
+-(VIRTIO_BLK_T_WRITE_ZEROES) or a flush (VIRTIO_BLK_T_FLUSH).
++(VIRTIO_BLK_T_WRITE_ZEROES), a flush (VIRTIO_BLK_T_FLUSH), or a get device=
+ ID
++string command (VIRTIO_BLK_T_GET_ID).
+=20
+ \begin{lstlisting}
+ #define VIRTIO_BLK_T_IN           0
+ #define VIRTIO_BLK_T_OUT          1
+ #define VIRTIO_BLK_T_FLUSH        4
++#define VIRTIO_BLK_T_GET_ID       8
+ #define VIRTIO_BLK_T_DISCARD      11
+ #define VIRTIO_BLK_T_WRITE_ZEROES 13
+ \end{lstlisting}
+@@ -4135,6 +4137,10 @@ \subsection{Device Operation}\label{sec:Device Types=
+ / Block Device / Device Ope
+ the device to discard the specified range, provided that following reads r=
+eturn
+ zeroes.
+=20
++VIRTIO_BLK_T_GET_ID requests fetch the device ID string from the device in=
+to
++\field{data}.  The device ID string is a NUL-padded ASCII string up to 20 =
+bytes
++long.  If the string is 20 bytes long then there is no NUL terminator.
++
+ The final \field{status} byte is written by the device: either
+ VIRTIO_BLK_S_OK for success, VIRTIO_BLK_S_IOERR for device or driver
+ error or VIRTIO_BLK_S_UNSUPP for a request unsupported by device:
+@@ -4166,6 +4172,8 @@ \subsection{Device Operation}\label{sec:Device Types =
+/ Block Device / Device Ope
+ virtio_blk_discard_write_zeroes for VIRTIO_BLK_T_DISCARD and
+ VIRTIO_BLK_T_WRITE_ZEROES requests.
+=20
++The length of \field{data} MUST be 20 bytes for VIRTIO_BLK_T_GET_ID reques=
+ts.
++
+ VIRTIO_BLK_T_DISCARD requests MUST NOT contain more than
+ \field{max_discard_seg} struct virtio_blk_discard_write_zeroes segments in
+ \field{data}.
 --=20
-MST
+2.23.0
 
 
 ---------------------------------------------------------------------
-To unsubscribe from this mail list, you must leave the OASIS TC that=20
-generates this mail.  Follow this link to all your TCs in OASIS at:
-https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php=20
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
