@@ -1,72 +1,137 @@
-Return-Path: virtio-dev-return-6458-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-6468-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 12E2298603B
-	for <virtio-dev@lists.oasis-open.org>; Wed,  4 Dec 2019 08:04:07 +0000 (UTC)
-References: <ee52234e-6b53-1f2a-563f-c3dd50dd1764@opensynergy.com>
- <21039a042ad38302e9dc9010014223d915704b91.camel@linux.intel.com>
- <07b9804d-2c20-9ff4-a375-2c65f1d27f63@opensynergy.com>
- <20191121090403.6vjnovlru4zrmzzs@sirius.home.kraxel.org>
- <84fb109c-1d1e-a52c-8efa-8dcd00b864b3@opensynergy.com>
- <20191122123521.GB6849@sirena.org.uk>
- <4db86201-ea0b-80e0-5714-ffa598bee34f@opensynergy.com>
- <D68AC0D0-851B-4F87-BE0E-F49527B83E24@redhat.com>
- <20191128121920.GB4210@sirena.org.uk>
- <6fc1a8cb-32aa-938a-f1b3-f11a9273ca6b@opensynergy.com>
- <20191202135519.GF1998@sirena.org.uk>
-From: Anton Yakovlev <anton.yakovlev@opensynergy.com>
-Message-ID: <dbe491e0-3eda-e204-7ce3-3b602f2efd3c@opensynergy.com>
-Date: Wed, 4 Dec 2019 09:04:02 +0100
+	by lists.oasis-open.org (Postfix) with ESMTP id 2FDF898607D
+	for <virtio-dev@lists.oasis-open.org>; Thu,  5 Dec 2019 16:24:18 +0000 (UTC)
+From: Alexander Duyck <alexander.duyck@gmail.com>
+Date: Thu, 05 Dec 2019 08:24:13 -0800
+Message-ID: <20191205162413.19737.43311.stgit@localhost.localdomain>
+In-Reply-To: <20191205161928.19548.41654.stgit@localhost.localdomain>
+References: <20191205161928.19548.41654.stgit@localhost.localdomain>
 MIME-Version: 1.0
-In-Reply-To: <20191202135519.GF1998@sirena.org.uk>
-Content-Language: en-US
-Subject: Re: [virtio-dev] [PATCH] snd: Add virtio sound device specification
-Content-Type: text/plain; charset=WINDOWS-1252; format=flowed
-Content-Transfer-Encoding: quoted-printable
-To: Mark Brown <broonie@kernel.org>
-Cc: Christophe de Dinechin <cdupontd@redhat.com>, Gerd Hoffmann <kraxel@redhat.com>, Liam Girdwood <liam.r.girdwood@linux.intel.com>, Jean-Philippe Brucker <jean-philippe@linaro.org>, Mikhail Golubev <Mikhail.Golubev@opensynergy.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Takashi Iwai <tiwai@suse.de>
+Subject: [virtio-dev] [PATCH v15 QEMU 1/3] virtio-ballon: Implement support for page
+ poison tracking feature
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+To: virtio-dev@lists.oasis-open.org, kvm@vger.kernel.org, mst@redhat.com, linux-kernel@vger.kernel.org, willy@infradead.org, mhocko@kernel.org, linux-mm@kvack.org, akpm@linux-foundation.org, mgorman@techsingularity.net, vbabka@suse.cz
+Cc: yang.zhang.wz@gmail.com, nitesh@redhat.com, konrad.wilk@oracle.com, david@redhat.com, pagupta@redhat.com, riel@surriel.com, lcapitulino@redhat.com, dave.hansen@intel.com, wei.w.wang@intel.com, aarcange@redhat.com, pbonzini@redhat.com, dan.j.williams@intel.com, alexander.h.duyck@linux.intel.com, osalvador@suse.de
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 02.12.2019 14:55, Mark Brown wrote:
-> On Mon, Dec 02, 2019 at 02:30:44PM +0100, Anton Yakovlev wrote:
->> On 28.11.2019 13:19, Mark Brown wrote:
->=20
->>> If you're talking about compressed as opposed to PCM audio here (you sa=
-y
->>> decompression) I think you probably want a different spec there, the
->>> flow control stuff is quite different and you often need a lot more
->>> configuration for compressed formats.
->=20
->> Usually all such kind of things are tight together in one audio subsyste=
-m and
->> in one audio driver. I don't think it has a sense to separate all kind o=
-f
->> streams into different specs.
->=20
-> All the Linux based systems split the data paths, and at the
-> hardware level unless you're using a message based system (which
-> is basically just software anyway) you need a different interface
-> as you can't push data through the system at a constant rate
-> which is a central assumption for PCM audio.
+From: Alexander Duyck <alexander.h.duyck@linux.intel.com>
 
-Are we going to design separated specs for different audio features? It see=
-ms
-a little bit of overkill.
+We need to make certain to advertise support for page poison tracking if
+we want to actually get data on if the guest will be poisoning pages. So
+if free page hinting is active we should add page poisoning support and
+let the guest disable it if it isn't using it.
 
+Page poisoning will result in a page being dirtied on free. As such we
+cannot really avoid having to copy the page at least one more time since
+we will need to write the poison value to the destination. As such we can
+just ignore free page hinting if page poisoning is enabled as it will
+actually reduce the work we have to do.
 
---=20
-Anton Yakovlev
-Senior Software Engineer
+Signed-off-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
+---
+ hw/virtio/virtio-balloon.c         |   25 +++++++++++++++++++++----
+ include/hw/virtio/virtio-balloon.h |    1 +
+ 2 files changed, 22 insertions(+), 4 deletions(-)
 
-OpenSynergy GmbH
-Rotherstr. 20, 10245 Berlin
-
-Phone: +49 30 60 98 54 0
-E-Mail: anton.yakovlev@opensynergy.com
+diff --git a/hw/virtio/virtio-balloon.c b/hw/virtio/virtio-balloon.c
+index 40b04f518028..6ecfec422309 100644
+--- a/hw/virtio/virtio-balloon.c
++++ b/hw/virtio/virtio-balloon.c
+@@ -531,6 +531,15 @@ static void virtio_balloon_free_page_start(VirtIOBalloon *s)
+         return;
+     }
+ 
++    /*
++     * If page poisoning is enabled then we probably shouldn't bother with
++     * the hinting since the poisoning will dirty the page and invalidate
++     * the work we are doing anyway.
++     */
++    if (virtio_vdev_has_feature(vdev, VIRTIO_BALLOON_F_PAGE_POISON)) {
++        return;
++    }
++
+     if (s->free_page_report_cmd_id == UINT_MAX) {
+         s->free_page_report_cmd_id =
+                        VIRTIO_BALLOON_FREE_PAGE_REPORT_CMD_ID_MIN;
+@@ -618,12 +627,10 @@ static size_t virtio_balloon_config_size(VirtIOBalloon *s)
+     if (s->qemu_4_0_config_size) {
+         return sizeof(struct virtio_balloon_config);
+     }
+-    if (virtio_has_feature(features, VIRTIO_BALLOON_F_PAGE_POISON)) {
++    if (virtio_has_feature(features, VIRTIO_BALLOON_F_PAGE_POISON) ||
++        virtio_has_feature(features, VIRTIO_BALLOON_F_FREE_PAGE_HINT)) {
+         return sizeof(struct virtio_balloon_config);
+     }
+-    if (virtio_has_feature(features, VIRTIO_BALLOON_F_FREE_PAGE_HINT)) {
+-        return offsetof(struct virtio_balloon_config, poison_val);
+-    }
+     return offsetof(struct virtio_balloon_config, free_page_report_cmd_id);
+ }
+ 
+@@ -634,6 +641,7 @@ static void virtio_balloon_get_config(VirtIODevice *vdev, uint8_t *config_data)
+ 
+     config.num_pages = cpu_to_le32(dev->num_pages);
+     config.actual = cpu_to_le32(dev->actual);
++    config.poison_val = cpu_to_le32(dev->poison_val);
+ 
+     if (dev->free_page_report_status == FREE_PAGE_REPORT_S_REQUESTED) {
+         config.free_page_report_cmd_id =
+@@ -697,6 +705,8 @@ static void virtio_balloon_set_config(VirtIODevice *vdev,
+         qapi_event_send_balloon_change(vm_ram_size -
+                         ((ram_addr_t) dev->actual << VIRTIO_BALLOON_PFN_SHIFT));
+     }
++    dev->poison_val = virtio_vdev_has_feature(vdev, VIRTIO_BALLOON_F_PAGE_POISON) ? 
++                      le32_to_cpu(config.poison_val) : 0;
+     trace_virtio_balloon_set_config(dev->actual, oldactual);
+ }
+ 
+@@ -706,6 +716,9 @@ static uint64_t virtio_balloon_get_features(VirtIODevice *vdev, uint64_t f,
+     VirtIOBalloon *dev = VIRTIO_BALLOON(vdev);
+     f |= dev->host_features;
+     virtio_add_feature(&f, VIRTIO_BALLOON_F_STATS_VQ);
++    if (virtio_has_feature(f, VIRTIO_BALLOON_F_FREE_PAGE_HINT)) {
++        virtio_add_feature(&f, VIRTIO_BALLOON_F_PAGE_POISON);
++    }
+ 
+     return f;
+ }
+@@ -847,6 +860,8 @@ static void virtio_balloon_device_reset(VirtIODevice *vdev)
+         g_free(s->stats_vq_elem);
+         s->stats_vq_elem = NULL;
+     }
++
++    s->poison_val = 0;
+ }
+ 
+ static void virtio_balloon_set_status(VirtIODevice *vdev, uint8_t status)
+@@ -909,6 +924,8 @@ static Property virtio_balloon_properties[] = {
+                     VIRTIO_BALLOON_F_DEFLATE_ON_OOM, false),
+     DEFINE_PROP_BIT("free-page-hint", VirtIOBalloon, host_features,
+                     VIRTIO_BALLOON_F_FREE_PAGE_HINT, false),
++    DEFINE_PROP_BIT("x-page-poison", VirtIOBalloon, host_features,
++                    VIRTIO_BALLOON_F_PAGE_POISON, false),
+     /* QEMU 4.0 accidentally changed the config size even when free-page-hint
+      * is disabled, resulting in QEMU 3.1 migration incompatibility.  This
+      * property retains this quirk for QEMU 4.1 machine types.
+diff --git a/include/hw/virtio/virtio-balloon.h b/include/hw/virtio/virtio-balloon.h
+index d1c968d2376e..7fe78e5c14d7 100644
+--- a/include/hw/virtio/virtio-balloon.h
++++ b/include/hw/virtio/virtio-balloon.h
+@@ -70,6 +70,7 @@ typedef struct VirtIOBalloon {
+     uint32_t host_features;
+ 
+     bool qemu_4_0_config_size;
++    uint32_t poison_val;
+ } VirtIOBalloon;
+ 
+ #endif
 
 
 ---------------------------------------------------------------------
