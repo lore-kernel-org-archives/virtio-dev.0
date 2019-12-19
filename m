@@ -1,21 +1,21 @@
-Return-Path: virtio-dev-return-6548-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-6547-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 3B500985F44
-	for <virtio-dev@lists.oasis-open.org>; Thu, 19 Dec 2019 13:12:45 +0000 (UTC)
-Date: Thu, 19 Dec 2019 14:12:34 +0100
+	by lists.oasis-open.org (Postfix) with ESMTP id EBECE985F44
+	for <virtio-dev@lists.oasis-open.org>; Thu, 19 Dec 2019 13:02:06 +0000 (UTC)
+Date: Thu, 19 Dec 2019 14:01:58 +0100
 From: Gerd Hoffmann <kraxel@redhat.com>
-Message-ID: <20191219131234.wm24cazvc7zrnhpn@sirius.home.kraxel.org>
+Message-ID: <20191219130158.7rzdkyemupreudko@sirius.home.kraxel.org>
 References: <20191218130214.170703-1-keiichiw@chromium.org>
+ <CAAFQd5AEJ0sUzqrXJAmFnBn0aU8Ef6FwXYo0LgK0NO_CdWXRVg@mail.gmail.com>
+ <20191219074639.kdkrqxwb6fdb67hu@sirius.home.kraxel.org>
  <3550989.gzE5nMqd4t@os-lin-dmo>
- <CAAFQd5BgkEUwBFWdv2ZH98egjm=u0dBRgtexqkzjES+J1SEmag@mail.gmail.com>
- <3878267.TzG3DlCiay@os-lin-dmo>
 MIME-Version: 1.0
-In-Reply-To: <3878267.TzG3DlCiay@os-lin-dmo>
+In-Reply-To: <3550989.gzE5nMqd4t@os-lin-dmo>
 Subject: Re: [virtio-dev] Re: [PATCH v2 1/1] virtio-video: Add virtio video
  device specification
 Content-Type: text/plain; charset=WINDOWS-1252
@@ -27,30 +27,17 @@ List-ID: <virtio-dev.lists.oasis-open.org>
 
   Hi,
 
-> > However that still doesn't let the driver know which buffers will be
-> > dequeued when. A simple example of this scenario is when the guest is
-> > done displaying a frame and requeues the buffer back to the decoder.
-> > Then the decoder will not choose it for decoding next frames into as
-> > long as the frame in that buffer is still used as a reference frame,
-> > even if one sends the drain request.
-> It might be that I'm getting your point wrong, but do you mean some hardw=
-are=20
-> can mark a buffer as ready to be displayed yet still using the underlying=
-=20
-> memory to decode other frames?
+> > Not clearly defined in the spec:  When is the decoder supposed to send
+> > the response for a queue request?  When it finished decoding (i.e. fram=
+e
+> > is ready for playback), or when it doesn't need the buffer any more for
+> > decoding (i.e. buffer can be re-queued or pages can be released)?
+> In my eyes the both statements mean almost the same and both are valid.
 
-Yes, this is how I understand Tomasz Figa.
-
-> This means, if you occasionally/intentionally=20
-> write to the buffer you mess up the whole decoding pipeline.
-
-And to avoid this the buffer handling aspect must be clarified in the
-specification.  Is the device allowed to continue using the buffer after
-finishing decoding and completing the queue request?  If so, how do we
-hand over buffer ownership back to the driver so it can free the pages?
-drain request?  How do we handle re-using buffers?  Can the driver
-simply re-queue them and expect the device figures by itself whenever it
-can use the buffer or whenever it is still needed as reference frame?
+Well, no.  When the device decoded a P-Frame it can notify the device,
+saying "here is your decoded frame".  But the device might still need
+the buffer with the decoded frame to properly decode the following B/I
+Frames which reference the P-Frame.
 
 cheers,
   Gerd
