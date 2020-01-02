@@ -1,74 +1,44 @@
-Return-Path: virtio-dev-return-6592-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-6579-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id EE64A984389
-	for <virtio-dev@lists.oasis-open.org>; Mon,  6 Jan 2020 02:51:28 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 3D2C1985C94
+	for <virtio-dev@lists.oasis-open.org>; Thu,  2 Jan 2020 06:55:51 +0000 (UTC)
 References: <cover.1577240905.git.zhabin@linux.alibaba.com>
- <a11d4c616158c9fb1ca4575ca0530b2e17b952fa.1577240905.git.zhabin@linux.alibaba.com>
- <85eeab19-1f53-6c45-95a2-44c1cfd39184@redhat.com>
- <28da67db-73ab-f772-fb00-5a471b746fc5@linux.intel.com>
- <683cac51-853d-c8c8-24c6-b01886978ca4@redhat.com>
- <42346d41-b758-967a-30b7-95aa0d383beb@linux.intel.com>
- <0c3d33de-3940-7895-2fe2-81de8714139c@redhat.com>
- <46806720-1D1C-40C3-BEE2-EDB0D4DA39BF@linux.alibaba.com>
- <7e151886-408e-2c1d-3958-77c26b8a4ac0@redhat.com>
- <20200105062023-mutt-send-email-mst@kernel.org>
 From: Jason Wang <jasowang@redhat.com>
-Message-ID: <e8dafb72-0737-01ad-f1c9-28870dbb8c1a@redhat.com>
-Date: Mon, 6 Jan 2020 10:51:11 +0800
+Message-ID: <6143fb9b-ad2e-a771-f7a2-91bd9f1b7873@redhat.com>
+Date: Thu, 2 Jan 2020 14:55:27 +0800
 MIME-Version: 1.0
-In-Reply-To: <20200105062023-mutt-send-email-mst@kernel.org>
+In-Reply-To: <cover.1577240905.git.zhabin@linux.alibaba.com>
 Content-Language: en-US
-Subject: Re: [virtio-dev] Re: [PATCH v1 2/2] virtio-mmio: add features for
- virtio-mmio specification version 3
-Content-Type: text/plain; charset=utf-8; format=flowed
+Subject: [virtio-dev] Re: [PATCH v1 0/2] support virtio mmio specification Version 3
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: quoted-printable
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: "Liu, Jiang" <gerry@linux.alibaba.com>, "Liu, Jing2" <jing2.liu@linux.intel.com>, Zha Bin <zhabin@linux.alibaba.com>, linux-kernel@vger.kernel.org, slp@redhat.com, virtio-dev@lists.oasis-open.org, jing2.liu@intel.com, chao.p.peng@intel.com
+To: Zha Bin <zhabin@linux.alibaba.com>, linux-kernel@vger.kernel.org
+Cc: mst@redhat.com, slp@redhat.com, virtio-dev@lists.oasis-open.org, gerry@linux.alibaba.com, jing2.liu@intel.com, chao.p.peng@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
 
-On 2020/1/5 =E4=B8=8B=E5=8D=887:25, Michael S. Tsirkin wrote:
-> On Fri, Jan 03, 2020 at 05:12:38PM +0800, Jason Wang wrote:
->> On 2020/1/3 =E4=B8=8B=E5=8D=882:14, Liu, Jiang wrote:
->>>> Ok, I get you now.
->>>>
->>>> But still, having fixed number of MSIs is less flexible. E.g:
->>>>
->>>> - for x86, processor can only deal with about 250 interrupt vectors.
->>>> - driver may choose to share MSI vectors [1] (which is not merged but =
-we will for sure need it)
->>> Thanks for the info:)
->>> X86 systems roughly have NCPU * 200 vectors available for device interr=
-upts.
->>> The proposed patch tries to map multiple event sources to an interrupt =
-vector, to avoid running out of x86 CPU vectors.
->>> Many virtio mmio devices may have several or tens of event sources, and=
- it=E2=80=99s rare to have hundreds of event sources.
->>> So could we treat the dynamic mapping between event sources and interru=
-pt vectors as an advanced optional feature?
->>>
->> Maybe, but I still prefer to implement it if it is not too complex. Let'=
-s
->> see Michael's opinion on this.
->>
->> Thanks
-> I think a way for the device to limit # of vectors in use by driver is
-> useful. But sharing of vectors doesn't really need any special
-> registers, just program the same vector for multiple Qs/interrupts.
+On 2019/12/25 =E4=B8=8A=E5=8D=8810:50, Zha Bin wrote:
+> With the virtio spec proposal[1], other VMMs (e.g. Qemu) can also make us=
+e
+> of the new features to get a enhancing performance.
+>
+> [1]https://lkml.org/lkml/2019/12/20/113
+>
+> Liu Jiang (2):
+>    x86/msi: Enhance x86 to support platform_msi
+>    virtio-mmio: add features for virtio-mmio specification version 3
 
 
-Right, but sine the #vectors is limited, we still need dynamic mapping=20
-like what is done in PCI.
+Btw, for next version I suggest to copy both kvm-devel list and=20
+qemu-devel list.
 
 Thanks
 
-
->
 
 
 ---------------------------------------------------------------------
