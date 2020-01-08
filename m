@@ -1,58 +1,65 @@
-Return-Path: virtio-dev-return-6635-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-6610-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 1934C985E3F
-	for <virtio-dev@lists.oasis-open.org>; Thu,  9 Jan 2020 14:01:26 +0000 (UTC)
-Date: Thu, 9 Jan 2020 15:01:17 +0100
-From: Gerd Hoffmann <kraxel@redhat.com>
-Message-ID: <20200109140117.cr7mpsldq7x3p2rd@sirius.home.kraxel.org>
-References: <20200107125049.99728-1-Anton.Yakovlev@opensynergy.com>
- <20200108103447.geh6qb4hay6konft@sirius.home.kraxel.org>
- <c103cd0b-07c9-bff7-83e0-f2897e28c613@opensynergy.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id B47D6985DFC
+	for <virtio-dev@lists.oasis-open.org>; Wed,  8 Jan 2020 09:02:09 +0000 (UTC)
 MIME-Version: 1.0
-In-Reply-To: <c103cd0b-07c9-bff7-83e0-f2897e28c613@opensynergy.com>
-Subject: [virtio-dev] Re: [PATCH v4] virtio-snd: add virtio sound device specification
-Content-Type: text/plain; charset=us-ascii
+From: David Stevens <stevensd@chromium.org>
+Date: Wed, 8 Jan 2020 18:01:58 +0900
+Message-ID: <CAD=HUj6FA3VoTJqNa+gmAgVOv9zS7Qk9pdg46EY9NvtJOdz5_A@mail.gmail.com>
+Subject: [virtio-dev][RFC PATCH v1 1/2] content: define what exporting a
+ resource is
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-To: Anton Yakovlev <anton.yakovlev@opensynergy.com>
-Cc: virtio-dev@lists.oasis-open.org, liam.r.girdwood@linux.intel.com, tiwai@suse.de, broonie@kernel.org, maz@kernel.org, james.morse@arm.com, julien.thierry.kdev@gmail.com, suzuki.poulose@arm.com, cdupontd@redhat.com, jean-philippe@linaro.org
+To: virtio-dev@lists.oasis-open.org, Gerd Hoffmann <kraxel@redhat.com>, Dylan Reid <dgreid@chromium.org>, Tomasz Figa <tfiga@chromium.org>, Zach Reizner <zachr@chromium.org>, Keiichi Watanabe <keiichiw@chromium.org>, Alexandre Courbot <acourbot@chromium.org>, Alex Lau <alexlau@chromium.org>, =?UTF-8?Q?St=C3=A9phane_Marchesin?= <marcheu@chromium.org>, Pawel Osciak <posciak@chromium.org>, Gurchetan Singh <gurchetansingh@chromium.org>, Stefan Hajnoczi <stefanha@gmail.com>, qemu-devel <qemu-devel@nongnu.org>, Linux Media Mailing List <linux-media@vger.kernel.org>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-  Hi,
+Define a mechanism for sharing resources between different virtio
+devices.
 
-> > Repeating "device-readable" or "device-writable" for each struct field
-> > looks a bit odd because this applies to the whole struct.  Not so much
-> > for these structs with a single field only, but there are structs with
-> > more fields further down the spec ...
->=20
-> Well, I'm not sure here. Previously, I was told to mark explicitly every
-> field.
+Signed-off-by: David Stevens <stevensd@chromium.org>
+---
+ content.tex | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
 
-Was that for virtqueue structs, or for config space?
+diff --git a/content.tex b/content.tex
+index b1ea9b9..73bd28e 100644
+--- a/content.tex
++++ b/content.tex
+@@ -373,6 +373,24 @@ \section{Driver Notifications}
+\label{sec:Virtqueues / Driver notifications}
 
-For config space which allows random access it surely makes sense.  In
-contrast the virtqueue has in and out buffers, so you requests structs
-are placed in "out" buffers and are device-readable. whereas response
-structs are placed in "in" buffers and are device-writable.
+ \input{shared-mem.tex}
 
-> Also, regarding requirement for populating tx/rx queues with period size
-> buffers. Maybe it's better to replace MUST with SHOULD? It would give mor=
-e
-> flexibility for the driver. What do you think?
++\section{Exporting Resources}\label{sec:Basic Facilities of a Virtio
+Device / Exporting Resources}
++
++When a resource created by one virtio device needs to be
++shared with a seperate virtio device, the first device can
++export the resource by generating a \field{uuid} which the
++guest can pass to the second device to identify the resource.
++
++What constitutes a resource, how to export resources, and
++how to import resources are defined by the individual device
++types. The generation method of a \field{uuid} is dependent
++upon the implementation of the exporting device.
++
++Whether a particular exported resource can be imported into
++a device is dependent upon the implementations of the exporting
++and importing devices. Generally speaking, the guest should
++have some knowledge of the host configuration before trying to
++use exported resources.
++
+ \chapter{General Initialization And Device
+Operation}\label{sec:General Initialization And Device Operation}
 
-I think relaxing this to SHOULD is fine.  I can't think of any bad side
-effects of that.   The driver obviously can't use the buffer completion
-as period notification then.  But that is the driver's choice and it
-wouldn't break the virtio protocol ...
-
-cheers,
-  Gerd
-
+ We start with an overview of device initialization, then expand on the
+--=20
+2.24.1.735.g03f4e72817-goog
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
