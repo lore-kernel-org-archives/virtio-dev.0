@@ -1,29 +1,27 @@
-Return-Path: virtio-dev-return-6658-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-6660-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id F016B985F67
-	for <virtio-dev@lists.oasis-open.org>; Wed, 15 Jan 2020 07:49:14 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 2AAC6985F6B
+	for <virtio-dev@lists.oasis-open.org>; Wed, 15 Jan 2020 11:12:55 +0000 (UTC)
 MIME-Version: 1.0
 References: <20191218130214.170703-1-keiichiw@chromium.org>
  <CAAFQd5DcYWymWyzdiyfy18HkUBsEhALYG+DLwjXGCpRGDaJqyQ@mail.gmail.com>
  <CAD90VcbG6kR1Nw6DTr2RjwFrDja2B=Ohje_2MMeKBwpXGZ_MyA@mail.gmail.com> <2337316.Sgy9Pd6rRy@os-lin-dmo>
 In-Reply-To: <2337316.Sgy9Pd6rRy@os-lin-dmo>
-From: Keiichi Watanabe <keiichiw@chromium.org>
-Date: Wed, 15 Jan 2020 16:49:00 +0900
-Message-ID: <CAD90Vca35=J1e=eqNxQ4jNhSrsgW8Y=_oXi_euc1mOjPNrmhaA@mail.gmail.com>
+From: Tomasz Figa <tfiga@chromium.org>
+Date: Wed, 15 Jan 2020 20:12:35 +0900
+Message-ID: <CAAFQd5CDQXfwRrdxH4afnz8WdUxczE9vDTXU+2gLjsjPFS7v3A@mail.gmail.com>
 Subject: Re: [virtio-dev] Re: [PATCH v2 1/1] virtio-video: Add virtio video
  device specification
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 To: Dmitry Sepp <dmitry.sepp@opensynergy.com>
-Cc: Tomasz Figa <tfiga@chromium.org>, Gerd Hoffmann <kraxel@redhat.com>, virtio-dev@lists.oasis-open.org, Linux Media Mailing List <linux-media@vger.kernel.org>, Alexandre Courbot <acourbot@chromium.org>, Alex Lau <alexlau@chromium.org>, Daniel Vetter <daniel@ffwll.ch>, Dylan Reid <dgreid@chromium.org>, Enrico Granata <egranata@google.com>, Frediano Ziglio <fziglio@redhat.com>, Hans Verkuil <hverkuil@xs4all.nl>, =?UTF-8?Q?St=C3=A9phane_Marchesin?= <marcheu@chromium.org>, Pawel Osciak <posciak@chromium.org>, spice-devel@lists.freedesktop.org, David Stevens <stevensd@chromium.org>, uril@redhat.com
+Cc: Keiichi Watanabe <keiichiw@chromium.org>, Gerd Hoffmann <kraxel@redhat.com>, virtio-dev@lists.oasis-open.org, Linux Media Mailing List <linux-media@vger.kernel.org>, Alexandre Courbot <acourbot@chromium.org>, Alex Lau <alexlau@chromium.org>, Daniel Vetter <daniel@ffwll.ch>, Dylan Reid <dgreid@chromium.org>, Enrico Granata <egranata@google.com>, Frediano Ziglio <fziglio@redhat.com>, Hans Verkuil <hverkuil@xs4all.nl>, =?UTF-8?Q?St=C3=A9phane_Marchesin?= <marcheu@chromium.org>, Pawel Osciak <posciak@chromium.org>, spice-devel@lists.freedesktop.org, David Stevens <stevensd@chromium.org>, uril@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
-
-Hi,
 
 On Tue, Jan 14, 2020 at 7:35 PM Dmitry Sepp <dmitry.sepp@opensynergy.com> w=
 rote:
@@ -136,51 +134,18 @@ s
 > So:
 > stop_streaming() =3D VIRTIO_VIDEO_CMD_QUEUE_CLEAR
 > REQBUFS(0) =3D RESOURCE_DESTROY
-
-Thank you for the explanation.
-
-It seems that the problem here is:
-"Should we _guarantee_ that the device won't read buffers after
-VIRTIO_VIDEO_CMD_QUEUE_CLEAR is called in the spec?"
-
-If we want to guarantee it and choose the way you suggested, the state
-machine and the table I posted were not enough to explain who can
-read/write which buffers.
-I suspect we would need to define states of streams like "on" and
-"off" in the spec.
-Then, VIRTIO_VIDEO_CMD_QUEUE_CLEAR will
-(1) force every pending command to being backed, and
-(2) change the stream state to "off".
-As a result, the table will become like this:
-
- state                | Guest   |    Host
--------------------------------------------
-created               | Read    | -
-queued                | -       | Read/Write
-dequeued (stream: on) | Read    | Read
-dequeued (stream: off)| Read    | -
-
-However, I doubt we really want to guarantee it going so far as
-introducing such more complexity.
-If we don't need to guarantee it, "on" and "off" of streams are simply
-the V4L2 driver's internal state and the spec won't care about it.
-
-Moreover, even if we realize we actually want to guarantee it and
-define "stream on" and "stream off" in the spec, we can define a
-separate command that only changes the stream state.
-In other words, the command only does (2) above.
-
-So, I'd suggest:
-* we don't guarantee that the device won't read buffers after
-VIRTIO_VIDEO_CMD_QUEUE_CLEAR is called in the spec.
-* If we realize that it's worth having a way to prevent buffers from
-being read by the device in the future, we will define a concept of
-"stream_on/off" in the spec and add a new command to change the stream
-state.
-
-Does it make sense?
-
 >
+
+I'm afraid this may not be enough. "drivers usually get all buffers
+back on stop_streaming" is more like executing DQBUF implicitly on all
+queued buffers. Unfortunately it doesn't necessarily mean releasing
+the buffers. AFAICT currently the only way to guarantee that the
+stateful V4L2 decoder on the host wouldn't use the buffers anymore is
+to call REQBUFS(CAPTURE, 0).
+
+Best regards,
+Tomasz
+
 > >
 > > In my understanding, the life cycle of video buffers is defined as
 > > this state machine.
@@ -258,16 +223,6 @@ once
 > for one particular queue though. We can rename it to something more
 > meaningful.
 >
-
-Having REQBUFS(0) =3D RESOURCE_DESTROY makes sense.
-So far, every CMD_RESOURCE_* commands only affect one specified
-resource. To follow this naming convention, how about renaming it to
-something like "CMD_STREAM_RESOUCES_DESTROY"?
-Any other ideas are welcome.
-
-Best regards,
-Keiichi
-
 > Best regards,
 > Dmitry.
 >
