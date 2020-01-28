@@ -1,215 +1,137 @@
-Return-Path: virtio-dev-return-6687-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-6688-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 87DA4985FCD
-	for <virtio-dev@lists.oasis-open.org>; Wed, 22 Jan 2020 16:56:46 +0000 (UTC)
-Date: Wed, 22 Jan 2020 16:56:37 +0000
-From: Stefan Hajnoczi <stefanha@redhat.com>
-Message-ID: <20200122165637.GD677983@stefanha-x1.localdomain>
-References: <1576855504-34947-1-git-send-email-jing2.liu@linux.intel.com>
- <20200106161836.GB350142@stefanha-x1.localdomain>
- <f691fb60-8f59-e827-6a5f-569db29e0a39@linux.intel.com>
- <20200110095217.GB573283@stefanha-x1.localdomain>
- <801cf09a-759f-b6bf-e71b-02dbf0f1d513@linux.intel.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id C3508985F50
+	for <virtio-dev@lists.oasis-open.org>; Tue, 28 Jan 2020 17:42:34 +0000 (UTC)
+From: "Walker, Benjamin" <benjamin.walker@intel.com>
+Date: Tue, 28 Jan 2020 17:26:07 +0000
+Message-ID: <4f02aee295fd809c9e6deed1f353f619c469651a.camel@intel.com>
+Content-Language: en-US
+Content-ID: <D9F414B64E61254689DA567623593223@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <801cf09a-759f-b6bf-e71b-02dbf0f1d513@linux.intel.com>
-Subject: Re: [virtio-dev][PATCH v1 1/2] virtio-mmio: Add MSI and different
- notification address support
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="mSxgbZZZvrAyzONB"
-Content-Disposition: inline
-To: "Liu, Jing2" <jing2.liu@linux.intel.com>
-Cc: virtio-dev@lists.oasis-open.org, slp@redhat.com, linux-kernel@vger.kernel.org, Chao Peng <chao.p.peng@linux.intel.com>, Zha Bin <zhabin@linux.alibaba.com>, Liu Jiang <gerry@linux.alibaba.com>
+Subject: [virtio-dev] virtio packed ring concerns
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
+To: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
---mSxgbZZZvrAyzONB
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Mon, Jan 13, 2020 at 07:54:06PM +0800, Liu, Jing2 wrote:
-> > > > >        \end{note}
-> > > > >      }
-> > > > >      \hline
-> > > > > @@ -1671,25 +1671,23 @@ \subsection{MMIO Device Register Layout}\=
-label{sec:Virtio Transport Options / Vi
-> > > > >        accesses apply to the queue selected by writing to \field{=
-QueueSel}.
-> > > > >      }
-> > > > >      \hline
-> > > > > -  \mmioreg{QueueNotify}{Queue notifier}{0x050}{W}{%
-> > > > > -    Writing a value to this register notifies the device that
-> > > > > -    there are new buffers to process in a queue.
-> > > > > +  \mmioreg{QueueNotify}{Queue notifier}{0x050}{RW}{%
-> > > > > +    Reading from the register returns the virtqueue notification=
- configuration.
-> > > > > -    When VIRTIO_F_NOTIFICATION_DATA has not been negotiated,
-> > > > > -    the value written is the queue index.
-> > > > > +    See \ref{sec:Virtio Transport Options / Virtio Over MMIO / M=
-MIO-specific Initialization And Device Operation / Notification Address}
-> > > > > +    for the configuration format.
-> > > > > -    When VIRTIO_F_NOTIFICATION_DATA has been negotiated,
-> > > > > -    the \field{Notification data} value has the following format=
-:
-> > > > > +    Writing when the notification address calculated by the noti=
-fication configuration
-> > > > > +    is just located at this register.
-> > > > I don't understand this sentence.  What happens when the driver wri=
-tes
-> > > > to this register?
-> > > We're trying to define the notification mechanism that, driver MUST r=
-ead
-> > > 0x50 to get the notification configuration
-> > >=20
-> > > and calculate the notify address. The writing case here is that, the =
-notify
-> > > address is just located here e.g. notify_base=3D0x50, notify_mul=3D0.
-> > I still don't understand what this means.  It's just an English issue
-> > and it will become clear if you can rephrase what you're saying.
->=20
-> Sure, let me try to explain it. :)
->=20
-> The different notification locations are calculated via the structure
-> returned by reading this register.
->=20
-> le32 {
-> =C2=A0=C2=A0=C2=A0 notify_base : 16;
-> =C2=A0=C2=A0=C2=A0 notify_multiplier : 16;
-> };
->=20
-> location=3Dnotify_base + queue_index * notify_multiplier
->=20
-> The location might be the same when mul=3D0, and furthermore, it might be
-> equal to 0x50 (notify_base=3D0x50, notify_mul=3D0) so we make this regist=
-er W
-> too.
->=20
-> So we said, the register is RW and W is only for such scenario.
->=20
-> Feel free to tell me if it's still confusing.
-
-I understand now:
-
-  Devices that only require a single notify address may set
-  notify_base=3D0x50 and notify_multiplier=3D0 to use the Queue Notifier
-  register itself for notifications.  In this case the driver writes to
-  Queue Notifier to notify the device that there are new buffers in a
-  virtqueue.
-
-Perhaps you could include this in the text.
-
-> > > > > -    \lstinputlisting{notifications-le.c}
-> > > > > -
-> > > > > -    See \ref{sec:Virtqueues / Driver notifications}~\nameref{sec=
-:Virtqueues / Driver notifications}
-> > > > > -    for the definition of the components.
-> > > > > +    See \ref{sec:Virtio Transport Options / Virtio Over MMIO / M=
-MIO-specific Initialization And Device Operation / Available Buffer Notific=
-ations}
-> > > > > +    to see the notification data format.
-> > > > >      }
-> > > > >      \hline
-> > > > >      \mmioreg{InterruptStatus}{Interrupt status}{0x60}{R}{%
-> > > > >        Reading from this register returns a bit mask of events th=
-at
-> > > > > -    caused the device interrupt to be asserted.
-> > > > > +    caused the device interrupt to be asserted. This is only use=
-d
-> > > > > +    when MSI is not enabled.
-> > > > >        The following events are possible:
-> > > > >        \begin{description}
-> > > > >          \item[Used Buffer Notification] - bit 0 - the interrupt =
-was asserted
-> > > > > @@ -1703,7 +1701,7 @@ \subsection{MMIO Device Register Layout}\la=
-bel{sec:Virtio Transport Options / Vi
-> > > > >      \mmioreg{InterruptACK}{Interrupt acknowledge}{0x064}{W}{%
-> > > > >        Writing a value with bits set as defined in \field{Interru=
-ptStatus}
-> > > > >        to this register notifies the device that events causing
-> > > > > -    the interrupt have been handled.
-> > > > > +    the interrupt have been handled. This is only used when MSI =
-is not enabled.
-> > > > >      }
-> > > > >      \hline
-> > > > >      \mmioreg{Status}{Device status}{0x070}{RW}{%
-> > > > > @@ -1762,6 +1760,31 @@ \subsection{MMIO Device Register Layout}\l=
-abel{sec:Virtio Transport Options / Vi
-> > > > >        \field{SHMSel} is unused) results in a base address of
-> > > > >        0xffffffffffffffff.
-> > > > >      }
-> > > > > +  \hline
-> > > > > +  \mmioreg{MsiStatus}{MSI status}{0x0c0}{R}{%
-> > > > > +    Reading from this register returns the global MSI enable/dis=
-able status and maximum
-> > > > > +    number of virtqueues that device supports.
-> > > > > +    \lstinputlisting{msi-status.c}
-> > > > > +  }
-> > > > Why is it necessary to combine the number of virtqueues and global
-> > > > MSI enable/disable into a single 16-bit field?
-> > > Originally, we want this 16-bit Read-Only, so we put some RO things t=
-ogether
-> > > and separate
-> > >=20
-> > > enable setting command to next register.
-> > >=20
-> > > > virtio-mmio uses 32-bit registers.  It doesn't try hard to save reg=
-ister
-> > > > space so it's strange to do it here (11-bit number of virtqueue fie=
-ld
-> > > > but 32-bit QueueSel field).
-> > > In order to improve performance/save register space,=C2=A0 we combine=
- some data
-> > > together.
-> > >=20
-> > > For example, combine MSI cmd operator (e.g. enable/disable, vector se=
-tup)
-> > > with argument (e.g. 1/0,=C2=A0 queue index).
-> > >=20
-> > > But it seems we miss the consistency with QueueSel.=C2=A0 So do you t=
-hink if the
-> > > max queue number should be 32-bit,
-> > >=20
-> > > which means it must be the same with QueueSel? If so, I guess we need=
- some
-> > > re-organization. :)
-> > I suggest following the 32-bit register size convention unless there is
-> > a specific reason why using other register sizes is absolutely necessar=
-y.
->=20
-> Yes, let's keep consistency with QueueSel and re-organize other registers=
-.
->=20
-> I feel concern why Available Bu=EF=AC=80er Notifcations (section describi=
-ng
-> VIRTIO_F_NOTIFICATION_DATA) makes vq index as 16bit?
-
-As you mentioned, the valid range of virtqueue numbers is only 16 bits
-due to non-MMIO parts of the specification using 16 bits.
-
-However, I think it makes sense to stick to the MMIO transport 32-bit
-register size convention for consistency.  Devices just won't support
-values above 0xffff.
-
-Stefan
-
---mSxgbZZZvrAyzONB
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAl4ofsUACgkQnKSrs4Gr
-c8jpJQgAkwY6jBtWqkvTC96YuKEAkir+ohEBSvoQ/i4KaAe6BdMqk8pIHdbtZh5u
-3tZ8wbtOD9/g7jNBICwGGG75k8LozgRCHsvmyOS+e2jkQXF0z7nQqabCv7iXL7OJ
-3w1c8+GMBI5JExEUhgG9fKYdYZjeScOPqZEkPsz/Kh1MkEHKSXjT+IW/M0mn/nfi
-8+Nn+i1omJJSpaUhs5a3PIThsuiy9d8WoUGC7H2kY6rSStABaKmIAsXeGQOl4KHu
-V8qgb9AlwcMSn+s4g//7HpoIG4UynJG7oPGbFVdhq3UB+F7xDMCLaUci/vz0nvt/
-8SKdn0farlHbqXvutpDjHEfQEdvX9g==
-=vT+Z
------END PGP SIGNATURE-----
-
---mSxgbZZZvrAyzONB--
+SGkgYWxsIC0gSSdtIGEgY29yZSBtYWludGFpbmVyIGZvciB0aGUgU1BESyBwcm9qZWN0LCB3aGlj
+aCBpbmNsdWRlcyBhIHZob3N0LXVzZXIgDQp0YXJnZXQgaW1wbGVtZW50YXRpb24gdGhhdCBoYW5k
+bGVzIGJvdGggdmlydGlvLWJsayBhbmQgdmlydGlvLXNjc2kuIFJlY2VudGx5IHdlDQpoYWQgc29t
+ZSBlbmdpbmVlcnMgZ28gb2ZmIGFuZCBhdHRlbXB0IHRvIGFkZCBzdXBwb3J0IGZvciBwYWNrZWQg
+dmlydHF1ZXVlcywgYXMNCmRlZmluZWQgaGVyZTogDQpodHRwczovL2dpdGh1Yi5jb20vb2FzaXMt
+dGNzL3ZpcnRpby1zcGVjL2Jsb2IvbWFzdGVyL3BhY2tlZC1yaW5nLnRleA0KDQpXaGlsZSByZXZp
+ZXdpbmcgdGhlIHBhdGNoZXMgdGhleSBzdWJtaXR0ZWQgSSBub3RpY2VkIHR3byBzZXBhcmF0ZSBp
+c3N1ZXMuIFRoZQ0KZmlyc3QgaXNzdWUgaXMgdGhhdCB0aGUgcmluZyBjYW5ub3QgZnVuY3Rpb24g
+Y29ycmVjdGx5IHVuZGVyIGNlcnRhaW4NCmNpcmN1bXN0YW5jZXMgYnkgc3BlYy4gVGhlIHNlY29u
+ZCBpc3N1ZSBpcyBhIHBlcmZvcm1hbmNlIGlzc3VlLiBJJ20gZ29pbmcgdG8gdHJ5DQp0byBrZWVw
+IGJvdGggb2YgdGhlc2UgZW50aXJlbHkgc2VwYXJhdGUuDQoNCkNvbW1lbnRzIGFyZSB2ZXJ5IHdl
+bGNvbWUgaGVyZSwgYW5kIEknbSBob3BpbmcgSSdtIGp1c3QgbWlzc2luZyBzb21lIGNyaXRpY2Fs
+DQpwaWVjZSBvZiBpbmZvcm1hdGlvbiB0aGF0IHJlc29sdmVzIHRoZSB3aG9sZSB0aGluZywgYnV0
+IHRlc3RpbmcgaXMgc28gZmFyDQpzaG93aW5nIHRoYXQgSSdtIGZpbmRpbmcgYSByZWFsIHByb2Js
+ZW0uDQoNCkZpcnN0LCB0aGUgZnVuY3Rpb25hbCBpc3N1ZS4gVGhlIHByb2JsZW0gc2NlbmFyaW8g
+aW52b2x2ZXMgb3V0IG9mIG9yZGVyDQpjb21wbGV0aW9ucyBkdXJpbmcgcmluZyB3cmFwIGFyb3Vu
+ZC4gSGVyZSBhcmUgdGhlIG1vc3QgcmVsZXZhbnQgc2VjdGlvbnMgb2YgdGhlDQpzcGVjaWZpY2F0
+aW9uOg0KDQp+fn4NCk5vdGU6IGFmdGVyIHJlYWRpbmcgZHJpdmVyIGRlc2NyaXB0b3JzIGFuZCBz
+dGFydGluZyB0aGVpciBwcm9jZXNzaW5nIGluIG9yZGVyLA0KdGhlIGRldmljZSBtaWdodCBjb21w
+bGV0ZSB0aGVpciBwcm9jZXNzaW5nIG91dCBvZiBvcmRlci4gIFVzZWQgZGV2aWNlDQpkZXNjcmlw
+dG9ycyBhcmUgd3JpdHRlbiBpbiB0aGUgb3JkZXIgaW4gd2hpY2ggdGhlaXIgcHJvY2Vzc2luZyBp
+cyBjb21wbGV0ZS4NCg0KVGhlIGNvdW50ZXIgbWFpbnRhaW5lZCBieSB0aGUgZHJpdmVyIGlzIGNh
+bGxlZCB0aGUgRHJpdmVyIFJpbmcgV3JhcCBDb3VudGVyLiBUaGUNCmRyaXZlciBjaGFuZ2VzIHRo
+ZSB2YWx1ZSBvZiB0aGlzIGNvdW50ZXIgZWFjaCB0aW1lIGl0IG1ha2VzIGF2YWlsYWJsZSB0aGUg
+bGFzdA0KZGVzY3JpcHRvciBpbiB0aGUgcmluZyAoYWZ0ZXIgbWFraW5nIHRoZSBsYXN0IGRlc2Ny
+aXB0b3IgYXZhaWxhYmxlKS4NCg0KVGhlIGNvdW50ZXIgbWFpbnRhaW5lZCBieSB0aGUgZGV2aWNl
+IGlzIGNhbGxlZCB0aGUgRGV2aWNlIFJpbmcgV3JhcA0KQ291bnRlci4gIFRoZSBkZXZpY2UgY2hh
+bmdlcyB0aGUgdmFsdWUgb2YgdGhpcyBjb3VudGVyDQplYWNoIHRpbWUgaXQgdXNlcyB0aGUgbGFz
+dCBkZXNjcmlwdG9yIGluDQp0aGUgcmluZyAoYWZ0ZXIgbWFya2luZyB0aGUgbGFzdCBkZXNjcmlw
+dG9yIHVzZWQpLg0KDQpUbyBtYXJrIGEgZGVzY3JpcHRvciBhcyBhdmFpbGFibGUsIHRoZSBkcml2
+ZXIgc2V0cyB0aGUgVklSVFFfREVTQ19GX0FWQUlMIGJpdCBpbg0KRmxhZ3MgdG8gbWF0Y2ggdGhl
+IGludGVybmFsIERyaXZlciBSaW5nIFdyYXAgQ291bnRlci4gIEl0IGFsc28gc2V0cyB0aGUNClZJ
+UlRRX0RFU0NfRl9VU0VEIGJpdCB0byBtYXRjaCB0aGUgaW52ZXJzZSB2YWx1ZSAoaS5lLiB0byBu
+b3QgbWF0Y2ggdGhlIGludGVybmFsDQpEcml2ZXIgUmluZyBXcmFwIENvdW50ZXIpLg0KDQpUbyBt
+YXJrIGEgZGVzY3JpcHRvciBhcyB1c2VkLCB0aGUgZGV2aWNlIHNldHMgdGhlIFZJUlRRX0RFU0Nf
+Rl9VU0VEIGJpdCBpbiBGbGFncw0KdG8gbWF0Y2ggdGhlIGludGVybmFsIERldmljZSBSaW5nIFdy
+YXAgQ291bnRlci4gIEl0IGFsc28gc2V0cyB0aGUNClZJUlRRX0RFU0NfRl9BVkFJTCBiaXQgdG8g
+bWF0Y2ggdGhlIFxlbXBoe3NhbWV9IHZhbHVlLg0Kfn5+DQoNCkltYWdpbmUgYSBwYWNrZWQgcmlu
+ZyB3aXRoIDQgZGVzY3JpcHRvcnMuIEF0IHNvbWUgZWFybGllciB0aW1lIGxldCdzIHNheSB0aGUN
+CmZpcnN0IDMgZGVzY3JpcHRvcnMgd2VyZSBzdWJtaXR0ZWQgYW5kIGNvbXBsZXRlZCwgaW4gb3Jk
+ZXIuIFRoZW4sIHR3byBtb3JlDQpkZXNjcmlwdG9ycyB3ZXJlIHN1Ym1pdHRlZCAoc28gdGhleSB3
+ZW50IGludG8gc2xvdCAzIGFuZCB0aGVuIDApLiBFYWNoIHRpbWUNCnRocm91Z2ggdGhlIHJpbmcs
+IHRoZSAicmluZyB3cmFwIGNvdW50ZXIiIHRvZ2dsZXMgZnJvbSAxIHRvIDAgb3IgdmljZSB2ZXJz
+YS4gVGhlDQphdmFpbCBhbmQgdXNlZCBmbGFncyBhcmUgaW5pdGlhbGl6ZWQgdG8gMSBhdCBzdGFy
+dCB1cCBhbmQgdGhlIHJpbmcgd3JhcCBjb3VudGVyDQppcyAwLg0KDQpTbyB3aGVuIHN1Ym1pdHRp
+bmcgaW50byBzbG90IDMsIHRoZSBkcml2ZXIgZmxpcHMgdGhlIGF2YWlsIGJpdCBmcm9tIDEgdG8g
+MC4gV2hlbg0Kc3VibWl0dGluZyBpbnRvIHNsb3QgMCBhZnRlciB0aGUgcmluZy13cmFwLCBpdCBm
+bGlwcyB0aGUgYXZhaWwgYml0IGZyb20gMCB0byAxLg0KVGhlIHNwZWMgc2F5cyBpdCBhbHNvIHNl
+dHMgdGhlIHVzZWQgZmxhZywgYnV0IHRoZSB1c2VkIGZsYWcgaXMgYWxyZWFkeSB0aGUNCmNvcnJl
+Y3QgdmFsdWUuIFRoYXQncyBhbGwgc29saWQgc28gZmFyLg0KDQpUaGUgZGV2aWNlIGlzIHRoZW4g
+cG9sbGluZyBvbiBzbG90IDMgd2FpdGluZyBmb3IgbmV3IGRlc2NyaXB0b3JzIHRvIGJlDQpzdWJt
+aXR0ZWQuIE5vdGUgaGVyZSB0aGF0IHRoZSBkZXZpY2UgbXVzdCBiZSBtYWludGFpbmluZyBpdHMg
+b3duIGNvcHkgb2Ygd2hhdCBpdA0KdGhpbmtzIGlzIHRoZSBkcml2ZXIncyByaW5nIHdyYXAgY291
+bnRlciB2YWx1ZSB0byBkZXRlY3QgZGVzY3JpcHRvcnMgYmVpbmcgbWFkZQ0KYXZhaWxhYmxlLCB3
+aGljaCBpc24ndCBjYWxsZWQgb3V0IGluIHRoZSBzcGVjaWZpY2F0aW9uIGF0IGFsbCBidXQgYWxs
+IGFjdHVhbA0KaW1wbGVtZW50YXRpb25zIGRvLiBSZWdhcmRsZXNzLCBvbmNlIGl0IHNlZXMgdGhl
+IGF2YWlsIGZsYWcgaW4gdGhlIGRlc2NyaXB0b3IgaW4NCnNsb3QgMyBmbGlwLCBpdCBiZWdpbnMg
+cHJvY2Vzc2luZyB0aGUgZGVzY3JpcHRvci4gSXQgdGhlbiBtb3ZlcyBvbiB0byBwb2xsIHNsb3QN
+CjAgZm9yIGluY29taW5nIGRlc2NyaXB0b3JzIChhbmQgdXBkYXRlcyBpdHMgZXhwZWN0ZWQgYXZh
+aWwgcmluZyB3cmFwIGNvdW50ZXINCnZhbHVlIGludGVybmFsbHkpLiBJbiB0aGlzIGNhc2UsIGl0
+IHNlZXMgdGhlIGJpdCBmbGlwIGZvciBzbG90IDAgYW5kIGJlZ2lucw0KcHJvY2Vzc2luZyB0aGUg
+ZGVzY3JpcHRvci4gRGVzY3JpcHRvciBwcm9jZXNzaW5nIGlzIGFzeW5jaHJvbm91cyBhbmQgbWF5
+DQpjb21wbGV0ZSBvdXQgb2Ygb3JkZXIsIGF0IGxlYXN0IGZvciBzdG9yYWdlIGRldmljZXMuDQoN
+ClNvIGxldCdzIHNheSB0aGF0IHRoZSBkZXNjcmlwdG9ycyBkbywgaW4gZmFjdCwgY29tcGxldGUg
+b3V0IG9mIG9yZGVyLCBzdWNoIHRoYXQNCnRoZSBkZXNjcmlwdG9yIGluIHNsb3QgMCBjb21wbGV0
+ZXMgZmlyc3QgYW5kIHRoZW4gdGhlIGRlc2NyaXB0b3IgaW4gc2xvdCAzDQpjb21wbGV0ZXMgc2Vj
+b25kLiBUaGUgc3BlY2lmaWNhdGlvbiBpcyB2ZXJ5IGNsZWFyIHRoYXQgdGhpcyBpcyBhbGxvd2Vk
+Lg0KDQpXaGVuIGNvbXBsZXRpbmcgdGhlIGRlc2NyaXB0b3IgaW4gc2xvdCAwLCB0aGUgZGV2aWNl
+IGhhcyBub3QgeWV0IGNvbXBsZXRlZCB0aGUNCmxhc3QgZGVzY3JpcHRvciBpbiB0aGUgcmluZyAo
+dGhleSdyZSBvdXQgb2Ygb3JkZXIhKS4gU28gdGhlIHJpbmcgd3JhcCBjb3VudGVyIGlzDQpzdGls
+bCAwLiBTbyBpdCB0aGVuIHByb2NlZWRzIHRvIHdyaXRlIGJvdGggdGhlIGF2YWlsIGZsYWcgYW5k
+IHRoZSB1c2VkIGZsYWcgdG8NCjAuIEJ1dCB0aGUgZHJpdmVyIGlzIGV4cGVjdGluZyB0aGUgdXNl
+ZCBmbGFnIHRvIGdldCBmbGlwcGVkIHRvIDEgdG8gaW5kaWNhdGUgYQ0KY29tcGxldGlvbi4gVGhp
+cyBpcyBicm9rZW4uDQoNCkkgd3JvdGUgYSB1bml0IHRlc3QgZm9yIHRoZSBTUERLIGltcGxlbWVu
+dGF0aW9uIGFuZCBpdCBpcyBpbmRlZWQgYnJva2VuIGluIHRoaXMNCnNjZW5hcmlvLCBjYXVzaW5n
+IHRoZSBkcml2ZXIgdG8gaGFuZy4gSSd2ZSBhbHNvIGF0IGxlYXN0IGxvb2tlZCB0aHJvdWdoIHRo
+ZSBjb2RlDQppbiBEUERLIGFuZCBpbiB0aGUgTGludXgga2VybmVsIGltcGxlbWVudGF0aW9ucyBh
+bmQgdGhleSBhcHBlYXIgYnJva2VuIGluDQp2YXJpb3VzIHdheXMgYXMgd2VsbC4gSXQgYXBwZWFy
+cyB0aGF0IERQREsgbWF5IGRlY2lkZSB0aGUgcmluZyBpcyBjb3JydXB0IGFuZA0KImRyb3AgdGhl
+IHBhY2tldCIgaW4gdGhpcyBzY2VuYXJpbywgd2hpY2ggaXMgZGF0YSBjb3JydXB0aW9uIGZvciBz
+dG9yYWdlLCBidXQgSQ0KaGF2ZW4ndCB5ZXQgcnVuIGEgdGVzdCB0byBjb25maXJtLiBUaGUgTGlu
+dXgga2VybmVsIGltcGxlbWVudGF0aW9uIGxvb2tzIHRvIG1lDQpsaWtlIGl0IHdpbGwgbmV2ZXIg
+Y29uc2lkZXIgdGhlIGRlc2NyaXB0b3IgYXMgY29tcGxldGUgYW5kIGV2ZW50dWFsbHkgaGFuZy4N
+Cg0KVGhlIGRldmljZSBkb2Vzbid0IGFjdHVhbGx5IG5lZWQgdG8gdHJhY2sgYSByaW5nIHdyYXAg
+Y291bnRlciBmb3IgdGhlIHVzZWQgZmxhZw0KYXQgYWxsLiBUaGUgZGV2aWNlIGRvZXMgbmVlZCB0
+byB0cmFjayBhIHJpbmcgd3JhcCBjb3VudGVyIGZvciB0aGUgZXhwZWN0ZWQgdmFsdWUNCm9mIHRo
+ZSBhdmFpbCBiaXQsIHRvIG1pcnJvciB0aGUgZHJpdmVyIHNpZGUgdmFsdWUgd2hpbGUgcG9sbGlu
+ZyBmb3IgaW5jb21pbmcNCmRlc2NyaXB0b3JzLiBCdXQgdG8gbWFyayBkZXNjcmlwdG9ycyBhcyB1
+c2VkLCBpdCBzaW1wbHkgbmVlZHMgdG8gc2V0IHRoZSB1c2VkDQpmbGFnIHRvIHRoZSBjdXJyZW50
+IHZhbHVlIG9mIHRoZSBhdmFpbCBmbGFnIGluIHRoYXQgZGVzY3JpcHRvci4NCg0KLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLQ0KDQpNb3Zpbmcgb24gdG8gbXkgc2VwYXJhdGUgY29uY2VybnMgYWJvdXQg
+cGVyZm9ybWFuY2UuIENyaXRpY2FsbHksIGl0J3MgaW1wb3J0YW50DQp0byBub3RlIHRoYXQgc3Rv
+cmFnZSBkZXZpY2VzIHRoZXNlIGRheXMgYXJlIGluaGVyZW50bHkgcGFyYWxsZWwgcGllY2VzIG9m
+DQpoYXJkd2FyZS4gWW91IGNhbiBzdWJtaXQgYSBsYXJnZSBudW1iZXIgb2YgY29tbWFuZHMgYXQg
+b25jZSBhbmQgdGhlIGRldmljZQ0KYWN0dWFsbHkgZG9lcyBwcm9jZXNzIHNvbWUgbnVtYmVyIG9m
+IHRoZW0gc2ltdWx0YW5lb3VzbHkuIFRoYXQgbWVhbnMgdGhpbmdzDQpjb21wbGV0ZSBvdXQgb2Yg
+b3JkZXIgYWxsIHRoZSB0aW1lLiBGb3IgZXhhbXBsZSwgaW1hZ2luZSBzdWJtaXR0aW5nIHR3byBj
+b21tYW5kcw0KdG8gYSBOQU5EIGZsYXNoIHN0b3JhZ2UgZGV2aWNlIHdoZXJlIG9uZSBpcyBhIDFN
+QiByZWFkIGFuZCB0aGUgc2Vjb25kIG9uZSBpcyBhDQo0ayByZWFkLiBMZXQncyBzYXkgdGhhdCB0
+aGUgZGF0YSB0aGVzZSBhcmUgcmVhZGluZyBhcmUgb24gZW50aXJlbHkgc2VwYXJhdGUgTkFORA0K
+Y2hpcHMgaW50ZXJuYWxseS4gVGhhdCA0ayByZWFkIHdpbGwgY29tcGxldGUgYWhlYWQgb2YgdGhl
+IDFNQiByZWFkLCBhbmQgaXQgd291bGQNCmJlIGF3ZnVsIHRvIGZvcmNlIHRoYXQgc21hbGwgcmVh
+ZCB0byB3YWl0IG9uIHRoZSBsYXJnZXIgb25lLg0KDQpCdXQgd2l0aCB0aGUgcGFja2VkIHJpbmcg
+ZGVzaWduLCB0aGVyZSdzIG9ubHkgb25lIHJpbmcgZm9yIGJvdGggc3VibWlzc2lvbiBhbmQNCmNv
+bXBsZXRpb24sIHNvIGRlc2NyaXB0b3Igc2xvdHMgY2FuIG9ubHkgYmUgcmUtdXNlZCBpbiBvcmRl
+ci4gRXZlbiBpZiB0aGUgZGV2aWNlDQppbXBsZW1lbnRhdGlvbiBpcyBhYmxlIHRvIGNvbXBsZXRl
+IHRoZSA0SyByZWFkIG91dCBvZiBvcmRlciBhaGVhZCBvZiB0aW1lIGFuZA0KbWFyayB0aGUgZGVz
+Y3JpcHRvciBhcyB1c2VkLCBhIGRyaXZlciB0aGF0J3MgcG9sbGluZyBmb3IgY29tcGxldGlvbnMg
+d29uJ3Qgc2VlDQppdCB1bnRpbCB0aGUgZWFybGllciBkZXNjcmlwdG9yIGNvbXBsZXRlcy4gQSBk
+cml2ZXIgdXNpbmcgaW50ZXJydXB0cyBtYXkgYmUgYWJsZQ0KdG8gc2VlIGl0IGlmIHRoZSBpbnRl
+cnJ1cHQgdGVsbHMgaXQgc3BlY2lmaWNhbGx5IHdoaWNoIHNsb3QgdG8gbG9vayBhdCwgYnV0IGl0
+DQpjYW4ndCByZS11c2UgdGhlIGRlc2NyaXB0b3Igc2xvdCBmb3IgYSBuZXcgY29tbWFuZCBiZWNh
+dXNlIHN1Ym1pc3Npb25zIG11c3QgZ28NCmluIG9yZGVyLiBXaGlsZSB0aGUgYnVnIEkgb3V0bGlu
+ZWQgaW4gdGhlIGZpcnN0IHBhcnQgb2YgbXkgZW1haWwgaXMgZml4YWJsZSwNCnRoaXMgZGVzaWdu
+IGlzc3VlIGlzIG5vdC4NCg0KVGhhbmtzLA0KQmVuDQo=
 
