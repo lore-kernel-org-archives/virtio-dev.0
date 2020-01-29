@@ -1,206 +1,158 @@
-Return-Path: virtio-dev-return-6691-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-6695-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id A0D75985F8B
-	for <virtio-dev@lists.oasis-open.org>; Wed, 29 Jan 2020 09:53:35 +0000 (UTC)
-Date: Wed, 29 Jan 2020 04:53:26 -0500
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20200129042738-mutt-send-email-mst@kernel.org>
+	by lists.oasis-open.org (Postfix) with ESMTP id 4153B98606F
+	for <virtio-dev@lists.oasis-open.org>; Wed, 29 Jan 2020 18:58:05 +0000 (UTC)
+From: "Walker, Benjamin" <benjamin.walker@intel.com>
+Date: Wed, 29 Jan 2020 18:57:58 +0000
+Message-ID: <4c114379104860777072f8c16ca41b75265eccd0.camel@intel.com>
 References: <4f02aee295fd809c9e6deed1f353f619c469651a.camel@intel.com>
+	 <20200129042738-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20200129042738-mutt-send-email-mst@kernel.org>
+Content-Language: en-US
+Content-ID: <6A11C9FF195A0242B952DAE27EF46B16@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <4f02aee295fd809c9e6deed1f353f619c469651a.camel@intel.com>
 Subject: Re: [virtio-dev] virtio packed ring concerns
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-To: "Walker, Benjamin" <benjamin.walker@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
+To: "mst@redhat.com" <mst@redhat.com>
 Cc: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-I second Stefan's comments. To add to that, I think the spec
-could be improved to avoid this kind of misunderstanding.
-See comments below:
-
-On Tue, Jan 28, 2020 at 05:26:07PM +0000, Walker, Benjamin wrote:
-> Hi all - I'm a core maintainer for the SPDK project, which includes a vho=
-st-user=20
-> target implementation that handles both virtio-blk and virtio-scsi. Recen=
-tly we
-> had some engineers go off and attempt to add support for packed virtqueue=
-s, as
-> defined here:=20
-> https://github.com/oasis-tcs/virtio-spec/blob/master/packed-ring.tex
->=20
-> While reviewing the patches they submitted I noticed two separate issues.=
- The
-> first issue is that the ring cannot function correctly under certain
-> circumstances by spec. The second issue is a performance issue. I'm going=
- to try
-> to keep both of these entirely separate.
->=20
-> Comments are very welcome here, and I'm hoping I'm just missing some crit=
-ical
-> piece of information that resolves the whole thing, but testing is so far
-> showing that I'm finding a real problem.
->=20
-> First, the functional issue. The problem scenario involves out of order
-> completions during ring wrap around. Here are the most relevant sections =
-of the
-> specification:
->=20
-> ~~~
-> Note: after reading driver descriptors and starting their processing in o=
-rder,
-> the device might complete their processing out of order.  Used device
-> descriptors are written in the order in which their processing is complet=
-e.
->=20
-> The counter maintained by the driver is called the Driver Ring Wrap Count=
-er. The
-> driver changes the value of this counter each time it makes available the=
- last
-> descriptor in the ring (after making the last descriptor available).
->=20
-> The counter maintained by the device is called the Device Ring Wrap
-> Counter.  The device changes the value of this counter
-> each time it uses the last descriptor in
-> the ring (after marking the last descriptor used).
->=20
-> To mark a descriptor as available, the driver sets the VIRTQ_DESC_F_AVAIL=
- bit in
-> Flags to match the internal Driver Ring Wrap Counter.  It also sets the
-> VIRTQ_DESC_F_USED bit to match the inverse value (i.e. to not match the i=
-nternal
-> Driver Ring Wrap Counter).
->=20
-> To mark a descriptor as used, the device sets the VIRTQ_DESC_F_USED bit i=
-n Flags
-> to match the internal Device Ring Wrap Counter.  It also sets the
-> VIRTQ_DESC_F_AVAIL bit to match the \emph{same} value.
-> ~~~
->=20
-> Imagine a packed ring with 4 descriptors. At some earlier time let's say =
-the
-> first 3 descriptors were submitted and completed, in order. Then, two mor=
-e
-> descriptors were submitted (so they went into slot 3 and then 0).
-
-And let's assume they have IDs 3 and 0, respectively.
-
-> Each time
-> through the ring, the "ring wrap counter" toggles from 1 to 0 or vice ver=
-sa. The
-> avail and used flags are initialized to 1 at start up and the ring wrap c=
-ounter
-> is 0.
->=20
-> So when submitting into slot 3, the driver flips the avail bit from 1 to =
-0. When
-> submitting into slot 0 after the ring-wrap, it flips the avail bit from 0=
- to 1.
-> The spec says it also sets the used flag, but the used flag is already th=
-e
-> correct value. That's all solid so far.
->=20
-> The device is then polling on slot 3 waiting for new descriptors to be
-> submitted. Note here that the device must be maintaining its own copy of =
-what it
-> thinks is the driver's ring wrap counter value to detect descriptors bein=
-g made
-> available, which isn't called out in the specification at all but all act=
-ual
-> implementations do. Regardless, once it sees the avail flag in the descri=
-ptor in
-> slot 3 flip, it begins processing the descriptor. It then moves on to pol=
-l slot
-> 0 for incoming descriptors (and updates its expected avail ring wrap coun=
-ter
-> value internally). In this case, it sees the bit flip for slot 0 and begi=
-ns
-> processing the descriptor. Descriptor processing is asynchronous and may
-> complete out of order, at least for storage devices.
->=20
-> So let's say that the descriptors do, in fact, complete out of order, suc=
-h that
-> the descriptor in slot 0 completes first and then the descriptor in slot =
-3
-> completes second. The specification is very clear that this is allowed.
->=20
-> When completing the descriptor in slot 0, the device has not yet complete=
-d the
-> last descriptor in the ring (they're out of order!). So the ring wrap cou=
-nter is
-> still 0. So it then proceeds to write both the avail flag and the used fl=
-ag to
-> 0. But the driver is expecting the used flag to get flipped to 1 to indic=
-ate a
-> completion. This is broken.
-
-Right but the spec says
-=09 Used device
-=09 descriptors are written in the order in which their processing is compl=
-ete.
-
-so what should happen, is this:
-=09 descriptor with ID 0 is written into slot 3.
-=09 descriptor with ID 3 is written into slot 0.
-
-
-The following might be helpful to describe this better:
-
-the spec already says:
-
-=09The Descriptor Ring is used in a circular manner: the driver writes desc=
-riptors into the ring in order. After
-=09reaching the end of the ring, the next descriptor is placed at the head =
-of the ring. Once the ring is full of driver
-=09descriptors, the driver stops sending new requests and waits for the dev=
-ice to start processing descriptors
-=09and to write out some used descriptors before making new driver descript=
-ors available.
-
-and maybe we should add:
-
-=09Similarly, device writes out used descriptors in a circular manner:
-=09starting at the head of the ring, and until it reaches the end of the
-=09ring. After reaching the end of the ring, the next used descriptor is
-=09again placed at the head of the ring.
-
-
-Also spec currently says:
-
-=09The counter maintained by the device is called the Device Ring Wrap Coun=
-ter. The device changes the
-=09value of this counter each time it uses the last descriptor in the ring =
-(after marking the last descriptor used).
-
-in fact this part may be confusing: it is not clear what does "uses the las=
-t descriptor"
-mean - you took it to mean "writes out descriptor with ID from the last
-descriptor", what spec means is "writes out a used descriptor over the
-last descriptor location".  The text also does not properly account for ski=
-pping descriptors.
-
-What it should say is:
-
-=09The counter maintained by the device is called the Device Ring Wrap Coun=
-ter. The device changes the
-=09value of this counter each time it reaches the last descriptor
-=09in the ring when writing used descriptors
-        (after writing out or skipping over the last used descriptor).
-
-Please let me know whether the changes suggested above would clarify
-things for you, or whether you have other suggestions. Thanks!
-
---=20
-MST
-
-
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+T24gV2VkLCAyMDIwLTAxLTI5IGF0IDA0OjUzIC0wNTAwLCBNaWNoYWVsIFMuIFRzaXJraW4gd3Jv
+dGU6DQo+IEkgc2Vjb25kIFN0ZWZhbidzIGNvbW1lbnRzLiBUbyBhZGQgdG8gdGhhdCwgSSB0aGlu
+ayB0aGUgc3BlYw0KPiBjb3VsZCBiZSBpbXByb3ZlZCB0byBhdm9pZCB0aGlzIGtpbmQgb2YgbWlz
+dW5kZXJzdGFuZGluZy4NCj4gU2VlIGNvbW1lbnRzIGJlbG93Og0KPiANCj4gT24gVHVlLCBKYW4g
+MjgsIDIwMjAgYXQgMDU6MjY6MDdQTSArMDAwMCwgV2Fsa2VyLCBCZW5qYW1pbiB3cm90ZToNCj4g
+PiBIaSBhbGwgLSBJJ20gYSBjb3JlIG1haW50YWluZXIgZm9yIHRoZSBTUERLIHByb2plY3QsIHdo
+aWNoIGluY2x1ZGVzIGEgdmhvc3QtDQo+ID4gdXNlciANCj4gPiB0YXJnZXQgaW1wbGVtZW50YXRp
+b24gdGhhdCBoYW5kbGVzIGJvdGggdmlydGlvLWJsayBhbmQgdmlydGlvLXNjc2kuIFJlY2VudGx5
+DQo+ID4gd2UNCj4gPiBoYWQgc29tZSBlbmdpbmVlcnMgZ28gb2ZmIGFuZCBhdHRlbXB0IHRvIGFk
+ZCBzdXBwb3J0IGZvciBwYWNrZWQgdmlydHF1ZXVlcywNCj4gPiBhcw0KPiA+IGRlZmluZWQgaGVy
+ZTogDQo+ID4gaHR0cHM6Ly9naXRodWIuY29tL29hc2lzLXRjcy92aXJ0aW8tc3BlYy9ibG9iL21h
+c3Rlci9wYWNrZWQtcmluZy50ZXgNCj4gPiANCj4gPiBXaGlsZSByZXZpZXdpbmcgdGhlIHBhdGNo
+ZXMgdGhleSBzdWJtaXR0ZWQgSSBub3RpY2VkIHR3byBzZXBhcmF0ZSBpc3N1ZXMuDQo+ID4gVGhl
+DQo+ID4gZmlyc3QgaXNzdWUgaXMgdGhhdCB0aGUgcmluZyBjYW5ub3QgZnVuY3Rpb24gY29ycmVj
+dGx5IHVuZGVyIGNlcnRhaW4NCj4gPiBjaXJjdW1zdGFuY2VzIGJ5IHNwZWMuIFRoZSBzZWNvbmQg
+aXNzdWUgaXMgYSBwZXJmb3JtYW5jZSBpc3N1ZS4gSSdtIGdvaW5nIHRvDQo+ID4gdHJ5DQo+ID4g
+dG8ga2VlcCBib3RoIG9mIHRoZXNlIGVudGlyZWx5IHNlcGFyYXRlLg0KPiA+IA0KPiA+IENvbW1l
+bnRzIGFyZSB2ZXJ5IHdlbGNvbWUgaGVyZSwgYW5kIEknbSBob3BpbmcgSSdtIGp1c3QgbWlzc2lu
+ZyBzb21lDQo+ID4gY3JpdGljYWwNCj4gPiBwaWVjZSBvZiBpbmZvcm1hdGlvbiB0aGF0IHJlc29s
+dmVzIHRoZSB3aG9sZSB0aGluZywgYnV0IHRlc3RpbmcgaXMgc28gZmFyDQo+ID4gc2hvd2luZyB0
+aGF0IEknbSBmaW5kaW5nIGEgcmVhbCBwcm9ibGVtLg0KPiA+IA0KPiA+IEZpcnN0LCB0aGUgZnVu
+Y3Rpb25hbCBpc3N1ZS4gVGhlIHByb2JsZW0gc2NlbmFyaW8gaW52b2x2ZXMgb3V0IG9mIG9yZGVy
+DQo+ID4gY29tcGxldGlvbnMgZHVyaW5nIHJpbmcgd3JhcCBhcm91bmQuIEhlcmUgYXJlIHRoZSBt
+b3N0IHJlbGV2YW50IHNlY3Rpb25zIG9mDQo+ID4gdGhlDQo+ID4gc3BlY2lmaWNhdGlvbjoNCj4g
+PiANCj4gPiB+fn4NCj4gPiBOb3RlOiBhZnRlciByZWFkaW5nIGRyaXZlciBkZXNjcmlwdG9ycyBh
+bmQgc3RhcnRpbmcgdGhlaXIgcHJvY2Vzc2luZyBpbg0KPiA+IG9yZGVyLA0KPiA+IHRoZSBkZXZp
+Y2UgbWlnaHQgY29tcGxldGUgdGhlaXIgcHJvY2Vzc2luZyBvdXQgb2Ygb3JkZXIuICBVc2VkIGRl
+dmljZQ0KPiA+IGRlc2NyaXB0b3JzIGFyZSB3cml0dGVuIGluIHRoZSBvcmRlciBpbiB3aGljaCB0
+aGVpciBwcm9jZXNzaW5nIGlzIGNvbXBsZXRlLg0KPiA+IA0KPiA+IFRoZSBjb3VudGVyIG1haW50
+YWluZWQgYnkgdGhlIGRyaXZlciBpcyBjYWxsZWQgdGhlIERyaXZlciBSaW5nIFdyYXAgQ291bnRl
+ci4NCj4gPiBUaGUNCj4gPiBkcml2ZXIgY2hhbmdlcyB0aGUgdmFsdWUgb2YgdGhpcyBjb3VudGVy
+IGVhY2ggdGltZSBpdCBtYWtlcyBhdmFpbGFibGUgdGhlDQo+ID4gbGFzdA0KPiA+IGRlc2NyaXB0
+b3IgaW4gdGhlIHJpbmcgKGFmdGVyIG1ha2luZyB0aGUgbGFzdCBkZXNjcmlwdG9yIGF2YWlsYWJs
+ZSkuDQo+ID4gDQo+ID4gVGhlIGNvdW50ZXIgbWFpbnRhaW5lZCBieSB0aGUgZGV2aWNlIGlzIGNh
+bGxlZCB0aGUgRGV2aWNlIFJpbmcgV3JhcA0KPiA+IENvdW50ZXIuICBUaGUgZGV2aWNlIGNoYW5n
+ZXMgdGhlIHZhbHVlIG9mIHRoaXMgY291bnRlcg0KPiA+IGVhY2ggdGltZSBpdCB1c2VzIHRoZSBs
+YXN0IGRlc2NyaXB0b3IgaW4NCj4gPiB0aGUgcmluZyAoYWZ0ZXIgbWFya2luZyB0aGUgbGFzdCBk
+ZXNjcmlwdG9yIHVzZWQpLg0KPiA+IA0KPiA+IFRvIG1hcmsgYSBkZXNjcmlwdG9yIGFzIGF2YWls
+YWJsZSwgdGhlIGRyaXZlciBzZXRzIHRoZSBWSVJUUV9ERVNDX0ZfQVZBSUwNCj4gPiBiaXQgaW4N
+Cj4gPiBGbGFncyB0byBtYXRjaCB0aGUgaW50ZXJuYWwgRHJpdmVyIFJpbmcgV3JhcCBDb3VudGVy
+LiAgSXQgYWxzbyBzZXRzIHRoZQ0KPiA+IFZJUlRRX0RFU0NfRl9VU0VEIGJpdCB0byBtYXRjaCB0
+aGUgaW52ZXJzZSB2YWx1ZSAoaS5lLiB0byBub3QgbWF0Y2ggdGhlDQo+ID4gaW50ZXJuYWwNCj4g
+PiBEcml2ZXIgUmluZyBXcmFwIENvdW50ZXIpLg0KPiA+IA0KPiA+IFRvIG1hcmsgYSBkZXNjcmlw
+dG9yIGFzIHVzZWQsIHRoZSBkZXZpY2Ugc2V0cyB0aGUgVklSVFFfREVTQ19GX1VTRUQgYml0IGlu
+DQo+ID4gRmxhZ3MNCj4gPiB0byBtYXRjaCB0aGUgaW50ZXJuYWwgRGV2aWNlIFJpbmcgV3JhcCBD
+b3VudGVyLiAgSXQgYWxzbyBzZXRzIHRoZQ0KPiA+IFZJUlRRX0RFU0NfRl9BVkFJTCBiaXQgdG8g
+bWF0Y2ggdGhlIFxlbXBoe3NhbWV9IHZhbHVlLg0KPiA+IH5+fg0KPiA+IA0KPiA+IEltYWdpbmUg
+YSBwYWNrZWQgcmluZyB3aXRoIDQgZGVzY3JpcHRvcnMuIEF0IHNvbWUgZWFybGllciB0aW1lIGxl
+dCdzIHNheSB0aGUNCj4gPiBmaXJzdCAzIGRlc2NyaXB0b3JzIHdlcmUgc3VibWl0dGVkIGFuZCBj
+b21wbGV0ZWQsIGluIG9yZGVyLiBUaGVuLCB0d28gbW9yZQ0KPiA+IGRlc2NyaXB0b3JzIHdlcmUg
+c3VibWl0dGVkIChzbyB0aGV5IHdlbnQgaW50byBzbG90IDMgYW5kIHRoZW4gMCkuDQo+IA0KPiBB
+bmQgbGV0J3MgYXNzdW1lIHRoZXkgaGF2ZSBJRHMgMyBhbmQgMCwgcmVzcGVjdGl2ZWx5Lg0KPiAN
+Cj4gPiBFYWNoIHRpbWUNCj4gPiB0aHJvdWdoIHRoZSByaW5nLCB0aGUgInJpbmcgd3JhcCBjb3Vu
+dGVyIiB0b2dnbGVzIGZyb20gMSB0byAwIG9yIHZpY2UgdmVyc2EuDQo+ID4gVGhlDQo+ID4gYXZh
+aWwgYW5kIHVzZWQgZmxhZ3MgYXJlIGluaXRpYWxpemVkIHRvIDEgYXQgc3RhcnQgdXAgYW5kIHRo
+ZSByaW5nIHdyYXANCj4gPiBjb3VudGVyDQo+ID4gaXMgMC4NCj4gPiANCj4gPiBTbyB3aGVuIHN1
+Ym1pdHRpbmcgaW50byBzbG90IDMsIHRoZSBkcml2ZXIgZmxpcHMgdGhlIGF2YWlsIGJpdCBmcm9t
+IDEgdG8gMC4NCj4gPiBXaGVuDQo+ID4gc3VibWl0dGluZyBpbnRvIHNsb3QgMCBhZnRlciB0aGUg
+cmluZy13cmFwLCBpdCBmbGlwcyB0aGUgYXZhaWwgYml0IGZyb20gMCB0bw0KPiA+IDEuDQo+ID4g
+VGhlIHNwZWMgc2F5cyBpdCBhbHNvIHNldHMgdGhlIHVzZWQgZmxhZywgYnV0IHRoZSB1c2VkIGZs
+YWcgaXMgYWxyZWFkeSB0aGUNCj4gPiBjb3JyZWN0IHZhbHVlLiBUaGF0J3MgYWxsIHNvbGlkIHNv
+IGZhci4NCj4gPiANCj4gPiBUaGUgZGV2aWNlIGlzIHRoZW4gcG9sbGluZyBvbiBzbG90IDMgd2Fp
+dGluZyBmb3IgbmV3IGRlc2NyaXB0b3JzIHRvIGJlDQo+ID4gc3VibWl0dGVkLiBOb3RlIGhlcmUg
+dGhhdCB0aGUgZGV2aWNlIG11c3QgYmUgbWFpbnRhaW5pbmcgaXRzIG93biBjb3B5IG9mDQo+ID4g
+d2hhdCBpdA0KPiA+IHRoaW5rcyBpcyB0aGUgZHJpdmVyJ3MgcmluZyB3cmFwIGNvdW50ZXIgdmFs
+dWUgdG8gZGV0ZWN0IGRlc2NyaXB0b3JzIGJlaW5nDQo+ID4gbWFkZQ0KPiA+IGF2YWlsYWJsZSwg
+d2hpY2ggaXNuJ3QgY2FsbGVkIG91dCBpbiB0aGUgc3BlY2lmaWNhdGlvbiBhdCBhbGwgYnV0IGFs
+bCBhY3R1YWwNCj4gPiBpbXBsZW1lbnRhdGlvbnMgZG8uIFJlZ2FyZGxlc3MsIG9uY2UgaXQgc2Vl
+cyB0aGUgYXZhaWwgZmxhZyBpbiB0aGUNCj4gPiBkZXNjcmlwdG9yIGluDQo+ID4gc2xvdCAzIGZs
+aXAsIGl0IGJlZ2lucyBwcm9jZXNzaW5nIHRoZSBkZXNjcmlwdG9yLiBJdCB0aGVuIG1vdmVzIG9u
+IHRvIHBvbGwNCj4gPiBzbG90DQo+ID4gMCBmb3IgaW5jb21pbmcgZGVzY3JpcHRvcnMgKGFuZCB1
+cGRhdGVzIGl0cyBleHBlY3RlZCBhdmFpbCByaW5nIHdyYXAgY291bnRlcg0KPiA+IHZhbHVlIGlu
+dGVybmFsbHkpLiBJbiB0aGlzIGNhc2UsIGl0IHNlZXMgdGhlIGJpdCBmbGlwIGZvciBzbG90IDAg
+YW5kIGJlZ2lucw0KPiA+IHByb2Nlc3NpbmcgdGhlIGRlc2NyaXB0b3IuIERlc2NyaXB0b3IgcHJv
+Y2Vzc2luZyBpcyBhc3luY2hyb25vdXMgYW5kIG1heQ0KPiA+IGNvbXBsZXRlIG91dCBvZiBvcmRl
+ciwgYXQgbGVhc3QgZm9yIHN0b3JhZ2UgZGV2aWNlcy4NCj4gPiANCj4gPiBTbyBsZXQncyBzYXkg
+dGhhdCB0aGUgZGVzY3JpcHRvcnMgZG8sIGluIGZhY3QsIGNvbXBsZXRlIG91dCBvZiBvcmRlciwg
+c3VjaA0KPiA+IHRoYXQNCj4gPiB0aGUgZGVzY3JpcHRvciBpbiBzbG90IDAgY29tcGxldGVzIGZp
+cnN0IGFuZCB0aGVuIHRoZSBkZXNjcmlwdG9yIGluIHNsb3QgMw0KPiA+IGNvbXBsZXRlcyBzZWNv
+bmQuIFRoZSBzcGVjaWZpY2F0aW9uIGlzIHZlcnkgY2xlYXIgdGhhdCB0aGlzIGlzIGFsbG93ZWQu
+DQo+ID4gDQo+ID4gV2hlbiBjb21wbGV0aW5nIHRoZSBkZXNjcmlwdG9yIGluIHNsb3QgMCwgdGhl
+IGRldmljZSBoYXMgbm90IHlldCBjb21wbGV0ZWQNCj4gPiB0aGUNCj4gPiBsYXN0IGRlc2NyaXB0
+b3IgaW4gdGhlIHJpbmcgKHRoZXkncmUgb3V0IG9mIG9yZGVyISkuIFNvIHRoZSByaW5nIHdyYXAN
+Cj4gPiBjb3VudGVyIGlzDQo+ID4gc3RpbGwgMC4gU28gaXQgdGhlbiBwcm9jZWVkcyB0byB3cml0
+ZSBib3RoIHRoZSBhdmFpbCBmbGFnIGFuZCB0aGUgdXNlZCBmbGFnDQo+ID4gdG8NCj4gPiAwLiBC
+dXQgdGhlIGRyaXZlciBpcyBleHBlY3RpbmcgdGhlIHVzZWQgZmxhZyB0byBnZXQgZmxpcHBlZCB0
+byAxIHRvIGluZGljYXRlDQo+ID4gYQ0KPiA+IGNvbXBsZXRpb24uIFRoaXMgaXMgYnJva2VuLg0K
+PiANCj4gUmlnaHQgYnV0IHRoZSBzcGVjIHNheXMNCj4gCSBVc2VkIGRldmljZQ0KPiAJIGRlc2Ny
+aXB0b3JzIGFyZSB3cml0dGVuIGluIHRoZSBvcmRlciBpbiB3aGljaCB0aGVpciBwcm9jZXNzaW5n
+IGlzDQo+IGNvbXBsZXRlLg0KPiANCj4gc28gd2hhdCBzaG91bGQgaGFwcGVuLCBpcyB0aGlzOg0K
+PiAJIGRlc2NyaXB0b3Igd2l0aCBJRCAwIGlzIHdyaXR0ZW4gaW50byBzbG90IDMuDQo+IAkgZGVz
+Y3JpcHRvciB3aXRoIElEIDMgaXMgd3JpdHRlbiBpbnRvIHNsb3QgMC4NCj4gDQo+IA0KPiBUaGUg
+Zm9sbG93aW5nIG1pZ2h0IGJlIGhlbHBmdWwgdG8gZGVzY3JpYmUgdGhpcyBiZXR0ZXI6DQo+IA0K
+PiB0aGUgc3BlYyBhbHJlYWR5IHNheXM6DQo+IA0KPiAJVGhlIERlc2NyaXB0b3IgUmluZyBpcyB1
+c2VkIGluIGEgY2lyY3VsYXIgbWFubmVyOiB0aGUgZHJpdmVyIHdyaXRlcw0KPiBkZXNjcmlwdG9y
+cyBpbnRvIHRoZSByaW5nIGluIG9yZGVyLiBBZnRlcg0KPiAJcmVhY2hpbmcgdGhlIGVuZCBvZiB0
+aGUgcmluZywgdGhlIG5leHQgZGVzY3JpcHRvciBpcyBwbGFjZWQgYXQgdGhlIGhlYWQNCj4gb2Yg
+dGhlIHJpbmcuIE9uY2UgdGhlIHJpbmcgaXMgZnVsbCBvZiBkcml2ZXINCj4gCWRlc2NyaXB0b3Jz
+LCB0aGUgZHJpdmVyIHN0b3BzIHNlbmRpbmcgbmV3IHJlcXVlc3RzIGFuZCB3YWl0cyBmb3IgdGhl
+DQo+IGRldmljZSB0byBzdGFydCBwcm9jZXNzaW5nIGRlc2NyaXB0b3JzDQo+IAlhbmQgdG8gd3Jp
+dGUgb3V0IHNvbWUgdXNlZCBkZXNjcmlwdG9ycyBiZWZvcmUgbWFraW5nIG5ldyBkcml2ZXINCj4g
+ZGVzY3JpcHRvcnMgYXZhaWxhYmxlLg0KPiANCj4gYW5kIG1heWJlIHdlIHNob3VsZCBhZGQ6DQo+
+IA0KPiAJU2ltaWxhcmx5LCBkZXZpY2Ugd3JpdGVzIG91dCB1c2VkIGRlc2NyaXB0b3JzIGluIGEg
+Y2lyY3VsYXIgbWFubmVyOg0KPiAJc3RhcnRpbmcgYXQgdGhlIGhlYWQgb2YgdGhlIHJpbmcsIGFu
+ZCB1bnRpbCBpdCByZWFjaGVzIHRoZSBlbmQgb2YgdGhlDQo+IAlyaW5nLiBBZnRlciByZWFjaGlu
+ZyB0aGUgZW5kIG9mIHRoZSByaW5nLCB0aGUgbmV4dCB1c2VkIGRlc2NyaXB0b3IgaXMNCj4gCWFn
+YWluIHBsYWNlZCBhdCB0aGUgaGVhZCBvZiB0aGUgcmluZy4NCg0KWWVzIHBsZWFzZSEgTm8gd2hl
+cmUgaW4gdGhlIGN1cnJlbnQgd29yZGluZyBkb2VzIGl0IHNheSB0aGUgZGV2aWNlIHdyaXRlcyB0
+aGUNCmRlc2NyaXB0b3JzIGNpcmN1bGFybHkuIEl0IHNheXMgdGhlIGRyaXZlciB3cml0ZXMgdGhl
+bSBjaXJjdWxhcmx5IGFuZCB0aGF0IHRoZQ0KZGV2aWNlIHJlYWRzIHRoZW0gY2lyY3VsYXJseSBv
+bmx5Lg0KDQo+IA0KPiANCj4gQWxzbyBzcGVjIGN1cnJlbnRseSBzYXlzOg0KPiANCj4gCVRoZSBj
+b3VudGVyIG1haW50YWluZWQgYnkgdGhlIGRldmljZSBpcyBjYWxsZWQgdGhlIERldmljZSBSaW5n
+IFdyYXANCj4gQ291bnRlci4gVGhlIGRldmljZSBjaGFuZ2VzIHRoZQ0KPiAJdmFsdWUgb2YgdGhp
+cyBjb3VudGVyIGVhY2ggdGltZSBpdCB1c2VzIHRoZSBsYXN0IGRlc2NyaXB0b3IgaW4gdGhlIHJp
+bmcNCj4gKGFmdGVyIG1hcmtpbmcgdGhlIGxhc3QgZGVzY3JpcHRvciB1c2VkKS4NCj4gDQo+IGlu
+IGZhY3QgdGhpcyBwYXJ0IG1heSBiZSBjb25mdXNpbmc6IGl0IGlzIG5vdCBjbGVhciB3aGF0IGRv
+ZXMgInVzZXMgdGhlIGxhc3QNCj4gZGVzY3JpcHRvciINCj4gbWVhbiAtIHlvdSB0b29rIGl0IHRv
+IG1lYW4gIndyaXRlcyBvdXQgZGVzY3JpcHRvciB3aXRoIElEIGZyb20gdGhlIGxhc3QNCj4gZGVz
+Y3JpcHRvciIsIHdoYXQgc3BlYyBtZWFucyBpcyAid3JpdGVzIG91dCBhIHVzZWQgZGVzY3JpcHRv
+ciBvdmVyIHRoZQ0KPiBsYXN0IGRlc2NyaXB0b3IgbG9jYXRpb24iLiAgVGhlIHRleHQgYWxzbyBk
+b2VzIG5vdCBwcm9wZXJseSBhY2NvdW50IGZvcg0KPiBza2lwcGluZyBkZXNjcmlwdG9ycy4NCj4g
+DQo+IFdoYXQgaXQgc2hvdWxkIHNheSBpczoNCj4gDQo+IAlUaGUgY291bnRlciBtYWludGFpbmVk
+IGJ5IHRoZSBkZXZpY2UgaXMgY2FsbGVkIHRoZSBEZXZpY2UgUmluZyBXcmFwDQo+IENvdW50ZXIu
+IFRoZSBkZXZpY2UgY2hhbmdlcyB0aGUNCj4gCXZhbHVlIG9mIHRoaXMgY291bnRlciBlYWNoIHRp
+bWUgaXQgcmVhY2hlcyB0aGUgbGFzdCBkZXNjcmlwdG9yDQo+IAlpbiB0aGUgcmluZyB3aGVuIHdy
+aXRpbmcgdXNlZCBkZXNjcmlwdG9ycw0KPiAgICAgICAgIChhZnRlciB3cml0aW5nIG91dCBvciBz
+a2lwcGluZyBvdmVyIHRoZSBsYXN0IHVzZWQgZGVzY3JpcHRvcikuDQo+IA0KPiBQbGVhc2UgbGV0
+IG1lIGtub3cgd2hldGhlciB0aGUgY2hhbmdlcyBzdWdnZXN0ZWQgYWJvdmUgd291bGQgY2xhcmlm
+eQ0KPiB0aGluZ3MgZm9yIHlvdSwgb3Igd2hldGhlciB5b3UgaGF2ZSBvdGhlciBzdWdnZXN0aW9u
+cy4gVGhhbmtzIQ0KPiANCg0KSSB3aG9sZWhlYXJ0ZWRseSBhZ3JlZSB0aGF0IHRoZSBuZXcgd29y
+ZGluZyBpcyBtdWNoIGJldHRlciBhbmQgd291bGQgaGF2ZSBtYWRlDQp0aGlzIG11Y2ggbW9yZSBv
+YnZpb3VzLiBUaGFua3MgZm9yIHRoZSBhc3Npc3RhbmNlLg0KDQpUaGFua3MsDQpCZW4NCg==
 
