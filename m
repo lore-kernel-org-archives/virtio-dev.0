@@ -1,77 +1,81 @@
-Return-Path: virtio-dev-return-6773-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-6706-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id E5064985D30
-	for <virtio-dev@lists.oasis-open.org>; Tue, 25 Feb 2020 06:15:48 +0000 (UTC)
-Date: Tue, 25 Feb 2020 07:15:38 +0100
-From: Gerd Hoffmann <kraxel@redhat.com>
-Message-ID: <20200225061538.2qlkhfbhv2pl3oku@sirius.home.kraxel.org>
-References: <20200219080637.61312-1-stevensd@chromium.org>
- <20200219080637.61312-3-stevensd@chromium.org>
+	by lists.oasis-open.org (Postfix) with ESMTP id CCD279847E3
+	for <virtio-dev@lists.oasis-open.org>; Mon, 10 Feb 2020 11:45:00 +0000 (UTC)
+Date: Mon, 10 Feb 2020 06:44:50 -0500
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20200210062938-mutt-send-email-mst@kernel.org>
+References: <cover.1581305609.git.zhabin@linux.alibaba.com>
 MIME-Version: 1.0
-In-Reply-To: <20200219080637.61312-3-stevensd@chromium.org>
-Subject: [virtio-dev] Re: [PATCH 2/2] drm/virtio: Support virtgpu exported resources
-Content-Type: text/plain; charset=WINDOWS-1252
+In-Reply-To: <cover.1581305609.git.zhabin@linux.alibaba.com>
+Subject: [virtio-dev] Re: [PATCH v2 0/5] virtio mmio specification enhancement
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
-To: David Stevens <stevensd@chromium.org>
-Cc: David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>, "Michael S . Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, Sumit Semwal <sumit.semwal@linaro.org>, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, virtualization@lists.linux-foundation.org, linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org, virtio-dev@lists.oasis-open.org
+To: Zha Bin <zhabin@linux.alibaba.com>
+Cc: linux-kernel@vger.kernel.org, jasowang@redhat.com, slp@redhat.com, virtio-dev@lists.oasis-open.org, qemu-devel@nongnu.org, gerry@linux.alibaba.com, jing2.liu@linux.intel.com, chao.p.peng@linux.intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-  Hi,
+On Mon, Feb 10, 2020 at 05:05:16PM +0800, Zha Bin wrote:
+> We have compared the number of files and the lines of code between
+> virtio-mmio and virio-pci.
+>=20
+> =09=09=09=09Virtio-PCI=09    Virtio-MMIO=09
+> =09number of files(Linux)=09    161=09=09=091
+> =09lines of code(Linux)=09    78237=09=09538
 
-> +struct dma_buf *virtgpu_gem_prime_export(struct drm_gem_object *obj,
-> +=09=09=09=09=09 int flags)
-> +{
-[ ... ]
-> +}
-> +
-> +struct drm_gem_object *virtgpu_gem_prime_import(struct drm_device *dev,
-> +=09=09=09=09=09=09struct dma_buf *buf)
-> +{
-[ ... ]
-> +}
 
-More code duplication.
 
-> diff --git a/include/uapi/linux/virtio_gpu.h b/include/uapi/linux/virtio_=
-gpu.h
-> index 0c85914d9369..9c428ef03060 100644
-> --- a/include/uapi/linux/virtio_gpu.h
-> +++ b/include/uapi/linux/virtio_gpu.h
+Something's very wrong here. virtio PCI is 161 files?
+Are you counting the whole PCI subsystem?
+Sure enough:
 
-API change should go to a separate patch.
+$ find drivers/pci -name '*c' |wc -l
+150
 
-> +/*
-> + * VIRTIO_GPU_CMD_RESOURCE_ASSIGN_UUID
-> + */
-> +#define VIRTIO_GPU_F_CROSS_DEVICE        2
+That's not reasonable, this includes a bunch of drivers that
+never run on a typical hypervisor.
 
-Hmm, how about VIRTIO_GPU_F_RESOURCE_UUID ?
+MMIO is also not as small as you are trying to show:
 
-> @@ -87,6 +92,7 @@ enum virtio_gpu_ctrl_type {
->  =09VIRTIO_GPU_RESP_OK_CAPSET_INFO,
->  =09VIRTIO_GPU_RESP_OK_CAPSET,
->  =09VIRTIO_GPU_RESP_OK_EDID,
-> +=09VIRTIO_GPU_RESP_OK_RESOURCE_ASSIGN_UUID,
+$ cloc drivers/virtio/virtio_mmio.c include/uapi/linux/virtio_mmio.h
+       2 text files.
+       2 unique files.                             =20
+       0 files ignored.
 
-The "assign" doesn't make sense in the reply.  I'd name that
-VIRTIO_GPU_RESP_OK_RESOURCE_UUID or just VIRTIO_GPU_RESP_OK_UUID,
+github.com/AlDanial/cloc v 1.82  T=3D0.01 s (230.7 files/s, 106126.5 lines/=
+s)
+---------------------------------------------------------------------------=
+----
+Language                     files          blank        comment           =
+code
+---------------------------------------------------------------------------=
+----
+C                                1            144            100           =
+ 535
+C/C++ Header                     1             39             66           =
+  36
+---------------------------------------------------------------------------=
+----
+SUM:                             2            183            166           =
+ 571
+---------------------------------------------------------------------------=
+----
 
-> +/* VIRTIO_GPU_RESP_OK_RESOURCE_ASSIGN_UUID */
-> +struct virtio_gpu_resp_resource_assign_uuid {
-> +=09struct virtio_gpu_ctrl_hdr hdr;
-> +=09__u8 uuid[16];
-> +};
 
-Same here.
+I don't doubt MMIO is smaller than PCI. Of course that's because it has
+no features to speak of - just this patch already doubles it's size. If
+we keep doing that because we want the features then they will reach
+the same size in about 4 iterations.
 
-cheers,
-  Gerd
+
+--=20
+MST
 
 
 ---------------------------------------------------------------------
