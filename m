@@ -1,228 +1,137 @@
-Return-Path: virtio-dev-return-6738-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-6729-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 4BE58985DC3
-	for <virtio-dev@lists.oasis-open.org>; Wed, 12 Feb 2020 07:40:15 +0000 (UTC)
-Date: Wed, 12 Feb 2020 02:40:03 -0500
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20200212023540-mutt-send-email-mst@kernel.org>
-References: <cover.1581305609.git.zhabin@linux.alibaba.com>
- <4c52548758eefe1fe7078d3b6f10492a001c0636.1581305609.git.zhabin@linux.alibaba.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 600D9985DB5
+	for <virtio-dev@lists.oasis-open.org>; Tue, 11 Feb 2020 22:51:22 +0000 (UTC)
+From: Alexander Duyck <alexander.duyck@gmail.com>
+Date: Tue, 11 Feb 2020 14:51:14 -0800
+Message-ID: <20200211225114.30409.17424.stgit@localhost.localdomain>
+In-Reply-To: <20200211224416.29318.44077.stgit@localhost.localdomain>
+References: <20200211224416.29318.44077.stgit@localhost.localdomain>
 MIME-Version: 1.0
-In-Reply-To: <4c52548758eefe1fe7078d3b6f10492a001c0636.1581305609.git.zhabin@linux.alibaba.com>
-Subject: [virtio-dev] Re: [PATCH v2 3/5] virtio-mmio: create a generic MSI irq domain
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-To: Zha Bin <zhabin@linux.alibaba.com>
-Cc: linux-kernel@vger.kernel.org, jasowang@redhat.com, slp@redhat.com, virtio-dev@lists.oasis-open.org, qemu-devel@nongnu.org, gerry@linux.alibaba.com, jing2.liu@linux.intel.com, chao.p.peng@linux.intel.com
+Subject: [virtio-dev] [PATCH v17 QEMU 1/3] virtio-ballon: Implement support for page
+ poison tracking feature
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+To: virtio-dev@lists.oasis-open.org, kvm@vger.kernel.org, mst@redhat.com, david@redhat.com, linux-kernel@vger.kernel.org, linux-mm@kvack.org, akpm@linux-foundation.org
+Cc: yang.zhang.wz@gmail.com, pagupta@redhat.com, konrad.wilk@oracle.com, nitesh@redhat.com, riel@surriel.com, willy@infradead.org, lcapitulino@redhat.com, dave.hansen@intel.com, wei.w.wang@intel.com, aarcange@redhat.com, pbonzini@redhat.com, dan.j.williams@intel.com, mhocko@kernel.org, mgorman@techsingularity.net, alexander.h.duyck@linux.intel.com, vbabka@suse.cz, osalvador@suse.de
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Mon, Feb 10, 2020 at 05:05:19PM +0800, Zha Bin wrote:
-> From: Liu Jiang <gerry@linux.alibaba.com>
->=20
-> Create a generic irq domain for all architectures which
-> supports virtio-mmio. The device offering VIRTIO_F_MMIO_MSI
-> feature bit can use this irq domain.
->=20
-> Signed-off-by: Liu Jiang <gerry@linux.alibaba.com>
-> Co-developed-by: Zha Bin <zhabin@linux.alibaba.com>
-> Signed-off-by: Zha Bin <zhabin@linux.alibaba.com>
-> Co-developed-by: Jing Liu <jing2.liu@linux.intel.com>
-> Signed-off-by: Jing Liu <jing2.liu@linux.intel.com>
-> Co-developed-by: Chao Peng <chao.p.peng@linux.intel.com>
-> Signed-off-by: Chao Peng <chao.p.peng@linux.intel.com>
-> ---
->  drivers/base/platform-msi.c      |  4 +-
->  drivers/virtio/Kconfig           |  9 ++++
->  drivers/virtio/virtio_mmio_msi.h | 93 ++++++++++++++++++++++++++++++++++=
-++++++
->  include/linux/msi.h              |  1 +
->  4 files changed, 105 insertions(+), 2 deletions(-)
->  create mode 100644 drivers/virtio/virtio_mmio_msi.h
->=20
-> diff --git a/drivers/base/platform-msi.c b/drivers/base/platform-msi.c
-> index 8da314b..45752f1 100644
-> --- a/drivers/base/platform-msi.c
-> +++ b/drivers/base/platform-msi.c
-> @@ -31,12 +31,11 @@ struct platform_msi_priv_data {
->  /* The devid allocator */
->  static DEFINE_IDA(platform_msi_devid_ida);
-> =20
-> -#ifdef GENERIC_MSI_DOMAIN_OPS
->  /*
->   * Convert an msi_desc to a globaly unique identifier (per-device
->   * devid + msi_desc position in the msi_list).
->   */
-> -static irq_hw_number_t platform_msi_calc_hwirq(struct msi_desc *desc)
-> +irq_hw_number_t platform_msi_calc_hwirq(struct msi_desc *desc)
->  {
->  =09u32 devid;
-> =20
-> @@ -45,6 +44,7 @@ static irq_hw_number_t platform_msi_calc_hwirq(struct m=
-si_desc *desc)
->  =09return (devid << (32 - DEV_ID_SHIFT)) | desc->platform.msi_index;
->  }
-> =20
-> +#ifdef GENERIC_MSI_DOMAIN_OPS
->  static void platform_msi_set_desc(msi_alloc_info_t *arg, struct msi_desc=
- *desc)
->  {
->  =09arg->desc =3D desc;
-> diff --git a/drivers/virtio/Kconfig b/drivers/virtio/Kconfig
-> index 078615c..551a9f7 100644
-> --- a/drivers/virtio/Kconfig
-> +++ b/drivers/virtio/Kconfig
-> @@ -84,6 +84,15 @@ config VIRTIO_MMIO
-> =20
->   =09 If unsure, say N.
-> =20
-> +config VIRTIO_MMIO_MSI
-> +=09bool "Memory-mapped virtio device MSI"
-> +=09depends on VIRTIO_MMIO && GENERIC_MSI_IRQ_DOMAIN && GENERIC_MSI_IRQ
-> +=09help
-> +=09 This allows device drivers to support msi interrupt handling for
-> +=09 virtio-mmio devices. It can improve performance greatly.
-> +
-> +=09 If unsure, say N.
-> +
->  config VIRTIO_MMIO_CMDLINE_DEVICES
->  =09bool "Memory mapped virtio devices parameter parsing"
->  =09depends on VIRTIO_MMIO
-> diff --git a/drivers/virtio/virtio_mmio_msi.h b/drivers/virtio/virtio_mmi=
-o_msi.h
-> new file mode 100644
-> index 0000000..27cb2af
-> --- /dev/null
-> +++ b/drivers/virtio/virtio_mmio_msi.h
-> @@ -0,0 +1,93 @@
-> +/* SPDX-License-Identifier: GPL-2.0-or-later */
-> +#ifndef _DRIVERS_VIRTIO_VIRTIO_MMIO_MSI_H
-> +#define _DRIVERS_VIRTIO_VIRTIO_MMIO_MSI_H
-> +
-> +#ifdef CONFIG_VIRTIO_MMIO_MSI
-> +
-> +#include <linux/msi.h>
-> +#include <linux/irq.h>
-> +#include <linux/irqdomain.h>
-> +#include <linux/platform_device.h>
-> +
-> +static irq_hw_number_t mmio_msi_hwirq;
-> +static struct irq_domain *mmio_msi_domain;
+From: Alexander Duyck <alexander.h.duyck@linux.intel.com>
 
-So each instance of including this header will create its own
-copy of the variables. That won't do the right thing.
+We need to make certain to advertise support for page poison tracking if
+we want to actually get data on if the guest will be poisoning pages. So
+if free page hinting is active we should add page poisoning support and
+let the guest disable it if it isn't using it.
 
+Page poisoning will result in a page being dirtied on free. As such we
+cannot really avoid having to copy the page at least one more time since
+we will need to write the poison value to the destination. As such we can
+just ignore free page hinting if page poisoning is enabled as it will
+actually reduce the work we have to do.
 
-> +
-> +struct irq_domain *__weak arch_msi_root_irq_domain(void)
-> +{
-> +=09return NULL;
-> +}
-> +
-> +void __weak irq_msi_compose_msg(struct irq_data *data, struct msi_msg *m=
-sg)
-> +{
-> +}
-> +
-> +static void mmio_msi_mask_irq(struct irq_data *data)
-> +{
-> +}
-> +
-> +static void mmio_msi_unmask_irq(struct irq_data *data)
-> +{
-> +}
-> +
-> +static struct irq_chip mmio_msi_controller =3D {
-> +=09.name=09=09=09=3D "VIRTIO-MMIO-MSI",
-> +=09.irq_mask=09=09=3D mmio_msi_mask_irq,
-> +=09.irq_unmask=09=09=3D mmio_msi_unmask_irq,
-> +=09.irq_ack=09=09=3D irq_chip_ack_parent,
-> +=09.irq_retrigger=09=09=3D irq_chip_retrigger_hierarchy,
-> +=09.irq_compose_msi_msg=09=3D irq_msi_compose_msg,
-> +=09.flags=09=09=09=3D IRQCHIP_SKIP_SET_WAKE,
-> +};
-> +
-> +static int mmio_msi_prepare(struct irq_domain *domain, struct device *de=
-v,
-> +=09=09=09=09int nvec, msi_alloc_info_t *arg)
-> +{
-> +=09memset(arg, 0, sizeof(*arg));
-> +=09return 0;
-> +}
-> +
-> +static void mmio_msi_set_desc(msi_alloc_info_t *arg, struct msi_desc *de=
-sc)
-> +{
-> +=09mmio_msi_hwirq =3D platform_msi_calc_hwirq(desc);
-> +}
-> +
-> +static irq_hw_number_t mmio_msi_get_hwirq(struct msi_domain_info *info,
-> +=09=09=09=09=09      msi_alloc_info_t *arg)
-> +{
-> +=09return mmio_msi_hwirq;
-> +}
-> +
-> +static struct msi_domain_ops mmio_msi_domain_ops =3D {
-> +=09.msi_prepare=09=3D mmio_msi_prepare,
-> +=09.set_desc=09=3D mmio_msi_set_desc,
-> +=09.get_hwirq=09=3D mmio_msi_get_hwirq,
-> +};
-> +
-> +static struct msi_domain_info mmio_msi_domain_info =3D {
-> +=09.flags          =3D MSI_FLAG_USE_DEF_DOM_OPS |
-> +=09=09=09  MSI_FLAG_USE_DEF_CHIP_OPS |
-> +=09=09=09  MSI_FLAG_ACTIVATE_EARLY,
-> +=09.ops            =3D &mmio_msi_domain_ops,
-> +=09.chip           =3D &mmio_msi_controller,
-> +=09.handler        =3D handle_edge_irq,
-> +=09.handler_name   =3D "edge",
-> +};
-> +
-> +static inline void mmio_msi_create_irq_domain(void)
-> +{
-> +=09struct fwnode_handle *fn;
-> +=09struct irq_domain *parent =3D arch_msi_root_irq_domain();
-> +
-> +=09fn =3D irq_domain_alloc_named_fwnode("VIRTIO-MMIO-MSI");
-> +=09if (fn && parent) {
-> +=09=09mmio_msi_domain =3D
-> +=09=09=09platform_msi_create_irq_domain(fn,
-> +=09=09=09=09&mmio_msi_domain_info, parent);
-> +=09=09irq_domain_free_fwnode(fn);
-> +=09}
-> +}
+Signed-off-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
+---
+ hw/virtio/virtio-balloon.c         |   25 +++++++++++++++++++++----
+ include/hw/virtio/virtio-balloon.h |    1 +
+ 2 files changed, 22 insertions(+), 4 deletions(-)
 
-It does not look like anyone cleans up this domain.
-So how does this work with a modular virtio mmio?
-what happens when you unload the module?
-
-
-> +#else
-> +static inline void mmio_msi_create_irq_domain(void) {}
-> +#endif
-> +
-> +#endif
-> diff --git a/include/linux/msi.h b/include/linux/msi.h
-> index 8ad679e..ee5f566 100644
-> --- a/include/linux/msi.h
-> +++ b/include/linux/msi.h
-> @@ -362,6 +362,7 @@ int platform_msi_domain_alloc(struct irq_domain *doma=
-in, unsigned int virq,
->  void platform_msi_domain_free(struct irq_domain *domain, unsigned int vi=
-rq,
->  =09=09=09      unsigned int nvec);
->  void *platform_msi_get_host_data(struct irq_domain *domain);
-> +irq_hw_number_t platform_msi_calc_hwirq(struct msi_desc *desc);
->  #endif /* CONFIG_GENERIC_MSI_IRQ_DOMAIN */
-> =20
->  #ifdef CONFIG_PCI_MSI_IRQ_DOMAIN
-> --=20
-> 1.8.3.1
+diff --git a/hw/virtio/virtio-balloon.c b/hw/virtio/virtio-balloon.c
+index a4729f7fc930..455d85b7082f 100644
+--- a/hw/virtio/virtio-balloon.c
++++ b/hw/virtio/virtio-balloon.c
+@@ -531,6 +531,15 @@ static void virtio_balloon_free_page_start(VirtIOBalloon *s)
+         return;
+     }
+ 
++    /*
++     * If page poisoning is enabled then we probably shouldn't bother with
++     * the hinting since the poisoning will dirty the page and invalidate
++     * the work we are doing anyway.
++     */
++    if (virtio_vdev_has_feature(vdev, VIRTIO_BALLOON_F_PAGE_POISON)) {
++        return;
++    }
++
+     if (s->free_page_report_cmd_id == UINT_MAX) {
+         s->free_page_report_cmd_id =
+                        VIRTIO_BALLOON_FREE_PAGE_REPORT_CMD_ID_MIN;
+@@ -618,12 +627,10 @@ static size_t virtio_balloon_config_size(VirtIOBalloon *s)
+     if (s->qemu_4_0_config_size) {
+         return sizeof(struct virtio_balloon_config);
+     }
+-    if (virtio_has_feature(features, VIRTIO_BALLOON_F_PAGE_POISON)) {
++    if (virtio_has_feature(features, VIRTIO_BALLOON_F_PAGE_POISON) ||
++        virtio_has_feature(features, VIRTIO_BALLOON_F_FREE_PAGE_HINT)) {
+         return sizeof(struct virtio_balloon_config);
+     }
+-    if (virtio_has_feature(features, VIRTIO_BALLOON_F_FREE_PAGE_HINT)) {
+-        return offsetof(struct virtio_balloon_config, poison_val);
+-    }
+     return offsetof(struct virtio_balloon_config, free_page_report_cmd_id);
+ }
+ 
+@@ -634,6 +641,7 @@ static void virtio_balloon_get_config(VirtIODevice *vdev, uint8_t *config_data)
+ 
+     config.num_pages = cpu_to_le32(dev->num_pages);
+     config.actual = cpu_to_le32(dev->actual);
++    config.poison_val = cpu_to_le32(dev->poison_val);
+ 
+     if (dev->free_page_report_status == FREE_PAGE_REPORT_S_REQUESTED) {
+         config.free_page_report_cmd_id =
+@@ -697,6 +705,8 @@ static void virtio_balloon_set_config(VirtIODevice *vdev,
+         qapi_event_send_balloon_change(vm_ram_size -
+                         ((ram_addr_t) dev->actual << VIRTIO_BALLOON_PFN_SHIFT));
+     }
++    dev->poison_val = virtio_vdev_has_feature(vdev, VIRTIO_BALLOON_F_PAGE_POISON) ? 
++                      le32_to_cpu(config.poison_val) : 0;
+     trace_virtio_balloon_set_config(dev->actual, oldactual);
+ }
+ 
+@@ -706,6 +716,9 @@ static uint64_t virtio_balloon_get_features(VirtIODevice *vdev, uint64_t f,
+     VirtIOBalloon *dev = VIRTIO_BALLOON(vdev);
+     f |= dev->host_features;
+     virtio_add_feature(&f, VIRTIO_BALLOON_F_STATS_VQ);
++    if (virtio_has_feature(f, VIRTIO_BALLOON_F_FREE_PAGE_HINT)) {
++        virtio_add_feature(&f, VIRTIO_BALLOON_F_PAGE_POISON);
++    }
+ 
+     return f;
+ }
+@@ -854,6 +867,8 @@ static void virtio_balloon_device_reset(VirtIODevice *vdev)
+         g_free(s->stats_vq_elem);
+         s->stats_vq_elem = NULL;
+     }
++
++    s->poison_val = 0;
+ }
+ 
+ static void virtio_balloon_set_status(VirtIODevice *vdev, uint8_t status)
+@@ -916,6 +931,8 @@ static Property virtio_balloon_properties[] = {
+                     VIRTIO_BALLOON_F_DEFLATE_ON_OOM, false),
+     DEFINE_PROP_BIT("free-page-hint", VirtIOBalloon, host_features,
+                     VIRTIO_BALLOON_F_FREE_PAGE_HINT, false),
++    DEFINE_PROP_BIT("x-page-poison", VirtIOBalloon, host_features,
++                    VIRTIO_BALLOON_F_PAGE_POISON, false),
+     /* QEMU 4.0 accidentally changed the config size even when free-page-hint
+      * is disabled, resulting in QEMU 3.1 migration incompatibility.  This
+      * property retains this quirk for QEMU 4.1 machine types.
+diff --git a/include/hw/virtio/virtio-balloon.h b/include/hw/virtio/virtio-balloon.h
+index d1c968d2376e..7fe78e5c14d7 100644
+--- a/include/hw/virtio/virtio-balloon.h
++++ b/include/hw/virtio/virtio-balloon.h
+@@ -70,6 +70,7 @@ typedef struct VirtIOBalloon {
+     uint32_t host_features;
+ 
+     bool qemu_4_0_config_size;
++    uint32_t poison_val;
+ } VirtIOBalloon;
+ 
+ #endif
 
 
 ---------------------------------------------------------------------
