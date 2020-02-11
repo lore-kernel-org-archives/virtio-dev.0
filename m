@@ -1,20 +1,20 @@
-Return-Path: virtio-dev-return-6730-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-6731-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id B7F15985DB5
-	for <virtio-dev@lists.oasis-open.org>; Tue, 11 Feb 2020 22:51:32 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 157A5985DB5
+	for <virtio-dev@lists.oasis-open.org>; Tue, 11 Feb 2020 22:51:44 +0000 (UTC)
 From: Alexander Duyck <alexander.duyck@gmail.com>
-Date: Tue, 11 Feb 2020 14:51:25 -0800
-Message-ID: <20200211225125.30409.98370.stgit@localhost.localdomain>
+Date: Tue, 11 Feb 2020 14:51:36 -0800
+Message-ID: <20200211225136.30409.19938.stgit@localhost.localdomain>
 In-Reply-To: <20200211224416.29318.44077.stgit@localhost.localdomain>
 References: <20200211224416.29318.44077.stgit@localhost.localdomain>
 MIME-Version: 1.0
-Subject: [virtio-dev] [PATCH v17 QEMU 2/3] virtio-balloon: Add support for providing free
- page reports to host
+Subject: [virtio-dev] [PATCH v17 QEMU 3/3] virtio-balloon: Provide a interface for free
+ page reporting
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 To: virtio-dev@lists.oasis-open.org, kvm@vger.kernel.org, mst@redhat.com, david@redhat.com, linux-kernel@vger.kernel.org, linux-mm@kvack.org, akpm@linux-foundation.org
@@ -23,40 +23,122 @@ List-ID: <virtio-dev.lists.oasis-open.org>
 
 From: Alexander Duyck <alexander.h.duyck@linux.intel.com>
 
-Add support for the page reporting feature provided by virtio-balloon.
-Reporting differs from the regular balloon functionality in that is is
-much less durable than a standard memory balloon. Instead of creating a
-list of pages that cannot be accessed the pages are only inaccessible
-while they are being indicated to the virtio interface. Once the
-interface has acknowledged them they are placed back into their respective
-free lists and are once again accessible by the guest system.
+Add support for what I am referring to as "free page reporting".
+Basically the idea is to function very similar to how the balloon works
+in that we basically end up madvising the page as not being used. However
+we don't really need to bother with any deflate type logic since the page
+will be faulted back into the guest when it is read or written to.
 
-Unlike a standard balloon we don't inflate and deflate the pages. Instead
-we perform the reporting, and once the reporting is completed it is
-assumed that the page has been dropped from the guest and will be faulted
-back in the next time the page is accessed.
-
-This patch is a subset of the UAPI patch that was submitted for the Linux
-kernel. The original patch can be found at:
-https://lore.kernel.org/lkml/20200211224657.29318.68624.stgit@localhost.localdomain/
+This is meant to be a simplification of the existing balloon interface
+to use for providing hints to what memory needs to be freed. I am assuming
+this is safe to do as the deflate logic does not actually appear to do very
+much other than tracking what subpages have been released and which ones
+haven't.
 
 Signed-off-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
 ---
- include/standard-headers/linux/virtio_balloon.h |    1 +
- 1 file changed, 1 insertion(+)
+ hw/virtio/virtio-balloon.c         |   46 ++++++++++++++++++++++++++++++++++--
+ include/hw/virtio/virtio-balloon.h |    2 +-
+ 2 files changed, 45 insertions(+), 3 deletions(-)
 
-diff --git a/include/standard-headers/linux/virtio_balloon.h b/include/standard-headers/linux/virtio_balloon.h
-index 9375ca2a70de..1c5f6d6f2de6 100644
---- a/include/standard-headers/linux/virtio_balloon.h
-+++ b/include/standard-headers/linux/virtio_balloon.h
-@@ -36,6 +36,7 @@
- #define VIRTIO_BALLOON_F_DEFLATE_ON_OOM	2 /* Deflate balloon on OOM */
- #define VIRTIO_BALLOON_F_FREE_PAGE_HINT	3 /* VQ to report free pages */
- #define VIRTIO_BALLOON_F_PAGE_POISON	4 /* Guest is using page poisoning */
-+#define VIRTIO_BALLOON_F_REPORTING	5 /* Page reporting virtqueue */
+diff --git a/hw/virtio/virtio-balloon.c b/hw/virtio/virtio-balloon.c
+index 455d85b7082f..5faafd2f62ac 100644
+--- a/hw/virtio/virtio-balloon.c
++++ b/hw/virtio/virtio-balloon.c
+@@ -321,6 +321,40 @@ static void balloon_stats_set_poll_interval(Object *obj, Visitor *v,
+     balloon_stats_change_timer(s, 0);
+ }
  
- /* Size of a PFN in the balloon interface. */
- #define VIRTIO_BALLOON_PFN_SHIFT 12
++static void virtio_balloon_handle_report(VirtIODevice *vdev, VirtQueue *vq)
++{
++    VirtIOBalloon *dev = VIRTIO_BALLOON(vdev);
++    VirtQueueElement *elem;
++
++    while ((elem = virtqueue_pop(vq, sizeof(VirtQueueElement)))) {
++    	unsigned int i;
++
++        for (i = 0; i < elem->in_num; i++) {
++            void *addr = elem->in_sg[i].iov_base;
++            size_t size = elem->in_sg[i].iov_len;
++            ram_addr_t ram_offset;
++            size_t rb_page_size;
++            RAMBlock *rb;
++
++            if (qemu_balloon_is_inhibited() || dev->poison_val)
++                continue;
++
++            rb = qemu_ram_block_from_host(addr, false, &ram_offset);
++            rb_page_size = qemu_ram_pagesize(rb);
++
++            /* For now we will simply ignore unaligned memory regions */
++            if ((ram_offset | size) & (rb_page_size - 1))
++                continue;
++
++            ram_block_discard_range(rb, ram_offset, size);
++        }
++
++        virtqueue_push(vq, elem, 0);
++        virtio_notify(vdev, vq);
++        g_free(elem);
++    }
++}
++
+ static void virtio_balloon_handle_output(VirtIODevice *vdev, VirtQueue *vq)
+ {
+     VirtIOBalloon *s = VIRTIO_BALLOON(vdev);
+@@ -628,7 +662,8 @@ static size_t virtio_balloon_config_size(VirtIOBalloon *s)
+         return sizeof(struct virtio_balloon_config);
+     }
+     if (virtio_has_feature(features, VIRTIO_BALLOON_F_PAGE_POISON) ||
+-        virtio_has_feature(features, VIRTIO_BALLOON_F_FREE_PAGE_HINT)) {
++        virtio_has_feature(features, VIRTIO_BALLOON_F_FREE_PAGE_HINT) ||
++        virtio_has_feature(features, VIRTIO_BALLOON_F_REPORTING)) {
+         return sizeof(struct virtio_balloon_config);
+     }
+     return offsetof(struct virtio_balloon_config, free_page_report_cmd_id);
+@@ -716,7 +751,8 @@ static uint64_t virtio_balloon_get_features(VirtIODevice *vdev, uint64_t f,
+     VirtIOBalloon *dev = VIRTIO_BALLOON(vdev);
+     f |= dev->host_features;
+     virtio_add_feature(&f, VIRTIO_BALLOON_F_STATS_VQ);
+-    if (virtio_has_feature(f, VIRTIO_BALLOON_F_FREE_PAGE_HINT)) {
++    if (virtio_has_feature(f, VIRTIO_BALLOON_F_FREE_PAGE_HINT) ||
++        virtio_has_feature(f, VIRTIO_BALLOON_F_REPORTING)) {
+         virtio_add_feature(&f, VIRTIO_BALLOON_F_PAGE_POISON);
+     }
+ 
+@@ -806,6 +842,10 @@ static void virtio_balloon_device_realize(DeviceState *dev, Error **errp)
+     s->dvq = virtio_add_queue(vdev, 128, virtio_balloon_handle_output);
+     s->svq = virtio_add_queue(vdev, 128, virtio_balloon_receive_stats);
+ 
++    if (virtio_has_feature(s->host_features, VIRTIO_BALLOON_F_REPORTING)) {
++        s->rvq = virtio_add_queue(vdev, 32, virtio_balloon_handle_report);
++    }
++
+     if (virtio_has_feature(s->host_features,
+                            VIRTIO_BALLOON_F_FREE_PAGE_HINT)) {
+         s->free_page_vq = virtio_add_queue(vdev, VIRTQUEUE_MAX_SIZE,
+@@ -939,6 +979,8 @@ static Property virtio_balloon_properties[] = {
+      */
+     DEFINE_PROP_BOOL("qemu-4-0-config-size", VirtIOBalloon,
+                      qemu_4_0_config_size, false),
++    DEFINE_PROP_BIT("unused-page-reporting", VirtIOBalloon, host_features,
++                    VIRTIO_BALLOON_F_REPORTING, true),
+     DEFINE_PROP_LINK("iothread", VirtIOBalloon, iothread, TYPE_IOTHREAD,
+                      IOThread *),
+     DEFINE_PROP_END_OF_LIST(),
+diff --git a/include/hw/virtio/virtio-balloon.h b/include/hw/virtio/virtio-balloon.h
+index 7fe78e5c14d7..db5bf7127112 100644
+--- a/include/hw/virtio/virtio-balloon.h
++++ b/include/hw/virtio/virtio-balloon.h
+@@ -42,7 +42,7 @@ enum virtio_balloon_free_page_report_status {
+ 
+ typedef struct VirtIOBalloon {
+     VirtIODevice parent_obj;
+-    VirtQueue *ivq, *dvq, *svq, *free_page_vq;
++    VirtQueue *ivq, *dvq, *svq, *free_page_vq, *rvq;
+     uint32_t free_page_report_status;
+     uint32_t num_pages;
+     uint32_t actual;
 
 
 ---------------------------------------------------------------------
