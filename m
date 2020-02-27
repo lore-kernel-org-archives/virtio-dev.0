@@ -1,54 +1,35 @@
-Return-Path: virtio-dev-return-6803-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-6792-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id AA1F5985E3D
-	for <virtio-dev@lists.oasis-open.org>; Thu, 27 Feb 2020 12:24:30 +0000 (UTC)
-Date: Thu, 27 Feb 2020 13:24:25 +0100
-From: Boris Brezillon <boris.brezillon@collabora.com>
-Message-ID: <20200227132425.1138be49@collabora.com>
-In-Reply-To: <20200227102917.vuey2acv5ziizwnb@sirius.home.kraxel.org>
-References: <20200207182842.770bfb27@collabora.com>
-	<20200225162105.1912fae0@collabora.com>
-	<20200226151224.tqctou74uxdaxtut@sirius.home.kraxel.org>
-	<20200226180504.66596367@collabora.com>
-	<20200227102917.vuey2acv5ziizwnb@sirius.home.kraxel.org>
+	by lists.oasis-open.org (Postfix) with ESMTP id 5FBE6985E3A
+	for <virtio-dev@lists.oasis-open.org>; Thu, 27 Feb 2020 04:21:03 +0000 (UTC)
 MIME-Version: 1.0
-Subject: Re: [virtio-dev] [RFC] Upstreaming virtio-wayland (or an
- alternative)
-Content-Type: text/plain; charset=WINDOWS-1252
+References: <20200207182842.770bfb27@collabora.com> <20200225162105.1912fae0@collabora.com>
+In-Reply-To: <20200225162105.1912fae0@collabora.com>
+From: David Stevens <stevensd@chromium.org>
+Date: Thu, 27 Feb 2020 13:20:51 +0900
+Message-ID: <CAD=HUj5R_iOsCwaN85_nNUxo+3sp+QxR6bjPknqFM2Y+u0GOUg@mail.gmail.com>
+Subject: Re: [virtio-dev] [RFC] Upstreaming virtio-wayland (or an alternative)
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-To: Gerd Hoffmann <kraxel@redhat.com>
-Cc: Stefan Hajnoczi <stefanha@redhat.com>, Zach Reizner <zachr@chromium.org>, David Stevens <stevensd@chromium.org>, =?UTF-8?B?U3TDqXBoYW5l?= Marchesin <marcheu@chromium.org>, Tomeu Vizoso <tomeu.vizoso@collabora.com>, Tomasz Figa <tfiga@chromium.org>, virtio-dev@lists.oasis-open.org, Alexandros Frantzis <alexandros.frantzis@collabora.co.uk>
+To: Boris Brezillon <boris.brezillon@collabora.com>
+Cc: Gerd Hoffmann <kraxel@redhat.com>, Stefan Hajnoczi <stefanha@redhat.com>, Zach Reizner <zachr@chromium.org>, =?UTF-8?Q?St=C3=A9phane_Marchesin?= <marcheu@chromium.org>, Tomeu Vizoso <tomeu.vizoso@collabora.com>, Tomasz Figa <tfiga@chromium.org>, virtio-dev@lists.oasis-open.org, Alexandros Frantzis <alexandros.frantzis@collabora.co.uk>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Thu, 27 Feb 2020 11:29:17 +0100
-Gerd Hoffmann <kraxel@redhat.com> wrote:
+> * manage a central UUID <-> 'struct file' map that allows virtio-pipe
+>   to convert FDs to UUIDs, pass UUIDs through a pipe and convert those
+>   UUIDs back to FDs on the other end
+>   - we need to expose an API to let each subsystem register/unregister
+>     their UUID <-> FD mapping (subsystems are responsible for the UUID
+>     creation/negotiation)
 
-> > I'm still unsure how FDs coming from a host application can be
-> > converted to resource objects (and then UUIDs so they can be passed
-> > to the ipc_connection) if they've not been previously created/passed
-> > by the guest though. =20
->=20
-> Depends on the kind of fd I think.  For unix sockets or virtio-fs files
-> it should be easy.  dma-bufs or sysv shmem would be more tricky because
-> we have to map them into the guest address space (if we want support
-> that).  Not impossible though, we could use the new shared memory
-> support for that.
-
-I was more worried about the complexity an import_resource() API would
-put on the host proxy: it will have to know which subsystem each of the
-resources/FDs it tries to pass to the virtio-ipc socket should be
-attached to, and none of those resources have actually been created by
-the proxy itself. That implies having a way to get that information from
-a FD (is it a dmabuf FD, a unix socket fd, ... and depending on the kind
-of FD, which device/subsystem is in charge of this FD, for instance, for
-dmabufs, you might need to know who allocated the buffer).
-
-
+Can you provide more detail about the envisioned scope of this
+framework? What sort of FDs and subsystems will use the framework? How
+do operations on the guest FD affect the host FD, and vice versa?
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
