@@ -1,30 +1,28 @@
-Return-Path: virtio-dev-return-6862-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-6863-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id E062E985CDE
-	for <virtio-dev@lists.oasis-open.org>; Mon,  2 Mar 2020 13:53:22 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 568C9985CF2
+	for <virtio-dev@lists.oasis-open.org>; Mon,  2 Mar 2020 13:53:29 +0000 (UTC)
 From: David Hildenbrand <david@redhat.com>
-Date: Mon,  2 Mar 2020 14:49:39 +0100
-Message-Id: <20200302134941.315212-10-david@redhat.com>
+Date: Mon,  2 Mar 2020 14:49:40 +0100
+Message-Id: <20200302134941.315212-11-david@redhat.com>
 In-Reply-To: <20200302134941.315212-1-david@redhat.com>
 References: <20200302134941.315212-1-david@redhat.com>
 MIME-Version: 1.0
-Subject: [virtio-dev] [PATCH v1 09/11] virtio-mem: Offline and remove completely unplugged memory blocks
+Subject: [virtio-dev] [PATCH v1 10/11] virtio-mem: Better retry handling
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: quoted-printable
 To: linux-kernel@vger.kernel.org
 Cc: linux-mm@kvack.org, virtio-dev@lists.oasis-open.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, Michal Hocko <mhocko@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, "Michael S . Tsirkin" <mst@redhat.com>, David Hildenbrand <david@redhat.com>, Jason Wang <jasowang@redhat.com>, Oscar Salvador <osalvador@suse.de>, Igor Mammedov <imammedo@redhat.com>, Dave Young <dyoung@redhat.com>, Dan Williams <dan.j.williams@intel.com>, Pavel Tatashin <pasha.tatashin@soleen.com>, Stefan Hajnoczi <stefanha@redhat.com>, Vlastimil Babka <vbabka@suse.cz>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Let's offline+remove memory blocks once all subblocks are unplugged. We
-can use the new Linux MM interface for that. As no memory is in use
-anymore, this shouldn't take a long time and shouldn't fail. There might
-be corner cases where the offlining could still fail (especially, if
-another notifier NACKs the offlining request).
+Let's start with a retry interval of 30 seconds and double the time until
+we reach 30 minutes, in case we keep getting errors. Reset the retry
+interval in case we succeeded.
 
 Cc: "Michael S. Tsirkin" <mst@redhat.com>
 Cc: Jason Wang <jasowang@redhat.com>
@@ -39,95 +37,63 @@ Cc: Stefan Hajnoczi <stefanha@redhat.com>
 Cc: Vlastimil Babka <vbabka@suse.cz>
 Signed-off-by: David Hildenbrand <david@redhat.com>
 ---
- drivers/virtio/virtio_mem.c | 47 +++++++++++++++++++++++++++++++++----
- 1 file changed, 43 insertions(+), 4 deletions(-)
+ drivers/virtio/virtio_mem.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/virtio/virtio_mem.c b/drivers/virtio/virtio_mem.c
-index 2916f8b970fa..0274527ac517 100644
+index 0274527ac517..8992d0d0e5da 100644
 --- a/drivers/virtio/virtio_mem.c
 +++ b/drivers/virtio/virtio_mem.c
-@@ -443,6 +443,28 @@ static int virtio_mem_mb_remove(struct virtio_mem *vm,=
- unsigned long mb_id)
- =09return remove_memory(nid, addr, memory_block_size_bytes());
- }
+@@ -138,7 +138,9 @@ struct virtio_mem {
 =20
-+/*
-+ * Try to offline and remove a memory block from Linux.
-+ *
-+ * Must not be called with the vm->hotplug_mutex held (possible deadlock w=
-ith
-+ * onlining code).
-+ *
-+ * Will not modify the state of the memory block.
-+ */
-+static int virtio_mem_mb_offline_and_remove(struct virtio_mem *vm,
-+=09=09=09=09=09    unsigned long mb_id)
-+{
-+=09const uint64_t addr =3D virtio_mem_mb_id_to_phys(mb_id);
-+=09int nid =3D vm->nid;
-+
-+=09if (nid =3D=3D NUMA_NO_NODE)
-+=09=09nid =3D memory_add_physaddr_to_nid(addr);
-+
-+=09dev_dbg(&vm->vdev->dev, "offlining and removing memory block: %lu\n",
-+=09=09mb_id);
-+=09return offline_and_remove_memory(nid, addr, memory_block_size_bytes());
-+}
-+
- /*
-  * Trigger the workqueue so the device can perform its magic.
-  */
-@@ -535,7 +557,13 @@ static void virtio_mem_notify_offline(struct virtio_me=
-m *vm,
+ =09/* Timer for retrying to plug/unplug memory. */
+ =09struct hrtimer retry_timer;
+-#define VIRTIO_MEM_RETRY_TIMER_MS=09=0930000
++=09unsigned int retry_timer_ms;
++#define VIRTIO_MEM_RETRY_TIMER_MIN_MS=09=0930000
++#define VIRTIO_MEM_RETRY_TIMER_MAX_MS=09=091800000
+=20
+ =09/* Memory notifier (online/offline events). */
+ =09struct notifier_block memory_notifier;
+@@ -1544,6 +1546,7 @@ static void virtio_mem_run_wq(struct work_struct *wor=
+k)
+=20
+ =09switch (rc) {
+ =09case 0:
++=09=09vm->retry_timer_ms =3D VIRTIO_MEM_RETRY_TIMER_MIN_MS;
  =09=09break;
- =09}
+ =09case -ENOSPC:
+ =09=09/*
+@@ -1559,8 +1562,7 @@ static void virtio_mem_run_wq(struct work_struct *wor=
+k)
+ =09=09 */
+ =09case -ENOMEM:
+ =09=09/* Out of memory, try again later. */
+-=09=09hrtimer_start(&vm->retry_timer,
+-=09=09=09      ms_to_ktime(VIRTIO_MEM_RETRY_TIMER_MS),
++=09=09hrtimer_start(&vm->retry_timer, ms_to_ktime(vm->retry_timer_ms),
+ =09=09=09      HRTIMER_MODE_REL);
+ =09=09break;
+ =09case -EAGAIN:
+@@ -1580,6 +1582,8 @@ static enum hrtimer_restart virtio_mem_timer_expired(=
+struct hrtimer *timer)
+ =09=09=09=09=09     retry_timer);
 =20
--=09/* trigger the workqueue, maybe we can now unplug memory. */
-+=09/*
-+=09 * Trigger the workqueue, maybe we can now unplug memory. Also,
-+=09 * when we offline and remove a memory block, this will re-trigger
-+=09 * us immediately - which is often nice because the removal of
-+=09 * the memory block (e.g., memmap) might have freed up memory
-+=09 * on other memory blocks we manage.
-+=09 */
  =09virtio_mem_retry(vm);
++=09vm->retry_timer_ms =3D min_t(unsigned int, vm->retry_timer_ms * 2,
++=09=09=09=09   VIRTIO_MEM_RETRY_TIMER_MAX_MS);
+ =09return HRTIMER_NORESTART;
  }
 =20
-@@ -1278,7 +1306,8 @@ static int virtio_mem_mb_unplug_any_sb_offline(struct=
- virtio_mem *vm,
-  * Unplug the desired number of plugged subblocks of an online memory bloc=
-k.
-  * Will skip subblock that are busy.
-  *
-- * Will modify the state of the memory block.
-+ * Will modify the state of the memory block. Might temporarily drop the
-+ * hotplug_mutex.
-  *
-  * Note: Can fail after some subblocks were successfully unplugged. Can
-  *       return 0 even if subblocks were busy and could not get unplugged.
-@@ -1334,9 +1363,19 @@ static int virtio_mem_mb_unplug_any_sb_online(struct=
- virtio_mem *vm,
- =09}
+@@ -1746,6 +1750,7 @@ static int virtio_mem_probe(struct virtio_device *vde=
+v)
+ =09spin_lock_init(&vm->removal_lock);
+ =09hrtimer_init(&vm->retry_timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
+ =09vm->retry_timer.function =3D virtio_mem_timer_expired;
++=09vm->retry_timer_ms =3D VIRTIO_MEM_RETRY_TIMER_MIN_MS;
 =20
- =09/*
--=09 * TODO: Once all subblocks of a memory block were unplugged, we want
--=09 * to offline the memory block and remove it.
-+=09 * Once all subblocks of a memory block were unplugged, offline and
-+=09 * remove it. This will usually not fail, as no memory is in use
-+=09 * anymore - however some other notifiers might NACK the request.
- =09 */
-+=09if (virtio_mem_mb_test_sb_unplugged(vm, mb_id, 0, vm->nb_sb_per_mb)) {
-+=09=09mutex_unlock(&vm->hotplug_mutex);
-+=09=09rc =3D virtio_mem_mb_offline_and_remove(vm, mb_id);
-+=09=09mutex_lock(&vm->hotplug_mutex);
-+=09=09if (!rc)
-+=09=09=09virtio_mem_mb_set_state(vm, mb_id,
-+=09=09=09=09=09=09VIRTIO_MEM_MB_STATE_UNUSED);
-+=09}
-+
- =09return 0;
- }
-=20
+ =09/* register the virtqueue */
+ =09rc =3D virtio_mem_init_vq(vm);
 --=20
 2.24.1
 
