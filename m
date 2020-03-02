@@ -1,77 +1,117 @@
-Return-Path: virtio-dev-return-6914-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-6861-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 13CC9985F01
-	for <virtio-dev@lists.oasis-open.org>; Tue, 10 Mar 2020 12:10:18 +0000 (UTC)
-References: <20200302134941.315212-1-david@redhat.com>
- <20200302134941.315212-8-david@redhat.com>
- <20200310114312.GG8447@dhcp22.suse.cz>
- <e505b4cb-1d12-d6e6-3524-9dfa65ae34bf@redhat.com>
- <20200310115955.GI8447@dhcp22.suse.cz>
+	by lists.oasis-open.org (Postfix) with ESMTP id E22AD985CDE
+	for <virtio-dev@lists.oasis-open.org>; Mon,  2 Mar 2020 13:53:02 +0000 (UTC)
 From: David Hildenbrand <david@redhat.com>
-Message-ID: <69326f17-6762-dab1-0eca-c1c7d148b92a@redhat.com>
-Date: Tue, 10 Mar 2020 13:09:58 +0100
+Date: Mon,  2 Mar 2020 14:49:38 +0100
+Message-Id: <20200302134941.315212-9-david@redhat.com>
+In-Reply-To: <20200302134941.315212-1-david@redhat.com>
+References: <20200302134941.315212-1-david@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <20200310115955.GI8447@dhcp22.suse.cz>
-Content-Language: en-US
-Subject: [virtio-dev] Re: [PATCH v1 07/11] virtio-mem: Allow to offline partially unplugged
- memory blocks
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-To: Michal Hocko <mhocko@kernel.org>
-Cc: linux-kernel@vger.kernel.org, linux-mm@kvack.org, virtio-dev@lists.oasis-open.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>, "Michael S . Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, Oscar Salvador <osalvador@suse.de>, Igor Mammedov <imammedo@redhat.com>, Dave Young <dyoung@redhat.com>, Dan Williams <dan.j.williams@intel.com>, Pavel Tatashin <pasha.tatashin@soleen.com>, Stefan Hajnoczi <stefanha@redhat.com>, Vlastimil Babka <vbabka@suse.cz>
+Subject: [virtio-dev] [PATCH v1 08/11] mm/memory_hotplug: Introduce offline_and_remove_memory()
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
+To: linux-kernel@vger.kernel.org
+Cc: linux-mm@kvack.org, virtio-dev@lists.oasis-open.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, Michal Hocko <mhocko@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, "Michael S . Tsirkin" <mst@redhat.com>, David Hildenbrand <david@redhat.com>, Oscar Salvador <osalvador@suse.com>, Michal Hocko <mhocko@suse.com>, Pavel Tatashin <pasha.tatashin@soleen.com>, Wei Yang <richard.weiyang@gmail.com>, Dan Williams <dan.j.williams@intel.com>, Qian Cai <cai@lca.pw>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 10.03.20 12:59, Michal Hocko wrote:
-> On Tue 10-03-20 12:46:05, David Hildenbrand wrote:
->> On 10.03.20 12:43, Michal Hocko wrote:
->>> On Mon 02-03-20 14:49:37, David Hildenbrand wrote:
->>> [...]
->>>> +static void virtio_mem_notify_going_offline(struct virtio_mem *vm,
->>>> +					    unsigned long mb_id)
->>>> +{
->>>> +	const unsigned long nr_pages = PFN_DOWN(vm->subblock_size);
->>>> +	unsigned long pfn;
->>>> +	int sb_id, i;
->>>> +
->>>> +	for (sb_id = 0; sb_id < vm->nb_sb_per_mb; sb_id++) {
->>>> +		if (virtio_mem_mb_test_sb_plugged(vm, mb_id, sb_id, 1))
->>>> +			continue;
->>>> +		/*
->>>> +		 * Drop our reference to the pages so the memory can get
->>>> +		 * offlined and add the unplugged pages to the managed
->>>> +		 * page counters (so offlining code can correctly subtract
->>>> +		 * them again).
->>>> +		 */
->>>> +		pfn = PFN_DOWN(virtio_mem_mb_id_to_phys(mb_id) +
->>>> +			       sb_id * vm->subblock_size);
->>>> +		adjust_managed_page_count(pfn_to_page(pfn), nr_pages);
->>>> +		for (i = 0; i < nr_pages; i++)
->>>> +			page_ref_dec(pfn_to_page(pfn + i));
->>>
->>> Is there ever situation this might be a different than 1->0 transition?
->>
->> Only if some other code would be taking a reference. At least not from
->> virtio-mem perspective.
-> 
-> OK, so that is essentially an error condition. I think it shouldn't go
-> silent and you want something like
-> 	if (WARN_ON(!page_ref_sub_and_test(page)))
-> 		dump_page(pfn_to_page(pfn + i), "YOUR REASON");
-> 
+virtio-mem wants to offline and remove a memory block once it unplugged
+all subblocks (e.g., using alloc_contig_range()). Let's provide
+an interface to do that from a driver. virtio-mem already supports to
+offline partially unplugged memory blocks. Offlining a fully unplugged
+memory block will not require to migrate any pages. All unplugged
+subblocks are PageOffline() and have a reference count of 0 - so
+offlining code will simply skip them.
 
-Makes sense -  I'll most probably convert this to a WARN_ON_ONCE.
+All we need is an interface to offline and remove the memory from kernel
+module context, where we don't have access to the memory block devices
+(esp. find_memory_block() and device_offline()) and the device hotplug
+lock.
 
-Thanks!
+To keep things simple, allow to only work on a single memory block.
 
--- 
-Thanks,
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: David Hildenbrand <david@redhat.com>
+Cc: Oscar Salvador <osalvador@suse.com>
+Cc: Michal Hocko <mhocko@suse.com>
+Cc: Pavel Tatashin <pasha.tatashin@soleen.com>
+Cc: Wei Yang <richard.weiyang@gmail.com>
+Cc: Dan Williams <dan.j.williams@intel.com>
+Cc: Qian Cai <cai@lca.pw>
+Signed-off-by: David Hildenbrand <david@redhat.com>
+---
+ include/linux/memory_hotplug.h |  1 +
+ mm/memory_hotplug.c            | 37 ++++++++++++++++++++++++++++++++++
+ 2 files changed, 38 insertions(+)
 
-David / dhildenb
+diff --git a/include/linux/memory_hotplug.h b/include/linux/memory_hotplug.=
+h
+index f4d59155f3d4..a98aa16dbfa1 100644
+--- a/include/linux/memory_hotplug.h
++++ b/include/linux/memory_hotplug.h
+@@ -311,6 +311,7 @@ extern void try_offline_node(int nid);
+ extern int offline_pages(unsigned long start_pfn, unsigned long nr_pages);
+ extern int remove_memory(int nid, u64 start, u64 size);
+ extern void __remove_memory(int nid, u64 start, u64 size);
++extern int offline_and_remove_memory(int nid, u64 start, u64 size);
+=20
+ #else
+ static inline bool is_mem_section_removable(unsigned long pfn,
+diff --git a/mm/memory_hotplug.c b/mm/memory_hotplug.c
+index ab1c31e67fd1..d0d337918a15 100644
+--- a/mm/memory_hotplug.c
++++ b/mm/memory_hotplug.c
+@@ -1818,4 +1818,41 @@ int remove_memory(int nid, u64 start, u64 size)
+ =09return rc;
+ }
+ EXPORT_SYMBOL_GPL(remove_memory);
++
++/*
++ * Try to offline and remove a memory block. Might take a long time to
++ * finish in case memory is still in use. Primarily useful for memory devi=
+ces
++ * that logically unplugged all memory (so it's no longer in use) and want=
+ to
++ * offline + remove the memory block.
++ */
++int offline_and_remove_memory(int nid, u64 start, u64 size)
++{
++=09struct memory_block *mem;
++=09int rc =3D -EINVAL;
++
++=09if (!IS_ALIGNED(start, memory_block_size_bytes()) ||
++=09    size !=3D memory_block_size_bytes())
++=09=09return rc;
++
++=09lock_device_hotplug();
++=09mem =3D find_memory_block(__pfn_to_section(PFN_DOWN(start)));
++=09if (mem)
++=09=09rc =3D device_offline(&mem->dev);
++=09/* Ignore if the device is already offline. */
++=09if (rc > 0)
++=09=09rc =3D 0;
++
++=09/*
++=09 * In case we succeeded to offline the memory block, remove it.
++=09 * This cannot fail as it cannot get onlined in the meantime.
++=09 */
++=09if (!rc) {
++=09=09rc =3D try_remove_memory(nid, start, size);
++=09=09WARN_ON_ONCE(rc);
++=09}
++=09unlock_device_hotplug();
++
++=09return rc;
++}
++EXPORT_SYMBOL_GPL(offline_and_remove_memory);
+ #endif /* CONFIG_MEMORY_HOTREMOVE */
+--=20
+2.24.1
 
 
 ---------------------------------------------------------------------
