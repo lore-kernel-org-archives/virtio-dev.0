@@ -1,89 +1,164 @@
-Return-Path: virtio-dev-return-6913-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-6860-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id E5ADA985F01
-	for <virtio-dev@lists.oasis-open.org>; Tue, 10 Mar 2020 11:49:04 +0000 (UTC)
-References: <20200302134941.315212-1-david@redhat.com>
- <20200302134941.315212-7-david@redhat.com>
- <20200310114745.GH8447@dhcp22.suse.cz>
+	by lists.oasis-open.org (Postfix) with ESMTP id 71CCC985CDE
+	for <virtio-dev@lists.oasis-open.org>; Mon,  2 Mar 2020 13:52:52 +0000 (UTC)
 From: David Hildenbrand <david@redhat.com>
-Message-ID: <5bc2a2ff-1ae0-6746-b32a-c27962804cef@redhat.com>
-Date: Tue, 10 Mar 2020 12:48:48 +0100
+Date: Mon,  2 Mar 2020 14:49:37 +0100
+Message-Id: <20200302134941.315212-8-david@redhat.com>
+In-Reply-To: <20200302134941.315212-1-david@redhat.com>
+References: <20200302134941.315212-1-david@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <20200310114745.GH8447@dhcp22.suse.cz>
-Content-Language: en-US
-Subject: [virtio-dev] Re: [PATCH v1 06/11] mm: Allow to offline unmovable PageOffline()
- pages via MEM_GOING_OFFLINE
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-To: Michal Hocko <mhocko@kernel.org>
-Cc: linux-kernel@vger.kernel.org, linux-mm@kvack.org, virtio-dev@lists.oasis-open.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>, "Michael S . Tsirkin" <mst@redhat.com>, Juergen Gross <jgross@suse.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Pavel Tatashin <pavel.tatashin@microsoft.com>, Alexander Duyck <alexander.h.duyck@linux.intel.com>, Vlastimil Babka <vbabka@suse.cz>, Johannes Weiner <hannes@cmpxchg.org>, Anthony Yznaga <anthony.yznaga@oracle.com>, Oscar Salvador <osalvador@suse.de>, Mel Gorman <mgorman@techsingularity.net>, Mike Rapoport <rppt@linux.ibm.com>, Dan Williams <dan.j.williams@intel.com>, Anshuman Khandual <anshuman.khandual@arm.com>, Qian Cai <cai@lca.pw>, Pingfan Liu <kernelfans@gmail.com>
+Subject: [virtio-dev] [PATCH v1 07/11] virtio-mem: Allow to offline partially unplugged memory blocks
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
+To: linux-kernel@vger.kernel.org
+Cc: linux-mm@kvack.org, virtio-dev@lists.oasis-open.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, Michal Hocko <mhocko@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, "Michael S . Tsirkin" <mst@redhat.com>, David Hildenbrand <david@redhat.com>, Jason Wang <jasowang@redhat.com>, Oscar Salvador <osalvador@suse.de>, Igor Mammedov <imammedo@redhat.com>, Dave Young <dyoung@redhat.com>, Dan Williams <dan.j.williams@intel.com>, Pavel Tatashin <pasha.tatashin@soleen.com>, Stefan Hajnoczi <stefanha@redhat.com>, Vlastimil Babka <vbabka@suse.cz>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 10.03.20 12:47, Michal Hocko wrote:
-> On Mon 02-03-20 14:49:36, David Hildenbrand wrote:
->> virtio-mem wants to allow to offline memory blocks of which some parts
->> were unplugged (allocated via alloc_contig_range()), especially, to later
->> offline and remove completely unplugged memory blocks. The important part
->> is that PageOffline() has to remain set until the section is offline, so
->> these pages will never get accessed (e.g., when dumping). The pages should
->> not be handed back to the buddy (which would require clearing PageOffline()
->> and result in issues if offlining fails and the pages are suddenly in the
->> buddy).
->>
->> Let's allow to do that by allowing to isolate any PageOffline() page
->> when offlining. This way, we can reach the memory hotplug notifier
->> MEM_GOING_OFFLINE, where the driver can signal that he is fine with
->> offlining this page by dropping its reference count. PageOffline() pages
->> with a reference count of 0 can then be skipped when offlining the
->> pages (like if they were free, however they are not in the buddy).
->>
->> Anybody who uses PageOffline() pages and does not agree to offline them
->> (e.g., Hyper-V balloon, XEN balloon, VMWare balloon for 2MB pages) will not
->> decrement the reference count and make offlining fail when trying to
->> migrate such an unmovable page. So there should be no observable change.
->> Same applies to balloon compaction users (movable PageOffline() pages), the
->> pages will simply be migrated.
->>
->> Note 1: If offlining fails, a driver has to increment the reference
->> 	count again in MEM_CANCEL_OFFLINE.
->>
->> Note 2: A driver that makes use of this has to be aware that re-onlining
->> 	the memory block has to be handled by hooking into onlining code
->> 	(online_page_callback_t), resetting the page PageOffline() and
->> 	not giving them to the buddy.
->>
->> Cc: Andrew Morton <akpm@linux-foundation.org>
->> Cc: Juergen Gross <jgross@suse.com>
->> Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
->> Cc: Pavel Tatashin <pavel.tatashin@microsoft.com>
->> Cc: Alexander Duyck <alexander.h.duyck@linux.intel.com>
->> Cc: Vlastimil Babka <vbabka@suse.cz>
->> Cc: Johannes Weiner <hannes@cmpxchg.org>
->> Cc: Anthony Yznaga <anthony.yznaga@oracle.com>
->> Cc: Michal Hocko <mhocko@suse.com>
->> Cc: Oscar Salvador <osalvador@suse.de>
->> Cc: Mel Gorman <mgorman@techsingularity.net>
->> Cc: Mike Rapoport <rppt@linux.ibm.com>
->> Cc: Dan Williams <dan.j.williams@intel.com>
->> Cc: Anshuman Khandual <anshuman.khandual@arm.com>
->> Cc: Qian Cai <cai@lca.pw>
->> Cc: Pingfan Liu <kernelfans@gmail.com>
->> Signed-off-by: David Hildenbrand <david@redhat.com>
-> 
-> Looks good to me. Thanks for dropping __put_page hooks!
-> Acked-by: Michal Hocko <mhocko@suse.com>
+Dropping the reference count of PageOffline() pages allows offlining
+code to skip them. However, we also have to convert PG_reserved to
+another flag - let's use PG_dirty - so has_unmovable_pages() will
+properly handle them. PG_reserved pages get detected as unmovable right
+away.
 
-Thanks a lot Michal - looks much cleaner this way.
+We need the flag to see if we are onlining pages the first time, or if
+we allocated them via alloc_contig_range().
 
--- 
-Thanks,
+Properly take care of offlining code also modifying the stats and
+special handling in case the driver gets unloaded.
 
-David / dhildenb
+Cc: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: Jason Wang <jasowang@redhat.com>
+Cc: Oscar Salvador <osalvador@suse.de>
+Cc: Michal Hocko <mhocko@kernel.org>
+Cc: Igor Mammedov <imammedo@redhat.com>
+Cc: Dave Young <dyoung@redhat.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Dan Williams <dan.j.williams@intel.com>
+Cc: Pavel Tatashin <pasha.tatashin@soleen.com>
+Cc: Stefan Hajnoczi <stefanha@redhat.com>
+Cc: Vlastimil Babka <vbabka@suse.cz>
+Signed-off-by: David Hildenbrand <david@redhat.com>
+---
+ drivers/virtio/virtio_mem.c | 64 ++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 63 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/virtio/virtio_mem.c b/drivers/virtio/virtio_mem.c
+index 5b26d57be551..2916f8b970fa 100644
+--- a/drivers/virtio/virtio_mem.c
++++ b/drivers/virtio/virtio_mem.c
+@@ -570,6 +570,53 @@ static void virtio_mem_notify_online(struct virtio_mem=
+ *vm, unsigned long mb_id,
+ =09=09virtio_mem_retry(vm);
+ }
+=20
++static void virtio_mem_notify_going_offline(struct virtio_mem *vm,
++=09=09=09=09=09    unsigned long mb_id)
++{
++=09const unsigned long nr_pages =3D PFN_DOWN(vm->subblock_size);
++=09unsigned long pfn;
++=09int sb_id, i;
++
++=09for (sb_id =3D 0; sb_id < vm->nb_sb_per_mb; sb_id++) {
++=09=09if (virtio_mem_mb_test_sb_plugged(vm, mb_id, sb_id, 1))
++=09=09=09continue;
++=09=09/*
++=09=09 * Drop our reference to the pages so the memory can get
++=09=09 * offlined and add the unplugged pages to the managed
++=09=09 * page counters (so offlining code can correctly subtract
++=09=09 * them again).
++=09=09 */
++=09=09pfn =3D PFN_DOWN(virtio_mem_mb_id_to_phys(mb_id) +
++=09=09=09       sb_id * vm->subblock_size);
++=09=09adjust_managed_page_count(pfn_to_page(pfn), nr_pages);
++=09=09for (i =3D 0; i < nr_pages; i++)
++=09=09=09page_ref_dec(pfn_to_page(pfn + i));
++=09}
++}
++
++static void virtio_mem_notify_cancel_offline(struct virtio_mem *vm,
++=09=09=09=09=09     unsigned long mb_id)
++{
++=09const unsigned long nr_pages =3D PFN_DOWN(vm->subblock_size);
++=09unsigned long pfn;
++=09int sb_id, i;
++
++=09for (sb_id =3D 0; sb_id < vm->nb_sb_per_mb; sb_id++) {
++=09=09if (virtio_mem_mb_test_sb_plugged(vm, mb_id, sb_id, 1))
++=09=09=09continue;
++=09=09/*
++=09=09 * Get the reference we dropped when going offline and
++=09=09 * subtract the unplugged pages from the managed page
++=09=09 * counters.
++=09=09 */
++=09=09pfn =3D PFN_DOWN(virtio_mem_mb_id_to_phys(mb_id) +
++=09=09=09       sb_id * vm->subblock_size);
++=09=09adjust_managed_page_count(pfn_to_page(pfn), -nr_pages);
++=09=09for (i =3D 0; i < nr_pages; i++)
++=09=09=09page_ref_inc(pfn_to_page(pfn + i));
++=09}
++}
++
+ /*
+  * This callback will either be called synchronously from add_memory() or
+  * asynchronously (e.g., triggered via user space). We have to be careful
+@@ -616,6 +663,7 @@ static int virtio_mem_memory_notifier_cb(struct notifie=
+r_block *nb,
+ =09=09=09break;
+ =09=09}
+ =09=09vm->hotplug_active =3D true;
++=09=09virtio_mem_notify_going_offline(vm, mb_id);
+ =09=09break;
+ =09case MEM_GOING_ONLINE:
+ =09=09mutex_lock(&vm->hotplug_mutex);
+@@ -640,6 +688,12 @@ static int virtio_mem_memory_notifier_cb(struct notifi=
+er_block *nb,
+ =09=09mutex_unlock(&vm->hotplug_mutex);
+ =09=09break;
+ =09case MEM_CANCEL_OFFLINE:
++=09=09if (!vm->hotplug_active)
++=09=09=09break;
++=09=09virtio_mem_notify_cancel_offline(vm, mb_id);
++=09=09vm->hotplug_active =3D false;
++=09=09mutex_unlock(&vm->hotplug_mutex);
++=09=09break;
+ =09case MEM_CANCEL_ONLINE:
+ =09=09if (!vm->hotplug_active)
+ =09=09=09break;
+@@ -666,8 +720,11 @@ static void virtio_mem_set_fake_offline(unsigned long =
+pfn,
+ =09=09struct page *page =3D pfn_to_page(pfn);
+=20
+ =09=09__SetPageOffline(page);
+-=09=09if (!onlined)
++=09=09if (!onlined) {
+ =09=09=09SetPageDirty(page);
++=09=09=09/* FIXME: remove after cleanups */
++=09=09=09ClearPageReserved(page);
++=09=09}
+ =09}
+ }
+=20
+@@ -1717,6 +1774,11 @@ static void virtio_mem_remove(struct virtio_device *=
+vdev)
+ =09=09rc =3D virtio_mem_mb_remove(vm, mb_id);
+ =09=09BUG_ON(rc);
+ =09}
++=09/*
++=09 * After we unregistered our callbacks, user space can no longer
++=09 * offline partially plugged online memory blocks. No need to worry
++=09 * about them.
++=09 */
+=20
+ =09/* unregister callbacks */
+ =09unregister_virtio_mem_device(vm);
+--=20
+2.24.1
 
 
 ---------------------------------------------------------------------
