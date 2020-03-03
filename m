@@ -1,169 +1,187 @@
-Return-Path: virtio-dev-return-6880-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-6882-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id B6D25985F0F
-	for <virtio-dev@lists.oasis-open.org>; Tue,  3 Mar 2020 14:17:51 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id A4B69985F1F
+	for <virtio-dev@lists.oasis-open.org>; Tue,  3 Mar 2020 18:55:37 +0000 (UTC)
 MIME-Version: 1.0
-References: <20200302115003.14877-1-yuri.benditovich@daynix.com> <20200302115003.14877-3-yuri.benditovich@daynix.com>
-In-Reply-To: <20200302115003.14877-3-yuri.benditovich@daynix.com>
-From: Rob Miller <rob.miller@broadcom.com>
-Date: Tue, 3 Mar 2020 09:17:24 -0500
-Message-ID: <CAJPjb1L3vZLCdOkgV-LTKg_Yp-PWxN4_OmrOVRS2D2NyMF-zvQ@mail.gmail.com>
+References: <20200302115003.14877-1-yuri.benditovich@daynix.com>
+ <20200302115003.14877-3-yuri.benditovich@daynix.com> <CAJPjb1L3vZLCdOkgV-LTKg_Yp-PWxN4_OmrOVRS2D2NyMF-zvQ@mail.gmail.com>
+In-Reply-To: <CAJPjb1L3vZLCdOkgV-LTKg_Yp-PWxN4_OmrOVRS2D2NyMF-zvQ@mail.gmail.com>
+From: Yuri Benditovich <yuri.benditovich@daynix.com>
+Date: Tue, 3 Mar 2020 20:55:27 +0200
+Message-ID: <CAOEp5OdDWUKKvogDZ8vpbEuJh9BdCVpjZBTFOCuGhRdt8_bHRw@mail.gmail.com>
 Subject: Re: [virtio-dev] [PATCH v4 2/3] virtio-net: Introduce RSS receive
  steering feature
-Content-Type: multipart/alternative; boundary="000000000000ff937a059ff3f7e0"
-To: Virtio-Dev <virtio-dev@lists.oasis-open.org>
+Content-Type: multipart/alternative; boundary="000000000000616837059ff7d9a7"
+To: Rob Miller <rob.miller@broadcom.com>
+Cc: Virtio-Dev <virtio-dev@lists.oasis-open.org>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
---000000000000ff937a059ff3f7e0
+--000000000000616837059ff7d9a7
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-Given that this new feature clarifies RSS, should the existing references
-to RSS be updated in the spec to have RSS replaced with RFS (aka Receive
-Flow Steering)?
+On Tue, Mar 3, 2020 at 4:17 PM Rob Miller <rob.miller@broadcom.com> wrote:
 
-Rob Miller
-rob.miller@broadcom.com
-(919)721-3339
-
-
-On Mon, Mar 2, 2020 at 6:52 AM Yuri Benditovich <yuri.benditovich@daynix.co=
-m>
-wrote:
-
-> RSS (Receive-side scaling) defines hash calculation
-> rules and decision on receive virtqueue according to
-> the calculated hash, provided mask to apply and
-> provided indirection table containing indices of
-> receive virqueues. The driver sends the control
-> command to enable multiqueue and provide parameters
-> for receive steering.
->
-> Signed-off-by: Yuri Benditovich <yuri.benditovich@daynix.com>
-> ---
->  include/uapi/linux/virtio_net.h | 42 +++++++++++++++++++++++++++++++--
->  1 file changed, 40 insertions(+), 2 deletions(-)
->
-> diff --git a/include/uapi/linux/virtio_net.h
-> b/include/uapi/linux/virtio_net.h
-> index 6466c5979a93..aec6fac3666a 100644
-> --- a/include/uapi/linux/virtio_net.h
-> +++ b/include/uapi/linux/virtio_net.h
-> @@ -57,6 +57,7 @@
->                                          * Steering */
->  #define VIRTIO_NET_F_CTRL_MAC_ADDR 23  /* Set MAC address */
->
-> +#define VIRTIO_NET_F_RSS         60    /* Supports RSS RX steering */
->  #define VIRTIO_NET_F_RSC_EXT     61    /* extended coalescing info */
->  #define VIRTIO_NET_F_STANDBY     62    /* Act as standby for another
-> device
->                                          * with the same MAC.
-> @@ -70,6 +71,17 @@
->  #define VIRTIO_NET_S_LINK_UP   1       /* Link is up */
->  #define VIRTIO_NET_S_ANNOUNCE  2       /* Announcement is needed */
->
-> +/* supported/enabled hash types */
-> +#define VIRTIO_NET_RSS_HASH_TYPE_IPv4          (1 << 0)
-> +#define VIRTIO_NET_RSS_HASH_TYPE_TCPv4         (1 << 1)
-> +#define VIRTIO_NET_RSS_HASH_TYPE_UDPv4         (1 << 2)
-> +#define VIRTIO_NET_RSS_HASH_TYPE_IPv6          (1 << 3)
-> +#define VIRTIO_NET_RSS_HASH_TYPE_TCPv6         (1 << 4)
-> +#define VIRTIO_NET_RSS_HASH_TYPE_UDPv6         (1 << 5)
-> +#define VIRTIO_NET_RSS_HASH_TYPE_IP_EX         (1 << 6)
-> +#define VIRTIO_NET_RSS_HASH_TYPE_TCP_EX        (1 << 7)
-> +#define VIRTIO_NET_RSS_HASH_TYPE_UDP_EX        (1 << 8)
-> +
->  struct virtio_net_config {
->         /* The config defining mac address (if VIRTIO_NET_F_MAC) */
->         __u8 mac[ETH_ALEN];
-> @@ -93,6 +105,12 @@ struct virtio_net_config {
->          * Any other value stands for unknown.
->          */
->         __u8 duplex;
-> +       /* maximum size of RSS key */
-> +       __u8 rss_max_key_size;
-> +       /* maximum number of indirection table entries */
-> +       __le16 rss_max_indirection_table_length;
-> +       /* bitmask of supported VIRTIO_NET_RSS_HASH_ types */
-> +       __le32 supported_hash_types;
->  } __attribute__((packed));
->
->  /*
-> @@ -248,7 +266,9 @@ struct virtio_net_ctrl_mac {
->
->  /*
->   * Control Receive Flow Steering
-> - *
-> + */
-> +#define VIRTIO_NET_CTRL_MQ   4
-> +/*
->   * The command VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET
->   * enables Receive Flow Steering, specifying the number of the transmit
-> and
->   * receive queues that will be used. After the command is consumed and
-> acked by
-> @@ -261,11 +281,29 @@ struct virtio_net_ctrl_mq {
->         __virtio16 virtqueue_pairs;
->  };
->
-> -#define VIRTIO_NET_CTRL_MQ   4
->   #define VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET        0
->   #define VIRTIO_NET_CTRL_MQ_VQ_PAIRS_MIN        1
->   #define VIRTIO_NET_CTRL_MQ_VQ_PAIRS_MAX        0x8000
->
-> +/*
-> + * The command VIRTIO_NET_CTRL_MQ_RSS_CONFIG has the same effect as
-> + * VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET does and additionally configures
-> + * the receive steering to use a hash calculated for incoming packet
-> + * to decide on receive virtqueue to place the packet. The command
-> + * also provides parameters to calculate a hash and receive virtqueue.
-> + */
-> +struct virtio_net_rss_config {
-> +       __le32 hash_types;
-> +       __le16 indirection_table_mask;
-> +       __le16 unclassified_queue;
-> +       __le16 indirection_table[1/* + indirection_table_mask */];
-> +       __le16 max_tx_vq;
-> +       __u8 hash_key_length;
-> +       __u8 hash_key_data[/* hash_key_length */];
-> +};
-> +
-> + #define VIRTIO_NET_CTRL_MQ_RSS_CONFIG          1
-> +
->  /*
->   * Control network offloads
->   *
-> --
-> 2.17.1
->
->
-> ---------------------------------------------------------------------
-> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
->
+> Given that this new feature clarifies RSS, should the existing references
+> to RSS be updated in the spec to have RSS replaced with RFS (aka Receive
+> Flow Steering)?
 >
 
---000000000000ff937a059ff3f7e0
+RSS is a flavor of receive flow steering in addition to already existing
+'automatic'.
+
+
+>
+> Rob Miller
+> rob.miller@broadcom.com
+> (919)721-3339
+>
+>
+> On Mon, Mar 2, 2020 at 6:52 AM Yuri Benditovich <
+> yuri.benditovich@daynix.com> wrote:
+>
+>> RSS (Receive-side scaling) defines hash calculation
+>> rules and decision on receive virtqueue according to
+>> the calculated hash, provided mask to apply and
+>> provided indirection table containing indices of
+>> receive virqueues. The driver sends the control
+>> command to enable multiqueue and provide parameters
+>> for receive steering.
+>>
+>> Signed-off-by: Yuri Benditovich <yuri.benditovich@daynix.com>
+>> ---
+>>  include/uapi/linux/virtio_net.h | 42 +++++++++++++++++++++++++++++++--
+>>  1 file changed, 40 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/include/uapi/linux/virtio_net.h
+>> b/include/uapi/linux/virtio_net.h
+>> index 6466c5979a93..aec6fac3666a 100644
+>> --- a/include/uapi/linux/virtio_net.h
+>> +++ b/include/uapi/linux/virtio_net.h
+>> @@ -57,6 +57,7 @@
+>>                                          * Steering */
+>>  #define VIRTIO_NET_F_CTRL_MAC_ADDR 23  /* Set MAC address */
+>>
+>> +#define VIRTIO_NET_F_RSS         60    /* Supports RSS RX steering */
+>>  #define VIRTIO_NET_F_RSC_EXT     61    /* extended coalescing info */
+>>  #define VIRTIO_NET_F_STANDBY     62    /* Act as standby for another
+>> device
+>>                                          * with the same MAC.
+>> @@ -70,6 +71,17 @@
+>>  #define VIRTIO_NET_S_LINK_UP   1       /* Link is up */
+>>  #define VIRTIO_NET_S_ANNOUNCE  2       /* Announcement is needed */
+>>
+>> +/* supported/enabled hash types */
+>> +#define VIRTIO_NET_RSS_HASH_TYPE_IPv4          (1 << 0)
+>> +#define VIRTIO_NET_RSS_HASH_TYPE_TCPv4         (1 << 1)
+>> +#define VIRTIO_NET_RSS_HASH_TYPE_UDPv4         (1 << 2)
+>> +#define VIRTIO_NET_RSS_HASH_TYPE_IPv6          (1 << 3)
+>> +#define VIRTIO_NET_RSS_HASH_TYPE_TCPv6         (1 << 4)
+>> +#define VIRTIO_NET_RSS_HASH_TYPE_UDPv6         (1 << 5)
+>> +#define VIRTIO_NET_RSS_HASH_TYPE_IP_EX         (1 << 6)
+>> +#define VIRTIO_NET_RSS_HASH_TYPE_TCP_EX        (1 << 7)
+>> +#define VIRTIO_NET_RSS_HASH_TYPE_UDP_EX        (1 << 8)
+>> +
+>>  struct virtio_net_config {
+>>         /* The config defining mac address (if VIRTIO_NET_F_MAC) */
+>>         __u8 mac[ETH_ALEN];
+>> @@ -93,6 +105,12 @@ struct virtio_net_config {
+>>          * Any other value stands for unknown.
+>>          */
+>>         __u8 duplex;
+>> +       /* maximum size of RSS key */
+>> +       __u8 rss_max_key_size;
+>> +       /* maximum number of indirection table entries */
+>> +       __le16 rss_max_indirection_table_length;
+>> +       /* bitmask of supported VIRTIO_NET_RSS_HASH_ types */
+>> +       __le32 supported_hash_types;
+>>  } __attribute__((packed));
+>>
+>>  /*
+>> @@ -248,7 +266,9 @@ struct virtio_net_ctrl_mac {
+>>
+>>  /*
+>>   * Control Receive Flow Steering
+>> - *
+>> + */
+>> +#define VIRTIO_NET_CTRL_MQ   4
+>> +/*
+>>   * The command VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET
+>>   * enables Receive Flow Steering, specifying the number of the transmit
+>> and
+>>   * receive queues that will be used. After the command is consumed and
+>> acked by
+>> @@ -261,11 +281,29 @@ struct virtio_net_ctrl_mq {
+>>         __virtio16 virtqueue_pairs;
+>>  };
+>>
+>> -#define VIRTIO_NET_CTRL_MQ   4
+>>   #define VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET        0
+>>   #define VIRTIO_NET_CTRL_MQ_VQ_PAIRS_MIN        1
+>>   #define VIRTIO_NET_CTRL_MQ_VQ_PAIRS_MAX        0x8000
+>>
+>> +/*
+>> + * The command VIRTIO_NET_CTRL_MQ_RSS_CONFIG has the same effect as
+>> + * VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET does and additionally configures
+>> + * the receive steering to use a hash calculated for incoming packet
+>> + * to decide on receive virtqueue to place the packet. The command
+>> + * also provides parameters to calculate a hash and receive virtqueue.
+>> + */
+>> +struct virtio_net_rss_config {
+>> +       __le32 hash_types;
+>> +       __le16 indirection_table_mask;
+>> +       __le16 unclassified_queue;
+>> +       __le16 indirection_table[1/* + indirection_table_mask */];
+>> +       __le16 max_tx_vq;
+>> +       __u8 hash_key_length;
+>> +       __u8 hash_key_data[/* hash_key_length */];
+>> +};
+>> +
+>> + #define VIRTIO_NET_CTRL_MQ_RSS_CONFIG          1
+>> +
+>>  /*
+>>   * Control network offloads
+>>   *
+>> --
+>> 2.17.1
+>>
+>>
+>> ---------------------------------------------------------------------
+>> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+>> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+>>
+>>
+
+--000000000000616837059ff7d9a7
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
+<div dir=3D"ltr"><div dir=3D"ltr"><br></div><br><div class=3D"gmail_quote">=
+<div dir=3D"ltr" class=3D"gmail_attr">On Tue, Mar 3, 2020 at 4:17 PM Rob Mi=
+ller &lt;<a href=3D"mailto:rob.miller@broadcom.com">rob.miller@broadcom.com=
+</a>&gt; wrote:<br></div><blockquote class=3D"gmail_quote" style=3D"margin:=
+0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">=
 <div dir=3D"ltr">Given=C2=A0that this new feature clarifies RSS, should the=
  existing references to RSS be updated in the spec to have RSS replaced wit=
-h RFS (aka Receive Flow Steering)?<div><br clear=3D"all"><div><div dir=3D"l=
-tr" class=3D"gmail_signature" data-smartmail=3D"gmail_signature"><div dir=
-=3D"ltr">Rob Miller<div><a href=3D"mailto:rob.miller@broadcom.com" target=
-=3D"_blank">rob.miller@broadcom.com</a></div><div>(919)721-3339</div></div>=
-</div></div><br></div></div><br><div class=3D"gmail_quote"><div dir=3D"ltr"=
- class=3D"gmail_attr">On Mon, Mar 2, 2020 at 6:52 AM Yuri Benditovich &lt;<=
-a href=3D"mailto:yuri.benditovich@daynix.com">yuri.benditovich@daynix.com</=
-a>&gt; wrote:<br></div><blockquote class=3D"gmail_quote" style=3D"margin:0p=
-x 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">RS=
-S (Receive-side scaling) defines hash calculation<br>
+h RFS (aka Receive Flow Steering)?</div></blockquote><div><br></div><div>RS=
+S is a=C2=A0flavor of receive flow steering in addition to already existing=
+ &#39;automatic&#39;.</div><div>=C2=A0<br></div><blockquote class=3D"gmail_=
+quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,=
+204);padding-left:1ex"><div dir=3D"ltr"><div><br clear=3D"all"><div><div di=
+r=3D"ltr"><div dir=3D"ltr">Rob Miller<div><a href=3D"mailto:rob.miller@broa=
+dcom.com" target=3D"_blank">rob.miller@broadcom.com</a></div><div>(919)721-=
+3339</div></div></div></div><br></div></div><br><div class=3D"gmail_quote">=
+<div dir=3D"ltr" class=3D"gmail_attr">On Mon, Mar 2, 2020 at 6:52 AM Yuri B=
+enditovich &lt;<a href=3D"mailto:yuri.benditovich@daynix.com" target=3D"_bl=
+ank">yuri.benditovich@daynix.com</a>&gt; wrote:<br></div><blockquote class=
+=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rg=
+b(204,204,204);padding-left:1ex">RSS (Receive-side scaling) defines hash ca=
+lculation<br>
 rules and decision on receive virtqueue according to<br>
 the calculated hash, provided mask to apply and<br>
 provided indirection table containing indices of<br>
@@ -305,6 +323,7 @@ sis-open.org" target=3D"_blank">virtio-dev-help@lists.oasis-open.org</a><br=
 >
 <br>
 </blockquote></div>
+</blockquote></div></div>
 
---000000000000ff937a059ff3f7e0--
+--000000000000616837059ff7d9a7--
 
