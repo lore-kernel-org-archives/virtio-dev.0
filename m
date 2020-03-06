@@ -1,79 +1,94 @@
-Return-Path: virtio-comment-return-1170-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio-comment@lists.oasis-open.org>
-List-Post: <mailto:virtio-comment@lists.oasis-open.org>
-List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
-References: <20200327103803.10460-1-alex.bennee@linaro.org>
- <20200327115338.57a79ac4.cohuck@redhat.com>
-From: Alex =?utf-8?Q?Benn=C3=A9e?= <alex.bennee@linaro.org>
-In-reply-to: <20200327115338.57a79ac4.cohuck@redhat.com>
-Date: Fri, 27 Mar 2020 11:58:02 +0000
-Message-ID: <87pncym2lx.fsf@linaro.org>
+Return-Path: virtio-dev-return-6891-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id D4E46985FBD
+	for <virtio-dev@lists.oasis-open.org>; Fri,  6 Mar 2020 15:40:40 +0000 (UTC)
 MIME-Version: 1.0
-Subject: Re: [virtio-comment] [RFC PATCH  0/8] some tweaks to the document
- build process
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-To: Cornelia Huck <cohuck@redhat.com>
-Cc: virtio-dev@lists.oasis-open.org, virtio-comment@lists.oasis-open.org
+From: Rob Miller <rob.miller@broadcom.com>
+Date: Fri, 6 Mar 2020 10:40:13 -0500
+Message-ID: <CAJPjb1K2W=wcer3+6XNzi+pcyGPAU2E3HXbq5_cuBVNQad=_zg@mail.gmail.com>
+Subject: [virtio-dev] Dirty Page Tracking (DPT)
+Content-Type: multipart/alternative; boundary="000000000000b4a75105a031790d"
+To: Virtio-Dev <virtio-dev@lists.oasis-open.org>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+--000000000000b4a75105a031790d
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-Cornelia Huck <cohuck@redhat.com> writes:
+I understand that DPT isn't really on the forefront of the vDPA framework,
+but wanted to understand if there any initial thoughts on how this would
+work...
 
-> On Fri, 27 Mar 2020 10:37:55 +0000
-> Alex Benn=C3=A9e <alex.bennee@linaro.org> wrote:
->
->> Hi,
->>=20
->> I was reviewing someones virtio-spec and realised that I wasn't quite
->> sure what it had been built from. Seeing as the standard is hosted in
->> git I've tried to clean up some of the automation to make it clearer
->> what a particular rendering was built from. Going forward it would be
->> nice to use signed annotated tags for the final build version but I
->> don't know how much of the boilerplate is down to OASIS requirements.
->
-> OASIS requirements are my concern here as well.
+In the migration framework, in its simplest form, (I gather) its QEMU via
+KVM that is reading the dirty page table, converting bits to page numbers,
+then flushing remote VM/copying local page(s)->remote VM, ect.
 
-I've tried to do some digging although the Oasis website has a lot of
-policy documents. I think the most relevant one is:
+While this is fine for a VM (say VM1) dirtying its own memory and the
+accesses are trapped in the kernel as well as the log is being updated, I'm
+not sure what happens in the situation of vhost, where a remote VM (say
+VM2) is dirtying up VM1's memory since it can directly access it, during
+packet reception for example.
 
-  https://docs.oasis-open.org/specGuidelines/ndr/namingDirectives.html
+Whatever technique is employed to catch this, how would this differ from a
+HW based Virtio device doing DMA directly into a VM's DDR, wrt to DPT? Is
+QEMU going to have a 2nd place to query the dirty logs - ie: the vDPA layer=
+?
 
-which as far as I can make out is mostly concerned that the final work
-product meets the naming standard by version and stage. Although ZIP
-files are mentioned a couple of times it is in the context of a file
-containing work products for local use. My personal interpretation is
-that if the final work products are correctly named and have the version
-information in them the rest is just ephemera. However I could be wrong
-so defer to anyone more familiar with the policies.
+Further I heard about a SW based DPT within the vDPA framework for those
+devices that do not (yet) support DPT inherently in HW. How is this
+envisioned to work?
 
-An random sampling of ZIP files on https://www.oasis-open.org/standards
-has shown them all to just contain the individual work products without
-any extraneous REVISION/REVISION-DATE files.
+Finally, for those HW vendors that do support DPT in HW, a mapping of a bit
+-> page isn't really an option, since no one wants to do a byte wide
+read-modify-write across the PCI bus, but rather  map a whole byte to page
+is likely more desirable - the HW can just do non-posted writes to the
+dirty page table. If byte wise, then the QEMU/vDPA layer has to either
+fix-up the mapping (from byte->bit) or have the capability to handle the
+granularity diffs.
 
-Anyway I defer to those with more experience of the process and I'll
-leave the question of tex vs rst for another day ;-)
+Thoughts?
 
---=20
-Alex Benn=C3=A9e
+Rob Miller
+rob.miller@broadcom.com
+(919)721-3339
 
-This publicly archived list offers a means to provide input to the=0D
-OASIS Virtual I/O Device (VIRTIO) TC.=0D
-=0D
-In order to verify user consent to the Feedback License terms and=0D
-to minimize spam in the list archive, subscription is required=0D
-before posting.=0D
-=0D
-Subscribe: virtio-comment-subscribe@lists.oasis-open.org=0D
-Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org=0D
-List help: virtio-comment-help@lists.oasis-open.org=0D
-List archive: https://lists.oasis-open.org/archives/virtio-comment/=0D
-Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf=
-=0D
-List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lis=
-ts=0D
-Committee: https://www.oasis-open.org/committees/virtio/=0D
-Join OASIS: https://www.oasis-open.org/join/
+--000000000000b4a75105a031790d
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">I understand that DPT isn&#39;t really on the forefront of=
+ the vDPA framework, but wanted to understand if there any initial thoughts=
+ on how this would work...<div><br></div><div>In the migration framework, i=
+n its simplest form, (I gather) its QEMU via KVM that is reading the dirty =
+page table, converting bits to page numbers, then flushing remote VM/copyin=
+g local page(s)-&gt;remote VM, ect.=C2=A0</div><div><br></div><div>While th=
+is is fine for a VM (say VM1) dirtying its own memory and the accesses are =
+trapped in the kernel as well as the log is being updated, I&#39;m not sure=
+ what happens in the situation=C2=A0of vhost, where a remote VM (say VM2) i=
+s dirtying up VM1&#39;s memory since it can directly access it, during pack=
+et reception for example.</div><div><br></div><div>Whatever technique is em=
+ployed=C2=A0to catch this, how would this differ from a HW based Virtio dev=
+ice doing DMA directly into a VM&#39;s DDR, wrt to DPT? Is QEMU going to ha=
+ve a 2nd place to query the dirty logs - ie: the vDPA layer?</div><div><br>=
+</div><div>Further I heard about a SW based DPT within the vDPA framework f=
+or those devices that do not (yet) support DPT inherently in HW. How is thi=
+s envisioned to work?</div><div><br></div><div>Finally, for those HW vendor=
+s that do support DPT in HW, a mapping of a bit -&gt; page isn&#39;t really=
+ an option, since no one wants to do a byte wide read-modify-write across t=
+he PCI bus, but rather=C2=A0 map a whole byte to page is likely more desira=
+ble - the HW can just do non-posted writes to the dirty page table. If byte=
+ wise, then the QEMU/vDPA layer has to either fix-up the mapping (from byte=
+-&gt;bit) or have the capability to handle the granularity diffs.</div><div=
+><br></div><div>Thoughts?</div><div><br clear=3D"all"><div><div dir=3D"ltr"=
+ class=3D"gmail_signature" data-smartmail=3D"gmail_signature"><div dir=3D"l=
+tr">Rob Miller<div><a href=3D"mailto:rob.miller@broadcom.com" target=3D"_bl=
+ank">rob.miller@broadcom.com</a></div><div>(919)721-3339</div></div></div><=
+/div></div></div>
+
+--000000000000b4a75105a031790d--
 
