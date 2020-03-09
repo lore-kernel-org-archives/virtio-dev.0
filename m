@@ -1,96 +1,55 @@
-Return-Path: virtio-dev-return-6935-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-6906-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id BFCF8985FDA
-	for <virtio-dev@lists.oasis-open.org>; Wed, 11 Mar 2020 18:24:26 +0000 (UTC)
-Date: Wed, 11 Mar 2020 19:18:55 +0100
-From: Halil Pasic <pasic@linux.ibm.com>
-In-Reply-To: <20200311172411.GG281087@stefanha-x1.localdomain>
-References: <874kv15o4q.fsf@linaro.org>
- <20200309154637.GJ7668@stefanha-x1.localdomain>
- <871rq1jx70.fsf@linaro.org>
- <20200311172411.GG281087@stefanha-x1.localdomain>
+	by lists.oasis-open.org (Postfix) with ESMTP id 231AC985BF2
+	for <virtio-dev@lists.oasis-open.org>; Mon,  9 Mar 2020 17:27:41 +0000 (UTC)
 MIME-Version: 1.0
-Message-Id: <20200311191855.3a406bbf.pasic@linux.ibm.com>
+References: <874kv15o4q.fsf@linaro.org> <20200309154637.GJ7668@stefanha-x1.localdomain>
+In-Reply-To: <20200309154637.GJ7668@stefanha-x1.localdomain>
+From: Srivatsa Vaddagiri <vatsa.ml@gmail.com>
+Date: Mon, 9 Mar 2020 22:57:01 +0530
+Message-ID: <CAMHO8so2zuDS5BjATchFpYk_4Qy4aG76L51qmCg7qkPPfNwmFA@mail.gmail.com>
 Subject: Re: [virtio-dev] Backend libraries for VirtIO device emulation
-Content-Type: multipart/signed; micalg=pgp-sha1;
- boundary="Sig_/IMcbrtVJS.tSgw8+=65uZCb"; protocol="application/pgp-signature"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 To: Stefan Hajnoczi <stefanha@redhat.com>
-Cc: Alex =?UTF-8?B?QmVubsOpZQ==?= <alex.bennee@linaro.org>, virtio-dev@lists.oasis-open.org
+Cc: =?UTF-8?B?QWxleCBCZW5uw6ll?= <alex.bennee@linaro.org>, virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
---Sig_/IMcbrtVJS.tSgw8+=65uZCb
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Mon, Mar 9, 2020 at 9:16 PM Stefan Hajnoczi <stefanha@redhat.com> wrote:
+>
+> That already exists today.  Pick a vhost-user device implementation from
+> QEMU, DPDK/SPDK, or rust-vmm and run it with your VMM of choice.
+>
+> > backend be emulated purely with some shared memory and some sockets for
+> > passing messages/kicks from/to the VMM which then deals with the hyperv=
+isor
+> > specifics of the virtio-transport?
+>
+> Yes, that is what vhost-user does.
 
-On Wed, 11 Mar 2020 17:24:11 +0000
-Stefan Hajnoczi <stefanha@redhat.com> wrote:
+Are there vhost-user based backends that emulates block and console devices=
+?
 
-> > I thought so - but does any vhost-user implementation assume it has
-> > access to the entire of the guests memory space? I can see why that
-> > might be seen as undesirable from a security point of view. =20
->=20
+From my quick read, vhost-user seems to depend on having backend complete a=
+ccess
+to front-end's memory. Is that true? We are looking for a backend solution =
+that
+does not assume access to whole of front-end memory. Only the memory region=
+s
+hosting IO buffers need to be ideally shared between the two VMs. Also the
+mechanism of memory sharing and signalling between VMs could be very
+hypervisor specific.
+Does vhost-user allow for such hyp-specific memory sharing and
+signalling interfaces?
 
-On s390 we do assume we have access to the whole guest memory
-space if VIRTIO_F_ACCESS_PLATFORM is not set.
+- vatsa
 
-> VMMs typically give the vhost-user device program access to the entirety
-> of guest RAM.  That's because unmodified VIRTIO guest drivers typically
-> require access to all of guest memory.
->=20
-> If the guest software cooperates then it's possible to reduce the shared
-> memory region.  In other words, the vhost-user protocol doesn't demand
-> that guest RAM is shared, it just requires all addresses to be within
-> the shared memory region, whatever that may be.
-
-In that case, I guess, we would have to negotiate
-VIRTIO_F_ACCESS_PLATFORM. vhost-user already has support for
-VIRTIO_F_ACCESS_PLATFORM, but in context of vhost-user it means: do
-IOVA translation. Translation is basically boils down to IOMMU/IOTLB
-support, and the specs (docs/interop/vhost-user.rst) says that the
-translated stuff needs to be within a region set via
-VHOST_USER_SET_MEM_TABLE.
-
-I'm wondering how restricting the memory region shared vhost-user program
-should work, unless we impose restrictions on what physical addresses
-may be used for virtio buffers (regardless of whether what lands in the
-virtqueue is an IOVA or a GPA), and make everybody in the stack aware of
-this.
-
-Of course sharing the whole guest memory space with the vhost-user
-program does not necessarily mean the guest can actually access the
-whole guest memory. For example memory encryption or other means of
-protecting memory (e.g. s390 protected VMs) may ensure that the
-vhost-user program can not mess with anything that in is not supposed to.
-
-Regards,
-Halil
-
---Sig_/IMcbrtVJS.tSgw8+=65uZCb
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBAgAGBQJeaSulAAoJEA0vhuyXGx0AiqIQAKtYszEwwnTe7kbK6GEJ3Flj
-K06RCQSmS2nO+uDdNsz+gjfcdrQ0WExpler0+xO+lZD/dOiypf+5oHzWGD2pW7dz
-sFG1GMN8PLAbP4E55z4vw1lZFOTr/F93Ug2Tvi1YOSw1t+5U7Rp5haUP5sm5nhpW
-IDb1/oYKh4eoQWjZFHKXXfTzVxZS+EM5kObZl1K6mvzGgeAC0KgdD/mA9brjqS52
-n9dURoO841Rw4WEikOFOqPEpukSLdgwoYwo1lCtldzQugDPTEHRDLc16FiniSdUk
-Fcz4L729hFBG7LzKN2ULTEtFDNKbdYyjCcW75/31swFA7z+dFo9UdV/hmXYTVKJa
-AvCCk1nvLqBF4sQ9sjysO2MIdJ1gj4ezpWtHiyhRev2SyfxGCf9g90vTpgRypJKx
-LQxvtiHEex3BXfSQ4wSUwSsbn0kb7DmJWZf7Cqrvxh//i7QeQ9FIGLi5QzNOAxDa
-8iSPvhAcQOBM/YripsE/J+NwZ3TVjScpELOaknb6D8gGvhHxgrU+U2Uo7Mt90J2b
-7Nm1i1FOhkikmAnFOcjKWVZ/S1QenMuHPRZeIdRauAsXu3cOc3ovQiN6WXD3LYs9
-fBgNop5+WNKAgZvhvoIInRJUlR6vdhmb+g0GmD1jTDXCCFZBagpPEWeZ1OwccjF5
-liQzoWrJMaK/3KuGowv0
-=fIz7
------END PGP SIGNATURE-----
-
---Sig_/IMcbrtVJS.tSgw8+=65uZCb--
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
