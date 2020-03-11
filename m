@@ -1,95 +1,105 @@
-Return-Path: virtio-dev-return-6916-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-6917-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 7AD3F985FD9
-	for <virtio-dev@lists.oasis-open.org>; Wed, 11 Mar 2020 11:20:24 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id C76DE985FE4
+	for <virtio-dev@lists.oasis-open.org>; Wed, 11 Mar 2020 11:20:29 +0000 (UTC)
 From: David Stevens <stevensd@chromium.org>
-Date: Wed, 11 Mar 2020 20:20:01 +0900
-Message-Id: <20200311112004.47138-2-stevensd@chromium.org>
+Date: Wed, 11 Mar 2020 20:20:02 +0900
+Message-Id: <20200311112004.47138-3-stevensd@chromium.org>
 In-Reply-To: <20200311112004.47138-1-stevensd@chromium.org>
 References: <20200311112004.47138-1-stevensd@chromium.org>
 MIME-Version: 1.0
-Subject: [virtio-dev] [PATCH v3 1/4] dma-buf: add support for virtio exported objects
+Subject: [virtio-dev] [PATCH v3 2/4] drm/prime: add support for virtio exported objects
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: quoted-printable
 To: Gerd Hoffmann <kraxel@redhat.com>, David Airlie <airlied@linux.ie>
 Cc: Daniel Vetter <daniel@ffwll.ch>, "Michael S . Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, Sumit Semwal <sumit.semwal@linaro.org>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, David Stevens <stevensd@chromium.org>, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, virtualization@lists.linux-foundation.org, linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org, virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-This change adds a new dma-buf operation that allows dma-bufs to be used
-by virtio drivers to share exported objects. The new operation allows
-the importing driver to query the exporting driver for the UUID which
-identifies the underlying exported object.
+This change exposes dma-buf's get_uuid callback to PRIME drivers.
 
 Signed-off-by: David Stevens <stevensd@chromium.org>
 ---
- drivers/dma-buf/dma-buf.c | 12 ++++++++++++
- include/linux/dma-buf.h   | 18 ++++++++++++++++++
- 2 files changed, 30 insertions(+)
+ drivers/gpu/drm/drm_prime.c | 23 +++++++++++++++++++++++
+ include/drm/drm_drv.h       | 10 ++++++++++
+ 2 files changed, 33 insertions(+)
 
-diff --git a/drivers/dma-buf/dma-buf.c b/drivers/dma-buf/dma-buf.c
-index d4097856c86b..fa5210ba6aaa 100644
---- a/drivers/dma-buf/dma-buf.c
-+++ b/drivers/dma-buf/dma-buf.c
-@@ -1158,6 +1158,18 @@ void dma_buf_vunmap(struct dma_buf *dmabuf, void *va=
-ddr)
+diff --git a/drivers/gpu/drm/drm_prime.c b/drivers/gpu/drm/drm_prime.c
+index 86d9b0e45c8c..50fed8497d3c 100644
+--- a/drivers/gpu/drm/drm_prime.c
++++ b/drivers/gpu/drm/drm_prime.c
+@@ -779,6 +779,28 @@ int drm_gem_dmabuf_mmap(struct dma_buf *dma_buf, struc=
+t vm_area_struct *vma)
  }
- EXPORT_SYMBOL_GPL(dma_buf_vunmap);
+ EXPORT_SYMBOL(drm_gem_dmabuf_mmap);
 =20
-+int dma_buf_get_uuid(struct dma_buf *dmabuf, uuid_t *uuid)
++/**
++ * drm_gem_dmabuf_get_uuid - dma_buf get_uuid implementation for GEM
++ * @dma_buf: buffer to query
++ * @uuid: uuid outparam
++ *
++ * Queries the buffer's virtio UUID. This can be used as the
++ * &dma_buf_ops.get_uuid callback. Calls into &drm_driver.gem_prime_get_uu=
+id.
++ *
++ * Returns 0 on success or a negative error code on failure.
++ */
++int drm_gem_dmabuf_get_uuid(struct dma_buf *dma_buf, uuid_t *uuid)
 +{
-+=09if (WARN_ON(!dmabuf) || !uuid)
-+=09=09return -EINVAL;
++=09struct drm_gem_object *obj =3D dma_buf->priv;
++=09struct drm_device *dev =3D obj->dev;
 +
-+=09if (!dmabuf->ops->get_uuid)
++=09if (!dev->driver->gem_prime_get_uuid)
 +=09=09return -ENODEV;
 +
-+=09return dmabuf->ops->get_uuid(dmabuf, uuid);
++=09return dev->driver->gem_prime_get_uuid(obj, uuid);
 +}
-+EXPORT_SYMBOL_GPL(dma_buf_get_uuid);
++EXPORT_SYMBOL(drm_gem_dmabuf_get_uuid);
 +
- #ifdef CONFIG_DEBUG_FS
- static int dma_buf_debug_show(struct seq_file *s, void *unused)
- {
-diff --git a/include/linux/dma-buf.h b/include/linux/dma-buf.h
-index abf5459a5b9d..00758523597d 100644
---- a/include/linux/dma-buf.h
-+++ b/include/linux/dma-buf.h
-@@ -251,6 +251,21 @@ struct dma_buf_ops {
-=20
- =09void *(*vmap)(struct dma_buf *);
- =09void (*vunmap)(struct dma_buf *, void *vaddr);
-+
-+=09/**
-+=09 * @get_uuid
-+=09 *
-+=09 * This is called by dma_buf_get_uuid to get the UUID which identifies
-+=09 * the buffer to virtio devices.
-+=09 *
-+=09 * This callback is optional.
-+=09 *
-+=09 * Returns:
-+=09 *
-+=09 * 0 on success or a negative error code on failure. On success uuid
-+=09 * will be populated with the buffer's UUID.
-+=09 */
-+=09int (*get_uuid)(struct dma_buf *dmabuf, uuid_t *uuid);
+ static const struct dma_buf_ops drm_gem_prime_dmabuf_ops =3D  {
+ =09.cache_sgt_mapping =3D true,
+ =09.attach =3D drm_gem_map_attach,
+@@ -789,6 +811,7 @@ static const struct dma_buf_ops drm_gem_prime_dmabuf_op=
+s =3D  {
+ =09.mmap =3D drm_gem_dmabuf_mmap,
+ =09.vmap =3D drm_gem_dmabuf_vmap,
+ =09.vunmap =3D drm_gem_dmabuf_vunmap,
++=09.get_uuid =3D drm_gem_dmabuf_get_uuid,
  };
 =20
  /**
-@@ -444,4 +459,7 @@ int dma_buf_mmap(struct dma_buf *, struct vm_area_struc=
-t *,
- =09=09 unsigned long);
- void *dma_buf_vmap(struct dma_buf *);
- void dma_buf_vunmap(struct dma_buf *, void *vaddr);
+diff --git a/include/drm/drm_drv.h b/include/drm/drm_drv.h
+index 77685ed7aa65..61e3ff341844 100644
+--- a/include/drm/drm_drv.h
++++ b/include/drm/drm_drv.h
+@@ -29,6 +29,7 @@
+=20
+ #include <linux/list.h>
+ #include <linux/irqreturn.h>
++#include <linux/uuid.h>
+=20
+ #include <drm/drm_device.h>
+=20
+@@ -639,6 +640,15 @@ struct drm_driver {
+ =09int (*gem_prime_mmap)(struct drm_gem_object *obj,
+ =09=09=09=09struct vm_area_struct *vma);
+=20
++=09/**
++=09 * @gem_prime_get_uuid
++=09 *
++=09 * get_uuid hook for GEM drivers. Retrieves the virtio uuid of the
++=09 * given GEM buffer.
++=09 */
++=09int (*gem_prime_get_uuid)(struct drm_gem_object *obj,
++=09=09=09=09  uuid_t *uuid);
 +
-+int dma_buf_get_uuid(struct dma_buf *dmabuf, uuid_t *uuid);
-+
- #endif /* __DMA_BUF_H__ */
+ =09/**
+ =09 * @dumb_create:
+ =09 *
 --=20
 2.25.1.481.gfbce0eb801-goog
 
