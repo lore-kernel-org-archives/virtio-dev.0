@@ -1,32 +1,28 @@
-Return-Path: virtio-dev-return-6923-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-6924-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 5E156985FD9
-	for <virtio-dev@lists.oasis-open.org>; Wed, 11 Mar 2020 17:15:43 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 7568D985FE4
+	for <virtio-dev@lists.oasis-open.org>; Wed, 11 Mar 2020 17:15:48 +0000 (UTC)
 From: David Hildenbrand <david@redhat.com>
-Date: Wed, 11 Mar 2020 18:14:14 +0100
-Message-Id: <20200311171422.10484-3-david@redhat.com>
+Date: Wed, 11 Mar 2020 18:14:15 +0100
+Message-Id: <20200311171422.10484-4-david@redhat.com>
 In-Reply-To: <20200311171422.10484-1-david@redhat.com>
 References: <20200311171422.10484-1-david@redhat.com>
 MIME-Version: 1.0
-Subject: [virtio-dev] [PATCH v2 02/10] virtio-mem: Allow to specify an ACPI PXM as nid
+Subject: [virtio-dev] [PATCH v2 03/10] virtio-mem: Paravirtualized memory hotunplug part 1
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: quoted-printable
 To: linux-kernel@vger.kernel.org
-Cc: linux-mm@kvack.org, virtio-dev@lists.oasis-open.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, Michal Hocko <mhocko@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, "Michael S . Tsirkin" <mst@redhat.com>, David Hildenbrand <david@redhat.com>, Michal Hocko <mhocko@suse.com>, "Rafael J. Wysocki" <rafael@kernel.org>, Jason Wang <jasowang@redhat.com>, Oscar Salvador <osalvador@suse.de>, Igor Mammedov <imammedo@redhat.com>, Dave Young <dyoung@redhat.com>, Dan Williams <dan.j.williams@intel.com>, Pavel Tatashin <pasha.tatashin@soleen.com>, Stefan Hajnoczi <stefanha@redhat.com>, Vlastimil Babka <vbabka@suse.cz>, Len Brown <lenb@kernel.org>, linux-acpi@vger.kernel.org
+Cc: linux-mm@kvack.org, virtio-dev@lists.oasis-open.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, Michal Hocko <mhocko@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, "Michael S . Tsirkin" <mst@redhat.com>, David Hildenbrand <david@redhat.com>, Jason Wang <jasowang@redhat.com>, Oscar Salvador <osalvador@suse.de>, Igor Mammedov <imammedo@redhat.com>, Dave Young <dyoung@redhat.com>, Dan Williams <dan.j.williams@intel.com>, Pavel Tatashin <pasha.tatashin@soleen.com>, Stefan Hajnoczi <stefanha@redhat.com>, Vlastimil Babka <vbabka@suse.cz>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-We want to allow to specify (similar as for a DIMM), to which node a
-virtio-mem device (and, therefore, its memory) belongs. Add a new
-virtio-mem feature flag and export pxm_to_node, so it can be used in kernel
-module context.
+Unplugging subblocks of memory blocks that are offline is easy. All we
+have to do is watch out for concurrent onlining activity.
 
-Acked-by: Michal Hocko <mhocko@suse.com> # for the export
-Acked-by: "Rafael J. Wysocki" <rafael@kernel.org> # for the export
 Cc: "Michael S. Tsirkin" <mst@redhat.com>
 Cc: Jason Wang <jasowang@redhat.com>
 Cc: Oscar Salvador <osalvador@suse.de>
@@ -38,165 +34,185 @@ Cc: Dan Williams <dan.j.williams@intel.com>
 Cc: Pavel Tatashin <pasha.tatashin@soleen.com>
 Cc: Stefan Hajnoczi <stefanha@redhat.com>
 Cc: Vlastimil Babka <vbabka@suse.cz>
-Cc: Len Brown <lenb@kernel.org>
-Cc: linux-acpi@vger.kernel.org
 Signed-off-by: David Hildenbrand <david@redhat.com>
 ---
- drivers/acpi/numa/srat.c        |  1 +
- drivers/virtio/virtio_mem.c     | 37 +++++++++++++++++++++++++++++++--
- include/uapi/linux/virtio_mem.h | 10 ++++++++-
- 3 files changed, 45 insertions(+), 3 deletions(-)
+ drivers/virtio/virtio_mem.c | 116 +++++++++++++++++++++++++++++++++++-
+ 1 file changed, 114 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/acpi/numa/srat.c b/drivers/acpi/numa/srat.c
-index 47b4969d9b93..5be5a977da1b 100644
---- a/drivers/acpi/numa/srat.c
-+++ b/drivers/acpi/numa/srat.c
-@@ -35,6 +35,7 @@ int pxm_to_node(int pxm)
- =09=09return NUMA_NO_NODE;
- =09return pxm_to_node_map[pxm];
- }
-+EXPORT_SYMBOL(pxm_to_node);
-=20
- int node_to_pxm(int node)
- {
 diff --git a/drivers/virtio/virtio_mem.c b/drivers/virtio/virtio_mem.c
-index 803e1426f80b..d8da656c9145 100644
+index d8da656c9145..c1fc7f9c4acf 100644
 --- a/drivers/virtio/virtio_mem.c
 +++ b/drivers/virtio/virtio_mem.c
-@@ -20,6 +20,8 @@
- #include <linux/bitmap.h>
- #include <linux/lockdep.h>
+@@ -120,7 +120,7 @@ struct virtio_mem {
+ =09 *
+ =09 * When this lock is held the pointers can't change, ONLINE and
+ =09 * OFFLINE blocks can't change the state and no subblocks will get
+-=09 * plugged.
++=09 * plugged/unplugged.
+ =09 */
+ =09struct mutex hotplug_mutex;
+ =09bool hotplug_active;
+@@ -277,6 +277,12 @@ static int virtio_mem_mb_state_prepare_next_mb(struct =
+virtio_mem *vm)
+ =09     _mb_id++) \
+ =09=09if (virtio_mem_mb_get_state(_vm, _mb_id) =3D=3D _state)
 =20
-+#include <acpi/acpi_numa.h>
++#define virtio_mem_for_each_mb_state_rev(_vm, _mb_id, _state) \
++=09for (_mb_id =3D _vm->next_mb_id - 1; \
++=09     _mb_id >=3D _vm->first_mb_id && _vm->nb_mb_state[_state]; \
++=09     _mb_id--) \
++=09=09if (virtio_mem_mb_get_state(_vm, _mb_id) =3D=3D _state)
 +
- enum virtio_mem_mb_state {
- =09/* Unplugged, not added to Linux. Can be reused later. */
- =09VIRTIO_MEM_MB_STATE_UNUSED =3D 0,
-@@ -71,6 +73,8 @@ struct virtio_mem {
-=20
- =09/* The device block size (for communicating with the device). */
- =09uint32_t device_block_size;
-+=09/* The translated node id. NUMA_NO_NODE in case not specified. */
-+=09int nid;
- =09/* Physical start address of the memory region. */
- =09uint64_t addr;
-=20
-@@ -386,7 +390,10 @@ static int virtio_mem_sb_bitmap_prepare_next_mb(struct=
- virtio_mem *vm)
- static int virtio_mem_mb_add(struct virtio_mem *vm, unsigned long mb_id)
- {
- =09const uint64_t addr =3D virtio_mem_mb_id_to_phys(mb_id);
--=09int nid =3D memory_add_physaddr_to_nid(addr);
-+=09int nid =3D vm->nid;
-+
-+=09if (nid =3D=3D NUMA_NO_NODE)
-+=09=09nid =3D memory_add_physaddr_to_nid(addr);
-=20
- =09dev_dbg(&vm->vdev->dev, "adding memory block: %lu\n", mb_id);
- =09return add_memory(nid, addr, memory_block_size_bytes());
-@@ -404,7 +411,10 @@ static int virtio_mem_mb_add(struct virtio_mem *vm, un=
-signed long mb_id)
- static int virtio_mem_mb_remove(struct virtio_mem *vm, unsigned long mb_id=
-)
- {
- =09const uint64_t addr =3D virtio_mem_mb_id_to_phys(mb_id);
--=09int nid =3D memory_add_physaddr_to_nid(addr);
-+=09int nid =3D vm->nid;
-+
-+=09if (nid =3D=3D NUMA_NO_NODE)
-+=09=09nid =3D memory_add_physaddr_to_nid(addr);
-=20
- =09dev_dbg(&vm->vdev->dev, "removing memory block: %lu\n", mb_id);
- =09return remove_memory(nid, addr, memory_block_size_bytes());
-@@ -423,6 +433,17 @@ static void virtio_mem_retry(struct virtio_mem *vm)
- =09spin_unlock_irqrestore(&vm->removal_lock, flags);
+ /*
+  * Mark all selected subblocks plugged.
+  *
+@@ -322,6 +328,19 @@ static bool virtio_mem_mb_test_sb_plugged(struct virti=
+o_mem *vm,
+ =09       bit + count;
  }
 =20
-+static int virtio_mem_translate_node_id(struct virtio_mem *vm, uint16_t no=
-de_id)
++/*
++ * Test if all selected subblocks are unplugged.
++ */
++static bool virtio_mem_mb_test_sb_unplugged(struct virtio_mem *vm,
++=09=09=09=09=09    unsigned long mb_id, int sb_id,
++=09=09=09=09=09    int count)
 +{
-+=09int node =3D NUMA_NO_NODE;
++=09const int bit =3D (mb_id - vm->first_mb_id) * vm->nb_sb_per_mb + sb_id;
 +
-+#if defined(CONFIG_ACPI_NUMA)
-+=09if (virtio_has_feature(vm->vdev, VIRTIO_MEM_F_ACPI_PXM))
-+=09=09node =3D pxm_to_node(node_id);
-+#endif
-+=09return node;
++=09/* TODO: Helper similar to bitmap_set() */
++=09return find_next_bit(vm->sb_bitmap, bit + count, bit) >=3D bit + count;
 +}
 +
  /*
-  * Test if a virtio-mem device overlaps with the given range. Can be calle=
-d
-  * from (notifier) callbacks lockless.
-@@ -1266,6 +1287,7 @@ static int virtio_mem_init(struct virtio_mem *vm)
- {
- =09const uint64_t phys_limit =3D 1UL << MAX_PHYSMEM_BITS;
- =09uint64_t region_size;
-+=09uint16_t node_id;
-=20
- =09if (!vm->vdev->config->get) {
- =09=09dev_err(&vm->vdev->dev, "config access disabled\n");
-@@ -1286,6 +1308,9 @@ static int virtio_mem_init(struct virtio_mem *vm)
- =09=09     &vm->plugged_size);
- =09virtio_cread(vm->vdev, struct virtio_mem_config, block_size,
- =09=09     &vm->device_block_size);
-+=09virtio_cread(vm->vdev, struct virtio_mem_config, node_id,
-+=09=09     &node_id);
-+=09vm->nid =3D virtio_mem_translate_node_id(vm, node_id);
- =09virtio_cread(vm->vdev, struct virtio_mem_config, addr, &vm->addr);
- =09virtio_cread(vm->vdev, struct virtio_mem_config, region_size,
- =09=09     &region_size);
-@@ -1501,12 +1526,20 @@ static int virtio_mem_restore(struct virtio_device =
-*vdev)
+  * Find the first plugged subblock. Returns vm->nb_sb_per_mb in case there=
+ is
+  * none.
+@@ -511,6 +530,9 @@ static void virtio_mem_notify_offline(struct virtio_mem=
+ *vm,
+ =09=09BUG();
+ =09=09break;
+ =09}
++
++=09/* trigger the workqueue, maybe we can now unplug memory. */
++=09virtio_mem_retry(vm);
  }
- #endif
 =20
-+static unsigned int virtio_mem_features[] =3D {
-+#if defined(CONFIG_NUMA) && defined(CONFIG_ACPI_NUMA)
-+=09VIRTIO_MEM_F_ACPI_PXM,
-+#endif
-+};
-+
- static struct virtio_device_id virtio_mem_id_table[] =3D {
- =09{ VIRTIO_ID_MEM, VIRTIO_DEV_ANY_ID },
- =09{ 0 },
- };
+ static void virtio_mem_notify_online(struct virtio_mem *vm, unsigned long =
+mb_id,
+@@ -1120,6 +1142,94 @@ static int virtio_mem_plug_request(struct virtio_mem=
+ *vm, uint64_t diff)
+ =09return rc;
+ }
 =20
- static struct virtio_driver virtio_mem_driver =3D {
-+=09.feature_table =3D virtio_mem_features,
-+=09.feature_table_size =3D ARRAY_SIZE(virtio_mem_features),
- =09.driver.name =3D KBUILD_MODNAME,
- =09.driver.owner =3D THIS_MODULE,
- =09.id_table =3D virtio_mem_id_table,
-diff --git a/include/uapi/linux/virtio_mem.h b/include/uapi/linux/virtio_me=
-m.h
-index 1bfade78bdfd..e0a9dc7397c3 100644
---- a/include/uapi/linux/virtio_mem.h
-+++ b/include/uapi/linux/virtio_mem.h
-@@ -83,6 +83,12 @@
-  * device is busy.
-  */
++/*
++ * Unplug the desired number of plugged subblocks of an offline memory blo=
+ck.
++ * Will fail if any subblock cannot get unplugged (instead of skipping it)=
+.
++ *
++ * Will modify the state of the memory block. Might temporarily drop the
++ * hotplug_mutex.
++ *
++ * Note: Can fail after some subblocks were successfully unplugged.
++ */
++static int virtio_mem_mb_unplug_any_sb_offline(struct virtio_mem *vm,
++=09=09=09=09=09       unsigned long mb_id,
++=09=09=09=09=09       uint64_t *nb_sb)
++{
++=09int rc;
++
++=09rc =3D virtio_mem_mb_unplug_any_sb(vm, mb_id, nb_sb);
++
++=09/* some subblocks might have been unplugged even on failure */
++=09if (!virtio_mem_mb_test_sb_plugged(vm, mb_id, 0, vm->nb_sb_per_mb))
++=09=09virtio_mem_mb_set_state(vm, mb_id,
++=09=09=09=09=09VIRTIO_MEM_MB_STATE_OFFLINE_PARTIAL);
++=09if (rc)
++=09=09return rc;
++
++=09if (virtio_mem_mb_test_sb_unplugged(vm, mb_id, 0, vm->nb_sb_per_mb)) {
++=09=09/*
++=09=09 * Remove the block from Linux - this should never fail.
++=09=09 * Hinder the block from getting onlined by marking it
++=09=09 * unplugged. Temporarily drop the mutex, so
++=09=09 * any pending GOING_ONLINE requests can be serviced/rejected.
++=09=09 */
++=09=09virtio_mem_mb_set_state(vm, mb_id,
++=09=09=09=09=09VIRTIO_MEM_MB_STATE_UNUSED);
++
++=09=09mutex_unlock(&vm->hotplug_mutex);
++=09=09rc =3D virtio_mem_mb_remove(vm, mb_id);
++=09=09BUG_ON(rc);
++=09=09mutex_lock(&vm->hotplug_mutex);
++=09}
++=09return 0;
++}
++
++/*
++ * Try to unplug the requested amount of memory.
++ */
++static int virtio_mem_unplug_request(struct virtio_mem *vm, uint64_t diff)
++{
++=09uint64_t nb_sb =3D diff / vm->subblock_size;
++=09unsigned long mb_id;
++=09int rc;
++
++=09if (!nb_sb)
++=09=09return 0;
++
++=09/*
++=09 * We'll drop the mutex a couple of times when it is safe to do so.
++=09 * This might result in some blocks switching the state (online/offline=
+)
++=09 * and we could miss them in this run - we will retry again later.
++=09 */
++=09mutex_lock(&vm->hotplug_mutex);
++
++=09/* Try to unplug subblocks of partially plugged offline blocks. */
++=09virtio_mem_for_each_mb_state_rev(vm, mb_id,
++=09=09=09=09=09 VIRTIO_MEM_MB_STATE_OFFLINE_PARTIAL) {
++=09=09rc =3D virtio_mem_mb_unplug_any_sb_offline(vm, mb_id,
++=09=09=09=09=09=09=09 &nb_sb);
++=09=09if (rc || !nb_sb)
++=09=09=09goto out_unlock;
++=09=09cond_resched();
++=09}
++
++=09/* Try to unplug subblocks of plugged offline blocks. */
++=09virtio_mem_for_each_mb_state_rev(vm, mb_id,
++=09=09=09=09=09 VIRTIO_MEM_MB_STATE_OFFLINE) {
++=09=09rc =3D virtio_mem_mb_unplug_any_sb_offline(vm, mb_id,
++=09=09=09=09=09=09=09 &nb_sb);
++=09=09if (rc || !nb_sb)
++=09=09=09goto out_unlock;
++=09=09cond_resched();
++=09}
++
++=09mutex_unlock(&vm->hotplug_mutex);
++=09return 0;
++out_unlock:
++=09mutex_unlock(&vm->hotplug_mutex);
++=09return rc;
++}
++
+ /*
+  * Try to unplug all blocks that couldn't be unplugged before, for example=
+,
+  * because the hypervisor was busy.
+@@ -1202,8 +1312,10 @@ static void virtio_mem_run_wq(struct work_struct *wo=
+rk)
+ =09=09if (vm->requested_size > vm->plugged_size) {
+ =09=09=09diff =3D vm->requested_size - vm->plugged_size;
+ =09=09=09rc =3D virtio_mem_plug_request(vm, diff);
++=09=09} else {
++=09=09=09diff =3D vm->plugged_size - vm->requested_size;
++=09=09=09rc =3D virtio_mem_unplug_request(vm, diff);
+ =09=09}
+-=09=09/* TODO: try to unplug memory */
+ =09}
 =20
-+/* --- virtio-mem: feature bits --- */
-+
-+/* node_id is an ACPI PXM and is valid */
-+#define VIRTIO_MEM_F_ACPI_PXM=09=090
-+
-+
- /* --- virtio-mem: guest -> host requests --- */
-=20
- /* request to plug memory blocks */
-@@ -177,7 +183,9 @@ struct virtio_mem_resp {
- struct virtio_mem_config {
- =09/* Block size and alignment. Cannot change. */
- =09__u32 block_size;
--=09__u32 padding;
-+=09/* Valid with VIRTIO_MEM_F_ACPI_PXM. Cannot change. */
-+=09__u16 node_id;
-+=09__u16 padding;
- =09/* Start address of the memory region. Cannot change. */
- =09__u64 addr;
- =09/* Region size (maximum). Cannot change. */
+ =09switch (rc) {
 --=20
 2.24.1
 
