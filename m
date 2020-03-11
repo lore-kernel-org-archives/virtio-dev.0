@@ -1,104 +1,51 @@
-Return-Path: virtio-dev-return-6930-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-6931-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id B46B6985FD9
-	for <virtio-dev@lists.oasis-open.org>; Wed, 11 Mar 2020 17:16:44 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id DC08A985FDA
+	for <virtio-dev@lists.oasis-open.org>; Wed, 11 Mar 2020 17:16:46 +0000 (UTC)
 From: David Hildenbrand <david@redhat.com>
-Date: Wed, 11 Mar 2020 18:14:21 +0100
-Message-Id: <20200311171422.10484-10-david@redhat.com>
+Date: Wed, 11 Mar 2020 18:14:22 +0100
+Message-Id: <20200311171422.10484-11-david@redhat.com>
 In-Reply-To: <20200311171422.10484-1-david@redhat.com>
 References: <20200311171422.10484-1-david@redhat.com>
 MIME-Version: 1.0
-Subject: [virtio-dev] [PATCH v2 09/10] virtio-mem: Better retry handling
+Subject: [virtio-dev] [PATCH v2 10/10] MAINTAINERS: Add myself as virtio-mem maintainer
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: quoted-printable
 To: linux-kernel@vger.kernel.org
-Cc: linux-mm@kvack.org, virtio-dev@lists.oasis-open.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, Michal Hocko <mhocko@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, "Michael S . Tsirkin" <mst@redhat.com>, David Hildenbrand <david@redhat.com>, Jason Wang <jasowang@redhat.com>, Oscar Salvador <osalvador@suse.de>, Igor Mammedov <imammedo@redhat.com>, Dave Young <dyoung@redhat.com>, Dan Williams <dan.j.williams@intel.com>, Pavel Tatashin <pasha.tatashin@soleen.com>, Stefan Hajnoczi <stefanha@redhat.com>, Vlastimil Babka <vbabka@suse.cz>
+Cc: linux-mm@kvack.org, virtio-dev@lists.oasis-open.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, Michal Hocko <mhocko@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, "Michael S . Tsirkin" <mst@redhat.com>, David Hildenbrand <david@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Let's start with a retry interval of 5 seconds and double the time until
-we reach 5 minutes, in case we keep getting errors. Reset the retry
-interval in case we succeeded.
-
-The two main reasons for having to retry are
-- The hypervisor is busy and cannot process our request
-- We cannot reach the desired requested_size (esp., not enough memory can
-  get unplugged because we can't allocate any subblocks).
+Let's make sure patches/bug reports find the right person.
 
 Cc: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Jason Wang <jasowang@redhat.com>
-Cc: Oscar Salvador <osalvador@suse.de>
-Cc: Michal Hocko <mhocko@kernel.org>
-Cc: Igor Mammedov <imammedo@redhat.com>
-Cc: Dave Young <dyoung@redhat.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Dan Williams <dan.j.williams@intel.com>
-Cc: Pavel Tatashin <pasha.tatashin@soleen.com>
-Cc: Stefan Hajnoczi <stefanha@redhat.com>
-Cc: Vlastimil Babka <vbabka@suse.cz>
 Signed-off-by: David Hildenbrand <david@redhat.com>
 ---
- drivers/virtio/virtio_mem.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+ MAINTAINERS | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/virtio/virtio_mem.c b/drivers/virtio/virtio_mem.c
-index aa322e7732a4..48e96702d4ce 100644
---- a/drivers/virtio/virtio_mem.c
-+++ b/drivers/virtio/virtio_mem.c
-@@ -138,7 +138,9 @@ struct virtio_mem {
+diff --git a/MAINTAINERS b/MAINTAINERS
+index f6dcd1233935..ee0e7cbca5c6 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -17937,6 +17937,13 @@ S:=09Maintained
+ F:=09drivers/iommu/virtio-iommu.c
+ F:=09include/uapi/linux/virtio_iommu.h
 =20
- =09/* Timer for retrying to plug/unplug memory. */
- =09struct hrtimer retry_timer;
--#define VIRTIO_MEM_RETRY_TIMER_MS=09=0930000
-+=09unsigned int retry_timer_ms;
-+#define VIRTIO_MEM_RETRY_TIMER_MIN_MS=09=0950000
-+#define VIRTIO_MEM_RETRY_TIMER_MAX_MS=09=09300000
-=20
- =09/* Memory notifier (online/offline events). */
- =09struct notifier_block memory_notifier;
-@@ -1548,6 +1550,7 @@ static void virtio_mem_run_wq(struct work_struct *wor=
-k)
-=20
- =09switch (rc) {
- =09case 0:
-+=09=09vm->retry_timer_ms =3D VIRTIO_MEM_RETRY_TIMER_MIN_MS;
- =09=09break;
- =09case -ENOSPC:
- =09=09/*
-@@ -1563,8 +1566,7 @@ static void virtio_mem_run_wq(struct work_struct *wor=
-k)
- =09=09 */
- =09case -ENOMEM:
- =09=09/* Out of memory, try again later. */
--=09=09hrtimer_start(&vm->retry_timer,
--=09=09=09      ms_to_ktime(VIRTIO_MEM_RETRY_TIMER_MS),
-+=09=09hrtimer_start(&vm->retry_timer, ms_to_ktime(vm->retry_timer_ms),
- =09=09=09      HRTIMER_MODE_REL);
- =09=09break;
- =09case -EAGAIN:
-@@ -1584,6 +1586,8 @@ static enum hrtimer_restart virtio_mem_timer_expired(=
-struct hrtimer *timer)
- =09=09=09=09=09     retry_timer);
-=20
- =09virtio_mem_retry(vm);
-+=09vm->retry_timer_ms =3D min_t(unsigned int, vm->retry_timer_ms * 2,
-+=09=09=09=09   VIRTIO_MEM_RETRY_TIMER_MAX_MS);
- =09return HRTIMER_NORESTART;
- }
-=20
-@@ -1750,6 +1754,7 @@ static int virtio_mem_probe(struct virtio_device *vde=
-v)
- =09spin_lock_init(&vm->removal_lock);
- =09hrtimer_init(&vm->retry_timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
- =09vm->retry_timer.function =3D virtio_mem_timer_expired;
-+=09vm->retry_timer_ms =3D VIRTIO_MEM_RETRY_TIMER_MIN_MS;
-=20
- =09/* register the virtqueue */
- =09rc =3D virtio_mem_init_vq(vm);
++VIRTIO MEM DRIVER
++M:=09David Hildenbrand <david@redhat.com>
++L:=09virtualization@lists.linux-foundation.org
++S:=09Maintained
++F:=09drivers/virtio/virtio_mem.c
++F:=09include/uapi/linux/virtio_mem.h
++
+ VIRTUAL BOX GUEST DEVICE DRIVER
+ M:=09Hans de Goede <hdegoede@redhat.com>
+ M:=09Arnd Bergmann <arnd@arndb.de>
 --=20
 2.24.1
 
