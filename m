@@ -1,88 +1,94 @@
-Return-Path: virtio-dev-return-6958-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-6936-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 79C4E985CE6
-	for <virtio-dev@lists.oasis-open.org>; Tue, 17 Mar 2020 09:18:39 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 19174985FDD
+	for <virtio-dev@lists.oasis-open.org>; Thu, 12 Mar 2020 09:04:07 +0000 (UTC)
+From: Dmitry Sepp <dmitry.sepp@opensynergy.com>
+Date: Thu, 12 Mar 2020 10:03:58 +0100
+Message-ID: <3182728.aeNJFYEL58@os-lin-dmo>
+In-Reply-To: <c4d7622b-e396-3920-0e14-5a73a0225c0f@xs4all.nl>
+References: <20200218202753.652093-1-dmitry.sepp@opensynergy.com> <c4d7622b-e396-3920-0e14-5a73a0225c0f@xs4all.nl>
 MIME-Version: 1.0
-References: <20200218202753.652093-1-dmitry.sepp@opensynergy.com>
- <CAD90VcZ5rYHw9qqS7pvaX0TP240qcmoA5MKxKuVVn-eVVrORSA@mail.gmail.com>
- <CAD90VcbON1XTuBpuqxV6E+reY8dYq08N8G-jrAO=z-6ytcvtHQ@mail.gmail.com> <1780647.tdWV9SEqCh@os-lin-dmo>
-In-Reply-To: <1780647.tdWV9SEqCh@os-lin-dmo>
-From: Keiichi Watanabe <keiichiw@chromium.org>
-Date: Tue, 17 Mar 2020 18:18:26 +0900
-Message-ID: <CAD90VcbG2QJvj7L-Ek64AHb4sg3tkYJKsrDn2fVO4FLiwMYOxQ@mail.gmail.com>
-Subject: [virtio-dev] Re: [PATCH v2 1/1] video_video: Add the Virtio Video V4L2 driver
-Content-Type: text/plain; charset="UTF-8"
+Subject: [virtio-dev] Re: [PATCH v2 0/1] Virtio Video V4L2 driver
+Content-Type: text/plain; charset=WINDOWS-1252
 Content-Transfer-Encoding: quoted-printable
-To: Dmitry Sepp <dmitry.sepp@opensynergy.com>
-Cc: Linux Media Mailing List <linux-media@vger.kernel.org>, virtio-dev@lists.oasis-open.org, Alexandre Courbot <acourbot@chromium.org>, Alex Lau <alexlau@chromium.org>, Daniel Vetter <daniel@ffwll.ch>, Dylan Reid <dgreid@chromium.org>, David Staessens <dstaessens@chromium.org>, Enrico Granata <egranata@google.com>, Frediano Ziglio <fziglio@redhat.com>, Hans Verkuil <hverkuil@xs4all.nl>, Gerd Hoffmann <kraxel@redhat.com>, =?UTF-8?Q?St=C3=A9phane_Marchesin?= <marcheu@chromium.org>, Pawel Osciak <posciak@chromium.org>, spice-devel@lists.freedesktop.org, David Stevens <stevensd@chromium.org>, Tomasz Figa <tfiga@chromium.org>, uril@redhat.com, Samiullah Khawaja <samiullah.khawaja@opensynergy.com>, Kiran Pawar <kiran.pawar@opensynergy.com>, Nikolay Martyanov <Nikolay.Martyanov@opensynergy.com>
+To: linux-media@vger.kernel.org, Hans Verkuil <hverkuil@xs4all.nl>
+Cc: virtio-dev@lists.oasis-open.org, acourbot@chromium.org, alexlau@chromium.org, daniel@ffwll.ch, dgreid@chromium.org, dstaessens@chromium.org, egranata@google.com, fziglio@redhat.com, keiichiw@chromium.org, kraxel@redhat.com, marcheu@chromium.org, posciak@chromium.org, spice-devel@lists.freedesktop.org, stevensd@chromium.org, tfiga@chromium.org, uril@redhat.com, samiullah.khawaja@opensynergy.com, kiran.pawar@opensynergy.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Tue, Mar 17, 2020 at 6:10 PM Dmitry Sepp <dmitry.sepp@opensynergy.com> w=
-rote:
->
-> Hi Keiichi,
->
-> On Dienstag, 17. M=C3=A4rz 2020 07:53:26 CET Keiichi Watanabe wrote:
-> > > > diff --git a/include/uapi/linux/virtio_video.h
-> > > > b/include/uapi/linux/virtio_video.h new file mode 100644
-> > > > index 000000000000..0dd98a2237c6
-> > > > --- /dev/null
-> > > > +++ b/include/uapi/linux/virtio_video.h
-> > > > @@ -0,0 +1,469 @@
-> > > > +/* SPDX-License-Identifier: GPL-2.0+ */
-> > >
-> > > I suspect it's not expected to use GPL licence without exceptions in =
-a
-> > > UAPI header file:
-> > > https://www.kernel.org/doc/html/v5.4/process/license-rules.html
-> > >
-> > > If GPL is used here, only GPL user programs can include this header
-> > > file, can't they?
-> > > So, can we use BSD licence like other virtio headers (e.g. virtio_gpu=
-.h)?
-> > >
-> > > Note that I found this program when running
-> > > /scripts/headers_install.sh. Though it suggested to add "WITH
-> > > Linux-syscall-note", it shouldn't be the case because this header
-> > > doesn't provide syscall interface.
-> > >
-> > > Best regards,
-> > > Keiichi
-> > >
-> > > > +/*
-> > > > + * Virtio Video Device
-> > > > + *
-> > > > + * This header is BSD licensed so anyone can use the definitions
-> > > > + * to implement compatible drivers/servers:
-> > > > + *
-> >
-> > Ah, this line says this header is BSD licensed.
-> > So, the SPDX-License-Identifier above should be simply wrong.
-> >
->
-> According to some recent upstream discussion about virtio-snd, which was =
-also
-> proposed by our engineers, it should be
-> /* SPDX-License-Identifier: BSD-3-Clause */
->
+Hi Hans,
 
-Sounds good. Thanks for letting me know.
+Thanks for reviewing.
+
+Sure, we understand the driver must pass v4l2-compliance. But the spec is n=
+ot=20
+finalized yet, so it was a bit out of the scope.
 
 Best regards,
-Keiichi
+Dmitry.
 
-> Best regards,
-> Dmitry.
->
+On Mittwoch, 11. M=E4rz 2020 14:26:46 CET Hans Verkuil wrote:
+> Hi Dmitry,
+>=20
+> On 2/18/20 9:27 PM, Dmitry Sepp wrote:
+> > Hi all,
+> >=20
+> > This is a v4l2 virtio video driver for the virtio-video device
+> > specification v3 [1].
+> >=20
+> > The first version of the driver was introduced here [2].
+> >=20
+> > Changes v1 -> v2:
+> > * support the v3 spec (mostly)
+> > * add a module parameter to ask for pages from ZONE_DMA
+> >=20
+> > What is not implemented:
+> > * Plane layout flags should be used to propagate number of planes to
+> >=20
+> >   user-space
+> >=20
+> > * There is no real use of stream creation with bitstream format in the
+> >=20
+> >   parameter list. The driver just uses the first bitstream format from
+> >   the list.
+> >=20
+> > * Setting bitrate is done in a different way compared to the spec. This
+> >=20
+> >   is because it has been already agreed on that the way the spec
+> >   currently describes it requires changes.
+> >=20
+> > Potential improvements:
+> > * Do not send stream_create from open. Use corresponding state machine
+> >=20
+> >   condition to do this.
+> >=20
+> > * Do not send stream_destroy from close. Do it in reqbufs(0).
+> > * Cache format and control settings. Reduce calls to the device.
+>=20
+> Some general notes:
+>=20
+> Before this can be merged it needs to pass v4l2-compliance.
+>=20
+> I also strongly recommend adding support for V4L2_PIX_FMT_FWHT to
+> allow testing with the vicodec emulation driver. This will also
+> allow testing all sorts of corner cases without requiring special
+> hardware.
+>=20
+> Regards,
+>=20
+> =09Hans
+>=20
 > > Best regards,
-> > Keiichi
->
->
+> > Dmitry.
+> >=20
+> > [1] https://markmail.org/message/dmw3pr4fuajvarth
+> > [2] https://markmail.org/message/wnnv6r6myvgb5at6
+
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
