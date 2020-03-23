@@ -1,91 +1,56 @@
-Return-Path: virtio-comment-return-1152-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio-comment@lists.oasis-open.org>
-List-Post: <mailto:virtio-comment@lists.oasis-open.org>
-List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
-From: =?UTF-8?q?Alex=20Benn=C3=A9e?= <alex.bennee@linaro.org>
-Date: Tue, 24 Mar 2020 17:54:38 +0000
-Message-Id: <20200324175446.13965-1-alex.bennee@linaro.org>
+Return-Path: virtio-dev-return-6966-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id 3FF4698432E
+	for <virtio-dev@lists.oasis-open.org>; Mon, 23 Mar 2020 13:21:14 +0000 (UTC)
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Date: Mon, 23 Mar 2020 14:20:22 +0100
+Message-Id: <20200323132021.2108049-1-jean-philippe@linaro.org>
 MIME-Version: 1.0
-Subject: [virtio-comment] [RFC PATCH  0/8] some tweaks to the document build process
-Content-Type: text/plain; charset=UTF-8
+Subject: [virtio-dev] [PATCH] virtio-iommu: Remove invalid requirement about padding
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: quoted-printable
-To: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
-Cc: =?UTF-8?q?Alex=20Benn=C3=A9e?= <alex.bennee@linaro.org>
+To: virtio-dev@lists.oasis-open.org
+Cc: mst@redhat.com, cohuck@redhat.com, Jean-Philippe Brucker <jean-philippe@linaro.org>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Hi,
+This reference to 'padding' is a leftover from a previous draft of the
+virtio-iommu device. The field doesn't exist anymore, remove the
+requirement.
 
-I was reviewing someones virtio-spec and realised that I wasn't quite
-sure what it had been built from. Seeing as the standard is hosted in
-git I've tried to clean up some of the automation to make it clearer
-what a particular rendering was built from. Going forward it would be
-nice to use signed annotated tags for the final build version but I
-don't know how much of the boilerplate is down to OASIS requirements.
+Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+---
+I just noticed this was still here, sorry for the delay. Previous
+discussion:
+https://lists.oasis-open.org/archives/virtio-dev/201911/msg00084.html
+---
+ virtio-iommu.tex | 2 --
+ 1 file changed, 2 deletions(-)
 
-What do people think? Is this worth improving on?
-
-Alex Benn=C3=A9e (8):
-  README.md: convert html to proper Markdown format
-  CONTRIBUTING.md: convert to proper MarkDown
-  LICENSE.md: convert html to proper MarkDown
-  makeall.sh: add explicit shebang to script
-  Cleanup old changelog files
-  Remove all mentioned of subversion
-  make*: remove reliance on REVISION-DATE and use git
-  Makefile: add simple make automation with clean target
-
- CONTRIBUTING.md         |   22 +-
- LICENSE.md              |    9 +-
- Makefile                |   17 +
- README.md               |  258 ++++------
- REVISION-DATE           |    1 -
- cl-cs01.tex             |   86 ----
- cl-cs02.tex             |   52 --
- cl-cs03.tex             |  328 ------------
- cl-cs04.tex             |  134 -----
- cl-csprd02.tex          | 1043 ---------------------------------------
- cl-csprd03.tex          |  400 ---------------
- getchangelog.pl         |  114 -----
- git-svn.txt             |   34 --
- make-setup-generated.sh |   54 +-
- makeall.sh              |    3 +-
- makediff.sh             |    1 -
- makediffall.sh          |    1 -
- makediffwithbase.sh     |    1 -
- maketex.sh              |    1 -
- makezip.sh              |   11 +-
- 20 files changed, 169 insertions(+), 2401 deletions(-)
- create mode 100644 Makefile
- delete mode 100644 REVISION-DATE
- delete mode 100644 cl-cs01.tex
- delete mode 100644 cl-cs02.tex
- delete mode 100644 cl-cs03.tex
- delete mode 100644 cl-cs04.tex
- delete mode 100644 cl-csprd02.tex
- delete mode 100644 cl-csprd03.tex
- delete mode 100755 getchangelog.pl
- delete mode 100644 git-svn.txt
-
+diff --git a/virtio-iommu.tex b/virtio-iommu.tex
+index 28c562b..08b358a 100644
+--- a/virtio-iommu.tex
++++ b/virtio-iommu.tex
+@@ -106,8 +106,6 @@ \subsection{Device configuration layout}\label{sec:Devi=
+ce Types / IOMMU Device /
+=20
+ \devicenormative{\subsubsection}{Device configuration layout}{Device Types=
+ / IOMMU Device / Device configuration layout}
+=20
+-The device SHOULD set \field{padding} to zero.
+-
+ The device MUST set at least one bit in \field{page_size_mask}, describing
+ the page granularity. The device MAY set more than one bit in
+ \field{page_size_mask}.
 --=20
-2.20.1
+2.25.1
 
 
-This publicly archived list offers a means to provide input to the
-OASIS Virtual I/O Device (VIRTIO) TC.
-
-In order to verify user consent to the Feedback License terms and
-to minimize spam in the list archive, subscription is required
-before posting.
-
-Subscribe: virtio-comment-subscribe@lists.oasis-open.org
-Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
-List help: virtio-comment-help@lists.oasis-open.org
-List archive: https://lists.oasis-open.org/archives/virtio-comment/
-Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
-List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lis=
-ts
-Committee: https://www.oasis-open.org/committees/virtio/
-Join OASIS: https://www.oasis-open.org/join/
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
