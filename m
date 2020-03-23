@@ -1,29 +1,28 @@
-Return-Path: virtio-dev-return-6969-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-6970-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 4719498432E
-	for <virtio-dev@lists.oasis-open.org>; Mon, 23 Mar 2020 13:56:35 +0000 (UTC)
-References: <20200323132021.2108049-1-jean-philippe@linaro.org>
-From: Auger Eric <eric.auger@redhat.com>
-Message-ID: <49986620-9fc3-503d-4976-47a86fe3b467@redhat.com>
-Date: Mon, 23 Mar 2020 14:56:22 +0100
-MIME-Version: 1.0
+	by lists.oasis-open.org (Postfix) with ESMTP id 62A7098432E
+	for <virtio-dev@lists.oasis-open.org>; Mon, 23 Mar 2020 14:09:38 +0000 (UTC)
+Date: Mon, 23 Mar 2020 15:09:26 +0100
+From: Cornelia Huck <cohuck@redhat.com>
+Message-ID: <20200323150926.18b438de.cohuck@redhat.com>
 In-Reply-To: <20200323132021.2108049-1-jean-philippe@linaro.org>
-Content-Language: en-US
-Subject: Re: [virtio-dev] [PATCH] virtio-iommu: Remove invalid requirement
- about padding
-Content-Type: text/plain; charset=utf-8
+References: <20200323132021.2108049-1-jean-philippe@linaro.org>
+MIME-Version: 1.0
+Subject: [virtio-dev] Re: [PATCH] virtio-iommu: Remove invalid requirement about padding
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>, virtio-dev@lists.oasis-open.org
-Cc: mst@redhat.com, cohuck@redhat.com
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Cc: virtio-dev@lists.oasis-open.org, mst@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Hi jean,
-On 3/23/20 2:20 PM, Jean-Philippe Brucker wrote:
+On Mon, 23 Mar 2020 14:20:22 +0100
+Jean-Philippe Brucker <jean-philippe@linaro.org> wrote:
+
 > This reference to 'padding' is a leftover from a previous draft of the
 > virtio-iommu device. The field doesn't exist anymore, remove the
 > requirement.
@@ -50,12 +49,8 @@ On 3/23/20 2:20 PM, Jean-Philippe Brucker wrote:
 >  The device MUST set at least one bit in \field{page_size_mask}, describing
 >  the page granularity. The device MAY set more than one bit in
 >  \field{page_size_mask}.
-> 
-Reviewed-by: Eric Auger <eric.auger@redhat.com>
 
-Thanks
-
-Eric
+Reviewed-by: Cornelia Huck <cohuck@redhat.com>
 
 
 ---------------------------------------------------------------------
