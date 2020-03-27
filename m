@@ -1,4 +1,4 @@
-Return-Path: virtio-comment-return-1171-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-comment-return-1172-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-comment@lists.oasis-open.org>
 List-Post: <mailto:virtio-comment@lists.oasis-open.org>
 List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
@@ -6,11 +6,10 @@ List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
 References: <20200227113735.23605-1-peter.hilber@opensynergy.com>
  <20200317192053.15665-1-peter.hilber@opensynergy.com>
- <87blonas8y.fsf@linaro.org>
 From: Alex =?utf-8?Q?Benn=C3=A9e?= <alex.bennee@linaro.org>
-In-reply-to: <87blonas8y.fsf@linaro.org>
-Date: Fri, 27 Mar 2020 14:43:37 +0000
-Message-ID: <87h7y9n9ie.fsf@linaro.org>
+In-reply-to: <20200317192053.15665-1-peter.hilber@opensynergy.com>
+Date: Fri, 27 Mar 2020 17:19:47 +0000
+Message-ID: <87369tn2a4.fsf@linaro.org>
 MIME-Version: 1.0
 Subject: [virtio-comment] Re: [virtio-dev] [PATCH v3] Add virtio SCMI device specification
 Content-Type: text/plain; charset=utf-8
@@ -20,45 +19,71 @@ Cc: virtio-comment@lists.oasis-open.org, linux-arm-kernel@lists.infradead.org, S
 List-ID: <virtio-dev.lists.oasis-open.org>
 
 
-Alex Benn=C3=A9e <alex.bennee@linaro.org> writes:
+Peter Hilber <peter.hilber@opensynergy.com> writes:
 
-> Peter Hilber <peter.hilber@opensynergy.com> writes:
+> This patch proposes a new virtio device for the Arm SCMI protocol.
 >
->> This patch proposes a new virtio device for the Arm SCMI protocol.
->>
->> The device provides a simple transport for the Arm SCMI protocol[1]. The
->> *S*ystem *C*ontrol and *M*anagement *I*nterface protocol allows speaking
->> to system controllers that allow orchestrating things like power
->> management, system state management and sensor access. The SCMI protocol
->> is used on SoCs where multiple cores and co-processors need access to
->> these resources.
->>
-> <snip>
->>
->> OpenSynergy has a prototype implementation (without device specific
->> features so far), and plans to upstream the Linux kernel driver.
+> The device provides a simple transport for the Arm SCMI protocol[1]. The
+> *S*ystem *C*ontrol and *M*anagement *I*nterface protocol allows speaking
+> to system controllers that allow orchestrating things like power
+> management, system state management and sensor access. The SCMI protocol
+> is used on SoCs where multiple cores and co-processors need access to
+> these resources.
 >
-> Has a RFC of the kernel driver been posted yet? I'm curious on how it
-> Linux backend integrates with other devices.
+> The virtio transport allows making use of this protocol in virtualized
+> systems.
 >
->>
->> The PDF output is available at [2].
->>
->> [2]
->> https://share.mailbox.org/ajax/share/056076e70571144f50c4ca7571144b319a1=
-d7236dda1cd3b/1/8/MzQ/MzQvMQ
+> [1] https://developer.arm.com/docs/den0056/b
 >
-> This PDF seems to include a fair number of extra devices - including an
-> RPMB device I'm quite interested in. Is this because you are building
-> from a tree with a bunch of rolled up updates?
+> Signed-off-by: Peter Hilber <peter.hilber@opensynergy.com>
+<snip>
+> +
+> +\subsubsection{Shared Memory Operation}
+> +
+> +Various SCMI protocols define statistics shared memory regions (for
+> +statistics and sensor values).
+> +
+> +\devicenormative{\paragraph}{Shared Memory Operation}{Device Types / SCM=
+I Device / Device Operation / Shared Memory Operation}
+> +
+> +If VIRTIO_SCMI_F_SHARED_MEMORY was negotiated, the device MAY implement
+> +an SCMI statistics shared memory region using a virtio shared memory
+> +region.
 
-I obviously failed to appropriately grep the existing spec closely
-enough :-/
+AFAICT this is the first usage of shmid in the virtio spec so I have
+some questions. The spec says:
 
-> /me wonders off to look at the make tooling in the upstream repo to see
-> if things can be tweaked a bit.
+  Memory consistency rules vary depending on the region and the device
+  and they will be specified as required by each device.
 
-I went ahead and suggested some tweaks anyway.
+So what are the rules for memory consistency for these regions:
+
+  - are they read-only w.r.t the guest? (maybe this is implicit?)
+  - how does the guest know when they have been updated?
+  - how goes the guest know it hasn't read a value mid-update?
+
+> +
+> +If the device implements a shared memory region, the device MUST assign
+> +the corresponding shmid as per the following table:
+> +
+> +\begin{tabular}{|l|l|}
+> +\hline
+> +SCMI statistics shared memory region & Virtio shmid \\
+> +\hline \hline
+> +Power state statistics shared memory region & 1 \\
+> +\hline
+> +Performance domain statistics shared memory region & 2 \\
+> +\hline
+> +Sensor Values Shared Memory & 3 \\
+> +\hline
+> +Reserved for future use & 4 to 0x7F \\
+> +\hline
+> +Vendor-specific statistics shared memory regions & 0x80 to 0xFF \\
+> +\hline
+> +Reserved for future use & 0x100 and greater \\
+> +\hline
+> +\end{tabular}
+
 
 --=20
 Alex Benn=C3=A9e
