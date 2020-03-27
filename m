@@ -1,95 +1,63 @@
-Return-Path: virtio-comment-return-1169-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-comment-return-1170-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-comment@lists.oasis-open.org>
 List-Post: <mailto:virtio-comment@lists.oasis-open.org>
 List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
-Date: Fri, 27 Mar 2020 11:53:38 +0100
-From: Cornelia Huck <cohuck@redhat.com>
-Message-ID: <20200327115338.57a79ac4.cohuck@redhat.com>
-In-Reply-To: <20200327103803.10460-1-alex.bennee@linaro.org>
 References: <20200327103803.10460-1-alex.bennee@linaro.org>
+ <20200327115338.57a79ac4.cohuck@redhat.com>
+From: Alex =?utf-8?Q?Benn=C3=A9e?= <alex.bennee@linaro.org>
+In-reply-to: <20200327115338.57a79ac4.cohuck@redhat.com>
+Date: Fri, 27 Mar 2020 11:58:02 +0000
+Message-ID: <87pncym2lx.fsf@linaro.org>
 MIME-Version: 1.0
 Subject: Re: [virtio-comment] [RFC PATCH  0/8] some tweaks to the document
  build process
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-To: Alex =?UTF-8?B?QmVubsOpZQ==?= <alex.bennee@linaro.org>
+To: Cornelia Huck <cohuck@redhat.com>
 Cc: virtio-dev@lists.oasis-open.org, virtio-comment@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Fri, 27 Mar 2020 10:37:55 +0000
-Alex Benn=C3=A9e <alex.bennee@linaro.org> wrote:
 
-> Hi,
->=20
-> I was reviewing someones virtio-spec and realised that I wasn't quite
-> sure what it had been built from. Seeing as the standard is hosted in
-> git I've tried to clean up some of the automation to make it clearer
-> what a particular rendering was built from. Going forward it would be
-> nice to use signed annotated tags for the final build version but I
-> don't know how much of the boilerplate is down to OASIS requirements.
+Cornelia Huck <cohuck@redhat.com> writes:
 
-OASIS requirements are my concern here as well.
+> On Fri, 27 Mar 2020 10:37:55 +0000
+> Alex Benn=C3=A9e <alex.bennee@linaro.org> wrote:
+>
+>> Hi,
+>>=20
+>> I was reviewing someones virtio-spec and realised that I wasn't quite
+>> sure what it had been built from. Seeing as the standard is hosted in
+>> git I've tried to clean up some of the automation to make it clearer
+>> what a particular rendering was built from. Going forward it would be
+>> nice to use signed annotated tags for the final build version but I
+>> don't know how much of the boilerplate is down to OASIS requirements.
+>
+> OASIS requirements are my concern here as well.
 
->=20
-> What do people think? Is this worth improving on?
->=20
-> Alex Benn=C3=A9e (8):
->   README.md: convert html to proper Markdown format
->   CONTRIBUTING.md: convert to proper MarkDown
->   LICENSE.md: convert html to proper MarkDown
+I've tried to do some digging although the Oasis website has a lot of
+policy documents. I think the most relevant one is:
 
-We should double-check first if the html snippets in there are sourced
-into some official web page somewhere. If not, I'm all for converting
-this.
+  https://docs.oasis-open.org/specGuidelines/ndr/namingDirectives.html
 
->   makeall.sh: add explicit shebang to script
->   Cleanup old changelog files
+which as far as I can make out is mostly concerned that the final work
+product meets the naming standard by version and stage. Although ZIP
+files are mentioned a couple of times it is in the context of a file
+containing work products for local use. My personal interpretation is
+that if the final work products are correctly named and have the version
+information in them the rest is just ephemera. However I could be wrong
+so defer to anyone more familiar with the policies.
 
-I'm not sure if there are any requirements for keeping this -- even if
-they are available in the history forever.
+An random sampling of ZIP files on https://www.oasis-open.org/standards
+has shown them all to just contain the individual work products without
+any extraneous REVISION/REVISION-DATE files.
 
->   Remove all mentioned of subversion
+Anyway I defer to those with more experience of the process and I'll
+leave the question of tex vs rst for another day ;-)
 
-That's probably fine.
-
->   make*: remove reliance on REVISION-DATE and use git
->   Makefile: add simple make automation with clean target
->=20
->  CONTRIBUTING.md         |   22 +-
->  LICENSE.md              |    9 +-
->  Makefile                |   17 +
->  README.md               |  258 ++++------
->  REVISION-DATE           |    1 -
->  cl-cs01.tex             |   86 ----
->  cl-cs02.tex             |   52 --
->  cl-cs03.tex             |  328 ------------
->  cl-cs04.tex             |  134 -----
->  cl-csprd02.tex          | 1043 ---------------------------------------
->  cl-csprd03.tex          |  400 ---------------
->  getchangelog.pl         |  114 -----
->  git-svn.txt             |   34 --
->  make-setup-generated.sh |   54 +-
->  makeall.sh              |    3 +-
->  makediff.sh             |    1 -
->  makediffall.sh          |    1 -
->  makediffwithbase.sh     |    1 -
->  maketex.sh              |    1 -
->  makezip.sh              |   11 +-
->  20 files changed, 169 insertions(+), 2401 deletions(-)
->  create mode 100644 Makefile
->  delete mode 100644 REVISION-DATE
->  delete mode 100644 cl-cs01.tex
->  delete mode 100644 cl-cs02.tex
->  delete mode 100644 cl-cs03.tex
->  delete mode 100644 cl-cs04.tex
->  delete mode 100644 cl-csprd02.tex
->  delete mode 100644 cl-csprd03.tex
->  delete mode 100755 getchangelog.pl
->  delete mode 100644 git-svn.txt
->=20
-
+--=20
+Alex Benn=C3=A9e
 
 This publicly archived list offers a means to provide input to the=0D
 OASIS Virtual I/O Device (VIRTIO) TC.=0D
