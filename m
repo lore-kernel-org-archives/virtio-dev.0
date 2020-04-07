@@ -1,91 +1,42 @@
-Return-Path: virtio-dev-return-7055-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-7015-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 1AE3E98484F
-	for <virtio-dev@lists.oasis-open.org>; Tue, 14 Apr 2020 07:36:12 +0000 (UTC)
-References: <20200410033729.24738.22879.stgit@localhost.localdomain>
- <20200410034150.24738.98143.stgit@localhost.localdomain>
- <c9b60224-e280-7351-33df-bbb3e25f6cfd@redhat.com>
- <CAKgT0UcLfpyGOmaOk9zYT6mfgR2E=Ra-1ViMN3gAeTX2r9CCag@mail.gmail.com>
-From: David Hildenbrand <david@redhat.com>
-Message-ID: <4151f0b8-051c-7ff9-d0ea-fb6dd5cc20a3@redhat.com>
-Date: Tue, 14 Apr 2020 09:36:00 +0200
+	by lists.oasis-open.org (Postfix) with ESMTP id BE166985E77
+	for <virtio-dev@lists.oasis-open.org>; Tue,  7 Apr 2020 09:53:25 +0000 (UTC)
 MIME-Version: 1.0
-In-Reply-To: <CAKgT0UcLfpyGOmaOk9zYT6mfgR2E=Ra-1ViMN3gAeTX2r9CCag@mail.gmail.com>
-Content-Language: en-US
-Subject: [virtio-dev] Re: [PATCH v19 QEMU 4/4] memory: Do not allow direct write access to
- rom_device regions
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: Alexander Duyck <alexander.duyck@gmail.com>, Paolo Bonzini <pbonzini@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>
-Cc: virtio-dev@lists.oasis-open.org, qemu-devel@nongnu.org
+References: <CAJPjb1K2W=wcer3+6XNzi+pcyGPAU2E3HXbq5_cuBVNQad=_zg@mail.gmail.com>
+ <20200309030251-mutt-send-email-mst@kernel.org> <ff63b1e2-e4aa-1b13-0b4a-72fd23badc06@redhat.com>
+ <20200309060238-mutt-send-email-mst@kernel.org> <fdedf8ac-74ed-f502-daef-38896f23e526@redhat.com>
+ <20200310021729-mutt-send-email-mst@kernel.org> <89358cf3-7ce0-7b60-f4a7-2672970a635e@redhat.com>
+ <CAJPjb1Jg3Md7GrzAG2-6hJk4YwmpkqDCLFWMpXrvvkUY=5pMpQ@mail.gmail.com> <0f43a280-5425-3a10-1312-22ea87d320ca@redhat.com>
+In-Reply-To: <0f43a280-5425-3a10-1312-22ea87d320ca@redhat.com>
+From: Eugenio Perez Martin <eperezma@redhat.com>
+Date: Tue, 7 Apr 2020 11:52:46 +0200
+Message-ID: <CAJaqyWfeSgj=+RMM_Zy4gTAkNJ42Ax5Axvc8okHOhH7UTsxhaA@mail.gmail.com>
+Subject: Re: [virtio-dev] Dirty Page Tracking (DPT)
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+To: Rob Miller <rob.miller@broadcom.com>
+Cc: Virtio-Dev <virtio-dev@lists.oasis-open.org>, Paolo Bonzini <pbonzini@redhat.com>, Jason Wang <jasowang@redhat.com>, Michael Tsirkin <mst@redhat.com>, Juan Quintela <quintela@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 14.04.20 00:48, Alexander Duyck wrote:
-> On Fri, Apr 10, 2020 at 3:50 AM Paolo Bonzini <pbonzini@redhat.com> wrote:
->>
->> On 10/04/20 05:41, Alexander Duyck wrote:
->>> From: Alexander Duyck <alexander.h.duyck@linux.intel.com>
->>>
->>> According to the documentation in memory.h a ROM memory region will be
->>> backed by RAM for reads, but is supposed to go through a callback for
->>> writes. Currently we were not checking for the existence of the rom_device
->>> flag when determining if we could perform a direct write or not.
->>>
->>> To correct that add a check to memory_region_is_direct so that if the
->>> memory region has the rom_device flag set we will return false for all
->>> checks where is_write is set.
->>>
->>> Signed-off-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
->>> ---
->>>  include/exec/memory.h |    4 ++--
->>>  1 file changed, 2 insertions(+), 2 deletions(-)
->>>
->>> diff --git a/include/exec/memory.h b/include/exec/memory.h
->>> index 1614d9a02c0c..e000bd2f97b2 100644
->>> --- a/include/exec/memory.h
->>> +++ b/include/exec/memory.h
->>> @@ -2351,8 +2351,8 @@ void address_space_write_cached_slow(MemoryRegionCache *cache,
->>>  static inline bool memory_access_is_direct(MemoryRegion *mr, bool is_write)
->>>  {
->>>      if (is_write) {
->>> -        return memory_region_is_ram(mr) &&
->>> -               !mr->readonly && !memory_region_is_ram_device(mr);
->>> +        return memory_region_is_ram(mr) && !mr->readonly &&
->>> +               !mr->rom_device && !memory_region_is_ram_device(mr);
->>>      } else {
->>>          return (memory_region_is_ram(mr) && !memory_region_is_ram_device(mr)) ||
->>>                 memory_region_is_romd(mr);
->>>
->>
->> Good catch.  I queued this up for 5.0.
->>
->> Thanks,
->>
->> Paolo
-> 
-> Thanks Paolo,
-> 
-> It looks like you only pulled this patch correct?
-> 
-> If so, David & Michael, do I need to resubmit the first 3 in this
-> series or can those be pulled separately?
+Hi!
 
-QEMU is currently in hard freeze. I'll have a final look over the
-patches. If nothing jumps at me (and nothing changed upstream in the
-meantime), Michael will queue them without a resend.
+So, from the previous mails, it seems that monitoring the used ring
+(and the packed descriptors) is a good first step in that direction,
+as DPDK did. This way, the device does not need to worry about the
+dirty page tracking using a bitmap and the PCI writes limitation, and
+we can evaluate later the proposed alternatives:
+* Alternate used descriptors in packed.
+* vDPA interface for vDPA devices in a convenient format.
+
+Any thoughts? Do you think that we should start with another way?
 
 Thanks!
-
-
--- 
-Thanks,
-
-David / dhildenb
 
 
 ---------------------------------------------------------------------
