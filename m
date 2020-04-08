@@ -1,75 +1,59 @@
-Return-Path: virtio-dev-return-7062-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-7026-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 2069A985F59
-	for <virtio-dev@lists.oasis-open.org>; Tue, 14 Apr 2020 18:39:56 +0000 (UTC)
-References: <20200311171422.10484-1-david@redhat.com>
- <20200329084128-mutt-send-email-mst@kernel.org>
- <b9984195-bb48-e2a6-887d-0905692a7524@redhat.com>
- <20200414122716-mutt-send-email-mst@kernel.org>
-From: David Hildenbrand <david@redhat.com>
-Message-ID: <758aa88e-7bd1-ea77-6ee3-9a015a0f8b0e@redhat.com>
-Date: Tue, 14 Apr 2020 20:39:25 +0200
+	by lists.oasis-open.org (Postfix) with ESMTP id B86C8985EFA
+	for <virtio-dev@lists.oasis-open.org>; Wed,  8 Apr 2020 22:55:14 +0000 (UTC)
+From: Alexander Duyck <alexander.duyck@gmail.com>
+Date: Wed, 08 Apr 2020 15:55:10 -0700
+Message-ID: <20200408225302.18764.209.stgit@localhost.localdomain>
 MIME-Version: 1.0
-In-Reply-To: <20200414122716-mutt-send-email-mst@kernel.org>
-Content-Language: en-US
-Subject: [virtio-dev] Re: [PATCH v2 00/10] virtio-mem: paravirtualized memory
-Content-Type: text/plain; charset=utf-8
+Subject: [virtio-dev] [PATCH v18 QEMU 0/3] virtio-balloon: add support for providing free
+ page reporting
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: linux-kernel@vger.kernel.org, linux-mm@kvack.org, virtio-dev@lists.oasis-open.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, Michal Hocko <mhocko@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Sebastien Boeuf <sebastien.boeuf@intel.com>, Samuel Ortiz <samuel.ortiz@intel.com>, Robert Bradford <robert.bradford@intel.com>, Luiz Capitulino <lcapitulino@redhat.com>, Pankaj Gupta <pankaj.gupta.linux@gmail.com>, teawater <teawaterz@linux.alibaba.com>, Igor Mammedov <imammedo@redhat.com>, "Dr . David Alan Gilbert" <dgilbert@redhat.com>, Alexander Duyck <alexander.h.duyck@linux.intel.com>, Alexander Potapenko <glider@google.com>, Anshuman Khandual <anshuman.khandual@arm.com>, Anthony Yznaga <anthony.yznaga@oracle.com>, Dan Williams <dan.j.williams@intel.com>, Dave Young <dyoung@redhat.com>, Jason Wang <jasowang@redhat.com>, Johannes Weiner <hannes@cmpxchg.org>, Juergen Gross <jgross@suse.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Len Brown <lenb@kernel.org>, Mel Gorman <mgorman@techsingularity.net>, Michal Hocko <mhocko@suse.com>, Mike Rapoport <rppt@linux.ibm.com>, Oscar Salvador <osalvador@suse.com>, Oscar Salvador <osalvador@suse.de>, Pavel Tatashin <pasha.tatashin@soleen.com>, Pavel Tatashin <pavel.tatashin@microsoft.com>, Pingfan Liu <kernelfans@gmail.com>, Qian Cai <cai@lca.pw>, "Rafael J. Wysocki" <rafael@kernel.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Stefan Hajnoczi <stefanha@redhat.com>, Vlastimil Babka <vbabka@suse.cz>, Wei Yang <richard.weiyang@gmail.com>
+To: david@redhat.com, mst@redhat.com
+Cc: virtio-dev@lists.oasis-open.org, qemu-devel@nongnu.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 14.04.20 18:28, Michael S. Tsirkin wrote:
-> On Tue, Apr 14, 2020 at 11:15:18AM +0200, David Hildenbrand wrote:
->> On 29.03.20 14:42, Michael S. Tsirkin wrote:
->>> On Wed, Mar 11, 2020 at 06:14:12PM +0100, David Hildenbrand wrote:
->>>> This series is based on latest linux-next. The patches are located at:
->>>>     https://github.com/davidhildenbrand/linux.git virtio-mem-v2
->>>>
->>>> I now have acks for all !virtio-mem changes. I'll be happy to get review
->>>> feedback, testing reports, etc. for the virtio-mem changes. If there are
->>>> no further comments, I guess this is good to go as a v1 soon.
->>>
->>> I'd like to queue it for merge after the release. If you feel it's ready
->>> please ping me after the release to help make sure it didn't get
->>> dropped.  I see there were some reports about people having trouble
->>> using this, pls keep working on this meanwhile.
->>
->> Hi Michael,
->>
->> I think this is ready to go as a first version. There are a couple of
->> future work items related to kexec/kdump:
->> - Teach kexec-tools/kexec_file_load() to not place the kexec
->>   kernel/initrd onto virtio-mem added memory.
->> - Teach kexec-tools/kdump to consider a bigger number of memory
->>   resources for dumping.
->>
->> In general, as virtio-mem adds a lot of memory resources, we might want
->> to tweak performance in that area as well. Future stuff.
->>
->> So I suggest queuing this. If you need a resend, please let me know.
->>
->> Cheers!
-> 
-> Thanks!
-> I'll queue it for merge after the release. If possible please ping me
-> after the release to help make sure it didn't get dropped.
+This series provides an asynchronous means of reporting free guest pages
+to QEMU through virtio-balloon so that the memory associated with those
+pages can be dropped and reused by other processes and/or guests on the
+host. Using this it is possible to avoid unnecessary I/O to disk and
+greatly improve performance in the case of memory overcommit on the host.
 
-If we could get this into 5.8, that would be great (IOW, have it in
--next for a while before the 5.8 merge window opens).
+I originally submitted this patch series[1] back on February 11th 2020,
+but at that time I was focused primarily on the kernel portion of this
+patch set. However as of April 7th those patches are now included in
+Linus's kernel tree[2] and so I thought I should resubmit the QEMU side of
+this for inclusion so that the feature will be available in QEMU hopefully
+by the time the 5.7 kernel tree is released.
 
-Thanks!
+[1]: https://lore.kernel.org/lkml/20200211224416.29318.44077.stgit@localhost.localdomain/
+[2]: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=b0c504f154718904ae49349147e3b7e6ae91ffdc
 
--- 
-Thanks,
+Changes from v17:
+Fixed typo in patch 1 title
+Addressed white-space issues reported via checkpatch
+Added braces {} for two if statements to match expected coding style
 
-David / dhildenb
+---
 
+Alexander Duyck (3):
+      virtio-balloon: Implement support for page poison tracking feature
+      virtio-balloon: Add support for providing free page reports to host
+      virtio-balloon: Provide a interface for free page reporting
+
+
+ hw/virtio/virtio-balloon.c                      |   70 ++++++++++++++++++++++-
+ include/hw/virtio/virtio-balloon.h              |    3 +
+ include/standard-headers/linux/virtio_balloon.h |    1 
+ 3 files changed, 69 insertions(+), 5 deletions(-)
+
+--
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
