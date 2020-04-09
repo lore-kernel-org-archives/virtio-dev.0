@@ -1,102 +1,107 @@
-Return-Path: virtio-dev-return-7177-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 67316985BA9
-	for <virtio-dev@lists.oasis-open.org>; Mon, 27 Apr 2020 09:34:09 +0000 (UTC)
-From: Dmitry Sepp <dmitry.sepp@opensynergy.com>
-Date: Mon, 27 Apr 2020 11:33:56 +0200
-Message-ID: <3353506.N7aMVyhfb1@os-lin-dmo>
-In-Reply-To: <CAD90Vcbrgf2dK2EYeQDJ=-AFA2NkFnyJhutLX3nfeD7ajNYw=A@mail.gmail.com>
-References: <20200206102058.247258-1-keiichiw@chromium.org> <17068786.sWSEgdgrri@os-lin-dmo> <CAD90Vcbrgf2dK2EYeQDJ=-AFA2NkFnyJhutLX3nfeD7ajNYw=A@mail.gmail.com>
+Return-Path: virtio-comment-return-1176-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-comment@lists.oasis-open.org>
+List-Post: <mailto:virtio-comment@lists.oasis-open.org>
+List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
+From: Peter Hilber <peter.hilber@opensynergy.com>
+References: <20200227113735.23605-1-peter.hilber@opensynergy.com>
+ <20200317192053.15665-1-peter.hilber@opensynergy.com>
+ <87369tn2a4.fsf@linaro.org>
+Message-ID: <f07872a9-d35f-307c-49ad-31b396fcc7d9@opensynergy.com>
+Date: Thu, 9 Apr 2020 10:01:28 +0200
 MIME-Version: 1.0
-Subject: [virtio-dev] Re: [PATCH v3 1/2] virtio-video: Add virtio video device specification
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: 7Bit
-To: Keiichi Watanabe <keiichiw@chromium.org>
-Cc: virtio-dev@lists.oasis-open.org, Linux Media Mailing List <linux-media@vger.kernel.org>, Alexandre Courbot <acourbot@chromium.org>, Alex Lau <alexlau@chromium.org>, Daniel Vetter <daniel@ffwll.ch>, Dylan Reid <dgreid@chromium.org>, David Staessens <dstaessens@chromium.org>, Enrico Granata <egranata@google.com>, Frediano Ziglio <fziglio@redhat.com>, Hans Verkuil <hverkuil@xs4all.nl>, Gerd Hoffmann <kraxel@redhat.com>, =?ISO-8859-1?Q?St=E9phane?= Marchesin <marcheu@chromium.org>, Pawel Osciak <posciak@chromium.org>, spice-devel@lists.freedesktop.org, David Stevens <stevensd@chromium.org>, Tomasz Figa <tfiga@chromium.org>, uril@redhat.com, Samiullah Khawaja <samiullah.khawaja@opensynergy.com>, Kiran Pawar <kiran.pawar@opensynergy.com>
+In-Reply-To: <87369tn2a4.fsf@linaro.org>
+Content-Language: en-US
+Subject: [virtio-comment] Re: [virtio-dev] [PATCH v3] Add virtio SCMI device specification
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+To: =?UTF-8?Q?Alex_Benn=c3=a9e?= <alex.bennee@linaro.org>
+Cc: virtio-comment@lists.oasis-open.org, linux-arm-kernel@lists.infradead.org, Souvik.Chakravarty@arm.com, Sudeep.Holla@arm.com, virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Hi Keiichi,
+Hi,
 
-One more addition to the comments below. Currently spec does not define units 
-for bitrate (are units needed for anything else except that?). Let's 
-explicitly state that bitrate is provided in bits per sec, so whatever 
-implementation can do proper conversion if needed.
+apologies for my slow reply. Please find my answers below.
+
+On 27.03.20 18:19, Alex Benn=C3=A9e wrote:
+> <snip>
+>> +
+>> +\subsubsection{Shared Memory Operation}
+>> +
+>> +Various SCMI protocols define statistics shared memory regions (for
+>> +statistics and sensor values).
+>> +
+>> +\devicenormative{\paragraph}{Shared Memory Operation}{Device Types / SC=
+MI Device / Device Operation / Shared Memory Operation}
+>> +
+>> +If VIRTIO_SCMI_F_SHARED_MEMORY was negotiated, the device MAY implement
+>> +an SCMI statistics shared memory region using a virtio shared memory
+>> +region.
+>=20
+> AFAICT this is the first usage of shmid in the virtio spec so I have
+> some questions. The spec says:
+
+The File System Device, which has been added to the virtio-spec master
+at least, also uses shared memory for the DAX Window already.[1]
+
+>=20
+>   Memory consistency rules vary depending on the region and the device
+>   and they will be specified as required by each device.
+>=20
+> So what are the rules for memory consistency for these regions:
+>=20
+>   - are they read-only w.r.t the guest? (maybe this is implicit?)
+
+The Arm SCMI spec[2] (DEN0056B) only lists "statistics" shared memory
+(SHM) fields which are read-only to the guest (SCMI agent), although
+this is not stated explicitly. I think the virtio spec should not
+specify more about this.
+
+>   - how does the guest know when they have been updated?
+
+SCMI provides notification messages for some events. DEN0056B does not
+specify any generic SHM update detection mechanism or SHM access
+synchronization mechanism, so I would again say the virtio spec
+should not specify anything about this.
+
+>   - how goes the guest know it hasn't read a value mid-update?
+
+I would add the following requirements (paraphrased) to the next virtio
+SCMI device spec patch:
+
+- All SHM elements MUST be naturally aligned.
+- Read and write accesses to scalar elements in the SHM MUST be atomic.
+
+Apart from this, I think DEN0056B imposes no further memory consistency
+rules which the virtio SCMI device spec needs to address.
 
 Best regards,
-Dmity.
 
-On Freitag, 24. April 2020 13:45:38 CEST Keiichi Watanabe wrote:
-> Hi Dmitry,
-> 
-> On Thu, Apr 9, 2020 at 10:23 PM Dmitry Sepp <dmitry.sepp@opensynergy.com> 
-wrote:
-> > Hi Keiichi,
-> > 
-> > On Donnerstag, 9. April 2020 12:46:56 CEST Keiichi Watanabe wrote:
-> > > Hi,
-> > > 
-> > > On Tue, Apr 7, 2020 at 11:49 PM Dmitry Sepp
-> > > <dmitry.sepp@opensynergy.com>
-> > 
-> > wrote:
-> > > > Hi,
-> > > > 
-> > > > > +\item[VIRTIO_VIDEO_CMD_STREAM_DESTROY] Destroy a video stream
-> > > > > +  (context) within the device.
-> > > > > +
-> > > > > +\begin{lstlisting}
-> > > > > +struct virtio_video_stream_destroy {
-> > > > > +        struct virtio_video_cmd_hdr hdr;
-> > > > > +};
-> > > > > +\end{lstlisting}
-> > > > 
-> > > > Let's add more strict description to stream_destroy, like as follows:
-> > > > Device MUST NOT generate any events for the stream in question after
-> > > > receiving the command. Before completing the command, Device MUST
-> > > > ensure
-> > > > that all asynchronous commands that are related to the stream have
-> > > > been
-> > > > completed and all memory objects are unreferenced.
-> > > 
-> > > Sounds good. But, the device should probably be able to generate
-> > > VIRTIO_VIDEO_EVENT_ERROR for a device-wide error?
-> > > Or, should VIRTIO_VIDEO_EVENT_ERROR always be a per-stream error? (I
-> > > haven't documented it in v3)
-> > 
-> > In the current version of the driver  I have we interpret it a stream
-> > error. I think it makes sense as several stream formats might be backed
-> > by different hardware devices on the host side. So it would be an
-> > overkill to mark the whole virtio device as broken on the guest side.
-> 
-> It makes sense. I'll explicitly document that it's a per-stream error.
-> 
-> > BTW, I think we should add some hard limit to the max_cap_length and
-> > max_resp_length in the spec, so buggy device does not make us allocate all
-> > memory for a response on the host side by providing a garbage value. I
-> > think 4k might be a good value.
-> 
-> Sounds good. Thank you for the suggestion.
-> 
-> Best regards,
-> Keiichi
-> 
-> > Best regards,
-> > Dmitry.
-> > 
-> > > Best regards,
-> > > Keiichi
-> > > 
-> > > > Best regards,
-> > > > Dmitry.
+Peter
 
 
+[1]
+https://github.com/oasis-tcs/virtio-spec/blob/0c0dd715152cbbdc1d87e8d193d4c=
+56d2b0bb5fe/virtio-fs.tex#L182
+[2]
+https://static.docs.arm.com/den0056/b/DEN0056B_System_Control_and_Managemen=
+t_Interface_v2_0.pdf
 
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+This publicly archived list offers a means to provide input to the
+OASIS Virtual I/O Device (VIRTIO) TC.
+
+In order to verify user consent to the Feedback License terms and
+to minimize spam in the list archive, subscription is required
+before posting.
+
+Subscribe: virtio-comment-subscribe@lists.oasis-open.org
+Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
+List help: virtio-comment-help@lists.oasis-open.org
+List archive: https://lists.oasis-open.org/archives/virtio-comment/
+Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
+List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lis=
+ts
+Committee: https://www.oasis-open.org/committees/virtio/
+Join OASIS: https://www.oasis-open.org/join/
 
