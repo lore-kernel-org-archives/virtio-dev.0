@@ -1,12 +1,12 @@
-Return-Path: virtio-dev-return-7051-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-7052-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id A50999842BE
-	for <virtio-dev@lists.oasis-open.org>; Mon, 13 Apr 2020 13:49:46 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 864659842BE
+	for <virtio-dev@lists.oasis-open.org>; Mon, 13 Apr 2020 13:49:56 +0000 (UTC)
 References: <CAJPjb1K2W=wcer3+6XNzi+pcyGPAU2E3HXbq5_cuBVNQad=_zg@mail.gmail.com>
  <20200309030251-mutt-send-email-mst@kernel.org>
  <ff63b1e2-e4aa-1b13-0b4a-72fd23badc06@redhat.com>
@@ -22,8 +22,8 @@ References: <CAJPjb1K2W=wcer3+6XNzi+pcyGPAU2E3HXbq5_cuBVNQad=_zg@mail.gmail.com>
  <CAJaqyWc3-swETnT-h43XcRD0N4CSvd7FM1tZKokHnEOBB0RNqw@mail.gmail.com>
  <CAJPjb1LU9Mo6uiRTQ7yFM97VDT58fXNa-SrrJhr0-axY4u6Gmw@mail.gmail.com>
 From: Jason Wang <jasowang@redhat.com>
-Message-ID: <5ea37fd7-f762-fdc0-684f-f7e5be7fbd4c@redhat.com>
-Date: Mon, 13 Apr 2020 21:49:33 +0800
+Message-ID: <0214783f-d2fc-eea9-7d46-625751776b80@redhat.com>
+Date: Mon, 13 Apr 2020 21:49:47 +0800
 MIME-Version: 1.0
 In-Reply-To: <CAJPjb1LU9Mo6uiRTQ7yFM97VDT58fXNa-SrrJhr0-axY4u6Gmw@mail.gmail.com>
 Content-Language: en-US
@@ -148,7 +148,7 @@ discussion upstream.
 
 
 I agree, I think we can start from software support and discuss the=20
-software path in parallel.
+hardware support in parallel.
 
 Thanks
 
