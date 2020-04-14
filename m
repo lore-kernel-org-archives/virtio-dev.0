@@ -1,62 +1,61 @@
-Return-Path: virtio-dev-return-7061-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-7056-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 54EF2985F59
-	for <virtio-dev@lists.oasis-open.org>; Tue, 14 Apr 2020 16:35:14 +0000 (UTC)
-Date: Tue, 14 Apr 2020 12:35:02 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20200414123438-mutt-send-email-mst@kernel.org>
+	by lists.oasis-open.org (Postfix) with ESMTP id 85C91985F3D
+	for <virtio-dev@lists.oasis-open.org>; Tue, 14 Apr 2020 09:15:51 +0000 (UTC)
 References: <20200311171422.10484-1-david@redhat.com>
- <20200311171422.10484-8-david@redhat.com>
- <156601a9-e919-b88f-2278-97ecee554d21@redhat.com>
+ <20200329084128-mutt-send-email-mst@kernel.org>
+From: David Hildenbrand <david@redhat.com>
+Message-ID: <b9984195-bb48-e2a6-887d-0905692a7524@redhat.com>
+Date: Tue, 14 Apr 2020 11:15:18 +0200
 MIME-Version: 1.0
-In-Reply-To: <156601a9-e919-b88f-2278-97ecee554d21@redhat.com>
-Subject: [virtio-dev] Re: [PATCH v2 07/10] mm/memory_hotplug: Introduce
- offline_and_remove_memory()
-Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20200329084128-mutt-send-email-mst@kernel.org>
+Content-Language: en-US
+Subject: [virtio-dev] Re: [PATCH v2 00/10] virtio-mem: paravirtualized memory
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-To: David Hildenbrand <david@redhat.com>
-Cc: linux-kernel@vger.kernel.org, linux-mm@kvack.org, virtio-dev@lists.oasis-open.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, Michal Hocko <mhocko@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Oscar Salvador <osalvador@suse.com>, Michal Hocko <mhocko@suse.com>, Pavel Tatashin <pasha.tatashin@soleen.com>, Wei Yang <richard.weiyang@gmail.com>, Dan Williams <dan.j.williams@intel.com>, Qian Cai <cai@lca.pw>
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: linux-kernel@vger.kernel.org, linux-mm@kvack.org, virtio-dev@lists.oasis-open.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, Michal Hocko <mhocko@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Sebastien Boeuf <sebastien.boeuf@intel.com>, Samuel Ortiz <samuel.ortiz@intel.com>, Robert Bradford <robert.bradford@intel.com>, Luiz Capitulino <lcapitulino@redhat.com>, Pankaj Gupta <pankaj.gupta.linux@gmail.com>, teawater <teawaterz@linux.alibaba.com>, Igor Mammedov <imammedo@redhat.com>, "Dr . David Alan Gilbert" <dgilbert@redhat.com>, Alexander Duyck <alexander.h.duyck@linux.intel.com>, Alexander Potapenko <glider@google.com>, Anshuman Khandual <anshuman.khandual@arm.com>, Anthony Yznaga <anthony.yznaga@oracle.com>, Dan Williams <dan.j.williams@intel.com>, Dave Young <dyoung@redhat.com>, Jason Wang <jasowang@redhat.com>, Johannes Weiner <hannes@cmpxchg.org>, Juergen Gross <jgross@suse.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Len Brown <lenb@kernel.org>, Mel Gorman <mgorman@techsingularity.net>, Michal Hocko <mhocko@suse.com>, Mike Rapoport <rppt@linux.ibm.com>, Oscar Salvador <osalvador@suse.com>, Oscar Salvador <osalvador@suse.de>, Pavel Tatashin <pasha.tatashin@soleen.com>, Pavel Tatashin <pavel.tatashin@microsoft.com>, Pingfan Liu <kernelfans@gmail.com>, Qian Cai <cai@lca.pw>, "Rafael J. Wysocki" <rafael@kernel.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Stefan Hajnoczi <stefanha@redhat.com>, Vlastimil Babka <vbabka@suse.cz>, Wei Yang <richard.weiyang@gmail.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, Mar 11, 2020 at 06:19:04PM +0100, David Hildenbrand wrote:
-> On 11.03.20 18:14, David Hildenbrand wrote:
-> > virtio-mem wants to offline and remove a memory block once it unplugged
-> > all subblocks (e.g., using alloc_contig_range()). Let's provide
-> > an interface to do that from a driver. virtio-mem already supports to
-> > offline partially unplugged memory blocks. Offlining a fully unplugged
-> > memory block will not require to migrate any pages. All unplugged
-> > subblocks are PageOffline() and have a reference count of 0 - so
-> > offlining code will simply skip them.
-> >=20
-> > All we need is an interface to offline and remove the memory from kerne=
-l
-> > module context, where we don't have access to the memory block devices
-> > (esp. find_memory_block() and device_offline()) and the device hotplug
-> > lock.
-> >=20
-> > To keep things simple, allow to only work on a single memory block.
-> >=20
+On 29.03.20 14:42, Michael S. Tsirkin wrote:
+> On Wed, Mar 11, 2020 at 06:14:12PM +0100, David Hildenbrand wrote:
+>> This series is based on latest linux-next. The patches are located at:
+>>     https://github.com/davidhildenbrand/linux.git virtio-mem-v2
+>>
+>> I now have acks for all !virtio-mem changes. I'll be happy to get review
+>> feedback, testing reports, etc. for the virtio-mem changes. If there are
+>> no further comments, I guess this is good to go as a v1 soon.
 >=20
-> Lost the ACK from Michael
->=20
-> Acked-by: Michal Hocko <mhocko@suse.com> [1]
->=20
-> [1] https://lkml.kernel.org/r/20200302142737.GP4380@dhcp22.suse.cz
+> I'd like to queue it for merge after the release. If you feel it's ready
+> please ping me after the release to help make sure it didn't get
+> dropped.  I see there were some reports about people having trouble
+> using this, pls keep working on this meanwhile.
 
+Hi Michael,
 
-Andrew, could you pls ack merging this through the vhost tree,
-with the rest of the patchset?
+I think this is ready to go as a first version. There are a couple of
+future work items related to kexec/kdump:
+- Teach kexec-tools/kexec_file_load() to not place the kexec
+  kernel/initrd onto virtio-mem added memory.
+- Teach kexec-tools/kdump to consider a bigger number of memory
+  resources for dumping.
 
-> --=20
-> Thanks,
->=20
-> David / dhildenb
+In general, as virtio-mem adds a lot of memory resources, we might want
+to tweak performance in that area as well. Future stuff.
+
+So I suggest queuing this. If you need a resend, please let me know.
+
+Cheers!
+
+--=20
+Thanks,
+
+David / dhildenb
 
 
 ---------------------------------------------------------------------
