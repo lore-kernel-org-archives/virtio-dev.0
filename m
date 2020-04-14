@@ -1,112 +1,110 @@
-Return-Path: virtio-dev-return-7100-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-7058-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id C6C42986076
-	for <virtio-dev@lists.oasis-open.org>; Fri, 17 Apr 2020 07:46:39 +0000 (UTC)
-References: <20200416192809.8763.19308.stgit@localhost.localdomain>
-From: David Hildenbrand <david@redhat.com>
-Message-ID: <f85362c1-8e23-36f9-eca7-7a1968b6118b@redhat.com>
-Date: Fri, 17 Apr 2020 09:46:28 +0200
+	by lists.oasis-open.org (Postfix) with ESMTP id 8054A985F59
+	for <virtio-dev@lists.oasis-open.org>; Tue, 14 Apr 2020 16:20:53 +0000 (UTC)
+Date: Tue, 14 Apr 2020 12:20:40 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20200414121724-mutt-send-email-mst@kernel.org>
+References: <BN6PR1801MB2067FCCE45316C25E5EB82F7C5DA0@BN6PR1801MB2067.namprd18.prod.outlook.com>
 MIME-Version: 1.0
-In-Reply-To: <20200416192809.8763.19308.stgit@localhost.localdomain>
-Content-Language: en-US
-Subject: [virtio-dev] Re: [PATCH] virtio-balloon: Disable free page hinting/reporting if
- page poison is disabled
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <BN6PR1801MB2067FCCE45316C25E5EB82F7C5DA0@BN6PR1801MB2067.namprd18.prod.outlook.com>
+Subject: [virtio-dev] Re: [Virtio-networking] Doorbell mapping of vDPA
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: quoted-printable
-To: Alexander Duyck <alexander.duyck@gmail.com>, jasowang@redhat.com, mst@redhat.com
-Cc: virtio-dev@lists.oasis-open.org, virtualization@lists.linux-foundation.org
+Content-Disposition: inline
+To: Vitaly Mireyno <vmireyno@marvell.com>
+Cc: Jason Wang <jasowang@redhat.com>, "virtio-networking@redhat.com" <virtio-networking@redhat.com>, Virtio-Dev <virtio-dev@lists.oasis-open.org>, Ariel Elior <aelior@marvell.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 16.04.20 21:30, Alexander Duyck wrote:
-> From: Alexander Duyck <alexander.h.duyck@linux.intel.com>
+On Tue, Apr 14, 2020 at 01:12:51PM +0000, Vitaly Mireyno wrote:
 >=20
-> If we have free page hinting or page reporting enabled we should disable =
-it
-> if the pages are poisoned or initialized on free and we cannot notify the
-> hypervisor.
+> >-----Original Message-----
+> >From: virtio-networking-bounces@redhat.com <virtio-networking-bounces@re=
+dhat.com> On Behalf
+> >Of Jason Wang
+> >Sent: Tuesday, 7 April, 2020 10:56
+> >To: virtio-networking@redhat.com; Virtio-Dev <virtio-dev@lists.oasis-ope=
+n.org>
+> >Cc: Michael S. Tsirkin <mst@redhat.com>
+> >Subject: [Virtio-networking] Doorbell mapping of vDPA
+> >
+> >----------------------------------------------------------------------
+> >Hi all:
+> >
+> >To get native performance of VF, we need to map doorbell to guest to avo=
+id unnecessary vmexit. In
+> >order to do this, we will launch qemu with page-per-vq=3Don. This means =
+the each doorbell register
+> >should be located at the beginning of 4K page and does not share the pag=
+e with other registers. Then
+> >vDPA framework can safely map it into the guest physical address (GPA) r=
+ange defined by qemu. It
+> >could be either
+> >
+> >1) a single doorbell register that is used by all virtqueues
+> >
+> >or
+> >
+> >2) several different per-vq doorbell registers
+> >
+> >If you decide to implement a virtio-pci register layout, need to make su=
+re for notification structure
+> >(4.1.4.4 of virtio spec):
+> >
+> >For each virtqueue, the result
+> >ofcap.offset+queue_notify_off*notify_off_multiplier is PAGE_SIZE (e.g
+> >4K) alignment, and the doorbeel does not share the page with other regis=
+ters.
+> >
+> >And it would be better if queue_notify_off, notify_off_multiplier can be=
+ changed via firmware for
+> >extra flexibility.
+> >
 >=20
-
-Please split that up into an actual fix (Fixes:) for free page reporting
-and an optimization for free page hinting. Also, please document why we
-are doing stuff.
-
-Regarding the free page reporting part, I propose something like this inste=
-ad
-
-
-diff --git a/drivers/virtio/virtio_balloon.c b/drivers/virtio/virtio_balloo=
-n.c
-index 0ef16566c3f3..9b1e56da1e29 100644
---- a/drivers/virtio/virtio_balloon.c
-+++ b/drivers/virtio/virtio_balloon.c
-@@ -1107,6 +1107,20 @@ static int virtballoon_restore(struct virtio_device =
-*vdev)
-=20
- static int virtballoon_validate(struct virtio_device *vdev)
- {
-+       /*
-+        * Free page reporting relies on the fact that any access after
-+        * pages were reported (esp. from the buddy) will result in them ge=
-tting
-+        * deflated automatically. In case we care about the page content, =
-we
-+        * need support from the hypervisor to provide us with the same pag=
-e
-+        * (poisoned) content we originally had in the page. Without
-+        * VIRTIO_BALLOON_F_PAGE_POISON, we will receive either the origina=
-l
-+        * page or a zeroed page.
-+        */
-+       if (!virtio_has_feature(vdev, VIRTIO_BALLOON_F_PAGE_POISON) &&
-+           !IS_ENABLED(CONFIG_PAGE_POISONING_NO_SANITY) &&
-+           page_poisoning_enabled())
-+               __virtio_clear_bit(vdev, VIRTIO_BALLOON_F_REPORTING);
-+
-        /* Tell the host whether we care about poisoned pages. */
-        if (!want_init_on_free() &&
-            (IS_ENABLED(CONFIG_PAGE_POISONING_NO_SANITY) ||
-
-
-> Fixes: 5d757c8d518d ("virtio-balloon: add support for providing free page=
- reports to host")
+> In some cases, these conditions could not be met for a virtio-net hardwar=
+e device over PCI transport.
+> queue_notify and notify_off_multiplier could not always be fully controll=
+ed by the firmware. There could be hardware limitations on flexibility degr=
+ee of these parameters.
+> Specifically, the limitations I'm thinking of are:
+>  * queue_notify_off>0 and notify_off_multiplier>0
+>  * Several doorbell registers of several virtqueues share the same page (=
+but don't share the page with other registers).
 >=20
-> Signed-off-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
-> ---
->  drivers/virtio/virtio_balloon.c |    6 +++++-
->  1 file changed, 5 insertions(+), 1 deletion(-)
+> Can this be supported in vDPA with direct doorbell mapping?
 >=20
-> diff --git a/drivers/virtio/virtio_balloon.c b/drivers/virtio/virtio_ball=
-oon.c
-> index 95d9c2f0a7be..08bc86a6e468 100644
-> --- a/drivers/virtio/virtio_balloon.c
-> +++ b/drivers/virtio/virtio_balloon.c
-> @@ -1110,8 +1110,12 @@ static int virtballoon_validate(struct virtio_devi=
-ce *vdev)
->  =09/* Tell the host whether we care about poisoned pages. */
->  =09if (!want_init_on_free() &&
->  =09    (IS_ENABLED(CONFIG_PAGE_POISONING_NO_SANITY) ||
-> -=09     !page_poisoning_enabled()))
-> +=09     !page_poisoning_enabled())) {
->  =09=09__virtio_clear_bit(vdev, VIRTIO_BALLOON_F_PAGE_POISON);
-> +=09} else if (!virtio_has_feature(vdev, VIRTIO_BALLOON_F_PAGE_POISON)) {
-> +=09=09__virtio_clear_bit(vdev, VIRTIO_BALLOON_F_FREE_PAGE_HINT);
-> +=09=09__virtio_clear_bit(vdev, VIRTIO_BALLOON_F_REPORTING);
-> +=09}
-> =20
->  =09__virtio_clear_bit(vdev, VIRTIO_F_IOMMU_PLATFORM);
->  =09return 0;
->=20
+> Thanks
+
+There's value in being able to intercept some vqs in software
+while the rest of vqs are handled in hardware.
+E.g. that's the case for e.g. the control vq.
 
 
---=20
-Thanks,
-
-David / dhildenb
+> >Please check and make sure your hardware have such ability and feel free=
+ to ask if you have questions
+> >(offline if necessary).
+> >
+> >Thanks
+> >
+> >
+> >
+> >
+> >
+> >_______________________________________________
+> >Virtio-networking mailing list
+> >Virtio-networking@redhat.com
+> >https://urldefense.proofpoint.com/v2/url?u=3Dhttps-3A__www.redhat.com_ma=
+ilman_listinfo_virtio-
+> >2Dnetworking&d=3DDwIGaQ&c=3DnKjWec2b6R0mOyPaz7xtfQ&r=3DlDHJ2FW52oJ3lqqsA=
+rgFRdcevq01tbLQAw
+> >4A_NO7xgI&m=3DpddgVCz-
+> >orGTuUXATJ4Dmi7vAXatG9w47AmULNC3V9A&s=3D5mfYWbLCjcZO8FcwDqgAc5bjE-H-
+> >4p5TBkRZqP3uMsQ&e=3D
 
 
 ---------------------------------------------------------------------
