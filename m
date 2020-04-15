@@ -1,139 +1,82 @@
-Return-Path: virtio-dev-return-7079-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-7073-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 73DC2985FB8
-	for <virtio-dev@lists.oasis-open.org>; Thu, 16 Apr 2020 10:55:57 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 2CD75985FAD
+	for <virtio-dev@lists.oasis-open.org>; Wed, 15 Apr 2020 18:35:53 +0000 (UTC)
+From: Alexander Duyck <alexander.duyck@gmail.com>
+Date: Wed, 15 Apr 2020 11:35:49 -0700
+Message-ID: <20200415183524.14402.24934.stgit@localhost.localdomain>
 MIME-Version: 1.0
-References: <CAJPjb1K2W=wcer3+6XNzi+pcyGPAU2E3HXbq5_cuBVNQad=_zg@mail.gmail.com>
- <20200309030251-mutt-send-email-mst@kernel.org> <ff63b1e2-e4aa-1b13-0b4a-72fd23badc06@redhat.com>
- <20200309060238-mutt-send-email-mst@kernel.org> <fdedf8ac-74ed-f502-daef-38896f23e526@redhat.com>
- <20200310021729-mutt-send-email-mst@kernel.org> <89358cf3-7ce0-7b60-f4a7-2672970a635e@redhat.com>
- <CAJPjb1Jg3Md7GrzAG2-6hJk4YwmpkqDCLFWMpXrvvkUY=5pMpQ@mail.gmail.com>
- <0f43a280-5425-3a10-1312-22ea87d320ca@redhat.com> <CAJaqyWfeSgj=+RMM_Zy4gTAkNJ42Ax5Axvc8okHOhH7UTsxhaA@mail.gmail.com>
- <20200409170152-mutt-send-email-mst@kernel.org> <cf4a59a4-ee86-1d9e-147e-e30e586e2320@redhat.com>
- <CAJaqyWc3-swETnT-h43XcRD0N4CSvd7FM1tZKokHnEOBB0RNqw@mail.gmail.com> <209e4f4b-a806-feb2-1e29-d8f7153a3ce3@redhat.com>
-In-Reply-To: <209e4f4b-a806-feb2-1e29-d8f7153a3ce3@redhat.com>
-From: Eugenio Perez Martin <eperezma@redhat.com>
-Date: Thu, 16 Apr 2020 12:55:16 +0200
-Message-ID: <CAJaqyWf6++YtR+TAWptOA7L8OiPZqC+obLnhQ0UbR9eTvvZdCw@mail.gmail.com>
-Subject: Re: [virtio-dev] Dirty Page Tracking (DPT)
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: Virtio-Dev <virtio-dev@lists.oasis-open.org>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>, Rob Miller <rob.miller@broadcom.com>, Paolo Bonzini <pbonzini@redhat.com>, Juan Quintela <quintela@redhat.com>, Jason Wang <jasowang@redhat.com>
+Subject: [virtio-dev] [PATCH v2] virtio-balloon: Avoid using the word 'report' when
+ referring to free page hinting
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+To: jasowang@redhat.com, david@redhat.com, mst@redhat.com
+Cc: virtio-dev@lists.oasis-open.org, virtualization@lists.linux-foundation.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Hi everyone.
+From: Alexander Duyck <alexander.h.duyck@linux.intel.com>
 
-As proposed in the previous virtio-networking Meeting, I summarized in
-this document the different proposed requirements/architectures about
-vDPA live migration, and a starting draft about the proposed actions.
+It can be confusing to have multiple features within the same driver that
+are using the same verbage. As such this patch is creating a union of
+free_page_report_cmd_id with free_page_hint_cmd_id so that we can clean-up
+the userspace code a bit in terms of readability while maintaining the
+functionality of legacy code.
 
-Feedback is welcome.
+Signed-off-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
+---
+ drivers/virtio/virtio_balloon.c     |    2 +-
+ include/uapi/linux/virtio_balloon.h |   13 ++++++++++---
+ 2 files changed, 11 insertions(+), 4 deletions(-)
 
-Thanks!
-
-https://docs.google.com/document/d/1-2kxRxce2CwttfsZMMoqHjyI_c-o_ZjdaHN9JHx=
-ja4M/edit?usp=3Dsharing
-
-
-On Mon, Apr 13, 2020 at 3:55 PM Jason Wang <jasowang@redhat.com> wrote:
->
->
-> On 2020/4/13 =E4=B8=8B=E5=8D=888:15, Eugenio Perez Martin wrote:
-> > On Fri, Apr 10, 2020 at 4:40 AM Jason Wang <jasowang@redhat.com> wrote:
-> >>
-> >> On 2020/4/10 =E4=B8=8A=E5=8D=885:06, Michael S. Tsirkin wrote:
-> >>> On Tue, Apr 07, 2020 at 11:52:46AM +0200, Eugenio Perez Martin wrote:
-> >>>> Hi!
-> >>>>
-> >>>> So, from the previous mails, it seems that monitoring the used ring
-> >>>> (and the packed descriptors) is a good first step in that direction,
-> >>>> as DPDK did. This way, the device does not need to worry about the
-> >>>> dirty page tracking using a bitmap and the PCI writes limitation, an=
-d
-> >>>> we can evaluate later the proposed alternatives:
-> >>>> * Alternate used descriptors in packed.
-> >>>> * vDPA interface for vDPA devices in a convenient format.
-> >>>>
-> >>>> Any thoughts? Do you think that we should start with another way?
-> >>>>
-> >>>> Thanks!
-> >>> I am concerned that with software in data path, we'll hit RX queue
-> >>> underruns, won't we?
-> >>
-> >> Do you mean it will lose some performance? If yes, I think so.
-> >>
-> >>
-> >>> Two ways to avoid underruns:
-> >>> - dirty page tracking
-> >>> - page faults
-> >>
-> >> It looks to me this will lead even worse performance than software pat=
-h?
-> >> There will be lots of page faults during RX.
-> >>
-> >> Another direction is to track dirty pages via IOMMU. E.g recent Intel
-> >> IOMMU has EA and D bit which could be used for tracking pages wrote by
-> >> devices but not CPU.
-> >>
-> > So this could be added on top of the dirty tracking mechanism, isn't?
->
->
-> Yes, it requires the support from IOMMU API and driver.
->
->
-> > or would it be easier to start another-way around, and to start using
-> > modern IOMMU and then extend to old generic code?
->
->
-> If my understanding is correct, even for modern IOMMU it still require a
-> lot of work. So we need to start from software support and hardware
-> support first.
->
->
-> >
-> >>> I'm working on a proposal for page faults now.
-> >>
-> >> I guess it's better to have a transport independent method.
-> >>
-> >>
-> >>> If someone wants
-> >>> to work on dirty tracking in addition, that's also an option.
-> >>
-> >> I remember Rob mention some challenges of implementing dirty bitmap, I
-> >> wonder something like queue based interface would be better (similar t=
-o
-> >> Peter did for KVM)?
-> >>
-> > I think that the main challenge was to write bits instead of writes
-> > using PCI bus.
->
->
-> Yes, the ring interface will work one the descriptor which would be
-> several bytes instead of bits.
->
-> Thanks
->
->
-> >
-> >  From a conversation with Juan, another solution could be to do a byte
-> > map DPT, where a byte represents a page, not a bit. While I find this
-> > solution simpler, I'm not sure about the performance implications of
-> > track this way (memory/TLB pressure, etc). Rob and Juan, please
-> > correct me if I'm wrong or missed something.
-> >
-> > Compared to the used ring interposition, much more logic needs to be
-> > in the device driver for both alternatives (byte mapping and queue),
-> > isn't it?
-> >
-> >> Thanks
-> >>
->
+diff --git a/drivers/virtio/virtio_balloon.c b/drivers/virtio/virtio_balloon.c
+index 0ef16566c3f3..95d9c2f0a7be 100644
+--- a/drivers/virtio/virtio_balloon.c
++++ b/drivers/virtio/virtio_balloon.c
+@@ -580,7 +580,7 @@ static u32 virtio_balloon_cmd_id_received(struct virtio_balloon *vb)
+ 	if (test_and_clear_bit(VIRTIO_BALLOON_CONFIG_READ_CMD_ID,
+ 			       &vb->config_read_bitmap))
+ 		virtio_cread(vb->vdev, struct virtio_balloon_config,
+-			     free_page_report_cmd_id,
++			     free_page_hint_cmd_id,
+ 			     &vb->cmd_id_received_cache);
+ 
+ 	return vb->cmd_id_received_cache;
+diff --git a/include/uapi/linux/virtio_balloon.h b/include/uapi/linux/virtio_balloon.h
+index 19974392d324..3ce64f72bd09 100644
+--- a/include/uapi/linux/virtio_balloon.h
++++ b/include/uapi/linux/virtio_balloon.h
+@@ -34,7 +34,7 @@
+ #define VIRTIO_BALLOON_F_MUST_TELL_HOST	0 /* Tell before reclaiming pages */
+ #define VIRTIO_BALLOON_F_STATS_VQ	1 /* Memory Stats virtqueue */
+ #define VIRTIO_BALLOON_F_DEFLATE_ON_OOM	2 /* Deflate balloon on OOM */
+-#define VIRTIO_BALLOON_F_FREE_PAGE_HINT	3 /* VQ to report free pages */
++#define VIRTIO_BALLOON_F_FREE_PAGE_HINT	3 /* Free page hinting VQ and config */
+ #define VIRTIO_BALLOON_F_PAGE_POISON	4 /* Guest is using page poisoning */
+ #define VIRTIO_BALLOON_F_REPORTING	5 /* Page reporting virtqueue */
+ 
+@@ -48,8 +48,15 @@ struct virtio_balloon_config {
+ 	__u32 num_pages;
+ 	/* Number of pages we've actually got in balloon. */
+ 	__u32 actual;
+-	/* Free page report command id, readonly by guest */
+-	__u32 free_page_report_cmd_id;
++	/*
++	 * Free page hint command id, readonly by guest.
++	 * Was previously named free_page_report_cmd_id so we
++	 * need to carry that name for legacy support.
++	 */
++	union {
++		__u32 free_page_hint_cmd_id;
++		__u32 free_page_report_cmd_id;	/* deprecated */
++	};
+ 	/* Stores PAGE_POISON if page poisoning is in use */
+ 	__u32 poison_val;
+ };
 
 
 ---------------------------------------------------------------------
