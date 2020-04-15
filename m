@@ -1,159 +1,122 @@
-Return-Path: virtio-dev-return-7046-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-7064-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 8233F985FDB
-	for <virtio-dev@lists.oasis-open.org>; Fri, 10 Apr 2020 03:41:47 +0000 (UTC)
-From: Alexander Duyck <alexander.duyck@gmail.com>
-Date: Thu, 09 Apr 2020 20:41:43 -0700
-Message-ID: <20200410034143.24738.78852.stgit@localhost.localdomain>
-In-Reply-To: <20200410033729.24738.22879.stgit@localhost.localdomain>
+	by lists.oasis-open.org (Postfix) with ESMTP id D1E9C985F90
+	for <virtio-dev@lists.oasis-open.org>; Wed, 15 Apr 2020 08:19:01 +0000 (UTC)
 References: <20200410033729.24738.22879.stgit@localhost.localdomain>
+ <20200410034143.24738.78852.stgit@localhost.localdomain>
+From: David Hildenbrand <david@redhat.com>
+Message-ID: <4f26ec52-5520-1bfb-a1e5-fe6492f7af60@redhat.com>
+Date: Wed, 15 Apr 2020 10:17:50 +0200
 MIME-Version: 1.0
-Subject: [virtio-dev] [PATCH v19 QEMU 3/4] virtio-balloon: Provide an interface for free
- page reporting
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-To: pbonzini@redhat.com, david@redhat.com, mst@redhat.com
+In-Reply-To: <20200410034143.24738.78852.stgit@localhost.localdomain>
+Content-Language: en-US
+Subject: [virtio-dev] Re: [PATCH v19 QEMU 3/4] virtio-balloon: Provide an interface for
+ free page reporting
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+To: Alexander Duyck <alexander.duyck@gmail.com>, pbonzini@redhat.com, mst@redhat.com
 Cc: virtio-dev@lists.oasis-open.org, qemu-devel@nongnu.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-From: Alexander Duyck <alexander.h.duyck@linux.intel.com>
+On 10.04.20 05:41, Alexander Duyck wrote:
+> From: Alexander Duyck <alexander.h.duyck@linux.intel.com>
+>=20
+> Add support for free page reporting. The idea is to function very similar
+> to how the balloon works in that we basically end up madvising the page a=
+s
+> not being used. However we don't really need to bother with any deflate
+> type logic since the page will be faulted back into the guest when it is
+> read or written to.
+>=20
+> This provides a new way of letting the guest proactively report free
+> pages to the hypervisor, so the hypervisor can reuse them. In contrast to
+> inflate/deflate that is triggered via the hypervisor explicitly.
 
-Add support for free page reporting. The idea is to function very similar
-to how the balloon works in that we basically end up madvising the page as
-not being used. However we don't really need to bother with any deflate
-type logic since the page will be faulted back into the guest when it is
-read or written to.
+Much better, thanks!
 
-This provides a new way of letting the guest proactively report free
-pages to the hypervisor, so the hypervisor can reuse them. In contrast to
-inflate/deflate that is triggered via the hypervisor explicitly.
+>=20
+> Signed-off-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
+> ---
+>  hw/virtio/virtio-balloon.c         |   63 ++++++++++++++++++++++++++++++=
++++++-
+>  include/hw/virtio/virtio-balloon.h |    2 +
+>  2 files changed, 62 insertions(+), 3 deletions(-)
+>=20
+> diff --git a/hw/virtio/virtio-balloon.c b/hw/virtio/virtio-balloon.c
+> index 1c6d36a29a04..86d8b48a8e3a 100644
+> --- a/hw/virtio/virtio-balloon.c
+> +++ b/hw/virtio/virtio-balloon.c
+> @@ -321,6 +321,57 @@ static void balloon_stats_set_poll_interval(Object *=
+obj, Visitor *v,
+>      balloon_stats_change_timer(s, 0);
+>  }
+> =20
+> +static void virtio_balloon_handle_report(VirtIODevice *vdev, VirtQueue *=
+vq)
+> +{
+> +    VirtIOBalloon *dev =3D VIRTIO_BALLOON(vdev);
+> +    VirtQueueElement *elem;
+> +
+> +    while ((elem =3D virtqueue_pop(vq, sizeof(VirtQueueElement)))) {
+> +        unsigned int i;
+> +
+> +        for (i =3D 0; i < elem->in_num; i++) {
+> +            void *addr =3D elem->in_sg[i].iov_base;
+> +            size_t size =3D elem->in_sg[i].iov_len;
+> +            ram_addr_t ram_offset;
+> +            size_t rb_page_size;
+> +            RAMBlock *rb;
+> +
+> +            if (qemu_balloon_is_inhibited() || dev->poison_val) {
+> +                continue;
 
-Signed-off-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
----
- hw/virtio/virtio-balloon.c         |   63 +++++++++++++++++++++++++++++++++++-
- include/hw/virtio/virtio-balloon.h |    2 +
- 2 files changed, 62 insertions(+), 3 deletions(-)
+actually, you want to do that in the outer loop, no?
 
-diff --git a/hw/virtio/virtio-balloon.c b/hw/virtio/virtio-balloon.c
-index 1c6d36a29a04..86d8b48a8e3a 100644
---- a/hw/virtio/virtio-balloon.c
-+++ b/hw/virtio/virtio-balloon.c
-@@ -321,6 +321,57 @@ static void balloon_stats_set_poll_interval(Object *obj, Visitor *v,
-     balloon_stats_change_timer(s, 0);
- }
- 
-+static void virtio_balloon_handle_report(VirtIODevice *vdev, VirtQueue *vq)
-+{
-+    VirtIOBalloon *dev = VIRTIO_BALLOON(vdev);
-+    VirtQueueElement *elem;
-+
-+    while ((elem = virtqueue_pop(vq, sizeof(VirtQueueElement)))) {
-+        unsigned int i;
-+
-+        for (i = 0; i < elem->in_num; i++) {
-+            void *addr = elem->in_sg[i].iov_base;
-+            size_t size = elem->in_sg[i].iov_len;
-+            ram_addr_t ram_offset;
-+            size_t rb_page_size;
-+            RAMBlock *rb;
-+
-+            if (qemu_balloon_is_inhibited() || dev->poison_val) {
-+                continue;
-+            }
-+
-+            /*
-+             * There is no need to check the memory section to see if
-+             * it is ram/readonly/romd like there is for handle_output
-+             * below. If the region is not meant to be written to then
-+             * address_space_map will have allocated a bounce buffer
-+             * and it will be freed in address_space_unmap and trigger
-+             * and unassigned_mem_write before failing to copy over the
-+             * buffer. If more than one bad descriptor is provided it
-+             * will return NULL after the first bounce buffer and fail
-+             * to map any resources.
-+             */
-+            rb = qemu_ram_block_from_host(addr, false, &ram_offset);
-+            if (!rb) {
-+                trace_virtio_balloon_bad_addr(elem->in_addr[i]);
-+                continue;
-+            }
-+
-+            /* For now we will simply ignore unaligned memory regions */
-+            rb_page_size = qemu_ram_pagesize(rb);
-+            if (!QEMU_IS_ALIGNED(ram_offset | size, rb_page_size)) {
-+                continue;
-+            }
-+
-+            ram_block_discard_range(rb, ram_offset, size);
-+        }
-+
-+        virtqueue_push(vq, elem, 0);
-+        virtio_notify(vdev, vq);
-+        g_free(elem);
-+    }
-+}
-+
- static void virtio_balloon_handle_output(VirtIODevice *vdev, VirtQueue *vq)
- {
-     VirtIOBalloon *s = VIRTIO_BALLOON(vdev);
-@@ -628,7 +679,8 @@ static size_t virtio_balloon_config_size(VirtIOBalloon *s)
-         return sizeof(struct virtio_balloon_config);
-     }
-     if (virtio_has_feature(features, VIRTIO_BALLOON_F_PAGE_POISON) ||
--        virtio_has_feature(features, VIRTIO_BALLOON_F_FREE_PAGE_HINT)) {
-+        virtio_has_feature(features, VIRTIO_BALLOON_F_FREE_PAGE_HINT) ||
-+        virtio_has_feature(features, VIRTIO_BALLOON_F_REPORTING)) {
-         return sizeof(struct virtio_balloon_config);
-     }
-     return offsetof(struct virtio_balloon_config, free_page_report_cmd_id);
-@@ -717,7 +769,8 @@ static uint64_t virtio_balloon_get_features(VirtIODevice *vdev, uint64_t f,
-     VirtIOBalloon *dev = VIRTIO_BALLOON(vdev);
-     f |= dev->host_features;
-     virtio_add_feature(&f, VIRTIO_BALLOON_F_STATS_VQ);
--    if (virtio_has_feature(f, VIRTIO_BALLOON_F_FREE_PAGE_HINT)) {
-+    if (virtio_has_feature(f, VIRTIO_BALLOON_F_FREE_PAGE_HINT) ||
-+        virtio_has_feature(f, VIRTIO_BALLOON_F_REPORTING)) {
-         virtio_add_feature(&f, VIRTIO_BALLOON_F_PAGE_POISON);
-     }
- 
-@@ -807,6 +860,10 @@ static void virtio_balloon_device_realize(DeviceState *dev, Error **errp)
-     s->dvq = virtio_add_queue(vdev, 128, virtio_balloon_handle_output);
-     s->svq = virtio_add_queue(vdev, 128, virtio_balloon_receive_stats);
- 
-+    if (virtio_has_feature(s->host_features, VIRTIO_BALLOON_F_REPORTING)) {
-+        s->rvq = virtio_add_queue(vdev, 32, virtio_balloon_handle_report);
-+    }
-+
-     if (virtio_has_feature(s->host_features,
-                            VIRTIO_BALLOON_F_FREE_PAGE_HINT)) {
-         s->free_page_vq = virtio_add_queue(vdev, VIRTQUEUE_MAX_SIZE,
-@@ -940,6 +997,8 @@ static Property virtio_balloon_properties[] = {
-      */
-     DEFINE_PROP_BOOL("qemu-4-0-config-size", VirtIOBalloon,
-                      qemu_4_0_config_size, false),
-+    DEFINE_PROP_BIT("free-page-reporting", VirtIOBalloon, host_features,
-+                    VIRTIO_BALLOON_F_REPORTING, true),
-     DEFINE_PROP_LINK("iothread", VirtIOBalloon, iothread, TYPE_IOTHREAD,
-                      IOThread *),
-     DEFINE_PROP_END_OF_LIST(),
-diff --git a/include/hw/virtio/virtio-balloon.h b/include/hw/virtio/virtio-balloon.h
-index 7fe78e5c14d7..db5bf7127112 100644
---- a/include/hw/virtio/virtio-balloon.h
-+++ b/include/hw/virtio/virtio-balloon.h
-@@ -42,7 +42,7 @@ enum virtio_balloon_free_page_report_status {
- 
- typedef struct VirtIOBalloon {
-     VirtIODevice parent_obj;
--    VirtQueue *ivq, *dvq, *svq, *free_page_vq;
-+    VirtQueue *ivq, *dvq, *svq, *free_page_vq, *rvq;
-     uint32_t free_page_report_status;
-     uint32_t num_pages;
-     uint32_t actual;
+> +            }
+> +
+> +            /*
+> +             * There is no need to check the memory section to see if
+> +             * it is ram/readonly/romd like there is for handle_output
+> +             * below. If the region is not meant to be written to then
+> +             * address_space_map will have allocated a bounce buffer
+> +             * and it will be freed in address_space_unmap and trigger
+> +             * and unassigned_mem_write before failing to copy over the
+> +             * buffer. If more than one bad descriptor is provided it
+> +             * will return NULL after the first bounce buffer and fail
+> +             * to map any resources.
+> +             */
+> +            rb =3D qemu_ram_block_from_host(addr, false, &ram_offset);
+> +            if (!rb) {
+> +                trace_virtio_balloon_bad_addr(elem->in_addr[i]);
+> +                continue;
+> +            }
+> +
+> +            /* For now we will simply ignore unaligned memory regions */
+> +            rb_page_size =3D qemu_ram_pagesize(rb);
+> +            if (!QEMU_IS_ALIGNED(ram_offset | size, rb_page_size)) {
+
+/me thinks you can drop rb_page_size
+
+I *think* there is still one remaining case to handle: Crossing RAM blocks.
+
+Most probably you should check
+
+/* For now, ignore crossing RAM blocks. */
+if (ram_offset + size >=3D qemu_ram_get_used_length()) {
+=09continue;
+}
+
+otherwise ram_block_discard_range() will report an error.
+
+--=20
+Thanks,
+
+David / dhildenb
 
 
 ---------------------------------------------------------------------
