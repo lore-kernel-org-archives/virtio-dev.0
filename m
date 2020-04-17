@@ -1,116 +1,180 @@
-Return-Path: virtio-dev-return-7094-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-7126-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 78A7B986076
-	for <virtio-dev@lists.oasis-open.org>; Fri, 17 Apr 2020 04:15:20 +0000 (UTC)
-References: <BN6PR1801MB2067FCCE45316C25E5EB82F7C5DA0@BN6PR1801MB2067.namprd18.prod.outlook.com>
-From: Jason Wang <jasowang@redhat.com>
-Message-ID: <5c682a37-04cc-e96f-e593-ec932caefbc7@redhat.com>
-Date: Fri, 17 Apr 2020 12:15:06 +0800
+	by lists.oasis-open.org (Postfix) with ESMTP id 34AA6986083
+	for <virtio-dev@lists.oasis-open.org>; Fri, 17 Apr 2020 13:17:47 +0000 (UTC)
+Date: Fri, 17 Apr 2020 09:17:39 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20200417091658-mutt-send-email-mst@kernel.org>
+References: <BN6PR1801MB2067D788CCD354CE6DE0CF52C5D90@BN6PR1801MB2067.namprd18.prod.outlook.com>
 MIME-Version: 1.0
-In-Reply-To: <BN6PR1801MB2067FCCE45316C25E5EB82F7C5DA0@BN6PR1801MB2067.namprd18.prod.outlook.com>
-Content-Language: en-US
-Subject: [virtio-dev] Re: [Virtio-networking] Doorbell mapping of vDPA
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <BN6PR1801MB2067D788CCD354CE6DE0CF52C5D90@BN6PR1801MB2067.namprd18.prod.outlook.com>
+Subject: Re: [virtio-dev] Re: [Virtio-networking] Doorbell mapping of vDPA
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-To: Vitaly Mireyno <vmireyno@marvell.com>, "virtio-networking@redhat.com" <virtio-networking@redhat.com>, Virtio-Dev <virtio-dev@lists.oasis-open.org>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>, Ariel Elior <aelior@marvell.com>
+Content-Disposition: inline
+To: Vitaly Mireyno <vmireyno@marvell.com>
+Cc: Jason Wang <jasowang@redhat.com>, "virtio-networking@redhat.com" <virtio-networking@redhat.com>, Virtio-Dev <virtio-dev@lists.oasis-open.org>, Ariel Elior <aelior@marvell.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+On Fri, Apr 17, 2020 at 12:53:29PM +0000, Vitaly Mireyno wrote:
+>=20
+> >-----Original Message-----
+> >From: Michael S. Tsirkin <mst@redhat.com>
+> >Sent: Friday, 17 April, 2020 14:00
+> >To: Jason Wang <jasowang@redhat.com>
+> >Cc: Vitaly Mireyno <vmireyno@marvell.com>; virtio-networking@redhat.com;=
+ Virtio-Dev <virtio-
+> >dev@lists.oasis-open.org>; Ariel Elior <aelior@marvell.com>
+> >Subject: Re: [virtio-dev] Re: [Virtio-networking] Doorbell mapping of vD=
+PA
+> >
+> >----------------------------------------------------------------------
+> >On Fri, Apr 17, 2020 at 06:25:30PM +0800, Jason Wang wrote:
+> >>
+> >> On 2020/4/17 =E4=B8=8B=E5=8D=886:06, Michael S. Tsirkin wrote:
+> >> > On Fri, Apr 17, 2020 at 05:59:29PM +0800, Jason Wang wrote:
+> >> > > On 2020/4/17 =E4=B8=8B=E5=8D=885:37, Michael S. Tsirkin wrote:
+> >> > > > On Fri, Apr 17, 2020 at 05:31:20PM +0800, Jason Wang wrote:
+> >> > > > > On 2020/4/17 =E4=B8=8B=E5=8D=882:39, Michael S. Tsirkin wrote:
+> >> > > > > > On Fri, Apr 17, 2020 at 12:22:04PM +0800, Jason Wang wrote:
+> >> > > > > > > On 2020/4/17 =E4=B8=8B=E5=8D=8812:19, Jason Wang wrote:
+> >> > > > > > > > On 2020/4/15 =E4=B8=8A=E5=8D=8812:20, Michael S. Tsirkin=
+ wrote:
+> >> > > > > > > > > On Tue, Apr 14, 2020 at 01:12:51PM +0000, Vitaly Mirey=
+no wrote:
+> >> > > > > > > > > > > -----Original Message-----
+> >> > > > > > > > > > > From:virtio-networking-bounces@redhat.com
+> >> > > > > > > > > > > <virtio-networking-bounces@redhat.com>  On Behalf
+> >> > > > > > > > > > > Of Jason Wang
+> >> > > > > > > > > > > Sent: Tuesday, 7 April, 2020 10:56
+> >> > > > > > > > > > > To:virtio-networking@redhat.com; Virtio-Dev
+> >> > > > > > > > > > > <virtio-dev@lists.oasis-open.org>
+> >> > > > > > > > > > > Cc: Michael S. Tsirkin<mst@redhat.com>
+> >> > > > > > > > > > > Subject: [Virtio-networking] Doorbell mapping of
+> >> > > > > > > > > > > vDPA
+> >> > > > > > > > > > >
+> >> > > > > > > > > > > --------------------------------------------------
+> >> > > > > > > > > > > --------------------
+> >> > > > > > > > > > > Hi all:
+> >> > > > > > > > > > >
+> >> > > > > > > > > > > To get native performance of VF, we need to map
+> >> > > > > > > > > > > doorbell to guest to avoid unnecessary vmexit. In
+> >> > > > > > > > > > > order to do this, we will launch qemu with page-pe=
+r-vq=3Don.
+> >> > > > > > > > > > > This means the each doorbell register should be
+> >> > > > > > > > > > > located at the beginning of 4K page and does not
+> >> > > > > > > > > > > share the page with other registers. Then vDPA
+> >> > > > > > > > > > > framework can safely map it into the guest
+> >> > > > > > > > > > > physical address (GPA) range defined by qemu. It
+> >> > > > > > > > > > > could be either
+> >> > > > > > > > > > >
+> >> > > > > > > > > > > 1) a single doorbell register that is used by all
+> >> > > > > > > > > > > virtqueues
+> >> > > > > > > > > > >
+> >> > > > > > > > > > > or
+> >> > > > > > > > > > >
+> >> > > > > > > > > > > 2) several different per-vq doorbell registers
+> >> > > > > > > > > > >
+> >> > > > > > > > > > > If you decide to implement a virtio-pci register
+> >> > > > > > > > > > > layout, need to make sure for notification
+> >> > > > > > > > > > > structure
+> >> > > > > > > > > > > (4.1.4.4 of virtio spec):
+> >> > > > > > > > > > >
+> >> > > > > > > > > > > For each virtqueue, the result
+> >> > > > > > > > > > > ofcap.offset+queue_notify_off*notify_off_multiplie
+> >> > > > > > > > > > > r is PAGE_SIZE (e.g
+> >> > > > > > > > > > > 4K) alignment, and the doorbeel does not share the
+> >> > > > > > > > > > > page with other registers.
+> >> > > > > > > > > > >
+> >> > > > > > > > > > > And it would be better if queue_notify_off,
+> >> > > > > > > > > > > notify_off_multiplier can be changed via firmware
+> >> > > > > > > > > > > for extra flexibility.
+> >> > > > > > > > > > >
+> >> > > > > > > > > > In some cases, these conditions could not be met for
+> >> > > > > > > > > > a virtio-net hardware device over PCI transport.
+> >> > > > > > > > > > queue_notify and notify_off_multiplier could not
+> >> > > > > > > > > > always be fully controlled by the firmware. There
+> >> > > > > > > > > > could be hardware limitations on flexibility degree =
+of these parameters.
+> >> > > > > > > > > > Specifically, the limitations I'm thinking of are:
+> >> > > > > > > > > >    =C2=A0 * queue_notify_off>0 and notify_off_multip=
+lier>0
+> >> > > > > > > > > >    =C2=A0 * Several doorbell registers of several
+> >> > > > > > > > > > virtqueues share the same page (but don't share the =
+page with other registers).
+> >> > > > > > > > > >
+> >> > > > > > > > > > Can this be supported in vDPA with direct doorbell m=
+apping?
+> >> > > > > > > > > >
+> >> > > > > > > > > > Thanks
+> >> > > > > > > > > There's value in being able to intercept some vqs in
+> >> > > > > > > > > software while the rest of vqs are handled in hardware=
+.
+> >> > > > > > > > > E.g. that's the case for e.g. the control vq.
+> >> > > > > > > > Good point, so in this case, the doorbell of control vq
+> >> > > > > > > > must exclusively own a page.
+> >> > > > > > > Or we need intercept the doorbells that share a page with
+> >> > > > > > > control vq doorbell.
+> >> > > > > > >
+> >> > > > > > > Thanks
+> >> > > > > > Which could be all of them. E.g. with a 4 byte offset, we
+> >> > > > > > are talking 1K VQs per a 4k page.
+> >> > > > > Yes, so as I replied in another thread. The doorbell of
+> >> > > > > control vq should not share page with other doorbells.
+> >> > > > Except page size can be as big as 64k on some systems.
+> >> > > > The best thing is really if device just allows driver to write
+> >> > > > anywhere within the page, taking VQ number from the data.
+> >> > > >
+> >> > > Just to make sure I understand, then there's no way to map them to=
+ guest?
+> >> > >
+> >> > > Thanks
+> >> >
+> >> > Then you can map them at any offset.
+> >>
+> >>
+> >> Two more questions.
+> >>
+> >> 1) If the doorbell of control vq shares 64K pages with other doorbell,
+> >> then we can't intercept the control vq doorbell by software.
+> >
+> >And if hardware requires doorbell e.g. at offset 0x10 in the page, we ca=
+n't migrate to a device which
+> >needs it at offset 0x0.
+> >
+> >
+> >> 2) Each VF should occupy at least 128K address space without the the
+> >> help of flexible notification proposed by Vitaly. Is this too much if
+> >> we have several thousands of vDPA instances?
+> >>
+> >> Thanks
+> >
+> >I guess ctrl VQs could share a page ...
+> >I guess hypervisor can have control over this so that we can just use 4K=
+ for the common x86/ARM case.
+> >
+>=20
+>=20
+> Just to make sure I understand - The device will still be able to control=
+ queue_notify_off for dataplane VQs, right?
+> And if we use 4K pages, the control vq can have its own page.
 
-On 2020/4/14 =E4=B8=8B=E5=8D=889:12, Vitaly Mireyno wrote:
->> -----Original Message-----
->> From: virtio-networking-bounces@redhat.com <virtio-networking-bounces@re=
-dhat.com> On Behalf
->> Of Jason Wang
->> Sent: Tuesday, 7 April, 2020 10:56
->> To: virtio-networking@redhat.com; Virtio-Dev <virtio-dev@lists.oasis-ope=
-n.org>
->> Cc: Michael S. Tsirkin <mst@redhat.com>
->> Subject: [Virtio-networking] Doorbell mapping of vDPA
->>
->> ----------------------------------------------------------------------
->> Hi all:
->>
->> To get native performance of VF, we need to map doorbell to guest to avo=
-id unnecessary vmexit. In
->> order to do this, we will launch qemu with page-per-vq=3Don. This means =
-the each doorbell register
->> should be located at the beginning of 4K page and does not share the pag=
-e with other registers. Then
->> vDPA framework can safely map it into the guest physical address (GPA) r=
-ange defined by qemu. It
->> could be either
->>
->> 1) a single doorbell register that is used by all virtqueues
->>
->> or
->>
->> 2) several different per-vq doorbell registers
->>
->> If you decide to implement a virtio-pci register layout, need to make su=
-re for notification structure
->> (4.1.4.4 of virtio spec):
->>
->> For each virtqueue, the result
->> ofcap.offset+queue_notify_off*notify_off_multiplier is PAGE_SIZE (e.g
->> 4K) alignment, and the doorbeel does not share the page with other regis=
-ters.
->>
->> And it would be better if queue_notify_off, notify_off_multiplier can be=
- changed via firmware for
->> extra flexibility.
->>
-> In some cases, these conditions could not be met for a virtio-net hardwar=
-e device over PCI transport.
-> queue_notify and notify_off_multiplier could not always be fully controll=
-ed by the firmware. There could be hardware limitations on flexibility degr=
-ee of these parameters.
-> Specifically, the limitations I'm thinking of are:
->   * queue_notify_off>0 and notify_off_multiplier>0
->   * Several doorbell registers of several virtqueues share the same page =
-(but don't share the page with other registers).
->
-> Can this be supported in vDPA with direct doorbell mapping?
+Problem is, e.g. with ppc it's common to have larger page size such as 64k.
 
-
-I think this could be supported, we can introduce the API to:
-
-1) let qemu to=C2=A0 mmap() the notification pages to userspace
-2) let qemu query the location of each notification registers, and=20
-decide whether or not it could be modeled by the transport. E.g in your=20
-case, if the transport is virtio-pci, it can be supported.
-
-Thanks
-
-
->
-> Thanks
->
->> Please check and make sure your hardware have such ability and feel free=
- to ask if you have questions
->> (offline if necessary).
->>
->> Thanks
->>
->>
->>
->>
->>
->> _______________________________________________
->> Virtio-networking mailing list
->> Virtio-networking@redhat.com
->> https://urldefense.proofpoint.com/v2/url?u=3Dhttps-3A__www.redhat.com_ma=
-ilman_listinfo_virtio-
->> 2Dnetworking&d=3DDwIGaQ&c=3DnKjWec2b6R0mOyPaz7xtfQ&r=3DlDHJ2FW52oJ3lqqsA=
-rgFRdcevq01tbLQAw
->> 4A_NO7xgI&m=3DpddgVCz-
->> orGTuUXATJ4Dmi7vAXatG9w47AmULNC3V9A&s=3D5mfYWbLCjcZO8FcwDqgAc5bjE-H-
->> 4p5TBkRZqP3uMsQ&e=3D
+> And just to clarify, the "flexible notification" proposal is not instead =
+of the queue_notify_off control. The device must have a unique and specific=
+ doorbell address per vq. The proposal is that it can have more data in the=
+ notification structure itself.
+>=20
+>=20
+> >--
+> >MST
+>=20
 
 
 ---------------------------------------------------------------------
