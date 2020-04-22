@@ -1,92 +1,159 @@
-Return-Path: virtio-dev-return-7154-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-7146-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id F221598609D
-	for <virtio-dev@lists.oasis-open.org>; Fri, 24 Apr 2020 07:56:50 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 553B2985F37
+	for <virtio-dev@lists.oasis-open.org>; Wed, 22 Apr 2020 18:21:40 +0000 (UTC)
+From: Alexander Duyck <alexander.duyck@gmail.com>
+Date: Wed, 22 Apr 2020 11:21:27 -0700
+Message-ID: <20200422182127.12258.26300.stgit@localhost.localdomain>
+In-Reply-To: <20200422181649.12258.37077.stgit@localhost.localdomain>
 References: <20200422181649.12258.37077.stgit@localhost.localdomain>
- <20200422182120.12258.67417.stgit@localhost.localdomain>
- <2d335814-c7eb-970b-5973-13dcdc7e0f12@redhat.com>
- <CAKgT0UeiKxy8AjrfoKRA9tV-8+nRMfEKjp1qCVcRoLhGs-oLew@mail.gmail.com>
- <46fb7362-0ec7-d27d-a8bc-458e9ae0beea@redhat.com>
- <CAKgT0Ucczmk2nG-yP8_Dfh1vFc5W242Q3=cMOQrG8aHG_6KFfw@mail.gmail.com>
- <69ff8fd6-8f34-bf8a-2a8c-a1c4947383a6@redhat.com>
- <20200424095354.03008d1e.cohuck@redhat.com>
-From: David Hildenbrand <david@redhat.com>
-Message-ID: <f7006928-7cf0-64da-b8d0-b549729d7fd2@redhat.com>
-Date: Fri, 24 Apr 2020 09:56:41 +0200
 MIME-Version: 1.0
-In-Reply-To: <20200424095354.03008d1e.cohuck@redhat.com>
-Content-Language: en-US
-Subject: [virtio-dev] Re: [PATCH v21 QEMU 4/5] virtio-balloon: Implement support for page
- poison tracking feature
-Content-Type: text/plain; charset=utf-8
+Subject: [virtio-dev] [PATCH v21 QEMU 5/5] virtio-balloon: Provide an interface for free
+ page reporting
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-To: Cornelia Huck <cohuck@redhat.com>
-Cc: Alexander Duyck <alexander.duyck@gmail.com>, virtio-dev@lists.oasis-open.org, qemu-devel@nongnu.org, "Michael S. Tsirkin" <mst@redhat.com>
+To: david@redhat.com, mst@redhat.com
+Cc: virtio-dev@lists.oasis-open.org, qemu-devel@nongnu.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 24.04.20 09:53, Cornelia Huck wrote:
-> On Fri, 24 Apr 2020 09:07:25 +0200
-> David Hildenbrand <david@redhat.com> wrote:
-> 
->>>>  GlobalProperty hw_compat_4_2[] = {
->>>>      { "virtio-blk-device", "queue-size", "128"},
->>>>      { "virtio-scsi-device", "virtqueue_size", "128"},  
->>>
->>> Okay, so the bit above is for after 5_0 is released then? Is there a  
->>
->> Yes.
->>
->>> way to queue up a reminder or something so we get to it when the time
->>> comes, or I just need to watch for 5.0 to come out and submit a patch
->>> then?  
->>
->> I think what happened usually happens is that someone introduces all the
->> compat machines, sometimes directly with empty hw_compat.
->>
->> E.g., see
->>
->> commit 3eb74d2087d3bd6cb51c06a49ba94222248d2de4
->> Author: Cornelia Huck <cohuck@redhat.com>
->> Date:   Tue Nov 12 11:48:11 2019 +0100
->>
->>     hw: add compat machines for 5.0
->>
->>     Add 5.0 machine types for arm/i440fx/q35/s390x/spapr.
->>
->> and
->>
->> commit 9aec2e52ce9d9632a86be2d1d0dd493722d2e7be
->> Author: Cornelia Huck <cohuck@redhat.com>
->> Date:   Wed Jul 24 12:35:24 2019 +0200
->>
->>     hw: add compat machines for 4.2
->>
->>     Add 4.2 machine types for arm/i440fx/q35/s390x/spapr.
->>
->>
->> The latter already introduced hw_compat_4_1, for examnple.
->>
->> @Conny, do you already have a patch for 5.1 compat patch lying around
->> somewhere?
-> 
-> Not yet, will do so now. Thanks for the reminder, nearly forgot about
-> that :)
-> 
+From: Alexander Duyck <alexander.h.duyck@linux.intel.com>
 
-Awesome!
+Add support for free page reporting. The idea is to function very similar
+to how the balloon works in that we basically end up madvising the page as
+not being used. However we don't really need to bother with any deflate
+type logic since the page will be faulted back into the guest when it is
+read or written to.
 
-I just re-read my sentences and decided to consume more coffee before
-starting to write emails in the morning. :)
+This provides a new way of letting the guest proactively report free
+pages to the hypervisor, so the hypervisor can reuse them. In contrast to
+inflate/deflate that is triggered via the hypervisor explicitly.
 
--- 
-Thanks,
+Signed-off-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
+---
+ hw/virtio/virtio-balloon.c         |   70 ++++++++++++++++++++++++++++++++++++
+ include/hw/virtio/virtio-balloon.h |    2 +
+ 2 files changed, 71 insertions(+), 1 deletion(-)
 
-David / dhildenb
+diff --git a/hw/virtio/virtio-balloon.c b/hw/virtio/virtio-balloon.c
+index 5effc8b4653b..b473ff7f4b88 100644
+--- a/hw/virtio/virtio-balloon.c
++++ b/hw/virtio/virtio-balloon.c
+@@ -321,6 +321,60 @@ static void balloon_stats_set_poll_interval(Object *obj, Visitor *v,
+     balloon_stats_change_timer(s, 0);
+ }
+ 
++static void virtio_balloon_handle_report(VirtIODevice *vdev, VirtQueue *vq)
++{
++    VirtIOBalloon *dev = VIRTIO_BALLOON(vdev);
++    VirtQueueElement *elem;
++
++    while ((elem = virtqueue_pop(vq, sizeof(VirtQueueElement)))) {
++        unsigned int i;
++
++        if (qemu_balloon_is_inhibited() || dev->poison_val) {
++            goto skip_element;
++        }
++
++        for (i = 0; i < elem->in_num; i++) {
++            void *addr = elem->in_sg[i].iov_base;
++            size_t size = elem->in_sg[i].iov_len;
++            ram_addr_t ram_offset;
++            RAMBlock *rb;
++
++            /*
++             * There is no need to check the memory section to see if
++             * it is ram/readonly/romd like there is for handle_output
++             * below. If the region is not meant to be written to then
++             * address_space_map will have allocated a bounce buffer
++             * and it will be freed in address_space_unmap and trigger
++             * and unassigned_mem_write before failing to copy over the
++             * buffer. If more than one bad descriptor is provided it
++             * will return NULL after the first bounce buffer and fail
++             * to map any resources.
++             */
++            rb = qemu_ram_block_from_host(addr, false, &ram_offset);
++            if (!rb) {
++                trace_virtio_balloon_bad_addr(elem->in_addr[i]);
++                continue;
++            }
++
++            /*
++             * For now we will simply ignore unaligned memory regions, or
++             * regions that overrun the end of the RAMBlock.
++             */
++            if (!QEMU_IS_ALIGNED(ram_offset | size, qemu_ram_pagesize(rb)) ||
++                (ram_offset + size) > qemu_ram_get_used_length(rb)) {
++                continue;
++            }
++
++            ram_block_discard_range(rb, ram_offset, size);
++        }
++
++skip_element:
++        virtqueue_push(vq, elem, 0);
++        virtio_notify(vdev, vq);
++        g_free(elem);
++    }
++}
++
+ static void virtio_balloon_handle_output(VirtIODevice *vdev, VirtQueue *vq)
+ {
+     VirtIOBalloon *s = VIRTIO_BALLOON(vdev);
+@@ -782,6 +836,16 @@ static void virtio_balloon_device_realize(DeviceState *dev, Error **errp)
+     VirtIOBalloon *s = VIRTIO_BALLOON(dev);
+     int ret;
+ 
++    /*
++     * Page reporting is dependant on page poison to make sure we can
++     * report a page without changing the state of the internal data.
++     * We need to set the flag before we call virtio_init as it will
++     * affect the config size of the vdev.
++     */
++    if (virtio_has_feature(s->host_features, VIRTIO_BALLOON_F_REPORTING)) {
++        s->host_features |= 1 << VIRTIO_BALLOON_F_PAGE_POISON;
++    }
++
+     virtio_init(vdev, "virtio-balloon", VIRTIO_ID_BALLOON,
+                 virtio_balloon_config_size(s));
+ 
+@@ -798,6 +862,10 @@ static void virtio_balloon_device_realize(DeviceState *dev, Error **errp)
+     s->dvq = virtio_add_queue(vdev, 128, virtio_balloon_handle_output);
+     s->svq = virtio_add_queue(vdev, 128, virtio_balloon_receive_stats);
+ 
++    if (virtio_has_feature(s->host_features, VIRTIO_BALLOON_F_REPORTING)) {
++        s->rvq = virtio_add_queue(vdev, 32, virtio_balloon_handle_report);
++    }
++
+     if (virtio_has_feature(s->host_features,
+                            VIRTIO_BALLOON_F_FREE_PAGE_HINT)) {
+         s->free_page_vq = virtio_add_queue(vdev, VIRTQUEUE_MAX_SIZE,
+@@ -923,6 +991,8 @@ static Property virtio_balloon_properties[] = {
+                     VIRTIO_BALLOON_F_DEFLATE_ON_OOM, false),
+     DEFINE_PROP_BIT("free-page-hint", VirtIOBalloon, host_features,
+                     VIRTIO_BALLOON_F_FREE_PAGE_HINT, false),
++    DEFINE_PROP_BIT("free-page-reporting", VirtIOBalloon, host_features,
++                    VIRTIO_BALLOON_F_REPORTING, true),
+     /* QEMU 4.0 accidentally changed the config size even when free-page-hint
+      * is disabled, resulting in QEMU 3.1 migration incompatibility.  This
+      * property retains this quirk for QEMU 4.1 machine types.
+diff --git a/include/hw/virtio/virtio-balloon.h b/include/hw/virtio/virtio-balloon.h
+index 3ca2a78e1aca..ac4013d51010 100644
+--- a/include/hw/virtio/virtio-balloon.h
++++ b/include/hw/virtio/virtio-balloon.h
+@@ -42,7 +42,7 @@ enum virtio_balloon_free_page_hint_status {
+ 
+ typedef struct VirtIOBalloon {
+     VirtIODevice parent_obj;
+-    VirtQueue *ivq, *dvq, *svq, *free_page_vq;
++    VirtQueue *ivq, *dvq, *svq, *free_page_vq, *rvq;
+     uint32_t free_page_hint_status;
+     uint32_t num_pages;
+     uint32_t actual;
 
 
 ---------------------------------------------------------------------
