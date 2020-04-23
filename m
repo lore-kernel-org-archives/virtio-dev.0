@@ -1,77 +1,116 @@
-Return-Path: virtio-dev-return-7164-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-7147-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id BE5F09860A0
-	for <virtio-dev@lists.oasis-open.org>; Fri, 24 Apr 2020 16:09:38 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 8A9E3985F87
+	for <virtio-dev@lists.oasis-open.org>; Thu, 23 Apr 2020 07:58:45 +0000 (UTC)
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Date: Thu, 23 Apr 2020 09:56:21 +0200
+Message-Id: <20200423075620.644668-1-jean-philippe@linaro.org>
 MIME-Version: 1.0
-References: <20200422181649.12258.37077.stgit@localhost.localdomain>
- <20200422182127.12258.26300.stgit@localhost.localdomain> <a2183a2f-e10d-1e19-52d9-a9cd71fa2655@redhat.com>
- <CAKgT0Ud1WVUV5VNCCBqJtYPSLCZTq5oXGUyvqHmXdnTQUko6qQ@mail.gmail.com> <6f7f970f-9188-726e-39da-6e0954ab9fdf@redhat.com>
-In-Reply-To: <6f7f970f-9188-726e-39da-6e0954ab9fdf@redhat.com>
-From: Alexander Duyck <alexander.duyck@gmail.com>
-Date: Fri, 24 Apr 2020 09:09:26 -0700
-Message-ID: <CAKgT0Ueg=oJpxXj2m9hpV8V7v75VcByhsWH3Vz1_-tRuJ3MtFQ@mail.gmail.com>
-Subject: [virtio-dev] Re: [PATCH v21 QEMU 5/5] virtio-balloon: Provide an interface for
- free page reporting
-Content-Type: text/plain; charset=UTF-8
+Subject: [virtio-dev] [PATCH v2] virtio-iommu: Add PAGE_SIZE_MASK property
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: quoted-printable
-To: David Hildenbrand <david@redhat.com>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>, virtio-dev@lists.oasis-open.org, qemu-devel@nongnu.org
+To: virtio-dev@lists.oasis-open.org
+Cc: eric.auger@redhat.com, bbhushan2@marvell.com, Jean-Philippe Brucker <jean-philippe@linaro.org>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Fri, Apr 24, 2020 at 8:34 AM David Hildenbrand <david@redhat.com> wrote:
->
->
-> >> Also, I do wonder if we want to default-enable it. It can still have a
-> >> negative performance impact and some people might not want that.
-> >
-> > The negative performance impact should be minimal. At this point the
-> > hinting process ends up being very light since it only processes a
-> > small chunk of the memory before it shuts down for a couple seconds.
-> > In my original data the only time any significant performance
-> > regression was seen was with page shuffling enabled, and that was
-> > before I put limits on how many pages we could process per pass and
-> > how frequently we would make a pass through memory. My thought is that
-> > we are much better having it enabled by default rather than having it
-> > disabled by default. In the worst case scenario we have a little bit
-> > of extra thread noise from it popping up running for a few
-> > milliseconds and then sleeping for about two seconds, but the benefit
-> > side is that the VMs will do us a favor and restrict themselves to a
-> > much smaller idle footprint until such time as the memory is actually
-> > needed in the guest.
->
-> While I agree that the impact is small, there *is* a noticeable
-> performance impact. One of the main users is memory overcommit.
->
-> Also, imagine the following scenarios:
-> - RT workload in the guest. Just because you have a virtio-balloon
->   device defined would mean something is suddenly active and
->   discarding/trying to discard pages.
-> - vfio: free page reporting is completely useless right now and
->   *only* overhead.
-> - prealloc does not expect that pages get suddenly discarded
-> - s390x, which has CMM and might not benefit at all (except when using
->   huge pages as backing storage)
->
-> No, I don't think it's acceptable to enable this as default. I remember
-> that it is quite common to just define a balloon device but never use it.
->
-> E.g., "A virtual memory balloon device is added to all Xen and KVM/QEMU
-> guest virtual machines. It will be seen as <memballoon> element" [1].
->
-> I think we should let upper layers decide (just as we do for free page
-> hinting, for example).
+Add a PROBE property to declare the mapping granularity per endpoint.
+The virtio-iommu device already has to declare a granule in its config
+space, but when endpoints are behind different physical IOMMUs (for
+example some pass-through and some PV endpoints), they may have
+different mapping granules. This new property allows to override the
+global page_size_mask for each endpoint. When the property isn't
+reported for an endpoint, the global page size mask applies. The device
+checks page alignment during MAP requests.
 
-Okay. I guess there are a number of other cases I hand't thought of. I
-will switch the default to false.
+Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+---
+v1: https://www.mail-archive.com/virtio-dev@lists.oasis-open.org/msg06035.h=
+tml
+v2 clarifies how overriding the global property works.
+---
+ virtio-iommu.tex | 38 +++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 37 insertions(+), 1 deletion(-)
 
-Thanks.
+diff --git a/virtio-iommu.tex b/virtio-iommu.tex
+index 08b358a..05f4fd6 100644
+--- a/virtio-iommu.tex
++++ b/virtio-iommu.tex
+@@ -216,6 +216,9 @@ \subsection{Device operations}\label{sec:Device Types /=
+ IOMMU Device / Device op
+   Creating mappings aligned on large page sizes can improve performance
+   since they require fewer page table and TLB entries.
+=20
++  The mask can be overriden for an endpoint by the PAGE_SIZE_MASK PROBE
++  property.
++
+ \item If the VIRTIO_IOMMU_F_DOMAIN_RANGE feature is offered,
+   \field{domain_range} describes the values supported in a \field{domain}
+   field. If the feature is not offered, any \field{domain} value is valid.
+@@ -664,7 +667,8 @@ \subsubsection{PROBE request}\label{sec:Device Types / =
+IOMMU Device / Device ope
+ \subsubsection{PROBE properties}\label{sec:Device Types / IOMMU Device / D=
+evice operations / PROBE properties}
+=20
+ \begin{lstlisting}
+-#define VIRTIO_IOMMU_PROBE_T_RESV_MEM   1
++#define VIRTIO_IOMMU_PROBE_T_RESV_MEM         1
++#define VIRTIO_IOMMU_PROBE_T_PAGE_SIZE_MASK   2
+ \end{lstlisting}
+=20
+ \paragraph{Property RESV_MEM}\label{sec:Device Types / IOMMU Device / Devi=
+ce operations / PROBE properties / RESVMEM}
+@@ -727,6 +731,38 @@ \subsubsection{PROBE properties}\label{sec:Device Type=
+s / IOMMU Device / Device
+ The device SHOULD NOT allow accesses from the endpoint to RESV_MEM regions
+ to affect any other component than the endpoint and the driver.
+=20
++\paragraph{Property PAGE_SIZE_MASK}\label{sec:Device Types / IOMMU Device =
+/ Device operations / PROBE properties / PAGESIZEMASK}
++
++The PAGE_SIZE_MASK property overrides the global \field{page_size_mask}
++configuration for an endpoint.
++
++\begin{lstlisting}
++struct virtio_iommu_probe_page_size_mask {
++  struct virtio_iommu_probe_property head;
++  u8    reserved[4];
++  le64  page_size_mask;
++};
++\end{lstlisting}
++
++The \field{page_size_mask} field behaves in the same way as the global
++\field{page_size_mask} field. The least significant bit describes the
++mapping granularity, and additional bits are hints (see \ref{sec:Device
++Types / IOMMU Device / Device operations}). When no PAGE_SIZE_MASK
++property is available for an endpoint, the global \field{page_size_mask}
++applies.
++
++\drivernormative{\subparagraph}{Property PAGE_SIZE_MASK}{Device Types / IO=
+MMU Device / Device operations / PROBE properties / PAGESIZEMASK}
++
++The driver MUST ignore \field{reserved}.
++
++\devicenormative{\subparagraph}{Property PAGE_SIZE_MASK}{Device Types / IO=
+MMU Device / Device operations / PROBE properties / PAGESIZEMASK}
++
++The device SHOULD set \field{reserved} to zero.
++
++The device MUST set at least one bit in \field{page_size_mask}, describing
++the page granularity. The device MAY set more than one bit in
++\field{page_size_mask}.
++
+ \subsubsection{Fault reporting}\label{sev:Device Types / IOMMU Device / De=
+vice operations / Fault reporting}
+=20
+ The device can report translation faults and other significant
+--=20
+2.26.0
 
-- Alex
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
