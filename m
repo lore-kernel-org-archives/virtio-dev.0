@@ -1,20 +1,20 @@
-Return-Path: virtio-dev-return-7167-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-7168-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 168CE9860A2
-	for <virtio-dev@lists.oasis-open.org>; Fri, 24 Apr 2020 16:50:12 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 085569860A0
+	for <virtio-dev@lists.oasis-open.org>; Fri, 24 Apr 2020 16:50:19 +0000 (UTC)
 From: Alexander Duyck <alexander.duyck@gmail.com>
-Date: Fri, 24 Apr 2020 09:50:09 -0700
-Message-ID: <20200424165009.10723.14503.stgit@localhost.localdomain>
+Date: Fri, 24 Apr 2020 09:50:15 -0700
+Message-ID: <20200424165015.10723.78092.stgit@localhost.localdomain>
 In-Reply-To: <20200424164239.10723.58352.stgit@localhost.localdomain>
 References: <20200424164239.10723.58352.stgit@localhost.localdomain>
 MIME-Version: 1.0
-Subject: [virtio-dev] [PATCH v22 QEMU 1/5] linux-headers: Update to allow renaming of
- free_page_report_cmd_id
+Subject: [virtio-dev] [PATCH v22 QEMU 2/5] linux-headers: update to contain
+ virito-balloon free page reporting
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 To: david@redhat.com, mst@redhat.com
@@ -23,36 +23,26 @@ List-ID: <virtio-dev.lists.oasis-open.org>
 
 From: Alexander Duyck <alexander.h.duyck@linux.intel.com>
 
-Sync to the latest upstream changes for free page hinting. To be
+Sync the latest upstream changes for free page reporting. To be
 replaced by a full linux header sync.
 
 Signed-off-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
 ---
- include/standard-headers/linux/virtio_balloon.h |   11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+ include/standard-headers/linux/virtio_balloon.h |    1 +
+ 1 file changed, 1 insertion(+)
 
 diff --git a/include/standard-headers/linux/virtio_balloon.h b/include/standard-headers/linux/virtio_balloon.h
-index 9375ca2a70de..af0a6b59dab2 100644
+index af0a6b59dab2..af3b7a1fa263 100644
 --- a/include/standard-headers/linux/virtio_balloon.h
 +++ b/include/standard-headers/linux/virtio_balloon.h
-@@ -47,8 +47,15 @@ struct virtio_balloon_config {
- 	uint32_t num_pages;
- 	/* Number of pages we've actually got in balloon. */
- 	uint32_t actual;
--	/* Free page report command id, readonly by guest */
--	uint32_t free_page_report_cmd_id;
-+	/*
-+	 * Free page hint command id, readonly by guest.
-+	 * Was previously name free_page_report_cmd_id so we
-+	 * need to carry that name for legacy support.
-+	 */
-+	union {
-+		uint32_t free_page_hint_cmd_id;
-+		uint32_t free_page_report_cmd_id;	/* deprecated */
-+	};
- 	/* Stores PAGE_POISON if page poisoning is in use */
- 	uint32_t poison_val;
- };
+@@ -36,6 +36,7 @@
+ #define VIRTIO_BALLOON_F_DEFLATE_ON_OOM	2 /* Deflate balloon on OOM */
+ #define VIRTIO_BALLOON_F_FREE_PAGE_HINT	3 /* VQ to report free pages */
+ #define VIRTIO_BALLOON_F_PAGE_POISON	4 /* Guest is using page poisoning */
++#define VIRTIO_BALLOON_F_REPORTING	5 /* Page reporting virtqueue */
+ 
+ /* Size of a PFN in the balloon interface. */
+ #define VIRTIO_BALLOON_PFN_SHIFT 12
 
 
 ---------------------------------------------------------------------
