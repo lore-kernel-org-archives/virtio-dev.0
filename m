@@ -1,22 +1,21 @@
-Return-Path: virtio-dev-return-7175-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-7176-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 98910985BA9
-	for <virtio-dev@lists.oasis-open.org>; Mon, 27 Apr 2020 08:21:13 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 7D0D4985BA9
+	for <virtio-dev@lists.oasis-open.org>; Mon, 27 Apr 2020 08:21:53 +0000 (UTC)
 References: <20200424164239.10723.58352.stgit@localhost.localdomain>
- <20200424165034.10723.77728.stgit@localhost.localdomain>
 From: David Hildenbrand <david@redhat.com>
-Message-ID: <d473cfb6-0774-003c-88bd-10c5227e19a2@redhat.com>
-Date: Mon, 27 Apr 2020 10:21:01 +0200
+Message-ID: <24b5a6e2-0062-4d73-db9d-2c811c7b7751@redhat.com>
+Date: Mon, 27 Apr 2020 10:21:42 +0200
 MIME-Version: 1.0
-In-Reply-To: <20200424165034.10723.77728.stgit@localhost.localdomain>
+In-Reply-To: <20200424164239.10723.58352.stgit@localhost.localdomain>
 Content-Language: en-US
-Subject: [virtio-dev] Re: [PATCH v22 QEMU 5/5] virtio-balloon: Provide an interface for
- free page reporting
+Subject: [virtio-dev] Re: [PATCH v22 QEMU 0/5] virtio-balloon: add support for page poison
+ reporting and free page reporting
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 To: Alexander Duyck <alexander.duyck@gmail.com>, mst@redhat.com
@@ -24,132 +23,64 @@ Cc: virtio-dev@lists.oasis-open.org, qemu-devel@nongnu.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
 On 24.04.20 18:50, Alexander Duyck wrote:
-> From: Alexander Duyck <alexander.h.duyck@linux.intel.com>
+> This series provides an asynchronous means of reporting free guest pages
+> to QEMU through virtio-balloon so that the memory associated with those
+> pages can be discarded and reused by other processes and/or guests on the
+> host. Using this it is possible to avoid unnecessary I/O to disk and
+> greatly improve performance in the case of memory overcommit on the host.
 > 
-> Add support for free page reporting. The idea is to function very similar
-> to how the balloon works in that we basically end up madvising the page as
-> not being used. However we don't really need to bother with any deflate
-> type logic since the page will be faulted back into the guest when it is
-> read or written to.
+> As a part of enabling this feature it was necessary to implement the page
+> poison reporting feature which had been added to the kernel, but was not
+> available in QEMU. This patch set adds it as a new device property
+> "page-poison" which is enabled by default, and adds support for migrating
+> the reported value.
 > 
-> This provides a new way of letting the guest proactively report free
-> pages to the hypervisor, so the hypervisor can reuse them. In contrast to
-> inflate/deflate that is triggered via the hypervisor explicitly.
+> I originally submitted this patch series back on February 11th 2020[1],
+> but at that time I was focused primarily on the kernel portion of this
+> patch set. However as of April 7th those patches are now included in
+> Linus's kernel tree[2] and so I am submitting the QEMU pieces for
+> inclusion.
 > 
-> Signed-off-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
-> ---
->  hw/virtio/virtio-balloon.c         |   67 ++++++++++++++++++++++++++++++++++++
->  include/hw/virtio/virtio-balloon.h |    2 +
->  2 files changed, 68 insertions(+), 1 deletion(-)
+> [1]: https://lore.kernel.org/lkml/20200211224416.29318.44077.stgit@localhost.localdomain/
+> [2]: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=b0c504f154718904ae49349147e3b7e6ae91ffdc
 > 
-> diff --git a/hw/virtio/virtio-balloon.c b/hw/virtio/virtio-balloon.c
-> index c1c76ec09c95..2ce56c6c0794 100644
-> --- a/hw/virtio/virtio-balloon.c
-> +++ b/hw/virtio/virtio-balloon.c
-> @@ -321,6 +321,67 @@ static void balloon_stats_set_poll_interval(Object *obj, Visitor *v,
->      balloon_stats_change_timer(s, 0);
->  }
->  
-> +static void virtio_balloon_handle_report(VirtIODevice *vdev, VirtQueue *vq)
-> +{
-> +    VirtIOBalloon *dev = VIRTIO_BALLOON(vdev);
-> +    VirtQueueElement *elem;
-> +
-> +    while ((elem = virtqueue_pop(vq, sizeof(VirtQueueElement)))) {
-> +        unsigned int i;
-> +
-> +        /*
-> +         * When we discard the page it has the effect of removing the page
-> +         * from the hypervisor itself and causing it to be zeroed when it
-> +         * is returned to us. So we must not discard the page if it is
-> +         * accessible by another device or process, or if the guest is
-> +         * expecting it to retain a non-zero value.
-> +         */
-> +        if (qemu_balloon_is_inhibited() || dev->poison_val) {
-> +            goto skip_element;
-> +        }
-> +
-> +        for (i = 0; i < elem->in_num; i++) {
-> +            void *addr = elem->in_sg[i].iov_base;
-> +            size_t size = elem->in_sg[i].iov_len;
-> +            ram_addr_t ram_offset;
-> +            RAMBlock *rb;
-> +
-> +            /*
-> +             * There is no need to check the memory section to see if
-> +             * it is ram/readonly/romd like there is for handle_output
-> +             * below. If the region is not meant to be written to then
-> +             * address_space_map will have allocated a bounce buffer
-> +             * and it will be freed in address_space_unmap and trigger
-> +             * and unassigned_mem_write before failing to copy over the
-> +             * buffer. If more than one bad descriptor is provided it
-> +             * will return NULL after the first bounce buffer and fail
-> +             * to map any resources.
-> +             */
-> +            rb = qemu_ram_block_from_host(addr, false, &ram_offset);
-> +            if (!rb) {
-> +                trace_virtio_balloon_bad_addr(elem->in_addr[i]);
-> +                continue;
-> +            }
-> +
-> +            /*
-> +             * For now we will simply ignore unaligned memory regions, or
-> +             * regions that overrun the end of the RAMBlock.
-> +             */
-> +            if (!QEMU_IS_ALIGNED(ram_offset | size, qemu_ram_pagesize(rb)) ||
-> +                (ram_offset + size) > qemu_ram_get_used_length(rb)) {
-> +                continue;
-> +            }
-> +
-> +            ram_block_discard_range(rb, ram_offset, size);
-> +        }
-> +
-> +skip_element:
-> +        virtqueue_push(vq, elem, 0);
-> +        virtio_notify(vdev, vq);
-> +        g_free(elem);
-> +    }
-> +}
-> +
->  static void virtio_balloon_handle_output(VirtIODevice *vdev, VirtQueue *vq)
->  {
->      VirtIOBalloon *s = VIRTIO_BALLOON(vdev);
-> @@ -818,6 +879,10 @@ static void virtio_balloon_device_realize(DeviceState *dev, Error **errp)
->      s->dvq = virtio_add_queue(vdev, 128, virtio_balloon_handle_output);
->      s->svq = virtio_add_queue(vdev, 128, virtio_balloon_receive_stats);
->  
-> +    if (virtio_has_feature(s->host_features, VIRTIO_BALLOON_F_REPORTING)) {
-> +        s->rvq = virtio_add_queue(vdev, 32, virtio_balloon_handle_report);
-> +    }
-> +
->      if (virtio_has_feature(s->host_features,
->                             VIRTIO_BALLOON_F_FREE_PAGE_HINT)) {
->          s->free_page_vq = virtio_add_queue(vdev, VIRTQUEUE_MAX_SIZE,
-> @@ -945,6 +1010,8 @@ static Property virtio_balloon_properties[] = {
->                      VIRTIO_BALLOON_F_FREE_PAGE_HINT, false),
->      DEFINE_PROP_BIT("page-poison", VirtIOBalloon, host_features,
->                      VIRTIO_BALLOON_F_PAGE_POISON, true),
-> +    DEFINE_PROP_BIT("free-page-reporting", VirtIOBalloon, host_features,
-> +                    VIRTIO_BALLOON_F_REPORTING, false),
->      /* QEMU 4.0 accidentally changed the config size even when free-page-hint
->       * is disabled, resulting in QEMU 3.1 migration incompatibility.  This
->       * property retains this quirk for QEMU 4.1 machine types.
-> diff --git a/include/hw/virtio/virtio-balloon.h b/include/hw/virtio/virtio-balloon.h
-> index 3ca2a78e1aca..ac4013d51010 100644
-> --- a/include/hw/virtio/virtio-balloon.h
-> +++ b/include/hw/virtio/virtio-balloon.h
-> @@ -42,7 +42,7 @@ enum virtio_balloon_free_page_hint_status {
->  
->  typedef struct VirtIOBalloon {
->      VirtIODevice parent_obj;
-> -    VirtQueue *ivq, *dvq, *svq, *free_page_vq;
-> +    VirtQueue *ivq, *dvq, *svq, *free_page_vq, *rvq;
->      uint32_t free_page_hint_status;
->      uint32_t num_pages;
->      uint32_t actual;
+> Changes from v17:
+> Fixed typo in patch 1 title
+> Addressed white-space issues reported via checkpatch
+> Added braces {} for two if statements to match expected coding style
 > 
+> Changes from v18:
+> Updated patches 2 and 3 based on input from dhildenb
+> Added comment to patch 2 describing what keeps us from reporting a bad page
+> Added patch to address issue with ROM devices being directly writable
+> 
+> Changes from v19:
+> Added std-headers change to match changes pushed for linux kernel headers
+> Added patch to remove "report" from page hinting code paths
+> Updated comment to better explain why we disable hints w/ page poisoning
+> Removed code that was modifying config size for poison vs hinting
+> Dropped x-page-poison property
+> Added code to bounds check the reported region vs the RAM block
+> Dropped patch for ROM devices as that was already pulled in by Paolo
+> 
+> Changes from v20:
+> Rearranged patches to push Linux header sync patches to front
+> Removed association between free page hinting and VIRTIO_BALLOON_F_PAGE_POISON
+> Added code to enable VIRTIO_BALLOON_F_PAGE_POISON if page reporting is enabled
+> Fixed possible resource leak if poison or qemu_balloon_is_inhibited return true
+> 
+> Changes from v21:
+> Added ack for patch 3
+> Rewrote patch description for page poison reporting feature
+> Made page-poison independent property and set to enabled by default
+> Added logic to migrate poison_val
+> Added several comments in code to better explain features
+> Switched free-page-reporting property to disabled by default
 
-Acked-by: David Hildenbrand <david@redhat.com>
+Except one minor nit, looks good to me. We'll have to take care of
+compat handling regarding patch #4 as soon as we have 5.0 compat
+machines in place.
+
 
 -- 
 Thanks,
