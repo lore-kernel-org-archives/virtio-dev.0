@@ -1,100 +1,94 @@
-Return-Path: virtio-dev-return-7229-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-7207-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 7402A985BC2
-	for <virtio-dev@lists.oasis-open.org>; Thu, 30 Apr 2020 19:34:33 +0000 (UTC)
-Date: Thu, 30 Apr 2020 15:34:24 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20200430152808-mutt-send-email-mst@kernel.org>
-References: <1588240976-10213-1-git-send-email-vatsa@codeaurora.org>
- <1588240976-10213-2-git-send-email-vatsa@codeaurora.org>
- <20200430101431.GD19932@willie-the-truck>
- <20200430103446.GH5097@quicinc.com>
- <20200430104149.GG19932@willie-the-truck>
- <20200430111156.GI5097@quicinc.com>
- <7bf8bffe-267b-6c66-86c9-40017d3ca4c2@siemens.com>
- <20200430133321.GC3204@quicinc.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id CC3C8985E81
+	for <virtio-dev@lists.oasis-open.org>; Wed, 29 Apr 2020 16:08:34 +0000 (UTC)
+From: David Hildenbrand <david@redhat.com>
+Date: Wed, 29 Apr 2020 18:08:00 +0200
+Message-Id: <20200429160803.109056-1-david@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <20200430133321.GC3204@quicinc.com>
-Subject: [virtio-dev] Re: [RFC/PATCH 1/1] virtio: Introduce MMIO ops
-Content-Type: text/plain; charset=us-ascii
+Subject: [virtio-dev] [PATCH v1 0/3] mm/memory_hotplug: Make virtio-mem play nicely with kexec-tools
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-To: Srivatsa Vaddagiri <vatsa@codeaurora.org>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, Will Deacon <will@kernel.org>, konrad.wilk@oracle.com, jasowang@redhat.com, stefano.stabellini@xilinx.com, iommu@lists.linux-foundation.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, tsoni@codeaurora.org, pratikp@codeaurora.org, christoffer.dall@arm.com, alex.bennee@linaro.org, linux-kernel@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: linux-mm@kvack.org, virtio-dev@lists.oasis-open.org, virtualization@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org, linux-acpi@vger.kernel.org, linux-nvdimm@lists.01.org, linux-hyperv@vger.kernel.org, linux-s390@vger.kernel.org, xen-devel@lists.xenproject.org, Michal Hocko <mhocko@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, "Michael S . Tsirkin" <mst@redhat.com>, David Hildenbrand <david@redhat.com>, Baoquan He <bhe@redhat.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Boris Ostrovsky <boris.ostrovsky@oracle.com>, Christian Borntraeger <borntraeger@de.ibm.com>, Dan Williams <dan.j.williams@intel.com>, Dave Jiang <dave.jiang@intel.com>, Eric Biederman <ebiederm@xmission.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Haiyang Zhang <haiyangz@microsoft.com>, Heiko Carstens <heiko.carstens@de.ibm.com>, Jason Wang <jasowang@redhat.com>, Juergen Gross <jgross@suse.com>, "K. Y. Srinivasan" <kys@microsoft.com>, Len Brown <lenb@kernel.org>, Leonardo Bras <leobras.c@gmail.com>, Michael Ellerman <mpe@ellerman.id.au>, Michal Hocko <mhocko@suse.com>, Nathan Lynch <nathanl@linux.ibm.com>, Oscar Salvador <osalvador@suse.de>, Pankaj Gupta <pankaj.gupta.linux@gmail.com>, Paul Mackerras <paulus@samba.org>, Pingfan Liu <kernelfans@gmail.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Stefano Stabellini <sstabellini@kernel.org>, Stephen Hemminger <sthemmin@microsoft.com>, Thomas Gleixner <tglx@linutronix.de>, Vasily Gorbik <gor@linux.ibm.com>, Vishal Verma <vishal.l.verma@intel.com>, Wei Liu <wei.liu@kernel.org>, Wei Yang <richard.weiyang@gmail.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Thu, Apr 30, 2020 at 07:03:21PM +0530, Srivatsa Vaddagiri wrote:
-> * Jan Kiszka <jan.kiszka@siemens.com> [2020-04-30 14:59:50]:
->=20
-> > >I believe ivshmem2_virtio requires hypervisor to support PCI device em=
-ulation
-> > >(for life-cycle management of VMs), which our hypervisor may not suppo=
-rt.
+This series is based on [1]:
+=09[PATCH v2 00/10] virtio-mem: paravirtualized memory
+That will hopefull get picked up soon, rebased to -next.
 
-PCI is mostly just 2 registers. One sets the affected device, one the data =
-to read/write.
+The following patches were reverted from -next [2]:
+=09[PATCH 0/3] kexec/memory_hotplug: Prevent removal and accidental use
+As discussed in that thread, they should be reverted from -next already.
 
-> A
-> > >simple shared memory and doorbell or message-queue based transport wil=
-l work for
-> > >us.
-> >=20
-> > As written in our private conversation, a mapping of the ivshmem2 devic=
-e
-> > discovery to platform mechanism (device tree etc.) and maybe even the
-> > register access for doorbell and life-cycle management to something
-> > hypercall-like would be imaginable. What would count more from virtio
-> > perspective is a common mapping on a shared memory transport.
->=20
-> Yes that sounds simpler for us.
->=20
-> > That said, I also warned about all the features that PCI already define=
-d
-> > (such as message-based interrupts) which you may have to add when going=
- a
-> > different way for the shared memory device.
->=20
-> Is it really required to present this shared memory as belonging to a PCI
-> device?
-
-But then you will go on and add MSI, and NUMA, and security, and and and ..=
-.
-
-> I would expect the device-tree to indicate the presence of this shared
-> memory region, which we should be able to present to ivshmem2 as shared m=
-emory
-> region to use (along with some handles for doorbell or message queue use)=
-.
->=20
-> I understand the usefulness of modeling the shared memory as part of devi=
-ce so
-> that hypervisor can send events related to peers going down or coming up.=
- In our
-> case, there will be other means to discover those events and avoiding thi=
-s
-> requirement on hypervisor (to emulate PCI) will simplify the solution for=
- us.
->=20
-> Any idea when we can expect virtio over ivshmem2 to become available?!
-
-Check out the virtio spec. Right at the beginning it states:
-
-=09These devices are
-=09found in virtual environments, yet by design they look like physical dev=
-ices to the guest within
-=09the virtual machine - and this document treats them as such. This simila=
-rity allows the guest to
-=09use standard drivers and discovery mechanisms
+In theory, if people agree, we could take the first two patches via the
+-mm tree now and the last (virtio-mem) patch via MST's tree once picking up
+virtio-mem. No strong feelings.
 
 
-> --=20
-> QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
-> of Code Aurora Forum, hosted by The Linux Foundation
+Memory added by virtio-mem is special and might contain logical holes,
+especially after memory unplug, but also when adding memory in
+sub-section size. While memory in these holes can usually be read, that
+memory should not be touched. virtio-mem managed device memory is never
+exposed via any firmware memmap (esp., e820). The device driver will
+request to plug memory from the hypervisor and add it to Linux.
+
+On a cold start, all memory is unplugged, and the guest driver will first
+request to plug memory from the hypervisor, to then add it to Linux. After
+a reboot, all memory will get unplugged (except in rare, special cases). In
+case the device driver comes up and detects that some memory is still
+plugged after a reboot, it will manually request to unplug all memory from
+the hypervisor first - to then request to plug memory from the hypervisor
+and add to Linux. This is essentially a defragmentation step, where all
+logical holes are removed.
+
+As the device driver is responsible for detecting, adding and managing that
+memory, also kexec should treat it like that. It is special. We need a way
+to teach kexec-tools to not add that memory to the fixed-up firmware
+memmap, to not place kexec images onto this memory, but still allow kdump
+to dump it. Add a flag to tell memory hotplug code to
+not create /sys/firmware/memmap entries and to indicate it via
+"System RAM (driver managed)" in /proc/iomem.
+
+Before this series, kexec_file_load() already did the right thing (for
+virtio-mem) by not adding that memory to the fixed-up firmware memmap and
+letting the device driver handle it. With this series, also kexec_load() -
+which relies on user space to provide a fixed up firmware memmap - does
+the right thing with virtio-mem memory.
+
+When the virtio-mem device driver(s) come up, they will request to unplug
+all memory from the hypervisor first (esp. defragment), to then request to
+plug consecutive memory ranges from the hypervisor, and add them to Linux
+- just like on a reboot where we still have memory plugged.
+
+[1] https://lore.kernel.org/r/20200311171422.10484-1-david@redhat.com/
+[2] https://lore.kernel.org/r/20200326180730.4754-1-james.morse@arm.com
+
+David Hildenbrand (3):
+  mm/memory_hotplug: Prepare passing flags to add_memory() and friends
+  mm/memory_hotplug: Introduce MHP_DRIVER_MANAGED
+  virtio-mem: Add memory with MHP_DRIVER_MANAGED
+
+ arch/powerpc/platforms/powernv/memtrace.c     |  2 +-
+ .../platforms/pseries/hotplug-memory.c        |  2 +-
+ drivers/acpi/acpi_memhotplug.c                |  2 +-
+ drivers/base/memory.c                         |  2 +-
+ drivers/dax/kmem.c                            |  2 +-
+ drivers/hv/hv_balloon.c                       |  2 +-
+ drivers/s390/char/sclp_cmd.c                  |  2 +-
+ drivers/virtio/virtio_mem.c                   |  3 +-
+ drivers/xen/balloon.c                         |  2 +-
+ include/linux/memory_hotplug.h                | 15 +++++++--
+ mm/memory_hotplug.c                           | 31 +++++++++++++------
+ 11 files changed, 44 insertions(+), 21 deletions(-)
+
+--=20
+2.25.3
 
 
 ---------------------------------------------------------------------
