@@ -1,239 +1,87 @@
-Return-Path: virtio-dev-return-7217-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-7210-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id C0379985AFD
-	for <virtio-dev@lists.oasis-open.org>; Thu, 30 Apr 2020 08:20:35 +0000 (UTC)
-References: <20200429160803.109056-1-david@redhat.com>
- <20200429160803.109056-3-david@redhat.com>
- <a7305cd8-8b2f-1d8f-7654-ecf777c46df6@redhat.com>
- <CAPcyv4i04+QLxiOyz04_eef2DFetEFKBUmi2A4xxw9abQD8hNQ@mail.gmail.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id E2FC2985E82
+	for <virtio-dev@lists.oasis-open.org>; Wed, 29 Apr 2020 16:08:54 +0000 (UTC)
 From: David Hildenbrand <david@redhat.com>
-Message-ID: <e32522cd-31bb-e129-47a6-9ec13b570506@redhat.com>
-Date: Thu, 30 Apr 2020 10:20:21 +0200
+Date: Wed, 29 Apr 2020 18:08:03 +0200
+Message-Id: <20200429160803.109056-4-david@redhat.com>
+In-Reply-To: <20200429160803.109056-1-david@redhat.com>
+References: <20200429160803.109056-1-david@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <CAPcyv4i04+QLxiOyz04_eef2DFetEFKBUmi2A4xxw9abQD8hNQ@mail.gmail.com>
-Content-Language: en-US
-Subject: [virtio-dev] Re: [PATCH v1 2/3] mm/memory_hotplug: Introduce MHP_DRIVER_MANAGED
-Content-Type: text/plain; charset=utf-8
+Subject: [virtio-dev] [PATCH v1 3/3] virtio-mem: Add memory with MHP_DRIVER_MANAGED
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: quoted-printable
-To: Dan Williams <dan.j.williams@intel.com>
-Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Linux MM <linux-mm@kvack.org>, virtio-dev@lists.oasis-open.org, virtualization@lists.linux-foundation.org, linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, Linux ACPI <linux-acpi@vger.kernel.org>, linux-nvdimm <linux-nvdimm@lists.01.org>, linux-hyperv@vger.kernel.org, linux-s390 <linux-s390@vger.kernel.org>, xen-devel <xen-devel@lists.xenproject.org>, Michal Hocko <mhocko@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, "Michael S . Tsirkin" <mst@redhat.com>, Michal Hocko <mhocko@suse.com>, Pankaj Gupta <pankaj.gupta.linux@gmail.com>, Wei Yang <richard.weiyang@gmail.com>, Baoquan He <bhe@redhat.com>, Eric Biederman <ebiederm@xmission.com>, Pavel Tatashin <pasha.tatashin@soleen.com>, Dave Hansen <dave.hansen@linux.intel.com>
+To: linux-kernel@vger.kernel.org
+Cc: linux-mm@kvack.org, virtio-dev@lists.oasis-open.org, virtualization@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org, linux-acpi@vger.kernel.org, linux-nvdimm@lists.01.org, linux-hyperv@vger.kernel.org, linux-s390@vger.kernel.org, xen-devel@lists.xenproject.org, Michal Hocko <mhocko@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, "Michael S . Tsirkin" <mst@redhat.com>, David Hildenbrand <david@redhat.com>, Jason Wang <jasowang@redhat.com>, Michal Hocko <mhocko@suse.com>, Eric Biederman <ebiederm@xmission.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 30.04.20 10:11, Dan Williams wrote:
-> On Thu, Apr 30, 2020 at 12:20 AM David Hildenbrand <david@redhat.com> wro=
-te:
->>
->> On 29.04.20 18:08, David Hildenbrand wrote:
->>> Some paravirtualized devices that add memory via add_memory() and
->>> friends (esp. virtio-mem) don't want to create entries in
->>> /sys/firmware/memmap/ - primarily to hinder kexec from adding this
->>> memory to the boot memmap of the kexec kernel.
->>>
->>> In fact, such memory is never exposed via the firmware (e.g., e820), bu=
-t
->>> only via the device, so exposing this memory via /sys/firmware/memmap/ =
-is
->>> wrong:
->>>  "kexec needs the raw firmware-provided memory map to setup the
->>>   parameter segment of the kernel that should be booted with
->>>   kexec. Also, the raw memory map is useful for debugging. For
->>>   that reason, /sys/firmware/memmap is an interface that provides
->>>   the raw memory map to userspace." [1]
->>>
->>> We want to let user space know that memory which is always detected,
->>> added, and managed via a (device) driver - like memory managed by
->>> virtio-mem - is special. It cannot be used for placing kexec segments
->>> and the (device) driver is responsible for re-adding memory that
->>> (eventually shrunk/grown/defragmented) memory after a reboot/kexec. It
->>> should e.g., not be added to a fixed up firmware memmap. However, it sh=
-ould
->>> be dumped by kdump.
->>>
->>> Also, such memory could behave differently than an ordinary DIMM - e.g.=
-,
->>> memory managed by virtio-mem can have holes inside added memory resourc=
-e,
->>> which should not be touched, especially for writing.
->>>
->>> Let's expose that memory as "System RAM (driver managed)" e.g., via
->>> /pro/iomem.
->>>
->>> We don't have to worry about firmware_map_remove() on the removal path.
->>> If there is no entry, it will simply return with -EINVAL.
->>>
->>> [1] https://www.kernel.org/doc/Documentation/ABI/testing/sysfs-firmware=
--memmap
->>>
->>> Cc: Andrew Morton <akpm@linux-foundation.org>
->>> Cc: Michal Hocko <mhocko@suse.com>
->>> Cc: Pankaj Gupta <pankaj.gupta.linux@gmail.com>
->>> Cc: Wei Yang <richard.weiyang@gmail.com>
->>> Cc: Baoquan He <bhe@redhat.com>
->>> Cc: Eric Biederman <ebiederm@xmission.com>
->>> Signed-off-by: David Hildenbrand <david@redhat.com>
->>> ---
->>>  include/linux/memory_hotplug.h |  8 ++++++++
->>>  mm/memory_hotplug.c            | 20 ++++++++++++++++----
->>>  2 files changed, 24 insertions(+), 4 deletions(-)
->>>
->>> diff --git a/include/linux/memory_hotplug.h b/include/linux/memory_hotp=
-lug.h
->>> index bf0e3edb8688..cc538584b39e 100644
->>> --- a/include/linux/memory_hotplug.h
->>> +++ b/include/linux/memory_hotplug.h
->>> @@ -68,6 +68,14 @@ struct mhp_params {
->>>       pgprot_t pgprot;
->>>  };
->>>
->>> +/* Flags used for add_memory() and friends. */
->>> +
->>> +/*
->>> + * Don't create entries in /sys/firmware/memmap/ and expose memory as
->>> + * "System RAM (driver managed)" in e.g., /proc/iomem
->>> + */
->>> +#define MHP_DRIVER_MANAGED           1
->>> +
->>>  /*
->>>   * Zone resizing functions
->>>   *
->>> diff --git a/mm/memory_hotplug.c b/mm/memory_hotplug.c
->>> index ebdf6541d074..cfa0721280aa 100644
->>> --- a/mm/memory_hotplug.c
->>> +++ b/mm/memory_hotplug.c
->>> @@ -98,11 +98,11 @@ void mem_hotplug_done(void)
->>>  u64 max_mem_size =3D U64_MAX;
->>>
->>>  /* add this memory to iomem resource */
->>> -static struct resource *register_memory_resource(u64 start, u64 size)
->>> +static struct resource *register_memory_resource(u64 start, u64 size,
->>> +                                              const char *resource_nam=
-e)
->>>  {
->>>       struct resource *res;
->>>       unsigned long flags =3D  IORESOURCE_SYSTEM_RAM | IORESOURCE_BUSY;
->>> -     char *resource_name =3D "System RAM";
->>>
->>>       /*
->>>        * Make sure value parsed from 'mem=3D' only restricts memory add=
-ing
->>> @@ -1058,7 +1058,8 @@ int __ref add_memory_resource(int nid, struct res=
-ource *res,
->>>       BUG_ON(ret);
->>>
->>>       /* create new memmap entry */
->>> -     firmware_map_add_hotplug(start, start + size, "System RAM");
->>> +     if (!(flags & MHP_DRIVER_MANAGED))
->>> +             firmware_map_add_hotplug(start, start + size, "System RAM=
-");
->>>
->>>       /* device_online() will take the lock when calling online_pages()=
- */
->>>       mem_hotplug_done();
->>> @@ -1081,10 +1082,21 @@ int __ref add_memory_resource(int nid, struct r=
-esource *res,
->>>  /* requires device_hotplug_lock, see add_memory_resource() */
->>>  int __ref __add_memory(int nid, u64 start, u64 size, unsigned long fla=
-gs)
->>>  {
->>> +     const char *resource_name =3D "System RAM";
->>>       struct resource *res;
->>>       int ret;
->>>
->>> -     res =3D register_memory_resource(start, size);
->>> +     /*
->>> +      * Indicate that memory managed by a driver is special. It's alwa=
-ys
->>> +      * detected and added via a driver, should not be given to the ke=
-xec
->>> +      * kernel for booting when manually crafting the firmware memmap,=
- and
->>> +      * no kexec segments should be placed on it. However, kdump shoul=
-d
->>> +      * dump this memory.
->>> +      */
->>> +     if (flags & MHP_DRIVER_MANAGED)
->>> +             resource_name =3D "System RAM (driver managed)";
->>> +
->>> +     res =3D register_memory_resource(start, size, resource_name);
->>>       if (IS_ERR(res))
->>>               return PTR_ERR(res);
->>>
->>>
->>
->> BTW, I was wondering if this is actually also something that
->> drivers/dax/kmem.c wants to use for adding memory.
->>
->> Just because we decided to use some DAX memory in the current kernel as
->> system ram, doesn't mean we should make that decision for the kexec
->> kernel (e.g., using it as initial memory, placing kexec binaries onto
->> it, etc.). This is also not what we would observe during a real reboot.
->=20
-> Agree.
->=20
->> I can see that the "System RAM" resource will show up as child resource
->> under the device e.g., in /proc/iomem.
->>
->> However, entries in /sys/firmware/memmap/ are created as "System RAM".
->=20
-> True. Do you think this rename should just be limited to what type
-> /sys/firmware/memmap/ emits? I have the concern, but no proof
+We don't want /sys/firmware/memmap entries and we want to indicate
+our memory as "System RAM (driver managed)" in /proc/iomem. This is
+especially relevant for kexec-tools, which have to be updated to
+support dumping virtio-mem memory after this patch. Expected behavior in
+kexec-tools:
+- Don't use this memory when creating a fixed-up firmware memmap. Works
+  now out of the box on x86-64.
+- Don't use this memory for placing kexec segments. Works now out of the
+  box on x86-64.
+- Consider "System RAM (driver managed)" when creating the elfcorehdr
+  for kdump. This memory has to be dumped. Needs update of kexec-tools.
 
-We could split this patch into
+With this patch on x86-64:
 
-MHP_NO_FIRMWARE_MEMMAP (create firmware memmap entries)
+/proc/iomem:
+=0900000000-00000fff : Reserved
+=0900001000-0009fbff : System RAM
+=09[...]
+=09fffc0000-ffffffff : Reserved
+=09100000000-13fffffff : System RAM
+=09140000000-147ffffff : System RAM (driver managed)
+=09340000000-347ffffff : System RAM (driver managed)
+=09348000000-34fffffff : System RAM (driver managed)
+=09[..]
+=093280000000-32ffffffff : PCI Bus 0000:00
 
-and
+/sys/firmware/memmap:
+=090000000000000000-000000000009fc00 (System RAM)
+=09000000000009fc00-00000000000a0000 (Reserved)
+=0900000000000f0000-0000000000100000 (Reserved)
+=090000000000100000-00000000bffe0000 (System RAM)
+=0900000000bffe0000-00000000c0000000 (Reserved)
+=0900000000feffc000-00000000ff000000 (Reserved)
+=0900000000fffc0000-0000000100000000 (Reserved)
+=090000000100000000-0000000140000000 (System RAM)
 
-MHP_DRIVER_MANAGED (name of the resource)
+Cc: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: Jason Wang <jasowang@redhat.com>
+Cc: Michal Hocko <mhocko@suse.com>
+Cc: Eric Biederman <ebiederm@xmission.com>
+Signed-off-by: David Hildenbrand <david@redhat.com>
+---
+ drivers/virtio/virtio_mem.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-See below, the latter might not be needed.
-
-> currently, that there are /proc/iomem walkers that explicitly look for
-> "System RAM", but might be thrown off by "System RAM (driver
-> managed)". I was not aware of /sys/firmware/memmap until about 5
-> minutes ago.
-
-The only two users of /proc/iomem I am aware of are kexec-tools and some
-s390x tools.
-
-kexec-tools on x86-64 uses /sys/firmware/memmap to craft the initial
-memmap, but uses /proc/iomem to
-a) Find places for kexec images
-b) Detect memory regions to dump via kdump
-
-I am not yet sure if we really need the "System RAM (driver managed)"
-part. If we can teach kexec-tools to
-a) Don't place kexec images on "System RAM" that has a parent resource
-(most likely requires kexec-tools changes)
-b) Consider for kdump "System RAM" that has a parent resource
-we might be able to avoid renaming that. (I assume that's already done)
-
-E.g., regarding virtio-mem (patch #3) I am currently also looking into
-creating a parent resource instead, like dax/kmem to avoid the rename:
-
-:/# cat /proc/iomem
-00000000-00000fff : Reserved
-[...]
-100000000-13fffffff : System RAM
-140000000-33fffffff : virtio0
-  140000000-147ffffff : System RAM
-  148000000-14fffffff : System RAM
-  150000000-157ffffff : System RAM
-340000000-303fffffff : virtio1
-  340000000-347ffffff : System RAM
-3280000000-32ffffffff : PCI Bus 0000:00
-
-
-
+diff --git a/drivers/virtio/virtio_mem.c b/drivers/virtio/virtio_mem.c
+index 3101cbf9e59d..6f658d1aeac4 100644
+--- a/drivers/virtio/virtio_mem.c
++++ b/drivers/virtio/virtio_mem.c
+@@ -421,7 +421,8 @@ static int virtio_mem_mb_add(struct virtio_mem *vm, uns=
+igned long mb_id)
+ =09=09nid =3D memory_add_physaddr_to_nid(addr);
+=20
+ =09dev_dbg(&vm->vdev->dev, "adding memory block: %lu\n", mb_id);
+-=09return add_memory(nid, addr, memory_block_size_bytes(), 0);
++=09return add_memory(nid, addr, memory_block_size_bytes(),
++=09=09=09  MHP_DRIVER_MANAGED);
+ }
+=20
+ /*
 --=20
-Thanks,
-
-David / dhildenb
+2.25.3
 
 
 ---------------------------------------------------------------------
