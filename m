@@ -1,77 +1,101 @@
-Return-Path: virtio-dev-return-7224-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-7229-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id BFE24985B07
-	for <virtio-dev@lists.oasis-open.org>; Thu, 30 Apr 2020 13:00:06 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 7402A985BC2
+	for <virtio-dev@lists.oasis-open.org>; Thu, 30 Apr 2020 19:34:33 +0000 (UTC)
+Date: Thu, 30 Apr 2020 15:34:24 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20200430152808-mutt-send-email-mst@kernel.org>
 References: <1588240976-10213-1-git-send-email-vatsa@codeaurora.org>
  <1588240976-10213-2-git-send-email-vatsa@codeaurora.org>
- <20200430101431.GD19932@willie-the-truck> <20200430103446.GH5097@quicinc.com>
- <20200430104149.GG19932@willie-the-truck> <20200430111156.GI5097@quicinc.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <7bf8bffe-267b-6c66-86c9-40017d3ca4c2@siemens.com>
-Date: Thu, 30 Apr 2020 14:59:50 +0200
+ <20200430101431.GD19932@willie-the-truck>
+ <20200430103446.GH5097@quicinc.com>
+ <20200430104149.GG19932@willie-the-truck>
+ <20200430111156.GI5097@quicinc.com>
+ <7bf8bffe-267b-6c66-86c9-40017d3ca4c2@siemens.com>
+ <20200430133321.GC3204@quicinc.com>
 MIME-Version: 1.0
-In-Reply-To: <20200430111156.GI5097@quicinc.com>
-Content-Language: en-US
+In-Reply-To: <20200430133321.GC3204@quicinc.com>
 Subject: [virtio-dev] Re: [RFC/PATCH 1/1] virtio: Introduce MMIO ops
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: quoted-printable
-To: Srivatsa Vaddagiri <vatsa@codeaurora.org>, Will Deacon <will@kernel.org>
-Cc: konrad.wilk@oracle.com, mst@redhat.com, jasowang@redhat.com, stefano.stabellini@xilinx.com, iommu@lists.linux-foundation.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, tsoni@codeaurora.org, pratikp@codeaurora.org, christoffer.dall@arm.com, alex.bennee@linaro.org, linux-kernel@vger.kernel.org
+Content-Disposition: inline
+To: Srivatsa Vaddagiri <vatsa@codeaurora.org>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, Will Deacon <will@kernel.org>, konrad.wilk@oracle.com, jasowang@redhat.com, stefano.stabellini@xilinx.com, iommu@lists.linux-foundation.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, tsoni@codeaurora.org, pratikp@codeaurora.org, christoffer.dall@arm.com, alex.bennee@linaro.org, linux-kernel@vger.kernel.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 30.04.20 13:11, Srivatsa Vaddagiri wrote:
-> * Will Deacon <will@kernel.org> [2020-04-30 11:41:50]:
+On Thu, Apr 30, 2020 at 07:03:21PM +0530, Srivatsa Vaddagiri wrote:
+> * Jan Kiszka <jan.kiszka@siemens.com> [2020-04-30 14:59:50]:
 >=20
->> On Thu, Apr 30, 2020 at 04:04:46PM +0530, Srivatsa Vaddagiri wrote:
->>> If CONFIG_VIRTIO_MMIO_OPS is defined, then I expect this to be uncondit=
-ionally
->>> set to 'magic_qcom_ops' that uses hypervisor-supported interface for IO=
- (for
->>> example: message_queue_send() and message_queue_recevie() hypercalls).
->>
->> Hmm, but then how would such a kernel work as a guest under all the
->> spec-compliant hypervisors out there?
+> > >I believe ivshmem2_virtio requires hypervisor to support PCI device em=
+ulation
+> > >(for life-cycle management of VMs), which our hypervisor may not suppo=
+rt.
+
+PCI is mostly just 2 registers. One sets the affected device, one the data =
+to read/write.
+
+> A
+> > >simple shared memory and doorbell or message-queue based transport wil=
+l work for
+> > >us.
+> >=20
+> > As written in our private conversation, a mapping of the ivshmem2 devic=
+e
+> > discovery to platform mechanism (device tree etc.) and maybe even the
+> > register access for doorbell and life-cycle management to something
+> > hypercall-like would be imaginable. What would count more from virtio
+> > perspective is a common mapping on a shared memory transport.
 >=20
-> Ok I see your point and yes for better binary compatibility, the ops have=
- to be
-> set based on runtime detection of hypervisor capabilities.
+> Yes that sounds simpler for us.
 >=20
->>> Ok. I guess the other option is to standardize on a new virtio transpor=
-t (like
->>> ivshmem2-virtio)?
->>
->> I haven't looked at that, but I suppose it depends on what your hypervis=
-or
->> folks are willing to accomodate.
+> > That said, I also warned about all the features that PCI already define=
+d
+> > (such as message-based interrupts) which you may have to add when going=
+ a
+> > different way for the shared memory device.
 >=20
-> I believe ivshmem2_virtio requires hypervisor to support PCI device emula=
-tion
-> (for life-cycle management of VMs), which our hypervisor may not support.=
- A
-> simple shared memory and doorbell or message-queue based transport will w=
-ork for
-> us.
+> Is it really required to present this shared memory as belonging to a PCI
+> device?
 
-As written in our private conversation, a mapping of the ivshmem2 device=20
-discovery to platform mechanism (device tree etc.) and maybe even the=20
-register access for doorbell and life-cycle management to something=20
-hypercall-like would be imaginable. What would count more from virtio=20
-perspective is a common mapping on a shared memory transport.
+But then you will go on and add MSI, and NUMA, and security, and and and ..=
+.
 
-That said, I also warned about all the features that PCI already defined=20
-(such as message-based interrupts) which you may have to add when going=20
-a different way for the shared memory device.
+> I would expect the device-tree to indicate the presence of this shared
+> memory region, which we should be able to present to ivshmem2 as shared m=
+emory
+> region to use (along with some handles for doorbell or message queue use)=
+.
+>=20
+> I understand the usefulness of modeling the shared memory as part of devi=
+ce so
+> that hypervisor can send events related to peers going down or coming up.=
+ In our
+> case, there will be other means to discover those events and avoiding thi=
+s
+> requirement on hypervisor (to emulate PCI) will simplify the solution for=
+ us.
+>=20
+> Any idea when we can expect virtio over ivshmem2 to become available?!
 
-Jan
+Check out the virtio spec. Right at the beginning it states:
 
---=20
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+=09These devices are
+=09found in virtual environments, yet by design they look like physical dev=
+ices to the guest within
+=09the virtual machine - and this document treats them as such. This simila=
+rity allows the guest to
+=09use standard drivers and discovery mechanisms
+
+
+> --=20
+> QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
+> of Code Aurora Forum, hosted by The Linux Foundation
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
