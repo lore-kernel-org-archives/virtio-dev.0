@@ -1,214 +1,91 @@
-Return-Path: virtio-comment-return-1216-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio-comment@lists.oasis-open.org>
-List-Post: <mailto:virtio-comment@lists.oasis-open.org>
-List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
+Return-Path: virtio-dev-return-7230-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id B1866985C18
+	for <virtio-dev@lists.oasis-open.org>; Fri,  1 May 2020 09:34:35 +0000 (UTC)
+References: <20200430102908.10107-1-david@redhat.com>
+ <20200430102908.10107-3-david@redhat.com>
+ <87pnbp2dcz.fsf@x220.int.ebiederm.org>
+ <1b49c3be-6e2f-57cb-96f7-f66a8f8a9380@redhat.com>
+ <871ro52ary.fsf@x220.int.ebiederm.org>
+ <373a6898-4020-4af1-5b3d-f827d705dd77@redhat.com>
+ <875zdg26hp.fsf@x220.int.ebiederm.org>
+ <b28c9e02-8cf2-33ae-646b-fe50a185738e@redhat.com>
+ <20200430152403.e0d6da5eb1cad06411ac6d46@linux-foundation.org>
+From: David Hildenbrand <david@redhat.com>
+Message-ID: <5c908ec3-9495-531e-9291-cbab24f292d6@redhat.com>
+Date: Fri, 1 May 2020 11:34:22 +0200
 MIME-Version: 1.0
-References: <20200429184122.1248.4817.stgit@localhost.localdomain>
- <20200429185757.1248.69725.stgit@localhost.localdomain> <20200507175848.26cb20bf.cohuck@redhat.com>
-In-Reply-To: <20200507175848.26cb20bf.cohuck@redhat.com>
-From: Alexander Duyck <alexander.duyck@gmail.com>
-Date: Thu, 7 May 2020 13:35:53 -0700
-Message-ID: <CAKgT0UegZDYd7Jjv+jYo-WU_=BZQ3aXPoSzNPgEzidNn8TdrEA@mail.gmail.com>
-Subject: Re: [virtio-comment] Re: [PATCH RFC 3/3] content: Document balloon
- feature free page reporting
-Content-Type: text/plain; charset="UTF-8"
-To: Cornelia Huck <cohuck@redhat.com>
-Cc: David Hildenbrand <david@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>, virtio-dev@lists.oasis-open.org, virtio-comment@lists.oasis-open.org
+In-Reply-To: <20200430152403.e0d6da5eb1cad06411ac6d46@linux-foundation.org>
+Content-Language: en-US
+Subject: [virtio-dev] Re: [PATCH v2 2/3] mm/memory_hotplug: Introduce
+ MHP_NO_FIRMWARE_MEMMAP
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+To: Andrew Morton <akpm@linux-foundation.org>
+Cc: "Eric W. Biederman" <ebiederm@xmission.com>, linux-kernel@vger.kernel.org, linux-mm@kvack.org, virtio-dev@lists.oasis-open.org, virtualization@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org, linux-acpi@vger.kernel.org, linux-nvdimm@lists.01.org, linux-hyperv@vger.kernel.org, linux-s390@vger.kernel.org, xen-devel@lists.xenproject.org, Michal Hocko <mhocko@kernel.org>, "Michael S . Tsirkin" <mst@redhat.com>, Michal Hocko <mhocko@suse.com>, Pankaj Gupta <pankaj.gupta.linux@gmail.com>, Wei Yang <richard.weiyang@gmail.com>, Baoquan He <bhe@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Thu, May 7, 2020 at 8:59 AM Cornelia Huck <cohuck@redhat.com> wrote:
->
-> On Wed, 29 Apr 2020 11:57:57 -0700
-> Alexander Duyck <alexander.duyck@gmail.com> wrote:
->
-> > From: Alexander Duyck <alexander.h.duyck@linux.intel.com>
-> >
-> > Free page reporting is a feature that allows the guest to proactively
-> > report unused pages to the host. By making use of this feature is is
-> > possible to reduce the overall memory footprint of the guest in cases where
-> > some significant portion of the memory is idle. Add documentation for the
-> > free page reporting feature describing the functionality and requirements.
-> >
-> > Signed-off-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
-> > ---
-> >  content.tex |   74 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-> >  1 file changed, 74 insertions(+)
-> >
-> > diff --git a/content.tex b/content.tex
-> > index c98b8ea9526a..52955c8ff007 100644
-> > --- a/content.tex
-> > +++ b/content.tex
-> > @@ -5007,12 +5007,15 @@ \subsection{Virtqueues}\label{sec:Device Types / Memory Balloon Device / Virtque
-> >  \item[1] deflateq
-> >  \item[2] statsq.
-> >  \item[3] free_page_vq.
-> > +\item[4] reporting_vq.
->
-> Also lose the trailing period here.
->
-> >  \end{description}
-> >
-> >    statsq only exists if VIRTIO_BALLOON_F_STATS_VQ set.
-> >
-> >    free_page_vq only exists if VIRTIO_BALLOON_F_FREE_PAGE_HINT set.
-> >
-> > +  reporting_vq only exists if VIRTIO_BALLOON_F_PAGE_REPORTING set.
->
-> s/set/is set/
->
-> > +
-> >  \subsection{Feature bits}\label{sec:Device Types / Memory Balloon Device / Feature bits}
-> >  \begin{description}
-> >  \item[VIRTIO_BALLOON_F_MUST_TELL_HOST (0)] Host has to be told before
-> > @@ -5029,6 +5032,8 @@ \subsection{Feature bits}\label{sec:Device Types / Memory Balloon Device / Featu
-> >  \item[ VIRTIO_BALLOON_F_PAGE_POISON(4) ] Host has to be notified if guest
-> >      is expecting reported pages to contain a certain value when returned.
-> >      Configuration field poison_val is valid.
-> > +\item[ VIRTIO_BALLOON_F_PAGE_REPORTING(5) ] Device has support for free
-> > +    page reporting. A virtqueue for reporting free guest memory is present.
-> >
-> >  \end{description}
-> >
-> > @@ -5039,6 +5044,10 @@ \subsection{Feature bits}\label{sec:Device Types / Memory Balloon Device / Featu
-> >  The driver SHOULD clear the VIRTIO_BALLOON_F_PAGE_POISON flag if it is not
-> >  expecting any specific value to be stored in the page.
-> >
-> > +The driver MUST NOT accept VIRTIO_BALLOON_F_PAGE_REPORTING if it is expecting
-> > +the pages to retain some initialized value and it has not negotiated
-> > +VIRTIO_BALLOON_F_PAGE_POISON as a feature.
-> > +
-> >  \devicenormative{\subsubsection}{Feature bits}{Device Types / Memory Balloon Device / Feature bits}
-> >  If the device offers the VIRTIO_BALLOON_F_MUST_TELL_HOST feature
-> >  bit, and if the driver did not accept this feature bit, the
-> > @@ -5097,6 +5106,13 @@ \subsection{Device Initialization}\label{sec:Device Types / Memory Balloon Devic
-> >
-> >  \item If the VIRTIO_BALLOON_F_PAGE_POISON feature bit is negotiated then
-> >    the driver MUST update the poison_val configuration field.
-> > +
-> > +\item If the VIRTIO_BALLOON_F_PAGE_REPORTING feature bit is negotiated:
-> > +  \begin{enumerate}
-> > +  \item Identify the reporting virtqueue.
-> > +  \item DRIVER_OK is set: device operation begins.
-> > +  \item Begin reporting free pages to device.
-> > +  \end{enumerate}
-> >  \end{enumerate}
->
-> See my previous comments regarding reordering this.
+On 01.05.20 00:24, Andrew Morton wrote:
+> On Thu, 30 Apr 2020 20:43:39 +0200 David Hildenbrand <david@redhat.com> wrote:
+> 
+>>>
+>>> Why does the firmware map support hotplug entries?
+>>
+>> I assume:
+>>
+>> The firmware memmap was added primarily for x86-64 kexec (and still, is
+>> mostly used on x86-64 only IIRC). There, we had ACPI hotplug. When DIMMs
+>> get hotplugged on real HW, they get added to e820. Same applies to
+>> memory added via HyperV balloon (unless memory is unplugged via
+>> ballooning and you reboot ... the the e820 is changed as well). I assume
+>> we wanted to be able to reflect that, to make kexec look like a real reboot.
+>>
+>> This worked for a while. Then came dax/kmem. Now comes virtio-mem.
+>>
+>>
+>> But I assume only Andrew can enlighten us.
+>>
+>> @Andrew, any guidance here? Should we really add all memory to the
+>> firmware memmap, even if this contradicts with the existing
+>> documentation? (especially, if the actual firmware memmap will *not*
+>> contain that memory after a reboot)
+> 
+> For some reason that patch is misattributed - it was authored by
+> Shaohui Zheng <shaohui.zheng@intel.com>, who hasn't been heard from in
+> a decade.  I looked through the email discussion from that time and I'm
+> not seeing anything useful.  But I wasn't able to locate Dave Hansen's
+> review comments.
 
-I'll work on restructuring all this. With things being split up I can
-drop some of the enumerated lists.
+Okay, thanks for checking. I think the documentation from 2008 is pretty
+clear what has to be done here. I will add some of these details to the
+patch description.
 
-> >
-> >  \subsection{Device Operation}\label{sec:Device Types / Memory Balloon Device / Device Operation}
-> > @@ -5497,6 +5513,64 @@ \subsubsection{Page Poison}\label{sec:Device Types / Memory Balloon Device / Dev
-> >  free page hinting as this feature did not exist prior to those features being
-> >  added.
-> >
-> > +\subsubsection{Free Page Reporting}\label{sec:Device Types / Memory Balloon Device / Device Operation / Free Page Reporting}
-> > +
-> > +Free Page Reporting provides a mechanism similar to balloon inflation,
-> > +however it does not provide a deflation queue. The expectation is that the
-> > +device will have a means by which it can detect the guest page access and
-> > +fault in such pages with some initial value, likely a zero page.
-> > +
-> > +The driver will respond to to memory conditions and begin reporting free
-> > +pages when some number of pages are available.
-> > +
-> > +\begin{enumerate}
-> > +
-> > +\item The driver determines it has enough pages available to begin
-> > +  reporting pages.
-> > +
-> > +\item The driver gathers pages into a scatter-gather list and adds them to
-> > +  the reporting_vq.
-> > +
-> > +\item The device acknowledges the reporting request.
->
-> How?
+Also, now that I know that esp. kexec-tools already don't consider
+dax/kmem memory properly (memory will not get dumped via kdump) and
+won't really suffer from a name change in /proc/iomem, I will go back to
+the MHP_DRIVER_MANAGED approach and
+1. Don't create firmware memmap entries
+2. Name the resource "System RAM (driver managed)"
+3. Flag the resource via something like IORESOURCE_MEM_DRIVER_MANAGED.
 
-I will update this. Basically it is acknowledged by "using the the
-reporting_vq descriptor".
+This way, kernel users and user space can figure out that this memory
+has different semantics and handle it accordingly - I think that was
+what Eric was asking for.
 
-> > +
-> > +\item Once the device has acknowledged the report, the pages can be
-> > +  returned to the location from which they were pulled.
-> > +
-> > +\item The driver can then continue to gather and report pages until it
-> > +  has determined it has reported a suffcient quantity of pages.
-> > +
-> > +\end{enumerate}
-> > +
-> > +\drivernormative{\paragraph}{Free Page Reporting}{Device Types / Memory Balloon Device / Device Operation / Free Page Reporting}
-> > +
-> > +Normative statements in this section apply if and only if  the
-> > +VIRTIO_BALLOON_F_PAGE_REPORTING feature has been negotiated.
->
-> "If the VIRTIO_BALLOON_F_PAGE_REPORTING feature has been negotiated:"
->
-> > +
-> > +If the guest is expecting the free page to contain some initial value it
->
-> s/guest/driver/
->
-> > +MUST make use of the VIRTIO_BALLOON_F_PAGE_POISON feature to notify the
-> > +device of this expectation via \field{poison_val}.
->
-> "..., it MUST NOT negotiate this feature without negotiating the
-> VIRTIO_BALLOON_F_PAGE_POISON feature as well and supply this value via
-> \field{poison_val}."
->
-> > +
-> > +The driver MUST NOT use the reported pages until the device has
-> > +acknowledged the reporting request.
-> > +
-> > +The driver MAY report free pages any time after DRIVER_OK is set.
-> > +
-> > +It is RECOMMENDED that the driver avoid unecessary reads or writes to the
-> > +page contents as this could reduce the performance for free page reporting.
-> > +
-> > +\devicenormative{\paragraph}{Free Page Reporting}{Device Types / Memory Balloon Device / Device Operation / Free Page Reporting}
-> > +
-> > +Normative statements in this section apply if and only if  the
-> > +VIRTIO_BALLOON_F_PAGE_REPORTING feature has been negotiated.
->
-> "If the VIRTIO_BALLOON_F_PAGE_REPORTING feature has been negotiated:"
->
-> > +
-> > +The device MAY modify the contents of a page in the report after detecting
-> > +its physical number in an report request and before acknowledging the
->
-> What is a 'physical number'?
+Of course, open for suggestions.
 
-I assume here it is referring to the physical page number, aka PFN. I
-had done some copy/paste from the balloon description since the start
-would be the same for when the page should be inaccessible. I could
-probably reword this to be from the time the device is notified of the
-descriptor containing the page physical address and size.
+-- 
+Thanks,
 
-> > +reporting request by using the reporting_vq descriptor.
->
-> What is the 'reporting_vq descriptor'?
+David / dhildenb
 
-So which piece of this do I need to define? I believe I called out the
-reporting_vq in the section above. The descriptor on the reporting_vq
-is used to describe the scatterlist to the devices as multiple inbuf
-on a single vring descriptor.
 
-This publicly archived list offers a means to provide input to the
-OASIS Virtual I/O Device (VIRTIO) TC.
-
-In order to verify user consent to the Feedback License terms and
-to minimize spam in the list archive, subscription is required
-before posting.
-
-Subscribe: virtio-comment-subscribe@lists.oasis-open.org
-Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
-List help: virtio-comment-help@lists.oasis-open.org
-List archive: https://lists.oasis-open.org/archives/virtio-comment/
-Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
-List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
-Committee: https://www.oasis-open.org/committees/virtio/
-Join OASIS: https://www.oasis-open.org/join/
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
