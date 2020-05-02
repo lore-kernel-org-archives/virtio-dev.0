@@ -1,16 +1,13 @@
-Return-Path: virtio-dev-return-7236-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-7237-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 3A065985C20
-	for <virtio-dev@lists.oasis-open.org>; Fri,  1 May 2020 21:11:14 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 64A35985D19
+	for <virtio-dev@lists.oasis-open.org>; Sat,  2 May 2020 09:26:55 +0000 (UTC)
 References: <20200430102908.10107-1-david@redhat.com>
- <1b49c3be-6e2f-57cb-96f7-f66a8f8a9380@redhat.com>
- <871ro52ary.fsf@x220.int.ebiederm.org>
- <373a6898-4020-4af1-5b3d-f827d705dd77@redhat.com>
  <875zdg26hp.fsf@x220.int.ebiederm.org>
  <b28c9e02-8cf2-33ae-646b-fe50a185738e@redhat.com>
  <20200430152403.e0d6da5eb1cad06411ac6d46@linux-foundation.org>
@@ -25,332 +22,62 @@ References: <20200430102908.10107-1-david@redhat.com>
  <CAPcyv4jjrxQ27rsfmz6wYPgmedevU=KG+wZ0GOm=qiE6tqa+VA@mail.gmail.com>
  <04242d48-5fa9-6da4-3e4a-991e401eb580@redhat.com>
  <CAPcyv4iXyOUDZgqhWH1KCObvATL=gP55xEr64rsRfUuJg5B+eQ@mail.gmail.com>
+ <8242c0c5-2df2-fc0c-079a-3be62c113a11@redhat.com>
+ <CAPcyv4h1nWjszkVJQgeXkUc=-nPv5=Me25BOGFQCpihUyFsD6w@mail.gmail.com>
 From: David Hildenbrand <david@redhat.com>
-Message-ID: <8242c0c5-2df2-fc0c-079a-3be62c113a11@redhat.com>
-Date: Fri, 1 May 2020 23:10:53 +0200
+Message-ID: <467ccba3-80ac-085c-3127-d5618d77d3e0@redhat.com>
+Date: Sat, 2 May 2020 11:26:41 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAPcyv4iXyOUDZgqhWH1KCObvATL=gP55xEr64rsRfUuJg5B+eQ@mail.gmail.com>
+In-Reply-To: <CAPcyv4h1nWjszkVJQgeXkUc=-nPv5=Me25BOGFQCpihUyFsD6w@mail.gmail.com>
 Content-Language: en-US
 Subject: [virtio-dev] Re: [PATCH v2 2/3] mm/memory_hotplug: Introduce
  MHP_NO_FIRMWARE_MEMMAP
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
 To: Dan Williams <dan.j.williams@intel.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>, "Eric W. Biederman" <ebiederm@xmission.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Linux MM <linux-mm@kvack.org>, virtio-dev@lists.oasis-open.org, virtualization@lists.linux-foundation.org, linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, Linux ACPI <linux-acpi@vger.kernel.org>, linux-nvdimm <linux-nvdimm@lists.01.org>, linux-hyperv@vger.kernel.org, linux-s390 <linux-s390@vger.kernel.org>, xen-devel <xen-devel@lists.xenproject.org>, Michal Hocko <mhocko@kernel.org>, "Michael S . Tsirkin" <mst@redhat.com>, Michal Hocko <mhocko@suse.com>, Pankaj Gupta <pankaj.gupta.linux@gmail.com>, Wei Yang <richard.weiyang@gmail.com>, Baoquan He <bhe@redhat.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>, "Eric W. Biederman" <ebiederm@xmission.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Linux MM <linux-mm@kvack.org>, virtio-dev@lists.oasis-open.org, virtualization@lists.linux-foundation.org, linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, Linux ACPI <linux-acpi@vger.kernel.org>, linux-nvdimm <linux-nvdimm@lists.01.org>, linux-hyperv@vger.kernel.org, linux-s390 <linux-s390@vger.kernel.org>, xen-devel <xen-devel@lists.xenproject.org>, Michal Hocko <mhocko@kernel.org>, "Michael S . Tsirkin" <mst@redhat.com>, Michal Hocko <mhocko@suse.com>, Pankaj Gupta <pankaj.gupta.linux@gmail.com>, Wei Yang <richard.weiyang@gmail.com>, Baoquan He <bhe@redhat.com>, Dave Hansen <dave.hansen@linux.intel.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 01.05.20 22:12, Dan Williams wrote:
-> On Fri, May 1, 2020 at 12:18 PM David Hildenbrand <david@redhat.com> wrot=
-e:
+>> Now, let's clarify what I want regarding virtio-mem:
 >>
->> On 01.05.20 20:43, Dan Williams wrote:
->>> On Fri, May 1, 2020 at 11:14 AM David Hildenbrand <david@redhat.com> wr=
-ote:
->>>>
->>>> On 01.05.20 20:03, Dan Williams wrote:
->>>>> On Fri, May 1, 2020 at 10:51 AM David Hildenbrand <david@redhat.com> =
-wrote:
->>>>>>
->>>>>> On 01.05.20 19:45, David Hildenbrand wrote:
->>>>>>> On 01.05.20 19:39, Dan Williams wrote:
->>>>>>>> On Fri, May 1, 2020 at 10:21 AM David Hildenbrand <david@redhat.co=
-m> wrote:
->>>>>>>>>
->>>>>>>>> On 01.05.20 18:56, Dan Williams wrote:
->>>>>>>>>> On Fri, May 1, 2020 at 2:34 AM David Hildenbrand <david@redhat.c=
-om> wrote:
->>>>>>>>>>>
->>>>>>>>>>> On 01.05.20 00:24, Andrew Morton wrote:
->>>>>>>>>>>> On Thu, 30 Apr 2020 20:43:39 +0200 David Hildenbrand <david@re=
-dhat.com> wrote:
->>>>>>>>>>>>
->>>>>>>>>>>>>>
->>>>>>>>>>>>>> Why does the firmware map support hotplug entries?
->>>>>>>>>>>>>
->>>>>>>>>>>>> I assume:
->>>>>>>>>>>>>
->>>>>>>>>>>>> The firmware memmap was added primarily for x86-64 kexec (and=
- still, is
->>>>>>>>>>>>> mostly used on x86-64 only IIRC). There, we had ACPI hotplug.=
- When DIMMs
->>>>>>>>>>>>> get hotplugged on real HW, they get added to e820. Same appli=
-es to
->>>>>>>>>>>>> memory added via HyperV balloon (unless memory is unplugged v=
-ia
->>>>>>>>>>>>> ballooning and you reboot ... the the e820 is changed as well=
-). I assume
->>>>>>>>>>>>> we wanted to be able to reflect that, to make kexec look like=
- a real reboot.
->>>>>>>>>>>>>
->>>>>>>>>>>>> This worked for a while. Then came dax/kmem. Now comes virtio=
--mem.
->>>>>>>>>>>>>
->>>>>>>>>>>>>
->>>>>>>>>>>>> But I assume only Andrew can enlighten us.
->>>>>>>>>>>>>
->>>>>>>>>>>>> @Andrew, any guidance here? Should we really add all memory t=
-o the
->>>>>>>>>>>>> firmware memmap, even if this contradicts with the existing
->>>>>>>>>>>>> documentation? (especially, if the actual firmware memmap wil=
-l *not*
->>>>>>>>>>>>> contain that memory after a reboot)
->>>>>>>>>>>>
->>>>>>>>>>>> For some reason that patch is misattributed - it was authored =
-by
->>>>>>>>>>>> Shaohui Zheng <shaohui.zheng@intel.com>, who hasn't been heard=
- from in
->>>>>>>>>>>> a decade.  I looked through the email discussion from that tim=
-e and I'm
->>>>>>>>>>>> not seeing anything useful.  But I wasn't able to locate Dave =
-Hansen's
->>>>>>>>>>>> review comments.
->>>>>>>>>>>
->>>>>>>>>>> Okay, thanks for checking. I think the documentation from 2008 =
-is pretty
->>>>>>>>>>> clear what has to be done here. I will add some of these detail=
-s to the
->>>>>>>>>>> patch description.
->>>>>>>>>>>
->>>>>>>>>>> Also, now that I know that esp. kexec-tools already don't consi=
-der
->>>>>>>>>>> dax/kmem memory properly (memory will not get dumped via kdump)=
- and
->>>>>>>>>>> won't really suffer from a name change in /proc/iomem, I will g=
-o back to
->>>>>>>>>>> the MHP_DRIVER_MANAGED approach and
->>>>>>>>>>> 1. Don't create firmware memmap entries
->>>>>>>>>>> 2. Name the resource "System RAM (driver managed)"
->>>>>>>>>>> 3. Flag the resource via something like IORESOURCE_MEM_DRIVER_M=
-ANAGED.
->>>>>>>>>>>
->>>>>>>>>>> This way, kernel users and user space can figure out that this =
-memory
->>>>>>>>>>> has different semantics and handle it accordingly - I think tha=
-t was
->>>>>>>>>>> what Eric was asking for.
->>>>>>>>>>>
->>>>>>>>>>> Of course, open for suggestions.
->>>>>>>>>>
->>>>>>>>>> I'm still more of a fan of this being communicated by "System RA=
-M"
->>>>>>>>>
->>>>>>>>> I was mentioning somewhere in this thread that "System RAM" insid=
-e a
->>>>>>>>> hierarchy (like dax/kmem) will already be basically ignored by
->>>>>>>>> kexec-tools. So, placing it inside a hierarchy already makes it l=
-ook
->>>>>>>>> special already.
->>>>>>>>>
->>>>>>>>> But after all, as we have to change kexec-tools either way, we ca=
-n
->>>>>>>>> directly go ahead and flag it properly as special (in case there =
-will
->>>>>>>>> ever be other cases where we could no longer distinguish it).
->>>>>>>>>
->>>>>>>>>> being parented especially because that tells you something about=
- how
->>>>>>>>>> the memory is driver-managed and which mechanism might be in pla=
-y.
->>>>>>>>>
->>>>>>>>> The could be communicated to some degree via the resource hierarc=
-hy.
->>>>>>>>>
->>>>>>>>> E.g.,
->>>>>>>>>
->>>>>>>>>             [root@localhost ~]# cat /proc/iomem
->>>>>>>>>             ...
->>>>>>>>>             140000000-33fffffff : Persistent Memory
->>>>>>>>>               140000000-1481fffff : namespace0.0
->>>>>>>>>               150000000-33fffffff : dax0.0
->>>>>>>>>                 150000000-33fffffff : System RAM (driver managed)
->>>>>>>>>
->>>>>>>>> vs.
->>>>>>>>>
->>>>>>>>>            :/# cat /proc/iomem
->>>>>>>>>             [...]
->>>>>>>>>             140000000-333ffffff : virtio-mem (virtio0)
->>>>>>>>>               140000000-147ffffff : System RAM (driver managed)
->>>>>>>>>               148000000-14fffffff : System RAM (driver managed)
->>>>>>>>>               150000000-157ffffff : System RAM (driver managed)
->>>>>>>>>
->>>>>>>>> Good enough for my taste.
->>>>>>>>>
->>>>>>>>>> What about adding an optional /sys/firmware/memmap/X/parent attr=
-ibute.
->>>>>>>>>
->>>>>>>>> I really don't want any firmware memmap entries for something tha=
-t is
->>>>>>>>> not part of the firmware provided memmap. In addition,
->>>>>>>>> /sys/firmware/memmap/ is still a fairly x86_64 specific thing. On=
-ly mips
->>>>>>>>> and two arm configs enable it at all.
->>>>>>>>>
->>>>>>>>> So, IMHO, /sys/firmware/memmap/ is definitely not the way to go.
->>>>>>>>
->>>>>>>> I think that's a policy decision and policy decisions do not belon=
-g in
->>>>>>>> the kernel. Give the tooling the opportunity to decide whether Sys=
-tem
->>>>>>>> RAM stays that way over a kexec. The parenthetical reference other=
-wise
->>>>>>>> looks out of place to me in the /proc/iomem output. What makes it
->>>>>>>> "driver managed" is how the kernel handles it, not how the kernel
->>>>>>>> names it.
->>>>>>>
->>>>>>> At least, virtio-mem is different. It really *has to be handled* by=
- the
->>>>>>> driver. This is not a policy. It's how it works.
->>>>>
->>>>> ...but that's not necessarily how dax/kmem works.
->>>>>
->>>>
->>>> Yes, and user space could still take that memory and add it to the
->>>> firmware memmap if it really wants to. It knows that it is special. It
->>>> can figure out that it belongs to a dax device using /proc/iomem.
->>>>
->>>>>>>
->>>>>>
->>>>>> Oh, and I don't see why "System RAM (driver managed)" would hinder a=
-ny
->>>>>> policy in user case to still do what it thinks is the right thing to=
- do
->>>>>> (e.g., for dax).
->>>>>>
->>>>>> "System RAM (driver managed)" would mean: Memory is not part of the =
-raw
->>>>>> firmware memmap. It was detected and added by a driver. Handle with
->>>>>> care, this is special.
->>>>>
->>>>> Oh, no, I was more reacting to your, "don't update
->>>>> /sys/firmware/memmap for the (driver managed) range" choice as being =
-a
->>>>> policy decision. It otherwise feels to me "System RAM (driver
->>>>> managed)" adds confusion for casual users of /proc/iomem and for clue=
-d
->>>>> in tools they have the parent association to decide policy.
->>>>
->>>> Not sure if I understand correctly, so bear with me :).
->>>>
->>>> Adding or not adding stuff to /sys/firmware/memmap is not a policy
->>>> decision. If it's not part of the raw firmware-provided memmap, it has
->>>> nothing to do in /sys/firmware/memmap. That's what the documentation
->>>> from 2008 tells us.
->>>
->>> It just occurs to me that there are valid cases for both wanting to
->>> start over with driver managed memory with a kexec and keeping it in
->>> the map.
->>
->> Yes, there might be valid cases. My gut feeling is that in the general
->> case, you want to let the kexec kernel implement a policy/ let the user
->> in the new system decide.
->>
->> But as I said, you can implement in kexec-tools whatever policy you
->> want. It has access to all information.
+>> 1. kexec should not add virtio-mem memory to the initial firmware
+>>    memmap. The driver has to be in charge as discussed.
+>> 2. kexec should not place kexec images onto virtio-mem memory. That
+>>    would end badly.
+>> 3. kexec should still dump virtio-mem memory via kdump.
 >=20
-> Right, so why is a new type needed if all the information is there by
-> other means?
+> Ok, but then seems to say to me that dax/kmem is a different type of
+> (driver managed) than virtio-mem and it's confusing to try to apply
+> the same meaning. Why not just call your type for the distinct type it
+> is "System RAM (virtio-mem)" and let any other driver managed memory
+> follow the same "System RAM ($driver)" format if it wants?
 
-You mean "System RAM (driver managed)" in /proc/iomem? See below for more.
+I had the same idea but discarded it because it seemed to uglify the
+add_memory() interface (passing yet another parameter only relevant for
+driver managed memory). Maybe we really want a new one, because I like
+that idea:
 
->=20
->>> Consider the case of EFI Special Purpose (SP) Memory that is
->>> marked EFI Conventional Memory with the SP attribute. In that case the
->>> firmware memory map marked it as conventional RAM, but the kernel
->>> optionally marks it as System RAM vs Soft Reserved. The 2008 patch
->>> simply does not consider that case. I'm not sure strict textualism
->>> works for coding decisions.
->>
->> I am no expert on that matter (esp EFI). But looking at the users of
->> firmware_map_add_early(), the single user is in arch/x86/kernel/e820.c
->> . So the single source of /sys/firmware/memmap is (besides hotplug) e820=
-.
->>
->> "'e820_table_firmware': the original firmware version passed to us by
->> the bootloader - not modified by the kernel. ... inform the user about
->> the firmware's notion of memory layout via /sys/firmware/memmap"
->> (arch/x86/kernel/e820.c)
->>
->> How is the EFI Special Purpose (SP) Memory represented in e820?
->> /sys/firmware/memmap is really simple: just dump in e820. No policies II=
-UC.
->=20
-> e820 now has a Soft Reserved translation for this which means "try to
-> reserve, but treat as System RAM is ok too". It seems generically
-> useful to me that the toggle for determining whether Soft Reserved or
-> System RAM shows up /sys/firmware/memmap is a determination that
-> policy can make. The kernel need not preemptively block it.
-
-So, I think I have to clarify something here. We do have two ways to kexec
-
-1. kexec_load(): User space (kexec-tools) crafts the memmap (e.g., using
-/sys/firmware/memmap on x86-64) and selects memory where to place the
-kexec images (e.g., using /proc/iomem)
-
-2. kexec_file_load(): The kernel reuses the (basically) raw firmware
-memmap and selects memory where to place kexec images.
-
-We are talking about changing 1, to behave like 2 in regards to
-dax/kmem. 2. does currently not add any hotplugged memory to the
-fixed-up e820, and it should be fixed regarding hotplugged DIMMs that
-would appear in e820 after a reboot.
-
-Now, all these policy discussions are nice and fun, but I don't really
-see a good reason to (ab)use /sys/firmware/memmap for that (e.g., parent
-properties). If you want to be able to make this configurable, then
-e.g., add a way to configure this in the kernel (for example along with
-kmem) to make 1. and 2. behave the same way. Otherwise, you really only
-can change 1.
+/*
+ * Add special, driver-managed memory to the system as system ram.
+ * The resource_name is expected to have the name format "System RAM
+ * ($DRIVER)", so user space (esp. kexec-tools)" can special-case it.
+ *
+ * For this memory, no entries in /sys/firmware/memmap are created,
+ * as this memory won't be part of the raw firmware-provided memory map
+ * e.g., after a reboot. Also, the created memory resource is flagged
+ * with IORESOURCE_MEM_DRIVER_MANAGED, so in-kernel users can special-
+ * case this memory (e.g., not place kexec images onto it).
+ */
+int add_memory_driver_managed(int nid, u64 start, u64 size,
+=09=09=09      const char *resource_name);
 
 
-Now, let's clarify what I want regarding virtio-mem:
+If we'd ever have to special case it even more in the kernel, we could
+allow to specify further resource flags. While passing the driver name
+instead of the resource_name would be an option, this way we don't have
+to hand craft new resource strings for added memory resources.
 
-1. kexec should not add virtio-mem memory to the initial firmware
-   memmap. The driver has to be in charge as discussed.
-2. kexec should not place kexec images onto virtio-mem memory. That
-   would end badly.
-3. kexec should still dump virtio-mem memory via kdump.
-
-This has to work when using kexec_load() or kexec_file_load(). This has
-to theoretically work on different architectures (especially, without
-/sys/firmware/memmap). kexec-tools has to have access to that
-information to figure out what to do.
-
-Regarding 1:
-- kexec_file_load(): works out of the box currently.
-- kexec_load(): Don't create entries in /sys/firmware/memmap (for
-  reasons discussed)
-Regarding 2:
-- kexec_file_load(): tag the resources as IORESOURCE_MEM_DRIVER_MANAGED
-  (inspired by Eric)
-- kexec_load(): indicate the memory as "System RAM (driver managed)"
-Regarding 3:
-- Same as 2. kexec-tools need to be thought to properly consider the
-  memory during kdump.
-
-Now, you are asking, "why System RAM (driver managed)". I don't think
-it's strictly needed right now, but it feels cleaner. E.g., for
-virtio-mem the current plan is to have /proc/iomem look like
-
-           :/# cat /proc/iomem
-            [...]
-            140000000-333ffffff : virtio-mem (virtio0)
-              140000000-147ffffff : System RAM (driver managed)
-              148000000-14fffffff : System RAM (driver managed)
-              150000000-157ffffff : System RAM (driver managed)
-
-One could judge by looking at the hierarchy, that this memory is
-special. kexec-tools will skip it currently in either form.
-
-If we all agree here, that we can drop it, then let's drop it,
-especially if it would allow dax/kmem to use the same mechanism I am
-proposing here for virtio-mem.
-
-
-Now, it would be fairly simple to add a config option for dax/kmem,
-making it configurable in the kernel, whether to add memory via
-MHP_DRIVER_MANAGED or just as we do now. It would contradict with the
-"raw firmware/prov..." description of /sys/firmware/memmap, but hey,
-somebody explicitly configured it, so it can't be wrong.
+Thoughts?
 
 --=20
 Thanks,
