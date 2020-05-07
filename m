@@ -1,93 +1,95 @@
-Return-Path: virtio-comment-return-1250-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio-comment@lists.oasis-open.org>
-List-Post: <mailto:virtio-comment@lists.oasis-open.org>
-List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
-References: <158895811782.529821.115832709184722087.stgit@ahduyck-workstation>
- <20200511143823.14d7398e.cohuck@redhat.com>
- <3f1e5c3e-03ce-bb32-e5a7-4be381477754@redhat.com>
- <CAKgT0Ucozsxkuuf5EujKciNh7BiFNxSpc7LcYC-+f-dNuJM5jg@mail.gmail.com>
+Return-Path: virtio-dev-return-7238-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id 34DB9985DF8
+	for <virtio-dev@lists.oasis-open.org>; Thu,  7 May 2020 10:32:01 +0000 (UTC)
 From: David Hildenbrand <david@redhat.com>
-Message-ID: <9e9bebc9-634b-9f86-4724-536c9587feff@redhat.com>
-Date: Fri, 15 May 2020 19:08:06 +0200
+Date: Thu,  7 May 2020 12:31:04 +0200
+Message-Id: <20200507103119.11219-1-david@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <CAKgT0Ucozsxkuuf5EujKciNh7BiFNxSpc7LcYC-+f-dNuJM5jg@mail.gmail.com>
-Content-Language: en-US
-Subject: [virtio-comment] Re: [PATCH 0/3] virtio-spec: Add documentation for recently added
- balloon features
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: Alexander Duyck <alexander.duyck@gmail.com>
-Cc: Cornelia Huck <cohuck@redhat.com>, virtio-comment@lists.oasis-open.org, "Michael S. Tsirkin" <mst@redhat.com>, virtio-dev@lists.oasis-open.org, "Wang, Wei W" <wei.w.wang@intel.com>
+Subject: [virtio-dev] [PATCH v3 00/15] virtio-mem: paravirtualized memory
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
+To: linux-kernel@vger.kernel.org
+Cc: linux-mm@kvack.org, virtio-dev@lists.oasis-open.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, Michal Hocko <mhocko@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, "Michael S . Tsirkin" <mst@redhat.com>, David Hildenbrand <david@redhat.com>, Sebastien Boeuf <sebastien.boeuf@intel.com>, Samuel Ortiz <samuel.ortiz@intel.com>, Robert Bradford <robert.bradford@intel.com>, Luiz Capitulino <lcapitulino@redhat.com>, Pankaj Gupta <pankaj.gupta.linux@gmail.com>, teawater <teawaterz@linux.alibaba.com>, Igor Mammedov <imammedo@redhat.com>, "Dr . David Alan Gilbert" <dgilbert@redhat.com>, Alexander Duyck <alexander.h.duyck@linux.intel.com>, Alexander Potapenko <glider@google.com>, Anshuman Khandual <anshuman.khandual@arm.com>, Anthony Yznaga <anthony.yznaga@oracle.com>, Dan Williams <dan.j.williams@intel.com>, Dave Young <dyoung@redhat.com>, Jason Wang <jasowang@redhat.com>, Johannes Weiner <hannes@cmpxchg.org>, Juergen Gross <jgross@suse.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Len Brown <lenb@kernel.org>, Mel Gorman <mgorman@techsingularity.net>, Michal Hocko <mhocko@suse.com>, Mike Rapoport <rppt@linux.ibm.com>, Oscar Salvador <osalvador@suse.com>, Oscar Salvador <osalvador@suse.de>, Pavel Tatashin <pasha.tatashin@soleen.com>, Pavel Tatashin <pavel.tatashin@microsoft.com>, Pingfan Liu <kernelfans@gmail.com>, Qian Cai <cai@lca.pw>, "Rafael J. Wysocki" <rafael@kernel.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Stefan Hajnoczi <stefanha@redhat.com>, Vlastimil Babka <vbabka@suse.cz>, Wei Yang <richard.weiyang@gmail.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 15.05.20 19:06, Alexander Duyck wrote:
-> On Mon, May 11, 2020 at 5:44 AM David Hildenbrand <david@redhat.com> wrote:
->>
->> On 11.05.20 14:38, Cornelia Huck wrote:
->>> On Fri, 08 May 2020 10:16:14 -0700
->>> Alexander Duyck <alexander.duyck@gmail.com> wrote:
->>>
->>>> This patch set is meant to add documentation for balloon features that have
->>>> been recently added to the Linux kernel[1,2] and that we are currently
->>>> working on adding to QEMU[3].
->>>>
->>>> Changes since RFC:
->>>> Incorporated suggestions from Cornelia Huck
->>>> Fixed a few additional spelling errors
->>>>
->>>> [1]: https://lore.kernel.org/lkml/20200211224416.29318.44077.stgit@localhost.localdomain/
->>>> [2]: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=b0c504f154718904ae49349147e3b7e6ae91ffdc
->>>> [3]: https://lists.oasis-open.org/archives/virtio-dev/202004/msg00180.html
->>>>
->>>> ---
->>>>
->>>> Alexander Duyck (3):
->>>>       content: Document balloon feature free page hints
->>>>       content: Document balloon feature page poison
->>>>       content: Document balloon feature free page reporting
->>>>
->>>>
->>>>  content.tex |  248 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-
->>>>  1 file changed, 242 insertions(+), 6 deletions(-)
->>>>
->>>> --
->>>>
->>>
->>> I think this has moved a lot into the right direction; but the patches
->>> would really benefit from review by someone more familiar with the
->>> balloon than me.
->>
->> On my list, will have a look this week.
-> 
-> Any ETA on when you might be able to get to that review? I'm just
-> considering if I should submit v2 with your tweak and the suggestions
-> from Cornelia or if I should wait for your feedback.
+This series is based on latest linux-next. The patches are located at:
+    https://github.com/davidhildenbrand/linux.git virtio-mem-v3
 
-I wanted to do it today but got distracted by other stuff :(
+Patch #1 - #10 where contained in v2 and only contain minor modifications
+(mostly smaller fixes). The remaining patches are new and contain smaller
+optimizations.
 
-Please send a v2, high prio for early next week, thanks!
+Details about virtio-mem can be found in the cover letter of v2 [1]. A
+basic QEMU implementation was posted yesterday [2].
 
--- 
-Thanks,
+[1] https://lkml.kernel.org/r/20200311171422.10484-1-david@redhat.com
+[2] https://lkml.kernel.org/r/20200506094948.76388-1-david@redhat.com
 
-David / dhildenb
+v2 -> v3:
+- "virtio-mem: Paravirtualized memory hotplug"
+-- Include "linux/slab.h" to fix build issues
+-- Remember the "region_size", helpful for patch #11
+-- Minor simplifaction in virtio_mem_overlaps_range()
+-- Use notifier_from_errno() instead of notifier_to_errno() in notifier
+-- More reliable check for added memory when unloading the driver
+- "virtio-mem: Allow to specify an ACPI PXM as nid"
+-- Also print the nid
+- Added patch #11-#15
+
+Cc: Sebastien Boeuf <sebastien.boeuf@intel.com>
+Cc: Samuel Ortiz <samuel.ortiz@intel.com>
+Cc: Robert Bradford <robert.bradford@intel.com>
+Cc: Luiz Capitulino <lcapitulino@redhat.com>
+Cc: Pankaj Gupta <pankaj.gupta.linux@gmail.com>
+Cc: teawater <teawaterz@linux.alibaba.com>
+Cc: Igor Mammedov <imammedo@redhat.com>
+Cc: Dr. David Alan Gilbert <dgilbert@redhat.com>
+
+David Hildenbrand (15):
+  virtio-mem: Paravirtualized memory hotplug
+  virtio-mem: Allow to specify an ACPI PXM as nid
+  virtio-mem: Paravirtualized memory hotunplug part 1
+  virtio-mem: Paravirtualized memory hotunplug part 2
+  mm: Allow to offline unmovable PageOffline() pages via
+    MEM_GOING_OFFLINE
+  virtio-mem: Allow to offline partially unplugged memory blocks
+  mm/memory_hotplug: Introduce offline_and_remove_memory()
+  virtio-mem: Offline and remove completely unplugged memory blocks
+  virtio-mem: Better retry handling
+  MAINTAINERS: Add myself as virtio-mem maintainer
+  virtio-mem: Add parent resource for all added "System RAM"
+  virtio-mem: Drop manual check for already present memory
+  virtio-mem: Unplug subblocks right-to-left
+  virtio-mem: Use -ETXTBSY as error code if the device is busy
+  virtio-mem: Try to unplug the complete online memory block first
+
+ MAINTAINERS                     |    7 +
+ drivers/acpi/numa/srat.c        |    1 +
+ drivers/virtio/Kconfig          |   17 +
+ drivers/virtio/Makefile         |    1 +
+ drivers/virtio/virtio_mem.c     | 1962 +++++++++++++++++++++++++++++++
+ include/linux/memory_hotplug.h  |    1 +
+ include/linux/page-flags.h      |   10 +
+ include/uapi/linux/virtio_ids.h |    1 +
+ include/uapi/linux/virtio_mem.h |  208 ++++
+ mm/memory_hotplug.c             |   81 +-
+ mm/page_alloc.c                 |   26 +
+ mm/page_isolation.c             |    9 +
+ 12 files changed, 2314 insertions(+), 10 deletions(-)
+ create mode 100644 drivers/virtio/virtio_mem.c
+ create mode 100644 include/uapi/linux/virtio_mem.h
+
+--=20
+2.25.3
 
 
-This publicly archived list offers a means to provide input to the
-OASIS Virtual I/O Device (VIRTIO) TC.
-
-In order to verify user consent to the Feedback License terms and
-to minimize spam in the list archive, subscription is required
-before posting.
-
-Subscribe: virtio-comment-subscribe@lists.oasis-open.org
-Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
-List help: virtio-comment-help@lists.oasis-open.org
-List archive: https://lists.oasis-open.org/archives/virtio-comment/
-Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
-List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
-Committee: https://www.oasis-open.org/committees/virtio/
-Join OASIS: https://www.oasis-open.org/join/
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
