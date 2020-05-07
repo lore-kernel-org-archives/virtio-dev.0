@@ -1,105 +1,150 @@
-Return-Path: virtio-dev-return-7278-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-7280-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id B4FDF985E8B
-	for <virtio-dev@lists.oasis-open.org>; Thu,  7 May 2020 14:03:45 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 971EB985EBA
+	for <virtio-dev@lists.oasis-open.org>; Thu,  7 May 2020 14:03:46 +0000 (UTC)
 From: David Hildenbrand <david@redhat.com>
-Date: Thu,  7 May 2020 16:01:34 +0200
-Message-Id: <20200507140139.17083-11-david@redhat.com>
+Date: Thu,  7 May 2020 16:01:35 +0200
+Message-Id: <20200507140139.17083-12-david@redhat.com>
 In-Reply-To: <20200507140139.17083-1-david@redhat.com>
 References: <20200507140139.17083-1-david@redhat.com>
 MIME-Version: 1.0
-Subject: [virtio-dev] [PATCH v4 10/15] virtio-mem: Better retry handling
+Subject: [virtio-dev] [PATCH v4 11/15] virtio-mem: Add parent resource for all added "System RAM"
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: quoted-printable
 To: linux-kernel@vger.kernel.org
-Cc: linux-mm@kvack.org, virtio-dev@lists.oasis-open.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, Michal Hocko <mhocko@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, "Michael S . Tsirkin" <mst@redhat.com>, David Hildenbrand <david@redhat.com>, Pankaj Gupta <pankaj.gupta.linux@gmail.com>, Jason Wang <jasowang@redhat.com>, Oscar Salvador <osalvador@suse.de>, Igor Mammedov <imammedo@redhat.com>, Dave Young <dyoung@redhat.com>, Dan Williams <dan.j.williams@intel.com>, Pavel Tatashin <pasha.tatashin@soleen.com>, Stefan Hajnoczi <stefanha@redhat.com>, Vlastimil Babka <vbabka@suse.cz>
+Cc: linux-mm@kvack.org, virtio-dev@lists.oasis-open.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, Michal Hocko <mhocko@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, "Michael S . Tsirkin" <mst@redhat.com>, David Hildenbrand <david@redhat.com>, Pankaj Gupta <pankaj.gupta.linux@gmail.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Let's start with a retry interval of 5 seconds and double the time until
-we reach 5 minutes, in case we keep getting errors. Reset the retry
-interval in case we succeeded.
+Let's add a parent resource, named after the virtio device (inspired by
+drivers/dax/kmem.c). This allows user space to identify which memory
+belongs to which virtio-mem device.
 
-The two main reasons for having to retry are
-- The hypervisor is busy and cannot process our request
-- We cannot reach the desired requested_size (esp., not enough memory can
-  get unplugged because we can't allocate any subblocks).
+With this change and two virtio-mem devices:
+=09:/# cat /proc/iomem
+=0900000000-00000fff : Reserved
+=0900001000-0009fbff : System RAM
+=09[...]
+=09140000000-333ffffff : virtio0
+=09  140000000-147ffffff : System RAM
+=09  148000000-14fffffff : System RAM
+=09  150000000-157ffffff : System RAM
+=09[...]
+=09334000000-3033ffffff : virtio1
+=09  338000000-33fffffff : System RAM
+=09  340000000-347ffffff : System RAM
+=09  348000000-34fffffff : System RAM
+=09[...]
 
-Tested-by: Pankaj Gupta <pankaj.gupta.linux@gmail.com>
 Cc: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Jason Wang <jasowang@redhat.com>
-Cc: Oscar Salvador <osalvador@suse.de>
-Cc: Michal Hocko <mhocko@kernel.org>
-Cc: Igor Mammedov <imammedo@redhat.com>
-Cc: Dave Young <dyoung@redhat.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Dan Williams <dan.j.williams@intel.com>
-Cc: Pavel Tatashin <pasha.tatashin@soleen.com>
-Cc: Stefan Hajnoczi <stefanha@redhat.com>
-Cc: Vlastimil Babka <vbabka@suse.cz>
+Cc: Pankaj Gupta <pankaj.gupta.linux@gmail.com>
 Signed-off-by: David Hildenbrand <david@redhat.com>
 ---
- drivers/virtio/virtio_mem.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+ drivers/virtio/virtio_mem.c | 52 ++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 51 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/virtio/virtio_mem.c b/drivers/virtio/virtio_mem.c
-index a2edb87e5ed8..eb4c16d634e0 100644
+index eb4c16d634e0..80cdb9e6b3c4 100644
 --- a/drivers/virtio/virtio_mem.c
 +++ b/drivers/virtio/virtio_mem.c
-@@ -141,7 +141,9 @@ struct virtio_mem {
+@@ -99,6 +99,9 @@ struct virtio_mem {
+ =09/* Id of the next memory bock to prepare when needed. */
+ =09unsigned long next_mb_id;
 =20
- =09/* Timer for retrying to plug/unplug memory. */
- =09struct hrtimer retry_timer;
--#define VIRTIO_MEM_RETRY_TIMER_MS=09=0930000
-+=09unsigned int retry_timer_ms;
-+#define VIRTIO_MEM_RETRY_TIMER_MIN_MS=09=0950000
-+#define VIRTIO_MEM_RETRY_TIMER_MAX_MS=09=09300000
-=20
- =09/* Memory notifier (online/offline events). */
- =09struct notifier_block memory_notifier;
-@@ -1550,6 +1552,7 @@ static void virtio_mem_run_wq(struct work_struct *wor=
-k)
-=20
- =09switch (rc) {
- =09case 0:
-+=09=09vm->retry_timer_ms =3D VIRTIO_MEM_RETRY_TIMER_MIN_MS;
- =09=09break;
- =09case -ENOSPC:
- =09=09/*
-@@ -1565,8 +1568,7 @@ static void virtio_mem_run_wq(struct work_struct *wor=
-k)
- =09=09 */
- =09case -ENOMEM:
- =09=09/* Out of memory, try again later. */
--=09=09hrtimer_start(&vm->retry_timer,
--=09=09=09      ms_to_ktime(VIRTIO_MEM_RETRY_TIMER_MS),
-+=09=09hrtimer_start(&vm->retry_timer, ms_to_ktime(vm->retry_timer_ms),
- =09=09=09      HRTIMER_MODE_REL);
- =09=09break;
- =09case -EAGAIN:
-@@ -1586,6 +1588,8 @@ static enum hrtimer_restart virtio_mem_timer_expired(=
-struct hrtimer *timer)
- =09=09=09=09=09     retry_timer);
-=20
- =09virtio_mem_retry(vm);
-+=09vm->retry_timer_ms =3D min_t(unsigned int, vm->retry_timer_ms * 2,
-+=09=09=09=09   VIRTIO_MEM_RETRY_TIMER_MAX_MS);
- =09return HRTIMER_NORESTART;
++=09/* The parent resource for all memory added via this device. */
++=09struct resource *parent_resource;
++
+ =09/* Summary of all memory block states. */
+ =09unsigned long nb_mb_state[VIRTIO_MEM_MB_STATE_COUNT];
+ #define VIRTIO_MEM_NB_OFFLINE_THRESHOLD=09=0910
+@@ -1741,6 +1744,44 @@ static int virtio_mem_init(struct virtio_mem *vm)
+ =09return 0;
  }
 =20
-@@ -1754,6 +1758,7 @@ static int virtio_mem_probe(struct virtio_device *vde=
-v)
- =09spin_lock_init(&vm->removal_lock);
- =09hrtimer_init(&vm->retry_timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
- =09vm->retry_timer.function =3D virtio_mem_timer_expired;
-+=09vm->retry_timer_ms =3D VIRTIO_MEM_RETRY_TIMER_MIN_MS;
++static int virtio_mem_create_resource(struct virtio_mem *vm)
++{
++=09/*
++=09 * When force-unloading the driver and removing the device, we
++=09 * could have a garbage pointer. Duplicate the string.
++=09 */
++=09const char *name =3D kstrdup(dev_name(&vm->vdev->dev), GFP_KERNEL);
++
++=09if (!name)
++=09=09return -ENOMEM;
++
++=09vm->parent_resource =3D __request_mem_region(vm->addr, vm->region_size,
++=09=09=09=09=09=09   name, IORESOURCE_SYSTEM_RAM);
++=09if (!vm->parent_resource) {
++=09=09kfree(name);
++=09=09dev_warn(&vm->vdev->dev, "could not reserve device region\n");
++=09=09return -EBUSY;
++=09}
++
++=09/* The memory is not actually busy - make add_memory() work. */
++=09vm->parent_resource->flags &=3D ~IORESOURCE_BUSY;
++=09return 0;
++}
++
++static void virtio_mem_delete_resource(struct virtio_mem *vm)
++{
++=09const char *name;
++
++=09if (!vm->parent_resource)
++=09=09return;
++
++=09name =3D vm->parent_resource->name;
++=09release_resource(vm->parent_resource);
++=09kfree(vm->parent_resource);
++=09kfree(name);
++=09vm->parent_resource =3D NULL;
++}
++
+ static int virtio_mem_probe(struct virtio_device *vdev)
+ {
+ =09struct virtio_mem *vm;
+@@ -1770,11 +1811,16 @@ static int virtio_mem_probe(struct virtio_device *v=
+dev)
+ =09if (rc)
+ =09=09goto out_del_vq;
 =20
- =09/* register the virtqueue */
- =09rc =3D virtio_mem_init_vq(vm);
++=09/* create the parent resource for all memory */
++=09rc =3D virtio_mem_create_resource(vm);
++=09if (rc)
++=09=09goto out_del_vq;
++
+ =09/* register callbacks */
+ =09vm->memory_notifier.notifier_call =3D virtio_mem_memory_notifier_cb;
+ =09rc =3D register_memory_notifier(&vm->memory_notifier);
+ =09if (rc)
+-=09=09goto out_del_vq;
++=09=09goto out_del_resource;
+ =09rc =3D register_virtio_mem_device(vm);
+ =09if (rc)
+ =09=09goto out_unreg_mem;
+@@ -1788,6 +1834,8 @@ static int virtio_mem_probe(struct virtio_device *vde=
+v)
+ =09return 0;
+ out_unreg_mem:
+ =09unregister_memory_notifier(&vm->memory_notifier);
++out_del_resource:
++=09virtio_mem_delete_resource(vm);
+ out_del_vq:
+ =09vdev->config->del_vqs(vdev);
+ out_free_vm:
+@@ -1848,6 +1896,8 @@ static void virtio_mem_remove(struct virtio_device *v=
+dev)
+ =09    vm->nb_mb_state[VIRTIO_MEM_MB_STATE_ONLINE_PARTIAL] ||
+ =09    vm->nb_mb_state[VIRTIO_MEM_MB_STATE_ONLINE_MOVABLE])
+ =09=09dev_warn(&vdev->dev, "device still has system memory added\n");
++=09else
++=09=09virtio_mem_delete_resource(vm);
+=20
+ =09/* remove all tracking data - no locking needed */
+ =09vfree(vm->mb_state);
 --=20
 2.25.3
 
