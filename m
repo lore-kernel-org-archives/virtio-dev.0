@@ -1,40 +1,91 @@
-Return-Path: virtio-dev-return-7345-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-7267-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 688C8986048
-	for <virtio-dev@lists.oasis-open.org>; Fri, 15 May 2020 07:26:28 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 0E7EB985E55
+	for <virtio-dev@lists.oasis-open.org>; Thu,  7 May 2020 14:02:13 +0000 (UTC)
+From: David Hildenbrand <david@redhat.com>
+Date: Thu,  7 May 2020 16:01:24 +0200
+Message-Id: <20200507140139.17083-1-david@redhat.com>
 MIME-Version: 1.0
-References: <20200311112004.47138-1-stevensd@chromium.org> <20200311112004.47138-5-stevensd@chromium.org>
- <20200513123326-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20200513123326-mutt-send-email-mst@kernel.org>
-From: David Stevens <stevensd@chromium.org>
-Date: Fri, 15 May 2020 16:26:15 +0900
-Message-ID: <CAD=HUj5qcMLw__LfJizR6nzCR9Qmu21Sjk3i0j_8+=rxt1Hk=w@mail.gmail.com>
-Subject: [virtio-dev] Re: [PATCH v3 4/4] drm/virtio: Support virtgpu exported resources
-Content-Type: text/plain; charset="UTF-8"
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Gerd Hoffmann <kraxel@redhat.com>, David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>, Jason Wang <jasowang@redhat.com>, Sumit Semwal <sumit.semwal@linaro.org>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, open list <linux-kernel@vger.kernel.org>, ML dri-devel <dri-devel@lists.freedesktop.org>, "open list:VIRTIO GPU DRIVER" <virtualization@lists.linux-foundation.org>, Linux Media Mailing List <linux-media@vger.kernel.org>, "moderated list:DMA BUFFER SHARING FRAMEWORK" <linaro-mm-sig@lists.linaro.org>, virtio-dev@lists.oasis-open.org
+Subject: [virtio-dev] [PATCH v4 00/15] virtio-mem: paravirtualized memory
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
+To: linux-kernel@vger.kernel.org
+Cc: linux-mm@kvack.org, virtio-dev@lists.oasis-open.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, Michal Hocko <mhocko@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, "Michael S . Tsirkin" <mst@redhat.com>, David Hildenbrand <david@redhat.com>, Alexander Duyck <alexander.h.duyck@linux.intel.com>, Alexander Potapenko <glider@google.com>, Anshuman Khandual <anshuman.khandual@arm.com>, Anthony Yznaga <anthony.yznaga@oracle.com>, Dan Williams <dan.j.williams@intel.com>, Dave Young <dyoung@redhat.com>, Igor Mammedov <imammedo@redhat.com>, Jason Wang <jasowang@redhat.com>, Johannes Weiner <hannes@cmpxchg.org>, Juergen Gross <jgross@suse.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Len Brown <lenb@kernel.org>, Mel Gorman <mgorman@techsingularity.net>, Michal Hocko <mhocko@suse.com>, Mike Rapoport <rppt@linux.ibm.com>, Oscar Salvador <osalvador@suse.com>, Oscar Salvador <osalvador@suse.de>, Pankaj Gupta <pankaj.gupta.linux@gmail.com>, Pavel Tatashin <pasha.tatashin@soleen.com>, Pavel Tatashin <pavel.tatashin@microsoft.com>, Pingfan Liu <kernelfans@gmail.com>, Qian Cai <cai@lca.pw>, "Rafael J. Wysocki" <rafael@kernel.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Stefan Hajnoczi <stefanha@redhat.com>, Vlastimil Babka <vbabka@suse.cz>, Wei Yang <richard.weiyang@gmail.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-> > +     if (virtio_has_feature(vgdev->vdev, VIRTIO_GPU_F_RESOURCE_UUID)) {
-> > +             vgdev->has_resource_assign_uuid = true;
-> > +     }
->
->
-> Just a question: this relies on DMA bufs so I assume it is
-> not really assumed to work when DMA API is bypassed, right?
-> Rather than worry what does it mean, how about just
-> disabling  this feature without PLATFORM_DMA for now?
+This series is based on v5.7-rc4. The patches are located at:
+    https://github.com/davidhildenbrand/linux.git virtio-mem-v4
 
-By PLATFORM_DMA, do you mean CONFIG_DMA_SHARED_BUFFER? Virtio-gpu
-depends on DRM, which selects that feature. So I think DMA bufs should
-always be available when virtio-gpu is present.
+This is basically a resend of v3 [1], now based on v5.7-rc4 and restested.
+One patch was reshuffled and two ACKs I missed to add were added. The
+rebase did not require any modifications to patches.
 
--David
+Details about virtio-mem can be found in the cover letter of v2 [2]. A
+basic QEMU implementation was posted yesterday [3].
+
+[1] https://lkml.kernel.org/r/20200507103119.11219-1-david@redhat.com
+[2] https://lkml.kernel.org/r/20200311171422.10484-1-david@redhat.com
+[3] https://lkml.kernel.org/r/20200506094948.76388-1-david@redhat.com
+
+v3 -> v4:
+- Move "MAINTAINERS: Add myself as virtio-mem maintainer" to #2
+- Add two ACKs from Andrew (in reply to v2)
+-- "mm: Allow to offline unmovable PageOffline() pages via ..."
+-- "mm/memory_hotplug: Introduce offline_and_remove_memory()"
+
+v2 -> v3:
+- "virtio-mem: Paravirtualized memory hotplug"
+-- Include "linux/slab.h" to fix build issues
+-- Remember the "region_size", helpful for patch #11
+-- Minor simplifaction in virtio_mem_overlaps_range()
+-- Use notifier_from_errno() instead of notifier_to_errno() in notifier
+-- More reliable check for added memory when unloading the driver
+- "virtio-mem: Allow to specify an ACPI PXM as nid"
+-- Also print the nid
+- Added patch #11-#15
+
+David Hildenbrand (15):
+  virtio-mem: Paravirtualized memory hotplug
+  MAINTAINERS: Add myself as virtio-mem maintainer
+  virtio-mem: Allow to specify an ACPI PXM as nid
+  virtio-mem: Paravirtualized memory hotunplug part 1
+  virtio-mem: Paravirtualized memory hotunplug part 2
+  mm: Allow to offline unmovable PageOffline() pages via
+    MEM_GOING_OFFLINE
+  virtio-mem: Allow to offline partially unplugged memory blocks
+  mm/memory_hotplug: Introduce offline_and_remove_memory()
+  virtio-mem: Offline and remove completely unplugged memory blocks
+  virtio-mem: Better retry handling
+  virtio-mem: Add parent resource for all added "System RAM"
+  virtio-mem: Drop manual check for already present memory
+  virtio-mem: Unplug subblocks right-to-left
+  virtio-mem: Use -ETXTBSY as error code if the device is busy
+  virtio-mem: Try to unplug the complete online memory block first
+
+ MAINTAINERS                     |    7 +
+ drivers/acpi/numa/srat.c        |    1 +
+ drivers/virtio/Kconfig          |   17 +
+ drivers/virtio/Makefile         |    1 +
+ drivers/virtio/virtio_mem.c     | 1962 +++++++++++++++++++++++++++++++
+ include/linux/memory_hotplug.h  |    1 +
+ include/linux/page-flags.h      |   10 +
+ include/uapi/linux/virtio_ids.h |    1 +
+ include/uapi/linux/virtio_mem.h |  208 ++++
+ mm/memory_hotplug.c             |   81 +-
+ mm/page_alloc.c                 |   26 +
+ mm/page_isolation.c             |    9 +
+ 12 files changed, 2314 insertions(+), 10 deletions(-)
+ create mode 100644 drivers/virtio/virtio_mem.c
+ create mode 100644 include/uapi/linux/virtio_mem.h
+
+--=20
+2.25.3
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
