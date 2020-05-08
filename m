@@ -1,251 +1,97 @@
-Return-Path: virtio-dev-return-7393-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-7297-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 128A0985FA6
-	for <virtio-dev@lists.oasis-open.org>; Thu, 21 May 2020 07:08:32 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 66634985EE0
+	for <virtio-dev@lists.oasis-open.org>; Fri,  8 May 2020 21:29:53 +0000 (UTC)
+From: Alexander Duyck <alexander.duyck@gmail.com>
+Date: Fri, 08 May 2020 14:29:49 -0700
+Message-ID: <20200508212719.26071.94248.stgit@localhost.localdomain>
 MIME-Version: 1.0
-References: <CAK25hWN3kJcW-dcpryFrvZ50t7Y0Z=MZM66-8NMuhwjRpNo2aQ@mail.gmail.com>
- <CAD90Vcb-x1KV++fWrmx+fLV5eNc2DiTtn8=OjQi7aUf7B0ULdA@mail.gmail.com>
- <CAK25hWM-hLdk=MSKgceumOUo9ZNBrrmM8qSe7MvTUAPGmur_HQ@mail.gmail.com>
- <2515515.r9knKAEANn@os-lin-dmo> <CAD90VcYeF7drbYNDiEioPBHcQcifqDYUia_CKqNLv_5VAMjPKw@mail.gmail.com>
- <67e1ba850c5fbf84b09ec8266ab70dd08a10c2e3.camel@ndufresne.ca>
- <CAD90VcaqE7PsLV=-xwWHXkct61wsiAuOCH78aLGSObfX9LqGsw@mail.gmail.com>
- <92ac2db087ccf8fae853284ecc8bdf187e292097.camel@ndufresne.ca>
- <CAPBb6MXUsMtNhxEPAdn4aTN8kNgt1eL8oLDDyNtXrD9bew_kMA@mail.gmail.com> <17ef7d07c50d419324a9191b216c8cc9ee95b1ae.camel@ndufresne.ca>
-In-Reply-To: <17ef7d07c50d419324a9191b216c8cc9ee95b1ae.camel@ndufresne.ca>
-From: Alexandre Courbot <acourbot@chromium.org>
-Date: Thu, 21 May 2020 16:08:13 +0900
-Message-ID: <CAPBb6MWi1zFQ6Oc8UOP48L7HbCRs4VDpvi2LO5NuVz1a8TC9cA@mail.gmail.com>
-Subject: Re: [virtio-dev] Re: Fwd: Qemu Support for Virtio Video V4L2 driver
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: Nicolas Dufresne <nicolas@ndufresne.ca>
-Cc: Keiichi Watanabe <keiichiw@chromium.org>, Dmitry Sepp <dmitry.sepp@opensynergy.com>, Saket Sinha <saket.sinha89@gmail.com>, Kiran Pawar <Kiran.Pawar@opensynergy.com>, Samiullah Khawaja <samiullah.khawaja@opensynergy.com>, qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, Gerd Hoffmann <kraxel@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>, Hans Verkuil <hverkuil@xs4all.nl>, Tomasz Figa <tfiga@chromium.org>, Linux Media Mailing List <linux-media@vger.kernel.org>, Alex Lau <alexlau@chromium.org>, Pawel Osciak <posciak@chromium.org>, Emil Velikov <emil.velikov@collabora.com>
+Subject: [virtio-dev] [PATCH v24 QEMU 0/3] virtio-balloon: add support for page poison
+ reporting and free page reporting
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+To: david@redhat.com, mst@redhat.com
+Cc: virtio-dev@lists.oasis-open.org, qemu-devel@nongnu.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Thu, May 21, 2020 at 1:21 AM Nicolas Dufresne <nicolas@ndufresne.ca> wro=
-te:
->
-> Le mercredi 20 mai 2020 =C3=A0 12:19 +0900, Alexandre Courbot a =C3=A9cri=
-t :
-> > On Wed, May 20, 2020 at 2:29 AM Nicolas Dufresne <nicolas@ndufresne.ca>=
- wrote:
-> > > Le mardi 19 mai 2020 =C3=A0 17:37 +0900, Keiichi Watanabe a =C3=A9cri=
-t :
-> > > > Hi Nicolas,
-> > > >
-> > > > On Fri, May 15, 2020 at 8:38 AM Nicolas Dufresne <
-> > > > nicolas@ndufresne.ca
-> > > > > wrote:
-> > > > > Le lundi 11 mai 2020 =C3=A0 20:49 +0900, Keiichi Watanabe a =C3=
-=A9crit :
-> > > > > > Hi,
-> > > > > >
-> > > > > > Thanks Saket for your feedback. As Dmitry mentioned, we're focu=
-sing on
-> > > > > > video encoding and decoding, not camera. So, my reply was about=
- how to
-> > > > > > implement paravirtualized video codec devices.
-> > > > > >
-> > > > > > On Mon, May 11, 2020 at 8:25 PM Dmitry Sepp <
-> > > > > > dmitry.sepp@opensynergy.com
-> > > > > > wrote:
-> > > > > > > Hi Saket,
-> > > > > > >
-> > > > > > > On Montag, 11. Mai 2020 13:05:53 CEST Saket Sinha wrote:
-> > > > > > > > Hi Keiichi,
-> > > > > > > >
-> > > > > > > > I do not support the approach of  QEMU implementation forwa=
-rding
-> > > > > > > > requests to the host's vicodec module since  this can limit=
- the scope
-> > > > > > > > of the virtio-video device only for testing,
-> > > > > > >
-> > > > > > > That was my understanding as well.
-> > > > > >
-> > > > > > Not really because the API which the vicodec provides is V4L2 s=
-tateful
-> > > > > > decoder interface [1], which are also used by other video drive=
-rs on
-> > > > > > Linux.
-> > > > > > The difference between vicodec and actual device drivers is tha=
-t
-> > > > > > vicodec performs decoding in the kernel space without using spe=
-cial
-> > > > > > video devices. In other words, vicodec is a software decoder in=
- kernel
-> > > > > > space which provides the same interface with actual video drive=
-rs.
-> > > > > > Thus, if the QEMU implementation can forward virtio-video reque=
-sts to
-> > > > > > vicodec, it can forward them to the actual V4L2 video decoder d=
-evices
-> > > > > > as well and VM gets access to a paravirtualized video device.
-> > > > > >
-> > > > > > The reason why we discussed vicodec in the previous thread was =
-it'll
-> > > > > > allow us to test the virtio-video driver without hardware requi=
-rement.
-> > > > > >
-> > > > > > [1]
-> > > > > > https://www.kernel.org/doc/html/latest/media/uapi/v4l/dev-decod=
-er.html
-> > > > > >
-> > > > > >
-> > > > > > > > which instead can be used with multiple use cases such as -
-> > > > > > > >
-> > > > > > > > 1. VM gets access to paravirtualized  camera devices which =
-shares the
-> > > > > > > > video frames input through actual HW camera attached to Hos=
-t.
-> > > > > > >
-> > > > > > > This use-case is out of the scope of virtio-video. Initially =
-I had a plan to
-> > > > > > > support capture-only streams like camera as well, but later t=
-he decision was
-> > > > > > > made upstream that camera should be implemented as separate d=
-evice type. We
-> > > > > > > still plan to implement a simple frame capture capability as =
-a downstream
-> > > > > > > patch though.
-> > > > > > >
-> > > > > > > > 2. If Host has multiple video devices (especially in ARM SO=
-Cs over
-> > > > > > > > MIPI interfaces or USB), different VM can be started or hot=
-plugged
-> > > > > > > > with selective video streams from actual HW video devices.
-> > > > > > >
-> > > > > > > We do support this in our device implementation. But spec in =
-general has no
-> > > > > > > requirements or instructions regarding this. And it is in fac=
-t flexible
-> > > > > > > enough
-> > > > > > > to provide abstraction on top of several HW devices.
-> > > > > > >
-> > > > > > > > Also instead of using libraries like Gstreamer in Host user=
-space, they
-> > > > > > > > can also be used inside the VM userspace after getting acce=
-ss to
-> > > > > > > > paravirtualized HW camera devices .
-> > > > > >
-> > > > > > Regarding Gstreamer, I intended this video decoding API [2]. If=
- QEMU
-> > > > > > can translate virtio-video requests to this API, we can easily =
-support
-> > > > > > multiple platforms.
-> > > > > > I'm not sure how feasible it is though, as I have no experience=
- of
-> > > > > > using this API by myself...
-> > > > >
-> > > > > Not sure which API you aim exactly, but what one need to remember=
- is that
-> > > > > mapping virtio-video CODEC on top of VAAPI, V4L2 Stateless, NVDEC=
- or other type
-> > > > > of "stateless" CODEC is not trivial and can't be done without use=
-rspace. Notably
-> > > > > because we don't want to do bitstream parsing in the kernel on th=
-e main CPU as
-> > > > > security would otherwise be very hard to guaranty. The other driv=
-er using same
-> > > > > API as virtio-video do bitstream parsing on a dedicated co-proces=
-sor (through
-> > > > > firmware blobs though).
-> > > > >
-> > > > > Having bridges between virtio-video, qemu and some abstraction li=
-brary like
-> > > > > FFMPEG or GStreamer is certainly the best solution if you want to=
- virtualize any
-> > > > > type of HW accelerated decoder or if you need to virtualized some=
-thing
-> > > > > proprietary (like NVDEC). Please shout if you need help.
-> > > > >
-> > > >
-> > > > Yeah, I meant we should map virtio-video commands to a set of
-> > > > abstracted userspace APIs to avoid having many platform-dependent c=
-ode
-> > > > in QEMU.
-> > > > This is the same with what we implemented in crosvm, a VMM on
-> > > > ChromiumOS. Crosvm's video device translates virtio-video commands
-> > > > into our own video decoding APIs [1, 2] which supports VAAPI, V4L2
-> > > > stateful and V4L2 stateless. Unfortunately, since our library is
-> > > > highly depending on Chrome, we cannot reuse this for QEMU.
-> > > >
-> > > > So, I agree that using FFMPEG or GStreamer is a good idea. Probably=
-,
-> > > > APIs in my previous link weren't for this purpose.
-> > > > Nicolas, do you know any good references for FFMPEG or GStreamer's
-> > > > abstracted video decoding APIs? Then, I may be able to think about =
-how
-> > > > virtio-video protocols can be mapped to them.
-> > >
-> > > The FFMpeg API for libavcodec can be found here:
-> > >
-> > >   http://git.videolan.org/?p=3Dffmpeg.git;a=3Dblob;f=3Dlibavcodec/avc=
-odec.h
-> > >
-> > > GStreamer does not really have such a low level CODEC API. So while
-> > > it's possible to use it (Wine project uses it for it's parsers as an
-> > > example, and Firefox use to have CODEC support wrapping GStreamer
-> > > CODEC), there will not be any one-to-one mapping. GStreamer is often
-> > > chosen as it's LGPL code does not carry directly any patented
-> > > implementation. It instead rely on plugins, which maybe provided as
-> > > third party, allowing to distribute your project while giving uses th=
-e
-> > > option to install potentially non-free technologies.
-> > >
-> > > But overall, I can describe GStreamer API for CODEC wrapping (pipelin=
-e
-> > > less) as:
-> > >
-> > >   - Push GstCaps describing the stream format
-> > >   - Push bitstream buffer on sink pad
-> > >   - When ready, buffers will be pushed through the push function
-> > >     callback on src pad
-> > >
-> > > Of course nothing prevent adding something like the vda abstraction i=
-n
-> > > qemu and make this multi-backend capable.
-> >
-> > My understanding is that we don't need a particularly low-level API to
-> > interact with. The host virtual device is receiving the whole encoded
-> > data, and can thus easily reconstruct the original stream (minus the
-> > container) and pass it to ffmpeg/gstreamer. So we can be pretty
-> > high-level here.
-> >
-> > Now the choice of API will also determine whether we want to allow
-> > emulation of codec devices, or whether we stay on a purely
-> > para-virtual track. If we use e.g. gstreamer, then the host can
-> > provide a virtual device that is backed by a purely software
-> > implementation. This can be useful for testing purposes, but for
-> > real-life usage the guest would be just as well using gstreamer
-> > itself.
->
-> Agreed.
->
-> >
-> > If we want to make sure that there is hardware on the host side, then
-> > an API like libva might make more sense, but it would be more
-> > complicated and may not support all hardware (I don't know if the V4L2
-> > backends are usable for instance).
->
-> To bring VAAPI into Qemu directly you'd have to introduce bitstream
-> parser, DPB management and other CODEC specific bits. I cannot speak
-> for the project, but that's re-inventing the wheel again with very
-> little gain. Best is to open the discussion with them early.
->
-> Note that it's relatively simple in both framework to only choose HW
-> accelerated CODECs. In ffmpeg, HW accelerator codecs can only be used
-> with HWContext, so your wrapper need to know specific HWContext for the
-> specific accelerator. In GStreamer, since 1.16, we add a metadata that
-> let the user know which decoder is hardware accelerated. (This is
-> usually used to disable HW acceleration at the moment).
+This series provides an asynchronous means of reporting free guest pages
+to QEMU through virtio-balloon so that the memory associated with those
+pages can be dropped and reused by other processes and/or guests on the
+host. Using this it is possible to avoid unnecessary I/O to disk and
+greatly improve performance in the case of memory overcommit on the host.
 
-Good point, and that would also not close the door to exposing a
-software-backed device for testing purposes.
+I originally submitted this patch series back on February 11th 2020[1],
+but at that time I was focused primarily on the kernel portion of this
+patch set. However as of April 7th those patches are now included in
+Linus's kernel tree[2] and so I am submitting the QEMU pieces for
+inclusion.
+
+[1]: https://lore.kernel.org/lkml/20200211224416.29318.44077.stgit@localhost.localdomain/
+[2]: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=b0c504f154718904ae49349147e3b7e6ae91ffdc
+
+Changes from v17:
+Fixed typo in patch 1 title
+Addressed white-space issues reported via checkpatch
+Added braces {} for two if statements to match expected coding style
+
+Changes from v18:
+Updated patches 2 and 3 based on input from dhildenb
+Added comment to patch 2 describing what keeps us from reporting a bad page
+Added patch to address issue with ROM devices being directly writable
+
+Changes from v19:
+Added std-headers change to match changes pushed for linux kernel headers
+Added patch to remove "report" from page hinting code paths
+Updated comment to better explain why we disable hints w/ page poisoning
+Removed code that was modifying config size for poison vs hinting
+Dropped x-page-poison property
+Added code to bounds check the reported region vs the RAM block
+Dropped patch for ROM devices as that was already pulled in by Paolo
+
+Changes from v20:
+Rearranged patches to push Linux header sync patches to front
+Removed association between free page hinting and VIRTIO_BALLOON_F_PAGE_POISON
+Added code to enable VIRTIO_BALLOON_F_PAGE_POISON if page reporting is enabled
+Fixed possible resource leak if poison or qemu_balloon_is_inhibited return true
+
+Changes from v21:
+Added ack for patch 3
+Rewrote patch description for page poison reporting feature
+Made page-poison independent property and set to enabled by default
+Added logic to migrate poison_val
+Added several comments in code to better explain features
+Switched free-page-reporting property to disabled by default
+
+Changes from v22:
+Added ack for patches 4 & 5
+Added additional comment fixes in patch 3 to remove "reporting" reference
+Renamed rvq in patch 5 to reporting_vq to better match linux kernel
+Moved call adding reporting_vq to after free_page_vq
+
+Changes from v23:
+Rebased on latest QEMU
+Dropped patches 1 & 2 as Linux kernel headers were synced
+Added compat machine bits for page-poison feature
+
+---
+
+Alexander Duyck (3):
+      virtio-balloon: Replace free page hinting references to 'report' with 'hint'
+      virtio-balloon: Implement support for page poison reporting feature
+      virtio-balloon: Provide an interface for free page reporting
+
+
+ hw/core/machine.c                  |    4 +
+ hw/virtio/virtio-balloon.c         |  176 ++++++++++++++++++++++++++++--------
+ include/hw/virtio/virtio-balloon.h |   23 ++---
+ 3 files changed, 152 insertions(+), 51 deletions(-)
+
+--
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
