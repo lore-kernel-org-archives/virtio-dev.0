@@ -1,45 +1,212 @@
-Return-Path: virtio-comment-return-1220-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-comment-return-1223-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-comment@lists.oasis-open.org>
 List-Post: <mailto:virtio-comment@lists.oasis-open.org>
 List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
 From: Alexander Duyck <alexander.duyck@gmail.com>
-Date: Fri, 08 May 2020 10:16:14 -0700
-Message-ID: <158895811782.529821.115832709184722087.stgit@ahduyck-workstation>
+Date: Fri, 08 May 2020 10:16:22 -0700
+Message-ID: 
+ <158895818234.529821.13300630585219085797.stgit@ahduyck-workstation>
+In-Reply-To: 
+ <158895811782.529821.115832709184722087.stgit@ahduyck-workstation>
+References: <158895811782.529821.115832709184722087.stgit@ahduyck-workstation>
 MIME-Version: 1.0
-Subject: [virtio-comment] [PATCH 0/3] virtio-spec: Add documentation for recently added balloon
- features
+Subject: [virtio-comment] [PATCH 1/3] content: Document balloon feature free page hints
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 To: virtio-comment@lists.oasis-open.org, mst@redhat.com, david@redhat.com, cohuck@redhat.com
 Cc: virtio-dev@lists.oasis-open.org, wei.w.wang@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-This patch set is meant to add documentation for balloon features that have
-been recently added to the Linux kernel[1,2] and that we are currently
-working on adding to QEMU[3].
+From: Alexander Duyck <alexander.h.duyck@linux.intel.com>
 
-Changes since RFC:
-Incorporated suggestions from Cornelia Huck
-Fixed a few additional spelling errors
+Free page hints allow the balloon driver to provide information on what
+pages are not currently in use so that we can avoid the cost of copying
+them in migration scenarios. Add a feature description for free page hints
+describing basic functioning and requirements.
 
-[1]: https://lore.kernel.org/lkml/20200211224416.29318.44077.stgit@localhost.localdomain/
-[2]: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=b0c504f154718904ae49349147e3b7e6ae91ffdc
-[3]: https://lists.oasis-open.org/archives/virtio-dev/202004/msg00180.html
-
+Signed-off-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
 ---
+ content.tex |  128 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 122 insertions(+), 6 deletions(-)
 
-Alexander Duyck (3):
-      content: Document balloon feature free page hints
-      content: Document balloon feature page poison
-      content: Document balloon feature free page reporting
+diff --git a/content.tex b/content.tex
+index 91735e3eb018..7d91604178fd 100644
+--- a/content.tex
++++ b/content.tex
+@@ -5005,10 +5005,13 @@ \subsection{Virtqueues}\label{sec:Device Types / Memory Balloon Device / Virtque
+ \begin{description}
+ \item[0] inflateq
+ \item[1] deflateq
+-\item[2] statsq.
++\item[2] statsq
++\item[3] free_page_vq
+ \end{description}
+ 
+-  Virtqueue 2 only exists if VIRTIO_BALLOON_F_STATS_VQ set.
++  statsq only exists if VIRTIO_BALLOON_F_STATS_VQ is set.
++
++  free_page_vq only exists if VIRTIO_BALLOON_F_FREE_PAGE_HINT is set.
+ 
+ \subsection{Feature bits}\label{sec:Device Types / Memory Balloon Device / Feature bits}
+ \begin{description}
+@@ -5019,6 +5022,10 @@ \subsection{Feature bits}\label{sec:Device Types / Memory Balloon Device / Featu
+     memory statistics is present.
+ \item[VIRTIO_BALLOON_F_DEFLATE_ON_OOM (2) ] Deflate balloon on
+     guest out of memory condition.
++\item[ VIRTIO_BALLOON_F_FREE_PAGE_HINT(3) ] Device has support for free
++    page hinting. A virtqueue for providing hints as to what memory is
++    currently free is present. Configuration field free_page_hint_cmd_id
++    is valid.
+ 
+ \end{description}
+ 
+@@ -5042,13 +5049,17 @@ \subsection{Feature bits}\label{sec:Device Types / Memory Balloon Device / Featu
+ VIRTIO_BALLOON_F_MUST_TELL_HOST is not negotiated.
+ 
+ \subsection{Device configuration layout}\label{sec:Device Types / Memory Balloon Device / Device configuration layout}
+-  Both fields of this configuration
+-  are always available.
++  \field{num_pages} and \field{actual} are always available.
++
++  \field{free_page_hint_cmd_id} is available if
++    VIRTIO_BALLOON_F_FREE_PAGE_HINT has been negotiated and is read-only by
++    the driver.
+ 
+ \begin{lstlisting}
+ struct virtio_balloon_config {
+         le32 num_pages;
+         le32 actual;
++        le32 free_page_hint_cmd_id;
+ };
+ \end{lstlisting}
+ 
+@@ -5072,9 +5083,15 @@ \subsection{Device Initialization}\label{sec:Device Types / Memory Balloon Devic
+   \begin{enumerate}
+   \item Identify the stats virtqueue.
+   \item Add one empty buffer to the stats virtqueue.
+-  \item DRIVER_OK is set: device operation begins.
+-  \item Notify the device about the stats virtqueue buffer.
+   \end{enumerate}
++
++\item If the VIRTIO_BALLOON_F_FREE_PAGE_HINT feature bit is negotiated the
++  free_page_vq is identified.
++
++\item DRIVER_OK is set: device operation begins.
++
++\item If the VIRTIO_BALLOON_F_STATS_VQ feature bit is negotiated then
++  notify the device about the stats virtqueue buffer.
+ \end{enumerate}
+ 
+ \subsection{Device Operation}\label{sec:Device Types / Memory Balloon Device / Device Operation}
+@@ -5345,6 +5362,105 @@ \subsubsection{Memory Statistics Tags}\label{sec:Device Types / Memory Balloon D
+   allocations in the guest.
+ \end{description}
+ 
++\subsubsection{Free Page Hinting}\label{sec:Device Types / Memory Balloon Device / Device Operation / Free Page Hinting}
++
++Free page hinting is designed to be used during migration to determine what
++pages within the guest are currently unused so that they can be skipped over
++while migrating the guest. The device will indicate that it is ready to start
++performing hinting by setting the \field{free_page_hint_cmd_id} to one of the
++non-reserved values that can be used as a command ID. The following values
++are reserved:
++
++\begin{description}
++\item[VIRTIO_BALLOON_CMD_ID_STOP (0)] Any command ID previously supplied by
++  the device is invalid. The driver should halt all hinting until a new
++  command ID is supplied.
++
++\item[VIRTIO_BALLOON_CMD_ID_DONE (1)] Any command ID previously supplied by
++  the device is invalid. The driver should halt all hinting and the hinting
++  balloon can now be deflated returning all pages to the guest.
++\end{description}
++
++A request for free page hinting proceeds as follows:
++
++\begin{enumerate}
++
++\item The driver examines \field{free_page_hint_cmd_id} configuration field.
++  If it contains a non-reserved value then inflation of the balloon will begin.
++
++\item To supply memory to the hinting balloon:
++  \begin{enumerate}
++  \item The driver constructs an output descriptor containing the new value
++    from \field{free_page_hint_cmd_id} configuration field and adds it to
++    the free_page_hint_vq.
++  \item The driver maps a series of pages and adds them to the
++    free_page_hint_vq as individual scatter-gather input descriptor entries.
++  \item When the driver is no longer able to fetch additional pages to add
++    to the free_page_hint_vq it will construct an output descriptor
++    containing the command ID VIRTIO_BALLOON_CMD_ID_STOP.
++  \end{enumerate}
++
++\item A round of hinting ends either when the driver is no longer able to
++  add more pages to the balloon as described above, or when the device
++  updates \field{free_page_hint_cmd_id} configuration field contain either
++  VIRTIO_BALLOON_CMD_ID_STOP or VIRTIO_BALLOON_CMD_ID_DONE.
++
++\item The device may follow VIRTIO_BALLOON_CMD_ID_STOP with a new
++  non-reserved value for \field{free_page_hint_cmd_id} configuration field
++  in which case it will resume supplying the hinting balloon.
++
++\item Otherwise, if the device provides VIRTIO_BALLOON_CMD_ID_DONE then
++  hinting is complete and the guest may begin to re-use pages previously
++  given to the balloon.
++
++\end{enumerate}
++
++\drivernormative{\paragraph}{Free Page Hinting}{Device Types / Memory Balloon Device / Device Operation / Free Page Hinting}
++
++Normative statements in this section apply if the
++VIRTIO_BALLOON_F_FREE_PAGE_HINT feature has been negotiated.
++
++The driver SHOULD supply pages to the hinting balloon when
++\field{free_page_hint_cmd_id} reports a value of 2 or greater.
++
++The driver MUST start hinting by providing an output descriptor
++containing the current command ID for the given block of pages.
++
++The driver SHOULD stop supplying pages to the hinting balloon when
++\field{free_page_hint_cmd_id} reports a value of VIRTIO_BALLOON_CMD_ID_STOP.
++
++If the driver is unable to supply pages it MUST complete hinting by adding
++an output descriptor containing the command ID VIRTIO_BALLOON_CMD_ID_STOP.
++
++The driver MAY use pages from the balloon after adding them to the balloon,
++including when the device has not yet used the descriptor contianing the
++hinting request.
++
++The driver SHOULD return pages for use once \field{free_page_hint_cmd_id}
++reports a value of VIRTIO_BALLOON_CMD_ID_DONE.
++
++\devicenormative{\paragraph}{Free Page Hinting}{Device Types / Memory Balloon Device / Device Operation / Free Page Hinting}
++
++Normative statements in this section apply if the
++VIRTIO_BALLOON_F_FREE_PAGE_HINT feature has been negotiated.
++
++The device MUST set \field{free_page_hint_cmd_id} to
++VIRTIO_BALLOON_CMD_ID_STOP any time that the dirty pages for the given
++guest are being recorded.
++
++The device MUST NOT reuse a command ID until it has received an output
++descriptor containing VIRTIO_BALLOON_CMD_ID_STOP from the driver.
++
++The device MUST ignore pages that are provided with a command ID that does
++not match the current value in \field{free_page_hint_cmd_id}.
++
++The device MAY modify the contents of the page in the balloon if the page
++has not been modified by the guest since the \field{free_page_hint_cmd_id}
++associated with the hint was issued by the device.
++
++The device MAY NOT modify the contents of the balloon after
++\field{free_page_hint_cmd_id} is set to VIRTIO_BALLOON_CMD_ID_DONE.
++
+ \section{SCSI Host Device}\label{sec:Device Types / SCSI Host Device}
+ 
+ The virtio SCSI host device groups together one or more virtual
 
-
- content.tex |  248 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 242 insertions(+), 6 deletions(-)
-
---
 
 
 This publicly archived list offers a means to provide input to the
