@@ -1,15 +1,15 @@
-Return-Path: virtio-dev-return-7307-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-7308-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id D15E6985CE6
-	for <virtio-dev@lists.oasis-open.org>; Mon, 11 May 2020 11:32:49 +0000 (UTC)
-Date: Mon, 11 May 2020 07:32:27 -0400
+	by lists.oasis-open.org (Postfix) with ESMTP id D69B5985CE6
+	for <virtio-dev@lists.oasis-open.org>; Mon, 11 May 2020 11:34:54 +0000 (UTC)
+Date: Mon, 11 May 2020 07:34:47 -0400
 From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20200511073049-mutt-send-email-mst@kernel.org>
+Message-ID: <20200511073251-mutt-send-email-mst@kernel.org>
 References: <CAK25hWN3kJcW-dcpryFrvZ50t7Y0Z=MZM66-8NMuhwjRpNo2aQ@mail.gmail.com>
  <CAD90Vcb-x1KV++fWrmx+fLV5eNc2DiTtn8=OjQi7aUf7B0ULdA@mail.gmail.com>
  <CAK25hWM-hLdk=MSKgceumOUo9ZNBrrmM8qSe7MvTUAPGmur_HQ@mail.gmail.com>
@@ -45,10 +45,7 @@ On Mon, May 11, 2020 at 01:25:23PM +0200, Dmitry Sepp wrote:
 > made upstream that camera should be implemented as separate device type. We 
 > still plan to implement a simple frame capture capability as a downstream 
 > patch though.
-
-You want to spec out what's in the field, spec-wise internal up/down
-stream distinctions are not important.
-
+> 
 > > 
 > > 2. If Host has multiple video devices (especially in ARM SOCs over
 > > MIPI interfaces or USB), different VM can be started or hotplugged
@@ -57,7 +54,15 @@ stream distinctions are not important.
 > We do support this in our device implementation. But spec in general has no 
 > requirements or instructions regarding this. And it is in fact flexible enough 
 > to provide abstraction on top of several HW devices.
-> 
+
+Hmm I agree if it's just for pass-through of host devices that's a very
+limited usecase. Not out of scope for virtio, but let's make
+it clear it's pass-through in the device name, so that if
+people want to create a virtualizeable interface down the road
+they don't feel blocked.
+
+
+
 > > 
 > > Also instead of using libraries like Gstreamer in Host userspace, they
 > > can also be used inside the VM userspace after getting access to
