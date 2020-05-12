@@ -1,223 +1,233 @@
-Return-Path: virtio-dev-return-7330-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-7322-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id B31A3985FC2
-	for <virtio-dev@lists.oasis-open.org>; Thu, 14 May 2020 07:52:02 +0000 (UTC)
-From: Bharat Bhushan <bbhushan2@marvell.com>
-Date: Thu, 14 May 2020 13:21:51 +0530
-Message-ID: <20200514075152.3892-1-bbhushan2@marvell.com>
-In-Reply-To: <jean-philippe@linaro.org, joro@8bytes.org, mst@redhat.com,
- jasowang@redhat.com, eric.auger.pro@gmail.com, eric.auger@redhat.com>
-References: <jean-philippe@linaro.org, joro@8bytes.org, mst@redhat.com,
- jasowang@redhat.com, eric.auger.pro@gmail.com, eric.auger@redhat.com>
-MIME-Version: 1.0
-Subject: [virtio-dev] [PATCH v6] iommu/virtio: Use page size bitmap supported by endpoint
-Content-Type: text/plain
-To: virtualization@lists.linux-foundation.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, virtio-dev@lists.oasis-open.org
-Cc: Bharat Bhushan <bbhushan2@marvell.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id D24D6985E23
+	for <virtio-dev@lists.oasis-open.org>; Tue, 12 May 2020 09:42:04 +0000 (UTC)
+From: Hui Zhu <teawater@gmail.com>
+Date: Tue, 12 May 2020 17:41:40 +0800
+Message-Id: <1589276501-16026-1-git-send-email-teawater@gmail.com>
+Subject: [virtio-dev] [RFC v3 for QEMU] virtio-balloon: Add option cont-pages to set VIRTIO_BALLOON_VQ_INFLATE_CONT
+Content-Type: text/plain; charset=US-ASCII
+To: mst@redhat.com, jasowang@redhat.com, akpm@linux-foundation.org, xdeguillard@vmware.com, namit@vmware.com, gregkh@linuxfoundation.org, david@redhat.com, virtualization@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-mm@kvack.org, qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org
+Cc: wei.guo.simon@linux.alibaba.com, qixuan.wu@linux.alibaba.com, Hui Zhu <teawater@gmail.com>, Hui Zhu <teawaterz@linux.alibaba.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Different endpoint can support different page size, probe
-endpoint if it supports specific page size otherwise use
-global page sizes.
+If the guest kernel has many fragmentation pages, use virtio_balloon
+will split THP of QEMU when it calls MADV_DONTNEED madvise to release
+the balloon pages.
+Set option cont-pages to on will open flags VIRTIO_BALLOON_VQ_INFLATE_CONT
+and set default continuous pages order to THP order.
+Then It will get continuous pages PFN that its order is current_pages_order
+from VQ ivq use use madvise MADV_DONTNEED release the page.
+This will handle the THP split issue.
 
-Device attached to domain should support a minimum of
-domain supported page sizes. If device supports more
-than domain supported page sizes then device is limited
-to use domain supported page sizes only.
-
-Signed-off-by: Bharat Bhushan <bbhushan2@marvell.com>
+Signed-off-by: Hui Zhu <teawaterz@linux.alibaba.com>
 ---
-v5->v6
- - property length before dereference
- - Error out on no supported page sizes (page-size-mask is zero)
- - Allow device to attach to domain even it supports
-   minimum of domain supported page sizes. In that case device
-   will use domain page sizes only.
- - added format of pgsize_bitmap
+ hw/virtio/virtio-balloon.c                      | 77 +++++++++++++++++--------
+ include/hw/virtio/virtio-balloon.h              |  2 +
+ include/standard-headers/linux/virtio_balloon.h |  5 ++
+ 3 files changed, 60 insertions(+), 24 deletions(-)
 
-v4->v5:
- - Rebase to Linux v5.7-rc4
-
-v3->v4:
- - Fix whitespace error
-
-v2->v3:
- - Fixed error return for incompatible endpoint
- - __u64 changed to __le64 in header file
-
- drivers/iommu/virtio-iommu.c      | 63 ++++++++++++++++++++++++++++---
- include/uapi/linux/virtio_iommu.h | 14 ++++++-
- 2 files changed, 71 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
-index 4e1d11af23c8..cbac3047a781 100644
---- a/drivers/iommu/virtio-iommu.c
-+++ b/drivers/iommu/virtio-iommu.c
-@@ -78,6 +78,7 @@ struct viommu_endpoint {
- 	struct viommu_dev		*viommu;
- 	struct viommu_domain		*vdomain;
- 	struct list_head		resv_regions;
-+	u64				pgsize_bitmap;
- };
+diff --git a/hw/virtio/virtio-balloon.c b/hw/virtio/virtio-balloon.c
+index a4729f7..84d47d3 100644
+--- a/hw/virtio/virtio-balloon.c
++++ b/hw/virtio/virtio-balloon.c
+@@ -34,6 +34,7 @@
+ #include "hw/virtio/virtio-access.h"
  
- struct viommu_request {
-@@ -415,6 +416,23 @@ static int viommu_replay_mappings(struct viommu_domain *vdomain)
- 	return ret;
+ #define BALLOON_PAGE_SIZE  (1 << VIRTIO_BALLOON_PFN_SHIFT)
++#define CONT_PAGES_ORDER   9
+ 
+ typedef struct PartiallyBalloonedPage {
+     ram_addr_t base_gpa;
+@@ -72,6 +73,8 @@ static void balloon_inflate_page(VirtIOBalloon *balloon,
+     RAMBlock *rb;
+     size_t rb_page_size;
+     int subpages;
++    size_t inflate_size = BALLOON_PAGE_SIZE << balloon->current_pages_order;
++    int pages_num;
+ 
+     /* XXX is there a better way to get to the RAMBlock than via a
+      * host address? */
+@@ -81,7 +84,7 @@ static void balloon_inflate_page(VirtIOBalloon *balloon,
+     if (rb_page_size == BALLOON_PAGE_SIZE) {
+         /* Easy case */
+ 
+-        ram_block_discard_range(rb, rb_offset, rb_page_size);
++        ram_block_discard_range(rb, rb_offset, inflate_size);
+         /* We ignore errors from ram_block_discard_range(), because it
+          * has already reported them, and failing to discard a balloon
+          * page is not fatal */
+@@ -99,32 +102,38 @@ static void balloon_inflate_page(VirtIOBalloon *balloon,
+ 
+     rb_aligned_offset = QEMU_ALIGN_DOWN(rb_offset, rb_page_size);
+     subpages = rb_page_size / BALLOON_PAGE_SIZE;
+-    base_gpa = memory_region_get_ram_addr(mr) + mr_offset -
+-               (rb_offset - rb_aligned_offset);
+ 
+-    if (pbp->bitmap && !virtio_balloon_pbp_matches(pbp, base_gpa)) {
+-        /* We've partially ballooned part of a host page, but now
+-         * we're trying to balloon part of a different one.  Too hard,
+-         * give up on the old partial page */
+-        virtio_balloon_pbp_free(pbp);
+-    }
++    for (pages_num = inflate_size / BALLOON_PAGE_SIZE;
++         pages_num > 0; pages_num--) {
++        base_gpa = memory_region_get_ram_addr(mr) + mr_offset -
++                   (rb_offset - rb_aligned_offset);
+ 
+-    if (!pbp->bitmap) {
+-        virtio_balloon_pbp_alloc(pbp, base_gpa, subpages);
+-    }
++        if (pbp->bitmap && !virtio_balloon_pbp_matches(pbp, base_gpa)) {
++            /* We've partially ballooned part of a host page, but now
++            * we're trying to balloon part of a different one.  Too hard,
++            * give up on the old partial page */
++            virtio_balloon_pbp_free(pbp);
++        }
+ 
+-    set_bit((rb_offset - rb_aligned_offset) / BALLOON_PAGE_SIZE,
+-            pbp->bitmap);
++        if (!pbp->bitmap) {
++            virtio_balloon_pbp_alloc(pbp, base_gpa, subpages);
++        }
+ 
+-    if (bitmap_full(pbp->bitmap, subpages)) {
+-        /* We've accumulated a full host page, we can actually discard
+-         * it now */
++        set_bit((rb_offset - rb_aligned_offset) / BALLOON_PAGE_SIZE,
++                pbp->bitmap);
+ 
+-        ram_block_discard_range(rb, rb_aligned_offset, rb_page_size);
+-        /* We ignore errors from ram_block_discard_range(), because it
+-         * has already reported them, and failing to discard a balloon
+-         * page is not fatal */
+-        virtio_balloon_pbp_free(pbp);
++        if (bitmap_full(pbp->bitmap, subpages)) {
++            /* We've accumulated a full host page, we can actually discard
++            * it now */
++
++            ram_block_discard_range(rb, rb_aligned_offset, rb_page_size);
++            /* We ignore errors from ram_block_discard_range(), because it
++            * has already reported them, and failing to discard a balloon
++            * page is not fatal */
++            virtio_balloon_pbp_free(pbp);
++        }
++
++        mr_offset += BALLOON_PAGE_SIZE;
+     }
  }
  
-+static int viommu_set_pgsize_bitmap(struct viommu_endpoint *vdev,
-+				    struct virtio_iommu_probe_pgsize_mask *mask,
-+				    size_t len)
-+{
-+	u64 pgsize_bitmap;
-+
-+	if (len < sizeof(*mask))
-+		return -EINVAL;
-+
-+	pgsize_bitmap = le64_to_cpu(mask->pgsize_bitmap);
-+	if (!pgsize_bitmap)
-+		return -EINVAL;
-+
-+	vdev->pgsize_bitmap = pgsize_bitmap;
-+	return 0;
-+}
-+
- static int viommu_add_resv_mem(struct viommu_endpoint *vdev,
- 			       struct virtio_iommu_probe_resv_mem *mem,
- 			       size_t len)
-@@ -499,6 +517,9 @@ static int viommu_probe_endpoint(struct viommu_dev *viommu, struct device *dev)
- 		case VIRTIO_IOMMU_PROBE_T_RESV_MEM:
- 			ret = viommu_add_resv_mem(vdev, (void *)prop, len);
- 			break;
-+		case VIRTIO_IOMMU_PROBE_T_PAGE_SIZE_MASK:
-+			ret = viommu_set_pgsize_bitmap(vdev, (void *)prop, len);
-+			break;
- 		default:
- 			dev_err(dev, "unknown viommu prop 0x%x\n", type);
- 		}
-@@ -615,7 +636,7 @@ static int viommu_domain_finalise(struct viommu_endpoint *vdev,
- 	struct viommu_dev *viommu = vdev->viommu;
- 	struct viommu_domain *vdomain = to_viommu_domain(domain);
+@@ -345,7 +354,7 @@ static void virtio_balloon_handle_output(VirtIODevice *vdev, VirtQueue *vq)
+             offset += 4;
  
--	viommu_page_size = 1UL << __ffs(viommu->pgsize_bitmap);
-+	viommu_page_size = 1UL << __ffs(vdev->pgsize_bitmap);
- 	if (viommu_page_size > PAGE_SIZE) {
- 		dev_err(vdev->dev,
- 			"granule 0x%lx larger than system page size 0x%lx\n",
-@@ -630,7 +651,7 @@ static int viommu_domain_finalise(struct viommu_endpoint *vdev,
+             section = memory_region_find(get_system_memory(), pa,
+-                                         BALLOON_PAGE_SIZE);
++                                BALLOON_PAGE_SIZE << s->current_pages_order);
+             if (!section.mr) {
+                 trace_virtio_balloon_bad_addr(pa);
+                 continue;
+@@ -618,9 +627,12 @@ static size_t virtio_balloon_config_size(VirtIOBalloon *s)
+     if (s->qemu_4_0_config_size) {
+         return sizeof(struct virtio_balloon_config);
+     }
+-    if (virtio_has_feature(features, VIRTIO_BALLOON_F_PAGE_POISON)) {
++    if (virtio_has_feature(s->host_features, VIRTIO_BALLOON_F_CONT_PAGES)) {
+         return sizeof(struct virtio_balloon_config);
+     }
++    if (virtio_has_feature(features, VIRTIO_BALLOON_F_PAGE_POISON)) {
++        return offsetof(struct virtio_balloon_config, current_pages_order);
++    }
+     if (virtio_has_feature(features, VIRTIO_BALLOON_F_FREE_PAGE_HINT)) {
+         return offsetof(struct virtio_balloon_config, poison_val);
+     }
+@@ -646,6 +658,11 @@ static void virtio_balloon_get_config(VirtIODevice *vdev, uint8_t *config_data)
+                        cpu_to_le32(VIRTIO_BALLOON_CMD_ID_DONE);
+     }
  
- 	vdomain->id		= (unsigned int)ret;
++    if (virtio_has_feature(dev->host_features, VIRTIO_BALLOON_F_CONT_PAGES)) {
++        config.max_pages_order = cpu_to_le32(CONT_PAGES_ORDER);
++        config.current_pages_order = cpu_to_le32(dev->current_pages_order);
++    }
++
+     trace_virtio_balloon_get_config(config.num_pages, config.actual);
+     memcpy(config_data, &config, virtio_balloon_config_size(dev));
+ }
+@@ -693,6 +710,9 @@ static void virtio_balloon_set_config(VirtIODevice *vdev,
  
--	domain->pgsize_bitmap	= viommu->pgsize_bitmap;
-+	domain->pgsize_bitmap	= vdev->pgsize_bitmap;
- 	domain->geometry	= viommu->geometry;
- 
- 	vdomain->map_flags	= viommu->map_flags;
-@@ -654,6 +675,38 @@ static void viommu_domain_free(struct iommu_domain *domain)
- 	kfree(vdomain);
+     memcpy(&config, config_data, virtio_balloon_config_size(dev));
+     dev->actual = le32_to_cpu(config.actual);
++    if (virtio_has_feature(dev->host_features, VIRTIO_BALLOON_F_CONT_PAGES)) {
++        dev->current_pages_order = le32_to_cpu(config.current_pages_order);
++    }
+     if (dev->actual != oldactual) {
+         qapi_event_send_balloon_change(vm_ram_size -
+                         ((ram_addr_t) dev->actual << VIRTIO_BALLOON_PFN_SHIFT));
+@@ -816,6 +836,13 @@ static void virtio_balloon_device_realize(DeviceState *dev, Error **errp)
+             virtio_error(vdev, "iothread is missing");
+         }
+     }
++
++    if (virtio_has_feature(s->host_features, VIRTIO_BALLOON_F_CONT_PAGES)) {
++        s->current_pages_order = CONT_PAGES_ORDER;
++    } else {
++        s->current_pages_order = 0;
++    }
++
+     reset_stats(s);
  }
  
-+/*
-+ * Check whether the endpoint's capabilities are compatible with other
-+ * endpoints in the domain. Report any inconsistency.
-+ */
-+static bool viommu_endpoint_is_compatible(struct viommu_endpoint *vdev,
-+					  struct viommu_domain *vdomain)
-+{
-+	struct device *dev = vdev->dev;
-+	u64 pgsize_bitmap;
-+
-+	if (vdomain->viommu != vdev->viommu) {
-+		dev_err(dev, "cannot attach to foreign vIOMMU\n");
-+		return false;
-+	}
-+
-+	pgsize_bitmap = vdomain->domain.pgsize_bitmap & vdev->pgsize_bitmap;
-+
-+	if (pgsize_bitmap != vdomain->domain.pgsize_bitmap) {
-+		dev_err(dev, "incompatible domain bitmap 0x%lx != 0x%llx\n",
-+			vdomain->domain.pgsize_bitmap, vdev->pgsize_bitmap);
-+		return false;
-+	}
-+
-+	/* Domain pagesize bitmap is subset of device pagesize bitmap */
-+	if (pgsize_bitmap != vdev->pgsize_bitmap) {
-+		dev_info(dev, "page size bitmap used %llx, supported %llx\n",
-+			 pgsize_bitmap, vdev->pgsize_bitmap);
-+		vdev->pgsize_bitmap = pgsize_bitmap;
-+	}
-+	return true;
-+}
-+
- static int viommu_attach_dev(struct iommu_domain *domain, struct device *dev)
- {
- 	int i;
-@@ -670,9 +723,8 @@ static int viommu_attach_dev(struct iommu_domain *domain, struct device *dev)
- 		 * owns it.
- 		 */
- 		ret = viommu_domain_finalise(vdev, domain);
--	} else if (vdomain->viommu != vdev->viommu) {
--		dev_err(dev, "cannot attach to foreign vIOMMU\n");
--		ret = -EXDEV;
-+	} else if (!viommu_endpoint_is_compatible(vdev, vdomain)) {
-+		ret = -EINVAL;
- 	}
- 	mutex_unlock(&vdomain->mutex);
+@@ -916,6 +943,8 @@ static Property virtio_balloon_properties[] = {
+                     VIRTIO_BALLOON_F_DEFLATE_ON_OOM, false),
+     DEFINE_PROP_BIT("free-page-hint", VirtIOBalloon, host_features,
+                     VIRTIO_BALLOON_F_FREE_PAGE_HINT, false),
++    DEFINE_PROP_BIT("cont-pages", VirtIOBalloon, host_features,
++                    VIRTIO_BALLOON_F_CONT_PAGES, false),
+     /* QEMU 4.0 accidentally changed the config size even when free-page-hint
+      * is disabled, resulting in QEMU 3.1 migration incompatibility.  This
+      * property retains this quirk for QEMU 4.1 machine types.
+diff --git a/include/hw/virtio/virtio-balloon.h b/include/hw/virtio/virtio-balloon.h
+index d1c968d..e0dce0d 100644
+--- a/include/hw/virtio/virtio-balloon.h
++++ b/include/hw/virtio/virtio-balloon.h
+@@ -70,6 +70,8 @@ typedef struct VirtIOBalloon {
+     uint32_t host_features;
  
-@@ -886,6 +938,7 @@ static int viommu_add_device(struct device *dev)
+     bool qemu_4_0_config_size;
++
++    uint32_t current_pages_order;
+ } VirtIOBalloon;
  
- 	vdev->dev = dev;
- 	vdev->viommu = viommu;
-+	vdev->pgsize_bitmap = viommu->pgsize_bitmap;
- 	INIT_LIST_HEAD(&vdev->resv_regions);
- 	dev_iommu_priv_set(dev, vdev);
+ #endif
+diff --git a/include/standard-headers/linux/virtio_balloon.h b/include/standard-headers/linux/virtio_balloon.h
+index 9375ca2..b5386ce 100644
+--- a/include/standard-headers/linux/virtio_balloon.h
++++ b/include/standard-headers/linux/virtio_balloon.h
+@@ -36,6 +36,7 @@
+ #define VIRTIO_BALLOON_F_DEFLATE_ON_OOM	2 /* Deflate balloon on OOM */
+ #define VIRTIO_BALLOON_F_FREE_PAGE_HINT	3 /* VQ to report free pages */
+ #define VIRTIO_BALLOON_F_PAGE_POISON	4 /* Guest is using page poisoning */
++#define VIRTIO_BALLOON_F_CONT_PAGES	6 /* VQ to report continuous pages */
  
-diff --git a/include/uapi/linux/virtio_iommu.h b/include/uapi/linux/virtio_iommu.h
-index 48e3c29223b5..15a8327ffef5 100644
---- a/include/uapi/linux/virtio_iommu.h
-+++ b/include/uapi/linux/virtio_iommu.h
-@@ -28,7 +28,11 @@ struct virtio_iommu_range_32 {
+ /* Size of a PFN in the balloon interface. */
+ #define VIRTIO_BALLOON_PFN_SHIFT 12
+@@ -51,6 +52,10 @@ struct virtio_balloon_config {
+ 	uint32_t free_page_report_cmd_id;
+ 	/* Stores PAGE_POISON if page poisoning is in use */
+ 	uint32_t poison_val;
++	/* Max pages order if VIRTIO_BALLOON_F_CONT_PAGES is set */
++	uint32_t max_pages_order;
++	/* Current pages order if VIRTIO_BALLOON_F_CONT_PAGES is set */
++	uint32_t current_pages_order;
  };
  
- struct virtio_iommu_config {
--	/* Supported page sizes */
-+	/*
-+	 * Bitmap of supported page sizes. The least significant bit
-+	 * indicates the smallest granularity and the other bits are
-+	 * hints indicating optimal block sizes.
-+	 */
- 	__u64					page_size_mask;
- 	/* Supported IOVA range */
- 	struct virtio_iommu_range_64		input_range;
-@@ -111,6 +115,7 @@ struct virtio_iommu_req_unmap {
- 
- #define VIRTIO_IOMMU_PROBE_T_NONE		0
- #define VIRTIO_IOMMU_PROBE_T_RESV_MEM		1
-+#define VIRTIO_IOMMU_PROBE_T_PAGE_SIZE_MASK	2
- 
- #define VIRTIO_IOMMU_PROBE_T_MASK		0xfff
- 
-@@ -119,6 +124,13 @@ struct virtio_iommu_probe_property {
- 	__le16					length;
- };
- 
-+struct virtio_iommu_probe_pgsize_mask {
-+	struct virtio_iommu_probe_property	head;
-+	__u8					reserved[4];
-+	/* Same format as virtio_iommu_config::page_size_mask */
-+	__le64					pgsize_bitmap;
-+};
-+
- #define VIRTIO_IOMMU_RESV_MEM_T_RESERVED	0
- #define VIRTIO_IOMMU_RESV_MEM_T_MSI		1
- 
+ #define VIRTIO_BALLOON_S_SWAP_IN  0   /* Amount of memory swapped in */
 -- 
-2.17.1
+1.8.3.1
 
 
 ---------------------------------------------------------------------
