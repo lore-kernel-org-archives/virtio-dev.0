@@ -1,170 +1,219 @@
-Return-Path: virtio-dev-return-7343-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-7331-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 15520986046
-	for <virtio-dev@lists.oasis-open.org>; Fri, 15 May 2020 02:58:26 +0000 (UTC)
-Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.80.23.2.2\))
-From: teawater <teawaterz@linux.alibaba.com>
-In-Reply-To: <cda84c4d-0f4c-1dd8-44f6-68f211e5de6d@redhat.com>
-Date: Fri, 15 May 2020 10:58:00 +0800
-Message-Id: <9708F43A-9BD2-4377-8EE8-7FB1D95C6F69@linux.alibaba.com>
-References: <20200507103119.11219-1-david@redhat.com>
- <7848642F-6AA7-4B5E-AE0E-DB0857C94A93@linux.alibaba.com>
- <31c5d2f9-c104-53e8-d9c8-cb45f7507c85@redhat.com>
- <A3BBAEEE-FBB9-4259-8BED-023CCD530021@linux.alibaba.com>
- <389b6bdc-b196-e4b9-b6be-dcac57524fdf@redhat.com>
- <3c82e149-6c42-690e-9d58-bb8e69870fe0@redhat.com>
- <e48ded49-9b92-7025-a06f-49b24f1c53a6@redhat.com>
- <cda84c4d-0f4c-1dd8-44f6-68f211e5de6d@redhat.com>
-Subject: Re: [virtio-dev] [PATCH v3 00/15] virtio-mem: paravirtualized memory
-Content-Type: text/plain;
-	charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-To: David Hildenbrand <david@redhat.com>
-Cc: LKML <linux-kernel@vger.kernel.org>, Linux MM <linux-mm@kvack.org>, virtio-dev@lists.oasis-open.org, Linux Virtualization <virtualization@lists.linux-foundation.org>, kvm@vger.kernel.org, Michal Hocko <mhocko@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, "Michael S . Tsirkin" <mst@redhat.com>, Sebastien Boeuf <sebastien.boeuf@intel.com>, Samuel Ortiz <samuel.ortiz@intel.com>, Robert Bradford <robert.bradford@intel.com>, Luiz Capitulino <lcapitulino@redhat.com>, Pankaj Gupta <pankaj.gupta.linux@gmail.com>, Igor Mammedov <imammedo@redhat.com>, "Dr . David Alan Gilbert" <dgilbert@redhat.com>, Alexander Duyck <alexander.h.duyck@linux.intel.com>, Alexander Potapenko <glider@google.com>, Anshuman Khandual <anshuman.khandual@arm.com>, Anthony Yznaga <anthony.yznaga@oracle.com>, Dan Williams <dan.j.williams@intel.com>, Dave Young <dyoung@redhat.com>, Jason Wang <jasowang@redhat.com>, Johannes Weiner <hannes@cmpxchg.org>, Juergen Gross <jgross@suse.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Len Brown <lenb@kernel.org>, Mel Gorman <mgorman@techsingularity.net>, Michal Hocko <mhocko@suse.com>, Mike Rapoport <rppt@linux.ibm.com>, Oscar Salvador <osalvador@suse.com>, Oscar Salvador <osalvador@suse.de>, Pavel Tatashin <pasha.tatashin@soleen.com>, Pavel Tatashin <pavel.tatashin@microsoft.com>, Pingfan Liu <kernelfans@gmail.com>, Qian Cai <cai@lca.pw>, "Rafael J. Wysocki" <rafael@kernel.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Stefan Hajnoczi <stefanha@redhat.com>, Vlastimil Babka <vbabka@suse.cz>, Wei Yang <richard.weiyang@gmail.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 83434985FC2
+	for <virtio-dev@lists.oasis-open.org>; Thu, 14 May 2020 07:52:52 +0000 (UTC)
+From: Bharat Bhushan <bbhushan2@marvell.com>
+Date: Thu, 14 May 2020 13:22:37 +0530
+Message-ID: <20200514075237.3941-1-bbhushan2@marvell.com>
+MIME-Version: 1.0
+Subject: [virtio-dev] [PATCH v6] iommu/virtio: Use page size bitmap supported by endpoint
+Content-Type: text/plain
+To: virtualization@lists.linux-foundation.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, virtio-dev@lists.oasis-open.org, jean-philippe@linaro.org, joro@8bytes.org, mst@redhat.com, jasowang@redhat.com, eric.auger.pro@gmail.com, eric.auger@redhat.com
+Cc: Bharat Bhushan <bbhushan2@marvell.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+Different endpoint can support different page size, probe
+endpoint if it supports specific page size otherwise use
+global page sizes.
 
+Device attached to domain should support a minimum of
+domain supported page sizes. If device supports more
+than domain supported page sizes then device is limited
+to use domain supported page sizes only.
 
-> 2020=E5=B9=B45=E6=9C=8814=E6=97=A5 20:19=EF=BC=8CDavid Hildenbrand <david=
-@redhat.com> =E5=86=99=E9=81=93=EF=BC=9A
->=20
-> On 14.05.20 13:47, David Hildenbrand wrote:
->> On 14.05.20 13:10, David Hildenbrand wrote:
->>> On 14.05.20 12:12, David Hildenbrand wrote:
->>>> On 14.05.20 12:02, teawater wrote:
->>>>>=20
->>>>>=20
->>>>>> 2020=E5=B9=B45=E6=9C=8814=E6=97=A5 16:48=EF=BC=8CDavid Hildenbrand <=
-david@redhat.com> =E5=86=99=E9=81=93=EF=BC=9A
->>>>>>=20
->>>>>> On 14.05.20 08:44, teawater wrote:
->>>>>>> Hi David,
->>>>>>>=20
->>>>>>> I got a kernel warning with v2 and v3.
->>>>>>=20
->>>>>> Hi Hui,
->>>>>>=20
->>>>>> thanks for playing with the latest versions. Surprisingly, I can
->>>>>> reproduce even by hotplugging a DIMM instead as well - that's good, =
-so
->>>>>> it's not related to virtio-mem, lol. Seems to be some QEMU setup iss=
-ue
->>>>>> with older machine types.
->>>>>>=20
->>>>>> Can you switch to a newer qemu machine version, especially
->>>>>> pc-i440fx-5.0? Both, hotplugging DIMMs and virtio-mem works for me w=
-ith
->>>>>> that QEMU machine just fine.
->>>>>=20
->>>>> I still could reproduce this issue with pc-i440fx-5.0 or pc.  Did I m=
-iss anything?
->>>>>=20
->>>>=20
->>>> Below I don't even see virtio_mem. I had to repair the image (filesyst=
-em
->>>> fsck) because it was broken, can you try that as well?
->>>>=20
->>>> Also, it would be great if you could test with v4.
->>>>=20
->>>=20
->>> Correction, something seems to be broken either in QEMU or the kernel. =
-Once I
->>> define a DIMM so it's added and online during boot, I get these issues:
->>>=20
->>> (I have virtio-mem v4 installed in the guest)
->>>=20
->>> #! /bin/bash
->>> sudo x86_64-softmmu/qemu-system-x86_64 \
->>>    -machine pc-i440fx-5.0,accel=3Dkvm,usb=3Doff \
->>>    -cpu host \
->>>    -no-reboot \
->>>    -nographic \
->>>    -device ide-hd,drive=3Dhd \
->>>    -drive if=3Dnone,id=3Dhd,file=3D/home/dhildenb/git/Fedora-Cloud-Base=
--31-1.9.x86_64.qcow2,format=3Dqcow2 \
->>>    -m 1g,slots=3D10,maxmem=3D2G \
->>>    -smp 1 \
->>>    -object memory-backend-ram,id=3Dmem0,size=3D256m \
->>>    -device pc-dimm,id=3Ddimm0,memdev=3Dmem0 \
->>>    -s \
->>>    -monitor unix:/var/tmp/monitor,server,nowait
->>>=20
->>>=20
->>> Without the DIMM it seems to work just fine.
->>>=20
->>=20
->> And another correction.=20
->>=20
->> Using QEMU v5.0.0, Linux 5.7-rc5, untouched
->> Fedora-Cloud-Base-32-1.6.x86_64.qcow2, I get even without any memory hot=
-plug:
->>=20
->> #! /bin/bash
->> sudo x86_64-softmmu/qemu-system-x86_64 \
->>    -machine pc-i440fx-5.0,accel=3Dkvm,usb=3Doff \
->>    -cpu host \
->>    -no-reboot \
->>    -nographic \
->>    -device ide-hd,drive=3Dhd \
->>    -drive if=3Dnone,id=3Dhd,file=3D/home/dhildenb/git/Fedora-Cloud-Base-=
-32-1.6.x86_64.qcow2,format=3Dqcow2 \
->>    -m 5g,slots=3D10,maxmem=3D6G \
->>    -smp 1 \
->>    -s \
->>    -kernel /home/dhildenb/git/linux/arch/x86/boot/bzImage \
->>    -append "console=3DttyS0 rd.shell nokaslr swiotlb=3Dnoforce" \
->>    -monitor unix:/var/tmp/monitor,server,nowait
->>=20
->>=20
->> Observe how big the initial RAM even is!
->>=20
->>=20
->> So this is no DIMM/hotplug/virtio_mem issue. With memory hotplug, it see=
-ms to get
->> more likely to trigger if "swiotlb=3Dnoforce" is not specified.
->>=20
->> "swiotlb=3Dnoforce" seems to trigger some pre-existing issue here. Witho=
-ut
->> "swiotlb=3Dnoforce", I was only able to observe this via pc-i440fx-2.1,
->>=20
->=20
-> (talking to myself :) )
->=20
-> I think I finally understood why using "swiotlb=3Dnoforce" with hotplugge=
-d
-> memory is wrong - or with memory > 3GB. Via "swiotlb=3Dnoforce" you tell
-> the system to "Never use bounce buffers (for debugging)". This works as
-> long as all memory is DMA memory (e.g., < 3GB) AFAIK.
->=20
-> "If specified, trying to map memory that cannot be used with DMA will
-> fail, and a rate-limited warning will be printed."
->=20
-> Hotplugged memory (under QEMU) is never added below 4GB, because of the
-> PCI hole. So both, memory from DIMMs and from virtio-mem will end up at
-> or above 4GB. To make a device use that memory, you need bounce buffers.
->=20
-> Hotplugged memory is never DMA memory.
->=20
+Signed-off-by: Bharat Bhushan <bbhushan2@marvell.com>
+---
+v5->v6
+ - property length before dereference
+ - Error out on no supported page sizes (page-size-mask is zero)
+ - Allow device to attach to domain even it supports
+   minimum of domain supported page sizes. In that case device
+   will use domain page sizes only.
+ - added format of pgsize_bitmap
 
+v4->v5:
+ - Rebase to Linux v5.7-rc4
 
-Hi David,
+v3->v4:
+ - Fix whitespace error
 
-It is fixed when I remove "swiotlb=3Dnoforce=E2=80=9D.
+v2->v3:
+ - Fixed error return for incompatible endpoint
+ - __u64 changed to __le64 in header file
 
-Thanks for your help.
+ drivers/iommu/virtio-iommu.c      | 63 ++++++++++++++++++++++++++++---
+ include/uapi/linux/virtio_iommu.h | 14 ++++++-
+ 2 files changed, 71 insertions(+), 6 deletions(-)
 
-Best,
-Hui
-
-> --=20
-> Thanks,
->=20
-> David / dhildenb
+diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
+index 4e1d11af23c8..cbac3047a781 100644
+--- a/drivers/iommu/virtio-iommu.c
++++ b/drivers/iommu/virtio-iommu.c
+@@ -78,6 +78,7 @@ struct viommu_endpoint {
+ 	struct viommu_dev		*viommu;
+ 	struct viommu_domain		*vdomain;
+ 	struct list_head		resv_regions;
++	u64				pgsize_bitmap;
+ };
+ 
+ struct viommu_request {
+@@ -415,6 +416,23 @@ static int viommu_replay_mappings(struct viommu_domain *vdomain)
+ 	return ret;
+ }
+ 
++static int viommu_set_pgsize_bitmap(struct viommu_endpoint *vdev,
++				    struct virtio_iommu_probe_pgsize_mask *mask,
++				    size_t len)
++{
++	u64 pgsize_bitmap;
++
++	if (len < sizeof(*mask))
++		return -EINVAL;
++
++	pgsize_bitmap = le64_to_cpu(mask->pgsize_bitmap);
++	if (!pgsize_bitmap)
++		return -EINVAL;
++
++	vdev->pgsize_bitmap = pgsize_bitmap;
++	return 0;
++}
++
+ static int viommu_add_resv_mem(struct viommu_endpoint *vdev,
+ 			       struct virtio_iommu_probe_resv_mem *mem,
+ 			       size_t len)
+@@ -499,6 +517,9 @@ static int viommu_probe_endpoint(struct viommu_dev *viommu, struct device *dev)
+ 		case VIRTIO_IOMMU_PROBE_T_RESV_MEM:
+ 			ret = viommu_add_resv_mem(vdev, (void *)prop, len);
+ 			break;
++		case VIRTIO_IOMMU_PROBE_T_PAGE_SIZE_MASK:
++			ret = viommu_set_pgsize_bitmap(vdev, (void *)prop, len);
++			break;
+ 		default:
+ 			dev_err(dev, "unknown viommu prop 0x%x\n", type);
+ 		}
+@@ -615,7 +636,7 @@ static int viommu_domain_finalise(struct viommu_endpoint *vdev,
+ 	struct viommu_dev *viommu = vdev->viommu;
+ 	struct viommu_domain *vdomain = to_viommu_domain(domain);
+ 
+-	viommu_page_size = 1UL << __ffs(viommu->pgsize_bitmap);
++	viommu_page_size = 1UL << __ffs(vdev->pgsize_bitmap);
+ 	if (viommu_page_size > PAGE_SIZE) {
+ 		dev_err(vdev->dev,
+ 			"granule 0x%lx larger than system page size 0x%lx\n",
+@@ -630,7 +651,7 @@ static int viommu_domain_finalise(struct viommu_endpoint *vdev,
+ 
+ 	vdomain->id		= (unsigned int)ret;
+ 
+-	domain->pgsize_bitmap	= viommu->pgsize_bitmap;
++	domain->pgsize_bitmap	= vdev->pgsize_bitmap;
+ 	domain->geometry	= viommu->geometry;
+ 
+ 	vdomain->map_flags	= viommu->map_flags;
+@@ -654,6 +675,38 @@ static void viommu_domain_free(struct iommu_domain *domain)
+ 	kfree(vdomain);
+ }
+ 
++/*
++ * Check whether the endpoint's capabilities are compatible with other
++ * endpoints in the domain. Report any inconsistency.
++ */
++static bool viommu_endpoint_is_compatible(struct viommu_endpoint *vdev,
++					  struct viommu_domain *vdomain)
++{
++	struct device *dev = vdev->dev;
++	u64 pgsize_bitmap;
++
++	if (vdomain->viommu != vdev->viommu) {
++		dev_err(dev, "cannot attach to foreign vIOMMU\n");
++		return false;
++	}
++
++	pgsize_bitmap = vdomain->domain.pgsize_bitmap & vdev->pgsize_bitmap;
++
++	if (pgsize_bitmap != vdomain->domain.pgsize_bitmap) {
++		dev_err(dev, "incompatible domain bitmap 0x%lx != 0x%llx\n",
++			vdomain->domain.pgsize_bitmap, vdev->pgsize_bitmap);
++		return false;
++	}
++
++	/* Domain pagesize bitmap is subset of device pagesize bitmap */
++	if (pgsize_bitmap != vdev->pgsize_bitmap) {
++		dev_info(dev, "page size bitmap used %llx, supported %llx\n",
++			 pgsize_bitmap, vdev->pgsize_bitmap);
++		vdev->pgsize_bitmap = pgsize_bitmap;
++	}
++	return true;
++}
++
+ static int viommu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ {
+ 	int i;
+@@ -670,9 +723,8 @@ static int viommu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ 		 * owns it.
+ 		 */
+ 		ret = viommu_domain_finalise(vdev, domain);
+-	} else if (vdomain->viommu != vdev->viommu) {
+-		dev_err(dev, "cannot attach to foreign vIOMMU\n");
+-		ret = -EXDEV;
++	} else if (!viommu_endpoint_is_compatible(vdev, vdomain)) {
++		ret = -EINVAL;
+ 	}
+ 	mutex_unlock(&vdomain->mutex);
+ 
+@@ -886,6 +938,7 @@ static int viommu_add_device(struct device *dev)
+ 
+ 	vdev->dev = dev;
+ 	vdev->viommu = viommu;
++	vdev->pgsize_bitmap = viommu->pgsize_bitmap;
+ 	INIT_LIST_HEAD(&vdev->resv_regions);
+ 	dev_iommu_priv_set(dev, vdev);
+ 
+diff --git a/include/uapi/linux/virtio_iommu.h b/include/uapi/linux/virtio_iommu.h
+index 48e3c29223b5..15a8327ffef5 100644
+--- a/include/uapi/linux/virtio_iommu.h
++++ b/include/uapi/linux/virtio_iommu.h
+@@ -28,7 +28,11 @@ struct virtio_iommu_range_32 {
+ };
+ 
+ struct virtio_iommu_config {
+-	/* Supported page sizes */
++	/*
++	 * Bitmap of supported page sizes. The least significant bit
++	 * indicates the smallest granularity and the other bits are
++	 * hints indicating optimal block sizes.
++	 */
+ 	__u64					page_size_mask;
+ 	/* Supported IOVA range */
+ 	struct virtio_iommu_range_64		input_range;
+@@ -111,6 +115,7 @@ struct virtio_iommu_req_unmap {
+ 
+ #define VIRTIO_IOMMU_PROBE_T_NONE		0
+ #define VIRTIO_IOMMU_PROBE_T_RESV_MEM		1
++#define VIRTIO_IOMMU_PROBE_T_PAGE_SIZE_MASK	2
+ 
+ #define VIRTIO_IOMMU_PROBE_T_MASK		0xfff
+ 
+@@ -119,6 +124,13 @@ struct virtio_iommu_probe_property {
+ 	__le16					length;
+ };
+ 
++struct virtio_iommu_probe_pgsize_mask {
++	struct virtio_iommu_probe_property	head;
++	__u8					reserved[4];
++	/* Same format as virtio_iommu_config::page_size_mask */
++	__le64					pgsize_bitmap;
++};
++
+ #define VIRTIO_IOMMU_RESV_MEM_T_RESERVED	0
+ #define VIRTIO_IOMMU_RESV_MEM_T_MSI		1
+ 
+-- 
+2.17.1
 
 
 ---------------------------------------------------------------------
