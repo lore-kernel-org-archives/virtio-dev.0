@@ -1,4 +1,4 @@
-Return-Path: virtio-comment-return-1233-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-comment-return-1249-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-comment@lists.oasis-open.org>
 List-Post: <mailto:virtio-comment@lists.oasis-open.org>
 List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
@@ -9,8 +9,8 @@ References: <158895811782.529821.115832709184722087.stgit@ahduyck-workstation>
  <20200511143823.14d7398e.cohuck@redhat.com> <3f1e5c3e-03ce-bb32-e5a7-4be381477754@redhat.com>
 In-Reply-To: <3f1e5c3e-03ce-bb32-e5a7-4be381477754@redhat.com>
 From: Alexander Duyck <alexander.duyck@gmail.com>
-Date: Mon, 11 May 2020 08:51:25 -0700
-Message-ID: <CAKgT0Uch3Tt9rMN7ku3D_OnNnyrV7sLk6_HecLHSOZd-ah87Hw@mail.gmail.com>
+Date: Fri, 15 May 2020 10:06:17 -0700
+Message-ID: <CAKgT0Ucozsxkuuf5EujKciNh7BiFNxSpc7LcYC-+f-dNuJM5jg@mail.gmail.com>
 Subject: [virtio-comment] Re: [PATCH 0/3] virtio-spec: Add documentation for recently added
  balloon features
 Content-Type: text/plain; charset="UTF-8"
@@ -55,18 +55,12 @@ On Mon, May 11, 2020 at 5:44 AM David Hildenbrand <david@redhat.com> wrote:
 > > balloon than me.
 >
 > On my list, will have a look this week.
->
-> Minor nit I spotted: Patch #2 should not document things (e.g., how
-> poisoning interacts with reported pages), before the free reporting
-> feature is actually introduced in patch #3.
 
-I'll tweak thinks a bit to work around that. The issue is that the
-page poison feature was introduced before page reporting, however it
-wasn't really put into use until page reporting was added.
+Any ETA on when you might be able to get to that review? I'm just
+considering if I should submit v2 with your tweak and the suggestions
+from Cornelia or if I should wait for your feedback.
 
-> BTW: Thanks Alex for tackling this!
-
-No problem. Thanks to you and Cornelia for taking the time to review this.
+Thanks.
 
 - Alex
 
