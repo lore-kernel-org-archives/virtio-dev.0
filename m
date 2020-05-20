@@ -1,85 +1,105 @@
-Return-Path: virtio-dev-return-7346-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-7387-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 1C091986048
-	for <virtio-dev@lists.oasis-open.org>; Fri, 15 May 2020 10:14:28 +0000 (UTC)
-From: David Hildenbrand <david@redhat.com>
-Date: Fri, 15 May 2020 12:14:02 +0200
-Message-Id: <20200515101402.16597-1-david@redhat.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 9E05B985F41
+	for <virtio-dev@lists.oasis-open.org>; Wed, 20 May 2020 05:25:41 +0000 (UTC)
+Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.80.23.2.2\))
+From: teawater <teawaterz@linux.alibaba.com>
 In-Reply-To: <20200507140139.17083-1-david@redhat.com>
+Date: Wed, 20 May 2020 13:25:29 +0800
+Message-Id: <2603F9B2-17D0-4A05-A82B-2D3B9671A96E@linux.alibaba.com>
 References: <20200507140139.17083-1-david@redhat.com>
-MIME-Version: 1.0
-Subject: [virtio-dev] [PATCH v4 16/15] virtio-mem: Don't rely on implicit compiler padding for requests
-Content-Type: text/plain; charset=US-ASCII
+Subject: [virtio-dev] Re: [PATCH v4 00/15] virtio-mem: paravirtualized memory
+Content-Type: text/plain;
+	charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-To: linux-kernel@vger.kernel.org
-Cc: linux-mm@kvack.org, virtio-dev@lists.oasis-open.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, Michal Hocko <mhocko@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, "Michael S . Tsirkin" <mst@redhat.com>, David Hildenbrand <david@redhat.com>, Pankaj Gupta <pankaj.gupta.linux@gmail.com>, teawater <teawaterz@linux.alibaba.com>
+To: David Hildenbrand <david@redhat.com>
+Cc: LKML <linux-kernel@vger.kernel.org>, Linux MM <linux-mm@kvack.org>, virtio-dev@lists.oasis-open.org, Linux Virtualization <virtualization@lists.linux-foundation.org>, kvm@vger.kernel.org, Michal Hocko <mhocko@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, "Michael S . Tsirkin" <mst@redhat.com>, Alexander Duyck <alexander.h.duyck@linux.intel.com>, Alexander Potapenko <glider@google.com>, Anshuman Khandual <anshuman.khandual@arm.com>, Anthony Yznaga <anthony.yznaga@oracle.com>, Dan Williams <dan.j.williams@intel.com>, Dave Young <dyoung@redhat.com>, Igor Mammedov <imammedo@redhat.com>, Jason Wang <jasowang@redhat.com>, Johannes Weiner <hannes@cmpxchg.org>, Juergen Gross <jgross@suse.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Len Brown <lenb@kernel.org>, Mel Gorman <mgorman@techsingularity.net>, Michal Hocko <mhocko@suse.com>, Mike Rapoport <rppt@linux.ibm.com>, Oscar Salvador <osalvador@suse.com>, Oscar Salvador <osalvador@suse.de>, Pankaj Gupta <pankaj.gupta.linux@gmail.com>, Pavel Tatashin <pasha.tatashin@soleen.com>, Pavel Tatashin <pavel.tatashin@microsoft.com>, Pingfan Liu <kernelfans@gmail.com>, Qian Cai <cai@lca.pw>, "Rafael J. Wysocki" <rafael@kernel.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Stefan Hajnoczi <stefanha@redhat.com>, Vlastimil Babka <vbabka@suse.cz>, Wei Yang <richard.weiyang@gmail.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-The compiler will add padding after the last member, make that explicit.
-The size of a request is always 24 bytes. The size of a response always
-10 bytes. Add compile-time checks.
+Hi David,
 
-Cc: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Pankaj Gupta <pankaj.gupta.linux@gmail.com>
-Cc: teawater <teawaterz@linux.alibaba.com>
-Signed-off-by: David Hildenbrand <david@redhat.com>
----
+Thanks for your work.
+I tried this version with cloud-hypervisor master.  It worked very well.
 
-Something I noticed while working on the spec (which proves that writing a
-virtio-spec makes sense :) ).
+Best,
+Hui
 
----
- drivers/virtio/virtio_mem.c     | 3 +++
- include/uapi/linux/virtio_mem.h | 3 +++
- 2 files changed, 6 insertions(+)
-
-diff --git a/drivers/virtio/virtio_mem.c b/drivers/virtio/virtio_mem.c
-index 9e523db3bee1..f658fe9149be 100644
---- a/drivers/virtio/virtio_mem.c
-+++ b/drivers/virtio/virtio_mem.c
-@@ -1770,6 +1770,9 @@ static int virtio_mem_probe(struct virtio_device *vde=
-v)
- =09struct virtio_mem *vm;
- =09int rc =3D -EINVAL;
-=20
-+=09BUILD_BUG_ON(sizeof(struct virtio_mem_req) !=3D 24);
-+=09BUILD_BUG_ON(sizeof(struct virtio_mem_resp) !=3D 10);
-+
- =09vdev->priv =3D vm =3D kzalloc(sizeof(*vm), GFP_KERNEL);
- =09if (!vm)
- =09=09return -ENOMEM;
-diff --git a/include/uapi/linux/virtio_mem.h b/include/uapi/linux/virtio_me=
-m.h
-index e0a9dc7397c3..a455c488a995 100644
---- a/include/uapi/linux/virtio_mem.h
-+++ b/include/uapi/linux/virtio_mem.h
-@@ -103,16 +103,19 @@
- struct virtio_mem_req_plug {
- =09__virtio64 addr;
- =09__virtio16 nb_blocks;
-+=09__virtio16 padding[3];
- };
-=20
- struct virtio_mem_req_unplug {
- =09__virtio64 addr;
- =09__virtio16 nb_blocks;
-+=09__virtio16 padding[3];
- };
-=20
- struct virtio_mem_req_state {
- =09__virtio64 addr;
- =09__virtio16 nb_blocks;
-+=09__virtio16 padding[3];
- };
-=20
- struct virtio_mem_req {
---=20
-2.25.4
+> 2020=E5=B9=B45=E6=9C=887=E6=97=A5 22:01=EF=BC=8CDavid Hildenbrand <david@=
+redhat.com> =E5=86=99=E9=81=93=EF=BC=9A
+>=20
+> This series is based on v5.7-rc4. The patches are located at:
+>    https://github.com/davidhildenbrand/linux.git virtio-mem-v4
+>=20
+> This is basically a resend of v3 [1], now based on v5.7-rc4 and restested=
+.
+> One patch was reshuffled and two ACKs I missed to add were added. The
+> rebase did not require any modifications to patches.
+>=20
+> Details about virtio-mem can be found in the cover letter of v2 [2]. A
+> basic QEMU implementation was posted yesterday [3].
+>=20
+> [1] https://lkml.kernel.org/r/20200507103119.11219-1-david@redhat.com
+> [2] https://lkml.kernel.org/r/20200311171422.10484-1-david@redhat.com
+> [3] https://lkml.kernel.org/r/20200506094948.76388-1-david@redhat.com
+>=20
+> v3 -> v4:
+> - Move "MAINTAINERS: Add myself as virtio-mem maintainer" to #2
+> - Add two ACKs from Andrew (in reply to v2)
+> -- "mm: Allow to offline unmovable PageOffline() pages via ..."
+> -- "mm/memory_hotplug: Introduce offline_and_remove_memory()"
+>=20
+> v2 -> v3:
+> - "virtio-mem: Paravirtualized memory hotplug"
+> -- Include "linux/slab.h" to fix build issues
+> -- Remember the "region_size", helpful for patch #11
+> -- Minor simplifaction in virtio_mem_overlaps_range()
+> -- Use notifier_from_errno() instead of notifier_to_errno() in notifier
+> -- More reliable check for added memory when unloading the driver
+> - "virtio-mem: Allow to specify an ACPI PXM as nid"
+> -- Also print the nid
+> - Added patch #11-#15
+>=20
+> David Hildenbrand (15):
+>  virtio-mem: Paravirtualized memory hotplug
+>  MAINTAINERS: Add myself as virtio-mem maintainer
+>  virtio-mem: Allow to specify an ACPI PXM as nid
+>  virtio-mem: Paravirtualized memory hotunplug part 1
+>  virtio-mem: Paravirtualized memory hotunplug part 2
+>  mm: Allow to offline unmovable PageOffline() pages via
+>    MEM_GOING_OFFLINE
+>  virtio-mem: Allow to offline partially unplugged memory blocks
+>  mm/memory_hotplug: Introduce offline_and_remove_memory()
+>  virtio-mem: Offline and remove completely unplugged memory blocks
+>  virtio-mem: Better retry handling
+>  virtio-mem: Add parent resource for all added "System RAM"
+>  virtio-mem: Drop manual check for already present memory
+>  virtio-mem: Unplug subblocks right-to-left
+>  virtio-mem: Use -ETXTBSY as error code if the device is busy
+>  virtio-mem: Try to unplug the complete online memory block first
+>=20
+> MAINTAINERS                     |    7 +
+> drivers/acpi/numa/srat.c        |    1 +
+> drivers/virtio/Kconfig          |   17 +
+> drivers/virtio/Makefile         |    1 +
+> drivers/virtio/virtio_mem.c     | 1962 +++++++++++++++++++++++++++++++
+> include/linux/memory_hotplug.h  |    1 +
+> include/linux/page-flags.h      |   10 +
+> include/uapi/linux/virtio_ids.h |    1 +
+> include/uapi/linux/virtio_mem.h |  208 ++++
+> mm/memory_hotplug.c             |   81 +-
+> mm/page_alloc.c                 |   26 +
+> mm/page_isolation.c             |    9 +
+> 12 files changed, 2314 insertions(+), 10 deletions(-)
+> create mode 100644 drivers/virtio/virtio_mem.c
+> create mode 100644 include/uapi/linux/virtio_mem.h
+>=20
+> --=20
+> 2.25.3
 
 
 ---------------------------------------------------------------------
