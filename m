@@ -1,260 +1,103 @@
-Return-Path: virtio-comment-return-1298-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio-comment@lists.oasis-open.org>
-List-Post: <mailto:virtio-comment@lists.oasis-open.org>
-List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
+Return-Path: virtio-dev-return-7411-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id 0A70E985FAF
+	for <virtio-dev@lists.oasis-open.org>; Wed, 27 May 2020 04:13:56 +0000 (UTC)
 From: Alexander Duyck <alexander.duyck@gmail.com>
-Date: Tue, 26 May 2020 21:07:02 -0700
-Message-ID: 
- <159055242270.209072.15091766786309829161.stgit@ahduyck-workstation>
-In-Reply-To: 
- <159055235065.209072.12017445428967301686.stgit@ahduyck-workstation>
-References: 
- <159055235065.209072.12017445428967301686.stgit@ahduyck-workstation>
+Date: Tue, 26 May 2020 21:13:53 -0700
+Message-ID: <20200527041212.12700.60627.stgit@localhost.localdomain>
 MIME-Version: 1.0
-Subject: [virtio-comment] [PATCH v4 3/3] content: Document balloon feature free page hints
+Subject: [virtio-dev] [PATCH v25 QEMU 0/3] virtio-balloon: add support for page poison
+ and free page reporting
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-To: mst@redhat.com, david@redhat.com, cohuck@redhat.com
-Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, wei.w.wang@intel.com
+To: david@redhat.com, mst@redhat.com
+Cc: virtio-dev@lists.oasis-open.org, qemu-devel@nongnu.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-From: Alexander Duyck <alexander.h.duyck@linux.intel.com>
+This series provides an asynchronous means of reporting free guest pages
+to QEMU through virtio-balloon so that the memory associated with those
+pages can be dropped and reused by other processes and/or guests on the
+host. Using this it is possible to avoid unnecessary I/O to disk and
+greatly improve performance in the case of memory overcommit on the host.
 
-Free page hints allow the balloon driver to provide information on what
-pages are not currently in use so that we can avoid the cost of copying
-them in migration scenarios. Add a feature description for free page hints
-describing basic functioning and requirements.
+I originally submitted this patch series back on February 11th 2020[1],
+but at that time I was focused primarily on the kernel portion of this
+patch set. However as of April 7th those patches are now included in
+Linus's kernel tree[2] and so I am submitting the QEMU pieces for
+inclusion.
 
-In working on this the specification as pointed out certain issues with the
-Linux driver and QEMU device implementation. The issues include:
-1. The Linux driver does not re-initialize pages when it reuses them
-before receiving the "DONE" command, as such this can lead to possible data
-corruption.
-2. The QEMU device is not returning the "DONE" command if a migration
-fails. This results in the guest holding onto pages until forced out by the
-shrinker.
+[1]: https://lore.kernel.org/lkml/20200211224416.29318.44077.stgit@localhost.localdomain/
+[2]: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=b0c504f154718904ae49349147e3b7e6ae91ffdc
 
-There are also additional issues that have been found not related to the
-specification.
+Changes from v17:
+Fixed typo in patch 1 title
+Addressed white-space issues reported via checkpatch
+Added braces {} for two if statements to match expected coding style
 
-There is currently discussion on if the feature should be removed so this
-patch is a place-holder for if we decide to keep the feature and fix the
-issues. Otherwise this patch can be dropped and we can work on a patch to
-document the need to avoid the feature.
+Changes from v18:
+Updated patches 2 and 3 based on input from dhildenb
+Added comment to patch 2 describing what keeps us from reporting a bad page
+Added patch to address issue with ROM devices being directly writable
 
-Signed-off-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
+Changes from v19:
+Added std-headers change to match changes pushed for linux kernel headers
+Added patch to remove "report" from page hinting code paths
+Updated comment to better explain why we disable hints w/ page poisoning
+Removed code that was modifying config size for poison vs hinting
+Dropped x-page-poison property
+Added code to bounds check the reported region vs the RAM block
+Dropped patch for ROM devices as that was already pulled in by Paolo
+
+Changes from v20:
+Rearranged patches to push Linux header sync patches to front
+Removed association between free page hinting and VIRTIO_BALLOON_F_PAGE_POISON
+Added code to enable VIRTIO_BALLOON_F_PAGE_POISON if page reporting is enabled
+Fixed possible resource leak if poison or qemu_balloon_is_inhibited return true
+
+Changes from v21:
+Added ack for patch 3
+Rewrote patch description for page poison reporting feature
+Made page-poison independent property and set to enabled by default
+Added logic to migrate poison_val
+Added several comments in code to better explain features
+Switched free-page-reporting property to disabled by default
+
+Changes from v22:
+Added ack for patches 4 & 5
+Added additional comment fixes in patch 3 to remove "reporting" reference
+Renamed rvq in patch 5 to reporting_vq to better match linux kernel
+Moved call adding reporting_vq to after free_page_vq
+
+Changes from v23:
+Rebased on latest QEMU
+Dropped patches 1 & 2 as Linux kernel headers were synced
+Added compat machine code for page-poison feature
+
+Changes from v24:
+Moved free page hinting rename to end of set as feature may be removed entirely
+Added code to cleanup reporting_vq
+
 ---
- conformance.tex |    2 +
- content.tex     |  125 +++++++++++++++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 127 insertions(+)
 
-diff --git a/conformance.tex b/conformance.tex
-index 18a5a94a72aa..5496a25e93ef 100644
---- a/conformance.tex
-+++ b/conformance.tex
-@@ -149,6 +149,7 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
- \item \ref{drivernormative:Device Types / Memory Balloon Device / Feature bits}
- \item \ref{drivernormative:Device Types / Memory Balloon Device / Device Operation}
- \item \ref{drivernormative:Device Types / Memory Balloon Device / Device Operation / Memory Statistics}
-+\item \ref{drivernormative:Device Types / Memory Balloon Device / Device Operation / Free Page Hinting}
- \item \ref{drivernormative:Device Types / Memory Balloon Device / Device Operation / Page Poison}
- \item \ref{drivernormative:Device Types / Memory Balloon Device / Device Operation / Free Page Reporting}
- \end{itemize}
-@@ -333,6 +334,7 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
- \item \ref{devicenormative:Device Types / Memory Balloon Device / Feature bits}
- \item \ref{devicenormative:Device Types / Memory Balloon Device / Device Operation}
- \item \ref{devicenormative:Device Types / Memory Balloon Device / Device Operation / Memory Statistics}
-+\item \ref{devicenormative:Device Types / Memory Balloon Device / Device Operation / Free Page Hinting}
- \item \ref{devicenormative:Device Types / Memory Balloon Device / Device Operation / Page Poison}
- \item \ref{devicenormative:Device Types / Memory Balloon Device / Device Operation / Free Page Reporting}
- \end{itemize}
-diff --git a/content.tex b/content.tex
-index 403651d1413b..a3a9c13516fd 100644
---- a/content.tex
-+++ b/content.tex
-@@ -5006,11 +5006,14 @@ \subsection{Virtqueues}\label{sec:Device Types / Memory Balloon Device / Virtque
- \item[0] inflateq
- \item[1] deflateq
- \item[2] statsq
-+\item[3] free_page_vq
- \item[4] reporting_vq
- \end{description}
- 
-   statsq only exists if VIRTIO_BALLOON_F_STATS_VQ is set.
- 
-+  free_page_vq only exists if VIRTIO_BALLOON_F_FREE_PAGE_HINT is set.
-+
-   reporting_vq only exists if VIRTIO_BALLOON_F_PAGE_REPORTING is set.
- 
- \subsection{Feature bits}\label{sec:Device Types / Memory Balloon Device / Feature bits}
-@@ -5022,6 +5025,10 @@ \subsection{Feature bits}\label{sec:Device Types / Memory Balloon Device / Featu
-     memory statistics is present.
- \item[VIRTIO_BALLOON_F_DEFLATE_ON_OOM (2) ] Deflate balloon on
-     guest out of memory condition.
-+\item[ VIRTIO_BALLOON_F_FREE_PAGE_HINT(3) ] The device has support for free
-+    page hinting. A virtqueue for providing hints as to what memory is
-+    currently free is present. Configuration field \field{free_page_hint_cmd_id}
-+    is valid.
- \item[ VIRTIO_BALLOON_F_PAGE_POISON(4) ] A hint to the device, that the driver
-     will immediately write \field{poison_val} to pages after deflating them.
-     Configuration field \field{poison_val} is valid.
-@@ -5060,6 +5067,10 @@ \subsection{Feature bits}\label{sec:Device Types / Memory Balloon Device / Featu
- \subsection{Device configuration layout}\label{sec:Device Types / Memory Balloon Device / Device configuration layout}
-   \field{num_pages} and \field{actual} are always available.
- 
-+  \field{free_page_hint_cmd_id} is available if
-+    VIRTIO_BALLOON_F_FREE_PAGE_HINT has been negotiated and is read-only by
-+    the driver.
-+
-   \field{poison_val} is available if VIRTIO_BALLOON_F_PAGE_POISON has been
-     negotiated.
- 
-@@ -5094,6 +5105,9 @@ \subsection{Device Initialization}\label{sec:Device Types / Memory Balloon Devic
-   \item Add one empty buffer to the stats virtqueue.
-   \end{enumerate}
- 
-+\item If the VIRTIO_BALLOON_F_FREE_PAGE_HINT feature bit is negotiated, the
-+  free_page_vq is identified.
-+
- \item If the VIRTIO_BALLOON_F_PAGE_POISON feature bit is negotiated, the
-   driver updates the \field{poison_val} configuration field.
- 
-@@ -5377,6 +5391,117 @@ \subsubsection{Memory Statistics Tags}\label{sec:Device Types / Memory Balloon D
-   allocations in the guest.
- \end{description}
- 
-+\subsubsection{Free Page Hinting}\label{sec:Device Types / Memory Balloon Device / Device Operation / Free Page Hinting}
-+
-+Free page hinting is designed to be used during migration to determine what
-+pages within the guest are currently unused so that they can be skipped over
-+while migrating the guest. The device will indicate that it is ready to start
-+performing hinting by setting the \field{free_page_hint_cmd_id} to one of the
-+non-reserved values that can be used as a command ID. The following values
-+are reserved:
-+
-+\begin{description}
-+\item[VIRTIO_BALLOON_CMD_ID_STOP (0)] Any command ID previously supplied by
-+  the device is invalid. The driver should stop hinting free pages until a
-+  new command ID is supplied, but should not release any hinted pages for
-+  use by the guest.
-+
-+\item[VIRTIO_BALLOON_CMD_ID_DONE (1)] Any command ID previously supplied by
-+  the device is invalid. The driver should stop hinting free pages, and
-+  should release all hinted pages for use by the guest.
-+\end{description}
-+
-+A request for free page hinting proceeds as follows:
-+
-+\begin{enumerate}
-+
-+\item The driver examines the \field{free_page_hint_cmd_id} configuration field.
-+  If it contains a non-reserved value then free page hinting will begin.
-+
-+\item To supply free page hints:
-+  \begin{enumerate}
-+  \item The driver constructs an output descriptor containing the new value
-+    from the \field{free_page_hint_cmd_id} configuration field and adds it to
-+    the free_page_hint_vq.
-+  \item The driver maps a series of pages and adds them to the
-+    free_page_hint_vq as individual scatter-gather input descriptor entries.
-+  \item When the driver is no longer able to fetch additional pages to add
-+    to the free_page_hint_vq, it will construct an output descriptor
-+    containing the command ID VIRTIO_BALLOON_CMD_ID_STOP.
-+  \end{enumerate}
-+
-+\item A round of hinting ends either when the driver is no longer able to
-+  supply more pages for hinting as described above, or when the device
-+  updates \field{free_page_hint_cmd_id} configuration field to contain either
-+  VIRTIO_BALLOON_CMD_ID_STOP or VIRTIO_BALLOON_CMD_ID_DONE.
-+
-+\item The device may follow VIRTIO_BALLOON_CMD_ID_STOP with a new
-+  non-reserved value for the \field{free_page_hint_cmd_id} configuration
-+  field in which case it will resume supplying free page hints.
-+
-+\item Otherwise, if the device provides VIRTIO_BALLOON_CMD_ID_DONE then
-+  hinting is complete and the driver may release all previously hinted
-+  pages for use by the guest.
-+
-+\end{enumerate}
-+
-+\drivernormative{\paragraph}{Free Page Hinting}{Device Types / Memory Balloon Device / Device Operation / Free Page Hinting}
-+
-+Normative statements in this section apply if the
-+VIRTIO_BALLOON_F_FREE_PAGE_HINT feature has been negotiated.
-+
-+The driver SHOULD supply pages to the free page hints when
-+\field{free_page_hint_cmd_id} reports a value of 2 or greater.
-+
-+The driver MUST start hinting by providing an output descriptor
-+containing the current command ID for the given block of pages.
-+
-+The driver SHOULD stop supplying pages for hinting when
-+\field{free_page_hint_cmd_id} reports a value of VIRTIO_BALLOON_CMD_ID_STOP.
-+
-+If the driver is unable to supply pages, it MUST complete hinting by adding
-+an output descriptor containing the command ID VIRTIO_BALLOON_CMD_ID_STOP.
-+
-+The driver MAY release hinted pages for use by the guest including when the
-+device has not yet used the descriptor containing the hinting request.
-+
-+The driver MUST treat the content of all hinted pages as uninitialized
-+memory.
-+
-+The driver MUST initialize the contents of any previously hinted page
-+released before \field{free_page_hint_cmd_id} reports a value of
-+VIRTIO_BALLOON_CMD_ID_DONE.
-+
-+The driver SHOULD release all previously hinted pages for use by the guest
-+once \field{free_page_hint_cmd_id} reports a value of
-+VIRTIO_BALLOON_CMD_ID_DONE.
-+
-+\devicenormative{\paragraph}{Free Page Hinting}{Device Types / Memory Balloon Device / Device Operation / Free Page Hinting}
-+
-+Normative statements in this section apply if the
-+VIRTIO_BALLOON_F_FREE_PAGE_HINT feature has been negotiated.
-+
-+The device MUST set \field{free_page_hint_cmd_id} to
-+VIRTIO_BALLOON_CMD_ID_STOP any time that the dirty pages for the given
-+guest are being recorded.
-+
-+The device MUST NOT reuse a command ID until it has received an output
-+descriptor containing VIRTIO_BALLOON_CMD_ID_STOP from the driver.
-+
-+The device MUST ignore pages that are provided with a command ID that does
-+not match the current value in \field{free_page_hint_cmd_id}.
-+
-+If the content of a previously hinted page has not been modified by the
-+guest since the device issued the \field{free_page_hint_cmd_id} associated
-+with the hint, the device MAY modify the contents of the page.
-+
-+The device MUST NOT modify the content of a previously hinted page after
-+\field{free_page_hint_cmd_id} is set to VIRTIO_BALLOON_CMD_ID_DONE.
-+
-+The device MUST report a value of VIRTIO_BALLOON_CMD_ID_DONE in
-+\field{free_page_hint_cmd_id} when it no longer has need for the
-+previously hinted pages.
-+
- \subsubsection{Page Poison}\label{sec:Device Types / Memory Balloon Device / Device Operation / Page Poison}
- 
- Page Poison provides a way to notify the host that the guest is initializing
+Alexander Duyck (3):
+      virtio-balloon: Implement support for page poison reporting feature
+      virtio-balloon: Provide an interface for free page reporting
+      virtio-balloon: Replace free page hinting references to 'report' with 'hint'
 
 
+ hw/core/machine.c                  |    4 +
+ hw/virtio/virtio-balloon.c         |  179 ++++++++++++++++++++++++++++--------
+ include/hw/virtio/virtio-balloon.h |   23 ++---
+ 3 files changed, 155 insertions(+), 51 deletions(-)
 
-This publicly archived list offers a means to provide input to the
-OASIS Virtual I/O Device (VIRTIO) TC.
+--
 
-In order to verify user consent to the Feedback License terms and
-to minimize spam in the list archive, subscription is required
-before posting.
-
-Subscribe: virtio-comment-subscribe@lists.oasis-open.org
-Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
-List help: virtio-comment-help@lists.oasis-open.org
-List archive: https://lists.oasis-open.org/archives/virtio-comment/
-Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
-List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
-Committee: https://www.oasis-open.org/committees/virtio/
-Join OASIS: https://www.oasis-open.org/join/
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
