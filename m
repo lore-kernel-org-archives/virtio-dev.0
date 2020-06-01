@@ -1,64 +1,66 @@
-Return-Path: virtio-dev-return-7437-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-7431-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 5D246985E07
-	for <virtio-dev@lists.oasis-open.org>; Tue,  2 Jun 2020 07:09:56 +0000 (UTC)
-References: <20200507140139.17083-1-david@redhat.com>
-From: David Hildenbrand <david@redhat.com>
-Message-ID: <8e130bb2-e4bc-bbfc-a635-b44957f069ed@redhat.com>
-Date: Tue, 2 Jun 2020 09:09:28 +0200
+	by lists.oasis-open.org (Postfix) with ESMTP id A85E59842AF
+	for <virtio-dev@lists.oasis-open.org>; Mon,  1 Jun 2020 06:01:43 +0000 (UTC)
+Date: Mon, 1 Jun 2020 02:01:34 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20200601015736-mutt-send-email-mst@kernel.org>
+References: <0592979c-c8ae-fd28-2ddf-e64b135a7292@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <20200507140139.17083-1-david@redhat.com>
-Content-Language: en-US
-Subject: [virtio-dev] Re: [PATCH v4 00/15] virtio-mem: paravirtualized memory
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: linux-kernel@vger.kernel.org, "Michael S . Tsirkin" <mst@redhat.com>
-Cc: linux-mm@kvack.org, virtio-dev@lists.oasis-open.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, Michal Hocko <mhocko@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Alexander Duyck <alexander.h.duyck@linux.intel.com>, Alexander Potapenko <glider@google.com>, Anshuman Khandual <anshuman.khandual@arm.com>, Anthony Yznaga <anthony.yznaga@oracle.com>, Dan Williams <dan.j.williams@intel.com>, Dave Young <dyoung@redhat.com>, Igor Mammedov <imammedo@redhat.com>, Jason Wang <jasowang@redhat.com>, Johannes Weiner <hannes@cmpxchg.org>, Juergen Gross <jgross@suse.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Len Brown <lenb@kernel.org>, Mel Gorman <mgorman@techsingularity.net>, Michal Hocko <mhocko@suse.com>, Mike Rapoport <rppt@linux.ibm.com>, Oscar Salvador <osalvador@suse.com>, Oscar Salvador <osalvador@suse.de>, Pankaj Gupta <pankaj.gupta.linux@gmail.com>, Pavel Tatashin <pasha.tatashin@soleen.com>, Pavel Tatashin <pavel.tatashin@microsoft.com>, Pingfan Liu <kernelfans@gmail.com>, Qian Cai <cai@lca.pw>, "Rafael J. Wysocki" <rafael@kernel.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Stefan Hajnoczi <stefanha@redhat.com>, Vlastimil Babka <vbabka@suse.cz>, Wei Yang <richard.weiyang@gmail.com>
+In-Reply-To: <0592979c-c8ae-fd28-2ddf-e64b135a7292@redhat.com>
+Subject: [virtio-dev] Re: queue_enable vs QueueReady
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+To: Jason Wang <jasowang@redhat.com>
+Cc: Virtio-Dev <virtio-dev@lists.oasis-open.org>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 07.05.20 16:01, David Hildenbrand wrote:
-> This series is based on v5.7-rc4. The patches are located at:
->     https://github.com/davidhildenbrand/linux.git virtio-mem-v4
+On Thu, May 28, 2020 at 09:06:36PM +0800, Jason Wang wrote:
+> Hi:
 > 
-> This is basically a resend of v3 [1], now based on v5.7-rc4 and restested.
-> One patch was reshuffled and two ACKs I missed to add were added. The
-> rebase did not require any modifications to patches.
+> I found ambiguity in the virtio specification:
 > 
-> Details about virtio-mem can be found in the cover letter of v2 [2]. A
-> basic QEMU implementation was posted yesterday [3].
+> In PCI part, it describes the queue_enable as:
 > 
-> [1] https://lkml.kernel.org/r/20200507103119.11219-1-david@redhat.com
-> [2] https://lkml.kernel.org/r/20200311171422.10484-1-david@redhat.com
-> [3] https://lkml.kernel.org/r/20200506094948.76388-1-david@redhat.com
+> The driver uses this to selectively prevent the device from executing
+> requests from this virtqueue. 1 - enabled; 0 - disabled.
 > 
-> v3 -> v4:
-> - Move "MAINTAINERS: Add myself as virtio-mem maintainer" to #2
-> - Add two ACKs from Andrew (in reply to v2)
-> -- "mm: Allow to offline unmovable PageOffline() pages via ..."
-> -- "mm/memory_hotplug: Introduce offline_and_remove_memory()"
+> In MMIO part, it describes the QueueReady as:
 > 
-> v2 -> v3:
-> - "virtio-mem: Paravirtualized memory hotplug"
-> -- Include "linux/slab.h" to fix build issues
-> -- Remember the "region_size", helpful for patch #11
-> -- Minor simplifaction in virtio_mem_overlaps_range()
-> -- Use notifier_from_errno() instead of notifier_to_errno() in notifier
-> -- More reliable check for added memory when unloading the driver
-> - "virtio-mem: Allow to specify an ACPI PXM as nid"
-> -- Also print the nid
-> - Added patch #11-#15
+> Writing one (0x1) to this register notifies the device that it can execute
+> requests from this virtual queue. Reading from this register returns the
+> last value written to it. Both read and write accesses apply to the queue
+> selected by writing to QueueSel.
+> 
+> If I understand this correctly, they have the same meaning, but the driver
+> requirements section looks conflict:
+> 
+> PCI said: The driver MUST NOT write a 0 to queue_enable.
+> 
+> MMIO said:
+> 
+> To stop using the queue the driver MUST write zero (0x0) to this QueueReady
+> and MUST read the value back to ensure synchronization.
+> 
+> So we can't disable a queue via queue_enable but QueueReady. Any reason for
+> such inconsistency?
+> 
+> Thanks
 
-@MST ping, v5.7 has been released
+PCI assumed device reset is enough to stop all queues.  We had tons of
+bugs around shutdown because of this, so in hindsight, MMIO had maybe a
+better idea.
+
+Ability to stop a queue and take back buffers would be nice, e.g. serial
+is kind of messed up around port disconnect without it.
 
 -- 
-Thanks,
-
-David / dhildenb
+MST
 
 
 ---------------------------------------------------------------------
