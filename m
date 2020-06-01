@@ -1,230 +1,137 @@
-Return-Path: virtio-dev-return-7433-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-7432-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 04B64985E06
-	for <virtio-dev@lists.oasis-open.org>; Tue,  2 Jun 2020 02:04:18 +0000 (UTC)
-References: <20200529080303.15449-1-jasowang@redhat.com>
- <20200529080303.15449-5-jasowang@redhat.com>
- <CAJPjb1JGn-+Y2EHvn1S+=uX_cjPVEUmGGo7CmAM2kTqyn4NRYQ@mail.gmail.com>
-From: Jason Wang <jasowang@redhat.com>
-Message-ID: <e8a88037-4027-b919-684d-9b83416c1c12@redhat.com>
-Date: Tue, 2 Jun 2020 10:04:09 +0800
+	by lists.oasis-open.org (Postfix) with ESMTP id 903749842AF
+	for <virtio-dev@lists.oasis-open.org>; Mon,  1 Jun 2020 07:19:15 +0000 (UTC)
 MIME-Version: 1.0
-In-Reply-To: <CAJPjb1JGn-+Y2EHvn1S+=uX_cjPVEUmGGo7CmAM2kTqyn4NRYQ@mail.gmail.com>
-Content-Language: en-US
-Subject: Re: [virtio-dev] Re: [PATCH 4/6] vhost_vdpa: support doorbell mapping
- via mmap
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
-To: Rob Miller <rob.miller@broadcom.com>, Virtio-Dev <virtio-dev@lists.oasis-open.org>
-Cc: kvm@vger.kernel.org, virtualization@lists.linux-foundation.org, Netdev <netdev@vger.kernel.org>, linux-kernel@vger.kernel.org
+References: <20200206102058.247258-1-keiichiw@chromium.org>
+ <20200206102058.247258-2-keiichiw@chromium.org> <CAD90Vca6=AGq6aN8voNyQ7Lh69LeDZzCxebGQ+sv_mU+mqRGLA@mail.gmail.com>
+ <3754945.rEp4dnK8H5@os-lin-dmo> <CAD90VcZuvDj+-fdM89w-gYH=v4vc7x=R3sn032An4-vAX6hN0A@mail.gmail.com>
+In-Reply-To: <CAD90VcZuvDj+-fdM89w-gYH=v4vc7x=R3sn032An4-vAX6hN0A@mail.gmail.com>
+From: Alexandre Courbot <acourbot@chromium.org>
+Date: Mon, 1 Jun 2020 16:19:00 +0900
+Message-ID: <CAPBb6MXPgqYskDJr=PFb5LCWh1bV2R-FWXokCoDrmN+sEow5Xg@mail.gmail.com>
+Subject: [virtio-dev] Re: [PATCH v3 1/2] virtio-video: Add virtio video device specification
+Content-Type: text/plain; charset="UTF-8"
+To: Keiichi Watanabe <keiichiw@chromium.org>
+Cc: Dmitry Sepp <dmitry.sepp@opensynergy.com>, virtio-dev@lists.oasis-open.org, Linux Media Mailing List <linux-media@vger.kernel.org>, Alex Lau <alexlau@chromium.org>, Daniel Vetter <daniel@ffwll.ch>, Dylan Reid <dgreid@chromium.org>, David Staessens <dstaessens@chromium.org>, Enrico Granata <egranata@google.com>, Frediano Ziglio <fziglio@redhat.com>, Hans Verkuil <hverkuil@xs4all.nl>, Gerd Hoffmann <kraxel@redhat.com>, =?UTF-8?Q?St=C3=A9phane_Marchesin?= <marcheu@chromium.org>, Pawel Osciak <posciak@chromium.org>, spice-devel@lists.freedesktop.org, David Stevens <stevensd@chromium.org>, Tomasz Figa <tfiga@chromium.org>, uril@redhat.com, Samiullah Khawaja <samiullah.khawaja@opensynergy.com>, Kiran Pawar <kiran.pawar@opensynergy.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-
-On 2020/5/30 =E4=B8=8A=E5=8D=882:30, Rob Miller wrote:
-> Given the need for 4K doorbell such that QEMU can easily map, ect, and=20
-> assuming that I have a HW device which exposes 2 VQ's, with a=20
-> notification area off of BAR3, offset=3Dwhatever, notifier_multiplier=3D4=
-,=20
-> we don't need to have 2 x 4K pages mapped into the VM for both=20
-> doorbells do we? The guest driver would ring DB0 at BAR4+offset, and=20
-> DB1 at BAR4+offset+(4*1).
-
-
-This requires qemu to advertise notifier_multiplier =3D 4 to guest, it has=
-=20
-several implications:
-
-- guest may think control virtqueue sit in the same page then we can't=20
-trap access to control virtqueue, qemu may lose the state of the device
-- it requires the destination to have exact the same queue_notify_off=20
-and notifier_multiplier in order to let migration to work
-
-So for doorbell mapping itself, we can support the mapping of doorbells=20
-at once which may occupy one or more pages, but it may bring troubles=20
-for other features.
-
-
+On Fri, May 29, 2020 at 11:22 PM Keiichi Watanabe <keiichiw@chromium.org> wrote:
 >
-> The 4K per DB is useful=C2=A0how? This allows for QEMU trapping of=20
-> individual DBs, that can then be used to do what, just forward the DBs=20
-> via some other scheme - this makes sense for non-HW related Virtio=20
-> devices I guess. Is this why there is a qemu option?
+> Hi Dmitry,
+>
+> On Wed, May 27, 2020 at 9:12 PM Dmitry Sepp <dmitry.sepp@opensynergy.com> wrote:
+> >
+> > Hi Keiichi,
+> >
+> > On Montag, 18. Mai 2020 07:17:53 CEST Keiichi Watanabe wrote:
+> > > > +struct virtio_video_stream_create {
+> > > > +        struct virtio_video_cmd_hdr hdr;
+> > > > +        le32 in_mem_type; /* One of VIRTIO_VIDEO_MEM_TYPE_* types */
+> > > > +        le32 out_mem_type; /* One of VIRTIO_VIDEO_MEM_TYPE_* types */
+> > > > +        le32 coded_format; /* One of VIRTIO_VIDEO_FORMAT_* types */
+> > > > +        u8 padding[4];
+> > > > +        u8 tag[64];
+> > > > +};
+> > > > +\end{lstlisting}
+> > > > +\begin{description}
+> > > > +\item[\field{in_mem_type, out_mem_type}] is a type of buffer
+> > > > +  management for input /output buffers. The driver MUST set a value in
+> > > > +  \field{enum virtio_video_mem_type} that the device reported a
+> > > > +  corresponding feature bit.
+> > > > +\begin{description}
+> > > > +\item[\field{VIRTIO_VIDEO_MEM_TYPE_GUEST_PAGES}] Use guest pages.
+> > > > +\end{description}
+> > > > +\item[\field{coded_format}] is the encoded format that will be
+> > > > +  processed.
+> > > > +\item[\field{tag}] is the name associated with this stream. The tag
+> > > > +  MUST be encoded in UTF-8 and NUL-terminated.
+> > >
+> > > I wonder why we need this "tag" field. I have kept this field from
+> > > Dmitry's first proposal, where this was called "char debug_name[64]".
+> > > However, on second thought, I have no idea what is the necessity to
+> > > have this field. Our VMM implementation in ChromeOS simply ignores
+> > > this field.
+> > > If OpenSynergy's implementation relies on this field, I'm curious
+> > > about the usage. We might want to have an enum value instead of this
+> > > field where arbitrary values can be stored.
+> > >
+> >
+> > The use of this field is not so clear because it was renamed. In fact, one can
+> > have an idea how it is used by simply looking at the driver code: the field is
+> > useful to know about the guest client app that uses the context. If someone
+> > wants to store arbitrary values, they have 64 bytes to do so with this so-
+> > called tag.
+>
+> Hmm, though I understand this can be useful for you, I don't think we
+> should support it in the standard.
+> For the first example, I feel something is not abstracted well if you
+> want to send some information from a user app to the host device. User
+> applications shouldn't have a way to send messages to hardware
+> directly.
 
+I am also a bit uncomfortable with having fields whose usage is not
+clearly defined in the kernel. How would user-space specify the value
+it wants to set there?
 
-The page per vq option provides extra flexibility. Note that it's the=20
-layout seen by guest, so actually for hardware vendor, the most easy way=20
-is to:
+> For the second example, who is "someone"? Driver or device? In any
+> case, I don't think it's the right way. They should extend existing
+> structs or add commands or feature flags, I think. Also, if arbitrary
+> values are allowed, the field won't be used correctly except in cases
+> where both driver implementation and device implementation are
+> available. This is against what the spec should be: virtio protocol
+> must work independently from the implementations.
+> Of course, it's obviously okay to have it as a downstream extension in
+> your product's local repository.
+>
+> >
+> > > > +\end{description}
+> > > > +
+> > > > +The driver MUST set \field{stream_id} in \field{virtio_video_cmd_hdr}
+> > > > +to an integer that is not used before. If a used value is passed as
+> > > > +\field{stream_id}, the device MUST reports an error with
+> > > > +VIRTIO_VIDEO_RESP_ERR_INVALID_STREAM_ID.
+> > >
+> > > I'm wondering if we can't generate stream_id in the host side so that
+> > > we will have less error control code. In the current design, both the
+> > > device and the driver have error checks; the device must check that a
+> > > given ID is available and the driver must check if the device didn't
+> > > return the INVALID_STREAM_ID error. Instead, by generating IDs in the
+> > > device, we will be free from this type of failure. Same for
+> > > resource_id in RESOURCE_CREATE.
+> > >
+> > > I guess this design originally came from the virtio-gpu protocol.
+> > > However, I couldn't find a benefit of adopting the same design here.
+> > >
+> >
+> > Honestly I don't see too much difference: device still needs to check whether
+> > the id provided by the driver within some particular command is correct. If it
+> > is not, it will return an error. The driver needs to check (or skip checking)
+> > for an error either way as long as it is possible for the driver code to send
+> > a wrong number.
+>
+> I'm talking about creation commands only. So, other commands won't be affected.
+>
+> Let me try to explain my idea in a different way. The relationship
+> between the driver and the device can be seen as a client-server
+> model.
+> The client (driver) sends a request and the server (device) sends a
+> response by processing or generating some data.
+> Thus, I feel it's more natural that new data, including IDs, are
+> generated and provided by the device.
 
-- use a single doorbell register for all virtqueues except for the=20
-control virtqueue (driver can differ queue index by the value wrote by=20
-the driver)
-- do not share the page with other registers
-
-In this way, it doesn't require much BAR space and we can still:
-
-- map doorbell separately to guest: guest may see a page per vq doorbell=20
-layout but in fact all those pages are mapped into the same page
-- trap the control virtqueue, (don't do mmap for control vq)
-
-Thanks
-
-
->
-> Rob Miller
-> rob.miller@broadcom.com <mailto:rob.miller@broadcom.com>
-> (919)721-3339
->
->
-> On Fri, May 29, 2020 at 4:03 AM Jason Wang <jasowang@redhat.com=20
-> <mailto:jasowang@redhat.com>> wrote:
->
->     Currently the doorbell is relayed via eventfd which may have
->     significant overhead because of the cost of vmexits or syscall. This
->     patch introduces mmap() based doorbell mapping which can eliminate th=
-e
->     overhead caused by vmexit or syscall.
->
->     To ease the userspace modeling of the doorbell layout (usually
->     virtio-pci), this patch starts from a doorbell per page
->     model. Vhost-vdpa only support the hardware doorbell that sit at the
->     boundary of a page and does not share the page with other registers.
->
->     Doorbell of each virtqueue must be mapped separately, pgoff is the
->     index of the virtqueue. This allows userspace to map a subset of the
->     doorbell which may be useful for the implementation of software
->     assisted virtqueue (control vq) in the future.
->
->     Signed-off-by: Jason Wang <jasowang@redhat.com
->     <mailto:jasowang@redhat.com>>
->     ---
->     =C2=A0drivers/vhost/vdpa.c | 59
->     ++++++++++++++++++++++++++++++++++++++++++++
->     =C2=A01 file changed, 59 insertions(+)
->
->     diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
->     index 6ff72289f488..bbe23cea139a 100644
->     --- a/drivers/vhost/vdpa.c
->     +++ b/drivers/vhost/vdpa.c
->     @@ -15,6 +15,7 @@
->     =C2=A0#include <linux/module.h>
->     =C2=A0#include <linux/cdev.h>
->     =C2=A0#include <linux/device.h>
->     +#include <linux/mm.h>
->     =C2=A0#include <linux/iommu.h>
->     =C2=A0#include <linux/uuid.h>
->     =C2=A0#include <linux/vdpa.h>
->     @@ -741,12 +742,70 @@ static int vhost_vdpa_release(struct inode
->     *inode, struct file *filep)
->     =C2=A0 =C2=A0 =C2=A0 =C2=A0 return 0;
->     =C2=A0}
->
->     +static vm_fault_t vhost_vdpa_fault(struct vm_fault *vmf)
->     +{
->     +=C2=A0 =C2=A0 =C2=A0 =C2=A0struct vhost_vdpa *v =3D vmf->vma->vm_fil=
-e->private_data;
->     +=C2=A0 =C2=A0 =C2=A0 =C2=A0struct vdpa_device *vdpa =3D v->vdpa;
->     +=C2=A0 =C2=A0 =C2=A0 =C2=A0const struct vdpa_config_ops *ops =3D vdp=
-a->config;
->     +=C2=A0 =C2=A0 =C2=A0 =C2=A0struct vdpa_notification_area notify;
->     +=C2=A0 =C2=A0 =C2=A0 =C2=A0struct vm_area_struct *vma =3D vmf->vma;
->     +=C2=A0 =C2=A0 =C2=A0 =C2=A0u16 index =3D vma->vm_pgoff;
->     +
->     +=C2=A0 =C2=A0 =C2=A0 =C2=A0notify =3D ops->get_vq_notification(vdpa,=
- index);
->     +
->     +=C2=A0 =C2=A0 =C2=A0 =C2=A0vma->vm_page_prot =3D pgprot_noncached(vm=
-a->vm_page_prot);
->     +=C2=A0 =C2=A0 =C2=A0 =C2=A0if (remap_pfn_range(vma, vmf->address & P=
-AGE_MASK,
->     +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0notify.addr >> PAGE_SHIFT, PAGE_SIZE,
->     +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0vma->vm_page_prot))
->     +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0return VM_FAU=
-LT_SIGBUS;
->     +
->     +=C2=A0 =C2=A0 =C2=A0 =C2=A0return VM_FAULT_NOPAGE;
->     +}
->     +
->     +static const struct vm_operations_struct vhost_vdpa_vm_ops =3D {
->     +=C2=A0 =C2=A0 =C2=A0 =C2=A0.fault =3D vhost_vdpa_fault,
->     +};
->     +
->     +static int vhost_vdpa_mmap(struct file *file, struct
->     vm_area_struct *vma)
->     +{
->     +=C2=A0 =C2=A0 =C2=A0 =C2=A0struct vhost_vdpa *v =3D vma->vm_file->pr=
-ivate_data;
->     +=C2=A0 =C2=A0 =C2=A0 =C2=A0struct vdpa_device *vdpa =3D v->vdpa;
->     +=C2=A0 =C2=A0 =C2=A0 =C2=A0const struct vdpa_config_ops *ops =3D vdp=
-a->config;
->     +=C2=A0 =C2=A0 =C2=A0 =C2=A0struct vdpa_notification_area notify;
->     +=C2=A0 =C2=A0 =C2=A0 =C2=A0int index =3D vma->vm_pgoff;
->     +
->     +=C2=A0 =C2=A0 =C2=A0 =C2=A0if (vma->vm_end - vma->vm_start !=3D PAGE=
-_SIZE)
->     +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0return -EINVA=
-L;
->     +=C2=A0 =C2=A0 =C2=A0 =C2=A0if ((vma->vm_flags & VM_SHARED) =3D=3D 0)
->     +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0return -EINVA=
-L;
->     +=C2=A0 =C2=A0 =C2=A0 =C2=A0if (vma->vm_flags & VM_READ)
->     +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0return -EINVA=
-L;
->     +=C2=A0 =C2=A0 =C2=A0 =C2=A0if (index > 65535)
->     +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0return -EINVA=
-L;
->     +=C2=A0 =C2=A0 =C2=A0 =C2=A0if (!ops->get_vq_notification)
->     +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0return -ENOTS=
-UPP;
->     +
->     +=C2=A0 =C2=A0 =C2=A0 =C2=A0/* To be safe and easily modelled by user=
-space, We only
->     +=C2=A0 =C2=A0 =C2=A0 =C2=A0 * support the doorbell which sits on the=
- page boundary and
->     +=C2=A0 =C2=A0 =C2=A0 =C2=A0 * does not share the page with other reg=
-isters.
->     +=C2=A0 =C2=A0 =C2=A0 =C2=A0 */
->     +=C2=A0 =C2=A0 =C2=A0 =C2=A0notify =3D ops->get_vq_notification(vdpa,=
- index);
->     +=C2=A0 =C2=A0 =C2=A0 =C2=A0if (notify.addr & (PAGE_SIZE - 1))
->     +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0return -EINVA=
-L;
->     +=C2=A0 =C2=A0 =C2=A0 =C2=A0if (vma->vm_end - vma->vm_start !=3D noti=
-fy.size)
->     +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0return -ENOTS=
-UPP;
->     +
->     +=C2=A0 =C2=A0 =C2=A0 =C2=A0vma->vm_ops =3D &vhost_vdpa_vm_ops;
->     +=C2=A0 =C2=A0 =C2=A0 =C2=A0return 0;
->     +}
->     +
->     =C2=A0static const struct file_operations vhost_vdpa_fops =3D {
->     =C2=A0 =C2=A0 =C2=A0 =C2=A0 .owner=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=3D THIS_MODULE,
->     =C2=A0 =C2=A0 =C2=A0 =C2=A0 .open=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0=3D vhost_vdpa_open,
->     =C2=A0 =C2=A0 =C2=A0 =C2=A0 .release=C2=A0 =C2=A0 =C2=A0 =C2=A0 =3D v=
-host_vdpa_release,
->     =C2=A0 =C2=A0 =C2=A0 =C2=A0 .write_iter=C2=A0 =C2=A0 =C2=A0=3D vhost_=
-vdpa_chr_write_iter,
->     =C2=A0 =C2=A0 =C2=A0 =C2=A0 .unlocked_ioctl =3D vhost_vdpa_unlocked_i=
-octl,
->     +=C2=A0 =C2=A0 =C2=A0 =C2=A0.mmap=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0=3D vhost_vdpa_mmap,
->     =C2=A0 =C2=A0 =C2=A0 =C2=A0 .compat_ioctl=C2=A0 =C2=A0=3D compat_ptr_=
-ioctl,
->     =C2=A0};
->
->     --=20
->     2.20.1
->
-
+This also results in one less check on the device side: when creating
+a stream it just needs to pick the first available ID, instead of
+checking whether the client provided something valid. This also
+removes the burden of managing stream IDs from the driver, since the
+device is entirely in charge of it (something it would have to do
+anyway in both cases since it would still need to check that the
+client-provided ID is valid).
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
