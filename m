@@ -1,65 +1,61 @@
-Return-Path: virtio-dev-return-7443-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-7437-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id CE1339860D7
-	for <virtio-dev@lists.oasis-open.org>; Fri,  5 Jun 2020 12:18:58 +0000 (UTC)
-References: <20191212171137.13872-1-david@redhat.com>
- <9acc5d04-c8e9-ef53-85e4-709030997ca6@redhat.com>
- <1cfa9edb-47ea-1495-4e28-4cf391eab44c@linux.alibaba.com>
- <d6cd1870-1012-cb3d-7d29-8e5ad2703717@redhat.com>
- <6b4724bf-84b5-9880-5464-1908425d106d@redhat.com>
- <e1643897-ebd7-75f8-d271-44f62318aa66@redhat.com>
- <95c6ef21-23e0-c768-999d-3af7f69d02d3@linux.alibaba.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 5D246985E07
+	for <virtio-dev@lists.oasis-open.org>; Tue,  2 Jun 2020 07:09:56 +0000 (UTC)
+References: <20200507140139.17083-1-david@redhat.com>
 From: David Hildenbrand <david@redhat.com>
-Message-ID: <b41dcc92-604e-0c48-92e5-5cb3d78f189e@redhat.com>
-Date: Fri, 5 Jun 2020 14:18:28 +0200
+Message-ID: <8e130bb2-e4bc-bbfc-a635-b44957f069ed@redhat.com>
+Date: Tue, 2 Jun 2020 09:09:28 +0200
 MIME-Version: 1.0
-In-Reply-To: <95c6ef21-23e0-c768-999d-3af7f69d02d3@linux.alibaba.com>
+In-Reply-To: <20200507140139.17083-1-david@redhat.com>
 Content-Language: en-US
-Subject: [virtio-dev] Re: [PATCH RFC v4 00/13] virtio-mem: paravirtualized memory
+Subject: [virtio-dev] Re: [PATCH v4 00/15] virtio-mem: paravirtualized memory
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-To: Alex Shi <alex.shi@linux.alibaba.com>, linux-kernel@vger.kernel.org
-Cc: linux-mm@kvack.org, virtio-dev@lists.oasis-open.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, Michal Hocko <mhocko@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, "Michael S . Tsirkin" <mst@redhat.com>, Sebastien Boeuf <sebastien.boeuf@intel.com>, Samuel Ortiz <samuel.ortiz@intel.com>, Robert Bradford <robert.bradford@intel.com>, Luiz Capitulino <lcapitulino@redhat.com>, Alexander Duyck <alexander.h.duyck@linux.intel.com>, Alexander Potapenko <glider@google.com>, Alexander Viro <viro@zeniv.linux.org.uk>, Anshuman Khandual <anshuman.khandual@arm.com>, Anthony Yznaga <anthony.yznaga@oracle.com>, Dan Williams <dan.j.williams@intel.com>, Dave Young <dyoung@redhat.com>, Igor Mammedov <imammedo@redhat.com>, Jason Wang <jasowang@redhat.com>, Johannes Weiner <hannes@cmpxchg.org>, Juergen Gross <jgross@suse.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Len Brown <lenb@kernel.org>, Mel Gorman <mgorman@techsingularity.net>, Michal Hocko <mhocko@suse.com>, Mike Rapoport <rppt@linux.ibm.com>, Oscar Salvador <osalvador@suse.com>, Oscar Salvador <osalvador@suse.de>, Pavel Tatashin <pasha.tatashin@soleen.com>, Pavel Tatashin <pavel.tatashin@microsoft.com>, Pingfan Liu <kernelfans@gmail.com>, Qian Cai <cai@lca.pw>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Stefan Hajnoczi <stefanha@redhat.com>, Vlastimil Babka <vbabka@suse.cz>, Wei Yang <richard.weiyang@gmail.com>
+Content-Transfer-Encoding: 7bit
+To: linux-kernel@vger.kernel.org, "Michael S . Tsirkin" <mst@redhat.com>
+Cc: linux-mm@kvack.org, virtio-dev@lists.oasis-open.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, Michal Hocko <mhocko@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Alexander Duyck <alexander.h.duyck@linux.intel.com>, Alexander Potapenko <glider@google.com>, Anshuman Khandual <anshuman.khandual@arm.com>, Anthony Yznaga <anthony.yznaga@oracle.com>, Dan Williams <dan.j.williams@intel.com>, Dave Young <dyoung@redhat.com>, Igor Mammedov <imammedo@redhat.com>, Jason Wang <jasowang@redhat.com>, Johannes Weiner <hannes@cmpxchg.org>, Juergen Gross <jgross@suse.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Len Brown <lenb@kernel.org>, Mel Gorman <mgorman@techsingularity.net>, Michal Hocko <mhocko@suse.com>, Mike Rapoport <rppt@linux.ibm.com>, Oscar Salvador <osalvador@suse.com>, Oscar Salvador <osalvador@suse.de>, Pankaj Gupta <pankaj.gupta.linux@gmail.com>, Pavel Tatashin <pasha.tatashin@soleen.com>, Pavel Tatashin <pavel.tatashin@microsoft.com>, Pingfan Liu <kernelfans@gmail.com>, Qian Cai <cai@lca.pw>, "Rafael J. Wysocki" <rafael@kernel.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Stefan Hajnoczi <stefanha@redhat.com>, Vlastimil Babka <vbabka@suse.cz>, Wei Yang <richard.weiyang@gmail.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 05.06.20 12:46, Alex Shi wrote:
->=20
->=20
-> =E5=9C=A8 2020/6/5 =E4=B8=8B=E5=8D=886:05, David Hildenbrand =E5=86=99=E9=
-=81=93:
->>> I guess I know what's happening here. In case we only have DMA memory
->>> when booting, we don't reserve swiotlb buffers. Once we hotplug memory
->>> and online ZONE_NORMAL, we don't have any swiotlb DMA bounce buffers to
->>> map such PFNs (total 0 (slots), used 0 (slots)).
->>>
->>> Can you try with "swiotlb=3Dforce" on the kernel cmdline?
->> Alternative, looks like you can specify "-m 2G,maxmem=3D16G,slots=3D1", =
-to
->> create proper ACPI tables that indicate hotpluggable memory. (I'll have
->> to look into QEMU to figure out to always indicate hotpluggable memory
->> that way).
->>
->=20
->=20
-> That works too. Yes, better resolved in qemu, maybe. :)
->=20
+On 07.05.20 16:01, David Hildenbrand wrote:
+> This series is based on v5.7-rc4. The patches are located at:
+>     https://github.com/davidhildenbrand/linux.git virtio-mem-v4
+> 
+> This is basically a resend of v3 [1], now based on v5.7-rc4 and restested.
+> One patch was reshuffled and two ACKs I missed to add were added. The
+> rebase did not require any modifications to patches.
+> 
+> Details about virtio-mem can be found in the cover letter of v2 [2]. A
+> basic QEMU implementation was posted yesterday [3].
+> 
+> [1] https://lkml.kernel.org/r/20200507103119.11219-1-david@redhat.com
+> [2] https://lkml.kernel.org/r/20200311171422.10484-1-david@redhat.com
+> [3] https://lkml.kernel.org/r/20200506094948.76388-1-david@redhat.com
+> 
+> v3 -> v4:
+> - Move "MAINTAINERS: Add myself as virtio-mem maintainer" to #2
+> - Add two ACKs from Andrew (in reply to v2)
+> -- "mm: Allow to offline unmovable PageOffline() pages via ..."
+> -- "mm/memory_hotplug: Introduce offline_and_remove_memory()"
+> 
+> v2 -> v3:
+> - "virtio-mem: Paravirtualized memory hotplug"
+> -- Include "linux/slab.h" to fix build issues
+> -- Remember the "region_size", helpful for patch #11
+> -- Minor simplifaction in virtio_mem_overlaps_range()
+> -- Use notifier_from_errno() instead of notifier_to_errno() in notifier
+> -- More reliable check for added memory when unloading the driver
+> - "virtio-mem: Allow to specify an ACPI PXM as nid"
+> -- Also print the nid
+> - Added patch #11-#15
 
-You can checkout
+@MST ping, v5.7 has been released
 
-git@github.com:davidhildenbrand/qemu.git virtio-mem-v4
-
-(prone to change before officially sent), which will create srat tables
-also if no "slots" parameter was defined (and no -numa config was
-specified).
-
-Your original example should work with that.
-
---=20
+-- 
 Thanks,
 
 David / dhildenb
