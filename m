@@ -1,113 +1,114 @@
-Return-Path: virtio-dev-return-7487-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-7453-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id F2428985F63
-	for <virtio-dev@lists.oasis-open.org>; Thu, 18 Jun 2020 19:00:45 +0000 (UTC)
-Date: Thu, 18 Jun 2020 20:00:32 +0100
-From: "Dr. David Alan Gilbert" <dgilbert@redhat.com>
-Message-ID: <20200618190032.GH2769@work-vm>
-References: <20200527041212.12700.60627.stgit@localhost.localdomain>
- <20200527041414.12700.50293.stgit@localhost.localdomain>
- <CAKgT0UdPC1s0c-wqsNc4x8DeZhtZQVMmLArWQ=Z345Mkof650Q@mail.gmail.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id F1D6E985C23
+	for <virtio-dev@lists.oasis-open.org>; Mon,  8 Jun 2020 15:37:38 +0000 (UTC)
 MIME-Version: 1.0
-In-Reply-To: <CAKgT0UdPC1s0c-wqsNc4x8DeZhtZQVMmLArWQ=Z345Mkof650Q@mail.gmail.com>
-Subject: Re: [virtio-dev] Re: [PATCH v25 QEMU 3/3] virtio-balloon: Replace
- free page hinting references to 'report' with 'hint'
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-To: Alexander Duyck <alexander.duyck@gmail.com>
-Cc: David Hildenbrand <david@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>, virtio-dev@lists.oasis-open.org, qemu-devel@nongnu.org
+References: <20200527041212.12700.60627.stgit@localhost.localdomain>
+In-Reply-To: <20200527041212.12700.60627.stgit@localhost.localdomain>
+From: Alexander Duyck <alexander.duyck@gmail.com>
+Date: Mon, 8 Jun 2020 08:37:26 -0700
+Message-ID: <CAKgT0Ue4DU9cP7BLCBHEU+kLzZjyZTFj-MqMDranezZVZ0W4pg@mail.gmail.com>
+Subject: [virtio-dev] Re: [PATCH v25 QEMU 0/3] virtio-balloon: add support for page poison
+ and free page reporting
+Content-Type: text/plain; charset="UTF-8"
+To: David Hildenbrand <david@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>
+Cc: virtio-dev@lists.oasis-open.org, qemu-devel@nongnu.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-* Alexander Duyck (alexander.duyck@gmail.com) wrote:
-> On Tue, May 26, 2020 at 9:14 PM Alexander Duyck
-> <alexander.duyck@gmail.com> wrote:
-> >
-> > From: Alexander Duyck <alexander.h.duyck@linux.intel.com>
-> >
-> > In an upcoming patch a feature named Free Page Reporting is about to be
-> > added. In order to avoid any confusion we should drop the use of the word
-> > 'report' when referring to Free Page Hinting. So what this patch does is go
-> > through and replace all instances of 'report' with 'hint" when we are
-> > referring to free page hinting.
-> >
-> > Acked-by: David Hildenbrand <david@redhat.com>
-> > Signed-off-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
-> > ---
-> >  hw/virtio/virtio-balloon.c         |   78 ++++++++++++++++++------------------
-> >  include/hw/virtio/virtio-balloon.h |   20 +++++----
-> >  2 files changed, 49 insertions(+), 49 deletions(-)
-> >
-> > diff --git a/hw/virtio/virtio-balloon.c b/hw/virtio/virtio-balloon.c
-> > index 3e2ac1104b5f..dc15409b0bb6 100644
-> > --- a/hw/virtio/virtio-balloon.c
-> > +++ b/hw/virtio/virtio-balloon.c
-> 
-> ...
-> 
-> > @@ -817,14 +817,14 @@ static int virtio_balloon_post_load_device(void *opaque, int version_id)
-> >      return 0;
-> >  }
-> >
-> > -static const VMStateDescription vmstate_virtio_balloon_free_page_report = {
-> > +static const VMStateDescription vmstate_virtio_balloon_free_page_hint = {
-> >      .name = "virtio-balloon-device/free-page-report",
-> >      .version_id = 1,
-> >      .minimum_version_id = 1,
-> >      .needed = virtio_balloon_free_page_support,
-> >      .fields = (VMStateField[]) {
-> > -        VMSTATE_UINT32(free_page_report_cmd_id, VirtIOBalloon),
-> > -        VMSTATE_UINT32(free_page_report_status, VirtIOBalloon),
-> > +        VMSTATE_UINT32(free_page_hint_cmd_id, VirtIOBalloon),
-> > +        VMSTATE_UINT32(free_page_hint_status, VirtIOBalloon),
-> >          VMSTATE_END_OF_LIST()
-> >      }
-> >  };
-> 
-> So I noticed this patch wasn't in the list of patches pulled, but that
-> is probably for the best since I believe the change above might have
-> broken migration as VMSTATE_UINT32 does a stringify on the first
-> parameter.
-> Any advice on how to address it, or should I just give up on renaming
-> free_page_report_cmd_id and free_page_report_status?
+It's been almost 2 weeks since I submitted this. Just thought I would
+follow up and see if there is any ETA on when this might be applied,
+or if I missed the need to fix something and resubmit.
 
-The filed names never hit the wire; the migration format is trivial
-binary, especially of things like integers - that lands as just 4 bytes
-on the wire [ hopefully in the place where the destination expects to
-receive them ].
-You need to be careful of the names of top level vmstate devices, and
-the names of subsections; I don't think any other naming is in the
-stream.
-(We've even done hacks in the past of converting a VMSTATE_UINT32 to a
-pair of UINT16 )
+Thanks.
 
-Dave
+- Alex
 
-> Looking at this I wonder why we even need to migrate these values? It
-> seems like if we are completing a migration the cmd_id should always
-> be "DONE" shouldn't it? It isn't as if we are going to migrate the
-> hinting from one host to another. We will have to start over which is
-> essentially the signal that the "DONE" value provides. Same thing for
-> the status. We shouldn't be able to migrate unless both of these are
-> already in the "DONE" state so if anything I wonder if we shouldn't
-> have that as the initial state for the device and just drop the
-> migration info.
-> 
-> Thanks.
-> 
-> - Alex
-> 
-> ---------------------------------------------------------------------
-> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
-> 
---
-Dr. David Alan Gilbert / dgilbert@redhat.com / Manchester, UK
 
+On Tue, May 26, 2020 at 9:13 PM Alexander Duyck
+<alexander.duyck@gmail.com> wrote:
+>
+> This series provides an asynchronous means of reporting free guest pages
+> to QEMU through virtio-balloon so that the memory associated with those
+> pages can be dropped and reused by other processes and/or guests on the
+> host. Using this it is possible to avoid unnecessary I/O to disk and
+> greatly improve performance in the case of memory overcommit on the host.
+>
+> I originally submitted this patch series back on February 11th 2020[1],
+> but at that time I was focused primarily on the kernel portion of this
+> patch set. However as of April 7th those patches are now included in
+> Linus's kernel tree[2] and so I am submitting the QEMU pieces for
+> inclusion.
+>
+> [1]: https://lore.kernel.org/lkml/20200211224416.29318.44077.stgit@localhost.localdomain/
+> [2]: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=b0c504f154718904ae49349147e3b7e6ae91ffdc
+>
+> Changes from v17:
+> Fixed typo in patch 1 title
+> Addressed white-space issues reported via checkpatch
+> Added braces {} for two if statements to match expected coding style
+>
+> Changes from v18:
+> Updated patches 2 and 3 based on input from dhildenb
+> Added comment to patch 2 describing what keeps us from reporting a bad page
+> Added patch to address issue with ROM devices being directly writable
+>
+> Changes from v19:
+> Added std-headers change to match changes pushed for linux kernel headers
+> Added patch to remove "report" from page hinting code paths
+> Updated comment to better explain why we disable hints w/ page poisoning
+> Removed code that was modifying config size for poison vs hinting
+> Dropped x-page-poison property
+> Added code to bounds check the reported region vs the RAM block
+> Dropped patch for ROM devices as that was already pulled in by Paolo
+>
+> Changes from v20:
+> Rearranged patches to push Linux header sync patches to front
+> Removed association between free page hinting and VIRTIO_BALLOON_F_PAGE_POISON
+> Added code to enable VIRTIO_BALLOON_F_PAGE_POISON if page reporting is enabled
+> Fixed possible resource leak if poison or qemu_balloon_is_inhibited return true
+>
+> Changes from v21:
+> Added ack for patch 3
+> Rewrote patch description for page poison reporting feature
+> Made page-poison independent property and set to enabled by default
+> Added logic to migrate poison_val
+> Added several comments in code to better explain features
+> Switched free-page-reporting property to disabled by default
+>
+> Changes from v22:
+> Added ack for patches 4 & 5
+> Added additional comment fixes in patch 3 to remove "reporting" reference
+> Renamed rvq in patch 5 to reporting_vq to better match linux kernel
+> Moved call adding reporting_vq to after free_page_vq
+>
+> Changes from v23:
+> Rebased on latest QEMU
+> Dropped patches 1 & 2 as Linux kernel headers were synced
+> Added compat machine code for page-poison feature
+>
+> Changes from v24:
+> Moved free page hinting rename to end of set as feature may be removed entirely
+> Added code to cleanup reporting_vq
+>
+> ---
+>
+> Alexander Duyck (3):
+>       virtio-balloon: Implement support for page poison reporting feature
+>       virtio-balloon: Provide an interface for free page reporting
+>       virtio-balloon: Replace free page hinting references to 'report' with 'hint'
+>
+>
+>  hw/core/machine.c                  |    4 +
+>  hw/virtio/virtio-balloon.c         |  179 ++++++++++++++++++++++++++++--------
+>  include/hw/virtio/virtio-balloon.h |   23 ++---
+>  3 files changed, 155 insertions(+), 51 deletions(-)
+>
+> --
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
