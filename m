@@ -1,61 +1,50 @@
-Return-Path: virtio-dev-return-7462-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-7450-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id BABD4986107
-	for <virtio-dev@lists.oasis-open.org>; Thu, 11 Jun 2020 10:57:35 +0000 (UTC)
-References: <20200611093518.5737-1-david@redhat.com>
- <CAM9Jb+jk=mHHQtLJ78=xZrebo6X6euGK_-aEjgQb-qtKjke-FA@mail.gmail.com>
-From: David Hildenbrand <david@redhat.com>
-Message-ID: <aed44d47-2995-555d-834f-20a919132bee@redhat.com>
-Date: Thu, 11 Jun 2020 12:57:25 +0200
+	by lists.oasis-open.org (Postfix) with ESMTP id D4110985A41
+	for <virtio-dev@lists.oasis-open.org>; Mon,  8 Jun 2020 09:43:35 +0000 (UTC)
+Date: Mon, 8 Jun 2020 05:43:27 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20200608054234-mutt-send-email-mst@kernel.org>
+References: <20200311112004.47138-1-stevensd@chromium.org>
+ <20200311112004.47138-5-stevensd@chromium.org>
+ <20200513123326-mutt-send-email-mst@kernel.org>
+ <CAD=HUj5qcMLw__LfJizR6nzCR9Qmu21Sjk3i0j_8+=rxt1Hk=w@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <CAM9Jb+jk=mHHQtLJ78=xZrebo6X6euGK_-aEjgQb-qtKjke-FA@mail.gmail.com>
-Content-Language: en-US
-Subject: [virtio-dev] Re: [PATCH v1] virtio-mem: add memory via add_memory_driver_managed()
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: Pankaj Gupta <pankaj.gupta.linux@gmail.com>
-Cc: LKML <linux-kernel@vger.kernel.org>, Linux MM <linux-mm@kvack.org>, virtio-dev@lists.oasis-open.org, virtualization@lists.linux-foundation.org, kvm@vger.kernel.org, "Michael S . Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, teawater <teawaterz@linux.alibaba.com>
+In-Reply-To: <CAD=HUj5qcMLw__LfJizR6nzCR9Qmu21Sjk3i0j_8+=rxt1Hk=w@mail.gmail.com>
+Subject: [virtio-dev] Re: [PATCH v3 4/4] drm/virtio: Support virtgpu exported resources
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+To: David Stevens <stevensd@chromium.org>
+Cc: Gerd Hoffmann <kraxel@redhat.com>, David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>, Jason Wang <jasowang@redhat.com>, Sumit Semwal <sumit.semwal@linaro.org>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, open list <linux-kernel@vger.kernel.org>, ML dri-devel <dri-devel@lists.freedesktop.org>, "open list:VIRTIO GPU DRIVER" <virtualization@lists.linux-foundation.org>, Linux Media Mailing List <linux-media@vger.kernel.org>, "moderated list:DMA BUFFER SHARING FRAMEWORK" <linaro-mm-sig@lists.linaro.org>, virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 11.06.20 12:32, Pankaj Gupta wrote:
->> Virtio-mem managed memory is always detected and added by the virtio-mem
->> driver, never using something like the firmware-provided memory map.
->> This is the case after an ordinary system reboot, and has to be guaranteed
->> after kexec. Especially, virtio-mem added memory resources can contain
->> inaccessible parts ("unblocked memory blocks"), blindly forwarding them
->> to a kexec kernel is dangerous, as unplugged memory will get accessed
->> (esp. written).
->>
->> Let's use the new way of adding special driver-managed memory introduced
->> in commit 75ac4c58bc0d ("mm/memory_hotplug: introduce
->> add_memory_driver_managed()").
+On Fri, May 15, 2020 at 04:26:15PM +0900, David Stevens wrote:
+> > > +     if (virtio_has_feature(vgdev->vdev, VIRTIO_GPU_F_RESOURCE_UUID)) {
+> > > +             vgdev->has_resource_assign_uuid = true;
+> > > +     }
+> >
+> >
+> > Just a question: this relies on DMA bufs so I assume it is
+> > not really assumed to work when DMA API is bypassed, right?
+> > Rather than worry what does it mean, how about just
+> > disabling  this feature without PLATFORM_DMA for now?
 > 
-> Is this commit id correct?
+> By PLATFORM_DMA, do you mean CONFIG_DMA_SHARED_BUFFER?
 
-Good point, it's the one from next-20200605.
+Sorry, no. I mean VIRTIO_F_IOMMU_PLATFORM which in the
+future will be renamed to VIRTIO_F_PLATFORM_ACCESS.
 
-7b7b27214bba
 
-Is the correct one.
-
-[...]
-
+> Virtio-gpu
+> depends on DRM, which selects that feature. So I think DMA bufs should
+> always be available when virtio-gpu is present.
 > 
-> Looks good to me.
-> Reviewed-by: Pankaj Gupta <pankaj.gupta.linux@gmail.com>
-> 
-
-Thanks!
-
--- 
-Thanks,
-
-David / dhildenb
+> -David
 
 
 ---------------------------------------------------------------------
