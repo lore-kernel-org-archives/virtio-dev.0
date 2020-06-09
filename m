@@ -1,115 +1,63 @@
-Return-Path: virtio-dev-return-7509-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-7455-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 153AB985F90
-	for <virtio-dev@lists.oasis-open.org>; Wed, 24 Jun 2020 18:01:23 +0000 (UTC)
-From: Nikos Dragazis <ndragazis@arrikto.com>
-References: <20200518203721.7625-1-ndragazis@arrikto.com>
-Message-ID: <29c5b38a-ac06-aa91-9f5c-54e00834ed9b@arrikto.com>
-Date: Wed, 24 Jun 2020 21:01:19 +0300
+	by lists.oasis-open.org (Postfix) with ESMTP id 75A1C985DA2
+	for <virtio-dev@lists.oasis-open.org>; Tue,  9 Jun 2020 01:25:48 +0000 (UTC)
+From: David Stevens <stevensd@chromium.org>
+Date: Tue,  9 Jun 2020 10:25:15 +0900
+Message-Id: <20200609012518.198908-1-stevensd@chromium.org>
 MIME-Version: 1.0
-In-Reply-To: <20200518203721.7625-1-ndragazis@arrikto.com>
-Content-Language: en-US
-Subject: Re: [virtio-dev] [PATCH v5 00/10] introduce virtio vhost-user backend
- device type
-Content-Type: text/plain; charset=utf-8; format=flowed
+Subject: [virtio-dev] [PATCH v5 0/3] Support virtio cross-device resources
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: quoted-printable
-To: virtio-dev@lists.oasis-open.org
-Cc: Stefan Hajnoczi <stefanha@redhat.com>, "Michael S . Tsirkin" <mst@redhat.com>
+To: Gerd Hoffmann <kraxel@redhat.com>, David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>, Sumit Semwal <sumit.semwal@linaro.org>, "Michael S . Tsirkin" <mst@redhat.com>
+Cc: Jason Wang <jasowang@redhat.com>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, David Stevens <stevensd@chromium.org>, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, virtualization@lists.linux-foundation.org, linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org, virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 18/5/20 11:37 =CE=BC.=CE=BC., Nikos Dragazis wrote:
+This patchset implements the current proposal for virtio cross-device
+resource sharing [1]. It will be used to import virtio resources into
+the virtio-video driver currently under discussion [2]. The patch
+under consideration to add support in the virtio-video driver is [3].
+It uses the APIs from v3 of this series, but the changes to update it
+are relatively minor.
 
-> Hi everyone,
->
-> this patch presents an updated version of the virtio device spec for the
-> virtio-vhost-user device. The initial RFC implementation can be found
-> here: [1]. It=E2=80=99s been a long time since the last revision. I=E2=80=
-=99m sending
-> this patch to kick off the discussion again. I'm Cc-ing Stefan and
-> Michael who had engaged with this in the past.
->
-> In this fifth revision of the patch I have made some minor and major
-> changes. The most important is the drop of the device-specific PCI
-> capabilities, as Michael suggested [2]. This guarantees portability
-> across transports, i.e., the device spec is not bound to the PCI
-> transport, as it used to be up to this point.
->
-> In more detail, the changes in this revision are outlined below. You can
-> find an HTML version here: [3]. Note that I have kept the commits
-> separate so that it is easy to track the changes from the previous
-> revision [4].
->
-> Looking forward to your comments.
->
-> Thanks,
-> Nikos
->
-> v5 changes:
->   * Change device id from #28 to #32
->   * Fix definitions of VIRTIO_VHOST_USER_STATUS_{MASTER,SLAVE}_UP bits
->   * Remove the extra PCI capabilities and use existing virtio registers
->     instead
->   * Intercept slave's reply to VHOST_USER_GET_PROTOCOL_FEATURES
->   * Some more minor fixes (typos, etc.)
->
-> v4 changes:
->   * Add comformance targets for the virtio-vhost-user device.
->   * Update the reference link for the vhost-user protocol specification.
->
-> v3 changes:
->   * Device Requirements for the Notification Capability: point out the
->     difference between the MSI-X Table Size stored in the Message Control
->     register of the MSI-X capability structure and the actual MSI-X Table
->     Size
->
-> v2 changes:
->   * Change device id from #25 to #28
->
->
-> [1] https://lists.oasis-open.org/archives/virtio-dev/201801/msg00110.html
-> [2] https://lists.oasis-open.org/archives/virtio-dev/201908/msg00014.html
-> [3] https://ndragazis.github.io/virtio/vvu/v5/virtio-v1.1-cs01.html#x1-49=
-600014
-> [4] https://lists.oasis-open.org/archives/virtio-dev/201906/msg00036.html
->
-> Nikos Dragazis (9):
->    vhost-user: minor fixes
->    vhost-user: add requirements for the notification capability
->    vhost-user: update shared memory capability
->    vhost-user: add conformance targets and clauses
->    vhost-user: change the device id
->    vhost-user: minor fix on status register
->    vhost-user: remove the extra PCI capabilities
->    vhost-user: intercept slave's reply to
->      VHOST_USER_GET_PROTOCOL_FEATURES
->    vhost-user: clarify that we are talking about slave-initiated messages
->
-> Stefan Hajnoczi (1):
->    vhost-user: add vhost-user device type
->
->   conformance.tex       |  11 +-
->   content.tex           |   3 +
->   introduction.tex      |   1 +
->   virtio-vhost-user.tex | 282 ++++++++++++++++++++++++++++++++++++++++++
->   4 files changed, 295 insertions(+), 2 deletions(-)
->   create mode 100644 virtio-vhost-user.tex
->
+This patchset adds a new flavor of dma-bufs that supports querying the
+underlying virtio object UUID, as well as adding support for exporting
+resources from virtgpu.
 
-Kind reminder on this.
+[1] https://markmail.org/thread/2ypjt5cfeu3m6lxu
+[2] https://markmail.org/thread/p5d3k566srtdtute
+[3] https://markmail.org/thread/j4xlqaaim266qpks
 
-Did anyone have the chance to look at this patchset? Is there anything
-that seems off or doesn't make sense? Is there anything else I can do to
-help?
+v4 -> v5 changes:
+ - Remove virtio_dma_buf_export_info.
 
-Any feedback is more than welcome.
+David Stevens (3):
+  virtio: add dma-buf support for exported objects
+  virtio-gpu: add VIRTIO_GPU_F_RESOURCE_UUID feature
+  drm/virtio: Support virtgpu exported resources
 
-Thanks,
-Nikos
+ drivers/gpu/drm/virtio/virtgpu_drv.c   |  3 +
+ drivers/gpu/drm/virtio/virtgpu_drv.h   | 20 ++++++
+ drivers/gpu/drm/virtio/virtgpu_kms.c   |  4 ++
+ drivers/gpu/drm/virtio/virtgpu_prime.c | 96 +++++++++++++++++++++++++-
+ drivers/gpu/drm/virtio/virtgpu_vq.c    | 55 +++++++++++++++
+ drivers/virtio/Makefile                |  2 +-
+ drivers/virtio/virtio.c                |  6 ++
+ drivers/virtio/virtio_dma_buf.c        | 82 ++++++++++++++++++++++
+ include/linux/virtio.h                 |  1 +
+ include/linux/virtio_dma_buf.h         | 37 ++++++++++
+ include/uapi/linux/virtio_gpu.h        | 19 +++++
+ 11 files changed, 321 insertions(+), 4 deletions(-)
+ create mode 100644 drivers/virtio/virtio_dma_buf.c
+ create mode 100644 include/linux/virtio_dma_buf.h
+
+--=20
+2.27.0.278.ge193c7cf3a9-goog
 
 
 ---------------------------------------------------------------------
