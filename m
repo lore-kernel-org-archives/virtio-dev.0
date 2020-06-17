@@ -1,259 +1,225 @@
-Return-Path: virtio-comment-return-1333-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio-comment@lists.oasis-open.org>
-List-Post: <mailto:virtio-comment@lists.oasis-open.org>
-List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
-References: <159055235065.209072.12017445428967301686.stgit@ahduyck-workstation>
- <159055242270.209072.15091766786309829161.stgit@ahduyck-workstation>
-From: David Hildenbrand <david@redhat.com>
-Message-ID: <75b1a08b-c13d-89f2-a122-afd9c488677e@redhat.com>
-Date: Wed, 24 Jun 2020 20:26:47 +0200
+Return-Path: virtio-dev-return-7468-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id 13FF4985EA0
+	for <virtio-dev@lists.oasis-open.org>; Wed, 17 Jun 2020 17:31:20 +0000 (UTC)
+From: Alex =?utf-8?Q?Benn=C3=A9e?= <alex.bennee@linaro.org>
+Message-ID: <87a7194kgt.fsf@linaro.org>
+Date: Wed, 17 Jun 2020 18:31:15 +0100
 MIME-Version: 1.0
-In-Reply-To: <159055242270.209072.15091766786309829161.stgit@ahduyck-workstation>
-Content-Language: en-US
-Subject: Re: [virtio-comment] [PATCH v4 3/3] content: Document balloon feature
- free page hints
+Subject: [virtio-dev] Constraining where a guest may allocate virtio accessible resources
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-To: Alexander Duyck <alexander.duyck@gmail.com>, mst@redhat.com, cohuck@redhat.com
-Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, wei.w.wang@intel.com
+To: virtio-dev@lists.oasis-open.org
+Cc: David Hildenbrand <david@redhat.com>, jan.kiszka@siemens.com, Srivatsa Vaddagiri <vatsa@codeaurora.org>, Azzedine Touzni <atouzni@qti.qualcomm.com>, =?utf-8?Q?Fran=C3=A7ois?= Ozog <francois.ozog@linaro.org>, Ilias Apalodimas <ilias.apalodimas@linaro.org>, "Soni, Trilok" <tsoni@quicinc.com>, "Dr. David Alan Gilbert" <dgilbert@redhat.com>, Stefan Hajnoczi <stefanha@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>, Jean-Philippe Brucker <jean-philippe@linaro.org>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 27.05.20 06:07, Alexander Duyck wrote:
-> From: Alexander Duyck <alexander.h.duyck@linux.intel.com>
->=20
-> Free page hints allow the balloon driver to provide information on what
-> pages are not currently in use so that we can avoid the cost of copying
-> them in migration scenarios. Add a feature description for free page hint=
-s
-> describing basic functioning and requirements.
->=20
-> In working on this the specification as pointed out certain issues with t=
-he
-> Linux driver and QEMU device implementation. The issues include:
-> 1. The Linux driver does not re-initialize pages when it reuses them
-> before receiving the "DONE" command, as such this can lead to possible da=
-ta
-> corruption.
-> 2. The QEMU device is not returning the "DONE" command if a migration
-> fails. This results in the guest holding onto pages until forced out by t=
-he
-> shrinker.
->=20
-> There are also additional issues that have been found not related to the
-> specification.
->=20
-> There is currently discussion on if the feature should be removed so this
-> patch is a place-holder for if we decide to keep the feature and fix the
-> issues. Otherwise this patch can be dropped and we can work on a patch to
-> document the need to avoid the feature.
 
-Looks like the feature will stay, hope we can document the expected
-semantics reasonably well now and fix the remaining issues. After all we
-spend quite some time in reverse-engineering and fixing already ...
+Hi,
 
-[...]
-> =20
-> +\subsubsection{Free Page Hinting}\label{sec:Device Types / Memory Balloo=
-n Device / Device Operation / Free Page Hinting}
-> +
-> +Free page hinting is designed to be used during migration to determine w=
-hat
-> +pages within the guest are currently unused so that they can be skipped =
-over
-> +while migrating the guest. The device will indicate that it is ready to =
-start
-> +performing hinting by setting the \field{free_page_hint_cmd_id} to one o=
-f the
-> +non-reserved values that can be used as a command ID. The following valu=
-es
-> +are reserved:
+This follows on from the discussion in the last thread I raised:
 
-Maybe mention somewhere (resulting from a discussion with Michael) that
-the semantics of hinted pages are similar to MADV_FREE, except
-- it's asynchronous (and the cmd_id is used to synchronize)
-- when reading pages after hinted, the content is undefined (might be
-  something besides the old content or zero).
+  Subject: Backend libraries for VirtIO device emulation
+  Date: Fri, 06 Mar 2020 18:33:57 +0000
+  Message-ID: <874kv15o4q.fsf@linaro.org>
 
-Might help to understand what the semantics are.
+To support the concept of a VirtIO backend having limited visibility of
+a guests memory space there needs to be some mechanism to limit the
+where that guest may place things. A simple VirtIO device can be
+expressed purely in virt resources, for example:
 
-> +
-> +\begin{description}
-> +\item[VIRTIO_BALLOON_CMD_ID_STOP (0)] Any command ID previously supplied=
- by
-> +  the device is invalid. The driver should stop hinting free pages until=
- a
-> +  new command ID is supplied, but should not release any hinted pages fo=
-r
-> +  use by the guest.
-> +
-> +\item[VIRTIO_BALLOON_CMD_ID_DONE (1)] Any command ID previously supplied=
- by
-> +  the device is invalid. The driver should stop hinting free pages, and
-> +  should release all hinted pages for use by the guest.
-> +\end{description}
-> +
-> +A request for free page hinting proceeds as follows:
-> +
-> +\begin{enumerate}
-> +
-> +\item The driver examines the \field{free_page_hint_cmd_id} configuratio=
-n field.
-> +  If it contains a non-reserved value then free page hinting will begin.
-> +
-> +\item To supply free page hints:
-> +  \begin{enumerate}
-> +  \item The driver constructs an output descriptor containing the new va=
-lue
-> +    from the \field{free_page_hint_cmd_id} configuration field and adds =
-it to
-> +    the free_page_hint_vq.
-> +  \item The driver maps a series of pages and adds them to the
-> +    free_page_hint_vq as individual scatter-gather input descriptor entr=
-ies.
-> +  \item When the driver is no longer able to fetch additional pages to a=
-dd
-> +    to the free_page_hint_vq, it will construct an output descriptor
-> +    containing the command ID VIRTIO_BALLOON_CMD_ID_STOP.
-> +  \end{enumerate}
-> +
-> +\item A round of hinting ends either when the driver is no longer able t=
-o
-> +  supply more pages for hinting as described above, or when the device
-> +  updates \field{free_page_hint_cmd_id} configuration field to contain e=
-ither
-> +  VIRTIO_BALLOON_CMD_ID_STOP or VIRTIO_BALLOON_CMD_ID_DONE.
-> +
-> +\item The device may follow VIRTIO_BALLOON_CMD_ID_STOP with a new
-> +  non-reserved value for the \field{free_page_hint_cmd_id} configuration
-> +  field in which case it will resume supplying free page hints.
-> +
-> +\item Otherwise, if the device provides VIRTIO_BALLOON_CMD_ID_DONE then
-> +  hinting is complete and the driver may release all previously hinted
-> +  pages for use by the guest.
-> +
-> +\end{enumerate}
-> +
-> +\drivernormative{\paragraph}{Free Page Hinting}{Device Types / Memory Ba=
-lloon Device / Device Operation / Free Page Hinting}
-> +
-> +Normative statements in this section apply if the
-> +VIRTIO_BALLOON_F_FREE_PAGE_HINT feature has been negotiated.
-> +
-> +The driver SHOULD supply pages to the free page hints when
-> +\field{free_page_hint_cmd_id} reports a value of 2 or greater.
-> +
+   * status, feature and config fields
+   * notification/doorbell
+   * one or more virtqueues
 
-nit: I'd avoid using the term "report" here. Maybe "specifies" or sth.
-like that.
+Using a PCI backend the location of everything but the virtqueues it
+controlled by the mapping of the PCI device so something that is
+controllable by the host/hypervisor. However the guest is free to
+allocate the virtqueues anywhere in the virtual address space of system
+RAM.
 
-> +The driver MUST start hinting by providing an output descriptor
-> +containing the current command ID for the given block of pages.
-> +
-> +The driver SHOULD stop supplying pages for hinting when
-> +\field{free_page_hint_cmd_id} reports a value of VIRTIO_BALLOON_CMD_ID_S=
-TOP.
+In theory this shouldn't matter because sharing virtual pages is just a
+matter of putting the appropriate translations in place. However there
+are multiple ways the host and guest may interact:
 
-"or VIRTIO_BALLOON_CMD_ID_DONE" I assume.
+* QEMU TCG
 
-> +
-> +If the driver is unable to supply pages, it MUST complete hinting by add=
-ing
-> +an output descriptor containing the command ID VIRTIO_BALLOON_CMD_ID_STO=
-P.
-> +
-> +The driver MAY release hinted pages for use by the guest including when =
-the
-> +device has not yet used the descriptor containing the hinting request.
-> +
-> +The driver MUST treat the content of all hinted pages as uninitialized
-> +memory.
-> +
-> +The driver MUST initialize the contents of any previously hinted page
-> +released before \field{free_page_hint_cmd_id} reports a value of
-> +VIRTIO_BALLOON_CMD_ID_DONE.
+QEMU sees a block of system memory in it's virtual address space that
+has a one to one mapping with the guests physical address space. If QEMU
+want to share a subset of that address space it can only realistically
+do it for a contiguous region of it's address space which implies the
+guest must use a contiguous region of it's physical address space.
 
-Ack.
+* QEMU KVM
 
-> +
-> +The driver SHOULD release all previously hinted pages for use by the gue=
-st
-> +once \field{free_page_hint_cmd_id} reports a value of
-> +VIRTIO_BALLOON_CMD_ID_DONE.
-> +
-> +\devicenormative{\paragraph}{Free Page Hinting}{Device Types / Memory Ba=
-lloon Device / Device Operation / Free Page Hinting}
-> +
-> +Normative statements in this section apply if the
-> +VIRTIO_BALLOON_F_FREE_PAGE_HINT feature has been negotiated.
-> +
-> +The device MUST set \field{free_page_hint_cmd_id} to
-> +VIRTIO_BALLOON_CMD_ID_STOP any time that the dirty pages for the given
-> +guest are being recorded.
+The situation here is broadly the same - although both QEMU and the
+guest are seeing a their own virtual views of a linear address space
+which may well actually be a fragmented set of physical pages on the
+host.
 
-Hm. The "dirty pages" wording  is a little bit too (migration) specific
-for my taste. Will think about this more.
+KVM based guests have additional constraints if they ever want to access
+real hardware in the host as you need to ensure any address accessed by
+the guest can be eventually translated into an address that can
+physically access the bus which a device in one (for device
+pass-through). The area also has to be DMA coherent so updates from a
+bus are reliably visible to software accessing the same address space.
 
-> +
-> +The device MUST NOT reuse a command ID until it has received an output
-> +descriptor containing VIRTIO_BALLOON_CMD_ID_STOP from the driver.
-> +
-> +The device MUST ignore pages that are provided with a command ID that do=
-es
-> +not match the current value in \field{free_page_hint_cmd_id}.
+* Xen (and other type-1's?)
 
-ACK, that's what you fixed.
+Here the situation is a little different because the guest explicitly
+makes it's pages visible to other domains by way of grant tables. The
+guest is still free to use whatever parts of its address space it wishes
+to. Other domains then request access to those pages via the hypervisor.
 
-> +
-> +If the content of a previously hinted page has not been modified by the
-> +guest since the device issued the \field{free_page_hint_cmd_id} associat=
-ed
-> +with the hint, the device MAY modify the contents of the page.
+In theory the requester is free to map the granted pages anywhere in
+its own address space. However there are differences between the
+architectures on how well this is supported.
 
-Only before setting DONE, correct? But ...
+So I think this makes a case for having a mechanism by which the guest
+can restrict it's allocation to a specific area of the guest physical
+address space. The question is then what is the best way to inform the
+guest kernel of the limitation?
 
-> +
-> +The device MUST NOT modify the content of a previously hinted page after
-> +\field{free_page_hint_cmd_id} is set to VIRTIO_BALLOON_CMD_ID_DONE.
+Option 1 - Kernel Command Line
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D
 
-... there it is :)
+This isn't without precedent - the kernel supports options like "memmap"
+which can with the appropriate amount of crafting be used to carve out
+sections of bad ram from the physical address space. Other formulations
+can be used to mark specific areas of the address space as particular
+types of memory. =20
 
-> +
-> +The device MUST report a value of VIRTIO_BALLOON_CMD_ID_DONE in
-> +\field{free_page_hint_cmd_id} when it no longer has need for the
-> +previously hinted pages.
+However there are cons to this approach as it then becomes a job for
+whatever builds the VMM command lines to ensure the both the backend and
+the kernel know where things are. It is also very Linux centric and
+doesn't solve the problem for other guest OSes. Considering the rest of
+VirtIO can be made discover-able this seems like it would be a backward
+step.
 
-Right, that's still to be fixed if migration fails. I think we can reuse
-the CLEANUP part.
+Option 2 - Additional Platform Data
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+
+This would be extending using something like device tree or ACPI tables
+which could define regions of memory that would inform the low level
+memory allocation routines where they could allocate from. There is
+already of the concept of "dma-ranges" in device tree which can be a
+per-device property which defines the region of space that is DMA
+coherent for a device.
+
+There is the question of how you tie regions declared here with the
+eventual instantiating of the VirtIO devices?
+
+For a fully distributed set of backends (one backend per device per
+worker VM) you would need several different regions. Would each region
+be tied to each device or just a set of areas the guest would allocate
+from in sequence?
+
+Option 3 - Abusing PCI Regions
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D
+
+One of the reasons to use the VirtIO PCI backend it to help with
+automatic probing and setup. Could we define a new PCI region which on
+backend just maps to RAM but from the front-ends point of view is a
+region it can allocate it's virtqueues? Could we go one step further and
+just let the host to define and allocate the virtqueue in the reserved
+PCI space and pass the base of it somehow?
+
+Options 4 - Extend VirtIO Config
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D
+
+Another approach would be to extend the VirtIO configuration and
+start-up handshake to supply these limitations to the guest. This could
+be handled by the addition of a feature bit (VIRTIO_F_HOST_QUEUE?) and
+additional configuration information.
+
+One problem I can foresee is device initialisation is usually done
+fairly late in the start-up of a kernel by which time any memory zoning
+restrictions will likely need to have informed the kernels low level
+memory management. Does that mean we would have to combine such a
+feature behaviour with a another method anyway?
+
+Option 5 - Additional Device
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D
+
+The final approach would be to tie the allocation of virtqueues to
+memory regions as defined by additional devices. For example the
+proposed IVSHMEMv2 spec offers the ability for the hypervisor to present
+a fixed non-mappable region of the address space. Other proposals like
+virtio-mem allow for hot plugging of "physical" memory into the guest
+(conveniently treatable as separate shareable memory objects for QEMU
+;-).
 
 
-Will we have to document that the guest must only indicate a cmd_id (in
-out_buf) only once and not multiple times? Essentially what we discussed
-in reply to your latest fix.
+Closing Thoughts and Open Questions
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
 
-Again, thanks a lot for documenting and fixing ...
+Currently all of this is considering just virtqueues themselves but of
+course only a subset of devices interact purely by virtqueue messages.
+Network and Block devices often end up filling up additional structures
+in memory that are usually across the whole of system memory. To achieve
+better isolation you either need to ensure that specific bits of kernel
+allocation are done in certain regions (i.e. block cache in "shared"
+region) or implement some sort of bounce buffer [1] that allows you to brin=
+g
+data from backend to frontend (which is more like the channel concept of
+Xen's PV).
+
+I suspect the solution will end up being a combination of all of these
+approaches. There setup of different systems might mean we need a
+plethora of ways to carve out and define regions in ways a kernel can
+understand and make decisions about.
+
+I think there will always have to be an element of VirtIO config
+involved as that is *the* mechanism by which front/back end negotiate if
+they can get up and running in a way they are both happy with.
+
+One potential approach would be to introduce the concept of a region id
+at the VirtIO config level which is simply a reasonably unique magic
+number that virtio driver passes down into the kernel when requesting
+memory for it's virtqueues. It could then be left to the kernel to
+associate use that id when identifying the physical address range to
+allocate from. This seems a bit of a loose binding between the driver
+level and the kernel level but perhaps that is preferable to allow for
+flexibility about how such regions are discovered by kernels?
+
+I hope this message hasn't rambled on to much. I feel this is a complex
+topic and I'm want to be sure I've thought through all the potential
+options before starting to prototype a solution. For those that have
+made it this far the final questions are:
+
+  - is constraining guest allocation of virtqueues a reasonable requirement=
+?
+
+  - could virtqueues ever be directly host/hypervisor assigned?
+
+  - should there be a tight or loose coupling between front-end driver
+    and kernel/hypervisor support for allocating memory?
+
+Of course if this is all solvable with existing code I'd be more than
+happy but please let me know how ;-)
+
+Regards,
+
 
 --=20
-Thanks,
+Alex Benn=C3=A9e
 
-David / dhildenb
+[1] Example bounce buffer approach
 
+Subject: [PATCH 0/5] virtio on Type-1 hypervisor
+Message-Id: <1588073958-1793-1-git-send-email-vatsa@codeaurora.org>
 
-This publicly archived list offers a means to provide input to the
-OASIS Virtual I/O Device (VIRTIO) TC.
-
-In order to verify user consent to the Feedback License terms and
-to minimize spam in the list archive, subscription is required
-before posting.
-
-Subscribe: virtio-comment-subscribe@lists.oasis-open.org
-Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
-List help: virtio-comment-help@lists.oasis-open.org
-List archive: https://lists.oasis-open.org/archives/virtio-comment/
-Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
-List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lis=
-ts
-Committee: https://www.oasis-open.org/committees/virtio/
-Join OASIS: https://www.oasis-open.org/join/
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
