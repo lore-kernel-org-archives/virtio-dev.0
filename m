@@ -1,143 +1,126 @@
-Return-Path: virtio-dev-return-7484-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-7485-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id AA0B0985F02
-	for <virtio-dev@lists.oasis-open.org>; Thu, 18 Jun 2020 16:09:39 +0000 (UTC)
-Date: Thu, 18 Jun 2020 12:09:31 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20200618120121-mutt-send-email-mst@kernel.org>
+	by lists.oasis-open.org (Postfix) with ESMTP id E9DD1985F03
+	for <virtio-dev@lists.oasis-open.org>; Thu, 18 Jun 2020 17:10:52 +0000 (UTC)
 References: <20200527041212.12700.60627.stgit@localhost.localdomain>
  <20200527041414.12700.50293.stgit@localhost.localdomain>
  <CAKgT0UdPC1s0c-wqsNc4x8DeZhtZQVMmLArWQ=Z345Mkof650Q@mail.gmail.com>
  <4f37c184-cf62-5711-a737-925533b52d73@redhat.com>
  <CAKgT0Udmxjx66hEhDyqWS1wBkAfEf_hht8FZAOuh3NMDOAOR3w@mail.gmail.com>
  <aea3b6e6-f653-dd0c-5e17-d0c948a6af4b@redhat.com>
+ <20200618120121-mutt-send-email-mst@kernel.org>
+From: David Hildenbrand <david@redhat.com>
+Message-ID: <1ee4f06d-f0bb-4155-ee82-1d56c346e2a0@redhat.com>
+Date: Thu, 18 Jun 2020 19:10:43 +0200
 MIME-Version: 1.0
-In-Reply-To: <aea3b6e6-f653-dd0c-5e17-d0c948a6af4b@redhat.com>
+In-Reply-To: <20200618120121-mutt-send-email-mst@kernel.org>
+Content-Language: en-US
 Subject: [virtio-dev] Re: [PATCH v25 QEMU 3/3] virtio-balloon: Replace free page hinting
  references to 'report' with 'hint'
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-To: David Hildenbrand <david@redhat.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+To: "Michael S. Tsirkin" <mst@redhat.com>
 Cc: Alexander Duyck <alexander.duyck@gmail.com>, virtio-dev@lists.oasis-open.org, qemu-devel@nongnu.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Thu, Jun 18, 2020 at 05:58:28PM +0200, David Hildenbrand wrote:
-> On 18.06.20 17:14, Alexander Duyck wrote:
-> > On Thu, Jun 18, 2020 at 5:54 AM David Hildenbrand <david@redhat.com> wrote:
-> >>
-> >> On 13.06.20 22:07, Alexander Duyck wrote:
-> >>> On Tue, May 26, 2020 at 9:14 PM Alexander Duyck
-> >>> <alexander.duyck@gmail.com> wrote:
-> >>>>
-> >>>> From: Alexander Duyck <alexander.h.duyck@linux.intel.com>
-> >>>>
-> >>>> In an upcoming patch a feature named Free Page Reporting is about to be
-> >>>> added. In order to avoid any confusion we should drop the use of the word
-> >>>> 'report' when referring to Free Page Hinting. So what this patch does is go
-> >>>> through and replace all instances of 'report' with 'hint" when we are
-> >>>> referring to free page hinting.
-> >>>>
-> >>>> Acked-by: David Hildenbrand <david@redhat.com>
-> >>>> Signed-off-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
-> >>>> ---
-> >>>>  hw/virtio/virtio-balloon.c         |   78 ++++++++++++++++++------------------
-> >>>>  include/hw/virtio/virtio-balloon.h |   20 +++++----
-> >>>>  2 files changed, 49 insertions(+), 49 deletions(-)
-> >>>>
-> >>>> diff --git a/hw/virtio/virtio-balloon.c b/hw/virtio/virtio-balloon.c
-> >>>> index 3e2ac1104b5f..dc15409b0bb6 100644
-> >>>> --- a/hw/virtio/virtio-balloon.c
-> >>>> +++ b/hw/virtio/virtio-balloon.c
-> >>>
-> >>> ...
-> >>>
-> >>>> @@ -817,14 +817,14 @@ static int virtio_balloon_post_load_device(void *opaque, int version_id)
-> >>>>      return 0;
-> >>>>  }
-> >>>>
-> >>>> -static const VMStateDescription vmstate_virtio_balloon_free_page_report = {
-> >>>> +static const VMStateDescription vmstate_virtio_balloon_free_page_hint = {
-> >>>>      .name = "virtio-balloon-device/free-page-report",
-> >>>>      .version_id = 1,
-> >>>>      .minimum_version_id = 1,
-> >>>>      .needed = virtio_balloon_free_page_support,
-> >>>>      .fields = (VMStateField[]) {
-> >>>> -        VMSTATE_UINT32(free_page_report_cmd_id, VirtIOBalloon),
-> >>>> -        VMSTATE_UINT32(free_page_report_status, VirtIOBalloon),
-> >>>> +        VMSTATE_UINT32(free_page_hint_cmd_id, VirtIOBalloon),
-> >>>> +        VMSTATE_UINT32(free_page_hint_status, VirtIOBalloon),
-> >>>>          VMSTATE_END_OF_LIST()
-> >>>>      }
-> >>>>  };
-> >>>
-> >>> So I noticed this patch wasn't in the list of patches pulled, but that
-> >>> is probably for the best since I believe the change above might have
-> >>> broken migration as VMSTATE_UINT32 does a stringify on the first
-> >>> parameter.
-> >>
-> >> Indeed, it's the name of the vmstate field. But I don't think it is
-> >> relevant for migration. It's and indicator if a field is valid and it's
-> >> used in traces/error messages.
-> >>
-> >> See git grep "field->name"
-> >>
-> >> I don't think renaming this is problematic. Can you rebase and resent?
-> >> Thanks!
-> > 
-> > Okay, I will.
-> > 
-> >>> Any advice on how to address it, or should I just give up on renaming
-> >>> free_page_report_cmd_id and free_page_report_status?
-> >>>
-> >>> Looking at this I wonder why we even need to migrate these values? It
-> >>> seems like if we are completing a migration the cmd_id should always
-> >>> be "DONE" shouldn't it? It isn't as if we are going to migrate the
-> >>
-> >> The *status* should be DONE IIUC. The cmd_id might be relevant, no? It's
-> >> always incremented until it wraps.
-> > 
-> > The thing is, the cmd_id visible to the driver if the status is DONE
-> > is the cmd_id value for DONE. So as long as the driver acknowledges
-> > the value we could essentially start over the cmd_id without any
-> > negative effect. The driver would have to put down a new descriptor to
-> > start a block of hinting in order to begin reporting again so there
-> > shouldn't be any risk of us falsely hinting pages that were in a
-> > previous epoch.
-> > 
-> > Ugh, although now looking at it I think we might have a bug in the
-> > QEMU code in that the driver could in theory force its way past a
-> > "STOP" by just replaying the last command_id descriptor and then keep
-> > going. Should be a pretty easy fix though as we should only allow a
-> > transition to S_START if the status is S_REQUESTED/
-> 
-> Ugh, ...
-> 
-> @MST, you might have missed that in another discussion, what's your
-> general opinion about removing free page hinting in QEMU (and Linux)? We
-> keep finding issues in the QEMU implementation, including non-trivial
-> ones, and have to speculate about the actual semantics. I can see that
-> e.g., libvirt does not support it yet.
+>>
+>> Ugh, ...
+>>
+>> @MST, you might have missed that in another discussion, what's your
+>> general opinion about removing free page hinting in QEMU (and Linux)? We
+>> keep finding issues in the QEMU implementation, including non-trivial
+>> ones, and have to speculate about the actual semantics. I can see that
+>> e.g., libvirt does not support it yet.
+>=20
+> Not maintaining two similar features sounds attractive.
 
-Not maintaining two similar features sounds attractive.
+I consider free page hinting (in QEMU) to be in an unmaintainable state
+(and it looks like Alex and I are fixing a feature we don't actually
+intend to use / not aware of users). In contrast to that, the free page
+reporting functionality/implementation is a walk in the park.
 
-I'm still trying to get my head around the list of issues.  So far they
-all look kind of minor to me.  Would you like to summarize them
-somewhere?
-The appeal of hinting is that it's 0 overhead outside migration,
-and pains were taken to avoid keeping pages locked while
-hypervisor is busy.
+>=20
+> I'm still trying to get my head around the list of issues.  So far they
+> all look kind of minor to me.  Would you like to summarize them
+> somewhere?
 
-If we are to drop hinting completely we need to show that reporting
-can be comparable, and we'll probably want to add a mode for
-reporting that behaves somewhat similarly.
+Some things I still have in my mind
 
--- 
-MST
+
+1. If migration fails during RAM precopy, the guest will never receive a
+DONE notification. Probably easy to fix.
+
+2. Unclear semantics. Alex tried to document what the actual semantics
+of hinted pages are. Assume the following in the guest to a previously
+hinted page
+
+/* page was hinted and is reused now */
+if (page[x] !=3D Y)
+=09page[x] =3D=3D Y;
+/* migration ends, we now run on the destination */
+BUG_ON(page[x] !=3D Y);
+/* BUG, because the content chan
+
+A guest can observe that. And that could be a random driver that just
+allocated a page.
+
+(I *assume* in Linux we might catch that using kasan, but I am not 100%
+sure, also, the actual semantics to document are unclear - e.g., for
+other guests)
+
+As Alex mentioned, it is not even guaranteed in QEMU that we receive a
+zero page on the destination, it could also be something else (e.g.,
+previously migrated values).
+
+3. If I am not wrong, the iothread works in
+virtio_ballloon_get_free_page_hints() on the virtqueue only with holding
+the free_page_lock (no BQL).
+
+Assume we're migrating, the iothread is active, and the guest triggers a
+device reset.
+
+virtio_balloon_device_reset() will trigger a
+virtio_balloon_free_page_stop(s). That won't actually wait for the
+iothread to stop, it will only temporarily lock free_page_lock and
+update s->free_page_report_status.
+
+I think there can be a race between the device reset and the iothread.
+Once virtio_balloon_free_page_stop() returned,
+virtio_ballloon_get_free_page_hints() can still call
+- virtio_queue_set_notification(vq, 0);
+- virtio_queue_set_notification(vq, 1);
+- virtio_notify(vdev, vq);
+- virtqueue_pop()
+
+I doubt this is very nice.
+
+There are other concerns I had regarding the iothread (e.g., while
+reporting is active, virtio_ballloon_get_free_page_hints() is
+essentially a busy loop, in contrast to documented -
+continue_to_get_hints will always be true).
+
+> The appeal of hinting is that it's 0 overhead outside migration,
+> and pains were taken to avoid keeping pages locked while
+> hypervisor is busy.
+>=20
+> If we are to drop hinting completely we need to show that reporting
+> can be comparable, and we'll probably want to add a mode for
+> reporting that behaves somewhat similarly.
+
+Depends on the actual users. If we're dropping a feature that nobody is
+actively using, I don't think we have to show anything.
+
+This feature obviously saw no proper review.
+
+--=20
+Thanks,
+
+David / dhildenb
 
 
 ---------------------------------------------------------------------
