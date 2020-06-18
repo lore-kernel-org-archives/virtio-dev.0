@@ -1,111 +1,299 @@
-Return-Path: virtio-dev-return-7482-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-7475-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 79096985F02
-	for <virtio-dev@lists.oasis-open.org>; Thu, 18 Jun 2020 15:29:16 +0000 (UTC)
-Date: Thu, 18 Jun 2020 11:29:07 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20200618112833-mutt-send-email-mst@kernel.org>
+	by lists.oasis-open.org (Postfix) with ESMTP id C959B985EFF
+	for <virtio-dev@lists.oasis-open.org>; Thu, 18 Jun 2020 13:54:37 +0000 (UTC)
 References: <87a7194kgt.fsf@linaro.org>
  <28614897-bfb7-b36c-6698-6c6942a87399@siemens.com>
- <20200618132958.GB2013520@stefanha-x1.localdomain>
- <2fe9e849-a93d-e3b0-30b9-0d7bef723813@siemens.com>
- <20200618105104-mutt-send-email-mst@kernel.org>
- <87cb818e-f9a5-67ff-8b78-94568e8b4e66@siemens.com>
- <20200618110218-mutt-send-email-mst@kernel.org>
- <91f501fc-b31c-f0e4-3f4d-b6f6d0181780@siemens.com>
+From: Laszlo Ersek <lersek@redhat.com>
+Message-ID: <c64a12c6-5450-7d3b-205e-888d297de20c@redhat.com>
+Date: Thu, 18 Jun 2020 15:53:51 +0200
 MIME-Version: 1.0
-In-Reply-To: <91f501fc-b31c-f0e4-3f4d-b6f6d0181780@siemens.com>
+In-Reply-To: <28614897-bfb7-b36c-6698-6c6942a87399@siemens.com>
+Content-Language: en-US
 Subject: Re: [virtio-dev] Re: Constraining where a guest may allocate virtio
  accessible resources
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Stefan Hajnoczi <stefanha@redhat.com>, Alex =?iso-8859-1?Q?Benn=E9e?= <alex.bennee@linaro.org>, virtio-dev@lists.oasis-open.org, David Hildenbrand <david@redhat.com>, Srivatsa Vaddagiri <vatsa@codeaurora.org>, Azzedine Touzni <atouzni@qti.qualcomm.com>, =?iso-8859-1?Q?Fran=E7ois?= Ozog <francois.ozog@linaro.org>, Ilias Apalodimas <ilias.apalodimas@linaro.org>, "Soni, Trilok" <tsoni@quicinc.com>, "Dr. David Alan Gilbert" <dgilbert@redhat.com>, Jean-Philippe Brucker <jean-philippe@linaro.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+To: Jan Kiszka <jan.kiszka@siemens.com>, =?UTF-8?Q?Alex_Benn=c3=a9e?= <alex.bennee@linaro.org>, virtio-dev@lists.oasis-open.org
+Cc: David Hildenbrand <david@redhat.com>, Srivatsa Vaddagiri <vatsa@codeaurora.org>, Azzedine Touzni <atouzni@qti.qualcomm.com>, =?UTF-8?Q?Fran=c3=a7ois_Ozog?= <francois.ozog@linaro.org>, Ilias Apalodimas <ilias.apalodimas@linaro.org>, "Soni, Trilok" <tsoni@quicinc.com>, "Dr. David Alan Gilbert" <dgilbert@redhat.com>, Stefan Hajnoczi <stefanha@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>, Jean-Philippe Brucker <jean-philippe@linaro.org>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Thu, Jun 18, 2020 at 05:22:40PM +0200, Jan Kiszka wrote:
-> On 18.06.20 17:05, Michael S. Tsirkin wrote:
-> > On Thu, Jun 18, 2020 at 04:58:40PM +0200, Jan Kiszka wrote:
-> >>>>>>> Option 5 - Additional Device
-> >>>>>>> ============================
-> >>>>>>>
-> >>>>>>> The final approach would be to tie the allocation of virtqueues to
-> >>>>>>> memory regions as defined by additional devices. For example the
-> >>>>>>> proposed IVSHMEMv2 spec offers the ability for the hypervisor to present
-> >>>>>>> a fixed non-mappable region of the address space. Other proposals like
-> >>>>>>> virtio-mem allow for hot plugging of "physical" memory into the guest
-> >>>>>>> (conveniently treatable as separate shareable memory objects for QEMU
-> >>>>>>> ;-).
-> >>>>>>>
-> >>>>>>
-> >>>>>> I think you forgot one approach: virtual IOMMU. That is the advanced
-> >>>>>> form of the grant table approach. The backend still "sees" the full
-> >>>>>> address space of the frontend, but it will not be able to access all of
-> >>>>>> it and there might even be a translation going on. Well, like IOMMUs work.
-> >>>>>>
-> >>>>>> However, this implies dynamics that are under guest control, namely of
-> >>>>>> the frontend guest. And such dynamics can be counterproductive for
-> >>>>>> certain scenarios. That's where this static windows of shared memory
-> >>>>>> came up.
-> >>>>>
-> >>>>> Yes, I think IOMMU interfaces are worth investigating more too. IOMMUs
-> >>>>> are now widely implemented in Linux and virtualization software. That
-> >>>>> means guest modifications aren't necessary and unmodified guest
-> >>>>> applications will run.
-> >>>>>
-> >>>>> Applications that need the best performance can use a static mapping
-> >>>>> while applications that want the strongest isolation can map/unmap DMA
-> >>>>> buffers dynamically.
-> >>>>
-> >>>> I do not see yet that you can model with an IOMMU a static, not guest
-> >>>> controlled window.
-> >>>
-> >>> Well basically the IOMMU will have as part of the
-> >>> topology description and range of addresses devices behind it
-> >>> are allowed to access. What's the problem with that?
-> >>>
-> >>
-> >> I didn't look at the detail of the vIOMMU from that perspective, but our
-> >> requirement would be that it would just statically communicate to the
-> >> guest where DMA windows are, rather than allowing the guest to configure
-> >> that (which is the normal usage of an IOMMU).
-> > 
-> > Right, I got that - IOMMUs aren't necessarily fully configurable though.
-> > E.g. some IOMMUs are restricted in the # of bits they can address.
-> > 
-> > 
-> >> In addition, it would only address the memory transfer topic. We would
-> >> still be left with the current issue of virtio that the hypervisor's
-> >> device model needs to understand all supported device types.
-> >>
-> >> Jan
-> > 
-> > I'd expect the DMA API would try to paper over that likely using
-> > bounce buffering. If you want to avoid copies, that's a harder
-> > problem generally.
-> > 
-> 
-> Here I was referring to the permutations of the control path in a device
-> model when switching from, say, a storage to a network virtio device.
-> With PCI and MMIO (didn't check Channel I/O, but that's not portable
-> anyway), you need to patch the "first-level" hypervisor when you want to
-> add a brand-new virtio-sound device and the hypervisor is not yet aware
-> of it. For minimized setups, I would prefer to only reconfigure it and
-> just add a new backend service app or VM. Naturally, that model also
-> shrinks the logic the core hypervisor needs to provide for virtio.
-> 
+On 06/17/20 20:01, Jan Kiszka wrote:
+> On 17.06.20 19:31, Alex Benn=C3=A9e wrote:
+>>
+>> Hi,
+>>
+>> This follows on from the discussion in the last thread I raised:
+>>
+>>   Subject: Backend libraries for VirtIO device emulation
+>>   Date: Fri, 06 Mar 2020 18:33:57 +0000
+>>   Message-ID: <874kv15o4q.fsf@linaro.org>
+>>
+>> To support the concept of a VirtIO backend having limited visibility of
+>> a guests memory space there needs to be some mechanism to limit the
+>> where that guest may place things. A simple VirtIO device can be
+>> expressed purely in virt resources, for example:
+>>
+>>    * status, feature and config fields
+>>    * notification/doorbell
+>>    * one or more virtqueues
+>>
+>> Using a PCI backend the location of everything but the virtqueues it
+>> controlled by the mapping of the PCI device so something that is
+>> controllable by the host/hypervisor. However the guest is free to
+>> allocate the virtqueues anywhere in the virtual address space of system
+>> RAM.
+>>
+>> In theory this shouldn't matter because sharing virtual pages is just a
+>> matter of putting the appropriate translations in place. However there
+>> are multiple ways the host and guest may interact:
+>>
+>> * QEMU TCG
+>>
+>> QEMU sees a block of system memory in it's virtual address space that
+>> has a one to one mapping with the guests physical address space. If QEMU
+>> want to share a subset of that address space it can only realistically
+>> do it for a contiguous region of it's address space which implies the
+>> guest must use a contiguous region of it's physical address space.
+>>
+>> * QEMU KVM
+>>
+>> The situation here is broadly the same - although both QEMU and the
+>> guest are seeing a their own virtual views of a linear address space
+>> which may well actually be a fragmented set of physical pages on the
+>> host.
+>>
+>> KVM based guests have additional constraints if they ever want to access
+>> real hardware in the host as you need to ensure any address accessed by
+>> the guest can be eventually translated into an address that can
+>> physically access the bus which a device in one (for device
+>> pass-through). The area also has to be DMA coherent so updates from a
+>> bus are reliably visible to software accessing the same address space.
+>>
+>> * Xen (and other type-1's?)
+>>
+>> Here the situation is a little different because the guest explicitly
+>> makes it's pages visible to other domains by way of grant tables. The
+>> guest is still free to use whatever parts of its address space it wishes
+>> to. Other domains then request access to those pages via the hypervisor.
+>>
+>> In theory the requester is free to map the granted pages anywhere in
+>> its own address space. However there are differences between the
+>> architectures on how well this is supported.
+>>
+>> So I think this makes a case for having a mechanism by which the guest
+>> can restrict it's allocation to a specific area of the guest physical
+>> address space. The question is then what is the best way to inform the
+>> guest kernel of the limitation?
+>>
+>> Option 1 - Kernel Command Line
+>> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D
+>>
+>> This isn't without precedent - the kernel supports options like "memmap"
+>> which can with the appropriate amount of crafting be used to carve out
+>> sections of bad ram from the physical address space. Other formulations
+>> can be used to mark specific areas of the address space as particular
+>> types of memory. =20
+>>
+>> However there are cons to this approach as it then becomes a job for
+>> whatever builds the VMM command lines to ensure the both the backend and
+>> the kernel know where things are. It is also very Linux centric and
+>> doesn't solve the problem for other guest OSes. Considering the rest of
+>> VirtIO can be made discover-able this seems like it would be a backward
+>> step.
+>>
+>> Option 2 - Additional Platform Data
+>> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>>
+>> This would be extending using something like device tree or ACPI tables
+>> which could define regions of memory that would inform the low level
+>> memory allocation routines where they could allocate from. There is
+>> already of the concept of "dma-ranges" in device tree which can be a
+>> per-device property which defines the region of space that is DMA
+>> coherent for a device.
+>>
+>> There is the question of how you tie regions declared here with the
+>> eventual instantiating of the VirtIO devices?
+>>
+>> For a fully distributed set of backends (one backend per device per
+>> worker VM) you would need several different regions. Would each region
+>> be tied to each device or just a set of areas the guest would allocate
+>> from in sequence?
+>>
+>> Option 3 - Abusing PCI Regions
+>> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D
+>>
+>> One of the reasons to use the VirtIO PCI backend it to help with
+>> automatic probing and setup. Could we define a new PCI region which on
+>> backend just maps to RAM but from the front-ends point of view is a
+>> region it can allocate it's virtqueues? Could we go one step further and
+>> just let the host to define and allocate the virtqueue in the reserved
+>> PCI space and pass the base of it somehow?
+>>
+>> Options 4 - Extend VirtIO Config
+>> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D
+>>
+>> Another approach would be to extend the VirtIO configuration and
+>> start-up handshake to supply these limitations to the guest. This could
+>> be handled by the addition of a feature bit (VIRTIO_F_HOST_QUEUE?) and
+>> additional configuration information.
+>>
+>> One problem I can foresee is device initialisation is usually done
+>> fairly late in the start-up of a kernel by which time any memory zoning
+>> restrictions will likely need to have informed the kernels low level
+>> memory management. Does that mean we would have to combine such a
+>> feature behaviour with a another method anyway?
+>>
+>> Option 5 - Additional Device
+>> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D
+>>
+>> The final approach would be to tie the allocation of virtqueues to
+>> memory regions as defined by additional devices. For example the
+>> proposed IVSHMEMv2 spec offers the ability for the hypervisor to present
+>> a fixed non-mappable region of the address space. Other proposals like
+>> virtio-mem allow for hot plugging of "physical" memory into the guest
+>> (conveniently treatable as separate shareable memory objects for QEMU
+>> ;-).
+>>
+>=20
+> I think you forgot one approach: virtual IOMMU. That is the advanced
+> form of the grant table approach. The backend still "sees" the full
+> address space of the frontend, but it will not be able to access all of
+> it and there might even be a translation going on. Well, like IOMMUs work=
+.
+
+I don't claim to fully understand the scope, but I agree with the
+virtual IOMMU reference. Front-end drivers that negotiate
+VIRTIO_F_IOMMU_PLATFORM already express they use the "DMA API",
+regardless of:
+
+- how the DMA API in the particular guest OS or guest firmware looks like,
+
+- how the DMA API is implemented by a separate driver in the guest OS or
+guest firmware.
+
+So I'd consider this a question of designing new (virtual) IOMMU
+devices, and writing drivers for them in (front-end) guests, upon which
+existent virtio drivers that negotiate VIRTIO_F_IOMMU_PLATFORM could
+transparently stack themselves.
+
+AMD SEV is one example where this works. In particular, Jan's words
+
+    The backend still "sees" the full address space of the frontend, but
+    it will not be able to access all of it
+
+apply quite well to SEV -- while the host "sees" the full RAM content of
+the guest, the host cannot *usefully* access any guest RAM area that's
+not deliberately decrypted by the guest first.
+
+> However, this implies dynamics that are under guest control, namely of
+> the frontend guest. And such dynamics can be counterproductive for
+> certain scenarios. That's where this static windows of shared memory
+> came up.
+
+I (vaguely) feel this still fits the vIOMMU approach -- configure the
+(front-end) guest IOMMU driver (by whatever means) to allocate the
+device-visible buffers in pre-determined / fixed areas.
+
+I guess what I'm saying is that the VIRTIO_F_IOMMU_PLATFORM feature bit
+should already cover this use case, as far as virtio (the spec) and
+existent virtio front-end drivers are  concerned.  The specific IOMMU
+design & configuration seems orthogonal to virtio (both spec and
+existent drivers).
+
+An existent driver that negotiates VIRTIO_F_IOMMU_PLATFORM should not
+have to undergo any changes to conform to this use case. Instead, the
+affected (front-end) guest OS or guest firmware should get a new IOMMU
+driver, and a method to select and configure that driver.
+
+(Sorry if I misunderstood -- I tend to follow this list from a distance,
+and I'm only commenting because Alex's and Jan's emails reminded me of
+how SEV support is implemented in OVMF's (and I believe Linux's) virtio
+drivers. When you have a hammer...)
+
+Thanks
+Laszlo
+
+>=20
+>>
+>> Closing Thoughts and Open Questions
+>> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>>
+>> Currently all of this is considering just virtqueues themselves but of
+>> course only a subset of devices interact purely by virtqueue messages.
+>> Network and Block devices often end up filling up additional structures
+>> in memory that are usually across the whole of system memory. To achieve
+>> better isolation you either need to ensure that specific bits of kernel
+>> allocation are done in certain regions (i.e. block cache in "shared"
+>> region) or implement some sort of bounce buffer [1] that allows you to b=
+ring
+>> data from backend to frontend (which is more like the channel concept of
+>> Xen's PV).
+>=20
+> For [1], look at https://lkml.org/lkml/2020/3/26/700 or at
+> http://git.kiszka.org/?p=3Dlinux.git;a=3Dblob;f=3Ddrivers/virtio/virtio_i=
+vshmem.c;hb=3Drefs/heads/queues/jailhouse
+> (which should be using swiotlb one day).
+>=20
+>>
+>> I suspect the solution will end up being a combination of all of these
+>> approaches. There setup of different systems might mean we need a
+>> plethora of ways to carve out and define regions in ways a kernel can
+>> understand and make decisions about.
+>>
+>> I think there will always have to be an element of VirtIO config
+>> involved as that is *the* mechanism by which front/back end negotiate if
+>> they can get up and running in a way they are both happy with.
+>>
+>> One potential approach would be to introduce the concept of a region id
+>> at the VirtIO config level which is simply a reasonably unique magic
+>> number that virtio driver passes down into the kernel when requesting
+>> memory for it's virtqueues. It could then be left to the kernel to
+>> associate use that id when identifying the physical address range to
+>> allocate from. This seems a bit of a loose binding between the driver
+>> level and the kernel level but perhaps that is preferable to allow for
+>> flexibility about how such regions are discovered by kernels?
+>>
+>> I hope this message hasn't rambled on to much. I feel this is a complex
+>> topic and I'm want to be sure I've thought through all the potential
+>> options before starting to prototype a solution. For those that have
+>> made it this far the final questions are:
+>>
+>>   - is constraining guest allocation of virtqueues a reasonable requirem=
+ent?
+>>
+>>   - could virtqueues ever be directly host/hypervisor assigned?
+>>
+>>   - should there be a tight or loose coupling between front-end driver
+>>     and kernel/hypervisor support for allocating memory?
+>>
+>> Of course if this is all solvable with existing code I'd be more than
+>> happy but please let me know how ;-)
+>>
+>=20
+> Queues are a central element of virtio, but there is a (maintainability
+> & security) benefit if you can keep them away from the hosting
+> hypervisor, limit their interpretation and negotiation to the backend
+> driver in a host process or in a backend guest VM. So I would be careful
+> with coupling things too tightly.
+>=20
+> One of the issues I see in virtio for use in minimalistic hypervisors is
+> the need to be aware of the different virtio devices when using PCI or
+> MMIO transports. That's where a shared memory transport come into play.
+>=20
 > Jan
-
-Hmm that went woosh over my head a bit, sorry.
-If it's important for this discussion, a diagram might help.
-
--- 
-MST
+>=20
 
 
 ---------------------------------------------------------------------
