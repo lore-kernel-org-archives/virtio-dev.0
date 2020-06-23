@@ -1,89 +1,84 @@
-Return-Path: virtio-dev-return-7237-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-7503-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 64A35985D19
-	for <virtio-dev@lists.oasis-open.org>; Sat,  2 May 2020 09:26:55 +0000 (UTC)
-References: <20200430102908.10107-1-david@redhat.com>
- <875zdg26hp.fsf@x220.int.ebiederm.org>
- <b28c9e02-8cf2-33ae-646b-fe50a185738e@redhat.com>
- <20200430152403.e0d6da5eb1cad06411ac6d46@linux-foundation.org>
- <5c908ec3-9495-531e-9291-cbab24f292d6@redhat.com>
- <CAPcyv4j=YKnr1HW4OhAmpzbuKjtfP7FdAn4-V7uA=b-Tcpfu+A@mail.gmail.com>
- <2d019c11-a478-9d70-abd5-4fd2ebf4bc1d@redhat.com>
- <CAPcyv4iOqS0Wbfa2KPfE1axQFGXoRB4mmPRP__Lmqpw6Qpr_ig@mail.gmail.com>
- <62dd4ce2-86cc-5b85-734f-ec8766528a1b@redhat.com>
- <0169e822-a6cc-1543-88ed-2a85d95ffb93@redhat.com>
- <CAPcyv4jGnR_fPtpKBC1rD2KRcT88bTkhqnTMmuwuc+f9Dwrz1g@mail.gmail.com>
- <9f3a813e-dc1d-b675-6e69-85beed3057a4@redhat.com>
- <CAPcyv4jjrxQ27rsfmz6wYPgmedevU=KG+wZ0GOm=qiE6tqa+VA@mail.gmail.com>
- <04242d48-5fa9-6da4-3e4a-991e401eb580@redhat.com>
- <CAPcyv4iXyOUDZgqhWH1KCObvATL=gP55xEr64rsRfUuJg5B+eQ@mail.gmail.com>
- <8242c0c5-2df2-fc0c-079a-3be62c113a11@redhat.com>
- <CAPcyv4h1nWjszkVJQgeXkUc=-nPv5=Me25BOGFQCpihUyFsD6w@mail.gmail.com>
-From: David Hildenbrand <david@redhat.com>
-Message-ID: <467ccba3-80ac-085c-3127-d5618d77d3e0@redhat.com>
-Date: Sat, 2 May 2020 11:26:41 +0200
+	by lists.oasis-open.org (Postfix) with ESMTP id BB287985F37
+	for <virtio-dev@lists.oasis-open.org>; Tue, 23 Jun 2020 11:13:55 +0000 (UTC)
+From: Keiichi Watanabe <keiichiw@chromium.org>
+Date: Tue, 23 Jun 2020 20:13:24 +0900
+Message-Id: <20200623111325.237158-1-keiichiw@chromium.org>
 MIME-Version: 1.0
-In-Reply-To: <CAPcyv4h1nWjszkVJQgeXkUc=-nPv5=Me25BOGFQCpihUyFsD6w@mail.gmail.com>
-Content-Language: en-US
-Subject: [virtio-dev] Re: [PATCH v2 2/3] mm/memory_hotplug: Introduce
- MHP_NO_FIRMWARE_MEMMAP
-Content-Type: text/plain; charset=utf-8
+Subject: [virtio-dev] [PATCH RFC v4 0/1] Virtio Video Device Specification
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: quoted-printable
-To: Dan Williams <dan.j.williams@intel.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>, "Eric W. Biederman" <ebiederm@xmission.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Linux MM <linux-mm@kvack.org>, virtio-dev@lists.oasis-open.org, virtualization@lists.linux-foundation.org, linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, Linux ACPI <linux-acpi@vger.kernel.org>, linux-nvdimm <linux-nvdimm@lists.01.org>, linux-hyperv@vger.kernel.org, linux-s390 <linux-s390@vger.kernel.org>, xen-devel <xen-devel@lists.xenproject.org>, Michal Hocko <mhocko@kernel.org>, "Michael S . Tsirkin" <mst@redhat.com>, Michal Hocko <mhocko@suse.com>, Pankaj Gupta <pankaj.gupta.linux@gmail.com>, Wei Yang <richard.weiyang@gmail.com>, Baoquan He <bhe@redhat.com>, Dave Hansen <dave.hansen@linux.intel.com>
+To: virtio-dev@lists.oasis-open.org
+Cc: linux-media@vger.kernel.org, acourbot@chromium.org, alexlau@chromium.org, daniel@ffwll.ch, dgreid@chromium.org, dstaessens@chromium.org, dmitry.sepp@opensynergy.com, egranata@google.com, fziglio@redhat.com, hverkuil@xs4all.nl, keiichiw@chromium.org, kraxel@redhat.com, marcheu@chromium.org, posciak@chromium.org, spice-devel@lists.freedesktop.org, stevensd@chromium.org, tfiga@chromium.org, uril@redhat.com, samiullah.khawaja@opensynergy.com, kiran.pawar@opensynergy.com, saket.sinha89@gmail.com, laurent.pinchart@ideasonboard.com, nicolas@ndufresne.ca, mst@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
->> Now, let's clarify what I want regarding virtio-mem:
->>
->> 1. kexec should not add virtio-mem memory to the initial firmware
->>    memmap. The driver has to be in charge as discussed.
->> 2. kexec should not place kexec images onto virtio-mem memory. That
->>    would end badly.
->> 3. kexec should still dump virtio-mem memory via kdump.
->=20
-> Ok, but then seems to say to me that dax/kmem is a different type of
-> (driver managed) than virtio-mem and it's confusing to try to apply
-> the same meaning. Why not just call your type for the distinct type it
-> is "System RAM (virtio-mem)" and let any other driver managed memory
-> follow the same "System RAM ($driver)" format if it wants?
+This is the v4 RFC of virtio video device specification.
+PDF versions are available at [1, 2].
 
-I had the same idea but discarded it because it seemed to uglify the
-add_memory() interface (passing yet another parameter only relevant for
-driver managed memory). Maybe we really want a new one, because I like
-that idea:
+Note that this patch depends on a recent patchset "Cross-device resource
+sharing" [3].
 
-/*
- * Add special, driver-managed memory to the system as system ram.
- * The resource_name is expected to have the name format "System RAM
- * ($DRIVER)", so user space (esp. kexec-tools)" can special-case it.
- *
- * For this memory, no entries in /sys/firmware/memmap are created,
- * as this memory won't be part of the raw firmware-provided memory map
- * e.g., after a reboot. Also, the created memory resource is flagged
- * with IORESOURCE_MEM_DRIVER_MANAGED, so in-kernel users can special-
- * case this memory (e.g., not place kexec images onto it).
- */
-int add_memory_driver_managed(int nid, u64 start, u64 size,
-=09=09=09      const char *resource_name);
+Here is a list of major changes from v3:
+* Redesingned struct definitions for each command and request based on
+  discussions at [4].
+* Renamed commands/structs/enums to more descriptive names.
+* Had different structs and fields for image formats and bitstream formats.
+* Added more detailed specification for supported video codecs.
+* Made stream_id be allocated by the device.
+* Had a single parameter struct per-stream instead of per-queue parameters =
+and
+  controls.
+* Allowed the driver to specify the number of buffers to use via
+  "cur_{image,bitstream}_buffers".
+* Renamed RESOURCE_CREATE command to RESOURCE_ATTACH command and allow the
+  driver to use this command when replacing backing memories as well.
 
+[5] is the diff of the header file from v3. Note that it only contains chan=
+ges
+in the header. We haven't updated the driver nor device implementation to f=
+ocus
+on protocol design discussion first.
 
-If we'd ever have to special case it even more in the kernel, we could
-allow to specify further resource flags. While passing the driver name
-instead of the resource_name would be an option, this way we don't have
-to hand craft new resource strings for added memory resources.
+While it may appear that many parts have been changed since the previous
+revision, these changes are to address the issues raised in previous discus=
+sions
+or/and to make the protocol simpler and easier to prevent misuse.
+I'd appreciate any types of feedback.
 
-Thoughts?
+Best regards,
+Keiichi
 
---=20
-Thanks,
+[1] (full): https://drive.google.com/file/d/1DiOJZfUJ5wvFtnNFQicxt0zkp4Ob1o=
+9C/view?usp=3Dsharing
+[2] (only video section): https://drive.google.com/file/d/188uAkIWE0BsXETEC=
+ez98y5fJKw8rslj3/view?usp=3Dsharing
+[3] https://lists.oasis-open.org/archives/virtio-comment/202003/msg00035.ht=
+ml
+[4] https://markmail.org/thread/c6h3e3zn647qli3w
+[5] https://chromium-review.googlesource.com/c/chromiumos/third_party/kerne=
+l/+/2164411
 
-David / dhildenb
+Keiichi Watanabe (1):
+  virtio-video: Add virtio video device specification
 
+ .gitignore                        |    1 +
+ content.tex                       |    1 +
+ images/video-buffer-lifecycle.dot |   18 +
+ make-setup-generated.sh           |    8 +
+ virtio-video.tex                  | 1163 +++++++++++++++++++++++++++++
+ 5 files changed, 1191 insertions(+)
+ create mode 100644 .gitignore
+ create mode 100644 images/video-buffer-lifecycle.dot
+ create mode 100644 virtio-video.tex
+
+--
+2.27.0.111.gc72c7da667-goog
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
