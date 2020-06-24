@@ -1,112 +1,169 @@
-Return-Path: virtio-dev-return-7489-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-7505-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id D51C79860D0
-	for <virtio-dev@lists.oasis-open.org>; Thu, 18 Jun 2020 20:20:56 +0000 (UTC)
-From: David Hildenbrand <david@redhat.com>
-Mime-Version: 1.0 (1.0)
-Date: Thu, 18 Jun 2020 22:20:51 +0200
-Message-Id: <B304BB6D-DBDB-4C36-B376-896945E5AE6D@redhat.com>
-References: <CAKgT0UfgyVyfLSg1dZejUR0g6znijY+dRyW_TAFJMZU+qXK+UQ@mail.gmail.com>
-In-Reply-To: <CAKgT0UfgyVyfLSg1dZejUR0g6znijY+dRyW_TAFJMZU+qXK+UQ@mail.gmail.com>
-Subject: [virtio-dev] Re: [PATCH v25 QEMU 3/3] virtio-balloon: Replace free page hinting references to 'report' with 'hint'
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-To: Alexander Duyck <alexander.duyck@gmail.com>
-Cc: David Hildenbrand <david@redhat.com>, "Wang, Wei W" <wei.w.wang@intel.com>, "Michael S. Tsirkin" <mst@redhat.com>, virtio-dev@lists.oasis-open.org, qemu-devel@nongnu.org
+	by lists.oasis-open.org (Postfix) with ESMTP id 5CFF2985F8C
+	for <virtio-dev@lists.oasis-open.org>; Wed, 24 Jun 2020 14:56:59 +0000 (UTC)
+Date: Wed, 24 Jun 2020 10:56:49 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20200624103559-mutt-send-email-mst@kernel.org>
+References: <20200527041212.12700.60627.stgit@localhost.localdomain>
+ <20200527041414.12700.50293.stgit@localhost.localdomain>
+ <CAKgT0UdPC1s0c-wqsNc4x8DeZhtZQVMmLArWQ=Z345Mkof650Q@mail.gmail.com>
+ <4f37c184-cf62-5711-a737-925533b52d73@redhat.com>
+ <CAKgT0Udmxjx66hEhDyqWS1wBkAfEf_hht8FZAOuh3NMDOAOR3w@mail.gmail.com>
+ <aea3b6e6-f653-dd0c-5e17-d0c948a6af4b@redhat.com>
+ <20200618120121-mutt-send-email-mst@kernel.org>
+ <1ee4f06d-f0bb-4155-ee82-1d56c346e2a0@redhat.com>
+MIME-Version: 1.0
+In-Reply-To: <1ee4f06d-f0bb-4155-ee82-1d56c346e2a0@redhat.com>
+Subject: [virtio-dev] Re: [PATCH v25 QEMU 3/3] virtio-balloon: Replace free page hinting
+ references to 'report' with 'hint'
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+To: David Hildenbrand <david@redhat.com>
+Cc: Alexander Duyck <alexander.duyck@gmail.com>, virtio-dev@lists.oasis-open.org, qemu-devel@nongnu.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
->=20
->> 2. Unclear semantics. Alex tried to document what the actual semantics
->> of hinted pages are. Assume the following in the guest to a previously
->> hinted page
->>=20
->> /* page was hinted and is reused now */
->> if (page[x] !=3D Y)
->>        page[x] =3D=3D Y;
->> /* migration ends, we now run on the destination */
->> BUG_ON(page[x] !=3D Y);
->> /* BUG, because the content chan
->>=20
->> A guest can observe that. And that could be a random driver that just
->> allocated a page.
->>=20
->> (I *assume* in Linux we might catch that using kasan, but I am not 100%
->> sure, also, the actual semantics to document are unclear - e.g., for
->> other guests)
->>=20
->> As Alex mentioned, it is not even guaranteed in QEMU that we receive a
->> zero page on the destination, it could also be something else (e.g.,
->> previously migrated values).
->=20
-> So this is only an issue for pages that are pushed out of the balloon
-> as a part of the shrinker process though. So fixing it would be pretty
-> straightforward as we would just have to initialize or at least dirty
-> pages that are leaked as a part of the shrinker. That may have an
-> impact on performance though as it would result in us dirtying pages
-> that are freed as a result of the shrinker being triggered.
->=20
+On Thu, Jun 18, 2020 at 07:10:43PM +0200, David Hildenbrand wrote:
+> >>
+> >> Ugh, ...
+> >>
+> >> @MST, you might have missed that in another discussion, what's your
+> >> general opinion about removing free page hinting in QEMU (and Linux)? We
+> >> keep finding issues in the QEMU implementation, including non-trivial
+> >> ones, and have to speculate about the actual semantics. I can see that
+> >> e.g., libvirt does not support it yet.
+> > 
+> > Not maintaining two similar features sounds attractive.
+> 
+> I consider free page hinting (in QEMU) to be in an unmaintainable state
+> (and it looks like Alex and I are fixing a feature we don't actually
+> intend to use / not aware of users). In contrast to that, the free page
+> reporting functionality/implementation is a walk in the park.
 
-It really depends on the desired semantics, which are unclear because there=
- is no doc/spec. Either QEMU is buggy or the kernel is buggy.
+So at the high level the idea was simple, we just clear the dirty bit
+when page is hinted, unless we sent a new command since. Implementation
+was reviewed by migration maintainers. If there's a consensus the code
+is written so badly we can't maintain it, maybe we should remove it.
+Which parts are unmaintainable in your eyes - migration or virtio ones?
+Or maybe it's the general thing that interface was never specced
+properly.
 
->> 3. If I am not wrong, the iothread works in
->> virtio_ballloon_get_free_page_hints() on the virtqueue only with holding
->> the free_page_lock (no BQL).
->>=20
->> Assume we're migrating, the iothread is active, and the guest triggers a
->> device reset.
->>=20
->> virtio_balloon_device_reset() will trigger a
->> virtio_balloon_free_page_stop(s). That won't actually wait for the
->> iothread to stop, it will only temporarily lock free_page_lock and
->> update s->free_page_report_status.
->>=20
->> I think there can be a race between the device reset and the iothread.
->> Once virtio_balloon_free_page_stop() returned,
->> virtio_ballloon_get_free_page_hints() can still call
->> - virtio_queue_set_notification(vq, 0);
->> - virtio_queue_set_notification(vq, 1);
->> - virtio_notify(vdev, vq);
->> - virtqueue_pop()
->>=20
->> I doubt this is very nice.
->=20
-> And our conversation had me start looking though reference to
-> virtio_balloon_free_page_stop. It looks like we call it for when we
-> unrealize the device or reset the device. It might make more sense for
-> us to look at pushing the status to DONE and forcing the iothread to
-> be flushed out.
->=20
->> There are other concerns I had regarding the iothread (e.g., while
->> reporting is active, virtio_ballloon_get_free_page_hints() is
->> essentially a busy loop, in contrast to documented -
->> continue_to_get_hints will always be true).
->>=20
->>> The appeal of hinting is that it's 0 overhead outside migration,
->>> and pains were taken to avoid keeping pages locked while
->>> hypervisor is busy.
->>>=20
->>> If we are to drop hinting completely we need to show that reporting
->>> can be comparable, and we'll probably want to add a mode for
->>> reporting that behaves somewhat similarly.
->>=20
->> Depends on the actual users. If we're dropping a feature that nobody is
->> actively using, I don't think we have to show anything.
->>=20
->> This feature obviously saw no proper review.
->=20
-> I'm pretty sure it had some, as it went through several iterations as
-> I recall. However I don't think the review of the virtio interface was
-> very detailed as I think most of the attention was on the kernel
-> interface.
+> > 
+> > I'm still trying to get my head around the list of issues.  So far they
+> > all look kind of minor to me.  Would you like to summarize them
+> > somewhere?
+> 
+> Some things I still have in my mind
 
-Yes, that=E2=80=98s what I meant. The kernel side and the migration code (Q=
-EMU) got a lot of attention.
+Thanks for the summary!
+
+> 
+> 1. If migration fails during RAM precopy, the guest will never receive a
+> DONE notification. Probably easy to fix.
+> 
+> 2. Unclear semantics. Alex tried to document what the actual semantics
+> of hinted pages are.
+
+I'll reply to that now.
+
+> Assume the following in the guest to a previously
+> hinted page
+> 
+> /* page was hinted and is reused now */
+> if (page[x] != Y)
+> 	page[x] == Y;
+> /* migration ends, we now run on the destination */
+> BUG_ON(page[x] != Y);
+> /* BUG, because the content chan
+
+The assumption hinting makes is that data in page is writtent to before it's used.
+
+
+> A guest can observe that. And that could be a random driver that just
+> allocated a page.
+> 
+> (I *assume* in Linux we might catch that using kasan, but I am not 100%
+> sure, also, the actual semantics to document are unclear - e.g., for
+> other guests)
+
+I think it's basically simple: hinting means it's ok to
+fill page with trash unless it has been modified since the command
+ID supplied.
+
+> As Alex mentioned, it is not even guaranteed in QEMU that we receive a
+> zero page on the destination, it could also be something else (e.g.,
+> previously migrated values).
+
+
+Absolutely.
+
+> 3. If I am not wrong, the iothread works in
+> virtio_ballloon_get_free_page_hints() on the virtqueue only with holding
+> the free_page_lock (no BQL).
+> 
+> Assume we're migrating, the iothread is active, and the guest triggers a
+> device reset.
+> 
+> virtio_balloon_device_reset() will trigger a
+> virtio_balloon_free_page_stop(s). That won't actually wait for the
+> iothread to stop, it will only temporarily lock free_page_lock and
+> update s->free_page_report_status.
+> 
+> I think there can be a race between the device reset and the iothread.
+> Once virtio_balloon_free_page_stop() returned,
+> virtio_ballloon_get_free_page_hints() can still call
+> - virtio_queue_set_notification(vq, 0);
+> - virtio_queue_set_notification(vq, 1);
+> - virtio_notify(vdev, vq);
+> - virtqueue_pop()
+> 
+> I doubt this is very nice.
+
+Reset is notoriously hard to get right.
+
+> There are other concerns I had regarding the iothread (e.g., while
+> reporting is active, virtio_ballloon_get_free_page_hints() is
+> essentially a busy loop, in contrast to documented -
+> continue_to_get_hints will always be true).
+
+So that would be a performance issue you are suggesting, right?
+
+> > The appeal of hinting is that it's 0 overhead outside migration,
+> > and pains were taken to avoid keeping pages locked while
+> > hypervisor is busy.
+> > 
+> > If we are to drop hinting completely we need to show that reporting
+> > can be comparable, and we'll probably want to add a mode for
+> > reporting that behaves somewhat similarly.
+> 
+> Depends on the actual users. If we're dropping a feature that nobody is
+> actively using, I don't think we have to show anything.
+
+
+I don't know how to find out. So far it doesn't look like we found
+any common data corruptions that would indicate no one can use it safely.
+Races around reset aren't all that uncommon but I don't think that
+qualifies as a deal breaker.
+
+I find the idea of asynchronously sending hints to host without
+waiting for them to be processed intriguing. Not something
+I'd work on implementing if we had reporting originally,
+but since it's there I'm not sure we should just discard it
+at this point.
+
+> This feature obviously saw no proper review.
+
+I did my best but obviously missed some things.
+
+> -- 
+> Thanks,
+> 
+> David / dhildenb
 
 
 ---------------------------------------------------------------------
