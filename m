@@ -1,74 +1,109 @@
-Return-Path: virtio-dev-return-7492-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-7513-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id AE4AF986127
-	for <virtio-dev@lists.oasis-open.org>; Fri, 19 Jun 2020 08:02:42 +0000 (UTC)
-Date: Fri, 19 Jun 2020 10:02:28 +0200
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Message-ID: <20200619080228.GA2530@myrica>
-References: <87a7194kgt.fsf@linaro.org>
+	by lists.oasis-open.org (Postfix) with ESMTP id 1B562985D64
+	for <virtio-dev@lists.oasis-open.org>; Fri, 26 Jun 2020 09:53:27 +0000 (UTC)
+From: David Hildenbrand <david@redhat.com>
+Date: Fri, 26 Jun 2020 11:53:14 +0200
+Message-Id: <20200626095314.411380-1-david@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <87a7194kgt.fsf@linaro.org>
-Subject: [virtio-dev] Re: Constraining where a guest may allocate virtio accessible
- resources
-Content-Type: text/plain; charset=utf-8
+Subject: [virtio-dev] [PATCH v1] virtio-balloon: always indicate S_DONE when migration fails
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-To: Alex =?utf-8?Q?Benn=C3=A9e?= <alex.bennee@linaro.org>
-Cc: virtio-dev@lists.oasis-open.org, David Hildenbrand <david@redhat.com>, jan.kiszka@siemens.com, Srivatsa Vaddagiri <vatsa@codeaurora.org>, Azzedine Touzni <atouzni@qti.qualcomm.com>, =?utf-8?B?RnJhbsOnb2lz?= Ozog <francois.ozog@linaro.org>, Ilias Apalodimas <ilias.apalodimas@linaro.org>, "Soni, Trilok" <tsoni@quicinc.com>, "Dr. David Alan Gilbert" <dgilbert@redhat.com>, Stefan Hajnoczi <stefanha@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>
+To: qemu-devel@nongnu.org
+Cc: "Michael S . Tsirkin" <mst@redhat.com>, virtio-dev@lists.oasis-open.org, David Hildenbrand <david@redhat.com>, Wei Wang <wei.w.wang@intel.com>, Alexander Duyck <alexander.duyck@gmail.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, Jun 17, 2020 at 06:31:15PM +0100, Alex Benn=C3=A9e wrote:
-[...]
-> Option 2 - Additional Platform Data
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->=20
-> This would be extending using something like device tree or ACPI tables
-> which could define regions of memory that would inform the low level
-> memory allocation routines where they could allocate from. There is
-> already of the concept of "dma-ranges" in device tree which can be a
-> per-device property which defines the region of space that is DMA
-> coherent for a device.
+If something goes wrong during precopy, before stopping the VM, we will
+never send a S_DONE indication to the VM, resulting in the hinted pages
+not getting released to be used by the guest OS (e.g., Linux).
 
-They are regions that are accessible to a device for DMA, coherency is
-described through other methods.
+Easy to reproduce:
+1. Start migration (e.g., HMP "migrate -d 'exec:gzip -c > STATEFILE.gz'")
+2. Cancel migration (e.g., HMP "migrate_cancel")
+3. Oberve in the guest (e.g., cat /proc/meminfo) that there is basically
+   no free memory left.
 
-Thinking more about this, dma-ranges (and ACPI _DMA) don't exactly
-describe what you need. They describe addressing limitation from a
-bridge's perspective, for example from the PCI root complex. So there are
-at least two issues:
+While at it, add similar locking to virtio_balloon_free_page_done() as
+done in virtio_balloon_free_page_stop. Locking is still weird, but that
+has to be sorted out separately.
 
-1. They apply to the whole downstream bus, so you can't define per-device
-   DMA windows. Although with PCIe I suppose you could put one on each
-   downstream port.
+There is nothing to do in the PRECOPY_NOTIFY_COMPLETE case. Add some
+comments regarding S_DONE handling.
 
-2. More importantly, they only describe addressing limitations locally.
-   When the device directly accesses memory, it emits guest-physical
-   addresses (GPA) so you can use DMA ranges to describe which memory it
-   can access. However, if there is an IOMMU in between, the device emits
-   I/O virtual addresses (IOVA), which are translated by the IOMMU into
-   GPA. In this case the DMA ranges apply to the IOVA, and there doesn't
-   exist a way to describe limitations on the GPA.
+Fixes: c13c4153f76d ("virtio-balloon: VIRTIO_BALLOON_F_FREE_PAGE_HINT")
+Cc: Wei Wang <wei.w.wang@intel.com>
+Cc: Alexander Duyck <alexander.duyck@gmail.com>
+Signed-off-by: David Hildenbrand <david@redhat.com>
+---
+ hw/virtio/virtio-balloon.c | 24 ++++++++++++++++++++----
+ 1 file changed, 20 insertions(+), 4 deletions(-)
 
-There are other mechanisms describing addressing limitations such as
-Intel's RMRR, but those also apply to IOVAs as far as I know.
+diff --git a/hw/virtio/virtio-balloon.c b/hw/virtio/virtio-balloon.c
+index 10507b2a43..13ba208694 100644
+--- a/hw/virtio/virtio-balloon.c
++++ b/hw/virtio/virtio-balloon.c
+@@ -628,8 +628,13 @@ static void virtio_balloon_free_page_done(VirtIOBalloo=
+n *s)
+ {
+     VirtIODevice *vdev =3D VIRTIO_DEVICE(s);
+=20
+-    s->free_page_report_status =3D FREE_PAGE_REPORT_S_DONE;
+-    virtio_notify_config(vdev);
++    if (s->free_page_report_status !=3D FREE_PAGE_REPORT_S_DONE) {
++        /* See virtio_balloon_free_page_stop() */
++        qemu_mutex_lock(&s->free_page_lock);
++        s->free_page_report_status =3D FREE_PAGE_REPORT_S_DONE;
++        qemu_mutex_unlock(&s->free_page_lock);
++        virtio_notify_config(vdev);
++    }
+ }
+=20
+ static int
+@@ -653,8 +658,6 @@ virtio_balloon_free_page_report_notify(NotifierWithRetu=
+rn *n, void *data)
+     case PRECOPY_NOTIFY_SETUP:
+         precopy_enable_free_page_optimization();
+         break;
+-    case PRECOPY_NOTIFY_COMPLETE:
+-    case PRECOPY_NOTIFY_CLEANUP:
+     case PRECOPY_NOTIFY_BEFORE_BITMAP_SYNC:
+         virtio_balloon_free_page_stop(dev);
+         break;
+@@ -662,9 +665,22 @@ virtio_balloon_free_page_report_notify(NotifierWithRet=
+urn *n, void *data)
+         if (vdev->vm_running) {
+             virtio_balloon_free_page_start(dev);
+         } else {
++            /*
++             * Set S_DONE before migrating the vmstate, so the guest will =
+reuse
++             * all hinted pages once running on the destination.
++             */
+             virtio_balloon_free_page_done(dev);
+         }
+         break;
++    case PRECOPY_NOTIFY_CLEANUP:
++        /*
++         * Especially, if something goes wrong during precopy or if migrat=
+ion
++         * is canceled, we have to properly communicate S_DONE to the VM.
++         */
++        virtio_balloon_free_page_done(dev);
++        break;
++    case PRECOPY_NOTIFY_COMPLETE:
++        break;
+     default:
+         virtio_error(vdev, "%s: %d reason unknown", __func__, pnd->reason)=
+;
+     }
+--=20
+2.26.2
 
-Thanks,
-Jean
-
->=20
-> There is the question of how you tie regions declared here with the
-> eventual instantiating of the VirtIO devices?
->=20
-> For a fully distributed set of backends (one backend per device per
-> worker VM) you would need several different regions. Would each region
-> be tied to each device or just a set of areas the guest would allocate
-> from in sequence?
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
