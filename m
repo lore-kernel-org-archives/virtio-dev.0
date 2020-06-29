@@ -1,90 +1,108 @@
-Return-Path: virtio-dev-return-7501-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-7514-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id E8FC7985F29
-	for <virtio-dev@lists.oasis-open.org>; Tue, 23 Jun 2020 01:31:39 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 0F5DC985359
+	for <virtio-dev@lists.oasis-open.org>; Mon, 29 Jun 2020 08:06:29 +0000 (UTC)
+From: David Hildenbrand <david@redhat.com>
+Date: Mon, 29 Jun 2020 10:06:15 +0200
+Message-Id: <20200629080615.26022-1-david@redhat.com>
 MIME-Version: 1.0
-References: <20200609012518.198908-1-stevensd@chromium.org> <20200609055021-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20200609055021-mutt-send-email-mst@kernel.org>
-From: David Stevens <stevensd@chromium.org>
-Date: Tue, 23 Jun 2020 10:31:28 +0900
-Message-ID: <CAD=HUj7wJfoKj_K44Cs9eEmh=OQHZ1+qz7ZHxoscHjYgOMXvZQ@mail.gmail.com>
-Subject: Re: [virtio-dev] Re: [PATCH v5 0/3] Support virtio cross-device resources
-Content-Type: text/plain; charset="UTF-8"
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Gerd Hoffmann <kraxel@redhat.com>, David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>, Sumit Semwal <sumit.semwal@linaro.org>, Jason Wang <jasowang@redhat.com>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, open list <linux-kernel@vger.kernel.org>, ML dri-devel <dri-devel@lists.freedesktop.org>, "open list:VIRTIO GPU DRIVER" <virtualization@lists.linux-foundation.org>, Linux Media Mailing List <linux-media@vger.kernel.org>, "moderated list:DMA BUFFER SHARING FRAMEWORK" <linaro-mm-sig@lists.linaro.org>, virtio-dev@lists.oasis-open.org, alex.williamson@redhat.com
+Subject: [virtio-dev] [PATCH v2] virtio-balloon: always indicate S_DONE when migration fails
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
+To: qemu-devel@nongnu.org
+Cc: "Michael S . Tsirkin" <mst@redhat.com>, virtio-dev@lists.oasis-open.org, David Hildenbrand <david@redhat.com>, Alexander Duyck <alexander.h.duyck@linux.intel.com>, Wei Wang <wei.w.wang@intel.com>, Alexander Duyck <alexander.duyck@gmail.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Unless there are any remaining objections to these patches, what are
-the next steps towards getting these merged? Sorry, I'm not familiar
-with the workflow for contributing patches to Linux.
+If something goes wrong during precopy, before stopping the VM, we will
+never send a S_DONE indication to the VM, resulting in the hinted pages
+not getting released to be used by the guest OS (e.g., Linux).
 
-Thanks,
-David
+Easy to reproduce:
+1. Start migration (e.g., HMP "migrate -d 'exec:gzip -c > STATEFILE.gz'")
+2. Cancel migration (e.g., HMP "migrate_cancel")
+3. Oberve in the guest (e.g., cat /proc/meminfo) that there is basically
+   no free memory left.
 
-On Tue, Jun 9, 2020 at 6:53 PM Michael S. Tsirkin <mst@redhat.com> wrote:
->
-> On Tue, Jun 09, 2020 at 10:25:15AM +0900, David Stevens wrote:
-> > This patchset implements the current proposal for virtio cross-device
-> > resource sharing [1]. It will be used to import virtio resources into
-> > the virtio-video driver currently under discussion [2]. The patch
-> > under consideration to add support in the virtio-video driver is [3].
-> > It uses the APIs from v3 of this series, but the changes to update it
-> > are relatively minor.
-> >
-> > This patchset adds a new flavor of dma-bufs that supports querying the
-> > underlying virtio object UUID, as well as adding support for exporting
-> > resources from virtgpu.
->
-> Gerd, David, if possible, please test this in configuration with
-> virtual VTD enabled but with iommu_platform=off
-> to make sure we didn't break this config.
->
->
-> Besides that, for virtio parts:
->
-> Acked-by: Michael S. Tsirkin <mst@redhat.com>
->
->
-> > [1] https://markmail.org/thread/2ypjt5cfeu3m6lxu
-> > [2] https://markmail.org/thread/p5d3k566srtdtute
-> > [3] https://markmail.org/thread/j4xlqaaim266qpks
-> >
-> > v4 -> v5 changes:
-> >  - Remove virtio_dma_buf_export_info.
-> >
-> > David Stevens (3):
-> >   virtio: add dma-buf support for exported objects
-> >   virtio-gpu: add VIRTIO_GPU_F_RESOURCE_UUID feature
-> >   drm/virtio: Support virtgpu exported resources
-> >
-> >  drivers/gpu/drm/virtio/virtgpu_drv.c   |  3 +
-> >  drivers/gpu/drm/virtio/virtgpu_drv.h   | 20 ++++++
-> >  drivers/gpu/drm/virtio/virtgpu_kms.c   |  4 ++
-> >  drivers/gpu/drm/virtio/virtgpu_prime.c | 96 +++++++++++++++++++++++++-
-> >  drivers/gpu/drm/virtio/virtgpu_vq.c    | 55 +++++++++++++++
-> >  drivers/virtio/Makefile                |  2 +-
-> >  drivers/virtio/virtio.c                |  6 ++
-> >  drivers/virtio/virtio_dma_buf.c        | 82 ++++++++++++++++++++++
-> >  include/linux/virtio.h                 |  1 +
-> >  include/linux/virtio_dma_buf.h         | 37 ++++++++++
-> >  include/uapi/linux/virtio_gpu.h        | 19 +++++
-> >  11 files changed, 321 insertions(+), 4 deletions(-)
-> >  create mode 100644 drivers/virtio/virtio_dma_buf.c
-> >  create mode 100644 include/linux/virtio_dma_buf.h
-> >
-> > --
-> > 2.27.0.278.ge193c7cf3a9-goog
->
->
-> ---------------------------------------------------------------------
-> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
->
+While at it, add similar locking to virtio_balloon_free_page_done() as
+done in virtio_balloon_free_page_stop. Locking is still weird, but that
+has to be sorted out separately.
+
+There is nothing to do in the PRECOPY_NOTIFY_COMPLETE case. Add some
+comments regarding S_DONE handling.
+
+Fixes: c13c4153f76d ("virtio-balloon: VIRTIO_BALLOON_F_FREE_PAGE_HINT")
+Reviewed-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
+Cc: Wei Wang <wei.w.wang@intel.com>
+Cc: Alexander Duyck <alexander.duyck@gmail.com>
+Signed-off-by: David Hildenbrand <david@redhat.com>
+---
+ hw/virtio/virtio-balloon.c | 26 ++++++++++++++++++++------
+ 1 file changed, 20 insertions(+), 6 deletions(-)
+
+diff --git a/hw/virtio/virtio-balloon.c b/hw/virtio/virtio-balloon.c
+index 10507b2a43..8a84718490 100644
+--- a/hw/virtio/virtio-balloon.c
++++ b/hw/virtio/virtio-balloon.c
+@@ -628,8 +628,13 @@ static void virtio_balloon_free_page_done(VirtIOBalloo=
+n *s)
+ {
+     VirtIODevice *vdev =3D VIRTIO_DEVICE(s);
+=20
+-    s->free_page_report_status =3D FREE_PAGE_REPORT_S_DONE;
+-    virtio_notify_config(vdev);
++    if (s->free_page_report_status !=3D FREE_PAGE_REPORT_S_DONE) {
++        /* See virtio_balloon_free_page_stop() */
++        qemu_mutex_lock(&s->free_page_lock);
++        s->free_page_report_status =3D FREE_PAGE_REPORT_S_DONE;
++        qemu_mutex_unlock(&s->free_page_lock);
++        virtio_notify_config(vdev);
++    }
+ }
+=20
+ static int
+@@ -653,17 +658,26 @@ virtio_balloon_free_page_report_notify(NotifierWithRe=
+turn *n, void *data)
+     case PRECOPY_NOTIFY_SETUP:
+         precopy_enable_free_page_optimization();
+         break;
+-    case PRECOPY_NOTIFY_COMPLETE:
+-    case PRECOPY_NOTIFY_CLEANUP:
+     case PRECOPY_NOTIFY_BEFORE_BITMAP_SYNC:
+         virtio_balloon_free_page_stop(dev);
+         break;
+     case PRECOPY_NOTIFY_AFTER_BITMAP_SYNC:
+         if (vdev->vm_running) {
+             virtio_balloon_free_page_start(dev);
+-        } else {
+-            virtio_balloon_free_page_done(dev);
++            break;
+         }
++        /*
++         * Set S_DONE before migrating the vmstate, so the guest will reus=
+e
++         * all hinted pages once running on the destination. Fall through.
++         */
++    case PRECOPY_NOTIFY_CLEANUP:
++        /*
++         * Especially, if something goes wrong during precopy or if migrat=
+ion
++         * is canceled, we have to properly communicate S_DONE to the VM.
++         */
++        virtio_balloon_free_page_done(dev);
++        break;
++    case PRECOPY_NOTIFY_COMPLETE:
+         break;
+     default:
+         virtio_error(vdev, "%s: %d reason unknown", __func__, pnd->reason)=
+;
+--=20
+2.26.2
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
