@@ -1,137 +1,119 @@
-Return-Path: virtio-dev-return-7432-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-7515-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 903749842AF
-	for <virtio-dev@lists.oasis-open.org>; Mon,  1 Jun 2020 07:19:15 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 1D958985A9F
+	for <virtio-dev@lists.oasis-open.org>; Thu,  2 Jul 2020 07:32:14 +0000 (UTC)
+From: Dmitry Sepp <dmitry.sepp@opensynergy.com>
+Date: Thu, 2 Jul 2020 09:32:05 +0200
+Message-ID: <2850781.lI95146Gml@os-lin-dmo>
+In-Reply-To: <20200623111325.237158-1-keiichiw@chromium.org>
+References: <20200623111325.237158-1-keiichiw@chromium.org>
 MIME-Version: 1.0
-References: <20200206102058.247258-1-keiichiw@chromium.org>
- <20200206102058.247258-2-keiichiw@chromium.org> <CAD90Vca6=AGq6aN8voNyQ7Lh69LeDZzCxebGQ+sv_mU+mqRGLA@mail.gmail.com>
- <3754945.rEp4dnK8H5@os-lin-dmo> <CAD90VcZuvDj+-fdM89w-gYH=v4vc7x=R3sn032An4-vAX6hN0A@mail.gmail.com>
-In-Reply-To: <CAD90VcZuvDj+-fdM89w-gYH=v4vc7x=R3sn032An4-vAX6hN0A@mail.gmail.com>
-From: Alexandre Courbot <acourbot@chromium.org>
-Date: Mon, 1 Jun 2020 16:19:00 +0900
-Message-ID: <CAPBb6MXPgqYskDJr=PFb5LCWh1bV2R-FWXokCoDrmN+sEow5Xg@mail.gmail.com>
-Subject: [virtio-dev] Re: [PATCH v3 1/2] virtio-video: Add virtio video device specification
-Content-Type: text/plain; charset="UTF-8"
-To: Keiichi Watanabe <keiichiw@chromium.org>
-Cc: Dmitry Sepp <dmitry.sepp@opensynergy.com>, virtio-dev@lists.oasis-open.org, Linux Media Mailing List <linux-media@vger.kernel.org>, Alex Lau <alexlau@chromium.org>, Daniel Vetter <daniel@ffwll.ch>, Dylan Reid <dgreid@chromium.org>, David Staessens <dstaessens@chromium.org>, Enrico Granata <egranata@google.com>, Frediano Ziglio <fziglio@redhat.com>, Hans Verkuil <hverkuil@xs4all.nl>, Gerd Hoffmann <kraxel@redhat.com>, =?UTF-8?Q?St=C3=A9phane_Marchesin?= <marcheu@chromium.org>, Pawel Osciak <posciak@chromium.org>, spice-devel@lists.freedesktop.org, David Stevens <stevensd@chromium.org>, Tomasz Figa <tfiga@chromium.org>, uril@redhat.com, Samiullah Khawaja <samiullah.khawaja@opensynergy.com>, Kiran Pawar <kiran.pawar@opensynergy.com>
+Subject: [virtio-dev] Re: [PATCH RFC v4 0/1] Virtio Video Device Specification
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+To: virtio-dev@lists.oasis-open.org, Keiichi Watanabe <keiichiw@chromium.org>
+Cc: linux-media@vger.kernel.org, acourbot@chromium.org, alexlau@chromium.org, daniel@ffwll.ch, dgreid@chromium.org, dstaessens@chromium.org, egranata@google.com, fziglio@redhat.com, hverkuil@xs4all.nl, keiichiw@chromium.org, kraxel@redhat.com, marcheu@chromium.org, posciak@chromium.org, spice-devel@lists.freedesktop.org, stevensd@chromium.org, tfiga@chromium.org, uril@redhat.com, samiullah.khawaja@opensynergy.com, kiran.pawar@opensynergy.com, saket.sinha89@gmail.com, laurent.pinchart@ideasonboard.com, nicolas@ndufresne.ca, mst@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Fri, May 29, 2020 at 11:22 PM Keiichi Watanabe <keiichiw@chromium.org> wrote:
->
-> Hi Dmitry,
->
-> On Wed, May 27, 2020 at 9:12 PM Dmitry Sepp <dmitry.sepp@opensynergy.com> wrote:
-> >
-> > Hi Keiichi,
-> >
-> > On Montag, 18. Mai 2020 07:17:53 CEST Keiichi Watanabe wrote:
-> > > > +struct virtio_video_stream_create {
-> > > > +        struct virtio_video_cmd_hdr hdr;
-> > > > +        le32 in_mem_type; /* One of VIRTIO_VIDEO_MEM_TYPE_* types */
-> > > > +        le32 out_mem_type; /* One of VIRTIO_VIDEO_MEM_TYPE_* types */
-> > > > +        le32 coded_format; /* One of VIRTIO_VIDEO_FORMAT_* types */
-> > > > +        u8 padding[4];
-> > > > +        u8 tag[64];
-> > > > +};
-> > > > +\end{lstlisting}
-> > > > +\begin{description}
-> > > > +\item[\field{in_mem_type, out_mem_type}] is a type of buffer
-> > > > +  management for input /output buffers. The driver MUST set a value in
-> > > > +  \field{enum virtio_video_mem_type} that the device reported a
-> > > > +  corresponding feature bit.
-> > > > +\begin{description}
-> > > > +\item[\field{VIRTIO_VIDEO_MEM_TYPE_GUEST_PAGES}] Use guest pages.
-> > > > +\end{description}
-> > > > +\item[\field{coded_format}] is the encoded format that will be
-> > > > +  processed.
-> > > > +\item[\field{tag}] is the name associated with this stream. The tag
-> > > > +  MUST be encoded in UTF-8 and NUL-terminated.
-> > >
-> > > I wonder why we need this "tag" field. I have kept this field from
-> > > Dmitry's first proposal, where this was called "char debug_name[64]".
-> > > However, on second thought, I have no idea what is the necessity to
-> > > have this field. Our VMM implementation in ChromeOS simply ignores
-> > > this field.
-> > > If OpenSynergy's implementation relies on this field, I'm curious
-> > > about the usage. We might want to have an enum value instead of this
-> > > field where arbitrary values can be stored.
-> > >
-> >
-> > The use of this field is not so clear because it was renamed. In fact, one can
-> > have an idea how it is used by simply looking at the driver code: the field is
-> > useful to know about the guest client app that uses the context. If someone
-> > wants to store arbitrary values, they have 64 bytes to do so with this so-
-> > called tag.
->
-> Hmm, though I understand this can be useful for you, I don't think we
-> should support it in the standard.
-> For the first example, I feel something is not abstracted well if you
-> want to send some information from a user app to the host device. User
-> applications shouldn't have a way to send messages to hardware
-> directly.
+Hi Keiichi,
 
-I am also a bit uncomfortable with having fields whose usage is not
-clearly defined in the kernel. How would user-space specify the value
-it wants to set there?
+Thank you very much for the hard work to update the spec and to summarize all 
+of the recent proposals!
 
-> For the second example, who is "someone"? Driver or device? In any
-> case, I don't think it's the right way. They should extend existing
-> structs or add commands or feature flags, I think. Also, if arbitrary
-> values are allowed, the field won't be used correctly except in cases
-> where both driver implementation and device implementation are
-> available. This is against what the spec should be: virtio protocol
-> must work independently from the implementations.
-> Of course, it's obviously okay to have it as a downstream extension in
-> your product's local repository.
->
-> >
-> > > > +\end{description}
-> > > > +
-> > > > +The driver MUST set \field{stream_id} in \field{virtio_video_cmd_hdr}
-> > > > +to an integer that is not used before. If a used value is passed as
-> > > > +\field{stream_id}, the device MUST reports an error with
-> > > > +VIRTIO_VIDEO_RESP_ERR_INVALID_STREAM_ID.
-> > >
-> > > I'm wondering if we can't generate stream_id in the host side so that
-> > > we will have less error control code. In the current design, both the
-> > > device and the driver have error checks; the device must check that a
-> > > given ID is available and the driver must check if the device didn't
-> > > return the INVALID_STREAM_ID error. Instead, by generating IDs in the
-> > > device, we will be free from this type of failure. Same for
-> > > resource_id in RESOURCE_CREATE.
-> > >
-> > > I guess this design originally came from the virtio-gpu protocol.
-> > > However, I couldn't find a benefit of adopting the same design here.
-> > >
-> >
-> > Honestly I don't see too much difference: device still needs to check whether
-> > the id provided by the driver within some particular command is correct. If it
-> > is not, it will return an error. The driver needs to check (or skip checking)
-> > for an error either way as long as it is possible for the driver code to send
-> > a wrong number.
->
-> I'm talking about creation commands only. So, other commands won't be affected.
->
-> Let me try to explain my idea in a different way. The relationship
-> between the driver and the device can be seen as a client-server
-> model.
-> The client (driver) sends a request and the server (device) sends a
-> response by processing or generating some data.
-> Thus, I feel it's more natural that new data, including IDs, are
-> generated and provided by the device.
+I want to again raise a topic that was discussed earlier and unfortunately the 
+latest proposal cannot resolve the problem. I hope together with upstream 
+people we'll be able to find a neat solution.
 
-This also results in one less check on the device side: when creating
-a stream it just needs to pick the first available ID, instead of
-checking whether the client provided something valid. This also
-removes the burden of managing stream IDs from the driver, since the
-device is entirely in charge of it (something it would have to do
-anyway in both cases since it would still need to check that the
-client-provided ID is valid).
+Please consider the following case:
+1. Encoder case
+2. User app does reqbufs with DMABUF flag.
+3. User app submits frames to encode, each frame has a different fd, might be a 
+completely new buffer.
+4. Driver receives this buffer via queue() and does this check to verify 
+whether it is a known dmabuf:
+https://elixir.bootlin.com/linux/v5.7.6/source/drivers/media/common/videobuf2/
+videobuf2-core.c#L1163
+5. When the check fails, it does cleanup.
+6. BUG: As we got rid of the flexible resource detach/destroy calls, host side 
+has no way to know the resource has a new memory region. The new sgt is never 
+propagated to the host.
+
+The mentioned earlier CMD_RESOURE_REASSIGN_ENTRIES/CMD_RESOURE_REASSIGN_OBJECT 
+are not included in the spec.
+
+Thanks in advance.
+
+Best regards,
+Dmitry.
+
+On Dienstag, 23. Juni 2020 13:13:24 CEST Keiichi Watanabe wrote:
+> 
+> This is the v4 RFC of virtio video device specification.
+> PDF versions are available at [1, 2].
+> 
+> Note that this patch depends on a recent patchset "Cross-device resource
+> sharing" [3].
+> 
+> Here is a list of major changes from v3:
+> * Redesingned struct definitions for each command and request based on
+>   discussions at [4].
+> * Renamed commands/structs/enums to more descriptive names.
+> * Had different structs and fields for image formats and bitstream formats.
+> * Added more detailed specification for supported video codecs.
+> * Made stream_id be allocated by the device.
+> * Had a single parameter struct per-stream instead of per-queue parameters
+> and controls.
+> * Allowed the driver to specify the number of buffers to use via
+>   "cur_{image,bitstream}_buffers".
+> * Renamed RESOURCE_CREATE command to RESOURCE_ATTACH command and allow the
+>   driver to use this command when replacing backing memories as well.
+> 
+> [5] is the diff of the header file from v3. Note that it only contains
+> changes in the header. We haven't updated the driver nor device
+> implementation to focus on protocol design discussion first.
+> 
+> While it may appear that many parts have been changed since the previous
+> revision, these changes are to address the issues raised in previous
+> discussions or/and to make the protocol simpler and easier to prevent
+> misuse.
+> I'd appreciate any types of feedback.
+> 
+> Best regards,
+> Keiichi
+> 
+> [1] (full):
+> https://drive.google.com/file/d/1DiOJZfUJ5wvFtnNFQicxt0zkp4Ob1o9C/view?usp=
+> sharing [2] (only video section):
+> https://drive.google.com/file/d/188uAkIWE0BsXETECez98y5fJKw8rslj3/view?usp=
+> sharing [3]
+> https://lists.oasis-open.org/archives/virtio-comment/202003/msg00035.html
+> [4] https://markmail.org/thread/c6h3e3zn647qli3w
+> [5]
+> https://chromium-review.googlesource.com/c/chromiumos/third_party/kernel/+/
+> 2164411
+> 
+> Keiichi Watanabe (1):
+>   virtio-video: Add virtio video device specification
+> 
+>  .gitignore                        |    1 +
+>  content.tex                       |    1 +
+>  images/video-buffer-lifecycle.dot |   18 +
+>  make-setup-generated.sh           |    8 +
+>  virtio-video.tex                  | 1163 +++++++++++++++++++++++++++++
+>  5 files changed, 1191 insertions(+)
+>  create mode 100644 .gitignore
+>  create mode 100644 images/video-buffer-lifecycle.dot
+>  create mode 100644 virtio-video.tex
+> 
+> --
+> 2.27.0.111.gc72c7da667-goog
+
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
