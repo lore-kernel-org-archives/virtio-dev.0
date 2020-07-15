@@ -1,82 +1,64 @@
-Return-Path: virtio-dev-return-7548-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-7550-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id CB6E1985E55
-	for <virtio-dev@lists.oasis-open.org>; Tue, 14 Jul 2020 21:43:40 +0000 (UTC)
-From: Alex =?utf-8?Q?Benn=C3=A9e?= <alex.bennee@linaro.org>
-Date: Tue, 14 Jul 2020 22:43:36 +0100
-Message-ID: <87r1tdydpz.fsf@linaro.org>
+	by lists.oasis-open.org (Postfix) with ESMTP id 74866985E55
+	for <virtio-dev@lists.oasis-open.org>; Wed, 15 Jul 2020 11:49:01 +0000 (UTC)
+Date: Wed, 15 Jul 2020 12:48:55 +0100
+From: Stefan Hajnoczi <stefanha@redhat.com>
+Message-ID: <20200715114855.GF18817@stefanha-x1.localdomain>
+References: <87r1tdydpz.fsf@linaro.org>
 MIME-Version: 1.0
-Subject: [virtio-dev] On doorbells (queue notifications)
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-To: virtio-dev@lists.oasis-open.org
-Cc: Zha Bin <zhabin@linux.alibaba.com>, Zha Bin <zhabin@linux.alibaba.com>, Jing Liu <jing2.liu@linux.intel.com>, Chao Peng <chao.p.peng@linux.intel.com>
+In-Reply-To: <87r1tdydpz.fsf@linaro.org>
+Subject: Re: [virtio-dev] On doorbells (queue notifications)
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="vA66WO2vHvL/CRSR"
+Content-Disposition: inline
+To: Alex =?iso-8859-1?Q?Benn=E9e?= <alex.bennee@linaro.org>
+Cc: virtio-dev@lists.oasis-open.org, Zha Bin <zhabin@linux.alibaba.com>, Jing Liu <jing2.liu@linux.intel.com>, Chao Peng <chao.p.peng@linux.intel.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+--vA66WO2vHvL/CRSR
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Hi,
+On Tue, Jul 14, 2020 at 10:43:36PM +0100, Alex Benn=E9e wrote:
+> I'm slightly confused by the MSI terminology because this only seems to
+> be relevant for the PCI legacy interface and AFAICT only touch the
+> outgoing path in setup and del_vq. Do incoming MSI interrupts just get
+> mapped directly to the appropriate handler function to process the
+> queues or the config?
 
-At some point in the life cycle of a virt queue there needs to be a
-notification event to signal to the guest or host that there has been an
-update to the virtio structures. The number of context switches made by
-the hypervisor is therefor a limiting factor to the overall performance
-of the system.
+When MSI is used the VIRTIO ISR register does not need to be read by the
+guest interrupt handler.
 
-As I understand it on the host side this can either be reported up via
-eventfd or user-space can simply busy-wait loop reading the virt queue
-status so it can process the queue as soon as a status change is
-visible.
+> Finally I'm curious if this is just a problem avoided by the s390
+> channel approach? Does the use of messages over a channel just avoid the
+> sort of bouncing back and forth that other hypervisors have to do when
+> emulating a device?
 
-On the guest side however a busy-wait approach is undesirable as it
-prevents the hypervisor from properly sharing resources. This will also
-be the case if you want to service the backend of a particular virtio
-device in another separate VMs.
+What does "bouncing back and forth" mean exactly?
 
-For Virtio PCI you get an IRQ number from a (hopefully virtualised) GIC
-and eventually end up at the IRQ handler which does a
-ioread8(vp_dev->isr). This implicitly clears the current IRQ event. The
-value of the ISR tells the driver what event has occurred (config or
-queue update).
+Stefan
 
-I'm slightly confused by the MSI terminology because this only seems to
-be relevant for the PCI legacy interface and AFAICT only touch the
-outgoing path in setup and del_vq. Do incoming MSI interrupts just get
-mapped directly to the appropriate handler function to process the
-queues or the config?
+--vA66WO2vHvL/CRSR
+Content-Type: application/pgp-signature; name="signature.asc"
 
-For MMIO based transports there is a more traditional setup of a
-InterruptStatus register which is read and then acknowledged with write
-to a InterruptACK register. If the device memory is handled with trap
-and emulate this means a two round trips to the hypervisor just to
-process one vq update.
+-----BEGIN PGP SIGNATURE-----
 
-I see there was a proposal to introduce the concept of MSI based IRQs to
-virtio-mmio last year:
+iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAl8O7ScACgkQnKSrs4Gr
+c8hEuQgAop36NaS2lIRkw3zhoKUKgopt6f8t35TnhvO6Abehb4mBHVWFyo1Rg/ga
+K3vmsF/y4nuUVojAUjkpZXjmKQbCHmZYD9OBpCbl0cd/InUK0nQd7ArLpx2yVFdo
+VBvtEwA6ClCAIByRVZRZvTL0Igy74+2xhJdvrPighO2T39D6uGTwJs0fnY6NPN9x
+pxwn4YmS2frfLl4b2hNjk8GgcznUxEXQL7UY36GQ2djlA0HSVycRJBgcaoobU8N+
+sTl1BHPjktaeSghrUXAyymgSzV81ZpdsQVkpy0OpnCrPUU51haJzj0JvBLr0dJAi
+v5gO6KdVNQFGFgT9BHahJ+ek5dsCZQ==
+=PEWc
+-----END PGP SIGNATURE-----
 
-  https://lore.kernel.org/patchwork/patch/1171065/
-
-with proposed kernel changes in January:
-
-  https://patchwork.kernel.org/cover/11343097/
-
-I haven't seen any follow up since those series were posted. Is this a
-proposal that support? Is there another version likely to be proposed to
-the virtio-comment list?
-
-Finally I'm curious if this is just a problem avoided by the s390
-channel approach? Does the use of messages over a channel just avoid the
-sort of bouncing back and forth that other hypervisors have to do when
-emulating a device?
-
---=20
-Alex Benn=C3=A9e
-
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+--vA66WO2vHvL/CRSR--
 
