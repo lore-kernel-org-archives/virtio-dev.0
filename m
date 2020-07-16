@@ -1,121 +1,447 @@
-Return-Path: virtio-dev-return-7537-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-7575-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id BA44F985DE0
-	for <virtio-dev@lists.oasis-open.org>; Wed,  8 Jul 2020 12:55:37 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 976D8986080
+	for <virtio-dev@lists.oasis-open.org>; Thu, 16 Jul 2020 16:45:52 +0000 (UTC)
+References: <20200518203721.7625-1-ndragazis@arrikto.com>
+ <20200518203721.7625-2-ndragazis@arrikto.com>
+From: Alex =?utf-8?Q?Benn=C3=A9e?= <alex.bennee@linaro.org>
+In-reply-to: <20200518203721.7625-2-ndragazis@arrikto.com>
+Date: Thu, 16 Jul 2020 17:45:47 +0100
+Message-ID: <87v9inv26c.fsf@linaro.org>
 MIME-Version: 1.0
-References: <20200623111325.237158-1-keiichiw@chromium.org>
- <2850781.lI95146Gml@os-lin-dmo> <CAD90VcbmrismAXW0t7K6M-=a2-P+OCOw8PvBr6r8S_3LNYu=pw@mail.gmail.com>
- <3163123.i8GTTo9gJ5@os-lin-dmo> <CAPBb6MWqYHidfaaTKq43yDtjOmKEi=AMC3O9vLdWpPBd_vFrUA@mail.gmail.com>
- <20200703051756-mutt-send-email-mst@kernel.org> <CAPBb6MXju_cc3FdWF60Ndx6aYfHmaGbQxu2a3QMxTfnLrXJxYQ@mail.gmail.com>
- <CAAFQd5CQuDgvZrYC53yKEYBY1LOX2QO8+7eRAscN5wQFmHmkZQ@mail.gmail.com> <CAPBb6MXMFQe2Qg1_O01-9OcOEOwv+A0UFu9wBf1ctjVevHAWrg@mail.gmail.com>
-In-Reply-To: <CAPBb6MXMFQe2Qg1_O01-9OcOEOwv+A0UFu9wBf1ctjVevHAWrg@mail.gmail.com>
-From: Tomasz Figa <tfiga@chromium.org>
-Date: Wed, 8 Jul 2020 14:55:21 +0200
-Message-ID: <CAAFQd5CUsk2F3RgUKhCzXxkbMSxLwp+_Cox+apA750hy5svYrQ@mail.gmail.com>
-Subject: [virtio-dev] Re: [PATCH RFC v4 0/1] Virtio Video Device Specification
-Content-Type: text/plain; charset="UTF-8"
-To: Alexandre Courbot <acourbot@chromium.org>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>, Dmitry Sepp <dmitry.sepp@opensynergy.com>, Keiichi Watanabe <keiichiw@chromium.org>, virtio-dev@lists.oasis-open.org, Linux Media Mailing List <linux-media@vger.kernel.org>, Alex Lau <alexlau@chromium.org>, Daniel Vetter <daniel@ffwll.ch>, Dylan Reid <dgreid@chromium.org>, David Staessens <dstaessens@chromium.org>, Enrico Granata <egranata@google.com>, Frediano Ziglio <fziglio@redhat.com>, Hans Verkuil <hverkuil@xs4all.nl>, Gerd Hoffmann <kraxel@redhat.com>, =?UTF-8?Q?St=C3=A9phane_Marchesin?= <marcheu@chromium.org>, Pawel Osciak <posciak@chromium.org>, spice-devel@lists.freedesktop.org, David Stevens <stevensd@chromium.org>, uril@redhat.com, Kiran Pawar <kiran.pawar@opensynergy.com>, Saket Sinha <saket.sinha89@gmail.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Nicolas Dufresne <nicolas@ndufresne.ca>
+Subject: Re: [virtio-dev] [PATCH v5 01/10] vhost-user: add vhost-user device
+ type
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+To: Nikos Dragazis <ndragazis@arrikto.com>
+Cc: Stefan Hajnoczi <stefanha@redhat.com>, "Michael S . Tsirkin" <mst@redhat.com>, virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, Jul 8, 2020 at 6:35 AM Alexandre Courbot <acourbot@chromium.org> wrote:
->
-> On Fri, Jul 3, 2020 at 6:55 PM Tomasz Figa <tfiga@chromium.org> wrote:
-> >
-> > On Fri, Jul 3, 2020 at 11:27 AM Alexandre Courbot <acourbot@chromium.org> wrote:
-> > >
-> > > On Fri, Jul 3, 2020 at 6:18 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > > >
-> > > > On Fri, Jul 03, 2020 at 02:45:15PM +0900, Alexandre Courbot wrote:
-> > > > > Hi Dmitry,
-> > > > >
-> > > > > On Thu, Jul 2, 2020 at 10:47 PM Dmitry Sepp <dmitry.sepp@opensynergy.com> wrote:
-> > > > > >
-> > > > > > Hi Keiichi,
-> > > > > >
-> > > > > > Thanks for the clarification. I believe we should explicitly describe this in
-> > > > > > the VIRTIO_VIDEO_CMD_RESOURCE_ATTACH section. And I also still see a problem
-> > > > > > there. If it is a guest allocated resource, we cannot consider it to be free
-> > > > > > until the device really releases it. And it won't happen until we issue the
-> > > > > > next ATTACH call. Also, as we discussed before, it might be not possible to
-> > > > > > free individual buffers, but the whole queue only.
-> > > > >
-> > > > > In the case of the encoder, a V4L2 driver is not supposed to let
-> > > > > user-space dequeue an input frame while it is used as reference for
-> > > > > the encoding process. So if we add a similar rule in the virtio-video
-> > > > > specification, I suppose this would solve the problem?
-> > > > >
-> > > > > For the decoder case, we have a bigger problem though. Since DMABUFs
-> > > > > can be arbitrarily attached to any V4L2 buffer ID, we may end up
-> > > > > re-queueing the DMABUF of a decoded frame that is still used as
-> > > > > reference under a different V4L2 buffer ID. In this case I don't think
-> > > > > the driver has a way to know that the memory resource should not be
-> > > > > overwritten, and it will thus happily use it as a decode target. The
-> > > > > easiest fix is probably to update the V4L2 stateful specification to
-> > > > > require that reused DMABUFs must always be assigned to the same V4L2
-> > > > > buffer ID, and must be kept alive as long as decoding is in progress,
-> > > > > or until a resolution change event is received. We can then apply a
-> > > > > similar rule to the virtio device.
-> > > >
-> > > >
-> > > > Sounds like a generic kind of problem - how do other devices solve it?
-> > >
-> > > Most users of V4L2 drivers use MMAP buffers, which don't suffer from
-> > > this problem: since MMAP buffers are managed by V4L2 and the same V4L2
-> > > buffer ID always corresponds to the same backing memory, the driver
-> > > just needs to refrain from decoding into a given V4L2 buffer as long
-> > > as it is used as a reference frames. This is something that all
-> > > drivers currently do AFAICT.
-> > >
-> > > The problem only occurs if you let userspace map anything to V4L2
-> > > buffers (USERPTR or DMABUF buffers). In order to guarantee the same
-> > > reliable behavior as with MMAP buffers, you must enforce the same
-> > > rule: always the same backing memory for a given V4L2 buffer.
-> > >
-> > > ... or you can rotate between a large enough number of buffers to
-> > > leave enough space for the reference tag to expire on your frames, but
-> > > that's clearly not a good way to address the problem.
-> >
-> > FWIW, it's typically solved with regular devices by completely
-> > disallowing the DMABUF/USERPTR modes and only allowing the
-> > V4L2-managed MMAP mode for affected buffer queues.
-> >
-> > However, that's quite a severe limitation and with a careful API
-> > extension, DMABUF could be still handled. Namely:
-> >  - pre-registration of buffers at initialization time: that would
-> > likely mean mandating VIDIOC_QBUF for all indexes before any
-> > decoding/encoding can start,
->
-> Can't we get around this by just requiring that DMABUFs passed to
-> VIDIOC_QBUFs are always the same for a given index? Why would it be
-> necessary to require all buffers to be queued before starting the
-> codec?
->
 
-There are decoders (e.g. s5p-mfc) which require all the framebuffers
-to be registered beforehands.
+Nikos Dragazis <ndragazis@arrikto.com> writes:
 
-> >  - enforcement of index-buffer mapping: VIDIOC_QBUF would have to fail
-> > if one attempts to queue another buffer at the same index,
-> >  - ability to explicitly release existing buffers: there is
-> > VIDIOC_RELEASE_BUF in the works which could be used to release a
-> > specific index,
-> >  - ability to explicitly add new buffers: a combination of
-> > VIDIOC_CREATEBUFS + VIDIOC_QBUF could be already used to achieve this.
+> From: Stefan Hajnoczi <stefanha@redhat.com>
 >
-> Even without these I guess we can probably get something working at
-> the cost of higher restrictions to clients (i.e. purely static set of
-> buffers).
+> The vhost-user device backend facilitates vhost-user device emulation
+> through vhost-user protocol exchanges and access to shared memory.
+> Software-defined networking, storage, and other I/O appliances can
+> provide services through this device.
+>
+> This device is based on Wei Wang's vhost-pci work.  The virtio
+> vhost-user device differs from vhost-pci because it is a single virtio
+> device type that exposes the vhost-user protocol instead of a family of
+> new virtio device types, one for each vhost-user device type.
+>
+> This device supports vhost-user slave and vhost-user master
+> reconnection.  It also contains a UUID so that vhost-user slave programs
+> can identify a specific device among many without using bus addresses.
+>
+> It is somewhat unconventional for a virtio device because it makes use
+> of additional resources called doorbells, notifications, and shared
+> memory.  A mapping of these resources to the virtio PCI transport is
+> provided.  Other transports, such as CCW may not be able to support
+> this device.
+>
+> Cc: Wei Wang <wei.w.wang@intel.com>
+> Cc: Michael S. Tsirkin <mst@redhat.com>
+> Cc: Maxime Coquelin <maxime.coquelin@redhat.com>
+> Signed-off-by: Stefan Hajnoczi <stefanha@redhat.com>
+> ---
+>  content.tex           |   3 +
+>  introduction.tex      |   1 +
+>  virtio-vhost-user.tex | 292 ++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 296 insertions(+)
+>  create mode 100644 virtio-vhost-user.tex
+>
+> diff --git a/content.tex b/content.tex
+> index 91735e3..9f3e86d 100644
+> --- a/content.tex
+> +++ b/content.tex
+> @@ -2801,6 +2801,8 @@ \chapter{Device Types}\label{sec:Device Types}
+>  \hline
+>  31         &   Video decoder device \\
+>  \hline
+> +28         &   vhost-user device backend \\
+> +\hline
+>  \end{tabular}
+> =20
+>  Some of the devices above are unspecified by this document,
+> @@ -6062,6 +6064,7 @@ \subsubsection{Legacy Interface: Framing Requiremen=
+ts}\label{sec:Device
+>  \input{virtio-fs.tex}
+>  \input{virtio-rpmb.tex}
+>  \input{virtio-iommu.tex}
+> +\input{virtio-vhost-user.tex}
+> =20
+>  \chapter{Reserved Feature Bits}\label{sec:Reserved Feature Bits}
+> =20
+> diff --git a/introduction.tex b/introduction.tex
+> index 33da3ec..9ef0aa7 100644
+> --- a/introduction.tex
+> +++ b/introduction.tex
+> @@ -66,6 +66,7 @@ \section{Normative References}\label{sec:Normative Refe=
+rences}
+>          \phantomsection\label{intro:eMMC}\textbf{[eMMC]} &
+>          eMMC Electrical Standard (5.1), JESD84-B51,
+>          \newline\url{http://www.jedec.org/sites/default/files/docs/JESD8=
+4-B51.pdf}\\
+> +=09\phantomsection\label{intro:Vhost-user Protocol}\textbf{[Vhost-user P=
+rotocol]} & Vhost-user Protocol, \newline\url{https://git.qemu.org/?p=3Dqem=
+u.git;a=3Dblob_plain;f=3Ddocs/interop/vhost-user.rst;hb=3DHEAD}, and any fu=
+ture revisions\\
+> =20
+>  \end{longtable}
+> =20
+> diff --git a/virtio-vhost-user.tex b/virtio-vhost-user.tex
+> new file mode 100644
+> index 0000000..ac96dc2
+> --- /dev/null
+> +++ b/virtio-vhost-user.tex
+> @@ -0,0 +1,292 @@
+> +\section{Vhost-user Device Backend}\label{sec:Device Types / Vhost-user =
+Device Backend}
+> +
+> +The vhost-user device backend facilitates vhost-user device emulation th=
+rough
+> +vhost-user protocol exchanges and access to shared memory.  Software-def=
+ined
+> +networking, storage, and other I/O appliances can provide services throu=
+gh this
+> +device.
+> +
+> +This section relies on definitions from the \hyperref[intro:Vhost-user
+> +Protocol]{Vhost-user Protocol}.  Knowledge of the vhost-user protocol is=
+ a
+> +prerequisite for understanding this device.
+> +
+> +The \hyperref[intro:Vhost-user Protocol]{Vhost-user Protocol} was origin=
+ally
+> +designed for processes on a single system communicating over UNIX domain
+> +sockets.  The virtio vhost-user device backend allows the vhost-user sla=
+ve to
+> +communicate with the vhost-user master over the device instead of a UNIX=
+ domain
+> +socket.  This allows the slave and master to run on two separate
+> systems such
 
-I suppose you mean without the last two?
+I realise we already have the terms master/slave baked into the
+vhost-user spec but perhaps we could find better wording? The vhost
+documentation describes thing in terms of who owns the virtqueues (the
+drive) and who processes the requests (the device). There may be better
+terminology to use.
 
-Best regards,
-Tomasz
+> +as a virtual machine and a hypervisor.
+
+This implies type-2 setups, depending on where you define the
+hypervisor. Could the language be extended: " or device in one virtual
+machine with the driver operating in another"?
+
+> +
+> +The vhost-user slave program exchanges vhost-user protocol messages with=
+ the
+> +vhost-user master through this device.  How the device implementation
+> +communicates with the vhost-user master is beyond the scope of this
+> +specification.  One possible device implementation uses a UNIX domain so=
+cket to
+> +relay messages to a vhost-user master process running on the same host.
+> +
+> +Existing vhost-user slave programs that communicate over UNIX domain soc=
+kets
+> +can support the virtio vhost-user device backend without invasive change=
+s
+> +because the pre-existing vhost-user wire protocol is used.
+> +
+> +\subsection{Device ID}\label{sec:Device Types / Vhost-user Device Backen=
+d / Device ID}
+> +  28
+> +
+> +\subsection{Virtqueues}\label{sec:Device Types / Vhost-user Device Backe=
+nd / Virtqueues}
+> +
+> +\begin{description}
+> +\item[0] rxq (device-to-driver vhost-user protocol messages)
+> +\item[1] txq (driver-to-device vhost-user protocol messages)
+> +\end{description}
+> +
+> +\subsection{Feature bits}\label{sec:Device Types / Vhost-user Device Bac=
+kend / Feature bits}
+> +
+> +No feature bits are defined at this time.
+> +
+> +\subsection{Device configuration layout}\label{sec:Device Types / Vhost-=
+user Device Backend / Device configuration layout}
+> +
+> +  All fields of this configuration are always available.
+> +
+> +\begin{lstlisting}
+> +struct virtio_vhost_user_config {
+> +        le32 status;
+> +#define VIRTIO_VHOST_USER_STATUS_SLAVE_UP 0
+> +#define VIRTIO_VHOST_USER_STATUS_MASTER_UP 1
+> +        le32 max_vhost_queues;
+> +        u8 uuid[16];
+> +};
+> +\end{lstlisting}
+> +
+> +\begin{description}
+> +\item[\field{status}] contains the vhost-user operational status.  The d=
+efault
+> +    value of this field is 0.
+> +
+> +    The driver sets VIRTIO_VHOST_USER_STATUS_SLAVE_UP to indicate readin=
+ess for
+> +    the vhost-user master to connect.  The vhost-user master cannot conn=
+ect
+> +    unless the driver has set this bit first.
+
+I suspect some deployment diagrams are going to help here. Does this
+imply that there is something in userspace connected to the slave kernel
+ready to process messages or just that the driver in the kernel is ready
+to accept messages?
+
+> +
+> +    When the driver clears VIRTIO_VHOST_USER_SLAVE_UP while the vhost-us=
+er
+> +    master is connected, the vhost-user master is disconnected.
+
+What happens to messages in flight? Do they stay in the queues until
+there is a re-connection?
+
+> +
+> +    When the vhost-user master disconnects, both
+> +    VIRTIO_VHOST_USER_STATUS_SLAVE_UP and VIRTIO_VHOST_USER_STATUS_MASTE=
+R_UP
+> +    are cleared by the device.  Communication can be restarted by the dr=
+iver
+> +    setting VIRTIO_VHOST_USER_STATUS_SLAVE_UP again.
+> +
+> +    A configuration change notification is sent when the device changes
+> +    this field unless a write to the field by the driver caused the chan=
+ge.
+> +
+> +\item[\field{max_vhost_queues}] is the maximum number of vhost-user queu=
+es
+> +    supported by this device.  This field is always greater than 0.
+> +
+> +\item[\field{uuid}] is the Universally Unique Identifier (UUID) for this
+> +    device.  If the device has no UUID then this field contains the nil
+> +    UUID (all zeroes).  The UUID allows vhost-user slave programs to ide=
+ntify a
+> +    specific vhost-user device backend among many without relying on bus
+> +    addresses.
+> +\end{description}
+> +
+> +\drivernormative{\subsubsection}{Device configuration layout}{Device Typ=
+es / Vhost-user Device Backend / Device configuration layout}
+> +
+> +The driver MUST NOT write to device configuration fields other than
+> +\field{status}.
+> +
+> +The driver MUST NOT set undefined bits in the \field{status} configurati=
+on field.
+> +
+> +\devicenormative{\subsection}{Device Initialization}{Device Types / Vhos=
+t-user Device Backend / Device Initialization}
+> +
+> +The driver SHOULD check the \field{max_vhost_queues} configuration field=
+ to
+> +determine how many queues the vhost-user slave will be able to support.
+> +
+> +The driver SHOULD fetch the \field{uuid} configuration field to allow
+> +vhost-user slave programs to identify a specific device among many.
+> +
+> +The driver SHOULD place at least one buffer in rxq before setting the
+> +VIRTIO_VHOST_USER_SLAVE_UP bit in the \field{status} configuration
+> field.
+
+This is a buffer for use - not an initial message?
+
+> +
+> +The driver MUST handle rxq virtqueue notifications that occur before the
+> +configuration change notification.  It is possible that a vhost-user pro=
+tocol
+> +message from the vhost-user master arrives before the driver has seen th=
+e
+> +configuration change notification for the VIRTIO_VHOST_USER_STATUS_MASTE=
+R_UP
+> +\field{status} change.
+> +
+> +\subsection{Device Operation}\label{sec:Device Types / Vhost-user Device=
+ Backend / Device Operation}
+> +
+> +Device operation consists of operating request queues and response queue=
+s.
+> +
+> +\subsubsection{Device Operation: Request Queues}\label{sec:Device Types =
+/ Vhost-user Device Backend / Device Operation / Device Operation: Request =
+Queues}
+> +
+> +The driver receives vhost-user protocol messages from the vhost-user mas=
+ter on
+> +rxq.  The driver sends responses to the vhost-user master on txq.
+> +
+> +The driver sends slave-initiated requests on txq.  The driver receives
+> +responses from the vhost-user master on rxq.
+> +
+> +All virtqueues offer in-order guaranteed delivery semantics for vhost-us=
+er
+> +protocol messages.
+> +
+> +Each buffer is a vhost-user protocol message as defined by the
+> +\hyperref[intro:Vhost-user Protocol]{Vhost-user Protocol}.  In order to =
+enable
+> +cross-endian communication, all message fields are little-endian instead=
+ of the
+> +native byte order normally used by the protocol.
+> +
+> +The appropriate size of rxq buffers is at least as large as the largest =
+message
+> +defined by the \hyperref[intro:Vhost-user Protocol]{Vhost-user Protocol}
+> +standard version that the driver supports.  If the vhost-user master sen=
+ds a
+> +message that is too large for an rxq buffer then DEVICE_NEEDS_RESET is s=
+et and
+> +the driver must reset the device.
+> +
+> +File descriptor passing is handled differently by the vhost-user device
+> +backend.  When a message is received that carries one or more file descr=
+iptors
+> +according to the vhost-user protocol, additional device resources become
+> +available to the driver.
+> +
+> +\subsection{Additional Device Resources over PCI}\label{sec:Device Types=
+ / Vhost-user Device Backend / Additional Device Resources over PCI}
+> +
+> +The vhost-user device backend contains additional device resources beyon=
+d
+> +configuration space and virtqueues.  The nature of these resources is
+> +transport-specific and therefore only virtio transports that provide the=
+se
+> +resources support the vhost-user device backend.
+> +
+> +The following additional resources exist:
+> +\begin{description}
+> +  \item[Doorbells] The driver signals the vhost-user master through door=
+bells.  The signal does not carry any data, it is purely an event.
+> +  \item[Notifications] The vhost-user master signals the driver for even=
+ts besides virtqueue activity and configuration changes by sending notifica=
+tions.
+
+What is the difference between a doorbell and a notification?
+
+> +  \item[Shared memory] The vhost-user master gives access to memory that=
+ can be mapped by the driver.
+> +\end{description}
+> +
+> +\subsubsection{Doorbell Numbering}\label{sec:Device Types / Vhost-user D=
+evice Backend / Additional Device Resources over PCI / Doorbell Numbering}
+> +
+> +Doorbells are laid out as follows:
+> +
+> +\begin{description}
+> +\item[0] Vring call for vhost-user queue 0
+> +\item[\ldots]
+> +\item[N] Vring err for vhost-user queue 0
+> +\item[\ldots]
+> +\item[2N] Log
+> +\end{description}
+> +
+> +\subsubsection{Notifications}\label{sec:Device Types / Vhost-user Device=
+ Backend / Additional Device Resources over PCI / Notifications}
+> +
+> +Notifications are laid out as follows:
+> +
+> +\begin{description}
+> +\item[0] Vring kick for vhost-user queue 0
+> +\item[\ldots]
+> +\item[N-1] Vring kick for vhost-user queue N-1
+> +\end{description}
+> +
+> +\subsubsection{Shared Memory Layout}\label{sec:Device Types /
+> Vhost-user Device Backend / Additional Device Resources over PCI /
+> Shared Memory Layout}
+
+These subsections seem to get renamed later in the series.
+
+> +
+> +Shared memory is laid out as follows:
+> +
+> +\begin{description}
+> +\item[0] Vhost memory region 0
+> +\item[SIZE0] Vhost memory region 1
+> +\item[\ldots]
+> +\item[SIZE0 + SIZE1 + \ldots] Log
+> +\end{description}
+> +
+> +The size of vhost memory region 0 is \field{SIZE0}, the size of vhost me=
+mory
+> +region 1 is \field{SIZE1}, and so on.
+> +
+> +\subsubsection{Availability of Additional Resources}\label{sec:Device Ty=
+pes / Vhost-user Device Backend / Additional Device Resources over PCI / Av=
+ailability of Additional Resources}
+> +
+> +The following vhost-user protocol messages convey access to additional d=
+evice
+> +resources:
+> +
+> +\begin{description}
+> +\item[VHOST_USER_SET_MEM_TABLE] Contents of vhost memory regions are ava=
+ilable to the driver in shared memory.  Region contents are laid out in the=
+ same order as the vhost memory region list.
+> +\item[VHOST_USER_SET_LOG_BASE] Contents of the log are available to the =
+driver in shared memory.
+> +\item[VHOST_USER_SET_LOG_FD] The log doorbell is available to the driver=
+.  Writes to the log doorbell before this message is received produce no ef=
+fect.
+> +\item[VHOST_USER_SET_VRING_KICK] The vring kick notification for this qu=
+eue is available to the driver.  The first notification may occur before th=
+e driver has processed this message.
+> +\item[VHOST_USER_SET_VRING_CALL] The vring call doorbell for this queue =
+is available to the driver.  Writes to the vring call doorbell before this =
+message is received produce no effect.
+> +\item[VHOST_USER_SET_VRING_ERR] The vring err doorbell for this queue is=
+ available to the driver.  Writes to the vring err doorbell before this mes=
+sage is received produce no effect.
+> +\item[VHOST_USER_SET_SLAVE_REQ_FD] The driver may send vhost-user protoc=
+ol slave messages on txq.  Buffers put onto txq before this message is rece=
+ived are discarded by the device.
+> +\end{description}
+> +
+> +Additional resources are configured on the virtio PCI transport by the f=
+ollowing \field{struct virtio_pci_cap.cfg_type} values:
+> +
+> +\begin{lstlisting}
+> +#define VIRTIO_PCI_CAP_DOORBELL_CFG 6
+> +#define VIRTIO_PCI_CAP_NOTIFICATION_CFG 7
+> +#define VIRTIO_PCI_CAP_SHARED_MEMORY_CFG 8
+> +\end{lstlisting}
+> +
+> +\subsubsection{Doorbell structure layout}\label{sec:Device Types / Vhost=
+-user Device Backend / Additional Device Resources over PCI / Doorbell capa=
+bility}
+> +
+> +The doorbell location is found using the VIRTIO_PCI_CAP_DOORBELL_CFG
+> +capability.  This capability is immediately followed by an additional
+> +field, like so:
+> +
+> +\begin{lstlisting}
+> +struct virtio_pci_doorbell_cap {
+> +        struct virtio_pci_cap cap;
+> +        le32 doorbell_off_multiplier;
+> +};
+> +\end{lstlisting}
+
+OK stuff is disappearing in later patches. Maybe it shouldn't be
+introduced in the first place?
+
+--=20
+Alex Benn=C3=A9e
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
