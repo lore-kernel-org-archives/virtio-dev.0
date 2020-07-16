@@ -1,88 +1,290 @@
-Return-Path: virtio-dev-return-7569-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-7563-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id C6AA1986079
-	for <virtio-dev@lists.oasis-open.org>; Thu, 16 Jul 2020 08:25:11 +0000 (UTC)
-Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.80.23.2.2\))
-From: teawater <teawaterz@linux.alibaba.com>
-In-Reply-To: <20200716024114-mutt-send-email-mst@kernel.org>
-Date: Thu, 16 Jul 2020 16:25:00 +0800
-Message-Id: <CEB4BCB7-E146-4F62-A8AC-8641B5469963@linux.alibaba.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id C3A7D986079
+	for <virtio-dev@lists.oasis-open.org>; Thu, 16 Jul 2020 02:42:47 +0000 (UTC)
+From: Hui Zhu <teawater@gmail.com>
+Date: Thu, 16 Jul 2020 10:41:52 +0800
+Message-Id: <1594867315-8626-3-git-send-email-teawater@gmail.com>
+In-Reply-To: <1594867315-8626-1-git-send-email-teawater@gmail.com>
 References: <1594867315-8626-1-git-send-email-teawater@gmail.com>
- <1594867315-8626-2-git-send-email-teawater@gmail.com>
- <20200716024114-mutt-send-email-mst@kernel.org>
-Subject: [virtio-dev] Re: [RFC for Linux v4 1/2] virtio_balloon: Add
- VIRTIO_BALLOON_F_CONT_PAGES and inflate_cont_vq
-Content-Type: text/plain;
-	charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Hui Zhu <teawater@gmail.com>, David Hildenbrand <david@redhat.com>, Jason Wang <jasowang@redhat.com>, Andrew Morton <akpm@linux-foundation.org>, Linux Virtualization <virtualization@lists.linux-foundation.org>, linux-kernel@vger.kernel.org, linux-mm@kvack.org, qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org
+Subject: [virtio-dev] [RFC for Linux v4 2/2] virtio_balloon: Add deflate_cont_vq to deflate continuous pages
+Content-Type: text/plain; charset=US-ASCII
+To: mst@redhat.com, david@redhat.com, jasowang@redhat.com, akpm@linux-foundation.org, virtualization@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-mm@kvack.org, qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org
+Cc: Hui Zhu <teawater@gmail.com>, Hui Zhu <teawaterz@linux.alibaba.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+This commit adds a vq deflate_cont_vq to deflate continuous pages.
+When VIRTIO_BALLOON_F_CONT_PAGES is set, call leak_balloon_cont to leak
+the balloon.
+leak_balloon_cont will call balloon_page_list_dequeue_cont get continuous
+pages from balloon and report them use deflate_cont_vq.
+
+Signed-off-by: Hui Zhu <teawaterz@linux.alibaba.com>
+---
+ drivers/virtio/virtio_balloon.c    | 73 ++++++++++++++++++++++++++++++++----
+ include/linux/balloon_compaction.h |  3 ++
+ mm/balloon_compaction.c            | 76 ++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 144 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/virtio/virtio_balloon.c b/drivers/virtio/virtio_balloon.c
+index b89f566..258b3d9 100644
+--- a/drivers/virtio/virtio_balloon.c
++++ b/drivers/virtio/virtio_balloon.c
+@@ -44,6 +44,7 @@
+ 
+ #define VIRTIO_BALLOON_INFLATE_MAX_ORDER min((int) (sizeof(__virtio32) * BITS_PER_BYTE - \
+ 						    1 - PAGE_SHIFT), (MAX_ORDER-1))
++#define VIRTIO_BALLOON_DEFLATE_MAX_PAGES_NUM (((__virtio32)~0U) >> PAGE_SHIFT)
+ 
+ #ifdef CONFIG_BALLOON_COMPACTION
+ static struct vfsmount *balloon_mnt;
+@@ -56,6 +57,7 @@ enum virtio_balloon_vq {
+ 	VIRTIO_BALLOON_VQ_FREE_PAGE,
+ 	VIRTIO_BALLOON_VQ_REPORTING,
+ 	VIRTIO_BALLOON_VQ_INFLATE_CONT,
++	VIRTIO_BALLOON_VQ_DEFLATE_CONT,
+ 	VIRTIO_BALLOON_VQ_MAX
+ };
+ 
+@@ -65,7 +67,8 @@ enum virtio_balloon_config_read {
+ 
+ struct virtio_balloon {
+ 	struct virtio_device *vdev;
+-	struct virtqueue *inflate_vq, *deflate_vq, *stats_vq, *free_page_vq, *inflate_cont_vq;
++	struct virtqueue *inflate_vq, *deflate_vq, *stats_vq, *free_page_vq,
++			 *inflate_cont_vq, *deflate_cont_vq;
+ 
+ 	/* Balloon's own wq for cpu-intensive work items */
+ 	struct workqueue_struct *balloon_wq;
+@@ -215,6 +218,16 @@ static void set_page_pfns(struct virtio_balloon *vb,
+ 					  page_to_balloon_pfn(page) + i);
+ }
+ 
++static void set_page_pfns_size(struct virtio_balloon *vb,
++			       __virtio32 pfns[], struct page *page,
++			       size_t size)
++{
++	/* Set the first pfn of the continuous pages.  */
++	pfns[0] = cpu_to_virtio32(vb->vdev, page_to_balloon_pfn(page));
++	/* Set the size of the continuous pages.  */
++	pfns[1] = (__virtio32) size;
++}
++
+ static void set_page_pfns_order(struct virtio_balloon *vb,
+ 				__virtio32 pfns[], struct page *page,
+ 				unsigned int order)
+@@ -222,10 +235,7 @@ static void set_page_pfns_order(struct virtio_balloon *vb,
+ 	if (order == 0)
+ 		return set_page_pfns(vb, pfns, page);
+ 
+-	/* Set the first pfn of the continuous pages.  */
+-	pfns[0] = cpu_to_virtio32(vb->vdev, page_to_balloon_pfn(page));
+-	/* Set the size of the continuous pages.  */
+-	pfns[1] = PAGE_SIZE << order;
++	set_page_pfns_size(vb, pfns, page, PAGE_SIZE << order);
+ }
+ 
+ static unsigned fill_balloon(struct virtio_balloon *vb, size_t num)
+@@ -367,6 +377,42 @@ static unsigned leak_balloon(struct virtio_balloon *vb, size_t num)
+ 	return num_freed_pages;
+ }
+ 
++static unsigned int leak_balloon_cont(struct virtio_balloon *vb, size_t num)
++{
++	unsigned int num_freed_pages;
++	struct balloon_dev_info *vb_dev_info = &vb->vb_dev_info;
++	LIST_HEAD(pages);
++	size_t num_pages;
++
++	mutex_lock(&vb->balloon_lock);
++	for (vb->num_pfns = 0, num_freed_pages = 0;
++	     vb->num_pfns < ARRAY_SIZE(vb->pfns) && num_freed_pages < num;
++	     vb->num_pfns += 2,
++	     num_freed_pages += num_pages << (PAGE_SHIFT - VIRTIO_BALLOON_PFN_SHIFT)) {
++		struct page *page;
++
++		num_pages = balloon_page_list_dequeue_cont(vb_dev_info, &pages, &page,
++						min_t(size_t,
++						      VIRTIO_BALLOON_DEFLATE_MAX_PAGES_NUM,
++						      num - num_freed_pages));
++		if (!num_pages)
++			break;
++		set_page_pfns_size(vb, vb->pfns + vb->num_pfns, page, num_pages << PAGE_SHIFT);
++	}
++	vb->num_pages -= num_freed_pages;
++
++	/*
++	 * Note that if
++	 * virtio_has_feature(vdev, VIRTIO_BALLOON_F_MUST_TELL_HOST);
++	 * is true, we *have* to do it in this order
++	 */
++	if (vb->num_pfns != 0)
++		tell_host(vb, vb->deflate_cont_vq);
++	release_pages_balloon(vb, &pages);
++	mutex_unlock(&vb->balloon_lock);
++	return num_freed_pages;
++}
++
+ static inline void update_stat(struct virtio_balloon *vb, int idx,
+ 			       u16 tag, u64 val)
+ {
+@@ -551,8 +597,12 @@ static void update_balloon_size_func(struct work_struct *work)
+ 
+ 	if (diff > 0)
+ 		diff -= fill_balloon(vb, diff);
+-	else
+-		diff += leak_balloon(vb, -diff);
++	else {
++		if (virtio_has_feature(vb->vdev, VIRTIO_BALLOON_F_CONT_PAGES))
++			diff += leak_balloon_cont(vb, -diff);
++		else
++			diff += leak_balloon(vb, -diff);
++	}
+ 	update_balloon_size(vb);
+ 
+ 	if (diff)
+@@ -587,6 +637,8 @@ static int init_vqs(struct virtio_balloon *vb)
+ 	names[VIRTIO_BALLOON_VQ_REPORTING] = NULL;
+ 	names[VIRTIO_BALLOON_VQ_INFLATE_CONT] = NULL;
+ 	callbacks[VIRTIO_BALLOON_VQ_INFLATE_CONT] = NULL;
++	names[VIRTIO_BALLOON_VQ_DEFLATE_CONT] = NULL;
++	callbacks[VIRTIO_BALLOON_VQ_DEFLATE_CONT] = NULL;
+ 
+ 	if (virtio_has_feature(vb->vdev, VIRTIO_BALLOON_F_STATS_VQ)) {
+ 		names[VIRTIO_BALLOON_VQ_STATS] = "stats";
+@@ -606,6 +658,8 @@ static int init_vqs(struct virtio_balloon *vb)
+ 	if (virtio_has_feature(vb->vdev, VIRTIO_BALLOON_F_CONT_PAGES)) {
+ 		names[VIRTIO_BALLOON_VQ_INFLATE_CONT] = "inflate_cont";
+ 		callbacks[VIRTIO_BALLOON_VQ_INFLATE_CONT] = balloon_ack;
++		names[VIRTIO_BALLOON_VQ_DEFLATE_CONT] = "deflate_cont";
++		callbacks[VIRTIO_BALLOON_VQ_DEFLATE_CONT] = balloon_ack;
+ 	}
+ 
+ 	err = vb->vdev->config->find_vqs(vb->vdev, VIRTIO_BALLOON_VQ_MAX,
+@@ -643,9 +697,12 @@ static int init_vqs(struct virtio_balloon *vb)
+ 	if (virtio_has_feature(vb->vdev, VIRTIO_BALLOON_F_REPORTING))
+ 		vb->reporting_vq = vqs[VIRTIO_BALLOON_VQ_REPORTING];
+ 
+-	if (virtio_has_feature(vb->vdev, VIRTIO_BALLOON_F_CONT_PAGES))
++	if (virtio_has_feature(vb->vdev, VIRTIO_BALLOON_F_CONT_PAGES)) {
+ 		vb->inflate_cont_vq
+ 			= vqs[VIRTIO_BALLOON_VQ_INFLATE_CONT];
++		vb->deflate_cont_vq
++			= vqs[VIRTIO_BALLOON_VQ_DEFLATE_CONT];
++	}
+ 
+ 	return 0;
+ }
+diff --git a/include/linux/balloon_compaction.h b/include/linux/balloon_compaction.h
+index 8180bbf..7cb2a75 100644
+--- a/include/linux/balloon_compaction.h
++++ b/include/linux/balloon_compaction.h
+@@ -70,6 +70,9 @@ extern size_t balloon_page_list_enqueue(struct balloon_dev_info *b_dev_info,
+ 				      struct list_head *pages);
+ extern size_t balloon_page_list_dequeue(struct balloon_dev_info *b_dev_info,
+ 				     struct list_head *pages, size_t n_req_pages);
++extern size_t balloon_page_list_dequeue_cont(struct balloon_dev_info *b_dev_info,
++					     struct list_head *pages, struct page **first_page,
++					     size_t max_req_pages);
+ 
+ static inline struct page *balloon_page_alloc(void)
+ {
+diff --git a/mm/balloon_compaction.c b/mm/balloon_compaction.c
+index 397d0b9..ea7d91f 100644
+--- a/mm/balloon_compaction.c
++++ b/mm/balloon_compaction.c
+@@ -111,6 +111,82 @@ size_t balloon_page_list_dequeue(struct balloon_dev_info *b_dev_info,
+ }
+ EXPORT_SYMBOL_GPL(balloon_page_list_dequeue);
+ 
++/**
++ * balloon_page_list_dequeue_cont() - removes continuous pages from balloon's page list
++ *				      and returns a list of the continuous pages.
++ * @b_dev_info: balloon device decriptor where we will grab a page from.
++ * @pages: pointer to the list of pages that would be returned to the caller.
++ * @max_req_pages: max number of requested pages.
++ *
++ * Driver must call this function to properly de-allocate a previous enlisted
++ * balloon pages before definitively releasing it back to the guest system.
++ * This function tries to remove @max_req_pages continuous pages from the ballooned
++ * pages and return them to the caller in the @pages list.
++ *
++ * Note that this function may fail to dequeue some pages even if the balloon
++ * isn't empty - since the page list can be temporarily empty due to compaction
++ * of isolated pages.
++ *
++ * Return: number of pages that were added to the @pages list.
++ */
++size_t balloon_page_list_dequeue_cont(struct balloon_dev_info *b_dev_info,
++				      struct list_head *pages, struct page **first_page,
++				      size_t max_req_pages)
++{
++	struct page *page, *tmp;
++	unsigned long flags, tail_pfn;
++	size_t n_pages = 0;
++	bool got_first = false;
++
++	spin_lock_irqsave(&b_dev_info->pages_lock, flags);
++	list_for_each_entry_safe_reverse(page, tmp, &b_dev_info->pages, lru) {
++		unsigned long pfn;
++
++		if (n_pages == max_req_pages)
++			break;
++
++		pfn = page_to_pfn(page);
++
++		if (got_first && pfn != tail_pfn + 1)
++			break;
++
++		/*
++		 * Block others from accessing the 'page' while we get around to
++		 * establishing additional references and preparing the 'page'
++		 * to be released by the balloon driver.
++		 */
++		if (!trylock_page(page)) {
++			if (!got_first)
++				continue;
++			else
++				break;
++		}
++
++		if (IS_ENABLED(CONFIG_BALLOON_COMPACTION) && PageIsolated(page)) {
++			/* raced with isolation */
++			unlock_page(page);
++			if (!got_first)
++				continue;
++			else
++				break;
++		}
++		balloon_page_delete(page);
++		__count_vm_event(BALLOON_DEFLATE);
++		list_add(&page->lru, pages);
++		unlock_page(page);
++		n_pages++;
++		tail_pfn = pfn;
++		if (!got_first) {
++			got_first = true;
++			*first_page = page;
++		}
++	}
++	spin_unlock_irqrestore(&b_dev_info->pages_lock, flags);
++
++	return n_pages;
++}
++EXPORT_SYMBOL_GPL(balloon_page_list_dequeue_cont);
++
+ /*
+  * balloon_pages_alloc - allocates a new page for insertion into the balloon
+  *			 page list.
+-- 
+2.7.4
 
 
-> 2020=E5=B9=B47=E6=9C=8816=E6=97=A5 14:43=EF=BC=8CMichael S. Tsirkin <mst@=
-redhat.com> =E5=86=99=E9=81=93=EF=BC=9A
->=20
-> On Thu, Jul 16, 2020 at 10:41:51AM +0800, Hui Zhu wrote:
->> diff --git a/include/uapi/linux/virtio_balloon.h b/include/uapi/linux/vi=
-rtio_balloon.h
->> index dc3e656..4d0151a 100644
->> --- a/include/uapi/linux/virtio_balloon.h
->> +++ b/include/uapi/linux/virtio_balloon.h
->> @@ -37,6 +37,7 @@
->> #define VIRTIO_BALLOON_F_FREE_PAGE_HINT=093 /* VQ to report free pages *=
-/
->> #define VIRTIO_BALLOON_F_PAGE_POISON=094 /* Guest is using page poisonin=
-g */
->> #define VIRTIO_BALLOON_F_REPORTING=095 /* Page reporting virtqueue */
->> +#define VIRTIO_BALLOON_F_CONT_PAGES=096 /* VQ to report continuous page=
-s */
->>=20
->> /* Size of a PFN in the balloon interface. */
->> #define VIRTIO_BALLOON_PFN_SHIFT 12
->=20
-> So how does the guest/host interface look like?
-> Could you write up something about it?
-
-Continuous pages are report by num_pfns and pfns in virtio_balloon too.
-The function to set pfns is set_page_pfns_size in https://github.com/teawat=
-er/linux/blob/balloon_conts/drivers/virtio/virtio_balloon.c#L221
-
-static void set_page_pfns_size(struct virtio_balloon *vb,
-                               __virtio32 pfns[], struct page *page,
-                               size_t size)
-{
-        /* Set the first pfn of the continuous pages.  */
-        pfns[0] =3D cpu_to_virtio32(vb->vdev, page_to_balloon_pfn(page));
-        /* Set the size of the continuous pages.  */
-        pfns[1] =3D (__virtio32) size;
-}
-
-Each of continuous pages need 2 pfn.
-The first pfn of the pages is set to pfns[0].  The size of the pages is set=
- to pfns[1].
-
-The pfn is 32 bits.
-So the max order of inflate continuous pages is VIRTIO_BALLOON_INFLATE_MAX_=
-ORDER.
-#define VIRTIO_BALLOON_INFLATE_MAX_ORDER min((int) (sizeof(__virtio32) * BI=
-TS_PER_BYTE - \
-                                                    1 - PAGE_SHIFT), (MAX_O=
-RDER-1))
-
-The max page number of deflate continuous pages is VIRTIO_BALLOON_DEFLATE_M=
-AX_PAGES_NUM.
-#define VIRTIO_BALLOON_DEFLATE_MAX_PAGES_NUM (((__virtio32)~0U) >> PAGE_SHI=
-FT)
-
-Best,
-Hui
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
 For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
