@@ -1,81 +1,111 @@
-Return-Path: virtio-dev-return-7623-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-7605-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 7351F985EFE
-	for <virtio-dev@lists.oasis-open.org>; Fri, 31 Jul 2020 15:44:42 +0000 (UTC)
-References: <DM6PR11MB4331B490586462DE7353E0B8F9710@DM6PR11MB4331.namprd11.prod.outlook.com>
-From: Alex =?utf-8?Q?Benn=C3=A9e?= <alex.bennee@linaro.org>
-In-reply-to: <DM6PR11MB4331B490586462DE7353E0B8F9710@DM6PR11MB4331.namprd11.prod.outlook.com>
-Date: Fri, 31 Jul 2020 16:44:36 +0100
-Message-ID: <87ft973d0b.fsf@linaro.org>
+	by lists.oasis-open.org (Postfix) with ESMTP id 50021985D51
+	for <virtio-dev@lists.oasis-open.org>; Wed, 22 Jul 2020 12:04:26 +0000 (UTC)
+Date: Wed, 22 Jul 2020 08:04:17 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20200722080356-mutt-send-email-mst@kernel.org>
+References: <20200629080615.26022-1-david@redhat.com>
 MIME-Version: 1.0
-Subject: [virtio-dev] Re: [PATCH v2 0/5] virtio mmio specification enhancement
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-To: "Pincus, Josh" <Josh.Pincus@windriver.com>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "zhabin@linux.alibaba.com" <zhabin@linux.alibaba.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, qemu-devel@nongnu.org
+In-Reply-To: <20200629080615.26022-1-david@redhat.com>
+Subject: [virtio-dev] Re: [PATCH v2] virtio-balloon: always indicate S_DONE when migration
+ fails
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+To: David Hildenbrand <david@redhat.com>
+Cc: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, Alexander Duyck <alexander.h.duyck@linux.intel.com>, Wei Wang <wei.w.wang@intel.com>, Alexander Duyck <alexander.duyck@gmail.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+On Mon, Jun 29, 2020 at 10:06:15AM +0200, David Hildenbrand wrote:
+> If something goes wrong during precopy, before stopping the VM, we will
+> never send a S_DONE indication to the VM, resulting in the hinted pages
+> not getting released to be used by the guest OS (e.g., Linux).
+> 
+> Easy to reproduce:
+> 1. Start migration (e.g., HMP "migrate -d 'exec:gzip -c > STATEFILE.gz'")
+> 2. Cancel migration (e.g., HMP "migrate_cancel")
+> 3. Oberve in the guest (e.g., cat /proc/meminfo) that there is basically
+>    no free memory left.
+> 
+> While at it, add similar locking to virtio_balloon_free_page_done() as
+> done in virtio_balloon_free_page_stop. Locking is still weird, but that
+> has to be sorted out separately.
+> 
+> There is nothing to do in the PRECOPY_NOTIFY_COMPLETE case. Add some
+> comments regarding S_DONE handling.
+> 
+> Fixes: c13c4153f76d ("virtio-balloon: VIRTIO_BALLOON_F_FREE_PAGE_HINT")
+> Reviewed-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
+> Cc: Wei Wang <wei.w.wang@intel.com>
+> Cc: Alexander Duyck <alexander.duyck@gmail.com>
+> Signed-off-by: David Hildenbrand <david@redhat.com>
 
-Pincus, Josh <Josh.Pincus@windriver.com> writes:
+IIUC this is superceded by Alexander's patches right?
+If not pls rebase ...
 
-> Hi,
->
-> =20
->
-> We were looking into a similar enhancement for the Virt I/O MMIO transpor=
-t and came across this project.
->
-> This enhancement would be perfect for us.
+> ---
+>  hw/virtio/virtio-balloon.c | 26 ++++++++++++++++++++------
+>  1 file changed, 20 insertions(+), 6 deletions(-)
+> 
+> diff --git a/hw/virtio/virtio-balloon.c b/hw/virtio/virtio-balloon.c
+> index 10507b2a43..8a84718490 100644
+> --- a/hw/virtio/virtio-balloon.c
+> +++ b/hw/virtio/virtio-balloon.c
+> @@ -628,8 +628,13 @@ static void virtio_balloon_free_page_done(VirtIOBalloon *s)
+>  {
+>      VirtIODevice *vdev = VIRTIO_DEVICE(s);
+>  
+> -    s->free_page_report_status = FREE_PAGE_REPORT_S_DONE;
+> -    virtio_notify_config(vdev);
+> +    if (s->free_page_report_status != FREE_PAGE_REPORT_S_DONE) {
+> +        /* See virtio_balloon_free_page_stop() */
+> +        qemu_mutex_lock(&s->free_page_lock);
+> +        s->free_page_report_status = FREE_PAGE_REPORT_S_DONE;
+> +        qemu_mutex_unlock(&s->free_page_lock);
+> +        virtio_notify_config(vdev);
+> +    }
+>  }
+>  
+>  static int
+> @@ -653,17 +658,26 @@ virtio_balloon_free_page_report_notify(NotifierWithReturn *n, void *data)
+>      case PRECOPY_NOTIFY_SETUP:
+>          precopy_enable_free_page_optimization();
+>          break;
+> -    case PRECOPY_NOTIFY_COMPLETE:
+> -    case PRECOPY_NOTIFY_CLEANUP:
+>      case PRECOPY_NOTIFY_BEFORE_BITMAP_SYNC:
+>          virtio_balloon_free_page_stop(dev);
+>          break;
+>      case PRECOPY_NOTIFY_AFTER_BITMAP_SYNC:
+>          if (vdev->vm_running) {
+>              virtio_balloon_free_page_start(dev);
+> -        } else {
+> -            virtio_balloon_free_page_done(dev);
+> +            break;
+>          }
+> +        /*
+> +         * Set S_DONE before migrating the vmstate, so the guest will reuse
+> +         * all hinted pages once running on the destination. Fall through.
+> +         */
+> +    case PRECOPY_NOTIFY_CLEANUP:
+> +        /*
+> +         * Especially, if something goes wrong during precopy or if migration
+> +         * is canceled, we have to properly communicate S_DONE to the VM.
+> +         */
+> +        virtio_balloon_free_page_done(dev);
+> +        break;
+> +    case PRECOPY_NOTIFY_COMPLETE:
+>          break;
+>      default:
+>          virtio_error(vdev, "%s: %d reason unknown", __func__, pnd->reason);
+> -- 
+> 2.26.2
 
-So there is certainly an interest in optimising MMIO based virtio and
-the current read/ack cycle adds additional round trip time for any trap
-and emulate hypervisor. However I think there is some resistance to
-making MMIO a re-implementation of what PCI already gives us for "free".
-
-I believe the current questions that need to be addressed are:
-
-  - Clear definitions in the spec on doorbells/notifications
-
-    The current virtio spec uses different terms in some places so it
-    would be nice to clarify the language and formalise what the
-    standard expects from transports w.r.t the capabilities of
-    notifications and doorbells.
-
-  - Quantifying the memory foot-print difference between PCI/MMIO
-
-    PCI gives a lot for free including a discovery and IRQ model already
-    designed to handle MSI/MSI-X. There is a claim that this brings in a
-    lot of bloat but I think there was some debate around the numbers.
-    My rough initial experiment with a PCI and non-PCI build with
-    otherwise identical VIRTIO configs results in the following:
-
-    16:40:15 c.282% [alex@zen:~/l/l/builds] review/rpmb|=E2=80=A6 + ls -l a=
-rm64/vmlinux arm64.nopci/vmlinux
-    -rwxr-xr-x 1 alex alex 83914728 Jul 31 16:39 arm64.nopci/vmlinux*
-    -rwxr-xr-x 1 alex alex 86368080 Jul 31 16:33 arm64/vmlinux*
-
-    which certainly implies there could be a fair amount of headroom for
-    an MMIO version to implement some features. However I don't know if
-    it's fully apples to apples as there maybe unneeded PCI bloat that a
-    virtio-only kernel doesn't need.
-
-
-What are the features you are most interested in?
-
-> Has there been any progress since Feb, 2020?  It looks like the effort
-> might have stalled?
-
-I can't speak to the OP's but there is certainly interest from others
-that are not the original posters.
-
-
---=20
-Alex Benn=C3=A9e
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
