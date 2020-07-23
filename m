@@ -1,280 +1,116 @@
-Return-Path: virtio-dev-return-7604-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-7611-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id CB25A985CAF
-	for <virtio-dev@lists.oasis-open.org>; Tue, 21 Jul 2020 11:42:26 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 0C88D985DD7
+	for <virtio-dev@lists.oasis-open.org>; Thu, 23 Jul 2020 06:15:24 +0000 (UTC)
+Date: Thu, 23 Jul 2020 07:15:13 +0100
+From: Stefan Hajnoczi <stefanha@redhat.com>
+Message-ID: <20200723061513.GA268427@stefanha-x1.localdomain>
 References: <20200518203721.7625-1-ndragazis@arrikto.com>
- <20200518203721.7625-2-ndragazis@arrikto.com> <87v9inv26c.fsf@linaro.org>
+ <20200518203721.7625-2-ndragazis@arrikto.com>
+ <87v9inv26c.fsf@linaro.org>
  <20200717092635.GB128195@stefanha-x1.localdomain>
  <99b30044-f59c-c9b7-df3a-3a1eb4001042@arrikto.com>
- <874kq2edcm.fsf@linaro.org>
-From: Nikos Dragazis <ndragazis@arrikto.com>
-Message-ID: <63aecef7-b00b-092c-df74-b7bdd57dbde1@arrikto.com>
-Date: Tue, 21 Jul 2020 14:42:23 +0300
 MIME-Version: 1.0
-In-Reply-To: <874kq2edcm.fsf@linaro.org>
-Content-Language: en-US
+In-Reply-To: <99b30044-f59c-c9b7-df3a-3a1eb4001042@arrikto.com>
 Subject: Re: [virtio-dev] [PATCH v5 01/10] vhost-user: add vhost-user device
  type
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
-To: =?UTF-8?Q?Alex_Benn=c3=a9e?= <alex.bennee@linaro.org>
-Cc: Stefan Hajnoczi <stefanha@redhat.com>, "Michael S . Tsirkin" <mst@redhat.com>, virtio-dev@lists.oasis-open.org
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="YZ5djTAD1cGYuMQK"
+Content-Disposition: inline
+To: Nikos Dragazis <ndragazis@arrikto.com>
+Cc: Alex =?iso-8859-1?Q?Benn=E9e?= <alex.bennee@linaro.org>, "Michael S . Tsirkin" <mst@redhat.com>, virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 20/7/20 12:37 =CE=BC.=CE=BC., Alex Benn=C3=A9e wrote:
+--YZ5djTAD1cGYuMQK
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> Nikos Dragazis <ndragazis@arrikto.com> writes:
->
->> On 17/7/20 12:26 =CE=BC.=CE=BC., Stefan Hajnoczi wrote:
->>
->>> On Thu, Jul 16, 2020 at 05:45:47PM +0100, Alex Benn=C3=A9e wrote:
->>>> Nikos Dragazis <ndragazis@arrikto.com> writes:
->>>>> diff --git a/virtio-vhost-user.tex b/virtio-vhost-user.tex
->>>>> new file mode 100644
->>>>> index 0000000..ac96dc2
->>>>> --- /dev/null
->>>>> +++ b/virtio-vhost-user.tex
->>>>> @@ -0,0 +1,292 @@
->>>>> +\section{Vhost-user Device Backend}\label{sec:Device Types / Vhost-u=
-ser Device Backend}
->>>>> +
->>>>> +The vhost-user device backend facilitates vhost-user device emulatio=
-n through
->>>>> +vhost-user protocol exchanges and access to shared memory.  Software=
--defined
->>>>> +networking, storage, and other I/O appliances can provide services t=
-hrough this
->>>>> +device.
->>>>> +
->>>>> +This section relies on definitions from the \hyperref[intro:Vhost-us=
+On Fri, Jul 17, 2020 at 02:17:13PM +0300, Nikos Dragazis wrote:
+> On 17/7/20 12:26 =CE=BC.=CE=BC., Stefan Hajnoczi wrote:
+>=20
+> > On Thu, Jul 16, 2020 at 05:45:47PM +0100, Alex Benn=C3=A9e wrote:
+> > > Nikos Dragazis <ndragazis@arrikto.com> writes:
+> > > > diff --git a/virtio-vhost-user.tex b/virtio-vhost-user.tex
+> > > > new file mode 100644
+> > > > index 0000000..ac96dc2
+> > > > --- /dev/null
+> > > > +++ b/virtio-vhost-user.tex
+> > > > @@ -0,0 +1,292 @@
+> > > > +\section{Vhost-user Device Backend}\label{sec:Device Types / Vhost=
+-user Device Backend}
+> > > > +
+> > > > +The vhost-user device backend facilitates vhost-user device emulat=
+ion through
+> > > > +vhost-user protocol exchanges and access to shared memory.  Softwa=
+re-defined
+> > > > +networking, storage, and other I/O appliances can provide services=
+ through this
+> > > > +device.
+> > > > +
+> > > > +This section relies on definitions from the \hyperref[intro:Vhost-=
+user
+> > > > +Protocol]{Vhost-user Protocol}.  Knowledge of the vhost-user proto=
+col is a
+> > > > +prerequisite for understanding this device.
+> > > > +
+> > > > +The \hyperref[intro:Vhost-user Protocol]{Vhost-user Protocol} was =
+originally
+> > > > +designed for processes on a single system communicating over UNIX =
+domain
+> > > > +sockets.  The virtio vhost-user device backend allows the vhost-us=
+er slave to
+> > > > +communicate with the vhost-user master over the device instead of =
+a UNIX domain
+> > > > +socket.  This allows the slave and master to run on two separate
+> > > > systems such
+> > > I realise we already have the terms master/slave baked into the
+> > > vhost-user spec but perhaps we could find better wording? The vhost
+> > > documentation describes thing in terms of who owns the virtqueues (th=
+e
+> > > drive) and who processes the requests (the device). There may be bett=
 er
->>>>> +Protocol]{Vhost-user Protocol}.  Knowledge of the vhost-user protoco=
-l is a
->>>>> +prerequisite for understanding this device.
->>>>> +
->>>>> +The \hyperref[intro:Vhost-user Protocol]{Vhost-user Protocol} was or=
-iginally
->>>>> +designed for processes on a single system communicating over UNIX do=
-main
->>>>> +sockets.  The virtio vhost-user device backend allows the vhost-user=
- slave to
->>>>> +communicate with the vhost-user master over the device instead of a =
-UNIX domain
->>>>> +socket.  This allows the slave and master to run on two separate
->>>>> systems such
->>>> I realise we already have the terms master/slave baked into the
->>>> vhost-user spec but perhaps we could find better wording? The vhost
->>>> documentation describes thing in terms of who owns the virtqueues (the
->>>> drive) and who processes the requests (the device). There may be bette=
-r
->>>> terminology to use.
->>> "backend" is now commonly used instead of "slave". There is no new term
->>> for "master" yet. I suggest replacing "slave" with "backend" in this
->>> patch.
->> Makes sense. Some observations:
->>
->> 1. Since "backend" is used instead of "slave", why "frontend" is not
->>      used instead of "master"? Also, why does the vhost-user spec use th=
-e
->>      terms"slave" and "backend" interchangeably and doesn't just drop th=
-e
->>      term"slave"completely?
->>
->> 2. The term "driver" cannot replace the term "master" for one more
->>      reason: they refer todifferent things. The master is the hypervisor=
-,
->>      not the driver. The driver doesn't even know that the device is
->>      implemented via the vhost-user mechanism.
->>
->>> Using "device"/"driver" would cause confusion here because
->>> both virtio-vhost-user itself and the vhost device being emulated
->>> already use those terms. We need to be able to differentiate between th=
-e
->>> vhost-level master/backend concept and the VIRTIO driver/device concept=
-.
->>>
->>>>> +as a virtual machine and a hypervisor.
->>>> This implies type-2 setups, depending on where you define the
->>>> hypervisor. Could the language be extended: " or device in one virtual
->>>> machine with the driver operating in another"?
->>> Traditional vhost-user looks like this:
->>>
->>>          VM
->>>      virtio-net
->>>
->>>          |
->>>
->>>         VMM                     vhost-user-net process
->>> vhost-user master  ------------ vhost-user backend
->>>
->>> The vhost-user protocol communication is not visible to the VM. It just
->>> sees a virtio-net device.
->>>
->>> With virtio-vhost-user it looks like this:
->>>
->>>       Driver VM                      Device VM
->>> virtio-net driver             virtio-vhost-user driver
->>>
->>>          |                               |
->>>
->>>      Driver VMM                      Device VMM
->>> vhost-user master  ------------ vhost-user backend
->>>
->>> Here the master is running on the "hypervisor" (it's the Driver VMM) an=
-d
->>> the backend is running inside the Device VM.
->>>
->>> This spec does not require that the Driver VMM and Device VMM
->>> communicate over the traditional vhost-user UNIX domain socket.
->>>
->>> I'm not sure what "device in one virtual machine with the driver
->>> operating in another" means. The main point of the paragraph is that a
->>> VIRTIO device for vhost-user allows the master and backend to run on
->>> separate systems (no longer tied to a UNIX domain socket).
->>>
->>> Can you think of a rewording that captures this better?
->>>
->>>>> +\begin{description}
->>>>> +\item[\field{status}] contains the vhost-user operational status.  T=
-he default
->>>>> +    value of this field is 0.
->>>>> +
->>>>> +    The driver sets VIRTIO_VHOST_USER_STATUS_SLAVE_UP to indicate re=
-adiness for
->>>>> +    the vhost-user master to connect.  The vhost-user master cannot =
-connect
->>>>> +    unless the driver has set this bit first.
->>>> I suspect some deployment diagrams are going to help here. Does this
->>>> imply that there is something in userspace connected to the slave kern=
-el
->>>> ready to process messages or just that the driver in the kernel is rea=
-dy
->>>> to accept messages?
->>> That is beyond the scope of the spec. There is no requirement for
->>> implementing the virtio-vhost-user driver in the kernel or in userspace=
-.
->>>
->>> The existing implementation in DPDK/SPDK is a userspace VFIO PCI
->>> implementation. The guest kernel in the Device VM does not touch the
->>> virtio-vhost-user device.
->>>
->>> Maybe someone will come up with a use-case where the device emulation
->>> needs to happen in the guest kernel (e.g. the in-kernel SCSI target).
->>>
->>> I think a kernel driver for virtio-vhost-user is not very useful since
->>> the actual behavior happens in userspace and involves shared memory.
->>> There is already an API for that VFIO. A userspace library would make i=
-t
->>> nicer to use though.
->>>
->>> But these are just my thoughts on how the Device VM's software stack
->>> should look. This spec allows all approaches.
->>>
->>> I do think it would be helpful to include an diagram/description in the
->>> beginning of the spec with a concrete example of how the Device VM's
->>> virtio-vhost-user software stack could look.
->> Totally agree. Though virtio does not contain diagrams, in this
->> particular case, a diagram would really help. Will add one in the next
->> revision.
->>
->>>>> +The driver SHOULD place at least one buffer in rxq before setting th=
-e
->>>>> +VIRTIO_VHOST_USER_SLAVE_UP bit in the \field{status} configuration
->>>>> field.
->>>> This is a buffer for use - not an initial message?
->>> Yes, an empty buffer. The rxq needs to be populated with buffers so tha=
-t
->>> messages can be received from the master. Vhost-user messages are
->>> initiated by the master so the backend does not send an initial message=
-.
->>>
->>>>> +The following additional resources exist:
->>>>> +\begin{description}
->>>>> +  \item[Doorbells] The driver signals the vhost-user master through =
-doorbells.  The signal does not carry any data, it is purely an event.
->>>>> +  \item[Notifications] The vhost-user master signals the driver for =
-events besides virtqueue activity and configuration changes by sending noti=
-fications.
->>>> What is the difference between a doorbell and a notification?
->>> Doorbells allow the driver to signal the device (i.e. device hardware
->>> registers that the driver writes to).
->>>
->>> Notifications allow the driver to be signalled by the device (i.e. MSI-=
-X
->>> interrupts that the driver handles).
->>>
->>> The more abstract "doorbell" and "notification" terms are used instead
->>> of hardware registers and interrupts because transports other than PCI
->>> may want to support these features too.
->> Let me try to make this a little bit more clear.
->>
->> A doorbell is a device register that is hooked up to a vhost-user
->> callfd.  There is one doorbell for each callfd. When the driver (i.e.,
->> the virtio-vhost-user driver) kicks a doorbell, the device (i.e., the
->> virtio-vhost-user device) kicks the corresponding callfd. So, doorbells
->> are the means for the device emulation software (e.g., the
->> vhost-user-net process in the above diagram), running in the Device VM,
->> to notify the device driver (e.g., the virtio-net driver in the above
->> diagram), running in the Driver VM, for I/O completions.
-> OK - I think I follow that although it's tricky because a
-> virtio-vhost-user driver is not like a virtio-device driver - being at
-> opposite ends of each other. Another good argument for having clear
-> terminology descriptions. I'll try and come up with some words and a
-> patch for the spec so we can make it clearer.
->
->> A notification is an interrupt. Notifications are hooked up to
->> vhost-user kickds. When a kickfd is kicked by the vhost-user master, the
->> virtio-vhost-user device sends the corresponding interrupt to the
->> virtio-vhost-user driver. So, notifications are the means for the device
->> driver, running in the Driver VM, to notify the device emulation
->> software, running in the Device VM, for I/O submissions.
-> Isn't that the wrong way around, surely a device driver sees a IRQ as
-> it's notification? Or are we talking about notifications going both ways
-> here?
->
+> > > terminology to use.
+> > "backend" is now commonly used instead of "slave". There is no new term
+> > for "master" yet. I suggest replacing "slave" with "backend" in this
+> > patch.
+>=20
+> Makes sense. Some observations:
+>=20
+> 1. Since "backend" is used instead of "slave", why "frontend" is not
+> =C2=A0=C2=A0 used instead of "master"? Also, why does the vhost-user spec=
+ use the
+> =C2=A0=C2=A0 terms"slave" and "backend" interchangeably and doesn't just =
+drop the
+> =C2=A0=C2=A0 term"slave"completely?
 
-We are talking about notifications from the vhost-user frontend to the
-backend. The virtio-vhost-user device uses an interrupt to signal the
-vhost-user backend in the Device VM for events on the vhost-user kickfd.
+Using "frontend" and "backend" sounds good. Do you want to send a patch
+to qemu.git docs/interop/vhost-user.rst?
 
+The vhost-user spec grew organically and few people have spent time on
+polishing it, making it consistent, etc.
 
-In more detail, the signaling path goes like this:
+Stefan
 
-1. The virtio-net driver (in the above diagram) adds new descriptors in
- =C2=A0=C2=A0 the virtqueue and kicks the corresponding doorbell/register o=
-f the
- =C2=A0=C2=A0 vhost-user-net device.
+--YZ5djTAD1cGYuMQK
+Content-Type: application/pgp-signature; name="signature.asc"
 
-2. The VMM in the Driver VM kicks the vhost-user kickfd that is
- =C2=A0=C2=A0 associated with this virtqueue in order to notify the backend=
-.
+-----BEGIN PGP SIGNATURE-----
 
-3. The virtio-vhost-user device, which is monitoring this kickfd,
- =C2=A0=C2=A0 notices the event and, in response, it sends an interrupt to =
-the
- =C2=A0=C2=A0 guest in order to notify the vhost-user backend.
+iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAl8ZKvEACgkQnKSrs4Gr
+c8hyJgf9EHI0rf2bC+7Px79wKoDQnozRKsQXQTJmRKWQ2ETY6rwKz5eNTlMncPW2
+B3L2A9HqIxAeVZ8Qmix/acM8xK5RYwfk27spsS9z1KxFLUS0KO/2/n4hQnAZ9pms
+1C/ecDyaYcaBCwzqY1BwXhTaqUIztzbDHZPso7lhMlzVqnqP2z1qB8dW1wi2A8tj
+ZTV7rn4WpiauktuD2T631LLuP8Fy+UgSaQ2O+YmtdST2CCyz4Z9sXHhgWIOYHXrT
+N/uR26dOO7lBAfyASmuywhcwW6e0X7ywBilJ8YzZyru22CBozlb1zx5k1H5pMD4S
+gKwlZZQp7nRkFTY5qHZoS4vqaPYSpA==
+=lD+y
+-----END PGP SIGNATURE-----
 
-
- From your comment, I can't really tell for sure what troubles you. Yes,
-the device driver sees an IRQ as its notification. Is there any other
-way that a device can notify a driver for something? Also, the
-meaning of a device-to-driver notification is device-specific. In this
-particular case, we are reserving specific MSI vectors to designate
-events on the vhost-user virtqueues.
-
-Could you please explain in more detail what troubles you? Is it about
-the word "notification"? In the virtio spec [1], this word refers to
-both driver-to-device and device-to-driver signaling.
-
-[1]https://docs.oasis-open.org/virtio/virtio/v1.1/csprd01/virtio-v1.1-csprd=
-01.html#x1-170003
-
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+--YZ5djTAD1cGYuMQK--
 
