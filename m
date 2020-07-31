@@ -1,214 +1,83 @@
-Return-Path: virtio-comment-return-1348-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio-comment@lists.oasis-open.org>
-List-Post: <mailto:virtio-comment@lists.oasis-open.org>
-List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
-From: Alexander Duyck <alexander.duyck@gmail.com>
-Date: Mon, 13 Jul 2020 11:24:58 -0700
-Message-ID: 
- <159466469884.170052.12727975722769765071.stgit@ahduyck-workstation>
-In-Reply-To: 
- <159466464860.170052.6278413164604715684.stgit@ahduyck-workstation>
-References: 
- <159466464860.170052.6278413164604715684.stgit@ahduyck-workstation>
+Return-Path: virtio-dev-return-7623-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id 7351F985EFE
+	for <virtio-dev@lists.oasis-open.org>; Fri, 31 Jul 2020 15:44:42 +0000 (UTC)
+References: <DM6PR11MB4331B490586462DE7353E0B8F9710@DM6PR11MB4331.namprd11.prod.outlook.com>
+From: Alex =?utf-8?Q?Benn=C3=A9e?= <alex.bennee@linaro.org>
+In-reply-to: <DM6PR11MB4331B490586462DE7353E0B8F9710@DM6PR11MB4331.namprd11.prod.outlook.com>
+Date: Fri, 31 Jul 2020 16:44:36 +0100
+Message-ID: <87ft973d0b.fsf@linaro.org>
 MIME-Version: 1.0
-Subject: [virtio-comment] [PATCH v6 3/3] content: Document balloon feature free page reporting
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-To: mst@redhat.com, david@redhat.com, cohuck@redhat.com
-Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, wei.w.wang@intel.com
+Subject: [virtio-dev] Re: [PATCH v2 0/5] virtio mmio specification enhancement
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+To: "Pincus, Josh" <Josh.Pincus@windriver.com>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "zhabin@linux.alibaba.com" <zhabin@linux.alibaba.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, qemu-devel@nongnu.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-From: Alexander Duyck <alexander.h.duyck@linux.intel.com>
 
-Free page reporting is a feature that allows the guest to proactively
-report unused pages to the host. By making use of this feature is is
-possible to reduce the overall memory footprint of the guest in cases where
-some significant portion of the memory is idle. Add documentation for the
-free page reporting feature describing the functionality and requirements.
+Pincus, Josh <Josh.Pincus@windriver.com> writes:
 
-Reviewed-by: Cornelia Huck <cohuck@redhat.com>
-Signed-off-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
----
- conformance.tex |    2 +
- content.tex     |   81 ++++++++++++++++++++++++++++++++++++++++++++++++++++++-
- 2 files changed, 82 insertions(+), 1 deletion(-)
+> Hi,
+>
+> =20
+>
+> We were looking into a similar enhancement for the Virt I/O MMIO transpor=
+t and came across this project.
+>
+> This enhancement would be perfect for us.
 
-diff --git a/conformance.tex b/conformance.tex
-index 5038b36324ac..5496a25e93ef 100644
---- a/conformance.tex
-+++ b/conformance.tex
-@@ -151,6 +151,7 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
- \item \ref{drivernormative:Device Types / Memory Balloon Device / Device Operation / Memory Statistics}
- \item \ref{drivernormative:Device Types / Memory Balloon Device / Device Operation / Free Page Hinting}
- \item \ref{drivernormative:Device Types / Memory Balloon Device / Device Operation / Page Poison}
-+\item \ref{drivernormative:Device Types / Memory Balloon Device / Device Operation / Free Page Reporting}
- \end{itemize}
- 
- \conformance{\subsection}{SCSI Host Driver Conformance}\label{sec:Conformance / Driver Conformance / SCSI Host Driver Conformance}
-@@ -335,6 +336,7 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
- \item \ref{devicenormative:Device Types / Memory Balloon Device / Device Operation / Memory Statistics}
- \item \ref{devicenormative:Device Types / Memory Balloon Device / Device Operation / Free Page Hinting}
- \item \ref{devicenormative:Device Types / Memory Balloon Device / Device Operation / Page Poison}
-+\item \ref{devicenormative:Device Types / Memory Balloon Device / Device Operation / Free Page Reporting}
- \end{itemize}
- 
- \conformance{\subsection}{SCSI Host Device Conformance}\label{sec:Conformance / Device Conformance / SCSI Host Device Conformance}
-diff --git a/content.tex b/content.tex
-index 3d0600dc0b4c..f1fdfbb85223 100644
---- a/content.tex
-+++ b/content.tex
-@@ -5007,12 +5007,15 @@ \subsection{Virtqueues}\label{sec:Device Types / Memory Balloon Device / Virtque
- \item[1] deflateq
- \item[2] statsq
- \item[3] free_page_vq
-+\item[4] reporting_vq
- \end{description}
- 
-   statsq only exists if VIRTIO_BALLOON_F_STATS_VQ is set.
- 
-   free_page_vq only exists if VIRTIO_BALLOON_F_FREE_PAGE_HINT is set.
- 
-+  reporting_vq only exists if VIRTIO_BALLOON_F_PAGE_REPORTING is set.
-+
- \subsection{Feature bits}\label{sec:Device Types / Memory Balloon Device / Feature bits}
- \begin{description}
- \item[VIRTIO_BALLOON_F_MUST_TELL_HOST (0)] Host has to be told before
-@@ -5029,6 +5032,8 @@ \subsection{Feature bits}\label{sec:Device Types / Memory Balloon Device / Featu
- \item[ VIRTIO_BALLOON_F_PAGE_POISON(4) ] A hint to the device, that the driver
-     will immediately write \field{poison_val} to pages after deflating them.
-     Configuration field \field{poison_val} is valid.
-+\item[ VIRTIO_BALLOON_F_PAGE_REPORTING(5) ] The device has support for free
-+    page reporting. A virtqueue for reporting free guest memory is present.
- 
- \end{description}
- 
-@@ -5040,6 +5045,10 @@ \subsection{Feature bits}\label{sec:Device Types / Memory Balloon Device / Featu
- not immediately write \field{poison_val} to deflated pages (e.g., to
- initialize them, or fill them with a poison value).
- 
-+If the driver is expecting the pages to retain some initialized value,
-+it MUST NOT accept VIRTIO_BALLOON_F_PAGE_REPORTING unless it also
-+negotiates VIRTIO_BALLOON_F_PAGE_POISON.
-+
- \devicenormative{\subsubsection}{Feature bits}{Device Types / Memory Balloon Device / Feature bits}
- If the device offers the VIRTIO_BALLOON_F_MUST_TELL_HOST feature
- bit, and if the driver did not accept this feature bit, the
-@@ -5099,11 +5108,15 @@ \subsection{Device Initialization}\label{sec:Device Types / Memory Balloon Devic
-   identify the free_page_vq.
- \item If the VIRTIO_BALLOON_F_PAGE_POISON feature bit is negotiated, update
-   the \field{poison_val} configuration field.
-+\item If the VIRTIO_BALLOON_F_PAGE_REPORTING feature bit is negotiated,
-+  identify the reporting_vq.
- 
- \item DRIVER_OK is set: device operation begins.
- 
- \item If the VIRTIO_BALLOON_F_STATS_VQ feature bit is negotiated, then
-   notify the device about the stats virtqueue buffer.
-+\item If the VIRTIO_BALLOON_F_PAGE_REPORTING feature bit is negotiated, then
-+  begin reporting free pages to the device.
- \end{enumerate}
- 
- \subsection{Device Operation}\label{sec:Device Types / Memory Balloon Device / Device Operation}
-@@ -5503,7 +5516,8 @@ \subsubsection{Page Poison}\label{sec:Device Types / Memory Balloon Device / Dev
- 
- Page Poison provides a way to notify the host that the guest is initializing
- free pages with \field{poison_val}. When the feature is enabled, pages will
--be immediately written to by the driver after deflating.
-+be immediately written to by the driver after deflating, and pages reported
-+by free page reporting will retain the value indicated by \field{poison_val}.
- 
- If the guest is not initializing freed pages, the driver should reject the
- VIRTIO_BALLOON_F_PAGE_POISON feature.
-@@ -5533,6 +5547,71 @@ \subsubsection{Page Poison}\label{sec:Device Types / Memory Balloon Device / Dev
- The device MAY use the content of \field{poison_val} as a hint to guest
- behavior.
- 
-+\subsubsection{Free Page Reporting}\label{sec:Device Types / Memory Balloon Device / Device Operation / Free Page Reporting}
-+
-+Free Page Reporting provides a mechanism similar to balloon inflation,
-+however it does not provide a deflation queue. Reported free pages can
-+be reused by the driver after the reporting request has been acknowledged
-+without notifying the device.
-+
-+The driver will begin reporting free pages. When exactly and which free
-+pages are reported is up to the driver.
-+
-+\begin{enumerate}
-+
-+\item The driver determines it has enough pages available to begin
-+  reporting free pages.
-+
-+\item The driver gathers free pages into a scatter-gather list and adds
-+  them to the reporting_vq.
-+
-+\item The device acknowledges the reporting request by using the
-+  reporting_vq descriptor.
-+
-+\item Once the device has acknowledged the report, the driver can reuse the
-+  reported free pages when needed (e.g., by putting them back to free page
-+  lists in the guest operating system).
-+
-+\item The driver can then continue to gather and report free pages until it
-+  has determined it has reported a sufficient quantity of pages.
-+
-+\end{enumerate}
-+
-+\drivernormative{\paragraph}{Free Page Reporting}{Device Types / Memory Balloon Device / Device Operation / Free Page Reporting}
-+
-+Normative statements in this section apply if the
-+VIRTIO_BALLOON_F_PAGE_REPORTING feature has been negotiated.
-+
-+If the VIRTIO_BALLOON_F_PAGE_POISON feature has not been negotiated, then
-+the driver MUST treat all reported pages as uninitialized memory.
-+
-+If the VIRTIO_BALLOON_F_PAGE_POISON feature has been negotiated, the
-+driver MUST initialize all free pages with \field{poison_val} before
-+reporting them.
-+
-+The driver MUST NOT use the reported pages until the device has
-+acknowledged the reporting request.
-+
-+The driver MAY report free pages any time after DRIVER_OK is set.
-+
-+The driver SHOULD attempt to report large pages rather than smaller ones.
-+
-+The driver SHOULD avoid reading/writing reported pages if
-+not strictly necessary.
-+
-+\devicenormative{\paragraph}{Free Page Reporting}{Device Types / Memory Balloon Device / Device Operation / Free Page Reporting}
-+
-+Normative statements in this section apply if the
-+VIRTIO_BALLOON_F_PAGE_REPORTING feature has been negotiated.
-+
-+If the VIRTIO_BALLOON_F_PAGE_POISON feature has not been negotiated, the
-+device MAY modify the contents of any page supplied in a report request
-+before acknowledging that request by using the reporting_vq descriptor.
-+
-+If the VIRTIO_BALLOON_F_PAGE_POISON feature has been negotiated, the device
-+MUST NOT modify the the content of a reported page to a value other than
-+\field{poison_val}.
-+
- \section{SCSI Host Device}\label{sec:Device Types / SCSI Host Device}
- 
- The virtio SCSI host device groups together one or more virtual
+So there is certainly an interest in optimising MMIO based virtio and
+the current read/ack cycle adds additional round trip time for any trap
+and emulate hypervisor. However I think there is some resistance to
+making MMIO a re-implementation of what PCI already gives us for "free".
+
+I believe the current questions that need to be addressed are:
+
+  - Clear definitions in the spec on doorbells/notifications
+
+    The current virtio spec uses different terms in some places so it
+    would be nice to clarify the language and formalise what the
+    standard expects from transports w.r.t the capabilities of
+    notifications and doorbells.
+
+  - Quantifying the memory foot-print difference between PCI/MMIO
+
+    PCI gives a lot for free including a discovery and IRQ model already
+    designed to handle MSI/MSI-X. There is a claim that this brings in a
+    lot of bloat but I think there was some debate around the numbers.
+    My rough initial experiment with a PCI and non-PCI build with
+    otherwise identical VIRTIO configs results in the following:
+
+    16:40:15 c.282% [alex@zen:~/l/l/builds] review/rpmb|=E2=80=A6 + ls -l a=
+rm64/vmlinux arm64.nopci/vmlinux
+    -rwxr-xr-x 1 alex alex 83914728 Jul 31 16:39 arm64.nopci/vmlinux*
+    -rwxr-xr-x 1 alex alex 86368080 Jul 31 16:33 arm64/vmlinux*
+
+    which certainly implies there could be a fair amount of headroom for
+    an MMIO version to implement some features. However I don't know if
+    it's fully apples to apples as there maybe unneeded PCI bloat that a
+    virtio-only kernel doesn't need.
 
 
+What are the features you are most interested in?
 
-This publicly archived list offers a means to provide input to the
-OASIS Virtual I/O Device (VIRTIO) TC.
+> Has there been any progress since Feb, 2020?  It looks like the effort
+> might have stalled?
 
-In order to verify user consent to the Feedback License terms and
-to minimize spam in the list archive, subscription is required
-before posting.
+I can't speak to the OP's but there is certainly interest from others
+that are not the original posters.
 
-Subscribe: virtio-comment-subscribe@lists.oasis-open.org
-Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
-List help: virtio-comment-help@lists.oasis-open.org
-List archive: https://lists.oasis-open.org/archives/virtio-comment/
-Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
-List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
-Committee: https://www.oasis-open.org/committees/virtio/
-Join OASIS: https://www.oasis-open.org/join/
+
+--=20
+Alex Benn=C3=A9e
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
