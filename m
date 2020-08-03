@@ -1,118 +1,74 @@
-Return-Path: virtio-comment-return-1392-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio-comment@lists.oasis-open.org>
-List-Post: <mailto:virtio-comment@lists.oasis-open.org>
-List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
-Date: Mon, 10 Aug 2020 19:06:15 +0200
-From: Cornelia Huck <cohuck@redhat.com>
-Message-ID: <20200810190615.2613a258.cohuck@redhat.com>
-In-Reply-To: <CAKgT0UchESZRMO2x6jK9u3qzEjb83eNnTm-XO9htpsRv-JF+3w@mail.gmail.com>
-References: <159466464860.170052.6278413164604715684.stgit@ahduyck-workstation>
-	<CAKgT0UchESZRMO2x6jK9u3qzEjb83eNnTm-XO9htpsRv-JF+3w@mail.gmail.com>
+Return-Path: virtio-dev-return-7624-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id CA7E89849ED
+	for <virtio-dev@lists.oasis-open.org>; Mon,  3 Aug 2020 16:23:26 +0000 (UTC)
+References: <DM6PR11MB4331B490586462DE7353E0B8F9710@DM6PR11MB4331.namprd11.prod.outlook.com>
+ <87ft973d0b.fsf@linaro.org>
+From: Alex =?utf-8?Q?Benn=C3=A9e?= <alex.bennee@linaro.org>
+In-reply-to: <87ft973d0b.fsf@linaro.org>
+Date: Mon, 03 Aug 2020 17:19:56 +0100
+Message-ID: <87wo2fn1lf.fsf@linaro.org>
 MIME-Version: 1.0
-Subject: [virtio-comment] Re: [PATCH v6 0/3] virtio-spec: Add documentation for recently
- added balloon features
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-To: Alexander Duyck <alexander.duyck@gmail.com>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>, David Hildenbrand <david@redhat.com>, virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, "Wang, Wei W" <wei.w.wang@intel.com>
+Subject: [virtio-dev] Re: [PATCH v2 0/5] virtio mmio specification enhancement
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+To: "Pincus, Josh" <Josh.Pincus@windriver.com>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "zhabin@linux.alibaba.com" <zhabin@linux.alibaba.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, qemu-devel@nongnu.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Mon, 10 Aug 2020 09:58:38 -0700
-Alexander Duyck <alexander.duyck@gmail.com> wrote:
 
-> So it has been almost a month since I submitted this and there hasn't
-> been any feedback. I'm wondering if this is ready for acceptance. If
-> so what are the next steps to getting this accepted into the virtio
-> spec?
+Alex Benn=C3=A9e <alex.bennee@linaro.org> writes:
 
-It would be nice to get an ack on patch 1, but I don't feel comfortable
-doing that.
+> Pincus, Josh <Josh.Pincus@windriver.com> writes:
+>
+>> Hi,
+>>
+>> =20
+>>
+>> We were looking into a similar enhancement for the Virt I/O MMIO transpo=
+rt and came across this project.
+>>
+>> This enhancement would be perfect for us.
+>
+> So there is certainly an interest in optimising MMIO based virtio and
+> the current read/ack cycle adds additional round trip time for any trap
+> and emulate hypervisor. However I think there is some resistance to
+> making MMIO a re-implementation of what PCI already gives us for "free".
+<snip>
+>
+>   - Quantifying the memory foot-print difference between PCI/MMIO
+>
+>     PCI gives a lot for free including a discovery and IRQ model already
+>     designed to handle MSI/MSI-X. There is a claim that this brings in a
+>     lot of bloat but I think there was some debate around the numbers.
+>     My rough initial experiment with a PCI and non-PCI build with
+>     otherwise identical VIRTIO configs results in the following:
+>
+>     16:40:15 c.282% [alex@zen:~/l/l/builds] review/rpmb|=E2=80=A6 + ls -l=
+ arm64/vmlinux arm64.nopci/vmlinux
+>     -rwxr-xr-x 1 alex alex 83914728 Jul 31 16:39 arm64.nopci/vmlinux*
+>     -rwxr-xr-x 1 alex alex 86368080 Jul 31 16:33 arm64/vmlinux*
+>
+>     which certainly implies there could be a fair amount of headroom for
+>     an MMIO version to implement some features. However I don't know if
+>     it's fully apples to apples as there maybe unneeded PCI bloat that a
+>     virtio-only kernel doesn't need.
 
-The usual procedure is to request a vote (open a github issue, link to
-the patch and mention the issue here, and request a vote in the issue.)
+Just following up after cutting the Xgene and ThunderX PCI bloat from
+the kernel the margin is a little smaller:
 
-> 
-> Thanks.
-> 
-> - Alex
-> 
-> On Mon, Jul 13, 2020 at 11:24 AM Alexander Duyck
-> <alexander.duyck@gmail.com> wrote:
-> >
-> > This patch set is meant to add documentation for balloon features that have
-> > been recently added to the Linux kernel[1,2] and that were recently added
-> > to QEMU[3].
-> >
-> > Changes since RFC:
-> > Incorporated suggestions from Cornelia Huck
-> > Fixed a few additional spelling errors
-> >
-> > Changes since v1:
-> > Incorporated additional suggestions from Cornelia Huck
-> > Dropped documentation referring to free page reporting from page poison patch
-> >
-> > Changes since v2:
-> > Rewrote multiple statements based on input from David Hildenbrand
-> >   Dropped use of balloon and deflate from page hinting description
-> >   Dropped use of free page reporting from page poison description
-> >   Cleaned up several spots that didn't match RFC2119 style comments
-> >   Added conformance links.
-> >   Various other clean-ups.
-> > Updated balloon command IDs based on input from Cornelia Huck
-> >
-> > Changes since v3:
-> > Reordered patches to place free page hinting at end of patch set
-> >   Moved contents out of patch to poison and free page reporting patches
-> >   Updated patch description to document some known issues with feature
-> > Further clean-ups based on input from David Hildenbrand
-> >
-> > Changes since v4:
-> > Further clean-ups for page hinting based on input from David Hildenbrand
-> >
-> > Changes since v5:
-> > Reverted patcher order changes from v3 placing hinting as first patch
-> > Addressed comments and added Reviewed-by from Cornelia Huck
-> > Addressed further items I found in free page hinting
-> >   Added requirement that output buffers be 4 bytes in size
-> >   Replaced reference to descriptor with buffer
-> >   Replaced references to free_page_hint_vq with free_page_vq
-> >
-> > [1]: https://lore.kernel.org/lkml/20200211224416.29318.44077.stgit@localhost.localdomain/
-> > [2]: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=b0c504f154718904ae49349147e3b7e6ae91ffdc
-> > [3]: https://lists.oasis-open.org/archives/virtio-dev/202004/msg00180.html
-> >
-> > ---
-> >
-> > Alexander Duyck (3):
-> >       content: Document balloon feature free page hints
-> >       content: Document balloon feature page poison
-> >       content: Document balloon feature free page reporting
-> >
-> >
-> >  conformance.tex |    6 +
-> >  content.tex     |  279 ++++++++++++++++++++++++++++++++++++++++++++++++++++++-
-> >  2 files changed, 279 insertions(+), 6 deletions(-)
-> >
-> > --
-> >  
-> 
+  -rwxr-xr-x 1 alex alex 83914728 Jul 31 16:39 arm64.nopci/vmlinux*
+  -rwxr-xr-x 1 alex alex 85639808 Aug  3 17:12 arm64/vmlinux*
 
+--=20
+Alex Benn=C3=A9e
 
-This publicly archived list offers a means to provide input to the
-OASIS Virtual I/O Device (VIRTIO) TC.
-
-In order to verify user consent to the Feedback License terms and
-to minimize spam in the list archive, subscription is required
-before posting.
-
-Subscribe: virtio-comment-subscribe@lists.oasis-open.org
-Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
-List help: virtio-comment-help@lists.oasis-open.org
-List archive: https://lists.oasis-open.org/archives/virtio-comment/
-Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
-List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
-Committee: https://www.oasis-open.org/committees/virtio/
-Join OASIS: https://www.oasis-open.org/join/
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
