@@ -1,68 +1,126 @@
-Return-Path: virtio-return-3434-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio@lists.oasis-open.org>
-List-Post: <mailto:virtio@lists.oasis-open.org>
-List-Help: <mailto:virtio-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Tue, 11 Aug 2020 10:39:11 +0200
-From: Cornelia Huck <cohuck@redhat.com>
-Message-ID: <20200811103911.09feca42.cohuck@redhat.com>
-In-Reply-To: <20200811042047-mutt-send-email-mst@kernel.org>
+Return-Path: virtio-comment-return-1395-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-comment@lists.oasis-open.org>
+List-Post: <mailto:virtio-comment@lists.oasis-open.org>
+List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
+From: Lars Ganrot <lga@napatech.com>
+Date: Tue, 11 Aug 2020 14:53:39 +0000
+Message-ID: <3e1f1c3f6b3a44daabf3cfca1d3e3f66@napatech.com>
 References: <20200810161501.1572834-1-mst@redhat.com>
-	<20200810185928.2e722231.cohuck@redhat.com>
-	<20200811042047-mutt-send-email-mst@kernel.org>
+ <20200810185928.2e722231.cohuck@redhat.com>
+ <20200811042047-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20200811042047-mutt-send-email-mst@kernel.org>
+Content-Language: en-US
 MIME-Version: 1.0
-Subject: Re: [virtio] [PATCH RFC] VIRTIO_F_PARTIAL_ORDER for page fault
- handling
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, virtio@lists.oasis-open.org
+Subject: [virtio-comment] RE: [virtio-dev] Re: [virtio] [PATCH RFC] VIRTIO_F_PARTIAL_ORDER for
+ page fault handling
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+To: "Michael S. Tsirkin" <mst@redhat.com>, Cornelia Huck <cohuck@redhat.com>
+Cc: "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "virtio@lists.oasis-open.org" <virtio@lists.oasis-open.org>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Tue, 11 Aug 2020 04:23:13 -0400
-"Michael S. Tsirkin" <mst@redhat.com> wrote:
+Hi Michael,
 
+Short comment below.
+
+BR,
+
+-Lars
+
+> From: virtio-dev@lists.oasis-open.org <virtio-dev@lists.oasis-open.org> O=
+n
+> Behalf Of Michael S. Tsirkin
+> Sent: 11. august 2020 10:23
+>=20
 > On Mon, Aug 10, 2020 at 06:59:28PM +0200, Cornelia Huck wrote:
 > > On Mon, 10 Aug 2020 12:15:15 -0400
 > > "Michael S. Tsirkin" <mst@redhat.com> wrote:
+> >
+> > > Devices that normally use buffers in order can benefit from ability
+> > > to temporarily switch to handle some buffers out of order.
+> > >
+> > > As a case in point, a networking device might handle RX buffers in
+> > > order normally. However, should an access to an RX buffer cause a
+> > > page fault (e.g. when using PRI), the device could benefit from
+> > > ability to temporarily keep using following buffers in the ring
+> > > (possibly with higher overhead) until the fault has been resolved.
+> > >
+> > > Page faults allow more features such as THP, auto-NUMA, live
+> > > migration.
+> > >
+> > > Out of order is of course already possible, however, IN_ORDER is
+> > > currently required for descriptor batching where device marks a
+> > > whole batch of buffers used in one go.
+> > >
+> > > The idea behind this proposal is to relax that requirement, allowing
+> > > batching without asking device to be in orde rat all times, as
+> > > follows:
+> > >
+> > > Device uses buffers in any order. Eventually when device detects
+> > > that it has used all previously outstanding buffers, it sets a FLUSH
+> > > flag on the last buffer used. If it set this flag on the last buffer
+> > > used previously, and now uses a batch of descriptors in-order, it
+> > > can now signal the last buffer used again setting the FLUSH flag.
+> > >
+> > > Driver can detect in-order when it sees two FLUSH flags one after
+> > > another. In other respects the feature is similar to IN_ORDER from
+> > > the driver implementation POV.
+> > >
+> > > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+> > > ---
+> > >  content.tex     |  9 ++++++++-
+> > >  packed-ring.tex | 23 +++++++++++++++++++++++  split-ring.tex  | 26
+> > > ++++++++++++++++++++++++--
+> > >  3 files changed, 55 insertions(+), 3 deletions(-)
+> > >
+> > > diff --git a/content.tex b/content.tex index 91735e3..8494eb6 100644
+> > > --- a/content.tex
+> > > +++ b/content.tex
+> > > @@ -296,7 +296,11 @@ \section{Virtqueues}\label{sec:Basic Facilities
+> > > of a Virtio Device / Virtqueues}
+> > >
+> > >  Some devices always use descriptors in the same order in which
+> > > they have been made available. These devices can offer the
+> > > -VIRTIO_F_IN_ORDER feature. If negotiated, this knowledge
+> > > +VIRTIO_F_IN_ORDER feature.  Other devices sometimes use descriptors
+> > > +in the same order in which they have been made available. These
+> > > +devices can offer the VIRTIO_F_PARTIAL_ORDER feature. If one of the
+> > > +features VIRTIO_F_IN_ORDER or VIRTIO_F_PARTIAL_ORDER is
+> negotiated,
+> > > +this knowledge
+> >
+> > Do these two features conflict with each other? I.e., at most one of
+> > them may be negotiated (or offered?) at a time?
+>=20
+> Good point. I think so, yes. Will document.
 
-> > > diff --git a/split-ring.tex b/split-ring.tex
-> > > index 123ac9f..cf197f8 100644
-> > > --- a/split-ring.tex
-> > > +++ b/split-ring.tex
-> > > @@ -398,10 +398,11 @@ \subsection{The Virtqueue Used Ring}\label{sec:Basic Facilities of a Virtio Devi
-> > >          le16 avail_event; /* Only if VIRTIO_F_EVENT_IDX */
-> > >  };
-> > >  
-> > > -/* le32 is used here for ids for padding reasons. */
-> > >  struct virtq_used_elem {
-> > >          /* Index of start of used descriptor chain. */
-> > > -        le32 id;
-> > > +        le16 id;
-> > > +#define VIRTQ_USED_ELEM_F_FLUSH  0x8000
-> > > +        le16 flags;  
-> > 
-> > This is a bit confusing for legacy, as this will only work for
-> > little-endian. The flags field will only be used for non-legacy, but I
-> > think the id field should still be treated as 32 bit for legacy.
-> > (We have a wholesale "it's guest endian when legacy" further up.)  
-> 
-> True. How do you suggest handling this? Just say that id is
-> OR with VIRTQ_USED_ELEM_F_FLUSH ? Or maybe just add
-> struct virtq_used_elem_legacy?
-
-I think introducing a legacy struct is the least confusing option.
-
-> 
-> 
-> > >          /* Total length of the descriptor chain which was used (written to) */
-> > >          le32 len;
-> > >  };
+Isn't it more natural to think of VIRTIO_F_IN_ORDER as the simple case whic=
+h always maintains ordered access, while the new feature flag allows active=
+ control of when descriptors are ordered and when not? To make it backward =
+compatible let VIRTIO_F_IN_ORDER imply the new bit is set, while the new bi=
+t set by itself without VIRTIO_F_IN_ORDER set means only active control is =
+offered. I guess a name like VIRTIO_F_CTRL_ORDER would be more appropriate =
+with this interpretation.
 
 
----------------------------------------------------------------------
-To unsubscribe from this mail list, you must leave the OASIS TC that 
-generates this mail.  Follow this link to all your TCs in OASIS at:
-https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
+
+This publicly archived list offers a means to provide input to the=0D
+OASIS Virtual I/O Device (VIRTIO) TC.=0D
+=0D
+In order to verify user consent to the Feedback License terms and=0D
+to minimize spam in the list archive, subscription is required=0D
+before posting.=0D
+=0D
+Subscribe: virtio-comment-subscribe@lists.oasis-open.org=0D
+Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org=0D
+List help: virtio-comment-help@lists.oasis-open.org=0D
+List archive: https://lists.oasis-open.org/archives/virtio-comment/=0D
+Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf=
+=0D
+List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lis=
+ts=0D
+Committee: https://www.oasis-open.org/committees/virtio/=0D
+Join OASIS: https://www.oasis-open.org/join/
 
