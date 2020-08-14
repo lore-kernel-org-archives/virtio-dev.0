@@ -1,466 +1,143 @@
-Return-Path: virtio-dev-return-7655-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-7656-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 4E1059860AC
-	for <virtio-dev@lists.oasis-open.org>; Fri, 14 Aug 2020 02:41:09 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 1D6AB985E2F
+	for <virtio-dev@lists.oasis-open.org>; Fri, 14 Aug 2020 02:41:14 +0000 (UTC)
 From: Gurchetan Singh <gurchetansingh@chromium.org>
-Date: Thu, 13 Aug 2020 19:39:53 -0700
-Message-Id: <20200814024000.2485-18-gurchetansingh@chromium.org>
+Date: Thu, 13 Aug 2020 19:39:54 -0700
+Message-Id: <20200814024000.2485-19-gurchetansingh@chromium.org>
 In-Reply-To: <20200814024000.2485-1-gurchetansingh@chromium.org>
 References: <20200814024000.2485-1-gurchetansingh@chromium.org>
 MIME-Version: 1.0
-Subject: [virtio-dev] [PATCH 17/24] drm/virtio: implement blob resources: implement vram object
+Subject: [virtio-dev] [PATCH 18/24] drm/virtio: implement blob resources: hypercall interface
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: quoted-printable
 To: dri-devel@lists.freedesktop.org, virtio-dev@lists.oasis-open.org
 Cc: kraxel@redhat.com, mst@redhat.com, vgoyal@redhat.com, sebastien.boeuf@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-From: Gerd Hoffmann <kraxel@redhat.com>
+This implements the blob hypercall interface.
 
-A virtio-gpu vram object is based on range-based allocation.
-No guest shmemfs backing, so we call drm_gem_private_object_init.
-
-This is for host memory without any guest backing (atleast initially).
-
-Signed-off-by: Gerd Hoffmann <kraxel@redhat.com>
-Co-developed-by: Gurchetan Singh <gurchetansingh@chromium.org>
 Signed-off-by: Gurchetan Singh <gurchetansingh@chromium.org>
 Acked-by: Tomeu Vizoso <tomeu.vizoso@collabora.com>
 ---
- drivers/gpu/drm/virtio/Makefile          |   2 +-
- drivers/gpu/drm/virtio/virtgpu_debugfs.c |  18 +++
- drivers/gpu/drm/virtio/virtgpu_drv.h     |  23 ++++
- drivers/gpu/drm/virtio/virtgpu_kms.c     |   8 ++
- drivers/gpu/drm/virtio/virtgpu_object.c  |  12 ++
- drivers/gpu/drm/virtio/virtgpu_vq.c      |  66 +++++++++
- drivers/gpu/drm/virtio/virtgpu_vram.c    | 162 +++++++++++++++++++++++
- 7 files changed, 290 insertions(+), 1 deletion(-)
- create mode 100644 drivers/gpu/drm/virtio/virtgpu_vram.c
+ drivers/gpu/drm/virtio/virtgpu_drv.h | 15 +++++++
+ drivers/gpu/drm/virtio/virtgpu_vq.c  | 65 ++++++++++++++++++++++++++++
+ 2 files changed, 80 insertions(+)
 
-diff --git a/drivers/gpu/drm/virtio/Makefile b/drivers/gpu/drm/virtio/Makef=
-ile
-index 92aa2b3d349d..b99fa4a73b68 100644
---- a/drivers/gpu/drm/virtio/Makefile
-+++ b/drivers/gpu/drm/virtio/Makefile
-@@ -3,7 +3,7 @@
- # Makefile for the drm device driver.  This driver provides support for th=
-e
- # Direct Rendering Infrastructure (DRI) in XFree86 4.1.0 and higher.
-=20
--virtio-gpu-y :=3D virtgpu_drv.o virtgpu_kms.o virtgpu_gem.o \
-+virtio-gpu-y :=3D virtgpu_drv.o virtgpu_kms.o virtgpu_gem.o virtgpu_vram.o=
- \
- =09virtgpu_display.o virtgpu_vq.o \
- =09virtgpu_fence.o virtgpu_object.o virtgpu_debugfs.o virtgpu_plane.o \
- =09virtgpu_ioctl.o virtgpu_prime.o virtgpu_trace_points.o
-diff --git a/drivers/gpu/drm/virtio/virtgpu_debugfs.c b/drivers/gpu/drm/vir=
-tio/virtgpu_debugfs.c
-index ea27cae28ab4..f81cfbff8c0b 100644
---- a/drivers/gpu/drm/virtio/virtgpu_debugfs.c
-+++ b/drivers/gpu/drm/virtio/virtgpu_debugfs.c
-@@ -71,9 +71,27 @@ virtio_gpu_debugfs_irq_info(struct seq_file *m, void *da=
-ta)
- =09return 0;
- }
-=20
-+static int
-+virtio_gpu_debugfs_host_visible_mm(struct seq_file *m, void *data)
-+{
-+=09struct drm_info_node *node =3D (struct drm_info_node *) m->private;
-+=09struct virtio_gpu_device *vgdev =3D node->minor->dev->dev_private;
-+=09struct drm_printer p;
-+
-+=09if (!vgdev->has_host_visible) {
-+=09=09seq_printf(m, "Host allocations not visible to guest\n");
-+=09=09return 0;
-+=09}
-+
-+=09p =3D drm_seq_file_printer(m);
-+=09drm_mm_print(&vgdev->host_visible_mm, &p);
-+=09return 0;
-+}
-+
- static struct drm_info_list virtio_gpu_debugfs_list[] =3D {
- =09{ "virtio-gpu-features", virtio_gpu_features },
- =09{ "virtio-gpu-irq-fence", virtio_gpu_debugfs_irq_info, 0, NULL },
-+=09{ "virtio-gpu-host-visible-mm", virtio_gpu_debugfs_host_visible_mm },
- };
-=20
- #define VIRTIO_GPU_DEBUGFS_ENTRIES ARRAY_SIZE(virtio_gpu_debugfs_list)
 diff --git a/drivers/gpu/drm/virtio/virtgpu_drv.h b/drivers/gpu/drm/virtio/=
 virtgpu_drv.h
-index 34636cb5a93c..61f57b04525b 100644
+index 61f57b04525b..fe9bb95a408b 100644
 --- a/drivers/gpu/drm/virtio/virtgpu_drv.h
 +++ b/drivers/gpu/drm/virtio/virtgpu_drv.h
-@@ -99,9 +99,19 @@ struct virtio_gpu_object_shmem {
- =09uint32_t mapped;
- };
+@@ -35,6 +35,7 @@
+ #include <drm/drm_drv.h>
+ #include <drm/drm_encoder.h>
+ #include <drm/drm_fb_helper.h>
++#include <drm/drm_fourcc.h>
+ #include <drm/drm_gem.h>
+ #include <drm/drm_gem_shmem_helper.h>
+ #include <drm/drm_ioctl.h>
+@@ -382,6 +383,20 @@ int virtio_gpu_cmd_map(struct virtio_gpu_device *vgdev=
+,
+ void virtio_gpu_cmd_unmap(struct virtio_gpu_device *vgdev,
+ =09=09=09  struct virtio_gpu_object *bo);
 =20
-+struct virtio_gpu_object_vram {
-+=09struct virtio_gpu_object base;
-+=09uint32_t map_state;
-+=09uint32_t map_info;
-+=09struct drm_mm_node vram_node;
-+};
-+
- #define to_virtio_gpu_shmem(virtio_gpu_object) \
- =09container_of((virtio_gpu_object), struct virtio_gpu_object_shmem, base)
-=20
-+#define to_virtio_gpu_vram(virtio_gpu_object) \
-+=09container_of((virtio_gpu_object), struct virtio_gpu_object_vram, base)
-+
- struct virtio_gpu_object_array {
- =09struct ww_acquire_ctx ticket;
- =09struct list_head next;
-@@ -222,6 +232,7 @@ struct virtio_gpu_device {
- =09bool has_resource_blob;
- =09bool has_host_visible;
- =09struct virtio_shm_region host_visible_region;
-+=09struct drm_mm host_visible_mm;
-=20
- =09struct work_struct config_changed_work;
-=20
-@@ -234,6 +245,7 @@ struct virtio_gpu_device {
- =09struct list_head cap_cache;
-=20
- =09spinlock_t resource_export_lock;
-+=09spinlock_t host_visible_lock;
- };
-=20
- struct virtio_gpu_fpriv {
-@@ -364,6 +376,12 @@ int
- virtio_gpu_cmd_resource_assign_uuid(struct virtio_gpu_device *vgdev,
- =09=09=09=09    struct virtio_gpu_object_array *objs);
-=20
-+int virtio_gpu_cmd_map(struct virtio_gpu_device *vgdev,
-+=09=09       struct virtio_gpu_object_array *objs, uint64_t offset);
-+
-+void virtio_gpu_cmd_unmap(struct virtio_gpu_device *vgdev,
-+=09=09=09  struct virtio_gpu_object *bo);
++void
++virtio_gpu_cmd_resource_create_blob(struct virtio_gpu_device *vgdev,
++=09=09=09=09    struct virtio_gpu_object *bo,
++=09=09=09=09    struct virtio_gpu_object_params *params,
++=09=09=09=09    struct virtio_gpu_mem_entry *ents,
++=09=09=09=09    uint32_t nents);
++void
++virtio_gpu_cmd_set_scanout_blob(struct virtio_gpu_device *vgdev,
++=09=09=09=09uint32_t scanout_id,
++=09=09=09=09struct virtio_gpu_object *bo,
++=09=09=09=09struct drm_framebuffer *fb,
++=09=09=09=09uint32_t width, uint32_t height,
++=09=09=09=09uint32_t x, uint32_t y);
 +
  /* virtgpu_display.c */
  void virtio_gpu_modeset_init(struct virtio_gpu_device *vgdev);
  void virtio_gpu_modeset_fini(struct virtio_gpu_device *vgdev);
-@@ -410,4 +428,9 @@ struct drm_gem_object *virtgpu_gem_prime_import_sg_tabl=
-e(
- /* virtgpu_debugfs.c */
- void virtio_gpu_debugfs_init(struct drm_minor *minor);
-=20
-+/* virtgpu_vram.c */
-+bool virtio_gpu_is_vram(struct virtio_gpu_object *bo);
-+int virtio_gpu_vram_create(struct virtio_gpu_device *vgdev,
-+=09=09=09   struct virtio_gpu_object_params *params,
-+=09=09=09   struct virtio_gpu_object **bo_ptr);
- #endif
-diff --git a/drivers/gpu/drm/virtio/virtgpu_kms.c b/drivers/gpu/drm/virtio/=
-virtgpu_kms.c
-index d3641eda7077..b1454c9d00e2 100644
---- a/drivers/gpu/drm/virtio/virtgpu_kms.c
-+++ b/drivers/gpu/drm/virtio/virtgpu_kms.c
-@@ -119,6 +119,7 @@ int virtio_gpu_init(struct drm_device *dev)
-=20
- =09spin_lock_init(&vgdev->display_info_lock);
- =09spin_lock_init(&vgdev->resource_export_lock);
-+=09spin_lock_init(&vgdev->host_visible_lock);
- =09ida_init(&vgdev->ctx_id_ida);
- =09ida_init(&vgdev->resource_ida);
- =09init_waitqueue_head(&vgdev->resp_wq);
-@@ -167,6 +168,9 @@ int virtio_gpu_init(struct drm_device *dev)
- =09=09=09 (unsigned long)vgdev->host_visible_region.addr,
- =09=09=09 (unsigned long)vgdev->host_visible_region.len);
- =09=09vgdev->has_host_visible =3D true;
-+=09=09drm_mm_init(&vgdev->host_visible_mm,
-+=09=09=09    (unsigned long)vgdev->host_visible_region.addr,
-+=09=09=09    (unsigned long)vgdev->host_visible_region.len);
- =09}
-=20
- =09DRM_INFO("features: %cvirgl %cedid %cresource_blob %chost_visible\n",
-@@ -256,6 +260,10 @@ void virtio_gpu_release(struct drm_device *dev)
- =09virtio_gpu_modeset_fini(vgdev);
- =09virtio_gpu_free_vbufs(vgdev);
- =09virtio_gpu_cleanup_cap_cache(vgdev);
-+
-+=09if (vgdev->has_host_visible)
-+=09=09drm_mm_takedown(&vgdev->host_visible_mm);
-+
- =09kfree(vgdev->capsets);
-=20
- =09if (vgdev->has_host_visible) {
-diff --git a/drivers/gpu/drm/virtio/virtgpu_object.c b/drivers/gpu/drm/virt=
-io/virtgpu_object.c
-index 792a2ae1bf97..432b9985ef2e 100644
---- a/drivers/gpu/drm/virtio/virtgpu_object.c
-+++ b/drivers/gpu/drm/virtio/virtgpu_object.c
-@@ -83,6 +83,18 @@ void virtio_gpu_cleanup_object(struct virtio_gpu_object =
-*bo)
- =09=09}
-=20
- =09=09drm_gem_shmem_free_object(&bo->base.base);
-+=09} else if (virtio_gpu_is_vram(bo)) {
-+=09=09struct virtio_gpu_object_vram *vram =3D to_virtio_gpu_vram(bo);
-+
-+=09=09spin_lock(&vgdev->host_visible_lock);
-+=09=09if (drm_mm_node_allocated(&vram->vram_node))
-+=09=09=09drm_mm_remove_node(&vram->vram_node);
-+
-+=09=09spin_unlock(&vgdev->host_visible_lock);
-+
-+=09=09drm_gem_free_mmap_offset(&vram->base.base.base);
-+=09=09drm_gem_object_release(&vram->base.base.base);
-+=09=09kfree(vram);
- =09}
- }
-=20
 diff --git a/drivers/gpu/drm/virtio/virtgpu_vq.c b/drivers/gpu/drm/virtio/v=
 irtgpu_vq.c
-index 3f225a08ecf3..09db56c69424 100644
+index 09db56c69424..de4356a183d2 100644
 --- a/drivers/gpu/drm/virtio/virtgpu_vq.c
 +++ b/drivers/gpu/drm/virtio/virtgpu_vq.c
-@@ -1162,3 +1162,69 @@ virtio_gpu_cmd_resource_assign_uuid(struct virtio_gp=
-u_device *vgdev,
+@@ -1228,3 +1228,68 @@ void virtio_gpu_cmd_unmap(struct virtio_gpu_device *=
+vgdev,
+=20
  =09virtio_gpu_queue_ctrl_buffer(vgdev, vbuf);
- =09return 0;
  }
 +
-+static void virtio_gpu_cmd_resource_map_cb(struct virtio_gpu_device *vgdev=
-,
-+=09=09=09=09=09   struct virtio_gpu_vbuffer *vbuf)
++void
++virtio_gpu_cmd_resource_create_blob(struct virtio_gpu_device *vgdev,
++=09=09=09=09    struct virtio_gpu_object *bo,
++=09=09=09=09    struct virtio_gpu_object_params *params,
++=09=09=09=09    struct virtio_gpu_mem_entry *ents,
++=09=09=09=09    uint32_t nents)
 +{
-+=09struct virtio_gpu_object *bo =3D
-+=09=09gem_to_virtio_gpu_obj(vbuf->objs->objs[0]);
-+=09struct virtio_gpu_resp_map_info *resp =3D
-+=09=09(struct virtio_gpu_resp_map_info *)vbuf->resp_buf;
-+=09struct virtio_gpu_object_vram *vram =3D to_virtio_gpu_vram(bo);
-+=09uint32_t resp_type =3D le32_to_cpu(resp->hdr.type);
-+
-+=09spin_lock(&vgdev->host_visible_lock);
-+
-+=09if (resp_type =3D=3D VIRTIO_GPU_RESP_OK_MAP_INFO) {
-+=09=09vram->map_info =3D resp->map_info;
-+=09=09vram->map_state =3D STATE_OK;
-+=09} else {
-+=09=09vram->map_state =3D STATE_ERR;
-+=09}
-+
-+=09spin_unlock(&vgdev->host_visible_lock);
-+=09wake_up_all(&vgdev->resp_wq);
-+}
-+
-+int virtio_gpu_cmd_map(struct virtio_gpu_device *vgdev,
-+=09=09       struct virtio_gpu_object_array *objs, uint64_t offset)
-+{
-+=09struct virtio_gpu_resource_map_blob *cmd_p;
-+=09struct virtio_gpu_object *bo =3D gem_to_virtio_gpu_obj(objs->objs[0]);
-+=09struct virtio_gpu_vbuffer *vbuf;
-+=09struct virtio_gpu_resp_map_info *resp_buf;
-+
-+=09resp_buf =3D kzalloc(sizeof(*resp_buf), GFP_KERNEL);
-+=09if (!resp_buf) {
-+=09=09virtio_gpu_array_put_free(objs);
-+=09=09return -ENOMEM;
-+=09}
-+
-+=09cmd_p =3D virtio_gpu_alloc_cmd_resp(vgdev,
-+=09=09virtio_gpu_cmd_resource_map_cb, &vbuf, sizeof(*cmd_p),
-+=09=09sizeof(struct virtio_gpu_resp_map_info), resp_buf);
-+=09memset(cmd_p, 0, sizeof(*cmd_p));
-+
-+=09cmd_p->hdr.type =3D cpu_to_le32(VIRTIO_GPU_CMD_RESOURCE_MAP_BLOB);
-+=09cmd_p->resource_id =3D cpu_to_le32(bo->hw_res_handle);
-+=09cmd_p->offset =3D offset;
-+=09vbuf->objs =3D objs;
-+
-+=09virtio_gpu_queue_ctrl_buffer(vgdev, vbuf);
-+=09return 0;
-+}
-+
-+void virtio_gpu_cmd_unmap(struct virtio_gpu_device *vgdev,
-+=09=09=09  struct virtio_gpu_object *bo)
-+{
-+=09struct virtio_gpu_resource_unmap_blob *cmd_p;
++=09struct virtio_gpu_resource_create_blob *cmd_p;
 +=09struct virtio_gpu_vbuffer *vbuf;
 +
 +=09cmd_p =3D virtio_gpu_alloc_cmd(vgdev, &vbuf, sizeof(*cmd_p));
 +=09memset(cmd_p, 0, sizeof(*cmd_p));
 +
-+=09cmd_p->hdr.type =3D cpu_to_le32(VIRTIO_GPU_CMD_RESOURCE_UNMAP_BLOB);
++=09cmd_p->hdr.type =3D cpu_to_le32(VIRTIO_GPU_CMD_RESOURCE_CREATE_BLOB);
++=09cmd_p->hdr.ctx_id =3D cpu_to_le32(params->ctx_id);
 +=09cmd_p->resource_id =3D cpu_to_le32(bo->hw_res_handle);
++=09cmd_p->blob_mem =3D cpu_to_le32(params->blob_mem);
++=09cmd_p->blob_flags =3D cpu_to_le32(params->blob_flags);
++=09cmd_p->blob_id =3D cpu_to_le64(params->blob_id);
++=09cmd_p->size =3D cpu_to_le64(params->size);
++=09cmd_p->nr_entries =3D cpu_to_le32(nents);
++
++=09vbuf->data_buf =3D ents;
++=09vbuf->data_size =3D sizeof(*ents) * nents;
 +
 +=09virtio_gpu_queue_ctrl_buffer(vgdev, vbuf);
-+}
-diff --git a/drivers/gpu/drm/virtio/virtgpu_vram.c b/drivers/gpu/drm/virtio=
-/virtgpu_vram.c
-new file mode 100644
-index 000000000000..3e7e29e56781
---- /dev/null
-+++ b/drivers/gpu/drm/virtio/virtgpu_vram.c
-@@ -0,0 +1,162 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include "virtgpu_drv.h"
-+
-+static void virtio_gpu_vram_free(struct drm_gem_object *obj)
-+{
-+=09struct virtio_gpu_object *bo =3D gem_to_virtio_gpu_obj(obj);
-+=09struct virtio_gpu_device *vgdev =3D obj->dev->dev_private;
-+=09struct virtio_gpu_object_vram *vram =3D to_virtio_gpu_vram(bo);
-+=09bool unmap;
-+
-+=09if (bo->created) {
-+=09=09spin_lock(&vgdev->host_visible_lock);
-+=09=09unmap =3D drm_mm_node_allocated(&vram->vram_node);
-+=09=09spin_unlock(&vgdev->host_visible_lock);
-+
-+=09=09if (unmap)
-+=09=09=09virtio_gpu_cmd_unmap(vgdev, bo);
-+
-+=09=09virtio_gpu_cmd_unref_resource(vgdev, bo);
-+=09=09virtio_gpu_notify(vgdev);
-+=09=09return;
-+=09}
++=09bo->created =3D true;
 +}
 +
-+static const struct vm_operations_struct virtio_gpu_vram_vm_ops =3D {
-+=09.open =3D drm_gem_vm_open,
-+=09.close =3D drm_gem_vm_close,
-+};
-+
-+static int virtio_gpu_vram_mmap(struct drm_gem_object *obj,
-+=09=09=09=09struct vm_area_struct *vma)
++void virtio_gpu_cmd_set_scanout_blob(struct virtio_gpu_device *vgdev,
++=09=09=09=09     uint32_t scanout_id,
++=09=09=09=09     struct virtio_gpu_object *bo,
++=09=09=09=09     struct drm_framebuffer *fb,
++=09=09=09=09     uint32_t width, uint32_t height,
++=09=09=09=09     uint32_t x, uint32_t y)
 +{
-+=09int ret;
-+=09struct virtio_gpu_device *vgdev =3D obj->dev->dev_private;
-+=09struct virtio_gpu_object *bo =3D gem_to_virtio_gpu_obj(obj);
-+=09struct virtio_gpu_object_vram *vram =3D to_virtio_gpu_vram(bo);
-+=09unsigned long vm_size =3D vma->vm_end - vma->vm_start;
++=09uint32_t i;
++=09struct virtio_gpu_set_scanout_blob *cmd_p;
++=09struct virtio_gpu_vbuffer *vbuf;
++=09uint32_t format =3D virtio_gpu_translate_format(fb->format->format);
 +
-+=09if (!(bo->blob_flags & VIRTGPU_BLOB_FLAG_USE_MAPPABLE))
-+=09=09return -EINVAL;
++=09cmd_p =3D virtio_gpu_alloc_cmd(vgdev, &vbuf, sizeof(*cmd_p));
++=09memset(cmd_p, 0, sizeof(*cmd_p));
 +
-+=09wait_event(vgdev->resp_wq, vram->map_state !=3D STATE_INITIALIZING);
-+=09if (vram->map_state !=3D STATE_OK)
-+=09=09return -EINVAL;
++=09cmd_p->hdr.type =3D cpu_to_le32(VIRTIO_GPU_CMD_SET_SCANOUT_BLOB);
++=09cmd_p->resource_id =3D cpu_to_le32(bo->hw_res_handle);
++=09cmd_p->scanout_id =3D cpu_to_le32(scanout_id);
 +
-+=09vma->vm_pgoff -=3D drm_vma_node_start(&obj->vma_node);
-+=09vma->vm_flags |=3D VM_MIXEDMAP | VM_DONTEXPAND;
-+=09vma->vm_page_prot =3D vm_get_page_prot(vma->vm_flags);
-+=09vma->vm_page_prot =3D pgprot_decrypted(vma->vm_page_prot);
-+=09vma->vm_ops =3D &virtio_gpu_vram_vm_ops;
++=09cmd_p->format =3D cpu_to_le32(format);
++=09cmd_p->width  =3D cpu_to_le32(fb->width);
++=09cmd_p->height =3D cpu_to_le32(fb->height);
 +
-+=09if (vram->map_info =3D=3D VIRTIO_GPU_MAP_CACHE_WC)
-+=09=09vma->vm_page_prot =3D pgprot_writecombine(vma->vm_page_prot);
-+=09else if (vram->map_info =3D=3D VIRTIO_GPU_MAP_CACHE_UNCACHED)
-+=09=09vma->vm_page_prot =3D pgprot_noncached(vma->vm_page_prot);
-+
-+=09/* Partial mappings of GEM buffers don't happen much in practice. */
-+=09if (vm_size !=3D vram->vram_node.size)
-+=09=09return -EINVAL;
-+
-+=09ret =3D io_remap_pfn_range(vma, vma->vm_start,
-+=09=09=09=09 vram->vram_node.start >> PAGE_SHIFT,
-+=09=09=09=09 vm_size, vma->vm_page_prot);
-+=09return ret;
-+}
-+
-+static const struct drm_gem_object_funcs virtio_gpu_vram_funcs =3D {
-+=09.open =3D virtio_gpu_gem_object_open,
-+=09.close =3D virtio_gpu_gem_object_close,
-+=09.free =3D virtio_gpu_vram_free,
-+=09.mmap =3D virtio_gpu_vram_mmap,
-+};
-+
-+bool virtio_gpu_is_vram(struct virtio_gpu_object *bo)
-+{
-+=09return bo->base.base.funcs =3D=3D &virtio_gpu_vram_funcs;
-+}
-+
-+static int virtio_gpu_vram_map(struct virtio_gpu_object *bo)
-+{
-+=09int ret;
-+=09uint64_t offset;
-+=09struct virtio_gpu_object_array *objs;
-+=09struct virtio_gpu_device *vgdev =3D bo->base.base.dev->dev_private;
-+=09struct virtio_gpu_object_vram *vram =3D to_virtio_gpu_vram(bo);
-+
-+=09if (!vgdev->has_host_visible)
-+=09=09return -EINVAL;
-+
-+=09spin_lock(&vgdev->host_visible_lock);
-+=09ret =3D drm_mm_insert_node(&vgdev->host_visible_mm, &vram->vram_node,
-+=09=09=09=09  bo->base.base.size);
-+=09spin_unlock(&vgdev->host_visible_lock);
-+
-+=09if (ret)
-+=09=09return ret;
-+
-+=09objs =3D virtio_gpu_array_alloc(1);
-+=09if (!objs) {
-+=09=09ret =3D -ENOMEM;
-+=09=09goto err_remove_node;
++=09for (i =3D 0; i < 4; i++) {
++=09=09cmd_p->strides[i] =3D cpu_to_le32(fb->pitches[i]);
++=09=09cmd_p->offsets[i] =3D cpu_to_le64(fb->offsets[i]);
 +=09}
 +
-+=09virtio_gpu_array_add_obj(objs, &bo->base.base);
-+=09/*TODO: Add an error checking helper function in drm_mm.h */
-+=09offset =3D vram->vram_node.start - vgdev->host_visible_region.addr;
++=09cmd_p->r.width =3D cpu_to_le32(width);
++=09cmd_p->r.height =3D cpu_to_le32(height);
++=09cmd_p->r.x =3D cpu_to_le32(x);
++=09cmd_p->r.y =3D cpu_to_le32(y);
 +
-+=09ret =3D virtio_gpu_cmd_map(vgdev, objs, offset);
-+=09if (ret) {
-+=09=09virtio_gpu_array_put_free(objs);
-+=09=09goto err_remove_node;
-+=09}
-+
-+=09return 0;
-+
-+err_remove_node:
-+=09spin_lock(&vgdev->host_visible_lock);
-+=09drm_mm_remove_node(&vram->vram_node);
-+=09spin_unlock(&vgdev->host_visible_lock);
-+=09return ret;
-+}
-+
-+int virtio_gpu_vram_create(struct virtio_gpu_device *vgdev,
-+=09=09=09   struct virtio_gpu_object_params *params,
-+=09=09=09   struct virtio_gpu_object **bo_ptr)
-+{
-+=09struct drm_gem_object *obj;
-+=09struct virtio_gpu_object_vram *vram;
-+=09int ret;
-+
-+=09vram =3D kzalloc(sizeof(*vram), GFP_KERNEL);
-+=09if (!vram)
-+=09=09return -ENOMEM;
-+
-+=09obj =3D &vram->base.base.base;
-+=09obj->funcs =3D &virtio_gpu_vram_funcs;
-+=09drm_gem_private_object_init(vgdev->ddev, obj, params->size);
-+
-+=09/* Create fake offset */
-+=09ret =3D drm_gem_create_mmap_offset(obj);
-+=09if (ret) {
-+=09=09kfree(vram);
-+=09=09return ret;
-+=09}
-+
-+=09ret =3D virtio_gpu_resource_id_get(vgdev, &vram->base.hw_res_handle);
-+=09if (ret) {
-+=09=09kfree(vram);
-+=09=09return ret;
-+=09}
-+
-+=09if (params->blob_flags & VIRTGPU_BLOB_FLAG_USE_MAPPABLE) {
-+=09=09ret =3D virtio_gpu_vram_map(&vram->base);
-+=09=09if (ret) {
-+=09=09=09virtio_gpu_vram_free(obj);
-+=09=09=09return ret;
-+=09=09}
-+=09}
-+
-+=09*bo_ptr =3D &vram->base;
-+=09return 0;
++=09virtio_gpu_queue_ctrl_buffer(vgdev, vbuf);
 +}
 --=20
 2.24.1
