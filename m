@@ -1,109 +1,69 @@
-Return-Path: virtio-dev-return-7646-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-7651-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 7F8C0985DFB
-	for <virtio-dev@lists.oasis-open.org>; Fri, 14 Aug 2020 02:40:18 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 9FCD0985DFC
+	for <virtio-dev@lists.oasis-open.org>; Fri, 14 Aug 2020 02:40:20 +0000 (UTC)
 From: Gurchetan Singh <gurchetansingh@chromium.org>
-Date: Thu, 13 Aug 2020 19:39:43 -0700
-Message-Id: <20200814024000.2485-8-gurchetansingh@chromium.org>
+Date: Thu, 13 Aug 2020 19:39:44 -0700
+Message-Id: <20200814024000.2485-9-gurchetansingh@chromium.org>
 In-Reply-To: <20200814024000.2485-1-gurchetansingh@chromium.org>
 References: <20200814024000.2485-1-gurchetansingh@chromium.org>
 MIME-Version: 1.0
-Subject: [virtio-dev] [PATCH 07/24] virtio: Implement get_shm_region for MMIO transport
+Subject: [virtio-dev] [PATCH 08/24] drm/virtio: blob prep: refactor getting pages and attaching backing
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: quoted-printable
 To: dri-devel@lists.freedesktop.org, virtio-dev@lists.oasis-open.org
 Cc: kraxel@redhat.com, mst@redhat.com, vgoyal@redhat.com, sebastien.boeuf@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-From: Sebastien Boeuf <sebastien.boeuf@intel.com>
+Useful for upcoming blob resources.
 
-On MMIO a new set of registers is defined for finding SHM
-regions.  Add their definitions and use them to find the region.
-
-Signed-off-by: Sebastien Boeuf <sebastien.boeuf@intel.com>
+Signed-off-by: Gurchetan Singh <gurchetansingh@chromium.org>
+Acked-by: Tomeu Vizoso <tomeu.vizoso@collabora.com>
 ---
- drivers/virtio/virtio_mmio.c     | 31 +++++++++++++++++++++++++++++++
- include/uapi/linux/virtio_mmio.h | 11 +++++++++++
- 2 files changed, 42 insertions(+)
+ drivers/gpu/drm/virtio/virtgpu_object.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/virtio/virtio_mmio.c b/drivers/virtio/virtio_mmio.c
-index 627ac0487494..238383ff1064 100644
---- a/drivers/virtio/virtio_mmio.c
-+++ b/drivers/virtio/virtio_mmio.c
-@@ -498,6 +498,36 @@ static const char *vm_bus_name(struct virtio_device *v=
-dev)
- =09return vm_dev->pdev->name;
- }
+diff --git a/drivers/gpu/drm/virtio/virtgpu_object.c b/drivers/gpu/drm/virt=
+io/virtgpu_object.c
+index 1359eb8f1a02..9d68f260d998 100644
+--- a/drivers/gpu/drm/virtio/virtgpu_object.c
++++ b/drivers/gpu/drm/virtio/virtgpu_object.c
+@@ -227,22 +227,22 @@ int virtio_gpu_object_create(struct virtio_gpu_device=
+ *vgdev,
+ =09=09=09goto err_put_objs;
+ =09}
 =20
-+static bool vm_get_shm_region(struct virtio_device *vdev,
-+=09=09=09      struct virtio_shm_region *region, u8 id)
-+{
-+=09struct virtio_mmio_device *vm_dev =3D to_virtio_mmio_device(vdev);
-+=09u64 len, addr;
++=09ret =3D virtio_gpu_object_shmem_init(vgdev, bo, &ents, &nents);
++=09if (ret !=3D 0) {
++=09=09virtio_gpu_free_object(&shmem_obj->base);
++=09=09return ret;
++=09}
 +
-+=09/* Select the region we're interested in */
-+=09writel(id, vm_dev->base + VIRTIO_MMIO_SHM_SEL);
-+
-+=09/* Read the region size */
-+=09len =3D (u64) readl(vm_dev->base + VIRTIO_MMIO_SHM_LEN_LOW);
-+=09len |=3D (u64) readl(vm_dev->base + VIRTIO_MMIO_SHM_LEN_HIGH) << 32;
-+
-+=09region->len =3D len;
-+
-+=09/* Check if region length is -1. If that's the case, the shared memory
-+=09 * region does not exist and there is no need to proceed further.
-+=09 */
-+=09if (len =3D=3D ~(u64)0)
-+=09=09return false;
-+
-+=09/* Read the region base address */
-+=09addr =3D (u64) readl(vm_dev->base + VIRTIO_MMIO_SHM_BASE_LOW);
-+=09addr |=3D (u64) readl(vm_dev->base + VIRTIO_MMIO_SHM_BASE_HIGH) << 32;
-+
-+=09region->addr =3D addr;
-+
-+=09return true;
-+}
-+
- static const struct virtio_config_ops virtio_mmio_config_ops =3D {
- =09.get=09=09=3D vm_get,
- =09.set=09=09=3D vm_set,
-@@ -510,6 +540,7 @@ static const struct virtio_config_ops virtio_mmio_confi=
-g_ops =3D {
- =09.get_features=09=3D vm_get_features,
- =09.finalize_features =3D vm_finalize_features,
- =09.bus_name=09=3D vm_bus_name,
-+=09.get_shm_region =3D vm_get_shm_region,
- };
+ =09if (params->virgl) {
+ =09=09virtio_gpu_cmd_resource_create_3d(vgdev, bo, params,
+ =09=09=09=09=09=09  objs, fence);
++=09=09virtio_gpu_object_attach(vgdev, bo, ents, nents);
+ =09} else {
+ =09=09virtio_gpu_cmd_create_resource(vgdev, bo, params,
+ =09=09=09=09=09       objs, fence);
++=09=09virtio_gpu_object_attach(vgdev, bo, ents, nents);
+ =09}
 =20
-=20
-diff --git a/include/uapi/linux/virtio_mmio.h b/include/uapi/linux/virtio_m=
-mio.h
-index c4b09689ab64..0650f91bea6c 100644
---- a/include/uapi/linux/virtio_mmio.h
-+++ b/include/uapi/linux/virtio_mmio.h
-@@ -122,6 +122,17 @@
- #define VIRTIO_MMIO_QUEUE_USED_LOW=090x0a0
- #define VIRTIO_MMIO_QUEUE_USED_HIGH=090x0a4
-=20
-+/* Shared memory region id */
-+#define VIRTIO_MMIO_SHM_SEL             0x0ac
-+
-+/* Shared memory region length, 64 bits in two halves */
-+#define VIRTIO_MMIO_SHM_LEN_LOW         0x0b0
-+#define VIRTIO_MMIO_SHM_LEN_HIGH        0x0b4
-+
-+/* Shared memory region base address, 64 bits in two halves */
-+#define VIRTIO_MMIO_SHM_BASE_LOW        0x0b8
-+#define VIRTIO_MMIO_SHM_BASE_HIGH       0x0bc
-+
- /* Configuration atomicity value */
- #define VIRTIO_MMIO_CONFIG_GENERATION=090x0fc
+-=09ret =3D virtio_gpu_object_shmem_init(vgdev, bo, &ents, &nents);
+-=09if (ret !=3D 0) {
+-=09=09virtio_gpu_free_object(&shmem_obj->base);
+-=09=09return ret;
+-=09}
+-
+-=09virtio_gpu_object_attach(vgdev, bo, ents, nents);
+-
+ =09*bo_ptr =3D bo;
+ =09return 0;
 =20
 --=20
 2.24.1
