@@ -1,114 +1,251 @@
-Return-Path: virtio-dev-return-7647-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-7649-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id A225F985E2F
+	by lists.oasis-open.org (Postfix) with ESMTP id AD00F985DC1
 	for <virtio-dev@lists.oasis-open.org>; Fri, 14 Aug 2020 02:40:20 +0000 (UTC)
 From: Gurchetan Singh <gurchetansingh@chromium.org>
-Date: Thu, 13 Aug 2020 19:39:45 -0700
-Message-Id: <20200814024000.2485-10-gurchetansingh@chromium.org>
+Date: Thu, 13 Aug 2020 19:39:46 -0700
+Message-Id: <20200814024000.2485-11-gurchetansingh@chromium.org>
 In-Reply-To: <20200814024000.2485-1-gurchetansingh@chromium.org>
 References: <20200814024000.2485-1-gurchetansingh@chromium.org>
 MIME-Version: 1.0
-Subject: [virtio-dev] [PATCH 09/24] drm/virtio: blob prep: make CPU responses more generic
+Subject: [virtio-dev] [PATCH 10/24] virtio-gpu api: blob resources
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: quoted-printable
 To: dri-devel@lists.freedesktop.org, virtio-dev@lists.oasis-open.org
 Cc: kraxel@redhat.com, mst@redhat.com, vgoyal@redhat.com, sebastien.boeuf@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-RESOURCE_MAP_BLOB / RESOURCE_UNMAP_BLOB can use this.
+From: Gerd Hoffmann <kraxel@redhat.com>
 
+A blob resource is a container for:
+   - VIRTGPU_BLOB_MEM_GUEST: a guest memory allocation
+     (referred to as a "guest-only blob resource")
+
+   - VIRTGPU_BLOB_MEM_HOST3D: a host3d memory allocation
+     (referred to as a "host-only blob resource")
+
+   - VIRTGPU_BLOB_MEM_HOST3D_GUEST: a guest + host3d memory allocation
+     (referred to as a "default blob resource").
+
+The memory properties of the blob resource must be described by
+`blob_mem`.
+
+For default and guest only blob resources set, `nents` guest system
+pages are assigned to the resource.  For default blob resources,
+these guest pages are used for transfer operations. Attach/detach is
+also possible to allow swap-in/swap-out, but isn't required since it
+may not be applicable to future blob mem types
+(shared guest/guest vram).
+
+Host allocations depend on whether the 3D is supported. If 3D is not
+supported, the only valid field for `blob_mem` is
+VIRTGPU_BLOB_MEM_GUEST.
+
+If 3D is supported, the virtio-gpu resource is created from the
+context local object identified by the `blob_id`. The actual host
+allocation done by the EXECBUFFER ioctl or for convenience the
+`cmd` field in the RESOURCE_CREATE_BLOB ioctl.
+
+Userspace must specify if the blob resource is intended to be used
+for userspace mapping, sharing between virtio-gpu contexts and/or
+sharing between virtio devices. This is done via `blob_flags`.
+
+For 3D hosts, both VIRTIO_GPU_CMD_TRANSFER_TO_HOST_3D and
+VIRTIO_GPU_CMD_TRANSFER_FROM_HOST_3D may be used to update
+the host resource. There is no restriction on the image/buffer
+view the guest/host userspace has on the blob resource.
+
+VIRTIO_GPU_CMD_SET_SCANOUT_BLOB / VIRTIO_GPU_CMD_RESOURCE_FLUSH may
+be used with blob resources as well.  The modifier is intentionally
+left out of SCANOUT_BLOB, and auxilary blobs are also left out
+as a simplification.
+
+The use case for blob resources is zero-copy, needed for coherent
+memory in virglrenderer. Host only blob resources are not mappable
+without the feature described in the next patch, but are shareable.
+
+Future work:
+   - Emulated coherent `blob_mem` type for QEMU/vhost-user
+   - A `blob_mem` type for guest-only resources imported in
+     cache-coherent FOSS GPU/display drivers.
+   - Display integration involving the blob model using seamless
+     Wayland windows.
+
+Signed-off-by: Gerd Hoffmann <kraxel@redhat.com>
+Co-developed-by: Gurchetan Singh <gurchetansingh@chromium.org>
 Signed-off-by: Gurchetan Singh <gurchetansingh@chromium.org>
 Acked-by: Tomeu Vizoso <tomeu.vizoso@collabora.com>
+Acked-by: Chia-I Wu <olvaffe@gmail.com>
+Acked-by: Lingfeng Yang <lfy@google.com>
 ---
- drivers/gpu/drm/virtio/virtgpu_drv.h   |  6 +++---
- drivers/gpu/drm/virtio/virtgpu_prime.c |  6 +++---
- drivers/gpu/drm/virtio/virtgpu_vq.c    | 10 +++++-----
- 3 files changed, 11 insertions(+), 11 deletions(-)
+ include/uapi/drm/virtgpu_drm.h  | 37 +++++++++++++++++++++++++++-
+ include/uapi/linux/virtio_gpu.h | 43 +++++++++++++++++++++++++++++++++
+ 2 files changed, 79 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/virtio/virtgpu_drv.h b/drivers/gpu/drm/virtio/=
-virtgpu_drv.h
-index fc84b4b526ff..c74c38123ff6 100644
---- a/drivers/gpu/drm/virtio/virtgpu_drv.h
-+++ b/drivers/gpu/drm/virtio/virtgpu_drv.h
-@@ -49,9 +49,9 @@
- #define DRIVER_MINOR 1
- #define DRIVER_PATCHLEVEL 0
+diff --git a/include/uapi/drm/virtgpu_drm.h b/include/uapi/drm/virtgpu_drm.=
+h
+index f06a789f34cd..bb224f604c9e 100644
+--- a/include/uapi/drm/virtgpu_drm.h
++++ b/include/uapi/drm/virtgpu_drm.h
+@@ -46,6 +46,7 @@ extern "C" {
+ #define DRM_VIRTGPU_TRANSFER_TO_HOST 0x07
+ #define DRM_VIRTGPU_WAIT     0x08
+ #define DRM_VIRTGPU_GET_CAPS  0x09
++#define DRM_VIRTGPU_RESOURCE_CREATE_BLOB 0x0a
 =20
--#define UUID_INITIALIZING 0
--#define UUID_INITIALIZED 1
--#define UUID_INITIALIZATION_FAILED 2
-+#define STATE_INITIALIZING 0
-+#define STATE_OK 1
-+#define STATE_ERR 2
+ #define VIRTGPU_EXECBUF_FENCE_FD_IN=090x01
+ #define VIRTGPU_EXECBUF_FENCE_FD_OUT=090x02
+@@ -71,6 +72,7 @@ struct drm_virtgpu_execbuffer {
 =20
- struct virtio_gpu_object_params {
- =09uint32_t format;
-diff --git a/drivers/gpu/drm/virtio/virtgpu_prime.c b/drivers/gpu/drm/virti=
-o/virtgpu_prime.c
-index acd14ef73d56..3552db128ba3 100644
---- a/drivers/gpu/drm/virtio/virtgpu_prime.c
-+++ b/drivers/gpu/drm/virtio/virtgpu_prime.c
-@@ -34,8 +34,8 @@ static int virtgpu_virtio_get_uuid(struct dma_buf *buf,
- =09struct virtio_gpu_object *bo =3D gem_to_virtio_gpu_obj(obj);
- =09struct virtio_gpu_device *vgdev =3D obj->dev->dev_private;
+ #define VIRTGPU_PARAM_3D_FEATURES 1 /* do we have 3D features in the hw */
+ #define VIRTGPU_PARAM_CAPSET_QUERY_FIX 2 /* do we have the capset fix */
++#define VIRTGPU_PARAM_RESOURCE_BLOB 3 /* DRM_VIRTGPU_RESOURCE_CREATE_BLOB =
+*/
 =20
--=09wait_event(vgdev->resp_wq, bo->uuid_state !=3D UUID_INITIALIZING);
--=09if (bo->uuid_state !=3D UUID_INITIALIZED)
-+=09wait_event(vgdev->resp_wq, bo->uuid_state !=3D STATE_INITIALIZING);
-+=09if (bo->uuid_state !=3D STATE_OK)
- =09=09return -ENODEV;
+ struct drm_virtgpu_getparam {
+ =09__u64 param;
+@@ -100,7 +102,7 @@ struct drm_virtgpu_resource_info {
+ =09__u32 bo_handle;
+ =09__u32 res_handle;
+ =09__u32 size;
+-=09__u32 stride;
++=09__u32 blob_mem;
+ };
 =20
- =09uuid_copy(uuid, &bo->uuid);
-@@ -81,7 +81,7 @@ struct dma_buf *virtgpu_gem_prime_export(struct drm_gem_o=
-bject *obj,
- =09=09=09return ERR_PTR(ret);
- =09=09virtio_gpu_notify(vgdev);
- =09} else {
--=09=09bo->uuid_state =3D UUID_INITIALIZATION_FAILED;
-+=09=09bo->uuid_state =3D STATE_ERR;
- =09}
+ struct drm_virtgpu_3d_box {
+@@ -117,6 +119,8 @@ struct drm_virtgpu_3d_transfer_to_host {
+ =09struct drm_virtgpu_3d_box box;
+ =09__u32 level;
+ =09__u32 offset;
++=09__u32 stride;
++=09__u32 layer_stride;
+ };
 =20
- =09exp_info.ops =3D &virtgpu_dmabuf_ops.ops;
-diff --git a/drivers/gpu/drm/virtio/virtgpu_vq.c b/drivers/gpu/drm/virtio/v=
-irtgpu_vq.c
-index 55af6fc7bc7c..3f225a08ecf3 100644
---- a/drivers/gpu/drm/virtio/virtgpu_vq.c
-+++ b/drivers/gpu/drm/virtio/virtgpu_vq.c
-@@ -1118,14 +1118,14 @@ static void virtio_gpu_cmd_resource_uuid_cb(struct =
-virtio_gpu_device *vgdev,
- =09uint32_t resp_type =3D le32_to_cpu(resp->hdr.type);
+ struct drm_virtgpu_3d_transfer_from_host {
+@@ -124,6 +128,8 @@ struct drm_virtgpu_3d_transfer_from_host {
+ =09struct drm_virtgpu_3d_box box;
+ =09__u32 level;
+ =09__u32 offset;
++=09__u32 stride;
++=09__u32 layer_stride;
+ };
 =20
- =09spin_lock(&vgdev->resource_export_lock);
--=09WARN_ON(obj->uuid_state !=3D UUID_INITIALIZING);
-+=09WARN_ON(obj->uuid_state !=3D STATE_INITIALIZING);
+ #define VIRTGPU_WAIT_NOWAIT 1 /* like it */
+@@ -140,6 +146,31 @@ struct drm_virtgpu_get_caps {
+ =09__u32 pad;
+ };
 =20
- =09if (resp_type =3D=3D VIRTIO_GPU_RESP_OK_RESOURCE_UUID &&
--=09=09=09obj->uuid_state =3D=3D UUID_INITIALIZING) {
-+=09    obj->uuid_state =3D=3D STATE_INITIALIZING) {
- =09=09memcpy(&obj->uuid.b, resp->uuid, sizeof(obj->uuid.b));
--=09=09obj->uuid_state =3D UUID_INITIALIZED;
-+=09=09obj->uuid_state =3D STATE_OK;
- =09} else {
--=09=09obj->uuid_state =3D UUID_INITIALIZATION_FAILED;
-+=09=09obj->uuid_state =3D STATE_ERR;
- =09}
- =09spin_unlock(&vgdev->resource_export_lock);
++struct drm_virtgpu_resource_create_blob {
++#define VIRTGPU_BLOB_MEM_GUEST             0x0001
++#define VIRTGPU_BLOB_MEM_HOST3D            0x0002
++#define VIRTGPU_BLOB_MEM_HOST3D_GUEST      0x0003
++
++#define VIRTGPU_BLOB_FLAG_USE_MAPPABLE     0x0001
++#define VIRTGPU_BLOB_FLAG_USE_SHAREABLE    0x0002
++#define VIRTGPU_BLOB_FLAG_USE_CROSS_DEVICE 0x0004
++=09/* zero is invalid blob_mem */
++=09__u32 blob_mem;
++=09__u32 blob_flags;
++=09__u32 bo_handle;
++=09__u32 res_handle;
++=09__u64 size;
++
++=09/*
++=09 * for 3D contexts with VIRTGPU_BLOB_MEM_HOST3D_GUEST and
++=09 * VIRTGPU_BLOB_MEM_HOST3D otherwise, must be zero.
++=09 */
++=09__u32 pad;
++=09__u32 cmd_size;
++=09__u64 cmd;
++=09__u64 blob_id;
++};
++
+ #define DRM_IOCTL_VIRTGPU_MAP \
+ =09DRM_IOWR(DRM_COMMAND_BASE + DRM_VIRTGPU_MAP, struct drm_virtgpu_map)
 =20
-@@ -1144,7 +1144,7 @@ virtio_gpu_cmd_resource_assign_uuid(struct virtio_gpu=
-_device *vgdev,
- =09resp_buf =3D kzalloc(sizeof(*resp_buf), GFP_KERNEL);
- =09if (!resp_buf) {
- =09=09spin_lock(&vgdev->resource_export_lock);
--=09=09bo->uuid_state =3D UUID_INITIALIZATION_FAILED;
-+=09=09bo->uuid_state =3D STATE_ERR;
- =09=09spin_unlock(&vgdev->resource_export_lock);
- =09=09virtio_gpu_array_put_free(objs);
- =09=09return -ENOMEM;
+@@ -175,6 +206,10 @@ struct drm_virtgpu_get_caps {
+ =09DRM_IOWR(DRM_COMMAND_BASE + DRM_VIRTGPU_GET_CAPS, \
+ =09struct drm_virtgpu_get_caps)
+=20
++#define DRM_IOCTL_VIRTGPU_RESOURCE_CREATE_BLOB=09=09=09=09\
++=09DRM_IOWR(DRM_COMMAND_BASE + DRM_VIRTGPU_RESOURCE_CREATE_BLOB,=09\
++=09=09struct drm_virtgpu_resource_create_blob)
++
+ #if defined(__cplusplus)
+ }
+ #endif
+diff --git a/include/uapi/linux/virtio_gpu.h b/include/uapi/linux/virtio_gp=
+u.h
+index 9721d58b4d58..a27ea3215d67 100644
+--- a/include/uapi/linux/virtio_gpu.h
++++ b/include/uapi/linux/virtio_gpu.h
+@@ -55,6 +55,11 @@
+  */
+ #define VIRTIO_GPU_F_RESOURCE_UUID       2
+=20
++/*
++ * VIRTIO_GPU_CMD_RESOURCE_CREATE_BLOB
++ */
++#define VIRTIO_GPU_F_RESOURCE_BLOB       3
++
+ enum virtio_gpu_ctrl_type {
+ =09VIRTIO_GPU_UNDEFINED =3D 0,
+=20
+@@ -71,6 +76,8 @@ enum virtio_gpu_ctrl_type {
+ =09VIRTIO_GPU_CMD_GET_CAPSET,
+ =09VIRTIO_GPU_CMD_GET_EDID,
+ =09VIRTIO_GPU_CMD_RESOURCE_ASSIGN_UUID,
++=09VIRTIO_GPU_CMD_RESOURCE_CREATE_BLOB,
++=09VIRTIO_GPU_CMD_SET_SCANOUT_BLOB,
+=20
+ =09/* 3d commands */
+ =09VIRTIO_GPU_CMD_CTX_CREATE =3D 0x0200,
+@@ -359,4 +366,40 @@ struct virtio_gpu_resp_resource_uuid {
+ =09__u8 uuid[16];
+ };
+=20
++/* VIRTIO_GPU_CMD_RESOURCE_CREATE_BLOB */
++struct virtio_gpu_resource_create_blob {
++=09struct virtio_gpu_ctrl_hdr hdr;
++=09__le32 resource_id;
++#define VIRTIO_GPU_BLOB_MEM_GUEST             0x0001
++#define VIRTIO_GPU_BLOB_MEM_HOST3D            0x0002
++#define VIRTIO_GPU_BLOB_MEM_HOST3D_GUEST      0x0003
++
++#define VIRTIO_GPU_BLOB_FLAG_USE_MAPPABLE     0x0001
++#define VIRTIO_GPU_BLOB_FLAG_USE_SHAREABLE    0x0002
++#define VIRTIO_GPU_BLOB_FLAG_USE_CROSS_DEVICE 0x0004
++=09/* zero is invalid blob mem */
++=09__le32 blob_mem;
++=09__le32 blob_flags;
++=09__le64 blob_id;
++=09__le64 size;
++=09__le32 nr_entries;
++=09/*
++=09 * sizeof(nr_entries * virtio_gpu_mem_entry) bytes follow
++=09 */
++};
++
++/* VIRTIO_GPU_CMD_SET_SCANOUT_BLOB */
++struct virtio_gpu_set_scanout_blob {
++=09struct virtio_gpu_ctrl_hdr hdr;
++=09struct virtio_gpu_rect r;
++=09__le32 scanout_id;
++=09__le32 resource_id;
++=09__le32 width;
++=09__le32 height;
++=09__le32 format;
++=09__le32 padding;
++=09__le32 strides[4];
++=09__le32 offsets[4];
++};
++
+ #endif
 --=20
 2.24.1
 
