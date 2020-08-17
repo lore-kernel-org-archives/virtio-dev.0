@@ -1,41 +1,41 @@
-Return-Path: virtio-dev-return-7674-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-7666-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 6B4B5985A9A
-	for <virtio-dev@lists.oasis-open.org>; Tue, 18 Aug 2020 07:11:32 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id C094E98425C
+	for <virtio-dev@lists.oasis-open.org>; Mon, 17 Aug 2020 10:50:23 +0000 (UTC)
+Date: Mon, 17 Aug 2020 12:50:08 +0200
+From: Gerd Hoffmann <kraxel@redhat.com>
+Message-ID: <20200817105008.mi3ukh6kxgi37gjs@sirius.home.kraxel.org>
+References: <20200609012518.198908-1-stevensd@chromium.org>
+ <20200609055021-mutt-send-email-mst@kernel.org>
+ <CAD=HUj7wJfoKj_K44Cs9eEmh=OQHZ1+qz7ZHxoscHjYgOMXvZQ@mail.gmail.com>
 MIME-Version: 1.0
-References: <20200818013744.3327271-1-stevensd@chromium.org> <20200818055949.6si4jzuubba5dx5u@sirius.home.kraxel.org>
-In-Reply-To: <20200818055949.6si4jzuubba5dx5u@sirius.home.kraxel.org>
-From: David Stevens <stevensd@chromium.org>
-Date: Tue, 18 Aug 2020 00:11:21 -0700
-Message-ID: <CAD=HUj5xqNE=7VPMH5MDq8h735-OnbancrkemJGkDKYmeddfNQ@mail.gmail.com>
-Subject: [virtio-dev] Re: [PATCH v6 0/3] Support virtio cross-device resources
-Content-Type: text/plain; charset="UTF-8"
-To: Gerd Hoffmann <kraxel@redhat.com>
-Cc: David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>, Sumit Semwal <sumit.semwal@linaro.org>, "Michael S . Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, open list <linux-kernel@vger.kernel.org>, ML dri-devel <dri-devel@lists.freedesktop.org>, "open list:VIRTIO GPU DRIVER" <virtualization@lists.linux-foundation.org>, Linux Media Mailing List <linux-media@vger.kernel.org>, "moderated list:DMA BUFFER SHARING FRAMEWORK" <linaro-mm-sig@lists.linaro.org>, virtio-dev@lists.oasis-open.org
+In-Reply-To: <CAD=HUj7wJfoKj_K44Cs9eEmh=OQHZ1+qz7ZHxoscHjYgOMXvZQ@mail.gmail.com>
+Subject: Re: [virtio-dev] Re: [PATCH v5 0/3] Support virtio cross-device
+ resources
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+To: David Stevens <stevensd@chromium.org>
+Cc: "Michael S. Tsirkin" <mst@redhat.com>, David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>, Sumit Semwal <sumit.semwal@linaro.org>, Jason Wang <jasowang@redhat.com>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, open list <linux-kernel@vger.kernel.org>, ML dri-devel <dri-devel@lists.freedesktop.org>, "open list:VIRTIO GPU DRIVER" <virtualization@lists.linux-foundation.org>, Linux Media Mailing List <linux-media@vger.kernel.org>, "moderated list:DMA BUFFER SHARING FRAMEWORK" <linaro-mm-sig@lists.linaro.org>, virtio-dev@lists.oasis-open.org, alex.williamson@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-> Hmm, checkpatch still complains, full log below.
->
-> IIRC "dim checkpatch" runs scripts/checkpatch.pl with --strict
-> so it is a bit more picky ...
+On Tue, Jun 23, 2020 at 10:31:28AM +0900, David Stevens wrote:
+> Unless there are any remaining objections to these patches, what are
+> the next steps towards getting these merged? Sorry, I'm not familiar
+> with the workflow for contributing patches to Linux.
 
-Ah, I didn't know --strict was being used. I'll send an update
-momentarily. Sorry for the churn.
+Sorry, just have been busy and not paying as much attention to drm
+patches as usual.  Playing catch-up now.  Queued for drm-misc-next,
+unless something goes wrong in my testing the patches should land
+in linux-next soon and be merged upstream in the next merge window.
 
-> -:250: CHECK:PREFER_KERNEL_TYPES: Prefer kernel type 'u32' over 'uint32_t'
-> #250: FILE: drivers/gpu/drm/virtio/virtgpu_vq.c:1118:
-> +       uint32_t resp_type = le32_to_cpu(resp->hdr.type);
->
+take care,
+  Gerd
 
-For consistency with the rest of the virtgpu code, I'll leave uint32_t.
-
-Cheers,
-David
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
