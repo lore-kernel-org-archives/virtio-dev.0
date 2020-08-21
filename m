@@ -1,85 +1,80 @@
-Return-Path: virtio-dev-return-7692-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-7693-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 2940F985E87
-	for <virtio-dev@lists.oasis-open.org>; Fri, 21 Aug 2020 13:16:09 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 4BC15985E85
+	for <virtio-dev@lists.oasis-open.org>; Fri, 21 Aug 2020 13:16:12 +0000 (UTC)
 From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Date: Fri, 21 Aug 2020 15:15:34 +0200
-Message-Id: <20200821131540.2801801-1-jean-philippe@linaro.org>
+Date: Fri, 21 Aug 2020 15:15:35 +0200
+Message-Id: <20200821131540.2801801-2-jean-philippe@linaro.org>
+In-Reply-To: <20200821131540.2801801-1-jean-philippe@linaro.org>
+References: <20200821131540.2801801-1-jean-philippe@linaro.org>
 MIME-Version: 1.0
-Subject: [virtio-dev] [PATCH v3 0/6] Add virtio-iommu built-in topology
+Subject: [virtio-dev] [PATCH v3 1/6] iommu/virtio: Move to drivers/iommu/virtio/
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: quoted-printable
 To: iommu@lists.linux-foundation.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, linux-pci@vger.kernel.org
 Cc: joro@8bytes.org, bhelgaas@google.com, mst@redhat.com, jasowang@redhat.com, kevin.tian@intel.com, sebastien.boeuf@intel.com, eric.auger@redhat.com, lorenzo.pieralisi@arm.com, Jean-Philippe Brucker <jean-philippe@linaro.org>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Add a topology description to the virtio-iommu driver and enable x86
-platforms.
+Before adding new files to the virtio-iommu driver, move it to its own
+subfolder, similarly to other IOMMU drivers.
 
-Since [v2] we have made some progress on adding ACPI support for
-virtio-iommu, which is the preferred boot method on x86. It will be a
-new vendor-agnostic table describing para-virtual topologies in a
-minimal format. However some platforms don't use either ACPI or DT for
-booting (for example microvm), and will need the alternative topology
-description method proposed here. In addition, since the process to get
-a new ACPI table will take a long time, this provides a boot method even
-to ACPI-based platforms, if only temporarily for testing and
-development.
-
-v3:
-* Add patch 1 that moves virtio-iommu to a subfolder.
-* Split the rest:
-  * Patch 2 adds topology-helper.c, which will be shared with the ACPI
-    support.
-  * Patch 4 adds definitions.
-  * Patch 5 adds parser in topology.c.
-* Address other comments.
-
-Linux and QEMU patches available at:
-https://jpbrucker.net/git/linux virtio-iommu/devel
-https://jpbrucker.net/git/qemu virtio-iommu/devel
-
-[spec] https://lists.oasis-open.org/archives/virtio-dev/202008/msg00067.htm=
-l
-[v2] https://lore.kernel.org/linux-iommu/20200228172537.377327-1-jean-phili=
-ppe@linaro.org/
-[v1] https://lore.kernel.org/linux-iommu/20200214160413.1475396-1-jean-phil=
-ippe@linaro.org/
-[rfc] https://lore.kernel.org/linux-iommu/20191122105000.800410-1-jean-phil=
-ippe@linaro.org/
-
-Jean-Philippe Brucker (6):
-  iommu/virtio: Move to drivers/iommu/virtio/
-  iommu/virtio: Add topology helpers
-  PCI: Add DMA configuration for virtual platforms
-  iommu/virtio: Add topology definitions
-  iommu/virtio: Support topology description in config space
-  iommu/virtio: Enable x86 support
-
- drivers/iommu/Kconfig                     |  18 +-
- drivers/iommu/Makefile                    |   3 +-
- drivers/iommu/virtio/Makefile             |   4 +
- drivers/iommu/virtio/topology-helpers.h   |  50 +++++
- include/linux/virt_iommu.h                |  15 ++
- include/uapi/linux/virtio_iommu.h         |  44 ++++
- drivers/iommu/virtio/topology-helpers.c   | 196 ++++++++++++++++
- drivers/iommu/virtio/topology.c           | 259 ++++++++++++++++++++++
- drivers/iommu/{ =3D> virtio}/virtio-iommu.c |   4 +
- drivers/pci/pci-driver.c                  |   5 +
- MAINTAINERS                               |   3 +-
- 11 files changed, 597 insertions(+), 4 deletions(-)
+Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+---
+ drivers/iommu/Makefile                    | 3 +--
+ drivers/iommu/virtio/Makefile             | 2 ++
+ drivers/iommu/{ =3D> virtio}/virtio-iommu.c | 0
+ MAINTAINERS                               | 2 +-
+ 4 files changed, 4 insertions(+), 3 deletions(-)
  create mode 100644 drivers/iommu/virtio/Makefile
- create mode 100644 drivers/iommu/virtio/topology-helpers.h
- create mode 100644 include/linux/virt_iommu.h
- create mode 100644 drivers/iommu/virtio/topology-helpers.c
- create mode 100644 drivers/iommu/virtio/topology.c
- rename drivers/iommu/{ =3D> virtio}/virtio-iommu.c (99%)
+ rename drivers/iommu/{ =3D> virtio}/virtio-iommu.c (100%)
 
+diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
+index 11f1771104f3..fc7523042512 100644
+--- a/drivers/iommu/Makefile
++++ b/drivers/iommu/Makefile
+@@ -1,5 +1,5 @@
+ # SPDX-License-Identifier: GPL-2.0
+-obj-y +=3D amd/ intel/ arm/
++obj-y +=3D amd/ intel/ arm/ virtio/
+ obj-$(CONFIG_IOMMU_API) +=3D iommu.o
+ obj-$(CONFIG_IOMMU_API) +=3D iommu-traces.o
+ obj-$(CONFIG_IOMMU_API) +=3D iommu-sysfs.o
+@@ -26,4 +26,3 @@ obj-$(CONFIG_EXYNOS_IOMMU) +=3D exynos-iommu.o
+ obj-$(CONFIG_FSL_PAMU) +=3D fsl_pamu.o fsl_pamu_domain.o
+ obj-$(CONFIG_S390_IOMMU) +=3D s390-iommu.o
+ obj-$(CONFIG_HYPERV_IOMMU) +=3D hyperv-iommu.o
+-obj-$(CONFIG_VIRTIO_IOMMU) +=3D virtio-iommu.o
+diff --git a/drivers/iommu/virtio/Makefile b/drivers/iommu/virtio/Makefile
+new file mode 100644
+index 000000000000..279368fcc074
+--- /dev/null
++++ b/drivers/iommu/virtio/Makefile
+@@ -0,0 +1,2 @@
++# SPDX-License-Identifier: GPL-2.0
++obj-$(CONFIG_VIRTIO_IOMMU) +=3D virtio-iommu.o
+diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio/virtio-iom=
+mu.c
+similarity index 100%
+rename from drivers/iommu/virtio-iommu.c
+rename to drivers/iommu/virtio/virtio-iommu.c
+diff --git a/MAINTAINERS b/MAINTAINERS
+index deaafb617361..3602b223c9b2 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -18451,7 +18451,7 @@ VIRTIO IOMMU DRIVER
+ M:=09Jean-Philippe Brucker <jean-philippe@linaro.org>
+ L:=09virtualization@lists.linux-foundation.org
+ S:=09Maintained
+-F:=09drivers/iommu/virtio-iommu.c
++F:=09drivers/iommu/virtio/
+ F:=09include/uapi/linux/virtio_iommu.h
+=20
+ VIRTIO MEM DRIVER
 --=20
 2.28.0
 
