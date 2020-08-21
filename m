@@ -1,118 +1,90 @@
-Return-Path: virtio-comment-return-1435-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio-comment@lists.oasis-open.org>
-List-Post: <mailto:virtio-comment@lists.oasis-open.org>
-List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
+Return-Path: virtio-dev-return-7692-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id 2940F985E87
+	for <virtio-dev@lists.oasis-open.org>; Fri, 21 Aug 2020 13:16:09 +0000 (UTC)
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Date: Fri, 21 Aug 2020 15:15:34 +0200
+Message-Id: <20200821131540.2801801-1-jean-philippe@linaro.org>
 MIME-Version: 1.0
-References: <159836664741.231431.2775539890399592989.stgit@ahduyck-workstation>
- <20200825170120.429b3ee8.cohuck@redhat.com>
-In-Reply-To: <20200825170120.429b3ee8.cohuck@redhat.com>
-From: Alexander Duyck <alexander.duyck@gmail.com>
-Date: Tue, 25 Aug 2020 13:40:25 -0700
-Message-ID: <CAKgT0Uc12p_Y3UKFA6=66ecEjOaGhfQ=gb--nf2HA2iLap7KvA@mail.gmail.com>
-Subject: [virtio-comment] Re: [PATCH v8 0/3] virtio-spec: Add documentation for recently added
- balloon features
-Content-Type: text/plain; charset="UTF-8"
-To: Cornelia Huck <cohuck@redhat.com>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>, David Hildenbrand <david@redhat.com>, virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, "Wang, Wei W" <wei.w.wang@intel.com>
+Subject: [virtio-dev] [PATCH v3 0/6] Add virtio-iommu built-in topology
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
+To: iommu@lists.linux-foundation.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, linux-pci@vger.kernel.org
+Cc: joro@8bytes.org, bhelgaas@google.com, mst@redhat.com, jasowang@redhat.com, kevin.tian@intel.com, sebastien.boeuf@intel.com, eric.auger@redhat.com, lorenzo.pieralisi@arm.com, Jean-Philippe Brucker <jean-philippe@linaro.org>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Tue, Aug 25, 2020 at 8:01 AM Cornelia Huck <cohuck@redhat.com> wrote:
->
-> On Tue, 25 Aug 2020 07:44:55 -0700
-> Alexander Duyck <alexander.duyck@gmail.com> wrote:
->
-> > This patch set is meant to add documentation for balloon features that have
-> > been recently added to the Linux kernel[1,2] and that were recently added
-> > to QEMU[3].
-> >
-> > Fixes: https://github.com/oasis-tcs/virtio-spec/issues/84
-> >
-> > Changes since RFC:
-> > Incorporated suggestions from Cornelia Huck
-> > Fixed a few additional spelling errors
-> >
-> > Changes since v1:
-> > Incorporated additional suggestions from Cornelia Huck
-> > Dropped documentation referring to free page reporting from page poison patch
-> >
-> > Changes since v2:
-> > Rewrote multiple statements based on input from David Hildenbrand
-> >   Dropped use of balloon and deflate from page hinting description
-> >   Dropped use of free page reporting from page poison description
-> >   Cleaned up several spots that didn't match RFC2119 style comments
-> >   Added conformance links.
-> >   Various other clean-ups.
-> > Updated balloon command IDs based on input from Cornelia Huck
-> >
-> > Changes since v3:
-> > Reordered patches to place free page hinting at end of patch set
-> >   Moved contents out of patch to poison and free page reporting patches
-> >   Updated patch description to document some known issues with feature
-> > Further clean-ups based on input from David Hildenbrand
-> >
-> > Changes since v4:
-> > Further clean-ups for page hinting based on input from David Hildenbrand
-> >
-> > Changes since v5:
-> > Reverted patcher order changes from v3 placing hinting as first patch
-> > Addressed comments and added Reviewed-by from Cornelia Huck
-> > Addressed further items I found in free page hinting
-> >   Added requirement that output buffers be 4 bytes in size
-> >   Replaced reference to descriptor with buffer
-> >   Replaced references to free_page_hint_vq with free_page_vq
-> >
-> > Changes since v6:
-> > Fixed line that was left over from a merge conflict
-> > Added Reviewed-by from David Hildenbrand
-> > Created issue and added "Fixes" to cover page
-> >
-> > Changes since v7:
-> > Removed comments from patch 1 describing issues that we fixed or addressed
-> > Added Acked-by for patch 1 from Cornelia Huck
-> >
-> > [1]: https://lore.kernel.org/lkml/20200211224416.29318.44077.stgit@localhost.localdomain/
-> > [2]: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=b0c504f154718904ae49349147e3b7e6ae91ffdc
-> > [3]: https://lists.oasis-open.org/archives/virtio-dev/202004/msg00180.html
-> >
-> > ---
-> >
-> > Alexander Duyck (3):
-> >       content: Document balloon feature free page hints
-> >       content: Document balloon feature page poison
-> >       content: Document balloon feature free page reporting
-> >
-> >
-> >  conformance.tex |    6 +
-> >  content.tex     |  286 ++++++++++++++++++++++++++++++++++++++++++++++++++++++-
-> >  2 files changed, 286 insertions(+), 6 deletions(-)
-> >
-> > --
-> >
->
-> I think this is good to vote on now.
+Add a topology description to the virtio-iommu driver and enable x86
+platforms.
 
-Thanks for the review feedback. If there are no other comments then I
-request a vote for inclusion.
+Since [v2] we have made some progress on adding ACPI support for
+virtio-iommu, which is the preferred boot method on x86. It will be a
+new vendor-agnostic table describing para-virtual topologies in a
+minimal format. However some platforms don't use either ACPI or DT for
+booting (for example microvm), and will need the alternative topology
+description method proposed here. In addition, since the process to get
+a new ACPI table will take a long time, this provides a boot method even
+to ACPI-based platforms, if only temporarily for testing and
+development.
 
-Fixes: https://github.com/oasis-tcs/virtio-spec/issues/84
+v3:
+* Add patch 1 that moves virtio-iommu to a subfolder.
+* Split the rest:
+  * Patch 2 adds topology-helper.c, which will be shared with the ACPI
+    support.
+  * Patch 4 adds definitions.
+  * Patch 5 adds parser in topology.c.
+* Address other comments.
 
-- Alex
+Linux and QEMU patches available at:
+https://jpbrucker.net/git/linux virtio-iommu/devel
+https://jpbrucker.net/git/qemu virtio-iommu/devel
 
-This publicly archived list offers a means to provide input to the
-OASIS Virtual I/O Device (VIRTIO) TC.
+[spec] https://lists.oasis-open.org/archives/virtio-dev/202008/msg00067.htm=
+l
+[v2] https://lore.kernel.org/linux-iommu/20200228172537.377327-1-jean-phili=
+ppe@linaro.org/
+[v1] https://lore.kernel.org/linux-iommu/20200214160413.1475396-1-jean-phil=
+ippe@linaro.org/
+[rfc] https://lore.kernel.org/linux-iommu/20191122105000.800410-1-jean-phil=
+ippe@linaro.org/
 
-In order to verify user consent to the Feedback License terms and
-to minimize spam in the list archive, subscription is required
-before posting.
+Jean-Philippe Brucker (6):
+  iommu/virtio: Move to drivers/iommu/virtio/
+  iommu/virtio: Add topology helpers
+  PCI: Add DMA configuration for virtual platforms
+  iommu/virtio: Add topology definitions
+  iommu/virtio: Support topology description in config space
+  iommu/virtio: Enable x86 support
 
-Subscribe: virtio-comment-subscribe@lists.oasis-open.org
-Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
-List help: virtio-comment-help@lists.oasis-open.org
-List archive: https://lists.oasis-open.org/archives/virtio-comment/
-Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
-List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
-Committee: https://www.oasis-open.org/committees/virtio/
-Join OASIS: https://www.oasis-open.org/join/
+ drivers/iommu/Kconfig                     |  18 +-
+ drivers/iommu/Makefile                    |   3 +-
+ drivers/iommu/virtio/Makefile             |   4 +
+ drivers/iommu/virtio/topology-helpers.h   |  50 +++++
+ include/linux/virt_iommu.h                |  15 ++
+ include/uapi/linux/virtio_iommu.h         |  44 ++++
+ drivers/iommu/virtio/topology-helpers.c   | 196 ++++++++++++++++
+ drivers/iommu/virtio/topology.c           | 259 ++++++++++++++++++++++
+ drivers/iommu/{ =3D> virtio}/virtio-iommu.c |   4 +
+ drivers/pci/pci-driver.c                  |   5 +
+ MAINTAINERS                               |   3 +-
+ 11 files changed, 597 insertions(+), 4 deletions(-)
+ create mode 100644 drivers/iommu/virtio/Makefile
+ create mode 100644 drivers/iommu/virtio/topology-helpers.h
+ create mode 100644 include/linux/virt_iommu.h
+ create mode 100644 drivers/iommu/virtio/topology-helpers.c
+ create mode 100644 drivers/iommu/virtio/topology.c
+ rename drivers/iommu/{ =3D> virtio}/virtio-iommu.c (99%)
+
+--=20
+2.28.0
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
