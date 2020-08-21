@@ -1,71 +1,105 @@
-Return-Path: virtio-dev-return-7694-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-7695-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 80E90985E87
-	for <virtio-dev@lists.oasis-open.org>; Fri, 21 Aug 2020 13:16:13 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 4A59C985E87
+	for <virtio-dev@lists.oasis-open.org>; Fri, 21 Aug 2020 13:16:16 +0000 (UTC)
 From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Date: Fri, 21 Aug 2020 15:15:37 +0200
-Message-Id: <20200821131540.2801801-4-jean-philippe@linaro.org>
+Date: Fri, 21 Aug 2020 15:15:38 +0200
+Message-Id: <20200821131540.2801801-5-jean-philippe@linaro.org>
 In-Reply-To: <20200821131540.2801801-1-jean-philippe@linaro.org>
 References: <20200821131540.2801801-1-jean-philippe@linaro.org>
 MIME-Version: 1.0
-Subject: [virtio-dev] [PATCH v3 3/6] PCI: Add DMA configuration for virtual platforms
+Subject: [virtio-dev] [PATCH v3 4/6] iommu/virtio: Add topology definitions
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: quoted-printable
 To: iommu@lists.linux-foundation.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, linux-pci@vger.kernel.org
 Cc: joro@8bytes.org, bhelgaas@google.com, mst@redhat.com, jasowang@redhat.com, kevin.tian@intel.com, sebastien.boeuf@intel.com, eric.auger@redhat.com, lorenzo.pieralisi@arm.com, Jean-Philippe Brucker <jean-philippe@linaro.org>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Hardware platforms usually describe the IOMMU topology using either
-device-tree pointers or vendor-specific ACPI tables.  For virtual
-platforms that don't provide a device-tree, the virtio-iommu device
-contains a description of the endpoints it manages.  That information
-allows us to probe endpoints after the IOMMU is probed (possibly as late
-as userspace modprobe), provided it is discovered early enough.
+Add struct definitions for describing endpoints managed by the
+virtio-iommu. When VIRTIO_IOMMU_F_TOPOLOGY is offered, an array of
+virtio_iommu_topo_* structures in config space describes the endpoints,
+identified either by their PCI BDF or their physical MMIO address.
 
-Add a hook to pci_dma_configure(), which returns -EPROBE_DEFER if the
-endpoint is managed by a vIOMMU that will be loaded later, or 0 in any
-other case to avoid disturbing the normal DMA configuration methods.
-When CONFIG_VIRTIO_IOMMU_TOPOLOGY_HELPERS isn't selected, the call to
-virt_dma_configure() is compiled out.
-
-As long as the information is consistent, platforms can provide both a
-device-tree and a built-in topology, and the IOMMU infrastructure is
-able to deal with multiple DMA configuration methods.
-
-Acked-by: Bjorn Helgaas <bhelgaas@google.com>
 Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 ---
- drivers/pci/pci-driver.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ include/uapi/linux/virtio_iommu.h | 44 +++++++++++++++++++++++++++++++
+ 1 file changed, 44 insertions(+)
 
-diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
-index 449466f71040..dbe9d33606b0 100644
---- a/drivers/pci/pci-driver.c
-+++ b/drivers/pci/pci-driver.c
-@@ -19,6 +19,7 @@
- #include <linux/kexec.h>
- #include <linux/of_device.h>
- #include <linux/acpi.h>
-+#include <linux/virt_iommu.h>
- #include "pci.h"
- #include "pcie/portdrv.h"
+diff --git a/include/uapi/linux/virtio_iommu.h b/include/uapi/linux/virtio_=
+iommu.h
+index 237e36a280cb..70cba30644d5 100644
+--- a/include/uapi/linux/virtio_iommu.h
++++ b/include/uapi/linux/virtio_iommu.h
+@@ -16,6 +16,7 @@
+ #define VIRTIO_IOMMU_F_BYPASS=09=09=093
+ #define VIRTIO_IOMMU_F_PROBE=09=09=094
+ #define VIRTIO_IOMMU_F_MMIO=09=09=095
++#define VIRTIO_IOMMU_F_TOPOLOGY=09=09=096
 =20
-@@ -1605,6 +1606,10 @@ static int pci_dma_configure(struct device *dev)
- =09struct device *bridge;
- =09int ret =3D 0;
+ struct virtio_iommu_range_64 {
+ =09__le64=09=09=09=09=09start;
+@@ -27,6 +28,17 @@ struct virtio_iommu_range_32 {
+ =09__le32=09=09=09=09=09end;
+ };
 =20
-+=09ret =3D virt_dma_configure(dev);
-+=09if (ret)
-+=09=09return ret;
++struct virtio_iommu_topo_config {
++=09/* Number of topology description structures */
++=09__le16=09=09=09=09=09count;
++=09/*
++=09 * Offset to the first topology description structure
++=09 * (virtio_iommu_topo_*) from the start of the virtio_iommu config
++=09 * space. Aligned on 8 bytes.
++=09 */
++=09__le16=09=09=09=09=09offset;
++};
 +
- =09bridge =3D pci_get_host_bridge_device(to_pci_dev(dev));
+ struct virtio_iommu_config {
+ =09/* Supported page sizes */
+ =09__le64=09=09=09=09=09page_size_mask;
+@@ -36,6 +48,38 @@ struct virtio_iommu_config {
+ =09struct virtio_iommu_range_32=09=09domain_range;
+ =09/* Probe buffer size */
+ =09__le32=09=09=09=09=09probe_size;
++=09struct virtio_iommu_topo_config=09=09topo_config;
++};
++
++#define VIRTIO_IOMMU_TOPO_PCI_RANGE=09=090x1
++#define VIRTIO_IOMMU_TOPO_MMIO=09=09=090x2
++
++struct virtio_iommu_topo_pci_range {
++=09/* VIRTIO_IOMMU_TOPO_PCI_RANGE */
++=09__u8=09=09=09=09=09type;
++=09__u8=09=09=09=09=09reserved;
++=09/* Length of this structure */
++=09__le16=09=09=09=09=09length;
++=09/* First endpoint ID in the range */
++=09__le32=09=09=09=09=09endpoint_start;
++=09/* PCI domain number */
++=09__le16=09=09=09=09=09segment;
++=09/* PCI Bus:Device.Function range */
++=09__le16=09=09=09=09=09bdf_start;
++=09__le16=09=09=09=09=09bdf_end;
++=09__le16=09=09=09=09=09padding;
++};
++
++struct virtio_iommu_topo_mmio {
++=09/* VIRTIO_IOMMU_TOPO_MMIO */
++=09__u8=09=09=09=09=09type;
++=09__u8=09=09=09=09=09reserved;
++=09/* Length of this structure */
++=09__le16=09=09=09=09=09length;
++=09/* Endpoint ID */
++=09__le32=09=09=09=09=09endpoint;
++=09/* Address of the first MMIO region */
++=09__le64=09=09=09=09=09address;
+ };
 =20
- =09if (IS_ENABLED(CONFIG_OF) && bridge->parent &&
+ /* Request types */
 --=20
 2.28.0
 
