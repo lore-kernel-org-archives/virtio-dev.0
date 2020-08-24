@@ -1,48 +1,74 @@
-Return-Path: virtio-dev-return-7730-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-7707-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 32FA5985E29
-	for <virtio-dev@lists.oasis-open.org>; Thu, 27 Aug 2020 08:01:45 +0000 (UTC)
-Date: Thu, 27 Aug 2020 10:01:25 +0200
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Message-ID: <20200827080125.GC3399702@myrica>
-References: <20200821131540.2801801-1-jean-philippe@linaro.org>
- <20200826092542-mutt-send-email-mst@kernel.org>
-MIME-Version: 1.0
-In-Reply-To: <20200826092542-mutt-send-email-mst@kernel.org>
-Subject: [virtio-dev] Re: [PATCH v3 0/6] Add virtio-iommu built-in topology
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: iommu@lists.linux-foundation.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, linux-pci@vger.kernel.org, kevin.tian@intel.com, sebastien.boeuf@intel.com, bhelgaas@google.com, jasowang@redhat.com
+	by lists.oasis-open.org (Postfix) with ESMTP id 1828398432C
+	for <virtio-dev@lists.oasis-open.org>; Mon, 24 Aug 2020 14:37:37 +0000 (UTC)
+From: Nikos Dragazis <ndragazis@arrikto.com>
+Date: Mon, 24 Aug 2020 17:36:57 +0300
+Message-Id: <20200824143708.5664-1-ndragazis@arrikto.com>
+Subject: [virtio-dev] [PATCH 00/11] Additional virtio device resources
+Content-Type: text/plain; charset=US-ASCII
+To: virtio-dev@lists.oasis-open.org
+Cc: Stefan Hajnoczi <stefanha@redhat.com>, "Michael S . Tsirkin" <mst@redhat.com>, =?UTF-8?q?Alex=20Benn=C3=A9e?= <alex.bennee@linaro.org>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, Aug 26, 2020 at 09:26:02AM -0400, Michael S. Tsirkin wrote:
-> On Fri, Aug 21, 2020 at 03:15:34PM +0200, Jean-Philippe Brucker wrote:
-> > Add a topology description to the virtio-iommu driver and enable x86
-> > platforms.
-> > 
-> > Since [v2] we have made some progress on adding ACPI support for
-> > virtio-iommu, which is the preferred boot method on x86. It will be a
-> > new vendor-agnostic table describing para-virtual topologies in a
-> > minimal format. However some platforms don't use either ACPI or DT for
-> > booting (for example microvm), and will need the alternative topology
-> > description method proposed here. In addition, since the process to get
-> > a new ACPI table will take a long time, this provides a boot method even
-> > to ACPI-based platforms, if only temporarily for testing and
-> > development.
-> 
-> OK should I park this in next now? Seems appropriate ...
+Hi everyone,
 
-Yes that sounds like a good idea. It could uncover new bugs since there is
-more automated testing happening for x86.
+This patch introduces the "doorbells" and "device-specific
+notifications" as a new set of virtio device resources.
 
-Thanks,
-Jean
+Doorbells are device registers that allow a driver to notify the device
+for events other than virtqueue activity.
+
+Device-specific notifications are interrupts that allow a device to
+notify the driver for events other than virtqueue activity and
+configuration changes.
+
+The purpose of both of these resources is to allow a virtio device to
+send/receive **device-specific** notifications to/from the driver. This
+is not supported by the current version of the virtio spec, since the
+only notifications supported are configuration changes, available and
+used buffer notifications.
+
+These resources will be used later by the virtio-vhost-user [1] device
+in order to send/receive notifications to/from the driver regarding
+activity on the vhost-user virtqueues. By standardizing these resources
+as standalone virtio device resources, other future devices will be able
+to use them as well.
+
+Also, note that this patch contains some fix commits for some minor
+typos/bugs that I bumped into while writing this patch.
+
+Nikos
+
+[1] https://lists.oasis-open.org/archives/virtio-dev/202005/msg00132.html
+
+Nikos Dragazis (11):
+  content: Remove duplicate content
+  content: Minor fix
+  content: Update list of virtio cfg structures
+  content: Minor layout fix
+  doorbells: Introduce doorbells
+  content: Introduce Doorbell cfg type for PCI
+  content: Introduce Doorbell register for MMIO
+  notifications: Introduce device-specific notifications
+  content: Introduce device-specific notification cfg type for PCI
+  content: Fix typo
+  content: Introduce device-specific notifications for MMIO
+
+ conformance.tex |   2 +
+ content.tex     | 177 ++++++++++++++++++++++++++++++++++++++++--------
+ doorbells.tex   |  12 ++++
+ 3 files changed, 163 insertions(+), 28 deletions(-)
+ create mode 100644 doorbells.tex
+
+-- 
+2.17.1
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
