@@ -1,71 +1,47 @@
-Return-Path: virtio-dev-return-7707-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-7708-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 1828398432C
-	for <virtio-dev@lists.oasis-open.org>; Mon, 24 Aug 2020 14:37:37 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 8CD9298432C
+	for <virtio-dev@lists.oasis-open.org>; Mon, 24 Aug 2020 14:38:34 +0000 (UTC)
 From: Nikos Dragazis <ndragazis@arrikto.com>
-Date: Mon, 24 Aug 2020 17:36:57 +0300
-Message-Id: <20200824143708.5664-1-ndragazis@arrikto.com>
-Subject: [virtio-dev] [PATCH 00/11] Additional virtio device resources
+Date: Mon, 24 Aug 2020 17:36:58 +0300
+Message-Id: <20200824143708.5664-2-ndragazis@arrikto.com>
+In-Reply-To: <20200824143708.5664-1-ndragazis@arrikto.com>
+References: <20200824143708.5664-1-ndragazis@arrikto.com>
+Subject: [virtio-dev] [PATCH 01/11] content: Remove duplicate content
 Content-Type: text/plain; charset=US-ASCII
 To: virtio-dev@lists.oasis-open.org
 Cc: Stefan Hajnoczi <stefanha@redhat.com>, "Michael S . Tsirkin" <mst@redhat.com>, =?UTF-8?q?Alex=20Benn=C3=A9e?= <alex.bennee@linaro.org>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Hi everyone,
+Signed-off-by: Nikos Dragazis <ndragazis@arrikto.com>
+---
+ content.tex | 8 --------
+ 1 file changed, 8 deletions(-)
 
-This patch introduces the "doorbells" and "device-specific
-notifications" as a new set of virtio device resources.
-
-Doorbells are device registers that allow a driver to notify the device
-for events other than virtqueue activity.
-
-Device-specific notifications are interrupts that allow a device to
-notify the driver for events other than virtqueue activity and
-configuration changes.
-
-The purpose of both of these resources is to allow a virtio device to
-send/receive **device-specific** notifications to/from the driver. This
-is not supported by the current version of the virtio spec, since the
-only notifications supported are configuration changes, available and
-used buffer notifications.
-
-These resources will be used later by the virtio-vhost-user [1] device
-in order to send/receive notifications to/from the driver regarding
-activity on the vhost-user virtqueues. By standardizing these resources
-as standalone virtio device resources, other future devices will be able
-to use them as well.
-
-Also, note that this patch contains some fix commits for some minor
-typos/bugs that I bumped into while writing this patch.
-
-Nikos
-
-[1] https://lists.oasis-open.org/archives/virtio-dev/202005/msg00132.html
-
-Nikos Dragazis (11):
-  content: Remove duplicate content
-  content: Minor fix
-  content: Update list of virtio cfg structures
-  content: Minor layout fix
-  doorbells: Introduce doorbells
-  content: Introduce Doorbell cfg type for PCI
-  content: Introduce Doorbell register for MMIO
-  notifications: Introduce device-specific notifications
-  content: Introduce device-specific notification cfg type for PCI
-  content: Fix typo
-  content: Introduce device-specific notifications for MMIO
-
- conformance.tex |   2 +
- content.tex     | 177 ++++++++++++++++++++++++++++++++++++++++--------
- doorbells.tex   |  12 ++++
- 3 files changed, 163 insertions(+), 28 deletions(-)
- create mode 100644 doorbells.tex
-
+diff --git a/content.tex b/content.tex
+index 91735e3..d505e94 100644
+--- a/content.tex
++++ b/content.tex
+@@ -1101,14 +1101,6 @@ \subsubsection{Shared memory capability}\label{sec:Virtio Transport Options / Vi
+ 
+ The \field{cap.id} MUST be unique for any one device instance.
+ 
+-\devicenormative{\paragraph}{Device-specific configuration}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Shared memory capability}
+-
+-The region defined by the combination of the \field {cap.offset},
+-\field {cap.offset_hi}, and \field {cap.length}, \field
+-{cap.length_hi} fields MUST be contained within the declared bar.
+-
+-The \field{cap.id} MUST be unique for any one device instance.
+-
+ \subsubsection{Vendor data capability}\label{sec:Virtio
+ Transport Options / Virtio Over PCI Bus / PCI Device Layout /
+ Vendor data capability}
 -- 
 2.17.1
 
