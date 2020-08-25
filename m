@@ -1,135 +1,103 @@
-Return-Path: virtio-return-3436-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio@lists.oasis-open.org>
-List-Post: <mailto:virtio@lists.oasis-open.org>
-List-Help: <mailto:virtio-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Thu, 13 Aug 2020 16:45:19 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20200813164212-mutt-send-email-mst@kernel.org>
-References: <20200810161501.1572834-1-mst@redhat.com>
- <20200810185928.2e722231.cohuck@redhat.com>
- <20200811042047-mutt-send-email-mst@kernel.org>
- <3e1f1c3f6b3a44daabf3cfca1d3e3f66@napatech.com>
+Return-Path: virtio-comment-return-1430-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-comment@lists.oasis-open.org>
+List-Post: <mailto:virtio-comment@lists.oasis-open.org>
+List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
+From: Alexander Duyck <alexander.duyck@gmail.com>
+Date: Tue, 25 Aug 2020 07:44:55 -0700
+Message-ID: 
+ <159836664741.231431.2775539890399592989.stgit@ahduyck-workstation>
 MIME-Version: 1.0
-In-Reply-To: <3e1f1c3f6b3a44daabf3cfca1d3e3f66@napatech.com>
-Subject: [virtio] Re: [virtio-dev] Re: [virtio] [PATCH RFC] VIRTIO_F_PARTIAL_ORDER for
- page fault handling
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-To: Lars Ganrot <lga@napatech.com>
-Cc: Cornelia Huck <cohuck@redhat.com>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "virtio@lists.oasis-open.org" <virtio@lists.oasis-open.org>
+Subject: [virtio-comment] [PATCH v8 0/3] virtio-spec: Add documentation for recently added
+ balloon features
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+To: mst@redhat.com, david@redhat.com, cohuck@redhat.com
+Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, wei.w.wang@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Tue, Aug 11, 2020 at 02:53:39PM +0000, Lars Ganrot wrote:
-> Hi Michael,
-> 
-> Short comment below.
-> 
-> BR,
-> 
-> -Lars
-> 
-> > From: virtio-dev@lists.oasis-open.org <virtio-dev@lists.oasis-open.org> On
-> > Behalf Of Michael S. Tsirkin
-> > Sent: 11. august 2020 10:23
-> >
-> > On Mon, Aug 10, 2020 at 06:59:28PM +0200, Cornelia Huck wrote:
-> > > On Mon, 10 Aug 2020 12:15:15 -0400
-> > > "Michael S. Tsirkin" <mst@redhat.com> wrote:
-> > >
-> > > > Devices that normally use buffers in order can benefit from ability
-> > > > to temporarily switch to handle some buffers out of order.
-> > > >
-> > > > As a case in point, a networking device might handle RX buffers in
-> > > > order normally. However, should an access to an RX buffer cause a
-> > > > page fault (e.g. when using PRI), the device could benefit from
-> > > > ability to temporarily keep using following buffers in the ring
-> > > > (possibly with higher overhead) until the fault has been resolved.
-> > > >
-> > > > Page faults allow more features such as THP, auto-NUMA, live
-> > > > migration.
-> > > >
-> > > > Out of order is of course already possible, however, IN_ORDER is
-> > > > currently required for descriptor batching where device marks a
-> > > > whole batch of buffers used in one go.
-> > > >
-> > > > The idea behind this proposal is to relax that requirement, allowing
-> > > > batching without asking device to be in orde rat all times, as
-> > > > follows:
-> > > >
-> > > > Device uses buffers in any order. Eventually when device detects
-> > > > that it has used all previously outstanding buffers, it sets a FLUSH
-> > > > flag on the last buffer used. If it set this flag on the last buffer
-> > > > used previously, and now uses a batch of descriptors in-order, it
-> > > > can now signal the last buffer used again setting the FLUSH flag.
-> > > >
-> > > > Driver can detect in-order when it sees two FLUSH flags one after
-> > > > another. In other respects the feature is similar to IN_ORDER from
-> > > > the driver implementation POV.
-> > > >
-> > > > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> > > > ---
-> > > >  content.tex     |  9 ++++++++-
-> > > >  packed-ring.tex | 23 +++++++++++++++++++++++  split-ring.tex  | 26
-> > > > ++++++++++++++++++++++++--
-> > > >  3 files changed, 55 insertions(+), 3 deletions(-)
-> > > >
-> > > > diff --git a/content.tex b/content.tex index 91735e3..8494eb6 100644
-> > > > --- a/content.tex
-> > > > +++ b/content.tex
-> > > > @@ -296,7 +296,11 @@ \section{Virtqueues}\label{sec:Basic Facilities
-> > > > of a Virtio Device / Virtqueues}
-> > > >
-> > > >  Some devices always use descriptors in the same order in which
-> > > > they have been made available. These devices can offer the
-> > > > -VIRTIO_F_IN_ORDER feature. If negotiated, this knowledge
-> > > > +VIRTIO_F_IN_ORDER feature.  Other devices sometimes use descriptors
-> > > > +in the same order in which they have been made available. These
-> > > > +devices can offer the VIRTIO_F_PARTIAL_ORDER feature. If one of the
-> > > > +features VIRTIO_F_IN_ORDER or VIRTIO_F_PARTIAL_ORDER is
-> > negotiated,
-> > > > +this knowledge
-> > >
-> > > Do these two features conflict with each other? I.e., at most one of
-> > > them may be negotiated (or offered?) at a time?
-> >
-> > Good point. I think so, yes. Will document.
-> 
-> Isn't it more natural to think of VIRTIO_F_IN_ORDER as the simple case
-> which always maintains ordered access, while the new feature flag
-> allows active control of when descriptors are ordered and when not? To
-> make it backward compatible let VIRTIO_F_IN_ORDER imply the new bit is
-> set, while the new bit set by itself without VIRTIO_F_IN_ORDER set
-> means only active control is offered. I guess a name like
-> VIRTIO_F_CTRL_ORDER would be more appropriate with this
-> interpretation.
+This patch set is meant to add documentation for balloon features that have
+been recently added to the Linux kernel[1,2] and that were recently added
+to QEMU[3].
+
+Fixes: https://github.com/oasis-tcs/virtio-spec/issues/84
+
+Changes since RFC:
+Incorporated suggestions from Cornelia Huck
+Fixed a few additional spelling errors
+
+Changes since v1:
+Incorporated additional suggestions from Cornelia Huck
+Dropped documentation referring to free page reporting from page poison patch
+
+Changes since v2:
+Rewrote multiple statements based on input from David Hildenbrand
+  Dropped use of balloon and deflate from page hinting description
+  Dropped use of free page reporting from page poison description
+  Cleaned up several spots that didn't match RFC2119 style comments
+  Added conformance links.
+  Various other clean-ups.
+Updated balloon command IDs based on input from Cornelia Huck
+
+Changes since v3:
+Reordered patches to place free page hinting at end of patch set
+  Moved contents out of patch to poison and free page reporting patches
+  Updated patch description to document some known issues with feature
+Further clean-ups based on input from David Hildenbrand
+
+Changes since v4:
+Further clean-ups for page hinting based on input from David Hildenbrand
+
+Changes since v5:
+Reverted patcher order changes from v3 placing hinting as first patch
+Addressed comments and added Reviewed-by from Cornelia Huck
+Addressed further items I found in free page hinting
+  Added requirement that output buffers be 4 bytes in size
+  Replaced reference to descriptor with buffer
+  Replaced references to free_page_hint_vq with free_page_vq
+
+Changes since v6:
+Fixed line that was left over from a merge conflict
+Added Reviewed-by from David Hildenbrand
+Created issue and added "Fixes" to cover page
+
+Changes since v7:
+Removed comments from patch 1 describing issues that we fixed or addressed
+Added Acked-by for patch 1 from Cornelia Huck
+
+[1]: https://lore.kernel.org/lkml/20200211224416.29318.44077.stgit@localhost.localdomain/
+[2]: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=b0c504f154718904ae49349147e3b7e6ae91ffdc
+[3]: https://lists.oasis-open.org/archives/virtio-dev/202004/msg00180.html
+
+---
+
+Alexander Duyck (3):
+      content: Document balloon feature free page hints
+      content: Document balloon feature page poison
+      content: Document balloon feature free page reporting
 
 
-So how does the behaviour with both VIRTIO_F_IN_ORDER with VIRTIO_F_PARTIAL_ORDER
-differ from just VIRTIO_F_IN_ORDER? If all buffers are used in order,
-then what is the extra meaning of FLUSH?
+ conformance.tex |    6 +
+ content.tex     |  286 ++++++++++++++++++++++++++++++++++++++++++++++++++++++-
+ 2 files changed, 286 insertions(+), 6 deletions(-)
+
+--
 
 
+This publicly archived list offers a means to provide input to the
+OASIS Virtual I/O Device (VIRTIO) TC.
 
-> 
-> Disclaimer: This email and any files transmitted with it may contain
-> confidential information intended for the addressee(s) only. The
-> information is not to be surrendered or copied to unauthorized
-> persons. If you have received this communication in error, please
-> notify the sender immediately and delete this e-mail from your system.
+In order to verify user consent to the Feedback License terms and
+to minimize spam in the list archive, subscription is required
+before posting.
 
-I think we are supposed to disregard this part as irrlevant, but just a
-reminder that you agreed that all material posted to the
-virtio mailing lists is governed by the relevant IPR rules.
-It is your responsibility not to post confidential information there.
-
--- 
-MST
-
-
----------------------------------------------------------------------
-To unsubscribe from this mail list, you must leave the OASIS TC that 
-generates this mail.  Follow this link to all your TCs in OASIS at:
-https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
+Subscribe: virtio-comment-subscribe@lists.oasis-open.org
+Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
+List help: virtio-comment-help@lists.oasis-open.org
+List archive: https://lists.oasis-open.org/archives/virtio-comment/
+Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
+List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
+Committee: https://www.oasis-open.org/committees/virtio/
+Join OASIS: https://www.oasis-open.org/join/
 
