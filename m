@@ -1,94 +1,48 @@
-Return-Path: virtio-dev-return-7729-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-7730-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 778F1985CF0
-	for <virtio-dev@lists.oasis-open.org>; Wed, 26 Aug 2020 13:26:28 +0000 (UTC)
-Date: Wed, 26 Aug 2020 09:26:02 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20200826092542-mutt-send-email-mst@kernel.org>
+	by lists.oasis-open.org (Postfix) with ESMTP id 32FA5985E29
+	for <virtio-dev@lists.oasis-open.org>; Thu, 27 Aug 2020 08:01:45 +0000 (UTC)
+Date: Thu, 27 Aug 2020 10:01:25 +0200
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Message-ID: <20200827080125.GC3399702@myrica>
 References: <20200821131540.2801801-1-jean-philippe@linaro.org>
+ <20200826092542-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <20200821131540.2801801-1-jean-philippe@linaro.org>
+In-Reply-To: <20200826092542-mutt-send-email-mst@kernel.org>
 Subject: [virtio-dev] Re: [PATCH v3 0/6] Add virtio-iommu built-in topology
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: "Michael S. Tsirkin" <mst@redhat.com>
 Cc: iommu@lists.linux-foundation.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, linux-pci@vger.kernel.org, kevin.tian@intel.com, sebastien.boeuf@intel.com, bhelgaas@google.com, jasowang@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Fri, Aug 21, 2020 at 03:15:34PM +0200, Jean-Philippe Brucker wrote:
-> Add a topology description to the virtio-iommu driver and enable x86
-> platforms.
+On Wed, Aug 26, 2020 at 09:26:02AM -0400, Michael S. Tsirkin wrote:
+> On Fri, Aug 21, 2020 at 03:15:34PM +0200, Jean-Philippe Brucker wrote:
+> > Add a topology description to the virtio-iommu driver and enable x86
+> > platforms.
+> > 
+> > Since [v2] we have made some progress on adding ACPI support for
+> > virtio-iommu, which is the preferred boot method on x86. It will be a
+> > new vendor-agnostic table describing para-virtual topologies in a
+> > minimal format. However some platforms don't use either ACPI or DT for
+> > booting (for example microvm), and will need the alternative topology
+> > description method proposed here. In addition, since the process to get
+> > a new ACPI table will take a long time, this provides a boot method even
+> > to ACPI-based platforms, if only temporarily for testing and
+> > development.
 > 
-> Since [v2] we have made some progress on adding ACPI support for
-> virtio-iommu, which is the preferred boot method on x86. It will be a
-> new vendor-agnostic table describing para-virtual topologies in a
-> minimal format. However some platforms don't use either ACPI or DT for
-> booting (for example microvm), and will need the alternative topology
-> description method proposed here. In addition, since the process to get
-> a new ACPI table will take a long time, this provides a boot method even
-> to ACPI-based platforms, if only temporarily for testing and
-> development.
+> OK should I park this in next now? Seems appropriate ...
 
-OK should I park this in next now? Seems appropriate ...
+Yes that sounds like a good idea. It could uncover new bugs since there is
+more automated testing happening for x86.
 
-> v3:
-> * Add patch 1 that moves virtio-iommu to a subfolder.
-> * Split the rest:
->   * Patch 2 adds topology-helper.c, which will be shared with the ACPI
->     support.
->   * Patch 4 adds definitions.
->   * Patch 5 adds parser in topology.c.
-> * Address other comments.
-> 
-> Linux and QEMU patches available at:
-> https://jpbrucker.net/git/linux virtio-iommu/devel
-> https://jpbrucker.net/git/qemu virtio-iommu/devel
-> 
-> [spec] https://lists.oasis-open.org/archives/virtio-dev/202008/msg00067.html
-> [v2] https://lore.kernel.org/linux-iommu/20200228172537.377327-1-jean-philippe@linaro.org/
-> [v1] https://lore.kernel.org/linux-iommu/20200214160413.1475396-1-jean-philippe@linaro.org/
-> [rfc] https://lore.kernel.org/linux-iommu/20191122105000.800410-1-jean-philippe@linaro.org/
-> 
-> Jean-Philippe Brucker (6):
->   iommu/virtio: Move to drivers/iommu/virtio/
->   iommu/virtio: Add topology helpers
->   PCI: Add DMA configuration for virtual platforms
->   iommu/virtio: Add topology definitions
->   iommu/virtio: Support topology description in config space
->   iommu/virtio: Enable x86 support
-> 
->  drivers/iommu/Kconfig                     |  18 +-
->  drivers/iommu/Makefile                    |   3 +-
->  drivers/iommu/virtio/Makefile             |   4 +
->  drivers/iommu/virtio/topology-helpers.h   |  50 +++++
->  include/linux/virt_iommu.h                |  15 ++
->  include/uapi/linux/virtio_iommu.h         |  44 ++++
->  drivers/iommu/virtio/topology-helpers.c   | 196 ++++++++++++++++
->  drivers/iommu/virtio/topology.c           | 259 ++++++++++++++++++++++
->  drivers/iommu/{ => virtio}/virtio-iommu.c |   4 +
->  drivers/pci/pci-driver.c                  |   5 +
->  MAINTAINERS                               |   3 +-
->  11 files changed, 597 insertions(+), 4 deletions(-)
->  create mode 100644 drivers/iommu/virtio/Makefile
->  create mode 100644 drivers/iommu/virtio/topology-helpers.h
->  create mode 100644 include/linux/virt_iommu.h
->  create mode 100644 drivers/iommu/virtio/topology-helpers.c
->  create mode 100644 drivers/iommu/virtio/topology.c
->  rename drivers/iommu/{ => virtio}/virtio-iommu.c (99%)
-> 
-> -- 
-> 2.28.0
-> 
-> _______________________________________________
-> iommu mailing list
-> iommu@lists.linux-foundation.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
-
+Thanks,
+Jean
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
