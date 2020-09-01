@@ -1,80 +1,114 @@
-Return-Path: virtio-comment-return-1457-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-comment-return-1438-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-comment@lists.oasis-open.org>
 List-Post: <mailto:virtio-comment@lists.oasis-open.org>
 List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
-Date: Wed, 16 Sep 2020 09:28:34 -0400
+Date: Tue, 1 Sep 2020 10:34:40 -0400
 From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20200916092827-mutt-send-email-mst@kernel.org>
+Message-ID: <20200901103356-mutt-send-email-mst@kernel.org>
 References: <159836664741.231431.2775539890399592989.stgit@ahduyck-workstation>
- <159836670239.231431.14835898822569373567.stgit@ahduyck-workstation>
- <fd8d3fed-a92a-4356-7a3d-fb773b04880a@siemens.com>
- <CAKgT0Ud7XfcEVL8jy-6kNQ=BDUJqh-xp94MZ7F2+Vf+mv1vj3Q@mail.gmail.com>
- <2faa1a86-fc9c-f325-00f0-99df49b2421d@siemens.com>
- <CAKgT0UercLR43iY1PQ7LOvEnqt-c2mds7Mv7XS=77Uju-Qdz=g@mail.gmail.com>
- <20200914081355.71f0d3f7.cohuck@redhat.com>
+ <20200825170120.429b3ee8.cohuck@redhat.com>
+ <CAKgT0Uc12p_Y3UKFA6=66ecEjOaGhfQ=gb--nf2HA2iLap7KvA@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20200914081355.71f0d3f7.cohuck@redhat.com>
-Subject: Re: [virtio-comment] Re: [virtio-dev] [PATCH v8 1/3] content:
- Document balloon feature free page hints
+In-Reply-To: <CAKgT0Uc12p_Y3UKFA6=66ecEjOaGhfQ=gb--nf2HA2iLap7KvA@mail.gmail.com>
+Subject: [virtio-comment] Re: [PATCH v8 0/3] virtio-spec: Add documentation for recently added
+ balloon features
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-To: Cornelia Huck <cohuck@redhat.com>
-Cc: Alexander Duyck <alexander.duyck@gmail.com>, Jan Kiszka <jan.kiszka@siemens.com>, David Hildenbrand <david@redhat.com>, virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, "Wang, Wei W" <wei.w.wang@intel.com>
+To: Alexander Duyck <alexander.duyck@gmail.com>
+Cc: Cornelia Huck <cohuck@redhat.com>, David Hildenbrand <david@redhat.com>, virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, "Wang, Wei W" <wei.w.wang@intel.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Mon, Sep 14, 2020 at 08:13:55AM +0200, Cornelia Huck wrote:
-> On Fri, 11 Sep 2020 08:11:15 -0700
-> Alexander Duyck <alexander.duyck@gmail.com> wrote:
-> 
-> > On Thu, Sep 10, 2020 at 10:28 PM Jan Kiszka <jan.kiszka@siemens.com> wrote:
+On Tue, Aug 25, 2020 at 01:40:25PM -0700, Alexander Duyck wrote:
+> On Tue, Aug 25, 2020 at 8:01 AM Cornelia Huck <cohuck@redhat.com> wrote:
+> >
+> > On Tue, 25 Aug 2020 07:44:55 -0700
+> > Alexander Duyck <alexander.duyck@gmail.com> wrote:
+> >
+> > > This patch set is meant to add documentation for balloon features that have
+> > > been recently added to the Linux kernel[1,2] and that were recently added
+> > > to QEMU[3].
 > > >
-> > > On 04.09.20 18:56, Alexander Duyck wrote:  
-> > > > On Fri, Sep 4, 2020 at 8:20 AM Jan Kiszka <jan.kiszka@siemens.com> wrote:  
-> > > >>
-> > > >> On 25.08.20 16:45, Alexander Duyck wrote:  
-> 
-> > > >>> @@ -5042,13 +5049,17 @@ \subsection{Feature bits}\label{sec:Device Types / Memory Balloon Device / Featu
-> > > >>>  VIRTIO_BALLOON_F_MUST_TELL_HOST is not negotiated.
-> > > >>>
-> > > >>>  \subsection{Device configuration layout}\label{sec:Device Types / Memory Balloon Device / Device configuration layout}
-> > > >>> -  Both fields of this configuration
-> > > >>> -  are always available.
-> > > >>> +  \field{num_pages} and \field{actual} are always available.
-> > > >>> +
-> > > >>> +  \field{free_page_hint_cmd_id} is available if
-> > > >>> +    VIRTIO_BALLOON_F_FREE_PAGE_HINT has been negotiated and is read-only by
-> > > >>> +    the driver.  
-> > > >>
-> > > >> This reads at least to me like "...if VIRTIO_BALLOON_F_FREE_PAGE_HINT
-> > > >> ... is read-only by the driver". I suspect you rather meant
-> > > >> "free_page_hint_cmd_id is read-only...". Maybe split up into two sentences?  
-> > > >
-> > > > Yes, the intention is:
-> > > > 1. free_page_hint_cmd_id is only available if
-> > > > VIRTIO_BALLOON_F_FREE_PAGE_HINT has been negotiated
-> > > > 2. free_page_hint_cmd_id is read only by the driver
-> > > >
-> > > > If needed I suppose we could break it up by splitting it into two
-> > > > sentences, or adding "the field" after the "and".
-> > > >  
+> > > Fixes: https://github.com/oasis-tcs/virtio-spec/issues/84
 > > >
-> > > I'm fine with both options but please adjust this - on top (Michael just
-> > > opened the voting for this version again due to the formal typo in round 1).
+> > > Changes since RFC:
+> > > Incorporated suggestions from Cornelia Huck
+> > > Fixed a few additional spelling errors
 > > >
-> > > Jan  
-> > 
-> > Since the patch set is being voted on is there a preferred method for
-> > making this sort of update? I'm just wondering if I should do an
-> > additional incremental patch, just submit a replacement for this
-> > patch, or make the change and resubmit the entire patch set?
+> > > Changes since v1:
+> > > Incorporated additional suggestions from Cornelia Huck
+> > > Dropped documentation referring to free page reporting from page poison patch
+> > >
+> > > Changes since v2:
+> > > Rewrote multiple statements based on input from David Hildenbrand
+> > >   Dropped use of balloon and deflate from page hinting description
+> > >   Dropped use of free page reporting from page poison description
+> > >   Cleaned up several spots that didn't match RFC2119 style comments
+> > >   Added conformance links.
+> > >   Various other clean-ups.
+> > > Updated balloon command IDs based on input from Cornelia Huck
+> > >
+> > > Changes since v3:
+> > > Reordered patches to place free page hinting at end of patch set
+> > >   Moved contents out of patch to poison and free page reporting patches
+> > >   Updated patch description to document some known issues with feature
+> > > Further clean-ups based on input from David Hildenbrand
+> > >
+> > > Changes since v4:
+> > > Further clean-ups for page hinting based on input from David Hildenbrand
+> > >
+> > > Changes since v5:
+> > > Reverted patcher order changes from v3 placing hinting as first patch
+> > > Addressed comments and added Reviewed-by from Cornelia Huck
+> > > Addressed further items I found in free page hinting
+> > >   Added requirement that output buffers be 4 bytes in size
+> > >   Replaced reference to descriptor with buffer
+> > >   Replaced references to free_page_hint_vq with free_page_vq
+> > >
+> > > Changes since v6:
+> > > Fixed line that was left over from a merge conflict
+> > > Added Reviewed-by from David Hildenbrand
+> > > Created issue and added "Fixes" to cover page
+> > >
+> > > Changes since v7:
+> > > Removed comments from patch 1 describing issues that we fixed or addressed
+> > > Added Acked-by for patch 1 from Cornelia Huck
+> > >
+> > > [1]: https://lore.kernel.org/lkml/20200211224416.29318.44077.stgit@localhost.localdomain/
+> > > [2]: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=b0c504f154718904ae49349147e3b7e6ae91ffdc
+> > > [3]: https://lists.oasis-open.org/archives/virtio-dev/202004/msg00180.html
+> > >
+> > > ---
+> > >
+> > > Alexander Duyck (3):
+> > >       content: Document balloon feature free page hints
+> > >       content: Document balloon feature page poison
+> > >       content: Document balloon feature free page reporting
+> > >
+> > >
+> > >  conformance.tex |    6 +
+> > >  content.tex     |  286 ++++++++++++++++++++++++++++++++++++++++++++++++++++++-
+> > >  2 files changed, 286 insertions(+), 6 deletions(-)
+> > >
+> > > --
+> > >
+> >
+> > I think this is good to vote on now.
 > 
-> I think doing an additional patch on top and then doing another vote on
-> that is the best way to handle this. (Or maybe it is minor enough to
-> simply merge the incremental patch?)
+> Thanks for the review feedback. If there are no other comments then I
+> request a vote for inclusion.
+> 
+> Fixes: https://github.com/oasis-tcs/virtio-spec/issues/84
+> 
+> - Alex
 
-yes, this sounds good to me
+Ballot created at https://www.oasis-open.org/committees/ballot.php?id=3521
+Once it concludes, would appreciate a reminder to merge the patch.
+Thanks!
+
+-- 
+MST
 
 
 This publicly archived list offers a means to provide input to the
