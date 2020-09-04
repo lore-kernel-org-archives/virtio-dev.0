@@ -1,220 +1,185 @@
-Return-Path: virtio-dev-return-7779-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-7761-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id C4F40985FD5
-	for <virtio-dev@lists.oasis-open.org>; Fri, 11 Sep 2020 16:44:17 +0000 (UTC)
-References: <87sgct153f.fsf@linaro.org> <87a6xxpyoa.fsf@linaro.org>
- <6005a63d-e6e5-4883-1f58-16c2b45af5fb@opensynergy.com>
-From: Alex =?utf-8?Q?Benn=C3=A9e?= <alex.bennee@linaro.org>
-In-reply-to: <6005a63d-e6e5-4883-1f58-16c2b45af5fb@opensynergy.com>
-Date: Fri, 11 Sep 2020 17:44:08 +0100
-Message-ID: <87een8nu07.fsf@linaro.org>
+	by lists.oasis-open.org (Postfix) with ESMTP id 0E286985EE1
+	for <virtio-dev@lists.oasis-open.org>; Fri,  4 Sep 2020 15:29:53 +0000 (UTC)
+References: <20200820132920.2041932-1-jean-philippe@linaro.org>
+From: Auger Eric <eric.auger@redhat.com>
+Message-ID: <b7c2bb96-721e-0032-3485-96fef99871dd@redhat.com>
+Date: Fri, 4 Sep 2020 17:29:18 +0200
 MIME-Version: 1.0
-Subject: Re: [virtio-dev] Re: clarifying the handling of responses for
- virtio-rpmb
+In-Reply-To: <20200820132920.2041932-1-jean-philippe@linaro.org>
+Subject: Re: [virtio-dev] [PATCH virtio v2] virtio-iommu: Add built-in
+ topology description
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-To: Harald Mommer <hmo@opensynergy.com>
-Cc: virtio-dev@lists.oasis-open.org, virtualization@lists.linuxfoundation.org, Tomas Winkler <tomas.winkler@intel.com>, Matti =?utf-8?Q?M=C3=B6ll?= <Matti.Moell@opensynergy.com>
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>, virtio-dev@lists.oasis-open.org
+Cc: mst@redhat.com, joro@8bytes.org, sebastien.boeuf@intel.com, kevin.tian@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+Hi Jean,
 
-Harald Mommer <hmo@opensynergy.com> writes:
+On 8/20/20 3:29 PM, Jean-Philippe Brucker wrote:
+> Add a simple method to describe the IOMMU topology in the config space,
+> guarded by a new feature bit. A list of capabilities in the config space
+> describes the devices managed by the IOMMU and their endpoint IDs.
+> 
+> As outlined in paragraph #1 below, the method used to describe I/O
+> topology depends on the platform. Device-Tree based platforms use the
+> "iommus" and "iommu-map" DT properties, while ACPI based platforms will
+> use the VIOT table (whose format is compatible with this built-in
+> description, but is under discussion). This adds a method for
+> lightweight platforms that don't use either DT or ACPI.
+> 
+> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> ---
+> v2:
+> * Precise what \field{length} should contain (Eric)
+> * Rename num_items -> count
+> v1: https://lists.oasis-open.org/archives/virtio-dev/202007/msg00023.html
+> ---
+>  virtio-iommu.tex | 102 +++++++++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 102 insertions(+)
+> 
+> diff --git a/virtio-iommu.tex b/virtio-iommu.tex
+> index 08b358a..82254b1 100644
+> --- a/virtio-iommu.tex
+> +++ b/virtio-iommu.tex
+> @@ -67,6 +67,9 @@ \subsection{Feature bits}\label{sec:Device Types / IOMMU Device / Feature bits}
+>  
+>  \item[VIRTIO_IOMMU_F_MMIO (5)]
+>    The VIRTIO_IOMMU_MAP_F_MMIO flag is available.
+> +
+> +\item[VIRTIO_IOMMU_F_TOPOLOGY (6)]
+> +  Topology description is available at \field{topo_config}.
+>  \end{description}
+>  
+>  \drivernormative{\subsubsection}{Feature bits}{Device Types / IOMMU Device / Feature bits}
+> @@ -97,6 +100,10 @@ \subsection{Device configuration layout}\label{sec:Device Types / IOMMU Device /
+>      le32 end;
+>    } domain_range;
+>    le32 probe_size;
+> +  struct virtio_iommu_topo_config {
+> +    le16 count;
+> +    le16 offset;
+> +  } topo_config;
+>  };
+>  \end{lstlisting}
+>  
+> @@ -139,6 +146,101 @@ \subsection{Device initialization}\label{sec:Device Types / IOMMU Device / Devic
+>  If the driver does not accept the VIRTIO_IOMMU_F_BYPASS feature, the
+>  device SHOULD NOT let endpoints access the guest-physical address space.
+>  
+> +\subsubsection{Built-in topology description}\label{sec:Device Types / IOMMU Device / Device initialization / topology}
+> +
+> +The device manages memory accesses from endpoints, identified by endpoint
+> +IDs. The driver can discover which endpoint ID corresponds to an endpoint
+> +using a method specific to the platform. Platforms described with device
+> +tree use the \texttt{iommus} and \texttt{iommu-map} properties embedded
+> +into device nodes for this purpose. Platforms described with ACPI use a
+> +table such as the Virtual I/O Translation Table (VIOT). Platforms that do
+> +not support either device tree or ACPI may embed a minimalistic
+> +description in the device configuration space, declared by the
+> +VIRTIO_IOMMU_F_TOPOLOGY feature.
+> +
+> +A disadvantage of describing the topology from within the device is the
+> +lack of initialization ordering information. Out-of-band descriptions such
+> +as device tree and ACPI let the operating system know about device
+> +dependencies so that it can initialize supplier devices (IOMMUs) before
+> +their consumers (endpoints). Platforms using the VIRTIO_IOMMU_F_TOPOLOGY
+> +feature have to communicate the device dependency in another way.
+> +
+> +If the VIRTIO_IOMMU_F_TOPOLOGY feature is negotiated, \field{topo_config}
+> +describes the topology description array. \field{topo_config.offset} is
+> +the offset between the beginning of the device-specific configuration
+> +space (struct virtio_iommu_config) and the array. The array is composed of
+> +\field{topo_config.count} topology structures. A topology structure
+> +defines the endpoint ID of one or more endpoints managed by the
+> +virtio-iommu device. Each structure has a \field{length} field, which
+> +defines the offset from the beginning of the structure to the beginning of
+> +the next one. Each structure starts with a \field{type} byte:
+> +
+> +\begin{description}
+> +  \item[VIRTIO_IOMMU_TOPO_PCI_RANGE (1)] struct virtio_iommu_topo_pci_range
+> +  \item[VIRTIO_IOMMU_TOPO_MMIO (2)] struct virtio_iommu_topo_mmio
+> +\end{description}
+> +
+> +To stay binary compatible with ACPI VIOT, types 3 and 4 are currently
+> +reserved.
+> +
+> +\paragraph{PCI range}\label{sec:Device Types / IOMMU Device / Device initialization / topology / PCI range}
+> +
+> +\begin{lstlisting}
+> +struct virtio_iommu_topo_pci_range {
+> +  u8 type;
+> +  u8 reserved;
+> +  le16 length;
+> +  le32 endpoint_start;
+> +  le16 segment;
+> +  le16 bdf_start;
+> +  le16 bdf_end;
+> +  le16 padding;
+> +};
+> +\end{lstlisting}
+> +
+> +The PCI range structure describes the endpoint IDs of a series of PCI
+> +devices identified by their BDF (Bus-Device-Function) number.
+> +
+> +\begin{description}
+> +  \item[\field{type}] VIRTIO_IOMMU_TOPO_PCI_RANGE.
+> +  \item[\field{length}] Length of the structure in bytes.
+> +  \item[\field{endpoint_start}] First endpoint ID.
+> +  \item[\field{segment}] Identifier of the PCI hierarchy. Sometimes called
+> +    domain number.
+> +  \item[\field{bdf_start}] First BDF in the range.
+> +  \item[\field{bdf_end}] Last BDF in the range.
+> +\end{description}
+> +
+> +The correspondence between a PCI BDF in the range
+> +[ bdf_start; bdf_end ] and its endpoint IDs is a linear transformation:
+> +endpoint_id = bdf - bdf_start + endpoint_start.
+> +
+> +\paragraph{Single endpoint}\label{sec:Device Types / IOMMU Device / Device initialization / topology / Single endpoint}
+> +
+> +\begin{lstlisting}
+> +struct virtio_iommu_topo_mmio {
+> +  u8 type;
+> +  u8 reserved;
+> +  le16 length;
+> +  le32 endpoint;
+> +  le64 address;
+> +};
+> +\end{lstlisting}
+> +
+> +This structure describes a single endpoint.
+> +
+> +\begin{description}
+> +  \item[\field{type}] VIRTIO_IOMMU_TOPO_MMIO.
+> +  \item[\field{length}] Length of the structure in bytes.
+> +  \item[\field{endpoint}] The endpoint ID.
+> +  \item[\field{address}] The first MMIO address in the physical address
+> +    space.
+> +\end{description}
+> +
+> +\devicenormative{\paragraph}{Built-in topology description}{Device Types / IOMMU Device / Device initialization / topology}
+> +
+> +\field{topo_config.offset} SHOULD be aligned on 8 bytes.
+> +
+>  \subsection{Device operations}\label{sec:Device Types / IOMMU Device / Device operations}
+>  
+>  Driver send requests on the request virtqueue, notifies the device and
+> 
+Reviewed-by: Eric Auger <eric.auger@redhat.com>
 
-> Hello,
->
-> I had my hands in a virtio RPMB device implementation the last few
-> weeks. During the development process I had to apply some patches to the
-> virtio RPMB driver:
->
->   * Change the device id from 0xFFFF to 28
->
->   * (Add some debug facilities. Needed to see the frames. Got first no
->     request frames on the device side, nothing.)
->
->   * Fix descriptor directions. For the outgoing frames num_in was
->     incremented instead of num_out.
->
-> The frames in the for-loop may be outgoing or intended for incoming
-> data. Decided on the RPMB_F_WRITE flag what to do with those frames:
->
->    for (i =3D 0; i < ncmds; i++) {
->          ...
->
->          if (cmds[i].flags & RPMB_F_WRITE)
->              sgs[num_out++ + num_in] =3D &frame[i];
->          else
->              sgs[num_out + num_in++] =3D &frame[i];
->      }
->
->   * Got now too much data comparing to the virtio spec. Removed those
->     additional frames in the beginning disabling some pieces of code in
->     the virtio RPMB driver.
->
-> You are probably puzzled by something which I think is a bug in the
-> virtio RPMB driver regarding the descriptor directions. Could be that
-> some device implementations do not really care about provided descriptor
-> directions, in this case this may go unnoticed for a while.
+Thanks
 
-I wonder if we've ended up making very similar changes to the virtio
-driver? I suspect because the originally driver had a whole bunch of
-command frames for something that never made it into the final spec.
+Eric
 
-FWIW my current hacked up tree is here:
-
-  https://git.linaro.org/people/alex.bennee/linux.git/log/?h=3Dtesting/ivsh=
-mem-and-rpm-aug2020
-
-I was pondering if it was worth removing the file-system integration
-patches and just posting a series which implements the rpmb char device,
-userspace tool and the virtio-rpmb driver?
-
->
->
-> Am 10.09.20 um 15:08 schrieb Alex Benn=C3=A9e:
->> CAUTION: This email originated from outside of the organization.
->> Do not click links or open attachments unless you recognize the sender a=
-nd know the content is safe.
->>
->>
->> Alex Benn=C3=A9e <alex.bennee@linaro.org> writes:
->>
->>> Hi,
->>>
->>> The specification lists a number of commands that have responses:
->>>
->>>    The operation of a virtio RPMB device is driven by the requests plac=
-ed
->>>    on the virtqueue. The type of request can be program key
->>>    (VIRTIO_RPMB_REQ_PROGRAM_KEY), get write counter
->>>    (VIRTIO_RPMB_REQ_GET_WRITE_COUNTER), write
->>>    (VIRTIO_RPMB_REQ_DATA_WRITE), and read (VIRTIO_RPMB_REQ_DATA_READ). =
-A
->>>    program key or write request can also combine with a result read
->>>    (VIRTIO_RPMB_REQ_RESULT_READ) for a returned result.
->>>
->>> Now I'm deep in the guts of virt queues doing the implementation I'm
->>> trying to clarify exactly what frames should be sent to the device and
->>> if they should be out_sgs or in_sgs. I suspect there is some difference
->>> between the original prototype interface and what we have now.
->>>
->>> Some operations obviously have an implied response
->>> (VIRTIO_RPMB_REQ_GET_WRITE_COUNTER and VIRTIO_RPMB_REQ_DATA_READ). As
->>> far as I could tell the frame should be simple:
->>>
->>>    sg[0] (out_sg=3D1) - frame with command
->>>    sg[1..n] (in_sg=3D1..n) - space for the reply to be filled in by the=
- device
->>>
->>> However the language for the program key and data write say they can be
->>> combined with a VIRTIO_RPMB_REQ_RESULT_READ to optionally return a
->>> result. My question is is this result read meant to be in a separate
->>> request frame and response frame so you get:
->>>
->>>   sg[0] - VIRTIO_RPMB_REQ_PROGRAM_KEY/VIRTIO_RPMB_REQ_DATA_WRITE frame
->>>   sg[1] - VIRTIO_RPMB_REQ_RESULT_READ (out_sg=3D2)
->>>   sg[2] - empty frame for response (in_sg=3D1)
-> This is what works after applying the direction patch above in the
-> virtio driver and which makes also sense to me. See also below my
-> comment for the rpmb_ioctl() code.
->>>
->>> or:
->>>
->>>   sg[0] - VIRTIO_RPMB_REQ_PROGRAM_KEY/VIRTIO_RPMB_REQ_DATA_WRITE frame =
-(out_sg=3D1)
->>>   sg[1] - VIRTIO_RPMB_REQ_RESULT_READ (in_sg=3D1)
-> Makes no sense for me. The VIRTIO_RPMB_REQ_RESULT_READ is a request
-> (command) in the same way as the other requests.
->>>
->>> where the result frame is filled in and sent back?
->>>
->>> I must say I'm a little confused by the logic in rpmb_ioctl (in the
->>> userspace tool) which creates both out_frames and resp frames:
->
-> Was also confused but it's not that complicated (after some hours). For
-> REQ_PROGRAM_KEY/REQ_WRITE_DATA is always an additional REQ_RESULT_READ
-> added. So in the end as last descriptor there is always an incoming
-> frame to be filled either with the  RESULT_READ data or the response
-> data for REQ_GET_WRITE_COUNTER/REQ_DATA_READ.
->
->>>    static int rpmb_ioctl(uint8_t frame_type, int fd, uint16_t req,
->>>                          const void *frames_in, unsigned int cnt_in,
->>>                          void *frames_out, unsigned int cnt_out)
->>>    {
->>>            int ret;
->>>            struct __packed {
->>>                    struct rpmb_ioc_seq_cmd h;
->>>                    struct rpmb_ioc_cmd cmd[3];
->>>            } iseq =3D {};
->>>
->>>            void *frame_res =3D NULL;
->>>            int i;
->>>            uint32_t flags;
->>>
->>>            rpmb_dbg("RPMB OP: %s\n", rpmb_op_str(req));
->>>            dbg_dump_frame(frame_type, "In Frame: ", frames_in, cnt_in);
->>>
->>>            i =3D 0;
->>>            flags =3D RPMB_F_WRITE;
->>>            if (req =3D=3D RPMB_WRITE_DATA || req =3D=3D RPMB_PROGRAM_KE=
-Y)
->>>                    flags |=3D RPMB_F_REL_WRITE;
->>>            rpmb_ioc_cmd_set(iseq.cmd[i], flags, frames_in, cnt_in);
->>>            i++;
->>>
->>>            if (req =3D=3D RPMB_WRITE_DATA || req =3D=3D RPMB_PROGRAM_KE=
-Y) {
->>>                    frame_res =3D rpmb_frame_alloc(frame_type, 0);
->>>                    if (!frame_res)
->>>                            return -ENOMEM;
->>>                    rpmb_frame_set(frame_type, frame_res,
->>>                                   RPMB_RESULT_READ, 0, 0, 0);
->>>                    rpmb_ioc_cmd_set(iseq.cmd[i], RPMB_F_WRITE, frame_re=
-s, 0);
->>>                    i++;
->>>            }
->>>
->>>            rpmb_ioc_cmd_set(iseq.cmd[i], 0, frames_out, cnt_out);
->>>            i++;
->>>
->>>            iseq.h.num_of_cmds =3D i;
->>>            ret =3D ioctl(fd, RPMB_IOC_SEQ_CMD, &iseq);
->>>            if (ret < 0)
->>>                    rpmb_err("ioctl failure %d: %s.\n", ret, strerror(er=
-rno));
->>>
->>>            ret =3D rpmb_check_req_resp(frame_type, req, frames_out);
->>>
->>>            dbg_dump_frame(frame_type, "Res Frame: ", frame_res, 1);
->>>            dbg_dump_frame(frame_type, "Out Frame: ", frames_out, cnt_ou=
-t);
->>>            free(frame_res);
->>>            return ret;
->>>    }
->>>
->>> although I'm guessing this might just be an impedance between the
->>> chardev ioctl interface for rpmb and the virtio FE driver which is only
->>> one potential consumer of these rpmb ioc commands?
->>>
->>> Can anyone clarify?
->> Ping?
->>
->> --
->> Alex Benn=C3=A9e
->>
->> ---------------------------------------------------------------------
->> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
->> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
->>
->>
-
-
---=20
-Alex Benn=C3=A9e
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
