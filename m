@@ -1,137 +1,220 @@
-Return-Path: virtio-dev-return-7773-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-7778-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 163D9985FBB
-	for <virtio-dev@lists.oasis-open.org>; Thu, 10 Sep 2020 13:08:09 +0000 (UTC)
-References: <87sgct153f.fsf@linaro.org>
-From: Alex =?utf-8?Q?Benn=C3=A9e?= <alex.bennee@linaro.org>
-In-reply-to: <87sgct153f.fsf@linaro.org>
-Date: Thu, 10 Sep 2020 14:08:05 +0100
-Message-ID: <87a6xxpyoa.fsf@linaro.org>
+	by lists.oasis-open.org (Postfix) with ESMTP id 79451985FD5
+	for <virtio-dev@lists.oasis-open.org>; Fri, 11 Sep 2020 15:50:45 +0000 (UTC)
+References: <87sgct153f.fsf@linaro.org> <87a6xxpyoa.fsf@linaro.org>
+From: Harald Mommer <hmo@opensynergy.com>
+Message-ID: <6005a63d-e6e5-4883-1f58-16c2b45af5fb@opensynergy.com>
+Date: Fri, 11 Sep 2020 17:50:38 +0200
 MIME-Version: 1.0
+In-Reply-To: <87a6xxpyoa.fsf@linaro.org>
 Subject: [virtio-dev] Re: clarifying the handling of responses for virtio-rpmb
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: quoted-printable
-To: virtio-dev@lists.oasis-open.org, virtualization@lists.linuxfoundation.org
-Cc: Tomas Winkler <tomas.winkler@intel.com>, Yang Huang <yang.huang@intel.com>, "Zhu, Bing" <bing.zhu@intel.com>, "Michael
- S.Tsirkin" <mst@redhat.com>
+Content-Language: en-US
+To: =?UTF-8?Q?Alex_Benn=c3=a9e?= <alex.bennee@linaro.org>, virtio-dev@lists.oasis-open.org, virtualization@lists.linuxfoundation.org
+Cc: Tomas Winkler <tomas.winkler@intel.com>, =?UTF-8?Q?Matti_M=c3=b6ll?= <Matti.Moell@opensynergy.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+Hello,
 
-Alex Benn=C3=A9e <alex.bennee@linaro.org> writes:
+I had my hands in a virtio RPMB device implementation the last few
+weeks. During the development process I had to apply some patches to the
+virtio RPMB driver:
 
-> Hi,
->
-> The specification lists a number of commands that have responses:
->
->   The operation of a virtio RPMB device is driven by the requests placed
->   on the virtqueue. The type of request can be program key
->   (VIRTIO_RPMB_REQ_PROGRAM_KEY), get write counter
->   (VIRTIO_RPMB_REQ_GET_WRITE_COUNTER), write
->   (VIRTIO_RPMB_REQ_DATA_WRITE), and read (VIRTIO_RPMB_REQ_DATA_READ). A
->   program key or write request can also combine with a result read
->   (VIRTIO_RPMB_REQ_RESULT_READ) for a returned result.
->
-> Now I'm deep in the guts of virt queues doing the implementation I'm
-> trying to clarify exactly what frames should be sent to the device and
-> if they should be out_sgs or in_sgs. I suspect there is some difference
-> between the original prototype interface and what we have now.
->
-> Some operations obviously have an implied response
-> (VIRTIO_RPMB_REQ_GET_WRITE_COUNTER and VIRTIO_RPMB_REQ_DATA_READ). As
-> far as I could tell the frame should be simple:
->
->   sg[0] (out_sg=3D1) - frame with command
->   sg[1..n] (in_sg=3D1..n) - space for the reply to be filled in by the de=
-vice
->
-> However the language for the program key and data write say they can be
-> combined with a VIRTIO_RPMB_REQ_RESULT_READ to optionally return a
-> result. My question is is this result read meant to be in a separate
-> request frame and response frame so you get:
->
->  sg[0] - VIRTIO_RPMB_REQ_PROGRAM_KEY/VIRTIO_RPMB_REQ_DATA_WRITE frame
->  sg[1] - VIRTIO_RPMB_REQ_RESULT_READ (out_sg=3D2)
->  sg[2] - empty frame for response (in_sg=3D1)
->
-> or:
->
->  sg[0] - VIRTIO_RPMB_REQ_PROGRAM_KEY/VIRTIO_RPMB_REQ_DATA_WRITE frame (ou=
-t_sg=3D1)
->  sg[1] - VIRTIO_RPMB_REQ_RESULT_READ (in_sg=3D1)
->
-> where the result frame is filled in and sent back?
->
-> I must say I'm a little confused by the logic in rpmb_ioctl (in the
-> userspace tool) which creates both out_frames and resp frames:
->
->   static int rpmb_ioctl(uint8_t frame_type, int fd, uint16_t req,
->                         const void *frames_in, unsigned int cnt_in,
->                         void *frames_out, unsigned int cnt_out)
->   {
->           int ret;
->           struct __packed {
->                   struct rpmb_ioc_seq_cmd h;
->                   struct rpmb_ioc_cmd cmd[3];
->           } iseq =3D {};
->
->           void *frame_res =3D NULL;
->           int i;
->           uint32_t flags;
->
->           rpmb_dbg("RPMB OP: %s\n", rpmb_op_str(req));
->           dbg_dump_frame(frame_type, "In Frame: ", frames_in, cnt_in);
->
->           i =3D 0;
->           flags =3D RPMB_F_WRITE;
->           if (req =3D=3D RPMB_WRITE_DATA || req =3D=3D RPMB_PROGRAM_KEY)
->                   flags |=3D RPMB_F_REL_WRITE;
->           rpmb_ioc_cmd_set(iseq.cmd[i], flags, frames_in, cnt_in);
->           i++;
->
->           if (req =3D=3D RPMB_WRITE_DATA || req =3D=3D RPMB_PROGRAM_KEY) =
-{
->                   frame_res =3D rpmb_frame_alloc(frame_type, 0);
->                   if (!frame_res)
->                           return -ENOMEM;
->                   rpmb_frame_set(frame_type, frame_res,
->                                  RPMB_RESULT_READ, 0, 0, 0);
->                   rpmb_ioc_cmd_set(iseq.cmd[i], RPMB_F_WRITE, frame_res, =
-0);
->                   i++;
->           }
->
->           rpmb_ioc_cmd_set(iseq.cmd[i], 0, frames_out, cnt_out);
->           i++;
->
->           iseq.h.num_of_cmds =3D i;
->           ret =3D ioctl(fd, RPMB_IOC_SEQ_CMD, &iseq);
->           if (ret < 0)
->                   rpmb_err("ioctl failure %d: %s.\n", ret, strerror(errno=
-));
->
->           ret =3D rpmb_check_req_resp(frame_type, req, frames_out);
->
->           dbg_dump_frame(frame_type, "Res Frame: ", frame_res, 1);
->           dbg_dump_frame(frame_type, "Out Frame: ", frames_out, cnt_out);
->           free(frame_res);
->           return ret;
->   }
->
-> although I'm guessing this might just be an impedance between the
-> chardev ioctl interface for rpmb and the virtio FE driver which is only
-> one potential consumer of these rpmb ioc commands?=20
->
-> Can anyone clarify?
+  * Change the device id from 0xFFFF to 28
 
-Ping?
+  * (Add some debug facilities. Needed to see the frames. Got first no
+    request frames on the device side, nothing.)
 
---=20
-Alex Benn=C3=A9e
+  * Fix descriptor directions. For the outgoing frames num_in was
+    incremented instead of num_out.
+
+The frames in the for-loop may be outgoing or intended for incoming
+data. Decided on the RPMB_F_WRITE flag what to do with those frames:
+
+   for (i =3D 0; i < ncmds; i++) {
+         ...
+
+         if (cmds[i].flags & RPMB_F_WRITE)
+             sgs[num_out++ + num_in] =3D &frame[i];
+         else
+             sgs[num_out + num_in++] =3D &frame[i];
+     }
+
+  * Got now too much data comparing to the virtio spec. Removed those
+    additional frames in the beginning disabling some pieces of code in
+    the virtio RPMB driver.
+
+You are probably puzzled by something which I think is a bug in the
+virtio RPMB driver regarding the descriptor directions. Could be that
+some device implementations do not really care about provided descriptor
+directions, in this case this may go unnoticed for a while.
+
+
+Am 10.09.20 um 15:08 schrieb Alex Benn=C3=A9e:
+> CAUTION: This email originated from outside of the organization.
+> Do not click links or open attachments unless you recognize the sender an=
+d know the content is safe.
+>
+>
+> Alex Benn=C3=A9e <alex.bennee@linaro.org> writes:
+>
+>> Hi,
+>>
+>> The specification lists a number of commands that have responses:
+>>
+>>    The operation of a virtio RPMB device is driven by the requests place=
+d
+>>    on the virtqueue. The type of request can be program key
+>>    (VIRTIO_RPMB_REQ_PROGRAM_KEY), get write counter
+>>    (VIRTIO_RPMB_REQ_GET_WRITE_COUNTER), write
+>>    (VIRTIO_RPMB_REQ_DATA_WRITE), and read (VIRTIO_RPMB_REQ_DATA_READ). A
+>>    program key or write request can also combine with a result read
+>>    (VIRTIO_RPMB_REQ_RESULT_READ) for a returned result.
+>>
+>> Now I'm deep in the guts of virt queues doing the implementation I'm
+>> trying to clarify exactly what frames should be sent to the device and
+>> if they should be out_sgs or in_sgs. I suspect there is some difference
+>> between the original prototype interface and what we have now.
+>>
+>> Some operations obviously have an implied response
+>> (VIRTIO_RPMB_REQ_GET_WRITE_COUNTER and VIRTIO_RPMB_REQ_DATA_READ). As
+>> far as I could tell the frame should be simple:
+>>
+>>    sg[0] (out_sg=3D1) - frame with command
+>>    sg[1..n] (in_sg=3D1..n) - space for the reply to be filled in by the =
+device
+>>
+>> However the language for the program key and data write say they can be
+>> combined with a VIRTIO_RPMB_REQ_RESULT_READ to optionally return a
+>> result. My question is is this result read meant to be in a separate
+>> request frame and response frame so you get:
+>>
+>>   sg[0] - VIRTIO_RPMB_REQ_PROGRAM_KEY/VIRTIO_RPMB_REQ_DATA_WRITE frame
+>>   sg[1] - VIRTIO_RPMB_REQ_RESULT_READ (out_sg=3D2)
+>>   sg[2] - empty frame for response (in_sg=3D1)
+This is what works after applying the direction patch above in the
+virtio driver and which makes also sense to me. See also below my
+comment for the rpmb_ioctl() code.
+>>
+>> or:
+>>
+>>   sg[0] - VIRTIO_RPMB_REQ_PROGRAM_KEY/VIRTIO_RPMB_REQ_DATA_WRITE frame (=
+out_sg=3D1)
+>>   sg[1] - VIRTIO_RPMB_REQ_RESULT_READ (in_sg=3D1)
+Makes no sense for me. The VIRTIO_RPMB_REQ_RESULT_READ is a request
+(command) in the same way as the other requests.
+>>
+>> where the result frame is filled in and sent back?
+>>
+>> I must say I'm a little confused by the logic in rpmb_ioctl (in the
+>> userspace tool) which creates both out_frames and resp frames:
+
+Was also confused but it's not that complicated (after some hours). For
+REQ_PROGRAM_KEY/REQ_WRITE_DATA is always an additional REQ_RESULT_READ
+added. So in the end as last descriptor there is always an incoming
+frame to be filled either with the  RESULT_READ data or the response
+data for REQ_GET_WRITE_COUNTER/REQ_DATA_READ.
+
+>>    static int rpmb_ioctl(uint8_t frame_type, int fd, uint16_t req,
+>>                          const void *frames_in, unsigned int cnt_in,
+>>                          void *frames_out, unsigned int cnt_out)
+>>    {
+>>            int ret;
+>>            struct __packed {
+>>                    struct rpmb_ioc_seq_cmd h;
+>>                    struct rpmb_ioc_cmd cmd[3];
+>>            } iseq =3D {};
+>>
+>>            void *frame_res =3D NULL;
+>>            int i;
+>>            uint32_t flags;
+>>
+>>            rpmb_dbg("RPMB OP: %s\n", rpmb_op_str(req));
+>>            dbg_dump_frame(frame_type, "In Frame: ", frames_in, cnt_in);
+>>
+>>            i =3D 0;
+>>            flags =3D RPMB_F_WRITE;
+>>            if (req =3D=3D RPMB_WRITE_DATA || req =3D=3D RPMB_PROGRAM_KEY=
+)
+>>                    flags |=3D RPMB_F_REL_WRITE;
+>>            rpmb_ioc_cmd_set(iseq.cmd[i], flags, frames_in, cnt_in);
+>>            i++;
+>>
+>>            if (req =3D=3D RPMB_WRITE_DATA || req =3D=3D RPMB_PROGRAM_KEY=
+) {
+>>                    frame_res =3D rpmb_frame_alloc(frame_type, 0);
+>>                    if (!frame_res)
+>>                            return -ENOMEM;
+>>                    rpmb_frame_set(frame_type, frame_res,
+>>                                   RPMB_RESULT_READ, 0, 0, 0);
+>>                    rpmb_ioc_cmd_set(iseq.cmd[i], RPMB_F_WRITE, frame_res=
+, 0);
+>>                    i++;
+>>            }
+>>
+>>            rpmb_ioc_cmd_set(iseq.cmd[i], 0, frames_out, cnt_out);
+>>            i++;
+>>
+>>            iseq.h.num_of_cmds =3D i;
+>>            ret =3D ioctl(fd, RPMB_IOC_SEQ_CMD, &iseq);
+>>            if (ret < 0)
+>>                    rpmb_err("ioctl failure %d: %s.\n", ret, strerror(err=
+no));
+>>
+>>            ret =3D rpmb_check_req_resp(frame_type, req, frames_out);
+>>
+>>            dbg_dump_frame(frame_type, "Res Frame: ", frame_res, 1);
+>>            dbg_dump_frame(frame_type, "Out Frame: ", frames_out, cnt_out=
+);
+>>            free(frame_res);
+>>            return ret;
+>>    }
+>>
+>> although I'm guessing this might just be an impedance between the
+>> chardev ioctl interface for rpmb and the virtio FE driver which is only
+>> one potential consumer of these rpmb ioc commands?
+>>
+>> Can anyone clarify?
+> Ping?
+>
+> --
+> Alex Benn=C3=A9e
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+>
+>
+--
+Dipl.-Ing. Harald Mommer
+Senior Software Engineer
+
+OpenSynergy GmbH
+Rotherstr. 20, 10245 Berlin
+
+Phone:  +49 (30) 60 98 540-0 <=3D=3D Zentrale
+Fax:    +49 (30) 60 98 540-99
+E-Mail: harald.mommer@opensynergy.com
+
+www.opensynergy.com
+
+Handelsregister: Amtsgericht Charlottenburg, HRB 108616B
+Gesch=C3=A4ftsf=C3=BChrer/Managing Director: Regis Adjamah
+
+
+Please mind our privacy notice<https://www.opensynergy.com/datenschutzerkla=
+erung/privacy-notice-for-business-partners-pursuant-to-article-13-of-the-ge=
+neral-data-protection-regulation-gdpr/> pursuant to Art. 13 GDPR. // Unsere=
+ Hinweise zum Datenschutz gem. Art. 13 DSGVO finden Sie hier.<https://www.o=
+pensynergy.com/de/datenschutzerklaerung/datenschutzhinweise-fuer-geschaefts=
+partner-gem-art-13-dsgvo/>
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
