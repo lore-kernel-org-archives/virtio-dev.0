@@ -1,76 +1,56 @@
-Return-Path: virtio-comment-return-1452-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-comment-return-1454-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-comment@lists.oasis-open.org>
 List-Post: <mailto:virtio-comment@lists.oasis-open.org>
 List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
-Date: Mon, 14 Sep 2020 08:13:55 +0200
-From: Cornelia Huck <cohuck@redhat.com>
-Message-ID: <20200914081355.71f0d3f7.cohuck@redhat.com>
-In-Reply-To: <CAKgT0UercLR43iY1PQ7LOvEnqt-c2mds7Mv7XS=77Uju-Qdz=g@mail.gmail.com>
-References: <159836664741.231431.2775539890399592989.stgit@ahduyck-workstation>
-	<159836670239.231431.14835898822569373567.stgit@ahduyck-workstation>
-	<fd8d3fed-a92a-4356-7a3d-fb773b04880a@siemens.com>
-	<CAKgT0Ud7XfcEVL8jy-6kNQ=BDUJqh-xp94MZ7F2+Vf+mv1vj3Q@mail.gmail.com>
-	<2faa1a86-fc9c-f325-00f0-99df49b2421d@siemens.com>
-	<CAKgT0UercLR43iY1PQ7LOvEnqt-c2mds7Mv7XS=77Uju-Qdz=g@mail.gmail.com>
+From: Alexander Duyck <alexander.duyck@gmail.com>
+Date: Mon, 14 Sep 2020 12:44:09 -0700
+Message-ID: <160011251967.38663.1066997200552457824.stgit@ahduyck-workstation>
+In-Reply-To: <20200914081355.71f0d3f7.cohuck@redhat.com>
+References: <20200914081355.71f0d3f7.cohuck@redhat.com>
 MIME-Version: 1.0
-Subject: Re: [virtio-comment] Re: [virtio-dev] [PATCH v8 1/3] content:
- Document balloon feature free page hints
-Content-Type: text/plain; charset=US-ASCII
+Subject: [virtio-comment] [PATCH v8 4/3] content: Minor change to clarify free_page_hint_cmd_id
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-To: Alexander Duyck <alexander.duyck@gmail.com>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, "Michael S. Tsirkin" <mst@redhat.com>, David Hildenbrand <david@redhat.com>, virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, "Wang, Wei W" <wei.w.wang@intel.com>
+To: mst@redhat.com, david@redhat.com, cohuck@redhat.com
+Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, wei.w.wang@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Fri, 11 Sep 2020 08:11:15 -0700
-Alexander Duyck <alexander.duyck@gmail.com> wrote:
+From: Alexander Duyck <alexander.h.duyck@linux.intel.com>
 
-> On Thu, Sep 10, 2020 at 10:28 PM Jan Kiszka <jan.kiszka@siemens.com> wrote:
-> >
-> > On 04.09.20 18:56, Alexander Duyck wrote:  
-> > > On Fri, Sep 4, 2020 at 8:20 AM Jan Kiszka <jan.kiszka@siemens.com> wrote:  
-> > >>
-> > >> On 25.08.20 16:45, Alexander Duyck wrote:  
+The original wording was a bit unclear and could have been misinterpreted
+as indicating that VIRTIO_BALLOON_FREE_PAGE_HINT was read-only instead of
+the field free_page_hint_cmd_id. To clarify that break it up into two
+sentences making it clear that the field is only available if the feature
+is negotiated, and that the field is read-only.
 
-> > >>> @@ -5042,13 +5049,17 @@ \subsection{Feature bits}\label{sec:Device Types / Memory Balloon Device / Featu
-> > >>>  VIRTIO_BALLOON_F_MUST_TELL_HOST is not negotiated.
-> > >>>
-> > >>>  \subsection{Device configuration layout}\label{sec:Device Types / Memory Balloon Device / Device configuration layout}
-> > >>> -  Both fields of this configuration
-> > >>> -  are always available.
-> > >>> +  \field{num_pages} and \field{actual} are always available.
-> > >>> +
-> > >>> +  \field{free_page_hint_cmd_id} is available if
-> > >>> +    VIRTIO_BALLOON_F_FREE_PAGE_HINT has been negotiated and is read-only by
-> > >>> +    the driver.  
-> > >>
-> > >> This reads at least to me like "...if VIRTIO_BALLOON_F_FREE_PAGE_HINT
-> > >> ... is read-only by the driver". I suspect you rather meant
-> > >> "free_page_hint_cmd_id is read-only...". Maybe split up into two sentences?  
-> > >
-> > > Yes, the intention is:
-> > > 1. free_page_hint_cmd_id is only available if
-> > > VIRTIO_BALLOON_F_FREE_PAGE_HINT has been negotiated
-> > > 2. free_page_hint_cmd_id is read only by the driver
-> > >
-> > > If needed I suppose we could break it up by splitting it into two
-> > > sentences, or adding "the field" after the "and".
-> > >  
-> >
-> > I'm fine with both options but please adjust this - on top (Michael just
-> > opened the voting for this version again due to the formal typo in round 1).
-> >
-> > Jan  
-> 
-> Since the patch set is being voted on is there a preferred method for
-> making this sort of update? I'm just wondering if I should do an
-> additional incremental patch, just submit a replacement for this
-> patch, or make the change and resubmit the entire patch set?
+Signed-off-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
+---
 
-I think doing an additional patch on top and then doing another vote on
-that is the best way to handle this. (Or maybe it is minor enough to
-simply merge the incremental patch?)
+So this patch addresses a minor nit that was pointed out after the ballot
+had already been created. If need be I can either open a new bugzilla and
+request a ballot to have it added.
+
+ content.tex |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/content.tex b/content.tex
+index 76dfce919b97..f74090491534 100644
+--- a/content.tex
++++ b/content.tex
+@@ -5052,8 +5052,8 @@ \subsection{Device configuration layout}\label{sec:Device Types / Memory Balloon
+   \field{num_pages} and \field{actual} are always available.
+ 
+   \field{free_page_hint_cmd_id} is available if
+-    VIRTIO_BALLOON_F_FREE_PAGE_HINT has been negotiated and is read-only by
+-    the driver.
++    VIRTIO_BALLOON_F_FREE_PAGE_HINT has been negotiated. The field is
++    read-only by the driver.
+ 
+ \begin{lstlisting}
+ struct virtio_balloon_config {
+
 
 
 This publicly archived list offers a means to provide input to the
