@@ -1,90 +1,86 @@
-Return-Path: virtio-dev-return-7798-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-7786-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id BE15398602C
-	for <virtio-dev@lists.oasis-open.org>; Fri, 18 Sep 2020 21:24:51 +0000 (UTC)
-References: <20200824143708.5664-1-ndragazis@arrikto.com>
- <20200824143708.5664-6-ndragazis@arrikto.com> <878sd8xrpc.fsf@linaro.org>
+	by lists.oasis-open.org (Postfix) with ESMTP id 1F551986008
+	for <virtio-dev@lists.oasis-open.org>; Thu, 17 Sep 2020 10:19:11 +0000 (UTC)
 From: Nikos Dragazis <ndragazis@arrikto.com>
-Message-ID: <18a0f437-8917-b9b6-4370-587c02f83e3a@arrikto.com>
-Date: Sat, 19 Sep 2020 00:24:48 +0300
+References: <20200824143708.5664-1-ndragazis@arrikto.com>
+Message-ID: <82383315-12d3-6fbd-37b0-c1c31ea7fb8d@arrikto.com>
+Date: Thu, 17 Sep 2020 13:19:08 +0300
 MIME-Version: 1.0
-In-Reply-To: <878sd8xrpc.fsf@linaro.org>
-Subject: [virtio-dev] Re: [PATCH 05/11] doorbells: Introduce doorbells
+In-Reply-To: <20200824143708.5664-1-ndragazis@arrikto.com>
+Subject: [virtio-dev] Re: [PATCH 00/11] Additional virtio device resources
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: quoted-printable
 Content-Language: en-US
-To: =?UTF-8?Q?Alex_Benn=c3=a9e?= <alex.bennee@linaro.org>
-Cc: virtio-dev@lists.oasis-open.org, Stefan Hajnoczi <stefanha@redhat.com>, "Michael S . Tsirkin" <mst@redhat.com>
+To: "Michael S . Tsirkin" <mst@redhat.com>
+Cc: virtio-dev@lists.oasis-open.org, Stefan Hajnoczi <stefanha@redhat.com>, =?UTF-8?Q?Alex_Benn=c3=a9e?= <alex.bennee@linaro.org>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 17/9/20 8:01 =CE=BC.=CE=BC., Alex Benn=C3=A9e wrote:
+On 24/8/20 5:36 =CE=BC.=CE=BC., Nikos Dragazis wrote:
 
-> Nikos Dragazis <ndragazis@arrikto.com> writes:
+> Hi everyone,
 >
->> Introduce doorbells as a new virtio device resource.
->>
->> Signed-off-by: Nikos Dragazis <ndragazis@arrikto.com>
->> ---
->>   content.tex   |  2 ++
->>   doorbells.tex | 12 ++++++++++++
->>   2 files changed, 14 insertions(+)
->>   create mode 100644 doorbells.tex
->>
->> diff --git a/content.tex b/content.tex
->> index 94a3693..38ed709 100644
->> --- a/content.tex
->> +++ b/content.tex
->> @@ -373,6 +373,8 @@ \section{Driver Notifications} \label{sec:Virtqueues=
- / Driver notifications}
->>  =20
->>   \input{shared-mem.tex}
->>  =20
->> +\input{doorbells.tex}
->> +
->>   \chapter{General Initialization And Device Operation}\label{sec:Genera=
-l Initialization And Device Operation}
->>  =20
->>   We start with an overview of device initialization, then expand on the
->> diff --git a/doorbells.tex b/doorbells.tex
->> new file mode 100644
->> index 0000000..e917536
->> --- /dev/null
->> +++ b/doorbells.tex
->> @@ -0,0 +1,12 @@
->> +\section{Doorbells}\label{sec:Basic Facilities of a Virtio device / Doo=
-rbells}
->> +
->> +A doorbell is a device register that triggers a notification to the
->> +device when accessed by the driver.
->> +
->> +Doorbells are an additional facility available to devices that need to
->> +support receiving driver notifications for events other than virtqueue
->> +activity (i.e., notifications that are device-specific).
->> +
->> +A device may be exporting multiple doorbells to the driver.
->> +
->> +The location of doorbells is found in a transport-specific way.
-> I just realised we don't specify anything about delivery. Should we say
-> something about lack of acknowledgement or guarantee that the
-> notification is delivered here?
+> This patch introduces the "doorbells" and "device-specific
+> notifications" as a new set of virtio device resources.
+>
+> Doorbells are device registers that allow a driver to notify the device
+> for events other than virtqueue activity.
+>
+> Device-specific notifications are interrupts that allow a device to
+> notify the driver for events other than virtqueue activity and
+> configuration changes.
+>
+> The purpose of both of these resources is to allow a virtio device to
+> send/receive **device-specific** notifications to/from the driver. This
+> is not supported by the current version of the virtio spec, since the
+> only notifications supported are configuration changes, available and
+> used buffer notifications.
+>
+> These resources will be used later by the virtio-vhost-user [1] device
+> in order to send/receive notifications to/from the driver regarding
+> activity on the vhost-user virtqueues. By standardizing these resources
+> as standalone virtio device resources, other future devices will be able
+> to use them as well.
+>
+> Also, note that this patch contains some fix commits for some minor
+> typos/bugs that I bumped into while writing this patch.
+>
+> Nikos
+>
+> [1] https://lists.oasis-open.org/archives/virtio-dev/202005/msg00132.html
+>
+> Nikos Dragazis (11):
+>    content: Remove duplicate content
+>    content: Minor fix
+>    content: Update list of virtio cfg structures
+>    content: Minor layout fix
+>    doorbells: Introduce doorbells
+>    content: Introduce Doorbell cfg type for PCI
+>    content: Introduce Doorbell register for MMIO
+>    notifications: Introduce device-specific notifications
+>    content: Introduce device-specific notification cfg type for PCI
+>    content: Fix typo
+>    content: Introduce device-specific notifications for MMIO
+>
+>   conformance.tex |   2 +
+>   content.tex     | 177 ++++++++++++++++++++++++++++++++++++++++--------
+>   doorbells.tex   |  12 ++++
+>   3 files changed, 163 insertions(+), 28 deletions(-)
+>   create mode 100644 doorbells.tex
 >
 
-I don't know. Should we? Based on the spec, the driver knows that each
-access delivers a notification to the device. So, I think it is clear that
-notifications cannot be lost. An acknowledgment would make sense if
-notifications could be lost.
+Kind reminder on this.
 
-Regarding the rate at which the device can actually process these
-notifications, I think this is a whole different story.
+Michael, did you have the chance to look at this?
+Looking forward to your feedback so that we can discuss.
 
-If you have something more specific in mind, please share it.
-
---Nikos
+Thanks,
+Nikos
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
