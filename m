@@ -1,20 +1,20 @@
-Return-Path: virtio-dev-return-7791-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-7787-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 5658A986010
-	for <virtio-dev@lists.oasis-open.org>; Thu, 17 Sep 2020 16:38:40 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 9B2A6986010
+	for <virtio-dev@lists.oasis-open.org>; Thu, 17 Sep 2020 14:58:15 +0000 (UTC)
 References: <20200824143708.5664-1-ndragazis@arrikto.com>
- <20200824143708.5664-5-ndragazis@arrikto.com>
+ <20200824143708.5664-6-ndragazis@arrikto.com>
 From: Alex =?utf-8?Q?Benn=C3=A9e?= <alex.bennee@linaro.org>
-In-reply-to: <20200824143708.5664-5-ndragazis@arrikto.com>
-Date: Thu, 17 Sep 2020 17:38:36 +0100
-Message-ID: <87h7rwxss3.fsf@linaro.org>
+In-reply-to: <20200824143708.5664-6-ndragazis@arrikto.com>
+Date: Thu, 17 Sep 2020 15:58:11 +0100
+Message-ID: <87v9gcxxfg.fsf@linaro.org>
 MIME-Version: 1.0
-Subject: [virtio-dev] Re: [PATCH 04/11] content: Minor layout fix
+Subject: [virtio-dev] Re: [PATCH 05/11] doorbells: Introduce doorbells
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
 To: Nikos Dragazis <ndragazis@arrikto.com>
@@ -24,12 +24,30 @@ List-ID: <virtio-dev.lists.oasis-open.org>
 
 Nikos Dragazis <ndragazis@arrikto.com> writes:
 
-> Fix the device/driver requirements of the vendor data capability so that
-> they are subsections of the vendor data capability section.
+> Introduce doorbells as a new virtio device resource.
 >
 > Signed-off-by: Nikos Dragazis <ndragazis@arrikto.com>
+> ---
+>  content.tex   |  2 ++
+>  doorbells.tex | 12 ++++++++++++
+>  2 files changed, 14 insertions(+)
+>  create mode 100644 doorbells.tex
+>
+> diff --git a/content.tex b/content.tex
+> index 94a3693..38ed709 100644
+> --- a/content.tex
+> +++ b/content.tex
+> @@ -373,6 +373,8 @@ \section{Driver Notifications} \label{sec:Virtqueues =
+/ Driver notifications}
+> =20
+>  \input{shared-mem.tex}
+> =20
+> +\input{doorbells.tex}
+> +
+>  \chapter{General Initialization And Device
+> Operation}\label{sec:General Initialization And Device Operation}
 
-Reviewed-by: Alex Benn=C3=A9e <alex.bennee@linaro.org>
+this has a minor conflict now.
 
 --=20
 Alex Benn=C3=A9e
