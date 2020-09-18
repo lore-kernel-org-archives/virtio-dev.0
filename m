@@ -1,253 +1,106 @@
-Return-Path: virtio-comment-return-1458-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio-comment@lists.oasis-open.org>
-List-Post: <mailto:virtio-comment@lists.oasis-open.org>
-List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
-From: Jie Deng <jie.deng@intel.com>
-Date: Tue, 22 Sep 2020 10:49:02 +0800
-Message-Id: <7e62cac21047d1692edea06c1fd917faea53087f.1600742717.git.jie.deng@intel.com>
+Return-Path: virtio-dev-return-7794-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id 4C04398602C
+	for <virtio-dev@lists.oasis-open.org>; Fri, 18 Sep 2020 16:26:31 +0000 (UTC)
+From: Peter Hilber <peter.hilber@opensynergy.com>
+Date: Fri, 18 Sep 2020 18:23:09 +0200
+Message-ID: <20200918162311.254564-1-peter.hilber@opensynergy.com>
 MIME-Version: 1.0
-Subject: [virtio-comment] [PATCH] virtio-i2c: add the device specification
-Content-Type: text/plain; charset=UTF-8
+Subject: [virtio-dev] [RFC PATCH 0/7] firmware: arm_scmi: Add virtio transport
+Content-Type: text/plain
 Content-Transfer-Encoding: quoted-printable
-To: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
-Cc: mst@redhat.com, Jie Deng <jie.deng@intel.com>
+To: linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org
+Cc: Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org, sudeep.holla@arm.com, souvik.chakravarty@arm.com, alex.bennee@linaro.org, jean-philippe@linaro.org, igor.skalkin@opensynergy.com, mikhail.golubev@opensynergy.com, anton.yakovlev@opensynergy.com, Peter Hilber <peter.hilber@opensynergy.com>, Jason Wang <jasowang@redhat.com>, Jassi Brar <jassisinghbrar@gmail.com>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Mark Rutland <mark.rutland@arm.com>, "Michael S. Tsirkin" <mst@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-virtio-i2c is a virtual I2C adapter device. It provides a way
-to =EF=AC=82exibly communicate with the I2C slave devices from the guest.
+This series implements an SCMI virtio driver according to the virtio
+SCMI device spec patch v5 [1], after simple preparatory changes to the
+existing arm-scmi driver.
 
-This patch adds the specification for this device.
+The virtio transport differs in some respects from the existing
+shared-memory based SCMI transports.
 
-Signed-off-by: Jie Deng <jie.deng@intel.com>
----
- conformance.tex | 28 ++++++++++++++++---
- content.tex     |  1 +
- virtio-i2c.tex  | 85 +++++++++++++++++++++++++++++++++++++++++++++++++++++=
-++++
- 3 files changed, 110 insertions(+), 4 deletions(-)
- create mode 100644 virtio-i2c.tex
+Message timeouts can be a problem if the virtio device (SCMI platform)
+does not have real-time properties. I set a high message rx timeout
+value which should work for non real-time virtio devices as well. There
+are other timeouts for delayed response and polling which were not
+addressed yet. Delayed responses are not really needed since, with the
+virtio transport, message responses may be transmitted out of order.
+Polling doesn't make sense at least for virtio devices without real-time
+behavior, in my understanding.
 
-diff --git a/conformance.tex b/conformance.tex
-index f1f23a8..12bce3a 100644
---- a/conformance.tex
-+++ b/conformance.tex
-@@ -27,8 +27,10 @@ \section{Conformance Targets}\label{sec:Conformance / Co=
-nformance Targets}
- \ref{sec:Conformance / Driver Conformance / Socket Driver Conformance},
- \ref{sec:Conformance / Driver Conformance / RPMB Driver Conformance},
- \ref{sec:Conformance / Driver Conformance / IOMMU Driver Conformance},
--\ref{sec:Conformance / Driver Conformance / Sound Driver Conformance} or
--\ref{sec:Conformance / Driver Conformance / Memory Driver Conformance}.
-+\ref{sec:Conformance / Driver Conformance / Sound Driver Conformance}
-+\ref{sec:Conformance / Driver Conformance / Memory Driver Conformance} or
-+\ref{sec:Conformance / Driver Conformance / I2C Adapter Driver Conformance=
-}.
-+
-     \item Clause \ref{sec:Conformance / Legacy Interface: Transitional Dev=
-ice and Transitional Driver Conformance}.
-   \end{itemize}
- \item[Device] A device MUST conform to four conformance clauses:
-@@ -47,8 +49,10 @@ \section{Conformance Targets}\label{sec:Conformance / Co=
-nformance Targets}
- \ref{sec:Conformance / Device Conformance / Socket Device Conformance},=20
- \ref{sec:Conformance / Device Conformance / RPMB Device Conformance},
- \ref{sec:Conformance / Device Conformance / IOMMU Device Conformance},
--\ref{sec:Conformance / Device Conformance / Sound Device Conformance} or
--\ref{sec:Conformance / Device Conformance / Memory Device Conformance}.
-+\ref{sec:Conformance / Device Conformance / Sound Device Conformance}
-+\ref{sec:Conformance / Device Conformance / Memory Device Conformance} or
-+\ref{sec:Conformance / Device Conformance / I2C Adapter Device Conformance=
-}.
-+
-     \item Clause \ref{sec:Conformance / Legacy Interface: Transitional Dev=
-ice and Transitional Driver Conformance}.
-   \end{itemize}
- \end{description}
-@@ -261,6 +265,14 @@ \section{Conformance Targets}\label{sec:Conformance / =
-Conformance Targets}
- \item \ref{drivernormative:Device Types / Memory Device / Device Operation=
- / STATE request}
- \end{itemize}
-=20
-+\conformance{\subsection}{I2C Adapter Driver Conformance}\label{sec:Confor=
-mance / Driver Conformance / I2C Adapter Driver Conformance}
-+
-+An I2C Adapter driver MUST conform to the following normative statements:
-+
-+\begin{itemize}
-+\item \ref{drivernormative:Device Types / I2C Adapter Device / Device Oper=
-ation}
-+\end{itemize}
-+
- \conformance{\section}{Device Conformance}\label{sec:Conformance / Device =
-Conformance}
-=20
- A device MUST conform to the following normative statements:
-@@ -477,6 +489,14 @@ \section{Conformance Targets}\label{sec:Conformance / =
-Conformance Targets}
- \item \ref{devicenormative:Device Types / Memory Device / Device Operation=
- / STATE request}
- \end{itemize}
-=20
-+\conformance{\subsection}{I2C Adapter Device Conformance}\label{sec:Confor=
-mance / Device Conformance / I2C Adapter Device Conformance}
-+
-+An I2C Adapter device MUST conform to the following normative statements:
-+
-+\begin{itemize}
-+\item \ref{devicenormative:Device Types / I2C Adapter Device / Device Oper=
-ation}
-+\end{itemize}
-+
- \conformance{\section}{Legacy Interface: Transitional Device and Transitio=
-nal Driver Conformance}\label{sec:Conformance / Legacy Interface: Transitio=
-nal Device and Transitional Driver Conformance}
- A conformant implementation MUST be either transitional or
- non-transitional, see \ref{intro:Legacy
-diff --git a/content.tex b/content.tex
-index 91855b4..95e2ed8 100644
---- a/content.tex
-+++ b/content.tex
-@@ -6200,6 +6200,7 @@ \subsubsection{Legacy Interface: Framing Requirements=
-}\label{sec:Device
- \input{virtio-iommu.tex}
- \input{virtio-sound.tex}
- \input{virtio-mem.tex}
-+\input{virtio-i2c.tex}
-=20
- \chapter{Reserved Feature Bits}\label{sec:Reserved Feature Bits}
-=20
-diff --git a/virtio-i2c.tex b/virtio-i2c.tex
-new file mode 100644
-index 0000000..b631211
---- /dev/null
-+++ b/virtio-i2c.tex
-@@ -0,0 +1,85 @@
-+\section{I2C Adapter Device}\label{sec:Device Types / I2C Adapter Device}
-+
-+virtio-i2c is a virtual I2C adapter device. It provides a way to flexibly
-+organize and manage I2C slave devices from the guest. By attaching ACPI
-+I2C slave nodes to the virtual I2C adapter device, the guest can
-+communicate with them without changing or adding extra drivers for these
-+slave I2C devices.=20
-+
-+\subsection{Device ID}\label{sec:Device Types / I2C Adapter Device / Devic=
-e ID}
-+34
-+
-+\subsection{Virtqueues}\label{sec:Device Types / I2C Adapter Device / Virt=
-queues}
-+
-+\begin{description}
-+\item[0] requestq
-+\end{description}
-+
-+\subsection{Feature bits}\label{sec:Device Types / I2C Adapter Device / Fe=
-ature bits}
-+
-+None currently defined.
-+
-+\subsection{Device configuration layout}\label{sec:Device Types / I2C Adap=
-ter Device / Device configuration layout}
-+
-+None currently defined.
-+
-+\subsection{Device Initialization}\label{sec:Device Types / I2C Adapter De=
-vice / Device Initialization}
-+
-+\begin{enumerate}
-+\item The virtqueue is initialized.
-+\end{enumerate}
-+
-+\subsection{Device Operation}\label{sec:Device Types / I2C Adapter Device =
-/ Device Operation}
-+
-+The driver queues requests to the virtqueues, and they are used by the
-+device (not necessarily in order). Each request is of form:
-+
-+\begin{lstlisting}
-+struct virtio_i2c_req {
-+        le16 addr;
-+        le16 flags;
-+        le16 len;
-+        u8 buf[];
-+        u8 status;
-+};
-+\end{lstlisting}
-+
-+The \field{addr} is the address of the I2C slave device.
-+
-+The first bit of \field{flags} indicates whether it is a read or write req=
-uest.
-+It mesns a read request if the first bit of \field{flags} is set, otherwis=
-e
-+it is a write request. The rest bits of \field{flags} are reserved.
-+
-+The \field{len} of the request indicates the length of the I2C message.
-+
-+The \field{buf} of the request contains the I2C message. If the first bit =
-of
-+\field{flags} is '1', the \field{buf} is written by the device and it cont=
-ains
-+the message read from the device. If the first bit of \field{flags} is '0'=
-, the
-+\field{buf} is written by the driver and it contains the message written t=
-o the
-+the device.
-+
-+The final \field{status} byte is written by the device: either VIRTIO_I2C_=
-MSG_OK
-+for success or VIRTIO_I2C_MSG_ERR for error.
-+
-+\begin{lstlisting}
-+#define VIRTIO_I2C_MSG_OK     0
-+#define VIRTIO_I2C_MSG_ERR    1
-+\end{lstlisting}
-+
-+\drivernormative{\subsubsection}{Device Operation}{Device Types / I2C Adap=
-ter Device / Device Operation}
-+
-+A driver MUST set \field{addr}, \field{flags} and \field{len} before sendi=
-ng
-+the message.
-+
-+A driver MUST place the I2C message into \field{buf} if the first bit of
-+\field{flags} is '0'.
-+
-+A driver MUST NOT use the message if the final \field{status} return from =
-the
-+device is VIRTIO_I2C_MSG_ERR.
-+
-+\devicenormative{\subsubsection}{Device Operation}{Device Types / I2C Adap=
-ter Device / Device Operation}
-+
-+A device MUST NOT change the value of \field{addr}, \field{flags} and \fie=
-ld{len}.
-+
-+A device MUST place the message into \field{buf} if the first bit of \fiel=
-d{flags}
-+is '1'.
-\ No newline at end of file
+There are some known issues which will be resolved before removing the
+RFC tag:
+
+- Further work is needed on the scmi_xfer management. Unlike shmem based
+  transports, the virtio transport is actually exchanging messages with
+  the SCMI agent through the scmi_xfer tx and rx buffers. In case of a
+  message rx timeout, the arm-scmi driver could try to re-use the
+  scmi_xfer, while that might still be used by the virtio device. I
+  think part of the scmi_xfers_info bookkeeping could be optionally
+  outsourced to the transport to remediate this.
+
+- After arm-scmi driver probe failure, or after remove, the scmi-virtio
+  driver may still try to process and forward message responses from the
+  virtio device.
+
+- We must be sure that the virtio transport option (such as virtio over
+  MMIO) is available when the virtio SCMI device is probed.
+
+The series is based on for-next/scmi [2], on top of
+
+commit 66d90f6ecee7 ("firmware: arm_scmi: Enable building as a single modul=
+e")
+
+The series was actually tested with a v5.4 based kernel, with the Base
+protocol and Sensor management protocol. The virtio SCMI device used was
+a proprietary implementation by OpenSynergy. Delayed responses were not
+tested.
+
+Any comments are very welcome.
+
+[1] https://lists.oasis-open.org/archives/virtio-comment/202005/msg00096.ht=
+ml
+[2] https://git.kernel.org/pub/scm/linux/kernel/git/sudeep.holla/linux.git
+
+
+Igor Skalkin (7):
+  firmware: arm_scmi, smccc, mailbox: Make shmem based transports
+    optional
+  firmware: arm_scmi: Document that max_msg is a per channel type limit
+  firmware: arm_scmi: Add op to override max message #
+  firmware: arm_scmi: Add per message transport data
+  firmware: arm_scmi: Add xfer_init_buffers transport op
+  dt-bindings: arm: Add virtio transport for SCMI
+  firmware: arm_scmi: Add virtio transport
+
+ .../devicetree/bindings/arm/arm,scmi.txt      |  38 +-
+ MAINTAINERS                                   |   1 +
+ drivers/firmware/Kconfig                      |  19 +-
+ drivers/firmware/arm_scmi/Makefile            |   3 +-
+ drivers/firmware/arm_scmi/common.h            |  31 +-
+ drivers/firmware/arm_scmi/driver.c            |  83 +++-
+ drivers/firmware/arm_scmi/virtio.c            | 470 ++++++++++++++++++
+ drivers/firmware/smccc/Kconfig                |   1 +
+ drivers/mailbox/Kconfig                       |   1 +
+ include/uapi/linux/virtio_ids.h               |   1 +
+ include/uapi/linux/virtio_scmi.h              |  41 ++
+ 11 files changed, 664 insertions(+), 25 deletions(-)
+ create mode 100644 drivers/firmware/arm_scmi/virtio.c
+ create mode 100644 include/uapi/linux/virtio_scmi.h
+
+
+base-commit: 66d90f6ecee755e9c19a119c9255e80091165498
 --=20
-2.7.4
+2.25.1
 
 
-This publicly archived list offers a means to provide input to the
-OASIS Virtual I/O Device (VIRTIO) TC.
-
-In order to verify user consent to the Feedback License terms and
-to minimize spam in the list archive, subscription is required
-before posting.
-
-Subscribe: virtio-comment-subscribe@lists.oasis-open.org
-Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
-List help: virtio-comment-help@lists.oasis-open.org
-List archive: https://lists.oasis-open.org/archives/virtio-comment/
-Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
-List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lis=
-ts
-Committee: https://www.oasis-open.org/committees/virtio/
-Join OASIS: https://www.oasis-open.org/join/
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
