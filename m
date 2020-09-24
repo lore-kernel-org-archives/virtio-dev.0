@@ -1,15 +1,15 @@
-Return-Path: virtio-dev-return-7805-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-7806-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 42380985D89
-	for <virtio-dev@lists.oasis-open.org>; Thu, 24 Sep 2020 10:25:04 +0000 (UTC)
-Date: Thu, 24 Sep 2020 12:24:46 +0200
-From: Gerd Hoffmann <kraxel@redhat.com>
-Message-ID: <20200924102446.icsdv2yhof4nbnec@sirius.home.kraxel.org>
+	by lists.oasis-open.org (Postfix) with ESMTP id A92D9985D89
+	for <virtio-dev@lists.oasis-open.org>; Thu, 24 Sep 2020 10:30:14 +0000 (UTC)
+Date: Thu, 24 Sep 2020 12:29:53 +0200
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Message-ID: <20200924102953.GD170808@myrica>
 References: <20200821131540.2801801-1-jean-philippe@linaro.org>
  <ab2a1668-e40c-c8f0-b77b-abadeceb4b82@redhat.com>
  <20200924045958-mutt-send-email-mst@kernel.org>
@@ -22,7 +22,7 @@ Subject: [virtio-dev] Re: [PATCH v3 0/6] Add virtio-iommu built-in topology
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 To: Joerg Roedel <joro@8bytes.org>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>, virtio-dev@lists.oasis-open.org, lorenzo.pieralisi@arm.com, Jean-Philippe Brucker <jean-philippe@linaro.org>, linux-pci@vger.kernel.org, virtualization@lists.linux-foundation.org, Auger Eric <eric.auger@redhat.com>, iommu@lists.linux-foundation.org, sebastien.boeuf@intel.com, bhelgaas@google.com
+Cc: "Michael S. Tsirkin" <mst@redhat.com>, Auger Eric <eric.auger@redhat.com>, iommu@lists.linux-foundation.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, linux-pci@vger.kernel.org, bhelgaas@google.com, jasowang@redhat.com, kevin.tian@intel.com, sebastien.boeuf@intel.com, lorenzo.pieralisi@arm.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
 On Thu, Sep 24, 2020 at 12:02:55PM +0200, Joerg Roedel wrote:
@@ -44,15 +44,30 @@ On Thu, Sep 24, 2020 at 12:02:55PM +0200, Joerg Roedel wrote:
 > of the selling points for MMIO in past discussions and I think it makes
 > sense to keep them in sync.
 
-So that requirement basically kills the "we have something to play with
-while the acpi table spec is in progress" argument.  Also note that qemu
-microvm got acpi support meanwhile.
+It's not possible to use exactly the same code for parsing. The access
+methods are different (need to deal with port-IO for built-in description
+on PCI, for example) and more importantly, the structure is different as
+well. The ACPI table needs nodes for virtio-iommu while the built-in
+description is contained in the virtio-iommu itself. So the endpoint nodes
+point to virtio-iommu node on ACPI, while they don't need a pointer on the
+built-in desc. I kept as much as possible common in structures and
+implementation, but in the end we still need about 200 unique lines on
+each side.
 
-Are there other cases where neither ACPI nor DT are available?
+Thanks,
+Jean
 
-take care,
-  Gerd
-
+> 
+> > We can always tweak the parser if there are slight differences
+> > between ACPI and virtio formats.
+> 
+> There is no guarantee that there only need to be "tweaks" until the
+> ACPI table format is stablized.
+> 
+> Regards,
+> 
+> 	Joerg
+> 
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
