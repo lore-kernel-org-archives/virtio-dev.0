@@ -1,126 +1,266 @@
-Return-Path: virtio-dev-return-7816-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 9D324985E33
-	for <virtio-dev@lists.oasis-open.org>; Tue,  6 Oct 2020 15:24:01 +0000 (UTC)
-References: <20200821131540.2801801-1-jean-philippe@linaro.org>
- <ab2a1668-e40c-c8f0-b77b-abadeceb4b82@redhat.com>
- <20200924045958-mutt-send-email-mst@kernel.org>
- <20200924092129.GH27174@8bytes.org>
- <20200924053159-mutt-send-email-mst@kernel.org>
- <d54b674e-2626-fc73-d663-136573c32b8a@redhat.com>
- <20201002182348.GO138842@redhat.com>
-From: Auger Eric <eric.auger@redhat.com>
-Message-ID: <e8a37837-30d0-d7cc-496a-df4c12fff1da@redhat.com>
-Date: Tue, 6 Oct 2020 17:23:32 +0200
+Return-Path: virtio-comment-return-1472-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-comment@lists.oasis-open.org>
+List-Post: <mailto:virtio-comment@lists.oasis-open.org>
+List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
+From: Jie Deng <jie.deng@intel.com>
+Date: Tue, 27 Oct 2020 14:00:24 +0800
+Message-Id: <5d3d8a27893734be954ebbe560f638fbafb3429c.1603778046.git.jie.deng@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <20201002182348.GO138842@redhat.com>
-Subject: [virtio-dev] Re: [PATCH v3 0/6] Add virtio-iommu built-in topology
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-To: Al Stone <ahs3@redhat.com>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>, Joerg Roedel <joro@8bytes.org>, Jean-Philippe Brucker <jean-philippe@linaro.org>, iommu@lists.linux-foundation.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, linux-pci@vger.kernel.org, bhelgaas@google.com, jasowang@redhat.com, kevin.tian@intel.com, sebastien.boeuf@intel.com, lorenzo.pieralisi@arm.com
+Subject: [virtio-comment] [PATCH v3] virtio-i2c: add the device specification
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+To: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+Cc: mst@redhat.com, Jie Deng <jie.deng@intel.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Hello Al,
+virtio-i2c is a virtual I2C adapter device. It provides a way
+to =EF=AC=82exibly communicate with the I2C slave devices from the guest.
 
-On 10/2/20 8:23 PM, Al Stone wrote:
-> On 24 Sep 2020 11:54, Auger Eric wrote:
->> Hi,
->>
->> Adding Al in the loop
->>
->> On 9/24/20 11:38 AM, Michael S. Tsirkin wrote:
->>> On Thu, Sep 24, 2020 at 11:21:29AM +0200, Joerg Roedel wrote:
->>>> On Thu, Sep 24, 2020 at 05:00:35AM -0400, Michael S. Tsirkin wrote:
->>>>> OK so this looks good. Can you pls repost with the minor tweak
->>>>> suggested and all acks included, and I will queue this?
->>>>
->>>> My NACK still stands, as long as a few questions are open:
->>>>
->>>> 	1) The format used here will be the same as in the ACPI table? I
->>>> 	   think the answer to this questions must be Yes, so this leads
->>>> 	   to the real question:
->>>
->>> I am not sure it's a must.
->>> We can always tweak the parser if there are slight differences
->>> between ACPI and virtio formats.
->>>
->>> But we do want the virtio format used here to be approved by the virtio
->>> TC, so it won't change.
->>>
->>> Eric, Jean-Philippe, does one of you intend to create a github issue
->>> and request a ballot for the TC? It's been posted end of August with no
->>> changes ...
->> Jean-Philippe, would you?
->>>
->>>> 	2) Has the ACPI table format stabalized already? If and only if
->>>> 	   the answer is Yes I will Ack these patches. We don't need to
->>>> 	   wait until the ACPI table format is published in a
->>>> 	   specification update, but at least some certainty that it
->>>> 	   will not change in incompatible ways anymore is needed.
->>>>
->>
->> Al, do you have any news about the the VIOT definition submission to
->> the UEFI ASWG?
->>
->> Thank you in advance
->>
->> Best Regards
->>
->> Eric
-> 
-> A follow-up to my earlier post ....
-> 
-> Hearing no objection, I've submitted the VIOT table description to
-> the ASWG for consideration under what they call the "code first"
-> process.  The "first reading" -- a brief discussion on what the
-> table is and why we would like to add it -- was held yesterday.
-> No concerns have been raised as yet.  Given the discussions that
-> have already occurred, I don't expect any, either.  I have been
-> wrong at least once before, however.
-> 
-> At this point, ASWG will revisit the request to add VIOT each
-> week.  If there have been no comments in the prior week, and no
-> further discussion during the meeting, then a vote will be taken.
-> Otherwise, there will be discussion and we try again the next
-> week.
-> 
-> The ASWG was also told that the likelihood of this definition of
-> the table changing is pretty low, and that it has been thought out
-> pretty well already.  ASWG's consideration will therefore start
-> from the assumption that it would be best _not_ to make changes.
-> 
-> So, I'll let you know what happens next week.
+This patch adds the specification for this device.
 
-Thank you very much for the updates and for your support backing the
-proposal in the best delays.
+Signed-off-by: Jie Deng <jie.deng@intel.com>
+---
+ conformance.tex | 28 ++++++++++++++---
+ content.tex     |  1 +
+ virtio-i2c.tex  | 94 +++++++++++++++++++++++++++++++++++++++++++++++++++++=
+++++
+ 3 files changed, 119 insertions(+), 4 deletions(-)
+ create mode 100644 virtio-i2c.tex
 
-Best Regards
+diff --git a/conformance.tex b/conformance.tex
+index f1f23a8..12bce3a 100644
+--- a/conformance.tex
++++ b/conformance.tex
+@@ -27,8 +27,10 @@ \section{Conformance Targets}\label{sec:Conformance / Co=
+nformance Targets}
+ \ref{sec:Conformance / Driver Conformance / Socket Driver Conformance},
+ \ref{sec:Conformance / Driver Conformance / RPMB Driver Conformance},
+ \ref{sec:Conformance / Driver Conformance / IOMMU Driver Conformance},
+-\ref{sec:Conformance / Driver Conformance / Sound Driver Conformance} or
+-\ref{sec:Conformance / Driver Conformance / Memory Driver Conformance}.
++\ref{sec:Conformance / Driver Conformance / Sound Driver Conformance}
++\ref{sec:Conformance / Driver Conformance / Memory Driver Conformance} or
++\ref{sec:Conformance / Driver Conformance / I2C Adapter Driver Conformance=
+}.
++
+     \item Clause \ref{sec:Conformance / Legacy Interface: Transitional Dev=
+ice and Transitional Driver Conformance}.
+   \end{itemize}
+ \item[Device] A device MUST conform to four conformance clauses:
+@@ -47,8 +49,10 @@ \section{Conformance Targets}\label{sec:Conformance / Co=
+nformance Targets}
+ \ref{sec:Conformance / Device Conformance / Socket Device Conformance},=20
+ \ref{sec:Conformance / Device Conformance / RPMB Device Conformance},
+ \ref{sec:Conformance / Device Conformance / IOMMU Device Conformance},
+-\ref{sec:Conformance / Device Conformance / Sound Device Conformance} or
+-\ref{sec:Conformance / Device Conformance / Memory Device Conformance}.
++\ref{sec:Conformance / Device Conformance / Sound Device Conformance}
++\ref{sec:Conformance / Device Conformance / Memory Device Conformance} or
++\ref{sec:Conformance / Device Conformance / I2C Adapter Device Conformance=
+}.
++
+     \item Clause \ref{sec:Conformance / Legacy Interface: Transitional Dev=
+ice and Transitional Driver Conformance}.
+   \end{itemize}
+ \end{description}
+@@ -261,6 +265,14 @@ \section{Conformance Targets}\label{sec:Conformance / =
+Conformance Targets}
+ \item \ref{drivernormative:Device Types / Memory Device / Device Operation=
+ / STATE request}
+ \end{itemize}
+=20
++\conformance{\subsection}{I2C Adapter Driver Conformance}\label{sec:Confor=
+mance / Driver Conformance / I2C Adapter Driver Conformance}
++
++An I2C Adapter driver MUST conform to the following normative statements:
++
++\begin{itemize}
++\item \ref{drivernormative:Device Types / I2C Adapter Device / Device Oper=
+ation}
++\end{itemize}
++
+ \conformance{\section}{Device Conformance}\label{sec:Conformance / Device =
+Conformance}
+=20
+ A device MUST conform to the following normative statements:
+@@ -477,6 +489,14 @@ \section{Conformance Targets}\label{sec:Conformance / =
+Conformance Targets}
+ \item \ref{devicenormative:Device Types / Memory Device / Device Operation=
+ / STATE request}
+ \end{itemize}
+=20
++\conformance{\subsection}{I2C Adapter Device Conformance}\label{sec:Confor=
+mance / Device Conformance / I2C Adapter Device Conformance}
++
++An I2C Adapter device MUST conform to the following normative statements:
++
++\begin{itemize}
++\item \ref{devicenormative:Device Types / I2C Adapter Device / Device Oper=
+ation}
++\end{itemize}
++
+ \conformance{\section}{Legacy Interface: Transitional Device and Transitio=
+nal Driver Conformance}\label{sec:Conformance / Legacy Interface: Transitio=
+nal Device and Transitional Driver Conformance}
+ A conformant implementation MUST be either transitional or
+ non-transitional, see \ref{intro:Legacy
+diff --git a/content.tex b/content.tex
+index 91855b4..95e2ed8 100644
+--- a/content.tex
++++ b/content.tex
+@@ -6200,6 +6200,7 @@ \subsubsection{Legacy Interface: Framing Requirements=
+}\label{sec:Device
+ \input{virtio-iommu.tex}
+ \input{virtio-sound.tex}
+ \input{virtio-mem.tex}
++\input{virtio-i2c.tex}
+=20
+ \chapter{Reserved Feature Bits}\label{sec:Reserved Feature Bits}
+=20
+diff --git a/virtio-i2c.tex b/virtio-i2c.tex
+new file mode 100644
+index 0000000..96c96bf
+--- /dev/null
++++ b/virtio-i2c.tex
+@@ -0,0 +1,94 @@
++\section{I2C Adapter Device}\label{sec:Device Types / I2C Adapter Device}
++
++virtio-i2c is a virtual I2C adapter device. It provides a way to flexibly
++organize and manage I2C slave devices from the guest. By attaching ACPI
++I2C slave nodes to the virtual I2C adapter device, the guest can
++communicate with them without changing or adding extra drivers for these
++slave I2C devices.=20
++
++\subsection{Device ID}\label{sec:Device Types / I2C Adapter Device / Devic=
+e ID}
++34
++
++\subsection{Virtqueues}\label{sec:Device Types / I2C Adapter Device / Virt=
+queues}
++
++\begin{description}
++\item[0] requestq
++\end{description}
++
++\subsection{Feature bits}\label{sec:Device Types / I2C Adapter Device / Fe=
+ature bits}
++
++None currently defined.
++
++\subsection{Device configuration layout}\label{sec:Device Types / I2C Adap=
+ter Device / Device configuration layout}
++
++None currently defined.
++
++\subsection{Device Initialization}\label{sec:Device Types / I2C Adapter De=
+vice / Device Initialization}
++
++\begin{enumerate}
++\item The virtqueue is initialized.
++\end{enumerate}
++
++\subsection{Device Operation}\label{sec:Device Types / I2C Adapter Device =
+/ Device Operation}
++
++The driver queues requests to the virtqueue, and they are used by the
++device. The request is the representation of one segment of an I2C
++transaction. Each request is of form:
++
++\begin{lstlisting}
++struct virtio_i2c_req {
++        le16 addr;
++        le16 flags;
++        le16 len;
++        u8 buf[];
++        u8 status;
++};
++\end{lstlisting}
++
++The \field{addr} is the address of the I2C slave device.
++
++The first bit of \field{flags} indicates whether it is a read or write req=
+uest.
++It means a read request if the first bit of \field{flags} is set, otherwis=
+e
++it is a write request. The rest bits of \field{flags} are reserved.
++
++The \field{len} is the number of data bytes in the \field{buf} being read =
+from or
++written to the I2C slave address.
++
++The \field{buf} of the request contains one segment of an I2C transaction.
++If the first bit of \field{flags} is '1', the \field{buf} is written by th=
+e
++device and it contains one segment of an I2C transaction being read from t=
+he
++device. If the first bit of \field{flags} is '0', the \field{buf} is writt=
+en
++by the driver and it contains one segment of an I2C transaction being writ=
+ten
++to the the device.
++
++The final \field{status} byte is written by the device: either VIRTIO_I2C_=
+MSG_OK
++for success or VIRTIO_I2C_MSG_ERR for error.
++
++\begin{lstlisting}
++#define VIRTIO_I2C_MSG_OK     0
++#define VIRTIO_I2C_MSG_ERR    1
++\end{lstlisting}
++
++\drivernormative{\subsubsection}{Device Operation}{Device Types / I2C Adap=
+ter Device / Device Operation}
++
++A driver MUST set \field{addr}, \field{flags} and \field{len} before sendi=
+ng
++the request.
++
++A driver MUST place one segment of an I2C transaction into \field{buf} if =
+the
++first bit of \field{flags} is '0'.
++
++A driver MUST NOT use \field{addr}, \field{flags}, \field{len} and \field{=
+buf}
++if the final \field{status} returned from the device is VIRTIO_I2C_MSG_ERR=
+.
++
++A driver MUST queue the requests in order if multiple requests are going t=
+o
++be sent at a time.
++
++\devicenormative{\subsubsection}{Device Operation}{Device Types / I2C Adap=
+ter Device / Device Operation}
++
++A device MUST NOT change the value of \field{addr}, \field{flags} and \fie=
+ld{len}.
++
++A device MUST place one segment of an I2C transaction into \field{buf} if =
+the first
++bit of \field{flags} is '1'.
++
++A device MUST guarantee the requests being handled in order if multiple re=
+quests
++are received.
+--=20
+2.7.4
 
-Eric
-> 
->>
->>>
->>> Not that I know, but I don't see why it's a must.
->>>
->>>> So what progress has been made with the ACPI table specification, is it
->>>> just a matter of time to get it approved or are there concerns?
->>>>
->>>> Regards,
->>>>
->>>> 	Joerg
->>>
->>
-> 
 
+This publicly archived list offers a means to provide input to the
+OASIS Virtual I/O Device (VIRTIO) TC.
 
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+In order to verify user consent to the Feedback License terms and
+to minimize spam in the list archive, subscription is required
+before posting.
+
+Subscribe: virtio-comment-subscribe@lists.oasis-open.org
+Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
+List help: virtio-comment-help@lists.oasis-open.org
+List archive: https://lists.oasis-open.org/archives/virtio-comment/
+Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
+List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lis=
+ts
+Committee: https://www.oasis-open.org/committees/virtio/
+Join OASIS: https://www.oasis-open.org/join/
 
