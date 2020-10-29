@@ -1,99 +1,111 @@
-Return-Path: virtio-comment-return-1479-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio-comment@lists.oasis-open.org>
-List-Post: <mailto:virtio-comment@lists.oasis-open.org>
-List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
-References: <5d3d8a27893734be954ebbe560f638fbafb3429c.1603778046.git.jie.deng@intel.com>
- <f0a25b9d-c1e7-21e8-0944-9fa5796adfca@redhat.com>
-From: Jie Deng <jie.deng@intel.com>
-Message-ID: <a9dfc607-5cdf-555e-142d-41d5dc7b59d6@intel.com>
-Date: Thu, 29 Oct 2020 15:38:09 +0800
+Return-Path: virtio-return-3439-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio@lists.oasis-open.org>
+List-Post: <mailto:virtio@lists.oasis-open.org>
+List-Help: <mailto:virtio-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
+Date: Thu, 29 Oct 2020 03:50:57 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20201029075047.119209-1-mst@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <f0a25b9d-c1e7-21e8-0944-9fa5796adfca@redhat.com>
-Subject: Re: [virtio-comment] [PATCH v3] virtio-i2c: add the device
- specification
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-To: Paolo Bonzini <pbonzini@redhat.com>, virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
-Cc: mst@redhat.com
+Subject: [virtio] [PATCH] VIRTIO_F_RING_PACKED_USED: packing used descriptors
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+To: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+Cc: virtio@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+Sometimes the device needs to only write out a single used descriptor
+after processing a batch of multiple available descriptors.
+This can happen when using
+descriptor chaining or with in-order
+use of descriptors.  In this case, the device writes out a single used
+descriptor with the buffer id of the last descriptor in the batch.
 
-On 2020/10/29 4:10, Paolo Bonzini wrote:
-> On 27/10/20 07:00, Jie Deng wrote:
->> +The driver queues requests to the virtqueue, and they are used by the
->> +device. The request is the representation of one segment of an I2C
->> +transaction. Each request is of form:
->> +
->> +\begin{lstlisting}
->> +struct virtio_i2c_req {
->> +        le16 addr;
->> +        le16 flags;
->> +        le16 len;
->> +        u8 buf[];
->> +        u8 status;
->> +};
->> +\end{lstlisting}
-> Hi,
->
-> one extremely common two-segment I2C transaction is not reproducible
-> with virtio-i2c.  This is when a write is followed by a read: the master
-> starts off the transmission with a write, then sends a second START,
-> then continues with a read from the same address.
->
-> Would it make sense to define the request like
->
-> struct virtio_i2c_req {
-> 	le16 addr;
-> 	le16 written;
-> 	le16 read;
-> 	u8 bufwrite[];
-> 	u8 status;
-> 	u8 bufread[];
-> };
->
-> instead?
->
-> Thanks,
->
-> Paolo
->
-Hi Paolo,
+When this happens, used descriptors stop being
+contiguous in memory. As a result each used descriptor
+needs a separate memory write. For devices on the pci express bus,
+this incurs overhead of a separate write trasaction
+(e.g. pci express headers etc).
 
-I'm not sure why this two-segment I2C transaction is not reproducible ?
+This patch proposes a new feature: VIRTIO_F_RING_PACKED_USED.
+The idea is that both device and driver count all of the
+descriptors in a batch as if all of them are being written out
+when used.  The resulting batch counter controls
+wrap around to beginning of the ring, which then serves
+as a synchronization point.
 
-my understanding is that we don't need to care about the 
-START/STOP/RESTART conditions
-between virtio-i2c frontend and backend. These conditions only make 
-sense when data
-is exchanged between master and slave devices, rather than virtio 
-frontend and backend.
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+---
+ content.tex     |  3 +++
+ packed-ring.tex | 27 +++++++++++++++++++++++----
+ 2 files changed, 26 insertions(+), 4 deletions(-)
 
-Only the backend may need to consider these conditions when doing device 
-emulation and
-exchanging data with its slave devices. It has nothing to do with the 
-frontend.
+diff --git a/content.tex b/content.tex
+index 47a4c6a..5b3121e 100644
+--- a/content.tex
++++ b/content.tex
+@@ -6247,6 +6247,9 @@ \chapter{Reserved Feature Bits}\label{sec:Reserved Feature Bits}
+   \item[VIRTIO_F_ORDER_PLATFORM(36)] This feature indicates
+   that memory accesses by the driver and the device are ordered
+   in a way described by the platform.
++  \item[VIRTIO_F_RING_PACKED_USED(37)] This feature indicates
++  support for packed write out of used descriptors. Requires
++  VIRTIO_F_RING_PACKED.
+ 
+   If this feature bit is negotiated, the ordering in effect for any
+   memory accesses by the driver that need to be ordered in a specific way
+diff --git a/packed-ring.tex b/packed-ring.tex
+index ea92543..f8a2676 100644
+--- a/packed-ring.tex
++++ b/packed-ring.tex
+@@ -131,17 +131,36 @@ \subsection{Polling of available and used descriptors}
+ poll (or test) a single location in memory: the next device descriptor after
+ the one they processed previously, in circular order.
+ 
++\subsection{Skipping Used Descriptors}
++\label{sec:Packed Virtqueues / Skipping Used Descriptors}
+ Sometimes the device needs to only write out a single used descriptor
+ after processing a batch of multiple available descriptors.  As
+ described in more detail below, this can happen when using
+ descriptor chaining or with in-order
+-use of descriptors.  In this case, the device writes out a used
+-descriptor with the buffer id of the last descriptor in the group.
+-After processing the used descriptor, both device and driver then
++use of descriptors.  In this case, the device writes out a single used
++descriptor with the buffer id of the last descriptor in the batch.
++
++If VIRTIO_F_RING_PACKED_USED has not been negotiated,
++after processing the used descriptor, both device and driver then
+ skip forward in the ring the number of the remaining descriptors
+-in the group until processing (reading for the driver and writing
++in the batch until processing (reading for the driver and writing
+ for the device) the next used descriptor.
+ 
++If VIRTIO_F_RING_PACKED_USED has been negotiated,
++both the device and the driver are expected to maintain,
++internally, a 16-bit used batch counter initialized to 0.
++Each time a batch of descriptors is used, the batch counter
++is incremented by the number of descriptors in the batch.
++If after processing the used descriptor, the batch counter
++does not exceed the ring size, the next used descriptor
++is written immediately adjacent to the current one, in ring
++order.
++When after processing the used descriptor, the batch counter
++exceeds the ring size, the batch counter is decremented by the
++ring size; both device and driver then skip to the
++beginning (offset 0) of the ring until processing (reading for
++the driver and writing for the device) the next used descriptor.
++
+ \subsection{Write Flag}
+ \label{sec:Packed Virtqueues / Write Flag}
+ 
+-- 
+MST
 
-Is my understanding correct ?
 
-Thanks
-
-
-This publicly archived list offers a means to provide input to the
-OASIS Virtual I/O Device (VIRTIO) TC.
-
-In order to verify user consent to the Feedback License terms and
-to minimize spam in the list archive, subscription is required
-before posting.
-
-Subscribe: virtio-comment-subscribe@lists.oasis-open.org
-Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
-List help: virtio-comment-help@lists.oasis-open.org
-List archive: https://lists.oasis-open.org/archives/virtio-comment/
-Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
-List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
-Committee: https://www.oasis-open.org/committees/virtio/
-Join OASIS: https://www.oasis-open.org/join/
+---------------------------------------------------------------------
+To unsubscribe from this mail list, you must leave the OASIS TC that 
+generates this mail.  Follow this link to all your TCs in OASIS at:
+https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
 
