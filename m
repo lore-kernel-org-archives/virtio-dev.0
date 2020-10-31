@@ -1,66 +1,47 @@
-Return-Path: virtio-comment-return-1473-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-comment-return-1494-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-comment@lists.oasis-open.org>
 List-Post: <mailto:virtio-comment@lists.oasis-open.org>
 List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
-Date: Tue, 27 Oct 2020 07:20:24 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20201027071957-mutt-send-email-mst@kernel.org>
 References: <61930337391bdfd23ed164288d998c04177bc839.1603435652.git.jie.deng@intel.com>
  <20201023115932-mutt-send-email-mst@kernel.org>
  <a4a8ee83-d3e6-df1f-c0ac-f608d563522e@intel.com>
+ <20201027071957-mutt-send-email-mst@kernel.org>
+From: Paolo Bonzini <pbonzini@redhat.com>
+Message-ID: <d0a26ef6-09a7-9cb3-73d3-b68a22cfee28@redhat.com>
+Date: Sat, 31 Oct 2020 14:58:58 +0100
 MIME-Version: 1.0
-In-Reply-To: <a4a8ee83-d3e6-df1f-c0ac-f608d563522e@intel.com>
+In-Reply-To: <20201027071957-mutt-send-email-mst@kernel.org>
 Subject: [virtio-comment] Re: [virtio-dev] Re: [PATCH v2] virtio-i2c: add the device
  specification
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-To: Jie Deng <jie.deng@intel.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+To: "Michael S. Tsirkin" <mst@redhat.com>, Jie Deng <jie.deng@intel.com>
 Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Mon, Oct 26, 2020 at 09:22:07AM +0800, Jie Deng wrote:
-> On 2020/10/24 0:00, Michael S. Tsirkin wrote:
+On 27/10/20 12:20, Michael S. Tsirkin wrote:
+>> The I2C doesn't support segments numbering and sorting.
+>> So if one creates a multi-segment transaction, then he/she should keep the
+>> segments in order.
+>>
+>> Thanks.
+> Fine, but I see no flags to signal start/end of such a transaction.
 > 
-> > On Fri, Oct 23, 2020 at 02:51:25PM +0800, Jie Deng wrote:
-> > > +
-> > > +The driver queues requests to the virtqueues, and they are used by the
-> > > +device. The request is the representation of one segment of an I2C
-> > > +transaction. Each request is of form:
-> > > +
-> > > +\begin{lstlisting}
-> > > +struct virtio_i2c_req {
-> > > +        le16 addr;
-> > > +        le16 flags;
-> > > +        le16 len;
-> > > +        u8 buf[];
-> > > +        u8 status;
-> > > +};
-> > > +\end{lstlisting}
-> > > +
-> > > +The \field{addr} is the address of the I2C slave device.
-> > > +
-> > > +The first bit of \field{flags} indicates whether it is a read or write request.
-> > > +It means a read request if the first bit of \field{flags} is set, otherwise
-> > > +it is a write request. The rest bits of \field{flags} are reserved.
-> > > 
-> > 
-> > So how does one creates a multi-segment transaction then?
-> > 
-> The I2C doesn't support segments numbering and sorting.
-> So if one creates a multi-segment transaction, then he/she should keep the
-> segments in order.
-> 
-> Thanks.
 
-Fine, but I see no flags to signal start/end of such a transaction.
+In theory there's no difference between one multi-segment transaction
+and many single-segment transactions _in a single-master scenario_.
 
-> > 
-> > ---------------------------------------------------------------------
-> > To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> > For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
-> > 
+However, it is a plausible configuration to have multiple guests sharing
+an I2C host device as if they were multiple master.
+
+For this reason, I would prefer to have at least support for
+transactions with 1 write and 1 read segment to the same address (see my
+other message).
+
+Paolo
 
 
 This publicly archived list offers a means to provide input to the
