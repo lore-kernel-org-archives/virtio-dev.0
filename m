@@ -1,85 +1,90 @@
-Return-Path: virtio-comment-return-1497-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio-comment@lists.oasis-open.org>
-List-Post: <mailto:virtio-comment@lists.oasis-open.org>
-List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
-References: <5d3d8a27893734be954ebbe560f638fbafb3429c.1603778046.git.jie.deng@intel.com>
- <f0a25b9d-c1e7-21e8-0944-9fa5796adfca@redhat.com>
-From: Jie Deng <jie.deng@intel.com>
-Message-ID: <a1497eb0-91c0-551f-37e2-041b91c68e4b@intel.com>
-Date: Wed, 4 Nov 2020 16:05:50 +0800
+Return-Path: virtio-return-3447-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio@lists.oasis-open.org>
+List-Post: <mailto:virtio@lists.oasis-open.org>
+List-Help: <mailto:virtio-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
+Date: Tue, 3 Nov 2020 17:18:34 +0000
+From: Stefan Hajnoczi <stefanha@redhat.com>
+Message-ID: <20201103171834.GC259481@stefanha-x1.localdomain>
+References: <20201029075047.119209-1-mst@redhat.com>
+ <20201030113732.GG307361@stefanha-x1.localdomain>
+ <20201030105945-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <f0a25b9d-c1e7-21e8-0944-9fa5796adfca@redhat.com>
-Subject: Re: [virtio-comment] [PATCH v3] virtio-i2c: add the device
- specification
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-To: Paolo Bonzini <pbonzini@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>, Cornelia Huck <cohuck@redhat.com>
-Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+In-Reply-To: <20201030105945-mutt-send-email-mst@kernel.org>
+Subject: Re: [virtio] Re: [virtio-dev] [PATCH] VIRTIO_F_RING_PACKED_USED:
+ packing used descriptors
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="1SQmhf2mF2YjsYvc"
+Content-Disposition: inline
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, virtio@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+--1SQmhf2mF2YjsYvc
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On 2020/10/29 4:10, Paolo Bonzini wrote:
-> On 27/10/20 07:00, Jie Deng wrote:
->> +The driver queues requests to the virtqueue, and they are used by the
->> +device. The request is the representation of one segment of an I2C
->> +transaction. Each request is of form:
->> +
->> +\begin{lstlisting}
->> +struct virtio_i2c_req {
->> +        le16 addr;
->> +        le16 flags;
->> +        le16 len;
->> +        u8 buf[];
->> +        u8 status;
->> +};
->> +\end{lstlisting}
-> Hi,
->
-> one extremely common two-segment I2C transaction is not reproducible
-> with virtio-i2c.  This is when a write is followed by a read: the master
-> starts off the transmission with a write, then sends a second START,
-> then continues with a read from the same address.
->
-> Would it make sense to define the request like
->
-> struct virtio_i2c_req {
-> 	le16 addr;
-> 	le16 written;
-> 	le16 read;
-> 	u8 bufwrite[];
-> 	u8 status;
-> 	u8 bufread[];
-> };
->
-> instead?
->
-> Thanks,
->
-> Paolo
+On Fri, Oct 30, 2020 at 11:01:10AM -0400, Michael S. Tsirkin wrote:
+> On Fri, Oct 30, 2020 at 11:37:32AM +0000, Stefan Hajnoczi wrote:
+> > On Thu, Oct 29, 2020 at 03:50:57AM -0400, Michael S. Tsirkin wrote:
+> > > +When after processing the used descriptor, the batch counter
+> > > +exceeds the ring size, the batch counter is decremented by the
+> > > +ring size; both device and driver then skip to the
+> > > +beginning (offset 0) of the ring until processing (reading for
+> > > +the driver and writing for the device) the next used descriptor.
+> >=20
+> > This may be clearer:
+> >=20
+> >   both device and driver then use ring index 0 for the next used
+> >   descriptor
+> >=20
+> > Or:
+> >=20
+> >   The device writes the next used descriptor at ring index 0. The drive=
+r
+> >   reads the next used descriptor from ring index 0.
+> >=20
+> > I'm not sure I understand this scheme. Is this pseudo-code correct?
+> >=20
+> >   batch_counter +=3D num_used_descs
+> >   if batch_counter > ring_size:
+> >       batch_counter -=3D ring_size
+> >       used_idx =3D 0
+>=20
+> yes
+>=20
+>=20
+> > Can you share an explanation of how this scheme ensures that the
+> > driver's next avail descriptor index never overtakes the device's next
+> > used descriptor index?
+>=20
+> Simply because to overtake it, it needs to wrap around to 0.
+> That happens when batch counter wraps over to 0, if we make
+> device wrap at that point all is well.
 
-Hi,
+What confuses me is that batch_counter is not reset to 0. It is set to
+batch_counter -=3D ring_size.
 
-Do you have any comments on Paolo's proposal ?
+I guess I need to get my crayons and draw pictures :-).
 
-Thanks.
+Stefan
 
+--1SQmhf2mF2YjsYvc
+Content-Type: application/pgp-signature; name="signature.asc"
 
-This publicly archived list offers a means to provide input to the
-OASIS Virtual I/O Device (VIRTIO) TC.
+-----BEGIN PGP SIGNATURE-----
 
-In order to verify user consent to the Feedback License terms and
-to minimize spam in the list archive, subscription is required
-before posting.
+iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAl+hkOoACgkQnKSrs4Gr
+c8holQgAmfsNypri4XArOifeJBlZRpNBUocpueu+iFTluzEHe7tPMXLlfEmBBCJc
+6ERwWZ3B91OaN8H/uw38Imlr+ohDAH7k9HeHWJyC6rq+HNwgoLX4ryHhA56Wbff4
+1vlBQtRy+YW3CgxPou4p1eOqBNqxbNw/vBMTOBlLDKWlgsWFiq8mIWBZED9HhFir
+MVN2hkOPsKOOC+Fbcy5wRxyjk6XYL+i1fnZUW/n2blTnZIlknBsguAJtqZDdyWP5
+Xl4Z7heFm8XKKbCbJ/afsnk/yG7+bjl6360h8RKeoZ5e+uBFA8J/8xz4lf6g4AD/
+yb3BW1EGrw5kZNPzppNBAWeBitwxCg==
+=/YAn
+-----END PGP SIGNATURE-----
 
-Subscribe: virtio-comment-subscribe@lists.oasis-open.org
-Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
-List help: virtio-comment-help@lists.oasis-open.org
-List archive: https://lists.oasis-open.org/archives/virtio-comment/
-Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
-List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
-Committee: https://www.oasis-open.org/committees/virtio/
-Join OASIS: https://www.oasis-open.org/join/
+--1SQmhf2mF2YjsYvc--
 
