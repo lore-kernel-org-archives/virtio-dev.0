@@ -1,121 +1,117 @@
-Return-Path: virtio-comment-return-1512-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio-comment@lists.oasis-open.org>
-List-Post: <mailto:virtio-comment@lists.oasis-open.org>
-List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
+Return-Path: virtio-dev-return-7841-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id D2786986162
+	for <virtio-dev@lists.oasis-open.org>; Thu,  5 Nov 2020 21:21:47 +0000 (UTC)
+From: Peter Hilber <peter.hilber@opensynergy.com>
+Date: Thu, 5 Nov 2020 22:21:06 +0100
+Message-ID: <20201105212116.411422-1-peter.hilber@opensynergy.com>
 MIME-Version: 1.0
-References: <159836664741.231431.2775539890399592989.stgit@ahduyck-workstation>
- <159836670239.231431.14835898822569373567.stgit@ahduyck-workstation>
- <fd8d3fed-a92a-4356-7a3d-fb773b04880a@siemens.com> <CAKgT0Ud7XfcEVL8jy-6kNQ=BDUJqh-xp94MZ7F2+Vf+mv1vj3Q@mail.gmail.com>
- <2faa1a86-fc9c-f325-00f0-99df49b2421d@siemens.com> <CAKgT0UercLR43iY1PQ7LOvEnqt-c2mds7Mv7XS=77Uju-Qdz=g@mail.gmail.com>
- <20200914081355.71f0d3f7.cohuck@redhat.com> <20200916092827-mutt-send-email-mst@kernel.org>
- <20201111190337.1bf64e7a.cohuck@redhat.com> <CAKgT0UfT1Ubw1V6vTDmBsoVthH-oKhSe7+VxFmFifD3KM_mgAg@mail.gmail.com>
- <20201112084501.491f3d6b.cohuck@redhat.com>
-In-Reply-To: <20201112084501.491f3d6b.cohuck@redhat.com>
-From: Alexander Duyck <alexander.duyck@gmail.com>
-Date: Thu, 12 Nov 2020 14:58:59 -0800
-Message-ID: <CAKgT0Uc=W+uKcGM2C6DzJTHmuL6fbSSXYC6a+D-4QC1GkCeMrQ@mail.gmail.com>
-Subject: Re: [virtio-comment] Re: [virtio-dev] [PATCH v8 1/3] content:
- Document balloon feature free page hints
-Content-Type: text/plain; charset="UTF-8"
-To: Cornelia Huck <cohuck@redhat.com>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>, Jan Kiszka <jan.kiszka@siemens.com>, David Hildenbrand <david@redhat.com>, virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, "Wang, Wei W" <wei.w.wang@intel.com>
+Subject: [virtio-dev] [RFC PATCH v2 00/10] firmware: arm_scmi: Add virtio transport
+Content-Type: text/plain
+Content-Transfer-Encoding: quoted-printable
+To: linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org
+Cc: Peter Hilber <peter.hilber@opensynergy.com>, Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org, sudeep.holla@arm.com, souvik.chakravarty@arm.com, alex.bennee@linaro.org, jean-philippe@linaro.org, igor.skalkin@opensynergy.com, mikhail.golubev@opensynergy.com, anton.yakovlev@opensynergy.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, Nov 11, 2020 at 11:45 PM Cornelia Huck <cohuck@redhat.com> wrote:
->
-> On Wed, 11 Nov 2020 14:09:23 -0800
-> Alexander Duyck <alexander.duyck@gmail.com> wrote:
->
-> > On Wed, Nov 11, 2020 at 10:03 AM Cornelia Huck <cohuck@redhat.com> wrote:
-> > >
-> > > On Wed, 16 Sep 2020 09:28:34 -0400
-> > > "Michael S. Tsirkin" <mst@redhat.com> wrote:
-> > >
-> > > > On Mon, Sep 14, 2020 at 08:13:55AM +0200, Cornelia Huck wrote:
-> > > > > On Fri, 11 Sep 2020 08:11:15 -0700
-> > > > > Alexander Duyck <alexander.duyck@gmail.com> wrote:
-> > > > >
-> > > > > > On Thu, Sep 10, 2020 at 10:28 PM Jan Kiszka <jan.kiszka@siemens.com> wrote:
-> > > > > > >
-> > > > > > > On 04.09.20 18:56, Alexander Duyck wrote:
-> > > > > > > > On Fri, Sep 4, 2020 at 8:20 AM Jan Kiszka <jan.kiszka@siemens.com> wrote:
-> > > > > > > >>
-> > > > > > > >> On 25.08.20 16:45, Alexander Duyck wrote:
-> > > > >
-> > > > > > > >>> @@ -5042,13 +5049,17 @@ \subsection{Feature bits}\label{sec:Device Types / Memory Balloon Device / Featu
-> > > > > > > >>>  VIRTIO_BALLOON_F_MUST_TELL_HOST is not negotiated.
-> > > > > > > >>>
-> > > > > > > >>>  \subsection{Device configuration layout}\label{sec:Device Types / Memory Balloon Device / Device configuration layout}
-> > > > > > > >>> -  Both fields of this configuration
-> > > > > > > >>> -  are always available.
-> > > > > > > >>> +  \field{num_pages} and \field{actual} are always available.
-> > > > > > > >>> +
-> > > > > > > >>> +  \field{free_page_hint_cmd_id} is available if
-> > > > > > > >>> +    VIRTIO_BALLOON_F_FREE_PAGE_HINT has been negotiated and is read-only by
-> > > > > > > >>> +    the driver.
-> > > > > > > >>
-> > > > > > > >> This reads at least to me like "...if VIRTIO_BALLOON_F_FREE_PAGE_HINT
-> > > > > > > >> ... is read-only by the driver". I suspect you rather meant
-> > > > > > > >> "free_page_hint_cmd_id is read-only...". Maybe split up into two sentences?
-> > > > > > > >
-> > > > > > > > Yes, the intention is:
-> > > > > > > > 1. free_page_hint_cmd_id is only available if
-> > > > > > > > VIRTIO_BALLOON_F_FREE_PAGE_HINT has been negotiated
-> > > > > > > > 2. free_page_hint_cmd_id is read only by the driver
-> > > > > > > >
-> > > > > > > > If needed I suppose we could break it up by splitting it into two
-> > > > > > > > sentences, or adding "the field" after the "and".
-> > > > > > > >
-> > > > > > >
-> > > > > > > I'm fine with both options but please adjust this - on top (Michael just
-> > > > > > > opened the voting for this version again due to the formal typo in round 1).
-> > > > > > >
-> > > > > > > Jan
-> > > > > >
-> > > > > > Since the patch set is being voted on is there a preferred method for
-> > > > > > making this sort of update? I'm just wondering if I should do an
-> > > > > > additional incremental patch, just submit a replacement for this
-> > > > > > patch, or make the change and resubmit the entire patch set?
-> > > > >
-> > > > > I think doing an additional patch on top and then doing another vote on
-> > > > > that is the best way to handle this. (Or maybe it is minor enough to
-> > > > > simply merge the incremental patch?)
-> > > >
-> > > > yes, this sounds good to me
-> > >
-> > > Which one of the options, actually? I'd be happy to merge a proper
-> > > patch on top (which I'd consider a trivial fix.)
-> >
-> > I had submitted a 4/3 for this set that was meant to fix it, but
-> > looking it over I don't think it would apply cleanly as I think I had
-> > only applied the patch it fixed and didn't have the poison patch
-> > applied when I generated it. If you need I can resubmit that patch as
-> > a trivial fix since it is only a 2 line change.
->
-> Thanks, that would be great.
+This series implements an SCMI virtio driver according to the virtio
+SCMI device spec patch v5 [1], after simple preparatory changes to the
+existing arm-scmi driver.
 
-No problem. I just submitted it as a standalone patch and added the
-Reviewed-by you had added when I submitted before.
+The virtio transport differs in some respects from the existing
+shared-memory based SCMI transports.
 
-Thanks.
+Message timeouts can be a problem if the virtio device (SCMI platform)
+does not have real-time properties. I set a high message rx timeout
+value which should work for non real-time virtio devices as well. There
+are other timeouts for delayed response and polling which were not
+addressed yet. Delayed responses are not really needed since, with the
+virtio transport, message responses may be transmitted out of order.
+Polling doesn't make sense at least for virtio devices without real-time
+behavior, in my understanding.
 
-- Alex
+There are some known issues which will be resolved before removing the
+RFC tag:
 
-This publicly archived list offers a means to provide input to the
-OASIS Virtual I/O Device (VIRTIO) TC.
+- Further work is needed on the scmi_xfer management. Unlike shmem based
+  transports, the virtio transport is actually exchanging messages with
+  the SCMI agent through the scmi_xfer tx and rx buffers. In case of a
+  message rx timeout, the arm-scmi driver could try to re-use the
+  scmi_xfer, while that might still be used by the virtio device. I
+  think part of the scmi_xfers_info bookkeeping could be optionally
+  outsourced to the transport to remediate this.
 
-In order to verify user consent to the Feedback License terms and
-to minimize spam in the list archive, subscription is required
-before posting.
+- After arm-scmi driver probe failure, or after remove, the scmi-virtio
+  driver may still try to process and forward message responses from the
+  virtio device.
 
-Subscribe: virtio-comment-subscribe@lists.oasis-open.org
-Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
-List help: virtio-comment-help@lists.oasis-open.org
-List archive: https://lists.oasis-open.org/archives/virtio-comment/
-Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
-List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
-Committee: https://www.oasis-open.org/committees/virtio/
-Join OASIS: https://www.oasis-open.org/join/
+- We must be sure that the virtio transport option (such as virtio over
+  MMIO) is available when the virtio SCMI device is probed.
+
+The series is based on for-next/scmi [2], on top of
+
+commit b9ceca6be432 ("firmware: arm_scmi: Fix duplicate workqueue name")
+
+The series was actually tested with a v5.4 based kernel, with the Base
+protocol and Sensor management protocol. The virtio SCMI device used was
+a proprietary implementation by OpenSynergy. Delayed responses were not
+tested.
+
+Changes in RFC v2:
+
+- Remove the DT virtio_transport phandle, since the SCMI virtio device may
+  not be known in advance. Instead, use the first suitable probed device.
+  Change due to Rob Herring's comment.
+
+Any comments are very welcome.
+
+[1] https://lists.oasis-open.org/archives/virtio-comment/202005/msg00096.ht=
+ml
+[2] https://git.kernel.org/pub/scm/linux/kernel/git/sudeep.holla/linux.git
+
+
+Igor Skalkin (7):
+  firmware: arm_scmi, smccc, mailbox: Make shmem based transports
+    optional
+  firmware: arm_scmi: Document that max_msg is a per channel type limit
+  firmware: arm_scmi: Add op to override max message #
+  firmware: arm_scmi: Add per message transport data
+  firmware: arm_scmi: Add xfer_init_buffers transport op
+  dt-bindings: arm: Add virtio transport for SCMI
+  firmware: arm_scmi: Add virtio transport
+
+Peter Hilber (3):
+  firmware: arm_scmi: Add optional link_supplier() transport op
+  firmware: arm_scmi: Add per-device transport private info
+  firmware: arm_scmi: Add is_scmi_protocol_device()
+
+ .../devicetree/bindings/arm/arm,scmi.txt      |  35 +-
+ MAINTAINERS                                   |   1 +
+ drivers/firmware/Kconfig                      |  19 +-
+ drivers/firmware/arm_scmi/Makefile            |   3 +-
+ drivers/firmware/arm_scmi/bus.c               |   5 +
+ drivers/firmware/arm_scmi/common.h            |  37 +-
+ drivers/firmware/arm_scmi/driver.c            | 124 ++++-
+ drivers/firmware/arm_scmi/virtio.c            | 493 ++++++++++++++++++
+ drivers/firmware/smccc/Kconfig                |   1 +
+ drivers/mailbox/Kconfig                       |   1 +
+ include/uapi/linux/virtio_ids.h               |   1 +
+ include/uapi/linux/virtio_scmi.h              |  41 ++
+ 12 files changed, 736 insertions(+), 25 deletions(-)
+ create mode 100644 drivers/firmware/arm_scmi/virtio.c
+ create mode 100644 include/uapi/linux/virtio_scmi.h
+
+
+base-commit: b9ceca6be43233845be70792be9b5ab315d2e010
+--=20
+2.25.1
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
