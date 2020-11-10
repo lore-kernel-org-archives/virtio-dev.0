@@ -1,81 +1,308 @@
-Return-Path: virtio-dev-return-7875-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id E4140986358
-	for <virtio-dev@lists.oasis-open.org>; Thu, 26 Nov 2020 09:58:45 +0000 (UTC)
-Date: Thu, 26 Nov 2020 04:58:35 -0500
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20201126045340-mutt-send-email-mst@kernel.org>
-References: <20200818115147.2567012-1-tomas.winkler@intel.com>
- <20200818115147.2567012-14-tomas.winkler@intel.com>
- <20201125160326-mutt-send-email-mst@kernel.org>
- <7f6181d8e80d4efb9464e9ec436800b7@intel.com>
+Return-Path: virtio-comment-return-1500-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-comment@lists.oasis-open.org>
+List-Post: <mailto:virtio-comment@lists.oasis-open.org>
+List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
+From: Jie Deng <jie.deng@intel.com>
+Date: Tue, 10 Nov 2020 15:31:10 +0800
+Message-Id: <3b0fd676eed3baa775009a17047737dbe669594c.1604992813.git.jie.deng@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <7f6181d8e80d4efb9464e9ec436800b7@intel.com>
-Subject: [virtio-dev] Re: [char-misc-next 13/13] mei: virtio: virtualization frontend
- driver
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-To: "Winkler, Tomas" <tomas.winkler@intel.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Usyskin, Alexander" <alexander.usyskin@intel.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Wang, Yu1" <yu1.wang@intel.com>, "Liu, Shuo A" <shuo.a.liu@intel.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
+Subject: [virtio-comment] [PATCH v4] virtio-i2c: add the device specification
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+To: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+Cc: mst@redhat.com, cohuck@redhat.com, Jie Deng <jie.deng@intel.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, Nov 25, 2020 at 09:18:04PM +0000, Winkler, Tomas wrote:
-> > 
-> > On Tue, Aug 18, 2020 at 02:51:47PM +0300, Tomas Winkler wrote:
-> > > +#ifndef VIRTIO_ID_MEI
-> > > +#define VIRTIO_ID_MEI 0xFFFE /* virtio mei */ #endif
-> > 
-> > Just noticed now that this driver landed upstream.  Can I ask that you guys
-> > please register IDs with the virtio TC and not just pick a number at random?
-> > In particular this is way outside allowed range.
-> > 
-> > IDs should also be listed in include/uapi/linux/virtio_ids.h
-> > 
-> > If people just pick random numbers like this collistions are unavoidable.
-> > 
-> > List of IDs is part of virtio spec, chapter "Device Types".
-> > 
-> > Please do this change now before this goes out to production!
-> Okay,  this was assigned by ACRN, my impression was it's already registered.
-> Will take care of.
-> Thanks
-> Tomas
+virtio-i2c is a virtual I2C adapter device. It provides a way
+to =EF=AC=82exibly communicate with the I2C slave devices from the guest.
 
-Found this:
-https://projectacrn.github.io/latest/developer-guides/hld/hld-virtio-devices.html
+This patch adds the specification for this device.
 
-Supported Virtio Devices
-All the BE virtio drivers are implemented using the ACRN virtio APIs, and the FE drivers are reusing the standard Linux FE virtio drivers. For the devices with FE drivers available in the Linux kernel, they should use standard virtio Vendor ID/Device ID and Subsystem Vendor ID/Subsystem Device ID. For other devices within ACRN, their temporary IDs are listed in the following table.
+Signed-off-by: Jie Deng <jie.deng@intel.com>
+---
+ conformance.tex  |  28 +++++++++++--
+ content.tex      |   1 +
+ introduction.tex |   3 ++
+ virtio-i2c.tex   | 117 +++++++++++++++++++++++++++++++++++++++++++++++++++=
+++++
+ 4 files changed, 145 insertions(+), 4 deletions(-)
+ create mode 100644 virtio-i2c.tex
 
-Table 5 Virtio Devices without existing FE drivers in Linux
-virtio device	Vendor ID	Device ID	Subvendor ID	Subdevice ID
-RPMB	0x8086	0x8601	0x8086	0xFFFF
-HECI	0x8086	0x8602	0x8086	0xFFFE
-audio	0x8086	0x8603	0x8086	0xFFFD
-IPU	0x8086	0x8604	0x8086	0xFFFC
-TSN/AVB	0x8086	0x8605	0x8086	0xFFFB
-hyper_dmabuf	0x8086	0x8606	0x8086	0xFFFA
-HDCP	0x8086	0x8607	0x8086	0xFFF9
-COREU	0x8086	0x8608	0x8086	0xFFF8
-I2C	0x8086	0x860a	0x8086	0xFFF6
-GPIO	0x8086	0x8609	0x8086	0xFFF7
+diff --git a/conformance.tex b/conformance.tex
+index f1f23a8..12bce3a 100644
+--- a/conformance.tex
++++ b/conformance.tex
+@@ -27,8 +27,10 @@ \section{Conformance Targets}\label{sec:Conformance / Co=
+nformance Targets}
+ \ref{sec:Conformance / Driver Conformance / Socket Driver Conformance},
+ \ref{sec:Conformance / Driver Conformance / RPMB Driver Conformance},
+ \ref{sec:Conformance / Driver Conformance / IOMMU Driver Conformance},
+-\ref{sec:Conformance / Driver Conformance / Sound Driver Conformance} or
+-\ref{sec:Conformance / Driver Conformance / Memory Driver Conformance}.
++\ref{sec:Conformance / Driver Conformance / Sound Driver Conformance}
++\ref{sec:Conformance / Driver Conformance / Memory Driver Conformance} or
++\ref{sec:Conformance / Driver Conformance / I2C Adapter Driver Conformance=
+}.
++
+     \item Clause \ref{sec:Conformance / Legacy Interface: Transitional Dev=
+ice and Transitional Driver Conformance}.
+   \end{itemize}
+ \item[Device] A device MUST conform to four conformance clauses:
+@@ -47,8 +49,10 @@ \section{Conformance Targets}\label{sec:Conformance / Co=
+nformance Targets}
+ \ref{sec:Conformance / Device Conformance / Socket Device Conformance},=20
+ \ref{sec:Conformance / Device Conformance / RPMB Device Conformance},
+ \ref{sec:Conformance / Device Conformance / IOMMU Device Conformance},
+-\ref{sec:Conformance / Device Conformance / Sound Device Conformance} or
+-\ref{sec:Conformance / Device Conformance / Memory Device Conformance}.
++\ref{sec:Conformance / Device Conformance / Sound Device Conformance}
++\ref{sec:Conformance / Device Conformance / Memory Device Conformance} or
++\ref{sec:Conformance / Device Conformance / I2C Adapter Device Conformance=
+}.
++
+     \item Clause \ref{sec:Conformance / Legacy Interface: Transitional Dev=
+ice and Transitional Driver Conformance}.
+   \end{itemize}
+ \end{description}
+@@ -261,6 +265,14 @@ \section{Conformance Targets}\label{sec:Conformance / =
+Conformance Targets}
+ \item \ref{drivernormative:Device Types / Memory Device / Device Operation=
+ / STATE request}
+ \end{itemize}
+=20
++\conformance{\subsection}{I2C Adapter Driver Conformance}\label{sec:Confor=
+mance / Driver Conformance / I2C Adapter Driver Conformance}
++
++An I2C Adapter driver MUST conform to the following normative statements:
++
++\begin{itemize}
++\item \ref{drivernormative:Device Types / I2C Adapter Device / Device Oper=
+ation}
++\end{itemize}
++
+ \conformance{\section}{Device Conformance}\label{sec:Conformance / Device =
+Conformance}
+=20
+ A device MUST conform to the following normative statements:
+@@ -477,6 +489,14 @@ \section{Conformance Targets}\label{sec:Conformance / =
+Conformance Targets}
+ \item \ref{devicenormative:Device Types / Memory Device / Device Operation=
+ / STATE request}
+ \end{itemize}
+=20
++\conformance{\subsection}{I2C Adapter Device Conformance}\label{sec:Confor=
+mance / Device Conformance / I2C Adapter Device Conformance}
++
++An I2C Adapter device MUST conform to the following normative statements:
++
++\begin{itemize}
++\item \ref{devicenormative:Device Types / I2C Adapter Device / Device Oper=
+ation}
++\end{itemize}
++
+ \conformance{\section}{Legacy Interface: Transitional Device and Transitio=
+nal Driver Conformance}\label{sec:Conformance / Legacy Interface: Transitio=
+nal Device and Transitional Driver Conformance}
+ A conformant implementation MUST be either transitional or
+ non-transitional, see \ref{intro:Legacy
+diff --git a/content.tex b/content.tex
+index 91855b4..95e2ed8 100644
+--- a/content.tex
++++ b/content.tex
+@@ -6200,6 +6200,7 @@ \subsubsection{Legacy Interface: Framing Requirements=
+}\label{sec:Device
+ \input{virtio-iommu.tex}
+ \input{virtio-sound.tex}
+ \input{virtio-mem.tex}
++\input{virtio-i2c.tex}
+=20
+ \chapter{Reserved Feature Bits}\label{sec:Reserved Feature Bits}
+=20
+diff --git a/introduction.tex b/introduction.tex
+index cc38e29..9f016d5 100644
+--- a/introduction.tex
++++ b/introduction.tex
+@@ -73,6 +73,9 @@ \section{Normative References}\label{sec:Normative Refere=
+nces}
+ =09\phantomsection\label{intro:HDA}\textbf{[HDA]} &
+ =09High Definition Audio Specification,
+ =09\newline\url{https://www.intel.com/content/dam/www/public/us/en/documen=
+ts/product-specifications/high-definition-audio-specification.pdf}\\
++=09\phantomsection\label{intro:I2C}\textbf{[I2C]} &
++=09I2C-bus specification and user manual,
++=09\newline\url{https://www.nxp.com.cn/docs/en/user-guide/UM10204.pdf}\\
+=20
+ \end{longtable}
+=20
+diff --git a/virtio-i2c.tex b/virtio-i2c.tex
+new file mode 100644
+index 0000000..0eb2a4e
+--- /dev/null
++++ b/virtio-i2c.tex
+@@ -0,0 +1,117 @@
++\section{I2C Adapter Device}\label{sec:Device Types / I2C Adapter Device}
++
++virtio-i2c is a virtual I2C adapter device. It provides a way to flexibly
++organize and manage I2C slave devices from the guest. By attaching ACPI
++I2C slave nodes to the virtual I2C adapter device, the guest can
++communicate with them without changing or adding extra drivers for these
++slave I2C devices.=20
++
++\subsection{Device ID}\label{sec:Device Types / I2C Adapter Device / Devic=
+e ID}
++34
++
++\subsection{Virtqueues}\label{sec:Device Types / I2C Adapter Device / Virt=
+queues}
++
++\begin{description}
++\item[0] requestq
++\end{description}
++
++\subsection{Feature bits}\label{sec:Device Types / I2C Adapter Device / Fe=
+ature bits}
++
++None currently defined.
++
++\subsection{Device configuration layout}\label{sec:Device Types / I2C Adap=
+ter Device / Device configuration layout}
++
++None currently defined.
++
++\subsection{Device Initialization}\label{sec:Device Types / I2C Adapter De=
+vice / Device Initialization}
++
++\begin{enumerate}
++\item The virtqueue is initialized.
++\end{enumerate}
++
++\subsection{Device Operation}\label{sec:Device Types / I2C Adapter Device =
+/ Device Operation}
++
++\subsubsection{Device Operation: Request Queue}\label{sec:Device Types / I=
+2C Adapter Device / Device Operation: Request Queue}
++
++The driver queues requests to the virtqueue, and they are used by the
++device. The request is the representation of one segment of an I2C
++transaction. Each request is of form:
++
++\begin{lstlisting}
++struct virtio_i2c_req {
++        le16 addr;
++        le16 len;
++        u8 buf[];
++        u8 status;
++};
++\end{lstlisting}
++
++The \field{addr} of the request is the address of the I2C slave device.
++
++The \field{len} of the request is the number of data bytes in the \field{b=
+uf}
++being read from or written to the I2C slave address.
++
++The \field{buf} of the request contains one segment of an I2C transaction.
++For a read request, it contains one segment of an I2C transaction being re=
+ad
++from the device, for a write request, it contains one segment of an
++I2C transaction being written to the device.
++
++The final \field{status} byte of the request is written by the device: eit=
+her
++VIRTIO_I2C_MSG_OK for success or VIRTIO_I2C_MSG_ERR for error.
++
++\begin{lstlisting}
++#define VIRTIO_I2C_MSG_OK     0
++#define VIRTIO_I2C_MSG_ERR    1
++\end{lstlisting}
++
++A driver may kick one request or multiple requests to the device at a time=
+.
++If multiple requests are sent at a time, they MUST be queued and processed
++in order.
++
++\subsubsection{Device Operation: Operation Status}\label{sec:Device Types =
+/ I2C Adapter Device / Device Operation: Operation Status}
++
++If a driver kicks multiple requests at a time and a device fails to proces=
+s
++some of them, then the first failed request MUST have its \field{status}
++being set to VIRTIO_I2C_MSG_ERR by the device and the requests after the f=
+irst
++failed one MUST also be treated as VIRTIO_I2C_MSG_ERR by the driver,
++no matter what \field{status} of them. In this case, the number of success=
+fully
++sent requests this time is the number of the last request being successful=
+ly
++processed.
++
++\drivernormative{\subsubsection}{Device Operation}{Device Types / I2C Adap=
+ter Device / Device Operation}
++
++A driver MUST set \field{addr} and \field{len} before sending the request.
++
++A driver MUST place one segment of an I2C transaction into \field{buf} if =
+it
++is a write request.
++
++A driver MUST NOT use \field{addr}, \field{len} and \field{buf} if the fin=
+al
++\field{status} returned from the device is VIRTIO_I2C_MSG_ERR.
++
++A driver MAY queue one request or multiple requests at a time.
++
++A driver MUST queue the requests in order if multiple requests are going t=
+o
++be sent at a time.
++
++If multiple requests are sent at a time and some of them returned from the
++device have the \field{status} being VIRTIO_I2C_MSG_ERR, a driver MUST tre=
+at
++the first failed request and the requests after the first failed one as
++VIRTIO_I2C_MSG_ERR.
++
++\devicenormative{\subsubsection}{Device Operation}{Device Types / I2C Adap=
+ter Device / Device Operation}
++
++A device SHOULD keep consistent behaviors with the hardware as described i=
+n
++\hyperref[intro:I2C]{I2C}.
++
++A device MUST NOT change the value of \field{addr} and \field{len}.
++
++A device MUST place one segment of an I2C transaction into \field{buf} if =
+it
++is a read request.
++
++A device MUST guarantee the requests being processed in order if multiple =
+requests
++are received at a time.
++
++If multiple requests are received at a time and some of them being process=
+ed failed,
++a device MUST set the \field{status} of the first failed request to be
++VIRTIO_I2C_MSG_ERR and MAY set the \field{status} of the requests after
++the first failed one to be VIRTIO_I2C_MSG_ERR.
+--=20
+2.7.4
 
-so IIUC what you are using is a temporary ID which is fine for
-experimentation but not for production.
 
-Note it does take a couple of weeks for a TC to vote on reserving an ID
-so pls do not delay this too much.
+This publicly archived list offers a means to provide input to the
+OASIS Virtual I/O Device (VIRTIO) TC.
 
--- 
-MST
+In order to verify user consent to the Feedback License terms and
+to minimize spam in the list archive, subscription is required
+before posting.
 
-
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+Subscribe: virtio-comment-subscribe@lists.oasis-open.org
+Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
+List help: virtio-comment-help@lists.oasis-open.org
+List archive: https://lists.oasis-open.org/archives/virtio-comment/
+Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
+List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lis=
+ts
+Committee: https://www.oasis-open.org/committees/virtio/
+Join OASIS: https://www.oasis-open.org/join/
 
