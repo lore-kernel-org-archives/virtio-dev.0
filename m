@@ -1,127 +1,116 @@
-Return-Path: virtio-comment-return-1501-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-comment-return-1502-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-comment@lists.oasis-open.org>
 List-Post: <mailto:virtio-comment@lists.oasis-open.org>
 List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
-From: Jie Deng <jie.deng@intel.com>
-References: <61930337391bdfd23ed164288d998c04177bc839.1603435652.git.jie.deng@intel.com>
- <20201023115932-mutt-send-email-mst@kernel.org>
- <a4a8ee83-d3e6-df1f-c0ac-f608d563522e@intel.com>
- <20201027071957-mutt-send-email-mst@kernel.org>
- <d0a26ef6-09a7-9cb3-73d3-b68a22cfee28@redhat.com>
- <a7c27a1d-eca7-f0a6-0bcc-4fdbb9d7a001@intel.com>
-Message-ID: <7f972463-35ed-e3a8-065a-5fe649827993@intel.com>
-Date: Tue, 10 Nov 2020 15:31:43 +0800
 MIME-Version: 1.0
+References: <61930337391bdfd23ed164288d998c04177bc839.1603435652.git.jie.deng@intel.com>
+ <20201023115932-mutt-send-email-mst@kernel.org> <a4a8ee83-d3e6-df1f-c0ac-f608d563522e@intel.com>
+ <20201027071957-mutt-send-email-mst@kernel.org> <d0a26ef6-09a7-9cb3-73d3-b68a22cfee28@redhat.com>
+ <a7c27a1d-eca7-f0a6-0bcc-4fdbb9d7a001@intel.com>
 In-Reply-To: <a7c27a1d-eca7-f0a6-0bcc-4fdbb9d7a001@intel.com>
-Subject: [virtio-comment] Re: [virtio-dev] Re: [PATCH v2] virtio-i2c: add the device
- specification
-Content-Type: multipart/alternative;
- boundary="------------3E30C0FFC930758F9F723275"
-Content-Language: en-US
-To: Paolo Bonzini <pbonzini@redhat.com>
-Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, stefanha@redhat.com, Cornelia Huck <cohuck@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>
+From: Paolo Bonzini <pbonzini@redhat.com>
+Date: Tue, 10 Nov 2020 08:51:22 +0100
+Message-ID: <CABgObfaMG8y-_yv+-f3Qsf=i17VCgxABaveHo7bq6vHPDPtd2g@mail.gmail.com>
+Subject: [virtio-comment] Re: [virtio-dev] Re: [PATCH v2] virtio-i2c: add the device specification
+Content-Type: multipart/alternative; boundary="00000000000093302205b3bbf2c2"
+To: Jie Deng <jie.deng@intel.com>
+Cc: virtio-comment@lists.oasis-open.org, Virtio-Dev <virtio-dev@lists.oasis-open.org>, stefanha@redhat.com, Cornelia Huck <cohuck@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
---------------3E30C0FFC930758F9F723275
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
+--00000000000093302205b3bbf2c2
+Content-Type: text/plain; charset="UTF-8"
 
+It'd always be a write followed by a read. Usually the write provides the
+number of a register to be read.
 
-On 2020/11/5 14:35, Jie Deng wrote:
->
+The opposite order does not make much sense.
+
+Paolo
+
+Il gio 5 nov 2020, 07:35 Jie Deng <jie.deng@intel.com> ha scritto:
+
 >
 > On 2020/10/31 21:58, Paolo Bonzini wrote:
->> On 27/10/20 12:20, Michael S. Tsirkin wrote:
->>>> The I2C doesn't support segments numbering and sorting.
->>>> So if one creates a multi-segment transaction, then he/she should keep=
- the
->>>> segments in order.
->>>>
->>>> Thanks.
->>> Fine, but I see no flags to signal start/end of such a transaction.
->>>
->> In theory there's no difference between one multi-segment transaction
->> and many single-segment transactions _in a single-master scenario_.
->>
->> However, it is a plausible configuration to have multiple guests sharing
->> an I2C host device as if they were multiple master.
->>
->> For this reason, I would prefer to have at least support for
->> transactions with 1 write and 1 read segment to the same address (see my
->> other message).
->>
->> Paolo
-> Then how to distinguish the order of the two segments if they are in=20
-> one request ?
-> We don't know this is a write followed by a read or a read followed by=20
-> a write in this case.
 >
-> However, if the request is the representation of only one segment of=20
-> an I2C transaction,
+> On 27/10/20 12:20, Michael S. Tsirkin wrote:
+>
+> The I2C doesn't support segments numbering and sorting.
+> So if one creates a multi-segment transaction, then he/she should keep the
+> segments in order.
+>
+> Thanks.
+>
+> Fine, but I see no flags to signal start/end of such a transaction.
+>
+>
+>
+> In theory there's no difference between one multi-segment transaction
+> and many single-segment transactions _in a single-master scenario_.
+>
+> However, it is a plausible configuration to have multiple guests sharing
+> an I2C host device as if they were multiple master.
+>
+> For this reason, I would prefer to have at least support for
+> transactions with 1 write and 1 read segment to the same address (see my
+> other message).
+>
+> Paolo
+>
+> Then how to distinguish the order of the two segments if they are in one
+> request ?
+> We don't know this is a write followed by a read or a read followed by a
+> write in this case.
+>
+> However, if the request is the representation of only one segment of an
+> I2C transaction,
 > we can simply judge by the order of the requests in the virtqueue.
 >
 > Thanks
 >
-I didn't see any response so I updated a v4 to have following simplest=20
-request for this moment.
+>
 
-struct virtio_i2c_req {
- =C2=A0=C2=A0=C2=A0 le16 addr;
- =C2=A0=C2=A0=C2=A0 le16 len;
- =C2=A0=C2=A0=C2=A0 u8 buf[];
- =C2=A0=C2=A0=C2=A0 u8 status;
-};
-
-Thanks.
-
-
---------------3E30C0FFC930758F9F723275
-Content-Type: text/html; charset=utf-8
+--00000000000093302205b3bbf2c2
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<html>
-  <head>
-    <meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3DUTF-8=
-">
-  </head>
-  <body>
+<div dir=3D"auto">It&#39;d always be a write followed by a read. Usually th=
+e write provides the number of a register to be read.<div dir=3D"auto"><br>=
+</div><div dir=3D"auto">The opposite order does not make much sense.<div di=
+r=3D"auto"><br></div><div dir=3D"auto">Paolo</div></div></div><br><div clas=
+s=3D"gmail_quote"><div dir=3D"ltr" class=3D"gmail_attr">Il gio 5 nov 2020, =
+07:35 Jie Deng &lt;<a href=3D"mailto:jie.deng@intel.com">jie.deng@intel.com=
+</a>&gt; ha scritto:<br></div><blockquote class=3D"gmail_quote" style=3D"ma=
+rgin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">
+ =20
+   =20
+ =20
+  <div>
     <p><br>
     </p>
-    <div class=3D"moz-cite-prefix">On 2020/11/5 14:35, Jie Deng wrote:<br>
+    <div>On 2020/10/31 21:58, Paolo Bonzini
+      wrote:<br>
     </div>
-    <blockquote type=3D"cite"
-      cite=3D"mid:a7c27a1d-eca7-f0a6-0bcc-4fdbb9d7a001@intel.com">
-      <meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3DUTF=
--8">
-      <p><br>
-      </p>
-      <div class=3D"moz-cite-prefix">On 2020/10/31 21:58, Paolo Bonzini
-        wrote:<br>
-      </div>
-      <blockquote type=3D"cite"
-        cite=3D"mid:d0a26ef6-09a7-9cb3-73d3-b68a22cfee28@redhat.com">
-        <pre class=3D"moz-quote-pre" wrap=3D"">On 27/10/20 12:20, Michael S=
-. Tsirkin wrote:
+    <blockquote type=3D"cite">
+      <pre>On 27/10/20 12:20, Michael S. Tsirkin wrote:
 </pre>
+      <blockquote type=3D"cite">
         <blockquote type=3D"cite">
-          <blockquote type=3D"cite">
-            <pre class=3D"moz-quote-pre" wrap=3D"">The I2C doesn't support =
-segments numbering and sorting.
+          <pre>The I2C doesn&#39;t support segments numbering and sorting.
 So if one creates a multi-segment transaction, then he/she should keep the
 segments in order.
 
 Thanks.
 </pre>
-          </blockquote>
-          <pre class=3D"moz-quote-pre" wrap=3D"">Fine, but I see no flags t=
-o signal start/end of such a transaction.
+        </blockquote>
+        <pre>Fine, but I see no flags to signal start/end of such a transac=
+tion.
 
 </pre>
-        </blockquote>
-        <pre class=3D"moz-quote-pre" wrap=3D"">In theory there's no differe=
-nce between one multi-segment transaction
+      </blockquote>
+      <pre>
+In theory there&#39;s no difference between one multi-segment transaction
 and many single-segment transactions _in a single-master scenario_.
 
 However, it is a plausible configuration to have multiple guests sharing
@@ -133,39 +122,26 @@ other message).
 
 Paolo
 </pre>
-      </blockquote>
-      Then how to distinguish the order of the two segments if they are
-      in one request ?<br>
-      We don't know this is a write followed by a read or a read
-      followed by a write in this case.<br>
-      <span class=3D"fontstyle0"></span><br>
-      <span class=3D"fontstyle0">However, if the request is the
-        representation of only one segment of an I2C transaction,</span><br=
->
-      <span class=3D"fontstyle0">we can simply judge by the order of the
-        requests in the virtqueue.</span>
-      <p><span class=3D"fontstyle0">Thanks<br>
-        </span></p>
     </blockquote>
-    <p>I didn't see any response so I updated a v4 to have following
-      simplest request for this moment.<br>
-    </p>
-    <p><span class=3D"fontstyle0">struct virtio_i2c_req {<br>
-        =C2=A0=C2=A0=C2=A0 le16 addr;<br>
-        =C2=A0=C2=A0=C2=A0 le16 len;<br>
-        =C2=A0=C2=A0=C2=A0 u8 buf[];<br>
-        =C2=A0=C2=A0=C2=A0 u8 status;<br>
-        };</span> <br style=3D" font-style: normal; font-variant: normal;
-        font-weight: normal; letter-spacing: normal; line-height:
-        normal; orphans: 2; text-align: -webkit-auto; text-indent: 0px;
-        text-transform: none; white-space: normal; widows: 2;
-        word-spacing: 0px; -webkit-text-size-adjust: auto;
-        -webkit-text-stroke-width: 0px; ">
-    </p>
-    <p>Thanks.<br>
-    </p>
-  </body>
-</html>
+    Then how to distinguish the order of the two segments if they are in
+    one request ?<br>
+    We don&#39;t know this is a write followed by a read or a read followed
+    by a write in this case.<br>
+    <span></span><br>
+    <span>However, if the request is the
+      representation of only one segment of an I2C transaction,</span><br>
+    <span>we can simply judge by the order of the
+      requests in the virtqueue.</span>
+    <p><span>Thanks<br>
+      </span></p>
+    <p><span></span></p>
+    <blockquote type=3D"cite">
+      <pre>
+</pre>
+    </blockquote>
+  </div>
 
---------------3E30C0FFC930758F9F723275--
+</blockquote></div>
+
+--00000000000093302205b3bbf2c2--
 
