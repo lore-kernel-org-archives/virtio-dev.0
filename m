@@ -1,34 +1,42 @@
-Return-Path: virtio-comment-return-1503-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-comment-return-1504-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-comment@lists.oasis-open.org>
 List-Post: <mailto:virtio-comment@lists.oasis-open.org>
 List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
+Date: Tue, 10 Nov 2020 05:33:21 -0500
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20201110053225-mutt-send-email-mst@kernel.org>
 References: <3b0fd676eed3baa775009a17047737dbe669594c.1604992813.git.jie.deng@intel.com>
-From: Paolo Bonzini <pbonzini@redhat.com>
-Message-ID: <83052aa7-8815-ce9d-3c9f-59d863107702@redhat.com>
-Date: Tue, 10 Nov 2020 09:05:47 +0100
+ <83052aa7-8815-ce9d-3c9f-59d863107702@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <3b0fd676eed3baa775009a17047737dbe669594c.1604992813.git.jie.deng@intel.com>
+In-Reply-To: <83052aa7-8815-ce9d-3c9f-59d863107702@redhat.com>
 Subject: Re: [virtio-comment] [PATCH v4] virtio-i2c: add the device
  specification
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
-To: Jie Deng <jie.deng@intel.com>, virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
-Cc: mst@redhat.com, cohuck@redhat.com
+To: Paolo Bonzini <pbonzini@redhat.com>
+Cc: Jie Deng <jie.deng@intel.com>, virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, cohuck@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 10/11/20 08:31, Jie Deng wrote:
-> virtio-i2c is a virtual I2C adapter device. It provides a way to=20
-> =EF=AC=82exibly communicate with the I2C slave devices from the guest. Th=
-is=20
-> patch adds the specification for this device.
+On Tue, Nov 10, 2020 at 09:05:47AM +0100, Paolo Bonzini wrote:
+> On 10/11/20 08:31, Jie Deng wrote:
+> > virtio-i2c is a virtual I2C adapter device. It provides a way to =EF=AC=
+=82exibly
+> > communicate with the I2C slave devices from the guest. This patch adds
+> > the specification for this device.
+>=20
+> Sorry I didn't reply last week, but I really would prefer if virtio-i2c
+> supported write-read transactions.
+>=20
+> Paolo
 
-Sorry I didn't reply last week, but I really would prefer if virtio-i2c=20
-supported write-read transactions.
+And I think an easier way is to allow multi-segment transactions
+probably using the stop flag.
 
-Paolo
+--=20
+MST
 
 
 This publicly archived list offers a means to provide input to the
