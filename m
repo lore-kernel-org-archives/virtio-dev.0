@@ -1,88 +1,96 @@
-Return-Path: virtio-comment-return-1506-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-comment-return-1507-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-comment@lists.oasis-open.org>
 List-Post: <mailto:virtio-comment@lists.oasis-open.org>
 List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
-Date: Wed, 11 Nov 2020 19:03:37 +0100
-From: Cornelia Huck <cohuck@redhat.com>
-Message-ID: <20201111190337.1bf64e7a.cohuck@redhat.com>
-In-Reply-To: <20200916092827-mutt-send-email-mst@kernel.org>
-References: <159836664741.231431.2775539890399592989.stgit@ahduyck-workstation>
-	<159836670239.231431.14835898822569373567.stgit@ahduyck-workstation>
-	<fd8d3fed-a92a-4356-7a3d-fb773b04880a@siemens.com>
-	<CAKgT0Ud7XfcEVL8jy-6kNQ=BDUJqh-xp94MZ7F2+Vf+mv1vj3Q@mail.gmail.com>
-	<2faa1a86-fc9c-f325-00f0-99df49b2421d@siemens.com>
-	<CAKgT0UercLR43iY1PQ7LOvEnqt-c2mds7Mv7XS=77Uju-Qdz=g@mail.gmail.com>
-	<20200914081355.71f0d3f7.cohuck@redhat.com>
-	<20200916092827-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
+References: <159836664741.231431.2775539890399592989.stgit@ahduyck-workstation>
+ <159836670239.231431.14835898822569373567.stgit@ahduyck-workstation>
+ <fd8d3fed-a92a-4356-7a3d-fb773b04880a@siemens.com> <CAKgT0Ud7XfcEVL8jy-6kNQ=BDUJqh-xp94MZ7F2+Vf+mv1vj3Q@mail.gmail.com>
+ <2faa1a86-fc9c-f325-00f0-99df49b2421d@siemens.com> <CAKgT0UercLR43iY1PQ7LOvEnqt-c2mds7Mv7XS=77Uju-Qdz=g@mail.gmail.com>
+ <20200914081355.71f0d3f7.cohuck@redhat.com> <20200916092827-mutt-send-email-mst@kernel.org>
+ <20201111190337.1bf64e7a.cohuck@redhat.com>
+In-Reply-To: <20201111190337.1bf64e7a.cohuck@redhat.com>
+From: Alexander Duyck <alexander.duyck@gmail.com>
+Date: Wed, 11 Nov 2020 14:09:23 -0800
+Message-ID: <CAKgT0UfT1Ubw1V6vTDmBsoVthH-oKhSe7+VxFmFifD3KM_mgAg@mail.gmail.com>
 Subject: Re: [virtio-comment] Re: [virtio-dev] [PATCH v8 1/3] content:
  Document balloon feature free page hints
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Alexander Duyck <alexander.duyck@gmail.com>, Jan Kiszka <jan.kiszka@siemens.com>, David Hildenbrand <david@redhat.com>, virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, "Wang, Wei W" <wei.w.wang@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+To: Cornelia Huck <cohuck@redhat.com>
+Cc: "Michael S. Tsirkin" <mst@redhat.com>, Jan Kiszka <jan.kiszka@siemens.com>, David Hildenbrand <david@redhat.com>, virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, "Wang, Wei W" <wei.w.wang@intel.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, 16 Sep 2020 09:28:34 -0400
-"Michael S. Tsirkin" <mst@redhat.com> wrote:
-
-> On Mon, Sep 14, 2020 at 08:13:55AM +0200, Cornelia Huck wrote:
-> > On Fri, 11 Sep 2020 08:11:15 -0700
-> > Alexander Duyck <alexander.duyck@gmail.com> wrote:
-> >   
-> > > On Thu, Sep 10, 2020 at 10:28 PM Jan Kiszka <jan.kiszka@siemens.com> wrote:  
-> > > >
-> > > > On 04.09.20 18:56, Alexander Duyck wrote:    
-> > > > > On Fri, Sep 4, 2020 at 8:20 AM Jan Kiszka <jan.kiszka@siemens.com> wrote:    
-> > > > >>
-> > > > >> On 25.08.20 16:45, Alexander Duyck wrote:    
-> >   
-> > > > >>> @@ -5042,13 +5049,17 @@ \subsection{Feature bits}\label{sec:Device Types / Memory Balloon Device / Featu
-> > > > >>>  VIRTIO_BALLOON_F_MUST_TELL_HOST is not negotiated.
-> > > > >>>
-> > > > >>>  \subsection{Device configuration layout}\label{sec:Device Types / Memory Balloon Device / Device configuration layout}
-> > > > >>> -  Both fields of this configuration
-> > > > >>> -  are always available.
-> > > > >>> +  \field{num_pages} and \field{actual} are always available.
-> > > > >>> +
-> > > > >>> +  \field{free_page_hint_cmd_id} is available if
-> > > > >>> +    VIRTIO_BALLOON_F_FREE_PAGE_HINT has been negotiated and is read-only by
-> > > > >>> +    the driver.    
-> > > > >>
-> > > > >> This reads at least to me like "...if VIRTIO_BALLOON_F_FREE_PAGE_HINT
-> > > > >> ... is read-only by the driver". I suspect you rather meant
-> > > > >> "free_page_hint_cmd_id is read-only...". Maybe split up into two sentences?    
+On Wed, Nov 11, 2020 at 10:03 AM Cornelia Huck <cohuck@redhat.com> wrote:
+>
+> On Wed, 16 Sep 2020 09:28:34 -0400
+> "Michael S. Tsirkin" <mst@redhat.com> wrote:
+>
+> > On Mon, Sep 14, 2020 at 08:13:55AM +0200, Cornelia Huck wrote:
+> > > On Fri, 11 Sep 2020 08:11:15 -0700
+> > > Alexander Duyck <alexander.duyck@gmail.com> wrote:
+> > >
+> > > > On Thu, Sep 10, 2020 at 10:28 PM Jan Kiszka <jan.kiszka@siemens.com> wrote:
 > > > > >
-> > > > > Yes, the intention is:
-> > > > > 1. free_page_hint_cmd_id is only available if
-> > > > > VIRTIO_BALLOON_F_FREE_PAGE_HINT has been negotiated
-> > > > > 2. free_page_hint_cmd_id is read only by the driver
+> > > > > On 04.09.20 18:56, Alexander Duyck wrote:
+> > > > > > On Fri, Sep 4, 2020 at 8:20 AM Jan Kiszka <jan.kiszka@siemens.com> wrote:
+> > > > > >>
+> > > > > >> On 25.08.20 16:45, Alexander Duyck wrote:
+> > >
+> > > > > >>> @@ -5042,13 +5049,17 @@ \subsection{Feature bits}\label{sec:Device Types / Memory Balloon Device / Featu
+> > > > > >>>  VIRTIO_BALLOON_F_MUST_TELL_HOST is not negotiated.
+> > > > > >>>
+> > > > > >>>  \subsection{Device configuration layout}\label{sec:Device Types / Memory Balloon Device / Device configuration layout}
+> > > > > >>> -  Both fields of this configuration
+> > > > > >>> -  are always available.
+> > > > > >>> +  \field{num_pages} and \field{actual} are always available.
+> > > > > >>> +
+> > > > > >>> +  \field{free_page_hint_cmd_id} is available if
+> > > > > >>> +    VIRTIO_BALLOON_F_FREE_PAGE_HINT has been negotiated and is read-only by
+> > > > > >>> +    the driver.
+> > > > > >>
+> > > > > >> This reads at least to me like "...if VIRTIO_BALLOON_F_FREE_PAGE_HINT
+> > > > > >> ... is read-only by the driver". I suspect you rather meant
+> > > > > >> "free_page_hint_cmd_id is read-only...". Maybe split up into two sentences?
+> > > > > >
+> > > > > > Yes, the intention is:
+> > > > > > 1. free_page_hint_cmd_id is only available if
+> > > > > > VIRTIO_BALLOON_F_FREE_PAGE_HINT has been negotiated
+> > > > > > 2. free_page_hint_cmd_id is read only by the driver
+> > > > > >
+> > > > > > If needed I suppose we could break it up by splitting it into two
+> > > > > > sentences, or adding "the field" after the "and".
+> > > > > >
 > > > > >
-> > > > > If needed I suppose we could break it up by splitting it into two
-> > > > > sentences, or adding "the field" after the "and".
-> > > > >    
+> > > > > I'm fine with both options but please adjust this - on top (Michael just
+> > > > > opened the voting for this version again due to the formal typo in round 1).
+> > > > >
+> > > > > Jan
 > > > >
-> > > > I'm fine with both options but please adjust this - on top (Michael just
-> > > > opened the voting for this version again due to the formal typo in round 1).
-> > > >
-> > > > Jan    
-> > > 
-> > > Since the patch set is being voted on is there a preferred method for
-> > > making this sort of update? I'm just wondering if I should do an
-> > > additional incremental patch, just submit a replacement for this
-> > > patch, or make the change and resubmit the entire patch set?  
-> > 
-> > I think doing an additional patch on top and then doing another vote on
-> > that is the best way to handle this. (Or maybe it is minor enough to
-> > simply merge the incremental patch?)  
-> 
-> yes, this sounds good to me
+> > > > Since the patch set is being voted on is there a preferred method for
+> > > > making this sort of update? I'm just wondering if I should do an
+> > > > additional incremental patch, just submit a replacement for this
+> > > > patch, or make the change and resubmit the entire patch set?
+> > >
+> > > I think doing an additional patch on top and then doing another vote on
+> > > that is the best way to handle this. (Or maybe it is minor enough to
+> > > simply merge the incremental patch?)
+> >
+> > yes, this sounds good to me
+>
+> Which one of the options, actually? I'd be happy to merge a proper
+> patch on top (which I'd consider a trivial fix.)
 
-Which one of the options, actually? I'd be happy to merge a proper
-patch on top (which I'd consider a trivial fix.)
+I had submitted a 4/3 for this set that was meant to fix it, but
+looking it over I don't think it would apply cleanly as I think I had
+only applied the patch it fixed and didn't have the poison patch
+applied when I generated it. If you need I can resubmit that patch as
+a trivial fix since it is only a 2 line change.
 
+Thanks.
+
+- Alex
 
 This publicly archived list offers a means to provide input to the
 OASIS Virtual I/O Device (VIRTIO) TC.
