@@ -1,68 +1,51 @@
-Return-Path: virtio-comment-return-1529-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-comment-return-1511-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-comment@lists.oasis-open.org>
 List-Post: <mailto:virtio-comment@lists.oasis-open.org>
 List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
-References: <3b0fd676eed3baa775009a17047737dbe669594c.1604992813.git.jie.deng@intel.com>
- <83052aa7-8815-ce9d-3c9f-59d863107702@redhat.com>
- <20201110053225-mutt-send-email-mst@kernel.org>
- <5a0fcb8b-80a1-d1e0-5d9f-2f6cc003adc2@redhat.com>
- <616323bf-25a5-d951-cd4c-3d67f08f5af8@intel.com>
- <20201112035331-mutt-send-email-mst@kernel.org>
- <c5d080c1-5dcf-cc80-681c-5dae34797e9e@intel.com>
- <ba89c7cc-fad4-e0ca-642a-220364ffd05a@intel.com>
- <e79f44b9-8620-3635-1f60-90a4c6dd4e2e@redhat.com>
- <0a821501-ce4b-6491-c9ad-654e91c99d93@intel.com>
- <20201117082342.kcbqq3bcysdb26ko@sirius.home.kraxel.org>
- <d20aef28-61cb-61c5-f186-ed6a37467764@intel.com>
- <c146eb06-bd77-eaf2-dd8b-3a82f66b8dc2@redhat.com>
- <3749de23-1f5e-46fd-aa26-53e06ac9608d@intel.com>
- <51f95a53-2536-67fd-d591-75b522a22bcb@redhat.com>
-From: Jie Deng <jie.deng@intel.com>
-Message-ID: <e3dff583-d206-3577-2819-4dff784e7957@intel.com>
-Date: Fri, 20 Nov 2020 09:36:15 +0800
+From: Alexander Duyck <alexander.duyck@gmail.com>
+Date: Thu, 12 Nov 2020 14:57:50 -0800
+Message-ID: <160522183826.1914950.13732523926342676174.stgit@ahduyck-workstation>
 MIME-Version: 1.0
-In-Reply-To: <51f95a53-2536-67fd-d591-75b522a22bcb@redhat.com>
-Subject: [virtio-comment] Re: [virtio-dev] Re: [virtio-comment] [PATCH v4] virtio-i2c: add the
- device specification
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
-To: Paolo Bonzini <pbonzini@redhat.com>, Gerd Hoffmann <kraxel@redhat.com>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>, virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, cohuck@redhat.com, wsa+renesas@sang-engineering.com, andriy.shevchenko@linux.intel.com, yu1.wang@intel.com, conghui.chen@intel.com, shuo.a.liu@intel.com
+Subject: [virtio-comment] [PATCH] content: Minor change to clarify free_page_hint_cmd_id
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+To: mst@redhat.com, david@redhat.com, cohuck@redhat.com
+Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, wei.w.wang@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+From: Alexander Duyck <alexander.h.duyck@linux.intel.com>
 
-On 2020/11/19 23:55, Paolo Bonzini wrote:
-> On 19/11/20 02:41, Jie Deng wrote:
->>>
->>> No, the kick is only an advice.=C2=A0 The device is allowed to poll on=
-=20
->>> the ring and ignore kicks completely, for example.
->>>
->>> Paolo
->>>
->> Understood. But I saw your proposal can only group two segments=20
->> "write-read".
->> What if we have segments more than two ? for example,=20
->> "write-read-read..." or "write-write-write...".
->> Can we use a flag to tag the START/STOP segments so that they can be=20
->> grouped into one transaction ?
->
-> Grouping of more than two segments is not particularly common, a lot=20
-> of host devices might not support it (unless they simply do bitbanging).
->
-> On the other hand grouping of two segments _is_ common enough that it=20
-> is probably supported by many host devices, and worth supporting it in=20
-> virtio-i2c.
->
-> You can certainly add an "u32 flags" to the buffer for future=20
-> extensibility.=C2=A0 That's a good idea regardless.
->
-> Paolo
->
-Understood... Thank you !
+The original wording was a bit unclear and could have been misinterpreted
+as indicating that VIRTIO_BALLOON_FREE_PAGE_HINT was read-only instead of
+the field free_page_hint_cmd_id. To clarify that break it up into two
+sentences making it clear that the field is only available if the feature
+is negotiated, and that the field is read-only.
+
+Reviewed-by: Cornelia Huck <cohuck@redhat.com>
+Signed-off-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
+---
+ content.tex |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/content.tex b/content.tex
+index 21e0cee903b0..9c39831acc15 100644
+--- a/content.tex
++++ b/content.tex
+@@ -5206,8 +5206,8 @@ \subsection{Device configuration layout}\label{sec:Device Types / Memory Balloon
+   \field{num_pages} and \field{actual} are always available.
+ 
+   \field{free_page_hint_cmd_id} is available if
+-    VIRTIO_BALLOON_F_FREE_PAGE_HINT has been negotiated and is read-only by
+-    the driver.
++    VIRTIO_BALLOON_F_FREE_PAGE_HINT has been negotiated. The field is
++    read-only by the driver.
+   \field{poison_val} is available if VIRTIO_BALLOON_F_PAGE_POISON has been
+     negotiated.
+ 
+
+
 
 This publicly archived list offers a means to provide input to the
 OASIS Virtual I/O Device (VIRTIO) TC.
@@ -76,8 +59,7 @@ Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
 List help: virtio-comment-help@lists.oasis-open.org
 List archive: https://lists.oasis-open.org/archives/virtio-comment/
 Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
-List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lis=
-ts
+List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
 Committee: https://www.oasis-open.org/committees/virtio/
 Join OASIS: https://www.oasis-open.org/join/
 
