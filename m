@@ -1,4 +1,4 @@
-Return-Path: virtio-comment-return-1522-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-comment-return-1523-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-comment@lists.oasis-open.org>
 List-Post: <mailto:virtio-comment@lists.oasis-open.org>
 List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
@@ -15,40 +15,69 @@ References: <3b0fd676eed3baa775009a17047737dbe669594c.1604992813.git.jie.deng@in
  <e79f44b9-8620-3635-1f60-90a4c6dd4e2e@redhat.com>
  <0a821501-ce4b-6491-c9ad-654e91c99d93@intel.com>
  <20201117082342.kcbqq3bcysdb26ko@sirius.home.kraxel.org>
- <5eec4f47-9815-0c11-4c85-a05a68995880@redhat.com>
 From: Jie Deng <jie.deng@intel.com>
-Message-ID: <7a514154-08c4-01c6-295b-1199fade3504@intel.com>
-Date: Wed, 18 Nov 2020 09:24:07 +0800
+Message-ID: <d20aef28-61cb-61c5-f186-ed6a37467764@intel.com>
+Date: Wed, 18 Nov 2020 10:06:54 +0800
 MIME-Version: 1.0
-In-Reply-To: <5eec4f47-9815-0c11-4c85-a05a68995880@redhat.com>
-Subject: Re: [virtio-comment] [PATCH v4] virtio-i2c: add the device
- specification
+In-Reply-To: <20201117082342.kcbqq3bcysdb26ko@sirius.home.kraxel.org>
+Subject: [virtio-comment] Re: [virtio-dev] Re: [virtio-comment] [PATCH v4] virtio-i2c: add the
+ device specification
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: quoted-printable
-To: Paolo Bonzini <pbonzini@redhat.com>, Gerd Hoffmann <kraxel@redhat.com>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>, virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, cohuck@redhat.com, wsa+renesas@sang-engineering.com, andriy.shevchenko@linux.intel.com, yu1.wang@intel.com, conghui.chen@intel.com, shuo.a.liu@intel.com
+To: Gerd Hoffmann <kraxel@redhat.com>
+Cc: Paolo Bonzini <pbonzini@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>, virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, cohuck@redhat.com, wsa+renesas@sang-engineering.com, andriy.shevchenko@linux.intel.com, yu1.wang@intel.com, conghui.chen@intel.com, shuo.a.liu@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
 
-On 2020/11/17 23:59, Paolo Bonzini wrote:
-> On 17/11/20 09:23, Gerd Hoffmann wrote:
->> That is not enough.=C2=A0 You also need that for the transactions.=C2=A0=
- If the
->> driver sends a write and a read message the device needs to know
->> whenever that is one or two transactions.=C2=A0 So if you want continue
->> with the i2c_msg list idea you need some way to group your messages
->> into transactions.
->>
->> Or you go with paolos idea which looks simpler to me.
+On 2020/11/17 16:23, Gerd Hoffmann wrote:
+> On Tue, Nov 17, 2020 at 02:55:14PM +0800, Jie Deng wrote:
+>> On 2020/11/16 16:16, Paolo Bonzini wrote:
+>>> On 16/11/20 03:12, Jie Deng wrote:
+>>>> Fore example, the frontend may kick the sequence "write read read
+>>>> ..." to the backend at a time.
+>>>>
+>>>> The segments can be aggregated into "i2c_msg list" and sent to the
+>>>> hardware at a time by the backend.
+>>>>
+>>>> The host native drivers will finally send these segments using the
+>>>> methods they support.
+>>> If so, the spec needs to specify what the backend must/should/may
+>>> aggregate into a single host-side transaction.
+>>>
+>>> What my proposal does is essentially saying that the backend MUST
+>>> aggregate a write and a read segment into a single transaction if it is
+>>> sent with a single virtio-i2c request.
+>>>
+>>> Paolo
+>>>
+>> This may depend on the host hardware. I can add a host feature bit to
+>> indicate it.
+> That is not enough.  You also need that for the transactions.  If the
+> driver sends a write and a read message the device needs to know
+> whenever that is one or two transactions.  So if you want continue
+> with the i2c_msg list idea you need some way to group your messages
+> into transactions.
+Can the "kick" be used for grouping ?=C2=A0 I mean when a write and a read=
+=20
+are sent
+by one kick at a time, they will be treated as one transaction by=20
+default if the host
+has such a feature bit.
+
+Thanks.
+
+
+> Or you go with paolos idea which looks simpler to me.
 >
-> Yeah, that seems the simplest.=C2=A0 You can also add a flags u32 that mu=
-st=20
-> be zero, in order to simplify future extensibility.
+> take care,
+>    Gerd
 >
-> Paolo
 >
-Sure, I will do that. Thank you.
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+>
 
 This publicly archived list offers a means to provide input to the
 OASIS Virtual I/O Device (VIRTIO) TC.
