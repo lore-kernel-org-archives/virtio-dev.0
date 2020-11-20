@@ -1,4 +1,4 @@
-Return-Path: virtio-comment-return-1527-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-comment-return-1529-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-comment@lists.oasis-open.org>
 List-Post: <mailto:virtio-comment@lists.oasis-open.org>
 List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
@@ -18,47 +18,51 @@ References: <3b0fd676eed3baa775009a17047737dbe669594c.1604992813.git.jie.deng@in
  <d20aef28-61cb-61c5-f186-ed6a37467764@intel.com>
  <c146eb06-bd77-eaf2-dd8b-3a82f66b8dc2@redhat.com>
  <3749de23-1f5e-46fd-aa26-53e06ac9608d@intel.com>
-From: Paolo Bonzini <pbonzini@redhat.com>
-Message-ID: <51f95a53-2536-67fd-d591-75b522a22bcb@redhat.com>
-Date: Thu, 19 Nov 2020 16:55:22 +0100
+ <51f95a53-2536-67fd-d591-75b522a22bcb@redhat.com>
+From: Jie Deng <jie.deng@intel.com>
+Message-ID: <e3dff583-d206-3577-2819-4dff784e7957@intel.com>
+Date: Fri, 20 Nov 2020 09:36:15 +0800
 MIME-Version: 1.0
-In-Reply-To: <3749de23-1f5e-46fd-aa26-53e06ac9608d@intel.com>
+In-Reply-To: <51f95a53-2536-67fd-d591-75b522a22bcb@redhat.com>
 Subject: [virtio-comment] Re: [virtio-dev] Re: [virtio-comment] [PATCH v4] virtio-i2c: add the
  device specification
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: quoted-printable
-To: Jie Deng <jie.deng@intel.com>, Gerd Hoffmann <kraxel@redhat.com>
+To: Paolo Bonzini <pbonzini@redhat.com>, Gerd Hoffmann <kraxel@redhat.com>
 Cc: "Michael S. Tsirkin" <mst@redhat.com>, virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, cohuck@redhat.com, wsa+renesas@sang-engineering.com, andriy.shevchenko@linux.intel.com, yu1.wang@intel.com, conghui.chen@intel.com, shuo.a.liu@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 19/11/20 02:41, Jie Deng wrote:
->>
->> No, the kick is only an advice.=C2=A0 The device is allowed to poll on t=
-he=20
->> ring and ignore kicks completely, for example.
->>
->> Paolo
->>
-> Understood. But I saw your proposal can only group two segments=20
-> "write-read".
-> What if we have segments more than two ? for example,=20
-> "write-read-read..." or "write-write-write...".
-> Can we use a flag to tag the START/STOP segments so that they can be=20
-> grouped into one transaction ?
 
-Grouping of more than two segments is not particularly common, a lot of=20
-host devices might not support it (unless they simply do bitbanging).
-
-On the other hand grouping of two segments _is_ common enough that it is=20
-probably supported by many host devices, and worth supporting it in=20
-virtio-i2c.
-
-You can certainly add an "u32 flags" to the buffer for future=20
-extensibility.  That's a good idea regardless.
-
-Paolo
-
+On 2020/11/19 23:55, Paolo Bonzini wrote:
+> On 19/11/20 02:41, Jie Deng wrote:
+>>>
+>>> No, the kick is only an advice.=C2=A0 The device is allowed to poll on=
+=20
+>>> the ring and ignore kicks completely, for example.
+>>>
+>>> Paolo
+>>>
+>> Understood. But I saw your proposal can only group two segments=20
+>> "write-read".
+>> What if we have segments more than two ? for example,=20
+>> "write-read-read..." or "write-write-write...".
+>> Can we use a flag to tag the START/STOP segments so that they can be=20
+>> grouped into one transaction ?
+>
+> Grouping of more than two segments is not particularly common, a lot=20
+> of host devices might not support it (unless they simply do bitbanging).
+>
+> On the other hand grouping of two segments _is_ common enough that it=20
+> is probably supported by many host devices, and worth supporting it in=20
+> virtio-i2c.
+>
+> You can certainly add an "u32 flags" to the buffer for future=20
+> extensibility.=C2=A0 That's a good idea regardless.
+>
+> Paolo
+>
+Understood... Thank you !
 
 This publicly archived list offers a means to provide input to the
 OASIS Virtual I/O Device (VIRTIO) TC.
