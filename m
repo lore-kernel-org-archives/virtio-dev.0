@@ -1,159 +1,302 @@
-Return-Path: virtio-comment-return-1563-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-comment-return-1555-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-comment@lists.oasis-open.org>
 List-Post: <mailto:virtio-comment@lists.oasis-open.org>
 List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
-Date: Thu, 17 Dec 2020 10:43:48 +0000
-From: Stefan Hajnoczi <stefanha@redhat.com>
-Message-ID: <20201217104348.GH4338@stefanha-x1.localdomain>
+Date: Wed, 16 Dec 2020 18:38:59 +0100
+From: Cornelia Huck <cohuck@redhat.com>
+Message-ID: <20201216183859.1e7b206a.cohuck@redhat.com>
+In-Reply-To: <1ea117ebe46d105eda21544acf85a5c7dbe2d8ec.1606283457.git.jie.deng@intel.com>
 References: <1ea117ebe46d105eda21544acf85a5c7dbe2d8ec.1606283457.git.jie.deng@intel.com>
- <20201216155218.GA720702@stefanha-x1.localdomain>
- <b59c78ee-1f25-e32b-fc22-697b92084ae0@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <b59c78ee-1f25-e32b-fc22-697b92084ae0@intel.com>
 Subject: Re: [virtio-comment] [PATCH v5] virtio-i2c: add the device
  specification
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="jaoouwwPWoQSJZYp"
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 To: Jie Deng <jie.deng@intel.com>
-Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, mst@redhat.com, cohuck@redhat.com, pbonzini@redhat.com, kraxel@redhat.com, wsa+renesas@sang-engineering.com, andriy.shevchenko@linux.intel.com, conghui.chen@intel.com, yu1.wang@intel.com, shuo.a.liu@intel.com
+Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, mst@redhat.com, pbonzini@redhat.com, kraxel@redhat.com, wsa+renesas@sang-engineering.com, andriy.shevchenko@linux.intel.com, conghui.chen@intel.com, yu1.wang@intel.com, shuo.a.liu@intel.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
---jaoouwwPWoQSJZYp
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On Wed, 25 Nov 2020 13:55:18 +0800
+Jie Deng <jie.deng@intel.com> wrote:
 
-On Thu, Dec 17, 2020 at 03:08:07PM +0800, Jie Deng wrote:
+<some mostly editorial comments; sorry about bringing this up now>
+
+> virtio-i2c is a virtual I2C adapter device. It provides a way
+> to =EF=AC=82exibly communicate with the host I2C slave devices from
+
+s/=EF=AC=82exibly/flexibly/
+
+> the guest.
 >=20
-> On 2020/12/16 23:52, Stefan Hajnoczi wrote:
-> > On Wed, Nov 25, 2020 at 01:55:18PM +0800, Jie Deng wrote:
-> > > diff --git a/virtio-i2c.tex b/virtio-i2c.tex
-> > > new file mode 100644
-> > > index 0000000..fdb0050
-> > > --- /dev/null
-> > > +++ b/virtio-i2c.tex
-> > > @@ -0,0 +1,139 @@
-> > > +\section{I2C Adapter Device}\label{sec:Device Types / I2C Adapter De=
-vice}
-> > > +
-> > > +virtio-i2c is a virtual I2C adapter device. It provides a way to fle=
-xibly
-> > > +organize and use the host I2C slave devices from the guest. By attac=
-hing
-> > > +the host ACPI I2C slave nodes to the virtual I2C adapter device, the=
- guest can
-> > > +communicate with them without changing or adding extra drivers for t=
-hese
-> > > +slave I2C devices.
-> > Is there a way to identify I2C busses if more than one virtio-i2c devic=
+> This patch adds the specification for this device.
+>=20
+> Fixes: https://github.com/oasis-tcs/virtio-spec/issues/88
+> Signed-off-by: Jie Deng <jie.deng@intel.com>
+> ---
+>  conformance.tex  |  28 +++++++++--
+>  content.tex      |   1 +
+>  introduction.tex |   3 ++
+>  virtio-i2c.tex   | 139 +++++++++++++++++++++++++++++++++++++++++++++++++=
+++++++
+>  4 files changed, 167 insertions(+), 4 deletions(-)
+>  create mode 100644 virtio-i2c.tex
+>=20
+
+(...)
+
+
+> diff --git a/introduction.tex b/introduction.tex
+> index cc38e29..9f016d5 100644
+> --- a/introduction.tex
+> +++ b/introduction.tex
+> @@ -73,6 +73,9 @@ \section{Normative References}\label{sec:Normative Refe=
+rences}
+>  =09\phantomsection\label{intro:HDA}\textbf{[HDA]} &
+>  =09High Definition Audio Specification,
+>  =09\newline\url{https://www.intel.com/content/dam/www/public/us/en/docum=
+ents/product-specifications/high-definition-audio-specification.pdf}\\
+> +=09\phantomsection\label{intro:I2C}\textbf{[I2C]} &
+> +=09I2C-bus specification and user manual,
+> +=09\newline\url{https://www.nxp.com.cn/docs/en/user-guide/UM10204.pdf}\\
+
+I think this url should use www.nxp.com instead of www.nxp.com.cn (even
+though both seem to lead to the same document).
+
+> =20
+>  \end{longtable}
+> =20
+> diff --git a/virtio-i2c.tex b/virtio-i2c.tex
+> new file mode 100644
+> index 0000000..fdb0050
+> --- /dev/null
+> +++ b/virtio-i2c.tex
+> @@ -0,0 +1,139 @@
+> +\section{I2C Adapter Device}\label{sec:Device Types / I2C Adapter Device=
+}
+> +
+> +virtio-i2c is a virtual I2C adapter device. It provides a way to flexibl=
+y
+> +organize and use the host I2C slave devices from the guest. By attaching
+> +the host ACPI I2C slave nodes to the virtual I2C adapter device, the gue=
+st can
+> +communicate with them without changing or adding extra drivers for these
+> +slave I2C devices.=20
+
+I know that the i2c spec talks about 'slave' devices, but can we find a
+better terminology for the virtio standard? E.g. prefix this with
+
+"Note: This standard uses the term 'controlled I2C device' to refer to
+what the I2C standard calls 'slave I2C device'."
+
+(Or whatever better term might exist.)
+
+> +
+> +\subsection{Device ID}\label{sec:Device Types / I2C Adapter Device / Dev=
+ice ID}
+> +34
+> +
+> +\subsection{Virtqueues}\label{sec:Device Types / I2C Adapter Device / Vi=
+rtqueues}
+> +
+> +\begin{description}
+> +\item[0] requestq
+> +\end{description}
+> +
+> +\subsection{Feature bits}\label{sec:Device Types / I2C Adapter Device / =
+Feature bits}
+> +
+> +None currently defined.
+> +
+> +\subsection{Device configuration layout}\label{sec:Device Types / I2C Ad=
+apter Device / Device configuration layout}
+> +
+> +None currently defined.
+> +
+> +\subsection{Device Initialization}\label{sec:Device Types / I2C Adapter =
+Device / Device Initialization}
+> +
+> +\begin{enumerate}
+> +\item The virtqueue is initialized.
+> +\end{enumerate}
+> +
+> +\subsection{Device Operation}\label{sec:Device Types / I2C Adapter Devic=
+e / Device Operation}
+> +
+> +\subsubsection{Device Operation: Request Queue}\label{sec:Device Types /=
+ I2C Adapter Device / Device Operation: Request Queue}
+> +
+> +The driver queues requests to the virtqueue, and they are used by the
+> +device. The request is the representation of segments of an I2C
+> +transaction. Each request is of form:
+> +
+> +\begin{lstlisting}
+> +struct virtio_i2c_req {
+> +        le16 addr;
+> +        le32 flags;
+> +        le16 written;
+> +        le16 read;
+> +        u8 write_buf[];
+> +        u8 read_buf[];
+> +        u8 status;
+> +};
+> +\end{lstlisting}
+> +
+> +The \field{addr} of the request is the address of the I2C slave device.
+> +
+> +The \field{flags} of the request is currently reserved as zero for futur=
 e
-> > is present? For example, imagine a host with 2 I2C busses. How does the
-> > guest know which virtio-i2c device connects to which host bus?
-> This virtio-i2c is a master device. The slave devices attached to it can =
-be
-> configured
-> by the backend in the host. These slave devices can be under different ho=
-st
-> I2C master devices.
-> The guest will see this virtio-i2c master device and its slave devices.
+> +feature extensibility.
+> +
+> +The \field{written} of the request is the number of data bytes in the \f=
+ield{write_buf}
+> +being written to the I2C slave address.
+> +
+> +The \field{read} of the request is the number of data bytes in the \fiel=
+d{read_buf}
+> +being read from the I2C slave address.
+> +
+> +The \field{write_buf} of the request contains one segment of an I2C tran=
+saction
+> +being written to the device.
+> +
+> +The \field{read_buf} of the request contains one segment of an I2C trans=
+action
+> +being read from the device.
+> +
+> +The final \field{status} byte of the request is written by the device: e=
+ither
+> +VIRTIO_I2C_MSG_OK for success or VIRTIO_I2C_MSG_ERR for error.
+> +
+> +\begin{lstlisting}
+> +#define VIRTIO_I2C_MSG_OK     0
+> +#define VIRTIO_I2C_MSG_ERR    1
+> +\end{lstlisting}
+> +
+> +If the \field{read}=3D0 and the \field{written}>0, the request is called=
+ write request.
+> +
+> +If the \field{read}>0 and the \field{written}=3D0, the request is called=
+ read request.
+> +
+> +If the \field{read}>0 and the \field{written}>0, the request is called w=
+rite-read request.
+> +It means an I2C write segment followed by a read segment. Usually, the w=
+rite segment
+> +provides the number of an I2C slave device register to be read.
+> +
+> +The \field{read}=3D0 and at the same time the \field{written}=3D0 doesn'=
+t make any sense.
+> +The driver SHOULD never send such request.
 
-There could still be multiple virtio-i2c devices. I guess the guest can
-use the device's bus address (e.g. virtio-pci address, virtio-mmio base
-address, etc) to differentiate (e.g. guest udev rules).
+'SHOULD' makes this a normative statement.
 
-No changes to the spec are needed here.
+> +
+> +\subsubsection{Device Operation: Operation Status}\label{sec:Device Type=
+s / I2C Adapter Device / Device Operation: Operation Status}
+> +
+> +A driver may send one request or multiple requests to the device at a ti=
+me.
+> +The requests in the virtqueue MUST be queued and processed in order.
 
-> >=20
-> > > +\begin{lstlisting}
-> > > +struct virtio_i2c_req {
-> > > +        le16 addr;
-> > > +        le32 flags;
-> > What is the memory layout?
-> >=20
-> > 1. 0x0 addr, 0x2 flags
-> >=20
-> > or
-> >=20
-> > 2. 0x0 addr, 0x4 flags
-> >=20
-> > This is unclear to me. I don't see a general statement in the spec abou=
-t
-> > struct field alignment/padding and no details in this new spec change.
->=20
-> Both are OK to me. I used to use "packed" but Michael said there was no n=
-eed
-> to pack it.
->=20
-> https://lkml.org/lkml/2020/9/3/339
->=20
-> So you prefer it to be clear ?
+Same here, 'MUST' makes this a normative statement. I think lowercasing
+these terms would make it correct.
 
-Packing wasn't necessary because all fields were aligned in that patch:
+> +
+> +If a driver sends multiple requests at a time and a device fails to proc=
+ess
+> +some of them, then the first failed request MUST have its \field{status}
+> +being set to VIRTIO_I2C_MSG_ERR by the device and the requests after the=
+ first
+> +failed one MUST also be treated as VIRTIO_I2C_MSG_ERR by the driver,
+> +no matter what \field{status} of them. In this case, the number of succe=
+ssfully
+> +sent requests this time is the number of the last request being successf=
+ully
+> +processed.
+> +
+> +\drivernormative{\subsubsection}{Device Operation}{Device Types / I2C Ad=
+apter Device / Device Operation}
+> +
+> +A driver MUST set \field{addr}, \field{flags}(currently reserved as zero=
+),
 
-  struct virtio_i2c_hdr {
-    __virtio16 addr;
-    __virtio16 flags;
-    __virtio16 len;
-  } __packed;
+I'd drop "(currently reserved as zero)" here and add
 
-The struct virtio_i2c_req definition in the virtio spec patch is not
-naturally aligned though. There are a few options: the fields can be
-reordered to achieve that, explicit padding fields can be introduced, or
-it can be explicitly marked packed.
+"A driver MUST set \field{flags} to zero."
 
-That way the memory layout will be clear for anyone wishing to implement
-the spec.
 
-> > > +        le16 written;
-> > > +        le16 read;
-> > > +        u8 write_buf[];
-> > > +        u8 read_buf[];
-> > > +        u8 status;
-> > > +};
-> > > +\end{lstlisting}
-> > > +
-> > > +The \field{addr} of the request is the address of the I2C slave devi=
-ce.
-> > https://en.wikipedia.org/wiki/I2c#Addressing_structure suggests there
-> > are at least 7-bit and 10-bit addressing schemes in I2C. How does this
-> > map to the little-endian 16-bit addr field?
->=20
-> This field maps to the kernel struct "i2c_msg.addr".
->=20
-> struct virtio_i2c_req  *vmsg;
-> struct i2c_msg *msg;
->=20
-> vmsg->addr  =3D cpu_to_le16(msg->addr);
->=20
-> The field in the request can be seen as host byte order
-> while the link can be seen as the I2C network byte order.
-> The host driver may take care thisconversion.
+> +\field{written} and \field{read} before sending the request.
+> +
+> +A driver MUST place one segment of an I2C transaction into \field{write_=
+buf} if the
 
-Please include a description in the spec of how to represent 7-bit and
-10-bit I2C addresses as defined by the I2C spec in the le16 addr field.
+s/if the/if/
 
-The other option would be to refer to Linux as you did in your reply,
-but nothing else in this device seems Linux-specific so let's avoid the
-reference. That way the vitio-i2c spec will be more general and easy to
-implement by people who are unfamiliar with Linux.
+> +\field{written}>0. =20
+> +
+> +A driver MUST NOT use \field{read_buf} if the final \field{status} retur=
+ned
+> +from the device is VIRTIO_I2C_MSG_ERR.
+> +
+> +A driver MAY queue one request or multiple requests at a time.
+> +
+> +A driver MUST queue the requests in order if multiple requests are going=
+ to
+> +be sent at a time.
+> +
+> +If multiple requests are sent at a time and some of them returned from t=
+he
+> +device have the \field{status} being VIRTIO_I2C_MSG_ERR, a driver MUST t=
+reat
+> +the first failed request and the requests after the first failed one as
+> +VIRTIO_I2C_MSG_ERR.
+> +
+> +\devicenormative{\subsubsection}{Device Operation}{Device Types / I2C Ad=
+apter Device / Device Operation}
+> +
+> +A device SHOULD keep consistent behaviors with the hardware as described=
+ in
+> +\hyperref[intro:I2C]{I2C}.
+> +
+> +A device MUST NOT change the value of \field{addr}, \field{flags}, \fiel=
+d{written},
+> +\field{read} and \field{write_buf}.
+> +
+> +A device MUST place one segment of an I2C transaction into \field{read_b=
+uf} if the
 
---jaoouwwPWoQSJZYp
-Content-Type: application/pgp-signature; name="signature.asc"
+s/if/if the/
 
------BEGIN PGP SIGNATURE-----
+> +\field{read}>0. =20
+> +
+> +A device MUST guarantee the requests in the virtqueue being processed in=
+ order
+> +if multiple requests are received at a time.
+> +
+> +If multiple requests are received at a time and some of them being proce=
+ssed failed,
+> +a device MUST set the \field{status} of the first failed request to be
+> +VIRTIO_I2C_MSG_ERR and MAY set the \field{status} of the requests after
+> +the first failed one to be VIRTIO_I2C_MSG_ERR.
 
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAl/bNmQACgkQnKSrs4Gr
-c8gHNwf/faMssqwQi2R++SR+rXwdjqFahK5fz1Wjm89PPUrz8gB3mTAfevfxjHzU
-9H9VqGagNRRddln1wDe+fqIsOYifI5a4F84fk6zFOFfBf3M6FcM9dYVq3KXt6PZi
-Qd4y6qNp6sZBDom8qNLvCf6Rf839d0WNOyBCRbirTqd9ikfyT2G7/PzFE5mhgjlp
-jxIhd8ck6As2PEWfU4kP450pQFrS2d1d+y2w96zf4avFGEmHlj1kVCK6iCtbL8zw
-COEkv3APYJYcwBFFv4IeSfMqn5s/NH8FssZtmk1vyxSmOxTLsGJTq2iQ3efWiTll
-+J+i4byiOs1UlNoJiI5cGykH0Tr+WA==
-=HJrX
------END PGP SIGNATURE-----
 
---jaoouwwPWoQSJZYp--
+This publicly archived list offers a means to provide input to the=0D
+OASIS Virtual I/O Device (VIRTIO) TC.=0D
+=0D
+In order to verify user consent to the Feedback License terms and=0D
+to minimize spam in the list archive, subscription is required=0D
+before posting.=0D
+=0D
+Subscribe: virtio-comment-subscribe@lists.oasis-open.org=0D
+Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org=0D
+List help: virtio-comment-help@lists.oasis-open.org=0D
+List archive: https://lists.oasis-open.org/archives/virtio-comment/=0D
+Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf=
+=0D
+List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lis=
+ts=0D
+Committee: https://www.oasis-open.org/committees/virtio/=0D
+Join OASIS: https://www.oasis-open.org/join/
 
