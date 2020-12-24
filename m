@@ -1,79 +1,300 @@
-Return-Path: virtio-return-3448-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio@lists.oasis-open.org>
-List-Post: <mailto:virtio@lists.oasis-open.org>
-List-Help: <mailto:virtio-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Tue, 3 Nov 2020 16:42:07 -0500
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20201103164113-mutt-send-email-mst@kernel.org>
-References: <20201029075047.119209-1-mst@redhat.com>
- <20201030113732.GG307361@stefanha-x1.localdomain>
- <20201030105945-mutt-send-email-mst@kernel.org>
- <20201103171834.GC259481@stefanha-x1.localdomain>
-MIME-Version: 1.0
-In-Reply-To: <20201103171834.GC259481@stefanha-x1.localdomain>
-Subject: Re: [virtio] Re: [virtio-dev] [PATCH] VIRTIO_F_RING_PACKED_USED:
- packing used descriptors
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-To: Stefan Hajnoczi <stefanha@redhat.com>
-Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, virtio@lists.oasis-open.org
+Return-Path: virtio-comment-return-1592-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-comment@lists.oasis-open.org>
+List-Post: <mailto:virtio-comment@lists.oasis-open.org>
+List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
+From: Jie Deng <jie.deng@intel.com>
+Date: Thu, 24 Dec 2020 16:10:43 +0800
+Message-Id: <ff3ec9f5cb7f480a52913790f698ad45c66edcc2.1608796685.git.jie.deng@intel.com>
+Subject: [virtio-comment] [PATCH v6] virtio-i2c: add the device specification
+Content-Type: text/plain; charset="US-ASCII"
+To: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+Cc: mst@redhat.com, cohuck@redhat.com, pbonzini@redhat.com, kraxel@redhat.com, wsa+renesas@sang-engineering.com, andriy.shevchenko@linux.intel.com, conghui.chen@intel.com, yu1.wang@intel.com, shuo.a.liu@intel.com, Jie Deng <jie.deng@intel.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Tue, Nov 03, 2020 at 05:18:34PM +0000, Stefan Hajnoczi wrote:
-> On Fri, Oct 30, 2020 at 11:01:10AM -0400, Michael S. Tsirkin wrote:
-> > On Fri, Oct 30, 2020 at 11:37:32AM +0000, Stefan Hajnoczi wrote:
-> > > On Thu, Oct 29, 2020 at 03:50:57AM -0400, Michael S. Tsirkin wrote:
-> > > > +When after processing the used descriptor, the batch counter
-> > > > +exceeds the ring size, the batch counter is decremented by the
-> > > > +ring size; both device and driver then skip to the
-> > > > +beginning (offset 0) of the ring until processing (reading for
-> > > > +the driver and writing for the device) the next used descriptor.
-> > > 
-> > > This may be clearer:
-> > > 
-> > >   both device and driver then use ring index 0 for the next used
-> > >   descriptor
-> > > 
-> > > Or:
-> > > 
-> > >   The device writes the next used descriptor at ring index 0. The driver
-> > >   reads the next used descriptor from ring index 0.
-> > > 
-> > > I'm not sure I understand this scheme. Is this pseudo-code correct?
-> > > 
-> > >   batch_counter += num_used_descs
-> > >   if batch_counter > ring_size:
-> > >       batch_counter -= ring_size
-> > >       used_idx = 0
-> > 
-> > yes
-> > 
-> > 
-> > > Can you share an explanation of how this scheme ensures that the
-> > > driver's next avail descriptor index never overtakes the device's next
-> > > used descriptor index?
-> > 
-> > Simply because to overtake it, it needs to wrap around to 0.
-> > That happens when batch counter wraps over to 0, if we make
-> > device wrap at that point all is well.
-> 
-> What confuses me is that batch_counter is not reset to 0. It is set to
-> batch_counter -= ring_size.
-> 
-> I guess I need to get my crayons and draw pictures :-).
-> 
-> Stefan
+virtio-i2c is a virtual I2C adapter device. It provides a way
+to flexibly communicate with the host I2C slave devices from
+the guest.
+
+This patch adds the specification for this device.
+
+Fixes: https://github.com/oasis-tcs/virtio-spec/issues/88
+Signed-off-by: Jie Deng <jie.deng@intel.com>
+---
+ conformance.tex  |  28 ++++++++--
+ content.tex      |   1 +
+ introduction.tex |   3 ++
+ virtio-i2c.tex   | 157 +++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 185 insertions(+), 4 deletions(-)
+ create mode 100644 virtio-i2c.tex
+
+diff --git a/conformance.tex b/conformance.tex
+index eb33240..e78adfd 100644
+--- a/conformance.tex
++++ b/conformance.tex
+@@ -27,8 +27,10 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
+ \ref{sec:Conformance / Driver Conformance / Socket Driver Conformance},
+ \ref{sec:Conformance / Driver Conformance / RPMB Driver Conformance},
+ \ref{sec:Conformance / Driver Conformance / IOMMU Driver Conformance},
+-\ref{sec:Conformance / Driver Conformance / Sound Driver Conformance} or
+-\ref{sec:Conformance / Driver Conformance / Memory Driver Conformance}.
++\ref{sec:Conformance / Driver Conformance / Sound Driver Conformance}
++\ref{sec:Conformance / Driver Conformance / Memory Driver Conformance} or
++\ref{sec:Conformance / Driver Conformance / I2C Adapter Driver Conformance}.
++
+     \item Clause \ref{sec:Conformance / Legacy Interface: Transitional Device and Transitional Driver Conformance}.
+   \end{itemize}
+ \item[Device] A device MUST conform to four conformance clauses:
+@@ -47,8 +49,10 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
+ \ref{sec:Conformance / Device Conformance / Socket Device Conformance}, 
+ \ref{sec:Conformance / Device Conformance / RPMB Device Conformance},
+ \ref{sec:Conformance / Device Conformance / IOMMU Device Conformance},
+-\ref{sec:Conformance / Device Conformance / Sound Device Conformance} or
+-\ref{sec:Conformance / Device Conformance / Memory Device Conformance}.
++\ref{sec:Conformance / Device Conformance / Sound Device Conformance}
++\ref{sec:Conformance / Device Conformance / Memory Device Conformance} or
++\ref{sec:Conformance / Device Conformance / I2C Adapter Device Conformance}.
++
+     \item Clause \ref{sec:Conformance / Legacy Interface: Transitional Device and Transitional Driver Conformance}.
+   \end{itemize}
+ \end{description}
+@@ -264,6 +268,14 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
+ \item \ref{drivernormative:Device Types / Memory Device / Device Operation / STATE request}
+ \end{itemize}
+ 
++\conformance{\subsection}{I2C Adapter Driver Conformance}\label{sec:Conformance / Driver Conformance / I2C Adapter Driver Conformance}
++
++An I2C Adapter driver MUST conform to the following normative statements:
++
++\begin{itemize}
++\item \ref{drivernormative:Device Types / I2C Adapter Device / Device Operation}
++\end{itemize}
++
+ \conformance{\section}{Device Conformance}\label{sec:Conformance / Device Conformance}
+ 
+ A device MUST conform to the following normative statements:
+@@ -483,6 +495,14 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
+ \item \ref{devicenormative:Device Types / Memory Device / Device Operation / STATE request}
+ \end{itemize}
+ 
++\conformance{\subsection}{I2C Adapter Device Conformance}\label{sec:Conformance / Device Conformance / I2C Adapter Device Conformance}
++
++An I2C Adapter device MUST conform to the following normative statements:
++
++\begin{itemize}
++\item \ref{devicenormative:Device Types / I2C Adapter Device / Device Operation}
++\end{itemize}
++
+ \conformance{\section}{Legacy Interface: Transitional Device and Transitional Driver Conformance}\label{sec:Conformance / Legacy Interface: Transitional Device and Transitional Driver Conformance}
+ A conformant implementation MUST be either transitional or
+ non-transitional, see \ref{intro:Legacy
+diff --git a/content.tex b/content.tex
+index 61eab41..48002a2 100644
+--- a/content.tex
++++ b/content.tex
+@@ -6484,6 +6484,7 @@ \subsubsection{Legacy Interface: Framing Requirements}\label{sec:Device
+ \input{virtio-iommu.tex}
+ \input{virtio-sound.tex}
+ \input{virtio-mem.tex}
++\input{virtio-i2c.tex}
+ 
+ \chapter{Reserved Feature Bits}\label{sec:Reserved Feature Bits}
+ 
+diff --git a/introduction.tex b/introduction.tex
+index cc38e29..bc0217f 100644
+--- a/introduction.tex
++++ b/introduction.tex
+@@ -73,6 +73,9 @@ \section{Normative References}\label{sec:Normative References}
+ 	\phantomsection\label{intro:HDA}\textbf{[HDA]} &
+ 	High Definition Audio Specification,
+ 	\newline\url{https://www.intel.com/content/dam/www/public/us/en/documents/product-specifications/high-definition-audio-specification.pdf}\\
++	\phantomsection\label{intro:I2C}\textbf{[I2C]} &
++	I2C-bus specification and user manual,
++	\newline\url{https://www.nxp.com/docs/en/user-guide/UM10204.pdf}\\
+ 
+ \end{longtable}
+ 
+diff --git a/virtio-i2c.tex b/virtio-i2c.tex
+new file mode 100644
+index 0000000..6ff00ee
+--- /dev/null
++++ b/virtio-i2c.tex
+@@ -0,0 +1,157 @@
++\section{I2C Adapter Device}\label{sec:Device Types / I2C Adapter Device}
++
++virtio-i2c is a virtual I2C adapter device. It provides a way to flexibly
++organize and use the host I2C controlled devices from the guest. By attaching
++the host ACPI I2C controlled nodes to the virtual I2C adapter device, the guest can
++communicate with them without changing or adding extra drivers for these
++controlled I2C devices.
++
++\subsection{Device ID}\label{sec:Device Types / I2C Adapter Device / Device ID}
++34
++
++\subsection{Virtqueues}\label{sec:Device Types / I2C Adapter Device / Virtqueues}
++
++\begin{description}
++\item[0] requestq
++\end{description}
++
++\subsection{Feature bits}\label{sec:Device Types / I2C Adapter Device / Feature bits}
++
++None currently defined.
++
++\subsection{Device configuration layout}\label{sec:Device Types / I2C Adapter Device / Device configuration layout}
++
++None currently defined.
++
++\subsection{Device Initialization}\label{sec:Device Types / I2C Adapter Device / Device Initialization}
++
++\begin{enumerate}
++\item The virtqueue is initialized.
++\end{enumerate}
++
++\subsection{Device Operation}\label{sec:Device Types / I2C Adapter Device / Device Operation}
++
++\subsubsection{Device Operation: Request Queue}\label{sec:Device Types / I2C Adapter Device / Device Operation: Request Queue}
++
++The driver queues requests to the virtqueue, and they are used by the
++device. The request is the representation of segments of an I2C
++transaction. Each request is of the form:
++
++\begin{lstlisting}
++struct virtio_i2c_out_hdr {
++        le16 addr;
++        le16 padding;
++        le32 flags;
++};
++\end{lstlisting}
++
++\begin{lstlisting}
++struct virtio_i2c_in_hdr {
++        u8 status;
++};
++\end{lstlisting}
++
++\begin{lstlisting}
++struct virtio_i2c_req {
++        struct virtio_i2c_out_hdr out_hdr;
++        u8 write_buf[];
++        u8 read_buf[];
++        struct virtio_i2c_in_hdr in_hdr;
++};
++\end{lstlisting}
++
++The \field{addr} of the request is the address of the I2C controlled device.
++The format of \field{addr} is defined in paragraph 3.1.10 and 3.1.11 of
++\hyperref[intro:I2C]{I2C}.
++
++The \field{padding} is used to pad to full dword.
++
++The \field{flags} of the request is currently reserved as zero for future
++feature extensibility.
++
++The \field{write_buf} of the request contains one segment of an I2C transaction
++being written to the device.
++
++The \field{read_buf} of the request contains one segment of an I2C transaction
++being read from the device.
++
++The final \field{status} byte of the request is written by the device: either
++VIRTIO_I2C_MSG_OK for success or VIRTIO_I2C_MSG_ERR for error.
++
++\begin{lstlisting}
++#define VIRTIO_I2C_MSG_OK     0
++#define VIRTIO_I2C_MSG_ERR    1
++\end{lstlisting}
++
++If ``length of \field{read_buf}''=0 and ``length of \field{write_buf}''>0,
++the request is called write request.
++
++If ``length of \field{read_buf}''>0 and ``length of \field{write_buf}''=0,
++the request is called read request.
++
++If ``length of \field{read_buf}''>0 and ``length of \field{write_buf}''>0,
++the request is called write-read request. It means an I2C write segment followed
++by a read segment. Usually, the write segment provides the number of an I2C
++controlled device register to be read.
++
++The case when ``length of \field{write_buf}''=0, and at the same time,
++``length of \field{read_buf}''=0 doesn't make any sense.
++
++\subsubsection{Device Operation: Operation Status}\label{sec:Device Types / I2C Adapter Device / Device Operation: Operation Status}
++
++\field{addr}, ``length of \field{write_buf}'' and ``length of \field{read_buf}''
++are determined by the driver, while \field{status} is determined by the processing
++of the devcie. A driver puts the data written to the device into \field{write_buf}, while
++a device puts the data of the corresponding length into \field{read_buf} according the
++request of the driver.
++
++A driver may send one request or multiple requests to the device at a time.
++The requests in the virtqueue are both queued and processed in order.
++
++If a driver sends multiple requests at a time and a device fails to process
++some of them, then the first failed request will have its \field{status}
++being set to VIRTIO_I2C_MSG_ERR by the device and the requests after the first
++failed one will also be treated as VIRTIO_I2C_MSG_ERR by the driver,
++no matter what \field{status} of them. In this case, the number of successfully
++sent requests this time is the number of the last request being successfully
++processed.
++
++\drivernormative{\subsubsection}{Device Operation}{Device Types / I2C Adapter Device / Device Operation}
++
++A driver MUST set \field{addr} and \field{flags} before sending the request.
++
++A driver MUST set \field{flags} to be zero.
++
++The driver SHOULD never send a request with ``length of \field{write_buf}''=0 and
++``length of \field{read_buf}''=0 at the same time.
++
++A driver MUST NOT use \field{read_buf} if the final \field{status} returned
++from the device is VIRTIO_I2C_MSG_ERR.
++
++A driver MAY queue one request or multiple requests at a time.
++
++A driver MUST queue the requests in order if multiple requests are going to
++be sent at a time.
++
++If multiple requests are sent at a time and some of them returned from the
++device have the \field{status} being VIRTIO_I2C_MSG_ERR, a driver MUST treat
++the first failed request and the requests after the first failed one as
++VIRTIO_I2C_MSG_ERR.
++
++\devicenormative{\subsubsection}{Device Operation}{Device Types / I2C Adapter Device / Device Operation}
++
++A device SHOULD keep consistent behaviors with the hardware as described in
++\hyperref[intro:I2C]{I2C}.
++
++A device MUST NOT change the value of \field{addr}, \field{flags} and \field{write_buf}.
++
++A device MUST place one I2C segment of the corresponding length into \field{read_buf}
++according the driver's request.
++
++A device MUST guarantee the requests in the virtqueue being processed in order
++if multiple requests are received at a time.
++
++If multiple requests are received at a time and processing of some of the
++requests fails, a device MUST set the \field{status} of the first failed
++request to be VIRTIO_I2C_MSG_ERR and MAY set the \field{status} of the
++requests after the first failed one to be VIRTIO_I2C_MSG_ERR.
+-- 
+2.7.4
 
 
+This publicly archived list offers a means to provide input to the
+OASIS Virtual I/O Device (VIRTIO) TC.
 
-The idea is that when all available buffers have been used then
-batch counter of the device matches the next avail index of the driver.
+In order to verify user consent to the Feedback License terms and
+to minimize spam in the list archive, subscription is required
+before posting.
 
-
----------------------------------------------------------------------
-To unsubscribe from this mail list, you must leave the OASIS TC that 
-generates this mail.  Follow this link to all your TCs in OASIS at:
-https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
+Subscribe: virtio-comment-subscribe@lists.oasis-open.org
+Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
+List help: virtio-comment-help@lists.oasis-open.org
+List archive: https://lists.oasis-open.org/archives/virtio-comment/
+Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
+List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
+Committee: https://www.oasis-open.org/committees/virtio/
+Join OASIS: https://www.oasis-open.org/join/
 
