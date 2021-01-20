@@ -1,630 +1,612 @@
-Return-Path: virtio-dev-return-7939-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-7929-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 8F850985B9F
-	for <virtio-dev@lists.oasis-open.org>; Sun, 24 Jan 2021 16:49:58 +0000 (UTC)
-References: <20210120003638.3339987-1-anton.yakovlev@opensynergy.com>
- <20210120003638.3339987-5-anton.yakovlev@opensynergy.com>
- <20210120032711-mutt-send-email-mst@kernel.org>
+	by lists.oasis-open.org (Postfix) with ESMTP id F01A098604B
+	for <virtio-dev@lists.oasis-open.org>; Wed, 20 Jan 2021 00:37:20 +0000 (UTC)
 From: Anton Yakovlev <anton.yakovlev@opensynergy.com>
-Message-ID: <59121ced-c306-ee7b-b98d-8fa2674326ad@opensynergy.com>
-Date: Sun, 24 Jan 2021 17:49:52 +0100
+Date: Wed, 20 Jan 2021 01:36:33 +0100
+Message-ID: <20210120003638.3339987-6-anton.yakovlev@opensynergy.com>
+In-Reply-To: <20210120003638.3339987-1-anton.yakovlev@opensynergy.com>
+References: <20210120003638.3339987-1-anton.yakovlev@opensynergy.com>
 MIME-Version: 1.0
-In-Reply-To: <20210120032711-mutt-send-email-mst@kernel.org>
-Subject: [virtio-dev] Re: [PATCH 4/7] ALSA: virtio: handling control and I/O messages for
- the PCM device
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
+Subject: [virtio-dev] [PATCH 5/7] ALSA: virtio: PCM substream operators
+Content-Type: text/plain
 Content-Transfer-Encoding: quoted-printable
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: virtualization@lists.linux-foundation.org, alsa-devel@alsa-project.org, virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, Takashi Iwai <tiwai@suse.com>
+To: virtualization@lists.linux-foundation.org, alsa-devel@alsa-project.org, virtio-dev@lists.oasis-open.org
+Cc: Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>, linux-kernel@vger.kernel.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+Introduce the operators required for the operation of substreams.
 
+Signed-off-by: Anton Yakovlev <anton.yakovlev@opensynergy.com>
+---
+ sound/virtio/Makefile         |   3 +-
+ sound/virtio/virtio_pcm.c     |   5 +-
+ sound/virtio/virtio_pcm.h     |   2 +
+ sound/virtio/virtio_pcm_ops.c | 509 ++++++++++++++++++++++++++++++++++
+ 4 files changed, 517 insertions(+), 2 deletions(-)
+ create mode 100644 sound/virtio/virtio_pcm_ops.c
 
-On 20.01.2021 09:29, Michael S. Tsirkin wrote:
-> CAUTION: This email originated from outside of the organization.
-> Do not click links or open attachments unless you recognize the sender an=
-d know the content is safe.
->=20
->=20
-> On Wed, Jan 20, 2021 at 01:36:32AM +0100, Anton Yakovlev wrote:
->> The driver implements a message-based transport for I/O substream
->> operations. Before the start of the substream, the hardware buffer is
->> sliced into I/O messages, the number of which is equal to the current
->> number of periods. The size of each message is equal to the current
->> size of one period.
->>
->> I/O messages are organized in an ordered queue. The completion of the
->> I/O message indicates an expired period (the only exception is the end
->> of the stream for the capture substream). Upon completion, the message
->> is automatically re-added to the end of the queue.
->>
->> When an I/O message is completed, the hw_ptr value is incremented
->> unconditionally (to ensure that the hw_ptr always correctly reflects
->> the state of the messages in the virtqueue). Due to its asynchronous
->> nature, a message can be completed when the runtime structure no longer
->> exists. For this reason, the values from this structure are cached in
->> the virtio substream, which are required to calculate the new value of
->> the hw_ptr.
->>
->> Signed-off-by: Anton Yakovlev <anton.yakovlev@opensynergy.com>
->> ---
->>   sound/virtio/Makefile         |   3 +-
->>   sound/virtio/virtio_card.c    |  33 ++++
->>   sound/virtio/virtio_card.h    |   9 +
->>   sound/virtio/virtio_pcm.c     |   3 +
->>   sound/virtio/virtio_pcm.h     |  31 ++++
->>   sound/virtio/virtio_pcm_msg.c | 317 ++++++++++++++++++++++++++++++++++
->>   6 files changed, 395 insertions(+), 1 deletion(-)
->>   create mode 100644 sound/virtio/virtio_pcm_msg.c
->>
->> diff --git a/sound/virtio/Makefile b/sound/virtio/Makefile
->> index 69162a545a41..626af3cc3ed7 100644
->> --- a/sound/virtio/Makefile
->> +++ b/sound/virtio/Makefile
->> @@ -5,5 +5,6 @@ obj-$(CONFIG_SND_VIRTIO) +=3D virtio_snd.o
->>   virtio_snd-objs :=3D \
->>        virtio_card.o \
->>        virtio_ctl_msg.o \
->> -     virtio_pcm.o
->> +     virtio_pcm.o \
->> +     virtio_pcm_msg.o
->>
->> diff --git a/sound/virtio/virtio_card.c b/sound/virtio/virtio_card.c
->> index 293d497f24e7..dc703fc662f5 100644
->> --- a/sound/virtio/virtio_card.c
->> +++ b/sound/virtio/virtio_card.c
->> @@ -145,6 +145,12 @@ static int virtsnd_find_vqs(struct virtio_snd *snd)
->>        callbacks[VIRTIO_SND_VQ_CONTROL] =3D virtsnd_ctl_notify_cb;
->>        callbacks[VIRTIO_SND_VQ_EVENT] =3D virtsnd_event_notify_cb;
->>
->> +     virtio_cread(vdev, struct virtio_snd_config, streams, &n);
->> +     if (n) {
->> +             callbacks[VIRTIO_SND_VQ_TX] =3D virtsnd_pcm_tx_notify_cb;
->> +             callbacks[VIRTIO_SND_VQ_RX] =3D virtsnd_pcm_rx_notify_cb;
->> +     }
->> +
->>        rc =3D virtio_find_vqs(vdev, VIRTIO_SND_VQ_MAX, vqs, callbacks, n=
-ames,
->>                             NULL);
->>        if (rc) {
->> @@ -186,15 +192,42 @@ static int virtsnd_find_vqs(struct virtio_snd *snd=
-)
->>    * virtsnd_enable_vqs() - Enable the event, tx and rx virtqueues.
->>    * @snd: VirtIO sound device.
->>    *
->> + * The tx queue is enabled only if the device supports playback stream(=
-s).
->> + *
->> + * The rx queue is enabled only if the device supports capture stream(s=
-).
->> + *
->>    * Context: Any context.
->>    */
->>   static void virtsnd_enable_vqs(struct virtio_snd *snd)
->>   {
->> +     struct virtio_device *vdev =3D snd->vdev;
->>        struct virtqueue *vqueue;
->> +     struct virtio_pcm *pcm;
->> +     unsigned int npbs =3D 0;
->> +     unsigned int ncps =3D 0;
->>
->>        vqueue =3D snd->queues[VIRTIO_SND_VQ_EVENT].vqueue;
->>        if (!virtqueue_enable_cb(vqueue))
->>                virtsnd_event_notify_cb(vqueue);
->> +
->> +     list_for_each_entry(pcm, &snd->pcm_list, list) {
->> +             npbs +=3D pcm->streams[SNDRV_PCM_STREAM_PLAYBACK].nsubstre=
-ams;
->> +             ncps +=3D pcm->streams[SNDRV_PCM_STREAM_CAPTURE].nsubstrea=
-ms;
->> +     }
->> +
->> +     if (npbs) {
->> +             vqueue =3D snd->queues[VIRTIO_SND_VQ_TX].vqueue;
->> +             if (!virtqueue_enable_cb(vqueue))
->> +                     dev_warn(&vdev->dev,
->> +                              "suspicious notification in the TX queue\=
-n");
->> +     }
->> +
->> +     if (ncps) {
->> +             vqueue =3D snd->queues[VIRTIO_SND_VQ_RX].vqueue;
->> +             if (!virtqueue_enable_cb(vqueue))
->> +                     dev_warn(&vdev->dev,
->> +                              "suspicious notification in the RX queue\=
-n");
->> +     }
->=20
-> Not sure how all this prevents use of same vq from multiple threads ...
-> And why are we sure there are no buffers yet?  If that is because
-> nothing yet happened, then I'd also like to point out that a vq starts
-> out with callbacks enabled, so you don't need to do that first thing ...
-
-Yes, I redone that logic in v2.
-
-
->>   }
->>
->>   /**
->> diff --git a/sound/virtio/virtio_card.h b/sound/virtio/virtio_card.h
->> index be6651a6aaf8..b11c09984882 100644
->> --- a/sound/virtio/virtio_card.h
->> +++ b/sound/virtio/virtio_card.h
->> @@ -89,4 +89,13 @@ virtsnd_rx_queue(struct virtio_snd *snd)
->>        return &snd->queues[VIRTIO_SND_VQ_RX];
->>   }
->>
->> +static inline struct virtio_snd_queue *
->> +virtsnd_pcm_queue(struct virtio_pcm_substream *substream)
->> +{
->> +     if (substream->direction =3D=3D SNDRV_PCM_STREAM_PLAYBACK)
->> +             return virtsnd_tx_queue(substream->snd);
->> +     else
->> +             return virtsnd_rx_queue(substream->snd);
->> +}
->> +
->>   #endif /* VIRTIO_SND_CARD_H */
->> diff --git a/sound/virtio/virtio_pcm.c b/sound/virtio/virtio_pcm.c
->> index 036990b7b78a..1ab50dcc88c8 100644
->> --- a/sound/virtio/virtio_pcm.c
->> +++ b/sound/virtio/virtio_pcm.c
->> @@ -376,6 +376,7 @@ int virtsnd_pcm_parse_cfg(struct virtio_snd *snd)
->>
->>                substream->snd =3D snd;
->>                substream->sid =3D i;
->> +             init_waitqueue_head(&substream->msg_empty);
->>
->>                rc =3D virtsnd_pcm_build_hw(substream, &info[i]);
->>                if (rc)
->> @@ -530,6 +531,8 @@ void virtsnd_pcm_event(struct virtio_snd *snd, struc=
-t virtio_snd_event *event)
->>                break;
->>        }
->>        case VIRTIO_SND_EVT_PCM_XRUN: {
->> +             if (atomic_read(&substream->xfer_enabled))
->> +                     atomic_set(&substream->xfer_xrun, 1);
->>                break;
->>        }
->>        }
->> diff --git a/sound/virtio/virtio_pcm.h b/sound/virtio/virtio_pcm.h
->> index 73fb4d9dc524..d011b7e1d18d 100644
->> --- a/sound/virtio/virtio_pcm.h
->> +++ b/sound/virtio/virtio_pcm.h
->> @@ -24,6 +24,7 @@
->>   #include <sound/pcm.h>
->>
->>   struct virtio_pcm;
->> +struct virtio_pcm_msg;
->>
->>   /**
->>    * struct virtio_pcm_substream - VirtIO PCM substream.
->> @@ -34,6 +35,16 @@ struct virtio_pcm;
->>    * @features: Stream VirtIO feature bit map (1 << VIRTIO_SND_PCM_F_XXX=
-).
->>    * @substream: Kernel ALSA substream.
->>    * @hw: Kernel ALSA substream hardware descriptor.
->> + * @frame_bytes: Current frame size in bytes.
->> + * @period_size: Current period size in frames.
->> + * @buffer_size: Current buffer size in frames.
->> + * @hw_ptr: Substream hardware pointer value in frames [0 ... buffer_si=
-ze).
->> + * @xfer_enabled: Data transfer state (0 - off, 1 - on).
->> + * @xfer_xrun: Data underflow/overflow state (0 - no xrun, 1 - xrun).
->> + * @msgs: I/O messages.
->> + * @msg_last_enqueued: Index of the last I/O message added to the virtq=
-ueue.
->> + * @msg_count: Number of pending I/O messages in the virtqueue.
->> + * @msg_empty: Notify when msg_count is zero.
->>    */
->>   struct virtio_pcm_substream {
->>        struct virtio_snd *snd;
->> @@ -43,6 +54,16 @@ struct virtio_pcm_substream {
->>        u32 features;
->>        struct snd_pcm_substream *substream;
->>        struct snd_pcm_hardware hw;
->> +     unsigned int frame_bytes;
->> +     snd_pcm_uframes_t period_size;
->> +     snd_pcm_uframes_t buffer_size;
->> +     atomic_t hw_ptr;
->> +     atomic_t xfer_enabled;
->> +     atomic_t xfer_xrun;
->> +     struct virtio_pcm_msg *msgs;
->> +     int msg_last_enqueued;
->> +     atomic_t msg_count;
->> +     wait_queue_head_t msg_empty;
->>   };
->>
->>   /**
->> @@ -86,4 +107,14 @@ struct virtio_pcm *virtsnd_pcm_find(struct virtio_sn=
-d *snd, unsigned int nid);
->>   struct virtio_pcm *virtsnd_pcm_find_or_create(struct virtio_snd *snd,
->>                                              unsigned int nid);
->>
->> +struct virtio_snd_msg *
->> +virtsnd_pcm_ctl_msg_alloc(struct virtio_pcm_substream *substream,
->> +                       unsigned int command, gfp_t gfp);
->> +
->> +int virtsnd_pcm_msg_alloc(struct virtio_pcm_substream *substream,
->> +                       unsigned int nmsg, u8 *dma_area,
->> +                       unsigned int period_bytes);
->> +
->> +int virtsnd_pcm_msg_send(struct virtio_pcm_substream *substream);
->> +
->>   #endif /* VIRTIO_SND_PCM_H */
->> diff --git a/sound/virtio/virtio_pcm_msg.c b/sound/virtio/virtio_pcm_msg=
-.c
->> new file mode 100644
->> index 000000000000..cfbe5935527a
->> --- /dev/null
->> +++ b/sound/virtio/virtio_pcm_msg.c
->> @@ -0,0 +1,317 @@
->> +// SPDX-License-Identifier: GPL-2.0+
->> +/*
->> + * Sound card driver for virtio
->> + * Copyright (C) 2020  OpenSynergy GmbH
->> + *
->> + * This program is free software; you can redistribute it and/or modify
->> + * it under the terms of the GNU General Public License as published by
->> + * the Free Software Foundation; either version 2 of the License, or
->> + * (at your option) any later version.
->> + *
->> + * This program is distributed in the hope that it will be useful,
->> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
->> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
->> + * GNU General Public License for more details.
->> + *
->> + * You should have received a copy of the GNU General Public License
->> + * along with this program; if not, see <http://www.gnu.org/licenses/>.
->> + */
->> +#include <sound/pcm_params.h>
->> +
->> +#include "virtio_card.h"
->> +
->> +/**
->> + * enum pcm_msg_sg_index - Scatter-gather element indexes for an I/O me=
-ssage.
->> + * @PCM_MSG_SG_XFER: Element containing a virtio_snd_pcm_xfer structure=
+diff --git a/sound/virtio/Makefile b/sound/virtio/Makefile
+index 626af3cc3ed7..34493226793f 100644
+--- a/sound/virtio/Makefile
++++ b/sound/virtio/Makefile
+@@ -6,5 +6,6 @@ virtio_snd-objs :=3D \
+ =09virtio_card.o \
+ =09virtio_ctl_msg.o \
+ =09virtio_pcm.o \
+-=09virtio_pcm_msg.o
++=09virtio_pcm_msg.o \
++=09virtio_pcm_ops.o
+=20
+diff --git a/sound/virtio/virtio_pcm.c b/sound/virtio/virtio_pcm.c
+index 1ab50dcc88c8..6a1ca6b2c3ca 100644
+--- a/sound/virtio/virtio_pcm.c
++++ b/sound/virtio/virtio_pcm.c
+@@ -121,7 +121,8 @@ static int virtsnd_pcm_build_hw(struct virtio_pcm_subst=
+ream *substream,
+ =09=09SNDRV_PCM_INFO_MMAP_VALID |
+ =09=09SNDRV_PCM_INFO_BATCH |
+ =09=09SNDRV_PCM_INFO_BLOCK_TRANSFER |
+-=09=09SNDRV_PCM_INFO_INTERLEAVED;
++=09=09SNDRV_PCM_INFO_INTERLEAVED |
++=09=09SNDRV_PCM_INFO_PAUSE;
+=20
+ =09if (!info->channels_min || info->channels_min > info->channels_max) {
+ =09=09dev_err(&vdev->dev,
+@@ -503,6 +504,8 @@ int virtsnd_pcm_build_devs(struct virtio_snd *snd)
+ =09=09=09=09if (rc)
+ =09=09=09=09=09return rc;
+ =09=09=09}
++
++=09=09=09snd_pcm_set_ops(pcm->pcm, i, &virtsnd_pcm_ops);
+ =09=09}
+=20
+ =09return 0;
+diff --git a/sound/virtio/virtio_pcm.h b/sound/virtio/virtio_pcm.h
+index d011b7e1d18d..fe467bc05d8b 100644
+--- a/sound/virtio/virtio_pcm.h
++++ b/sound/virtio/virtio_pcm.h
+@@ -90,6 +90,8 @@ struct virtio_pcm {
+ =09struct virtio_pcm_stream streams[SNDRV_PCM_STREAM_LAST + 1];
+ };
+=20
++extern const struct snd_pcm_ops virtsnd_pcm_ops;
++
+ int virtsnd_pcm_validate(struct virtio_device *vdev);
+=20
+ int virtsnd_pcm_parse_cfg(struct virtio_snd *snd);
+diff --git a/sound/virtio/virtio_pcm_ops.c b/sound/virtio/virtio_pcm_ops.c
+new file mode 100644
+index 000000000000..8d26c1144ad6
+--- /dev/null
++++ b/sound/virtio/virtio_pcm_ops.c
+@@ -0,0 +1,509 @@
++// SPDX-License-Identifier: GPL-2.0+
++/*
++ * Sound card driver for virtio
++ * Copyright (C) 2020  OpenSynergy GmbH
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, see <http://www.gnu.org/licenses/>.
++ */
++#include <sound/pcm_params.h>
++
++#include "virtio_card.h"
++
++/*
++ * Our main concern here is maintaining the correct state of the underlyin=
+g I/O
++ * virtqueues. Thus, operators are implemented to support all of the follo=
+wing
++ * possible control paths (excluding all trivial ones):
++ *
++ *                        +---------+
++ *                        | open()  |<------------------+
++ *                        +----+----+                   |
++ *                             v                        |
++ *                      +------+------+                 |
++ *       +------------->| hw_params() |<-------------+  |
++ *       |              +-------------+              |  |
++ *       |                     v                     |  |
++ *       |               +-----------+               |  |
++ *       |               | prepare() |<-----------+  |  |
++ *       |               +-----------+            |  |  |
++ *       |                     v                  |  |  |
++ *       |        +-------------------------+     |  |  |
++ * +-----------+  | trigger(START/          |     |  |  |
++ * | restore() |  |         PAUSE_RELEASE/  |<-+  |  |  |
++ * +-----------+  |         RESUME)         |  |  |  |  |
++ *       ^        +-------------------------+  |  |  |  |
++ *       |                     v               |  |  |  |
++ *       |               +-----------+         |  |  |  |
++ *       |               | pointer() |         |  |  |  |
++ *       |               +-----------+         |  |  |  |
++ *       |                     v               |  |  |  |
++ *       |          +---------------------+    |  |  |  |
++ * +-----------+    | trigger(STOP/       |----+  |  |  |
++ * | freeze()  |<---|         PAUSE_PUSH/ |-------+  |  |
++ * +-----------+    |         SUSPEND)    |          |  |
++ *                  +---------------------+          |  |
++ *                             v                     |  |
++ *                       +-----------+               |  |
++ *                       | hw_free() |---------------+  |
++ *                       +-----------+                  |
++ *                             v                        |
++ *                        +---------+                   |
++ *                        | close() |-------------------+
++ *                        +---------+
++ */
++
++/* Map for converting ALSA format to VirtIO format. */
++struct virtsnd_a2v_format {
++=09unsigned int alsa_bit;
++=09unsigned int vio_bit;
++};
++
++static const struct virtsnd_a2v_format g_a2v_format_map[] =3D {
++=09{ SNDRV_PCM_FORMAT_IMA_ADPCM, VIRTIO_SND_PCM_FMT_IMA_ADPCM },
++=09{ SNDRV_PCM_FORMAT_MU_LAW, VIRTIO_SND_PCM_FMT_MU_LAW },
++=09{ SNDRV_PCM_FORMAT_A_LAW, VIRTIO_SND_PCM_FMT_A_LAW },
++=09{ SNDRV_PCM_FORMAT_S8, VIRTIO_SND_PCM_FMT_S8 },
++=09{ SNDRV_PCM_FORMAT_U8, VIRTIO_SND_PCM_FMT_U8 },
++=09{ SNDRV_PCM_FORMAT_S16_LE, VIRTIO_SND_PCM_FMT_S16 },
++=09{ SNDRV_PCM_FORMAT_U16_LE, VIRTIO_SND_PCM_FMT_U16 },
++=09{ SNDRV_PCM_FORMAT_S18_3LE, VIRTIO_SND_PCM_FMT_S18_3 },
++=09{ SNDRV_PCM_FORMAT_U18_3LE, VIRTIO_SND_PCM_FMT_U18_3 },
++=09{ SNDRV_PCM_FORMAT_S20_3LE, VIRTIO_SND_PCM_FMT_S20_3 },
++=09{ SNDRV_PCM_FORMAT_U20_3LE, VIRTIO_SND_PCM_FMT_U20_3 },
++=09{ SNDRV_PCM_FORMAT_S24_3LE, VIRTIO_SND_PCM_FMT_S24_3 },
++=09{ SNDRV_PCM_FORMAT_U24_3LE, VIRTIO_SND_PCM_FMT_U24_3 },
++=09{ SNDRV_PCM_FORMAT_S20_LE, VIRTIO_SND_PCM_FMT_S20 },
++=09{ SNDRV_PCM_FORMAT_U20_LE, VIRTIO_SND_PCM_FMT_U20 },
++=09{ SNDRV_PCM_FORMAT_S24_LE, VIRTIO_SND_PCM_FMT_S24 },
++=09{ SNDRV_PCM_FORMAT_U24_LE, VIRTIO_SND_PCM_FMT_U24 },
++=09{ SNDRV_PCM_FORMAT_S32_LE, VIRTIO_SND_PCM_FMT_S32 },
++=09{ SNDRV_PCM_FORMAT_U32_LE, VIRTIO_SND_PCM_FMT_U32 },
++=09{ SNDRV_PCM_FORMAT_FLOAT_LE, VIRTIO_SND_PCM_FMT_FLOAT },
++=09{ SNDRV_PCM_FORMAT_FLOAT64_LE, VIRTIO_SND_PCM_FMT_FLOAT64 },
++=09{ SNDRV_PCM_FORMAT_DSD_U8, VIRTIO_SND_PCM_FMT_DSD_U8 },
++=09{ SNDRV_PCM_FORMAT_DSD_U16_LE, VIRTIO_SND_PCM_FMT_DSD_U16 },
++=09{ SNDRV_PCM_FORMAT_DSD_U32_LE, VIRTIO_SND_PCM_FMT_DSD_U32 },
++=09{ SNDRV_PCM_FORMAT_IEC958_SUBFRAME_LE,
++=09  VIRTIO_SND_PCM_FMT_IEC958_SUBFRAME }
++};
++
++/* Map for converting ALSA frame rate to VirtIO frame rate. */
++struct virtsnd_a2v_rate {
++=09unsigned int rate;
++=09unsigned int vio_bit;
++};
++
++static const struct virtsnd_a2v_rate g_a2v_rate_map[] =3D {
++=09{ 5512, VIRTIO_SND_PCM_RATE_5512 },
++=09{ 8000, VIRTIO_SND_PCM_RATE_8000 },
++=09{ 11025, VIRTIO_SND_PCM_RATE_11025 },
++=09{ 16000, VIRTIO_SND_PCM_RATE_16000 },
++=09{ 22050, VIRTIO_SND_PCM_RATE_22050 },
++=09{ 32000, VIRTIO_SND_PCM_RATE_32000 },
++=09{ 44100, VIRTIO_SND_PCM_RATE_44100 },
++=09{ 48000, VIRTIO_SND_PCM_RATE_48000 },
++=09{ 64000, VIRTIO_SND_PCM_RATE_64000 },
++=09{ 88200, VIRTIO_SND_PCM_RATE_88200 },
++=09{ 96000, VIRTIO_SND_PCM_RATE_96000 },
++=09{ 176400, VIRTIO_SND_PCM_RATE_176400 },
++=09{ 192000, VIRTIO_SND_PCM_RATE_192000 }
++};
++
++/**
++ * virtsnd_pcm_release() - Release the PCM substream on the device side.
++ * @substream: VirtIO substream.
++ *
++ * The function waits for all pending I/O messages to complete.
++ *
++ * Context: Any context that permits to sleep.
++ * Return: 0 on success, -errno on failure.
++ */
++static inline bool virtsnd_pcm_released(struct virtio_pcm_substream *subst=
+ream)
++{
++=09return atomic_read(&substream->msg_count) =3D=3D 0;
++}
++
++static int virtsnd_pcm_release(struct virtio_pcm_substream *substream)
++{
++=09struct virtio_snd *snd =3D substream->snd;
++=09struct virtio_snd_msg *msg;
++=09unsigned int js =3D msecs_to_jiffies(msg_timeout_ms);
++=09int rc;
++
++=09msg =3D virtsnd_pcm_ctl_msg_alloc(substream, VIRTIO_SND_R_PCM_RELEASE,
++=09=09=09=09=09GFP_KERNEL);
++=09if (IS_ERR(msg))
++=09=09return PTR_ERR(msg);
++
++=09rc =3D virtsnd_ctl_msg_send_sync(snd, msg);
++=09if (rc)
++=09=09return rc;
++
++=09return wait_event_interruptible_timeout(substream->msg_empty,
++=09=09=09=09=09=09virtsnd_pcm_released(substream),
++=09=09=09=09=09=09js);
++}
++
++/**
++ * virtsnd_pcm_open() - Open the PCM substream.
++ * @substream: Kernel ALSA substream.
++ *
++ * Context: Any context.
++ * Return: 0 on success, -errno on failure.
++ */
++static int virtsnd_pcm_open(struct snd_pcm_substream *substream)
++{
++=09struct virtio_pcm *pcm =3D snd_pcm_substream_chip(substream);
++=09struct virtio_pcm_substream *ss =3D NULL;
++
++=09if (pcm) {
++=09=09switch (substream->stream) {
++=09=09case SNDRV_PCM_STREAM_PLAYBACK:
++=09=09case SNDRV_PCM_STREAM_CAPTURE: {
++=09=09=09struct virtio_pcm_stream *stream =3D
++=09=09=09=09&pcm->streams[substream->stream];
++
++=09=09=09if (substream->number < stream->nsubstreams)
++=09=09=09=09ss =3D stream->substreams[substream->number];
++=09=09=09break;
++=09=09}
++=09=09}
++=09}
++
++=09if (!ss)
++=09=09return -EBADFD;
++
++=09substream->runtime->hw =3D ss->hw;
++=09substream->private_data =3D ss;
++
++=09return 0;
++}
++
++/**
++ * virtsnd_pcm_close() - Close the PCM substream.
++ * @substream: Kernel ALSA substream.
++ *
++ * Context: Any context.
++ * Return: 0.
++ */
++static int virtsnd_pcm_close(struct snd_pcm_substream *substream)
++{
++=09return 0;
++}
++
++/**
++ * virtsnd_pcm_hw_params() - Set the parameters of the PCM substream.
++ * @substream: Kernel ALSA substream.
++ * @hw_params: Hardware parameters (can be NULL).
++ *
++ * The function can be called both from the upper level (in this case,
++ * @hw_params is not NULL) or from the driver itself (in this case, @hw_pa=
+rams
++ * is NULL, and the parameter values are taken from the runtime structure)=
 .
->> + * @PCM_MSG_SG_DATA: Element containing a data buffer.
->> + * @PCM_MSG_SG_STATUS: Element containing a virtio_snd_pcm_status struc=
-ture.
->> + * @PCM_MSG_SG_MAX: The maximum number of elements in the scatter-gathe=
-r table.
->> + *
->> + * These values are used as the index of the payload scatter-gather tab=
-le.
->> + */
->> +enum pcm_msg_sg_index {
->> +     PCM_MSG_SG_XFER =3D 0,
->> +     PCM_MSG_SG_DATA,
->> +     PCM_MSG_SG_STATUS,
->> +     PCM_MSG_SG_MAX
->> +};
->> +
->> +/**
->> + * struct virtio_pcm_msg - VirtIO I/O message.
->> + * @substream: VirtIO PCM substream.
->> + * @xfer: Request header payload.
->> + * @status: Response header payload.
->> + * @sgs: Payload scatter-gather table.
->> + */
->> +struct virtio_pcm_msg {
->> +     struct virtio_pcm_substream *substream;
->> +     struct virtio_snd_pcm_xfer xfer;
->> +     struct virtio_snd_pcm_status status;
->> +     struct scatterlist sgs[PCM_MSG_SG_MAX];
->> +};
->> +
->> +/**
->> + * virtsnd_pcm_msg_alloc() - Allocate I/O messages.
->> + * @substream: VirtIO PCM substream.
->> + * @nmsg: Number of messages (equal to the number of periods).
->> + * @dma_area: Pointer to used audio buffer.
->> + * @period_bytes: Period (message payload) size.
->> + *
->> + * The function slices the buffer into nmsg parts (each with the size o=
-f
->> + * period_bytes), and creates nmsg corresponding I/O messages.
->> + *
->> + * Context: Any context that permits to sleep.
->> + * Return: 0 on success, -ENOMEM on failure.
->> + */
->> +int virtsnd_pcm_msg_alloc(struct virtio_pcm_substream *substream,
->> +                       unsigned int nmsg, u8 *dma_area,
->> +                       unsigned int period_bytes)
->> +{
->> +     struct virtio_device *vdev =3D substream->snd->vdev;
->> +     unsigned int i;
->> +
->> +     if (substream->msgs)
->> +             devm_kfree(&vdev->dev, substream->msgs);
->> +
->> +     substream->msgs =3D devm_kcalloc(&vdev->dev, nmsg,
->> +                                    sizeof(*substream->msgs), GFP_KERNE=
-L);
->> +     if (!substream->msgs)
->> +             return -ENOMEM;
->> +
->> +     for (i =3D 0; i < nmsg; ++i) {
->> +             struct virtio_pcm_msg *msg =3D &substream->msgs[i];
->> +
->> +             msg->substream =3D substream;
->> +
->> +             sg_init_table(msg->sgs, PCM_MSG_SG_MAX);
->> +             sg_init_one(&msg->sgs[PCM_MSG_SG_XFER], &msg->xfer,
->> +                         sizeof(msg->xfer));
->> +             sg_init_one(&msg->sgs[PCM_MSG_SG_DATA],
->> +                         dma_area + period_bytes * i, period_bytes);
->> +             sg_init_one(&msg->sgs[PCM_MSG_SG_STATUS], &msg->status,
->> +                         sizeof(msg->status));
->> +     }
->> +
->> +     return 0;
->> +}
->> +
->> +/**
->> + * virtsnd_pcm_msg_send() - Send asynchronous I/O messages.
->> + * @substream: VirtIO PCM substream.
->> + *
->> + * All messages are organized in an ordered circular list. Each time th=
-e
->> + * function is called, all currently non-enqueued messages are added to=
- the
->> + * virtqueue. For this, the function keeps track of two values:
->> + *
->> + *   msg_last_enqueued =3D index of the last enqueued message,
->> + *   msg_count =3D # of pending messages in the virtqueue.
->> + *
->> + * Context: Any context.
->> + * Return: 0 on success, -EIO on failure.
->> + */
->> +int virtsnd_pcm_msg_send(struct virtio_pcm_substream *substream)
->> +{
->> +     struct snd_pcm_runtime *runtime =3D substream->substream->runtime;
->> +     struct virtio_snd *snd =3D substream->snd;
->> +     struct virtio_device *vdev =3D snd->vdev;
->> +     struct virtqueue *vqueue =3D virtsnd_pcm_queue(substream)->vqueue;
->> +     int i;
->> +     int n;
->> +     bool notify =3D false;
->> +
->> +     if (!vqueue)
->> +             return -EIO;
->> +
->> +     i =3D (substream->msg_last_enqueued + 1) % runtime->periods;
->> +     n =3D runtime->periods - atomic_read(&substream->msg_count);
->> +
->> +     for (; n; --n, i =3D (i + 1) % runtime->periods) {
->> +             struct virtio_pcm_msg *msg =3D &substream->msgs[i];
->> +             struct scatterlist *psgs[PCM_MSG_SG_MAX] =3D {
->> +                     [PCM_MSG_SG_XFER] =3D &msg->sgs[PCM_MSG_SG_XFER],
->> +                     [PCM_MSG_SG_DATA] =3D &msg->sgs[PCM_MSG_SG_DATA],
->> +                     [PCM_MSG_SG_STATUS] =3D &msg->sgs[PCM_MSG_SG_STATU=
-S]
->> +             };
->> +             int rc;
->> +
->> +             msg->xfer.stream_id =3D cpu_to_virtio32(vdev, substream->s=
-id);
->> +             memset(&msg->status, 0, sizeof(msg->status));
->> +
->> +             atomic_inc(&substream->msg_count);
->> +
->> +             if (substream->direction =3D=3D SNDRV_PCM_STREAM_PLAYBACK)
->> +                     rc =3D virtqueue_add_sgs(vqueue, psgs, 2, 1, msg,
->> +                                            GFP_ATOMIC);
->> +             else
->> +                     rc =3D virtqueue_add_sgs(vqueue, psgs, 1, 2, msg,
->> +                                            GFP_ATOMIC);
->> +
->> +             if (rc) {
->> +                     atomic_dec(&substream->msg_count);
->> +                     return -EIO;
->> +             }
->> +
->> +             substream->msg_last_enqueued =3D i;
->> +     }
->> +
->> +     if (!(substream->features & (1U << VIRTIO_SND_PCM_F_MSG_POLLING)))
->> +             notify =3D virtqueue_kick_prepare(vqueue);
->> +
->> +     if (notify)
->> +             if (!virtqueue_notify(vqueue))
->> +                     return -EIO;
->> +
->> +     return 0;
->> +}
->> +
->> +/**
->> + * virtsnd_pcm_msg_complete() - Complete an I/O message.
->> + * @msg: I/O message.
->> + * @size: Number of bytes written.
->> + *
->> + * Completion of the message means the elapsed period:
->> + *   - update hardware pointer,
->> + *   - update latency value,
->> + *   - kick the upper layer.
->> + *
->> + * Context: Interrupt context.
->> + */
->> +static void virtsnd_pcm_msg_complete(struct virtio_pcm_msg *msg, size_t=
- size)
->> +{
->> +     struct virtio_pcm_substream *substream =3D msg->substream;
->> +     snd_pcm_uframes_t hw_ptr;
->> +     unsigned int msg_count;
->> +
->> +     hw_ptr =3D (snd_pcm_uframes_t)atomic_read(&substream->hw_ptr);
->> +
->> +     /*
->> +      * If the capture substream returned an incorrect status, then jus=
-t
->> +      * increase the hw_ptr by the period size.
->> +      */
->> +     if (substream->direction =3D=3D SNDRV_PCM_STREAM_PLAYBACK ||
->> +         size <=3D sizeof(msg->status)) {
->> +             hw_ptr +=3D substream->period_size;
->> +     } else {
->> +             size -=3D sizeof(msg->status);
->> +             hw_ptr +=3D size / substream->frame_bytes;
->> +     }
->> +
->> +     atomic_set(&substream->hw_ptr, (u32)(hw_ptr % substream->buffer_si=
-ze));
->> +     atomic_set(&substream->xfer_xrun, 0);
->> +
->> +     msg_count =3D atomic_dec_return(&substream->msg_count);
->> +
->> +     if (atomic_read(&substream->xfer_enabled)) {
->> +             struct snd_pcm_runtime *runtime =3D substream->substream->=
-runtime;
->> +
->> +             runtime->delay =3D
->> +                     bytes_to_frames(runtime,
->> +                                     le32_to_cpu(msg->status.latency_by=
-tes));
->> +
->> +             snd_pcm_period_elapsed(substream->substream);
->> +
->> +             virtsnd_pcm_msg_send(substream);
->> +     } else if (!msg_count) {
->> +             wake_up_all(&substream->msg_empty);
->> +     }
->> +}
->> +
->> +/**
->> + * virtsnd_pcm_notify_cb() - Process all completed I/O messages.
->> + * @vqueue: Underlying tx/rx virtqueue.
->> + *
->> + * If transmission is allowed, then each completed message is immediate=
-ly placed
->> + * back at the end of the queue.
->> + *
->> + * Context: Interrupt context. Takes and releases the tx/rx queue spinl=
-ock.
->> + */
->> +static inline void virtsnd_pcm_notify_cb(struct virtio_snd_queue *queue=
-)
->> +{
->> +     unsigned long flags;
->> +
->> +     spin_lock_irqsave(&queue->lock, flags);
->> +     while (queue->vqueue) {
->> +             virtqueue_disable_cb(queue->vqueue);
->> +
->> +             for (;;) {
->> +                     struct virtio_pcm_msg *msg;
->> +                     u32 length;
->> +
->> +                     msg =3D virtqueue_get_buf(queue->vqueue, &length);
->> +                     if (!msg)
->> +                             break;
->> +
->> +                     virtsnd_pcm_msg_complete(msg, length);
->> +             }
->> +
->> +             if (unlikely(virtqueue_is_broken(queue->vqueue)))
->> +                     break;
->> +
->> +             if (virtqueue_enable_cb(queue->vqueue))
->> +                     break;
->> +     }
->> +     spin_unlock_irqrestore(&queue->lock, flags);
->> +}
->> +
->> +/**
->> + * virtsnd_pcm_tx_notify_cb() - Process all completed TX messages.
->> + * @vqueue: Underlying tx virtqueue.
->> + *
->> + * Context: Interrupt context.
->> + */
->> +void virtsnd_pcm_tx_notify_cb(struct virtqueue *vqueue)
->> +{
->> +     struct virtio_snd *snd =3D vqueue->vdev->priv;
->> +
->> +     virtsnd_pcm_notify_cb(virtsnd_tx_queue(snd));
->> +}
->> +
->> +/**
->> + * virtsnd_pcm_rx_notify_cb() - Process all completed RX messages.
->> + * @vqueue: Underlying rx virtqueue.
->> + *
->> + * Context: Interrupt context.
->> + */
->> +void virtsnd_pcm_rx_notify_cb(struct virtqueue *vqueue)
->> +{
->> +     struct virtio_snd *snd =3D vqueue->vdev->priv;
->> +
->> +     virtsnd_pcm_notify_cb(virtsnd_rx_queue(snd));
->> +}
->> +
->> +/**
->> + * virtsnd_pcm_ctl_msg_alloc() - Allocate and initialize the PCM device=
- control
->> + *                               message for the specified substream.
->> + * @substream: VirtIO PCM substream.
->> + * @command: Control request code (VIRTIO_SND_R_PCM_XXX).
->> + * @gfp: Kernel flags for memory allocation.
->> + *
->> + * Context: Any context. May sleep if @gfp flags permit.
->> + * Return: Allocated message on success, ERR_PTR(-errno) on failure.
->> + */
->> +struct virtio_snd_msg *
->> +virtsnd_pcm_ctl_msg_alloc(struct virtio_pcm_substream *substream,
->> +                       unsigned int command, gfp_t gfp)
->> +{
->> +     struct virtio_device *vdev =3D substream->snd->vdev;
->> +     size_t request_size =3D sizeof(struct virtio_snd_pcm_hdr);
->> +     size_t response_size =3D sizeof(struct virtio_snd_hdr);
->> +     struct virtio_snd_msg *msg;
->> +
->> +     switch (command) {
->> +     case VIRTIO_SND_R_PCM_SET_PARAMS: {
->> +             request_size =3D sizeof(struct virtio_snd_pcm_set_params);
->> +             break;
->> +     }
->> +     }
->> +
->> +     msg =3D virtsnd_ctl_msg_alloc(vdev, request_size, response_size, g=
-fp);
->> +     if (!IS_ERR(msg)) {
->> +             struct virtio_snd_pcm_hdr *hdr =3D sg_virt(&msg->sg_reques=
-t);
->> +
->> +             hdr->hdr.code =3D cpu_to_virtio32(vdev, command);
->> +             hdr->stream_id =3D cpu_to_virtio32(vdev, substream->sid);
->> +     }
->> +
->> +     return msg;
->> +}
->> --
->> 2.30.0
->>
->>
->=20
->=20
-
++ *
++ * In all cases, the function:
++ *   1. checks the state of the virtqueue and, if necessary, tries to fix =
+it,
++ *   2. sets the parameters on the device side,
++ *   3. allocates a hardware buffer and I/O messages.
++ *
++ * Context: Any context that permits to sleep.
++ * Return: 0 on success, -errno on failure.
++ */
++static int virtsnd_pcm_hw_params(struct snd_pcm_substream *substream,
++=09=09=09=09 struct snd_pcm_hw_params *hw_params)
++{
++=09struct snd_pcm_runtime *runtime =3D substream->runtime;
++=09struct virtio_pcm_substream *ss =3D snd_pcm_substream_chip(substream);
++=09struct virtio_device *vdev =3D ss->snd->vdev;
++=09struct virtio_snd_msg *msg;
++=09struct virtio_snd_pcm_set_params *request;
++=09snd_pcm_format_t format;
++=09unsigned int channels;
++=09unsigned int rate;
++=09unsigned int buffer_bytes;
++=09unsigned int period_bytes;
++=09unsigned int periods;
++=09unsigned int i;
++=09int vformat =3D -1;
++=09int vrate =3D -1;
++=09int rc;
++
++=09/*
++=09 * If we got here after ops->trigger() was called, the queue may
++=09 * still contain messages. In this case, we need to release the
++=09 * substream first.
++=09 */
++=09if (atomic_read(&ss->msg_count)) {
++=09=09rc =3D virtsnd_pcm_release(ss);
++=09=09if (rc) {
++=09=09=09dev_err(&vdev->dev,
++=09=09=09=09"SID %u: invalid I/O queue state\n",
++=09=09=09=09ss->sid);
++=09=09=09return rc;
++=09=09}
++=09}
++
++=09/* Set hardware parameters in device */
++=09if (hw_params) {
++=09=09format =3D params_format(hw_params);
++=09=09channels =3D params_channels(hw_params);
++=09=09rate =3D params_rate(hw_params);
++=09=09buffer_bytes =3D params_buffer_bytes(hw_params);
++=09=09period_bytes =3D params_period_bytes(hw_params);
++=09=09periods =3D params_periods(hw_params);
++=09} else {
++=09=09format =3D runtime->format;
++=09=09channels =3D runtime->channels;
++=09=09rate =3D runtime->rate;
++=09=09buffer_bytes =3D frames_to_bytes(runtime, runtime->buffer_size);
++=09=09period_bytes =3D frames_to_bytes(runtime, runtime->period_size);
++=09=09periods =3D runtime->periods;
++=09}
++
++=09for (i =3D 0; i < ARRAY_SIZE(g_a2v_format_map); ++i)
++=09=09if (g_a2v_format_map[i].alsa_bit =3D=3D format) {
++=09=09=09vformat =3D g_a2v_format_map[i].vio_bit;
++
++=09=09=09break;
++=09=09}
++
++=09for (i =3D 0; i < ARRAY_SIZE(g_a2v_rate_map); ++i)
++=09=09if (g_a2v_rate_map[i].rate =3D=3D rate) {
++=09=09=09vrate =3D g_a2v_rate_map[i].vio_bit;
++
++=09=09=09break;
++=09=09}
++
++=09if (vformat =3D=3D -1 || vrate =3D=3D -1)
++=09=09return -EINVAL;
++
++=09msg =3D virtsnd_pcm_ctl_msg_alloc(ss, VIRTIO_SND_R_PCM_SET_PARAMS,
++=09=09=09=09=09GFP_KERNEL);
++=09if (IS_ERR(msg))
++=09=09return PTR_ERR(msg);
++
++=09request =3D sg_virt(&msg->sg_request);
++
++=09request->buffer_bytes =3D cpu_to_virtio32(vdev, buffer_bytes);
++=09request->period_bytes =3D cpu_to_virtio32(vdev, period_bytes);
++=09request->channels =3D channels;
++=09request->format =3D vformat;
++=09request->rate =3D vrate;
++
++=09if (ss->features & (1U << VIRTIO_SND_PCM_F_MSG_POLLING))
++=09=09request->features |=3D
++=09=09=09cpu_to_virtio32(vdev,
++=09=09=09=09=091U << VIRTIO_SND_PCM_F_MSG_POLLING);
++
++=09if (ss->features & (1U << VIRTIO_SND_PCM_F_EVT_XRUNS))
++=09=09request->features |=3D
++=09=09=09cpu_to_virtio32(vdev,
++=09=09=09=09=091U << VIRTIO_SND_PCM_F_EVT_XRUNS);
++
++=09rc =3D virtsnd_ctl_msg_send_sync(ss->snd, msg);
++=09if (rc)
++=09=09return rc;
++
++=09/* If the buffer was already allocated earlier, do nothing. */
++=09if (runtime->dma_area)
++=09=09return 0;
++
++=09/* Allocate hardware buffer */
++=09rc =3D snd_pcm_lib_malloc_pages(substream, buffer_bytes);
++=09if (rc < 0)
++=09=09return rc;
++
++=09/* Allocate and initialize I/O messages */
++=09rc =3D virtsnd_pcm_msg_alloc(ss, periods, runtime->dma_area,
++=09=09=09=09   period_bytes);
++=09if (rc)
++=09=09snd_pcm_lib_free_pages(substream);
++
++=09return rc;
++}
++
++/**
++ * virtsnd_pcm_hw_free() - Reset the parameters of the PCM substream.
++ * @substream: Kernel ALSA substream.
++ *
++ * The function does the following:
++ *   1. tries to release the PCM substream on the device side,
++ *   2. frees the hardware buffer.
++ *
++ * Context: Any context that permits to sleep.
++ * Return: 0 on success, -errno on failure.
++ */
++static int virtsnd_pcm_hw_free(struct snd_pcm_substream *substream)
++{
++=09struct virtio_pcm_substream *ss =3D snd_pcm_substream_chip(substream);
++=09int rc;
++
++=09rc =3D virtsnd_pcm_release(ss);
++
++=09/*
++=09 * Even if we failed to send the RELEASE message or wait for the queue
++=09 * flush to complete, we can safely delete the buffer. Because after
++=09 * receiving the STOP command, the device must stop all I/O message
++=09 * processing. If there are still pending messages in the queue, the
++=09 * next ops->hw_params() call should deal with this.
++=09 */
++=09snd_pcm_lib_free_pages(substream);
++
++=09return rc;
++}
++
++/**
++ * virtsnd_pcm_hw_params() - Prepare the PCM substream.
++ * @substream: Kernel ALSA substream.
++ *
++ * The function can be called both from the upper level or from the driver
++ * itself.
++ *
++ * In all cases, the function:
++ *   1. checks the state of the virtqueue and, if necessary, tries to fix =
+it,
++ *   2. prepares the substream on the device side.
++ *
++ * Context: Any context that permits to sleep. May take and release the tx=
+/rx
++ *          queue spinlock.
++ * Return: 0 on success, -errno on failure.
++ */
++static int virtsnd_pcm_prepare(struct snd_pcm_substream *substream)
++{
++=09struct virtio_pcm_substream *ss =3D snd_pcm_substream_chip(substream);
++=09struct virtio_snd_queue *queue =3D virtsnd_pcm_queue(ss);
++=09struct virtio_snd_msg *msg;
++=09unsigned long flags;
++=09int rc;
++
++=09/*
++=09 * If we got here after ops->trigger() was called, the queue may
++=09 * still contain messages. In this case, we need to reset the
++=09 * substream first.
++=09 */
++=09if (atomic_read(&ss->msg_count)) {
++=09=09rc =3D virtsnd_pcm_hw_params(substream, NULL);
++=09=09if (rc)
++=09=09=09return rc;
++=09}
++
++=09spin_lock_irqsave(&queue->lock, flags);
++=09ss->msg_last_enqueued =3D -1;
++=09spin_unlock_irqrestore(&queue->lock, flags);
++
++=09/*
++=09 * Since I/O messages are asynchronous, they can be completed
++=09 * when the runtime structure no longer exists. Since each
++=09 * completion implies incrementing the hw_ptr, we cache all the
++=09 * current values needed to compute the new hw_ptr value.
++=09 */
++=09ss->frame_bytes =3D substream->runtime->frame_bits >> 3;
++=09ss->period_size =3D substream->runtime->period_size;
++=09ss->buffer_size =3D substream->runtime->buffer_size;
++
++=09atomic_set(&ss->hw_ptr, 0);
++=09atomic_set(&ss->xfer_xrun, 0);
++=09atomic_set(&ss->msg_count, 0);
++
++=09msg =3D virtsnd_pcm_ctl_msg_alloc(ss, VIRTIO_SND_R_PCM_PREPARE,
++=09=09=09=09=09GFP_KERNEL);
++=09if (IS_ERR(msg))
++=09=09return PTR_ERR(msg);
++
++=09return virtsnd_ctl_msg_send_sync(ss->snd, msg);
++}
++
++/**
++ * virtsnd_pcm_trigger() - Process command for the PCM substream.
++ * @substream: Kernel ALSA substream.
++ * @command: Substream command (SNDRV_PCM_TRIGGER_XXX).
++ *
++ * Depending on the command, the function does the following:
++ *   1. enables/disables data transmission,
++ *   2. starts/stops the substream on the device side.
++ *
++ * Context: Atomic context. May take and release the tx/rx queue spinlock.
++ * Return: 0 on success, -errno on failure.
++ */
++static int virtsnd_pcm_trigger(struct snd_pcm_substream *substream, int co=
+mmand)
++{
++=09struct virtio_pcm_substream *ss =3D snd_pcm_substream_chip(substream);
++=09struct virtio_snd *snd =3D ss->snd;
++=09struct virtio_snd_queue *queue =3D virtsnd_pcm_queue(ss);
++=09struct virtio_snd_msg *msg;
++
++=09switch (command) {
++=09case SNDRV_PCM_TRIGGER_START:
++=09case SNDRV_PCM_TRIGGER_PAUSE_RELEASE: {
++=09=09int rc;
++
++=09=09spin_lock(&queue->lock);
++=09=09rc =3D virtsnd_pcm_msg_send(ss);
++=09=09spin_unlock(&queue->lock);
++=09=09if (rc)
++=09=09=09return rc;
++
++=09=09atomic_set(&ss->xfer_enabled, 1);
++
++=09=09msg =3D virtsnd_pcm_ctl_msg_alloc(ss, VIRTIO_SND_R_PCM_START,
++=09=09=09=09=09=09GFP_ATOMIC);
++=09=09if (IS_ERR(msg))
++=09=09=09return PTR_ERR(msg);
++
++=09=09return virtsnd_ctl_msg_send(snd, msg);
++=09}
++=09case SNDRV_PCM_TRIGGER_STOP:
++=09case SNDRV_PCM_TRIGGER_PAUSE_PUSH: {
++=09=09atomic_set(&ss->xfer_enabled, 0);
++
++=09=09msg =3D virtsnd_pcm_ctl_msg_alloc(ss, VIRTIO_SND_R_PCM_STOP,
++=09=09=09=09=09=09GFP_ATOMIC);
++=09=09if (IS_ERR(msg))
++=09=09=09return PTR_ERR(msg);
++
++=09=09return virtsnd_ctl_msg_send(snd, msg);
++=09}
++=09default: {
++=09=09return -EINVAL;
++=09}
++=09}
++}
++
++/**
++ * virtsnd_pcm_pointer() - Get the current hardware position for the PCM
++ *                         substream.
++ * @substream: Kernel ALSA substream.
++ *
++ * Context: Atomic context.
++ * Return: Hardware position in frames inside [0 ... buffer_size) range.
++ */
++static snd_pcm_uframes_t
++virtsnd_pcm_pointer(struct snd_pcm_substream *substream)
++{
++=09struct virtio_pcm_substream *ss =3D snd_pcm_substream_chip(substream);
++
++=09if (atomic_read(&ss->xfer_xrun))
++=09=09return SNDRV_PCM_POS_XRUN;
++
++=09return (snd_pcm_uframes_t)atomic_read(&ss->hw_ptr);
++}
++
++/* PCM substream operators map. */
++const struct snd_pcm_ops virtsnd_pcm_ops =3D {
++=09.open =3D virtsnd_pcm_open,
++=09.close =3D virtsnd_pcm_close,
++=09.ioctl =3D snd_pcm_lib_ioctl,
++=09.hw_params =3D virtsnd_pcm_hw_params,
++=09.hw_free =3D virtsnd_pcm_hw_free,
++=09.prepare =3D virtsnd_pcm_prepare,
++=09.trigger =3D virtsnd_pcm_trigger,
++=09.pointer =3D virtsnd_pcm_pointer,
++};
 --=20
-Anton Yakovlev
-Senior Software Engineer
+2.30.0
 
-OpenSynergy GmbH
-Rotherstr. 20, 10245 Berlin
-
-Phone: +49 30 60 98 54 0
-E-Mail: anton.yakovlev@opensynergy.com
-
-www.opensynergy.com
-
-Handelsregister/Commercial Registry: Amtsgericht Charlottenburg, HRB 108616=
-B
-Gesch=C3=A4ftsf=C3=BChrer/Managing Director: Regis Adjamah
 
 
 ---------------------------------------------------------------------
