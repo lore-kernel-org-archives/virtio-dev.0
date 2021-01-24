@@ -1,231 +1,353 @@
-Return-Path: virtio-dev-return-7960-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-7952-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id C8F4A986263
-	for <virtio-dev@lists.oasis-open.org>; Tue, 26 Jan 2021 09:22:59 +0000 (UTC)
-Date: Tue, 26 Jan 2021 10:22:49 +0100 (CET)
-From: Guennadi Liakhovetski <guennadi.liakhovetski@linux.intel.com>
-In-Reply-To: <20210124165408.1122868-9-anton.yakovlev@opensynergy.com>
-Message-ID: <643248d4-d246-686f-34c3-7e592777e3ec@intel.com>
-References: <20210124165408.1122868-1-anton.yakovlev@opensynergy.com> <20210124165408.1122868-9-anton.yakovlev@opensynergy.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 0CE9C985B9F
+	for <virtio-dev@lists.oasis-open.org>; Sun, 24 Jan 2021 16:55:14 +0000 (UTC)
+From: Anton Yakovlev <anton.yakovlev@opensynergy.com>
+Date: Sun, 24 Jan 2021 17:54:08 +0100
+Message-ID: <20210124165408.1122868-10-anton.yakovlev@opensynergy.com>
+In-Reply-To: <20210124165408.1122868-1-anton.yakovlev@opensynergy.com>
+References: <20210124165408.1122868-1-anton.yakovlev@opensynergy.com>
 MIME-Version: 1.0
-Subject: [virtio-dev] Re: [PATCH v2 8/9] ALSA: virtio: introduce PCM channel map support
-Content-Type: text/plain; charset=US-ASCII; format=flowed
-To: Anton Yakovlev <anton.yakovlev@opensynergy.com>
-Cc: virtualization@lists.linux-foundation.org, alsa-devel@alsa-project.org, virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>, "Michael S. Tsirkin" <mst@redhat.com>
+Subject: [virtio-dev] [PATCH v2 9/9] ALSA: virtio: introduce device suspend/resume support
+Content-Type: text/plain
+Content-Transfer-Encoding: quoted-printable
+To: virtualization@lists.linux-foundation.org, alsa-devel@alsa-project.org, virtio-dev@lists.oasis-open.org
+Cc: "Michael S. Tsirkin" <mst@redhat.com>, Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>, linux-kernel@vger.kernel.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+All running PCM substreams are stopped on device suspend and restarted
+on device resume.
 
-On Sun, 24 Jan 2021, Anton Yakovlev wrote:
+Signed-off-by: Anton Yakovlev <anton.yakovlev@opensynergy.com>
+---
+ sound/virtio/virtio_card.c    | 54 ++++++++++++++++++++
+ sound/virtio/virtio_pcm.c     | 40 +++++++++++++++
+ sound/virtio/virtio_pcm.h     |  6 +++
+ sound/virtio/virtio_pcm_ops.c | 93 ++++++++++++++++++++---------------
+ 4 files changed, 154 insertions(+), 39 deletions(-)
 
-> Enumerate all available PCM channel maps and create ALSA controls.
->
-> Signed-off-by: Anton Yakovlev <anton.yakovlev@opensynergy.com>
-> ---
-> sound/virtio/Makefile       |   1 +
-> sound/virtio/virtio_card.c  |  15 +++
-> sound/virtio/virtio_card.h  |   8 ++
-> sound/virtio/virtio_chmap.c | 237 ++++++++++++++++++++++++++++++++++++
-> sound/virtio/virtio_pcm.h   |   4 +
-> 5 files changed, 265 insertions(+)
-> create mode 100644 sound/virtio/virtio_chmap.c
+diff --git a/sound/virtio/virtio_card.c b/sound/virtio/virtio_card.c
+index fabf91fc1c9c..90dadf18d9b0 100644
+--- a/sound/virtio/virtio_card.c
++++ b/sound/virtio/virtio_card.c
+@@ -491,6 +491,56 @@ static void virtsnd_config_changed(struct virtio_devic=
+e *vdev)
+ =09=09=09 "sound device configuration was changed\n");
+ }
+=20
++#ifdef CONFIG_PM_SLEEP
++/**
++ * virtsnd_freeze() - Suspend device.
++ * @vdev: VirtIO parent device.
++ *
++ * Context: Any context that permits to sleep.
++ * Return: 0 on success, -errno on failure.
++ */
++static int virtsnd_freeze(struct virtio_device *vdev)
++{
++=09struct virtio_snd *snd =3D vdev->priv;
++
++=09virtsnd_disable_vqs(snd);
++
++=09vdev->config->reset(vdev);
++=09vdev->config->del_vqs(vdev);
++
++=09return 0;
++}
++
++/**
++ * virtsnd_restore() - Resume device.
++ * @vdev: VirtIO parent device.
++ *
++ * Context: Any context that permits to sleep.
++ * Return: 0 on success, -errno on failure.
++ */
++static int virtsnd_restore(struct virtio_device *vdev)
++{
++=09struct virtio_snd *snd =3D vdev->priv;
++=09int rc;
++
++=09rc =3D virtsnd_find_vqs(snd);
++=09if (rc)
++=09=09return rc;
++
++=09virtio_device_ready(vdev);
++
++=09if (snd->nsubstreams) {
++=09=09rc =3D virtsnd_pcm_restore(snd);
++=09=09if (rc)
++=09=09=09return rc;
++=09}
++
++=09virtsnd_enable_event_vq(snd);
++
++=09return 0;
++}
++#endif /* CONFIG_PM_SLEEP */
++
+ static const struct virtio_device_id id_table[] =3D {
+ =09{ VIRTIO_ID_SOUND, VIRTIO_DEV_ANY_ID },
+ =09{ 0 },
+@@ -504,6 +554,10 @@ static struct virtio_driver virtsnd_driver =3D {
+ =09.probe =3D virtsnd_probe,
+ =09.remove =3D virtsnd_remove,
+ =09.config_changed =3D virtsnd_config_changed,
++#ifdef CONFIG_PM_SLEEP
++=09.freeze =3D virtsnd_freeze,
++=09.restore =3D virtsnd_restore,
++#endif
+ };
+=20
+ static int __init init(void)
+diff --git a/sound/virtio/virtio_pcm.c b/sound/virtio/virtio_pcm.c
+index 6a1ca6b2c3ca..68d9c6dee13a 100644
+--- a/sound/virtio/virtio_pcm.c
++++ b/sound/virtio/virtio_pcm.c
+@@ -122,6 +122,7 @@ static int virtsnd_pcm_build_hw(struct virtio_pcm_subst=
+ream *substream,
+ =09=09SNDRV_PCM_INFO_BATCH |
+ =09=09SNDRV_PCM_INFO_BLOCK_TRANSFER |
+ =09=09SNDRV_PCM_INFO_INTERLEAVED |
++=09=09SNDRV_PCM_INFO_RESUME |
+ =09=09SNDRV_PCM_INFO_PAUSE;
+=20
+ =09if (!info->channels_min || info->channels_min > info->channels_max) {
+@@ -511,6 +512,45 @@ int virtsnd_pcm_build_devs(struct virtio_snd *snd)
+ =09return 0;
+ }
+=20
++#ifdef CONFIG_PM_SLEEP
++/**
++ * virtsnd_pcm_restore() - Resume PCM substreams.
++ * @snd: VirtIO sound device.
++ *
++ * Context: Any context that permits to sleep.
++ * Return: 0 on success, -errno on failure.
++ */
++int virtsnd_pcm_restore(struct virtio_snd *snd)
++{
++=09unsigned int i;
++
++=09for (i =3D 0; i < snd->nsubstreams; ++i) {
++=09=09struct virtio_pcm_substream *substream =3D &snd->substreams[i];
++=09=09struct snd_pcm_substream *ksubstream =3D substream->substream;
++=09=09int rc;
++
++=09=09if (!substream->suspended)
++=09=09=09continue;
++
++=09=09/*
++=09=09 * We restart the substream by executing the standard command
++=09=09 * sequence. The START command will be sent from a subsequent
++=09=09 * call to the trigger() callback function after the device has
++=09=09 * been resumed.
++=09=09 */
++=09=09rc =3D ksubstream->ops->hw_params(ksubstream, NULL);
++=09=09if (rc)
++=09=09=09return rc;
++
++=09=09rc =3D ksubstream->ops->prepare(ksubstream);
++=09=09if (rc)
++=09=09=09return rc;
++=09}
++
++=09return 0;
++}
++#endif /* CONFIG_PM_SLEEP */
++
+ /**
+  * virtsnd_pcm_event() - Handle the PCM device event notification.
+  * @snd: VirtIO sound device.
+diff --git a/sound/virtio/virtio_pcm.h b/sound/virtio/virtio_pcm.h
+index a326b921b947..23d0fdd57225 100644
+--- a/sound/virtio/virtio_pcm.h
++++ b/sound/virtio/virtio_pcm.h
+@@ -41,6 +41,7 @@ struct virtio_pcm_msg;
+  * @hw_ptr: Substream hardware pointer value in frames [0 ... buffer_size)=
+.
+  * @xfer_enabled: Data transfer state (0 - off, 1 - on).
+  * @xfer_xrun: Data underflow/overflow state (0 - no xrun, 1 - xrun).
++ * @suspended: Kernel ALSA substream is suspended.
+  * @msgs: I/O messages.
+  * @msg_last_enqueued: Index of the last I/O message added to the virtqueu=
+e.
+  * @msg_count: Number of pending I/O messages in the virtqueue.
+@@ -60,6 +61,7 @@ struct virtio_pcm_substream {
+ =09atomic_t hw_ptr;
+ =09atomic_t xfer_enabled;
+ =09atomic_t xfer_xrun;
++=09bool suspended;
+ =09struct virtio_pcm_msg *msgs;
+ =09int msg_last_enqueued;
+ =09atomic_t msg_count;
+@@ -102,6 +104,10 @@ int virtsnd_pcm_parse_cfg(struct virtio_snd *snd);
+=20
+ int virtsnd_pcm_build_devs(struct virtio_snd *snd);
+=20
++#ifdef CONFIG_PM_SLEEP
++int virtsnd_pcm_restore(struct virtio_snd *snd);
++#endif /* CONFIG_PM_SLEEP */
++
+ void virtsnd_pcm_event(struct virtio_snd *snd, struct virtio_snd_event *ev=
+ent);
+=20
+ void virtsnd_pcm_tx_notify_cb(struct virtqueue *vqueue);
+diff --git a/sound/virtio/virtio_pcm_ops.c b/sound/virtio/virtio_pcm_ops.c
+index 19882777fcd6..0b3c66802325 100644
+--- a/sound/virtio/virtio_pcm_ops.c
++++ b/sound/virtio/virtio_pcm_ops.c
+@@ -187,6 +187,8 @@ static int virtsnd_pcm_open(struct snd_pcm_substream *s=
+ubstream)
+ =09if (!ss)
+ =09=09return -EBADFD;
+=20
++=09ss->suspended =3D false;
++
+ =09substream->runtime->hw =3D ss->hw;
+ =09substream->private_data =3D ss;
+=20
+@@ -241,18 +243,20 @@ static int virtsnd_pcm_hw_params(struct snd_pcm_subst=
+ream *substream,
+ =09int vrate =3D -1;
+ =09int rc;
+=20
+-=09/*
+-=09 * If we got here after ops->trigger() was called, the queue may
+-=09 * still contain messages. In this case, we need to release the
+-=09 * substream first.
+-=09 */
+-=09if (atomic_read(&ss->msg_count)) {
+-=09=09rc =3D virtsnd_pcm_release(ss);
+-=09=09if (rc) {
+-=09=09=09dev_err(&vdev->dev,
+-=09=09=09=09"SID %u: invalid I/O queue state\n",
+-=09=09=09=09ss->sid);
+-=09=09=09return rc;
++=09if (!ss->suspended) {
++=09=09/*
++=09=09 * If we got here after ops->trigger() was called, the queue may
++=09=09 * still contain messages. In this case, we need to release the
++=09=09 * substream first.
++=09=09 */
++=09=09if (atomic_read(&ss->msg_count)) {
++=09=09=09rc =3D virtsnd_pcm_release(ss);
++=09=09=09if (rc) {
++=09=09=09=09dev_err(&vdev->dev,
++=09=09=09=09=09"SID %u: invalid I/O queue state\n",
++=09=09=09=09=09ss->sid);
++=09=09=09=09return rc;
++=09=09=09}
+ =09=09}
+ =09}
+=20
+@@ -383,37 +387,41 @@ static int virtsnd_pcm_hw_free(struct snd_pcm_substre=
+am *substream)
+ static int virtsnd_pcm_prepare(struct snd_pcm_substream *substream)
+ {
+ =09struct virtio_pcm_substream *ss =3D snd_pcm_substream_chip(substream);
+-=09struct virtio_snd_queue *queue =3D virtsnd_pcm_queue(ss);
+ =09struct virtio_snd_msg *msg;
+ =09unsigned long flags;
+ =09int rc;
+=20
+-=09/*
+-=09 * If we got here after ops->trigger() was called, the queue may
+-=09 * still contain messages. In this case, we need to reset the
+-=09 * substream first.
+-=09 */
+-=09if (atomic_read(&ss->msg_count)) {
+-=09=09rc =3D virtsnd_pcm_hw_params(substream, NULL);
+-=09=09if (rc)
+-=09=09=09return rc;
+-=09}
+-
+-=09spin_lock_irqsave(&queue->lock, flags);
+-=09ss->msg_last_enqueued =3D -1;
+-=09spin_unlock_irqrestore(&queue->lock, flags);
++=09if (!ss->suspended) {
++=09=09struct virtio_snd_queue *queue =3D virtsnd_pcm_queue(ss);
++
++=09=09/*
++=09=09 * If we got here after ops->trigger() was called, the queue may
++=09=09 * still contain messages. In this case, we need to reset the
++=09=09 * substream first.
++=09=09 */
++=09=09if (atomic_read(&ss->msg_count)) {
++=09=09=09rc =3D virtsnd_pcm_hw_params(substream, NULL);
++=09=09=09if (rc)
++=09=09=09=09return rc;
++=09=09}
+=20
+-=09/*
+-=09 * Since I/O messages are asynchronous, they can be completed
+-=09 * when the runtime structure no longer exists. Since each
+-=09 * completion implies incrementing the hw_ptr, we cache all the
+-=09 * current values needed to compute the new hw_ptr value.
+-=09 */
+-=09ss->frame_bytes =3D substream->runtime->frame_bits >> 3;
+-=09ss->period_size =3D substream->runtime->period_size;
+-=09ss->buffer_size =3D substream->runtime->buffer_size;
++=09=09spin_lock_irqsave(&queue->lock, flags);
++=09=09ss->msg_last_enqueued =3D -1;
++=09=09spin_unlock_irqrestore(&queue->lock, flags);
++
++=09=09/*
++=09=09 * Since I/O messages are asynchronous, they can be completed
++=09=09 * when the runtime structure no longer exists. Since each
++=09=09 * completion implies incrementing the hw_ptr, we cache all the
++=09=09 * current values needed to compute the new hw_ptr value.
++=09=09 */
++=09=09ss->frame_bytes =3D substream->runtime->frame_bits >> 3;
++=09=09ss->period_size =3D substream->runtime->period_size;
++=09=09ss->buffer_size =3D substream->runtime->buffer_size;
++
++=09=09atomic_set(&ss->hw_ptr, 0);
++=09}
+=20
+-=09atomic_set(&ss->hw_ptr, 0);
+ =09atomic_set(&ss->xfer_xrun, 0);
+ =09atomic_set(&ss->msg_count, 0);
+=20
+@@ -446,9 +454,12 @@ static int virtsnd_pcm_trigger(struct snd_pcm_substrea=
+m *substream, int command)
+=20
+ =09switch (command) {
+ =09case SNDRV_PCM_TRIGGER_START:
+-=09case SNDRV_PCM_TRIGGER_PAUSE_RELEASE: {
++=09case SNDRV_PCM_TRIGGER_PAUSE_RELEASE:
++=09case SNDRV_PCM_TRIGGER_RESUME: {
+ =09=09int rc;
+=20
++=09=09ss->suspended =3D false;
++
+ =09=09spin_lock(&queue->lock);
+ =09=09rc =3D virtsnd_pcm_msg_send(ss);
+ =09=09spin_unlock(&queue->lock);
+@@ -465,9 +476,13 @@ static int virtsnd_pcm_trigger(struct snd_pcm_substrea=
+m *substream, int command)
+ =09=09return virtsnd_ctl_msg_send(snd, msg);
+ =09}
+ =09case SNDRV_PCM_TRIGGER_STOP:
+-=09case SNDRV_PCM_TRIGGER_PAUSE_PUSH: {
++=09case SNDRV_PCM_TRIGGER_PAUSE_PUSH:
++=09case SNDRV_PCM_TRIGGER_SUSPEND: {
+ =09=09atomic_set(&ss->xfer_enabled, 0);
+=20
++=09=09if (command =3D=3D SNDRV_PCM_TRIGGER_SUSPEND)
++=09=09=09ss->suspended =3D true;
++
+ =09=09msg =3D virtsnd_pcm_ctl_msg_alloc(ss, VIRTIO_SND_R_PCM_STOP,
+ =09=09=09=09=09=09GFP_ATOMIC);
+ =09=09if (IS_ERR(msg))
+--=20
+2.30.0
 
-[snip]
 
-> diff --git a/sound/virtio/virtio_chmap.c b/sound/virtio/virtio_chmap.c
-> new file mode 100644
-> index 000000000000..8a2ddc4dcffb
-> --- /dev/null
-> +++ b/sound/virtio/virtio_chmap.c
-> @@ -0,0 +1,237 @@
-
-[snip]
-
-> +/**
-> + * virtsnd_chmap_parse_cfg() - Parse the channel map configuration.
-> + * @snd: VirtIO sound device.
-> + *
-> + * This function is called during initial device initialization.
-> + *
-> + * Context: Any context that permits to sleep.
-> + * Return: 0 on success, -errno on failure.
-> + */
-> +int virtsnd_chmap_parse_cfg(struct virtio_snd *snd)
-> +{
-> +	struct virtio_device *vdev = snd->vdev;
-> +	unsigned int i;
-> +	int rc;
-> +
-> +	virtio_cread(vdev, struct virtio_snd_config, chmaps, &snd->nchmaps);
-> +	if (!snd->nchmaps)
-> +		return 0;
-> +
-> +	snd->chmaps = devm_kcalloc(&vdev->dev, snd->nchmaps,
-> +				   sizeof(*snd->chmaps), GFP_KERNEL);
-> +	if (!snd->chmaps)
-> +		return -ENOMEM;
-> +
-> +	rc = virtsnd_ctl_query_info(snd, VIRTIO_SND_R_CHMAP_INFO, 0,
-> +				    snd->nchmaps, sizeof(*snd->chmaps),
-> +				    snd->chmaps);
-> +	if (rc)
-> +		return rc;
-> +
-> +	/* Count the number of channel maps per each PCM device/stream. */
-> +	for (i = 0; i < snd->nchmaps; ++i) {
-> +		struct virtio_snd_chmap_info *info = &snd->chmaps[i];
-> +		unsigned int nid = le32_to_cpu(info->hdr.hda_fn_nid);
-> +		struct virtio_pcm *pcm;
-> +		struct virtio_pcm_stream *stream;
-> +
-> +		pcm = virtsnd_pcm_find_or_create(snd, nid);
-> +		if (IS_ERR(pcm))
-> +			return PTR_ERR(pcm);
-> +
-> +		switch (info->direction) {
-> +		case VIRTIO_SND_D_OUTPUT: {
-> +			stream = &pcm->streams[SNDRV_PCM_STREAM_PLAYBACK];
-> +			break;
-> +		}
-> +		case VIRTIO_SND_D_INPUT: {
-> +			stream = &pcm->streams[SNDRV_PCM_STREAM_CAPTURE];
-> +			break;
-> +		}
-> +		default: {
-> +			dev_err(&vdev->dev,
-> +				"chmap #%u: unknown direction (%u)\n", i,
-> +				info->direction);
-> +			return -EINVAL;
-> +		}
-> +		}
-> +
-> +		stream->nchmaps++;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +/**
-> + * virtsnd_chmap_add_ctls() - Create an ALSA control for channel maps.
-> + * @pcm: ALSA PCM device.
-> + * @direction: PCM stream direction (SNDRV_PCM_STREAM_XXX).
-> + * @stream: VirtIO PCM stream.
-> + *
-> + * Context: Any context.
-> + * Return: 0 on success, -errno on failure.
-> + */
-> +static int virtsnd_chmap_add_ctls(struct snd_pcm *pcm, int direction,
-> +				  struct virtio_pcm_stream *stream)
-> +{
-> +	unsigned int i;
-> +	int max_channels = 0;
-> +
-> +	for (i = 0; i < stream->nchmaps; i++)
-> +		if (max_channels < stream->chmaps[i].channels)
-> +			max_channels = stream->chmaps[i].channels;
-> +
-> +	return snd_pcm_add_chmap_ctls(pcm, direction, stream->chmaps,
-> +				      max_channels, 0, NULL);
-> +}
-> +
-> +/**
-> + * virtsnd_chmap_build_devs() - Build ALSA controls for channel maps.
-> + * @snd: VirtIO sound device.
-> + *
-> + * Context: Any context.
-> + * Return: 0 on success, -errno on failure.
-> + */
-> +int virtsnd_chmap_build_devs(struct virtio_snd *snd)
-> +{
-> +	struct virtio_device *vdev = snd->vdev;
-> +	struct virtio_pcm *pcm;
-> +	struct virtio_pcm_stream *stream;
-> +	unsigned int i;
-> +	int rc;
-> +
-> +	/* Allocate channel map elements per each PCM device/stream. */
-> +	list_for_each_entry(pcm, &snd->pcm_list, list) {
-> +		for (i = 0; i < ARRAY_SIZE(pcm->streams); ++i) {
-> +			stream = &pcm->streams[i];
-> +
-> +			if (!stream->nchmaps)
-> +				continue;
-> +
-> +			stream->chmaps = devm_kcalloc(&vdev->dev,
-> +						      stream->nchmaps + 1,
-> +						      sizeof(*stream->chmaps),
-> +						      GFP_KERNEL);
-> +			if (!stream->chmaps)
-> +				return -ENOMEM;
-> +
-> +			stream->nchmaps = 0;
-> +		}
-> +	}
-> +
-> +	/* Initialize channel maps per each PCM device/stream. */
-> +	for (i = 0; i < snd->nchmaps; ++i) {
-> +		struct virtio_snd_chmap_info *info = &snd->chmaps[i];
-> +		unsigned int nid = le32_to_cpu(info->hdr.hda_fn_nid);
-> +		unsigned int channels = info->channels;
-> +		unsigned int ch;
-> +		struct snd_pcm_chmap_elem *chmap;
-> +
-> +		pcm = virtsnd_pcm_find(snd, nid);
-> +		if (IS_ERR(pcm))
-> +			return PTR_ERR(pcm);
-> +
-> +		if (info->direction == VIRTIO_SND_D_OUTPUT)
-> +			stream = &pcm->streams[SNDRV_PCM_STREAM_PLAYBACK];
-> +		else
-> +			stream = &pcm->streams[SNDRV_PCM_STREAM_CAPTURE];
-> +
-> +		chmap = &stream->chmaps[stream->nchmaps++];
-> +
-> +		if (channels > ARRAY_SIZE(chmap->map))
-> +			channels = ARRAY_SIZE(chmap->map);
-> +
-> +		chmap->channels = channels;
-> +
-> +		for (ch = 0; ch < channels; ++ch) {
-> +			u8 position = info->positions[ch];
-> +
-> +			if (position >= ARRAY_SIZE(g_v2a_position_map))
-> +				return -EINVAL;
-> +
-> +			chmap->map[ch] = g_v2a_position_map[position];
-> +		}
-> +	}
-
-You enter this function after virtsnd_chmap_parse_cfg() has run. And 
-virtsnd_chmap_parse_cfg() has already found or created all the PCMs and 
-counted channel maps - the same way as you do in the above loop. Wouldn't 
-it be enough to reuse the result of that counting and avoid re-counting 
-here?
-
-> +
-> +	/* Create an ALSA control per each PCM device/stream. */
-> +	list_for_each_entry(pcm, &snd->pcm_list, list) {
-> +		if (!pcm->pcm)
-> +			continue;
-> +
-> +		for (i = 0; i < ARRAY_SIZE(pcm->streams); ++i) {
-> +			stream = &pcm->streams[i];
-> +
-> +			if (!stream->nchmaps)
-> +				continue;
-> +
-> +			rc = virtsnd_chmap_add_ctls(pcm->pcm, i, stream);
-> +			if (rc)
-> +				return rc;
-> +		}
-> +	}
-> +
-> +	return 0;
-> +}
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
