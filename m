@@ -1,209 +1,194 @@
-Return-Path: virtio-dev-return-7992-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-7967-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 09A58986529
-	for <virtio-dev@lists.oasis-open.org>; Tue,  9 Feb 2021 12:41:17 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 885A29865DE
+	for <virtio-dev@lists.oasis-open.org>; Mon,  1 Feb 2021 23:18:15 +0000 (UTC)
+References: <20210124165408.1122868-1-anton.yakovlev@opensynergy.com>
+ <20210124165408.1122868-3-anton.yakovlev@opensynergy.com>
+ <8754dae8-114-6383-510-de2ba9dc4fa@intel.com>
 From: Anton Yakovlev <anton.yakovlev@opensynergy.com>
-Date: Tue, 9 Feb 2021 13:40:10 +0100
-Message-ID: <20210209124011.1224628-10-anton.yakovlev@opensynergy.com>
-In-Reply-To: <20210209124011.1224628-1-anton.yakovlev@opensynergy.com>
-References: <20210209124011.1224628-1-anton.yakovlev@opensynergy.com>
+Message-ID: <52f71ac6-3ec7-2884-7a64-1995f416d20a@opensynergy.com>
+Date: Tue, 2 Feb 2021 00:18:09 +0100
 MIME-Version: 1.0
-Subject: [virtio-dev] [PATCH v3 9/9] ALSA: virtio: introduce device suspend/resume support
-Content-Type: text/plain
-Content-Transfer-Encoding: quoted-printable
-To: virtualization@lists.linux-foundation.org, alsa-devel@alsa-project.org, virtio-dev@lists.oasis-open.org
-Cc: "Michael S. Tsirkin" <mst@redhat.com>, Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>, linux-kernel@vger.kernel.org
+In-Reply-To: <8754dae8-114-6383-510-de2ba9dc4fa@intel.com>
+Subject: Re: [virtio-dev] Re: [PATCH v2 2/9] ALSA: virtio: add virtio sound
+ driver
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+To: Guennadi Liakhovetski <guennadi.liakhovetski@linux.intel.com>
+Cc: virtualization@lists.linux-foundation.org, alsa-devel@alsa-project.org, virtio-dev@lists.oasis-open.org, linux-kernel@vger.kernel.org, Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>, "Michael S. Tsirkin" <mst@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-All running PCM substreams are stopped on device suspend and restarted
-on device resume.
+Hi Guennadi,
 
-Signed-off-by: Anton Yakovlev <anton.yakovlev@opensynergy.com>
----
- sound/virtio/virtio_card.c    | 57 +++++++++++++++++++++++++++++++++++
- sound/virtio/virtio_pcm.c     |  1 +
- sound/virtio/virtio_pcm_ops.c | 44 ++++++++++++++++++++-------
- 3 files changed, 91 insertions(+), 11 deletions(-)
+Sorry for the late reply and thanks for your comments, they helped me a
+lot! Please see my answers inline.
 
-diff --git a/sound/virtio/virtio_card.c b/sound/virtio/virtio_card.c
-index 787a4dec1da8..1f0a0fa7bbc0 100644
---- a/sound/virtio/virtio_card.c
-+++ b/sound/virtio/virtio_card.c
-@@ -373,6 +373,59 @@ static void virtsnd_config_changed(struct virtio_devic=
-e *vdev)
- =09=09=09 "sound device configuration was changed\n");
- }
-=20
-+#ifdef CONFIG_PM_SLEEP
-+/**
-+ * virtsnd_freeze() - Suspend device.
-+ * @vdev: VirtIO parent device.
-+ *
-+ * Context: Any context.
-+ * Return: 0 on success, -errno on failure.
-+ */
-+static int virtsnd_freeze(struct virtio_device *vdev)
-+{
-+=09struct virtio_snd *snd =3D vdev->priv;
-+
-+=09/* Stop all the virtqueues. */
-+=09vdev->config->reset(vdev);
-+=09vdev->config->del_vqs(vdev);
-+
-+=09virtsnd_ctl_msg_cancel_all(snd);
-+
-+=09kfree(snd->event_msgs);
-+
-+=09/*
-+=09 * If the virtsnd_restore() fails before re-allocating events, then we
-+=09 * get a dangling pointer here.
-+=09 */
-+=09snd->event_msgs =3D NULL;
-+
-+=09return 0;
-+}
-+
-+/**
-+ * virtsnd_restore() - Resume device.
-+ * @vdev: VirtIO parent device.
-+ *
-+ * Context: Any context.
-+ * Return: 0 on success, -errno on failure.
-+ */
-+static int virtsnd_restore(struct virtio_device *vdev)
-+{
-+=09struct virtio_snd *snd =3D vdev->priv;
-+=09int rc;
-+
-+=09rc =3D virtsnd_find_vqs(snd);
-+=09if (rc)
-+=09=09return rc;
-+
-+=09virtio_device_ready(vdev);
-+
-+=09virtsnd_enable_event_vq(snd);
-+
-+=09return 0;
-+}
-+#endif /* CONFIG_PM_SLEEP */
-+
- static const struct virtio_device_id id_table[] =3D {
- =09{ VIRTIO_ID_SOUND, VIRTIO_DEV_ANY_ID },
- =09{ 0 },
-@@ -386,6 +439,10 @@ static struct virtio_driver virtsnd_driver =3D {
- =09.probe =3D virtsnd_probe,
- =09.remove =3D virtsnd_remove,
- =09.config_changed =3D virtsnd_config_changed,
-+#ifdef CONFIG_PM_SLEEP
-+=09.freeze =3D virtsnd_freeze,
-+=09.restore =3D virtsnd_restore,
-+#endif
- };
-=20
- static int __init init(void)
-diff --git a/sound/virtio/virtio_pcm.c b/sound/virtio/virtio_pcm.c
-index 1d98de878385..401d4c975d2b 100644
---- a/sound/virtio/virtio_pcm.c
-+++ b/sound/virtio/virtio_pcm.c
-@@ -109,6 +109,7 @@ static int virtsnd_pcm_build_hw(struct virtio_pcm_subst=
-ream *vss,
- =09=09SNDRV_PCM_INFO_BATCH |
- =09=09SNDRV_PCM_INFO_BLOCK_TRANSFER |
- =09=09SNDRV_PCM_INFO_INTERLEAVED |
-+=09=09SNDRV_PCM_INFO_RESUME |
- =09=09SNDRV_PCM_INFO_PAUSE;
-=20
- =09if (!info->channels_min || info->channels_min > info->channels_max) {
-diff --git a/sound/virtio/virtio_pcm_ops.c b/sound/virtio/virtio_pcm_ops.c
-index c2224f5461c4..207f4877a5ec 100644
---- a/sound/virtio/virtio_pcm_ops.c
-+++ b/sound/virtio/virtio_pcm_ops.c
-@@ -220,6 +220,10 @@ static int virtsnd_pcm_hw_params(struct snd_pcm_substr=
-eam *substream,
- =09if (rc)
- =09=09return rc;
-=20
-+=09/* If messages have already been allocated before, do nothing. */
-+=09if (runtime->status->state =3D=3D SNDRV_PCM_STATE_SUSPENDED)
-+=09=09return 0;
-+
- =09return virtsnd_pcm_msg_alloc(vss, periods, period_bytes);
- }
-=20
-@@ -260,19 +264,21 @@ static int virtsnd_pcm_prepare(struct snd_pcm_substre=
-am *substream)
- =09}
-=20
- =09spin_lock_irqsave(&vss->lock, flags);
--=09/*
--=09 * Since I/O messages are asynchronous, they can be completed
--=09 * when the runtime structure no longer exists. Since each
--=09 * completion implies incrementing the hw_ptr, we cache all the
--=09 * current values needed to compute the new hw_ptr value.
--=09 */
--=09vss->frame_bytes =3D runtime->frame_bits >> 3;
--=09vss->period_size =3D runtime->period_size;
--=09vss->buffer_size =3D runtime->buffer_size;
-+=09if (runtime->status->state !=3D SNDRV_PCM_STATE_SUSPENDED) {
-+=09=09/*
-+=09=09 * Since I/O messages are asynchronous, they can be completed
-+=09=09 * when the runtime structure no longer exists. Since each
-+=09=09 * completion implies incrementing the hw_ptr, we cache all the
-+=09=09 * current values needed to compute the new hw_ptr value.
-+=09=09 */
-+=09=09vss->frame_bytes =3D runtime->frame_bits >> 3;
-+=09=09vss->period_size =3D runtime->period_size;
-+=09=09vss->buffer_size =3D runtime->buffer_size;
-=20
--=09vss->hw_ptr =3D 0;
-+=09=09vss->hw_ptr =3D 0;
-+=09=09vss->msg_last_enqueued =3D -1;
-+=09}
- =09vss->xfer_xrun =3D false;
--=09vss->msg_last_enqueued =3D -1;
- =09vss->msg_count =3D 0;
- =09spin_unlock_irqrestore(&vss->lock, flags);
-=20
-@@ -302,6 +308,21 @@ static int virtsnd_pcm_trigger(struct snd_pcm_substrea=
-m *substream, int command)
- =09int rc;
-=20
- =09switch (command) {
-+=09case SNDRV_PCM_TRIGGER_RESUME: {
-+=09=09/*
-+=09=09 * We restart the substream by executing the standard command
-+=09=09 * sequence.
-+=09=09 */
-+=09=09rc =3D virtsnd_pcm_hw_params(substream, NULL);
-+=09=09if (rc)
-+=09=09=09return rc;
-+
-+=09=09rc =3D virtsnd_pcm_prepare(substream);
-+=09=09if (rc)
-+=09=09=09return rc;
-+
-+=09=09fallthrough;
-+=09}
- =09case SNDRV_PCM_TRIGGER_START:
- =09case SNDRV_PCM_TRIGGER_PAUSE_RELEASE: {
- =09=09struct virtio_snd_queue *queue =3D virtsnd_pcm_queue(vss);
-@@ -328,6 +349,7 @@ static int virtsnd_pcm_trigger(struct snd_pcm_substream=
- *substream, int command)
-=20
- =09=09return virtsnd_ctl_msg_send_sync(snd, msg);
- =09}
-+=09case SNDRV_PCM_TRIGGER_SUSPEND:
- =09case SNDRV_PCM_TRIGGER_STOP:
- =09case SNDRV_PCM_TRIGGER_PAUSE_PUSH: {
- =09=09spin_lock_irqsave(&vss->lock, flags);
---=20
-2.30.0
 
+On 25.01.2021 15:54, Guennadi Liakhovetski wrote:
+
+...[snip]...
+
+ >
+ >> + * 1. Redistributions of source code must retain the above copyright
+ >> + *    notice, this list of conditions and the following disclaimer.
+ >> + * 2. Redistributions in binary form must reproduce the above copyright
+ >> + *    notice, this list of conditions and the following disclaimer in
+ >> the
+ >> + *    documentation and/or other materials provided with the
+ >> distribution.
+ >> + * 3. Neither the name of OpenSynergy GmbH nor the names of its
+ >> contributors
+ >> + *    may be used to endorse or promote products derived from this
+ >> software
+ >> + *    without specific prior written permission.
+ >> + * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ >> + * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ >> + * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ >> + * FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL IBM OR
+ >
+ > IBM? Also no idea whether this warranty disclaimer is appropriate here. I
+ > thought we were transitioning to those SPDX identifiers to eliminate all
+ > these headers.
+
+It was a copy-paste mistake, I will edit these lines.
+
+
+...[snip]...
+
+ >> +
+ >> +/**
+ >> + * virtsnd_disable_vqs() - Disable all virtqueues.
+ >> + * @snd: VirtIO sound device.
+ >> + *
+ >> + * Also free all allocated events and control messages.
+ >> + *
+ >> + * Context: Any context.
+ >> + */
+ >> +static void virtsnd_disable_vqs(struct virtio_snd *snd)
+ >> +{
+ >> +     struct virtio_device *vdev = snd->vdev;
+ >> +     unsigned int i;
+ >> +     unsigned long flags;
+ >> +
+ >> +     for (i = 0; i < VIRTIO_SND_VQ_MAX; ++i) {
+ >> +             struct virtio_snd_queue *queue = &snd->queues[i];
+ >> +
+ >> +             spin_lock_irqsave(&queue->lock, flags);
+ >> +             /* Prohibit the use of the queue */
+ >> +             if (queue->vqueue)
+ >> +                     virtqueue_disable_cb(queue->vqueue);
+ >> +             queue->vqueue = NULL;
+ >> +             spin_unlock_irqrestore(&queue->lock, flags);
+ >> +     }
+ >> +
+ >> +     if (snd->event_msgs)
+ >
+ > Check not needed, kfree(NULL) is ok.
+
+Yes, you are right here. I didn't notice that devm_kfree() now works
+fine with NULL argument too.
+
+
+ >> +             devm_kfree(&vdev->dev, snd->event_msgs);
+ >
+ > I think there are very few cases when managed resources have to be
+ > explicitly freed. If explicit freeing is always required, then there's no
+ > need to have them managed. If there's a clear case for managed resources,
+ > usually you don't need to free them explicitly. Here.event_msgs are
+ > allocated in virtsnd_find_vqs() above, which is only called during
+ > probing. And this function is only called during release. So, I'd assume,
+ > that you don't need to free memory explicitly here.
+
+Here, the reason for explicitly freeing managed resources is in the
+current device reset handling logic. At the moment, executing the reset
+worker results in a call to virtsnd_disable_vqs. After which the device
+is recreated. And since in this case the driver is not detached from the
+device, the managed resources are not automatically freed. On the other
+hand, managed resources allow not to worry about deallocation if the
+probing function returns an error.
+
+
+ >> +
+ >> +     snd->event_msgs = NULL;
+ >
+ > snd is about to be freed, so do you really need this?
+
+No :)
+
+
+ >> +}
+ >> +
+ >> +/**
+ >> + * virtsnd_reset_fn() - Kernel worker's function to reset the device.
+ >> + * @work: Reset device work.
+ >> + *
+ >> + * Context: Process context.
+ >> + */
+ >> +static void virtsnd_reset_fn(struct work_struct *work)
+ >> +{
+ >> +     struct virtio_snd *snd =
+ >> +             container_of(work, struct virtio_snd, reset_work);
+ >> +     struct virtio_device *vdev = snd->vdev;
+ >> +     struct device *dev = &vdev->dev;
+ >> +     int rc;
+ >> +
+ >> +     dev_info(dev, "sound device needs reset\n");
+ >> +
+ >> +     /*
+ >> +      * It seems that the only way to properly reset the device is to
+ >> remove
+ >> +      * and re-create the ALSA sound card device.
+ >> +      *
+ >> +      * Also resetting the device involves a number of steps with
+ >> setting the
+ >> +      * status bits described in the virtio specification. And the
+ >> easiest
+ >> +      * way to get everything right is to use the virtio bus interface.
+ >> +      */
+ >> +     rc = dev->bus->remove(dev);
+ >> +     if (rc)
+ >> +             dev_warn(dev, "bus->remove() failed: %d", rc);
+ >> +
+ >> +     rc = dev->bus->probe(dev);
+ >> +     if (rc)
+ >> +             dev_err(dev, "bus->probe() failed: %d", rc);
+ >
+ > This looks very suspicious to me. Wondering what ALSA maintainers 
+will say
+ > to this.
+
+I'm also wondering what the virtio people have to say. This part is a
+purely virtio specific thing. And since none of the existing virtio
+drivers processes the request to reset the device, it is not clear what
+is the best way to proceed here. For this reason, the most
+straightforward and simple solution was chosen.
+
+
+...[snip]...
+
+ >
+ > Thanks
+ > Guennadi
+ >
+ > ---------------------------------------------------------------------
+ > To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+ > For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+ >
+ >
+-- 
+Anton Yakovlev
+Senior Software Engineer
+
+OpenSynergy GmbH
+Rotherstr. 20, 10245 Berlin
+
+www.opensynergy.com
 
 
 ---------------------------------------------------------------------
