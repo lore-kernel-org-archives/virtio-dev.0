@@ -1,295 +1,308 @@
-Return-Path: virtio-dev-return-7981-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 21682986621
-	for <virtio-dev@lists.oasis-open.org>; Fri,  5 Feb 2021 18:02:41 +0000 (UTC)
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Date: Fri,  5 Feb 2021 18:58:20 +0100
-Message-Id: <20210205175812.143886-5-jean-philippe@linaro.org>
-In-Reply-To: <20210205175812.143886-1-jean-philippe@linaro.org>
-References: <20210205175812.143886-1-jean-philippe@linaro.org>
+Return-Path: virtio-comment-return-1706-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-comment@lists.oasis-open.org>
+List-Post: <mailto:virtio-comment@lists.oasis-open.org>
+List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
+From: Vivek Kasireddy <vivek.kasireddy@intel.com>
+Date: Wed,  3 Feb 2021 00:40:58 -0800
+Message-Id: <20210203084058.1910930-1-vivek.kasireddy@intel.com>
 MIME-Version: 1.0
-Subject: [virtio-dev] [PATCH 4/4] virtio-iommu: Add Arm 64-bit page tables
+Subject: [virtio-comment] [PATCH] virtio-dmabuf: Add specification details for this device
 Content-Transfer-Encoding: quoted-printable
 Content-Type: text/plain; charset="US-ASCII"
-To: virtio-dev@lists.oasis-open.org
-Cc: eric.auger@redhat.com, kevin.tian@intel.com, vivek.gautam@arm.com, Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+Cc: kraxel@redhat.com, Vivek Kasireddy <vivek.kasireddy@intel.com>, Dongwon Kim <dongwon.kim@intel.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Allow a driver to detect support for Arm page tables and attach a set of
-tables.
+The virtio dmabuf device provides a way to share a page backed dmabuf
+created in the Guest with the Host. The actual sharing is accomplished
+by recreating the dmabuf on the Host using the page metadata shared by
+the guest.
 
-When the host IOMMU is an Arm SMMUv2, a single address space per
-endpoint is supported. The driver detects the Arm LPAE page table format
-in a PROBE request and sends an ATTACH_TABLE request with a pointer to
-the page directory.
-
-When the host IOMMU is an Arm SMMUv3, an intermediate "Context
-Descriptor" (CD) table has to be attached. That table is indexed by
-PASID and contains multiple pointers to page directories:
-
-                 CD table          Page directory
-                +-------+   ,------->+-------+
-                :       :   |        :       :
-                +-------+   |        +-------+
-         PASID->|  CD   |---'    VA->|  PTE  |--> GPA
-                +-------+            +-------+
-                :       :            :       :
-                +-------+            +-------+
-
-The driver detects support for both table formats in a PROBE request and
-sends an ATTACH_TABLE request with a pointer to the context descriptor
-table.
-
-These features are voluntarily omitted:
-* Stall, which cannot be supported without recoverable page faults. I do
-  plan to implement this once we get to the I/O Page fault extensions.
-* Big endian page tables.
-* AArch32 LPAE format and per-armv8 short descriptor format.
-* Page-based Hardware Attributes (PBHA), Auxiliary Memory Attributes
-  (AMAIR)
-* Memory Partioning And Monitoring (MPAM)
-
-Support for any of these could easily be added later, by adding flags to
-the PROBE property and fields in the ATTACH_TABLE config. However, most
-of these extensions might never be needed.
-
-Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Signed-off-by: Vivek Kasireddy <vivek.kasireddy@intel.com>
+Signed-off-by: Dongwon Kim <dongwon.kim@intel.com>
 ---
- introduction.tex |   6 ++
- virtio-iommu.tex | 180 +++++++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 186 insertions(+)
+ conformance.tex    |  30 ++++++++++--
+ content.tex        |   3 ++
+ virtio-vdmabuf.tex | 120 +++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 149 insertions(+), 4 deletions(-)
+ create mode 100644 virtio-vdmabuf.tex
 
-diff --git a/introduction.tex b/introduction.tex
-index bc0217f..1603726 100644
---- a/introduction.tex
-+++ b/introduction.tex
-@@ -76,6 +76,12 @@ \section{Normative References}\label{sec:Normative Refer=
-ences}
- =09\phantomsection\label{intro:I2C}\textbf{[I2C]} &
- =09I2C-bus specification and user manual,
- =09\newline\url{https://www.nxp.com/docs/en/user-guide/UM10204.pdf}\\
-+=09\phantomsection\label{intro:SMMUv3}\textbf{[SMMUv3]} &
-+=09Arm System Memory Management Unit version 3
-+=09\newline\url{https://developer.arm.com/documentation/ihi0070/latest} \\
-+=09\phantomsection\label{intro:Armv8-A}\textbf{[ARMv8-A]} &
-+=09Armv8-A Architecture Reference Manual
-+=09\newline\url{https://developer.arm.com/documentation/ddi0487/latest} \\
+diff --git a/conformance.tex b/conformance.tex
+index e78adfd..1f972ae 100644
+--- a/conformance.tex
++++ b/conformance.tex
+@@ -28,8 +28,9 @@ \section{Conformance Targets}\label{sec:Conformance / Con=
+formance Targets}
+ \ref{sec:Conformance / Driver Conformance / RPMB Driver Conformance},
+ \ref{sec:Conformance / Driver Conformance / IOMMU Driver Conformance},
+ \ref{sec:Conformance / Driver Conformance / Sound Driver Conformance}
+-\ref{sec:Conformance / Driver Conformance / Memory Driver Conformance} or
+-\ref{sec:Conformance / Driver Conformance / I2C Adapter Driver Conformance=
+}.
++\ref{sec:Conformance / Driver Conformance / Memory Driver Conformance}
++\ref{sec:Conformance / Driver Conformance / I2C Adapter Driver Conformance=
+} or
++\ref{sec:Conformance / Driver Conformance / Dmabuf Driver Conformance}.
 =20
- \end{longtable}
+     \item Clause \ref{sec:Conformance / Legacy Interface: Transitional Dev=
+ice and Transitional Driver Conformance}.
+   \end{itemize}
+@@ -50,8 +51,9 @@ \section{Conformance Targets}\label{sec:Conformance / Con=
+formance Targets}
+ \ref{sec:Conformance / Device Conformance / RPMB Device Conformance},
+ \ref{sec:Conformance / Device Conformance / IOMMU Device Conformance},
+ \ref{sec:Conformance / Device Conformance / Sound Device Conformance}
+-\ref{sec:Conformance / Device Conformance / Memory Device Conformance} or
+-\ref{sec:Conformance / Device Conformance / I2C Adapter Device Conformance=
+}.
++\ref{sec:Conformance / Device Conformance / Memory Device Conformance}
++\ref{sec:Conformance / Device Conformance / I2C Adapter Device Conformance=
+} or
++\ref{sec:Conformance / Driver Conformance / Dmabuf Driver Conformance}.
 =20
-diff --git a/virtio-iommu.tex b/virtio-iommu.tex
-index e14bd67..bc18342 100644
---- a/virtio-iommu.tex
-+++ b/virtio-iommu.tex
-@@ -1176,3 +1176,183 @@ \subsubsection{Fault reporting}\label{sec:Device Ty=
-pes / IOMMU Device / Device o
- \footnotetext{This would happen for example if the device implements a
- more recent version of this specification, whose fault report contains
- additional fields.}
+     \item Clause \ref{sec:Conformance / Legacy Interface: Transitional Dev=
+ice and Transitional Driver Conformance}.
+   \end{itemize}
+@@ -276,6 +278,16 @@ \section{Conformance Targets}\label{sec:Conformance / =
+Conformance Targets}
+ \item \ref{drivernormative:Device Types / I2C Adapter Device / Device Oper=
+ation}
+ \end{itemize}
+=20
++\conformance{\subsection}{Dmabuf Driver Conformance}\label{sec:Conformance=
+ / Driver Conformance / Dmabuf Driver Conformance}
 +
-+\subsection{Table formats}\label{sec:Device Types / IOMMU Device / Table F=
-ormats}
++A Dmabuf driver MUST conform to the following normative statements:
 +
-+Supported table formats in PROBE properties and ATTACH_TABLE
-+requests are:
++\begin{itemize}
++\item \ref{drivernormative:Device Types / Dmabuf Device / Device Operation=
+ / VM ID}
++\item \ref{drivernormative:Device Types / Dmabuf Device / Device Operation=
+ / Export}
++\item \ref{drivernormative:Device Types / Dmabuf Device / Device Operation=
+ / Release}
++\end{itemize}
++
+ \conformance{\section}{Device Conformance}\label{sec:Conformance / Device =
+Conformance}
+=20
+ A device MUST conform to the following normative statements:
+@@ -503,6 +515,16 @@ \section{Conformance Targets}\label{sec:Conformance / =
+Conformance Targets}
+ \item \ref{devicenormative:Device Types / I2C Adapter Device / Device Oper=
+ation}
+ \end{itemize}
+=20
++\conformance{\subsection}{Dmabuf Device Conformance}\label{sec:Conformance=
+ / Device Conformance / Dmabuf Device Conformance}
++
++A Dmabuf device MUST conform to the following normative statements:
++
++\begin{itemize}
++\item \ref{drivernormative:Device Types / Dmabuf Device / Device Operation=
+ / VM ID}
++\item \ref{drivernormative:Device Types / Dmabuf Device / Device Operation=
+ / Export}
++\item \ref{drivernormative:Device Types / Dmabuf Device / Device Operation=
+ / Release}
++\end{itemize}
++
+ \conformance{\section}{Legacy Interface: Transitional Device and Transitio=
+nal Driver Conformance}\label{sec:Conformance / Legacy Interface: Transitio=
+nal Device and Transitional Driver Conformance}
+ A conformant implementation MUST be either transitional or
+ non-transitional, see \ref{intro:Legacy
+diff --git a/content.tex b/content.tex
+index 1ca24c1..b6ea383 100644
+--- a/content.tex
++++ b/content.tex
+@@ -2846,6 +2846,8 @@ \chapter{Device Types}\label{sec:Device Types}
+ \hline
+ 35         &   Watchdog \\
+ \hline
++36         &   Dmabuf device \\
++\hline
+ \end{tabular}
+=20
+ Some of the devices above are unspecified by this document,
+@@ -6508,6 +6510,7 @@ \subsubsection{Legacy Interface: Framing Requirements=
+}\label{sec:Device
+ \input{virtio-sound.tex}
+ \input{virtio-mem.tex}
+ \input{virtio-i2c.tex}
++\input{virtio-vdmabuf.tex}
+=20
+ \chapter{Reserved Feature Bits}\label{sec:Reserved Feature Bits}
+=20
+diff --git a/virtio-vdmabuf.tex b/virtio-vdmabuf.tex
+new file mode 100644
+index 0000000..18a4e2c
+--- /dev/null
++++ b/virtio-vdmabuf.tex
+@@ -0,0 +1,120 @@
++\section{Dmabuf Device}\label{sec:Device Types / Dmabuf Device}
++
++The virtio dmabuf device is a virtual dmabuf transfer device that provides
++a way to share a page-backed dmabuf created in the Guest with the device.
++Once shared, the driver and the device would use the same underlying memor=
+y
++associated with the original dmabuf but not at the same time.
++
++\subsection{Device ID}\label{sec:Device Types / Dmabuf Device / Device ID}
++  36
++
++\subsection{Virtqueues}\label{sec:Device Types / Dmabuf Device / Virtqueue=
+s}
 +\begin{description}
-+  \item[VIRTIO_IOMMU_PST_ARM_SMMU3 (1)] Arm SMMUv3 Context
-+    Descriptor Tables.
-+  \item[VIRTIO_IOMMU_PGT_ARM64 (2)] Arm VMSAv8-64 page tables.
++\item[0] recv
++\item[1] send
 +\end{description}
 +
-+\subsubsection{Arm SMMUv3 Context Descriptor table}\label{sec:Device Types=
- / IOMMU Device / Table Formats / Arm SMMUv3 Context Descriptor}
++\subsection{Feature bits}\label{sec:Device Types / Dmabuf Device / Feature=
+ bits}
 +
-+Attach Context Descriptor tables (PASID tables) in the format
-+described in the \hyperref[intro:SMMUv3]{Arm System Memory
-+Management Unit v3 specification}. The table contains context
-+descriptors indexed by PASID, each pointing to a page directory.
++No specific feature bits defined for this device.
 +
-+\paragraph{PROBE properties for Arm SMMUv3 Context Descriptor tables}\labe=
-l{sec:Device Types / IOMMU Device / Table Formats / Arm SMMUv3 Context Desc=
-riptor / PROBE}
++\subsection{Device configuration layout}\label{sec:Device Types / Dmabuf D=
+evice / Device configuration layout}
 +
-+\begin{lstlisting}
-+struct virtio_iommu_probe_pst_arm_smmu3 {
-+  struct virtio_iommu_probe_property head;
-+  le16  format;
-+  u8    reserved[2];
-+  le64  flags;
-+};
++No specific layout defined for this device.
 +
-+#define VIRTIO_IOMMU_PST_ARM_SMMU3_F_BTM    (1ULL << 0)
-+\end{lstlisting}
++\subsection{Device Initialization}\label{sec:Device Types / Dmabuf Device =
+/ Device Initialization}
 +
-+Supported flags are:
-+\begin{description}
-+  \item[VIRTIO_IOMMU_PST_ARM_SMMU3_F_BTM] Broadcast TLB
-+    maintenance is supported. INVALIDATE requests for
-+    \field{caches} VIRTIO_IOMMU_INVAL_C_TLB can be replaced by
-+    broadcast TLBI instructions. INVALIDATE requests for
-+    \field{caches} VIRTIO_IOMMU_INVAL_C_EP_TLB, if the endpoint
-+    has PCIe ATS enabled, are still necessary.
-+\end{description}
++\begin{enumerate}
++\item Both the send and recv virtqueues are initialized to handle messages=
+.
++\end{enumerate}
 +
-+\paragraph{ATTACH_TABLE request for Arm SMMUv3 Context Descriptor tables}\=
-label{sec:Device Types / IOMMU Device / Table Formats / Arm SMMUv3 Context =
-Descriptor / ATTACH_TABLE}
++\subsection{Device Operation}\label{sec:Device Types / Dmabuf Device / Dev=
+ice Operation}
++
++Messages that are sent or received are of the following format:
 +
 +\begin{lstlisting}
-+struct virtio_iommu_req_attach_pst_arm_smmu3 {
-+  struct virtio_iommu_req_head head;
-+  le32  domain;
-+  le32  endpoint;
-+  le16  format;
-+  u8    s1fmt;
-+  u8    s1dss;
-+  le64  s1contextptr;
-+  u8    s1cdmax;
-+  u8    reserved[51];
-+  struct virtio_iommu_req_tail tail;
-+};
-+
-+/* Stage-1 format */
-+#define VIRTIO_IOMMU_PST_ARM_SMMU3_LINEAR     0x0
-+#define VIRTIO_IOMMU_PST_ARM_SMMU3_4KL2       0x1
-+#define VIRTIO_IOMMU_PST_ARM_SMMU3_64KL2      0x2
-+
-+/* Stage-1 default substream */
-+#define VIRTIO_IOMMU_PST_ARM_SMMU3_DSS_TERM   0x0
-+#define VIRTIO_IOMMU_PST_ARM_SMMU3_DSS_BYPASS 0x1
-+#define VIRTIO_IOMMU_PST_ARM_SMMU3_DSS_0      0x2
-+\end{lstlisting}
-+
-+\begin{description}
-+  \item[\field{s1fmt}] The layout used for the context descriptor
-+    table:
-+    \begin{description}
-+      \item{LINEAR} Single table level,
-+      \item{4KL2} Two-level tables with 4KB leaf tables,
-+      \item{64KL2} Two-level tables with 64KB leaf tables.
-+    \end{description}
-+  \item[\field{s1dss}] Default substream (PASID) behavior:
-+    \begin{description}
-+      \item{DSS_TERM} Transactions without a substream are
-+        terminated.
-+      \item{DSS_BYPASS} Transactions without a substream bypass
-+        translation.
-+      \item{DSS_0} Transactions without a substream use entry 0
-+        of the table. Substream 0 is invalid.
-+    \end{description}
-+  \item[\field{s1contextptr}] Address of the context descriptor
-+    table, in guest-physical address space.
-+  \item[\field{s1cdmax}] Size of the table. $2^\field{s1cdmax}$
-+    is the number of context descriptors.
-+\end{description}
-+
-+\drivernormative{\subparagraph}{ATTACH_TABLE request for Arm SMMUv3 Contex=
-t Descriptor tables}{Device Types / IOMMU Device / Table Formats / Arm SMMU=
-v3 Context Descriptor / ATTACH_TABLE}
-+
-+\field{s1contextptr} MUST be aligned on 64 bytes.
-+
-+\field{s1cdmax} MUST be less than or equal to \field{bits_count}
-+in the VIRTIO_IOMMU_PROBE_T_PASID_SIZE property.
-+
-+\subsubsection{Arm 64-bit page tables}\label{sec:Device Types / IOMMU Devi=
-ce / Table Formats / Arm64}
-+
-+Attach page tables in the Arm VMSAv8-64 format, as described by
-+the \hyperref[intro:Armv8-A]{Armv8-A Architecture Reference
-+Manual}. The descriptors are little-endian.
-+
-+\paragraph{PROBE properties for Arm 64-bit page tables}\label{sec:Device T=
-ypes / IOMMU Device / Table Formats / Arm64 / PROBE}
-+
-+\begin{lstlisting}
-+struct virtio_iommu_probe_pgt_arm64 {
-+  struct virtio_iommu_probe_property head;
-+  le16  format;
-+  u8    reserved[2];
-+  le64  flags;
-+};
-+
-+#define VIRTIO_IOMMU_PGT_ARM64_F_ASID16     (1ULL << 1)
-+#define VIRTIO_IOMMU_PGT_ARM64_F_HW_ACCESS  (1ULL << 2)
-+#define VIRTIO_IOMMU_PGT_ARM64_F_HW_DIRTY   (1ULL << 3)
-+\end{lstlisting}
-+
-+\begin{description}
-+  \item[VIRTIO_IOMMU_PGT_ARM64_F_ASID16] ASIDs can be up to 16
-+    bits. When unset, ASID are only 8 bits.
-+  \item[VIRTIO_IOMMU_PGT_ARM64_F_HW_ACCESS] Hardware management
-+    of the access bit. The device can write the access bit in page
-+    table entries.
-+  \item[VIRTIO_IOMMU_PGT_ARM64_F_HW_DIRTY] Hardware management of
-+    the dirty bit. The device can set the dirty bit in page table
-+    entries.
-+\end{description}
-+
-+\paragraph{ATTACH_TABLE request for Arm 64-bit page tables}\label{sec:Devi=
-ce Types / IOMMU Device / Table Formats / Arm64 / ATTACH_TABLE}
-+
-+Attach a single set of page tables to an endpoint.
-+
-+\begin{lstlisting}
-+struct virtio_iommu_req_attach_pgt_arm64 {
-+  struct virtio_iommu_req_head head;
-+  le32  domain;
-+  le32  endpoint;
-+  le16  format;
-+  u8    reserved[2]
-+  le64  tcr;
-+  le64  ttbr0;
-+  le64  ttbr1;
-+  le64  mair;
-+  u8    reserved1[32];
-+  struct virtio_iommu_req_tail tail;
++struct virtio_vdmabuf_msg {
++        le32 cmd;
++        le32 op[64];
 +};
 +\end{lstlisting}
 +
-+\begin{description}
-+  \item[\field{tcr}] Translation Control Registers, corresponding
-+    to TCR_EL1 described in the Armv8-A Architecture Reference
-+    Manual.
-+  \item[\field{ttbr0}] Translation Table Base Register
-+    corresponding to TTBR0_EL1.
-+  \item[\field{ttbr1}] Translation Table Base Register
-+    corresponding to TTBR1_EL1.
-+  \item[\field{mair}] Memory Attribute Index Register
-+    corresponding to MAIR_EL1.
-+\end{description}
++The field \field{cmd} is initialized with one of the following:
 +
-+\drivernormative{\subparagraph}{ATTACH_TABLE request for Arm 64-bit page t=
-ables}{Device Types / IOMMU Device / Table Formats / Arm64 / ATTACH_TABLE}
++\begin{lstlisting}
++enum virtio_vdmabuf_cmd {
++        VIRTIO_VDMABUF_CMD_NEED_VMID =3D 1,
++        VIRTIO_VDMABUF_CMD_EXPORT =3D 2,
++        VIRTIO_VDMABUF_CMD_DMABUF_REL =3D3,
++};
++\end{lstlisting}
 +
-+The driver SHOULD set fields \field{reserved} and
-+\field{reserved1} to zero.
++Based on the field \field{cmd}, the 256 bytes represented by the field
++\field{op} are either zeroed out or contain metadata. They are zeroed out
++if \field{cmd} is VIRTIO_VDMABUF_CMD_NEED_VMID. In other cases, the metada=
+ta
++is formatted as below.
 +
-+If the endpoint supports a Context Descriptor table format, the
-+driver SHOULD NOT send an ATTACH_TABLE request with Arm 64-bit
-+tables. It SHOULD instead attach a Context Descriptor table.
++The first 16 bytes contains a unique 128-bit Identifier of the following
++format:
++\begin{lstlisting}
++struct virtio_vdmabuf_buf_id_t{
++        le64 id;
++        le32 rng_key[2];
++};
++\end{lstlisting}
 +
-+\devicenormative{\subparagraph}{ATTACH_TABLE request for Arm 64-bit page t=
-ables}{Device Types / IOMMU Device / Table Formats / Arm64 / ATTACH_TABLE}
++The first 4 bytes of \field{id} contain an ID associated with the device a=
+nd
++the other 4 bytes contain a counter. The last 8 bytes of the above structu=
+re
++represented by \field{rng_key} contain random data to ensure that the 128-=
+bit
++identifier is indeed unique at any given time.
 +
-+The device MUST ignore fields \field{reserved} and
-+\field{reserved1}.
++The remaining 240 bytes contain private data shared between the driver and
++the device.
 +
-+\paragraph{INVALIDATE request for Arm 64-bit page tables}\label{sec:Device=
- Types / IOMMU Device / Table Formats / Arm64 / INVALIDATE}
++\subsubsection{Virtqueue Flow Control}\label{sec:Device Types / Dmabuf Dev=
+ice / Device Operation / Virtqueue Flow Control}
 +
-+Bits [15:0] of \field{id} in an INVALIDATE request correspond to
-+the address space ID (ASID) of the page directory.
++The send virtqueue carries messages initiated by an application running in=
+ the
++Guest and responses to previously sent messages. The recv virtqueue carrie=
+s
++messages initiated by the device.
++
++\subsubsection{VM ID}\label{sec:Device Types / Dmabuf Device / Device Oper=
+ation / VM ID}
++
++The driver sends a VM ID message to the device via the send virtqueue
++after setting the \field{cmd} to VIRTIO_VDMABUF_CMD_NEED_VMID.
++
++In response, the device would queue up a message on the recv virtqueue wit=
+h
++the \field{cmd} set to VIRTIO_VDMABUF_CMD_NEED_VMID and the first 4 bytes =
+of
++\field{op} containing the ID associated with the device.
++
++\drivernormative{\paragraph}{Device Operation: VM ID}{Device Types / Dmabu=
+f Device / Device Operation / VM ID}
++
++The rest of the message MUST be zeroed out.
++
++\subsubsection{Export}\label{sec:Device Types / Dmabuf Device / Device Ope=
+ration / Export}
++
++The driver sends an Export message to the device via the send virtqueue
++after populating the message as follows:
++
++\drivernormative{\paragraph}{Device Operation: Export}{Device Types / Dmab=
+uf Device / Device Operation / Export}
++
++The driver MUST set \field{cmd} to VIRTIO_VDMABUF_CMD_EXPORT.
++
++The driver MUST set the first 16 bytes of \field{op} to a new unique ID.
++
++The driver MUST populate the next 20 bytes of \field{op} with valid meta d=
+ata
++associated with the buffer represented by the ID.
++
++\subsubsection{Release}\label{sec:Device Types / Dmabuf Device / Device Op=
+eration / Release}
++
++The device sends a Release message to the driver via the recv virtqueue
++after populating the message as follows:
++
++\drivernormative{\paragraph}{Device Operation: Release}{Device Types / Dma=
+buf Device / Device Operation / Release}
++
++The device MUST set \field{cmd} to VIRTIO_VDMABUF_CMD_RELEASE.
++
++The device MUST set the first 16 bytes of \field{op} to a valid unique ID
++that was previously shared by the driver.
++
++The device must zero out the remaining part of the message.
++
 --=20
-2.30.0
+2.26.2
 
 
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+This publicly archived list offers a means to provide input to the
+OASIS Virtual I/O Device (VIRTIO) TC.
+
+In order to verify user consent to the Feedback License terms and
+to minimize spam in the list archive, subscription is required
+before posting.
+
+Subscribe: virtio-comment-subscribe@lists.oasis-open.org
+Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
+List help: virtio-comment-help@lists.oasis-open.org
+List archive: https://lists.oasis-open.org/archives/virtio-comment/
+Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
+List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lis=
+ts
+Committee: https://www.oasis-open.org/committees/virtio/
+Join OASIS: https://www.oasis-open.org/join/
 
