@@ -1,272 +1,229 @@
-Return-Path: virtio-comment-return-1714-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-comment-return-1715-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-comment@lists.oasis-open.org>
 List-Post: <mailto:virtio-comment@lists.oasis-open.org>
 List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
+From: "Kasireddy, Vivek" <vivek.kasireddy@intel.com>
+Date: Thu, 4 Feb 2021 23:43:35 +0000
+Message-ID: <df4483fc4c544817a110333249774c4c@intel.com>
 References: <20210203084058.1910930-1-vivek.kasireddy@intel.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <fa558ca8-4cdf-a91f-f915-9f1e8336b2e5@siemens.com>
-Date: Thu, 4 Feb 2021 11:24:12 +0100
+ <fa558ca8-4cdf-a91f-f915-9f1e8336b2e5@siemens.com>
+In-Reply-To: <fa558ca8-4cdf-a91f-f915-9f1e8336b2e5@siemens.com>
 MIME-Version: 1.0
-In-Reply-To: <20210203084058.1910930-1-vivek.kasireddy@intel.com>
-Subject: Re: [virtio-comment] [PATCH] virtio-dmabuf: Add specification details
+Subject: RE: [virtio-comment] [PATCH] virtio-dmabuf: Add specification details
  for this device
-Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-To: Vivek Kasireddy <vivek.kasireddy@intel.com>, virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
-Cc: kraxel@redhat.com, Dongwon Kim <dongwon.kim@intel.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+To: Jan Kiszka <jan.kiszka@siemens.com>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
+Cc: "kraxel@redhat.com" <kraxel@redhat.com>, "Kim, Dongwon" <dongwon.kim@intel.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 03.02.21 09:40, Vivek Kasireddy wrote:
-> The virtio dmabuf device provides a way to share a page backed dmabuf
-> created in the Guest with the Host. The actual sharing is accomplished
-> by recreating the dmabuf on the Host using the page metadata shared by
-> the guest.
-What's the use case for this?
-
-Jan
-
-> 
-> Signed-off-by: Vivek Kasireddy <vivek.kasireddy@intel.com>
-> Signed-off-by: Dongwon Kim <dongwon.kim@intel.com>
-> ---
->  conformance.tex    |  30 ++++++++++--
->  content.tex        |   3 ++
->  virtio-vdmabuf.tex | 120 +++++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 149 insertions(+), 4 deletions(-)
->  create mode 100644 virtio-vdmabuf.tex
-> 
-> diff --git a/conformance.tex b/conformance.tex
-> index e78adfd..1f972ae 100644
-> --- a/conformance.tex
-> +++ b/conformance.tex
-> @@ -28,8 +28,9 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
->  \ref{sec:Conformance / Driver Conformance / RPMB Driver Conformance},
->  \ref{sec:Conformance / Driver Conformance / IOMMU Driver Conformance},
->  \ref{sec:Conformance / Driver Conformance / Sound Driver Conformance}
-> -\ref{sec:Conformance / Driver Conformance / Memory Driver Conformance} or
-> -\ref{sec:Conformance / Driver Conformance / I2C Adapter Driver Conformance}.
-> +\ref{sec:Conformance / Driver Conformance / Memory Driver Conformance}
-> +\ref{sec:Conformance / Driver Conformance / I2C Adapter Driver Conformance} or
-> +\ref{sec:Conformance / Driver Conformance / Dmabuf Driver Conformance}.
->  
->      \item Clause \ref{sec:Conformance / Legacy Interface: Transitional Device and Transitional Driver Conformance}.
->    \end{itemize}
-> @@ -50,8 +51,9 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
->  \ref{sec:Conformance / Device Conformance / RPMB Device Conformance},
->  \ref{sec:Conformance / Device Conformance / IOMMU Device Conformance},
->  \ref{sec:Conformance / Device Conformance / Sound Device Conformance}
-> -\ref{sec:Conformance / Device Conformance / Memory Device Conformance} or
-> -\ref{sec:Conformance / Device Conformance / I2C Adapter Device Conformance}.
-> +\ref{sec:Conformance / Device Conformance / Memory Device Conformance}
-> +\ref{sec:Conformance / Device Conformance / I2C Adapter Device Conformance} or
-> +\ref{sec:Conformance / Driver Conformance / Dmabuf Driver Conformance}.
->  
->      \item Clause \ref{sec:Conformance / Legacy Interface: Transitional Device and Transitional Driver Conformance}.
->    \end{itemize}
-> @@ -276,6 +278,16 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
->  \item \ref{drivernormative:Device Types / I2C Adapter Device / Device Operation}
->  \end{itemize}
->  
-> +\conformance{\subsection}{Dmabuf Driver Conformance}\label{sec:Conformance / Driver Conformance / Dmabuf Driver Conformance}
-> +
-> +A Dmabuf driver MUST conform to the following normative statements:
-> +
-> +\begin{itemize}
-> +\item \ref{drivernormative:Device Types / Dmabuf Device / Device Operation / VM ID}
-> +\item \ref{drivernormative:Device Types / Dmabuf Device / Device Operation / Export}
-> +\item \ref{drivernormative:Device Types / Dmabuf Device / Device Operation / Release}
-> +\end{itemize}
-> +
->  \conformance{\section}{Device Conformance}\label{sec:Conformance / Device Conformance}
->  
->  A device MUST conform to the following normative statements:
-> @@ -503,6 +515,16 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
->  \item \ref{devicenormative:Device Types / I2C Adapter Device / Device Operation}
->  \end{itemize}
->  
-> +\conformance{\subsection}{Dmabuf Device Conformance}\label{sec:Conformance / Device Conformance / Dmabuf Device Conformance}
-> +
-> +A Dmabuf device MUST conform to the following normative statements:
-> +
-> +\begin{itemize}
-> +\item \ref{drivernormative:Device Types / Dmabuf Device / Device Operation / VM ID}
-> +\item \ref{drivernormative:Device Types / Dmabuf Device / Device Operation / Export}
-> +\item \ref{drivernormative:Device Types / Dmabuf Device / Device Operation / Release}
-> +\end{itemize}
-> +
->  \conformance{\section}{Legacy Interface: Transitional Device and Transitional Driver Conformance}\label{sec:Conformance / Legacy Interface: Transitional Device and Transitional Driver Conformance}
->  A conformant implementation MUST be either transitional or
->  non-transitional, see \ref{intro:Legacy
-> diff --git a/content.tex b/content.tex
-> index 1ca24c1..b6ea383 100644
-> --- a/content.tex
-> +++ b/content.tex
-> @@ -2846,6 +2846,8 @@ \chapter{Device Types}\label{sec:Device Types}
->  \hline
->  35         &   Watchdog \\
->  \hline
-> +36         &   Dmabuf device \\
-> +\hline
->  \end{tabular}
->  
->  Some of the devices above are unspecified by this document,
-> @@ -6508,6 +6510,7 @@ \subsubsection{Legacy Interface: Framing Requirements}\label{sec:Device
->  \input{virtio-sound.tex}
->  \input{virtio-mem.tex}
->  \input{virtio-i2c.tex}
-> +\input{virtio-vdmabuf.tex}
->  
->  \chapter{Reserved Feature Bits}\label{sec:Reserved Feature Bits}
->  
-> diff --git a/virtio-vdmabuf.tex b/virtio-vdmabuf.tex
-> new file mode 100644
-> index 0000000..18a4e2c
-> --- /dev/null
-> +++ b/virtio-vdmabuf.tex
-> @@ -0,0 +1,120 @@
-> +\section{Dmabuf Device}\label{sec:Device Types / Dmabuf Device}
-> +
-> +The virtio dmabuf device is a virtual dmabuf transfer device that provides
-> +a way to share a page-backed dmabuf created in the Guest with the device.
-> +Once shared, the driver and the device would use the same underlying memory
-> +associated with the original dmabuf but not at the same time.
-> +
-> +\subsection{Device ID}\label{sec:Device Types / Dmabuf Device / Device ID}
-> +  36
-> +
-> +\subsection{Virtqueues}\label{sec:Device Types / Dmabuf Device / Virtqueues}
-> +\begin{description}
-> +\item[0] recv
-> +\item[1] send
-> +\end{description}
-> +
-> +\subsection{Feature bits}\label{sec:Device Types / Dmabuf Device / Feature bits}
-> +
-> +No specific feature bits defined for this device.
-> +
-> +\subsection{Device configuration layout}\label{sec:Device Types / Dmabuf Device / Device configuration layout}
-> +
-> +No specific layout defined for this device.
-> +
-> +\subsection{Device Initialization}\label{sec:Device Types / Dmabuf Device / Device Initialization}
-> +
-> +\begin{enumerate}
-> +\item Both the send and recv virtqueues are initialized to handle messages.
-> +\end{enumerate}
-> +
-> +\subsection{Device Operation}\label{sec:Device Types / Dmabuf Device / Device Operation}
-> +
-> +Messages that are sent or received are of the following format:
-> +
-> +\begin{lstlisting}
-> +struct virtio_vdmabuf_msg {
-> +        le32 cmd;
-> +        le32 op[64];
-> +};
-> +\end{lstlisting}
-> +
-> +The field \field{cmd} is initialized with one of the following:
-> +
-> +\begin{lstlisting}
-> +enum virtio_vdmabuf_cmd {
-> +        VIRTIO_VDMABUF_CMD_NEED_VMID = 1,
-> +        VIRTIO_VDMABUF_CMD_EXPORT = 2,
-> +        VIRTIO_VDMABUF_CMD_DMABUF_REL =3,
-> +};
-> +\end{lstlisting}
-> +
-> +Based on the field \field{cmd}, the 256 bytes represented by the field
-> +\field{op} are either zeroed out or contain metadata. They are zeroed out
-> +if \field{cmd} is VIRTIO_VDMABUF_CMD_NEED_VMID. In other cases, the metadata
-> +is formatted as below.
-> +
-> +The first 16 bytes contains a unique 128-bit Identifier of the following
-> +format:
-> +\begin{lstlisting}
-> +struct virtio_vdmabuf_buf_id_t{
-> +        le64 id;
-> +        le32 rng_key[2];
-> +};
-> +\end{lstlisting}
-> +
-> +The first 4 bytes of \field{id} contain an ID associated with the device and
-> +the other 4 bytes contain a counter. The last 8 bytes of the above structure
-> +represented by \field{rng_key} contain random data to ensure that the 128-bit
-> +identifier is indeed unique at any given time.
-> +
-> +The remaining 240 bytes contain private data shared between the driver and
-> +the device.
-> +
-> +\subsubsection{Virtqueue Flow Control}\label{sec:Device Types / Dmabuf Device / Device Operation / Virtqueue Flow Control}
-> +
-> +The send virtqueue carries messages initiated by an application running in the
-> +Guest and responses to previously sent messages. The recv virtqueue carries
-> +messages initiated by the device.
-> +
-> +\subsubsection{VM ID}\label{sec:Device Types / Dmabuf Device / Device Operation / VM ID}
-> +
-> +The driver sends a VM ID message to the device via the send virtqueue
-> +after setting the \field{cmd} to VIRTIO_VDMABUF_CMD_NEED_VMID.
-> +
-> +In response, the device would queue up a message on the recv virtqueue with
-> +the \field{cmd} set to VIRTIO_VDMABUF_CMD_NEED_VMID and the first 4 bytes of
-> +\field{op} containing the ID associated with the device.
-> +
-> +\drivernormative{\paragraph}{Device Operation: VM ID}{Device Types / Dmabuf Device / Device Operation / VM ID}
-> +
-> +The rest of the message MUST be zeroed out.
-> +
-> +\subsubsection{Export}\label{sec:Device Types / Dmabuf Device / Device Operation / Export}
-> +
-> +The driver sends an Export message to the device via the send virtqueue
-> +after populating the message as follows:
-> +
-> +\drivernormative{\paragraph}{Device Operation: Export}{Device Types / Dmabuf Device / Device Operation / Export}
-> +
-> +The driver MUST set \field{cmd} to VIRTIO_VDMABUF_CMD_EXPORT.
-> +
-> +The driver MUST set the first 16 bytes of \field{op} to a new unique ID.
-> +
-> +The driver MUST populate the next 20 bytes of \field{op} with valid meta data
-> +associated with the buffer represented by the ID.
-> +
-> +\subsubsection{Release}\label{sec:Device Types / Dmabuf Device / Device Operation / Release}
-> +
-> +The device sends a Release message to the driver via the recv virtqueue
-> +after populating the message as follows:
-> +
-> +\drivernormative{\paragraph}{Device Operation: Release}{Device Types / Dmabuf Device / Device Operation / Release}
-> +
-> +The device MUST set \field{cmd} to VIRTIO_VDMABUF_CMD_RELEASE.
-> +
-> +The device MUST set the first 16 bytes of \field{op} to a valid unique ID
-> +that was previously shared by the driver.
-> +
-> +The device must zero out the remaining part of the message.
-> +
-> 
-
-
--- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
-
-This publicly archived list offers a means to provide input to the
-OASIS Virtual I/O Device (VIRTIO) TC.
-
-In order to verify user consent to the Feedback License terms and
-to minimize spam in the list archive, subscription is required
-before posting.
-
-Subscribe: virtio-comment-subscribe@lists.oasis-open.org
-Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
-List help: virtio-comment-help@lists.oasis-open.org
-List archive: https://lists.oasis-open.org/archives/virtio-comment/
-Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
-List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
-Committee: https://www.oasis-open.org/committees/virtio/
-Join OASIS: https://www.oasis-open.org/join/
+SGkgSmFuLA0KSSBoYXZlIGRldGFpbGVkIHNvbWUgb2YgdGhlIHVzZS1jYXNlcyBoZXJlOg0KaHR0
+cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL3BpcGVybWFpbC92aXJ0dWFsaXphdGlvbi8y
+MDIxLUZlYnJ1YXJ5LzA1MjIzMy5odG1sDQoNCldlIGV4cGVjdCBtb3JlIHVzZS1jYXNlcyB0byBj
+b21lIHVwIGFzIG5ldyBoYXJkd2FyZSAoRGlzY3JldGUgR1BVcw0KZnJvbSBJbnRlbCBhbmQgb3Ro
+ZXIgT0VNcykgd2l0aCBhZHZhbmNlZCBmZWF0dXJlcyBiZWNvbWVzIGF2YWlsYWJsZQ0KYW5kIHRo
+ZXJlIHdvdWxkIGJlIGEgbmVlZCB0byBhY2Nlc3MgZGF0YS9idWZmZXJzIGNyZWF0ZWQgaW4gdGhl
+IEd1ZXN0IG9uDQp0aGUgSG9zdCBpbiBhIHN0YW5kYXJkIChEbWFidWYpIHdheS4NCg0KVGhhbmtz
+LA0KVml2ZWsNCg0KPiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBKYW4gS2lz
+emthIDxqYW4ua2lzemthQHNpZW1lbnMuY29tPg0KPiBTZW50OiBUaHVyc2RheSwgRmVicnVhcnkg
+MDQsIDIwMjEgMjoyNCBBTQ0KPiBUbzogS2FzaXJlZGR5LCBWaXZlayA8dml2ZWsua2FzaXJlZGR5
+QGludGVsLmNvbT47IHZpcnRpby1jb21tZW50QGxpc3RzLm9hc2lzLQ0KPiBvcGVuLm9yZzsgdmly
+dGlvLWRldkBsaXN0cy5vYXNpcy1vcGVuLm9yZw0KPiBDYzoga3JheGVsQHJlZGhhdC5jb207IEtp
+bSwgRG9uZ3dvbiA8ZG9uZ3dvbi5raW1AaW50ZWwuY29tPg0KPiBTdWJqZWN0OiBSZTogW3ZpcnRp
+by1jb21tZW50XSBbUEFUQ0hdIHZpcnRpby1kbWFidWY6IEFkZCBzcGVjaWZpY2F0aW9uIGRldGFp
+bHMgZm9yIHRoaXMNCj4gZGV2aWNlDQo+IA0KPiBPbiAwMy4wMi4yMSAwOTo0MCwgVml2ZWsgS2Fz
+aXJlZGR5IHdyb3RlOg0KPiA+IFRoZSB2aXJ0aW8gZG1hYnVmIGRldmljZSBwcm92aWRlcyBhIHdh
+eSB0byBzaGFyZSBhIHBhZ2UgYmFja2VkIGRtYWJ1Zg0KPiA+IGNyZWF0ZWQgaW4gdGhlIEd1ZXN0
+IHdpdGggdGhlIEhvc3QuIFRoZSBhY3R1YWwgc2hhcmluZyBpcyBhY2NvbXBsaXNoZWQNCj4gPiBi
+eSByZWNyZWF0aW5nIHRoZSBkbWFidWYgb24gdGhlIEhvc3QgdXNpbmcgdGhlIHBhZ2UgbWV0YWRh
+dGEgc2hhcmVkIGJ5DQo+ID4gdGhlIGd1ZXN0Lg0KPiBXaGF0J3MgdGhlIHVzZSBjYXNlIGZvciB0
+aGlzPw0KPiANCj4gSmFuDQo+IA0KPiA+DQo+ID4gU2lnbmVkLW9mZi1ieTogVml2ZWsgS2FzaXJl
+ZGR5IDx2aXZlay5rYXNpcmVkZHlAaW50ZWwuY29tPg0KPiA+IFNpZ25lZC1vZmYtYnk6IERvbmd3
+b24gS2ltIDxkb25nd29uLmtpbUBpbnRlbC5jb20+DQo+ID4gLS0tDQo+ID4gIGNvbmZvcm1hbmNl
+LnRleCAgICB8ICAzMCArKysrKysrKysrLS0NCj4gPiAgY29udGVudC50ZXggICAgICAgIHwgICAz
+ICsrDQo+ID4gIHZpcnRpby12ZG1hYnVmLnRleCB8IDEyMA0KPiA+ICsrKysrKysrKysrKysrKysr
+KysrKysrKysrKysrKysrKysrKysrKysrKysrKw0KPiA+ICAzIGZpbGVzIGNoYW5nZWQsIDE0OSBp
+bnNlcnRpb25zKCspLCA0IGRlbGV0aW9ucygtKSAgY3JlYXRlIG1vZGUNCj4gPiAxMDA2NDQgdmly
+dGlvLXZkbWFidWYudGV4DQo+ID4NCj4gPiBkaWZmIC0tZ2l0IGEvY29uZm9ybWFuY2UudGV4IGIv
+Y29uZm9ybWFuY2UudGV4IGluZGV4IGU3OGFkZmQuLjFmOTcyYWUNCj4gPiAxMDA2NDQNCj4gPiAt
+LS0gYS9jb25mb3JtYW5jZS50ZXgNCj4gPiArKysgYi9jb25mb3JtYW5jZS50ZXgNCj4gPiBAQCAt
+MjgsOCArMjgsOSBAQCBcc2VjdGlvbntDb25mb3JtYW5jZSBUYXJnZXRzfVxsYWJlbHtzZWM6Q29u
+Zm9ybWFuY2UNCj4gPiAvIENvbmZvcm1hbmNlIFRhcmdldHN9ICBccmVme3NlYzpDb25mb3JtYW5j
+ZSAvIERyaXZlciBDb25mb3JtYW5jZSAvDQo+ID4gUlBNQiBEcml2ZXIgQ29uZm9ybWFuY2V9LCAg
+XHJlZntzZWM6Q29uZm9ybWFuY2UgLyBEcml2ZXIgQ29uZm9ybWFuY2UgLw0KPiA+IElPTU1VIERy
+aXZlciBDb25mb3JtYW5jZX0sICBccmVme3NlYzpDb25mb3JtYW5jZSAvIERyaXZlciBDb25mb3Jt
+YW5jZQ0KPiA+IC8gU291bmQgRHJpdmVyIENvbmZvcm1hbmNlfSAtXHJlZntzZWM6Q29uZm9ybWFu
+Y2UgLyBEcml2ZXIgQ29uZm9ybWFuY2UNCj4gPiAvIE1lbW9yeSBEcml2ZXIgQ29uZm9ybWFuY2V9
+IG9yIC1ccmVme3NlYzpDb25mb3JtYW5jZSAvIERyaXZlciBDb25mb3JtYW5jZSAvIEkyQw0KPiBB
+ZGFwdGVyIERyaXZlciBDb25mb3JtYW5jZX0uDQo+ID4gK1xyZWZ7c2VjOkNvbmZvcm1hbmNlIC8g
+RHJpdmVyIENvbmZvcm1hbmNlIC8gTWVtb3J5IERyaXZlcg0KPiA+ICtDb25mb3JtYW5jZX0gXHJl
+ZntzZWM6Q29uZm9ybWFuY2UgLyBEcml2ZXIgQ29uZm9ybWFuY2UgLyBJMkMgQWRhcHRlcg0KPiA+
+ICtEcml2ZXIgQ29uZm9ybWFuY2V9IG9yIFxyZWZ7c2VjOkNvbmZvcm1hbmNlIC8gRHJpdmVyIENv
+bmZvcm1hbmNlIC8gRG1hYnVmIERyaXZlcg0KPiBDb25mb3JtYW5jZX0uDQo+ID4NCj4gPiAgICAg
+IFxpdGVtIENsYXVzZSBccmVme3NlYzpDb25mb3JtYW5jZSAvIExlZ2FjeSBJbnRlcmZhY2U6IFRy
+YW5zaXRpb25hbCBEZXZpY2UgYW5kDQo+IFRyYW5zaXRpb25hbCBEcml2ZXIgQ29uZm9ybWFuY2V9
+Lg0KPiA+ICAgIFxlbmR7aXRlbWl6ZX0NCj4gPiBAQCAtNTAsOCArNTEsOSBAQCBcc2VjdGlvbntD
+b25mb3JtYW5jZSBUYXJnZXRzfVxsYWJlbHtzZWM6Q29uZm9ybWFuY2UNCj4gPiAvIENvbmZvcm1h
+bmNlIFRhcmdldHN9ICBccmVme3NlYzpDb25mb3JtYW5jZSAvIERldmljZSBDb25mb3JtYW5jZSAv
+DQo+ID4gUlBNQiBEZXZpY2UgQ29uZm9ybWFuY2V9LCAgXHJlZntzZWM6Q29uZm9ybWFuY2UgLyBE
+ZXZpY2UgQ29uZm9ybWFuY2UgLw0KPiA+IElPTU1VIERldmljZSBDb25mb3JtYW5jZX0sICBccmVm
+e3NlYzpDb25mb3JtYW5jZSAvIERldmljZSBDb25mb3JtYW5jZQ0KPiA+IC8gU291bmQgRGV2aWNl
+IENvbmZvcm1hbmNlfSAtXHJlZntzZWM6Q29uZm9ybWFuY2UgLyBEZXZpY2UgQ29uZm9ybWFuY2UN
+Cj4gPiAvIE1lbW9yeSBEZXZpY2UgQ29uZm9ybWFuY2V9IG9yIC1ccmVme3NlYzpDb25mb3JtYW5j
+ZSAvIERldmljZSBDb25mb3JtYW5jZSAvIEkyQw0KPiBBZGFwdGVyIERldmljZSBDb25mb3JtYW5j
+ZX0uDQo+ID4gK1xyZWZ7c2VjOkNvbmZvcm1hbmNlIC8gRGV2aWNlIENvbmZvcm1hbmNlIC8gTWVt
+b3J5IERldmljZQ0KPiA+ICtDb25mb3JtYW5jZX0gXHJlZntzZWM6Q29uZm9ybWFuY2UgLyBEZXZp
+Y2UgQ29uZm9ybWFuY2UgLyBJMkMgQWRhcHRlcg0KPiA+ICtEZXZpY2UgQ29uZm9ybWFuY2V9IG9y
+IFxyZWZ7c2VjOkNvbmZvcm1hbmNlIC8gRHJpdmVyIENvbmZvcm1hbmNlIC8gRG1hYnVmIERyaXZl
+cg0KPiBDb25mb3JtYW5jZX0uDQo+ID4NCj4gPiAgICAgIFxpdGVtIENsYXVzZSBccmVme3NlYzpD
+b25mb3JtYW5jZSAvIExlZ2FjeSBJbnRlcmZhY2U6IFRyYW5zaXRpb25hbCBEZXZpY2UgYW5kDQo+
+IFRyYW5zaXRpb25hbCBEcml2ZXIgQ29uZm9ybWFuY2V9Lg0KPiA+ICAgIFxlbmR7aXRlbWl6ZX0N
+Cj4gPiBAQCAtMjc2LDYgKzI3OCwxNiBAQCBcc2VjdGlvbntDb25mb3JtYW5jZQ0KPiA+IFRhcmdl
+dHN9XGxhYmVse3NlYzpDb25mb3JtYW5jZSAvIENvbmZvcm1hbmNlIFRhcmdldHN9ICBcaXRlbQ0K
+PiA+IFxyZWZ7ZHJpdmVybm9ybWF0aXZlOkRldmljZSBUeXBlcyAvIEkyQyBBZGFwdGVyIERldmlj
+ZSAvIERldmljZQ0KPiA+IE9wZXJhdGlvbn0gIFxlbmR7aXRlbWl6ZX0NCj4gPg0KPiA+ICtcY29u
+Zm9ybWFuY2V7XHN1YnNlY3Rpb259e0RtYWJ1ZiBEcml2ZXINCj4gPiArQ29uZm9ybWFuY2V9XGxh
+YmVse3NlYzpDb25mb3JtYW5jZSAvIERyaXZlciBDb25mb3JtYW5jZSAvIERtYWJ1Zg0KPiA+ICtE
+cml2ZXIgQ29uZm9ybWFuY2V9DQo+ID4gKw0KPiA+ICtBIERtYWJ1ZiBkcml2ZXIgTVVTVCBjb25m
+b3JtIHRvIHRoZSBmb2xsb3dpbmcgbm9ybWF0aXZlIHN0YXRlbWVudHM6DQo+ID4gKw0KPiA+ICtc
+YmVnaW57aXRlbWl6ZX0NCj4gPiArXGl0ZW0gXHJlZntkcml2ZXJub3JtYXRpdmU6RGV2aWNlIFR5
+cGVzIC8gRG1hYnVmIERldmljZSAvIERldmljZQ0KPiA+ICtPcGVyYXRpb24gLyBWTSBJRH0gXGl0
+ZW0gXHJlZntkcml2ZXJub3JtYXRpdmU6RGV2aWNlIFR5cGVzIC8gRG1hYnVmDQo+ID4gK0Rldmlj
+ZSAvIERldmljZSBPcGVyYXRpb24gLyBFeHBvcnR9IFxpdGVtIFxyZWZ7ZHJpdmVybm9ybWF0aXZl
+OkRldmljZQ0KPiA+ICtUeXBlcyAvIERtYWJ1ZiBEZXZpY2UgLyBEZXZpY2UgT3BlcmF0aW9uIC8g
+UmVsZWFzZX0gXGVuZHtpdGVtaXplfQ0KPiA+ICsNCj4gPiAgXGNvbmZvcm1hbmNle1xzZWN0aW9u
+fXtEZXZpY2UgQ29uZm9ybWFuY2V9XGxhYmVse3NlYzpDb25mb3JtYW5jZSAvDQo+ID4gRGV2aWNl
+IENvbmZvcm1hbmNlfQ0KPiA+DQo+ID4gIEEgZGV2aWNlIE1VU1QgY29uZm9ybSB0byB0aGUgZm9s
+bG93aW5nIG5vcm1hdGl2ZSBzdGF0ZW1lbnRzOg0KPiA+IEBAIC01MDMsNiArNTE1LDE2IEBAIFxz
+ZWN0aW9ue0NvbmZvcm1hbmNlDQo+ID4gVGFyZ2V0c31cbGFiZWx7c2VjOkNvbmZvcm1hbmNlIC8g
+Q29uZm9ybWFuY2UgVGFyZ2V0c30gIFxpdGVtDQo+ID4gXHJlZntkZXZpY2Vub3JtYXRpdmU6RGV2
+aWNlIFR5cGVzIC8gSTJDIEFkYXB0ZXIgRGV2aWNlIC8gRGV2aWNlDQo+ID4gT3BlcmF0aW9ufSAg
+XGVuZHtpdGVtaXplfQ0KPiA+DQo+ID4gK1xjb25mb3JtYW5jZXtcc3Vic2VjdGlvbn17RG1hYnVm
+IERldmljZQ0KPiA+ICtDb25mb3JtYW5jZX1cbGFiZWx7c2VjOkNvbmZvcm1hbmNlIC8gRGV2aWNl
+IENvbmZvcm1hbmNlIC8gRG1hYnVmDQo+ID4gK0RldmljZSBDb25mb3JtYW5jZX0NCj4gPiArDQo+
+ID4gK0EgRG1hYnVmIGRldmljZSBNVVNUIGNvbmZvcm0gdG8gdGhlIGZvbGxvd2luZyBub3JtYXRp
+dmUgc3RhdGVtZW50czoNCj4gPiArDQo+ID4gK1xiZWdpbntpdGVtaXplfQ0KPiA+ICtcaXRlbSBc
+cmVme2RyaXZlcm5vcm1hdGl2ZTpEZXZpY2UgVHlwZXMgLyBEbWFidWYgRGV2aWNlIC8gRGV2aWNl
+DQo+ID4gK09wZXJhdGlvbiAvIFZNIElEfSBcaXRlbSBccmVme2RyaXZlcm5vcm1hdGl2ZTpEZXZp
+Y2UgVHlwZXMgLyBEbWFidWYNCj4gPiArRGV2aWNlIC8gRGV2aWNlIE9wZXJhdGlvbiAvIEV4cG9y
+dH0gXGl0ZW0gXHJlZntkcml2ZXJub3JtYXRpdmU6RGV2aWNlDQo+ID4gK1R5cGVzIC8gRG1hYnVm
+IERldmljZSAvIERldmljZSBPcGVyYXRpb24gLyBSZWxlYXNlfSBcZW5ke2l0ZW1pemV9DQo+ID4g
+Kw0KPiA+ICBcY29uZm9ybWFuY2V7XHNlY3Rpb259e0xlZ2FjeSBJbnRlcmZhY2U6IFRyYW5zaXRp
+b25hbCBEZXZpY2UgYW5kDQo+ID4gVHJhbnNpdGlvbmFsIERyaXZlciBDb25mb3JtYW5jZX1cbGFi
+ZWx7c2VjOkNvbmZvcm1hbmNlIC8gTGVnYWN5DQo+ID4gSW50ZXJmYWNlOiBUcmFuc2l0aW9uYWwg
+RGV2aWNlIGFuZCBUcmFuc2l0aW9uYWwgRHJpdmVyIENvbmZvcm1hbmNlfSAgQQ0KPiA+IGNvbmZv
+cm1hbnQgaW1wbGVtZW50YXRpb24gTVVTVCBiZSBlaXRoZXIgdHJhbnNpdGlvbmFsIG9yDQo+ID4g
+bm9uLXRyYW5zaXRpb25hbCwgc2VlIFxyZWZ7aW50cm86TGVnYWN5IGRpZmYgLS1naXQgYS9jb250
+ZW50LnRleA0KPiA+IGIvY29udGVudC50ZXggaW5kZXggMWNhMjRjMS4uYjZlYTM4MyAxMDA2NDQN
+Cj4gPiAtLS0gYS9jb250ZW50LnRleA0KPiA+ICsrKyBiL2NvbnRlbnQudGV4DQo+ID4gQEAgLTI4
+NDYsNiArMjg0Niw4IEBAIFxjaGFwdGVye0RldmljZSBUeXBlc31cbGFiZWx7c2VjOkRldmljZSBU
+eXBlc30NCj4gPiBcaGxpbmUNCj4gPiAgMzUgICAgICAgICAmICAgV2F0Y2hkb2cgXFwNCj4gPiAg
+XGhsaW5lDQo+ID4gKzM2ICAgICAgICAgJiAgIERtYWJ1ZiBkZXZpY2UgXFwNCj4gPiArXGhsaW5l
+DQo+ID4gIFxlbmR7dGFidWxhcn0NCj4gPg0KPiA+ICBTb21lIG9mIHRoZSBkZXZpY2VzIGFib3Zl
+IGFyZSB1bnNwZWNpZmllZCBieSB0aGlzIGRvY3VtZW50LCBAQA0KPiA+IC02NTA4LDYgKzY1MTAs
+NyBAQCBcc3Vic3Vic2VjdGlvbntMZWdhY3kgSW50ZXJmYWNlOiBGcmFtaW5nDQo+ID4gUmVxdWly
+ZW1lbnRzfVxsYWJlbHtzZWM6RGV2aWNlICBcaW5wdXR7dmlydGlvLXNvdW5kLnRleH0NCj4gPiBc
+aW5wdXR7dmlydGlvLW1lbS50ZXh9ICBcaW5wdXR7dmlydGlvLWkyYy50ZXh9DQo+ID4gK1xpbnB1
+dHt2aXJ0aW8tdmRtYWJ1Zi50ZXh9DQo+ID4NCj4gPiAgXGNoYXB0ZXJ7UmVzZXJ2ZWQgRmVhdHVy
+ZSBCaXRzfVxsYWJlbHtzZWM6UmVzZXJ2ZWQgRmVhdHVyZSBCaXRzfQ0KPiA+DQo+ID4gZGlmZiAt
+LWdpdCBhL3ZpcnRpby12ZG1hYnVmLnRleCBiL3ZpcnRpby12ZG1hYnVmLnRleCBuZXcgZmlsZSBt
+b2RlDQo+ID4gMTAwNjQ0IGluZGV4IDAwMDAwMDAuLjE4YTRlMmMNCj4gPiAtLS0gL2Rldi9udWxs
+DQo+ID4gKysrIGIvdmlydGlvLXZkbWFidWYudGV4DQo+ID4gQEAgLTAsMCArMSwxMjAgQEANCj4g
+PiArXHNlY3Rpb257RG1hYnVmIERldmljZX1cbGFiZWx7c2VjOkRldmljZSBUeXBlcyAvIERtYWJ1
+ZiBEZXZpY2V9DQo+ID4gKw0KPiA+ICtUaGUgdmlydGlvIGRtYWJ1ZiBkZXZpY2UgaXMgYSB2aXJ0
+dWFsIGRtYWJ1ZiB0cmFuc2ZlciBkZXZpY2UgdGhhdA0KPiA+ICtwcm92aWRlcyBhIHdheSB0byBz
+aGFyZSBhIHBhZ2UtYmFja2VkIGRtYWJ1ZiBjcmVhdGVkIGluIHRoZSBHdWVzdCB3aXRoIHRoZSBk
+ZXZpY2UuDQo+ID4gK09uY2Ugc2hhcmVkLCB0aGUgZHJpdmVyIGFuZCB0aGUgZGV2aWNlIHdvdWxk
+IHVzZSB0aGUgc2FtZSB1bmRlcmx5aW5nDQo+ID4gK21lbW9yeSBhc3NvY2lhdGVkIHdpdGggdGhl
+IG9yaWdpbmFsIGRtYWJ1ZiBidXQgbm90IGF0IHRoZSBzYW1lIHRpbWUuDQo+ID4gKw0KPiA+ICtc
+c3Vic2VjdGlvbntEZXZpY2UgSUR9XGxhYmVse3NlYzpEZXZpY2UgVHlwZXMgLyBEbWFidWYgRGV2
+aWNlIC8NCj4gPiArRGV2aWNlIElEfQ0KPiA+ICsgIDM2DQo+ID4gKw0KPiA+ICtcc3Vic2VjdGlv
+bntWaXJ0cXVldWVzfVxsYWJlbHtzZWM6RGV2aWNlIFR5cGVzIC8gRG1hYnVmIERldmljZSAvDQo+
+ID4gK1ZpcnRxdWV1ZXN9IFxiZWdpbntkZXNjcmlwdGlvbn0gXGl0ZW1bMF0gcmVjdiBcaXRlbVsx
+XSBzZW5kDQo+ID4gK1xlbmR7ZGVzY3JpcHRpb259DQo+ID4gKw0KPiA+ICtcc3Vic2VjdGlvbntG
+ZWF0dXJlIGJpdHN9XGxhYmVse3NlYzpEZXZpY2UgVHlwZXMgLyBEbWFidWYgRGV2aWNlIC8NCj4g
+PiArRmVhdHVyZSBiaXRzfQ0KPiA+ICsNCj4gPiArTm8gc3BlY2lmaWMgZmVhdHVyZSBiaXRzIGRl
+ZmluZWQgZm9yIHRoaXMgZGV2aWNlLg0KPiA+ICsNCj4gPiArXHN1YnNlY3Rpb257RGV2aWNlIGNv
+bmZpZ3VyYXRpb24gbGF5b3V0fVxsYWJlbHtzZWM6RGV2aWNlIFR5cGVzIC8NCj4gPiArRG1hYnVm
+IERldmljZSAvIERldmljZSBjb25maWd1cmF0aW9uIGxheW91dH0NCj4gPiArDQo+ID4gK05vIHNw
+ZWNpZmljIGxheW91dCBkZWZpbmVkIGZvciB0aGlzIGRldmljZS4NCj4gPiArDQo+ID4gK1xzdWJz
+ZWN0aW9ue0RldmljZSBJbml0aWFsaXphdGlvbn1cbGFiZWx7c2VjOkRldmljZSBUeXBlcyAvIERt
+YWJ1Zg0KPiA+ICtEZXZpY2UgLyBEZXZpY2UgSW5pdGlhbGl6YXRpb259DQo+ID4gKw0KPiA+ICtc
+YmVnaW57ZW51bWVyYXRlfQ0KPiA+ICtcaXRlbSBCb3RoIHRoZSBzZW5kIGFuZCByZWN2IHZpcnRx
+dWV1ZXMgYXJlIGluaXRpYWxpemVkIHRvIGhhbmRsZSBtZXNzYWdlcy4NCj4gPiArXGVuZHtlbnVt
+ZXJhdGV9DQo+ID4gKw0KPiA+ICtcc3Vic2VjdGlvbntEZXZpY2UgT3BlcmF0aW9ufVxsYWJlbHtz
+ZWM6RGV2aWNlIFR5cGVzIC8gRG1hYnVmIERldmljZQ0KPiA+ICsvIERldmljZSBPcGVyYXRpb259
+DQo+ID4gKw0KPiA+ICtNZXNzYWdlcyB0aGF0IGFyZSBzZW50IG9yIHJlY2VpdmVkIGFyZSBvZiB0
+aGUgZm9sbG93aW5nIGZvcm1hdDoNCj4gPiArDQo+ID4gK1xiZWdpbntsc3RsaXN0aW5nfQ0KPiA+
+ICtzdHJ1Y3QgdmlydGlvX3ZkbWFidWZfbXNnIHsNCj4gPiArICAgICAgICBsZTMyIGNtZDsNCj4g
+PiArICAgICAgICBsZTMyIG9wWzY0XTsNCj4gPiArfTsNCj4gPiArXGVuZHtsc3RsaXN0aW5nfQ0K
+PiA+ICsNCj4gPiArVGhlIGZpZWxkIFxmaWVsZHtjbWR9IGlzIGluaXRpYWxpemVkIHdpdGggb25l
+IG9mIHRoZSBmb2xsb3dpbmc6DQo+ID4gKw0KPiA+ICtcYmVnaW57bHN0bGlzdGluZ30NCj4gPiAr
+ZW51bSB2aXJ0aW9fdmRtYWJ1Zl9jbWQgew0KPiA+ICsgICAgICAgIFZJUlRJT19WRE1BQlVGX0NN
+RF9ORUVEX1ZNSUQgPSAxLA0KPiA+ICsgICAgICAgIFZJUlRJT19WRE1BQlVGX0NNRF9FWFBPUlQg
+PSAyLA0KPiA+ICsgICAgICAgIFZJUlRJT19WRE1BQlVGX0NNRF9ETUFCVUZfUkVMID0zLCB9OyBc
+ZW5ke2xzdGxpc3Rpbmd9DQo+ID4gKw0KPiA+ICtCYXNlZCBvbiB0aGUgZmllbGQgXGZpZWxke2Nt
+ZH0sIHRoZSAyNTYgYnl0ZXMgcmVwcmVzZW50ZWQgYnkgdGhlDQo+ID4gK2ZpZWxkIFxmaWVsZHtv
+cH0gYXJlIGVpdGhlciB6ZXJvZWQgb3V0IG9yIGNvbnRhaW4gbWV0YWRhdGEuIFRoZXkgYXJlDQo+
+ID4gK3plcm9lZCBvdXQgaWYgXGZpZWxke2NtZH0gaXMgVklSVElPX1ZETUFCVUZfQ01EX05FRURf
+Vk1JRC4gSW4gb3RoZXINCj4gPiArY2FzZXMsIHRoZSBtZXRhZGF0YSBpcyBmb3JtYXR0ZWQgYXMg
+YmVsb3cuDQo+ID4gKw0KPiA+ICtUaGUgZmlyc3QgMTYgYnl0ZXMgY29udGFpbnMgYSB1bmlxdWUg
+MTI4LWJpdCBJZGVudGlmaWVyIG9mIHRoZQ0KPiA+ICtmb2xsb3dpbmcNCj4gPiArZm9ybWF0Og0K
+PiA+ICtcYmVnaW57bHN0bGlzdGluZ30NCj4gPiArc3RydWN0IHZpcnRpb192ZG1hYnVmX2J1Zl9p
+ZF90ew0KPiA+ICsgICAgICAgIGxlNjQgaWQ7DQo+ID4gKyAgICAgICAgbGUzMiBybmdfa2V5WzJd
+Ow0KPiA+ICt9Ow0KPiA+ICtcZW5ke2xzdGxpc3Rpbmd9DQo+ID4gKw0KPiA+ICtUaGUgZmlyc3Qg
+NCBieXRlcyBvZiBcZmllbGR7aWR9IGNvbnRhaW4gYW4gSUQgYXNzb2NpYXRlZCB3aXRoIHRoZQ0K
+PiA+ICtkZXZpY2UgYW5kIHRoZSBvdGhlciA0IGJ5dGVzIGNvbnRhaW4gYSBjb3VudGVyLiBUaGUg
+bGFzdCA4IGJ5dGVzIG9mDQo+ID4gK3RoZSBhYm92ZSBzdHJ1Y3R1cmUgcmVwcmVzZW50ZWQgYnkg
+XGZpZWxke3JuZ19rZXl9IGNvbnRhaW4gcmFuZG9tDQo+ID4gK2RhdGEgdG8gZW5zdXJlIHRoYXQg
+dGhlIDEyOC1iaXQgaWRlbnRpZmllciBpcyBpbmRlZWQgdW5pcXVlIGF0IGFueSBnaXZlbiB0aW1l
+Lg0KPiA+ICsNCj4gPiArVGhlIHJlbWFpbmluZyAyNDAgYnl0ZXMgY29udGFpbiBwcml2YXRlIGRh
+dGEgc2hhcmVkIGJldHdlZW4gdGhlDQo+ID4gK2RyaXZlciBhbmQgdGhlIGRldmljZS4NCj4gPiAr
+DQo+ID4gK1xzdWJzdWJzZWN0aW9ue1ZpcnRxdWV1ZSBGbG93IENvbnRyb2x9XGxhYmVse3NlYzpE
+ZXZpY2UgVHlwZXMgLw0KPiA+ICtEbWFidWYgRGV2aWNlIC8gRGV2aWNlIE9wZXJhdGlvbiAvIFZp
+cnRxdWV1ZSBGbG93IENvbnRyb2x9DQo+ID4gKw0KPiA+ICtUaGUgc2VuZCB2aXJ0cXVldWUgY2Fy
+cmllcyBtZXNzYWdlcyBpbml0aWF0ZWQgYnkgYW4gYXBwbGljYXRpb24NCj4gPiArcnVubmluZyBp
+biB0aGUgR3Vlc3QgYW5kIHJlc3BvbnNlcyB0byBwcmV2aW91c2x5IHNlbnQgbWVzc2FnZXMuIFRo
+ZQ0KPiA+ICtyZWN2IHZpcnRxdWV1ZSBjYXJyaWVzIG1lc3NhZ2VzIGluaXRpYXRlZCBieSB0aGUg
+ZGV2aWNlLg0KPiA+ICsNCj4gPiArXHN1YnN1YnNlY3Rpb257Vk0gSUR9XGxhYmVse3NlYzpEZXZp
+Y2UgVHlwZXMgLyBEbWFidWYgRGV2aWNlIC8gRGV2aWNlDQo+ID4gK09wZXJhdGlvbiAvIFZNIElE
+fQ0KPiA+ICsNCj4gPiArVGhlIGRyaXZlciBzZW5kcyBhIFZNIElEIG1lc3NhZ2UgdG8gdGhlIGRl
+dmljZSB2aWEgdGhlIHNlbmQgdmlydHF1ZXVlDQo+ID4gK2FmdGVyIHNldHRpbmcgdGhlIFxmaWVs
+ZHtjbWR9IHRvIFZJUlRJT19WRE1BQlVGX0NNRF9ORUVEX1ZNSUQuDQo+ID4gKw0KPiA+ICtJbiBy
+ZXNwb25zZSwgdGhlIGRldmljZSB3b3VsZCBxdWV1ZSB1cCBhIG1lc3NhZ2Ugb24gdGhlIHJlY3YN
+Cj4gPiArdmlydHF1ZXVlIHdpdGggdGhlIFxmaWVsZHtjbWR9IHNldCB0byBWSVJUSU9fVkRNQUJV
+Rl9DTURfTkVFRF9WTUlEDQo+ID4gK2FuZCB0aGUgZmlyc3QgNCBieXRlcyBvZiBcZmllbGR7b3B9
+IGNvbnRhaW5pbmcgdGhlIElEIGFzc29jaWF0ZWQgd2l0aCB0aGUgZGV2aWNlLg0KPiA+ICsNCj4g
+PiArXGRyaXZlcm5vcm1hdGl2ZXtccGFyYWdyYXBofXtEZXZpY2UgT3BlcmF0aW9uOiBWTSBJRH17
+RGV2aWNlIFR5cGVzIC8NCj4gPiArRG1hYnVmIERldmljZSAvIERldmljZSBPcGVyYXRpb24gLyBW
+TSBJRH0NCj4gPiArDQo+ID4gK1RoZSByZXN0IG9mIHRoZSBtZXNzYWdlIE1VU1QgYmUgemVyb2Vk
+IG91dC4NCj4gPiArDQo+ID4gK1xzdWJzdWJzZWN0aW9ue0V4cG9ydH1cbGFiZWx7c2VjOkRldmlj
+ZSBUeXBlcyAvIERtYWJ1ZiBEZXZpY2UgLw0KPiA+ICtEZXZpY2UgT3BlcmF0aW9uIC8gRXhwb3J0
+fQ0KPiA+ICsNCj4gPiArVGhlIGRyaXZlciBzZW5kcyBhbiBFeHBvcnQgbWVzc2FnZSB0byB0aGUg
+ZGV2aWNlIHZpYSB0aGUgc2VuZA0KPiA+ICt2aXJ0cXVldWUgYWZ0ZXIgcG9wdWxhdGluZyB0aGUg
+bWVzc2FnZSBhcyBmb2xsb3dzOg0KPiA+ICsNCj4gPiArXGRyaXZlcm5vcm1hdGl2ZXtccGFyYWdy
+YXBofXtEZXZpY2UgT3BlcmF0aW9uOiBFeHBvcnR9e0RldmljZSBUeXBlcyAvDQo+ID4gK0RtYWJ1
+ZiBEZXZpY2UgLyBEZXZpY2UgT3BlcmF0aW9uIC8gRXhwb3J0fQ0KPiA+ICsNCj4gPiArVGhlIGRy
+aXZlciBNVVNUIHNldCBcZmllbGR7Y21kfSB0byBWSVJUSU9fVkRNQUJVRl9DTURfRVhQT1JULg0K
+PiA+ICsNCj4gPiArVGhlIGRyaXZlciBNVVNUIHNldCB0aGUgZmlyc3QgMTYgYnl0ZXMgb2YgXGZp
+ZWxke29wfSB0byBhIG5ldyB1bmlxdWUgSUQuDQo+ID4gKw0KPiA+ICtUaGUgZHJpdmVyIE1VU1Qg
+cG9wdWxhdGUgdGhlIG5leHQgMjAgYnl0ZXMgb2YgXGZpZWxke29wfSB3aXRoIHZhbGlkDQo+ID4g
+K21ldGEgZGF0YSBhc3NvY2lhdGVkIHdpdGggdGhlIGJ1ZmZlciByZXByZXNlbnRlZCBieSB0aGUg
+SUQuDQo+ID4gKw0KPiA+ICtcc3Vic3Vic2VjdGlvbntSZWxlYXNlfVxsYWJlbHtzZWM6RGV2aWNl
+IFR5cGVzIC8gRG1hYnVmIERldmljZSAvDQo+ID4gK0RldmljZSBPcGVyYXRpb24gLyBSZWxlYXNl
+fQ0KPiA+ICsNCj4gPiArVGhlIGRldmljZSBzZW5kcyBhIFJlbGVhc2UgbWVzc2FnZSB0byB0aGUg
+ZHJpdmVyIHZpYSB0aGUgcmVjdg0KPiA+ICt2aXJ0cXVldWUgYWZ0ZXIgcG9wdWxhdGluZyB0aGUg
+bWVzc2FnZSBhcyBmb2xsb3dzOg0KPiA+ICsNCj4gPiArXGRyaXZlcm5vcm1hdGl2ZXtccGFyYWdy
+YXBofXtEZXZpY2UgT3BlcmF0aW9uOiBSZWxlYXNlfXtEZXZpY2UgVHlwZXMNCj4gPiArLyBEbWFi
+dWYgRGV2aWNlIC8gRGV2aWNlIE9wZXJhdGlvbiAvIFJlbGVhc2V9DQo+ID4gKw0KPiA+ICtUaGUg
+ZGV2aWNlIE1VU1Qgc2V0IFxmaWVsZHtjbWR9IHRvIFZJUlRJT19WRE1BQlVGX0NNRF9SRUxFQVNF
+Lg0KPiA+ICsNCj4gPiArVGhlIGRldmljZSBNVVNUIHNldCB0aGUgZmlyc3QgMTYgYnl0ZXMgb2Yg
+XGZpZWxke29wfSB0byBhIHZhbGlkDQo+ID4gK3VuaXF1ZSBJRCB0aGF0IHdhcyBwcmV2aW91c2x5
+IHNoYXJlZCBieSB0aGUgZHJpdmVyLg0KPiA+ICsNCj4gPiArVGhlIGRldmljZSBtdXN0IHplcm8g
+b3V0IHRoZSByZW1haW5pbmcgcGFydCBvZiB0aGUgbWVzc2FnZS4NCj4gPiArDQo+ID4NCj4gDQo+
+IA0KPiAtLQ0KPiBTaWVtZW5zIEFHLCBUIFJEQSBJT1QNCj4gQ29ycG9yYXRlIENvbXBldGVuY2Ug
+Q2VudGVyIEVtYmVkZGVkIExpbnV4DQo=
 
