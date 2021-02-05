@@ -1,240 +1,290 @@
-Return-Path: virtio-dev-return-7980-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-7981-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 70135986629
-	for <virtio-dev@lists.oasis-open.org>; Fri,  5 Feb 2021 18:02:30 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 21682986621
+	for <virtio-dev@lists.oasis-open.org>; Fri,  5 Feb 2021 18:02:41 +0000 (UTC)
 From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Date: Fri,  5 Feb 2021 18:58:18 +0100
-Message-Id: <20210205175812.143886-4-jean-philippe@linaro.org>
+Date: Fri,  5 Feb 2021 18:58:20 +0100
+Message-Id: <20210205175812.143886-5-jean-philippe@linaro.org>
 In-Reply-To: <20210205175812.143886-1-jean-philippe@linaro.org>
 References: <20210205175812.143886-1-jean-philippe@linaro.org>
 MIME-Version: 1.0
-Subject: [virtio-dev] [PATCH 3/4] virtio-iommu: Add PROBE properties for tables
+Subject: [virtio-dev] [PATCH 4/4] virtio-iommu: Add Arm 64-bit page tables
 Content-Transfer-Encoding: quoted-printable
 Content-Type: text/plain; charset="US-ASCII"
 To: virtio-dev@lists.oasis-open.org
-Cc: eric.auger@redhat.com, kevin.tian@intel.com, vivek.gautam@arm.com, Jean-Philippe Brucker <jean-philippe@linaro.org>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Cc: eric.auger@redhat.com, kevin.tian@intel.com, vivek.gautam@arm.com, Jean-Philippe Brucker <jean-philippe@linaro.org>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Add several PROBE properties required for attaching tables to a domain.
-The MAP_UNMAP interface is simple enough that the same global properties
-can be used for all endpoints managed by the device. This won't be the
-case for the table interface. Hardware and emulated endpoints have
-difference properties, which have to be described in PROBE requests.
+Allow a driver to detect support for Arm page tables and attach a set of
+tables.
 
-* PAGE_SIZE_MASK: supported mapping granularity
-* INPUT_RANGE: input address size (IOVA)
-* OUTPUT_SIZE: output address size (GPA)
-* PASID_SIZE: Process Address Space ID size. To know the maximum size of
-  a PASID table.
-* TABLE_FORMAT: PASID or page table format. These will be described in
-  subsequent patches.
+When the host IOMMU is an Arm SMMUv2, a single address space per
+endpoint is supported. The driver detects the Arm LPAE page table format
+in a PROBE request and sends an ATTACH_TABLE request with a pointer to
+the page directory.
 
-Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+When the host IOMMU is an Arm SMMUv3, an intermediate "Context
+Descriptor" (CD) table has to be attached. That table is indexed by
+PASID and contains multiple pointers to page directories:
+
+                 CD table          Page directory
+                +-------+   ,------->+-------+
+                :       :   |        :       :
+                +-------+   |        +-------+
+         PASID->|  CD   |---'    VA->|  PTE  |--> GPA
+                +-------+            +-------+
+                :       :            :       :
+                +-------+            +-------+
+
+The driver detects support for both table formats in a PROBE request and
+sends an ATTACH_TABLE request with a pointer to the context descriptor
+table.
+
+These features are voluntarily omitted:
+* Stall, which cannot be supported without recoverable page faults. I do
+  plan to implement this once we get to the I/O Page fault extensions.
+* Big endian page tables.
+* AArch32 LPAE format and per-armv8 short descriptor format.
+* Page-based Hardware Attributes (PBHA), Auxiliary Memory Attributes
+  (AMAIR)
+* Memory Partioning And Monitoring (MPAM)
+
+Support for any of these could easily be added later, by adding flags to
+the PROBE property and fields in the ATTACH_TABLE config. However, most
+of these extensions might never be needed.
+
+Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 ---
- virtio-iommu.tex | 159 ++++++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 158 insertions(+), 1 deletion(-)
+ introduction.tex |   6 ++
+ virtio-iommu.tex | 180 +++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 186 insertions(+)
 
+diff --git a/introduction.tex b/introduction.tex
+index bc0217f..1603726 100644
+--- a/introduction.tex
++++ b/introduction.tex
+@@ -76,6 +76,12 @@ \section{Normative References}\label{sec:Normative Refer=
+ences}
+ =09\phantomsection\label{intro:I2C}\textbf{[I2C]} &
+ =09I2C-bus specification and user manual,
+ =09\newline\url{https://www.nxp.com/docs/en/user-guide/UM10204.pdf}\\
++=09\phantomsection\label{intro:SMMUv3}\textbf{[SMMUv3]} &
++=09Arm System Memory Management Unit version 3
++=09\newline\url{https://developer.arm.com/documentation/ihi0070/latest} \\
++=09\phantomsection\label{intro:Armv8-A}\textbf{[ARMv8-A]} &
++=09Armv8-A Architecture Reference Manual
++=09\newline\url{https://developer.arm.com/documentation/ddi0487/latest} \\
+=20
+ \end{longtable}
+=20
 diff --git a/virtio-iommu.tex b/virtio-iommu.tex
-index 1ca2638..e14bd67 100644
+index e14bd67..bc18342 100644
 --- a/virtio-iommu.tex
 +++ b/virtio-iommu.tex
-@@ -871,7 +871,12 @@ \subsubsection{PROBE request}\label{sec:Device Types /=
- IOMMU Device / Device ope
- \subsubsection{PROBE properties}\label{sec:Device Types / IOMMU Device / D=
-evice operations / PROBE properties}
-=20
- \begin{lstlisting}
--#define VIRTIO_IOMMU_PROBE_T_RESV_MEM   1
-+#define VIRTIO_IOMMU_PROBE_T_RESV_MEM       1
-+#define VIRTIO_IOMMU_PROBE_T_PAGE_SIZE_MASK 2
-+#define VIRTIO_IOMMU_PROBE_T_INPUT_RANGE    3
-+#define VIRTIO_IOMMU_PROBE_T_OUTPUT_SIZE    4
-+#define VIRTIO_IOMMU_PROBE_T_PASID_SIZE     5
-+#define VIRTIO_IOMMU_PROBE_T_TABLE_FORMAT   6
- \end{lstlisting}
-=20
- \paragraph{Property RESV_MEM}\label{sec:Device Types / IOMMU Device / Devi=
-ce operations / PROBE properties / RESVMEM}
-@@ -934,6 +939,158 @@ \subsubsection{PROBE properties}\label{sec:Device Typ=
-es / IOMMU Device / Device
- The device SHOULD NOT allow accesses from the endpoint to RESV_MEM regions
- to affect any other component than the endpoint and the driver.
-=20
+@@ -1176,3 +1176,183 @@ \subsubsection{Fault reporting}\label{sec:Device Ty=
+pes / IOMMU Device / Device o
+ \footnotetext{This would happen for example if the device implements a
+ more recent version of this specification, whose fault report contains
+ additional fields.}
 +
-+\paragraph{Property PAGE_SIZE_MASK}\label{sec:Device Types / IOMMU Device =
-/ Device operations / PROBE properties / PAGE_SIZE_MASK}
++\subsection{Table formats}\label{sec:Device Types / IOMMU Device / Table F=
+ormats}
 +
-+\begin{lstlisting}
-+struct virtio_iommu_probe_page_size_mask {
-+  struct virtio_iommu_probe_property head;
-+  u8    reserved[4];
-+  le64  page_size_mask;
-+};
-+\end{lstlisting}
++Supported table formats in PROBE properties and ATTACH_TABLE
++requests are:
++\begin{description}
++  \item[VIRTIO_IOMMU_PST_ARM_SMMU3 (1)] Arm SMMUv3 Context
++    Descriptor Tables.
++  \item[VIRTIO_IOMMU_PGT_ARM64 (2)] Arm VMSAv8-64 page tables.
++\end{description}
 +
-+The PAGE_SIZE_MASK property overrides the global
-+\field{page_size_mask} configuration for an endpoint.
++\subsubsection{Arm SMMUv3 Context Descriptor table}\label{sec:Device Types=
+ / IOMMU Device / Table Formats / Arm SMMUv3 Context Descriptor}
 +
-+The \field{page_size_mask} field behaves in the same way as the
-+global \field{page_size_mask} field, described in \ref{sec:Device
-+Types / IOMMU Device / Device operations}. The least significant
-+bit describes the mapping granularity, while additional bits are
-+hints.
++Attach Context Descriptor tables (PASID tables) in the format
++described in the \hyperref[intro:SMMUv3]{Arm System Memory
++Management Unit v3 specification}. The table contains context
++descriptors indexed by PASID, each pointing to a page directory.
 +
-+\drivernormative{\subparagraph}{Property PAGE_SIZE_MASK}{Device Types / IO=
-MMU Device / Device operations / PROBE properties / PAGE_SIZE_MASK}
-+
-+The driver MUST ignore \field{reserved}.
-+
-+\devicenormative{\subparagraph}{Property PAGE_SIZE_MASK}{Device Types / IO=
-MMU Device / Device operations / PROBE properties / PAGE_SIZE_MASK}
-+
-+The device SHOULD set \field{reserved} to zero.
-+
-+The device MAY present multiple PAGE_SIZE_MASK property per
-+endpoint.
-+
-+
-+\paragraph{Property INPUT_RANGE}\label{sec:Device Types / IOMMU Device / D=
-evice operations / PROBE properties / INPUT_RANGE}
++\paragraph{PROBE properties for Arm SMMUv3 Context Descriptor tables}\labe=
+l{sec:Device Types / IOMMU Device / Table Formats / Arm SMMUv3 Context Desc=
+riptor / PROBE}
 +
 +\begin{lstlisting}
-+struct virtio_iommu_probe_input_range {
-+  struct virtio_iommu_probe_property head;
-+  u8    reserved[4];
-+  le64  start;
-+  le64  end;
-+};
-+\end{lstlisting}
-+
-+The INPUT_RANGE property overrides the global \field{input_range}
-+configuration for an endpoint.
-+
-+Fields \field{start} and \field{end} behave in the same way as
-+the global \field{input_range.start} and \field{input_range.end}
-+fields, described in \ref{sec:Device Types / IOMMU Device /
-+Device operations}.
-+
-+\drivernormative{\subparagraph}{Property INPUT_RANGE}{Device Types / IOMMU=
- Device / Device operations / PROBE properties / INPUT_RANGE}
-+
-+The driver MUST ignore \field{reserved}.
-+
-+\devicenormative{\subparagraph}{Property INPUT_RANGE}{Device Types / IOMMU=
- Device / Device operations / PROBE properties / INPUT_RANGE}
-+
-+The device SHOULD set \field{reserved} to zero.
-+
-+The device SHOULD NOT present more than one INPUT_RANGE property
-+per endpoint.
-+
-+The device MAY present an INPUT_RANGE property even if it does
-+not offer the VIRTIO_IOMMU_F_INPUT_RANGE feature.
-+
-+
-+\paragraph{Property OUTPUT_SIZE}\label{sec:Device Types / IOMMU Device / D=
-evice operations / PROBE properties / OUTPUT_SIZE}
-+
-+\begin{lstlisting}
-+struct virtio_iommu_probe_output_size {
-+  struct virtio_iommu_probe_property head;
-+  u8=09bits_count;
-+  u8=09reserved[3];
-+};
-+\end{lstlisting}
-+
-+The OUTPUT_SIZE property describes the maximum guest-physical
-+address that the device supports for this endpoint.
-+\field{bits_count} is the number of bits that an address can use.
-+
-+\drivernormative{\subparagraph}{Property OUTPUT_SIZE}{Device Types / IOMMU=
- Device / Device operations / PROBE properties / OUTPUT_SIZE}
-+
-+The driver MUST ignore \field{reserved}.
-+
-+The driver SHOULD NOT use guest-physical addresses larger than
-+the size defined by \field{bits_count} in a MAP request or in a
-+page table.
-+
-+\devicenormative{\subparagraph}{Property OUTPUT_SIZE}{Device Types / IOMMU=
- Device / Device operations / PROBE properties / OUTPUT_SIZE}
-+
-+The device SHOULD set \field{reserved} to zero.
-+
-+The device SHOULD NOT present more than one OUTPUT_SIZE property
-+per endpoint.
-+
-+
-+\paragraph{Property PASID_SIZE}\label{sec:Device Types / IOMMU Device / De=
-vice operations / PROBE properties / PASID_SIZE}
-+
-+\begin{lstlisting}
-+struct virtio_iommu_probe_pasid_size {
-+  struct virtio_iommu_probe_property head;
-+  u8  bits_count;
-+  u8  reserved[3];
-+};
-+\end{lstlisting}
-+
-+The PASID_SIZE property describes the maximum PASID that the
-+device supports for this endpoint. \field{bits_count} is the
-+number of PASID bits that the device can receive in a DMA
-+transaction from this endpoint. This property is conflated with
-+the endpoint PASID size, obtained through a platform specific
-+mechanism such as a PCIe PASID capability.
-+
-+\drivernormative{\subparagraph}{Property PASID_SIZE}{Device Types / IOMMU =
-Device / Device operations / PROBE properties / PASID_SIZE}
-+
-+The driver MUST ignore \field{reserved}.
-+
-+The driver SHOULD NOT use PASIDs larger than the size defined by
-+\field{bits_count} when updating a PASID table, or in an
-+INVALIDATE request.
-+
-+\devicenormative{\subparagraph}{Property PASID_SIZE}{Device Types / IOMMU =
-Device / Device operations / PROBE properties / PASID_SIZE}
-+
-+The device SHOULD set \field{reserved} to zero.
-+
-+The device SHOULD NOT present more than one PASID_SIZE property
-+per endpoint.
-+
-+
-+\paragraph{Property TABLE_FORMAT}\label{sec:Device Types / IOMMU Device / =
-Device operations / PROBE properties / TABLE_FORMAT}
-+
-+\begin{lstlisting}
-+struct virtio_iommu_probe_table_format {
++struct virtio_iommu_probe_pst_arm_smmu3 {
 +  struct virtio_iommu_probe_property head;
 +  le16  format;
++  u8    reserved[2];
++  le64  flags;
++};
 +
-+  /* Format-specific fields follow */
++#define VIRTIO_IOMMU_PST_ARM_SMMU3_F_BTM    (1ULL << 0)
++\end{lstlisting}
++
++Supported flags are:
++\begin{description}
++  \item[VIRTIO_IOMMU_PST_ARM_SMMU3_F_BTM] Broadcast TLB
++    maintenance is supported. INVALIDATE requests for
++    \field{caches} VIRTIO_IOMMU_INVAL_C_TLB can be replaced by
++    broadcast TLBI instructions. INVALIDATE requests for
++    \field{caches} VIRTIO_IOMMU_INVAL_C_EP_TLB, if the endpoint
++    has PCIe ATS enabled, are still necessary.
++\end{description}
++
++\paragraph{ATTACH_TABLE request for Arm SMMUv3 Context Descriptor tables}\=
+label{sec:Device Types / IOMMU Device / Table Formats / Arm SMMUv3 Context =
+Descriptor / ATTACH_TABLE}
++
++\begin{lstlisting}
++struct virtio_iommu_req_attach_pst_arm_smmu3 {
++  struct virtio_iommu_req_head head;
++  le32  domain;
++  le32  endpoint;
++  le16  format;
++  u8    s1fmt;
++  u8    s1dss;
++  le64  s1contextptr;
++  u8    s1cdmax;
++  u8    reserved[51];
++  struct virtio_iommu_req_tail tail;
++};
++
++/* Stage-1 format */
++#define VIRTIO_IOMMU_PST_ARM_SMMU3_LINEAR     0x0
++#define VIRTIO_IOMMU_PST_ARM_SMMU3_4KL2       0x1
++#define VIRTIO_IOMMU_PST_ARM_SMMU3_64KL2      0x2
++
++/* Stage-1 default substream */
++#define VIRTIO_IOMMU_PST_ARM_SMMU3_DSS_TERM   0x0
++#define VIRTIO_IOMMU_PST_ARM_SMMU3_DSS_BYPASS 0x1
++#define VIRTIO_IOMMU_PST_ARM_SMMU3_DSS_0      0x2
++\end{lstlisting}
++
++\begin{description}
++  \item[\field{s1fmt}] The layout used for the context descriptor
++    table:
++    \begin{description}
++      \item{LINEAR} Single table level,
++      \item{4KL2} Two-level tables with 4KB leaf tables,
++      \item{64KL2} Two-level tables with 64KB leaf tables.
++    \end{description}
++  \item[\field{s1dss}] Default substream (PASID) behavior:
++    \begin{description}
++      \item{DSS_TERM} Transactions without a substream are
++        terminated.
++      \item{DSS_BYPASS} Transactions without a substream bypass
++        translation.
++      \item{DSS_0} Transactions without a substream use entry 0
++        of the table. Substream 0 is invalid.
++    \end{description}
++  \item[\field{s1contextptr}] Address of the context descriptor
++    table, in guest-physical address space.
++  \item[\field{s1cdmax}] Size of the table. $2^\field{s1cdmax}$
++    is the number of context descriptors.
++\end{description}
++
++\drivernormative{\subparagraph}{ATTACH_TABLE request for Arm SMMUv3 Contex=
+t Descriptor tables}{Device Types / IOMMU Device / Table Formats / Arm SMMU=
+v3 Context Descriptor / ATTACH_TABLE}
++
++\field{s1contextptr} MUST be aligned on 64 bytes.
++
++\field{s1cdmax} MUST be less than or equal to \field{bits_count}
++in the VIRTIO_IOMMU_PROBE_T_PASID_SIZE property.
++
++\subsubsection{Arm 64-bit page tables}\label{sec:Device Types / IOMMU Devi=
+ce / Table Formats / Arm64}
++
++Attach page tables in the Arm VMSAv8-64 format, as described by
++the \hyperref[intro:Armv8-A]{Armv8-A Architecture Reference
++Manual}. The descriptors are little-endian.
++
++\paragraph{PROBE properties for Arm 64-bit page tables}\label{sec:Device T=
+ypes / IOMMU Device / Table Formats / Arm64 / PROBE}
++
++\begin{lstlisting}
++struct virtio_iommu_probe_pgt_arm64 {
++  struct virtio_iommu_probe_property head;
++  le16  format;
++  u8    reserved[2];
++  le64  flags;
++};
++
++#define VIRTIO_IOMMU_PGT_ARM64_F_ASID16     (1ULL << 1)
++#define VIRTIO_IOMMU_PGT_ARM64_F_HW_ACCESS  (1ULL << 2)
++#define VIRTIO_IOMMU_PGT_ARM64_F_HW_DIRTY   (1ULL << 3)
++\end{lstlisting}
++
++\begin{description}
++  \item[VIRTIO_IOMMU_PGT_ARM64_F_ASID16] ASIDs can be up to 16
++    bits. When unset, ASID are only 8 bits.
++  \item[VIRTIO_IOMMU_PGT_ARM64_F_HW_ACCESS] Hardware management
++    of the access bit. The device can write the access bit in page
++    table entries.
++  \item[VIRTIO_IOMMU_PGT_ARM64_F_HW_DIRTY] Hardware management of
++    the dirty bit. The device can set the dirty bit in page table
++    entries.
++\end{description}
++
++\paragraph{ATTACH_TABLE request for Arm 64-bit page tables}\label{sec:Devi=
+ce Types / IOMMU Device / Table Formats / Arm64 / ATTACH_TABLE}
++
++Attach a single set of page tables to an endpoint.
++
++\begin{lstlisting}
++struct virtio_iommu_req_attach_pgt_arm64 {
++  struct virtio_iommu_req_head head;
++  le32  domain;
++  le32  endpoint;
++  le16  format;
++  u8    reserved[2]
++  le64  tcr;
++  le64  ttbr0;
++  le64  ttbr1;
++  le64  mair;
++  u8    reserved1[32];
++  struct virtio_iommu_req_tail tail;
 +};
 +\end{lstlisting}
 +
-+The TABLE_FORMAT property describes a page table or PASID table
-+format that the device supports for this endpoint. The format is
-+used in ATTACH_TABLE requests. Formats are described in section
-+\ref{sec:Device Types / IOMMU Device / Table Formats}.
++\begin{description}
++  \item[\field{tcr}] Translation Control Registers, corresponding
++    to TCR_EL1 described in the Armv8-A Architecture Reference
++    Manual.
++  \item[\field{ttbr0}] Translation Table Base Register
++    corresponding to TTBR0_EL1.
++  \item[\field{ttbr1}] Translation Table Base Register
++    corresponding to TTBR1_EL1.
++  \item[\field{mair}] Memory Attribute Index Register
++    corresponding to MAIR_EL1.
++\end{description}
 +
-+\devicenormative{\subparagraph}{Property TABLE_FORMAT}{Device Types / IOMM=
-U Device / Device operations / PROBE properties / TABLE_FORMAT}
++\drivernormative{\subparagraph}{ATTACH_TABLE request for Arm 64-bit page t=
+ables}{Device Types / IOMMU Device / Table Formats / Arm64 / ATTACH_TABLE}
 +
-+The device MAY present more than one TABLE_FORMAT property. If
-+the device presents a PASID table format, it SHOULD also present
-+a compatible page table format.
++The driver SHOULD set fields \field{reserved} and
++\field{reserved1} to zero.
 +
++If the endpoint supports a Context Descriptor table format, the
++driver SHOULD NOT send an ATTACH_TABLE request with Arm 64-bit
++tables. It SHOULD instead attach a Context Descriptor table.
 +
- \subsubsection{Fault reporting}\label{sec:Device Types / IOMMU Device / De=
-vice operations / Fault reporting}
-=20
- The device can report translation faults and other significant
++\devicenormative{\subparagraph}{ATTACH_TABLE request for Arm 64-bit page t=
+ables}{Device Types / IOMMU Device / Table Formats / Arm64 / ATTACH_TABLE}
++
++The device MUST ignore fields \field{reserved} and
++\field{reserved1}.
++
++\paragraph{INVALIDATE request for Arm 64-bit page tables}\label{sec:Device=
+ Types / IOMMU Device / Table Formats / Arm64 / INVALIDATE}
++
++Bits [15:0] of \field{id} in an INVALIDATE request correspond to
++the address space ID (ASID) of the page directory.
 --=20
 2.30.0
 
