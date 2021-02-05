@@ -1,191 +1,208 @@
-Return-Path: virtio-dev-return-7978-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-7979-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 48636986621
-	for <virtio-dev@lists.oasis-open.org>; Fri,  5 Feb 2021 18:02:08 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 73DA7986621
+	for <virtio-dev@lists.oasis-open.org>; Fri,  5 Feb 2021 18:02:24 +0000 (UTC)
 From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Date: Fri,  5 Feb 2021 18:58:14 +0100
-Message-Id: <20210205175812.143886-2-jean-philippe@linaro.org>
+Date: Fri,  5 Feb 2021 18:58:16 +0100
+Message-Id: <20210205175812.143886-3-jean-philippe@linaro.org>
 In-Reply-To: <20210205175812.143886-1-jean-philippe@linaro.org>
 References: <20210205175812.143886-1-jean-philippe@linaro.org>
 MIME-Version: 1.0
-Subject: [virtio-dev] [PATCH 1/4] virtio-iommu: Add ATTACH_TABLE request
+Subject: [virtio-dev] [PATCH 2/4] virtio-iommu: Add INVALIDATE request
 Content-Transfer-Encoding: quoted-printable
 Content-Type: text/plain; charset="US-ASCII"
 To: virtio-dev@lists.oasis-open.org
-Cc: eric.auger@redhat.com, kevin.tian@intel.com, vivek.gautam@arm.com, Jean-Philippe Brucker <jean-philippe@linaro.org>
+Cc: eric.auger@redhat.com, kevin.tian@intel.com, vivek.gautam@arm.com, Jean-Philippe Brucker <jean-philippe@linaro.org>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Add a way to attach page tables to a domain. Only introduces the feature
-bit and the ATTACH_TABLE request. We'll also need new PROBE properties
-and INVALIDATE requests.
+Add a request that invalidates mappings of a domain attached with table.
 
-I chose ATTACH_TABLE request rather than ATTACH followed by SET_TABLE
-because it leads to fewer domain states. With ATTACH_TABLE a domain can
-be free, attached-with-map or attached-with-pgtable. With
-ATTACH+SET_TABLE, a domain can be free, attached, attached-with-map or
-attached-with-pgtable. I believe managing state transitions for
-ATTACH_TABLE is simpler.
-
-Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
 ---
- virtio-iommu.tex | 74 ++++++++++++++++++++++++++++++++++++++++++------
- 1 file changed, 65 insertions(+), 9 deletions(-)
+ virtio-iommu.tex | 151 +++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 151 insertions(+)
 
 diff --git a/virtio-iommu.tex b/virtio-iommu.tex
-index efa735b..840f897 100644
+index 840f897..1ca2638 100644
 --- a/virtio-iommu.tex
 +++ b/virtio-iommu.tex
-@@ -54,9 +54,7 @@ \subsection{Feature bits}\label{sec:Device Types / IOMMU =
-Device / Feature bits}
-   The number of domains supported is described in \field{domain_range}.
-=20
- \item[VIRTIO_IOMMU_F_MAP_UNMAP (2)]
--  Map and unmap requests are available.\footnote{Future extensions may add
--  different modes of operations. At the moment, only
--  VIRTIO_IOMMU_F_MAP_UNMAP is supported.}
-+  Map and unmap requests are available.
-=20
- \item[VIRTIO_IOMMU_F_BYPASS (3)]
-   When not attached to a domain, endpoints downstream of the IOMMU
-@@ -67,6 +65,9 @@ \subsection{Feature bits}\label{sec:Device Types / IOMMU =
-Device / Feature bits}
-=20
- \item[VIRTIO_IOMMU_F_MMIO (5)]
-   The VIRTIO_IOMMU_MAP_F_MMIO flag is available.
-+
-+\item[VIRTIO_IOMMU_F_ATTACH_TABLE (6)]
-+  The ATTACH_TABLE and INVALIDATE requests are available.
- \end{description}
-=20
- \drivernormative{\subsubsection}{Feature bits}{Device Types / IOMMU Device=
- / Feature bits}
-@@ -77,7 +78,8 @@ \subsection{Feature bits}\label{sec:Device Types / IOMMU =
-Device / Feature bits}
-=20
- \devicenormative{\subsubsection}{Feature bits}{Device Types / IOMMU Device=
- / Feature bits}
-=20
--The device SHOULD offer feature bit VIRTIO_IOMMU_F_MAP_UNMAP.
-+The device MUST offer at least one of the
-+VIRTIO_IOMMU_F_MAP_UNMAP or VIRTIO_IOMMU_F_ATTACH_TABLE features.
-=20
- \subsection{Device configuration layout}\label{sec:Device Types / IOMMU De=
-vice / Device configuration layout}
-=20
-@@ -161,11 +163,12 @@ \subsection{Device operations}\label{sec:Device Types=
- / IOMMU Device / Device op
- Type may be one of:
-=20
- \begin{lstlisting}
--#define VIRTIO_IOMMU_T_ATTACH     1
--#define VIRTIO_IOMMU_T_DETACH     2
--#define VIRTIO_IOMMU_T_MAP        3
--#define VIRTIO_IOMMU_T_UNMAP      4
--#define VIRTIO_IOMMU_T_PROBE      5
-+#define VIRTIO_IOMMU_T_ATTACH       1
-+#define VIRTIO_IOMMU_T_DETACH       2
-+#define VIRTIO_IOMMU_T_MAP          3
-+#define VIRTIO_IOMMU_T_UNMAP        4
-+#define VIRTIO_IOMMU_T_PROBE        5
-+#define VIRTIO_IOMMU_T_ATTACH_TABLE 6
+@@ -169,6 +169,7 @@ \subsection{Device operations}\label{sec:Device Types /=
+ IOMMU Device / Device op
+ #define VIRTIO_IOMMU_T_UNMAP        4
+ #define VIRTIO_IOMMU_T_PROBE        5
+ #define VIRTIO_IOMMU_T_ATTACH_TABLE 6
++#define VIRTIO_IOMMU_T_INVALIDATE   7
  \end{lstlisting}
 =20
  A few general-purpose status codes are defined here.
-@@ -301,6 +304,10 @@ \subsubsection{ATTACH request}\label{sec:Device Types =
-/ IOMMU Device / Device op
- The driver SHOULD ensure that endpoints that cannot be isolated from each
- other are attached to the same domain.
+@@ -612,6 +613,156 @@ \subsubsection{UNMAP request}\label{sec:Device Types =
+/ IOMMU Device / Device ope
+ mapping, then the device SHOULD remove all mappings affected by the range
+ and set the request \field{status} to VIRTIO_IOMMU_S_OK.
 =20
-+The driver SHOULD NOT create the \field{domain} with an ATTACH
-+request if the VIRTIO_IOMMU_F_MAP_UNMAP feature was not
-+negotiated. In this case the ATTACH_TABLE request is used.
-+
- \devicenormative{\paragraph}{ATTACH request}{Device Types / IOMMU Device /=
- Device operations / ATTACH request}
-=20
- If the \field{reserved} field of an ATTACH request is not zero, the device
-@@ -330,6 +337,49 @@ \subsubsection{ATTACH request}\label{sec:Device Types =
-/ IOMMU Device / Device op
-=20
- A device that does not reject the request MUST attach the endpoint.
-=20
-+\subsubsection{ATTACH_TABLE request}\label{ref:Device Types / IOMMU Device=
- / Device operations / ATTACH_TABLE request}
++\subsubsection{INVALIDATE request}\label{sec:Device Types / IOMMU Device /=
+ Device operations / INVALIDATE request}
 +
 +\begin{lstlisting}
-+struct virtio_iommu_req_attach_table {
-+=09struct virtio_iommu_req_head head;
-+=09le32 domain;
-+=09le32 endpoint;
-+=09le16 format;
-+=09u8   descriptor[62];
-+=09struct virtio_iommu_req_tail tail;
++struct virtio_iommu_req_invalidate {
++  struct virtio_iommu_req_head head;
++  u8    scope;
++  u8    caches;
++  le16  flags;
++  le32  domain;
++  le32  pasid;
++  le64  id;
++  le64  virt_start;
++  le64  nr_pages;
++  u8    page_size;
++  u8    reserved[19];
++  struct virtio_iommu_req_tail tail;
 +};
++
++#define VIRTIO_IOMMU_INVAL_S_DOMAIN   1
++#define VIRTIO_IOMMU_INVAL_S_PASID    2
++#define VIRTIO_IOMMU_INVAL_S_ADDRESS  3
++
++#define VIRTIO_IOMMU_INVAL_C_PASID    (1 << 0)
++#define VIRTIO_IOMMU_INVAL_C_TLB      (1 << 1)
++#define VIRTIO_IOMMU_INVAL_C_EP_TLB   (1 << 2)
++
++#define VIRTIO_IOMMU_INVAL_F_LEAF     (1 << 0)
++#define VIRTIO_IOMMU_INVAL_F_PASID    (1 << 1)
++#define VIRTIO_IOMMU_INVAL_F_ID       (1 << 2)
++
 +\end{lstlisting}
 +
-+Attach an endpoint to a domain, in the same way as an ATTACH
-+request. In addition, provide a pointer to a table describing the
-+mappings. Instead of using MAP and UNMAP requests, the driver
-+creates and removes mappings by writing into the tables. When a
-+mapping that may have been cached in a TLB is removed, the driver
-+sends an INVALIDATE request.
++Invalidate a mapping or configuration. When using PASID or page
++tables, the driver sends an INVALIDATE request to signal changes
++to table elements that could have been cached by the device, such
++as a mapping removal.
 +
-+The driver discovers with a PROBE request the table formats
-+supported by the device. The device can support multiple page
-+tables and PASID table formats. A PASID table contains pointers
-+to one or more page tables. The driver chooses a format it
-+recognises, and sends the ATTACH_TABLE request.
++Field \field{scope} specifies which entries to invalidate:
++\begin{description}
++  \item[VIRTIO_IOMMU_INVAL_S_DOMAIN] invalidates all cached
++    entries for the given \field{domain}.
++  \item[VIRTIO_IOMMU_INVAL_S_PASID] invalidates all cached
++    entries for the given \field{domain} and \field{pasid}.
++  \item[VIRTIO_IOMMU_INVAL_S_ADDRESS] invalidates all cached
++    entries for the given \field{domain}, \field{pasid} and
++    virtual address range.
++\end{description}
 +
-+Apart from \field{domain}, \field{endpoint} and \field{format},
-+each table format uses different parameters in field
-+\field{descriptor}. Table formats and their associated parameters
-+are described in section \ref{sec:Device Types / IOMMU Device /
-+Table Formats}.
++Field \field{caches} specifies which caches to invalidate:
++\begin{description}
++  \item[VIRTIO_IOMMU_INVAL_C_PASID] Invalidate entries cached
++    from the PASID table.
++  \item[VIRTIO_IOMMU_INVAL_C_TLB] Invalidate entries from the
++    Translation Lookaside Buffer (TLB).
++  \item[VIRTIO_IOMMU_INVAL_C_EP_TLB] Invalidate entries from the
++    TLB of endpoints attached to the domain. For example when a
++    PCIe endpoint has an Address Translation Cache (ATC),
++    discovered and enabled through the PCIe ATS capability.
++\end{description}
 +
-+\drivernormative{\paragraph}{ATTACH_TABLE request}{Device Types / IOMMU De=
-vice / Device operations / ATTACH_TABLE request}
++For example, when the driver removes a mapping from a table
++attached to the \field{domain}, it sends an INVALIDATE request
++with \field{scope} VIRTIO_IOMMU_INVAL_S_ADDRESS, \field{caches}
++VIRTIO_IOMMU_INVAL_C_TLB and, if necessary,
++VIRTIO_IOMMU_INVAL_C_EP_TLB. To invalidate the whole address
++space the driver sets the \field{scope} to
++VIRTIO_IOMMU_INVAL_S_DOMAIN, or to VIRTIO_IOMMU_INVAL_S_PASID
++when using a PASID table. When removing a page table directory
++from a PASID table entry, the driver sends an INVALIDATE request
++with \field{scope} VIRTIO_IOMMU_INVAL_S_PASID, and all
++\field{caches} flags set.
 +
-+The driver SHOULD NOT send ATTACH_TABLE requests if the
-+VIRTIO_IOMMU_F_ATTACH_TABLE feature was not negotiated.
++Field \field{flags} specifies additional information:
++\begin{description}
++  \item[VIRTIO_IOMMU_INVAL_F_LEAF] Only invalidate TLB entries
++    cached from leaf table entries.
++  \item[VIRTIO_IOMMU_INVAL_F_PASID] The \field{pasid} field is
++    valid.
++  \item[VIRTIO_IOMMU_INVAL_F_ID] The \field{id} field is valid.
++\end{description}
 +
-+The driver SHOULD NOT send ATTACH_TABLE requests with an existing
-+\field{domain}. To attach additional endpoints to a domain
-+created with ATTACH_DOMAIN, the driver SHOULD send an ATTACH
-+request. All endpoints attached to a domain MUST support the same
-+table formats.
++Use of field \field{id} is specific to the table format. Some
++formats use only the PASID to identify address spaces within a
++domain, others use a separate ID for TLB entries.
 +
- \subsubsection{DETACH request}
-=20
- \begin{lstlisting}
-@@ -446,6 +496,9 @@ \subsubsection{MAP request}\label{sec:Device Types / IO=
-MMU Device / Device opera
- If the VIRTIO_IOMMU_F_MMIO feature isn't negotiated, the driver MUST NOT
- use the VIRTIO_IOMMU_MAP_F_MMIO flag.
-=20
-+\field{domain} SHOULD NOT have been created with an ATTACH_TABLE
++For a \field{scope} of VIRTIO_IOMMU_INVAL_S_ADDRESS, the
++invalidation affects the range of virtual addresses of size
++$\field{nr\_pages} \times 2^\field{page\_size}$, starting at
++\field{virt_start}. Specifying the range size this way allows the
++device to efficiently remove TLB entries. For example a page
++table format could allow a 2MiB range to be mapped with either
++512 4KiB pages, or a single 2MiB block. In the latter case a
++single TLB entry is used, so the driver specifies a
++\field{page_size} of 21 and the device does not need to iterate
++over all 4KiB multiples to invalidate the range.
++
++The following table describes the restricted set of valid
++\field{caches}, \field{flags} and fields for each \field{scope}:
++
++\begin{tabular}{|l|c|c|c|}
++\hline
++  \field{scope}       & DOMAIN      & PASID               & ADDRESS \\
++\hline
++  \field{caches}      & PASID, TLB  & PASID, TLB, EP_TLB  & TLB, EP_TLB \\
++  \field{flags}       & ID          & LEAF, PASID, ID     & LEAF, PASID, I=
+D \\
++  \field{domain}      & Y           & Y                   & Y \\
++  \field{pasid}       & N           & Y                   & Y \\
++  \field{id}          & Y           & Y                   & Y \\
++  \field{virt_start}  & N           & N                   & Y \\
++  \field{nr_pages}    & N           & N                   & Y \\
++  \field{page_size}   & N           & N                   & Y \\
++\hline
++\end{tabular}
++
++\devicenormative{\paragraph}{INVALIDATE request}{Device Types / IOMMU Devi=
+ce / Device operations / INVALIDATE request}
++
++After handling an INVALIDATE request, the device SHOULD NOT let
++endpoints attached to \field{domain} access virtual address in
++the invalidated range, unless the range is valid in the table
++attached to the \field{domain}. In other words, the device SHOULD
++access the virtual address through the attached tables instead of
++a cache.
++
++For a \field{scope} of VIRTIO_IOMMU_INVAL_S_DOMAIN, the device
++SHOULD ignore fields \field{pasid}, \field{virt_start},
++\field{nr_pages} and \field{page_size}.
++
++For a \field{scope} of VIRTIO_IOMMU_INVAL_S_PASID, the device
++SHOULD ignore fields \field{virt_start}, \field{nr_pages},
++\field{page_size},
++
++If no cache entry exist for the given parameters, the device
++SHOULD set the \field{status} field to VIRTIO_IOMMU_S_OK. In
++other words, spurious invalidations are allowed.
++
++The device MAY ignore flag VIRTIO_IOMMU_INVAL_F_LEAF.
++
++\drivernormative{\paragraph}{INVALIDATE request}{Device Types / IOMMU Devi=
+ce / Device operations / INVALIDATE request}
++
++\field{domain} MUST have been created with an ATTACH_TABLE
 +request.
 +
- \devicenormative{\paragraph}{MAP request}{Device Types / IOMMU Device / De=
-vice operations / MAP request}
-=20
- If \field{virt_start}, \field{phys_start} or (\field{virt_end} + 1) is
-@@ -538,6 +591,9 @@ \subsubsection{UNMAP request}\label{sec:Device Types / =
-IOMMU Device / Device ope
- or be outside any mapping. The last address of a range MUST either be the
- last address of a mapping or be outside any mapping.
-=20
-+\field{domain} SHOULD NOT have been created with an ATTACH_TABLE
-+request.
++For a \field{scope} of VIRTIO_IOMMU_INVAL_S_DOMAIN, the driver
++SHOULD set fields \field{pasid}, \field{virt_start},
++\field{nr_pages} and \field{page_size} to zero.
 +
- \devicenormative{\paragraph}{UNMAP request}{Device Types / IOMMU Device / =
-Device operations / UNMAP request}
++For a \field{scope} of VIRTIO_IOMMU_INVAL_S_PASID, the driver
++SHOULD set fields \field{virt_start}, \field{nr_pages},
++\field{page_size} to zero.
++
+ \subsubsection{PROBE request}\label{sec:Device Types / IOMMU Device / Devi=
+ce operations / PROBE request}
 =20
- If the \field{reserved} field of an UNMAP request is not zero, the device
+ If the VIRTIO_IOMMU_F_PROBE feature bit is present, the driver sends a
 --=20
 2.30.0
 
