@@ -1,171 +1,103 @@
-Return-Path: virtio-comment-return-1720-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-comment-return-1721-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-comment@lists.oasis-open.org>
 List-Post: <mailto:virtio-comment@lists.oasis-open.org>
 List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
+From: Souvik Chakravarty <Souvik.Chakravarty@arm.com>
+Date: Tue, 16 Feb 2021 16:48:30 +0000
+Message-ID: <DBBPR08MB4790802EA436661E4AEEEFF682879@DBBPR08MB4790.eurprd08.prod.outlook.com>
 References: <20210212095920.249768-1-peter.hilber@opensynergy.com>
- <20210215132029.GD12691@e120937-lin>
-From: Peter Hilber <peter.hilber@opensynergy.com>
-Message-ID: <e18cf222-ea57-5d0b-9ea3-47ebed868a10@opensynergy.com>
-Date: Tue, 16 Feb 2021 16:11:42 +0100
+ <20210216161208.GA1463@shell.armlinux.org.uk>
+In-Reply-To: <20210216161208.GA1463@shell.armlinux.org.uk>
 MIME-Version: 1.0
-In-Reply-To: <20210215132029.GD12691@e120937-lin>
-Subject: [virtio-comment] Re: [PATCH v6] Add virtio SCMI device specification
-Content-Type: text/plain; charset="utf-8"
+Subject: [virtio-comment] RE: [PATCH v6] Add virtio SCMI device specification
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-To: Cristian Marussi <cristian.marussi@arm.com>
-Cc: virtio-comment@lists.oasis-open.org, linux-arm-kernel@lists.infradead.org, Souvik.Chakravarty@arm.com, Sudeep.Holla@arm.com, virtio-dev@lists.oasis-open.org, alex.bennee@linaro.org, jean-philippe@linaro.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+To: Russell King - ARM Linux admin <linux@armlinux.org.uk>, Peter Hilber <peter.hilber@opensynergy.com>
+Cc: "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "jean-philippe@linaro.org" <jean-philippe@linaro.org>, Cristian Marussi <Cristian.Marussi@arm.com>, Sudeep Holla <Sudeep.Holla@arm.com>, "alex.bennee@linaro.org" <alex.bennee@linaro.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 15.02.21 14:20, Cristian Marussi wrote:
-> Hi Peter,
-> 
-> just one remark down below.
-> 
+> From: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+> Sent: Tuesday, February 16, 2021 4:12 PM
+>=20
+> On Fri, Feb 12, 2021 at 10:59:20AM +0100, Peter Hilber wrote:
+> > This patch proposes a new virtio device for the Arm SCMI protocol.
+> >
+> > The device provides a simple transport for the Arm SCMI protocol[1].
+> > The *S*ystem *C*ontrol and *M*anagement *I*nterface protocol allows
+> > speaking to system controllers that allow orchestrating things like
+> > power management, system state management and sensor access. The
+> SCMI
+> > protocol is used on SoCs where multiple cores and co-processors need
+> > access to these resources.
+> >
+> > The virtio transport allows making use of this protocol in virtualized
+> > systems.
+> >
+> > [1] https://developer.arm.com/docs/den0056/c
+> >
+> > Signed-off-by: Peter Hilber <peter.hilber@opensynergy.com>
+>=20
+> I'm not too familiar with SCMI, but I think this question is worth asking=
+...
+>=20
+> If the SCMI protocol can be used to control system level power management=
+,
+> and if the intention is to expose this firmware interface to virtualised =
+guests,
+> what prevents a guest from controlling the power settings for stuff it sh=
+ould
+> not have access to?
+>=20
+> For example, if it's possible to tell the system to power down a critical=
+ host
+> component through SCMI, what would prevent a guest requesting that
+> critical component from having its power cut?
 
-Hi Cristian,
+Short summary:
+SCMI as a protocol has built in requirements where only the resources (spec=
+ific clock, sensor etc.)
+which are specifically needed by a VM are exposed to it. Resources are mapp=
+ed by Identifiers and if
+the VM tries to access an identifier which it does not have access to, the =
+SCMI backend
+can simply ignore or return DENIED. At no point is direct access to any pow=
+er mgmt. hardware
+granted to any VM, nor is a VM supposed to have global access to all system=
+ resources.
+There is always a firmware backend which controls the hardware and services
+SCMI command requests from agents/guests, after due validation.=20
+The SCMI device/firmware which implements the SCMI backend, is responsible =
+for implementing these
+resource isolation guarantees.
 
-thanks for your comments. Please see my reply inline below.
+Regards,
+Souvik
 
-[snip]
+>=20
+> I hope I'm barking up the wrong tree...
+>=20
+> --
+> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+> FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
 
-> 
-> [snip]
-> 
->> +The cmdq is used by the driver to send commands to the device. The
->> +device replies with responses (not delayed responses) over the cmdq.
->> +
->> +The eventq is used by the device to send notifications and delayed
->> +responses. The eventq only exists if VIRTIO_SCMI_F_P2A_CHANNELS was
->> +negotiated.
->> +
->> +\subsection{Feature bits}\label{sec:Device Types / SCMI Device / Feature bits}
->> +
->> +\begin{description}
->> +\item[VIRTIO_SCMI_F_P2A_CHANNELS (0)] Device implements some SCMI
->> +notifications, or delayed responses.
->> +\item[VIRTIO_SCMI_F_SHARED_MEMORY (1)] Device implements any SCMI
->> +statistics shared memory region.
->> +\end{description}
->> +
->> +VIRTIO_SCMI_F_P2A_CHANNELS is used to determine the existence of the
->> +eventq. The eventq is required for SCMI notifications and delayed
->> +responses.
->> +
->> +VIRTIO_SCMI_F_SHARED_MEMORY is used to determine whether the device
->> +provides any SCMI statistics shared memory region. SCMI statistics
->> +shared memory regions are defined by some SCMI protocols.
->> +
->> +The SCMI protocols provide the PROTOCOL_MESSAGE_ATTRIBUTES commands to
->> +inquire about the particular SCMI notifications and delayed responses
->> +implemented by the device. The SCMI protocols provide additional
->> +commands to detect other features implemented by the device.
->> +
->> +\devicenormative{\subsubsection}{Feature bits}{Device Types / SCMI Device / Feature bits}
->> +
->> +The device MUST offer VIRTIO_SCMI_F_P2A_CHANNELS if the device can
->> +implement at least one SCMI notification, or delayed response.
->> +
->> +The device MUST offer VIRTIO_SCMI_F_SHARED_MEMORY if the device can
->> +implement at least one SCMI statistics shared memory region.
->> +
->> +\subsection{Device configuration layout}\label{sec:Device Types / SCMI Device / Device configuration layout}
->> +
->> +There is no configuration data for the device.
->> +
-> 
-> I could be missing something here, so I apologize upfront if this has
-> already been discussed elsewhere, but AFAIU the fact that no device
-> configuration is exposed here (like a device ID) implies that SCMI devices
-> are not "identifiable" from within the VirtIO subsystem, so not
-> distinguishable in other words.
-> 
-> At the same time in the companion RFC driver series it has been already
-> also ruled out (as of now at least) by the DT maintainer the possibility
-> to establish a link at the DT level between an SCMI virtio-mmio device
-> definition and the SCMI related DT descriptions (because, AFAIU, it's not
-> something needed by any of all the other existent VirtIO devices that are
-> indeed usually somehow 'identifiable')
-> 
-> These 2 things combined together rule out any future possibility to have
-> multiple SCMI devices defined on a system (at least not identifiable/usable)
-> in order to support multiple distinct transport channels against the same
-> platform (or, less desirable, multiple platforms), and in fact the SCMI virtio
-> transport RFC driver as of now states upfront that only one device/once channel
-> configuration is supported.
-> 
-> Even if not the norm probably, I would say that could be useful to leave
-> open for the future the possibility to redirect some protocols down through
-> a specific distinct VirtIO channel (other than the main one), at least for
-> debug/testing purposes if not to support multiple platform residing in
-> distinct VMs.
-> Another use case could be separating the transport channel used by some
-> possibly chatty protocol like Sensors (possibly flooding the system with
-> lots of notifications) from other SCMI protocols, that could benefit from
-> having a dedicated quieter virtio-mmio SCMI device channel (with dedicated
-> IRQs and friends...)
-> 
-> Beside that, also the general fact that this SCMI transport does not support
-> multiple channels is a bit at odd with all the other SCMI transports
-> (like mailbox/svc that, it's to be said, are indeed based instead on
-> shared memory)
-> 
-> So, what I'm saying here is if it's not the case of having some sort of
-> device_id in the configuration space, so that a platform could expose,
-> if it wants, multiple identifiable devices and the agents could pick the
-> device they want and associate with a specific protocol.
-> (via some DT transport reference to the desired SCMI device_id to use,
->  similarly to what's possible with shared mems transports)
-> 
-> But, as said, it could have been already discussed and ruled out so feel
-> free to ignore this and point me at the related pre-existing discussion
-> threads.
-> 
-
-This has not been discussed on the mailing list so far. I think both
-features, multiple devices and dedicated transport channels/virtqueues
-(similar to the SCMI SHM transport), do make sense, but we at
-OpenSynergy do so far not have a use case which requires them. The
-multiple devices feature would be straightforward to add in my
-understanding (just add an `id' device configuration field). From what
-you wrote I understand the dedicated transport channels could just mimic
-the SCMI SHM channels scheme from the Linux kernel, with optional
-per-protocol channels.
-
-Virtio is extensible through feature bits in a backwards-compatible way,
-so I think both features could also be introduced as extensions once
-there is a need for them. (This is actually done very often for other
-virtio devices.) I guess it would even be very straightforward to
-backport these features to older Linux kernels then. Would this option
-of introducing feature bits in the future address your concerns?
-
-Best regards,
-
-Peter
-
-
-> Thanks
-> 
-> Cristian
-> 
->
-
-
-This publicly archived list offers a means to provide input to the
-OASIS Virtual I/O Device (VIRTIO) TC.
-
-In order to verify user consent to the Feedback License terms and
-to minimize spam in the list archive, subscription is required
-before posting.
-
-Subscribe: virtio-comment-subscribe@lists.oasis-open.org
-Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
-List help: virtio-comment-help@lists.oasis-open.org
-List archive: https://lists.oasis-open.org/archives/virtio-comment/
-Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
-List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
-Committee: https://www.oasis-open.org/committees/virtio/
+This publicly archived list offers a means to provide input to the=0D
+OASIS Virtual I/O Device (VIRTIO) TC.=0D
+=0D
+In order to verify user consent to the Feedback License terms and=0D
+to minimize spam in the list archive, subscription is required=0D
+before posting.=0D
+=0D
+Subscribe: virtio-comment-subscribe@lists.oasis-open.org=0D
+Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org=0D
+List help: virtio-comment-help@lists.oasis-open.org=0D
+List archive: https://lists.oasis-open.org/archives/virtio-comment/=0D
+Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf=
+=0D
+List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lis=
+ts=0D
+Committee: https://www.oasis-open.org/committees/virtio/=0D
 Join OASIS: https://www.oasis-open.org/join/
 
