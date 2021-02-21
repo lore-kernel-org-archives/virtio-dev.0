@@ -1,82 +1,87 @@
-Return-Path: virtio-dev-return-8033-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-8001-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id BD70B9860B2
-	for <virtio-dev@lists.oasis-open.org>; Wed, 24 Feb 2021 15:58:56 +0000 (UTC)
-Date: Wed, 24 Feb 2021 15:57:57 +0000
-From: Stefan Hajnoczi <stefanha@redhat.com>
-Message-ID: <YDZ3hSj6c7NQ9kz2@stefanha-x1.localdomain>
-References: <CAPR809srddYRtoPue9aROJbdeFVxRRSMxzGmP5NnaoxGmJhqoA@mail.gmail.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 66C30983ED8
+	for <virtio-dev@lists.oasis-open.org>; Sun, 21 Feb 2021 13:57:55 +0000 (UTC)
+From: Anton Yakovlev <anton.yakovlev@opensynergy.com>
+Date: Sun, 21 Feb 2021 14:57:22 +0100
+Message-ID: <20210221135731.51348-1-anton.yakovlev@opensynergy.com>
 MIME-Version: 1.0
-In-Reply-To: <CAPR809srddYRtoPue9aROJbdeFVxRRSMxzGmP5NnaoxGmJhqoA@mail.gmail.com>
-Subject: Re: [virtio-dev] [PATCH] Add lifetime metrics to virtio-blk
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="xrgkOLuopaiuY5yv"
-Content-Disposition: inline
-To: Enrico Granata <egranata@google.com>
-Cc: virtio-dev@lists.oasis-open.org
+Subject: [virtio-dev] [PATCH v4 0/9] ALSA: add virtio sound driver
+Content-Type: text/plain
+Content-Transfer-Encoding: quoted-printable
+To: virtualization@lists.linux-foundation.org, alsa-devel@alsa-project.org, virtio-dev@lists.oasis-open.org
+Cc: "Michael S. Tsirkin" <mst@redhat.com>, Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
---xrgkOLuopaiuY5yv
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+This series implements a driver part of the virtio sound device
+specification v8 [1].
 
-On Fri, Feb 19, 2021 at 10:59:26AM -0700, Enrico Granata wrote:
+The driver supports PCM playback and capture substreams, jack and
+channel map controls. A message-based transport is used to write/read
+PCM frames to/from a device.
 
-Thanks! Minor comments below:
+As a device part was used OpenSynergy proprietary implementation.
 
-> @@ -4648,6 +4653,20 @@ \subsection{Device Operation}\label{sec:Device
-> Types / Block Device / Device Ope
->  \field{data}.  The device ID string is a NUL-padded ASCII string up to 2=
-0 bytes
->  long.  If the string is 20 bytes long then there is no NUL terminator.
->=20
-> +The \field{data} used for VIRTIO_BLK_T_GET_LIFETIME requests consists of=
- one
-> +segment which is populated by the device, and is of the form:
+v4 changes:
+ - fixed sparse warnings, no functional change
 
-"consists of one segment" should probably be removed. The framing
-(layout) of requests is up to the driver (see 2.6.4 Message Framing).
-struct virtio_blk_lifetime could be a single descriptor, it could be
-split across multiple descriptors, or it could be combined in a
-larger descriptor with the virtio-blk request status byte.
+[1] https://lists.oasis-open.org/archives/virtio-dev/202003/msg00185.html
 
-> +
-> +\begin{lstlisting}
-> +struct virtio_blk_lifetime {
-> +    le16 eol;
-> +    le16 lifetimeA;
-> +    le16 lifetimeB;
-> +};
-> +\end{lstlisting}
-> +
-> +The device lifetime metrics \field{eol}, \field{lifetimeA} and
-> \field{lifetimeB}
-> +have the semantics described by the JEDEC standard No.84-B50.
 
-Is there a more specific way of referencing this? For example, the
-section of the spec that describes these fields. Are the called "eol",
-"lifetimeA", "lifetimeB" in the eMMC spec?
+Anton Yakovlev (9):
+  uapi: virtio_ids: add a sound device type ID from OASIS spec
+  ALSA: virtio: add virtio sound driver
+  ALSA: virtio: handling control messages
+  ALSA: virtio: build PCM devices and substream hardware descriptors
+  ALSA: virtio: handling control and I/O messages for the PCM device
+  ALSA: virtio: PCM substream operators
+  ALSA: virtio: introduce jack support
+  ALSA: virtio: introduce PCM channel map support
+  ALSA: virtio: introduce device suspend/resume support
 
---xrgkOLuopaiuY5yv
-Content-Type: application/pgp-signature; name="signature.asc"
+ MAINTAINERS                     |   9 +
+ include/uapi/linux/virtio_ids.h |   1 +
+ include/uapi/linux/virtio_snd.h | 334 +++++++++++++++++++++
+ sound/Kconfig                   |   2 +
+ sound/Makefile                  |   3 +-
+ sound/virtio/Kconfig            |  10 +
+ sound/virtio/Makefile           |  13 +
+ sound/virtio/virtio_card.c      | 462 +++++++++++++++++++++++++++++
+ sound/virtio/virtio_card.h      | 113 ++++++++
+ sound/virtio/virtio_chmap.c     | 219 ++++++++++++++
+ sound/virtio/virtio_ctl_msg.c   | 310 ++++++++++++++++++++
+ sound/virtio/virtio_ctl_msg.h   |  78 +++++
+ sound/virtio/virtio_jack.c      | 233 +++++++++++++++
+ sound/virtio/virtio_pcm.c       | 499 ++++++++++++++++++++++++++++++++
+ sound/virtio/virtio_pcm.h       | 121 ++++++++
+ sound/virtio/virtio_pcm_msg.c   | 392 +++++++++++++++++++++++++
+ sound/virtio/virtio_pcm_ops.c   | 491 +++++++++++++++++++++++++++++++
+ 17 files changed, 3289 insertions(+), 1 deletion(-)
+ create mode 100644 include/uapi/linux/virtio_snd.h
+ create mode 100644 sound/virtio/Kconfig
+ create mode 100644 sound/virtio/Makefile
+ create mode 100644 sound/virtio/virtio_card.c
+ create mode 100644 sound/virtio/virtio_card.h
+ create mode 100644 sound/virtio/virtio_chmap.c
+ create mode 100644 sound/virtio/virtio_ctl_msg.c
+ create mode 100644 sound/virtio/virtio_ctl_msg.h
+ create mode 100644 sound/virtio/virtio_jack.c
+ create mode 100644 sound/virtio/virtio_pcm.c
+ create mode 100644 sound/virtio/virtio_pcm.h
+ create mode 100644 sound/virtio/virtio_pcm_msg.c
+ create mode 100644 sound/virtio/virtio_pcm_ops.c
 
------BEGIN PGP SIGNATURE-----
+--=20
+2.30.0
 
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmA2d4UACgkQnKSrs4Gr
-c8jwYwf+M409A4n2DxAKR5Maon3n4wUWl99Yl1gtz+gU8VGFRAEio+vlqd2yWutd
-COQZiC71Oqo9ZnS/6OrxJKbfJuDpJXvy53Mkkfw2gGZkGp8ZPnSgLxNg6iokuuvV
-O7suWlBgoSrqefMx9yQT7bxNtQb6L7E9gw0OZaMEUAe65fk659df3sq2g1ZlwfAx
-y9aCfKzjw+cwtkoi6wgHIa3jtp1tOxO2vcRd4pUZ1dplLqF92fs9Ut+N9Sdf2DtH
-rqhR3J90Yik/OejODtPVsTrjaU8sZmbfA8FQEQRDjtRPu24v2dj7x4sSzRcikdCm
-OQuo+dEj3+f+MHMjNgp9t0s+6TRgsw==
-=rlXx
------END PGP SIGNATURE-----
 
---xrgkOLuopaiuY5yv--
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
