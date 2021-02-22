@@ -1,71 +1,87 @@
-Return-Path: virtio-dev-return-8047-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-8010-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 3360C986226
-	for <virtio-dev@lists.oasis-open.org>; Fri, 26 Feb 2021 11:16:35 +0000 (UTC)
-From: =?UTF-8?q?Alex=20Benn=C3=A9e?= <alex.bennee@linaro.org>
-Date: Fri, 26 Feb 2021 11:16:19 +0000
-Message-Id: <20210226111619.21178-1-alex.bennee@linaro.org>
+	by lists.oasis-open.org (Postfix) with ESMTP id 503AE985B6B
+	for <virtio-dev@lists.oasis-open.org>; Mon, 22 Feb 2021 15:35:57 +0000 (UTC)
+From: Anton Yakovlev <anton.yakovlev@opensynergy.com>
+Date: Mon, 22 Feb 2021 16:34:35 +0100
+Message-ID: <20210222153444.348390-1-anton.yakovlev@opensynergy.com>
 MIME-Version: 1.0
-Subject: [virtio-dev] [VHOST USER SPEC PATCH] vhost-user.rst: add clarifying language about protocol negotiation
-Content-Type: text/plain; charset=UTF-8
+Subject: [virtio-dev] [PATCH v5 0/9] ALSA: add virtio sound driver
+Content-Type: text/plain
 Content-Transfer-Encoding: quoted-printable
-To: qemu-devel@nongnu.org, rust-vmm@lists.opendev.org
-Cc: stratos-dev@op-lists.linaro.org, virtio-dev@lists.oasis-open.org, viresh.kumar@linaro.org, =?UTF-8?q?Alex=20Benn=C3=A9e?= <alex.bennee@linaro.org>, Jiang Liu <gerry@linux.alibaba.com>, "Michael S. Tsirkin" <mst@redhat.com>
+To: virtualization@lists.linux-foundation.org, alsa-devel@alsa-project.org, virtio-dev@lists.oasis-open.org
+Cc: "Michael S. Tsirkin" <mst@redhat.com>, Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-In practice the protocol negotiation between vhost master and slave
-occurs before the final feature negotiation between backend and
-frontend. This has lead to an inconsistency between the rust-vmm vhost
-implementation and the libvhost-user library in their approaches to
-checking if all the requirements for REPLY_ACK processing were met.
-As this is purely a function of the protocol negotiation and not of
-interest to the frontend lets make the language clearer about the
-requirements for a successfully negotiated protocol feature.
+This series implements a driver part of the virtio sound device
+specification v8 [1].
 
-Signed-off-by: Alex Benn=C3=A9e <alex.bennee@linaro.org>
-Cc: Jiang Liu <gerry@linux.alibaba.com>
----
- docs/interop/vhost-user.rst | 14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
+The driver supports PCM playback and capture substreams, jack and
+channel map controls. A message-based transport is used to write/read
+PCM frames to/from a device.
 
-diff --git a/docs/interop/vhost-user.rst b/docs/interop/vhost-user.rst
-index d6085f7045..3ac221a8c7 100644
---- a/docs/interop/vhost-user.rst
-+++ b/docs/interop/vhost-user.rst
-@@ -301,12 +301,22 @@ If *slave* detects some error such as incompatible fe=
-atures, it may also
- close the connection. This should only happen in exceptional circumstances=
-.
-=20
- Any protocol extensions are gated by protocol feature bits, which
--allows full backwards compatibility on both master and slave.  As
--older slaves don't support negotiating protocol features, a feature
-+allows full backwards compatibility on both master and slave. As older
-+slaves don't support negotiating protocol features, a device feature
- bit was dedicated for this purpose::
-=20
-   #define VHOST_USER_F_PROTOCOL_FEATURES 30
-=20
-+However as the protocol negotiation something that only occurs between
-+parts of the backend implementation it is permissible to for the master
-+to mask the feature bit from the guest. As noted for the
-+``VHOST_USER_GET_PROTOCOL_FEATURES`` and
-+``VHOST_USER_SET_PROTOCOL_FEATURES`` messages this occurs before a
-+final ``VHOST_USER_SET_FEATURES`` comes from the guest. So the
-+enabling of protocol features need only require the advertising of the
-+feature by the slave and the successful get/set protocol features
-+sequence.
-+ =20
- Starting and stopping rings
- ---------------------------
-=20
+As a device part was used OpenSynergy proprietary implementation.
+
+v5 changes:
+ - Fixed another bunch of sparse warnings
+   (replaced virtio_cread() -> virtio_cread_le()), no functional changes.
+(Sorry, I didn't know how to run sparse locally, now everything should be f=
+ixed)
+
+[1] https://lists.oasis-open.org/archives/virtio-dev/202003/msg00185.html
+
+
+Anton Yakovlev (9):
+  uapi: virtio_ids: add a sound device type ID from OASIS spec
+  ALSA: virtio: add virtio sound driver
+  ALSA: virtio: handling control messages
+  ALSA: virtio: build PCM devices and substream hardware descriptors
+  ALSA: virtio: handling control and I/O messages for the PCM device
+  ALSA: virtio: PCM substream operators
+  ALSA: virtio: introduce jack support
+  ALSA: virtio: introduce PCM channel map support
+  ALSA: virtio: introduce device suspend/resume support
+
+ MAINTAINERS                     |   9 +
+ include/uapi/linux/virtio_ids.h |   1 +
+ include/uapi/linux/virtio_snd.h | 334 +++++++++++++++++++++
+ sound/Kconfig                   |   2 +
+ sound/Makefile                  |   3 +-
+ sound/virtio/Kconfig            |  10 +
+ sound/virtio/Makefile           |  13 +
+ sound/virtio/virtio_card.c      | 462 +++++++++++++++++++++++++++++
+ sound/virtio/virtio_card.h      | 113 ++++++++
+ sound/virtio/virtio_chmap.c     | 219 ++++++++++++++
+ sound/virtio/virtio_ctl_msg.c   | 310 ++++++++++++++++++++
+ sound/virtio/virtio_ctl_msg.h   |  78 +++++
+ sound/virtio/virtio_jack.c      | 233 +++++++++++++++
+ sound/virtio/virtio_pcm.c       | 498 ++++++++++++++++++++++++++++++++
+ sound/virtio/virtio_pcm.h       | 120 ++++++++
+ sound/virtio/virtio_pcm_msg.c   | 392 +++++++++++++++++++++++++
+ sound/virtio/virtio_pcm_ops.c   | 491 +++++++++++++++++++++++++++++++
+ 17 files changed, 3287 insertions(+), 1 deletion(-)
+ create mode 100644 include/uapi/linux/virtio_snd.h
+ create mode 100644 sound/virtio/Kconfig
+ create mode 100644 sound/virtio/Makefile
+ create mode 100644 sound/virtio/virtio_card.c
+ create mode 100644 sound/virtio/virtio_card.h
+ create mode 100644 sound/virtio/virtio_chmap.c
+ create mode 100644 sound/virtio/virtio_ctl_msg.c
+ create mode 100644 sound/virtio/virtio_ctl_msg.h
+ create mode 100644 sound/virtio/virtio_jack.c
+ create mode 100644 sound/virtio/virtio_pcm.c
+ create mode 100644 sound/virtio/virtio_pcm.h
+ create mode 100644 sound/virtio/virtio_pcm_msg.c
+ create mode 100644 sound/virtio/virtio_pcm_ops.c
+
 --=20
-2.20.1
+2.30.0
+
 
 
 ---------------------------------------------------------------------
