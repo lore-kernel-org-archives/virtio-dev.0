@@ -1,84 +1,46 @@
-Return-Path: virtio-dev-return-8010-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-8011-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 503AE985B6B
-	for <virtio-dev@lists.oasis-open.org>; Mon, 22 Feb 2021 15:35:57 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 83FB5985B5D
+	for <virtio-dev@lists.oasis-open.org>; Mon, 22 Feb 2021 15:35:58 +0000 (UTC)
 From: Anton Yakovlev <anton.yakovlev@opensynergy.com>
-Date: Mon, 22 Feb 2021 16:34:35 +0100
-Message-ID: <20210222153444.348390-1-anton.yakovlev@opensynergy.com>
+Date: Mon, 22 Feb 2021 16:34:36 +0100
+Message-ID: <20210222153444.348390-2-anton.yakovlev@opensynergy.com>
+In-Reply-To: <20210222153444.348390-1-anton.yakovlev@opensynergy.com>
+References: <20210222153444.348390-1-anton.yakovlev@opensynergy.com>
 MIME-Version: 1.0
-Subject: [virtio-dev] [PATCH v5 0/9] ALSA: add virtio sound driver
+Subject: [virtio-dev] [PATCH v5 1/9] uapi: virtio_ids: add a sound device type ID from OASIS spec
 Content-Type: text/plain
 Content-Transfer-Encoding: quoted-printable
 To: virtualization@lists.linux-foundation.org, alsa-devel@alsa-project.org, virtio-dev@lists.oasis-open.org
-Cc: "Michael S. Tsirkin" <mst@redhat.com>, Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
+Cc: "Michael S. Tsirkin" <mst@redhat.com>, Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>, Jason Wang <jasowang@redhat.com>, linux-kernel@vger.kernel.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-This series implements a driver part of the virtio sound device
-specification v8 [1].
+The OASIS virtio spec defines a sound device type ID that is not
+present in the header yet.
 
-The driver supports PCM playback and capture substreams, jack and
-channel map controls. A message-based transport is used to write/read
-PCM frames to/from a device.
+Signed-off-by: Anton Yakovlev <anton.yakovlev@opensynergy.com>
+---
+ include/uapi/linux/virtio_ids.h | 1 +
+ 1 file changed, 1 insertion(+)
 
-As a device part was used OpenSynergy proprietary implementation.
-
-v5 changes:
- - Fixed another bunch of sparse warnings
-   (replaced virtio_cread() -> virtio_cread_le()), no functional changes.
-(Sorry, I didn't know how to run sparse locally, now everything should be f=
-ixed)
-
-[1] https://lists.oasis-open.org/archives/virtio-dev/202003/msg00185.html
-
-
-Anton Yakovlev (9):
-  uapi: virtio_ids: add a sound device type ID from OASIS spec
-  ALSA: virtio: add virtio sound driver
-  ALSA: virtio: handling control messages
-  ALSA: virtio: build PCM devices and substream hardware descriptors
-  ALSA: virtio: handling control and I/O messages for the PCM device
-  ALSA: virtio: PCM substream operators
-  ALSA: virtio: introduce jack support
-  ALSA: virtio: introduce PCM channel map support
-  ALSA: virtio: introduce device suspend/resume support
-
- MAINTAINERS                     |   9 +
- include/uapi/linux/virtio_ids.h |   1 +
- include/uapi/linux/virtio_snd.h | 334 +++++++++++++++++++++
- sound/Kconfig                   |   2 +
- sound/Makefile                  |   3 +-
- sound/virtio/Kconfig            |  10 +
- sound/virtio/Makefile           |  13 +
- sound/virtio/virtio_card.c      | 462 +++++++++++++++++++++++++++++
- sound/virtio/virtio_card.h      | 113 ++++++++
- sound/virtio/virtio_chmap.c     | 219 ++++++++++++++
- sound/virtio/virtio_ctl_msg.c   | 310 ++++++++++++++++++++
- sound/virtio/virtio_ctl_msg.h   |  78 +++++
- sound/virtio/virtio_jack.c      | 233 +++++++++++++++
- sound/virtio/virtio_pcm.c       | 498 ++++++++++++++++++++++++++++++++
- sound/virtio/virtio_pcm.h       | 120 ++++++++
- sound/virtio/virtio_pcm_msg.c   | 392 +++++++++++++++++++++++++
- sound/virtio/virtio_pcm_ops.c   | 491 +++++++++++++++++++++++++++++++
- 17 files changed, 3287 insertions(+), 1 deletion(-)
- create mode 100644 include/uapi/linux/virtio_snd.h
- create mode 100644 sound/virtio/Kconfig
- create mode 100644 sound/virtio/Makefile
- create mode 100644 sound/virtio/virtio_card.c
- create mode 100644 sound/virtio/virtio_card.h
- create mode 100644 sound/virtio/virtio_chmap.c
- create mode 100644 sound/virtio/virtio_ctl_msg.c
- create mode 100644 sound/virtio/virtio_ctl_msg.h
- create mode 100644 sound/virtio/virtio_jack.c
- create mode 100644 sound/virtio/virtio_pcm.c
- create mode 100644 sound/virtio/virtio_pcm.h
- create mode 100644 sound/virtio/virtio_pcm_msg.c
- create mode 100644 sound/virtio/virtio_pcm_ops.c
-
+diff --git a/include/uapi/linux/virtio_ids.h b/include/uapi/linux/virtio_id=
+s.h
+index bc1c0621f5ed..029a2e07a7f9 100644
+--- a/include/uapi/linux/virtio_ids.h
++++ b/include/uapi/linux/virtio_ids.h
+@@ -51,6 +51,7 @@
+ #define VIRTIO_ID_PSTORE=09=0922 /* virtio pstore device */
+ #define VIRTIO_ID_IOMMU=09=09=0923 /* virtio IOMMU */
+ #define VIRTIO_ID_MEM=09=09=0924 /* virtio mem */
++#define VIRTIO_ID_SOUND=09=09=0925 /* virtio sound */
+ #define VIRTIO_ID_FS=09=09=0926 /* virtio filesystem */
+ #define VIRTIO_ID_PMEM=09=09=0927 /* virtio pmem */
+ #define VIRTIO_ID_MAC80211_HWSIM=0929 /* virtio mac80211-hwsim */
 --=20
 2.30.0
 
