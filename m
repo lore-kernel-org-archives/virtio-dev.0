@@ -1,209 +1,93 @@
-Return-Path: virtio-dev-return-8018-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-8027-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 92A1E985C76
-	for <virtio-dev@lists.oasis-open.org>; Mon, 22 Feb 2021 15:36:31 +0000 (UTC)
-From: Anton Yakovlev <anton.yakovlev@opensynergy.com>
-Date: Mon, 22 Feb 2021 16:34:44 +0100
-Message-ID: <20210222153444.348390-10-anton.yakovlev@opensynergy.com>
-In-Reply-To: <20210222153444.348390-1-anton.yakovlev@opensynergy.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id AC2B5986028
+	for <virtio-dev@lists.oasis-open.org>; Tue, 23 Feb 2021 12:09:12 +0000 (UTC)
+Date: Tue, 23 Feb 2021 07:09:01 -0500
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20210223070839-mutt-send-email-mst@kernel.org>
 References: <20210222153444.348390-1-anton.yakovlev@opensynergy.com>
 MIME-Version: 1.0
-Subject: [virtio-dev] [PATCH v5 9/9] ALSA: virtio: introduce device suspend/resume support
-Content-Type: text/plain
-Content-Transfer-Encoding: quoted-printable
-To: virtualization@lists.linux-foundation.org, alsa-devel@alsa-project.org, virtio-dev@lists.oasis-open.org
-Cc: "Michael S. Tsirkin" <mst@redhat.com>, Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>, linux-kernel@vger.kernel.org
+In-Reply-To: <20210222153444.348390-1-anton.yakovlev@opensynergy.com>
+Subject: [virtio-dev] Re: [PATCH v5 0/9] ALSA: add virtio sound driver
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+To: Anton Yakovlev <anton.yakovlev@opensynergy.com>
+Cc: virtualization@lists.linux-foundation.org, alsa-devel@alsa-project.org, virtio-dev@lists.oasis-open.org, Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-All running PCM substreams are stopped on device suspend and restarted
-on device resume.
+On Mon, Feb 22, 2021 at 04:34:35PM +0100, Anton Yakovlev wrote:
+> This series implements a driver part of the virtio sound device
+> specification v8 [1].
+> 
+> The driver supports PCM playback and capture substreams, jack and
+> channel map controls. A message-based transport is used to write/read
+> PCM frames to/from a device.
+> 
+> As a device part was used OpenSynergy proprietary implementation.
+> 
+> v5 changes:
+>  - Fixed another bunch of sparse warnings
+>    (replaced virtio_cread() -> virtio_cread_le()), no functional changes.
+> (Sorry, I didn't know how to run sparse locally, now everything should be fixed)
+> 
+> [1] https://lists.oasis-open.org/archives/virtio-dev/202003/msg00185.html
 
-Signed-off-by: Anton Yakovlev <anton.yakovlev@opensynergy.com>
----
- sound/virtio/virtio_card.c    | 57 +++++++++++++++++++++++++++++++++++
- sound/virtio/virtio_pcm.c     |  1 +
- sound/virtio/virtio_pcm_ops.c | 44 ++++++++++++++++++++-------
- 3 files changed, 91 insertions(+), 11 deletions(-)
 
-diff --git a/sound/virtio/virtio_card.c b/sound/virtio/virtio_card.c
-index 787a4dec1da8..1f0a0fa7bbc0 100644
---- a/sound/virtio/virtio_card.c
-+++ b/sound/virtio/virtio_card.c
-@@ -373,6 +373,59 @@ static void virtsnd_config_changed(struct virtio_devic=
-e *vdev)
- =09=09=09 "sound device configuration was changed\n");
- }
-=20
-+#ifdef CONFIG_PM_SLEEP
-+/**
-+ * virtsnd_freeze() - Suspend device.
-+ * @vdev: VirtIO parent device.
-+ *
-+ * Context: Any context.
-+ * Return: 0 on success, -errno on failure.
-+ */
-+static int virtsnd_freeze(struct virtio_device *vdev)
-+{
-+=09struct virtio_snd *snd =3D vdev->priv;
-+
-+=09/* Stop all the virtqueues. */
-+=09vdev->config->reset(vdev);
-+=09vdev->config->del_vqs(vdev);
-+
-+=09virtsnd_ctl_msg_cancel_all(snd);
-+
-+=09kfree(snd->event_msgs);
-+
-+=09/*
-+=09 * If the virtsnd_restore() fails before re-allocating events, then we
-+=09 * get a dangling pointer here.
-+=09 */
-+=09snd->event_msgs =3D NULL;
-+
-+=09return 0;
-+}
-+
-+/**
-+ * virtsnd_restore() - Resume device.
-+ * @vdev: VirtIO parent device.
-+ *
-+ * Context: Any context.
-+ * Return: 0 on success, -errno on failure.
-+ */
-+static int virtsnd_restore(struct virtio_device *vdev)
-+{
-+=09struct virtio_snd *snd =3D vdev->priv;
-+=09int rc;
-+
-+=09rc =3D virtsnd_find_vqs(snd);
-+=09if (rc)
-+=09=09return rc;
-+
-+=09virtio_device_ready(vdev);
-+
-+=09virtsnd_enable_event_vq(snd);
-+
-+=09return 0;
-+}
-+#endif /* CONFIG_PM_SLEEP */
-+
- static const struct virtio_device_id id_table[] =3D {
- =09{ VIRTIO_ID_SOUND, VIRTIO_DEV_ANY_ID },
- =09{ 0 },
-@@ -386,6 +439,10 @@ static struct virtio_driver virtsnd_driver =3D {
- =09.probe =3D virtsnd_probe,
- =09.remove =3D virtsnd_remove,
- =09.config_changed =3D virtsnd_config_changed,
-+#ifdef CONFIG_PM_SLEEP
-+=09.freeze =3D virtsnd_freeze,
-+=09.restore =3D virtsnd_restore,
-+#endif
- };
-=20
- static int __init init(void)
-diff --git a/sound/virtio/virtio_pcm.c b/sound/virtio/virtio_pcm.c
-index 3605151860f2..4a4a6583b002 100644
---- a/sound/virtio/virtio_pcm.c
-+++ b/sound/virtio/virtio_pcm.c
-@@ -109,6 +109,7 @@ static int virtsnd_pcm_build_hw(struct virtio_pcm_subst=
-ream *vss,
- =09=09SNDRV_PCM_INFO_BATCH |
- =09=09SNDRV_PCM_INFO_BLOCK_TRANSFER |
- =09=09SNDRV_PCM_INFO_INTERLEAVED |
-+=09=09SNDRV_PCM_INFO_RESUME |
- =09=09SNDRV_PCM_INFO_PAUSE;
-=20
- =09if (!info->channels_min || info->channels_min > info->channels_max) {
-diff --git a/sound/virtio/virtio_pcm_ops.c b/sound/virtio/virtio_pcm_ops.c
-index 07510778b555..ccef64502c13 100644
---- a/sound/virtio/virtio_pcm_ops.c
-+++ b/sound/virtio/virtio_pcm_ops.c
-@@ -218,6 +218,10 @@ static int virtsnd_pcm_hw_params(struct snd_pcm_substr=
-eam *substream,
- =09if (rc)
- =09=09return rc;
-=20
-+=09/* If messages have already been allocated before, do nothing. */
-+=09if (runtime->status->state =3D=3D SNDRV_PCM_STATE_SUSPENDED)
-+=09=09return 0;
-+
- =09return virtsnd_pcm_msg_alloc(vss, periods, period_bytes);
- }
-=20
-@@ -258,19 +262,21 @@ static int virtsnd_pcm_prepare(struct snd_pcm_substre=
-am *substream)
- =09}
-=20
- =09spin_lock_irqsave(&vss->lock, flags);
--=09/*
--=09 * Since I/O messages are asynchronous, they can be completed
--=09 * when the runtime structure no longer exists. Since each
--=09 * completion implies incrementing the hw_ptr, we cache all the
--=09 * current values needed to compute the new hw_ptr value.
--=09 */
--=09vss->frame_bytes =3D runtime->frame_bits >> 3;
--=09vss->period_size =3D runtime->period_size;
--=09vss->buffer_size =3D runtime->buffer_size;
-+=09if (runtime->status->state !=3D SNDRV_PCM_STATE_SUSPENDED) {
-+=09=09/*
-+=09=09 * Since I/O messages are asynchronous, they can be completed
-+=09=09 * when the runtime structure no longer exists. Since each
-+=09=09 * completion implies incrementing the hw_ptr, we cache all the
-+=09=09 * current values needed to compute the new hw_ptr value.
-+=09=09 */
-+=09=09vss->frame_bytes =3D runtime->frame_bits >> 3;
-+=09=09vss->period_size =3D runtime->period_size;
-+=09=09vss->buffer_size =3D runtime->buffer_size;
-=20
--=09vss->hw_ptr =3D 0;
-+=09=09vss->hw_ptr =3D 0;
-+=09=09vss->msg_last_enqueued =3D -1;
-+=09}
- =09vss->xfer_xrun =3D false;
--=09vss->msg_last_enqueued =3D -1;
- =09vss->msg_count =3D 0;
- =09spin_unlock_irqrestore(&vss->lock, flags);
-=20
-@@ -300,6 +306,21 @@ static int virtsnd_pcm_trigger(struct snd_pcm_substrea=
-m *substream, int command)
- =09int rc;
-=20
- =09switch (command) {
-+=09case SNDRV_PCM_TRIGGER_RESUME: {
-+=09=09/*
-+=09=09 * We restart the substream by executing the standard command
-+=09=09 * sequence.
-+=09=09 */
-+=09=09rc =3D virtsnd_pcm_hw_params(substream, NULL);
-+=09=09if (rc)
-+=09=09=09return rc;
-+
-+=09=09rc =3D virtsnd_pcm_prepare(substream);
-+=09=09if (rc)
-+=09=09=09return rc;
-+
-+=09=09fallthrough;
-+=09}
- =09case SNDRV_PCM_TRIGGER_START:
- =09case SNDRV_PCM_TRIGGER_PAUSE_RELEASE: {
- =09=09struct virtio_snd_queue *queue =3D virtsnd_pcm_queue(vss);
-@@ -326,6 +347,7 @@ static int virtsnd_pcm_trigger(struct snd_pcm_substream=
- *substream, int command)
-=20
- =09=09return virtsnd_ctl_msg_send_sync(snd, msg);
- =09}
-+=09case SNDRV_PCM_TRIGGER_SUSPEND:
- =09case SNDRV_PCM_TRIGGER_STOP:
- =09case SNDRV_PCM_TRIGGER_PAUSE_PUSH: {
- =09=09spin_lock_irqsave(&vss->lock, flags);
---=20
-2.30.0
+In the future please number patches from 1, not from 2.
+thanks!
 
+> 
+> Anton Yakovlev (9):
+>   uapi: virtio_ids: add a sound device type ID from OASIS spec
+>   ALSA: virtio: add virtio sound driver
+>   ALSA: virtio: handling control messages
+>   ALSA: virtio: build PCM devices and substream hardware descriptors
+>   ALSA: virtio: handling control and I/O messages for the PCM device
+>   ALSA: virtio: PCM substream operators
+>   ALSA: virtio: introduce jack support
+>   ALSA: virtio: introduce PCM channel map support
+>   ALSA: virtio: introduce device suspend/resume support
+> 
+>  MAINTAINERS                     |   9 +
+>  include/uapi/linux/virtio_ids.h |   1 +
+>  include/uapi/linux/virtio_snd.h | 334 +++++++++++++++++++++
+>  sound/Kconfig                   |   2 +
+>  sound/Makefile                  |   3 +-
+>  sound/virtio/Kconfig            |  10 +
+>  sound/virtio/Makefile           |  13 +
+>  sound/virtio/virtio_card.c      | 462 +++++++++++++++++++++++++++++
+>  sound/virtio/virtio_card.h      | 113 ++++++++
+>  sound/virtio/virtio_chmap.c     | 219 ++++++++++++++
+>  sound/virtio/virtio_ctl_msg.c   | 310 ++++++++++++++++++++
+>  sound/virtio/virtio_ctl_msg.h   |  78 +++++
+>  sound/virtio/virtio_jack.c      | 233 +++++++++++++++
+>  sound/virtio/virtio_pcm.c       | 498 ++++++++++++++++++++++++++++++++
+>  sound/virtio/virtio_pcm.h       | 120 ++++++++
+>  sound/virtio/virtio_pcm_msg.c   | 392 +++++++++++++++++++++++++
+>  sound/virtio/virtio_pcm_ops.c   | 491 +++++++++++++++++++++++++++++++
+>  17 files changed, 3287 insertions(+), 1 deletion(-)
+>  create mode 100644 include/uapi/linux/virtio_snd.h
+>  create mode 100644 sound/virtio/Kconfig
+>  create mode 100644 sound/virtio/Makefile
+>  create mode 100644 sound/virtio/virtio_card.c
+>  create mode 100644 sound/virtio/virtio_card.h
+>  create mode 100644 sound/virtio/virtio_chmap.c
+>  create mode 100644 sound/virtio/virtio_ctl_msg.c
+>  create mode 100644 sound/virtio/virtio_ctl_msg.h
+>  create mode 100644 sound/virtio/virtio_jack.c
+>  create mode 100644 sound/virtio/virtio_pcm.c
+>  create mode 100644 sound/virtio/virtio_pcm.h
+>  create mode 100644 sound/virtio/virtio_pcm_msg.c
+>  create mode 100644 sound/virtio/virtio_pcm_ops.c
+> 
+> -- 
+> 2.30.0
+> 
 
 
 ---------------------------------------------------------------------
