@@ -1,93 +1,131 @@
-Return-Path: virtio-comment-return-1723-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio-comment@lists.oasis-open.org>
-List-Post: <mailto:virtio-comment@lists.oasis-open.org>
-List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
-References: <20210212095920.249768-1-peter.hilber@opensynergy.com>
- <20210216161208.GA1463@shell.armlinux.org.uk>
- <DBBPR08MB4790802EA436661E4AEEEFF682879@DBBPR08MB4790.eurprd08.prod.outlook.com>
- <20210216165705.GB1463@shell.armlinux.org.uk>
- <DBBPR08MB4790C18DDCA35B7C33D43CF782879@DBBPR08MB4790.eurprd08.prod.outlook.com>
-From: Peter Hilber <peter.hilber@opensynergy.com>
-Message-ID: <3feccb6f-1789-4cd8-b18f-748464539a50@opensynergy.com>
-Date: Tue, 16 Feb 2021 20:26:51 +0100
+Return-Path: virtio-dev-return-8020-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id 52188986020
+	for <virtio-dev@lists.oasis-open.org>; Tue, 23 Feb 2021 09:25:13 +0000 (UTC)
+Date: Tue, 23 Feb 2021 04:25:05 -0500
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20210223041740-mutt-send-email-mst@kernel.org>
+References: <1613735698-3328-1-git-send-email-si-wei.liu@oracle.com>
+ <605e7d2d-4f27-9688-17a8-d57191752ee7@redhat.com>
+ <ee31e93b-5fbb-1999-0e82-983d3e49ad1e@oracle.com>
 MIME-Version: 1.0
-In-Reply-To: <DBBPR08MB4790C18DDCA35B7C33D43CF782879@DBBPR08MB4790.eurprd08.prod.outlook.com>
-Subject: [virtio-comment] Re: [PATCH v6] Add virtio SCMI device specification
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-To: Souvik Chakravarty <Souvik.Chakravarty@arm.com>, Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "jean-philippe@linaro.org" <jean-philippe@linaro.org>, Sudeep Holla <Sudeep.Holla@arm.com>, Peter Hilber <peter.hilber@opensynergy.com>, Cristian Marussi <Cristian.Marussi@arm.com>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "alex.bennee@linaro.org" <alex.bennee@linaro.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+In-Reply-To: <ee31e93b-5fbb-1999-0e82-983d3e49ad1e@oracle.com>
+Subject: [virtio-dev] Re: [PATCH] vdpa/mlx5: set_features should allow reset to zero
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+To: Si-Wei Liu <si-wei.liu@oracle.com>
+Cc: Jason Wang <jasowang@redhat.com>, elic@nvidia.com, linux-kernel@vger.kernel.org, virtualization@lists.linux-foundation.org, netdev@vger.kernel.org, virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 16.02.21 18:31, Souvik Chakravarty wrote:
->> From: Russell King - ARM Linux admin <linux@armlinux.org.uk>
->> Sent: Tuesday, February 16, 2021 4:57 PM
->>
->> On Tue, Feb 16, 2021 at 04:48:30PM +0000, Souvik Chakravarty wrote:
->>>> From: Russell King - ARM Linux admin <linux@armlinux.org.uk>
->>>> Sent: Tuesday, February 16, 2021 4:12 PM I'm not too familiar with
->>>> SCMI, but I think this question is worth asking...
->>>>
->>>> If the SCMI protocol can be used to control system level power
->>>> management, and if the intention is to expose this firmware
->>>> interface to virtualised guests, what prevents a guest from
->>>> controlling the power settings for stuff it should not have access to?
->>>>
->>>> For example, if it's possible to tell the system to power down a
->>>> critical host component through SCMI, what would prevent a guest
->>>> requesting that critical component from having its power cut?
->>>
->>> Short summary:
->>> SCMI as a protocol has built in requirements where only the resources
->>> (specific clock, sensor etc.) which are specifically needed by a VM
->>> are exposed to it. Resources are mapped by Identifiers and if the VM
->>> tries to access an identifier which it does not have access to, the
->>> SCMI backend can simply ignore or return DENIED. At no point is direct
->> access to any power mgmt. hardware granted to any VM, nor is a VM
->> supposed to have global access to all system resources.
->>> There is always a firmware backend which controls the hardware and
->>> services SCMI command requests from agents/guests, after due validation.
->>> The SCMI device/firmware which implements the SCMI backend, is
->>> responsible for implementing these resource isolation guarantees.
->>
->> You seem to be saying the SCMI firmware itself is responsible for
->> implementing this. Given what I've seen from vendors in ATF, this does not
->> leave me with much confidence that there will be sufficient security. It
->> concerns me more when you say that the "backend" is responsible for
->> making these decisions. This doesn't sound good to me.
-> 
-> [Somehow realizing I cannot post to virtio-dev...]
-> Let me try to add a bit of color because I realize I did mix up a few usage models 
-> (baremetal & virtualized) in my previous reply. 
-> 
-> Let me rephrase from the perspective of a virtualized system using Virtio SCMI specifically. 
-> In this specific case, the commands issued by the VM will go to the SCMI virtio backend
-> which is in the host. This can then choose can choose to reject VM issued SCMI commands.
-> 
+On Mon, Feb 22, 2021 at 09:09:28AM -0800, Si-Wei Liu wrote:
+>=20
+>=20
+> On 2/21/2021 8:14 PM, Jason Wang wrote:
+> >=20
+> > On 2021/2/19 7:54 =E4=B8=8B=E5=8D=88, Si-Wei Liu wrote:
+> > > Commit 452639a64ad8 ("vdpa: make sure set_features is invoked
+> > > for legacy") made an exception for legacy guests to reset
+> > > features to 0, when config space is accessed before features
+> > > are set. We should relieve the verify_min_features() check
+> > > and allow features reset to 0 for this case.
+> > >=20
+> > > It's worth noting that not just legacy guests could access
+> > > config space before features are set. For instance, when
+> > > feature VIRTIO_NET_F_MTU is advertised some modern driver
+> > > will try to access and validate the MTU present in the config
+> > > space before virtio features are set.
+> >=20
+> >=20
+> > This looks like a spec violation:
+> >=20
+> > "
+> >=20
+> > The following driver-read-only field, mtu only exists if
+> > VIRTIO_NET_F_MTU is set. This field specifies the maximum MTU for the
+> > driver to use.
+> > "
+> >=20
+> > Do we really want to workaround this?
+>=20
+> Isn't the commit 452639a64ad8 itself is a workaround for legacy guest?
+>=20
+> I think the point is, since there's legacy guest we'd have to support, th=
+is
+> host side workaround is unavoidable. Although I agree the violating drive=
+r
+> should be fixed (yes, it's in today's upstream kernel which exists for a
+> while now).
 
-In my company's implementation, the integrator has to explicitly list
-every resource which the "firmware" should make available to the
-virtualization guest. As Souvik wrote, the "firmware" is in fact a
-dedicated virtualization component, which was designed with security in
-mind. I hope hearing this lessens your concerns.
+Oh  you are right:
 
 
-This publicly archived list offers a means to provide input to the
-OASIS Virtual I/O Device (VIRTIO) TC.
+static int virtnet_validate(struct virtio_device *vdev)
+{
+        if (!vdev->config->get) {
+                dev_err(&vdev->dev, "%s failure: config access disabled\n",
+                        __func__);
+                return -EINVAL;
+        }
 
-In order to verify user consent to the Feedback License terms and
-to minimize spam in the list archive, subscription is required
-before posting.
+        if (!virtnet_validate_features(vdev))
+                return -EINVAL;
 
-Subscribe: virtio-comment-subscribe@lists.oasis-open.org
-Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
-List help: virtio-comment-help@lists.oasis-open.org
-List archive: https://lists.oasis-open.org/archives/virtio-comment/
-Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
-List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
-Committee: https://www.oasis-open.org/committees/virtio/
-Join OASIS: https://www.oasis-open.org/join/
+        if (virtio_has_feature(vdev, VIRTIO_NET_F_MTU)) {
+                int mtu =3D virtio_cread16(vdev,
+                                         offsetof(struct virtio_net_config,
+                                                  mtu));
+                if (mtu < MIN_MTU)
+                        __virtio_clear_bit(vdev, VIRTIO_NET_F_MTU);
+        }
+
+        return 0;
+}
+
+And the spec says:
+
+
+The driver MUST follow this sequence to initialize a device:
+1. Reset the device.
+2. Set the ACKNOWLEDGE status bit: the guest OS has noticed the device.
+3. Set the DRIVER status bit: the guest OS knows how to drive the device.
+4. Read device feature bits, and write the subset of feature bits understoo=
+d by the OS and driver to the
+device. During this step the driver MAY read (but MUST NOT write) the devic=
+e-specific configuration
+fields to check that it can support the device before accepting it.
+5. Set the FEATURES_OK status bit. The driver MUST NOT accept new feature b=
+its after this step.
+6. Re-read device status to ensure the FEATURES_OK bit is still set: otherw=
+ise, the device does not
+support our subset of features and the device is unusable.
+7. Perform device-specific setup, including discovery of virtqueues for the=
+ device, optional per-bus setup,
+reading and possibly writing the device=E2=80=99s virtio configuration spac=
+e, and population of virtqueues.
+8. Set the DRIVER_OK status bit. At this point the device is =E2=80=9Clive=
+=E2=80=9D.
+
+
+Item 4 on the list explicitly allows reading config space before
+FEATURES_OK.
+
+I conclude that VIRTIO_NET_F_MTU is set means "set in device features".
+
+Generally it is worth going over feature dependent config fields
+and checking whether they should be present when device feature is set
+or when feature bit has been negotiated, and making this clear.
+
+--=20
+MST
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
