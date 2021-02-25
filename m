@@ -1,148 +1,109 @@
-Return-Path: virtio-dev-return-7996-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-8040-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id C7F6A985EB6
-	for <virtio-dev@lists.oasis-open.org>; Mon, 15 Feb 2021 09:54:30 +0000 (UTC)
-From: Stefan Hajnoczi <stefanha@redhat.com>
-Date: Mon, 15 Feb 2021 09:54:10 +0000
-Message-Id: <20210215095410.85607-3-stefanha@redhat.com>
-In-Reply-To: <20210215095410.85607-1-stefanha@redhat.com>
-References: <20210215095410.85607-1-stefanha@redhat.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 6D28F986184
+	for <virtio-dev@lists.oasis-open.org>; Thu, 25 Feb 2021 17:56:01 +0000 (UTC)
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Date: Thu, 25 Feb 2021 18:53:15 +0100
+Message-Id: <20210225175314.1987932-1-jean-philippe@linaro.org>
 MIME-Version: 1.0
-Subject: [virtio-dev] [PATCH v2 2/2] virtio-fs: add notification queue
-Content-Transfer-Encoding: base64
+Subject: [virtio-dev] [PATCH] virtio-iommu: Add VIRTIO_IOMMU_F_BOOT_BYPASS
+Content-Transfer-Encoding: quoted-printable
 Content-Type: text/plain; charset="US-ASCII"
 To: virtio-dev@lists.oasis-open.org
-Cc: "Dr. David Alan Gilbert" <dgilbert@redhat.com>, vgoyal@redhat.com, mszeredi@redhat.com, Stefan Hajnoczi <stefanha@redhat.com>
+Cc: eric.auger@redhat.com, mst@redhat.com, kevin.tian@intel.com, Jean-Philippe Brucker <jean-philippe@linaro.org>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-VGhlIEZVU0UgcHJvdG9jb2wgYWxsb3dzIHRoZSBmaWxlIHNlcnZlciAoZGV2aWNlKSB0byBpbml0
-aWF0ZQpjb21tdW5pY2F0aW9uIHdpdGggdGhlIGNsaWVudCAoZHJpdmVyKSB1c2luZyBGVVNFIG5v
-dGlmeSBtZXNzYWdlcy4KTm9ybWFsbHkgb25seSB0aGUgY2xpZW50IGNhbiBpbml0aWF0ZSBjb21t
-dW5pY2F0aW9uLiBUaGlzIGZlYXR1cmUgaXMKdXNlZCB0byByZXBvcnQgYXN5bmNocm9ub3VzIGV2
-ZW50cyB0aGF0IGFyZSBub3QgcmVsYXRlZCB0byBhbiBpbi1mbGlnaHQKcmVxdWVzdC4KClRoaXMg
-cGF0Y2ggYWRkcyBhIG5vdGlmaWNhdGlvbiBxdWV1ZSB0aGF0IHdvcmtzIGxpa2UgYW4gcnggcXVl
-dWUgaW4Kb3RoZXIgVklSVElPIGRldmljZSB0eXBlcy4gVGhlIGRldmljZSBjYW4gZW1pdCBGVVNF
-IG5vdGlmeSBtZXNzYWdlcyBieQp1c2luZyBhIGJ1ZmZlciBmcm9tIHRoaXMgcXVldWUuCgpUaGlz
-IG1lY2hhbmlzbSB3YXMgZGVzaWduZWQgYnkgVml2ZWsgR295YWwgPHZnb3lhbEByZWRoYXQuY29t
-Pi4KClNpZ25lZC1vZmYtYnk6IFN0ZWZhbiBIYWpub2N6aSA8c3RlZmFuaGFAcmVkaGF0LmNvbT4K
-LS0tCiBjb25mb3JtYW5jZS50ZXggfCAgMSArCiB2aXJ0aW8tZnMudGV4ICAgfCA3MSArKysrKysr
-KysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKystLS0tLS0tCiAyIGZpbGVzIGNoYW5n
-ZWQsIDYyIGluc2VydGlvbnMoKyksIDEwIGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL2NvbmZv
-cm1hbmNlLnRleCBiL2NvbmZvcm1hbmNlLnRleAppbmRleCA5YTdmZTBiLi44YzJmNTExIDEwMDY0
-NAotLS0gYS9jb25mb3JtYW5jZS50ZXgKKysrIGIvY29uZm9ybWFuY2UudGV4CkBAIC0yMjcsNiAr
-MjI3LDcgQEAgXHNlY3Rpb257Q29uZm9ybWFuY2UgVGFyZ2V0c31cbGFiZWx7c2VjOkNvbmZvcm1h
-bmNlIC8gQ29uZm9ybWFuY2UgVGFyZ2V0c30KIFxiZWdpbntpdGVtaXplfQogXGl0ZW0gXHJlZntk
-cml2ZXJub3JtYXRpdmU6RGV2aWNlIFR5cGVzIC8gRmlsZSBTeXN0ZW0gRGV2aWNlIC8gRGV2aWNl
-IGNvbmZpZ3VyYXRpb24gbGF5b3V0fQogXGl0ZW0gXHJlZntkcml2ZXJub3JtYXRpdmU6RGV2aWNl
-IFR5cGVzIC8gRmlsZSBTeXN0ZW0gRGV2aWNlIC8gRGV2aWNlIE9wZXJhdGlvbiAvIERldmljZSBP
-cGVyYXRpb246IEhpZ2ggUHJpb3JpdHkgUXVldWV9CitcaXRlbSBccmVme2RyaXZlcm5vcm1hdGl2
-ZTpEZXZpY2UgVHlwZXMgLyBGaWxlIFN5c3RlbSBEZXZpY2UgLyBEZXZpY2UgT3BlcmF0aW9uIC8g
-RGV2aWNlIE9wZXJhdGlvbjogTm90aWZpY2F0aW9uIFF1ZXVlfQogXGl0ZW0gXHJlZntkcml2ZXJu
-b3JtYXRpdmU6RGV2aWNlIFR5cGVzIC8gRmlsZSBTeXN0ZW0gRGV2aWNlIC8gRGV2aWNlIE9wZXJh
-dGlvbiAvIERldmljZSBPcGVyYXRpb246IERBWCBXaW5kb3d9CiBcZW5ke2l0ZW1pemV9CiAKZGlm
-ZiAtLWdpdCBhL3ZpcnRpby1mcy50ZXggYi92aXJ0aW8tZnMudGV4CmluZGV4IDE1OGQwNjYuLmM5
-OTU3NDggMTAwNjQ0Ci0tLSBhL3ZpcnRpby1mcy50ZXgKKysrIGIvdmlydGlvLWZzLnRleApAQCAt
-MjUsMjQgKzI1LDMzIEBAIFxzdWJzZWN0aW9ue1ZpcnRxdWV1ZXN9XGxhYmVse3NlYzpEZXZpY2Ug
-VHlwZXMgLyBGaWxlIFN5c3RlbSBEZXZpY2UgLyBWaXJ0cXVldWVzCiAKIFxiZWdpbntkZXNjcmlw
-dGlvbn0KIFxpdGVtWzBdIGhpcHJpbwotXGl0ZW1bMVxsZG90cyBuXSByZXF1ZXN0IHF1ZXVlcwor
-XGl0ZW1bMV0gbm90aWZpY2F0aW9uIHF1ZXVlCitcaXRlbVsyXGxkb3RzIG5dIHJlcXVlc3QgcXVl
-dWVzCiBcZW5ke2Rlc2NyaXB0aW9ufQogCitUaGUgbm90aWZpY2F0aW9uIHF1ZXVlIG9ubHkgZXhp
-c3RzIGlmIFZJUlRJT19GU19GX05PVElGSUNBVElPTiBpcyBzZXQuCisKIFxzdWJzZWN0aW9ue0Zl
-YXR1cmUgYml0c31cbGFiZWx7c2VjOkRldmljZSBUeXBlcyAvIEZpbGUgU3lzdGVtIERldmljZSAv
-IEZlYXR1cmUgYml0c30KIAotVGhlcmUgYXJlIGN1cnJlbnRseSBubyBmZWF0dXJlIGJpdHMgZGVm
-aW5lZC4KK1xiZWdpbntkZXNjcmlwdGlvbn0KK1xpdGVtW1ZJUlRJT19GU19GX05PVElGSUNBVElP
-TiAoMCldIERldmljZSBoYXMgc3VwcG9ydCBmb3IgRlVTRSBub3RpZnkKKyAgICBtZXNzYWdlcy4g
-IFRoZSBub3RpZmljYXRpb24gcXVldWUgaXMgdmlydHF1ZXVlIDEuCitcZW5ke2Rlc2NyaXB0aW9u
-fQogCiBcc3Vic2VjdGlvbntEZXZpY2UgY29uZmlndXJhdGlvbiBsYXlvdXR9XGxhYmVse3NlYzpE
-ZXZpY2UgVHlwZXMgLyBGaWxlIFN5c3RlbSBEZXZpY2UgLyBEZXZpY2UgY29uZmlndXJhdGlvbiBs
-YXlvdXR9CiAKLUFsbCBmaWVsZHMgb2YgdGhpcyBjb25maWd1cmF0aW9uIGFyZSBhbHdheXMgYXZh
-aWxhYmxlLgotCiBcYmVnaW57bHN0bGlzdGluZ30KIHN0cnVjdCB2aXJ0aW9fZnNfY29uZmlnIHsK
-ICAgICAgICAgY2hhciB0YWdbMzZdOwogICAgICAgICBsZTMyIG51bV9yZXF1ZXN0X3F1ZXVlczsK
-KyAgICAgICAgbGUzMiBub3RpZnlfYnVmX3NpemU7CiB9OwogXGVuZHtsc3RsaXN0aW5nfQogCitU
-aGUgXGZpZWxke3RhZ30gYW5kIFxmaWVsZHtudW1fcmVxdWVzdF9xdWV1ZXN9IGZpZWxkcyBhcmUg
-YWx3YXlzIGF2YWlsYWJsZS4KK1RoZSBcZmllbGR7bm90aWZ5X2J1Zl9zaXplfSBmaWVsZCBpcyBv
-bmx5IGF2YWlsYWJsZSB3aGVuCitWSVJUSU9fRlNfRl9OT1RJRklDQVRJT04gaXMgc2V0LgorCiBc
-YmVnaW57ZGVzY3JpcHRpb259CiBcaXRlbVtcZmllbGR7dGFnfV0gaXMgdGhlIG5hbWUgYXNzb2Np
-YXRlZCB3aXRoIHRoaXMgZmlsZSBzeXN0ZW0uICBUaGUgdGFnIGlzCiAgICAgZW5jb2RlZCBpbiBV
-VEYtOCBhbmQgcGFkZGVkIHdpdGggTlVMIGJ5dGVzIGlmIHNob3J0ZXIgdGhhbiB0aGUKQEAgLTUz
-LDYgKzYyLDggQEAgXHN1YnNlY3Rpb257RGV2aWNlIGNvbmZpZ3VyYXRpb24gbGF5b3V0fVxsYWJl
-bHtzZWM6RGV2aWNlIFR5cGVzIC8gRmlsZSBTeXN0ZW0gRGUKICAgICB0aGVyZSBhcmUgbm8gb3Jk
-ZXJpbmcgZ3VhcmFudGVlcyBiZXR3ZWVuIHJlcXVlc3RzIG1hZGUgYXZhaWxhYmxlIG9uCiAgICAg
-ZGlmZmVyZW50IHF1ZXVlcy4gIFVzZSBvZiBtdWx0aXBsZSBxdWV1ZXMgaXMgaW50ZW5kZWQgdG8g
-aW5jcmVhc2UKICAgICBwZXJmb3JtYW5jZS4KK1xpdGVtW1xmaWVsZHtub3RpZnlfYnVmX3NpemV9
-XSBpcyB0aGUgbWluaW11bSBudW1iZXIgb2YgYnl0ZXMgcmVxdWlyZWQgZm9yIGVhY2gKKyAgICBi
-dWZmZXIgaW4gdGhlIG5vdGlmaWNhdGlvbiBxdWV1ZS4KIFxlbmR7ZGVzY3JpcHRpb259CiAKIFxk
-cml2ZXJub3JtYXRpdmV7XHN1YnN1YnNlY3Rpb259e0RldmljZSBjb25maWd1cmF0aW9uIGxheW91
-dH17RGV2aWNlIFR5cGVzIC8gRmlsZSBTeXN0ZW0gRGV2aWNlIC8gRGV2aWNlIGNvbmZpZ3VyYXRp
-b24gbGF5b3V0fQpAQCAtNjUsMTMgKzc2LDIwIEBAIFxzdWJzZWN0aW9ue0RldmljZSBjb25maWd1
-cmF0aW9uIGxheW91dH1cbGFiZWx7c2VjOkRldmljZSBUeXBlcyAvIEZpbGUgU3lzdGVtIERlCiAK
-IFRoZSBkZXZpY2UgTVVTVCBzZXQgXGZpZWxke251bV9yZXF1ZXN0X3F1ZXVlc30gdG8gMSBvciBn
-cmVhdGVyLgogCitUaGUgZGV2aWNlIE1VU1Qgc2V0IFxmaWVsZHtub3RpZnlfYnVmX3NpemV9IHRv
-IGJlIGxhcmdlIGVub3VnaCB0byBob2xkIGFueSBvZgordGhlIEZVU0Ugbm90aWZ5IG1lc3NhZ2Vz
-IHRoYXQgdGhpcyBkZXZpY2UgZW1pdHMuCisKIFxzdWJzZWN0aW9ue0RldmljZSBJbml0aWFsaXph
-dGlvbn1cbGFiZWx7RGV2aWNlIFR5cGVzIC8gRmlsZSBTeXN0ZW0gRGV2aWNlIC8gRGV2aWNlIElu
-aXRpYWxpemF0aW9ufQogCi1PbiBpbml0aWFsaXphdGlvbiB0aGUgZHJpdmVyIGZpcnN0IGRpc2Nv
-dmVycyB0aGUgZGV2aWNlJ3MgdmlydHF1ZXVlcy4gIFRoZSBGVVNFCi1zZXNzaW9uIGlzIHN0YXJ0
-ZWQgYnkgc2VuZGluZyBhIEZVU0VcX0lOSVQgcmVxdWVzdCBhcyBkZWZpbmVkIGJ5IHRoZSBGVVNF
-Ci1wcm90b2NvbCBvbiBvbmUgcmVxdWVzdCB2aXJ0cXVldWUuICBBbGwgdmlydHF1ZXVlcyBwcm92
-aWRlIGFjY2VzcyB0byB0aGUgc2FtZQotRlVTRSBzZXNzaW9uIGFuZCB0aGVyZWZvcmUgb25seSBv
-bmUgRlVTRVxfSU5JVCByZXF1ZXN0IGlzIHJlcXVpcmVkIHJlZ2FyZGxlc3MKLW9mIHRoZSBudW1i
-ZXIgb2YgYXZhaWxhYmxlIHZpcnRxdWV1ZXMuCitPbiBpbml0aWFsaXphdGlvbiB0aGUgZHJpdmVy
-IGZpcnN0IGRpc2NvdmVycyB0aGUgZGV2aWNlJ3MgdmlydHF1ZXVlcy4KKworVGhlIGRyaXZlciBw
-b3B1bGF0ZXMgdGhlIG5vdGlmaWNhdGlvbiBxdWV1ZSB3aXRoIGJ1ZmZlcnMgZm9yIHJlY2Vpdmlu
-ZyBGVVNFCitub3RpZnkgbWVzc2FnZXMgaWYgVklSVElPX0ZTX0ZfTk9USUZJQ0FUSU9OIGlzIHNl
-dC4KKworVGhlIEZVU0Ugc2Vzc2lvbiBpcyBzdGFydGVkIGJ5IHNlbmRpbmcgYSBGVVNFXF9JTklU
-IHJlcXVlc3QgYXMgZGVmaW5lZCBieSB0aGUKK0ZVU0UgcHJvdG9jb2wgb24gb25lIHJlcXVlc3Qg
-dmlydHF1ZXVlLiAgQWxsIHZpcnRxdWV1ZXMgcHJvdmlkZSBhY2Nlc3MgdG8gdGhlCitzYW1lIEZV
-U0Ugc2Vzc2lvbiBhbmQgdGhlcmVmb3JlIG9ubHkgb25lIEZVU0VcX0lOSVQgcmVxdWVzdCBpcyBy
-ZXF1aXJlZAorcmVnYXJkbGVzcyBvZiB0aGUgbnVtYmVyIG9mIGF2YWlsYWJsZSB2aXJ0cXVldWVz
-LgogCiBcc3Vic2VjdGlvbntEZXZpY2UgT3BlcmF0aW9ufVxsYWJlbHtzZWM6RGV2aWNlIFR5cGVz
-IC8gRmlsZSBTeXN0ZW0gRGV2aWNlIC8gRGV2aWNlIE9wZXJhdGlvbn0KIApAQCAtODgsNyArMTA2
-LDggQEAgXHN1YnNlY3Rpb257RGV2aWNlIE9wZXJhdGlvbn1cbGFiZWx7c2VjOkRldmljZSBUeXBl
-cyAvIEZpbGUgU3lzdGVtIERldmljZSAvIERldmkKICAgICAgIGZ1bGwuCiBcZW5ke2l0ZW1pemV9
-CiAKLU5vdGUgdGhhdCBGVVNFIG5vdGlmaWNhdGlvbiByZXF1ZXN0cyBhcmUgbm90IHN1cHBvcnRl
-ZC4KK0ZVU0Ugbm90aWZ5IG1lc3NhZ2VzIGFyZSByZWNlaXZlZCBvbiB0aGUgbm90aWZpY2F0aW9u
-IHF1ZXVlIGlmCitWSVJUSU9fRlNfRl9OT1RJRklDQVRJT04gaXMgc2V0LgogCiBcc3Vic3Vic2Vj
-dGlvbntEZXZpY2UgT3BlcmF0aW9uOiBSZXF1ZXN0IFF1ZXVlc31cbGFiZWx7c2VjOkRldmljZSBU
-eXBlcyAvIEZpbGUgU3lzdGVtIERldmljZSAvIERldmljZSBPcGVyYXRpb24gLyBEZXZpY2UgT3Bl
-cmF0aW9uOiBSZXF1ZXN0IFF1ZXVlc30KIApAQCAtMTc5LDYgKzE5OCwzOCBAQCBcc3Vic3Vic2Vj
-dGlvbntEZXZpY2UgT3BlcmF0aW9uOiBIaWdoIFByaW9yaXR5IFF1ZXVlfVxsYWJlbHtzZWM6RGV2
-aWNlIFR5cGVzIC8gRgogCiBUaGUgZHJpdmVyIE1VU1QgYW50aWNpcGF0ZSB0aGF0IHJlcXVlc3Qg
-cXVldWVzIGFyZSBwcm9jZXNzZWQgY29uY3VycmVudGx5IHdpdGggdGhlIGhpcHJpbyBxdWV1ZS4K
-IAorXHN1YnN1YnNlY3Rpb257RGV2aWNlIE9wZXJhdGlvbjogTm90aWZpY2F0aW9uIFF1ZXVlfVxs
-YWJlbHtzZWM6RGV2aWNlIFR5cGVzIC8gRmlsZSBTeXN0ZW0gRGV2aWNlIC8gRGV2aWNlIE9wZXJh
-dGlvbiAvIERldmljZSBPcGVyYXRpb246IE5vdGlmaWNhdGlvbiBRdWV1ZX0KKworVGhlIG5vdGlm
-aWNhdGlvbiBxdWV1ZSBpcyBwb3B1bGF0ZWQgd2l0aCBidWZmZXJzIGJ5IHRoZSBkcml2ZXIgYW5k
-IHRoZXNlCitidWZmZXJzIGFyZSB1c2VkIGJ5IHRoZSBkZXZpY2UgdG8gZW1pdCBGVVNFIG5vdGlm
-eSBtZXNzYWdlcy4gIE5vdGlmaWNhdGlvbgorcXVldWUgYnVmZmVyIGxheW91dCBpcyBhcyBmb2xs
-b3dzOgorCitcYmVnaW57bHN0bGlzdGluZ30KK3N0cnVjdCB2aXJ0aW9fZnNfbm90aWZ5IHsKKyAg
-ICAgICAgLy8gRGV2aWNlLXdyaXRhYmxlIHBhcnQKKyAgICAgICAgc3RydWN0IGZ1c2Vfb3V0X2hl
-YWRlciBvdXRfaGRyOworICAgICAgICBjaGFyIG91dGFyZ1tub3RpZnlfYnVmX3NpemUgLSBzaXpl
-b2Yoc3RydWN0IGZ1c2Vfb3V0X2hlYWRlcildOworfTsKK1xlbmR7bHN0bGlzdGluZ30KKworXGZp
-ZWxke291dGFyZ30gY29udGFpbnMgdGhlIEZVU0Ugbm90aWZ5IG1lc3NhZ2UgcGF5bG9hZCB0aGF0
-IGRlcGVuZHMgb24gdGhlCit0eXBlIG9mIG5vdGlmaWNhdGlvbiBiZWluZyBlbWl0dGVkLgorCitJ
-ZiB0aGUgZHJpdmVyIHByb3ZpZGVzIG5vdGlmaWNhdGlvbiBxdWV1ZSBidWZmZXJzIGF0IGEgc2xv
-d2VyIHJhdGUgdGhhbiB0aGUKK2RldmljZSBlbWl0cyBGVVNFIG5vdGlmeSBtZXNzYWdlcyB0aGVu
-IHRoZSB2aXJ0cXVldWUgd2lsbCBldmVudHVhbGx5IGJlY29tZQorZW1wdHkuICBUaGUgYmVoYXZp
-b3IgaW4gcmVzcG9uc2UgdG8gYW4gZW1wdHkgdmlydHF1ZXVlIGRlcGVuZHMgb24gdGhlIEZVU0UK
-K25vdGlmeSBtZXNzYWdlIHR5cGU6CitcYmVnaW57aXRlbWl6ZX0KK1xpdGVtIEZVU0VcX05PVElG
-WVxfTE9DSyBtZXNzYWdlcyBhcmUgZGVsaXZlcmVkIHdoZW4gYnVmZmVycyBiZWNvbWUgYXZhaWxh
-YmxlIGFnYWluLiBXaGVuIHRoZSBkZXZpY2UgcnVucyBvdXQgb2YgcmVzb3VyY2VzIG5ldyBsb2Nr
-IHJlcXVlc3RzIGZhaWwgd2l0aCBFTk9MQ0suCitcZW5ke2l0ZW1pemV9CisKK1xkcml2ZXJub3Jt
-YXRpdmV7XHBhcmFncmFwaH17RGV2aWNlIE9wZXJhdGlvbjogTm90aWZpY2F0aW9uIFF1ZXVlfXtE
-ZXZpY2UgVHlwZXMgLyBGaWxlIFN5c3RlbSBEZXZpY2UgLyBEZXZpY2UgT3BlcmF0aW9uIC8gRGV2
-aWNlIE9wZXJhdGlvbjogTm90aWZpY2F0aW9uIFF1ZXVlfQorCitUaGUgZHJpdmVyIE1VU1QgcHJv
-dmlkZSBidWZmZXJzIG9mIGF0IGxlYXN0IFxmaWVsZHtub3RpZnlfYnVmX3NpemV9IGJ5dGVzLgor
-CitUaGUgZHJpdmVyIFNIT1VMRCByZXBsZW5pc2ggbm90aWZpY2F0aW9uIHF1ZXVlIGJ1ZmZlcnMg
-c3VmZmljaWVudGx5IHF1aWNrbHkgc28KK3RoYXQgdGhlcmUgaXMgYWx3YXlzIGF0IGxlYXN0IG9u
-ZSBhdmFpbGFibGUgYnVmZmVyLgorCiBcc3Vic3Vic2VjdGlvbntEZXZpY2UgT3BlcmF0aW9uOiBE
-QVggV2luZG93fVxsYWJlbHtzZWM6RGV2aWNlIFR5cGVzIC8gRmlsZSBTeXN0ZW0gRGV2aWNlIC8g
-RGV2aWNlIE9wZXJhdGlvbiAvIERldmljZSBPcGVyYXRpb246IERBWCBXaW5kb3d9CiAKIEZVU0Vc
-X1JFQUQgYW5kIEZVU0VcX1dSSVRFIHJlcXVlc3RzIHRyYW5zZmVyIGZpbGUgY29udGVudHMgYmV0
-d2VlbiB0aGUKLS0gCjIuMjkuMgoK
+Specify the behavior of the device before feature negotiation.
+Implementations that allow DMA to bypass the IOMMU during boot inform
+the driver by setting the VIRTIO_IOMMU_F_BOOT_BYPASS feature.
+Negotiating the feature doesn't have any effect.
+
+Clarify the description for VIRTIO_IOMMU_F_BYPASS while we're at it,
+because "downstream of the IOMMU" is confusing.
+
+Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+---
+ virtio-iommu.tex | 28 ++++++++++++++++++++--------
+ 1 file changed, 20 insertions(+), 8 deletions(-)
+
+diff --git a/virtio-iommu.tex b/virtio-iommu.tex
+index 08b358a..4f34a14 100644
+--- a/virtio-iommu.tex
++++ b/virtio-iommu.tex
+@@ -59,7 +59,7 @@ \subsection{Feature bits}\label{sec:Device Types / IOMMU =
+Device / Feature bits}
+   VIRTIO_IOMMU_F_MAP_UNMAP is supported.}
+=20
+ \item[VIRTIO_IOMMU_F_BYPASS (3)]
+-  When not attached to a domain, endpoints downstream of the IOMMU
++  When not attached to a domain, endpoints managed by the IOMMU
+   can access the guest-physical address space.
+=20
+ \item[VIRTIO_IOMMU_F_PROBE (4)]
+@@ -67,6 +67,10 @@ \subsection{Feature bits}\label{sec:Device Types / IOMMU=
+ Device / Feature bits}
+=20
+ \item[VIRTIO_IOMMU_F_MMIO (5)]
+   The VIRTIO_IOMMU_MAP_F_MMIO flag is available.
++
++\item[VIRTIO_IOMMU_F_BOOT_BYPASS (6)]
++  Before feature negotiation, endpoints managed by the IOMMU
++  can access the guest-physical address space.
+ \end{description}
+=20
+ \drivernormative{\subsubsection}{Feature bits}{Device Types / IOMMU Device=
+ / Feature bits}
+@@ -114,12 +118,15 @@ \subsection{Device initialization}\label{sec:Device T=
+ypes / IOMMU Device / Devic
+=20
+ When the device is reset, endpoints are not attached to any domain.
+=20
+-If the VIRTIO_IOMMU_F_BYPASS feature is negotiated, all accesses from
+-unattached endpoints are allowed and translated by the IOMMU using the
+-identity function. If the feature is not negotiated, any memory access
+-from an unattached endpoint fails. Upon attaching an endpoint in
+-bypass mode to a new domain, any memory access from the endpoint fails,
+-since the domain does not contain any mapping.
++Memory accesses from an endpoint bypass the IOMMU, that is all
++accesses are allowed and translated using the identity function,
++in the following cases:
++\begin{itemize}
++\item If the VIRTIO_IOMMU_F_BOOT_BYPASS feature is offered and
++  the FEATURES_OK status bit is not set.
++\item If the VIRTIO_IOMMU_F_BYPASS feature is negotiated and the
++  endpoint is not attached to a domain.
++\end{itemize}
+=20
+ Future devices might support more modes of operation besides MAP/UNMAP.
+ Drivers verify that devices set VIRTIO_IOMMU_F_MAP_UNMAP and fail
+@@ -136,8 +143,13 @@ \subsection{Device initialization}\label{sec:Device Ty=
+pes / IOMMU Device / Devic
+=20
+ \devicenormative{\subsubsection}{Device Initialization}{Device Types / IOM=
+MU Device / Device Initialization}
+=20
++If the device does not offer the VIRTIO_IOMMU_F_BOOT_BYPASS
++feature, it SHOULD NOT let endpoints access the guest-physical
++address space before feature negotiation is complete.
++
+ If the driver does not accept the VIRTIO_IOMMU_F_BYPASS feature, the
+-device SHOULD NOT let endpoints access the guest-physical address space.
++device SHOULD NOT let endpoints access the guest-physical address space
++after feature negotiation is complete.
+=20
+ \subsection{Device operations}\label{sec:Device Types / IOMMU Device / Dev=
+ice operations}
+=20
+--=20
+2.30.1
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
