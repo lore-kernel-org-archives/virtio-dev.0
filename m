@@ -1,218 +1,122 @@
-Return-Path: virtio-dev-return-8060-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-8045-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 3A13A9862C9
-	for <virtio-dev@lists.oasis-open.org>; Sat, 27 Feb 2021 09:00:57 +0000 (UTC)
-From: Anton Yakovlev <anton.yakovlev@opensynergy.com>
-Date: Sat, 27 Feb 2021 09:59:56 +0100
-Message-ID: <20210227085956.1700687-10-anton.yakovlev@opensynergy.com>
-In-Reply-To: <20210227085956.1700687-1-anton.yakovlev@opensynergy.com>
-References: <20210227085956.1700687-1-anton.yakovlev@opensynergy.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 5F7AB986223
+	for <virtio-dev@lists.oasis-open.org>; Thu, 25 Feb 2021 23:41:54 +0000 (UTC)
 MIME-Version: 1.0
-Subject: [virtio-dev] [PATCH v6 9/9] ALSA: virtio: introduce device suspend/resume support
-Content-Type: text/plain
-Content-Transfer-Encoding: quoted-printable
-To: virtualization@lists.linux-foundation.org, alsa-devel@alsa-project.org, virtio-dev@lists.oasis-open.org
-Cc: "Michael S. Tsirkin" <mst@redhat.com>, Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>, linux-kernel@vger.kernel.org
+From: Enrico Granata <egranata@google.com>
+Date: Thu, 25 Feb 2021 16:41:41 -0700
+Message-ID: <CAPR809ud5OC2fAdyRqHR0tw+H++nDVk1g2FZw2-KCLJHnCcm3Q@mail.gmail.com>
+Subject: [virtio-dev] [PATCH v2] Add lifetime metrics to virtio-blk
+Content-Type: text/plain; charset="UTF-8"
+To: virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-All running PCM substreams are stopped on device suspend and restarted
-on device resume.
+In many embedded systems, virtio-blk implementations are
+backed by eMMC or UFS storage devices, which are subject to
+predictable and measurable wear over time due to repeated write
+cycles.
 
-Signed-off-by: Anton Yakovlev <anton.yakovlev@opensynergy.com>
+For such systems, it can be important to be able to track
+accurately the amount of wear imposed on the storage over
+time and surface it to applications. In a native deployments
+this is generally handled by the physical block device driver
+but no such provision is made in virtio-blk to expose these
+metrics for devices where it makes sense to do so.
+
+This patch adds support to virtio-blk for lifetime and wear
+metrics to be exposed to the guest when a deployment of
+virtio-blk is done over compatible eMMC or UFS storage.
+
+Signed-off-by: Enrico Granata <egranata@google.com>
 ---
- sound/virtio/virtio_card.c    | 56 +++++++++++++++++++++++++++++++++++
- sound/virtio/virtio_pcm.c     |  1 +
- sound/virtio/virtio_pcm_ops.c | 41 ++++++++++++++++++++-----
- 3 files changed, 90 insertions(+), 8 deletions(-)
+ content.tex | 31 +++++++++++++++++++++++++++++--
+ 1 file changed, 29 insertions(+), 2 deletions(-)
 
-diff --git a/sound/virtio/virtio_card.c b/sound/virtio/virtio_card.c
-index 59455a562018..c7ae8801991d 100644
---- a/sound/virtio/virtio_card.c
-+++ b/sound/virtio/virtio_card.c
-@@ -323,6 +323,58 @@ static void virtsnd_remove(struct virtio_device *vdev)
- =09kfree(snd->event_msgs);
- }
-=20
-+#ifdef CONFIG_PM_SLEEP
-+/**
-+ * virtsnd_freeze() - Suspend device.
-+ * @vdev: VirtIO parent device.
-+ *
-+ * Context: Any context.
-+ * Return: 0 on success, -errno on failure.
-+ */
-+static int virtsnd_freeze(struct virtio_device *vdev)
-+{
-+=09struct virtio_snd *snd =3D vdev->priv;
+diff --git a/content.tex b/content.tex
+index 835f1ea..0e73ff0 100644
+--- a/content.tex
++++ b/content.tex
+@@ -4418,6 +4418,9 @@ \subsection{Feature bits}\label{sec:Device Types
+/ Block Device / Feature bits}
+ \item[VIRTIO_BLK_F_WRITE_ZEROES (14)] Device can support write zeroes command,
+      maximum write zeroes sectors size in \field{max_write_zeroes_sectors} and
+      maximum write zeroes segment number in \field{max_write_zeroes_seg}.
 +
-+=09virtsnd_ctl_msg_cancel_all(snd);
-+
-+=09vdev->config->del_vqs(vdev);
-+=09vdev->config->reset(vdev);
-+
-+=09kfree(snd->event_msgs);
-+
-+=09/*
-+=09 * If the virtsnd_restore() fails before re-allocating events, then we
-+=09 * get a dangling pointer here.
-+=09 */
-+=09snd->event_msgs =3D NULL;
-+
-+=09return 0;
-+}
-+
-+/**
-+ * virtsnd_restore() - Resume device.
-+ * @vdev: VirtIO parent device.
-+ *
-+ * Context: Any context.
-+ * Return: 0 on success, -errno on failure.
-+ */
-+static int virtsnd_restore(struct virtio_device *vdev)
-+{
-+=09struct virtio_snd *snd =3D vdev->priv;
-+=09int rc;
-+
-+=09rc =3D virtsnd_find_vqs(snd);
-+=09if (rc)
-+=09=09return rc;
-+
-+=09virtio_device_ready(vdev);
-+
-+=09virtsnd_enable_event_vq(snd);
-+
-+=09return 0;
-+}
-+#endif /* CONFIG_PM_SLEEP */
-+
- static const struct virtio_device_id id_table[] =3D {
- =09{ VIRTIO_ID_SOUND, VIRTIO_DEV_ANY_ID },
- =09{ 0 },
-@@ -335,6 +387,10 @@ static struct virtio_driver virtsnd_driver =3D {
- =09.validate =3D virtsnd_validate,
- =09.probe =3D virtsnd_probe,
- =09.remove =3D virtsnd_remove,
-+#ifdef CONFIG_PM_SLEEP
-+=09.freeze =3D virtsnd_freeze,
-+=09.restore =3D virtsnd_restore,
-+#endif
- };
-=20
- static int __init init(void)
-diff --git a/sound/virtio/virtio_pcm.c b/sound/virtio/virtio_pcm.c
-index 3605151860f2..4a4a6583b002 100644
---- a/sound/virtio/virtio_pcm.c
-+++ b/sound/virtio/virtio_pcm.c
-@@ -109,6 +109,7 @@ static int virtsnd_pcm_build_hw(struct virtio_pcm_subst=
-ream *vss,
- =09=09SNDRV_PCM_INFO_BATCH |
- =09=09SNDRV_PCM_INFO_BLOCK_TRANSFER |
- =09=09SNDRV_PCM_INFO_INTERLEAVED |
-+=09=09SNDRV_PCM_INFO_RESUME |
- =09=09SNDRV_PCM_INFO_PAUSE;
-=20
- =09if (!info->channels_min || info->channels_min > info->channels_max) {
-diff --git a/sound/virtio/virtio_pcm_ops.c b/sound/virtio/virtio_pcm_ops.c
-index d02d79bd94f3..03a7e2666cfb 100644
---- a/sound/virtio/virtio_pcm_ops.c
-+++ b/sound/virtio/virtio_pcm_ops.c
-@@ -167,7 +167,8 @@ static int virtsnd_pcm_hw_params(struct snd_pcm_substre=
-am *substream,
- =09int vrate =3D -1;
- =09int rc;
-=20
--=09if (virtsnd_pcm_msg_pending_num(vss)) {
-+=09if (runtime->status->state !=3D SNDRV_PCM_STATE_SUSPENDED &&
-+=09    virtsnd_pcm_msg_pending_num(vss)) {
- =09=09dev_err(&vdev->dev, "SID %u: invalid I/O queue state\n",
- =09=09=09vss->sid);
- =09=09return -EBADFD;
-@@ -231,6 +232,10 @@ static int virtsnd_pcm_hw_params(struct snd_pcm_substr=
-eam *substream,
- =09if (rc)
- =09=09return rc;
-=20
-+=09/* If messages have already been allocated before, do nothing. */
-+=09if (runtime->status->state =3D=3D SNDRV_PCM_STATE_SUSPENDED)
-+=09=09return 0;
-+
- =09/* Free previously allocated messages (if any). */
- =09virtsnd_pcm_msg_free(vss);
-=20
-@@ -267,20 +272,24 @@ static int virtsnd_pcm_hw_free(struct snd_pcm_substre=
-am *substream)
-  */
- static int virtsnd_pcm_prepare(struct snd_pcm_substream *substream)
- {
-+=09struct snd_pcm_runtime *runtime =3D substream->runtime;
- =09struct virtio_pcm_substream *vss =3D snd_pcm_substream_chip(substream);
- =09struct virtio_device *vdev =3D vss->snd->vdev;
- =09struct virtio_snd_msg *msg;
-=20
--=09if (virtsnd_pcm_msg_pending_num(vss)) {
--=09=09dev_err(&vdev->dev, "SID %u: invalid I/O queue state\n",
--=09=09=09vss->sid);
--=09=09return -EBADFD;
-+=09if (runtime->status->state !=3D SNDRV_PCM_STATE_SUSPENDED) {
-+=09=09if (virtsnd_pcm_msg_pending_num(vss)) {
-+=09=09=09dev_err(&vdev->dev, "SID %u: invalid I/O queue state\n",
-+=09=09=09=09vss->sid);
-+=09=09=09return -EBADFD;
-+=09=09}
-+
-+=09=09vss->buffer_bytes =3D snd_pcm_lib_buffer_bytes(substream);
-+=09=09vss->hw_ptr =3D 0;
-+=09=09vss->msg_last_enqueued =3D -1;
- =09}
-=20
--=09vss->buffer_bytes =3D snd_pcm_lib_buffer_bytes(substream);
--=09vss->hw_ptr =3D 0;
- =09vss->xfer_xrun =3D false;
--=09vss->msg_last_enqueued =3D -1;
- =09vss->msg_count =3D 0;
-=20
- =09msg =3D virtsnd_pcm_ctl_msg_alloc(vss, VIRTIO_SND_R_PCM_PREPARE,
-@@ -309,6 +318,21 @@ static int virtsnd_pcm_trigger(struct snd_pcm_substrea=
-m *substream, int command)
- =09int rc;
-=20
- =09switch (command) {
-+=09case SNDRV_PCM_TRIGGER_RESUME: {
-+=09=09/*
-+=09=09 * We restart the substream by executing the standard command
-+=09=09 * sequence.
-+=09=09 */
-+=09=09rc =3D virtsnd_pcm_hw_params(substream, NULL);
-+=09=09if (rc)
-+=09=09=09return rc;
-+
-+=09=09rc =3D virtsnd_pcm_prepare(substream);
-+=09=09if (rc)
-+=09=09=09return rc;
-+
-+=09=09fallthrough;
-+=09}
- =09case SNDRV_PCM_TRIGGER_START:
- =09case SNDRV_PCM_TRIGGER_PAUSE_RELEASE: {
- =09=09struct virtio_snd_queue *queue =3D virtsnd_pcm_queue(vss);
-@@ -335,6 +359,7 @@ static int virtsnd_pcm_trigger(struct snd_pcm_substream=
- *substream, int command)
-=20
- =09=09return virtsnd_ctl_msg_send_sync(snd, msg);
- =09}
-+=09case SNDRV_PCM_TRIGGER_SUSPEND:
- =09case SNDRV_PCM_TRIGGER_STOP:
- =09case SNDRV_PCM_TRIGGER_PAUSE_PUSH: {
- =09=09spin_lock_irqsave(&vss->lock, flags);
---=20
-2.30.1
++\item[VIRTIO_BLK_F_LIFETIME (15)] Device supports providing storage lifetime
++     information.
+ \end{description}
 
+ \subsubsection{Legacy Interface: Feature bits}\label{sec:Device Types
+/ Block Device / Feature bits / Legacy Interface: Feature bits}
+@@ -4601,8 +4604,9 @@ \subsection{Device Operation}\label{sec:Device
+Types / Block Device / Device Ope
 
+ The type of the request is either a read (VIRTIO_BLK_T_IN), a write
+ (VIRTIO_BLK_T_OUT), a discard (VIRTIO_BLK_T_DISCARD), a write zeroes
+-(VIRTIO_BLK_T_WRITE_ZEROES), a flush (VIRTIO_BLK_T_FLUSH), or a get device ID
+-string command (VIRTIO_BLK_T_GET_ID).
++(VIRTIO_BLK_T_WRITE_ZEROES), a flush (VIRTIO_BLK_T_FLUSH), a get device ID
++string command (VIRTIO_BLK_T_GET_ID), or a get device lifetime
++command (VIRTIO_BLK_T_GET_LIFETIME).
+
+ \begin{lstlisting}
+ #define VIRTIO_BLK_T_IN           0
+@@ -4611,6 +4615,7 @@ \subsection{Device Operation}\label{sec:Device
+Types / Block Device / Device Ope
+ #define VIRTIO_BLK_T_GET_ID       8
+ #define VIRTIO_BLK_T_DISCARD      11
+ #define VIRTIO_BLK_T_WRITE_ZEROES 13
++#define VIRTIO_BLK_T_GET_LIFETIME 15
+ \end{lstlisting}
+
+ The \field{sector} number indicates the offset (multiplied by 512) where
+@@ -4648,6 +4653,23 @@ \subsection{Device Operation}\label{sec:Device
+Types / Block Device / Device Ope
+ \field{data}.  The device ID string is a NUL-padded ASCII string up to 20 bytes
+ long.  If the string is 20 bytes long then there is no NUL terminator.
+
++The \field{data} used for VIRTIO_BLK_T_GET_LIFETIME requests is populated by
++the device, and is of the form:
++
++\begin{lstlisting}
++struct virtio_blk_lifetime {
++    le16 pre_eol_info;
++    le16 device_lifetime_est_a;
++    le16 device_lifetime_est_b;
++};
++\end{lstlisting}
++
++The device lifetime metrics \field{pre_eol_info}, \field{device_lifetime_est_a}
++and \field{device_lifetime_est_b} have the semantics described by the JEDEC
++standard No.84-B50 for the extended CSD register fields \field{PRE_EOL_INFO}
++\field{DEVICE_LIFETIME_EST_TYP_A} and \field{DEVICE_LIFETIME_EST_TYP_B}
++respectively.
++
+ The final \field{status} byte is written by the device: either
+ VIRTIO_BLK_S_OK for success, VIRTIO_BLK_S_IOERR for device or driver
+ error or VIRTIO_BLK_S_UNSUPP for a request unsupported by device:
+@@ -4754,6 +4776,11 @@ \subsection{Device Operation}\label{sec:Device
+Types / Block Device / Device Ope
+ (case~\ref{item:flush3}).  Failure to do so can cause data loss
+ in case of a crash.
+
++If the device is backed by eMMC or UFS persistent storage, the device SHOULD
++offer the VIRTIO_BLK_F_LIFETIME flag. The flag MUST NOT be offered if
+the device
++is backed by storage for which the lifetime metrics as described in
+this document
++cannot be obtained or have no useful meaning.
++
+ If the driver changes \field{writeback} between the submission of the write
+ and its completion, the write could be either volatile or stable when
+ its completion is reported; in other words, the exact behavior is undefined.
+--
+2.30.1.766.gb4fecdf3b7-goog
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
