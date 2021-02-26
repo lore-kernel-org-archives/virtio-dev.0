@@ -1,122 +1,72 @@
-Return-Path: virtio-dev-return-8045-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-8047-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 5F7AB986223
-	for <virtio-dev@lists.oasis-open.org>; Thu, 25 Feb 2021 23:41:54 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 3360C986226
+	for <virtio-dev@lists.oasis-open.org>; Fri, 26 Feb 2021 11:16:35 +0000 (UTC)
+From: =?UTF-8?q?Alex=20Benn=C3=A9e?= <alex.bennee@linaro.org>
+Date: Fri, 26 Feb 2021 11:16:19 +0000
+Message-Id: <20210226111619.21178-1-alex.bennee@linaro.org>
 MIME-Version: 1.0
-From: Enrico Granata <egranata@google.com>
-Date: Thu, 25 Feb 2021 16:41:41 -0700
-Message-ID: <CAPR809ud5OC2fAdyRqHR0tw+H++nDVk1g2FZw2-KCLJHnCcm3Q@mail.gmail.com>
-Subject: [virtio-dev] [PATCH v2] Add lifetime metrics to virtio-blk
-Content-Type: text/plain; charset="UTF-8"
-To: virtio-dev@lists.oasis-open.org
+Subject: [virtio-dev] [VHOST USER SPEC PATCH] vhost-user.rst: add clarifying language about protocol negotiation
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+To: qemu-devel@nongnu.org, rust-vmm@lists.opendev.org
+Cc: stratos-dev@op-lists.linaro.org, virtio-dev@lists.oasis-open.org, viresh.kumar@linaro.org, =?UTF-8?q?Alex=20Benn=C3=A9e?= <alex.bennee@linaro.org>, Jiang Liu <gerry@linux.alibaba.com>, "Michael S. Tsirkin" <mst@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-In many embedded systems, virtio-blk implementations are
-backed by eMMC or UFS storage devices, which are subject to
-predictable and measurable wear over time due to repeated write
-cycles.
+In practice the protocol negotiation between vhost master and slave
+occurs before the final feature negotiation between backend and
+frontend. This has lead to an inconsistency between the rust-vmm vhost
+implementation and the libvhost-user library in their approaches to
+checking if all the requirements for REPLY_ACK processing were met.
+As this is purely a function of the protocol negotiation and not of
+interest to the frontend lets make the language clearer about the
+requirements for a successfully negotiated protocol feature.
 
-For such systems, it can be important to be able to track
-accurately the amount of wear imposed on the storage over
-time and surface it to applications. In a native deployments
-this is generally handled by the physical block device driver
-but no such provision is made in virtio-blk to expose these
-metrics for devices where it makes sense to do so.
-
-This patch adds support to virtio-blk for lifetime and wear
-metrics to be exposed to the guest when a deployment of
-virtio-blk is done over compatible eMMC or UFS storage.
-
-Signed-off-by: Enrico Granata <egranata@google.com>
+Signed-off-by: Alex Benn=C3=A9e <alex.bennee@linaro.org>
+Cc: Jiang Liu <gerry@linux.alibaba.com>
 ---
- content.tex | 31 +++++++++++++++++++++++++++++--
- 1 file changed, 29 insertions(+), 2 deletions(-)
+ docs/interop/vhost-user.rst | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
 
-diff --git a/content.tex b/content.tex
-index 835f1ea..0e73ff0 100644
---- a/content.tex
-+++ b/content.tex
-@@ -4418,6 +4418,9 @@ \subsection{Feature bits}\label{sec:Device Types
-/ Block Device / Feature bits}
- \item[VIRTIO_BLK_F_WRITE_ZEROES (14)] Device can support write zeroes command,
-      maximum write zeroes sectors size in \field{max_write_zeroes_sectors} and
-      maximum write zeroes segment number in \field{max_write_zeroes_seg}.
-+
-+\item[VIRTIO_BLK_F_LIFETIME (15)] Device supports providing storage lifetime
-+     information.
- \end{description}
+diff --git a/docs/interop/vhost-user.rst b/docs/interop/vhost-user.rst
+index d6085f7045..3ac221a8c7 100644
+--- a/docs/interop/vhost-user.rst
++++ b/docs/interop/vhost-user.rst
+@@ -301,12 +301,22 @@ If *slave* detects some error such as incompatible fe=
+atures, it may also
+ close the connection. This should only happen in exceptional circumstances=
+.
+=20
+ Any protocol extensions are gated by protocol feature bits, which
+-allows full backwards compatibility on both master and slave.  As
+-older slaves don't support negotiating protocol features, a feature
++allows full backwards compatibility on both master and slave. As older
++slaves don't support negotiating protocol features, a device feature
+ bit was dedicated for this purpose::
+=20
+   #define VHOST_USER_F_PROTOCOL_FEATURES 30
+=20
++However as the protocol negotiation something that only occurs between
++parts of the backend implementation it is permissible to for the master
++to mask the feature bit from the guest. As noted for the
++``VHOST_USER_GET_PROTOCOL_FEATURES`` and
++``VHOST_USER_SET_PROTOCOL_FEATURES`` messages this occurs before a
++final ``VHOST_USER_SET_FEATURES`` comes from the guest. So the
++enabling of protocol features need only require the advertising of the
++feature by the slave and the successful get/set protocol features
++sequence.
++ =20
+ Starting and stopping rings
+ ---------------------------
+=20
+--=20
+2.20.1
 
- \subsubsection{Legacy Interface: Feature bits}\label{sec:Device Types
-/ Block Device / Feature bits / Legacy Interface: Feature bits}
-@@ -4601,8 +4604,9 @@ \subsection{Device Operation}\label{sec:Device
-Types / Block Device / Device Ope
-
- The type of the request is either a read (VIRTIO_BLK_T_IN), a write
- (VIRTIO_BLK_T_OUT), a discard (VIRTIO_BLK_T_DISCARD), a write zeroes
--(VIRTIO_BLK_T_WRITE_ZEROES), a flush (VIRTIO_BLK_T_FLUSH), or a get device ID
--string command (VIRTIO_BLK_T_GET_ID).
-+(VIRTIO_BLK_T_WRITE_ZEROES), a flush (VIRTIO_BLK_T_FLUSH), a get device ID
-+string command (VIRTIO_BLK_T_GET_ID), or a get device lifetime
-+command (VIRTIO_BLK_T_GET_LIFETIME).
-
- \begin{lstlisting}
- #define VIRTIO_BLK_T_IN           0
-@@ -4611,6 +4615,7 @@ \subsection{Device Operation}\label{sec:Device
-Types / Block Device / Device Ope
- #define VIRTIO_BLK_T_GET_ID       8
- #define VIRTIO_BLK_T_DISCARD      11
- #define VIRTIO_BLK_T_WRITE_ZEROES 13
-+#define VIRTIO_BLK_T_GET_LIFETIME 15
- \end{lstlisting}
-
- The \field{sector} number indicates the offset (multiplied by 512) where
-@@ -4648,6 +4653,23 @@ \subsection{Device Operation}\label{sec:Device
-Types / Block Device / Device Ope
- \field{data}.  The device ID string is a NUL-padded ASCII string up to 20 bytes
- long.  If the string is 20 bytes long then there is no NUL terminator.
-
-+The \field{data} used for VIRTIO_BLK_T_GET_LIFETIME requests is populated by
-+the device, and is of the form:
-+
-+\begin{lstlisting}
-+struct virtio_blk_lifetime {
-+    le16 pre_eol_info;
-+    le16 device_lifetime_est_a;
-+    le16 device_lifetime_est_b;
-+};
-+\end{lstlisting}
-+
-+The device lifetime metrics \field{pre_eol_info}, \field{device_lifetime_est_a}
-+and \field{device_lifetime_est_b} have the semantics described by the JEDEC
-+standard No.84-B50 for the extended CSD register fields \field{PRE_EOL_INFO}
-+\field{DEVICE_LIFETIME_EST_TYP_A} and \field{DEVICE_LIFETIME_EST_TYP_B}
-+respectively.
-+
- The final \field{status} byte is written by the device: either
- VIRTIO_BLK_S_OK for success, VIRTIO_BLK_S_IOERR for device or driver
- error or VIRTIO_BLK_S_UNSUPP for a request unsupported by device:
-@@ -4754,6 +4776,11 @@ \subsection{Device Operation}\label{sec:Device
-Types / Block Device / Device Ope
- (case~\ref{item:flush3}).  Failure to do so can cause data loss
- in case of a crash.
-
-+If the device is backed by eMMC or UFS persistent storage, the device SHOULD
-+offer the VIRTIO_BLK_F_LIFETIME flag. The flag MUST NOT be offered if
-the device
-+is backed by storage for which the lifetime metrics as described in
-this document
-+cannot be obtained or have no useful meaning.
-+
- If the driver changes \field{writeback} between the submission of the write
- and its completion, the write could be either volatile or stable when
- its completion is reported; in other words, the exact behavior is undefined.
---
-2.30.1.766.gb4fecdf3b7-goog
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
