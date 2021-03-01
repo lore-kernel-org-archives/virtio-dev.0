@@ -1,119 +1,72 @@
-Return-Path: virtio-dev-return-8082-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-8068-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 10599986392
-	for <virtio-dev@lists.oasis-open.org>; Tue,  2 Mar 2021 15:35:28 +0000 (UTC)
-References: <20210227085956.1700687-1-anton.yakovlev@opensynergy.com>
- <20210227085956.1700687-10-anton.yakovlev@opensynergy.com>
- <s5hpn0kjt31.wl-tiwai@suse.de>
- <7d4daea0-ed59-e84c-c28a-945c49204c83@opensynergy.com>
- <s5hwnuqgifa.wl-tiwai@suse.de>
- <d9853306-2adf-24fe-935c-f7f8a1295dc3@opensynergy.com>
- <s5hr1kxhqcn.wl-tiwai@suse.de>
-From: Anton Yakovlev <anton.yakovlev@opensynergy.com>
-Message-ID: <2479ed0f-4c90-f565-81cd-8d0348cd14bc@opensynergy.com>
-Date: Tue, 2 Mar 2021 16:35:24 +0100
+	by lists.oasis-open.org (Postfix) with ESMTP id CC5B8985A84
+	for <virtio-dev@lists.oasis-open.org>; Mon,  1 Mar 2021 11:20:28 +0000 (UTC)
+Date: Mon, 1 Mar 2021 11:20:23 +0000
+From: Stefan Hajnoczi <stefanha@redhat.com>
+Message-ID: <YDzN9zwyeOp8+ftw@stefanha-x1.localdomain>
+References: <CAPR809ud5OC2fAdyRqHR0tw+H++nDVk1g2FZw2-KCLJHnCcm3Q@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <s5hr1kxhqcn.wl-tiwai@suse.de>
-Subject: [virtio-dev] Re: [PATCH v6 9/9] ALSA: virtio: introduce device suspend/resume
- support
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-To: Takashi Iwai <tiwai@suse.de>
-Cc: virtualization@lists.linux-foundation.org, alsa-devel@alsa-project.org, virtio-dev@lists.oasis-open.org, "Michael S.
- Tsirkin" <mst@redhat.com>, Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>, linux-kernel@vger.kernel.org
+In-Reply-To: <CAPR809ud5OC2fAdyRqHR0tw+H++nDVk1g2FZw2-KCLJHnCcm3Q@mail.gmail.com>
+Subject: Re: [virtio-dev] [PATCH v2] Add lifetime metrics to virtio-blk
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="7PI5LX5i1XsniEta"
+Content-Disposition: inline
+To: Enrico Granata <egranata@google.com>
+Cc: virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 02.03.2021 10:11, Takashi Iwai wrote:
-> On Tue, 02 Mar 2021 09:09:33 +0100,
-> Anton Yakovlev wrote:
->>
->> On 02.03.2021 07:48, Takashi Iwai wrote:
->>> On Tue, 02 Mar 2021 07:29:20 +0100,
->>> Anton Yakovlev wrote:
->>>>
->>>> On 28.02.2021 13:05, Takashi Iwai wrote:
->>>>> On Sat, 27 Feb 2021 09:59:56 +0100,
->>>>> Anton Yakovlev wrote:
->>>>>>
->>>>
->>>> [snip]
->>>>
->>>>>> --- a/sound/virtio/virtio_pcm.c
->>>>>> +++ b/sound/virtio/virtio_pcm.c
->>>>>> @@ -109,6 +109,7 @@ static int virtsnd_pcm_build_hw(struct virtio_pcm_substream *vss,
->>>>>>                  SNDRV_PCM_INFO_BATCH |
->>>>>>                  SNDRV_PCM_INFO_BLOCK_TRANSFER |
->>>>>>                  SNDRV_PCM_INFO_INTERLEAVED |
->>>>>> +             SNDRV_PCM_INFO_RESUME |
->>>>>>                  SNDRV_PCM_INFO_PAUSE;
->>>>>
->>>>> Actually you don't need to set SNDRV_PCM_INFO_RESUME.
->>>>> This flag means that the driver supports the full resume procedure,
->>>>> which isn't often the case; with this, the driver is supposed to
->>>>> resume the stream exactly from the suspended position.
->>>>>
->>>>> Most drivers don't set this but implement only the suspend-stop
->>>>> action.  Then the application (or the sound backend) will re-setup the
->>>>> stream and restart accordingly.
->>>>
->>>> I tried to resume driver without SNDRV_PCM_INFO_RESUME, and alsa-lib
->>>> called only ops->prepare(). It makes sense for a typical hw, but we have
->>>> "clean" unconfigured device on resume. And we must set hw parameters as
->>>> a first step. It means, that code should be more or less the same. And
->>>> maybe it's better to set SNDRV_PCM_INFO_RESUME, since it allows us to
->>>> resume substream in any situation (regardless of application behavior).
->>>> I can refactor code to only send requests from trigger(RESUME) path and
->>>> not to call ops itself. It should make code more straitforward. What do
->>>> you say?
->>>
->>> How about calling hw_params(NULL) conditionally in the prepare?
->>
->> Then the question is that condition. When ops->prepare() is called, the
->> substream is in SUSPENDED state or not? If not then we need to track
->> this in some additional field (and it will make logic a little bit
->> clumsy, since that field is needed to be carefully handled in other
->> places).
-> 
-> Yes, you'd need to have a suspend/resume PM callback in the driver
-> that flips the internal flag to invalidate the hw_parmas, and in the
-> prepare callback, just call hw_params(NULL) if that flag is set.
-> 
->>> Doing the full stack work in the trigger callback is bad from the API
->>> design POV; in general the trigger callback is supposed to be as short
->>> as possible.
->>
->> Yeah, but usually original subsystem design does not take into account
->> para-virtualized devices, which usually have it's own slightly different
->> reality. And we need to introduce some tricks.
-> 
-> The hardware drivers do a lot of more things in either suspend/resume
-> PM callbacks or prepare callback for re-setup of the hardware.  We can
-> follow the similar pattern.  Heavy-lifting works in the trigger
-> callbacks is really something to avoid.
+--7PI5LX5i1XsniEta
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Ok, I redone this part and now the driver sets parameters for the device
-in ops->prepare() if the substream was suspended. And everything works
-fine. Thanks! I will send a new patch set soon.
+On Thu, Feb 25, 2021 at 04:41:41PM -0700, Enrico Granata wrote:
+> @@ -4611,6 +4615,7 @@ \subsection{Device Operation}\label{sec:Device
+> Types / Block Device / Device Ope
+>  #define VIRTIO_BLK_T_GET_ID       8
+>  #define VIRTIO_BLK_T_DISCARD      11
+>  #define VIRTIO_BLK_T_WRITE_ZEROES 13
+> +#define VIRTIO_BLK_T_GET_LIFETIME 15
 
+Sorry I missed this in the previous revision:
 
-> Takashi
-> 
+There is some funny business in the Linux drivers/block/virtio_blk.c
+driver and QEMU hw/block/virtio-blk.c device implementations where the
+least significant bit indicates a driver-to-device DMA transfer when
+set and a device-to-driver DMA transfer when clear. That's why
+DISCARD/WRITE_ZEROES have odd-numbered request types but GET_ID has an
+even-numbered request type.
 
--- 
-Anton Yakovlev
-Senior Software Engineer
+The implementations should probably be overhauled to stop doing this.
+There doesn't seem to be a good reason for it! :P
 
-OpenSynergy GmbH
-Rotherstr. 20, 10245 Berlin
+To make life easy, please choose an even-numbered request type. That way
+these implementations will treat VIRTIO_BLK_T_GET_LIFETIME as a "read"
+instead of a "write". 10, 12, or 14 would work.
 
+Otherwise:
 
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+
+--7PI5LX5i1XsniEta
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmA8zfYACgkQnKSrs4Gr
+c8iRjQf/WgfjWL3ocX2F3JYaPiG3lplRX3h9qq8gldeI7Swj5WBOjHYqcNLaX2qE
+04kF+ADsv0dYFo2b9j08IWXO/l7kNa6lJkKWvSZRFjmYgzJ+3bTjD+YIM83bqvMB
+DmFAUtOdc41aLkDxk5+1S1sPIJBg6SfmjQdTfdcZ8kHFGaaF878qCqSNGHv75O7v
+mI/1gamqwuwEOCN7XBtyNcOJLW0c/vfvG3v4Mkxy3RWjLVUH75cc6rB9zTjeowK2
+P1rG9Tqi54d2MjdkNx9/DcTqHRG+la/4trR0GY24uPI3o0jt0dtCw2YdFXxFFwf/
+gB9167OdtGbSIHQ8JZ5QOdIQ4Nd28A==
+=aFkn
+-----END PGP SIGNATURE-----
+
+--7PI5LX5i1XsniEta--
 
