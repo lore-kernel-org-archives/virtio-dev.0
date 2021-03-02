@@ -1,225 +1,93 @@
-Return-Path: virtio-dev-return-8102-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-8081-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 80DBA9864ED
-	for <virtio-dev@lists.oasis-open.org>; Fri,  5 Mar 2021 17:36:11 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 0CA7C98638D
+	for <virtio-dev@lists.oasis-open.org>; Tue,  2 Mar 2021 12:08:28 +0000 (UTC)
+Date: Tue, 2 Mar 2021 13:08:12 +0100
+From: Cornelia Huck <cohuck@redhat.com>
+Message-ID: <20210302130812.6227f176.cohuck@redhat.com>
+In-Reply-To: <cdd72199-ac7b-cc8d-2c40-81e43162c532@redhat.com>
+References: <20210223041740-mutt-send-email-mst@kernel.org>
+	<788a0880-0a68-20b7-5bdf-f8150b08276a@redhat.com>
+	<20210223110430.2f098bc0.cohuck@redhat.com>
+	<bbb0a09e-17e1-a397-1b64-6ce9afe18e44@redhat.com>
+	<20210223115833.732d809c.cohuck@redhat.com>
+	<8355f9b3-4cda-cd2e-98df-fed020193008@redhat.com>
+	<20210224121234.0127ae4b.cohuck@redhat.com>
+	<be6713d3-ac98-bbbf-1dc1-a003ed06a156@redhat.com>
+	<20210225135229-mutt-send-email-mst@kernel.org>
+	<0f8eb381-cc98-9e05-0e35-ccdb1cbd6119@redhat.com>
+	<20210228162306-mutt-send-email-mst@kernel.org>
+	<cdd72199-ac7b-cc8d-2c40-81e43162c532@redhat.com>
 MIME-Version: 1.0
-References: <CAPR809to17OpKuAvoYvdjpZYmVxbTi5umTABc4UZf90iqC0UmA@mail.gmail.com>
- <20210303181807.756bb723.cohuck@redhat.com> <CAPR809vK4XuhRGtf4=4bP+6XNpXTUND4mE0vKBE2f_1bUvv_DQ@mail.gmail.com>
- <20210305123844.45f176d4.cohuck@redhat.com>
-In-Reply-To: <20210305123844.45f176d4.cohuck@redhat.com>
-From: Enrico Granata <egranata@google.com>
-Date: Fri, 5 Mar 2021 10:35:58 -0700
-Message-ID: <CAPR809vGjxk8ZnKPDUHNibbt_3j=Ad4=PUpJtnHEpZqmX5--QQ@mail.gmail.com>
-Subject: Re: [virtio-dev] [PATCH v3] Add lifetime metrics to virtio-blk
-Content-Type: text/plain; charset="UTF-8"
-To: Cornelia Huck <cohuck@redhat.com>
-Cc: virtio-dev@lists.oasis-open.org
+Subject: Re: [virtio-dev] Re: [PATCH] vdpa/mlx5: set_features should allow
+ reset to zero
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+To: Jason Wang <jasowang@redhat.com>
+Cc: "Michael S. Tsirkin" <mst@redhat.com>, Si-Wei Liu <si-wei.liu@oracle.com>, elic@nvidia.com, linux-kernel@vger.kernel.org, virtualization@lists.linux-foundation.org, netdev@vger.kernel.org, virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Fri, Mar 5, 2021 at 4:38 AM Cornelia Huck <cohuck@redhat.com> wrote:
->
-> On Wed, 3 Mar 2021 11:01:50 -0700
-> Enrico Granata <egranata@google.com> wrote:
->
-> > On Wed, Mar 3, 2021 at 10:18 AM Cornelia Huck <cohuck@redhat.com> wrote:
-> > >
-> > > On Mon, 1 Mar 2021 10:51:03 -0700
-> > > Enrico Granata <egranata@google.com> wrote:
-> > >
-> > > > In many embedded systems, virtio-blk implementations are
-> > > > backed by eMMC or UFS storage devices, which are subject to
-> > > > predictable and measurable wear over time due to repeated write
-> > > > cycles.
-> > > >
-> > > > For such systems, it can be important to be able to track
-> > > > accurately the amount of wear imposed on the storage over
-> > > > time and surface it to applications. In a native deployments
-> > > > this is generally handled by the physical block device driver
-> > > > but no such provision is made in virtio-blk to expose these
-> > > > metrics for devices where it makes sense to do so.
-> > > >
-> > > > This patch adds support to virtio-blk for lifetime and wear
-> > > > metrics to be exposed to the guest when a deployment of
-> > > > virtio-blk is done over compatible eMMC or UFS storage.
-> > > >
-> > > > Signed-off-by: Enrico Granata <egranata@google.com>
-> > > > ---
-> > > >  content.tex | 31 +++++++++++++++++++++++++++++--
-> > > >  1 file changed, 29 insertions(+), 2 deletions(-)
-> > > >
-> > > > diff --git a/content.tex b/content.tex
-> > > > index 835f1ea..47e3566 100644
-> > > > --- a/content.tex
-> > > > +++ b/content.tex
-> > > > @@ -4418,6 +4418,9 @@ \subsection{Feature bits}\label{sec:Device Types
-> > > > / Block Device / Feature bits}
-> > >
-> > > [something seems to have caused line wrapping in this patch]
-> > >
-> >
-> > Hmm... I can try applying again and sending out as a v4?
->
-> Please do, if we don't have any more changes on top.
->
+On Mon, 1 Mar 2021 11:51:08 +0800
+Jason Wang <jasowang@redhat.com> wrote:
 
-Respun v4 at https://lists.oasis-open.org/archives/virtio-dev/202103/msg00038.html
+> On 2021/3/1 5:25 =E4=B8=8A=E5=8D=88, Michael S. Tsirkin wrote:
+> > On Fri, Feb 26, 2021 at 04:19:16PM +0800, Jason Wang wrote: =20
+> >> On 2021/2/26 2:53 =E4=B8=8A=E5=8D=88, Michael S. Tsirkin wrote: =20
 
+> >>> Confused. What is wrong with the above? It never reads the
+> >>> field unless the feature has been offered by device. =20
+> >>
+> >> So the spec said:
+> >>
+> >> "
+> >>
+> >> The following driver-read-only field, max_virtqueue_pairs only exists =
+if
+> >> VIRTIO_NET_F_MQ is set.
+> >>
+> >> "
+> >>
+> >> If I read this correctly, there will be no max_virtqueue_pairs field i=
+f the
+> >> VIRTIO_NET_F_MQ is not offered by device? If yes the offsetof() violat=
+es
+> >> what spec said.
+> >>
+> >> Thanks =20
+> > I think that's a misunderstanding. This text was never intended to
+> > imply that field offsets change beased on feature bits.
+> > We had this pain with legacy and we never wanted to go back there.
 > >
-> > > >  \item[VIRTIO_BLK_F_WRITE_ZEROES (14)] Device can support write zeroes command,
-> > > >       maximum write zeroes sectors size in \field{max_write_zeroes_sectors} and
-> > > >       maximum write zeroes segment number in \field{max_write_zeroes_seg}.
-> > > > +
-> > > > +\item[VIRTIO_BLK_F_LIFETIME (15)] Device supports providing storage lifetime
-> > > > +     information.
-> > > >  \end{description}
-> > > >
-> > > >  \subsubsection{Legacy Interface: Feature bits}\label{sec:Device Types
-> > > > / Block Device / Feature bits / Legacy Interface: Feature bits}
-> > > > @@ -4601,14 +4604,16 @@ \subsection{Device Operation}\label{sec:Device
-> > > > Types / Block Device / Device Ope
-> > > >
-> > > >  The type of the request is either a read (VIRTIO_BLK_T_IN), a write
-> > > >  (VIRTIO_BLK_T_OUT), a discard (VIRTIO_BLK_T_DISCARD), a write zeroes
-> > > > -(VIRTIO_BLK_T_WRITE_ZEROES), a flush (VIRTIO_BLK_T_FLUSH), or a get device ID
-> > > > -string command (VIRTIO_BLK_T_GET_ID).
-> > > > +(VIRTIO_BLK_T_WRITE_ZEROES), a flush (VIRTIO_BLK_T_FLUSH), a get device ID
-> > > > +string command (VIRTIO_BLK_T_GET_ID), or a get device lifetime
-> > > > +command (VIRTIO_BLK_T_GET_LIFETIME).
-> > > >
-> > > >  \begin{lstlisting}
-> > > >  #define VIRTIO_BLK_T_IN           0
-> > > >  #define VIRTIO_BLK_T_OUT          1
-> > > >  #define VIRTIO_BLK_T_FLUSH        4
-> > > >  #define VIRTIO_BLK_T_GET_ID       8
-> > > > +#define VIRTIO_BLK_T_GET_LIFETIME 10
-> > > >  #define VIRTIO_BLK_T_DISCARD      11
-> > > >  #define VIRTIO_BLK_T_WRITE_ZEROES 13
-> > > >  \end{lstlisting}
-> > > > @@ -4648,6 +4653,23 @@ \subsection{Device Operation}\label{sec:Device
-> > > > Types / Block Device / Device Ope
-> > > >  \field{data}.  The device ID string is a NUL-padded ASCII string up to 20 bytes
-> > > >  long.  If the string is 20 bytes long then there is no NUL terminator.
-> > > >
-> > > > +The \field{data} used for VIRTIO_BLK_T_GET_LIFETIME requests is populated by
-> > > > +the device, and is of the form:
-> > > > +
-> > > > +\begin{lstlisting}
-> > > > +struct virtio_blk_lifetime {
-> > > > +    le16 pre_eol_info;
-> > > > +    le16 device_lifetime_est_a;
-> > > > +    le16 device_lifetime_est_b;
-> > > > +};
-> > > > +\end{lstlisting}
-> > > > +
-> > > > +The device lifetime metrics \field{pre_eol_info}, \field{device_lifetime_est_a}
-> > > > +and \field{device_lifetime_est_b} have the semantics described by the JEDEC
-> > > > +standard No.84-B50 for the extended CSD register fields \field{PRE_EOL_INFO}
-> > > > +\field{DEVICE_LIFETIME_EST_TYP_A} and \field{DEVICE_LIFETIME_EST_TYP_B}
-> > > > +respectively.
-> > >
-> > > Do we have an explicit link to that JEDEC standard?
-> > >
+> > This merely implies that without VIRTIO_NET_F_MQ the field
+> > should not be accessed. Exists in the sense "is accessible to driver".
 > >
-> > I believe the specification is under a JEDEC paywall. I have access to
-> > it by means of my employer, but it doesn't seem to be publicly
-> > available.
->
-> That's unfortunate... how much of the information in there is needed
-> for someone to come up with a compliant implementation? Can we condense
-> that to a sentence or two that would be unproblematic to put into the
-> standard?
->
-> If JEDEC is providing reasonable licensing terms, I guess it could also
-> be an option to just refer to their homepage and specifying that
-> standard (I think the full name is JESD84-B50 -- at least that's what
-> my searching pointed to.)
->
+> > Let's just clarify that in the spec, job done. =20
+>=20
+>=20
+> Ok, agree. That will make things more eaiser.
 
-I have added an explicit mention of finding the spec at JEDEC website.
-If you think it is worthwhile to try and condense the spec in here, I
-can take a pass at it.
-I do slightly prefer just pointing the interested reader at JEDEC for
-a couple reasons:
-- in case of ambiguity, the JEDEC spec would be normative  and the
-content here just "FYI" at best, so the interested implementor would
-be best advised to consult the actual spec anyway;
-- in a lot of common cases, the hardware will provide this data via
-the host system's interface (e.g. sysfs in Linux) and need no further
-processing by the virtio-blki implementation.
+Yes, that makes much more sense.
 
-Up to you though. I can work with either just the link, or adding a
-brief description
+What about adding the following to the "Basic Facilities of a Virtio
+Device/Device Configuration Space" section of the spec:
 
-> >
-> > > > +
-> > > >  The final \field{status} byte is written by the device: either
-> > > >  VIRTIO_BLK_S_OK for success, VIRTIO_BLK_S_IOERR for device or driver
-> > > >  error or VIRTIO_BLK_S_UNSUPP for a request unsupported by device:
-> > > > @@ -4754,6 +4776,11 @@ \subsection{Device Operation}\label{sec:Device
-> > > > Types / Block Device / Device Ope
-> > > >  (case~\ref{item:flush3}).  Failure to do so can cause data loss
-> > > >  in case of a crash.
-> > > >
-> > > > +If the device is backed by eMMC or UFS persistent storage, the device SHOULD
-> > > > +offer the VIRTIO_BLK_F_LIFETIME flag. The flag MUST NOT be offered if
-> > > > the device
-> > > > +is backed by storage for which the lifetime metrics as described in
-> > > > this document
-> > > > +cannot be obtained or have no useful meaning.
-> > >
-> > > Isn't that outside of the normative sections? If so, please make this a
-> > > description without SHOULD and MUST NOT, and add them to the normative
-> > > clauses.
-> > >
-> >
-> > Hmm.. when I look at my local copy, I see this section right below the clause:
-> >
-> > "If the device is backed by persistent storage, the device MUST ensure that
-> > stable writes are committed to it, before reporting completion of the write
-> > (cases~\ref{item:flush1} and~\ref{item:flush2}) or the flush
-> > (case~\ref{item:flush3}).  Failure to do so can cause data loss
-> > in case of a crash."
-> >
-> > It looked like the right place to add this kind of clause to me, but
-> > if I am wrong and you would like to see it moved, please do let me
-> > know.
->
-> Ah, sorry, my mistake; I must have slipped in the document, your
-> addition is fine.
->
-> > Maybe I really do just need to apply the patch again on a clean-slate
-> > repository, if what I see locally does not align?
-> >
-> > > Also, are eMMC/UFS just examples (i.e. may other types of persistent
-> > > storage provide these metrics as well?)
-> > >
-> >
-> > I can't say I know of other hardware that provides identical metrics,
-> > but it could be possible and maybe could be done by software
-> > adaptation for other storage systems?
->
-> If we can get potentially get the same metrics from other hardware,
-> that sentence should probably be reworded a bit. What about:
->
-> "If the device is backed by storage providing life time metrics (such
-> as eMMC or UFS persistent storage), the device SHOULD offer the
-> VIRTIO_BLK_F_LIFETIME flag."
->
+"If an optional configuration field does not exist, the corresponding
+space is still present, but reserved."
 
-Reworded as you suggest in v4. Thanks for the feedback
+(Do we need to specify what a device needs to do if the driver tries to
+access a non-existing field? We cannot really make assumptions about
+config space accesses; virtio-ccw can just copy a chunk of config space
+that contains non-existing fields... I guess the device could ignore
+writes and return zeroes on read?)
 
-> ?
->
->
-> ---------------------------------------------------------------------
-> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
->
+I've opened https://github.com/oasis-tcs/virtio-spec/issues/98 for the
+spec issues.
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
