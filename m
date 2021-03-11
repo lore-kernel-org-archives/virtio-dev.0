@@ -1,80 +1,546 @@
-Return-Path: virtio-dev-return-8113-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id E6BC19864A9
-	for <virtio-dev@lists.oasis-open.org>; Tue, 16 Mar 2021 16:40:51 +0000 (UTC)
+Return-Path: virtio-comment-return-1736-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-comment@lists.oasis-open.org>
+List-Post: <mailto:virtio-comment@lists.oasis-open.org>
+List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
+References: <20210212095920.249768-1-peter.hilber@opensynergy.com>
+From: Peter Hilber <peter.hilber@opensynergy.com>
+Message-ID: <182c86c3-730b-12e2-1a9a-347d5e8e25af@opensynergy.com>
+Date: Thu, 11 Mar 2021 18:19:23 +0100
 MIME-Version: 1.0
-References: <CAPR809sesHT9M+5jmQho-4m1L1QufPgE6A_RGWmYqbnM52qSkQ@mail.gmail.com>
- <20210315122709.33c4f128.cohuck@redhat.com>
-In-Reply-To: <20210315122709.33c4f128.cohuck@redhat.com>
-From: Enrico Granata <egranata@google.com>
-Date: Tue, 16 Mar 2021 10:40:39 -0600
-Message-ID: <CAPR809uB1OSN8Uu5-irGNjQqqS+tGoid4Dbi8h-Q7dKRV3pXfg@mail.gmail.com>
-Subject: Re: [virtio-dev] [PATCH v5] Add lifetime metrics to virtio-blk
-Content-Type: text/plain; charset="UTF-8"
-To: Cornelia Huck <cohuck@redhat.com>
-Cc: virtio-dev@lists.oasis-open.org
+In-Reply-To: <20210212095920.249768-1-peter.hilber@opensynergy.com>
+Subject: [virtio-comment] Re: [PATCH v6] Add virtio SCMI device specification
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: quoted-printable
+To: virtio-comment@lists.oasis-open.org
+Cc: linux-arm-kernel@lists.infradead.org, Souvik.Chakravarty@arm.com, Sudeep.Holla@arm.com, virtio-dev@lists.oasis-open.org, alex.bennee@linaro.org, jean-philippe@linaro.org, cristian.marussi@arm.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Please do start a vote on this issue at your earliest convenience
+On 12.02.21 10:59, Peter Hilber wrote:
+> This patch proposes a new virtio device for the Arm SCMI protocol.
+>=20
+> The device provides a simple transport for the Arm SCMI protocol[1]. The
+> *S*ystem *C*ontrol and *M*anagement *I*nterface protocol allows speaking
+> to system controllers that allow orchestrating things like power
+> management, system state management and sensor access. The SCMI protocol
+> is used on SoCs where multiple cores and co-processors need access to
+> these resources.
+>=20
+> The virtio transport allows making use of this protocol in virtualized
+> systems.
+>=20
+> [1] https://developer.arm.com/docs/den0056/c
+>=20
+> Signed-off-by: Peter Hilber <peter.hilber@opensynergy.com>
+> ---
+>=20
+> Notes:
+>=20
+>     Since sending out v5 in May 2020, there has been no additional
+>     feedback w.r.t. the spec. An RfC patch series for the driver is now
+>     available at [1]. OpenSynergy also has a proprietary implementation
+>     of the device (without the VIRTIO_SCMI_F_SHARED_MEMORY feature so
+>     far).
+>=20
+>     So I would like to request a vote on adding the device in a few weeks=
+.
+>    =20
 
-Fixes: https://github.com/oasis-tcs/virtio-spec/issues/97
+I would like to request a vote on adding the virtio SCMI device to the spec=
+.
 
-Thanks,
-- Enrico
+Fixes: https://github.com/oasis-tcs/virtio-spec/issues/100
 
-On Mon, Mar 15, 2021 at 5:27 AM Cornelia Huck <cohuck@redhat.com> wrote:
->
-> On Tue, 9 Mar 2021 14:20:14 -0700
-> Enrico Granata <egranata@google.com> wrote:
->
-> > In many embedded systems, virtio-blk implementations are
-> > backed by eMMC or UFS storage devices, which are subject to
-> > predictable and measurable wear over time due to repeated write
-> > cycles.
-> >
-> > For such systems, it can be important to be able to track
-> > accurately the amount of wear imposed on the storage over
-> > time and surface it to applications. In a native deployments
-> > this is generally handled by the physical block device driver
-> > but no such provision is made in virtio-blk to expose these
-> > metrics for devices where it makes sense to do so.
-> >
-> > This patch adds support to virtio-blk for lifetime and wear
-> > metrics to be exposed to the guest when a deployment of
-> > virtio-blk is done over compatible eMMC or UFS storage.
-> >
-> > Signed-off-by: Enrico Granata <egranata@google.com>
-> > Fixes: https://github.org/oasis-tcs/virtio-spec/issues/97
-> > ---
-> >  content.tex | 35 +++++++++++++++++++++++++++++++++--
-> >  1 file changed, 33 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/content.tex b/content.tex
-> > index b72bad0..75631ba 100644
-> > --- a/content.tex
-> > +++ b/content.tex
-> > @@ -4418,6 +4418,9 @@ \subsection{Feature bits}\label{sec:Device Types
-> > / Block Device / Feature bits}
->
-> There still seems to be something wrong with the line wrapping in this
-> patch (won't apply without manual massaging) -- can you please
-> double-check your setup?
->
-> That said, I think we can still vote on this patch; please add the link
-> to this version to the github issue if you think it's time for voting.
->
->
-> ---------------------------------------------------------------------
-> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
->
+Best regards,
 
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+Peter
+
+>     The PDF output is available at [2].
+>    =20
+>     [1] https://lore.kernel.org/linux-arm-kernel/20201105212116.411422-1-=
+peter.hilber@opensynergy.com/
+>     [2] https://share.mailbox.org/ajax/share/056076e70571144f50c4ca757114=
+4b319a1d7236dda1cd3b/1/8/MzQ/MzQvMQ
+>=20
+>     Changes for v6:
+>=20
+>     - Refer to new SCMI spec version 3.0 (DEN0056C), which has a
+>       provision for SHM race conditions.
+>=20
+>     - Resolve conflicts with other added device documentation.
+>=20
+>     Changes for v5:
+>    =20
+>     - Remove requirements on shared memory added in v4, since an upcoming
+>     new version of the Arm SCMI spec[1] will provide a generic, more
+>     powerful way to handle concurrent access to shared memory.
+>    =20
+>     Changes for v4:
+>    =20
+>     - Add more requirements on shared memory regions after feedback from
+>       Alex Benn=C3=A9e.
+>    =20
+>     Changes for v3:
+>    =20
+>     - Add tentative device ID 32 in device section.
+>    =20
+>     - Remove redundant 'len' fields. The length of the payload fields can
+>       already be deduced from the generic virtqueue 'len' fields. Therefo=
+re,
+>       remove the redundant device-specific 'len' fields.
+>    =20
+>     - Reword requirement that driver must not put too small buffers into
+>       eventq.
+>    =20
+>     Changes for v2:
+>    =20
+>     - CC virtio-dev list.
+>     - Define size of erroneous delayed/not delayed responses.
+>     - Use correct long name for SCMI.
+>     - Remove restriction to `embedded' in commit message.
+>     - Add motivation for conceptual per-message-channels.
+>     - Device may now just drop notification if no buffers are available.
+>    =20
+>=20
+>  conformance.tex  |  34 ++++--
+>  content.tex      |   1 +
+>  introduction.tex |   3 +
+>  virtio-scmi.tex  | 271 +++++++++++++++++++++++++++++++++++++++++++++++
+>  4 files changed, 303 insertions(+), 6 deletions(-)
+>  create mode 100644 virtio-scmi.tex
+>=20
+> diff --git a/conformance.tex b/conformance.tex
+> index 17c390d..a164cbb 100644
+> --- a/conformance.tex
+> +++ b/conformance.tex
+> @@ -27,9 +27,10 @@ \section{Conformance Targets}\label{sec:Conformance / =
+Conformance Targets}
+>  \ref{sec:Conformance / Driver Conformance / Socket Driver Conformance},
+>  \ref{sec:Conformance / Driver Conformance / RPMB Driver Conformance},
+>  \ref{sec:Conformance / Driver Conformance / IOMMU Driver Conformance},
+> -\ref{sec:Conformance / Driver Conformance / Sound Driver Conformance}
+> -\ref{sec:Conformance / Driver Conformance / Memory Driver Conformance} o=
+r
+> -\ref{sec:Conformance / Driver Conformance / I2C Adapter Driver Conforman=
+ce}.
+> +\ref{sec:Conformance / Driver Conformance / Sound Driver Conformance},
+> +\ref{sec:Conformance / Driver Conformance / Memory Driver Conformance},
+> +\ref{sec:Conformance / Driver Conformance / I2C Adapter Driver Conforman=
+ce} or
+> +\ref{sec:Conformance / Driver Conformance / SCMI Driver Conformance}.
+> =20
+>      \item Clause \ref{sec:Conformance / Legacy Interface: Transitional D=
+evice and Transitional Driver Conformance}.
+>    \end{itemize}
+> @@ -49,9 +50,10 @@ \section{Conformance Targets}\label{sec:Conformance / =
+Conformance Targets}
+>  \ref{sec:Conformance / Device Conformance / Socket Device Conformance},=
+=20
+>  \ref{sec:Conformance / Device Conformance / RPMB Device Conformance},
+>  \ref{sec:Conformance / Device Conformance / IOMMU Device Conformance},
+> -\ref{sec:Conformance / Device Conformance / Sound Device Conformance}
+> -\ref{sec:Conformance / Device Conformance / Memory Device Conformance} o=
+r
+> -\ref{sec:Conformance / Device Conformance / I2C Adapter Device Conforman=
+ce}.
+> +\ref{sec:Conformance / Device Conformance / Sound Device Conformance},
+> +\ref{sec:Conformance / Device Conformance / Memory Device Conformance},
+> +\ref{sec:Conformance / Device Conformance / I2C Adapter Device Conforman=
+ce} or
+> +\ref{sec:Conformance / Device Conformance / SCMI Device Conformance}.
+> =20
+>      \item Clause \ref{sec:Conformance / Legacy Interface: Transitional D=
+evice and Transitional Driver Conformance}.
+>    \end{itemize}
+> @@ -277,6 +279,15 @@ \section{Conformance Targets}\label{sec:Conformance =
+/ Conformance Targets}
+>  \item \ref{drivernormative:Device Types / I2C Adapter Device / Device Op=
+eration}
+>  \end{itemize}
+> =20
+> +\conformance{\subsection}{SCMI Driver Conformance}\label{sec:Conformance=
+ / Driver Conformance / SCMI Driver Conformance}
+> +
+> +An SCMI driver MUST conform to the following normative statements:
+> +
+> +\begin{itemize}
+> +\item \ref{drivernormative:Device Types / SCMI Device / Device Operation=
+ / cmdq Operation}
+> +\item \ref{drivernormative:Device Types / SCMI Device / Device Operation=
+ / Setting Up eventq Buffers}
+> +\end{itemize}
+> +
+>  \conformance{\section}{Device Conformance}\label{sec:Conformance / Devic=
+e Conformance}
+> =20
+>  A device MUST conform to the following normative statements:
+> @@ -505,6 +516,17 @@ \section{Conformance Targets}\label{sec:Conformance =
+/ Conformance Targets}
+>  \item \ref{devicenormative:Device Types / I2C Adapter Device / Device Op=
+eration}
+>  \end{itemize}
+> =20
+> +\conformance{\subsection}{SCMI Device Conformance}\label{sec:Conformance=
+ / Device Conformance / SCMI Device Conformance}
+> +
+> +An SCMI device MUST conform to the following normative statements:
+> +
+> +\begin{itemize}
+> +\item \ref{devicenormative:Device Types / SCMI Device / Feature bits}
+> +\item \ref{devicenormative:Device Types / SCMI Device / Device Operation=
+ / cmdq Operation}
+> +\item \ref{devicenormative:Device Types / SCMI Device / Device Operation=
+ / eventq Operation}
+> +\item \ref{devicenormative:Device Types / SCMI Device / Device Operation=
+ / Shared Memory Operation}
+> +\end{itemize}
+> +
+>  \conformance{\section}{Legacy Interface: Transitional Device and Transit=
+ional Driver Conformance}\label{sec:Conformance / Legacy Interface: Transit=
+ional Device and Transitional Driver Conformance}
+>  A conformant implementation MUST be either transitional or
+>  non-transitional, see \ref{intro:Legacy
+> diff --git a/content.tex b/content.tex
+> index 835f1ea..40ab30a 100644
+> --- a/content.tex
+> +++ b/content.tex
+> @@ -6532,6 +6532,7 @@ \subsubsection{Legacy Interface: Framing Requiremen=
+ts}\label{sec:Device
+>  \input{virtio-sound.tex}
+>  \input{virtio-mem.tex}
+>  \input{virtio-i2c.tex}
+> +\input{virtio-scmi.tex}
+> =20
+>  \chapter{Reserved Feature Bits}\label{sec:Reserved Feature Bits}
+> =20
+> diff --git a/introduction.tex b/introduction.tex
+> index bc0217f..7204b24 100644
+> --- a/introduction.tex
+> +++ b/introduction.tex
+> @@ -76,6 +76,9 @@ \section{Normative References}\label{sec:Normative Refe=
+rences}
+>  =09\phantomsection\label{intro:I2C}\textbf{[I2C]} &
+>  =09I2C-bus specification and user manual,
+>  =09\newline\url{https://www.nxp.com/docs/en/user-guide/UM10204.pdf}\\
+> +=09\phantomsection\label{intro:SCMI}\textbf{[SCMI]} &
+> +=09Arm System Control and Management Interface, DEN0056,
+> +=09\newline\url{https://developer.arm.com/docs/den0056/c}, version C and=
+ any future revisions\\
+> =20
+>  \end{longtable}
+> =20
+> diff --git a/virtio-scmi.tex b/virtio-scmi.tex
+> new file mode 100644
+> index 0000000..c4b8dd0
+> --- /dev/null
+> +++ b/virtio-scmi.tex
+> @@ -0,0 +1,271 @@
+> +\section{SCMI Device}\label{sec:Device Types / SCMI Device}
+> +
+> +An SCMI device implements the Arm System Control and Management
+> +Interface (SCMI). SCMI can be used for sensors, power state management,
+> +clock management and performance management among other things.
+> +
+> +This section relies on definitions from the \hyperref[intro:SCMI]{SCMI
+> +specification}.
+> +
+> +Virtio SCMI device and driver are mapped to SCMI platform and agent
+> +respectively. The device is visible to a particular SCMI agent. The
+> +device allows a guest to communicate as an SCMI agent using one or more
+> +SCMI protocols. The default SCMI protocols are defined in the
+> +\hyperref[intro:SCMI]{SCMI specification}. Virtio provides a transport
+> +medium for exchanging SCMI messages between the SCMI agent and platform.
+> +The virtio SCMI transport allows the queueing of multiple messages and
+> +responses.
+> +
+> +SCMI FastChannels are not supported.
+> +
+> +\subsection{Device ID}\label{sec:Device Types / SCMI Device / Device ID}
+> +
+> +32
+> +
+> +\subsection{Virtqueues}\label{sec:Device Types / SCMI Device / Virtqueue=
+s}
+> +
+> +\begin{description}
+> +\item[0] cmdq
+> +\item[1] eventq
+> +\end{description}
+> +
+> +The cmdq is used by the driver to send commands to the device. The
+> +device replies with responses (not delayed responses) over the cmdq.
+> +
+> +The eventq is used by the device to send notifications and delayed
+> +responses. The eventq only exists if VIRTIO_SCMI_F_P2A_CHANNELS was
+> +negotiated.
+> +
+> +\subsection{Feature bits}\label{sec:Device Types / SCMI Device / Feature=
+ bits}
+> +
+> +\begin{description}
+> +\item[VIRTIO_SCMI_F_P2A_CHANNELS (0)] Device implements some SCMI
+> +notifications, or delayed responses.
+> +\item[VIRTIO_SCMI_F_SHARED_MEMORY (1)] Device implements any SCMI
+> +statistics shared memory region.
+> +\end{description}
+> +
+> +VIRTIO_SCMI_F_P2A_CHANNELS is used to determine the existence of the
+> +eventq. The eventq is required for SCMI notifications and delayed
+> +responses.
+> +
+> +VIRTIO_SCMI_F_SHARED_MEMORY is used to determine whether the device
+> +provides any SCMI statistics shared memory region. SCMI statistics
+> +shared memory regions are defined by some SCMI protocols.
+> +
+> +The SCMI protocols provide the PROTOCOL_MESSAGE_ATTRIBUTES commands to
+> +inquire about the particular SCMI notifications and delayed responses
+> +implemented by the device. The SCMI protocols provide additional
+> +commands to detect other features implemented by the device.
+> +
+> +\devicenormative{\subsubsection}{Feature bits}{Device Types / SCMI Devic=
+e / Feature bits}
+> +
+> +The device MUST offer VIRTIO_SCMI_F_P2A_CHANNELS if the device can
+> +implement at least one SCMI notification, or delayed response.
+> +
+> +The device MUST offer VIRTIO_SCMI_F_SHARED_MEMORY if the device can
+> +implement at least one SCMI statistics shared memory region.
+> +
+> +\subsection{Device configuration layout}\label{sec:Device Types / SCMI D=
+evice / Device configuration layout}
+> +
+> +There is no configuration data for the device.
+> +
+> +\subsection{Device Initialization}\label{sec:Device Types / SCMI Device =
+/ Device Initialization}
+> +
+> +The
+> +\hyperref[sec:General Initialization And Device Operation / Device Initi=
+alization]{general
+> +requirements on device initialization} apply.
+> +
+> +\subsection{Device Operation}\label{sec:Device Types / SCMI Device / Dev=
+ice Operation}
+> +
+> +The SCMI transport used for the device puts each SCMI message into a
+> +dedicated virtio buffer. The driver uses the cmdq for transmitting SCMI
+> +commands and receiving the corresponding SCMI responses. The device uses
+> +the eventq for transmitting SCMI notifications and delayed responses.
+> +Each message includes an SCMI protocol header and payload, as defined by
+> +the \hyperref[intro:SCMI]{SCMI specification}.
+> +
+> +\subsubsection{cmdq Operation}\label{sec:Device Types / SCMI Device / De=
+vice Operation / cmdq Operation}
+> +
+> +Each buffer in the cmdq holds a single SCMI command once the buffer has
+> +been made available. When the buffer has been marked as used, it
+> +contains the SCMI response. An arbitrary number of such SCMI messages
+> +can be in transit at the same time. Conceptually, each SCMI message in
+> +the cmdq uses its own SCMI A2P (agent to platform) channel.
+> +
+> +The SCMI response is in the same virtio buffer as the corresponding SCMI
+> +command. The response contains the return values which SCMI specifies
+> +for each command, whether synchronous or asynchronous. Delayed responses
+> +are distinct SCMI messages transmitted over the eventq.
+> +
+> +Buffers in the cmdq contain both the request and the response. A request
+> +has the following layout:
+> +
+> +\begin{lstlisting}
+> +struct virtio_scmi_request {
+> +        le32 hdr;
+> +        u8 params[<actual parameters size>];
+> +};
+> +\end{lstlisting}
+> +
+> +The virtio_scmi_request fields are interpreted as follows:
+> +
+> +\begin{description}
+> +\item[\field{hdr}] (device-readable) contains the SCMI message header
+> +\item[\field{params}] (device-readable) comprises the SCMI message
+> +parameters
+> +\end{description}
+> +
+> +A cmdq response has the following layout:
+> +
+> +\begin{lstlisting}
+> +struct virtio_scmi_response {
+> +        le32 hdr;
+> +        u8 ret_values[<actual return values size>];
+> +};
+> +\end{lstlisting}
+> +
+> +The virtio_scmi_response fields are interpreted as follows:
+> +
+> +\begin{description}
+> +\item[\field{hdr}] (device-writable) contains the SCMI message header
+> +\item[\field{ret_values}] (device-writable) comprises the SCMI message
+> +return values
+> +\end{description}
+> +
+> +If VIRTIO_SCMI_F_P2A_CHANNELS was not negotiated, the device responds to
+> +SCMI commands as if no SCMI notifications or delayed responses were
+> +implemented.
+> +
+> +\devicenormative{\paragraph}{cmdq Operation}{Device Types / SCMI Device =
+/ Device Operation / cmdq Operation}
+> +
+> +The device MAY process available commands out of order and in parallel.
+> +
+> +The device MUST process all available commands eventually, even in the
+> +case of bursts of multiple command messages.
+> +
+> +If the \field{status} field in the \field{virtio_scmi_response}
+> +\field{ret_values} has a value other than SUCCESS, the device MUST set
+> +the size of \field{ret_values} to the size of the \field{status} field.
+> +
+> +If the driver requests an SCMI notification or a delayed response and
+> +there are currently NOT enough available buffers in the eventq, the
+> +device SHOULD still return SCMI status code SUCCESS.
+> +
+> +If VIRTIO_SCMI_F_P2A_CHANNELS was not negotiated, the device MUST deny
+> +any request for an SCMI notification or a delayed response by returning
+> +SCMI status code NOT_SUPPORTED.
+> +
+> +If VIRTIO_SCMI_F_P2A_CHANNELS was not negotiated, the device MUST NOT
+> +indicate in the PROTOCOL_MESSAGE_ATTRIBUTES return values that any SCMI
+> +notification, or delayed response, is implemented.
+> +
+> +\drivernormative{\paragraph}{cmdq Operation}{Device Types / SCMI Device =
+/ Device Operation / cmdq Operation}
+> +
+> +Before sending a command, the driver MUST wait for responses to all
+> +commands whose completion the driver considers prerequisites to
+> +executing the command.
+> +
+> +With every command message, the driver MUST provide enough
+> +device-writable memory to enable the device to return corresponding
+> +return values.
+> +
+> +If VIRTIO_SCMI_F_P2A_CHANNELS was not negotiated, the driver MUST NOT
+> +request any SCMI notification, nor any delayed response.
+> +
+> +\subsubsection{Setting Up eventq Buffers}
+> +
+> +The driver has to populate the eventq before the device can use it.
+> +
+> +\drivernormative{\paragraph}{Setting Up eventq Buffers}{Device Types / S=
+CMI Device / Device Operation / Setting Up eventq Buffers}
+> +
+> +If VIRTIO_SCMI_F_P2A_CHANNELS was negotiated, the driver SHOULD populate
+> +the eventq with buffers.
+> +
+> +The driver MUST NOT put device-readable descriptors into the eventq.
+> +
+> +The driver MUST NOT put into the eventq any buffer which is smaller than
+> +the largest SCMI P2A (platform to agent) message which the driver will
+> +request.
+> +
+> +\subsubsection{eventq Operation}
+> +
+> +Each buffer in the eventq holds (once the buffer is marked as used)
+> +either a single SCMI notification, or a single SCMI delayed response. An
+> +arbitrary number of such SCMI messages can be in transit at the same
+> +time. Conceptually, each SCMI message transmitted over the eventq uses
+> +its own SCMI P2A (platform to agent) channel. Buffers in the eventq have
+> +the following layout:
+> +
+> +\begin{lstlisting}
+> +struct virtio_scmi_event_msg {
+> +        /* start of device-writable data */
+> +        le32 hdr;
+> +        u8 payload[<actual payload size>];
+> +};
+> +\end{lstlisting}
+> +
+> +\begin{description}
+> +\item[\field{hdr}] (device-writable) contains the SCMI message header
+> +\item[\field{payload}] (device-writable) comprises the SCMI message
+> +payload
+> +\end{description}
+> +
+> +\devicenormative{\paragraph}{eventq Operation}{Device Types / SCMI Devic=
+e / Device Operation / eventq Operation}
+> +
+> +If the device intends to send a notification and there are no available
+> +buffers in the eventq, the device MAY drop the notification, or send a
+> +corresponding notification later, once enough buffers become available.
+> +
+> +The device MAY send the notification later if the events which cause the
+> +notification take place in quick succession.
+> +
+> +If the device sends the notification later, the device MAY send the
+> +notification with updated data, unless the specific SCMI protocol
+> +disallows this.
+> +
+> +If the device intends to send a notification and there are available
+> +buffers, but one of the buffers is too small to fit the notification,
+> +the device MAY omit the notification.
+> +
+> +If the device intends to send a delayed response and there are no
+> +available buffers in the eventq, the device MUST send the corresponding
+> +delayed response once enough buffers become available.
+> +
+> +If the \field{status} field in a delayed response \field{payload} has a
+> +value other than SUCCESS, the device MUST set the size of
+> +\field{payload} to the size of the \field{status} field.
+> +
+> +\subsubsection{Shared Memory Operation}
+> +
+> +Various SCMI protocols define statistics shared memory regions (for
+> +statistics and sensor values).
+> +
+> +\devicenormative{\paragraph}{Shared Memory Operation}{Device Types / SCM=
+I Device / Device Operation / Shared Memory Operation}
+> +
+> +If VIRTIO_SCMI_F_SHARED_MEMORY was negotiated, the device MAY implement
+> +an SCMI statistics shared memory region using a virtio shared memory
+> +region.
+> +
+> +If the device implements a shared memory region, the device MUST assign
+> +the corresponding shmid as per the following table:
+> +
+> +\begin{tabular}{|l|l|}
+> +\hline
+> +SCMI statistics shared memory region & Virtio shmid \\
+> +\hline \hline
+> +Reserved (invalid) & 0 \\
+> +\hline
+> +Power state statistics shared memory region & 1 \\
+> +\hline
+> +Performance domain statistics shared memory region & 2 \\
+> +\hline
+> +Sensor Values Shared Memory & 3 \\
+> +\hline
+> +Reserved for future use & 4 to 0x7F \\
+> +\hline
+> +Vendor-specific statistics shared memory regions & 0x80 to 0xFF \\
+> +\hline
+> +Reserved for future use & 0x100 and greater \\
+> +\hline
+> +\end{tabular}
+>=20
+> base-commit: f5fd3fca7e4006108b3f9ba91c0b76c5eb6c0726
+>=20
+
+
+
+This publicly archived list offers a means to provide input to the
+OASIS Virtual I/O Device (VIRTIO) TC.
+
+In order to verify user consent to the Feedback License terms and
+to minimize spam in the list archive, subscription is required
+before posting.
+
+Subscribe: virtio-comment-subscribe@lists.oasis-open.org
+Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
+List help: virtio-comment-help@lists.oasis-open.org
+List archive: https://lists.oasis-open.org/archives/virtio-comment/
+Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
+List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lis=
+ts
+Committee: https://www.oasis-open.org/committees/virtio/
+Join OASIS: https://www.oasis-open.org/join/
 
