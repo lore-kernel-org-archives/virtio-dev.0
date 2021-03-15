@@ -1,90 +1,73 @@
-Return-Path: virtio-dev-return-7966-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-8112-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 46B9D98610E
-	for <virtio-dev@lists.oasis-open.org>; Mon,  1 Feb 2021 07:05:02 +0000 (UTC)
-References: <875d1495-9511-4b5d-062c-2063ee9bed7e@redhat.com>
- <20210129105653-mutt-send-email-mst@kernel.org>
-From: Jason Wang <jasowang@redhat.com>
-Message-ID: <91ebe382-b725-53c0-a599-d2958f4cb6d2@redhat.com>
-Date: Mon, 1 Feb 2021 15:04:50 +0800
+	by lists.oasis-open.org (Postfix) with ESMTP id 52189986314
+	for <virtio-dev@lists.oasis-open.org>; Mon, 15 Mar 2021 15:53:05 +0000 (UTC)
+Date: Mon, 15 Mar 2021 15:52:59 +0000
+From: Stefan Hajnoczi <stefanha@redhat.com>
+Message-ID: <YE+C2+QeBzhuDvN1@stefanha-x1.localdomain>
+References: <20210215095410.85607-1-stefanha@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <20210129105653-mutt-send-email-mst@kernel.org>
-Subject: [virtio-dev] Re: Packed ring only devices clarification
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
-To: "Michael S. Tsirkin" <mst@redhat.com>, Maxime Coquelin <maxime.coquelin@redhat.com>
-Cc: virtio-dev@lists.oasis-open.org
+In-Reply-To: <20210215095410.85607-1-stefanha@redhat.com>
+Subject: [virtio-dev] Re: [PATCH v2 0/2] virtio-fs: add notification queue
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="eivTWBeNwnf46J1R"
+Content-Disposition: inline
+To: virtio-dev@lists.oasis-open.org
+Cc: "Dr. David Alan Gilbert" <dgilbert@redhat.com>, vgoyal@redhat.com, mszeredi@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+--eivTWBeNwnf46J1R
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On 2021/1/29 =E4=B8=8B=E5=8D=8811:58, Michael S. Tsirkin wrote:
-> On Fri, Jan 29, 2021 at 09:38:25AM +0100, Maxime Coquelin wrote:
->> Hello,
->>
->> In the Virtqueues section of the Virtio specification [0], it is
->> mentioned that:
->>
->> "
->> Every driver and device supports either the Packed or the Split
->> Virtqueue format, or both.
->> "
->>
->> However, it seems there is no way to differentiate whether the device
->> supports both split and packed ring, or only packed ring by reading
->> its features bits.
->>
->> In the case of live-migration, it means we would need to trigger a
->> features negotiation before the migration is initiated, and see if
->> FEATURES_OK device status bit is set. Still, we could not be sure a
->> failure would be due to the device supporting only packed ring.
->>
->> Is my understanding correct?
->
-> The simple answer is that live migration is transparent to
-> guests and so isn't ATM described by the virtio spec.
+On Mon, Feb 15, 2021 at 09:54:08AM +0000, Stefan Hajnoczi wrote:
+> v2:
+>  * Document empty virtqueue behavior for FUSE_NOTIFY_LOCK messages
+>=20
+> This patch series adds the notification queue to the VIRTIO specification=
+.
+> This new virtqueue carries device->driver FUSE notify messages.  They are
+> currently unused but will be necessary for file locking, which can block =
+for an
+> unbounded amount of time and therefore needs a asynchronous completion ev=
+ent
+> instead of a request/response buffer that consumes space in the request
+> virtqueue until the operation completes.
+>=20
+> Patch 1 corrects an oversight I noticed: the file system device was not a=
+dded
+> to the Conformance chapter.
+>=20
+> Stefan Hajnoczi (2):
+>   virtio-fs: add file system device to Conformance chapter
+>   virtio-fs: add notification queue
+>=20
+>  conformance.tex | 23 ++++++++++++++++
+>  virtio-fs.tex   | 71 ++++++++++++++++++++++++++++++++++++++++++-------
+>  2 files changed, 84 insertions(+), 10 deletions(-)
 
+Ping?
 
-This might require more thoughts, consider in a cloud with multiple=20
-virtio implementations. How do management know it's safe to migrate=20
-between two nodes? We probably need something like the concept of=20
-cluster but there should be way for management to know which parts of=20
-features is supported and mandated by a device.
+--eivTWBeNwnf46J1R
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Thanks
+-----BEGIN PGP SIGNATURE-----
 
+iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmBPgtsACgkQnKSrs4Gr
+c8hTOAf/Y6jCqMzsvPFqBW5yqqG4Yl6F/1ZiCyt7Yn5aUuVxHHBL6WNzAAeP/M+J
+Ncr3kfanxDsUu463lkdkdjFtJdJ4Tz2Nszdwi/l0EjUwyzHwfvTKSDyyRr/McjXd
+49peSsnT3QWjARTaP5i8BGvGULPbD0+So+8jkUl0Hp4ZHTts/gt9tlyf8OvX5Xnw
+FyXlVNKUx6XKCuu/DdffDzIlw7YprhYCaFcfKG1IulgsBZVllJM3uQ0pyl7Owqgv
+HzWf5BXnJtO979kxXq6/mPaoKBJ+eOmmeh1MZRMvi3mzSKSPskjEnDGMdkH0P3LZ
+9MIQ5TtSt/Wk2XLPULPOZRx0c+ffRg==
+=lmah
+-----END PGP SIGNATURE-----
 
->
-> devices implementing live migration need not constrain
-> themselves to using the feature bits described in the spec,
-> e.g. vhost-user has its own "protocol features".
->
->> If so, maybe we would need to introduce a new feature bit for split
->> ring, and also a feature bit indicating compliance with the new spec
->> version for backward compatibility:
->>
->> VIRTIO_F_VERSION_1_2(39):
->>      This indicates compliance with Virtio version 1.2 specification.
->>
->> VIRTIO_F_RING_SPLIT(40):
->>      This feature indicates support for the split virtqueue layout as
->>      described in 2.6 Split Virtqueues.
->>
->>
->> Best regards,
->> Maxime
->>
->> [0]:
->> https://docs.oasis-open.org/virtio/virtio/v1.1/csprd01/virtio-v1.1-csprd=
-01.html#x1-230005
-
-
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+--eivTWBeNwnf46J1R--
 
