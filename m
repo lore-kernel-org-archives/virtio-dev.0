@@ -1,37 +1,31 @@
-Return-Path: virtio-return-3535-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio@lists.oasis-open.org>
-List-Post: <mailto:virtio@lists.oasis-open.org>
-List-Help: <mailto:virtio-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Wed, 17 Mar 2021 15:52:59 +0000
-From: Stefan Hajnoczi <stefanha@redhat.com>
-Message-ID: <YFIl24pVVmWACUzF@stefanha-x1.localdomain>
-References: <20210316211311.154117-1-mst@redhat.com>
+Return-Path: virtio-comment-return-1761-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-comment@lists.oasis-open.org>
+List-Post: <mailto:virtio-comment@lists.oasis-open.org>
+List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
 MIME-Version: 1.0
+References: <20210316211311.154117-1-mst@redhat.com>
 In-Reply-To: <20210316211311.154117-1-mst@redhat.com>
-Subject: [virtio] Re: [virtio-dev] [PATCH] introduction: document #define syntax
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="/EGSU9qtxQQPW7AI"
-Content-Disposition: inline
+From: Eugenio Perez Martin <eperezma@redhat.com>
+Date: Wed, 17 Mar 2021 18:59:15 +0100
+Message-ID: <CAJaqyWcXxHvFo2saNDkr+pj-wzUzVEvGy2GyewOzpAbXW2ZDqw@mail.gmail.com>
+Subject: [virtio-comment] Re: [virtio-dev] [PATCH] introduction: document #define syntax
+Content-Type: text/plain; charset="UTF-8"
 To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, virtio@lists.oasis-open.org
+Cc: virtio-comment@lists.oasis-open.org, Virtio-Dev <virtio-dev@lists.oasis-open.org>, virtio@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
---/EGSU9qtxQQPW7AI
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Tue, Mar 16, 2021 at 05:13:17PM -0400, Michael S. Tsirkin wrote:
+On Tue, Mar 16, 2021 at 10:13 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+>
 > We use the C #define syntax to refer to numeric values.
 > Let's document that.
->=20
+>
 > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 > ---
 >  introduction.tex | 21 +++++++++++++++++++++
 >  1 file changed, 21 insertions(+)
->=20
+>
 > diff --git a/introduction.tex b/introduction.tex
 > index cc38e29..4febed2 100644
 > --- a/introduction.tex
@@ -47,33 +41,50 @@ On Tue, Mar 16, 2021 at 05:13:17PM -0400, Michael S. Tsirkin wrote:
 > +comment syntax. Multiple related values are grouped together with
 > +a common name as a prefix, using _ as a separator.
 > +Using _XXX as a suffix refers to all values in a group.
+> +For example:
+> +
+> +\begin{lstlisting}
+> +/* Value A description */
+> +#define VIRTIO_VALUE_A        (1 << 0)
+> +/* Value B description */
+> +#define VIRTIO_VALUE_B        (1 << 1)
+> +\end{lstlisting}
+> +documents two numeric values: 1 meaning Value A and 2 meaning
+> +Value B.  Note that $<<$ refers to the shift-left operation.
 
-This sentence confused me. It's not talking about C #define syntax. It's
-a convention for referring to the #defines in the spec text.
+I'm not sure if somebody can be confused about this, but maybe
+s/shift-left operation/shift-left bitwise operation/ is more clear?
 
-This could be clarified:
+> +
+> +Further, in this case VIRTIO_VALUE_A and VIRTIO_VALUE_B
+> +refer to 1 and 2 respectively. Further, VIRTIO_VALUE_XXX refers to
+> +either VIRTIO_VALUE_A or VIRTIO_VALUE_B.
+>
+>  \newpage
+>
+> --
+> MST
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+>
 
-  Multiple constants with the same prefix are referred to in the text
-  using a _XXX a suffix as a shorthand for all constants that share the
-  prefix.
 
-I suggest moving this down to the bottom where the VIRTIO_VALUE_XXX
-example is given.
+This publicly archived list offers a means to provide input to the
+OASIS Virtual I/O Device (VIRTIO) TC.
 
---/EGSU9qtxQQPW7AI
-Content-Type: application/pgp-signature; name="signature.asc"
+In order to verify user consent to the Feedback License terms and
+to minimize spam in the list archive, subscription is required
+before posting.
 
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmBSJdsACgkQnKSrs4Gr
-c8gS8wgAyNbVicMYXSse40XH79d37mJwMq3IX2Q8Rc2X8EzyOdSkBlhUrWJW22I4
-KOi6XyEw1pN6vSEiNVMz4UsDdKydFy/oPuXMEZgJlKlcr1XBXUIE9MGn710od+BK
-r8piMnLxwQ2xnL1kyBuYWl73d4XnTPH4Ol4GZyufTDuZTm0Uwhm00zc7Bzrb0u3P
-qS1YR04iBrw2GCJzOLIDEOd5uXySri5+XX3krsmM4U8fgf57bbBbXsU3QIgnElV/
-IeREXRXA6pUutcDEi7Nd5IIZd3NTaZeUi0wXDfdNjtmOWQ7QiT/GLTIh7QX8q4C9
-Gs4kftkCOT+CUjN21rKFXmLGk/vx3Q==
-=6Xgv
------END PGP SIGNATURE-----
-
---/EGSU9qtxQQPW7AI--
+Subscribe: virtio-comment-subscribe@lists.oasis-open.org
+Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
+List help: virtio-comment-help@lists.oasis-open.org
+List archive: https://lists.oasis-open.org/archives/virtio-comment/
+Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
+List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
+Committee: https://www.oasis-open.org/committees/virtio/
+Join OASIS: https://www.oasis-open.org/join/
 
