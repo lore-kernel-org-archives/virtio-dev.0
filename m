@@ -1,73 +1,73 @@
-Return-Path: virtio-dev-return-8112-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 52189986314
-	for <virtio-dev@lists.oasis-open.org>; Mon, 15 Mar 2021 15:53:05 +0000 (UTC)
-Date: Mon, 15 Mar 2021 15:52:59 +0000
-From: Stefan Hajnoczi <stefanha@redhat.com>
-Message-ID: <YE+C2+QeBzhuDvN1@stefanha-x1.localdomain>
-References: <20210215095410.85607-1-stefanha@redhat.com>
+Return-Path: virtio-return-3537-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio@lists.oasis-open.org>
+List-Post: <mailto:virtio@lists.oasis-open.org>
+List-Help: <mailto:virtio-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
+Date: Thu, 18 Mar 2021 14:23:33 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20210318182314.163060-1-mst@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <20210215095410.85607-1-stefanha@redhat.com>
-Subject: [virtio-dev] Re: [PATCH v2 0/2] virtio-fs: add notification queue
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="eivTWBeNwnf46J1R"
-Content-Disposition: inline
-To: virtio-dev@lists.oasis-open.org
-Cc: "Dr. David Alan Gilbert" <dgilbert@redhat.com>, vgoyal@redhat.com, mszeredi@redhat.com
-List-ID: <virtio-dev.lists.oasis-open.org>
-
---eivTWBeNwnf46J1R
+Subject: [virtio] [PATCH v2] introduction: document #define syntax
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+To: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+Cc: virtio@lists.oasis-open.org
+List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Mon, Feb 15, 2021 at 09:54:08AM +0000, Stefan Hajnoczi wrote:
-> v2:
->  * Document empty virtqueue behavior for FUSE_NOTIFY_LOCK messages
->=20
-> This patch series adds the notification queue to the VIRTIO specification=
-.
-> This new virtqueue carries device->driver FUSE notify messages.  They are
-> currently unused but will be necessary for file locking, which can block =
-for an
-> unbounded amount of time and therefore needs a asynchronous completion ev=
-ent
-> instead of a request/response buffer that consumes space in the request
-> virtqueue until the operation completes.
->=20
-> Patch 1 corrects an oversight I noticed: the file system device was not a=
-dded
-> to the Conformance chapter.
->=20
-> Stefan Hajnoczi (2):
->   virtio-fs: add file system device to Conformance chapter
->   virtio-fs: add notification queue
->=20
->  conformance.tex | 23 ++++++++++++++++
->  virtio-fs.tex   | 71 ++++++++++++++++++++++++++++++++++++++++++-------
->  2 files changed, 84 insertions(+), 10 deletions(-)
+We use the C #define syntax to refer to numeric values.
+Let's document that.
 
-Ping?
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+---
 
---eivTWBeNwnf46J1R
-Content-Type: application/pgp-signature; name="signature.asc"
+changes from v1:
+address Cornelia's comments
 
------BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmBPgtsACgkQnKSrs4Gr
-c8hTOAf/Y6jCqMzsvPFqBW5yqqG4Yl6F/1ZiCyt7Yn5aUuVxHHBL6WNzAAeP/M+J
-Ncr3kfanxDsUu463lkdkdjFtJdJ4Tz2Nszdwi/l0EjUwyzHwfvTKSDyyRr/McjXd
-49peSsnT3QWjARTaP5i8BGvGULPbD0+So+8jkUl0Hp4ZHTts/gt9tlyf8OvX5Xnw
-FyXlVNKUx6XKCuu/DdffDzIlw7YprhYCaFcfKG1IulgsBZVllJM3uQ0pyl7Owqgv
-HzWf5BXnJtO979kxXq6/mPaoKBJ+eOmmeh1MZRMvi3mzSKSPskjEnDGMdkH0P3LZ
-9MIQ5TtSt/Wk2XLPULPOZRx0c+ffRg==
-=lmah
------END PGP SIGNATURE-----
+ introduction.tex | 23 +++++++++++++++++++++++
+ 1 file changed, 23 insertions(+)
 
---eivTWBeNwnf46J1R--
+diff --git a/introduction.tex b/introduction.tex
+index cc38e29..47bebf5 100644
+--- a/introduction.tex
++++ b/introduction.tex
+@@ -210,6 +210,29 @@ \section{Structure Specifications}
+ \begin{lstlisting}
+ CPU_TO_BE16(B << 15 | A)
+ \end{lstlisting}
++\section{Constant Specifications}
++
++In many cases, numeric values used in the interface between the device
++and the driver are documented using the C #define and /* */
++comment syntax. Multiple related values are grouped together with
++a common name as a prefix, using _ as a separator.
++Using _XXX as a suffix refers to all values in a group.
++For example:
++
++\begin{lstlisting}
++/* Field Fld value A description */
++#define VIRTIO_FLD_A        (1 << 0)
++/* Field Fld value B description */
++#define VIRTIO_FLD_B        (1 << 1)
++\end{lstlisting}
++documents two numeric values for a field \field{Fld}, with
++\field{Fld} having value 1 referring to \field{A} and \field{Fld}
++having value 2 referring to \field{B}.
++Note that $<<$ refers to the shift-left operation.
++
++Further, in this case VIRTIO_FLD_A and VIRTIO_FLD_B
++refer to values 1 and 2 of Fld respectively. Further, VIRTIO_FLD_XXX refers to
++either VIRTIO_FLD_A or VIRTIO_FLD_B.
+ 
+ \newpage
+ 
+-- 
+MST
+
+
+---------------------------------------------------------------------
+To unsubscribe from this mail list, you must leave the OASIS TC that 
+generates this mail.  Follow this link to all your TCs in OASIS at:
+https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
 
