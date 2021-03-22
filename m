@@ -1,83 +1,46 @@
-Return-Path: virtio-return-3538-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio@lists.oasis-open.org>
-List-Post: <mailto:virtio@lists.oasis-open.org>
-List-Help: <mailto:virtio-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Fri, 19 Mar 2021 13:30:08 +0100
-From: Cornelia Huck <cohuck@redhat.com>
-Message-ID: <20210319133008.78402ffb.cohuck@redhat.com>
-In-Reply-To: <20210318182314.163060-1-mst@redhat.com>
-References: <20210318182314.163060-1-mst@redhat.com>
+Return-Path: virtio-dev-return-8122-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id 5CB32985EE4
+	for <virtio-dev@lists.oasis-open.org>; Mon, 22 Mar 2021 19:19:24 +0000 (UTC)
 MIME-Version: 1.0
-Subject: Re: [virtio] [PATCH v2] introduction: document #define syntax
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, virtio@lists.oasis-open.org
+From: Hao Chen <chenhaosjtuacm@google.com>
+Date: Mon, 22 Mar 2021 12:19:11 -0700
+Message-ID: <CABATKF_wnHQRrmBV=yKE-wrOMGXxX6=Pz=PwgZy+-DXrVQ+7ZA@mail.gmail.com>
+Subject: [virtio-dev] [PATCH] Reserve device id for parameter server
+Content-Type: text/plain; charset="UTF-8"
+To: virtio-dev@lists.oasis-open.org
+Cc: Hao Chen <chenhaosjtuacm@google.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Thu, 18 Mar 2021 14:23:33 -0400
-"Michael S. Tsirkin" <mst@redhat.com> wrote:
+Use device ID 37
 
-> We use the C #define syntax to refer to numeric values.
-> Let's document that.
-> 
-> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> ---
-> 
-> changes from v1:
-> address Cornelia's comments
-> 
-> 
->  introduction.tex | 23 +++++++++++++++++++++++
->  1 file changed, 23 insertions(+)
-> 
-> diff --git a/introduction.tex b/introduction.tex
-> index cc38e29..47bebf5 100644
-> --- a/introduction.tex
-> +++ b/introduction.tex
-> @@ -210,6 +210,29 @@ \section{Structure Specifications}
->  \begin{lstlisting}
->  CPU_TO_BE16(B << 15 | A)
->  \end{lstlisting}
-> +\section{Constant Specifications}
-> +
-> +In many cases, numeric values used in the interface between the device
-> +and the driver are documented using the C #define and /* */
-> +comment syntax. Multiple related values are grouped together with
-> +a common name as a prefix, using _ as a separator.
-> +Using _XXX as a suffix refers to all values in a group.
-> +For example:
-> +
-> +\begin{lstlisting}
-> +/* Field Fld value A description */
-> +#define VIRTIO_FLD_A        (1 << 0)
-> +/* Field Fld value B description */
-> +#define VIRTIO_FLD_B        (1 << 1)
-> +\end{lstlisting}
-> +documents two numeric values for a field \field{Fld}, with
-> +\field{Fld} having value 1 referring to \field{A} and \field{Fld}
-> +having value 2 referring to \field{B}.
+Signed-off-by: Hao Chen <chenhaosjtuacm@google.com>
+---
+ content.tex | 2 ++
+ 1 file changed, 2 insertions(+)
 
-The reader may infer a general Fld <-> FLD matching requirement here;
-but OTOH, this is only an example. I don't have an idea how to make
-that more explicit without being overly verbose, anyway.
+diff --git a/content.tex b/content.tex
+index b72bad0..b88e606 100644
+--- a/content.tex
++++ b/content.tex
+@@ -2870,6 +2870,8 @@ \chapter{Device Types}\label{sec:Device Types}
+ \hline
+ 36         &   CAN device \\
+ \hline
++37         &   Parameter Server \\
++\hline
+ \end{tabular}
 
-> +Note that $<<$ refers to the shift-left operation.
-> +
-> +Further, in this case VIRTIO_FLD_A and VIRTIO_FLD_B
-> +refer to values 1 and 2 of Fld respectively. Further, VIRTIO_FLD_XXX refers to
-> +either VIRTIO_FLD_A or VIRTIO_FLD_B.
->  
->  \newpage
->  
-
-Reviewed-by: Cornelia Huck <cohuck@redhat.com>
-
+ Some of the devices above are unspecified by this document,
+--
+2.31.0.rc2.261.g7f71774620-goog
 
 ---------------------------------------------------------------------
-To unsubscribe from this mail list, you must leave the OASIS TC that 
-generates this mail.  Follow this link to all your TCs in OASIS at:
-https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
