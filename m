@@ -1,104 +1,59 @@
-Return-Path: virtio-return-3585-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio@lists.oasis-open.org>
-List-Post: <mailto:virtio@lists.oasis-open.org>
-List-Help: <mailto:virtio-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Wed, 21 Apr 2021 04:23:01 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20210421040930-mutt-send-email-mst@kernel.org>
-References: <20210318182314.163060-1-mst@redhat.com>
- <20210408221813.7796697c.pasic@linux.ibm.com>
+Return-Path: virtio-dev-return-8130-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id CAF2C986228
+	for <virtio-dev@lists.oasis-open.org>; Tue,  6 Apr 2021 10:09:49 +0000 (UTC)
+Date: Tue, 6 Apr 2021 12:09:42 +0200
+From: Cornelia Huck <cohuck@redhat.com>
+Message-ID: <20210406120942.4bd1a5a9.cohuck@redhat.com>
+In-Reply-To: <CABATKF9YyYwBGOhSX0wKRB1t3OG+1DAKdmfzwHnAu5+f+M68Fg@mail.gmail.com>
+References: <CABATKF_wnHQRrmBV=yKE-wrOMGXxX6=Pz=PwgZy+-DXrVQ+7ZA@mail.gmail.com>
+	<20210330115114.4cb89229.cohuck@redhat.com>
+	<CABATKF9YyYwBGOhSX0wKRB1t3OG+1DAKdmfzwHnAu5+f+M68Fg@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20210408221813.7796697c.pasic@linux.ibm.com>
-Subject: Re: [virtio] Re: [virtio-comment] [PATCH v2] introduction: document
- #define syntax
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-To: Halil Pasic <pasic@linux.ibm.com>
-Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, virtio@lists.oasis-open.org
+Subject: Re: [virtio-dev] [PATCH v2] Reserve device id for parameter server
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+To: Hao Chen <chenhaosjtuacm@google.com>
+Cc: virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Thu, Apr 08, 2021 at 10:18:13PM +0200, Halil Pasic wrote:
-> On Thu, 18 Mar 2021 14:23:33 -0400
-> "Michael S. Tsirkin" <mst@redhat.com> wrote:
-> 
-> > We use the C #define syntax to refer to numeric values.
-> > Let's document that.
-> > 
-> > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> > ---
-> > 
-> > changes from v1:
-> > address Cornelia's comments
-> > 
-> > 
-> >  introduction.tex | 23 +++++++++++++++++++++++
-> >  1 file changed, 23 insertions(+)
-> > 
-> > diff --git a/introduction.tex b/introduction.tex
-> > index cc38e29..47bebf5 100644
-> > --- a/introduction.tex
-> > +++ b/introduction.tex
-> > @@ -210,6 +210,29 @@ \section{Structure Specifications}
-> >  \begin{lstlisting}
-> >  CPU_TO_BE16(B << 15 | A)
-> >  \end{lstlisting}
-> > +\section{Constant Specifications}
-> > +
-> > +In many cases, numeric values used in the interface between the device
-> > +and the driver are documented using the C #define and /* */
-> > +comment syntax. Multiple related values are grouped together with
-> > +a common name as a prefix, using _ as a separator.
-> > +Using _XXX as a suffix refers to all values in a group.
-> > +For example:
-> > +
-> > +\begin{lstlisting}
-> > +/* Field Fld value A description */
-> > +#define VIRTIO_FLD_A        (1 << 0)
-> > +/* Field Fld value B description */
-> > +#define VIRTIO_FLD_B        (1 << 1)
-> > +\end{lstlisting}
-> > +documents two numeric values for a field \field{Fld}, with
-> > +\field{Fld} having value 1 referring to \field{A} and \field{Fld}
-> > +having value 2 referring to \field{B}.
-> > +Note that $<<$ refers to the shift-left operation.
-> > +
-> > +Further, in this case VIRTIO_FLD_A and VIRTIO_FLD_B
-> > +refer to values 1 and 2 of Fld respectively. Further, VIRTIO_FLD_XXX refers to
-> > +either VIRTIO_FLD_A or VIRTIO_FLD_B.
-> 
-> IMHO we also use the define stuff to do flags, and that does not match
-> nicely with the above sentence, since VIRTIO_FLD_F_A does not mean that
-> the FLD_F field has value A if we are trying to specify a flag or a
-> feature bit. And the left-shift is actually most common in these cases.
-> 
-> I'm not opposed to this change. In the virtio spec we tend to not be
-> very rigorous about formalism, and I came to accept that as a given.
-> Just wanted to point it out.
-> 
-> Sorry for not commenting on this sooner.
-> 
-> Regards,
-> Halil
+On Tue, 30 Mar 2021 12:34:19 -0700
+Hao Chen <chenhaosjtuacm@google.com> wrote:
 
-
-All true. Do you want to propose an enhancement, or just let it be for
-now?
-
-> >  
-> >  \newpage
-> >  
+> Use device ID 38
 > 
+> Signed-off-by: Hao Chen <chenhaosjtuacm@google.com>
+> ---
+>  content.tex | 2 ++
+>  1 file changed, 2 insertions(+)
 > 
-> ---------------------------------------------------------------------
-> To unsubscribe from this mail list, you must leave the OASIS TC that 
-> generates this mail.  Follow this link to all your TCs in OASIS at:
-> https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
+> diff --git a/content.tex b/content.tex
+> index b72bad0..cc292b3 100644
+> --- a/content.tex
+> +++ b/content.tex
+> @@ -2870,6 +2870,8 @@ \chapter{Device Types}\label{sec:Device Types}
+>  \hline
+>  36         &   CAN device \\
+>  \hline
+> +38         &   Parameter Server \\
+> +\hline
+>  \end{tabular}
+> 
+>  Some of the devices above are unspecified by this document,
+
+Can you please edit the github issue so that 38 is mentioned in its
+title, and the description (not a comment) is linking to this patch?
+(We use that data to create the ballot.)
+
+Thanks!
 
 
 ---------------------------------------------------------------------
-To unsubscribe from this mail list, you must leave the OASIS TC that 
-generates this mail.  Follow this link to all your TCs in OASIS at:
-https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
