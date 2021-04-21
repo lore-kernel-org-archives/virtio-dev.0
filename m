@@ -1,152 +1,351 @@
-Return-Path: virtio-dev-return-8074-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-8134-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id CDD3B986307
-	for <virtio-dev@lists.oasis-open.org>; Mon,  1 Mar 2021 17:18:38 +0000 (UTC)
-Date: Mon, 1 Mar 2021 12:18:25 -0500
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20210301121623-mutt-send-email-mst@kernel.org>
-References: <20210226111619.21178-1-alex.bennee@linaro.org>
- <YDzKhnQa+LS01yTN@stefanha-x1.localdomain>
- <87czwjjdf7.fsf@linaro.org>
- <YD0X58hj+al5uPWk@stefanha-x1.localdomain>
+	by lists.oasis-open.org (Postfix) with ESMTP id 57A259864A5
+	for <virtio-dev@lists.oasis-open.org>; Wed, 21 Apr 2021 00:33:31 +0000 (UTC)
 MIME-Version: 1.0
-In-Reply-To: <YD0X58hj+al5uPWk@stefanha-x1.localdomain>
-Subject: Re: [virtio-dev] [VHOST USER SPEC PATCH] vhost-user.rst: add
- clarifying language about protocol negotiation
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-To: Stefan Hajnoczi <stefanha@redhat.com>
-Cc: Alex =?iso-8859-1?Q?Benn=E9e?= <alex.bennee@linaro.org>, qemu-devel@nongnu.org, rust-vmm@lists.opendev.org, stratos-dev@op-lists.linaro.org, virtio-dev@lists.oasis-open.org, viresh.kumar@linaro.org, Jiang Liu <gerry@linux.alibaba.com>
+From: Hao Chen <chenhaosjtuacm@google.com>
+Date: Tue, 20 Apr 2021 17:33:17 -0700
+Message-ID: <CABATKF9Vjf1NE0EjToKfp=1aPcGieeny1k8rkfVv6BFZ=+b4sw@mail.gmail.com>
+Subject: [virtio-dev] [PATCH] Add virtio parameter server device specification
+Content-Type: text/plain; charset="UTF-8"
+To: virtio-dev@lists.oasis-open.org
+Cc: Enrico Granata <egranata@google.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Mon, Mar 01, 2021 at 04:35:51PM +0000, Stefan Hajnoczi wrote:
-> On Mon, Mar 01, 2021 at 11:38:47AM +0000, Alex Benn=E9e wrote:
-> > Stefan Hajnoczi <stefanha@redhat.com> writes:
-> > > On Fri, Feb 26, 2021 at 11:16:19AM +0000, Alex Benn=E9e wrote:
-> > >> +However as the protocol negotiation something that only occurs betw=
-een
-> > >
-> > > Missing "is". Shortening the sentence fixes that without losing clari=
-ty:
-> > > s/something that/negotiation/
-> > >
-> > >> +parts of the backend implementation it is permissible to for the ma=
-ster
-> > >
-> > > "vhost-user device backend" is often used to refer to the slave (to
-> > > avoid saying the word "slave") but "backend" is being used in a
-> > > different sense here. That is confusing.
-> > >
-> > >> +to mask the feature bit from the guest.
-> > >
-> > > I think this sentence effectively says "the master MAY mask the
-> > > VHOST_USER_F_PROTOCOL_FEATURES bit from the VIRTIO feature bits". Tha=
-t
-> > > is not really accurate since VIRTIO devices do not advertise this
-> > > feature bit and so it can never be negotiated through the VIRTIO feat=
-ure
-> > > negotiation process.
-> > >
-> > > How about referring to the details from the VIRTIO 1.1 specification
-> > > instead. Something like this:
-> > >
-> > >   Note that VHOST_USER_F_PROTOCOL_FEATURES is the UNUSED (30) feature
-> > >   bit defined in `VIRTIO 1.1 6.3 Legacy Interface: Reserved Feature B=
-its
-> > >   <https://docs.oasis-open.org/virtio/virtio/v1.1/cs01/virtio-v1.1-cs=
-01.html#x1-4130003>`_.
-> > >   VIRTIO devices do not advertise this feature bit and therefore VIRT=
-IO
-> > >   drivers cannot negotiate it.
-> > >
-> > >   This reserved feature bit was reused by the vhost-user protocol to =
-add
-> > >   vhost-user protocol feature negotiation in a backwards compatible
-> > >   fashion. Old vhost-user master and slave implementations continue t=
-o
-> > >   work even though they are not aware of vhost-user protocol feature
-> > >   negotiation.
-> >=20
-> > OK - so does that mean that feature bit will remain UNUSED for ever
-> > more?
->=20
-> It's unlikely to be repurposed in VIRTIO. It can never be used by VIRTIO
-> in a situation that overlaps with vhost-user. That leaves cases that
-> don't overlap with vhost-user but that is unlikely too since the bit had
-> a previous meaning (before vhost-user) and repurposing it would cause
-> confusion for very old drivers or devices.
+This patch introduces a new type of device: parameter server. The device
+acts as a key-value store and the driver can read from, write to or
+subscribe to the properties in the server.
 
-Yes, it's easier to just use higher bits.
-If it ever is reused we will just send that bit separately.
+Signed-off-by: Hao Chen <chenhaosjtuacm@google.com>
+---
+ conformance.tex |  26 +++++--
+ content.tex     |   1 +
+ virtio-ps.tex   | 188 ++++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 211 insertions(+), 4 deletions(-)
+ create mode 100644 virtio-ps.tex
 
-> > What about other feature bits? Is it permissible for the
-> > master/requester/vhost-user front-end/QEMU to filter any other feature
-> > bits the slave/vhost-user backend/daemon may offer from being read by
-> > the guest driver when it reads the feature bits?
->=20
-> Yes, the vhost-user frontend can decide how it wants to expose
-> VHOST_USER_GET_FEATURES feature bits on the VIRTIO device:
->=20
-> 1. Pass-through. Allow the vhost-user device backend to control the
->    feature bit.
-> 2. Disabling. Clear a feature bit because it cannot be supported for
->    some reason (e.g. VIRTIO 1.1 packed vrings are not implemented and
->    therefore enabling them would prevent live migration).
-> 3. Enabling. Enable a feature bit that does not rely on vhost-user
->    device backend support. For example, message-signalled interrupts
->    for virtio-mmio.
->=20
-> >=20
-> > >
-> > >> As noted for the
-> > >> +``VHOST_USER_GET_PROTOCOL_FEATURES`` and
-> > >> +``VHOST_USER_SET_PROTOCOL_FEATURES`` messages this occurs before a
-> > >> +final ``VHOST_USER_SET_FEATURES`` comes from the guest.
-> > >
-> > > I couldn't find any place where vhost-user.rst states that
-> > > VHOST_USER_SET_PROTOCOL_FEATURES has to come before
-> > > VHOST_USER_SET_FEATURES?
-> > >
-> > > The only order I found was:
-> > >
-> > > 1. VHOST_USER_GET_FEATURES to determine whether protocol features are
-> > >    supported.
-> > > 2. VHOST_USER_GET_PROTOCOL_FEATURES to fetch available protocol featu=
-re bits.
-> > > 3. VHOST_USER_SET_PROTOCOL_FEATURES to set protocol feature bits.
-> > > 4. Using functionality that depends on enabled protocol feature bits.
-> > >
-> > > Is the purpose of this sentence to add a new requirement to the spec
-> > > that "VHOST_USER_SET_PROTOCOL_FEATURES MUST be sent before
-> > > VHOST_USER_SET_FEATURES"?
-> >=20
-> > No I don't want to add a new sequence requirement. But if SET_FEATURES
-> > doesn't acknowledge the VHOST_USER_F_PROTOCOL_FEATURES bit should that
-> > stop the processing of
-> > VHOST_USER_GET_PROTOCOL_FEATURES/VHOST_USER_SET_PROTOCOL_FEATURES
-> > messages? AFAICT SET_FEATURES should be irrelevant to the negotiation o=
-f
-> > the PROTOCOL_FEATURES right?
->=20
-> I agree, the value of VHOST_USER_F_PROTOCOL_FEATURES in
-> VHOST_USER_SET_FEATURES does not matter according to the spec:
->=20
->   Only legal if feature bit ``VHOST_USER_F_PROTOCOL_FEATURES`` is
->   present in ``VHOST_USER_GET_FEATURES``.
->=20
-> Since it does not mention "set in VHOST_USER_SET_FEATURES" we have to
-> assume existing vhost-user device backends do not care whether the
-> vhost-user frontend includes the bit in VHOST_USER_SET_FEATURES or not.
->=20
-> Stefan
+diff --git a/conformance.tex b/conformance.tex
+index a164cbb..0d6b1a5 100644
+--- a/conformance.tex
++++ b/conformance.tex
+@@ -29,8 +29,9 @@ \section{Conformance Targets}\label{sec:Conformance
+/ Conformance Targets}
+ \ref{sec:Conformance / Driver Conformance / IOMMU Driver Conformance},
+ \ref{sec:Conformance / Driver Conformance / Sound Driver Conformance},
+ \ref{sec:Conformance / Driver Conformance / Memory Driver Conformance},
+-\ref{sec:Conformance / Driver Conformance / I2C Adapter Driver Conformance} or
+-\ref{sec:Conformance / Driver Conformance / SCMI Driver Conformance}.
++\ref{sec:Conformance / Driver Conformance / I2C Adapter Driver Conformance},
++\ref{sec:Conformance / Driver Conformance / SCMI Driver Conformance} or
++\ref{sec:Conformance / Driver Conformance / Parameter Server Driver
+Conformance}.
 
+     \item Clause \ref{sec:Conformance / Legacy Interface:
+Transitional Device and Transitional Driver Conformance}.
+   \end{itemize}
+@@ -52,8 +53,9 @@ \section{Conformance Targets}\label{sec:Conformance
+/ Conformance Targets}
+ \ref{sec:Conformance / Device Conformance / IOMMU Device Conformance},
+ \ref{sec:Conformance / Device Conformance / Sound Device Conformance},
+ \ref{sec:Conformance / Device Conformance / Memory Device Conformance},
+-\ref{sec:Conformance / Device Conformance / I2C Adapter Device Conformance} or
+-\ref{sec:Conformance / Device Conformance / SCMI Device Conformance}.
++\ref{sec:Conformance / Device Conformance / I2C Adapter Device Conformance},
++\ref{sec:Conformance / Device Conformance / SCMI Device Conformance}or
++\ref{sec:Conformance / Device Conformance / Parameter Server Device
+Conformance}.
 
+     \item Clause \ref{sec:Conformance / Legacy Interface:
+Transitional Device and Transitional Driver Conformance}.
+   \end{itemize}
+@@ -288,6 +290,14 @@ \section{Conformance
+Targets}\label{sec:Conformance / Conformance Targets}
+ \item \ref{drivernormative:Device Types / SCMI Device / Device
+Operation / Setting Up eventq Buffers}
+ \end{itemize}
+
++\conformance{\subsection}{Parameter Server Driver
+Conformance}\label{sec:Conformance / Driver Conformance / Parameter
+Server Driver Conformance}
++
++A parameter server driver MUST conform to the following normative statements:
++
++\begin{itemize}
++\item \ref{drivernormative:Device Types / Parameter Server / Device Operation}
++\end{itemize}
++
+ \conformance{\section}{Device Conformance}\label{sec:Conformance /
+Device Conformance}
+
+ A device MUST conform to the following normative statements:
+@@ -527,6 +537,14 @@ \section{Conformance
+Targets}\label{sec:Conformance / Conformance Targets}
+ \item \ref{devicenormative:Device Types / SCMI Device / Device
+Operation / Shared Memory Operation}
+ \end{itemize}
+
++\conformance{\subsection}{Parameter Server Device
+Conformance}\label{sec:Conformance / Device Conformance / Parameter
+Server Device Conformance}
++
++A parameter server device MUST conform to the following normative statements:
++
++\begin{itemize}
++\item \ref{devicenormative:Device Types / Parameter Server / Device Operation}
++\end{itemize}
++
+ \conformance{\section}{Legacy Interface: Transitional Device and
+Transitional Driver Conformance}\label{sec:Conformance / Legacy
+Interface: Transitional Device and Transitional Driver Conformance}
+ A conformant implementation MUST be either transitional or
+ non-transitional, see \ref{intro:Legacy
+diff --git a/content.tex b/content.tex
+index 9232d5c..b980a93 100644
+--- a/content.tex
++++ b/content.tex
+@@ -6568,6 +6568,7 @@ \subsubsection{Legacy Interface: Framing
+Requirements}\label{sec:Device
+ \input{virtio-mem.tex}
+ \input{virtio-i2c.tex}
+ \input{virtio-scmi.tex}
++\input{virtio-ps.tex}
+
+ \chapter{Reserved Feature Bits}\label{sec:Reserved Feature Bits}
+
+diff --git a/virtio-ps.tex b/virtio-ps.tex
+new file mode 100644
+index 0000000..fa0930a
+--- /dev/null
++++ b/virtio-ps.tex
+@@ -0,0 +1,188 @@
++\section{Parameter Server}\label{sec:Device Types / Parameter Server}
++
++The parameter server device manages a set of values with unique
+property IDs. These values may
++either be static (i.e. have a constant value) or be dynamic (i.e.
+value may change over time).
++The driver can get and set values, get value configurations,
+subscribe and unsubscribe dynamic
++properties from the device. The device processes the requests from
+the driver, enforces the value
++access rules, and may potentially alter the behavior of external
+systems as a result of driver
++operations.
++
++\subsection{Device ID}\label{sec:Device Types / Parameter Server / Device ID}
++
++38
++
++\subsection{Virtqueues}\label{sec:Device Types / Parameter Server / Virtqueues}
++
++\begin{description}
++\item[0] cmdq
++\item[1] eventq
++\end{description}
++
++\subsection{Feature Bits}\label{sec:Device Types / Parameter Server /
+Feature Bits}
++
++None currently defined.
++
++\subsection{Device Configuration Layout}\label{sec:Device Types /
+Parameter Server / Device Configuration Layout}
++
++\begin{lstlisting}
++struct virtio_parameter_server_config {
++    char name[128];
++};
++\end{lstlisting}
++
++A device configuration space only contains the name of the device,
+which can be used by the
++userspace for identification.
++
++\subsection{Device Initialization}
++
++\begin{enumerate}
++\item The virtqueues are initialized.
++\end{enumerate}
++
++\subsection{Device Operation}\label{sec:Device Types / Parameter
+Server / Device Operation}
++
++The driver puts the requests to the cmdq virtqueue. The responses
+from the device also go into
++the cmdq virtqueue. Updates on the subscribed values are put into the
+eventq virtqueue. The
++\field{prop_id}, \field{prop_item_id} pair is the primary key for the
+values stored in the
++parameter server, while the values with the same \field{prop_id}
+share the same configuration.
++Subscriptions are also on \field{prop_id}.
++
++The layout of requests and responses are defined below:
++
++\begin{lstlisting}
++struct virtio_parameter_server_request {
++    le64 timestamp;
++    le32 prop_id;
++    le32 prop_item_id;
++    le32 payload_size;
++    u8 op;
++    u8 payload[<actual payload size>];
++};
++
++struct virtio_parameter_server_response {
++    le64 timestamp;
++    le32 prop_id;
++    le32 prop_item_id;
++    le32 payload_size;
++    u16 op;
++    u16 ret_value;
++    u8 payload[<actual payload size>];
++};
++
++/* Reserved prop_id and prop_item_id */
++#define VIRTIO_PARAMETER_SERVER_OP_ALL_PROP INT_MAX
++
++/* Supported operations */
++#define VIRTIO_PARAMETER_SERVER_OP_INVALID 0
++#define VIRTIO_PARAMETER_SERVER_OP_GET_PROP_CONFIG 1
++#define VIRTIO_PARAMETER_SERVER_OP_GET_PROP_VALUE 2
++#define VIRTIO_PARAMETER_SERVER_OP_SET_PROP_VALUE 3
++#define VIRTIO_PARAMETER_SERVER_OP_SUBSCRIBE_PROP 4
++#define VIRTIO_PARAMETER_SERVER_OP_UNSUBSCRIBE_PROP 5
++\end{lstlisting}
++
++The layout of messages in eventq is defined below:
++
++\begin{lstlisting}
++struct virtio_parameter_server_event_msg {
++    le64 timestamp;
++    le32 prop_id;
++    le32 prop_item_id;
++    le32 payload_size;
++    u8 payload[<actual payload size>];
++};
++\end{lstlisting}
++
++There will be exactly one response for each request in the cmdq, even
+if \field{op} is invalid. For some operations,
++the \field{payload} of requests and/or responses may be empty. If the
+\field{payload} is non-empty, it can be either
++property configuration(s) or value. The \field{payload} of messages
+in the eventq virtqueue is always value.
++
++\subsubsection{Property Configuration Layout}\label{sec:Device Types
+/ Parameter Server / Device Operation / Property Configuration Layout}
++
++\begin{lstlisting}
++struct virtio_parameter_server_prop_config {
++    le32 prop_id;
++    le32 mode;
++    le32 min_sample_freq;
++    le32 max_sample_freq;
++    le32 encoding[5];
++    le32 param_size;
++    char desc[256];
++    u8 params[<actual param size>];
++};
++\end{lstlisting}
++
++while \field{mode} is the bitwise-or-combination of the following:
++
++\begin{lstlisting}
++enum virtio_parameter_server_prop_mode {
++    /* access */
++    VIRTIO_PARAMETER_SERVER_M_READ = 0x1,
++    VIRTIO_PARAMETER_SERVER_M_WRITE = 0x2,
++    VIRTIO_PARAMETER_SERVER_M_READ_WRITE = 0x3,
++
++    /* change */
++    VIRTIO_PARAMETER_SERVER_M_STATIC = 0x4,
++    VIRTIO_PARAMETER_SERVER_M_MUTABLE = 0x8,
++    VIRTIO_PARAMETER_SERVER_M_CONTINUOUS = 0xc,
++};
++\end{lstlisting}
++
++Both VIRTIO_PARAMETER_SERVER_M_MUTABLE and
+VIRTIO_PARAMETER_SERVER_M_CONTINUOUS are dynamic
++properties. A VIRTIO_PARAMETER_SERVER_M_MUTABLE value will change due
+to the set value operation
++from the driver, or actions of the external system; a
+VIRTIO_PARAMETER_SERVER_M_CONTINUOUS value
++is expected to be generated by means of a sensor updating at a steady
+frequency.
++
++The properties with the same \field{prop_id} share the configuration.
+\field{min_sample_freq} and
++\field{max_sample_freq} are the sampling rate range for the
++\field{VIRTIO_PARAMETER_SERVER_M_CONTINUOUS} values. \field{desc} is
+the optional string
++description. \field{params} are for the customized configuration parameters.
++
++The integer array \field{encoding} specifies the number of different
+primitive value in the
++property value.
++
++\begin{lstlisting}
++#define VIRTIO_PARAMETER_SERVER_ENCODING_INDEX_NUM_INT64 0
++#define VIRTIO_PARAMETER_SERVER_ENCODING_INDEX_NUM_FLOAT64 1
++#define VIRTIO_PARAMETER_SERVER_ENCODING_INDEX_NUM_INT32 2
++#define VIRTIO_PARAMETER_SERVER_ENCODING_INDEX_NUM_BYTE 3
++#define VIRTIO_PARAMETER_SERVER_ENCODING_INDEX_HAS_STRING 4
++
++#define VIRTIO_PARAMETER_SERVER_VARIABLE_LENGTH -2
++\end{lstlisting}
++
++If the driver asks for ALL property configurations, then the \field{payload} of
++virtio_parameter_server_response will be multiple property
+configurations, serialized 1-by-1.
++
++\subsubsection{Property Value Layout}\label{sec:Device Types /
+Parameter Server / Device Operation / Property Value Layout}
++
++The property value payload begins with 5 arrays. The order is the
+same as the \field{encoding} array defined above.
++For each array, it begins with a 32-bit integer for length (number of
+elements). Empty array will be a 32-bit 0, while
++-1 means the array does not exist. The elements follows the length,
+and the size of the encoded array will be padded
++to 4 bytes. String is encoded as char16_t, zero-terminated array.
++
++After the arrays, there may be customized data, which is encoded as a
+byte array.
++
++\drivernormative{\subsubsection}{Device Operation}{Device Types /
+Parameter Server / Device Operation}
++
++The driver MUST NOT send undefined ops.
++
++The driver MUST NOT put device-readable descriptors into the eventq.
++
++The payload size of requests MUST be padded to 4 bytes.
++
++\devicenormative{\subsubsection}{Device Operation}{Device Types /
+Parameter Server / Device Operation}
++
++\field{name} of the device configuration MUST be non-empty.
++
++The unused bits of the message header MUST be 0.
++
++The \field{prop_item_id} of VIRTIO_PARAMETER_SERVER_OP_GET_PROP_CONFIG,
++VIRTIO_PARAMETER_SERVER_OP_SUBSCRIBE_PROP and
+VIRTIO_PARAMETER_SERVER_OP_UNSUBSCRIBE_PROP requests
++MUST be ignored.
++
++The device MUST send exact 1 response for every received request.
++
++The payload size of responses and event messages MUST be padded to 4 bytes.
++
++The param size of property configurations MUST be padded to 4 bytes.
+--
+2.31.1.368.gbe11c130af-goog
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
