@@ -1,177 +1,385 @@
-Return-Path: virtio-dev-return-8173-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-8154-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id D4787986038
-	for <virtio-dev@lists.oasis-open.org>; Mon, 24 May 2021 16:49:04 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 657E59863FA
+	for <virtio-dev@lists.oasis-open.org>; Fri,  7 May 2021 23:06:54 +0000 (UTC)
 MIME-Version: 1.0
-References: <20210505193655.2414268-1-egranata@google.com> <CAPR809ukYeThsPy4eg8A-G8b4Hwt7Prxh9P75=Vp9jnCKb6WqQ@mail.gmail.com>
- <20210517123300.0ea826ef.cohuck@redhat.com> <CAPR809vrz4+WRxSJ=BtQGeKLgHCeMwgB8xq9E+Ei8kykKbPfbA@mail.gmail.com>
-In-Reply-To: <CAPR809vrz4+WRxSJ=BtQGeKLgHCeMwgB8xq9E+Ei8kykKbPfbA@mail.gmail.com>
-From: Enrico Granata <egranata@google.com>
-Date: Mon, 24 May 2021 10:48:51 -0600
-Message-ID: <CAPR809s7TXj5m2x8P_om2oX2szy3uNCF7RGHUXb5BcgecHZyNg@mail.gmail.com>
-Subject: Re: [virtio-dev] Fwd: [PATCH v2] Provide detailed specification of
- virtio-blk lifetime metrics
-Content-Type: multipart/alternative; boundary="000000000000dac3be05c3162f87"
+References: <CABATKF9Vjf1NE0EjToKfp=1aPcGieeny1k8rkfVv6BFZ=+b4sw@mail.gmail.com>
+ <20210430125502.43535749.cohuck@redhat.com>
+In-Reply-To: <20210430125502.43535749.cohuck@redhat.com>
+From: Hao Chen <chenhaosjtuacm@google.com>
+Date: Fri, 7 May 2021 16:06:41 -0700
+Message-ID: <CABATKF-_8SoR0=azxjGwMi2YKGUG0jW95nd8fKdC2-KJcL7n8Q@mail.gmail.com>
+Subject: Re: [virtio-dev] [PATCH] Add virtio parameter server device specification
+Content-Type: text/plain; charset="UTF-8"
 To: Cornelia Huck <cohuck@redhat.com>
-Cc: virtio-dev@lists.oasis-open.org
+Cc: Enrico Granata <egranata@google.com>, virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
---000000000000dac3be05c3162f87
-Content-Type: text/plain; charset="UTF-8"
+> Your client seems to introduce line wraps...
 
-Friendly ping here. Since no further feedback, would it make sense to set
-up a vote on this proposal?
+Thanks for pointing it out, we will fix it in the following patches.
+
+> Do these two types need to be handled differently? If I set up a
+> subscription "poll this parameter every n ms", it doesn't really matter
+> why the parameter changes, does it? In any case, it is not under
+> control of the driver, as "actions of the external system" may also
+> change a mutable parameter.
+
+The reason we want to handle "MUTABLE" and "CONTNUOUS" differently is,
+the MUTABLE values are not constantly changing, so the device may be able to
+send every updates of it to the driver; while CONTINUOUS values are changing
+frequently (e.g., sensor outputs) and the device should decide how to sample it
+and provide a sample rate range ("min_sample_freq" and "max_sample_freq")
+
+> s/device-readable// ?
+
+If I understand correctly, the driver need to fill the virtqueues no
+matter who is the
+reader, so "device-readable" is necessary here. What do you think?
 
 Thanks,
-- Enrico
+Hao
 
-
-On Mon, May 17, 2021 at 9:55 AM Enrico Granata <egranata@google.com> wrote:
-
-> I believe the proposal was Acked-By and didn't receive any strong pushback
+On Fri, Apr 30, 2021 at 3:55 AM Cornelia Huck <cohuck@redhat.com> wrote:
 >
-> The only open point of discussion was whether to rename the feature
-> flag to F_EMMC_LIFETIME in order to open the door for F_NVME_LIFETIME
-> I think, but I didn't hear any comment on that
+> On Tue, 20 Apr 2021 17:33:17 -0700
+> Hao Chen <chenhaosjtuacm@google.com> wrote:
 >
-> Thanks,
-> - Enrico
->
-> On Mon, May 17, 2021 at 4:33 AM Cornelia Huck <cohuck@redhat.com> wrote:
+> > This patch introduces a new type of device: parameter server. The device
+> > acts as a key-value store and the driver can read from, write to or
+> > subscribe to the properties in the server.
 > >
-> > On Wed, 5 May 2021 13:37:26 -0600
-> > Enrico Granata <egranata@google.com> wrote:
+> > Signed-off-by: Hao Chen <chenhaosjtuacm@google.com>
+> > ---
+> >  conformance.tex |  26 +++++--
+> >  content.tex     |   1 +
+> >  virtio-ps.tex   | 188 ++++++++++++++++++++++++++++++++++++++++++++++++
+> >  3 files changed, 211 insertions(+), 4 deletions(-)
+> >  create mode 100644 virtio-ps.tex
 > >
-> > > ---------- Forwarded message ---------
-> > > From: Enrico Granata <egranata@google.com>
-> > > Date: Wed, May 5, 2021 at 1:37 PM
-> > > Subject: [PATCH v2] Provide detailed specification of virtio-blk
-> > > lifetime metrics
-> > > To: <virtio-dev@lists.oasis-open.org>
-> > > Cc: <egranata@google.com>, <hch@infradead.org>, <mst@redhat.com>,
-> > > <linux-block@vger.kernel.org>,
-> > > <virtualization@lists.linux-foundation.org>
-> > >
-> > >
-> > > In the course of review, some concerns were surfaced about the
-> > > original virtio-blk lifetime proposal, as it depends on the eMMC
-> > > spec which is not open
-> > >
-> > > Add a more detailed description of the meaning of the fields
-> > > added by that proposal to the virtio-blk specification, as to
-> > > make it feasible to understand and implement the new lifetime
-> > > metrics feature without needing to refer to JEDEC's specification
-> > >
-> > > This patch does not change the meaning of those fields nor add
-> > > any new fields, but it is intended to provide an open and more
-> > > clear description of the meaning associated with those fields.
-> > >
-> > > Signed-off-by: Enrico Granata <egranata@google.com>
-> > > ---
-> > > Changes in v2:
-> > >   - clarified JEDEC references;
-> > >   - added VIRTIO_BLK prefix and cleaned up comment syntax;
-> > >   - clarified reserved block references
-> > >
-> > >  content.tex | 40 ++++++++++++++++++++++++++++++++--------
-> > >  1 file changed, 32 insertions(+), 8 deletions(-)
+> > diff --git a/conformance.tex b/conformance.tex
+> > index a164cbb..0d6b1a5 100644
+> > --- a/conformance.tex
+> > +++ b/conformance.tex
+> > @@ -29,8 +29,9 @@ \section{Conformance Targets}\label{sec:Conformance
+> > / Conformance Targets}
+> >  \ref{sec:Conformance / Driver Conformance / IOMMU Driver Conformance},
+> >  \ref{sec:Conformance / Driver Conformance / Sound Driver Conformance},
+> >  \ref{sec:Conformance / Driver Conformance / Memory Driver Conformance},
+> > -\ref{sec:Conformance / Driver Conformance / I2C Adapter Driver Conformance} or
+> > -\ref{sec:Conformance / Driver Conformance / SCMI Driver Conformance}.
+> > +\ref{sec:Conformance / Driver Conformance / I2C Adapter Driver Conformance},
+> > +\ref{sec:Conformance / Driver Conformance / SCMI Driver Conformance} or
+> > +\ref{sec:Conformance / Driver Conformance / Parameter Server Driver
+> > Conformance}.
+>
+> Your client seems to introduce line wraps, which means the patch cannot
+> be applied without extra massaging by the committer, which is simply
+> not feasible for a larger patch. Can you please check why it breaks,
+> and try to fix it?
+>
 > >
-> > Do we have a consent here? I see the mails are not showing up on all of
-> > the lists, so I'm a bit confused regarding the state of this...
-> >
+> >      \item Clause \ref{sec:Conformance / Legacy Interface:
+> > Transitional Device and Transitional Driver Conformance}.
+> >    \end{itemize}
+>
+> (...)
+>
+> > diff --git a/virtio-ps.tex b/virtio-ps.tex
+> > new file mode 100644
+> > index 0000000..fa0930a
+> > --- /dev/null
+> > +++ b/virtio-ps.tex
+> > @@ -0,0 +1,188 @@
+> > +\section{Parameter Server}\label{sec:Device Types / Parameter Server}
+> > +
+> > +The parameter server device manages a set of values with unique
+> > property IDs. These values may
+> > +either be static (i.e. have a constant value) or be dynamic (i.e.
+> > value may change over time).
+> > +The driver can get and set values, get value configurations,
+> > subscribe and unsubscribe dynamic
+> > +properties from the device. The device processes the requests from
+>
+> What does 'subscribe' mean? Does the driver get notifications from the
+> device when a subscribed value changes?
+>
+> > the driver, enforces the value
+> > +access rules, and may potentially alter the behavior of external
+> > systems as a result of driver
+> > +operations.
+> > +
+> > +\subsection{Device ID}\label{sec:Device Types / Parameter Server / Device ID}
+> > +
+> > +38
+> > +
+> > +\subsection{Virtqueues}\label{sec:Device Types / Parameter Server / Virtqueues}
+> > +
+> > +\begin{description}
+> > +\item[0] cmdq
+> > +\item[1] eventq
+> > +\end{description}
+> > +
+> > +\subsection{Feature Bits}\label{sec:Device Types / Parameter Server /
+> > Feature Bits}
+> > +
+> > +None currently defined.
+> > +
+> > +\subsection{Device Configuration Layout}\label{sec:Device Types /
+> > Parameter Server / Device Configuration Layout}
+> > +
+> > +\begin{lstlisting}
+> > +struct virtio_parameter_server_config {
+> > +    char name[128];
+> > +};
+> > +\end{lstlisting}
+> > +
+> > +A device configuration space only contains the name of the device,
+> > which can be used by the
+> > +userspace for identification.
+> > +
+> > +\subsection{Device Initialization}
+> > +
+> > +\begin{enumerate}
+> > +\item The virtqueues are initialized.
+> > +\end{enumerate}
+> > +
+> > +\subsection{Device Operation}\label{sec:Device Types / Parameter
+> > Server / Device Operation}
+> > +
+> > +The driver puts the requests to the cmdq virtqueue. The responses
+>
+> Maybe "The driver puts requests to read, write, subscribe to, or
+> unsubscribe from, parameters onto the cmdq virtqueue."?
+>
+> > from the device also go into
+> > +the cmdq virtqueue. Updates on the subscribed values are put into the
+>
+> "The device also puts its responses to the driver's requests onto the
+> cmdq virtqueue. The device puts any updates to values that the driver
+> has subscribed to onto the eventq virtqueue."
+>
+> ?
+>
+> > eventq virtqueue. The
+> > +\field{prop_id}, \field{prop_item_id} pair is the primary key for the
+> > values stored in the
+> > +parameter server, while the values with the same \field{prop_id}
+> > share the same configuration.
+>
+> I don't quite understand what the second part of the sentence means. Do
+> you have e.g. a prop_id 42 for a certain property foo, and
+> prop_item_ids 0, 1, 2, so that (42, 0), (42, 1), (42, 2) are of the
+> same kind?
+>
+> > +Subscriptions are also on \field{prop_id}.
+>
+> Does that mean that if the driver subscribes to prop_id 42, it gets
+> updates for any of (42, 0), (42, 1), (42, 2)?
+>
+> > +
+> > +The layout of requests and responses are defined below:
+> > +
+> > +\begin{lstlisting}
+> > +struct virtio_parameter_server_request {
+> > +    le64 timestamp;
+> > +    le32 prop_id;
+> > +    le32 prop_item_id;
+> > +    le32 payload_size;
+> > +    u8 op;
+> > +    u8 payload[<actual payload size>];
+> > +};
+> > +
+> > +struct virtio_parameter_server_response {
+> > +    le64 timestamp;
+> > +    le32 prop_id;
+> > +    le32 prop_item_id;
+> > +    le32 payload_size;
+> > +    u16 op;
+> > +    u16 ret_value;
+> > +    u8 payload[<actual payload size>];
+> > +};
+> > +
+> > +/* Reserved prop_id and prop_item_id */
+> > +#define VIRTIO_PARAMETER_SERVER_OP_ALL_PROP INT_MAX
+> > +
+> > +/* Supported operations */
+> > +#define VIRTIO_PARAMETER_SERVER_OP_INVALID 0
+> > +#define VIRTIO_PARAMETER_SERVER_OP_GET_PROP_CONFIG 1
+> > +#define VIRTIO_PARAMETER_SERVER_OP_GET_PROP_VALUE 2
+> > +#define VIRTIO_PARAMETER_SERVER_OP_SET_PROP_VALUE 3
+> > +#define VIRTIO_PARAMETER_SERVER_OP_SUBSCRIBE_PROP 4
+> > +#define VIRTIO_PARAMETER_SERVER_OP_UNSUBSCRIBE_PROP 5
+> > +\end{lstlisting}
+> > +
+> > +The layout of messages in eventq is defined below:
+> > +
+> > +\begin{lstlisting}
+> > +struct virtio_parameter_server_event_msg {
+> > +    le64 timestamp;
+> > +    le32 prop_id;
+> > +    le32 prop_item_id;
+> > +    le32 payload_size;
+> > +    u8 payload[<actual payload size>];
+> > +};
+> > +\end{lstlisting}
+> > +
+> > +There will be exactly one response for each request in the cmdq, even
+> > if \field{op} is invalid. For some operations,
+> > +the \field{payload} of requests and/or responses may be empty. If the
+> > \field{payload} is non-empty, it can be either
+> > +property configuration(s) or value. The \field{payload} of messages
+>
+> I'd simply say that the contents of the payload depend on the operation?
+>
+> > in the eventq virtqueue is always value.
+> > +
+> > +\subsubsection{Property Configuration Layout}\label{sec:Device Types
+> > / Parameter Server / Device Operation / Property Configuration Layout}
+> > +
+> > +\begin{lstlisting}
+> > +struct virtio_parameter_server_prop_config {
+> > +    le32 prop_id;
+> > +    le32 mode;
+> > +    le32 min_sample_freq;
+> > +    le32 max_sample_freq;
+> > +    le32 encoding[5];
+> > +    le32 param_size;
+> > +    char desc[256];
+> > +    u8 params[<actual param size>];
+> > +};
+> > +\end{lstlisting}
+> > +
+> > +while \field{mode} is the bitwise-or-combination of the following:
+> > +
+> > +\begin{lstlisting}
+> > +enum virtio_parameter_server_prop_mode {
+> > +    /* access */
+> > +    VIRTIO_PARAMETER_SERVER_M_READ = 0x1,
+> > +    VIRTIO_PARAMETER_SERVER_M_WRITE = 0x2,
+> > +    VIRTIO_PARAMETER_SERVER_M_READ_WRITE = 0x3,
+> > +
+> > +    /* change */
+> > +    VIRTIO_PARAMETER_SERVER_M_STATIC = 0x4,
+> > +    VIRTIO_PARAMETER_SERVER_M_MUTABLE = 0x8,
+> > +    VIRTIO_PARAMETER_SERVER_M_CONTINUOUS = 0xc,
+> > +};
+> > +\end{lstlisting}
+> > +
+> > +Both VIRTIO_PARAMETER_SERVER_M_MUTABLE and
+> > VIRTIO_PARAMETER_SERVER_M_CONTINUOUS are dynamic
+> > +properties. A VIRTIO_PARAMETER_SERVER_M_MUTABLE value will change due
+> > to the set value operation
+> > +from the driver, or actions of the external system; a
+> > VIRTIO_PARAMETER_SERVER_M_CONTINUOUS value
+> > +is expected to be generated by means of a sensor updating at a steady
+> > frequency.
+>
+> Do these two types need to be handled differently? If I set up a
+> subscription "poll this parameter every n ms", it doesn't really matter
+> why the parameter changes, does it? In any case, it is not under
+> control of the driver, as "actions of the external system" may also
+> change a mutable parameter.
+>
+> > +
+> > +The properties with the same \field{prop_id} share the configuration.
+> > \field{min_sample_freq} and
+> > +\field{max_sample_freq} are the sampling rate range for the
+> > +\field{VIRTIO_PARAMETER_SERVER_M_CONTINUOUS} values. \field{desc} is
+> > the optional string
+> > +description. \field{params} are for the customized configuration parameters.
+> > +
+> > +The integer array \field{encoding} specifies the number of different
+> > primitive value in the
+> > +property value.
+> > +
+> > +\begin{lstlisting}
+> > +#define VIRTIO_PARAMETER_SERVER_ENCODING_INDEX_NUM_INT64 0
+> > +#define VIRTIO_PARAMETER_SERVER_ENCODING_INDEX_NUM_FLOAT64 1
+> > +#define VIRTIO_PARAMETER_SERVER_ENCODING_INDEX_NUM_INT32 2
+> > +#define VIRTIO_PARAMETER_SERVER_ENCODING_INDEX_NUM_BYTE 3
+> > +#define VIRTIO_PARAMETER_SERVER_ENCODING_INDEX_HAS_STRING 4
+> > +
+> > +#define VIRTIO_PARAMETER_SERVER_VARIABLE_LENGTH -2
+>
+> What does that '-2' mean?
+>
+> > +\end{lstlisting}
+> > +
+> > +If the driver asks for ALL property configurations, then the \field{payload} of
+> > +virtio_parameter_server_response will be multiple property
+> > configurations, serialized 1-by-1.
+>
+> How does it ask for all configurations?
+>
+> > +
+> > +\subsubsection{Property Value Layout}\label{sec:Device Types /
+> > Parameter Server / Device Operation / Property Value Layout}
+> > +
+> > +The property value payload begins with 5 arrays. The order is the
+> > same as the \field{encoding} array defined above.
+> > +For each array, it begins with a 32-bit integer for length (number of
+> > elements). Empty array will be a 32-bit 0, while
+> > +-1 means the array does not exist. The elements follows the length,
+> > and the size of the encoded array will be padded
+> > +to 4 bytes. String is encoded as char16_t, zero-terminated array.
+>
+> I don't think we've specified what a char16_t is.
+>
+>
+> To check whether I understand this correctly, each 'array' seems to be
+> of the form
+>
+> <u32 length> <list of data types as specified by length>
+>
+> and is succeeded by further 'arrays' in the int64..string order
+> outlined above.
+>
+> So, does the 'length' correspond to the values specified in the
+> encoding? Is HAS_STRING indicating the presence of a string or its
+> length?
+>
+> > +
+> > +After the arrays, there may be customized data, which is encoded as a
+> > byte array.
+> > +
+> > +\drivernormative{\subsubsection}{Device Operation}{Device Types /
+> > Parameter Server / Device Operation}
+> > +
+> > +The driver MUST NOT send undefined ops.
+> > +
+> > +The driver MUST NOT put device-readable descriptors into the eventq.
+>
+> s/device-readable// ?
+>
+> > +
+> > +The payload size of requests MUST be padded to 4 bytes.
+> > +
+> > +\devicenormative{\subsubsection}{Device Operation}{Device Types /
+> > Parameter Server / Device Operation}
+> > +
+> > +\field{name} of the device configuration MUST be non-empty.
+> > +
+> > +The unused bits of the message header MUST be 0.
+> > +
+> > +The \field{prop_item_id} of VIRTIO_PARAMETER_SERVER_OP_GET_PROP_CONFIG,
+> > +VIRTIO_PARAMETER_SERVER_OP_SUBSCRIBE_PROP and
+> > VIRTIO_PARAMETER_SERVER_OP_UNSUBSCRIBE_PROP requests
+> > +MUST be ignored.
+> > +
+> > +The device MUST send exact 1 response for every received request.
+> > +
+> > +The payload size of responses and event messages MUST be padded to 4 bytes.
+> > +
+> > +The param size of property configurations MUST be padded to 4 bytes.
 >
 
---000000000000dac3be05c3162f87
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><div>Friendly ping here. Since no further feedback, would =
-it make sense to set up a vote on this proposal?</div><br clear=3D"all"><di=
-v><div dir=3D"ltr" class=3D"gmail_signature" data-smartmail=3D"gmail_signat=
-ure">Thanks,<br>- Enrico</div></div><br></div><br><div class=3D"gmail_quote=
-"><div dir=3D"ltr" class=3D"gmail_attr">On Mon, May 17, 2021 at 9:55 AM Enr=
-ico Granata &lt;<a href=3D"mailto:egranata@google.com">egranata@google.com<=
-/a>&gt; wrote:<br></div><blockquote class=3D"gmail_quote" style=3D"margin:0=
-px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">I=
- believe the proposal was Acked-By and didn&#39;t receive any strong pushba=
-ck<br>
-<br>
-The only open point of discussion was whether to rename the feature<br>
-flag to F_EMMC_LIFETIME in order to open the door for F_NVME_LIFETIME<br>
-I think, but I didn&#39;t hear any comment on that<br>
-<br>
-Thanks,<br>
-- Enrico<br>
-<br>
-On Mon, May 17, 2021 at 4:33 AM Cornelia Huck &lt;<a href=3D"mailto:cohuck@=
-redhat.com" target=3D"_blank">cohuck@redhat.com</a>&gt; wrote:<br>
-&gt;<br>
-&gt; On Wed, 5 May 2021 13:37:26 -0600<br>
-&gt; Enrico Granata &lt;<a href=3D"mailto:egranata@google.com" target=3D"_b=
-lank">egranata@google.com</a>&gt; wrote:<br>
-&gt;<br>
-&gt; &gt; ---------- Forwarded message ---------<br>
-&gt; &gt; From: Enrico Granata &lt;<a href=3D"mailto:egranata@google.com" t=
-arget=3D"_blank">egranata@google.com</a>&gt;<br>
-&gt; &gt; Date: Wed, May 5, 2021 at 1:37 PM<br>
-&gt; &gt; Subject: [PATCH v2] Provide detailed specification of virtio-blk<=
-br>
-&gt; &gt; lifetime metrics<br>
-&gt; &gt; To: &lt;<a href=3D"mailto:virtio-dev@lists.oasis-open.org" target=
-=3D"_blank">virtio-dev@lists.oasis-open.org</a>&gt;<br>
-&gt; &gt; Cc: &lt;<a href=3D"mailto:egranata@google.com" target=3D"_blank">=
-egranata@google.com</a>&gt;, &lt;<a href=3D"mailto:hch@infradead.org" targe=
-t=3D"_blank">hch@infradead.org</a>&gt;, &lt;<a href=3D"mailto:mst@redhat.co=
-m" target=3D"_blank">mst@redhat.com</a>&gt;,<br>
-&gt; &gt; &lt;<a href=3D"mailto:linux-block@vger.kernel.org" target=3D"_bla=
-nk">linux-block@vger.kernel.org</a>&gt;,<br>
-&gt; &gt; &lt;<a href=3D"mailto:virtualization@lists.linux-foundation.org" =
-target=3D"_blank">virtualization@lists.linux-foundation.org</a>&gt;<br>
-&gt; &gt;<br>
-&gt; &gt;<br>
-&gt; &gt; In the course of review, some concerns were surfaced about the<br=
->
-&gt; &gt; original virtio-blk lifetime proposal, as it depends on the eMMC<=
-br>
-&gt; &gt; spec which is not open<br>
-&gt; &gt;<br>
-&gt; &gt; Add a more detailed description of the meaning of the fields<br>
-&gt; &gt; added by that proposal to the virtio-blk specification, as to<br>
-&gt; &gt; make it feasible to understand and implement the new lifetime<br>
-&gt; &gt; metrics feature without needing to refer to JEDEC&#39;s specifica=
-tion<br>
-&gt; &gt;<br>
-&gt; &gt; This patch does not change the meaning of those fields nor add<br=
->
-&gt; &gt; any new fields, but it is intended to provide an open and more<br=
->
-&gt; &gt; clear description of the meaning associated with those fields.<br=
->
-&gt; &gt;<br>
-&gt; &gt; Signed-off-by: Enrico Granata &lt;<a href=3D"mailto:egranata@goog=
-le.com" target=3D"_blank">egranata@google.com</a>&gt;<br>
-&gt; &gt; ---<br>
-&gt; &gt; Changes in v2:<br>
-&gt; &gt;=C2=A0 =C2=A0- clarified JEDEC references;<br>
-&gt; &gt;=C2=A0 =C2=A0- added VIRTIO_BLK prefix and cleaned up comment synt=
-ax;<br>
-&gt; &gt;=C2=A0 =C2=A0- clarified reserved block references<br>
-&gt; &gt;<br>
-&gt; &gt;=C2=A0 content.tex | 40 ++++++++++++++++++++++++++++++++--------<b=
-r>
-&gt; &gt;=C2=A0 1 file changed, 32 insertions(+), 8 deletions(-)<br>
-&gt;<br>
-&gt; Do we have a consent here? I see the mails are not showing up on all o=
-f<br>
-&gt; the lists, so I&#39;m a bit confused regarding the state of this...<br=
->
-&gt;<br>
-</blockquote></div>
-
---000000000000dac3be05c3162f87--
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
