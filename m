@@ -1,76 +1,98 @@
-Return-Path: virtio-dev-return-8158-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-8160-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 32486986227
-	for <virtio-dev@lists.oasis-open.org>; Tue, 11 May 2021 08:22:33 +0000 (UTC)
-Date: Tue, 11 May 2021 09:22:24 +0100
+	by lists.oasis-open.org (Postfix) with ESMTP id 0D06A986475
+	for <virtio-dev@lists.oasis-open.org>; Thu, 13 May 2021 13:44:54 +0000 (UTC)
+Date: Thu, 13 May 2021 14:44:42 +0100
 From: Stefan Hajnoczi <stefanha@redhat.com>
-Message-ID: <YJo+wCSffIZAx9aM@stefanha-x1.localdomain>
+Message-ID: <YJ0tSmwRulBHGrIG@stefanha-x1.localdomain>
 References: <20210215095410.85607-1-stefanha@redhat.com>
+ <YJo+wCSffIZAx9aM@stefanha-x1.localdomain>
+ <20210512223637.GA6241@rsjd01523.et2sqa>
 MIME-Version: 1.0
-In-Reply-To: <20210215095410.85607-1-stefanha@redhat.com>
-Subject: Re: [virtio-dev] [PATCH v2 0/2] virtio-fs: add notification queue
+In-Reply-To: <20210512223637.GA6241@rsjd01523.et2sqa>
+Subject: [virtio-dev] Re: [Virtio-fs] [virtio-dev] [PATCH v2 0/2] virtio-fs: add
+ notification queue
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="LfalMhQMl7yvqHbp"
+	protocol="application/pgp-signature"; boundary="CLysp2a4mQE6o2Rw"
 Content-Disposition: inline
-To: virtio-dev@lists.oasis-open.org
-Cc: "Dr. David Alan Gilbert" <dgilbert@redhat.com>, vgoyal@redhat.com, mszeredi@redhat.com, virtio-fs@redhat.com
+To: Liu Bo <bo.liu@linux.alibaba.com>
+Cc: virtio-dev@lists.oasis-open.org, virtio-fs@redhat.com, vgoyal@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
---LfalMhQMl7yvqHbp
+--CLysp2a4mQE6o2Rw
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Feb 15, 2021 at 09:54:08AM +0000, Stefan Hajnoczi wrote:
-> v2:
->  * Document empty virtqueue behavior for FUSE_NOTIFY_LOCK messages
+On Thu, May 13, 2021 at 06:36:37AM +0800, Liu Bo wrote:
+> Hi Stefan,
 >=20
-> This patch series adds the notification queue to the VIRTIO specification=
-.
-> This new virtqueue carries device->driver FUSE notify messages.  They are
-> currently unused but will be necessary for file locking, which can block =
-for an
-> unbounded amount of time and therefore needs a asynchronous completion ev=
-ent
-> instead of a request/response buffer that consumes space in the request
-> virtqueue until the operation completes.
+> On Tue, May 11, 2021 at 09:22:24AM +0100, Stefan Hajnoczi wrote:
+> > On Mon, Feb 15, 2021 at 09:54:08AM +0000, Stefan Hajnoczi wrote:
+> > > v2:
+> > >  * Document empty virtqueue behavior for FUSE_NOTIFY_LOCK messages
+> > >=20
+> > > This patch series adds the notification queue to the VIRTIO specifica=
+tion.
+> > > This new virtqueue carries device->driver FUSE notify messages.  They=
+ are
+> > > currently unused but will be necessary for file locking, which can bl=
+ock for an
+> > > unbounded amount of time and therefore needs a asynchronous completio=
+n event
+> > > instead of a request/response buffer that consumes space in the reque=
+st
+> > > virtqueue until the operation completes.
+> > >=20
+> > > Patch 1 corrects an oversight I noticed: the file system device was n=
+ot added
+> > > to the Conformance chapter.
+> > >=20
+> > > Stefan Hajnoczi (2):
+> > >   virtio-fs: add file system device to Conformance chapter
+> > >   virtio-fs: add notification queue
+> > >=20
+> > >  conformance.tex | 23 ++++++++++++++++
+> > >  virtio-fs.tex   | 71 ++++++++++++++++++++++++++++++++++++++++++-----=
+--
+> > >  2 files changed, 84 insertions(+), 10 deletions(-)
+> >=20
+> > Reminder to anyone who needs the virtio-fs notification queue: please
+> > review this series.
+> >
 >=20
-> Patch 1 corrects an oversight I noticed: the file system device was not a=
-dded
-> to the Conformance chapter.
->=20
-> Stefan Hajnoczi (2):
->   virtio-fs: add file system device to Conformance chapter
->   virtio-fs: add notification queue
->=20
->  conformance.tex | 23 ++++++++++++++++
->  virtio-fs.tex   | 71 ++++++++++++++++++++++++++++++++++++++++++-------
->  2 files changed, 84 insertions(+), 10 deletions(-)
+> Besides using notification queue to provide posix lock support, I've
+> also managed to invalidate dentry/inode's cache with notification
+> queue, it worked well.
 
-Reminder to anyone who needs the virtio-fs notification queue: please
-review this series.
+Thank you!
+
+Are you using dentry/inode cache invalidation to reduce the number of
+file descriptors that virtiofsd needs to hold open, or are you using it
+because the file system is shared by multiple systems and you want to
+stronger cache coherency?
 
 Stefan
 
---LfalMhQMl7yvqHbp
+--CLysp2a4mQE6o2Rw
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmCaPsAACgkQnKSrs4Gr
-c8jKyAgAvdV9eWuyUEztvoyXM+DmDjaGoya9E75/2TSVOTioENHkACoOfdu7vKpk
-u2PaeWVOKMqFgnyUdmvZyEHgZmT821sjmjR0491ZS8CYFP9M25bUoKZSPHT8MyFd
-epaa6jREdOU3/Z3dUQthtB+hefcsqH9MgBuQ/UktpTvahqILTE2G09wqlEO5svDJ
-Ivb19YkalCTqimae+QNEwquLM2Cp3Lq+TWPnQ8h+T/HE8svpITU5tw5fpOxMvWru
-aas8EGj4TUSH+nH4QCD21LlWt/MiAjRKSdQYi+96tzEtQqW2URFmzvMQ6ZAz4GYA
-0jT0lCkGED7eyaS1y5R3MhQVAezzBA==
-=jaJA
+iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmCdLUoACgkQnKSrs4Gr
+c8jA3gf/Q0mFGv16s7l1XxG/2mZ10SDmlpOum4x2S93qMEzsqz2l2Zmck/Y76OTx
+/lkFy5EW9PDHJrl73MQ57uLceWAR2m4j9XiyRPukThn7ybjpQyIitbhZE73ug0eG
+DoMi9LkXFSzknTuzrHsUMs1c+336cnA62HBAYoI4rRIyMfMU+VoenApWTYllV9sY
+W5ROjRCgWm3krhayIfcEjv/AOpxJBSfHMVxWISmMWSGGvYnq4sGAhbCndpIGuSUY
+/8rO0BFuDEDRs74wZNbg7OOkqizXA5nFTxjIvlbhL0f9nufWbPQkPq5o6wjq5sPr
+LUrpOlLb/GucOhwMF3mS51vKPw2T0A==
+=2ntM
 -----END PGP SIGNATURE-----
 
---LfalMhQMl7yvqHbp--
+--CLysp2a4mQE6o2Rw--
 
