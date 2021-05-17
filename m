@@ -1,20 +1,20 @@
-Return-Path: virtio-dev-return-8167-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-8168-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id C2934985E64
-	for <virtio-dev@lists.oasis-open.org>; Mon, 17 May 2021 19:33:06 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 431E2985E64
+	for <virtio-dev@lists.oasis-open.org>; Mon, 17 May 2021 19:37:44 +0000 (UTC)
 MIME-Version: 1.0
-References: <CABATKF_vRfnkybEyj-PejKYPud0=FNPscRJ9=ztKzWiySnyHVQ@mail.gmail.com>
- <20210517193030.1568902-1-chenhaosjtuacm@google.com>
-In-Reply-To: <20210517193030.1568902-1-chenhaosjtuacm@google.com>
+References: <CABATKF8SvvObHWu3OCuSG6goXHJL1R_XxxrnQ9p-9DsLEms6cg@mail.gmail.com>
+ <20210517193617.1576401-1-chenhaosjtuacm@google.com>
+In-Reply-To: <20210517193617.1576401-1-chenhaosjtuacm@google.com>
 From: Hao Chen <chenhaosjtuacm@google.com>
-Date: Mon, 17 May 2021 12:32:53 -0700
-Message-ID: <CABATKF8SvvObHWu3OCuSG6goXHJL1R_XxxrnQ9p-9DsLEms6cg@mail.gmail.com>
-Subject: [virtio-dev] [PATCH v2] Add virtio parameter server device specification
+Date: Mon, 17 May 2021 12:37:30 -0700
+Message-ID: <CABATKF9BoZQJenux4ju8TpZAmgeoMNGLPj_Dq8YZf6YwGfD8wg@mail.gmail.com>
+Subject: [virtio-dev] Fwd: [PATCH v3] Add virtio parameter server device specification
 Content-Type: text/plain; charset="UTF-8"
 To: virtio-dev@lists.oasis-open.org
 Cc: Enrico Granata <egranata@google.com>, Cornelia Huck <cohuck@redhat.com>
@@ -26,10 +26,10 @@ subscribe to the properties in the server.
 
 Signed-off-by: Hao Chen <chenhaosjtuacm@google.com>
 ---
- conformance.tex |  26 +++++--
+ conformance.tex |  26 ++++++-
  content.tex     |   1 +
- virtio-ps.tex   | 188 ++++++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 211 insertions(+), 4 deletions(-)
+ virtio-ps.tex   | 197 ++++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 220 insertions(+), 4 deletions(-)
  create mode 100644 virtio-ps.tex
 
 diff --git a/conformance.tex b/conformance.tex
@@ -122,10 +122,10 @@ Requirements}\label{sec:Device
 
 diff --git a/virtio-ps.tex b/virtio-ps.tex
 new file mode 100644
-index 0000000..fa0930a
+index 0000000..f84b211
 --- /dev/null
 +++ b/virtio-ps.tex
-@@ -0,0 +1,188 @@
+@@ -0,0 +1,197 @@
 +\section{Parameter Server}\label{sec:Device Types / Parameter Server}
 +
 +The parameter server device manages a set of values with unique
@@ -134,11 +134,11 @@ property IDs. These values may
 value may change over time).
 +The driver can get and set values, get value configurations,
 subscribe and unsubscribe dynamic
-+properties from the device. The device processes the requests from
-the driver, enforces the value
-+access rules, and may potentially alter the behavior of external
-systems as a result of driver
-+operations.
++properties from the device. The driver will get updates when
+subscribed value changes. The device
++processes the requests from the driver, enforces the value access
+rules, and may potentially alter
++the behavior of external systems as a result of driver operations.
 +
 +\subsection{Device ID}\label{sec:Device Types / Parameter Server / Device ID}
 +
@@ -178,15 +178,24 @@ which can be used by the
 +\subsection{Device Operation}\label{sec:Device Types / Parameter
 Server / Device Operation}
 +
-+The driver puts the requests to the cmdq virtqueue. The responses
-from the device also go into
-+the cmdq virtqueue. Updates on the subscribed values are put into the
-eventq virtqueue. The
++The driver puts requests to read, write, subscribe to, or unsubscribe
+from, parameters onto the
++cmdq virtqueue. The device also puts its responses to the driver's
+requests onto the cmdq
++virtqueue. The device puts any updates to values that the driver has
+subscribed to onto the
++eventq virtqueue. The
 +\field{prop_id}, \field{prop_item_id} pair is the primary key for the
 values stored in the
 +parameter server, while the values with the same \field{prop_id}
 share the same configuration.
-+Subscriptions are also on \field{prop_id}.
++For example, \field{prop_id} 12 with \field{prop_item_id} 0, 1 and 2
+represent 3 different values
++sharing the same \field{virtio_parameter_server_config}.
+Subscriptions are also on \field{prop_id},
++so if \field{prop_id} 12 is subscribed, the driver will receive
+updates on (12, 0), (12, 1) and
++(12, 2).
 +
 +The layout of requests and responses are defined below:
 +
@@ -236,10 +245,8 @@ share the same configuration.
 +
 +There will be exactly one response for each request in the cmdq, even
 if \field{op} is invalid. For some operations,
-+the \field{payload} of requests and/or responses may be empty. If the
-\field{payload} is non-empty, it can be either
-+property configuration(s) or value. The \field{payload} of messages
-in the eventq virtqueue is always value.
++the \field{payload} of requests and/or responses may be empty. The
+content of the payload depend on the operation.
 +
 +\subsubsection{Property Configuration Layout}\label{sec:Device Types
 / Parameter Server / Device Operation / Property Configuration Layout}
@@ -282,6 +289,15 @@ VIRTIO_PARAMETER_SERVER_M_CONTINUOUS value
 +is expected to be generated by means of a sensor updating at a steady
 frequency.
 +
++The reason we want to handle "MUTABLE" and "CONTNUOUS" differently
+is, the MUTABLE values are not
++constantly changing, so the device may be able to send every updates
+of it to the driver; while
++CONTINUOUS values are changing frequently (e.g., sensor outputs) and
+the device should decide how
++to sample it and provide a sample rate range (\field{min_sample_freq}
+and \field{max_sample_freq})
++
 +The properties with the same \field{prop_id} share the configuration.
 \field{min_sample_freq} and
 +\field{max_sample_freq} are the sampling rate range for the
@@ -299,13 +315,13 @@ primitive value in the
 +#define VIRTIO_PARAMETER_SERVER_ENCODING_INDEX_NUM_INT32 2
 +#define VIRTIO_PARAMETER_SERVER_ENCODING_INDEX_NUM_BYTE 3
 +#define VIRTIO_PARAMETER_SERVER_ENCODING_INDEX_HAS_STRING 4
-+
-+#define VIRTIO_PARAMETER_SERVER_VARIABLE_LENGTH -2
 +\end{lstlisting}
 +
-+If the driver asks for ALL property configurations, then the \field{payload} of
-+virtio_parameter_server_response will be multiple property
-configurations, serialized 1-by-1.
++If the driver asks for ALL property configurations by setting the
+\field{prop_id} of the request to
++VIRTIO_PARAMETER_SERVER_OP_ALL_PROP, then the \field{payload} of
+virtio_parameter_server_response
++will be multiple property configurations, serialized 1-by-1.
 +
 +\subsubsection{Property Value Layout}\label{sec:Device Types /
 Parameter Server / Device Operation / Property Value Layout}
@@ -316,7 +332,9 @@ same as the \field{encoding} array defined above.
 elements). Empty array will be a 32-bit 0, while
 +-1 means the array does not exist. The elements follows the length,
 and the size of the encoded array will be padded
-+to 4 bytes. String is encoded as char16_t, zero-terminated array.
++to 4 bytes. String is encoded as char, zero-terminated array,
++\field{encoding[VIRTIO_PARAMETER_SERVER_ENCODING_INDEX_HAS_STRING]}
+indicates the existence of the string.
 +
 +After the arrays, there may be customized data, which is encoded as a
 byte array.
@@ -326,7 +344,7 @@ Parameter Server / Device Operation}
 +
 +The driver MUST NOT send undefined ops.
 +
-+The driver MUST NOT put device-readable descriptors into the eventq.
++The driver MUST NOT put descriptors into the eventq.
 +
 +The payload size of requests MUST be padded to 4 bytes.
 +
