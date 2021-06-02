@@ -1,70 +1,54 @@
-Return-Path: virtio-dev-return-8152-cohuck=redhat.com@lists.oasis-open.org
+Return-Path: virtio-dev-return-8177-cohuck=redhat.com@lists.oasis-open.org
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 5F3BF985EDB
-	for <virtio-dev@lists.oasis-open.org>; Wed,  5 May 2021 21:01:55 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 2C85298652B
+	for <virtio-dev@lists.oasis-open.org>; Wed,  2 Jun 2021 13:48:30 +0000 (UTC)
+References: <CABATKF9Vjf1NE0EjToKfp=1aPcGieeny1k8rkfVv6BFZ=+b4sw@mail.gmail.com>
+ <YJ07vrCt3thO5MM/@stefanha-x1.localdomain>
+ <CABATKF_vRfnkybEyj-PejKYPud0=FNPscRJ9=ztKzWiySnyHVQ@mail.gmail.com>
+ <adc1355d-7ecb-7617-536e-1082ecbba039@metux.net>
+ <CABATKF-cFHeiLz1ruwKaYHHHo3xuoKcCods+WAzhXojo6wEO1w@mail.gmail.com>
+From: "Enrico Weigelt, metux IT consult" <lkml@metux.net>
+Message-ID: <40119ebe-04c5-ce46-e015-6e69086f2186@metux.net>
+Date: Wed, 2 Jun 2021 15:48:26 +0200
 MIME-Version: 1.0
-References: <20210420162556.217350-1-egranata@google.com> <20210505054314.GA4179527@infradead.org>
- <20210505161022-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20210505161022-mutt-send-email-mst@kernel.org>
-From: Enrico Granata <egranata@google.com>
-Date: Wed, 5 May 2021 15:01:42 -0600
-Message-ID: <CAPR809tf07tqpbK9z1jJ61PneLwE1WwD+9H9DM0GA95p7ks=zw@mail.gmail.com>
-Subject: Re: [virtio-dev] Re: [PATCH] Provide detailed specification of
- virtio-blk lifetime metrics
-Content-Type: text/plain; charset="UTF-8"
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Christoph Hellwig <hch@infradead.org>, virtio-dev@lists.oasis-open.org, linux-block@vger.kernel.org, virtualization@lists.linux-foundation.org
+In-Reply-To: <CABATKF-cFHeiLz1ruwKaYHHHo3xuoKcCods+WAzhXojo6wEO1w@mail.gmail.com>
+Subject: Re: [virtio-dev] [PATCH] Add virtio parameter server device
+ specification
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: tl
+Content-Transfer-Encoding: quoted-printable
+To: Hao Chen <chenhaosjtuacm@google.com>
+Cc: virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-FWIW, that patch needs a few updates, so I will be sending out an
-updated version (ETA within next week is the plan), but I do agree
-that Ack: would be good since there were some strong philosophical
-objections in the beginning & it might make sense to let the wider
-community know those are being addressed
+On 18.05.21 23:56, Hao Chen wrote:
+> In our use case, we treat vehicle as a virtual device. For example, we
+> send values to it to control the HVAC, and we receive values like car
+> speed from the vehicle. We are not using virtio-can because 1. the
+> vehicle bus does not have to be CAN and 2. we are doing something
+> which more than just a pipe to the car bus (e.g., power management).
 
-Thanks,
-- Enrico
+If its just reading / setting some kind of "variables" via some path
+name, why not using 9P for that ?
 
-On Wed, May 5, 2021 at 2:11 PM Michael S. Tsirkin <mst@redhat.com> wrote:
->
-> On Wed, May 05, 2021 at 06:43:14AM +0100, Christoph Hellwig wrote:
-> > On Tue, Apr 20, 2021 at 04:25:56PM +0000, Enrico Granata wrote:
-> > > In the course of review, some concerns were surfaced about the
-> > > original virtio-blk lifetime proposal, as it depends on the eMMC
-> > > spec which is not open
-> > >
-> > > Add a more detailed description of the meaning of the fields
-> > > added by that proposal to the virtio-blk specification, as to
-> > > make it feasible to understand and implement the new lifetime
-> > > metrics feature without needing to refer to JEDEC's specification
-> > >
-> > > This patch does not change the meaning of those fields nor add
-> > > any new fields, but it is intended to provide an open and more
-> > > clear description of the meaning associated with those fields.
-> > >
-> > > Signed-off-by: Enrico Granata <egranata@google.com>
-> >
-> > Still not a fan of the encoding, but at least it is properly documented
-> > now:
-> >
-> > Acked-by: Christoph Hellwig <hch@lst.de>
->
-> With that, would you like to ack the virtip-blk patch too?
-> The format didn't actually change ...
->
-> --
-> MST
->
->
-> ---------------------------------------------------------------------
-> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
->
+
+--mtx
+
+--=20
+---
+Hinweis: unverschl=C3=BCsselte E-Mails k=C3=B6nnen leicht abgeh=C3=B6rt und=
+ manipuliert
+werden ! F=C3=BCr eine vertrauliche Kommunikation senden Sie bitte ihren
+GPG/PGP-Schl=C3=BCssel zu.
+---
+Enrico Weigelt, metux IT consult
+Free software and Linux embedded engineering
+info@metux.net -- +49-151-27565287
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
