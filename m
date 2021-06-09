@@ -1,64 +1,42 @@
-Return-Path: <virtualization-bounces@lists.linux-foundation.org>
-Date: Thu, 24 Jun 2021 13:22:55 -0600
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v4 13/16] dt-bindings: arm: Add virtio transport for SCMI
-Message-ID: <20210624192255.GA1842097@robh.at.kernel.org>
-References: <20210611165937.701-1-cristian.marussi@arm.com>
- <20210611165937.701-14-cristian.marussi@arm.com>
+Return-Path: virtio-dev-return-8183-cohuck=redhat.com@lists.oasis-open.org
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id 39FA79865D5
+	for <virtio-dev@lists.oasis-open.org>; Wed,  9 Jun 2021 15:37:52 +0000 (UTC)
+From: Stefan Hajnoczi <stefanha@redhat.com>
+Date: Wed,  9 Jun 2021 16:37:38 +0100
+Message-Id: <20210609153740.262346-1-stefanha@redhat.com>
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20210611165937.701-14-cristian.marussi@arm.com>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/virtualization>, 
- <mailto:virtualization-request@lists.linux-foundation.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/virtualization/>
-List-Post: <mailto:virtualization@lists.linux-foundation.org>
-List-Help: <mailto:virtualization-request@lists.linux-foundation.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/virtualization>, 
- <mailto:virtualization-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Errors-To: virtualization-bounces@lists.linux-foundation.org
-Sender: "Virtualization" <virtualization-bounces@lists.linux-foundation.org>
-To: Cristian Marussi <cristian.marussi@arm.com>
-Cc: jean-philippe@linaro.org, mikhail.golubev@opensynergy.com, f.fainelli@gmail.com, vincent.guittot@linaro.org, igor.skalkin@opensynergy.com, virtio-dev@lists.oasis-open.org, devicetree@vger.kernel.org, sudeep.holla@arm.com, linux-kernel@vger.kernel.org, virtualization@lists.linux-foundation.org, Vasyl.Vavrychuk@opensynergy.com, Rob Herring <robh+dt@kernel.org>, peter.hilber@opensynergy.com, Andriy.Tryshnivskyy@opensynergy.com, james.quinlan@broadcom.com, Jonathan.Cameron@huawei.com, souvik.chakravarty@arm.com, etienne.carriere@linaro.org, linux-arm-kernel@lists.infradead.org
+Subject: [virtio-dev] [PATCH v3 0/2] virtio-fs: add notification queue
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+To: virtio-dev@lists.oasis-open.org
+Cc: "Dr. David Alan Gilbert" <dgilbert@redhat.com>, Liu Bo <bo.liu@linux.alibaba.com>, vgoyal@redhat.com, iangelak@redhat.com, mszeredi@redhat.com, Stefan Hajnoczi <stefanha@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Fri, 11 Jun 2021 17:59:34 +0100, Cristian Marussi wrote:
-> From: Igor Skalkin <igor.skalkin@opensynergy.com>
-> 
-> Document the properties for arm,scmi-virtio compatible nodes.
-> The backing virtio SCMI device is described in patch [1].
-> 
-> While doing that, make shmem property required only for pre-existing
-> mailbox and smc transports, since virtio-scmi does not need it.
-> 
-> [1] https://lists.oasis-open.org/archives/virtio-comment/202102/msg00018.html
-> 
-> CC: Rob Herring <robh+dt@kernel.org>
-> CC: devicetree@vger.kernel.org
-> Signed-off-by: Igor Skalkin <igor.skalkin@opensynergy.com>
-> [ Peter: Adapted patch for submission to upstream. ]
-> Co-developed-by: Peter Hilber <peter.hilber@opensynergy.com>
-> Signed-off-by: Peter Hilber <peter.hilber@opensynergy.com>
-> [ Cristian: converted to yaml format, moved shmen required property. ]
-> Co-developed-by: Cristian Marussi <cristian.marussi@arm.com>
-> Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
-> ---
-> v3 --> V4
-> - convertd to YAML
-> - make shmem required only for pre-existing mailbox and smc transport
-> - updated VirtIO specification patch message reference
-> - dropped virtio-mmio SCMI device example since really not pertinent to
->   virtio-scmi dt bindings transport: it is not even referenced in SCMI
->   virtio DT node since they are enumerated by VirtIO subsystem and there
->   could be PCI based SCMI devices anyway.
-> ---
->  Documentation/devicetree/bindings/firmware/arm,scmi.yaml | 8 +++++++-
->  1 file changed, 7 insertions(+), 1 deletion(-)
-> 
+djM6DQogKiBDbGFyaWZ5IHRoYXQgZW1wdHkgbm90aWZpY2F0aW9uIHZxIHNlbWFudGljcyBhcmUg
+ZG9jdW1lbnRlZCBmb3IgYWxsDQogICBzdXBwb3J0ZWQgbm90aWZpY2F0aW9uIG1lc3NhZ2UgdHlw
+ZXMuIFtWaXZla10NCiAqIENsYXJpZnkgdGhhdCB0aGUgZGV2aWNlIGhhcyBpbnRlcm5hbCByZXNv
+dXJjZXMgZm9yIGxvY2sgcmVxdWVzdHMgYW5kIHdoZW4NCiAgIHRoZXkgYXJlIGV4aGF1c3RlZCBF
+Tk9MQ0sgaXMgcmV0dXJuZWQuIFtWaXZla10NCnYyOg0KICogRG9jdW1lbnQgZW1wdHkgdmlydHF1
+ZXVlIGJlaGF2aW9yIGZvciBGVVNFX05PVElGWV9MT0NLIG1lc3NhZ2VzDQoNClRoaXMgcGF0Y2gg
+c2VyaWVzIGFkZHMgdGhlIG5vdGlmaWNhdGlvbiBxdWV1ZSB0byB0aGUgVklSVElPIHNwZWNpZmlj
+YXRpb24uDQpUaGlzIG5ldyB2aXJ0cXVldWUgY2FycmllcyBkZXZpY2UtPmRyaXZlciBGVVNFIG5v
+dGlmeSBtZXNzYWdlcy4gIFRoZXkgYXJlDQpjdXJyZW50bHkgdW51c2VkIGJ1dCB3aWxsIGJlIG5l
+Y2Vzc2FyeSBmb3IgZmlsZSBsb2NraW5nLCB3aGljaCBjYW4gYmxvY2sgZm9yIGFuDQp1bmJvdW5k
+ZWQgYW1vdW50IG9mIHRpbWUgYW5kIHRoZXJlZm9yZSBuZWVkcyBhIGFzeW5jaHJvbm91cyBjb21w
+bGV0aW9uIGV2ZW50DQppbnN0ZWFkIG9mIGEgcmVxdWVzdC9yZXNwb25zZSBidWZmZXIgdGhhdCBj
+b25zdW1lcyBzcGFjZSBpbiB0aGUgcmVxdWVzdA0KdmlydHF1ZXVlIHVudGlsIHRoZSBvcGVyYXRp
+b24gY29tcGxldGVzLg0KDQpQYXRjaCAxIGNvcnJlY3RzIGFuIG92ZXJzaWdodCBJIG5vdGljZWQ6
+IHRoZSBmaWxlIHN5c3RlbSBkZXZpY2Ugd2FzIG5vdCBhZGRlZA0KdG8gdGhlIENvbmZvcm1hbmNl
+IGNoYXB0ZXIuDQoNClN0ZWZhbiBIYWpub2N6aSAoMik6DQogIHZpcnRpby1mczogYWRkIGZpbGUg
+c3lzdGVtIGRldmljZSB0byBDb25mb3JtYW5jZSBjaGFwdGVyDQogIHZpcnRpby1mczogYWRkIG5v
+dGlmaWNhdGlvbiBxdWV1ZQ0KDQogY29uZm9ybWFuY2UudGV4IHwgMjMgKysrKysrKysrKysrKysr
+Kw0KIHZpcnRpby1mcy50ZXggICB8IDcxICsrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysr
+KysrKysrKysrKy0tLS0tLS0NCiAyIGZpbGVzIGNoYW5nZWQsIDg0IGluc2VydGlvbnMoKyksIDEw
+IGRlbGV0aW9ucygtKQ0KDQotLSANCjIuMzEuMQ0KDQo=
 
-Reviewed-by: Rob Herring <robh@kernel.org>
-_______________________________________________
-Virtualization mailing list
-Virtualization@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/virtualization
