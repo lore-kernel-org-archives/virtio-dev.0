@@ -1,12 +1,13 @@
 Return-Path: <virtualization-bounces@lists.linux-foundation.org>
-Date: Mon, 14 Jun 2021 12:43:52 +0100
-From: Christoph Hellwig <hch@infradead.org>
-Subject: Re: [PATCH v4 00/16] Introduce SCMI VirtIO transport
-Message-ID: <YMdA+GkgJ+GONuJr@infradead.org>
+Date: Thu, 24 Jun 2021 13:22:55 -0600
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v4 13/16] dt-bindings: arm: Add virtio transport for SCMI
+Message-ID: <20210624192255.GA1842097@robh.at.kernel.org>
 References: <20210611165937.701-1-cristian.marussi@arm.com>
+ <20210611165937.701-14-cristian.marussi@arm.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20210611165937.701-1-cristian.marussi@arm.com>
+In-Reply-To: <20210611165937.701-14-cristian.marussi@arm.com>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/virtualization>, 
  <mailto:virtualization-request@lists.linux-foundation.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/virtualization/>
@@ -19,22 +20,44 @@ Content-Transfer-Encoding: 7bit
 Errors-To: virtualization-bounces@lists.linux-foundation.org
 Sender: "Virtualization" <virtualization-bounces@lists.linux-foundation.org>
 To: Cristian Marussi <cristian.marussi@arm.com>
-Cc: virtio-dev@lists.oasis-open.org, mikhail.golubev@opensynergy.com, f.fainelli@gmail.com, vincent.guittot@linaro.org, igor.skalkin@opensynergy.com, jean-philippe@linaro.org, Jonathan.Cameron@huawei.com, linux-kernel@vger.kernel.org, virtualization@lists.linux-foundation.org, Vasyl.Vavrychuk@opensynergy.com, peter.hilber@opensynergy.com, james.quinlan@broadcom.com, sudeep.holla@arm.com, souvik.chakravarty@arm.com, etienne.carriere@linaro.org, linux-arm-kernel@lists.infradead.org, Andriy.Tryshnivskyy@opensynergy.com
+Cc: jean-philippe@linaro.org, mikhail.golubev@opensynergy.com, f.fainelli@gmail.com, vincent.guittot@linaro.org, igor.skalkin@opensynergy.com, virtio-dev@lists.oasis-open.org, devicetree@vger.kernel.org, sudeep.holla@arm.com, linux-kernel@vger.kernel.org, virtualization@lists.linux-foundation.org, Vasyl.Vavrychuk@opensynergy.com, Rob Herring <robh+dt@kernel.org>, peter.hilber@opensynergy.com, Andriy.Tryshnivskyy@opensynergy.com, james.quinlan@broadcom.com, Jonathan.Cameron@huawei.com, souvik.chakravarty@arm.com, etienne.carriere@linaro.org, linux-arm-kernel@lists.infradead.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Fri, Jun 11, 2021 at 05:59:21PM +0100, Cristian Marussi wrote:
-> Hi all,
+On Fri, 11 Jun 2021 17:59:34 +0100, Cristian Marussi wrote:
+> From: Igor Skalkin <igor.skalkin@opensynergy.com>
 > 
-> I'm posting this V4 series starting from the work done up to V3 by
-> OpenSynergy.
+> Document the properties for arm,scmi-virtio compatible nodes.
+> The backing virtio SCMI device is described in patch [1].
+> 
+> While doing that, make shmem property required only for pre-existing
+> mailbox and smc transports, since virtio-scmi does not need it.
+> 
+> [1] https://lists.oasis-open.org/archives/virtio-comment/202102/msg00018.html
+> 
+> CC: Rob Herring <robh+dt@kernel.org>
+> CC: devicetree@vger.kernel.org
+> Signed-off-by: Igor Skalkin <igor.skalkin@opensynergy.com>
+> [ Peter: Adapted patch for submission to upstream. ]
+> Co-developed-by: Peter Hilber <peter.hilber@opensynergy.com>
+> Signed-off-by: Peter Hilber <peter.hilber@opensynergy.com>
+> [ Cristian: converted to yaml format, moved shmen required property. ]
+> Co-developed-by: Cristian Marussi <cristian.marussi@arm.com>
+> Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
+> ---
+> v3 --> V4
+> - convertd to YAML
+> - make shmem required only for pre-existing mailbox and smc transport
+> - updated VirtIO specification patch message reference
+> - dropped virtio-mmio SCMI device example since really not pertinent to
+>   virtio-scmi dt bindings transport: it is not even referenced in SCMI
+>   virtio DT node since they are enumerated by VirtIO subsystem and there
+>   could be PCI based SCMI devices anyway.
+> ---
+>  Documentation/devicetree/bindings/firmware/arm,scmi.yaml | 8 +++++++-
+>  1 file changed, 7 insertions(+), 1 deletion(-)
+> 
 
-Who is 'OpenSynergy'?
-
-> The main aim of this rework is to simplify where possible the SCMI VirtIO
-> support added in V3 by adding upfront and then using some new mechanisms in
-> the SCMI Core Transport layer.
-
-And what is 'SCMI', and why would anyone want a new virtio transport?
+Reviewed-by: Rob Herring <robh@kernel.org>
 _______________________________________________
 Virtualization mailing list
 Virtualization@lists.linux-foundation.org
