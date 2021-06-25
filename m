@@ -1,481 +1,440 @@
-Return-Path: virtio-dev-return-8182-cohuck=redhat.com@lists.oasis-open.org
-Sender: <virtio-dev@lists.oasis-open.org>
+Return-Path: virtio-dev-return-8201-cohuck=redhat.com@lists.oasis-open.org
+Sender: virtio-dev@lists.oasis-open.org
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 1FAE6986229
-	for <virtio-dev@lists.oasis-open.org>; Wed,  9 Jun 2021 09:52:03 +0000 (UTC)
-Date: Wed, 9 Jun 2021 10:12:27 +0100
-From: Stefan Hajnoczi <stefanha@redhat.com>
-Message-ID: <YMCF+yUx9y36q+JL@stefanha-x1.localdomain>
-References: <CABATKF9Vjf1NE0EjToKfp=1aPcGieeny1k8rkfVv6BFZ=+b4sw@mail.gmail.com>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242]) by lists.oasis-open.org (Postfix) with ESMTP id 6B4C49866C9 for <virtio-dev@lists.oasis-open.org>; Fri, 25 Jun 2021 09:19:44 +0000 (UTC)
+Date: Fri, 25 Jun 2021 11:19:38 +0200
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+Message-ID: <20210625091938.5s7g2eiuz52vx7fh@pengutronix.de>
+References: <c3fc258b-2f62-74ba-ca41-e6f839930020@opensynergy.com> <20210618091614.nqcvvmtf4wo4aejm@pengutronix.de>
+ <8c76c15d-6252-8af5-01d1-71752cd0cb7b@opensynergy.com>
 MIME-Version: 1.0
-In-Reply-To: <CABATKF9Vjf1NE0EjToKfp=1aPcGieeny1k8rkfVv6BFZ=+b4sw@mail.gmail.com>
-Subject: Re: [virtio-dev] [PATCH] Add virtio parameter server device
- specification
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="idaf31ji9Gpsr8Md"
+In-Reply-To: <8c76c15d-6252-8af5-01d1-71752cd0cb7b@opensynergy.com>
+Subject: [virtio-dev] review of virtio-can (was: Re: MSG_CONFIRM RX messages
+ with SocketCAN known as unreliable under heavy load?)
+Content-Type: multipart/signed; protocol="application/pgp-signature"; boundary=pzrznloxh3zdh5y7
 Content-Disposition: inline
-To: Hao Chen <chenhaosjtuacm@google.com>
-Cc: virtio-dev@lists.oasis-open.org, Enrico Granata <egranata@google.com>
+To: Harald Mommer <hmo@opensynergy.com>
+Cc: linux-can@vger.kernel.org, virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
---idaf31ji9Gpsr8Md
-Content-Type: text/plain; charset=us-ascii
+--pzrznloxh3zdh5y7
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Apr 20, 2021 at 05:33:17PM -0700, Hao Chen wrote:
-> This patch introduces a new type of device: parameter server. The device
-> acts as a key-value store and the driver can read from, write to or
-> subscribe to the properties in the server.
+On 24.06.2021 17:21:15, Harald Mommer wrote:
+> First draft went to virtio-comment@lists.oasis-open.org and
+> virtio-dev@lists.oasis-open.org.
 >=20
-> Signed-off-by: Hao Chen <chenhaosjtuacm@google.com>
+> https://markmail.org/search/?q=3Dvirtio-can&q=3Dlist%3Aorg.oasis-open.lis=
+ts.virtio-comment#query:virtio-can%20list%3Aorg.oasis-open.lists.virtio-com=
+ment+page:1+mid:hdxj35fsthypllkt+state:results
+
+> [virtio-dev] [PATCH 1/1] [RFC] virtio-can: Add the device specification.
+> Harald Mommer Thu, 01 Apr 2021 08:21:09 -0700
+>=20
+> virtio-can is a virtual CAN device. It provides a way to give access to
+> a CAN controller from a driver guest. The device is aimed to be used by
+> driver guests running a HLOS as well as by driver guests running a
+> typical RTOS as used in controller environments.
+
+Let's open the focus of this driver and not limit us to RTOSes.
+
 > ---
->  conformance.tex |  26 +++++--
->  content.tex     |   1 +
->  virtio-ps.tex   | 188 ++++++++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 211 insertions(+), 4 deletions(-)
->  create mode 100644 virtio-ps.tex
+>  content.tex      |   1 +
+>  introduction.tex |   3 +
+>  virtio-can.tex   | 245 +++++++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 249 insertions(+)
+>  create mode 100644 virtio-can.tex
 >=20
-> diff --git a/conformance.tex b/conformance.tex
-> index a164cbb..0d6b1a5 100644
-> --- a/conformance.tex
-> +++ b/conformance.tex
-> @@ -29,8 +29,9 @@ \section{Conformance Targets}\label{sec:Conformance
-> / Conformance Targets}
->  \ref{sec:Conformance / Driver Conformance / IOMMU Driver Conformance},
->  \ref{sec:Conformance / Driver Conformance / Sound Driver Conformance},
->  \ref{sec:Conformance / Driver Conformance / Memory Driver Conformance},
-> -\ref{sec:Conformance / Driver Conformance / I2C Adapter Driver Conforman=
-ce} or
-> -\ref{sec:Conformance / Driver Conformance / SCMI Driver Conformance}.
-> +\ref{sec:Conformance / Driver Conformance / I2C Adapter Driver Conforman=
-ce},
-> +\ref{sec:Conformance / Driver Conformance / SCMI Driver Conformance} or
-> +\ref{sec:Conformance / Driver Conformance / Parameter Server Driver
-> Conformance}.
->=20
->      \item Clause \ref{sec:Conformance / Legacy Interface:
-> Transitional Device and Transitional Driver Conformance}.
->    \end{itemize}
-> @@ -52,8 +53,9 @@ \section{Conformance Targets}\label{sec:Conformance
-> / Conformance Targets}
->  \ref{sec:Conformance / Device Conformance / IOMMU Device Conformance},
->  \ref{sec:Conformance / Device Conformance / Sound Device Conformance},
->  \ref{sec:Conformance / Device Conformance / Memory Device Conformance},
-> -\ref{sec:Conformance / Device Conformance / I2C Adapter Device Conforman=
-ce} or
-> -\ref{sec:Conformance / Device Conformance / SCMI Device Conformance}.
-> +\ref{sec:Conformance / Device Conformance / I2C Adapter Device Conforman=
-ce},
-> +\ref{sec:Conformance / Device Conformance / SCMI Device Conformance}or
-> +\ref{sec:Conformance / Device Conformance / Parameter Server Device
-> Conformance}.
->=20
->      \item Clause \ref{sec:Conformance / Legacy Interface:
-> Transitional Device and Transitional Driver Conformance}.
->    \end{itemize}
-> @@ -288,6 +290,14 @@ \section{Conformance
-> Targets}\label{sec:Conformance / Conformance Targets}
->  \item \ref{drivernormative:Device Types / SCMI Device / Device
-> Operation / Setting Up eventq Buffers}
->  \end{itemize}
->=20
-> +\conformance{\subsection}{Parameter Server Driver
-> Conformance}\label{sec:Conformance / Driver Conformance / Parameter
-> Server Driver Conformance}
-> +
-> +A parameter server driver MUST conform to the following normative statem=
-ents:
-> +
-> +\begin{itemize}
-> +\item \ref{drivernormative:Device Types / Parameter Server / Device Oper=
-ation}
-> +\end{itemize}
-> +
->  \conformance{\section}{Device Conformance}\label{sec:Conformance /
-> Device Conformance}
->=20
->  A device MUST conform to the following normative statements:
-> @@ -527,6 +537,14 @@ \section{Conformance
-> Targets}\label{sec:Conformance / Conformance Targets}
->  \item \ref{devicenormative:Device Types / SCMI Device / Device
-> Operation / Shared Memory Operation}
->  \end{itemize}
->=20
-> +\conformance{\subsection}{Parameter Server Device
-> Conformance}\label{sec:Conformance / Device Conformance / Parameter
-> Server Device Conformance}
-> +
-> +A parameter server device MUST conform to the following normative statem=
-ents:
-> +
-> +\begin{itemize}
-> +\item \ref{devicenormative:Device Types / Parameter Server / Device Oper=
-ation}
-> +\end{itemize}
-> +
->  \conformance{\section}{Legacy Interface: Transitional Device and
-> Transitional Driver Conformance}\label{sec:Conformance / Legacy
-> Interface: Transitional Device and Transitional Driver Conformance}
->  A conformant implementation MUST be either transitional or
->  non-transitional, see \ref{intro:Legacy
 > diff --git a/content.tex b/content.tex
-> index 9232d5c..b980a93 100644
+> index e536fd4..c1604db 100644
 > --- a/content.tex
 > +++ b/content.tex
-> @@ -6568,6 +6568,7 @@ \subsubsection{Legacy Interface: Framing
+> @@ -6564,6 +6564,7 @@ \subsubsection{Legacy Interface: Framing=20
 > Requirements}\label{sec:Device
 >  \input{virtio-mem.tex}
 >  \input{virtio-i2c.tex}
 >  \input{virtio-scmi.tex}
-> +\input{virtio-ps.tex}
->=20
+> +\input{virtio-can.tex}
+> =20
 >  \chapter{Reserved Feature Bits}\label{sec:Reserved Feature Bits}
->=20
-> diff --git a/virtio-ps.tex b/virtio-ps.tex
+> =20
+> diff --git a/introduction.tex b/introduction.tex
+> index 7204b24..84ea5c0 100644
+> --- a/introduction.tex
+> +++ b/introduction.tex
+> @@ -79,6 +79,9 @@ \section{Normative References}\label{sec:Normative Refe=
+rences}
+>         \phantomsection\label{intro:SCMI}\textbf{[SCMI]} &
+>         Arm System Control and Management Interface, DEN0056,
+>         \newline\url{https://developer.arm.com/docs/den0056/c}, version C=
+ and=20
+> any future revisions\\
+> +       \phantomsection\label{intro:CAN_Driver}\textbf{[CAN Driver]} &
+> +       Specification of CAN Driver -- AUTOSAR CP R20-11,
+
+As mentioned before don't make this AUTOSAR specific.
+
+> +      =20
+> \newline\url{https://www.autosar.org/fileadmin/user_upload/standards/clas=
+sic/20-11/AUTOSAR_SWS_CANDriver.pdf}\\
+> =20
+>  \end{longtable}
+> =20
+> diff --git a/virtio-can.tex b/virtio-can.tex
 > new file mode 100644
-> index 0000000..fa0930a
+> index 0000000..c343759
 > --- /dev/null
-> +++ b/virtio-ps.tex
-> @@ -0,0 +1,188 @@
-> +\section{Parameter Server}\label{sec:Device Types / Parameter Server}
+> +++ b/virtio-can.tex
+> @@ -0,0 +1,245 @@
+> +\section{CAN Device}\label{sec:Device Types / CAN Device}
 > +
-> +The parameter server device manages a set of values with unique
-> property IDs. These values may
-> +either be static (i.e. have a constant value) or be dynamic (i.e.
-> value may change over time).
-> +The driver can get and set values, get value configurations,
-> subscribe and unsubscribe dynamic
-> +properties from the device. The device processes the requests from
-> the driver, enforces the value
-> +access rules, and may potentially alter the behavior of external
-> systems as a result of driver
-> +operations.
->
-> +\subsection{Device ID}\label{sec:Device Types / Parameter Server / Devic=
-e ID}
+> +virtio-can is a virtio based CAN (Controller Area Network) device. It is
+> +used to give a virtual machine access to a CAN bus. The CAN bus may
+> +either be a physical CAN bus or a virtual CAN bus between virtual
+> +machines or a combination of both.
 > +
-> +38
+> +This section relies on definitions made by the AUTOSAR
+> +\hyperref[intro:CAN_Driver]{CAN Driver} specification.
+
+Please refer to the ISO CAN specs.
+
 > +
-> +\subsection{Virtqueues}\label{sec:Device Types / Parameter Server / Virt=
-queues}
+> +\subsection{Device ID}\label{sec:Device Types / CAN Device / Device ID}
+> +
+> +36
+> +
+> +\subsection{Virtqueues}\label{sec:Device Types / CAN Device / Virtqueues=
+}
 > +
 > +\begin{description}
-> +\item[0] cmdq
-> +\item[1] eventq
+> +\item[0] Txq
+> +\item[1] Rxq
+> +\item[2] Controlq
+> +\item[3] Indicationq
 > +\end{description}
 > +
-> +\subsection{Feature Bits}\label{sec:Device Types / Parameter Server /
-> Feature Bits}
+> +The \field{Txq} is used to send CAN packets to the CAN bus.
 > +
-> +None currently defined.
+> +The \field{Rxq} is used to receive CAN packets from the CAN bus.
 > +
-> +\subsection{Device Configuration Layout}\label{sec:Device Types /
-> Parameter Server / Device Configuration Layout}
+> +The \field{Controlq} is used to control the state of the CAN controller.
+> +
+> +The \field{Indicationq} is used to receive unsolicited indications of
+> +CAN controller state changes.
+> +
+> +\subsection{Feature Bits}\label{sec:Device Types / CAN Device / Feature =
+Bits}
+> +
+> +The virtio-can device always supports classic CAN frames with a maximum
+> +payload size of 8 bytes.
+> +
+> +Actual CAN controllers support Extended CAN IDs with 29 bits (CAN~2.0B)
+> +as well as Standard CAN IDs with 11 bits (CAN~2.0A). The support of
+> +CAN~2.0B Extended CAN IDs is considered as mandatory for this
+> +specification.
+
+Let's make Classical CAN a feature just like CAN-FD. There might be
+Controller Implementations that only support CAN-FD.
+
+> +
+> +\begin{description}
+> +
+> +\item[VIRTIO_CAN_F_CAN_FD (0)]
+> +
+> +In addition to classic CAN frames the device supports CAN FD frames with
+> +a maximum payload size of 64 bytes.
+>
+
+OK
+
+> +\end{description}
+> +
+> +\subsection{Device configuration layout}\label{sec:Device Types / CAN De=
+vice /=20
+> Device configuration layout}
+> +
+> +All fields of this configuration are always available and read-only for
+> +the driver.
 > +
 > +\begin{lstlisting}
-> +struct virtio_parameter_server_config {
-> +    char name[128];
+> +struct virtio_can_config {
+> +        le16 lo_prio_count;=20
+> +        le16 hi_prio_count;
 > +};
 > +\end{lstlisting}
-> +
-> +A device configuration space only contains the name of the device,
-> which can be used by the
-> +userspace for identification.
 
-What is the character encoding?
-
-Is this field NUL-terminated?
-
-Can the name be 128 chars long (no NUL terminator)?
+Have you had a look at the virtio-net? There is already support for
+multiple queue pairs. Though, I haven't found any notion of priorities
+among the queues.
 
 > +
-> +\subsection{Device Initialization}
+> +To operate the Virtio CAN device it may be necessary to know some basic
+> +properties of the underlying physical CAN controller hardware and its
+> +configuration.
+> +
+> +Physical CAN controllers may support transmission by putting messages
+> +into FIFOs first and / or by using transmit buffers directly. The user
+> +of the Virtio CAN driver may need to know
+> +
+> +\begin{itemize}
+> +\item Number of TX FIFO places for non time critical CAN messages
+> +\item Number of TX buffers for high priority CAN messages
+> +\end{itemize}
+
+IMHO the FIFO depth is optional and should be per queue.
+
+> +
+> +to schedule an optimal transmission of CAN messages. Non time critical
+> +messages may be sent via a FIFO where they may suffer "Inner Priority
+> +Inversion" (\hyperref[intro:CAN_Driver]{CAN Driver} chapter 2.1). High
+> +priority messages are preferably sent directly to a transmit buffer
+> +where they immediately participate in CAN bus arbitration.
+> +
+
+Let's use multiple queues like Ethernet has.
+
+> +\subsection{Device Initialization}\label{sec:Device Types / CAN Device /=
+=20
+> Device Initialization}
 > +
 > +\begin{enumerate}
-> +\item The virtqueues are initialized.
+> +
+> +\item Read the feature bits and negotiate with the device.
+> +
+> +\item Fill the virtqueue \field{Rxq} with empty buffers to be ready for
+> +the reception of CAN messages.
+> +
+> +\item Fill the virtqueue \field{Indicationq} with empty buffers so that
+> +the CAN device is able to provide status change indications to the
+> +virtio CAN driver.
+> +
+> +\item Read the CAN controller properties using the \field{Controlq}.
+> +
+> +\item Start the CAN controller using the \field{Controlq}.
+
+How does this work on Ethernet?
+
+> +
 > +\end{enumerate}
 > +
-> +\subsection{Device Operation}\label{sec:Device Types / Parameter
-> Server / Device Operation}
+> +\subsection{Device Operation}\label{sec:Device Types / CAN Device / Devi=
+ce=20
+> Operation}
 > +
-> +The driver puts the requests to the cmdq virtqueue. The responses
-> from the device also go into
-> +the cmdq virtqueue. Updates on the subscribed values are put into the
-> eventq virtqueue. The
-> +\field{prop_id}, \field{prop_item_id} pair is the primary key for the
-> values stored in the
-> +parameter server, while the values with the same \field{prop_id}
-> share the same configuration.
-
-What does "share the same configuration" mean? I guess prop_id might be
-a unique system identifier like a DNS domain name, an IP address, or a
-UUID and you're saying that all parameters associated with that system
-are stored under the same prop_id? That's one convention for using this
-device interface, but there may be others that are also valid and
-useful. I'm not sure if the spec should mention this (unless you go into
-more detail about the structure of the keys later).
-
-> +Subscriptions are also on \field{prop_id}.
-
-Does this mean
-
-  "Subscriptions monitor all <prop_id, prop_item_id> pairs for a given
-  prop_id. It is not possible to monitor an individual <prop_id,
-  prop_item_id> pair without also monitoring all other pairs with the
-  same prop_id."
-
-or
-
-  "Subscriptions can monitor individual <prop_id, prop_item_id> pairs or
-  all <prop_id, prop_item_id> pairs for a given prop_id"
-
-?
-
-> +
-> +The layout of requests and responses are defined below:
+> +A device operation has an outcome which is described by one of the
+> +following values:
 > +
 > +\begin{lstlisting}
-> +struct virtio_parameter_server_request {
-> +    le64 timestamp;
-
-What are the units of this timestamp (nanoseconds, milliseconds,
-seconds)?
-
-Is there a reference clock so the device and driver can expect to be
-synchronized (e.g. time since the UNIX epoch)?
-
-What is the purpose of this field? Is there a timeout/time-to-live
-feature?
-
-> +    le32 prop_id;
-> +    le32 prop_item_id;
-> +    le32 payload_size;
-
-There is no need to include a payload_size field because the device can
-infer it from the buffer length:
-
-  payload_size =3D virtq_elem_length - sizeof(struct virtio_parameter_serve=
-r_request)
-
-> +    u8 op;
-> +    u8 payload[<actual payload size>];
-> +};
-> +
-> +struct virtio_parameter_server_response {
-> +    le64 timestamp;
-> +    le32 prop_id;
-> +    le32 prop_item_id;
-> +    le32 payload_size;
-> +    u16 op;
-> +    u16 ret_value;
-> +    u8 payload[<actual payload size>];
-> +};
-> +
-> +/* Reserved prop_id and prop_item_id */
-> +#define VIRTIO_PARAMETER_SERVER_OP_ALL_PROP INT_MAX
-> +
-> +/* Supported operations */
-> +#define VIRTIO_PARAMETER_SERVER_OP_INVALID 0
-> +#define VIRTIO_PARAMETER_SERVER_OP_GET_PROP_CONFIG 1
-> +#define VIRTIO_PARAMETER_SERVER_OP_GET_PROP_VALUE 2
-> +#define VIRTIO_PARAMETER_SERVER_OP_SET_PROP_VALUE 3
-> +#define VIRTIO_PARAMETER_SERVER_OP_SUBSCRIBE_PROP 4
-> +#define VIRTIO_PARAMETER_SERVER_OP_UNSUBSCRIBE_PROP 5
+> +#define VIRTIO_CAN_RESULT_OK     0u
+> +#define VIRTIO_CAN_RESULT_NOT_OK 1u
 > +\end{lstlisting}
 > +
-> +The layout of messages in eventq is defined below:
+> +The type of a CAN message identifier is identified by the most
+> +significant 2 bits of the internally used 32 bit value. This matches the
+> +definition for Can_IdType in
+
+I'm missing RTR messages.
+
+Please don't cramp to much information, or better say any additional
+information in the remaining 3 bits of the 32 bit CAN-id.
+
+You defined a struct for the CAN messages, so add all needed flags to a
+proper flags field.
+
+> +\hyperref[intro:CAN_Driver]{CAN Driver} chapter 8.2.3.
 > +
 > +\begin{lstlisting}
-> +struct virtio_parameter_server_event_msg {
-> +    le64 timestamp;
-> +    le32 prop_id;
-> +    le32 prop_item_id;
-> +    le32 payload_size;
-> +    u8 payload[<actual payload size>];
+> +#define VIRTIO_CAN_ID_TYPE_STANDARD    0x00000000U
+> +#define VIRTIO_CAN_ID_TYPE_STANDARD_FD 0x40000000U
+> +#define VIRTIO_CAN_ID_TYPE_EXTENDED    0x80000000U
+> +#define VIRTIO_CAN_ID_TYPE_EXTENDED_FD 0xC0000000U
+> +\end{lstlisting}
+> +
+> +\subsubsection{Controller Mode}\label{sec:Device Types / CAN Device / De=
+vice=20
+> Operation / Controller Mode}
+> +
+> +The general format of a request in the \field{Controlq} is
+> +
+> +\begin{lstlisting}
+> +struct virtio_can_control_out {
+> +#define VIRTIO_CAN_SET_CTRL_MODE_START  0x0201u
+> +#define VIRTIO_CAN_SET_CTRL_MODE_STOP   0x0202u
+> +        le16 msg_type;=20
+> +};
+> +\end{lstlisting}
+
+How does Ethernet handle this?
+
+> +
+> +To participate in bus communication the CAN controller must be started
+> +by sending a VIRTIO_CAN_SET_CTRL_MODE_START control message,
+> +to stop participating in bus communication it must be stopped by sending
+> +a VIRTIO_CAN_SET_CTRL_MODE_STOP control message. Both requests are
+> +confirmed by the result of the operation.
+> +
+> +\begin{lstlisting}
+> +struct virtio_can_set_ctrl_mode_in {
+> +        u8 result;
 > +};
 > +\end{lstlisting}
 > +
-> +There will be exactly one response for each request in the cmdq, even
-> if \field{op} is invalid. For some operations,
-> +the \field{payload} of requests and/or responses may be empty. If the
-> \field{payload} is non-empty, it can be either
-> +property configuration(s) or value. The \field{payload} of messages
-> in the eventq virtqueue is always value.
-
-A common request layout for devices is:
-
-  struct request {
-      struct request_header header;
-      u8 data[];
-      struct request_footer footer;
-  };
-
-The data[] field has a variable size depending on the payload being
-transferred. It can even support bi-directional transfers where the data
-being written to the device comes first, followed by the data being read
-from the device.
-
-I suggest using this layout since other devices are also designed like
-this. A few notes compared to what you have described:
-1. There is no need for payload_size fields because the payload size can
-   be inferred from the buffer (virtqueue element) length.
-2. The footer is filled in by the device. There's no need to explicitly
-   mention that the footer (struct virtio_parameter_server_response) is
-   placed on the cmdq since it's embedded in struct request.
-3. There's a 1:1 relationship between header and footer. There is no
-   need to mention that most requests have a response associated with
-   them.
-
+> +If the transition succeeded the result shall be VIRTIO_CAN_RESULT_OK
+> +otherwise it shall be VIRTIO_CAN_RESULT_NOT_OK. The request shall be put
+> +into the used queue when the CAN controller finalized the transition to
+> +the requested controller mode.
 > +
-> +\subsubsection{Property Configuration Layout}\label{sec:Device Types
-> / Parameter Server / Device Operation / Property Configuration Layout}
+> +A transition to STOPPED state cancels all CAN messages pending for
+> +transmission. A state transition to STOPPED state shall trigger to put
+> +all CAN messages pending for transmission into the used queue with
+> +result VIRTIO_CAN_RESULT_NOT_OK.
+> +
+> +Initially the CAN controller is in STOPPED state.
+> +
+> +\subsubsection{CAN Message Transmission}\label{sec:Device Types / CAN De=
+vice /=20
+> Device Operation / CAN Message Transmission}
+> +
+> +Messages may be transmitted by placing outgoing CAN messages in the
+> +virtqueue \field{Txq}.
 > +
 > +\begin{lstlisting}
-> +struct virtio_parameter_server_prop_config {
-> +    le32 prop_id;
-> +    le32 mode;
-> +    le32 min_sample_freq;
-> +    le32 max_sample_freq;
-> +    le32 encoding[5];
-> +    le32 param_size;
-> +    char desc[256];
-> +    u8 params[<actual param size>];
+> +struct virtio_can_tx_out {
+> +#define VIRTIO_CAN_TX 0x0001u
+> +        le16 msg_type;
+
+make this 32 bit and add flags for extended CAN messages, RTR, CAN-FD.
+We have to discuss if we need a bit rate switch flag.
+
+> +        le16 priority;
+
+Let's handle priority by using different queues.
+
+> +        le32 can_id;
+> +        u8 sdu[];
+
+Where's the dlc or len information?
+
+We have to discuss if we want to pass dlc (0x0...0xf for both Classical
+CAN and CAN-FD) or len (0...8 for Classical CAN and 0...64 for CAN-FD).
+
+> +};
+> +
+> +struct virtio_can_tx_in {
+> +        u8 result;
 > +};
 > +\end{lstlisting}
 > +
-> +while \field{mode} is the bitwise-or-combination of the following:
+> +Priority is 0 for low priority and 1 for high priority CAN messages.
+> +
+> +The actual length of the SDU can be calculated from the length of the de=
+vice
+> +read-only descriptor.
+> +
+> +To avoid internal priority inversion in the \field{Txq} the user of the
+> +driver may do a book keeping of in flight transmission requests and
+> +defer sending of TX messages until the chosen transmission resource
+> +becomes available.
+> +
+> +If priority, can_id or SDU length are out of range or the CAN controller
+> +is in an invalid state result shall be set to VIRTIO_CAN_RESULT_NOT_OK
+> +and the message shall not be scheduled for transmission. Sending a CAN
+> +message with a priority with 0 transmission places configured shall
+> +be considered as priority being out of range.
+> +
+> +If the parameters are valid the message is scheduled for transmission
+> +and result is set to VIRTIO_CAN_OK. The transmission request should be
+> +put into the used queue after the physical CAN controller acknowledged
+> +the transmission on the CAN bus (may have to be put under a feature flag
+> +as there may be non AUTOSAR CAN driver backends which don't provide a
+> +trigger to do this correctly).
+
+I think this should me mandatory, but we might have a flag or feature
+flag to indicate the "quality" if the tx done information. Some HW CAN
+devices only provide feedback that they have queued the CAN message, but
+no feedback that they have actually transmitted the message.
+
+> +
+> +\subsubsection{CAN Message Reception}\label{sec:Device Types / CAN Devic=
+e /=20
+> Device Operation / CAN Message Reception}
+> +
+> +Messages can be received by providing empty incoming buffers to the
+> +virtqueue \field{Rxq}.
 > +
 > +\begin{lstlisting}
-> +enum virtio_parameter_server_prop_mode {
-> +    /* access */
-> +    VIRTIO_PARAMETER_SERVER_M_READ =3D 0x1,
-> +    VIRTIO_PARAMETER_SERVER_M_WRITE =3D 0x2,
-> +    VIRTIO_PARAMETER_SERVER_M_READ_WRITE =3D 0x3,
-> +
-> +    /* change */
-> +    VIRTIO_PARAMETER_SERVER_M_STATIC =3D 0x4,
-> +    VIRTIO_PARAMETER_SERVER_M_MUTABLE =3D 0x8,
-> +    VIRTIO_PARAMETER_SERVER_M_CONTINUOUS =3D 0xc,
+> +struct virtio_can_rx {
+> +#define VIRTIO_CAN_RX 0x0101u
+> +        le16 msg_type;
+> +        le16 reserved;
+> +        le32 can_id;
+> +        u8 sdu[];
 > +};
 > +\end{lstlisting}
 > +
-> +Both VIRTIO_PARAMETER_SERVER_M_MUTABLE and
-> VIRTIO_PARAMETER_SERVER_M_CONTINUOUS are dynamic
-> +properties. A VIRTIO_PARAMETER_SERVER_M_MUTABLE value will change due
-> to the set value operation
-> +from the driver, or actions of the external system; a
-> VIRTIO_PARAMETER_SERVER_M_CONTINUOUS value
-> +is expected to be generated by means of a sensor updating at a steady
-> frequency.
+> +The structure element reserved may in the future be used to forward an
+> +AUTOSAR hoh, see (\hyperref[intro:CAN_Driver]{CAN Driver} chapter 7.6).
+> +The value should be set to 0xFFFF.
 
-Can you rephrase the definition of MUTABLE? I don't understand what it
-means, especially since there is already a WRITE permission that
-indicates read-only parameters. Why is MUTABLE needed?
+Please remove any AUTOSAR references.
 
-Does CONTINUOUS mean that the device expects to update the value? You
-mentioned a "steady frequency", is that the key characteristic being
-described here? If so, then PERIODIC might be a clearer name than
-CONTINUOUS (which could have other meanings, like that the value will be
-different every time it's read).
-
-> +The properties with the same \field{prop_id} share the configuration.
-
-It is not clear to mean what a "configuration" is.
-
-> \field{min_sample_freq} and
-> +\field{max_sample_freq} are the sampling rate range for the
-> +\field{VIRTIO_PARAMETER_SERVER_M_CONTINUOUS} values.
-
-Is this really needed since the device interface also supports pub/sub?
-If the application/driver wants to monitor a parameter that's
-periodically updated by the device it can just subscribe to be notified
-rather than reading at the max sample frequency and discarding unchanged
-values.
-
-By the way, is there a "current sample frequency"? If not, then I guess
-the application/driver needs to assume min/max, depending on its
-requirement. This could be inefficient.
-
-> \field{desc} is
-> the optional string
-> +description.
-
-Please indicate the character encoding and NUL termination of this
-string.
-
-Is this the parameter's name ("temperature_sensor_4") or is it a
-description ("Main board temperature sensor")?
-
-> \field{params} are for the customized configuration parameters.
-
-This looks like a vendor-specific extension mechanism. It's opaque so
-there's no way for the driver to skip over parameters it doesn't
-understand. That could be a problem for version compatibility if the
-device/driver are updated and expect different param[] data formats.
-Perhaps it would help to define the structure that allows the driver to
-skip unknown parameters?
-
-How does the driver know how large to make the struct
-virtio_parameter_server_prop_config buffer? Maybe there should be a
-max_params_len configuration space field.
-
-> +The integer array \field{encoding} specifies the number of different
-> primitive value in the
-> +property value.
+> +
+> +If the feature \field{VIRTIO_CAN_F_CAN_FD} has been negotiated the
+> +maximal possible SDU length is 64, if the feature has not been
+> +negotiated the maximal possible SDU length is 8.
+> +
+> +The actual length of the SDU can be calculated from the length of the
+> +driver read-only descriptor.
+> +
+> +\subsubsection{BusOff Indication}\label{sec:Device Types / CAN Device / =
+Device=20
+> Operation / BusOff Indication}
+> +
+> +There are certain error conditions so that the physical CAN controller
+> +has to stop participating in CAN communication on the bus. If such an
+> +error condition occurs the device informs the driver about the
+> +unsolicited CAN controller state change by a CAN BusOff indication.
 > +
 > +\begin{lstlisting}
-> +#define VIRTIO_PARAMETER_SERVER_ENCODING_INDEX_NUM_INT64 0
-> +#define VIRTIO_PARAMETER_SERVER_ENCODING_INDEX_NUM_FLOAT64 1
-> +#define VIRTIO_PARAMETER_SERVER_ENCODING_INDEX_NUM_INT32 2
-> +#define VIRTIO_PARAMETER_SERVER_ENCODING_INDEX_NUM_BYTE 3
-> +#define VIRTIO_PARAMETER_SERVER_ENCODING_INDEX_HAS_STRING 4
-> +
-> +#define VIRTIO_PARAMETER_SERVER_VARIABLE_LENGTH -2
+> +struct virtio_can_busoff_ind {
+> +#define VIRTIO_CAN_BUSOFF_IND 0x0301u
+> +        le16 msg_type;
+> +};
 > +\end{lstlisting}
 > +
-> +If the driver asks for ALL property configurations, then the \field{payl=
-oad} of
-> +virtio_parameter_server_response will be multiple property
-> configurations, serialized 1-by-1.
-> +
-> +\subsubsection{Property Value Layout}\label{sec:Device Types /
-> Parameter Server / Device Operation / Property Value Layout}
-> +
-> +The property value payload begins with 5 arrays. The order is the
-> same as the \field{encoding} array defined above.
-> +For each array, it begins with a 32-bit integer for length (number of
-> elements). Empty array will be a 32-bit 0, while
-> +-1 means the array does not exist. The elements follows the length,
-> and the size of the encoded array will be padded
-> +to 4 bytes. String is encoded as char16_t, zero-terminated array.
+> +After bus-off detection the CAN controller is in STOPPED state. The CAN
+> +module does not participate in bus communication any more so all CAN
+> +messages pending for transmission must be put into the used queue with
+> +result VIRTIO_CAN_RESULT_NOT_OK.
+> --=20
+> 2.17.1
 
-Please include examples to illustrate this.
+Marc
 
-The character encoding of char16_t is implementation-defined in the C11
-specification. So I guess it could be UCS-2, UTF-16, or any other 16-bit
-encoding. Therefore char16_t is not enough to precisely describe
-character encoding. Please state a character encoding (e.g. UTF-8,
-UTF-16, etc).
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
---idaf31ji9Gpsr8Md
+--pzrznloxh3zdh5y7
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmDAhfsACgkQnKSrs4Gr
-c8h+/AgAlyRtq/rng0/hhgSEgEMF4kPhUBhqcluTm1uBEnoYNQTfLsSzxjIg36kP
-kGZku3p4m2LabEbtIyKdOQirzkfRYjLszlH1Gr/8ghJUlI8HtkD4P5oWaOB2+EPI
-Gaupt1Y/v/oAmWctA4RPep6OzW1XOQVYXb4qX4/tpdHUH9/F3Y4j1E0gCD1GkxD0
-bs+ZUmULdbigQ56g70zRAHOAofbbtval9r6OzyiSigL2ROuQhCx+BeYGrgSse2ec
-kxgBo64fMj4T4GTtC0oHEkqpmhD0SuOSJ5gBIwj4FWoT76BVv7b7EObvJ1XdzqJO
-Fh4or2qvDexdy+61FOPxQw32F59TnA==
-=Rwet
+iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmDVn6cACgkQqclaivrt
+76mNYgf+NDIfWoUsYnb2sJn2J/d+j7eOTdh00Brt1sCTYp1JyZj4t5rnxxnB2ANi
+IhwB4QMoOqseUURdEFyCiTi2NAXYQMmuywlnARr7CsCBsZ0eQUD+6hlrDzfb2Y+L
+ILjMrDfGktmqzaY3pWbPBogsZ2uWBPW3ozo3QSS0zW9ypzfi8h0gGD+qX1/KG/QY
+CyIOc32sEWzPzp3K09DkNy4VzPtWKzKc2/CgD4pXPh/haq+wU6Ttyio+AYKXyrhN
+V8v28fGY042yzZQVDoQmh8226DHtuRqa666cz4+3JA42LScbOFqmNJKdcLUV3arC
+kbK2mlbznAeHGpczct5SneRODkJvQQ==
+=yoG1
 -----END PGP SIGNATURE-----
 
---idaf31ji9Gpsr8Md--
-
+--pzrznloxh3zdh5y7--
