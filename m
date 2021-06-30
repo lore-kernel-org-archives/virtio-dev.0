@@ -1,83 +1,55 @@
-Return-Path: <virtio-dev-return-8210-cohuck=redhat.com@lists.oasis-open.org>
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 3EC179861E4
-	for <virtio-dev@lists.oasis-open.org>; Wed, 30 Jun 2021 15:49:08 +0000 (UTC)
-Date: Wed, 30 Jun 2021 16:49:01 +0100
-From: Stefan Hajnoczi <stefanha@redhat.com>
-Message-ID: <YNySbeZFSxpZd6cK@stefanha-x1.localdomain>
-References: <20210609153740.262346-1-stefanha@redhat.com>
+Return-Path: <virtio-comment-return-1919-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-comment@lists.oasis-open.org>
+List-Post: <mailto:virtio-comment@lists.oasis-open.org>
+List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
+From: "Enrico Weigelt, metux IT consult" <info@metux.net>
+Date: Wed, 30 Jun 2021 13:58:50 +0200
+Message-Id: <20210630115851.12272-1-info@metux.net>
 MIME-Version: 1.0
-In-Reply-To: <20210609153740.262346-1-stefanha@redhat.com>
-Subject: [virtio-dev] Re: [PATCH v3 0/2] virtio-fs: add notification queue
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="QDdJOrNoBhplqZ6j"
-Content-Disposition: inline
-To: virtio-dev@lists.oasis-open.org
-Cc: "Dr. David Alan Gilbert" <dgilbert@redhat.com>, Liu Bo <bo.liu@linux.alibaba.com>, vgoyal@redhat.com, iangelak@redhat.com, mszeredi@redhat.com
+Subject: [virtio-comment] [PATCH v2 1/2] makepdf: fix shell command
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="US-ASCII"
+To: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
---QDdJOrNoBhplqZ6j
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+The script needs bash, but calls /bin/sh, which might be (and on some
+distros actually is) a completely different shell.
 
-On Wed, Jun 09, 2021 at 04:37:38PM +0100, Stefan Hajnoczi wrote:
-> v3:
->  * Clarify that empty notification vq semantics are documented for all
->    supported notification message types. [Vivek]
->  * Clarify that the device has internal resources for lock requests and w=
-hen
->    they are exhausted ENOLCK is returned. [Vivek]
-> v2:
->  * Document empty virtqueue behavior for FUSE_NOTIFY_LOCK messages
->=20
-> This patch series adds the notification queue to the VIRTIO specification=
-.
-> This new virtqueue carries device->driver FUSE notify messages.  They are
-> currently unused but will be necessary for file locking, which can block =
-for an
-> unbounded amount of time and therefore needs a asynchronous completion ev=
-ent
-> instead of a request/response buffer that consumes space in the request
-> virtqueue until the operation completes.
->=20
-> Patch 1 corrects an oversight I noticed: the file system device was not a=
-dded
-> to the Conformance chapter.
->=20
-> Stefan Hajnoczi (2):
->   virtio-fs: add file system device to Conformance chapter
->   virtio-fs: add notification queue
->=20
->  conformance.tex | 23 ++++++++++++++++
->  virtio-fs.tex   | 71 ++++++++++++++++++++++++++++++++++++++++++-------
->  2 files changed, 84 insertions(+), 10 deletions(-)
+Signed-off-by: Enrico Weigelt, metux IT consult <info@metux.net>
+---
+ makeall.sh | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-I am requesting a vote. Thank you!
+diff --git a/makeall.sh b/makeall.sh
+index 37e6c34..186a6d1 100755
+--- a/makeall.sh
++++ b/makeall.sh
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/bin/bash
+=20
+ export SPECDOC=3D${SPECDOC:-`cat REVISION`}
+ export DATESTR=3D${DATESTR:-`cat REVISION-DATE`}
+--=20
+2.20.1
 
-Fixes: https://github.com/oasis-tcs/virtio-spec/issues/111
 
-Stefan
+This publicly archived list offers a means to provide input to the
+OASIS Virtual I/O Device (VIRTIO) TC.
 
---QDdJOrNoBhplqZ6j
-Content-Type: application/pgp-signature; name="signature.asc"
+In order to verify user consent to the Feedback License terms and
+to minimize spam in the list archive, subscription is required
+before posting.
 
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmDckm0ACgkQnKSrs4Gr
-c8jBRQf+N2SqsTnqrpftodG4JqQcVuD3G5oM0H4yveM6n3TpUBWk+vAZoW/tkmOD
-39i/rhz/g2KcWxTVMntL4qsB1YqVvGWJiH2sfbBz/MH4HvOwdmv18D1LX6tbSkxp
-1NO0OxGNB0py5OTNETClQj12mFB2wyHZq3MOh3CPjFO9Kr1ZFiasdCaRbip0EuEH
-FTGE/e8dKdZ8NoU2yOzrjwO+P7auS3EBHBQv5VosfWjjy0MSNa17WpBk2DWaBE9I
-XfxvEzA/5QP1NQ3FdgBmop5VTbw0w3Auc5OgFw9HY231pT/moiUNhgPY7a1374GT
-mX9J129V0s7prqDejvwCO3FxpR9wjw==
-=J3ky
------END PGP SIGNATURE-----
-
---QDdJOrNoBhplqZ6j--
+Subscribe: virtio-comment-subscribe@lists.oasis-open.org
+Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
+List help: virtio-comment-help@lists.oasis-open.org
+List archive: https://lists.oasis-open.org/archives/virtio-comment/
+Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
+List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lis=
+ts
+Committee: https://www.oasis-open.org/committees/virtio/
+Join OASIS: https://www.oasis-open.org/join/
 
