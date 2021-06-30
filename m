@@ -1,540 +1,484 @@
-Return-Path: <virtio-dev-return-8203-cohuck=redhat.com@lists.oasis-open.org>
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 8BD69986150
-	for <virtio-dev@lists.oasis-open.org>; Tue, 29 Jun 2021 17:14:11 +0000 (UTC)
-References: <c3fc258b-2f62-74ba-ca41-e6f839930020@opensynergy.com>
- <20210618091614.nqcvvmtf4wo4aejm@pengutronix.de>
- <8c76c15d-6252-8af5-01d1-71752cd0cb7b@opensynergy.com>
- <20210625091938.5s7g2eiuz52vx7fh@pengutronix.de>
-From: Harald Mommer <hmo@opensynergy.com>
-Message-ID: <8de068d1-b5f1-786a-1dcd-46893ea098e7@opensynergy.com>
-Date: Tue, 29 Jun 2021 19:14:03 +0200
-In-Reply-To: <20210625091938.5s7g2eiuz52vx7fh@pengutronix.de>
+Return-Path: <virtio-comment-return-1917-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-comment@lists.oasis-open.org>
+List-Post: <mailto:virtio-comment@lists.oasis-open.org>
+List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
+From: "Enrico Weigelt, metux IT consult" <info@metux.net>
+Date: Wed, 30 Jun 2021 13:58:37 +0200
+Message-Id: <20210630115837.12182-1-info@metux.net>
 MIME-Version: 1.0
-Subject: [virtio-dev] Re: review of virtio-can (was: Re: MSG_CONFIRM RX messages with
- SocketCAN known as unreliable under heavy load?)
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Marc Kleine-Budde <mkl@pengutronix.de>
-Cc: linux-can@vger.kernel.org, virtio-dev@lists.oasis-open.org
+Subject: [virtio-comment] [PATCH v2] virtio-gpio: add formal specification
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="US-ASCII"
+To: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Hello,
+This patch adds specification for attaching general purpose IO (gpio) devic=
+es
+via virtio. The protocol is specifically designed to be easily implemented =
+in
+software (e.g. hypervisors) as well as low end hardware (eg. silicon, FPGA,
+tiny MCUs) and allows future extensions while retaining full backwards
+compatibility.
 
-Am 25.06.21 um 11:19 schrieb Marc Kleine-Budde:
-> On 24.06.2021 17:21:15, Harald Mommer wrote:
->> First draft went to virtio-comment@lists.oasis-open.org and
->> virtio-dev@lists.oasis-open.org.
->>
->> https://markmail.org/search/?q=virtio-can&q=list%3Aorg.oasis-open.lists.virtio-comment#query:virtio-can%20list%3Aorg.oasis-open.lists.virtio-comment+page:1+mid:hdxj35fsthypllkt+state:results
->> [virtio-dev] [PATCH 1/1] [RFC] virtio-can: Add the device specification.
->> Harald Mommer Thu, 01 Apr 2021 08:21:09 -0700
->>
->> virtio-can is a virtual CAN device. It provides a way to give access to
->> a CAN controller from a driver guest. The device is aimed to be used by
->> driver guests running a HLOS as well as by driver guests running a
->> typical RTOS as used in controller environments.
-> Let's open the focus of this driver and not limit us to RTOSes.
-Not limited to. But usable for the RTOS audience as well.
->>   The CAN dlc is not needed for anything, just like in SocketCAN.---
->>   content.tex      |   1 +
->>   introduction.tex |   3 +
->>   virtio-can.tex   | 245 +++++++++++++++++++++++++++++++++++++++++++++++
->>   3 files changed, 249 insertions(+)
->>   create mode 100644 virtio-can.tex
->>
->> diff --git a/content.tex b/content.tex
->> index e536fd4..c1604db 100644
->> --- a/content.tex
->> +++ b/content.tex
->> @@ -6564,6 +6564,7 @@ \subsubsection{Legacy Interface: Framing
->> Requirements}\label{sec:Device
->>   \input{virtio-mem.tex}
->>   \input{virtio-i2c.tex}
->>   \input{virtio-scmi.tex}
->> +\input{virtio-can.tex}
->>   
->>   \chapter{Reserved Feature Bits}\label{sec:Reserved Feature Bits}
->>   
->> diff --git a/introduction.tex b/introduction.tex
->> index 7204b24..84ea5c0 100644
->> --- a/introduction.tex
->> +++ b/introduction.tex
->> @@ -79,6 +79,9 @@ \section{Normative References}\label{sec:Normative References}
->>          \phantomsection\label{intro:SCMI}\textbf{[SCMI]} &
->>          Arm System Control and Management Interface, DEN0056,
->>          \newline\url{https://developer.arm.com/docs/den0056/c}, version C and
->> any future revisions\\
->> +       \phantomsection\label{intro:CAN_Driver}\textbf{[CAN Driver]} &
->> +       Specification of CAN Driver -- AUTOSAR CP R20-11,
-> As mentioned before don't make this AUTOSAR specific.
+Implementations for driver (Linux kernel) and device (Qemu) are publically
+available and field tested since late 2020. Hardware implementations also
+exist (but proprietary, cannot be published yet).
 
-Not sure yet whether the AUTOSAR reference should be removed. Going to 
-simplify so some things may disappear and this may result in being able 
-to do so. Working in this direction.
+Device type ID 41 has been allocated by TC vote #3632.
 
->> +
->> \newline\url{https://www.autosar.org/fileadmin/user_upload/standards/classic/20-11/AUTOSAR_SWS_CANDriver.pdf}\\
->>   
->>   \end{longtable}
->>   
->> diff --git a/virtio-can.tex b/virtio-can.tex
->> new file mode 100644
->> index 0000000..c343759
->> --- /dev/null
->> +++ b/virtio-can.tex
->> @@ -0,0 +1,245 @@
->> +\section{CAN Device}\label{sec:Device Types / CAN Device}
->> +
->> +virtio-can is a virtio based CAN (Controller Area Network) device. It is
->> +used to give a virtual machine access to a CAN bus. The CAN bus may
->> +either be a physical CAN bus or a virtual CAN bus between virtual
->> +machines or a combination of both.
->> +
->> +This section relies on definitions made by the AUTOSAR
->> +\hyperref[intro:CAN_Driver]{CAN Driver} specification.
-> Please refer to the ISO CAN specs.
-Next version will contain the ISO specification additionally in the 
-references. In the meantime I heavily looked into the ISO spec also so 
-this reference will belong into the document anyway.
->> +
->> +\subsection{Device ID}\label{sec:Device Types / CAN Device / Device ID}
->> +
->> +36
->> +
->> +\subsection{Virtqueues}\label{sec:Device Types / CAN Device / Virtqueues}
->> +
->> +\begin{description}
->> +\item[0] Txq
->> +\item[1] Rxq
->> +\item[2] Controlq
->> +\item[3] Indicationq
->> +\end{description}
->> +
->> +The \field{Txq} is used to send CAN packets to the CAN bus.
->> +
->> +The \field{Rxq} is used to receive CAN packets from the CAN bus.
->> +
->> +The \field{Controlq} is used to control the state of the CAN controller.
->> +
->> +The \field{Indicationq} is used to receive unsolicited indications of
->> +CAN controller state changes.
->> +
->> +\subsection{Feature Bits}\label{sec:Device Types / CAN Device / Feature Bits}
->> +
->> +The virtio-can device always supports classic CAN frames with a maximum
->> +payload size of 8 bytes.
->> +
->> +Actual CAN controllers support Extended CAN IDs with 29 bits (CAN~2.0B)
->> +as well as Standard CAN IDs with 11 bits (CAN~2.0A). The support of
->> +CAN~2.0B Extended CAN IDs is considered as mandatory for this
->> +specification.
-> Let's make Classical CAN a feature just like CAN-FD. There might be
-> Controller Implementations that only support CAN-FD.
+Signed-off-by: Enrico Weigelt, metux IT consult <info@metux.net>
 
-Originally it was there in a very first internal version. ISO sais in "1 
-Scope" that there are 3 implementation options. In this chapter 
-classical CAN is always supported. So I thought "This is not a feature". 
-But "10.9.10 Disabling of frame formats" says that a frame format can be 
-disabled by configuration. So this is indeed needed as a feature. Was 
-mislead by ISO "1 Scope".
+---
 
->> +
->> +\begin{description}
->> +
->> +\item[VIRTIO_CAN_F_CAN_FD (0)]
->> +
->> +In addition to classic CAN frames the device supports CAN FD frames with
->> +a maximum payload size of 64 bytes.
->>
-> OK
->
->> +\end{description}
->> +
->> +\subsection{Device configuration layout}\label{sec:Device Types / CAN Device /
->> Device configuration layout}
->> +
->> +All fields of this configuration are always available and read-only for
->> +the driver.
->> +
->> +\begin{lstlisting}
->> +struct virtio_can_config {
->> +        le16 lo_prio_count;
->> +        le16 hi_prio_count;
->> +};
->> +\end{lstlisting}
-> Have you had a look at the virtio-net? There is already support for
-> multiple queue pairs. Though, I haven't found any notion of priorities
-> among the queues.
+changes v2: * fixed htlatex build error with underscores in labels
+            * using code listings for structs and define's
+            * fixed mixed-up device/driver wording
+---
+ conformance.tex |  28 +++++-
+ content.tex     |   3 +-
+ virtio-gpio.tex | 257 ++++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 283 insertions(+), 5 deletions(-)
+ create mode 100644 virtio-gpio.tex
 
-I had a look into the network device. Any I have also not found any 
-notion that those multiple queues are associated to different priorites.
-
-The block device has optionally also multiple queues. The purpose in the 
-block device is that different CPUs can have ideally their own queue 
-assigned. This avoids lock operations on the queues avoiding 
-bottlenecks. The network device and the block device have in common that 
-they are both devices which have to transport an incredible amount of 
-data so I suspect that the reason for optional multiple queue support in 
-the network device is exactly the same: Performance improvement avoiding 
-lock bottlenecks.
-
->> +
->> +To operate the Virtio CAN device it may be necessary to know some basic
->> +properties of the underlying physical CAN controller hardware and its
->> +configuration.
->> +
->> +Physical CAN controllers may support transmission by putting messages
->> +into FIFOs first and / or by using transmit buffers directly. The user
->> +of the Virtio CAN driver may need to know
->> +
->> +\begin{itemize}
->> +\item Number of TX FIFO places for non time critical CAN messages
->> +\item Number of TX buffers for high priority CAN messages
->> +\end{itemize}
-> IMHO the FIFO depth is optional and should be per queue.
-
-In the meantime I believe this part here was over-engineered for a first 
-specification draft.
-
-- I see in SocketCAN no support of priorities. Looked into the m_can.c 
-driver heavily and also there no indication that priorities are supported.
-
-- I see in m_can.c also no support that I could query for the properties 
-of anything (queue depth etc.)
-
-Having an AUTOSAR driver as backend from which the properties are known 
-under an RTOS this all could be done. But this is not what can be done 
-in the Linux/SocketCAN environment which is used now.
-
-I'm going to remove this, this has no place in a first draft specification.
-
-Not sure whether the usage of different virtio queues for different 
-priorities would be benefitial. But if I remove now those stuff (and may 
-keep the priority thing open by requiring to set a reserved field to 0) 
-no need to decide this now.
-
->> +
->> +to schedule an optimal transmission of CAN messages. Non time critical
->> +messages may be sent via a FIFO where they may suffer "Inner Priority
->> +Inversion" (\hyperref[intro:CAN_Driver]{CAN Driver} chapter 2.1). High
->> +priority messages are preferably sent directly to a transmit buffer
->> +where they immediately participate in CAN bus arbitration.
->> +
-> Let's use multiple queues like Ethernet has.
-Ethernet does it (most probably also like block device) for a different 
-purpose, not for priorities.
->> +\subsection{Device Initialization}\label{sec:Device Types / CAN Device /
->> Device Initialization}
->> +
->> +\begin{enumerate}
->> +
->> +\item Read the feature bits and negotiate with the device.
->> +
->> +\item Fill the virtqueue \field{Rxq} with empty buffers to be ready for
->> +the reception of CAN messages.
->> +
->> +\item Fill the virtqueue \field{Indicationq} with empty buffers so that
->> +the CAN device is able to provide status change indications to the
->> +virtio CAN driver.
->> +
->> +\item Read the CAN controller properties using the \field{Controlq}.
->> +
->> +\item Start the CAN controller using the \field{Controlq}.
-> How does this work on Ethernet?
-
-The part with property reading from the Control Queue is wrong, it's the 
-config space. Besides this initialization works always the same using 
-virtio. It's a standardized initialisation sequence.
-
-https://docs.oasis-open.org/virtio/virtio/v1.1/csprd01/virtio-v1.1-csprd01.pdf
-
-3.1.1 "Driver Requirements: Device Initialization" is about the feature 
-negotation.
-
-And then is
-
-5.1.5 "Device Initialization" for the network device.
-
-Reading feature bits, filling the queues on which something is 
-transmitted from the device => driver with empty buffers so that the 
-device has something so that it can put in data. Always the same scheme.
-
-Starting and Stopping the CAN controller: I had support of the AUTOSAR 
-CAN spec in mind, means Can_SetControllerMode() which allows to start 
-and to stop a CAN controller. At first glance the Ethernet device does 
-not have anything similar to stop a whole Ethernet controller. The 
-Ethernet device supports optionally the stop of reception of all kinds 
-of frames, chapter 5.1.6.5.1 "Packet Receive Filtering".
-
-In m_can.c I saw m_can_start() and m_can_stop(). So far so good.
-
-But not only in m_can_set_mode() I saw that only CAN_MODE_START is 
-supported. So this is not a bug in m_can.c but something intentional. I 
-guess I will receive comments on this attempt to support AUTOSAR 
-Can_SetControllerMode(), especially on the stopping part. Smells like 
-I've something not gotten.
-
->> +
->> +\end{enumerate}
->> +
->> +\subsection{Device Operation}\label{sec:Device Types / CAN Device / Device
->> Operation}
->> +
->> +A device operation has an outcome which is described by one of the
->> +following values:
->> +
->> +\begin{lstlisting}
->> +#define VIRTIO_CAN_RESULT_OK     0u
->> +#define VIRTIO_CAN_RESULT_NOT_OK 1u
->> +\end{lstlisting}
->> +
->> +The type of a CAN message identifier is identified by the most
->> +significant 2 bits of the internally used 32 bit value. This matches the
->> +definition for Can_IdType in
-> I'm missing RTR messages.
->
-> Please don't cramp to much information, or better say any additional
-> information in the remaining 3 bits of the 32 bit CAN-id.
->
-> You defined a struct for the CAN messages, so add all needed flags to a
-> proper flags field.
-
-You are missing RTR frames because my brain is AUTOSAR CAN polluted.
-
-- AUTOSAR CAN does not support RTR frames
-
-- RTR frames were removed from CAN FD, they exist only in classic CAN
-
-=> Are RTR frames an obsolete or a needed feature? I just don't know, 
-therefore I ask.
-
-If anyone implements a virtio CAN device on a controller using an 
-AUTOSAR CAN driver as backend there is neither support nor need for RTR 
-frames. So RTR frames must be considered as an optional feature (flag) 
-because they are not doable in all environments.
-
-The bits were defined as in AUTOSAR CAN. Now the CAN FD bit in AUTOSAR 
-clashes with the RTR bit for SocketCan. To add all needed flags in an 
-own field is fine. No clashes, no problems and one reference less to the 
-AUTOSAR CAN driver specification.
->> +\hyperref[intro:CAN_Driver]{CAN Driver} chapter 8.2.3.
->> +
->> +\begin{lstlisting}
->> +#define VIRTIO_CAN_ID_TYPE_STANDARD    0x00000000U
->> +#define VIRTIO_CAN_ID_TYPE_STANDARD_FD 0x40000000U
->> +#define VIRTIO_CAN_ID_TYPE_EXTENDED    0x80000000U
->> +#define VIRTIO_CAN_ID_TYPE_EXTENDED_FD 0xC0000000U
->> +\end{lstlisting}
->> +
->> +\subsubsection{Controller Mode}\label{sec:Device Types / CAN Device / Device
->> Operation / Controller Mode}
->> +
->> +The general format of a request in the \field{Controlq} is
->> +
->> +\begin{lstlisting}
->> +struct virtio_can_control_out {
->> +#define VIRTIO_CAN_SET_CTRL_MODE_START  0x0201u
->> +#define VIRTIO_CAN_SET_CTRL_MODE_STOP   0x0202u
->> +        le16 msg_type;
->> +};
->> +\end{lstlisting}
-> How does Ethernet handle this?
-As mentioned above, Virtio Ethernet seems not to support a full off of 
-the Ethernet controller. But the more interesting question is: How 
-should virtio CAN handle this? If this AUTOSAR Can_SetControllerMode() 
-start and stop support brings us into trouble then here something has to 
-happen. Always on?
->> +
->> +To participate in bus communication the CAN controller must be started
->> +by sending a VIRTIO_CAN_SET_CTRL_MODE_START control message,
->> +to stop participating in bus communication it must be stopped by sending
->> +a VIRTIO_CAN_SET_CTRL_MODE_STOP control message. Both requests are
->> +confirmed by the result of the operation.
->> +
->> +\begin{lstlisting}
->> +struct virtio_can_set_ctrl_mode_in {
->> +        u8 result;
->> +};
->> +\end{lstlisting}
->> +
->> +If the transition succeeded the result shall be VIRTIO_CAN_RESULT_OK
->> +otherwise it shall be VIRTIO_CAN_RESULT_NOT_OK. The request shall be put
->> +into the used queue when the CAN controller finalized the transition to
->> +the requested controller mode.
->> +
->> +A transition to STOPPED state cancels all CAN messages pending for
->> +transmission. A state transition to STOPPED state shall trigger to put
->> +all CAN messages pending for transmission into the used queue with
->> +result VIRTIO_CAN_RESULT_NOT_OK.
->> +
->> +Initially the CAN controller is in STOPPED state.
->> +
->> +\subsubsection{CAN Message Transmission}\label{sec:Device Types / CAN Device /
->> Device Operation / CAN Message Transmission}
->> +
->> +Messages may be transmitted by placing outgoing CAN messages in the
->> +virtqueue \field{Txq}.
->> +
->> +\begin{lstlisting}
->> +struct virtio_can_tx_out {
->> +#define VIRTIO_CAN_TX 0x0001u
->> +        le16 msg_type;
-> make this 32 bit and add flags for extended CAN messages, RTR, CAN-FD.
-> We have to discuss if we need a bit rate switch flag.
->
->> +        le16 priority;
-> Let's handle priority by using different queues.
->
->> +        le32 can_id;
->> +        u8 sdu[];
-> Where's the dlc or len information?
-
-I will think about the details, msg_type is everywhere le16 and just 
-there in case we need some day to support a totally different message on 
-this queue we have not even an idea of today. Somehow I'm preferring to 
-spend an own field for the flags.
-
-As 2 priorities should be sufficient this can be a bit in the flags if 
-not to be implemented by different TX queues. So instead of "le16 
-priority" "le16 flags".
-
-The CAN len is not needed as Virtio provides the message length of the 
-whole transmitted message.
-
-CAN len = Virtio message length - offset of sdu[0].
-
->
-> We have to discuss if we want to pass dlc (0x0...0xf for both Classical
-> CAN and CAN-FD) or len (0...8 for Classical CAN and 0...64 for CAN-FD).
->
->> +};
->> +
->> +struct virtio_can_tx_in {
->> +        u8 result;
->> +};
->> +\end{lstlisting}
->> +
->> +Priority is 0 for low priority and 1 for high priority CAN messages.
->> +
->> +The actual length of the SDU can be calculated from the length of the device
->> +read-only descriptor.
->> +
->> +To avoid internal priority inversion in the \field{Txq} the user of the
->> +driver may do a book keeping of in flight transmission requests and
->> +defer sending of TX messages until the chosen transmission resource
->> +becomes available.
->> +
->> +If priority, can_id or SDU length are out of range or the CAN controller
->> +is in an invalid state result shall be set to VIRTIO_CAN_RESULT_NOT_OK
->> +and the message shall not be scheduled for transmission. Sending a CAN
->> +message with a priority with 0 transmission places configured shall
->> +be considered as priority being out of range.
->> +
->> +If the parameters are valid the message is scheduled for transmission
->> +and result is set to VIRTIO_CAN_OK. The transmission request should be
->> +put into the used queue after the physical CAN controller acknowledged
->> +the transmission on the CAN bus (may have to be put under a feature flag
->> +as there may be non AUTOSAR CAN driver backends which don't provide a
->> +trigger to do this correctly).
-> I think this should me mandatory, but we might have a flag or feature
-> flag to indicate the "quality" if the tx done information. Some HW CAN
-> devices only provide feedback that they have queued the CAN message, but
-> no feedback that they have actually transmitted the message.
-
-Feature flag to be added: VIRTIO_CAN_F_LATE_TX_ACK
-
-And all this config field and priority stuff will be removed. This is 
-nothing for the 1st version. Especially because it cannot be tested in 
-the SocketCAN environment as there is no support. Let's keep it in mind 
-as feature for a subsequent version but forget now about it. 
-Overengineered for the 1st shot, wanted too much.
-
->> +
->> +\subsubsection{CAN Message Reception}\label{sec:Device Types / CAN Device /
->> Device Operation / CAN Message Reception}
->> +
->> +Messages can be received by providing empty incoming buffers to the
->> +virtqueue \field{Rxq}.
->> +
->> +\begin{lstlisting}
->> +struct virtio_can_rx {
->> +#define VIRTIO_CAN_RX 0x0101u
->> +        le16 msg_type;
->> +        le16 reserved;
->> +        le32 can_id;
->> +        u8 sdu[];
->> +};
->> +\end{lstlisting}
->> +
->> +The structure element reserved may in the future be used to forward an
->> +AUTOSAR hoh, see (\hyperref[intro:CAN_Driver]{CAN Driver} chapter 7.6).
->> +The value should be set to 0xFFFF.
-> Please remove any AUTOSAR references.
-Last remaining. And it's not needed if no rationale for the requirement 
-to set the reserved field to 0xFFFF is given. Just wanted to have it out 
-of the expected value range if someone wants to use it for that purpose 
-later.
->> +
->> +If the feature \field{VIRTIO_CAN_F_CAN_FD} has been negotiated the
->> +maximal possible SDU length is 64, if the feature has not been
->> +negotiated the maximal possible SDU length is 8.
->> +
->> +The actual length of the SDU can be calculated from the length of the
->> +driver read-only descriptor.
->> +
->> +\subsubsection{BusOff Indication}\label{sec:Device Types / CAN Device / Device
->> Operation / BusOff Indication}
->> +
->> +There are certain error conditions so that the physical CAN controller
->> +has to stop participating in CAN communication on the bus. If such an
->> +error condition occurs the device informs the driver about the
->> +unsolicited CAN controller state change by a CAN BusOff indication.
->> +
->> +\begin{lstlisting}
->> +struct virtio_can_busoff_ind {
->> +#define VIRTIO_CAN_BUSOFF_IND 0x0301u
->> +        le16 msg_type;
->> +};
->> +\end{lstlisting}
->> +
->> +After bus-off detection the CAN controller is in STOPPED state. The CAN
->> +module does not participate in bus communication any more so all CAN
->> +messages pending for transmission must be put into the used queue with
->> +result VIRTIO_CAN_RESULT_NOT_OK.
->> -- 
->> 2.17.1
-
-I expected a fat comment about this indication queue here. Using a 
-virtio queue just to be able to send a single rare event. We discussed 
-internally whether this could be done by writing a status byte to the 
-config space but decided against it because of Appendix B.2 in the 
-virtio specification which advises against doing so.
-
-And I had additionally AUTOSAR in mind and the polling functions there:
-
-Can_MainFunctionRead() could poll the RX queue while 
-Can_MainFunction_BusOff() could poll the indication queue. Clear 
-distribution of Can_MainFunctionXXX() duties, nice.
-
-But having seen that a BusOff condition in SocketCAN is done by 
-receiving a special error message indicating the BusOff condition 
-(CAN_ERR_FLAG / CAN_ERR_BUSOFF) I'm not sure whether having this last 
-virtio queue was the best idea. Maybe I should simplify and send this 
-indication message via the RX queue and the indication queue is gone. 
-Could be that this queue was over-engineering. But this does not decide 
-the war now, this is just a detail to think about.
-
-Harald
+diff --git a/conformance.tex b/conformance.tex
+index a164cbb..e5956f4 100644
+--- a/conformance.tex
++++ b/conformance.tex
+@@ -29,8 +29,9 @@ \section{Conformance Targets}\label{sec:Conformance / Con=
+formance Targets}
+ \ref{sec:Conformance / Driver Conformance / IOMMU Driver Conformance},
+ \ref{sec:Conformance / Driver Conformance / Sound Driver Conformance},
+ \ref{sec:Conformance / Driver Conformance / Memory Driver Conformance},
+-\ref{sec:Conformance / Driver Conformance / I2C Adapter Driver Conformance=
+} or
+-\ref{sec:Conformance / Driver Conformance / SCMI Driver Conformance}.
++\ref{sec:Conformance / Driver Conformance / I2C Adapter Driver Conformance=
+},
++\ref{sec:Conformance / Driver Conformance / SCMI Driver Conformance} or
++\ref{sec:Conformance / Driver Conformance / General Purpose IO Driver Conf=
+ormance}.
+=20
+     \item Clause \ref{sec:Conformance / Legacy Interface: Transitional Dev=
+ice and Transitional Driver Conformance}.
+   \end{itemize}
+@@ -52,8 +53,9 @@ \section{Conformance Targets}\label{sec:Conformance / Con=
+formance Targets}
+ \ref{sec:Conformance / Device Conformance / IOMMU Device Conformance},
+ \ref{sec:Conformance / Device Conformance / Sound Device Conformance},
+ \ref{sec:Conformance / Device Conformance / Memory Device Conformance},
+-\ref{sec:Conformance / Device Conformance / I2C Adapter Device Conformance=
+} or
+-\ref{sec:Conformance / Device Conformance / SCMI Device Conformance}.
++\ref{sec:Conformance / Device Conformance / I2C Adapter Device Conformance=
+},
++\ref{sec:Conformance / Device Conformance / SCMI Device Conformance} or
++\ref{sec:Conformance / Device Conformance / General Purpose IO Device Conf=
+ormance}.
+=20
+     \item Clause \ref{sec:Conformance / Legacy Interface: Transitional Dev=
+ice and Transitional Driver Conformance}.
+   \end{itemize}
+@@ -288,6 +290,15 @@ \section{Conformance Targets}\label{sec:Conformance / =
+Conformance Targets}
+ \item \ref{drivernormative:Device Types / SCMI Device / Device Operation /=
+ Setting Up eventq Buffers}
+ \end{itemize}
+=20
++\conformance{\subsection}{General Purpose IO Driver Conformance}\label{sec=
+:Conformance / Driver Conformance / General Purpose IO Driver Conformance}
++
++An General Purpose IO driver MUST conform to the following normative state=
+ments:
++
++\begin{itemize}
++\item \ref{devicenormative:Device Types / General Purpose IO / Virtqueues}
++\item \ref{devicenormative:Device Types / General Purpose IO / Data flow}
++\end{itemize}
++
+ \conformance{\section}{Device Conformance}\label{sec:Conformance / Device =
+Conformance}
+=20
+ A device MUST conform to the following normative statements:
+@@ -527,6 +538,15 @@ \section{Conformance Targets}\label{sec:Conformance / =
+Conformance Targets}
+ \item \ref{devicenormative:Device Types / SCMI Device / Device Operation /=
+ Shared Memory Operation}
+ \end{itemize}
+=20
++\conformance{\subsection}{General Purpose IO Device Conformance}\label{sec=
+:Conformance / Device Conformance / General Purpose IO Device Conformance}
++
++An General Purpose IO device MUST conform to the following normative state=
+ments:
++
++\begin{itemize}
++\item \ref{devicenormative:Device Types / General Purpose IO / Virtqueues}
++\item \ref{devicenormative:Device Types / General Purpose IO / Data flow}
++\end{itemize}
++
+ \conformance{\section}{Legacy Interface: Transitional Device and Transitio=
+nal Driver Conformance}\label{sec:Conformance / Legacy Interface: Transitio=
+nal Device and Transitional Driver Conformance}
+ A conformant implementation MUST be either transitional or
+ non-transitional, see \ref{intro:Legacy
+diff --git a/content.tex b/content.tex
+index 5c70a3c..3e9d1a1 100644
+--- a/content.tex
++++ b/content.tex
+@@ -2876,7 +2876,7 @@ \chapter{Device Types}\label{sec:Device Types}
+ \hline
+ 40         &   Bluetooth device \\
+ \hline
+-41         &   GPIO device \\
++41         &   General Purpose IO device \\
+ \hline
+ \end{tabular}
+=20
+@@ -6583,6 +6583,7 @@ \subsubsection{Legacy Interface: Framing Requirements=
+}\label{sec:Device
+ \input{virtio-mem.tex}
+ \input{virtio-i2c.tex}
+ \input{virtio-scmi.tex}
++\input{virtio-gpio.tex}
+=20
+ \chapter{Reserved Feature Bits}\label{sec:Reserved Feature Bits}
+=20
+diff --git a/virtio-gpio.tex b/virtio-gpio.tex
+new file mode 100644
+index 0000000..92dfa19
+--- /dev/null
++++ b/virtio-gpio.tex
+@@ -0,0 +1,257 @@
++\section{General Purpose IO Device}\label{sec:Device Types / General Purpo=
+se IO}
++
++The virtio gpio device is a general purpose IO device that supports a vari=
+able
++number of named IO lines that may be switched either as input or output an=
+d
++in logical level 0 or 1.
++
++\subsection{Device ID}\label{sec:Device Types / General Purpose IO / Devic=
+e ID}
++  41
++
++\subsection{Version}\label{sec:Device Types / General Purpose IO / Version=
+}
++  1
++
++\subsection{Device configuration layout}\label{sec:Device Types / General =
+Purpose IO / Device configuration layout}
++
++General purpose IO configuration uses the following layout structure:
++
++\begin{lstlisting}
++struct virtio_gpio_config {
++    __u8    version;
++    __u8    reserved0;
++    __u16   num_gpios;
++    __u32   names_size;
++    __u8    reserved1[24];
++    __u8    name[32];
++    __u8    line_names[];
++};
++\end{lstlisting}
++
++\begin{itemize}
++    \item for \field{version} field currently only value 1 supported.
++    \item the \field{line names block} holds a stream of zero-terminated s=
+trings,
++        containing the individual line names in ASCII. line names must uni=
+que.
++    \item unspecified fields are reserved for future use and should be zer=
+o.
++    \item future versions may extend this configuration space by additiona=
+l fields.
++\end{itemize}
++
++\subsection{Virtqueues}\label{sec:Device Types / General Purpose IO / Virt=
+queues}
++\begin{description}
++\item[0] rx (device to CPU)
++\item[1] tx (CPU to device)
++\end{description}
++
++The virtqueues transport messages of the type struct virtio_gpio_msg from =
+device to CPU or CPU to device.
++
++\subsubsection{Virtqueues}\label{sec:Device Types / General Purpose IO / V=
+irtqueues / Message format}
++
++The queues transport messages of the struct virtio_gpio_msg:
++
++\begin{lstlisting}
++struct virtio_gpio_msg {
++    __le16  type;
++    __le16  pin;
++    __le32  value;
++};
++\end{lstlisting}
++
++\subsubsection{Message types}\label{sec:Device Types / General Purpose IO =
+/ Virtqueues / Message types}
++
++\begin{lstlisting}
++/* messages types: driver -> device */
++#define VIRTIO_GPIO_MSG_CPU_REQUEST             0x0001
++#define VIRTIO_GPIO_MSG_CPU_DIRECTION_INPUT     0x0002
++#define VIRTIO_GPIO_MSG_CPU_DIRECTION_OUTPUT    0x0003
++#define VIRTIO_GPIO_MSG_CPU_GET_DIRECTION       0x0004
++#define VIRTIO_GPIO_MSG_CPU_GET_LEVEL           0x0005
++#define VIRTIO_GPIO_MSG_CPU_SET_LEVEL           0x0006
++
++/* message types: device -> driver */
++#define VIRTIO_GPIO_MSG_DEVICE_LEVEL            0x0011
++
++/* reply mask: device sets this bit on replies (along with request's messa=
+ge type)
++#define VIRTIO_GPIO_MSG_REPLY                   0x8000
++\end{lstlisting}
++
++\devicenormative{\subsubsection}{Virtqueues}{Device Types / General Purpos=
+e IO / Virtqueues}
++
++The device MUST read from the tx queue and write to rx queue.
++
++The device MUST NOT write to the tx queue.
++
++\drivernormative{\subsubsection}{Virtqueues}{Device Types / General Purpos=
+e IO / Virtqueues}
++
++The device MUST read from the rx queue and write to tx queue.
++
++The device MUST NOT write to the rx queue.
++
++\subsection{Data flow}\label{sec:Device Types / General Purpose IO / Data =
+flow}
++
++\begin{itemize}
++    \item all operations, except \field{VIRTIO_GPIO_MSG_DEVICE_LEVEL}, are=
+ initiated by CPU (tx queue)
++    \item device replies with the orinal \field{type} value OR'ed with \fi=
+eld{VIRTIO_GPIO_MSG_REPLY} (rx queue)
++    \item requests are processed and replied in the they had been sent
++    \item async notifications by the device may be interleaved with reques=
+t responses
++    \item VIRTIO_GPIO_MSG_DEVICE_LEVEL is only sent asynchronously from de=
+vice to CPU
++    \item in replies, a negative \field{value} field denotes an Unix-style=
+ / POSIX errno code
++    \item the actual error values \textit{(despite being negative or not)}=
+ is only of informational
++          nature -- a device or vm host \textit{may} report more detailed =
+error cause but is not required to.
++    \item valid direction values are: 0 =3D output, 1 =3D input
++    \item valid line level values are: 0 =3D inactive, 1 =3D active
++    \item CPU should not send messages with unspecified \field{type} value
++    \item CPU should ignore ignore messages with unspecified \field{type} =
+value
++\end{itemize}
++
++
++\subsubsection{VIRTIO_GPIO_MSG_CPU_REQUEST}\label{sec:Device Types / Gener=
+al Purpose IO / Data flow / VIRTIO-GPIO-MSG-CPU-REQUEST}
++
++Notify the device that given line number is going to be used.
++
++\begin{tabular}{ll}
++    \hline
++    \textbf{request:} & \\
++    \hline
++    \field{line}  field: & logical line number \\
++    \field{value} field: & unused (should be zero) \\
++    \textbf{reply:} & \\
++    \hline
++    \field{value} field: & POSIX errno code (0 =3D success, non-zero =3D e=
+rror) \\
++    \hline
++\end{tabular}
++
++\subsubsection{VIRTIO_GPIO_MSG_CPU_DIRECTION_INPUT}\label{sec:Device Types=
+ / General Purpose IO / Data flow / VIRTIO-GPIO-MSG-CPU-DIRECTION-INPUT}
++
++Set line line direction to input.
++
++\begin{tabular}{ll}
++    \hline
++    \textbf{request:} \\
++    \hline
++    \field{line}  field: & logical line number \\
++    \field{value} field: & unused (should be zero) \\
++    \hline
++    \textbf{reply:} & \\
++    \hline
++    \field{value} field: & POSIX errno code (0 =3D success, non-zero =3D e=
+rror) \\
++    \hline
++\end{tabular}
++
++\subsubsection{VIRTIO_GPIO_MSG_CPU_DIRECTION_OUTPUT}\label{sec:Device Type=
+s / General Purpose IO / Data flow / VIRTIO-GPIO-MSG-CPU-DIRECTION-OUTPUT}
++
++Set line direction to output and given line level.
++
++\begin{tabular}{ll}
++    \hline
++    \textbf{request:} \\
++    \hline
++    \field{line}  field: & logical line number \\
++    \field{value} field: & output level (0=3Dinactive, 1=3Dactive) \\
++    \hline
++    \textbf{reply:} & \\
++    \hline
++    \field{value} field: & POSIX errno code (0 =3D success, non-zero =3D e=
+rror) \\
++    \hline
++\end{tabular}
++
++\subsubsection{VIRTIO_GPIO_MSG_CPU_GET_DIRECTION}\label{sec:Device Types /=
+ General Purpose IO / Data flow / VIRTIO-GPIO-MSG-CPU-GET-DIRECTION}
++
++Retrieve line direction.
++
++\begin{tabular}{ll}
++    \hline
++    \textbf{request:} & \\
++    \hline
++    \field{line}  field: & logical line number \\
++    \field{value} field: & unused (should be zero) \\
++    \hline
++    \textbf{reply:} & \\
++    \hline
++    \field{value} field: & direction (0=3Doutput, 1=3Dinput) or POSIX errn=
+o code \\
++    \hline
++\end{tabular}
++
++\subsubsection{VIRTIO_GPIO_MSG_CPU_GET_LEVEL}\label{sec:Device Types / Gen=
+eral Purpose IO / Data flow / VIRTIO-GPIO-MSG-CPU-GET-LEVEL}
++
++Retrieve line level.
++
++\begin{tabular}{ll}
++    \hline
++    \textbf{request:} & \\
++    \hline
++    \field{line}  field: & logical line number \\
++    \field{value} field: & unused (should be zero) \\
++    \hline
++    \textbf{reply:} & \\
++    \hline
++    \field{value} field: & line level (0=3Dinactive, 1=3Dactive) or errno =
+code \\
++    \hline
++\end{tabular}
++
++\subsubsection{VIRTIO_GPIO_MSG_CPU_SET_LEVEL}\label{sec:Device Types / Gen=
+eral Purpose IO / Data flow / VIRTIO-GPIO-MSG-CPU-SET-LEVEL}
++
++Set line level (output only)
++
++\begin{tabular}{ll}
++    \hline
++    \textbf{request:} & \\
++    \hline
++    \field{line}  field: & logical line number \\
++    \field{value} field: & line level (0=3Dinactive, 1=3Dactive) \\
++    \hline
++    \textbf{reply:} & \\
++    \hline
++    \field{value} field: & new line level or (negative) POSIX errno code \=
+\
++    \hline
++\end{tabular}
++
++\subsubsection{VIRTIO_GPIO_MSG_DEVICE_LEVEL}\label{sec:Device Types / Gene=
+ral Purpose IO / Data flow / VIRTIO-GPIO-MSG-DEVICE-LEVEL}
++
++Async notification from device to CPU: line level changed
++
++\begin{tabular}{ll}
++    \hline
++    \textbf{request:} & \\
++    \hline
++    \field{line}  field: & logical line number \\
++    \field{value} field: & unused (should be zero) \\
++    \hline
++    \textbf{reply:} & \\
++    \field{value} field: & line level (0=3Dinactive, 1=3Dactive) \\
++    \hline
++\end{tabular}
++
++\devicenormative{\subsubsection}{Data flow}{Device Types / General Purpose=
+ IO / Data flow}
++
++The device MUST reply to all driver requests in they had been sent.
++
++The device MUST copy the \field{line} field from the request to its reply.
++
++Except for async notification, the device MUST reply the orignal message t=
+ype, but with the highest bit set
++(or'ed with VIRTIO_GPIO_MSG_REPLY)
++
++In case of error the device MUST fill an negative value into the \field{va=
+lue} field, it SHOULD use
++an fitting POSIX / Unix errno value when applicable.
++
++On switching to output, the device SHOULD set internal output level before=
+ switching the line to output.
++
++The device SHOULD send VIRTIO_GPIO_MSG_DEVICE_LEVEL message for a particul=
+ar line when it is in input
++direction and line level changes.
++
++\drivernormative{\subsubsection}{Data flow}{Device Types / General Purpose=
+ IO / Data flow}
++
++The driver MUST NOT send VIRTIO_GPIO_MSG_DEVICE_LEVEL and MUST NOT set the=
+ highest bit in the message type.
++
++The driver MUST NOT send messages with types not defined in this specifica=
+tion.
++
++\subsection{Future versions}\label{sec:Device Types / General Purpose IO /=
+ Future versions}
++
++\begin{itemize}
++    \item future versions must increment the ``version`` value
++    \item the basic data structures (config space, message format) should =
+remain
++          backwards compatible, but may increased in size or use reserved =
+fields
++    \item device needs to support commands in older versions
++    \item CPU should not send commands of newer versions that the device d=
+oesn't support
++\end{itemize}
++
++\subsection{Feature bits}\label{sec:Device Types / General Purpose IO / Fe=
+ature bits}
++
++There are currently no feature bits defined for this device, but may be ad=
+ded in future versions.
+--=20
+2.20.1
 
 
+This publicly archived list offers a means to provide input to the
+OASIS Virtual I/O Device (VIRTIO) TC.
 
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+In order to verify user consent to the Feedback License terms and
+to minimize spam in the list archive, subscription is required
+before posting.
+
+Subscribe: virtio-comment-subscribe@lists.oasis-open.org
+Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
+List help: virtio-comment-help@lists.oasis-open.org
+List archive: https://lists.oasis-open.org/archives/virtio-comment/
+Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
+List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lis=
+ts
+Committee: https://www.oasis-open.org/committees/virtio/
+Join OASIS: https://www.oasis-open.org/join/
 
