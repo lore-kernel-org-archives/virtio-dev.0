@@ -1,86 +1,86 @@
-Return-Path: <virtio-dev-return-8292-cohuck=redhat.com@lists.oasis-open.org>
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 091509864BC
-	for <virtio-dev@lists.oasis-open.org>; Thu, 15 Jul 2021 16:04:26 +0000 (UTC)
-References: <c3fc258b-2f62-74ba-ca41-e6f839930020@opensynergy.com>
- <20210618091614.nqcvvmtf4wo4aejm@pengutronix.de>
- <8c76c15d-6252-8af5-01d1-71752cd0cb7b@opensynergy.com>
- <20210625091938.5s7g2eiuz52vx7fh@pengutronix.de>
- <20210714031300-mutt-send-email-mst@kernel.org>
-From: Harald Mommer <hmo@opensynergy.com>
-Message-ID: <3da52df1-c639-94b7-a3d1-f7c03d422f41@opensynergy.com>
-Date: Thu, 15 Jul 2021 18:04:15 +0200
-In-Reply-To: <20210714031300-mutt-send-email-mst@kernel.org>
+Return-Path: <virtio-comment-return-1922-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-comment@lists.oasis-open.org>
+List-Post: <mailto:virtio-comment@lists.oasis-open.org>
+List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
+Resent-Message-ID: <20210701093253.wcsamlaz5jtjvkr2@vireshk-i7>
+Resent-To: virtio-comment@lists.oasis-open.org
 MIME-Version: 1.0
-Subject: Re: [virtio-dev] review of virtio-can (was: Re: MSG_CONFIRM RX
- messages with SocketCAN known as unreliable under heavy load?)
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
-To: "Michael S. Tsirkin" <mst@redhat.com>, Marc Kleine-Budde <mkl@pengutronix.de>
-Cc: linux-can@vger.kernel.org, virtio-dev@lists.oasis-open.org
+References: <20210630115837.12182-1-info@metux.net> <20210630152213.xhqhke54gzt3esdj@vireshk-i7>
+ <641254c3-d60d-eb17-7388-29dd9ebcb826@metux.net> <20210630173022.7ukqg764z5xi5uho@vireshk-i7>
+In-Reply-To: <20210630173022.7ukqg764z5xi5uho@vireshk-i7>
+From: Arnd Bergmann <arnd@linaro.org>
+Date: Thu, 1 Jul 2021 11:01:52 +0200
+Message-ID: <CAK8P3a05SFQ2Vo_CjoC4kaxfz0jwj_K9ogfLw00rRim9EMZtnQ@mail.gmail.com>
+Subject: [virtio-comment] Re: [virtio-dev] Re: [virtio-comment] [PATCH v2] virtio-gpio: add
+ formal specification
+Content-Type: text/plain; charset="UTF-8"
+To: Viresh Kumar <viresh.kumar@linaro.org>
+Cc: "Enrico Weigelt, metux IT consult" <lkml@metux.net>, virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, Vincent Guittot <vincent.guittot@linaro.org>, Bill Mills <bill.mills@linaro.org>, =?UTF-8?B?QWxleCBCZW5uw6ll?= <alex.bennee@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Linus Walleij <linus.walleij@linaro.org>, Jason Wang <jasowang@redhat.com>, Jean-Philippe Brucker <jean-philippe@linaro.org>, Geert Uytterhoeven <geert@linux-m68k.org>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Am 14.07.21 um 09:15 schrieb Michael S. Tsirkin:
+On Wed, Jun 30, 2021 at 7:30 PM Viresh Kumar <viresh.kumar@linaro.org> wrote:
 >
->> As mentioned before don't make this AUTOSAR specific.
-> If the specs are more or less identical it might be worth it to link
-> to AUTOSAR too just because it can be downloaded for free.
+> On 30-06-21, 17:55, Enrico Weigelt, metux IT consult wrote:
+> > On 30.06.21 17:22, Viresh Kumar wrote:
+> > > + All the people from previous version (Please cc them yourself while sending a
+> > > new version, these are the people interested in this stuff).
 >
-> --
-> MST
+> Adding them again, not sure why they got dropped after your email.
 
-The specs are not identical. But the specifications do not contradict,=20
-we are talking about the same CAN. From this point of view inclusion=20
-would be ok. But there was already a comment about the AUTOSAR=20
-specifications highliting a problem. While the AUTOSAR spec is=20
-downloadable for free it is not usable for free for all purposes. This=20
-may be a problem or even a trap for people.
+Thanks.
 
-AUTOSAR CP R20-11 says on page 9 chapter "Disclaimer":
+> > > I don't see the improvements suggested for the config structure, nothing about
+> > > features, no interrupt support. You just reformatted the stuff and that's all.
+> >
+> > Don't worry, I haven't forgotten that. But that's something I'd *really*
+> > like to have as optional features (so not all hardware is mandated to
+> > implement that all) and i'd like to get the mandatory base finished,
+> > before specifying the optional features like interrupt controller.
+> >
+> > Let's discuss the optional features separately, feel free to share your
+> > thoughts here.
+>
+> What about the changes to the config structure to make it efficient,
+> easily extendable, etc Or the Free Msg, etc? These views are already
+> shared in details for the earlier version and I shouldn't be expected
+> to explain them again.
+>
+> Over that, if you don't want to implement interrupts in your version
+> (I can surely send a patch for that), then you need to drop the
+> half-hearted interrupt support, i.e.  VIRTIO_GPIO_MSG_DEVICE_LEVEL, as
+> that is not the right way of implementing interrupts. This will make
+> the specification as well as Linux or backend code messy, as we would
+> be required to support interrupts in two ways in this case based on
+> irq-feature. If you want to support interrupts, then you need to do
+> them properly, else don't add them at all.
 
-"This work (specification and/or software implementation) and the=20
-material contained in it, as released by AUTOSAR, is for the purpose of=20
-information only. ..."
+Agreed, interrupt support is obviously something that can not be
+retrofitted easily if you don't get it right from the start.
 
-"The material contained in this work is protected by copyright and other=20
-types of intellectual property rights. The commercial exploitation of=20
-the material contained in this work requires a license to such=20
-intellectual property rights.
-This work may be utilized or reproduced without any modification, in any=20
-form or by any means, for informational purposes only. ..."
+> Please reply to the issues raised in the previous version itself now
+> and close them there. And please don't proceed with a new version
+> unless there is a clear consensus in favor or otherwise. It just ends
+> up wasting a lot of time for everyone.
 
-Cannot judge the exact impact of those sentences, I'm an engineer not a=20
-lawyer. Not my field of expertise. Free downloadable seems not to mean=20
-free usable so it may indeed be better to get rid of this reference=20
-here. Poisoned? Don't know, looks so.
++1
 
-Regards
-Harald
+      Arnd
 
---=20
+This publicly archived list offers a means to provide input to the
+OASIS Virtual I/O Device (VIRTIO) TC.
 
-Dipl.-Ing. Harald Mommer
-Senior Software Engineer
+In order to verify user consent to the Feedback License terms and
+to minimize spam in the list archive, subscription is required
+before posting.
 
-OpenSynergy GmbH
-Rotherstr. 20, 10245 Berlin
-
-Phone:  +49 (30) 60 98 540-0 <=3D=3D Zentrale
-Fax:    +49 (30) 60 98 540-99
-E-Mail: harald.mommer@opensynergy.com
-
-www.opensynergy.com
-
-Handelsregister: Amtsgericht Charlottenburg, HRB 108616B
-Gesch=C3=A4ftsf=C3=BChrer/Managing Director: Regis Adjamah
-
-
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+Subscribe: virtio-comment-subscribe@lists.oasis-open.org
+Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
+List help: virtio-comment-help@lists.oasis-open.org
+List archive: https://lists.oasis-open.org/archives/virtio-comment/
+Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
+List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
+Committee: https://www.oasis-open.org/committees/virtio/
+Join OASIS: https://www.oasis-open.org/join/
 
