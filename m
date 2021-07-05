@@ -1,79 +1,62 @@
-Return-Path: <jasowang@redhat.com>
-Subject: Re: [PATCH] virtio-pci: implement VIRTIO_F_RING_STATE
-References: <20210707043441.42361-1-jasowang@redhat.com>
- <YOwZhDqkYv7kUgiQ@stefanha-x1.localdomain>
-From: Jason Wang <jasowang@redhat.com>
-Message-ID: <ada4dce9-7ac0-5deb-e1e2-644d4468143d@redhat.com>
-Date: Tue, 13 Jul 2021 11:39:13 +0800
+Return-Path: <virtio-dev-return-8225-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id C17DA986372
+	for <virtio-dev@lists.oasis-open.org>; Mon,  5 Jul 2021 18:04:23 +0000 (UTC)
+Date: Mon, 5 Jul 2021 14:04:15 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20210705140337-mutt-send-email-mst@kernel.org>
+References: <75e7814a85767f111aefda0c173c83d4@codeaurora.org>
 MIME-Version: 1.0
-In-Reply-To: <YOwZhDqkYv7kUgiQ@stefanha-x1.localdomain>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-To: Stefan Hajnoczi <stefanha@redhat.com>
-Cc: mst@redhat.com, virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, mgurtovoy@nvidia.com, cohuck@redhat.com, eperezma@redhat.com, oren@nvidia.com, shahafs@nvidia.com, parav@nvidia.com, bodong@nvidia.com, amikheev@nvidia.com, pasic@linux.ibm.com, dgilbert@redhat.com
+In-Reply-To: <75e7814a85767f111aefda0c173c83d4@codeaurora.org>
+Subject: [virtio-dev] Re: virtio mmio reset - driver requirements
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+To: Srivatsa Vaddagiri <vatsa@codeaurora.org>
+Cc: virtio-dev@lists.oasis-open.org, vatsa.ml@gmail.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+On Mon, Jul 05, 2021 at 10:07:15PM +0530, Srivatsa Vaddagiri wrote:
+> I noticed this in virtio spec for PCI transport based devices:
+> 
+> "After writing 0 to device_status, the driver MUST wait for a read of
+> device_status to return 0 before reinitializing the device."
+> 
+> I was wondering why the spec does not recommend a similar "wait after
+> writing 0
+> to status register" for other transports such as MMIO.
+> 
+> Even the Linux code for virtio_mmio does not have any such wait:
+> 
+> static void vm_reset(struct virtio_device *vdev)
+> {
+>         struct virtio_mmio_device *vm_dev = to_virtio_mmio_device(vdev);
+> 
+>         /* 0 status means a reset. */
+>         writel(0, vm_dev->base + VIRTIO_MMIO_STATUS);
+> }
+> 
+> Does that assume that backends are implemented in software when MMIO writes
+> result in trap and backend synchronously does everything needed to handle
+> reset
+> as part of trap handling? Wouldn't it break if we were to have backends
+> implemented in hardware device accessed via MMIO transport?
+> 
+> Thanks
+> vatsa
 
-在 2021/7/12 下午6:29, Stefan Hajnoczi 写道:
-> On Wed, Jul 07, 2021 at 12:34:41PM +0800, Jason Wang wrote:
->> This patch is a follow up for the virtqueue state synchronization
->> series to implement VIRTIO_F_RING_STATE via a dedicated capability for
->> PCI transport.
->>
->> With the help of the STOP status bit, the virtqueue state
->> synchronization for PCI should be self contained.
->>
->> Signed-off-by: Jason Wang <jasowang@redhat.com>
->> ---
->>   content.tex | 32 ++++++++++++++++++++++++++++++++
->>   1 file changed, 32 insertions(+)
-> This may not be critical, but the interface reminds me of the legacy
-> fw_cfg interface that was slow. It was replaced by a DMA interface that
-> reduced the number of vmexits. fw_cfg often transferred far more data
-> than this interface, so the inefficiency was a bigger problem.
->
-> If there was an admin virtqueue then the state of all virtqueues could
-> be saved/loaded in a single request instead of requiring 2 accesses per
-> virtqueue.
+I guess yes.
 
-
-So this is just one of the possible implementation. It could be done via 
-other ways for sure:
-
-1) new control command which pack both avail and used state
-2) 32bit registers
-3) shared memory (DMA)
-
-
->
-> Assuming a register access takes 1 microsecond, a device with 64
-> virtqueues needs 128 microseconds to save/load virtqueue state. The
-> actual register access time will vary depending on how the device is
-> implemented (VFIO, vDPA, userspace). The total time is probably going to
-> be acceptable, however, if we need an admin virtqueue anyway,
+> --
+> QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
+> of Code Aurora Forum, hosted by The Linux Foundation
 
 
-It can only help if we invent a control command that can be used to set 
-or get a brunch of states (e.g 128 states).
-
-
->   then maybe
-> do this as an admin virtqueue request instead of a transport-specific
-> method?
-
-
-As discussed in another thread, admin virtqueue is one of the possible 
-solution since the virtqueue state is one of the basic facility.
-
-We can allow the state to be carried via admin virtqueue after it was 
-introduced in the spec.
-
-But admin virtqueue should not be the only method.
-
-Thanks
-
-
->
-> Stefan
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
