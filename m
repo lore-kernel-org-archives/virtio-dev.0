@@ -1,64 +1,177 @@
 Return-Path: <jasowang@redhat.com>
 From: Jason Wang <jasowang@redhat.com>
-Subject: [PATCH V2 0/2] Vitqueue State Synchronization
-Date: Tue,  6 Jul 2021 12:33:32 +0800
-Message-Id: <20210706043334.36359-1-jasowang@redhat.com>
+Subject: [PATCH V2 1/2] virtio: introduce virtqueue state as basic facility
+Date: Tue,  6 Jul 2021 12:33:33 +0800
+Message-Id: <20210706043334.36359-2-jasowang@redhat.com>
+In-Reply-To: <20210706043334.36359-1-jasowang@redhat.com>
+References: <20210706043334.36359-1-jasowang@redhat.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="US-ASCII"
 To: mst@redhat.com, jasowang@redhat.com, virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
 Cc: stefanha@redhat.com, mgurtovoy@nvidia.com, cohuck@redhat.com, eperezma@redhat.com, oren@nvidia.com, shahafs@nvidia.com, parav@nvidia.com, bodong@nvidia.com, amikheev@nvidia.com, pasic@linux.ibm.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Hi All:
+This patch adds new device facility to save and restore virtqueue
+state. The virtqueue state is split into two parts:
 
-This is an updated version to implement virtqueue state
-synchronization which is a must for the migration support.
+- The available state: The state that is used for read the next
+  available buffer.
+- The used state: The state that is used for making buffer used.
 
-The first patch introduces virtqueue states as a new basic facility of
-the virtio device. This is used by the driver to save and restore
-virtqueue state. The states were split into available state and used
-state to ease the transport specific implementation. It is also
-allowed for the device to have its own device specific way to save and
-resotre extra virtqueue states like in flight request.
+Note that, there could be devices that is required to set and get the
+requests that are being processed by the device. I leave such API to
+be device specific.
 
-The second patch introduce a new status bit STOP. This bit is used for
-the driver to stop the device. The major difference from reset is that
-STOP must preserve all the virtqueue state plus the device state.
+This facility could be used by both migration and device diagnostic.
 
-A driver can then:
+Signed-off-by: Jason Wang <jasowang@redhat.com>
+---
+ content.tex | 117 ++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 117 insertions(+)
 
-- Get the virtqueue state if STOP status bit is set
-- Set the virtqueue state after FEATURE_OK but before DRIVER_OK
-
-Device specific state synchronization could be built on top.
-
-Please review.
-
-Thanks
-
-Changes from V1:
-
-- introduce used_idx for synchronize used state for split virtqueue,
-  this is needed since the used ring is read only by the driver.
-- stick to the uni-directional state machine, this means driver is
-  forbidden to clear STOP, the only way to 'resume' the device is to
-  reset and re-initialization the device. This simplify the
-  implementation and make it works more like a vhost device.
-- mandate the virtqueue state setting during device initialization
-- clarify the steps that are required for saving the virtqueue state
-- allow the device to have its specifc way to save and restore extra
-  virtqueue state
-- rename DEVICE_STOPPED to STOP
-- various other tweaks
-
-Jason Wang (2):
-  virtio: introduce virtqueue state as basic facility
-  virtio: introduce STOP status bit
-
- content.tex | 180 ++++++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 180 insertions(+)
-
+diff --git a/content.tex b/content.tex
+index 620c0e2..8877b6f 100644
+--- a/content.tex
++++ b/content.tex
+@@ -385,6 +385,116 @@ \section{Exporting Objects}\label{sec:Basic Facilities of a Virtio Device / Expo
+ types. It is RECOMMENDED that devices generate version 4
+ UUIDs as specified by \hyperref[intro:rfc4122]{[RFC4122]}.
+ 
++\section{Virtqueue State}\label{sec:Virtqueues / Virtqueue State}
++
++When VIRTIO_F_RING_STATE is negotiated, the driver can set and
++get the device internal virtqueue state through the following
++fields. The way to access those fields is transport specific.
++
++\subsection{\field{Available State} Field}
++
++The \field{Available State} field is two bytes for the driver to get
++or set the state that is used by the virtqueue to read for the next
++available buffer.
++
++When VIRTIO_F_RING_PACKED is not negotiated, it contains:
++
++\begin{lstlisting}
++le16 {
++        last_avail_idx : 16;
++} avail_state;
++\end{lstlisting}
++
++The \field{last_avail_idx} field indicates where the device would read
++for the next index from the virtqueue available ring（modulo the queue
++ size). This starts at the value set by the driver, and increases.
++
++When VIRTIO_F_RING_PACKED is negotiated, it contains:
++
++\begin{lstlisting}
++le16 {
++        last_avail_idx : 15;
++        last_avail_wrap_counter : 1;
++} avail_state;
++\end{lstlisting}
++
++The \field{last_avail_idx} field indicates where the device would read for
++the next descriptor head from the descriptor ring. This starts at the
++value set by the driver and wraps around when reaching the end of the
++ring.
++
++The \field{last_avail_wrap_counter} field indicates the last Driver Ring
++Wrap Counter that is observed by the device. This starts at the value
++set by the driver, and is flipped when reaching the end of the ring.
++
++See also \ref{sec:Packed Virtqueues / Driver and Device Ring Wrap Counters}.
++
++\subsection{\field{Used State} Field}
++
++The \field{Used State} field is two bytes for the driver to set and
++get the state used by the virtqueue to make buffer used.
++
++When VIRTIO_F_RING_PACKED is not negotiated, the used state contains:
++
++\begin{lstlisting}
++le16 {
++        used_idx : 16;
++} used_state;
++\end{lstlisting}
++
++The \field{used_idx} where the device would write the next used
++descriptor head to the used ring (modulo the queue size). This starts
++at the value set by the driver, and increases. It is easy to see this
++is the initial value of the \field{idx} in the used ring.
++
++See also \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Used Ring}
++
++When VIRTIO_F_RING_PACKED is negotiated, the used state contains:
++
++\begin{lstlisting}
++le16 {
++        used_idx : 15;
++        used_wrap_counter : 1;
++} used_state;
++\end{lstlisting}
++
++The \field{used_idx} indicates where the device would write the next used
++descriptor head to the descriptor ring. This starts at the value set
++by the driver, and warps around when reaching the end of the ring.
++
++\field{used_wrap_counter} is the Device Ring Wrap Counter. This starts
++at the value set by the driver, and is flipped when reaching the end
++of the ring.
++
++See also \ref{sec:Packed Virtqueues / Driver and Device Ring Wrap Counters}.
++
++\drivernormative{\subsection}{Virtqueue State}{Basic Facilities of a Virtio Device / Virtqueue State}
++
++If VIRTIO_F_RING_STATE has been negotiated:
++\begin{itemize}
++\item A driver MUST NOT set the virtqueue state before setting the
++  FEATURE_OK status bit.
++\item A driver MUST NOT set the virtqueue state after setting the
++  DRIVER_OK status bit.
++\end{itemize}
++
++\devicenormative{\subsection}{Virtqueue State}{Basic Facilities of a Virtio Device / Virtqueue State}
++
++If VIRTIO_F_RING_STATE has not been negotiated, a device MUST ingore
++the read and write to the virtqueue state.
++
++If VIRTIO_F_RING_STATE has been negotiated:
++\begin{itemize}
++\item A device SHOULD ignore the write to the virtqueue state if the
++FEATURE_OK status bit is not set.
++\item A device SHOULD ignore the write to the virtqueue state if the
++DRIVER_OK status bit is set.
++\end{itemize}
++
++If VIRTIO_F_RING_STATE has been negotiated, a device MAY has its
++device-specific way for the driver to set and get extra virtqueue
++states such as in flight requests.
++
+ \chapter{General Initialization And Device Operation}\label{sec:General Initialization And Device Operation}
+ 
+ We start with an overview of device initialization, then expand on the
+@@ -420,6 +530,9 @@ \section{Device Initialization}\label{sec:General Initialization And Device Oper
+    device, optional per-bus setup, reading and possibly writing the
+    device's virtio configuration space, and population of virtqueues.
+ 
++\item\label{itm:General Initialization And Device Operation / Device
++  Initialization / Virtqueue State Setup} When VIRTIO_F_RING_STATE has been negotiated, perform virtqueue state setup, including the initialization of the per virtqueue available state, used state and the possible device specific virtqueue state.
++
+ \item\label{itm:General Initialization And Device Operation / Device Initialization / Set DRIVER-OK} Set the DRIVER_OK status bit.  At this point the device is
+    ``live''.
+ \end{enumerate}
+@@ -6596,6 +6709,10 @@ \chapter{Reserved Feature Bits}\label{sec:Reserved Feature Bits}
+   transport specific.
+   For more details about driver notifications over PCI see \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Available Buffer Notifications}.
+ 
++  \item[VIRTIO_F_RING_STATE(40)] This feature indicates that the driver
++  can set and get the device internal virtqueue state.
++  See \ref{sec:Virtqueues / Virtqueue State}~\nameref{sec:Virtqueues / Virtqueue State}.
++
+ \end{description}
+ 
+ \drivernormative{\section}{Reserved Feature Bits}{Reserved Feature Bits}
 -- 
 2.25.1
 
