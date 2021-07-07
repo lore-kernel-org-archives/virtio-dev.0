@@ -1,185 +1,157 @@
-Return-Path: <dgilbert@redhat.com>
-Date: Tue, 6 Jul 2021 10:24:43 +0100
-From: "Dr. David Alan Gilbert" <dgilbert@redhat.com>
+Return-Path: <jasowang@redhat.com>
 Subject: Re: [virtio-comment] [PATCH V2 2/2] virtio: introduce STOP status bit
-Message-ID: <YOQhW9MUlv5ohe05@work-vm>
 References: <20210706043334.36359-1-jasowang@redhat.com>
- <20210706043334.36359-3-jasowang@redhat.com>
+ <20210706043334.36359-3-jasowang@redhat.com> <YOQhW9MUlv5ohe05@work-vm>
+From: Jason Wang <jasowang@redhat.com>
+Message-ID: <52e1347c-9363-8ff8-e36c-2681b42e4c37@redhat.com>
+Date: Wed, 7 Jul 2021 11:20:40 +0800
 MIME-Version: 1.0
-In-Reply-To: <20210706043334.36359-3-jasowang@redhat.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-To: Jason Wang <jasowang@redhat.com>
+In-Reply-To: <YOQhW9MUlv5ohe05@work-vm>
+Content-Type: text/plain; charset="gbk"; format="flowed"
+Content-Transfer-Encoding: base64
+Content-Language: en-US
+To: "Dr. David Alan Gilbert" <dgilbert@redhat.com>
 Cc: mst@redhat.com, virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, stefanha@redhat.com, mgurtovoy@nvidia.com, cohuck@redhat.com, eperezma@redhat.com, oren@nvidia.com, shahafs@nvidia.com, parav@nvidia.com, bodong@nvidia.com, amikheev@nvidia.com, pasic@linux.ibm.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-* Jason Wang (jasowang@redhat.com) wrote:
-> This patch introduces a new status bit STOP. This will be
-> used by the driver to stop the device in order to safely fetch the
-> device state (virtqueue state) from the device.
-> 
-> This is a must for supporting migration.
-> 
-> Signed-off-by: Jason Wang <jasowang@redhat.com>
-> ---
->  content.tex | 69 ++++++++++++++++++++++++++++++++++++++++++++++++++---
->  1 file changed, 66 insertions(+), 3 deletions(-)
-> 
-> diff --git a/content.tex b/content.tex
-> index 8877b6f..284ead0 100644
-> --- a/content.tex
-> +++ b/content.tex
-> @@ -47,6 +47,10 @@ \section{\field{Device Status} Field}\label{sec:Basic Facilities of a Virtio Dev
->  \item[DRIVER_OK (4)] Indicates that the driver is set up and ready to
->    drive the device.
->  
-> +\item[STOP (32)] When VIRTIO_F_STOP is negotiated, indicates that the
-> +  device has been stopped by the driver. This status bit is different
-> +  from the reset since the device state is preserved.
-> +
->  \item[DEVICE_NEEDS_RESET (64)] Indicates that the device has experienced
->    an error from which it can't recover.
->  \end{description}
-> @@ -70,12 +74,38 @@ \section{\field{Device Status} Field}\label{sec:Basic Facilities of a Virtio Dev
->  recover by issuing a reset.
->  \end{note}
->  
-> +If VIRTIO_F_STOP has been negotiated, the driver MUST NOT set STOP if
-> +DRIVER_OK is not set.
-> +
-> +If VIRTIO_F_STOP has been negotiated, to stop a device, after setting
-> +STOP, the driver MUST re-read the device status to ensure the STOP bit
-> +is set to synchronize with the device.
-> +
->  \devicenormative{\subsection}{Device Status Field}{Basic Facilities of a Virtio Device / Device Status Field}
->  The device MUST initialize \field{device status} to 0 upon reset.
->  
->  The device MUST NOT consume buffers or send any used buffer
->  notifications to the driver before DRIVER_OK.
->  
-> +If VIRTIO_F_STOP has not been negotiated, the device MUST ignore the
-> +write of STOP.
-> +
-> +If VIRTIO_F_STOP has been negotiated, after the driver writes STOP,
-> +the device MUST finish any pending operations like in flight requests
-> +or have its device specific way for driver to save the pending
-> +operations like in flight requests before setting the STOP status bit.
-> +
-> +If VIRTIO_F_STOP has been negotiated, the device MUST NOT consume
-> +buffers or send any used buffer notifications to the driver after
-> +STOP. The device MUST keep the configuration space unchanged and MUST
-> +NOT send configuration space change notification to the driver after
-> +STOP.
-> +
-> +If VIRTIO_F_STOP has been negotiated, after STOP, the device MUST
-> +preserve all the necessary state (the virtqueue states with the
-> +possible device specific states) that is required for restoring in the
-> +future.
-> +
->  \label{sec:Basic Facilities of a Virtio Device / Device Status Field / DEVICENEEDSRESET}The device SHOULD set DEVICE_NEEDS_RESET when it enters an error state
->  that a reset is needed.  If DRIVER_OK is set, after it sets DEVICE_NEEDS_RESET, the device
->  MUST send a device configuration change notification to the driver.
-> @@ -474,8 +504,8 @@ \subsection{\field{Used State} Field}
->  \begin{itemize}
->  \item A driver MUST NOT set the virtqueue state before setting the
->    FEATURE_OK status bit.
-> -\item A driver MUST NOT set the virtqueue state after setting the
-> -  DRIVER_OK status bit.
-> +\item A driver MUST NOT set the virtqueue state if DRIVER_OK status
-> +  bit is set without STOP status bit.
->  \end{itemize}
->  
->  \devicenormative{\subsection}{Virtqueue State}{Basic Facilities of a Virtio Device / Virtqueue State}
-> @@ -488,7 +518,7 @@ \subsection{\field{Used State} Field}
->  \item A device SHOULD ignore the write to the virtqueue state if the
->  FEATURE_OK status bit is not set.
->  \item A device SHOULD ignore the write to the virtqueue state if the
-> -DRIVER_OK status bit is set.
-> +DRIVER_OK status bit is set without STOP status bit.
->  \end{itemize}
->  
->  If VIRTIO_F_RING_STATE has been negotiated, a device MAY has its
-> @@ -623,6 +653,36 @@ \section{Device Cleanup}\label{sec:General Initialization And Device Operation /
->  
->  Thus a driver MUST ensure a virtqueue isn't live (by device reset) before removing exposed buffers.
->  
-> +\section{Virtqueue State Saving}
-> +
-> +If both VIRTIO_F_RING_STATE and VIRTIO_F_STOP have been negotiated. A
-> +driver MAY save the internal virtqueue state.
-> +
-> +\drivernormative{\subsection}{Virtqueue State Saving}{General Initialization And Device Operation / Virtqueue State Saving}
-> +
-> +Assuming the device is 'live'.
-
-Is that defined somewhere?  If I understand correctly, this is all
-driven from the driver inside the guest, so for this to work
-the guest must be running and already have initialised the driver.
-
-> The driver MUST follow this sequence to
-> +stop the device and save the virtqueue state:
-> +
-> +\begin{enumerate}
-> +\item Set the STOP status bit.
-> +
-> +\item Re-read \field{device status} until the STOP bit is set to
-> +  synchronize with the device.
-
-At that point, is it guaranteed that the device has already stopped
-and that all outstanding transactions have finished?
-
-> +\item Read \field{available state} and save it.
-> +
-> +\item Read \field{used state} and save it.
-> +
-> +\item Read device specific virtqueue states if needed.
-> +
-> +\item Reset the device.
-
-Say that a migration fails after this point; how does the source
-recover?
-Why is the 'reset the device' there?
-
-> +\end{enumerate}
-> +
-> +The driver MAY perform device specific steps to save device specific sate.
-> +
-> +The driver MAY 'resume' the device by redoing the device initialization
-> +with the saved virtqueue state. See ref\{sec:General Initialization and Device Operation / Device Initialization}
-> +
->  \chapter{Virtio Transport Options}\label{sec:Virtio Transport Options}
->  
->  Virtio can use various different buses, thus the standard is split
-> @@ -6713,6 +6773,9 @@ \chapter{Reserved Feature Bits}\label{sec:Reserved Feature Bits}
->    can set and get the device internal virtqueue state.
->    See \ref{sec:Virtqueues / Virtqueue State}~\nameref{sec:Virtqueues / Virtqueue State}.
->  
-> +  \item[VIRTIO_F_STOP(41)] This feature indicates that the driver can
-> +  stop the device.
-> +  See \ref{sec:Basic Facilities of a Virtio Device / Device Status Field}
->  \end{description}
->  
->  \drivernormative{\section}{Reserved Feature Bits}{Reserved Feature Bits}
-> -- 
-> 2.25.1
-> 
-> 
-> This publicly archived list offers a means to provide input to the
-> OASIS Virtual I/O Device (VIRTIO) TC.
-> 
-> In order to verify user consent to the Feedback License terms and
-> to minimize spam in the list archive, subscription is required
-> before posting.
-> 
-> Subscribe: virtio-comment-subscribe@lists.oasis-open.org
-> Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
-> List help: virtio-comment-help@lists.oasis-open.org
-> List archive: https://lists.oasis-open.org/archives/virtio-comment/
-> Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
-> List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
-> Committee: https://www.oasis-open.org/committees/virtio/
-> Join OASIS: https://www.oasis-open.org/join/
-> 
--- 
-Dr. David Alan Gilbert / dgilbert@redhat.com / Manchester, UK
-
+CtTaIDIwMjEvNy82IM/Czuc1OjI0LCBEci4gRGF2aWQgQWxhbiBHaWxiZXJ0INC0tcA6Cj4gKiBK
+YXNvbiBXYW5nIChqYXNvd2FuZ0ByZWRoYXQuY29tKSB3cm90ZToKPj4gVGhpcyBwYXRjaCBpbnRy
+b2R1Y2VzIGEgbmV3IHN0YXR1cyBiaXQgU1RPUC4gVGhpcyB3aWxsIGJlCj4+IHVzZWQgYnkgdGhl
+IGRyaXZlciB0byBzdG9wIHRoZSBkZXZpY2UgaW4gb3JkZXIgdG8gc2FmZWx5IGZldGNoIHRoZQo+
+PiBkZXZpY2Ugc3RhdGUgKHZpcnRxdWV1ZSBzdGF0ZSkgZnJvbSB0aGUgZGV2aWNlLgo+Pgo+PiBU
+aGlzIGlzIGEgbXVzdCBmb3Igc3VwcG9ydGluZyBtaWdyYXRpb24uCj4+Cj4+IFNpZ25lZC1vZmYt
+Ynk6IEphc29uIFdhbmcgPGphc293YW5nQHJlZGhhdC5jb20+Cj4+IC0tLQo+PiAgIGNvbnRlbnQu
+dGV4IHwgNjkgKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysr
+KystLS0KPj4gICAxIGZpbGUgY2hhbmdlZCwgNjYgaW5zZXJ0aW9ucygrKSwgMyBkZWxldGlvbnMo
+LSkKPj4KPj4gZGlmZiAtLWdpdCBhL2NvbnRlbnQudGV4IGIvY29udGVudC50ZXgKPj4gaW5kZXgg
+ODg3N2I2Zi4uMjg0ZWFkMCAxMDA2NDQKPj4gLS0tIGEvY29udGVudC50ZXgKPj4gKysrIGIvY29u
+dGVudC50ZXgKPj4gQEAgLTQ3LDYgKzQ3LDEwIEBAIFxzZWN0aW9ue1xmaWVsZHtEZXZpY2UgU3Rh
+dHVzfSBGaWVsZH1cbGFiZWx7c2VjOkJhc2ljIEZhY2lsaXRpZXMgb2YgYSBWaXJ0aW8gRGV2Cj4+
+ICAgXGl0ZW1bRFJJVkVSX09LICg0KV0gSW5kaWNhdGVzIHRoYXQgdGhlIGRyaXZlciBpcyBzZXQg
+dXAgYW5kIHJlYWR5IHRvCj4+ICAgICBkcml2ZSB0aGUgZGV2aWNlLgo+PiAgIAo+PiArXGl0ZW1b
+U1RPUCAoMzIpXSBXaGVuIFZJUlRJT19GX1NUT1AgaXMgbmVnb3RpYXRlZCwgaW5kaWNhdGVzIHRo
+YXQgdGhlCj4+ICsgIGRldmljZSBoYXMgYmVlbiBzdG9wcGVkIGJ5IHRoZSBkcml2ZXIuIFRoaXMg
+c3RhdHVzIGJpdCBpcyBkaWZmZXJlbnQKPj4gKyAgZnJvbSB0aGUgcmVzZXQgc2luY2UgdGhlIGRl
+dmljZSBzdGF0ZSBpcyBwcmVzZXJ2ZWQuCj4+ICsKPj4gICBcaXRlbVtERVZJQ0VfTkVFRFNfUkVT
+RVQgKDY0KV0gSW5kaWNhdGVzIHRoYXQgdGhlIGRldmljZSBoYXMgZXhwZXJpZW5jZWQKPj4gICAg
+IGFuIGVycm9yIGZyb20gd2hpY2ggaXQgY2FuJ3QgcmVjb3Zlci4KPj4gICBcZW5ke2Rlc2NyaXB0
+aW9ufQo+PiBAQCAtNzAsMTIgKzc0LDM4IEBAIFxzZWN0aW9ue1xmaWVsZHtEZXZpY2UgU3RhdHVz
+fSBGaWVsZH1cbGFiZWx7c2VjOkJhc2ljIEZhY2lsaXRpZXMgb2YgYSBWaXJ0aW8gRGV2Cj4+ICAg
+cmVjb3ZlciBieSBpc3N1aW5nIGEgcmVzZXQuCj4+ICAgXGVuZHtub3RlfQo+PiAgIAo+PiArSWYg
+VklSVElPX0ZfU1RPUCBoYXMgYmVlbiBuZWdvdGlhdGVkLCB0aGUgZHJpdmVyIE1VU1QgTk9UIHNl
+dCBTVE9QIGlmCj4+ICtEUklWRVJfT0sgaXMgbm90IHNldC4KPj4gKwo+PiArSWYgVklSVElPX0Zf
+U1RPUCBoYXMgYmVlbiBuZWdvdGlhdGVkLCB0byBzdG9wIGEgZGV2aWNlLCBhZnRlciBzZXR0aW5n
+Cj4+ICtTVE9QLCB0aGUgZHJpdmVyIE1VU1QgcmUtcmVhZCB0aGUgZGV2aWNlIHN0YXR1cyB0byBl
+bnN1cmUgdGhlIFNUT1AgYml0Cj4+ICtpcyBzZXQgdG8gc3luY2hyb25pemUgd2l0aCB0aGUgZGV2
+aWNlLgo+PiArCj4+ICAgXGRldmljZW5vcm1hdGl2ZXtcc3Vic2VjdGlvbn17RGV2aWNlIFN0YXR1
+cyBGaWVsZH17QmFzaWMgRmFjaWxpdGllcyBvZiBhIFZpcnRpbyBEZXZpY2UgLyBEZXZpY2UgU3Rh
+dHVzIEZpZWxkfQo+PiAgIFRoZSBkZXZpY2UgTVVTVCBpbml0aWFsaXplIFxmaWVsZHtkZXZpY2Ug
+c3RhdHVzfSB0byAwIHVwb24gcmVzZXQuCj4+ICAgCj4+ICAgVGhlIGRldmljZSBNVVNUIE5PVCBj
+b25zdW1lIGJ1ZmZlcnMgb3Igc2VuZCBhbnkgdXNlZCBidWZmZXIKPj4gICBub3RpZmljYXRpb25z
+IHRvIHRoZSBkcml2ZXIgYmVmb3JlIERSSVZFUl9PSy4KPj4gICAKPj4gK0lmIFZJUlRJT19GX1NU
+T1AgaGFzIG5vdCBiZWVuIG5lZ290aWF0ZWQsIHRoZSBkZXZpY2UgTVVTVCBpZ25vcmUgdGhlCj4+
+ICt3cml0ZSBvZiBTVE9QLgo+PiArCj4+ICtJZiBWSVJUSU9fRl9TVE9QIGhhcyBiZWVuIG5lZ290
+aWF0ZWQsIGFmdGVyIHRoZSBkcml2ZXIgd3JpdGVzIFNUT1AsCj4+ICt0aGUgZGV2aWNlIE1VU1Qg
+ZmluaXNoIGFueSBwZW5kaW5nIG9wZXJhdGlvbnMgbGlrZSBpbiBmbGlnaHQgcmVxdWVzdHMKPj4g
+K29yIGhhdmUgaXRzIGRldmljZSBzcGVjaWZpYyB3YXkgZm9yIGRyaXZlciB0byBzYXZlIHRoZSBw
+ZW5kaW5nCj4+ICtvcGVyYXRpb25zIGxpa2UgaW4gZmxpZ2h0IHJlcXVlc3RzIGJlZm9yZSBzZXR0
+aW5nIHRoZSBTVE9QIHN0YXR1cyBiaXQuCj4+ICsKPj4gK0lmIFZJUlRJT19GX1NUT1AgaGFzIGJl
+ZW4gbmVnb3RpYXRlZCwgdGhlIGRldmljZSBNVVNUIE5PVCBjb25zdW1lCj4+ICtidWZmZXJzIG9y
+IHNlbmQgYW55IHVzZWQgYnVmZmVyIG5vdGlmaWNhdGlvbnMgdG8gdGhlIGRyaXZlciBhZnRlcgo+
+PiArU1RPUC4gVGhlIGRldmljZSBNVVNUIGtlZXAgdGhlIGNvbmZpZ3VyYXRpb24gc3BhY2UgdW5j
+aGFuZ2VkIGFuZCBNVVNUCj4+ICtOT1Qgc2VuZCBjb25maWd1cmF0aW9uIHNwYWNlIGNoYW5nZSBu
+b3RpZmljYXRpb24gdG8gdGhlIGRyaXZlciBhZnRlcgo+PiArU1RPUC4KPj4gKwo+PiArSWYgVklS
+VElPX0ZfU1RPUCBoYXMgYmVlbiBuZWdvdGlhdGVkLCBhZnRlciBTVE9QLCB0aGUgZGV2aWNlIE1V
+U1QKPj4gK3ByZXNlcnZlIGFsbCB0aGUgbmVjZXNzYXJ5IHN0YXRlICh0aGUgdmlydHF1ZXVlIHN0
+YXRlcyB3aXRoIHRoZQo+PiArcG9zc2libGUgZGV2aWNlIHNwZWNpZmljIHN0YXRlcykgdGhhdCBp
+cyByZXF1aXJlZCBmb3IgcmVzdG9yaW5nIGluIHRoZQo+PiArZnV0dXJlLgo+PiArCj4+ICAgXGxh
+YmVse3NlYzpCYXNpYyBGYWNpbGl0aWVzIG9mIGEgVmlydGlvIERldmljZSAvIERldmljZSBTdGF0
+dXMgRmllbGQgLyBERVZJQ0VORUVEU1JFU0VUfVRoZSBkZXZpY2UgU0hPVUxEIHNldCBERVZJQ0Vf
+TkVFRFNfUkVTRVQgd2hlbiBpdCBlbnRlcnMgYW4gZXJyb3Igc3RhdGUKPj4gICB0aGF0IGEgcmVz
+ZXQgaXMgbmVlZGVkLiAgSWYgRFJJVkVSX09LIGlzIHNldCwgYWZ0ZXIgaXQgc2V0cyBERVZJQ0Vf
+TkVFRFNfUkVTRVQsIHRoZSBkZXZpY2UKPj4gICBNVVNUIHNlbmQgYSBkZXZpY2UgY29uZmlndXJh
+dGlvbiBjaGFuZ2Ugbm90aWZpY2F0aW9uIHRvIHRoZSBkcml2ZXIuCj4+IEBAIC00NzQsOCArNTA0
+LDggQEAgXHN1YnNlY3Rpb257XGZpZWxke1VzZWQgU3RhdGV9IEZpZWxkfQo+PiAgIFxiZWdpbntp
+dGVtaXplfQo+PiAgIFxpdGVtIEEgZHJpdmVyIE1VU1QgTk9UIHNldCB0aGUgdmlydHF1ZXVlIHN0
+YXRlIGJlZm9yZSBzZXR0aW5nIHRoZQo+PiAgICAgRkVBVFVSRV9PSyBzdGF0dXMgYml0Lgo+PiAt
+XGl0ZW0gQSBkcml2ZXIgTVVTVCBOT1Qgc2V0IHRoZSB2aXJ0cXVldWUgc3RhdGUgYWZ0ZXIgc2V0
+dGluZyB0aGUKPj4gLSAgRFJJVkVSX09LIHN0YXR1cyBiaXQuCj4+ICtcaXRlbSBBIGRyaXZlciBN
+VVNUIE5PVCBzZXQgdGhlIHZpcnRxdWV1ZSBzdGF0ZSBpZiBEUklWRVJfT0sgc3RhdHVzCj4+ICsg
+IGJpdCBpcyBzZXQgd2l0aG91dCBTVE9QIHN0YXR1cyBiaXQuCj4+ICAgXGVuZHtpdGVtaXplfQo+
+PiAgIAo+PiAgIFxkZXZpY2Vub3JtYXRpdmV7XHN1YnNlY3Rpb259e1ZpcnRxdWV1ZSBTdGF0ZX17
+QmFzaWMgRmFjaWxpdGllcyBvZiBhIFZpcnRpbyBEZXZpY2UgLyBWaXJ0cXVldWUgU3RhdGV9Cj4+
+IEBAIC00ODgsNyArNTE4LDcgQEAgXHN1YnNlY3Rpb257XGZpZWxke1VzZWQgU3RhdGV9IEZpZWxk
+fQo+PiAgIFxpdGVtIEEgZGV2aWNlIFNIT1VMRCBpZ25vcmUgdGhlIHdyaXRlIHRvIHRoZSB2aXJ0
+cXVldWUgc3RhdGUgaWYgdGhlCj4+ICAgRkVBVFVSRV9PSyBzdGF0dXMgYml0IGlzIG5vdCBzZXQu
+Cj4+ICAgXGl0ZW0gQSBkZXZpY2UgU0hPVUxEIGlnbm9yZSB0aGUgd3JpdGUgdG8gdGhlIHZpcnRx
+dWV1ZSBzdGF0ZSBpZiB0aGUKPj4gLURSSVZFUl9PSyBzdGF0dXMgYml0IGlzIHNldC4KPj4gK0RS
+SVZFUl9PSyBzdGF0dXMgYml0IGlzIHNldCB3aXRob3V0IFNUT1Agc3RhdHVzIGJpdC4KPj4gICBc
+ZW5ke2l0ZW1pemV9Cj4+ICAgCj4+ICAgSWYgVklSVElPX0ZfUklOR19TVEFURSBoYXMgYmVlbiBu
+ZWdvdGlhdGVkLCBhIGRldmljZSBNQVkgaGFzIGl0cwo+PiBAQCAtNjIzLDYgKzY1MywzNiBAQCBc
+c2VjdGlvbntEZXZpY2UgQ2xlYW51cH1cbGFiZWx7c2VjOkdlbmVyYWwgSW5pdGlhbGl6YXRpb24g
+QW5kIERldmljZSBPcGVyYXRpb24gLwo+PiAgIAo+PiAgIFRodXMgYSBkcml2ZXIgTVVTVCBlbnN1
+cmUgYSB2aXJ0cXVldWUgaXNuJ3QgbGl2ZSAoYnkgZGV2aWNlIHJlc2V0KSBiZWZvcmUgcmVtb3Zp
+bmcgZXhwb3NlZCBidWZmZXJzLgo+PiAgIAo+PiArXHNlY3Rpb257VmlydHF1ZXVlIFN0YXRlIFNh
+dmluZ30KPj4gKwo+PiArSWYgYm90aCBWSVJUSU9fRl9SSU5HX1NUQVRFIGFuZCBWSVJUSU9fRl9T
+VE9QIGhhdmUgYmVlbiBuZWdvdGlhdGVkLiBBCj4+ICtkcml2ZXIgTUFZIHNhdmUgdGhlIGludGVy
+bmFsIHZpcnRxdWV1ZSBzdGF0ZS4KPj4gKwo+PiArXGRyaXZlcm5vcm1hdGl2ZXtcc3Vic2VjdGlv
+bn17VmlydHF1ZXVlIFN0YXRlIFNhdmluZ317R2VuZXJhbCBJbml0aWFsaXphdGlvbiBBbmQgRGV2
+aWNlIE9wZXJhdGlvbiAvIFZpcnRxdWV1ZSBTdGF0ZSBTYXZpbmd9Cj4+ICsKPj4gK0Fzc3VtaW5n
+IHRoZSBkZXZpY2UgaXMgJ2xpdmUnLgo+IElzIHRoYXQgZGVmaW5lZCBzb21ld2hlcmU/CgoKUHJv
+YmFibHkgbm90LCBidXQgJ2xpdmUnIGlzIHVzZWQgc2V2ZXJhbCB0aW1lcyBpbiB0aGUgc3BlYy4K
+CkkgY2FuIGNsYXJpZnkgdGhhdCBpbiB0aGUgc3BlYy4KCgo+ICAgSWYgSSB1bmRlcnN0YW5kIGNv
+cnJlY3RseSwgdGhpcyBpcyBhbGwKPiBkcml2ZW4gZnJvbSB0aGUgZHJpdmVyIGluc2lkZSB0aGUg
+Z3Vlc3QsIHNvIGZvciB0aGlzIHRvIHdvcmsKPiB0aGUgZ3Vlc3QgbXVzdCBiZSBydW5uaW5nIGFu
+ZCBhbHJlYWR5IGhhdmUgaW5pdGlhbGlzZWQgdGhlIGRyaXZlci4KCgpZZXMuCgoKPgo+PiBUaGUg
+ZHJpdmVyIE1VU1QgZm9sbG93IHRoaXMgc2VxdWVuY2UgdG8KPj4gK3N0b3AgdGhlIGRldmljZSBh
+bmQgc2F2ZSB0aGUgdmlydHF1ZXVlIHN0YXRlOgo+PiArCj4+ICtcYmVnaW57ZW51bWVyYXRlfQo+
+PiArXGl0ZW0gU2V0IHRoZSBTVE9QIHN0YXR1cyBiaXQuCj4+ICsKPj4gK1xpdGVtIFJlLXJlYWQg
+XGZpZWxke2RldmljZSBzdGF0dXN9IHVudGlsIHRoZSBTVE9QIGJpdCBpcyBzZXQgdG8KPj4gKyAg
+c3luY2hyb25pemUgd2l0aCB0aGUgZGV2aWNlLgo+IEF0IHRoYXQgcG9pbnQsIGlzIGl0IGd1YXJh
+bnRlZWQgdGhhdCB0aGUgZGV2aWNlIGhhcyBhbHJlYWR5IHN0b3BwZWQKPiBhbmQgdGhhdCBhbGwg
+b3V0c3RhbmRpbmcgdHJhbnNhY3Rpb25zIGhhdmUgZmluaXNoZWQ/CgoKTm8sIHRoZSBkZXZpY2Ug
+bWF5IGNob29zZSBmcm9tIG9uZSBvZiB0aGUgYmVsb3c6CgoxKSBhbGwgdGhlIHBlbmRpbmcgdHJh
+bnNhY3Rpb25zIGhhdmUgZmluaXNoZWQKCm9yCgoyKSBhIGRldmljZSBzcGVjaWZpYyB3YXkgZm9y
+IHRoZSBkcml2ZXIgdG8gc2F2ZSBhbmQgcmVzdG9yZSB0aGUgcGVuZGluZyAKdHJhbnNhc2N0aW9u
+cwoKCj4KPj4gK1xpdGVtIFJlYWQgXGZpZWxke2F2YWlsYWJsZSBzdGF0ZX0gYW5kIHNhdmUgaXQu
+Cj4+ICsKPj4gK1xpdGVtIFJlYWQgXGZpZWxke3VzZWQgc3RhdGV9IGFuZCBzYXZlIGl0Lgo+PiAr
+Cj4+ICtcaXRlbSBSZWFkIGRldmljZSBzcGVjaWZpYyB2aXJ0cXVldWUgc3RhdGVzIGlmIG5lZWRl
+ZC4KPj4gKwo+PiArXGl0ZW0gUmVzZXQgdGhlIGRldmljZS4KPiBTYXkgdGhhdCBhIG1pZ3JhdGlv
+biBmYWlscyBhZnRlciB0aGlzIHBvaW50OyBob3cgZG9lcyB0aGUgc291cmNlCj4gcmVjb3Zlcj8K
+CgpSZS1kbyB0aGUgZGV2aWNlIGluaXRpYWxpemF0aW9uLCBhbmQgcmVzdG9yZSB0aGUgc3RhdGUg
+dGhlbi4KCgo+IFdoeSBpcyB0aGUgJ3Jlc2V0IHRoZSBkZXZpY2UnIHRoZXJlPwoKCkJlY2F1c2Ug
+dGhlIGN1cnJlbnQgdmlydGlvIGRldmljZSBzdGF0dXMgbWFjaGluZSBpcyB1bmktZGlyZWN0aW9u
+YWwuIApJdCdzIG5vdCBhbGxvd2VkIHRvIGNsZWFyIGEgc3RhdHVzIGJpdC4gU28gdGhlIG9ubHkg
+d2F5IHRvIHJlY292ZXIgaXMgdG8gCnJlc2V0IGFuZCByZWRvIHRoZSBpbml0aWFsaXphdGlvbi4K
+ClRoYW5rcwoKCj4KPj4gK1xlbmR7ZW51bWVyYXRlfQo+PiArCj4+ICtUaGUgZHJpdmVyIE1BWSBw
+ZXJmb3JtIGRldmljZSBzcGVjaWZpYyBzdGVwcyB0byBzYXZlIGRldmljZSBzcGVjaWZpYyBzYXRl
+Lgo+PiArCj4+ICtUaGUgZHJpdmVyIE1BWSAncmVzdW1lJyB0aGUgZGV2aWNlIGJ5IHJlZG9pbmcg
+dGhlIGRldmljZSBpbml0aWFsaXphdGlvbgo+PiArd2l0aCB0aGUgc2F2ZWQgdmlydHF1ZXVlIHN0
+YXRlLiBTZWUgcmVmXHtzZWM6R2VuZXJhbCBJbml0aWFsaXphdGlvbiBhbmQgRGV2aWNlIE9wZXJh
+dGlvbiAvIERldmljZSBJbml0aWFsaXphdGlvbn0KPj4gKwo+PiAgIFxjaGFwdGVye1ZpcnRpbyBU
+cmFuc3BvcnQgT3B0aW9uc31cbGFiZWx7c2VjOlZpcnRpbyBUcmFuc3BvcnQgT3B0aW9uc30KPj4g
+ICAKPj4gICBWaXJ0aW8gY2FuIHVzZSB2YXJpb3VzIGRpZmZlcmVudCBidXNlcywgdGh1cyB0aGUg
+c3RhbmRhcmQgaXMgc3BsaXQKPj4gQEAgLTY3MTMsNiArNjc3Myw5IEBAIFxjaGFwdGVye1Jlc2Vy
+dmVkIEZlYXR1cmUgQml0c31cbGFiZWx7c2VjOlJlc2VydmVkIEZlYXR1cmUgQml0c30KPj4gICAg
+IGNhbiBzZXQgYW5kIGdldCB0aGUgZGV2aWNlIGludGVybmFsIHZpcnRxdWV1ZSBzdGF0ZS4KPj4g
+ICAgIFNlZSBccmVme3NlYzpWaXJ0cXVldWVzIC8gVmlydHF1ZXVlIFN0YXRlfX5cbmFtZXJlZntz
+ZWM6VmlydHF1ZXVlcyAvIFZpcnRxdWV1ZSBTdGF0ZX0uCj4+ICAgCj4+ICsgIFxpdGVtW1ZJUlRJ
+T19GX1NUT1AoNDEpXSBUaGlzIGZlYXR1cmUgaW5kaWNhdGVzIHRoYXQgdGhlIGRyaXZlciBjYW4K
+Pj4gKyAgc3RvcCB0aGUgZGV2aWNlLgo+PiArICBTZWUgXHJlZntzZWM6QmFzaWMgRmFjaWxpdGll
+cyBvZiBhIFZpcnRpbyBEZXZpY2UgLyBEZXZpY2UgU3RhdHVzIEZpZWxkfQo+PiAgIFxlbmR7ZGVz
+Y3JpcHRpb259Cj4+ICAgCj4+ICAgXGRyaXZlcm5vcm1hdGl2ZXtcc2VjdGlvbn17UmVzZXJ2ZWQg
+RmVhdHVyZSBCaXRzfXtSZXNlcnZlZCBGZWF0dXJlIEJpdHN9Cj4+IC0tIAo+PiAyLjI1LjEKPj4K
+Pj4KPj4gVGhpcyBwdWJsaWNseSBhcmNoaXZlZCBsaXN0IG9mZmVycyBhIG1lYW5zIHRvIHByb3Zp
+ZGUgaW5wdXQgdG8gdGhlCj4+IE9BU0lTIFZpcnR1YWwgSS9PIERldmljZSAoVklSVElPKSBUQy4K
+Pj4KPj4gSW4gb3JkZXIgdG8gdmVyaWZ5IHVzZXIgY29uc2VudCB0byB0aGUgRmVlZGJhY2sgTGlj
+ZW5zZSB0ZXJtcyBhbmQKPj4gdG8gbWluaW1pemUgc3BhbSBpbiB0aGUgbGlzdCBhcmNoaXZlLCBz
+dWJzY3JpcHRpb24gaXMgcmVxdWlyZWQKPj4gYmVmb3JlIHBvc3RpbmcuCj4+Cj4+IFN1YnNjcmli
+ZTogdmlydGlvLWNvbW1lbnQtc3Vic2NyaWJlQGxpc3RzLm9hc2lzLW9wZW4ub3JnCj4+IFVuc3Vi
+c2NyaWJlOiB2aXJ0aW8tY29tbWVudC11bnN1YnNjcmliZUBsaXN0cy5vYXNpcy1vcGVuLm9yZwo+
+PiBMaXN0IGhlbHA6IHZpcnRpby1jb21tZW50LWhlbHBAbGlzdHMub2FzaXMtb3Blbi5vcmcKPj4g
+TGlzdCBhcmNoaXZlOiBodHRwczovL2xpc3RzLm9hc2lzLW9wZW4ub3JnL2FyY2hpdmVzL3ZpcnRp
+by1jb21tZW50Lwo+PiBGZWVkYmFjayBMaWNlbnNlOiBodHRwczovL3d3dy5vYXNpcy1vcGVuLm9y
+Zy93aG8vaXByL2ZlZWRiYWNrX2xpY2Vuc2UucGRmCj4+IExpc3QgR3VpZGVsaW5lczogaHR0cHM6
+Ly93d3cub2FzaXMtb3Blbi5vcmcvcG9saWNpZXMtZ3VpZGVsaW5lcy9tYWlsaW5nLWxpc3RzCj4+
+IENvbW1pdHRlZTogaHR0cHM6Ly93d3cub2FzaXMtb3Blbi5vcmcvY29tbWl0dGVlcy92aXJ0aW8v
+Cj4+IEpvaW4gT0FTSVM6IGh0dHBzOi8vd3d3Lm9hc2lzLW9wZW4ub3JnL2pvaW4vCj4+Cgo=
