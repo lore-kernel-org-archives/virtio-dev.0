@@ -1,47 +1,77 @@
-Return-Path: <virtio-dev-return-8277-cohuck=redhat.com@lists.oasis-open.org>
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id D30A99863DB
-	for <virtio-dev@lists.oasis-open.org>; Wed, 14 Jul 2021 07:40:22 +0000 (UTC)
-Date: Wed, 14 Jul 2021 03:40:15 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20210714032108-mutt-send-email-mst@kernel.org>
-References: <20210630115837.12182-1-info@metux.net>
- <20210630152213.xhqhke54gzt3esdj@vireshk-i7>
- <641254c3-d60d-eb17-7388-29dd9ebcb826@metux.net>
+Return-Path: <jasowang@redhat.com>
+From: Jason Wang <jasowang@redhat.com>
+Subject: [PATCH] virtio-pci: implement VIRTIO_F_RING_STATE
+Date: Wed,  7 Jul 2021 12:34:41 +0800
+Message-Id: <20210707043441.42361-1-jasowang@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <641254c3-d60d-eb17-7388-29dd9ebcb826@metux.net>
-Subject: Re: [virtio-dev] Re: [virtio-comment] [PATCH v2] virtio-gpio: add
- formal specification
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-To: "Enrico Weigelt, metux IT consult" <lkml@metux.net>
-Cc: virtio-dev@lists.oasis-open.org
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="US-ASCII"
+To: mst@redhat.com, jasowang@redhat.com, virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+Cc: stefanha@redhat.com, mgurtovoy@nvidia.com, cohuck@redhat.com, eperezma@redhat.com, oren@nvidia.com, shahafs@nvidia.com, parav@nvidia.com, bodong@nvidia.com, amikheev@nvidia.com, pasic@linux.ibm.com, dgilbert@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, Jun 30, 2021 at 05:55:07PM +0200, Enrico Weigelt, metux IT consult wrote:
-> On 30.06.21 17:22, Viresh Kumar wrote:
-> > + All the people from previous version (Please cc them yourself while sending a
-> > new version, these are the people interested in this stuff).
-> 
-> Phuh, it's hard to track them all. I'm assuming everybody interested in
-> this is already on the list or can easily subscribe :p
+This patch is a follow up for the virtqueue state synchronization
+series to implement VIRTIO_F_RING_STATE via a dedicated capability for
+PCI transport.
 
-It's a matter of courtesy to help people who contributed by
-spending time on review locate your new version.
-Tracking what changed to address which comments and listing
-that in the cover letter is also very much expected of contributors.
-Please do this in the future.
+With the help of the STOP status bit, the virtqueue state
+synchronization for PCI should be self contained.
 
+Signed-off-by: Jason Wang <jasowang@redhat.com>
+---
+ content.tex | 32 ++++++++++++++++++++++++++++++++
+ 1 file changed, 32 insertions(+)
+
+diff --git a/content.tex b/content.tex
+index 284ead0..f1848f7 100644
+--- a/content.tex
++++ b/content.tex
+@@ -878,6 +878,8 @@ \subsection{Virtio Structure PCI Capabilities}\label{sec:Virtio Transport Option
+ #define VIRTIO_PCI_CAP_SHARED_MEMORY_CFG 8
+ /* Vendor-specific data */
+ #define VIRTIO_PCI_CAP_VENDOR_CFG        9
++/* General Virtqueue State */
++#define VIRTIO_PCI_CAP_RING_STATE        10
+ \end{lstlisting}
+ 
+         Any other value is reserved for future use.
+@@ -1434,6 +1436,36 @@ \subsubsection{PCI configuration access capability}\label{sec:Virtio Transport O
+ specified by some other Virtio Structure PCI Capability
+ of type other than \field{VIRTIO_PCI_CAP_PCI_CFG}.
+ 
++\subsubsection{General Virtqueue State}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / General Virtqueue State}
++
++The VITIO_PCI_CAP_RING_STATE capability is for the driver to configure
++the virtqueue state(see \ref{sec:Virtqueues / Virtqueue State}):
++
++The capability is immediately followed by an additional field like so:
++
++\begin{lstlisting}
++struct virtio_pci_cfg_cap {
++        struct virtio_pci_cap cap;
++        le16 queue_select; /* read-write */
++        le16 avail_state;  /* read-write */
++        le16 used_state;   /* read-write */
++};
++\end{lstlisting}
++
++\begin{description}
++\item[\field{queue_select}]
++        Queue Select. The driver selects which virtqueue the following
++        fields refer to.
++\item[\field{avail_state}]
++        The driver writes and reads available state here.
++\item[\field{used_state}]
++        The driver writes and reads used state here.
++\end{description}
++
++\devicenormative{\paragraph}{General Virtqueue State}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / General Virtqueue State}
++
++The device MUST present at least one VIRTIO_PCI_CAP_RING_STATE capability if VITIO_F_RING_STATE is negotiated.
++
+ \subsubsection{Legacy Interfaces: A Note on PCI Device Layout}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Legacy Interfaces: A Note on PCI Device Layout}
+ 
+ Transitional devices MUST present part of configuration
 -- 
-MST
-
-
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+2.25.1
 
