@@ -1,81 +1,164 @@
-Return-Path: <jasowang@redhat.com>
-Subject: Re: [PATCH V2 2/2] virtio: introduce STOP status bit
-References: <20210706043334.36359-1-jasowang@redhat.com>
- <20210706043334.36359-3-jasowang@redhat.com> <87eecbhai7.fsf@redhat.com>
- <9cf51717-9627-ce3e-07fe-85c80b8d0004@redhat.com> <8735srh5zu.fsf@redhat.com>
- <9e20bfca-2302-1cd4-d839-0a68aa1a1a31@redhat.com> <877di2f4xl.fsf@redhat.com>
-From: Jason Wang <jasowang@redhat.com>
-Message-ID: <361b7676-64e0-21c3-af4e-53e229e3ca75@redhat.com>
-Date: Thu, 8 Jul 2021 12:06:37 +0800
+Return-Path: <eperezma@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <877di2f4xl.fsf@redhat.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-To: Cornelia Huck <cohuck@redhat.com>, mst@redhat.com, virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
-Cc: stefanha@redhat.com, mgurtovoy@nvidia.com, eperezma@redhat.com, oren@nvidia.com, shahafs@nvidia.com, parav@nvidia.com, bodong@nvidia.com, amikheev@nvidia.com, pasic@linux.ibm.com
+References: <20210706043334.36359-1-jasowang@redhat.com> <20210706043334.36359-3-jasowang@redhat.com>
+In-Reply-To: <20210706043334.36359-3-jasowang@redhat.com>
+From: Eugenio Perez Martin <eperezma@redhat.com>
+Date: Fri, 9 Jul 2021 19:35:31 +0200
+Message-ID: <CAJaqyWeWV4qE_EQMh9BkGmzSSu9E1C2wJeiaDZLNOP_tHpBMNg@mail.gmail.com>
+Subject: Re: [PATCH V2 2/2] virtio: introduce STOP status bit
+Content-Type: text/plain; charset="UTF-8"
+To: Jason Wang <jasowang@redhat.com>
+Cc: Michael Tsirkin <mst@redhat.com>, virtio-comment@lists.oasis-open.org, Virtio-Dev <virtio-dev@lists.oasis-open.org>, Stefan Hajnoczi <stefanha@redhat.com>, Max Gurtovoy <mgurtovoy@nvidia.com>, Cornelia Huck <cohuck@redhat.com>, Oren Duer <oren@nvidia.com>, Shahaf Shuler <shahafs@nvidia.com>, Parav Pandit <parav@nvidia.com>, Bodong Wang <bodong@nvidia.com>, Alexander Mikheev <amikheev@nvidia.com>, Halil Pasic <pasic@linux.ibm.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-
-在 2021/7/8 上午12:45, Cornelia Huck 写道:
-> On Wed, Jul 07 2021, Jason Wang <jasowang@redhat.com> wrote:
+On Tue, Jul 6, 2021 at 6:34 AM Jason Wang <jasowang@redhat.com> wrote:
 >
->> 在 2021/7/6 下午10:27, Cornelia Huck 写道:
->>> On Tue, Jul 06 2021, Jason Wang <jasowang@redhat.com> wrote:
->>>
->>>> 在 2021/7/6 下午8:50, Cornelia Huck 写道:
->>>>> On Tue, Jul 06 2021, Jason Wang <jasowang@redhat.com> wrote:
->>>>>> +If VIRTIO_F_STOP has been negotiated, to stop a device, after setting
->>>>>> +STOP, the driver MUST re-read the device status to ensure the STOP bit
->>>>>> +is set to synchronize with the device.
->>>>> Is this more that the driver needs to re-read the status until STOP is
->>>>> set to make sure that the stop process has finished?
->>>> Yes.
->>>>
->>>>
->>>>>     If the device has
->>>>> offered the feature and the driver accepted it, I'd assume that the
->>>>> device will eventually finish with the procedure, or sets NEEDS_RESET if
->>>>> something goes wrong?
->>>> As stated below, the device must either:
->>>>
->>>> 1) finish all pending requests
->>>>
->>>> or
->>>>
->>>> 2) provide a device specific way for the driver to save and restore
->>>> pending requests
->>>>
->>>> before setting STOP.
->>>>
->>>> Otherwise the device can't offer this feature.
->>>>
->>>> Using NEEDS_RESET seems more complicated than this.
->>> Hm, what happens on an internal error?
->>
->> A question, can reset fail? If yes, do we need to define how to proceed
->> in the driver side?
->>
->> If not, I don't need the reason we need to deal with that in the STOP.
-> When you put it that way, it makes sense. Let's just keep it simple,
-> then.
+> This patch introduces a new status bit STOP. This will be
+> used by the driver to stop the device in order to safely fetch the
+> device state (virtqueue state) from the device.
+>
+> This is a must for supporting migration.
+>
+> Signed-off-by: Jason Wang <jasowang@redhat.com>
+> ---
+>  content.tex | 69 ++++++++++++++++++++++++++++++++++++++++++++++++++---
+>  1 file changed, 66 insertions(+), 3 deletions(-)
+>
+> diff --git a/content.tex b/content.tex
+> index 8877b6f..284ead0 100644
+> --- a/content.tex
+> +++ b/content.tex
+> @@ -47,6 +47,10 @@ \section{\field{Device Status} Field}\label{sec:Basic Facilities of a Virtio Dev
+>  \item[DRIVER_OK (4)] Indicates that the driver is set up and ready to
+>    drive the device.
+>
+> +\item[STOP (32)] When VIRTIO_F_STOP is negotiated, indicates that the
+> +  device has been stopped by the driver. This status bit is different
+> +  from the reset since the device state is preserved.
+> +
+>  \item[DEVICE_NEEDS_RESET (64)] Indicates that the device has experienced
+>    an error from which it can't recover.
+>  \end{description}
+> @@ -70,12 +74,38 @@ \section{\field{Device Status} Field}\label{sec:Basic Facilities of a Virtio Dev
+>  recover by issuing a reset.
+>  \end{note}
+>
+> +If VIRTIO_F_STOP has been negotiated, the driver MUST NOT set STOP if
+> +DRIVER_OK is not set.
+> +
+> +If VIRTIO_F_STOP has been negotiated, to stop a device, after setting
+> +STOP, the driver MUST re-read the device status to ensure the STOP bit
+> +is set to synchronize with the device.
+> +
+>  \devicenormative{\subsection}{Device Status Field}{Basic Facilities of a Virtio Device / Device Status Field}
+>  The device MUST initialize \field{device status} to 0 upon reset.
+>
+>  The device MUST NOT consume buffers or send any used buffer
+>  notifications to the driver before DRIVER_OK.
+>
+> +If VIRTIO_F_STOP has not been negotiated, the device MUST ignore the
+> +write of STOP.
+> +
+> +If VIRTIO_F_STOP has been negotiated, after the driver writes STOP,
+> +the device MUST finish any pending operations like in flight requests
+> +or have its device specific way for driver to save the pending
+> +operations like in flight requests before setting the STOP status bit.
+> +
+> +If VIRTIO_F_STOP has been negotiated, the device MUST NOT consume
+> +buffers or send any used buffer notifications to the driver after
+> +STOP. The device MUST keep the configuration space unchanged and MUST
+> +NOT send configuration space change notification to the driver after
+> +STOP.
+> +
+> +If VIRTIO_F_STOP has been negotiated, after STOP, the device MUST
+> +preserve all the necessary state (the virtqueue states with the
+> +possible device specific states) that is required for restoring in the
+> +future.
+> +
+>  \label{sec:Basic Facilities of a Virtio Device / Device Status Field / DEVICENEEDSRESET}The device SHOULD set DEVICE_NEEDS_RESET when it enters an error state
+>  that a reset is needed.  If DRIVER_OK is set, after it sets DEVICE_NEEDS_RESET, the device
+>  MUST send a device configuration change notification to the driver.
+> @@ -474,8 +504,8 @@ \subsection{\field{Used State} Field}
+>  \begin{itemize}
+>  \item A driver MUST NOT set the virtqueue state before setting the
+>    FEATURE_OK status bit.
+> -\item A driver MUST NOT set the virtqueue state after setting the
+> -  DRIVER_OK status bit.
+> +\item A driver MUST NOT set the virtqueue state if DRIVER_OK status
+> +  bit is set without STOP status bit.
+>  \end{itemize}
+>
+>  \devicenormative{\subsection}{Virtqueue State}{Basic Facilities of a Virtio Device / Virtqueue State}
+> @@ -488,7 +518,7 @@ \subsection{\field{Used State} Field}
+>  \item A device SHOULD ignore the write to the virtqueue state if the
+>  FEATURE_OK status bit is not set.
+>  \item A device SHOULD ignore the write to the virtqueue state if the
+> -DRIVER_OK status bit is set.
+> +DRIVER_OK status bit is set without STOP status bit.
+>  \end{itemize}
+>
+>  If VIRTIO_F_RING_STATE has been negotiated, a device MAY has its
+> @@ -623,6 +653,36 @@ \section{Device Cleanup}\label{sec:General Initialization And Device Operation /
+>
+>  Thus a driver MUST ensure a virtqueue isn't live (by device reset) before removing exposed buffers.
+>
+> +\section{Virtqueue State Saving}
+> +
+> +If both VIRTIO_F_RING_STATE and VIRTIO_F_STOP have been negotiated. A
+> +driver MAY save the internal virtqueue state.
+> +
+> +\drivernormative{\subsection}{Virtqueue State Saving}{General Initialization And Device Operation / Virtqueue State Saving}
+> +
+> +Assuming the device is 'live'. The driver MUST follow this sequence to
+> +stop the device and save the virtqueue state:
+> +
+> +\begin{enumerate}
+> +\item Set the STOP status bit.
+> +
+> +\item Re-read \field{device status} until the STOP bit is set to
+> +  synchronize with the device.
+> +
+> +\item Read \field{available state} and save it.
+> +
+> +\item Read \field{used state} and save it.
+> +
+> +\item Read device specific virtqueue states if needed.
+> +
+> +\item Reset the device.
 
+Maybe I'm being too nitpicky here, but the next user of the device
+must reset anyway to start using it (as "driver initialization"
+states). Maybe it's better to remove this "reset the device" from the
+enumeration and ... [1]
 
-I agree and according to the spec, reset should succeed, since it was 
-used to recover from NEEDS_RESET:
+> +\end{enumerate}
+> +
+> +The driver MAY perform device specific steps to save device specific sate.
 
-"""
+s/sate/state/
 
-The driver SHOULD NOT rely on completion of operations of a device if 
-DEVICE_NEEDS_RESET is set. Note: For example, the driver can’t assume 
-requests in flight will be completed if DEVICE_NEEDS_RESET is set, nor 
-can it assume that they have not been completed. A good implementation 
-will try to recover by issuing a reset.
+> +
+> +The driver MAY 'resume' the device by redoing the device initialization
+> +with the saved virtqueue state. See ref\{sec:General Initialization and Device Operation / Device Initialization}
 
-"""
+[1] just let this aclaration? If we let the reset in the enumeration,
+it seems that the reset step is a MUST to save the virtqueue state.
 
-Thanks
-
-
+> +
+>  \chapter{Virtio Transport Options}\label{sec:Virtio Transport Options}
+>
+>  Virtio can use various different buses, thus the standard is split
+> @@ -6713,6 +6773,9 @@ \chapter{Reserved Feature Bits}\label{sec:Reserved Feature Bits}
+>    can set and get the device internal virtqueue state.
+>    See \ref{sec:Virtqueues / Virtqueue State}~\nameref{sec:Virtqueues / Virtqueue State}.
+>
+> +  \item[VIRTIO_F_STOP(41)] This feature indicates that the driver can
+> +  stop the device.
+> +  See \ref{sec:Basic Facilities of a Virtio Device / Device Status Field}
+>  \end{description}
+>
+>  \drivernormative{\section}{Reserved Feature Bits}{Reserved Feature Bits}
+> --
+> 2.25.1
 >
 
