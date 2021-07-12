@@ -1,66 +1,42 @@
-Return-Path: <virtio-comment-return-1961-cohuck=redhat.com@lists.oasis-open.org>
-Sender: <virtio-comment@lists.oasis-open.org>
-List-Post: <mailto:virtio-comment@lists.oasis-open.org>
-List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
-From: Cornelia Huck <cohuck@redhat.com>
-In-Reply-To: <20210707043441.42361-1-jasowang@redhat.com>
+Return-Path: <jasowang@redhat.com>
+Subject: Re: [PATCH] virtio-pci: implement VIRTIO_F_RING_STATE
 References: <20210707043441.42361-1-jasowang@redhat.com>
-Date: Fri, 09 Jul 2021 13:06:32 +0200
-Message-ID: <87pmvreog7.fsf@redhat.com>
+ <87pmvreog7.fsf@redhat.com>
+From: Jason Wang <jasowang@redhat.com>
+Message-ID: <812da272-dcb7-b75d-acbc-aa90f9ac8301@redhat.com>
+Date: Mon, 12 Jul 2021 11:11:17 +0800
 MIME-Version: 1.0
-Subject: [virtio-comment] Re: [PATCH] virtio-pci: implement VIRTIO_F_RING_STATE
-Content-Type: text/plain
-To: Jason Wang <jasowang@redhat.com>, mst@redhat.com, jasowang@redhat.com, virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+In-Reply-To: <87pmvreog7.fsf@redhat.com>
+Content-Type: text/plain; charset="gbk"; format="flowed"
+Content-Transfer-Encoding: base64
+Content-Language: en-US
+To: Cornelia Huck <cohuck@redhat.com>, mst@redhat.com, virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
 Cc: stefanha@redhat.com, mgurtovoy@nvidia.com, eperezma@redhat.com, oren@nvidia.com, shahafs@nvidia.com, parav@nvidia.com, bodong@nvidia.com, amikheev@nvidia.com, pasic@linux.ibm.com, dgilbert@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, Jul 07 2021, Jason Wang <jasowang@redhat.com> wrote:
-
-> This patch is a follow up for the virtqueue state synchronization
-> series to implement VIRTIO_F_RING_STATE via a dedicated capability for
-> PCI transport.
->
-> With the help of the STOP status bit, the virtqueue state
-> synchronization for PCI should be self contained.
->
-> Signed-off-by: Jason Wang <jasowang@redhat.com>
-> ---
->  content.tex | 32 ++++++++++++++++++++++++++++++++
->  1 file changed, 32 insertions(+)
-
-(...)
-
-> +\devicenormative{\paragraph}{General Virtqueue State}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / General Virtqueue State}
-> +
-> +The device MUST present at least one VIRTIO_PCI_CAP_RING_STATE
-> capability if VITIO_F_RING_STATE is negotiated.
-
-s/VITIO/VIRTIO/
-
-Are multiple capabilities inteded to enable parallel access to multiple
-virtqueues?
-
-> +
->  \subsubsection{Legacy Interfaces: A Note on PCI Device Layout}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Legacy Interfaces: A Note on PCI Device Layout}
->  
->  Transitional devices MUST present part of configuration
-
-
-This publicly archived list offers a means to provide input to the
-OASIS Virtual I/O Device (VIRTIO) TC.
-
-In order to verify user consent to the Feedback License terms and
-to minimize spam in the list archive, subscription is required
-before posting.
-
-Subscribe: virtio-comment-subscribe@lists.oasis-open.org
-Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
-List help: virtio-comment-help@lists.oasis-open.org
-List archive: https://lists.oasis-open.org/archives/virtio-comment/
-Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
-List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
-Committee: https://www.oasis-open.org/committees/virtio/
-Join OASIS: https://www.oasis-open.org/join/
-
+CtTaIDIwMjEvNy85IM/Czuc3OjA2LCBDb3JuZWxpYSBIdWNrINC0tcA6Cj4gT24gV2VkLCBKdWwg
+MDcgMjAyMSwgSmFzb24gV2FuZyA8amFzb3dhbmdAcmVkaGF0LmNvbT4gd3JvdGU6Cj4KPj4gVGhp
+cyBwYXRjaCBpcyBhIGZvbGxvdyB1cCBmb3IgdGhlIHZpcnRxdWV1ZSBzdGF0ZSBzeW5jaHJvbml6
+YXRpb24KPj4gc2VyaWVzIHRvIGltcGxlbWVudCBWSVJUSU9fRl9SSU5HX1NUQVRFIHZpYSBhIGRl
+ZGljYXRlZCBjYXBhYmlsaXR5IGZvcgo+PiBQQ0kgdHJhbnNwb3J0Lgo+Pgo+PiBXaXRoIHRoZSBo
+ZWxwIG9mIHRoZSBTVE9QIHN0YXR1cyBiaXQsIHRoZSB2aXJ0cXVldWUgc3RhdGUKPj4gc3luY2hy
+b25pemF0aW9uIGZvciBQQ0kgc2hvdWxkIGJlIHNlbGYgY29udGFpbmVkLgo+Pgo+PiBTaWduZWQt
+b2ZmLWJ5OiBKYXNvbiBXYW5nIDxqYXNvd2FuZ0ByZWRoYXQuY29tPgo+PiAtLS0KPj4gICBjb250
+ZW50LnRleCB8IDMyICsrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrCj4+ICAgMSBmaWxl
+IGNoYW5nZWQsIDMyIGluc2VydGlvbnMoKykKPiAoLi4uKQo+Cj4+ICtcZGV2aWNlbm9ybWF0aXZl
+e1xwYXJhZ3JhcGh9e0dlbmVyYWwgVmlydHF1ZXVlIFN0YXRlfXtWaXJ0aW8gVHJhbnNwb3J0IE9w
+dGlvbnMgLyBWaXJ0aW8gT3ZlciBQQ0kgQnVzIC8gUENJIERldmljZSBMYXlvdXQgLyBHZW5lcmFs
+IFZpcnRxdWV1ZSBTdGF0ZX0KPj4gKwo+PiArVGhlIGRldmljZSBNVVNUIHByZXNlbnQgYXQgbGVh
+c3Qgb25lIFZJUlRJT19QQ0lfQ0FQX1JJTkdfU1RBVEUKPj4gY2FwYWJpbGl0eSBpZiBWSVRJT19G
+X1JJTkdfU1RBVEUgaXMgbmVnb3RpYXRlZC4KPiBzL1ZJVElPL1ZJUlRJTy8KCgpXaWxsIGZpeC4K
+Cgo+Cj4gQXJlIG11bHRpcGxlIGNhcGFiaWxpdGllcyBpbnRlZGVkIHRvIGVuYWJsZSBwYXJhbGxl
+bCBhY2Nlc3MgdG8gbXVsdGlwbGUKPiB2aXJ0cXVldWVzPwoKCkknbSBub3Qgc3VyZSwgaXQganVz
+dCBub3QgZm9yYmlkIHRoZSBkZXZpY2UgdG8gaGF2ZSBtdWx0aXBsZSBvZiBzdWNoIApjYXBhYmls
+aWVzLiBXZSd2ZSBhbHJlYWR5IGhhZCBub3JtYXRpdmUgbGlrZSB0aGlzIGZvciBjb21tb24gCmNv
+bmZpZ3VyYXRpb24gc3RydWN0dXJlOgoKIlRoZSBkZXZpY2UgTVVTVCBwcmVzZW50IGF0IGxlYXN0
+IG9uZSBjb21tb24gY29uZmlndXJhdGlvbiBjYXBhYmlsaXR5LiIKClRoYW5rcwoKCj4KPj4gKwo+
+PiAgIFxzdWJzdWJzZWN0aW9ue0xlZ2FjeSBJbnRlcmZhY2VzOiBBIE5vdGUgb24gUENJIERldmlj
+ZSBMYXlvdXR9XGxhYmVse3NlYzpWaXJ0aW8gVHJhbnNwb3J0IE9wdGlvbnMgLyBWaXJ0aW8gT3Zl
+ciBQQ0kgQnVzIC8gUENJIERldmljZSBMYXlvdXQgLyBMZWdhY3kgSW50ZXJmYWNlczogQSBOb3Rl
+IG9uIFBDSSBEZXZpY2UgTGF5b3V0fQo+PiAgIAo+PiAgIFRyYW5zaXRpb25hbCBkZXZpY2VzIE1V
+U1QgcHJlc2VudCBwYXJ0IG9mIGNvbmZpZ3VyYXRpb24KCg==
