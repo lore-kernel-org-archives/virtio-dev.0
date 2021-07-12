@@ -1,74 +1,102 @@
 Return-Path: <jasowang@redhat.com>
 Subject: Re: [virtio-comment] [PATCH V2 2/2] virtio: introduce STOP status bit
-References: <YOwSGeL+lfTxHuXg@stefanha-x1.localdomain>
- <3ce9775c-64fa-1c9b-6627-55f3b18ac987@redhat.com>
- <YO1kQ8sBkr2eguvi@stefanha-x1.localdomain>
- <8a2037df-e527-dcb4-c4c8-a568885180e4@redhat.com>
- <YO60HpxfZnmfMCMj@stefanha-x1.localdomain>
- <094e15d4-169a-87e9-5ebb-93439ea72831@redhat.com>
- <YO79tuI72kTEWURN@stefanha-x1.localdomain>
- <1ab19438-cc13-bbe5-7fec-53a113d85463@redhat.com>
- <YPAHcG7bxhlIGVeE@stefanha-x1.localdomain>
- <c626c856-7010-0df6-131f-00aad7221266@redhat.com>
- <YPVzcLGj591X37fX@stefanha-x1.localdomain>
- <48a8b9f0-d68f-e5a0-1d7b-43e61bda603c@redhat.com>
- <d4e7afdd-943d-73bd-3c31-c07543392819@nvidia.com>
- <0b278344-c732-53c3-59b0-b581109bbee5@redhat.com>
- <94180b9d-0fcd-5522-8352-81e29e68fa8a@nvidia.com>
+References: <20210706043334.36359-1-jasowang@redhat.com>
+ <20210706043334.36359-3-jasowang@redhat.com> <YOQhW9MUlv5ohe05@work-vm>
+ <52e1347c-9363-8ff8-e36c-2681b42e4c37@redhat.com>
+ <CAJaqyWeQQZopTWDxnG3yUyS9qyGSXYTj3KwuhFqbzKih3te6AQ@mail.gmail.com>
 From: Jason Wang <jasowang@redhat.com>
-Message-ID: <f1dc87f3-4b47-4d74-ce33-52b13e68ac55@redhat.com>
-Date: Thu, 22 Jul 2021 10:01:06 +0800
+Message-ID: <cde5799f-2226-9454-e982-c038594b30fa@redhat.com>
+Date: Mon, 12 Jul 2021 11:53:58 +0800
 MIME-Version: 1.0
-In-Reply-To: <94180b9d-0fcd-5522-8352-81e29e68fa8a@nvidia.com>
+In-Reply-To: <CAJaqyWeQQZopTWDxnG3yUyS9qyGSXYTj3KwuhFqbzKih3te6AQ@mail.gmail.com>
 Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Transfer-Encoding: 8bit
 Content-Language: en-US
-To: Max Gurtovoy <mgurtovoy@nvidia.com>, Stefan Hajnoczi <stefanha@redhat.com>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>, Eugenio Perez Martin <eperezma@redhat.com>, "Dr. David Alan Gilbert" <dgilbert@redhat.com>, virtio-comment@lists.oasis-open.org, Virtio-Dev <virtio-dev@lists.oasis-open.org>, Cornelia Huck <cohuck@redhat.com>, Oren Duer <oren@nvidia.com>, Shahaf Shuler <shahafs@nvidia.com>, Parav Pandit <parav@nvidia.com>, Bodong Wang <bodong@nvidia.com>, Alexander Mikheev <amikheev@nvidia.com>, Halil Pasic <pasic@linux.ibm.com>
+To: Eugenio Perez Martin <eperezma@redhat.com>, "Dr. David Alan Gilbert" <dgilbert@redhat.com>
+Cc: Michael Tsirkin <mst@redhat.com>, virtio-comment@lists.oasis-open.org, Virtio-Dev <virtio-dev@lists.oasis-open.org>, Stefan Hajnoczi <stefanha@redhat.com>, Max Gurtovoy <mgurtovoy@nvidia.com>, Cornelia Huck <cohuck@redhat.com>, Oren Duer <oren@nvidia.com>, Shahaf Shuler <shahafs@nvidia.com>, Parav Pandit <parav@nvidia.com>, Bodong Wang <bodong@nvidia.com>, Alexander Mikheev <amikheev@nvidia.com>, Halil Pasic <pasic@linux.ibm.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
 
-在 2021/7/21 下午7:43, Max Gurtovoy 写道:
+在 2021/7/10 上午1:23, Eugenio Perez Martin 写道:
+>>>    If I understand correctly, this is all
+>>> driven from the driver inside the guest, so for this to work
+>>> the guest must be running and already have initialised the driver.
 >>
+>> Yes.
 >>
->> Right, vp_vdpa fit naturally for this. But I don't see the much value 
->> of a dedicated migration driver, do you?
+> As I see it, the feature can be driven entirely by the VMM as long as
+> it intercept the relevant configuration space (PCI, MMIO, etc) from
+> guest's reads and writes, and present it as coherent and transparent
+> for the guest. Some use cases I can imagine with a physical device (or
+> vp_vpda device) with VIRTIO_F_STOP:
+
+
+It's basically for nested live migration. (E.g present a VIRTIO_F_STOP 
+to L1 guest and above)
+
+
 >
-> I don't know how VDPA device advertise migration capability to QEMU. 
+> 1) The VMM chooses not to pass the feature flag. The guest cannot stop
+> the device, so any write to this flag is an error/undefined.
+> 2) The VMM passes the flag to the guest. The guest can stop the device.
+> 2.1) The VMM stops the device to perform a live migration, and the
+> guest does not write to STOP in any moment of the LM. It resets the
+> destination device with the state, and then initializes the device.
+> 2.2) The guest stops the device and, when STOP(32) is set, the source
+> VMM migrates the device status. The destination VMM realizes the bit,
+> so it sets the bit in the destination too after device initialization.
+> 2.3) The device is not initialized by the guest so it doesn't matter
+> what bit has the HW, but the VM can be migrated.
+>
+> Am I missing something?
 
 
-This is done by vhost-vDPA via advertising vhost feature 
-VHOST_F_LOG_ALL, otherwise qemu will block the migration.
+Something like this, note that in any cases we should not let the L(x) 
+guest to access the device status bit of L(x-1) directly. The VMM in 
+L(x-1) is in charge of shadowing the device status (DRIVER_OK and STOP) 
+correctly. If we want to migrate L(x) guest, VMM in L(x-1) needs to 
+migrate the device status correctly and restore them in the destination:
 
-vhost-vDPA inherits the vhost uAPI, so at the uAPI level we had:
+1) The device status bit in L1 is implemented by L0 VMM
 
-1) VHOST_SET_VRING_BASE/VHOST_GET_VRING_BASE for syncing index
-2) VHOST_SET_LOG_BASE for setting the address of the dirty page bitmap
-3) VHOST_VDPA_SET_STATUS for setting the device status
+2) The device status bit in L2 is implemented by L1 VMM
 
-Note that, vhost-vDPA doesn't implement 2) since we're not sure the 
-dirty page bitmap is the way we need to go for hardware, it would just 
-take few lines for introducing them in vDPA bus level.
+3) If we need to migrate L1, we just migrate the L1 device status and 
+restore it
 
-So from vDPA point of view, it's a vhost device. And the vDPA networking 
-device is driven by the qemu vhost-vDPA module.
+4) If we need to migrate L2, we just migrate the L2 device status and 
+restore it
 
-Without VHOST_SET_LOG_BASE, Eugenio is working on the shadow virtqueue 
-for tracking dirty pages in software to live migrate a vDPA device.
+E.g the logic of L0 VMM (source) is:
 
-Assuming the VHOST_SET_LOG_BASE or other dirty logging mechanism is 
-implemented, we can live migrate a networking vDPA device with the 
-hardware assisted dirty page tracking.
+if L1_status | DRIVER_OK && !(L1_status | STOP):
+     set STOP to L0_status;
+     wait until STOP is set for L0_status;
+save L1 state(status) and send it to destination
 
-For the device state like filters, mac, qemu will intercept the control 
-command so we don't need any API for querying those states from the 
-devices. So the above three uAPIs are sufficient for live migrating a 
-virtio-net vDPA device, and the migration compatibility is kept 
-perfectly since it was seamlessly integrated with the current vhost 
-protocol.
+The logic of L0 VMM(dest) is:
 
-When the device/virtio specific mechanism for device state 
-synchronization is invented, we can introduce uAPI for them.
+get L1 state(status)
+if L1_status | DRIVER_OK:
+     perform the L0 device initialization (e.g features based of L1 state)
+     propagate L1_status(DRIVER_OK|DRIVER_STOP) to the L0 device
+
+So:
+
+For 2.1,  STOP is set by source VMM by not recovered by source since 
+it's not a state of L1 device
+
+For 2.2,  STOP is 'set' by L1 and shadowed by VMM, and it was recovered 
+by the destination since it's a state of L1 device
+
+For 2.3, STOP is not set by source and not recovered by destination 
+since it's not a state of L1 device
 
 Thanks
+
+
+
+>
+> Thanks!
+>
 
