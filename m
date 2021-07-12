@@ -1,57 +1,57 @@
-Return-Path: <mst@redhat.com>
-Date: Sat, 10 Jul 2021 16:36:31 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
+Return-Path: <jasowang@redhat.com>
 Subject: Re: [virtio-comment] [PATCH V2 2/2] virtio: introduce STOP status bit
-Message-ID: <20210710163326-mutt-send-email-mst@kernel.org>
 References: <20210706043334.36359-1-jasowang@redhat.com>
- <20210706043334.36359-3-jasowang@redhat.com>
- <YOQhW9MUlv5ohe05@work-vm>
+ <20210706043334.36359-3-jasowang@redhat.com> <YOQhW9MUlv5ohe05@work-vm>
  <52e1347c-9363-8ff8-e36c-2681b42e4c37@redhat.com>
  <CAJaqyWeQQZopTWDxnG3yUyS9qyGSXYTj3KwuhFqbzKih3te6AQ@mail.gmail.com>
+ <20210710163326-mutt-send-email-mst@kernel.org>
+From: Jason Wang <jasowang@redhat.com>
+Message-ID: <778ffa63-c0ca-2faa-32da-3c5e71dd1dfe@redhat.com>
+Date: Mon, 12 Jul 2021 12:00:39 +0800
 MIME-Version: 1.0
-In-Reply-To: <CAJaqyWeQQZopTWDxnG3yUyS9qyGSXYTj3KwuhFqbzKih3te6AQ@mail.gmail.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-To: Eugenio Perez Martin <eperezma@redhat.com>
-Cc: Jason Wang <jasowang@redhat.com>, "Dr. David Alan Gilbert" <dgilbert@redhat.com>, virtio-comment@lists.oasis-open.org, Virtio-Dev <virtio-dev@lists.oasis-open.org>, Stefan Hajnoczi <stefanha@redhat.com>, Max Gurtovoy <mgurtovoy@nvidia.com>, Cornelia Huck <cohuck@redhat.com>, Oren Duer <oren@nvidia.com>, Shahaf Shuler <shahafs@nvidia.com>, Parav Pandit <parav@nvidia.com>, Bodong Wang <bodong@nvidia.com>, Alexander Mikheev <amikheev@nvidia.com>, Halil Pasic <pasic@linux.ibm.com>
+In-Reply-To: <20210710163326-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset="gbk"; format="flowed"
+Content-Transfer-Encoding: base64
+Content-Language: en-US
+To: "Michael S. Tsirkin" <mst@redhat.com>, Eugenio Perez Martin <eperezma@redhat.com>
+Cc: "Dr. David Alan Gilbert" <dgilbert@redhat.com>, virtio-comment@lists.oasis-open.org, Virtio-Dev <virtio-dev@lists.oasis-open.org>, Stefan Hajnoczi <stefanha@redhat.com>, Max Gurtovoy <mgurtovoy@nvidia.com>, Cornelia Huck <cohuck@redhat.com>, Oren Duer <oren@nvidia.com>, Shahaf Shuler <shahafs@nvidia.com>, Parav Pandit <parav@nvidia.com>, Bodong Wang <bodong@nvidia.com>, Alexander Mikheev <amikheev@nvidia.com>, Halil Pasic <pasic@linux.ibm.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Fri, Jul 09, 2021 at 07:23:33PM +0200, Eugenio Perez Martin wrote:
-> > >   If I understand correctly, this is all
-> > > driven from the driver inside the guest, so for this to work
-> > > the guest must be running and already have initialised the driver.
-> >
-> >
-> > Yes.
-> >
-> 
-> As I see it, the feature can be driven entirely by the VMM as long as
-> it intercept the relevant configuration space (PCI, MMIO, etc) from
-> guest's reads and writes, and present it as coherent and transparent
-> for the guest. Some use cases I can imagine with a physical device (or
-> vp_vpda device) with VIRTIO_F_STOP:
-> 
-> 1) The VMM chooses not to pass the feature flag. The guest cannot stop
-> the device, so any write to this flag is an error/undefined.
-> 2) The VMM passes the flag to the guest. The guest can stop the device.
-> 2.1) The VMM stops the device to perform a live migration, and the
-> guest does not write to STOP in any moment of the LM. It resets the
-> destination device with the state, and then initializes the device.
-> 2.2) The guest stops the device and, when STOP(32) is set, the source
-> VMM migrates the device status. The destination VMM realizes the bit,
-> so it sets the bit in the destination too after device initialization.
-> 2.3) The device is not initialized by the guest so it doesn't matter
-> what bit has the HW, but the VM can be migrated.
-> 
-> Am I missing something?
-> 
-> Thanks!
-
-It's doable like this. It's all a lot of hoops to jump through though.
-It's also not easy for devices to implement.
-Why don't we design the feature in a way that is useable by VMMs
-and implementable by devices in a simple way?
-
--- 
-MST
-
+CtTaIDIwMjEvNy8xMSDJz87nNDozNiwgTWljaGFlbCBTLiBUc2lya2luINC0tcA6Cj4gT24gRnJp
+LCBKdWwgMDksIDIwMjEgYXQgMDc6MjM6MzNQTSArMDIwMCwgRXVnZW5pbyBQZXJleiBNYXJ0aW4g
+d3JvdGU6Cj4+Pj4gICAgSWYgSSB1bmRlcnN0YW5kIGNvcnJlY3RseSwgdGhpcyBpcyBhbGwKPj4+
+PiBkcml2ZW4gZnJvbSB0aGUgZHJpdmVyIGluc2lkZSB0aGUgZ3Vlc3QsIHNvIGZvciB0aGlzIHRv
+IHdvcmsKPj4+PiB0aGUgZ3Vlc3QgbXVzdCBiZSBydW5uaW5nIGFuZCBhbHJlYWR5IGhhdmUgaW5p
+dGlhbGlzZWQgdGhlIGRyaXZlci4KPj4+Cj4+PiBZZXMuCj4+Pgo+PiBBcyBJIHNlZSBpdCwgdGhl
+IGZlYXR1cmUgY2FuIGJlIGRyaXZlbiBlbnRpcmVseSBieSB0aGUgVk1NIGFzIGxvbmcgYXMKPj4g
+aXQgaW50ZXJjZXB0IHRoZSByZWxldmFudCBjb25maWd1cmF0aW9uIHNwYWNlIChQQ0ksIE1NSU8s
+IGV0YykgZnJvbQo+PiBndWVzdCdzIHJlYWRzIGFuZCB3cml0ZXMsIGFuZCBwcmVzZW50IGl0IGFz
+IGNvaGVyZW50IGFuZCB0cmFuc3BhcmVudAo+PiBmb3IgdGhlIGd1ZXN0LiBTb21lIHVzZSBjYXNl
+cyBJIGNhbiBpbWFnaW5lIHdpdGggYSBwaHlzaWNhbCBkZXZpY2UgKG9yCj4+IHZwX3ZwZGEgZGV2
+aWNlKSB3aXRoIFZJUlRJT19GX1NUT1A6Cj4+Cj4+IDEpIFRoZSBWTU0gY2hvb3NlcyBub3QgdG8g
+cGFzcyB0aGUgZmVhdHVyZSBmbGFnLiBUaGUgZ3Vlc3QgY2Fubm90IHN0b3AKPj4gdGhlIGRldmlj
+ZSwgc28gYW55IHdyaXRlIHRvIHRoaXMgZmxhZyBpcyBhbiBlcnJvci91bmRlZmluZWQuCj4+IDIp
+IFRoZSBWTU0gcGFzc2VzIHRoZSBmbGFnIHRvIHRoZSBndWVzdC4gVGhlIGd1ZXN0IGNhbiBzdG9w
+IHRoZSBkZXZpY2UuCj4+IDIuMSkgVGhlIFZNTSBzdG9wcyB0aGUgZGV2aWNlIHRvIHBlcmZvcm0g
+YSBsaXZlIG1pZ3JhdGlvbiwgYW5kIHRoZQo+PiBndWVzdCBkb2VzIG5vdCB3cml0ZSB0byBTVE9Q
+IGluIGFueSBtb21lbnQgb2YgdGhlIExNLiBJdCByZXNldHMgdGhlCj4+IGRlc3RpbmF0aW9uIGRl
+dmljZSB3aXRoIHRoZSBzdGF0ZSwgYW5kIHRoZW4gaW5pdGlhbGl6ZXMgdGhlIGRldmljZS4KPj4g
+Mi4yKSBUaGUgZ3Vlc3Qgc3RvcHMgdGhlIGRldmljZSBhbmQsIHdoZW4gU1RPUCgzMikgaXMgc2V0
+LCB0aGUgc291cmNlCj4+IFZNTSBtaWdyYXRlcyB0aGUgZGV2aWNlIHN0YXR1cy4gVGhlIGRlc3Rp
+bmF0aW9uIFZNTSByZWFsaXplcyB0aGUgYml0LAo+PiBzbyBpdCBzZXRzIHRoZSBiaXQgaW4gdGhl
+IGRlc3RpbmF0aW9uIHRvbyBhZnRlciBkZXZpY2UgaW5pdGlhbGl6YXRpb24uCj4+IDIuMykgVGhl
+IGRldmljZSBpcyBub3QgaW5pdGlhbGl6ZWQgYnkgdGhlIGd1ZXN0IHNvIGl0IGRvZXNuJ3QgbWF0
+dGVyCj4+IHdoYXQgYml0IGhhcyB0aGUgSFcsIGJ1dCB0aGUgVk0gY2FuIGJlIG1pZ3JhdGVkLgo+
+Pgo+PiBBbSBJIG1pc3Npbmcgc29tZXRoaW5nPwo+Pgo+PiBUaGFua3MhCj4gSXQncyBkb2FibGUg
+bGlrZSB0aGlzLiBJdCdzIGFsbCBhIGxvdCBvZiBob29wcyB0byBqdW1wIHRocm91Z2ggdGhvdWdo
+Lgo+IEl0J3MgYWxzbyBub3QgZWFzeSBmb3IgZGV2aWNlcyB0byBpbXBsZW1lbnQuCgoKSXQganVz
+dCByZXF1aXJlcyBhIG5ldyBzdGF0dXMgYml0LiBBbnl0aGluZyB0aGF0IG1ha2VzIHlvdSB0aGlu
+ayBpdCdzIApoYXJkIHRvIGltcGxlbWVudD8KCkUuZyBmb3IgbmV0d29ya2luZyBkZXZpY2UsIGl0
+IHNob3VsZCBiZSBzdWZmaWNpZW50IHRvIHVzZSB0aGlzIGJpdCArIHRoZSAKdmlydHF1ZXVlIHN0
+YXRlLgoKCj4gV2h5IGRvbid0IHdlIGRlc2lnbiB0aGUgZmVhdHVyZSBpbiBhIHdheSB0aGF0IGlz
+IHVzZWFibGUgYnkgVk1Ncwo+IGFuZCBpbXBsZW1lbnRhYmxlIGJ5IGRldmljZXMgaW4gYSBzaW1w
+bGUgd2F5PwoKCkl0IHVzZSB0aGUgY29tbW9uIHRlY2hub2xvZ3kgbGlrZSByZWdpc3RlciBzaGFk
+b3dpbmcgd2l0aG91dCBhbnkgZnVydGhlciAKc3R1ZmZzLgoKT3IgZG8geW91IGhhdmUgYW55IG90
+aGVyIGlkZWFzPwoKKEkgdGhpbmsgd2UgYWxsIGtub3cgbWlncmF0aW9uIHdpbGwgYmUgdmVyeSBo
+YXJkIGlmIHdlIHNpbXBseSBwYXNzIAp0aHJvdWdoIHRob3NlIHN0YXRlIHJlZ2lzdGVycykuCgpU
+aGFua3MKCgo+Cgo=
