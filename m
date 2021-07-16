@@ -1,59 +1,90 @@
-Return-Path: <viresh.kumar@linaro.org>
-Date: Tue, 20 Jul 2021 09:49:13 +0530
-From: Viresh Kumar <viresh.kumar@linaro.org>
-Subject: Re: [PATCH V5 2/2] virtio-gpio: Add support for interrupts
-Message-ID: <20210720041913.d2rrbbsvusph272g@vireshk-i7>
-References: <cover.1626418779.git.viresh.kumar@linaro.org>
- <54f15944263f4a32e1ea90cd47a45adfa76f260f.1626418779.git.viresh.kumar@linaro.org>
- <20210719102411.yykntzjefeamz24t@vireshk-i7>
- <20210719110854-mutt-send-email-mst@kernel.org>
+Return-Path: <arnd@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <20210719110854-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Jason Wang <jasowang@redhat.com>, Cornelia Huck <cohuck@redhat.com>, Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Vincent Guittot <vincent.guittot@linaro.org>, Arnd Bergmann <arnd@kernel.org>, Jean-Philippe Brucker <jean-philippe@linaro.org>, Bill Mills <bill.mills@linaro.org>, Alex =?utf-8?Q?Benn=C3=A9e?= <alex.bennee@linaro.org>, "Enrico Weigelt, metux IT consult" <info@metux.net>, virtio-dev@lists.oasis-open.org, Geert Uytterhoeven <geert@linux-m68k.org>
+References: <cover.1626418779.git.viresh.kumar@linaro.org>
+In-Reply-To: <cover.1626418779.git.viresh.kumar@linaro.org>
+From: Arnd Bergmann <arnd@kernel.org>
+Date: Fri, 16 Jul 2021 11:57:41 +0200
+Message-ID: <CAK8P3a0KuFUEA-nTb+HkS39xMWA=v-wLQ2_pz0f5oOEAXSoS_A@mail.gmail.com>
+Subject: Re: [PATCH V5 0/2] virtio: Add specification for virtio-gpio
+Content-Type: text/plain; charset="UTF-8"
+To: Viresh Kumar <viresh.kumar@linaro.org>
+Cc: Jason Wang <jasowang@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>, Cornelia Huck <cohuck@redhat.com>, Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Vincent Guittot <vincent.guittot@linaro.org>, Jean-Philippe Brucker <jean-philippe@linaro.org>, Bill Mills <bill.mills@linaro.org>, =?UTF-8?B?QWxleCBCZW5uw6ll?= <alex.bennee@linaro.org>, "Enrico Weigelt, metux IT consult" <info@metux.net>, virtio-dev@lists.oasis-open.org, Geert Uytterhoeven <geert@linux-m68k.org>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 19-07-21, 11:11, Michael S. Tsirkin wrote:
-> On Mon, Jul 19, 2021 at 03:54:11PM +0530, Viresh Kumar wrote:
-> > On 16-07-21, 13:09, Viresh Kumar wrote:
-> > > This patch adds support for interrupts to the virtio-gpio specification.
-> > > This uses the feature bit 0 for the same.
-> > 
-> > Michael (and other virtio experts),
-> > 
-> > I have a doubt about interrupt messages initiated by the device. There is
-> > nothing meaningful I want to return from the driver to the device on an
-> > interrupt event, but I need to make sure the device doesn't send another
-> > interrupt for the same GPIO line, before the previous one is serviced. I was
-> > thinking about sending some sort of response message for it, but am not sure how
-> > to implement it.
-> 
-> My suggestion is this: driver adds a buffer to tell device
-> it wants an interrupt. device uses the buffer to notify
-> driver of the interrupt event.
+On Fri, Jul 16, 2021 at 9:39 AM Viresh Kumar <viresh.kumar@linaro.org> wrote:
+>
+> Hello,
+>
+> This patchset adds virtio specification for GPIO devices. It supports basic GPIO
+> line operations, along with optional interrupts on them (in a separate patch).
+>
+> This is an *alternative implementation* of the virtio-gpio specification,
+> another version of it was earlier posted by Enrico [1].
+>
+> I took back V4 of the specification I posted earlier (on June 17th), to allow
+> Enrico to come up with something that is robust and works for everyone (as he
+> started this thing last year), but it didn't go as expected. I couldn't
+> see any of my review comments being incorporated (or any intentions of them
+> getting in ever) in the two versions Enrico posted and a month passed since
+> then.
+>
+> And so I am trying to present an alternative approach here to solve the problem,
+> which I believe is more clear and robust. I am open to suggestions to improve it
+> further.
 
-So what you are suggesting is, re-queue of the buffer would mean an
-acknowledgement for the interrupt from the driver.
+Hi Viresh,
 
-Hmm, I was looking at parallelizing the interrupts for various GPIOs. Lets say
-we have X number of GPIO lines, with what you are suggesting, we will only honor
-1 interrupt at a time. What I was thinking of was providing multiple buffers at
-the beginning itself, lets say 5-10, so we can process the interrupts in
-parallel in separate threads (probably running on different virtual CPUs in the
-guest).
+I've looked at the two proposals again now, and yours does look more
+mature, so I agree it makes sense to continue with your version.
 
-> > Another way out to implement this, is by adding to the spec that on interrupt
-> > the device MUST mask the interrupt line on the GPIO before sending the event to
-> > the driver and this irq can be re-enabled only by the driver sending another
-> > request over the primary virtqueue (and not interrupt virtqueue).
-> > 
-> > What do you suggest ?
-> 
-> Well vqs fundamentally can cause spurious interrupts. First suggestion
-> is closer to how other devices do this.
+> I will let the virtio/gpio maintainers decide on its fate.
+>
+> Key differences from Enrico's approach [1]:
+>
+> - config structure is rearranged to remove unnecessary fields/padding, and place
+>   gpio_names block in such a way that we can expand the structure easily going
+>   forward, if required.
 
--- 
-viresh
+Simplifying is good, maybe we can cut it down even further. I now
+actually wonder
+if we shouldn't remove the gpio names from the virtio-gpu spec entirely.
+
+In practice I assume this driver only makes sense to be used in combination
+with firmware describing how it interacts with other drivers
+(gpio-key, gpio-led,
+mmc, i2c, ...) that require access to gpio lines for something they do, and
+these already rely on DT information or some equivalent.
+
+As soon as we have a DT node for the device, the names can just be
+passed according ot the generic DT binding for gpio controllers.
+
+> - Supports freeing of a GPIO line after use.
+
+I agree it makes sense have both alloc and free as a pair if you have one
+of them, but as I commented I'm not convinced we do need them at all,
+so removing both may be better here.
+
+> - Interrupt implementation handled with feature bit 0. Either the interrupts are
+>   fully supported or not at all.
+
+The interrupt definition looks better than Enrico's version, but the
+serialization
+still looks incomplete, especially since you added level triggered
+mode. I always
+get confused by those as well, so we'll need to have this reviewed by an
+irqchip person as well, but let's start with my questions for now.
+
+> - Doesn't add any ordering restrictions on the device, it can respond earlier to
+>   the second request, while still processing the first one.
+>
+> - Clearly state that two requests can't be initiated for the same line by device
+>   or driver.
+
+These are good.
+
+The other comments I had regarding the use of errno values, and the
+split between txq/rxq messages are things you inherited from Enrico's
+version, so those need to be resolved regardless.
+
+       Arnd
 
