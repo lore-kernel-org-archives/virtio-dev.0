@@ -1,143 +1,103 @@
-Return-Path: <virtio-dev-return-8376-cohuck=redhat.com@lists.oasis-open.org>
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 94F9C986312
-	for <virtio-dev@lists.oasis-open.org>; Thu, 22 Jul 2021 11:09:24 +0000 (UTC)
-From: Srivatsa Vaddagiri <svaddagi@qti.qualcomm.com>
-Date: Thu, 22 Jul 2021 11:09:16 +0000
-Message-ID: <BY5PR02MB7073904F2843A1FE0860DFD9F9E49@BY5PR02MB7073.namprd02.prod.outlook.com>
-References: <BY5PR02MB7073F1EAF729D30ACFFC67FCF9E49@BY5PR02MB7073.namprd02.prod.outlook.com>,<b380151d-f20e-4e63-f1c3-a3f2220270cf@redhat.com>
-In-Reply-To: <b380151d-f20e-4e63-f1c3-a3f2220270cf@redhat.com>
+Return-Path: <viresh.kumar@linaro.org>
+From: Viresh Kumar <viresh.kumar@linaro.org>
+Subject: [PATCH V5 0/2] virtio: Add specification for virtio-gpio
+Date: Fri, 16 Jul 2021 13:09:17 +0530
+Message-Id: <cover.1626418779.git.viresh.kumar@linaro.org>
 MIME-Version: 1.0
-Subject: Re: [virtio-dev] [PATCH] virtio-mmio: Specify wait needed in driver during
- reset
-Content-Language: en-US
-Content-Type: multipart/alternative;
-	boundary="_000_BY5PR02MB7073904F2843A1FE0860DFD9F9E49BY5PR02MB7073namp_"
-To: Jason Wang <jasowang@redhat.com>, "mst@redhat.com" <mst@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
-Cc: Trilok Soni <tsoni@quicinc.com>, Pratik Patel <pratikp@quicinc.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="US-ASCII"
+To: Jason Wang <jasowang@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>, Cornelia Huck <cohuck@redhat.com>, Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Cc: Viresh Kumar <viresh.kumar@linaro.org>, Vincent Guittot <vincent.guittot@linaro.org>, Arnd Bergmann <arnd@kernel.org>, Jean-Philippe Brucker <jean-philippe@linaro.org>, Bill Mills <bill.mills@linaro.org>, =?UTF-8?q?Alex=20Benn=C3=A9e?= <alex.bennee@linaro.org>, "Enrico Weigelt, metux IT consult" <info@metux.net>, virtio-dev@lists.oasis-open.org, Geert Uytterhoeven <geert@linux-m68k.org>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
---_000_BY5PR02MB7073904F2843A1FE0860DFD9F9E49BY5PR02MB7073namp_
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Hello,
 
-> > This is following up on the discussion we had earlier on MMIO reset
-> > behavior:
-> >
-> > https://lists.oasis-open.org/archives/virtio-dev/202107/msg00012.html
-> > <https://lists.oasis-open.org/archives/virtio-dev/202107/msg00012.html>
-> >
-> > Suggesting below change to spec to make it explicit what's expected in
-> > driver. If this is accepted, I will follow up with a patch to Linux
-> > driver.
-> >
-> > =3D=3D=3D
-> >
-> > Device reset is accomplished by writing 0 to Status register.
-> > Explicitly note
-> > that a driver needs to wait on Status register read returning 0 before
-> > assuming that
-> > device reset operation is complete.
-> > Signed-off-by: Srivatsa Vaddagiri <svaddagi@qti.qualcomm.com>
->
->
->
-> I wonder if it deserves a feature bit.
+This patchset adds virtio specification for GPIO devices. It supports basic GPIO
+line operations, along with optional interrupts on them (in a separate patch).
 
-I see this as fixing a bug in spec/code rather than adding any new feature,=
- so
-perhaps no.
+This is an *alternative implementation* of the virtio-gpio specification,
+another version of it was earlier posted by Enrico [1].
 
-- vatsa
+I took back V4 of the specification I posted earlier (on June 17th), to allow
+Enrico to come up with something that is robust and works for everyone (as he
+started this thing last year), but it didn't go as expected. I couldn't
+see any of my review comments being incorporated (or any intentions of them
+getting in ever) in the two versions Enrico posted and a month passed since
+then.
 
----
+And so I am trying to present an alternative approach here to solve the problem,
+which I believe is more clear and robust. I am open to suggestions to improve it
+further.
 
-Qualcomm Innovation Center, Inc. is submitting the attached "feedback" as a=
- non-member to the virtio-dev mailing list for consideration and inclusion.
+I will let the virtio/gpio maintainers decide on its fate.
+
+Key differences from Enrico's approach [1]:
+
+- config structure is rearranged to remove unnecessary fields/padding, and place
+  gpio_names block in such a way that we can expand the structure easily going
+  forward, if required.
+
+- Supports freeing of a GPIO line after use.
+
+- Interrupt implementation handled with feature bit 0. Either the interrupts are
+  fully supported or not at all.
+
+- Doesn't add any ordering restrictions on the device, it can respond earlier to
+  the second request, while still processing the first one.
+
+- Clearly state that two requests can't be initiated for the same line by device
+  or driver.
 
 
---_000_BY5PR02MB7073904F2843A1FE0860DFD9F9E49BY5PR02MB7073namp_
-Content-Type: text/html; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Version history of the specification I sent:
 
-<html>
-<head>
-<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Diso-8859-=
-1">
-<style type=3D"text/css" style=3D"display:none;"> P {margin-top:0;margin-bo=
-ttom:0;} </style>
-</head>
-<body dir=3D"ltr">
-<div style=3D"font-family: Calibri, Arial, Helvetica, sans-serif; font-size=
-: 12pt; color: rgb(0, 0, 0);">
-&gt; &gt; This is following up on the discussion we had earlier on MMIO res=
-et</div>
-<div style=3D"font-family: Calibri, Arial, Helvetica, sans-serif; font-size=
-: 12pt; color: rgb(0, 0, 0);">
-<div>&gt; &gt; behavior:</div>
-<div>&gt; &gt;</div>
-<div>&gt; &gt; https://lists.oasis-open.org/archives/virtio-dev/202107/msg0=
-0012.html</div>
-<div>&gt; &gt; &lt;https://lists.oasis-open.org/archives/virtio-dev/202107/=
-msg00012.html&gt;</div>
-<div>&gt; &gt;</div>
-<div>&gt; &gt; Suggesting below change to spec to make it explicit what's e=
-xpected in</div>
-<div>&gt; &gt; driver. If this is accepted, I will follow up with a patch t=
-o Linux</div>
-<div>&gt; &gt; driver.</div>
-<div>&gt; &gt;</div>
-<div>&gt; &gt; =3D=3D=3D</div>
-<div>&gt; &gt;</div>
-<div>&gt; &gt; Device reset is accomplished by writing 0 to Status register=
-.</div>
-<div>&gt; &gt; Explicitly note</div>
-<div>&gt; &gt; that a driver needs to wait on Status register read returnin=
-g 0 before</div>
-<div>&gt; &gt; assuming that</div>
-<div>&gt; &gt; device reset operation is complete.</div>
-<div>&gt; &gt; Signed-off-by: Srivatsa Vaddagiri &lt;svaddagi@qti.qualcomm.=
-com&gt;</div>
-<div>&gt; </div>
-<div>&gt; </div>
-<div>&gt; </div>
-<div>&gt; I wonder if it deserves a feature bit.</div>
-<div><br>
-</div>
-<div>I see this as fixing a bug in spec/code rather than adding any new fea=
-ture, so</div>
-<div>perhaps no.</div>
-<div><br>
-</div>
-<span>- vatsa</span><br>
-</div>
-<div style=3D"font-family: Calibri, Arial, Helvetica, sans-serif; font-size=
-: 12pt; color: rgb(0, 0, 0);">
-<span><br>
-</span></div>
-<div style=3D"font-family: Calibri, Arial, Helvetica, sans-serif; font-size=
-: 12pt; color: rgb(0, 0, 0);">
-<span><span style=3D"margin:0px;font-size:12pt;color:black;background-color=
-:white"><span style=3D"margin:0px">---</span></span>
-<div style=3D"margin:0px;font-size:12pt;color:black;background-color:white"=
-><br>
-</div>
-<span style=3D"margin:0px;font-size:12pt;color:black;background-color:white=
-">Qualcomm Innovation Center, Inc. is submitting the attached &quot;feedbac=
-k&quot; as a non-member to the virtio-dev mailing list for consideration an=
-d inclusion.</span><br>
-</span></div>
-<div style=3D"font-family: Calibri, Arial, Helvetica, sans-serif; font-size=
-: 12pt; color: rgb(0, 0, 0);">
-<span><br>
-</span></div>
-</body>
-</html>
+V4 -> V5:
+- Split into two patches, irq stuff in patch 2.
+- Use separate virtqueue for sending data from device/driver.
+- Allow parallel processing of requests for different GPIOs, only one request at
+  a time for the same GPIO line.
+- Same goes for interrupt side, only one interrupt request per GPIO line.
+- Improved formatting in general.
+- Add new sections explaining message flow sequence.
 
---_000_BY5PR02MB7073904F2843A1FE0860DFD9F9E49BY5PR02MB7073namp_--
+V3 -> V4:
+- The GPIO line names must be unique within a device.
+- The gpio_names[0] field is dropped and gpio_names_offset field is
+  added in place of the 2 bytes of padding.
+- New interrupts must not be initiated by the device, without a response
+  for the previous one.
+
+V2 -> V3:
+- Unused char in name string should be marked 0 now.
+- s/host/device/ and s/guest/driver/
+- Added a new feature for IRQ mode, VIRTIO_GPIO_F_IRQ.
+- A new feature should be added for Version information if required
+  later on.
+
+V1 -> V2:
+- gpio_names_size is 32 bit.
+- gpio field is 16 bit.
+- padding added 16 bit.
+- Added packed attribute to few structures
+- Add the missing 'type' field to the request
+- Dropped to _nodata request/responses to simplify a bit, updated
+  related text.
+
+--
+Viresh
+
+[1] https://lists.oasis-open.org/archives/virtio-dev/202106/msg00030.html
+
+Viresh Kumar (2):
+  virtio-gpio: Add the device specification
+  virtio-gpio: Add support for interrupts
+
+ conformance.tex |  26 ++-
+ content.tex     |   3 +-
+ virtio-gpio.tex | 464 ++++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 488 insertions(+), 5 deletions(-)
+ create mode 100644 virtio-gpio.tex
+
+-- 
+2.31.1.272.g89b43f80a514
 
