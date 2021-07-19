@@ -1,58 +1,53 @@
-Return-Path: <geert.uytterhoeven@gmail.com>
-MIME-Version: 1.0
-References: <cover.1626418779.git.viresh.kumar@linaro.org> <4bb66b16dc261acf9d40517c8b7961a52212086b.1626418779.git.viresh.kumar@linaro.org>
+Return-Path: <viresh.kumar@linaro.org>
+Date: Mon, 19 Jul 2021 13:02:49 +0530
+From: Viresh Kumar <viresh.kumar@linaro.org>
+Subject: Re: [PATCH V5 1/2] virtio-gpio: Add the device specification
+Message-ID: <20210719073249.gopt6iqb3gzf2bsn@vireshk-i7>
+References: <cover.1626418779.git.viresh.kumar@linaro.org>
+ <4bb66b16dc261acf9d40517c8b7961a52212086b.1626418779.git.viresh.kumar@linaro.org>
  <CAK8P3a1_ZeSu0XgqF7+zA+_HhZPtQw6rrBkda0djVKwTtAqGLg@mail.gmail.com>
  <CAKohponZQxCp99RUJSNMW2yv2byJ5CkQYwsrh+3thHr2wV=+aA@mail.gmail.com>
- <CAK8P3a0iZCJBLrz652Ez70m7Zj3Tjdm-Jfw_s3wUmdceY8bkNQ@mail.gmail.com>
- <20210719092937.jqwfeouaqwarg2op@vireshk-i7> <CAK8P3a1G-vUXeVB45e5EJvqfuSKxwZ1Zt2xxWAo6z1ZQPPCPrw@mail.gmail.com>
-In-Reply-To: <CAK8P3a1G-vUXeVB45e5EJvqfuSKxwZ1Zt2xxWAo6z1ZQPPCPrw@mail.gmail.com>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Mon, 19 Jul 2021 13:48:12 +0200
-Message-ID: <CAMuHMdU+t0Z+q=fk9wniJ_OhN8yy0O0O9ctdyoZL8+YCq1-XmQ@mail.gmail.com>
-Subject: Re: [PATCH V5 1/2] virtio-gpio: Add the device specification
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+In-Reply-To: <CAKohponZQxCp99RUJSNMW2yv2byJ5CkQYwsrh+3thHr2wV=+aA@mail.gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 To: Arnd Bergmann <arnd@kernel.org>
-Cc: Viresh Kumar <viresh.kumar@linaro.org>, Jason Wang <jasowang@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>, Cornelia Huck <cohuck@redhat.com>, Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Vincent Guittot <vincent.guittot@linaro.org>, Jean-Philippe Brucker <jean-philippe@linaro.org>, Bill Mills <bill.mills@linaro.org>, =?UTF-8?B?QWxleCBCZW5uw6ll?= <alex.bennee@linaro.org>, "Enrico Weigelt, metux IT consult" <info@metux.net>, virtio-dev@lists.oasis-open.org
+Cc: Jason Wang <jasowang@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>, Cornelia Huck <cohuck@redhat.com>, Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Vincent Guittot <vincent.guittot@linaro.org>, Jean-Philippe Brucker <jean-philippe@linaro.org>, Bill Mills <bill.mills@linaro.org>, Alex =?utf-8?Q?Benn=C3=A9e?= <alex.bennee@linaro.org>, "Enrico Weigelt, metux IT consult" <info@metux.net>, virtio-dev@lists.oasis-open.org, Geert Uytterhoeven <geert@linux-m68k.org>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Hi Arnd,
+On 16-07-21, 21:56, Viresh Kumar wrote:
+> On Fri, 16 Jul 2021 at 13:54, Arnd Bergmann <arnd@kernel.org> wrote:
 
-On Mon, Jul 19, 2021 at 12:40 PM Arnd Bergmann <arnd@kernel.org> wrote:
-> On Mon, Jul 19, 2021 at 11:29 AM Viresh Kumar <viresh.kumar@linaro.org> wrote:
-> > On 16-07-21, 20:20, Arnd Bergmann wrote:
-> > > I still don't quite get it. Why would the guest care about a stable name?
-> >
-> > For Linux userspace, debugging mostly, at guest userspace. Like what you get out
-> > of /sys/class/gpio/gpiochipN/label or in debugfs.
-> >
-> > i.e. to easily identify the chip there since device names aren't fixed
-> > otherwise.
-> >
-> > Though this was initially added by Enrico and I never though of removing it. If
-> > you still think it is a waste, will get rid of it.
->
-> I still don't see it as an important enough part of the interface to be encoded
-> in the virtio spec. In the most likely use cases I can think of, you would never
-> need more than one gpio controller in a virtio machine, since you can have
-> an arbitrary number of lines connected to it already.
->
-> This also simplifies the host side, as it avoids requiring the host to configure
-> a name that ends up being the same almost always.
+> > As they are always treated as a transaction, wouldn't it be easier to have
+> > a single virtqueue and make each transaction have both an input and an
+> > output buffer?
+> parallel
+> 
+> That's what I did initially (and that's we did in I2C as well), but
+> then I realised
+> that it may not work well with transactions done in parallel.
+> 
+> For example, we want to allow setting direction to input for pins 5 and 8 in
+> parallel. I at that time thought that with using a single virtqueue for both
+> request/response messages may block the virtqueue for further usage. But
+> now that I think about it a bit more, it may not.
+> 
+> We should still be able to identify different response messages based on the
+> address of the buffer (for example) and so what you are suggesting may
+> actually work and won't be a bottleneck as I thought of it earlier.
+> 
+> If this works fine, I will move back to one virtqueue for all non-irq
+> stuff, like I
+> had until V4 and one virtqueue only for interrupt processing.
 
-Exactly, using the GPIO aggregator you can aggregate all GPIOs you want
-to export to a specific guest, followed by adjusting the permissions
-on the newly created /dev/gpiochip*.
+Okay, I tested this and it works. I was able to send multiple requests in
+parallel and it worked out fine.
 
-Note to $self: look into interrupt support for the GPIO Aggregator.
+So I am going to switch back to what I had earlier, i.e. one virtqueue for all
+requests originating from driver and its response from device.
 
-Gr{oetje,eeting}s,
-
-                        Geert
+And a different virtqueue for interrupts.
 
 -- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+viresh
 
