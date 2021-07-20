@@ -1,14 +1,9 @@
-Return-Path: <virtio-comment-return-2017-cohuck=redhat.com@lists.oasis-open.org>
-Sender: <virtio-comment@lists.oasis-open.org>
-List-Post: <mailto:virtio-comment@lists.oasis-open.org>
-List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
-From: Cornelia Huck <cohuck@redhat.com>
-In-Reply-To: <YPaOYTAHaHYcelth@stefanha-x1.localdomain>
-References: <8a2037df-e527-dcb4-c4c8-a568885180e4@redhat.com>
- <YO60HpxfZnmfMCMj@stefanha-x1.localdomain>
- <094e15d4-169a-87e9-5ebb-93439ea72831@redhat.com>
+Return-Path: <stefanha@redhat.com>
+Date: Tue, 20 Jul 2021 13:47:24 +0100
+From: Stefan Hajnoczi <stefanha@redhat.com>
+Subject: Re: [virtio-comment] [PATCH V2 2/2] virtio: introduce STOP status bit
+Message-ID: <YPbF3D3zG5Dsy5ZH@stefanha-x1.localdomain>
+References: <094e15d4-169a-87e9-5ebb-93439ea72831@redhat.com>
  <YO79tuI72kTEWURN@stefanha-x1.localdomain>
  <1ab19438-cc13-bbe5-7fec-53a113d85463@redhat.com>
  <YPAHcG7bxhlIGVeE@stefanha-x1.localdomain>
@@ -17,69 +12,82 @@ References: <8a2037df-e527-dcb4-c4c8-a568885180e4@redhat.com>
  <YPVz9A/DkawlKoD1@stefanha-x1.localdomain>
  <0213e6c2-59aa-f140-7231-36231b42051d@redhat.com>
  <YPaOYTAHaHYcelth@stefanha-x1.localdomain>
-Date: Tue, 20 Jul 2021 12:48:43 +0200
-Message-ID: <87o8ax8dmc.fsf@redhat.com>
+ <87o8ax8dmc.fsf@redhat.com>
 MIME-Version: 1.0
-Subject: Re: [virtio-comment] [PATCH V2 2/2] virtio: introduce STOP status bit
-Content-Type: text/plain
-To: Stefan Hajnoczi <stefanha@redhat.com>, Jason Wang <jasowang@redhat.com>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>, Eugenio Perez Martin <eperezma@redhat.com>, "Dr. David Alan Gilbert" <dgilbert@redhat.com>, virtio-comment@lists.oasis-open.org, Virtio-Dev <virtio-dev@lists.oasis-open.org>, Max Gurtovoy <mgurtovoy@nvidia.com>, Oren Duer <oren@nvidia.com>, Shahaf Shuler <shahafs@nvidia.com>, Parav Pandit <parav@nvidia.com>, Bodong Wang <bodong@nvidia.com>, Alexander Mikheev <amikheev@nvidia.com>, Halil Pasic <pasic@linux.ibm.com>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="m3yg3qN6+Ja7XLg7"
+Content-Disposition: inline
+In-Reply-To: <87o8ax8dmc.fsf@redhat.com>
+To: Cornelia Huck <cohuck@redhat.com>
+Cc: Jason Wang <jasowang@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>, Eugenio Perez Martin <eperezma@redhat.com>, "Dr. David Alan Gilbert" <dgilbert@redhat.com>, virtio-comment@lists.oasis-open.org, Virtio-Dev <virtio-dev@lists.oasis-open.org>, Max Gurtovoy <mgurtovoy@nvidia.com>, Oren Duer <oren@nvidia.com>, Shahaf Shuler <shahafs@nvidia.com>, Parav Pandit <parav@nvidia.com>, Bodong Wang <bodong@nvidia.com>, Alexander Mikheev <amikheev@nvidia.com>, Halil Pasic <pasic@linux.ibm.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Tue, Jul 20 2021, Stefan Hajnoczi <stefanha@redhat.com> wrote:
 
-> On Tue, Jul 20, 2021 at 11:04:55AM +0800, Jason Wang wrote:
->> Let me clarify, I agree we can't have a standard device state for all kinds
->> of device.
->> 
->> That's way I tend to leave them to be device specific. (but not
->> implementation specific)
->
-> Unfortunately device state is sometimes implementation-specific. Not
-> because the device is proprietary, but because the actual state is
-> meaningless to other implementations.
->
-> I mentioned virtiofs as an example where file system backends can be
-> implemented in completely different ways so the device state cannot be
-> migrated between implementations.
->
->> But we can generalize the virtqueue state for sure.
->
-> I agree and also that some device types can standardize their device
-> state representations. But I think it's a technical requirement to
-> support implementation-specific state for device types where
-> cross-implementation migration is not possible.
->
-> I'm not saying the implementation-specific state representation has to
-> be a binary blob. There could be an identifier registry to ensure live
-> migration compatibility checks can be performed. There could also be a
-> standard binary encoding for migration data. But the contents will be
-> implementation-specific for some devices.
+--m3yg3qN6+Ja7XLg7
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Can we at least put those implementation-specific states into some kind
-of structured, standardized form? E.g. something like
+On Tue, Jul 20, 2021 at 12:48:43PM +0200, Cornelia Huck wrote:
+> On Tue, Jul 20 2021, Stefan Hajnoczi <stefanha@redhat.com> wrote:
+>=20
+> > On Tue, Jul 20, 2021 at 11:04:55AM +0800, Jason Wang wrote:
+> >> Let me clarify, I agree we can't have a standard device state for all =
+kinds
+> >> of device.
+> >>=20
+> >> That's way I tend to leave them to be device specific. (but not
+> >> implementation specific)
+> >
+> > Unfortunately device state is sometimes implementation-specific. Not
+> > because the device is proprietary, but because the actual state is
+> > meaningless to other implementations.
+> >
+> > I mentioned virtiofs as an example where file system backends can be
+> > implemented in completely different ways so the device state cannot be
+> > migrated between implementations.
+> >
+> >> But we can generalize the virtqueue state for sure.
+> >
+> > I agree and also that some device types can standardize their device
+> > state representations. But I think it's a technical requirement to
+> > support implementation-specific state for device types where
+> > cross-implementation migration is not possible.
+> >
+> > I'm not saying the implementation-specific state representation has to
+> > be a binary blob. There could be an identifier registry to ensure live
+> > migration compatibility checks can be performed. There could also be a
+> > standard binary encoding for migration data. But the contents will be
+> > implementation-specific for some devices.
+>=20
+> Can we at least put those implementation-specific states into some kind
+> of structured, standardized form? E.g. something like
+>=20
+> <type category: file system backend data>
+> <type identifier: file system foo>
+> <length>
+> <data>
+>=20
+> so that we can at least do compat checks for "I know how to handle foo"?
 
-<type category: file system backend data>
-<type identifier: file system foo>
-<length>
-<data>
+Yes, that's what I was trying to describe.
 
-so that we can at least do compat checks for "I know how to handle foo"?
+Stefan
 
+--m3yg3qN6+Ja7XLg7
+Content-Type: application/pgp-signature; name="signature.asc"
 
-This publicly archived list offers a means to provide input to the
-OASIS Virtual I/O Device (VIRTIO) TC.
+-----BEGIN PGP SIGNATURE-----
 
-In order to verify user consent to the Feedback License terms and
-to minimize spam in the list archive, subscription is required
-before posting.
+iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmD2xdwACgkQnKSrs4Gr
+c8gHrwf6AwDZth12ypmWBZsCSRMMJ6DJoYAt4FbYGLVQLlVdLSjLGqZiO6mtQuu5
++JszIqHHsEoD3lewCndKqaLF60qrjCrTUiOlkZDnlGDb1fqzx+vPA1cghtiHna/s
+dEXrNNg/bW5xgqz5tkYUbGyLxTOeYDRqpK2rDtC4c5k/81A3Bji9lfPcjlikcNS7
+vWoxnUVVcSHzCaZ+iA6bVOeUNkFyaVDXRyxwqGY21VoAwPCBwTddPdAojWPdEdTQ
+Nk/3VrNoYsx4uQnOXFfUH1aebc4hTYOU0Zeyd3VAKM/FJrdnUdyOZTjU+CJZ7owl
+6ivzlfpjikMIPprqaJKlB1y83/MvMg==
+=Jf6A
+-----END PGP SIGNATURE-----
 
-Subscribe: virtio-comment-subscribe@lists.oasis-open.org
-Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
-List help: virtio-comment-help@lists.oasis-open.org
-List archive: https://lists.oasis-open.org/archives/virtio-comment/
-Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
-List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
-Committee: https://www.oasis-open.org/committees/virtio/
-Join OASIS: https://www.oasis-open.org/join/
+--m3yg3qN6+Ja7XLg7--
 
