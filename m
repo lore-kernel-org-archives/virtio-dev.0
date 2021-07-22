@@ -1,49 +1,67 @@
-Return-Path: <svaddagi@qti.qualcomm.com>
+Return-Path: <virtio-dev-return-8376-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id 94F9C986312
+	for <virtio-dev@lists.oasis-open.org>; Thu, 22 Jul 2021 11:09:24 +0000 (UTC)
+From: Srivatsa Vaddagiri <svaddagi@qti.qualcomm.com>
+Date: Thu, 22 Jul 2021 11:09:16 +0000
+Message-ID: <BY5PR02MB7073904F2843A1FE0860DFD9F9E49@BY5PR02MB7073.namprd02.prod.outlook.com>
+References: <BY5PR02MB7073F1EAF729D30ACFFC67FCF9E49@BY5PR02MB7073.namprd02.prod.outlook.com>,<b380151d-f20e-4e63-f1c3-a3f2220270cf@redhat.com>
+In-Reply-To: <b380151d-f20e-4e63-f1c3-a3f2220270cf@redhat.com>
+MIME-Version: 1.0
 Subject: Re: [virtio-dev] [PATCH] virtio-mmio: Specify wait needed in driver during
  reset
-From: Srivatsa Vaddagiri <svaddagi@qti.qualcomm.com>
-Date: Thu, 22 Jul 2021 15:41:49 +0000
-Message-ID: <BY5PR02MB7073E8361281BB624E320FA4F9E49@BY5PR02MB7073.namprd02.prod.outlook.com>
-References: <BY5PR02MB7073F1EAF729D30ACFFC67FCF9E49@BY5PR02MB7073.namprd02.prod.outlook.com>
- <b380151d-f20e-4e63-f1c3-a3f2220270cf@redhat.com>
- <87pmva7h06.fsf@redhat.com>,<f2b9203c-faaf-9aba-faad-0df2c199cb94@redhat.com>
-In-Reply-To: <f2b9203c-faaf-9aba-faad-0df2c199cb94@redhat.com>
-MIME-Version: 1.0
 Content-Language: en-US
 Content-Type: multipart/alternative;
-	boundary="_000_BY5PR02MB7073E8361281BB624E320FA4F9E49BY5PR02MB7073namp_"
-To: Jason Wang <jasowang@redhat.com>, Cornelia Huck <cohuck@redhat.com>, "mst@redhat.com" <mst@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
+	boundary="_000_BY5PR02MB7073904F2843A1FE0860DFD9F9E49BY5PR02MB7073namp_"
+To: Jason Wang <jasowang@redhat.com>, "mst@redhat.com" <mst@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
 Cc: Trilok Soni <tsoni@quicinc.com>, Pratik Patel <pratikp@quicinc.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
---_000_BY5PR02MB7073E8361281BB624E320FA4F9E49BY5PR02MB7073namp_
+--_000_BY5PR02MB7073904F2843A1FE0860DFD9F9E49BY5PR02MB7073namp_
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 
-> >> I wonder if it deserves a feature bit.
-> > Not sure what that feature bit should govern; if it is not negotiated,
-> > the device must assume that the driver considers the reset to be
-> > complete right after writing? I'm not sure what the device is supposed
-> > to do then.
+> > This is following up on the discussion we had earlier on MMIO reset
+> > behavior:
+> >
+> > https://lists.oasis-open.org/archives/virtio-dev/202107/msg00012.html
+> > <https://lists.oasis-open.org/archives/virtio-dev/202107/msg00012.html>
+> >
+> > Suggesting below change to spec to make it explicit what's expected in
+> > driver. If this is accepted, I will follow up with a patch to Linux
+> > driver.
+> >
+> > =3D=3D=3D
+> >
+> > Device reset is accomplished by writing 0 to Status register.
+> > Explicitly note
+> > that a driver needs to wait on Status register read returning 0 before
+> > assuming that
+> > device reset operation is complete.
+> > Signed-off-by: Srivatsa Vaddagiri <svaddagi@qti.qualcomm.com>
 >
 >
-> The (hardware) device can refuse the feature negotiation if driver
-> doesn't support the feature.
 >
-> This makes sure the driver is not broken by the device.
+> I wonder if it deserves a feature bit.
 
-Let me send the next patch with a new feature bit added. I guess I can use =
-bit
-40 for it (VIRTIO_F_MMIO_RESET_WAIT)?
+I see this as fixing a bug in spec/code rather than adding any new feature,=
+ so
+perhaps no.
 
 - vatsa
 
 ---
 
-Qualcomm Innovation Center, Inc. is submitting the attached "feedback" as a
-non-member to the virtio-dev mailing list for consideration and inclusion.
+Qualcomm Innovation Center, Inc. is submitting the attached "feedback" as a=
+ non-member to the virtio-dev mailing list for consideration and inclusion.
 
---_000_BY5PR02MB7073E8361281BB624E320FA4F9E49BY5PR02MB7073namp_
+
+--_000_BY5PR02MB7073904F2843A1FE0860DFD9F9E49BY5PR02MB7073namp_
 Content-Type: text/html; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 
@@ -57,41 +75,69 @@ ttom:0;} </style>
 <body dir=3D"ltr">
 <div style=3D"font-family: Calibri, Arial, Helvetica, sans-serif; font-size=
 : 12pt; color: rgb(0, 0, 0);">
-&gt; &gt;&gt; I wonder if it deserves a feature bit.
-<div>&gt; &gt; Not sure what that feature bit should govern; if it is not n=
-egotiated,</div>
-<div>&gt; &gt; the device must assume that the driver considers the reset t=
-o be</div>
-<div>&gt; &gt; complete right after writing? I'm not sure what the device i=
-s supposed</div>
-<div>&gt; &gt; to do then.</div>
+&gt; &gt; This is following up on the discussion we had earlier on MMIO res=
+et</div>
+<div style=3D"font-family: Calibri, Arial, Helvetica, sans-serif; font-size=
+: 12pt; color: rgb(0, 0, 0);">
+<div>&gt; &gt; behavior:</div>
+<div>&gt; &gt;</div>
+<div>&gt; &gt; https://lists.oasis-open.org/archives/virtio-dev/202107/msg0=
+0012.html</div>
+<div>&gt; &gt; &lt;https://lists.oasis-open.org/archives/virtio-dev/202107/=
+msg00012.html&gt;</div>
+<div>&gt; &gt;</div>
+<div>&gt; &gt; Suggesting below change to spec to make it explicit what's e=
+xpected in</div>
+<div>&gt; &gt; driver. If this is accepted, I will follow up with a patch t=
+o Linux</div>
+<div>&gt; &gt; driver.</div>
+<div>&gt; &gt;</div>
+<div>&gt; &gt; =3D=3D=3D</div>
+<div>&gt; &gt;</div>
+<div>&gt; &gt; Device reset is accomplished by writing 0 to Status register=
+.</div>
+<div>&gt; &gt; Explicitly note</div>
+<div>&gt; &gt; that a driver needs to wait on Status register read returnin=
+g 0 before</div>
+<div>&gt; &gt; assuming that</div>
+<div>&gt; &gt; device reset operation is complete.</div>
+<div>&gt; &gt; Signed-off-by: Srivatsa Vaddagiri &lt;svaddagi@qti.qualcomm.=
+com&gt;</div>
 <div>&gt; </div>
 <div>&gt; </div>
-<div>&gt; The (hardware) device can refuse the feature negotiation if drive=
-r</div>
-<div>&gt; doesn't support the feature.</div>
 <div>&gt; </div>
-<div>&gt; This makes sure the driver is not broken by the device.</div>
+<div>&gt; I wonder if it deserves a feature bit.</div>
 <div><br>
 </div>
-<div>Let me send the next patch with a new feature bit added. I guess I can=
- use bit</div>
-<div>40 for it (VIRTIO_F_MMIO_RESET_WAIT)?</div>
+<div>I see this as fixing a bug in spec/code rather than adding any new fea=
+ture, so</div>
+<div>perhaps no.</div>
 <div><br>
 </div>
-<div>- vatsa</div>
-<div><br>
+<span>- vatsa</span><br>
 </div>
-<div>---</div>
-<div><br>
+<div style=3D"font-family: Calibri, Arial, Helvetica, sans-serif; font-size=
+: 12pt; color: rgb(0, 0, 0);">
+<span><br>
+</span></div>
+<div style=3D"font-family: Calibri, Arial, Helvetica, sans-serif; font-size=
+: 12pt; color: rgb(0, 0, 0);">
+<span><span style=3D"margin:0px;font-size:12pt;color:black;background-color=
+:white"><span style=3D"margin:0px">---</span></span>
+<div style=3D"margin:0px;font-size:12pt;color:black;background-color:white"=
+><br>
 </div>
-<div>Qualcomm Innovation Center, Inc. is submitting the attached &quot;feed=
-back&quot; as a</div>
-<span>non-member to the virtio-dev mailing list for consideration and inclu=
-sion.</span><br>
-</div>
+<span style=3D"margin:0px;font-size:12pt;color:black;background-color:white=
+">Qualcomm Innovation Center, Inc. is submitting the attached &quot;feedbac=
+k&quot; as a non-member to the virtio-dev mailing list for consideration an=
+d inclusion.</span><br>
+</span></div>
+<div style=3D"font-family: Calibri, Arial, Helvetica, sans-serif; font-size=
+: 12pt; color: rgb(0, 0, 0);">
+<span><br>
+</span></div>
 </body>
 </html>
 
---_000_BY5PR02MB7073E8361281BB624E320FA4F9E49BY5PR02MB7073namp_--
+--_000_BY5PR02MB7073904F2843A1FE0860DFD9F9E49BY5PR02MB7073namp_--
 
