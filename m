@@ -1,641 +1,159 @@
-Return-Path: <virtio-comment-return-2057-cohuck=redhat.com@lists.oasis-open.org>
-Sender: <virtio-comment@lists.oasis-open.org>
-List-Post: <mailto:virtio-comment@lists.oasis-open.org>
-List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
-From: "Enrico Weigelt, metux IT consult" <info@metux.net>
-Date: Mon, 26 Jul 2021 15:37:34 +0200
-Message-Id: <20210726133734.21678-1-info@metux.net>
+Return-Path: <virtio-dev-return-8370-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id 4AEE7986312
+	for <virtio-dev@lists.oasis-open.org>; Thu, 22 Jul 2021 09:20:00 +0000 (UTC)
+From: Srivatsa Vaddagiri <svaddagi@qti.qualcomm.com>
+Date: Thu, 22 Jul 2021 09:19:56 +0000
+Message-ID: <BY5PR02MB7073F1EAF729D30ACFFC67FCF9E49@BY5PR02MB7073.namprd02.prod.outlook.com>
 MIME-Version: 1.0
-Subject: [virtio-comment] [PATCH] virtio-gpio: add formal specification
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="US-ASCII"
-To: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, linux-gpio@vger.kernel.org, geert@linux-m68k.org, arnd@linaro.org, mst@redhat.com
+Subject: [virtio-dev] [PATCH] virtio-mmio: Specify wait needed in driver during reset
+Content-Language: en-US
+Content-Type: multipart/alternative;
+	boundary="_000_BY5PR02MB7073F1EAF729D30ACFFC67FCF9E49BY5PR02MB7073namp_"
+To: "mst@redhat.com" <mst@redhat.com>, "jasowang@redhat.com" <jasowang@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
+Cc: Trilok Soni <tsoni@quicinc.com>, Pratik Patel <pratikp@quicinc.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-This patch adds specification for attaching general purpose IO (gpio) devic=
-es
-via virtio. The protocol is specifically designed to be easily implemented =
-in
-software (e.g. hypervisors) as well as low end hardware (eg. silicon, FPGA,
-tiny MCUs) both both device and driver end, and allows future extensions wh=
-ile
-retaining full backwards compatibility.
+--_000_BY5PR02MB7073F1EAF729D30ACFFC67FCF9E49BY5PR02MB7073namp_
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
-Implementations for driver (Linux kernel) and device (Qemu) are publically
-available and field tested since late 2020. Hardware implementations also
-exist (but proprietary, cannot be published yet).
+This is following up on the discussion we had earlier on MMIO reset behavio=
+r:
 
-Device type ID 41 has been allocated by TC vote #3632.
+https://lists.oasis-open.org/archives/virtio-dev/202107/msg00012.html
 
-Signed-off-by: Enrico Weigelt, metux IT consult <info@metux.net>
+Suggesting below change to spec to make it explicit what's expected in driv=
+er. If this is accepted, I will follow up with a patch to Linux driver.
 
----
+=3D=3D=3D
 
-changes v3: * moved arbitration into an optional feature
-            * clarification on feature bits vs versions
-            * clarification on max concurrent requests (queue size)
-            * explicit definition of error codes
-            * optional IRQ masking
-            * moved spec text into subdir 'devices'
-            * added explaination of important design considerations
+Device reset is accomplished by writing 0 to Status register. Explicitly no=
+te
+that a driver needs to wait on Status register read returning 0 before assu=
+ming that
+device reset operation is complete.
 
-changes v2: * fixed htlatex build error with underscores in labels
-            * using code listings for structs and define's
-            * fixed mixed-up device/driver wording
----
- conformance.tex         |  28 ++-
- content.tex             |   3 +-
- devices/virtio-gpio.tex | 381 ++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 407 insertions(+), 5 deletions(-)
- create mode 100644 devices/virtio-gpio.tex
+Signed-off-by: Srivatsa Vaddagiri <svaddagi@qti.qualcomm.com>
 
-diff --git a/conformance.tex b/conformance.tex
-index 94d7a06..4bdaac4 100644
---- a/conformance.tex
-+++ b/conformance.tex
-@@ -30,8 +30,9 @@ \section{Conformance Targets}\label{sec:Conformance / Con=
-formance Targets}
- \ref{sec:Conformance / Driver Conformance / IOMMU Driver Conformance},
- \ref{sec:Conformance / Driver Conformance / Sound Driver Conformance},
- \ref{sec:Conformance / Driver Conformance / Memory Driver Conformance},
--\ref{sec:Conformance / Driver Conformance / I2C Adapter Driver Conformance=
-} or
--\ref{sec:Conformance / Driver Conformance / SCMI Driver Conformance}.
-+\ref{sec:Conformance / Driver Conformance / I2C Adapter Driver Conformance=
-},
-+\ref{sec:Conformance / Driver Conformance / SCMI Driver Conformance} or
-+\ref{sec:Conformance / Driver Conformance / General Purpose IO Driver Conf=
-ormance}.
-=20
-     \item Clause \ref{sec:Conformance / Legacy Interface: Transitional Dev=
-ice and Transitional Driver Conformance}.
-   \end{itemize}
-@@ -54,8 +55,9 @@ \section{Conformance Targets}\label{sec:Conformance / Con=
-formance Targets}
- \ref{sec:Conformance / Device Conformance / IOMMU Device Conformance},
- \ref{sec:Conformance / Device Conformance / Sound Device Conformance},
- \ref{sec:Conformance / Device Conformance / Memory Device Conformance},
--\ref{sec:Conformance / Device Conformance / I2C Adapter Device Conformance=
-} or
--\ref{sec:Conformance / Device Conformance / SCMI Device Conformance}.
-+\ref{sec:Conformance / Device Conformance / I2C Adapter Device Conformance=
-},
-+\ref{sec:Conformance / Device Conformance / SCMI Device Conformance} or
-+\ref{sec:Conformance / Device Conformance / General Purpose IO Device Conf=
-ormance}.
-=20
-     \item Clause \ref{sec:Conformance / Legacy Interface: Transitional Dev=
-ice and Transitional Driver Conformance}.
-   \end{itemize}
-@@ -301,6 +303,15 @@ \section{Conformance Targets}\label{sec:Conformance / =
-Conformance Targets}
- \item \ref{drivernormative:Device Types / SCMI Device / Device Operation /=
- Setting Up eventq Buffers}
- \end{itemize}
-=20
-+\conformance{\subsection}{General Purpose IO Driver Conformance}\label{sec=
-:Conformance / Driver Conformance / General Purpose IO Driver Conformance}
-+
-+An General Purpose IO driver MUST conform to the following normative state=
-ments:
-+
-+\begin{itemize}
-+\item \ref{devicenormative:Device Types / General Purpose IO / Virtqueues}
-+\item \ref{devicenormative:Device Types / General Purpose IO / Data flow}
-+\end{itemize}
-+
- \conformance{\section}{Device Conformance}\label{sec:Conformance / Device =
-Conformance}
-=20
- A device MUST conform to the following normative statements:
-@@ -550,6 +561,15 @@ \section{Conformance Targets}\label{sec:Conformance / =
-Conformance Targets}
- \item \ref{devicenormative:Device Types / SCMI Device / Device Operation /=
- Shared Memory Operation}
- \end{itemize}
-=20
-+\conformance{\subsection}{General Purpose IO Device Conformance}\label{sec=
-:Conformance / Device Conformance / General Purpose IO Device Conformance}
-+
-+An General Purpose IO device MUST conform to the following normative state=
-ments:
-+
-+\begin{itemize}
-+\item \ref{devicenormative:Device Types / General Purpose IO / Virtqueues}
-+\item \ref{devicenormative:Device Types / General Purpose IO / Data flow}
-+\end{itemize}
-+
- \conformance{\section}{Legacy Interface: Transitional Device and Transitio=
-nal Driver Conformance}\label{sec:Conformance / Legacy Interface: Transitio=
-nal Device and Transitional Driver Conformance}
- A conformant implementation MUST be either transitional or
- non-transitional, see \ref{intro:Legacy
 diff --git a/content.tex b/content.tex
-index ceb2562..a5e1ec4 100644
+index 5c70a3c..7631be4 100644
 --- a/content.tex
 +++ b/content.tex
-@@ -2876,7 +2876,7 @@ \chapter{Device Types}\label{sec:Device Types}
- \hline
- 40         &   Bluetooth device \\
- \hline
--41         &   GPIO device \\
-+41         &   General Purpose IO device \\
- \hline
- \end{tabular}
-=20
-@@ -6583,6 +6583,7 @@ \subsubsection{Legacy Interface: Framing Requirements=
-}\label{sec:Device
- \input{virtio-mem.tex}
- \input{virtio-i2c.tex}
- \input{virtio-scmi.tex}
-+\input{devices/virtio-gpio.tex}
-=20
- \chapter{Reserved Feature Bits}\label{sec:Reserved Feature Bits}
-=20
-diff --git a/devices/virtio-gpio.tex b/devices/virtio-gpio.tex
-new file mode 100644
-index 0000000..8417acb
---- /dev/null
-+++ b/devices/virtio-gpio.tex
-@@ -0,0 +1,381 @@
-+\section{General Purpose IO Device}\label{sec:Device Types / General Purpo=
-se IO}
-+
-+The virtio gpio device is a general purpose IO device that supports a vari=
-able
-+number of named IO lines that may be switched either as input or output an=
-d
-+in logical level 0 or 1.
-+
-+\subsection{Device ID}\label{sec:Device Types / General Purpose IO / Devic=
-e ID}
-+  41
-+
-+\subsection{Version}\label{sec:Device Types / General Purpose IO / Version=
-}
-+  1
-+
-+\subsection{Device configuration layout}\label{sec:Device Types / General =
-Purpose IO / Device configuration layout}
-+
-+General purpose IO configuration uses the following layout structure:
-+
-+\begin{lstlisting}
-+struct virtio_gpio_config {
-+    __u8    version;
-+    __u8    reserved0;
-+    __u16   num_gpios;
-+    __u32   names_size;
-+    __u8    reserved1[24];
-+    __u8    name[32];
-+    __u8    line_names[];
-+};
-+\end{lstlisting}
-+
-+\begin{itemize}
-+    \item for \field{version} field currently only value 1 supported.
-+    \item the \field{line names block} holds a stream of zero-terminated s=
-trings,
-+        containing the individual line names in ASCII. line names must uni=
-que.
-+    \item the \field{name} field may contain a zero terminated device name
-+          or serial number in ASCII.
-+    \item unspecified fields are reserved for future use and should be zer=
-o.
-+    \item future versions may extend this configuration space by additiona=
-l fields.
-+\end{itemize}
-+
-+\subsection{Feature bits}\label{sec:Device Types / General Purpose IO / Fe=
-ature bits}
-+
-+\begin{description}
-+\item[VIRTIO_GPIO_F_ARBITRATION (0)] line arbitration -- REQUEST and RELEA=
-SE operations.
-+\item[VIRTIO_GPIO_F_IRQ (1)] IRQ control
-+\end{description}
-+
-+\subsection{Virtqueues}\label{sec:Device Types / General Purpose IO / Virt=
-queues}
-+\begin{description}
-+\item[0] rx (device to CPU)
-+\item[1] tx (CPU to device)
-+\end{description}
-+
-+The virtqueues transport messages of the type struct virtio_gpio_msg from =
-device to CPU or CPU to device.
-+
-+\subsubsection{Virtqueues}\label{sec:Device Types / General Purpose IO / V=
-irtqueues / Message format}
-+
-+The queues transport messages of the struct virtio_gpio_msg:
-+
-+\begin{lstlisting}
-+struct virtio_gpio_msg {
-+    __le16  type;
-+    __le16  pin;
-+    __le32  value;
-+};
-+\end{lstlisting}
-+
-+\subsubsection{Message types}\label{sec:Device Types / General Purpose IO =
-/ Virtqueues / Message types}
-+
-+\begin{lstlisting}
-+/* messages types: driver -> device */
-+#define VIRTIO_GPIO_MSG_CPU_REQUEST             0x0001
-+#define VIRTIO_GPIO_MSG_CPU_DIRECTION_INPUT     0x0002
-+#define VIRTIO_GPIO_MSG_CPU_DIRECTION_OUTPUT    0x0003
-+#define VIRTIO_GPIO_MSG_CPU_GET_DIRECTION       0x0004
-+#define VIRTIO_GPIO_MSG_CPU_GET_LEVEL           0x0005
-+#define VIRTIO_GPIO_MSG_CPU_SET_LEVEL           0x0006
-+#define VIRTIO_GPIO_MSG_CPU_RELEASE             0x0007
-+#define VIRTIO_GPIO_MSG_CPU_SET_IRQ             0x0008
-+
-+/* message types: device -> driver */
-+#define VIRTIO_GPIO_MSG_DEVICE_LEVEL            0x0011
-+
-+/* reply mask: device sets this bit on replies (along with request's messa=
-ge type)
-+#define VIRTIO_GPIO_MSG_REPLY                   0x8000
-+\end{lstlisting}
-+
-+\subsubsection{Error codes}\label{sec:Device Types / General Purpose IO / =
-Virtqueues / Error codes}
-+
-+If requests result in an error, the device shall respond with an appropria=
-te
-+error code, which is encoded as \textbf{negative} value in the reply messa=
-ge's
-+\textit{value} field.
-+
-+\begin{lstlisting}
-+/* success, no error */
-+#define VIRTIO_GPIO_ERR_OK      0x0000
-+/* internal fault */
-+#define VIRTIO_GPIO_ERR_FAULT   0x0001
-+/* requested pin does not exist */
-+#define VIRTIO_GPIO_ERR_NO_PIN  0x0002
-+/* communications error */
-+#define VIRTIO_GPIO_ERR_COMM    0x0003
-+/* configuration not supported */
-+#define VIRTIO_GPIO_ERR_INVAL   0x0004
-+\end{lstlisting}
-+
-+\devicenormative{\subsubsection}{Virtqueues}{Device Types / General Purpos=
-e IO / Virtqueues}
-+
-+The device MUST read from the tx queue and write to rx queue.
-+
-+The device MUST NOT write to the tx queue.
-+
-+\drivernormative{\subsubsection}{Virtqueues}{Device Types / General Purpos=
-e IO / Virtqueues}
-+
-+The device MUST read from the rx queue and write to tx queue.
-+
-+The device MUST NOT write to the rx queue.
-+
-+\subsection{Data flow}\label{sec:Device Types / General Purpose IO / Data =
-flow}
-+
-+\begin{itemize}
-+    \item all operations, except \field{VIRTIO_GPIO_MSG_DEVICE_LEVEL}, are=
- initiated by CPU (tx queue)
-+    \item device replies with the orinal \field{type} value OR'ed with \fi=
-eld{VIRTIO_GPIO_MSG_REPLY} (rx queue)
-+    \item requests are processed and replied in the they had been sent
-+    \item the number of concurrent requests is limited by the device's que=
-ue size
-+    \item async notifications by the device may be interleaved with reques=
-t responses
-+    \item VIRTIO_GPIO_MSG_DEVICE_LEVEL is only sent asynchronously from de=
-vice to CPU
-+    \item in replies, a negative \field{value} field denotes an error code
-+    \item in level or direction values, only bit 0 shall be used
-+    \item valid direction values are: bit 0: 0 =3D output, 1 =3D input
-+    \item valid line level values are: bit 0: 0 =3D inactive, 1 =3D active
-+    \item CPU should not send messages with unspecified \field{type} value
-+    \item CPU should ignore ignore messages with unspecified \field{type} =
-value
-+\end{itemize}
-+
-+\subsubsection{VIRTIO_GPIO_MSG_CPU_REQUEST}\label{sec:Device Types / Gener=
-al Purpose IO / Data flow / VIRTIO-GPIO-MSG-CPU-REQUEST}
-+
-+Notify the device that given line number is going to be used.
-+
-+Only available if feature bit VIRTIO_GPIO_F_ARBITRATION is set.
-+
-+\begin{tabular}{ll}
-+    \hline
-+    \textbf{request:} & \\
-+    \hline
-+    \field{line}  field: & logical line number \\
-+    \field{value} field: & unused (should be zero) \\
-+    \textbf{reply:} & \\
-+    \hline
-+    \field{value} field: & error code (0 =3D success) \\
-+    \hline
-+\end{tabular}
-+
-+\subsubsection{VIRTIO_GPIO_MSG_CPU_RELEASE}\label{sec:Device Types / Gener=
-al Purpose IO / Data flow / VIRTIO-GPIO-MSG-CPU-RELEASE}
-+
-+Notify the device that given line number is not used anymore.
-+
-+Only available if feature bit VIRTIO_GPIO_F_ARBITRATION is set.
-+
-+\begin{tabular}{ll}
-+    \hline
-+    \textbf{request:} & \\
-+    \hline
-+    \field{line}  field: & logical line number \\
-+    \field{value} field: & unused (should be zero) \\
-+    \textbf{reply:} & \\
-+    \hline
-+    \field{value} field: & error code (0 =3D success) \\
-+    \hline
-+\end{tabular}
-+
-+\subsubsection{VIRTIO_GPIO_MSG_CPU_DIRECTION_INPUT}\label{sec:Device Types=
- / General Purpose IO / Data flow / VIRTIO-GPIO-MSG-CPU-DIRECTION-INPUT}
-+
-+Set line line direction to input.
-+
-+\begin{tabular}{ll}
-+    \hline
-+    \textbf{request:} \\
-+    \hline
-+    \field{line}  field: & logical line number \\
-+    \field{value} field: & unused (should be zero) \\
-+    \hline
-+    \textbf{reply:} & \\
-+    \hline
-+    \field{value} field: & error code (0 =3D success) \\
-+    \hline
-+\end{tabular}
-+
-+\subsubsection{VIRTIO_GPIO_MSG_CPU_DIRECTION_OUTPUT}\label{sec:Device Type=
-s / General Purpose IO / Data flow / VIRTIO-GPIO-MSG-CPU-DIRECTION-OUTPUT}
-+
-+Set line direction to output and given line level.
-+
-+\begin{tabular}{ll}
-+    \hline
-+    \textbf{request:} \\
-+    \hline
-+    \field{line}  field: & logical line number \\
-+    \field{value} field: & bit 0: output level (0=3Dinactive, 1=3Dactive) =
-\\
-+    \hline
-+    \textbf{reply:} & \\
-+    \hline
-+    \field{value} field: & error code (0 =3D success) \\
-+    \hline
-+\end{tabular}
-+
-+\subsubsection{VIRTIO_GPIO_MSG_CPU_GET_DIRECTION}\label{sec:Device Types /=
- General Purpose IO / Data flow / VIRTIO-GPIO-MSG-CPU-GET-DIRECTION}
-+
-+Retrieve line direction.
-+
-+\begin{tabular}{ll}
-+    \hline
-+    \textbf{request:} & \\
-+    \hline
-+    \field{line}  field: & logical line number \\
-+    \field{value} field: & unused (should be zero) \\
-+    \hline
-+    \textbf{reply:} & \\
-+    \hline
-+    \field{value} field: & bit 0: direction (0=3Doutput, 1=3Dinput) or err=
-no code \\
-+    \hline
-+\end{tabular}
-+
-+\subsubsection{VIRTIO_GPIO_MSG_CPU_GET_LEVEL}\label{sec:Device Types / Gen=
-eral Purpose IO / Data flow / VIRTIO-GPIO-MSG-CPU-GET-LEVEL}
-+
-+Retrieve line level.
-+
-+\begin{tabular}{ll}
-+    \hline
-+    \textbf{request:} & \\
-+    \hline
-+    \field{line}  field: & logical line number \\
-+    \field{value} field: & unused (should be zero) \\
-+    \hline
-+    \textbf{reply:} & \\
-+    \hline
-+    \field{value} field: & bit 0: line level (0=3Dinactive, 1=3Dactive) or=
- errno code \\
-+    \hline
-+\end{tabular}
-+
-+\subsubsection{VIRTIO_GPIO_MSG_CPU_SET_LEVEL}\label{sec:Device Types / Gen=
-eral Purpose IO / Data flow / VIRTIO-GPIO-MSG-CPU-SET-LEVEL}
-+
-+Set line level (output only)
-+
-+\begin{tabular}{ll}
-+    \hline
-+    \textbf{request:} & \\
-+    \hline
-+    \field{line}  field: & logical line number \\
-+    \field{value} field: & bit 0: line level (0=3Dinactive, 1=3Dactive) \\
-+    \hline
-+    \textbf{reply:} & \\
-+    \hline
-+    \field{value} field: & bit 0: new line level or (negative) errno code =
-\\
-+    \hline
-+\end{tabular}
-+
-+\subsubsection{VIRTIO_GPIO_MSG_CPU_SET_IRQ}\label{sec:Device Types / Gener=
-al Purpose IO / Data flow / VIRTIO-GPIO-MSG-CPU-SET-IRQ}
-+
-+Set the IRQ mask. See \ref{sec:Device Types / General Purpose IO / IRQ han=
-dling}.
-+
-+Only available if feature bit VIRTIO_GPIO_F_IRQ has been negotiated.
-+
-+\begin{tabular}{ll}
-+    \hline
-+    \textbf{request:} & \\
-+    \hline
-+    \field{line}  field: & logical line number \\
-+    \field{value} field: & IRQ mask \\
-+    \hline
-+    \textbf{reply:} & \\
-+    \hline
-+    \field{value} field: & (negative) errno code \\
-+    \hline
-+\end{tabular}
-+
-+\subsubsection{VIRTIO_GPIO_MSG_DEVICE_LEVEL}\label{sec:Device Types / Gene=
-ral Purpose IO / Data flow / VIRTIO-GPIO-MSG-DEVICE-LEVEL}
-+
-+Async notification from device to CPU: line level changed
-+
-+\begin{tabular}{ll}
-+    \hline
-+    \textbf{request:} & \\
-+    \hline
-+    \field{line}  field: & logical line number \\
-+    \field{value} field: & unused (should be zero) \\
-+    \hline
-+    \textbf{reply:} & \\
-+    \field{value} field: & bit 0: line level (0=3Dinactive, 1=3Dactive) \\
-+    \hline
-+\end{tabular}
-+
-+\devicenormative{\subsubsection}{Data flow}{Device Types / General Purpose=
- IO / Data flow}
-+
-+The device MUST reply to all driver requests in they had been sent.
-+
-+The device MUST copy the \field{line} field from the request to its reply.
-+
-+Except for async notification, the device MUST reply the orignal message t=
-ype, but with the highest bit set
-+(or'ed with VIRTIO_GPIO_MSG_REPLY)
-+
-+In case of error the device MUST fill an \textbf{negative} value into the =
-\field{value} field.
-+
-+On switching to output, the device SHOULD set internal output level before=
- switching the line to output.
-+
-+The device SHOULD send VIRTIO_GPIO_MSG_DEVICE_LEVEL message for a particul=
-ar line when it is in input
-+direction and line level changes.
-+
-+\drivernormative{\subsubsection}{Data flow}{Device Types / General Purpose=
- IO / Data flow}
-+
-+The driver MUST NOT send VIRTIO_GPIO_MSG_DEVICE_LEVEL and MUST NOT set the=
- highest bit in the message type.
-+
-+The driver MUST NOT send messages with types not defined in this specifica=
-tion.
-+
-+The driver MUST treat all negative values of the \field{value} field as er=
-rors, regardless whether
-+the actual codes are explicitly defined in this specification.
-+
-+\subsection{IRQ handling}\label{sec:Device Types / General Purpose IO / IR=
-Q handling}
-+
-+IRQ handling is only enabled if feature VIRTIO_GPIO_F_IRQ had been negotia=
-ted -- in
-+this case only explicitly configured events are sent via VIRTIO_GPIO_MSG_D=
-EVICE_LEVEL
-+message. Otherwise level state changes are sent unconditionally.
-+
-+IRQ masking is configured via VIRTIO_GPIO_MSG_CPU_IRQ message, using the f=
-ollowing
-+(or'ed) mask bits:
-+
-+\begin{lstlisting}
-+/* fire on levels */
-+#define VIRTIO_GPIO_IRQ_HI      0x0001
-+#define VIRTIO_GPIO_IRQ_LOW     0x0002
-+
-+/* fire on edge */
-+#define VIRTIO_GPIO_IRQ_RAISING 0x0004
-+#define VIRTIO_GPIO_IRQ_FALLING 0x0008
-+
-+/* enabled */
-+#define VIRTIO_GPIO_IRQ_ARMED   0x0016
-+#define VIRTIO_GPIO_IRQ_ALWAYS  0x0032
-+\end{lstlisting}
-+
-+The actual kind of IRQ fired is determined on whether / how the line state=
- changed
-+from the previous message.
-+
-+IRQs are fired only, if either \textbf{ARMED} or \textbf{ALWAYS} are set. =
-The
-+\textbf{ARMED} flag is automatically cleared on IRQ signal, thus needs exp=
-licit
-+rearming / unmasking.
-+
-+\devicenormative{\subsubsection}{IRQ handling}{sec:Device Types / General =
-Purpose IO / IRQ handling}
-+
-+The device MUST maintain the IRQ masking state independently from other st=
-ates like
-+line direction or line states.
-+
-+When VIRTIO_GPIO_F_IRQ is negotiated, all irq mask registers need to be cl=
-eared,
-+so no IRQs can occour, until explicitly enabled.
-+
-+\subsection{Future versions}\label{sec:Device Types / General Purpose IO /=
- Future versions}
-+
-+\begin{itemize}
-+    \item adding new functionality should be done by adding optional featu=
-re bits, if possible --
-+          new versions shall only be introduces when feature bits are not =
-sufficient
-+    \item future versions must increment the \field{version} value
-+    \item the basic data structures (config space, message format) should =
-remain
-+          backwards compatible, but may increased in size or use reserved =
-fields
-+    \item device needs to support commands in older versions
-+    \item CPU should not send commands of newer versions that the device d=
-oesn't support
-+\end{itemize}
-+
-+\subsection{Design considerations}\label{sec:Device Types / General Purpos=
-e IO / Design considerations}
-+
-+This specification has been layed out for being easy to implement in \text=
-bf{hardware},
-+silicon or FPGA, with a minimum number of required gates, in order to save=
- chip space,
-+power consumption and heat emissions, but also being easy to emulate in so=
-ftware, on both
-+device and driver side.
-+
-+For that reason, data structures and signaling protocols have been designe=
-d to be very
-+simple (e.g. fixed buffer layouts), and features that may not be always pr=
-esent or needed
-+(e.g. IRQs) are explicitly negotiated by optional feature bits.
-+
-+Signal flow has been designed to use a simple (in-order) request-response =
-scheme with
-+separated tx/rx queues for all driver initiated transactions, that the dev=
-ice replies
-+by just flipping a few bits and sending the packet back.
-+
-+The subset of virtio used here can also be easily implemented by very low =
-level means
-+like serial lines.
---=20
-2.20.1
+@@ -1985,6 +1985,10 @@ \subsubsection{Device Initialization}\label{sec:Virt=
+io Transport Options / Virti
+ and if its value is zero (0x0) MUST abort initialization and
+ MUST NOT access any other register.
+
++After writing 0 to \field{Status}, the driver MUST wait for a read of
++\field{Status} to return 0 before proceeding with the remaining steps of
++initializing the device.
++
+ Drivers not expecting shared memory MUST NOT use the shared
+ memory registers.
 
 
-This publicly archived list offers a means to provide input to the
-OASIS Virtual I/O Device (VIRTIO) TC.
+---
 
-In order to verify user consent to the Feedback License terms and
-to minimize spam in the list archive, subscription is required
-before posting.
+Qualcomm Innovation Center, Inc. is submitting the attached "feedback" as a=
+ non-member to the virtio-dev mailing list for consideration and inclusion.
 
-Subscribe: virtio-comment-subscribe@lists.oasis-open.org
-Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
-List help: virtio-comment-help@lists.oasis-open.org
-List archive: https://lists.oasis-open.org/archives/virtio-comment/
-Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
-List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lis=
-ts
-Committee: https://www.oasis-open.org/committees/virtio/
-Join OASIS: https://www.oasis-open.org/join/
+--_000_BY5PR02MB7073F1EAF729D30ACFFC67FCF9E49BY5PR02MB7073namp_
+Content-Type: text/html; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+<html>
+<head>
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Diso-8859-=
+1">
+<style type=3D"text/css" style=3D"display:none;"> P {margin-top:0;margin-bo=
+ttom:0;} </style>
+</head>
+<body dir=3D"ltr">
+<div style=3D"font-family: Calibri, Arial, Helvetica, sans-serif; font-size=
+: 12pt; color: rgb(0, 0, 0);">
+<div style=3D"margin:0px;font-size:12pt;color:black;background-color:rgb(25=
+5, 255, 255)">
+<div style=3D"margin:0px">This is following up on the discussion we had ear=
+lier on MMIO reset behavior:</div>
+<div style=3D"margin:0px"><br>
+</div>
+<div style=3D"margin:0px"><a href=3D"https://lists.oasis-open.org/archives/=
+virtio-dev/202107/msg00012.html" id=3D"LPlnk">https://lists.oasis-open.org/=
+archives/virtio-dev/202107/msg00012.html</a><br>
+</div>
+<div class=3D"_Entity _EType_OWALinkPreview _EId_OWALinkPreview _EReadonly_=
+1"></div>
+<br>
+Suggesting below change to spec to make it explicit what's expected in driv=
+er. If this is accepted, I will follow up with a patch to Linux driver.</di=
+v>
+<div style=3D"margin:0px;font-size:12pt;color:black;background-color:rgb(25=
+5, 255, 255)">
+<br>
+</div>
+<div style=3D"margin:0px;font-size:12pt;color:black;background-color:rgb(25=
+5, 255, 255)">
+=3D=3D=3D</div>
+<div style=3D"margin:0px;font-size:12pt;color:black;background-color:rgb(25=
+5, 255, 255)">
+<div style=3D"margin:0px"><br>
+</div>
+<div style=3D"margin:0px">Device reset is accomplished by writing 0 to Stat=
+us register. Explicitly note</div>
+<div style=3D"margin:0px">that a driver needs to wait on Status register re=
+ad returning 0 before assuming that</div>
+<div style=3D"margin:0px">device reset operation is complete.</div>
+<div style=3D"margin:0px">&nbsp; &nbsp;</div>
+<div style=3D"margin:0px">Signed-off-by: Srivatsa Vaddagiri &lt;svaddagi@qt=
+i.qualcomm.com&gt;</div>
+<div style=3D"margin:0px"><br>
+</div>
+<div style=3D"margin:0px">diff --git a/content.tex b/content.tex</div>
+<div style=3D"margin:0px">index 5c70a3c..7631be4 100644</div>
+<div style=3D"margin:0px">--- a/content.tex</div>
+<div style=3D"margin:0px">+++ b/content.tex</div>
+<div style=3D"margin:0px">@@ -1985,6 +1985,10 @@ \subsubsection{Device Init=
+ialization}\label{sec:Virtio Transport Options / Virti</div>
+<div style=3D"margin:0px">&nbsp;and if its value is zero (0x0) MUST abort i=
+nitialization and</div>
+<div style=3D"margin:0px">&nbsp;MUST NOT access any other register.</div>
+<div style=3D"margin:0px">&nbsp;</div>
+<div style=3D"margin:0px">+After writing 0 to \field{Status}, the driver MU=
+ST wait for a read of</div>
+<div style=3D"margin:0px">+\field{Status} to return 0 before proceeding wit=
+h the remaining steps of</div>
+<div style=3D"margin:0px">+initializing the device.</div>
+<div style=3D"margin:0px">+</div>
+<div style=3D"margin:0px">&nbsp;Drivers not expecting shared memory MUST NO=
+T use the shared</div>
+<div style=3D"margin:0px">&nbsp;memory registers.</div>
+<span style=3D"margin:0px">&nbsp;</span><br>
+</div>
+<div style=3D"margin:0px;font-size:12pt;color:black;background-color:rgb(25=
+5, 255, 255)">
+<span style=3D"margin:0px"><br>
+</span></div>
+<div style=3D"margin:0px;font-size:12pt;color:black;background-color:rgb(25=
+5, 255, 255)">
+<span style=3D"color: black; font-size: 12pt;">---</span><br>
+</div>
+<div style=3D"margin:0px;font-size:12pt;color:black;background-color:rgb(25=
+5, 255, 255)">
+<br>
+</div>
+<span style=3D"margin:0px;font-size:12pt;color:black;background-color:rgb(2=
+55, 255, 255)">Qualcomm Innovation Center, Inc. is submitting the attached =
+&quot;feedback&quot; as a non-member to the virtio-dev mailing list for con=
+sideration and inclusion.</span><br>
+</div>
+</body>
+</html>
+
+--_000_BY5PR02MB7073F1EAF729D30ACFFC67FCF9E49BY5PR02MB7073namp_--
 
