@@ -1,172 +1,229 @@
-Return-Path: <jasowang@redhat.com>
-Subject: Re: [PATCH V2 0/2] Vitqueue State Synchronization
-References: <20210706043334.36359-1-jasowang@redhat.com>
- <YOwVc1V3k6+/xGHa@stefanha-x1.localdomain>
- <7cac6f07-2ea3-1d02-5706-abf93327224a@redhat.com>
- <YO1rST8Vz3rrqqL4@stefanha-x1.localdomain>
-From: Jason Wang <jasowang@redhat.com>
-Message-ID: <74534bb8-5747-4714-12ed-14d6651ea7c9@redhat.com>
-Date: Tue, 13 Jul 2021 19:56:02 +0800
+Return-Path: <pankaj.gupta.linux@gmail.com>
+From: Pankaj Gupta <pankaj.gupta.linux@gmail.com>
+Subject: [PATCH RESEND] virtio-pmem: PMEM device spec
+Date: Wed, 28 Jul 2021 17:04:35 +0200
+Message-Id: <20210728150435.264551-1-pankaj.gupta.linux@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <YO1rST8Vz3rrqqL4@stefanha-x1.localdomain>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-To: Stefan Hajnoczi <stefanha@redhat.com>
-Cc: mst@redhat.com, virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, mgurtovoy@nvidia.com, cohuck@redhat.com, eperezma@redhat.com, oren@nvidia.com, shahafs@nvidia.com, parav@nvidia.com, bodong@nvidia.com, amikheev@nvidia.com, pasic@linux.ibm.com
+Content-Type: text/plain; charset="US-ASCII"
+To: virtio-dev@lists.oasis-open.org
+Cc: dan.j.williams@intel.com, david@redhat.com, mst@redhat.com, cohuck@redhat.com, tstark@linux.microsoft.com, pankaj.gupta@ionos.com, Pankaj Gupta <pankaj.gupta.linux@gmail.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+Posting virtio specification for virtio pmem device. Virtio pmem is a
+paravirtualized device which allows the guest to bypass page cache.
+Virtio pmem kernel driver is merged in Upstream Kernel 5.3. Also, Qemu
+device is merged in Qemu 4.1.
 
-在 2021/7/13 下午6:30, Stefan Hajnoczi 写道:
-> On Tue, Jul 13, 2021 at 11:08:28AM +0800, Jason Wang wrote:
->> 在 2021/7/12 下午6:12, Stefan Hajnoczi 写道:
->>> On Tue, Jul 06, 2021 at 12:33:32PM +0800, Jason Wang wrote:
->>>> Hi All:
->>>>
->>>> This is an updated version to implement virtqueue state
->>>> synchronization which is a must for the migration support.
->>>>
->>>> The first patch introduces virtqueue states as a new basic facility of
->>>> the virtio device. This is used by the driver to save and restore
->>>> virtqueue state. The states were split into available state and used
->>>> state to ease the transport specific implementation. It is also
->>>> allowed for the device to have its own device specific way to save and
->>>> resotre extra virtqueue states like in flight request.
->>>>
->>>> The second patch introduce a new status bit STOP. This bit is used for
->>>> the driver to stop the device. The major difference from reset is that
->>>> STOP must preserve all the virtqueue state plus the device state.
->>>>
->>>> A driver can then:
->>>>
->>>> - Get the virtqueue state if STOP status bit is set
->>>> - Set the virtqueue state after FEATURE_OK but before DRIVER_OK
->>>>
->>>> Device specific state synchronization could be built on top.
->>> Will you send a proof-of-concept implementation to demonstrate how it
->>> works in practice?
->>
->> Eugenio has implemented a prototype for this. (Note that the codes was for
->> previous version of the proposal, but it's sufficient to demonstrate how it
->> works).
->>
->> https://www.mail-archive.com/qemu-devel@nongnu.org/msg809332.html
->>
->> https://www.mail-archive.com/qemu-devel@nongnu.org/msg809335.html
->>
->>
->>> You mentioned being able to migrate virtio-net devices using this
->>> interface, but what about state like VIRTIO_NET_S_LINK_UP that is either
->>> per-device or associated with a non-rx/tx virtqueue?
->>
->> Note that the config space will be maintained by Qemu. So Qemu can choose to
->> emulate link down by simply don't set DRIVER_OK to the device.
->>
->>
->>> Basically I'm not sure if the scope of this is just to migrate state
->>> associated with offloaded virtqueues (vDPA, VFIO/mdev, etc) or if it's
->>> really supposed to migrate the entire device?
->>
->> As the subject, it's the virtqueue state not the device state. The series
->> tries to introduce the minimal sets of functions that could be used to
->> migrate the network device.
->>
->>
->>
->>> Do you have an approach in mind for saving/loading device-specific
->>> state? Here are devices and their state:
->>> - virtio-blk: a list of requests that the destination device can
->>>     re-submit
->>> - virtio-scsi: a list of requests that the destination device can
->>>     re-submit
->>> - virtio-serial: active ports, including the current buffer being
->>>     transferred
->>
->> Actually, we had two types of additional states:
->>
->> - pending (or inflight) buffers, we can introduce a transport specific way
->> to specify the auxiliary page which is used to stored the inflight
->> descriptors (as what vhost-user did)
->> - other device states, this needs to be done via a device specific way, and
->> it would be hard to generalize them
->>
->>
->>> - virtio-net: MAC address, status, etc
->>
->> So VMM will intercept all the control commands, that means we don't need to
->> query any states that is changed via those control commands.
->>
->> E.g The Qemu is in charge of shadowing control virtqueue, so we don't even
->> need to interface to query any of those states that is set via control
->> virtqueue.
->>
->> But all those device state stuffs is out of the scope of this proposal.
->>
->> I can see one of the possible gap is that people may think the migration
->> facility is designed for the simple passthrough that Linux provides, that
->> means the device is assigend 'entirely' to the guest. This is not case for
->> the case of live migration, some kind of mediation must be done in the
->> middle.
->>
->> And that's the work of VMM through vDPA + Qemu: intercepting control command
->> but not datapath.
-> I thought this was a more general migration mechanism that passthrough
-> devices could use. Thanks for explaining. Maybe this can be made clearer
-> in the spec - it's not a full save/load mechanism, it can only be used
-> in conjunction with another component that is aware of the device's
-> state.
+Signed-off-by: Pankaj Gupta <pankaj.gupta.linux@gmail.com>
+---
+Sorry, It took me long time to get back on this. There is
+an enhancement to this spec by "Taylor Stark" CCed in the list.
+Request for feedback and merging. 
 
+RFC is posted here [1]
+[1] https://lists.oasis-open.org/archives/virtio-dev/201903/msg00083.html
 
-Yes, and actually this should be the suggested way for migrating virtio 
-device.
+ conformance.tex |  19 ++++++-
+ content.tex     |   1 +
+ virtio-pmem.tex | 132 ++++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 150 insertions(+), 2 deletions(-)
+ create mode 100644 virtio-pmem.tex
 
-The advantage is obvious, to leverage the mature virtio/vhost software 
-stack then we don't need to care much about things like migration 
-compatibility.
-
-
->
-> There is a gap between this approach and VFIO's migration interface. It
-> appears to be impossible to write a VFIO/mdev or vfio-user device that
-> passes a physical virtio-pci device through to the guest with migration
-> support.
-
-
-I think mediation(mdev) is a must for support live migration in this 
-case even for VFIO. If you simply assign the device to the guest, the 
-VMM will lose all the control to the device.
-
-And what's more important, virtio is not PCI specific so it can work 
-where VFIO can not work:
-
-1) The physical device that doesn't use PCI as its transport
-2) The guest that doesn't use PCI or even don't have PCI
-
-That's the consideration for introducing all those as basic facility 
-first. Then we can let the transport to implement them in a transport 
-comfortable way (admin virtqueue or capabilities).
-
-
-> The reason is because VIRTIO lacks an interface to save/load
-> device (not virtqueue) state. I guess it will be added sooner or later,
-> it's similar to what Max Gurtovoy recently proposed.
-
-
-So my understanding is:
-
-1) Each device should define its own state that needs to be migrated
-
-then, we can define
-
-2) How to design the device interface
-
-Admin virtqueue is a solution for 2) but not 1). And an obvious drawback 
-for admin virtqueue is that it's not easily to be used in the nested 
-environment where you still need a per function interface.
-
-Thanks
-
-
->
-> Stefan
+diff --git a/conformance.tex b/conformance.tex
+index 94d7a06..818ddda 100644
+--- a/conformance.tex
++++ b/conformance.tex
+@@ -31,7 +31,8 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
+ \ref{sec:Conformance / Driver Conformance / Sound Driver Conformance},
+ \ref{sec:Conformance / Driver Conformance / Memory Driver Conformance},
+ \ref{sec:Conformance / Driver Conformance / I2C Adapter Driver Conformance} or
+-\ref{sec:Conformance / Driver Conformance / SCMI Driver Conformance}.
++\ref{sec:Conformance / Driver Conformance / SCMI Driver Conformance},
++\ref{sec:Conformance / Driver Conformance / PMEM Driver Conformance}.
+ 
+     \item Clause \ref{sec:Conformance / Legacy Interface: Transitional Device and Transitional Driver Conformance}.
+   \end{itemize}
+@@ -55,7 +56,8 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
+ \ref{sec:Conformance / Device Conformance / Sound Device Conformance},
+ \ref{sec:Conformance / Device Conformance / Memory Device Conformance},
+ \ref{sec:Conformance / Device Conformance / I2C Adapter Device Conformance} or
+-\ref{sec:Conformance / Device Conformance / SCMI Device Conformance}.
++\ref{sec:Conformance / Device Conformance / SCMI Device Conformance},
++\ref{sec:Conformance / Device Conformance / PMEM Driver Conformance}.
+ 
+     \item Clause \ref{sec:Conformance / Legacy Interface: Transitional Device and Transitional Driver Conformance}.
+   \end{itemize}
+@@ -301,6 +303,19 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
+ \item \ref{drivernormative:Device Types / SCMI Device / Device Operation / Setting Up eventq Buffers}
+ \end{itemize}
+ 
++\conformance{\subsection}{PMEM Driver Conformance}\label{sec:Conformance / Driver Conformance / PMEM Driver Conformance}
++
++A PMEM driver MUST conform to the following normative statements:
++
++\begin{itemize}
++\item \ref{devicenormative:Device Types / PMEM Device / Device Initialization}
++\item \ref{drivernormative:Device Types / PMEM Driver / Driver Initialization / Direct access}
++\item \ref{drivernormative:Device Types / PMEM Driver / Driver Initialization / Virtio flush}
++\item \ref{drivernormative:Device Types / PMEM Driver / Driver Operation / Virtqueue command}
++\item \ref{devicenormative:Device Types / PMEM Device / Device Operation / Virtqueue flush}
++\item \ref{devicenormative:Device Types / PMEM Device / Device Operation / Virtqueue return}
++\end{itemize}
++
+ \conformance{\section}{Device Conformance}\label{sec:Conformance / Device Conformance}
+ 
+ A device MUST conform to the following normative statements:
+diff --git a/content.tex b/content.tex
+index ceb2562..6acc785 100644
+--- a/content.tex
++++ b/content.tex
+@@ -6583,6 +6583,7 @@ \subsubsection{Legacy Interface: Framing Requirements}\label{sec:Device
+ \input{virtio-mem.tex}
+ \input{virtio-i2c.tex}
+ \input{virtio-scmi.tex}
++\input{virtio-pmem.tex}
+ 
+ \chapter{Reserved Feature Bits}\label{sec:Reserved Feature Bits}
+ 
+diff --git a/virtio-pmem.tex b/virtio-pmem.tex
+new file mode 100644
+index 0000000..a2b888e
+--- /dev/null
++++ b/virtio-pmem.tex
+@@ -0,0 +1,132 @@
++\section{PMEM Device}\label{sec:Device Types / PMEM Device}
++
++The virtio pmem is a fake persistent memory (NVDIMM) device
++used to bypass the guest page cache and provide a virtio
++based asynchronous flush mechanism.This avoids the need
++of a separate page cache in guest and keeps page cache only
++in the host. Under memory pressure, the host makes use of
++effecient memory reclaim decisions for page cache pages
++of all the guests. This helps to reduce the memory footprint
++and fit more guests in the host system.
++
++\subsection{Device ID}\label{sec:Device Types / PMEM Device / Device ID}
++  27
++
++\subsection{Virtqueues}\label{sec:Device Types / PMEM Device / Virtqueues}
++\begin{description}
++\item[0] req_vq
++\end{description}
++
++\subsection{Feature bits}\label{sec:Device Types / PMEM Device / Feature bits}
++
++There are currently no feature bits defined for this device.
++
++\subsection{Device configuration layout}\label{sec:Device Types / PMEM Device / Device configuration layout}
++
++\begin{lstlisting}
++struct virtio_pmem_config {
++	le64 start;
++	le64 size;
++};
++\end{lstlisting}
++
++\begin{description}
++\item[\field{start}] contains the start address from the guest physical address range
++to be hotplugged into the guest address space using the pmem API.
++
++\item[\field{size}] contains the length of this address range.
++\end{description}
++
++\subsection{Device Initialization}\label{sec:Device Types / PMEM Device / Device Initialization}
++
++Device hotplugs physical memory to guest address space. Persistent memory device
++is emulated with file backed memory at host side.
++
++\begin{enumerate}
++\item Guest vpmem start is read from \field{start}.
++\item Guest vpmem end is read from \field{size}.
++\end{enumerate}
++
++\devicenormative{\subsubsection}{Device Initialization}{Device Types / PMEM Device / Device Initialization}
++
++File backed memory MUST be memory mapped to guest address space with SHARED
++memory mapping.
++
++\subsection{Driver Initialization}\label{sec:Device Types / PMEM Driver / Driver Initialization}
++
++Driver hotplugs the physical memory and registers associated region with the pmem API.
++Also, configures a flush callback function with the corresponding region.
++
++\drivernormative{\subsubsection}{Driver Initialization: Filesystem direct access}{Device Types / PMEM Driver / Driver Initialization / Direct access}
++
++Driver MUST enable filesystem direct access operations for read/write on the device.
++
++\drivernormative{\subsubsection}{Driver Initialization: Virtio flush}{Device Types / PMEM Driver / Driver Initialization / Virtio flush}
++
++Driver MUST implement a virtio based flush callback.
++
++Driver MUST disable other FLUSH/SYNC mechanisms for the device when virtio flush is configured.
++
++\subsection{Driver Operations}\label{sec:Device Types / PMEM Driver / Driver Operation}
++\drivernormative{\subsubsection}{Driver Operation: Virtqueue command}{Device Types / PMEM Driver / Driver Operation / Virtqueue command}
++
++Driver MUST send VIRTIO_FLUSH command on request virtqueue, allows guest userspace process to perform IO operations asynchronously.
++
++Driver SHOULD handle multiple fsync requests on files present on the device.
++
++\subsection{Device Operations}\label{sec:Device Types / PMEM Driver / Device Operation}
++
++\devicenormative{\subsubsection}{Device Operations}{Device Types / PMEM Device / Device Operation / Virtqueue flush}
++
++Device SHOULD handle multiple flush requests simultaneously using host filesystem fsync or flush call.
++
++\devicenormative{\subsubsection}{Device operations}{Device Types / PMEM Device / Device Operation / Virtqueue return}
++
++Device MUST return integer "0" for success and "-1" for failure.
++These errors are converted to corresponding error codes by guest
++as per architecture.
++
++\subsection{Possible security implications}\label{sec:Device Types / PMEM Device / Possible Security Implications}
++
++There could be potential security implications depending on how
++memory mapped host backing file is used. By default device emulation
++is done with SHARED mapping. There is a contract between guest and host
++process to access same backing file for read/write operations.
++
++If a malicious guest or host userspace map the same backing file,
++attacking process can make use of known cache side channel attacks
++to predict the current state of shared page cache page. If both
++attacker and victim somehow execute same shared code after a
++flush/evict call, with difference in execution timing attacker
++could infer another guest local data or host data. Though this is
++not easy and same challenges exist as with bare metal host system
++when userspace share same backing file.
++
++\subsection{Countermeasures}\label{sec:Device Types / PMEM Device / Possible Security Implications / Countermeasures}
++
++\subsubsection{ With SHARED mapping}\label{sec:Device Types / PMEM Device / Possible Security Implications / Countermeasures / SHARED}
++
++If device backing backing file is shared with multiple guests or host
++processes, this may act as a metric for page cache side channel attack.
++As a counter measure every guest should have its own(not shared with
++another guest) SHARED backing file and gets populated a per host process
++page cache pages.
++
++\subsubsection{ With PRIVATE mapping}\label{sec:Device Types / PMEM Device / Possible Security Implications / Countermeasures / PRIVATE}
++There maybe be chances of side channels attack with PRIVATE
++memory mapping similar to SHARED with read-only shared mappings.
++PRIVATE is not used for virtio pmem making this usecase
++irrelevant.
++
++\subsubsection{ Workload specific mapping}\label{sec:Device Types / PMEM Device / Possible Security Implications / Countermeasures / Workload}
++For SHARED mapping, if workload is single application inside
++guest and there is no risk with sharing of data between guests.
++Guest sharing same backing file with SHARED mapping can be
++used as a valid configuration.
++
++\subsubsection{ Prevent cache eviction}\label{sec:Device Types / PMEM Device / Possible Security Implications / Countermeasures / Cache eviction}
++Don't allow cache evict from guest filesystem trim/discard command
++with virtio pmem. This rules out any possibility of evict-reload
++page cache side channel attacks if backing disk is shared(SHARED)
++with mutliple guests. Though if we use per device backing file with
++shared mapping this countermeasure is not required.
+-- 
+2.25.1
 
