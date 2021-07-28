@@ -1,67 +1,29 @@
-Return-Path: <viresh.kumar@linaro.org>
-Date: Thu, 29 Jul 2021 17:17:28 +0530
-From: Viresh Kumar <viresh.kumar@linaro.org>
-Subject: Re: [PATCH V7 2/2] virtio-gpio: Add support for interrupts
-Message-ID: <20210729114728.kjdegdbyd67makjo@vireshk-i7>
-References: <cover.1627469463.git.viresh.kumar@linaro.org>
- <0dac5ab26a5fcc94ec530dbf83247788922123d7.1627469463.git.viresh.kumar@linaro.org>
- <CAK8P3a0x5OcQu1FuhhbEbcmvw1VDLQGR9-WFkA24nJTeDZtErw@mail.gmail.com>
- <20210729105957.zem2tbhixoxuxry6@vireshk-i7>
- <CAK8P3a0KER4NFXkv1OXSqD-9Khip+-u=H+4_fkQmVz3so6V1=A@mail.gmail.com>
+Return-Path: <linus.walleij@linaro.org>
 MIME-Version: 1.0
-In-Reply-To: <CAK8P3a0KER4NFXkv1OXSqD-9Khip+-u=H+4_fkQmVz3so6V1=A@mail.gmail.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-To: Arnd Bergmann <arnd@kernel.org>
-Cc: Jason Wang <jasowang@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>, Cornelia Huck <cohuck@redhat.com>, Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Vincent Guittot <vincent.guittot@linaro.org>, Jean-Philippe Brucker <jean-philippe@linaro.org>, Bill Mills <bill.mills@linaro.org>, Alex =?utf-8?Q?Benn=C3=A9e?= <alex.bennee@linaro.org>, "Enrico Weigelt, metux IT consult" <info@metux.net>, virtio-dev@lists.oasis-open.org, Geert Uytterhoeven <geert@linux-m68k.org>, Stratos Mailing List <stratos-dev@op-lists.linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Marc Zyngier <maz@kernel.org>
+References: <cover.1627469463.git.viresh.kumar@linaro.org> <0dac5ab26a5fcc94ec530dbf83247788922123d7.1627469463.git.viresh.kumar@linaro.org>
+In-Reply-To: <0dac5ab26a5fcc94ec530dbf83247788922123d7.1627469463.git.viresh.kumar@linaro.org>
+From: Linus Walleij <linus.walleij@linaro.org>
+Date: Wed, 28 Jul 2021 14:58:25 +0200
+Message-ID: <CACRpkdZDptyPpin_0o7gr+u5ve183Fxf_aVBeHUUExkTUSK1cg@mail.gmail.com>
+Subject: Re: [PATCH V7 2/2] virtio-gpio: Add support for interrupts
+Content-Type: text/plain; charset="UTF-8"
+To: Viresh Kumar <viresh.kumar@linaro.org>
+Cc: Jason Wang <jasowang@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>, Arnd Bergmann <arnd@kernel.org>, Cornelia Huck <cohuck@redhat.com>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Vincent Guittot <vincent.guittot@linaro.org>, Jean-Philippe Brucker <jean-philippe@linaro.org>, Bill Mills <bill.mills@linaro.org>, =?UTF-8?B?QWxleCBCZW5uw6ll?= <alex.bennee@linaro.org>, "Enrico Weigelt, metux IT consult" <info@metux.net>, virtio-dev@lists.oasis-open.org, Geert Uytterhoeven <geert@linux-m68k.org>, stratos-dev@op-lists.linaro.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 29-07-21, 13:39, Arnd Bergmann wrote:
-> On Thu, Jul 29, 2021 at 12:59 PM Viresh Kumar <viresh.kumar@linaro.org> wrote:
-> >
-> > On 28-07-21, 14:05, Arnd Bergmann wrote:
-> > > I think the last sentence here is somewhat ambiguous, I'm not sure
-> > > what it actually means to unmask a level triggered line if the driver has not
-> > > queued an event request for that line.
-> >
-> > I think I now understand what you meant by this, I wasn't thinking of
-> > fasteoi earlier :)
-> >
-> > What about following diff over this patch:
-> >
-> >  The device MUST mask the interrupt for a GPIO line, if the trigger type is set
-> >  to \field{VIRTIO_GPIO_IRQ_TYPE_NONE} and also discard any latched interrupt
-> > -status associated with the line. The device MUST unmask the interrupt for any
-> > -other value of the trigger type.
-> > +event associated with the line. The device MUST NOT notify the driver of an
-> > +interrupt event if the trigger type is set to \field{VIRTIO_GPIO_IRQ_TYPE_NONE}
-> > +for the GPIO line.
-> 
-> I actually thought that setting VIRTIO_GPIO_IRQ_TYPE_NONE would
-> return the buffer to the driver, with status indicating that no event
-> has happened.
+On Wed, Jul 28, 2021 at 1:11 PM Viresh Kumar <viresh.kumar@linaro.org> wrote:
 
-Yeah, that is actually the case. What I meant here was that an
-interrupt must not be reported by the device in this case, but yes the
-buffer needs to be returned. Will clarify on that a bit here.
+> This patch adds support for interrupts to the virtio-gpio specification.
+> This uses the feature bit 0 for the same.
+>
+> Fixes: https://github.com/oasis-tcs/virtio-spec/issues/110
+> Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
 
-> > +For level trigger type, the device only reports an interrupt if the
-> > +corresponding interrupt level was sensed when the buffers are received.
-> 
-> I think you mean the right thing, but this part is very misleading: we
-> clearly want
-> to be notified if the line was active when the buffer is received and also as
-> soon as it becomes active afterwards, just not when it was active in the past.
+From a GPIO point of view this looks good, so FWIW
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 
-Right.
+It's best if you get feedback from the irqchip people too.
 
-> The rest looks good to me now, but it's a little hard to read in diff form.
-> Are you able to post the driver soon? I think our understanding of how this
-> should work has converged enough that I'd review that next.
-
-I should be able to post that somewhere next week, making changes
-according to spec changes.
-
--- 
-viresh
+Yours,
+Linus Walleij
 
