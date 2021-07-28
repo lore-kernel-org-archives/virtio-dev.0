@@ -1,325 +1,132 @@
-Return-Path: <pankaj.gupta.linux@gmail.com>
+Return-Path: <viresh.kumar@linaro.org>
+From: Viresh Kumar <viresh.kumar@linaro.org>
+Subject: [PATCH V7 0/2] virtio: Add specification for virtio-gpio
+Date: Wed, 28 Jul 2021 16:41:20 +0530
+Message-Id: <cover.1627469463.git.viresh.kumar@linaro.org>
 MIME-Version: 1.0
-References: <20210728150435.264551-1-pankaj.gupta.linux@gmail.com> <87r1fg10hm.fsf@redhat.com>
-In-Reply-To: <87r1fg10hm.fsf@redhat.com>
-From: Pankaj Gupta <pankaj.gupta.linux@gmail.com>
-Date: Fri, 30 Jul 2021 14:25:47 +0200
-Message-ID: <CAM9Jb+jAbBrsQbR8hHFcskqXojj47kMc0xzivQMH0Ax2uUb8ng@mail.gmail.com>
-Subject: Re: [PATCH RESEND] virtio-pmem: PMEM device spec
-Content-Type: text/plain; charset="UTF-8"
-To: Cornelia Huck <cohuck@redhat.com>
-Cc: virtio-dev@lists.oasis-open.org, Dan Williams <dan.j.williams@intel.com>, David Hildenbrand <david@redhat.com>, "Michael S . Tsirkin" <mst@redhat.com>, Taylor Stark <tstark@linux.microsoft.com>, Pankaj Gupta <pankaj.gupta@ionos.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="US-ASCII"
+To: Jason Wang <jasowang@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>, Arnd Bergmann <arnd@kernel.org>, Cornelia Huck <cohuck@redhat.com>, Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Cc: Viresh Kumar <viresh.kumar@linaro.org>, Vincent Guittot <vincent.guittot@linaro.org>, Jean-Philippe Brucker <jean-philippe@linaro.org>, Bill Mills <bill.mills@linaro.org>, =?UTF-8?q?Alex=20Benn=C3=A9e?= <alex.bennee@linaro.org>, "Enrico Weigelt, metux IT consult" <info@metux.net>, virtio-dev@lists.oasis-open.org, Geert Uytterhoeven <geert@linux-m68k.org>, stratos-dev@op-lists.linaro.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Hi Cornelia,
+Hello,
 
-> > Posting virtio specification for virtio pmem device. Virtio pmem is a
-> > paravirtualized device which allows the guest to bypass page cache.
-> > Virtio pmem kernel driver is merged in Upstream Kernel 5.3. Also, Qemu
-> > device is merged in Qemu 4.1.
-> >
-> > Signed-off-by: Pankaj Gupta <pankaj.gupta.linux@gmail.com>
-> > ---
-> > Sorry, It took me long time to get back on this. There is
-> > an enhancement to this spec by "Taylor Stark" CCed in the list.
-> > Request for feedback and merging.
->
-> Thank you for following up on this.
+This patchset adds virtio specification for GPIO devices. It supports basic GPIO
+line operations, along with optional interrupts on them (in a separate patch).
 
-Thank you for for the review.
->
-> >
-> > RFC is posted here [1]
-> > [1] https://lists.oasis-open.org/archives/virtio-dev/201903/msg00083.html
-> >
-> >  conformance.tex |  19 ++++++-
-> >  content.tex     |   1 +
-> >  virtio-pmem.tex | 132 ++++++++++++++++++++++++++++++++++++++++++++++++
-> >  3 files changed, 150 insertions(+), 2 deletions(-)
-> >  create mode 100644 virtio-pmem.tex
->
-> (...)
->
-> > diff --git a/virtio-pmem.tex b/virtio-pmem.tex
-> > new file mode 100644
-> > index 0000000..a2b888e
-> > --- /dev/null
-> > +++ b/virtio-pmem.tex
-> > @@ -0,0 +1,132 @@
-> > +\section{PMEM Device}\label{sec:Device Types / PMEM Device}
-> > +
-> > +The virtio pmem is a fake persistent memory (NVDIMM) device
->
-> "The virtio pmem device"?
+This is an *alternative implementation* of the virtio-gpio specification, a
+different version of it was earlier posted by Enrico [1].
 
-Sure.
+I took back V4 of the specification I posted earlier (on June 17th), to allow
+Enrico to come up with something that is robust and works for everyone (as he
+started this thing last year), but it didn't go as expected. I couldn't
+see any of my review comments being incorporated (or any intentions of them
+getting in ever) in the three versions Enrico posted.
 
->
-> > +used to bypass the guest page cache and provide a virtio
-> > +based asynchronous flush mechanism.This avoids the need
->
-> missing space after '.'
+And so I am trying to present an alternative approach here to solve the problem,
+which I believe is more clear and robust. I am open to suggestions to improve it
+further.
 
-will fix.
+I will let the virtio/gpio maintainers decide on its fate.
 
->
-> > +of a separate page cache in guest and keeps page cache only
->
-> s/guest/the guest/
-> s/page cache/the page cache/
+Key differences from Enrico's approach [1]:
 
-will fix both.
+- config structure is rearranged to remove everything apart from number of gpios
+  and size of the gpio_names_field.
 
->
-> > +in the host. Under memory pressure, the host makes use of
->
-> "can make use", or maybe "is enabled to make use"?
+- Request/free is merged with set-direction itself.
 
-seems better.
+- Interrupt implementation handled with feature bit 0. Either the interrupts are
+  fully supported or not at all.
 
->
-> > +effecient memory reclaim decisions for page cache pages
+- All non-interrupt traffic happens on a single virtqueue, requestq. Interrupt
+  traffic goes over eventq.
 
-s/effecient/efficient
-> > +of all the guests. This helps to reduce the memory footprint
-> > +and fit more guests in the host system.
-> > +
-> > +\subsection{Device ID}\label{sec:Device Types / PMEM Device / Device ID}
-> > +  27
-> > +
-> > +\subsection{Virtqueues}\label{sec:Device Types / PMEM Device / Virtqueues}
-> > +\begin{description}
-> > +\item[0] req_vq
-> > +\end{description}
-> > +
-> > +\subsection{Feature bits}\label{sec:Device Types / PMEM Device / Feature bits}
-> > +
-> > +There are currently no feature bits defined for this device.
-> > +
-> > +\subsection{Device configuration layout}\label{sec:Device Types / PMEM Device / Device configuration layout}
-> > +
-> > +\begin{lstlisting}
-> > +struct virtio_pmem_config {
-> > +     le64 start;
-> > +     le64 size;
-> > +};
-> > +\end{lstlisting}
-> > +
-> > +\begin{description}
-> > +\item[\field{start}] contains the start address from the guest physical address range
-> > +to be hotplugged into the guest address space using the pmem API.
-> > +
-> > +\item[\field{size}] contains the length of this address range.
-> > +\end{description}
-> > +
-> > +\subsection{Device Initialization}\label{sec:Device Types / PMEM Device / Device Initialization}
-> > +
-> > +Device hotplugs physical memory to guest address space. Persistent memory device
->
-> s/Device/The device/
-> s/Persistent memory device/The persistent memory device/
+- Doesn't add any ordering restrictions on the device for different GPIO lines,
+  it can respond earlier to the second request, while still processing the first
+  one.
 
-will fix.
 
->
-> > +is emulated with file backed memory at host side.
->
-> "on the host side"?
+Version history of the specification I sent:
 
-Sure.
+V6 -> V7:
+- Drop Activate/Deactivate requests and merge them with set-direction one.
+- Dropped separate calls to set direction to input or output (with a value),
+  with a single call to set-direction (input, output, or none). Note that the
+  driver needs to call set-value before calling set-direction-out now.
+- Allow multiple messages for a GPIO line to be sent together, they must be
+  processed in order though.
+- The gpio-line names aren't required to be set for all the lines now, it is
+  optional and can be present only for a subset of lines. Provided example as
+  well.
+- Merge irq-set/mask/unmask to a single set-irq-type message.
+- We have only 6 message types now instead of 11 in v6.
+- Mentioned about non-atomic nature of the these messages in commit log for
+  patch 1/2.
+- Improved spec content overall.
 
->
-> > +
-> > +\begin{enumerate}
-> > +\item Guest vpmem start is read from \field{start}.
-> > +\item Guest vpmem end is read from \field{size}.
-> > +\end{enumerate}
-> > +
-> > +\devicenormative{\subsubsection}{Device Initialization}{Device Types / PMEM Device / Device Initialization}
-> > +
-> > +File backed memory MUST be memory mapped to guest address space with SHARED
-> > +memory mapping.
->
-> Is 'SHARED' generic enough? Probably yes.
->
-> (Similar for the other terms like 'page cache' -- I think we can assume
-> similar concepts for most operating systems?)
+V5 -> V6:
+- All non-interrupt traffic happens on a single virtqueue, requestq. Interrupt
+  traffic goes over eventq now.
+- Many fields dropped from the config structure.
+- Separate message type to get gpio-names, added more description about how the
+  names should be.
+- Much clearer message flows, both non-irq messages and irq-messages.
+- Parallelism supported for all type of messages, for different GPIO pins.
+- All references to POSIX errors dropped, just reply pass or fail.
+- request/free renamed to activate/deactivate, as that's what we will end up
+  doing there, activate or deactivate a GPIO line.
+- General purpose IO as I/O or Input/Output instead.
+- Hopefully I didn't miss any review comments.
 
-Yes, SHRED seems generic to me.
+V4 -> V5:
+- Split into two patches, irq stuff in patch 2.
+- Use separate virtqueue for sending data from device/driver.
+- Allow parallel processing of requests for different GPIOs, only one request at
+  a time for the same GPIO line.
+- Same goes for interrupt side, only one interrupt request per GPIO line.
+- Improved formatting in general.
+- Add new sections explaining message flow sequence.
 
-'page cache' can be changed to 'host cache', but not sure
+V3 -> V4:
+- The GPIO line names must be unique within a device.
+- The gpio_names[0] field is dropped and gpio_names_offset field is
+  added in place of the 2 bytes of padding.
+- New interrupts must not be initiated by the device, without a response
+  for the previous one.
 
->
-> > +
-> > +\subsection{Driver Initialization}\label{sec:Device Types / PMEM Driver / Driver Initialization}
-> > +
-> > +Driver hotplugs the physical memory and registers associated region with the pmem API.
->
-> s/Driver/The driver/
-> s/associated region/the associated region/ ?
+V2 -> V3:
+- Unused char in name string should be marked 0 now.
+- s/host/device/ and s/guest/driver/
+- Added a new feature for IRQ mode, VIRTIO_GPIO_F_IRQ.
+- A new feature should be added for Version information if required
+  later on.
 
-o.k
+V1 -> V2:
+- gpio_names_size is 32 bit.
+- gpio field is 16 bit.
+- padding added 16 bit.
+- Added packed attribute to few structures
+- Add the missing 'type' field to the request
+- Dropped to _nodata request/responses to simplify a bit, updated
+  related text.
 
->
-> > +Also, configures a flush callback function with the corresponding region.
->
-> Not sure if that is too specific already... maybe something like "Also,
-> it configures a notification for when the corresponding region is flushed."?
+--
+Viresh
 
-Maybe will remove this line altogether as it is implementation details?
+[1] https://lists.oasis-open.org/archives/virtio-dev/202106/msg00030.html
 
->
-> > +
-> > +\drivernormative{\subsubsection}{Driver Initialization: Filesystem direct access}{Device Types / PMEM Driver / Driver Initialization / Direct access}
-> > +
-> > +Driver MUST enable filesystem direct access operations for read/write on the device.
->
-> s/Driver/The driver/
+Viresh Kumar (2):
+  virtio-gpio: Add the device specification
+  virtio-gpio: Add support for interrupts
 
-o.k
->
-> Not sure whether this is operating system agnostic enough... does anyone
-> else have a better idea?
->
-> > +
-> > +\drivernormative{\subsubsection}{Driver Initialization: Virtio flush}{Device Types / PMEM Driver / Driver Initialization / Virtio flush}
-> > +
-> > +Driver MUST implement a virtio based flush callback.
-> > +
-> > +Driver MUST disable other FLUSH/SYNC mechanisms for the device when virtio flush is configured.
->
-> s/Driver/The driver/ (x2)
+ conformance.tex |  30 ++-
+ content.tex     |   1 +
+ virtio-gpio.tex | 528 ++++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 555 insertions(+), 4 deletions(-)
+ create mode 100644 virtio-gpio.tex
 
-o.k
-
->
-> See above for "flush callback". I'm mostly worrying about the wording
-> being generic enough (even though it's probably obvious enough for
-> non-Linux people as well.)
-
-yes, Something below is better?
-
-The driver MUST not enable any explicit FLUSH on the file memory
-mapped from the Virtio pmem device
-
->
-> > +
-> > +\subsection{Driver Operations}\label{sec:Device Types / PMEM Driver / Driver Operation}
-> > +\drivernormative{\subsubsection}{Driver Operation: Virtqueue command}{Device Types / PMEM Driver / Driver Operation / Virtqueue command}
-> > +
-> > +Driver MUST send VIRTIO_FLUSH command on request virtqueue, allows guest userspace process to perform IO operations asynchronously.
->
-> s/Driver/The driver/
->
-> I don't think we should refer to "guest userspace" in the spec; can we
-> reword this?
-
-Sure
-
-Driver MUST send VIRTIO_FLUSH command on request virtqueue, thus
-allows asynchronous FLUSH operation on the files present in Virtio
-pmem device.
-
->
-> > +
-> > +Driver SHOULD handle multiple fsync requests on files present on the device.
->
-> s/Driver/The driver/
-
-o.k
-
->
-> Again, a bit unsure on whether this is generic enough.
-
-Driver SHOULD handle multiple FLUSH requests on the files present on
-the Virtio pmem device.
-
->
-> > +
-> > +\subsection{Device Operations}\label{sec:Device Types / PMEM Driver / Device Operation}
-> > +
-> > +\devicenormative{\subsubsection}{Device Operations}{Device Types / PMEM Device / Device Operation / Virtqueue flush}
-> > +
-> > +Device SHOULD handle multiple flush requests simultaneously using host filesystem fsync or flush call.
->
-> s/Device/The device/
-
-o.k
-
->
-> > +
-> > +\devicenormative{\subsubsection}{Device operations}{Device Types / PMEM Device / Device Operation / Virtqueue return}
-> > +
-> > +Device MUST return integer "0" for success and "-1" for failure.
->
-> s/Device/The device/
-
-o.k
-
->
-> > +These errors are converted to corresponding error codes by guest
-> > +as per architecture.
->
-> I don't think you need to specify what the guest will actually do with
-> the errors, that's entirely driver-dependent.
-
-Sure, will remove it.
-
->
-> > +
-> > +\subsection{Possible security implications}\label{sec:Device Types / PMEM Device / Possible Security Implications}
-> > +
-> > +There could be potential security implications depending on how
-> > +memory mapped host backing file is used. By default device emulation
-> > +is done with SHARED mapping. There is a contract between guest and host
-> > +process to access same backing file for read/write operations.
-> > +
-> > +If a malicious guest or host userspace map the same backing file,
-> > +attacking process can make use of known cache side channel attacks
-> > +to predict the current state of shared page cache page. If both
-> > +attacker and victim somehow execute same shared code after a
-> > +flush/evict call, with difference in execution timing attacker
-> > +could infer another guest local data or host data. Though this is
-> > +not easy and same challenges exist as with bare metal host system
-> > +when userspace share same backing file.
-> > +
-> > +\subsection{Countermeasures}\label{sec:Device Types / PMEM Device / Possible Security Implications / Countermeasures}
-> > +
-> > +\subsubsection{ With SHARED mapping}\label{sec:Device Types / PMEM Device / Possible Security Implications / Countermeasures / SHARED}
-> > +
-> > +If device backing backing file is shared with multiple guests or host
-> > +processes, this may act as a metric for page cache side channel attack.
-> > +As a counter measure every guest should have its own(not shared with
-> > +another guest) SHARED backing file and gets populated a per host process
-> > +page cache pages.
-> > +
-> > +\subsubsection{ With PRIVATE mapping}\label{sec:Device Types / PMEM Device / Possible Security Implications / Countermeasures / PRIVATE}
-> > +There maybe be chances of side channels attack with PRIVATE
-> > +memory mapping similar to SHARED with read-only shared mappings.
-> > +PRIVATE is not used for virtio pmem making this usecase
-> > +irrelevant.
-> > +
-> > +\subsubsection{ Workload specific mapping}\label{sec:Device Types / PMEM Device / Possible Security Implications / Countermeasures / Workload}
-> > +For SHARED mapping, if workload is single application inside
-> > +guest and there is no risk with sharing of data between guests.
-> > +Guest sharing same backing file with SHARED mapping can be
-> > +used as a valid configuration.
-> > +
-> > +\subsubsection{ Prevent cache eviction}\label{sec:Device Types / PMEM Device / Possible Security Implications / Countermeasures / Cache eviction}
-> > +Don't allow cache evict from guest filesystem trim/discard command
-> > +with virtio pmem. This rules out any possibility of evict-reload
-> > +page cache side channel attacks if backing disk is shared(SHARED)
-> > +with mutliple guests. Though if we use per device backing file with
-> > +shared mapping this countermeasure is not required.
->
-> I'll leave review of these to others who are more familiar with this
-> area.
-
-o.k.
-
-Thanks you very much!
-
-Best regards,
-Pankaj
->
+-- 
+2.31.1.272.g89b43f80a514
 
