@@ -1,71 +1,74 @@
-Return-Path: <virtio-dev-return-8432-cohuck=redhat.com@lists.oasis-open.org>
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 5B21B986134
-	for <virtio-dev@lists.oasis-open.org>; Thu, 29 Jul 2021 06:18:28 +0000 (UTC)
+Return-Path: <viresh.kumar@linaro.org>
+Date: Thu, 29 Jul 2021 11:58:36 +0530
+From: Viresh Kumar <viresh.kumar@linaro.org>
+Subject: Re: [PATCH] virtio: i2c: Allow buffer less transactions
+Message-ID: <20210729062836.yonnjojkccmnu4b7@vireshk-i7>
 References: <cd02a45c16631d92d864fbf432bf0b2865b7de12.1627017387.git.viresh.kumar@linaro.org>
  <7c74b6aa-5d1d-8ab1-b4ca-e1f9df8b6605@intel.com>
  <20210729054712.aw76luyq7ajso35v@vireshk-i7>
-From: Jie Deng <jie.deng@intel.com>
-Message-ID: <6ea301e0-0420-f17a-c79f-8551fb840ecc@intel.com>
-Date: Thu, 29 Jul 2021 14:18:21 +0800
+ <6ea301e0-0420-f17a-c79f-8551fb840ecc@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <20210729054712.aw76luyq7ajso35v@vireshk-i7>
-Subject: [virtio-dev] Re: [PATCH] virtio: i2c: Allow buffer less transactions
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+In-Reply-To: <6ea301e0-0420-f17a-c79f-8551fb840ecc@intel.com>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
-To: Viresh Kumar <viresh.kumar@linaro.org>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>, Cornelia Huck <cohuck@redhat.com>, Wolfram Sang <wsa@kernel.org>, Paolo Bonzini <pbonzini@redhat.com>, Vincent Guittot <vincent.guittot@linaro.org>, Jason Wang <jasowang@redhat.com>, Bill Mills <bill.mills@linaro.org>, =?UTF-8?Q?Alex_Benn=c3=a9e?= <alex.bennee@linaro.org>, virtio-dev@lists.oasis-open.org, Gerd Hoffmann <kraxel@redhat.com>
+To: Jie Deng <jie.deng@intel.com>
+Cc: "Michael S. Tsirkin" <mst@redhat.com>, Cornelia Huck <cohuck@redhat.com>, Wolfram Sang <wsa@kernel.org>, Paolo Bonzini <pbonzini@redhat.com>, Vincent Guittot <vincent.guittot@linaro.org>, Jason Wang <jasowang@redhat.com>, Bill Mills <bill.mills@linaro.org>, Alex =?utf-8?Q?Benn=C3=A9e?= <alex.bennee@linaro.org>, virtio-dev@lists.oasis-open.org, Gerd Hoffmann <kraxel@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+On 29-07-21, 14:18, Jie Deng wrote:
+> The number of descriptors required for a request will not be fixed.
 
-On 2021/7/29 13:47, Viresh Kumar wrote:
-> On 29-07-21, 13:39, Jie Deng wrote:
->
->> Well, then can we also add a flag to mark the zero-length request.
->>
->> I think it will be convenient for backend developers.
-> Hmm, I think that information is already present at the device since
-> only two elements will be present in the received request, one out
-> buffer and one in buffer. And since the middle (data) buffer is not
-> present, the device can easily know that it is a zero-length request.
->
-> I don't see a real advantage of adding a flag for this.
->  =20
+That is true today as well, as we allow 3 (write or read) or 4
+(write-read) descriptors.
 
+> If there is a descriptor sequence in the virtqueue, then you may need a
+> state machine
+>=20
+> to parse the sequence. For example, when you have
+>=20
+>=20
+> WR=A0=A0 =A0=A0 RR =A0 =A0=A0=A0=A0 ZR
+>=20
+> O O I=A0=A0 O I I=A0=A0=A0=A0 O I
+>=20
+> * WR:(write request), RR (read request), ZR (zero request), O: output
+> descriptor, I: input descriptor
+>=20
+>=20
+> When you encounter "O I" combination, you have to read the element after =
+it
+> to distinguish
+>=20
+> RR and ZR. Will this bring unnecessary difficulties for the backend codin=
+g ?
 
-The number of descriptors required for a request will not be fixed.
+I understand what you are saying, but at least all the backends that I
+have worked with (Qemu and Rust), further categorizes these into
+blocks and this is how it looks there (writing in qemu terminology):
 
-If there is a descriptor sequence in the virtqueue, then you may need a=20
-state machine
+VuVirtqElement *elem =3D vu_queue_pop();
 
-to parse the sequence. For example, when you have
+elem->in_num and elem_out_num gives the number of out/in buffers
+there.
 
+And so there is no way one can get confused between two different
+elements and you will always know if it is WR or RR or ZR.
 
-WR=C2=A0=C2=A0 =C2=A0=C2=A0 RR =C2=A0 =C2=A0=C2=A0=C2=A0=C2=A0 ZR
+Look at the implementation of vi2c_handle_ctrl() here in one of my
+qemu implementations [1].
 
-O O I=C2=A0=C2=A0 O I I=C2=A0=C2=A0=C2=A0=C2=A0 O I
+The same is true for Rust backend.
 
-* WR:(write request), RR (read request), ZR (zero request), O: output=20
-descriptor, I: input descriptor
+And so I thought it is evidently clear from virtio standard itself.
+Otherwise even with the current specification, how will you know if it
+is a WR or RR or WRR (write-read request).
 
+Is my understanding correct ?
 
-When you encounter "O I" combination, you have to read the element after=20
-it to distinguish
+--=20
+viresh
 
-RR and ZR. Will this bring unnecessary difficulties for the backend coding =
-?
-
-
-
-
-
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+[1] https://lore.kernel.org/qemu-devel/e0adcd9552cee4de0ee844f6b3c87fb2b2f2=
+357c.1617278395.git.viresh.kumar@linaro.org/
 
