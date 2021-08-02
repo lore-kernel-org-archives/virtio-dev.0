@@ -1,122 +1,32 @@
-Return-Path: <arnd@kernel.org>
-MIME-Version: 1.0
-References: <cover.1627627021.git.viresh.kumar@linaro.org> <33671b4e543557740acf85bc30ed8ad1ba9ef8aa.1627627021.git.viresh.kumar@linaro.org>
- <87a6m42ngf.wl-maz@kernel.org> <CAK8P3a2pMUpLUFFA62pTcH9LBYfo1g+gYGkqDxmBjUfQA2Uong@mail.gmail.com>
- <87v94q25iu.wl-maz@kernel.org>
-In-Reply-To: <87v94q25iu.wl-maz@kernel.org>
-From: Arnd Bergmann <arnd@kernel.org>
-Date: Sun, 1 Aug 2021 15:43:37 +0200
-Message-ID: <CAK8P3a2Rz_HGVYG7n6stn06ws521VSTgagBvz__2Kh8ho0FDXA@mail.gmail.com>
+Return-Path: <viresh.kumar@linaro.org>
+Date: Mon, 2 Aug 2021 11:24:16 +0530
+From: Viresh Kumar <viresh.kumar@linaro.org>
 Subject: Re: [PATCH V8 2/2] virtio-gpio: Add support for interrupts
-Content-Type: text/plain; charset="UTF-8"
-To: Marc Zyngier <maz@kernel.org>
-Cc: Viresh Kumar <viresh.kumar@linaro.org>, Jason Wang <jasowang@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>, Cornelia Huck <cohuck@redhat.com>, Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Vincent Guittot <vincent.guittot@linaro.org>, Jean-Philippe Brucker <jean-philippe@linaro.org>, Bill Mills <bill.mills@linaro.org>, =?UTF-8?B?QWxleCBCZW5uw6ll?= <alex.bennee@linaro.org>, "Enrico Weigelt, metux IT consult" <info@metux.net>, virtio-dev@lists.oasis-open.org, Geert Uytterhoeven <geert@linux-m68k.org>, Stratos Mailing List <stratos-dev@op-lists.linaro.org>, Thomas Gleixner <tglx@linutronix.de>
+Message-ID: <20210802055416.v67gdafcqslw53lt@vireshk-i7>
+References: <cover.1627627021.git.viresh.kumar@linaro.org>
+ <33671b4e543557740acf85bc30ed8ad1ba9ef8aa.1627627021.git.viresh.kumar@linaro.org>
+ <87a6m42ngf.wl-maz@kernel.org>
+ <CAK8P3a2pMUpLUFFA62pTcH9LBYfo1g+gYGkqDxmBjUfQA2Uong@mail.gmail.com>
+ <87v94q25iu.wl-maz@kernel.org>
+ <CAK8P3a2Rz_HGVYG7n6stn06ws521VSTgagBvz__2Kh8ho0FDXA@mail.gmail.com>
+MIME-Version: 1.0
+In-Reply-To: <CAK8P3a2Rz_HGVYG7n6stn06ws521VSTgagBvz__2Kh8ho0FDXA@mail.gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+To: Arnd Bergmann <arnd@kernel.org>
+Cc: Marc Zyngier <maz@kernel.org>, Jason Wang <jasowang@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>, Cornelia Huck <cohuck@redhat.com>, Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Vincent Guittot <vincent.guittot@linaro.org>, Jean-Philippe Brucker <jean-philippe@linaro.org>, Bill Mills <bill.mills@linaro.org>, Alex =?utf-8?Q?Benn=C3=A9e?= <alex.bennee@linaro.org>, "Enrico Weigelt, metux IT consult" <info@metux.net>, virtio-dev@lists.oasis-open.org, Geert Uytterhoeven <geert@linux-m68k.org>, Stratos Mailing List <stratos-dev@op-lists.linaro.org>, Thomas Gleixner <tglx@linutronix.de>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Sat, Jul 31, 2021 at 11:31 AM Marc Zyngier <maz@kernel.org> wrote:
-> On Fri, 30 Jul 2021 11:05:30 +0100, Arnd Bergmann <arnd@kernel.org> wrote:
-> > On Fri, Jul 30, 2021 at 10:52 AM Marc Zyngier <maz@kernel.org> wrote:
+On 01-08-21, 15:43, Arnd Bergmann wrote:
+> On Sat, Jul 31, 2021 at 11:31 AM Marc Zyngier <maz@kernel.org> wrote:
+> > Is there any sample code we could look at, both got guest and host?
+> 
+> Viresh said that he is close to sending it after updating the code
+> to the latest spec.
 
-> > The EOI for the level interrupt is the message being enqueued after
-> > the guest is done processing the interrupt. I can see four ways this
-> > could go:
-> >
-> > 1. If the interrupt has not been made pending again yet, nothing happens
-> >   until it eventually becomes pending again (this is the obvious case)
-> >
-> > 2. If it is already pending, chip->irq_eoi() causes the new event descriptor
-> >   to be queued on the eventq, and it signals the host about new buffers
-> >   being available. The /host/ samples the level of the line, notices it is
-> >   pending and puts the resulting buffer back on the 'used' queue even
-> >   before returning from the guest 'notify' function.
-> >   The guest virtio core code keeps processing the 'used' buffers and
-> >   gets back into the interrupt handler.
-> >
-> > 3. Same as 2., but the host handles the virtqueue ->notify asynchronously,
-> >   and the guest has already checked the 'used' queue before the host
-> >   adds back the buffer to tell it that the line is still active. Now the guest
-> >   gets notified again after it returns from the virtqueue interrupt, in order
-> >   to process the new 'used' buffer.
-> >
-> > 4. The gpio line actually goes into inactive state until after the new event
-> >    is queued in chip->irq_eoi(), but becomes active immediately afterwards.
-> >    Now the host gets interrupted and handles this by queuing the event
-> >    reply but cannot interrupt the guest because it is still processing the
-> >    original virtqueue event. However, since the event is queued, it will be
-> >    processed the same way as 2. or 3. by the virtio core.
-> >
-> > Do  you see a problem with scenarios 2, 3 or 4, or with another case
-> > that I may have missed?
->
-> Thanks, that's really useful. I don't think you missed much. What the
-> documentation is missing though is an actual interrupt controller
-> specification. Although it describes the protocol in great length, at
-> no point does it explain what the irq_response does in terms of
-> interrupt life cycle (there is no interrupt life cycle at all). Same
-> goes for the various states that an interrupt can get. As someone who
-> spends way too much time reading interrupt controller specs, this is a
-> first class defect.
+I am close to sending code for the guest, but it will take time to get it done
+for the host (I am going to do a Rust implementation for the same).
 
-Ok, makes sense.
-
-> Another point I have just realised is that this spec confuses
-> interrupt mask with interrupt enable. It describes masking interrupts
-> as an effect of setting the trigger type, but that's completely
-> unusable. There is a strong expectation from SW that a masked
-> interrupt doesn't loose signals. If the interrupt is masked by setting
-> its trigger to NONE, then an edge interrupt coming at this point will
-> be lost. No cookie for you.
->
-> I'm fine with this odd way of *enabling* the interrupt, but masking
-> cannot lose any signal, ever.
-
-Viresh's previous first version actually had this, I asked him to
-simplify it in order to reduce the number of possible states, as it
-seemed to me that it would be better not to have eight possible
-states when you have the various combinations of enabled/disabled,
-unmasked/masked and armed/not-armed. The current version folds
-unmasked/masked into armed/not-armed by masking the interrupt
-whenever the reply has been queued to the guest, until it gets
-queued again on the eventq.
-
-This avoids the problem that using the controlq to mask explicitly
-mask the interrupt cannot be done from atomic context since it
-has to wait_for_completion() until the controlq message is returned.
-Queing up the eventq message to unmask the even can be done
-in atomic context, since this is a posted operation.
-
-What are the requirements for a ->irq_mask() operation? Can this
-be called in atomic context? If it can, is it allowed to be posted
-(e.g. by queuing a new command without waiting for the reply)?
-
-Alternatively, would it be possible to simply emulate the 'irq_mask()'
-operation in software, by not delivering the next interrupt to the
-handler until the driver calls irq_unmask()? Once it's been delivered,
-it would just not get requeued in this case.
-
-> Another unclear aspect is how you switch from one trigger type to
-> another. Do you have to transition via NONE? I have the strong feeling
-> that you should if you want to be robust against spurious signals.
-
-Good idea.
-
-> > [This all assumes that the host is able to atomically enable
-> > interrupts and check the current level when processing the new
-> > buffer. If the host uses the Linux gpiolib ioctl interface, this
-> > means it has to register for an edge event on the line first, and
-> > then read the current value before adding the file descriptor to its
-> > poll table. I feel this is out of the scope of the virtio spec
-> > though.]
->
-> There are certainly a number of implementation difficulties with
-> this. At this stage, I'm more worried about the guest-visible aspects
-> so far, but I guess that I should also look at the host side at some
-> point.
->
-> Is there any sample code we could look at, both got guest and host?
-
-Viresh said that he is close to sending it after updating the code
-to the latest spec.
-
-        Arnd
+-- 
+viresh
 
