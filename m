@@ -1,48 +1,74 @@
-Return-Path: <virtio-dev-return-8509-cohuck=redhat.com@lists.oasis-open.org>
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 0F0B8986279
-	for <virtio-dev@lists.oasis-open.org>; Mon,  9 Aug 2021 05:51:01 +0000 (UTC)
-From: Cornelia Huck <cohuck@redhat.com>
-In-Reply-To: <20210809041544.272ykb6mtg2xpucj@vireshk-i7>
+Return-Path: <viresh.kumar@linaro.org>
+Date: Mon, 2 Aug 2021 10:42:54 +0530
+From: Viresh Kumar <viresh.kumar@linaro.org>
+Subject: Re: [PATCH V8 2/2] virtio-gpio: Add support for interrupts
+Message-ID: <20210802051254.yk7hrm5jfvkbqtza@vireshk-i7>
 References: <cover.1627627021.git.viresh.kumar@linaro.org>
- <3e801cbef0a46d5c4f82d46debd3a72811becd4c.1627627021.git.viresh.kumar@linaro.org>
- <87lf5ey30z.fsf@redhat.com> <20210809041544.272ykb6mtg2xpucj@vireshk-i7>
-Date: Mon, 09 Aug 2021 07:50:50 +0200
-Message-ID: <87fsvjxj2d.fsf@redhat.com>
+ <33671b4e543557740acf85bc30ed8ad1ba9ef8aa.1627627021.git.viresh.kumar@linaro.org>
+ <CAK8P3a1G-TNkCxXg-FTAP6iqPyyJHU_gNGGF3ZqH8=5inASY5g@mail.gmail.com>
 MIME-Version: 1.0
-Subject: [virtio-dev] Re: [PATCH V8 1/2] virtio-gpio: Add the device specification
-Content-Type: text/plain
-To: Viresh Kumar <viresh.kumar@linaro.org>
-Cc: Jason Wang <jasowang@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>, Arnd Bergmann <arnd@kernel.org>, Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Vincent Guittot <vincent.guittot@linaro.org>, Jean-Philippe Brucker <jean-philippe@linaro.org>, Bill Mills <bill.mills@linaro.org>, Alex =?utf-8?Q?Benn=C3=A9e?= <alex.bennee@linaro.org>, "Enrico Weigelt, metux IT
- consult" <info@metux.net>, virtio-dev@lists.oasis-open.org, Geert Uytterhoeven <geert@linux-m68k.org>, stratos-dev@op-lists.linaro.org, Thomas Gleixner <tglx@linutronix.de>, Marc Zyngier <maz@kernel.org>, Arnd Bergmann <arnd@arndb.de>
+In-Reply-To: <CAK8P3a1G-TNkCxXg-FTAP6iqPyyJHU_gNGGF3ZqH8=5inASY5g@mail.gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+To: Arnd Bergmann <arnd@kernel.org>
+Cc: Jason Wang <jasowang@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>, Cornelia Huck <cohuck@redhat.com>, Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Vincent Guittot <vincent.guittot@linaro.org>, Jean-Philippe Brucker <jean-philippe@linaro.org>, Bill Mills <bill.mills@linaro.org>, Alex =?utf-8?Q?Benn=C3=A9e?= <alex.bennee@linaro.org>, "Enrico Weigelt, metux IT consult" <info@metux.net>, virtio-dev@lists.oasis-open.org, Geert Uytterhoeven <geert@linux-m68k.org>, Stratos Mailing List <stratos-dev@op-lists.linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Marc Zyngier <maz@kernel.org>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Mon, Aug 09 2021, Viresh Kumar <viresh.kumar@linaro.org> wrote:
+On 30-07-21, 10:08, Arnd Bergmann wrote:
+> On Fri, Jul 30, 2021 at 8:45 AM Viresh Kumar <viresh.kumar@linaro.org> wrote:
+> > +If the trigger type is set to \field{VIRTIO_GPIO_IRQ_TYPE_NONE}, the device MUST
+> > +mask the interrupt for the GPIO line and discard any latched interrupt event
+> > +associated with it. The device MUST also return any unused pair of buffers
+> > +for the GPIO line, over the \field{eventq} virtqueue, after setting the
+> > +\field{status} field to \field{VIRTIO_GPIO_IRQ_STATUS_INVALID}. If the driver
+> > +queues another pair of buffers, while the trigger type remains set as
+> > +\field{VIRTIO_GPIO_IRQ_TYPE_NONE}, the device MUST wait for another message of
+> > +type \field{VIRTIO_GPIO_MSG_SET_IRQ_TYPE} before using the newly queued buffers.
+> 
+> We discussed this last part before, and you had already said you
+> prefer this ordering,
+> but after you explain it here, the interaction of VIRTIO_GPIO_MSG_SET_IRQ_TYPE
+> with queued buffers still seems inconsistent to me: If setting the
+> type to none cancels
+> any outstanding eventq request, why do newly queued eventq request get added to
+> the queue? If we change the order to always require the type to be
+> enabled before
+> queuing any events, this inconsistency would go away. With the
+> behavior of the level
+> triggered interrupts changed to fasteoi, do you still see a need to
+> keep this ordering?
 
-> On 06-08-21, 18:02, Cornelia Huck wrote:
->> On Fri, Jul 30 2021, Viresh Kumar <viresh.kumar@linaro.org> wrote:
->> > +\subsection{Device Initialization}\label{sec:Device Types / GPIO Device / Device Initialization}
->> > +
->> > +\begin{itemize}
->> > +\item The driver MUST configure and initialize the \field{requestq} virtqueue.
->> 
->> Also outside of conformance sections. Maybe "The driver configures and
->> initializes..." ? I don't think that one requires a normative statement.
->
-> Not sure I understood it well, but are you suggesting to drop this line
-> altogether ? I wrote it as I saw similar lines/sections for other protocols, I
-> can drop it though.
+If you look at the message-flow sequence, I did change it to how you described
+above, i.e. the driver enables the interrupt first and then queue the message.
 
-No, just rewrite it as an informational text (i.e. get rid of the
-'MUST', which only belongs into normative statements.)
+I wasn't sure if we wanted to force it entirely and so kept it like this. But I
+think it may be fine that way, so I will change this to mention that if buffers
+are received while the interrupt is disabled, then the device should just return
+them back unused. That will just make the expectation clear for both device and
+driver in this case.
 
+> > +\item In a typical guest operating system kernel, the virtio-gpio driver
+> > +    notifies the client driver, that is associated with this gpio line, to
+> > +    process the event.
+> > +
+> > +\item In the case of a level triggered interrupt, the client driver must fully
+> > +    process and acknowledge the event at its source to return the line to its
+> > +    inactive state.
+> > +
+> > +\item The driver may again queue, same or new, pair of buffers for that GPIO
+> > +    line and notify the device.
+> 
+> I suggested this bit, but on second thought it still doesn't quite capture the
+> important bit that the 'level' line has to be set to low /before/ the new buffer
+> gets queued (to avoid a spurious notification).
 
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+I find the second item above say exactly the same thing. It says for level
+triggered interrupted, line must return to inactive state.
+
+> Otherwise there is no difference
+> between edge and level interrupts, obviously in both cases the interrupt
+> has to be processed eventually.
+
+-- 
+viresh
 
