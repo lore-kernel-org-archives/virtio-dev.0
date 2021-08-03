@@ -1,84 +1,100 @@
-Return-Path: <virtio-dev-return-8481-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-8482-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 17BE798647F
-	for <virtio-dev@lists.oasis-open.org>; Tue,  3 Aug 2021 13:11:55 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id EF6259864F9
+	for <virtio-dev@lists.oasis-open.org>; Tue,  3 Aug 2021 13:12:00 +0000 (UTC)
 From: Cristian Marussi <cristian.marussi@arm.com>
-Date: Tue,  3 Aug 2021 14:10:21 +0100
-Message-Id: <20210803131024.40280-13-cristian.marussi@arm.com>
+Date: Tue,  3 Aug 2021 14:10:22 +0100
+Message-Id: <20210803131024.40280-14-cristian.marussi@arm.com>
 In-Reply-To: <20210803131024.40280-1-cristian.marussi@arm.com>
 References: <20210803131024.40280-1-cristian.marussi@arm.com>
-Subject: [virtio-dev] [PATCH v7 12/15] firmware: arm_scmi: Add optional link_supplier() transport op
+Subject: [virtio-dev] [PATCH v7 13/15] dt-bindings: arm: Add virtio transport for SCMI
 Content-Type: text/plain; charset="US-ASCII"
 To: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org
 Cc: sudeep.holla@arm.com, james.quinlan@broadcom.com, Jonathan.Cameron@Huawei.com, f.fainelli@gmail.com, etienne.carriere@linaro.org, vincent.guittot@linaro.org, souvik.chakravarty@arm.com, cristian.marussi@arm.com, igor.skalkin@opensynergy.com, peter.hilber@opensynergy.com, alex.bennee@linaro.org, jean-philippe@linaro.org, mikhail.golubev@opensynergy.com, anton.yakovlev@opensynergy.com, Vasyl.Vavrychuk@opensynergy.com, Andriy.Tryshnivskyy@opensynergy.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-From: Peter Hilber <peter.hilber@opensynergy.com>
+From: Igor Skalkin <igor.skalkin@opensynergy.com>
 
-Some transports are also effectively registered with other kernel subsystem
-in order to be properly probed and initialized; as a consequence such kind
-of transports, and their related devices, might still not have been probed
-and initialized at the time the main SCMI core driver is probed.
+Document the properties for arm,scmi-virtio compatible nodes.
+The backing virtio SCMI device is described in patch [1].
 
-Add an optional .link_supplier() transport operation which can be used by
-the core SCMI stack to dynamically check if the transport is ready and
-dynamically link its device to the SCMI platform instance device.
+While doing that, make shmem property required only for pre-existing
+mailbox and smc transports, since virtio-scmi does not need it.
 
+[1] https://lists.oasis-open.org/archives/virtio-comment/202102/msg00018.html
+
+Reviewed-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Igor Skalkin <igor.skalkin@opensynergy.com>
+[ Peter: Adapted patch for submission to upstream. ]
+Co-developed-by: Peter Hilber <peter.hilber@opensynergy.com>
 Signed-off-by: Peter Hilber <peter.hilber@opensynergy.com>
-[ Cristian: reworded commit message ]
+[ Cristian: converted to yaml format, moved shmen required property. ]
 Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
 ---
-v6 --> v7
-- fixed commit message
-v5 --> v6
-- reworded commit message
+v3 --> V4
+- convertd to YAML
+- make shmem required only for pre-existing mailbox and smc transport
+- updated VirtIO specification patch message reference
+- dropped virtio-mmio SCMI device example since really not pertinent to
+  virtio-scmi dt bindings transport: it is not even referenced in SCMI
+  virtio DT node since they are enumerated by VirtIO subsystem and there
+  could be PCI based SCMI devices anyway.
 ---
- drivers/firmware/arm_scmi/common.h | 2 ++
- drivers/firmware/arm_scmi/driver.c | 6 ++++++
- 2 files changed, 8 insertions(+)
+ Documentation/devicetree/bindings/firmware/arm,scmi.yaml | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/firmware/arm_scmi/common.h b/drivers/firmware/arm_scmi/common.h
-index 4da6cecc0a1c..024d97fbf97b 100644
---- a/drivers/firmware/arm_scmi/common.h
-+++ b/drivers/firmware/arm_scmi/common.h
-@@ -348,6 +348,7 @@ struct scmi_chan_info {
- /**
-  * struct scmi_transport_ops - Structure representing a SCMI transport ops
-  *
-+ * @link_supplier: Optional callback to add link to a supplier device
-  * @chan_available: Callback to check if channel is available or not
-  * @chan_setup: Callback to allocate and setup a channel
-  * @chan_free: Callback to free a channel
-@@ -362,6 +363,7 @@ struct scmi_chan_info {
-  * @poll_done: Callback to poll transfer status
-  */
- struct scmi_transport_ops {
-+	int (*link_supplier)(struct device *dev);
- 	bool (*chan_available)(struct device *dev, int idx);
- 	int (*chan_setup)(struct scmi_chan_info *cinfo, struct device *dev,
- 			  bool tx);
-diff --git a/drivers/firmware/arm_scmi/driver.c b/drivers/firmware/arm_scmi/driver.c
-index a907f3fe4c08..7ae4ec8f8d1f 100644
---- a/drivers/firmware/arm_scmi/driver.c
-+++ b/drivers/firmware/arm_scmi/driver.c
-@@ -1814,6 +1814,12 @@ static int scmi_probe(struct platform_device *pdev)
- 	handle->devm_protocol_get = scmi_devm_protocol_get;
- 	handle->devm_protocol_put = scmi_devm_protocol_put;
+diff --git a/Documentation/devicetree/bindings/firmware/arm,scmi.yaml b/Documentation/devicetree/bindings/firmware/arm,scmi.yaml
+index cebf6ffe70d5..5c4c6782e052 100644
+--- a/Documentation/devicetree/bindings/firmware/arm,scmi.yaml
++++ b/Documentation/devicetree/bindings/firmware/arm,scmi.yaml
+@@ -34,6 +34,10 @@ properties:
+       - description: SCMI compliant firmware with ARM SMC/HVC transport
+         items:
+           - const: arm,scmi-smc
++      - description: SCMI compliant firmware with SCMI Virtio transport.
++                     The virtio transport only supports a single device.
++        items:
++          - const: arm,scmi-virtio
  
-+	if (desc->ops->link_supplier) {
-+		ret = desc->ops->link_supplier(dev);
-+		if (ret)
-+			return ret;
-+	}
-+
- 	ret = scmi_txrx_setup(info, dev, SCMI_PROTOCOL_BASE);
- 	if (ret)
- 		return ret;
+   interrupts:
+     description:
+@@ -172,6 +176,7 @@ patternProperties:
+       Each sub-node represents a protocol supported. If the platform
+       supports a dedicated communication channel for a particular protocol,
+       then the corresponding transport properties must be present.
++      The virtio transport does not support a dedicated communication channel.
+ 
+     properties:
+       reg:
+@@ -195,7 +200,6 @@ patternProperties:
+ 
+ required:
+   - compatible
+-  - shmem
+ 
+ if:
+   properties:
+@@ -209,6 +213,7 @@ then:
+ 
+   required:
+     - mboxes
++    - shmem
+ 
+ else:
+   if:
+@@ -219,6 +224,7 @@ else:
+   then:
+     required:
+       - arm,smc-id
++      - shmem
+ 
+ examples:
+   - |
 -- 
 2.17.1
 
