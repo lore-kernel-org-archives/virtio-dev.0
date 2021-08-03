@@ -2,54 +2,100 @@ Return-Path: <pankaj.gupta.linux@gmail.com>
 MIME-Version: 1.0
 References: <20210728150435.264551-1-pankaj.gupta.linux@gmail.com>
  <87r1fg10hm.fsf@redhat.com> <CAM9Jb+jAbBrsQbR8hHFcskqXojj47kMc0xzivQMH0Ax2uUb8ng@mail.gmail.com>
- <87mtpzylvl.fsf@redhat.com> <543eb53d-144d-380c-f495-8e6ca3cf5374@redhat.com>
-In-Reply-To: <543eb53d-144d-380c-f495-8e6ca3cf5374@redhat.com>
+ <87mtpzylvl.fsf@redhat.com>
+In-Reply-To: <87mtpzylvl.fsf@redhat.com>
 From: Pankaj Gupta <pankaj.gupta.linux@gmail.com>
-Date: Tue, 3 Aug 2021 11:02:24 +0200
-Message-ID: <CAM9Jb+jvdNvp=Y-LpKVRYHNzuhAgA0K+dwKzLe2Nm8SnffaRsw@mail.gmail.com>
+Date: Tue, 3 Aug 2021 11:16:29 +0200
+Message-ID: <CAM9Jb+jjRE0q+kU6FgxoTxmXM_tUQQJcA4Kvg3Ra+UmHz7ym4g@mail.gmail.com>
 Subject: Re: [PATCH RESEND] virtio-pmem: PMEM device spec
 Content-Type: text/plain; charset="UTF-8"
-To: David Hildenbrand <david@redhat.com>
-Cc: Cornelia Huck <cohuck@redhat.com>, virtio-dev@lists.oasis-open.org, Dan Williams <dan.j.williams@intel.com>, "Michael S . Tsirkin" <mst@redhat.com>, Taylor Stark <tstark@linux.microsoft.com>, Pankaj Gupta <pankaj.gupta@ionos.com>
+To: Cornelia Huck <cohuck@redhat.com>
+Cc: virtio-dev@lists.oasis-open.org, Dan Williams <dan.j.williams@intel.com>, David Hildenbrand <david@redhat.com>, "Michael S . Tsirkin" <mst@redhat.com>, Taylor Stark <tstark@linux.microsoft.com>, Pankaj Gupta <pankaj.gupta@ionos.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-> >>>> +Also, configures a flush callback function with the corresponding region.
-> >>>
-> >>> Not sure if that is too specific already... maybe something like "Also,
-> >>> it configures a notification for when the corresponding region is flushed."?
+> >> > +Also, configures a flush callback function with the corresponding region.
 > >>
-> >> Maybe will remove this line altogether as it is implementation
-> >> details?
+> >> Not sure if that is too specific already... maybe something like "Also,
+> >> it configures a notification for when the corresponding region is flushed."?
 > >
-> > Maybe... I think the point is to configure _something_, not sure if we
-> > can really generalize that. Other ideas welcome.
-> >
-> >>> See above for "flush callback". I'm mostly worrying about the wording
-> >>> being generic enough (even though it's probably obvious enough for
-> >>> non-Linux people as well.)
-> >>
-> >> yes, Something below is better?
-> >>
-> >> The driver MUST not enable any explicit FLUSH on the file memory
-> >> mapped from the Virtio pmem device
-> >
-> > Hm, not sure. Would like to see feedback from others that had worked in
-> > this area.
+> > Maybe will remove this line altogether as it is implementation
+> > details?
 >
->
-> I think instead of describing detailed device handling in regard to
-> e.g., fsync, we should document what the exact semantics are in POV of
-> the driver when issuing a flush, and when it makes sense to issue a
-> flush. The device is free to implement that however it likes (fsync,
-> whatsoever).
->
-> Why do we care about "The driver MUST not enable any explicit FLUSH on
-> the file memory mapped from the Virtio pmem device" and what exactly do
-> we mean with "explicit FLUSH" here ?
+> Maybe... I think the point is to configure _something_, not sure if we
+> can really generalize that. Other ideas welcome.
 
-Fair. Will remove this and any other hints towards implementation.
-Thanks for having a look.
+Agree.
+>
+> >> See above for "flush callback". I'm mostly worrying about the wording
+> >> being generic enough (even though it's probably obvious enough for
+> >> non-Linux people as well.)
+> >
+> > yes, Something below is better?
+> >
+> > The driver MUST not enable any explicit FLUSH on the file memory
+> > mapped from the Virtio pmem device
+>
+> Hm, not sure. Would like to see feedback from others that had worked in
+> this area.
 
-Best regards,
+As suggested by David, will remove this as well. As this seems to be
+implementation
+details.
+>
+> >
+> >>
+> >> > +
+> >> > +\subsection{Driver Operations}\label{sec:Device Types / PMEM Driver / Driver Operation}
+> >> > +\drivernormative{\subsubsection}{Driver Operation: Virtqueue command}{Device Types / PMEM Driver / Driver Operation / Virtqueue command}
+> >> > +
+> >> > +Driver MUST send VIRTIO_FLUSH command on request virtqueue, allows guest userspace process to perform IO operations asynchronously.
+> >>
+> >> s/Driver/The driver/
+> >>
+> >> I don't think we should refer to "guest userspace" in the spec; can we
+> >> reword this?
+> >
+> > Sure
+> >
+> > Driver MUST send VIRTIO_FLUSH command on request virtqueue, thus
+> > allows asynchronous FLUSH operation on the files present in Virtio
+> > pmem device.
+>
+> s/Driver/The driver/
+> s/allows/allowing/
+
+o.k
+
+>
+> I'm not sure whether we should refer to 'files'.
+>
+> Again, feedback from others welcome; this is not really one of my core topics.
+
+Sure. Will recheck.
+>
+> >
+> >>
+> >> > +
+> >> > +Driver SHOULD handle multiple fsync requests on files present on the device.
+> >>
+> >> s/Driver/The driver/
+> >
+> > o.k
+> >
+> >>
+> >> Again, a bit unsure on whether this is generic enough.
+> >
+> > Driver SHOULD handle multiple FLUSH requests on the files present on
+> > the Virtio pmem device.
+>
+> Same here. I'm afraid this is not easy :(
+
+hmm...
+
+The driver SHOULD handle multiple FLUSH requests.
+
+Thanks,
 Pankaj
+
+>
 
