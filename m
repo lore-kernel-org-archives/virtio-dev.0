@@ -1,82 +1,68 @@
-Return-Path: <stefanha@redhat.com>
-Date: Wed, 4 Aug 2021 13:33:05 +0100
-From: Stefan Hajnoczi <stefanha@redhat.com>
-Subject: Re: [virtio-dev] [PATCH RESEND] virtio-pmem: PMEM device spec
-Message-ID: <YQqJAVa/qjy+NOrN@stefanha-x1.localdomain>
-References: <20210728150435.264551-1-pankaj.gupta.linux@gmail.com>
- <YQp1D+Ece28livMx@stefanha-x1.localdomain>
- <dee2aab6-c0a7-3af6-4d4a-f0be75e2a92b@redhat.com>
+Return-Path: <virtio-dev-return-8496-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id B71ED986529
+	for <virtio-dev@lists.oasis-open.org>; Wed,  4 Aug 2021 12:43:08 +0000 (UTC)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="n+DgD4n+4rQlqZIo"
-Content-Disposition: inline
-In-Reply-To: <dee2aab6-c0a7-3af6-4d4a-f0be75e2a92b@redhat.com>
-To: David Hildenbrand <david@redhat.com>
-Cc: Pankaj Gupta <pankaj.gupta.linux@gmail.com>, virtio-dev@lists.oasis-open.org, dan.j.williams@intel.com, mst@redhat.com, cohuck@redhat.com, tstark@linux.microsoft.com, pankaj.gupta@ionos.com
+References: <20210728150435.264551-1-pankaj.gupta.linux@gmail.com>
+ <YQp1D+Ece28livMx@stefanha-x1.localdomain> <dee2aab6-c0a7-3af6-4d4a-f0be75e2a92b@redhat.com>
+ <YQqJAVa/qjy+NOrN@stefanha-x1.localdomain>
+In-Reply-To: <YQqJAVa/qjy+NOrN@stefanha-x1.localdomain>
+From: Pankaj Gupta <pankaj.gupta.linux@gmail.com>
+Date: Wed, 4 Aug 2021 14:42:56 +0200
+Message-ID: <CAM9Jb+jKVhukS_-k0u89bh6_g1EjozrTqcLzHw=+FRi2fzOmxA@mail.gmail.com>
+Subject: Re: [virtio-dev] [PATCH RESEND] virtio-pmem: PMEM device spec
+Content-Type: text/plain; charset="UTF-8"
+To: Stefan Hajnoczi <stefanha@redhat.com>
+Cc: David Hildenbrand <david@redhat.com>, virtio-dev@lists.oasis-open.org, Dan Williams <dan.j.williams@intel.com>, "Michael S . Tsirkin" <mst@redhat.com>, Cornelia Huck <cohuck@redhat.com>, Taylor Stark <tstark@linux.microsoft.com>, Pankaj Gupta <pankaj.gupta@ionos.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+> > On 04.08.21 13:07, Stefan Hajnoczi wrote:
+> > > On Wed, Jul 28, 2021 at 05:04:35PM +0200, Pankaj Gupta wrote:
+> > > > +\subsection{Device configuration layout}\label{sec:Device Types / PMEM Device / Device configuration layout}
+> > > > +
+> > > > +\begin{lstlisting}
+> > > > +struct virtio_pmem_config {
+> > > > + le64 start;
+> > > > + le64 size;
+> > > > +};
+> > > > +\end{lstlisting}
+> > > > +
+> > > > +\begin{description}
+> > > > +\item[\field{start}] contains the start address from the guest physical address range
+> > > > +to be hotplugged into the guest address space using the pmem API.
+> > > > +
+> > > > +\item[\field{size}] contains the length of this address range.
+> > > > +\end{description}
+> > >
+> > > Please use a Shared Memory Region instead. This is a relatively new
+> > > addition to the VIRTIO device model that seems like a good fit for this
+> > > device:
+> > > https://github.com/oasis-tcs/virtio-spec/blob/master/shared-mem.tex
+> >
+> > Note that virtio-pmem is already upstream in QEMU and in Linux using this
+> > model. There is a proposal to optionally use shared memory for exposing the
+> > area, to be unlocked with a feature bit.
+>
+> Please incorporate the proposal into this patch. A feature bit is a good
+> way of handling this case.
 
---n+DgD4n+4rQlqZIo
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+You mean in the patch with parent spec?
 
-On Wed, Aug 04, 2021 at 01:11:52PM +0200, David Hildenbrand wrote:
-> On 04.08.21 13:07, Stefan Hajnoczi wrote:
-> > On Wed, Jul 28, 2021 at 05:04:35PM +0200, Pankaj Gupta wrote:
-> > > +\subsection{Device configuration layout}\label{sec:Device Types / PM=
-EM Device / Device configuration layout}
-> > > +
-> > > +\begin{lstlisting}
-> > > +struct virtio_pmem_config {
-> > > +	le64 start;
-> > > +	le64 size;
-> > > +};
-> > > +\end{lstlisting}
-> > > +
-> > > +\begin{description}
-> > > +\item[\field{start}] contains the start address from the guest physi=
-cal address range
-> > > +to be hotplugged into the guest address space using the pmem API.
-> > > +
-> > > +\item[\field{size}] contains the length of this address range.
-> > > +\end{description}
-> >=20
-> > Please use a Shared Memory Region instead. This is a relatively new
-> > addition to the VIRTIO device model that seems like a good fit for this
-> > device:
-> > https://github.com/oasis-tcs/virtio-spec/blob/master/shared-mem.tex
->=20
-> Note that virtio-pmem is already upstream in QEMU and in Linux using this
-> model. There is a proposal to optionally use shared memory for exposing t=
-he
-> area, to be unlocked with a feature bit.
+>
+> Although the difference between configuration space parameters and a
+> shared memory region might seem trivial, I think using the shared memory
+> region is worthwhile because it makes the memory region a first-class
+> concept in the VIRTIO device model that is supported by the driver and
+> device emulation infrastructure.
+>
+> Stefan
 
-Please incorporate the proposal into this patch. A feature bit is a good
-way of handling this case.
-
-Although the difference between configuration space parameters and a
-shared memory region might seem trivial, I think using the shared memory
-region is worthwhile because it makes the memory region a first-class
-concept in the VIRTIO device model that is supported by the driver and
-device emulation infrastructure.
-
-Stefan
-
---n+DgD4n+4rQlqZIo
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmEKiQEACgkQnKSrs4Gr
-c8gGrgf9G+lXQ1iZOiTcIfAMiXRM1jt0BBAqTrTQVzVWNVPNGbb6VtU9SYRJz3JW
-Np7LF4BnxswdK5FHRTb6seXJYpen3AiLH5eO82H0krFa2Uebb6Jk0AfNTTLtJvt9
-5whSX86S2LWl6szOp2gYT/s4a8IVdO+SVK68t8c1sYEQIYW2YbGrAtHDoswgb41j
-a1kDaUvw4rOFyhk2vo/J8jkJ2XUkvV7l9xGoGZ7XH4p2JUvZc0dlwRejFVB6+5Io
-2fh2RlERkzBvO/Ysb0NiA/3+ielU3BQ3Ltl/nlNJdokpvjwXxTh1IJX1XmiEVmcP
-NI+R+Lif6IEKZqcyGo55Eyq19fU1Og==
-=Kwjy
------END PGP SIGNATURE-----
-
---n+DgD4n+4rQlqZIo--
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
