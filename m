@@ -1,86 +1,89 @@
-Return-Path: <mst@redhat.com>
-Date: Tue, 31 Aug 2021 21:19:47 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: Re: [virtio-dev] Re: [PATCH v3] virtio-mmio: Specify wait needed in
- driver during reset
-Message-ID: <20210831211356-mutt-send-email-mst@kernel.org>
-References: <20210831135753.GG9207@quicinc.com>
- <20210831103906-mutt-send-email-mst@kernel.org>
- <20210831155603.GH9207@quicinc.com>
+Return-Path: <egranata@google.com>
 MIME-Version: 1.0
-In-Reply-To: <20210831155603.GH9207@quicinc.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-To: Srivatsa Vaddagiri <quic_svaddagi@quicinc.com>
-Cc: Cornelia Huck <cohuck@redhat.com>, Jason Wang <jasowang@redhat.com>, virtio-dev@lists.oasis-open.org, tsoni@quicinc.com
+References: <20210505193655.2414268-1-egranata@google.com> <CAPR809ukYeThsPy4eg8A-G8b4Hwt7Prxh9P75=Vp9jnCKb6WqQ@mail.gmail.com>
+ <YO6ro345FI0XE8vv@stefanha-x1.localdomain> <87pmvlck3p.fsf@redhat.com> <YO7zwKbH6OEW2z1o@stefanha-x1.localdomain>
+In-Reply-To: <YO7zwKbH6OEW2z1o@stefanha-x1.localdomain>
+From: Enrico Granata <egranata@google.com>
+Date: Fri, 6 Aug 2021 13:19:35 -0600
+Message-ID: <CAPR809uuo=5kmzUs3RFp6z_4===R0hxdFiScLPouUS+qxdaVWg@mail.gmail.com>
+Subject: Re: [virtio-dev] Fwd: [PATCH v2] Provide detailed specification of
+ virtio-blk lifetime metrics
+Content-Type: text/plain; charset="UTF-8"
+To: Stefan Hajnoczi <stefanha@redhat.com>
+Cc: Cornelia Huck <cohuck@redhat.com>, virtio-dev@lists.oasis-open.org, linux-block@vger.kernel.org, virtualization@lists.linux-foundation.org, hch@infradead.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Tue, Aug 31, 2021 at 09:26:03PM +0530, Srivatsa Vaddagiri wrote:
-> * Michael S. Tsirkin <mst@redhat.com> [2021-08-31 10:45:53]:
-> 
-> > On Tue, Aug 31, 2021 at 07:27:53PM +0530, Srivatsa Vaddagiri wrote:
-> > > Reset of a virtio-mmio device is initiated by writing 0 to its Status register.
-> > > In case of some devices, the reset operation itself may not be completed
-> > > by the time write instruction completes and hence such devices would require
-> > > drivers to wait on reset operation to complete before they proceed with
-> > > remaining steps of initialization.
-> > > 
-> > > Update the specification to indicate which devices would need driver to block on
-> > > reset completion.
-> > > 
-> > > Suggested-by: Jason Wang <jasowang@redhat.com>
-> > > Signed-off-by: Srivatsa Vaddagiri <quic_svaddagi@quicinc.com>
-> > 
-> > 
-> > I am still of two minds on whether we
-> > want such a drastic change as a version update for such a
-> > minor thing. Yes, we did it for PCI but then PCI did
-> > not break backwards compat like mmio did.
-> > 
-> > Let's see what needs to happen to make existing drivers work
-> > 1- reset starts the reset process
-> > 2- following writes into status are buffered by the device
-> >   until reset completes
-> > 3- read from features completes after reset is complete
-> 
-> Couple of scenarios which we discussed in this regard earlier:
-> 
-> 1) What if device reset encounters a failure? What should it return for the
-> 'features' read in that case?
+Hi folks,
+I am back from my leave of absence, so thank you everyone for your patience
 
-I'd say the main thing is to fail to set FEATURES_OK.
+This proposal has been outstanding for a while and didn't seem to
+receive pushback, especially compared to the initial proposal
 
-> 2) For untrusted devices, like in our case [A], it would require hypervisor to
-> stall vcpu until the untrusted backend responds to the features read request,
+Would it be the right time to put this modification up for a vote?
 
-Wait a second, this is fundamental to reads anyway. They can't bypass
-writes. E.g. this is the case when FEATURES_OK is written then read
-back.
+Thanks,
+- Enrico
 
-> which could take a long time.
-
-This last is a reasonable argument. so it's not about hardware it's for
-software where reset takes a long time and we do not
-want to stall the VCPU. That's a reasonable requirement but
-pls include it in the text though. And I wonder how you are handling
-other cases where reads are ordered with writes.
-Is there a reason to assume reset is special?
+Thanks,
+- Enrico
 
 
->  In worst case, the VM may get reset due to
-> watchdog firing. Requiring drivers to poll will avoid that situation and allow
-> drivers to fail probe gracefully.
+On Wed, Jul 14, 2021 at 8:25 AM Stefan Hajnoczi <stefanha@redhat.com> wrote:
 >
-> Ref A: https://lists.oasis-open.org/archives/virtio-dev/202108/msg00090.html
-> 
-> - vatsa
-> 
-> -- 
-> Qualcomm Innovation Center, Inc. is submitting the attached "feedback" as a
-> non-member to the virtio-dev mailing list for consideration and inclusion.
-> 
-> 
-> ---------------------------------------------------------------------
-> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+> On Wed, Jul 14, 2021 at 11:36:58AM +0200, Cornelia Huck wrote:
+> > On Wed, Jul 14 2021, Stefan Hajnoczi <stefanha@redhat.com> wrote:
+> >
+> > > On Wed, May 05, 2021 at 12:37:26PM -0700, Enrico Granata wrote:
+> > >> ---------- Forwarded message ---------
+> > >> From: Enrico Granata <egranata@google.com>
+> > >> Date: Wed, May 5, 2021 at 1:37 PM
+> > >> Subject: [PATCH v2] Provide detailed specification of virtio-blk
+> > >> lifetime metrics
+> > >> To: <virtio-dev@lists.oasis-open.org>
+> > >> Cc: <egranata@google.com>, <hch@infradead.org>, <mst@redhat.com>,
+> > >> <linux-block@vger.kernel.org>,
+> > >> <virtualization@lists.linux-foundation.org>
+> > >>
+> > >>
+> > >> In the course of review, some concerns were surfaced about the
+> > >> original virtio-blk lifetime proposal, as it depends on the eMMC
+> > >> spec which is not open
+> > >>
+> > >> Add a more detailed description of the meaning of the fields
+> > >> added by that proposal to the virtio-blk specification, as to
+> > >> make it feasible to understand and implement the new lifetime
+> > >> metrics feature without needing to refer to JEDEC's specification
+> > >>
+> > >> This patch does not change the meaning of those fields nor add
+> > >> any new fields, but it is intended to provide an open and more
+> > >> clear description of the meaning associated with those fields.
+> > >>
+> > >> Signed-off-by: Enrico Granata <egranata@google.com>
+> > >> ---
+> > >> Changes in v2:
+> > >>   - clarified JEDEC references;
+> > >>   - added VIRTIO_BLK prefix and cleaned up comment syntax;
+> > >>   - clarified reserved block references
+> > >>
+> > >>  content.tex | 40 ++++++++++++++++++++++++++++++++--------
+> > >>  1 file changed, 32 insertions(+), 8 deletions(-)
+> > >
+> > > Ping?
+> > >
+> > > Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+> >
+> > [Enrico is currently on leave of absence]
+> >
+> > Is there any outstanding feedback from the linux-block folks? I've lost
+> > track of this, I'm afraid. (Your R-b is the only feedback I see on this
+> > list...)
+> >
+> > We can certainly put up a vote. This is one of the things I wanted to
+> > see fixed for the next release of the standard.
+>
+> I have CCed Christoph, linux-block@, and virtualization@. Here is the
+> link to the patch that we're discussing:
+> https://patchwork.kernel.org/project/linux-block/patch/20210505193655.2414268-1-egranata@google.com/
+>
+> Stefan
 
