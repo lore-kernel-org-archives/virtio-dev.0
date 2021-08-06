@@ -1,41 +1,47 @@
-Return-Path: <virtio-dev-return-8567-cohuck=redhat.com@lists.oasis-open.org>
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 6D3C2986488
-	for <virtio-dev@lists.oasis-open.org>; Wed, 18 Aug 2021 11:21:52 +0000 (UTC)
-From: Cornelia Huck <cohuck@redhat.com>
-In-Reply-To: <20210818111146.q5pl6ltv4tc2ggwp@vireshk-i7>
-References: <cb15de92f8cb840204a945ae643c14700b567600.1628492314.git.viresh.kumar@linaro.org>
- <87o89vrp25.fsf@redhat.com> <20210818111146.q5pl6ltv4tc2ggwp@vireshk-i7>
-Date: Wed, 18 Aug 2021 13:21:40 +0200
-Message-ID: <87lf4zroaj.fsf@redhat.com>
+Return-Path: <viresh.kumar@linaro.org>
+Date: Fri, 6 Aug 2021 09:51:16 +0530
+From: Viresh Kumar <viresh.kumar@linaro.org>
+Subject: Re: [PATCH] virtio: i2c: Allow buffer less transactions
+Message-ID: <20210806042116.ji6n4j4vswvotnjh@vireshk-i7>
+References: <cd02a45c16631d92d864fbf432bf0b2865b7de12.1627017387.git.viresh.kumar@linaro.org>
 MIME-Version: 1.0
-Subject: [virtio-dev] Re: [PATCH V9] virtio-gpio: Add the device specification
-Content-Type: text/plain
-To: Viresh Kumar <viresh.kumar@linaro.org>
-Cc: Jason Wang <jasowang@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>, Arnd Bergmann <arnd@kernel.org>, Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Vincent Guittot <vincent.guittot@linaro.org>, Jean-Philippe Brucker <jean-philippe@linaro.org>, Bill Mills <bill.mills@linaro.org>, Alex =?utf-8?Q?Benn=C3=A9e?= <alex.bennee@linaro.org>, "Enrico Weigelt, metux IT
- consult" <info@metux.net>, virtio-dev@lists.oasis-open.org, Geert Uytterhoeven <geert@linux-m68k.org>, stratos-dev@op-lists.linaro.org, Arnd Bergmann <arnd@arndb.de>
+In-Reply-To: <cd02a45c16631d92d864fbf432bf0b2865b7de12.1627017387.git.viresh.kumar@linaro.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+To: "Michael S. Tsirkin" <mst@redhat.com>, Cornelia Huck <cohuck@redhat.com>, Jie Deng <jie.deng@intel.com>, Wolfram Sang <wsa@kernel.org>, Paolo Bonzini <pbonzini@redhat.com>
+Cc: Vincent Guittot <vincent.guittot@linaro.org>, Jason Wang <jasowang@redhat.com>, Bill Mills <bill.mills@linaro.org>, Alex =?utf-8?Q?Benn=C3=A9e?= <alex.bennee@linaro.org>, virtio-dev@lists.oasis-open.org, Gerd Hoffmann <kraxel@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, Aug 18 2021, Viresh Kumar <viresh.kumar@linaro.org> wrote:
+On 23-07-21, 10:56, Viresh Kumar wrote:
+> The I2C protocol allows requests with no data, like the SMBus Quick
+> command, where the command is inferred based on the read/write flag
+> itself.
+> 
+> In order to allow such a request, allocate another bit,
+> VIRTIO_I2C_FLAGS_M_RD(1), in the flags to pass the request type, as read
+> or write. This was earlier done using the read/write permission to the
+> buffer itself.
+> 
+> This still won't work well if multiple buffers are passed for the same
+> request, i.e. the write-read requests, as the VIRTIO_I2C_FLAGS_M_RD flag
+> can only be used with a single buffer.
+> 
+> Coming back to it, there is no need to send multiple buffers with a
+> single request. All we need, is a way to group several requests
+> together, which we can already do based on the
+> VIRTIO_I2C_FLAGS_FAIL_NEXT flag.
+> 
+> Remove support for multiple buffers within a single request.
+> 
+> Since we are at very early stage of development currently, we can do
+> these modifications without addition of new features or versioning of
+> the protocol.
+> 
+> Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
+> ---
 
-> On 18-08-21, 13:05, Cornelia Huck wrote:
->> Pushed out the voted-upon change; please follow up on the raised
->> comments separately.
->
-> Thanks.
->
-> Do I need to create a new issue for the UTF-8 thing ? Or just a simple
-> patch without a Fixes tag is fine ?
+Gentle reminder!
 
-I think this is something we should vote on; so please open an issue.
-
-
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+-- 
+viresh
 
