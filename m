@@ -1,25 +1,83 @@
-Return-Path: <viresh.kumar@linaro.org>
-Date: Mon, 16 Aug 2021 15:18:00 +0530
-From: Viresh Kumar <viresh.kumar@linaro.org>
-Subject: Re: [PATCH] virtio: i2c: Allow buffer less transactions
-Message-ID: <20210816094800.hhgfzb45lk63ze4s@vireshk-i7>
-References: <cd02a45c16631d92d864fbf432bf0b2865b7de12.1627017387.git.viresh.kumar@linaro.org>
- <20210806042116.ji6n4j4vswvotnjh@vireshk-i7>
- <871r6tvin1.fsf@redhat.com>
+Return-Path: <virtio-dev-return-8515-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id 74403986459
+	for <virtio-dev@lists.oasis-open.org>; Fri, 13 Aug 2021 02:31:09 +0000 (UTC)
+From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Date: Fri, 13 Aug 2021 10:31:05 +0800
+Message-Id: <20210813023105.84658-1-xuanzhuo@linux.alibaba.com>
 MIME-Version: 1.0
-In-Reply-To: <871r6tvin1.fsf@redhat.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-To: Cornelia Huck <cohuck@redhat.com>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>, Jie Deng <jie.deng@intel.com>, Wolfram Sang <wsa@kernel.org>, Paolo Bonzini <pbonzini@redhat.com>, Vincent Guittot <vincent.guittot@linaro.org>, Jason Wang <jasowang@redhat.com>, Bill Mills <bill.mills@linaro.org>, Alex =?utf-8?Q?Benn=C3=A9e?= <alex.bennee@linaro.org>, virtio-dev@lists.oasis-open.org, Gerd Hoffmann <kraxel@redhat.com>
+Subject: [virtio-dev] [PATCH] virtio: introduce VIRTIO_F_RING_RESET for reset queue
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="US-ASCII"
+To: virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 16-08-21, 11:33, Cornelia Huck wrote:
-> Hm, I thought there had been some feedback already? I've been waiting
-> for a respin.
+This patch allows the driver to reset a queue individually.
 
-Sent now, thanks.
+This is very common on general network equipment. By disabling a queue,
+you can quickly reclaim the buffer currently on the queue. If necessary,
+we can reinitialize the queue separately.
 
--- 
-viresh
+For example, when virtio-net implements support for AF_XDP, we need to
+disable a queue to release all the original buffers when AF_XDP setup.
+And quickly release all the AF_XDP buffers that have been placed in the
+queue when AF_XDP exits.
+
+Since mmio's QueueReady allows setting 0 to stop the queue, there is no
+need to distinguish whether VIRTIO_F_RING_RESET is negotiated.
+
+Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+---
+ content.tex | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
+
+diff --git a/content.tex b/content.tex
+index 7cec1c3..70a9765 100644
+--- a/content.tex
++++ b/content.tex
+@@ -1001,7 +1001,13 @@ \subsubsection{Common configuration structure layout=
+}\label{sec:Virtio Transport
+ After writing 0 to \field{device_status}, the driver MUST wait for a read =
+of
+ \field{device_status} to return 0 before reinitializing the device.
+=20
+-The driver MUST NOT write a 0 to \field{queue_enable}.
++If the VIRTIO_F_RING_RESET feature bit is not negotiated,
++the driver MUST NOT write a 0 to \field{queue_enable}.
++
++Otherwise, if the VIRTIO_F_RING_RESET feature bit is negotiated,
++the driver can stop using the queue by writing a 0 to \field{queue_enable}=
+ and
++MUST read the value back to ensure synchronization. Then optionally re-ena=
+ble
++the queue.
+=20
+ \subsubsection{Notification structure layout}\label{sec:Virtio Transport O=
+ptions / Virtio Over PCI Bus / PCI Device Layout / Notification capability}
+=20
+@@ -6672,6 +6678,9 @@ \chapter{Reserved Feature Bits}\label{sec:Reserved Fe=
+ature Bits}
+   transport specific.
+   For more details about driver notifications over PCI see \ref{sec:Virtio=
+ Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And =
+Device Operation / Available Buffer Notifications}.
+=20
++  \item[VIRTIO_F_RING_RESET(40)] This feature indicates
++  that the driver can reset a queue individually.
++
+ \end{description}
+=20
+ \drivernormative{\section}{Reserved Feature Bits}{Reserved Feature Bits}
+--=20
+2.31.0
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
