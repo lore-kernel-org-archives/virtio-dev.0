@@ -1,100 +1,89 @@
-Return-Path: <mst@redhat.com>
-Date: Fri, 20 Aug 2021 07:15:57 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: Re: [virtio-dev] Re: [PATCH v1] virtio-mmio: Specify wait needed in
- driver during reset
-Message-ID: <20210820071342-mutt-send-email-mst@kernel.org>
-References: <BY5PR02MB707337890F06CA1879CE7D54F9E89@BY5PR02MB7073.namprd02.prod.outlook.com>
- <87eebl5msn.fsf@redhat.com>
- <20210726091851-mutt-send-email-mst@kernel.org>
- <BY5PR02MB7073036306A91FEF52CCC5FBF9E89@BY5PR02MB7073.namprd02.prod.outlook.com>
- <20210726141737-mutt-send-email-mst@kernel.org>
- <09b74816-8a1e-f993-640f-eb790a4a4698@redhat.com>
- <20210811100550.GC21582@quicinc.com>
- <2723b42a-f5d0-9c49-bf5c-302fbd4c947f@redhat.com>
- <20210816013138-mutt-send-email-mst@kernel.org>
- <3a880c16-ce26-f689-3175-c27f968c55f1@redhat.com>
+Return-Path: <quic_svaddagi@quicinc.com>
+Date: Fri, 13 Aug 2021 20:23:51 +0530
+From: Srivatsa Vaddagiri <quic_svaddagi@quicinc.com>
+Subject: [PATCH v2] virtio-mmio: Specify wait needed in driver during reset
+Message-ID: <20210813145351.GA5604@quicinc.com>
+Reply-To: Srivatsa Vaddagiri <quic_svaddagi@quicinc.com>
 MIME-Version: 1.0
-In-Reply-To: <3a880c16-ce26-f689-3175-c27f968c55f1@redhat.com>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-To: Jason Wang <jasowang@redhat.com>
-Cc: Srivatsa Vaddagiri <quic_svaddagi@quicinc.com>, Srivatsa Vaddagiri <svaddagi@qti.qualcomm.com>, Cornelia Huck <cohuck@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Trilok Soni <quic_tsoni@quicinc.com>, Pratik Patel <quic_pratikp@quicinc.com>
+To: "Michael S. Tsirkin" <mst@redhat.com>, Cornelia Huck <cohuck@redhat.com>, Jason Wang <jasowang@redhat.com>
+Cc: virtio-dev@lists.oasis-open.org, tsoni@quicinc.com, pratikp@quicinc.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Fri, Aug 20, 2021 at 11:56:15AM +0800, Jason Wang wrote:
-> 
-> 在 2021/8/16 下午1:35, Michael S. Tsirkin 写道:
-> > On Mon, Aug 16, 2021 at 10:09:34AM +0800, Jason Wang wrote:
-> > > 在 2021/8/11 下午6:05, Srivatsa Vaddagiri 写道:
-> > > > * Jason Wang <jasowang@redhat.com> [2021-08-02 14:06:38]:
-> > > > 
-> > > > > > Maybe if it sees status was not read it can just
-> > > > > > stay in reset state and not exit it?
-> > > > > > 
-> > > > > > 
-> > > > > Or I wonder we can use increase the version instead.
-> > > > What should be the guidance for backend/devices here? Go with version 3 only if
-> > > > it requires driver to poll on reset? Otherwise it may break existing setups -
-> > > > lets say Qemu is updated to report version 3 which will break older guest images
-> > > > that understood version 2 - this is despite the same Qemu being capable of
-> > > > serving those guests.
-> > > 
-> > > My understanding is that qemu should stick to version 2 since it works fine.
-> > > 
-> > > Thanks
-> > Yes breaking all guests does not sound like a good plan.
-> > Which is unfortunate generally.
-> > 
-> > So thinking about all this, quite early in the setup process we
-> > have:
-> > 
-> >          /* Figure out what features the device supports. */
-> >          device_features = dev->config->get_features(dev);
-> > 
-> > 
-> > isn't this sufficient? this will flush out
-> > all writes and device can defer responding to reads
-> > until reset is complete.
-> 
-> 
-> This works unless we mandate the deferring in the spec. And the racy part is
-> here:
-> 
->         /* We always start by resetting the device, in case a previous
->          * driver messed it up.  This also tests that code path a little. */
->         dev->config->reset(dev);
-> 
->         /* Acknowledge that we've seen the device. */
->         virtio_add_status(dev, VIRTIO_CONFIG_S_ACKNOWLEDGE);
-> 
-> If we don't read, the reset can be finished after add_status()?
-> 
-> Thanks
+Reset of a virtio-mmio device is initiated by writing 0 to its Status
+register. The reset operation itself may or may not be completed by the time
+write instruction completes. For devices that are emulated in software, writes
+to Status register are trapped and resumed only after the reset operation is
+complete. Thus a driver can be assured of reset completion as soon as its write
+completes. That may not be however true in other cases, such as when virtio-mmio
+devices implemented directly in hardware. Driver's write to Status register in
+such case could complete before the device reset operation is completed.
 
-It can, but VIRTIO_CONFIG_S_ACKNOWLEDGE is mostly for hypervisor's
-benefit.  It's a basic system to debug the binding process.  If device
-cares it can hold the write in a buffer while it's being reset.  If it
-does not it can just drop this bit, nothing that's too bad will happen.
+Update the specification to indicate when a driver may need to poll for reset
+completion before going ahead with the remaining initialization steps.
+    
+Suggested-by: Jason Wang <jasowang@redhat.com>
+Signed-off-by: Srivatsa Vaddagiri <quic_svaddagi@quicinc.com>
 
-> 
-> > 
-> > I know it's not elegant since there are a bunch of writes like
-> > acknowledge and driver, but hey.
-> > 
-> > How about we just add a non-normative section explaining that trick?
-> > 
-> > 
-> > > > - vatsa
-> > > > 
-> > > > ---
-> > > > 
-> > > > Qualcomm Innovation Center, Inc. is submitting the attached "feedback" as a
-> > > > non-member to the virtio-dev mailing list for consideration and inclusion.
-> > > > 
-> > > > ---------------------------------------------------------------------
-> > > > To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> > > > For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
-> > > > 
+---
+V2->V1:
+- Use version 0x3 as an indication for drivers to poll for reset completion
+  (rather than base it on a new feature bit)
+
+Previous version can be found at:
+
+https://lists.oasis-open.org/archives/virtio-dev/202107/msg00168.html
+
+ content.tex | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
+
+diff --git a/content.tex b/content.tex
+index 7cec1c3..b6b30a0 100644
+--- a/content.tex
++++ b/content.tex
+@@ -1730,9 +1730,9 @@ \subsection{MMIO Device Register Layout}\label{sec:Virtio Transport Options / Vi
+   } 
+   \hline
+   \mmioreg{Version}{Device version number}{0x004}{R}{%
+-    0x2.
++    0x3.
+     \begin{note}
+-      Legacy devices (see \ref{sec:Virtio Transport Options / Virtio Over MMIO / Legacy interface}~\nameref{sec:Virtio Transport Options / Virtio Over MMIO / Legacy interface}) used 0x1.
++      Legacy devices (see \ref{sec:Virtio Transport Options / Virtio Over MMIO / Legacy interface}~\nameref{sec:Virtio Transport Options / Virtio Over MMIO / Legacy interface}) used 0x1. Devices that do not require drivers to poll for reset completion can use 0x2. See \ref{devicenormative:Virtio Transport Options / Virtio Over MMIO / MMIO Device Register Layout} for more details.
+     \end{note}
+   }
+   \hline 
+@@ -1916,7 +1916,7 @@ \subsection{MMIO Device Register Layout}\label{sec:Virtio Transport Options / Vi
+ 
+ The device MUST return 0x74726976 in \field{MagicValue}.
+ 
+-The device MUST return value 0x2 in \field{Version}.
++The device MUST return either value 0x3 or 0x2 in \field{Version} based on its reset behavior. Drivers trigger reset of a device by writing 0 to \field{Status}. The reset operation itself may or may not be completed by the time write operation is complete. Devices whose reset operation completes synchronously with the write operation are allowed to return value of 0x2 for \field{Version}. Other devices, whose reset operation can be incomplete by the time write operation completes MUST return value 0x3 as an indication for drivers to poll for reset completion.
+ 
+ The device MUST present each event by setting the corresponding bit in \field{InterruptStatus} from the
+ moment it takes place, until the driver acknowledges the interrupt
+@@ -1947,12 +1947,15 @@ \subsection{MMIO Device Register Layout}\label{sec:Virtio Transport Options / Vi
+ The driver MUST ignore a device with \field{MagicValue} which is not 0x74726976,
+ although it MAY report an error.
+ 
+-The driver MUST ignore a device with \field{Version} which is not 0x2,
++The driver MUST ignore a device with \field{Version} which is neither 0x2 nor 0x3,
+ although it MAY report an error.
+ 
+ The driver MUST ignore a device with \field{DeviceID} 0x0,
+ but MUST NOT report any error.
+ 
++After writing 0 to \field{Status}, which triggers a reset of device, the driver MUST wait for a read of
++\field{Status} to return 0 before proceeding with the remaining steps of initializing the device.
++
+ Before reading from \field{DeviceFeatures}, the driver MUST write a value to \field{DeviceFeaturesSel}.
+ 
+ Before writing to the \field{DriverFeatures} register, the driver MUST write a value to the \field{DriverFeaturesSel} register.
+
+
+---
+
+Qualcomm Innovation Center, Inc. is submitting the attached "feedback" as a
+non-member to the virtio-dev mailing list for consideration and inclusion.
 
