@@ -1,11 +1,11 @@
-Return-Path: <mst@redhat.com>
-Date: Mon, 16 Aug 2021 10:37:18 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
+Return-Path: <quic_svaddagi@quicinc.com>
+Date: Mon, 16 Aug 2021 20:28:14 +0530
+From: Srivatsa Vaddagiri <quic_svaddagi@quicinc.com>
 Subject: Re: [virtio-dev] Re: [PATCH v1] virtio-mmio: Specify wait needed in
  driver during reset
-Message-ID: <20210816103348-mutt-send-email-mst@kernel.org>
-References: <20210726091851-mutt-send-email-mst@kernel.org>
- <BY5PR02MB7073036306A91FEF52CCC5FBF9E89@BY5PR02MB7073.namprd02.prod.outlook.com>
+Message-ID: <20210816145814.GA3665@quicinc.com>
+Reply-To: Srivatsa Vaddagiri <quic_svaddagi@quicinc.com>
+References: <BY5PR02MB7073036306A91FEF52CCC5FBF9E89@BY5PR02MB7073.namprd02.prod.outlook.com>
  <20210726141737-mutt-send-email-mst@kernel.org>
  <09b74816-8a1e-f993-640f-eb790a4a4698@redhat.com>
  <20210811100550.GC21582@quicinc.com>
@@ -14,51 +14,44 @@ References: <20210726091851-mutt-send-email-mst@kernel.org>
  <20210816063550.GD5604@quicinc.com>
  <20210816074558-mutt-send-email-mst@kernel.org>
  <20210816133451.GA8203@quicinc.com>
+ <20210816103348-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <20210816133451.GA8203@quicinc.com>
-Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20210816103348-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Disposition: inline
-To: Srivatsa Vaddagiri <quic_svaddagi@quicinc.com>
-Cc: Jason Wang <jasowang@redhat.com>, Srivatsa Vaddagiri <svaddagi@qti.qualcomm.com>, Cornelia Huck <cohuck@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Trilok Soni <quic_tsoni@quicinc.com>, Pratik Patel <quic_pratikp@quicinc.com>
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: Jason Wang <jasowang@redhat.com>, Srivatsa Vaddagiri <svaddagi@qti.qualcomm.com>, Cornelia Huck <cohuck@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Trilok
+ Soni <quic_tsoni@quicinc.com>, Pratik Patel <quic_pratikp@quicinc.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Mon, Aug 16, 2021 at 07:04:51PM +0530, Srivatsa Vaddagiri wrote:
-> * Michael S. Tsirkin <mst@redhat.com> [2021-08-16 07:48:56]:
-> 
-> > On Mon, Aug 16, 2021 at 12:05:50PM +0530, Srivatsa Vaddagiri wrote:
-> > > * Michael S. Tsirkin <mst@redhat.com> [2021-08-16 01:35:46]:
-> > > 
-> > > > So thinking about all this, quite early in the setup process we
-> > > > have:
-> > > > 
-> > > >         /* Figure out what features the device supports. */
-> > > >         device_features = dev->config->get_features(dev);
-> > > > 
-> > > > 
-> > > > isn't this sufficient? this will flush out
-> > > > all writes and device can defer responding to reads
-> > > > until reset is complete.
-> > > 
-> > > Hmm not sure if that's possible in all MMIO devices? I think a while back Jason
-> > > felt some of the MMIO devices, their registers could act as plain DRAM for
-> > > reads, which means device can't block such reads?
-> > > 
-> > > - vatsa
+* Michael S. Tsirkin <mst@redhat.com> [2021-08-16 10:37:18]:
+
+> > What about the case where device reset fails, which may require driver to
+> > initiate reset again or give up on device? Won't the read of features be forever
+> > deferred in that case?
 > > 
-> > Is it worth bothering about theoretical issues though? Jason what is
-> > your take?
+> > - vatsa
 > 
-> What about the case where device reset fails, which may require driver to
-> initiate reset again or give up on device? Won't the read of features be forever
-> deferred in that case?
-> 
-> - vatsa
+> That might be worth addressing but I feel your proposal does not
+> address it sufficiently.
 
-That might be worth addressing but I feel your proposal does not
-address it sufficiently.
+Ok let me take a stab at addressing it better in my next version. Basically
+here's what I am thinking. Pls let me know if there is anything else I need to
+consider:
 
-> ---
->  
-> Qualcomm Innovation Center, Inc. is submitting the attached "feedback" as a
-> non-member to the virtio-dev mailing list for consideration and inclusion.
+* Introduce a status bit for device to indicate "reset in progress". This could
+  be adopted by other transports also (for ex PCI).
+
+* For v3 MMIO devices, driver, after initiating reset, should wait until status = 0
+  or device indicates "failure". Should the spec advise what a driver should do
+  in case of failure after reset? Not sure if the outcome would be different if
+  driver were to issue reset again. Again this advice should be common to both
+  MMIO and PCI I think.
+
+- vatsa
+
+---
+  
+Qualcomm Innovation Center, Inc. is submitting the attached "feedback" as a
+non-member to the virtio-dev mailing list for consideration and inclusion.
 
