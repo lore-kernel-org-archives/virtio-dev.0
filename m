@@ -1,58 +1,43 @@
-Return-Path: <virtio-dev-return-8513-cohuck=redhat.com@lists.oasis-open.org>
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id DA31098606D
-	for <virtio-dev@lists.oasis-open.org>; Wed, 11 Aug 2021 10:05:58 +0000 (UTC)
-Date: Wed, 11 Aug 2021 15:35:50 +0530
-From: Srivatsa Vaddagiri <quic_svaddagi@quicinc.com>
-Message-ID: <20210811100550.GC21582@quicinc.com>
-Reply-To: Srivatsa Vaddagiri <quic_svaddagi@quicinc.com>
+Return-Path: <jasowang@redhat.com>
+Subject: Re: [virtio-dev] Re: [PATCH v1] virtio-mmio: Specify wait needed in
+ driver during reset
 References: <BY5PR02MB707313DCD9C7D356D79C8F07F9E59@BY5PR02MB7073.namprd02.prod.outlook.com>
  <87h7gh5od5.fsf@redhat.com>
  <BY5PR02MB707337890F06CA1879CE7D54F9E89@BY5PR02MB7073.namprd02.prod.outlook.com>
- <87eebl5msn.fsf@redhat.com>
- <20210726091851-mutt-send-email-mst@kernel.org>
+ <87eebl5msn.fsf@redhat.com> <20210726091851-mutt-send-email-mst@kernel.org>
  <BY5PR02MB7073036306A91FEF52CCC5FBF9E89@BY5PR02MB7073.namprd02.prod.outlook.com>
  <20210726141737-mutt-send-email-mst@kernel.org>
  <09b74816-8a1e-f993-640f-eb790a4a4698@redhat.com>
+ <20210811100550.GC21582@quicinc.com>
+From: Jason Wang <jasowang@redhat.com>
+Message-ID: <2723b42a-f5d0-9c49-bf5c-302fbd4c947f@redhat.com>
+Date: Mon, 16 Aug 2021 10:09:34 +0800
 MIME-Version: 1.0
-In-Reply-To: <09b74816-8a1e-f993-640f-eb790a4a4698@redhat.com>
-Subject: Re: [virtio-dev] Re: [PATCH v1] virtio-mmio: Specify wait needed in
- driver during reset
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Disposition: inline
-To: Jason Wang <jasowang@redhat.com>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>, Srivatsa Vaddagiri <svaddagi@qti.qualcomm.com>, Cornelia Huck <cohuck@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Trilok
- Soni <quic_tsoni@quicinc.com>, Pratik Patel <quic_pratikp@quicinc.com>
+In-Reply-To: <20210811100550.GC21582@quicinc.com>
+Content-Type: text/plain; charset="gbk"; format="flowed"
+Content-Transfer-Encoding: base64
+Content-Language: en-US
+To: Srivatsa Vaddagiri <quic_svaddagi@quicinc.com>
+Cc: "Michael S. Tsirkin" <mst@redhat.com>, Srivatsa Vaddagiri <svaddagi@qti.qualcomm.com>, Cornelia Huck <cohuck@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Trilok Soni <quic_tsoni@quicinc.com>, Pratik Patel <quic_pratikp@quicinc.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-* Jason Wang <jasowang@redhat.com> [2021-08-02 14:06:38]:
-
-> >Maybe if it sees status was not read it can just
-> >stay in reset state and not exit it?
-> >
-> >
-> 
-> Or I wonder we can use increase the version instead.
-
-What should be the guidance for backend/devices here? Go with version 3 only if
-it requires driver to poll on reset? Otherwise it may break existing setups -
-lets say Qemu is updated to report version 3 which will break older guest images
-that understood version 2 - this is despite the same Qemu being capable of
-serving those guests.
-
-- vatsa
-
----
-
-Qualcomm Innovation Center, Inc. is submitting the attached "feedback" as a
-non-member to the virtio-dev mailing list for consideration and inclusion.
-
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
-
+CtTaIDIwMjEvOC8xMSDPws7nNjowNSwgU3JpdmF0c2EgVmFkZGFnaXJpINC0tcA6Cj4gKiBKYXNv
+biBXYW5nIDxqYXNvd2FuZ0ByZWRoYXQuY29tPiBbMjAyMS0wOC0wMiAxNDowNjozOF06Cj4KPj4+
+IE1heWJlIGlmIGl0IHNlZXMgc3RhdHVzIHdhcyBub3QgcmVhZCBpdCBjYW4ganVzdAo+Pj4gc3Rh
+eSBpbiByZXNldCBzdGF0ZSBhbmQgbm90IGV4aXQgaXQ/Cj4+Pgo+Pj4KPj4gT3IgSSB3b25kZXIg
+d2UgY2FuIHVzZSBpbmNyZWFzZSB0aGUgdmVyc2lvbiBpbnN0ZWFkLgo+IFdoYXQgc2hvdWxkIGJl
+IHRoZSBndWlkYW5jZSBmb3IgYmFja2VuZC9kZXZpY2VzIGhlcmU/IEdvIHdpdGggdmVyc2lvbiAz
+IG9ubHkgaWYKPiBpdCByZXF1aXJlcyBkcml2ZXIgdG8gcG9sbCBvbiByZXNldD8gT3RoZXJ3aXNl
+IGl0IG1heSBicmVhayBleGlzdGluZyBzZXR1cHMgLQo+IGxldHMgc2F5IFFlbXUgaXMgdXBkYXRl
+ZCB0byByZXBvcnQgdmVyc2lvbiAzIHdoaWNoIHdpbGwgYnJlYWsgb2xkZXIgZ3Vlc3QgaW1hZ2Vz
+Cj4gdGhhdCB1bmRlcnN0b29kIHZlcnNpb24gMiAtIHRoaXMgaXMgZGVzcGl0ZSB0aGUgc2FtZSBR
+ZW11IGJlaW5nIGNhcGFibGUgb2YKPiBzZXJ2aW5nIHRob3NlIGd1ZXN0cy4KCgpNeSB1bmRlcnN0
+YW5kaW5nIGlzIHRoYXQgcWVtdSBzaG91bGQgc3RpY2sgdG8gdmVyc2lvbiAyIHNpbmNlIGl0IHdv
+cmtzIGZpbmUuCgpUaGFua3MKCgo+Cj4gLSB2YXRzYQo+Cj4gLS0tCj4KPiBRdWFsY29tbSBJbm5v
+dmF0aW9uIENlbnRlciwgSW5jLiBpcyBzdWJtaXR0aW5nIHRoZSBhdHRhY2hlZCAiZmVlZGJhY2si
+IGFzIGEKPiBub24tbWVtYmVyIHRvIHRoZSB2aXJ0aW8tZGV2IG1haWxpbmcgbGlzdCBmb3IgY29u
+c2lkZXJhdGlvbiBhbmQgaW5jbHVzaW9uLgo+Cj4gLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCj4gVG8gdW5zdWJzY3Jp
+YmUsIGUtbWFpbDogdmlydGlvLWRldi11bnN1YnNjcmliZUBsaXN0cy5vYXNpcy1vcGVuLm9yZwo+
+IEZvciBhZGRpdGlvbmFsIGNvbW1hbmRzLCBlLW1haWw6IHZpcnRpby1kZXYtaGVscEBsaXN0cy5v
+YXNpcy1vcGVuLm9yZwo+Cgo=
