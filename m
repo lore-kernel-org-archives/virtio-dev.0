@@ -1,157 +1,216 @@
-Return-Path: <pankaj.gupta.linux@gmail.com>
+Return-Path: <virtio-dev-return-8534-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id 4039B9863B9
+	for <virtio-dev@lists.oasis-open.org>; Tue, 17 Aug 2021 03:37:18 +0000 (UTC)
+From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Date: Tue, 17 Aug 2021 11:37:13 +0800
+Message-Id: <20210817033713.40001-1-xuanzhuo@linux.alibaba.com>
 MIME-Version: 1.0
-References: <20210813095216.487591-1-pankaj.gupta.linux@gmail.com> <87r1errtsi.fsf@redhat.com>
-In-Reply-To: <87r1errtsi.fsf@redhat.com>
-From: Pankaj Gupta <pankaj.gupta.linux@gmail.com>
-Date: Thu, 19 Aug 2021 08:03:47 +0200
-Message-ID: <CAM9Jb+j31NH0dtCVK6cx0NiRx7z4aXBs7tV2mFCZiSH3ROyVJA@mail.gmail.com>
-Subject: Re: [virtio-dev] Re: [PATCH v2] virtio-pmem: PMEM device spec
-Content-Type: text/plain; charset="UTF-8"
-To: Cornelia Huck <cohuck@redhat.com>
-Cc: virtio-dev@lists.oasis-open.org, Stefan Hajnoczi <stefanha@redhat.com>, Dan Williams <dan.j.williams@intel.com>, David Hildenbrand <david@redhat.com>, "Michael S . Tsirkin" <mst@redhat.com>, Taylor Stark <tstark@linux.microsoft.com>, Pankaj Gupta <pankaj.gupta@ionos.com>
+Subject: [virtio-dev] [PATCH] virtio-net: support device stats
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="US-ASCII"
+To: virtio-dev@lists.oasis-open.org
+Cc: jasowang@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-> > Posting virtio specification for virtio pmem device. Virtio pmem is a
-> > paravirtualized device which allows the guest to bypass page cache.
-> > Virtio pmem kernel driver is merged in Upstream Kernel 5.3. Also, Qemu
-> > device is merged in Qemu 4.1.
-> >
-> > Signed-off-by: Pankaj Gupta <pankaj.gupta.linux@gmail.com>
-> > ---
-> > changes from v1 -> v2
-> > -----------------------
-> > Thanks to Cornelia, Stefan & David for the v1 review.
-> > - Use device & driver name instead of host & guest.
-> > - Remove implementation details from the spec.
-> > - Define FLUSH_REQUEST.
-> > - Other suggested changes.
-> >
-> >  conformance.tex |  18 ++++++-
-> >  content.tex     |   1 +
-> >  virtio-pmem.tex | 128 ++++++++++++++++++++++++++++++++++++++++++++++++
-> >  3 files changed, 145 insertions(+), 2 deletions(-)
-> >  create mode 100644 virtio-pmem.tex
->
-> (...)
->
-> > +\subsection{Driver Operations}\label{sec:Device Types / PMEM Driver / Driver Operation}
-> > +\drivernormative{\subsubsection}{Driver Operation: Virtqueue command}{Device Types / PMEM Driver / Driver Operation / Virtqueue command}
-> > +
-> > +\begin{lstlisting}
-> > +struct virtio_pmem_req {
-> > +        __le32 type;
-> > +};
-> > +\end{lstlisting}
-> > +
-> > +Virtio pmem flush request:
-> > +\begin{lstlisting}
-> > +#define VIRTIO_PMEM_REQ_TYPE_FLUSH      0
-> > +\end{lstlisting}
-> > +
-> > +The driver MUST send VIRTIO_PMEM_REQ_TYPE_FLUSH command on request virtqueue.
-> > +
-> > +The driver SHOULD be able to handle concurrent FLUSH requests.
->
-> I'm wondering what part of all of this should go into a normative
-> section, and what into a more descriptive paragraph.
->
-> Contants, structure definitions etc. can go into a descriptive
-> paragraph; I don't think we need to spell out that a conforming device
-> or driver actually needs to use those...
->
-> We maybe should have a non-normative paragraph that describes the normal
-> operation; i.e. the driver queues a flush request on the request queue
-> when it wants to persist something, the device acts on the flush request
-> and persists the writes made before the flush. That section could also
-> give some helpful hints to implementors that should not be binding (if
-> you have anything like that.)
->
-> The driver normative section could then be something like "The driver
-> MUST NOT consider any writes prior to a flush command to be persistent
-> until after the device successfully processed that flush command" or
+This patch allows the driver to obtain some statistics from the device,
+such as:
 
-I am not sure about this as this comes under implementation details and can vary
-as per operating system.
+1. queue_N_rx_drops: Rx packets not passed to the driver.
+2. queue_N_tx_drops: The tx packet that the device did not send out
+3. queue_N_tx_inter: The number of interrupts initiated by device for tx
+4. queue_N_rx_inter: The number of interrupts initiated by device for rx
+5. queue_N_rx_bad_csum: The number of the csum abnormal packages
+......
 
-I can move struct to descriptive section. Only reason for keeping it
-in normative section
-was its very small and corresponding. But i will move.
+In the back-end implementation, we can count a lot of such information,
+which can be used for debugging and judging the running status of the
+back-end. We hope to directly display it to the user through ethtool.
 
-> something like that. The device normative section for the flush
-> operation looks fine to me.
+There is no fixed keys, all keys are defined by the backend itself.
+Finally it can be directly displayed to the user.
 
-Thanks.
->
-> > +
-> > +\subsection{Device Operations}\label{sec:Device Types / PMEM Driver / Device Operation}
-> > +\devicenormative{\subsubsection}{Device Operation: Virtqueue flush}{Device Types / PMEM Device / Device Operation / Virtqueue flush}
-> > +
-> > +The device MUST ensure that all writes made before a flush request will persist across device reset and power failure before completing the flush request.
-> > +
-> > +\devicenormative{\subsubsection}{Device Operation: Virtqueue return}{Device Types / PMEM Device / Device Operation / Virtqueue return}
-> > +
-> > +The device MUST return integer "0" for success and "-1" for failure.
-> > +
-> > +\subsection{Possible security implications}\label{sec:Device Types / PMEM Device / Possible Security Implications}
-> > +
-> > +There could be potential security implications depending on how
-> > +memory mapped device backing file is used. By default device emulation
-> > +is done with SHARED mapping. There is a contract between driver and device
-> > +process to access same backing file for read or write operations.
-> > +
-> > +If a malicious driver or device map the same backing file, attacking
-> > +process can make use of known cache side channel attacks to predict
-> > +the current state of shared page cache page. If both attacker and
-> > +victim somehow execute same shared code after a flush or evict call,
-> > +with difference in execution timing attacker could infer another driver
-> > +local data or device data. Though this is not easy and same challenges
-> > +exist as with bare metal device system when userspace share same backing file.
->
-> I'm not 100% sure about this section. Is it more or less Linux-specific,
-> or can it be made a bit more implementation agnostic? As this is not my
-> area of expertise, maybe others can chime in.
+Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+---
+ content.tex | 99 +++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 99 insertions(+)
 
-Honestly, I thought a'lot about this and wanted text to make sense in
-some familiar context.
-I will try to improve it more as suggested but not sure how much I would.
+diff --git a/content.tex b/content.tex
+index 70a9765..bcadded 100644
+--- a/content.tex
++++ b/content.tex
+@@ -2978,6 +2978,9 @@ \subsection{Feature bits}\label{sec:Device Types / Ne=
+twork Device / Feature bits
+ \item[VIRTIO_NET_F_CTRL_MAC_ADDR(23)] Set MAC address through control
+     channel.
+=20
++\item[VIRTIO_NET_F_CTRL_STATS (55)] Device can provide device-level statis=
+tics
++    to the driver through the control channel.
++
+ \item[VIRTIO_NET_F_HOST_USO (56)] Device can receive USO packets. Unlike U=
+FO
+  (fragmenting the packet) the USO splits large UDP packet
+  to several segments when each of these smaller packets has UDP header.
+@@ -3023,6 +3026,7 @@ \subsubsection{Feature bit requirements}\label{sec:De=
+vice Types / Network Device
+ \item[VIRTIO_NET_F_GUEST_ANNOUNCE] Requires VIRTIO_NET_F_CTRL_VQ.
+ \item[VIRTIO_NET_F_MQ] Requires VIRTIO_NET_F_CTRL_VQ.
+ \item[VIRTIO_NET_F_CTRL_MAC_ADDR] Requires VIRTIO_NET_F_CTRL_VQ.
++\item[VIRTIO_NET_F_CTRL_STATS] Requires VIRTIO_NET_F_CTRL_VQ.
+ \item[VIRTIO_NET_F_RSC_EXT] Requires VIRTIO_NET_F_HOST_TSO4 or VIRTIO_NET_=
+F_HOST_TSO6.
+ \item[VIRTIO_NET_F_RSS] Requires VIRTIO_NET_F_CTRL_VQ.
+ \end{description}
+@@ -3901,6 +3905,7 @@ \subsubsection{Control Virtqueue}\label{sec:Device Ty=
+pes / Network Device / Devi
+         u8 command;
+         u8 command-specific-data[];
+         u8 ack;
++        u8 command-specific-data-reply[];
+ };
+=20
+ /* ack values */
+@@ -3912,6 +3917,10 @@ \subsubsection{Control Virtqueue}\label{sec:Device T=
+ypes / Network Device / Devi
+ driver, and the device sets the \field{ack} byte. There is little it can
+ do except issue a diagnostic if \field{ack} is not
+ VIRTIO_NET_OK.
++\field{command-specific-data-reply} is alloced by driver, then pass
++ to device.  It is filled by the device.  It is optional.
++ These commands need to get some information from the device.
++
+=20
+ \paragraph{Packet Receive Filtering}\label{sec:Device Types / Network Devi=
+ce / Device Operation / Control Virtqueue / Packet Receive Filtering}
+ \label{sec:Device Types / Network Device / Device Operation / Control Virt=
+queue / Setting Promiscuous Mode}%old label for latexdiff
+@@ -4390,6 +4399,96 @@ \subsubsection{Legacy Interface: Framing Requirement=
+s}\label{sec:Device
+ See \ref{sec:Basic
+ Facilities of a Virtio Device / Virtqueues / Message Framing}.
+=20
++\paragraph{Device stats}\label{sec:Device Types / Network Device / Device =
+Operation / Control Virtqueue / Device stats}
++
++If the VIRTIO_NET_F_CTRL_STATS feature is negotiated, the driver can
++send control commands to get device stats.
++
++To get the stats, the following definitions are used:
++\begin{lstlisting}
++#define VIRTIO_NET_CTRL_STATS        6
++#define VIRTIO_NET_CTRL_STATS_NUM    0 // get device stats num
++#define VIRTIO_NET_CTRL_STATS_KEYS   1 // get device stats keys
++#define VIRTIO_NET_CTRL_STATS_VALUES 2 // get device stats values
++
++#define VIRTIO_NET_STATS_KEY_LEN 32
++\end{lstlisting}
++
++The class is VIRTIO_NET_CTRL_STATS.
++
++\subparagraph{Device stats num}\label{sec:device types / network device / =
+device operation / control virtqueue / Device stats / Device stats num}
++
++Get the number of stats supported by the device from the device. After the
++device is initialized, this value MUST remain unchanged.
++
++The following layout structure are used as \field{command-specific-data-re=
+ply}:
++
++\begin{lstlisting}
++le64 num;
++\end{lstlisting}
++
++The command VIRTIO_NET_CTRL_STATS_NUM is used to obtain this information. =
+The
++device fills \field{num} as reply. \field{num} is meaningful only when
++\field{ack} is equal to VIRTIO_NET_OK.
++
++\subparagraph{Device stats keys}\label{sec:Device Types / Network Device /=
+ Device Operation / Control Virtqueue / Device stats keys / Device stats ke=
+ys}
++
++Get the keys of stats supported by the device from the device. After the
++device is initialized, these keys and their order MUST not change.
++
++The maximum length of each key is VIRTIO_NET_STATS_KEY_LEN - 1, the size o=
+f
++the key buf allocated by the driver is VIRTIO_NET_STATS_KEY_LEN. Each key =
+filled
++by the device ends with NULL.
++
++The following layout structure are used:
++
++\field{command-specific-data}
++\begin{lstlisting}
++le64 alloc_num;
++\end{lstlisting}
++
++\field{command-specific-data-reply}
++\begin{lstlisting}
++le64 real_num;
++u8 keys[VIRTIO_NET_STATS_KEY_LEN][alloc_num]
++\end{lstlisting}
++
++The command VIRTIO_NET_CTRL_STATS_KEYS is used to obtain the stats keys. T=
+he
++driver setting \field{alloc_num} specifies the number of keys allocated in=
+ the
++reply. The device fills \field{real_num} as the number of keys actually fi=
+lled.
++
++When \field{ack} is equal to VIRTIO_NET_OK, reply is meaningful.
++
++\subparagraph{Device stats values}\label{sec:Device Types / Network Device=
+ / Device Operation / Control Virtqueue / Device stats / Device stats value=
+s}
++
++Get the values of stats supported by the device from the device. After the
++device is initialized, these values and their order MUST not change.
++
++The following layout structure are used:
++
++\field{command-specific-data}
++\begin{lstlisting}
++le64 alloc_num;
++\end{lstlisting}
++
++\field{command-specific-data-reply}
++\begin{lstlisting}
++le64 real_num;
++le64 values[alloc_num]
++\end{lstlisting}
++
++The command VIRTIO_NET_CTRL_STATS_VALUES is used to obtain this informatio=
+n. The
++driver setting \field{alloc_num} specifies the number of values allocated =
+in the
++reply. The device fills real_num as the number of values actually filled.
++
++When \field{ack} is equal to VIRTIO_NET_OK, reply is meaningful.
++
++\subparagraph{Legacy Interface: Device stats}\label{sec:Device Types / Net=
+work Device / Device Operation / Control Virtqueue / Device stats / Legacy =
+Interface: Device stats}
++When using the legacy interface, transitional devices and drivers
++MUST format the \field{num}, \field{alloc_num},\field{real_num},\field{val=
+ues}
++according to the native endian of the guest rather than
++(necessarily when not using the legacy interface) little-endian.
++
+ \section{Block Device}\label{sec:Device Types / Block Device}
+=20
+ The virtio block device is a simple virtual block device (ie.
+--=20
+2.31.0
 
-Thank you for your valuable inputs.
 
-Best regards,
-Pankaj
-
-> > +
-> > +\subsection{Countermeasures}\label{sec:Device Types / PMEM Device / Possible Security Implications / Countermeasures}
-> > +
-> > +\subsubsection{ With SHARED mapping}\label{sec:Device Types / PMEM Device / Possible Security Implications / Countermeasures / SHARED}
-> > +
-> > +If device backing backing file is shared with multiple driver or device,
-> > +this may act as a metric for page cache side channel attack. As a counter
-> > +measure every driver should have its own(not shared with another driver)
-> > +SHARED backing file and gets populated a per device page cache pages.
-> > +
-> > +\subsubsection{ With PRIVATE mapping}\label{sec:Device Types / PMEM Device / Possible Security Implications / Countermeasures / PRIVATE}
-> > +There maybe be chances of side channels attack with PRIVATE
-> > +memory mapping similar to SHARED with read-only shared mappings.
-> > +PRIVATE is not used for virtio pmem making this usecase
-> > +irrelevant.
-> > +
-> > +\subsubsection{ Workload specific mapping}\label{sec:Device Types / PMEM Device / Possible Security Implications / Countermeasures / Workload}
-> > +For SHARED mapping, if workload is single application inside
-> > +the driver and there is no risk with sharing of data between the devices.
-> > +Driver sharing same backing file with SHARED mapping can be
-> > +used as a valid configuration.
-> > +
-> > +\subsubsection{ Prevent cache eviction}\label{sec:Device Types / PMEM Device / Possible Security Implications / Countermeasures / Cache eviction}
-> > +Don't allow cache evict from driver filesystem trim or discard command
-> > +with virtio pmem. This rules out any possibility of evict-reload
-> > +page cache side channel attacks if backing disk is shared(SHARED)
-> > +with mutliple drivers. Though if we use per device backing file with
-> > +shared mapping this countermeasure is not required.
->
->
-> ---------------------------------------------------------------------
-> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
->
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
