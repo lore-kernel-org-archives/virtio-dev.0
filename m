@@ -1,8 +1,10 @@
-Return-Path: <jasowang@redhat.com>
+Return-Path: <mst@redhat.com>
+Date: Tue, 17 Aug 2021 03:51:47 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
 Subject: Re: [virtio-dev] Re: [PATCH v1] virtio-mmio: Specify wait needed in
  driver during reset
-References: <BY5PR02MB707337890F06CA1879CE7D54F9E89@BY5PR02MB7073.namprd02.prod.outlook.com>
- <87eebl5msn.fsf@redhat.com> <20210726091851-mutt-send-email-mst@kernel.org>
+Message-ID: <20210817034312-mutt-send-email-mst@kernel.org>
+References: <20210726091851-mutt-send-email-mst@kernel.org>
  <BY5PR02MB7073036306A91FEF52CCC5FBF9E89@BY5PR02MB7073.namprd02.prod.outlook.com>
  <20210726141737-mutt-send-email-mst@kernel.org>
  <09b74816-8a1e-f993-640f-eb790a4a4698@redhat.com>
@@ -11,41 +13,81 @@ References: <BY5PR02MB707337890F06CA1879CE7D54F9E89@BY5PR02MB7073.namprd02.prod.
  <20210816013138-mutt-send-email-mst@kernel.org>
  <20210816063550.GD5604@quicinc.com>
  <20210816074558-mutt-send-email-mst@kernel.org>
-From: Jason Wang <jasowang@redhat.com>
-Message-ID: <af73ed7b-b339-3ba2-87cb-176a9435fa2c@redhat.com>
-Date: Tue, 17 Aug 2021 13:45:12 +0800
+ <af73ed7b-b339-3ba2-87cb-176a9435fa2c@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <20210816074558-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset="gbk"; format="flowed"
-Content-Transfer-Encoding: base64
-Content-Language: en-US
-To: "Michael S. Tsirkin" <mst@redhat.com>, Srivatsa Vaddagiri <quic_svaddagi@quicinc.com>
-Cc: Srivatsa Vaddagiri <svaddagi@qti.qualcomm.com>, Cornelia Huck <cohuck@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Trilok Soni <quic_tsoni@quicinc.com>, Pratik Patel <quic_pratikp@quicinc.com>
+In-Reply-To: <af73ed7b-b339-3ba2-87cb-176a9435fa2c@redhat.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+To: Jason Wang <jasowang@redhat.com>
+Cc: Srivatsa Vaddagiri <quic_svaddagi@quicinc.com>, Srivatsa Vaddagiri <svaddagi@qti.qualcomm.com>, Cornelia Huck <cohuck@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Trilok Soni <quic_tsoni@quicinc.com>, Pratik Patel <quic_pratikp@quicinc.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-CtTaIDIwMjEvOC8xNiDPws7nNzo0OCwgTWljaGFlbCBTLiBUc2lya2luINC0tcA6Cj4gT24gTW9u
-LCBBdWcgMTYsIDIwMjEgYXQgMTI6MDU6NTBQTSArMDUzMCwgU3JpdmF0c2EgVmFkZGFnaXJpIHdy
-b3RlOgo+PiAqIE1pY2hhZWwgUy4gVHNpcmtpbiA8bXN0QHJlZGhhdC5jb20+IFsyMDIxLTA4LTE2
-IDAxOjM1OjQ2XToKPj4KPj4+IFNvIHRoaW5raW5nIGFib3V0IGFsbCB0aGlzLCBxdWl0ZSBlYXJs
-eSBpbiB0aGUgc2V0dXAgcHJvY2VzcyB3ZQo+Pj4gaGF2ZToKPj4+Cj4+PiAgICAgICAgICAvKiBG
-aWd1cmUgb3V0IHdoYXQgZmVhdHVyZXMgdGhlIGRldmljZSBzdXBwb3J0cy4gKi8KPj4+ICAgICAg
-ICAgIGRldmljZV9mZWF0dXJlcyA9IGRldi0+Y29uZmlnLT5nZXRfZmVhdHVyZXMoZGV2KTsKPj4+
-Cj4+Pgo+Pj4gaXNuJ3QgdGhpcyBzdWZmaWNpZW50PyB0aGlzIHdpbGwgZmx1c2ggb3V0Cj4+PiBh
-bGwgd3JpdGVzIGFuZCBkZXZpY2UgY2FuIGRlZmVyIHJlc3BvbmRpbmcgdG8gcmVhZHMKPj4+IHVu
-dGlsIHJlc2V0IGlzIGNvbXBsZXRlLgo+PiBIbW0gbm90IHN1cmUgaWYgdGhhdCdzIHBvc3NpYmxl
-IGluIGFsbCBNTUlPIGRldmljZXM/IEkgdGhpbmsgYSB3aGlsZSBiYWNrIEphc29uCj4+IGZlbHQg
-c29tZSBvZiB0aGUgTU1JTyBkZXZpY2VzLCB0aGVpciByZWdpc3RlcnMgY291bGQgYWN0IGFzIHBs
-YWluIERSQU0gZm9yCj4+IHJlYWRzLCB3aGljaCBtZWFucyBkZXZpY2UgY2FuJ3QgYmxvY2sgc3Vj
-aCByZWFkcz8KPj4KPj4gLSB2YXRzYQo+IElzIGl0IHdvcnRoIGJvdGhlcmluZyBhYm91dCB0aGVv
-cmV0aWNhbCBpc3N1ZXMgdGhvdWdoPyBKYXNvbiB3aGF0IGlzCj4geW91ciB0YWtlPwoKClJlLXJl
-YWQgdGhlIHNwZWMsIGFuZCBpdCBzYWlkCgoiCgpNTUlPIERldmljZSBSZWdpc3RlciBMYXlvdXQK
-CiIKCkkgYmVsaWV2ZSBwbGFpbiBEUkFNIHdpbGwgbm90IGJlaGF2ZSBsaWtlIGEgcmVnaXN0ZXIu
-IFNvIHdlIGRvbid0IG5lZWQgCnRvIHdvcnJ5IGFib3V0IHRoYXQuCgpCdXQgdGhleSBhcmUgaW5k
-ZWVkIGRldmljZXMgdGhhdCBhY3QgYXMgYSBwbGFpbiBEUkFNIGZvciB0aGVpciBjb250cm9sIApw
-YXRoLCB3aGljaCBtaWdodCByZXF1aXJlcyBuZXcgdHJhbnNwb3J0c1sxXS4KCkFub3RoZXIgcXVl
-c3Rpb24gaXMgdGhhdCB3aGF0IG1ha2VzIFBDSSBkaWZmZXIgZnJvbSBNTUlPLiAoRS5nIFBDSSAK
-cmVxdWlyZXMgYSByZS1yZWFkIGJ1dCBNTUlPIGRvZXNuJ3QpCgpbMV0gaHR0cHM6Ly9sa21sLm9y
-Zy9sa21sLzIwMjAvOS8xLzI1NQoKCj4KPgo+PiAtLS0KPj4KPj4gUXVhbGNvbW0gSW5ub3ZhdGlv
-biBDZW50ZXIsIEluYy4gaXMgc3VibWl0dGluZyB0aGUgYXR0YWNoZWQgImZlZWRiYWNrIiBhcyBh
-Cj4+IG5vbi1tZW1iZXIgdG8gdGhlIHZpcnRpby1kZXYgbWFpbGluZyBsaXN0IGZvciBjb25zaWRl
-cmF0aW9uIGFuZCBpbmNsdXNpb24uCgo=
+On Tue, Aug 17, 2021 at 01:45:12PM +0800, Jason Wang wrote:
+> 
+> 在 2021/8/16 下午7:48, Michael S. Tsirkin 写道:
+> > On Mon, Aug 16, 2021 at 12:05:50PM +0530, Srivatsa Vaddagiri wrote:
+> > > * Michael S. Tsirkin <mst@redhat.com> [2021-08-16 01:35:46]:
+> > > 
+> > > > So thinking about all this, quite early in the setup process we
+> > > > have:
+> > > > 
+> > > >          /* Figure out what features the device supports. */
+> > > >          device_features = dev->config->get_features(dev);
+> > > > 
+> > > > 
+> > > > isn't this sufficient? this will flush out
+> > > > all writes and device can defer responding to reads
+> > > > until reset is complete.
+> > > Hmm not sure if that's possible in all MMIO devices? I think a while back Jason
+> > > felt some of the MMIO devices, their registers could act as plain DRAM for
+> > > reads, which means device can't block such reads?
+> > > 
+> > > - vatsa
+> > Is it worth bothering about theoretical issues though? Jason what is
+> > your take?
+> 
+> 
+> Re-read the spec, and it said
+> 
+> "
+> 
+> MMIO Device Register Layout
+> 
+> "
+> 
+> I believe plain DRAM will not behave like a register. So we don't need to
+> worry about that.
+> 
+> But they are indeed devices that act as a plain DRAM for their control path,
+> which might requires new transports[1].
+> 
+> Another question is that what makes PCI differ from MMIO. (E.g PCI requires
+> a re-read but MMIO doesn't)
+
+I don't think PCI requires a re-read either.  IIRC from that meeting, it
+was intended for a hypervisor so it does not have to block the guest:
+the guest can do something else then re-read.
+We did similar things elsewhere.
+
+See
+https://issues.oasis-open.org/projects/VIRTIO/issues/VIRTIO-103
+for the original proposal.
+
+In any case, I would say status register is unlikely to be in regular
+DRAM, after all write has side effects.
+So before we move on I'd like to know whether we do something as drastic
+as incrementing the version number for a theoretical or practical
+benefit.
+
+
+> [1] https://lkml.org/lkml/2020/9/1/255
+> 
+> 
+> > 
+> > 
+> > > ---
+> > > 
+> > > Qualcomm Innovation Center, Inc. is submitting the attached "feedback" as a
+> > > non-member to the virtio-dev mailing list for consideration and inclusion.
+
