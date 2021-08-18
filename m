@@ -1,10 +1,6 @@
-Return-Path: <quic_svaddagi@quicinc.com>
-Date: Tue, 17 Aug 2021 18:18:11 +0530
-From: Srivatsa Vaddagiri <quic_svaddagi@quicinc.com>
+Return-Path: <jasowang@redhat.com>
 Subject: Re: [virtio-dev] Re: [PATCH v1] virtio-mmio: Specify wait needed in
  driver during reset
-Message-ID: <20210817124811.GB9207@quicinc.com>
-Reply-To: Srivatsa Vaddagiri <quic_svaddagi@quicinc.com>
 References: <20210726141737-mutt-send-email-mst@kernel.org>
  <09b74816-8a1e-f993-640f-eb790a4a4698@redhat.com>
  <20210811100550.GC21582@quicinc.com>
@@ -14,47 +10,42 @@ References: <20210726141737-mutt-send-email-mst@kernel.org>
  <20210816074558-mutt-send-email-mst@kernel.org>
  <af73ed7b-b339-3ba2-87cb-176a9435fa2c@redhat.com>
  <20210817034312-mutt-send-email-mst@kernel.org>
- <20210817100333.GA9207@quicinc.com>
+ <20210817100333.GA9207@quicinc.com> <20210817124811.GB9207@quicinc.com>
+From: Jason Wang <jasowang@redhat.com>
+Message-ID: <2023e566-3331-a386-fb7c-5b4a50248a58@redhat.com>
+Date: Wed, 18 Aug 2021 10:57:16 +0800
 MIME-Version: 1.0
-In-Reply-To: <20210817100333.GA9207@quicinc.com>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Disposition: inline
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Jason Wang <jasowang@redhat.com>, Srivatsa Vaddagiri <svaddagi@qti.qualcomm.com>, Cornelia Huck <cohuck@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Trilok
- Soni <quic_tsoni@quicinc.com>, Pratik Patel <quic_pratikp@quicinc.com>
+In-Reply-To: <20210817124811.GB9207@quicinc.com>
+Content-Type: text/plain; charset="gbk"; format="flowed"
+Content-Transfer-Encoding: base64
+Content-Language: en-US
+To: Srivatsa Vaddagiri <quic_svaddagi@quicinc.com>, "Michael S. Tsirkin" <mst@redhat.com>
+Cc: Srivatsa Vaddagiri <svaddagi@qti.qualcomm.com>, Cornelia Huck <cohuck@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Trilok Soni <quic_tsoni@quicinc.com>, Pratik Patel <quic_pratikp@quicinc.com>, Xie Yongji <xieyongji@bytedance.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-* Srivatsa Vaddagiri <quic_svaddagi@quicinc.com> [2021-08-17 15:33:33]:
-
-> Handling reset is the only open issue we have, as guest triggering reset has
-> currently no provision to poll for reset completion and hypervisor itself cannot
-> handle reset completly. This is where we observed discrepancy between PCI vs
-> MMIO in handling reset, which we wanted to address with this discussion.
-> 
-> I think the option we discussed earlier of a new feature bit seems less
-> intrusive than incrementing MMIO version?
-> 
-> https://lists.oasis-open.org/archives/virtio-dev/202107/msg00168.html
-
-Alternately would it be fine to merge a change like this to Linux virtio_mmio
-driver w/o requiring any further changes to spec?
-
-diff --git a/drivers/virtio/virtio_mmio.c b/drivers/virtio/virtio_mmio.c
-index 56128b9..9db81e6 100644
---- a/drivers/virtio/virtio_mmio.c
-+++ b/drivers/virtio/virtio_mmio.c
-@@ -262,6 +262,9 @@ static void vm_reset(struct virtio_device *vdev)
- 
- 	/* 0 status means a reset. */
- 	writel(0, vm_dev->base + VIRTIO_MMIO_STATUS);
-+
-+	while (vm_get_status(vdev))
-+		msleep(1);
- }
- 
- 
-
--- 
-Qualcomm Innovation Center, Inc. is submitting the attached "feedback" as a
-non-member to the virtio-dev mailing list for consideration and inclusion.
-
+CtTaIDIwMjEvOC8xNyDPws7nODo0OCwgU3JpdmF0c2EgVmFkZGFnaXJpINC0tcA6Cj4gKiBTcml2
+YXRzYSBWYWRkYWdpcmkgPHF1aWNfc3ZhZGRhZ2lAcXVpY2luYy5jb20+IFsyMDIxLTA4LTE3IDE1
+OjMzOjMzXToKPgo+PiBIYW5kbGluZyByZXNldCBpcyB0aGUgb25seSBvcGVuIGlzc3VlIHdlIGhh
+dmUsIGFzIGd1ZXN0IHRyaWdnZXJpbmcgcmVzZXQgaGFzCj4+IGN1cnJlbnRseSBubyBwcm92aXNp
+b24gdG8gcG9sbCBmb3IgcmVzZXQgY29tcGxldGlvbiBhbmQgaHlwZXJ2aXNvciBpdHNlbGYgY2Fu
+bm90Cj4+IGhhbmRsZSByZXNldCBjb21wbGV0bHkuIFRoaXMgaXMgd2hlcmUgd2Ugb2JzZXJ2ZWQg
+ZGlzY3JlcGFuY3kgYmV0d2VlbiBQQ0kgdnMKPj4gTU1JTyBpbiBoYW5kbGluZyByZXNldCwgd2hp
+Y2ggd2Ugd2FudGVkIHRvIGFkZHJlc3Mgd2l0aCB0aGlzIGRpc2N1c3Npb24uCj4+Cj4+IEkgdGhp
+bmsgdGhlIG9wdGlvbiB3ZSBkaXNjdXNzZWQgZWFybGllciBvZiBhIG5ldyBmZWF0dXJlIGJpdCBz
+ZWVtcyBsZXNzCj4+IGludHJ1c2l2ZSB0aGFuIGluY3JlbWVudGluZyBNTUlPIHZlcnNpb24/Cj4+
+Cj4+IGh0dHBzOi8vbGlzdHMub2FzaXMtb3Blbi5vcmcvYXJjaGl2ZXMvdmlydGlvLWRldi8yMDIx
+MDcvbXNnMDAxNjguaHRtbAo+IEFsdGVybmF0ZWx5IHdvdWxkIGl0IGJlIGZpbmUgdG8gbWVyZ2Ug
+YSBjaGFuZ2UgbGlrZSB0aGlzIHRvIExpbnV4IHZpcnRpb19tbWlvCj4gZHJpdmVyIHcvbyByZXF1
+aXJpbmcgYW55IGZ1cnRoZXIgY2hhbmdlcyB0byBzcGVjPwo+Cj4gZGlmZiAtLWdpdCBhL2RyaXZl
+cnMvdmlydGlvL3ZpcnRpb19tbWlvLmMgYi9kcml2ZXJzL3ZpcnRpby92aXJ0aW9fbW1pby5jCj4g
+aW5kZXggNTYxMjhiOS4uOWRiODFlNiAxMDA2NDQKPiAtLS0gYS9kcml2ZXJzL3ZpcnRpby92aXJ0
+aW9fbW1pby5jCj4gKysrIGIvZHJpdmVycy92aXJ0aW8vdmlydGlvX21taW8uYwo+IEBAIC0yNjIs
+NiArMjYyLDkgQEAgc3RhdGljIHZvaWQgdm1fcmVzZXQoc3RydWN0IHZpcnRpb19kZXZpY2UgKnZk
+ZXYpCj4gICAKPiAgIAkvKiAwIHN0YXR1cyBtZWFucyBhIHJlc2V0LiAqLwo+ICAgCXdyaXRlbCgw
+LCB2bV9kZXYtPmJhc2UgKyBWSVJUSU9fTU1JT19TVEFUVVMpOwo+ICsKPiArCXdoaWxlICh2bV9n
+ZXRfc3RhdHVzKHZkZXYpKQo+ICsJCW1zbGVlcCgxKTsKPiAgIH0KPiAgIAo+ICAgCgoKSSB0aGlu
+ayB3ZSBzdGlsbCBuZWVkIHNvbWUgY2xhcmlmaWNhdGlvbiBvbiB0aGUgc3BlYy4KCk5vdGUgdGhh
+dCBkb2luZyB0aGlzLCB3aXRoIGFuIHVudHJ1c3RlZCBkZXZpY2UgdGhlIHN5c3RlbSB0b29sIGxp
+a2UgCm1vZHByb2JlIG1heSBibG9jayBhdCB0aGlzIGZvcmV2ZXIKCldlIHByb2JhYmx5IG5lZWQg
+YSB3YXkgdG8gZmFpbCB0aGUgcmVzZXQuCgpWRFVTRSBtZWV0cyBzaW1pbGFyIGlzc3VlLgoKVGhh
+bmtzCgoKPgoK
