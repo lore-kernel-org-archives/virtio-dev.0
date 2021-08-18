@@ -1,9 +1,17 @@
-Return-Path: <jasowang@redhat.com>
-Subject: Re: [virtio-dev] Re: [PATCH v1] virtio-mmio: Specify wait needed in
- driver during reset
-References: <BY5PR02MB7073036306A91FEF52CCC5FBF9E89@BY5PR02MB7073.namprd02.prod.outlook.com>
- <20210726141737-mutt-send-email-mst@kernel.org>
- <09b74816-8a1e-f993-640f-eb790a4a4698@redhat.com>
+Return-Path: <virtio-dev-return-8555-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id 7F7D5986488
+	for <virtio-dev@lists.oasis-open.org>; Wed, 18 Aug 2021 05:15:53 +0000 (UTC)
+Date: Wed, 18 Aug 2021 10:45:44 +0530
+From: Srivatsa Vaddagiri <quic_svaddagi@quicinc.com>
+Message-ID: <20210818051544.GC9207@quicinc.com>
+Reply-To: Srivatsa Vaddagiri <quic_svaddagi@quicinc.com>
+References: <09b74816-8a1e-f993-640f-eb790a4a4698@redhat.com>
  <20210811100550.GC21582@quicinc.com>
  <2723b42a-f5d0-9c49-bf5c-302fbd4c947f@redhat.com>
  <20210816013138-mutt-send-email-mst@kernel.org>
@@ -12,69 +20,50 @@ References: <BY5PR02MB7073036306A91FEF52CCC5FBF9E89@BY5PR02MB7073.namprd02.prod.
  <af73ed7b-b339-3ba2-87cb-176a9435fa2c@redhat.com>
  <20210817034312-mutt-send-email-mst@kernel.org>
  <20210817100333.GA9207@quicinc.com>
-From: Jason Wang <jasowang@redhat.com>
-Message-ID: <e07fd648-9044-d486-29b6-83ee64b6842a@redhat.com>
-Date: Wed, 18 Aug 2021 10:54:37 +0800
+ <e07fd648-9044-d486-29b6-83ee64b6842a@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <20210817100333.GA9207@quicinc.com>
-Content-Type: text/plain; charset="gbk"; format="flowed"
-Content-Transfer-Encoding: base64
-Content-Language: en-US
-To: Srivatsa Vaddagiri <quic_svaddagi@quicinc.com>, "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Srivatsa Vaddagiri <svaddagi@qti.qualcomm.com>, Cornelia Huck <cohuck@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Trilok Soni <quic_tsoni@quicinc.com>, Pratik Patel <quic_pratikp@quicinc.com>
+In-Reply-To: <e07fd648-9044-d486-29b6-83ee64b6842a@redhat.com>
+Subject: Re: [virtio-dev] Re: [PATCH v1] virtio-mmio: Specify wait needed in
+ driver during reset
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Disposition: inline
+To: Jason Wang <jasowang@redhat.com>
+Cc: "Michael S. Tsirkin" <mst@redhat.com>, Srivatsa Vaddagiri <svaddagi@qti.qualcomm.com>, Cornelia Huck <cohuck@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Trilok
+ Soni <quic_tsoni@quicinc.com>, Pratik Patel <quic_pratikp@quicinc.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-CtTaIDIwMjEvOC8xNyDPws7nNjowMywgU3JpdmF0c2EgVmFkZGFnaXJpINC0tcA6Cj4gKiBNaWNo
-YWVsIFMuIFRzaXJraW4gPG1zdEByZWRoYXQuY29tPiBbMjAyMS0wOC0xNyAwMzo1MTo0N106Cj4K
-Pj4gU28gYmVmb3JlIHdlIG1vdmUgb24gSSdkIGxpa2UgdG8ga25vdyB3aGV0aGVyIHdlIGRvIHNv
-bWV0aGluZyBhcyBkcmFzdGljCj4+IGFzIGluY3JlbWVudGluZyB0aGUgdmVyc2lvbiBudW1iZXIg
-Zm9yIGEgdGhlb3JldGljYWwgb3IgcHJhY3RpY2FsCj4+IGJlbmVmaXQuCj4gV2UgaW5pdGlhbGx5
-IHN0dW1ibGVkIG9uIHRoaXMgcmVzZXQgaXNzdWUgd2hlbiBkb2luZyBzb21lIG9wdGltaXphdGlv
-biBpbgo+IFF1YWxjb21tIFR5cGUtMSBoeXBlcnZpc29yIGZvciB2aXJ0aW8uIEluIG91ciBjYXNl
-LCB2aXJ0aW8gZnJvbnRlbmQgYW5kIGJhY2tlbmQKPiBkcml2ZXJzIGFyZSBpbiBzZXBhcmF0ZSBW
-TXMuIFRoZSBBbmRyb2lkIFZNIHRoYXQgaG9zdHMgYmFja2VuZCBkcml2ZXIgaXMKPiBjb25zaWRl
-cmVkIHVudHJ1c3RlZCwgd2hpY2ggYW1vbmcgb3RoZXIgdGhpbmdzIG1lYW50IGZyb250LWVuZCBj
-b3VsZCBzZWUgbGFyZ2UKPiBsYXRlbmNpZXMgZm9yIGl0cyBNTUlPIHJlZ2lzdGVyIHIvdyByZXF1
-ZXN0cyAobGFyZ2VseSBvd2luZyB0byBzY2hlZHVsaW5nCj4gZGVsYXlzKS4gSW4gc29tZSBjYXNl
-cywgSSBtZWFzdXJlZCA1LTEwIG1zIGZvciBhIHNpbmdsZSBNTUlPIHJlZ2lzdGVyIHJlYWQgb3IK
-PiB3cml0ZSByZXF1ZXN0LiBGZXcgb2YgdGhlIHJlZ2lzdGVycyBhcmUgYWNjZXNzZWQgaW4gaG90
-LXBhdGggKGxpa2UKPiBWSVJUSU9fTU1JT19RVUVVRV9OT1RJRlkgb3IgVklSVElPX01NSU9fSU5U
-RVJSVVBUX0FDSykgd2hpY2ggd2Ugd2FudGVkIHRvIGJlIG9mCj4gbG93LWxhdGVuY3kgYXMgbXVj
-aCBhcyBwb3NzaWJsZS4KPgo+IFRoZSBvcHRpbWl6YXRpb24gd2UgaGF2ZSB0byBoZWxwIHJlZHVj
-ZSB0aGlzIGxhdGVuY3kgaXMgZm9yIGh5cGVydmlzb3IgdG8KPiBhY2tub3dsZWRnZSBNTUlPIHdy
-aXRlcyB3aXRob3V0IHdhaXRpbmcgb24gYmFja2VuZCB0byByZXNwb25kLiBGb3IgZXhhbXBsZSwg
-d2hlbgo+IFZNIHdyaXRlcyB0byBWSVJUSU9fTU1JT19RVUVVRV9OT1RJRlksIGl0IGNhdXNlcyBh
-IHRyYXAgYW5kIG5vcm1hbGx5IGh5cGVydmlzb3IKPiB3b3VsZCBoYXZlIHJlcXVpcmVkIHRvIHN0
-YWxsIHRoZSB2Y3B1IHVudGlsIGJhY2tlbmQgYWNrbm93bGVkZ2VzIGl0LgoKClRoaXMgbG9va3Mg
-bm90IG5lY2Vzc2FyeS4gUWVtdS9LVk0gYWxsb3dzIGFuIGV2ZW50ZmQgdG8gYmUgaW5zdGFsbGVk
-IApoZXJlLiBUaGVuIHdlIGNhbiB1bmJsb2NrIHRoZSB2Y3B1IGltbWVkaWF0ZWx5IGFmdGVyIGV2
-ZW50IGlzIHNpZ25hbGVkIAphbmQgd2UgZG9uJ3QgbmVlZCB0byB3YWl0IGZvciB0aGUgYWNrbm93
-bGVkZ2UuCgoKPiBJbiBvdXIKPiBjYXNlLCBoeXBlcnZpc29yIHdvdWxkIHVuYmxvY2sgdGhlIHZj
-cHUgaW1tZWRpYXRlbHkgYWZ0ZXIgaW5qZWN0aW5nIGFuIGludGVycnVwdAo+IHRvIGJhY2tlbmQg
-KHRvIGxldCBiYWNrZW5kIGtub3cgdGhhdCB0aGVyZSBpcyBhIHF1ZXVlX25vdGlmeSBldmVudCku
-IEhhbmRsaW5nCj4gd3JpdGVzIHRvIFZJUlRJT19NTUlPX0lOVEVSUlVQVF9BQ0sgd2FzIGJpdCB0
-cmlja3kgYnV0IHdlIG1hbmFnZWQgdGhhdCB3aXRoIGZldwo+IGNoYW5nZXMgaW4gYmFja2VuZCAo
-ZXNwZWNpYWxseSBhbnkgYXdhcmVuZXNzIGJhY2tlbmQgaGFkIGFib3V0IGZyb250LWVuZCBiZWlu
-Zwo+IHN0aWxsIGluIGEgaW50ZXJydXB0IGhhbmRsZXIpLiBTaW1pbGFybHkgb3RoZXIgcmVnaXN0
-ZXJzIHRoYXQgYXJlIHdyaXR0ZW4gYXJlCj4gY29tcGxldGVseSBoYW5kbGVkIGluIGh5cGVydmlz
-b3Igd2l0aG91dCByZXF1aXJpbmcgaW50ZXJ2ZW50aW9uIGZyb20gYmFja2VuZC4KPgo+IEhhbmRs
-aW5nIHJlc2V0IGlzIHRoZSBvbmx5IG9wZW4gaXNzdWUgd2UgaGF2ZSwgYXMgZ3Vlc3QgdHJpZ2dl
-cmluZyByZXNldCBoYXMKPiBjdXJyZW50bHkgbm8gcHJvdmlzaW9uIHRvIHBvbGwgZm9yIHJlc2V0
-IGNvbXBsZXRpb24gYW5kIGh5cGVydmlzb3IgaXRzZWxmIGNhbm5vdAo+IGhhbmRsZSByZXNldCBj
-b21wbGV0bHkuIFRoaXMgaXMgd2hlcmUgd2Ugb2JzZXJ2ZWQgZGlzY3JlcGFuY3kgYmV0d2VlbiBQ
-Q0kgdnMKPiBNTUlPIGluIGhhbmRsaW5nIHJlc2V0LCB3aGljaCB3ZSB3YW50ZWQgdG8gYWRkcmVz
-cyB3aXRoIHRoaXMgZGlzY3Vzc2lvbi4KCgpJdCBsb29rcyBsaWtlIHdlIG1heSBzdWZmZXIgZnJv
-bSBzaW1pbGFyIGlzc3VlIGZvciBvdGhlciB1bnRydXN0ZWQgCmRldmljZXMgbGlrZSBWRFVTRS4K
-Cgo+Cj4gSSB0aGluayB0aGUgb3B0aW9uIHdlIGRpc2N1c3NlZCBlYXJsaWVyIG9mIGEgbmV3IGZl
-YXR1cmUgYml0IHNlZW1zIGxlc3MKPiBpbnRydXNpdmUgdGhhbiBpbmNyZW1lbnRpbmcgTU1JTyB2
-ZXJzaW9uPwo+Cj4gaHR0cHM6Ly9saXN0cy5vYXNpcy1vcGVuLm9yZy9hcmNoaXZlcy92aXJ0aW8t
-ZGV2LzIwMjEwNy9tc2cwMDE2OC5odG1sCgoKVXNpbmcgZmVhdHVyZXMgd2lsbCByZXN1bHQgc29t
-ZSBpbnRlcmVzdGluZyBxdWVzdGlvbjoKCjEpIHRoZSBkcml2ZXJzIHVzdWFsbHkgcmVzZXQgdGhl
-IGRldmljZSBiZWZvcmUgZmVhdHVyZSBuZWdvdGlhdGlvbgoyKSBpdCBtZWFucyB0aGUgZHJpdmVy
-IG11c3QgbWFuZGF0ZSB0aGlzIGJlaGF2aW9yIGV2ZW4gYmVmb3JlIGZlYXR1cmUgCm5lZ290aWF0
-aW9uIGlzIGRvbmUKCldlIGRvbid0IGhhdmUgdGhvc2UgaXNzdWUgaWYgd2UgaW5jcmVhc2UgdGhl
-IHZlcnNpb24gKGJ1dCBpdCBsb29rcyBtb3JlIAppbnRydXNpdmUpLgoKVGhhbmtzCgoKPgo+IC0g
-dmF0c2EKPgo+IC0tCj4KPiBRdWFsY29tbSBJbm5vdmF0aW9uIENlbnRlciwgSW5jLiBpcyBzdWJt
-aXR0aW5nIHRoZSBhdHRhY2hlZCAiZmVlZGJhY2siIGFzIGEKPiBvbi1tZW1iZXIgdG8gdGhlIHZp
-cnRpby1kZXYgbWFpbGluZyBsaXN0IGZvciBjb25zaWRlcmF0aW9uIGFuZCBpbmNsdXNpb24uCj4K
-Cg==
+* Jason Wang <jasowang@redhat.com> [2021-08-18 10:54:37]:
+
+> >I think the option we discussed earlier of a new feature bit seems less
+> >intrusive than incrementing MMIO version?
+> >
+> >https://lists.oasis-open.org/archives/virtio-dev/202107/msg00168.html
+> 
+> 
+> Using features will result some interesting question:
+> 
+> 1) the drivers usually reset the device before feature negotiation
+> 2) it means the driver must mandate this behavior even before feature
+> negotiation is done
+> 
+> We don't have those issue if we increase the version (but it looks more
+> intrusive).
+
+Hmm ..are you suggesting that we read the Version register as part of reset code
+and do the wait part only for v3 device? Otherwise we have the same issue as
+feature bit with version change also. 
+
+Can't the driver do the same with feature register also? Do poll if
+WAIT_FOR_RESET_COMPLETION feature bit is set, which can happen before feature
+negotiation is complete.
+
+- vatsa
+
+-- 
+Qualcomm Innovation Center, Inc. is submitting the attached "feedback" as a
+non-member to the virtio-dev mailing list for consideration and inclusion.
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+
