@@ -1,78 +1,62 @@
-Return-Path: <virtio-dev-return-8541-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-8565-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 7B01B9863B9
-	for <virtio-dev@lists.oasis-open.org>; Tue, 17 Aug 2021 10:01:19 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id B83A6986488
+	for <virtio-dev@lists.oasis-open.org>; Wed, 18 Aug 2021 11:05:19 +0000 (UTC)
 From: Cornelia Huck <cohuck@redhat.com>
-In-Reply-To: <YRuDYG6LKSyssCDa@stefanha-x1.localdomain>
+In-Reply-To: <cb15de92f8cb840204a945ae643c14700b567600.1628492314.git.viresh.kumar@linaro.org>
 References: <cb15de92f8cb840204a945ae643c14700b567600.1628492314.git.viresh.kumar@linaro.org>
- <YRuDYG6LKSyssCDa@stefanha-x1.localdomain>
-Date: Tue, 17 Aug 2021 12:01:04 +0200
-Message-ID: <87bl5wtmov.fsf@redhat.com>
+Date: Wed, 18 Aug 2021 13:05:06 +0200
+Message-ID: <87o89vrp25.fsf@redhat.com>
 MIME-Version: 1.0
-Subject: Re: [virtio-dev] [PATCH V9] virtio-gpio: Add the device specification
+Subject: [virtio-dev] Re: [PATCH V9] virtio-gpio: Add the device specification
 Content-Type: text/plain
-To: Stefan Hajnoczi <stefanha@redhat.com>, Viresh Kumar <viresh.kumar@linaro.org>
-Cc: Jason Wang <jasowang@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>, Arnd Bergmann <arnd@kernel.org>, Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Vincent Guittot <vincent.guittot@linaro.org>, Jean-Philippe Brucker <jean-philippe@linaro.org>, Bill Mills <bill.mills@linaro.org>, Alex =?utf-8?Q?Benn=C3=A9e?= <alex.bennee@linaro.org>, "Enrico Weigelt, metux IT
+To: Viresh Kumar <viresh.kumar@linaro.org>, Jason Wang <jasowang@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>, Arnd Bergmann <arnd@kernel.org>, Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Cc: Viresh Kumar <viresh.kumar@linaro.org>, Vincent Guittot <vincent.guittot@linaro.org>, Jean-Philippe Brucker <jean-philippe@linaro.org>, Bill Mills <bill.mills@linaro.org>, Alex =?utf-8?Q?Benn=C3=A9e?= <alex.bennee@linaro.org>, "Enrico Weigelt, metux IT
  consult" <info@metux.net>, virtio-dev@lists.oasis-open.org, Geert Uytterhoeven <geert@linux-m68k.org>, stratos-dev@op-lists.linaro.org, Arnd Bergmann <arnd@arndb.de>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Tue, Aug 17 2021, Stefan Hajnoczi <stefanha@redhat.com> wrote:
+On Mon, Aug 09 2021, Viresh Kumar <viresh.kumar@linaro.org> wrote:
 
-> On Mon, Aug 09, 2021 at 12:32:14PM +0530, Viresh Kumar wrote:
->> +\subsubsection{requestq Operation: Get Line Names}\label{sec:Device Types / GPIO Device / requestq Operation / Get Line Names}
->> +
->> +The driver sends this message to receive a stream of zero-terminated strings,
->> +where each string represents the name of a GPIO line, present in increasing
->> +order of the GPIO line numbers. The names of the GPIO lines are optional and may
->> +be present only for a subset of GPIO lines. If missing, then a zero-byte must be
->> +present for the GPIO line. If present, the name string must be zero-terminated
->> +and the name must be unique within a GPIO Device.
+> virtio-gpio is a virtual GPIO controller. It provides a way to flexibly
+> communicate with the host GPIO controllers from the guest.
 >
-> Sorry I didn't get to this patch before the vote. It's necessary to
-> specify the character encoding. In the text above it's unclear whether
-> the characters are limited to US-ASCII, UTF-8, or something else.
+> Note that the current implementation doesn't provide atomic APIs for
+> GPIO configurations. i.e. the driver (guest) would need to implement
+> sleep-able versions of the APIs as the guest will respond asynchronously
+> over the virtqueue.
 >
-> I suggest UTF-8 for maximum flexibility.
+> This patch adds the specification for it.
+>
+> Based on the initial work posted by:
+> "Enrico Weigelt, metux IT consult" <lkml@metux.net>.
+>
+> Fixes: https://github.com/oasis-tcs/virtio-spec/issues/110
+> Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+> Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
+> ---
+> V8->V9:
+> - Dropped few occurrences of "MUST" from non-normative statements.
+> - Send the patch for base GPIO specifications separately, so it can get merged
+>   first while the IRQ support is still discussed.
+>
+> Here is the previous version:
+>
+> https://lists.oasis-open.org/archives/virtio-dev/202107/msg00232.html
+>
+>  conformance.tex |  28 +++-
+>  content.tex     |   1 +
+>  virtio-gpio.tex | 346 ++++++++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 371 insertions(+), 4 deletions(-)
+>  create mode 100644 virtio-gpio.tex
 
-Agree on UTF-8. We can do this with a patch on top.
-
->
->> +These names of the GPIO lines should be most meaningful producer names for the
->> +system, such as name indicating the usage. For example "MMC-CD", "Red LED Vdd"
->> +and "ethernet reset" are reasonable line names as they describe what the line is
->> +used for, while "GPIO0" is not a good name to give to a GPIO line.
->
-> Does this belong in the device normative section? Normally "should",
-> "must", "may", etc are only used there. If you prefer to keep it here,
-> please adjust the language ("The device describes GPIO lines with the
-> most meaningful producer names for the system, ...").
-
-The all caps SHOULD etc. are for normative sections; I consider the
-usage here ok, although we can certainly consider tweaking the wording
-on top of this. It seems more like advice to me.
-
->
->> +
->> +The driver sends this message to request the device to configure a line's
->> +direction. The driver can either set the direction to
->> +\field{VIRTIO_GPIO_DIRECTION_IN} or \field{VIRTIO_GPIO_DIRECTION_OUT}, which
->> +also activates the line, or to \field{VIRTIO_GPIO_DIRECTION_NONE}, which
->> +deactivates the line.
->> +
->> +The driver should set the value of the GPIO line, using the
->> +\field{VIRTIO_GPIO_MSG_SET_VALUE} message, before setting the direction of the
->> +line to output to avoid any undesired behavior.
->
-> Does this belong in the driver normative section? Normally "should",
-> "must", "may", etc are only used there. If you prefer to keep it here,
-> please adjust the language ("The driver sets the value ...").
-
-Same here.
+Pushed out the voted-upon change; please follow up on the raised
+comments separately.
 
 
 ---------------------------------------------------------------------
