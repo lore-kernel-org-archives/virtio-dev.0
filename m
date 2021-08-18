@@ -1,61 +1,59 @@
-Return-Path: <viresh.kumar@linaro.org>
-Date: Tue, 17 Aug 2021 16:13:14 +0530
-From: Viresh Kumar <viresh.kumar@linaro.org>
-Subject: Re: [PATCH V2] virtio: i2c: Allow zero-length transactions
-Message-ID: <20210817104314.yg2ybrodkpnfwpoq@vireshk-i7>
+Return-Path: <virtio-dev-return-8549-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id CCE23986488
+	for <virtio-dev@lists.oasis-open.org>; Wed, 18 Aug 2021 02:38:38 +0000 (UTC)
 References: <bd0f81517c064b333ea5263bacbb74385e0d9b3a.1629107000.git.viresh.kumar@linaro.org>
  <20210816104430-mutt-send-email-mst@kernel.org>
  <20210817035324.r27cdx3yu2j4qmms@vireshk-i7>
  <20210817024607-mutt-send-email-mst@kernel.org>
+ <20210817104314.yg2ybrodkpnfwpoq@vireshk-i7>
+From: Jie Deng <jie.deng@intel.com>
+Message-ID: <ade98cbb-ba4f-ae59-46a0-09b518d72ba7@intel.com>
+Date: Wed, 18 Aug 2021 10:38:32 +0800
 MIME-Version: 1.0
-In-Reply-To: <20210817024607-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Cornelia Huck <cohuck@redhat.com>, Jie Deng <jie.deng@intel.com>, Wolfram Sang <wsa@kernel.org>, Paolo Bonzini <pbonzini@redhat.com>, Vincent Guittot <vincent.guittot@linaro.org>, Jason Wang <jasowang@redhat.com>, Bill Mills <bill.mills@linaro.org>, Alex =?utf-8?Q?Benn=C3=A9e?= <alex.bennee@linaro.org>, virtio-dev@lists.oasis-open.org, stratos-dev@op-lists.linaro.org, Gerd Hoffmann <kraxel@redhat.com>
+In-Reply-To: <20210817104314.yg2ybrodkpnfwpoq@vireshk-i7>
+Subject: [virtio-dev] Re: [PATCH V2] virtio: i2c: Allow zero-length transactions
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: quoted-printable
+To: Viresh Kumar <viresh.kumar@linaro.org>, "Michael S. Tsirkin" <mst@redhat.com>
+Cc: Cornelia Huck <cohuck@redhat.com>, Wolfram Sang <wsa@kernel.org>, Paolo Bonzini <pbonzini@redhat.com>, Vincent Guittot <vincent.guittot@linaro.org>, Jason Wang <jasowang@redhat.com>, Bill Mills <bill.mills@linaro.org>, =?UTF-8?Q?Alex_Benn=c3=a9e?= <alex.bennee@linaro.org>, virtio-dev@lists.oasis-open.org, stratos-dev@op-lists.linaro.org, Gerd Hoffmann <kraxel@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 17-08-21, 02:47, Michael S. Tsirkin wrote:
-> On Tue, Aug 17, 2021 at 09:23:24AM +0530, Viresh Kumar wrote:
-> > On 16-08-21, 10:45, Michael S. Tsirkin wrote:
-> > > So I wonder. What if we allow zero-length buffers in virtio? Would that
-> > > address the need?
 
-> OK, so yea. Let's split this up please.
+On 2021/8/17 18:43, Viresh Kumar wrote:
+> On 17-08-21, 02:47, Michael S. Tsirkin wrote:
+>> On Tue, Aug 17, 2021 at 09:23:24AM +0530, Viresh Kumar wrote:
+>>> On 16-08-21, 10:45, Michael S. Tsirkin wrote:
+>>>> So I wonder. What if we allow zero-length buffers in virtio? Would tha=
+t
+>>>> address the need?
+>> OK, so yea. Let's split this up please.
+> Just to make sure I understand what you asked for, we are looking for
+> something on these lines ? And the kernel side will still send an 'sg'
+> element and call sg_init_one(sg, NULL, 0) ?
 
-Just to make sure I understand what you asked for, we are looking for
-something on these lines ? And the kernel side will still send an 'sg'
-element and call sg_init_one(sg, NULL, 0) ?
 
-diff --git a/packed-ring.tex b/packed-ring.tex
-index a9e6c162fe12..cf3af6f42fbd 100644
---- a/packed-ring.tex
-+++ b/packed-ring.tex
-@@ -163,7 +163,9 @@ \subsection{Element Address and Length}
+ From the perspective of specification=EF=BC=8CI think we can allow zero-le=
+ngth=20
+buffers in virtio.
 
- In an available descriptor, Element Address corresponds to the
- physical address of the buffer element. The length of the element assumed
--to be physically contiguous is stored in Element Length.
-+to be physically contiguous is stored in Element Length. Virtio also
-+allows zero-length descriptors, where both address and length of the
-+element is set to zero by the driver.
+we can use the len of descriptor to see if it is a zero-length buffer.
 
- In a used descriptor, Element Address is unused. Element Length
- specifies the length of the buffer that has been initialized
-diff --git a/split-ring.tex b/split-ring.tex
-index bfef62d18dab..baf478e4998e 100644
---- a/split-ring.tex
-+++ b/split-ring.tex
-@@ -175,6 +175,8 @@ \subsection{The Virtqueue Descriptor Table}\label{sec:Basic Facilities of a Virt
- can be chained via \field{next}. Each descriptor describes a
- buffer which is read-only for the device (``device-readable'') or write-only for the device (``device-writable''), but a chain of
- descriptors can contain both device-readable and device-writable buffers.
-+Virtio also allows zero-length descriptors, where both \field{addr} and
-+\field{len} is set to zero by the driver.
+But for a specific implementation, I don't think "NULL" can be passed to=20
+this API.
 
- The actual contents of the memory offered to the device depends on the
- device type.  Most common is to begin the data with a header
+There is a check "BUG_ON(!virt_addr_valid(buf))" in it.
 
--- 
-viresh
+
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
