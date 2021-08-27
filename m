@@ -1,42 +1,141 @@
-Return-Path: <viresh.kumar@linaro.org>
-Date: Wed, 1 Sep 2021 11:52:31 +0530
-From: Viresh Kumar <viresh.kumar@linaro.org>
-Subject: Re: [PATCH V2] virtio: i2c: Allow zero-length transactions
-Message-ID: <20210901062231.e5dqa3w4yjs62g7c@vireshk-i7>
-References: <bd0f81517c064b333ea5263bacbb74385e0d9b3a.1629107000.git.viresh.kumar@linaro.org>
- <20210831195916-mutt-send-email-mst@kernel.org>
+Return-Path: <virtio-dev-return-8606-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 MIME-Version: 1.0
-In-Reply-To: <20210831195916-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Cornelia Huck <cohuck@redhat.com>, Jie Deng <jie.deng@intel.com>, Wolfram Sang <wsa@kernel.org>, Paolo Bonzini <pbonzini@redhat.com>, Vincent Guittot <vincent.guittot@linaro.org>, Jason Wang <jasowang@redhat.com>, Bill Mills <bill.mills@linaro.org>, Alex =?utf-8?Q?Benn=C3=A9e?= <alex.bennee@linaro.org>, virtio-dev@lists.oasis-open.org, stratos-dev@op-lists.linaro.org, Gerd Hoffmann <kraxel@redhat.com>
+Message-Id: <1630034294.3513477-1-xuanzhuo@linux.alibaba.com>
+Date: Fri, 27 Aug 2021 11:18:14 +0800
+From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+In-Reply-To: <4678446c-7ec9-7724-dac9-071388ac117a@redhat.com>
+Subject: Re: [virtio-dev] [PATCH] virtio: introduce VIRTIO_F_RING_RESET for
+ reset queue
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+To: Jason Wang <jasowang@redhat.com>
+Cc: virtio-comment@lists.oasis-open.org, virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 31-08-21, 20:03, Michael S. Tsirkin wrote:
-> But if you are doing it like this, then I think we should
-> have conformance clauses that require that the flag
-> is consistent with the buffer.
+On Thu, 26 Aug 2021 12:32:34 +0800, Jason Wang <jasowang@redhat.com> wrote:
+>
+> =E5=9C=A8 2021/8/23 =E4=B8=8B=E5=8D=884:28, Xuan Zhuo =E5=86=99=E9=81=93:
+> > cc jasowang@redhat.com
+> >
+> > On Fri, 13 Aug 2021 10:31:05 +0800, Xuan Zhuo <xuanzhuo@linux.alibaba.c=
+om> wrote:
+> >> This patch allows the driver to reset a queue individually.
+> >>
+> >> This is very common on general network equipment. By disabling a queue=
+,
+> >> you can quickly reclaim the buffer currently on the queue. If necessar=
+y,
+> >> we can reinitialize the queue separately.
+> >>
+> >> For example, when virtio-net implements support for AF_XDP, we need to
+> >> disable a queue to release all the original buffers when AF_XDP setup.
+> >> And quickly release all the AF_XDP buffers that have been placed in th=
+e
+> >> queue when AF_XDP exits.
+> >>
+> >> Since mmio's QueueReady allows setting 0 to stop the queue, there is n=
+o
+> >> need to distinguish whether VIRTIO_F_RING_RESET is negotiated.
+> >>
+> >> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> >> ---
+> >>   content.tex | 11 ++++++++++-
+> >>   1 file changed, 10 insertions(+), 1 deletion(-)
+> >>
+> >> diff --git a/content.tex b/content.tex
+> >> index 7cec1c3..70a9765 100644
+> >> --- a/content.tex
+> >> +++ b/content.tex
+> >> @@ -1001,7 +1001,13 @@ \subsubsection{Common configuration structure l=
+ayout}\label{sec:Virtio Transport
+> >>   After writing 0 to \field{device_status}, the driver MUST wait for a=
+ read of
+> >>   \field{device_status} to return 0 before reinitializing the device.
+> >>
+> >> -The driver MUST NOT write a 0 to \field{queue_enable}.
+> >> +If the VIRTIO_F_RING_RESET feature bit is not negotiated,
+> >> +the driver MUST NOT write a 0 to \field{queue_enable}.
+> >> +
+> >> +Otherwise, if the VIRTIO_F_RING_RESET feature bit is negotiated,
+> >> +the driver can stop using the queue by writing a 0 to \field{queue_en=
+able} and
+> >> +MUST read the value back to ensure synchronization. Then optionally r=
+e-enable
+> >> +the queue.
+>
+>
+>
+> So I think we need to clarify what did "stop" mean here. Since you're
+> use "RESET" in the feature I guess the virtqueue state is also reset.
+> That's fine but I'm not sure if MMIO has the similar semantic.
+>
+> E.g is the virtqueue state preserved during a stop and resume?
 
-Something like this will work ?
+  "To stop using the queue the driver MUST write zero (0x0) to this QueueRe=
+ady
+  and MUST read the value back to ensure synchronization."
 
-diff --git a/virtio-i2c.tex b/virtio-i2c.tex
-index ae344b2bc822..c7335372a8bb 100644
---- a/virtio-i2c.tex
-+++ b/virtio-i2c.tex
-@@ -145,6 +145,12 @@ \subsubsection{Device Operation: Operation Status}\label{sec:Device Types / I2C
- A driver MUST NOT use \field{buf}, for a read request, if the final
- \field{status} returned from the device is VIRTIO_I2C_MSG_ERR.
+Judging from the description of the spec, the more emphasis is on the stop =
+of
+the queue. It does not express whether the queue can be re-enabled.
 
-+A driver MUST set the \field{VIRTIO_I2C_FLAGS_M_RD} flag for a read operation,
-+where the buffer is write-only for the device.
-+
-+A driver MUST NOT set the \field{VIRTIO_I2C_FLAGS_M_RD} flag for a write
-+operation, where the buffer is read-only for the device.
-+
- A driver MUST queue the requests in order if multiple requests are going to
- be sent at a time.
+I think MMIO also adds the judgment for VIRTIO_F_RING_RESET here. If this
+function is successfully negotiated, then MMIO also supports queue reset,
+otherwise MMIO only supports stop queue.
 
--- 
-viresh
+The "stop" I understand means the destruction of all the states of the enti=
+re
+queue and the release of memory. Re-enable means reallocating the memory as=
+ when
+the device is initialized, and synchronizing this information to the device=
+.
+I will improve this part of the information in the next version.
+
+Regarding the description of the state during a stop and resume, I will add=
+ it
+in the next version.
+
+Thanks.
+
+>
+> Thanks
+>
+>
+> >>
+> >>   \subsubsection{Notification structure layout}\label{sec:Virtio Trans=
+port Options / Virtio Over PCI Bus / PCI Device Layout / Notification capab=
+ility}
+> >>
+> >> @@ -6672,6 +6678,9 @@ \chapter{Reserved Feature Bits}\label{sec:Reserv=
+ed Feature Bits}
+> >>     transport specific.
+> >>     For more details about driver notifications over PCI see \ref{sec:=
+Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initializatio=
+n And Device Operation / Available Buffer Notifications}.
+> >>
+> >> +  \item[VIRTIO_F_RING_RESET(40)] This feature indicates
+> >> +  that the driver can reset a queue individually.
+> >> +
+> >>   \end{description}
+> >>
+> >>   \drivernormative{\section}{Reserved Feature Bits}{Reserved Feature B=
+its}
+> >> --
+> >> 2.31.0
+> >>
+> >>
+> >> ---------------------------------------------------------------------
+> >> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+> >> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+> >>
+>
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
