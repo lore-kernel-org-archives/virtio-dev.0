@@ -1,123 +1,76 @@
-Return-Path: <mst@redhat.com>
-Date: Tue, 31 Aug 2021 10:45:53 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: Re: [PATCH v3] virtio-mmio: Specify wait needed in driver during
- reset
-Message-ID: <20210831103906-mutt-send-email-mst@kernel.org>
+Return-Path: <virtio-dev-return-8615-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id 7FB519864CA
+	for <virtio-dev@lists.oasis-open.org>; Tue, 31 Aug 2021 15:56:12 +0000 (UTC)
+Date: Tue, 31 Aug 2021 21:26:03 +0530
+From: Srivatsa Vaddagiri <quic_svaddagi@quicinc.com>
+Message-ID: <20210831155603.GH9207@quicinc.com>
+Reply-To: Srivatsa Vaddagiri <quic_svaddagi@quicinc.com>
 References: <20210831135753.GG9207@quicinc.com>
+ <20210831103906-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <20210831135753.GG9207@quicinc.com>
-Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20210831103906-mutt-send-email-mst@kernel.org>
+Subject: [virtio-dev] Re: [PATCH v3] virtio-mmio: Specify wait needed in driver during
+ reset
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Disposition: inline
-To: Srivatsa Vaddagiri <quic_svaddagi@quicinc.com>
+To: "Michael S. Tsirkin" <mst@redhat.com>
 Cc: Cornelia Huck <cohuck@redhat.com>, Jason Wang <jasowang@redhat.com>, virtio-dev@lists.oasis-open.org, tsoni@quicinc.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Tue, Aug 31, 2021 at 07:27:53PM +0530, Srivatsa Vaddagiri wrote:
-> Reset of a virtio-mmio device is initiated by writing 0 to its Status register.
-> In case of some devices, the reset operation itself may not be completed
-> by the time write instruction completes and hence such devices would require
-> drivers to wait on reset operation to complete before they proceed with
-> remaining steps of initialization.
+* Michael S. Tsirkin <mst@redhat.com> [2021-08-31 10:45:53]:
+
+> On Tue, Aug 31, 2021 at 07:27:53PM +0530, Srivatsa Vaddagiri wrote:
+> > Reset of a virtio-mmio device is initiated by writing 0 to its Status register.
+> > In case of some devices, the reset operation itself may not be completed
+> > by the time write instruction completes and hence such devices would require
+> > drivers to wait on reset operation to complete before they proceed with
+> > remaining steps of initialization.
+> > 
+> > Update the specification to indicate which devices would need driver to block on
+> > reset completion.
+> > 
+> > Suggested-by: Jason Wang <jasowang@redhat.com>
+> > Signed-off-by: Srivatsa Vaddagiri <quic_svaddagi@quicinc.com>
 > 
-> Update the specification to indicate which devices would need driver to block on
-> reset completion.
 > 
-> Suggested-by: Jason Wang <jasowang@redhat.com>
-> Signed-off-by: Srivatsa Vaddagiri <quic_svaddagi@quicinc.com>
+> I am still of two minds on whether we
+> want such a drastic change as a version update for such a
+> minor thing. Yes, we did it for PCI but then PCI did
+> not break backwards compat like mmio did.
+> 
+> Let's see what needs to happen to make existing drivers work
+> 1- reset starts the reset process
+> 2- following writes into status are buffered by the device
+>   until reset completes
+> 3- read from features completes after reset is complete
+
+Couple of scenarios which we discussed in this regard earlier:
+
+1) What if device reset encounters a failure? What should it return for the
+'features' read in that case?
+
+2) For untrusted devices, like in our case [A], it would require hypervisor to
+stall vcpu until the untrusted backend responds to the features read request,
+which could take a long time.  In worst case, the VM may get reset due to
+watchdog firing. Requiring drivers to poll will avoid that situation and allow
+drivers to fail probe gracefully.
+
+Ref A: https://lists.oasis-open.org/archives/virtio-dev/202108/msg00090.html
+
+- vatsa
+
+-- 
+Qualcomm Innovation Center, Inc. is submitting the attached "feedback" as a
+non-member to the virtio-dev mailing list for consideration and inclusion.
 
 
-I am still of two minds on whether we
-want such a drastic change as a version update for such a
-minor thing. Yes, we did it for PCI but then PCI did
-not break backwards compat like mmio did.
-
-Let's see what needs to happen to make existing drivers work
-1- reset starts the reset process
-2- following writes into status are buffered by the device
-  until reset completes
-3- read from features completes after reset is complete
-
-This does not sound like a difficult set of requirements
-to implement. Maybe just write up 1-3 above in the spec
-and be done with it?
-
-
-
-> ---
-> v3->v2:
-> - Introduce a new status bit, DEVICE_RESET_IN_PROGRESS
-> - Limit driver need to poll for reset completion only for MMIO devices having
->   Version = 0x3 
-> 
-> Previous version can be found at:
-> 
-> https://lists.oasis-open.org/archives/virtio-dev/202108/msg00065.html
-> 
->  content.tex | 23 +++++++++++++++++++----
->  1 file changed, 19 insertions(+), 4 deletions(-)
-> 
-> diff --git a/content.tex b/content.tex
-> index 7cec1c3..e10f7d3 100644
-> --- a/content.tex
-> +++ b/content.tex
-> @@ -49,6 +49,8 @@ \section{\field{Device Status} Field}\label{sec:Basic Facilities of a Virtio Dev
->  
->  \item[DEVICE_NEEDS_RESET (64)] Indicates that the device has experienced
->    an error from which it can't recover.
-> +
-> +\item[DEVICE_RESET_IN_PROGRESS (256)] Indicates that the device reset is in progress.
->  \end{description}
->  
->  The \field{device status} field starts out as 0, and is reinitialized to 0 by
-> @@ -1730,9 +1732,9 @@ \subsection{MMIO Device Register Layout}\label{sec:Virtio Transport Options / Vi
->    } 
->    \hline
->    \mmioreg{Version}{Device version number}{0x004}{R}{%
-> -    0x2.
-> +    0x3.
->      \begin{note}
-> -      Legacy devices (see \ref{sec:Virtio Transport Options / Virtio Over MMIO / Legacy interface}~\nameref{sec:Virtio Transport Options / Virtio Over MMIO / Legacy interface}) used 0x1.
-> +      Legacy devices (see \ref{sec:Virtio Transport Options / Virtio Over MMIO / Legacy interface}~\nameref{sec:Virtio Transport Options / Virtio Over MMIO / Legacy interface}) used 0x1. Devices that do not require drivers to poll for reset completion can use 0x2. See \ref{devicenormative:Virtio Transport Options / Virtio Over MMIO / MMIO Device Register Layout} for more details.
->      \end{note}
->    }
->    \hline 
-> @@ -1916,7 +1918,15 @@ \subsection{MMIO Device Register Layout}\label{sec:Virtio Transport Options / Vi
->  
->  The device MUST return 0x74726976 in \field{MagicValue}.
->  
-> -The device MUST return value 0x2 in \field{Version}.
-> +The device MUST return either value 0x3 or 0x2 in \field{Version} based on its reset behavior. Drivers trigger reset
-> +of a device by writing 0 to \field{Status}. The reset operation itself may or may not be completed by the time write
-> +operation is complete. Devices whose reset operation completes synchronously with the write operation are allowed to
-> +return value of 0x2 for \field{Version}. Other devices, whose reset operation can be incomplete by the time write
-> +operation completes MUST return value 0x3 as an indication for drivers to poll for reset completion. Such devices
-> +MUST indicate progress of reset operation in \field{Status}, with value of DEVICE_RESET_IN_PROGRESS indicating reset
-> +operation is still in progress, a value of 0x0 indicating reset operation is complete and a value of
-> +DEVICE_NEEDS_RESET indicating device has experienced an error and that reset operation could not be completed
-> +successfully.
->  
->  The device MUST present each event by setting the corresponding bit in \field{InterruptStatus} from the
->  moment it takes place, until the driver acknowledges the interrupt
-> @@ -1947,9 +1957,14 @@ \subsection{MMIO Device Register Layout}\label{sec:Virtio Transport Options / Vi
->  The driver MUST ignore a device with \field{MagicValue} which is not 0x74726976,
->  although it MAY report an error.
->  
-> -The driver MUST ignore a device with \field{Version} which is not 0x2,
-> +The driver MUST ignore a device with \field{Version} which is neither 0x2 nor 0x3,
->  although it MAY report an error.
->  
-> +When \field{Version} is 0x3, the driver, after initiating reset of device by
-> +writing 0 to \field{Status}, MUST wait for device reset operation to complete.
-> +Further, when \field{Version} is 0x3, the driver MUST not access any register other than
-> +reading \field{Status} while device reset is in progress.
-> +
->  The driver MUST ignore a device with \field{DeviceID} 0x0,
->  but MUST NOT report any error.
->  
-> 
-> 
-> -- 
-> Qualcomm Innovation Center, Inc. is submitting the attached "feedback" as a
-> non-member to the virtio-dev mailing list for consideration and inclusion.
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
