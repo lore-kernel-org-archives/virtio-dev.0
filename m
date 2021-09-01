@@ -1,183 +1,181 @@
-Return-Path: <pankaj.gupta.linux@gmail.com>
+Return-Path: <viresh.kumar@linaro.org>
+From: Viresh Kumar <viresh.kumar@linaro.org>
+Subject: [PATCH V3] virtio: i2c: Allow zero-length transactions
+Date: Wed,  1 Sep 2021 13:05:39 +0530
+Message-Id: <8d35aa1c925ab7cd2452f790ea84e78ff905db00.1630481293.git.viresh.kumar@linaro.org>
 MIME-Version: 1.0
-References: <20210921102702.60259-1-pankaj.gupta.linux@gmail.com> <871r5ffult.fsf@redhat.com>
-In-Reply-To: <871r5ffult.fsf@redhat.com>
-From: Pankaj Gupta <pankaj.gupta.linux@gmail.com>
-Date: Thu, 23 Sep 2021 18:20:35 +0200
-Message-ID: <CAM9Jb+ii7h=R+2ZtH48QZWpKdpCve9BhC5-_p7+cKpqcJdwFbQ@mail.gmail.com>
-Subject: Re: [PATCH v4] virtio-pmem: PMEM device spec
-Content-Type: text/plain; charset="UTF-8"
-To: Cornelia Huck <cohuck@redhat.com>
-Cc: virtio-dev@lists.oasis-open.org, Stefan Hajnoczi <stefanha@redhat.com>, Dan Williams <dan.j.williams@intel.com>, David Hildenbrand <david@redhat.com>, "Michael S . Tsirkin" <mst@redhat.com>, Taylor Stark <tstark@linux.microsoft.com>, Pankaj Gupta <pankaj.gupta@ionos.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="US-ASCII"
+To: "Michael S. Tsirkin" <mst@redhat.com>, Cornelia Huck <cohuck@redhat.com>, Jie Deng <jie.deng@intel.com>, Wolfram Sang <wsa@kernel.org>, Paolo Bonzini <pbonzini@redhat.com>
+Cc: Viresh Kumar <viresh.kumar@linaro.org>, Vincent Guittot <vincent.guittot@linaro.org>, Jason Wang <jasowang@redhat.com>, Bill Mills <bill.mills@linaro.org>, =?UTF-8?q?Alex=20Benn=C3=A9e?= <alex.bennee@linaro.org>, virtio-dev@lists.oasis-open.org, stratos-dev@op-lists.linaro.org, Gerd Hoffmann <kraxel@redhat.com>, Arnd Bergmann <arnd@kernel.org>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-> > Posting virtio specification for virtio pmem device. Virtio pmem is a
-> > paravirtualized device which allows the guest to bypass page cache.
-> > Virtio pmem kernel driver is merged in Upstream Kernel 5.3. Also, Qemu
-> > device is merged in Qemu 4.1.
-> >
-> > Signed-off-by: Pankaj Gupta <pankaj.gupta.linux@gmail.com>
-> > ---
-> >  v3 -> v4
-> >   Define constant used in request type - Stefan
-> >   Small text change - Stefan
-> >
-> >  conformance.tex |  16 +++++-
-> >  content.tex     |   1 +
-> >  virtio-pmem.tex | 128 ++++++++++++++++++++++++++++++++++++++++++++++++
-> >  3 files changed, 143 insertions(+), 2 deletions(-)
-> >  create mode 100644 virtio-pmem.tex
->
-> (...)
->
-> > diff --git a/virtio-pmem.tex b/virtio-pmem.tex
-> > new file mode 100644
-> > index 0000000..4fad8a3
-> > --- /dev/null
-> > +++ b/virtio-pmem.tex
-> > @@ -0,0 +1,128 @@
-> > +\section{PMEM Device}\label{sec:Device Types / PMEM Device}
-> > +
-> > +The virtio pmem device is a persistent memory (NVDIMM) device
-> > +that provides a virtio based asynchronous flush mechanism. This avoids
-> > +the need of a separate page cache in the guest and keeps the page cache
-> > +only in the host. Under memory pressure, the host makes use of
-> > +efficient memory reclaim decisions for page cache pages of all the
-> > +guests. This helps to reduce the memory footprint and fits more guests
-> > +in the host system.
-> > +
-> > +The virtio pmem device provides access to byte-addressable persistent
-> > +memory. The persist memory is a directly accessible range of system memory.
-> > +Data written to this memory is made persistent by separately sending a
-> > +flush command. Writes that have been flushed are preserved across device
-> > +reset and power failure.
-> > +
-> > +\subsection{Device ID}\label{sec:Device Types / PMEM Device / Device ID}
-> > +  27
-> > +
-> > +\subsection{Virtqueues}\label{sec:Device Types / PMEM Device / Virtqueues}
-> > +\begin{description}
-> > +\item[0] req_vq
-> > +\end{description}
-> > +
-> > +\subsection{Feature bits}\label{sec:Device Types / PMEM Device / Feature bits}
-> > +
-> > +There are currently no feature bits defined for this device.
-> > +
-> > +\subsection{Device configuration layout}\label{sec:Device Types / PMEM Device / Device configuration layout}
-> > +
-> > +\begin{lstlisting}
-> > +struct virtio_pmem_config {
-> > +     le64 start;
-> > +     le64 size;
-> > +};
-> > +\end{lstlisting}
-> > +
-> > +\begin{description}
-> > +\item[\field{start}] contains the physical address of the first byte of the persistent memory region.
-> > +
-> > +\item[\field{size}] contains the length of this address range.
-> > +\end{description}
-> > +
-> > +\begin{enumerate}
-> > +\item Driver vpmem start is read from \field{start}.
-> > +\item Driver vpmem end is read from \field{size}.
-> > +\end{enumerate}
-> > +
-> > +\subsection{Driver Initialization}\label{sec:Device Types / PMEM Driver / Driver Initialization}
-> > +
-> > +The driver determines the start address and size of the persistent memory region in preparation for reading or writing data.
-> > +
-> > +The driver initializes req_vq in preparation for making flush requests.
-> > +
-> > +\subsection{Driver Operations}\label{sec:Device Types / PMEM Driver / Driver Operation / Request Queues}
-> > +
-> > +Requests have the following format:
-> > +
-> > +\begin{lstlisting}
-> > +struct virtio_pmem_req {
-> > +        le32 type;
-> > +};
-> > +\end{lstlisting}
-> > +
-> > +\field{type} is the request command type.
->
-> (minor) trailing whitespace
->
-> > +
-> > +Possible request types are:
-> > +
-> > +\begin{lstlisting}
-> > +#define VIRTIO_PMEM_REQ_TYPE_FLUSH      0
-> > +\end{lstlisting}
-> > +
-> > +\subsection{Device Operations}\label{sec:Device Types / PMEM Driver / Device Operation}
-> > +\devicenormative{\subsubsection}{Device Operation: Virtqueue flush}{Device Types / PMEM Device / Device Operation / Virtqueue flush}
-> > +
-> > +The device MUST ensure that all writes completed before a flush request persist across device reset and power failure before completing the flush request.
-> > +
-> > +\subsubsection{Device Operations}\label{sec:Device Types / PMEM Driver / Device Operation / Virtqueue return}
-> > +\begin{lstlisting}
-> > +struct virtio_pmem_resp {
-> > +        le32 ret;
-> > +};
-> > +\end{lstlisting}
-> > +
-> > +\field{ret} is the value which device returns after command completion.
->
-> (minor) s/device/the device/
->
-> > +
-> > +\devicenormative{\subsubsection}{Device Operation: Virtqueue return}{Device Types / PMEM Device / Device Operation / Virtqueue return}
-> > +
-> > +The device MUST return "0" for success and "-1" for failure.
-> > +
-> > +\subsection{Possible security implications}\label{sec:Device Types / PMEM Device / Possible Security Implications}
-> > +
-> > +There could be potential security implications depending on how
-> > +memory mapped backing device is used. By default device emulation
-> > +is done with SHARED memory mapping. There is a contract between driver
-> > +and device to access shared memory region for read or write operations.
-> > +
-> > +If a malicious driver or device map the same memory region, the attacker
-> > +can make use of known side channel attacks to predict the current state of data.
-> > +If both attacker and victim somehow execute same shared code after a flush
-> > +or evict operation, with difference in execution timing attacker could infer
-> > +another device data.
-> > +
-> > +\subsection{Countermeasures}\label{sec:Device Types / PMEM Device / Possible Security Implications / Countermeasures}
-> > +
-> > +\subsubsection{ With SHARED mapping}\label{sec:Device Types / PMEM Device / Possible Security Implications / Countermeasures / SHARED}
-> > +
-> > +If device backing region is shared between multiple devices, this may act
-> > +as a metric for side channel attack. As a counter measure every device
-> > +should have its own(not shared with another driver) SHARED backing memory.
-> > +
-> > +\subsubsection{ With PRIVATE mapping}\label{sec:Device Types / PMEM Device / Possible Security Implications / Countermeasures / PRIVATE}
-> > +There maybe be chances of side channels attack with PRIVATE
-> > +memory mapping similar to SHARED with read-only shared mappings.
-> > +PRIVATE is not used for virtio pmem making this usecase
-> > +irrelevant.
-> > +
-> > +\subsubsection{ Workload specific mapping}\label{sec:Device Types / PMEM Device / Possible Security Implications / Countermeasures / Workload}
-> > +For SHARED mapping, if workload is single application inside
-> > +the driver and there is no risk in sharing data. Device sharing
-> > +same backing region with SHARED mapping can be used as a valid configuration.
-> > +
-> > +\subsubsection{ Prevent cache eviction}\label{sec:Device Types / PMEM Device / Possible Security Implications / Countermeasures / Cache eviction}
-> > +Don't allow device shared region evict from driver filesystem trim or discard
-> > +like commands with virtio pmem. This rules out any possibility of evict-reload
-> > +cache side channel attacks if backing region is shared(SHARED)
-> > +between mutliple devices. Though if we use per device backing file with
-> > +shared mapping this countermeasure is not required.
->
-> I have only two minor things, and these can easily be fixed up while
-> applying (or later). If others are also fine with this (especially
-> regarding the security implicates section, which I did not really
-> review), I think we can start voting.
+The I2C protocol allows zero-length requests with no data, like the
+SMBus Quick command, where the command is inferred based on the
+read/write flag itself.
 
-Thank you, Cornelia !
+In order to allow such a request, allocate another bit,
+VIRTIO_I2C_FLAGS_M_RD(1), in the flags to pass the request type, as read
+or write. This was earlier done using the read/write permission to the
+buffer itself.
 
-Best regards,
-Pankaj
+This still won't work well if multiple buffers are passed for the same
+request, i.e. the write-read requests, as the VIRTIO_I2C_FLAGS_M_RD flag
+can only be used with a single buffer.
+
+Coming back to it, there is no need to send multiple buffers with a
+single request. All we need, is a way to group several requests
+together, which we can already do based on the
+VIRTIO_I2C_FLAGS_FAIL_NEXT flag.
+
+Remove support for multiple buffers within a single request.
+
+Since we are at very early stage of development currently, we can do
+these modifications without addition of new features or versioning of
+the protocol.
+
+Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
+---
+V2->V3:
+- Add conformance clauses that require that the flag is consistent with the
+  buffer.
+
+V1->V2:
+- Name the buffer-less request as zero-length request.
+
+Hi Guys,
+
+I did try to follow the discussion you guys had during V4, where we added
+support for multiple buffers for the same request, which I think is unnecessary
+now, after introduction of the VIRTIO_I2C_FLAGS_FAIL_NEXT flag.
+
+https://lists.oasis-open.org/archives/virtio-comment/202011/msg00005.html
+
+And so starting this discussion again, because we need to support stuff
+like: i2cdetect -q <i2c-bus-number>, which issues a zero-length SMBus
+Quick command.
+---
+ virtio-i2c.tex | 66 +++++++++++++++++++++++++++-----------------------
+ 1 file changed, 36 insertions(+), 30 deletions(-)
+
+diff --git a/virtio-i2c.tex b/virtio-i2c.tex
+index 949d75f44158..c7335372a8bb 100644
+--- a/virtio-i2c.tex
++++ b/virtio-i2c.tex
+@@ -54,8 +54,7 @@ \subsubsection{Device Operation: Request Queue}\label{sec:Device Types / I2C Ada
+ \begin{lstlisting}
+ struct virtio_i2c_req {
+         struct virtio_i2c_out_hdr out_hdr;
+-        u8 write_buf[];
+-        u8 read_buf[];
++        u8 buf[];
+         struct virtio_i2c_in_hdr in_hdr;
+ };
+ \end{lstlisting}
+@@ -84,16 +83,16 @@ \subsubsection{Device Operation: Request Queue}\label{sec:Device Types / I2C Ada
+     and sets it on the other requests. If this bit is set and a device fails
+     to process the current request, it needs to fail the next request instead
+     of attempting to execute it.
++
++\item[VIRTIO_I2C_FLAGS_M_RD(1)] is used to mark the request as READ or WRITE.
+ \end{description}
+ 
+ Other bits of \field{flags} are currently reserved as zero for future feature
+ extensibility.
+ 
+-The \field{write_buf} of the request contains one segment of an I2C transaction
+-being written to the device.
+-
+-The \field{read_buf} of the request contains one segment of an I2C transaction
+-being read from the device.
++The \field{buf} of the request is optional and contains one segment of an I2C
++transaction being read from or written to the device, based on the value of the
++\field{VIRTIO_I2C_FLAGS_M_RD} bit in the \field{flags} field.
+ 
+ The final \field{status} byte of the request is written by the device: either
+ VIRTIO_I2C_MSG_OK for success or VIRTIO_I2C_MSG_ERR for error.
+@@ -103,27 +102,27 @@ \subsubsection{Device Operation: Request Queue}\label{sec:Device Types / I2C Ada
+ #define VIRTIO_I2C_MSG_ERR    1
+ \end{lstlisting}
+ 
+-If ``length of \field{read_buf}''=0 and ``length of \field{write_buf}''>0,
+-the request is called write request.
++If \field{VIRTIO_I2C_FLAGS_M_RD} bit is set in the \field{flags}, then the
++request is called a read request.
+ 
+-If ``length of \field{read_buf}''>0 and ``length of \field{write_buf}''=0,
+-the request is called read request.
++If \field{VIRTIO_I2C_FLAGS_M_RD} bit is unset in the \field{flags}, then the
++request is called a write request.
+ 
+-If ``length of \field{read_buf}''>0 and ``length of \field{write_buf}''>0,
+-the request is called write-read request. It means an I2C write segment followed
+-by a read segment. Usually, the write segment provides the number of an I2C
+-controlled device register to be read.
++The \field{buf} is optional and will not be present for a zero-length request,
++like SMBus Quick.
+ 
+-The case when ``length of \field{write_buf}''=0, and at the same time,
+-``length of \field{read_buf}''=0 doesn't make any sense.
++The virtio I2C protocol supports write-read requests, i.e. an I2C write segment
++followed by a read segment (usually, the write segment provides the number of an
++I2C controlled device register to be read), by grouping a list of requests
++together using the \field{VIRTIO_I2C_FLAGS_FAIL_NEXT} flag.
+ 
+ \subsubsection{Device Operation: Operation Status}\label{sec:Device Types / I2C Adapter Device / Device Operation: Operation Status}
+ 
+-\field{addr}, \field{flags}, ``length of \field{write_buf}'' and ``length of \field{read_buf}''
+-are determined by the driver, while \field{status} is determined by the processing
+-of the device. A driver puts the data written to the device into \field{write_buf}, while
+-a device puts the data of the corresponding length into \field{read_buf} according to the
+-request of the driver.
++\field{addr}, \field{flags}, and ``length of \field{buf}'' are determined by the
++driver, while \field{status} is determined by the processing of the device.  A
++driver, for a write request, puts the data to be written to the device into the
++\field{buf}, while a device, for a read request, puts the data read from device
++into the \field{buf} according to the request from the driver.
+ 
+ A driver may send one request or multiple requests to the device at a time.
+ The requests in the virtqueue are both queued and processed in order.
+@@ -141,11 +140,16 @@ \subsubsection{Device Operation: Operation Status}\label{sec:Device Types / I2C
+ 
+ A driver MUST set the reserved bits of \field{flags} to be zero.
+ 
+-The driver MUST NOT send a request with ``length of \field{write_buf}''=0 and
+-``length of \field{read_buf}''=0 at the same time.
++A driver MUST NOT send the \field{buf}, for a zero-length request.
++
++A driver MUST NOT use \field{buf}, for a read request, if the final
++\field{status} returned from the device is VIRTIO_I2C_MSG_ERR.
+ 
+-A driver MUST NOT use \field{read_buf} if the final \field{status} returned
+-from the device is VIRTIO_I2C_MSG_ERR.
++A driver MUST set the \field{VIRTIO_I2C_FLAGS_M_RD} flag for a read operation,
++where the buffer is write-only for the device.
++
++A driver MUST NOT set the \field{VIRTIO_I2C_FLAGS_M_RD} flag for a write
++operation, where the buffer is read-only for the device.
+ 
+ A driver MUST queue the requests in order if multiple requests are going to
+ be sent at a time.
+@@ -160,11 +164,13 @@ \subsubsection{Device Operation: Operation Status}\label{sec:Device Types / I2C
+ A device SHOULD keep consistent behaviors with the hardware as described in
+ \hyperref[intro:I2C]{I2C}.
+ 
+-A device MUST NOT change the value of \field{addr}, reserved bits of \field{flags}
+-and \field{write_buf}.
++A device MUST NOT change the value of \field{addr}, and reserved bits of
++\field{flags}.
++
++A device MUST not change the value of the \field{buf} for a write request.
+ 
+-A device MUST place one I2C segment of the corresponding length into \field{read_buf}
+-according the driver's request.
++A device MUST place one I2C segment of the ``length of \field{buf}'', for the
++read request, into the \field{buf} according the driver's request.
+ 
+ A device MUST guarantee the requests in the virtqueue being processed in order
+ if multiple requests are received at a time.
+-- 
+2.31.1.272.g89b43f80a514
 
