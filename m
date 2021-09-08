@@ -1,209 +1,350 @@
-Return-Path: <virtio-dev-return-8749-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-8644-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 5D5769865E9
-	for <virtio-dev@lists.oasis-open.org>; Thu, 30 Sep 2021 09:18:19 +0000 (UTC)
-From: Parav Pandit <parav@nvidia.com>
-Date: Thu, 30 Sep 2021 12:17:59 +0300
-Message-ID: <20210930091759.525267-1-parav@nvidia.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id B6FD49864DD
+	for <virtio-dev@lists.oasis-open.org>; Wed,  8 Sep 2021 20:42:20 +0000 (UTC)
 MIME-Version: 1.0
-Subject: [virtio-dev] [PATCH] Add device reset timeout field
-Content-Type: text/plain
-Content-Transfer-Encoding: quoted-printable
+References: <CABATKF-Oa52Hq9U+-4zOY7+aL-mrf6+DmhSG51WRnLPjFsdXUA@mail.gmail.com>
+ <20210610231954.2937837-1-chenhaosjtuacm@google.com> <CABATKF-PYBmqW-GSy0c12FLDifanKgPRap1DuYbf3dJew5wMHA@mail.gmail.com>
+In-Reply-To: <CABATKF-PYBmqW-GSy0c12FLDifanKgPRap1DuYbf3dJew5wMHA@mail.gmail.com>
+From: Hao Chen <chenhaosjtuacm@google.com>
+Date: Wed, 8 Sep 2021 13:42:06 -0700
+Message-ID: <CABATKF8JMFFUKb54w9oeuu-ykTXvN0K12=KCYM+b_V+wXmGK+Q@mail.gmail.com>
+Subject: [virtio-dev] Re: [PATCH v4] Add virtio parameter server device specification
+Content-Type: text/plain; charset="UTF-8"
 To: virtio-dev@lists.oasis-open.org
-Cc: mgurtovoy@nvidia.com, shahafs@nvidia.com, oren@nvidia.com, parav@nvidia.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Motivation:
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-Currently when driver initiates a device reset operation, a device may
-not be able finish the reset operation immediately. In such case driver
-waits for an arbitrary amount of time in a hope that device will finish
-the reset. Depending on the device type and its backend implementation a
-device timeout can be different. Trying to wait for all device type in
-same value may not be efficient or adequate.
+Hi folks,
 
-Proposal:
-=3D=3D=3D=3D=3D=3D=3D=3D
-Hence, enhance the specification to let device report a device reset
-timeout value in milliseconds. Such hint helps driver to know how long
-should it wait for device reset to finish.
+I had some issues when trying to implement the sample driver for this
+device proposal. When the device wants to send some values to the
+driver,
+the size of the values may vary a lot, and the size may not be
+determined when the driver allocates buffers for them. The device
+knows more about
+that. I think it will be great if the device can allocate buffers, but
+I didn't see that in the spec. I wonder what will be the current
+solution here.
 
-This proposal introduces optional device reset timeout field for MMIO
-and PCI transports. Such transports have a use case where virtio devices
-are implemented in hardware and made available to the guest.
+Thanks!
+Hao
 
-A device reset timeout field has following attributes.
-(a) It is an optional field to maintain backward compatibility.
-(b) It is valid only when device advertises a new feature bit
-    VIRTIO_F_DEV_RESET_TO
-(b) When it is not advertised, this field is invalid and driver should
-    choose the reasonable reset timeout.
-(c) It is a 16-bit field covering wide range of timeout from 10
-milliseconds to several hundred seconds.
-
-This proposal is an improvement over a past proposal [1].
-Instead of just passing a flag for wait, this proposal offers upper bound
-wait time making the device reset timeout and overall device initialization
-more predictable.
-
-[1] https://lists.oasis-open.org/archives/virtio-dev/202108/msg00161.html
-
-Signed-off-by: Parav Pandit <parav@nvidia.com>
-Reviewed-by: Max Gurtovoy <mgurtovoy@nvidia.com>
-
----
-changelog:
-v1->v2:
-- address comments from Max
-- added comment that it is device specific for the new field
-- added description to say that device reset timeout of zero is invalid
-- fixed unit of the field in description
-v0->v1:
-- address comments from Shahaf, Max, Oren
-- several grammar corrections
-- changed timer granularity from 1msec to 10mec
-- changed device reset timeout field from le32 to le16
-- added VIRTIO_F_DEV_RESET_TO device feature bit
----
- content.tex | 43 +++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 43 insertions(+)
-
-diff --git a/content.tex b/content.tex
-index 37c45d3..d52daf9 100644
---- a/content.tex
-+++ b/content.tex
-@@ -73,6 +73,15 @@ \section{\field{Device Status} Field}\label{sec:Basic Fa=
-cilities of a Virtio Dev
- recover by issuing a reset.
- \end{note}
-=20
-+Once the driver initiates a reset, the device may not be able to finish th=
-e reset
-+immediately. Such device provides a hint to the driver about how long a
-+device may take to complete the reset. Driver should wait at least for the
-+time specified by the device to let device finish the reset or if
-+the device status field to become 0 within the specified time interval.
-+Such driver initialization sequence specified in
-+\ref{sec:General Initialization And Device Operation / Device
-+Initialization}.
-+
- \devicenormative{\subsection}{Device Status Field}{Basic Facilities of a V=
-irtio Device / Device Status Field}
-=20
- The device MUST NOT consume buffers or send any used buffer
-@@ -210,11 +219,20 @@ \section{Device Reset}\label{sec:Basic Facilities of =
-a Virtio Device / Device Re
- indicating completion of the reset by reinitializing \field{device status}
- to 0, until the driver re-initializes the device.
-=20
-+A device may not be able to complete reset action when the driver initiate=
-s a reset operation.
-+Such a device should provide the hint as to how long a device may take to =
-finish the reset operation.
-+This hint is provided by the device using device reset timeout field in un=
-its of 10 milliseconds.
-+
- \drivernormative{\subsection}{Device Reset}{Basic Facilities of a Virtio D=
-evice / Device Reset}
-=20
- The driver SHOULD consider a driver-initiated reset complete when it
- reads \field{device status} as 0.
-=20
-+When a device reports a non-zero device reset timeout value, the driver SH=
-OULD wait for the device
-+to finish the reset action during the initialization sequence before givin=
-g up on the device. When
-+device reset timeout is not provided by the device, driver SHOULD choose a=
- reasonable timeout
-+value for reset operation to complete.
-+
- \section{Device Configuration Space}\label{sec:Basic Facilities of a Virti=
-o Device / Device Configuration Space}
-=20
- Device configuration space is generally used for rarely-changing or
-@@ -859,6 +877,8 @@ \subsubsection{Common configuration structure layout}\l=
-abel{sec:Virtio Transport
-         le64 queue_driver;              /* read-write */
-         le64 queue_device;              /* read-write */
-         le16 queue_notify_data;         /* read-only for driver */
-+        /* About the whole device. */
-+        le16 device_reset_timeout;      /* read-only for driver */
- };
- \end{lstlisting}
-=20
-@@ -938,6 +958,15 @@ \subsubsection{Common configuration structure layout}\=
-label{sec:Virtio Transport
-         may benefit from providing another value, for example an internal =
-virtqueue
-         identifier, or an internal offset related to the virtqueue number.
-         \end{note}
-+
-+\item[\field{device_reset_timeout}]
-+        This field exists only if the VIRTIO_F_DEV_RESET_TO is advertised =
-by the device.
-+        This field provides the hint to the driver indicating how much max=
-imum time a
-+        device can take to complete the reset once the driver initiates th=
-e device reset
-+        operation. This field unit is in 10 milliseconds. For example, a f=
-ield value of
-+        3 indicates device reset timeout is 30 milliseconds. When VIRTIO_F=
-_DEV_RESET_TO
-+=09feature is set by the device this field must contain a non zero value.
-+
- \end{description}
-=20
- \devicenormative{\paragraph}{Common configuration structure layout}{Virtio=
- Transport Options / Virtio Over PCI Bus / PCI Device Layout / Common confi=
-guration structure layout}
-@@ -1804,6 +1833,15 @@ \subsection{MMIO Device Register Layout}\label{sec:V=
-irtio Transport Options / Vi
-     accesses apply to the queue selected by writing to \field{QueueSel}.
-   }
-   \hline=20
-+  \mmioreg{DeviceResetTimeout}{Device reset timeout}{0x04c}{R}{%
-+    This register exists only if the VIRTIO_F_DEV_RESET_TO is advertised b=
-y the device.
-+    It provides the hint to the driver indicating how much maximum time a
-+    device can take to complete the reset once the driver initiates the de=
-vice reset operation.
-+    This field unit is in 10 milliseconds. For example, a field value of 3=
- indicates device
-+    reset timeout is 30 milliseconds. When VIRTIO_F_DEV_RESET_TO feature i=
-s set by the device
-+    this field must contain a non zero value.
-+  }
-+  \hline
-   \mmioreg{QueueNotify}{Queue notifier}{0x050}{W}{%
-     Writing a value to this register notifies the device that
-     there are new buffers to process in a queue.
-@@ -6673,6 +6711,11 @@ \chapter{Reserved Feature Bits}\label{sec:Reserved F=
-eature Bits}
-   transport specific.
-   For more details about driver notifications over PCI see \ref{sec:Virtio=
- Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And =
-Device Operation / Available Buffer Notifications}.
-=20
-+  \item[VIRTIO_F_DEV_RESET_TO(40)] This feature indicates that the device
-+  advertises a maximum reset timeout which the driver should use during de=
-vice reset stage.
-+  For more details about device reset timeout over PCI see \ref{sec:Virtio=
- Transport Options / Virtio Over PCI Bus / PCI Device Layout / Common confi=
-guration structure layout}.
-+  For more details about device reset timeout over MMIO see \ref{sec:Virti=
-o Transport Options / Virtio Over MMIO / MMIO Device Register Layout}.
-+
- \end{description}
-=20
- \drivernormative{\section}{Reserved Feature Bits}{Reserved Feature Bits}
---=20
-2.31.1
-
+On Fri, Jun 11, 2021 at 11:44 AM Hao Chen <chenhaosjtuacm@google.com> wrote:
+>
+> On Thu, Jun 10, 2021 at 4:19 PM Hao Chen <chenhaosjtuacm@google.com> wrote:
+> >
+> > This patch introduces a new type of device: parameter server. The device
+> > acts as a key-value store and the driver can read from, write to or
+> > subscribe to the properties in the server.
+> >
+> > Signed-off-by: Hao Chen <chenhaosjtuacm@google.com>
+> > ---
+> >  conformance.tex |  26 +++++-
+> >  content.tex     |   1 +
+> >  virtio-ps.tex   | 216 ++++++++++++++++++++++++++++++++++++++++++++++++
+> >  3 files changed, 239 insertions(+), 4 deletions(-)
+> >  create mode 100644 virtio-ps.tex
+> >
+> > diff --git a/conformance.tex b/conformance.tex
+> > index a164cbb..0d6b1a5 100644
+> > --- a/conformance.tex
+> > +++ b/conformance.tex
+> > @@ -29,8 +29,9 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
+> >  \ref{sec:Conformance / Driver Conformance / IOMMU Driver Conformance},
+> >  \ref{sec:Conformance / Driver Conformance / Sound Driver Conformance},
+> >  \ref{sec:Conformance / Driver Conformance / Memory Driver Conformance},
+> > -\ref{sec:Conformance / Driver Conformance / I2C Adapter Driver Conformance} or
+> > -\ref{sec:Conformance / Driver Conformance / SCMI Driver Conformance}.
+> > +\ref{sec:Conformance / Driver Conformance / I2C Adapter Driver Conformance},
+> > +\ref{sec:Conformance / Driver Conformance / SCMI Driver Conformance} or
+> > +\ref{sec:Conformance / Driver Conformance / Parameter Server Driver Conformance}.
+> >
+> >      \item Clause \ref{sec:Conformance / Legacy Interface: Transitional Device and Transitional Driver Conformance}.
+> >    \end{itemize}
+> > @@ -52,8 +53,9 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
+> >  \ref{sec:Conformance / Device Conformance / IOMMU Device Conformance},
+> >  \ref{sec:Conformance / Device Conformance / Sound Device Conformance},
+> >  \ref{sec:Conformance / Device Conformance / Memory Device Conformance},
+> > -\ref{sec:Conformance / Device Conformance / I2C Adapter Device Conformance} or
+> > -\ref{sec:Conformance / Device Conformance / SCMI Device Conformance}.
+> > +\ref{sec:Conformance / Device Conformance / I2C Adapter Device Conformance},
+> > +\ref{sec:Conformance / Device Conformance / SCMI Device Conformance}or
+> > +\ref{sec:Conformance / Device Conformance / Parameter Server Device Conformance}.
+> >
+> >      \item Clause \ref{sec:Conformance / Legacy Interface: Transitional Device and Transitional Driver Conformance}.
+> >    \end{itemize}
+> > @@ -288,6 +290,14 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
+> >  \item \ref{drivernormative:Device Types / SCMI Device / Device Operation / Setting Up eventq Buffers}
+> >  \end{itemize}
+> >
+> > +\conformance{\subsection}{Parameter Server Driver Conformance}\label{sec:Conformance / Driver Conformance / Parameter Server Driver Conformance}
+> > +
+> > +A parameter server driver MUST conform to the following normative statements:
+> > +
+> > +\begin{itemize}
+> > +\item \ref{drivernormative:Device Types / Parameter Server / Device Operation}
+> > +\end{itemize}
+> > +
+> >  \conformance{\section}{Device Conformance}\label{sec:Conformance / Device Conformance}
+> >
+> >  A device MUST conform to the following normative statements:
+> > @@ -527,6 +537,14 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
+> >  \item \ref{devicenormative:Device Types / SCMI Device / Device Operation / Shared Memory Operation}
+> >  \end{itemize}
+> >
+> > +\conformance{\subsection}{Parameter Server Device Conformance}\label{sec:Conformance / Device Conformance / Parameter Server Device Conformance}
+> > +
+> > +A parameter server device MUST conform to the following normative statements:
+> > +
+> > +\begin{itemize}
+> > +\item \ref{devicenormative:Device Types / Parameter Server / Device Operation}
+> > +\end{itemize}
+> > +
+> >  \conformance{\section}{Legacy Interface: Transitional Device and Transitional Driver Conformance}\label{sec:Conformance / Legacy Interface: Transitional Device and Transitional Driver Conformance}
+> >  A conformant implementation MUST be either transitional or
+> >  non-transitional, see \ref{intro:Legacy
+> > diff --git a/content.tex b/content.tex
+> > index 9232d5c..b980a93 100644
+> > --- a/content.tex
+> > +++ b/content.tex
+> > @@ -6568,6 +6568,7 @@ \subsubsection{Legacy Interface: Framing Requirements}\label{sec:Device
+> >  \input{virtio-mem.tex}
+> >  \input{virtio-i2c.tex}
+> >  \input{virtio-scmi.tex}
+> > +\input{virtio-ps.tex}
+> >
+> >  \chapter{Reserved Feature Bits}\label{sec:Reserved Feature Bits}
+> >
+> > diff --git a/virtio-ps.tex b/virtio-ps.tex
+> > new file mode 100644
+> > index 0000000..2a226c4
+> > --- /dev/null
+> > +++ b/virtio-ps.tex
+> > @@ -0,0 +1,216 @@
+> > +\section{Parameter Server}\label{sec:Device Types / Parameter Server}
+> > +
+> > +The parameter server device manages a set of values with unique property IDs. These values may
+> > +either be static (i.e. have a constant value) or be dynamic (i.e. value may change over time).
+> > +The driver can get and set values, get value configurations, subscribe and unsubscribe dynamic
+> > +properties from the device. The driver will get updates when subscribed value changes. The device
+> > +processes the requests from the driver, enforces the value access rules, and may potentially alter
+> > +the behavior of external systems as a result of driver operations.
+> > +
+> > +\subsection{Device ID}\label{sec:Device Types / Parameter Server / Device ID}
+> > +
+> > +38
+> > +
+> > +\subsection{Virtqueues}\label{sec:Device Types / Parameter Server / Virtqueues}
+> > +
+> > +\begin{description}
+> > +\item[0] cmdq
+> > +\item[1] eventq
+> > +\end{description}
+> > +
+> > +\subsection{Feature Bits}\label{sec:Device Types / Parameter Server / Feature Bits}
+> > +
+> > +None currently defined.
+> > +
+> > +\subsection{Device Configuration Layout}\label{sec:Device Types / Parameter Server / Device Configuration Layout}
+> > +
+> > +\begin{lstlisting}
+> > +struct virtio_parameter_server_config {
+> > +    char name[128];
+> > +};
+> > +\end{lstlisting}
+> > +
+> > +A device configuration space only contains the name of the device, which can be used by the
+> > +userspace for identification. \field{name} is a zero-terminated char string. The maximum length
+> > +of \field{name} is 127.
+> > +
+> > +\subsection{Device Initialization}
+> > +
+> > +\begin{enumerate}
+> > +\item The virtqueues are initialized.
+> > +\end{enumerate}
+> > +
+> > +\subsection{Device Operation}\label{sec:Device Types / Parameter Server / Device Operation}
+> > +
+> > +The driver puts requests to read, write, subscribe to, or unsubscribe from, parameters onto the
+> > +cmdq virtqueue. The device also puts its responses to the driver's requests onto the cmdq
+> > +virtqueue. The device puts any updates to values that the driver has subscribed to onto the
+> > +eventq virtqueue. The
+> > +\field{prop_id}, \field{prop_item_id} pair is the primary key for the values stored in the
+> > +parameter server, while the values with the same \field{prop_id} share the same configuration.
+> > +For example, \field{prop_id} 12 with \field{prop_item_id} 0, 1 and 2 represent 3 different values
+> > +sharing the same \field{virtio_parameter_server_config}. \field{prop_id} is also used for
+> > +subscriptions, meaning that if you subscribe on a prop_id, you will receive every updates on that
+> > +prop_id regardless of what prop_item_id it contains. \field{prop_item_id} is not used in
+> > +subscription.
+> > +
+> > +The layout of requests and responses are defined below:
+> > +
+> > +\begin{lstlisting}
+> > +struct virtio_parameter_server_request {
+> > +    le64 timestamp;
+> > +    le32 prop_id;
+> > +    le32 prop_item_id;
+> > +    u8 op;
+> > +    u8 payload[<actual payload size>];
+> > +};
+> > +
+> > +struct virtio_parameter_server_response {
+> > +    le64 timestamp;
+> > +    le32 prop_id;
+> > +    le32 prop_item_id;
+> > +    u16 op;
+> > +    u16 ret_value;
+> > +    u8 payload[<actual payload size>];
+> > +};
+> > +
+> > +/* Reserved prop_id and prop_item_id */
+> > +#define VIRTIO_PARAMETER_SERVER_OP_ALL_PROP INT_MAX
+> > +
+> > +/* Supported operations */
+> > +#define VIRTIO_PARAMETER_SERVER_OP_INVALID 0
+> > +#define VIRTIO_PARAMETER_SERVER_OP_GET_PROP_CONFIG 1
+> > +#define VIRTIO_PARAMETER_SERVER_OP_GET_PROP_VALUE 2
+> > +#define VIRTIO_PARAMETER_SERVER_OP_SET_PROP_VALUE 3
+> > +#define VIRTIO_PARAMETER_SERVER_OP_SUBSCRIBE_PROP 4
+> > +#define VIRTIO_PARAMETER_SERVER_OP_UNSUBSCRIBE_PROP 5
+> > +\end{lstlisting}
+> > +
+> > +The layout of messages in eventq is defined below:
+> > +
+> > +\begin{lstlisting}
+> > +struct virtio_parameter_server_event_msg {
+> > +    le64 timestamp;
+> > +    le32 prop_id;
+> > +    le32 prop_item_id;
+> > +    u8 payload[<actual payload size>];
+> > +};
+> > +\end{lstlisting}
+> > +
+> > +There will be exactly one response for each request in the cmdq, even if \field{op} is invalid. For some operations,
+> > +the \field{payload} of requests and/or responses may be empty. The content of the payload depend on the operation.
+> > +
+> > +\subsubsection{Property Configuration Layout}\label{sec:Device Types / Parameter Server / Device Operation / Property Configuration Layout}
+> > +
+> > +\begin{lstlisting}
+> > +// The max size of virtio_parameter_server_config, including
+> > +// fixed-length members and params
+> > +#define VIRTIO_PARAMETER_SERVER_CONFIG_MAX_SIZE_BYTE 4096
+> > +
+> > +struct virtio_parameter_server_prop_config {
+> > +    le32 prop_id;
+> > +    le32 mode;
+> > +    le32 min_sample_freq;
+> > +    le32 max_sample_freq;
+> > +    le32 encoding[5];
+> > +    le32 param_size;
+> > +    char desc[256];
+> > +    u8 params[<actual param size>];
+> > +};
+> > +\end{lstlisting}
+> > +
+> > +while \field{mode} is the bitwise-or-combination of the following:
+> > +
+> > +\begin{lstlisting}
+> > +enum virtio_parameter_server_prop_mode {
+> > +    /* access */
+> > +    VIRTIO_PARAMETER_SERVER_M_READ = 0x1,
+> > +    VIRTIO_PARAMETER_SERVER_M_WRITE = 0x2,
+> > +    VIRTIO_PARAMETER_SERVER_M_READ_WRITE = 0x3,
+> > +
+> > +    /* change */
+> > +    VIRTIO_PARAMETER_SERVER_M_STATIC = 0x4,
+> > +    VIRTIO_PARAMETER_SERVER_M_MUTABLE = 0x8,
+> > +    VIRTIO_PARAMETER_SERVER_M_CONTINUOUS = 0xc,
+> > +};
+> > +\end{lstlisting}
+> > +
+> > +Both VIRTIO_PARAMETER_SERVER_M_MUTABLE and VIRTIO_PARAMETER_SERVER_M_CONTINUOUS are dynamic
+> > +properties. A VIRTIO_PARAMETER_SERVER_M_MUTABLE value will change due to the set value operation
+> > +from the driver, or actions of the external system; a VIRTIO_PARAMETER_SERVER_M_CONTINUOUS value
+> > +is expected to be generated by means of a sensor updating at a steady frequency.
+> > +
+> > +The reason we want to handle "MUTABLE" and "CONTNUOUS" differently is, the MUTABLE values are not
+> > +constantly changing, so the device may be able to send every updates of it to the driver; while
+> > +CONTINUOUS values are changing frequently (e.g., sensor outputs) and the device should decide how
+> > +to sample it and provide a sample rate range (\field{min_sample_freq} and \field{max_sample_freq})
+> > +
+> > +The properties with the same \field{prop_id} share the configuration. \field{min_sample_freq} and
+> > +\field{max_sample_freq} are the sampling rate range for the
+> > +\field{VIRTIO_PARAMETER_SERVER_M_CONTINUOUS} values. \field{desc} is the optional zero-terminated
+> > +char string description. \field{params} are for the customized configuration parameters.
+> > +
+> > +The integer array \field{encoding} specifies the number of different primitive value in the
+> > +property value.
+> > +
+> > +\begin{lstlisting}
+> > +#define VIRTIO_PARAMETER_SERVER_ENCODING_INDEX_NUM_INT64 0
+> > +#define VIRTIO_PARAMETER_SERVER_ENCODING_INDEX_NUM_FLOAT64 1
+> > +#define VIRTIO_PARAMETER_SERVER_ENCODING_INDEX_NUM_INT32 2
+> > +#define VIRTIO_PARAMETER_SERVER_ENCODING_INDEX_NUM_BYTE 3
+> > +#define VIRTIO_PARAMETER_SERVER_ENCODING_INDEX_HAS_STRING 4
+> > +\end{lstlisting}
+> > +
+> > +If the driver asks for ALL property configurations by setting the \field{prop_id} of the request to
+> > +VIRTIO_PARAMETER_SERVER_OP_ALL_PROP, then the \field{payload} of virtio_parameter_server_response
+> > +will be multiple property configurations, serialized 1-by-1.
+> > +
+> > +\subsubsection{Property Value Layout}\label{sec:Device Types / Parameter Server / Device Operation / Property Value Layout}
+> > +
+> > +The property value payload begins with 5 arrays. The order is the same as the \field{encoding} array defined above.
+> > +For each array, it begins with a 32-bit integer for length (number of elements). Empty array will be a 32-bit 0, while
+> > +-1 means the array does not exist. The elements follows the length, and the size of the encoded array will be padded
+> > +to 4 bytes. String is encoded as a zero-terminated char array,
+> > +\field{encoding[VIRTIO_PARAMETER_SERVER_ENCODING_INDEX_HAS_STRING]} indicates the existence of the string.
+> > +
+> > +After the arrays, there may be customized data, which is encoded as a byte array.
+> > +
+> > +For example, if \field{encoding} of virtio_parameter_server_prop_config of property A is \field{[2, 0, 0, 0, 1]},
+> > +then property A contains two 64-bit integers and a string. The encoded value consists of the following (from top to bottom):
+> > +
+> > +\begin{lstlisting}
+> > +2 (32-bit, meaning 2 64-bit integers)
+> > +64-bit integer
+> > +64-bit integer
+> > +-1 (32-bit, meaning no 64-bit float number array)
+> > +-1 (32-bit, meaning no 32-bit integer array)
+> > +-1 (32-bit, meaning no byte array)
+> > +14 (32-bit integer, length of the char string, including trailing zero, excluding padding zeros)
+> > +"sample string\0"
+> > +padding zeros to 4 bytes. In this case there will be 2 zero bytes.
+> > +(optional) byte array length + data if there are customized data
+> > +\end{lstlisting}
+> > +
+> > +\drivernormative{\subsubsection}{Device Operation}{Device Types / Parameter Server / Device Operation}
+> > +
+> > +The driver MUST NOT send undefined ops.
+> > +
+> > +The driver MUST NOT put descriptors into the eventq.
+> > +
+> > +The payload size of requests MUST be padded to 4 bytes.
+> > +
+> > +\devicenormative{\subsubsection}{Device Operation}{Device Types / Parameter Server / Device Operation}
+> > +
+> > +\field{name} of the device configuration MUST be non-empty.
+> > +
+> > +The unused bits of the message header MUST be 0.
+> > +
+> > +The \field{prop_item_id} of VIRTIO_PARAMETER_SERVER_OP_GET_PROP_CONFIG,
+> > +VIRTIO_PARAMETER_SERVER_OP_SUBSCRIBE_PROP and VIRTIO_PARAMETER_SERVER_OP_UNSUBSCRIBE_PROP requests
+> > +MUST be ignored.
+> > +
+> > +The device MUST send exact 1 response for every received request.
+> > +
+> > +The payload size of responses and event messages MUST be padded to 4 bytes.
+> > +
+> > +The param size of property configurations MUST be padded to 4 bytes.
+> > --
+> > 2.32.0.272.g935e593368-goog
+> >
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
