@@ -1,136 +1,42 @@
-Return-Path: <virtio-dev-return-8652-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-8666-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id DD56B9864EE
-	for <virtio-dev@lists.oasis-open.org>; Thu,  9 Sep 2021 01:37:33 +0000 (UTC)
-From: Gurchetan Singh <gurchetansingh@chromium.org>
-Date: Wed,  8 Sep 2021 18:37:13 -0700
-Message-Id: <20210909013717.861-9-gurchetansingh@chromium.org>
-In-Reply-To: <20210909013717.861-1-gurchetansingh@chromium.org>
+	by lists.oasis-open.org (Postfix) with ESMTP id 058FB98637F
+	for <virtio-dev@lists.oasis-open.org>; Wed, 15 Sep 2021 05:53:56 +0000 (UTC)
+Date: Wed, 15 Sep 2021 07:53:50 +0200
+From: Gerd Hoffmann <kraxel@redhat.com>
+Message-ID: <20210915055350.sgfadzktcl5bngtq@sirius.home.kraxel.org>
 References: <20210909013717.861-1-gurchetansingh@chromium.org>
+ <20210909013717.861-9-gurchetansingh@chromium.org>
 MIME-Version: 1.0
-Subject: [virtio-dev] [PATCH v1 08/12] drm/virtio: implement context init: stop using drv->context when creating fence
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="US-ASCII"
-To: dri-devel@lists.freedesktop.org, virtio-dev@lists.oasis-open.org
-Cc: kraxel@redhat.com
+In-Reply-To: <20210909013717.861-9-gurchetansingh@chromium.org>
+Subject: [virtio-dev] Re: [PATCH v1 08/12] drm/virtio: implement context init: stop using
+ drv->context when creating fence
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+To: Gurchetan Singh <gurchetansingh@chromium.org>
+Cc: dri-devel@lists.freedesktop.org, virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-The plumbing is all here to do this.  Since we always use the
-default fence context when allocating a fence, this makes no
-functional difference.
+On Wed, Sep 08, 2021 at 06:37:13PM -0700, Gurchetan Singh wrote:
+> The plumbing is all here to do this.  Since we always use the
+> default fence context when allocating a fence, this makes no
+> functional difference.
+> 
+> We can't process just the largest fence id anymore, since it's
+> it's associated with different timelines.  It's fine for fence_id
+> 260 to signal before 259.  As such, process each fence_id
+> individually.
 
-We can't process just the largest fence id anymore, since it's
-it's associated with different timelines.  It's fine for fence_id
-260 to signal before 259.  As such, process each fence_id
-individually.
+I guess you need to also update virtio_gpu_fence_event_process()
+then?  It currently has the strict ordering logic baked in ...
 
-Signed-off-by: Gurchetan Singh <gurchetansingh@chromium.org>
-Acked-by: Lingfeng Yang <lfy@google.com>
----
- drivers/gpu/drm/virtio/virtgpu_fence.c | 16 ++++++++++++++--
- drivers/gpu/drm/virtio/virtgpu_vq.c    | 15 +++------------
- 2 files changed, 17 insertions(+), 14 deletions(-)
-
-diff --git a/drivers/gpu/drm/virtio/virtgpu_fence.c b/drivers/gpu/drm/virti=
-o/virtgpu_fence.c
-index 24c728b65d21..98a00c1e654d 100644
---- a/drivers/gpu/drm/virtio/virtgpu_fence.c
-+++ b/drivers/gpu/drm/virtio/virtgpu_fence.c
-@@ -75,20 +75,25 @@ struct virtio_gpu_fence *virtio_gpu_fence_alloc(struct =
-virtio_gpu_device *vgdev,
- =09=09=09=09=09=09uint64_t base_fence_ctx,
- =09=09=09=09=09=09uint32_t ring_idx)
- {
-+=09uint64_t fence_context =3D base_fence_ctx + ring_idx;
- =09struct virtio_gpu_fence_driver *drv =3D &vgdev->fence_drv;
- =09struct virtio_gpu_fence *fence =3D kzalloc(sizeof(struct virtio_gpu_fen=
-ce),
- =09=09=09=09=09=09=09GFP_KERNEL);
-+
- =09if (!fence)
- =09=09return fence;
-=20
- =09fence->drv =3D drv;
-+=09fence->ring_idx =3D ring_idx;
-+=09fence->emit_fence_info =3D !(base_fence_ctx =3D=3D drv->context);
-=20
- =09/* This only partially initializes the fence because the seqno is
- =09 * unknown yet.  The fence must not be used outside of the driver
- =09 * until virtio_gpu_fence_emit is called.
- =09 */
--=09dma_fence_init(&fence->f, &virtio_gpu_fence_ops, &drv->lock, drv->conte=
-xt,
--=09=09       0);
-+
-+=09dma_fence_init(&fence->f, &virtio_gpu_fence_ops, &drv->lock,
-+=09=09       fence_context, 0);
-=20
- =09return fence;
- }
-@@ -110,6 +115,13 @@ void virtio_gpu_fence_emit(struct virtio_gpu_device *v=
-gdev,
-=20
- =09cmd_hdr->flags |=3D cpu_to_le32(VIRTIO_GPU_FLAG_FENCE);
- =09cmd_hdr->fence_id =3D cpu_to_le64(fence->fence_id);
-+
-+=09/* Only currently defined fence param. */
-+=09if (fence->emit_fence_info) {
-+=09=09cmd_hdr->flags |=3D
-+=09=09=09cpu_to_le32(VIRTIO_GPU_FLAG_INFO_RING_IDX);
-+=09=09cmd_hdr->ring_idx =3D (u8)fence->ring_idx;
-+=09}
- }
-=20
- void virtio_gpu_fence_event_process(struct virtio_gpu_device *vgdev,
-diff --git a/drivers/gpu/drm/virtio/virtgpu_vq.c b/drivers/gpu/drm/virtio/v=
-irtgpu_vq.c
-index 496f8ce4cd41..938331554632 100644
---- a/drivers/gpu/drm/virtio/virtgpu_vq.c
-+++ b/drivers/gpu/drm/virtio/virtgpu_vq.c
-@@ -205,7 +205,7 @@ void virtio_gpu_dequeue_ctrl_func(struct work_struct *w=
-ork)
- =09struct list_head reclaim_list;
- =09struct virtio_gpu_vbuffer *entry, *tmp;
- =09struct virtio_gpu_ctrl_hdr *resp;
--=09u64 fence_id =3D 0;
-+=09u64 fence_id;
-=20
- =09INIT_LIST_HEAD(&reclaim_list);
- =09spin_lock(&vgdev->ctrlq.qlock);
-@@ -232,23 +232,14 @@ void virtio_gpu_dequeue_ctrl_func(struct work_struct =
-*work)
- =09=09=09=09DRM_DEBUG("response 0x%x\n", le32_to_cpu(resp->type));
- =09=09}
- =09=09if (resp->flags & cpu_to_le32(VIRTIO_GPU_FLAG_FENCE)) {
--=09=09=09u64 f =3D le64_to_cpu(resp->fence_id);
--
--=09=09=09if (fence_id > f) {
--=09=09=09=09DRM_ERROR("%s: Oops: fence %llx -> %llx\n",
--=09=09=09=09=09  __func__, fence_id, f);
--=09=09=09} else {
--=09=09=09=09fence_id =3D f;
--=09=09=09}
-+=09=09=09fence_id =3D le64_to_cpu(resp->fence_id);
-+=09=09=09virtio_gpu_fence_event_process(vgdev, fence_id);
- =09=09}
- =09=09if (entry->resp_cb)
- =09=09=09entry->resp_cb(vgdev, entry);
- =09}
- =09wake_up(&vgdev->ctrlq.ack_queue);
-=20
--=09if (fence_id)
--=09=09virtio_gpu_fence_event_process(vgdev, fence_id);
--
- =09list_for_each_entry_safe(entry, tmp, &reclaim_list, list) {
- =09=09if (entry->objs)
- =09=09=09virtio_gpu_array_put_free_delayed(vgdev, entry->objs);
---=20
-2.33.0.153.gba50c8fa24-goog
+take care,
+  Gerd
 
 
 ---------------------------------------------------------------------
