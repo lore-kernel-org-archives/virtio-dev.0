@@ -1,140 +1,112 @@
-Return-Path: <virtio-dev-return-8701-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-8699-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 62F45986530
+	by lists.oasis-open.org (Postfix) with ESMTP id 77DD09865D7
 	for <virtio-dev@lists.oasis-open.org>; Tue, 21 Sep 2021 23:20:59 +0000 (UTC)
 From: Gurchetan Singh <gurchetansingh@chromium.org>
-Date: Tue, 21 Sep 2021 16:20:21 -0700
-Message-Id: <20210921232024.817-10-gurchetansingh@chromium.org>
+Date: Tue, 21 Sep 2021 16:20:22 -0700
+Message-Id: <20210921232024.817-11-gurchetansingh@chromium.org>
 In-Reply-To: <20210921232024.817-1-gurchetansingh@chromium.org>
 References: <20210921232024.817-1-gurchetansingh@chromium.org>
 MIME-Version: 1.0
-Subject: [virtio-dev] [PATCH v3 09/12] drm/virtio: implement context init: allocate an array of fence contexts
+Subject: [virtio-dev] [PATCH v3 10/12] drm/virtio: implement context init: handle VIRTGPU_CONTEXT_PARAM_POLL_RINGS_MASK
 Content-Transfer-Encoding: quoted-printable
 Content-Type: text/plain; charset="US-ASCII"
 To: dri-devel@lists.freedesktop.org, virtio-dev@lists.oasis-open.org
 Cc: kraxel@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-We don't want fences from different 3D contexts (virgl, gfxstream,
-venus) to be on the same timeline.  With explicit context creation,
-we can specify the number of ring each context wants.
+For the Sommelier guest Wayland proxy, it's desirable for the
+DRM fd to be pollable in response to an host compositor event.
+This can also be used by the 3D driver to poll events on a CPU
+timeline.
 
-Execbuffer can specify which ring to use.
+This enables the DRM fd associated with a particular 3D context
+to be polled independent of KMS events.  The parameter
+VIRTGPU_CONTEXT_PARAM_POLL_RINGS_MASK specifies the pollable
+rings.
 
 Signed-off-by: Gurchetan Singh <gurchetansingh@chromium.org>
-Acked-by: Lingfeng Yang <lfy@google.com>
+Acked-by: Nicholas Verne <nverne@chromium.org>
 ---
- drivers/gpu/drm/virtio/virtgpu_drv.h   |  3 +++
- drivers/gpu/drm/virtio/virtgpu_ioctl.c | 34 ++++++++++++++++++++++++--
- 2 files changed, 35 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/virtio/virtgpu_drv.h   |  1 +
+ drivers/gpu/drm/virtio/virtgpu_ioctl.c | 22 +++++++++++++++++++++-
+ 2 files changed, 22 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/gpu/drm/virtio/virtgpu_drv.h b/drivers/gpu/drm/virtio/=
 virtgpu_drv.h
-index a5142d60c2fa..cca9ab505deb 100644
+index cca9ab505deb..cb60d52c2bd1 100644
 --- a/drivers/gpu/drm/virtio/virtgpu_drv.h
 +++ b/drivers/gpu/drm/virtio/virtgpu_drv.h
-@@ -56,6 +56,7 @@
- #define STATE_ERR 2
-=20
- #define MAX_CAPSET_ID 63
-+#define MAX_RINGS 64
-=20
- struct virtio_gpu_object_params {
- =09unsigned long size;
-@@ -263,6 +264,8 @@ struct virtio_gpu_fpriv {
- =09uint32_t ctx_id;
- =09uint32_t context_init;
+@@ -266,6 +266,7 @@ struct virtio_gpu_fpriv {
  =09bool context_created;
-+=09uint32_t num_rings;
-+=09uint64_t base_fence_ctx;
+ =09uint32_t num_rings;
+ =09uint64_t base_fence_ctx;
++=09uint64_t ring_idx_mask;
  =09struct mutex context_lock;
  };
 =20
 diff --git a/drivers/gpu/drm/virtio/virtgpu_ioctl.c b/drivers/gpu/drm/virti=
 o/virtgpu_ioctl.c
-index f51f3393a194..262f79210283 100644
+index 262f79210283..be7b22a03884 100644
 --- a/drivers/gpu/drm/virtio/virtgpu_ioctl.c
 +++ b/drivers/gpu/drm/virtio/virtgpu_ioctl.c
-@@ -99,6 +99,11 @@ static int virtio_gpu_execbuffer_ioctl(struct drm_device=
- *dev, void *data,
- =09int in_fence_fd =3D exbuf->fence_fd;
- =09int out_fence_fd =3D -1;
- =09void *buf;
-+=09uint64_t fence_ctx;
-+=09uint32_t ring_idx;
-+
-+=09fence_ctx =3D vgdev->fence_drv.context;
-+=09ring_idx =3D 0;
-=20
- =09if (vgdev->has_virgl_3d =3D=3D false)
- =09=09return -ENOSYS;
-@@ -106,6 +111,17 @@ static int virtio_gpu_execbuffer_ioctl(struct drm_devi=
-ce *dev, void *data,
- =09if ((exbuf->flags & ~VIRTGPU_EXECBUF_FLAGS))
- =09=09return -EINVAL;
-=20
-+=09if ((exbuf->flags & VIRTGPU_EXECBUF_RING_IDX)) {
-+=09=09if (exbuf->ring_idx >=3D vfpriv->num_rings)
-+=09=09=09return -EINVAL;
-+
-+=09=09if (!vfpriv->base_fence_ctx)
-+=09=09=09return -EINVAL;
-+
-+=09=09fence_ctx =3D vfpriv->base_fence_ctx;
-+=09=09ring_idx =3D exbuf->ring_idx;
-+=09}
-+
- =09exbuf->fence_fd =3D -1;
-=20
- =09virtio_gpu_create_context(dev, file);
-@@ -173,7 +189,7 @@ static int virtio_gpu_execbuffer_ioctl(struct drm_devic=
-e *dev, void *data,
- =09=09=09goto out_memdup;
- =09}
-=20
--=09out_fence =3D virtio_gpu_fence_alloc(vgdev, vgdev->fence_drv.context, 0=
-);
-+=09out_fence =3D virtio_gpu_fence_alloc(vgdev, fence_ctx, ring_idx);
- =09if(!out_fence) {
- =09=09ret =3D -ENOMEM;
- =09=09goto out_unresv;
-@@ -691,7 +707,7 @@ static int virtio_gpu_context_init_ioctl(struct drm_dev=
+@@ -694,6 +694,7 @@ static int virtio_gpu_context_init_ioctl(struct drm_dev=
+ice *dev,
+ {
+ =09int ret =3D 0;
+ =09uint32_t num_params, i, param, value;
++=09uint64_t valid_ring_mask;
+ =09size_t len;
+ =09struct drm_virtgpu_context_set_param *ctx_set_params =3D NULL;
+ =09struct virtio_gpu_device *vgdev =3D dev->dev_private;
+@@ -707,7 +708,7 @@ static int virtio_gpu_context_init_ioctl(struct drm_dev=
 ice *dev,
  =09=09return -EINVAL;
 =20
  =09/* Number of unique parameters supported at this time. */
--=09if (num_params > 1)
-+=09if (num_params > 2)
+-=09if (num_params > 2)
++=09if (num_params > 3)
  =09=09return -EINVAL;
 =20
  =09ctx_set_params =3D memdup_user(u64_to_user_ptr(args->ctx_set_params),
-@@ -731,6 +747,20 @@ static int virtio_gpu_context_init_ioctl(struct drm_de=
-vice *dev,
-=20
- =09=09=09vfpriv->context_init |=3D value;
+@@ -761,12 +762,31 @@ static int virtio_gpu_context_init_ioctl(struct drm_d=
+evice *dev,
+ =09=09=09vfpriv->base_fence_ctx =3D dma_fence_context_alloc(value);
+ =09=09=09vfpriv->num_rings =3D value;
  =09=09=09break;
-+=09=09case VIRTGPU_CONTEXT_PARAM_NUM_RINGS:
-+=09=09=09if (vfpriv->base_fence_ctx) {
++=09=09case VIRTGPU_CONTEXT_PARAM_POLL_RINGS_MASK:
++=09=09=09if (vfpriv->ring_idx_mask) {
 +=09=09=09=09ret =3D -EINVAL;
 +=09=09=09=09goto out_unlock;
 +=09=09=09}
 +
-+=09=09=09if (value > MAX_RINGS) {
-+=09=09=09=09ret =3D -EINVAL;
-+=09=09=09=09goto out_unlock;
-+=09=09=09}
-+
-+=09=09=09vfpriv->base_fence_ctx =3D dma_fence_context_alloc(value);
-+=09=09=09vfpriv->num_rings =3D value;
++=09=09=09vfpriv->ring_idx_mask =3D value;
 +=09=09=09break;
  =09=09default:
  =09=09=09ret =3D -EINVAL;
  =09=09=09goto out_unlock;
+ =09=09}
+ =09}
+=20
++=09if (vfpriv->ring_idx_mask) {
++=09=09valid_ring_mask =3D 0;
++=09=09for (i =3D 0; i < vfpriv->num_rings; i++)
++=09=09=09valid_ring_mask |=3D 1 << i;
++
++=09=09if (~valid_ring_mask & vfpriv->ring_idx_mask) {
++=09=09=09ret =3D -EINVAL;
++=09=09=09goto out_unlock;
++=09=09}
++=09}
++
+ =09virtio_gpu_create_context_locked(vgdev, vfpriv);
+ =09virtio_gpu_notify(vgdev);
+=20
 --=20
 2.33.0.464.g1972c5931b-goog
 
