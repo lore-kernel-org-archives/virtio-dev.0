@@ -1,125 +1,106 @@
-Return-Path: <virtio-dev-return-8721-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-8714-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 32E6698644C
-	for <virtio-dev@lists.oasis-open.org>; Tue, 28 Sep 2021 03:06:58 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id AD12798628C
+	for <virtio-dev@lists.oasis-open.org>; Mon, 27 Sep 2021 12:31:58 +0000 (UTC)
+From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Date: Mon, 27 Sep 2021 20:31:53 +0800
+Message-Id: <20210927123153.20242-3-xuanzhuo@linux.alibaba.com>
+In-Reply-To: <20210927123153.20242-1-xuanzhuo@linux.alibaba.com>
+References: <20210927123153.20242-1-xuanzhuo@linux.alibaba.com>
 MIME-Version: 1.0
-message-id: <1632798234.8581927-2-xuanzhuo@linux.alibaba.com>
-date: Tue, 28 Sep 2021 11:03:54 +0800
-from: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-in-reply-to: <CACGkMEueCGNdW5qNFPcRLAF61NJUNtFTRxxWpU4zBqE_gBWyMw@mail.gmail.com>
-Subject: [virtio-dev] Re: [PATCH v3 1/2] virtio: introduce virtqueue reset as basic
- facility
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Jason Wang <jasowang@redhat.com>
-Cc: Virtio-Dev <virtio-dev@lists.oasis-open.org>
+Subject: [virtio-dev] [PATCH v3 2/2] virtio: pci support virtqueue reset
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="US-ASCII"
+To: jasowang@redhat.com
+Cc: virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Tue, 28 Sep 2021 11:01:55 +0800, Jason Wang <jasowang@redhat.com> wrote:
-> On Mon, Sep 27, 2021 at 8:32 PM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
-> >
-> > This patch allows the driver to reset a queue individually.
-> >
-> > This is very common on general network equipment. By disabling a queue,
-> > you can quickly reclaim the buffer currently on the queue. If necessary,
-> > we can reinitialize the queue separately.
-> >
-> > For example, when virtio-net implements support for AF_XDP, we need to
-> > disable a queue to release all the original buffers when AF_XDP setup.
-> > And quickly release all the AF_XDP buffers that have been placed in the
-> > queue when AF_XDP exits.
-> >
-> > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> > ---
-> >  content.tex | 41 +++++++++++++++++++++++++++++++++++++++++
-> >  1 file changed, 41 insertions(+)
-> >
-> > diff --git a/content.tex b/content.tex
-> > index 37c45d3..603b1f1 100644
-> > --- a/content.tex
-> > +++ b/content.tex
-> > @@ -407,6 +407,43 @@ \section{Exporting Objects}\label{sec:Basic Facilities of a Virtio Device / Expo
-> >  types. It is RECOMMENDED that devices generate version 4
-> >  UUIDs as specified by \hyperref[intro:rfc4122]{[RFC4122]}.
-> >
-> > +\section{Virtqueue Reset}\label{sec:Virtqueues / Virtqueue Reset}
-> > +
-> > +When VIRTIO_F_RING_RESET is negotiated, the driver can reset a virtqueue
-> > +individually. The way to reset the virtqueue is transport specific.
-> > +
-> > +Virtqueue reset is divided into two parts. The driver MUST reset stop a queue
-> > +first, and then re-enable the queue. The re-enable part is optional.
-> > +
-> > +\devicenormative{\subsection}{Virtqueue Reset Stop}{Virtqueues / Virtqueue Reset}
-> > +The device MUST not executes the requests from this virtqueue, and notify the
-> > +driver.
-> > +
-> > +And the device MUST initialize all states of this virtqueue, including the
-> > +available state and the used state.
-> > +
-> > +\drivernormative{\subsection}{Virtqueue Reset Stop}{Virtqueues / Virtqueue Reset}
-> > +
-> > +The driver MUST first notify
->
-> What did "notify" mean here? I guess it means the transport specific
-> way to stop a virtqueue?
+PCI support virtqueue reset.
 
-Yes.
+virtio_pci_common_cfg add "queue_reset" to support virtqueue reset.
+The driver uses this to selectively reset the queue.
 
-Cornelia Huck suggested that this expression would be better:
+Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+---
+ content.tex | 21 +++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
 
-	After the driver tell the device to reset a queue, the driver MUST verify that
-	the queue has actually been reset.
+diff --git a/content.tex b/content.tex
+index 603b1f1..35228dc 100644
+--- a/content.tex
++++ b/content.tex
+@@ -896,6 +896,7 @@ \subsubsection{Common configuration structure layout}\l=
+abel{sec:Virtio Transport
+         le64 queue_driver;              /* read-write */
+         le64 queue_device;              /* read-write */
+         le16 queue_notify_data;         /* read-only for driver */
++        le16 queue_reset;               /* read-write */
+ };
+ \end{lstlisting}
+=20
+@@ -975,6 +976,12 @@ \subsubsection{Common configuration structure layout}\=
+label{sec:Virtio Transport
+         may benefit from providing another value, for example an internal =
+virtqueue
+         identifier, or an internal offset related to the virtqueue number.
+         \end{note}
++
++\item[\field{queue_reset}]
++        The driver uses this to selectively reset the queue.
++        This field exists only if VIRTIO_F_RING_RESET has been
++        negotiated. (see \ref{sec:Virtqueues / Virtqueue Reset}).
++
+ \end{description}
+=20
+ \devicenormative{\paragraph}{Common configuration structure layout}{Virtio=
+ Transport Options / Virtio Over PCI Bus / PCI Device Layout / Common confi=
+guration structure layout}
+@@ -1016,6 +1023,14 @@ \subsubsection{Common configuration structure layout=
+}\label{sec:Virtio Transport
+=20
+ The device MUST present a 0 in \field{queue_enable} on reset.
+=20
++The device MUST present a 0 in \field{queue_reset} after the virtqueue is
++enabled with \field{queue_enable}. The device MUST reset the queue when 1 =
+is
++written to \field{queue_reset}, and present a 1 in \field{queue_reset} unt=
+il the
++queue is enabled with \field{queue_enable}. (see \ref{sec:Virtqueues / Vir=
+tqueue Reset}).
++
++The device MUST present a 0 in \field{queue_enable} after the virtqueue is=
+ reset
++with \field{queue_reset}. (see \ref{sec:Virtqueues / Virtqueue Reset}).
++
+ The device MUST present a 0 in \field{queue_size} if the virtqueue
+ corresponding to the current \field{queue_select} is unavailable.
+=20
+@@ -1040,6 +1055,12 @@ \subsubsection{Common configuration structure layout=
+}\label{sec:Virtio Transport
+=20
+ The driver MUST NOT write a 0 to \field{queue_enable}.
+=20
++If the VIRTIO_F_RING_RESET feature bit is negotiated, the driver can stop =
+using
++the queue by writing a 1 to \field{queue_reset} and MUST read the value ba=
+ck to
++ensure synchronization. Then optionally re-enable the queue by writing a 1=
+ to
++\field{queue_enable} after configuring the other virtqueue fields. (see
++\ref{sec:Virtqueues / Virtqueue Reset}).
++
+ \subsubsection{Notification structure layout}\label{sec:Virtio Transport O=
+ptions / Virtio Over PCI Bus / PCI Device Layout / Notification capability}
+=20
+ The notification location is found using the VIRTIO_PCI_CAP_NOTIFY_CFG
+--=20
+2.31.0
 
-Thanks.
-
-
->
-> Thanks
->
-> > the device and confirm that we have successfully
-> > +stopped a queue.
-> > +
-> > +Then the driver can release all the resources occupied by this virtqueue.
-> > +And reinitialize the state of this queue.
-> > +
-> > +\devicenormative{\subsection}{Virtqueue Reset Re-enable}{Virtqueues / Virtqueue Reset}
-> > +
-> > +This process is the same as the initialization process of a single queue during
-> > +the initialization of the entire device. After the device has accepted all the
-> > +configuration from the driver, it will start working under the notification of the
-> > +driver.
-> > +
-> > +\drivernormative{\subsection}{Virtqueue Reset Re-enable}{Virtqueues / Virtqueue Reset}
-> > +
-> > +This process is the same as the initialization process of a single queue during
-> > +the entire device initialization process. After the driver allocates resources
-> > +and completes the configuration of the queue status, it notifies the device to
-> > +start working.
-> > +
-> >  \chapter{General Initialization And Device Operation}\label{sec:General Initialization And Device Operation}
-> >
-> >  We start with an overview of device initialization, then expand on the
-> > @@ -6673,6 +6710,10 @@ \chapter{Reserved Feature Bits}\label{sec:Reserved Feature Bits}
-> >    transport specific.
-> >    For more details about driver notifications over PCI see \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Available Buffer Notifications}.
-> >
-> > +  \item[VIRTIO_F_RING_RESET(40)] This feature indicates
-> > +  that the driver can reset a queue individually.
-> > +  See \ref{sec:Virtqueues / Virtqueue Reset}.
-> > +
-> >  \end{description}
-> >
-> >  \drivernormative{\section}{Reserved Feature Bits}{Reserved Feature Bits}
-> > --
-> > 2.31.0
-> >
->
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
