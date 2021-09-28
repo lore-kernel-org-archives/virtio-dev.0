@@ -1,49 +1,130 @@
-Return-Path: <virtio-dev-return-8730-cohuck=redhat.com@lists.oasis-open.org>
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 914F298645B
-	for <virtio-dev@lists.oasis-open.org>; Tue, 28 Sep 2021 09:22:08 +0000 (UTC)
-From: Cornelia Huck <cohuck@redhat.com>
-In-Reply-To: <CACGkMEvSa6Q=BpMsOKR7Ax+tRGikm=hxGCb3rxDAFzOCN1OPhA@mail.gmail.com>
-References: <20210927123153.20242-1-xuanzhuo@linux.alibaba.com>
- <20210927123153.20242-3-xuanzhuo@linux.alibaba.com>
- <87sfxqcbr4.fsf@redhat.com>
- <CACGkMEvSa6Q=BpMsOKR7Ax+tRGikm=hxGCb3rxDAFzOCN1OPhA@mail.gmail.com>
-Date: Tue, 28 Sep 2021 11:22:03 +0200
-Message-ID: <87fstp5a2s.fsf@redhat.com>
+Return-Path: <xuanzhuo@linux.alibaba.com>
 MIME-Version: 1.0
-Subject: Re: [virtio-dev] [PATCH v3 2/2] virtio: pci support virtqueue reset
-Content-Type: text/plain
-To: Jason Wang <jasowang@redhat.com>
-Cc: Xuan Zhuo <xuanzhuo@linux.alibaba.com>, Virtio-Dev <virtio-dev@lists.oasis-open.org>
+message-id: <1632811690.232091-1-xuanzhuo@linux.alibaba.com>
+subject: Re: [virtio-dev] [PATCH v3 2/2] virtio: pci support virtqueue reset
+date: Tue, 28 Sep 2021 14:48:10 +0800
+from: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+in-reply-to: <87sfxqcbr4.fsf@redhat.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Cornelia Huck <cohuck@redhat.com>
+Cc: virtio-dev@lists.oasis-open.org, jasowang@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Tue, Sep 28 2021, Jason Wang <jasowang@redhat.com> wrote:
-
-> On Mon, Sep 27, 2021 at 10:51 PM Cornelia Huck <cohuck@redhat.com> wrote:
->> For CCW, maybe we can add a payload to the existing RESET command if the
->> feature has been negotiated;
+On Mon, 27 Sep 2021 16:51:43 +0200, Cornelia Huck <cohuck@redhat.com> wrote:
+> On Mon, Sep 27 2021, Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
 >
-> I wonder if it's better for a new dedicated command. Consider device
-> reset is different from virtqueue reset.
+> > PCI support virtqueue reset.
+> >
+> > virtio_pci_common_cfg add "queue_reset" to support virtqueue reset.
+> > The driver uses this to selectively reset the queue.
+> >
+> > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> > ---
+> >  content.tex | 21 +++++++++++++++++++++
+> >  1 file changed, 21 insertions(+)
+> >
+> > diff --git a/content.tex b/content.tex
+> > index 603b1f1..35228dc 100644
+> > --- a/content.tex
+> > +++ b/content.tex
+> > @@ -896,6 +896,7 @@ \subsubsection{Common configuration structure layout}\label{sec:Virtio Transport
+> >          le64 queue_driver;              /* read-write */
+> >          le64 queue_device;              /* read-write */
+> >          le16 queue_notify_data;         /* read-only for driver */
+> > +        le16 queue_reset;               /* read-write */
+> >  };
+> >  \end{lstlisting}
+> >
+> > @@ -975,6 +976,12 @@ \subsubsection{Common configuration structure layout}\label{sec:Virtio Transport
+> >          may benefit from providing another value, for example an internal virtqueue
+> >          identifier, or an internal offset related to the virtqueue number.
+> >          \end{note}
+> > +
+> > +\item[\field{queue_reset}]
+> > +        The driver uses this to selectively reset the queue.
+> > +        This field exists only if VIRTIO_F_RING_RESET has been
+> > +        negotiated. (see \ref{sec:Virtqueues / Virtqueue Reset}).
+> > +
+> >  \end{description}
+> >
+> >  \devicenormative{\paragraph}{Common configuration structure layout}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Common configuration structure layout}
+> > @@ -1016,6 +1023,14 @@ \subsubsection{Common configuration structure layout}\label{sec:Virtio Transport
+> >
+> >  The device MUST present a 0 in \field{queue_enable} on reset.
+> >
+> > +The device MUST present a 0 in \field{queue_reset} after the virtqueue is
+> > +enabled with \field{queue_enable}. The device MUST reset the queue when 1 is
+> > +written to \field{queue_reset}, and present a 1 in \field{queue_reset} until the
+> > +queue is enabled with \field{queue_enable}. (see \ref{sec:Virtqueues / Virtqueue Reset}).
+>
+> "present a 1 in \field{queue_reset} after the queue has been reset,
+> until the driver re-enables the queue via \field{queue_enable}"
+>
+> ?
+>
 
-Yes, either can work. I'm trying to be a bit conservative with
-allocating new commands, but if it is too confusing, we can use a new
-one. The important thing is that I think this can be implemented for ccw
-as well.
+Thanks. This is better.
+
+> I suppose queue_reset is reset to 0 when the whole device is reset?
+
+Yes, I will explain this in the next version.
 
 >
-> Thanks
+> > +
+> > +The device MUST present a 0 in \field{queue_enable} after the virtqueue is reset
+> > +with \field{queue_reset}. (see \ref{sec:Virtqueues / Virtqueue Reset}).
 >
->> the queue can be re-enabled by the normal
->> READ_VQ_CONF/SET_VQ procedure. I have not yet thought that through.
+> "after the driver has reset the virtqueue via \field{queue_reset}" ?
 
+Thanks. This is better.
 
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+>
+> This section should probably also refer to the feature bit at least once?
+
+OK.
+
+>
+> > +
+> >  The device MUST present a 0 in \field{queue_size} if the virtqueue
+> >  corresponding to the current \field{queue_select} is unavailable.
+> >
+> > @@ -1040,6 +1055,12 @@ \subsubsection{Common configuration structure layout}\label{sec:Virtio Transport
+> >
+> >  The driver MUST NOT write a 0 to \field{queue_enable}.
+> >
+> > +If the VIRTIO_F_RING_RESET feature bit is negotiated, the driver can stop using
+> > +the queue by writing a 1 to \field{queue_reset} and MUST read the value back to
+> > +ensure synchronization. Then optionally re-enable the queue by writing a 1 to
+> > +\field{queue_enable} after configuring the other virtqueue fields. (see
+> > +\ref{sec:Virtqueues / Virtqueue Reset}).
+>
+> "If VIRTIO_F_RING_RESET has been negotiated, after the driver writes 1 to
+> \field{queue_reset} to reset the queue, it MUST verify that the queue
+> has been reset by reading back \field{queue_reset} and ensuring that it
+> is 1. The driver MAY re-enable the queue by writing a 1 to
+> \field{queue_enable} after ensuring that the other virtqueue fields have
+> been set up correctly."
+>
+> ?
+
+Thanks. This is better.
+
+>
+> > +
+> >  \subsubsection{Notification structure layout}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Notification capability}
+> >
+> >  The notification location is found using the VIRTIO_PCI_CAP_NOTIFY_CFG
+>
+> MMIO can probably use a similar mechanism.
+>
+> For CCW, maybe we can add a payload to the existing RESET command if the
+> feature has been negotiated; the queue can be re-enabled by the normal
+> READ_VQ_CONF/SET_VQ procedure. I have not yet thought that through.
+
+Regarding CCW, can I consider adding this part later? This time I want to
+complete PCI and MMIO support for queue reset first.
+
+Thanks.
+
 
