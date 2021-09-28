@@ -1,252 +1,195 @@
-Return-Path: <mst@redhat.com>
-Date: Mon, 6 Sep 2021 02:33:05 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: Re: [virtio-comment] Re: [virtio-dev] Re: [virtio] [PATCH RFC]
- VIRTIO_F_PARTIAL_ORDER for page fault handling
-Message-ID: <20210906012958-mutt-send-email-mst@kernel.org>
-References: <20200810161501.1572834-1-mst@redhat.com>
- <20200810185928.2e722231.cohuck@redhat.com>
- <20200811042047-mutt-send-email-mst@kernel.org>
- <3e1f1c3f6b3a44daabf3cfca1d3e3f66@napatech.com>
- <49f4f4c248a844d4a51f97308adf19b3@napatech.com>
- <20200812145051.32922356.cohuck@redhat.com>
- <71876de5ce464fbda5607af7c508d0d4@napatech.com>
- <20200813191623-mutt-send-email-mst@kernel.org>
- <3c6acf2d5d524d17bb14e7d7d1d55f30@napatech.com>
+Return-Path: <virtio-dev-return-8729-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id DFBA698645B
+	for <virtio-dev@lists.oasis-open.org>; Tue, 28 Sep 2021 09:13:45 +0000 (UTC)
+From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Date: Tue, 28 Sep 2021 17:13:40 +0800
+Message-Id: <20210928091340.78554-1-xuanzhuo@linux.alibaba.com>
 MIME-Version: 1.0
-In-Reply-To: <3c6acf2d5d524d17bb14e7d7d1d55f30@napatech.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-To: Lars Ganrot <lga@napatech.com>
-Cc: Cornelia Huck <cohuck@redhat.com>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "virtio@lists.oasis-open.org" <virtio@lists.oasis-open.org>
+Subject: [virtio-dev] [PATCH v4] virtio-net: support device stats
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="US-ASCII"
+To: jasowang@redhat.com
+Cc: virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Mon, Aug 17, 2020 at 08:11:36AM +0000, Lars Ganrot wrote:
-> > From: virtio-comment@lists.oasis-open.org <virtio-comment@lists.oasis-
-> > open.org> On Behalf Of Michael S. Tsirkin
-> > Sent: 14. august 2020 01:18
-> > 
-> > On Wed, Aug 12, 2020 at 03:55:18PM +0000, Lars Ganrot wrote:
-> > > > From: virtio-comment@lists.oasis-open.org
-> > > > <virtio-comment@lists.oasis- open.org> On Behalf Of Cornelia Huck
-> > > > Sent: 12. august 2020 14:51
-> > > >
-> > > > On Tue, 11 Aug 2020 15:43:44 +0000
-> > > > Lars Ganrot <lga@napatech.com> wrote:
-> > > >
-> > > > > > From: virtio-comment@lists.oasis-open.org
-> > > > > > <virtio-comment@lists.oasis- open.org> On Behalf Of Lars Ganrot
-> > > > > > Sent: 11. august 2020 16:54
-> > > > > >
-> > > > > > > From: virtio-dev@lists.oasis-open.org
-> > > > > > > <virtio-dev@lists.oasis-open.org> On Behalf Of Michael S.
-> > > > > > > Tsirkin
-> > > > > > > Sent: 11. august 2020 10:23
-> > > > > > >
-> > > > > > > On Mon, Aug 10, 2020 at 06:59:28PM +0200, Cornelia Huck wrote:
-> > > > > > > > On Mon, 10 Aug 2020 12:15:15 -0400 "Michael S. Tsirkin"
-> > > > > > > > <mst@redhat.com> wrote:
-> > > > > > > >
-> > > > > > > > > Devices that normally use buffers in order can benefit
-> > > > > > > > > from ability to temporarily switch to handle some buffers out of
-> > order.
-> > > > > > > > >
-> > > > > > > > > As a case in point, a networking device might handle RX
-> > > > > > > > > buffers in order normally. However, should an access to an
-> > > > > > > > > RX buffer cause a page fault (e.g. when using PRI), the
-> > > > > > > > > device could benefit from ability to temporarily keep
-> > > > > > > > > using following buffers in the ring (possibly with higher
-> > > > > > > > > overhead) until the fault has
-> > > > been resolved.
-> > > > > > > > >
-> > > > > > > > > Page faults allow more features such as THP, auto-NUMA,
-> > > > > > > > > live migration.
-> > > > > > > > >
-> > > > > > > > > Out of order is of course already possible, however,
-> > > > > > > > > IN_ORDER is currently required for descriptor batching
-> > > > > > > > > where device marks a whole batch of buffers used in one go.
-> > > > > > > > >
-> > > > > > > > > The idea behind this proposal is to relax that
-> > > > > > > > > requirement, allowing batching without asking device to be
-> > > > > > > > > in orde rat all times, as
-> > > > > > > > > follows:
-> > > > > > > > >
-> > > > > > > > > Device uses buffers in any order. Eventually when device
-> > > > > > > > > detects that it has used all previously outstanding
-> > > > > > > > > buffers, it sets a FLUSH flag on the last buffer used. If
-> > > > > > > > > it set this flag on the last buffer used previously, and
-> > > > > > > > > now uses a batch of descriptors in-order, it can now
-> > > > > > > > > signal the last buffer used again setting the FLUSH
-> > > > > > flag.
-> > > > > > > > >
-> > > > > > > > > Driver can detect in-order when it sees two FLUSH flags
-> > > > > > > > > one after another. In other respects the feature is
-> > > > > > > > > similar to IN_ORDER from the driver implementation POV.
-> > > > > > > > >
-> > > > > > > > > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> > > > > > > > > ---
-> > > > > > > > >  content.tex     |  9 ++++++++-
-> > > > > > > > >  packed-ring.tex | 23 +++++++++++++++++++++++
-> > > > > > > > > split-ring.tex
-> > > > > > > > > |
-> > > > > > > > > 26
-> > > > > > > > > ++++++++++++++++++++++++--
-> > > > > > > > >  3 files changed, 55 insertions(+), 3 deletions(-)
-> > > > > > > > >
-> > > > > > > > > diff --git a/content.tex b/content.tex index
-> > > > > > > > > 91735e3..8494eb6
-> > > > > > > > > 100644
-> > > > > > > > > --- a/content.tex
-> > > > > > > > > +++ b/content.tex
-> > > > > > > > > @@ -296,7 +296,11 @@ \section{Virtqueues}\label{sec:Basic
-> > > > > > > > > Facilities of a Virtio Device / Virtqueues}
-> > > > > > > > >
-> > > > > > > > >  Some devices always use descriptors in the same order in
-> > > > > > > > > which they have been made available. These devices can
-> > > > > > > > > offer the -VIRTIO_F_IN_ORDER feature. If negotiated, this
-> > > > > > > > > knowledge
-> > > > > > > > > +VIRTIO_F_IN_ORDER feature.  Other devices sometimes use
-> > > > > > > > > +descriptors in the same order in which they have been
-> > > > > > > > > +made available. These devices can offer the
-> > > > > > > > > +VIRTIO_F_PARTIAL_ORDER feature. If one of the features
-> > > > > > > > > +VIRTIO_F_IN_ORDER or VIRTIO_F_PARTIAL_ORDER is
-> > > > > > > negotiated,
-> > > > > > > > > +this knowledge
-> > > > > > > >
-> > > > > > > > Do these two features conflict with each other? I.e., at
-> > > > > > > > most one of them may be negotiated (or offered?) at a time?
-> > > > > > >
-> > > > > > > Good point. I think so, yes. Will document.
-> > > > > >
-> > > > > > Isn't it more natural to think of VIRTIO_F_IN_ORDER as the
-> > > > > > simple case which always maintains ordered access, while the new
-> > > > > > feature flag allows active control of when descriptors are
-> > > > > > ordered and when not? To make it backward compatible let
-> > > > > > VIRTIO_F_IN_ORDER imply the new bit is set, while the new bit
-> > > > > > set by itself without VIRTIO_F_IN_ORDER set means only active
-> > > > > > control is offered. I guess a name like VIRTIO_F_CTRL_ORDER
-> > > > > > would be more appropriate with this
-> > > > interpretation.
-> > > > > >
-> > > > >
-> > > > > On second thought that might be a bit backwards - how about:
-> > > > >
-> > > > > Legacy case: VIRTIO_F_IN_ORDER==0/1 + VIRTIO_F_ORDER_RELAX==0
-> > This
-> > > > > proposal: VIRTIO_F_IN_ORDER==1 + VIRTIO_F_ORDER_RELAX==1
-> > Potential
-> > > > > future use: VIRTIO_F_???_ORDER==1 + VIRTIO_F_ORDER_RELAX==0/1
-> > > >
-> > > > What happens in the new device/old driver case?
-> > > > - device offers IN_ORDER and PARTIAL_ORDER
-> > > > - driver does not know PARTIAL_ORDER, accepts IN_ORDER
-> > > > - device now only can do complete ordering
-> > > >
-> > > > Maybe I don't understand the purpose of the new feature correctly,
-> > > > but I thought it was for those devices that don't do full in-order,
-> > > > but can do it for a subset of buffers? As such, the two features
-> > > > can't really imply each other: a device offering IN_ORDER might not
-> > > > know about the new feature and its mechanism, and a device offering
-> > > > the new feature, but not IN_ORDER probably does so because it cannot
-> > support full IN_ORDER.
-> > > >
-> > > > I think it makes the most sense if the device can offer both flags,
-> > > > but the driver must only accept at most one of them?
-> > > >
-> > >
-> > > Yes, you are absolutely right. Keeping them as two mutually exclusive
-> > options is probably best.
-> > >
-> > > Another aspect of the proposal is that the functionality is only
-> > > described for the packed ring layout, but the concept should be
-> > > equally applicable to the split ring.
-> > 
-> > Pls take a look at the changes in split-ring.tex Are they unclear?
-> > 
-> 
-> I guess not. I failed to understand that the used-ring 32-bit ID field is divided into a 16-bit ID and a 16-bit flags. Sorry for the confusion.
-> 
-> Does this mean that for a device that always sets the FLUSH-flag, the
-> PARTIAL_ORDER feature will be identical to IN_ORDER for both packed
-> and split rings?
+This patch allows the driver to obtain some statistics from the device.
 
-Yes, I think so.
+In the back-end implementation, we can count a lot of such information,
+which can be used for debugging and judging the running status of the
+back-end. We hope to directly display it to the user through ethtool.
 
-> The first write to a Used structure (after creation
-> of the Virtqueue) would not have 2 FLUSH-flags, but would still fulfil
-> the condition.
+Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+---
 
-Needs thought.
+v4:
+1. remove dev_stats_num, {rx|tx}_stats_num
+2. Use two commands to get the stats of queue pair and dev respectively
 
-> > > The split ring does not have
-> > > flags for each used ring element, so the FLUSH flag functionality
-> > > needs to be a bit different. One way is to add an IN_ORDER-flag to the
-> > > virtq_used.flags, that allows the device to signal when it starts to
-> > > adhere to IN_ORDER buffer use. The driver acknowledges this when it is
-> > > ready to fulfil its part of the IN_ORDER restrictions by setting a new
-> > > virtq_avail.flag: IN_ORDER_ACK. At this point both device and driver
-> > > can assume IN_ORDER optimization until the device clears IN_ORDER.
-> > > After clearing IN_ORDER, the device must wait until IN_ORDER_ACK is
-> > > cleared before IN_ORDER can be asserted it again.
-> > 
-> > It would be tricky to figure out which buffers does the handshake apply to. My
-> > proposal does it a bit differently, pls take a look.
-> > 
-> > 
-> > >
-> > > This is a little less fine-grained than the packed-ring solution with the FLUSH
-> > flag, but for infrequent scenarios like migration it should be OK.
-> > >
-> > > >
-> > > > This publicly archived list offers a means to provide input to the
-> > > > OASIS Virtual I/O Device (VIRTIO) TC.
-> > > >
-> > > > In order to verify user consent to the Feedback License terms and to
-> > > > minimize spam in the list archive, subscription is required before posting.
-> > > >
-> > > > Subscribe: virtio-comment-subscribe@lists.oasis-open.org
-> > > > Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
-> > > > List help: virtio-comment-help@lists.oasis-open.org
-> > > > List archive: https://lists.oasis-open.org/archives/virtio-comment/
-> > > > Feedback License: https://www.oasis-
-> > > > open.org/who/ipr/feedback_license.pdf
-> > > > List Guidelines:
-> > > > https://www.oasis-open.org/policies-guidelines/mailing-lists
-> > > > Committee: https://www.oasis-open.org/committees/virtio/
-> > > > Join OASIS: https://www.oasis-open.org/join/
-> > >
-> > 
-> > 
-> > This publicly archived list offers a means to provide input to the OASIS Virtual
-> > I/O Device (VIRTIO) TC.
-> > 
-> > In order to verify user consent to the Feedback License terms and to minimize
-> > spam in the list archive, subscription is required before posting.
-> > 
-> > Subscribe: virtio-comment-subscribe@lists.oasis-open.org
-> > Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
-> > List help: virtio-comment-help@lists.oasis-open.org
-> > List archive: https://lists.oasis-open.org/archives/virtio-comment/
-> > Feedback License: https://www.oasis-
-> > open.org/who/ipr/feedback_license.pdf
-> > List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
-> > Committee: https://www.oasis-open.org/committees/virtio/
-> > Join OASIS: https://www.oasis-open.org/join/
-> 
-> 
-> This publicly archived list offers a means to provide input to the
-> OASIS Virtual I/O Device (VIRTIO) TC.
-> 
-> In order to verify user consent to the Feedback License terms and
-> to minimize spam in the list archive, subscription is required
-> before posting.
-> 
-> Subscribe: virtio-comment-subscribe@lists.oasis-open.org
-> Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
-> List help: virtio-comment-help@lists.oasis-open.org
-> List archive: https://lists.oasis-open.org/archives/virtio-comment/
-> Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
-> List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
-> Committee: https://www.oasis-open.org/committees/virtio/
-> Join OASIS: https://www.oasis-open.org/join/
+v3 changes:
+1. add dev_version
+2. use queue_pair_index replace rx_num, tx_num
+3. Explain the processing when the device and driver support different numb=
+ers
+of stats
+
+
+ content.tex | 78 ++++++++++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 77 insertions(+), 1 deletion(-)
+
+diff --git a/content.tex b/content.tex
+index 7cec1c3..ad8d781 100644
+--- a/content.tex
++++ b/content.tex
+@@ -2972,6 +2972,9 @@ \subsection{Feature bits}\label{sec:Device Types / Ne=
+twork Device / Feature bits
+ \item[VIRTIO_NET_F_CTRL_MAC_ADDR(23)] Set MAC address through control
+     channel.
+
++\item[VIRTIO_NET_F_CTRL_STATS(55)] Device can provide device-level statist=
+ics
++    to the driver through the control channel.
++
+ \item[VIRTIO_NET_F_HOST_USO (56)] Device can receive USO packets. Unlike U=
+FO
+  (fragmenting the packet) the USO splits large UDP packet
+  to several segments when each of these smaller packets has UDP header.
+@@ -3017,6 +3020,7 @@ \subsubsection{Feature bit requirements}\label{sec:De=
+vice Types / Network Device
+ \item[VIRTIO_NET_F_GUEST_ANNOUNCE] Requires VIRTIO_NET_F_CTRL_VQ.
+ \item[VIRTIO_NET_F_MQ] Requires VIRTIO_NET_F_CTRL_VQ.
+ \item[VIRTIO_NET_F_CTRL_MAC_ADDR] Requires VIRTIO_NET_F_CTRL_VQ.
++\item[VIRTIO_NET_F_CTRL_STATS] Requires VIRTIO_NET_F_CTRL_VQ.
+ \item[VIRTIO_NET_F_RSC_EXT] Requires VIRTIO_NET_F_HOST_TSO4 or VIRTIO_NET_=
+F_HOST_TSO6.
+ \item[VIRTIO_NET_F_RSS] Requires VIRTIO_NET_F_CTRL_VQ.
+ \end{description}
+@@ -3895,6 +3899,7 @@ \subsubsection{Control Virtqueue}\label{sec:Device Ty=
+pes / Network Device / Devi
+         u8 command;
+         u8 command-specific-data[];
+         u8 ack;
++        u8 command-specific-data-reply[];
+ };
+
+ /* ack values */
+@@ -3903,7 +3908,8 @@ \subsubsection{Control Virtqueue}\label{sec:Device Ty=
+pes / Network Device / Devi
+ \end{lstlisting}
+
+ The \field{class}, \field{command} and command-specific-data are set by th=
+e
+-driver, and the device sets the \field{ack} byte. There is little it can
++driver, and the device sets the \field{ack} byte and optionally
++\field{command-specific-data-reply}. There is little it can
+ do except issue a diagnostic if \field{ack} is not
+ VIRTIO_NET_OK.
+
+@@ -4384,6 +4390,76 @@ \subsubsection{Legacy Interface: Framing Requirement=
+s}\label{sec:Device
+ See \ref{sec:Basic
+ Facilities of a Virtio Device / Virtqueues / Message Framing}.
+
++\paragraph{Device stats}\label{sec:Device Types / Network Device / Device =
+Operation / Control Virtqueue / Device stats}
++
++If the VIRTIO_NET_F_CTRL_STATS feature is negotiated, the driver can
++get device stats from the device by \field{command-specific-data-reply}.
++
++To get the stats, the following definitions are used:
++\begin{lstlisting}
++#define VIRTIO_NET_CTRL_STATS                  6
++#define VIRTIO_NET_CTRL_STATS_GET_DEV          0
++#define VIRTIO_NET_CTRL_STATS_GET_QUEUE_PAIR   1
++\end{lstlisting}
++
++The following layout structure are used:
++
++\field{command-specific-data}
++\begin{lstlisting}
++struct virtio_net_ctrl_stats_queue_pair {
++    le64 queue_pair_index;
++}
++\end{lstlisting}
++
++\field{command-specific-data-reply}
++\begin{lstlisting}
++struct virtio_net_ctrl_reply_stats_dev {
++    le64 dev_version;=09=09// The number of device version.
++    le64 dev_reset;=09=09=09// The number of device reset.
++}
++
++struct virtio_net_ctrl_reply_stats_queue_pair {
++    le64 queue_pair_index;
++    le64 rx_inter;=09=09=09// The number of interrupts sent by the rx queu=
+e.
++    le64 rx_drop;=09=09=09// The number of packets dropped by the rx queue=
+. Contains all kinds of packet loss.
++    le64 rx_drop_overruns;=09// The number of packets dropped by the rx qu=
+eue when no more avail desc.
++    le64 rx_csum_bad;=09=09// The number of packets with abnormal csum in =
+the rx queue.
++    le64 rx_gso_packets;=09// The number of gso packets received by rx.
++    le64 rx_gso_bytes;=09=09// The number of gso bytes received by rx.
++    le64 rx_oversize_pkts;=09// The number of oversized packets received b=
+y the rx queue.
++    le64 tx_inter;=09=09=09// The number of interrupts sent by the tx queu=
+e.
++    le64 tx_drop;=09=09=09// The number of packets dropped by the tx queue=
+. Contains all kinds of packet loss.
++    le64 tx_csum;=09=09=09// The number of packets that completes csum by =
+the device.
++    le64 tx_gso_packets;=09// The number of gso packets transmitted.
++    le64 tx_gso_bytes;=09=09// The number of gso bytes transmitted.
++}
++\end{lstlisting}
++
++All device stats is divided into two categories, one is the stats of the d=
+evice,
++and the other is the stats of the queue pair. The queue pair stats contain=
+s the
++stats of rx and tx.
++
++The command VIRTIO_NET_CTRL_STATS_GET_DEV is used to obtain the stats of t=
+he device.
++The command VIRTIO_NET_CTRL_STATS_GET_QUEUE_PAIR is used to obtain the sta=
+ts of the queue pair.
++
++When the driver uses the command VIRTIO_NET_CTRL_STATS_GET_DEV,
++\field{command-specific-data} MUST be empty. The structure
++\field{virtio_net_ctrl_reply_stats_dev} MUST be used as
++\field{command-specific-data-reply}.
++
++When the driver uses the command VIRTIO_NET_CTRL_STATS_GET_QUEUE_PAIR,
++\field{command-specific-data} MUST be \field{virtio_net_ctrl_stats_queue_p=
+air}. At the same
++time, the structure \field{virtio_net_ctrl_reply_stats_queue_pair} MUST be=
+ used as
++\field{command-specific-data-reply}.
++\field{virtio_net_ctrl_stats_queue_pair.queue_pair_index} specify the queu=
+e pair
++index of the queue that the driver wants to get stats.
++
++The device MUST set \field{command-specific-data-reply} based on command.
++
++When the command is VIRTIO_NET_CTRL_STATS_GET_QUEUE_PAIR, the device MUST =
+set
++\field{virtio_net_ctrl_reply_stats_queue_pair.queue_pair_index} equal to
++\field{virtio_net_ctrl_stats_queue_pair.queue_pair_index}
++
+ \section{Block Device}\label{sec:Device Types / Block Device}
+
+ The virtio block device is a simple virtual block device (ie.
+--
+2.31.0
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
