@@ -1,124 +1,82 @@
-Return-Path: <viresh.kumar@linaro.org>
-From: Viresh Kumar <viresh.kumar@linaro.org>
-Subject: [PATCH V6 2/2] virtio: i2c: Allow zero-length transactions
-Date: Wed, 13 Oct 2021 16:34:07 +0530
-Message-Id: <5c888507117bcee7895ee4b74cb6823811d2e21f.1634123022.git.viresh.kumar@linaro.org>
-In-Reply-To: <cover.1634123022.git.viresh.kumar@linaro.org>
-References: <cover.1634123022.git.viresh.kumar@linaro.org>
+Return-Path: <virtio-dev-return-8758-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id 093699843EC
+	for <virtio-dev@lists.oasis-open.org>; Fri,  1 Oct 2021 11:27:37 +0000 (UTC)
+From: Cornelia Huck <cohuck@redhat.com>
+In-Reply-To: <20210930175008.88352-2-xuanzhuo@linux.alibaba.com>
+References: <20210930175008.88352-1-xuanzhuo@linux.alibaba.com>
+ <20210930175008.88352-2-xuanzhuo@linux.alibaba.com>
+Date: Fri, 01 Oct 2021 13:27:29 +0200
+Message-ID: <871r553rz2.fsf@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="US-ASCII"
-To: "Michael S. Tsirkin" <mst@redhat.com>, Cornelia Huck <cohuck@redhat.com>, Jie Deng <jie.deng@intel.com>, Wolfram Sang <wsa@kernel.org>, Paolo Bonzini <pbonzini@redhat.com>
-Cc: Viresh Kumar <viresh.kumar@linaro.org>, Vincent Guittot <vincent.guittot@linaro.org>, Jason Wang <jasowang@redhat.com>, Bill Mills <bill.mills@linaro.org>, =?UTF-8?q?Alex=20Benn=C3=A9e?= <alex.bennee@linaro.org>, virtio-dev@lists.oasis-open.org, stratos-dev@op-lists.linaro.org, Gerd Hoffmann <kraxel@redhat.com>, Arnd Bergmann <arnd@kernel.org>, Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [virtio-dev] [PATCH v5 1/3] virtio: introduce virtqueue reset
+ as basic facility
+Content-Type: text/plain
+To: Xuan Zhuo <xuanzhuo@linux.alibaba.com>, jasowang@redhat.com
+Cc: virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-The I2C protocol allows zero-length requests with no data, like the
-SMBus Quick command, where the command is inferred based on the
-read/write flag itself.
+On Fri, Oct 01 2021, Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
 
-In order to allow such a request, allocate another bit,
-VIRTIO_I2C_FLAGS_M_RD(1), in the flags to pass the request type, as read
-or write. This was earlier done using the read/write permission to the
-buffer itself.
+> This patch allows the driver to reset a queue individually.
+>
+> This is very common on general network equipment. By disabling a queue,
+> you can quickly reclaim the buffer currently on the queue. If necessary,
+> we can reinitialize the queue separately.
+>
+> For example, when virtio-net implements support for AF_XDP, we need to
+> disable a queue to release all the original buffers when AF_XDP setup.
+> And quickly release all the AF_XDP buffers that have been placed in the
+> queue when AF_XDP exits.
+>
+> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> ---
+>  content.tex | 46 ++++++++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 46 insertions(+)
+>
+> diff --git a/content.tex b/content.tex
+> index 37c45d3..dd095f4 100644
+> --- a/content.tex
+> +++ b/content.tex
+> @@ -350,6 +350,48 @@ \section{Virtqueues}\label{sec:Basic Facilities of a Virtio Device / Virtqueues}
+>  Every driver and device supports either the Packed or the Split
+>  Virtqueue format, or both.
+>  
+> +\subsection{Virtqueue Reset}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Reset}
+> +
+> +When VIRTIO_F_RING_RESET is negotiated, the driver can reset a virtqueue
+> +individually. The way to reset the virtqueue is transport specific.
+> +
+> +Virtqueue reset is divided into two parts. The driver first resets a queue and
+> +can afterwards optionally re-enable it.
+> +
+> +\subsubsection{Virtqueue Reset}\label{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Reset / Virtqueue Reset}
+> +
+> +\devicenormative{\paragraph}{Virtqueue Reset}{Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Reset / Virtqueue Reset}
+> +
+> +After a queue has been reset by the driver, the device MUST NOT execute
+> +any requests from that virtqueue, or notify the driver for it.
+> +
+> +The device MUST reset any state of a virtqueue to be reset to the default state,
 
-Add a new feature flag for zero length requests and make it mandatory
-for it to be implemented, so we don't need to drag the old
-implementation around.
+This sentence looks a bit strange; probably should be
 
-Fixes: https://github.com/oasis-tcs/virtio-spec/issues/112
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
-Reviewed-by: Jie Deng <jie.deng@intel.com>
-Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
----
- virtio-i2c.tex | 42 +++++++++++++++++++++++++++++++++++++++---
- 1 file changed, 39 insertions(+), 3 deletions(-)
+"The device MUST reset any state of a virtqueue to the default state",
+or
+"The device MUST cause any state of a virtqueue to be reset to the
+default state"
 
-diff --git a/virtio-i2c.tex b/virtio-i2c.tex
-index 5d634aec6e7c..5d407cb9e7c2 100644
---- a/virtio-i2c.tex
-+++ b/virtio-i2c.tex
-@@ -17,7 +17,21 @@ \subsection{Virtqueues}\label{sec:Device Types / I2C Adapter Device / Virtqueues
- 
- \subsection{Feature bits}\label{sec:Device Types / I2C Adapter Device / Feature bits}
- 
--None currently defined.
-+\begin{description}
-+\item[VIRTIO_I2C_F_ZERO_LENGTH_REQUEST (0)] The device supports zero-length I2C
-+request and \field{VIRTIO_I2C_FLAGS_M_RD} flag. It is mandatory to implement
-+this feature.
-+\end{description}
-+
-+\begin{note}
-+The \field{VIRTIO_I2C_FLAGS_M_RD} flag was not present in the initial
-+implementation of the specification and the direction of the transfer (read or
-+write) was inferred from the permissions (read-only or write-only) of the
-+buffer itself. There is no need of having backwards compatibility for the older
-+specification and so the \field{VIRTIO_I2C_FLAGS_FAIL_NEXT} feature is made
-+mandatory. The driver should abort negotiation with the device, if the device
-+doesn't offer this feature.
-+\end{note}
- 
- \subsection{Device configuration layout}\label{sec:Device Types / I2C Adapter Device / Device configuration layout}
- 
-@@ -83,13 +97,20 @@ \subsubsection{Device Operation: Request Queue}\label{sec:Device Types / I2C Ada
-     and sets it on the other requests. If this bit is set and a device fails
-     to process the current request, it needs to fail the next request instead
-     of attempting to execute it.
-+
-+\item[VIRTIO_I2C_FLAGS_M_RD(1)] is used to mark the request as READ or WRITE.
-+    If \field{VIRTIO_I2C_FLAGS_M_RD} bit is set in the \field{flags}, then the
-+    request is called a read request. If \field{VIRTIO_I2C_FLAGS_M_RD} bit is
-+    unset in the \field{flags}, then the request is called a write request.
- \end{description}
- 
- Other bits of \field{flags} are currently reserved as zero for future feature
- extensibility.
- 
--The \field{buf} of the request contains one segment of an I2C transaction
--being read from or written to the device.
-+The \field{buf} is optional and will not be present for a zero-length request,
-+like the SMBus "Quick" command. The \field{buf} contains one segment of an I2C
-+transaction being read from or written to the device, based on the value of the
-+\field{VIRTIO_I2C_FLAGS_M_RD} bit in the \field{flags} field.
- 
- The final \field{status} byte of the request is written by the device: either
- VIRTIO_I2C_MSG_OK for success or VIRTIO_I2C_MSG_ERR for error.
-@@ -124,13 +145,25 @@ \subsubsection{Device Operation: Operation Status}\label{sec:Device Types / I2C
- 
- \drivernormative{\subsubsection}{Device Operation}{Device Types / I2C Adapter Device / Device Operation}
- 
-+A driver MUST accept the \field{VIRTIO_I2C_F_ZERO_LENGTH_REQUEST} feature and
-+MUST abort negotiation with the device, if the device doesn't offer this
-+feature.
-+
- A driver MUST set \field{addr} and \field{flags} before sending the request.
- 
- A driver MUST set the reserved bits of \field{flags} to be zero.
- 
-+A driver MUST NOT send the \field{buf}, for a zero-length request.
-+
- A driver MUST NOT use \field{buf}, for a read request, if the final
- \field{status} returned from the device is VIRTIO_I2C_MSG_ERR.
- 
-+A driver MUST set the \field{VIRTIO_I2C_FLAGS_M_RD} flag for a read operation,
-+where the buffer is write-only for the device.
-+
-+A driver MUST NOT set the \field{VIRTIO_I2C_FLAGS_M_RD} flag for a write
-+operation, where the buffer is read-only for the device.
-+
- A driver MUST queue the requests in order if multiple requests are going to
- be sent at a time.
- 
-@@ -141,6 +174,9 @@ \subsubsection{Device Operation: Operation Status}\label{sec:Device Types / I2C
- 
- \devicenormative{\subsubsection}{Device Operation}{Device Types / I2C Adapter Device / Device Operation}
- 
-+A device MUST offer the \field{VIRTIO_I2C_F_ZERO_LENGTH_REQUEST} feature and
-+MUST reject any driver that doesn't negotiate this feature.
-+
- A device SHOULD keep consistent behaviors with the hardware as described in
- \hyperref[intro:I2C]{I2C}.
- 
--- 
-2.31.1.272.g89b43f80a514
+> +including the available state and the used state.
+
+Otherwise, the generic description now looks good to me.
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
