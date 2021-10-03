@@ -1,152 +1,164 @@
-Return-Path: <mgurtovoy@nvidia.com>
-Subject: Re: [virtio-dev] [PATCH] Add device reset timeout field
-References: <20210930091759.525267-1-parav@nvidia.com>
- <87y27d2bup.fsf@redhat.com>
- <PH0PR12MB548116BD0816E447A3F2CDDDDCAB9@PH0PR12MB5481.namprd12.prod.outlook.com>
- <8735pg3im0.fsf@redhat.com>
- <PH0PR12MB5481775FB5930D9985AAB378DCAF9@PH0PR12MB5481.namprd12.prod.outlook.com>
- <87tuhw0xyn.fsf@redhat.com>
- <PH0PR12MB54815763EDC6ECDEEC59A844DCAF9@PH0PR12MB5481.namprd12.prod.outlook.com>
-From: Max Gurtovoy <mgurtovoy@nvidia.com>
-Message-ID: <0d1ad24a-867e-af96-0609-f0e95f78ad47@nvidia.com>
-Date: Wed, 6 Oct 2021 11:35:10 +0300
+Return-Path: <mst@redhat.com>
+Date: Sun, 3 Oct 2021 03:26:07 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Subject: Re: [RFC PATCH 1/1] virtio: write back features before verify
+Message-ID: <20211003032253-mutt-send-email-mst@kernel.org>
+References: <20210930012049.3780865-1-pasic@linux.ibm.com>
+ <20210930070444-mutt-send-email-mst@kernel.org>
+ <87fstm47no.fsf@redhat.com>
+ <20211002141351-mutt-send-email-mst@kernel.org>
+ <20211003070030.658fc94e.pasic@linux.ibm.com>
+ <20211003021027-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <PH0PR12MB54815763EDC6ECDEEC59A844DCAF9@PH0PR12MB5481.namprd12.prod.outlook.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-To: Parav Pandit <parav@nvidia.com>, Cornelia Huck <cohuck@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Halil
- Pasic <pasic@linux.ibm.com>
-Cc: Shahaf Shuler <shahafs@nvidia.com>, Oren Duer <oren@nvidia.com>
+In-Reply-To: <20211003021027-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+To: Halil Pasic <pasic@linux.ibm.com>
+Cc: Cornelia Huck <cohuck@redhat.com>, Jason Wang <jasowang@redhat.com>, Xie Yongji <xieyongji@bytedance.com>, virtualization@lists.linux-foundation.org, linux-kernel@vger.kernel.org, markver@us.ibm.com, Christian Borntraeger <borntraeger@de.ibm.com>, linux-s390@vger.kernel.org, virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+On Sun, Oct 03, 2021 at 02:42:30AM -0400, Michael S. Tsirkin wrote:
+> On Sun, Oct 03, 2021 at 07:00:30AM +0200, Halil Pasic wrote:
+> > On Sat, 2 Oct 2021 14:20:47 -0400
+> > "Michael S. Tsirkin" <mst@redhat.com> wrote:
+> > 
+> > > > >From my perspective the problem is that the version of the device  
+> > > > remains in limbo as long as the features have not yet been finalized,
+> > > > which means that the endianness of the config space remains in limbo as
+> > > > well. Both device and driver might come to different conclusions.  
+> > > 
+> > > Version === legacy versus modern?
+> > > It is true that feature negotiation can not be used by device to decide that
+> > > question simply because it happens too late.
+> > > So let's not use it for that then ;)
+> > > 
+> > > Yes we have VERSION_1 which looks like it should allow this, but
+> > > unfortunately it only helps with that for the driver, not the device.
+> > > 
+> > > In practice legacy versus modern has to be determined by
+> > > transport specific versioning, luckily we have that for all
+> > > specified transports (can't say what happens with rproc).
+> > 
+> > So if we look at ccw, you say that the revision negotiation already
+> > determines whether VERSION_1 is negotiated or not, and the
+> > feature bit VERSION_1 is superfluous?
+> > 
+> > That would also imply, that 
+> > 1) if revision > 0 was negotiated then the device must offer VERSION_1
+> > 2) if revision > 0 was negotiated and the driver cleared VERSION_1
+> >    the device must refuse to operate.
+> > 3) if revision > 0 was negotiated then the driver should reject 
+> >    to drive a device if it does not offer VERSION_1
+> > 4) if revision > 0 was negotiated the driver must accept VERSION_1
+> > 5) if revision > 0 was *not* negotiated then the device should not offer
+> >    VERSION_1 because at this point it is already certain that the device
+> >    can not act in accordance to the virtio 1.0 or higher interface.
+> > 
+> > Does that sound about right?
+> 
+> To me, it does.
+> 
+> > IMHO we should also change 
+> > https://docs.oasis-open.org/virtio/virtio/v1.1/cs01/virtio-v1.1-cs01.html#x1-160003
+> > and the definition of VERSION_1 because both sides have to know what is
+> > going on before features are fully negotiated. Or?
+> > 
+> > Regards,
+> > Halil
+> > 
+> 
+> I guess so. And I guess we need transport-specific sections
+> describing this behaviour for each transport.
+> 
+> So something like this, for starters?
 
-On 10/5/2021 11:42 AM, Parav Pandit wrote:
->> From: Cornelia Huck <cohuck@redhat.com>
->> Sent: Tuesday, October 5, 2021 12:18 PM
->>
->> On Tue, Oct 05 2021, Parav Pandit <parav@nvidia.com> wrote:
->>
->>>> From: Cornelia Huck <cohuck@redhat.com>
->>>> Sent: Monday, October 4, 2021 9:09 PM
->>>
->>>> On Fri, Oct 01 2021, Parav Pandit <parav@nvidia.com> wrote:
->>>>
->>>>>> From: Cornelia Huck <cohuck@redhat.com>
->>>>>> Sent: Friday, October 1, 2021 5:31 PM
->>>>>>
->>>>>> On Thu, Sep 30 2021, Parav Pandit <parav@nvidia.com> wrote:
->>>>>>> +Such driver initialization sequence specified in
->>>>>>> +\ref{sec:General Initialization And Device Operation / Device
->> Initialization}.
->>>>>> I'm sorry, I don't parse that statement.
->>>>> It is similar statement that exists in "Driver Requirements"
->>>>> section as first
->>>> line.
->>>>> Do you mean I should rewrite above sentence or?
->>>> The sentence seems to be missing a verb?
->>> Ah, right. I will add "is" and modify it as " Such driver initialization sequence is
->> specified in 3.1."
->>
->> Maybe
->>
->> "Refer to the driver initialization sequence specified in..."
->>
-> Device reset section already has reference to initialization sequence.
-> So I will skip mentioning this as part of device reset timeout explanation.
->
->> ?
->>>>>>> -210,11 +219,20 @@ \section{Device Reset}\label{sec:Basic
->>>>>>> Facilities of a Virtio Device / Device Re  indicating completion
->>>>>>> of the reset by reinitializing \field{device status}  to 0,
->>>>>>> until the driver re-initializes the
->>>>>> device.
->>>>>>> +A device may not be able to complete reset action when the
->>>>>>> +driver initiates
->>>>>> a reset operation.
->>>>>>> +Such a device should provide the hint as to how long a device
->>>>>>> +may take to
->>>>>> finish the reset operation.
->>>>>>> +This hint is provided by the device using device reset timeout
->>>>>>> +field in units
->>>>>> of 10 milliseconds.
->>>>>>
->>>>>> Is this supposed to go into the device config space? Or can each
->>>>>> transport decide how to expose the value?
->>>>>>
->>>>> Isn't each transport define how a config space is accessible?
->>>>> In this proposal for PCI it is part of the struct virtio_pci_common_cfg.
->>>> Yes; therefore my question. Should we agree about putting it into the
->>>> config space, or does it make more sense to leave the actual
->>>> mechanism to the transport?
->>> I think its worth to add into the config space like proposed.
->>> I don't see it any different than queue_notify_data field.
->> The queue_notify_data field does not seem to have been specified for anything
->> but PCI so far. In particular, CCW does not yet provide that facility, and I'm not
->> sure whether it should go into the config space, or use a dedicated mechanism.
->> It might be worth standardizing on using the config space for variables such as
->> the notification data and the reset timeout, or it might make things awkward
->> for some transports.
->>
->> Halil, do you have any opinion on this, especially for CCW?
->>
->>>>>   > > +
->>>>>>>   \drivernormative{\subsection}{Device Reset}{Basic Facilities of
->>>>>>> a Virtio Device / Device Reset}
->>>>>>>
->>>>>>>   The driver SHOULD consider a driver-initiated reset complete
->>>>>>> when it reads \field{device status} as 0.
->>>>>>>
->>>>>>> +When a device reports a non-zero device reset timeout value,
->>>>>>> +the driver SHOULD wait for the device to finish the reset
->>>>>>> +action during the initialization sequence before giving up on the
->> device.
->>>>>>> +When device reset timeout is not provided by the device, driver
->>>>>>> +SHOULD choose a
->>>>>> reasonable timeout value for reset operation to complete.
->>>>>>
->>>>>> Is the driver allowed to not time the reset action out at all?
->>>>>>
->>>>> Which is what is being done by the Linux driver today.
->>>>> Not sure I follow the question.
->>>>> As virtio spec follows RFC 2119, driver is recommended to time the
->>>>> reset with
->>>> above text description.
->>>>
->>>> Yes, it does make sense use a timeout; but should we note explicitly
->>>> that there's no requirement for the driver to use any kind of timeout
->>>> mechanism if it didn't negotiate the feature? Or drop that statement
->>>> completely, and let the driver continue to do whatever it is doing right now?
->>>>
->>> Letting driver doing what it is doing right now = wait infinitely is certainly not
->> good.
->>> We want to improve the driver stack to have determinism.
->>> Hence, the proposal to improve.
->> I think the driver had already been free to implement some timeout if it
->> wanted to?
-> Sure when this feature is not supported, driver can choose its own timeout value.
-> Spec is providing the guidance to driver of what to do when this field is not present.
+Sent too early. So here's what I propose. Could you pls take a look
+and if you like this, post a ccw section?
+There's also an attempt to prevent fallback from modern to legacy
+here since if driver does fallback then failing FEATURES_OK can't work
+properly.
+That's a separate issue, will be a separate patch when I post
+this for consideration by the TC.
 
-Well, probably not. I've send a patch to fix that in the current driver 
-and it wasn't accepted because it's not according to the spec.
 
->
->>> Also in other thread Michael also mentioned that current code is broken in
->> the hotplug scenario where, device is infinitely waiting for reset to finish.
->>> And this reset never finishes, because device is already on its way to hot
->> unplug.
->>> We also experienced this in the field.
->> I don't question the usefulness of the timeout; my concern is that we should not
->> cause confusion whether old drivers are compliant or not.
-> Old driver will follow old spec. New driver will follow new spec.
-> Old driver unaware of this new spec changes cannot do anything anyways.
->
->> If we say that the
->> driver SHOULD timeout with a self-chosen value, it might read as a new
->> requirement, even though the driver is not forced to implement it. No
->> statement at all might be less confusing.
-> I think yes, it is a new requirement as part of the new spec release.
-> An old driver doesn't need to implement new spec recommendations.
->
-> Guidance provided in newer spec is anyway good for driver to make decision, so I think we should think from forward spec perspective.
+diff --git a/content.tex b/content.tex
+index 1398390..06271f4 100644
+--- a/content.tex
++++ b/content.tex
+@@ -140,10 +140,13 @@ \subsection{Legacy Interface: A Note on Feature
+ Bits}\label{sec:Basic Facilities of a Virtio Device / Feature
+ Bits / Legacy Interface: A Note on Feature Bits}
+ 
+-Transitional Drivers MUST detect Legacy Devices by detecting that
+-the feature bit VIRTIO_F_VERSION_1 is not offered.
+-Transitional devices MUST detect Legacy drivers by detecting that
+-VIRTIO_F_VERSION_1 has not been acknowledged by the driver.
++Transitional drivers MAY support operating legacy devices.
++Transitional devices MAY support operation by legacy drivers.
++
++Transitional drivers MUST detect legacy devices in a way that is
++transport specific.
++Transitional devices MUST detect legacy drivers in a way that
++is transport specific.
+ 
+ In this case device is used through the legacy interface.
+ 
+@@ -160,6 +163,33 @@ \subsection{Legacy Interface: A Note on Feature
+ Specification text within these sections generally does not apply
+ to non-transitional devices.
+ 
++\begin{note}
++The device offers different features when used through
++the legacy interface and when operated in accordance with this
++specification.
++\end{note}
++
++Transitional drivers MUST use Devices only through the legacy interface
++if the feature bit VIRTIO_F_VERSION_1 is not offered.
++Transitional devices MUST NOT offer VIRTIO_F_VERSION_1 when used through
++the legacy interface.
++
++When the driver uses a device through the legacy interface, then it
++MUST only accept the features the device offered through the
++legacy interface.
++
++When used through the legacy interface, the device SHOULD
++validate that the driver only accepted the features it
++offered through the legacy interface.
++
++When operating a transitional device, a transitional driver
++SHOULD NOT use the device through the legacy interface if
++operation through the modern interface has failed.
++In particular, a transitional driver
++SHOULD NOT fall back to using the device through the
++legacy interface if feature negotiation failed
++(since that would defeat the purpose of the FEATURES_OK bit).
++
+ \section{Notifications}\label{sec:Basic Facilities of a Virtio Device
+ / Notifications}
+ 
+@@ -1003,6 +1033,12 @@ \subsubsection{Common configuration structure layout}\label{sec:Virtio Transport
+ 
+ The driver MUST NOT write a 0 to \field{queue_enable}.
+ 
++\paragraph}{Legacy Interface: Common configuration structure layout}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Legacy Interface: Common configuration structure layout}
++Transitional drivers SHOULD detect legacy devices by detecting
++that the device has the Transitional PCI Device ID in
++the range 0x1000 to 0x103f and lacks a VIRTIO_PCI_CAP_COMMON_CFG
++capability specifying the location of a common configuration structure.
++
+ \subsubsection{Notification structure layout}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Notification capability}
+ 
+ The notification location is found using the VIRTIO_PCI_CAP_NOTIFY_CFG
+@@ -1288,6 +1324,10 @@ \subsubsection{Legacy Interfaces: A Note on PCI Device Layout}\label{sec:Virtio
+ Transitional devices MUST present part of configuration
+ registers in a legacy configuration structure in BAR0 in the first I/O
+ region of the PCI device, as documented below.
++
++Transitional devices SHOULD detect legacy drivers by detecting
++access to the legacy configuration structure.
++
+ When using the legacy interface, transitional drivers
+ MUST use the legacy configuration structure in BAR0 in the first
+ I/O region of the PCI device, as documented below.
 
