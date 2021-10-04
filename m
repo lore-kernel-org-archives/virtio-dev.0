@@ -1,287 +1,73 @@
-Return-Path: <virtio-dev-return-8767-cohuck=redhat.com@lists.oasis-open.org>
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 1C6199862CE
-	for <virtio-dev@lists.oasis-open.org>; Mon,  4 Oct 2021 11:13:18 +0000 (UTC)
+Return-Path: <viresh.kumar@linaro.org>
+Date: Mon, 4 Oct 2021 11:40:11 +0530
+From: Viresh Kumar <viresh.kumar@linaro.org>
+Subject: Re: [virtio-dev] Re: [PATCH V3] virtio: i2c: Allow zero-length
+ transactions
+Message-ID: <20211004061011.dd2nflittub7sj3o@vireshk-i7>
+References: <8d35aa1c925ab7cd2452f790ea84e78ff905db00.1630481293.git.viresh.kumar@linaro.org>
+ <87ilytf2v5.fsf@redhat.com>
 MIME-Version: 1.0
-References: <20210921102702.60259-1-pankaj.gupta.linux@gmail.com> <YVrKq1rOFCMMpowE@stefanha-x1.localdomain>
-In-Reply-To: <YVrKq1rOFCMMpowE@stefanha-x1.localdomain>
-From: Pankaj Gupta <pankaj.gupta.linux@gmail.com>
-Date: Mon, 4 Oct 2021 13:13:04 +0200
-Message-ID: <CAM9Jb+i+v++CusQvzQFZMrCBj-WX7C=ewtuMYkZz8_rAQ6rjGQ@mail.gmail.com>
-Subject: Re: [virtio-dev] [PATCH v4] virtio-pmem: PMEM device spec
-Content-Type: text/plain; charset="UTF-8"
-To: Stefan Hajnoczi <stefanha@redhat.com>
-Cc: virtio-dev@lists.oasis-open.org, Dan Williams <dan.j.williams@intel.com>, David Hildenbrand <david@redhat.com>, "Michael S . Tsirkin" <mst@redhat.com>, Cornelia Huck <cohuck@redhat.com>, Taylor Stark <tstark@linux.microsoft.com>, Pankaj Gupta <pankaj.gupta@ionos.com>
+In-Reply-To: <87ilytf2v5.fsf@redhat.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+To: Cornelia Huck <cohuck@redhat.com>
+Cc: "Michael S. Tsirkin" <mst@redhat.com>, Jie Deng <jie.deng@intel.com>, Wolfram Sang <wsa@kernel.org>, Paolo Bonzini <pbonzini@redhat.com>, Vincent Guittot <vincent.guittot@linaro.org>, Jason Wang <jasowang@redhat.com>, Bill Mills <bill.mills@linaro.org>, Alex =?utf-8?Q?Benn=C3=A9e?= <alex.bennee@linaro.org>, virtio-dev@lists.oasis-open.org, stratos-dev@op-lists.linaro.org, Gerd Hoffmann <kraxel@redhat.com>, Arnd Bergmann <arnd@kernel.org>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-> On Tue, Sep 21, 2021 at 12:27:02PM +0200, Pankaj Gupta wrote:
-> > Posting virtio specification for virtio pmem device. Virtio pmem is a
-> > paravirtualized device which allows the guest to bypass page cache.
-> > Virtio pmem kernel driver is merged in Upstream Kernel 5.3. Also, Qemu
-> > device is merged in Qemu 4.1.
+On 22-09-21, 10:09, Cornelia Huck wrote:
+> On Wed, Sep 01 2021, Viresh Kumar <viresh.kumar@linaro.org> wrote:
+> 
+> > The I2C protocol allows zero-length requests with no data, like the
+> > SMBus Quick command, where the command is inferred based on the
+> > read/write flag itself.
 > >
-> > Signed-off-by: Pankaj Gupta <pankaj.gupta.linux@gmail.com>
-> > ---
-> >  v3 -> v4
-> >   Define constant used in request type - Stefan
-> >   Small text change - Stefan
+> > In order to allow such a request, allocate another bit,
+> > VIRTIO_I2C_FLAGS_M_RD(1), in the flags to pass the request type, as read
+> > or write. This was earlier done using the read/write permission to the
+> > buffer itself.
 > >
-> >  conformance.tex |  16 +++++-
-> >  content.tex     |   1 +
-> >  virtio-pmem.tex | 128 ++++++++++++++++++++++++++++++++++++++++++++++++
-> >  3 files changed, 143 insertions(+), 2 deletions(-)
-> >  create mode 100644 virtio-pmem.tex
+> > This still won't work well if multiple buffers are passed for the same
+> > request, i.e. the write-read requests, as the VIRTIO_I2C_FLAGS_M_RD flag
+> > can only be used with a single buffer.
 > >
-> > diff --git a/conformance.tex b/conformance.tex
-> > index 94d7a06..7331003 100644
-> > --- a/conformance.tex
-> > +++ b/conformance.tex
-> > @@ -31,7 +31,8 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
-> >  \ref{sec:Conformance / Driver Conformance / Sound Driver Conformance},
-> >  \ref{sec:Conformance / Driver Conformance / Memory Driver Conformance},
-> >  \ref{sec:Conformance / Driver Conformance / I2C Adapter Driver Conformance} or
-> > -\ref{sec:Conformance / Driver Conformance / SCMI Driver Conformance}.
-> > +\ref{sec:Conformance / Driver Conformance / SCMI Driver Conformance},
-> > +\ref{sec:Conformance / Driver Conformance / PMEM Driver Conformance}.
+> > Coming back to it, there is no need to send multiple buffers with a
+> > single request. All we need, is a way to group several requests
+> > together, which we can already do based on the
+> > VIRTIO_I2C_FLAGS_FAIL_NEXT flag.
 > >
-> >      \item Clause \ref{sec:Conformance / Legacy Interface: Transitional Device and Transitional Driver Conformance}.
-> >    \end{itemize}
-> > @@ -55,7 +56,8 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
-> >  \ref{sec:Conformance / Device Conformance / Sound Device Conformance},
-> >  \ref{sec:Conformance / Device Conformance / Memory Device Conformance},
-> >  \ref{sec:Conformance / Device Conformance / I2C Adapter Device Conformance} or
-> > -\ref{sec:Conformance / Device Conformance / SCMI Device Conformance}.
-> > +\ref{sec:Conformance / Device Conformance / SCMI Device Conformance},
-> > +\ref{sec:Conformance / Device Conformance / PMEM Driver Conformance}.
+> > Remove support for multiple buffers within a single request.
 > >
-> >      \item Clause \ref{sec:Conformance / Legacy Interface: Transitional Device and Transitional Driver Conformance}.
-> >    \end{itemize}
-> > @@ -301,6 +303,16 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
-> >  \item \ref{drivernormative:Device Types / SCMI Device / Device Operation / Setting Up eventq Buffers}
-> >  \end{itemize}
-> >
-> > +\conformance{\subsection}{PMEM Driver Conformance}\label{sec:Conformance / Driver Conformance / PMEM Driver Conformance}
-> > +
-> > +A PMEM driver MUST conform to the following normative statements:
-> > +
-> > +\begin{itemize}
-> > +\item \ref{devicenormative:Device Types / PMEM Device / Device Initialization}
-> > +\item \ref{devicenormative:Device Types / PMEM Device / Device Operation / Virtqueue flush}
-> > +\item \ref{devicenormative:Device Types / PMEM Device / Device Operation / Virtqueue return}
-> > +\end{itemize}
-> > +
-> >  \conformance{\section}{Device Conformance}\label{sec:Conformance / Device Conformance}
-> >
-> >  A device MUST conform to the following normative statements:
-> > diff --git a/content.tex b/content.tex
-> > index 31b02e1..08d4a92 100644
-> > --- a/content.tex
-> > +++ b/content.tex
-> > @@ -6583,6 +6583,7 @@ \subsubsection{Legacy Interface: Framing Requirements}\label{sec:Device
-> >  \input{virtio-mem.tex}
-> >  \input{virtio-i2c.tex}
-> >  \input{virtio-scmi.tex}
-> > +\input{virtio-pmem.tex}
-> >
-> >  \chapter{Reserved Feature Bits}\label{sec:Reserved Feature Bits}
-> >
-> > diff --git a/virtio-pmem.tex b/virtio-pmem.tex
-> > new file mode 100644
-> > index 0000000..4fad8a3
-> > --- /dev/null
-> > +++ b/virtio-pmem.tex
-> > @@ -0,0 +1,128 @@
-> > +\section{PMEM Device}\label{sec:Device Types / PMEM Device}
-> > +
-> > +The virtio pmem device is a persistent memory (NVDIMM) device
-> > +that provides a virtio based asynchronous flush mechanism. This avoids
-> > +the need of a separate page cache in the guest and keeps the page cache
->
-> s/need of/need for/
+> > Since we are at very early stage of development currently, we can do
+> > these modifications without addition of new features or versioning of
+> > the protocol.
+> 
+> I'm a bit worried about this statement. While we have not done a formal
+> release of the standard since i2c has been added, it still has been out
+> there already,
 
-fixed
->
-> > +only in the host. Under memory pressure, the host makes use of
-> > +efficient memory reclaim decisions for page cache pages of all the
-> > +guests. This helps to reduce the memory footprint and fits more guests
-> > +in the host system.
-> > +
-> > +The virtio pmem device provides access to byte-addressable persistent
-> > +memory. The persist memory is a directly accessible range of system memory.
->
-> s/persist/persistent/
-Sorry! :(
+As far as I know, there are only two users of this stuff for now, Linaro and
+Intel (Jie). And both of us are okay to go ahead with this change.
 
->
-> > +Data written to this memory is made persistent by separately sending a
-> > +flush command. Writes that have been flushed are preserved across device
-> > +reset and power failure.
-> > +
-> > +\subsection{Device ID}\label{sec:Device Types / PMEM Device / Device ID}
-> > +  27
-> > +
-> > +\subsection{Virtqueues}\label{sec:Device Types / PMEM Device / Virtqueues}
-> > +\begin{description}
-> > +\item[0] req_vq
-> > +\end{description}
-> > +
-> > +\subsection{Feature bits}\label{sec:Device Types / PMEM Device / Feature bits}
-> > +
-> > +There are currently no feature bits defined for this device.
-> > +
-> > +\subsection{Device configuration layout}\label{sec:Device Types / PMEM Device / Device configuration layout}
-> > +
-> > +\begin{lstlisting}
-> > +struct virtio_pmem_config {
-> > +     le64 start;
-> > +     le64 size;
-> > +};
-> > +\end{lstlisting}
-> > +
-> > +\begin{description}
-> > +\item[\field{start}] contains the physical address of the first byte of the persistent memory region.
-> > +
-> > +\item[\field{size}] contains the length of this address range.
-> > +\end{description}
-> > +
-> > +\begin{enumerate}
-> > +\item Driver vpmem start is read from \field{start}.
-> > +\item Driver vpmem end is read from \field{size}.
-> > +\end{enumerate}
-> > +
-> > +\subsection{Driver Initialization}\label{sec:Device Types / PMEM Driver / Driver Initialization}
-> > +
-> > +The driver determines the start address and size of the persistent memory region in preparation for reading or writing data.
-> > +
-> > +The driver initializes req_vq in preparation for making flush requests.
-> > +
-> > +\subsection{Driver Operations}\label{sec:Device Types / PMEM Driver / Driver Operation / Request Queues}
-> > +
-> > +Requests have the following format:
-> > +
-> > +\begin{lstlisting}
-> > +struct virtio_pmem_req {
-> > +        le32 type;
-> > +};
-> > +\end{lstlisting}
-> > +
-> > +\field{type} is the request command type.
-> > +
-> > +Possible request types are:
-> > +
-> > +\begin{lstlisting}
-> > +#define VIRTIO_PMEM_REQ_TYPE_FLUSH      0
-> > +\end{lstlisting}
-> > +
-> > +\subsection{Device Operations}\label{sec:Device Types / PMEM Driver / Device Operation}
-> > +\devicenormative{\subsubsection}{Device Operation: Virtqueue flush}{Device Types / PMEM Device / Device Operation / Virtqueue flush}
-> > +
-> > +The device MUST ensure that all writes completed before a flush request persist across device reset and power failure before completing the flush request.
-> > +
-> > +\subsubsection{Device Operations}\label{sec:Device Types / PMEM Driver / Device Operation / Virtqueue return}
-> > +\begin{lstlisting}
-> > +struct virtio_pmem_resp {
-> > +        le32 ret;
-> > +};
-> > +\end{lstlisting}
-> > +
-> > +\field{ret} is the value which device returns after command completion.
-> > +
-> > +\devicenormative{\subsubsection}{Device Operation: Virtqueue return}{Device Types / PMEM Device / Device Operation / Virtqueue return}
-> > +
-> > +The device MUST return "0" for success and "-1" for failure.
-> > +
-> > +\subsection{Possible security implications}\label{sec:Device Types / PMEM Device / Possible Security Implications}
-> > +
-> > +There could be potential security implications depending on how
-> > +memory mapped backing device is used. By default device emulation
-> > +is done with SHARED memory mapping. There is a contract between driver
-> > +and device to access shared memory region for read or write operations.
-> > +
-> > +If a malicious driver or device map the same memory region, the attacker
->
-> s/map/maps/
+> and this is an incompatible change (even if it is one
+> that makes sense.)
 
-fixed
->
-> > +can make use of known side channel attacks to predict the current state of data.
-> > +If both attacker and victim somehow execute same shared code after a flush
-> > +or evict operation, with difference in execution timing attacker could infer
-> > +another device data.
->
-> s/device/device's/
+Yes, it is incompatible for sure.
 
-fixed
->
-> > +
-> > +\subsection{Countermeasures}\label{sec:Device Types / PMEM Device / Possible Security Implications / Countermeasures}
-> > +
-> > +\subsubsection{ With SHARED mapping}\label{sec:Device Types / PMEM Device / Possible Security Implications / Countermeasures / SHARED}
-> > +
-> > +If device backing region is shared between multiple devices, this may act
->
-> s/If device/If a device's/
+> So, I'm a bit torn between just going with this and adding a feature bit
+> (that can be mandatory so we don't need to drag the old implementation
+> around.)
 
-fixed
->
-> > +as a metric for side channel attack. As a counter measure every device
->
-> s/attack/attacks/
+I would be fine with that as it would solve the problem at hand.
 
-fixed
->
-> > +should have its own(not shared with another driver) SHARED backing memory.
->
-> s/own(/own (/
+> But I'm also worried whether there are more incompatible
+> changes expected in the near future; if there are, I'd be more
+> comfortable if we could just hold off until everyone agrees things are
+> stable.
 
-ok
->
-> > +
-> > +\subsubsection{ With PRIVATE mapping}\label{sec:Device Types / PMEM Device / Possible Security Implications / Countermeasures / PRIVATE}
-> > +There maybe be chances of side channels attack with PRIVATE
-> > +memory mapping similar to SHARED with read-only shared mappings.
-> > +PRIVATE is not used for virtio pmem making this usecase
-> > +irrelevant.
-> > +
-> > +\subsubsection{ Workload specific mapping}\label{sec:Device Types / PMEM Device / Possible Security Implications / Countermeasures / Workload}
-> > +For SHARED mapping, if workload is single application inside
->
-> s/mapping/mappings/
-> s/workload/the workload/
-> s/single/a single/
+Both me and Jie are done with our developments of backends and Linux driver and
+this is the only thing that came up during reviews. So there is nothing which is
+already known.
 
-fixed
->
-> > +the driver and there is no risk in sharing data. Device sharing
->
-> The first sentence is incomplete ("if X and Y"). Should it be "if X then
-> Y" or something else?
-
-replaced "if" by "for".
->
-> > +same backing region with SHARED mapping can be used as a valid configuration.
-> > +
-> > +\subsubsection{ Prevent cache eviction}\label{sec:Device Types / PMEM Device / Possible Security Implications / Countermeasures / Cache eviction}
-> > +Don't allow device shared region evict from driver filesystem trim or discard
->
-> s/evict/eviction/
->
-> > +like commands with virtio pmem. This rules out any possibility of evict-reload
-> > +cache side channel attacks if backing region is shared(SHARED)
->
-> s/shared(/shared (/
-
-o.k
-
-
-Thank you!
-
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+-- 
+viresh
 
