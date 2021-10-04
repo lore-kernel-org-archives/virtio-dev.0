@@ -1,352 +1,329 @@
-Return-Path: <virtio-dev-return-8768-cohuck=redhat.com@lists.oasis-open.org>
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 731B79862CE
-	for <virtio-dev@lists.oasis-open.org>; Mon,  4 Oct 2021 11:35:50 +0000 (UTC)
-Date: Mon, 4 Oct 2021 13:33:43 +0200
-From: Matias Ezequiel Vara Larsen <matiasevara@gmail.com>
-Message-ID: <20211004113343.GA20@matiasv.localdomain>
-References: <87v94ldrqq.fsf@linaro.org>
- <20210819091154.GA20@matiasv.localdomain>
- <20210820060558.GB13452@laputa>
- <20210821140820.GA19@matiasv.localdomain>
- <20210823012029.GB40863@laputa>
+Return-Path: <stefanha@redhat.com>
+Date: Mon, 4 Oct 2021 10:34:35 +0100
+From: Stefan Hajnoczi <stefanha@redhat.com>
+Subject: Re: [virtio-dev] [PATCH v4] virtio-pmem: PMEM device spec
+Message-ID: <YVrKq1rOFCMMpowE@stefanha-x1.localdomain>
+References: <20210921102702.60259-1-pankaj.gupta.linux@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20210823012029.GB40863@laputa>
-Subject: Re: [virtio-dev] Enabling hypervisor agnosticism for VirtIO backends
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="oGCRZ4vfjELobJB2"
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-To: AKASHI Takahiro <takahiro.akashi@linaro.org>
-Cc: Alex Benn??e <alex.bennee@linaro.org>, Stratos Mailing List <stratos-dev@op-lists.linaro.org>, virtio-dev@lists.oasis-open.org, Arnd Bergmann <arnd.bergmann@linaro.org>, Viresh Kumar <viresh.kumar@linaro.org>, Stefano Stabellini <stefano.stabellini@xilinx.com>, stefanha@redhat.com, Jan Kiszka <jan.kiszka@siemens.com>, Carl van Schaik <cvanscha@qti.qualcomm.com>, pratikp@quicinc.com, Srivatsa Vaddagiri <vatsa@codeaurora.org>, Jean-Philippe Brucker <jean-philippe@linaro.org>, Mathieu Poirier <mathieu.poirier@linaro.org>
+In-Reply-To: <20210921102702.60259-1-pankaj.gupta.linux@gmail.com>
+To: Pankaj Gupta <pankaj.gupta.linux@gmail.com>
+Cc: virtio-dev@lists.oasis-open.org, dan.j.williams@intel.com, david@redhat.com, mst@redhat.com, cohuck@redhat.com, tstark@linux.microsoft.com, pankaj.gupta@ionos.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Mon, Aug 23, 2021 at 10:20:29AM +0900, AKASHI Takahiro wrote:
-> Hi Matias,
->=20
-> On Sat, Aug 21, 2021 at 04:08:20PM +0200, Matias Ezequiel Vara Larsen wro=
-te:
-> > Hello,
-> >=20
-> > On Fri, Aug 20, 2021 at 03:05:58PM +0900, AKASHI Takahiro wrote:
-> > > Hi Matias,
-> > >=20
-> > > On Thu, Aug 19, 2021 at 11:11:55AM +0200, Matias Ezequiel Vara Larsen=
- wrote:
-> > > > Hello Alex,
-> > > >=20
-> > > > I can tell you my experience from working on a PoC (library)=20
-> > > > to allow the implementation of virtio-devices that are hypervisor/O=
-S agnostic.=20
-> > >=20
-> > > What hypervisor are you using for your PoC here?
-> > >=20
-> >=20
-> > I am using an in-house hypervisor, which is similar to Jailhouse.
-> >=20
-> > > > I focused on two use cases:
-> > > > 1. type-I hypervisor in which the backend is running as a VM. This
-> > > > is an in-house hypervisor that does not support VMExits.
-> > > > 2. Linux user-space. In this case, the library is just used to
-> > > > communicate threads. The goal of this use case is merely testing.
-> > > >=20
-> > > > I have chosen virtio-mmio as the way to exchange information
-> > > > between the frontend and backend. I found it hard to synchronize th=
-e
-> > > > access to the virtio-mmio layout without VMExits. I had to add some=
- extra bits to allow=20
-> > >=20
-> > > Can you explain how MMIOs to registers in virito-mmio layout
-> > > (which I think means a configuration space?) will be propagated to BE=
-?
-> > >=20
-> >=20
-> > In this PoC, the BE guest is created with a fixed number of regions
-> > of memory that represents each device. The BE initializes these regions=
-, and then, waits
-> > for the FEs to begin the initialization.=20
->=20
-> Let me ask you in another way; When FE tries to write a register
-> in configuration space, say QueueSel, how is BE notified of this event?
->=20
-In my PoC, it is never notified when FE writes to a register. For example, =
-the QueueSel is only used in one of the
-steps of the device status configuration. The BE is only notified when the
-FE is in that step. When the FE is setting up the vrings, it sets the addre=
-ss, set the QueueSel, and=20
-then blocks until the BE can get the values. The BE gets the values and res=
-umes the FE, which moves to the next step.=20
 
-> > > > the front-end and back-end to synchronize, which is required
-> > > > during the device-status initialization. These extra bits would not=
- be=20
-> > > > needed in case the hypervisor supports VMExits, e.g., KVM.
-> > > >=20
-> > > > Each guest has a memory region that is shared with the backend.=20
-> > > > This memory region is used by the frontend to allocate the io-buffe=
-rs. This region also=20
-> > > > maps the virtio-mmio layout that is initialized by the backend. For=
- the moment, this region=20
-> > > > is defined when the guest is created. One limitation is that the me=
-mory for io-buffers is fixed.=20
-> > >=20
-> > > So in summary, you have a single memory region that is used
-> > > for virtio-mmio layout and io-buffers (I think they are for payload)
-> > > and you assume that the region will be (at lease for now) statically
-> > > shared between FE and BE so that you can eliminate 'mmap' at every
-> > > time to access the payload.
-> > > Correct?
-> > >
-> >=20
-> > Yes, It is.=20
-> >=20
-> > > If so, it can be an alternative solution for memory access issue,
-> > > and a similar technique is used in some implementations:
-> > > - (Jailhouse's) ivshmem
-> > > - Arnd's fat virtqueue
-> > >
-> > > In either case, however, you will have to allocate payload from the r=
-egion
-> > > and so you will see some impact on FE code (at least at some low leve=
-l).
-> > > (In ivshmem, dma_ops in the kernel is defined for this purpose.)
-> > > Correct?
-> >=20
-> > Yes, It is. The FE implements a sort of malloc() to organize the alloca=
-tion of io-buffers from that
-> > memory region.
-> >=20
-> > Rethinking about the VMExits, I am not sure how this mechanism may be u=
-sed when both the FE and=20
-> > the BE are VMs. The use of VMExits may require to involve the hyperviso=
-r.
+--oGCRZ4vfjELobJB2
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Tue, Sep 21, 2021 at 12:27:02PM +0200, Pankaj Gupta wrote:
+> Posting virtio specification for virtio pmem device. Virtio pmem is a
+> paravirtualized device which allows the guest to bypass page cache.
+> Virtio pmem kernel driver is merged in Upstream Kernel 5.3. Also, Qemu
+> device is merged in Qemu 4.1.
 >=20
-> Maybe I misunderstand something. Are FE/BE not VMs in your PoC?
+> Signed-off-by: Pankaj Gupta <pankaj.gupta.linux@gmail.com>
+> ---
+>  v3 -> v4
+>   Define constant used in request type - Stefan
+>   Small text change - Stefan
+>=20
+>  conformance.tex |  16 +++++-
+>  content.tex     |   1 +
+>  virtio-pmem.tex | 128 ++++++++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 143 insertions(+), 2 deletions(-)
+>  create mode 100644 virtio-pmem.tex
+>=20
+> diff --git a/conformance.tex b/conformance.tex
+> index 94d7a06..7331003 100644
+> --- a/conformance.tex
+> +++ b/conformance.tex
+> @@ -31,7 +31,8 @@ \section{Conformance Targets}\label{sec:Conformance / C=
+onformance Targets}
+>  \ref{sec:Conformance / Driver Conformance / Sound Driver Conformance},
+>  \ref{sec:Conformance / Driver Conformance / Memory Driver Conformance},
+>  \ref{sec:Conformance / Driver Conformance / I2C Adapter Driver Conforman=
+ce} or
+> -\ref{sec:Conformance / Driver Conformance / SCMI Driver Conformance}.
+> +\ref{sec:Conformance / Driver Conformance / SCMI Driver Conformance},
+> +\ref{sec:Conformance / Driver Conformance / PMEM Driver Conformance}.
+> =20
+>      \item Clause \ref{sec:Conformance / Legacy Interface: Transitional D=
+evice and Transitional Driver Conformance}.
+>    \end{itemize}
+> @@ -55,7 +56,8 @@ \section{Conformance Targets}\label{sec:Conformance / C=
+onformance Targets}
+>  \ref{sec:Conformance / Device Conformance / Sound Device Conformance},
+>  \ref{sec:Conformance / Device Conformance / Memory Device Conformance},
+>  \ref{sec:Conformance / Device Conformance / I2C Adapter Device Conforman=
+ce} or
+> -\ref{sec:Conformance / Device Conformance / SCMI Device Conformance}.
+> +\ref{sec:Conformance / Device Conformance / SCMI Device Conformance},
+> +\ref{sec:Conformance / Device Conformance / PMEM Driver Conformance}.
+> =20
+>      \item Clause \ref{sec:Conformance / Legacy Interface: Transitional D=
+evice and Transitional Driver Conformance}.
+>    \end{itemize}
+> @@ -301,6 +303,16 @@ \section{Conformance Targets}\label{sec:Conformance =
+/ Conformance Targets}
+>  \item \ref{drivernormative:Device Types / SCMI Device / Device Operation=
+ / Setting Up eventq Buffers}
+>  \end{itemize}
+> =20
+> +\conformance{\subsection}{PMEM Driver Conformance}\label{sec:Conformance=
+ / Driver Conformance / PMEM Driver Conformance}
+> +
+> +A PMEM driver MUST conform to the following normative statements:
+> +
+> +\begin{itemize}
+> +\item \ref{devicenormative:Device Types / PMEM Device / Device Initializ=
+ation}
+> +\item \ref{devicenormative:Device Types / PMEM Device / Device Operation=
+ / Virtqueue flush}
+> +\item \ref{devicenormative:Device Types / PMEM Device / Device Operation=
+ / Virtqueue return}
+> +\end{itemize}
+> +
+>  \conformance{\section}{Device Conformance}\label{sec:Conformance / Devic=
+e Conformance}
+> =20
+>  A device MUST conform to the following normative statements:
+> diff --git a/content.tex b/content.tex
+> index 31b02e1..08d4a92 100644
+> --- a/content.tex
+> +++ b/content.tex
+> @@ -6583,6 +6583,7 @@ \subsubsection{Legacy Interface: Framing Requiremen=
+ts}\label{sec:Device
+>  \input{virtio-mem.tex}
+>  \input{virtio-i2c.tex}
+>  \input{virtio-scmi.tex}
+> +\input{virtio-pmem.tex}
+> =20
+>  \chapter{Reserved Feature Bits}\label{sec:Reserved Feature Bits}
+> =20
+> diff --git a/virtio-pmem.tex b/virtio-pmem.tex
+> new file mode 100644
+> index 0000000..4fad8a3
+> --- /dev/null
+> +++ b/virtio-pmem.tex
+> @@ -0,0 +1,128 @@
+> +\section{PMEM Device}\label{sec:Device Types / PMEM Device}
+> +
+> +The virtio pmem device is a persistent memory (NVDIMM) device
+> +that provides a virtio based asynchronous flush mechanism. This avoids
+> +the need of a separate page cache in the guest and keeps the page cache
+
+s/need of/need for/
+
+> +only in the host. Under memory pressure, the host makes use of
+> +efficient memory reclaim decisions for page cache pages of all the
+> +guests. This helps to reduce the memory footprint and fits more guests
+> +in the host system.
+> +
+> +The virtio pmem device provides access to byte-addressable persistent
+> +memory. The persist memory is a directly accessible range of system memo=
+ry.
+
+s/persist/persistent/
+
+> +Data written to this memory is made persistent by separately sending a
+> +flush command. Writes that have been flushed are preserved across device
+> +reset and power failure.
+> +
+> +\subsection{Device ID}\label{sec:Device Types / PMEM Device / Device ID}
+> +  27
+> +
+> +\subsection{Virtqueues}\label{sec:Device Types / PMEM Device / Virtqueue=
+s}
+> +\begin{description}
+> +\item[0] req_vq
+> +\end{description}
+> +
+> +\subsection{Feature bits}\label{sec:Device Types / PMEM Device / Feature=
+ bits}
+> +
+> +There are currently no feature bits defined for this device.
+> +
+> +\subsection{Device configuration layout}\label{sec:Device Types / PMEM D=
+evice / Device configuration layout}
+> +
+> +\begin{lstlisting}
+> +struct virtio_pmem_config {
+> +	le64 start;
+> +	le64 size;
+> +};
+> +\end{lstlisting}
+> +
+> +\begin{description}
+> +\item[\field{start}] contains the physical address of the first byte of =
+the persistent memory region.
+> +
+> +\item[\field{size}] contains the length of this address range.
+> +\end{description}
+> +
+> +\begin{enumerate}
+> +\item Driver vpmem start is read from \field{start}.
+> +\item Driver vpmem end is read from \field{size}.
+> +\end{enumerate}
+> +
+> +\subsection{Driver Initialization}\label{sec:Device Types / PMEM Driver =
+/ Driver Initialization}
+> +
+> +The driver determines the start address and size of the persistent memor=
+y region in preparation for reading or writing data.
+> +
+> +The driver initializes req_vq in preparation for making flush requests.
+> +
+> +\subsection{Driver Operations}\label{sec:Device Types / PMEM Driver / Dr=
+iver Operation / Request Queues}
+> +
+> +Requests have the following format:
+> +
+> +\begin{lstlisting}
+> +struct virtio_pmem_req {
+> +        le32 type;
+> +};
+> +\end{lstlisting}
+> +
+> +\field{type} is the request command type.=20
+> +
+> +Possible request types are:
+> +
+> +\begin{lstlisting}
+> +#define VIRTIO_PMEM_REQ_TYPE_FLUSH      0
+> +\end{lstlisting}
+> +
+> +\subsection{Device Operations}\label{sec:Device Types / PMEM Driver / De=
+vice Operation}
+> +\devicenormative{\subsubsection}{Device Operation: Virtqueue flush}{Devi=
+ce Types / PMEM Device / Device Operation / Virtqueue flush}
+> +
+> +The device MUST ensure that all writes completed before a flush request =
+persist across device reset and power failure before completing the flush r=
+equest.
+> +
+> +\subsubsection{Device Operations}\label{sec:Device Types / PMEM Driver /=
+ Device Operation / Virtqueue return}
+> +\begin{lstlisting}
+> +struct virtio_pmem_resp {
+> +        le32 ret;
+> +};
+> +\end{lstlisting}
+> +
+> +\field{ret} is the value which device returns after command completion.
+> +
+> +\devicenormative{\subsubsection}{Device Operation: Virtqueue return}{Dev=
+ice Types / PMEM Device / Device Operation / Virtqueue return}
+> +
+> +The device MUST return "0" for success and "-1" for failure.
+> +
+> +\subsection{Possible security implications}\label{sec:Device Types / PME=
+M Device / Possible Security Implications}
+> +
+> +There could be potential security implications depending on how
+> +memory mapped backing device is used. By default device emulation
+> +is done with SHARED memory mapping. There is a contract between driver
+> +and device to access shared memory region for read or write operations.
+> +
+> +If a malicious driver or device map the same memory region, the attacker
+
+s/map/maps/
+
+> +can make use of known side channel attacks to predict the current state =
+of data.
+> +If both attacker and victim somehow execute same shared code after a flu=
+sh
+> +or evict operation, with difference in execution timing attacker could i=
+nfer
+> +another device data.
+
+s/device/device's/
+
+> +
+> +\subsection{Countermeasures}\label{sec:Device Types / PMEM Device / Poss=
+ible Security Implications / Countermeasures}
+> +
+> +\subsubsection{ With SHARED mapping}\label{sec:Device Types / PMEM Devic=
+e / Possible Security Implications / Countermeasures / SHARED}
+> +
+> +If device backing region is shared between multiple devices, this may act
+
+s/If device/If a device's/
+
+> +as a metric for side channel attack. As a counter measure every device
+
+s/attack/attacks/
+
+> +should have its own(not shared with another driver) SHARED backing memor=
+y.
+
+s/own(/own (/
+
+> +
+> +\subsubsection{ With PRIVATE mapping}\label{sec:Device Types / PMEM Devi=
+ce / Possible Security Implications / Countermeasures / PRIVATE}
+> +There maybe be chances of side channels attack with PRIVATE
+> +memory mapping similar to SHARED with read-only shared mappings.
+> +PRIVATE is not used for virtio pmem making this usecase
+> +irrelevant.
+> +
+> +\subsubsection{ Workload specific mapping}\label{sec:Device Types / PMEM=
+ Device / Possible Security Implications / Countermeasures / Workload}
+> +For SHARED mapping, if workload is single application inside
+
+s/mapping/mappings/
+s/workload/the workload/
+s/single/a single/
+
+> +the driver and there is no risk in sharing data. Device sharing
+
+The first sentence is incomplete ("if X and Y"). Should it be "if X then
+Y" or something else?
+
+> +same backing region with SHARED mapping can be used as a valid configura=
+tion.
+> +
+> +\subsubsection{ Prevent cache eviction}\label{sec:Device Types / PMEM De=
+vice / Possible Security Implications / Countermeasures / Cache eviction}
+> +Don't allow device shared region evict from driver filesystem trim or di=
+scard=20
+
+s/evict/eviction/
+
+> +like commands with virtio pmem. This rules out any possibility of evict-=
+reload
+> +cache side channel attacks if backing region is shared(SHARED)
+
+s/shared(/shared (/
+
+> +between mutliple devices. Though if we use per device backing file with
+> +shared mapping this countermeasure is not required.
+> --=20
+> 2.25.1
+>=20
+>=20
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 >=20
 
-Yes, both are VMs. I meant, in case that both are VMs AND a VMExit
-mechanism is used, such a mechanism would require the hypervisor to
-forward the traps. In my PoC, both are VMs BUT there is not a VMExit
-mechanism.
+--oGCRZ4vfjELobJB2
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Matias
-> -Takahiro Akashi
->=20
-> > Matias
-> > >=20
-> > > -Takahiro Akashi
-> > >=20
-> > > > At some point, the guest shall be able to balloon this region. Noti=
-fications between=20
-> > > > the frontend and the backend are implemented by using an hypercall.=
- The hypercall=20
-> > > > mechanism and the memory allocation are abstracted away by a platfo=
-rm layer that=20
-> > > > exposes an interface that is hypervisor/os agnostic.
-> > > >=20
-> > > > I split the backend into a virtio-device driver and a
-> > > > backend driver. The virtio-device driver is the virtqueues and the
-> > > > backend driver gets packets from the virtqueue for
-> > > > post-processing. For example, in the case of virtio-net, the backen=
-d
-> > > > driver would decide if the packet goes to the hardware or to anothe=
-r
-> > > > virtio-net device. The virtio-device drivers may be
-> > > > implemented in different ways like by using a single thread, multip=
-le threads,=20
-> > > > or one thread for all the virtio-devices.
-> > > >=20
-> > > > In this PoC, I just tackled two very simple use-cases. These
-> > > > use-cases allowed me to extract some requirements for an hypervisor=
- to
-> > > > support virtio.
-> > > >=20
-> > > > Matias
-> > > >=20
-> > > > On Wed, Aug 04, 2021 at 10:04:30AM +0100, Alex Benn=E9e wrote:
-> > > > > Hi,
-> > > > >=20
-> > > > > One of the goals of Project Stratos is to enable hypervisor agnos=
-tic
-> > > > > backends so we can enable as much re-use of code as possible and =
-avoid
-> > > > > repeating ourselves. This is the flip side of the front end where
-> > > > > multiple front-end implementations are required - one per OS, ass=
-uming
-> > > > > you don't just want Linux guests. The resultant guests are trivia=
-lly
-> > > > > movable between hypervisors modulo any abstracted paravirt type
-> > > > > interfaces.
-> > > > >=20
-> > > > > In my original thumb nail sketch of a solution I envisioned vhost=
--user
-> > > > > daemons running in a broadly POSIX like environment. The interfac=
-e to
-> > > > > the daemon is fairly simple requiring only some mapped memory and=
- some
-> > > > > sort of signalling for events (on Linux this is eventfd). The ide=
-a was a
-> > > > > stub binary would be responsible for any hypervisor specific setu=
-p and
-> > > > > then launch a common binary to deal with the actual virtqueue req=
-uests
-> > > > > themselves.
-> > > > >=20
-> > > > > Since that original sketch we've seen an expansion in the sort of=
- ways
-> > > > > backends could be created. There is interest in encapsulating bac=
-kends
-> > > > > in RTOSes or unikernels for solutions like SCMI. There interest i=
-n Rust
-> > > > > has prompted ideas of using the trait interface to abstract diffe=
-rences
-> > > > > away as well as the idea of bare-metal Rust backends.
-> > > > >=20
-> > > > > We have a card (STR-12) called "Hypercall Standardisation" which
-> > > > > calls for a description of the APIs needed from the hypervisor si=
-de to
-> > > > > support VirtIO guests and their backends. However we are some way=
- off
-> > > > > from that at the moment as I think we need to at least demonstrat=
-e one
-> > > > > portable backend before we start codifying requirements. To that =
-end I
-> > > > > want to think about what we need for a backend to function.
-> > > > >=20
-> > > > > Configuration
-> > > > > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > > > >=20
-> > > > > In the type-2 setup this is typically fairly simple because the h=
-ost
-> > > > > system can orchestrate the various modules that make up the compl=
-ete
-> > > > > system. In the type-1 case (or even type-2 with delegated service=
- VMs)
-> > > > > we need some sort of mechanism to inform the backend VM about key
-> > > > > details about the system:
-> > > > >=20
-> > > > >   - where virt queue memory is in it's address space
-> > > > >   - how it's going to receive (interrupt) and trigger (kick) even=
-ts
-> > > > >   - what (if any) resources the backend needs to connect to
-> > > > >=20
-> > > > > Obviously you can elide over configuration issues by having stati=
-c
-> > > > > configurations and baking the assumptions into your guest images =
-however
-> > > > > this isn't scalable in the long term. The obvious solution seems =
-to be
-> > > > > extending a subset of Device Tree data to user space but perhaps =
-there
-> > > > > are other approaches?
-> > > > >=20
-> > > > > Before any virtio transactions can take place the appropriate mem=
-ory
-> > > > > mappings need to be made between the FE guest and the BE guest.
-> > > > > Currently the whole of the FE guests address space needs to be vi=
-sible
-> > > > > to whatever is serving the virtio requests. I can envision 3 appr=
-oaches:
-> > > > >=20
-> > > > >  * BE guest boots with memory already mapped
-> > > > >=20
-> > > > >  This would entail the guest OS knowing where in it's Guest Physi=
-cal
-> > > > >  Address space is already taken up and avoiding clashing. I would=
- assume
-> > > > >  in this case you would want a standard interface to userspace to=
- then
-> > > > >  make that address space visible to the backend daemon.
-> > > > >=20
-> > > > >  * BE guests boots with a hypervisor handle to memory
-> > > > >=20
-> > > > >  The BE guest is then free to map the FE's memory to where it wan=
-ts in
-> > > > >  the BE's guest physical address space. To activate the mapping w=
-ill
-> > > > >  require some sort of hypercall to the hypervisor. I can see two =
-options
-> > > > >  at this point:
-> > > > >=20
-> > > > >   - expose the handle to userspace for daemon/helper to trigger t=
-he
-> > > > >     mapping via existing hypercall interfaces. If using a helper =
-you
-> > > > >     would have a hypervisor specific one to avoid the daemon havi=
-ng to
-> > > > >     care too much about the details or push that complexity into =
-a
-> > > > >     compile time option for the daemon which would result in diff=
-erent
-> > > > >     binaries although a common source base.
-> > > > >=20
-> > > > >   - expose a new kernel ABI to abstract the hypercall differences=
- away
-> > > > >     in the guest kernel. In this case the userspace would essenti=
-ally
-> > > > >     ask for an abstract "map guest N memory to userspace ptr" and=
- let
-> > > > >     the kernel deal with the different hypercall interfaces. This=
- of
-> > > > >     course assumes the majority of BE guests would be Linux kerne=
-ls and
-> > > > >     leaves the bare-metal/unikernel approaches to their own devic=
-es.
-> > > > >=20
-> > > > > Operation
-> > > > > =3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > > > >=20
-> > > > > The core of the operation of VirtIO is fairly simple. Once the
-> > > > > vhost-user feature negotiation is done it's a case of receiving u=
-pdate
-> > > > > events and parsing the resultant virt queue for data. The vhost-u=
-ser
-> > > > > specification handles a bunch of setup before that point, mostly =
-to
-> > > > > detail where the virt queues are set up FD's for memory and event
-> > > > > communication. This is where the envisioned stub process would be
-> > > > > responsible for getting the daemon up and ready to run. This is
-> > > > > currently done inside a big VMM like QEMU but I suspect a modern
-> > > > > approach would be to use the rust-vmm vhost crate. It would then =
-either
-> > > > > communicate with the kernel's abstracted ABI or be re-targeted as=
- a
-> > > > > build option for the various hypervisors.
-> > > > >=20
-> > > > > One question is how to best handle notification and kicks. The ex=
-isting
-> > > > > vhost-user framework uses eventfd to signal the daemon (although =
-QEMU
-> > > > > is quite capable of simulating them when you use TCG). Xen has it=
-'s own
-> > > > > IOREQ mechanism. However latency is an important factor and havin=
-g
-> > > > > events go through the stub would add quite a lot.
-> > > > >=20
-> > > > > Could we consider the kernel internally converting IOREQ messages=
- from
-> > > > > the Xen hypervisor to eventfd events? Would this scale with other=
- kernel
-> > > > > hypercall interfaces?
-> > > > >=20
-> > > > > So any thoughts on what directions are worth experimenting with?
-> > > > >=20
-> > > > > --=20
-> > > > > Alex Benn=E9e
-> > > > >=20
-> > > > > -----------------------------------------------------------------=
-----
-> > > > > To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.o=
-rg
-> > > > > For additional commands, e-mail: virtio-dev-help@lists.oasis-open=
-.org
-> > > > >=20
+-----BEGIN PGP SIGNATURE-----
 
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmFayqoACgkQnKSrs4Gr
+c8gEuQgArxn/dJJgUrHPhvOab5dCZZjRa6B8bnBWn4iKGgW+iO8nfUXi8FJTW0Cd
+7m1J4DcYSemv1KQvNcZvBnPJ7C5UfU7eFzMXIYeK1Fh2xDqe+NSVJVZTObh1E/wP
+Xxfh5kQ1kGUEFQ7S5n8nKD6Vr6Y9W0jpdvp6bE7VMFmReN53DDlBFLH9wLVxtvcD
+uTC4pgXKLVHORQBjz/v0N2ELryQQr3H71k2TPOPblFxmGmxi9+Ej51KtILnunnur
+7gngf2q66GGOOq9AYERb/sihx8qxSp7H79EFk/stSRGiDmh44KLO2feHav/eH7jM
+cSHHb7uzNuA+wGpBp3tYdRddZp+0cw==
+=Abx9
+-----END PGP SIGNATURE-----
+
+--oGCRZ4vfjELobJB2--
 
