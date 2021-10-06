@@ -1,14 +1,14 @@
-Return-Path: <pankaj.gupta@ionos.com>
+Return-Path: <pankaj.gupta.linux@gmail.com>
 MIME-Version: 1.0
 References: <20211006062157.21768-1-pankaj.gupta.linux@gmail.com> <874k9u1vf5.fsf@redhat.com>
 In-Reply-To: <874k9u1vf5.fsf@redhat.com>
-From: Pankaj Gupta <pankaj.gupta@ionos.com>
-Date: Wed, 6 Oct 2021 09:19:48 +0200
-Message-ID: <CALzYo31zpLsDSsW4Aij9jMSnJKv9==+iEPdOhm7my7maztQmBQ@mail.gmail.com>
-Subject: Re: [PATCH v5] virtio-pmem: PMEM device spec
+From: Pankaj Gupta <pankaj.gupta.linux@gmail.com>
+Date: Wed, 6 Oct 2021 09:21:13 +0200
+Message-ID: <CAM9Jb+h130AAJRMNz1rEuKSXeOjtyR=oi23KMr+w4GQPhRwuQg@mail.gmail.com>
+Subject: Re: [virtio-dev] Re: [PATCH v5] virtio-pmem: PMEM device spec
 Content-Type: text/plain; charset="UTF-8"
 To: Cornelia Huck <cohuck@redhat.com>
-Cc: Pankaj Gupta <pankaj.gupta.linux@gmail.com>, virtio-dev@lists.oasis-open.org, stefanha@redhat.com, Dan Williams <dan.j.williams@intel.com>, David Hildenbrand <david@redhat.com>, "Michael S . Tsirkin" <mst@redhat.com>, Taylor Stark <tstark@linux.microsoft.com>
+Cc: virtio-dev@lists.oasis-open.org, Stefan Hajnoczi <stefanha@redhat.com>, Dan Williams <dan.j.williams@intel.com>, David Hildenbrand <david@redhat.com>, "Michael S . Tsirkin" <mst@redhat.com>, Taylor Stark <tstark@linux.microsoft.com>, Pankaj Gupta <pankaj.gupta@ionos.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
 > > Posting virtio specification for virtio pmem device. Virtio pmem is a
@@ -54,7 +54,29 @@ List-ID: <virtio-dev.lists.oasis-open.org>
 >
 > Nit: drop the space after the opening bracket (also below.)
 
-o.k
+o.k. Sure
+
+>
+> > +
+> > +If a device's backing region is shared between multiple devices, this may act
+> > +as a metric for side channel attacks. As a counter measure every device
+> > +should have its own (not shared with another driver) SHARED backing memory.
+> > +
+> > +\subsubsection{ With PRIVATE mapping}\label{sec:Device Types / PMEM Device / Possible Security Implications / Countermeasures / PRIVATE}
+> > +There maybe be chances of side channels attack with PRIVATE
+> > +memory mapping similar to SHARED with read-only shared mappings.
+> > +PRIVATE is not used for virtio pmem making this usecase
+> > +irrelevant.
+> > +
+> > +\subsubsection{ Workload specific mapping}\label{sec:Device Types / PMEM Device / Possible Security Implications / Countermeasures / Workload}
+> > +For SHARED mappings, for the workload is a single application inside
+> > +the driver and there is no risk in sharing data. Device sharing
+>
+> Sorry for noticing this only now, but I have trouble parsing this
+> sentence. Does it mean that you can use SHARED mapping if the workload
+> is a single application?
+
+
 
 >
 > > +
