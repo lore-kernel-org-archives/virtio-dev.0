@@ -1,62 +1,45 @@
-Return-Path: <jean-philippe@linaro.org>
-Date: Fri, 15 Oct 2021 12:07:31 +0100
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: Re: [virtio-dev] [PATCH v2] virtio-iommu: Rework the bypass feature
-Message-ID: <YWlg8yaeVTjZpvYT@myrica>
-References: <20211011150916.38120-1-jean-philippe@linaro.org>
- <BN9PR11MB5433D2DC0C4959183142A42E8CB79@BN9PR11MB5433.namprd11.prod.outlook.com>
- <YWa+qK32mogp1iWd@myrica>
- <BN9PR11MB543342D98352576A35B433D08CB89@BN9PR11MB5433.namprd11.prod.outlook.com>
+Return-Path: <virtio-dev-return-8800-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id 3C85E986495
+	for <virtio-dev@lists.oasis-open.org>; Wed,  6 Oct 2021 11:54:21 +0000 (UTC)
+From: Cornelia Huck <cohuck@redhat.com>
+In-Reply-To: <CAPR809uuo=5kmzUs3RFp6z_4===R0hxdFiScLPouUS+qxdaVWg@mail.gmail.com>
+References: <20210505193655.2414268-1-egranata@google.com>
+ <CAPR809ukYeThsPy4eg8A-G8b4Hwt7Prxh9P75=Vp9jnCKb6WqQ@mail.gmail.com>
+ <YO6ro345FI0XE8vv@stefanha-x1.localdomain> <87pmvlck3p.fsf@redhat.com>
+ <YO7zwKbH6OEW2z1o@stefanha-x1.localdomain>
+ <CAPR809uuo=5kmzUs3RFp6z_4===R0hxdFiScLPouUS+qxdaVWg@mail.gmail.com>
+Date: Wed, 06 Oct 2021 13:54:01 +0200
+Message-ID: <87h7duz7vq.fsf@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <BN9PR11MB543342D98352576A35B433D08CB89@BN9PR11MB5433.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Cc: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "eric.auger@redhat.com" <eric.auger@redhat.com>, "Boeuf, Sebastien" <sebastien.boeuf@intel.com>, "cohuck@redhat.com" <cohuck@redhat.com>, "mst@redhat.com" <mst@redhat.com>
+Subject: Re: [virtio-dev] Fwd: [PATCH v2] Provide detailed specification of
+ virtio-blk lifetime metrics
+Content-Type: text/plain
+To: Enrico Granata <egranata@google.com>, Stefan Hajnoczi <stefanha@redhat.com>
+Cc: virtio-dev@lists.oasis-open.org, linux-block@vger.kernel.org, virtualization@lists.linux-foundation.org, hch@infradead.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Thu, Oct 14, 2021 at 02:05:30AM +0000, Tian, Kevin wrote:
-> > > >   For more security, the firmware could implement a minimal virtio-
-> > iommu
-> > > >   driver that reuses existing virtio support and only touches the config
-> > > >   space. It could enable PCI bus mastering in bridges only for the
-> > > >   endpoints that need it, enable global IOMMU bypass by flipping a bit,
-> > >
-> > > then untrusted devices can do DMA after global bypass is enabled?
-> > 
-> > Not necessarily, I think firmware could configure PCI switch ports
-> > upstream of untrusted devices, by keeping Bus Master Enable disabled in
-> > their config space which will block Memory and I/O Requests.
-> 
-> guest firmware only manages virtual switch ports. Physically they are
-> supposed to be already enabled in the process of device passthrough. 
+On Fri, Aug 06 2021, Enrico Granata <egranata@google.com> wrote:
 
-Right I was considering virtual devices and virtual switches. For physical
-devices, the switch emulation would need to disable the IOMMU mappings
-when bus mastering is disabled in the switch. In either case, though, it's
-probably more complexity than hypervisors are willing to put in. QEMU
-seems to ignore Bus Master Enable on root ports, for example.
+> Hi folks,
+> I am back from my leave of absence, so thank you everyone for your patience
+>
+> This proposal has been outstanding for a while and didn't seem to
+> receive pushback, especially compared to the initial proposal
+>
+> Would it be the right time to put this modification up for a vote?
 
-> Given a device is untrusted, it may ignore Bus Master Enable bit 
-> inadvertently or deliberately to issue DMA. I feel concept-wise it's
-> not good for the firmware to open this window when boot-bypass is
-> disabled...
-> 
-> > 
-> > > suppose
-> > > here just needs attach storage device to a normal domain, leaving other
-> > > devices still blocked from doing DMA
-> > 
-> > Yes that's the safest route, but also more complicated to implement.
-> > If firmware can setup the PCI topology as above, its virtio-iommu driver
-> > just needs to poke the config space for feature negotiation and enabling
-> > bypass, no need to setup virtqueues.
-> 
-> I see the value of this simplified approach. But if it cannot isolate 
-> untrusted devices then we may have to follow the complicated route
+I guess no news is good news? (Or it fell through the cracks for everybody...)
 
-Agreed
+I can update #106 and start voting.
 
-Thanks,
-Jean
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
