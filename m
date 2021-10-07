@@ -1,17 +1,17 @@
-Return-Path: <virtio-dev-return-8811-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-8812-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 8DD78986503
-	for <virtio-dev@lists.oasis-open.org>; Thu,  7 Oct 2021 08:43:20 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 61CCE986503
+	for <virtio-dev@lists.oasis-open.org>; Thu,  7 Oct 2021 09:00:44 +0000 (UTC)
 From: Cornelia Huck <cohuck@redhat.com>
 In-Reply-To: <20211006112816.71892-1-jean-philippe@linaro.org>
 References: <20211006112816.71892-1-jean-philippe@linaro.org>
-Date: Thu, 07 Oct 2021 10:43:07 +0200
-Message-ID: <87ee8xz0mc.fsf@redhat.com>
+Date: Thu, 07 Oct 2021 11:00:00 +0200
+Message-ID: <878rz5yzu7.fsf@redhat.com>
 MIME-Version: 1.0
 Subject: [virtio-dev] Re: [PATCH v2] content: Remove duplicate paragraph
 Content-Type: text/plain
@@ -49,35 +49,12 @@ On Wed, Oct 06 2021, Jean-Philippe Brucker <jean-philippe@linaro.org> wrote:
 > ---
 >  content.tex | 15 ++++-----------
 >  1 file changed, 4 insertions(+), 11 deletions(-)
->
-> diff --git a/content.tex b/content.tex
-> index 288e62f..39fe12b 100644
-> --- a/content.tex
-> +++ b/content.tex
-> @@ -1143,17 +1143,10 @@ \subsubsection{Shared memory capability}\label{sec:Virtio Transport Options / Vi
->  
->  \devicenormative{\paragraph}{Shared memory capability}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Shared memory capability}
->  
-> -The region defined by the combination of \field{cap.offset},
-> -\field{offset_hi}, and \field {cap.length}, \field{length_hi}
-> -MUST be contained within the BAR specified by \field{cap.bar}.
-> -
-> -The \field{cap.id} MUST be unique for any one device instance.
-> -
-> -\devicenormative{\paragraph}{Shared memory capability}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Shared memory capability}
-> -
-> -The region defined by the combination of the \field {cap.offset},
-> -\field {cap.offset_hi}, and \field {cap.length}, \field
-> -{cap.length_hi} fields MUST be contained within the declared bar.
-> +The region defined by the combination of the \field{cap.offset},
-> +\field{offset_hi}, and \field{cap.length}, \field{length_hi}
-> +fields MUST be contained within the BAR specified by
-> +\field{cap.bar}.
->  
->  The \field{cap.id} MUST be unique for any one device instance.
->  
 
-LGTM; I think this is still within the scope of editorial updates.
+Thanks, pushed as an editorial update.
+
+[While looking at this, I noticed that the normative statements for the
+vendor data capability are not at the correct level. I'll do a patch to
+fix that.]
 
 
 ---------------------------------------------------------------------
