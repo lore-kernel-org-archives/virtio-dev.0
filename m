@@ -1,149 +1,89 @@
-Return-Path: <parav@nvidia.com>
-From: Parav Pandit <parav@nvidia.com>
-Subject: RE: [PATCH v2] Add device reset timeout field
-Date: Fri, 22 Oct 2021 06:29:30 +0000
-Message-ID: <PH0PR12MB5481DD8E43D3991A1C0CF21EDC809@PH0PR12MB5481.namprd12.prod.outlook.com>
-References: <PH0PR12MB54816AD1011E3806A4A26B27DCB29@PH0PR12MB5481.namprd12.prod.outlook.com>
+Return-Path: <virtio-dev-return-8838-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id DACF59862A3
+	for <virtio-dev@lists.oasis-open.org>; Mon, 11 Oct 2021 16:22:27 +0000 (UTC)
+From: Cornelia Huck <cohuck@redhat.com>
+In-Reply-To: <PH0PR12MB5481502C480B6A7C1B61DFD6DCB59@PH0PR12MB5481.namprd12.prod.outlook.com>
+References: <PH0PR12MB54811E06DAED3F7D60955A84DCB09@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20211006163309-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB5481990F6F33697BB2F9B6D4DCB19@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20211008063303-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB5481378DF0CE74777A5BEC90DCB29@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20211008071903-mutt-send-email-mst@kernel.org>
+ <87lf33ybz7.fsf@redhat.com>
+ <PH0PR12MB5481270F843DEC30A49972F3DCB29@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20211008085134-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB54816AD1011E3806A4A26B27DCB29@PH0PR12MB5481.namprd12.prod.outlook.com>
  <20211008185926-mutt-send-email-mst@kernel.org>
  <PH0PR12MB54814DF6BE5016FB4D941847DCB59@PH0PR12MB5481.namprd12.prod.outlook.com>
  <871r4ry5do.fsf@redhat.com>
  <PH0PR12MB5481502C480B6A7C1B61DFD6DCB59@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20211011115716-mutt-send-email-mst@kernel.org>
- <PH0PR12MB548198414B1F64D5F7A149C8DCB69@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20211012045448-mutt-send-email-mst@kernel.org>
- <PH0PR12MB5481DB5D0F4F3EAAEB26B047DCB69@PH0PR12MB5481.namprd12.prod.outlook.com>
- <PH0PR12MB5481C5C0EB93191416E36D4EDCB89@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20211014182437-mutt-send-email-mst@kernel.org>
- <DM8PR12MB54806B9EEECE8920F450F86BDCB99@DM8PR12MB5480.namprd12.prod.outlook.com>
- <87czo6vkza.fsf@redhat.com>
- <DM8PR12MB5480C1A24131E23A5568AAA5DCB99@DM8PR12MB5480.namprd12.prod.outlook.com>
- <87a6javdul.fsf@redhat.com>
-In-Reply-To: <87a6javdul.fsf@redhat.com>
+Date: Mon, 11 Oct 2021 18:22:15 +0200
+Message-ID: <87y26zwmyw.fsf@redhat.com>
 MIME-Version: 1.0
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-To: Cornelia Huck <cohuck@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>
+Subject: [virtio-dev] RE: [PATCH v2] Add device reset timeout field
+Content-Type: text/plain
+To: Parav Pandit <parav@nvidia.com>, "Michael S. Tsirkin" <mst@redhat.com>
 Cc: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Max Gurtovoy <mgurtovoy@nvidia.com>, Shahaf Shuler <shahafs@nvidia.com>, Oren Duer <oren@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Hi Cornelia,
+On Mon, Oct 11 2021, Parav Pandit <parav@nvidia.com> wrote:
 
-I wasn't able to respond last few days.
-Sorry for the delayed response below.
+>> From: Cornelia Huck <cohuck@redhat.com>
+>> Sent: Monday, October 11, 2021 8:29 PM
+>> 
+>> On Mon, Oct 11 2021, Parav Pandit <parav@nvidia.com> wrote:
 
-> From: Cornelia Huck <cohuck@redhat.com>
-> Sent: Friday, October 15, 2021 2:56 PM
+>> > I think read only device reset timeout is most elegant option during device
+>> initialization phase that eliminates infinite loop of today.
+>> 
+>> Why can't a driver just go ahead and do a timeout regardless? 
+> o.k. lets consider this thought exercise. What is the timeout value that driver will choose if device doesn't specify one?
+> I explained in previous thread and you acked that actual fw based device may take longer to initialize than pure sw implementation backend.
+> In second example a pre-boot device can take even longer initialization time.
+> Sriov VF device may initialize lot faster.
+> Instead of driver having such transport, and device specific checks, (or some very short or very long timeout), we propose, that let device mention such timeout value.
 
-> On Fri, Oct 15 2021, Parav Pandit <parav@nvidia.com> wrote:
->=20
-> >> From: Cornelia Huck <cohuck@redhat.com>
-> >> Sent: Friday, October 15, 2021 12:22 PM
-> >>
-> >> On Fri, Oct 15 2021, Parav Pandit <parav@nvidia.com> wrote:
-> >>
-> >> >> From: Michael S. Tsirkin <mst@redhat.com>
-> >> >> Sent: Friday, October 15, 2021 3:59 AM
-> >> >>
-> >> >> On Thu, Oct 14, 2021 at 05:35:37PM +0000, Parav Pandit wrote:
-> >> >> > Below changes are good for v3?
-> >> >> > 1. driver should use device reset time during initialization
-> >> >> > stage
-> >> >>
-> >> >> How does driver identify this though?
-> >> > Existence of device_reset_timeout field in struct
-> >> > virtio_pci_common_cfg
-> >> indicates that this field exists.
-> >> > If device support it, it will place non zero value and driver knows
-> >> > that this
-> >> field should be used.
-> >>
-> >> But how does the driver know? The very first step in the
-> >> initialization sequence is "reset the device", before it may read the =
-config
-> space.
-> > PCI configuration space is always accessible when a PCI device exists a=
-t PCI
-> level even before virtio layer can operate it.
-> > So struct virtio_pci_common_cfg is accessible to the virtio transport l=
-ayer
-> before resetting the device.
-> > It needs to contains what the timeout is, just like reset of the fields=
-.
-> >
-> > I made mistake in understanding last time between virtio config space s=
-uch
-> as (struct virtio_net_config) vs PCI config space.
-> > So want to double check, did you mean pci config space and struct
-> virtio_pci_common_cfg or something else when you mentioned
-> _config_space_?
-> > Virtio_net_config certainly accessible only after reset.
-> > But transport level pci capabilities are accessible before reset by the=
- PCI
-> spec.
->=20
-> So, how does that work for non-pci? Can mmio access its config space like
-> that?
-Yes. MMIO device initialization starts in transport layer.
-This device init starts by reading the magicvalue and version registers fro=
-m the MMIO config space.
-After this is done, it follows the device init flow described in the spec s=
-ection 4.2.3.1.1.
+But does the driver really care in all cases? Say, I'm a virtio-blk
+driver, and I drive all kinds of virtio-blk devices. If I choose a
+timeout value that accommodates hardware devices, software devices will
+just always breeze past, and nothing bad happens. If I know that I'm in
+a pre-boot environment, I'll just add on a value that allows devices to
+warm up. I'd say reasonable values depend way more on the driver
+implementation and the environment it is running in than on the device.
 
->=20
-> My point is: don't make it harder for future transports than really necce=
-ssary. If
-> you look at today's transports, ccw is already substantially different fr=
-om pci in
-> many ways, and yet both are functional virtio transports. Take the concep=
-t of
-> "config space": ccw devices do not have such a thing. I created two chann=
-el
-> commands to basically emulate that concept for *virtio* *only*. Should we
-> want to introduce the timeout value for ccw (which is not likely, but let=
-'s go for
-> it for the sake of the argument), we cannot put it into a non-existing co=
-nfig
-> space; it needs to use something else, like a command to retrieve the val=
-ue. A
-> future transport might be in a similar position, and "put it into the con=
-fig
-> space" may simply not be possible.
->=20
-> Look at it that way: You come from the PCI perspective, and you have an i=
-dea
-> how to model things there. I come from a channel I/O background, and I ha=
-ve
-> an idea how to model things there. Both are quite different; if we can co=
-me up
-> with something that can work for both transports, chances are good that a
-> future transport can also work with it.=20
+>
+>> This seems
+>> pretty much to depend on the implementation. Nothing in the virtio spec forces
+>> the driver to reset all devices serially and wait potentially forever. (If you deal
+>> with a large amount of subdevices you cannot access concurrently, you likely
+>> already have problems.)
+> Sure, nothing in driver forces serial initialization.
+> However in reality, PCI device scanning on the bus in hotplug driver, preboot env, sriov vf initialization is serial.
 
-In this proposal, for pci and mmio transports, the new timeout register is =
-located in the transport specific device config space.
-This is because these two transports initialization is based on this config=
- space.
-Both the transport clearly describe that they follow the spec 3.1 device in=
-itialization flow.
+So, can't pci scan asynchronously? Is that a limitation in the pci spec?
+The Linux ccw bus switched to asynchronous processing precisely because
+of slow devices years ago, FWIW, so that may be why I don't really
+understand the issue.
 
-For ccw as you well described above and as part of the spec there is no lin=
-k to spec 3.1 device initialization flow.
+> In preboot case, even the order is defined, so it is sort of serial.
 
-> If we say that the driver retrieves that
-> information in a transport-specific way without any mention of config spa=
-ces,
-> we should be fine.
-Yes. I totally agree with you.
-Its transport specific way.
-In the current proposal, in the device reset timeout description section 2.=
-4.1, 2.4.2, there is no mention of config space.
-Each transport (pci, mmio) extends their own config space and describes wha=
-t is the transport specific extension it is to interact with device.
+Again, is that somewhere in the hardware spec, and can it be fixed?
+Serializing something that might take some time just seems troublesome.
 
-So if new non config space based transport or ccw wants to do this in futur=
-e, they will use their transport specific way (as you described channel com=
-mand interface).
+> In other uses, concurrent access is fine and host does that today when it disables autoprobe on the PCI Bus and probes them in parallel after enabling sriov.
+> I hope you understand that there are both use-cases exists which scan parallel and some serial.
 
-I didn't muddy the device reset description for ccw exceptions because for =
-rest the device reset piece, it doesn't have any link to ccw differences.
+Can at least some processing be made asynchronous? Like, you discover
+the device, but then do the virtio setup out of band.
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
