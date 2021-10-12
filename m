@@ -1,41 +1,52 @@
-Return-Path: <virtio-dev-return-8874-cohuck=redhat.com@lists.oasis-open.org>
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 793D898647C
-	for <virtio-dev@lists.oasis-open.org>; Thu, 14 Oct 2021 10:42:58 +0000 (UTC)
-From: Cornelia Huck <cohuck@redhat.com>
-In-Reply-To: <20211014102536.yoh4czkikw63cmoz@vireshk-i7>
-References: <ed36fcb94f33cf27106b6ea0a555f71400d27ade.1634022690.git.viresh.kumar@linaro.org>
- <87o87rvrry.fsf@redhat.com> <20211014102536.yoh4czkikw63cmoz@vireshk-i7>
-Date: Thu, 14 Oct 2021 12:42:46 +0200
-Message-ID: <87lf2vvqe1.fsf@redhat.com>
+Return-Path: <viresh.kumar@linaro.org>
+From: Viresh Kumar <viresh.kumar@linaro.org>
+Subject: [PATCH V5 0/2] virtio: i2c: Allow zero-length transactions
+Date: Tue, 12 Oct 2021 16:53:36 +0530
+Message-Id: <cover.1634037711.git.viresh.kumar@linaro.org>
 MIME-Version: 1.0
-Subject: [virtio-dev] Re: [PATCH V9] virtio-gpio: Add support for interrupts
-Content-Type: text/plain
-To: Viresh Kumar <viresh.kumar@linaro.org>
-Cc: Jason Wang <jasowang@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>, Arnd Bergmann <arnd@kernel.org>, Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Vincent Guittot <vincent.guittot@linaro.org>, Jean-Philippe Brucker <jean-philippe@linaro.org>, Bill Mills <bill.mills@linaro.org>, Alex =?utf-8?Q?Benn=C3=A9e?= <alex.bennee@linaro.org>, "Enrico Weigelt, metux IT
- consult" <info@metux.net>, virtio-dev@lists.oasis-open.org, Geert Uytterhoeven <geert@linux-m68k.org>, stratos-dev@op-lists.linaro.org, Kent Gibson <warthog618@gmail.com>, Marc Zyngier <maz@kernel.org>, Thomas Gleixner <tglx@linutronix.de>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="US-ASCII"
+To: "Michael S. Tsirkin" <mst@redhat.com>, Cornelia Huck <cohuck@redhat.com>, Jie Deng <jie.deng@intel.com>, Wolfram Sang <wsa@kernel.org>, Paolo Bonzini <pbonzini@redhat.com>
+Cc: Viresh Kumar <viresh.kumar@linaro.org>, Vincent Guittot <vincent.guittot@linaro.org>, Jason Wang <jasowang@redhat.com>, Bill Mills <bill.mills@linaro.org>, =?UTF-8?q?Alex=20Benn=C3=A9e?= <alex.bennee@linaro.org>, virtio-dev@lists.oasis-open.org, stratos-dev@op-lists.linaro.org, Gerd Hoffmann <kraxel@redhat.com>, Arnd Bergmann <arnd@kernel.org>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Thu, Oct 14 2021, Viresh Kumar <viresh.kumar@linaro.org> wrote:
+Hi,
 
-> On 14-10-21, 12:12, Cornelia Huck wrote:
->> What triggers the device to configure the GPIO lines in that state? Is
->> that something that it should already do when it decides to offer the
->> feature bit?
->
-> Yes, it should be the state before negotiations start.
+Arnd suggested (over IRC) to split this into two patches for better readability
+and so here is a resend. The eventual specification hasn't changed at all.
 
-Ok, so it probably doesn't belong into the startup sequence... I guess
-it is already clear that this is the default state? If not, is a
-statement needed to describe that?
+V4->V5:
+- Split into two patches.
 
+V3->V4:
+- Add a new mandatory feature flag.
 
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+V2->V3:
+- Add conformance clauses that require that the flag is consistent with the
+  buffer.
+
+V1->V2:
+- Name the buffer-less request as zero-length request.
+
+------
+
+I did try to follow the discussion you guys had during V4, where we added
+support for multiple buffers for the same request, which I think is unnecessary
+now, after introduction of the VIRTIO_I2C_FLAGS_FAIL_NEXT flag.
+
+https://lists.oasis-open.org/archives/virtio-comment/202011/msg00005.html
+
+And so starting this discussion again, because we need to support stuff
+like: i2cdetect -q <i2c-bus-number>, which issues a zero-length SMBus
+Quick command.
+
+Viresh Kumar (2):
+  virtio: i2c: No need to have separate read-write buffers
+  virtio: i2c: Allow zero-length transactions
+
+ virtio-i2c.tex | 76 ++++++++++++++++++++++++++++++--------------------
+ 1 file changed, 45 insertions(+), 31 deletions(-)
+
+-- 
+2.31.1.272.g89b43f80a514
 
