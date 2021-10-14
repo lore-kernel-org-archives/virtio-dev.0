@@ -1,144 +1,372 @@
-Return-Path: <parav@nvidia.com>
-From: Parav Pandit <parav@nvidia.com>
-Subject: RE: [PATCH v2] Add device reset timeout field
-Date: Tue, 12 Oct 2021 10:35:45 +0000
-Message-ID: <PH0PR12MB5481D32984226A4363F19F86DCB69@PH0PR12MB5481.namprd12.prod.outlook.com>
-References: <PH0PR12MB54811E06DAED3F7D60955A84DCB09@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20211006163309-mutt-send-email-mst@kernel.org>
- <PH0PR12MB5481990F6F33697BB2F9B6D4DCB19@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20211008063303-mutt-send-email-mst@kernel.org>
- <PH0PR12MB5481378DF0CE74777A5BEC90DCB29@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20211008071903-mutt-send-email-mst@kernel.org> <87lf33ybz7.fsf@redhat.com>
- <PH0PR12MB5481270F843DEC30A49972F3DCB29@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20211008085134-mutt-send-email-mst@kernel.org>
- <PH0PR12MB54816AD1011E3806A4A26B27DCB29@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20211008185926-mutt-send-email-mst@kernel.org>
- <PH0PR12MB54814DF6BE5016FB4D941847DCB59@PH0PR12MB5481.namprd12.prod.outlook.com>
- <871r4ry5do.fsf@redhat.com>
- <PH0PR12MB5481502C480B6A7C1B61DFD6DCB59@PH0PR12MB5481.namprd12.prod.outlook.com>
- <87y26zwmyw.fsf@redhat.com>
-In-Reply-To: <87y26zwmyw.fsf@redhat.com>
+Return-Path: <viresh.kumar@linaro.org>
+From: Viresh Kumar <viresh.kumar@linaro.org>
+Subject: [PATCH V10] virtio-gpio: Add support for interrupts
+Date: Thu, 14 Oct 2021 16:30:56 +0530
+Message-Id: <2f66fd73961cd38a91c1a4297ad08642055dbb77.1634209052.git.viresh.kumar@linaro.org>
 MIME-Version: 1.0
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-To: Cornelia Huck <cohuck@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>
-Cc: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Max Gurtovoy <mgurtovoy@nvidia.com>, Shahaf Shuler <shahafs@nvidia.com>, Oren Duer <oren@nvidia.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="US-ASCII"
+To: Jason Wang <jasowang@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>, Arnd Bergmann <arnd@kernel.org>, Cornelia Huck <cohuck@redhat.com>, Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Marc Zyngier <maz@kernel.org>
+Cc: Viresh Kumar <viresh.kumar@linaro.org>, Vincent Guittot <vincent.guittot@linaro.org>, Jean-Philippe Brucker <jean-philippe@linaro.org>, Bill Mills <bill.mills@linaro.org>, =?UTF-8?q?Alex=20Benn=C3=A9e?= <alex.bennee@linaro.org>, "Enrico Weigelt, metux IT consult" <info@metux.net>, virtio-dev@lists.oasis-open.org, Geert Uytterhoeven <geert@linux-m68k.org>, stratos-dev@op-lists.linaro.org, Kent Gibson <warthog618@gmail.com>, Thomas Gleixner <tglx@linutronix.de>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+This patch adds support for interrupts to the virtio-gpio specification.
+This uses the feature bit 0 for the same.
 
-> From: Cornelia Huck <cohuck@redhat.com>
-> Sent: Monday, October 11, 2021 9:52 PM
->=20
-> On Mon, Oct 11 2021, Parav Pandit <parav@nvidia.com> wrote:
->=20
-> >> From: Cornelia Huck <cohuck@redhat.com>
-> >> Sent: Monday, October 11, 2021 8:29 PM
-> >>
-> >> On Mon, Oct 11 2021, Parav Pandit <parav@nvidia.com> wrote:
->=20
-> >> > I think read only device reset timeout is most elegant option
-> >> > during device
-> >> initialization phase that eliminates infinite loop of today.
-> >>
-> >> Why can't a driver just go ahead and do a timeout regardless?
-> > o.k. lets consider this thought exercise. What is the timeout value tha=
-t driver
-> will choose if device doesn't specify one?
-> > I explained in previous thread and you acked that actual fw based devic=
-e
-> may take longer to initialize than pure sw implementation backend.
-> > In second example a pre-boot device can take even longer initialization=
- time.
-> > Sriov VF device may initialize lot faster.
-> > Instead of driver having such transport, and device specific checks, (o=
-r some
-> very short or very long timeout), we propose, that let device mention suc=
-h
-> timeout value.
->=20
-> But does the driver really care in all cases?=20
-Idea is that driver shouldn't care based on device type; rather just care w=
-hat device provided.
+Fixes: https://github.com/oasis-tcs/virtio-spec/issues/114
+Cc: Marc Zyngier <maz@kernel.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
+---
+V9 -> V10:
+- Mandatory for the interrupt to be enabled before being unmasked.
 
-> Say, I'm a virtio-blk driver, and I
-> drive all kinds of virtio-blk devices. If I choose a timeout value that
-> accommodates hardware devices, software devices will just always breeze
-> past, and nothing bad happens.=20
-I had hard time defining a universal timeout that fits all device types of =
-hw and sw.
-We have 3 variants of the hw based devices and they have range from millise=
-conds to ten of seconds (in worst case).
-Hence, the request is to let device feed the value based on the internal lo=
-gic.
+- Remove unnecessary stuff from Device Initialization and clean it up.
 
-> If I know that I'm in a pre-boot environment,
-> I'll just add on a value that allows devices to warm up. I'd say reasonab=
-le
-> values depend way more on the driver implementation and the environment
-> it is running in than on the device.
->=20
-It will be usually min_of (env.max_timeout, device.reset_timeout) if env wa=
-nts to enforce its upper limit.
+- Minor cleanup (s/enabled/negotiated, etc).
 
-> >
-> >> This seems
-> >> pretty much to depend on the implementation. Nothing in the virtio
-> >> spec forces the driver to reset all devices serially and wait
-> >> potentially forever. (If you deal with a large amount of subdevices
-> >> you cannot access concurrently, you likely already have problems.)
-> > Sure, nothing in driver forces serial initialization.
-> > However in reality, PCI device scanning on the bus in hotplug driver, p=
-reboot
-> env, sriov vf initialization is serial.
->=20
-> So, can't pci scan asynchronously? Is that a limitation in the pci spec?
-There isn't limitation from pci spec to my knowledge.
-Linux device discovery to my knowledge is not parallel across or within a s=
-ubsystem.
+V8 -> V9:
+- The patch for base GPIO specification is already merged, sending this
+  separately now.
 
-> The Linux ccw bus switched to asynchronous processing precisely because o=
-f
-> slow devices years ago, FWIW, so that may be why I don't really understan=
-d
-> the issue.
->=20
-> > In preboot case, even the order is defined, so it is sort of serial.
->=20
-> Again, is that somewhere in the hardware spec, and can it be fixed?
-It is not in the hardware spec.
-Preboot env usually runs with limited text and data memory without the OS.
-User defined the boot order at the BIOS level. It is the way some systems w=
-ork.
-virtio device is fitting in the existing eco-system of physical servers.
+- Differentiate properly between enabling/disabling and masking/unmasking of the
+  interrupt.
 
-> Serializing something that might take some time just seems troublesome.
->=20
-True, which is why as Michael mentioned, device resetting within short inte=
-rval is better.
-I cannot promise, but yes, with newer generation usually such timing and fu=
-nctionality should improves.
-There is still finite timeout though.
+- Specify how a trigger type should be changed, i.e. by disabling interrupt
+  first.
 
-> > In other uses, concurrent access is fine and host does that today when =
-it
-> disables autoprobe on the PCI Bus and probes them in parallel after enabl=
-ing
-> sriov.
-> > I hope you understand that there are both use-cases exists which scan
-> parallel and some serial.
->=20
-> Can at least some processing be made asynchronous? Like, you discover the
-> device, but then do the virtio setup out of band.
-Do you mean differ virtio device setup in a workqueue context or similar?
+- No fixed sequence for enabling/unmasking of the interrupt, any of them can be
+  done first. The interrupt is only delivered once it is enabled and unmasked.
 
-This may be possible, but when user does sysfs operations, it adds uncertai=
-nly to when the device's netdevice will actually appear even though sysfs o=
-peration completed for probe.
-It requires users to listen to udev events to know that for a given PCI vir=
-tio pci device, now a net/block device is available.
-This makes the whole flow complex to use.
-May be certain device omit exposing device reset timeout, and workqueue/dif=
-fered context can be avoided, but again now the user sw is unaware when to =
-use udev to discover vs inline.
+- Use normative text only in normative sections.
+
+- Guest side Linux driver's IRQ implementation:
+
+  https://lore.kernel.org/linux-gpio/96223fb8143a4eaa9b183d376ff46e5cd8ef54b4.1628590591.git.viresh.kumar@linaro.org/
+
+ conformance.tex |   2 +
+ virtio-gpio.tex | 245 +++++++++++++++++++++++++++++++++++++++++++++++-
+ 2 files changed, 246 insertions(+), 1 deletion(-)
+
+diff --git a/conformance.tex b/conformance.tex
+index c52f1a40be2d..64bcc12d1199 100644
+--- a/conformance.tex
++++ b/conformance.tex
+@@ -310,6 +310,7 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
+ 
+ \begin{itemize}
+ \item \ref{drivernormative:Device Types / GPIO Device / requestq Operation}
++\item \ref{drivernormative:Device Types / GPIO Device / eventq Operation}
+ \end{itemize}
+ 
+ \conformance{\section}{Device Conformance}\label{sec:Conformance / Device Conformance}
+@@ -568,6 +569,7 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
+ 
+ \begin{itemize}
+ \item \ref{devicenormative:Device Types / GPIO Device / requestq Operation}
++\item \ref{devicenormative:Device Types / GPIO Device / eventq Operation}
+ \end{itemize}
+ 
+ \conformance{\section}{Legacy Interface: Transitional Device and Transitional Driver Conformance}\label{sec:Conformance / Legacy Interface: Transitional Device and Transitional Driver Conformance}
+diff --git a/virtio-gpio.tex b/virtio-gpio.tex
+index 3c614ec97b92..55c553f92a14 100644
+--- a/virtio-gpio.tex
++++ b/virtio-gpio.tex
+@@ -11,11 +11,17 @@ \subsection{Virtqueues}\label{sec:Device Types / GPIO Device / Virtqueues}
+ 
+ \begin{description}
+ \item[0] requestq
++\item[1] eventq
+ \end{description}
+ 
++The \field{eventq} virtqueue is available only if the \field{VIRTIO_GPIO_F_IRQ}
++feature is offered by the device.
++
+ \subsection{Feature bits}\label{sec:Device Types / GPIO Device / Feature bits}
+ 
+-None currently defined.
++\begin{description}
++\item[VIRTIO_GPIO_F_IRQ (0)] The device supports interrupts on GPIO lines.
++\end{description}
+ 
+ \subsection{Device configuration layout}\label{sec:Device Types / GPIO Device / Device configuration layout}
+ 
+@@ -46,6 +52,9 @@ \subsection{Device Initialization}\label{sec:Device Types / GPIO Device / Device
+ 
+ \begin{itemize}
+ \item The driver configures and initializes the \field{requestq} virtqueue.
++
++\item The driver configures and initializes the \field{eventq} virtqueue, if the
++    \field{VIRTIO_GPIO_F_IRQ} feature has been negotiated.
+ \end{itemize}
+ 
+ \subsection{Device Operation: requestq}\label{sec:Device Types / GPIO Device / requestq Operation}
+@@ -105,11 +114,20 @@ \subsection{Device Operation: requestq}\label{sec:Device Types / GPIO Device / r
+ #define VIRTIO_GPIO_MSG_SET_DIRECTION           0x0003
+ #define VIRTIO_GPIO_MSG_GET_VALUE               0x0004
+ #define VIRTIO_GPIO_MSG_SET_VALUE               0x0005
++#define VIRTIO_GPIO_MSG_SET_IRQ_TYPE            0x0006
+ 
+ /* GPIO Direction types */
+ #define VIRTIO_GPIO_DIRECTION_NONE              0x00
+ #define VIRTIO_GPIO_DIRECTION_OUT               0x01
+ #define VIRTIO_GPIO_DIRECTION_IN                0x02
++
++/* GPIO interrupt types */
++#define VIRTIO_GPIO_IRQ_TYPE_NONE               0x00
++#define VIRTIO_GPIO_IRQ_TYPE_EDGE_RISING        0x01
++#define VIRTIO_GPIO_IRQ_TYPE_EDGE_FALLING       0x02
++#define VIRTIO_GPIO_IRQ_TYPE_EDGE_BOTH          0x03
++#define VIRTIO_GPIO_IRQ_TYPE_LEVEL_HIGH         0x04
++#define VIRTIO_GPIO_IRQ_TYPE_LEVEL_LOW          0x08
+ \end{lstlisting}
+ 
+ \subsubsection{requestq Operation: Get Line Names}\label{sec:Device Types / GPIO Device / requestq Operation / Get Line Names}
+@@ -270,6 +288,73 @@ \subsubsection{requestq Operation: Set Value}\label{sec:Device Types / GPIO Devi
+ \hline
+ \end{tabularx}
+ 
++\subsubsection{requestq Operation: Set IRQ Type}\label{sec:Device Types / GPIO Device / requestq Operation / Set IRQ Type}
++
++This request is allowed only if the \field{VIRTIO_GPIO_F_IRQ} feature has been
++negotiated.
++
++The interrupt configuration is divided into two steps, enabling or disabling of
++the interrupt at the device and masking or unmasking of the interrupt for
++delivery at the driver. This request only pertains to enabling or disabling of
++the interrupt at the device, the masking and unmasking of the interrupt is
++handled by a separate request that takes place over the \field{eventq}
++virtqueue.
++
++The driver sends the \field{VIRTIO_GPIO_MSG_SET_IRQ_TYPE} message over the
++\field{requestq} virtqueue to enable or disable interrupt for a GPIO line at
++the device.
++
++The driver sends this message with trigger type set to any valid value other
++than \field{VIRTIO_GPIO_IRQ_TYPE_NONE}, to enable the interrupt for a GPIO line,
++this doesn't unmask the interrupt for delivery at the driver though. For edge
++trigger type, the device should latch the interrupt events from this point
++onward and notify it to the driver once the interrupt is unmasked. For level
++trigger type, the device should notify the driver once the interrupt signal on a
++line is sensed and the interrupt is unmasked for the line.
++
++The driver sends this message with trigger type set to
++\field{VIRTIO_GPIO_IRQ_TYPE_NONE}, to disable the interrupt for a GPIO line. The
++device should discard any latched interrupt event associated with it. In order
++to change the trigger type of an already enabled interrupt, the driver should
++first disable the interrupt and then re-enable it with appropriate trigger type.
++
++The interrupts are masked at initialization and the driver unmasks them by
++queuing a pair of buffers, of type \field{virtio_gpio_irq_request} and
++\field{virtio_gpio_irq_response}, over the \field{eventq} virtqueue for a GPIO
++line. A separate pair of buffers must be queued for each GPIO line, the driver
++wants to configure for interrupts. Once an already enabled interrupt is unmasked
++by the driver, the device can notify the driver of an active interrupt signal on
++the GPIO line. This is done by updating the \field{struct
++virtio_gpio_irq_response} buffer's \field{status} with
++\field{VIRTIO_GPIO_IRQ_STATUS_VALID} and returning the updated buffers to the
++driver. The interrupt is masked automatically at this point until the buffers
++are available again at the device.
++
++The interrupt for a GPIO line should not be unmasked before being enabled by the
++driver.
++
++If the interrupt is disabled by the driver, by setting the trigger type to
++\field{VIRTIO_GPIO_IRQ_TYPE_NONE}, or the interrupt is unmasked without being
++enabled first, the device should return any unused pair of buffers for the GPIO
++line, over the \field{eventq} virtqueue, after setting the \field{status} field
++to \field{VIRTIO_GPIO_IRQ_STATUS_INVALID}. This also masks the interrupt.
++
++\begin{tabularx}{\textwidth}{ |l||X|X|X| }
++\hline
++\textbf{Request} & \field{type} & \field{gpio} & \field{value} \\
++\hline
++& \field{VIRTIO_GPIO_MSG_SET_IRQ_TYPE} & line number & one of \field{VIRTIO_GPIO_IRQ_TYPE_*} \\
++\hline
++\end{tabularx}
++
++\begin{tabularx}{\textwidth}{ |l||X|X| }
++\hline
++\textbf{Response} & \field{status} & \field{value} \\
++\hline
++& \field{VIRTIO_GPIO_STATUS_*} & 0 \\
++\hline
++\end{tabularx}
++
+ \subsubsection{requestq Operation: Message Flow}\label{sec:Device Types / GPIO Device / requestq Operation / Message Flow}
+ 
+ \begin{itemize}
+@@ -313,6 +398,20 @@ \subsubsection{requestq Operation: Message Flow}\label{sec:Device Types / GPIO D
+ 
+ \item The driver MAY send multiple messages for same or different GPIO lines in
+     parallel.
++
++\item The driver MUST NOT send IRQ messages if the \field{VIRTIO_GPIO_F_IRQ}
++    feature has not been negotiated.
++
++\item The driver MUST NOT send IRQ messages for a GPIO line configured for
++    output.
++
++\item The driver MUST set the IRQ trigger type to
++    \field{VIRTIO_GPIO_IRQ_TYPE_NONE} once it is done using the GPIO line
++    configured for interrupts.
++
++\item In order to change the trigger type of an already enabled interrupt, the
++    driver MUST first disable the interrupt and then re-enable it with
++    appropriate trigger type.
+ \end{itemize}
+ 
+ \devicenormative{\subsubsection}{requestq Operation}{Device Types / GPIO Device / requestq Operation}
+@@ -344,4 +443,148 @@ \subsubsection{requestq Operation: Message Flow}\label{sec:Device Types / GPIO D
+ \item The device MUST discard all state information corresponding to a GPIO
+     line, once the driver has requested to set its direction to
+     \field{VIRTIO_GPIO_DIRECTION_NONE}.
++
++\item The device MUST latch an edge interrupt if the interrupt is enabled but
++    still masked.
++
++\item The device MUST NOT latch an level interrupt if the interrupt is enabled
++    but still masked.
++
++\item The device MUST discard any latched interrupt for a GPIO line, once
++    interrupt is disabled for the same.
++\end{itemize}
++
++\subsection{Device Operation: eventq}\label{sec:Device Types / GPIO Device / eventq Operation}
++
++The \field{eventq} virtqueue is used by the driver to unmask the interrupts and
++used by the device to notify the driver of newly sensed interrupts. In order to
++unmask interrupt on a GPIO line, the driver queues a pair of buffers,
++\field{struct virtio_gpio_irq_request} (filled by driver) and \field{struct
++virtio_gpio_irq_response} (to be filled by device later), to the \field{eventq}
++virtqueue. A separate pair of buffers must be queued for each GPIO line, the
++driver wants to configure for interrupts. The device, on sensing an interrupt,
++returns the pair of buffers for the respective GPIO line, which also masks the
++interrupts. The driver can queue the buffers again to unmask the interrupt.
++
++\begin{lstlisting}
++struct virtio_gpio_irq_request {
++    le16 gpio;
++};
++\end{lstlisting}
++
++This structure is filled by the driver and read by the device.
++
++\begin{description}
++\item[\field{gpio}] is the GPIO line number, i.e. 0 <= \field{gpio} <
++    \field{ngpio}.
++\end{description}
++
++\begin{lstlisting}
++struct virtio_gpio_irq_response {
++    u8 status;
++};
++
++/* Possible values of the interrupt status field */
++#define VIRTIO_GPIO_IRQ_STATUS_INVALID          0x0
++#define VIRTIO_GPIO_IRQ_STATUS_VALID            0x1
++\end{lstlisting}
++
++This structure is filled by the device and read by the driver.
++
++\begin{description}
++\item[\field{status}] of the interrupt event,
++    \field{VIRTIO_GPIO_IRQ_STATUS_VALID} on interrupt and
++    \field{VIRTIO_GPIO_IRQ_STATUS_INVALID} to return the buffers back to the
++    driver after interrupt is disabled.
++\end{description}
++
++\subsubsection{eventq Operation: Message Flow}\label{sec:Device Types / GPIO Device / eventq Operation / Message Flow}
++
++\begin{itemize}
++\item The virtio-gpio driver is requested by a client driver to enable interrupt
++    for a GPIO line and configure it to a particular trigger type.
++
++\item The driver sends the \field{VIRTIO_GPIO_MSG_SET_IRQ_TYPE} message, over
++    the \field{requestq} virtqueue, and the device configures the GPIO line for
++    the requested trigger type and enables the interrupt. The interrupt is still
++    masked for delivery though. The device shall latch the interrupt from now
++    onward for edge trigger type.
++
++\item The driver unmasks the interrupt by queuing a pair of buffers to the
++    \field{eventq} virtqueue for the GPIO line. The driver can do this before
++    enabling the interrupt as well, though the interrupt must be both unmasked
++    and enabled to get delivered at the driver.
++
++\item The driver notifies the device of the presence of new buffers on the
++    \field{eventq} virtqueue. The interrupt is fully configured at this point.
++
++\item The device, on sensing an active interrupt on the GPIO line, finds the
++    matching buffers (based on GPIO line number) from the \field{eventq}
++    virtqueue and update its \field{struct virtio_gpio_irq_response} buffer's
++    \field{status} with \field{VIRTIO_GPIO_IRQ_STATUS_VALID} and returns the
++    pair of buffers to the device. This results in masking the interrupt as
++    well.
++
++\item The device notifies the driver of the presence of returned buffers on the
++    \field{eventq} virtqueue.
++
++\item If the GPIO line is configured for level interrupts, the device ignores
++    any further interrupt signals on this GPIO line, until the interrupt is
++    unmasked again by the driver by making the buffers available to the device.
++    Once the interrupt is unmasked again and the interrupt on the line is still
++    active, the device shall notify the driver again.
++
++\item If the GPIO line is configured for edge interrupts, the device latches
++    the interrupt received for this GPIO line, until the interrupt is unmasked
++    again by the driver by making the buffers available to the device. Once the
++    interrupt is unmasked again and an interrupt was latched earlier, the
++    device shall notify the driver again.
++
++\item The driver on receiving the notification from the device, processes the
++    interrupt. The interrupt is masked at the device until the buffers are
++    queued again by the driver.
++
++\item In a typical guest operating system kernel, the virtio-gpio driver
++    notifies the client driver, that is associated with this GPIO line, to
++    process the event. In the case of a level triggered interrupt, the client
++    driver shall fully process and acknowledge the event at its source to return
++    the line to its inactive state before the interrupt is unmasked again to
++    avoid a spurious interrupt.
++
++\item Once the interrupt is handled, the driver may queue a pair of buffers for
++    the GPIO line to unmask the interrupt again.
++
++\item The driver can also disable the interrupt by sending the
++    \field{VIRTIO_GPIO_MSG_SET_IRQ_TYPE} message, with
++    \field{VIRTIO_GPIO_IRQ_TYPE_NONE} trigger type. In that case, the device
++    shall return the unused pair of buffers for the GPIO line after setting the
++    \field{status} field with \field{VIRTIO_GPIO_IRQ_STATUS_INVALID}.
++\end{itemize}
++
++\drivernormative{\subsubsection}{eventq Operation}{Device Types / GPIO Device / eventq Operation}
++
++\begin{itemize}
++\item The driver MUST both enable and unmask the interrupt in order to get
++    notified for the same.
++
++\item The driver MUST enable the interrupt before unmasking it.
++
++\item To unmask the interrupt, the driver MUST queue a separate pair of buffers
++    to the \field{eventq} virtqueue for each GPIO line.
++
++\item The driver MUST NOT add multiple pairs of buffers for the same GPIO line
++    on the \field{eventq} virtqueue.
++\end{itemize}
++
++\devicenormative{\subsubsection}{eventq Operation}{Device Types / GPIO Device / eventq Operation}
++
++\begin{itemize}
++\item The device MUST NOT send an interrupt event to the driver for a GPIO
++    line unless the interrupt has been both unmasked and enabled by the
++    driver.
++
++\item On receiving \field{VIRTIO_GPIO_MSG_SET_IRQ_TYPE} message, with
++    \field{VIRTIO_GPIO_IRQ_TYPE_NONE} trigger type, the device MUST return the
++    buffers, if they were received earlier, after setting the \field{status}
++    field to \field{VIRTIO_GPIO_IRQ_STATUS_INVALID}.
+ \end{itemize}
+-- 
+2.31.1.272.g89b43f80a514
 
