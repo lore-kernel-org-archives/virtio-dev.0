@@ -1,66 +1,83 @@
-Return-Path: <parav@nvidia.com>
-From: Parav Pandit <parav@nvidia.com>
-Subject: RE: [virtio-dev] RE: [PATCH v2] Add device reset timeout field
-Date: Thu, 28 Oct 2021 06:06:23 +0000
-Message-ID: <PH0PR12MB5481F984DDD2F3228A128CFADC869@PH0PR12MB5481.namprd12.prod.outlook.com>
-References: <CACGkMEthjkX3pV+1L9Eg-nJOArSUfmDRY8UCK_2LJ7-oxO6SpQ@mail.gmail.com>
- <DM8PR12MB548048016A0311F809BF0E67DCB99@DM8PR12MB5480.namprd12.prod.outlook.com>
- <CACGkMEuP6nZCSyz8piHYdMzwSKGgZbn65SBx486C-Lm2jbw5TA@mail.gmail.com>
- <PH0PR12MB5481C32F9D9A54AFA4E337A3DC809@PH0PR12MB5481.namprd12.prod.outlook.com>
- <2984c445-a7fd-97c4-34aa-3a40778a0fcd@redhat.com>
- <PH0PR12MB54810528108E4EB12CC1C401DC839@PH0PR12MB5481.namprd12.prod.outlook.com>
- <CACGkMEtBJavHQr2SaMiz8TSTt-fCsm3WoJMfRYEO=dr-=Ld-1Q@mail.gmail.com>
- <PH0PR12MB54818FC7BD40A16F656CAE90DC859@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20211027040559-mutt-send-email-mst@kernel.org>
- <PH0PR12MB5481CEC3BB8BB3EC0B0A368BDC869@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20211028014301-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20211028014301-mutt-send-email-mst@kernel.org>
+Return-Path: <virtio-dev-return-8892-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id 5F0039865C0
+	for <virtio-dev@lists.oasis-open.org>; Fri, 15 Oct 2021 06:52:19 +0000 (UTC)
+From: Cornelia Huck <cohuck@redhat.com>
+In-Reply-To: <DM8PR12MB54806B9EEECE8920F450F86BDCB99@DM8PR12MB5480.namprd12.prod.outlook.com>
+References: <PH0PR12MB54816AD1011E3806A4A26B27DCB29@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20211008185926-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB54814DF6BE5016FB4D941847DCB59@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <871r4ry5do.fsf@redhat.com>
+ <PH0PR12MB5481502C480B6A7C1B61DFD6DCB59@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20211011115716-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB548198414B1F64D5F7A149C8DCB69@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20211012045448-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB5481DB5D0F4F3EAAEB26B047DCB69@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <PH0PR12MB5481C5C0EB93191416E36D4EDCB89@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20211014182437-mutt-send-email-mst@kernel.org>
+ <DM8PR12MB54806B9EEECE8920F450F86BDCB99@DM8PR12MB5480.namprd12.prod.outlook.com>
+Date: Fri, 15 Oct 2021 08:51:53 +0200
+Message-ID: <87czo6vkza.fsf@redhat.com>
 MIME-Version: 1.0
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Jason Wang <jasowang@redhat.com>, Cornelia Huck <cohuck@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Max Gurtovoy <mgurtovoy@nvidia.com>, Shahaf Shuler <shahafs@nvidia.com>, Oren Duer <oren@nvidia.com>
+Subject: [virtio-dev] RE: [PATCH v2] Add device reset timeout field
+Content-Type: text/plain
+To: Parav Pandit <parav@nvidia.com>, "Michael S. Tsirkin" <mst@redhat.com>
+Cc: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Max Gurtovoy <mgurtovoy@nvidia.com>, Shahaf Shuler <shahafs@nvidia.com>, Oren Duer <oren@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+On Fri, Oct 15 2021, Parav Pandit <parav@nvidia.com> wrote:
 
-> From: Michael S. Tsirkin <mst@redhat.com>
-> Sent: Thursday, October 28, 2021 11:21 AM
->=20
-> On Thu, Oct 28, 2021 at 04:01:52AM +0000, Parav Pandit wrote:
-> > >   how it looks like, whether there is a timeout is
-> > >   a separate question.
-> >
-> > > E.g. a read counter sounds
-> > >   more generic, if device is stuck it can just stop
-> > >   incrementing it.
-> > This is not scalable solution for hundreds of devices and it breaks the=
- layering
-> too.
-> > A virtio layer itself is not in up_state to perform counter update.
-> > A non virtio layer is expected to implement this counter. This is not r=
-ight.
->=20
-> Donnu what does the above mean. My point is simple: there's little differ=
-ence
-> between device being stuck during firmware boot and device being stuck ri=
-ght
-> after boot.
-Virtio functionality is something to be implemented by the virtio layer in =
-the device.
-When the device is booting, virtio layer may not have yet booted to update =
-this counter. (device is not stuck).
-Some other layer before the virtio layer within the device is asked to impl=
-ement virtio counters.
+>> From: Michael S. Tsirkin <mst@redhat.com>
+>> Sent: Friday, October 15, 2021 3:59 AM
+>> 
+>> On Thu, Oct 14, 2021 at 05:35:37PM +0000, Parav Pandit wrote:
+>> > Below changes are good for v3?
+>> > 1. driver should use device reset time during initialization stage
+>> 
+>> How does driver identify this though?
+> Existence of device_reset_timeout field in struct virtio_pci_common_cfg indicates that this field exists.
+> If device support it, it will place non zero value and driver knows that this field should be used.
 
-And hence it incorrect to have such counter to indicate that the device is =
-booting.
+But how does the driver know? The very first step in the initialization
+sequence is "reset the device", before it may read the config space.
 
-A init bit is good enough to indicate that initialization has not yet finis=
-hed. When the virtio layer is booted in the device, it can connect to this =
-layer to update about its init status.
-This is far more scalable and don't break layers.
+>
+>> 
+>> > 2. remove feature bit as feature bits are only readable after reset is
+>> > completed 3. device reset timeout field of zero indicates that device doesn't
+>> support it.
+>> 
+>> I'm not sure about 3. I think each transport will need its own way to do it.
+>> 
+> For pci a value of zero indicates it isn't supported.
+> For mmio DeviceResetTimeout at offset 0x04c indicates same.
+> Currently only these 2 transports have the use.
 
-Secondly, a free flowing counter implementation for tens of hundreds of dev=
-ices doesn't scale in pre-init stage.
+I don't think we want to force all transports, including not yet
+existing ones, to use that mechanism. They might as well use a command
+to retrieve the value and fail the command, for example.
+
+>
+>> So I propose: maybe a capability like this, with a timeout field?
+> Do you mean a new capability like say VIRTIO_PCI_DEVICE_TIMEOUT like VIRTIO_PCI_CAP_COMMON_CFG?
+> This will contain one or more timeout? For example with his proposal it contains only device reset timeout.
+> Later same capability will be further extended to contains command timeout too? Yes?
+>
+>> And within VMs, we can just do without, since it got out of reset once it will
+>> surely get out of reset again...
+> Yes, VM might not need it. It is really the HV's choice to implement and not part of the virtio spec.
+> Our internal cloud passthrough a PF to the VM.
+> It is probably better to let HV to choose if they want to do ctrl+c or have timeout.
+
+But you want it in the spec, don't you? Confused.
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
