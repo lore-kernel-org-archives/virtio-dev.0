@@ -1,160 +1,339 @@
-Return-Path: <parav@nvidia.com>
-From: Parav Pandit <parav@nvidia.com>
-Subject: RE: [virtio-dev] RE: [PATCH v2] Add device reset timeout field
-Date: Mon, 25 Oct 2021 06:11:31 +0000
-Message-ID: <PH0PR12MB54810528108E4EB12CC1C401DC839@PH0PR12MB5481.namprd12.prod.outlook.com>
+Return-Path: <jasowang@redhat.com>
+MIME-Version: 1.0
 References: <PH0PR12MB54816AD1011E3806A4A26B27DCB29@PH0PR12MB5481.namprd12.prod.outlook.com>
  <PH0PR12MB5481DB5D0F4F3EAAEB26B047DCB69@PH0PR12MB5481.namprd12.prod.outlook.com>
  <PH0PR12MB5481C5C0EB93191416E36D4EDCB89@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20211014182437-mutt-send-email-mst@kernel.org>
- <DM8PR12MB54806B9EEECE8920F450F86BDCB99@DM8PR12MB5480.namprd12.prod.outlook.com>
- <047032b5-6b39-98cb-8517-2b02e5fb1560@redhat.com>
- <PH0PR12MB5481E5C62AD72F75792FC9B6DCB99@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20211014182437-mutt-send-email-mst@kernel.org> <DM8PR12MB54806B9EEECE8920F450F86BDCB99@DM8PR12MB5480.namprd12.prod.outlook.com>
+ <047032b5-6b39-98cb-8517-2b02e5fb1560@redhat.com> <PH0PR12MB5481E5C62AD72F75792FC9B6DCB99@PH0PR12MB5481.namprd12.prod.outlook.com>
  <CACGkMEs7gAipdbkj4DrpWLsxViHK_qicFVjy6Dy4qP7argih4g@mail.gmail.com>
  <PH0PR12MB548105873DCFFDE8FD95D0A6DCB99@PH0PR12MB5481.namprd12.prod.outlook.com>
  <CACGkMEthjkX3pV+1L9Eg-nJOArSUfmDRY8UCK_2LJ7-oxO6SpQ@mail.gmail.com>
  <DM8PR12MB548048016A0311F809BF0E67DCB99@DM8PR12MB5480.namprd12.prod.outlook.com>
  <CACGkMEuP6nZCSyz8piHYdMzwSKGgZbn65SBx486C-Lm2jbw5TA@mail.gmail.com>
  <PH0PR12MB5481C32F9D9A54AFA4E337A3DC809@PH0PR12MB5481.namprd12.prod.outlook.com>
- <2984c445-a7fd-97c4-34aa-3a40778a0fcd@redhat.com>
-In-Reply-To: <2984c445-a7fd-97c4-34aa-3a40778a0fcd@redhat.com>
-MIME-Version: 1.0
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-To: Jason Wang <jasowang@redhat.com>
+ <2984c445-a7fd-97c4-34aa-3a40778a0fcd@redhat.com> <PH0PR12MB54810528108E4EB12CC1C401DC839@PH0PR12MB5481.namprd12.prod.outlook.com>
+In-Reply-To: <PH0PR12MB54810528108E4EB12CC1C401DC839@PH0PR12MB5481.namprd12.prod.outlook.com>
+From: Jason Wang <jasowang@redhat.com>
+Date: Tue, 26 Oct 2021 12:03:52 +0800
+Message-ID: <CACGkMEtBJavHQr2SaMiz8TSTt-fCsm3WoJMfRYEO=dr-=Ld-1Q@mail.gmail.com>
+Subject: Re: [virtio-dev] RE: [PATCH v2] Add device reset timeout field
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+To: Parav Pandit <parav@nvidia.com>
 Cc: "Michael S. Tsirkin" <mst@redhat.com>, Cornelia Huck <cohuck@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Max Gurtovoy <mgurtovoy@nvidia.com>, Shahaf Shuler <shahafs@nvidia.com>, Oren Duer <oren@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-DQoNCj4gRnJvbTogSmFzb24gV2FuZyA8amFzb3dhbmdAcmVkaGF0LmNvbT4NCj4gU2VudDogTW9u
-ZGF5LCBPY3RvYmVyIDI1LCAyMDIxIDExOjEyIEFNDQpbLi5dIA0KPiBTbyB3aGF0IEkgbWVhbnQg
-aXMsIGlmIFBDSSBnaXZlcyB1cyBhbiB1cHBlciBsaW1pdCBvZiB0aGUgcmVzZXQgKGUuZyAxMDBt
-cyBhcyB5b3UNCj4gc2FpZCksIGNhbiB2aXJ0aW8gZGV2aWNlIHBlcmZvcm0gcmVzZXQgbW9yZSB0
-aGFuIHRoYXQ/IElmIG5vdCwgY2FuIHdlIHNpbXBseSB1c2UNCj4gMTAwbXMgZm9yIHZpcnRpby1w
-Y2kgb3IgY2FuIHdlIGdhaW4gZnJvbSBoYXZpbmcgYSBzbWFsbGVyIHBlciBkZXZpY2UgdGltZW91
-dD8NCj4gSWYgeWVzLCBpdCBsb29rcyBsaWtlIGEgdmlvbGF0aW9uIGZvciBQQ0kuDQpOby4gTm90
-IGF0IGFsbCBhIHZpb2xhdGlvbiBvZiBQQ0kgc3BlYy4NClBDSSBzcGVjIGlzIHRyYW5zcG9ydCBs
-YXllci4NClZpcnRpbyBpbyBpcyBsYXllciBhYm92ZSB0cmFuc3BvcnQuDQoNClBDSSBkZXZpY2Ug
-Y2FuIGJlIHJlc2V0LCBidXQgbm90IG5lY2Vzc2FyeSwgaXQgaXMgcmVhZHkgdG8gc2VydmljZSB1
-cHBlciBsYXllciBwcm90b2NvbHMgd2hvIG1heSBuZWVkIG1vcmUgdGltZSB0byBmaW5pc2ggdGhl
-IHJlc2V0Lg0KDQpUaGVyZSBhcmUgc2V2ZXJhbCBleGFtcGxlcyBvZiBpdCBpbiBpbmR1c3RyeSB0
-b2RheS4NCm52bWUsIG1seDUsIGVmYSwgaW50ZWwgaWNlIGFuZCBtb3JlIHdobyBtYXkgbmVlZCBt
-b3JlIHRpbWUgdG8gcmVzZXQgdGhlIHVwcGVyIGxheWVyIGRldmljZSB0YW4gMTAwbXNlYy4NCg0K
-c2Vjb25kIHBvaW50IHRoYXQgSSBhbHJlYWR5IGV4cGxhaW5lZCwgaXMgdGhlcmUgaXMgbm90aGlu
-ZyB3cm9uZyBhdCB0aGUgUENJIGxldmVsIHRoYXQgX3JlcXVpcmVzXyBmdXJ0aGVyIHJlc2V0Lg0K
-UENJIGRldmljZSBpcyBqdXN0IGZpbmUsIGl0IGlzIHVuZGVyIHJlc2V0IGJ5IHZpcnRpby4gRGVw
-ZW5kaW5nIG9uIHRoZSBkZXZpY2UgaW1wbGVtZW50YXRpb24gaXQganVzdCB0YWtlcyBtb3JlIHRp
-bWUuDQpJbiBmZXcgcmVzcG9uc2VzIGluIHRoZSB0aHJlYWQsIEkgYWxyZWFkeSBkZXNjcmliZWQg
-dGhvc2UgZGlmZmVyZW50IHR5cGVzIG9mIGRldmljZXMgaW4gcmVzcG9uc2UgdG8gQ29ybmVsaWEg
-YW5kIE1pY2hhZWwuDQpQbGVhc2UgZ28gdGhyb3VnaCB0aGUgdGhyZWFkLiBMZXRzICBub3QgcmVw
-ZWF0IHNhbWUgZGlzY3Vzc2lvbiBhZ2Fpbi4NCg0KPiANCj4gSXQgbG9va3MgdG8gdGhlcmUncmUg
-bWFueSBjaG9pY2VzDQo+IA0KPiAxKSBkcml2ZXIgcmVzZXQgdGltZW91dCB2aWEgbW9kdWxlIHBh
-cmFtZXRlciBvciBzeXNmcw0KPiAyKSB0cmFuc3BvcnQgZHJpdmVyIHJlc2V0IHRpbWVvdXQgKGUu
-ZyB2aWEgdmlydGlvLXBjaSkNCj4gMykgZGV2aWNlIHJlc2V0IHRpbWVvdXQNCj4gDQo+IElmIHdl
-IGNhbiBzb2x2ZSB0aGUgaXNzdWUgaW4gMSkgYW5kIDIpLCB0aGVyZSdzIG5vIG5lZWQgZm9yIDMp
-IGNvbnNpZGVyDQo+IDMpIHJlcXVpcmVzIGEgY2hhbmdlcyBpcyB2YXJpb3VzIHBsYWNlcyBhbmQg
-bWF5IGJyaW5nIGV4dHJhIHRyb3VibGVzLg0KPiANCldoYXQgYXJlIHRob3NlIGV4dHJhIHRyb3Vi
-bGVzPw0KRGV2aWNlIHJlc2V0IHRpbWVvdXQgaXMgYWRkcmVzc2luZyAjMSwgIzIgYW5kICMzIHdp
-dGhvdXQgYW55IG9mIHRoZSBleHRyYSB1c2VyIGNvbmZpZyBrbm9icy4gVGhpcyBkZWxpdmVycyBs
-ZXNzIHBhaW5mdWwgc3lzdGVtcyB0byB1c2VyIGFuZCBhbHNvIHZlbmRvciBhZ25vc3RpYyBtZXRo
-b2QuDQoNCkFjdHVhbGx5IHN5c2ZzIGlzIG1vcmUgdHJvdWJsZXNvbWUsIHdoZXJlIHVzZXIgbmVl
-ZHMgdG8gcmVib290IHRoZSBzeXN0ZW0gYW5kIGRvIHNjcmlwdHMgdG8gY29uZmlndXJlIHRoZXNl
-IHZhbHVlcyBldmVuIGJlZm9yZSBrZXJuZWwtYnVpbHRpbiBtb2R1bGVzIGFyZSBsb2FkZWQuDQpT
-b21lIHByZS1ib290IGVudiwgZG9lc27igJl0IGhhdmUgc3VjaCBzeXNmcy4NCg0KPiANCj4gPg0K
-PiA+PiBJdCBsb29rcyB0byBtZSBpdCB3aWxsIGd1YXJhbnRlZSB0aGUgc3VjY2VzcyBvZiB0aGUg
-cmVzZXQ/DQo+ID4gWW91IGFyZSBkZXNjcmliaW5nIHRoZSB0aW1lb3V0IGV4cGlyYXRpb24gaGFu
-ZGxpbmcuDQo+IA0KPiANCj4gVGhpcyBsb29rcyBtb3JlIGltcG9ydGFudCB0aGFuIGp1c3QgaGF2
-aW5nIGEgZGV2aWNlIGhpbnQgb2YgdGhlIHRpbWVvdXQuDQo+IFdlIGRvbid0IHdhbnQgdG8gYmxv
-Y2sgdGhpbmcgbGlrZSBtb2R1bGUgdW5sb2FkIG9yIGRldmljZSByZW1vdmFsIGV0Yy4NCj4gDQpX
-ZSBhbHJlYWR5IGRpc2N1c3NlZCBpbiB0aGlzIHRocmVhZCB3aXRoIE1pY2hhZWwsIHRoYXQgYSBk
-ZXZpY2Ugd2hpY2ggaXMgYWxyZWFkeSByZXNldGVkIGJlZm9yZSwgYSBzZWNvbmQgcmVzZXQgc2hv
-dWxkIGJlIGZhc3QgdG8gc2VydmljZSBhbnl3YXkuDQpQbGVhc2UgcmVhZCB0aGUgZGlzY3Vzc2lv
-biBpbiB0aGlzIHRocmVhZC4gTGV0cyBub3QgcmVwZWF0IHNhbWUgZGlzY3Vzc2lvbiBhZ2Fpbi4N
-Cj4gPj4+IFN0aWxsIG5vdCBhbnkgZGlmZmVyZW50IHRoYW4gcmVzdCBvZiB0aGUgUlcgY2FwYWJp
-bGl0aWVzL3JlZ2lzdGVycy4NCj4gPj4gU28gdGhlIHRpbWVvdXQgZG9lc24ndCB3b3JrIGlmIHdl
-IGNhbiBlbmZvcmNlIHRoYXQuDQo+ID4gRGlkbuKAmXQgZm9sbG93IHlvdXIgY29tbWVudC4gRW5m
-b3JjZSB3aGF0Pw0KPiANCj4gDQo+IEkgbWVhbnQgdGhlIHRpbWVvdXQgdmFsdWUgZG9lc24ndCB3
-b3JrIGhlcmUgc2luY2UgZ3Vlc3QgY2FuJ3Qgc2VlIHRoYXQuDQpZb3VyIGV4YW1wbGUgd2FzIGZv
-ciBWTSBtaWdyYXRpb24gZnJvbSBzd193aXRob3V0X2RldmljZV9yZXNldCB0byBod193aXRoX2Rl
-dmljZV9yZXNldC4NCkFuZCBoZXJlLCB5b3Ugd2FudGVkIHRvIGhpZGUgdGhlIGRldmljZSByZXNl
-dCB0aW1lb3V0Lg0KU28gZ3Vlc3QgX3Nob3VsZF9ub3RfIGJlIGFibGUgdG8gc2VlIGl0LiBSaWdo
-dD8NCg0KPiANCj4gDQo+ID4NCj4gPj4gU2VlbXMgc3ViIG9wdGltYWwgdGhhbiBkb2luZyBhIHRy
-YW5zcG9ydCByZXNldCBpZiBwb3NzaWJsZS4NCj4gPiBUcmFuc3BvcnQgbGV2ZWwgcmVzZXQgaXMg
-bm90IGhlbHBmdWwgZm9yIHR3byBtYWluIHJlYXNvbnMuDQo+ID4gMS4gQSBkZXZpY2UgdW5kZXIg
-cmVzZXQgaGFzIG5vdGhpbmcgd3JvbmcgYXQgdGhlIFBDSSBsZXZlbC4NCj4gPiBEZXZpY2UgaXMg
-anVzdCBzdGlsbCB1bmRlciBib290L3Jlc2V0dGluZyB0byBzZXJ2aWNlIHZpcnRpbyBsZXZlbCBj
-b21tYW5kcy4NCj4gPiBTbyBkb2luZyBQQ0kgbGV2ZWwgcmVzZXQgaXMgYWN0dWFsbHkgYWR2ZXJz
-ZWx5IGFmZmVjdCBpdCBmdXJ0aGVyIGJlY2F1c2UgUENJDQo+IGxldmVsIHJlc2V0IHdpbGwgdHJp
-Z2dlciBtb3JlIGxheWVycyBvZiB1bndhbnRlZCByZXNldC4NCj4gDQo+IA0KPiBXZWxsLCBsb29r
-aW5nIGF0IHRoZSBkcml2ZXIgY29kZXMsIHRoZXJlJ3JlIHZhcmlvdXMgcGxhY2VzIHRoYXQgdGhl
-DQo+IHJlc2V0KCkgaXMgbm90IGV4cGVjdGVkIHRvIGJlIGZhaWwuIE15IHVuZGVyc3RhbmRpbmcg
-aXMgdGhhdCB5b3VyDQo+IHByb3Bvc2FsIG9ubHkgc29sdmUgdGhlIGlzc3VlIHdoZW4gdGhlIHJl
-c2V0IGNhbiBmYWlsIGJ1dCBub3Qgb3RoZXIuDQo+IFRoYXQncyB3aHkgd2UgbmVlZCBzZWVrIGhl
-bHAgZm9yIHRyYW5zcG9ydCBsYXllciBzdXBwb3J0Lg0KPiANCkRyaXZlciBjYW4gaXNzdWUgdHJh
-bnNwb3J0IGxldmVsIHJlc2V0IHdoZW4gcmVzZXQgdGltZW91dCBleHBpcmVzLg0KRmlyc3Qgd2Ug
-bmVlZCB0aGUgcmVzZXQgdGltZW91dCB0byBiZSBkZWZpbmVkIGFuZCBsZXQgaXQgZXhwaXJlLiA6
-KQ0KT25jZSBpdCBleHBpcmVzLCBzdXJlLCB0cmFuc3BvcnQgbGV2ZWwgcmVzZXRzIGNhbiBiZSBh
-cHBsaWVkLg0KDQpJIHRoaW5rIHlvdSBtaXNzZWQgdGhpcyBwYXJ0LCB0aGF0IHdlIGRvIG5vdCBy
-ZXNldCB0byB3YWl0IGluZmluaXRlbHkgaW4gYWxsIHBsYWNlcyBhcyBkb25lIHRvZGF5IGluIGxp
-bnV4IGRyaXZlci4NCldhaXQgZmluaXRlbHksIGFuZCB3aGVuIGZpbml0ZSB0aW1lIGV4cGlyZXMs
-IHN1cmUsIGRyaXZlciBjYW4gaXNzdWUgdHJhbnNwb3J0IGxldmVsIHJlc2V0Lg0KDQo+IA0KPiA+
-DQo+ID4gMi4gUENJIGxldmVsIHJlc2V0IG11c3QgY29tcGxldGUgaW4gMTAwbXNlYy4NCj4gDQo+
-IA0KPiBEaWQgeW91IG1lYW4gMTAwbXMgaXMgdG9vIGxvbmc/IElmIHllcywgcGxlYXNlIGV4cGxh
-aW4gd2h5Lg0KVGhpcyBpcyBkaXNjdXNzZWQgYW5kIENvcm5lbGlhIGdhdmUgdGhlIGV4YW1wbGUg
-YWxzbyBpbiB0aGlzIHRocmVhZC4NCmkuZS4gYSBmdyBiYXNlZCBodyB2aXJ0aW8gZGV2aWNlIG1h
-eSBub3QgaGF2ZSBmaW5pc2hlZCBpdHMgaW5pdGlhbGl6YXRpb24gaW4gaXRzIDEwMCBtc2VjLg0K
-c28gdmlydGlvIGxheWVyIG1heSBuZWVkIHRvIHdhaXQgbG9uZ2VyLg0KDQo+IA0KPiANCj4gPg0K
-PiA+IEkgc3RpbGwgZG9uJ3QgdW5kZXJzdGFuZCBtaXhpbmcgdHJhbnNwb3J0IGxldmVsIHJlc2V0
-IHdpdGggdmlydGlvIGxldmVsIHJlc2V0IGluDQo+IGNvbnRleHQgb2YgTE0uDQo+ID4NCj4gPiBJ
-ZiBJIHJlYWQgeW91ciBvcmlnaW5hbCBjb25jZXJuLCB0aGF0IGEgc3cgZGV2aWNlIHdhcyBleHBv
-c2VkIG9uIEhWLTEgd2l0aG91dA0KPiBkZXZpY2UgcmVzZXQgdGltZW91dC4NCj4gPiBBbmQgbm93
-IHVzZXIgd2FudHMgdG8gbWlncmF0ZSB0aGlzIFZNIHRvIEhWLTIgd2hpY2ggaGFzIGEgaHcgZGV2
-aWNlIHdpdGgNCj4gZGV2aWNlIHJlc2V0IHRpbWVvdXQuDQo+ID4gQW5kIG5vdyB0aGlzIGRldmlj
-ZSBjYW5ub3QgYmUgcGFzc2VkIHRvIHRoZSBIVi0yIGJlY2F1c2Ugb2xkZXIgc3cgZGV2aWNlDQo+
-IHdhcyBhdHRhY2hlZCB0byB0aGUgVk0uDQo+ID4gSSBhbSBmcmFua2x5IG5vdCBzdXJlLCBpZiB0
-aGlzIGlzIHJlYWxseSBhIGNhc2UgdG8gY29uc2lkZXIuDQo+IA0KPiANCj4gQWN0dWFsbHksIGl0
-J3MgYSBjaG9pY2Ugb2YgdGhlIGNsb3VkIHZlbmRvcnMuIEJ1dCBjb25zaWRlciB0aGVyZSBhcmUN
-Cj4gdmVyeSBodWdlIG51bWJlciBvZiBpbnN0YW5jZXMgd2hpY2ggaXMgYmFzZWQgb24gc29mdHdh
-cmUgdmlydGlvLCBpdCdzIGENCj4gdmFsaWQgdXNlIGNhc2UuIEJ1dCB3aGF0IEkgd2FudCB0byBz
-YXkgaXMgdGhhdCwgaWYgd2UgdG91Y2ggdGhlIHNwZWMsIGl0DQo+IHdpbGwgcmVxdWlyZXMgY2hh
-bmdlcyBpbiB0aGUgbWFuYWdlbWVudCBsYXllciBhcyB3ZWxsLiBFLmcgaWYgd2UgY2FuIG5vdA0K
-PiBtaWdyYXRlIGZyb20gaGFyZHdhcmUgdGhhdCBzdXBwb3J0IHJlc2V0IHRpbWVvdXQgdG8gc29m
-dHdhcmUgdGhhdA0KPiBkb2Vzbid0IHN1cHBvcnQgcmVzZXQgdGltZW91dC4gSXQgd2lsbCBiZSBi
-ZXR0ZXIgaWYgd2UgY2FuIGRvIHRoYXQgb25seQ0KPiBpbiB0aGUgZHJpdmVyLg0KQWJvdmUgZXhw
-bGFuYXRpb24gY2hvb3NlcyBub3cgYSBkaWZmZXJlbnQgZXhhbXBsZS4NCkluIHRoaXMgZXhhbXBs
-ZSwgeW91IG1lbnRpb24gaHcgdG8gc3cgbWlncmF0aW9uLg0KUHJldmlvdXNseSB5b3VyIGV4YW1w
-bGUgd2FzIGZyb20gaW5mZXJpb3Igc3cgdG8gbmV3ZXIgaHcuDQogDQo+IA0KPiBTaW1pbGFyIGJ1
-dCBvbmUgbW9yZSBidXJkZW4gZm9yIHRoZSBtYW5hZ2VtZW50IGlmIGEgc2ltcGxlIDEwMG1zIHRp
-bWVvdXQNCj4gY2FuIHdvcmsgZm9yIHZpcnRpby1wY2kuDQpSZXNpbGllbnQgc3BlYyBhbmQgcmVz
-aWxpZW50IHN3LCBodyBzdGFjayBpcyBub3QgYSBidXJkZW4gdG8gbWFuYWdlbWVudCBzdGFjay4N
-Ckl0IGlzIGp1c3QgYW55IG90aGVyIGh3L3N3IGF0dHJpYnV0ZSBvZiB0aGUgdmlydGlvIGRldmlj
-ZSB0byB0YWtlIGNhcmUuDQoNCj4gDQo+ID4gSW4gYW5vdGhlciBNU0ktWCBleGFtcGxlIHlvdSBw
-cm92aWRlZCBlbXVsYXRlZCBNU0lYIGFsdGVyYXRpdmUgd2FzDQo+IHByb3Bvc2VkLiBUaGlzIGlz
-IGFnYWluIG5vdCBtYXBwaW5nIHRoZSBmdWxsIGh3IGRldmljZS4NCj4gPg0KPiA+IFNvIGl0IGlz
-IHN0aWxsIHN3IGRldmljZSBvbiBvdGhlciBoYW5kLiBVc2VyIG1pZ2h0IGFzIHdlbGwganVzdCBj
-b250aW51ZSBpbiBzdw0KPiBtb2RlLg0KPiA+DQo+ID4gTGV0J3MgYXNzdW1lIGZvciBhIG1vbWVu
-dCB0aGF0LCB0aGlzIChyYXJlKSBjYXNlIHNob3VsZCBiZSBjb25zaWRlcmVkLg0KPiA+DQo+ID4g
-T25jZSB3YXkgdG8gb3ZlcmNvbWUgdGhpcyBpcyBiZWxvdy4NCj4gPiAoYSkgRG8gbm90IHBsYWNl
-IG5ldyBkZXZpY2VfcmVzZXRfdGltZW91dCBmaWVsZCBpbiBzdHJ1Y3QNCj4gdmlydGlvX3BjaV9j
-b21tb25fY2ZnLg0KPiA+IFRoaXMgaXMgYmVjYXVzZSB0aGlzIG1hcCBiZSBpbiBtZW1vcnkgbWFw
-cGVkIEJBUiBkaXJlY3RseSBhY2Nlc3NpYmxlIHRvIHRoZQ0KPiBndWVzdCBhbmQgZnV0dXJlIHZl
-cnNpb24gb2YgdGhlIHNwZWMgaGFzIG1vcmUgZmllbGRzIGFmdGVyIGRldmljZSByZXNldCB0aW1l
-b3V0Lg0KPiA+IFN1Y2ggZmllbGRzIGFyZSBzb21laG93IGltcGxlbWVudGVkIGJ5IHRoZSBzdyBk
-ZXZpY2Ugb24gSFYtMS4NCj4gPg0KPiA+IChiKSBJbnN0ZWFkLCBkZWZpbmUgbmV3IGNmZ190eXBl
-IFZJUlRJT19QQ0lfQ0FQX0RFVl9USU1FT1VUX0NGRy4NCj4gPiBUaGlzIHBvaW50cyB0byB0aGUg
-c3RydWN0IGNvbnRhaW5pbmcgZGV2aWNlIHJlc2V0IHRpbWVvdXQuDQo+ID4gRXhwb3NpbmcgdGhp
-cyBjYXBhYmlsaXR5IGNhbiBiZSBza2lwcGVkIHdoZW4gbWFwcGluZyB0aGUgaHcgdmlydGlvIGRl
-dmljZSB0bw0KPiBWTSBvbiBIVi0yIHRvIG1hdGNoIHN3IHZpcnRpbyBkZXZpY2Ugb2YgSFYtMS4N
-Cj4gDQo+IA0KPiBUaGlzIHdpbGwgZWFzZSB0aGUgaHlwZXJ2aXNvciBidXQgYW55aG93IGh5cGVy
-dmlzb3IgY2FuIGNob29zZSB0byBub3QNCj4gZXhwb3NlIHRoZSBjYXBhYmlsaXR5IGRpcmVjdGx5
-IHRvIGd1ZXN0ICh3aGljaCB3aWxsIHNvb24gYmVjYW1lIGEgYnVyZGVuDQo+IHRvIHN1cHBvcnQg
-Y3Jvc3MgdmVuZG9yIGxpdmUgbWlncmF0aW9uKS4NCkFnYWluIGl0IGlzIG5vdCBhIGJ1cmRlbi4N
-CklmIGEgbGl2ZSBtaWdyYXRpb24gc3cgbmVlZHMgdGhlIGFiaWxpdHkgdG8gbWlncmF0ZSBiZXR3
-ZWVuIHZlbmRvcnMsIHJpZ2h0IGFwcHJvYWNoIGlzIHRvIGhhdmUgYXR0cmlidXRlcyBpbiB0aGUg
-c3BlYy4NClNvIHRoYXQgc3cgaGFzIHRoZSBhYmlsaXR5IHRvIHVuZGVyc3RhbmQgd2hlcmUgY2Fu
-IGRldmljZSBtaWdyYXRlLg0KDQpBcyBJIGV4cGxhaW5lZCwgdGhlcmUgYXJlIG1hbnkgUlcgZmVh
-dHVyZXMgaW4gdGhlIHZpcnRpbyBzcGVjIHRoYXQgbGl2ZSBtaWdyYXRpb24gc3cgbmVlZHMgdG8g
-dGFrZSBjYXJlIHRvIG1pZ3JhdGUgYWNyb3NzIGNyb3NzIHZlbmRvci4NCkEgbmV3IFJPIGZpZWxk
-IHRoYXQgaW1wcm92ZXMgdGhlIHN3IHN0YWNrIGNhbm5vdCBiZSBhdHRyaWJ1dGVkIGFzIGJ1cmRl
-biB0byBsaXZlIG1pZ3JhdGlvbiBzdy4NCg==
+On Mon, Oct 25, 2021 at 2:11 PM Parav Pandit <parav@nvidia.com> wrote:
+>
+>
+>
+> > From: Jason Wang <jasowang@redhat.com>
+> > Sent: Monday, October 25, 2021 11:12 AM
+> [..]
+> > So what I meant is, if PCI gives us an upper limit of the reset (e.g 10=
+0ms as you
+> > said), can virtio device perform reset more than that? If not, can we s=
+imply use
+> > 100ms for virtio-pci or can we gain from having a smaller per device ti=
+meout?
+> > If yes, it looks like a violation for PCI.
+> No. Not at all a violation of PCI spec.
+> PCI spec is transport layer.
+> Virtio io is layer above transport.
+>
+> PCI device can be reset, but not necessary, it is ready to service upper =
+layer protocols who may need more time to finish the reset.
+
+Isn't transport level reset implies a virtio reset? I think this is
+the question we need to answer or clarify it in the spec. All my
+suggestions were based on the answer "yes".
+
+Another question is that we don't define reset actually, do we need to
+do that before trying to define reset timeout? To me the reset means
+the device can be used by the driver which means all the basic device
+facilities are ready. It means the device is ready from the
+perspective of a "driver", if the device requires a connection to a
+remote subsystem, whether or not such connection is established is out
+of the scope of virtio reset. Devices can choose not to process the
+requests from the virtqueue.
+
+Another question is that, can we present a PCI device if the
+underlayer device logic is not ready? If the question is yes, do we
+need a new facility to tell the driver that the device is being
+initialized?
+
+>
+> There are several examples of it in industry today.
+> nvme, mlx5, efa, intel ice and more who may need more time to reset the u=
+pper layer device tan 100msec.
+
+Virtio supports more types than the above list, if it's the timeout
+that is specific to some types of the devices (e.g block), we need to
+use device specific methods.
+
+>
+> second point that I already explained, is there is nothing wrong at the P=
+CI level that _requires_ further reset.
+> PCI device is just fine, it is under reset by virtio. Depending on the de=
+vice implementation it just takes more time.
+> In few responses in the thread, I already described those different types=
+ of devices in response to Cornelia and Michael.
+> Please go through the thread. Let's not repeat the same discussion again.
+
+So my point is to avoid exposing any implementation specific to the
+driver. It has a different movitiaton than the discussion you refer to
+here.
+
+>
+> >
+> > It looks to there're many choices
+> >
+> > 1) driver reset timeout via module parameter or sysfs
+> > 2) transport driver reset timeout (e.g via virtio-pci)
+> > 3) device reset timeout
+> >
+> > If we can solve the issue in 1) and 2), there's no need for 3) consider
+> > 3) requires a changes is various places and may bring extra troubles.
+> >
+> What are those extra troubles?
+> Device reset timeout is addressing #1, #2 and #3 without any of the extra=
+ user config knobs. This delivers less painful systems to user and also ven=
+dor agnostic method.
+>
+> Actually sysfs is more troublesome, where user needs to reboot the system=
+ and do scripts to configure these values even before kernel-builtin module=
+s are loaded.
+> Some pre-boot env, doesn=E2=80=99t have such sysfs.
+
+It's just an example, it could be a hard coded value. If 100ms is not
+enough we can use something longer.
+
+>
+> >
+> > >
+> > >> It looks to me it will guarantee the success of the reset?
+> > > You are describing the timeout expiration handling.
+> >
+> >
+> > This looks more important than just having a device hint of the timeout=
+.
+> > We don't want to block thing like module unload or device removal etc.
+> >
+> We already discussed in this thread with Michael, that a device which is =
+already reseted before, a second reset should be fast to service anyway.
+
+Well, this part I don't understand. If you meant the time spent on the
+"first" reset is implementation dependent but time spent on the
+"second" reset is fast (not much implementation dependent). It looks
+like a conclusion that applies only to your specific implementation or
+hardware.
+
+> Please read the discussion in this thread. Let's not repeat the same disc=
+ussion again.
+
+It's not a repeat of the discussion, we don't want to end up with a
+solution that works only for a single vendor or implementation.
+
+> > >>> Still not any different than rest of the RW capabilities/registers.
+> > >> So the timeout doesn't work if we can enforce that.
+> > > Didn=E2=80=99t follow your comment. Enforce what?
+> >
+> >
+> > I meant the timeout value doesn't work here since guest can't see that.
+> Your example was for VM migration from sw_without_device_reset to hw_with=
+_device_reset.
+> And here, you wanted to hide the device reset timeout.
+> So guest _should_not_ be able to see it. Right?
+
+Yes, so if the hardware can work with the infinite waiting in the
+guest, there's no much value for the device specific reset timeout
+actually. Isn't it?
+
+>
+> >
+> >
+> > >
+> > >> Seems sub optimal than doing a transport reset if possible.
+> > > Transport level reset is not helpful for two main reasons.
+> > > 1. A device under reset has nothing wrong at the PCI level.
+> > > Device is just still under boot/resetting to service virtio level com=
+mands.
+> > > So doing PCI level reset is actually adversely affect it further beca=
+use PCI
+> > level reset will trigger more layers of unwanted reset.
+> >
+> >
+> > Well, looking at the driver codes, there're various places that the
+> > reset() is not expected to be fail. My understanding is that your
+> > proposal only solve the issue when the reset can fail but not other.
+> > That's why we need seek help for transport layer support.
+> >
+> Driver can issue transport level reset when reset timeout expires.
+> First we need the reset timeout to be defined and let it expire. :)
+> Once it expires, sure, transport level resets can be applied.
+
+Yes, but I'm not sure how device specific timeout can help more:
+
+1) if device works well, there won't be an infinite wait on the reset
+2) if device is buggy,
+2.1) wait for ever
+2.2) doing a transport specific reset to prevent data corruption after a ti=
+meout
+
+Using 2.2 is tricky since as discussed, the hypervisor may choose to
+hide this and let guests just use infinite wait for most of the cases.
+
+>
+> I think you missed this part, that we do not reset to wait infinitely in =
+all places as done today in linux driver.
+
+The reason is that virtio drivers are mostly used in the guest where
+the device is emulated by the software. It's almost impossible to
+enforce a timeout for any specific operation, setting device status is
+just one of the possible operations that may wait forever.
+
+> Wait finitely, and when finite time expires, sure, driver can issue trans=
+port level reset.
+
+Ok, so I think if we finally go with the way of the device advertised
+timeout, we need to clarify the transport level reset is a must after
+timeout in the spec anyhow.
+
+>
+> >
+> > >
+> > > 2. PCI level reset must complete in 100msec.
+> >
+> >
+> > Did you mean 100ms is too long? If yes, please explain why.
+> This is discussed and Cornelia gave the example also in this thread.
+> i.e. a fw based hw virtio device may not have finished its initialization=
+ in its 100 msec.
+> so virtio layer may need to wait longer.
+
+Yes, but current code without timeout works in this case.
+
+>
+> >
+> >
+> > >
+> > > I still don't understand mixing transport level reset with virtio lev=
+el reset in
+> > context of LM.
+> > >
+> > > If I read your original concern, that a sw device was exposed on HV-1=
+ without
+> > device reset timeout.
+> > > And now user wants to migrate this VM to HV-2 which has a hw device w=
+ith
+> > device reset timeout.
+> > > And now this device cannot be passed to the HV-2 because older sw dev=
+ice
+> > was attached to the VM.
+> > > I am frankly not sure, if this is really a case to consider.
+> >
+> >
+> > Actually, it's a choice of the cloud vendors. But consider there are
+> > very huge number of instances which is based on software virtio, it's a
+> > valid use case. But what I want to say is that, if we touch the spec, i=
+t
+> > will requires changes in the management layer as well. E.g if we can no=
+t
+> > migrate from hardware that support reset timeout to software that
+> > doesn't support reset timeout. It will be better if we can do that only
+> > in the driver.
+> Above explanation chooses now a different example.
+> In this example, you mention hw to sw migration.
+> Previously your example was from inferior sw to newer hw.
+
+It just to demonstrate possible troubles:
+
+1) migrate from sw(no timeout) to hw (timeout)
+2) migrate from hw(timeout) to sw(no timeout)
+3) migrate from hw_vendorA(timeoutA) to hw_vendorB(timeoutB)
+4) migrate from hw_vendorA(timeoutA_implementationA) to
+hw_vendorA(timeoutB_implementationB)
+5) migrate from hw_vendorA(timeoutA_implementationA) to
+hw_vendorA(timeoutA_implementationA)
+
+The hypervisor can only choose to expose timeout value in the case 5)
+(and it can only do this if it knows all the migration destinations
+have the same timeout value) and it will let the 1 to 4 to simply use
+infinite wait by hiding the capability. The management stack should
+have virtio specific knowledge to poke into the PCIE capabilities list
+to find and report the timeout and we need cross machine co-ordination
+with the migration destination or clusters to allow the migration.
+Hypervisors like Qemu maintain the migration compatibility by using
+machine type, but this implementation specific attributes makes it
+almost impossible to be a part of the machine type which means virtio
+ad-hoc codes were needed.
+
+>
+> >
+> > Similar but one more burden for the management if a simple 100ms timeou=
+t
+> > can work for virtio-pci.
+> Resilient spec and resilient sw, hw stack is not a burden to management s=
+tack.
+> It is just any other hw/sw attribute of the virtio device to take care.
+
+This is only true if you don't expose any vendor or implementation
+specific attributes. See above.
+
+>
+> >
+> > > In another MSI-X example you provided emulated MSIX alterative was
+> > proposed. This is again not mapping the full hw device.
+> > >
+> > > So it is still sw device on other hand. User might as well just conti=
+nue in sw
+> > mode.
+> > >
+> > > Let's assume for a moment that, this (rare) case should be considered=
+.
+> > >
+> > > Once way to overcome this is below.
+> > > (a) Do not place new device_reset_timeout field in struct
+> > virtio_pci_common_cfg.
+> > > This is because this map be in memory mapped BAR directly accessible =
+to the
+> > guest and future version of the spec has more fields after device reset=
+ timeout.
+> > > Such fields are somehow implemented by the sw device on HV-1.
+> > >
+> > > (b) Instead, define new cfg_type VIRTIO_PCI_CAP_DEV_TIMEOUT_CFG.
+> > > This points to the struct containing device reset timeout.
+> > > Exposing this capability can be skipped when mapping the hw virtio de=
+vice to
+> > VM on HV-2 to match sw virtio device of HV-1.
+> >
+> >
+> > This will ease the hypervisor but anyhow hypervisor can choose to not
+> > expose the capability directly to guest (which will soon became a burde=
+n
+> > to support cross vendor live migration).
+> Again it is not a burden.
+> If a live migration sw needs the ability to migrate between vendors, righ=
+t approach is to have attributes in the spec.
+> So that sw has the ability to understand where can device migrate.
+
+So waiting forever can make sure the guest can migrate without caring
+about the timeout.
+
+>
+> As I explained, there are many RW features in the virtio spec that live m=
+igration sw needs to take care to migrate across cross vendor.
+
+Note that those features are virtio features not the transport
+specific features. Spec only cares about how to migrate virtio,
+instead of migrating transport specific stuff. Another thing is that,
+unlike #queue_paris or #msi_vectors, the device rest timeout is not
+something that can be provisioned or mediated before/after doing live
+migration. Hypervisor may just choose to disable them for the guest
+for migration compatibility.
+
+Thanks
+
+> A new RO field that improves the sw stack cannot be attributed as burden =
+to live migration sw.
 
