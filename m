@@ -1,16 +1,9 @@
-Return-Path: <parav@nvidia.com>
-From: Parav Pandit <parav@nvidia.com>
-Subject: RE: [virtio-dev] RE: [PATCH v2] Add device reset timeout field
-Date: Wed, 27 Oct 2021 08:04:10 +0000
-Message-ID: <PH0PR12MB54818FC7BD40A16F656CAE90DC859@PH0PR12MB5481.namprd12.prod.outlook.com>
-References: <PH0PR12MB54816AD1011E3806A4A26B27DCB29@PH0PR12MB5481.namprd12.prod.outlook.com>
- <PH0PR12MB5481DB5D0F4F3EAAEB26B047DCB69@PH0PR12MB5481.namprd12.prod.outlook.com>
- <PH0PR12MB5481C5C0EB93191416E36D4EDCB89@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20211014182437-mutt-send-email-mst@kernel.org>
- <DM8PR12MB54806B9EEECE8920F450F86BDCB99@DM8PR12MB5480.namprd12.prod.outlook.com>
- <047032b5-6b39-98cb-8517-2b02e5fb1560@redhat.com>
- <PH0PR12MB5481E5C62AD72F75792FC9B6DCB99@PH0PR12MB5481.namprd12.prod.outlook.com>
- <CACGkMEs7gAipdbkj4DrpWLsxViHK_qicFVjy6Dy4qP7argih4g@mail.gmail.com>
+Return-Path: <mst@redhat.com>
+Date: Wed, 27 Oct 2021 04:26:20 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Subject: Re: [virtio-dev] RE: [PATCH v2] Add device reset timeout field
+Message-ID: <20211027040559-mutt-send-email-mst@kernel.org>
+References: <CACGkMEs7gAipdbkj4DrpWLsxViHK_qicFVjy6Dy4qP7argih4g@mail.gmail.com>
  <PH0PR12MB548105873DCFFDE8FD95D0A6DCB99@PH0PR12MB5481.namprd12.prod.outlook.com>
  <CACGkMEthjkX3pV+1L9Eg-nJOArSUfmDRY8UCK_2LJ7-oxO6SpQ@mail.gmail.com>
  <DM8PR12MB548048016A0311F809BF0E67DCB99@DM8PR12MB5480.namprd12.prod.outlook.com>
@@ -19,331 +12,426 @@ References: <PH0PR12MB54816AD1011E3806A4A26B27DCB29@PH0PR12MB5481.namprd12.prod.
  <2984c445-a7fd-97c4-34aa-3a40778a0fcd@redhat.com>
  <PH0PR12MB54810528108E4EB12CC1C401DC839@PH0PR12MB5481.namprd12.prod.outlook.com>
  <CACGkMEtBJavHQr2SaMiz8TSTt-fCsm3WoJMfRYEO=dr-=Ld-1Q@mail.gmail.com>
-In-Reply-To: <CACGkMEtBJavHQr2SaMiz8TSTt-fCsm3WoJMfRYEO=dr-=Ld-1Q@mail.gmail.com>
+ <PH0PR12MB54818FC7BD40A16F656CAE90DC859@PH0PR12MB5481.namprd12.prod.outlook.com>
 MIME-Version: 1.0
-Content-Language: en-US
+In-Reply-To: <PH0PR12MB54818FC7BD40A16F656CAE90DC859@PH0PR12MB5481.namprd12.prod.outlook.com>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-To: Jason Wang <jasowang@redhat.com>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>, Cornelia Huck <cohuck@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Max Gurtovoy <mgurtovoy@nvidia.com>, Shahaf Shuler <shahafs@nvidia.com>, Oren Duer <oren@nvidia.com>
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+To: Parav Pandit <parav@nvidia.com>
+Cc: Jason Wang <jasowang@redhat.com>, Cornelia Huck <cohuck@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Max Gurtovoy <mgurtovoy@nvidia.com>, Shahaf Shuler <shahafs@nvidia.com>, Oren Duer <oren@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-DQo+IEZyb206IEphc29uIFdhbmcgPGphc293YW5nQHJlZGhhdC5jb20+DQo+IFNlbnQ6IFR1ZXNk
-YXksIE9jdG9iZXIgMjYsIDIwMjEgOTozNCBBTQ0KPiANCj4gT24gTW9uLCBPY3QgMjUsIDIwMjEg
-YXQgMjoxMSBQTSBQYXJhdiBQYW5kaXQgPHBhcmF2QG52aWRpYS5jb20+IHdyb3RlOg0KPiA+DQo+
-ID4NCj4gPg0KPiA+ID4gRnJvbTogSmFzb24gV2FuZyA8amFzb3dhbmdAcmVkaGF0LmNvbT4NCj4g
-PiA+IFNlbnQ6IE1vbmRheSwgT2N0b2JlciAyNSwgMjAyMSAxMToxMiBBTQ0KPiA+IFsuLl0NCj4g
-PiA+IFNvIHdoYXQgSSBtZWFudCBpcywgaWYgUENJIGdpdmVzIHVzIGFuIHVwcGVyIGxpbWl0IG9m
-IHRoZSByZXNldCAoZS5nDQo+ID4gPiAxMDBtcyBhcyB5b3Ugc2FpZCksIGNhbiB2aXJ0aW8gZGV2
-aWNlIHBlcmZvcm0gcmVzZXQgbW9yZSB0aGFuIHRoYXQ/DQo+ID4gPiBJZiBub3QsIGNhbiB3ZSBz
-aW1wbHkgdXNlIDEwMG1zIGZvciB2aXJ0aW8tcGNpIG9yIGNhbiB3ZSBnYWluIGZyb20gaGF2aW5n
-IGENCj4gc21hbGxlciBwZXIgZGV2aWNlIHRpbWVvdXQ/DQo+ID4gPiBJZiB5ZXMsIGl0IGxvb2tz
-IGxpa2UgYSB2aW9sYXRpb24gZm9yIFBDSS4NCj4gPiBOby4gTm90IGF0IGFsbCBhIHZpb2xhdGlv
-biBvZiBQQ0kgc3BlYy4NCj4gPiBQQ0kgc3BlYyBpcyB0cmFuc3BvcnQgbGF5ZXIuDQo+ID4gVmly
-dGlvIGlvIGlzIGxheWVyIGFib3ZlIHRyYW5zcG9ydC4NCj4gPg0KPiA+IFBDSSBkZXZpY2UgY2Fu
-IGJlIHJlc2V0LCBidXQgbm90IG5lY2Vzc2FyeSwgaXQgaXMgcmVhZHkgdG8gc2VydmljZSB1cHBl
-ciBsYXllcg0KPiBwcm90b2NvbHMgd2hvIG1heSBuZWVkIG1vcmUgdGltZSB0byBmaW5pc2ggdGhl
-IHJlc2V0Lg0KPiANCj4gSXNuJ3QgdHJhbnNwb3J0IGxldmVsIHJlc2V0IGltcGxpZXMgYSB2aXJ0
-aW8gcmVzZXQ/IEkgdGhpbmsgdGhpcyBpcyB0aGUgcXVlc3Rpb24gd2UNCj4gbmVlZCB0byBhbnN3
-ZXIgb3IgY2xhcmlmeSBpdCBpbiB0aGUgc3BlYy4gQWxsIG15IHN1Z2dlc3Rpb25zIHdlcmUgYmFz
-ZWQgb24gdGhlDQo+IGFuc3dlciAieWVzIi4NClRyYW5zcG9ydCBsZXZlbCByZXNldHMgYXJlIG9m
-dGVuIHRvbyBzaG9ydC4gSXQgZW5zdXJlcyB0aGF0IHJlc2V0IG9jY3VycmVkLCBoZW5jZSwgbm90
-aWZpY2F0aW9ucyBhbmQgRE1BIGFjdGl2aXRpZXMgd29uJ3Qgb2NjdXIgYWZ0ZXIgdHJhbnNwb3J0
-IHJlc2V0Lg0KSG93ZXZlciwgaXQgbWF5IG5vdCBoYXZlIGZpbmlzaGVkIHRoZSB1cHBlciBsYXll
-ciByZXNldCB0byByZS1zZXJ2aWNlIHRoZSBkZXZpY2UgYWZ0ZXIgdHJhbnNwb3J0IHJlc2V0Lg0K
-DQo+IA0KPiBBbm90aGVyIHF1ZXN0aW9uIGlzIHRoYXQgd2UgZG9uJ3QgZGVmaW5lIHJlc2V0IGFj
-dHVhbGx5LCANCkl0IGhhcyByZWFzb25hYmx5IHdlbGwgZGVmaW5pdGlvbiBpbiB0aGUgc3BlYyBp
-biBjb21taXQ6IGEzMDZiZjQ2Nzg1MGUgKCJjbGFyaWZ5IGRldmljZSByZXNldCIpDQoNCj4gZG8g
-d2UgbmVlZCB0byBkbyB0aGF0DQo+IGJlZm9yZSB0cnlpbmcgdG8gZGVmaW5lIHJlc2V0IHRpbWVv
-dXQ/IFRvIG1lIHRoZSByZXNldCBtZWFucyB0aGUgZGV2aWNlIGNhbiBiZQ0KPiB1c2VkIGJ5IHRo
-ZSBkcml2ZXIgd2hpY2ggbWVhbnMgYWxsIHRoZSBiYXNpYyBkZXZpY2UgZmFjaWxpdGllcyBhcmUg
-cmVhZHkuIA0KUmVzZXQgaXMgd2VsbCBpbiBzcGVjIDEuMCBjb21wYXJlIHRvIDAuOTUgaW5kaWNh
-dGluZyB0aGF0IGRyaXZlciBuZWVkIHRvIHdhaXQgcmVzZXQgdG8gZmluaXNoLg0KDQppLmUuIHRo
-YXQgZHJpdmVyIHNob3VsZCB3YWl0IGZvciBkZXZpY2Ugc3RhdHVzIHRvIHR1cm4gemVybyBkdXJp
-bmcgcmVzZXQgYW5kIG11c3QgZG8gcmVzZXQuDQoNClVubGlrZSAwLjk1IHRoYXQgZXhwbGljaXRs
-eSBzdGF0ZWQgIiBSZXNldCB0aGUgZGV2aWNlLiBUaGlzIGlzIG5vdCByZXF1aXJlZCBvbiBpbml0
-aWFsIHN0YXJ0dXAuIiBJbiBzZWN0aW9uIDIuMi4xLg0KDQo+IEl0DQo+IG1lYW5zIHRoZSBkZXZp
-Y2UgaXMgcmVhZHkgZnJvbSB0aGUgcGVyc3BlY3RpdmUgb2YgYSAiZHJpdmVyIiwgaWYgdGhlIGRl
-dmljZQ0KPiByZXF1aXJlcyBhIGNvbm5lY3Rpb24gdG8gYSByZW1vdGUgc3Vic3lzdGVtLCB3aGV0
-aGVyIG9yIG5vdCBzdWNoIGNvbm5lY3Rpb24NCj4gaXMgZXN0YWJsaXNoZWQgaXMgb3V0IG9mIHRo
-ZSBzY29wZSBvZiB2aXJ0aW8gcmVzZXQuIA0KU3VyZSBzdWNoIGltcGxlbWVudGF0aW9uIGRldGFp
-bCBhYm91dCByZW1vdGUgc3lzdGVtIGNvbm5lY3Rpb24gaXMgb3V0c2lkZSB0aGUgc2NvcGUgb2Yg
-c3BlYy4NCg0KPiBEZXZpY2VzIGNhbiBjaG9vc2Ugbm90IHRvIHByb2Nlc3MgdGhlIHJlcXVlc3Rz
-IGZyb20gdGhlIHZpcnRxdWV1ZS4NClllcywgdGhhdCBpcyByaWdodCwgYnV0IGl0IGlzIG5vdCBs
-aW1pdGVkIHRvIG9ubHkgdnEgcHJvY2Vzc2luZy4NCkFzIG1lbnRpb25lZCBpbiB0aGUgc3BlYyBz
-ZWN0aW9uIDMuMS4xIGJlZm9yZSBWUXMgYXJlIGNyZWF0ZWQgZmVhdHVyZSBiaXRzLCB2aXJ0aW8g
-Y29uZmlnIHNwYWNlIHZhbHVlcyBjYW4gYmUgcmVhZCBvbmx5IGFmdGVyIHJlc2V0IHN0ZXBfMSBp
-cyBjb21wbGV0ZWQuDQoNCj4gDQo+IEFub3RoZXIgcXVlc3Rpb24gaXMgdGhhdCwgY2FuIHdlIHBy
-ZXNlbnQgYSBQQ0kgZGV2aWNlIGlmIHRoZSB1bmRlcmxheWVyIGRldmljZQ0KPiBsb2dpYyBpcyBu
-b3QgcmVhZHk/IA0KWWVzLCB0aGlzIGlzIHZlcnkgY29tbW9uIGZvciBodyBiYXNlZCBkZXZpY2Vz
-LCB1bmxpa2Ugc3ludGhldGljIGRldmljZXMgZm9yIGd1ZXN0IFZNcy4NClRoaXMgaXMgYWxzbyBk
-aXNjdXNzZWQgaW4gdGhpcyB0aHJlYWQgd2l0aCBzcmlvdiBleGFtcGxlLg0KDQo+IElmIHRoZSBx
-dWVzdGlvbiBpcyB5ZXMsIGRvIHdlIG5lZWQgYSBuZXcgZmFjaWxpdHkgdG8gdGVsbCB0aGUNCj4g
-ZHJpdmVyIHRoYXQgdGhlIGRldmljZSBpcyBiZWluZyBpbml0aWFsaXplZD8NCj4gDQpNYXkgYmUg
-eWVzLCBhIGRpZmZlcmVudCByZWdpc3RlciB0aGFuIHRoZSByZXNldCBjYW4gYmUgaGVscGZ1bCB0
-byBpbmRpY2F0ZSB0aGF0Lg0KVGhvdWdoIGl0IHNoYXJlcyBsb3Qgb2YgZnVuY3Rpb25hbGl0aWVz
-IGNvbW1vbiB0byB0aGUgcmVzZXRpbmcgdGhlIGRldmljZS4NCg0KR2l2ZW4gdGhhdCB0aGlzIGlz
-IHRvbyBlYXJseSBpbiBkZXZpY2UgaW5pdGlhbGl6YXRpb24gc2VxdWVuY2UsDQpEZXZpY2UgZG9l
-c27igJl0IGtub3cgaWYgc2hvdWxkIHJldHVybiBmYWtlIHJlc2V0X2NvbXBsZXRlZCBzdGF0dXMg
-YW5kIGlmIGRyaXZlciBpcyBnb2luZyB0byB3YWl0IGZvciBpbml0aWFsaXppbmcgcmVnaXN0ZXIg
-b3Igbm90Lg0KDQpTbyBsZXQgcmVzZXQgcmVnaXN0ZXIgaW5kaWNhdGUgaWYgdGhlIHJlc2V0IGlz
-IGNvbXBsZXRlZCBvciBub3Qgc2VlbXMgbW9yZSBhcHByb3ByaWF0ZSBhbmQgbGVzcyBjb21wbGV4
-IHNvbHV0aW9uLg0KDQo+ID4NCj4gPiBUaGVyZSBhcmUgc2V2ZXJhbCBleGFtcGxlcyBvZiBpdCBp
-biBpbmR1c3RyeSB0b2RheS4NCj4gPiBudm1lLCBtbHg1LCBlZmEsIGludGVsIGljZSBhbmQgbW9y
-ZSB3aG8gbWF5IG5lZWQgbW9yZSB0aW1lIHRvIHJlc2V0IHRoZQ0KPiB1cHBlciBsYXllciBkZXZp
-Y2UgdGFuIDEwMG1zZWMuDQo+IA0KPiBWaXJ0aW8gc3VwcG9ydHMgbW9yZSB0eXBlcyB0aGFuIHRo
-ZSBhYm92ZSBsaXN0LCBpZiBpdCdzIHRoZSB0aW1lb3V0IHRoYXQgaXMgc3BlY2lmaWMNCj4gdG8g
-c29tZSB0eXBlcyBvZiB0aGUgZGV2aWNlcyAoZS5nIGJsb2NrKSwgd2UgbmVlZCB0byB1c2UgZGV2
-aWNlIHNwZWNpZmljDQo+IG1ldGhvZHMuDQpCbG9jayBpcyBtb3N0IGNvbW1vbiBleGFtcGxlLCBi
-dXQgaXQgaXMgbm90IGxpbWl0ZWQgdG8gaXQuDQpUaGVyZSBhcmUgbm9uLXN5bnRoZXRpYywgaHcg
-UENJIGRldmljZXMgb2YgYmxvY2sgYW5kIG5vbi1ibG9jayB0eXBlcyB0aGF0IG1heSBuZWVkIHJl
-bW90ZSBjb25uZWN0aW9uIG9yIG1heSB0YWtlIG1vcmUgdGltZSB0byByZXNldC4NCg0KQXMgeW91
-IGRlc2NyaWJlZCBiZWxvdywgdHJhZGl0aW9uYWxseSB2aXJ0aW8gZGV2aWNlcyB3ZXJlIGV4cG9z
-ZWQgdG8gZ3Vlc3QgVk0gYnkgdGhlIGh5cGVydmlzb3IgYW5kIGhlbmNlIHRoZXkgd2VyZSBhbHdh
-eXMgdGhlcmUuDQpTbyByZXNpbGllbmN5IHdhcyBpbXBsaWNpdGx5IHByZXNlbnQgb24gc3VjaCBn
-dWVzdCBWTSBjYXNlLg0KDQpJIGdhdmUgZXhhbXBsZSBvZiBhYm92ZSBkZXZpY2VzIHdoaWNoIGFy
-ZSB1c2VkIGluIGd1ZXN0IFZNIGRldmljZXMgYW5kIGFzIHBoeXNpY2FsIGRldmljZXMuDQpUaGVy
-ZSBpc24ndCB0aGUgcXVlc3Rpb24gYWJvdXQgd2lkZWx5IHBvcHVsYXIgYW5kIHVzZWQgdmlydGlv
-IGRldmljZXMgZm9yIGd1ZXN0IFZNLiA6LSkNCg0KPiA+DQo+ID4gc2Vjb25kIHBvaW50IHRoYXQg
-SSBhbHJlYWR5IGV4cGxhaW5lZCwgaXMgdGhlcmUgaXMgbm90aGluZyB3cm9uZyBhdCB0aGUgUENJ
-DQo+IGxldmVsIHRoYXQgX3JlcXVpcmVzXyBmdXJ0aGVyIHJlc2V0Lg0KPiA+IFBDSSBkZXZpY2Ug
-aXMganVzdCBmaW5lLCBpdCBpcyB1bmRlciByZXNldCBieSB2aXJ0aW8uIERlcGVuZGluZyBvbiB0
-aGUgZGV2aWNlDQo+IGltcGxlbWVudGF0aW9uIGl0IGp1c3QgdGFrZXMgbW9yZSB0aW1lLg0KPiA+
-IEluIGZldyByZXNwb25zZXMgaW4gdGhlIHRocmVhZCwgSSBhbHJlYWR5IGRlc2NyaWJlZCB0aG9z
-ZSBkaWZmZXJlbnQgdHlwZXMgb2YNCj4gZGV2aWNlcyBpbiByZXNwb25zZSB0byBDb3JuZWxpYSBh
-bmQgTWljaGFlbC4NCj4gPiBQbGVhc2UgZ28gdGhyb3VnaCB0aGUgdGhyZWFkLiBMZXQncyBub3Qg
-cmVwZWF0IHRoZSBzYW1lIGRpc2N1c3Npb24gYWdhaW4uDQo+IA0KPiBTbyBteSBwb2ludCBpcyB0
-byBhdm9pZCBleHBvc2luZyBhbnkgaW1wbGVtZW50YXRpb24gc3BlY2lmaWMgdG8gdGhlIGRyaXZl
-ci4gSXQNCj4gaGFzIGEgZGlmZmVyZW50IG1vdml0aWF0b24gdGhhbiB0aGUgZGlzY3Vzc2lvbiB5
-b3UgcmVmZXIgdG8gaGVyZS4NCj4gDQpUaGVyZSBhcmUgZGlmZmVyZW50IHR5cGUgKHBoeXNpY2Fs
-LCBzcmlvdikgYW5kIGNsYXNzIChuZXQvYmxrL2dwdSkgb2YgaHcgUENJIGRldmljZXMgaW4gYWRk
-aXRpb24gdG8gc3cgYmFzZWQgZGV2aWNlcy4NClNpbmdsZSB0aW1lb3V0IChlaXRoZXIgaW5maW5p
-dGUgb3Igc29tZSBhcmJpdHJhcnkgMSBtc2VjKSBkb2VzbuKAmXQgZml0IGFsbCBjbGFzcyBvZiB0
-aGUgZGV2aWNlcy4NCg0KVGhpcyBwcm9wb3NhbCBwcm92aWRlcyBnZW5lcmljLCBvcHRpb25hbCwg
-dmVuZG9yIGFnbm9zdGljLCBwbGF0Zm9ybSBhZ25vc3RpYyBSTyByZWdpc3RlciB0byBkcml2ZXIu
-DQoNCj4gSXQncyBqdXN0IGFuIGV4YW1wbGUsIGl0IGNvdWxkIGJlIGEgaGFyZCBjb2RlZCB2YWx1
-ZS4gSWYgMTAwbXMgaXMgbm90IGVub3VnaCB3ZQ0KPiBjYW4gdXNlIHNvbWV0aGluZyBsb25nZXIu
-DQoNCkl0IGRvZXNu4oCZdCBtYWtlIHNlbnNlIHRvIGhhdmUgdG9vIHNob3J0IG9yIHRvbyBoaWdo
-IHRpbWVvdXQgc2luZ2xlIHZhbHVlIGJ5IHRoZSBkcml2ZXIgdGhhdCBmaXRzIGFsbC4NCkZvciBl
-eGFtcGxlIHN3IHN5bnRoZXRpYyBkZXZpY2UgdG8gZ3Vlc3QgVk0gZG9lc27igJl0IG5lZWQgdGlt
-ZW91dC4gR3Vlc3QgVk0gY2FuIHdhaXQgaW5maW5pdGVseSBhcyBkZXZpY2UgZGlkbid0IGV4cG9z
-ZSB0aGUgZmllbGQuDQoNCj4gPiA+DQo+ID4gPiA+DQo+ID4gPiA+PiBJdCBsb29rcyB0byBtZSBp
-dCB3aWxsIGd1YXJhbnRlZSB0aGUgc3VjY2VzcyBvZiB0aGUgcmVzZXQ/DQo+ID4gPiA+IFlvdSBh
-cmUgZGVzY3JpYmluZyB0aGUgdGltZW91dCBleHBpcmF0aW9uIGhhbmRsaW5nLg0KPiA+ID4NCj4g
-PiA+DQo+ID4gPiBUaGlzIGxvb2tzIG1vcmUgaW1wb3J0YW50IHRoYW4ganVzdCBoYXZpbmcgYSBk
-ZXZpY2UgaGludCBvZiB0aGUgdGltZW91dC4NCj4gPiA+IFdlIGRvbid0IHdhbnQgdG8gYmxvY2sg
-dGhpbmcgbGlrZSBtb2R1bGUgdW5sb2FkIG9yIGRldmljZSByZW1vdmFsIGV0Yy4NCj4gPiA+DQo+
-ID4gV2UgYWxyZWFkeSBkaXNjdXNzZWQgaW4gdGhpcyB0aHJlYWQgd2l0aCBNaWNoYWVsLCB0aGF0
-IGEgZGV2aWNlIHdoaWNoIGlzDQo+IGFscmVhZHkgcmVzZXRlZCBiZWZvcmUsIGEgc2Vjb25kIHJl
-c2V0IHNob3VsZCBiZSBmYXN0IHRvIHNlcnZpY2UgYW55d2F5Lg0KPiANCj4gV2VsbCwgdGhpcyBw
-YXJ0IEkgZG9uJ3QgdW5kZXJzdGFuZC4gSWYgeW91IG1lYW50IHRoZSB0aW1lIHNwZW50IG9uIHRo
-ZSAiZmlyc3QiDQo+IHJlc2V0IGlzIGltcGxlbWVudGF0aW9uIGRlcGVuZGVudCBidXQgdGltZSBz
-cGVudCBvbiB0aGUgInNlY29uZCIgcmVzZXQgaXMgZmFzdA0KPiAobm90IG11Y2ggaW1wbGVtZW50
-YXRpb24gZGVwZW5kZW50KS4gSXQgbG9va3MgbGlrZSBhIGNvbmNsdXNpb24gdGhhdCBhcHBsaWVz
-DQo+IG9ubHkgdG8geW91ciBzcGVjaWZpYyBpbXBsZW1lbnRhdGlvbiBvciBoYXJkd2FyZS4NCg0K
-Tm8uIGl0IGlzIG5vdCBhIHNwZWNpZmljIGh3IGltcGxlbWVudGF0aW9uLiBVc3VhbGx5IGEgZmly
-bXdhcmUvaHcgYmFzZWQgZGV2aWNlcyB0YWtlcyBmaW5pdGUgdGltZSBjb21lIHVwLg0KSXQgc3Rp
-bGwgaGF2ZSB0byBwcmVzZW50IHRoZSBwaHlzaWNhbCBQQ0kgZGV2aWNlIHdoaWNoIGV4aXN0cyB0
-aGVyZSBldmVuIGJlZm9yZSB2aXJ0aW8gbGF5ZXIgc2hvd3MgdXAgZm9yIHZhcmlvdXMgcmVhc29u
-cy4NCkluIHN1Y2ggY2FzZSBhIGZpcnN0IGRldmljZSByZXNldCBtYXkgdGFrZSBsb25nZXIgYWZ0
-ZXIgcG93ZXItb24uDQoNCkEgZGV2aWNlIHVuZGVyIGNvbnRyb2wgb2YgZHJpdmVyLCBhbmQgcnVu
-bmluZyBWUXMsIGlmIGJlaW5nIHJlc2V0IGlzIGxpa2VseSB0byB0YWtlIHNob3J0ZXIgdGltZS4N
-ClRoaXMgaXMgYmVjYXVzZSBpdCBkb2Vzbid0IG5lZWQgdG8gdW5kZXJnbyBpbml0aWFsaXphdGlv
-biB0aGF0IHdhcyBhbHJlYWR5IGNvbXBsZXRlZCBvbiBpbml0aWFsIGZpcnN0IHBvd2VyLW9uLg0K
-DQpPbmUgY2FuIHN0aWxsIGltcGxlbWVudCB0byBkbyBzZWNvbmQgcmVzZXQgYWxzbyBhcyBzbG93
-IGFzIGZpcnN0LCBidXQgc3VjaCB3b3VsZCBiZSBzdWItb3B0aW1hbCBhbmQgbm90IHVzZWZ1bC4N
-Ck5vdCBzdXJlLCB3aHkgb25lIHdvdWxkIGRvIHRoYXQuDQoNCj4gDQo+ID4gUGxlYXNlIHJlYWQg
-dGhlIGRpc2N1c3Npb24gaW4gdGhpcyB0aHJlYWQuIExldCdzIG5vdCByZXBlYXQgdGhlIHNhbWUg
-ZGlzY3Vzc2lvbg0KPiBhZ2Fpbi4NCj4gDQo+IEl0J3Mgbm90IGEgcmVwZWF0IG9mIHRoZSBkaXNj
-dXNzaW9uLCB3ZSBkb24ndCB3YW50IHRvIGVuZCB1cCB3aXRoIGEgc29sdXRpb24gdGhhdA0KPiB3
-b3JrcyBvbmx5IGZvciBhIHNpbmdsZSB2ZW5kb3Igb3IgaW1wbGVtZW50YXRpb24uDQpZZXMsIEkg
-ZG9uJ3Qgc2VlIGFueSB2ZW5kb3Igc3BlY2lmaWMgaW1wbGVtZW50YXRpb24gcHVzaGVkIGhlcmUu
-DQpUaGUgcHJvcG9zYWwgaXMgbWFraW5nIGl0IHBsYXRmb3JtLCB2ZW5kb3IgYW5kIGRldmljZSB0
-eXBlIGFnbm9zdGljIGFuZCBjb250aW51ZSB0byByZW1haW4gb3B0aW9uYWwgZm9yIHN3IGJhc2Vk
-IGRldmljZXMuDQoNCj4gDQo+ID4gPiA+Pj4gU3RpbGwgbm90IGFueSBkaWZmZXJlbnQgdGhhbiBy
-ZXN0IG9mIHRoZSBSVyBjYXBhYmlsaXRpZXMvcmVnaXN0ZXJzLg0KPiA+ID4gPj4gU28gdGhlIHRp
-bWVvdXQgZG9lc24ndCB3b3JrIGlmIHdlIGNhbiBlbmZvcmNlIHRoYXQuDQo+ID4gPiA+IERpZG7i
-gJl0IGZvbGxvdyB5b3VyIGNvbW1lbnQuIEVuZm9yY2Ugd2hhdD8NCj4gPiA+DQo+ID4gPg0KPiA+
-ID4gSSBtZWFudCB0aGUgdGltZW91dCB2YWx1ZSBkb2Vzbid0IHdvcmsgaGVyZSBzaW5jZSBndWVz
-dCBjYW4ndCBzZWUgdGhhdC4NCj4gPiBZb3VyIGV4YW1wbGUgd2FzIGZvciBWTSBtaWdyYXRpb24g
-ZnJvbSBzd193aXRob3V0X2RldmljZV9yZXNldCB0bw0KPiBod193aXRoX2RldmljZV9yZXNldC4N
-Cj4gPiBBbmQgaGVyZSwgeW91IHdhbnRlZCB0byBoaWRlIHRoZSBkZXZpY2UgcmVzZXQgdGltZW91
-dC4NCj4gPiBTbyBndWVzdCBfc2hvdWxkX25vdF8gYmUgYWJsZSB0byBzZWUgaXQuIFJpZ2h0Pw0K
-PiANCj4gWWVzLCBzbyBpZiB0aGUgaGFyZHdhcmUgY2FuIHdvcmsgd2l0aCB0aGUgaW5maW5pdGUg
-d2FpdGluZyBpbiB0aGUgZ3Vlc3QsIHRoZXJlJ3MNCj4gbm8gbXVjaCB2YWx1ZSBmb3IgdGhlIGRl
-dmljZSBzcGVjaWZpYyByZXNldCB0aW1lb3V0IGFjdHVhbGx5LiBJc24ndCBpdD8NClVubGlrZSBI
-ViBzdyBleHBvc2luZyBkZXZpY2UsIGh3IGRldmljZSBtYXkgZXhwZXJpZW5jZSBmYWlsdXJlcyBz
-b21ldGltZXMuDQpBbmQgYSBzeXN0ZW0gdG8gcmVjb3Zlci9yZXN1bWUgaW4gZmluaXRlIHRpbWUg
-ZnJvbSBpdCBpcyB1c2VmdWwuDQoNCj4gPiA+DQo+ID4gRHJpdmVyIGNhbiBpc3N1ZSB0cmFuc3Bv
-cnQgbGV2ZWwgcmVzZXQgd2hlbiByZXNldCB0aW1lb3V0IGV4cGlyZXMuDQo+ID4gRmlyc3Qgd2Ug
-bmVlZCB0aGUgcmVzZXQgdGltZW91dCB0byBiZSBkZWZpbmVkIGFuZCBsZXQgaXQgZXhwaXJlLiA6
-KQ0KPiA+IE9uY2UgaXQgZXhwaXJlcywgc3VyZSwgdHJhbnNwb3J0IGxldmVsIHJlc2V0cyBjYW4g
-YmUgYXBwbGllZC4NCj4gDQo+IFllcywgYnV0IEknbSBub3Qgc3VyZSBob3cgZGV2aWNlIHNwZWNp
-ZmljIHRpbWVvdXQgY2FuIGhlbHAgbW9yZToNCj4gDQo+IDEpIGlmIGRldmljZSB3b3JrcyB3ZWxs
-LCB0aGVyZSB3b24ndCBiZSBhbiBpbmZpbml0ZSB3YWl0IG9uIHRoZSByZXNldA0KPiAyKSBpZiBk
-ZXZpY2UgaXMgYnVnZ3ksDQo+IDIuMSkgd2FpdCBmb3IgZXZlcg0KQSBzeXN0ZW0gbWlnaHQgbm90
-IGV2ZW4gYm9vdCBpZiBpdCB3YWl0cyBmb3IgZXZlciBqdXN0IGJlY2F1c2Ugb2Ygc2luZ2xlIGZh
-dWx0eSBkZXZpY2UuDQpBIHVzZXIgbWF5IG5vdCBldmVuIGhhdmUgY2hhbmNlIHRvIHJlY292ZXIg
-dGhlIHN5c3RlbS91cGdyYWRlIGZ3IG9mIHRoaXMgZmF1bHR5IGRldmljZS4NCg0KQSBwcmUtYm9v
-dCBlbnZpcm9ubWVudCB1c2luZyBwaHlzaWNhbCBkZXZpY2UgY2Fubm90IHdhaXQgZm9yZXZlciBq
-dXN0IGJlY2F1c2Ugb25lIGRldmljZSBpbiB3aG9sZSBzeXN0ZW0gaXMgYnVnZ3kuDQoNCj4gMi4y
-KSBkb2luZyBhIHRyYW5zcG9ydCBzcGVjaWZpYyByZXNldCB0byBwcmV2ZW50IGRhdGEgY29ycnVw
-dGlvbiBhZnRlciBhIHRpbWVvdXQNCj4gDQo+IFVzaW5nIDIuMiBpcyB0cmlja3kgc2luY2UgYXMg
-ZGlzY3Vzc2VkLCB0aGUgaHlwZXJ2aXNvciBtYXkgY2hvb3NlIHRvIGhpZGUgdGhpcw0KPiBhbmQg
-bGV0IGd1ZXN0cyBqdXN0IHVzZSBpbmZpbml0ZSB3YWl0IGZvciBtb3N0IG9mIHRoZSBjYXNlcy4N
-Cj4gDQpTdXJlLCBzb21lIGh5cGVydmlzb3IgY2FuIGhpZGUgdGhpcyBmb3IgZ3Vlc3QgVk0gaWYg
-aXQgd2lzaCB0by4NCg0KPiA+DQo+ID4gSSB0aGluayB5b3UgbWlzc2VkIHRoaXMgcGFydCwgdGhh
-dCB3ZSBkbyBub3QgcmVzZXQgdG8gd2FpdCBpbmZpbml0ZWx5IGluIGFsbCBwbGFjZXMNCj4gYXMg
-ZG9uZSB0b2RheSBpbiBsaW51eCBkcml2ZXIuDQo+IA0KPiBUaGUgcmVhc29uIGlzIHRoYXQgdmly
-dGlvIGRyaXZlcnMgYXJlIG1vc3RseSB1c2VkIGluIHRoZSBndWVzdCB3aGVyZSB0aGUgZGV2aWNl
-DQo+IGlzIGVtdWxhdGVkIGJ5IHRoZSBzb2Z0d2FyZS4gSXQncyBhbG1vc3QgaW1wb3NzaWJsZSB0
-byBlbmZvcmNlIGEgdGltZW91dCBmb3IgYW55DQo+IHNwZWNpZmljIG9wZXJhdGlvbiwgc2V0dGlu
-ZyBkZXZpY2Ugc3RhdHVzIGlzIGp1c3Qgb25lIG9mIHRoZSBwb3NzaWJsZSBvcGVyYXRpb25zDQo+
-IHRoYXQgbWF5IHdhaXQgZm9yZXZlci4NCg0KdmlydGlvIGRyaXZlcnMgYXJlIGhhdmluZyB3aWRl
-ciB1c2VzIHRoYW4ganVzdCBndWVzdCBlbnYsIGluY2x1ZGluZyBwcmVib290LCBwaHlzaWNhbCBk
-ZXZpY2VzLCBzcmlvdiBldGMuDQoNClJPIHRpbWVvdXQgaXMgbm90IGFib3V0IGVuZm9yY2VtZW50
-LCBpdCBpcyB0byBzZXQgdXBwZXIgYm91bmQgbGltaXQuDQoNCkd1ZXN0IFZNIHRoYXQgZG9lc27i
-gJl0IGZvbGxvdyB0aGUgc3BlYyBjYW4gZG8sDQooYSkgbm90IGhvbm9yIHRoZSB0aW1lb3V0LCBh
-bmQgd2FpdCBmb3JldmVyLiANCihiKSBpZ25vcmVzIHRoZSB0aW1lb3V0IGFuZCBnZXRzIG5vbi1v
-cGVyYXRpb25hbCBkZXZpY2UuDQoNCkFuZCBpbmNvcnJlY3QgYmVoYXZpb3IgY2FuIGhhcHBlbiBl
-dmVuIHdpdGggY3VycmVudCBkcml2ZXJzIHJlZ2FyZGxlc3Mgb2YgdGhlIHRpbWVvdXQuDQoNCj4g
-DQo+ID4gV2FpdCBmaW5pdGVseSwgYW5kIHdoZW4gZmluaXRlIHRpbWUgZXhwaXJlcywgc3VyZSwg
-ZHJpdmVyIGNhbiBpc3N1ZSB0cmFuc3BvcnQNCj4gbGV2ZWwgcmVzZXQuDQo+IA0KPiBPaywgc28g
-SSB0aGluayBpZiB3ZSBmaW5hbGx5IGdvIHdpdGggdGhlIHdheSBvZiB0aGUgZGV2aWNlIGFkdmVy
-dGlzZWQgdGltZW91dCwgd2UNCj4gbmVlZCB0byBjbGFyaWZ5IHRoZSB0cmFuc3BvcnQgbGV2ZWwg
-cmVzZXQgaXMgYSBtdXN0IGFmdGVyIHRpbWVvdXQgaW4gdGhlIHNwZWMNCj4gYW55aG93Lg0KPiAN
-CkkgYW0gbm90IHN1cmUgaXQgaXMgaW4gdGhlIHNjb3BlIG9mIHRoZSB2aXJ0aW8gc3BlYy4NCkkg
-dW5kZXJzdGFuZCBpdCBtYXkgYmUgZ29vZCB0byByZXNldCB0aGUgZGV2aWNlLCBidXQgdGhpcyBp
-cyByZWFsbHkgaW1wbGVtZW50YXRpb24gY2hvaWNlLg0KV2h5IGNhbnQgcGxhdGZvcm0vc3cgaWdu
-b3JlIHRoZSBkZXZpY2Ugd2l0aCBzaW5nbGUgcmV0cnkgdG8gcmVzZXQgdGhlIGRldmljZSB3aXRo
-b3V0IHRyYW5zcG9ydCBsZXZlbCByZXNldD8NCkkgd291bGQgcHV0IHRoYXQgYXMgZ3VpZGFuY2Ug
-dG8gZHJpdmVyIGFuZCBub3QgX211c3RfIHJlcXVpcmVtZW50IGluIHRoZSBzcGVjLg0KDQpHdWlk
-aW5nIGRyaXZlciB0byBpc3N1ZSB0cmFuc3BvcnQgbGV2ZWwgcmVzZXQgaXMgdmVyeSB1c2VmdWwg
-dG8gaW5kaWNhdGUgZHJpdmVyIHRoYXQgc3VjaCB0cmFuc3BvcnQgbGV2ZWwgcmVzZXQgd2lsbCBl
-bnN1cmUgdGhhdCBub3RpZmljYXRpb25zIGFuZCBETUEgd2lsbCBzdG9wLg0KU28geWVzLCB3ZSBz
-aG91bGQgZG9jdW1lbnQgdGhpcyBpbnN0cnVjdGlvbiBmb3IgZHJpdmVycy4NCg0KPiA+IFRoaXMg
-aXMgZGlzY3Vzc2VkIGFuZCBDb3JuZWxpYSBnYXZlIHRoZSBleGFtcGxlIGFsc28gaW4gdGhpcyB0
-aHJlYWQuDQo+ID4gaS5lLiBhIGZ3IGJhc2VkIGh3IHZpcnRpbyBkZXZpY2UgbWF5IG5vdCBoYXZl
-IGZpbmlzaGVkIGl0cyBpbml0aWFsaXphdGlvbiBpbiBpdHMNCj4gMTAwIG1zZWMuDQo+ID4gc28g
-dmlydGlvIGxheWVyIG1heSBuZWVkIHRvIHdhaXQgbG9uZ2VyLg0KPiANCj4gWWVzLCBidXQgY3Vy
-cmVudCBjb2RlIHdpdGhvdXQgdGltZW91dCB3b3JrcyBpbiB0aGlzIGNhc2UuDQpJdCB3b3JrcyBv
-bmx5IGlmIHRoZSBkZXZpY2UgZGlkbuKAmXQgZmFpbCB0byByZXNldC4NCg0KPiBJdCBqdXN0IHRv
-IGRlbW9uc3RyYXRlIHBvc3NpYmxlIHRyb3VibGVzOg0KPiANCj4gMSkgbWlncmF0ZSBmcm9tIHN3
-KG5vIHRpbWVvdXQpIHRvIGh3ICh0aW1lb3V0KQ0KPiAyKSBtaWdyYXRlIGZyb20gaHcodGltZW91
-dCkgdG8gc3cobm8gdGltZW91dCkNClN3IHNob3VsZCBiZSBlbmhhbmNlZCB0byBtYXRjaCB0aGUg
-bWlncmF0aW9uIGZyb20gaHcuDQoNCj4gMykgbWlncmF0ZSBmcm9tIGh3X3ZlbmRvckEodGltZW91
-dEEpIHRvIGh3X3ZlbmRvckIodGltZW91dEIpDQpBZ2FpbiwgdGhpcyBpcyBubyBkaWZmZXJlbnQg
-dGhhbiBhbnkgb3RoZXIgZmVhdHVyZXMgYmV0d2VlbiB0d28gdmVuZG9ycy4NCkFueSBlbXVsYXRp
-b24sIG1lZGlhdGlvbiBpcyBub3QgQSB0byBCIG1pZ3JhdGlvbiwgaXQgaXMgaW4gYmV0d2VlbiBv
-ZiAjMiBhbmQgIzMuDQpTbyBwZXJmIHdpc2UgaXQgaXMgc3RpbGwgbm90IHNhbWUuDQoNCj4gNCkg
-bWlncmF0ZSBmcm9tIGh3X3ZlbmRvckEodGltZW91dEFfaW1wbGVtZW50YXRpb25BKSB0bw0KPiBo
-d192ZW5kb3JBKHRpbWVvdXRCX2ltcGxlbWVudGF0aW9uQikNCkZyYW5rbHksIHRoaXMgaXMgbW9y
-ZSBwcmFjdGljYWwgc2NlbmFyaW8gY29tcGFyZSB0byAjMy4NCg0KPiA1KSBtaWdyYXRlIGZyb20g
-aHdfdmVuZG9yQSh0aW1lb3V0QV9pbXBsZW1lbnRhdGlvbkEpIHRvDQo+IGh3X3ZlbmRvckEodGlt
-ZW91dEFfaW1wbGVtZW50YXRpb25BKQ0KVGhpcyBkb2VzbuKAmXQgbmVlZCBhbnkgZXh0cmEgY2Fy
-ZS4gSSB0aGluayB5b3Ugd2FudGVkIHRvIHNheSwNCg0KaHdfdmVuZG9yQSh0aW1lb3V0QV9pbXBs
-ZW1lbnRhdGlvbkEpIHRvIGh3X3ZlbmRvckEodGltZW91dEFfaW1wbGVtZW50YXRpb25CKQ0KICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIF5eXl5eDQo+IA0KPiBUaGUgaHlwZXJ2aXNv
-ciBjYW4gb25seSBjaG9vc2UgdG8gZXhwb3NlIHRpbWVvdXQgdmFsdWUgaW4gdGhlIGNhc2UgNSkg
-KGFuZCBpdA0KPiBjYW4gb25seSBkbyB0aGlzIGlmIGl0IGtub3dzIGFsbCB0aGUgbWlncmF0aW9u
-IGRlc3RpbmF0aW9ucyBoYXZlIHRoZSBzYW1lDQo+IHRpbWVvdXQgdmFsdWUpIGFuZCBpdCB3aWxs
-IGxldCB0aGUgMSB0byA0IHRvIHNpbXBseSB1c2UgaW5maW5pdGUgd2FpdCBieSBoaWRpbmcgdGhl
-DQo+IGNhcGFiaWxpdHkuIFRoZSBtYW5hZ2VtZW50IHN0YWNrIHNob3VsZCBoYXZlIHZpcnRpbyBz
-cGVjaWZpYyBrbm93bGVkZ2UgdG8NCj4gcG9rZSBpbnRvIHRoZSBQQ0lFIGNhcGFiaWxpdGllcyBs
-aXN0IHRvIGZpbmQgYW5kIHJlcG9ydCB0aGUgdGltZW91dCBhbmQgd2UgbmVlZA0KPiBjcm9zcyBt
-YWNoaW5lIGNvLW9yZGluYXRpb24gd2l0aCB0aGUgbWlncmF0aW9uIGRlc3RpbmF0aW9uIG9yIGNs
-dXN0ZXJzIHRvIGFsbG93DQo+IHRoZSBtaWdyYXRpb24uDQo+IEh5cGVydmlzb3JzIGxpa2UgUWVt
-dSBtYWludGFpbiB0aGUgbWlncmF0aW9uIGNvbXBhdGliaWxpdHkgYnkgdXNpbmcgbWFjaGluZQ0K
-PiB0eXBlLCBidXQgdGhpcyBpbXBsZW1lbnRhdGlvbiBzcGVjaWZpYyBhdHRyaWJ1dGVzIG1ha2Vz
-IGl0IGFsbW9zdCBpbXBvc3NpYmxlIHRvDQo+IGJlIGEgcGFydCBvZiB0aGUgbWFjaGluZSB0eXBl
-IHdoaWNoIG1lYW5zIHZpcnRpbyBhZC1ob2MgY29kZXMgd2VyZSBuZWVkZWQuDQoNCldpdGggYWJv
-dmUgZXhwbGFuYXRpb24sIEkgZG9u4oCZdCBzZWUgaG93IFFFTVUgY2FuIG1pZ3JhdGUgYSB2aXJ0
-aW8gZGV2aWNlIGZyb20gNCBSU1MgcXVldWVzIHRvIDIgUlNTIHF1ZXVlcyBiYXNlZCBkZXZpY2Ug
-d2l0aCBqdXN0IG1hY2hpbmUgdHlwZS4NCkRvZXMgbWFjaGluZSB0eXBlIGVuY29tcGFzcyBhbGwg
-dGhlIGRldmljZSBsZXZlbCBkZXRhaWxzIHRvbz8NCg0KQSBIViBuZWVkcyB0byBjb21wb3NlIChh
-bmQvb3IgZmluZCkgdGhlIGRldmljZSBjb21wYXRpYmxlIHRvIHRoZSBzb3VyY2UgYW55d2F5Lg0K
-SXQgaXMgbGVzcyBkaWZmaWN1bHQgdG8gZmluZCBhIHZpcnRpbyBzcGVjIGRlZmluZWQgZGV2aWNl
-IGNvbXBhcmUgdG8gc29tZSBhZC1ob2MgZGV2aWNlLg0KDQo+ID4gPg0KPiA+ID4gU2ltaWxhciBi
-dXQgb25lIG1vcmUgYnVyZGVuIGZvciB0aGUgbWFuYWdlbWVudCBpZiBhIHNpbXBsZSAxMDBtcw0K
-PiA+ID4gdGltZW91dCBjYW4gd29yayBmb3IgdmlydGlvLXBjaS4NCj4gPiBSZXNpbGllbnQgc3Bl
-YyBhbmQgcmVzaWxpZW50IHN3LCBodyBzdGFjayBpcyBub3QgYSBidXJkZW4gdG8gbWFuYWdlbWVu
-dA0KPiBzdGFjay4NCj4gPiBJdCBpcyBqdXN0IGFueSBvdGhlciBody9zdyBhdHRyaWJ1dGUgb2Yg
-dGhlIHZpcnRpbyBkZXZpY2UgdG8gdGFrZSBjYXJlLg0KPiANCj4gVGhpcyBpcyBvbmx5IHRydWUg
-aWYgeW91IGRvbid0IGV4cG9zZSBhbnkgdmVuZG9yIG9yIGltcGxlbWVudGF0aW9uIHNwZWNpZmlj
-DQo+IGF0dHJpYnV0ZXMuIFNlZSBhYm92ZS4NCj4gDQpJdCBpcyBubyBkaWZmZXJlbnQgdGhhbiBh
-bnkgb3RoZXIgdmlydGlvIGZlYXR1cmVzLiBJZiBzb3VyY2UgdmlydGlvIGRldmljZSBzdXBwb3J0
-IG9mIHZlbmRvci1BIHN1cHBvcnRzIGNvbnRyb2wgVlEsDQpBbmQgZGVzdGluYXRpb24gdmlydGlv
-IGRldmljZSBvZiB2ZW5kb3IgWCAoQS9CKSBpbXBsZW1lbnRhdGlvbiBZIChBL0IpLCBkb2Vzbid0
-IHN1cHBvcnQgY29udHJvbCBWUSwNClRoZXkgbWF5IG5vdCBiZSBhYmxlIHRvIG1pZ3JhdGUuDQoN
-CkhWIG9yIG90aGVyIG1pZ3JhdGlvbiBzdyBuZWVkcyB0byBjb21wYXRpYmlsaXR5IGNoZWNrIG9y
-IHNvbWV0aW1lIGNvbXBvc2luZyBkZXZpY2Ugb24gZGVzdGluYXRpb24gdGhhdCBtYXRjaGVzIHNv
-dXJjZSBhdHRyaWJ1dGVzLg0KDQpJdCBpcyBpbXBvcnRhbnQgdG8ga2VlcCBMTSBleWVzIG9wZW4s
-IGJ1dCB0aGlzIGlzIG5vIGRpZmZlcmVudCB0aGFuIG90aGVyIGV4aXN0aW5nIG9yIG5ldyB2aXJ0
-aW8gZmVhdHVyZXMgKHNheSBzdGF0aXN0aWNzIG9mIG5ldCBkZXZpY2UgaW4gZ3Vlc3Qgdm0gc3Vw
-cG9ydGVkIGJ5IFZGKS4NCg0KPiA+DQo+ID4gPg0KPiA+ID4gPiBJbiBhbm90aGVyIE1TSS1YIGV4
-YW1wbGUgeW91IHByb3ZpZGVkIGVtdWxhdGVkIE1TSVggYWx0ZXJhdGl2ZSB3YXMNCj4gPiA+IHBy
-b3Bvc2VkLiBUaGlzIGlzIGFnYWluIG5vdCBtYXBwaW5nIHRoZSBmdWxsIGh3IGRldmljZS4NCj4g
-PiA+ID4NCj4gPiA+ID4gU28gaXQgaXMgc3RpbGwgc3cgZGV2aWNlIG9uIG90aGVyIGhhbmQuIFVz
-ZXIgbWlnaHQgYXMgd2VsbCBqdXN0DQo+ID4gPiA+IGNvbnRpbnVlIGluIHN3DQo+ID4gPiBtb2Rl
-Lg0KPiA+ID4gPg0KPiA+ID4gPiBMZXQncyBhc3N1bWUgZm9yIGEgbW9tZW50IHRoYXQsIHRoaXMg
-KHJhcmUpIGNhc2Ugc2hvdWxkIGJlIGNvbnNpZGVyZWQuDQo+ID4gPiA+DQo+ID4gPiA+IE9uY2Ug
-d2F5IHRvIG92ZXJjb21lIHRoaXMgaXMgYmVsb3cuDQo+ID4gPiA+IChhKSBEbyBub3QgcGxhY2Ug
-bmV3IGRldmljZV9yZXNldF90aW1lb3V0IGZpZWxkIGluIHN0cnVjdA0KPiA+ID4gdmlydGlvX3Bj
-aV9jb21tb25fY2ZnLg0KPiA+ID4gPiBUaGlzIGlzIGJlY2F1c2UgdGhpcyBtYXAgYmUgaW4gbWVt
-b3J5IG1hcHBlZCBCQVIgZGlyZWN0bHkNCj4gPiA+ID4gYWNjZXNzaWJsZSB0byB0aGUNCj4gPiA+
-IGd1ZXN0IGFuZCBmdXR1cmUgdmVyc2lvbiBvZiB0aGUgc3BlYyBoYXMgbW9yZSBmaWVsZHMgYWZ0
-ZXIgZGV2aWNlIHJlc2V0DQo+IHRpbWVvdXQuDQo+ID4gPiA+IFN1Y2ggZmllbGRzIGFyZSBzb21l
-aG93IGltcGxlbWVudGVkIGJ5IHRoZSBzdyBkZXZpY2Ugb24gSFYtMS4NCj4gPiA+ID4NCj4gPiA+
-ID4gKGIpIEluc3RlYWQsIGRlZmluZSBuZXcgY2ZnX3R5cGUgVklSVElPX1BDSV9DQVBfREVWX1RJ
-TUVPVVRfQ0ZHLg0KPiA+ID4gPiBUaGlzIHBvaW50cyB0byB0aGUgc3RydWN0IGNvbnRhaW5pbmcg
-ZGV2aWNlIHJlc2V0IHRpbWVvdXQuDQo+ID4gPiA+IEV4cG9zaW5nIHRoaXMgY2FwYWJpbGl0eSBj
-YW4gYmUgc2tpcHBlZCB3aGVuIG1hcHBpbmcgdGhlIGh3IHZpcnRpbw0KPiA+ID4gPiBkZXZpY2Ug
-dG8NCj4gPiA+IFZNIG9uIEhWLTIgdG8gbWF0Y2ggc3cgdmlydGlvIGRldmljZSBvZiBIVi0xLg0K
-PiA+ID4NCj4gPiA+DQo+ID4gPiBUaGlzIHdpbGwgZWFzZSB0aGUgaHlwZXJ2aXNvciBidXQgYW55
-aG93IGh5cGVydmlzb3IgY2FuIGNob29zZSB0bw0KPiA+ID4gbm90IGV4cG9zZSB0aGUgY2FwYWJp
-bGl0eSBkaXJlY3RseSB0byBndWVzdCAod2hpY2ggd2lsbCBzb29uIGJlY2FtZQ0KPiA+ID4gYSBi
-dXJkZW4gdG8gc3VwcG9ydCBjcm9zcyB2ZW5kb3IgbGl2ZSBtaWdyYXRpb24pLg0KPiA+IEFnYWlu
-IGl0IGlzIG5vdCBhIGJ1cmRlbi4NCj4gPiBJZiBhIGxpdmUgbWlncmF0aW9uIHN3IG5lZWRzIHRo
-ZSBhYmlsaXR5IHRvIG1pZ3JhdGUgYmV0d2VlbiB2ZW5kb3JzLCByaWdodA0KPiBhcHByb2FjaCBp
-cyB0byBoYXZlIGF0dHJpYnV0ZXMgaW4gdGhlIHNwZWMuDQo+ID4gU28gdGhhdCBzdyBoYXMgdGhl
-IGFiaWxpdHkgdG8gdW5kZXJzdGFuZCB3aGVyZSBjYW4gZGV2aWNlIG1pZ3JhdGUuDQo+IA0KPiBT
-byB3YWl0aW5nIGZvcmV2ZXIgY2FuIG1ha2Ugc3VyZSB0aGUgZ3Vlc3QgY2FuIG1pZ3JhdGUgd2l0
-aG91dCBjYXJpbmcgYWJvdXQNCj4gdGhlIHRpbWVvdXQuDQo+IA0KPiA+DQo+ID4gQXMgSSBleHBs
-YWluZWQsIHRoZXJlIGFyZSBtYW55IFJXIGZlYXR1cmVzIGluIHRoZSB2aXJ0aW8gc3BlYyB0aGF0
-IGxpdmUNCj4gbWlncmF0aW9uIHN3IG5lZWRzIHRvIHRha2UgY2FyZSB0byBtaWdyYXRlIGFjcm9z
-cyBjcm9zcyB2ZW5kb3IuDQo+IA0KPiBOb3RlIHRoYXQgdGhvc2UgZmVhdHVyZXMgYXJlIHZpcnRp
-byBmZWF0dXJlcyBub3QgdGhlIHRyYW5zcG9ydCBzcGVjaWZpYyBmZWF0dXJlcy4NCj4gU3BlYyBv
-bmx5IGNhcmVzIGFib3V0IGhvdyB0byBtaWdyYXRlIHZpcnRpbywgaW5zdGVhZCBvZiBtaWdyYXRp
-bmcgdHJhbnNwb3J0DQo+IHNwZWNpZmljIHN0dWZmLiANClRyYW5zcG9ydCBpcyBwYXJ0IG9mIHRo
-ZSB2aXJ0aW8gc3BlYyBhbmQgZXF1YWxseSBwYXJ0IG9mIHRoZSBjb25mb3JtYW5jZSBjbGF1c2Vz
-IGluIHNlY3Rpb24gNy4NCkkgZG9uJ3Qgc2VlIGhvdyB1bndyaXR0ZW4gdmlydGlvIExNIHNwZWMg
-d29uJ3QgY2FyZSBhYm91dCBpdC4NCg0KPiBBbm90aGVyIHRoaW5nIGlzIHRoYXQsIHVubGlrZSAj
-cXVldWVfcGFyaXMgb3IgI21zaV92ZWN0b3JzLCB0aGUNCj4gZGV2aWNlIHJlc3QgdGltZW91dCBp
-cyBub3Qgc29tZXRoaW5nIHRoYXQgY2FuIGJlIHByb3Zpc2lvbmVkIG9yIG1lZGlhdGVkDQo+IGJl
-Zm9yZS9hZnRlciBkb2luZyBsaXZlIG1pZ3JhdGlvbi4gDQpXZSBzaG91bGQgd29yayB0b3dhcmRz
-IGl0IHNvIHRoYXQgaWYgdGhpcyBpcyByZWFsbHkgbmVlZGVkLCB3ZSBjYW4gbWVkaWF0ZSBpdC4N
-CkkgcHJvcG9zZWQgdGhlIG9wdGlvbiBpbiB0aGlzIHRocmVhZCwgdGhhdCB3ZSBjYW4gZG8gYXMg
-ZGV2aWNlIHJlc2V0IHRpbWVvdXQgcmVnaXN0ZXIgdmlhIFZJUlRJT19QQ0lfQ0FQX1BDSV9ERVZf
-VElNRU9VVC4NCg0KVGhpcyBhbHNvIGVuYWJsZXMgdG8gbm90IGV4cG9zZSBpbiBkaWZmZXJlbnQg
-bWlncmF0aW9uIGNhc2VzIHlvdSBsaXN0ZWQgYWJvdmUuDQoNCj4gSHlwZXJ2aXNvciBtYXkganVz
-dCBjaG9vc2UgdG8gZGlzYWJsZSB0aGVtDQo+IGZvciB0aGUgZ3Vlc3QgZm9yIG1pZ3JhdGlvbiBj
-b21wYXRpYmlsaXR5Lg0KPiANClllcywgYnV0IHRoaXMgbWF5IG5lZWQgZGlzYWJsaW5nIG1hbnkg
-dGhpbmdzIGluIGEgdmlydGlvIGRldmljZS4NCkZvciBhbnkgdG8gYW55IG1pZ3JhdGlvbiwgYSBk
-ZXZpY2Ugd2l0aCBsb3dlc3QgY29tbW9uIGRlbm9taW5hdG9yIGZlYXR1cmVzIGluIHRoZSBnaXZl
-biBuZXR3b3JrIHdpbGwgd29yaw0KU3VjaCBkZXZpY2UgbWF5IG1pc3Mgb24gbm9uLWNvbXBhdGli
-bGUgZmVhdHVyZXMgb2YgdGhlIGRldmljZS4NCnZpcnRpbyBsZXZlbCBjb250cm9sIFZRIGNhbiBi
-ZSBvbmUgZXhhbXBsZSBvZiBpdC4NCk5vdCBzdXJlIGhvdyBvbmUgY2FuIG1lZGlhdGUgY29udHJv
-bCBWUSB3aGlsZSBrZWVwaW5nIG90aGVyIFZRcyB0byBkZXZpY2UgYWZ0ZXIgbWlncmF0aW9uLCBp
-ZiBpdCB3YXMgc3VwcG9ydGVkIGJ5IHNvdXJjZSBkZXZpY2Ugd2l0aG91dCBtZWRpYXRpb24uDQoN
-CkFuIExNIGltcGxlbWVudGF0aW9uIG5lZWRzIHRvIGZpbmQvY29tcG9zZSBkZXN0aW5hdGlvbiBk
-ZXZpY2UgZWl0aGVyIGluIGRldmljZSBvciB0aHJvdWdoIG1lZGlhdGlvbiB0aGF0IG1hdGNoIHNv
-dXJjZSBkZXZpY2UuDQpWaXJ0aW8gc3BlYyBhZGRpdGlvbiB0aGF0IG1ha2VzIHRoZSBtZWRpYXRp
-b24gZWFzaWVyIGlzIGEgZ29vZCBnb2FsLCBidXQgbm90IHN1cmUgYWxsIGV4dGVuc2lvbnMgY2Fu
-IHJlYWNoIHRoZXJlLg0KU29tZSBtYXkgbm90LCBhbmQgaGVuY2Ugbm90IGVuaGFuY2luZyB0aGUg
-c3BlYyBmb3IgaXQsIGRvZXNu4oCZdCBzZWVtIHJpZ2h0LiBUaG91Z2ggaW4gY2FzZSBvZiBkZXZp
-Y2UgcmVzZXQgdGltZSwgd2UgaGF2ZSBhbHRlcm5hdGl2ZSBwcm9wb3NhbCB0byANCmV4cG9zZSB2
-aWEgbmV3IFZJUlRJT19QQ0lfQ0FQX1BDSV9ERVZfVElNRU9VVCBpbnN0ZWFkIG9mIHBsYWNlbWVu
-dCBpbnNpZGUgc3RydWN0IHZpcnRpb19wY2lfY29tbW9uX2NmZy4NCg==
+On Wed, Oct 27, 2021 at 08:04:10AM +0000, Parav Pandit wrote:
+> 
+> > From: Jason Wang <jasowang@redhat.com>
+> > Sent: Tuesday, October 26, 2021 9:34 AM
+> > 
+> > On Mon, Oct 25, 2021 at 2:11 PM Parav Pandit <parav@nvidia.com> wrote:
+> > >
+> > >
+> > >
+> > > > From: Jason Wang <jasowang@redhat.com>
+> > > > Sent: Monday, October 25, 2021 11:12 AM
+> > > [..]
+> > > > So what I meant is, if PCI gives us an upper limit of the reset (e.g
+> > > > 100ms as you said), can virtio device perform reset more than that?
+> > > > If not, can we simply use 100ms for virtio-pci or can we gain from having a
+> > smaller per device timeout?
+> > > > If yes, it looks like a violation for PCI.
+> > > No. Not at all a violation of PCI spec.
+> > > PCI spec is transport layer.
+> > > Virtio io is layer above transport.
+> > >
+> > > PCI device can be reset, but not necessary, it is ready to service upper layer
+> > protocols who may need more time to finish the reset.
+> > 
+> > Isn't transport level reset implies a virtio reset? I think this is the question we
+> > need to answer or clarify it in the spec. All my suggestions were based on the
+> > answer "yes".
+> Transport level resets are often too short. It ensures that reset occurred, hence, notifications and DMA activities won't occur after transport reset.
+> However, it may not have finished the upper layer reset to re-service the device after transport reset.
+> 
+> > 
+> > Another question is that we don't define reset actually, 
+> It has reasonably well definition in the spec in commit: a306bf467850e ("clarify device reset")
+> 
+> > do we need to do that
+> > before trying to define reset timeout? To me the reset means the device can be
+> > used by the driver which means all the basic device facilities are ready. 
+> Reset is well in spec 1.0 compare to 0.95 indicating that driver need to wait reset to finish.
+> 
+> i.e. that driver should wait for device status to turn zero during reset and must do reset.
+> 
+> Unlike 0.95 that explicitly stated " Reset the device. This is not required on initial startup." In section 2.2.1.
+
+
+Right. So again, I'm trying to help you here. I think the problem with
+your approach so far is that it conflates the two things,
+physical device startup might take a lot of time and it's
+ok since physical host boot takes very long.
+
+This does not seem to be related to a driver init at all
+which is what the spec describes.
+
+
+A reset timeout which can run into seconds will break usecases such as
+kata containers. This is why there's so much resistance to adding such a
+feature to the spec. reset should be short, in fact it seems reasonable
+for spec to give guidance that it should take around ~10ms tops.
+
+
+
+
+
+
+
+
+
+
+
+> > It
+> > means the device is ready from the perspective of a "driver", if the device
+> > requires a connection to a remote subsystem, whether or not such connection
+> > is established is out of the scope of virtio reset. 
+> Sure such implementation detail about remote system connection is outside the scope of spec.
+> 
+> > Devices can choose not to process the requests from the virtqueue.
+> Yes, that is right, but it is not limited to only vq processing.
+> As mentioned in the spec section 3.1.1 before VQs are created feature bits, virtio config space values can be read only after reset step_1 is completed.
+> 
+> > 
+> > Another question is that, can we present a PCI device if the underlayer device
+> > logic is not ready? 
+> Yes, this is very common for hw based devices, unlike synthetic devices for guest VMs.
+> This is also discussed in this thread with sriov example.
+> 
+> > If the question is yes, do we need a new facility to tell the
+> > driver that the device is being initialized?
+> > 
+> May be yes, a different register than the reset can be helpful to indicate that.
+> Though it shares lot of functionalities common to the reseting the device.
+> 
+> Given that this is too early in device initialization sequence,
+> Device doesn’t know if should return fake reset_completed status and if driver is going to wait for initializing register or not.
+> 
+> So let reset register indicate if the reset is completed or not seems more appropriate and less complex solution.
+
+It's not reset though. What is not completed is startup. virtio reset
+can't take seconds.
+
+> > >
+> > > There are several examples of it in industry today.
+> > > nvme, mlx5, efa, intel ice and more who may need more time to reset the
+> > upper layer device tan 100msec.
+> > 
+> > Virtio supports more types than the above list, if it's the timeout that is specific
+> > to some types of the devices (e.g block), we need to use device specific
+> > methods.
+> Block is most common example, but it is not limited to it.
+> There are non-synthetic, hw PCI devices of block and non-block types that may need remote connection or may take more time to reset.
+> 
+> As you described below, traditionally virtio devices were exposed to guest VM by the hypervisor and hence they were always there.
+> So resiliency was implicitly present on such guest VM case.
+> 
+> I gave example of above devices which are used in guest VM devices and as physical devices.
+> There isn't the question about widely popular and used virtio devices for guest VM. :-)
+> 
+> > >
+> > > second point that I already explained, is there is nothing wrong at the PCI
+> > level that _requires_ further reset.
+> > > PCI device is just fine, it is under reset by virtio. Depending on the device
+> > implementation it just takes more time.
+> > > In few responses in the thread, I already described those different types of
+> > devices in response to Cornelia and Michael.
+> > > Please go through the thread. Let's not repeat the same discussion again.
+> > 
+> > So my point is to avoid exposing any implementation specific to the driver. It
+> > has a different movitiaton than the discussion you refer to here.
+> > 
+> There are different type (physical, sriov) and class (net/blk/gpu) of hw PCI devices in addition to sw based devices.
+> Single timeout (either infinite or some arbitrary 1 msec) doesn’t fit all class of the devices.
+> 
+> This proposal provides generic, optional, vendor agnostic, platform agnostic RO register to driver.
+> 
+> > It's just an example, it could be a hard coded value. If 100ms is not enough we
+> > can use something longer.
+> 
+> It doesn’t make sense to have too short or too high timeout single value by the driver that fits all.
+> For example sw synthetic device to guest VM doesn’t need timeout. Guest VM can wait infinitely as device didn't expose the field.
+> 
+> > > >
+> > > > >
+> > > > >> It looks to me it will guarantee the success of the reset?
+> > > > > You are describing the timeout expiration handling.
+> > > >
+> > > >
+> > > > This looks more important than just having a device hint of the timeout.
+> > > > We don't want to block thing like module unload or device removal etc.
+> > > >
+> > > We already discussed in this thread with Michael, that a device which is
+> > already reseted before, a second reset should be fast to service anyway.
+> > 
+> > Well, this part I don't understand. If you meant the time spent on the "first"
+> > reset is implementation dependent but time spent on the "second" reset is fast
+> > (not much implementation dependent). It looks like a conclusion that applies
+> > only to your specific implementation or hardware.
+> 
+> No. it is not a specific hw implementation. Usually a firmware/hw based devices takes finite time come up.
+> It still have to present the physical PCI device which exists there even before virtio layer shows up for various reasons.
+> In such case a first device reset may take longer after power-on.
+> 
+> A device under control of driver, and running VQs, if being reset is likely to take shorter time.
+> This is because it doesn't need to undergo initialization that was already completed on initial first power-on.
+> 
+> One can still implement to do second reset also as slow as first, but such would be sub-optimal and not useful.
+> Not sure, why one would do that.
+> 
+> > 
+> > > Please read the discussion in this thread. Let's not repeat the same discussion
+> > again.
+> > 
+> > It's not a repeat of the discussion, we don't want to end up with a solution that
+> > works only for a single vendor or implementation.
+> Yes, I don't see any vendor specific implementation pushed here.
+> The proposal is making it platform, vendor and device type agnostic and continue to remain optional for sw based devices.
+> 
+> > 
+> > > > >>> Still not any different than rest of the RW capabilities/registers.
+> > > > >> So the timeout doesn't work if we can enforce that.
+> > > > > Didn’t follow your comment. Enforce what?
+> > > >
+> > > >
+> > > > I meant the timeout value doesn't work here since guest can't see that.
+> > > Your example was for VM migration from sw_without_device_reset to
+> > hw_with_device_reset.
+> > > And here, you wanted to hide the device reset timeout.
+> > > So guest _should_not_ be able to see it. Right?
+> > 
+> > Yes, so if the hardware can work with the infinite waiting in the guest, there's
+> > no much value for the device specific reset timeout actually. Isn't it?
+> Unlike HV sw exposing device, hw device may experience failures sometimes.
+> And a system to recover/resume in finite time from it is useful.
+
+Hmm given software after all runs on the hardware declaring that
+it's fundamentally more robust seems controversial ;)
+
+> > > >
+> > > Driver can issue transport level reset when reset timeout expires.
+> > > First we need the reset timeout to be defined and let it expire. :)
+> > > Once it expires, sure, transport level resets can be applied.
+> > 
+> > Yes, but I'm not sure how device specific timeout can help more:
+> > 
+> > 1) if device works well, there won't be an infinite wait on the reset
+> > 2) if device is buggy,
+> > 2.1) wait for ever
+> A system might not even boot if it waits for ever just because of single faulty device.
+> A user may not even have chance to recover the system/upgrade fw of this faulty device.
+> 
+> A pre-boot environment using physical device cannot wait forever just because one device in whole system is buggy.
+> 
+> > 2.2) doing a transport specific reset to prevent data corruption after a timeout
+> > 
+> > Using 2.2 is tricky since as discussed, the hypervisor may choose to hide this
+> > and let guests just use infinite wait for most of the cases.
+> > 
+> Sure, some hypervisor can hide this for guest VM if it wish to.
+> 
+> > >
+> > > I think you missed this part, that we do not reset to wait infinitely in all places
+> > as done today in linux driver.
+> > 
+> > The reason is that virtio drivers are mostly used in the guest where the device
+> > is emulated by the software. It's almost impossible to enforce a timeout for any
+> > specific operation, setting device status is just one of the possible operations
+> > that may wait forever.
+> 
+> virtio drivers are having wider uses than just guest env, including preboot, physical devices, sriov etc.
+> 
+> RO timeout is not about enforcement, it is to set upper bound limit.
+> 
+> Guest VM that doesn’t follow the spec can do,
+> (a) not honor the timeout, and wait forever. 
+> (b) ignores the timeout and gets non-operational device.
+> 
+> And incorrect behavior can happen even with current drivers regardless of the timeout.
+> 
+> > 
+> > > Wait finitely, and when finite time expires, sure, driver can issue transport
+> > level reset.
+> > 
+> > Ok, so I think if we finally go with the way of the device advertised timeout, we
+> > need to clarify the transport level reset is a must after timeout in the spec
+> > anyhow.
+> > 
+> I am not sure it is in the scope of the virtio spec.
+> I understand it may be good to reset the device, but this is really implementation choice.
+> Why cant platform/sw ignore the device with single retry to reset the device without transport level reset?
+> I would put that as guidance to driver and not _must_ requirement in the spec.
+> 
+> Guiding driver to issue transport level reset is very useful to indicate driver that such transport level reset will ensure that notifications and DMA will stop.
+> So yes, we should document this instruction for drivers.
+> 
+> > > This is discussed and Cornelia gave the example also in this thread.
+> > > i.e. a fw based hw virtio device may not have finished its initialization in its
+> > 100 msec.
+> > > so virtio layer may need to wait longer.
+> > 
+> > Yes, but current code without timeout works in this case.
+> It works only if the device didn’t fail to reset.
+> 
+> > It just to demonstrate possible troubles:
+> > 
+> > 1) migrate from sw(no timeout) to hw (timeout)
+> > 2) migrate from hw(timeout) to sw(no timeout)
+> Sw should be enhanced to match the migration from hw.
+> 
+> > 3) migrate from hw_vendorA(timeoutA) to hw_vendorB(timeoutB)
+> Again, this is no different than any other features between two vendors.
+> Any emulation, mediation is not A to B migration, it is in between of #2 and #3.
+> So perf wise it is still not same.
+> 
+> > 4) migrate from hw_vendorA(timeoutA_implementationA) to
+> > hw_vendorA(timeoutB_implementationB)
+> Frankly, this is more practical scenario compare to #3.
+> 
+> > 5) migrate from hw_vendorA(timeoutA_implementationA) to
+> > hw_vendorA(timeoutA_implementationA)
+> This doesn’t need any extra care. I think you wanted to say,
+> 
+> hw_vendorA(timeoutA_implementationA) to hw_vendorA(timeoutA_implementationB)
+>                                                                                                                                                     ^^^^^
+> > 
+> > The hypervisor can only choose to expose timeout value in the case 5) (and it
+> > can only do this if it knows all the migration destinations have the same
+> > timeout value) and it will let the 1 to 4 to simply use infinite wait by hiding the
+> > capability. The management stack should have virtio specific knowledge to
+> > poke into the PCIE capabilities list to find and report the timeout and we need
+> > cross machine co-ordination with the migration destination or clusters to allow
+> > the migration.
+> > Hypervisors like Qemu maintain the migration compatibility by using machine
+> > type, but this implementation specific attributes makes it almost impossible to
+> > be a part of the machine type which means virtio ad-hoc codes were needed.
+> 
+> With above explanation, I don’t see how QEMU can migrate a virtio device from 4 RSS queues to 2 RSS queues based device with just machine type.
+> Does machine type encompass all the device level details too?
+> 
+> A HV needs to compose (and/or find) the device compatible to the source anyway.
+> It is less difficult to find a virtio spec defined device compare to some ad-hoc device.
+> 
+> > > >
+> > > > Similar but one more burden for the management if a simple 100ms
+> > > > timeout can work for virtio-pci.
+> > > Resilient spec and resilient sw, hw stack is not a burden to management
+> > stack.
+> > > It is just any other hw/sw attribute of the virtio device to take care.
+> > 
+> > This is only true if you don't expose any vendor or implementation specific
+> > attributes. See above.
+> > 
+> It is no different than any other virtio features. If source virtio device support of vendor-A supports control VQ,
+> And destination virtio device of vendor X (A/B) implementation Y (A/B), doesn't support control VQ,
+> They may not be able to migrate.
+> 
+> HV or other migration sw needs to compatibility check or sometime composing device on destination that matches source attributes.
+> 
+> It is important to keep LM eyes open, but this is no different than other existing or new virtio features (say statistics of net device in guest vm supported by VF).
+> 
+> > >
+> > > >
+> > > > > In another MSI-X example you provided emulated MSIX alterative was
+> > > > proposed. This is again not mapping the full hw device.
+> > > > >
+> > > > > So it is still sw device on other hand. User might as well just
+> > > > > continue in sw
+> > > > mode.
+> > > > >
+> > > > > Let's assume for a moment that, this (rare) case should be considered.
+> > > > >
+> > > > > Once way to overcome this is below.
+> > > > > (a) Do not place new device_reset_timeout field in struct
+> > > > virtio_pci_common_cfg.
+> > > > > This is because this map be in memory mapped BAR directly
+> > > > > accessible to the
+> > > > guest and future version of the spec has more fields after device reset
+> > timeout.
+> > > > > Such fields are somehow implemented by the sw device on HV-1.
+> > > > >
+> > > > > (b) Instead, define new cfg_type VIRTIO_PCI_CAP_DEV_TIMEOUT_CFG.
+> > > > > This points to the struct containing device reset timeout.
+> > > > > Exposing this capability can be skipped when mapping the hw virtio
+> > > > > device to
+> > > > VM on HV-2 to match sw virtio device of HV-1.
+> > > >
+> > > >
+> > > > This will ease the hypervisor but anyhow hypervisor can choose to
+> > > > not expose the capability directly to guest (which will soon became
+> > > > a burden to support cross vendor live migration).
+> > > Again it is not a burden.
+> > > If a live migration sw needs the ability to migrate between vendors, right
+> > approach is to have attributes in the spec.
+> > > So that sw has the ability to understand where can device migrate.
+> > 
+> > So waiting forever can make sure the guest can migrate without caring about
+> > the timeout.
+> > 
+> > >
+> > > As I explained, there are many RW features in the virtio spec that live
+> > migration sw needs to take care to migrate across cross vendor.
+> > 
+> > Note that those features are virtio features not the transport specific features.
+> > Spec only cares about how to migrate virtio, instead of migrating transport
+> > specific stuff. 
+> Transport is part of the virtio spec and equally part of the conformance clauses in section 7.
+> I don't see how unwritten virtio LM spec won't care about it.
+> 
+> > Another thing is that, unlike #queue_paris or #msi_vectors, the
+> > device rest timeout is not something that can be provisioned or mediated
+> > before/after doing live migration. 
+> We should work towards it so that if this is really needed, we can mediate it.
+> I proposed the option in this thread, that we can do as device reset timeout register via VIRTIO_PCI_CAP_PCI_DEV_TIMEOUT.
+> 
+> This also enables to not expose in different migration cases you listed above.
+> 
+> > Hypervisor may just choose to disable them
+> > for the guest for migration compatibility.
+> > 
+> Yes, but this may need disabling many things in a virtio device.
+> For any to any migration, a device with lowest common denominator features in the given network will work
+> Such device may miss on non-compatible features of the device.
+> virtio level control VQ can be one example of it.
+> Not sure how one can mediate control VQ while keeping other VQs to device after migration, if it was supported by source device without mediation.
+> 
+> An LM implementation needs to find/compose destination device either in device or through mediation that match source device.
+> Virtio spec addition that makes the mediation easier is a good goal, but not sure all extensions can reach there.
+> Some may not, and hence not enhancing the spec for it, doesn’t seem right. Though in case of device reset time, we have alternative proposal to 
+> expose via new VIRTIO_PCI_CAP_PCI_DEV_TIMEOUT instead of placement inside struct virtio_pci_common_cfg.
+
+
+And just to make things clear this is not a reset timeout.
+It's a readiness timeout unaffected by reset.
+
+Here's one way I see it working that will likely cause much less
+contention than your current proposals:
+
+- new capability that allows reporting device readiness.
+  how it looks like, whether there is a timeout is
+  a separate question. E.g. a read counter sounds
+  more generic, if device is stuck it can just stop
+  incrementing it.
+
+- clarify that it's unaffected by virtio reset
+
+- if device is accessed while not ready (e.g. with existing drivers),
+  device will not exit reset. For legacy/mmio it will have to block read of
+  features until it is ready.
+
+
+Above is just a vague outlike that should make all this much less
+controversial.
+
+
+-- 
+MST
 
