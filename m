@@ -1,85 +1,59 @@
-Return-Path: <virtio-dev-return-8925-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-8918-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id BD740986454
-	for <virtio-dev@lists.oasis-open.org>; Fri,  5 Nov 2021 14:12:17 +0000 (UTC)
-Date: Fri, 5 Nov 2021 19:42:09 +0530
-From: Srivatsa Vaddagiri <quic_svaddagi@quicinc.com>
-Message-ID: <20211105141209.GC18377@quicinc.com>
-Reply-To: Srivatsa Vaddagiri <quic_svaddagi@quicinc.com>
-References: <20211104170740.GA14929@quicinc.com>
- <20211105033354-mutt-send-email-mst@kernel.org>
- <20211105122943.GA18377@quicinc.com>
- <20211105091234-mutt-send-email-mst@kernel.org>
+	by lists.oasis-open.org (Postfix) with ESMTP id 82742986451
+	for <virtio-dev@lists.oasis-open.org>; Thu,  4 Nov 2021 16:02:20 +0000 (UTC)
+From: Cornelia Huck <cohuck@redhat.com>
+In-Reply-To: <20211015014414.98335-2-xuanzhuo@linux.alibaba.com>
+References: <20211015014414.98335-1-xuanzhuo@linux.alibaba.com>
+ <20211015014414.98335-2-xuanzhuo@linux.alibaba.com>
+Date: Thu, 04 Nov 2021 17:02:15 +0100
+Message-ID: <87v917aozc.fsf@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <20211105091234-mutt-send-email-mst@kernel.org>
-Subject: Re: [virtio-dev] Timing out virtio-pci config space access
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Disposition: inline
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: virtio-dev@lists.oasis-open.org, jasowang@redhat.com
+Subject: [virtio-dev] Re: [PATCH v6 1/3] virtio: introduce virtqueue reset as basic facility
+Content-Type: text/plain
+To: Xuan Zhuo <xuanzhuo@linux.alibaba.com>, jasowang@redhat.com
+Cc: virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-* Michael S. Tsirkin <mst@redhat.com> [2021-11-05 09:13:27]:
+On Fri, Oct 15 2021, Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
 
-> On Fri, Nov 05, 2021 at 05:59:43PM +0530, Srivatsa Vaddagiri wrote:
-> > * Michael S. Tsirkin <mst@redhat.com> [2021-11-05 03:38:39]:
-> > 
-> > > On Thu, Nov 04, 2021 at 10:37:40PM +0530, Srivatsa Vaddagiri wrote:
-> > > > We are working on a virtio-pci implementation on a Type-1 hypervisor where
-> > > > backend drivers are hosted in another VM and are considered untrusted. PCI is
-> > > > the virtio transport used in this case.
-> > > > 
-> > > > One issue that crops up is a read/write of config space can potentially block
-> > > > forever, as the backend is untrusted and could be causing a denial-of-service of
-> > > > sorts. This causes the vcpu to stall forever. I was wondering if we can timeout
-> > > > in such case and have the hypervisor break the stall by letting read return
-> > > > "error" (-1) along with setting DEVICE_NEEDS_RESET in status register. Will that
-> > > > allow Linux guest driver to gracefully fail its probe? I don't see where Linux
-> > > > handles DEVICE_NEEDS_RESET currently and also am not sure if returning -1 will
-> > > > lead to graceful failure of the driver alone (we don't want VM to come down or
-> > > > panic because of a mis-behaving device). 
-> > > 
-> > > DEVICE_NEEDS_RESET isn't handled ATM. the point of it in any case
-> > > is a recoverable error, with a malicious backend this is
-> > > not the case.
-> > > 
-> > > 
-> > > Once thing you can do that will work a bit better is implementing
-> > > surprise-removal in this case.
-> > 
-> > My layman understanding of surprise removal is that it requires the PCI
-> > controller to interrupt OS and convey which device is removed, so that the PCI
-> > subsystem can mark it "removed"? Is that possible for the generic controller
-> > ("pci-host-ecam-generic") that virtio pci devices use?
-> 
-> I think so, yes.
+> This patch allows the driver to reset a queue individually.
+>
+> This is very common on general network equipment. By disabling a queue,
+> you can quickly reclaim the buffer currently on the queue. If necessary,
+> we can reinitialize the queue separately.
+>
+> For example, when virtio-net implements support for AF_XDP, we need to
+> disable a queue to release all the original buffers when AF_XDP setup.
+> And quickly release all the AF_XDP buffers that have been placed in the
+> queue when AF_XDP exits.
+>
+> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> ---
+>  content.tex | 46 ++++++++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 46 insertions(+)
+>
 
-Will that work during device probe also?
+(...)
 
-> > > So hypervisor detects a timeout
-> > > (presumably it knows what to expect of the device) and then pretends to
-> > > guest device is gone, unmapping it completely from guest.
-> > 
-> > Can you elaborate on what unmapping means? I think the reads should
-> > return -1 and writes to be dropped in such case - beyond that what would unmap
-> > entail?
-> > 
-> > Thanks
-> > vatsa
-> 
-> Removing guest access to device so access attempts end up in QEMU.
+> +\devicenormative{\paragraph}{Virtqueue Reset}{Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Reset / Virtqueue Reset}
+> +
+> +After a queue has been reset by the driver, the device MUST NOT execute
+> +any requests from that virtqueue, or notify the driver for it.
+> +
+> +The device MUST reset any state of a virtqueue to be reset to the default state,
 
-Would QEMU end up terminating the guest or inject some bus error that guest VM
-can gracefully handle? We prefer not to bring down the VM because of this -
-rather have the driver probe fail gracefully.
+s/to be reset//
 
-Thanks
-vatsa
+> +including the available state and the used state.
+
+(...)
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
