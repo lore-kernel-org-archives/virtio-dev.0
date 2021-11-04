@@ -1,52 +1,50 @@
-Return-Path: <jean-philippe@linaro.org>
-Date: Thu, 11 Nov 2021 11:09:25 +0000
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: Re: [virtio-dev] [PATCH v3] virtio-iommu: Rework the bypass feature
-Message-ID: <YYz55bdE6y0gKc3x@myrica>
-References: <20211022121219.1133867-1-jean-philippe@linaro.org>
- <20211111112636.2cd15966.pasic@linux.ibm.com>
+Return-Path: <virtio-dev-return-8919-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id C9597986452
+	for <virtio-dev@lists.oasis-open.org>; Thu,  4 Nov 2021 17:07:49 +0000 (UTC)
+Date: Thu, 4 Nov 2021 22:37:40 +0530
+From: Srivatsa Vaddagiri <quic_svaddagi@quicinc.com>
+Message-ID: <20211104170740.GA14929@quicinc.com>
+Reply-To: Srivatsa Vaddagiri <quic_svaddagi@quicinc.com>
 MIME-Version: 1.0
-In-Reply-To: <20211111112636.2cd15966.pasic@linux.ibm.com>
-Content-Type: text/plain; charset=us-ascii
+Subject: [virtio-dev] Timing out virtio-pci config space access
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Disposition: inline
-To: Halil Pasic <pasic@linux.ibm.com>
-Cc: virtio-dev@lists.oasis-open.org, eric.auger@redhat.com, kevin.tian@intel.com, sebastien.boeuf@intel.com, cohuck@redhat.com, mst@redhat.com
+To: virtio-dev@lists.oasis-open.org
+Cc: mst@redhat.com, jasowang@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Hi Halil,
+We are working on a virtio-pci implementation on a Type-1 hypervisor where
+backend drivers are hosted in another VM and are considered untrusted. PCI is
+the virtio transport used in this case.
 
-On Thu, Nov 11, 2021 at 11:26:36AM +0100, Halil Pasic wrote:
-> On Fri, 22 Oct 2021 13:12:20 +0100
-> Jean-Philippe Brucker <jean-philippe@linaro.org> wrote:
-> 
-> > The VIRTIO_IOMMU_F_BYPASS feature is awkward to use and incomplete.
-> > Although it is implemented by QEMU, it is not supported by any driver as
-> > far as I know. Replace it with a new VIRTIO_IOMMU_F_BYPASS_CONFIG
-> > feature.
-> 
-> Hi Jean-Philippe!
-> 
-> Is somebody working on the implementation of this? I would like to be
-> Cc-ed with the implementation patches if possible.
+One issue that crops up is a read/write of config space can potentially block
+forever, as the backend is untrusted and could be causing a denial-of-service of
+sorts. This causes the vcpu to stall forever. I was wondering if we can timeout
+in such case and have the hypervisor break the stall by letting read return
+"error" (-1) along with setting DEVICE_NEEDS_RESET in status register. Will that
+allow Linux guest driver to gracefully fail its probe? I don't see where Linux
+handles DEVICE_NEEDS_RESET currently and also am not sure if returning -1 will
+lead to graceful failure of the driver alone (we don't want VM to come down or
+panic because of a mis-behaving device). 
 
-Yes I posted the Linux support:
-https://lore.kernel.org/linux-iommu/20211013121052.518113-1-jean-philippe@linaro.org/
+I saw some discussions in this regard for vDPA where similar solution seem to
+have been discussed.
 
-And QEMU, which depends on the Linux header:
-https://lore.kernel.org/qemu-devel/20210930185050.262759-1-jean-philippe@linaro.org/
+https://lkml.org/lkml/2021/7/6/219
 
-I plan to resend after the merge window and will Cc you.
+Would that work for PCI transport also?
 
-> The interaction of s390x and IOMMU is sometimes a little tricky. I would
-> like to make sure nothing breaks for us. :)
+Thanks
+vatsa
 
-Bypass should be constrained within the virtio-iommu device and driver,
-and so shouldn't break s390 as far as I know. I haven't thought much about
-supporting virtio-iommu for archs other than arm and x86 for the moment
-(in general it should be as simple as adding it to ACPI tables or DT).
-I believe power already has a PV IOMMU interface and doesn't need a
-dedicated vIOMMU device, but I'm not sure where s390 stands
 
-Thanks,
-Jean
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
