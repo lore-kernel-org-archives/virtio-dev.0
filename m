@@ -1,92 +1,89 @@
-Return-Path: <xuanzhuo@linux.alibaba.com>
-From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Subject: [PATCH v7 3/3] virtio: mmio support virtqueue reset
-Date: Mon,  8 Nov 2021 14:22:43 +0800
-Message-Id: <20211108062243.102360-4-xuanzhuo@linux.alibaba.com>
-In-Reply-To: <20211108062243.102360-1-xuanzhuo@linux.alibaba.com>
-References: <20211108062243.102360-1-xuanzhuo@linux.alibaba.com>
+Return-Path: <eperezma@redhat.com>
+From: =?UTF-8?q?Eugenio=20P=C3=A9rez?= <eperezma@redhat.com>
+Subject: [PATCH v3 0/2] virtio: introduce STOP status bit
+Date: Thu, 11 Nov 2021 19:58:10 +0100
+Message-Id: <20211111185812.2326093-1-eperezma@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="US-ASCII"
-To: cohuck@redhat.com, jasowang@redhat.com
-Cc: virtio-dev@lists.oasis-open.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+To: virtio-dev@lists.oasis-open.org, virtio-comment@lists.oasis-open.org, mst@redhat.com, jasowang@redhat.com
+Cc: amikheev@nvidia.com, stefanha@redhat.com, shahafs@nvidia.com, oren@nvidia.com, pasic@linux.ibm.com, cohuck@redhat.com, bodong@nvidia.com, "Dr . David Alan Gilbert" <dgilbert@redhat.com>, parav@nvidia.com, mgurtovoy@nvidia.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-mmio support virtqueue reset.
-
-MMIO Device Register Layout "QueueReady" to support virtqueue reset.
-The driver uses this to selectively reset the queue.
-
-Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
----
- content.tex | 33 ++++++++++++++++++++++++++++++++-
- 1 file changed, 32 insertions(+), 1 deletion(-)
-
-diff --git a/content.tex b/content.tex
-index 219ad2f..c2ed496 100644
---- a/content.tex
-+++ b/content.tex
-@@ -1853,7 +1853,7 @@ \subsection{MMIO Device Register Layout}\label{sec:Virtio Transport Options / Vi
-     Writing to this register selects the virtual queue that the
-     following operations on \field{QueueNumMax}, \field{QueueNum}, \field{QueueReady},
-     \field{QueueDescLow}, \field{QueueDescHigh}, \field{QueueDriverlLow}, \field{QueueDriverHigh},
--    \field{QueueDeviceLow} and \field{QueueDeviceHigh} apply to. The index
-+    \field{QueueDeviceLow}, \field{QueueDeviceHigh} and \field{QueueReset} apply to. The index
-     number of the first queue is zero (0x0). 
-   }
-   \hline 
-@@ -1970,6 +1970,12 @@ \subsection{MMIO Device Register Layout}\label{sec:Virtio Transport Options / Vi
-     0xffffffffffffffff.
-   }
-   \hline 
-+  \mmioreg{QueueReset}{Virtual queue reset bit}{0x0c0}{RW}{%
-+    If VIRTIO_F_RING_RESET has been negotiated, writing one (0x1) to this
-+    register selectively resets the queue. Both read and write accesses
-+    apply to the queue selected by writing to \field{QueueSel}.
-+  }
-+  \hline
-   \mmioreg{ConfigGeneration}{Configuration atomicity value}{0x0fc}{R}{
-     Reading from this register returns a value describing a version of the device-specific configuration space (see \field{Config}).
-     The driver can then access the configuration space and, when finished, read \field{ConfigGeneration} again.
-@@ -2005,6 +2011,22 @@ \subsection{MMIO Device Register Layout}\label{sec:Virtio Transport Options / Vi
- 
- The device MUST NOT access virtual queue contents when \field{QueueReady} is zero (0x0).
- 
-+If VIRTIO_F_RING_RESET has been negotiated, the device MUST present a 0 in
-+\field{QueueReady} after the driver has reset the virtqueue via
-+\field{QueueReset}.
-+
-+If VIRTIO_F_RING_RESET has been negotiated, the device MUST present a 0 in
-+\field{QueueReset} on reset.
-+
-+If VIRTIO_F_RING_RESET has been negotiated, The device MUST present a 0 in
-+\field{QueueReset} after the virtqueue is enabled with \field{QueueReady}.
-+
-+The device MUST reset the queue when 1 is written to \field{QueueReset}, and
-+present a 1 in \field{QueueReset} after the queue has been reset, until the
-+driver re-enables the queue via \field{QueueReady} or until the device is reset.
-+The device MUST present consistent default values after queue reset.
-+(see \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Reset}).
-+
- \drivernormative{\subsubsection}{MMIO Device Register Layout}{Virtio Transport Options / Virtio Over MMIO / MMIO Device Register Layout}
- The driver MUST NOT access memory locations not described in the
- table \ref{tab:Virtio Trasport Options / Virtio Over MMIO / MMIO Device Register Layout}
-@@ -2047,6 +2069,15 @@ \subsection{MMIO Device Register Layout}\label{sec:Virtio Transport Options / Vi
- The driver MUST write a value with a bit mask describing events it handled into \field{InterruptACK} when
- it finishes handling an interrupt and MUST NOT set any of the undefined bits in the value.
- 
-+If VIRTIO_F_RING_RESET has been negotiated, after the driver writes 1 to
-+\field{QueueReset} to reset the queue, it MUST verify that the queue
-+has been reset by reading back \field{QueueReset} and ensuring that it
-+is 1. The driver MAY re-enable the queue by writing a 1 to
-+\field{QueueReady} after ensuring that the other virtqueue fields have
-+been set up correctly. The driver MAY set driver-writeable queue configuration
-+values to different values than those that were used before the queue reset.
-+(see \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Reset}).
-+
- \subsection{MMIO-specific Initialization And Device Operation}\label{sec:Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operation}
- 
- \subsubsection{Device Initialization}\label{sec:Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operation / Device Initialization}
--- 
-2.31.0
+This patch introduces a new status bit STOP. This can be used by the=0D
+driver to stop the device in order to safely fetch used descriptors=0D
+status, making sure the device will not fetch new available ones.=0D
+=0D
+Its main use case is live migration, although it has other orthogonal=0D
+use cases. It can be used to safely discard requests that have not been=0D
+used: in other words, to rewind available descriptors.=0D
+=0D
+Stopping the device in the live migration context is done by per-device=0D
+operations in vhost backends, but the introduction of STOP as a basic=0D
+virtio facility comes with advantages:=0D
+* All the device virtio-specific state is summarized in a single entity,=0D
+  making easier to reason about it.=0D
+* VMM does not need to implement device specific operations in the=0D
+  driver part.=0D
+* Work out of the box for devices that use pure virtio backends in some=0D
+  part of the device emulation chain (virtio_pci_vdpa or virtio_vdpa),=0D
+  in any transport the device can use.=0D
+* It's totally self-contained, solving the nested virtualization case=0D
+  straightforwardly.=0D
+=0D
+To fully understand its position in the live migration case, it's needed=0D
+to note that the VMM acts as a part (or the whole) of the virtio device=0D
+from the guest point of view, and it can act as a part of the driver=0D
+from an external virtio device point of view. This is already the case=0D
+when using vhost-net, for example, where VMM exposes a combination of=0D
+backend and VMM features, and can mask them if needed.=0D
+=0D
+To migrate an external device the VMM needs to retrieve its (guest=0D
+visible) status and make sure the device does not modify it or=0D
+communicate with the guest anymore. The STOP status bit achieves the=0D
+last part, and even the first one in case of a pure stateless device=0D
+using the split vring.=0D
+=0D
+In its simpler way of working, the VMM masks the VIRTIO_F_STOP feature=0D
+to the guest, and also masks the STOP and STOP_FAILED status bit. This=0D
+way the VMM can stop and resume operation unilaterally, totally=0D
+transparent for the latter.=0D
+=0D
+If we don't need the STOP status bit in the hypervisor but we want the=0D
+guest to be able to stop the device, the status can be passthrough.=0D
+=0D
+If we want the guest to be able to stop and=0D
+resume the device by itself and VMM does not need LM, the flag and=0D
+status must not be masked. If we want both, we need VMM to be able to=0D
+override, taking into account the device status for the guest.=0D
+=0D
+v3:=0D
+* Delete all virtqueue state saving and restoring, not needed at the=0D
+  moment.=0D
+* Add STOP_FAILED bit so device can fail the operation=0D
+* Add config interrupt to notify driver about the stop bit is set, so it=0D
+  can avoid busy waiting polling status.=0D
+* Expand device's required treatment to in-flight descriptors before=0D
+  setting the STOP bit.=0D
+* Add rewind capabilities.=0D
+* Add resume operation, clearing the STOP bit.=0D
+* Reword status clear bit / PCI reset contradictions, already present in=0D
+  the spec=0D
+* Specify device behavior if STOP status bit is set before DRIVER_OK=0D
+=0D
+Signed-off-by: Jason Wang <jasowang@redhat.com>=0D
+Signed-off-by: Eugenio P=C3=A9rez <eperezma@redhat.com>=0D
+=0D
+Eugenio P=C3=A9rez (1):=0D
+  content: Explain better the status clearing bits=0D
+=0D
+Jason Wang (1):=0D
+  virtio: introduce STOP status bit=0D
+=0D
+ content.tex | 90 +++++++++++++++++++++++++++++++++++++++++++++++++++--=0D
+ 1 file changed, 87 insertions(+), 3 deletions(-)=0D
+=0D
+--=20=0D
+2.27.0=0D
+=0D
 
