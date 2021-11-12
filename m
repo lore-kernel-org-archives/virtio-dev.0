@@ -1,65 +1,78 @@
-Return-Path: <virtio-dev-return-8947-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-8945-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 9C70A9862EF
-	for <virtio-dev@lists.oasis-open.org>; Mon, 15 Nov 2021 06:45:03 +0000 (UTC)
-MIME-Version: 1.0
-References: <20210120083143.766189-1-acourbot@chromium.org> <874k8k9wsi.fsf@redhat.com>
-In-Reply-To: <874k8k9wsi.fsf@redhat.com>
-From: Alexandre Courbot <acourbot@chromium.org>
-Date: Mon, 15 Nov 2021 15:44:50 +0900
-Message-ID: <CAPBb6MUD_oYeUt8_bGRwAPCPam40Jtktz2F7+A3SO5PFRdUsiw@mail.gmail.com>
-Subject: Re: [virtio-dev] [RFC PATCH v5] virtio-video: Add virtio video device specification
-Content-Type: text/plain; charset="UTF-8"
-To: Cornelia Huck <cohuck@redhat.com>
-Cc: virtio-dev@lists.oasis-open.org, linux-media@vger.kernel.org, alexlau@chromium.org, daniel@ffwll.ch, dgreid@chromium.org, dstaessens@chromium.org, egranata@google.com, kraxel@redhat.com, posciak@chromium.org, spice-devel@lists.freedesktop.org, stevensd@chromium.org, tfiga@chromium.org, uril@redhat.com, kiran.pawar@opensynergy.com, enric.balletbo@collabora.com, alex.bennee@linaro.org, Matti.Moell@opensynergy.com, Keiichi Watanabe <keiichiw@chromium.org>, Dmitry Sepp <dmitry.sepp@opensynergy.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 58964986490
+	for <virtio-dev@lists.oasis-open.org>; Fri, 12 Nov 2021 18:07:26 +0000 (UTC)
+From: Cristian Marussi <cristian.marussi@arm.com>
+Date: Fri, 12 Nov 2021 18:07:05 +0000
+Message-Id: <20211112180705.41601-1-cristian.marussi@arm.com>
+Subject: [virtio-dev] [PATCH] firmware: arm_scmi: Fix null de-reference on error path
+Content-Type: text/plain; charset="US-ASCII"
+To: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org
+Cc: sudeep.holla@arm.com, cristian.marussi@arm.com, igor.skalkin@opensynergy.com, peter.hilber@opensynergy.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Hi Cornelia,
+During channel setup a failure in the call of scmi_vio_feed_vq_rx() leads
+to an attempt to access a dev pointer by dereferencing vioch->cinfo at
+a time when vioch->cinfo has still to be initialized.
 
-On Wed, Nov 10, 2021 at 6:37 PM Cornelia Huck <cohuck@redhat.com> wrote:
->
-> On Wed, Jan 20 2021, Alexandre Courbot <acourbot@chromium.org> wrote:
->
-> > From: Keiichi Watanabe <keiichiw@chromium.org>
-> >
-> > The virtio video encoder and decoder devices are virtual devices that
-> > support video encoding and decoding respectively. Although they are
-> > different devices, they use the same protocol.
-> >
-> > Signed-off-by: Dmitry Sepp <dmitry.sepp@opensynergy.com>
-> > Signed-off-by: Keiichi Watanabe <keiichiw@chromium.org>
-> > Signed-off-by: Alexandre Courbot <acourbot@chromium.org>
-> > ---
-> > Here is the new revision of the virtio-video specification. Compared to
-> > v4 some extra simplification work has been performed, and all stream
-> > settings are now consolidated under the parameters. Hopefully this can
-> > be used as the basis to write a new version of the Linux driver and
-> > virtual device, or maybe even to drop that RFC tag! :)
->
-> It seems that there has not been any followup on this, has there?
->
-> I assume that there is still interest (after all, the ids have already
-> been reservered); let me add some quick comments from the spec pov (I
-> don't really know anything about how video is supposed to work here.)
+Fix it by providing the device reference directly to scmi_vio_feed_vq_rx.
 
-Thanks for the comments ; they come at the right time as we are
-currently working on what will become the v6 of this draft. The
-precision about the use of normative sections in particular is
-welcome.
+Fixes: 46abe13b5e3db ("firmware: arm_scmi: Add virtio transport")
+Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
+---
+ drivers/firmware/arm_scmi/virtio.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-Although other work keeps getting in the way I hope to post v6
-sometime this week. We are also thinking of updating our current
-implementation of an older protocol version to provide a working
-proof-of-concept, although this will likely take some more time to be
-done.
+diff --git a/drivers/firmware/arm_scmi/virtio.c b/drivers/firmware/arm_scmi/virtio.c
+index c8cab5652daf..c30f82cc59ac 100644
+--- a/drivers/firmware/arm_scmi/virtio.c
++++ b/drivers/firmware/arm_scmi/virtio.c
+@@ -82,7 +82,8 @@ static bool scmi_vio_have_vq_rx(struct virtio_device *vdev)
+ }
+ 
+ static int scmi_vio_feed_vq_rx(struct scmi_vio_channel *vioch,
+-			       struct scmi_vio_msg *msg)
++			       struct scmi_vio_msg *msg,
++			       struct device *dev)
+ {
+ 	struct scatterlist sg_in;
+ 	int rc;
+@@ -94,8 +95,7 @@ static int scmi_vio_feed_vq_rx(struct scmi_vio_channel *vioch,
+ 
+ 	rc = virtqueue_add_inbuf(vioch->vqueue, &sg_in, 1, msg, GFP_ATOMIC);
+ 	if (rc)
+-		dev_err(vioch->cinfo->dev,
+-			"failed to add to RX virtqueue (%d)\n", rc);
++		dev_err(dev, "failed to add to RX virtqueue (%d)\n", rc);
+ 	else
+ 		virtqueue_kick(vioch->vqueue);
+ 
+@@ -108,7 +108,7 @@ static void scmi_finalize_message(struct scmi_vio_channel *vioch,
+ 				  struct scmi_vio_msg *msg)
+ {
+ 	if (vioch->is_rx) {
+-		scmi_vio_feed_vq_rx(vioch, msg);
++		scmi_vio_feed_vq_rx(vioch, msg, vioch->cinfo->dev);
+ 	} else {
+ 		/* Here IRQs are assumed to be already disabled by the caller */
+ 		spin_lock(&vioch->lock);
+@@ -269,7 +269,7 @@ static int virtio_chan_setup(struct scmi_chan_info *cinfo, struct device *dev,
+ 			list_add_tail(&msg->list, &vioch->free_list);
+ 			spin_unlock_irqrestore(&vioch->lock, flags);
+ 		} else {
+-			scmi_vio_feed_vq_rx(vioch, msg);
++			scmi_vio_feed_vq_rx(vioch, msg, cinfo->dev);
+ 		}
+ 	}
+ 
+-- 
+2.17.1
 
-Cheers,
-Alex.
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
