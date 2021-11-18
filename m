@@ -1,348 +1,460 @@
-Return-Path: <stefanha@redhat.com>
-Date: Thu, 18 Nov 2021 15:59:37 +0000
-From: Stefan Hajnoczi <stefanha@redhat.com>
-Subject: Re: [PATCH v3 2/2] virtio: introduce STOP status bit
-Message-ID: <YZZ4aXdOAA65v10Y@stefanha-x1.localdomain>
-References: <20211111185812.2326093-1-eperezma@redhat.com>
- <20211111185812.2326093-3-eperezma@redhat.com>
+Return-Path: <eperezma@redhat.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="SgnZsW/z3RFG6Wms"
-Content-Disposition: inline
-In-Reply-To: <20211111185812.2326093-3-eperezma@redhat.com>
-To: Eugenio =?iso-8859-1?Q?P=E9rez?= <eperezma@redhat.com>
-Cc: virtio-dev@lists.oasis-open.org, virtio-comment@lists.oasis-open.org, mst@redhat.com, jasowang@redhat.com, amikheev@nvidia.com, shahafs@nvidia.com, oren@nvidia.com, pasic@linux.ibm.com, cohuck@redhat.com, bodong@nvidia.com, "Dr . David Alan Gilbert" <dgilbert@redhat.com>, parav@nvidia.com, mgurtovoy@nvidia.com
+References: <20211111185812.2326093-1-eperezma@redhat.com> <20211111185812.2326093-3-eperezma@redhat.com>
+ <YZZ4aXdOAA65v10Y@stefanha-x1.localdomain>
+In-Reply-To: <YZZ4aXdOAA65v10Y@stefanha-x1.localdomain>
+From: Eugenio Perez Martin <eperezma@redhat.com>
+Date: Thu, 18 Nov 2021 20:58:05 +0100
+Message-ID: <CAJaqyWcy3J=pSgXQbKch3EA-5swJJBa68qn-VCWFaixctR+ppw@mail.gmail.com>
+Subject: Re: [PATCH v3 2/2] virtio: introduce STOP status bit
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+To: Stefan Hajnoczi <stefanha@redhat.com>
+Cc: Virtio-Dev <virtio-dev@lists.oasis-open.org>, virtio-comment@lists.oasis-open.org, Michael Tsirkin <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, Alexander Mikheev <amikheev@nvidia.com>, Shahaf Shuler <shahafs@nvidia.com>, Oren Duer <oren@nvidia.com>, Halil Pasic <pasic@linux.ibm.com>, Cornelia Huck <cohuck@redhat.com>, Bodong Wang <bodong@nvidia.com>, "Dr . David Alan Gilbert" <dgilbert@redhat.com>, Parav Pandit <parav@nvidia.com>, Max Gurtovoy <mgurtovoy@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+On Thu, Nov 18, 2021 at 5:00 PM Stefan Hajnoczi <stefanha@redhat.com> wrote=
+:
+>
+> On Thu, Nov 11, 2021 at 07:58:12PM +0100, Eugenio P=C3=A9rez wrote:
+> > From: Jason Wang <jasowang@redhat.com>
+> >
+> > This patch introduces a new status bit STOP. This can be used by the
+> > driver to stop the device in order to safely fetch used descriptors
+> > status, making sure the device will not fetch new available ones.
+> >
+> > Its main use case is live migration, although it has other orthogonal
+> > use cases. It can be used to safely discard requests that have not been
+> > used: in other words, to rewind available descriptors.
+> >
+> > Signed-off-by: Jason Wang <jasowang@redhat.com>
+> > Signed-off-by: Eugenio P=C3=A9rez <eperezma@redhat.com>
+> > ---
+> >  content.tex | 83 +++++++++++++++++++++++++++++++++++++++++++++++++++++
+> >  1 file changed, 83 insertions(+)
+> >
+> > diff --git a/content.tex b/content.tex
+> > index 2aa3006..9ed0d09 100644
+> > --- a/content.tex
+> > +++ b/content.tex
+> > @@ -47,6 +47,13 @@ \section{\field{Device Status} Field}\label{sec:Basi=
+c Facilities of a Virtio Dev
+> >  \item[DRIVER_OK (4)] Indicates that the driver is set up and ready to
+> >    drive the device.
+> >
+> > +\item[STOP (16)] When VIRTIO_F_STOP is negotiated, indicates that the
+> > +  device has been stopped by the driver.
+>
+> Who controls the STOP bit? If I understand correctly, the driver writes
+> STOP to the Status Register but the device will not report the STOP bit
+> until the device has fully stopped?
+>
 
---SgnZsW/z3RFG6Wms
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Yes, but to add the point of view of the driver here seems too much.
+However, driver_ok is already explained from the point of view of the
+driver, so I should try to accommodate that here too.
 
-On Thu, Nov 11, 2021 at 07:58:12PM +0100, Eugenio P=E9rez wrote:
-> From: Jason Wang <jasowang@redhat.com>
->=20
-> This patch introduces a new status bit STOP. This can be used by the
-> driver to stop the device in order to safely fetch used descriptors
-> status, making sure the device will not fetch new available ones.
->=20
-> Its main use case is live migration, although it has other orthogonal
-> use cases. It can be used to safely discard requests that have not been
-> used: in other words, to rewind available descriptors.
->=20
-> Signed-off-by: Jason Wang <jasowang@redhat.com>
-> Signed-off-by: Eugenio P=E9rez <eperezma@redhat.com>
-> ---
->  content.tex | 83 +++++++++++++++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 83 insertions(+)
->=20
-> diff --git a/content.tex b/content.tex
-> index 2aa3006..9ed0d09 100644
-> --- a/content.tex
-> +++ b/content.tex
-> @@ -47,6 +47,13 @@ \section{\field{Device Status} Field}\label{sec:Basic =
-Facilities of a Virtio Dev
->  \item[DRIVER_OK (4)] Indicates that the driver is set up and ready to
->    drive the device.
-> =20
-> +\item[STOP (16)] When VIRTIO_F_STOP is negotiated, indicates that the
-> +  device has been stopped by the driver.
+> > +  This status bit is different
+> > +  from the reset since the device state is preserved.
+>
+> "the reset" -> "resetting the device"
+>
 
-Who controls the STOP bit? If I understand correctly, the driver writes
-STOP to the Status Register but the device will not report the STOP bit
-until the device has fully stopped?
+I will rephrase that.
 
-> +  This status bit is different
-> +  from the reset since the device state is preserved.
+> > +
+> > +\item[STOP_FAILED (32)] When VIRTIO_F_STOP is negotiated, indicates th=
+at the
+> > +  device could not stop the STOP request.
+>
+> "could not stop the STOP request" is weird, maybe "could not complete
+> the STOP request" or just "could not stop".
+>
 
-"the reset" -> "resetting the device"
+I think STOP_FAILED should be left out of the proposal for the next
+revision actually, but you are right.
 
-> +
-> +\item[STOP_FAILED (32)] When VIRTIO_F_STOP is negotiated, indicates that=
+> > +
+> >  \item[DEVICE_NEEDS_RESET (64)] Indicates that the device has experienc=
+ed
+> >    an error from which it can't recover.
+> >  \end{description}
+> > @@ -74,11 +81,83 @@ \section{\field{Device Status} Field}\label{sec:Bas=
+ic Facilities of a Virtio Dev
+> >  recover by issuing a reset.
+> >  \end{note}
+> >
+> > +If VIRTIO_F_STOP has been negotiated, the driver MUST NOT set or clear=
+ STOP if
+> > +DRIVER_OK is not set.
+>
+> Small tweak: "if DRIVER_OK is not set" -> "when DRIVER_OK is not set".
+> That makes the sentence a little easier to read (for me, at least).
+>
+
+Ok I will change that.
+
+> > +
+> > +If VIRTIO_F_STOP has been negotiated the driver MUST re-read the devic=
+e status
+> > +to ensure the STOP or STOP_FAILED bit is set after the write. The devi=
+ce
+> > +acknowledges the new paused status setting the first, or the failure s=
+etting
+> > +the last.
+>
+> This sentence is confusing. "paused status" introduces an alias for the
+> STOP functionality that is being described. Don't use multiple names for
+> the same thing. The "first"/"last" is unnecessary indirection, just use
+> "STOP" and "STOP_FAILED" so the reader doesn't have to figure out what
+> you meant. I suggest:
+>
+>   "The device indicates that it has stopped by reporting the STOP bit or
+>   indicates failure by reporting the STOP_FAILED bit in the device
+>   status field."
+>
+
+I agree, I will change that.
+
+To be sure, you mean to replace just the second part of the paragraph, isn'=
+t it?
+
+> > +Since this change may not be instantaneous, the driver MAY wait for
+> > +the configuration change notification that the device must send after =
+the
+>
+> "must" is lowercase. If this is a device normative section then it
+> should be "MUST". Otherwise I suggest removing the "must": "that the
+> device sends after ...".
+>
+
+It's in lowercase because it's the driver normative, not the device
+one. But the "after" alternative sounds perfect to me.
+
+> > +change. If the device sets the STOP_FAILED bit, the driver MUST clear =
+it before
+> > +try new STOP attempts.
+>
+> s/try/trying/
+>
+
+I'll probably discard the STOP_FAILED part for the next revisions but
+I will take into account if I recover that, thanks!
+
+> > +
+> > +If VIRTIO_F_STOP has been negotiated and the device has confirmed its =
+stop,
+>
+> "its stop" should probably be "it has stopped", but a more explicit way
+> to explain this is:
+>
+> "If VIRTIO_F_STOP has been negotiated and the driver reads the STOP bit
+> from the device status field,"
+>
+
+I will change that.
+
+> > +the driver MAY change avail_idx in the case of split virtqueue, but th=
+e new
+> > +avail_idx MUST be within used_idx and used_idx plus virtqueue size.
+>
+> I'm trying to understand how this would work. Available buffers may be
+> consumed out-of-order unless VIRTIO_F_IN_ORDER was negotiated, so the
+> avail ring could contain something like:
+>
+>   avail.ring =3D [Used, Not used, Used, Not used, ...]
+>                                                 ^--- avail.idx
+>
+> There are num_not_used =3D avail.idx - used.idx requests that are "Not
+> used" in avail.ring.
+>
+> Does this mean the driver can rewind avail.idx by counting the number of
+> "Not used" buffers and skipping "Used" buffers until it reaches
+> num_not_used "Not used" buffers?
+>
+
+I'm going to also drop the "resume" part for the next version because
+it adds extra complexity not actually needed, and it can be achieved
+with a full reset in a simpler way.
+
+But I'll explain it below with your examples. Long story short, the
+driver only can rewind the available descriptors that are still in the
+available ring, and the device must flush the ones that cannot recover
+from the ring.
+
+> I think there is a known issue with this approach:
+>
+> Imagine a vring with 4 elements:
+>
+>   avail.ring =3D [0,        1,    2,    3   ]
+>                 Not used, used, used, used
+>                                            ^--- avail.idx
+>
+> Since the device has used 3 buffers the driver now has space to make
+> more buffers available. avail.idx wraps back to the start of the ring
+> and the driver overwrites the first element ("Not used"):
+>
+>   avail.ring =3D [1,        N/A,  N/A,  N/A]
+>                 Not used, N/A,  N/A,  N/A
+>                          ^--- avail.idx
+>
+> Since vring descriptor 0 is still in use the driver chose descriptor 1
+> for the new available buffer.
+>
+> Now we stop the device, knowing there are two buffers available that
+> have not been used. But avail.ring[] actually only contains the new
+> buffer (vring descriptor 1) that we made available because we overwrote
+> the old avail.ring[] element (vring descriptor 0).
+>
+> What now? Where does the device reset its internal avail_idx to?
+
+To be on the same page, in qemu the device maintains two "internal
+avail idx": shadow_avail_idx (last seen in the available ring, could
+be 4 in this case) and last_avail_idx (next descriptor to fetch from
+avail, 2). The device must forget shadow_avail_idx and flush the
+descriptors that cannot recover (0). So last_avail_idx is now 3. Now
+it can stop.
+
+The proposal allows the device to fail descriptor 0 in a
+device-specific way, but I think now it was a bad choice.
+
+The driver cannot move the device's last_avail_idx in this operation:
+The device is simply forced to flush used ones to the used ring or
+descriptor ring in a packed vq case. So the device's internal
+avail_idx =3D=3D used_idx =3D=3D 3. When the device resumes, it's still 3.
+
+The device must keep its last_avail_idx through stop and resume cycle.
+
+> Does
+> the device remember the available buffer with vring descriptor 0 or do
+> we need to add it again?
+>
+
+If we want to keep the descriptor 0 as available, device and driver
+should forget these internally tracked available buffers on stop and
+skip those in the packed case, similar as in the descriptor chain or
+IN_ORDER case. Regular stop and resume gets more complicated, but
+descriptors rewinding is more powerful. And this solution gets way
+more difficult or impossible to use from the VMM.
+
+We could allow the device and the driver to remember these internally
+tracked available descriptors. But this makes it impossible to use the
+solution from the VMM transparently to the guest unless a way to
+provide them is used.
+
+However this gets more and more complicated. I think it's better to
+rely on device stop + reset for descriptor recovery. Everything is way
+more clear even if a few more steps are needed to resume, and all
+descriptors are recoverable. The device still needs a way to expose
+the in-flight ones in the not IN_ORDER case.
+
+> I'm not sure if this idea works even with split virtqueues.
+>
+> > +
+> > +If VIRTIO_F_STOP has been negotiated and the device has confirmed its =
+stop,
+>
+> "its stop" -> "it has stopped".
+>
+
+I will replace it.
+
+> > +the driver MAY change any descriptor.
+>
+> Not just descriptors, but also avail.ring[] and avail.idx?
+>
+
+Right.
+
+> > +
+> > +If VIRTIO_F_STOP has been negotiated and the device has confirmed its =
+stopped,
+>
+> "its" -> "it has"
+>
+> > +the driver can resume it clearing the STOP status bit. It MUST re-read=
  the
-> +  device could not stop the STOP request.
+>
+> "it clearing" -> "it by clearing"
+>
+> > +device status to ensure the STOP bit is clear after the write. The dev=
+ice
+> > +acknowledges the new status clearing it. Since this change may not be
+>
+> "new status clearing" -> "new status by clearing"
+>
 
-"could not stop the STOP request" is weird, maybe "could not complete
-the STOP request" or just "could not stop".
+I will correct all of the above.
 
-> +
->  \item[DEVICE_NEEDS_RESET (64)] Indicates that the device has experienced
->    an error from which it can't recover.
->  \end{description}
-> @@ -74,11 +81,83 @@ \section{\field{Device Status} Field}\label{sec:Basic=
- Facilities of a Virtio Dev
->  recover by issuing a reset.
->  \end{note}
-> =20
-> +If VIRTIO_F_STOP has been negotiated, the driver MUST NOT set or clear S=
-TOP if
-> +DRIVER_OK is not set.
+> > +instantaneous, the driver MAY wait for the configuration change notifi=
+cation
+> > +that the device must send after the change.
+>
+> "must" -> "MUST" or "that the device sends"
+>
 
-Small tweak: "if DRIVER_OK is not set" -> "when DRIVER_OK is not set".
-That makes the sentence a little easier to read (for me, at least).
+I will delete it.
 
-> +
-> +If VIRTIO_F_STOP has been negotiated the driver MUST re-read the device =
-status
-> +to ensure the STOP or STOP_FAILED bit is set after the write. The device
-> +acknowledges the new paused status setting the first, or the failure set=
-ting
-> +the last.
+> > +
+> >  \devicenormative{\subsection}{Device Status Field}{Basic Facilities of=
+ a Virtio Device / Device Status Field}
+> >
+> >  The device MUST NOT consume buffers or send any used buffer
+> >  notifications to the driver before DRIVER_OK.
+> >
+> > +If VIRTIO_F_STOP has not been negotiated the device MUST ignore the wr=
+ite of
+> > +STOP. If the DRIVER_OK status bit is not set the device SHOULD ignore =
+the write
+> > +or clear of STOP.
+> > +
+> > +If VIRTIO_F_STOP has been negotiated, the device MUST finish any in fl=
+ight
+> > +operations after the driver writes STOP.  Depending on the device, it =
+can do it
+> > +in many ways as long as the driver can recover its normal operation if=
+ it
+> > +resumes the device without the need of resetting it:
+> > +\begin{itemize}
+> > +\item Drain and wait for the completion of all pending requests until =
+a
+> > +convenient avail descriptor. Ignore any other posterior descriptor.
+> > +\item Return a device-specific failure for these descriptors, so the d=
+river
+> > +can choose to retry or to cancel them.
+>
+> This means each device type in the spec needs to define STOP semantics
+> so drivers know what to expect. Not sure it's feasible to do this. If
+> you can drop this point from the patch I would because this is going to
+> be hard to get right in implementations and a pain to specify properly.
+>
 
-This sentence is confusing. "paused status" introduces an alias for the
-STOP functionality that is being described. Don't use multiple names for
-the same thing. The "first"/"last" is unnecessary indirection, just use
-"STOP" and "STOP_FAILED" so the reader doesn't have to figure out what
-you meant. I suggest:
+Yes, this complicates the solution and is not needed if the device is
+able to report the in-flight ones.
 
-  "The device indicates that it has stopped by reporting the STOP bit or
-  indicates failure by reporting the STOP_FAILED bit in the device
-  status field."
+> > +\item Mark them as done even if they are not, if the kind of device ca=
+n
+> > +assume to lose them.
+> > +\end{itemize}
+> > +
+> > +If VIRTIO_F_STOP has been negotiated and it needs to fail the device s=
+top after
+> > +a guest's request, the device MUST set the STOP_FAILED bit for the gue=
+st to
+> > +read it. The device MUST ignore new writes to the STOP bit until the g=
+uest
+> > +clears STOP_FAILED.
+>
+> s/guest/driver/ here and elsewhere in this patch
+>
 
-> +Since this change may not be instantaneous, the driver MAY wait for
-> +the configuration change notification that the device must send after the
+I will review it.
 
-"must" is lowercase. If this is a device normative section then it
-should be "MUST". Otherwise I suggest removing the "must": "that the
-device sends after ...".
+> > +
+> > +If VIRTIO_F_STOP has been negotiated and the guest has written the STO=
+P bit,
+> > +and the device can pause its operation, the device MUST set the descri=
+ptors
+> > +that it has done with them as used before exposing the STOP status bit=
+ as set.
+>
+> This sentence is a bit confusing. What does "can" mean here?
+>
 
-> +change. If the device sets the STOP_FAILED bit, the driver MUST clear it=
- before
-> +try new STOP attempts.
+"the device can pause its operation" can be replaced by "The device
+has set STOP bit". Is that clearer?
 
-s/try/trying/
+> Can the
+> device negotiate VIRTIO_F_STOP but always set STOP_FAILED because it
+> cannot actually stop?
 
-> +
-> +If VIRTIO_F_STOP has been negotiated and the device has confirmed its st=
-op,
+In this proposal yes, although it is not very polite of course.
+STOP_FAILED will be dropped for the next revision so there is no need
+to worry about this at the moment.
 
-"its stop" should probably be "it has stopped", but a more explicit way
-to explain this is:
+> The second part of the sentence is unclear. Does it mean that the device
+> must complete an in-flight buffers? When VIRTIO_F_IN_ORDER is not
+> negotiated the device doesn't have to process available buffers in
+> order, so that means the device may leave a mix of available and used
+> buffers rather than a sequence of used buffers followed by available
+> buffers?
+>
 
-"If VIRTIO_F_STOP has been negotiated and the driver reads the STOP bit
-=66rom the device status field,"
+It does not need to complete all in-flight, only the non recoverable actual=
+ly.
 
-> +the driver MAY change avail_idx in the case of split virtqueue, but the =
-new
-> +avail_idx MUST be within used_idx and used_idx plus virtqueue size.
+> > +
+> > +If VIRTIO_F_STOP has been negotiated, the device MUST NOT perform thes=
+e actions
+> > +after exposing the STOP bit set:
+> > +\begin{itemize}
+> > +\item Read updates on the descriptor or driver area, or consume more b=
+uffers.
+> > +\item Send any used buffer notifications to the driver.
+> > +\end{itemize}
+> > +
+> > +The device MUST send a configuration space change right after exposing=
+ the STOP
+> > +or STOP_FAILED as set to the driver, and MUST NOT change configuration=
+ space or
+> > +send another configuration space change notification to the driver aft=
+erwards
+> > +until the guest clears it.
+> > +
+> > +If VIRTIO_F_STOP has been negotiated and STOP device status flag is se=
+t,
+> > +the device MUST resume operation when the driver clears the STOP bit. =
+The
+> > +device MUST continue reading available descriptors as if an available =
+buffer
+> > +notification has reach it, starting from the last descriptor it marked=
+ as used,
+>
+> "has reach it" -> "has been received"?
+>
+> "starting from the last descriptor it marked as used" sounds wrong. I
+> guess this assumes VIRTIO_F_IN_ORDER was negotiated?
+>
 
-I'm trying to understand how this would work. Available buffers may be
-consumed out-of-order unless VIRTIO_F_IN_ORDER was negotiated, so the
-avail ring could contain something like:
+It is written with the packed vq in mind but I think that "last used
+idx" is ok too. No need for VIRTIO_F_IN_ORDER.
 
-  avail.ring =3D [Used, Not used, Used, Not used, ...]
-                                                ^--- avail.idx
+I hope these explanations make the proposal more clear. A big part of
+it will change in next revisions with the "in flight" reporting in
+mind, but feel free to request more clarifications for sure. I will
+address all the other comments, so thank you a lot for all of them!
 
-There are num_not_used =3D avail.idx - used.idx requests that are "Not
-used" in avail.ring.
-
-Does this mean the driver can rewind avail.idx by counting the number of
-"Not used" buffers and skipping "Used" buffers until it reaches
-num_not_used "Not used" buffers?
-
-I think there is a known issue with this approach:
-
-Imagine a vring with 4 elements:
-
-  avail.ring =3D [0,        1,    2,    3   ]
-                Not used, used, used, used
-                                           ^--- avail.idx
-
-Since the device has used 3 buffers the driver now has space to make
-more buffers available. avail.idx wraps back to the start of the ring
-and the driver overwrites the first element ("Not used"):
-
-  avail.ring =3D [1,        N/A,  N/A,  N/A]
-                Not used, N/A,  N/A,  N/A
-		         ^--- avail.idx
-
-Since vring descriptor 0 is still in use the driver chose descriptor 1
-for the new available buffer.
-
-Now we stop the device, knowing there are two buffers available that
-have not been used. But avail.ring[] actually only contains the new
-buffer (vring descriptor 1) that we made available because we overwrote
-the old avail.ring[] element (vring descriptor 0).
-
-What now? Where does the device reset its internal avail_idx to? Does
-the device remember the available buffer with vring descriptor 0 or do
-we need to add it again?
-
-I'm not sure if this idea works even with split virtqueues.
-
-> +
-> +If VIRTIO_F_STOP has been negotiated and the device has confirmed its st=
-op,
-
-"its stop" -> "it has stopped".
-
-> +the driver MAY change any descriptor.
-
-Not just descriptors, but also avail.ring[] and avail.idx?
-
-> +
-> +If VIRTIO_F_STOP has been negotiated and the device has confirmed its st=
-opped,
-
-"its" -> "it has"
-
-> +the driver can resume it clearing the STOP status bit. It MUST re-read t=
-he
-
-"it clearing" -> "it by clearing"
-
-> +device status to ensure the STOP bit is clear after the write. The device
-> +acknowledges the new status clearing it. Since this change may not be
-
-"new status clearing" -> "new status by clearing"
-
-> +instantaneous, the driver MAY wait for the configuration change notifica=
-tion
-> +that the device must send after the change.
-
-"must" -> "MUST" or "that the device sends"
-
-> +
->  \devicenormative{\subsection}{Device Status Field}{Basic Facilities of a=
- Virtio Device / Device Status Field}
-> =20
->  The device MUST NOT consume buffers or send any used buffer
->  notifications to the driver before DRIVER_OK.
-> =20
-> +If VIRTIO_F_STOP has not been negotiated the device MUST ignore the writ=
-e of
-> +STOP. If the DRIVER_OK status bit is not set the device SHOULD ignore th=
-e write
-> +or clear of STOP.
-> +
-> +If VIRTIO_F_STOP has been negotiated, the device MUST finish any in flig=
-ht
-> +operations after the driver writes STOP.  Depending on the device, it ca=
-n do it
-> +in many ways as long as the driver can recover its normal operation if it
-> +resumes the device without the need of resetting it:
-> +\begin{itemize}
-> +\item Drain and wait for the completion of all pending requests until a
-> +convenient avail descriptor. Ignore any other posterior descriptor.
-> +\item Return a device-specific failure for these descriptors, so the dri=
-ver
-> +can choose to retry or to cancel them.
-
-This means each device type in the spec needs to define STOP semantics
-so drivers know what to expect. Not sure it's feasible to do this. If
-you can drop this point from the patch I would because this is going to
-be hard to get right in implementations and a pain to specify properly.
-
-> +\item Mark them as done even if they are not, if the kind of device can
-> +assume to lose them.
-> +\end{itemize}
-> +
-> +If VIRTIO_F_STOP has been negotiated and it needs to fail the device sto=
-p after
-> +a guest's request, the device MUST set the STOP_FAILED bit for the guest=
- to
-> +read it. The device MUST ignore new writes to the STOP bit until the gue=
-st
-> +clears STOP_FAILED.
-
-s/guest/driver/ here and elsewhere in this patch
-
-> +
-> +If VIRTIO_F_STOP has been negotiated and the guest has written the STOP =
-bit,
-> +and the device can pause its operation, the device MUST set the descript=
-ors
-> +that it has done with them as used before exposing the STOP status bit a=
-s set.
-
-This sentence is a bit confusing. What does "can" mean here? Can the
-device negotiate VIRTIO_F_STOP but always set STOP_FAILED because it
-cannot actually stop?
-
-The second part of the sentence is unclear. Does it mean that the device
-must complete an in-flight buffers? When VIRTIO_F_IN_ORDER is not
-negotiated the device doesn't have to process available buffers in
-order, so that means the device may leave a mix of available and used
-buffers rather than a sequence of used buffers followed by available
-buffers?
-
-> +
-> +If VIRTIO_F_STOP has been negotiated, the device MUST NOT perform these =
-actions
-> +after exposing the STOP bit set:
-> +\begin{itemize}
-> +\item Read updates on the descriptor or driver area, or consume more buf=
-fers.
-> +\item Send any used buffer notifications to the driver.
-> +\end{itemize}
-> +
-> +The device MUST send a configuration space change right after exposing t=
-he STOP
-> +or STOP_FAILED as set to the driver, and MUST NOT change configuration s=
-pace or
-> +send another configuration space change notification to the driver after=
-wards
-> +until the guest clears it.
-> +
-> +If VIRTIO_F_STOP has been negotiated and STOP device status flag is set,
-> +the device MUST resume operation when the driver clears the STOP bit. The
-> +device MUST continue reading available descriptors as if an available bu=
-ffer
-> +notification has reach it, starting from the last descriptor it marked a=
-s used,
-
-"has reach it" -> "has been received"?
-
-"starting from the last descriptor it marked as used" sounds wrong. I
-guess this assumes VIRTIO_F_IN_ORDER was negotiated?
-
-> +and continue the regular operation after that. The device MUST read again
-> +descriptor and driver area beyond the last descriptor it marked as used =
-when it
-> +stopped, because the driver can change it. Device MUST set DEVICE_NEEDS_=
-RESET
-> +if for some reason it cannot continue.
-> +
->  \label{sec:Basic Facilities of a Virtio Device / Device Status Field / D=
-EVICENEEDSRESET}The device SHOULD set DEVICE_NEEDS_RESET when it enters an =
-error state
->  that a reset is needed.  If DRIVER_OK is set, after it sets DEVICE_NEEDS=
-_RESET, the device
->  MUST send a device configuration change notification to the driver.
-> @@ -6694,6 +6773,10 @@ \chapter{Reserved Feature Bits}\label{sec:Reserved=
- Feature Bits}
->    transport specific.
->    For more details about driver notifications over PCI see \ref{sec:Virt=
-io Transport Options / Virtio Over PCI Bus / PCI-specific Initialization An=
-d Device Operation / Available Buffer Notifications}.
-> =20
-> +\item[VIRTIO_F_STOP(41)] This feature indicates that the driver can
-> +  stop the device.
-> +  See \ref{sec:Basic Facilities of a Virtio Device / Device Status Field=
-}.
-> +
->  \end{description}
-> =20
->  \drivernormative{\section}{Reserved Feature Bits}{Reserved Feature Bits}
-> --=20
-> 2.27.0
->=20
-
---SgnZsW/z3RFG6Wms
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmGWeGkACgkQnKSrs4Gr
-c8h7dgf/ToXLSZ/RDJHl3agPDG7HpxLLaBrTRFX15vbckNc0X/wW0ml3PIdUdTF6
-rfcUUcI8R5BACUeu6DSGthzmqQmQC2GgCWXie9iRzRfZSsryclSGcUWE15b4j2zs
-2EiR+itaQA2zFs7EZTMj9kY3XPlgE7v9JmOSeE1ZSblAxI6WQ1A6R3SC/00bZWdq
-xRCsu75VMTPn4d98HhfDzgsI1vf9cqPSHRm7ozmbtKJD9I+Ej1JhHoCEH2D4nboU
-95MEPpxFwo8EMPTVdHV+TcxbNdkdTwIMehcFPLE9SGIXNOTp3heR5EvVZ52QiW2Q
-jDM1BG9AfoAQ8VimsSvvh1KTUGPLbA==
-=ZYNH
------END PGP SIGNATURE-----
-
---SgnZsW/z3RFG6Wms--
+> > +and continue the regular operation after that. The device MUST read ag=
+ain
+> > +descriptor and driver area beyond the last descriptor it marked as use=
+d when it
+> > +stopped, because the driver can change it. Device MUST set DEVICE_NEED=
+S_RESET
+> > +if for some reason it cannot continue.
+> > +
+> >  \label{sec:Basic Facilities of a Virtio Device / Device Status Field /=
+ DEVICENEEDSRESET}The device SHOULD set DEVICE_NEEDS_RESET when it enters a=
+n error state
+> >  that a reset is needed.  If DRIVER_OK is set, after it sets DEVICE_NEE=
+DS_RESET, the device
+> >  MUST send a device configuration change notification to the driver.
+> > @@ -6694,6 +6773,10 @@ \chapter{Reserved Feature Bits}\label{sec:Reserv=
+ed Feature Bits}
+> >    transport specific.
+> >    For more details about driver notifications over PCI see \ref{sec:Vi=
+rtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization =
+And Device Operation / Available Buffer Notifications}.
+> >
+> > +\item[VIRTIO_F_STOP(41)] This feature indicates that the driver can
+> > +  stop the device.
+> > +  See \ref{sec:Basic Facilities of a Virtio Device / Device Status Fie=
+ld}.
+> > +
+> >  \end{description}
+> >
+> >  \drivernormative{\section}{Reserved Feature Bits}{Reserved Feature Bit=
+s}
+> > --
+> > 2.27.0
+> >
 
