@@ -1,42 +1,57 @@
-Return-Path: <virtio-return-3642-cohuck=redhat.com@lists.oasis-open.org>
-Sender: <virtio@lists.oasis-open.org>
-List-Post: <mailto:virtio@lists.oasis-open.org>
-List-Help: <mailto:virtio-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-From: Cornelia Huck <cohuck@redhat.com>
-References: <871r27qw8o.fsf@redhat.com>
-Date: Tue, 25 Jan 2022 11:58:04 +0100
-Message-ID: <87lez4jd4z.fsf@redhat.com>
+Return-Path: <virtio-dev-return-9016-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id F02D4983E07
+	for <virtio-dev@lists.oasis-open.org>; Wed, 12 Jan 2022 05:58:32 +0000 (UTC)
+From: Jason Wang <jasowang@redhat.com>
+Date: Wed, 12 Jan 2022 13:57:53 +0800
+Message-Id: <20220112055755.41011-1-jasowang@redhat.com>
 MIME-Version: 1.0
-Subject: [virtio] The virtio spec is now in FREEZE for 1.2
-Content-Type: text/plain
-To: virtio@lists.oasis-open.org, virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
-Cc: "Michael S. Tsirkin" <mst@redhat.com>
+Subject: [virtio-dev] [PATCH V2 0/2] virito-pci: PASID support
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: quoted-printable
+To: virtio-dev@lists.oasis-open.org
+Cc: mst@redhat.com, stefanha@redhat.com, eperezma@redhat.com, lulu@redhat.com, Jason Wang <jasowang@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-The virtio spec is now in freeze for the upcoming 1.2 release.
+Hi All:
 
-What does this mean?
-- No more issues will be accepted into the 1.2 release, i.e. no more
-  votes will be started. Anything outstanding will be delayed until
-  after we have released 1.2 (which we hope to have done by the end of
-  March.)
-- We may still do some editorial fixups.
-- Behind the scenes, we will work on getting a Committee Specification
-  Draft ready and out for review.
+This series tries to add PASID support for virtio-pci to allow the
+virtqueue to use PASID TLP prefix for PCI transactions. This will be
+useful for future work like, queue assignment, virtqueue
+virtualization and presenting multiple vDPA devices with a single PCI
+device.
 
-What does this NOT mean?
-- No freeze on opening new issues, they will simply target the next
-  release.
-- Most certainly no freeze on discussions! Just keep in mind that the
-  chairs/editors may be busy with other things.
+Since we're short of the space for the PCI capabilities, the PCI
+extended capability for virtio structure is introduced that allows the
+PASID configuration structure to use.
 
-We will update you on the progress along the way.
+A prototype is implemented with emulated virtio-pci device in [1]. A
+test driver is implemented in [2].
+
+Please review.
+
+Thanks
+
+[1] https://github.com/jasowang/qemu.git virtio-pasid
+[2] https://github.com/jasowang/linux.git virtio-pasid
+
+Jason Wang (2):
+  virtio-pci: introduce virtio structure PCI Extended Capability
+  virtio-pci: add PASID configuration extended capability
+
+ content.tex | 244 ++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 244 insertions(+)
+
+--=20
+2.32.0 (Apple Git-132)
 
 
 ---------------------------------------------------------------------
-To unsubscribe from this mail list, you must leave the OASIS TC that 
-generates this mail.  Follow this link to all your TCs in OASIS at:
-https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
