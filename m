@@ -1,103 +1,57 @@
-Return-Path: <parav@nvidia.com>
-From: Parav Pandit <parav@nvidia.com>
-Subject: RE: [PATCH 2/5] Introduce
- VIRTIO_F_ADMIN_VQ_INDIRECT_DESC/VIRTIO_F_ADMIN_VQ_IN_ORDER
-Date: Wed, 26 Jan 2022 09:47:49 +0000
-Message-ID: <PH0PR12MB548182B87ED8A2117A36AA09DC209@PH0PR12MB5481.namprd12.prod.outlook.com>
+Return-Path: <mgurtovoy@nvidia.com>
+From: Max Gurtovoy <mgurtovoy@nvidia.com>
+Subject: [PATCH 3/5] virtio-blk: add support for VIRTIO_F_ADMIN_VQ
+Date: Thu, 13 Jan 2022 16:51:01 +0200
+Message-ID: <20220113145103.26894-4-mgurtovoy@nvidia.com>
+In-Reply-To: <20220113145103.26894-1-mgurtovoy@nvidia.com>
 References: <20220113145103.26894-1-mgurtovoy@nvidia.com>
- <20220113145103.26894-3-mgurtovoy@nvidia.com>
- <20220113102218-mutt-send-email-mst@kernel.org>
- <eaf88f9c-8b51-7758-90c0-c1a92df35061@nvidia.com>
- <20220113121203-mutt-send-email-mst@kernel.org>
- <PH0PR12MB5481B90FF747D56377A0A850DC579@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20220117170442-mutt-send-email-mst@kernel.org>
- <PH0PR12MB54818033A0BD96EA9493C51ADC589@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20220118011731-mutt-send-email-mst@kernel.org>
- <PH0PR12MB54816DB30F23511266B8F35EDC589@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20220118014737-mutt-send-email-mst@kernel.org>
- <PH0PR12MB5481B99E351B624A27378BC5DC589@PH0PR12MB5481.namprd12.prod.outlook.com>
- <15063a94-85ae-fd1a-6ff1-458a039d1def@redhat.com>
- <PH0PR12MB5481D5BD8BB8CFDEFA218D2FDC599@PH0PR12MB5481.namprd12.prod.outlook.com>
- <56a7bf50-509d-f9d5-df78-858cb1b156c1@redhat.com>
- <PH0PR12MB548182EBE025ECA44124A11DDC5F9@PH0PR12MB5481.namprd12.prod.outlook.com>
- <622a3ecc-ac21-40ae-7fcd-9667a8fd9540@redhat.com>
- <PH0PR12MB54810CAE9F2E25D5C60B1116DC209@PH0PR12MB5481.namprd12.prod.outlook.com>
- <CACGkMEu7j6mXO-bWxTq+-HQOzeMQ0WoMnPgEYbd6kf+U_aEY3Q@mail.gmail.com>
- <PH0PR12MB5481AD0731F32FDEE399FE85DC209@PH0PR12MB5481.namprd12.prod.outlook.com>
- <CACGkMEs76Yz5CUPDWs0x6Wo7Qh0oVYtRGEyUDjeeqJ8tnDfnfw@mail.gmail.com>
- <PH0PR12MB54818EA664CD2E89BD262E53DC209@PH0PR12MB5481.namprd12.prod.outlook.com>
- <CACGkMEuH6tqD0uXpixev7cFJFvmMc0RJ-CF9n92XXLbwYRP-iA@mail.gmail.com>
- <PH0PR12MB54810131D028210D5633B338DC209@PH0PR12MB5481.namprd12.prod.outlook.com>
- <CACGkMEt8eg4wvEZJPM9_FuQJMs_kBXo127K7JKgtSPoOeH8S9w@mail.gmail.com>
-In-Reply-To: <CACGkMEt8eg4wvEZJPM9_FuQJMs_kBXo127K7JKgtSPoOeH8S9w@mail.gmail.com>
 MIME-Version: 1.0
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-To: Jason Wang <jasowang@redhat.com>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>, Max Gurtovoy <mgurtovoy@nvidia.com>, "cohuck@redhat.com" <cohuck@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Shahaf Shuler <shahafs@nvidia.com>, Oren Duer <oren@nvidia.com>, "stefanha@redhat.com" <stefanha@redhat.com>
+Content-Type: text/plain
+To: virtio-comment@lists.oasis-open.org, mst@redhat.com, cohuck@redhat.com, virtio-dev@lists.oasis-open.org, jasowang@redhat.com
+Cc: parav@nvidia.com, shahafs@nvidia.com, oren@nvidia.com, stefanha@redhat.com, Max Gurtovoy <mgurtovoy@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-DQoNCj4gRnJvbTogSmFzb24gV2FuZyA8amFzb3dhbmdAcmVkaGF0LmNvbT4NCj4gU2VudDogV2Vk
-bmVzZGF5LCBKYW51YXJ5IDI2LCAyMDIyIDI6MzcgUE0NCj4gDQo+IE9uIFdlZCwgSmFuIDI2LCAy
-MDIyIGF0IDQ6MDkgUE0gUGFyYXYgUGFuZGl0IDxwYXJhdkBudmlkaWEuY29tPiB3cm90ZToNCj4g
-Pg0KPiA+DQo+ID4gPiBGcm9tOiBKYXNvbiBXYW5nIDxqYXNvd2FuZ0ByZWRoYXQuY29tPg0KPiA+
-ID4gU2VudDogV2VkbmVzZGF5LCBKYW51YXJ5IDI2LCAyMDIyIDEyOjI0IFBNDQo+ID4gPg0KPiA+
-ID4gPiA+DQo+ID4gPiA+ID4gMSkgdGhlIHZlbmRvciBhbmQgdHJhbnNwb3J0IHRoYXQgZG9lc24n
-dCB3YW50IHRvIHVzZSBhZG1pbg0KPiA+ID4gPiA+IHZpcnRxdWV1ZQ0KPiA+ID4gPiBJdCBpcyBu
-b3QgdGhlIGNob2ljZSBvZiB2ZW5kb3IgdG8gdXNlIGFkbWluIHZpcnRxdWV1ZSBvciBub3QuIEl0
-DQo+ID4gPiA+IGlzIHRoZSBzcGVjDQo+ID4gPiBkZWZpbml0aW9uLg0KPiA+ID4NCj4gPiA+IFdl
-IGFyZSBkaXNjdXNzaW5nIHRoZSBwcm9wb3NhbCB3aGljaCBoYXNuJ3QgYmVlbiBhIHBhcnQgb2Yg
-dGhlIHNwZWMgcmlnaHQNCj4gbm93Lg0KPiA+ID4gSXQgZG9lc24ndCBtZWFuIHdlIGNhbid0IGRv
-IGJldHRlci4NCj4gPiBTdXJlLiBJdOKAmXMgdGhlIHByb3Bvc2FsIHdlIGFyZSBkaXNjdXNzaW5n
-LCBidXQgSSBmYWlsIHRvIHVuZGVyc3RhbmQgd2h5IGEgdmVuZG9yDQo+IGRvZXNu4oCZdCB3YW50
-IHRvIHVzZSBhIGFkbWluIHF1ZXVlIGR1ZSB0byB3aGljaCBpdCBuZWVkcyB0byBiZSBkZXRhY2hl
-ZC4NCj4gDQo+IFdoYXQgZG8geW91IG1lYW4gYnkgImRldGFjaGVkIj8NCkRldGFjaGluZyB0aGUg
-bWdtdCBjbWQgZnJvbSB0aGUgYWRtaW4gcXVldWUuDQoNCj4gPg0KPiA+IEEgZGVzY3JpcHRvciBp
-biBhIHZpcnRxdWV1ZSByZXByZXNlbnRzIHdpZGUgcmFuZ2Ugb2YgdGhpbmdzLg0KPiA+IDEuIFNv
-bWV0aW1lIHNlbmRpbmcgcGFja2V0LA0KPiA+IDIuIHNvbWV0aW1lcyBjb25maWd1cmluZyB2bGFu
-LA0KPiA+IDMuIHNvbWV0aW1lIGNvbmZpZ3VyaW5nIGFkZGluZyBtYWMgdG8gdGFibGUuDQo+ID4g
-NC4gc29tZXRpbWUgYWRkaW5nIGNyeXB0byBzZXNzaW9uDQo+ID4gNS4gYW5kIG5vdyBzb21ldGlt
-ZSBtYW5hZ2luZyBhIG1hbmFnZWQgVkYgb3IgU0YgZGV2aWNlDQo+ID4NCj4gPiBJdGVtICM1IGlz
-IG5vIGRpZmZlcmVudCB0aGFuICMxIHRvICM0Lg0KPiA+IE1hbmFnZWQgZGV2aWNlIGNvbmZpZ3Vy
-YXRpb24gIT0gImdlbmVyaWMgY29uZmlndXJlIHRoZSBkZXZpY2UiLg0KPiANCj4gV2VsbCwgSSB0
-aGluayB0aGVuIHlvdSBuZWVkIHRvIGV4cGxhaW4gdGhpcyB3ZWxsIGluIHRoZSBwYXRjaC4NCj4g
-DQpEaWQgeW91IGdldCBhIGNoYW5jZSB0byByZXZpZXcgdjIgY29tbWl0IGxvZz8NCkl0IGRlc2Ny
-aWJlcyB0aGUgbW90aXZhdGlvbiBmb3IgQVEuDQoNCj4gU28gYSB2aXJ0cXVldWUgaXMgbmVlZGVk
-IG9ubHkgd2hlbiBETUEgaXMgcmVxdWlyZWQuIFRoYXQgaXMgdGhlIGNhc2UgZm9yDQo+IHZpcnRp
-b19mc19yZXEuDQo+IA0KPiBGb3Igb3RoZXIgY2FzZXMgdGhhdCBETUEgaXMgbm90IGEgbXVzdCwg
-aXQgY291bGQgb3Igbm90IGJlIGEgcXVldWUgaW50ZXJmYWNlLg0KSXQgaXMgbm90IG9ubHkgdGhl
-IERNQSwgaXQgaXMgdGhlIGFiaWxpdHkgdG8gZW5xdWV1ZSBtdWx0aXBsZSByZXF1ZXN0cyB0byB0
-aGUgZGV2aWNlLg0KDQo+ID4gSWYgeW91IHdhbnQgdG8gYXR0cmlidXRlIGl0IGFzICJtYW5kYXRl
-IiB0aGFuIHllcywgaXQgaXMgbm8gZGlmZmVyZW50DQo+ID4gdGhhbiwgdmlydGlvX2ZzX3JlcSBp
-cyBtYW5kYXRlZCBvbiByZXF1ZXN0IHZxLg0KPiA+IHZpcnRpb19jcnlwdG9fb3BfY3RybF9yZXEg
-aWEgbWFuZGF0ZWQgb24gY29udHJvbCB2cS4NCj4gPg0KPiA+IFdoYXQgcHJldmVudHMgYm90aCBh
-Ym92ZSBleGFtcGxlcyB0byB1c2VkIEFRIGluIGdlbmVyaWMgbWFubmVyPw0KPiANCj4gTm90aGlu
-ZywgYnV0IGZvciBzaW1wbGUgZmVhdHVyZXMgbGlrZSBNU0kgSSBkb24ndCB0aGluayB3ZSBjYW4g
-ZXhjbHVkZSB0aGUNCj4gcG9zc2liaWxpdHkgb2YgdXNpbmcgZGVkaWNhdGVkIHJlZ2lzdGVycy4g
-Rm9yIGEgc2ltcGxlIHNldHVwIGxpa2UgYSBndWVzdCB0aGF0IGlzDQo+IHVzaW5nIGFuIE1NSU8g
-ZGV2aWNlLCB1c2luZyBuZXcgdmlydHF1ZXVlIGp1c3QgZm9yIE1TSSBzZWVtcyBhbiBvZGQgYnVy
-ZGVuLg0KWW91IG1peGluZyBNU0kgY29uZmlndXJhdGlvbiBkb25lIGJ5IGd1ZXN0IGRyaXZlciB3
-aXRoIEFRLg0KR3Vlc3QgZHJpdmVyIGNhbiBuZXZlciB1c2UgQVEgZm9yIGNvbmZpZ3VyaW5nIGl0
-cyBvd24gdmVjdG9yIGNvbmZpZ3VyYXRpb24gd2hpY2ggbXVzdCBoYXBwZW4gYmVmb3JlIEFRIGlz
-IGNyZWF0ZWQuDQpTbyBBUSBpcyBub3QgdXNlZnVsIGZvciB0aGF0IHB1cnBvc2UgYW55d2F5Lg0K
-QW5kIGhvdyBtYW55IHZlY3RvcnMgYSBNTUlPIGRldmljZSBnZXRzLCBjYW4gYmUgYWx3YXlzIGNv
-bmZpZ3VyZWQgYnkgSFYgb3ZlciBBUS4NCkV2ZW4gZm9yIHRoZSBzaW1wbGUgc2V0dXAuDQoNCj4g
-VG8gY2xhcmlmeSwgd2UgbmVlZCB0byBkZWZpbmUgd2hhdCBleGFjdGx5IGRpZCBtYW5hZ2VtZW50
-IG1lYW4/IEUuZyBpcyBJTVMNCj4gY29uc2lkZXJlZCB0byBiZSBtZ210IG9yIGNvbnRyb2w/DQpX
-aGF0IGlzIElNUy4gUGxlYXNlIGJlIHNwZWNpZmljPw0KKGEpIElNUyB2ZWN0b3IgY29uZmlndXJh
-dGlvbiBiZWZvcmUgcXVldWUgY29uZmlndXJhdGlvbiBieSBndWVzdCBkcml2ZXI/DQpPciANCihi
-KSBJTVMgdmVjdG9yIHByb3Zpc2lvbmluZyBmb3IgYSBWRiBvciBTRiBieSBpdHMgcGFyZW50KG1h
-bmFnZW1lbnQpIGRldmljZSBieSBQRj8NCg0KQWJvdmUgI2EgZmFsbHMgaW4gdGhlIGNvbmZpZ3Vy
-YXRpb24gYXJlYSBhbmQgbmVlZHMgdHJhbnNwb3J0IHNwZWNpZmljIHJlZ2lzdGVycy4NCkFib3Zl
-ICNiIGZhbGxzIGluIHRoZSBtZ210IGJ1Y2tldC4NCg0KPiA+ID4gPiBNaWNoYWVsIGFsc28gcmVz
-cG9uZGVkIHRoYXQgZGV2aWNlIGNvbmZpZ3VyYXRpb24gd2lsbCBub3QgZW5kIGF0DQo+ID4gPiA+
-IG1zaXgNCj4gPiA+IGNvbmZpZ3VyYXRpb24uDQo+ID4gPiA+IFNvIGFkZGluZyBtb3JlIGFuZCBt
-b3JlIHRpbnkgY2FwYWJpbGl0aWVzIGZvciBlYWNoIGNvbmZpZ3VyYXRpb24NCj4gPiA+ID4gZG9l
-c24ndA0KPiA+ID4gc2NhbGUgZWl0aGVyLg0KPiA+ID4gPg0KPiA+IFlvdSBuZWVkIHRvIGFjayBh
-Ym92ZSBwb2ludCBvdGhlcndpc2Ugd2Ugd2lsbCBrZWVwIGRpc2N1c3NpbmcgdGhpcw0KPiA+IGV2
-ZW4gMiB3ZWVrcyBmcm9tIG5vdy4gOikNCj4gDQo+IEkgdGhpbmsgSSd2ZSBhY2tub3dsZWRnZWQg
-aW4gYW5vdGhlciB0aHJlYWQgYWJvdXQgdGhlIGlkZWEgb2YgdXNpbmcgYWRtaW4NCj4gdmlydHF1
-ZXVlLg0KPiANCk9rLiBJIGFtIGNsZWFyIG5vdyB0aGF0IHdlIGhhdmUgYWNrIGZyb20geW91IHRv
-IHVzZSBBUSBmb3IgTVNJLVggcHJvdmlzaW9uaW5nIGJ5IHRoZSBIViBQRi4NCg==
+Set the relevant index in case of VIRTIO_F_ADMIN_VQ negotiation.
+
+Reviewed-by: Parav Pandit <parav@nvidia.com>
+Signed-off-by: Max Gurtovoy <mgurtovoy@nvidia.com>
+---
+ content.tex | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
+
+diff --git a/content.tex b/content.tex
+index cc3e648..0ae4b68 100644
+--- a/content.tex
++++ b/content.tex
+@@ -4518,10 +4518,19 @@ \subsection{Device ID}\label{sec:Device Types / Block Device / Device ID}
+   2
+ 
+ \subsection{Virtqueues}\label{sec:Device Types / Block Device / Virtqueues}
++ if VIRTIO_F_ADMIN_VQ is not negotiated, the request queues layout is as follows:
+ \begin{description}
+ \item[0] requestq1
+ \item[\ldots]
+ \item[N-1] requestqN
++\end{description}
++
++ If VIRTIO_F_ADMIN_VQ is negotiated, the queues layout is as follows:
++\begin{description}
++\item[0] requestq1
++\item[\ldots]
++\item[N-1] requestqN
++\item[N] adminq
+ \end{description}
+ 
+  N=1 if VIRTIO_BLK_F_MQ is not negotiated, otherwise N is set by
+@@ -4590,7 +4599,7 @@ \subsection{Device configuration layout}\label{sec:Device Types / Block Device /
+ bits as indicated above.
+ 
+ The field \field{num_queues} only exists if VIRTIO_BLK_F_MQ is set. This field specifies
+-the number of queues.
++the number of request queues. This field doesn't account admin virtqueue.
+ 
+ The parameters in the configuration space of the device \field{max_discard_sectors}
+ \field{discard_sector_alignment} are expressed in 512-byte units if the
+-- 
+2.21.0
 
