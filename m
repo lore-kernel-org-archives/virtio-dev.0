@@ -1,61 +1,60 @@
 Return-Path: <mgurtovoy@nvidia.com>
-Message-ID: <1e1c6101-1b04-6fd6-0ff6-d4e4b5e8bf24@nvidia.com>
-Date: Sun, 16 Jan 2022 11:41:23 +0200
-MIME-Version: 1.0
-Subject: Re: [PATCH] Reserve more feature bits for device type usage
-References: <20220114111210.129059-1-cohuck@redhat.com>
 From: Max Gurtovoy <mgurtovoy@nvidia.com>
-In-Reply-To: <20220114111210.129059-1-cohuck@redhat.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Cornelia Huck <cohuck@redhat.com>, virtio-dev@lists.oasis-open.org, virtio-comment@lists.oasis-open.org
+Subject: [PATCH v1 0/5] VIRTIO: Provision maximum MSI-X vectors for a VF
+Date: Thu, 13 Jan 2022 16:50:58 +0200
+Message-ID: <20220113145103.26894-1-mgurtovoy@nvidia.com>
+MIME-Version: 1.0
+Content-Type: text/plain
+To: virtio-comment@lists.oasis-open.org, mst@redhat.com, cohuck@redhat.com, virtio-dev@lists.oasis-open.org, jasowang@redhat.com
+Cc: parav@nvidia.com, shahafs@nvidia.com, oren@nvidia.com, stefanha@redhat.com, Max Gurtovoy <mgurtovoy@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+Hi,
 
-On 1/14/2022 1:12 PM, Cornelia Huck wrote:
-> Feature bits 41 and above are noted as being reserved for future
-> extensions. However, the net device has been using bits in that space
-> for some time now, as it already used up the device type specific
-> range up to 23.
->
-> To avoid problems in the future, let's designate bits 50 to 127 to
-> device type specific usage (which accommodates current usage by the
-> net driver, and gives breathing room for future type specific bits),
-> and declare bits 41 to 49 and bits 128 and above to be reserved for
-> future extensions (which gives us some time before bit numbers move
-> beyond 63, which would need some changes in existing device and driver
-> implementations.)
->
-> Reported-by: Max Gurtovoy <mgurtovoy@nvidia.com>
-> Fixes: https://github.com/oasis-tcs/virtio-spec/issues/131
-> Signed-off-by: Cornelia Huck <cohuck@redhat.com>
-> ---
->   content.tex | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/content.tex b/content.tex
-> index 32de6685c50b..c6f116c7aa39 100644
-> --- a/content.tex
-> +++ b/content.tex
-> @@ -97,12 +97,12 @@ \section{Feature Bits}\label{sec:Basic Facilities of a Virtio Device / Feature B
->   Feature bits are allocated as follows:
->   
->   \begin{description}
-> -\item[0 to 23] Feature bits for the specific device type
-> +\item[0 to 23, and 50 to 127] Feature bits for the specific device type
->   
->   \item[24 to 40] Feature bits reserved for extensions to the queue and
->     feature negotiation mechanisms
->   
-> -\item[41 and above] Feature bits reserved for future extensions.
-> +\item[41 to 49, and 128 and above] Feature bits reserved for future extensions.
->   \end{description}
->   
->   \begin{note}
+In a PCI SR-IOV configuration, MSI-X vectors of the device is precious
+device resource. Hence making efficient use of it based on the use case
+that aligns to the VM configuration is desired for best system
+performance.
 
-Looks reasonable to me.
+For example, today's static assignment of the amount of MSI-X vectors
+doesn't allow sophisticated utilization of resources.
 
-Reviewed-by: Max Gurtovoy <mgurtovoy@nvidia.com>
+A typical cloud provider SR-IOV use case is to create many VFs for
+use by guest VMs. Each VM might have a different purpose and different
+amount of resources accordingly (e.g. number of CPUs). A common driver
+usage of device's MSI-X vectors is proportional to the number of CPUs in
+the VM. Since the system administrator might know the amount of CPUs in
+the requested VM, he can also configure the VF's MSI-X vectors amount
+proportional to the number of CPUs in the VM. In this way, the
+utilization of the physical hardware will be improved.
 
+Today we have some operating systems that support provisioning MSI-X
+vectors for PCI VFs.
+
+Update the specification to have a method to change the number of MSI-X
+vectors supported by a VF using the PF admin virtqueue interface. For that,
+create a generic infrastructure for managing PCI resources of the managed
+VF by its parent PF.
+
+Patches (1/5)-(2/5) introduce the admin virtqueue concept and feature bits.
+Patches (3/5)-(4/5) add the admin virtq to virtio-blk and virtio-net
+devices.
+Patch (5/5) introduce MSI-X mgmt support.
+
+Max Gurtovoy (5):
+  Add virtio Admin Virtqueue specification
+  Introduce VIRTIO_F_ADMIN_VQ_INDIRECT_DESC/VIRTIO_F_ADMIN_VQ_IN_ORDER
+  virtio-blk: add support for VIRTIO_F_ADMIN_VQ
+  virtio-net: add support for VIRTIO_F_ADMIN_VQ
+  Add support for dynamic MSI-X vector mgmt for VFs
+
+ admin-virtq.tex | 145 ++++++++++++++++++++++++++++++++++++++++++++++++
+ content.tex     |  91 +++++++++++++++++++++++++++---
+ packed-ring.tex |  26 ++++-----
+ split-ring.tex  |  35 ++++++++----
+ 4 files changed, 263 insertions(+), 34 deletions(-)
+ create mode 100644 admin-virtq.tex
+
+-- 
+2.21.0
 
