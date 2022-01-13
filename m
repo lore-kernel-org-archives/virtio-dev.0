@@ -1,226 +1,71 @@
 Return-Path: <mst@redhat.com>
-Date: Tue, 18 Jan 2022 05:38:31 -0500
+Date: Thu, 13 Jan 2022 13:32:01 -0500
 From: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: Re: [PATCH 5/5] Add support for dynamic MSI-X vector mgmt for VFs
-Message-ID: <20220118053702-mutt-send-email-mst@kernel.org>
+Subject: Re: [PATCH v1 0/5] VIRTIO: Provision maximum MSI-X vectors for a VF
+Message-ID: <20220113132436-mutt-send-email-mst@kernel.org>
 References: <20220113145103.26894-1-mgurtovoy@nvidia.com>
- <20220113145103.26894-6-mgurtovoy@nvidia.com>
 MIME-Version: 1.0
-In-Reply-To: <20220113145103.26894-6-mgurtovoy@nvidia.com>
+In-Reply-To: <20220113145103.26894-1-mgurtovoy@nvidia.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 To: Max Gurtovoy <mgurtovoy@nvidia.com>
 Cc: virtio-comment@lists.oasis-open.org, cohuck@redhat.com, virtio-dev@lists.oasis-open.org, jasowang@redhat.com, parav@nvidia.com, shahafs@nvidia.com, oren@nvidia.com, stefanha@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Thu, Jan 13, 2022 at 04:51:03PM +0200, Max Gurtovoy wrote:
+On Thu, Jan 13, 2022 at 04:50:58PM +0200, Max Gurtovoy wrote:
+> Hi,
+> 
+> In a PCI SR-IOV configuration, MSI-X vectors of the device is precious
+> device resource. Hence making efficient use of it based on the use case
+> that aligns to the VM configuration is desired for best system
+> performance.
+> 
+> For example, today's static assignment of the amount of MSI-X vectors
+> doesn't allow sophisticated utilization of resources.
+> 
 > A typical cloud provider SR-IOV use case is to create many VFs for
-> use by guest VMs. The VFs may not be assigned to a VM until a user
-> requests a VM of a certain size, e.g., number of CPUs.
-> A VF may need
-> MSI-X vectors proportional to the number of CPUs in the VM,
-
-Problem is, it does not work like that.  VF needs vectors
-proportional to # of VQs and yes, # of VQs proportional to # of CPUs.
-
-So I am not sure what does control over # of vectors get us
-without control over # of VQs. Something to better explain in
-the cover letter.
-
-
-> but there is
-> no standard way today in the spec to change the number of MSI-X vectors
-> supported by a VF, although there are some operating systems that
-> support this.
+> use by guest VMs. Each VM might have a different purpose and different
+> amount of resources accordingly (e.g. number of CPUs). A common driver
+> usage of device's MSI-X vectors is proportional to the number of CPUs in
+> the VM. Since the system administrator might know the amount of CPUs in
+> the requested VM, he can also configure the VF's MSI-X vectors amount
+> proportional to the number of CPUs in the VM. In this way, the
+> utilization of the physical hardware will be improved.
 > 
-> Introduce new feature bits for generic PCI virtualization management
-> mechanism and a specific mechanism to manage the MSI-X vector assignment
-> process of virtual/managed functions by its parent virtio device via its
-> admin virtqueue. For now, virtio supports only PCI virtual function
-> virtualization, thus the virt manager device will be the PF and the
-> managed device will be the VF.
+> Today we have some operating systems that support provisioning MSI-X
+> vectors for PCI VFs.
 > 
-> Reviewed-by: Parav Pandit <parav@nvidia.com>
-> Signed-off-by: Max Gurtovoy <mgurtovoy@nvidia.com>
-> ---
->  admin-virtq.tex | 98 ++++++++++++++++++++++++++++++++++++++++++++++++-
->  content.tex     | 29 ++++++++++++++-
->  2 files changed, 124 insertions(+), 3 deletions(-)
+> Update the specification to have a method to change the number of MSI-X
+> vectors supported by a VF using the PF admin virtqueue interface. For that,
+> create a generic infrastructure for managing PCI resources of the managed
+> VF by its parent PF.
+
+Can you describe in the cover letter or the commit log of
+the admin VQ patch the motivation for using a VQ and not
+memory mapped space for this capability?
+In fact I feel at least some commands would be better replaced
+with a memory mapped structure.
+
+
+> Patches (1/5)-(2/5) introduce the admin virtqueue concept and feature bits.
+> Patches (3/5)-(4/5) add the admin virtq to virtio-blk and virtio-net
+> devices.
+> Patch (5/5) introduce MSI-X mgmt support.
 > 
-> diff --git a/admin-virtq.tex b/admin-virtq.tex
-> index ad20f89..4ee8a32 100644
-> --- a/admin-virtq.tex
-> +++ b/admin-virtq.tex
-> @@ -41,9 +41,105 @@ \section{Admin Virtqueues}\label{sec:Basic Facilities of a Virtio Device / Admin
->  \hline
->  Opcode (bits) & Opcode (hex) & Command & M/O \\
->  \hline \hline
-> - -  & 00h - 7Fh   & Generic admin cmds    & -  \\
-> + 00000000b  & 00h   & VIRTIO_ADMIN_PCI_VIRT_MGMT_ATTR_IDENTIFY    & O  \\
-> +\hline
-> + 00000001b  & 01h   & VIRTIO_ADMIN_PCI_VIRT_PROPERTY_SET    & O  \\
-> +\hline
-> + 00000010b  & 02h   & VIRTIO_ADMIN_PCI_VIRT_PROPERTY_GET    & O  \\
-> +\hline
-> + -  & 03h - 7Fh   & Generic admin cmds    & -  \\
->  \hline
->   -  & 80h - FFh   & Reserved    & - \\
->  \hline
->  \end{tabular}
->  
-> +\subsection{VIRTIO ADMIN PCI VIRT MGMT ATTR IDENTIFY command}\label{sec:Basic Facilities of a Virtio Device / Admin Virtqueues / VIRTIO ADMIN PCI VIRT MGMT ATTR IDENTIFY command}
-> +
-> +The VIRTIO_ADMIN_PCI_VIRT_MGMT_ATTR_IDENTIFY command has no command specific data set by the driver.
-> +This command upon success, returns a data buffer that describes information about PCI virtualization
-> +management attributes. This information is of form:
-> +\begin{lstlisting}
-> +struct virtio_admin_pci_virt_mgmt_attr_identify_result {
-> +        /* For compatibility - indicates which of the below fields are valid (1 means valid):
-> +         * Bit 0x0 - total_free_vfs_msix_count
-> +         * Bit 0x1 - per_vf_max_msix_count
-> +         * Bits 0x2 - 0x3F - reserved for future fields
-> +         */
-> +        le64 mask;
-> +        /* Number of free msix in the global msix pool for VFs */
-> +        le32 total_free_vfs_msix_count;
-> +        /* Max number of msix vectors that can be assigned for a single VF */
-> +        le16 per_vf_max_msix_count;
-> +};
-> +\end{lstlisting}
-> +
-> +\subsection{VIRTIO ADMIN PCI VIRT PROPERTY SET command}\label{sec:Basic Facilities of a Virtio Device / Admin Virtqueues / VIRTIO ADMIN PCI VIRT PROPERTY SET command}
-> +
-> +The VIRTIO_ADMIN_PCI_VIRT_PROPERTY_SET command is used to modify the values of VF properties.
-> +The command specific data set by the driver is of form:
-> +\begin{lstlisting}
-> +virtio_admin_pci_virt_property_set_data {
-> +        /* The virtual function number */
-> +        le16 vf_number;
-> +        /* For compatibility - indicates which of the below properties should be
-> +         * modified (1 means that field should be modified):
-> +         * Bit 0x0 - msix_count
-> +         * Bits 0x1 - 0x3F - reserved for future fields
-> +         */
-> +        le64 property_mask;
-> +        /* The amount of MSI-X vectors */
-> +        le16 msix_count;
-> +};
-> +\end{lstlisting}
-> +
-> +\begin{note}
-> +{vf_number can't be greater than NumVFs value as defined in the PCI specification
-> +or smaller than 1. An error status will be returned otherwise.}
-> +\end{note}
-> +
-> +This command has no command specific result set by the device. Upon success, the device guarantees
-> +that all the requested properties were modified to the given values. Otherwise, error will be returned.
-> +
-> +\begin{note}
-> +{Before setting msix_count property the virtual/managed device (VF) shall be un-initialized and may not be used by the driver.}
-> +\end{note}
-> +
-> +\subsection{VIRTIO ADMIN PCI VIRT PROPERTY GET command}\label{sec:Basic Facilities of a Virtio Device / Admin Virtqueues / VIRTIO ADMIN PCI VIRT PROPERTY GET command}
-> +
-> +The VIRTIO_ADMIN_PCI_VIRT_PROPERTY_GET command is used to obtain the values of VF properties.
-> +The command specific data set by the driver is of form:
-> +\begin{lstlisting}
-> +virtio_admin_pci_virt_property_get_data {
-> +        /* The virtual function number */
-> +        le16 vf_number;
-> +        /* For compatibility - indicates which of the below properties should be
-> +         * queried (1 means that field should be queried):
-> +         * Bit 0x0 - msix_count
-> +         * Bits 0x1 - 0x3F - reserved for future fields
-> +         */
-> +        le64 property_mask;
-> +        /* The amount of MSI-X vectors */
-> +        le16 msix_count;
-> +};
-> +\end{lstlisting}
-> +
-> +\begin{note}
-> +{vf_number can't be greater than NumVFs value as defined in the PCI specification
-> +or smaller than 1. An error status will be returned otherwise.}
-> +\end{note}
-> +
-> +This command, upon success, returns a data buffer that describes the properties that were requested
-> +and their values for the subject virtio VF device according to the given vf_number.
-> +This information is of form:
-> +\begin{lstlisting}
-> +struct virtio_admin_pci_virt_property_get_result {
-> +        /* For compatibility - indicates which of the below fields were returned
-> +         * (1 means that field was returned):
-> +         * Bit 0x0 - msix_count
-> +         * Bits 0x1 - 0x3F - reserved for future fields
-> +         */
-> +        le64 property_mask;
-> +        /* The amount of MSI-X vectors */
-> +        le16 msix_count;
-> +};
-> +\end{lstlisting}
-> diff --git a/content.tex b/content.tex
-> index e9c2383..64678f0 100644
-> --- a/content.tex
-> +++ b/content.tex
-> @@ -99,10 +99,10 @@ \section{Feature Bits}\label{sec:Basic Facilities of a Virtio Device / Feature B
->  \begin{description}
->  \item[0 to 23] Feature bits for the specific device type
->  
-> -\item[24 to 43] Feature bits reserved for extensions to the queue and
-> +\item[24 to 45] Feature bits reserved for extensions to the queue and
->    feature negotiation mechanisms
->  
-> -\item[44 and above] Feature bits reserved for future extensions.
-> +\item[46 and above] Feature bits reserved for future extensions.
->  \end{description}
->  
->  \begin{note}
-> @@ -6878,6 +6878,17 @@ \chapter{Reserved Feature Bits}\label{sec:Reserved Feature Bits}
->    that all buffers are used by the admin virtqueue of the device in
->    the same order in which they have been made available.
->  
-> +  \item[VIRTIO_F_ADMIN_PCI_VIRT_MANAGER (44)] This feature indicates
-> +  that the device can manage PCI related capabilities for its managed PCI VF
-> +  devices and supports VIRTIO_ADMIN_PCI_VIRT_MGMT_ATTR_IDENTIFY,
-> +  VIRTIO_ADMIN_PCI_VIRT_PROPERTY_SET and VIRTIO_ADMIN_PCI_VIRT_PROPERTY_GET
-> +  admin commands. This feature can be supported only by PCI devices.
-> +
-> +  \item[VIRTIO_F_ADMIN_MSIX_MGMT (45)] This feature indicates
-> +  that the device supports management of the MSI-X vectors for its
-> +  managed PCI VF devices using VIRTIO_ADMIN_PCI_VIRT_PROPERTY_SET and
-> +  VIRTIO_ADMIN_PCI_VIRT_PROPERTY_GET admin commands.
-> +
->  \end{description}
->  
->  \drivernormative{\section}{Reserved Feature Bits}{Reserved Feature Bits}
-> @@ -6920,6 +6931,14 @@ \chapter{Reserved Feature Bits}\label{sec:Reserved Feature Bits}
->  A driver MAY accept VIRTIO_F_ADMIN_VQ_IN_ORDER only if it accepts
->  VIRTIO_F_ADMIN_VQ.
->  
-> +A driver MAY accept VIRTIO_F_ADMIN_PCI_VIRT_MANAGER only if it accepts
-> +VIRTIO_F_ADMIN_VQ.
-> +
-> +A driver MAY accept VIRTIO_F_ADMIN_MSIX_MGMT only if it accepts
-> +VIRTIO_F_ADMIN_VQ and VIRTIO_F_ADMIN_PCI_VIRT_MANAGER. Currently only
-> +MSI-X management of PCI virtual functions is supported, so the driver
-> +MUST NOT negotiate VIRTIO_F_ADMIN_MSIX_MGMT if VIRTIO_F_SR_IOV is not negotiated.
-> +
->  \devicenormative{\section}{Reserved Feature Bits}{Reserved Feature Bits}
->  
->  A device MUST offer VIRTIO_F_VERSION_1.  A device MAY fail to operate further
-> @@ -6960,6 +6979,12 @@ \chapter{Reserved Feature Bits}\label{sec:Reserved Feature Bits}
->  A device MAY offer VIRTIO_F_ADMIN_VQ_IN_ORDER only if it offers
->  VIRTIO_F_ADMIN_VQ.
->  
-> +A PCI device MAY offer VIRTIO_F_ADMIN_PCI_VIRT_MANAGER only if it
-> +offers VIRTIO_F_ADMIN_VQ.
-> +
-> +A PCI device MAY offer VIRTIO_F_ADMIN_MSIX_MGMT only if it
-> +offers VIRTIO_F_ADMIN_VQ, VIRTIO_F_ADMIN_PCI_VIRT_MANAGER and VIRTIO_F_SR_IOV.
-> +
->  \section{Legacy Interface: Reserved Feature Bits}\label{sec:Reserved Feature Bits / Legacy Interface: Reserved Feature Bits}
->  
->  Transitional devices MAY offer the following:
+> Max Gurtovoy (5):
+>   Add virtio Admin Virtqueue specification
+>   Introduce VIRTIO_F_ADMIN_VQ_INDIRECT_DESC/VIRTIO_F_ADMIN_VQ_IN_ORDER
+>   virtio-blk: add support for VIRTIO_F_ADMIN_VQ
+>   virtio-net: add support for VIRTIO_F_ADMIN_VQ
+>   Add support for dynamic MSI-X vector mgmt for VFs
+> 
+>  admin-virtq.tex | 145 ++++++++++++++++++++++++++++++++++++++++++++++++
+>  content.tex     |  91 +++++++++++++++++++++++++++---
+>  packed-ring.tex |  26 ++++-----
+>  split-ring.tex  |  35 ++++++++----
+>  4 files changed, 263 insertions(+), 34 deletions(-)
+>  create mode 100644 admin-virtq.tex
+> 
 > -- 
 > 2.21.0
 
