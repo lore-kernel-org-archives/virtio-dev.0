@@ -1,45 +1,75 @@
-Return-Path: <parav@nvidia.com>
-From: Parav Pandit <parav@nvidia.com>
-Subject: RE: [PATCH 4/5] virtio-net: add support for VIRTIO_F_ADMIN_VQ
-Date: Mon, 17 Jan 2022 14:07:51 +0000
-Message-ID: <PH0PR12MB54812553884E5791B8A69DE8DC579@PH0PR12MB5481.namprd12.prod.outlook.com>
+Return-Path: <mst@redhat.com>
+Date: Mon, 17 Jan 2022 17:22:37 -0500
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Subject: Re: [PATCH 4/5] virtio-net: add support for VIRTIO_F_ADMIN_VQ
+Message-ID: <20220117171459-mutt-send-email-mst@kernel.org>
 References: <20220113145103.26894-1-mgurtovoy@nvidia.com>
  <20220113145103.26894-5-mgurtovoy@nvidia.com>
  <20220113125409-mutt-send-email-mst@kernel.org>
  <38c7b7a3-e0d8-d242-8723-11cabbbcb47d@nvidia.com>
-In-Reply-To: <38c7b7a3-e0d8-d242-8723-11cabbbcb47d@nvidia.com>
+ <PH0PR12MB54812553884E5791B8A69DE8DC579@PH0PR12MB5481.namprd12.prod.outlook.com>
 MIME-Version: 1.0
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-To: Max Gurtovoy <mgurtovoy@nvidia.com>, "Michael S. Tsirkin" <mst@redhat.com>
-Cc: "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "cohuck@redhat.com" <cohuck@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "jasowang@redhat.com" <jasowang@redhat.com>, Shahaf Shuler <shahafs@nvidia.com>, Oren Duer <oren@nvidia.com>, "stefanha@redhat.com" <stefanha@redhat.com>
+In-Reply-To: <PH0PR12MB54812553884E5791B8A69DE8DC579@PH0PR12MB5481.namprd12.prod.outlook.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+To: Parav Pandit <parav@nvidia.com>
+Cc: Max Gurtovoy <mgurtovoy@nvidia.com>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "cohuck@redhat.com" <cohuck@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "jasowang@redhat.com" <jasowang@redhat.com>, Shahaf Shuler <shahafs@nvidia.com>, Oren Duer <oren@nvidia.com>, "stefanha@redhat.com" <stefanha@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-DQo+IEZyb206IE1heCBHdXJ0b3ZveSA8bWd1cnRvdm95QG52aWRpYS5jb20+DQo+IFNlbnQ6IFN1
-bmRheSwgSmFudWFyeSAxNiwgMjAyMiAzOjE4IFBNDQo+IA0KPiANCj4gT24gMS8xMy8yMDIyIDc6
-NTYgUE0sIE1pY2hhZWwgUy4gVHNpcmtpbiB3cm90ZToNCj4gPiBPbiBUaHUsIEphbiAxMywgMjAy
-MiBhdCAwNDo1MTowMlBNICswMjAwLCBNYXggR3VydG92b3kgd3JvdGU6DQo+ID4+IFNldCB0aGUg
-cmVsZXZhbnQgaW5kZXggaW4gY2FzZSBvZiBWSVJUSU9fRl9BRE1JTl9WUSBuZWdvdGlhdGlvbi4N
-Cj4gPj4NCj4gPj4gUmV2aWV3ZWQtYnk6IFBhcmF2IFBhbmRpdCA8cGFyYXZAbnZpZGlhLmNvbT4N
-Cj4gPj4gU2lnbmVkLW9mZi1ieTogTWF4IEd1cnRvdm95IDxtZ3VydG92b3lAbnZpZGlhLmNvbT4N
-Cj4gPiBTbyBhZG1pbiBWUSAjIGlzIG9ubHkga25vd24gd2hlbiBhbGwgZmVhdHVyZXMgYXJlIG5l
-Z290aWF0ZWQuDQo+IA0KPiBOby4gVGhlIGRyaXZlciBzaG91bGQgc2VlIGlmIFZJUlRJT19ORVRf
-Rl9DVFJMX1ZRL1ZJUlRJT19GX0FETUlOX1ZRDQo+IGFyZSBzZXQgYnkgdGhlIGRldmljZS4NCj4g
-DQo+IE5lZ290aWF0aW9uIGlzIG5vdCBhIG11c3QuDQo+IA0KPiBMZXRzIHNheSBDVFJMX1ZRIGlz
-IHN1cHBvcnRlZCBieSB0aGUgZGV2aWNlIGFuZCBkcml2ZXIgQSB3b3VsZCBsaWtlIHRvIHVzZSBp
-dA0KPiBhbmQgZHJpdmVyIEIgd291bGRuJ3QgbGlrZSB0byB1c2UgaXQgLSBpbiBib3RoIGNhc2Vz
-IHRoZSBhZG1pcSBWUSAjIHdvdWxkIGJlIDJODQo+ICsgMS4NCj4gDQo+ID4gV2hpY2ggaXMgcXVp
-dGUgYW5ub3lpbmcgaWYgaHlwZXJ2aXNvciB3YW50cyB0byBwYXJ0aXRpb24gdGhpbmdzIGUuZy4N
-Cj4gPiBoYW5kbGluZyBhZG1pbiBxIGluIHByb2Nlc3MgYW5kIGhhbmRsaW5nIHZxcyBieSBhbiBl
-eHRlcm5hbCBwcm9jZXNzIG9yDQo+ID4gYnkgaGFyZHdhcmUuDQo+ID4NCj4gPiBJIHRoaW5rIHdl
-IGNhbiBhbGxvdyBkZXZpY2VzIHRvIHNldCB0aGUgVlEjIGZvciB0aGUgYWRtaW4gcXVldWUNCj4g
-PiBpbnN0ZWFkLiBXb3VsZCB0aGF0IHdvcms/DQpOdW1iZXIgb2YgTVNJLVggY29uZmlndXJhdGlv
-biBhbmQgbnVtYmVyIG9mIFZRcyBjb25maWcgYXJlIHR3byBkaWZmZXJlbnQsIHRob3VnaCBpdCBo
-YXMgc3Ryb25nIGNvcnJlbGF0aW9uLg0KQ29uZmlndXJpbmcgbnVtYmVyIG9mIHF1ZXVlcyBzZWVt
-cyBhIHZlcnkgZGV2aWNlIHNwZWNpZmljIGNvbmZpZ3VyYXRpb24gKGV2ZW4gdGhvdWdoIG51bV9x
-dWV1ZXMgaXMgZ2VuZXJpYyBmaWVsZCBpbiBzdHJ1Y3QgdmlydGlvX3BjaV9jb21tb25fY2ZnKS4N
-Cg0KU28gbnVtIFZRIGNvbmZpZ3VyYXRpb24gaXMgYSBkaWZmZXJlbnQgY29tbWFuZCBsaWtlbHkg
-Y29tYmluZWQgd2l0aCBvdGhlciBkZXZpY2Ugc3BlY2lmaWMgY29uZmlnIHN1Y2ggYXMgbWFjIG9y
-IHJzcyBvciBvdGhlcnMuDQo=
+On Mon, Jan 17, 2022 at 02:07:51PM +0000, Parav Pandit wrote:
+> 
+> > From: Max Gurtovoy <mgurtovoy@nvidia.com>
+> > Sent: Sunday, January 16, 2022 3:18 PM
+> > 
+> > 
+> > On 1/13/2022 7:56 PM, Michael S. Tsirkin wrote:
+> > > On Thu, Jan 13, 2022 at 04:51:02PM +0200, Max Gurtovoy wrote:
+> > >> Set the relevant index in case of VIRTIO_F_ADMIN_VQ negotiation.
+> > >>
+> > >> Reviewed-by: Parav Pandit <parav@nvidia.com>
+> > >> Signed-off-by: Max Gurtovoy <mgurtovoy@nvidia.com>
+> > > So admin VQ # is only known when all features are negotiated.
+> > 
+> > No. The driver should see if VIRTIO_NET_F_CTRL_VQ/VIRTIO_F_ADMIN_VQ
+> > are set by the device.
+> > 
+> > Negotiation is not a must.
+> > 
+> > Lets say CTRL_VQ is supported by the device and driver A would like to use it
+> > and driver B wouldn't like to use it - in both cases the admiq VQ # would be 2N
+> > + 1.
+> > 
+> > > Which is quite annoying if hypervisor wants to partition things e.g.
+> > > handling admin q in process and handling vqs by an external process or
+> > > by hardware.
+> > >
+> > > I think we can allow devices to set the VQ# for the admin queue
+> > > instead. Would that work?
+> Number of MSI-X configuration and number of VQs config are two different,
+
+
+I was talking about the number of the VQ used for admin commands. Not
+about the number of VQs.
+
+> though it has strong correlation.
+> Configuring number of queues seems a very device specific configuration (even though num_queues is generic field in struct virtio_pci_common_cfg).
+> 
+> So num VQ configuration is a different command likely combined with other device specific config such as mac or rss or others.
+
+I was not talking about that at all, but since you mention that,
+to me it looks like something that many device types can support.
+It's not necessarily rss related, MQ config would benefit too,
+so I am not sure why not have a command for controlling number
+of queues. Looks like it could quite be generic.
+
+Since current guests only support two modes: a vector
+per VQ and a shared vector for all VQs, it follows that
+it is important when configuring vectors per VF to also configure
+VQs per VF. This makes me wonder whether ability to configure
+vectors per VF in isolation without ability to configure or
+at least query VQs per VF even has value.
+
+
+-- 
+MST
 
