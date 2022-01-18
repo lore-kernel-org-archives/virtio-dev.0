@@ -1,8 +1,8 @@
 Return-Path: <mst@redhat.com>
-Date: Thu, 13 Jan 2022 13:20:59 -0500
+Date: Tue, 18 Jan 2022 05:38:31 -0500
 From: "Michael S. Tsirkin" <mst@redhat.com>
 Subject: Re: [PATCH 5/5] Add support for dynamic MSI-X vector mgmt for VFs
-Message-ID: <20220113122843-mutt-send-email-mst@kernel.org>
+Message-ID: <20220118053702-mutt-send-email-mst@kernel.org>
 References: <20220113145103.26894-1-mgurtovoy@nvidia.com>
  <20220113145103.26894-6-mgurtovoy@nvidia.com>
 MIME-Version: 1.0
@@ -16,8 +16,19 @@ List-ID: <virtio-dev.lists.oasis-open.org>
 On Thu, Jan 13, 2022 at 04:51:03PM +0200, Max Gurtovoy wrote:
 > A typical cloud provider SR-IOV use case is to create many VFs for
 > use by guest VMs. The VFs may not be assigned to a VM until a user
-> requests a VM of a certain size, e.g., number of CPUs. A VF may need
-> MSI-X vectors proportional to the number of CPUs in the VM, but there is
+> requests a VM of a certain size, e.g., number of CPUs.
+> A VF may need
+> MSI-X vectors proportional to the number of CPUs in the VM,
+
+Problem is, it does not work like that.  VF needs vectors
+proportional to # of VQs and yes, # of VQs proportional to # of CPUs.
+
+So I am not sure what does control over # of vectors get us
+without control over # of VQs. Something to better explain in
+the cover letter.
+
+
+> but there is
 > no standard way today in the spec to change the number of MSI-X vectors
 > supported by a VF, although there are some operating systems that
 > support this.
@@ -31,10 +42,6 @@ On Thu, Jan 13, 2022 at 04:51:03PM +0200, Max Gurtovoy wrote:
 > 
 > Reviewed-by: Parav Pandit <parav@nvidia.com>
 > Signed-off-by: Max Gurtovoy <mgurtovoy@nvidia.com>
-
-So, we have the concept of vectors.
-
-
 > ---
 >  admin-virtq.tex | 98 ++++++++++++++++++++++++++++++++++++++++++++++++-
 >  content.tex     | 29 ++++++++++++++-
@@ -56,26 +63,11 @@ So, we have the concept of vectors.
 > + 00000010b  & 02h   & VIRTIO_ADMIN_PCI_VIRT_PROPERTY_GET    & O  \\
 > +\hline
 > + -  & 03h - 7Fh   & Generic admin cmds    & -  \\
-
-What are these?
-
 >  \hline
 >   -  & 80h - FFh   & Reserved    & - \\
 >  \hline
 >  \end{tabular}
 >  
-
-What are the rules for these commands? Can they be issued when any VFs
-are in use? What happens then? I don't exactly understand how this
-interacts with existing virtio devices binding to VFs.
-Does device fail assignment of a vector # out of range,
-falling back to smaller # of vectors?
-Generally # of VQs to use and # of interrupts can be related, otherwise
-performance might suffer - e.g. it's pointless to have many more
-interrupts than VQs.
-Shouldn't we control # of per-device VQs with these commands too then?
-
-
 > +\subsection{VIRTIO ADMIN PCI VIRT MGMT ATTR IDENTIFY command}\label{sec:Basic Facilities of a Virtio Device / Admin Virtqueues / VIRTIO ADMIN PCI VIRT MGMT ATTR IDENTIFY command}
 > +
 > +The VIRTIO_ADMIN_PCI_VIRT_MGMT_ATTR_IDENTIFY command has no command specific data set by the driver.
@@ -95,25 +87,10 @@ Shouldn't we control # of per-device VQs with these commands too then?
 > +        le16 per_vf_max_msix_count;
 > +};
 > +\end{lstlisting}
-
-Looks like something that should be memory mapped. In fact
-you reinvented a features/capability mask here which would
-make memory-mapping this quite easy.
-
 > +
 > +\subsection{VIRTIO ADMIN PCI VIRT PROPERTY SET command}\label{sec:Basic Facilities of a Virtio Device / Admin Virtqueues / VIRTIO ADMIN PCI VIRT PROPERTY SET command}
 > +
 > +The VIRTIO_ADMIN_PCI_VIRT_PROPERTY_SET command is used to modify the values of VF properties.
-
-VF appears completely out of the blue here. You need some description
-and quote relevant specs to introduce this to the reader.
-Since this depends on a feature and feature depends on VIRTIO_F_SR_IOV
-and that in turn is only for PFs, I conclude that this is also
-only for PFs. But would not hurt to spell this out.
-Also can other transport types support partitioning?
-Or is that always a PCI thing?
-
-
 > +The command specific data set by the driver is of form:
 > +\begin{lstlisting}
 > +virtio_admin_pci_virt_property_set_data {
@@ -124,12 +101,6 @@ Or is that always a PCI thing?
 > +         * Bit 0x0 - msix_count
 > +         * Bits 0x1 - 0x3F - reserved for future fields
 > +         */
-
-Addressing specific VFs seems like something that should be
-a generic capability rather a command specific one.
-No? Why not?
-
-
 > +        le64 property_mask;
 > +        /* The amount of MSI-X vectors */
 > +        le16 msix_count;
@@ -139,11 +110,6 @@ No? Why not?
 > +\begin{note}
 > +{vf_number can't be greater than NumVFs value as defined in the PCI specification
 > +or smaller than 1. An error status will be returned otherwise.}
-
-Meaning VIRTIO_ADMIN_STATUS_ERR?
-
-
-
 > +\end{note}
 > +
 > +This command has no command specific result set by the device. Upon success, the device guarantees
@@ -161,11 +127,6 @@ Meaning VIRTIO_ADMIN_STATUS_ERR?
 > +virtio_admin_pci_virt_property_get_data {
 > +        /* The virtual function number */
 > +        le16 vf_number;
-
-How will we extend this for things like scalable IOV partitioning?
-Defining a completely new set of commands for that expected usecase
-seems weird ...
-
 > +        /* For compatibility - indicates which of the below properties should be
 > +         * queried (1 means that field should be queried):
 > +         * Bit 0x0 - msix_count
@@ -175,13 +136,6 @@ seems weird ...
 > +        /* The amount of MSI-X vectors */
 > +        le16 msix_count;
 > +};
-
-
-Pls change the layout adding padding so fields are length-aligned.
-
-Unclear. So why does query send msix_count?
-
-
 > +\end{lstlisting}
 > +
 > +\begin{note}
@@ -203,29 +157,7 @@ Unclear. So why does query send msix_count?
 > +        /* The amount of MSI-X vectors */
 > +        le16 msix_count;
 > +};
-
-Seems the same except for VF #. So how about reusing it so reader does
-not need to parse this twice?
-
 > +\end{lstlisting}
-
-Please describe the various fields in the document body. The structure formatting
-should be of the format similar to
-
-struct virtio_pci_cap {
-        u8 cap_vndr;    /* Short description */
-	...
-};
-
-We should describe this in indtroduction, I notice that we do not
-currently do this.
-
-Also pls use bitfields, defines etc as explained in introduction.tex
-
-Pls also add conformance statements about the use here.
-
-
-
 > diff --git a/content.tex b/content.tex
 > index e9c2383..64678f0 100644
 > --- a/content.tex
@@ -252,10 +184,6 @@ Pls also add conformance statements about the use here.
 > +  devices and supports VIRTIO_ADMIN_PCI_VIRT_MGMT_ATTR_IDENTIFY,
 > +  VIRTIO_ADMIN_PCI_VIRT_PROPERTY_SET and VIRTIO_ADMIN_PCI_VIRT_PROPERTY_GET
 > +  admin commands. This feature can be supported only by PCI devices.
-
-
-Not sure what does _VIRT_ here stand for.
-
 > +
 > +  \item[VIRTIO_F_ADMIN_MSIX_MGMT (45)] This feature indicates
 > +  that the device supports management of the MSI-X vectors for its
