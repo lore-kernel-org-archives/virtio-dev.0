@@ -1,9 +1,9 @@
-Return-Path: <mst@redhat.com>
-Date: Tue, 18 Jan 2022 10:09:25 -0500
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: Re: [PATCH 2/5] Introduce
+Return-Path: <parav@nvidia.com>
+From: Parav Pandit <parav@nvidia.com>
+Subject: RE: [PATCH 2/5] Introduce
  VIRTIO_F_ADMIN_VQ_INDIRECT_DESC/VIRTIO_F_ADMIN_VQ_IN_ORDER
-Message-ID: <20220118100109-mutt-send-email-mst@kernel.org>
+Date: Tue, 18 Jan 2022 17:17:06 +0000
+Message-ID: <PH0PR12MB5481134129490AE3D3C95039DC589@PH0PR12MB5481.namprd12.prod.outlook.com>
 References: <20220117170442-mutt-send-email-mst@kernel.org>
  <PH0PR12MB54818033A0BD96EA9493C51ADC589@PH0PR12MB5481.namprd12.prod.outlook.com>
  <20220118011731-mutt-send-email-mst@kernel.org>
@@ -14,69 +14,74 @@ References: <20220117170442-mutt-send-email-mst@kernel.org>
  <PH0PR12MB54817CAD287BCA267504C16FDC589@PH0PR12MB5481.namprd12.prod.outlook.com>
  <20220118052715-mutt-send-email-mst@kernel.org>
  <PH0PR12MB54813403EB286E31EE760098DC589@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20220118100109-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20220118100109-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <PH0PR12MB54813403EB286E31EE760098DC589@PH0PR12MB5481.namprd12.prod.outlook.com>
+Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-To: Parav Pandit <parav@nvidia.com>
+Content-Transfer-Encoding: base64
+To: "Michael S. Tsirkin" <mst@redhat.com>
 Cc: Max Gurtovoy <mgurtovoy@nvidia.com>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "cohuck@redhat.com" <cohuck@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "jasowang@redhat.com" <jasowang@redhat.com>, Shahaf Shuler <shahafs@nvidia.com>, Oren Duer <oren@nvidia.com>, "stefanha@redhat.com" <stefanha@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Tue, Jan 18, 2022 at 10:50:52AM +0000, Parav Pandit wrote:
-> 
-> 
-> > From: Michael S. Tsirkin <mst@redhat.com>
-> > Sent: Tuesday, January 18, 2022 4:09 PM
-> > 
-> > On Tue, Jan 18, 2022 at 07:30:34AM +0000, Parav Pandit wrote:
-> > > An unrelated command to AQ in Jason's proposal [1] is about " The
-> > management driver MUST create a managed device by allocating".
-> > > We see that creator of the subfunction is often not the only entity managing
-> > it.
-> > > They being same in new era finding less and less users.
-> > > So this piece needs more discussion whenever we address that.
-> > >
-> > > [1]
-> > > https://lists.oasis-open.org/archives/virtio-comment/202108/msg00136.h
-> > > tml
-> > 
-> > This reminds me. How do AQ commands interact with VF lifecycle?
-> VF device usage is controlled by the same system which is configuring the VF via its parent PF device.
-> So VF device shouldn't be in use. Any configuration change while VF device is in use will result in failing the AQ command.
-> 
-> > E.g. can one change number of vectors for an active VF?
-> > Need to specify this.
-> > 
-> > Also, I started worrying about compatibility here.
-> > Let's say the msix capability in a VF specifies 16 vectors.
-> > Can PF specify 32? If yes how will driver program them?
-> Yes, PF can change to 32. When VF driver queries the PCI capability, it will reflect 32 instead of 16.
-> > Can PF specify 8? If yes how do we make sure driver does not attempt to use
-> > 16? And what happens if it does?
-> PF is programming the VF msix capability in the device. So virtio pci driver operating the PCI VF device cannot access vectors beyond the max value programmed by the PF driver.
-
-Um. Interesting. This means that the msix capability of the VF changes?
-Is that in fact spec compliant? Could some OSes cache the value of the
-capability even if the device is not in active use? E.g. I can see how
-this might happen in order to map the MSIX tables even before loading
-the driver.
-
-The spec says:
-	Depending upon system software policy, system software, device driver software, or each at
-	different times or environments may configure a function’s MSI-X capability and table
-	structures with suitable vectors.
-
-So MSIX canfiguation might not be up to the driver.
-
-We actually ask driver to read back any vector assigned to a VQ
-so it's possible to fail vector assignment. Maybe that's better.
-
-> > Again, something to address.
-> Yes, this has to be described in the spec text. Will add more clearly in v2.
-> 
-> > 
-> > 
-> > --
-> > MST
+DQoNCj4gRnJvbTogTWljaGFlbCBTLiBUc2lya2luIDxtc3RAcmVkaGF0LmNvbT4NCj4gU2VudDog
+VHVlc2RheSwgSmFudWFyeSAxOCwgMjAyMiA4OjM5IFBNDQo+IA0KPiBPbiBUdWUsIEphbiAxOCwg
+MjAyMiBhdCAxMDo1MDo1MkFNICswMDAwLCBQYXJhdiBQYW5kaXQgd3JvdGU6DQo+ID4NCj4gPg0K
+PiA+ID4gRnJvbTogTWljaGFlbCBTLiBUc2lya2luIDxtc3RAcmVkaGF0LmNvbT4NCj4gPiA+IFNl
+bnQ6IFR1ZXNkYXksIEphbnVhcnkgMTgsIDIwMjIgNDowOSBQTQ0KPiA+ID4NCj4gPiA+IE9uIFR1
+ZSwgSmFuIDE4LCAyMDIyIGF0IDA3OjMwOjM0QU0gKzAwMDAsIFBhcmF2IFBhbmRpdCB3cm90ZToN
+Cj4gPiA+ID4gQW4gdW5yZWxhdGVkIGNvbW1hbmQgdG8gQVEgaW4gSmFzb24ncyBwcm9wb3NhbCBb
+MV0gaXMgYWJvdXQgIiBUaGUNCj4gPiA+IG1hbmFnZW1lbnQgZHJpdmVyIE1VU1QgY3JlYXRlIGEg
+bWFuYWdlZCBkZXZpY2UgYnkgYWxsb2NhdGluZyIuDQo+ID4gPiA+IFdlIHNlZSB0aGF0IGNyZWF0
+b3Igb2YgdGhlIHN1YmZ1bmN0aW9uIGlzIG9mdGVuIG5vdCB0aGUgb25seQ0KPiA+ID4gPiBlbnRp
+dHkgbWFuYWdpbmcNCj4gPiA+IGl0Lg0KPiA+ID4gPiBUaGV5IGJlaW5nIHNhbWUgaW4gbmV3IGVy
+YSBmaW5kaW5nIGxlc3MgYW5kIGxlc3MgdXNlcnMuDQo+ID4gPiA+IFNvIHRoaXMgcGllY2UgbmVl
+ZHMgbW9yZSBkaXNjdXNzaW9uIHdoZW5ldmVyIHdlIGFkZHJlc3MgdGhhdC4NCj4gPiA+ID4NCj4g
+PiA+ID4gWzFdDQo+ID4gPiA+IGh0dHBzOi8vbGlzdHMub2FzaXMtb3Blbi5vcmcvYXJjaGl2ZXMv
+dmlydGlvLWNvbW1lbnQvMjAyMTA4L21zZzAwMQ0KPiA+ID4gPiAzNi5oDQo+ID4gPiA+IHRtbA0K
+PiA+ID4NCj4gPiA+IFRoaXMgcmVtaW5kcyBtZS4gSG93IGRvIEFRIGNvbW1hbmRzIGludGVyYWN0
+IHdpdGggVkYgbGlmZWN5Y2xlPw0KPiA+IFZGIGRldmljZSB1c2FnZSBpcyBjb250cm9sbGVkIGJ5
+IHRoZSBzYW1lIHN5c3RlbSB3aGljaCBpcyBjb25maWd1cmluZyB0aGUgVkYNCj4gdmlhIGl0cyBw
+YXJlbnQgUEYgZGV2aWNlLg0KPiA+IFNvIFZGIGRldmljZSBzaG91bGRuJ3QgYmUgaW4gdXNlLiBB
+bnkgY29uZmlndXJhdGlvbiBjaGFuZ2Ugd2hpbGUgVkYgZGV2aWNlIGlzDQo+IGluIHVzZSB3aWxs
+IHJlc3VsdCBpbiBmYWlsaW5nIHRoZSBBUSBjb21tYW5kLg0KPiA+DQo+ID4gPiBFLmcuIGNhbiBv
+bmUgY2hhbmdlIG51bWJlciBvZiB2ZWN0b3JzIGZvciBhbiBhY3RpdmUgVkY/DQo+ID4gPiBOZWVk
+IHRvIHNwZWNpZnkgdGhpcy4NCj4gPiA+DQo+ID4gPiBBbHNvLCBJIHN0YXJ0ZWQgd29ycnlpbmcg
+YWJvdXQgY29tcGF0aWJpbGl0eSBoZXJlLg0KPiA+ID4gTGV0J3Mgc2F5IHRoZSBtc2l4IGNhcGFi
+aWxpdHkgaW4gYSBWRiBzcGVjaWZpZXMgMTYgdmVjdG9ycy4NCj4gPiA+IENhbiBQRiBzcGVjaWZ5
+IDMyPyBJZiB5ZXMgaG93IHdpbGwgZHJpdmVyIHByb2dyYW0gdGhlbT8NCj4gPiBZZXMsIFBGIGNh
+biBjaGFuZ2UgdG8gMzIuIFdoZW4gVkYgZHJpdmVyIHF1ZXJpZXMgdGhlIFBDSSBjYXBhYmlsaXR5
+LCBpdCB3aWxsDQo+IHJlZmxlY3QgMzIgaW5zdGVhZCBvZiAxNi4NCj4gPiA+IENhbiBQRiBzcGVj
+aWZ5IDg/IElmIHllcyBob3cgZG8gd2UgbWFrZSBzdXJlIGRyaXZlciBkb2VzIG5vdCBhdHRlbXB0
+DQo+ID4gPiB0byB1c2UgMTY/IEFuZCB3aGF0IGhhcHBlbnMgaWYgaXQgZG9lcz8NCj4gPiBQRiBp
+cyBwcm9ncmFtbWluZyB0aGUgVkYgbXNpeCBjYXBhYmlsaXR5IGluIHRoZSBkZXZpY2UuIFNvIHZp
+cnRpbyBwY2kgZHJpdmVyDQo+IG9wZXJhdGluZyB0aGUgUENJIFZGIGRldmljZSBjYW5ub3QgYWNj
+ZXNzIHZlY3RvcnMgYmV5b25kIHRoZSBtYXggdmFsdWUNCj4gcHJvZ3JhbW1lZCBieSB0aGUgUEYg
+ZHJpdmVyLg0KPiANCj4gVW0uIEludGVyZXN0aW5nLiBUaGlzIG1lYW5zIHRoYXQgdGhlIG1zaXgg
+Y2FwYWJpbGl0eSBvZiB0aGUgVkYgY2hhbmdlcz8NClllcy4NCj4gSXMgdGhhdCBpbiBmYWN0IHNw
+ZWMgY29tcGxpYW50PyBDb3VsZCBzb21lIE9TZXMgY2FjaGUgdGhlIHZhbHVlIG9mIHRoZQ0KPiBj
+YXBhYmlsaXR5IGV2ZW4gaWYgdGhlIGRldmljZSBpcyBub3QgaW4gYWN0aXZlIHVzZT8gRS5nLiBJ
+IGNhbiBzZWUgaG93IHRoaXMgbWlnaHQNCj4gaGFwcGVuIGluIG9yZGVyIHRvIG1hcCB0aGUgTVNJ
+WCB0YWJsZXMgZXZlbiBiZWZvcmUgbG9hZGluZyB0aGUgZHJpdmVyLg0KPiANClBDSSBzdWJzeXN0
+ZW0gY2FuIGNhdGNoIHRoZSB2YWx1ZSBiZWZvcmUgdGhlIGRldmljZSBkcml2ZXIgY2FuIGxvYWQu
+DQpHZW5lcmFsbHkgYSBkZXZpY2Ugc3VwcG9ydCBpbnR4L21zaXggb3IgaW50eC9tc2kuIFNvIFBD
+SSBzdWJzeXN0ZW0gaXMgbm90IGF3YXJlIHdoYXQgd2lsbCBiZSB1c2VkIGJ5IGl0cyB1cHBlciBs
+YXllciBkZXZpY2UgZHJpdmVycy4NClNvIGl0IHVzdWFsbHkgZGlmZmVycyBzdWNoIGluaXRpYWxp
+emF0aW9uIHRvIGEgbGF0ZXIgc3RhZ2UgdW50aWwgaXQgaXMgYWN0dWFsbHkgdXNlZC4NCg0KV2hp
+Y2hldmVyIE9TIGRyaXZlciB3aGljaCBpbXBsZW1lbnRzIG1zaXggY29uZmlndXJhdGlvbiwgd2ls
+bCBoYXZlIHRvIGVpdGhlciBub3QgY2FjaGUgaXQgb3IgZmx1c2grIHJlYnVpbGQgdGhlIGNhY2hl
+Lg0KDQo+IFRoZSBzcGVjIHNheXM6DQo+IAlEZXBlbmRpbmcgdXBvbiBzeXN0ZW0gc29mdHdhcmUg
+cG9saWN5LCBzeXN0ZW0gc29mdHdhcmUsIGRldmljZSBkcml2ZXINCj4gc29mdHdhcmUsIG9yIGVh
+Y2ggYXQNCj4gCWRpZmZlcmVudCB0aW1lcyBvciBlbnZpcm9ubWVudHMgbWF5IGNvbmZpZ3VyZSBh
+IGZ1bmN0aW9u4oCZcyBNU0ktWA0KPiBjYXBhYmlsaXR5IGFuZCB0YWJsZQ0KPiAJc3RydWN0dXJl
+cyB3aXRoIHN1aXRhYmxlIHZlY3RvcnMuDQo+IA0KPiBTbyBNU0lYIGNhbmZpZ3VhdGlvbiBtaWdo
+dCBub3QgYmUgdXAgdG8gdGhlIGRyaXZlci4NCj4gDQo+IFdlIGFjdHVhbGx5IGFzayBkcml2ZXIg
+dG8gcmVhZCBiYWNrIGFueSB2ZWN0b3IgYXNzaWduZWQgdG8gYSBWUSBzbyBpdCdzIHBvc3NpYmxl
+DQo+IHRvIGZhaWwgdmVjdG9yIGFzc2lnbm1lbnQuIE1heWJlIHRoYXQncyBiZXR0ZXIuDQo+IA0K
+VmlydGlvIGRyaXZlciBzaG91bGQgbm90IGluY3VyIGFueSBhZGRpdGlvbmFsIGNvbXBsZXhpdHkg
+aW4gcmUtcmVhZGluZyB2ZWN0b3IgZXRjLg0KQWxsIHRoZSBtc2l4IGNvbmZpZyBzaG91bGQgaGFw
+cGVuIG11Y2ggYmVmb3JlIGRyaXZlcnMgZ2V0cyBsb2FkZWQgZm9yIHRoZSBWRi4NCkl0IGlzIFBD
+SSBsYXllciBvZiB0aGUgSFYgdG8gcHJvdmlkZSBhIHN0YWJsZSBkZXZpY2UgdG8gdmlydGlvIGRl
+dmljZSBkcml2ZXIgd2hpY2ggaXMgbm90IHVuZGVyZ29pbmcgbXNpeCB0YWJsZSBjaGFuZ2VzLCB3
+aGVuIHZpcnRpbyBkZXZpY2UgZHJpdmVyIGlzIG9wZXJhdGluZyBvbiBpdC4NCg==
 
