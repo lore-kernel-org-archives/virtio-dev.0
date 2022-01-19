@@ -1,153 +1,161 @@
-Return-Path: <pasic@linux.ibm.com>
-Date: Thu, 20 Jan 2022 16:24:29 +0100
+Return-Path: <virtio-comment-return-2590-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-comment@lists.oasis-open.org>
+List-Post: <mailto:virtio-comment@lists.oasis-open.org>
+List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
+Date: Wed, 19 Jan 2022 13:23:19 +0100
 From: Halil Pasic <pasic@linux.ibm.com>
-Subject: Re: [virtio-dev] [PATCH] virtio: clarify feature negotiation
-Message-ID: <20220120162429.6fcbfedf.pasic@linux.ibm.com>
-In-Reply-To: <20220119183730-mutt-send-email-mst@kernel.org>
+Message-ID: <20220119132319.5ee3821d.pasic@linux.ibm.com>
+In-Reply-To: <20220114225032.290762-1-mst@redhat.com>
 References: <20220114225032.290762-1-mst@redhat.com>
-	<87k0eyv0az.fsf@redhat.com>
-	<20220117172336-mutt-send-email-mst@kernel.org>
-	<20220119132343.533d8f61.pasic@linux.ibm.com>
-	<20220119105924-mutt-send-email-mst@kernel.org>
-	<87pmond38l.fsf@redhat.com>
-	<20220119183730-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
+Subject: [virtio-comment] Re: [virtio] [PATCH] virtio: clarify feature negotiation
 Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
 To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Cornelia Huck <cohuck@redhat.com>, virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, virtio@lists.oasis-open.org, Halil Pasic <pasic@linux.ibm.com>
+Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, virtio@lists.oasis-open.org, Halil Pasic <pasic@linux.ibm.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, 19 Jan 2022 18:48:04 -0500
+On Fri, 14 Jan 2022 17:50:51 -0500
 "Michael S. Tsirkin" <mst@redhat.com> wrote:
+> Subject: virtio: clarify feature negotiation
 
-> On Wed, Jan 19, 2022 at 06:50:18PM +0100, Cornelia Huck wrote:
-> > On Wed, Jan 19 2022, "Michael S. Tsirkin" <mst@redhat.com> wrote:
-[..] 
-> > Hm, I would rather interpret the act of "setting FEATURES_OK" as
-> > "acknowledging the features it wrote to the device", as in not only "I
-> > know those features, and can use them in principle", but in "this is
-> > actually a feature combination I can use".  
-> 
-> that's the feature negotiation is complete part I think.
-> 
-> 
-
-I agree.
-
+This is in my opinion more of an incompatible change that a
+clarification, but since the commit message does not constitute a part
+of the standard, it does not matter that much.
 [..]
-> > My personal understanding of the terminology is:
-> > - acknowledged: the driver has written a feature to the device, and set
-> >   FEATURES_OK
-> > - negotiated: the bit is acknowledged, and the device has actually
-> >   accepted FEATURES_OK
-> > 
-> > Generally, "acknowledging" a bit does not really carry more weight than
-> > simply writing the bit to the device, the big distinction is whether the
-> > device accepted FEATURES_OK.  
-> 
-> Hmm I don't think this is the current reading of the spec. Do you?
-> acknowledged is really something we inherited from 0.X
-> and never changed, so it always meant "written to device as 1".
-> Nothing to do with FEATURES_OK.
-> 1.0 added negotiated to deal with FEATURES_OK.
-> 
 
-IMHO, the fact that Connie got this wrong is a reason enough to clarify
-this thoroughly. Connie isn't exactly new to Virtio, and people with
-less exposure are even likelier to get it wrong.
+> @@ -298,10 +298,10 @@ \section{Device Configuration Space}\label{sec:Basi=
+c Facilities of a Virtio Devi
+>  \end{note}
+> =20
+>  \devicenormative{\subsection}{Device Configuration Space}{Basic Faciliti=
+es of a Virtio Device / Device Configuration Space}
+> -The device MUST allow reading of any device-specific configuration
+> +The device SHOULD allow reading of any device-specific configuration
+>  field before FEATURES_OK is set by the driver.  This includes fields whi=
+ch are
+> -conditional on feature bits, as long as those feature bits are offered
+> -by the device.
+> +conditional on feature bits, as long as those feature bits have
+> +been acknowledged by the driver.
 
-I wasn't aware either that "acknowledged" is a thing for modern devices,
-or that it is terminology inherited form 0.X.
+"Those feature bits have been acknowledged by the driver" is new
+terminology. IMHO we should have a precise definition
+of "feature bit is acknowledged".
 
-So let us say what is in 0.X. I'm quoting form
-https://ozlabs.org/~rusty/virtio-spec/virtio-0.9.5.pdf
-
-"The feature bits are negotiated: the device lists all the features it
-understands in the Device Features field, and the guest writes the
-subset that it understands into the Guest Features field. The only way
-to renegotiate is to reset the device."
-
-"Extensible: Virtio PCI devices contain feature bits which are
-acknowledged by the guest operating system during device setup. This allows forwards
-and backwards compatibility: the device offers all the features it knows
-ab out, and the driver acknowledges those it understands and wishes to
-use."
-
-So at least 0.9.5 defines "features negotiated" and defines it well, in
-a sense that there is no ambiguity about it (when are the features
-considered to be negotiated, and how is this done). The only problem
-with the definition is, that it ain't extensible! But let us get
-back to well defined. In this document, the the "Guest Features" are
-defined as single 32 bit field, which may be written (by the driver)
-exactly once. And the act of writing "Guest Features" which is an atomic
-operation concludes the feature negotiation. The only way to
-re-negotiate, i.e. write again to "Guest Features" is to reset and then
-re-init the device.
-
-IMHO in this document, there is term "acknowledged" in relation to
-feature bits is not defined. "Acknowledge" is rather used as a synonym
-for "negotiated" in the second quote. And that is the only feature bits
-related occurrence of "acknowledge I could find. The meaning of
-"acknowledge" we want here, i.e. the state where the features have been
-written, but not yet negotiated (finalized) is not something one can find
-in v0.9.5.
-
-BTW one thing I like about v0.9.5 is that it makes very clear, that
-"Device Features" and "Guest Features" are two pairs of shoes.
+Currently "acknowledge features" means "write features".
 
 
-> And I don't really like moving to this variant since acknowledged is then
-> a very short transient state. We would be burning a very useful
-> term on something that's barely there.
-> 
-> 
-> > So, the things that really matter are, I think,
-> > - whether the driver has written VERSION_1, which means that the config
-> >   space is supposed to be litte-endian
-> > - whether the driver has written any bit that governs an optional field,
-> >   which means that the driver may read that field
-> > - that weird special case above
-> > - whether the device has accepted FEATURES_OK, which means that the
-> >   config space layout is fixed and the driver may write to it
-> > 
-> > That still leaves the problem to find a good term for clearing the bit
-> > again... unless we simply talk about the driver setting and clearing it
-> > (but how do we express that it needs to make the device aware of it?)
-> > 
-> > The other big problem is of course legacy... the spec talks of
-> > "acknowledging" there, but in the legacy case, it means simply that the
-> > driver wrote the bit, as we do not really have an explicit point where
-> > the bit has actually been negotiated, it's only implicit. I think
-> > phrasing matters for transitional devices, VIRTIO_1, and config space
-> > endianness here...  
-> 
-> 
-> So for all of the above reasons I think we are better off
-> with keeping the way acknowledging is currently understood in
-> spec - really the pre-1.0 meaning.
+> =20
+>  \subsection{Legacy Interface: A Note on Device Configuration Space endia=
+n-ness}\label{sec:Basic Facilities of a Virtio Device / Device Configuratio=
+n Space / Legacy Interface: A Note on Configuration Space endian-ness}
+> =20
+> @@ -500,8 +500,13 @@ \section{Device Initialization}\label{sec:General In=
+itialization And Device Oper
+> =20
+>  \item\label{itm:General Initialization And Device Operation /
+>  Device Initialization / Read feature bits} Read device feature bits, and=
+ write the subset of feature bits
+> -   understood by the OS and driver to the device.  During this step the
+> -   driver MAY read (but MUST NOT write) the device-specific configuratio=
+n fields to check that it can support the device before accepting it.
+> +   understood by the OS and driver to the device.  During this
+> +   step, after writing the subset of feature bits to the device the
+> +   driver MAY read (but MUST NOT write) the device-specific
+> +   configuration fields to validate that it can support the device
+> +   before accepting it. The driver MAY then repeatedly modify the
+> +   subset as appropriate, write the new subset and repeat the
+> +   validation, any number of times.
 
-See my comment above.
+IMHO don't have an exact definition of what "MAY read device-specific
+configuration field means". To me, "may read" does not automatically
+imply that what was read can be interpreted, is valid and meaningful.
 
-> 
-> > > We could just add a paragraph explaining the terminology, I just
-> > > wish we could be more concise.  
-> > 
-> > I'm unfortunately struggling to come up with good, waterproof, and
-> > understandable terminology covering all cases :(  
-> 
-> I think if you recall what terminology used to be pre-1.0 things
-> will become clearer. 
+For example there was no harm in reading MTU without having the
+F_VERSION_1 feature acknowledged before. We did not end up in undefined
+behavior land, the read_config operation did not blow up in our face,
+and the field was also "there" if the corresponding feature was offered.
+The only trouble was that one could not interpret the value of the field,
+because one could not tell is it big or little endian.
 
-I disagree.
+IMHO, we want to accomplish, readable, interpretible, valid and
+meaningful, before the feature has been negotiated by setting
+FEATURES_OK.
 
-> And I think the requirement to allow
-> early config space access and the idea of detecting legacy
-> based on features all predate FEATURES_OK.
-> 
+I see a couple of potential problems with this:
+1) The set of acknowledged features may be invalid! For example may end
+up with feature B acknowledged and feature B not acknowledged, when
+B depends on A. Before "acknowledge" we used to be safe, because the
+device would reject FEATURES_OK.
+2) In theory, we could have union-type conditional fields. To demonstrate
+what I mean here is a stupid example:
+struct ThermometherConfig {
+union {
+u16 temp_in_kelvin;
+u16 temp_in_celsius;
+u16 temp_in_farenheit;
+} temp;
+};
+where kelvin is the default, but you can get Celsius or Fahrenheit
+depending on mutex feature bits.
+This also used to be and still is safe after the features have been
+negotiated, but with "acknowledged" there is trouble when both the
+features are set.
+3) Features are written in 32 bit chunks. My guess is that what we
+want for "features acknowledged is": driver has written each chunk it
+knows about at least once. Of course, the question arises, what should
+the device do if config is read before that happens.
+4) It is pretty obvious to me, that after "features have been
+acknowledged", we want the driver to read the very same config as
+if we were in "features have been negotiated" state. The only  difference
+we want is, that the features must not be "frozen", i.e. the driver
+should still be able to modify the features.
+5) It ain't clear to me when is the driver supposed to assume that
+"the features have been acknowledged". I.e. that the expected changes
+have taken effect. For PCI, as far as I remember, they have this write it
+and then read it back drill to force side-effects. Would we have to do
+something like this. I think for FEATURES_OK we have that stuff clearly
+specified.
 
-I agree with this part.
+I don't know if that would be viable, but introducing a FEATURES_ACK
+status bit would IMHO resolve a bunch of these potential problems, and
+would also serve as a clear trigger for stuff like vhost (to flush
+features)
+
+The only problem, that would remain is that IMHO this is still
+fundamentally a change that effectively breaks compatibility. IMHO
+"features acknowledged" is essentially a new feature, which enables
+a sane use of the config space before FEATURES_OK. But we can't guard it
+with a feature bit, because the snake would just bite its tail. I'm
+fine with going down this route. It is just that I would like to be
+completely transparent about this.
+
+Please also see my other mail!
+
+Thank you  for tackling this! I highly appreciate it!
 
 Regards,
 Halil
+
+[..]
+
+This publicly archived list offers a means to provide input to the
+OASIS Virtual I/O Device (VIRTIO) TC.
+
+In order to verify user consent to the Feedback License terms and
+to minimize spam in the list archive, subscription is required
+before posting.
+
+Subscribe: virtio-comment-subscribe@lists.oasis-open.org
+Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
+List help: virtio-comment-help@lists.oasis-open.org
+List archive: https://lists.oasis-open.org/archives/virtio-comment/
+Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
+List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lis=
+ts
+Committee: https://www.oasis-open.org/committees/virtio/
+Join OASIS: https://www.oasis-open.org/join/
 
