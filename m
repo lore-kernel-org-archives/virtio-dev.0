@@ -1,12 +1,10 @@
-Return-Path: <parav@nvidia.com>
-From: Parav Pandit <parav@nvidia.com>
-Subject: RE: [virtio-dev] Re: [PATCH 2/5] Introduce
+Return-Path: <mst@redhat.com>
+Date: Wed, 19 Jan 2022 03:21:26 -0500
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Subject: Re: [virtio-dev] Re: [PATCH 2/5] Introduce
  VIRTIO_F_ADMIN_VQ_INDIRECT_DESC/VIRTIO_F_ADMIN_VQ_IN_ORDER
-Date: Wed, 19 Jan 2022 08:15:50 +0000
-Message-ID: <PH0PR12MB5481E871F07BAA8BE043CCB9DC599@PH0PR12MB5481.namprd12.prod.outlook.com>
-References: <20220118011731-mutt-send-email-mst@kernel.org>
- <PH0PR12MB54816DB30F23511266B8F35EDC589@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20220118014737-mutt-send-email-mst@kernel.org>
+Message-ID: <20220119031801-mutt-send-email-mst@kernel.org>
+References: <20220118014737-mutt-send-email-mst@kernel.org>
  <PH0PR12MB5481B99E351B624A27378BC5DC589@PH0PR12MB5481.namprd12.prod.outlook.com>
  <20220118020831-mutt-send-email-mst@kernel.org>
  <PH0PR12MB54817CAD287BCA267504C16FDC589@PH0PR12MB5481.namprd12.prod.outlook.com>
@@ -15,62 +13,59 @@ References: <20220118011731-mutt-send-email-mst@kernel.org>
  <20220118100109-mutt-send-email-mst@kernel.org>
  <PH0PR12MB5481134129490AE3D3C95039DC589@PH0PR12MB5481.namprd12.prod.outlook.com>
  <20220119021910-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20220119021910-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB5481E871F07BAA8BE043CCB9DC599@PH0PR12MB5481.namprd12.prod.outlook.com>
 MIME-Version: 1.0
-Content-Language: en-US
+In-Reply-To: <PH0PR12MB5481E871F07BAA8BE043CCB9DC599@PH0PR12MB5481.namprd12.prod.outlook.com>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-To: "Michael S. Tsirkin" <mst@redhat.com>
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+To: Parav Pandit <parav@nvidia.com>
 Cc: Max Gurtovoy <mgurtovoy@nvidia.com>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "cohuck@redhat.com" <cohuck@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "jasowang@redhat.com" <jasowang@redhat.com>, Shahaf Shuler <shahafs@nvidia.com>, Oren Duer <oren@nvidia.com>, "stefanha@redhat.com" <stefanha@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-DQo+IEZyb206IHZpcnRpby1kZXZAbGlzdHMub2FzaXMtb3Blbi5vcmcgPHZpcnRpby1kZXZAbGlz
-dHMub2FzaXMtb3Blbi5vcmc+IE9uDQo+IEJlaGFsZiBPZiBNaWNoYWVsIFMuIFRzaXJraW4NCj4g
-U2VudDogV2VkbmVzZGF5LCBKYW51YXJ5IDE5LCAyMDIyIDEyOjUxIFBNDQoNCj4gPiA+IFVtLiBJ
-bnRlcmVzdGluZy4gVGhpcyBtZWFucyB0aGF0IHRoZSBtc2l4IGNhcGFiaWxpdHkgb2YgdGhlIFZG
-IGNoYW5nZXM/DQo+ID4gWWVzLg0KPiA+ID4gSXMgdGhhdCBpbiBmYWN0IHNwZWMgY29tcGxpYW50
-PyBDb3VsZCBzb21lIE9TZXMgY2FjaGUgdGhlIHZhbHVlIG9mDQo+ID4gPiB0aGUgY2FwYWJpbGl0
-eSBldmVuIGlmIHRoZSBkZXZpY2UgaXMgbm90IGluIGFjdGl2ZSB1c2U/IEUuZy4gSSBjYW4NCj4g
-PiA+IHNlZSBob3cgdGhpcyBtaWdodCBoYXBwZW4gaW4gb3JkZXIgdG8gbWFwIHRoZSBNU0lYIHRh
-YmxlcyBldmVuIGJlZm9yZQ0KPiBsb2FkaW5nIHRoZSBkcml2ZXIuDQo+ID4gPg0KPiA+IFBDSSBz
-dWJzeXN0ZW0gY2FuIGNhdGNoIHRoZSB2YWx1ZSBiZWZvcmUgdGhlIGRldmljZSBkcml2ZXIgY2Fu
-IGxvYWQuDQo+ID4gR2VuZXJhbGx5IGEgZGV2aWNlIHN1cHBvcnQgaW50eC9tc2l4IG9yIGludHgv
-bXNpLiBTbyBQQ0kgc3Vic3lzdGVtIGlzIG5vdA0KPiBhd2FyZSB3aGF0IHdpbGwgYmUgdXNlZCBi
-eSBpdHMgdXBwZXIgbGF5ZXIgZGV2aWNlIGRyaXZlcnMuDQo+ID4gU28gaXQgdXN1YWxseSBkaWZm
-ZXJzIHN1Y2ggaW5pdGlhbGl6YXRpb24gdG8gYSBsYXRlciBzdGFnZSB1bnRpbCBpdCBpcyBhY3R1
-YWxseSB1c2VkLg0KPiA+DQo+ID4gV2hpY2hldmVyIE9TIGRyaXZlciB3aGljaCBpbXBsZW1lbnRz
-IG1zaXggY29uZmlndXJhdGlvbiwgd2lsbCBoYXZlIHRvDQo+IGVpdGhlciBub3QgY2FjaGUgaXQg
-b3IgZmx1c2grIHJlYnVpbGQgdGhlIGNhY2hlLg0KPiANCj4gU2VlbXMgdG8gY29udHJhZGljdCB3
-aGF0IHRoZSBzcGVjIHNheXMgKGJlbG93KS4NCk5vIGl0IGRvZXNuJ3QuIHNwZWMgY292ZXJzIHRo
-YXQgZGVwZW5kZW5jeSBpcyBvbiBzeXN0ZW0gc29mdHdhcmUgcG9saWN5LCBzeXN0ZW0gc3csIGRy
-aXZlciBzdy4NClNvIHRoaXMgc3lzdGVtIHRoYXQgY29udGFpbnMgcG9saWN5LCBzdywgZHJpdmVy
-IHN3IHdpbGwgaW1wbGVtZW50IHZpcnRpbyBleHRlbnNpb24uDQoNCkluIGFib3ZlIHNlbnRlbmNl
-IG9mICJ3aGljaGV2ZXIgT1MgZHJpdmVyIiwgaXQgY292ZXJzIGFsbCBzdyBjb21wb25lbnRzIGlu
-dm9sdmVkIGluIHRoaXMgZnVuY3Rpb25hbGl0eS4NCj4gDQo+ID4gPiBUaGUgc3BlYyBzYXlzOg0K
-PiA+ID4gCURlcGVuZGluZyB1cG9uIHN5c3RlbSBzb2Z0d2FyZSBwb2xpY3ksIHN5c3RlbSBzb2Z0
-d2FyZSwgZGV2aWNlDQo+ID4gPiBkcml2ZXIgc29mdHdhcmUsIG9yIGVhY2ggYXQNCj4gPiA+IAlk
-aWZmZXJlbnQgdGltZXMgb3IgZW52aXJvbm1lbnRzIG1heSBjb25maWd1cmUgYSBmdW5jdGlvbuKA
-mXMgTVNJLVgNCj4gPiA+IGNhcGFiaWxpdHkgYW5kIHRhYmxlDQo+ID4gPiAJc3RydWN0dXJlcyB3
-aXRoIHN1aXRhYmxlIHZlY3RvcnMuDQo+ID4gPg0KPiA+ID4gU28gTVNJWCBjYW5maWd1YXRpb24g
-bWlnaHQgbm90IGJlIHVwIHRvIHRoZSBkcml2ZXIuDQo+ID4gPg0KPiA+ID4gV2UgYWN0dWFsbHkg
-YXNrIGRyaXZlciB0byByZWFkIGJhY2sgYW55IHZlY3RvciBhc3NpZ25lZCB0byBhIFZRIHNvDQo+
-ID4gPiBpdCdzIHBvc3NpYmxlIHRvIGZhaWwgdmVjdG9yIGFzc2lnbm1lbnQuIE1heWJlIHRoYXQn
-cyBiZXR0ZXIuDQo+ID4gPg0KPiA+IFZpcnRpbyBkcml2ZXIgc2hvdWxkIG5vdCBpbmN1ciBhbnkg
-YWRkaXRpb25hbCBjb21wbGV4aXR5IGluIHJlLXJlYWRpbmcgdmVjdG9yDQo+IGV0Yy4NCj4gDQo+
-IEkgdGhpbmsgaXQgZG9lcyB0aGlzIGFscmVhZHkuDQpXaGVuIGRvZXMgaXQgcmUtcmVhZD8NCkkg
-ZG8gbm90IGZvbGxvdyB5b3VyIHBvaW50IG9mICJhc2sgZHJpdmVyIHRvIHJlYWQgYmFjayBhbnkg
-dmVjdG9yIi4gV2hlbiBkbyB5b3Ugd2FudCB0byBkbyB0aGlzPw0KDQo+IA0KPiA+IEFsbCB0aGUg
-bXNpeCBjb25maWcgc2hvdWxkIGhhcHBlbiBtdWNoIGJlZm9yZSBkcml2ZXJzIGdldHMgbG9hZGVk
-IGZvciB0aGUgVkYuDQo+ID4gSXQgaXMgUENJIGxheWVyIG9mIHRoZSBIViB0byBwcm92aWRlIGEg
-c3RhYmxlIGRldmljZSB0byB2aXJ0aW8gZGV2aWNlIGRyaXZlciB3aGljaA0KPiBpcyBub3QgdW5k
-ZXJnb2luZyBtc2l4IHRhYmxlIGNoYW5nZXMsIHdoZW4gdmlydGlvIGRldmljZSBkcml2ZXIgaXMg
-b3BlcmF0aW5nIG9uDQo+IGl0Lg0KPiANCj4gDQo+IFByb2JsZW0gaXMgaW4gdGhlIGd1ZXN0IHRo
-b3VnaC4gSSdtIG5vdCBzdXJlIHdlIGNhbiByZWx5IG9uIHRoaXMgcGFydCBiZWluZyBwYXJ0DQo+
-IG9mIHRoZSBkcml2ZXIgYW5kIG5vdCBwYXJ0IG9mIHRoZSBPUy4NCkl0IGlzIHBhcnQgb2YgdGhl
-IHN5c3RlbSBzb2Z0d2FyZSB0aGF0IGNvbnNpc3Qgb2YgdmlydGlvIGRyaXZlciwgcGNpIHN1YnN5
-c3RlbSBhbmQgdXNlciBpbnRlcmZhY2UuDQpJIGRvIG5vdCBmb2xsb3cgeW91ciBjb21tZW50IGFi
-b3V0ICJwcm9ibGVtIGlzIGluIGd1ZXN0IHRob3VnaCIuDQpDYW4geW91IHBsZWFzZSBleHBsYWlu
-Pw0KVkYgaXMgc2ltcGx5IG5vdCBhdmFpbGFibGUgdG8gdGhlIGd1ZXN0LCB3aGVuIEhWIGhhcyBu
-b3QgZ2l2ZW4gaXQuIEFuZCB3aGVuIGl0cyBnaXZlbiwgSFYgZG9lc27igJl0IG1vZGlmeSB0aGUg
-bXNpeCBpbiBzb21lIHJhbmRvbSBtYW5uZXIuDQo=
+On Wed, Jan 19, 2022 at 08:15:50AM +0000, Parav Pandit wrote:
+> > > Virtio driver should not incur any additional complexity in re-reading vector
+> > etc.
+> > 
+> > I think it does this already.
+> When does it re-read?
+> I do not follow your point of "ask driver to read back any vector". When do you want to do this?
+
+
+After mapping an event to vector, the
+driver MUST verify success by reading the Vector field value: on
+success, the previously written value is returned, and on
+failure, NO_VECTOR is returned. If a mapping failure is detected,
+the driver MAY retry mapping with fewer vectors, disable MSI-X
+or report device failure.
+
+
+
+> > 
+> > > All the msix config should happen much before drivers gets loaded for the VF.
+> > > It is PCI layer of the HV to provide a stable device to virtio device driver which
+> > is not undergoing msix table changes, when virtio device driver is operating on
+> > it.
+> > 
+> > 
+> > Problem is in the guest though. I'm not sure we can rely on this part being part
+> > of the driver and not part of the OS.
+> It is part of the system software that consist of virtio driver, pci subsystem and user interface.
+> I do not follow your comment about "problem is in guest though".
+
+sorry I meant host of course.
+
+> Can you please explain?
+> VF is simply not available to the guest, when HV has not given it. And
+> when its given, HV doesn’t modify the msix in some random manner.
+
+I am concerned that we can not be sure that changing MSIX capability
+while device is present is safe since spec does not promise
+the capability is not read by host at boot. However, given device can instead
+fail to map events to vectors, even if it is not safe we have other
+ways to fail gracefully. It's probably a good idea to mention all
+this in the spec text.
+
+-- 
+MST
 
