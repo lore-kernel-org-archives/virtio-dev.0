@@ -1,9 +1,9 @@
-Return-Path: <jasowang@redhat.com>
-Message-ID: <15063a94-85ae-fd1a-6ff1-458a039d1def@redhat.com>
-Date: Wed, 19 Jan 2022 12:03:09 +0800
-MIME-Version: 1.0
-Subject: Re: [PATCH 2/5] Introduce
+Return-Path: <parav@nvidia.com>
+From: Parav Pandit <parav@nvidia.com>
+Subject: RE: [PATCH 2/5] Introduce
  VIRTIO_F_ADMIN_VQ_INDIRECT_DESC/VIRTIO_F_ADMIN_VQ_IN_ORDER
+Date: Wed, 19 Jan 2022 04:48:13 +0000
+Message-ID: <PH0PR12MB5481D5BD8BB8CFDEFA218D2FDC599@PH0PR12MB5481.namprd12.prod.outlook.com>
 References: <20220113145103.26894-1-mgurtovoy@nvidia.com>
  <20220113145103.26894-3-mgurtovoy@nvidia.com>
  <20220113102218-mutt-send-email-mst@kernel.org>
@@ -16,143 +16,86 @@ References: <20220113145103.26894-1-mgurtovoy@nvidia.com>
  <PH0PR12MB54816DB30F23511266B8F35EDC589@PH0PR12MB5481.namprd12.prod.outlook.com>
  <20220118014737-mutt-send-email-mst@kernel.org>
  <PH0PR12MB5481B99E351B624A27378BC5DC589@PH0PR12MB5481.namprd12.prod.outlook.com>
-From: Jason Wang <jasowang@redhat.com>
-In-Reply-To: <PH0PR12MB5481B99E351B624A27378BC5DC589@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <15063a94-85ae-fd1a-6ff1-458a039d1def@redhat.com>
+In-Reply-To: <15063a94-85ae-fd1a-6ff1-458a039d1def@redhat.com>
+MIME-Version: 1.0
 Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-To: Parav Pandit <parav@nvidia.com>, "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Max Gurtovoy <mgurtovoy@nvidia.com>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "cohuck@redhat.com" <cohuck@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Shahaf Shuler <shahafs@nvidia.com>, Oren Duer <oren@nvidia.com>, "stefanha@redhat.com" <stefanha@redhat.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+To: Jason Wang <jasowang@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>
+Cc: Max Gurtovoy <mgurtovoy@nvidia.com>, "cohuck@redhat.com" <cohuck@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Shahaf Shuler <shahafs@nvidia.com>, Oren Duer <oren@nvidia.com>, "stefanha@redhat.com" <stefanha@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-
-在 2022/1/18 下午3:07, Parav Pandit 写道:
->> From: Michael S. Tsirkin <mst@redhat.com>
->> Sent: Tuesday, January 18, 2022 12:25 PM
->>
->> On Tue, Jan 18, 2022 at 06:32:50AM +0000, Parav Pandit wrote:
->>>
->>>> From: Michael S. Tsirkin <mst@redhat.com>
->>>> Sent: Tuesday, January 18, 2022 11:54 AM
->>>>
->>>> On Tue, Jan 18, 2022 at 04:44:36AM +0000, Parav Pandit wrote:
->>>>>
->>>>>> From: Michael S. Tsirkin <mst@redhat.com>
->>>>>> Sent: Tuesday, January 18, 2022 3:44 AM
->>>>>>>> It's a control queue. Why do we worry?
->>>>>>> It is used to control/manage the resource of a VF which is
->>>>>>> deployed usually
->>>>>> to a VM.
->>>>>>> So higher the latency, higher the time it takes to deploy start the VM.
->>>>>> What are the savings here, in real terms? Boot times for
->>>>>> smallest VMs are in 10s of milliseconds. Is reordering of a
->>>>>> queue somehow going to save more than microseconds?
->>>>>>
->>>>> It is probably better not to pick on a specific vendor implementation.
->>>>> But for real numbers, I see that an implementation takes 54usec to
->>>>> 500 usec
->>>> range for simple configuration.
->>>>> It is better to not small VM 4 vector configuration to take longer
->>>>> because
->>>> there was previous AQ command for 64 vectors.
->>>>
->>>> So virtio discovery on boot includes multiple of vmexits, each costs
->>>> ~1000 cycles.  And people do not seem to worry about it.
->>> It is not the vector configuration by guest VM.
->>> It is the AQ command that provisions number of msix vectors for the VF that
->> takes tens to hundreds of usecs.
->>> These are the command in patch-5 in this proposal.
->> Hundreds of usecs is negligeable compared to VM boot time.
->> Sorry I don't really see why we worry about indirect in that case.
->>
->>
-> Ok. we will do incremental proposal after this for wider use case.
->
->>>> You want a compelling argument for working on performance of config.
->>>> I frankly think it's not really useful but I especially think you
->>>> should cut this out of the current proposal, it's too big as it is.
->>>>
->>> Ok. We can do follow on proposal after AQ.
->>> We already see need of out of order AQ in internal performance tests we are
->> running.
->>
->> OK so first of all you can avoid declaring IN_ORDER.
-> This will force non IN_ORDER on other txq and rxq too that causes higher latency.
-> But fine, initial implementation can start without it.
->
->> If you see that IN_ORDER
->> improves performance for you so you need it, then look at PARTIAL_ORDER
->> pls.
-> Ok. will consider PARTIAL_ORDER more in future proposal.
->
->> And if that does not address your needs then let's discuss, I'd rather have a
->> generic solution since the requirement does not seem to be specific to AQ.
->>
->>> But fine, we can differ.
-> So far I gather below summary that needs to be addressed in v2.
->
-> 1. Use AQ for msix query and config
-
-
-It it means IMS, there's already a proposal[1] that introduce MSI 
-commands via the admin virtqueue. And we had similar requirement for 
-virtio-MMIO[2] and managed device or SF [3], so I would rather to 
-introduce IMS (need a better name though) as a basic facility instead of 
-tie it to any specific transport.
-
-
-> 2. AQ to follows IN_ORDER and INDIRECT_DESC negotiation like rest of the queues
-> 3. Update commit log to describe why config space is not chosen (scale, on-die registers, uniform way to handle all aq cmds)
-
-
-I fail to understand the scale/registeres issues. With the one of my 
-previous proposal (device selector), technically we don't even need any 
-config space or BAR for VF or SF by multiplexing the registers for PF.
-
-I do see one advantage is that the admin virtqueue is transport 
-independent (or it could be used as a transport).
-
-
-> 4. Improve documentation around msix config to link to sriov section of virtio spec
-> 5. Describe error that if VF is bound to the device, admin commands targeting VF can fail, describe this error code
->
-> Did I miss anything?
->
-> Yet to receive your feedback on group, if/why is it needed and, why/if it must be in this proposal, what pieces prevents it do as follow-on.
->
-> Cornelia, Jason,
-> Can you please review current proposal as well before we revise v2?
-
-
-If I understand correctly, most of the features (except for the admin 
-virtqueue in_order stuffs) are not specific to the admin virtqueue. As 
-discussed in the previous versions, I still think it's better:
-
-1) adding sections in the basic device facility or data structure for 
-provisioning and MSI
-2) introduce admin virtqueue on top as an device interface for those 
-features
-
-The leaves the chance for future extensions to allow those features to 
-be used by transport specific interface which will benefit for
-
-1) vendor that doesn't want to transport specific method (MMIO or PCIe 
-capability) [4]
-2) features that can be used by guest or nesting environment (L1)
-
-Thanks
-
-[1] 
-https://lists.oasis-open.org/archives/virtio-comment/202108/msg00025.html
-
-[2] https://lkml.org/lkml/2020/1/21/31
-
-[3] 
-https://lists.oasis-open.org/archives/virtio-comment/202108/msg00134.html
-
-[4] 
-https://lists.oasis-open.org/archives/virtio-comment/202108/msg00136.html
-
-
->
+DQo+IEZyb206IEphc29uIFdhbmcgPGphc293YW5nQHJlZGhhdC5jb20+DQo+IFNlbnQ6IFdlZG5l
+c2RheSwgSmFudWFyeSAxOSwgMjAyMiA5OjMzIEFNDQo+IA0KPiANCj4gSXQgaXQgbWVhbnMgSU1T
+LCB0aGVyZSdzIGFscmVhZHkgYSBwcm9wb3NhbFsxXSB0aGF0IGludHJvZHVjZSBNU0kgY29tbWFu
+ZHMNCj4gdmlhIHRoZSBhZG1pbiB2aXJ0cXVldWUuIEFuZCB3ZSBoYWQgc2ltaWxhciByZXF1aXJl
+bWVudCBmb3IgdmlydGlvLU1NSU9bMl0NCj4gYW5kIG1hbmFnZWQgZGV2aWNlIG9yIFNGIFszXSwg
+c28gSSB3b3VsZCByYXRoZXIgdG8gaW50cm9kdWNlIElNUyAobmVlZCBhDQo+IGJldHRlciBuYW1l
+IHRob3VnaCkgYXMgYSBiYXNpYyBmYWNpbGl0eSBpbnN0ZWFkIG9mIHRpZSBpdCB0byBhbnkgc3Bl
+Y2lmaWMNCj4gdHJhbnNwb3J0Lg0KPiANCklNUyBvZiBbMV0gaXMgYSBpbnRlcnJ1cHQgY29uZmln
+dXJhdGlvbiBieSB0aGUgdmlydGlvIGRyaXZlciBmb3IgdGhlIGRldmljZSBpcyBpdCBkcml2aW5n
+LCB3aGljaCBuZWVkcyBhIHF1ZXVlLg0KU28gcmVnYXJkbGVzcyBvZiB0aGUgZGV2aWNlIHR5cGUg
+YXMgUENJIFBGL1ZGL1NGL0FESSwgdGhlcmUgaXMgZGVzaXJlIHRvIGhhdmUgYSBnZW5lcmljIGFk
+bWluIHF1ZXVlIG5vdCBhdHRhY2hlZCB0byBkZXZpY2UgdHlwZS4NCkFuZCBBUSBpbiB0aGlzIHBy
+b3Bvc2FsIGV4YWN0bHkgc2VydmVzIHRoaXMgcHVycG9zZS4NCg0KRGV2aWNlIGNvbmZpZ3VyaW5n
+IGl0cyBvd24gSU1TIHZlY3RvciB2cyBQQ0kgUEYgY29uZmlndXJpbmcgVkYncyBNU0ktWCBtYXgg
+dmVjdG9yIGNvdW50IGFyZSB0d28gZGlmZmVyZW50IGZ1bmN0aW9uYWxpdHkuDQpCb3RoIG9mIHRo
+ZXNlIGNvbW1hbmRzIGNhbiByaWRlIG9uIGEgZ2VuZXJpYyBxdWV1ZS4NCkhvd2V2ZXIgdGhlIHF1
+ZXVlIGlzIG5vdCBzYW1lLCBiZWNhdXNlDQpQRiBvd25zIGl0cyBvd24gYWRtaW4gcXVldWUgKGZv
+ciB2ZiBtc2l4IGNvbmZpZyksIA0KVkYgb3IgU0Ygb3BlcmF0ZXMgaXRzIG93biBhZG1pbiBxdWV1
+ZSAoZm9yIElNUyBjb25maWcpLg0KDQpTbyBhIGdvb2QgZXhhbXBsZSBpcywNCjEuIFBDSSBQRiBj
+b25maWd1cmVzIDggTVNJLVggb3IgMTYgSU1TIHZlY3RvcnMgZm9yIHRoZSBWRiB1c2luZyBQRl9B
+USBpbiBIVi4NCjIuIFBDSSBWRiB3aGVuIHVzaW5nIElNUyBjb25maWd1cmVzLCBJTVMgZGF0YSwg
+dmVjdG9yLCBtYXNrIGV0YyB1c2luZyBWRl9BUSBpbiBHVk0uDQpCb3RoIHRoZSBmdW5jdGlvbnMg
+d2lsbCBoYXZlIEFRIGZlYXR1cmUgYml0IHNldC4NCg0KRmFpciBlbm91Z2gsIHNvIHdlIGhhdmUg
+bW9yZSB1c2VycyBvZiBhZG1pbiBxdWV1ZSB0aGFuIGp1c3QgTVNJLVggY29uZmlnLg0KDQo+IA0K
+PiA+IDIuIEFRIHRvIGZvbGxvd3MgSU5fT1JERVIgYW5kIElORElSRUNUX0RFU0MgbmVnb3RpYXRp
+b24gbGlrZSByZXN0IG9mDQo+ID4gdGhlIHF1ZXVlcyAzLiBVcGRhdGUgY29tbWl0IGxvZyB0byBk
+ZXNjcmliZSB3aHkgY29uZmlnIHNwYWNlIGlzIG5vdA0KPiA+IGNob3NlbiAoc2NhbGUsIG9uLWRp
+ZSByZWdpc3RlcnMsIHVuaWZvcm0gd2F5IHRvIGhhbmRsZSBhbGwgYXEgY21kcykNCj4gDQo+IA0K
+PiBJIGZhaWwgdG8gdW5kZXJzdGFuZCB0aGUgc2NhbGUvcmVnaXN0ZXJlcyBpc3N1ZXMuIFdpdGgg
+dGhlIG9uZSBvZiBteSBwcmV2aW91cw0KPiBwcm9wb3NhbCAoZGV2aWNlIHNlbGVjdG9yKSwgdGVj
+aG5pY2FsbHkgd2UgZG9uJ3QgZXZlbiBuZWVkIGFueSBjb25maWcgc3BhY2Ugb3INCj4gQkFSIGZv
+ciBWRiBvciBTRiBieSBtdWx0aXBsZXhpbmcgdGhlIHJlZ2lzdGVycyBmb3IgUEYuDQo+DQpTY2Fs
+ZSBpc3N1ZSBpczogd2hlbiB5b3Ugd2FudCB0byBjcmVhdGUsIHF1ZXJ5LCBtYW5pcHVsYXRlIGh1
+bmRyZWRzIG9mIG9iamVjdHMsIGhhdmluZyBzaGFyZWQgTU1JTyByZWdpc3RlciBvciBjb25maWd1
+cmF0aW9uIHJlZ2lzdGVyLCB3aWxsIGJlIHRvbyBzbG93Lg0KQW5kIGFkZGl0aW9uYWxseSBzdWNo
+IHJlZ2lzdGVyIHNldCBkb2Vzbid0IHNjYWxlIHRvIGFsbG93IHNoYXJpbmcgbGFyZ2UgbnVtYmVy
+IG9mIGJ5dGVzIGFzIERNQSBjYW5ub3QgYmUgZG9uZS4NCg0KRnJvbSBwaHlzaWNhbCBkZXZpY2Ug
+cGVyc3BlY3RpdmUsIGl0IGRvZXNu4oCZdCBzY2FsZSBiZWNhdXNlIGRldmljZSBuZWVkcyB0byBo
+YXZlIHRob3NlIHJlc291cmNlcyByZWFkeSB0byBhbnN3ZXIgb24gTU1JTyByZWFkcyBhbmQgZm9y
+IGh1bmRyZWRzIHRvIHRob3VzYW5kIG9mIGRldmljZXMgaXQganVzdCBjYW5ub3QgZG8gaXQuDQpU
+aGlzIGlzIG9uZSBvZiB0aGUgcmVhc29uIGZvciBiaXJ0aCBvZiBJTVMuDQoNCj4gSSBkbyBzZWUg
+b25lIGFkdmFudGFnZSBpcyB0aGF0IHRoZSBhZG1pbiB2aXJ0cXVldWUgaXMgdHJhbnNwb3J0IGlu
+ZGVwZW5kZW50DQo+IChvciBpdCBjb3VsZCBiZSB1c2VkIGFzIGEgdHJhbnNwb3J0KS4NCj4gDQpJ
+IGFtIHlldCB0byByZWFkIHRoZSB0cmFuc3BvcnQgcGFydCBmcm9tIFsxXS4NCg0KPiANCj4gPiA0
+LiBJbXByb3ZlIGRvY3VtZW50YXRpb24gYXJvdW5kIG1zaXggY29uZmlnIHRvIGxpbmsgdG8gc3Jp
+b3Ygc2VjdGlvbiBvZiB2aXJ0aW8NCj4gc3BlYw0KPiA+IDUuIERlc2NyaWJlIGVycm9yIHRoYXQg
+aWYgVkYgaXMgYm91bmQgdG8gdGhlIGRldmljZSwgYWRtaW4gY29tbWFuZHMNCj4gdGFyZ2V0aW5n
+IFZGIGNhbiBmYWlsLCBkZXNjcmliZSB0aGlzIGVycm9yIGNvZGUNCj4gPg0KPiA+IERpZCBJIG1p
+c3MgYW55dGhpbmc/DQo+ID4NCj4gPiBZZXQgdG8gcmVjZWl2ZSB5b3VyIGZlZWRiYWNrIG9uIGdy
+b3VwLCBpZi93aHkgaXMgaXQgbmVlZGVkIGFuZCwgd2h5L2lmIGl0IG11c3QNCj4gYmUgaW4gdGhp
+cyBwcm9wb3NhbCwgd2hhdCBwaWVjZXMgcHJldmVudHMgaXQgZG8gYXMgZm9sbG93LW9uLg0KPiA+
+DQo+ID4gQ29ybmVsaWEsIEphc29uLA0KPiA+IENhbiB5b3UgcGxlYXNlIHJldmlldyBjdXJyZW50
+IHByb3Bvc2FsIGFzIHdlbGwgYmVmb3JlIHdlIHJldmlzZSB2Mj8NCj4gDQo+IA0KPiBJZiBJIHVu
+ZGVyc3RhbmQgY29ycmVjdGx5LCBtb3N0IG9mIHRoZSBmZWF0dXJlcyAoZXhjZXB0IGZvciB0aGUg
+YWRtaW4NCj4gdmlydHF1ZXVlIGluX29yZGVyIHN0dWZmcykgYXJlIG5vdCBzcGVjaWZpYyB0byB0
+aGUgYWRtaW4gdmlydHF1ZXVlLiBBcw0KPiBkaXNjdXNzZWQgaW4gdGhlIHByZXZpb3VzIHZlcnNp
+b25zLCBJIHN0aWxsIHRoaW5rIGl0J3MgYmV0dGVyOg0KPiANCj4gMSkgYWRkaW5nIHNlY3Rpb25z
+IGluIHRoZSBiYXNpYyBkZXZpY2UgZmFjaWxpdHkgb3IgZGF0YSBzdHJ1Y3R1cmUgZm9yDQo+IHBy
+b3Zpc2lvbmluZyBhbmQgTVNJDQo+IDIpIGludHJvZHVjZSBhZG1pbiB2aXJ0cXVldWUgb24gdG9w
+IGFzIGFuIGRldmljZSBpbnRlcmZhY2UgZm9yIHRob3NlDQo+IGZlYXR1cmVzDQo+DQpJIGRpZG4n
+dCBmb2xsb3cgeW91ciBzdWdnZXN0aW9uLiBDYW4geW91IHBsZWFzZSBleHBsYWluPw0KU3BlY2lm
+aWNhbGx5ICJkYXRhIHN0cnVjdHVyZSBmb3IgcHJvdmlzaW9uaW5nIGFuZCBNU0kiLi4NCiANCj4g
+VGhlIGxlYXZlcyB0aGUgY2hhbmNlIGZvciBmdXR1cmUgZXh0ZW5zaW9ucyB0byBhbGxvdyB0aG9z
+ZSBmZWF0dXJlcyB0bw0KPiBiZSB1c2VkIGJ5IHRyYW5zcG9ydCBzcGVjaWZpYyBpbnRlcmZhY2Ug
+d2hpY2ggd2lsbCBiZW5lZml0IGZvcg0KPiANCkFRIGFsbG93cyBjb21tdW5pY2F0aW9uIChjb21t
+YW5kLCByZXNwb25zZSkgYmV0d2VlbiBkcml2ZXIgYW5kIGRldmljZSBpbiB0cmFuc3BvcnQgaW5k
+ZXBlbmRlbnQgd2F5Lg0KU29tZXRpbWVzIGl0IHF1ZXJ5L3NldCB0cmFuc3BvcnQgc3BlY2lmaWMg
+ZmllbGRzIGxpa2UgTVNJLVggdmVjdG9ycyBvZiBWRi4NClNvbWV0aW1lcyBkZXZpY2UgY29uZmln
+dXJlIGl0cyBvbiBJTVMgaW50ZXJydXB0Lg0KU29tZXRoaW5nIGVsc2UgaW4gZnV0dXJlLg0KU28g
+aXQgaXMgcmVhbGx5IGEgZ2VuZXJpYyByZXF1ZXN0LXJlc3BvbnNlIHF1ZXVlLg0KDQo+IFsxXQ0K
+PiBodHRwczovL2xpc3RzLm9hc2lzLW9wZW4ub3JnL2FyY2hpdmVzL3ZpcnRpby1jb21tZW50LzIw
+MjEwOC9tc2cwMDAyNS5odG1sDQo=
 
