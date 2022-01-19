@@ -1,9 +1,9 @@
-Return-Path: <mst@redhat.com>
-Date: Wed, 19 Jan 2022 03:21:26 -0500
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: Re: [virtio-dev] Re: [PATCH 2/5] Introduce
+Return-Path: <parav@nvidia.com>
+From: Parav Pandit <parav@nvidia.com>
+Subject: RE: [virtio-dev] Re: [PATCH 2/5] Introduce
  VIRTIO_F_ADMIN_VQ_INDIRECT_DESC/VIRTIO_F_ADMIN_VQ_IN_ORDER
-Message-ID: <20220119031801-mutt-send-email-mst@kernel.org>
+Date: Wed, 19 Jan 2022 10:10:38 +0000
+Message-ID: <DM8PR12MB5480F3C323C7B7DBD099BBD9DC599@DM8PR12MB5480.namprd12.prod.outlook.com>
 References: <20220118014737-mutt-send-email-mst@kernel.org>
  <PH0PR12MB5481B99E351B624A27378BC5DC589@PH0PR12MB5481.namprd12.prod.outlook.com>
  <20220118020831-mutt-send-email-mst@kernel.org>
@@ -14,58 +14,61 @@ References: <20220118014737-mutt-send-email-mst@kernel.org>
  <PH0PR12MB5481134129490AE3D3C95039DC589@PH0PR12MB5481.namprd12.prod.outlook.com>
  <20220119021910-mutt-send-email-mst@kernel.org>
  <PH0PR12MB5481E871F07BAA8BE043CCB9DC599@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20220119031801-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20220119031801-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <PH0PR12MB5481E871F07BAA8BE043CCB9DC599@PH0PR12MB5481.namprd12.prod.outlook.com>
+Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-To: Parav Pandit <parav@nvidia.com>
+Content-Transfer-Encoding: base64
+To: "Michael S. Tsirkin" <mst@redhat.com>
 Cc: Max Gurtovoy <mgurtovoy@nvidia.com>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "cohuck@redhat.com" <cohuck@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "jasowang@redhat.com" <jasowang@redhat.com>, Shahaf Shuler <shahafs@nvidia.com>, Oren Duer <oren@nvidia.com>, "stefanha@redhat.com" <stefanha@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, Jan 19, 2022 at 08:15:50AM +0000, Parav Pandit wrote:
-> > > Virtio driver should not incur any additional complexity in re-reading vector
-> > etc.
-> > 
-> > I think it does this already.
-> When does it re-read?
-> I do not follow your point of "ask driver to read back any vector". When do you want to do this?
-
-
-After mapping an event to vector, the
-driver MUST verify success by reading the Vector field value: on
-success, the previously written value is returned, and on
-failure, NO_VECTOR is returned. If a mapping failure is detected,
-the driver MAY retry mapping with fewer vectors, disable MSI-X
-or report device failure.
-
-
-
-> > 
-> > > All the msix config should happen much before drivers gets loaded for the VF.
-> > > It is PCI layer of the HV to provide a stable device to virtio device driver which
-> > is not undergoing msix table changes, when virtio device driver is operating on
-> > it.
-> > 
-> > 
-> > Problem is in the guest though. I'm not sure we can rely on this part being part
-> > of the driver and not part of the OS.
-> It is part of the system software that consist of virtio driver, pci subsystem and user interface.
-> I do not follow your comment about "problem is in guest though".
-
-sorry I meant host of course.
-
-> Can you please explain?
-> VF is simply not available to the guest, when HV has not given it. And
-> when its given, HV doesn’t modify the msix in some random manner.
-
-I am concerned that we can not be sure that changing MSIX capability
-while device is present is safe since spec does not promise
-the capability is not read by host at boot. However, given device can instead
-fail to map events to vectors, even if it is not safe we have other
-ways to fail gracefully. It's probably a good idea to mention all
-this in the spec text.
-
--- 
-MST
+DQo+IEZyb206IE1pY2hhZWwgUy4gVHNpcmtpbiA8bXN0QHJlZGhhdC5jb20+DQo+IFNlbnQ6IFdl
+ZG5lc2RheSwgSmFudWFyeSAxOSwgMjAyMiAxOjUxIFBNDQo+IA0KPiBPbiBXZWQsIEphbiAxOSwg
+MjAyMiBhdCAwODoxNTo1MEFNICswMDAwLCBQYXJhdiBQYW5kaXQgd3JvdGU6DQo+ID4gPiA+IFZp
+cnRpbyBkcml2ZXIgc2hvdWxkIG5vdCBpbmN1ciBhbnkgYWRkaXRpb25hbCBjb21wbGV4aXR5IGlu
+DQo+ID4gPiA+IHJlLXJlYWRpbmcgdmVjdG9yDQo+ID4gPiBldGMuDQo+ID4gPg0KPiA+ID4gSSB0
+aGluayBpdCBkb2VzIHRoaXMgYWxyZWFkeS4NCj4gPiBXaGVuIGRvZXMgaXQgcmUtcmVhZD8NCj4g
+PiBJIGRvIG5vdCBmb2xsb3cgeW91ciBwb2ludCBvZiAiYXNrIGRyaXZlciB0byByZWFkIGJhY2sg
+YW55IHZlY3RvciIuIFdoZW4gZG8NCj4geW91IHdhbnQgdG8gZG8gdGhpcz8NCj4gDQo+IA0KPiBB
+ZnRlciBtYXBwaW5nIGFuIGV2ZW50IHRvIHZlY3RvciwgdGhlDQo+IGRyaXZlciBNVVNUIHZlcmlm
+eSBzdWNjZXNzIGJ5IHJlYWRpbmcgdGhlIFZlY3RvciBmaWVsZCB2YWx1ZTogb24gc3VjY2Vzcywg
+dGhlDQo+IHByZXZpb3VzbHkgd3JpdHRlbiB2YWx1ZSBpcyByZXR1cm5lZCwgYW5kIG9uIGZhaWx1
+cmUsIE5PX1ZFQ1RPUiBpcyByZXR1cm5lZC4gSWYNCj4gYSBtYXBwaW5nIGZhaWx1cmUgaXMgZGV0
+ZWN0ZWQsIHRoZSBkcml2ZXIgTUFZIHJldHJ5IG1hcHBpbmcgd2l0aCBmZXdlcg0KPiB2ZWN0b3Jz
+LCBkaXNhYmxlIE1TSS1YIG9yIHJlcG9ydCBkZXZpY2UgZmFpbHVyZS4NCk9rIEkgZ290IGl0IG5v
+dy4NCkJ1dCBpbnNhbmUgSFYgY2FuIGF0dGVtcHQgdG8gY2hhbmdlIHRoZSB2YWx1ZSB0aGlzIHZl
+Y3RvciBldmVuIGFmdGVyIHRoaXMgcmVhZCB3YXMgc3VjY2Vzc2Z1bC4NCkFuZCBpdCB3aWxsIG9i
+dmlvdXNseSBicmVhayB0aGUgVk0uDQpUaGlzIGlzbid0IHRoZSB1c2FnZSBtb2RlbC4NClBGIChh
+ZG1pbiBkZXZpY2UpIHVzZXIgZ2l2aW5nIFZGIHRvIFZNICggPSBzeXN0ZW0gc29mdHdhcmUpIGhh
+cyB0byBlbnN1cmUgdGhhdCB0aGV5IGRvbuKAmXQgZ2l2ZSBWRiB0byBWTSB3aGlsZSBpbiBtaWRk
+bGUgb2YgY29uZmlndXJhdGlvbi4NCldlIG11c3QgYWRkIGl0IHRvIHRoZSBzcGVjIGluIHYyLg0K
+DQo+IA0KPiA+ID4NCj4gPiA+ID4gQWxsIHRoZSBtc2l4IGNvbmZpZyBzaG91bGQgaGFwcGVuIG11
+Y2ggYmVmb3JlIGRyaXZlcnMgZ2V0cyBsb2FkZWQgZm9yIHRoZQ0KPiBWRi4NCj4gPiA+ID4gSXQg
+aXMgUENJIGxheWVyIG9mIHRoZSBIViB0byBwcm92aWRlIGEgc3RhYmxlIGRldmljZSB0byB2aXJ0
+aW8NCj4gPiA+ID4gZGV2aWNlIGRyaXZlciB3aGljaA0KPiA+ID4gaXMgbm90IHVuZGVyZ29pbmcg
+bXNpeCB0YWJsZSBjaGFuZ2VzLCB3aGVuIHZpcnRpbyBkZXZpY2UgZHJpdmVyIGlzDQo+ID4gPiBv
+cGVyYXRpbmcgb24gaXQuDQo+ID4gPg0KPiA+ID4NCj4gPiA+IFByb2JsZW0gaXMgaW4gdGhlIGd1
+ZXN0IHRob3VnaC4gSSdtIG5vdCBzdXJlIHdlIGNhbiByZWx5IG9uIHRoaXMNCj4gPiA+IHBhcnQg
+YmVpbmcgcGFydCBvZiB0aGUgZHJpdmVyIGFuZCBub3QgcGFydCBvZiB0aGUgT1MuDQo+ID4gSXQg
+aXMgcGFydCBvZiB0aGUgc3lzdGVtIHNvZnR3YXJlIHRoYXQgY29uc2lzdCBvZiB2aXJ0aW8gZHJp
+dmVyLCBwY2kgc3Vic3lzdGVtDQo+IGFuZCB1c2VyIGludGVyZmFjZS4NCj4gPiBJIGRvIG5vdCBm
+b2xsb3cgeW91ciBjb21tZW50IGFib3V0ICJwcm9ibGVtIGlzIGluIGd1ZXN0IHRob3VnaCIuDQo+
+IA0KPiBzb3JyeSBJIG1lYW50IGhvc3Qgb2YgY291cnNlLg0KPiANCj4gPiBDYW4geW91IHBsZWFz
+ZSBleHBsYWluPw0KPiA+IFZGIGlzIHNpbXBseSBub3QgYXZhaWxhYmxlIHRvIHRoZSBndWVzdCwg
+d2hlbiBIViBoYXMgbm90IGdpdmVuIGl0LiBBbmQNCj4gPiB3aGVuIGl0cyBnaXZlbiwgSFYgZG9l
+c27igJl0IG1vZGlmeSB0aGUgbXNpeCBpbiBzb21lIHJhbmRvbSBtYW5uZXIuDQo+IA0KPiBJIGFt
+IGNvbmNlcm5lZCB0aGF0IHdlIGNhbiBub3QgYmUgc3VyZSB0aGF0IGNoYW5naW5nIE1TSVggY2Fw
+YWJpbGl0eSB3aGlsZQ0KPiBkZXZpY2UgaXMgcHJlc2VudCBpcyBzYWZlIHNpbmNlIHNwZWMgZG9l
+cyBub3QgcHJvbWlzZSB0aGUgY2FwYWJpbGl0eSBpcyBub3QgcmVhZA0KPiBieSBob3N0IGF0IGJv
+b3QuIEhvd2V2ZXIsIGdpdmVuIGRldmljZSBjYW4gaW5zdGVhZCBmYWlsIHRvIG1hcCBldmVudHMg
+dG8NCj4gdmVjdG9ycywgZXZlbiBpZiBpdCBpcyBub3Qgc2FmZSB3ZSBoYXZlIG90aGVyIHdheXMg
+dG8gZmFpbCBncmFjZWZ1bGx5LiBJdCdzIHByb2JhYmx5DQo+IGEgZ29vZCBpZGVhIHRvIG1lbnRp
+b24gYWxsIHRoaXMgaW4gdGhlIHNwZWMgdGV4dC4NCkl0IGlzIHRoZSBzeXN0ZW0gd2hvIGltcGxl
+bWVudHMgdmlydGlvIHNwZWMgaGFzIHRvIGVuc3VyZSB0aGF0IGl0IGRvZXNuJ3QgY2hhbmdlIG1z
+aXggY2FwYWJpbGl0eSB3aGlsZSBkZXZpY2UgaXMgdXNlLg0KVmlydGlvIHNwZWMgc2hvdWxkIGRl
+ZmluZSBhIG1pbmltdW0gZXhwZWN0YXRpb25zIGZyb20gdGhlIHN5c3RlbSBzdWNoIGFzIGZsdXNo
+aW5nIHRoZSBjYWNoZSBvciBubyBjYWNoZSBvciBub3QgdXNlIHRoZSBkZXZpY2Ugd2hpbGUgdW5k
+ZXJnb2luZyBjb25maWcuDQoNCkZvciBzdXJlLCB0aGlzIHdpbGwgYmUgYWRkZWQgdG8gdjIuDQo=
 
