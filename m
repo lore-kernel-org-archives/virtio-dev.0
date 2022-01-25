@@ -1,97 +1,42 @@
-Return-Path: <mst@redhat.com>
-Date: Mon, 17 Jan 2022 16:41:01 -0500
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: Re: [PATCH v1 0/5] VIRTIO: Provision maximum MSI-X vectors for a VF
-Message-ID: <20220117163205-mutt-send-email-mst@kernel.org>
-References: <20220113145103.26894-1-mgurtovoy@nvidia.com>
- <20220113132436-mutt-send-email-mst@kernel.org>
- <BN9PR12MB5196B58CA5D389F384F05936CE579@BN9PR12MB5196.namprd12.prod.outlook.com>
+Return-Path: <virtio-return-3642-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio@lists.oasis-open.org>
+List-Post: <mailto:virtio@lists.oasis-open.org>
+List-Help: <mailto:virtio-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
+From: Cornelia Huck <cohuck@redhat.com>
+References: <871r27qw8o.fsf@redhat.com>
+Date: Tue, 25 Jan 2022 11:58:04 +0100
+Message-ID: <87lez4jd4z.fsf@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <BN9PR12MB5196B58CA5D389F384F05936CE579@BN9PR12MB5196.namprd12.prod.outlook.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-To: Shahaf Shuler <shahafs@nvidia.com>
-Cc: Max Gurtovoy <mgurtovoy@nvidia.com>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "cohuck@redhat.com" <cohuck@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "jasowang@redhat.com" <jasowang@redhat.com>, Parav Pandit <parav@nvidia.com>, Oren Duer <oren@nvidia.com>, "stefanha@redhat.com" <stefanha@redhat.com>
+Subject: [virtio] The virtio spec is now in FREEZE for 1.2
+Content-Type: text/plain
+To: virtio@lists.oasis-open.org, virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+Cc: "Michael S. Tsirkin" <mst@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Mon, Jan 17, 2022 at 10:00:21AM +0000, Shahaf Shuler wrote:
-> Thursday, January 13, 2022 8:32 PM, Michael S. Tsirkin:
-> > Subject: Re: [PATCH v1 0/5] VIRTIO: Provision maximum MSI-X vectors for a
-> > VF
-> > 
-> > On Thu, Jan 13, 2022 at 04:50:58PM +0200, Max Gurtovoy wrote:
-> > > Hi,
-> > >
-> > > In a PCI SR-IOV configuration, MSI-X vectors of the device is precious
-> > > device resource. Hence making efficient use of it based on the use
-> > > case that aligns to the VM configuration is desired for best system
-> > > performance.
-> > >
-> > > For example, today's static assignment of the amount of MSI-X vectors
-> > > doesn't allow sophisticated utilization of resources.
-> > >
-> > > A typical cloud provider SR-IOV use case is to create many VFs for use
-> > > by guest VMs. Each VM might have a different purpose and different
-> > > amount of resources accordingly (e.g. number of CPUs). A common driver
-> > > usage of device's MSI-X vectors is proportional to the number of CPUs
-> > > in the VM. Since the system administrator might know the amount of
-> > > CPUs in the requested VM, he can also configure the VF's MSI-X vectors
-> > > amount proportional to the number of CPUs in the VM. In this way, the
-> > > utilization of the physical hardware will be improved.
-> > >
-> > > Today we have some operating systems that support provisioning MSI-X
-> > > vectors for PCI VFs.
-> > >
-> > > Update the specification to have a method to change the number of
-> > > MSI-X vectors supported by a VF using the PF admin virtqueue
-> > > interface. For that, create a generic infrastructure for managing PCI
-> > > resources of the managed VF by its parent PF.
-> > 
-> > Can you describe in the cover letter or the commit log of the admin VQ patch
-> > the motivation for using a VQ and not memory mapped space for this
-> > capability?
-> > In fact I feel at least some commands would be better replaced with a
-> > memory mapped structure.
-> 
-> I am wondering what is the motivation to go for memory mapped structures for such control operations. 
-> 
-> I can fully understand why data plane related fields should be placed on MMIO structures.
+The virtio spec is now in freeze for the upcoming 1.2 release.
 
-Actually, data plane is usually in a VQ for us, since MMIO accesses
-trigger VM exits.
+What does this mean?
+- No more issues will be accepted into the 1.2 release, i.e. no more
+  votes will be started. Anything outstanding will be delayed until
+  after we have released 1.2 (which we hope to have done by the end of
+  March.)
+- We may still do some editorial fixups.
+- Behind the scenes, we will work on getting a Committee Specification
+  Draft ready and out for review.
 
-> However for control, memory mapped commands are:
-> 1. More constraining for the device implementor and thus not scalable. MMIO direct access implies on-die resources to be allocated. You can see as example the IMS section on Scalable IOV spec[1] that follows this exact design
+What does this NOT mean?
+- No freeze on opening new issues, they will simply target the next
+  release.
+- Most certainly no freeze on discussions! Just keep in mind that the
+  chairs/editors may be busy with other things.
 
-Oh it's a PCIe thing, right? Read can not depend on another read?
-So this is one of the reasons we don't put big structures in MMIO.
-But a couple of bytes is really no big deal IMHO.
-
-> 2. Hard to maintain - each new command may add new MMIO fields, making the device BAR complex.
-
-Well actually we have very nice APIs to handle dependency
-between memory and feature bits. It's much harder to abstract
-away VQ commands, we don't have anything uniform for that.
-
-> 3. Implies a non-uniform design - some commands are memory mapped,
-> some commands are VQ based. How do we provide the guiding rules to
-> decide? Isn't it simpler to have a single i/f for all the control? 
-
-newdevice.tex has some guiding principles, see "What Device
-Configuration Space Layout?".
-
-But yes, if the answer is "commands A,B,C do not fit in
-config space, we placed commands D,E in a VQ for consitency"
-then that is an ok answer, but it's something to be mentioned
-in the commit log.
+We will update you on the progress along the way.
 
 
-
-> 
-> [1]
-> https://www.intel.com/content/www/us/en/developer/articles/technical/introducing-intel-scalable-io-virtualization.html
-
-config space is generally more robust, requires less code
-on both host and guest side.
-
+---------------------------------------------------------------------
+To unsubscribe from this mail list, you must leave the OASIS TC that 
+generates this mail.  Follow this link to all your TCs in OASIS at:
+https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
 
