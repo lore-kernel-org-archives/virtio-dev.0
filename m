@@ -1,9 +1,9 @@
-Return-Path: <jasowang@redhat.com>
-Message-ID: <3418f436-2d0b-c0ee-264d-2153315f1c56@redhat.com>
-Date: Tue, 25 Jan 2022 11:45:33 +0800
-MIME-Version: 1.0
-Subject: Re: [PATCH 2/5] Introduce
+Return-Path: <parav@nvidia.com>
+From: Parav Pandit <parav@nvidia.com>
+Subject: RE: [PATCH 2/5] Introduce
  VIRTIO_F_ADMIN_VQ_INDIRECT_DESC/VIRTIO_F_ADMIN_VQ_IN_ORDER
+Date: Tue, 25 Jan 2022 04:07:34 +0000
+Message-ID: <PH0PR12MB5481E3B9417AC14BBF194122DC5F9@PH0PR12MB5481.namprd12.prod.outlook.com>
 References: <20220113145103.26894-1-mgurtovoy@nvidia.com>
  <20220113145103.26894-3-mgurtovoy@nvidia.com>
  <20220113102218-mutt-send-email-mst@kernel.org>
@@ -19,95 +19,85 @@ References: <20220113145103.26894-1-mgurtovoy@nvidia.com>
  <15063a94-85ae-fd1a-6ff1-458a039d1def@redhat.com>
  <PH0PR12MB5481D5BD8BB8CFDEFA218D2FDC599@PH0PR12MB5481.namprd12.prod.outlook.com>
  <PH0PR12MB5481F371AF762EE35F25EC1BDC599@PH0PR12MB5481.namprd12.prod.outlook.com>
-From: Jason Wang <jasowang@redhat.com>
-In-Reply-To: <PH0PR12MB5481F371AF762EE35F25EC1BDC599@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <3418f436-2d0b-c0ee-264d-2153315f1c56@redhat.com>
+In-Reply-To: <3418f436-2d0b-c0ee-264d-2153315f1c56@redhat.com>
+MIME-Version: 1.0
 Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-To: Parav Pandit <parav@nvidia.com>, "Michael S. Tsirkin" <mst@redhat.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+To: Jason Wang <jasowang@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>
 Cc: Max Gurtovoy <mgurtovoy@nvidia.com>, "cohuck@redhat.com" <cohuck@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Shahaf Shuler <shahafs@nvidia.com>, Oren Duer <oren@nvidia.com>, "stefanha@redhat.com" <stefanha@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-
-在 2022/1/20 上午4:25, Parav Pandit 写道:
-> Hi Jason,
->
->> From: Parav Pandit
->> Sent: Wednesday, January 19, 2022 10:18 AM
->>
->>
->>> From: Jason Wang <jasowang@redhat.com>
->>> Sent: Wednesday, January 19, 2022 9:33 AM
->>>
->>>
->>> It it means IMS, there's already a proposal[1] that introduce MSI
->>> commands via the admin virtqueue. And we had similar requirement for
->>> virtio-MMIO[2] and managed device or SF [3], so I would rather to
->>> introduce IMS (need a better name though) as a basic facility instead
->>> of tie it to any specific transport.
->>>
->> IMS of [1] is a interrupt configuration by the virtio driver for the device is it
->> driving, which needs a queue.
->> So regardless of the device type as PCI PF/VF/SF/ADI, there is desire to have a
->> generic admin queue not attached to device type.
->> And AQ in this proposal exactly serves this purpose.
->>
->> Device configuring its own IMS vector vs PCI PF configuring VF's MSI-X max
->> vector count are two different functionality.
->> Both of these commands can ride on a generic queue.
->> However the queue is not same, because
->> PF owns its own admin queue (for vf msix config), VF or SF operates its own
->> admin queue (for IMS config).
->>
->> So a good example is,
->> 1. PCI PF configures 8 MSI-X or 16 IMS vectors for the VF using PF_AQ in HV.
->> 2. PCI VF when using IMS configures, IMS data, vector, mask etc using VF_AQ in
->> GVM.
->> Both the functions will have AQ feature bit set.
->>
->> Fair enough, so we have more users of admin queue than just MSI-X config.
->>
-> If we treat the AQ as any other VQ, than IMS configuration by the virtio driver of #2 for VF or SF cannot be done through AQ.
-> Because AQ needs to be live before setting DRIVER_OK.
-> And spec mandates "The driver MUST configure the other virtqueue fields before enabling the virtqueue with queue_enable."
-> This includes the vector configuration.
-> So AQ will operate in polling mode which is not so good.
-> And it cannot be disabled to update MSI-X/IMS vectore because spec says "The driver MUST NOT write a 0 to queue_enable.".
->
-> Make special exception to AQ is equally not good in physical device implementation given all the queue config is located in single config space.
->
-> So a better approach for IMS configuration would be to have, limited config registers to bootstrap IMS configuration.
-> Something like,
->
-> struct virtio_pci_dev_interrupt_cfg {
-> 	le16 max_device_interrupts; /* read-only tells maximum ims interrupts */
-
-
-Is it better to use the same terminology with MSI capability like 
-"max_device_vectors"
-
-
-> 	le16 refer_index; /* write-only interrupt index to program */
-> 	u8 status;	/* read only response by device, 0x0 = success, 0x1=busy, other error codes */
-> 	u8 enable;	/* enable/disable interrupt referred by index */
-
-
-Any reason we need this assuming we've already had PCI_NO_VECTOR in 
-common cfg? I think what's better to have is the ability to mask and 
-unmask a vector.
-
-
-> 	le16 reserved_pad;
-> 	u64 addr; /* write only interrupt addr handle on MSIX TLPs */
-> 	u32 data; /* write only interrupt data handle.. */
-> };
-
-
-Is this better to split the above into different commands?
-
-Thanks
-
-
-> This way, VF, SF can configure large number of vectors before starting the queue and without on-chip resource.
-> Only on-chip resource required per VF is 20 bytes of above cfg registers.
+DQo+IEZyb206IEphc29uIFdhbmcgPGphc293YW5nQHJlZGhhdC5jb20+DQo+IFNlbnQ6IFR1ZXNk
+YXksIEphbnVhcnkgMjUsIDIwMjIgOToxNiBBTQ0KPiANCj4g5ZyoIDIwMjIvMS8yMCDkuIrljYg0
+OjI1LCBQYXJhdiBQYW5kaXQg5YaZ6YGTOg0KPiA+IEhpIEphc29uLA0KPiA+DQo+ID4+IEZyb206
+IFBhcmF2IFBhbmRpdA0KPiA+PiBTZW50OiBXZWRuZXNkYXksIEphbnVhcnkgMTksIDIwMjIgMTA6
+MTggQU0NCj4gPj4NCj4gPj4NCj4gPj4+IEZyb206IEphc29uIFdhbmcgPGphc293YW5nQHJlZGhh
+dC5jb20+DQo+ID4+PiBTZW50OiBXZWRuZXNkYXksIEphbnVhcnkgMTksIDIwMjIgOTozMyBBTQ0K
+PiA+Pj4NCj4gPj4+DQo+ID4+PiBJdCBpdCBtZWFucyBJTVMsIHRoZXJlJ3MgYWxyZWFkeSBhIHBy
+b3Bvc2FsWzFdIHRoYXQgaW50cm9kdWNlIE1TSQ0KPiA+Pj4gY29tbWFuZHMgdmlhIHRoZSBhZG1p
+biB2aXJ0cXVldWUuIEFuZCB3ZSBoYWQgc2ltaWxhciByZXF1aXJlbWVudCBmb3INCj4gPj4+IHZp
+cnRpby1NTUlPWzJdIGFuZCBtYW5hZ2VkIGRldmljZSBvciBTRiBbM10sIHNvIEkgd291bGQgcmF0
+aGVyIHRvDQo+ID4+PiBpbnRyb2R1Y2UgSU1TIChuZWVkIGEgYmV0dGVyIG5hbWUgdGhvdWdoKSBh
+cyBhIGJhc2ljIGZhY2lsaXR5DQo+ID4+PiBpbnN0ZWFkIG9mIHRpZSBpdCB0byBhbnkgc3BlY2lm
+aWMgdHJhbnNwb3J0Lg0KPiA+Pj4NCj4gPj4gSU1TIG9mIFsxXSBpcyBhIGludGVycnVwdCBjb25m
+aWd1cmF0aW9uIGJ5IHRoZSB2aXJ0aW8gZHJpdmVyIGZvciB0aGUNCj4gPj4gZGV2aWNlIGlzIGl0
+IGRyaXZpbmcsIHdoaWNoIG5lZWRzIGEgcXVldWUuDQo+ID4+IFNvIHJlZ2FyZGxlc3Mgb2YgdGhl
+IGRldmljZSB0eXBlIGFzIFBDSSBQRi9WRi9TRi9BREksIHRoZXJlIGlzIGRlc2lyZQ0KPiA+PiB0
+byBoYXZlIGEgZ2VuZXJpYyBhZG1pbiBxdWV1ZSBub3QgYXR0YWNoZWQgdG8gZGV2aWNlIHR5cGUu
+DQo+ID4+IEFuZCBBUSBpbiB0aGlzIHByb3Bvc2FsIGV4YWN0bHkgc2VydmVzIHRoaXMgcHVycG9z
+ZS4NCj4gPj4NCj4gPj4gRGV2aWNlIGNvbmZpZ3VyaW5nIGl0cyBvd24gSU1TIHZlY3RvciB2cyBQ
+Q0kgUEYgY29uZmlndXJpbmcgVkYncw0KPiA+PiBNU0ktWCBtYXggdmVjdG9yIGNvdW50IGFyZSB0
+d28gZGlmZmVyZW50IGZ1bmN0aW9uYWxpdHkuDQo+ID4+IEJvdGggb2YgdGhlc2UgY29tbWFuZHMg
+Y2FuIHJpZGUgb24gYSBnZW5lcmljIHF1ZXVlLg0KPiA+PiBIb3dldmVyIHRoZSBxdWV1ZSBpcyBu
+b3Qgc2FtZSwgYmVjYXVzZSBQRiBvd25zIGl0cyBvd24gYWRtaW4gcXVldWUNCj4gPj4gKGZvciB2
+ZiBtc2l4IGNvbmZpZyksIFZGIG9yIFNGIG9wZXJhdGVzIGl0cyBvd24gYWRtaW4gcXVldWUgKGZv
+ciBJTVMNCj4gPj4gY29uZmlnKS4NCj4gPj4NCj4gPj4gU28gYSBnb29kIGV4YW1wbGUgaXMsDQo+
+ID4+IDEuIFBDSSBQRiBjb25maWd1cmVzIDggTVNJLVggb3IgMTYgSU1TIHZlY3RvcnMgZm9yIHRo
+ZSBWRiB1c2luZyBQRl9BUSBpbiBIVi4NCj4gPj4gMi4gUENJIFZGIHdoZW4gdXNpbmcgSU1TIGNv
+bmZpZ3VyZXMsIElNUyBkYXRhLCB2ZWN0b3IsIG1hc2sgZXRjIHVzaW5nDQo+ID4+IFZGX0FRIGlu
+IEdWTS4NCj4gPj4gQm90aCB0aGUgZnVuY3Rpb25zIHdpbGwgaGF2ZSBBUSBmZWF0dXJlIGJpdCBz
+ZXQuDQo+ID4+DQo+ID4+IEZhaXIgZW5vdWdoLCBzbyB3ZSBoYXZlIG1vcmUgdXNlcnMgb2YgYWRt
+aW4gcXVldWUgdGhhbiBqdXN0IE1TSS1YIGNvbmZpZy4NCj4gPj4NCj4gPiBJZiB3ZSB0cmVhdCB0
+aGUgQVEgYXMgYW55IG90aGVyIFZRLCB0aGFuIElNUyBjb25maWd1cmF0aW9uIGJ5IHRoZSB2aXJ0
+aW8NCj4gZHJpdmVyIG9mICMyIGZvciBWRiBvciBTRiBjYW5ub3QgYmUgZG9uZSB0aHJvdWdoIEFR
+Lg0KPiA+IEJlY2F1c2UgQVEgbmVlZHMgdG8gYmUgbGl2ZSBiZWZvcmUgc2V0dGluZyBEUklWRVJf
+T0suDQo+ID4gQW5kIHNwZWMgbWFuZGF0ZXMgIlRoZSBkcml2ZXIgTVVTVCBjb25maWd1cmUgdGhl
+IG90aGVyIHZpcnRxdWV1ZSBmaWVsZHMNCj4gYmVmb3JlIGVuYWJsaW5nIHRoZSB2aXJ0cXVldWUg
+d2l0aCBxdWV1ZV9lbmFibGUuIg0KPiA+IFRoaXMgaW5jbHVkZXMgdGhlIHZlY3RvciBjb25maWd1
+cmF0aW9uLg0KPiA+IFNvIEFRIHdpbGwgb3BlcmF0ZSBpbiBwb2xsaW5nIG1vZGUgd2hpY2ggaXMg
+bm90IHNvIGdvb2QuDQo+ID4gQW5kIGl0IGNhbm5vdCBiZSBkaXNhYmxlZCB0byB1cGRhdGUgTVNJ
+LVgvSU1TIHZlY3RvcmUgYmVjYXVzZSBzcGVjIHNheXMNCj4gIlRoZSBkcml2ZXIgTVVTVCBOT1Qg
+d3JpdGUgYSAwIHRvIHF1ZXVlX2VuYWJsZS4iLg0KPiA+DQo+ID4gTWFrZSBzcGVjaWFsIGV4Y2Vw
+dGlvbiB0byBBUSBpcyBlcXVhbGx5IG5vdCBnb29kIGluIHBoeXNpY2FsIGRldmljZQ0KPiBpbXBs
+ZW1lbnRhdGlvbiBnaXZlbiBhbGwgdGhlIHF1ZXVlIGNvbmZpZyBpcyBsb2NhdGVkIGluIHNpbmds
+ZSBjb25maWcgc3BhY2UuDQo+ID4NCj4gPiBTbyBhIGJldHRlciBhcHByb2FjaCBmb3IgSU1TIGNv
+bmZpZ3VyYXRpb24gd291bGQgYmUgdG8gaGF2ZSwgbGltaXRlZCBjb25maWcNCj4gcmVnaXN0ZXJz
+IHRvIGJvb3RzdHJhcCBJTVMgY29uZmlndXJhdGlvbi4NCj4gPiBTb21ldGhpbmcgbGlrZSwNCj4g
+Pg0KPiA+IHN0cnVjdCB2aXJ0aW9fcGNpX2Rldl9pbnRlcnJ1cHRfY2ZnIHsNCj4gPiAJbGUxNiBt
+YXhfZGV2aWNlX2ludGVycnVwdHM7IC8qIHJlYWQtb25seSB0ZWxscyBtYXhpbXVtIGltcw0KPiBp
+bnRlcnJ1cHRzDQo+ID4gKi8NCj4gDQo+IA0KPiBJcyBpdCBiZXR0ZXIgdG8gdXNlIHRoZSBzYW1l
+IHRlcm1pbm9sb2d5IHdpdGggTVNJIGNhcGFiaWxpdHkgbGlrZQ0KPiAibWF4X2RldmljZV92ZWN0
+b3JzIg0KPg0KWWVwLiANCiANCj4gDQo+ID4gCWxlMTYgcmVmZXJfaW5kZXg7IC8qIHdyaXRlLW9u
+bHkgaW50ZXJydXB0IGluZGV4IHRvIHByb2dyYW0gKi8NCj4gPiAJdTggc3RhdHVzOwkvKiByZWFk
+IG9ubHkgcmVzcG9uc2UgYnkgZGV2aWNlLCAweDAgPSBzdWNjZXNzLA0KPiAweDE9YnVzeSwgb3Ro
+ZXIgZXJyb3IgY29kZXMgKi8NCj4gPiAJdTggZW5hYmxlOwkvKiBlbmFibGUvZGlzYWJsZSBpbnRl
+cnJ1cHQgcmVmZXJyZWQgYnkgaW5kZXggKi8NCj4gDQo+IA0KPiBBbnkgcmVhc29uIHdlIG5lZWQg
+dGhpcyBhc3N1bWluZyB3ZSd2ZSBhbHJlYWR5IGhhZCBQQ0lfTk9fVkVDVE9SIGluDQo+IGNvbW1v
+biBjZmc/IEkgdGhpbmsgd2hhdCdzIGJldHRlciB0byBoYXZlIGlzIHRoZSBhYmlsaXR5IHRvIG1h
+c2sgYW5kDQo+IHVubWFzayBhIHZlY3Rvci4NCj4gDQpZZXMuIG1hc2svdW5tYXNrIGlzIG1vcmUg
+YXBwcm9wcmlhdGUuIEkganVzdCBwdXQgYSBoaWdoIGxldmVsIHNrZXRjaCBvZiB3aGF0IHdlIG5l
+ZWQgdG8gZG8gb3V0c2lkZSBvZiBBUS4NCk5PX1ZFQ1RPUiBpcyBzb21ldGhpbmcgc3RvcmVkIGlu
+c2lkZSB0aGUgcXVldWUgY29uZmlnLg0KQWJvdmUgTU1JTyBzdHJ1Y3R1cmUgaXMgdG8gZW5hYmxl
+L2Rpc2FibGUgKG1hc2svdW5tYXNrKSBhIHNwZWNpZmljIHZlY3Rvci4NCg0KPiANCj4gPiAJbGUx
+NiByZXNlcnZlZF9wYWQ7DQo+ID4gCXU2NCBhZGRyOyAvKiB3cml0ZSBvbmx5IGludGVycnVwdCBh
+ZGRyIGhhbmRsZSBvbiBNU0lYIFRMUHMgKi8NCj4gPiAJdTMyIGRhdGE7IC8qIHdyaXRlIG9ubHkg
+aW50ZXJydXB0IGRhdGEgaGFuZGxlLi4gKi8NCj4gPiB9Ow0KPiANCj4gDQo+IElzIHRoaXMgYmV0
+dGVyIHRvIHNwbGl0IHRoZSBhYm92ZSBpbnRvIGRpZmZlcmVudCBjb21tYW5kcz8NCj4NClByb2Jh
+Ymx5IHllcywgSSB0aGluayB3ZSBhbHNvIG5lZWQgdGhlIGFiaWxpdHkgdG8gc2VlIGlmIGFkZHIg
+KyBkYXRhIGlzIG5lZWRlZC4NCkkgaGVhciBpbiBhbiBvZmZsaW5lIGRpc2N1c3Npb24gdGhhdCBh
+ZGRyICsgZGF0YSBpcyBub3QgYWx3YXlzIG5lY2Vzc2FyeSBhbmQgYnVyZGVuc29tZS4NClNvIHZp
+cnRpbyBhZGFwdGluZyB0byB0aGlzIGZsZXhpYmlsaXR5IHdpbGwgYmUgcHJvYmFibHkgYmV0dGVy
+Lg0KDQoNCg==
 
