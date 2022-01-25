@@ -1,104 +1,111 @@
-Return-Path: <pasic@linux.ibm.com>
-Date: Wed, 26 Jan 2022 16:10:36 +0100
-From: Halil Pasic <pasic@linux.ibm.com>
-Subject: Re: [virtio-comment] Re: [virtio] [PATCH] virtio: clarify feature
- negotiation
-Message-ID: <20220126161036.09c7c447.pasic@linux.ibm.com>
-In-Reply-To: <20220124132837-mutt-send-email-mst@kernel.org>
+Return-Path: <virtio-dev-return-9170-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id 6222198649D
+	for <virtio-dev@lists.oasis-open.org>; Tue, 25 Jan 2022 15:22:19 +0000 (UTC)
+From: Cornelia Huck <cohuck@redhat.com>
+In-Reply-To: <20220124174052.1b6b423e.pasic@linux.ibm.com>
 References: <20220114225032.290762-1-mst@redhat.com>
-	<20220119132319.5ee3821d.pasic@linux.ibm.com>
-	<20220119112059-mutt-send-email-mst@kernel.org>
-	<87k0eud0bi.fsf@redhat.com>
-	<20220121033806.70b55223.pasic@linux.ibm.com>
-	<87r191krbg.fsf@redhat.com>
-	<20220124174052.1b6b423e.pasic@linux.ibm.com>
-	<20220124132837-mutt-send-email-mst@kernel.org>
+ <20220119132319.5ee3821d.pasic@linux.ibm.com>
+ <20220119112059-mutt-send-email-mst@kernel.org>
+ <87k0eud0bi.fsf@redhat.com> <20220121033806.70b55223.pasic@linux.ibm.com>
+ <87r191krbg.fsf@redhat.com> <20220124174052.1b6b423e.pasic@linux.ibm.com>
+Date: Tue, 25 Jan 2022 16:22:05 +0100
+Message-ID: <87fspbkfhe.fsf@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 8bit
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Cornelia Huck <cohuck@redhat.com>, virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, virtio@lists.oasis-open.org, Viresh Kumar <viresh.kumar@linaro.org>, Jean-Philippe Brucker <jean-philippe@linaro.org>, Halil Pasic <pasic@linux.ibm.com>
+Subject: [virtio-dev] Re: [virtio-comment] Re: [virtio] [PATCH] virtio: clarify feature
+ negotiation
+Content-Type: text/plain
+To: Halil Pasic <pasic@linux.ibm.com>
+Cc: "Michael S. Tsirkin" <mst@redhat.com>, virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, virtio@lists.oasis-open.org, Halil Pasic <pasic@linux.ibm.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Mon, 24 Jan 2022 16:42:35 -0500
-"Michael S. Tsirkin" <mst@redhat.com> wrote:
+On Mon, Jan 24 2022, Halil Pasic <pasic@linux.ibm.com> wrote:
 
-> On Mon, Jan 24, 2022 at 05:40:52PM +0100, Halil Pasic wrote:
-[..]
-> > 
-> > So the drivers currently out there, that do the early config read to
-> > validate if they support some of the features don't fulfill the new
-> > driver requirements. In my reading of the spec, a driver that does
-> > not some fulfill the driver requirements is non-conform.  
-> 
-> It's true. However, that's a generic rule and specific devices
-> can differ. and if you look at specific instances, you will
-> see that they typically require that the feature is negotiated.
+> On Fri, 21 Jan 2022 17:05:07 +0100
+> Cornelia Huck <cohuck@redhat.com> wrote:
+>
+>> On Fri, Jan 21 2022, Halil Pasic <pasic@linux.ibm.com> wrote:
+>> 
+>> > On Thu, 20 Jan 2022 14:05:37 +0100
+>> > Cornelia Huck <cohuck@redhat.com> wrote:
+>> >  
+>> >> On Wed, Jan 19 2022, "Michael S. Tsirkin" <mst@redhat.com> wrote:
+>> >>   
+>> >> > On Wed, Jan 19, 2022 at 01:23:19PM +0100, Halil Pasic wrote:    
+>> >> >> 3) Features are written in 32 bit chunks. My guess is that what we
+>> >> >> want for "features acknowledged is": driver has written each chunk it
+>> >> >> knows about at least once. Of course, the question arises, what should
+>> >> >> the device do if config is read before that happens.    
+>> >> >
+>> >> > we are lucky that at present it's just mtu of the net device :).    
+>> >> 
+>> >> If, say, the driver writes the first chunk with the MTU bit, then reads
+>> >> the mtu config field, then writes the second chunk with VERSION_1, it
+>> >> should get the mtu in platform-endian (and on the next read after the
+>> >> second chunk has been written, in little endian.) I'd say that this is
+>> >> simply an issue of the driver not serializing its own reads/writes
+>> >> correctly :)
+>> >>   
+>> >
+>> > Point me to the sentence that says the driver did not serialize its own
+>> > reads/writes correctly please!
+>> >
+>> > We can't just come up with requirements when it suits us. Well, we can
+>> > but I argue, that should be the last resort.  
+>> 
+>> What I say is that the driver simply gets things back from the device
+>> that are consistent from the device's point of view.
+>
+> That is what I'm concerned about. The current proposal stipulates, that
+> the device needs to deliver a consistent config space, when it is in an
+> inconsistent state, in a sense that the feature set, that has been
+> written, is not supported. For example if I had a feature X2 that depends
+> on bit F2 which in turn depends on feature X1 and bit F1, and has a
+> config field C2 that is conditional on F2 and needs to be computed during
+> initialization of X1 and requires private values that were computed
+> during the initialization of the feature X1, I would refuse to
+> initialize X2 if bit F1 is not set, because there is no sane way to
+> do that without initializing X1 first. An thus there is no sane way
+> to compute C2.
 
-IMHO we should be careful about the spec contradicting itself, so I guess
-where a generic rule is overruled by device specific rules, we should
-use something like "unless stated otherwise in the device specific part
-of the specification ..."
+Well, if the device can't compute it, it can't... this needs to be
+specified on a per-device basis. But I don't see what that has to do
+with the device returning something that makes sense from its point of
+view? It simply needs a specification that defines a default value for
+the field if it hasn't been initialized yet?
 
-> For example:
-> 
-> \item If the VIRTIO_BLK_F_BLK_SIZE feature is negotiated,
->   \field{blk_size} can be read to determine the optimal sector size
->   for the driver to use.
-> 
+>
+>> If it cannot write
+>> a set of bits atomically, that it simply needs to expect that it can get
+>> different values at different times during the writing process. If it
+>> wants consistent values, it must not mix up non-atomic writes and
+>> reads -- but that's nothing special.
+>
+> IMHO if the spec promises consistent values under certain conditions,
+> then the device needs to deliver consistent values, at least under those
+> conditions. Are you telling me "after writing the subset of feature bits
+> to the device" somehow includes "in must not mix up ..."?
+>
+> You said in the hypothesized scenario the driver does not keep it's end
+> of the bargain. I asked to point me to the exact points in the spec
+> which got violated. I don't see those pointers in your response. Sorry.
+> So I'm asking again, can you please tell me which section, which
+> paragraph of the spec, or some linked spec is violated?
+>
+> Or did I misunderstand you? Were you not claiming that the given case
+> the driver would be in violation of the spec?
 
-There are two ways to read this, and right now you are choosing the
-first one:
-1) This kind of implicitly tells us, that if VIRTIO_BLK_F_BLK_SIZE
-feature not yet negotiated, the the driver can not read  and use
-the field to determine the optimal sector size.
-2) This is just a positive guarantee. This sentence does not tell us
-anything about what happens if feature is not (yet) negotiated. And that
-could compose with a generic guarantee in a sense, that this sentence
-says nothing about our situation, but the generic rule does give us the
-guarantee we need (field is readable and valid). 
+No, neither the driver nor the device are in violation of the spec. The
+driver gets what it is supposed to get; if it cannot deal with that,
+then it is a bug within the driver.
 
-> so a driver reading blk_size before FEATURES_OK is actually using
-> an undocumented aspect of the behaviour.
 
-Which actually does not even work for all supported platforms! 
-
-According to that, commit 82e89ea077b9 ("virtio-blk: Add validation for
-block size in config space") is simply bugous, right?
-
-Should we change the linux code accordingly?
-
-> 
-> compare this to MTU:
-> 
-> \item[VIRTIO_NET_F_MTU(3)] Device maximum MTU reporting is supported. If
->     offered by the device, device advises driver about the value of
->     its maximum MTU. If negotiated, the driver uses \field{mtu} as
->     the maximum MTU value.
-> 
-> from which it's clear that it can be read even if not
-> negotiated.
-
-I agree, this was probably the intention, nevertheless we should be
-careful to express our intention in a non-ambiguous way (see above).
-
-So is the current QEMU implementation of virtio-net is violating the
-spec under certain circumstances? I mean when \field{mtu} is read,
-before F_VERSION_1was written, ,  F_VERSION_1 was offered and guest
-endiannes is big-endian. 
-
-> 
-> So from that point of view, we are actually relaxing the requirements,
-> and yes we'll need to carefully go over each instance of
-> "offered".
-
-Which requirements do you mean here? The device requirements or the
-driver requirements?
-
-> I thought I did, but now I did a quick grep again and I found instances
-> in virtio-iommu.tex and virtio-gpio.tex
-> Both of these are new, so I think we can just fix them to "negotiated".
-> 
-
-[..]
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
