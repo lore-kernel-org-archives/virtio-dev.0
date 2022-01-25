@@ -1,9 +1,9 @@
-Return-Path: <parav@nvidia.com>
-From: Parav Pandit <parav@nvidia.com>
-Subject: RE: [PATCH 2/5] Introduce
+Return-Path: <jasowang@redhat.com>
+Message-ID: <3418f436-2d0b-c0ee-264d-2153315f1c56@redhat.com>
+Date: Tue, 25 Jan 2022 11:45:33 +0800
+MIME-Version: 1.0
+Subject: Re: [PATCH 2/5] Introduce
  VIRTIO_F_ADMIN_VQ_INDIRECT_DESC/VIRTIO_F_ADMIN_VQ_IN_ORDER
-Date: Wed, 19 Jan 2022 20:25:24 +0000
-Message-ID: <PH0PR12MB5481F371AF762EE35F25EC1BDC599@PH0PR12MB5481.namprd12.prod.outlook.com>
 References: <20220113145103.26894-1-mgurtovoy@nvidia.com>
  <20220113145103.26894-3-mgurtovoy@nvidia.com>
  <20220113102218-mutt-send-email-mst@kernel.org>
@@ -18,66 +18,96 @@ References: <20220113145103.26894-1-mgurtovoy@nvidia.com>
  <PH0PR12MB5481B99E351B624A27378BC5DC589@PH0PR12MB5481.namprd12.prod.outlook.com>
  <15063a94-85ae-fd1a-6ff1-458a039d1def@redhat.com>
  <PH0PR12MB5481D5BD8BB8CFDEFA218D2FDC599@PH0PR12MB5481.namprd12.prod.outlook.com>
-In-Reply-To: <PH0PR12MB5481D5BD8BB8CFDEFA218D2FDC599@PH0PR12MB5481.namprd12.prod.outlook.com>
-MIME-Version: 1.0
+ <PH0PR12MB5481F371AF762EE35F25EC1BDC599@PH0PR12MB5481.namprd12.prod.outlook.com>
+From: Jason Wang <jasowang@redhat.com>
+In-Reply-To: <PH0PR12MB5481F371AF762EE35F25EC1BDC599@PH0PR12MB5481.namprd12.prod.outlook.com>
 Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-To: Jason Wang <jasowang@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+To: Parav Pandit <parav@nvidia.com>, "Michael S. Tsirkin" <mst@redhat.com>
 Cc: Max Gurtovoy <mgurtovoy@nvidia.com>, "cohuck@redhat.com" <cohuck@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Shahaf Shuler <shahafs@nvidia.com>, Oren Duer <oren@nvidia.com>, "stefanha@redhat.com" <stefanha@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-SGkgSmFzb24sDQoNCj4gRnJvbTogUGFyYXYgUGFuZGl0DQo+IFNlbnQ6IFdlZG5lc2RheSwgSmFu
-dWFyeSAxOSwgMjAyMiAxMDoxOCBBTQ0KPiANCj4gDQo+ID4gRnJvbTogSmFzb24gV2FuZyA8amFz
-b3dhbmdAcmVkaGF0LmNvbT4NCj4gPiBTZW50OiBXZWRuZXNkYXksIEphbnVhcnkgMTksIDIwMjIg
-OTozMyBBTQ0KPiA+DQo+ID4NCj4gPiBJdCBpdCBtZWFucyBJTVMsIHRoZXJlJ3MgYWxyZWFkeSBh
-IHByb3Bvc2FsWzFdIHRoYXQgaW50cm9kdWNlIE1TSQ0KPiA+IGNvbW1hbmRzIHZpYSB0aGUgYWRt
-aW4gdmlydHF1ZXVlLiBBbmQgd2UgaGFkIHNpbWlsYXIgcmVxdWlyZW1lbnQgZm9yDQo+ID4gdmly
-dGlvLU1NSU9bMl0gYW5kIG1hbmFnZWQgZGV2aWNlIG9yIFNGIFszXSwgc28gSSB3b3VsZCByYXRo
-ZXIgdG8NCj4gPiBpbnRyb2R1Y2UgSU1TIChuZWVkIGEgYmV0dGVyIG5hbWUgdGhvdWdoKSBhcyBh
-IGJhc2ljIGZhY2lsaXR5IGluc3RlYWQNCj4gPiBvZiB0aWUgaXQgdG8gYW55IHNwZWNpZmljIHRy
-YW5zcG9ydC4NCj4gPg0KPiBJTVMgb2YgWzFdIGlzIGEgaW50ZXJydXB0IGNvbmZpZ3VyYXRpb24g
-YnkgdGhlIHZpcnRpbyBkcml2ZXIgZm9yIHRoZSBkZXZpY2UgaXMgaXQNCj4gZHJpdmluZywgd2hp
-Y2ggbmVlZHMgYSBxdWV1ZS4NCj4gU28gcmVnYXJkbGVzcyBvZiB0aGUgZGV2aWNlIHR5cGUgYXMg
-UENJIFBGL1ZGL1NGL0FESSwgdGhlcmUgaXMgZGVzaXJlIHRvIGhhdmUgYQ0KPiBnZW5lcmljIGFk
-bWluIHF1ZXVlIG5vdCBhdHRhY2hlZCB0byBkZXZpY2UgdHlwZS4NCj4gQW5kIEFRIGluIHRoaXMg
-cHJvcG9zYWwgZXhhY3RseSBzZXJ2ZXMgdGhpcyBwdXJwb3NlLg0KPiANCj4gRGV2aWNlIGNvbmZp
-Z3VyaW5nIGl0cyBvd24gSU1TIHZlY3RvciB2cyBQQ0kgUEYgY29uZmlndXJpbmcgVkYncyBNU0kt
-WCBtYXgNCj4gdmVjdG9yIGNvdW50IGFyZSB0d28gZGlmZmVyZW50IGZ1bmN0aW9uYWxpdHkuDQo+
-IEJvdGggb2YgdGhlc2UgY29tbWFuZHMgY2FuIHJpZGUgb24gYSBnZW5lcmljIHF1ZXVlLg0KPiBI
-b3dldmVyIHRoZSBxdWV1ZSBpcyBub3Qgc2FtZSwgYmVjYXVzZQ0KPiBQRiBvd25zIGl0cyBvd24g
-YWRtaW4gcXVldWUgKGZvciB2ZiBtc2l4IGNvbmZpZyksIFZGIG9yIFNGIG9wZXJhdGVzIGl0cyBv
-d24NCj4gYWRtaW4gcXVldWUgKGZvciBJTVMgY29uZmlnKS4NCj4gDQo+IFNvIGEgZ29vZCBleGFt
-cGxlIGlzLA0KPiAxLiBQQ0kgUEYgY29uZmlndXJlcyA4IE1TSS1YIG9yIDE2IElNUyB2ZWN0b3Jz
-IGZvciB0aGUgVkYgdXNpbmcgUEZfQVEgaW4gSFYuDQo+IDIuIFBDSSBWRiB3aGVuIHVzaW5nIElN
-UyBjb25maWd1cmVzLCBJTVMgZGF0YSwgdmVjdG9yLCBtYXNrIGV0YyB1c2luZyBWRl9BUSBpbg0K
-PiBHVk0uDQo+IEJvdGggdGhlIGZ1bmN0aW9ucyB3aWxsIGhhdmUgQVEgZmVhdHVyZSBiaXQgc2V0
-Lg0KPiANCj4gRmFpciBlbm91Z2gsIHNvIHdlIGhhdmUgbW9yZSB1c2VycyBvZiBhZG1pbiBxdWV1
-ZSB0aGFuIGp1c3QgTVNJLVggY29uZmlnLg0KPiANCklmIHdlIHRyZWF0IHRoZSBBUSBhcyBhbnkg
-b3RoZXIgVlEsIHRoYW4gSU1TIGNvbmZpZ3VyYXRpb24gYnkgdGhlIHZpcnRpbyBkcml2ZXIgb2Yg
-IzIgZm9yIFZGIG9yIFNGIGNhbm5vdCBiZSBkb25lIHRocm91Z2ggQVEuDQpCZWNhdXNlIEFRIG5l
-ZWRzIHRvIGJlIGxpdmUgYmVmb3JlIHNldHRpbmcgRFJJVkVSX09LLg0KQW5kIHNwZWMgbWFuZGF0
-ZXMgIlRoZSBkcml2ZXIgTVVTVCBjb25maWd1cmUgdGhlIG90aGVyIHZpcnRxdWV1ZSBmaWVsZHMg
-YmVmb3JlIGVuYWJsaW5nIHRoZSB2aXJ0cXVldWUgd2l0aCBxdWV1ZV9lbmFibGUuIg0KVGhpcyBp
-bmNsdWRlcyB0aGUgdmVjdG9yIGNvbmZpZ3VyYXRpb24uDQpTbyBBUSB3aWxsIG9wZXJhdGUgaW4g
-cG9sbGluZyBtb2RlIHdoaWNoIGlzIG5vdCBzbyBnb29kLg0KQW5kIGl0IGNhbm5vdCBiZSBkaXNh
-YmxlZCB0byB1cGRhdGUgTVNJLVgvSU1TIHZlY3RvcmUgYmVjYXVzZSBzcGVjIHNheXMgIlRoZSBk
-cml2ZXIgTVVTVCBOT1Qgd3JpdGUgYSAwIHRvIHF1ZXVlX2VuYWJsZS4iLg0KDQpNYWtlIHNwZWNp
-YWwgZXhjZXB0aW9uIHRvIEFRIGlzIGVxdWFsbHkgbm90IGdvb2QgaW4gcGh5c2ljYWwgZGV2aWNl
-IGltcGxlbWVudGF0aW9uIGdpdmVuIGFsbCB0aGUgcXVldWUgY29uZmlnIGlzIGxvY2F0ZWQgaW4g
-c2luZ2xlIGNvbmZpZyBzcGFjZS4NCg0KU28gYSBiZXR0ZXIgYXBwcm9hY2ggZm9yIElNUyBjb25m
-aWd1cmF0aW9uIHdvdWxkIGJlIHRvIGhhdmUsIGxpbWl0ZWQgY29uZmlnIHJlZ2lzdGVycyB0byBi
-b290c3RyYXAgSU1TIGNvbmZpZ3VyYXRpb24uDQpTb21ldGhpbmcgbGlrZSwNCg0Kc3RydWN0IHZp
-cnRpb19wY2lfZGV2X2ludGVycnVwdF9jZmcgew0KCWxlMTYgbWF4X2RldmljZV9pbnRlcnJ1cHRz
-OyAvKiByZWFkLW9ubHkgdGVsbHMgbWF4aW11bSBpbXMgaW50ZXJydXB0cyAqLw0KCWxlMTYgcmVm
-ZXJfaW5kZXg7IC8qIHdyaXRlLW9ubHkgaW50ZXJydXB0IGluZGV4IHRvIHByb2dyYW0gKi8NCgl1
-OCBzdGF0dXM7CS8qIHJlYWQgb25seSByZXNwb25zZSBieSBkZXZpY2UsIDB4MCA9IHN1Y2Nlc3Ms
-IDB4MT1idXN5LCBvdGhlciBlcnJvciBjb2RlcyAqLw0KCXU4IGVuYWJsZTsJLyogZW5hYmxlL2Rp
-c2FibGUgaW50ZXJydXB0IHJlZmVycmVkIGJ5IGluZGV4ICovDQoJbGUxNiByZXNlcnZlZF9wYWQ7
-DQoJdTY0IGFkZHI7IC8qIHdyaXRlIG9ubHkgaW50ZXJydXB0IGFkZHIgaGFuZGxlIG9uIE1TSVgg
-VExQcyAqLw0KCXUzMiBkYXRhOyAvKiB3cml0ZSBvbmx5IGludGVycnVwdCBkYXRhIGhhbmRsZS4u
-ICovDQp9Ow0KVGhpcyB3YXksIFZGLCBTRiBjYW4gY29uZmlndXJlIGxhcmdlIG51bWJlciBvZiB2
-ZWN0b3JzIGJlZm9yZSBzdGFydGluZyB0aGUgcXVldWUgYW5kIHdpdGhvdXQgb24tY2hpcCByZXNv
-dXJjZS4NCk9ubHkgb24tY2hpcCByZXNvdXJjZSByZXF1aXJlZCBwZXIgVkYgaXMgMjAgYnl0ZXMg
-b2YgYWJvdmUgY2ZnIHJlZ2lzdGVycy4NCg==
+
+在 2022/1/20 上午4:25, Parav Pandit 写道:
+> Hi Jason,
+>
+>> From: Parav Pandit
+>> Sent: Wednesday, January 19, 2022 10:18 AM
+>>
+>>
+>>> From: Jason Wang <jasowang@redhat.com>
+>>> Sent: Wednesday, January 19, 2022 9:33 AM
+>>>
+>>>
+>>> It it means IMS, there's already a proposal[1] that introduce MSI
+>>> commands via the admin virtqueue. And we had similar requirement for
+>>> virtio-MMIO[2] and managed device or SF [3], so I would rather to
+>>> introduce IMS (need a better name though) as a basic facility instead
+>>> of tie it to any specific transport.
+>>>
+>> IMS of [1] is a interrupt configuration by the virtio driver for the device is it
+>> driving, which needs a queue.
+>> So regardless of the device type as PCI PF/VF/SF/ADI, there is desire to have a
+>> generic admin queue not attached to device type.
+>> And AQ in this proposal exactly serves this purpose.
+>>
+>> Device configuring its own IMS vector vs PCI PF configuring VF's MSI-X max
+>> vector count are two different functionality.
+>> Both of these commands can ride on a generic queue.
+>> However the queue is not same, because
+>> PF owns its own admin queue (for vf msix config), VF or SF operates its own
+>> admin queue (for IMS config).
+>>
+>> So a good example is,
+>> 1. PCI PF configures 8 MSI-X or 16 IMS vectors for the VF using PF_AQ in HV.
+>> 2. PCI VF when using IMS configures, IMS data, vector, mask etc using VF_AQ in
+>> GVM.
+>> Both the functions will have AQ feature bit set.
+>>
+>> Fair enough, so we have more users of admin queue than just MSI-X config.
+>>
+> If we treat the AQ as any other VQ, than IMS configuration by the virtio driver of #2 for VF or SF cannot be done through AQ.
+> Because AQ needs to be live before setting DRIVER_OK.
+> And spec mandates "The driver MUST configure the other virtqueue fields before enabling the virtqueue with queue_enable."
+> This includes the vector configuration.
+> So AQ will operate in polling mode which is not so good.
+> And it cannot be disabled to update MSI-X/IMS vectore because spec says "The driver MUST NOT write a 0 to queue_enable.".
+>
+> Make special exception to AQ is equally not good in physical device implementation given all the queue config is located in single config space.
+>
+> So a better approach for IMS configuration would be to have, limited config registers to bootstrap IMS configuration.
+> Something like,
+>
+> struct virtio_pci_dev_interrupt_cfg {
+> 	le16 max_device_interrupts; /* read-only tells maximum ims interrupts */
+
+
+Is it better to use the same terminology with MSI capability like 
+"max_device_vectors"
+
+
+> 	le16 refer_index; /* write-only interrupt index to program */
+> 	u8 status;	/* read only response by device, 0x0 = success, 0x1=busy, other error codes */
+> 	u8 enable;	/* enable/disable interrupt referred by index */
+
+
+Any reason we need this assuming we've already had PCI_NO_VECTOR in 
+common cfg? I think what's better to have is the ability to mask and 
+unmask a vector.
+
+
+> 	le16 reserved_pad;
+> 	u64 addr; /* write only interrupt addr handle on MSIX TLPs */
+> 	u32 data; /* write only interrupt data handle.. */
+> };
+
+
+Is this better to split the above into different commands?
+
+Thanks
+
+
+> This way, VF, SF can configure large number of vectors before starting the queue and without on-chip resource.
+> Only on-chip resource required per VF is 20 bytes of above cfg registers.
 
