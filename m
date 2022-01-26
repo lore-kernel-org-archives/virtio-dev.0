@@ -1,309 +1,327 @@
-Return-Path: <mgurtovoy@nvidia.com>
-Message-ID: <e2cf5b79-912a-5d0f-cc51-0f94e701d90c@nvidia.com>
-Date: Wed, 26 Jan 2022 11:27:03 +0200
+Return-Path: <jasowang@redhat.com>
 MIME-Version: 1.0
-Subject: Re: [PATCH 2/5] Introduce
- VIRTIO_F_ADMIN_VQ_INDIRECT_DESC/VIRTIO_F_ADMIN_VQ_IN_ORDER
-References: <20220113145103.26894-1-mgurtovoy@nvidia.com>
- <20220113121203-mutt-send-email-mst@kernel.org>
+References: <20220113145103.26894-1-mgurtovoy@nvidia.com> <20220113121203-mutt-send-email-mst@kernel.org>
  <PH0PR12MB5481B90FF747D56377A0A850DC579@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20220117170442-mutt-send-email-mst@kernel.org>
- <PH0PR12MB54818033A0BD96EA9493C51ADC589@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20220118011731-mutt-send-email-mst@kernel.org>
- <PH0PR12MB54816DB30F23511266B8F35EDC589@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20220118014737-mutt-send-email-mst@kernel.org>
- <PH0PR12MB5481B99E351B624A27378BC5DC589@PH0PR12MB5481.namprd12.prod.outlook.com>
- <15063a94-85ae-fd1a-6ff1-458a039d1def@redhat.com>
- <PH0PR12MB5481D5BD8BB8CFDEFA218D2FDC599@PH0PR12MB5481.namprd12.prod.outlook.com>
- <56a7bf50-509d-f9d5-df78-858cb1b156c1@redhat.com>
- <PH0PR12MB548182EBE025ECA44124A11DDC5F9@PH0PR12MB5481.namprd12.prod.outlook.com>
- <b6fc2eb9-8023-29c6-ce59-6a9f3810d057@nvidia.com>
- <CACGkMEtNQx_xS0CVcswintHYYVOqG4avX3Uc0FzRFLb75=dq+g@mail.gmail.com>
-From: Max Gurtovoy <mgurtovoy@nvidia.com>
-In-Reply-To: <CACGkMEtNQx_xS0CVcswintHYYVOqG4avX3Uc0FzRFLb75=dq+g@mail.gmail.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+ <20220117170442-mutt-send-email-mst@kernel.org> <PH0PR12MB54818033A0BD96EA9493C51ADC589@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20220118011731-mutt-send-email-mst@kernel.org> <PH0PR12MB54816DB30F23511266B8F35EDC589@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20220118014737-mutt-send-email-mst@kernel.org> <PH0PR12MB5481B99E351B624A27378BC5DC589@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <15063a94-85ae-fd1a-6ff1-458a039d1def@redhat.com> <PH0PR12MB5481D5BD8BB8CFDEFA218D2FDC599@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <56a7bf50-509d-f9d5-df78-858cb1b156c1@redhat.com> <PH0PR12MB548182EBE025ECA44124A11DDC5F9@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <b6fc2eb9-8023-29c6-ce59-6a9f3810d057@nvidia.com> <CACGkMEtNQx_xS0CVcswintHYYVOqG4avX3Uc0FzRFLb75=dq+g@mail.gmail.com>
+ <e2cf5b79-912a-5d0f-cc51-0f94e701d90c@nvidia.com>
+In-Reply-To: <e2cf5b79-912a-5d0f-cc51-0f94e701d90c@nvidia.com>
+From: Jason Wang <jasowang@redhat.com>
+Date: Wed, 26 Jan 2022 17:34:37 +0800
+Message-ID: <CACGkMEu2KW+AiR6+=fwhZEphDRMQ_ObvMehGq7CFLbCYrFUeAg@mail.gmail.com>
+Subject: Re: [PATCH 2/5] Introduce VIRTIO_F_ADMIN_VQ_INDIRECT_DESC/VIRTIO_F_ADMIN_VQ_IN_ORDER
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-To: Jason Wang <jasowang@redhat.com>
-Cc: Parav Pandit <parav@nvidia.com>, "Michael S. Tsirkin" <mst@redhat.com>, "cohuck@redhat.com" <cohuck@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Shahaf Shuler <shahafs@nvidia.com>, Oren
- Duer <oren@nvidia.com>, "stefanha@redhat.com" <stefanha@redhat.com>
+To: Max Gurtovoy <mgurtovoy@nvidia.com>
+Cc: Parav Pandit <parav@nvidia.com>, "Michael S. Tsirkin" <mst@redhat.com>, "cohuck@redhat.com" <cohuck@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Shahaf Shuler <shahafs@nvidia.com>, Oren Duer <oren@nvidia.com>, "stefanha@redhat.com" <stefanha@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-
-On 1/26/2022 9:03 AM, Jason Wang wrote:
-> On Tue, Jan 25, 2022 at 6:59 PM Max Gurtovoy <mgurtovoy@nvidia.com> wrote=
-:
->>
->> On 1/25/2022 5:52 AM, Parav Pandit wrote:
->>> Hi Jason,
->>>
->>>> From: Jason Wang <jasowang@redhat.com>
->>>> Sent: Tuesday, January 25, 2022 8:59 AM
->>>>
->>>> =E5=9C=A8 2022/1/19 =E4=B8=8B=E5=8D=8812:48, Parav Pandit =E5=86=99=E9=
-=81=93:
->>>>>> From: Jason Wang <jasowang@redhat.com>
->>>>>> Sent: Wednesday, January 19, 2022 9:33 AM
->>>>>>
->>>>>>
->>>>>> It it means IMS, there's already a proposal[1] that introduce MSI
->>>>>> commands via the admin virtqueue. And we had similar requirement for
->>>>>> virtio-MMIO[2] and managed device or SF [3], so I would rather to
->>>>>> introduce IMS (need a better name though) as a basic facility instea=
-d
->>>>>> of tie it to any specific transport.
->>>>>>
->>>>> IMS of [1] is a interrupt configuration by the virtio driver for the =
-device is it
->>>> driving, which needs a queue.
->>>>> So regardless of the device type as PCI PF/VF/SF/ADI, there is desire=
- to have a
->>>> generic admin queue not attached to device type.
->>>>> And AQ in this proposal exactly serves this purpose.
->>>>>
->>>>> Device configuring its own IMS vector vs PCI PF configuring VF's MSI-=
-X max
->>>> vector count are two different functionality.
->>>>> Both of these commands can ride on a generic queue.
->>>>> However the queue is not same, because PF owns its own admin queue
->>>>> (for vf msix config), VF or SF operates its own admin queue (for IMS
->>>>> config).
->>>> So I think in the next version we need to clarify:
->>>>
->>>> 1) is there a single admin virtqueue shared by all the VFs and PF
->>>>
->>>> or
->>>>
->>>> 2) per VF/PF admin virtqueue, and how does the driver know how to find=
- the
->>>> corresponding admin virtqueue
->>>>
->>> Admin queue is not per VF.
->>> Lets take concrete examples.
->>> 1. So for example, PCI PF can have one AQ.
->>> This AQ carries command to query/config MSI-X vector of VFs.
->>>
->>> 2. In second example, PCI PF is creating/destroying SFs. This is again =
-done by using the AQ of the PCI PF.
->>>
->>> 3. A PCI VF has its own AQ to configure some of its own generic attribu=
-te, don't know which is that today.
->>> May be something that is extremely hard to do over features bit.
->>> Currently proposed v2 doesn't restrict admin queue to be within PCI PF =
-or VF or that matter not limited to other transports.
->>>
->>>>> So a good example is,
->>>>> 1. PCI PF configures 8 MSI-X or 16 IMS vectors for the VF using PF_AQ=
- in HV.
->>>>> 2. PCI VF when using IMS configures, IMS data, vector, mask etc using=
- VF_AQ
->>>> in GVM.
->>>>> Both the functions will have AQ feature bit set.
->>>> Where did the VF_AQ sit? I guess it belongs to the VF. But if this is
->>>> true, don't we need some kind of address isolation like PASID?
->>>>
->>> Above one for IMS is not a good example. I replied the reasoning last w=
-eek for it.
->>>
->>>>> Fair enough, so we have more users of admin queue than just MSI-X con=
-fig.
->>>> Well, what I really meant is that we actually have more users of IMS.
->>>> That's is exactly what virito-mmio wants. In this case introducing adm=
-in
->>>> queue looks too heavyweight for that.
->>>>
->>> IMS config cannot be done over AQ as described in previous email in thi=
-s thread.
->>>
->>>>>>> 2. AQ to follows IN_ORDER and INDIRECT_DESC negotiation like rest o=
-f
->>>>>>> the queues 3. Update commit log to describe why config space is not
->>>>>>> chosen (scale, on-die registers, uniform way to handle all aq cmds)
->>>>>> I fail to understand the scale/registeres issues. With the one of my=
- previous
->>>>>> proposal (device selector), technically we don't even need any confi=
-g space
->>>> or
->>>>>> BAR for VF or SF by multiplexing the registers for PF.
->>>>>>
->>>>> Scale issue is: when you want to create, query, manipulate hundreds o=
-f
->>>> objects, having shared MMIO register or configuration register, will b=
-e too
->>>> slow.
->>>>
->>>>
->>>> Ok, this need to be clarified in the commit log. And we need make sure
->>>> it's not an issue that is only happen for some specific vendor.
->>> It is present in the v2 commit log cover letter.
->>> Please let me know if you think it should be in the actual patch commit=
- log.
->>>
->>>
->>>>> And additionally such register set doesn't scale to allow sharing lar=
-ge
->>>> number of bytes as DMA cannot be done.
->>>>
->>>>
->>>> That's true.
->>>>
->>>>
->>>>>    From physical device perspective, it doesn=E2=80=99t scale because=
- device needs to
->>>> have those resources ready to answer on MMIO reads and for hundreds to
->>>> thousand of devices it just cannot do it.
->>>>> This is one of the reason for birth of IMS.
->>>> IMS allows the table to be stored in the memory and cached by the devi=
-ce
->>>> to have the best scalability. But I had other questions:
->>>>
->>>> 1) if we have a single admin virtqueue, there will still be contention
->>>> in the driver side
->>>>
->>> AQ inherently allows out of order commands execution.
->>> It shouldn't face contention. For example 1K depth AQ should be serving=
- hundreds of descriptors commands in parallel for SF creation, VF MSI-X con=
-fig and more.
->>>
->>> Which area/commands etc you think can lead to the contention?
->>>
->>>> 2) if we have per vf admin virtqueue, it still doesn't scale since it
->>>> occupies more hardware resources
->>>>
->>> That is too heavy, and doesn=E2=80=99t scale. Proposal is to not have p=
-er vf admin queue.
->>> Proposal is to have one admin queue in a virtio device.
->> Right ? where did we mention something that can imply otherwise ?
-> Well, I don't know but probably this part,
+On Wed, Jan 26, 2022 at 5:27 PM Max Gurtovoy <mgurtovoy@nvidia.com> wrote:
 >
-> " PCI VF when using IMS configures, IMS data, vector, mask etc using VF_A=
-Q ..."
 >
->>
->>>>>> I do see one advantage is that the admin virtqueue is transport
->>>> independent
->>>>>> (or it could be used as a transport).
->>>>>>
->>>>> I am yet to read the transport part from [1].
->>>> Yes, the main goal is to be compatible with SIOV.
->>>>
->>> Admin queue is a command interface transport where higher layer service=
-s can be buit.
->>> This includes SR-IOV config, SIOV config.
->>> And v2 enables SIOV commands implementation whenever they are ready.
->>>
->>>>>>> 4. Improve documentation around msix config to link to sriov sectio=
-n of
->>>> virtio
->>>>>> spec
->>>>>>> 5. Describe error that if VF is bound to the device, admin commands
->>>>>> targeting VF can fail, describe this error code
->>>>>>> Did I miss anything?
->>>>>>>
->>>>>>> Yet to receive your feedback on group, if/why is it needed and, why=
-/if it
->>>> must
->>>>>> be in this proposal, what pieces prevents it do as follow-on.
->>>>>>> Cornelia, Jason,
->>>>>>> Can you please review current proposal as well before we revise v2?
->>>>>> If I understand correctly, most of the features (except for the admi=
-n
->>>>>> virtqueue in_order stuffs) are not specific to the admin virtqueue. =
-As
->>>>>> discussed in the previous versions, I still think it's better:
->>>>>>
->>>>>> 1) adding sections in the basic device facility or data structure fo=
-r
->>>>>> provisioning and MSI
->>>>>> 2) introduce admin virtqueue on top as an device interface for those
->>>>>> features
->>>>>>
->>>>> I didn't follow your suggestion. Can you please explain?
->>>>> Specifically "data structure for provisioning and MSI"..
->>>> I meant:
->>>>
->>>> There's a chapter "Basic Facilities of a Virtio Device", we can
->>>> introduce the concepts there like:
->>>>
->>>> 1) Managed device and Management device (terminology proposed by
->>>> Michael), and can use PF and VF as a example
->>>>
->>>> 2) Managed device provisioning (the data structure to specify the
->>>> attributes of a managed device (VF))
->>>>
->>>> 3) MSI
->>>>
->>> Above is good idea. Will revisit v2, if it is not arranged this way.
->> Let me make sure I understand, you would like to see a new chapter under
->> "Basic Facilities of a Virtio Device" that is
->>
->> called "Device management" and this chapter will explain in few words
->> the concept
-> Yes.
->
->> and it will point to another chapter under "Basic Facilities
->> of a Virtio Device"
->>
->> that was introduced here "Admin Virtqueues" ?
-> So far as I see from the proposal, it needs belong to PCI transport
-> part or a new transport.
-
-No it's not.
-
-It should stay in the basic/generic area like we discussed in the past=20
-and already agreed on.
-
-Lets move forward please.
-
->> So you do agree that managing a managed (create/destroy/setup/etc...)
->> will be done using the AQ of the managing device ?
-> I agree.
->
-> Thanks
-
-Ok so I guess we agree on the concept of this patch set and the AQ.
-
-Thanks.
-
->
->>>> And then we can introduced admin virtqueue in either
->>>>
->>>> 1) transport part
->>>>
->>>> or
->>>>
->>>> 2) PCI transport
->>>>
->>> It is not specific to PCI transport, and currently it is not a transpor=
-t either.
->>> So admin queue will keep as general entity for admin work.
->>>
->>>> In the admin virtqueue, there will be commands to provision and
->>>> configure MSI.
->>>>
->>> Please review v2 if it is not arranged this way.
->>>
->>>>>> The leaves the chance for future extensions to allow those features =
+> On 1/26/2022 9:03 AM, Jason Wang wrote:
+> > On Tue, Jan 25, 2022 at 6:59 PM Max Gurtovoy <mgurtovoy@nvidia.com> wro=
+te:
+> >>
+> >> On 1/25/2022 5:52 AM, Parav Pandit wrote:
+> >>> Hi Jason,
+> >>>
+> >>>> From: Jason Wang <jasowang@redhat.com>
+> >>>> Sent: Tuesday, January 25, 2022 8:59 AM
+> >>>>
+> >>>> =E5=9C=A8 2022/1/19 =E4=B8=8B=E5=8D=8812:48, Parav Pandit =E5=86=99=
+=E9=81=93:
+> >>>>>> From: Jason Wang <jasowang@redhat.com>
+> >>>>>> Sent: Wednesday, January 19, 2022 9:33 AM
+> >>>>>>
+> >>>>>>
+> >>>>>> It it means IMS, there's already a proposal[1] that introduce MSI
+> >>>>>> commands via the admin virtqueue. And we had similar requirement f=
+or
+> >>>>>> virtio-MMIO[2] and managed device or SF [3], so I would rather to
+> >>>>>> introduce IMS (need a better name though) as a basic facility inst=
+ead
+> >>>>>> of tie it to any specific transport.
+> >>>>>>
+> >>>>> IMS of [1] is a interrupt configuration by the virtio driver for th=
+e device is it
+> >>>> driving, which needs a queue.
+> >>>>> So regardless of the device type as PCI PF/VF/SF/ADI, there is desi=
+re to have a
+> >>>> generic admin queue not attached to device type.
+> >>>>> And AQ in this proposal exactly serves this purpose.
+> >>>>>
+> >>>>> Device configuring its own IMS vector vs PCI PF configuring VF's MS=
+I-X max
+> >>>> vector count are two different functionality.
+> >>>>> Both of these commands can ride on a generic queue.
+> >>>>> However the queue is not same, because PF owns its own admin queue
+> >>>>> (for vf msix config), VF or SF operates its own admin queue (for IM=
+S
+> >>>>> config).
+> >>>> So I think in the next version we need to clarify:
+> >>>>
+> >>>> 1) is there a single admin virtqueue shared by all the VFs and PF
+> >>>>
+> >>>> or
+> >>>>
+> >>>> 2) per VF/PF admin virtqueue, and how does the driver know how to fi=
+nd the
+> >>>> corresponding admin virtqueue
+> >>>>
+> >>> Admin queue is not per VF.
+> >>> Lets take concrete examples.
+> >>> 1. So for example, PCI PF can have one AQ.
+> >>> This AQ carries command to query/config MSI-X vector of VFs.
+> >>>
+> >>> 2. In second example, PCI PF is creating/destroying SFs. This is agai=
+n done by using the AQ of the PCI PF.
+> >>>
+> >>> 3. A PCI VF has its own AQ to configure some of its own generic attri=
+bute, don't know which is that today.
+> >>> May be something that is extremely hard to do over features bit.
+> >>> Currently proposed v2 doesn't restrict admin queue to be within PCI P=
+F or VF or that matter not limited to other transports.
+> >>>
+> >>>>> So a good example is,
+> >>>>> 1. PCI PF configures 8 MSI-X or 16 IMS vectors for the VF using PF_=
+AQ in HV.
+> >>>>> 2. PCI VF when using IMS configures, IMS data, vector, mask etc usi=
+ng VF_AQ
+> >>>> in GVM.
+> >>>>> Both the functions will have AQ feature bit set.
+> >>>> Where did the VF_AQ sit? I guess it belongs to the VF. But if this i=
+s
+> >>>> true, don't we need some kind of address isolation like PASID?
+> >>>>
+> >>> Above one for IMS is not a good example. I replied the reasoning last=
+ week for it.
+> >>>
+> >>>>> Fair enough, so we have more users of admin queue than just MSI-X c=
+onfig.
+> >>>> Well, what I really meant is that we actually have more users of IMS=
+.
+> >>>> That's is exactly what virito-mmio wants. In this case introducing a=
+dmin
+> >>>> queue looks too heavyweight for that.
+> >>>>
+> >>> IMS config cannot be done over AQ as described in previous email in t=
+his thread.
+> >>>
+> >>>>>>> 2. AQ to follows IN_ORDER and INDIRECT_DESC negotiation like rest=
+ of
+> >>>>>>> the queues 3. Update commit log to describe why config space is n=
+ot
+> >>>>>>> chosen (scale, on-die registers, uniform way to handle all aq cmd=
+s)
+> >>>>>> I fail to understand the scale/registeres issues. With the one of =
+my previous
+> >>>>>> proposal (device selector), technically we don't even need any con=
+fig space
+> >>>> or
+> >>>>>> BAR for VF or SF by multiplexing the registers for PF.
+> >>>>>>
+> >>>>> Scale issue is: when you want to create, query, manipulate hundreds=
+ of
+> >>>> objects, having shared MMIO register or configuration register, will=
+ be too
+> >>>> slow.
+> >>>>
+> >>>>
+> >>>> Ok, this need to be clarified in the commit log. And we need make su=
+re
+> >>>> it's not an issue that is only happen for some specific vendor.
+> >>> It is present in the v2 commit log cover letter.
+> >>> Please let me know if you think it should be in the actual patch comm=
+it log.
+> >>>
+> >>>
+> >>>>> And additionally such register set doesn't scale to allow sharing l=
+arge
+> >>>> number of bytes as DMA cannot be done.
+> >>>>
+> >>>>
+> >>>> That's true.
+> >>>>
+> >>>>
+> >>>>>    From physical device perspective, it doesn=E2=80=99t scale becau=
+se device needs to
+> >>>> have those resources ready to answer on MMIO reads and for hundreds =
 to
->>>>>> be used by transport specific interface which will benefit for
->>>>>>
->>>>> AQ allows communication (command, response) between driver and device
->>>> in transport independent way.
->>>>> Sometimes it query/set transport specific fields like MSI-X vectors o=
-f VF.
->>>>> Sometimes device configure its on IMS interrupt.
->>>>> Something else in future.
->>>>> So it is really a generic request-response queue.
->>>> I agree, but I think we can't mandate new features to a specific trans=
-port.
->>>>
->>> Certainly. Admin queue is transport independent.
->>> PCI MSI-X configuration is PCI transport specific command, so structure=
-s are defined it accordingly.
->>> It is similar to struct virtio_pci_cap, struct virtio_pci_common_cfg et=
-c.
->>>
->>> Any other transport will have transport specific interrupt configuratio=
-n. So it will be defined accordingly whenever that occurs.
->>> For example, IMS for VF or IMS for SF.
+> >>>> thousand of devices it just cannot do it.
+> >>>>> This is one of the reason for birth of IMS.
+> >>>> IMS allows the table to be stored in the memory and cached by the de=
+vice
+> >>>> to have the best scalability. But I had other questions:
+> >>>>
+> >>>> 1) if we have a single admin virtqueue, there will still be contenti=
+on
+> >>>> in the driver side
+> >>>>
+> >>> AQ inherently allows out of order commands execution.
+> >>> It shouldn't face contention. For example 1K depth AQ should be servi=
+ng hundreds of descriptors commands in parallel for SF creation, VF MSI-X c=
+onfig and more.
+> >>>
+> >>> Which area/commands etc you think can lead to the contention?
+> >>>
+> >>>> 2) if we have per vf admin virtqueue, it still doesn't scale since i=
+t
+> >>>> occupies more hardware resources
+> >>>>
+> >>> That is too heavy, and doesn=E2=80=99t scale. Proposal is to not have=
+ per vf admin queue.
+> >>> Proposal is to have one admin queue in a virtio device.
+> >> Right ? where did we mention something that can imply otherwise ?
+> > Well, I don't know but probably this part,
+> >
+> > " PCI VF when using IMS configures, IMS data, vector, mask etc using VF=
+_AQ ..."
+> >
+> >>
+> >>>>>> I do see one advantage is that the admin virtqueue is transport
+> >>>> independent
+> >>>>>> (or it could be used as a transport).
+> >>>>>>
+> >>>>> I am yet to read the transport part from [1].
+> >>>> Yes, the main goal is to be compatible with SIOV.
+> >>>>
+> >>> Admin queue is a command interface transport where higher layer servi=
+ces can be buit.
+> >>> This includes SR-IOV config, SIOV config.
+> >>> And v2 enables SIOV commands implementation whenever they are ready.
+> >>>
+> >>>>>>> 4. Improve documentation around msix config to link to sriov sect=
+ion of
+> >>>> virtio
+> >>>>>> spec
+> >>>>>>> 5. Describe error that if VF is bound to the device, admin comman=
+ds
+> >>>>>> targeting VF can fail, describe this error code
+> >>>>>>> Did I miss anything?
+> >>>>>>>
+> >>>>>>> Yet to receive your feedback on group, if/why is it needed and, w=
+hy/if it
+> >>>> must
+> >>>>>> be in this proposal, what pieces prevents it do as follow-on.
+> >>>>>>> Cornelia, Jason,
+> >>>>>>> Can you please review current proposal as well before we revise v=
+2?
+> >>>>>> If I understand correctly, most of the features (except for the ad=
+min
+> >>>>>> virtqueue in_order stuffs) are not specific to the admin virtqueue=
+. As
+> >>>>>> discussed in the previous versions, I still think it's better:
+> >>>>>>
+> >>>>>> 1) adding sections in the basic device facility or data structure =
+for
+> >>>>>> provisioning and MSI
+> >>>>>> 2) introduce admin virtqueue on top as an device interface for tho=
+se
+> >>>>>> features
+> >>>>>>
+> >>>>> I didn't follow your suggestion. Can you please explain?
+> >>>>> Specifically "data structure for provisioning and MSI"..
+> >>>> I meant:
+> >>>>
+> >>>> There's a chapter "Basic Facilities of a Virtio Device", we can
+> >>>> introduce the concepts there like:
+> >>>>
+> >>>> 1) Managed device and Management device (terminology proposed by
+> >>>> Michael), and can use PF and VF as a example
+> >>>>
+> >>>> 2) Managed device provisioning (the data structure to specify the
+> >>>> attributes of a managed device (VF))
+> >>>>
+> >>>> 3) MSI
+> >>>>
+> >>> Above is good idea. Will revisit v2, if it is not arranged this way.
+> >> Let me make sure I understand, you would like to see a new chapter und=
+er
+> >> "Basic Facilities of a Virtio Device" that is
+> >>
+> >> called "Device management" and this chapter will explain in few words
+> >> the concept
+> > Yes.
+> >
+> >> and it will point to another chapter under "Basic Facilities
+> >> of a Virtio Device"
+> >>
+> >> that was introduced here "Admin Virtqueues" ?
+> > So far as I see from the proposal, it needs belong to PCI transport
+> > part or a new transport.
+>
+> No it's not.
+>
+> It should stay in the basic/generic area like we discussed in the past
+> and already agreed on.
+>
+> Lets move forward please.
+
+Yes, for the general admin virtqueue part, it should be fine, but for
+SR-IOV ATTRS part, is it better to move it to PCI transport?
+
+>
+> >> So you do agree that managing a managed (create/destroy/setup/etc...)
+> >> will be done using the AQ of the managing device ?
+> > I agree.
+> >
+> > Thanks
+>
+> Ok so I guess we agree on the concept of this patch set and the AQ.
+
+Yes.
+
+Thanks
+
+>
+> Thanks.
+>
+> >
+> >>>> And then we can introduced admin virtqueue in either
+> >>>>
+> >>>> 1) transport part
+> >>>>
+> >>>> or
+> >>>>
+> >>>> 2) PCI transport
+> >>>>
+> >>> It is not specific to PCI transport, and currently it is not a transp=
+ort either.
+> >>> So admin queue will keep as general entity for admin work.
+> >>>
+> >>>> In the admin virtqueue, there will be commands to provision and
+> >>>> configure MSI.
+> >>>>
+> >>> Please review v2 if it is not arranged this way.
+> >>>
+> >>>>>> The leaves the chance for future extensions to allow those feature=
+s to
+> >>>>>> be used by transport specific interface which will benefit for
+> >>>>>>
+> >>>>> AQ allows communication (command, response) between driver and devi=
+ce
+> >>>> in transport independent way.
+> >>>>> Sometimes it query/set transport specific fields like MSI-X vectors=
+ of VF.
+> >>>>> Sometimes device configure its on IMS interrupt.
+> >>>>> Something else in future.
+> >>>>> So it is really a generic request-response queue.
+> >>>> I agree, but I think we can't mandate new features to a specific tra=
+nsport.
+> >>>>
+> >>> Certainly. Admin queue is transport independent.
+> >>> PCI MSI-X configuration is PCI transport specific command, so structu=
+res are defined it accordingly.
+> >>> It is similar to struct virtio_pci_cap, struct virtio_pci_common_cfg =
+etc.
+> >>>
+> >>> Any other transport will have transport specific interrupt configurat=
+ion. So it will be defined accordingly whenever that occurs.
+> >>> For example, IMS for VF or IMS for SF.
+>
 
