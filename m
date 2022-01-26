@@ -1,178 +1,296 @@
-Return-Path: <parav@nvidia.com>
-From: Parav Pandit <parav@nvidia.com>
-Subject: RE: [PATCH 2/5] Introduce
- VIRTIO_F_ADMIN_VQ_INDIRECT_DESC/VIRTIO_F_ADMIN_VQ_IN_ORDER
-Date: Wed, 26 Jan 2022 05:26:11 +0000
-Message-ID: <PH0PR12MB54810CAE9F2E25D5C60B1116DC209@PH0PR12MB5481.namprd12.prod.outlook.com>
-References: <20220113145103.26894-1-mgurtovoy@nvidia.com>
- <20220113145103.26894-3-mgurtovoy@nvidia.com>
- <20220113102218-mutt-send-email-mst@kernel.org>
- <eaf88f9c-8b51-7758-90c0-c1a92df35061@nvidia.com>
- <20220113121203-mutt-send-email-mst@kernel.org>
- <PH0PR12MB5481B90FF747D56377A0A850DC579@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20220117170442-mutt-send-email-mst@kernel.org>
- <PH0PR12MB54818033A0BD96EA9493C51ADC589@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20220118011731-mutt-send-email-mst@kernel.org>
- <PH0PR12MB54816DB30F23511266B8F35EDC589@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20220118014737-mutt-send-email-mst@kernel.org>
- <PH0PR12MB5481B99E351B624A27378BC5DC589@PH0PR12MB5481.namprd12.prod.outlook.com>
- <15063a94-85ae-fd1a-6ff1-458a039d1def@redhat.com>
- <PH0PR12MB5481D5BD8BB8CFDEFA218D2FDC599@PH0PR12MB5481.namprd12.prod.outlook.com>
- <56a7bf50-509d-f9d5-df78-858cb1b156c1@redhat.com>
- <PH0PR12MB548182EBE025ECA44124A11DDC5F9@PH0PR12MB5481.namprd12.prod.outlook.com>
- <622a3ecc-ac21-40ae-7fcd-9667a8fd9540@redhat.com>
-In-Reply-To: <622a3ecc-ac21-40ae-7fcd-9667a8fd9540@redhat.com>
+Return-Path: <jasowang@redhat.com>
 MIME-Version: 1.0
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-To: Jason Wang <jasowang@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Max Gurtovoy <mgurtovoy@nvidia.com>, "cohuck@redhat.com" <cohuck@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Shahaf Shuler <shahafs@nvidia.com>, Oren Duer <oren@nvidia.com>, "stefanha@redhat.com" <stefanha@redhat.com>
+References: <20220113145103.26894-1-mgurtovoy@nvidia.com> <20220113145103.26894-3-mgurtovoy@nvidia.com>
+ <20220113102218-mutt-send-email-mst@kernel.org> <eaf88f9c-8b51-7758-90c0-c1a92df35061@nvidia.com>
+ <20220113121203-mutt-send-email-mst@kernel.org> <PH0PR12MB5481B90FF747D56377A0A850DC579@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20220117170442-mutt-send-email-mst@kernel.org> <PH0PR12MB54818033A0BD96EA9493C51ADC589@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20220118011731-mutt-send-email-mst@kernel.org> <PH0PR12MB54816DB30F23511266B8F35EDC589@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20220118014737-mutt-send-email-mst@kernel.org> <PH0PR12MB5481B99E351B624A27378BC5DC589@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <15063a94-85ae-fd1a-6ff1-458a039d1def@redhat.com> <PH0PR12MB5481D5BD8BB8CFDEFA218D2FDC599@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <56a7bf50-509d-f9d5-df78-858cb1b156c1@redhat.com> <PH0PR12MB548182EBE025ECA44124A11DDC5F9@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <622a3ecc-ac21-40ae-7fcd-9667a8fd9540@redhat.com> <PH0PR12MB54810CAE9F2E25D5C60B1116DC209@PH0PR12MB5481.namprd12.prod.outlook.com>
+In-Reply-To: <PH0PR12MB54810CAE9F2E25D5C60B1116DC209@PH0PR12MB5481.namprd12.prod.outlook.com>
+From: Jason Wang <jasowang@redhat.com>
+Date: Wed, 26 Jan 2022 13:45:15 +0800
+Message-ID: <CACGkMEu7j6mXO-bWxTq+-HQOzeMQ0WoMnPgEYbd6kf+U_aEY3Q@mail.gmail.com>
+Subject: Re: [PATCH 2/5] Introduce VIRTIO_F_ADMIN_VQ_INDIRECT_DESC/VIRTIO_F_ADMIN_VQ_IN_ORDER
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+To: Parav Pandit <parav@nvidia.com>
+Cc: "Michael S. Tsirkin" <mst@redhat.com>, Max Gurtovoy <mgurtovoy@nvidia.com>, "cohuck@redhat.com" <cohuck@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Shahaf Shuler <shahafs@nvidia.com>, Oren Duer <oren@nvidia.com>, "stefanha@redhat.com" <stefanha@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-DQoNCj4gRnJvbTogSmFzb24gV2FuZyA8amFzb3dhbmdAcmVkaGF0LmNvbT4NCj4gU2VudDogV2Vk
-bmVzZGF5LCBKYW51YXJ5IDI2LCAyMDIyIDEwOjM1IEFNDQo+IA0KPiDlnKggMjAyMi8xLzI1IOS4
-iuWNiDExOjUyLCBQYXJhdiBQYW5kaXQg5YaZ6YGTOg0KPiA+IEhpIEphc29uLA0KPiA+DQo+ID4+
-IEZyb206IEphc29uIFdhbmcgPGphc293YW5nQHJlZGhhdC5jb20+DQo+ID4+IFNlbnQ6IFR1ZXNk
-YXksIEphbnVhcnkgMjUsIDIwMjIgODo1OSBBTQ0KPiA+Pg0KPiA+PiDlnKggMjAyMi8xLzE5IOS4
-i+WNiDEyOjQ4LCBQYXJhdiBQYW5kaXQg5YaZ6YGTOg0KPiA+Pj4+IEZyb206IEphc29uIFdhbmcg
-PGphc293YW5nQHJlZGhhdC5jb20+DQo+ID4+Pj4gU2VudDogV2VkbmVzZGF5LCBKYW51YXJ5IDE5
-LCAyMDIyIDk6MzMgQU0NCj4gPj4+Pg0KPiA+Pj4+DQo+ID4+Pj4gSXQgaXQgbWVhbnMgSU1TLCB0
-aGVyZSdzIGFscmVhZHkgYSBwcm9wb3NhbFsxXSB0aGF0IGludHJvZHVjZSBNU0kNCj4gPj4+PiBj
-b21tYW5kcyB2aWEgdGhlIGFkbWluIHZpcnRxdWV1ZS4gQW5kIHdlIGhhZCBzaW1pbGFyIHJlcXVp
-cmVtZW50DQo+ID4+Pj4gZm9yIHZpcnRpby1NTUlPWzJdIGFuZCBtYW5hZ2VkIGRldmljZSBvciBT
-RiBbM10sIHNvIEkgd291bGQgcmF0aGVyDQo+ID4+Pj4gdG8gaW50cm9kdWNlIElNUyAobmVlZCBh
-IGJldHRlciBuYW1lIHRob3VnaCkgYXMgYSBiYXNpYyBmYWNpbGl0eQ0KPiA+Pj4+IGluc3RlYWQg
-b2YgdGllIGl0IHRvIGFueSBzcGVjaWZpYyB0cmFuc3BvcnQuDQo+ID4+Pj4NCj4gPj4+IElNUyBv
-ZiBbMV0gaXMgYSBpbnRlcnJ1cHQgY29uZmlndXJhdGlvbiBieSB0aGUgdmlydGlvIGRyaXZlciBm
-b3IgdGhlDQo+ID4+PiBkZXZpY2UgaXMgaXQNCj4gPj4gZHJpdmluZywgd2hpY2ggbmVlZHMgYSBx
-dWV1ZS4NCj4gPj4+IFNvIHJlZ2FyZGxlc3Mgb2YgdGhlIGRldmljZSB0eXBlIGFzIFBDSSBQRi9W
-Ri9TRi9BREksIHRoZXJlIGlzDQo+ID4+PiBkZXNpcmUgdG8gaGF2ZSBhDQo+ID4+IGdlbmVyaWMg
-YWRtaW4gcXVldWUgbm90IGF0dGFjaGVkIHRvIGRldmljZSB0eXBlLg0KPiA+Pj4gQW5kIEFRIGlu
-IHRoaXMgcHJvcG9zYWwgZXhhY3RseSBzZXJ2ZXMgdGhpcyBwdXJwb3NlLg0KPiA+Pj4NCj4gPj4+
-IERldmljZSBjb25maWd1cmluZyBpdHMgb3duIElNUyB2ZWN0b3IgdnMgUENJIFBGIGNvbmZpZ3Vy
-aW5nIFZGJ3MNCj4gPj4+IE1TSS1YIG1heA0KPiA+PiB2ZWN0b3IgY291bnQgYXJlIHR3byBkaWZm
-ZXJlbnQgZnVuY3Rpb25hbGl0eS4NCj4gPj4+IEJvdGggb2YgdGhlc2UgY29tbWFuZHMgY2FuIHJp
-ZGUgb24gYSBnZW5lcmljIHF1ZXVlLg0KPiA+Pj4gSG93ZXZlciB0aGUgcXVldWUgaXMgbm90IHNh
-bWUsIGJlY2F1c2UgUEYgb3ducyBpdHMgb3duIGFkbWluIHF1ZXVlDQo+ID4+PiAoZm9yIHZmIG1z
-aXggY29uZmlnKSwgVkYgb3IgU0Ygb3BlcmF0ZXMgaXRzIG93biBhZG1pbiBxdWV1ZSAoZm9yIElN
-Uw0KPiA+Pj4gY29uZmlnKS4NCj4gPj4NCj4gPj4gU28gSSB0aGluayBpbiB0aGUgbmV4dCB2ZXJz
-aW9uIHdlIG5lZWQgdG8gY2xhcmlmeToNCj4gPj4NCj4gPj4gMSkgaXMgdGhlcmUgYSBzaW5nbGUg
-YWRtaW4gdmlydHF1ZXVlIHNoYXJlZCBieSBhbGwgdGhlIFZGcyBhbmQgUEYNCj4gPj4NCj4gPj4g
-b3INCj4gPj4NCj4gPj4gMikgcGVyIFZGL1BGIGFkbWluIHZpcnRxdWV1ZSwgYW5kIGhvdyBkb2Vz
-IHRoZSBkcml2ZXIga25vdyBob3cgdG8NCj4gPj4gZmluZCB0aGUgY29ycmVzcG9uZGluZyBhZG1p
-biB2aXJ0cXVldWUNCj4gPj4NCj4gPiBBZG1pbiBxdWV1ZSBpcyBub3QgcGVyIFZGLg0KPiA+IExl
-dHMgdGFrZSBjb25jcmV0ZSBleGFtcGxlcy4NCj4gPiAxLiBTbyBmb3IgZXhhbXBsZSwgUENJIFBG
-IGNhbiBoYXZlIG9uZSBBUS4NCj4gPiBUaGlzIEFRIGNhcnJpZXMgY29tbWFuZCB0byBxdWVyeS9j
-b25maWcgTVNJLVggdmVjdG9yIG9mIFZGcy4NCj4gPg0KPiA+IDIuIEluIHNlY29uZCBleGFtcGxl
-LCBQQ0kgUEYgaXMgY3JlYXRpbmcvZGVzdHJveWluZyBTRnMuIFRoaXMgaXMgYWdhaW4gZG9uZSBi
-eQ0KPiB1c2luZyB0aGUgQVEgb2YgdGhlIFBDSSBQRi4NCj4gPg0KPiA+IDMuIEEgUENJIFZGIGhh
-cyBpdHMgb3duIEFRIHRvIGNvbmZpZ3VyZSBzb21lIG9mIGl0cyBvd24gZ2VuZXJpYyBhdHRyaWJ1
-dGUsDQo+IGRvbid0IGtub3cgd2hpY2ggaXMgdGhhdCB0b2RheS4NCj4gDQo+IA0KPiBTbyB0aGlz
-IGNvdWxkIGJlIHVzZWZ1bCBpZiB3ZSBjYW4gY3JlYXRlIFNGIG9uIHRvcCBvZiBWRi4gQnV0IGFz
-IGRpc2N1c3NlZCB3ZSdkDQo+IGJldHRlciB0byBnZW5lcmFsaXplIHRoZSBjb25jZXB0IChtYW5h
-Z2VtZW50IGRldmljZSB2cyBtYW5hZ2VkIGRldmljZSkuDQo+IA0KSXQgZG9lcyBub3QgbWF0dGVy
-IGlmIHRoZSBTRiBpcyBjcmVhdGVkIG92ZXIgUENJIFBGIG9yIFZGLiBJdHMgb24gdG9wIG9mIFBD
-SSB2aXJ0aW8gZGV2aWNlLg0KV2hlbi9pZiBzb21lb25lIGNyZWF0ZXMgU0Ygb3ZlciBQQ0kgVkYs
-IFBDSSBWRiBpcyBtYW5hZ2VtZW50IGRldmljZSwgYW5kIFBDSSBTRiBpcyBtYW5hZ2VkIGRldmlj
-ZS4NCg0KV2hlbi9pZiBTRiBpcyBjcmVhdGVkIG92ZXIgUENJIFBGLCBQQ0kgUEYgaXMgbWFuYWdl
-ZCBkZXZpY2UsIGFuZCBQQ0kgU0YgaXMgbWFuYWdlZCBkZXZpY2UuDQoNCkluIGVpdGhlciBjYXNl
-IHRoZSBBUSBvbiB0aGUgUENJIGRldmljZSBpcyB0cmFuc3BvcnRpbmcgU0YgY3JlYXRlL2Rlc3Ry
-b3kgY29tbWFuZHMuDQoNCj4gPiBBUSBpbmhlcmVudGx5IGFsbG93cyBvdXQgb2Ygb3JkZXIgY29t
-bWFuZHMgZXhlY3V0aW9uLg0KPiA+IEl0IHNob3VsZG4ndCBmYWNlIGNvbnRlbnRpb24uIEZvciBl
-eGFtcGxlIDFLIGRlcHRoIEFRIHNob3VsZCBiZSBzZXJ2aW5nDQo+IGh1bmRyZWRzIG9mIGRlc2Ny
-aXB0b3JzIGNvbW1hbmRzIGluIHBhcmFsbGVsIGZvciBTRiBjcmVhdGlvbiwgVkYgTVNJLVggY29u
-ZmlnDQo+IGFuZCBtb3JlLg0KPiA+DQo+ID4gV2hpY2ggYXJlYS9jb21tYW5kcyBldGMgeW91IHRo
-aW5rIGNhbiBsZWFkIHRvIHRoZSBjb250ZW50aW9uPw0KPiANCj4gDQo+IFVubGVzcyB0aGUgd2Ug
-aGF2ZSBzZWxmLWNvbmFpbnRlZCBkZXNjcmlwdG9yIHdoaWNoIGNvbnRhaW5zIHBlciBkZXNjcmlw
-dG9yDQo+IHdyaXRlYmFjayBhZGRyZXNzLiBFdmVuIGlmIHdlIGhhdmUgT09PLCB0aGUgZW5xdWV1
-ZSBhbmQgZGVxdWV1ZSBzdGlsbCBuZWVkcw0KPiB0byBiZSBzZXJpYWxpemVkPw0KPg0KTm8uIHdl
-IGRvbid0IG5lZWQgdG8gZGVmaW5lIGFueSBiZWhhdmlvci4NCldoZW4gVklSVElPX0ZfSU5fT1JE
-RVIgaXMgbm90IG5lZ290aWF0ZWQsIHRoZSB3YXkgYSBWUSBiZWhhdmVzLCBBUSBhbHdheXMgYmVo
-YXZlcyB0aGlzIHdheS4NCkFuZCBhbnkgc3luY2hyb25pemF0aW9uIHRvIGJlIGRvbmUgaXMgZG9u
-ZSBpbiB0aGUgZHJpdmVyIGxpa2UgdG9kYXkuIFVzdWFsbHkgd2hlbiBwb3N0aW5nIGRlc2NyaXB0
-b3JzIGl0IG5lZWRzIHRvIGhvbGQgbG9jayBmb3Igc2hvcnQgaW50ZXJuYWwuDQpBbmQgdGhpcyBj
-YW5ub3QgbGVhZCB0byBjb250ZW50aW9uLCBkdWUgdG8gdGhlIGZhY3QgdGhhdCBkZXNjcmlwdG9y
-IHBvc3RpbmcgdGltZSBpcyB2ZXJ5IHNob3J0Lg0KIA0KPiANCj4gPg0KPiA+PiAyKSBpZiB3ZSBo
-YXZlIHBlciB2ZiBhZG1pbiB2aXJ0cXVldWUsIGl0IHN0aWxsIGRvZXNuJ3Qgc2NhbGUgc2luY2Ug
-aXQNCj4gPj4gb2NjdXBpZXMgbW9yZSBoYXJkd2FyZSByZXNvdXJjZXMNCj4gPj4NCj4gPiBUaGF0
-IGlzIHRvbyBoZWF2eSwgYW5kIGRvZXNu4oCZdCBzY2FsZS4gUHJvcG9zYWwgaXMgdG8gbm90IGhh
-dmUgcGVyIHZmIGFkbWluDQo+IHF1ZXVlLg0KPiA+IFByb3Bvc2FsIGlzIHRvIGhhdmUgb25lIGFk
-bWluIHF1ZXVlIGluIGEgdmlydGlvIGRldmljZS4NCj4gDQo+IA0KPiBPay4NCj4gDQo+IA0KPiA+
-DQo+ID4+Pj4gSSBkbyBzZWUgb25lIGFkdmFudGFnZSBpcyB0aGF0IHRoZSBhZG1pbiB2aXJ0cXVl
-dWUgaXMgdHJhbnNwb3J0DQo+ID4+IGluZGVwZW5kZW50DQo+ID4+Pj4gKG9yIGl0IGNvdWxkIGJl
-IHVzZWQgYXMgYSB0cmFuc3BvcnQpLg0KPiA+Pj4+DQo+ID4+PiBJIGFtIHlldCB0byByZWFkIHRo
-ZSB0cmFuc3BvcnQgcGFydCBmcm9tIFsxXS4NCj4gPj4NCj4gPj4gWWVzLCB0aGUgbWFpbiBnb2Fs
-IGlzIHRvIGJlIGNvbXBhdGlibGUgd2l0aCBTSU9WLg0KPiA+Pg0KPiA+IEFkbWluIHF1ZXVlIGlz
-IGEgY29tbWFuZCBpbnRlcmZhY2UgdHJhbnNwb3J0IHdoZXJlIGhpZ2hlciBsYXllciBzZXJ2aWNl
-cw0KPiBjYW4gYmUgYnVpdC4NCj4gPiBUaGlzIGluY2x1ZGVzIFNSLUlPViBjb25maWcsIFNJT1Yg
-Y29uZmlnLg0KPiA+IEFuZCB2MiBlbmFibGVzIFNJT1YgY29tbWFuZHMgaW1wbGVtZW50YXRpb24g
-d2hlbmV2ZXIgdGhleSBhcmUgcmVhZHkuDQo+ID4NCj4gPj4+Pj4gNC4gSW1wcm92ZSBkb2N1bWVu
-dGF0aW9uIGFyb3VuZCBtc2l4IGNvbmZpZyB0byBsaW5rIHRvIHNyaW92DQo+ID4+Pj4+IHNlY3Rp
-b24gb2YNCj4gPj4gdmlydGlvDQo+ID4+Pj4gc3BlYw0KPiA+Pj4+PiA1LiBEZXNjcmliZSBlcnJv
-ciB0aGF0IGlmIFZGIGlzIGJvdW5kIHRvIHRoZSBkZXZpY2UsIGFkbWluDQo+ID4+Pj4+IGNvbW1h
-bmRzDQo+ID4+Pj4gdGFyZ2V0aW5nIFZGIGNhbiBmYWlsLCBkZXNjcmliZSB0aGlzIGVycm9yIGNv
-ZGUNCj4gPj4+Pj4gRGlkIEkgbWlzcyBhbnl0aGluZz8NCj4gPj4+Pj4NCj4gPj4+Pj4gWWV0IHRv
-IHJlY2VpdmUgeW91ciBmZWVkYmFjayBvbiBncm91cCwgaWYvd2h5IGlzIGl0IG5lZWRlZCBhbmQs
-DQo+ID4+Pj4+IHdoeS9pZiBpdA0KPiA+PiBtdXN0DQo+ID4+Pj4gYmUgaW4gdGhpcyBwcm9wb3Nh
-bCwgd2hhdCBwaWVjZXMgcHJldmVudHMgaXQgZG8gYXMgZm9sbG93LW9uLg0KPiA+Pj4+PiBDb3Ju
-ZWxpYSwgSmFzb24sDQo+ID4+Pj4+IENhbiB5b3UgcGxlYXNlIHJldmlldyBjdXJyZW50IHByb3Bv
-c2FsIGFzIHdlbGwgYmVmb3JlIHdlIHJldmlzZSB2Mj8NCj4gPj4+PiBJZiBJIHVuZGVyc3RhbmQg
-Y29ycmVjdGx5LCBtb3N0IG9mIHRoZSBmZWF0dXJlcyAoZXhjZXB0IGZvciB0aGUNCj4gPj4+PiBh
-ZG1pbiB2aXJ0cXVldWUgaW5fb3JkZXIgc3R1ZmZzKSBhcmUgbm90IHNwZWNpZmljIHRvIHRoZSBh
-ZG1pbg0KPiA+Pj4+IHZpcnRxdWV1ZS4gQXMgZGlzY3Vzc2VkIGluIHRoZSBwcmV2aW91cyB2ZXJz
-aW9ucywgSSBzdGlsbCB0aGluayBpdCdzIGJldHRlcjoNCj4gPj4+Pg0KPiA+Pj4+IDEpIGFkZGlu
-ZyBzZWN0aW9ucyBpbiB0aGUgYmFzaWMgZGV2aWNlIGZhY2lsaXR5IG9yIGRhdGEgc3RydWN0dXJl
-DQo+ID4+Pj4gZm9yIHByb3Zpc2lvbmluZyBhbmQgTVNJDQo+ID4+Pj4gMikgaW50cm9kdWNlIGFk
-bWluIHZpcnRxdWV1ZSBvbiB0b3AgYXMgYW4gZGV2aWNlIGludGVyZmFjZSBmb3INCj4gPj4+PiB0
-aG9zZSBmZWF0dXJlcw0KPiA+Pj4+DQo+ID4+PiBJIGRpZG4ndCBmb2xsb3cgeW91ciBzdWdnZXN0
-aW9uLiBDYW4geW91IHBsZWFzZSBleHBsYWluPw0KPiA+Pj4gU3BlY2lmaWNhbGx5ICJkYXRhIHN0
-cnVjdHVyZSBmb3IgcHJvdmlzaW9uaW5nIGFuZCBNU0kiLi4NCj4gPj4NCj4gPj4gSSBtZWFudDoN
-Cj4gPj4NCj4gPj4gVGhlcmUncyBhIGNoYXB0ZXIgIkJhc2ljIEZhY2lsaXRpZXMgb2YgYSBWaXJ0
-aW8gRGV2aWNlIiwgd2UgY2FuDQo+ID4+IGludHJvZHVjZSB0aGUgY29uY2VwdHMgdGhlcmUgbGlr
-ZToNCj4gPj4NCj4gPj4gMSkgTWFuYWdlZCBkZXZpY2UgYW5kIE1hbmFnZW1lbnQgZGV2aWNlICh0
-ZXJtaW5vbG9neSBwcm9wb3NlZCBieQ0KPiA+PiBNaWNoYWVsKSwgYW5kIGNhbiB1c2UgUEYgYW5k
-IFZGIGFzIGEgZXhhbXBsZQ0KPiA+Pg0KPiA+PiAyKSBNYW5hZ2VkIGRldmljZSBwcm92aXNpb25p
-bmcgKHRoZSBkYXRhIHN0cnVjdHVyZSB0byBzcGVjaWZ5IHRoZQ0KPiA+PiBhdHRyaWJ1dGVzIG9m
-IGEgbWFuYWdlZCBkZXZpY2UgKFZGKSkNCj4gPj4NCj4gPj4gMykgTVNJDQo+ID4+DQo+ID4gQWJv
-dmUgaXMgZ29vZCBpZGVhLiBXaWxsIHJldmlzaXQgdjIsIGlmIGl0IGlzIG5vdCBhcnJhbmdlZCB0
-aGlzIHdheS4NCj4gPg0KPiA+PiBBbmQgdGhlbiB3ZSBjYW4gaW50cm9kdWNlZCBhZG1pbiB2aXJ0
-cXVldWUgaW4gZWl0aGVyDQo+ID4+DQo+ID4+IDEpIHRyYW5zcG9ydCBwYXJ0DQo+ID4+DQo+ID4+
-IG9yDQo+ID4+DQo+ID4+IDIpIFBDSSB0cmFuc3BvcnQNCj4gPj4NCj4gPiBJdCBpcyBub3Qgc3Bl
-Y2lmaWMgdG8gUENJIHRyYW5zcG9ydCwgYW5kIGN1cnJlbnRseSBpdCBpcyBub3QgYSB0cmFuc3Bv
-cnQgZWl0aGVyLg0KPiANCj4gDQo+IEtpbmQgb2YsIGl0IGFsbG93cyB0byBjb25maWd1cmUgc29t
-ZSBiYXNpYyBhdHRyaWJ1dGVzIHNvbWVob3cuIEkgdGhpbmsgd2UnZA0KPiBiZXR0ZXIgdHJ5IG5v
-dCB0byBjb3VwbGUgYW55IGZlYXR1cmVzIHRvIGFkbWluIHZpcnRxdWV1ZS4NCj4gDQpJIGFtIGZp
-bmUgYnkgZGVmaW5pbmcgdmlydGlvX21nbXRfY21kIHRoYXQgc29tZWhvdyBjYW4gYmUgaXNzdWVk
-IHdpdGhvdXQgdGhlIGFkbWluIHF1ZXVlLg0KRm9yIGV4YW1wbGUsIHN0cnVjdCB2aXJ0aW9fZnNf
-cmVxIGlzIGRldGFjaGVkIGZyb20gdGhlIHJlcXVlc3QgcXVldWUsIGJ1dCBvbmx5IHdheSBpdCBj
-YW4gYmUgaXNzdWVkIHRvZGF5IGlzIHdpdGggcmVxdWVzdCBxdWV1ZS4NClNvIHdlIGNhbiBkcmFm
-dCB0aGUgc3BlY2lmaWNhdGlvbiB0aGlzIHdheS4NCg0KQnV0IEkgcmVwZWF0ZWRseSBtaXNzIHRv
-IHNlZSBhbiBleHBsYW5hdGlvbiB3aHkgaXMgdGhhdCBuZWVkZWQuDQpXaGVyZSBpbiB0aGUgcmVj
-ZW50IHNwZWMgYSBuZXcgcXVldWUgaXMgYWRkZWQgdGhhdCBoYXMgcmVxdWVzdCBzdHJ1Y3R1cmUg
-ZGV0YWNoZWQgZnJvbSBxdWV1ZS4NCkkgd291bGQgbGlrZSB0byBzZWUgcmVmZXJlbmNlIHRvIHRo
-ZSBzcGVjIHRoYXQgaW5kaWNhdGVzIHRoYXQgDQphLiBzdHJ1Y3QgdmlydGlvX2ZzX3JlcSBjYW4g
-YmUgaXNzdWVkIGJ5IG90aGVyIG1lYW5zIG90aGVyIHRoYW4gcmVxdWVzdCBxdWV1ZS4NCmIuIEN1
-cnJlbnRseSB0aGUgbmVnb3RpYXRpb24gaXMgZG9uZSBieSBzbyBhbmQgc28gZmVhdHVyZSBiaXQg
-dG8gZG8gc28gdmlhIGEgcmVxdWVzdCBxdWV1ZS4NCmMuICJoZW5jZSBkb3duIHRoZSByb2FkIHNv
-bWV0aGluZyBlbHNlIGNhbiBiZSB1c2VkIHRvIGNhcnJ5IHN0cnVjdCB2aXJ0aW9fZnNfcmVxIGlu
-c3RlYWQgb2YgcmVxdWVzdCBxdWV1ZSIuDQoNCkFuZCB0aGF0IHdpbGwgZ2l2ZSBnb29kIGV4cGxh
-bmF0aW9uIHdoeSBhZG1pbiBxdWV1ZSBzaG91bGQgZm9sbG93IHNvbWUgcmVjZW50bHkgYWRkZWQg
-cXVldWUgd2hpY2ggaGFzIHN0cnVjdHVyZSBkZXRhY2hlZCBmcm9tIHRoZSBxdWV1ZS4NCihub3Qg
-anVzdCBpbiBmb3JtIG9mIHN0cnVjdHVyZSBuYW1lLCBidXQgYWxzbyBpbiBmb3JtIG9uIGZlYXR1
-cmUgbmVnb3RpYXRpb24gcGx1bWJpbmcgZXRjKS4NCg0KT3RoZXJ3aXNlIGRldGFjaCBtZ210LiBj
-bWQgZnJvbSBhZG1pbiBxdWV1ZSBpcyB2YWd1ZSByZXF1aXJlbWVudCB0byBtZSwgdGhhdCBkb2Vz
-buKAmXQgcmVxdWlyZSBkZXRhY2htZW50Lg0KDQo+ID4gQ2VydGFpbmx5LiBBZG1pbiBxdWV1ZSBp
-cyB0cmFuc3BvcnQgaW5kZXBlbmRlbnQuDQo+ID4gUENJIE1TSS1YIGNvbmZpZ3VyYXRpb24gaXMg
-UENJIHRyYW5zcG9ydCBzcGVjaWZpYyBjb21tYW5kLCBzbyBzdHJ1Y3R1cmVzIGFyZQ0KPiBkZWZp
-bmVkIGl0IGFjY29yZGluZ2x5Lg0KPiA+IEl0IGlzIHNpbWlsYXIgdG8gc3RydWN0IHZpcnRpb19w
-Y2lfY2FwLCBzdHJ1Y3QgdmlydGlvX3BjaV9jb21tb25fY2ZnIGV0Yy4NCj4gPg0KPiA+IEFueSBv
-dGhlciB0cmFuc3BvcnQgd2lsbCBoYXZlIHRyYW5zcG9ydCBzcGVjaWZpYyBpbnRlcnJ1cHQgY29u
-ZmlndXJhdGlvbi4gU28gaXQNCj4gd2lsbCBiZSBkZWZpbmVkIGFjY29yZGluZ2x5IHdoZW5ldmVy
-IHRoYXQgb2NjdXJzLg0KPiA+IEZvciBleGFtcGxlLCBJTVMgZm9yIFZGIG9yIElNUyBmb3IgU0Yu
-DQo+IA0KPiANCj4gSSBkb24ndCB0aGluayBJTVMgaXMgUENJIHNwZWNpZmljIHN0dWZmcywgd2Ug
-aGFkIHNpbWlsYXIgcmVxdWVzdHMgZm9yIE1NSU8uDQpTdXJlLCBidXQgZXZlbiBmb3IgdGhhdCB0
-aGVyZSB3aWxsIGJlIFNGIHNwZWNpZmljIGNvbW1hbmQgZm9yIElNUyBjb25maWd1cmF0aW9uLg0K
-VGhpcyBjb21tYW5kIHdpbGwgaGF2ZSBtYWluIGRpZmZlcmVuY2UgZnJvbSBWRiB3aWxsIGJlIHRo
-ZSBTRiBpZGVudGlmaWVyIHZzIFZGIGlkZW50aWZpZXIuDQo=
+On Wed, Jan 26, 2022 at 1:26 PM Parav Pandit <parav@nvidia.com> wrote:
+>
+>
+>
+> > From: Jason Wang <jasowang@redhat.com>
+> > Sent: Wednesday, January 26, 2022 10:35 AM
+> >
+> > =E5=9C=A8 2022/1/25 =E4=B8=8A=E5=8D=8811:52, Parav Pandit =E5=86=99=E9=
+=81=93:
+> > > Hi Jason,
+> > >
+> > >> From: Jason Wang <jasowang@redhat.com>
+> > >> Sent: Tuesday, January 25, 2022 8:59 AM
+> > >>
+> > >> =E5=9C=A8 2022/1/19 =E4=B8=8B=E5=8D=8812:48, Parav Pandit =E5=86=99=
+=E9=81=93:
+> > >>>> From: Jason Wang <jasowang@redhat.com>
+> > >>>> Sent: Wednesday, January 19, 2022 9:33 AM
+> > >>>>
+> > >>>>
+> > >>>> It it means IMS, there's already a proposal[1] that introduce MSI
+> > >>>> commands via the admin virtqueue. And we had similar requirement
+> > >>>> for virtio-MMIO[2] and managed device or SF [3], so I would rather
+> > >>>> to introduce IMS (need a better name though) as a basic facility
+> > >>>> instead of tie it to any specific transport.
+> > >>>>
+> > >>> IMS of [1] is a interrupt configuration by the virtio driver for th=
+e
+> > >>> device is it
+> > >> driving, which needs a queue.
+> > >>> So regardless of the device type as PCI PF/VF/SF/ADI, there is
+> > >>> desire to have a
+> > >> generic admin queue not attached to device type.
+> > >>> And AQ in this proposal exactly serves this purpose.
+> > >>>
+> > >>> Device configuring its own IMS vector vs PCI PF configuring VF's
+> > >>> MSI-X max
+> > >> vector count are two different functionality.
+> > >>> Both of these commands can ride on a generic queue.
+> > >>> However the queue is not same, because PF owns its own admin queue
+> > >>> (for vf msix config), VF or SF operates its own admin queue (for IM=
+S
+> > >>> config).
+> > >>
+> > >> So I think in the next version we need to clarify:
+> > >>
+> > >> 1) is there a single admin virtqueue shared by all the VFs and PF
+> > >>
+> > >> or
+> > >>
+> > >> 2) per VF/PF admin virtqueue, and how does the driver know how to
+> > >> find the corresponding admin virtqueue
+> > >>
+> > > Admin queue is not per VF.
+> > > Lets take concrete examples.
+> > > 1. So for example, PCI PF can have one AQ.
+> > > This AQ carries command to query/config MSI-X vector of VFs.
+> > >
+> > > 2. In second example, PCI PF is creating/destroying SFs. This is agai=
+n done by
+> > using the AQ of the PCI PF.
+> > >
+> > > 3. A PCI VF has its own AQ to configure some of its own generic attri=
+bute,
+> > don't know which is that today.
+> >
+> >
+> > So this could be useful if we can create SF on top of VF. But as discus=
+sed we'd
+> > better to generalize the concept (management device vs managed device).
+> >
+> It does not matter if the SF is created over PCI PF or VF. Its on top of =
+PCI virtio device.
+> When/if someone creates SF over PCI VF, PCI VF is management device, and =
+PCI SF is managed device.
+>
+> When/if SF is created over PCI PF, PCI PF is managed device, and PCI SF i=
+s managed device.
+>
+> In either case the AQ on the PCI device is transporting SF create/destroy=
+ commands.
+
+That's exactly what I meant.
+
+>
+> > > AQ inherently allows out of order commands execution.
+> > > It shouldn't face contention. For example 1K depth AQ should be servi=
+ng
+> > hundreds of descriptors commands in parallel for SF creation, VF MSI-X =
+config
+> > and more.
+> > >
+> > > Which area/commands etc you think can lead to the contention?
+> >
+> >
+> > Unless the we have self-conainted descriptor which contains per descrip=
+tor
+> > writeback address. Even if we have OOO, the enqueue and dequeue still n=
+eeds
+> > to be serialized?
+> >
+> No. we don't need to define any behavior.
+> When VIRTIO_F_IN_ORDER is not negotiated, the way a VQ behaves, AQ always=
+ behaves this way.
+> And any synchronization to be done is done in the driver like today. Usua=
+lly when posting descriptors it needs to hold lock for short internal.
+> And this cannot lead to contention, due to the fact that descriptor posti=
+ng time is very short.
+
+Probably but it really depends on the magnitude of the objects that
+you want to manage via the admin virtqueue. 1K queue size may work for
+1K objects but not for 10K or 100K.
+
+The lock is not the only thing that needs to care, the (busy) waiting
+for the completion of the command may still take time.
+
+>
+> >
+> > >
+> > >> 2) if we have per vf admin virtqueue, it still doesn't scale since i=
+t
+> > >> occupies more hardware resources
+> > >>
+> > > That is too heavy, and doesn=E2=80=99t scale. Proposal is to not have=
+ per vf admin
+> > queue.
+> > > Proposal is to have one admin queue in a virtio device.
+> >
+> >
+> > Ok.
+> >
+> >
+> > >
+> > >>>> I do see one advantage is that the admin virtqueue is transport
+> > >> independent
+> > >>>> (or it could be used as a transport).
+> > >>>>
+> > >>> I am yet to read the transport part from [1].
+> > >>
+> > >> Yes, the main goal is to be compatible with SIOV.
+> > >>
+> > > Admin queue is a command interface transport where higher layer servi=
+ces
+> > can be buit.
+> > > This includes SR-IOV config, SIOV config.
+> > > And v2 enables SIOV commands implementation whenever they are ready.
+> > >
+> > >>>>> 4. Improve documentation around msix config to link to sriov
+> > >>>>> section of
+> > >> virtio
+> > >>>> spec
+> > >>>>> 5. Describe error that if VF is bound to the device, admin
+> > >>>>> commands
+> > >>>> targeting VF can fail, describe this error code
+> > >>>>> Did I miss anything?
+> > >>>>>
+> > >>>>> Yet to receive your feedback on group, if/why is it needed and,
+> > >>>>> why/if it
+> > >> must
+> > >>>> be in this proposal, what pieces prevents it do as follow-on.
+> > >>>>> Cornelia, Jason,
+> > >>>>> Can you please review current proposal as well before we revise v=
+2?
+> > >>>> If I understand correctly, most of the features (except for the
+> > >>>> admin virtqueue in_order stuffs) are not specific to the admin
+> > >>>> virtqueue. As discussed in the previous versions, I still think it=
+'s better:
+> > >>>>
+> > >>>> 1) adding sections in the basic device facility or data structure
+> > >>>> for provisioning and MSI
+> > >>>> 2) introduce admin virtqueue on top as an device interface for
+> > >>>> those features
+> > >>>>
+> > >>> I didn't follow your suggestion. Can you please explain?
+> > >>> Specifically "data structure for provisioning and MSI"..
+> > >>
+> > >> I meant:
+> > >>
+> > >> There's a chapter "Basic Facilities of a Virtio Device", we can
+> > >> introduce the concepts there like:
+> > >>
+> > >> 1) Managed device and Management device (terminology proposed by
+> > >> Michael), and can use PF and VF as a example
+> > >>
+> > >> 2) Managed device provisioning (the data structure to specify the
+> > >> attributes of a managed device (VF))
+> > >>
+> > >> 3) MSI
+> > >>
+> > > Above is good idea. Will revisit v2, if it is not arranged this way.
+> > >
+> > >> And then we can introduced admin virtqueue in either
+> > >>
+> > >> 1) transport part
+> > >>
+> > >> or
+> > >>
+> > >> 2) PCI transport
+> > >>
+> > > It is not specific to PCI transport, and currently it is not a transp=
+ort either.
+> >
+> >
+> > Kind of, it allows to configure some basic attributes somehow. I think =
+we'd
+> > better try not to couple any features to admin virtqueue.
+> >
+> I am fine by defining virtio_mgmt_cmd that somehow can be issued without =
+the admin queue.
+> For example, struct virtio_fs_req is detached from the request queue, but=
+ only way it can be issued today is with request queue.
+> So we can draft the specification this way.
+>
+> But I repeatedly miss to see an explanation why is that needed.
+> Where in the recent spec a new queue is added that has request structure =
+detached from queue.
+> I would like to see reference to the spec that indicates that
+> a. struct virtio_fs_req can be issued by other means other than request q=
+ueue.
+> b. Currently the negotiation is done by so and so feature bit to do so vi=
+a a request queue.
+> c. "hence down the road something else can be used to carry struct virtio=
+_fs_req instead of request queue".
+>
+> And that will give good explanation why admin queue should follow some re=
+cently added queue which has structure detached from the queue.
+> (not just in form of structure name, but also in form on feature negotiat=
+ion plumbing etc).
+>
+> Otherwise detach mgmt. cmd from admin queue is vague requirement to me, t=
+hat doesn=E2=80=99t require detachment.
+
+So what I meant is not specific to any type of device. Device specific
+operations should be done via virtqueue.
+
+What I see is, we should not limit the interface for the device
+independent basic device facility to be admin virtqueue only:
+
+E.g for IMS, we should allow it to be configured with various ways
+
+1) transport independent way: e.g admin virtqueue (which will be
+eventually became another transport)
+
+or
+
+2) transport specific way, E.g a simple PCI(e) capability or MMIO registere=
+s.
+
+>
+> > > Certainly. Admin queue is transport independent.
+> > > PCI MSI-X configuration is PCI transport specific command, so structu=
+res are
+> > defined it accordingly.
+> > > It is similar to struct virtio_pci_cap, struct virtio_pci_common_cfg =
+etc.
+> > >
+> > > Any other transport will have transport specific interrupt configurat=
+ion. So it
+> > will be defined accordingly whenever that occurs.
+> > > For example, IMS for VF or IMS for SF.
+> >
+> >
+> > I don't think IMS is PCI specific stuffs, we had similar requests for M=
+MIO.
+> Sure, but even for that there will be SF specific command for IMS configu=
+ration.
+> This command will have main difference from VF will be the SF identifier =
+vs VF identifier.
+
+I think it's not hard to have a single identifier and just say it's
+transport specific? Or simply reserving IDs for VF.
+
+Thanks
 
