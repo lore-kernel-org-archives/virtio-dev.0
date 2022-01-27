@@ -1,212 +1,359 @@
-Return-Path: <mst@redhat.com>
-Date: Thu, 27 Jan 2022 12:28:47 -0500
-From: "Michael S. Tsirkin" <mst@redhat.com>
+Return-Path: <jasowang@redhat.com>
+Message-ID: <e0726651-4534-26e9-3368-abee12ed13c0@redhat.com>
+Date: Thu, 27 Jan 2022 11:36:05 +0800
+MIME-Version: 1.0
 Subject: Re: [PATCH v2 4/4] Add support for MSI-X vectors configuration for
  PCI VFs
-Message-ID: <20220127120820-mutt-send-email-mst@kernel.org>
 References: <20220124093918.34371-1-mgurtovoy@nvidia.com>
  <20220124093918.34371-5-mgurtovoy@nvidia.com>
- <20220125063443-mutt-send-email-mst@kernel.org>
- <PH0PR12MB5481EB2BC964EDDEDAD6C16FDC209@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20220126085334-mutt-send-email-mst@kernel.org>
- <PH0PR12MB548106F93293256FA2AA270CDC219@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20220127021356-mutt-send-email-mst@kernel.org>
- <PH0PR12MB54819F0D0BB5BD5C352A92F0DC219@PH0PR12MB5481.namprd12.prod.outlook.com>
-MIME-Version: 1.0
-In-Reply-To: <PH0PR12MB54819F0D0BB5BD5C352A92F0DC219@PH0PR12MB5481.namprd12.prod.outlook.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-To: Parav Pandit <parav@nvidia.com>
-Cc: Max Gurtovoy <mgurtovoy@nvidia.com>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "cohuck@redhat.com" <cohuck@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "jasowang@redhat.com" <jasowang@redhat.com>, Shahaf Shuler <shahafs@nvidia.com>, Oren Duer <oren@nvidia.com>, "stefanha@redhat.com" <stefanha@redhat.com>
+From: Jason Wang <jasowang@redhat.com>
+In-Reply-To: <20220124093918.34371-5-mgurtovoy@nvidia.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+To: Max Gurtovoy <mgurtovoy@nvidia.com>, virtio-comment@lists.oasis-open.org, mst@redhat.com, cohuck@redhat.com, virtio-dev@lists.oasis-open.org
+Cc: parav@nvidia.com, shahafs@nvidia.com, oren@nvidia.com, stefanha@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Thu, Jan 27, 2022 at 02:16:32PM +0000, Parav Pandit wrote:
-> 
-> > From: Michael S. Tsirkin <mst@redhat.com>
-> > Sent: Thursday, January 27, 2022 6:10 PM
-> 
-> > > If the system admin wants to assign 4 vectors to a VF, the current value in VF
-> > and desired value are same.
-> > > So no need to assign.
-> > 
-> > But there's no way to know how many vectors there are by default, or even
-> > whether the default is same for all VFs, without first issuing a ton of commands.
-> Either query all and build database (likely sane thing to do) or 
-> Query the first free VF, configure the value to it and use it.
 
-And not only that. Let's say you have 256 vectors split between 256 VFs
-equally. If you want to increase vectors for VF0, you need to start
-by reducing vectors for other VFs.
+在 2022/1/24 下午5:39, Max Gurtovoy 写道:
+> A typical cloud provider SR-IOV use case is to create many VFs for
+> use by guest VMs. The VFs may not be assigned to a VM until a user
+> requests a VM of a certain size, e.g., number of CPUs. A VF may need
+> MSI-X vectors proportional to the number of CPUs in the VM, but there is
+> no standard way today in the spec to change the number of MSI-X vectors
+> supported by a VF, although there are some operating systems that
+> support this.
+>
+> Introduce new admin commands for a generic interrupt vector management
+> for PCI VFs. For now, this mechanism will manage the MSI-X interrupt
+> vectors assignments of a VF by its parent PF.
+>
+> These admin commands will be easily extended, if needed, for other types
+> of interrupt vectors in the future with backward compatibility to old
+> drivers and devices.
+>
+> Reviewed-by: Parav Pandit <parav@nvidia.com>
+> Signed-off-by: Max Gurtovoy <mgurtovoy@nvidia.com>
+> ---
+>   admin-virtq.tex | 150 +++++++++++++++++++++++++++++++++++++++++++++++-
+>   content.tex     |  44 ++++++++++++++
+>   2 files changed, 192 insertions(+), 2 deletions(-)
+>
+> diff --git a/admin-virtq.tex b/admin-virtq.tex
+> index 1a41c22..b57b57d 100644
+> --- a/admin-virtq.tex
+> +++ b/admin-virtq.tex
+> @@ -64,7 +64,13 @@ \section{Admin Virtqueues}\label{sec:Basic Facilities of a Virtio Device / Admin
+>   \hline \hline
+>   0000h   & VIRTIO_ADMIN_CAPS_IDENTIFY    & M  \\
+>   \hline
+> -0001h - 7FFFh   & Generic admin cmds    & -  \\
+> +0001h   & VIRTIO_ADMIN_PCI_SRIOV_ATTRS    & O  \\
+> +\hline
+> +0002h   & VIRTIO_ADMIN_PCI_VF_INTERRUPT_CONFIG_SET    & O  \\
+> +\hline
+> +0003h   & VIRTIO_ADMIN_PCI_VF_INTERRUPT_CONFIG_GET    & O  \\
+> +\hline
+> +0004h - 7FFFh   & Generic admin cmds    & -  \\
+>   \hline
+>   8000h - FFFFh   & Reserved    & - \\
+>   \hline
+> @@ -78,7 +84,8 @@ \subsection{VIRTIO ADMIN CAPS IDENTIFY command}\label{sec:Basic Facilities of a
+>   \begin{lstlisting}
+>   struct virtio_admin_caps_identify_result {
+>          /*
+> -        * caps[0] - Bit 0x0 - Bit 0x7 are reserved
+> +        * caps[0] - Bit 0x0 - if set, VF MSI-X control supported
+> +        *           Bit 0x1 - Bit 0x7 are reserved
+>           * caps[1] - Bit 0x0 - Bit 0x7 are reserved
+>           * caps[2] - Bit 0x0 - Bit 0x7 are reserved
+>           * ....
+> @@ -87,3 +94,142 @@ \subsection{VIRTIO ADMIN CAPS IDENTIFY command}\label{sec:Basic Facilities of a
+>          u8 caps[8192];
+>   };
+>   \end{lstlisting}
+> +
+> +For more details on VF MSI-X configuration support see section \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Admin command set / VF MSI-X control}.
+> +
+> +\subsection{VIRTIO ADMIN PCI SRIOV ATTRS command}\label{sec:Basic Facilities of a Virtio Device / Admin Virtqueues / VIRTIO ADMIN PCI SRIOV ATTRS command}
+> +
 
-It's really a ton of round trips to the card just for startup.
+
+So this is all for PCI transport, do we need to
+
+1) move this to PCI transport
+
+or
+
+2) use non PCI specific termiology (PF/VF) here
+
+?
 
 
+> +The VIRTIO_ADMIN_PCI_SRIOV_ATTRS command has no command specific data set by the driver.
+> +This command upon success, returns a data buffer that describes information about PCI SRIOV
+> +related capabilities and attributes for the device. This command can be supported only by
+> +PCI devices that supports Single Root I/O Virtualization.
+> +This information is of form:
+> +\begin{lstlisting}
+> +struct virtio_admin_pci_sriov_attrs_result {
+> +        /* For compatibility - indicates which of the below fields are valid (1 means valid):
+> +         * Bit 0x0 - vfs_free_msix_count
+> +         * Bit 0x1 - per_vf_max_msix_count
+> +         * Bits 0x2 - 0x3F - reserved for future fields
+> +         */
 
-> > 
-> > Nothing here specifies the lifetime, e.g. nothing precludes tweaking the
-> > number while driver is using the VF. Which will just be a mess to support.
-> 
-> It is described in the v2.
-> 
+
+So we have several layers of compatibilities:
+
+1) feature bits
+2) cap bitmap / identifiy
+3) attrs_mask (no negotiation so it's unclear that how the compatibility 
+can work here).
+
+This looks like a burden for the management.
+
+Is it really helpful to have a device that can only return 
+free_msix_count but not per_vf_max_msix_count?
+
+And I think it's better to explicit split the commands then we can have 
+dedicated commands for MSI instead of trying to mix all SRIOV related 
+attributes into the same command.
+
+
+> +        le64 attrs_mask;
+> +        /* Number of free msix vectors in the global msix pool for VFs */
+> +        le32 vfs_free_msix_count;
+> +        /* Max number of msix vectors that can be assigned for a single VF */
+> +        le16 per_vf_max_msix_count;
+> +};
+> +\end{lstlisting}
+> +
+> +\subsection{VIRTIO ADMIN PCI VF INTERRUPT CONFIG SET command}\label{sec:Basic Facilities of a Virtio Device / Admin Virtqueues / VIRTIO ADMIN PCI VF INTERRUPT CONFIG SET command}
+> +
+> +The VIRTIO_ADMIN_PCI_VF_INTERRUPT_CONFIG_SET command is used to modify the interrupt vectors
+> +count for a PCI virtual function. The command specific data set by the driver is of form:
+> +\begin{lstlisting}
+> +struct virtio_admin_pci_vf_interrupt_config_set_data {
+> +        /* The virtual function number */
+> +        le16 vf_number;
+> +        /* For compatibility - indicates which of the below properties should be
+> +         * modified (1 means that field should be modified):
+> +         * Bit 0x0 - msix_count
+> +         * Bits 0x1 - 0x3F - reserved for future fields
+> +         */
+> +        le64 attrs_mask;
+> +        /* The amount of MSI-X interrupt vectors */
+> +        le16 msix_count;
+> +};
+> +\end{lstlisting}
+
+
+I think it's better to have a dedicated command to set the msix_vectors, 
+then there's no need for the attrs_mask.
+
+
+> +
+> +The following table describes the command specific error codes codes:
+> +
+> +\begin{tabular}{|l|l|l|}
+> +\hline
+> +Opcode & Status & Description \\
+> +\hline \hline
+> +00h   & VIRTIO_ADMIN_CS_ERR_PCI_VF_NUM_INVALID    & invalid VF number  \\
+
+
+Does it mean it exceeds the totalVFs? We need an accurate definition on 
+"invalid" here.
+
+
+> +\hline
+> +01h   & VIRTIO_ADMIN_CS_ERR_PCI_MSIX_COUNT_EXCEED    & MSI-X count exceed the max value per VF  \\
+
+
+I guess it's actually per_vf_max_msix_count? What if the device doesn't give us per_vf_max_msix_count (it's odd but it's allowed in this propsal if I was not wrong).
+
+
+> +\hline
+> +02h   & VIRTIO_ADMIN_CS_ERR_PCI_MSIX_POOL_NO_RSC    & MSI-X count exceed the free pool resources   \\
+> +\hline
+
+
+Do we need to define "pool" here?
+
+
+> +03h   & VIRTIO_ADMIN_CS_ERR_PCI_VF_IN_USE    & VF is already in use, operation failed   \\
+
+
+How do you define "VF is already in use"? Is this command only 
+applicable when sriov_numvfs in the capability is zero? How about the 
+initial associated VF via initial_vfs?
+
+
+> +\hline
+> +04h - FFh   & Reserved    & -  \\
+> +\hline
+> +\end{tabular}
+> +
+> +\begin{note}
+> +{vf_number can't be greater than NumVFs value as defined in the PCI specification
+> +or smaller than 1. A command specific error status code VIRTIO_ADMIN_CS_ERR_PCI_VF_NUM_INVALID
+> +is returned when vf_number is out of the range.}
+
+
+Should be TotalVFs in the SR-IOV extended capability.
+
+
+> +\end{note}
+> +
+> +\begin{note}
+> +{A command specific error status code VIRTIO_ADMIN_CS_ERR_PCI_MSIX_COUNT_EXCEED
+> +is returned when the amount of MSI-X to assign exceed the maximum value that can be
+> +assigned to a single VF.}
+> +\end{note}
+> +
+> +\begin{note}
+> +{A command specific error status code VIRTIO_ADMIN_CS_ERR_PCI_MSIX_POOL_NO_RSC
+> +is returned when the amount of MSI-X to assign exceed the amount of free MSI-X
+> +vectors in the global pool.}
+> +\end{note}
+> +
+> +This command has no command specific result set by the device. Upon success, the device guarantees
+> +that all the requested properties were modified to the given values. Otherwise, error will be returned.
+> +
+> +\begin{note}
 > +{Before setting msix_count property the virtual/managed device (VF) shall be un-initialized and may not be used by the driver.
-> 
-> Above should be changed to "must not be used by the driver."
-
-ok so there's an implicit uninitialized state.
-
-This is why I felt that instead, we should make it implicit
-calling the command INITIALIZE, with flags specifying
-what is being initialized.
-
-And an UINITIALIZE command for symmetry.
-
-Alternatively - VFs should start in
-a known state, with 0 vectors, and uninitialized - driver can not bind.
-Following this, we'd do commands to assign resources to the VFs.
-Finally, we make the VF initialized - after this point driver can bind,
-but configuration can no longer be changed.
-
-It looks like in your proposal, just assigning msix count makes
-VF initialized, so this is implicit. One also can not put VF
-back in uninitialized state which seems asymmetrical.
+> +Otherwise, a command specific error status code VIRTIO_ADMIN_CS_ERR_PCI_VF_IN_USE will be returned.}
 
 
-> > > It is like a netdevice comes up default with some X queues and if user wants
-> > to modify it, it does ethtool and use the new value.
-> > > It is not that complex.
-> > 
-> > A ton of commands will be needed to first query all VFs, then configure them
-> > all the way management wants to.
-> So, it that a problem? To configure some value, query is needed.
-
-yes because it's not even one command. It can be like 200 commands.
-That is excessive.
-
-> If user doesn't want to issue too many commands it can pick the free VF and configure it.
-> 
-> Other option is below, where HV says, ah I don't like to query all the VFs.
-> I want to manage each VF individually.
-> So HV does one command even before enabling SR-IOV to give 0 vectors by default to each VF.
+How did the device know whether or not VF is not used by any driver?
 
 
-
-> So sequence will be like,
-> 
-> 1. reset all vf vectors, count = 0.
-
-This one small step is like 200 commands though.
-
-> 2. query total vectors of the device
-> 3. enable sriov (num vfs = N)
-> 3. assign #A vectors to VF-A.
-> 4. assign VF to VM
-> 5. use VM
-> 6. release VM and VF
-> 7. assign #B vectors to VF-A.
-> 8. Repeat 5 to 6
-> 
-> > 
-> > > > And alternative is to declare that VF is not set up automatically,
-> > > > and ask driver to set it up before use.
-> > > >
-> > > Yes. This is equally good idea.
-> > > May be a pci_msix_config on PF device will be good idea indicating that,
-> > always have all the VFs with zero default vector.
-> > > And user will setup the vector before giving the VF to the driver.
-> > >
-> > > > It's strictly less work for the device so I find it hard to believe
-> > > > it's impossible to implement.
-> > > >
-> > > It is less work. This is fine.
-> > > Enabling/disabling individual VF is a completely different mechanics.
-> > 
-> > Well. you seem to already allow allocating 0 vectors to a VF, which will break
-> > most drivers effectively disabling it.
-> Allocating 0 vectors is not to break driver. Not sure why you use the term break.
-
-just that most drivers won't work if device can not drive any interrupt.
-
-> > I just this it's best to formalize this.
-> I liked the idea of above 8 steps example, this will be efficient for the user.
-
-step 1 is problematic though.
-
-> > > > > > IOW we would have two commands, enable and disable, an enabled
-> > > > > > VFs has to be supplied with all of its configuration.
-> > > > > >
-> > > > > I wish best to those who will attempt this.
-> > > >
-> > > > It's possible that you will end up being that person, we need to
-> > > > have the interface that's generic and clear enough even if your
-> > > > hardware does not benefit.
-> > > >
-> > > > > Devices that we experience are able to handle SR-IOV scale for
-> > > > > several
-> > > > hundreds of VFs without need to undergo enable-disable individual VFs.
-> > > >
-> > > > OK... and is it true that at the same time they do not support
-> > > > enough MSI-X vectors per VF such that we need complex machinery to
-> > control them?
-> > > >
-> > > Yes.
-> > >
-> > > > What is the motivation for this proposal again?
-> > > >
-> > > Efficiently distribute device resources among large number of VFs.
-> > 
-> > So what's the total # of vectors supported and what's the # of VFs then?
-> 
-> One example, 256 VFs. total of 2K MSI-X vectors among these 256 VFs.
-
-OK so 128 per VF by default. So pls think of a set of commands where
-we can manage most reasonable tasks without resorting to hundreds of
-commands.
+> +\end{note}
+> +
+> +\subsection{VIRTIO ADMIN PCI VF INTERRUPT CONFIG GET command}\label{sec:Basic Facilities of a Virtio Device / Admin Virtqueues / VIRTIO ADMIN PCI VF INTERRUPT CONFIG GET command}
+> +
+> +The VIRTIO_ADMIN_PCI_VF_INTERRUPT_CONFIG_GET command is used to obtain the values of the VFs
+> +interrupt vectors configuration.
+> +The command specific data set by the driver is of form:
+> +\begin{lstlisting}
+> +struct virtio_admin_pci_vf_interrupt_config_get_data {
+> +        /* The virtual function number */
+> +        le16 vf_number;
+> +        /* For compatibility - indicates which of the below properties should be
+> +         * queried (1 means that field should be queried):
+> +         * Bit 0x0 - msix_count (The amount of MSI-X interrupt vectors)
+> +         * Bits 0x1 - 0x3F - reserved for future fields
+> +         */
+> +        le64 attrs_mask;
+> +};
+> +\end{lstlisting}
+> +
+> +The following table describes the command specific error codes codes:
+> +
+> +\begin{tabular}{|l|l|l|}
+> +\hline
+> +Opcode & Status & Description \\
+> +\hline \hline
+> +00h   & VIRTIO_ADMIN_CS_ERR_PCI_VF_NUM_INVALID    & invalid VF number  \\
+> +\hline
+> +01h - FFh   & Reserved    & -  \\
+> +\hline
+> +\end{tabular}
+> +
+> +\begin{note}
+> +{vf_number can't be greater than NumVFs value as defined in the PCI specification
 
 
-> > > When to pci capabilities, where to store in driver structure, when to update
-> > them, when to mark those capabilities dirty and re-read it.
-> > > All above is not defined by PCI spec; it varies from OS to OS. Virtio spec can
-> > give guidance of what to expect so that OS can implement above for msix
-> > config update.
-> > 
-> > All I'm saying it let's drop the "beyond the scope" thing and in fact this whole
-> > paragraph does not seem to add anything useful to the spec.
-> > 
-> Oh, you suggested to describe this details in v1 in the spec. 
-
-Wall this does is try to say that you won't though.
-
-> > Maybe you are trying to say that the driver or systems software needs to do
-> > some kind of synchronization - is that it?
-> Yes.
-> > It is not clear from this description what are you talking about, what is synched
-> > with what, or what does "reflected in the PCI device" mean.
-> 
-> Below is what is written in proposed patch:
-> 
-> "MSI-X capability access by the subject PCI VF defined by the PCI specification must 
-> reflect the new configuration in all relevant fields."
-
-MUST I guess and do the conformance paragraph dance then.
-
-and I think you mean "after setting the msix_count field" right?
-
-otherwise this is ok, but I was referring to the beyond scope part,
-not to this sentence at all.
-
-> 
-> All the configuration relevant to the MSI-X should reflect in necessary registers defined by PCI spec.
-> 
-> Probably it should be written as "All MSI-X related registers, capabilities and fields must reflect the new configuration".
-> Is this better?
-
-no, that sentence was mostly ok.
-
-I think this thread has outlived its usefulness.
-Please just post a new version and we can restart as at this point it's no longer
-clear who is responding to what.
+I guess for NumVFs you meant the TotalVFs in SR-IOV extended capability.
 
 
--- 
-MST
+> +or smaller than 1. A command specific error status code VIRTIO_ADMIN_CS_ERR_PCI_VF_NUM_INVALID
+> +is returned when vf_number is out of the range.}
+> +\end{note}
+> +
+> +This command, upon success, returns a data buffer that describes the properties that were requested
+> +and their values for the subject virtio VF device according to the given vf_number.
+> +This information is of form:
+> +\begin{lstlisting}
+> +struct virtio_admin_pci_vf_interrupt_config_get_result {
+> +        /* For compatibility - indicates which of the below fields were returned
+> +         * (1 means that field was returned):
+> +         * Bit 0x0 - msix_count
+> +         * Bits 0x1 - 0x3F - reserved for future fields
+> +         */
+> +        le64 attrs_mask;
+> +        /* The amount of MSI-X interrupt vectors currently assigned to the VF */
+> +        le16 msix_count;
+> +};
+> +\end{lstlisting}
+> diff --git a/content.tex b/content.tex
+> index 18a5c66..2dd1d46 100644
+> --- a/content.tex
+> +++ b/content.tex
+> @@ -1734,6 +1734,50 @@ \subsubsection{Driver Handling Interrupts}\label{sec:Virtio Transport Options /
+>       \end{itemize}
+>   \end{itemize}
+>   
+> +\subsection{PCI-specific Admin capabilities}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Admin capabilities}
+> +
+> +This documents the group of Admin capabilities for PCI virtio devices. Each capability is
+> +implemented using one or more Admin queue commands.
+> +
+> +\subsubsection{VF MSI-X control}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Admin command set / VF MSI-X control}
+> +
+> +This capability enables a virtio PCI PF device to control the assignment of MSI-X interrupt vectors
+> +for its managed VFs. Capable devices will need to set bit 0x0 of caps[0] in the result of VIRTIO_ADMIN_CAPS_IDENTIFY
+> +admin command. See section \ref{sec:Basic Facilities of a Virtio Device / Admin Virtqueues / VIRTIO ADMIN CAPS IDENTIFY command}
+> +for more details.
+> +
+> +Capable devices will also need to implement VIRTIO_ADMIN_PCI_SRIOV_ATTRS, VIRTIO_ADMIN_PCI_VF_INTERRUPT_CONFIG_SET and
+> +VIRTIO_ADMIN_PCI_VF_INTERRUPT_CONFIG_GET admin commands.
+> +
+> +In the result of VIRTIO_ADMIN_PCI_SRIOV_ATTRS admin command, a capable device should return the number of free msix vectors
+> +in the global msix pool for its VFs in \field{vfs_free_msix_count} field and also the maximal number of msix vectors that
+> +can be assigned for a single VF in \field{per_vf_max_msix_count} field. In addition, bit 0x0 and bit 0x1 should be set
+> +to indicate on the validity of the other 2 fields in the \field{attrs_mask} field of the result buffer.
+> +See section \ref{sec:Basic Facilities of a Virtio Device / Admin Virtqueues / VIRTIO ADMIN PCI SRIOV ATTRS command} for more
+> +details.
+> +
+> +A PCI PF device may assign default number of MSI-X vectors to the enabled PCI VFs. Also, using VIRTIO_ADMIN_PCI_VF_INTERRUPT_CONFIG_SET
+> +it is possible to update the default MSI-X assignment for a specific VF.
+> +In the data of VIRTIO_ADMIN_PCI_VF_INTERRUPT_CONFIG_SET admin command, a driver set the virtual function number in
+> +\field{vf_number} and the amount of MSI-X interrupt vectors to configure to the subject virtual function in \field{msix_count}.
+> +In addition, bit 0x0 in the \field{attrs_mask} field should be set. A successful operation guarantees that the requested
+> +amount of MSI-X interrupt vectors was assigned to the subject virtual function.
+> +Also, a successful operation guarantees that the MSI-X capability access by the subject PCI VF defined by the PCI specification must reflect
+> +the new configuration in all relevant fields. For example, by default if the PCI VF has been assigned 4 MSI-X vectors, and VIRTIO_ADMIN_PCI_VF_INTERRUPT_CONFIG_SET increases the MSI-X vectors to 8; on this change, reading Table size field of the MSI-X message control
+> +register should reflect a value of 7.
+> +See section \ref{sec:Basic Facilities of a Virtio Device / Admin Virtqueues / VIRTIO ADMIN PCI VF INTERRUPT CONFIG SET command} for more details.
+> +
+> +It is beyond the scope of the virtio specification to define necessary synchronization in system software to ensure that a virtio PCI VF device
+> +interrupt configuration modification is reflected in the PCI device. However, it is expected that any modern system software implementing virtio
+> +drivers and PCI subsystem should ensure that any changes occurring in the VF interrupt configuration is either updated in the PCI VF device or
+> +such configuration fails.
+> +
+> +In the data of VIRTIO_ADMIN_PCI_VF_INTERRUPT_CONFIG_GET admin command, a driver should set the virtual function number in
+> +\field{vf_number}. In addition, bit 0x0 in the \field{attrs_mask} field should be set to indicate requested output fields in
+> +the result from the device. In the result of a successful operation, the amount of MSI-X interrupt vectors that is currently
+> +assigned to the subject virtual function is returned by the device in \field{msix_count} field. In addition, bit 0x0 in the \field{attrs_mask} field should be set by the device to indicate on the validity of \field{msix_count} field.
+> +See section \ref{sec:Basic Facilities of a Virtio Device / Admin Virtqueues / VIRTIO ADMIN PCI VF INTERRUPT CONFIG GET command} for more details.
+> +
+
+
+I think we should have a guidance on how to provision #msix_vectors step 
+by step. E.g:
+
+1) Do we need to do that before or after the VF provisioning
+2) Can the value survive when 0 is wrote to sriov_numvfs
+
+etc.
+
+Thanks
+
+
+>   \section{Virtio Over MMIO}\label{sec:Virtio Transport Options / Virtio Over MMIO}
+>   
+>   Virtual environments without PCI support (a common situation in
 
