@@ -1,9 +1,9 @@
-Return-Path: <mst@redhat.com>
-Date: Wed, 26 Jan 2022 09:11:43 -0500
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: Re: [PATCH 2/5] Introduce
+Return-Path: <parav@nvidia.com>
+From: Parav Pandit <parav@nvidia.com>
+Subject: RE: [PATCH 2/5] Introduce
  VIRTIO_F_ADMIN_VQ_INDIRECT_DESC/VIRTIO_F_ADMIN_VQ_IN_ORDER
-Message-ID: <20220126090911-mutt-send-email-mst@kernel.org>
+Date: Thu, 27 Jan 2022 03:49:58 +0000
+Message-ID: <PH0PR12MB548185B0603F0A4C8009EB66DC219@PH0PR12MB5481.namprd12.prod.outlook.com>
 References: <PH0PR12MB54816DB30F23511266B8F35EDC589@PH0PR12MB5481.namprd12.prod.outlook.com>
  <20220118014737-mutt-send-email-mst@kernel.org>
  <PH0PR12MB5481B99E351B624A27378BC5DC589@PH0PR12MB5481.namprd12.prod.outlook.com>
@@ -14,51 +14,51 @@ References: <PH0PR12MB54816DB30F23511266B8F35EDC589@PH0PR12MB5481.namprd12.prod.
  <b6fc2eb9-8023-29c6-ce59-6a9f3810d057@nvidia.com>
  <20220125070649-mutt-send-email-mst@kernel.org>
  <PH0PR12MB5481B051AFA529851B0167B3DC209@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20220126090911-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20220126090911-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <PH0PR12MB5481B051AFA529851B0167B3DC209@PH0PR12MB5481.namprd12.prod.outlook.com>
+Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-To: Parav Pandit <parav@nvidia.com>
+Content-Transfer-Encoding: base64
+To: "Michael S. Tsirkin" <mst@redhat.com>
 Cc: Max Gurtovoy <mgurtovoy@nvidia.com>, Jason Wang <jasowang@redhat.com>, "cohuck@redhat.com" <cohuck@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Shahaf Shuler <shahafs@nvidia.com>, Oren Duer <oren@nvidia.com>, "stefanha@redhat.com" <stefanha@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, Jan 26, 2022 at 01:29:27PM +0000, Parav Pandit wrote:
-> 
-> > From: Michael S. Tsirkin <mst@redhat.com>
-> > Sent: Tuesday, January 25, 2022 5:39 PM
-> 
-> > >
-> > > So you do agree that managing a managed (create/destroy/setup/etc...)
-> > > will be done using the AQ of the managing device ?
-> > 
-> > I think Jason asked that the management commands are split from the queue
-> > itself, such that they can be implemented in more ways down the road.
-> 
-> Admin commands involved DMA. And also multiple commands can be enqueued to the device.
-> I don't see any other construct in the spec other than vq that enables driver and device to achieve both.
-> Hence split the queue from command is very weird for spec to do.
-
- VIRTIO_PCI_CAP_SHARED_MEMORY_CFG can do this.
-
-
-> A recent addition like virtio_fs_req didn’t adopt this suggestion.
-> 
-> If we just want to split so that admin commands can be transported via non admin queue, we should remove below line from spec:
-> 
-> "The Admin command set defines the commands that may be issued only to the admin virtqueue"
-
-sure
-
-> And reword it as below,
-> 
-> The Admin command set defines the commands to manipulate various features/attributes of another device within the same group...
-> When VIRTIO_F_ADMIN_VQ feature is negotiated, admin commands must be transported through the admin queue.
-> 
-> Looks ok?
-
-I see no problem with that.
-
--- 
-MST
+DQo+IEZyb206IE1pY2hhZWwgUy4gVHNpcmtpbiA8bXN0QHJlZGhhdC5jb20+DQo+IFNlbnQ6IFdl
+ZG5lc2RheSwgSmFudWFyeSAyNiwgMjAyMiA3OjQyIFBNDQo+IA0KPiBPbiBXZWQsIEphbiAyNiwg
+MjAyMiBhdCAwMToyOToyN1BNICswMDAwLCBQYXJhdiBQYW5kaXQgd3JvdGU6DQo+ID4NCj4gPiA+
+IEZyb206IE1pY2hhZWwgUy4gVHNpcmtpbiA8bXN0QHJlZGhhdC5jb20+DQo+ID4gPiBTZW50OiBU
+dWVzZGF5LCBKYW51YXJ5IDI1LCAyMDIyIDU6MzkgUE0NCj4gPg0KPiA+ID4gPg0KPiA+ID4gPiBT
+byB5b3UgZG8gYWdyZWUgdGhhdCBtYW5hZ2luZyBhIG1hbmFnZWQNCj4gPiA+ID4gKGNyZWF0ZS9k
+ZXN0cm95L3NldHVwL2V0Yy4uLikgd2lsbCBiZSBkb25lIHVzaW5nIHRoZSBBUSBvZiB0aGUgbWFu
+YWdpbmcNCj4gZGV2aWNlID8NCj4gPiA+DQo+ID4gPiBJIHRoaW5rIEphc29uIGFza2VkIHRoYXQg
+dGhlIG1hbmFnZW1lbnQgY29tbWFuZHMgYXJlIHNwbGl0IGZyb20gdGhlDQo+ID4gPiBxdWV1ZSBp
+dHNlbGYsIHN1Y2ggdGhhdCB0aGV5IGNhbiBiZSBpbXBsZW1lbnRlZCBpbiBtb3JlIHdheXMgZG93
+biB0aGUNCj4gcm9hZC4NCj4gPg0KPiA+IEFkbWluIGNvbW1hbmRzIGludm9sdmVkIERNQS4gQW5k
+IGFsc28gbXVsdGlwbGUgY29tbWFuZHMgY2FuIGJlDQo+IGVucXVldWVkIHRvIHRoZSBkZXZpY2Uu
+DQo+ID4gSSBkb24ndCBzZWUgYW55IG90aGVyIGNvbnN0cnVjdCBpbiB0aGUgc3BlYyBvdGhlciB0
+aGFuIHZxIHRoYXQgZW5hYmxlcyBkcml2ZXINCj4gYW5kIGRldmljZSB0byBhY2hpZXZlIGJvdGgu
+DQo+ID4gSGVuY2Ugc3BsaXQgdGhlIHF1ZXVlIGZyb20gY29tbWFuZCBpcyB2ZXJ5IHdlaXJkIGZv
+ciBzcGVjIHRvIGRvLg0KPiANCj4gIFZJUlRJT19QQ0lfQ0FQX1NIQVJFRF9NRU1PUllfQ0ZHIGNh
+biBkbyB0aGlzLg0KPg0KRGV2aWNlIG5lZWRzIHRvIGFsd2F5cyBoYXZlIHNoYXJlZCBtZW1vcnkg
+cmVnaW9uIGFsd2F5cyBpbiBhdmFpbGFibGUgcmFuZ2UgZm9yIGRyaXZlciB0byByZWFkLg0KRHJp
+dmVyIHN0aWxsIG5lZWRzIHRvIGNvcHkgZGF0YSBmcm9tIHNoYXJlZCByZWdpb24gdG8gb3duIG1l
+bW9yeS4NCkhvdyBETUEgQ2FuIGJlIGRvbmUgaW4gdGhlIGhvc3QgZHJpdmVyIFBBIHVzaW5nIHNo
+YXJlZCBtZW1vcnkgcmVnaW9uPw0KDQpJbiBmdXR1cmUgd2hlbiBTSU9WIG9jY3VycywgZWFjaCBu
+ZXcgU0lPViBTRi9BREkgd2lsbCByZXF1aXJlIG5ldyB3aW5kb3cgaW4gdGhlIHNoYXJlZCByZWdp
+b25zIGV4cG9zZWQgc3RhdGljYWxseSBkdXJpbmcgUENJIGRpc2NvdmVyeSB0aW1lLg0KU28gaXQg
+ZG9lc24ndCBzY2FsZS4NCiAgDQo+IA0KPiA+IEEgcmVjZW50IGFkZGl0aW9uIGxpa2UgdmlydGlv
+X2ZzX3JlcSBkaWRu4oCZdCBhZG9wdCB0aGlzIHN1Z2dlc3Rpb24uDQo+ID4NCj4gPiBJZiB3ZSBq
+dXN0IHdhbnQgdG8gc3BsaXQgc28gdGhhdCBhZG1pbiBjb21tYW5kcyBjYW4gYmUgdHJhbnNwb3J0
+ZWQgdmlhIG5vbg0KPiBhZG1pbiBxdWV1ZSwgd2Ugc2hvdWxkIHJlbW92ZSBiZWxvdyBsaW5lIGZy
+b20gc3BlYzoNCj4gPg0KPiA+ICJUaGUgQWRtaW4gY29tbWFuZCBzZXQgZGVmaW5lcyB0aGUgY29t
+bWFuZHMgdGhhdCBtYXkgYmUgaXNzdWVkIG9ubHkgdG8NCj4gdGhlIGFkbWluIHZpcnRxdWV1ZSIN
+Cj4gDQo+IHN1cmUNCj4gDQo+ID4gQW5kIHJld29yZCBpdCBhcyBiZWxvdywNCj4gPg0KPiA+IFRo
+ZSBBZG1pbiBjb21tYW5kIHNldCBkZWZpbmVzIHRoZSBjb21tYW5kcyB0byBtYW5pcHVsYXRlIHZh
+cmlvdXMNCj4gZmVhdHVyZXMvYXR0cmlidXRlcyBvZiBhbm90aGVyIGRldmljZSB3aXRoaW4gdGhl
+IHNhbWUgZ3JvdXAuLi4NCj4gPiBXaGVuIFZJUlRJT19GX0FETUlOX1ZRIGZlYXR1cmUgaXMgbmVn
+b3RpYXRlZCwgYWRtaW4gY29tbWFuZHMgbXVzdA0KPiBiZSB0cmFuc3BvcnRlZCB0aHJvdWdoIHRo
+ZSBhZG1pbiBxdWV1ZS4NCj4gPg0KPiA+IExvb2tzIG9rPw0KPiANCj4gSSBzZWUgbm8gcHJvYmxl
+bSB3aXRoIHRoYXQuDQoNClNpbmNlIHdlIGFncmVlIGZvciB0aGlzLCBJIGNvbnNpZGVyZWQgQVEg
+dnMgbm9fQVEgYXMgY2xvc2VkIHRvcGljPw0K
 
