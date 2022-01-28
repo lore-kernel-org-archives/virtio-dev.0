@@ -1,99 +1,79 @@
-Return-Path: <jasowang@redhat.com>
-Message-ID: <6979b063-d707-710d-fd13-454158ca7541@redhat.com>
-Date: Fri, 28 Jan 2022 11:35:34 +0800
-MIME-Version: 1.0
-Subject: Re: [PATCH v2 4/4] Add support for MSI-X vectors configuration for
+Return-Path: <parav@nvidia.com>
+From: Parav Pandit <parav@nvidia.com>
+Subject: RE: [PATCH v2 4/4] Add support for MSI-X vectors configuration for
  PCI VFs
+Date: Fri, 28 Jan 2022 03:45:37 +0000
+Message-ID: <DM8PR12MB5480FBF987765563452DA094DC229@DM8PR12MB5480.namprd12.prod.outlook.com>
 References: <20220124093918.34371-1-mgurtovoy@nvidia.com>
  <20220124093918.34371-5-mgurtovoy@nvidia.com>
  <e0726651-4534-26e9-3368-abee12ed13c0@redhat.com>
  <PH0PR12MB5481398EBFC427C178D5F51BDC219@PH0PR12MB5481.namprd12.prod.outlook.com>
  <CACGkMEte-oLuF81QwTjFJ67VLUksdUsG90rz8RCtnZBxWqaQ2Q@mail.gmail.com>
  <DM8PR12MB5480F4C39589FBA7A3D17336DC229@DM8PR12MB5480.namprd12.prod.outlook.com>
-From: Jason Wang <jasowang@redhat.com>
-In-Reply-To: <DM8PR12MB5480F4C39589FBA7A3D17336DC229@DM8PR12MB5480.namprd12.prod.outlook.com>
+ <6979b063-d707-710d-fd13-454158ca7541@redhat.com>
+In-Reply-To: <6979b063-d707-710d-fd13-454158ca7541@redhat.com>
+MIME-Version: 1.0
 Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-To: Parav Pandit <parav@nvidia.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+To: Jason Wang <jasowang@redhat.com>
 Cc: Max Gurtovoy <mgurtovoy@nvidia.com>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "mst@redhat.com" <mst@redhat.com>, "cohuck@redhat.com" <cohuck@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Shahaf Shuler <shahafs@nvidia.com>, Oren Duer <oren@nvidia.com>, "stefanha@redhat.com" <stefanha@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-
-在 2022/1/28 上午11:30, Parav Pandit 写道:
->> From: Jason Wang <jasowang@redhat.com>
->> Sent: Friday, January 28, 2022 8:54 AM
->> vxlan part actually.
-> Right.
->>> Similarly, we prefer the ability and flexibility to set more fields in one
->> command.
->>
->> I understood this motivation. But what I want to say is:
->>
->> struct virtio_cmd {
->>      u64 attr_mask;
->>      field_X;
->>      field_Y;
->>      field_Z;
->> }
->>
->> What's the default value if one of the X,Y, Z is not specified?
-> If minimum default values are not provided, HV cannot proceed to do configuration and ENOSUPPORT error code is returned by kernel to user.
-
-
-Do we need to document the minimum default value?
-
-
->
->> How to get those default values?
->>
-> By doing identify or _get respective command.
-
-
-This can only work if there's no attr_mask in get command. If the device 
-can selectively provides us partial information we can't do 
-compatibility check since we don't know its value.
-
-
->   
->> And suppose we add a new field
->>
->> struct virtio_cmd {
->>      u64 attr_mask;
->>      field_X;
->>      field_Y;
->>      field_Z;
->>      field_M;
->> }
->>
->> How can the driver know it can use field_M?
-> If attribute mask is present for field_M, driver can use it.
-
-
-So the driver need first use get then try to use set?
-
-
->
->> And if field_M is supported in src
->> but not dst, how can we keep the migration compatibility?
-> This is HV level command to query and provision a VF.
-> Migration compatibility is high level check where it will identify on which HV to migrate where I can provision X vectors for a VF.
-
-
-By probing capability of attr_mask in each possible commands?
-
-
->
->> Would it be simple to just mandate all the fields in this case?
->>
-> May be, attribute mask is basically to let expand structure without inventing new fields.
-
-
-It could be done via new command.
-
-Thanks
-
-
-> For a given command few minimal attributes to be set and driver can verify, that if they are not, a given functionality is unsupported.
->
+DQo+IEZyb206IEphc29uIFdhbmcgPGphc293YW5nQHJlZGhhdC5jb20+DQo+IFNlbnQ6IEZyaWRh
+eSwgSmFudWFyeSAyOCwgMjAyMiA5OjA2IEFNDQo+IA0KPiDlnKggMjAyMi8xLzI4IOS4iuWNiDEx
+OjMwLCBQYXJhdiBQYW5kaXQg5YaZ6YGTOg0KPiA+PiBGcm9tOiBKYXNvbiBXYW5nIDxqYXNvd2Fu
+Z0ByZWRoYXQuY29tPg0KPiA+PiBTZW50OiBGcmlkYXksIEphbnVhcnkgMjgsIDIwMjIgODo1NCBB
+TSB2eGxhbiBwYXJ0IGFjdHVhbGx5Lg0KPiA+IFJpZ2h0Lg0KPiA+Pj4gU2ltaWxhcmx5LCB3ZSBw
+cmVmZXIgdGhlIGFiaWxpdHkgYW5kIGZsZXhpYmlsaXR5IHRvIHNldCBtb3JlIGZpZWxkcw0KPiA+
+Pj4gaW4gb25lDQo+ID4+IGNvbW1hbmQuDQo+ID4+DQo+ID4+IEkgdW5kZXJzdG9vZCB0aGlzIG1v
+dGl2YXRpb24uIEJ1dCB3aGF0IEkgd2FudCB0byBzYXkgaXM6DQo+ID4+DQo+ID4+IHN0cnVjdCB2
+aXJ0aW9fY21kIHsNCj4gPj4gICAgICB1NjQgYXR0cl9tYXNrOw0KPiA+PiAgICAgIGZpZWxkX1g7
+DQo+ID4+ICAgICAgZmllbGRfWTsNCj4gPj4gICAgICBmaWVsZF9aOw0KPiA+PiB9DQo+ID4+DQo+
+ID4+IFdoYXQncyB0aGUgZGVmYXVsdCB2YWx1ZSBpZiBvbmUgb2YgdGhlIFgsWSwgWiBpcyBub3Qg
+c3BlY2lmaWVkPw0KPiA+IElmIG1pbmltdW0gZGVmYXVsdCB2YWx1ZXMgYXJlIG5vdCBwcm92aWRl
+ZCwgSFYgY2Fubm90IHByb2NlZWQgdG8gZG8NCj4gY29uZmlndXJhdGlvbiBhbmQgRU5PU1VQUE9S
+VCBlcnJvciBjb2RlIGlzIHJldHVybmVkIGJ5IGtlcm5lbCB0byB1c2VyLg0KPiANCj4gDQo+IERv
+IHdlIG5lZWQgdG8gZG9jdW1lbnQgdGhlIG1pbmltdW0gZGVmYXVsdCB2YWx1ZT8NCj4NCkkgZ3Vl
+c3MsIG5vdCBiZWNhdXNlIGF0dHJfbWFzayBpcyBleHBlY3RlZCB0byBncm93IGFuZCB0aGVyZSBt
+YXkgYmUgdW5yZWxhdGVkIGF0dHJpYnV0ZXMgdG8gaXQuDQogDQo+IA0KPiA+DQo+ID4+IEhvdyB0
+byBnZXQgdGhvc2UgZGVmYXVsdCB2YWx1ZXM/DQo+ID4+DQo+ID4gQnkgZG9pbmcgaWRlbnRpZnkg
+b3IgX2dldCByZXNwZWN0aXZlIGNvbW1hbmQuDQo+IA0KPiANCj4gVGhpcyBjYW4gb25seSB3b3Jr
+IGlmIHRoZXJlJ3Mgbm8gYXR0cl9tYXNrIGluIGdldCBjb21tYW5kLiBJZiB0aGUgZGV2aWNlIGNh
+bg0KPiBzZWxlY3RpdmVseSBwcm92aWRlcyB1cyBwYXJ0aWFsIGluZm9ybWF0aW9uIHdlIGNhbid0
+IGRvIGNvbXBhdGliaWxpdHkgY2hlY2sNCj4gc2luY2Ugd2UgZG9uJ3Qga25vdyBpdHMgdmFsdWUu
+DQo+IA0KRGV2aWNlIHdpbGwgZm9sbG93IHNvbWUgc2FuZSBpbXBsZW1lbnRhdGlvbi4NCklmIGRl
+dmljZSB3aGljaCB3YW50cyB0byBzdXBwb3J0IG1zaXggY29uZmlnIGZvciBhIFZGLCBpdCB3aWxs
+IHJlcG9ydCByaWdodCB2YWx1ZXMgaW4gZ2VuZXJpYyBpZGVudGlmeSBhbmQgZ2V0IGNtZCBvZiBk
+ZXZpY2UuDQpBIHNpbXBsZSBlcnJvciBjaGVjayBvZiBiaXQgbWFzayB3aWxsIGJlIGVub3VnaCBp
+biBkcml2ZXIuDQoNCj4gDQo+ID4NCj4gPj4gQW5kIHN1cHBvc2Ugd2UgYWRkIGEgbmV3IGZpZWxk
+DQo+ID4+DQo+ID4+IHN0cnVjdCB2aXJ0aW9fY21kIHsNCj4gPj4gICAgICB1NjQgYXR0cl9tYXNr
+Ow0KPiA+PiAgICAgIGZpZWxkX1g7DQo+ID4+ICAgICAgZmllbGRfWTsNCj4gPj4gICAgICBmaWVs
+ZF9aOw0KPiA+PiAgICAgIGZpZWxkX007DQo+ID4+IH0NCj4gPj4NCj4gPj4gSG93IGNhbiB0aGUg
+ZHJpdmVyIGtub3cgaXQgY2FuIHVzZSBmaWVsZF9NPw0KPiA+IElmIGF0dHJpYnV0ZSBtYXNrIGlz
+IHByZXNlbnQgZm9yIGZpZWxkX00sIGRyaXZlciBjYW4gdXNlIGl0Lg0KPiANCj4gDQo+IFNvIHRo
+ZSBkcml2ZXIgbmVlZCBmaXJzdCB1c2UgZ2V0IHRoZW4gdHJ5IHRvIHVzZSBzZXQ/DQo+DQpOby4g
+dGhlIGZsb3cgaXM6DQoxLiBBUSBmZWF0dXJlIGJpdCBpcyBuZWdvdGlhdGVkDQoyLiBDcmVhdGUg
+QVENCjMuIERvIGlkZW50aWZ5IGNtZCBhbmQgY2FjaGUgdGhlIGRldmljZSBjYXBhYmlsaXRpZXMN
+CkEgYml0IHNheXMgdGhhdCBWRiBtc2l4IG1vZGlmaWNhdGlvbiBzdXBwb3J0ZWQuDQo0LiB1c2Vy
+IHF1ZXJpZWQgYWxsIFZGcyBjdXJyZW50IHZlY3RvciBkaXN0cmlidXRpb24gKG9wdGltaXplIHRo
+aXMgYml0IGxhdGVyLCBidXQgY29uc2lkZXIgdGhpcyBmb3Igbm93KQ0KSWYgYXR0ci5tYXNrLmJp
+dFggbm90IHNldCwgZmFpbCB0aGUgdXNlciByZXF1ZXN0Lg0KNC4gdXNlciByZXF1ZXN0cyB0byBt
+b2RpZnkgVkYtQSB2ZWN0b3JzIGZyb20gKDggdG8gNCkgdXNlcyBhdHRyLm1hc2suYml0WC4NCiAN
+Cj4gDQo+ID4NCj4gPj4gQW5kIGlmIGZpZWxkX00gaXMgc3VwcG9ydGVkIGluIHNyYw0KPiA+PiBi
+dXQgbm90IGRzdCwgaG93IGNhbiB3ZSBrZWVwIHRoZSBtaWdyYXRpb24gY29tcGF0aWJpbGl0eT8N
+Cj4gPiBUaGlzIGlzIEhWIGxldmVsIGNvbW1hbmQgdG8gcXVlcnkgYW5kIHByb3Zpc2lvbiBhIFZG
+Lg0KPiA+IE1pZ3JhdGlvbiBjb21wYXRpYmlsaXR5IGlzIGhpZ2ggbGV2ZWwgY2hlY2sgd2hlcmUg
+aXQgd2lsbCBpZGVudGlmeSBvbiB3aGljaCBIVg0KPiB0byBtaWdyYXRlIHdoZXJlIEkgY2FuIHBy
+b3Zpc2lvbiBYIHZlY3RvcnMgZm9yIGEgVkYuDQo+IA0KPiANCj4gQnkgcHJvYmluZyBjYXBhYmls
+aXR5IG9mIGF0dHJfbWFzayBpbiBlYWNoIHBvc3NpYmxlIGNvbW1hbmRzPw0KPg0KTm8uIG5vdCBp
+biBlYWNoIHBvc3NpYmxlIGNvbW1hbmRzLg0KSWRlbnRpZnkgY29tbWFuZCBnaXZlcyB0aGUgY2Fw
+YWJpbGl0aWVzIHN1cHBvcnRlZCBpbiBzdGVwICMzIGFib3ZlIHRvIHNlZSBpZiBQRnMgb24gc291
+cmNlIGFuZCBkZXN0aW5hdGlvbiBIViBzdXBwb3J0IGl0IG9yIG5vdC4NCiANCj4gDQo+ID4NCj4g
+Pj4gV291bGQgaXQgYmUgc2ltcGxlIHRvIGp1c3QgbWFuZGF0ZSBhbGwgdGhlIGZpZWxkcyBpbiB0
+aGlzIGNhc2U/DQo+ID4+DQo+ID4gTWF5IGJlLCBhdHRyaWJ1dGUgbWFzayBpcyBiYXNpY2FsbHkg
+dG8gbGV0IGV4cGFuZCBzdHJ1Y3R1cmUgd2l0aG91dCBpbnZlbnRpbmcNCj4gbmV3IGZpZWxkcy4N
+Cj4gDQo+IA0KPiBJdCBjb3VsZCBiZSBkb25lIHZpYSBuZXcgY29tbWFuZC4NClN1cmUsIGl0IGNh
+biBiZS4NCldlIHdhbnQgdG8gYXZvaWQgdG9vIG1hbnkgY29tbWFuZHMsIGlmIHRoZXkgY2FuIGJl
+IGNsdWJiZWQgaW4gc2luZ2xlIGNvbW1hbmQgd2hlbiBzdGFydGluZyBhIFZGLg0K
 
