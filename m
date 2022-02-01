@@ -1,110 +1,70 @@
-Return-Path: <virtio-dev-return-9316-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-9243-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 90C70986349
-	for <virtio-dev@lists.oasis-open.org>; Mon, 21 Feb 2022 03:06:29 +0000 (UTC)
-Message-ID: <1645412676.5755718-1-xuanzhuo@linux.alibaba.com>
-Date: Mon, 21 Feb 2022 11:04:36 +0800
-From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-References: <20220210090604.32603-1-xuanzhuo@linux.alibaba.com>
- <CACGkMEsmhLVozpGpTBWv1WJ_RMq=ckajCK9ZLo5eWckxGpNdiA@mail.gmail.com>
- <20220218042604-mutt-send-email-mst@kernel.org>
- <CACGkMEuYP51s-FV43UBQrK5oTvU9twMG32pMDsQ86HPuYMHNVg@mail.gmail.com>
-In-Reply-To: <CACGkMEuYP51s-FV43UBQrK5oTvU9twMG32pMDsQ86HPuYMHNVg@mail.gmail.com>
-Subject: [virtio-dev] Re: [PATCH v1] virtio-net: support reset queue
-Content-Type: text/plain; charset="US-ASCII"
-To: Jason Wang <jasowang@redhat.com>
-Cc: Virtio-Dev <virtio-dev@lists.oasis-open.org>, Yuri Benditovich <yuri.benditovich@daynix.com>, Andrew Melnychenko <andrew@daynix.com>, "Michael S. Tsirkin" <mst@redhat.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 9F8829865FD
+	for <virtio-dev@lists.oasis-open.org>; Tue,  1 Feb 2022 23:57:22 +0000 (UTC)
+MIME-Version: 1.0
+From: Roman Kiryanov <rkir@google.com>
+Date: Tue, 1 Feb 2022 15:57:10 -0800
+Message-ID: <CAOGAQerz6dM+ZStRUiFaSmYCQJsbpij5=S+OU=Ck+bbUKOR+Pw@mail.gmail.com>
+Subject: [virtio-dev] virtio-snd spec question
+Content-Type: multipart/alternative; boundary="0000000000006ca9c205d6fda9ba"
+To: virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Mon, 21 Feb 2022 11:02:54 +0800, Jason Wang <jasowang@redhat.com> wrote:
-> On Fri, Feb 18, 2022 at 5:27 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> >
-> > On Thu, Feb 10, 2022 at 05:26:24PM +0800, Jason Wang wrote:
-> > > On Thu, Feb 10, 2022 at 5:06 PM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
-> > > >
-> > > > This patch defines some requirements for virtio-net to support reset
-> > > > queues.
-> > > >
-> > > > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> > > > ---
-> > > >  conformance.tex |  1 +
-> > > >  content.tex     | 12 ++++++++++++
-> > > >  2 files changed, 13 insertions(+)
-> > > >
-> > > > diff --git a/conformance.tex b/conformance.tex
-> > > > index 42f8537..3656da5 100644
-> > > > --- a/conformance.tex
-> > > > +++ b/conformance.tex
-> > > > @@ -396,6 +396,7 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
-> > > >  \item \ref{devicenormative:Device Types / Network Device / Device Operation / Packet Transmission}
-> > > >  \item \ref{devicenormative:Device Types / Network Device / Device Operation / Setting Up Receive Buffers}
-> > > >  \item \ref{devicenormative:Device Types / Network Device / Device Operation / Processing of Incoming Packets}
-> > > > +\item \ref{devicenormative:Device Types / Network Device / Device Operation / Reset Virtqueue}
-> > > >  \item \ref{devicenormative:Device Types / Network Device / Device Operation / Control Virtqueue / Packet Receive Filtering}
-> > > >  \item \ref{devicenormative:Device Types / Network Device / Device Operation / Control Virtqueue / Setting MAC Address Filtering}
-> > > >  \item \ref{devicenormative:Device Types / Network Device / Device Operation / Control Virtqueue / Gratuitous Packet Sending}
-> > > > diff --git a/content.tex b/content.tex
-> > > > index c6f116c..af86689 100644
-> > > > --- a/content.tex
-> > > > +++ b/content.tex
-> > > > @@ -4000,6 +4000,18 @@ \subsubsection{Processing of Incoming Packets}\label{sec:Device Types / Network
-> > > >  #define VIRTIO_NET_HASH_REPORT_UDPv6_EX        9
-> > > >  \end{lstlisting}
-> > > >
-> > > > +\subsubsection{Reset Virtqueue}\label{sec:Device Types / Network Device / Device Operation / Reset Virtqueue}
-> > > > +
-> > > > +The receive and transmission virtqueues and the control virtqueue can implement
-> > > > +reset based on Virtqueue Reset (See \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Reset}).
-> > > > +
-> > > > +\devicenormative{\paragraph}{Gratuitous Packet Sending}{Device Types / Network Device / Device Operation / Reset Virtqueue}
-> > > > +
-> > > > +After automatic receive steering or RSS receive steering has completed the
-> > > > +selection of the queue, if the destination receive queue is in reset state,
-> > > > +the device SHOULD re-select a different random queue.
-> > >
-> > > This seems break the semantics of the indirection table?
-> >
-> > I don't really understand this random thing either. If we don't want to
-> > drop then maybe use unclassified_queue?
-> > And generally - is packet reordering better or worse than packet drops?
->
-> Not sure, but this is something we need to clarify in the spec.
->
-> Personally, drop looks more safe than unclassified_queue. It gives
-> hints to administrator that something is wrong.
+--0000000000006ca9c205d6fda9ba
+Content-Type: text/plain; charset="UTF-8"
 
-I also think drop can be selected in this case. My v2 has already been sent, and
-you can see if there is any problem with v2.
+Hello,
 
-Thanks.
+I work in Android Studio Emulator and I am currently implementing a
+virtio-snd device. We found a spec draft here:
 
->
-> Thanks
->
-> >
-> > > For RSS, I
-> > > think we probably need to drop.
-> > >
-> > > Thanks
-> > >
-> > > > If all receive queues are
-> > > > +in reset state, the device can drop the packet.
-> > > > +
-> > > >  \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue}
-> > > >
-> > > >  The driver uses the control virtqueue (if VIRTIO_NET_F_CTRL_VQ is
-> > > > --
-> > > > 2.31.0
-> > > >
-> >
->
+https://github.com/oasis-tcs/virtio-spec/commit/e73c8cdf3e822fd83c26c6de964a947670f93cc3#diff-73045e70aeaf45f93087610437b705e2d320c82a9d29b4027721f5f5f3918dc5
 
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+It mentions four virtqueues: ctl, event, rx and tx. It is not very clear
+where a virtio-snd device should put responses to the ctl requests from the
+linux kernel driver. There is a kernel driver implementation and we have a
+virtio-snd device implemented in another emulator, it uses the same
+virtqueue (ctl) to put ctl responses and the current kernel driver seems
+happy with this.
+
+Do you know if this is expected behavior? I am far from an expert here, but
+I believe the device and the kernel will race here by reading from the same
+virtqueue: the device could read VirtQueueElement produced by itself before
+the kernel if the kernel is not fast enough.
+
+Thank you.
+
+Regards,
+Roman.
+
+--0000000000006ca9c205d6fda9ba
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">Hello,<div><br></div><div>I work in Android Studio Emulato=
+r and I am currently implementing a virtio-snd device. We found a spec draf=
+t here:</div><div><br></div><div><a href=3D"https://github.com/oasis-tcs/vi=
+rtio-spec/commit/e73c8cdf3e822fd83c26c6de964a947670f93cc3#diff-73045e70aeaf=
+45f93087610437b705e2d320c82a9d29b4027721f5f5f3918dc5">https://github.com/oa=
+sis-tcs/virtio-spec/commit/e73c8cdf3e822fd83c26c6de964a947670f93cc3#diff-73=
+045e70aeaf45f93087610437b705e2d320c82a9d29b4027721f5f5f3918dc5</a><br></div=
+><div><br></div><div>It mentions four virtqueues: ctl, event, rx and tx. It=
+ is not very clear where a virtio-snd device should put responses to the ct=
+l requests from the linux kernel driver. There is a kernel driver implement=
+ation and we have a virtio-snd=C2=A0device implemented in another emulator,=
+ it uses the same virtqueue (ctl) to put ctl responses and the current kern=
+el driver seems happy with this.</div><div><br></div><div>Do you know if th=
+is is expected behavior? I am far from an expert here, but I believe the de=
+vice and the kernel will race here by reading from the same virtqueue: the =
+device could read VirtQueueElement produced by itself before the kernel if =
+the kernel is not fast enough.</div><div><br></div><div>Thank you.</div><di=
+v><br></div><div>Regards,</div><div>Roman.</div></div>
+
+--0000000000006ca9c205d6fda9ba--
 
