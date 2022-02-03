@@ -1,83 +1,100 @@
-Return-Path: <mst@redhat.com>
-Date: Tue, 8 Feb 2022 16:00:25 -0500
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: Re: [PATCH v3 1/4] Add virtio Admin virtqueue
-Message-ID: <20220208155906-mutt-send-email-mst@kernel.org>
-References: <20220207052843-mutt-send-email-mst@kernel.org>
- <PH0PR12MB548164CFE929F59EEDBD3557DC2D9@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20220208014039-mutt-send-email-mst@kernel.org>
- <PH0PR12MB548104AB80FA36544DB3D7D0DC2D9@PH0PR12MB5481.namprd12.prod.outlook.com>
- <878rulv6kq.fsf@redhat.com>
- <PH0PR12MB54816EBF061770CC91E0435DDC2D9@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20220208084022-mutt-send-email-mst@kernel.org>
- <PH0PR12MB548145C554CBE6367318A8F9DC2D9@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20220208103757-mutt-send-email-mst@kernel.org>
- <PH0PR12MB5481B7DB7CD220C512397B4CDC2D9@PH0PR12MB5481.namprd12.prod.outlook.com>
+Return-Path: <mgurtovoy@nvidia.com>
+From: Max Gurtovoy <mgurtovoy@nvidia.com>
+Subject: [PATCH v3 2/4] Add miscellaneous configuration structure for PCI
+Date: Thu, 3 Feb 2022 09:57:14 +0200
+Message-ID: <20220203075716.11684-3-mgurtovoy@nvidia.com>
+In-Reply-To: <20220203075716.11684-1-mgurtovoy@nvidia.com>
+References: <20220203075716.11684-1-mgurtovoy@nvidia.com>
 MIME-Version: 1.0
-In-Reply-To: <PH0PR12MB5481B7DB7CD220C512397B4CDC2D9@PH0PR12MB5481.namprd12.prod.outlook.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-To: Parav Pandit <parav@nvidia.com>
-Cc: Cornelia Huck <cohuck@redhat.com>, Max Gurtovoy <mgurtovoy@nvidia.com>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "jasowang@redhat.com" <jasowang@redhat.com>, Shahaf Shuler <shahafs@nvidia.com>, Oren Duer <oren@nvidia.com>, "stefanha@redhat.com" <stefanha@redhat.com>
+Content-Type: text/plain
+To: virtio-comment@lists.oasis-open.org, mst@redhat.com, cohuck@redhat.com, virtio-dev@lists.oasis-open.org, jasowang@redhat.com
+Cc: parav@nvidia.com, shahafs@nvidia.com, oren@nvidia.com, stefanha@redhat.com, Max Gurtovoy <mgurtovoy@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Tue, Feb 08, 2022 at 06:52:09PM +0000, Parav Pandit wrote:
-> 
-> > From: Michael S. Tsirkin <mst@redhat.com>
-> > Sent: Tuesday, February 8, 2022 9:10 PM
-> > 
-> > On Tue, Feb 08, 2022 at 03:06:16PM +0000, Parav Pandit wrote:
-> > >
-> > > > From: Michael S. Tsirkin <mst@redhat.com>
-> > > > Sent: Tuesday, February 8, 2022 7:29 PM
-> > > >
-> > > > > Do we have a concrete example of a command that can be targeted
-> > > > > for same
-> > > > device and a target device, which requires differentiating their
-> > > > destination? If so, lets discuss and then it make sense to add for the well-
-> > defined use case.
-> > > >
-> > > > So e.g. things like controlling NIC's MAC can reasonably be part of
-> > > > the same device.
-> > > A mac address of NIC can be programmed via the existing control VQ for the
-> > self.
-> > 
-> > Not if it's disabled for the guest.
-> > 
-> Its unrelated.
-> The idea was to issue same command in same way by two devices = primary and secondary.
-> And in case of primary, it will refer to secondary device.
-> And in second case secondary tells to self.
-> 
-> So if its disabled by guest, it doesn't matter how guest transports it, either via CVQ or AQ.
-> Its disabled.
-> Why to re-invent command that exists on CVQ to AQ?
+This new structure will be used for adding new miscellaneous registers
+for a virtio device configuration layout.
 
-I can go into it but it's beside the point.  I was just trying to help
-you come up with use-cases.  Don't like it - come up with your own ones.
+For now, only admin_queue_index register is added. Admin virtqueue index
+does not depend on the device type. Hence, add a PCI capability to read
+the admin virtqueue index.
 
+Reviewed-by: Parav Pandit <parav@nvidia.com>
+Signed-off-by: Max Gurtovoy <mgurtovoy@nvidia.com>
+---
+ conformance.tex |  2 ++
+ content.tex     | 25 +++++++++++++++++++++++++
+ 2 files changed, 27 insertions(+)
 
-> > OK, and Cornelia also said she thinks 64 is necessary.
-> > 
-> > > So if we really want to cover variety of cases like [1] and some more
-> > > complex nested cases, we better define, Device identifier as below,
-> > > struct device_identifier {
-> > > 	u8 id_length;
-> > > 	u8 id[];	/* variable length field
-> > > };
-> > > For implicitly grouped VFs of a PF, id can be 2 bytes.
-> > > For more advance cases it can be a structure consist one or more
-> > combination of (a) host id or controller id (b) PF BDF, (c) sf id (d) PASID and
-> > more.
-> > >
-> > > [1]
-> > > https://www.kernel.org/doc/Documentation/networking/devlink/devlink-po
-> > > rt.rst
-> > 
-> > I'm fine with this too.
-> >
-> Since we aim for future proofing and flexibility, variable length id is better than constant u64. It covers the u64 case anyway.
->  
-> > --
-> > MST
+diff --git a/conformance.tex b/conformance.tex
+index 2e5d7e0..6ba4d94 100644
+--- a/conformance.tex
++++ b/conformance.tex
+@@ -102,6 +102,7 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
+ \item \ref{drivernormative:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / PCI configuration access capability}
+ \item \ref{drivernormative:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / MSI-X Vector Configuration}
+ \item \ref{drivernormative:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Notification of Device Configuration Changes}
++\item \ref{drivernormative:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Miscellaneous configuration structure layout}
+ \end{itemize}
+ 
+ \conformance{\subsection}{MMIO Driver Conformance}\label{sec:Conformance / Driver Conformance / MMIO Driver Conformance}
+@@ -363,6 +364,7 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
+ \item \ref{devicenormative:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / MSI-X Vector Configuration}
+ \item \ref{devicenormative:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Used Buffer Notifications}
+ \item \ref{devicenormative:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Notification of Device Configuration Changes}
++\item \ref{devicenormative:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Miscellaneous configuration structure layout}
+ \end{itemize}
+ 
+ \conformance{\subsection}{MMIO Device Conformance}\label{sec:Conformance / Device Conformance / MMIO Device Conformance}
+diff --git a/content.tex b/content.tex
+index 163cb34..bf46192 100644
+--- a/content.tex
++++ b/content.tex
+@@ -712,6 +712,7 @@ \subsection{Virtio Structure PCI Capabilities}\label{sec:Virtio Transport Option
+ \item ISR Status
+ \item Device-specific configuration (optional)
+ \item PCI configuration access
++\item Miscellaneous configuration
+ \end{itemize}
+ 
+ Each structure can be mapped by a Base Address register (BAR) belonging to
+@@ -771,6 +772,8 @@ \subsection{Virtio Structure PCI Capabilities}\label{sec:Virtio Transport Option
+ #define VIRTIO_PCI_CAP_SHARED_MEMORY_CFG 8
+ /* Vendor-specific data */
+ #define VIRTIO_PCI_CAP_VENDOR_CFG        9
++/* Miscellaneous configuration */
++#define VIRTIO_PCI_CAP_MISC_CFG          10
+ \end{lstlisting}
+ 
+         Any other value is reserved for future use.
+@@ -1352,6 +1355,28 @@ \subsubsection{PCI configuration access capability}\label{sec:Virtio Transport O
+ specified by some other Virtio Structure PCI Capability
+ of type other than \field{VIRTIO_PCI_CAP_PCI_CFG}.
+ 
++\subsubsection{Miscellaneous configuration structure layout}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Miscellaneous configuration structure layout}
++
++The miscellaneous configuration structure is found at the bar and offset within the VIRTIO_PCI_CAP_MISC_CFG capability.
++Its layout is below.
++\begin{lstlisting}
++struct virtio_pci_misc_cfg {
++        le16 admin_queue_index;         /* read-only for driver */
++};
++\end{lstlisting}
++
++\begin{description}
++\item[\field{admin_queue_index}]
++        The device uses this to report the index of the admin virtqueue.
++        This field is valid only if VIRTIO_F_ADMIN_VQ is set.
++\end{description}
++
++\devicenormative{\paragraph}{Miscellaneous configuration structure layout}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Miscellaneous configuration structure layout}
++The device MUST present a valid \field{admin_queue_index} when VIRTIO_F_ADMIN_VQ is set.
++
++\drivernormative{\paragraph}{Miscellaneous configuration structure layout}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Miscellaneous configuration structure layout}
++The driver MUST use the value of \field{admin_queue_index} to configure the admin virtqueue. For more details on virtqueue configuration see section \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / Virtqueue Configuration}.
++
+ \subsubsection{Legacy Interfaces: A Note on PCI Device Layout}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Legacy Interfaces: A Note on PCI Device Layout}
+ 
+ Transitional devices MUST present part of configuration
+-- 
+2.21.0
 
