@@ -1,8 +1,8 @@
 Return-Path: <mgurtovoy@nvidia.com>
 From: Max Gurtovoy <mgurtovoy@nvidia.com>
-Subject: [PATCH v3 2/4] Add miscellaneous configuration structure for PCI
-Date: Thu, 3 Feb 2022 09:57:14 +0200
-Message-ID: <20220203075716.11684-3-mgurtovoy@nvidia.com>
+Subject: [PATCH v3 3/4] Add device management facility
+Date: Thu, 3 Feb 2022 09:57:15 +0200
+Message-ID: <20220203075716.11684-4-mgurtovoy@nvidia.com>
 In-Reply-To: <20220203075716.11684-1-mgurtovoy@nvidia.com>
 References: <20220203075716.11684-1-mgurtovoy@nvidia.com>
 MIME-Version: 1.0
@@ -11,90 +11,43 @@ To: virtio-comment@lists.oasis-open.org, mst@redhat.com, cohuck@redhat.com, virt
 Cc: parav@nvidia.com, shahafs@nvidia.com, oren@nvidia.com, stefanha@redhat.com, Max Gurtovoy <mgurtovoy@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-This new structure will be used for adding new miscellaneous registers
-for a virtio device configuration layout.
-
-For now, only admin_queue_index register is added. Admin virtqueue index
-does not depend on the device type. Hence, add a PCI capability to read
-the admin virtqueue index.
+A virtio device may be capable of managing other virtio device
+features and configuration. These management operations are composed of
+one or more admin commands from the admin command set. One such
+management interface for issuing these commands can be the virtio admin
+virtqueue.
 
 Reviewed-by: Parav Pandit <parav@nvidia.com>
 Signed-off-by: Max Gurtovoy <mgurtovoy@nvidia.com>
 ---
- conformance.tex |  2 ++
- content.tex     | 25 +++++++++++++++++++++++++
- 2 files changed, 27 insertions(+)
+ content.tex | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
-diff --git a/conformance.tex b/conformance.tex
-index 2e5d7e0..6ba4d94 100644
---- a/conformance.tex
-+++ b/conformance.tex
-@@ -102,6 +102,7 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
- \item \ref{drivernormative:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / PCI configuration access capability}
- \item \ref{drivernormative:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / MSI-X Vector Configuration}
- \item \ref{drivernormative:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Notification of Device Configuration Changes}
-+\item \ref{drivernormative:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Miscellaneous configuration structure layout}
- \end{itemize}
- 
- \conformance{\subsection}{MMIO Driver Conformance}\label{sec:Conformance / Driver Conformance / MMIO Driver Conformance}
-@@ -363,6 +364,7 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
- \item \ref{devicenormative:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / MSI-X Vector Configuration}
- \item \ref{devicenormative:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Used Buffer Notifications}
- \item \ref{devicenormative:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Notification of Device Configuration Changes}
-+\item \ref{devicenormative:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Miscellaneous configuration structure layout}
- \end{itemize}
- 
- \conformance{\subsection}{MMIO Device Conformance}\label{sec:Conformance / Device Conformance / MMIO Device Conformance}
 diff --git a/content.tex b/content.tex
-index 163cb34..bf46192 100644
+index bf46192..276a29f 100644
 --- a/content.tex
 +++ b/content.tex
-@@ -712,6 +712,7 @@ \subsection{Virtio Structure PCI Capabilities}\label{sec:Virtio Transport Option
- \item ISR Status
- \item Device-specific configuration (optional)
- \item PCI configuration access
-+\item Miscellaneous configuration
- \end{itemize}
+@@ -451,6 +451,20 @@ \section{Exporting Objects}\label{sec:Basic Facilities of a Virtio Device / Expo
  
- Each structure can be mapped by a Base Address register (BAR) belonging to
-@@ -771,6 +772,8 @@ \subsection{Virtio Structure PCI Capabilities}\label{sec:Virtio Transport Option
- #define VIRTIO_PCI_CAP_SHARED_MEMORY_CFG 8
- /* Vendor-specific data */
- #define VIRTIO_PCI_CAP_VENDOR_CFG        9
-+/* Miscellaneous configuration */
-+#define VIRTIO_PCI_CAP_MISC_CFG          10
- \end{lstlisting}
+ \input{admin.tex}
  
-         Any other value is reserved for future use.
-@@ -1352,6 +1355,28 @@ \subsubsection{PCI configuration access capability}\label{sec:Virtio Transport O
- specified by some other Virtio Structure PCI Capability
- of type other than \field{VIRTIO_PCI_CAP_PCI_CFG}.
++\section{Device management}\label{sec:Basic Facilities of a Virtio Device / Device management}
++
++Virtualized environments might be composed of one or more virtio devices. These devices might be
++associated with each other. For example,  virtio PCI PF and its VFS are composing one virtio group.
++A PCI PF device, by default, is the primary device in the group, and its PCI VFs are the secondary devices in the group.
++A sophisticated primary device might have capabilities to manage its secondary devices. This primary
++device will be the virtio group manager and the secondary devices would be the managed devices in this group.
++
++The primary device will use the admin command set to manage secondary devices (see section
++\ref{sec:Basic Facilities of a Virtio Device / Admin command set} for more details). The primary device
++can use any management interface that is defined in the virtio specification for issuing admin commands.
++For example, the admin virtqueue (see section \ref{sec:Basic Facilities of a Virtio Device / Admin Virtqueues} for more details)
++of the PF can be used to configure some attributes (such as MSI-X vectors) for its VFs in order to improve resource utilization.
++
+ \chapter{General Initialization And Device Operation}\label{sec:General Initialization And Device Operation}
  
-+\subsubsection{Miscellaneous configuration structure layout}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Miscellaneous configuration structure layout}
-+
-+The miscellaneous configuration structure is found at the bar and offset within the VIRTIO_PCI_CAP_MISC_CFG capability.
-+Its layout is below.
-+\begin{lstlisting}
-+struct virtio_pci_misc_cfg {
-+        le16 admin_queue_index;         /* read-only for driver */
-+};
-+\end{lstlisting}
-+
-+\begin{description}
-+\item[\field{admin_queue_index}]
-+        The device uses this to report the index of the admin virtqueue.
-+        This field is valid only if VIRTIO_F_ADMIN_VQ is set.
-+\end{description}
-+
-+\devicenormative{\paragraph}{Miscellaneous configuration structure layout}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Miscellaneous configuration structure layout}
-+The device MUST present a valid \field{admin_queue_index} when VIRTIO_F_ADMIN_VQ is set.
-+
-+\drivernormative{\paragraph}{Miscellaneous configuration structure layout}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Miscellaneous configuration structure layout}
-+The driver MUST use the value of \field{admin_queue_index} to configure the admin virtqueue. For more details on virtqueue configuration see section \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / Virtqueue Configuration}.
-+
- \subsubsection{Legacy Interfaces: A Note on PCI Device Layout}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Legacy Interfaces: A Note on PCI Device Layout}
- 
- Transitional devices MUST present part of configuration
+ We start with an overview of device initialization, then expand on the
 -- 
 2.21.0
 
