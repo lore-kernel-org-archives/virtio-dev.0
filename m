@@ -1,165 +1,149 @@
-Return-Path: <mst@redhat.com>
-Date: Wed, 9 Feb 2022 02:46:03 -0500
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: Re: [PATCH v2 1/4] Add virtio Admin Virtqueue
-Message-ID: <20220209024522-mutt-send-email-mst@kernel.org>
-References: <87tudnzwq9.fsf@redhat.com>
- <20220128105012-mutt-send-email-mst@kernel.org>
- <CACGkMEsXhKDGqpK=umdFkKubqm09Z45YgnNSYH-xwwJQEd9PEA@mail.gmail.com>
- <e80bdf0d-4b52-03ca-6378-cf9e2a062b34@nvidia.com>
- <20220130043917-mutt-send-email-mst@kernel.org>
- <f3644061-70b6-892d-a2e0-1e710bf58609@nvidia.com>
- <20220130093740-mutt-send-email-mst@kernel.org>
- <da7444d6-f67d-3598-814d-a1b945c3542d@nvidia.com>
- <20220130102940-mutt-send-email-mst@kernel.org>
- <0a5efddd-8427-59d9-4ff2-94b0b7c57b1b@redhat.com>
+Return-Path: <mgurtovoy@nvidia.com>
+From: Max Gurtovoy <mgurtovoy@nvidia.com>
+Subject: [PATCH v3 0/4] VIRTIO: Provision maximum MSI-X vectors for a VF
+Date: Thu, 3 Feb 2022 09:57:12 +0200
+Message-ID: <20220203075716.11684-1-mgurtovoy@nvidia.com>
 MIME-Version: 1.0
-In-Reply-To: <0a5efddd-8427-59d9-4ff2-94b0b7c57b1b@redhat.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-To: Jason Wang <jasowang@redhat.com>
-Cc: Max Gurtovoy <mgurtovoy@nvidia.com>, Cornelia Huck <cohuck@redhat.com>, virtio-comment@lists.oasis-open.org, Virtio-Dev <virtio-dev@lists.oasis-open.org>, Parav Pandit <parav@nvidia.com>, Shahaf Shuler <shahafs@nvidia.com>, Oren Duer <oren@nvidia.com>, Stefan Hajnoczi <stefanha@redhat.com>
+Content-Type: text/plain
+To: virtio-comment@lists.oasis-open.org, mst@redhat.com, cohuck@redhat.com, virtio-dev@lists.oasis-open.org, jasowang@redhat.com
+Cc: parav@nvidia.com, shahafs@nvidia.com, oren@nvidia.com, stefanha@redhat.com, Max Gurtovoy <mgurtovoy@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, Feb 09, 2022 at 10:27:25AM +0800, Jason Wang wrote:
-> 
-> 在 2022/1/30 下午11:30, Michael S. Tsirkin 写道:
-> > On Sun, Jan 30, 2022 at 05:12:46PM +0200, Max Gurtovoy wrote:
-> > > On 1/30/2022 4:41 PM, Michael S. Tsirkin wrote:
-> > > > On Sun, Jan 30, 2022 at 11:56:30AM +0200, Max Gurtovoy wrote:
-> > > > > On 1/30/2022 11:40 AM, Michael S. Tsirkin wrote:
-> > > > > > On Sun, Jan 30, 2022 at 11:13:38AM +0200, Max Gurtovoy wrote:
-> > > > > > > On 1/29/2022 5:53 AM, Jason Wang wrote:
-> > > > > > > > On Fri, Jan 28, 2022 at 11:52 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > > > > > > > > On Fri, Jan 28, 2022 at 04:49:34PM +0100, Cornelia Huck wrote:
-> > > > > > > > > > On Fri, Jan 28 2022, "Michael S. Tsirkin" <mst@redhat.com> wrote:
-> > > > > > > > > > 
-> > > > > > > > > > > On Fri, Jan 28, 2022 at 01:14:14PM +0100, Cornelia Huck wrote:
-> > > > > > > > > > > > On Mon, Jan 24 2022, Max Gurtovoy <mgurtovoy@nvidia.com> wrote:
-> > > > > > > > > > > > > +\section{Admin Virtqueues}\label{sec:Basic Facilities of a Virtio Device / Admin Virtqueues}
-> > > > > > > > > > > > > +
-> > > > > > > > > > > > > +Admin virtqueue is used to send administrative commands to manipulate
-> > > > > > > > > > > > > +various features of the device and/or to manipulate various features,
-> > > > > > > > > > > > > +if possible, of another device within the same group (e.g. PCI VFs of
-> > > > > > > > > > > > > +a parent PCI PF device are grouped together. These devices can be
-> > > > > > > > > > > > > +optionally managed by its parent PCI PF using its admin virtqueue.).
-> > > > > > > > > > > > > +
-> > > > > > > > > > > > > +Use of Admin virtqueue is negotiated by the VIRTIO_F_ADMIN_VQ
-> > > > > > > > > > > > > +feature bit.
-> > > > > > > > > > > > > +
-> > > > > > > > > > > > > +Admin virtqueue index may vary among different device types.
-> > > > > > > > > > > > So, my understanding is:
-> > > > > > > > > > > > - any device type may or may not support the admin vq
-> > > > > > > > > > > > - if the device type wants to be able to accommodate the admin vq, it
-> > > > > > > > > > > >       also needs to specify where it shows up when the feature is negotiated
-> > > > > > > > > > > > 
-> > > > > > > > > > > > Do we expect that eventually all device types will need to support the
-> > > > > > > > > > > > admin vq (if some use case comes along that will require all devices to
-> > > > > > > > > > > > participate, for example?)
-> > > > > > > > > > > I suspect yes. And that's one of the reasons why I'd rather we had a
-> > > > > > > > > > > device independent way to locate the admin queue. There are less
-> > > > > > > > > > > transports than device types.
-> > > > > > > > > > So, do we want to bite the bullet now and simply say that every device
-> > > > > > > > > > type has the admin vq as the last vq if the feature is negotiated?
-> > > > > > > > > > Should be straightforward for the device types that have a fixed number
-> > > > > > > > > > of vqs, and doable for those that have a variable amount (two device
-> > > > > > > > > > types are covered by this series anyway.) I think we need to put it with
-> > > > > > > > > > the device types, as otherwise the numbering of virtqueues could change
-> > > > > > > > > > in unpredictable ways with the admin vq off/on.
-> > > > > > > > > Well that only works once. The next thing we'll need we won't be able to
-> > > > > > > > > make the last one ;) So I am inclined to add a per-transport field that
-> > > > > > > > > gives the admin queue number.
-> > > > > > > > Technically, there's no need to use the same namespace for admin
-> > > > > > > > virtqueue if it has a dedicated notification area. If we go this way,
-> > > > > > > > we can simply use 0 as queue index for admin virtqueue.
-> > > > > > > Or we can use index 0xFFFF for admin virtqueue for compatibility.
-> > > > > > I think I'd prefer a register with the #. For example we might want
-> > > > > > to limit the # of VQs in order to pass extra data with the kick write.
-> > > > > So you are suggesting adding a new cfg_type (#define
-> > > > > VIRTIO_PCI_CAP_ADMIN_CFG 10) ?
-> > > > > 
-> > > > > that will look something like:
-> > > > > 
-> > > > > struct virtio_pci_admin_cfg {
-> > > > > 
-> > > > >       le32 queue_index; /* read only for the driver */
-> > > > > 
-> > > > >       le16 queue_size; /* read-write */
-> > > > >       le16 queue_msix_vector; /* read-write */
-> > > > >       le16 queue_enable; /* read-write */
-> > > > >       le16 queue_notify_off; /* read-only for driver */
-> > > > >       le64 queue_desc; /* read-write */
-> > > > >       le64 queue_driver; /* read-write */
-> > > > >       le64 queue_device; /* read-write */
-> > > > >       le16 queue_notify_data; /* read-only for driver */
-> > > > >       le16 queue_reset; /* read-write */
-> > > > > 
-> > > > > };
-> > > > > 
-> > > > > instead of re-using the struct virtio_pci_common_cfg ?
-> > > > > 
-> > > > > 
-> > > > > or do you prefer extending the struct virtio_pci_common_cfg with "le16
-> > > > > admin_queue_index; /* read only for the driver */ ?
-> > > > The later. Other transports will need this too.
-> > > > 
-> > > > 
-> > > > Cornelia has another idea which is that instead of
-> > > > adding just the admin queue register to all transports,
-> > > > we instead add a misc_config structure to all
-> > > > transports. Working basically like device specific config,
-> > > > but being device independent. For now it will only have
-> > > > a single le16 admin_queue_index register.
-> > > > 
-> > > > For PCI we would thus add it with VIRTIO_PCI_CAP_MISC_CFG
-> > > > 
-> > > > The point here is that we are making it easier to add
-> > > > more fields just like admin queue index in the future.
-> > > OK.
-> > > 
-> > > #define VIRTIO_PCI_CAP_MISC_CFG 10
-> > > 
-> > > and
-> > > 
-> > > struct virtio_pci_misc_cfg {
-> > >      le16 admin_queue_index; /* read-only for driver */
-> > > };
-> > > 
-> > > Is agreed by all for V3 ? instead of the net and blk AQ index definitions.
-> > We need to add it to MMIO and CCW I guess too.
-> 
-> 
-> I wonder how much useful is this.
-> 
-> E.g for PCI we have an equation to calculate the queue notify address, if
-> device choose to use dedicated notify for each queue it will probably end up
-> with the last queue.
-> 
-> And I think the admin_queue_index should be stable regardless of the feature
-> that has been negotiated?
-> 
-> Thanks
+Hi,
+
+In a PCI SR-IOV configuration, MSI-X vectors of the device is precious
+device resource. Hence making efficient use of it based on the use case
+that aligns to the VM configuration is desired for best system
+performance.
+
+For example, today's static assignment of the amount of MSI-X vectors
+doesn't allow sophisticated utilization of resources.
+
+A typical cloud provider SR-IOV use case is to create many VFs for
+use by guest VMs. Each VM might have a different purpose and different
+amount of resources accordingly (e.g. number of CPUs). A common driver
+usage of device's MSI-X vectors is proportional to the number of CPUs in
+the VM. Since the system administrator might know the amount of CPUs in
+the requested VM, he can also configure the VF's MSI-X vectors amount
+proportional to the number of CPUs in the VM. In this way, the
+utilization of the physical hardware will be improved.
+
+Today we have some operating systems that support provisioning MSI-X
+vectors for PCI VFs.
+
+Update the specification to have a method to change the number of MSI-X
+vectors supported by a VF using the PF admin virtqueue interface. For that,
+create a generic infrastructure for managing PCI resources of the managed
+VF by its parent PF.
+
+The admin virtqueue interface will be extended in the future with more and more
+features that some of them already in discussions. Some of these features don't
+fit to MMIO/config_space characteristics, therefore a queue is selected to address
+admin commands.
+
+Motivation for choosing admin queue:
+1. It is anticipated that admin queue will be used for managing and configuring
+   many different type of resources. For example,
+   a. PCI PF configuring PCI VF attributes in [1].
+   b. virtio device creating/destroying/configuring subfunctions discussed in [2]
+   c. composing device config space of VF or SF such as mac address, number of VQs, virtio features
+
+Mapping all of them as configuration registers to MMIO will require large MMIO space, if done for
+each VF/SF. Such MMIO implementation in physical devices such as PCI PF and VF requires on-chip
+resources to complete within MMIO access latencies. Such resources are very expensive.
+
+2. Such limitation can be overcome by having smaller MMIO register set to build
+   a command request response interface. However, such MMIO based command interface
+   will be limited to serve single outstanding command execution. Such limitation can
+   resulting in high device creation and composing time which can affect VM startup time.
+   Often device can queue and service multiple commands in parallel, such command interface
+   cannot use parallelism offered by the device.
+
+3. When a command wants to DMA data from one or more physical addresses, for example in the future a
+   live migration command may need to fetch device state consist of config space, tens of
+   VQs state, VLAN and MAC table, per VQ partial outstanding block IO list database and more.
+   Packing one or more DMA addresses over new command interface will be burden some and continue
+   to suffer single outstanding command execution latencies. Such limitation is not good for time
+   sensitive live migration use cases.
+
+4. A virtio queue overcomes all the above limitations. It also supports DMA and multiple outstanding
+   descriptors. Similar mechanism exist today for device specific configuration - the control VQ.
+
+[1] This proposal
+[2] https://lists.oasis-open.org/archives/virtio-comment/202108/msg00025.html
+
+Patch (1/4) introduce the admin virtqueue concept and feature bit.
+Patch (2/4) introduce the miscellaneous configuration structure for PCI.
+Patch (3/4) introduce the device management concept.
+Patch (4/4) introduce MSI-X control support.
+
+Open issues:
+1.  Should we have command to reset all VFs vectors to zero before enabling SR-IOV? Yes/No.
+    If yes, is this optimization command must in current series? Or it can be added later?
+2. CCW and MMIO specification for admin_queue_index register
+
+---
+
+changes from V2:
+
+1. Addressed below comments from Jason:
+ - split admin virtqueue section from admin command set section
+ - added device management section in "Basic Facilities of a Virtio Device"
+ - mention that management interface may be admin virtqueue (but not a must)
+ - add MSI-X configuration sequence
+
+2. Addressed below comments from MST:
+ - added conformance sections
+ - use decimal instead of hex for bit numbering
+ - remove the OOO definitions for AQ
+ - explain more about default configuration of MSI-X for VFs
+
+3. Addressed below comments from Cornelia:
+ - reword AQ index definitions
+ - introduce misc config for PCI transport
+
+4. added vfs_assigned_msix_count attr to VIRTIO_ADMIN_PCI_SRIOV_ATTRS cmd
+
+5. removed the net/blk AQ index definitions (not needed in the new model)
+
+6. rebased on top of master branch commit 88895f56e642aca ("Reserve more feature bits for device type usage")
+
+changes from V1:
+
+1. Addressed below comments from MST:
+ - updated cover letter for admin queue motivation
+ - removed VIRTIO_F_ADMIN_PCI_VIRT_MANAGER
+ - simplified admin queue interface by removing 
+   VIRTIO_F_ADMIN_VQ_INDIRECT_DESC/VIRTIO_F_ADMIN_VQ_IN_ORDER feature bits
+ - added a subsection for VF MSI-X control capability in PCI section
+ - re-designed interrupt vector management admin commands
+ - added a mandatory admin command to expose admin capabilities
+ - improved commit messages
+ - described error code for unsupported command
+ - described error code for errors on invalid VF
+ - described system software requirements for supporting MSI-X configuration
+
+2. Addressed comments from Parav
+ - extended command opcode to 16-bit
+ - improve commit messages
+
+3. Added more command specific error codes
+
+---
 
 
-there's only one last queue though. I wouldn't just use it and hope
-we don't need it for anything else.
+Max Gurtovoy (4):
+  Add virtio Admin virtqueue
+  Add miscellaneous configuration structure for PCI
+  Add device management facility
+  Add support for MSI-X vectors configuration for PCI VFs
 
-> 
-> > 
-> > This is Cornelia's idea, we'll need her response.
-> > 
-> > 
-> > > > 
-> > > > > > > > Thanks
-> > > > > > > > 
-> > > > > > > > > Another advantage to this approach is that
-> > > > > > > > > we can make sure admin queue gets a page by itself (which can be good if
-> > > > > > > > > we want to allow access to regular vqs but not to the admin queue to
-> > > > > > > > > guest) even if regular vqs share a page. Will help devices use less
-> > > > > > > > > memory space.
-> > > > > > > > > 
-> > > > > > > > > --
-> > > > > > > > > MST
-> > > > > > > > > 
+ admin.tex       | 252 ++++++++++++++++++++++++++++++++++++++++++++++++
+ conformance.tex |   4 +
+ content.tex     | 119 ++++++++++++++++++++++-
+ 3 files changed, 373 insertions(+), 2 deletions(-)
+ create mode 100644 admin.tex
+
+-- 
+2.21.0
 
