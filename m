@@ -1,43 +1,50 @@
-Return-Path: <mst@redhat.com>
-Date: Tue, 8 Feb 2022 09:04:12 -0500
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: Re: [PATCH v3 1/4] Add virtio Admin virtqueue
-Message-ID: <20220208085915-mutt-send-email-mst@kernel.org>
+Return-Path: <parav@nvidia.com>
+From: Parav Pandit <parav@nvidia.com>
+Subject: RE: [PATCH v3 1/4] Add virtio Admin virtqueue
+Date: Tue, 8 Feb 2022 06:25:41 +0000
+Message-ID: <PH0PR12MB548164CFE929F59EEDBD3557DC2D9@PH0PR12MB5481.namprd12.prod.outlook.com>
 References: <20220203075716.11684-1-mgurtovoy@nvidia.com>
  <20220203075716.11684-2-mgurtovoy@nvidia.com>
  <20220207052843-mutt-send-email-mst@kernel.org>
- <d9c93540-4838-c18e-12c6-9ef4dc0028de@nvidia.com>
- <20220207111649-mutt-send-email-mst@kernel.org>
- <e29a241b-ebd6-ccb5-1f8c-1ca7fad471d9@nvidia.com>
- <20220208014332-mutt-send-email-mst@kernel.org>
- <d4265ec1-8eab-0a53-f2a5-3764d6e2cda5@nvidia.com>
+In-Reply-To: <20220207052843-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <d4265ec1-8eab-0a53-f2a5-3764d6e2cda5@nvidia.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-To: Max Gurtovoy <mgurtovoy@nvidia.com>
-Cc: virtio-comment@lists.oasis-open.org, cohuck@redhat.com, virtio-dev@lists.oasis-open.org, jasowang@redhat.com, parav@nvidia.com, shahafs@nvidia.com, oren@nvidia.com, stefanha@redhat.com
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+To: "Michael S. Tsirkin" <mst@redhat.com>, Max Gurtovoy <mgurtovoy@nvidia.com>
+Cc: "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "cohuck@redhat.com" <cohuck@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "jasowang@redhat.com" <jasowang@redhat.com>, Shahaf Shuler <shahafs@nvidia.com>, Oren Duer <oren@nvidia.com>, "stefanha@redhat.com" <stefanha@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Tue, Feb 08, 2022 at 10:34:24AM +0200, Max Gurtovoy wrote:
-> "Admin virtqueue is one of the management interface that used to send administrative
-> commands to manipulate various features of the *device* and/or to manipulate
-> various features, if possible, of *another device* within the same group"
-> 
-> It's not only for groups.
 
-First this sentence is unclear what does "to manipulate" refer to?
-What is done to manipulate these things?
-I think the vq is to send commands. The commands are to manipulate etc.
-So pls cut this up and use shorter sentences please.
+> From: Michael S. Tsirkin <mst@redhat.com>
+> Sent: Monday, February 7, 2022 4:09 PM
+>=20
+> Next, trying to think about scalable iov extensions. So we will have grou=
+ps of
+> VFs and then SFs as the next level.
+> How does one differentiate between the two?
+> Maybe reserve a field for "destination type"?
+>
+We already discussed this in v2.
+SF will have different identification than 16-bits. And no one knows what t=
+hat would be.
+We just cannot reserve some arbitrary bytes for unknown.
+You suggested in v2 to reserve 4 bytes for sf_id, and I explained you that =
+4 bytes may not be enough.
 
-And I think the vq is useful mostly for groups. But yes, thinkably if
-admin commands are submitted via e.g. MMIO then they can refer to the
-same device where they are sent, not to a group.  And this is exactly
-why Cornelia's suggesting a way to differentiate.  We should not need a
-completely separate command just because it's going to the same device
-and not to another one.
+Whether SFs are on top of VFs or SFs are on top of PFs or both is completel=
+y different spec.
+Whether PF will manage SFs of the VFs or it will be done nested manner by V=
+F etc is a completely different discussion than what is being proposed here=
+.
+Whether PF will manage the SF is yet another big question. We work with use=
+rs and they dislike this.
+To address it, some OS has a different management interface (not visible to=
+ PF) for SF life cycle even though SFs are anchored on a PF.
 
--- 
-MST
+So SF/iov extension discussion has long way to go for community to first un=
+derstand the use cases before crafting some extension.
+
+So lets not complicate and mix things here for a blurry definition of scala=
+ble iov/sf extension.
 
