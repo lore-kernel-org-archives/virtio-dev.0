@@ -1,99 +1,110 @@
-Return-Path: <virtio-dev-return-9298-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-9287-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 4B2A198641C
-	for <virtio-dev@lists.oasis-open.org>; Tue, 15 Feb 2022 11:42:32 +0000 (UTC)
-Message-ID: <e85b6271-5510-959b-efdc-7ba318f114bc@redhat.com>
-Date: Tue, 15 Feb 2022 12:42:26 +0100
+	by lists.oasis-open.org (Postfix) with ESMTP id 291CA9863C3
+	for <virtio-dev@lists.oasis-open.org>; Wed,  9 Feb 2022 09:02:03 +0000 (UTC)
+From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Date: Wed,  9 Feb 2022 17:01:58 +0800
+Message-Id: <20220209090158.49162-1-xuanzhuo@linux.alibaba.com>
 MIME-Version: 1.0
-References: <20220214195908.4070138-1-kalutes@google.com>
-From: David Hildenbrand <david@redhat.com>
-In-Reply-To: <20220214195908.4070138-1-kalutes@google.com>
-Subject: [virtio-dev] Re: [PATCH] Virtio-balloon: add user space API for sizing
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-To: Kameron Lutes <kalutes@google.com>, "Michael S . Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, virtualization@lists.linux-foundation.org, linux-kernel@vger.kernel.org, virtio-dev@lists.oasis-open.org, kvm@vger.kernel.org
-Cc: Suleiman Souhlal <suleiman@chromium.org>, Charles William Dick <cwd@google.com>, David Stevens <stevensd@chromium.org>
+Subject: [virtio-dev] [PATCH] virtio-net: support reset queue
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="US-ASCII"
+To: virtio-dev@lists.oasis-open.org
+Cc: jasowang@redhat.com, "Michael S. Tsirkin" <mst@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 14.02.22 20:59, Kameron Lutes wrote:
-> This new linux API will allow user space applications to directly
-> control the size of the virtio-balloon. This is useful in
-> situations where the guest must quickly respond to drastically
-> increased memory pressure and cannot wait for the host to adjust
-> the balloon's size.
-> 
-> Under the current wording of the Virtio spec, guest driven
-> behavior such as this is permitted:
-> 
-> VIRTIO Version 1.1 Section 5.5.6
-> "The device is driven either by the receipt of a configuration
-> change notification, or by changing guest memory needs, such as
-> performing memory compaction or responding to out of memory
-> conditions."
+This patch defines some requirements for virtio-net to support reset
+queues.
 
-Not quite. num_pages is determined by the hypervisor only and the guest
-is not expected to change it, and if it does, it's ignored.
+Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+---
+ conformance.tex |  2 ++
+ content.tex     | 19 +++++++++++++++++++
+ 2 files changed, 21 insertions(+)
 
-5.5.6 does not indicate at all that the guest may change it or that it
-would have any effect. num_pages is examined only, actual is updated by
-the driver.
-
-5.5.6.1 documents what's allowed, e.g.,
-
-  The driver SHOULD supply pages to the balloon when num_pages is
-  greater than the actual number of pages in the balloon.
-
-  The driver MAY use pages from the balloon when num_pages is less than
-  the actual number of pages in the balloon.
-
-and special handling for VIRTIO_BALLOON_F_DEFLATE_ON_OOM.
-
-Especially, we have
-
-  The driver MUST update actual after changing the number of pages in
-  the balloon.
-
-  The driver MAY update actual once after multiple inflate and deflate
-  operations.
-
-That's also why QEMU never syncs back the num_pages value from the guest
-when writing the config.
-
-
-Current spec does not allow for what you propose.
-
-
-> 
-> The intended use case for this API is one where the host
-> communicates a deflation limit to the guest. The guest may then
-> choose to respond to memory pressure by deflating its balloon down
-> to the guest's allowable limit.
-
-It would be good to have a full proposal and a proper spec update. I'd
-assume you'd want separate values for soft vs. hard num_values -- if
-that's what we really want.
-
-BUT
-
-There seems to be recent interest in handling memory pressure in a
-better way (although how to really detect "serious memory pressure" vs
-"ordinary reclaim" in Linux is still to be figured out). There is
-already a discussion going on how that could happen. Adding random user
-space toggles might not be the best idea. We might want a single
-mechanism to achieve that.
-
-https://lists.oasis-open.org/archives/virtio-comment/202201/msg00139.html
-
--- 
-Thanks,
-
-David / dhildenb
+diff --git a/conformance.tex b/conformance.tex
+index 42f8537..52b4879 100644
+--- a/conformance.tex
++++ b/conformance.tex
+@@ -136,6 +136,7 @@ \section{Conformance Targets}\label{sec:Conformance / C=
+onformance Targets}
+ \item \ref{drivernormative:Device Types / Network Device / Device Operatio=
+n / Packet Transmission}
+ \item \ref{drivernormative:Device Types / Network Device / Device Operatio=
+n / Setting Up Receive Buffers}
+ \item \ref{drivernormative:Device Types / Network Device / Device Operatio=
+n / Processing of Incoming Packets}
++\item \ref{drivernormative:Device Types / Network Device / Device Operatio=
+n / Reset Virtqueue}
+ \item \ref{drivernormative:Device Types / Network Device / Device Operatio=
+n / Control Virtqueue / Packet Receive Filtering}
+ \item \ref{drivernormative:Device Types / Network Device / Device Operatio=
+n / Control Virtqueue / Setting MAC Address Filtering}
+ \item \ref{drivernormative:Device Types / Network Device / Device Operatio=
+n / Control Virtqueue / Gratuitous Packet Sending}
+@@ -396,6 +397,7 @@ \section{Conformance Targets}\label{sec:Conformance / C=
+onformance Targets}
+ \item \ref{devicenormative:Device Types / Network Device / Device Operatio=
+n / Packet Transmission}
+ \item \ref{devicenormative:Device Types / Network Device / Device Operatio=
+n / Setting Up Receive Buffers}
+ \item \ref{devicenormative:Device Types / Network Device / Device Operatio=
+n / Processing of Incoming Packets}
++\item \ref{devicenormative:Device Types / Network Device / Device Operatio=
+n / Reset Virtqueue}
+ \item \ref{devicenormative:Device Types / Network Device / Device Operatio=
+n / Control Virtqueue / Packet Receive Filtering}
+ \item \ref{devicenormative:Device Types / Network Device / Device Operatio=
+n / Control Virtqueue / Setting MAC Address Filtering}
+ \item \ref{devicenormative:Device Types / Network Device / Device Operatio=
+n / Control Virtqueue / Gratuitous Packet Sending}
+diff --git a/content.tex b/content.tex
+index c6f116c..ce8e37a 100644
+--- a/content.tex
++++ b/content.tex
+@@ -4000,6 +4000,25 @@ \subsubsection{Processing of Incoming Packets}\label=
+{sec:Device Types / Network
+ #define VIRTIO_NET_HASH_REPORT_UDPv6_EX        9
+ \end{lstlisting}
+=20
++\subsubsection{Reset Virtqueue}\label{sec:Device Types / Network Device / =
+Device Operation / Reset Virtqueue}
++
++The receive and transmission virtqueues can implement reset based on Virtq=
+ueue
++Reset (See \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Vir=
+tqueue Reset}).
++
++\drivernormative{\paragraph}{Gratuitous Packet Sending}{Device Types / Net=
+work Device / Device Operation / Reset Virtqueue}
++
++The driver MUST NOT reset the control virtqueue.
++
++\devicenormative{\paragraph}{Gratuitous Packet Sending}{Device Types / Net=
+work Device / Device Operation / Reset Virtqueue}
++
++After automatic receive steering or RSS receive steering has completed the
++selection of the queue, if the destination receive queue is in reset state=
+,
++the device MUST re-select a different random queue. If all receive queues =
+are in
++reset state, the device can drop the packet.
++
++A virtio-net device MUST support the above requirements in order to suppor=
+t
++VIRTIO_F_RING_RESET.
++
+ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device =
+/ Device Operation / Control Virtqueue}
+=20
+ The driver uses the control virtqueue (if VIRTIO_NET_F_CTRL_VQ is
+--=20
+2.31.0
 
 
 ---------------------------------------------------------------------
