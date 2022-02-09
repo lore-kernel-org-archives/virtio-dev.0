@@ -1,180 +1,160 @@
-Return-Path: <mst@redhat.com>
-Date: Tue, 1 Feb 2022 13:34:56 -0500
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: Re: [virtio-dev] Re: [PATCH v2 1/4] Add virtio Admin Virtqueue
-Message-ID: <20220201132815-mutt-send-email-mst@kernel.org>
-References: <da7444d6-f67d-3598-814d-a1b945c3542d@nvidia.com>
- <20220130102940-mutt-send-email-mst@kernel.org>
- <87ilu0z2mc.fsf@redhat.com>
- <20220131083927-mutt-send-email-mst@kernel.org>
- <87fsp4yo9v.fsf@redhat.com>
- <20220131094911-mutt-send-email-mst@kernel.org>
- <20220131171205.1317b936.pasic@linux.ibm.com>
- <877dafzv8w.fsf@redhat.com>
- <20220201125357.3ebc00bd.pasic@linux.ibm.com>
- <87ee4my101.fsf@redhat.com>
+Return-Path: <jasowang@redhat.com>
+Message-ID: <0a5efddd-8427-59d9-4ff2-94b0b7c57b1b@redhat.com>
+Date: Wed, 9 Feb 2022 10:27:25 +0800
 MIME-Version: 1.0
-In-Reply-To: <87ee4my101.fsf@redhat.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-To: Cornelia Huck <cohuck@redhat.com>
-Cc: Halil Pasic <pasic@linux.ibm.com>, Max Gurtovoy <mgurtovoy@nvidia.com>, Jason Wang <jasowang@redhat.com>, virtio-comment@lists.oasis-open.org, Virtio-Dev <virtio-dev@lists.oasis-open.org>, Parav Pandit <parav@nvidia.com>, Shahaf Shuler <shahafs@nvidia.com>, Oren Duer <oren@nvidia.com>, Stefan Hajnoczi <stefanha@redhat.com>
+Subject: Re: [PATCH v2 1/4] Add virtio Admin Virtqueue
+References: <87wnikys4p.fsf@redhat.com>
+ <20220128074613-mutt-send-email-mst@kernel.org> <87tudnzwq9.fsf@redhat.com>
+ <20220128105012-mutt-send-email-mst@kernel.org>
+ <CACGkMEsXhKDGqpK=umdFkKubqm09Z45YgnNSYH-xwwJQEd9PEA@mail.gmail.com>
+ <e80bdf0d-4b52-03ca-6378-cf9e2a062b34@nvidia.com>
+ <20220130043917-mutt-send-email-mst@kernel.org>
+ <f3644061-70b6-892d-a2e0-1e710bf58609@nvidia.com>
+ <20220130093740-mutt-send-email-mst@kernel.org>
+ <da7444d6-f67d-3598-814d-a1b945c3542d@nvidia.com>
+ <20220130102940-mutt-send-email-mst@kernel.org>
+From: Jason Wang <jasowang@redhat.com>
+In-Reply-To: <20220130102940-mutt-send-email-mst@kernel.org>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+To: "Michael S. Tsirkin" <mst@redhat.com>, Max Gurtovoy <mgurtovoy@nvidia.com>
+Cc: Cornelia Huck <cohuck@redhat.com>, virtio-comment@lists.oasis-open.org, Virtio-Dev <virtio-dev@lists.oasis-open.org>, Parav Pandit <parav@nvidia.com>, Shahaf Shuler <shahafs@nvidia.com>, Oren Duer <oren@nvidia.com>, Stefan Hajnoczi <stefanha@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Tue, Feb 01, 2022 at 06:01:34PM +0100, Cornelia Huck wrote:
-> On Tue, Feb 01 2022, Halil Pasic <pasic@linux.ibm.com> wrote:
-> 
-> > On Mon, 31 Jan 2022 18:10:39 +0100
-> > Cornelia Huck <cohuck@redhat.com> wrote:
-> >
-> >> On Mon, Jan 31 2022, Halil Pasic <pasic@linux.ibm.com> wrote:
-> >> 
-> >> > On Mon, 31 Jan 2022 09:52:54 -0500
-> >> > "Michael S. Tsirkin" <mst@redhat.com> wrote:
-> >> >  
-> >> >> On Mon, Jan 31, 2022 at 03:26:36PM +0100, Cornelia Huck wrote:  
-> >> >> > On Mon, Jan 31 2022, "Michael S. Tsirkin" <mst@redhat.com> wrote:
-> >> >> >     
-> >> >> > > On Mon, Jan 31, 2022 at 10:16:43AM +0100, Cornelia Huck wrote:    
-> >> >> > >> On Sun, Jan 30 2022, "Michael S. Tsirkin" <mst@redhat.com> wrote:
-> >> >> > >>     
-> >> >> > >> > On Sun, Jan 30, 2022 at 05:12:46PM +0200, Max Gurtovoy wrote:    
-> >> >> > >> >> #define VIRTIO_PCI_CAP_MISC_CFG 10
-> >> >> > >> >> 
-> >> >> > >> >> and
-> >> >> > >> >> 
-> >> >> > >> >> struct virtio_pci_misc_cfg {
-> >> >> > >> >>     le16 admin_queue_index; /* read-only for driver */
-> >> >> > >> >> };
-> >> >> > >> >> 
-> >> >> > >> >> Is agreed by all for V3 ? instead of the net and blk AQ index definitions.    
-> >> >> > >> >
-> >> >> > >> > We need to add it to MMIO and CCW I guess too.    
-> >> >> > >> 
-> >> >> > >> That seems ok for pci.
-> >> >> > >> 
-> >> >> > >> For ccw, I'd do something like
-> >> >> > >> 
-> >> >> > >> #define CCW_CMD_READ_MISC_CONF 0x82
-> >> >> > >> 
-> >> >> > >> struct virtio_misc_conf {
-> >> >> > >>        be16 admin_queue_index;
-> >> >> > >> };
-> >> >> > >> 
-> >> >> > >> bound to revision 3, which gets a payload data containing the length of
-> >> >> > >> this structure (for future expansions).
-> >> >> > >> 
-> >> >> > >> Halil, do you think that would work?
-> >> >> > >> 
-> >> >> > >> For mmio, I'd need to think a bit more. Any mmio experts around?    
-> >> >> > >
-> >> >> > > Not an expert but I think we can rely on a feature
-> >> >> > > bit to be acked since admin vq is only needed
-> >> >> > > after feature negotiation is complete.    
-> >> >> > 
-> >> >> > You mean a register that is valid conditionally? I don't see an easy way
-> >> >> > to add some kind of "misc" interface for mmio, unlike for the other
-> >> >> > transports.
-> >> >> > 
-> >> >> > So something like:
-> >> >> > 
-> >> >> > AdminQueueIndex/0x0c4/R
-> >> >> > If VIRTIO_F_ADMIN_VQ has been negotiated, reading from this register
-> >> >> > returns the queue index of the administration virtqueue.    
-> >> >> 
-> >> >> No, I mean a register that switches 100+ between device specific
-> >> >> and misc space.
-> >> >>   
-> >> >
-> >> > Maybe adding a register that tells us where does the "misc config
-> >> > start" is another option. I don't think we need an open ended
-> >> > device-config in practice. I have no idea if there are any upper limits
-> >> > on MMIO address space though. If we are constrained there, the switching
-> >> > is certainly more efficient. Otherwise, I think having the misc config
-> >> > somewhere after device specific config is simpler.  
-> >> 
-> >> I think we first need to agree what the "misc" thing is actually
-> >> supposed to be. My idea was that we don't have an unlimited supply of
-> >> ccws to use for new features, so introducing one for reading "misc"
-> >> configuration would be a way to keep things extensible (it also might
-> >> make the config/register space for other transports less cluttered). The
-> >> same idea (save on ccws) would apply to the multiplexing "action" ccw I
-> >> mentioned in my other mail.
-> >> 
-> >
-> > I agree with not wasting CCWs.
-> >
-> >> So, for the case here (simply relaying the location of the admin vq), we
-> >> don't really need a "misc" mechanism for pci/mmio, but I'd like to
-> >> introduce one for ccw. If we agree that it would be useful for pci/mmio
-> >> as well, we should introduce it now.
-> >
-> > Please see Michael's response. My understanding was also that what we
-> > want is something like config space for the virtio protocol stuff. The
-> > current config space is entirely device specific, so if we would want a
-> > common thing in _config space_, like _the index of the administration 
-> > vq_ then each device would have to define it separately, in a device
-> > specific location. Which is not nice.
-> 
-> Ok, so for ccw, it will be more of a secondary "config space", and we
-> should reuse all the infrastructure that we already use for our normal
-> "config space" (put into quotes because it isn't really a config space.)
-> 
-> Maybe we can call this "protocol config space"?
 
-Well config is not an english word ;)
-
-We don't have many mentions of config space, those that are there
-should probably be converted to device configuration.
-
-I am fine with protocol configuration if others like it, though
-I'm not 100% sure which "protocol" does this refer to, but there
-are instances in the spec where "protocol" means "virtio spec".
+在 2022/1/30 下午11:30, Michael S. Tsirkin 写道:
+> On Sun, Jan 30, 2022 at 05:12:46PM +0200, Max Gurtovoy wrote:
+>> On 1/30/2022 4:41 PM, Michael S. Tsirkin wrote:
+>>> On Sun, Jan 30, 2022 at 11:56:30AM +0200, Max Gurtovoy wrote:
+>>>> On 1/30/2022 11:40 AM, Michael S. Tsirkin wrote:
+>>>>> On Sun, Jan 30, 2022 at 11:13:38AM +0200, Max Gurtovoy wrote:
+>>>>>> On 1/29/2022 5:53 AM, Jason Wang wrote:
+>>>>>>> On Fri, Jan 28, 2022 at 11:52 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+>>>>>>>> On Fri, Jan 28, 2022 at 04:49:34PM +0100, Cornelia Huck wrote:
+>>>>>>>>> On Fri, Jan 28 2022, "Michael S. Tsirkin" <mst@redhat.com> wrote:
+>>>>>>>>>
+>>>>>>>>>> On Fri, Jan 28, 2022 at 01:14:14PM +0100, Cornelia Huck wrote:
+>>>>>>>>>>> On Mon, Jan 24 2022, Max Gurtovoy <mgurtovoy@nvidia.com> wrote:
+>>>>>>>>>>>> +\section{Admin Virtqueues}\label{sec:Basic Facilities of a Virtio Device / Admin Virtqueues}
+>>>>>>>>>>>> +
+>>>>>>>>>>>> +Admin virtqueue is used to send administrative commands to manipulate
+>>>>>>>>>>>> +various features of the device and/or to manipulate various features,
+>>>>>>>>>>>> +if possible, of another device within the same group (e.g. PCI VFs of
+>>>>>>>>>>>> +a parent PCI PF device are grouped together. These devices can be
+>>>>>>>>>>>> +optionally managed by its parent PCI PF using its admin virtqueue.).
+>>>>>>>>>>>> +
+>>>>>>>>>>>> +Use of Admin virtqueue is negotiated by the VIRTIO_F_ADMIN_VQ
+>>>>>>>>>>>> +feature bit.
+>>>>>>>>>>>> +
+>>>>>>>>>>>> +Admin virtqueue index may vary among different device types.
+>>>>>>>>>>> So, my understanding is:
+>>>>>>>>>>> - any device type may or may not support the admin vq
+>>>>>>>>>>> - if the device type wants to be able to accommodate the admin vq, it
+>>>>>>>>>>>       also needs to specify where it shows up when the feature is negotiated
+>>>>>>>>>>>
+>>>>>>>>>>> Do we expect that eventually all device types will need to support the
+>>>>>>>>>>> admin vq (if some use case comes along that will require all devices to
+>>>>>>>>>>> participate, for example?)
+>>>>>>>>>> I suspect yes. And that's one of the reasons why I'd rather we had a
+>>>>>>>>>> device independent way to locate the admin queue. There are less
+>>>>>>>>>> transports than device types.
+>>>>>>>>> So, do we want to bite the bullet now and simply say that every device
+>>>>>>>>> type has the admin vq as the last vq if the feature is negotiated?
+>>>>>>>>> Should be straightforward for the device types that have a fixed number
+>>>>>>>>> of vqs, and doable for those that have a variable amount (two device
+>>>>>>>>> types are covered by this series anyway.) I think we need to put it with
+>>>>>>>>> the device types, as otherwise the numbering of virtqueues could change
+>>>>>>>>> in unpredictable ways with the admin vq off/on.
+>>>>>>>> Well that only works once. The next thing we'll need we won't be able to
+>>>>>>>> make the last one ;) So I am inclined to add a per-transport field that
+>>>>>>>> gives the admin queue number.
+>>>>>>> Technically, there's no need to use the same namespace for admin
+>>>>>>> virtqueue if it has a dedicated notification area. If we go this way,
+>>>>>>> we can simply use 0 as queue index for admin virtqueue.
+>>>>>> Or we can use index 0xFFFF for admin virtqueue for compatibility.
+>>>>> I think I'd prefer a register with the #. For example we might want
+>>>>> to limit the # of VQs in order to pass extra data with the kick write.
+>>>> So you are suggesting adding a new cfg_type (#define
+>>>> VIRTIO_PCI_CAP_ADMIN_CFG 10) ?
+>>>>
+>>>> that will look something like:
+>>>>
+>>>> struct virtio_pci_admin_cfg {
+>>>>
+>>>>       le32 queue_index; /* read only for the driver */
+>>>>
+>>>>       le16 queue_size; /* read-write */
+>>>>       le16 queue_msix_vector; /* read-write */
+>>>>       le16 queue_enable; /* read-write */
+>>>>       le16 queue_notify_off; /* read-only for driver */
+>>>>       le64 queue_desc; /* read-write */
+>>>>       le64 queue_driver; /* read-write */
+>>>>       le64 queue_device; /* read-write */
+>>>>       le16 queue_notify_data; /* read-only for driver */
+>>>>       le16 queue_reset; /* read-write */
+>>>>
+>>>> };
+>>>>
+>>>> instead of re-using the struct virtio_pci_common_cfg ?
+>>>>
+>>>>
+>>>> or do you prefer extending the struct virtio_pci_common_cfg with "le16
+>>>> admin_queue_index; /* read only for the driver */ ?
+>>> The later. Other transports will need this too.
+>>>
+>>>
+>>> Cornelia has another idea which is that instead of
+>>> adding just the admin queue register to all transports,
+>>> we instead add a misc_config structure to all
+>>> transports. Working basically like device specific config,
+>>> but being device independent. For now it will only have
+>>> a single le16 admin_queue_index register.
+>>>
+>>> For PCI we would thus add it with VIRTIO_PCI_CAP_MISC_CFG
+>>>
+>>> The point here is that we are making it easier to add
+>>> more fields just like admin queue index in the future.
+>> OK.
+>>
+>> #define VIRTIO_PCI_CAP_MISC_CFG 10
+>>
+>> and
+>>
+>> struct virtio_pci_misc_cfg {
+>>      le16 admin_queue_index; /* read-only for driver */
+>> };
+>>
+>> Is agreed by all for V3 ? instead of the net and blk AQ index definitions.
+> We need to add it to MMIO and CCW I guess too.
 
 
-> >
-> > AFAIU having a this protocol config could be sufficient in the sense
-> > that we probably don't need another misc. My line of thinking is: with
-> > this we basically get a read-write interface for exposing stuff. The
-> > only other thing I can think of is _transport specific fields_. That
-> > is if we needed something that ain't specific to the device, but ain't
-> > common to all virtio (i.e. the virtio protocol). One idea, which would
-> > allow us to remain flexible is to a make this new thing not
-> > only this new _protocol config_ but state in some sort of a header
-> > that _protocol config_ is a given range of addresses within the
-> > space on which what you called MISC_CONF operates on.
-> 
-> Yeah, we can make transport config a subset of protocol
-> config... possibly just a command + address setup, and the transport can
-> multiplex on that?
+I wonder how much useful is this.
 
-OK but we need size too? I'd like to avoid a ton of exits if possible,
-people already complain about pci discovery causing a ton of exits,
-an exit per value is possible for pci after all.
+E.g for PCI we have an equation to calculate the queue notify address, 
+if device choose to use dedicated notify for each queue it will probably 
+end up with the last queue.
 
-> >
-> > This multiplexing "action" ccw sounds like an interesting idea to
-> > explore. Maybe we only need that, and can integrate misc config
-> > or protocol config into that interface.
-> 
-> It would probably be better to try and integrate it into the protocol
-> config, if that's going to be read/write anyway. We can introduce like
-> queue reset we're still missing on ccw into the transport config and
-> already test out whether that makes actual sense.
+And I think the admin_queue_index should be stable regardless of the 
+feature that has been negotiated?
 
-The annoying thing is we added queue reset to pci already, ugh.
-There are two ways to do it for pci then? Oh well ...
+Thanks
 
 
-> >
-> > Do you have a proposal somewhere? I do remember the other email you
-> > mentioned it in, but I don't remember seeing anything akin to an
-> > interface specification.
-> 
-> No, nothing formal. I was thinking of a ccw with a command/length/data
-> payload, with successful conclusion of the I/O signifying successful
-> triggering of the action (or maybe conclusion, depending on the
-> command.) That might be more effective than the "config space"
-> read/write dance, but I'm not sure whether it's worth deviating from the
-> other transports.
+>
+> This is Cornelia's idea, we'll need her response.
+>
+>
+>>>
+>>>>>>> Thanks
+>>>>>>>
+>>>>>>>> Another advantage to this approach is that
+>>>>>>>> we can make sure admin queue gets a page by itself (which can be good if
+>>>>>>>> we want to allow access to regular vqs but not to the admin queue to
+>>>>>>>> guest) even if regular vqs share a page. Will help devices use less
+>>>>>>>> memory space.
+>>>>>>>>
+>>>>>>>> --
+>>>>>>>> MST
+>>>>>>>>
 
