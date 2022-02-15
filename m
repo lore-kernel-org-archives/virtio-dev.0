@@ -1,118 +1,102 @@
-Return-Path: <kvm-owner@vger.kernel.org>
-Date: Mon, 14 Feb 2022 19:59:08 +0000
-Message-Id: <20220214195908.4070138-1-kalutes@google.com>
-Mime-Version: 1.0
-Subject: [PATCH] Virtio-balloon: add user space API for sizing
-From: Kameron Lutes <kalutes@google.com>
-Content-Type: text/plain; charset="UTF-8"
-To: "Michael S . Tsirkin" <mst@redhat.com>, David Hildenbrand <david@redhat.com>, Jason Wang <jasowang@redhat.com>, virtualization@lists.linux-foundation.org, linux-kernel@vger.kernel.org, virtio-dev@lists.oasis-open.org, kvm@vger.kernel.org
-Cc: Suleiman Souhlal <suleiman@chromium.org>, Charles William Dick <cwd@google.com>, Kameron Lutes <kalutes@google.com>
+Return-Path: <virtio-dev-return-9298-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id 4B2A198641C
+	for <virtio-dev@lists.oasis-open.org>; Tue, 15 Feb 2022 11:42:32 +0000 (UTC)
+Message-ID: <e85b6271-5510-959b-efdc-7ba318f114bc@redhat.com>
+Date: Tue, 15 Feb 2022 12:42:26 +0100
+MIME-Version: 1.0
+References: <20220214195908.4070138-1-kalutes@google.com>
+From: David Hildenbrand <david@redhat.com>
+In-Reply-To: <20220214195908.4070138-1-kalutes@google.com>
+Subject: [virtio-dev] Re: [PATCH] Virtio-balloon: add user space API for sizing
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+To: Kameron Lutes <kalutes@google.com>, "Michael S . Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, virtualization@lists.linux-foundation.org, linux-kernel@vger.kernel.org, virtio-dev@lists.oasis-open.org, kvm@vger.kernel.org
+Cc: Suleiman Souhlal <suleiman@chromium.org>, Charles William Dick <cwd@google.com>, David Stevens <stevensd@chromium.org>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-This new linux API will allow user space applications to directly
-control the size of the virtio-balloon. This is useful in
-situations where the guest must quickly respond to drastically
-increased memory pressure and cannot wait for the host to adjust
-the balloon's size.
+On 14.02.22 20:59, Kameron Lutes wrote:
+> This new linux API will allow user space applications to directly
+> control the size of the virtio-balloon. This is useful in
+> situations where the guest must quickly respond to drastically
+> increased memory pressure and cannot wait for the host to adjust
+> the balloon's size.
+> 
+> Under the current wording of the Virtio spec, guest driven
+> behavior such as this is permitted:
+> 
+> VIRTIO Version 1.1 Section 5.5.6
+> "The device is driven either by the receipt of a configuration
+> change notification, or by changing guest memory needs, such as
+> performing memory compaction or responding to out of memory
+> conditions."
 
-Under the current wording of the Virtio spec, guest driven
-behavior such as this is permitted:
+Not quite. num_pages is determined by the hypervisor only and the guest
+is not expected to change it, and if it does, it's ignored.
 
-VIRTIO Version 1.1 Section 5.5.6
-"The device is driven either by the receipt of a configuration
-change notification, or by changing guest memory needs, such as
-performing memory compaction or responding to out of memory
-conditions."
+5.5.6 does not indicate at all that the guest may change it or that it
+would have any effect. num_pages is examined only, actual is updated by
+the driver.
 
-The intended use case for this API is one where the host
-communicates a deflation limit to the guest. The guest may then
-choose to respond to memory pressure by deflating its balloon down
-to the guest's allowable limit.
+5.5.6.1 documents what's allowed, e.g.,
 
-Signed-off-by: Kameron Lutes <kalutes@google.com>
----
- drivers/virtio/virtio_balloon.c | 55 +++++++++++++++++++++++++++++++++
- 1 file changed, 55 insertions(+)
+  The driver SHOULD supply pages to the balloon when num_pages is
+  greater than the actual number of pages in the balloon.
 
-diff --git a/drivers/virtio/virtio_balloon.c b/drivers/virtio/virtio_balloon.c
-index f4c34a2a6b8e..aa06305a3137 100644
---- a/drivers/virtio/virtio_balloon.c
-+++ b/drivers/virtio/virtio_balloon.c
-@@ -878,6 +878,54 @@ static int virtio_balloon_register_shrinker(struct virtio_balloon *vb)
- 	return register_shrinker(&vb->shrinker);
- }
- 
-+static ssize_t balloon_size_show(struct device *dev,
-+				 struct device_attribute *attr, char *buf)
-+{
-+	struct virtio_device *vdev = container_of(dev, struct virtio_device, dev);
-+	u32 num_pages;
-+
-+	/*
-+	 * Read the size directly from the balloon's configuration.
-+	 * The caller expects the balloon size enforced by the host,
-+	 * not the actual balloon size
-+	 */
-+	virtio_cread(vdev, struct virtio_balloon_config, num_pages,
-+		     &num_pages);
-+
-+	return sprintf(buf, "0x%x", num_pages);
-+}
-+
-+static ssize_t balloon_size_store(struct device *dev,
-+				  struct device_attribute *attr,
-+				  const char *buf, size_t count)
-+{
-+	struct virtio_device *vdev = container_of(dev, struct virtio_device, dev);
-+	u32 num_pages;
-+	int err;
-+
-+	err = kstrtou32(buf, 0, &num_pages);
-+
-+	if (err < 0) {
-+		dev_err(dev, "Failed to read balloon size from file\n");
-+		return err;
-+	}
-+
-+	/*
-+	 * Write num_pages back to the balloon's config section
-+	 */
-+	virtio_cwrite_le(vdev, struct virtio_balloon_config, num_pages,
-+		      &num_pages);
-+
-+	/*
-+	 * Signal to the balloon that the configuration has changed.
-+	 * This triggers any necessary resizing actions
-+	 */
-+	virtballoon_changed(vdev);
-+
-+	return count;
-+}
-+static DEVICE_ATTR_RW(balloon_size);
-+
- static int virtballoon_probe(struct virtio_device *vdev)
- {
- 	struct virtio_balloon *vb;
-@@ -1015,12 +1063,19 @@ static int virtballoon_probe(struct virtio_device *vdev)
- 			goto out_unregister_oom;
- 	}
- 
-+	err = device_create_file(&vb->vdev->dev, &dev_attr_balloon_size);
-+	if (err)
-+		goto out_unregister_page_reporting;
-+
- 	virtio_device_ready(vdev);
- 
- 	if (towards_target(vb))
- 		virtballoon_changed(vdev);
- 	return 0;
- 
-+out_unregister_page_reporting:
-+	if (virtio_has_feature(vb->vdev, VIRTIO_BALLOON_F_REPORTING))
-+		page_reporting_unregister(&vb->pr_dev_info);
- out_unregister_oom:
- 	if (virtio_has_feature(vb->vdev, VIRTIO_BALLOON_F_DEFLATE_ON_OOM))
- 		unregister_oom_notifier(&vb->oom_nb);
+  The driver MAY use pages from the balloon when num_pages is less than
+  the actual number of pages in the balloon.
+
+and special handling for VIRTIO_BALLOON_F_DEFLATE_ON_OOM.
+
+Especially, we have
+
+  The driver MUST update actual after changing the number of pages in
+  the balloon.
+
+  The driver MAY update actual once after multiple inflate and deflate
+  operations.
+
+That's also why QEMU never syncs back the num_pages value from the guest
+when writing the config.
+
+
+Current spec does not allow for what you propose.
+
+
+> 
+> The intended use case for this API is one where the host
+> communicates a deflation limit to the guest. The guest may then
+> choose to respond to memory pressure by deflating its balloon down
+> to the guest's allowable limit.
+
+It would be good to have a full proposal and a proper spec update. I'd
+assume you'd want separate values for soft vs. hard num_values -- if
+that's what we really want.
+
+BUT
+
+There seems to be recent interest in handling memory pressure in a
+better way (although how to really detect "serious memory pressure" vs
+"ordinary reclaim" in Linux is still to be figured out). There is
+already a discussion going on how that could happen. Adding random user
+space toggles might not be the best idea. We might want a single
+mechanism to achieve that.
+
+https://lists.oasis-open.org/archives/virtio-comment/202201/msg00139.html
+
 -- 
-2.35.1.265.g69c8d7142f-goog
+Thanks,
+
+David / dhildenb
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
