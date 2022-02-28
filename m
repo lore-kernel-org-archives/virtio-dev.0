@@ -1,24 +1,26 @@
-Return-Path: <virtio-dev-return-9323-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-9324-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 728E6986478
-	for <virtio-dev@lists.oasis-open.org>; Thu, 24 Feb 2022 11:11:45 +0000 (UTC)
-Message-ID: <1645700959.799065-1-xuanzhuo@linux.alibaba.com>
-Date: Thu, 24 Feb 2022 19:09:19 +0800
-From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id C9090986260
+	for <virtio-dev@lists.oasis-open.org>; Mon, 28 Feb 2022 09:08:12 +0000 (UTC)
+MIME-Version: 1.0
 References: <20220215074743.35155-1-xuanzhuo@linux.alibaba.com>
 In-Reply-To: <20220215074743.35155-1-xuanzhuo@linux.alibaba.com>
-Subject: Re: [virtio-dev] [PATCH v9] virtio-net: support device stats
-Content-Type: text/plain; charset="US-ASCII"
+From: Jason Wang <jasowang@redhat.com>
+Date: Mon, 28 Feb 2022 17:07:54 +0800
+Message-ID: <CACGkMEs7NuoGQyn6gQ-fvnaLh3Gccy4vLdmiH8Cve-GJr8mfRQ@mail.gmail.com>
+Subject: [virtio-dev] Re: [PATCH v9] virtio-net: support device stats
+Content-Type: text/plain; charset="UTF-8"
 To: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Cc: jasowang@redhat.com, "Michael S. Tsirkin" <mst@redhat.com>, virtio-dev@lists.oasis-open.org
+Cc: Virtio-Dev <virtio-dev@lists.oasis-open.org>, "Michael S. Tsirkin" <mst@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Tue, 15 Feb 2022 15:47:43 +0800, Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
+On Tue, Feb 15, 2022 at 3:47 PM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
+>
 > This patch allows the driver to obtain some statistics from the device.
 >
 > In the back-end implementation, we can count a lot of such information,
@@ -26,11 +28,6 @@ On Tue, 15 Feb 2022 15:47:43 +0800, Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote
 > back-end. We hope to directly display it to the user through ethtool.
 >
 > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-
-hi Michael, Jason, any comment for this?
-
-Thanks.
-
 > ---
 >  conformance.tex |   2 +
 >  content.tex     | 135 ++++++++++++++++++++++++++++++++++++++++++++++--
@@ -136,6 +133,11 @@ Thanks.
 > +    le64 mac_multicast_num; /* The number of multicast mac addresses. */
 > +    le64 vlan_num;          /* The number of vlan. */
 > +}
+
+This looks more like the states instead of the stats? And the driver
+should have the knowledge of those. Or is there any chance that the
+device knowledge can differ from the driver's?
+
 > +
 > +struct virtio_net_ctrl_reply_stats_cvq {
 > +    le64 command_num;            /* The number of commands, including the current command. */
@@ -174,12 +176,36 @@ Thanks.
 > +
 > +    le64 tx_csum_none;        /* The number of packets that doesn't require hardware csum. */
 > +    le64 tx_csum_partial;     /* The number of packets that requires hardware csum. */
+
+s/requires/require/
+
 > +
 > +    le64 tx_gso_packets;      /* The number of GSO packets that the device received from the driver. */
 > +    le64 tx_gso_bytes;        /* The number of bytes(excluding the virtio net header) of GSO packets that the device received from the driver. */
 > +    le64 tx_reset;            /* The number of queue resets. */
 > +}
 > +\end{lstlisting}
+
+I wonder if it's better to use description/item to explain the fields
+one by one instead of using comments.
+
+E.g for some fields, we need to explain that the value is valid only
+if some specific feature is negotiated (e.g gso or reset)?
+
+Rethink of the structure, I also wonder if it's better to restructure
+the stats to
+
+struct stats{
+/* the counters that doesn't need any features */
+/* the counters that needs CSUM */
+/* the counters that needs GSO */
+/* the counters that needs reset */
+}
+
+Or even split them into different commands. The reason is that the
+current design requires the knowledge of a feature even if it doesn't
+support it.
+
 > +
 > +See \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Reset}
 > +for more about \field{rx_reset} and \field{tx_reset}.
@@ -219,9 +245,20 @@ Thanks.
 > +
 > +If VIRTIO_NET_F_GUEST_CSUM is not successfully negotiated, all csum related
 > +metrics MUST be 0.
+
+It's better to move this to the guidance part.
+
 > +
 > +GSO packet refers to the packet of gso_type != VIRTIO_NET_HDR_GSO_NONE.
+
+We'd better use English instead of "!=" here.
+
 > +All statistics on GSO MUST be based on the GSO packets.
+
+As discussed above, we need to also add the part of reset.
+
+Thanks
+
 > +
 > +\drivernormative{\subparagraph}{Device stats}{Device Types / Network Device / Device Operation / Control Virtqueue / Device stats}
 > +
@@ -233,11 +270,7 @@ Thanks.
 > --
 > 2.31.0
 >
->
-> ---------------------------------------------------------------------
-> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
->
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
