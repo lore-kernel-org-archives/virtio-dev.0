@@ -1,86 +1,57 @@
 Return-Path: <mgurtovoy@nvidia.com>
 From: Max Gurtovoy <mgurtovoy@nvidia.com>
-Subject: [PATCH v1 0/5] Introduce virtio subsystem and Admin virtqueue
-Date: Wed, 2 Mar 2022 17:56:03 +0200
-Message-ID: <20220302155608.24189-1-mgurtovoy@nvidia.com>
+Subject: [PATCH v1 1/5] virtio: Introduce virtio subsystem
+Date: Wed, 2 Mar 2022 17:56:04 +0200
+Message-ID: <20220302155608.24189-2-mgurtovoy@nvidia.com>
+In-Reply-To: <20220302155608.24189-1-mgurtovoy@nvidia.com>
+References: <20220302155608.24189-1-mgurtovoy@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 To: virtio-comment@lists.oasis-open.org, mst@redhat.com, cohuck@redhat.com, virtio-dev@lists.oasis-open.org, jasowang@redhat.com
 Cc: parav@nvidia.com, shahafs@nvidia.com, oren@nvidia.com, stefanha@redhat.com, Max Gurtovoy <mgurtovoy@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Hi,
-A virtio subsystem definition will help extending the virtio specefication for
-various future features that require a notion of grouping devices together or
-managing devices inside a group. It also might be used splitting or sharing a
-single virtio backend between multiple devices (e.g. Multipath IO for virtio-blk
-devices). A virtio subsystem include one or more virtio devices.
+A virtio subsystem may contain one or more virtio devices. All of the
+devices that make up a virtio subsystem share the same virtio subsystem
+unique identifier. This identifier is the virtio qualified name (VQN).
+Each device within a virtio subsystem has a unique identifier. This
+identifier is the virtio device id (vdev_id). The combination of these
+identifiers forms a globally unique value identifies a virtio device.
 
-Also introduce the admin facility to allow manipulating features and configurations
-in a generic manner. Using the admin command set, one can manipulate the device itself
-and/or to manipulate, if possible, another device within the same virtio subsystem (the
-following patch set).
+Reviewed-by: Parav Pandit <parav@nvidia.com>
+Signed-off-by: Max Gurtovoy <mgurtovoy@nvidia.com>
+---
+ introduction.tex | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
 
-The admin virtqueue is the first management interface to issue Admin commands from
-the admin command set.
-
-The admin virtqueue interface will be extended in the future with more and more
-features that some of them already in discussions. Some of these features don't
-fit to MMIO/config_space characteristics, therefore a queue is selected to address
-admin commands.
-
-Motivation for choosing admin queue:
-1. It is anticipated that admin queue will be used for managing and configuring
-   many different type of resources. For example,
-   a. PCI PF configuring PCI VF attributes.
-   b. virtio device creating/destroying/configuring subfunctions discussed in [1]
-   c. composing device config space of VF or SF such as mac address, number of VQs, virtio features
-
-   Mapping all of them as configuration registers to MMIO will require large MMIO space,
-   if done for each VF/SF. Such MMIO implementation in physical devices such as PCI PF and VF
-   requires on-chip resources to complete within MMIO access latencies. Such resources are very
-   expensive.
-
-2. Such limitation can be overcome by having smaller MMIO register set to build
-   a command request response interface. However, such MMIO based command interface
-   will be limited to serve single outstanding command execution. Such limitation can
-   resulting in high device creation and composing time which can affect VM startup time.
-   Often device can queue and service multiple commands in parallel, such command interface
-   cannot use parallelism offered by the device.
-
-3. When a command wants to DMA data from one or more physical addresses, for example in the future a
-   live migration command may need to fetch device state consist of config space, tens of
-   VQs state, VLAN and MAC table, per VQ partial outstanding block IO list database and more.
-   Packing one or more DMA addresses over new command interface will be burden some and continue
-   to suffer single outstanding command execution latencies. Such limitation is not good for time
-   sensitive live migration use cases.
-
-4. A virtio queue overcomes all the above limitations. It also supports DMA and multiple outstanding
-   descriptors. Similar mechanism exist today for device specific configuration - the control VQ.
-
-[1] https://lists.oasis-open.org/archives/virtio-comment/202108/msg00025.html
-
-This series was extended and splitted from the V3 of the "VIRTIO: Provision maximum MSI-X vectors for a VF".
-This series include the comments and fixes from V1-V3 of the initial patch set from above.
-The following series introduce the management devices and MSI-X configuration of virtio devices.
-
-Open issues:
-1. CCW and MMIO specification for admin_queue_index register
-
-Max Gurtovoy (5):
-  virtio: Introduce virtio subsystem
-  Introduce Admin Command Set
-  Introduce DEVICE INFO Admin command
-  Add virtio Admin virtqueue
-  Add miscellaneous configuration structure for PCI
-
- admin.tex        | 177 +++++++++++++++++++++++++++++++++++++++++++++++
- conformance.tex  |   3 +
- content.tex      |  33 ++++++++-
- introduction.tex |  20 ++++++
- 4 files changed, 231 insertions(+), 2 deletions(-)
- create mode 100644 admin.tex
-
+diff --git a/introduction.tex b/introduction.tex
+index 6d52717..8e6611e 100644
+--- a/introduction.tex
++++ b/introduction.tex
+@@ -240,5 +240,23 @@ \section{Constant Specifications}
+ refer to values 1 and 2 of Fld respectively. Further, VIRTIO_FLD_XXX refers to
+ either VIRTIO_FLD_A or VIRTIO_FLD_B.
+ 
++\section{Definitions}\label{sec:Introduction / Definitions}
++
++\subsection{virtio device}\label{sec:Introduction / Definitions / virtio device}
++
++An entity that implements virtio specification.
++
++\subsection{virtio subsystem}\label{sec:Introduction / Definitions / virtio subsystem}
++
++A virtio subsystem includes one or more virtio devices.
++Each virtio subsystem has a unique virtio qualified name (VQN) that is permanent for the lifetime of the virtio subsystem.
++The VQN is a 128-bit UUID. It is RECOMMENDED to use UUIDs as specified by \hyperref[intro:rfc4122]{[RFC4122]}.
++Virtio devices within one virtio subsystem share the same VQN. Each virtio device has a unique virtio
++device id (vdev_id) within a virtio subsystem. A valid vdev_id is a 64-bit field in the range of
++0x0 - 0xFFFFFFFFFFFFFFF0. Vdev_id 0xFFFFFFFFFFFFFFFF is a broadcast value that is used to specify all the
++virtio devices in a virtio subsystem and isn't a valid vdev_id.
++
++The vdev_id value when combined with the VQN forms a globally unique value that identifies the virtio device.
++
+ \newpage
+ 
 -- 
 2.21.0
 
