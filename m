@@ -1,8 +1,8 @@
 Return-Path: <mgurtovoy@nvidia.com>
 From: Max Gurtovoy <mgurtovoy@nvidia.com>
-Subject: [PATCH v1 3/5] Introduce DEVICE INFO Admin command
-Date: Wed, 2 Mar 2022 17:56:06 +0200
-Message-ID: <20220302155608.24189-4-mgurtovoy@nvidia.com>
+Subject: [PATCH v1 4/5] Add virtio Admin virtqueue
+Date: Wed, 2 Mar 2022 17:56:07 +0200
+Message-ID: <20220302155608.24189-5-mgurtovoy@nvidia.com>
 In-Reply-To: <20220302155608.24189-1-mgurtovoy@nvidia.com>
 References: <20220302155608.24189-1-mgurtovoy@nvidia.com>
 MIME-Version: 1.0
@@ -11,72 +11,97 @@ To: virtio-comment@lists.oasis-open.org, mst@redhat.com, cohuck@redhat.com, virt
 Cc: parav@nvidia.com, shahafs@nvidia.com, oren@nvidia.com, stefanha@redhat.com, Max Gurtovoy <mgurtovoy@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-The DEVICE INFO command will return a basic information for a virtio
-device.
+In one of the many use cases a user wants to manipulate features and
+configuration of the virtio devices regardless of the device type
+(net/block/console). Some of this configuration is generic enough. i.e
+Number of MSI-X vectors of a virtio PCI VF device. There is a need to do
+such features query and manipulation by its parent PCI PF. For that the
+Admin Command Set introduced. The Admin virtqueue will be the first
+management interface to issue Admin commands.
+
+Currently virtio specification defines control virtqueue to manipulate
+features and configuration of the device it operates on. However,
+control virtqueue commands are device type specific, which makes it very
+difficult to extend for device agnostic commands.
+
+To support this requirement in elegant way, this patch introduces a new
+admin virtqueue interface.
+
+Manipulate features via admin virtqueue is asynchronous, scalable, easy
+to extend and doesn't require additional and expensive on-die resources
+to be allocated for every new feature that will be added in the future.
 
 Reviewed-by: Parav Pandit <parav@nvidia.com>
 Signed-off-by: Max Gurtovoy <mgurtovoy@nvidia.com>
 ---
- admin.tex | 35 +++++++++++++++++++++++++++++++++--
- 1 file changed, 33 insertions(+), 2 deletions(-)
+ admin.tex       | 17 +++++++++++++++++
+ conformance.tex |  1 +
+ content.tex     |  6 ++++--
+ 3 files changed, 22 insertions(+), 2 deletions(-)
 
 diff --git a/admin.tex b/admin.tex
-index 1e30e01..9a8969b 100644
+index 9a8969b..ed9f6bd 100644
 --- a/admin.tex
 +++ b/admin.tex
-@@ -67,7 +67,9 @@ \section{Admin command set}\label{sec:Basic Facilities of a Virtio Device / Admi
- \hline
- 0001h   & VIRTIO_ADMIN_SUBSYSTEM_IDENTIFY    & O  \\
- \hline
--0002h - 7FFFh   & Generic admin cmds    & -  \\
-+0002h   & VIRTIO_ADMIN_DEVICE_INFO    & O  \\
-+\hline
-+0003h - 7FFFh   & Generic admin cmds    & -  \\
- \hline
- 8000h - FFFFh   & Reserved    & - \\
- \hline
-@@ -94,7 +96,8 @@ \subsection{VIRTIO ADMIN DEVICE IDENTIFY command}\label{sec:Basic Facilities of
-        /* This field indicates which of the below optional admin
-         * capabilities are supported by the device:
-         * Bit 0 - if set, VIRTIO_ADMIN_SUBSYSTEM_IDENTIFY supported
--        * Bits 1 - 63 - reserved for future capabilities.
-+        * Bit 1 - if set, VIRTIO_ADMIN_DEVICE_INFO supported
-+        * Bits 2 - 63 - reserved for future capabilities.
-         */
-        le64 optional_caps_support;
-        u8 reserved[4072];
-@@ -127,3 +130,31 @@ \subsection{VIRTIO ADMIN SUBSYSTEM IDENTIFY command}\label{sec:Basic Facilities
-        u8 reserved[4056];
- };
- \end{lstlisting}
+@@ -158,3 +158,20 @@ \subsection{VIRTIO ADMIN DEVICE INFO command}\label{sec:Basic Facilities of a Vi
+ specification and can't be equal to zero. If bit 0 is not set, the driver will ignore \field{vf_number}.}
+ \end{note}
+ 
++\section{Admin Virtqueues}\label{sec:Basic Facilities of a Virtio Device / Admin Virtqueues}
 +
-+\subsection{VIRTIO ADMIN DEVICE INFO command}\label{sec:Basic Facilities of a Virtio Device / Admin command set / VIRTIO ADMIN DEVICE INFO command}
++An admin virtqueue is a management interface of a device that can be used to send administrative
++commands to manipulate various features of the device and/or to manipulate
++various features, if possible, of another device within the same virtio subsystem
++(see \ref{sec:Introduction / Definitions / virtio subsystem}).
 +
-+The VIRTIO_ADMIN_DEVICE_INFO command has no command specific data set by the driver.
-+The \field{command} is set to VIRTIO_ADMIN_DEVICE_INFO.
++An admin virtqueue exists for a certain device if VIRTIO_F_ADMIN_VQ is
++negotiated. The index of the admin virtqueue is exposed by the device in a
++transport specific manner.
 +
-+The VIRTIO_ADMIN_DEVICE_INFO upon success, returns a data buffer that describes a basic information for the target virtio device.
-+Upon success, the returned data buffer is of form:
-+\begin{lstlisting}
-+struct virtio_admin_device_info_result {
-+        /* For compatibility - indicates which of the below fields were returned
-+         * (1 means that field was returned):
-+         * Bit 0 - vf_number
-+         * Bits 1 - 63 - reserved for future fields
-+         */
-+        le64 attrs_mask;
-+        /* The virtual function number */
-+        le16 vf_number;
-+        u8 reserved[1014];
-+};
-+\end{lstlisting}
++If VIRTIO_F_ADMIN_VQ has been negotiated, the driver will use the admin virtqueue to send all admin commands.
 +
-+\begin{note}
-+{Bit 0 in \field{attrs_mask} will be set only if the target virtio device represents a PCI Virtual function.
-+In this case, the \field{vf_number} value can't be greater than TotalVFs value as defined in the PCI
-+specification and can't be equal to zero. If bit 0 is not set, the driver will ignore \field{vf_number}.}
-+\end{note}
++\devicenormative{\subsection}{Admin Virtqueues}{Basic Facilities of a Virtio Device / Admin Virtqueues}
++A device that advertises VIRTIO_F_ADMIN_VQ capability MUST support all the mandatory admin commands.
 +
++A device that advertises VIRTIO_F_ADMIN_VQ capability MAY support one or more optional admin commands.
+diff --git a/conformance.tex b/conformance.tex
+index 42f8537..129831c 100644
+--- a/conformance.tex
++++ b/conformance.tex
+@@ -341,6 +341,7 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
+ \item \ref{devicenormative:Basic Facilities of a Virtio Device / Virtqueues / Available Buffer Notification Suppression}
+ \item \ref{devicenormative:Basic Facilities of a Virtio Device / Shared Memory Regions}
+ \item \ref{devicenormative:Reserved Feature Bits}
++\item \ref{devicenormative:Basic Facilities of a Virtio Device / Admin Virtqueues}
+ \end{itemize}
+ 
+ \conformance{\subsection}{PCI Device Conformance}\label{sec:Conformance / Device Conformance / PCI Device Conformance}
+diff --git a/content.tex b/content.tex
+index 2e1df84..163cb34 100644
+--- a/content.tex
++++ b/content.tex
+@@ -99,10 +99,10 @@ \section{Feature Bits}\label{sec:Basic Facilities of a Virtio Device / Feature B
+ \begin{description}
+ \item[0 to 23, and 50 to 127] Feature bits for the specific device type
+ 
+-\item[24 to 40] Feature bits reserved for extensions to the queue and
++\item[24 to 41] Feature bits reserved for extensions to the queue and
+   feature negotiation mechanisms
+ 
+-\item[41 to 49, and 128 and above] Feature bits reserved for future extensions.
++\item[42 to 49, and 128 and above] Feature bits reserved for future extensions.
+ \end{description}
+ 
+ \begin{note}
+@@ -6849,6 +6849,8 @@ \chapter{Reserved Feature Bits}\label{sec:Reserved Feature Bits}
+   that the driver can reset a queue individually.
+   See \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Reset}.
+ 
++  \item[VIRTIO_F_ADMIN_VQ (41)] This feature indicates that an administration virtqueue is supported.
++
+ \end{description}
+ 
+ \drivernormative{\section}{Reserved Feature Bits}{Reserved Feature Bits}
 -- 
 2.21.0
 
