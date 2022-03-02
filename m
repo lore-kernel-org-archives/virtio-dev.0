@@ -1,235 +1,135 @@
-Return-Path: <mgurtovoy@nvidia.com>
-Message-ID: <f5b9414b-cbb5-1f61-3528-62c901317841@nvidia.com>
-Date: Sun, 27 Mar 2022 18:40:15 +0300
-Subject: Re: [virtio-comment] Re: [PATCH v1 0/5] Introduce virtio subsystem
- and Admin virtqueue
-References: <20220302155608.24189-1-mgurtovoy@nvidia.com>
- <20220309024115-mutt-send-email-mst@kernel.org>
- <5ba012be-cd17-e6b8-547d-01a8adaa22fd@nvidia.com>
- <20220310072743-mutt-send-email-mst@kernel.org>
- <fdbcd6d4-5b2b-dacd-f60f-b3ec4e354fa4@nvidia.com>
- <20220320172826-mutt-send-email-mst@kernel.org>
+Return-Path: <virtio-comment-return-2779-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-comment@lists.oasis-open.org>
+List-Post: <mailto:virtio-comment@lists.oasis-open.org>
+List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
 From: Max Gurtovoy <mgurtovoy@nvidia.com>
-In-Reply-To: <20220320172826-mutt-send-email-mst@kernel.org>
+Date: Wed, 2 Mar 2022 18:02:36 +0200
+Message-ID: <20220302160237.26742-1-mgurtovoy@nvidia.com>
 MIME-Version: 1.0
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: virtio-comment@lists.oasis-open.org, cohuck@redhat.com, virtio-dev@lists.oasis-open.org, jasowang@redhat.com, parav@nvidia.com, shahafs@nvidia.com, oren@nvidia.com, stefanha@redhat.com, Tziporet Koren <tziporet@nvidia.com>
+Subject: [virtio-comment] [PATCH v4 0/1] VIRTIO: Introduce MGMT device and Provision maximum MSI-X vectors for a VF
+Content-Type: text/plain
+To: virtio-comment@lists.oasis-open.org, mst@redhat.com, cohuck@redhat.com, virtio-dev@lists.oasis-open.org, jasowang@redhat.com
+Cc: parav@nvidia.com, shahafs@nvidia.com, oren@nvidia.com, stefanha@redhat.com, Max Gurtovoy <mgurtovoy@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+Hi,
 
-On 3/20/2022 11:41 PM, Michael S. Tsirkin wrote:
-> On Thu, Mar 10, 2022 at 03:08:54PM +0200, Max Gurtovoy wrote:
->> On 3/10/2022 2:49 PM, Michael S. Tsirkin wrote:
->>> On Thu, Mar 10, 2022 at 12:38:38PM +0200, Max Gurtovoy wrote:
->>>> On 3/9/2022 9:42 AM, Michael S. Tsirkin wrote:
->>>>> On Wed, Mar 02, 2022 at 05:56:03PM +0200, Max Gurtovoy wrote:
->>>>>> Hi,
->>>>>> A virtio subsystem definition will help extending the virtio specefication for
->>>>>> various future features that require a notion of grouping devices together or
->>>>>> managing devices inside a group. It also might be used splitting or sharing a
->>>>>> single virtio backend between multiple devices (e.g. Multipath IO for virtio-blk
->>>>>> devices). A virtio subsystem include one or more virtio devices.
->>>>> A large patch, need a bit more time for review. Meanwhile,
->>>>> how about adding migration related capabilities?
->>>>> I would very much like that to make progress before
->>>>> people start using high overhead solutions like
->>>>> VQ shadowing.
->>>> Sure I can start working on rebasing old LM proposal to virtio subsystem
->>>> framework.
->>>>
->>>> But can you be precise for what you mean capabilities ? only caps without
->>>> the commands and LM logic ?
->>> There are at least four distinct bits, and they can be worked on mostly
->>> separately:
->>>
->>>
->>> 1.  We need a bunch of stuff to migrate a device to a different host right?
->>> - device specific state
->>> - transport state
->>> - vq ring state
->>> and of course we need
->>> - ability to stop/resume device
->>> This is useful by itself e.g. for snapshoting.
->>>
->>> Then to reduce downtime we also need to run device during memory
->>> migration, which requires support for
->>>
->>> 2. page faults (postcopy) and optionally
->>> 3. dirty tracking (precopy) - though dirty tracking can be done
->>> with faults too, so maybe just faults.
->>> Faults are definitely useful for a bunch of stuff like memory migration.
->>> Dirty tracking is more of a boutique feature, but I guess uses
->>> beyond memory migration can still be found.
->>>
->>> 4.  Finally, feature compatibility is a problem: not any configuration of a
->>> device can be migrated to any other device. A simplest example is a
->>> device feature not present on destination. Can be solved by not exposing
->>> the feature to the guest. Another example is layout of pci configuration
->>> space. Spec allows a lot of flexibility here, however things like
->>> # of VQs will affect the memory bar size.
->>> I am not exactly sure what we want to do in this space, maybe for
->>> starters enumerating what are the things that need to match on source
->>> and destination?
->>> We can start with a non-normative sections describing the issues
->>> generally at least.
->> MST,
->>
->> I really like us to push these 5 patches before we deep dive to LM stuff.
->>
->> This was our plan we agreed together - push infrastructure with relatively
->> small feature (we choose MSIX management) to the spec.
->>
->> This infrastructure should fit for future features such as: VQ management,
->> LM management and more.
->>
->> I think it does. Now the TG need to review and agree.
->>
->> If we'll start talking about LM during this series review we will end up
->> again with nothing merged to the spec and waste more precious time.
-> I am not sure that last sentence is true. Or to be more precise,
-> yes it's possible that the fastest way to merge admin queue
-> proposal is to avoid making sure it solves live migration, but
-> admin queue is not an end by itself.
+In a PCI SR-IOV configuration, MSI-X vectors of the device is precious
+device resource. Hence making efficient use of it based on the use case
+that aligns to the VM configuration is desired for best system
+performance.
 
-Not by itself, of course. We use it for other features such as MSIX 
-configuration (that I posted in the TG mailing list several months ago), 
-remember ?
+For example, today's static assignment of the amount of MSI-X vectors
+doesn't allow sophisticated utilization of resources.
 
-And it can be extended to other features by other members as well as 
-soon as we'll merge it.
+A typical cloud provider SR-IOV use case is to create many VFs for
+use by guest VMs. Each VM might have a different purpose and different
+amount of resources accordingly (e.g. number of CPUs). A common driver
+usage of device's MSI-X vectors is proportional to the number of CPUs in
+the VM. Since the system administrator might know the amount of CPUs in
+the requested VM, he can also configure the VF's MSI-X vectors amount
+proportional to the number of CPUs in the VM. In this way, the
+utilization of the physical hardware will be improved.
 
->
->> So I'm taking the bits above into account for the internal LM work that I'm
->> preparing for the future (after we'll merge the current series).
->>
->> agreed ?
-> My advice is always to do work in the open and publish drafts of
-> the work even if it's not ready, but be very clear and open about
-> what is and what is not ready, including a TODO list in the
-> commit log. You can tag it RFC in subject and make it PATCH 6/5
-> so it's clear to people that it's a POC and not a final patch.
-> In particular it will be helpful to show that admin queue is
-> actually a good fit for this purpose.
+Today we have some operating systems that support provisioning MSI-X
+vectors for PCI VFs.
 
-We already agreed that admin queue is a good fit. You said it in your 
-own words.
+Update the specification to have a method to change the number of MSI-X
+vectors supported by a VF using the PF admin virtqueue interface. For that,
+we have created a generic admin infrastructure. In this series we extended
+it to manage PCI resources of the managed VF by its parent PF.
 
-I would like us to continue our initial plan that you proposed and that 
-we build a plan of records according to it.
+For that, introduce a new definition of a Management device and a Manged device.
+In the future more resources would be provisioned using this mechanism.
 
-Changing strategy in V5 is not something we should do.
+The admin virtqueue interface and the virtio subsystem were introduced in
+"Introduce virtio subsystem and Admin virtqueue" series in [1].
+This series extend the admin command set for management capabilities.
 
-Lets stick to the original plan please.
+Open issues:
+1.  Should we have command to reset all VFs vectors to zero before enabling SR-IOV? Yes/No.
+    If yes, is this optimization command must in current series? Or it can be added later?
 
-Any comments for this series ? Cornelia/Jason ? or can we merge it as-is ?
+[1] https://lists.oasis-open.org/archives/virtio-comment/202203/msg00005.html
 
->
->
->>>
->>>
->>>> Initial feedback will be great for this series since every rebase cost a
->>>> lot... and it grows if we add more caps and logic.
->>>>
->>>>>> Also introduce the admin facility to allow manipulating features and configurations
->>>>>> in a generic manner. Using the admin command set, one can manipulate the device itself
->>>>>> and/or to manipulate, if possible, another device within the same virtio subsystem (the
->>>>>> following patch set).
->>>>>>
->>>>>> The admin virtqueue is the first management interface to issue Admin commands from
->>>>>> the admin command set.
->>>>>>
->>>>>> The admin virtqueue interface will be extended in the future with more and more
->>>>>> features that some of them already in discussions. Some of these features don't
->>>>>> fit to MMIO/config_space characteristics, therefore a queue is selected to address
->>>>>> admin commands.
->>>>>>
->>>>>> Motivation for choosing admin queue:
->>>>>> 1. It is anticipated that admin queue will be used for managing and configuring
->>>>>>       many different type of resources. For example,
->>>>>>       a. PCI PF configuring PCI VF attributes.
->>>>>>       b. virtio device creating/destroying/configuring subfunctions discussed in [1]
->>>>>>       c. composing device config space of VF or SF such as mac address, number of VQs, virtio features
->>>>>>
->>>>>>       Mapping all of them as configuration registers to MMIO will require large MMIO space,
->>>>>>       if done for each VF/SF. Such MMIO implementation in physical devices such as PCI PF and VF
->>>>>>       requires on-chip resources to complete within MMIO access latencies. Such resources are very
->>>>>>       expensive.
->>>>>>
->>>>>> 2. Such limitation can be overcome by having smaller MMIO register set to build
->>>>>>       a command request response interface. However, such MMIO based command interface
->>>>>>       will be limited to serve single outstanding command execution. Such limitation can
->>>>>>       resulting in high device creation and composing time which can affect VM startup time.
->>>>>>       Often device can queue and service multiple commands in parallel, such command interface
->>>>>>       cannot use parallelism offered by the device.
->>>>>>
->>>>>> 3. When a command wants to DMA data from one or more physical addresses, for example in the future a
->>>>>>       live migration command may need to fetch device state consist of config space, tens of
->>>>>>       VQs state, VLAN and MAC table, per VQ partial outstanding block IO list database and more.
->>>>>>       Packing one or more DMA addresses over new command interface will be burden some and continue
->>>>>>       to suffer single outstanding command execution latencies. Such limitation is not good for time
->>>>>>       sensitive live migration use cases.
->>>>>>
->>>>>> 4. A virtio queue overcomes all the above limitations. It also supports DMA and multiple outstanding
->>>>>>       descriptors. Similar mechanism exist today for device specific configuration - the control VQ.
->>>>>>
->>>>>> [1] https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Flists.oasis-open.org%2Farchives%2Fvirtio-comment%2F202108%2Fmsg00025.html&amp;data=04%7C01%7Cmgurtovoy%40nvidia.com%7Cf061ce52d05b4d41f26508da0aba6bfa%7C43083d15727340c1b7db39efd9ccc17a%7C0%7C0%7C637834093644643841%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000&amp;sdata=%2BPEha9meUnHSg1fiwm7Z7Pv6UgvCLeLka3A2THirvt8%3D&amp;reserved=0
->>>>>>
->>>>>> This series was extended and splitted from the V3 of the "VIRTIO: Provision maximum MSI-X vectors for a VF".
->>>>>> This series include the comments and fixes from V1-V3 of the initial patch set from above.
->>>>>> The following series introduce the management devices and MSI-X configuration of virtio devices.
->>>>>>
->>>>>> Open issues:
->>>>>> 1. CCW and MMIO specification for admin_queue_index register
->>>>>>
->>>>>> Max Gurtovoy (5):
->>>>>>      virtio: Introduce virtio subsystem
->>>>>>      Introduce Admin Command Set
->>>>>>      Introduce DEVICE INFO Admin command
->>>>>>      Add virtio Admin virtqueue
->>>>>>      Add miscellaneous configuration structure for PCI
->>>>>>
->>>>>>     admin.tex        | 177 +++++++++++++++++++++++++++++++++++++++++++++++
->>>>>>     conformance.tex  |   3 +
->>>>>>     content.tex      |  33 ++++++++-
->>>>>>     introduction.tex |  20 ++++++
->>>>>>     4 files changed, 231 insertions(+), 2 deletions(-)
->>>>>>     create mode 100644 admin.tex
->>>>>>
->>>>>> -- 
->>>>>> 2.21.0
->> This publicly archived list offers a means to provide input to the
->> OASIS Virtual I/O Device (VIRTIO) TC.
->>
->> In order to verify user consent to the Feedback License terms and
->> to minimize spam in the list archive, subscription is required
->> before posting.
->>
->> Subscribe: virtio-comment-subscribe@lists.oasis-open.org
->> Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
->> List help: virtio-comment-help@lists.oasis-open.org
->> List archive: https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Flists.oasis-open.org%2Farchives%2Fvirtio-comment%2F&amp;data=04%7C01%7Cmgurtovoy%40nvidia.com%7Cf061ce52d05b4d41f26508da0aba6bfa%7C43083d15727340c1b7db39efd9ccc17a%7C0%7C0%7C637834093644643841%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000&amp;sdata=HaslbICc4GrV%2FesN2KO%2BsA12Gif%2Fbmi0%2BSzkLXPJvFU%3D&amp;reserved=0
->> Feedback License: https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.oasis-open.org%2Fwho%2Fipr%2Ffeedback_license.pdf&amp;data=04%7C01%7Cmgurtovoy%40nvidia.com%7Cf061ce52d05b4d41f26508da0aba6bfa%7C43083d15727340c1b7db39efd9ccc17a%7C0%7C0%7C637834093644643841%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000&amp;sdata=R2lnpEmQ3nfDXQOYkRzkdzitviwOLEuhYDMQKkchaOc%3D&amp;reserved=0
->> List Guidelines: https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.oasis-open.org%2Fpolicies-guidelines%2Fmailing-lists&amp;data=04%7C01%7Cmgurtovoy%40nvidia.com%7Cf061ce52d05b4d41f26508da0aba6bfa%7C43083d15727340c1b7db39efd9ccc17a%7C0%7C0%7C637834093644643841%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000&amp;sdata=Uc8pPeEvC7m2Afui8b8%2Fxk0J5bUlFSsjZ3Jsr%2BQsBY0%3D&amp;reserved=0
->> Committee: https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.oasis-open.org%2Fcommittees%2Fvirtio%2F&amp;data=04%7C01%7Cmgurtovoy%40nvidia.com%7Cf061ce52d05b4d41f26508da0aba6bfa%7C43083d15727340c1b7db39efd9ccc17a%7C0%7C0%7C637834093644643841%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000&amp;sdata=TCrF3rJ2I94Zgevi4DaTeI2mO%2FL69CarkYs11UgaNRg%3D&amp;reserved=0
->> Join OASIS: https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.oasis-open.org%2Fjoin%2F&amp;data=04%7C01%7Cmgurtovoy%40nvidia.com%7Cf061ce52d05b4d41f26508da0aba6bfa%7C43083d15727340c1b7db39efd9ccc17a%7C0%7C0%7C637834093644643841%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000&amp;sdata=Jkph2NA2cZKAvPmj0zcgypu%2BtwI0yVH%2Bpo4G8ndmAKc%3D&amp;reserved=0
->
-> This publicly archived list offers a means to provide input to the
-> OASIS Virtual I/O Device (VIRTIO) TC.
->
-> In order to verify user consent to the Feedback License terms and
-> to minimize spam in the list archive, subscription is required
-> before posting.
->
-> Subscribe: virtio-comment-subscribe@lists.oasis-open.org
-> Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
-> List help: virtio-comment-help@lists.oasis-open.org
-> List archive: https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Flists.oasis-open.org%2Farchives%2Fvirtio-comment%2F&amp;data=04%7C01%7Cmgurtovoy%40nvidia.com%7Cf061ce52d05b4d41f26508da0aba6bfa%7C43083d15727340c1b7db39efd9ccc17a%7C0%7C0%7C637834093644643841%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000&amp;sdata=HaslbICc4GrV%2FesN2KO%2BsA12Gif%2Fbmi0%2BSzkLXPJvFU%3D&amp;reserved=0
-> Feedback License: https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.oasis-open.org%2Fwho%2Fipr%2Ffeedback_license.pdf&amp;data=04%7C01%7Cmgurtovoy%40nvidia.com%7Cf061ce52d05b4d41f26508da0aba6bfa%7C43083d15727340c1b7db39efd9ccc17a%7C0%7C0%7C637834093644643841%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000&amp;sdata=R2lnpEmQ3nfDXQOYkRzkdzitviwOLEuhYDMQKkchaOc%3D&amp;reserved=0
-> List Guidelines: https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.oasis-open.org%2Fpolicies-guidelines%2Fmailing-lists&amp;data=04%7C01%7Cmgurtovoy%40nvidia.com%7Cf061ce52d05b4d41f26508da0aba6bfa%7C43083d15727340c1b7db39efd9ccc17a%7C0%7C0%7C637834093644643841%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000&amp;sdata=Uc8pPeEvC7m2Afui8b8%2Fxk0J5bUlFSsjZ3Jsr%2BQsBY0%3D&amp;reserved=0
-> Committee: https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.oasis-open.org%2Fcommittees%2Fvirtio%2F&amp;data=04%7C01%7Cmgurtovoy%40nvidia.com%7Cf061ce52d05b4d41f26508da0aba6bfa%7C43083d15727340c1b7db39efd9ccc17a%7C0%7C0%7C637834093644643841%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000&amp;sdata=TCrF3rJ2I94Zgevi4DaTeI2mO%2FL69CarkYs11UgaNRg%3D&amp;reserved=0
-> Join OASIS: https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.oasis-open.org%2Fjoin%2F&amp;data=04%7C01%7Cmgurtovoy%40nvidia.com%7Cf061ce52d05b4d41f26508da0aba6bfa%7C43083d15727340c1b7db39efd9ccc17a%7C0%7C0%7C637834093644643841%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000&amp;sdata=Jkph2NA2cZKAvPmj0zcgypu%2BtwI0yVH%2Bpo4G8ndmAKc%3D&amp;reserved=0
->
+---
+
+changes from V3:
+
+ - split the seties to 2 parts (virtio subsystem and admin + MSIX configuration and management device)
+
+changes from V2:
+
+1. Addressed below comments from Jason:
+ - split admin virtqueue section from admin command set section
+ - added device management section in "Basic Facilities of a Virtio Device"
+ - mention that management interface may be admin virtqueue (but not a must)
+ - add MSI-X configuration sequence
+
+2. Addressed below comments from MST:
+ - added conformance sections
+ - use decimal instead of hex for bit numbering
+ - remove the OOO definitions for AQ
+ - explain more about default configuration of MSI-X for VFs
+
+3. Addressed below comments from Cornelia:
+ - reword AQ index definitions
+ - introduce misc config for PCI transport
+
+4. added vfs_assigned_msix_count attr to VIRTIO_ADMIN_PCI_SRIOV_ATTRS cmd
+
+5. removed the net/blk AQ index definitions (not needed in the new model)
+
+6. rebased on top of master branch commit 88895f56e642aca ("Reserve more feature bits for device type usage")
+
+changes from V1:
+
+1. Addressed below comments from MST:
+ - updated cover letter for admin queue motivation
+ - removed VIRTIO_F_ADMIN_PCI_VIRT_MANAGER
+ - simplified admin queue interface by removing 
+   VIRTIO_F_ADMIN_VQ_INDIRECT_DESC/VIRTIO_F_ADMIN_VQ_IN_ORDER feature bits
+ - added a subsection for VF MSI-X control capability in PCI section
+ - re-designed interrupt vector management admin commands
+ - added a mandatory admin command to expose admin capabilities
+ - improved commit messages
+ - described error code for unsupported command
+ - described error code for errors on invalid VF
+ - described system software requirements for supporting MSI-X configuration
+
+2. Addressed comments from Parav
+ - extended command opcode to 16-bit
+ - improve commit messages
+
+3. Added more command specific error codes
+
+Max Gurtovoy (1):
+  Introduce MGMT Admin commands
+
+ admin.tex        | 205 +++++++++++++++++++++++++++++++++++++++++++++--
+ content.tex      |  88 ++++++++++++++++++++
+ introduction.tex |  25 ++++++
+ 3 files changed, 310 insertions(+), 8 deletions(-)
+
+-- 
+2.21.0
+
+
+This publicly archived list offers a means to provide input to the
+OASIS Virtual I/O Device (VIRTIO) TC.
+
+In order to verify user consent to the Feedback License terms and
+to minimize spam in the list archive, subscription is required
+before posting.
+
+Subscribe: virtio-comment-subscribe@lists.oasis-open.org
+Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
+List help: virtio-comment-help@lists.oasis-open.org
+List archive: https://lists.oasis-open.org/archives/virtio-comment/
+Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
+List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
+Committee: https://www.oasis-open.org/committees/virtio/
+Join OASIS: https://www.oasis-open.org/join/
 
