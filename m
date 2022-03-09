@@ -1,14 +1,14 @@
-Return-Path: <virtio-dev-return-9352-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-9354-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 0849598650D
-	for <virtio-dev@lists.oasis-open.org>; Tue,  8 Mar 2022 08:29:39 +0000 (UTC)
-Message-ID: <1646727996.1146605-2-xuanzhuo@linux.alibaba.com>
-Date: Tue, 8 Mar 2022 16:26:36 +0800
+	by lists.oasis-open.org (Postfix) with ESMTP id D062898658A
+	for <virtio-dev@lists.oasis-open.org>; Wed,  9 Mar 2022 03:53:06 +0000 (UTC)
+Message-ID: <1646797809.0498495-1-xuanzhuo@linux.alibaba.com>
+Date: Wed, 9 Mar 2022 11:50:09 +0800
 From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 References: <20220302085217.16546-1-xuanzhuo@linux.alibaba.com>
  <fbb699b3-7f20-5acc-dd94-9a1164411e3c@redhat.com>
@@ -134,11 +134,13 @@ ice.
 > But then I wonder if it would be simpler to just use fixed length and
 > just extend the types.
 
-Yes, we can require that the length value must be the size of stats, which =
-would
-be simpler. Extend the new stats types in the future with the new types.
 
-I think it's ok.
+If we decide to extend the new stats by adding a new type, even if we just =
+add a
+new counter to a current stats structure, we also add a new type. Then we c=
+an
+delete the length directly. Because type and the return stats must correspo=
+nd.
 
 Thanks.
 
