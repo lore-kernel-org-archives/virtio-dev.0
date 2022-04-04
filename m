@@ -1,76 +1,126 @@
-Return-Path: <mst@redhat.com>
-Date: Thu, 7 Apr 2022 10:58:09 -0400
+Return-Path: <virtio-dev-return-9380-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id 1B930986281
+	for <virtio-dev@lists.oasis-open.org>; Mon,  4 Apr 2022 12:03:17 +0000 (UTC)
+Date: Mon, 4 Apr 2022 08:03:07 -0400
 From: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: Re: [virtio-comment] Re: [virtio] [PATCH] virtio: clarify feature
- negotiation
-Message-ID: <20220407105734-mutt-send-email-mst@kernel.org>
-References: <20220114225032.290762-1-mst@redhat.com>
- <20220119132319.5ee3821d.pasic@linux.ibm.com>
- <20220119112059-mutt-send-email-mst@kernel.org>
- <87k0eud0bi.fsf@redhat.com>
- <20220121033806.70b55223.pasic@linux.ibm.com>
- <87r191krbg.fsf@redhat.com>
- <20220124174052.1b6b423e.pasic@linux.ibm.com>
- <20220124132837-mutt-send-email-mst@kernel.org>
- <YfET8pNaYoWZ6eFt@myrica>
- <87lewharyk.fsf@redhat.com>
+Message-ID: <20220404072833-mutt-send-email-mst@kernel.org>
+References: <20220302155608.24189-1-mgurtovoy@nvidia.com>
+ <20220302155608.24189-2-mgurtovoy@nvidia.com>
 MIME-Version: 1.0
-In-Reply-To: <87lewharyk.fsf@redhat.com>
+In-Reply-To: <20220302155608.24189-2-mgurtovoy@nvidia.com>
+Subject: [virtio-dev] Re: [PATCH v1 1/5] virtio: Introduce virtio subsystem
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-To: Cornelia Huck <cohuck@redhat.com>
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, Halil Pasic <pasic@linux.ibm.com>, virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, virtio@lists.oasis-open.org, Viresh Kumar <viresh.kumar@linaro.org>
+To: Max Gurtovoy <mgurtovoy@nvidia.com>
+Cc: virtio-comment@lists.oasis-open.org, cohuck@redhat.com, virtio-dev@lists.oasis-open.org, jasowang@redhat.com, parav@nvidia.com, shahafs@nvidia.com, oren@nvidia.com, stefanha@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Thu, Apr 07, 2022 at 04:28:03PM +0200, Cornelia Huck wrote:
-> [sorry about resurrecting an undead thread; I'm trying to collect some
-> editorial changes]
+On Wed, Mar 02, 2022 at 05:56:04PM +0200, Max Gurtovoy wrote:
+> A virtio subsystem may contain one or more virtio devices. All of the
+> devices that make up a virtio subsystem share the same virtio subsystem
+> unique identifier. This identifier is the virtio qualified name (VQN).
+> Each device within a virtio subsystem has a unique identifier. This
+> identifier is the virtio device id (vdev_id). The combination of these
+> identifiers forms a globally unique value identifies a virtio device.
 > 
-> On Wed, Jan 26 2022, Jean-Philippe Brucker <jean-philippe@linaro.org> wrote:
-> 
-> > On Mon, Jan 24, 2022 at 04:42:35PM -0500, Michael S. Tsirkin wrote:
-> >> So from that point of view, we are actually relaxing the requirements,
-> >> and yes we'll need to carefully go over each instance of
-> >> "offered".
-> >> I thought I did, but now I did a quick grep again and I found instances
-> >> in virtio-iommu.tex and virtio-gpio.tex
-> >> Both of these are new, so I think we can just fix them to "negotiated".
-> >> 
-> >> Jean-Philippe, Viresh, what do you think? Would it be a problem to
-> >> replace offered with negotiated, and restrict iommu and gpio drivers to
-> >> access config space after FEATURES_OK?
-> >
-> > No problem for iommu. The config space fields domain_range and input_range
-> > are not useful to the driver before DRIVER_OK. Reading field bypass
-> > earlier could be useful for debugging, but in that case going a few more
-> > steps into device initialization wouldn't hurt.
-> 
-> For domain_range and input_range, offered->negotiated looks like the
-> right thing to do. However, I'm a bit unsure about bypass. We currently
-> have:
-> 
-> "
-> An endpoint is in bypass mode if:
-> \begin{itemize}
->   \item the VIRTIO_IOMMU_F_BYPASS_CONFIG feature is offered and:
->     \begin{itemize}
->       \item config field \field{bypass} is 1 and the endpoint is
->         not attached to a domain. This applies even if the driver
->         does not accept the VIRTIO_IOMMU_F_BYPASS_CONFIG feature
->         and the device initializes field \field{bypass} to 1.
-> 
->         or
->       \item the endpoint is attached to a domain with
->         VIRTIO_IOMMU_ATTACH_F_BYPASS.
->     \end{itemize}
-> "
-> 
-> The "This applies even if..." clause refers to "offered, but not
-> accepted". I assume we want to do offered->negotiated even here, but
-> wanted to double-check.
+> Reviewed-by: Parav Pandit <parav@nvidia.com>
+> Signed-off-by: Max Gurtovoy <mgurtovoy@nvidia.com>
 
-Negotiated is same as accepted, I think it's good as is
+OK linux and qemu releases finally settling down so I have the time
+to review this, sorry about the delay.
 
--- 
-MST
+> ---
+>  introduction.tex | 18 ++++++++++++++++++
+>  1 file changed, 18 insertions(+)
+> 
+> diff --git a/introduction.tex b/introduction.tex
+> index 6d52717..8e6611e 100644
+> --- a/introduction.tex
+> +++ b/introduction.tex
+> @@ -240,5 +240,23 @@ \section{Constant Specifications}
+>  refer to values 1 and 2 of Fld respectively. Further, VIRTIO_FLD_XXX refers to
+>  either VIRTIO_FLD_A or VIRTIO_FLD_B.
+>  
+> +\section{Definitions}\label{sec:Introduction / Definitions}
+
+I think this belongs in Terminology section.
+
+> +
+> +\subsection{virtio device}\label{sec:Introduction / Definitions / virtio device}
+> +
+> +An entity that implements virtio specification.
+
+Applies to a driver equally ... if we are trying to explain it further,
+then I would say something along the lines of:
+
+virtio specifies an interface
+for a two-way communication between two parties called
+a device and a driver. driver is the party that initiates
+the communication setup and initialization.
+in common usage device is part of a hypervisor and driver part
+of a guest running within a VM on this hypervisor,
+but other uses are not precluded.
+
+
+> +\subsection{virtio subsystem}\label{sec:Introduction / Definitions / virtio subsystem}
+> +
+> +A virtio subsystem includes one or more virtio devices.
+> +Each virtio subsystem has a unique virtio qualified name (VQN) that is permanent for the lifetime of the virtio subsystem.
+
+the naming here is unfortunate. "subsystem" generally refers to
+something like a group of drivers within linux, and to a type of
+device in pci. VQN refers to a VQ number in the spec.
+
+I would suggest simply "device group".
+
+And please preface this with a bit of informal text explaining that
+sometimes it is useful to refer to a group of devices
+as a whole.
+
+
+> +The VQN is a 128-bit UUID. It is RECOMMENDED to use UUIDs as specified by \hyperref[intro:rfc4122]{[RFC4122]}.
+
+
+Do we really need the UUID at all? It is unique within which context?
+Can we split the UUID from this proposal?
+
+> +Virtio devices within one virtio subsystem share the same VQN.
+
+share in which sense? I don't see any way to retrieve the VQN from
+the device itself.
+
+> Each virtio device has a unique virtio
+> +device id (vdev_id) within a virtio subsystem. A valid vdev_id is a 64-bit field in the range of
+> +0x0 - 0xFFFFFFFFFFFFFFF0.
+
+are other values reserved?
+
+> Vdev_id 0xFFFFFFFFFFFFFFFF is a broadcast value that is used to specify all the
+> +virtio devices in a virtio subsystem and isn't a valid vdev_id.
+
+broadcast is a bit confusing. Just say "Vdev_id value 0xFFFFFFFFFFFFFFFF
+refers to all devices in a group".
+
+I think we should also add a special value meaning "this device itself".
+
+> +
+> +The vdev_id value when combined with the VQN forms a globally unique value that identifies the virtio device.
+> +
+>  \newpage
+
+
+
+> -- 
+> 2.21.0
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
