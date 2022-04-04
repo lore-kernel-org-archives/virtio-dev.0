@@ -1,43 +1,57 @@
-Return-Path: <virtio-return-3683-cohuck=redhat.com@lists.oasis-open.org>
-Sender: <virtio@lists.oasis-open.org>
-List-Post: <mailto:virtio@lists.oasis-open.org>
-List-Help: <mailto:virtio-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-From: Cornelia Huck <cohuck@redhat.com>
-In-Reply-To: <20220125122332.64473-1-mst@redhat.com>
-References: <20220125122332.64473-1-mst@redhat.com>
-Date: Wed, 13 Apr 2022 11:35:50 +0200
-Message-ID: <87lew99vgp.fsf@redhat.com>
+Return-Path: <virtio-dev-return-9378-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id 5D828986231
+	for <virtio-dev@lists.oasis-open.org>; Mon,  4 Apr 2022 10:06:14 +0000 (UTC)
+Date: Mon, 4 Apr 2022 11:06:08 +0100
+From: Stefan Hajnoczi <stefanha@redhat.com>
+Message-ID: <YkrDEMl+nxRJQFyr@stefanha-x1.localdomain>
+References: <20220330152659.3780600-1-usama.arif@bytedance.com>
+ <20220330152659.3780600-2-usama.arif@bytedance.com>
 MIME-Version: 1.0
-Subject: [virtio] Re: [virtio-dev] [PATCH] virtio-gpio: offered -> negotiated
-Content-Type: text/plain
-To: "Michael S. Tsirkin" <mst@redhat.com>, virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
-Cc: Viresh Kumar <viresh.kumar@linaro.org>, virtio@lists.oasis-open.org
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="H/YXl6ONCvcmSjoW"
+Content-Disposition: inline
+In-Reply-To: <20220330152659.3780600-2-usama.arif@bytedance.com>
+Subject: [virtio-dev] Re: [PATCH 1/4] content: Introduce driver/device auxiliary
+ notifications
+To: Usama Arif <usama.arif@bytedance.com>
+Cc: virtio-dev@lists.oasis-open.org, mst@redhat.com, ndragazis@arrikto.com, fam.zheng@bytedance.com, liangma@liangbit.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Tue, Jan 25 2022, "Michael S. Tsirkin" <mst@redhat.com> wrote:
+--H/YXl6ONCvcmSjoW
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-> virtqueues are only discovered after FEATURES_OK.
-> As such it makes no sense to talk about virtqueues being affected by
-> features which are offered but not negotiated, and doing so will confuse
-> the reader.
->
-> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> ---
->
-> Viresh, others your thoughts on this? Looks like an obvious typo
-> to me, and something that I think we can fix under the editorial
-> changes rule.
->
->  virtio-gpio.tex | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+On Wed, Mar 30, 2022 at 04:26:56PM +0100, Usama Arif wrote:
+> +Available buffer notifications and device auxiliary notifications
+> +are sent by the driver, the recipient is the device. Available buffer
+> +notifications indicate that a buffer may have been made available on the
+> +virtqueue designated by the notification; device auxiliary
+> +notifcations allow the driver to send notifcations other than available
 
-Pushed as editorial update.
+s/notifcations/notifications/
 
+Please spell-check these commits.
 
----------------------------------------------------------------------
-To unsubscribe from this mail list, you must leave the OASIS TC that 
-generates this mail.  Follow this link to all your TCs in OASIS at:
-https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
+--H/YXl6ONCvcmSjoW
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmJKwxAACgkQnKSrs4Gr
+c8h63Qf+Ok9dc+1WoB0zKyozpT7lb2IvhrzWkSlISO7cv8sUUSfP8KsDxUEObVOL
+TL/9KL2zvBXVWvsT+tgLqO+59B5LFN95/eU6Z1bt6Nep2aVWGHzpMdh+JzvvEq6T
+lwp+PjVuDiirtBLGiQkygRoAK+UqchmiuQN1+RrZoVEhmKV4mqGEbhyykq9RIKr1
+e/YYBKthFa0NK4pZIb5qwgwgu9UDuwB77q3KZV3GaUlqOwB2fcapv73wLFLKMILy
+UHTEL9+p0XswAWJE0KHdpDjqisMC08iyUz/ob1+cXKMtIYrQyupT9MHDHQc7HsJv
+M+4Lo89OcSu4M4Lc3dnen5ba/fnm3g==
+=zysz
+-----END PGP SIGNATURE-----
+
+--H/YXl6ONCvcmSjoW--
 
