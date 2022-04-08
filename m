@@ -1,86 +1,111 @@
-Return-Path: <virtio-dev-return-9507-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-9400-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id B79C89865ED
-	for <virtio-dev@lists.oasis-open.org>; Fri, 29 Apr 2022 02:45:36 +0000 (UTC)
-Message-ID: <2bde85b9-afda-a719-c9ca-360780748280@redhat.com>
-Date: Fri, 29 Apr 2022 10:45:28 +0800
+	by lists.oasis-open.org (Postfix) with ESMTP id 67EF5986522
+	for <virtio-dev@lists.oasis-open.org>; Fri,  8 Apr 2022 17:44:53 +0000 (UTC)
+From: Usama Arif <usama.arif@bytedance.com>
+Date: Fri,  8 Apr 2022 18:44:37 +0100
+Message-Id: <20220408174441.1002578-1-usama.arif@bytedance.com>
 MIME-Version: 1.0
-References: <20220424083131.72881-1-xuanzhuo@linux.alibaba.com>
-From: Jason Wang <jasowang@redhat.com>
-In-Reply-To: <20220424083131.72881-1-xuanzhuo@linux.alibaba.com>
-Subject: [virtio-dev] Re: [PATCH v5] virtio-net: support reset queue
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Subject: [virtio-dev] [PATCH v2 0/4] Introduce aux. notifications and virtio-vhost-user
 Content-Transfer-Encoding: quoted-printable
-To: Xuan Zhuo <xuanzhuo@linux.alibaba.com>, virtio-dev@lists.oasis-open.org
-Cc: "Michael S. Tsirkin" <mst@redhat.com>
+Content-Type: text/plain; charset="US-ASCII"; x-default=true
+To: virtio-dev@lists.oasis-open.org
+Cc: mst@redhat.com, stefanha@redhat.com, ndragazis@arrikto.com, fam.zheng@bytedance.com, liangma@liangbit.com, Usama Arif <usama.arif@bytedance.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+Hi,
 
-=E5=9C=A8 2022/4/24 16:31, Xuan Zhuo =E5=86=99=E9=81=93:
-> A separate reset queue function introduced by Virtqueue Reset.
->
-> However, it is currently not defined what to do if the destination queue =
-is
-> being reset when virtio-net is steering in multi-queue mode.
->
-> Fixes: https://github.com/oasis-tcs/virtio-spec/issues/138
-> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+This patch series introduces device and driver auxiliary notifications
+as a new set of virtio device resources, as well as vhost-user device
+backend that uses these resources.
+
+Driver auxiliary notifications allow the device to send notifications
+other than configuration changes and used buffer notifications to the
+driver, these are optional and their meaning is **device-specific**.
+
+Device auxiliary notifcations allow the driver to send notifcations
+other than available buffer notifications to the device for example
+through a device register, these are optional and their meaning is
+**device-specific**.
+
+These resources are used in the last patch by the virtio-vhost-user
+device in order to send/receive notifications to/from the driver
+regarding activity on the vhost-user virtqueues. By standardizing
+these resources as standalone virtio device resources, other future
+devices will be able to use them as well.
+
+The last patch introduces the vhost-user device backend which facilitates
+vhost-user device emulation through vhost-user protocol exchanges and
+access to shared memory. Software-defined networking, storage, and other
+I/O appliances can provide services through this device.
+
+This device is based on Wei Wang's vhost-pci work. The virtio-vhost-user
+device differs from vhost-pci because it is a single virtio
+device type that exposes the vhost-user protocol instead of a family of
+new virtio device types, one for each vhost-user device type.
+
+A HTML version with the changes is available at [1].
+
+For more information about virtio-vhost-user, see [2].
+
+These patches are based on the work initially done by Stefan Hajnoczi [2]
+and continued by Nikos Dragazis [3], [4].
+
+A working prototype implementing this spec can be reproduced using
+instructions in [5] utilizing work done on top of v6.2.50 QEMU [6] and
+22.03.0-rc4 DPDK [7].
+This is also based on the work initially done by Stefan
+and continued later by Nikos. The prototype code uses the terms
+"doorbell"/"device-specific notification" and "master"/"slave" instead of
+"device auxiliary notification"/"driver auxiliary notification" and
+"frontend"/"backend". This is based on older work, however, their
+functionality is the same. If these virtio-spec changes get approved,
+I will refractor the patches for QEMU/DPDK and send them for review
+according to the final patches in the respective mailing list.
+
+Thanks and looking forward to your response!
+Usama
+
+[1] https://uarif1.github.io/vvu/v2/virtio-v1.1-cs01
+[2] https://wiki.qemu.org/Features/VirtioVhostUser
+[3] https://ndragazis.github.io/dpdk-vhost-vvu-demo.html
+[4] https://lists.oasis-open.org/archives/virtio-dev/202005/msg00132.html
+[5] https://uarif1.github.io/vvu/dpdk-vvu-instructions
+[6] https://github.com/uarif1/qemu/tree/vvu
+[7] https://github.com/uarif1/dpdk/tree/vvu
+----------
+v1->v2:
+- Shortened device aux. notification section
+- Make data width of device aux. notifications device specific and not
+  limited to 2 bytes.
+- Added information about the minimum number of MSIX vectors.
+- Split virtio-mmio implementation of driver aux. notifications into 2
+  registers, DeviceAuxNotificationIndex and DeviceAuxNotificationData.
+- Made the shared memory section in virtio vhost-user clearer and added
+  the shared memory would look like when
+  VHOST_USER_PROTOCOL_F_CONFIGURE_MEM_SLOTS has been negotiated.
 
 
-Reviewed-by: Jason Wang <jasowang@redhat.com>
+Usama Arif (4):
+  content: Introduce driver/device auxiliary notifications
+  content: Introduce driver/device aux. notification cfg type for PCI
+  content: Introduce driver/device auxiliary notifications for MMIO
+  vhost-user: add vhost-user device type
 
+ conformance.tex       |  29 ++++-
+ content.tex           | 254 ++++++++++++++++++++++++++++++------
+ introduction.tex      |   3 +
+ virtio-vhost-user.tex | 294 ++++++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 539 insertions(+), 41 deletions(-)
+ create mode 100644 virtio-vhost-user.tex
 
-> ---
->   content.tex | 5 +++++
->   1 file changed, 5 insertions(+)
->
-> diff --git a/content.tex b/content.tex
-> index 060bdab..61c36e8 100644
-> --- a/content.tex
-> +++ b/content.tex
-> @@ -4337,6 +4337,10 @@ \subsubsection{Control Virtqueue}\label{sec:Device=
- Types / Network Device / Devi
->   \field{virtqueue_pairs} once it has placed the
->   VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET command in a used buffer.
->  =20
-> +If the destination receive queue is being reset (See \ref{sec:Basic Faci=
-lities of a Virtio Device / Virtqueues / Virtqueue Reset}),
-> +the device SHOULD re-select another random queue. If all receive queues =
-are
-> +being reset, the device MUST drop the packet.
-> +
->   \subparagraph{Legacy Interface: Automatic receive steering in multiqueu=
-e mode}\label{sec:Device Types / Network Device / Device Operation / Contro=
-l Virtqueue / Automatic receive steering in multiqueue mode / Legacy Interf=
-ace: Automatic receive steering in multiqueue mode}
->   When using the legacy interface, transitional devices and drivers
->   MUST format \field{virtqueue_pairs}
-> @@ -4425,6 +4429,7 @@ \subsubsection{Control Virtqueue}\label{sec:Device =
-Types / Network Device / Devi
->   \item Calculate the hash of the packet as defined in \ref{sec:Device Ty=
-pes / Network Device / Device Operation / Processing of Incoming Packets / =
-Hash calculation for incoming packets}.
->   \item If the device did not calculate the hash for the specific packet,=
- the device directs the packet to the receiveq specified by \field{unclassi=
-fied_queue} of virtio_net_rss_config structure (value of 0 corresponds to r=
-eceiveq1).
->   \item Apply \field{indirection_table_mask} to the calculated hash and u=
-se the result as the index in the indirection table to get 0-based number o=
-f destination receiveq (value of 0 corresponds to receiveq1).
-> +\item If the destination receive queue is being reset (See \ref{sec:Basi=
-c Facilities of a Virtio Device / Virtqueues / Virtqueue Reset}), the devic=
-e MUST drop the packet.
->   \end{itemize}
->  =20
->   \paragraph{Offloads State Configuration}\label{sec:Device Types / Netwo=
-rk Device / Device Operation / Control Virtqueue / Offloads State Configura=
-tion}
+--=20
+2.25.1
 
 
 ---------------------------------------------------------------------
