@@ -1,47 +1,49 @@
-Return-Path: <mst@redhat.com>
-Date: Wed, 20 Apr 2022 11:33:17 -0400
+Return-Path: <virtio-dev-return-9411-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id 6A12A986401
+	for <virtio-dev@lists.oasis-open.org>; Tue, 19 Apr 2022 15:54:31 +0000 (UTC)
+Date: Tue, 19 Apr 2022 11:54:24 -0400
 From: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: Re: [virtio-dev] [PATCH] fixupdiff: escape ^ caret
-Message-ID: <20220420100135-mutt-send-email-mst@kernel.org>
-References: <20220419163024.134007-1-mst@redhat.com>
- <87wnfj7w0v.fsf@redhat.com>
+Message-ID: <20220419155421.132831-1-mst@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <87wnfj7w0v.fsf@redhat.com>
+Subject: [virtio-dev] [PATCH] content.tex: drop space after \field
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-To: Cornelia Huck <cohuck@redhat.com>
-Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, virtio@lists.oasis-open.org
+To: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+Cc: virtio@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, Apr 20, 2022 at 02:57:04PM +0200, Cornelia Huck wrote:
-> On Tue, Apr 19 2022, "Michael S. Tsirkin" <mst@redhat.com> wrote:
-> 
-> > Since commit:
-> >
-> > commit 1e30753d53d222fbe955f0643583d756105d557e
-> > Author: Jan Kiszka <jan.kiszka@siemens.com>
-> > Date:   Fri Oct 11 13:43:41 2019 +0200
-> >
-> >     Fix ^= in example code
-> >
-> >     Trying to escaping ^ here only leaves the backslash in the output.
-> >
-> >     Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-> >     Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> >
-> > we have plain ^ inside listing. Escape it with \ but only
-> > if not already escaped (as output of diff with old source will be).
-> >
-> > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> > ---
-> >  fixupdiff.pl | 4 ++++
-> >  1 file changed, 4 insertions(+)
-> 
-> Thanks, pushed as an editorial update.
+always use \field{foo} not \field {foo}, the latter confuses
+latexdiff.
 
-Sounds good! OK let me compile this all, upload and we can
-get the ball rolling with the 1st vote.
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+---
+ content.tex | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/content.tex b/content.tex
+index 8f9173d..741d166 100644
+--- a/content.tex
++++ b/content.tex
+@@ -874,7 +874,7 @@ \subsection{Virtio Structure PCI Capabilities}\label{sec:Virtio Transport Option
+ \end{lstlisting}
+ 
+ Given that the \field{cap.length} and \field{cap.offset} fields
+-are only 32 bit, the additional \field{offset_hi} and \field {length_hi}
++are only 32 bit, the additional \field{offset_hi} and \field{length_hi}
+ fields provide the most significant 32 bits of a total 64 bit offset and
+ length within the BAR specified by \field{cap.bar}.
+ 
 -- 
 MST
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
