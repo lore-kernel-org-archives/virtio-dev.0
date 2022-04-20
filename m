@@ -1,42 +1,44 @@
-Return-Path: <virtio-return-3705-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-return-3704-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio@lists.oasis-open.org>
 List-Post: <mailto:virtio@lists.oasis-open.org>
 List-Help: <mailto:virtio-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Wed, 20 Apr 2022 13:16:45 -0400
+Date: Wed, 20 Apr 2022 13:15:53 -0400
 From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20220420171608.3669-1-mst@redhat.com>
+Message-ID: <20220420171550.3609-1-mst@redhat.com>
 MIME-Version: 1.0
-Subject: [virtio] [PATCH] change revisions: diff from v1.1, current v1.2
+Subject: [virtio] [PATCH] fixupdiff: reverse add/del for code snippets
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 To: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
 Cc: virtio@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Note: we forgot to tag v1.1-cs01 (same as csd01 really),
-I did it, one has to re-fetch the tags to get it.
+Turns out added/deleted versions for code snippets
+were reversed and no one noticed. Fix it up.
 
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 ---
- DIFFVERSION | 2 +-
- REVISION    | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ fixupdiff.pl | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/DIFFVERSION b/DIFFVERSION
-index 9aa2cca..593b6c1 100644
---- a/DIFFVERSION
-+++ b/DIFFVERSION
-@@ -1 +1 @@
--v1.1-csprd01
-+v1.1-cs01
-diff --git a/REVISION b/REVISION
-index dd3533d..0694a9e 100644
---- a/REVISION
-+++ b/REVISION
-@@ -1 +1 @@
--virtio-v1.1-cs01
-+virtio-v1.2-cs01
+diff --git a/fixupdiff.pl b/fixupdiff.pl
+index e7d3a0f..1c6b8e2 100644
+--- a/fixupdiff.pl
++++ b/fixupdiff.pl
+@@ -40,9 +40,9 @@ while (<>) {
+ 			#also at beginning of line
+ 			$line =~ s/^(\^)/\\$1/g;
+ 			if ($add) {
+-				$line =~ s/(.*)/\$\\DIFdel\{$1\}\$/;
+-			} else {
+ 				$line =~ s/(.*)/\$\\DIFadd\{$1\}\$/;
++			} else {
++				$line =~ s/(.*)/\$\\DIFdel\{$1\}\$/;
+ 			}
+ 		}
+ 		#print "%FIXED BY RULE 1\n";
 -- 
 MST
 
