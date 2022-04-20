@@ -1,64 +1,60 @@
-Return-Path: <virtio-dev-return-9412-cohuck=redhat.com@lists.oasis-open.org>
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 7593598640E
-	for <virtio-dev@lists.oasis-open.org>; Tue, 19 Apr 2022 16:30:34 +0000 (UTC)
-Date: Tue, 19 Apr 2022 12:30:27 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20220419163024.134007-1-mst@redhat.com>
+Return-Path: <virtio-comment-return-2957-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-comment@lists.oasis-open.org>
+List-Post: <mailto:virtio-comment@lists.oasis-open.org>
+List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
+From: Cornelia Huck <cohuck@redhat.com>
+In-Reply-To: <20220419163024.134007-1-mst@redhat.com>
+References: <20220419163024.134007-1-mst@redhat.com>
+Date: Wed, 20 Apr 2022 14:57:04 +0200
+Message-ID: <87wnfj7w0v.fsf@redhat.com>
 MIME-Version: 1.0
-Subject: [virtio-dev] [PATCH] fixupdiff: escape ^ caret
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-To: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+Subject: [virtio-comment] Re: [virtio-dev] [PATCH] fixupdiff: escape ^ caret
+Content-Type: text/plain
+To: "Michael S. Tsirkin" <mst@redhat.com>, virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
 Cc: virtio@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Since commit:
+On Tue, Apr 19 2022, "Michael S. Tsirkin" <mst@redhat.com> wrote:
 
-commit 1e30753d53d222fbe955f0643583d756105d557e
-Author: Jan Kiszka <jan.kiszka@siemens.com>
-Date:   Fri Oct 11 13:43:41 2019 +0200
+> Since commit:
+>
+> commit 1e30753d53d222fbe955f0643583d756105d557e
+> Author: Jan Kiszka <jan.kiszka@siemens.com>
+> Date:   Fri Oct 11 13:43:41 2019 +0200
+>
+>     Fix ^= in example code
+>
+>     Trying to escaping ^ here only leaves the backslash in the output.
+>
+>     Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+>     Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+>
+> we have plain ^ inside listing. Escape it with \ but only
+> if not already escaped (as output of diff with old source will be).
+>
+> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+> ---
+>  fixupdiff.pl | 4 ++++
+>  1 file changed, 4 insertions(+)
 
-    Fix ^= in example code
-
-    Trying to escaping ^ here only leaves the backslash in the output.
-
-    Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-    Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-we have plain ^ inside listing. Escape it with \ but only
-if not already escaped (as output of diff with old source will be).
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
----
- fixupdiff.pl | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/fixupdiff.pl b/fixupdiff.pl
-index f50cf26..e7d3a0f 100644
---- a/fixupdiff.pl
-+++ b/fixupdiff.pl
-@@ -35,6 +35,10 @@ while (<>) {
- 		$line =~ s/%DIFDELCMD\s+< //;
- 		if (not $line =~ m/\\(?:begin|end)\{lstlisting\}/) {
- 			$line =~ s/([#&{} ])/\\$1/g;
-+			#be careful: do not escape \^
-+			$line =~ s/([^\\])(\^)/$1\\$2/g;
-+			#also at beginning of line
-+			$line =~ s/^(\^)/\\$1/g;
- 			if ($add) {
- 				$line =~ s/(.*)/\$\\DIFdel\{$1\}\$/;
- 			} else {
--- 
-MST
+Thanks, pushed as an editorial update.
 
 
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+This publicly archived list offers a means to provide input to the
+OASIS Virtual I/O Device (VIRTIO) TC.
+
+In order to verify user consent to the Feedback License terms and
+to minimize spam in the list archive, subscription is required
+before posting.
+
+Subscribe: virtio-comment-subscribe@lists.oasis-open.org
+Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
+List help: virtio-comment-help@lists.oasis-open.org
+List archive: https://lists.oasis-open.org/archives/virtio-comment/
+Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
+List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
+Committee: https://www.oasis-open.org/committees/virtio/
+Join OASIS: https://www.oasis-open.org/join/
 
