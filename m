@@ -1,31 +1,47 @@
-Return-Path: <virtio-comment-return-2971-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-comment-return-2967-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio-comment@lists.oasis-open.org>
 List-Post: <mailto:virtio-comment@lists.oasis-open.org>
 List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
-From: Cornelia Huck <cohuck@redhat.com>
-In-Reply-To: <20220421152938.37438-1-mst@redhat.com>
-References: <20220421152938.37438-1-mst@redhat.com>
-Date: Thu, 21 Apr 2022 17:35:29 +0200
-Message-ID: <87pmla8n5q.fsf@redhat.com>
+Date: Thu, 21 Apr 2022 11:29:27 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20220421152920.37374-1-mst@redhat.com>
 MIME-Version: 1.0
-Subject: [virtio-comment] Re: [virtio] [PATCH] virtio-html.cfg: use variable for spec version
-Content-Type: text/plain
-To: "Michael S. Tsirkin" <mst@redhat.com>, virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+Subject: [virtio-comment] [PATCH] make-setup-generated.sh: get version from spec string
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+To: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
 Cc: virtio@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Thu, Apr 21 2022, "Michael S. Tsirkin" <mst@redhat.com> wrote:
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+---
+ make-setup-generated.sh | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-> this way it gets updated automatically
->
-> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> ---
->  virtio-html.cfg | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-
-Reviewed-by: Cornelia Huck <cohuck@redhat.com>
+diff --git a/make-setup-generated.sh b/make-setup-generated.sh
+index f15d148..2c5c7f8 100755
+--- a/make-setup-generated.sh
++++ b/make-setup-generated.sh
+@@ -1,6 +1,5 @@
+ #! /bin/sh
+ 
+-VERSION=1.1
+ DATESTR=${DATESTR:-`cat REVISION-DATE 2>/dev/null`}
+ if [ x"$DATESTR" = x ]; then
+     ISODATE=`git show --format=format:'%cd' --date=iso | head -n 1`
+@@ -40,6 +39,8 @@ case "$1" in
+ 	exit 1
+ esac
+ 
++VERSION=`echo "$1"| sed -e 's/virtio-v//' -e 's/-.*//'`
++
+ #Prepend OASIS unless already there
+ case "$STAGENAME" in
+ 	OASIS*)
+-- 
+MST
 
 
 This publicly archived list offers a means to provide input to the
