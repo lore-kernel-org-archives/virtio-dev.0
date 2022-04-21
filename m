@@ -1,35 +1,48 @@
-Return-Path: <virtio-return-3716-cohuck=redhat.com@lists.oasis-open.org>
-Sender: <virtio@lists.oasis-open.org>
-List-Post: <mailto:virtio@lists.oasis-open.org>
-List-Help: <mailto:virtio-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Thu, 21 Apr 2022 12:11:14 -0400
+Return-Path: <virtio-comment-return-2969-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-comment@lists.oasis-open.org>
+List-Post: <mailto:virtio-comment@lists.oasis-open.org>
+List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
+Date: Thu, 21 Apr 2022 11:30:00 -0400
 From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20220421120631-mutt-send-email-mst@kernel.org>
+Message-ID: <20220421152951.37494-1-mst@redhat.com>
 MIME-Version: 1.0
-Subject: [virtio] Virtio 1.2 update
+Subject: [virtio-comment] [PATCH] revision: update date
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-To: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+To: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+Cc: virtio@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Hello, all!
-Today the TC started voting on promoting the latest specification
-working draft virtio-v1.2-wd01 to a Committee Specification Draft,
-and starting a 30 day public review of the same.
+---
+ REVISION-DATE | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-The voting will conclude by end of the month, if approved and if the review also
-goes well we should be able to release revision 1.2 by June.
-
-Thanks to everyone involved!
-
+diff --git a/REVISION-DATE b/REVISION-DATE
+index 59c9d17..9bb734d 100644
+--- a/REVISION-DATE
++++ b/REVISION-DATE
+@@ -1 +1 @@
+-11 April 2019
++21 April 2022
 -- 
 MST
 
 
----------------------------------------------------------------------
-To unsubscribe from this mail list, you must leave the OASIS TC that 
-generates this mail.  Follow this link to all your TCs in OASIS at:
-https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
+This publicly archived list offers a means to provide input to the
+OASIS Virtual I/O Device (VIRTIO) TC.
+
+In order to verify user consent to the Feedback License terms and
+to minimize spam in the list archive, subscription is required
+before posting.
+
+Subscribe: virtio-comment-subscribe@lists.oasis-open.org
+Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
+List help: virtio-comment-help@lists.oasis-open.org
+List archive: https://lists.oasis-open.org/archives/virtio-comment/
+Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
+List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
+Committee: https://www.oasis-open.org/committees/virtio/
+Join OASIS: https://www.oasis-open.org/join/
 
