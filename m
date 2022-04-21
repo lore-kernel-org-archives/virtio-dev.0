@@ -1,28 +1,42 @@
-Return-Path: <virtio-return-3715-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-return-3711-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio@lists.oasis-open.org>
 List-Post: <mailto:virtio@lists.oasis-open.org>
 List-Help: <mailto:virtio-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-From: Cornelia Huck <cohuck@redhat.com>
-In-Reply-To: <20220421152951.37494-1-mst@redhat.com>
-References: <20220421152951.37494-1-mst@redhat.com>
-Date: Thu, 21 Apr 2022 17:38:57 +0200
-Message-ID: <87mtge8mzy.fsf@redhat.com>
+Date: Thu, 21 Apr 2022 11:29:40 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20220421152938.37438-1-mst@redhat.com>
 MIME-Version: 1.0
-Subject: [virtio] Re: [virtio-comment] [PATCH] revision: update date
-Content-Type: text/plain
-To: "Michael S. Tsirkin" <mst@redhat.com>, virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+Subject: [virtio] [PATCH] virtio-html.cfg: use variable for spec version
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+To: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
 Cc: virtio@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Thu, Apr 21 2022, "Michael S. Tsirkin" <mst@redhat.com> wrote:
+this way it gets updated automatically
 
-> ---
->  REVISION-DATE | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+---
+ virtio-html.cfg | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Reviewed-by: Cornelia Huck <cohuck@redhat.com>
+diff --git a/virtio-html.cfg b/virtio-html.cfg
+index 80212aa..c80d5eb 100644
+--- a/virtio-html.cfg
++++ b/virtio-html.cfg
+@@ -17,7 +17,7 @@
+ 	
+ 	%%\Configure{HColWidth}{\HCode{ style="min-width:\HColWidth"}}
+ 
+-	\Configure{@TITLE}{Virtual I/O Device (VIRTIO) Version 1.1}
++	\Configure{@TITLE}{Virtual I/O Device (VIRTIO) Version \virtiorev}
+ 	\Css{body { font-family: Arial, Helvetica, sans-serif; font-size: 10pt; }}     
+ 	\Css{h1 { color:\#552681; font-size:150\%; }}
+ 	\Css{h2 { color:\#552681; font-size:140\%; }}
+-- 
+MST
 
 
 ---------------------------------------------------------------------
