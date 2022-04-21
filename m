@@ -1,109 +1,35 @@
-Return-Path: <virtio-dev-return-9440-cohuck=redhat.com@lists.oasis-open.org>
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id ECB14983F05
-	for <virtio-dev@lists.oasis-open.org>; Sun, 24 Apr 2022 08:07:18 +0000 (UTC)
-Message-ID: <1650787031.3563752-2-xuanzhuo@linux.alibaba.com>
-Date: Sun, 24 Apr 2022 15:57:11 +0800
-From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-References: <20220222065241.89602-1-xuanzhuo@linux.alibaba.com>
- <20220424024747-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20220424024747-mutt-send-email-mst@kernel.org>
-Subject: [virtio-dev] Re: [PATCH v4] virtio-net: support reset queue
-Content-Type: text/plain; charset="US-ASCII"; x-default=true
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: virtio-dev@lists.oasis-open.org, jasowang@redhat.com
+Return-Path: <virtio-return-3716-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio@lists.oasis-open.org>
+List-Post: <mailto:virtio@lists.oasis-open.org>
+List-Help: <mailto:virtio-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
+Date: Thu, 21 Apr 2022 12:11:14 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20220421120631-mutt-send-email-mst@kernel.org>
+MIME-Version: 1.0
+Subject: [virtio] Virtio 1.2 update
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+To: virtio@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Sun, 24 Apr 2022 02:53:46 -0400, "Michael S. Tsirkin" <mst@redhat.com> wrote:
-> On Tue, Feb 22, 2022 at 02:52:41PM +0800, Xuan Zhuo wrote:
-> > This patch defines some requirements for virtio-net to support reset
-> > queues.
-> >
-> > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
->
-> Suggest creating a github issue documenting that it is not defined
-> what the behaviour is, so we rememeber to list this as a known issue
-> in 1.2.
+Hello, all!
+Today the TC started voting on promoting the latest specification
+working draft virtio-v1.2-wd01 to a Committee Specification Draft,
+and starting a 30 day public review of the same.
 
-OK.
+The voting will conclude by end of the month, if approved and if the review also
+goes well we should be able to release revision 1.2 by June.
 
+Thanks to everyone involved!
 
->
->
-> > ---
-> >  content.tex | 5 +++++
-> >  1 file changed, 5 insertions(+)
-> >
-> > diff --git a/content.tex b/content.tex
-> > index c6f116c..45751f4 100644
-> > --- a/content.tex
-> > +++ b/content.tex
-> > @@ -4337,6 +4337,10 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
-> >  \field{virtqueue_pairs} once it has placed the
-> >  VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET command in a used buffer.
-> >
-> > +If the destination receive queue is in reset state(See \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Reset}),
->
-> Should this be "a reset state"? Also, I do not see any definition of "reset state" in
-> the linked chapter. That chapter should really be cleaned up btw.
+-- 
+MST
 
-Oh, I will try to clean that.
-
->
-> > +the device SHOULD re-select a different random queue.
->
-> different from what?
->
-> I suspect we want to move this:
->
-> When multiqueue is enabled by VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET command, the device MUST use automatic receive steering
-> based on packet flow. Programming of the receive steering
-> classificator is implicit. After the driver transmitted a packet of a
-> flow on transmitqX, the device SHOULD cause incoming packets for that flow to
-> be steered to receiveqX. For uni-directional protocols, or where
-> no packets have been transmitted yet, the device MAY steer a packet
-> to a random queue out of the specified receiveq1\ldots receiveqn.
->
->
->
-> to a conformance chapter, and be replaced with a general description
-> avoiding conformance keyworkds like MUST and SHOULD.
->
->
-> Generally, whenever we have conformance keywords out of conformance
-> clauses it's a bug and source of confusion at some point.
-
-Agreed, can we do some cleanup for these cases before 1.3.
-
-Thanks.
-
-
->
->
-> > If all receive queues are
-> > +in reset state, the device MUST drop the packet.
-> > +
-> >  \subparagraph{Legacy Interface: Automatic receive steering in multiqueue mode}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Automatic receive steering in multiqueue mode / Legacy Interface: Automatic receive steering in multiqueue mode}
-> >  When using the legacy interface, transitional devices and drivers
-> >  MUST format \field{virtqueue_pairs}
-> > @@ -4425,6 +4429,7 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
-> >  \item Calculate the hash of the packet as defined in \ref{sec:Device Types / Network Device / Device Operation / Processing of Incoming Packets / Hash calculation for incoming packets}.
-> >  \item If the device did not calculate the hash for the specific packet, the device directs the packet to the receiveq specified by \field{unclassified_queue} of virtio_net_rss_config structure (value of 0 corresponds to receiveq1).
-> >  \item Apply \field{indirection_table_mask} to the calculated hash and use the result as the index in the indirection table to get 0-based number of destination receiveq (value of 0 corresponds to receiveq1).
-> > +\item If the destination receive queue is in reset state(See \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Reset}), the device MUST drop the packet.
-> >  \end{itemize}
-> >
-> >  \paragraph{Offloads State Configuration}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Offloads State Configuration}
-> > --
-> > 2.31.0
->
 
 ---------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+To unsubscribe from this mail list, you must leave the OASIS TC that 
+generates this mail.  Follow this link to all your TCs in OASIS at:
+https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
 
