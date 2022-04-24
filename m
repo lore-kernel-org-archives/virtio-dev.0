@@ -1,72 +1,80 @@
-Return-Path: <mgurtovoy@nvidia.com>
-From: Max Gurtovoy <mgurtovoy@nvidia.com>
-Subject: [PATCH v5 7/7] RFC: add initial support for configuring feature bits
-Date: Wed, 27 Apr 2022 01:58:24 +0300
-Message-ID: <20220426225824.5918-8-mgurtovoy@nvidia.com>
-In-Reply-To: <20220426225824.5918-1-mgurtovoy@nvidia.com>
-References: <20220426225824.5918-1-mgurtovoy@nvidia.com>
+Return-Path: <virtio-dev-return-9441-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id B46B0983F05
+	for <virtio-dev@lists.oasis-open.org>; Sun, 24 Apr 2022 08:31:37 +0000 (UTC)
+From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Date: Sun, 24 Apr 2022 16:31:31 +0800
+Message-Id: <20220424083131.72881-1-xuanzhuo@linux.alibaba.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-To: jasowang@redhat.com, virtio-comment@lists.oasis-open.org, mst@redhat.com, cohuck@redhat.com, virtio-dev@lists.oasis-open.org
-Cc: oren@nvidia.com, parav@nvidia.com, shahafs@nvidia.com, aadam@redhat.com, virtio@lists.oasis-open.org, Max Gurtovoy <mgurtovoy@nvidia.com>
+Subject: [virtio-dev] [PATCH v5] virtio-net: support reset queue
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="US-ASCII"; x-default=true
+To: virtio-dev@lists.oasis-open.org
+Cc: jasowang@redhat.com, "Michael S. Tsirkin" <mst@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-After adding the concept of a management and a managed device, add
-another example of using this concept to manage resources.
+A separate reset queue function introduced by Virtqueue Reset.
 
-Today there is no standard definition in the spec that allows user to
-setup specific feature bits of a virtio device.
+However, it is currently not defined what to do if the destination queue is
+being reset when virtio-net is steering in multi-queue mode.
 
-For that, extend the management mechanism to allow management devices to
-change feature bits of its managed devices.
-
-Signed-off-by: Max Gurtovoy <mgurtovoy@nvidia.com>
+Fixes: https://github.com/oasis-tcs/virtio-spec/issues/138
+Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 ---
- admin.tex | 12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
+ content.tex | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/admin.tex b/admin.tex
-index 5b54743..43106ba 100644
---- a/admin.tex
-+++ b/admin.tex
-@@ -113,7 +113,9 @@ \subsection{VIRTIO ADMIN DEVICE CAPS IDENTIFY command}\label{sec:Basic Facilitie
-         * Bit 0 - if set, the device is a management device
-         * Bit 1 - if set, the device is a type 1 management device that supports
-         *         MSI-X vector mgmt of its type 1 managed devices
--        * Bits 2 - 63 - reserved for future capabilities.
-+        * Bit 2 - if set, the device is a type 1 management device that supports
-+        *         feature mgmt of bits 0 to 63 for its type 1 managed devices
-+        * Bits 3 - 63 - reserved for future capabilities.
-         */
-        le64 device_admin_caps;
-        u8 reserved[112];
-@@ -143,7 +145,9 @@ \subsection{VIRTIO ADMIN DEVICE CAPS ACCEPT command}\label{sec:Basic Facilities
-         * Bit 0 - if set, the driver accepted the device as a management device
-         * Bit 1 - if set, the driver accepted the device as a type 1 management device
-         *         that supports MSI-X vector mgmt of its type 1 managed devices
--        * Bits 2 - 63 - reserved for future capabilities.
-+        * Bit 2 - if set, the driver accepted the device as a type 1 management device
-+        *         that supports feature mgmt of bits 0 to 63 for its type 1 managed devices
-+        * Bits 3 - 63 - reserved for future capabilities.
-         */
-        le64 driver_admin_caps;
-        u8 reserved[112];
-@@ -167,12 +171,14 @@ \subsection{VIRTIO ADMIN DEVICE MGMT command}\label{sec:Basic Facilities of a Vi
-         u8 operation;
-         /*
-          * 0 - MSI-X vector
--         * 1 - 65535 are reserved
-+         * 1 - Device feature bits 0 to 63
-+         * 2 - 65535 are reserved
-          */
-         le16 resource;
-         /*
-          * The value to the given resource:
-          * if resource = 0 (MSI-X vector), it's a 1-based count.
-+         * if resource = 1 (Device feature bits 0 to 63), it's a feature bitmap.
-          */
-         le64 resource_val;
-         u8 reserved[5];
--- 
-2.21.0
+diff --git a/content.tex b/content.tex
+index 060bdab..61c36e8 100644
+--- a/content.tex
++++ b/content.tex
+@@ -4337,6 +4337,10 @@ \subsubsection{Control Virtqueue}\label{sec:Device T=
+ypes / Network Device / Devi
+ \field{virtqueue_pairs} once it has placed the
+ VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET command in a used buffer.
+=20
++If the destination receive queue is being reset (See \ref{sec:Basic Facili=
+ties of a Virtio Device / Virtqueues / Virtqueue Reset}),
++the device SHOULD re-select another random queue. If all receive queues ar=
+e
++being reset, the device MUST drop the packet.
++
+ \subparagraph{Legacy Interface: Automatic receive steering in multiqueue m=
+ode}\label{sec:Device Types / Network Device / Device Operation / Control V=
+irtqueue / Automatic receive steering in multiqueue mode / Legacy Interface=
+: Automatic receive steering in multiqueue mode}
+ When using the legacy interface, transitional devices and drivers
+ MUST format \field{virtqueue_pairs}
+@@ -4425,6 +4429,7 @@ \subsubsection{Control Virtqueue}\label{sec:Device Ty=
+pes / Network Device / Devi
+ \item Calculate the hash of the packet as defined in \ref{sec:Device Types=
+ / Network Device / Device Operation / Processing of Incoming Packets / Has=
+h calculation for incoming packets}.
+ \item If the device did not calculate the hash for the specific packet, th=
+e device directs the packet to the receiveq specified by \field{unclassifie=
+d_queue} of virtio_net_rss_config structure (value of 0 corresponds to rece=
+iveq1).
+ \item Apply \field{indirection_table_mask} to the calculated hash and use =
+the result as the index in the indirection table to get 0-based number of d=
+estination receiveq (value of 0 corresponds to receiveq1).
++\item If the destination receive queue is being reset (See \ref{sec:Basic =
+Facilities of a Virtio Device / Virtqueues / Virtqueue Reset}), the device =
+MUST drop the packet.
+ \end{itemize}
+=20
+ \paragraph{Offloads State Configuration}\label{sec:Device Types / Network =
+Device / Device Operation / Control Virtqueue / Offloads State Configuratio=
+n}
+--=20
+2.31.0
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
