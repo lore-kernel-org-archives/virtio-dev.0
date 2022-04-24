@@ -1,65 +1,69 @@
-Return-Path: <mst@redhat.com>
-Date: Mon, 25 Apr 2022 13:32:39 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: Re: [virtio-dev] Re: queue_reset register polarity to improve
-Message-ID: <20220425125819-mutt-send-email-mst@kernel.org>
+Return-Path: <virtio-dev-return-9439-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id 99C96983F05
+	for <virtio-dev@lists.oasis-open.org>; Sun, 24 Apr 2022 07:37:43 +0000 (UTC)
+Message-ID: <1650785333.6800807-1-xuanzhuo@linux.alibaba.com>
+Date: Sun, 24 Apr 2022 15:28:53 +0800
+From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 References: <PH0PR12MB54819125071ED675E2B72F0EDCF99@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20220424023301-mutt-send-email-mst@kernel.org>
- <871qxl8k51.fsf@redhat.com>
- <PH0PR12MB54811ABC8173F4DE9AABED5EDCF89@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20220425085415-mutt-send-email-mst@kernel.org>
- <PH0PR12MB54816E6AA01851746C851FDBDCF89@PH0PR12MB5481.namprd12.prod.outlook.com>
-MIME-Version: 1.0
-In-Reply-To: <PH0PR12MB54816E6AA01851746C851FDBDCF89@PH0PR12MB5481.namprd12.prod.outlook.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+In-Reply-To: <PH0PR12MB54819125071ED675E2B72F0EDCF99@PH0PR12MB5481.namprd12.prod.outlook.com>
+Subject: Re: [virtio-dev] queue_reset register polarity to improve
+Content-Type: text/plain; charset="US-ASCII"; x-default=true
 To: Parav Pandit <parav@nvidia.com>
-Cc: Cornelia Huck <cohuck@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Halil Pasic <pasic@linux.ibm.com>
+Cc: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "Michael S. Tsirkin" <mst@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Mon, Apr 25, 2022 at 02:56:39PM +0000, Parav Pandit wrote:
-> 
-> > From: Michael S. Tsirkin <mst@redhat.com>
-> > Sent: Monday, April 25, 2022 9:43 AM
-> > 
-> > Question is what exactly is the advantage of making changes now.  If we are
-> > trying to save bits then maybe an alternative that uses queue enable instead
-> > should be worked on.
-> > 
-> Bit saving by merging to queue_enable is yet another gain.
-> But it may be too late now as you say.
-> If we adopt to the alternative definition we discussed, new queue_reset bit can follow queue_enable without additional complexity.
-> > 
-> > > Spec is not released, right?
-> > 
-> > Kind of yes. The vote to release for a review is technically ongoing, but
-> > practically 6 out of 8 voting members already cast a ballot and voted yes.
-> > The best way forward if you think the issue is important enough to delay the
-> > release is probably working on a proposal for a change meanwhile and
-> > submitting it as part of the 30 day public review. Since the change seems
-> > material this would imply another 15 day public review period, delaying the
-> > release by about a month in total.
-> > 
-> > As part of that I would suggest explaining the motivation for the change beyond
-> > the simple "seems a bit cleaner".
-> > 
-> To me it is beyond than being cleaner.
-> A state machine and driver-device interface where same register values coney different things doesn't look right.
-> 
-> If virtio spec release process has concept of errata/ratification, I propose a minor change that doesn't affect the current release.
-> 
-> a. Let feature bit as is
-> b. On queue_reset=1, it stays 1, until queue is busy in reset
-> c. When queue reset completed, it goes to zero along with queue_enabled bit.
+On Sun, 24 Apr 2022 00:49:19 +0000, Parav Pandit <parav@nvidia.com> wrote:
+> Hi,
 >
-> I can draft the "Fixes" text for this in existing proposed spec. This way we get right fix without much disruption.
-> Would that be ok?
+> A recently defined queue_reset register has a little weird definition that we should improve.
+> When driver initiate queue reset, it writes queue_reset = 1.
+> When device is busy resetting the queue, on this driver request, it is expected to return queue_reset=0.
+> Once queue reset is completed it is expected to return queue_reset = 1.
+> (Polarity changed twice to same value as what was driver set). See more below.
+>
+> So state wise,
+> # q_enable, q_reset represents :
+> a) 0,0 -> device init time value
+> b) 1,0 -> vq is enabled and working
+> c) 1,1 -> vq is enabled, driver initiated reset
+> d) 1,0 -> vq is enabled, but device is busy doing the reset (conflicting definition with above #b )
+> e) 0,1 -> vq reset is complete in the device and VQ is now disabled (again conflict with #a above )
+>
+> Instead, I think we should have below better, consistent definition, no matter how queue reset occurs (init time or later).
+>
+> q_enable, q_reset
+> A) 0, 0 -> default, device init time
+> B) 1, 0 -> driver has enabled vq
+> C) 1, 1 -> driver started q reset
+> D) 1, 1 -> q_reset stays 1 until device is busy resetting vq (communicating that its working on resetting, consistent with #C)
+> E) 0, 0 -> q_reset by device is completed, q got disabled (now matches the state same as device init time #A)
 
-There's no special errata process as far as I'm aware.
-Feel free to peruse
-https://www.oasis-open.org/policies-guidelines/tc-process-2017-05-26/
+Seems to me to be two different designs, I don't see any particular value in the
+conflict mentioned here, and under what circumstances would it cause any
+trouble?
 
+The design here is similar to many scenarios, such as device reset.
 
--- 
-MST
+So if you want to change to your design, I want to know if there are other
+reasons.
+
+Thanks.
+
+>
+> Parav
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+>
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
