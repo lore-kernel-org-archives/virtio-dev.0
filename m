@@ -1,99 +1,36 @@
-Return-Path: <virtio-dev-return-9443-cohuck=redhat.com@lists.oasis-open.org>
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 9F1979862B0
-	for <virtio-dev@lists.oasis-open.org>; Mon, 25 Apr 2022 11:42:09 +0000 (UTC)
-From: Cornelia Huck <cohuck@redhat.com>
-In-Reply-To: <20220424023301-mutt-send-email-mst@kernel.org>
+Return-Path: <parav@nvidia.com>
+From: Parav Pandit <parav@nvidia.com>
+Subject: RE: [virtio-dev] Re: queue_reset register polarity to improve
+Date: Mon, 25 Apr 2022 12:01:21 +0000
+Message-ID: <PH0PR12MB54811ABC8173F4DE9AABED5EDCF89@PH0PR12MB5481.namprd12.prod.outlook.com>
 References: <PH0PR12MB54819125071ED675E2B72F0EDCF99@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20220424023301-mutt-send-email-mst@kernel.org>
-Date: Mon, 25 Apr 2022 13:42:02 +0200
-Message-ID: <871qxl8k51.fsf@redhat.com>
+ <20220424023301-mutt-send-email-mst@kernel.org> <871qxl8k51.fsf@redhat.com>
+In-Reply-To: <871qxl8k51.fsf@redhat.com>
 MIME-Version: 1.0
-Subject: Re: [virtio-dev] Re: queue_reset register polarity to improve
-Content-Type: text/plain
-To: "Michael S. Tsirkin" <mst@redhat.com>, Parav Pandit <parav@nvidia.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+To: Cornelia Huck <cohuck@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>
 Cc: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Halil Pasic <pasic@linux.ibm.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Sun, Apr 24 2022, "Michael S. Tsirkin" <mst@redhat.com> wrote:
 
-> On Sun, Apr 24, 2022 at 12:49:19AM +0000, Parav Pandit wrote:
->> Hi,
->> 
->> A recently defined queue_reset register has a little weird definition that we should improve.
->> When driver initiate queue reset, it writes queue_reset = 1.
->> When device is busy resetting the queue, on this driver request, it is expected to return queue_reset=0.
->> Once queue reset is completed it is expected to return queue_reset = 1.
->> (Polarity changed twice to same value as what was driver set). See more below.
->> 
->> So state wise,
->> # q_enable, q_reset represents :
->> a) 0,0 -> device init time value
->> b) 1,0 -> vq is enabled and working
->> c) 1,1 -> vq is enabled, driver initiated reset
->> d) 1,0 -> vq is enabled, but device is busy doing the reset (conflicting definition with above #b )
-> it is not great but don't see a conflict here
->
->> e) 0,1 -> vq reset is complete in the device and VQ is now disabled (again conflict with #a above )
-> this one is ugly in that state is really mostly same as (1)
-> but the flag values are different
->
->
->> f) 1,0 -> vq is enabled and working again
->
->
->
-> It can actually be any value, the spec just says
->
-> If VIRTIO_F_RING_RESET has been negotiated, after the driver writes 1 to
-> \field{QueueReset} to reset the queue, it MUST verify that the queue
-> has been reset by reading back \field{QueueReset} and ensuring that it
-> is 1.
->
-> So can be 2 or whatever, so one can distinguish between the two states.
->
-> Spec really should clarify what to do if it is not 1 (i.e. read it again
-> until it is 1) .
->
->
->> Instead, I think we should have below better, consistent definition, no matter how queue reset occurs (init time or later).
->> 
->> q_enable, q_reset
->> A) 0, 0 -> default, device init time
->> B) 1, 0 -> driver has enabled vq
->> C) 1, 1 -> driver started q reset
->> D) 1, 1 -> q_reset stays 1 until device is busy resetting vq (communicating that its working on resetting, consistent with #C)
->> E) 0, 0 -> q_reset by device is completed, q got disabled (now matches the state same as device init time #A)
->> 
->> Parav
->
->
-> Well it's been merged since November. Probably too late unless you can
-> convince the TC that the current feature should be abandoned
-> and the feature completely redesigned. Above does not look like
-> a deal breaker.
+> From: Cornelia Huck <cohuck@redhat.com>
+> Sent: Monday, April 25, 2022 7:42 AM
 
-Agreed. We can add clarifications on top, though.
+> >
+> > Well it's been merged since November. Probably too late unless you can
+> > convince the TC that the current feature should be abandoned and the
+> > feature completely redesigned. Above does not look like a deal
+> > breaker.
+>=20
+> Agreed. We can add clarifications on top, though.
 
->
-> If we are to re-design it, I would maybe instead rework things so queue_enable can be
-> written to, to stop vq without a reset. Will need careful work for
-> transports other than PCI since those already allow writing into e.g.
-> QueueReady.
-
-For ccw, we have not yet added queue reset; but looking at the spec, I
-notice that the queue discovery section could also benefit from some
-clarifications as it stands (do we need to specify special semantics for
-SET_VQ with 0? do we need to forbid interactions with the queues when
-SET_VQ has succeeded, but we have not yet set up indicators? etc.)
-
-
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+I replied to Michael in other thread.
+Feature was merged in Dec-21.
+It is likely not too late to fix it now, instead of keeping this behavior f=
+or next 10 years.
+Are there any devices, drivers that have adopted and broken due to this?
+If not, lets please fix it.
+Spec is not released, right?
 
