@@ -1,73 +1,98 @@
-Return-Path: <virtio-dev-return-9341-cohuck=redhat.com@lists.oasis-open.org>
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 19D8398648D
-	for <virtio-dev@lists.oasis-open.org>; Tue,  1 Mar 2022 16:37:43 +0000 (UTC)
-Date: Tue, 1 Mar 2022 16:37:37 +0000
-From: Stefan Hajnoczi <stefanha@redhat.com>
-Message-ID: <Yh5L0dNz4+/mji7t@stefanha-x1.localdomain>
-References: <20220301120021.147070-1-stefanha@redhat.com>
- <Yh4it+8MroTwbnlz@stefanha-x1.localdomain>
- <20220301084433-mutt-send-email-mst@kernel.org>
+Return-Path: <mgurtovoy@nvidia.com>
+From: Max Gurtovoy <mgurtovoy@nvidia.com>
+Subject: [PATCH v5 0/7] Introduce device group and device management
+Date: Wed, 27 Apr 2022 01:58:17 +0300
+Message-ID: <20220426225824.5918-1-mgurtovoy@nvidia.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="klPYPZ2TswNXPENL"
-Content-Disposition: inline
-In-Reply-To: <20220301084433-mutt-send-email-mst@kernel.org>
-Subject: [virtio-dev] Re: [PATCH] virtio-blk: document that the capacity field can change
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: virtio-dev@lists.oasis-open.org
+Content-Type: text/plain
+To: jasowang@redhat.com, virtio-comment@lists.oasis-open.org, mst@redhat.com, cohuck@redhat.com, virtio-dev@lists.oasis-open.org
+Cc: oren@nvidia.com, parav@nvidia.com, shahafs@nvidia.com, aadam@redhat.com, virtio@lists.oasis-open.org, Max Gurtovoy <mgurtovoy@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
---klPYPZ2TswNXPENL
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Hi,
+A device group definition will help extending the virtio specefication for
+various future features that require a notion of grouping devices together or
+managing devices inside a group. A device group include one or more virtio devices.
+For now, only support for type 1 device group was added.
 
-On Tue, Mar 01, 2022 at 08:45:31AM -0500, Michael S. Tsirkin wrote:
-> On Tue, Mar 01, 2022 at 01:42:15PM +0000, Stefan Hajnoczi wrote:
-> > On Tue, Mar 01, 2022 at 12:00:21PM +0000, Stefan Hajnoczi wrote:
-> > > Block devices can change size during operation. A configuration change
-> > > notification is sent by the device and the driver detects that the fi=
-eld
-> > > has changed. Document this behavior that has already been implemented=
- in
-> > > Linux and QEMU since 2011.
-> > >=20
-> > > Signed-off-by: Stefan Hajnoczi <stefanha@redhat.com>
-> > > ---
-> > >  content.tex | 7 +++++++
-> > >  1 file changed, 7 insertions(+)
-> >=20
-> > Requesting a vote.
-> >=20
-> > Fixes: https://github.com/oasis-tcs/virtio-spec/issues/136
->=20
-> We can vote but not for 1.2 unless it's urgent (i.e. a regression), and
-> I think we can wait with this one.
+Also introduce the admin facility to allow manipulating features and configurations
+in a generic manner. Using the admin command set, one can manipulate the device itself
+and/or to manipulate, if possible, another device within the same device group (for now,
+introduce only support of PCI SR-IOV devices grouping).
 
-I agree, it's not urgent. It can wait for 1.3.
+The admin command set will be extended in the future  to support more functionalities.
+Some of these functionalities are already under discussions.
 
-Stefan
+The admin virtqueue is the first management interface to issue admin commands from
+the admin command set.
 
---klPYPZ2TswNXPENL
-Content-Type: application/pgp-signature; name="signature.asc"
+Motivation for choosing admin queue as first management interface:
+1. It is anticipated that admin queue will be used for managing and configuring
+   many different type of resources. For example,
+   a. PCI PF configuring PCI VF attributes.
+   b. virtio device creating/destroying/configuring subfunctions discussed in [1]
+   c. composing device config space of VF or SF such as mac address, number of VQs, virtio features
 
------BEGIN PGP SIGNATURE-----
+   Mapping all of them as configuration registers to MMIO will require large MMIO space,
+   if done for each VF/SF. Such MMIO implementation in physical devices such as PCI PF and VF
+   requires on-chip resources to complete within MMIO access latencies. Such resources are very
+   expensive.
 
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmIeS9EACgkQnKSrs4Gr
-c8gIVQf+Ng5x/9d2wEqOJmmZtNNcKrSB0cUg1BBF4eMyrVQTY+QAGfcZLaNbvQNt
-Tl2GTsJeZ1dOPTL0gO7/pBm7bZiQ8V37L0UUeO2yx+P7Sxu28oA3BaPxNscggI+C
-63OnVPT9azjPYPxnHLUJosWZNJ2q+OmfSZrozkFsuUhBCXHrUhBq3AcGpqFIpa5O
-tevoAKUAe0u55WYeeAXP6DN7oB/KQsDOlC7hfUm48JelbPINGI5K2d+YkXK9Fkkj
-ktwZ09bCYpzpoUDJ2oqQHLpRYGvsc6s4kE5w128DFszqW8QQFq7JktPzuIsf3ydH
-v8f4JeNKB8oFT+m0mNoAPK+mv0mL9g==
-=0Kcs
------END PGP SIGNATURE-----
+2. Such limitation can be overcome by having smaller MMIO register set to build
+   a command request response interface. However, such MMIO based command interface
+   will be limited to serve single outstanding command execution. Such limitation can
+   resulting in high device creation and composing time which can affect VM startup time.
+   Often device can queue and service multiple commands in parallel, such command interface
+   cannot use parallelism offered by the device.
 
---klPYPZ2TswNXPENL--
+3. When a command wants to DMA data from one or more physical addresses, for example in the future a
+   live migration command may need to fetch device state consist of config space, tens of
+   VQs state, VLAN and MAC table, per VQ partial outstanding block IO list database and more.
+   Packing one or more DMA addresses over new command interface will be burden some and continue
+   to suffer single outstanding command execution latencies. Such limitation is not good for time
+   sensitive live migration use cases.
+
+4. A virtio queue overcomes all the above limitations. It also supports DMA and multiple outstanding
+   descriptors. Similar mechanism exist today for device specific configuration - the control VQ.
+
+A future work can add another management interface to issue admin commands.
+
+[1] https://lists.oasis-open.org/archives/virtio-comment/202108/msg00025.html
+
+This series include the comments and fixes from V1-V4 of the initial patch sets ("VIRTIO: Provision maximum
+MSI-X vectors for a VF" and "Introduce virtio subsystem and Admin virtqueue" [2]).
+This series was extended with additional RFC for setting managed device feature bits as another example for
+using admin command set. Also device/driver negotiation for admin caps was introduced as a response for previous
+comments on the mailing list.
+
+[2] https://lists.oasis-open.org/archives/virtio-comment/202203/msg00005.html
+
+
+Open issues:
+1. CCW and MMIO specification for admin_queue_index register
+
+Changelog:
+ - Merged MSI-X configuration series to current one.
+ - Addressed comments from MST, Jason Wang and others.
+ - simplified the interface.
+ - added another resource management  as RFC (feature bits).
+
+Max Gurtovoy (7):
+  Introduce device group
+  Introduce admin command set
+  Introduce new destination type for admin commands
+  Introduce virtio admin virtqueue
+  Add miscellaneous configuration structure for PCI
+  Introduce MGMT admin commands
+  RFC: add initial support for configuring feature bits
+
+ admin.tex        | 282 +++++++++++++++++++++++++++++++++++++++++++++++
+ conformance.tex  |   3 +
+ content.tex      | 118 +++++++++++++++++++-
+ introduction.tex |  42 +++++++
+ 4 files changed, 443 insertions(+), 2 deletions(-)
+ create mode 100644 admin.tex
+
+-- 
+2.21.0
 
