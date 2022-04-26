@@ -1,8 +1,8 @@
 Return-Path: <mgurtovoy@nvidia.com>
 From: Max Gurtovoy <mgurtovoy@nvidia.com>
-Subject: [PATCH v5 4/7] Introduce virtio admin virtqueue
-Date: Wed, 27 Apr 2022 01:58:21 +0300
-Message-ID: <20220426225824.5918-5-mgurtovoy@nvidia.com>
+Subject: [PATCH v5 5/7] Add miscellaneous configuration structure for PCI
+Date: Wed, 27 Apr 2022 01:58:22 +0300
+Message-ID: <20220426225824.5918-6-mgurtovoy@nvidia.com>
 In-Reply-To: <20220426225824.5918-1-mgurtovoy@nvidia.com>
 References: <20220426225824.5918-1-mgurtovoy@nvidia.com>
 MIME-Version: 1.0
@@ -11,95 +11,94 @@ To: jasowang@redhat.com, virtio-comment@lists.oasis-open.org, mst@redhat.com, co
 Cc: oren@nvidia.com, parav@nvidia.com, shahafs@nvidia.com, aadam@redhat.com, virtio@lists.oasis-open.org, Max Gurtovoy <mgurtovoy@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-In one of the many use cases a user wants to manipulate features and
-configuration of the virtio devices regardless of the device type
-(net/block/console). For that the admin command set introduced. The
-admin virtqueue will be the first management interface to issue admin
-commands.
+This new structure will be used for adding new miscellaneous registers
+for a virtio device configuration layout.
 
-Currently virtio specification defines control virtqueue to manipulate
-features and configuration of the device it operates on. However,
-control virtqueue commands are device type specific, which makes it very
-difficult to extend for device agnostic commands.
-
-To support this requirement in elegant way, this patch introduces a new
-admin virtqueue interface.
-
-Manipulate features via admin virtqueue is asynchronous, scalable, easy
-to extend and doesn't require additional and expensive on-die resources
-to be allocated for every new feature that will be added in the future.
+For now, only admin_queue_index register is added. Admin virtqueue index
+does not depend on the device type. Hence, add a PCI capability to read
+the admin virtqueue index.
 
 Reviewed-by: Parav Pandit <parav@nvidia.com>
 Signed-off-by: Max Gurtovoy <mgurtovoy@nvidia.com>
 ---
- admin.tex       | 17 +++++++++++++++++
- conformance.tex |  1 +
- content.tex     |  6 ++++--
- 3 files changed, 22 insertions(+), 2 deletions(-)
+ conformance.tex |  2 ++
+ content.tex     | 29 +++++++++++++++++++++++++++++
+ 2 files changed, 31 insertions(+)
 
-diff --git a/admin.tex b/admin.tex
-index f816c3b..d09683d 100644
---- a/admin.tex
-+++ b/admin.tex
-@@ -131,3 +131,20 @@ \subsection{VIRTIO ADMIN DEVICE CAPS ACCEPT command}\label{sec:Basic Facilities
-        u8 reserved[112];
- };
- \end{lstlisting}
-+
-+\section{Admin Virtqueues}\label{sec:Basic Facilities of a Virtio Device / Admin Virtqueues}
-+
-+An admin virtqueue is a management interface of a device that can be used to send administrative
-+commands (see \ref{sec:Basic Facilities of a Virtio Device / Administration command set}) to manipulate
-+various features of the device and/or to manipulate various features, if possible, of another device.
-+
-+An admin virtqueue exists for a certain device if VIRTIO_F_ADMIN_VQ feature is
-+negotiated. The index of the admin virtqueue is exposed by the device in a
-+transport specific manner.
-+
-+If VIRTIO_F_ADMIN_VQ has been negotiated, the driver will use the admin virtqueue to send all admin commands.
-+
-+\devicenormative{\subsection}{Admin Virtqueues}{Basic Facilities of a Virtio Device / Admin Virtqueues}
-+A device that advertises VIRTIO_F_ADMIN_VQ capability MUST support all the mandatory admin commands.
-+
-+A device that advertises VIRTIO_F_ADMIN_VQ capability MAY support one or more optional admin commands.
 diff --git a/conformance.tex b/conformance.tex
-index 9807c30..3c7b7bc 100644
+index 3c7b7bc..c183581 100644
 --- a/conformance.tex
 +++ b/conformance.tex
-@@ -342,6 +342,7 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
- \item \ref{devicenormative:Basic Facilities of a Virtio Device / Virtqueues / Available Buffer Notification Suppression}
- \item \ref{devicenormative:Basic Facilities of a Virtio Device / Shared Memory Regions}
- \item \ref{devicenormative:Reserved Feature Bits}
-+\item \ref{devicenormative:Basic Facilities of a Virtio Device / Admin Virtqueues}
+@@ -103,6 +103,7 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
+ \item \ref{drivernormative:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / PCI configuration access capability}
+ \item \ref{drivernormative:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / MSI-X Vector Configuration}
+ \item \ref{drivernormative:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Notification of Device Configuration Changes}
++\item \ref{drivernormative:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Miscellaneous configuration structure layout}
  \end{itemize}
  
- \conformance{\subsection}{PCI Device Conformance}\label{sec:Conformance / Device Conformance / PCI Device Conformance}
+ \conformance{\subsection}{MMIO Driver Conformance}\label{sec:Conformance / Driver Conformance / MMIO Driver Conformance}
+@@ -364,6 +365,7 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
+ \item \ref{devicenormative:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / MSI-X Vector Configuration}
+ \item \ref{devicenormative:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Used Buffer Notifications}
+ \item \ref{devicenormative:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Notification of Device Configuration Changes}
++\item \ref{devicenormative:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Miscellaneous configuration structure layout}
+ \end{itemize}
+ 
+ \conformance{\subsection}{MMIO Device Conformance}\label{sec:Conformance / Device Conformance / MMIO Device Conformance}
 diff --git a/content.tex b/content.tex
-index 2e1df84..163cb34 100644
+index 163cb34..0c1d44f 100644
 --- a/content.tex
 +++ b/content.tex
-@@ -99,10 +99,10 @@ \section{Feature Bits}\label{sec:Basic Facilities of a Virtio Device / Feature B
- \begin{description}
- \item[0 to 23, and 50 to 127] Feature bits for the specific device type
+@@ -712,6 +712,7 @@ \subsection{Virtio Structure PCI Capabilities}\label{sec:Virtio Transport Option
+ \item ISR Status
+ \item Device-specific configuration (optional)
+ \item PCI configuration access
++\item Miscellaneous configuration
+ \end{itemize}
  
--\item[24 to 40] Feature bits reserved for extensions to the queue and
-+\item[24 to 41] Feature bits reserved for extensions to the queue and
-   feature negotiation mechanisms
+ Each structure can be mapped by a Base Address register (BAR) belonging to
+@@ -771,6 +772,8 @@ \subsection{Virtio Structure PCI Capabilities}\label{sec:Virtio Transport Option
+ #define VIRTIO_PCI_CAP_SHARED_MEMORY_CFG 8
+ /* Vendor-specific data */
+ #define VIRTIO_PCI_CAP_VENDOR_CFG        9
++/* Miscellaneous configuration */
++#define VIRTIO_PCI_CAP_MISC_CFG          10
+ \end{lstlisting}
  
--\item[41 to 49, and 128 and above] Feature bits reserved for future extensions.
-+\item[42 to 49, and 128 and above] Feature bits reserved for future extensions.
- \end{description}
+         Any other value is reserved for future use.
+@@ -1352,6 +1355,32 @@ \subsubsection{PCI configuration access capability}\label{sec:Virtio Transport O
+ specified by some other Virtio Structure PCI Capability
+ of type other than \field{VIRTIO_PCI_CAP_PCI_CFG}.
  
- \begin{note}
-@@ -6849,6 +6849,8 @@ \chapter{Reserved Feature Bits}\label{sec:Reserved Feature Bits}
-   that the driver can reset a queue individually.
-   See \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Reset}.
- 
-+  \item[VIRTIO_F_ADMIN_VQ (41)] This feature indicates that an administration virtqueue is supported.
++\subsubsection{Miscellaneous configuration structure layout}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Miscellaneous configuration structure layout}
 +
- \end{description}
++The miscellaneous configuration structure is found at the bar and offset within the VIRTIO_PCI_CAP_MISC_CFG capability.
++Its layout is below.
++\begin{lstlisting}
++struct virtio_pci_misc_cfg {
++        le16 admin_queue_index;         /* read-only for driver */
++};
++\end{lstlisting}
++
++\begin{description}
++\item[\field{admin_queue_index}]
++        The device uses this to report the index of the admin virtqueue.
++        This field is valid only if VIRTIO_F_ADMIN_VQ is set.
++\end{description}
++
++\devicenormative{\paragraph}{Miscellaneous configuration structure layout}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Miscellaneous configuration structure layout}
++The device MUST present VIRTIO_PCI_CAP_MISC_CFG capability when VIRTIO_F_ADMIN_VQ is set.
++
++The device MUST present a valid \field{admin_queue_index} when VIRTIO_F_ADMIN_VQ is set.
++
++\drivernormative{\paragraph}{Miscellaneous configuration structure layout}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Miscellaneous configuration structure layout}
++The driver MUST NOT proceed with configuring the admin virtqueue in case VIRTIO_F_ADMIN_VQ is set and VIRTIO_PCI_CAP_MISC_CFG capability is not present.
++
++The driver MUST use the value of \field{admin_queue_index} to configure the admin virtqueue. For more details on virtqueue configuration see section \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / Virtqueue Configuration}.
++
+ \subsubsection{Legacy Interfaces: A Note on PCI Device Layout}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Legacy Interfaces: A Note on PCI Device Layout}
  
- \drivernormative{\section}{Reserved Feature Bits}{Reserved Feature Bits}
+ Transitional devices MUST present part of configuration
 -- 
 2.21.0
 
