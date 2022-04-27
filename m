@@ -1,272 +1,177 @@
-Return-Path: <jasowang@redhat.com>
+Return-Path: <virtio-dev-return-9471-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id 544C7986445
+	for <virtio-dev@lists.oasis-open.org>; Wed, 27 Apr 2022 12:48:16 +0000 (UTC)
+From: Cornelia Huck <cohuck@redhat.com>
+In-Reply-To: <20220427102559.305669-1-parav@nvidia.com>
+References: <20220427102559.305669-1-parav@nvidia.com>
+Date: Wed, 27 Apr 2022 14:48:10 +0200
+Message-ID: <87fsly7kvp.fsf@redhat.com>
 MIME-Version: 1.0
-References: <20220427102559.305669-1-parav@nvidia.com> <CACGkMEsDEJS0awDfFzR7a1aOr3+TQ6iDse5R=LRAYGxgNs4bpQ@mail.gmail.com>
- <PH0PR12MB5481FA61532231E61C96F692DCFA9@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20220427111713-mutt-send-email-mst@kernel.org> <PH0PR12MB5481CBB7E506E3DCEB11A7BFDCFA9@PH0PR12MB5481.namprd12.prod.outlook.com>
- <CACGkMEviG8JkDZkv3FBChPcKb2zWdnsZpVrh5Oa6d1C1shHdJw@mail.gmail.com>
- <PH0PR12MB5481515FBE5E8842D44AFF2DDCFD9@PH0PR12MB5481.namprd12.prod.outlook.com>
- <cb3684ef-0c6c-58ec-7eed-36e4605963e1@redhat.com> <20220428002220-mutt-send-email-mst@kernel.org>
- <CACGkMEtRcZaNAAZYyAtRgmqsB+KvVQzYFN0B+w4XUQOdD2gA7Q@mail.gmail.com> <20220428021753-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20220428021753-mutt-send-email-mst@kernel.org>
-From: Jason Wang <jasowang@redhat.com>
-Date: Thu, 28 Apr 2022 16:20:11 +0800
-Message-ID: <CACGkMEt2vgZd5q4RpO9jOO6G3oSPjQKy_g52Vw2-dQXYHJa4WQ@mail.gmail.com>
-Subject: Re: [virtio-dev] [PATCH v2] virtio: Improve queue_reset polarity to
- match to default reset state
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Parav Pandit <parav@nvidia.com>, Virtio-Dev <virtio-dev@lists.oasis-open.org>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>, Cornelia Huck <cohuck@redhat.com>, Stefan Hajnoczi <stefanha@redhat.com>
+Subject: [virtio-dev] Re: [PATCH v2] virtio: Improve queue_reset polarity to match to
+ default reset state
+Content-Type: text/plain
+To: Parav Pandit <parav@nvidia.com>, virtio-dev@lists.oasis-open.org, xuanzhuo@linux.alibaba.com, jasowang@redhat.com, mst@redhat.com
+Cc: stefanha@redhat.com, Parav Pandit <parav@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Thu, Apr 28, 2022 at 2:26 PM Michael S. Tsirkin <mst@redhat.com> wrote:
->
-> On Thu, Apr 28, 2022 at 02:10:46PM +0800, Jason Wang wrote:
-> > On Thu, Apr 28, 2022 at 12:56 PM Michael S. Tsirkin <mst@redhat.com> wr=
-ote:
-> > >
-> > > On Thu, Apr 28, 2022 at 11:43:16AM +0800, Jason Wang wrote:
-> > > >
-> > > > =E5=9C=A8 2022/4/28 11:24, Parav Pandit =E5=86=99=E9=81=93:
-> > > > >
-> > > > > > From: Jason Wang <jasowang@redhat.com>
-> > > > > > Sent: Wednesday, April 27, 2022 11:15 PM
-> > > > > >
-> > > > > > On Wed, Apr 27, 2022 at 11:39 PM Parav Pandit <parav@nvidia.com=
-> wrote:
-> > > > > > >
-> > > > > > > > From: Michael S. Tsirkin <mst@redhat.com>
-> > > > > > > > Sent: Wednesday, April 27, 2022 11:30 AM
-> > > > > > > >
-> > > > > > > > On Wed, Apr 27, 2022 at 02:51:36PM +0000, Parav Pandit wrot=
-e:
-> > > > > > > > > > From: Jason Wang <jasowang@redhat.com>
-> > > > > > > > > > Sent: Wednesday, April 27, 2022 7:30 AM
-> > > > > > > > > >
-> > > > > > > > > > On Wed, Apr 27, 2022 at 6:26 PM Parav Pandit <parav@nvi=
-dia.com>
-> > > > > > wrote:
-> > > > > > > > > > > example flow:
-> > > > > > > > > > > a) 0,0 -> device init time value
-> > > > > > > > > > > b) 1,0 -> vq is enabled by driver and working
-> > > > > > > > > > Did you see my reply in V1? What's the reason for using=
- write to
-> > > > > > > > > > clear behavior that is different from the device status=
-?
-> > > > > > > > > >
-> > > > > > > > > > We can simply make this as 1, 1 here and let the driver=
- write to
-> > > > > > > > > > 0 to reset the virtqueue.
-> > > > > > > > > >
-> > > > > > > > > > And if we do this, the queue_enable and queue_reset are=
- always
-> > > > > > > > > > the same, then we can simply reuse queue_enable.
-> > > > > > > > > >
-> > > > > > > > > Yes, I know we can make this work using new feature bit +=
- single
-> > > > > > > > queue_enable register.
-> > > > > > > > > I replied that in v0 to Michael.
-> > > > > > > > A bigger question in my eyes is that down the road we might=
- want to
-> > > > > > > > be able to stop the ring without having it lose state.
-> > > > > > > > The natural interface for that seems to be writing 0 to que=
-ue enable.
-> > > > > > > Why queue_enable and not queue_reset?
-> > > > > > >
-> > > > > > > to me this interface is unlikely performant and useful for su=
-ch case.
-> > > > > > > When we want to pause/stop the VQ and query the state we need
-> > > > > > performant scheme, that can even work in a batch for all the VQ=
-s.
-> > > > > > > At that point programming 64 registers to pause/stop VQ witho=
-ut losing
-> > > > > > state and querying its indices etc won't be scalable with regis=
-ter interface.
-> > > > > >
-> > > > > > The register interface to sync indices has already been impleme=
-nted in real
-> > > > > > hardware for years.
-> > > > > >
-> > > > > Sure. I meant to that when we want to pause a VQ and restart late=
-r use-case will require more plumbing than just enable/disable register.
-> > > > > And to do that, a register interface won't be performant/scalable=
-. So for the wider use case this may not be the good choice.
-> > > > >
-> > > > > And I explained the other reason that we lose the state informati=
-on with this busy-wait register in the other reply to V2 and summary in the=
- github issue too on Michael's request.
-> > > >
-> > > >
-> > > > I've replied to the thread.
-> > > >
-> > > >
-> > > > >
-> > > > > > > I imagine a AQ (likely) or some other interface.
-> > > > > > So did the queue_enable registers, we need to write 1 to queue_=
-enable for
-> > > > > > each virtqueue before DRIVER_OK.
-> > > > > >
-> > > > > > Where to allow writing 0 to queue_enable is orthogonal to scala=
-bility.
-> > > > > Sure, lets sync after you get chance to go through my other reply=
- to Michael about why with single busy-wait register we lose the state.
-> > > > > And hence, queue_reset register (with the fix) is better.
-> > > >
-> > > >
-> > > > Note that the MMIO transport allows writing 0 to queue_ready.
-> > > >
-> > > > Thanks
-> > >
-> > > ... without the side effect of resetting the queue state.
-> >
-> > It's unclear in the spec that whether or not we had such side effects.
->
-> ...and that makes it pretty useless without a new feature bit
->
-> > > I think ideally there should be text in MMIO stating it does not
-> > > support the reset feature at the moment,
-> >
-> > So do you mean the state is held after writing 0 to queue_ready?
->
-> I said nothing about QueueReady. I just said that we did not
-> add the reset register to MMIO yet, MMIO drivers should be
-> careful not to negotiate the reset feature bit until we
-> do and they know the reset register offset.
->
-> > What
-> > happen if driver do
-> >
-> > write 0 to queue_enable,
-> > avail_idx =3D 0,
-> > write 1 to queue_enable,
-> >
-> > ?
-> >
-> > > so devices should not expose
-> > > this feature and drivers should not acknowledge this if exposed by de=
-vice
-> > > but should not fail if it's exposed (for future expansion).
-> >
-> > I'm not sure I understand this, but it looks too late to do that? (We
-> > don't have a feature for this).
-> >
-> > Or we can simply forbid writing 0 to queue_ready until we refine this
-> > behaviour with a feature.
-> >
-> > > This is an existing spec issue, should be a separate patch.
-> > >
-> > > Regarding MMIO it is not exactly clear but I think the assumption
-> > > always was you don't disable queues after DRIVER_OK.
-> > >
-> > > Just thinking aloud, I am wondering:
-> > >
-> > >
-> > > So in the proposal, the new queue reset register does two things:
-> > > - reset the internal queue state
-> >
-> > Does the reset also mean stop?
->
-> After a queue has been reset by the driver, the device MUST NOT execute
-> any requests from that virtqueue, or notify the driver for it.
->
-> so apparently yes
->
->
-> > > - disable the queue
-> >
-> > What's the benefit of separating the functions here?
->
-> I am not separating anything *here*, just listing what happens.
-> Below I list some ideas for why disable without reset might be useful.
->
-> > >
-> > >
-> > > It seems possible to split the functionality: queue reset would just
-> > > disable counters, queue enable would disable queue.
-> >
-> > This requires hardware to synchronize the queue_reset with datapath
-> > internally which looks a little bit complicated.
->
-> this is already the case.
->
-> > > If we do
-> > > that:
-> > > 1- We need to specify what happens if we reset counters while ring is=
- enabled.
-> > >    I guess queue then has to go until ring is empty, then stop?
-> > >    Draining queue like this has value for e.g. snapshots.
-> > >    An alternative is to prohibit this transition.
-> >
-> > Does this mean we only support queue_reset after disabling the queue?
-> > If yes, this basically go back to using a single queue_enable
-> > register.
->
-> I do not think queue enable resets internal registers such as wrap
-> count.
+On Wed, Apr 27 2022, Parav Pandit <parav@nvidia.com> wrote:
 
-Right, but it looks like something we need to clarify in the spec. Or
-we can introduce new feature to formalize the behaviour.
+> Currently when driver initiates a queue reset, device is expected
+> to communicate reset status to the driver by changing the value of the
+> queue_reset register twice. First to return value other than 1 when
+> reset is ongoing, later to return 1 when queue reset is completed.
+>
+> However initially during the device reset time the queue reset value
+> is zero. queue_reset changes the value of the register to a different
+> value on reset completion. Yet another time queue_reset value is
+> expected to change when queue_select is reprogrammed.
+>
+> For example in below flow, a created virtqueue, which is disabled
+> by driver leaves the queue state as
+> queue_enable = 0, queue_reset = 1.
+>
+> example flow:
+> a) 0,0 -> device init time value
+> b) 1,0 -> vq is enabled by driver and working
+> c) 1,1 -> vq is enabled, driver initiated reset
+> d) 1,0 -> vq is enabled, but device is busy doing the reset
+> e) 0,1 -> vq reset is completed in the device and VQ is now disabled
+> (conflict with initial queue reset state #a above)
+>
+> On next iteration, when queue_select selects the same VQ again,
+> without enablement, device is confused to return 1 or 0 because
+> it was reset once before via queue_reset register.
+>
+> This demands complex device implementation to understand what
+> should be returned for a VQ that is reset using queue_reset register
+> vs other means.
+>
+> Instead, it is better and efficient to maintain the same VQ state
+> on the device when queue reset is completed.
+>
+> new proposed flow:
+> q_enable, q_reset
+> A) 0, 0 -> default, device init time
+> B) 1, 0 -> driver has enabled vq
+> C) 1, 1 -> driver started q reset
+> D) 1, 1 -> q_reset stays 1 until device is busy resetting vq
+> (device communicates that its working on resetting VQ, consistent with #C)
+> E) 0, 0 -> q_reset by device is completed, q got disabled
+> (consistent with device init time #A)
+>
+> Hence, this patch proposes a simple change to have reset register
+> polarity to be same as that of initial reset value.
+>
+> Fixes: https://github.com/oasis-tcs/virtio-spec/issues/139
+> Fixes: 12998e738621 ("virtio: pci support virtqueue reset")
+> Fixes: a4ce81a83780 ("virtio: mmio support virtqueue reset")
+> Fixes: 3b5378d70a42 ("virtio: introduce virtqueue reset as basic facility")
+> Signed-off-by: Parav Pandit <parav@nvidia.com>
+>
+> ---
+> changelog:
+> v1->v2:
+> - Fixed below comment from Xuan Zhuo
+> - Fixed the configuration and register layout text to reflect the polarity
+> v0->v1:
+> - Fixed below comments from Michael
+> - Removed example device side pseudo code for old and new polarity
+> - Removed unwanted articles 'a' and 'the'
+> - Dropped extra empty line
+> ---
+>  content.tex | 26 ++++++++++++++++----------
+>  1 file changed, 16 insertions(+), 10 deletions(-)
+>
 
->
-> > >
-> > >    By the way current spec does not make it clear what happens if
-> > >    driver keeps adding buffers to the queue after writing to
-> > >    reset. It's probably a good idea to specify that device
-> > >    should not wait to drain the queue, it should just reset,
-> > >    but again this is an existing defect so maybe a separate patch.
-> > >
-> > > 2- what happens if queue is disabled but
-> > >    without reset, and queue size changes? We do not specify.
-> > >    Maybe that has to be prohibited.
-> >
-> > Yes, after we enable a queue.
-> >
-> > >
-> > > I conclude that at some point, there is a chance we will want
-> > > to add VIRTIO_RING_F_DISABLE making queue enable writeable for
-> > > all transports after DRIVER_OK.
-> >
-> > It looks to me it's better to have a single feature for disable/rest.
-> > And it's self-contained if:
-> >
-> > 1) it holds a virtualenv state (indices)
-> > 2) allows the driver to modify the indices after it has been stopped
-> > (with another feature).
-> >
-> > This seems to cover all the use cases.
-> >
-> > Thanks
->
-> I am not 100% sure what you advocate for here. Dropping RESET
-> feature from spec completely for now, and replacing in 1.3 with
-> a feature that allows driver to modify internal device state?
+[No comment about the actual change, as I have not yet sufficiently
+thought that through, but some remarks regarding the wording]
 
-Just want to propose something that is more functional complete. It
-depends on whether we need a per virtqueue stop-and-modify. (I can't
-think of one now) So If a per device stop and resume is sufficient. We
-don't need to bother.
+> diff --git a/content.tex b/content.tex
+> index 060bdab..68b176b 100644
+> --- a/content.tex
+> +++ b/content.tex
+> @@ -1039,7 +1039,7 @@ \subsubsection{Common configuration structure layout}\label{sec:Virtio Transport
+>  \field{queue_reset} after the virtqueue is enabled with \field{queue_enable}.
+>  
+>  The device MUST reset the queue when 1 is written to \field{queue_reset}, and
+> -present a 1 in \field{queue_reset} after the queue has been reset, until the
+> +present 0 in \field{queue_reset} after the queue has been reset, until the
+>  driver re-enables the queue via \field{queue_enable} or the device is reset.
+>  The device MUST present consistent default values after queue reset.
+>  (see \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Reset}).
+> @@ -1069,10 +1069,13 @@ \subsubsection{Common configuration structure layout}\label{sec:Virtio Transport
+>  The driver MUST NOT write a 0 to \field{queue_enable}.
+>  
+>  If VIRTIO_F_RING_RESET has been negotiated, after the driver writes 1 to
+> -\field{queue_reset} to reset the queue, it MUST verify that the queue
+> -has been reset by reading back \field{queue_reset} and ensuring that it
+> -is 1. The driver MAY re-enable the queue by writing a 1 to
+> -\field{queue_enable} after ensuring that the other virtqueue fields have
+> +\field{queue_reset} to reset the queue, driver MUST verify that the queue
 
-Thanks
+s/driver/the driver/
 
-> Or something else?
->
->
->
-> > > If we do, we might want the reset register behaviour to change
-> > > if VIRTIO_RING_F_DISABLE has been negotiated.
-> > > Parav from hardware point of view, would you say such a register wher=
-e
-> > > behaviour changes depending on feature bit be too messy?
-> > >
-> > >
-> > > Overall, this makes me feel existing two register interface is
-> > > fine, reusing queue enable would make future expansion harder
-> > > while making queue enable writeable would be a new feature
-> > > and needs its own feature bit.
-> > >
-> > >
-> > > --
-> > > MST
-> > >
->
+> +has been reset by reading back \field{queue_reset} until device returns a value of 0.
+
+s/device/the device/
+
+> +Device continue to report value of 1 for the \field{queue_reset} until device finishes
+> +the queue reset request.
+
+This looks a bit odd: Shouldn't that go into the normative section for
+the device instead?
+
+> When the device completes the queue reset, \field{queue_reset}
+> +and \field{queue_enable} set to zero, indicating
+> +that specified queue is ready to be enabled again.
+
+Same here. I think a statement that the driver MUST NOT consider queue
+reset to be complete until it reads back 0 in both queue_reset and
+queue_enable is more appropriate here.
+
+> The driver MAY re-enable the queue by writing 1 to
+> +\field{queue_enable} after ensuring that other virtqueue fields have
+>  been set up correctly. The driver MAY set driver-writeable queue configuration
+>  values to different values than those that were used before the queue reset.
+>  (see \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Reset}).
+> @@ -2015,7 +2018,7 @@ \subsection{MMIO Device Register Layout}\label{sec:Virtio Transport Options / Vi
+>  \field{QueueReset} after the virtqueue is enabled with \field{QueueReady}.
+>  
+>  The device MUST reset the queue when 1 is written to \field{QueueReset}, and
+> -present a 1 in \field{QueueReset} after the queue has been reset, until the
+> +present 0 in \field{QueueReset} after the queue has been reset, until the
+>  driver re-enables the queue via \field{QueueReady} or until the device is reset.
+>  The device MUST present consistent default values after queue reset.
+>  (see \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Reset}).
+> @@ -2063,10 +2066,13 @@ \subsection{MMIO Device Register Layout}\label{sec:Virtio Transport Options / Vi
+>  it finishes handling an interrupt and MUST NOT set any of the undefined bits in the value.
+>  
+>  If VIRTIO_F_RING_RESET has been negotiated, after the driver writes 1 to
+> -\field{QueueReset} to reset the queue, it MUST verify that the queue
+> -has been reset by reading back \field{QueueReset} and ensuring that it
+> -is 1. The driver MAY re-enable the queue by writing a 1 to
+> -\field{QueueReady} after ensuring that the other virtqueue fields have
+> +\field{QueueReset} to reset the queue, driver MUST verify that the queue
+> +has been reset by reading back \field{QueueReset} until device returns a value of 0.
+> +Device continue to report value of 1 for the \field{QueueReset} until device finishes
+> +the reset. When the device completes the queue reset, \field{QueueReset} and
+> +\field{QueueReady} set to zero, indicating that specified queue is ready to be
+> +enabled again. The driver MAY re-enable the queue by writing 1 to
+> +\field{QueueReady} after ensuring that other virtqueue fields have
+>  been set up correctly. The driver MAY set driver-writeable queue configuration
+>  values to different values than those that were used before the queue reset.
+>  (see \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Reset}).
+
+Similar comments as for the pci section.
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
