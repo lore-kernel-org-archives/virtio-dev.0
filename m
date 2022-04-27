@@ -1,35 +1,56 @@
-Return-Path: <parav@nvidia.com>
-From: Parav Pandit <parav@nvidia.com>
-Subject: RE: [virtio-dev] [PATCH v2] virtio: Improve queue_reset polarity to
+Return-Path: <mst@redhat.com>
+Date: Wed, 27 Apr 2022 11:29:41 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Subject: Re: [virtio-dev] [PATCH v2] virtio: Improve queue_reset polarity to
  match to default reset state
-Date: Wed, 27 Apr 2022 14:51:36 +0000
-Message-ID: <PH0PR12MB5481FA61532231E61C96F692DCFA9@PH0PR12MB5481.namprd12.prod.outlook.com>
+Message-ID: <20220427111713-mutt-send-email-mst@kernel.org>
 References: <20220427102559.305669-1-parav@nvidia.com>
  <CACGkMEsDEJS0awDfFzR7a1aOr3+TQ6iDse5R=LRAYGxgNs4bpQ@mail.gmail.com>
-In-Reply-To: <CACGkMEsDEJS0awDfFzR7a1aOr3+TQ6iDse5R=LRAYGxgNs4bpQ@mail.gmail.com>
+ <PH0PR12MB5481FA61532231E61C96F692DCFA9@PH0PR12MB5481.namprd12.prod.outlook.com>
 MIME-Version: 1.0
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-To: Jason Wang <jasowang@redhat.com>
-Cc: Virtio-Dev <virtio-dev@lists.oasis-open.org>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>, mst <mst@redhat.com>, Cornelia Huck <cohuck@redhat.com>, Stefan Hajnoczi <stefanha@redhat.com>
+In-Reply-To: <PH0PR12MB5481FA61532231E61C96F692DCFA9@PH0PR12MB5481.namprd12.prod.outlook.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+To: Parav Pandit <parav@nvidia.com>
+Cc: Jason Wang <jasowang@redhat.com>, Virtio-Dev <virtio-dev@lists.oasis-open.org>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>, Cornelia Huck <cohuck@redhat.com>, Stefan Hajnoczi <stefanha@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-DQo+IEZyb206IEphc29uIFdhbmcgPGphc293YW5nQHJlZGhhdC5jb20+DQo+IFNlbnQ6IFdlZG5l
-c2RheSwgQXByaWwgMjcsIDIwMjIgNzozMCBBTQ0KPiANCj4gT24gV2VkLCBBcHIgMjcsIDIwMjIg
-YXQgNjoyNiBQTSBQYXJhdiBQYW5kaXQgPHBhcmF2QG52aWRpYS5jb20+IHdyb3RlOg0KPiA+DQo+
-ID4gZXhhbXBsZSBmbG93Og0KPiA+IGEpIDAsMCAtPiBkZXZpY2UgaW5pdCB0aW1lIHZhbHVlDQo+
-ID4gYikgMSwwIC0+IHZxIGlzIGVuYWJsZWQgYnkgZHJpdmVyIGFuZCB3b3JraW5nDQo+IA0KPiBE
-aWQgeW91IHNlZSBteSByZXBseSBpbiBWMT8gV2hhdCdzIHRoZSByZWFzb24gZm9yIHVzaW5nIHdy
-aXRlIHRvIGNsZWFyDQo+IGJlaGF2aW9yIHRoYXQgaXMgZGlmZmVyZW50IGZyb20gdGhlIGRldmlj
-ZSBzdGF0dXM/DQo+IA0KPiBXZSBjYW4gc2ltcGx5IG1ha2UgdGhpcyBhcyAxLCAxIGhlcmUgYW5k
-IGxldCB0aGUgZHJpdmVyIHdyaXRlIHRvIDAgdG8gcmVzZXQgdGhlDQo+IHZpcnRxdWV1ZS4NCj4g
-DQo+IEFuZCBpZiB3ZSBkbyB0aGlzLCB0aGUgcXVldWVfZW5hYmxlIGFuZCBxdWV1ZV9yZXNldCBh
-cmUgYWx3YXlzIHRoZSBzYW1lLA0KPiB0aGVuIHdlIGNhbiBzaW1wbHkgcmV1c2UgcXVldWVfZW5h
-YmxlLg0KPiANClllcywgSSBrbm93IHdlIGNhbiBtYWtlIHRoaXMgd29yayB1c2luZyBuZXcgZmVh
-dHVyZSBiaXQgKyBzaW5nbGUgcXVldWVfZW5hYmxlIHJlZ2lzdGVyLg0KSSByZXBsaWVkIHRoYXQg
-aW4gdjAgdG8gTWljaGFlbC4NCg0KSSB3YXMgbm90IHN1cmUgaG93IGRyYXN0aWMgdGhhdCB3b3Vs
-ZCBiZSBhdCB0aGlzIHBvaW50IGluIHRoZSBzcGVjIHJlbGVhc2UgY3ljbGUgdGhhdCBNaWNoYWVs
-IGhpZ2hsaWdodGVkLg0KSGVuY2UsIEkgcHJvcG9zZWQgYSBtaW5pbWFsIGNoYW5nZSBmaXggdG8g
-cXVldWVfcmVzZXQgcmVnaXN0ZXIgZ2l2ZW4gdGltZWxpbmUuDQo=
+On Wed, Apr 27, 2022 at 02:51:36PM +0000, Parav Pandit wrote:
+> 
+> > From: Jason Wang <jasowang@redhat.com>
+> > Sent: Wednesday, April 27, 2022 7:30 AM
+> > 
+> > On Wed, Apr 27, 2022 at 6:26 PM Parav Pandit <parav@nvidia.com> wrote:
+> > >
+> > > example flow:
+> > > a) 0,0 -> device init time value
+> > > b) 1,0 -> vq is enabled by driver and working
+> > 
+> > Did you see my reply in V1? What's the reason for using write to clear
+> > behavior that is different from the device status?
+> > 
+> > We can simply make this as 1, 1 here and let the driver write to 0 to reset the
+> > virtqueue.
+> > 
+> > And if we do this, the queue_enable and queue_reset are always the same,
+> > then we can simply reuse queue_enable.
+> > 
+> Yes, I know we can make this work using new feature bit + single queue_enable register.
+> I replied that in v0 to Michael.
+
+A bigger question in my eyes is that down the road we might want to
+be able to stop the ring without having it lose state.
+The natural interface for that seems to be writing 0 to queue enable.
+
+> I was not sure how drastic that would be at this point in the spec release cycle that Michael highlighted.
+> Hence, I proposed a minimal change fix to queue_reset register given timeline.
+
+Well if accepted this proposal is going to delay the release anyway.  If
+we are doing a new feature then that can love alongside the one that is
+already in the spec.
+
+
+
+-- 
+MST
 
