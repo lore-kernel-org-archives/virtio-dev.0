@@ -1,74 +1,92 @@
-Return-Path: <parav@nvidia.com>
-From: Parav Pandit <parav@nvidia.com>
-Subject: RE: [virtio-dev] [PATCH v2] virtio: Improve queue_reset polarity to
+Return-Path: <jasowang@redhat.com>
+Message-ID: <cb3684ef-0c6c-58ec-7eed-36e4605963e1@redhat.com>
+Date: Thu, 28 Apr 2022 11:43:16 +0800
+MIME-Version: 1.0
+Subject: Re: [virtio-dev] [PATCH v2] virtio: Improve queue_reset polarity to
  match to default reset state
-Date: Thu, 28 Apr 2022 03:24:37 +0000
-Message-ID: <PH0PR12MB5481515FBE5E8842D44AFF2DDCFD9@PH0PR12MB5481.namprd12.prod.outlook.com>
 References: <20220427102559.305669-1-parav@nvidia.com>
  <CACGkMEsDEJS0awDfFzR7a1aOr3+TQ6iDse5R=LRAYGxgNs4bpQ@mail.gmail.com>
  <PH0PR12MB5481FA61532231E61C96F692DCFA9@PH0PR12MB5481.namprd12.prod.outlook.com>
  <20220427111713-mutt-send-email-mst@kernel.org>
  <PH0PR12MB5481CBB7E506E3DCEB11A7BFDCFA9@PH0PR12MB5481.namprd12.prod.outlook.com>
  <CACGkMEviG8JkDZkv3FBChPcKb2zWdnsZpVrh5Oa6d1C1shHdJw@mail.gmail.com>
-In-Reply-To: <CACGkMEviG8JkDZkv3FBChPcKb2zWdnsZpVrh5Oa6d1C1shHdJw@mail.gmail.com>
-MIME-Version: 1.0
+ <PH0PR12MB5481515FBE5E8842D44AFF2DDCFD9@PH0PR12MB5481.namprd12.prod.outlook.com>
+From: Jason Wang <jasowang@redhat.com>
+In-Reply-To: <PH0PR12MB5481515FBE5E8842D44AFF2DDCFD9@PH0PR12MB5481.namprd12.prod.outlook.com>
 Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-To: Jason Wang <jasowang@redhat.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+To: Parav Pandit <parav@nvidia.com>
 Cc: "Michael S. Tsirkin" <mst@redhat.com>, Virtio-Dev <virtio-dev@lists.oasis-open.org>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>, Cornelia Huck <cohuck@redhat.com>, Stefan Hajnoczi <stefanha@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-DQoNCj4gRnJvbTogSmFzb24gV2FuZyA8amFzb3dhbmdAcmVkaGF0LmNvbT4NCj4gU2VudDogV2Vk
-bmVzZGF5LCBBcHJpbCAyNywgMjAyMiAxMToxNSBQTQ0KPiANCj4gT24gV2VkLCBBcHIgMjcsIDIw
-MjIgYXQgMTE6MzkgUE0gUGFyYXYgUGFuZGl0IDxwYXJhdkBudmlkaWEuY29tPiB3cm90ZToNCj4g
-Pg0KPiA+DQo+ID4gPiBGcm9tOiBNaWNoYWVsIFMuIFRzaXJraW4gPG1zdEByZWRoYXQuY29tPg0K
-PiA+ID4gU2VudDogV2VkbmVzZGF5LCBBcHJpbCAyNywgMjAyMiAxMTozMCBBTQ0KPiA+ID4NCj4g
-PiA+IE9uIFdlZCwgQXByIDI3LCAyMDIyIGF0IDAyOjUxOjM2UE0gKzAwMDAsIFBhcmF2IFBhbmRp
-dCB3cm90ZToNCj4gPiA+ID4NCj4gPiA+ID4gPiBGcm9tOiBKYXNvbiBXYW5nIDxqYXNvd2FuZ0By
-ZWRoYXQuY29tPg0KPiA+ID4gPiA+IFNlbnQ6IFdlZG5lc2RheSwgQXByaWwgMjcsIDIwMjIgNzoz
-MCBBTQ0KPiA+ID4gPiA+DQo+ID4gPiA+ID4gT24gV2VkLCBBcHIgMjcsIDIwMjIgYXQgNjoyNiBQ
-TSBQYXJhdiBQYW5kaXQgPHBhcmF2QG52aWRpYS5jb20+DQo+IHdyb3RlOg0KPiA+ID4gPiA+ID4N
-Cj4gPiA+ID4gPiA+IGV4YW1wbGUgZmxvdzoNCj4gPiA+ID4gPiA+IGEpIDAsMCAtPiBkZXZpY2Ug
-aW5pdCB0aW1lIHZhbHVlDQo+ID4gPiA+ID4gPiBiKSAxLDAgLT4gdnEgaXMgZW5hYmxlZCBieSBk
-cml2ZXIgYW5kIHdvcmtpbmcNCj4gPiA+ID4gPg0KPiA+ID4gPiA+IERpZCB5b3Ugc2VlIG15IHJl
-cGx5IGluIFYxPyBXaGF0J3MgdGhlIHJlYXNvbiBmb3IgdXNpbmcgd3JpdGUgdG8NCj4gPiA+ID4g
-PiBjbGVhciBiZWhhdmlvciB0aGF0IGlzIGRpZmZlcmVudCBmcm9tIHRoZSBkZXZpY2Ugc3RhdHVz
-Pw0KPiA+ID4gPiA+DQo+ID4gPiA+ID4gV2UgY2FuIHNpbXBseSBtYWtlIHRoaXMgYXMgMSwgMSBo
-ZXJlIGFuZCBsZXQgdGhlIGRyaXZlciB3cml0ZSB0bw0KPiA+ID4gPiA+IDAgdG8gcmVzZXQgdGhl
-IHZpcnRxdWV1ZS4NCj4gPiA+ID4gPg0KPiA+ID4gPiA+IEFuZCBpZiB3ZSBkbyB0aGlzLCB0aGUg
-cXVldWVfZW5hYmxlIGFuZCBxdWV1ZV9yZXNldCBhcmUgYWx3YXlzDQo+ID4gPiA+ID4gdGhlIHNh
-bWUsIHRoZW4gd2UgY2FuIHNpbXBseSByZXVzZSBxdWV1ZV9lbmFibGUuDQo+ID4gPiA+ID4NCj4g
-PiA+ID4gWWVzLCBJIGtub3cgd2UgY2FuIG1ha2UgdGhpcyB3b3JrIHVzaW5nIG5ldyBmZWF0dXJl
-IGJpdCArIHNpbmdsZQ0KPiA+ID4gcXVldWVfZW5hYmxlIHJlZ2lzdGVyLg0KPiA+ID4gPiBJIHJl
-cGxpZWQgdGhhdCBpbiB2MCB0byBNaWNoYWVsLg0KPiA+ID4NCj4gPiA+IEEgYmlnZ2VyIHF1ZXN0
-aW9uIGluIG15IGV5ZXMgaXMgdGhhdCBkb3duIHRoZSByb2FkIHdlIG1pZ2h0IHdhbnQgdG8NCj4g
-PiA+IGJlIGFibGUgdG8gc3RvcCB0aGUgcmluZyB3aXRob3V0IGhhdmluZyBpdCBsb3NlIHN0YXRl
-Lg0KPiA+ID4gVGhlIG5hdHVyYWwgaW50ZXJmYWNlIGZvciB0aGF0IHNlZW1zIHRvIGJlIHdyaXRp
-bmcgMCB0byBxdWV1ZSBlbmFibGUuDQo+ID4gV2h5IHF1ZXVlX2VuYWJsZSBhbmQgbm90IHF1ZXVl
-X3Jlc2V0Pw0KPiA+DQo+ID4gdG8gbWUgdGhpcyBpbnRlcmZhY2UgaXMgdW5saWtlbHkgcGVyZm9y
-bWFudCBhbmQgdXNlZnVsIGZvciBzdWNoIGNhc2UuDQo+ID4gV2hlbiB3ZSB3YW50IHRvIHBhdXNl
-L3N0b3AgdGhlIFZRIGFuZCBxdWVyeSB0aGUgc3RhdGUgd2UgbmVlZA0KPiBwZXJmb3JtYW50IHNj
-aGVtZSwgdGhhdCBjYW4gZXZlbiB3b3JrIGluIGEgYmF0Y2ggZm9yIGFsbCB0aGUgVlFzLg0KPiA+
-IEF0IHRoYXQgcG9pbnQgcHJvZ3JhbW1pbmcgNjQgcmVnaXN0ZXJzIHRvIHBhdXNlL3N0b3AgVlEg
-d2l0aG91dCBsb3NpbmcNCj4gc3RhdGUgYW5kIHF1ZXJ5aW5nIGl0cyBpbmRpY2VzIGV0YyB3b24n
-dCBiZSBzY2FsYWJsZSB3aXRoIHJlZ2lzdGVyIGludGVyZmFjZS4NCj4gDQo+IFRoZSByZWdpc3Rl
-ciBpbnRlcmZhY2UgdG8gc3luYyBpbmRpY2VzIGhhcyBhbHJlYWR5IGJlZW4gaW1wbGVtZW50ZWQg
-aW4gcmVhbA0KPiBoYXJkd2FyZSBmb3IgeWVhcnMuDQo+IA0KU3VyZS4gSSBtZWFudCB0byB0aGF0
-IHdoZW4gd2Ugd2FudCB0byBwYXVzZSBhIFZRIGFuZCByZXN0YXJ0IGxhdGVyIHVzZS1jYXNlIHdp
-bGwgcmVxdWlyZSBtb3JlIHBsdW1iaW5nIHRoYW4ganVzdCBlbmFibGUvZGlzYWJsZSByZWdpc3Rl
-ci4NCkFuZCB0byBkbyB0aGF0LCBhIHJlZ2lzdGVyIGludGVyZmFjZSB3b24ndCBiZSBwZXJmb3Jt
-YW50L3NjYWxhYmxlLiBTbyBmb3IgdGhlIHdpZGVyIHVzZSBjYXNlIHRoaXMgbWF5IG5vdCBiZSB0
-aGUgZ29vZCBjaG9pY2UuDQoNCkFuZCBJIGV4cGxhaW5lZCB0aGUgb3RoZXIgcmVhc29uIHRoYXQg
-d2UgbG9zZSB0aGUgc3RhdGUgaW5mb3JtYXRpb24gd2l0aCB0aGlzIGJ1c3ktd2FpdCByZWdpc3Rl
-ciBpbiB0aGUgb3RoZXIgcmVwbHkgdG8gVjIgYW5kIHN1bW1hcnkgaW4gdGhlIGdpdGh1YiBpc3N1
-ZSB0b28gb24gTWljaGFlbCdzIHJlcXVlc3QuDQoNCj4gPiBJIGltYWdpbmUgYSBBUSAobGlrZWx5
-KSBvciBzb21lIG90aGVyIGludGVyZmFjZS4NCj4gDQo+IFNvIGRpZCB0aGUgcXVldWVfZW5hYmxl
-IHJlZ2lzdGVycywgd2UgbmVlZCB0byB3cml0ZSAxIHRvIHF1ZXVlX2VuYWJsZSBmb3INCj4gZWFj
-aCB2aXJ0cXVldWUgYmVmb3JlIERSSVZFUl9PSy4NCj4gDQo+IFdoZXJlIHRvIGFsbG93IHdyaXRp
-bmcgMCB0byBxdWV1ZV9lbmFibGUgaXMgb3J0aG9nb25hbCB0byBzY2FsYWJpbGl0eS4NCg0KU3Vy
-ZSwgbGV0cyBzeW5jIGFmdGVyIHlvdSBnZXQgY2hhbmNlIHRvIGdvIHRocm91Z2ggbXkgb3RoZXIg
-cmVwbHkgdG8gTWljaGFlbCBhYm91dCB3aHkgd2l0aCBzaW5nbGUgYnVzeS13YWl0IHJlZ2lzdGVy
-IHdlIGxvc2UgdGhlIHN0YXRlLg0KQW5kIGhlbmNlLCBxdWV1ZV9yZXNldCByZWdpc3RlciAod2l0
-aCB0aGUgZml4KSBpcyBiZXR0ZXIuDQo=
+
+在 2022/4/28 11:24, Parav Pandit 写道:
+>
+>> From: Jason Wang <jasowang@redhat.com>
+>> Sent: Wednesday, April 27, 2022 11:15 PM
+>>
+>> On Wed, Apr 27, 2022 at 11:39 PM Parav Pandit <parav@nvidia.com> wrote:
+>>>
+>>>> From: Michael S. Tsirkin <mst@redhat.com>
+>>>> Sent: Wednesday, April 27, 2022 11:30 AM
+>>>>
+>>>> On Wed, Apr 27, 2022 at 02:51:36PM +0000, Parav Pandit wrote:
+>>>>>> From: Jason Wang <jasowang@redhat.com>
+>>>>>> Sent: Wednesday, April 27, 2022 7:30 AM
+>>>>>>
+>>>>>> On Wed, Apr 27, 2022 at 6:26 PM Parav Pandit <parav@nvidia.com>
+>> wrote:
+>>>>>>> example flow:
+>>>>>>> a) 0,0 -> device init time value
+>>>>>>> b) 1,0 -> vq is enabled by driver and working
+>>>>>> Did you see my reply in V1? What's the reason for using write to
+>>>>>> clear behavior that is different from the device status?
+>>>>>>
+>>>>>> We can simply make this as 1, 1 here and let the driver write to
+>>>>>> 0 to reset the virtqueue.
+>>>>>>
+>>>>>> And if we do this, the queue_enable and queue_reset are always
+>>>>>> the same, then we can simply reuse queue_enable.
+>>>>>>
+>>>>> Yes, I know we can make this work using new feature bit + single
+>>>> queue_enable register.
+>>>>> I replied that in v0 to Michael.
+>>>> A bigger question in my eyes is that down the road we might want to
+>>>> be able to stop the ring without having it lose state.
+>>>> The natural interface for that seems to be writing 0 to queue enable.
+>>> Why queue_enable and not queue_reset?
+>>>
+>>> to me this interface is unlikely performant and useful for such case.
+>>> When we want to pause/stop the VQ and query the state we need
+>> performant scheme, that can even work in a batch for all the VQs.
+>>> At that point programming 64 registers to pause/stop VQ without losing
+>> state and querying its indices etc won't be scalable with register interface.
+>>
+>> The register interface to sync indices has already been implemented in real
+>> hardware for years.
+>>
+> Sure. I meant to that when we want to pause a VQ and restart later use-case will require more plumbing than just enable/disable register.
+> And to do that, a register interface won't be performant/scalable. So for the wider use case this may not be the good choice.
+>
+> And I explained the other reason that we lose the state information with this busy-wait register in the other reply to V2 and summary in the github issue too on Michael's request.
+
+
+I've replied to the thread.
+
+
+>
+>>> I imagine a AQ (likely) or some other interface.
+>> So did the queue_enable registers, we need to write 1 to queue_enable for
+>> each virtqueue before DRIVER_OK.
+>>
+>> Where to allow writing 0 to queue_enable is orthogonal to scalability.
+> Sure, lets sync after you get chance to go through my other reply to Michael about why with single busy-wait register we lose the state.
+> And hence, queue_reset register (with the fix) is better.
+
+
+Note that the MMIO transport allows writing 0 to queue_ready.
+
+Thanks
+
 
