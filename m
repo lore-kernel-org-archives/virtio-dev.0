@@ -1,9 +1,9 @@
-Return-Path: <jasowang@redhat.com>
-Message-ID: <9a932876-1a5e-8166-57fd-f41bf4f153f5@redhat.com>
-Date: Thu, 28 Apr 2022 11:40:32 +0800
-MIME-Version: 1.0
-Subject: Re: [virtio-dev] [PATCH v2] virtio: Improve queue_reset polarity to
+Return-Path: <parav@nvidia.com>
+From: Parav Pandit <parav@nvidia.com>
+Subject: RE: [virtio-dev] [PATCH v2] virtio: Improve queue_reset polarity to
  match to default reset state
+Date: Thu, 28 Apr 2022 04:00:45 +0000
+Message-ID: <PH0PR12MB5481E73A95F36A3CE63EEA8FDCFD9@PH0PR12MB5481.namprd12.prod.outlook.com>
 References: <20220427102559.305669-1-parav@nvidia.com>
  <CACGkMEsDEJS0awDfFzR7a1aOr3+TQ6iDse5R=LRAYGxgNs4bpQ@mail.gmail.com>
  <PH0PR12MB5481FA61532231E61C96F692DCFA9@PH0PR12MB5481.namprd12.prod.outlook.com>
@@ -12,108 +12,55 @@ References: <20220427102559.305669-1-parav@nvidia.com>
  <20220427114055-mutt-send-email-mst@kernel.org>
  <PH0PR12MB5481AC52975356341A964314DCFA9@PH0PR12MB5481.namprd12.prod.outlook.com>
  <PH0PR12MB548121654DFF8442593FF26DDCFA9@PH0PR12MB5481.namprd12.prod.outlook.com>
-From: Jason Wang <jasowang@redhat.com>
-In-Reply-To: <PH0PR12MB548121654DFF8442593FF26DDCFA9@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <9a932876-1a5e-8166-57fd-f41bf4f153f5@redhat.com>
+In-Reply-To: <9a932876-1a5e-8166-57fd-f41bf4f153f5@redhat.com>
+MIME-Version: 1.0
 Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-To: Parav Pandit <parav@nvidia.com>, "Michael S. Tsirkin" <mst@redhat.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+To: Jason Wang <jasowang@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>
 Cc: Virtio-Dev <virtio-dev@lists.oasis-open.org>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>, Cornelia Huck <cohuck@redhat.com>, Stefan Hajnoczi <stefanha@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-
-在 2022/4/28 00:15, Parav Pandit 写道:
->> From: Parav Pandit
->> Sent: Wednesday, April 27, 2022 11:58 AM
->>
->> But this is so basic.
->> It's hard to gaze at this spec for coming years and the code to see, Hey
->> sometimes 0 means disabled, sometime 0 means still enabled, sometime 1
->> means enabled, and sometimes 1 means now disabled...
->> And maintain those weird code in device side and extra state bits burning
->> some expensive chip resource.
->>
->> Is removing from 1.2 is equal delay to get is fixed in 1.3?
->> If yes, I make humble request to fix this and have errata.
->> Some of the professional standard bodies release the spec and short after
->> that errata/ratification follows the release that resolve such small issues.
->> May be time for virtio spec to take this opportunity now and be bit agile on it.
->> Your call. :)
->
-> I think further, it appears a real bug that requires so special handling in the device for next years to carry.
->
-> Imagine this sequence.
-> 1. A virtio device is handed over to guest VM
-> 2. A virtio device started queue_reset sequence,
-> So register values are:
-> queue_enable = 1, q_reset=1
-> 2. guest VM poled the q_reset register.
-> Queue_enable = 1, q_reset = 0 (because device is doing the resetting the queue)
-> 3. HV suspend the VM and queried the VQ state
-
-
-Hypervisor needs to trap the access to q_reset, otherwise there will be 
-a race anyhow. So it knows the device is being reset and only after the 
-device rest is finished, it can suspend a VM.
-
-
-> VQ state returned
-> q_enable=1, q_reset = 0.
->
-> HV doesn't know what q_reset=0 mean here, is it 0 because it was never reset?
-> Or it is 0 because GVM Started the reset, but reset didn't finish?
-
-
-If the device can change any register value (e.g q_reset), it's not 
-stopped. We can't do the migration anyhow. No?
-
-
->
-> When this virtio device is restored on the other side, HV and device doesn't know how to deal with this.
->
-> A WA that all devices will implement is, not returning 0, in step_2, but return say q_reset = 0xa to indicate that its other than 1 and other than 0.
-> But hey, the destination side needs to treat this special 0xa and convert to internal q_yet_busy stage.
->
-> And this answer Jason and myself why queue_enable shouldn't be overloaded for this busy_wait register.
-
-
-Well, we've already had busy waiting register that is device_status.
-
-"""
-
-After writing 0 todevice_status, the driver MUST wait for a read 
-ofdevice_statusto return 0 before reinitializing the device.
-
-"""
-
-static void vp_reset(struct virtio_device *vdev)
-{
-         struct virtio_pci_device *vp_dev = to_vp_device(vdev);
-         struct virtio_pci_modern_device *mdev = &vp_dev->mdev;
-
-         /* 0 status means a reset. */
-         vp_modern_set_status(mdev, 0);
-         /* After writing 0 to device_status, the driver MUST wait for a 
-read of
-          * device_status to return 0 before reinitializing the device.
-          * This will flush out the status write, and flush in device 
-writes,
-          * including MSI-X interrupts, if any.
-          */
-         while (vp_modern_get_status(mdev))
-                 msleep(1);
-         /* Flush pending VQ/configuration callbacks. */
-         vp_synchronize_vectors(vdev);
-}
-
-We don't see any live migration issue with this.
-
-Thanks
-
-
-> Hence queue_reset register seems the right choice with the fix.
->
-> Starting to think of workaround even before the spec release is not elegant.
-> Lets please fix this, bug effect is expanding beyond the primary virtio device itself.
->
+DQo+IEZyb206IEphc29uIFdhbmcgPGphc293YW5nQHJlZGhhdC5jb20+DQo+IFNlbnQ6IFdlZG5l
+c2RheSwgQXByaWwgMjcsIDIwMjIgMTE6NDEgUE0NCj4gDQo+IA0KPiBIeXBlcnZpc29yIG5lZWRz
+IHRvIHRyYXAgdGhlIGFjY2VzcyB0byBxX3Jlc2V0LCBvdGhlcndpc2UgdGhlcmUgd2lsbCBiZSBh
+DQo+IHJhY2UgYW55aG93LiBTbyBpdCBrbm93cyB0aGUgZGV2aWNlIGlzIGJlaW5nIHJlc2V0IGFu
+ZCBvbmx5IGFmdGVyIHRoZSBkZXZpY2UNCj4gcmVzdCBpcyBmaW5pc2hlZCwgaXQgY2FuIHN1c3Bl
+bmQgYSBWTS4NCj4gDQpUaGUgc3RhdGUgY2FuIGNvbWUgZnJvbSB0aGUgZGV2aWNlIGRpcmVjdGx5
+IHdpdGhvdXQgdGhlIHRyYXAgdmlhIEhWIHRvIGRldmljZSBkaXJlY3QgYWNjZXNzLg0KDQo+IA0K
+PiA+IFZRIHN0YXRlIHJldHVybmVkDQo+ID4gcV9lbmFibGU9MSwgcV9yZXNldCA9IDAuDQo+ID4N
+Cj4gPiBIViBkb2Vzbid0IGtub3cgd2hhdCBxX3Jlc2V0PTAgbWVhbiBoZXJlLCBpcyBpdCAwIGJl
+Y2F1c2UgaXQgd2FzIG5ldmVyDQo+IHJlc2V0Pw0KPiA+IE9yIGl0IGlzIDAgYmVjYXVzZSBHVk0g
+U3RhcnRlZCB0aGUgcmVzZXQsIGJ1dCByZXNldCBkaWRuJ3QgZmluaXNoPw0KPiANCj4gDQo+IElm
+IHRoZSBkZXZpY2UgY2FuIGNoYW5nZSBhbnkgcmVnaXN0ZXIgdmFsdWUgKGUuZyBxX3Jlc2V0KSwg
+aXQncyBub3Qgc3RvcHBlZC4NCj4gV2UgY2FuJ3QgZG8gdGhlIG1pZ3JhdGlvbiBhbnlob3cuIE5v
+Pw0KVGhlIHN0YXRlIGlzIGluIHRoZSBkZXZpY2UsIHNvIGRlcGVuZGluZyBvbiB0aGUgZGV2aWNl
+IHR5cGUgaXQgbWF5IGJlIGFibGUgdG8gc3RvcmUgaXRzIGludGVybmFsIHN0YXRlLg0KDQo+IA0K
+PiANCj4gPg0KPiA+IFdoZW4gdGhpcyB2aXJ0aW8gZGV2aWNlIGlzIHJlc3RvcmVkIG9uIHRoZSBv
+dGhlciBzaWRlLCBIViBhbmQgZGV2aWNlIGRvZXNuJ3QNCj4ga25vdyBob3cgdG8gZGVhbCB3aXRo
+IHRoaXMuDQo+ID4NCj4gPiBBIFdBIHRoYXQgYWxsIGRldmljZXMgd2lsbCBpbXBsZW1lbnQgaXMs
+IG5vdCByZXR1cm5pbmcgMCwgaW4gc3RlcF8yLCBidXQNCj4gcmV0dXJuIHNheSBxX3Jlc2V0ID0g
+MHhhIHRvIGluZGljYXRlIHRoYXQgaXRzIG90aGVyIHRoYW4gMSBhbmQgb3RoZXIgdGhhbiAwLg0K
+PiA+IEJ1dCBoZXksIHRoZSBkZXN0aW5hdGlvbiBzaWRlIG5lZWRzIHRvIHRyZWF0IHRoaXMgc3Bl
+Y2lhbCAweGEgYW5kIGNvbnZlcnQgdG8NCj4gaW50ZXJuYWwgcV95ZXRfYnVzeSBzdGFnZS4NCj4g
+Pg0KPiA+IEFuZCB0aGlzIGFuc3dlciBKYXNvbiBhbmQgbXlzZWxmIHdoeSBxdWV1ZV9lbmFibGUg
+c2hvdWxkbid0IGJlDQo+IG92ZXJsb2FkZWQgZm9yIHRoaXMgYnVzeV93YWl0IHJlZ2lzdGVyLg0K
+PiANCj4gDQo+IFdlbGwsIHdlJ3ZlIGFscmVhZHkgaGFkIGJ1c3kgd2FpdGluZyByZWdpc3RlciB0
+aGF0IGlzIGRldmljZV9zdGF0dXMuDQo+IA0KPiAiIiINCj4gDQo+IEFmdGVyIHdyaXRpbmcgMCB0
+b2RldmljZV9zdGF0dXMsIHRoZSBkcml2ZXIgTVVTVCB3YWl0IGZvciBhIHJlYWQNCj4gb2ZkZXZp
+Y2Vfc3RhdHVzdG8gcmV0dXJuIDAgYmVmb3JlIHJlaW5pdGlhbGl6aW5nIHRoZSBkZXZpY2UuDQo+
+IA0KSSB0aGluayB5ZXMsIHdlIGNhbiBvdmVybG9hZCBxX2VuYWJsZSBidXN5IHdhaXQgdG8gcmVn
+aXN0ZXIgbGlrZSBkZXZpY2Vfc3RhdHVzLg0KUV9lbmFibGUgdHVybnMgemVybyBvbmx5IHdoZW4g
+cXVldWUgaXMgZGlzYWJsZWQsIHRpbGwgdGhhdCB0aW1lIGRyaXZlciBwb2xscyBmb3IgaXQgYW5k
+IGdldHMgMS4NCg0KSW4gdGhpcyBhcHByb2FjaCwgZXh0ZXJuYWwgcXVlcnkgZW50aXR5IHdpbGwg
+bm90IGJlIGFibGUgdG8gc2VlIG9uZ29pbmcgcXVldWUgcmVzZXQuDQpUaGlzIG1heSBiZSBvayBi
+ZWNhdXNlIGRldmljZSBpcyBhbnl3YXkgbWFpbnRhaW5pbmcgaXRzIGludGVybmFsIHN0YXRlIHJl
+Z2FyZGxlc3MuDQoNCnF1ZXVlX3Jlc2V0IHJlbW92YWwgaGFzIGZhciBtb3JlIGVkaXRvcmlhbCBj
+aGFuZ2VzLg0KQmVmb3JlIEkgdXBkYXRlIHRoZSB2NCB0byBpbmNvcnBvcmF0ZSwgcGxlYXNlIGRp
+c2N1c3Mvc3luYyB3aXRoIE1pY2hhZWwgb3Igb3RoZXJzIHdoYXQgaXMgYmVzdCBjb3Vyc2Ugb2Yg
+YWN0aW9uIGZyb20gc3BlYyB0aW1pbmcgcGVyc3BlY3RpdmUuDQogSSBhbSBvayBlaXRoZXIgd2F5
+IHRvIGRyYWZ0IGVpdGhlciBieSANCihhKSByZW1vdmFsIG9mIHF1ZXVlX3Jlc2V0IHJlZ2lzdGVy
+IGFuZCBhbGxvdyBxdWV1ZV9kaXNhYmxlIGJ5IHJlcGxhY2luZyBSSU5HX1JFU0VUIGRlZmluaXRp
+b24gaW4gdjQNCk9yDQooYikgZml4aW5nIHRoZSBwb2xhcml0eSBhcyBkb25lIGluIHYzDQo=
 
