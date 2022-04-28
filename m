@@ -1,66 +1,94 @@
-Return-Path: <parav@nvidia.com>
-From: Parav Pandit <parav@nvidia.com>
-Subject: RE: [virtio-dev] [PATCH v2] virtio: Improve queue_reset polarity to
- match to default reset state
-Date: Thu, 28 Apr 2022 04:00:45 +0000
-Message-ID: <PH0PR12MB5481E73A95F36A3CE63EEA8FDCFD9@PH0PR12MB5481.namprd12.prod.outlook.com>
-References: <20220427102559.305669-1-parav@nvidia.com>
- <CACGkMEsDEJS0awDfFzR7a1aOr3+TQ6iDse5R=LRAYGxgNs4bpQ@mail.gmail.com>
- <PH0PR12MB5481FA61532231E61C96F692DCFA9@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20220427111713-mutt-send-email-mst@kernel.org>
- <PH0PR12MB5481CBB7E506E3DCEB11A7BFDCFA9@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20220427114055-mutt-send-email-mst@kernel.org>
- <PH0PR12MB5481AC52975356341A964314DCFA9@PH0PR12MB5481.namprd12.prod.outlook.com>
- <PH0PR12MB548121654DFF8442593FF26DDCFA9@PH0PR12MB5481.namprd12.prod.outlook.com>
- <9a932876-1a5e-8166-57fd-f41bf4f153f5@redhat.com>
-In-Reply-To: <9a932876-1a5e-8166-57fd-f41bf4f153f5@redhat.com>
+Return-Path: <jasowang@redhat.com>
 MIME-Version: 1.0
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-To: Jason Wang <jasowang@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Virtio-Dev <virtio-dev@lists.oasis-open.org>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>, Cornelia Huck <cohuck@redhat.com>, Stefan Hajnoczi <stefanha@redhat.com>
+References: <20220427102559.305669-1-parav@nvidia.com> <CACGkMEsDEJS0awDfFzR7a1aOr3+TQ6iDse5R=LRAYGxgNs4bpQ@mail.gmail.com>
+ <PH0PR12MB5481FA61532231E61C96F692DCFA9@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20220427111713-mutt-send-email-mst@kernel.org> <PH0PR12MB5481CBB7E506E3DCEB11A7BFDCFA9@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20220427114055-mutt-send-email-mst@kernel.org> <PH0PR12MB5481AC52975356341A964314DCFA9@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <PH0PR12MB548121654DFF8442593FF26DDCFA9@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <9a932876-1a5e-8166-57fd-f41bf4f153f5@redhat.com> <PH0PR12MB5481E73A95F36A3CE63EEA8FDCFD9@PH0PR12MB5481.namprd12.prod.outlook.com>
+In-Reply-To: <PH0PR12MB5481E73A95F36A3CE63EEA8FDCFD9@PH0PR12MB5481.namprd12.prod.outlook.com>
+From: Jason Wang <jasowang@redhat.com>
+Date: Thu, 28 Apr 2022 14:13:42 +0800
+Message-ID: <CACGkMEsWMxXEyNKue7f8cu4m5CkUmZNexbjzK6ha5eDFCmhR1w@mail.gmail.com>
+Subject: Re: [virtio-dev] [PATCH v2] virtio: Improve queue_reset polarity to
+ match to default reset state
+Content-Type: text/plain; charset="UTF-8"
+To: Parav Pandit <parav@nvidia.com>
+Cc: "Michael S. Tsirkin" <mst@redhat.com>, Virtio-Dev <virtio-dev@lists.oasis-open.org>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>, Cornelia Huck <cohuck@redhat.com>, Stefan Hajnoczi <stefanha@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-DQo+IEZyb206IEphc29uIFdhbmcgPGphc293YW5nQHJlZGhhdC5jb20+DQo+IFNlbnQ6IFdlZG5l
-c2RheSwgQXByaWwgMjcsIDIwMjIgMTE6NDEgUE0NCj4gDQo+IA0KPiBIeXBlcnZpc29yIG5lZWRz
-IHRvIHRyYXAgdGhlIGFjY2VzcyB0byBxX3Jlc2V0LCBvdGhlcndpc2UgdGhlcmUgd2lsbCBiZSBh
-DQo+IHJhY2UgYW55aG93LiBTbyBpdCBrbm93cyB0aGUgZGV2aWNlIGlzIGJlaW5nIHJlc2V0IGFu
-ZCBvbmx5IGFmdGVyIHRoZSBkZXZpY2UNCj4gcmVzdCBpcyBmaW5pc2hlZCwgaXQgY2FuIHN1c3Bl
-bmQgYSBWTS4NCj4gDQpUaGUgc3RhdGUgY2FuIGNvbWUgZnJvbSB0aGUgZGV2aWNlIGRpcmVjdGx5
-IHdpdGhvdXQgdGhlIHRyYXAgdmlhIEhWIHRvIGRldmljZSBkaXJlY3QgYWNjZXNzLg0KDQo+IA0K
-PiA+IFZRIHN0YXRlIHJldHVybmVkDQo+ID4gcV9lbmFibGU9MSwgcV9yZXNldCA9IDAuDQo+ID4N
-Cj4gPiBIViBkb2Vzbid0IGtub3cgd2hhdCBxX3Jlc2V0PTAgbWVhbiBoZXJlLCBpcyBpdCAwIGJl
-Y2F1c2UgaXQgd2FzIG5ldmVyDQo+IHJlc2V0Pw0KPiA+IE9yIGl0IGlzIDAgYmVjYXVzZSBHVk0g
-U3RhcnRlZCB0aGUgcmVzZXQsIGJ1dCByZXNldCBkaWRuJ3QgZmluaXNoPw0KPiANCj4gDQo+IElm
-IHRoZSBkZXZpY2UgY2FuIGNoYW5nZSBhbnkgcmVnaXN0ZXIgdmFsdWUgKGUuZyBxX3Jlc2V0KSwg
-aXQncyBub3Qgc3RvcHBlZC4NCj4gV2UgY2FuJ3QgZG8gdGhlIG1pZ3JhdGlvbiBhbnlob3cuIE5v
-Pw0KVGhlIHN0YXRlIGlzIGluIHRoZSBkZXZpY2UsIHNvIGRlcGVuZGluZyBvbiB0aGUgZGV2aWNl
-IHR5cGUgaXQgbWF5IGJlIGFibGUgdG8gc3RvcmUgaXRzIGludGVybmFsIHN0YXRlLg0KDQo+IA0K
-PiANCj4gPg0KPiA+IFdoZW4gdGhpcyB2aXJ0aW8gZGV2aWNlIGlzIHJlc3RvcmVkIG9uIHRoZSBv
-dGhlciBzaWRlLCBIViBhbmQgZGV2aWNlIGRvZXNuJ3QNCj4ga25vdyBob3cgdG8gZGVhbCB3aXRo
-IHRoaXMuDQo+ID4NCj4gPiBBIFdBIHRoYXQgYWxsIGRldmljZXMgd2lsbCBpbXBsZW1lbnQgaXMs
-IG5vdCByZXR1cm5pbmcgMCwgaW4gc3RlcF8yLCBidXQNCj4gcmV0dXJuIHNheSBxX3Jlc2V0ID0g
-MHhhIHRvIGluZGljYXRlIHRoYXQgaXRzIG90aGVyIHRoYW4gMSBhbmQgb3RoZXIgdGhhbiAwLg0K
-PiA+IEJ1dCBoZXksIHRoZSBkZXN0aW5hdGlvbiBzaWRlIG5lZWRzIHRvIHRyZWF0IHRoaXMgc3Bl
-Y2lhbCAweGEgYW5kIGNvbnZlcnQgdG8NCj4gaW50ZXJuYWwgcV95ZXRfYnVzeSBzdGFnZS4NCj4g
-Pg0KPiA+IEFuZCB0aGlzIGFuc3dlciBKYXNvbiBhbmQgbXlzZWxmIHdoeSBxdWV1ZV9lbmFibGUg
-c2hvdWxkbid0IGJlDQo+IG92ZXJsb2FkZWQgZm9yIHRoaXMgYnVzeV93YWl0IHJlZ2lzdGVyLg0K
-PiANCj4gDQo+IFdlbGwsIHdlJ3ZlIGFscmVhZHkgaGFkIGJ1c3kgd2FpdGluZyByZWdpc3RlciB0
-aGF0IGlzIGRldmljZV9zdGF0dXMuDQo+IA0KPiAiIiINCj4gDQo+IEFmdGVyIHdyaXRpbmcgMCB0
-b2RldmljZV9zdGF0dXMsIHRoZSBkcml2ZXIgTVVTVCB3YWl0IGZvciBhIHJlYWQNCj4gb2ZkZXZp
-Y2Vfc3RhdHVzdG8gcmV0dXJuIDAgYmVmb3JlIHJlaW5pdGlhbGl6aW5nIHRoZSBkZXZpY2UuDQo+
-IA0KSSB0aGluayB5ZXMsIHdlIGNhbiBvdmVybG9hZCBxX2VuYWJsZSBidXN5IHdhaXQgdG8gcmVn
-aXN0ZXIgbGlrZSBkZXZpY2Vfc3RhdHVzLg0KUV9lbmFibGUgdHVybnMgemVybyBvbmx5IHdoZW4g
-cXVldWUgaXMgZGlzYWJsZWQsIHRpbGwgdGhhdCB0aW1lIGRyaXZlciBwb2xscyBmb3IgaXQgYW5k
-IGdldHMgMS4NCg0KSW4gdGhpcyBhcHByb2FjaCwgZXh0ZXJuYWwgcXVlcnkgZW50aXR5IHdpbGwg
-bm90IGJlIGFibGUgdG8gc2VlIG9uZ29pbmcgcXVldWUgcmVzZXQuDQpUaGlzIG1heSBiZSBvayBi
-ZWNhdXNlIGRldmljZSBpcyBhbnl3YXkgbWFpbnRhaW5pbmcgaXRzIGludGVybmFsIHN0YXRlIHJl
-Z2FyZGxlc3MuDQoNCnF1ZXVlX3Jlc2V0IHJlbW92YWwgaGFzIGZhciBtb3JlIGVkaXRvcmlhbCBj
-aGFuZ2VzLg0KQmVmb3JlIEkgdXBkYXRlIHRoZSB2NCB0byBpbmNvcnBvcmF0ZSwgcGxlYXNlIGRp
-c2N1c3Mvc3luYyB3aXRoIE1pY2hhZWwgb3Igb3RoZXJzIHdoYXQgaXMgYmVzdCBjb3Vyc2Ugb2Yg
-YWN0aW9uIGZyb20gc3BlYyB0aW1pbmcgcGVyc3BlY3RpdmUuDQogSSBhbSBvayBlaXRoZXIgd2F5
-IHRvIGRyYWZ0IGVpdGhlciBieSANCihhKSByZW1vdmFsIG9mIHF1ZXVlX3Jlc2V0IHJlZ2lzdGVy
-IGFuZCBhbGxvdyBxdWV1ZV9kaXNhYmxlIGJ5IHJlcGxhY2luZyBSSU5HX1JFU0VUIGRlZmluaXRp
-b24gaW4gdjQNCk9yDQooYikgZml4aW5nIHRoZSBwb2xhcml0eSBhcyBkb25lIGluIHYzDQo=
+On Thu, Apr 28, 2022 at 12:00 PM Parav Pandit <parav@nvidia.com> wrote:
+>
+>
+> > From: Jason Wang <jasowang@redhat.com>
+> > Sent: Wednesday, April 27, 2022 11:41 PM
+> >
+> >
+> > Hypervisor needs to trap the access to q_reset, otherwise there will be a
+> > race anyhow. So it knows the device is being reset and only after the device
+> > rest is finished, it can suspend a VM.
+> >
+> The state can come from the device directly without the trap via HV to device direct access.
+
+So this complicates the implementation of the hardware:
+
+1) it needs to track a state like busy resetting which seems unnecessary
+2) in the case of nesting, we need to trap anyhow
+
+>
+> >
+> > > VQ state returned
+> > > q_enable=1, q_reset = 0.
+> > >
+> > > HV doesn't know what q_reset=0 mean here, is it 0 because it was never
+> > reset?
+> > > Or it is 0 because GVM Started the reset, but reset didn't finish?
+> >
+> >
+> > If the device can change any register value (e.g q_reset), it's not stopped.
+> > We can't do the migration anyhow. No?
+> The state is in the device, so depending on the device type it may be able to store its internal state.
+>
+> >
+> >
+> > >
+> > > When this virtio device is restored on the other side, HV and device doesn't
+> > know how to deal with this.
+> > >
+> > > A WA that all devices will implement is, not returning 0, in step_2, but
+> > return say q_reset = 0xa to indicate that its other than 1 and other than 0.
+> > > But hey, the destination side needs to treat this special 0xa and convert to
+> > internal q_yet_busy stage.
+> > >
+> > > And this answer Jason and myself why queue_enable shouldn't be
+> > overloaded for this busy_wait register.
+> >
+> >
+> > Well, we've already had busy waiting register that is device_status.
+> >
+> > """
+> >
+> > After writing 0 todevice_status, the driver MUST wait for a read
+> > ofdevice_statusto return 0 before reinitializing the device.
+> >
+> I think yes, we can overload q_enable busy wait to register like device_status.
+> Q_enable turns zero only when queue is disabled, till that time driver polls for it and gets 1.
+>
+> In this approach, external query entity will not be able to see ongoing queue reset.
+
+Yes, this can simplify a lot, there's no much value in migrating
+ongoing queue rest.
+
+> This may be ok because device is anyway maintaining its internal state regardless.
+>
+> queue_reset removal has far more editorial changes.
+> Before I update the v4 to incorporate, please discuss/sync with Michael or others what is best course of action from spec timing perspective.
+>  I am ok either way to draft either by
+> (a) removal of queue_reset register and allow queue_disable by replacing RING_RESET definition in v4
+> Or
+> (b) fixing the polarity as done in v3
+
+Ok.
+
+Thanks
 
