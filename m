@@ -1,8 +1,8 @@
 Return-Path: <parav@nvidia.com>
 From: Parav Pandit <parav@nvidia.com>
-Subject: [PATCH v5] virtio: Improve queue_reset polarity to match to default reset state
-Date: Fri, 29 Apr 2022 18:31:40 +0300
-Message-ID: <20220429153140.361874-1-parav@nvidia.com>
+Subject: [PATCH v4] virtio: Improve queue_reset polarity to match to default reset state
+Date: Fri, 29 Apr 2022 01:16:37 +0300
+Message-ID: <20220428221637.348443-1-parav@nvidia.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 Content-Type: text/plain
@@ -67,15 +67,10 @@ Fixes: https://github.com/oasis-tcs/virtio-spec/issues/139
 Fixes: 12998e738621 ("virtio: pci support virtqueue reset")
 Fixes: a4ce81a83780 ("virtio: mmio support virtqueue reset")
 Fixes: 3b5378d70a42 ("virtio: introduce virtqueue reset as basic facility")
-Reviewed-by: Jason Wang <jasowang@redhat.com>
-Reviewed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 Signed-off-by: Parav Pandit <parav@nvidia.com>
 
 ---
 changelog:
-v4->v5:
- - Fixed better wordings suggested by Cornelia
- - Added Xuan's and Jason's reviewed-by to commit log
 v3->v4:
 - removed incorrect requirement to read queue_enable on resetting
   the queue
@@ -102,7 +97,7 @@ v0->v1:
  1 file changed, 20 insertions(+), 28 deletions(-)
 
 diff --git a/content.tex b/content.tex
-index 060bdab..7508dd1 100644
+index 060bdab..fdd255d 100644
 --- a/content.tex
 +++ b/content.tex
 @@ -1029,19 +1029,15 @@ \subsubsection{Common configuration structure layou=
@@ -129,11 +124,11 @@ t.
 -The device MUST present consistent default values after queue reset.
 +The device MUST reset the queue when 1 is written to \field{queue_reset}. =
 The
-+device MUST continue to present 1 in \field{queue_reset} as long as the qu=
-eue reset
-+is ongoing. The device MUST present 0 in both \field{queue_reset} and \fie=
-ld{queue_enable}
-+when queue reset has completed.
++device MUST continue to present 1 in \field{queue_reset} when the queue re=
+set
++is ongoing. The device MUST present 0 in \field{queue_reset} and \field{qu=
+eue_enable}
++when queue reset completes.
  (see \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue=
  Reset}).
 =20
@@ -189,11 +184,11 @@ reset.
 -The device MUST present consistent default values after queue reset.
 +The device MUST reset the queue when 1 is written to \field{QueueReset}. T=
 he
-+device MUST continue to present 1 in \field{QueueReset} as long as the que=
-ue reset
-+is ongoing. The device MUST present 0 in both \field{QueueReset} and \fiel=
-d{QueueReady}
-+when queue reset has completed.
++device MUST continue to present 1 in \field{QueueReset} when the queue res=
+et
++is ongoing. The device MUST present 0 in \field{QueueReset} and \field{Que=
+ueReady}
++when queue reset completes.
  (see \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue=
  Reset}).
 =20
