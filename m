@@ -1,92 +1,131 @@
-Return-Path: <virtio-dev-return-9517-cohuck=redhat.com@lists.oasis-open.org>
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id BAD6D986349
-	for <virtio-dev@lists.oasis-open.org>; Mon,  2 May 2022 12:19:50 +0000 (UTC)
-From: Cornelia Huck <cohuck@redhat.com>
-In-Reply-To: <20220429153140.361874-1-parav@nvidia.com>
-References: <20220429153140.361874-1-parav@nvidia.com>
-Date: Mon, 02 May 2022 14:19:44 +0200
-Message-ID: <871qxc6s9r.fsf@redhat.com>
+Return-Path: <virtio-return-3718-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio@lists.oasis-open.org>
+List-Post: <mailto:virtio@lists.oasis-open.org>
+List-Help: <mailto:virtio-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
+Date: Mon, 2 May 2022 07:40:36 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20220502113914.20119-1-mst@redhat.com>
 MIME-Version: 1.0
-Subject: [virtio-dev] Re: [PATCH v5] virtio: Improve queue_reset polarity to match to
- default reset state
-Content-Type: text/plain
-To: Parav Pandit <parav@nvidia.com>, virtio-dev@lists.oasis-open.org, xuanzhuo@linux.alibaba.com, jasowang@redhat.com, mst@redhat.com, virtio-comment@lists.oasis-open.org
-Cc: stefanha@redhat.com, Parav Pandit <parav@nvidia.com>
+Subject: [virtio] [PATCH] acknowledgements: update for 1.2
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+To: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+Cc: virtio@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Fri, Apr 29 2022, Parav Pandit <parav@nvidia.com> wrote:
+To keep things simple I decided to just move the previous content
+to a historical acknowledgements section and add a new one.
 
-> Currently when driver initiates a queue reset, device is expected
-> to communicate reset status to the driver by changing the value of the
-> queue_reset register twice. First to return value other than 1 when
-> reset is ongoing, later to return 1 when queue reset is completed.
->
-> However initially during the device reset time the queue reset value
-> is zero. queue_reset changes the value of the register to a different
-> value on reset completion. Yet another time queue_reset value is
-> expected to change when queue_select is reprogrammed.
->
-> For example in below flow, a created virtqueue, which is disabled
-> by driver leaves the queue state as
-> queue_enable = 0, queue_reset = 1.
->
-> example flow:
-> a) 0,0 -> device init time value
-> b) 1,0 -> vq is enabled by driver and working
-> c) 1,1 -> vq is enabled, driver initiated reset
-> d) 0,0 -> queue reset is ongoing
->    conflicts with #a, because queue is still enabled in device
->    whose reset is in progress.
->    External entity has no knowledge if VQ is undergoing reset or
->    VQ is never enabled.
-> e) 0,1 -> queue reset is completed (conflicts with #a initial value)
->
-> On next iteration, when queue_select selects the same VQ again,
-> without enablement, device is confused to return 1 or 0 because
-> it was reset once before via queue_reset register.
->
-> This demands complex device implementation to understand what
-> should be returned for a VQ that is reset using queue_reset register
-> vs other means.
->
-> Additionally, external entity that may have to manage a virtio device
-> cannot distinguish between #a and #d, whether a VQ is not yet enabled
-> or it is in use and undergoing a reset.
->
-> Instead, it is better and efficient to maintain the same VQ state
-> on the device when queue reset is completed.
->
-> new proposed flow:
-> q_enable, q_reset
-> A) 0, 0 -> default, device init time
-> B) 1, 0 -> driver has enabled vq
-> C) 1, 1 -> driver started q reset
-> D) 1, 1 -> q_reset stays 1 until device is busy resetting vq
-> (device communicates that its working on resetting VQ, consistent with #C)
-> E) 0, 0 -> q_reset by device is completed, q got disabled
-> (consistent with device init time #A)
->
-> Hence, this patch proposes a simple change to have reset register
-> polarity to be same as that of initial reset value.
->
-> Fixes: https://github.com/oasis-tcs/virtio-spec/issues/139
-> Fixes: 12998e738621 ("virtio: pci support virtqueue reset")
-> Fixes: a4ce81a83780 ("virtio: mmio support virtqueue reset")
-> Fixes: 3b5378d70a42 ("virtio: introduce virtqueue reset as basic facility")
-> Reviewed-by: Jason Wang <jasowang@redhat.com>
-> Reviewed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> Signed-off-by: Parav Pandit <parav@nvidia.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+---
 
-LGTM now.
+
+ acknowledgements.tex | 75 +++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 74 insertions(+), 1 deletion(-)
+
+diff --git a/acknowledgements.tex b/acknowledgements.tex
+index 4520cd3..1c0a155 100644
+--- a/acknowledgements.tex
++++ b/acknowledgements.tex
+@@ -5,6 +5,78 @@ \chapter{Acknowledgements}\label{chap:Acknowledgements}
+=20
+ The following individuals have participated in the creation of this specif=
+ication and are gratefully acknowledged:
+=20
++\subsection*{Participants}
++Alexander Duyck, Intel \newline
++Alex Benn=C3=A9e, Linaro \newline
++Anton Yakovlev, OpenSynergy \newline
++Arseny Krasnov, Kaspersky Lab \newline
++Cornelia Huck, Red Hat \newline
++David Hildenbrand, Red Hat \newline
++David Stevens, Chromium \newline
++Dr. David Alan Gilbert, Red Hat \newline
++Enrico Granata, Google \newline
++Eugenio P=C3=A9rez, Red Hat \newline
++Felipe Franciosi, Nutanix \newline
++Gaetan Harter, OpenSynergy \newline
++Gerd Hoffmann, Red Hat \newline
++Gurchetan Singh, Chromium \newline
++Halil Pasic, IBM \newline
++Hao Chen, Google \newline
++Huang Yang, Intel \newline
++Jan Kiszka, Siemens \newline
++Jean-Philippe Brucker, Linaro \newline
++Jiang Wang, Bytedance \newline
++Jie Deng, Intel \newline
++Joel Nider, Individual \newline
++Johannes Berg, Intel \newline
++Junji Wei, Bytedance \newline
++Keiichi Watanabe, Chromium \newline
++Marcel Holtmann, Individual \newline
++Max Gurtovoy, Nvidia \newline
++Michael S. Tsirkin, Red Hat \newline
++Nikos Dragazis, Arrikto \newline
++Pankaj Gupta, Red Hat \newline
++Paolo Bonzini, Red Hat \newline
++Parav Pandit, Nvidia \newline
++Peter Hilber, OpenSynergy \newline
++Petre Eftime, Amazon \newline
++Philipp Hahn, Univention \newline
++Rob Bradford, Intel \newline
++Stefan Fritsch, Individual \newline
++Stefan Hajnoczi, Red Hat \newline
++Stefano Garzarella, Red Hat \newline
++Taylor Stark, Microsoft \newline
++Tiwei Bie, Intel \newline
++Viresh Kumar, Linaro \newline
++Vitaly Mireyno, Marvell \newline
++Xuan Zhuo, Alibaba \newline
++Yadong Qi, Intel \newline
++Yoni Bettan, Red Hat \newline
++Yuri Benditovich, Red Hat / Daynix \newline
++
++The following non-members have provided valuable feedback on this
++specification and are gratefully acknowledged:
++
++\subsection*{Reviewers}
++Christophe de Dinechin, Red Hat \newline
++Gil Savir, Intel \newline
++Ruchika Gupta, Linaro \newline
++Arnd Bergmann, Individual \newline
++Bing Zhu, Intel \newline
++Eduardo Habkost, Red Hat \newline
++Eric Auger, Red Hat \newline
++Jason Wang, Red Hat \newline
++Jens Freimann, Red Hat \newline
++Kevin Tian, Intel \newline
++Linus Walleij, Linaro \newline
++Matti M=C3=B6ll, OpenSynergy \newline
++Tomas Winkler, Intel \newline
++Yang Huang, Intel \newline
++
++
++The following individuals have participated in the creation of
++previous versions of this specification and are gratefully acknowledged:
++
+ \subsection*{Participants}
+ Allen Chia, Oracle=09\newline
+ Amit Shah,=09Red Hat=09\newline
+@@ -59,7 +131,8 @@ \subsection*{Participants}
+ Wei Wang, Intel=09\newline
+ Xin Zeng, Intel=09\newline
+=20
+-The following non-members have provided valuable feedback on this
++The following non-members have provided valuable feedback on
++previous versions of this
+ specification and are gratefully acknowledged:
+=20
+ \subsection*{Reviewers}
+--=20
+MST
 
 
 ---------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+To unsubscribe from this mail list, you must leave the OASIS TC that=20
+generates this mail.  Follow this link to all your TCs in OASIS at:
+https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php=20
 
