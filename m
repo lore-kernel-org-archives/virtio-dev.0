@@ -1,124 +1,90 @@
-Return-Path: <virtio-dev-return-9518-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-9517-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 276EB9863EB
-	for <virtio-dev@lists.oasis-open.org>; Tue,  3 May 2022 13:00:53 +0000 (UTC)
-Message-ID: <43a6caa0-d771-c5ca-c043-ea16f0bbda45@bytedance.com>
-Date: Tue, 3 May 2022 14:00:49 +0100
+	by lists.oasis-open.org (Postfix) with ESMTP id BAD6D986349
+	for <virtio-dev@lists.oasis-open.org>; Mon,  2 May 2022 12:19:50 +0000 (UTC)
+From: Cornelia Huck <cohuck@redhat.com>
+In-Reply-To: <20220429153140.361874-1-parav@nvidia.com>
+References: <20220429153140.361874-1-parav@nvidia.com>
+Date: Mon, 02 May 2022 14:19:44 +0200
+Message-ID: <871qxc6s9r.fsf@redhat.com>
 MIME-Version: 1.0
-References: <20220408174441.1002578-1-usama.arif@bytedance.com>
-From: Usama Arif <usama.arif@bytedance.com>
-In-Reply-To: <20220408174441.1002578-1-usama.arif@bytedance.com>
-Subject: [virtio-dev] Re: [PATCH v2 0/4] Introduce aux. notifications and virtio-vhost-user
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: virtio-dev@lists.oasis-open.org, stefanha@redhat.com, mst@redhat.com
-Cc: ndragazis@arrikto.com, fam.zheng@bytedance.com, liangma@liangbit.com
+Subject: [virtio-dev] Re: [PATCH v5] virtio: Improve queue_reset polarity to match to
+ default reset state
+Content-Type: text/plain
+To: Parav Pandit <parav@nvidia.com>, virtio-dev@lists.oasis-open.org, xuanzhuo@linux.alibaba.com, jasowang@redhat.com, mst@redhat.com, virtio-comment@lists.oasis-open.org
+Cc: stefanha@redhat.com, Parav Pandit <parav@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+On Fri, Apr 29 2022, Parav Pandit <parav@nvidia.com> wrote:
 
+> Currently when driver initiates a queue reset, device is expected
+> to communicate reset status to the driver by changing the value of the
+> queue_reset register twice. First to return value other than 1 when
+> reset is ongoing, later to return 1 when queue reset is completed.
+>
+> However initially during the device reset time the queue reset value
+> is zero. queue_reset changes the value of the register to a different
+> value on reset completion. Yet another time queue_reset value is
+> expected to change when queue_select is reprogrammed.
+>
+> For example in below flow, a created virtqueue, which is disabled
+> by driver leaves the queue state as
+> queue_enable = 0, queue_reset = 1.
+>
+> example flow:
+> a) 0,0 -> device init time value
+> b) 1,0 -> vq is enabled by driver and working
+> c) 1,1 -> vq is enabled, driver initiated reset
+> d) 0,0 -> queue reset is ongoing
+>    conflicts with #a, because queue is still enabled in device
+>    whose reset is in progress.
+>    External entity has no knowledge if VQ is undergoing reset or
+>    VQ is never enabled.
+> e) 0,1 -> queue reset is completed (conflicts with #a initial value)
+>
+> On next iteration, when queue_select selects the same VQ again,
+> without enablement, device is confused to return 1 or 0 because
+> it was reset once before via queue_reset register.
+>
+> This demands complex device implementation to understand what
+> should be returned for a VQ that is reset using queue_reset register
+> vs other means.
+>
+> Additionally, external entity that may have to manage a virtio device
+> cannot distinguish between #a and #d, whether a VQ is not yet enabled
+> or it is in use and undergoing a reset.
+>
+> Instead, it is better and efficient to maintain the same VQ state
+> on the device when queue reset is completed.
+>
+> new proposed flow:
+> q_enable, q_reset
+> A) 0, 0 -> default, device init time
+> B) 1, 0 -> driver has enabled vq
+> C) 1, 1 -> driver started q reset
+> D) 1, 1 -> q_reset stays 1 until device is busy resetting vq
+> (device communicates that its working on resetting VQ, consistent with #C)
+> E) 0, 0 -> q_reset by device is completed, q got disabled
+> (consistent with device init time #A)
+>
+> Hence, this patch proposes a simple change to have reset register
+> polarity to be same as that of initial reset value.
+>
+> Fixes: https://github.com/oasis-tcs/virtio-spec/issues/139
+> Fixes: 12998e738621 ("virtio: pci support virtqueue reset")
+> Fixes: a4ce81a83780 ("virtio: mmio support virtqueue reset")
+> Fixes: 3b5378d70a42 ("virtio: introduce virtqueue reset as basic facility")
+> Reviewed-by: Jason Wang <jasowang@redhat.com>
+> Reviewed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> Signed-off-by: Parav Pandit <parav@nvidia.com>
 
-On 08/04/2022 18:44, Usama Arif wrote:
-> Hi,
-> 
-> This patch series introduces device and driver auxiliary notifications
-> as a new set of virtio device resources, as well as vhost-user device
-> backend that uses these resources.
-> 
-> Driver auxiliary notifications allow the device to send notifications
-> other than configuration changes and used buffer notifications to the
-> driver, these are optional and their meaning is **device-specific**.
-> 
-> Device auxiliary notifcations allow the driver to send notifcations
-> other than available buffer notifications to the device for example
-> through a device register, these are optional and their meaning is
-> **device-specific**.
-> 
-> These resources are used in the last patch by the virtio-vhost-user
-> device in order to send/receive notifications to/from the driver
-> regarding activity on the vhost-user virtqueues. By standardizing
-> these resources as standalone virtio device resources, other future
-> devices will be able to use them as well.
-> 
-> The last patch introduces the vhost-user device backend which facilitates
-> vhost-user device emulation through vhost-user protocol exchanges and
-> access to shared memory. Software-defined networking, storage, and other
-> I/O appliances can provide services through this device.
-> 
-> This device is based on Wei Wang's vhost-pci work. The virtio-vhost-user
-> device differs from vhost-pci because it is a single virtio
-> device type that exposes the vhost-user protocol instead of a family of
-> new virtio device types, one for each vhost-user device type.
-> 
-> A HTML version with the changes is available at [1].
-> 
-> For more information about virtio-vhost-user, see [2].
-> 
-> These patches are based on the work initially done by Stefan Hajnoczi [2]
-> and continued by Nikos Dragazis [3], [4].
-> 
-> A working prototype implementing this spec can be reproduced using
-> instructions in [5] utilizing work done on top of v6.2.50 QEMU [6] and
-> 22.03.0-rc4 DPDK [7].
-> This is also based on the work initially done by Stefan
-> and continued later by Nikos. The prototype code uses the terms
-> "doorbell"/"device-specific notification" and "master"/"slave" instead of
-> "device auxiliary notification"/"driver auxiliary notification" and
-> "frontend"/"backend". This is based on older work, however, their
-> functionality is the same. If these virtio-spec changes get approved,
-> I will refractor the patches for QEMU/DPDK and send them for review
-> according to the final patches in the respective mailing list.
-> 
-> Thanks and looking forward to your response!
-> Usama
+LGTM now.
 
-Hi,
-
-Just wanted to check if there were any feedback/comments on the v2 of 
-the patch?
-
-Thanks!
-Usama
-
-> 
-> [1] https://uarif1.github.io/vvu/v2/virtio-v1.1-cs01
-> [2] https://wiki.qemu.org/Features/VirtioVhostUser
-> [3] https://ndragazis.github.io/dpdk-vhost-vvu-demo.html
-> [4] https://lists.oasis-open.org/archives/virtio-dev/202005/msg00132.html
-> [5] https://uarif1.github.io/vvu/dpdk-vvu-instructions
-> [6] https://github.com/uarif1/qemu/tree/vvu
-> [7] https://github.com/uarif1/dpdk/tree/vvu
-> ----------
-> v1->v2:
-> - Shortened device aux. notification section
-> - Make data width of device aux. notifications device specific and not
->    limited to 2 bytes.
-> - Added information about the minimum number of MSIX vectors.
-> - Split virtio-mmio implementation of driver aux. notifications into 2
->    registers, DeviceAuxNotificationIndex and DeviceAuxNotificationData.
-> - Made the shared memory section in virtio vhost-user clearer and added
->    the shared memory would look like when
->    VHOST_USER_PROTOCOL_F_CONFIGURE_MEM_SLOTS has been negotiated.
-> 
-> 
-> Usama Arif (4):
->    content: Introduce driver/device auxiliary notifications
->    content: Introduce driver/device aux. notification cfg type for PCI
->    content: Introduce driver/device auxiliary notifications for MMIO
->    vhost-user: add vhost-user device type
-> 
->   conformance.tex       |  29 ++++-
->   content.tex           | 254 ++++++++++++++++++++++++++++++------
->   introduction.tex      |   3 +
->   virtio-vhost-user.tex | 294 ++++++++++++++++++++++++++++++++++++++++++
->   4 files changed, 539 insertions(+), 41 deletions(-)
->   create mode 100644 virtio-vhost-user.tex
-> 
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
