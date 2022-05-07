@@ -1,368 +1,205 @@
-Return-Path: <virtio-dev-return-9571-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-9519-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 87E199862AE
-	for <virtio-dev@lists.oasis-open.org>; Tue, 31 May 2022 06:35:15 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id A6E59986481
+	for <virtio-dev@lists.oasis-open.org>; Sat,  7 May 2022 07:15:38 +0000 (UTC)
+From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Date: Sat,  7 May 2022 15:15:33 +0800
+Message-Id: <20220507071533.104000-1-xuanzhuo@linux.alibaba.com>
 MIME-Version: 1.0
-References: <24d684572923c7171ccffa365e14526223ccb881.1652798338.git.pabeni@redhat.com>
-In-Reply-To: <24d684572923c7171ccffa365e14526223ccb881.1652798338.git.pabeni@redhat.com>
-From: Jason Wang <jasowang@redhat.com>
-Date: Tue, 31 May 2022 14:34:56 +0800
-Message-ID: <CACGkMEtXUdOgity7UB=f5hTs-sqrzFy_3rKQWnSf4EmNzz+LRg@mail.gmail.com>
-Subject: Re: [virtio-dev] [PATCH] virtio-net: define UDP tunnel offload feature
-Content-Type: text/plain; charset="UTF-8"
-To: Paolo Abeni <pabeni@redhat.com>
-Cc: Virtio-Dev <virtio-dev@lists.oasis-open.org>
+Subject: [virtio-dev] [PATCH v2] virtio_net: support split header
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="US-ASCII"; x-default=true
+To: virtio-dev@lists.oasis-open.org
+Cc: jasowang@redhat.com, "Michael S. Tsirkin" <mst@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, May 18, 2022 at 6:16 PM Paolo Abeni <pabeni@redhat.com> wrote:
->
-> The VIRTIO_NET_HDR_GSO_UDP_TUNNEL is a gso_type flags allowing
-> GSO over UDP tunnel. It can be negotiated on both the host and
-> guest side.
->
-> UDP tunnel usage is ubiquitous in container deployment, and the
-> ability to offload UDP encapsulated GSO traffic impacts greatly
-> the performances and the CPU utilization of such use-case
->
-> To keep the design relatively simple, this copes only with tunneling
-> scenarios including an inner ethernet MAC header - e.g. inner network
-> on top of the UDP encapsulation is not allowed.
->
-> Other than that the new flag is designed to be independent from the
-> specific UDP tunnel encapsulation - geneve, vxlan, etc.
->
-> The outer UDP header may carry a second checksum, which can be
-> offloaded independently from the inner one. We don't need to specify
-> the location of such checksum, as both the host and the guest can infer
-> its location the same way they currently do for the transport header for
-> plain GSO packets.
+The purpose of this feature is to split the header and the payload of
+the packet.
 
-I'm not sure I get this, the transport header is set based on
-csum_start currently. More below.
+|                    receive buffer                                    |
+|                       0th descriptor             | 1th descriptor    |
+| virtnet hdr | mac | ip hdr | tcp hdr|<-- hold -->|   payload         |
 
->
-> One constraint addressed here is that the virtio side (either device or
-> driver) receiving an UDP tunneled GSO packet must be able to reconstruct
-> completely the inner and outer headers offset - to allow for later GSO.
->
-> To accommodate such need the hdr_len field is [re-]used: when
-> the UDP tunnel feature is negotiated and the VIRTIO_NET_HDR_GSO_UDP_TUNNEL
-> is set, such field is used to identify the inner network header.
->
-> All the other inner/outer headers location can be computed from the
-> above info.
->
-> Note that when the VIRTIO_NET_HDR_GSO_UDP_TUNNEL flag is not set,
-> the current semantic for the hdr_hen field does not change.
->
-> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-> ---
->  content.tex | 110 +++++++++++++++++++++++++++++++++++++++++++++-------
->  1 file changed, 96 insertions(+), 14 deletions(-)
->
-> diff --git a/content.tex b/content.tex
-> index c6f116c..8825d81 100644
-> --- a/content.tex
-> +++ b/content.tex
-> @@ -3092,6 +3092,16 @@ \subsection{Feature bits}\label{sec:Device Types / Network Device / Feature bits
->  \item[VIRTIO_NET_F_CTRL_MAC_ADDR(23)] Set MAC address through control
->      channel.
->
-> +\item[VIRTIO_NET_F_GUEST_UDP_TUNNEL (54)] Driver can receive GSO packets
-> +  carried by an UDP tunnel. The tunnel encapsulation is constrained to have
-> +  constant size and carring an inner ethernet header. e.g. alike vxlan and
+We can use a buffer plus a separate page when allocating the receive
+buffer. In this way, we can ensure that all payloads can be
+independently in a page, which is very beneficial for the zerocopy
+implemented by the upper layer.
 
-I think you mean "carrying" here.
+Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+---
+ conformance.tex |  2 ++
+ content.tex     | 72 +++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 74 insertions(+)
 
-> +  geneve defaults.
-> +
-> +\item[VIRTIO_NET_F_HOST_UDP_TUNNEL (55)] Device can receive GSO packets
-> +  carried by an UDP tunnel. The tunnel encapsulation is constrained to have
-> +  constant size and carring an inner ethernet header. e.g. alike vxlan and
-
-And here.
-
-> +  geneve defaults.
-> +
->  \item[VIRTIO_NET_F_HOST_USO (56)] Device can receive USO packets. Unlike UFO
->   (fragmenting the packet) the USO splits large UDP packet
->   to several segments when each of these smaller packets has UDP header.
-> @@ -3125,12 +3135,14 @@ \subsubsection{Feature bit requirements}\label{sec:Device Types / Network Device
->  \item[VIRTIO_NET_F_GUEST_TSO6] Requires VIRTIO_NET_F_GUEST_CSUM.
->  \item[VIRTIO_NET_F_GUEST_ECN] Requires VIRTIO_NET_F_GUEST_TSO4 or VIRTIO_NET_F_GUEST_TSO6.
->  \item[VIRTIO_NET_F_GUEST_UFO] Requires VIRTIO_NET_F_GUEST_CSUM.
-> +\item[VIRTIO_NET_F_GUEST_UDP_TUNNEL] Requires VIRTIO_NET_F_GUEST_TSO4 or VIRTIO_NET_F_GUEST_TSO6
->
->  \item[VIRTIO_NET_F_HOST_TSO4] Requires VIRTIO_NET_F_CSUM.
->  \item[VIRTIO_NET_F_HOST_TSO6] Requires VIRTIO_NET_F_CSUM.
->  \item[VIRTIO_NET_F_HOST_ECN] Requires VIRTIO_NET_F_HOST_TSO4 or VIRTIO_NET_F_HOST_TSO6.
->  \item[VIRTIO_NET_F_HOST_UFO] Requires VIRTIO_NET_F_CSUM.
->  \item[VIRTIO_NET_F_HOST_USO] Requires VIRTIO_NET_F_CSUM.
-> +\item[VIRTIO_NET_F_HOST_UDP_TUNNEL] Requires VIRTIO_NET_F_HOST_TSO4, VIRTIO_NET_F_HOST_TSO6 or VIRTIO_NET_F_HOST_USO
->
->  \item[VIRTIO_NET_F_CTRL_RX] Requires VIRTIO_NET_F_CTRL_VQ.
->  \item[VIRTIO_NET_F_CTRL_VLAN] Requires VIRTIO_NET_F_CTRL_VQ.
-> @@ -3337,6 +3349,9 @@ \subsection{Device Initialization}\label{sec:Device Types / Network Device / Dev
->    segmentation/fragmentation offload by negotiating the VIRTIO_NET_F_HOST_TSO4 (IPv4
->    TCP), VIRTIO_NET_F_HOST_TSO6 (IPv6 TCP), VIRTIO_NET_F_HOST_UFO
->    (UDP fragmentation) and VIRTIO_NET_F_HOST_USO (UDP segmentation) features.
-> +  Additionally, it can negotiate the VIRTIO_NET_F_HOST_UDP_TUNNEL feature to
-> +  use TCP segmentation or UDP segmentation on top of UDP encapsulation,
-> +  respecting the other negotiated features.
->
->  \item The converse features are also available: a driver can save
->    the virtual device some work by negotiating these features.\note{For example, a network packet transported between two guests on
-> @@ -3345,8 +3360,8 @@ \subsection{Device Initialization}\label{sec:Device Types / Network Device / Dev
->     The VIRTIO_NET_F_GUEST_CSUM feature indicates that partially
->    checksummed packets can be received, and if it can do that then
->    the VIRTIO_NET_F_GUEST_TSO4, VIRTIO_NET_F_GUEST_TSO6,
-> -  VIRTIO_NET_F_GUEST_UFO and VIRTIO_NET_F_GUEST_ECN are the input
-> -  equivalents of the features described above.
-> +  VIRTIO_NET_F_GUEST_UFO, VIRTIO_NET_F_GUEST_ECN and VIRTIO_NET_F_GUEST_UDP_TUNNEL
-> +  are the input equivalents of the features described above.
->    See \ref{sec:Device Types / Network Device / Device Operation /
->  Setting Up Receive Buffers}~\nameref{sec:Device Types / Network
->  Device / Device Operation / Setting Up Receive Buffers} and
-> @@ -3370,12 +3385,14 @@ \subsection{Device Operation}\label{sec:Device Types / Network Device / Device O
->  #define VIRTIO_NET_HDR_F_NEEDS_CSUM    1
->  #define VIRTIO_NET_HDR_F_DATA_VALID    2
->  #define VIRTIO_NET_HDR_F_RSC_INFO      4
-> +#define VIRTIO_NET_HDR_F_UDP_TUNNEL_CSUM 8
->          u8 flags;
->  #define VIRTIO_NET_HDR_GSO_NONE        0
->  #define VIRTIO_NET_HDR_GSO_TCPV4       1
->  #define VIRTIO_NET_HDR_GSO_UDP         3
->  #define VIRTIO_NET_HDR_GSO_TCPV6       4
->  #define VIRTIO_NET_HDR_GSO_UDP_L4      5
-> +#define VIRTIO_NET_HDR_GSO_UDP_TUNNEL 0x40
->  #define VIRTIO_NET_HDR_GSO_ECN      0x80
->          u8 gso_type;
->          le16 hdr_len;
-> @@ -3443,6 +3460,8 @@ \subsubsection{Packet Transmission}\label{sec:Device Types / Network Device / De
->  followed by the TCP header (with the TCP checksum field 16 bytes
->  into that header). \field{csum_start} will be 14+20 = 34 (the TCP
->  checksum includes the header), and \field{csum_offset} will be 16.
-> +If the given packets has the VIRTIO_NET_HDR_GSO_UDP_TUNNEL bit set,
-> +the above checksum fields refer to the inner header checksum.
->  \end{note}
-
-I think we need to explain how the outer checksum is expected to work.
-It looks to me it requires the device to examine/probe the outer
-packet header. If it's true, I wonder what happen if the device fail
-to do such probing.
-
->
->  \item If the driver negotiated
-> @@ -3455,11 +3474,16 @@ \subsubsection{Packet Transmission}\label{sec:Device Types / Network Device / De
->    into smaller packets. The other gso fields are set:
->
->    \begin{itemize}
-> -  \item If the VIRTIO_NET_F_GUEST_HDRLEN feature has been negotiated,
-> +  \item If the VIRTIO_NET_F_HOST_UDP_TUNNEL feature has been negotiated and
-> +    the VIRTIO_NET_HDR_GSO_UDP_TUNNEL bit is set,
-> +    \field{hdr_len} indicates the location of the inner network header.
-
-It's probably better to explain why a network header instead of
-transport header is needed here. (Anyhow we're doing segmentation at
-L4 instead of L3).
-
-> +    Otherwise, if the VIRTIO_NET_F_GUEST_HDRLEN feature has been negotiated
-> +    and the VIRTIO_NET_HDR_GSO_UDP_TUNNEL bit is not set,
-
-I wonder if this just suppress the semantic of GUEST_HDR_LEN. If yes,
-is this better to have dedicated inner hdr len?
-
->      \field{hdr_len} indicates the header length that needs to be replicated
->      for each packet. It's the number of bytes from the beginning of the packet
->      to the beginning of the transport payload.
-> -    Otherwise, if the VIRTIO_NET_F_GUEST_HDRLEN feature has not been negotiated,
-> +    Finally, if the VIRTIO_NET_F_GUEST_HDRLEN and VIRTIO_NET_F_HOST_UDP_TUNNEL
-> +    the features has not been negotiated,
->      \field{hdr_len} is a hint to the device as to how much of the header
->      needs to be kept to copy into each packet, usually set to the
->      length of the headers, including the transport header\footnote{Due to various bugs in implementations, this field is not useful
-> @@ -3477,6 +3501,13 @@ \subsubsection{Packet Transmission}\label{sec:Device Types / Network Device / De
->      the VIRTIO_NET_HDR_GSO_ECN bit in \field{gso_type}
->      indicates that the TCP packet has the ECN bit set\footnote{This case is not handled by some older hardware, so is called out
->  specifically in the protocol.}.
-> +
-> +  \item If the driver negotiated the VIRTIO_NET_F_HOST_UDP_TUNNEL feature,
-> +    \field{gso_type} has the VIRTIO_NET_HDR_GSO_UDP_TUNNEL bit set,
-> +    \field{flags} has the VIRTIO_NET_HDR_F_UDP_TUNNEL_CSUM set, the outer
-> +    UDP checksum field carries the checksum for the UDP pseudo header,
-> +    the complete UDP checksum can be computed in a similar way to the
-> +    inner TCP.
-
-This looks like a partial offload of the outer checksum, if yes, we
-probably need a better name of the flag (maybe
-UDP_TUNNEL_PARTIAL_CSUM)? This is because VIRTIO_NET_HDR_F_CSUM is
-used for complete offloading.
-
->     \end{itemize}
->
->  \item \field{num_buffers} is set to zero.  This field is unused on transmitted packets.
-> @@ -3520,6 +3551,11 @@ \subsubsection{Packet Transmission}\label{sec:Device Types / Network Device / De
->  driver MUST set the VIRTIO_NET_HDR_GSO_ECN bit in
->  \field{gso_type}.
->
-> +The driver MUST NOT sent to the device TCP or UDP packets over UDP tunnel
-> +requiring segmentation offload, unless the VIRTIO_NET_F_HOST_UDP_TUNNEL is
-> +negotiated, in which case the driver MUST set the VIRTIO_NET_HDR_GSO_UDP_TUNNEL
-> +bit in the \field{gso_type}.
-
-Do we need to clarify that inner UFO is forbidden even with UDP_TUNNEL?
-
-> +
->  If the VIRTIO_NET_F_CSUM feature has been negotiated, the
->  driver MAY set the VIRTIO_NET_HDR_F_NEEDS_CSUM bit in
->  \field{flags}, if so:
-> @@ -3549,7 +3585,13 @@ \subsubsection{Packet Transmission}\label{sec:Device Types / Network Device / De
->  If one of the VIRTIO_NET_F_HOST_TSO4, TSO6, USO or UFO options have
->  been negotiated:
->  \begin{itemize}
-> -\item If the VIRTIO_NET_F_GUEST_HDRLEN feature has been negotiated,
-> +\item If the VIRTIO_NET_F_HOST_UDP_TUNNEL feature has been negotiated,
-> +       and the \field{gso_type} VIRTIO_NET_HDR_GSO_UDP_TUNNEL bit is
-> +       set, the driver MUST set \field{hdr_len} to a value equal to
-> +       the inner network header offset.
-> +
-> +\item If the \field{gso_type} VIRTIO_NET_HDR_GSO_UDP_TUNNEL is not set,
-> +       the VIRTIO_NET_F_GUEST_HDRLEN feature has been negotiated,
->         and \field{gso_type} differs from VIRTIO_NET_HDR_GSO_NONE,
->         the driver MUST set \field{hdr_len} to a value equal to the length
->         of the headers, including the transport header.
-> @@ -3576,7 +3618,18 @@ \subsubsection{Packet Transmission}\label{sec:Device Types / Network Device / De
->  If one of the VIRTIO_NET_F_HOST_TSO4, TSO6, USO or UFO options have
->  been negotiated:
->  \begin{itemize}
-> -\item If the VIRTIO_NET_F_GUEST_HDRLEN feature has been negotiated,
-> +\item If the VIRTIO_NET_F_HOST_UDP_TUNNEL feature has been negotiated,
-> +       and the \field{gso_type} VIRTIO_NET_HDR_GSO_UDP_TUNNEL bit is
-> +       set, the driver MUST use \field{hdr_len} as the inner network
-> +       header offset.
-> +
-> +       \begin{note}
-> +       Caution should be taken by the implementation so as to prevent
-> +       a malicious driver from attacking the device by setting an incorrect hdr_len.
-> +       \end{note}
-> +
-> +\item If the \field{gso_type} VIRTIO_NET_HDR_GSO_UDP_TUNNEL bit is not set,
-> +       the VIRTIO_NET_F_GUEST_HDRLEN feature has been negotiated,
->         and \field{gso_type} differs from VIRTIO_NET_HDR_GSO_NONE,
->         the device MAY use \field{hdr_len} as the transport header size.
->
-> @@ -3585,7 +3638,8 @@ \subsubsection{Packet Transmission}\label{sec:Device Types / Network Device / De
->         a malicious driver from attacking the device by setting an incorrect hdr_len.
->         \end{note}
->
-> -\item If the VIRTIO_NET_F_GUEST_HDRLEN feature has not been negotiated,
-> +\item If the VIRTIO_NET_F_HOST_UDP_TUNNEL feature has not been negotiated,
-> +       the VIRTIO_NET_F_GUEST_HDRLEN feature has not been negotiated,
->         or \field{gso_type} is VIRTIO_NET_HDR_GSO_NONE,
->         the device MAY use \field{hdr_len} only as a hint about the
->         transport header size.
-> @@ -3689,8 +3743,8 @@ \subsubsection{Processing of Incoming Packets}\label{sec:Device Types / Network
->    has been validated.
->  \end{enumerate}
->
-> -Additionally, VIRTIO_NET_F_GUEST_CSUM, TSO4, TSO6, UDP and ECN
-> -features enable receive checksum, large receive offload and ECN
-> +Additionally, VIRTIO_NET_F_GUEST_CSUM, TSO4, TSO6, UDP, UDP_TUNNEL
-> +and ECN features enable receive checksum, large receive offload and ECN
->  support which are the input equivalents of the transmit checksum,
->  transmit segmentation offloading and ECN features, as described
->  in \ref{sec:Device Types / Network Device / Device Operation /
-> @@ -3700,6 +3754,14 @@ \subsubsection{Processing of Incoming Packets}\label{sec:Device Types / Network
->    negotiated, then \field{gso_type} MAY be something other than
->    VIRTIO_NET_HDR_GSO_NONE, and \field{gso_size} field indicates the
->    desired MSS (see Packet Transmission point 2).
-> +\item If the VIRTIO_NET_F_GUEST_UDP_TUNNEL option was negotiated and
-> +  \field{gso_type} is not VIRTIO_NET_HDR_GSO_NONE, the VIRTIO_NET_HDR_GSO_UDP_TUNNEL
-> +  bit MAY be set, and the \field{hdr_len} field indicates the
-> +  inner network header offset (see Packet Transmission point 2).
-> +  Additionally, the VIRTIO_NET_HDR_F_UDP_TUNNEL_CSUM bit in the
-> +  \field{flags} MAY be set, indicating that the outer UDP header
-> +  carries the UDP pseudo header csum and that the full UDP checksum
-> +  (see Packet Transmission point 2).
->  \item If the VIRTIO_NET_F_RSC_EXT option was negotiated (this
->    implies one of VIRTIO_NET_F_GUEST_TSO4, TSO6), the
->    device processes also duplicated ACK segments, reports
-> @@ -3759,6 +3821,19 @@ \subsubsection{Processing of Incoming Packets}\label{sec:Device Types / Network
->  which have the Explicit Congestion Notification bit set, unless the
->  VIRTIO_NET_F_GUEST_ECN feature is negotiated, in which case the
->  device MUST set the VIRTIO_NET_HDR_GSO_ECN bit in
-> +
-> +The device SHOULD NOT send to the driver TCP or UDP packets encapsulated in UDP
-> +tunnel and requiring segmentation offload, unless the
-> +VIRTIO_NET_F_GUEST_UDP_TUNNEL is negotiated, in which case the device MUST set
-> +the VIRTIO_NET_HDR_GSO_UDP_TUNNEL bit in \field{gso_type}. If the outer UDP
-> +header carries a non 0 checksum:
-> +\begin{enumerate}
-> +\item the device MUST set the VIRTIO_NET_HDR_F_UDP_TUNNEL_CSUM bit in
-> +       \field{flags}
-> +\item the device MUST set the outer UDP header checksum field to the outer
-> +       UDP pseudo header
-> +\end{enumerate}
-> +
->  \field{gso_type}.
->
->  If the VIRTIO_NET_F_GUEST_CSUM feature has been negotiated, the
-> @@ -3778,6 +3853,12 @@ \subsubsection{Processing of Incoming Packets}\label{sec:Device Types / Network
->         fully checksummed packet;
->  \end{enumerate}
->
-> +\begin{note}
-> +If the VIRTIO_NET_F_GUEST_UDP_TUNNEL feature is negotiated and the
-> +VIRTIO_NET_HDR_GSO_UDP_TUNNEL bit is set, the VIRTIO_NET_HDR_F_NEEDS_CSUM
-> +bit refears to the inner header checksum
-
-"refers"?
-
-Thanks
-
-> +\end{note}
-> +
->  If none of the VIRTIO_NET_F_GUEST_TSO4, TSO6 or UFO options have
->  been negotiated, the device MUST set \field{gso_type} to
->  VIRTIO_NET_HDR_GSO_NONE.
-> @@ -3794,9 +3875,9 @@ \subsubsection{Processing of Incoming Packets}\label{sec:Device Types / Network
->  not set VIRTIO_NET_HDR_F_RSC_INFO bit in \field{flags}.
->
->  If one of the VIRTIO_NET_F_GUEST_TSO4, TSO6 or UFO options have
-> -been negotiated, the device SHOULD set \field{hdr_len} to a value
-> -not less than the length of the headers, including the transport
-> -header.
-> +been negotiate and the VIRTIO_NET_HDR_GSO_UDP_TUNNEL is not set,
-> +the device SHOULD set \field{hdr_len} to a value not less than
-> +the length of the headers, including the transport header.
->
->  If the VIRTIO_NET_F_GUEST_CSUM feature has been negotiated, the
->  device MAY set the VIRTIO_NET_HDR_F_DATA_VALID bit in
-> @@ -3814,8 +3895,9 @@ \subsubsection{Processing of Incoming Packets}\label{sec:Device Types / Network
->  if VIRTIO_NET_HDR_F_RSC_INFO bit \field{flags} is set, the
->  driver MUST NOT use the \field{csum_start} and \field{csum_offset}.
->
-> -If one of the VIRTIO_NET_F_GUEST_TSO4, TSO6 or UFO options have
-> -been negotiated, the driver MAY use \field{hdr_len} only as a hint about the
-> +If the VIRTIO_NET_HDR_GSO_UDP_TUNNEL bit is not set and one of the
-> +VIRTIO_NET_F_GUEST_TSO4, TSO6 or UFO options have been negotiated,
-> +the driver MAY use \field{hdr_len} only as a hint about the
->  transport header size.
->  The driver MUST NOT rely on \field{hdr_len} to be correct.
->  \begin{note}
-> --
-> 2.35.3
->
->
-> ---------------------------------------------------------------------
-> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
->
+diff --git a/conformance.tex b/conformance.tex
+index 663e7c3..6f561fb 100644
+--- a/conformance.tex
++++ b/conformance.tex
+@@ -149,6 +149,7 @@ \section{Conformance Targets}\label{sec:Conformance / C=
+onformance Targets}
+ \item \ref{drivernormative:Device Types / Network Device / Device Operatio=
+n / Control Virtqueue / Automatic receive steering in multiqueue mode}
+ \item \ref{drivernormative:Device Types / Network Device / Device Operatio=
+n / Control Virtqueue / Offloads State Configuration / Setting Offloads Sta=
+te}
+ \item \ref{drivernormative:Device Types / Network Device / Device Operatio=
+n / Control Virtqueue / Receive-side scaling (RSS) }
++\item \ref{drivernormative:Device Types / Network Device / Device Operatio=
+n / Control Virtqueue / Split Header}
+ \end{itemize}
+=20
+ \conformance{\subsection}{Block Driver Conformance}\label{sec:Conformance =
+/ Driver Conformance / Block Driver Conformance}
+@@ -411,6 +412,7 @@ \section{Conformance Targets}\label{sec:Conformance / C=
+onformance Targets}
+ \item \ref{devicenormative:Device Types / Network Device / Device Operatio=
+n / Control Virtqueue / Gratuitous Packet Sending}
+ \item \ref{devicenormative:Device Types / Network Device / Device Operatio=
+n / Control Virtqueue / Automatic receive steering in multiqueue mode}
+ \item \ref{devicenormative:Device Types / Network Device / Device Operatio=
+n / Control Virtqueue / Receive-side scaling (RSS) / RSS processing}
++\item \ref{devicenormative:Device Types / Network Device / Device Operatio=
+n / Control Virtqueue / Split Header}
+ \end{itemize}
+=20
+ \conformance{\subsection}{Block Device Conformance}\label{sec:Conformance =
+/ Device Conformance / Block Device Conformance}
+diff --git a/content.tex b/content.tex
+index 060bdab..3340402 100644
+--- a/content.tex
++++ b/content.tex
+@@ -3092,6 +3092,9 @@ \subsection{Feature bits}\label{sec:Device Types / Ne=
+twork Device / Feature bits
+ \item[VIRTIO_NET_F_CTRL_MAC_ADDR(23)] Set MAC address through control
+     channel.
+=20
++\item[VIRTIO_NET_F_SPLIT_HEADER (55)] Device supports to split the header =
+and
++    the payload.
++
+ \item[VIRTIO_NET_F_HOST_USO (56)] Device can receive USO packets. Unlike U=
+FO
+  (fragmenting the packet) the USO splits large UDP packet
+  to several segments when each of these smaller packets has UDP header.
+@@ -3139,6 +3142,7 @@ \subsubsection{Feature bit requirements}\label{sec:De=
+vice Types / Network Device
+ \item[VIRTIO_NET_F_CTRL_MAC_ADDR] Requires VIRTIO_NET_F_CTRL_VQ.
+ \item[VIRTIO_NET_F_RSC_EXT] Requires VIRTIO_NET_F_HOST_TSO4 or VIRTIO_NET_=
+F_HOST_TSO6.
+ \item[VIRTIO_NET_F_RSS] Requires VIRTIO_NET_F_CTRL_VQ.
++\item[VIRTIO_NET_F_SPLIT_HEADER] Requires VIRTIO_NET_F_CTRL_VQ.
+ \end{description}
+=20
+ \subsubsection{Legacy Interface: Feature bits}\label{sec:Device Types / Ne=
+twork Device / Feature bits / Legacy Interface: Feature bits}
+@@ -3370,6 +3374,7 @@ \subsection{Device Operation}\label{sec:Device Types =
+/ Network Device / Device O
+ #define VIRTIO_NET_HDR_F_NEEDS_CSUM    1
+ #define VIRTIO_NET_HDR_F_DATA_VALID    2
+ #define VIRTIO_NET_HDR_F_RSC_INFO      4
++#define VIRTIO_NET_HDR_F_SPLIT_HEADER  8
+         u8 flags;
+ #define VIRTIO_NET_HDR_GSO_NONE        0
+ #define VIRTIO_NET_HDR_GSO_TCPV4       1
+@@ -4471,6 +4476,73 @@ \subsubsection{Control Virtqueue}\label{sec:Device T=
+ypes / Network Device / Devi
+ according to the native endian of the guest rather than
+ (necessarily when not using the legacy interface) little-endian.
+=20
++\paragraph{Split Header}\label{sec:Device Types / Network Device / Device =
+Operation / Control Virtqueue / Split Header}
++
++If the VIRTIO_NET_F_SPLIT_HEADER feature is negotiated,
++the device supports to split the header and the payload.
++The header and payload will be separated into different buffers.
++
++\subparagraph{Split Header}\label{sec:Device Types / Network Device / Devi=
+ce Operation / Control Virtqueue / Split Header / Setting Split Header}
++
++To configure the split header, the following layout structure and definiti=
+ons
++are used:
++
++\begin{lstlisting}
++struct virtio_net_split_header_config {
++#define VIRTIO_NET_SPLIT_HEADER_TYPE_TCPv4     1
++#define VIRTIO_NET_SPLIT_HEADER_TYPE_TCPv6     2
++#define VIRTIO_NET_SPLIT_HEADER_TYPE_UDPv4     4
++#define VIRTIO_NET_SPLIT_HEADER_TYPE_UDPv6     8
++    le64 type;
++};
++
++#define VIRTIO_NET_CTRL_SPLIT_HEADER       6
++ #define VIRTIO_NET_CTRL_SPLIT_HEADER_SET   0
++\end{lstlisting}
++
++The class VIRTIO_NET_CTRL_SPLIT_HEADER has one command:
++VIRTIO_NET_CTRL_SPLIT_HEADER_SET applies the new split header configuratio=
+n.
++
++\field{type} passed as command data is a bitmask, bits set define
++packet types to split header, bits cleared - split header to be disabled.
++
++The header contains the struct virtio_net_hdr and the header of the packag=
+e.
++Such as \field{VIRTIO_NET_SPLIT_HEADER_TYPE_TCPv4} specified header contai=
+ns
++virtio_net_hdr, MAC header, IPv4 header (including IPv4 options), TCP head=
+er
++(include TCP options). The back part is the payload.
++
++\devicenormative{\subparagraph}{Setting Split Header}{Device Types / Netwo=
+rk Device / Device Operation / Control Virtqueue / Split Header}
++
++Split header MUST be disabled after device initialization.
++
++A device MUST NOT perform split header in the following cases:
++\begin{itemize}
++    \item device does not recognize protocol of the packet.
++    \item \field{type} does not include the protocol of the packet.
++    \item the packet is a IP fragmentation.
++    \item the receive buffer consists of only one descriptor.
++    \item the header exceeds the size of the 0th descriptor.
++    \item If VIRTIO_NET_F_MRG_RXBUF is not negotiated and the size of the
++        payload is greater than the total size of the 1th\ldots Nth descri=
+ptor.
++\end{itemize}
++
++If the split header completed, then the \field{flags} of virtnet hdr MUST
++contains VIRTIO_NET_HDR_F_SPLIT_HEADER. The header MUST is on the buffer o=
+f the
++0th descriptor, and the payload MUST starts from the buffer of the 1th des=
+criptor.
++The device MUST set \field{hdr_len} of virtnet hdr.
++
++If VIRTIO_NET_F_MRG_RXBUF is negotiated and the device is to use multiple
++receive buffers, each subsequent receive buffer MUST skip the 0th descript=
+or.
++
++\drivernormative{\subparagraph}{Setting Split Header}{Device Types / Netwo=
+rk Device / Device Operation / Control Virtqueue / Split Header}
++
++If VIRTIO_NET_HDR_F_SPLIT_HEADER bit in \field{flags} is set, the driver M=
+UST
++believe \field{hdr_len}, the length of the header in the 0th descriptor is=
+ equal
++to the length of struct virtio_net_hdr plus \field{hdr_len}.
++
++If the split header function is enable, the buffers submitted by the drive=
+r
++SHOULD at least be composed of two descriptors. The buffer specified by th=
+e 0th
++descriptor SHOULD be able to accommodate the header.
+=20
+ \subsubsection{Legacy Interface: Framing Requirements}\label{sec:Device
+ Types / Network Device / Legacy Interface: Framing Requirements}
+--=20
+2.31.0
 
 
 ---------------------------------------------------------------------
