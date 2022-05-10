@@ -1,25 +1,22 @@
-Return-Path: <virtio-return-3753-cohuck=redhat.com@lists.oasis-open.org>
-Sender: <virtio@lists.oasis-open.org>
-List-Post: <mailto:virtio@lists.oasis-open.org>
-List-Help: <mailto:virtio-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-From: Cornelia Huck <cohuck@redhat.com>
+Return-Path: <pasic@linux.ibm.com>
+Date: Tue, 10 May 2022 17:57:01 +0200
+From: Halil Pasic <pasic@linux.ibm.com>
+Subject: Re: [virtio-dev] [PATCH v2] editorial: update S390 Common I/O link
+Message-ID: <20220510175701.17fcc5fe.pasic@linux.ibm.com>
 In-Reply-To: <20220510140130.99846-1-mst@redhat.com>
 References: <20220510140130.99846-1-mst@redhat.com>
-Date: Tue, 10 May 2022 16:08:35 +0200
-Message-ID: <87r1511nvg.fsf@redhat.com>
 MIME-Version: 1.0
-Subject: [virtio] Re: [PATCH v2] editorial: update S390 Common I/O link
-Content-Type: text/plain
-To: "Michael S. Tsirkin" <mst@redhat.com>, virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
-Cc: virtio@lists.oasis-open.org, Paul Knight <paul.knight@oasis-open.org>, Halil Pasic <pasic@linux.ibm.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, virtio@lists.oasis-open.org, Paul Knight <paul.knight@oasis-open.org>, Cornelia Huck <cohuck@redhat.com>, Halil Pasic <pasic@linux.ibm.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Tue, May 10 2022, "Michael S. Tsirkin" <mst@redhat.com> wrote:
+On Tue, 10 May 2022 10:01:56 -0400
+"Michael S. Tsirkin" <mst@redhat.com> wrote:
 
 > Paul Knight wrote:
->
+> 
 > In running a link check, I noted several issues, none significant for this
 > initial public review publication:
 > - broken link in Normative references:
@@ -33,23 +30,33 @@ On Tue, May 10 2022, "Michael S. Tsirkin" <mst@redhat.com> wrote:
 > 4.3.1.3 is still needed.)
 > This broken link is not a blocking issue for a Committee specification Draft,
 > but it will not be allowed for a Committee Specification.
->
+> 
 > Reported-by: Paul Knight <paul.knight@oasis-open.org>
 > Suggested-by: Halil Pasic <pasic@linux.ibm.com>
 > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+
+Reviewed-by: Halil Pasic <pasic@linux.ibm.com>
+
 > ---
->
+> 
 > changes from v1:
 > 	do not tweak description just the url
->
+> 
 >  introduction.tex | 3 ++-
 >  1 file changed, 2 insertions(+), 1 deletion(-)
-
-Reviewed-by: Cornelia Huck <cohuck@redhat.com>
-
-
----------------------------------------------------------------------
-To unsubscribe from this mail list, you must leave the OASIS TC that 
-generates this mail.  Follow this link to all your TCs in OASIS at:
-https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
+> 
+> diff --git a/introduction.tex b/introduction.tex
+> index 4dc7085..aa9ec1b 100644
+> --- a/introduction.tex
+> +++ b/introduction.tex
+> @@ -45,7 +45,8 @@ \section{Normative References}\label{sec:Normative References}
+>  IDentifier (UUID) URN Namespace'', RFC 4122, DOI 10.17487/RFC4122,
+>  July 2005. \newline\url{http://www.ietf.org/rfc/rfc4122.txt}\\
+>  	\phantomsection\label{intro:S390 PoP}\textbf{[S390 PoP]} & z/Architecture Principles of Operation, IBM Publication SA22-7832, \newline\url{http://publibfi.boulder.ibm.com/epubs/pdf/dz9zr009.pdf}, and any future revisions\\
+> -	\phantomsection\label{intro:S390 Common I/O}\textbf{[S390 Common I/O]} & ESA/390 Common I/O-Device and Self-Description, IBM Publication SA22-7204, \newline\url{http://publibfp.dhe.ibm.com/cgi-bin/bookmgr/BOOKS/dz9ar501/CCONTENTS}, and any future revisions\\
+> +	\phantomsection\label{intro:S390 Common I/O}\textbf{[S390
+> +Common I/O]} & ESA/390 Common I/O-Device and Self-Description, IBM Publication SA22-7204, \newline\url{https://www.ibm.com/resources/publications/OutputPubsDetails?PubID=SA22720401}, and any future revisions\\
+>  	\phantomsection\label{intro:PCI}\textbf{[PCI]} &
+>  	Conventional PCI Specifications,
+>  	\newline\url{http://www.pcisig.com/specifications/conventional/},
 
