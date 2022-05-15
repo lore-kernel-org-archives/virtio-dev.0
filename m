@@ -1,112 +1,96 @@
-Return-Path: <mgurtovoy@nvidia.com>
-Message-ID: <1a323f19-6651-c2e1-73c7-2e8b5213a24d@nvidia.com>
-Date: Wed, 18 May 2022 17:16:13 +0300
-Subject: Re: [virtio-comment] Re: [PATCH v5 2/7] Introduce admin command set
+Return-Path: <mst@redhat.com>
+Date: Sun, 15 May 2022 11:01:51 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Subject: Re: [PATCH v5 3/7] Introduce new destination type for admin commands
+Message-ID: <20220515110019-mutt-send-email-mst@kernel.org>
 References: <20220426225824.5918-1-mgurtovoy@nvidia.com>
- <20220426225824.5918-3-mgurtovoy@nvidia.com>
- <20220515111056-mutt-send-email-mst@kernel.org>
- <e6446d40-9144-b615-b7ea-e807600b6aab@nvidia.com> <87leuzeypw.fsf@redhat.com>
-From: Max Gurtovoy <mgurtovoy@nvidia.com>
-In-Reply-To: <87leuzeypw.fsf@redhat.com>
+ <20220426225824.5918-4-mgurtovoy@nvidia.com>
 MIME-Version: 1.0
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Cornelia Huck <cohuck@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>
-Cc: jasowang@redhat.com, virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, oren@nvidia.com, parav@nvidia.com, shahafs@nvidia.com, aadam@redhat.com, virtio@lists.oasis-open.org
+In-Reply-To: <20220426225824.5918-4-mgurtovoy@nvidia.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+To: Max Gurtovoy <mgurtovoy@nvidia.com>
+Cc: jasowang@redhat.com, virtio-comment@lists.oasis-open.org, cohuck@redhat.com, virtio-dev@lists.oasis-open.org, oren@nvidia.com, parav@nvidia.com, shahafs@nvidia.com, aadam@redhat.com, virtio@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+On Wed, Apr 27, 2022 at 01:58:20AM +0300, Max Gurtovoy wrote:
+> Introduce a new mechanism to issue commands with dst_type field that is
+> not "self". With the new mechanism, driver can set dst_type to 1
+> and use the vdev_id common field to describe the designated vdev_id.
+> 
+> This mechanism is useful for device groups with multiple devices
+> with various different capabilities. For example, a type 1 device group
+> that contains a PCI PF and its VF. For this group, a clever system
+> administrator can use admin commands to manipulate the PF/VF resources.
+> 
+> Reviewed-by: Parav Pandit <parav@nvidia.com>
+> Signed-off-by: Max Gurtovoy <mgurtovoy@nvidia.com>
+> ---
+>  admin.tex | 18 ++++++++++++++----
+>  1 file changed, 14 insertions(+), 4 deletions(-)
+> 
+> diff --git a/admin.tex b/admin.tex
+> index 6725daa..f816c3b 100644
+> --- a/admin.tex
+> +++ b/admin.tex
+> @@ -11,11 +11,13 @@ \section{Administration command set}\label{sec:Basic Facilities of a Virtio Devi
+>          le16 command;
+>          /*
+>           * 0 - self
+> -         * 1 - 65535 are reserved
+> +         * 1 - other virtio device (identified by vdev_id) in the same device group
+> +         * 2 - 65535 are reserved
+>           */
+>          le16 dst_type;
+> +        le64 vdev_id;
+>          /* reserved for common cmd fields */
+> -        u8 reserved[20];
+> +        u8 reserved[12];
+>          u8 command_specific_data[];
+>  
+>          /* Device-writable part */
+> @@ -39,9 +41,11 @@ \section{Administration command set}\label{sec:Basic Facilities of a Virtio Devi
+>  \hline
+>  03h   & VIRTIO_ADMIN_STATUS_INVALID_FIELD    & invalid field was set  \\
+>  \hline
+> +04h   & VIRTIO_ADMIN_STATUS_INVALID_VDEV_ID    & invalid vdev_id was set  \\
+> +\hline
+>  \end{tabular}
+>  
+> -The \field{command}, \field{dst_type} and \field{command_specific_data} are
+> +The \field{command}, \field{dst_type}, \field{vdev_id} and \field{command_specific_data} are
+>  set by the driver, and the device sets the \field{status}, the
+>  \field{command_specific_error} and the \field{command_specific_result},
+>  if needed.
+> @@ -50,9 +54,15 @@ \section{Administration command set}\label{sec:Basic Facilities of a Virtio Devi
+>  
+>  The mandatory fields to be set by the driver, for all admin commands, are \field{command} and \field{dst_type}.
+>  
+> +The optional unused fields to be zeroed by the driver.
+> +
+>  The \field{command} defines the opcode for the command. The value for each command can be found in each command section.
+>  
+> -The \field{dst_type} defines the designated virtio device for the command. This value should be set to 0 (self).
+> +The \field{dst_type} defines the designated virtio device for the command. This value can be set to 0 (self) or 1 (other virtio device in the same device
+> +group) by the driver. Not all the commands allow setting \field{dst_type} to 1. Refer to each command description explicitly
 
-On 5/18/2022 4:50 PM, Cornelia Huck wrote:
-> On Wed, May 18 2022, Max Gurtovoy <mgurtovoy@nvidia.com> wrote:
->
->> On 5/15/2022 6:23 PM, Michael S. Tsirkin wrote:
->>> On Wed, Apr 27, 2022 at 01:58:19AM +0300, Max Gurtovoy wrote:
->>>> This command set is used for essential administrative and management
->>>> operations.
->>>>
->>>> Admin commands should be submitted to a well defined management
->>>> interface.
->>>>
->>>> Reviewed-by: Parav Pandit <parav@nvidia.com>
->>>> Signed-off-by: Max Gurtovoy <mgurtovoy@nvidia.com>
->>>> ---
->>>>    admin.tex   | 123 ++++++++++++++++++++++++++++++++++++++++++++++++++++
->>>>    content.tex |   2 +
->>>>    2 files changed, 125 insertions(+)
->>>>    create mode 100644 admin.tex
->>>>
->>>> +The VIRTIO_ADMIN_DEVICE_CAPS_ACCEPT command is used by the driver to acknowledge those admin capabilities it understands and wishes to use.
->>> ok so we have a protocol here, kind of like feature negotiation. Please write its description.
->>> e.g. is it ok to change accepted caps? when? can device change its caps
->>> etc etc etc.
->> I don't understand what does this mean to change a cap ?
->>
->> Device can offer a cap and driver can accept it if it wishes to use it.
->>
->> That is it.
->>
->> I added this mechanism just for your request.
->>
->> I never saw a device that asks acceptance from driver but I did my best
->> to fulfill your request.
->>
->>> Avoiding this kind of spec work is exactly why me and jason keep telling
->>> you to consider just using features instead. Add a 64 bit admin features
->>> field to the PCI transport and be done with it. CCW and MMIO already
->>> have feature selector so it's trivial to add feature bits.
->> It's not scalable for admin mechanism and I don't want to perform 100
->> write/read from configuration space instead of doing all in 1 admin command.
-> Why use the config space for that; just use feature bits, there are
-> enough of those, and we already have a defined protocol.
+explicitly means nothig. just avoid using this word.
 
-can you please propose something concrete ?
+> to check whether this operation is allowed.
 
-that will be scalable and will not add complexity to the feature 
-negotiation mechanism we have today ?
+what this operation? I think you mean "which commands are allowed".
 
->
->>>
->>>> +The \field{command} is set to VIRTIO_ADMIN_DEVICE_CAPS_ACCEPT by the driver.
->>>> +
->>>> +The command specific data set by the driver is of form:
->>>> +\begin{lstlisting}
->>>> +struct virtio_admin_device_caps_accept_data {
->>>> +       /* Indicates which of the below fields were set
->>>> +        * (1 means that field is set):
->>> yes we all know that 1 means set.
->>>
->>> do you really mean field is valid maybe?
->> yes valid == set.
->>>
->>>> +        * Bit 0 - driver_admin_caps
->>>> +        * Bits 1 - 63 - reserved for future fields
->>>> +        */
->>>> +       le64 attrs_mask;
->>> looks like going overboard. just send 64 caps bits and be done with it.
->>> and rename accept_data to accept_caps.
->> this is the command specific data.
->>>> +       /* This field indicates which of the below admin
->>>> +        * capabilities are supported by the driver:
->>>> +        * Bits 0 - 63 - reserved for future capabilities.
->>>> +        */
->>>> +       le64 driver_admin_caps;
->>>> +       u8 reserved[112];
->>> I just noticed this. Please do not add this huge amount of padding
->>> everywhere. instead, explain that device must be ready to accept
->>> a smaller or larger buffer depending on feature bits.
->> It's not huge. It's 128B command data.
->>
->> We will be sorry in the future for not doing extendable API.
->>
->> I prefer keep it 128B unless there is a concrete reason for not doing so.
-> So just use a variable length structure, that should be extendable for
-> all future use cases.
+> +If \field{dst_type} is set to 0 by the driver, the \field{vdev_id} isn't valid, should be zeroed by the driver and should be ignored by the device.
+> +If \field{dst_type} is set to 1 by the driver, the \field{vdev_id} is valid and used to describe the vdev_id of the designated virtio device (see section
+> +\ref{sec:Introduction / Terminology / Device group} for vdev_id numbering for type 1 device groups).
 
-I don't know how to develop compatible HW that use variable length 
-structure.
 
-And why ? without any good reason.
+should for use by conformance sections only. in fact pls add one for
+this.
 
->
+>  
+>  The \field{command_specific_error} should be inspected by the driver only if \field{status} is set to
+>  VIRTIO_ADMIN_STATUS_CS_ERR by the device. In this case, the content of \field{command_specific_error}
+> -- 
+> 2.21.0
 
