@@ -1,126 +1,107 @@
-Return-Path: <mgurtovoy@nvidia.com>
-Message-ID: <76eec107-9cf2-f09e-7ba4-bd190683a1ce@nvidia.com>
-Date: Thu, 19 May 2022 02:18:51 +0300
-Subject: Re: [PATCH v5 7/7] RFC: add initial support for configuring feature
- bits
+Return-Path: <mst@redhat.com>
+Date: Sun, 15 May 2022 11:27:52 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Subject: Re: [PATCH v5 0/7] Introduce device group and device management
+Message-ID: <20220515112715-mutt-send-email-mst@kernel.org>
 References: <20220426225824.5918-1-mgurtovoy@nvidia.com>
- <20220426225824.5918-8-mgurtovoy@nvidia.com>
- <20220515103717-mutt-send-email-mst@kernel.org>
- <c7121fbd-fcee-ffbb-5ee8-60f89104c0d8@nvidia.com>
- <20220518123406-mutt-send-email-mst@kernel.org>
-From: Max Gurtovoy <mgurtovoy@nvidia.com>
-In-Reply-To: <20220518123406-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: "Michael S. Tsirkin" <mst@redhat.com>
+In-Reply-To: <20220426225824.5918-1-mgurtovoy@nvidia.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+To: Max Gurtovoy <mgurtovoy@nvidia.com>
 Cc: jasowang@redhat.com, virtio-comment@lists.oasis-open.org, cohuck@redhat.com, virtio-dev@lists.oasis-open.org, oren@nvidia.com, parav@nvidia.com, shahafs@nvidia.com, aadam@redhat.com, virtio@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+On Wed, Apr 27, 2022 at 01:58:17AM +0300, Max Gurtovoy wrote:
+> Hi,
+> A device group definition will help extending the virtio specefication for
+> various future features that require a notion of grouping devices together or
+> managing devices inside a group. A device group include one or more virtio devices.
+> For now, only support for type 1 device group was added.
 
-On 5/18/2022 7:34 PM, Michael S. Tsirkin wrote:
-> On Wed, May 18, 2022 at 06:31:18PM +0300, Max Gurtovoy wrote:
->> On 5/15/2022 5:38 PM, Michael S. Tsirkin wrote:
->>> On Wed, Apr 27, 2022 at 01:58:24AM +0300, Max Gurtovoy wrote:
->>>> After adding the concept of a management and a managed device, add
->>>> another example of using this concept to manage resources.
->>>>
->>>> Today there is no standard definition in the spec that allows user to
->>>> setup specific feature bits of a virtio device.
->>>>
->>>> For that, extend the management mechanism to allow management devices to
->>>> change feature bits of its managed devices.
->>>>
->>>> Signed-off-by: Max Gurtovoy <mgurtovoy@nvidia.com>
->>> Please, add more explanation here. E.g. I am guessing these are
->>> host feature bits, right? How does driver know which features are
->>> ok to enable?
->>>
->>> I would expect some description sections and conformance sections.
->>>
->> This is an RFC to emphasize the need for the admin command set.
->>
->> I added this because we agreed to think on more features for showing the
->> motivation of this mechanism.
->>
->> I can work on MSI-X or feature bits as initial submission.
->>
->> Choose what do you think will be easier to merge and lets keep working on
->> it.
->>
->> Working on both will cause distraction.
-> OK.
->
-> I personally think feature bits are easier, we don't need to also refer
-> to the pci spec.
 
-If you think it will accelerate the process of acceptance than I can 
-give it a try.
+OK good progress here. Sent a bunch of comments, most of them
+cosmetic.
 
-Although I really don't understand the gap we have for MSI-X.
 
-Just need to keep some rules such as not allowing a VF to be bounded to 
-a device driver before performing the configuration.
-
-it's very easy and works today for mlx5.
-
-I also hope someone will add it to nvme driver since this functionality 
-is in NVM spec.
-
-Maybe I'll do it myself if I'll find some time soon.
-
-Also, if we'll do the feature bits configuration still the pre-condition 
-for it to work will be to make sure that the VF is not bounded to a 
-device driver, same as for MSI-X.
-
->
->>>> ---
->>>>    admin.tex | 12 +++++++++---
->>>>    1 file changed, 9 insertions(+), 3 deletions(-)
->>>>
->>>> diff --git a/admin.tex b/admin.tex
->>>> index 5b54743..43106ba 100644
->>>> --- a/admin.tex
->>>> +++ b/admin.tex
->>>> @@ -113,7 +113,9 @@ \subsection{VIRTIO ADMIN DEVICE CAPS IDENTIFY command}\label{sec:Basic Facilitie
->>>>            * Bit 0 - if set, the device is a management device
->>>>            * Bit 1 - if set, the device is a type 1 management device that supports
->>>>            *         MSI-X vector mgmt of its type 1 managed devices
->>>> -        * Bits 2 - 63 - reserved for future capabilities.
->>>> +        * Bit 2 - if set, the device is a type 1 management device that supports
->>>> +        *         feature mgmt of bits 0 to 63 for its type 1 managed devices
->>>> +        * Bits 3 - 63 - reserved for future capabilities.
->>>>            */
->>>>           le64 device_admin_caps;
->>>>           u8 reserved[112];
->>>> @@ -143,7 +145,9 @@ \subsection{VIRTIO ADMIN DEVICE CAPS ACCEPT command}\label{sec:Basic Facilities
->>>>            * Bit 0 - if set, the driver accepted the device as a management device
->>>>            * Bit 1 - if set, the driver accepted the device as a type 1 management device
->>>>            *         that supports MSI-X vector mgmt of its type 1 managed devices
->>>> -        * Bits 2 - 63 - reserved for future capabilities.
->>>> +        * Bit 2 - if set, the driver accepted the device as a type 1 management device
->>>> +        *         that supports feature mgmt of bits 0 to 63 for its type 1 managed devices
->>>> +        * Bits 3 - 63 - reserved for future capabilities.
->>>>            */
->>>>           le64 driver_admin_caps;
->>>>           u8 reserved[112];
->>>> @@ -167,12 +171,14 @@ \subsection{VIRTIO ADMIN DEVICE MGMT command}\label{sec:Basic Facilities of a Vi
->>>>            u8 operation;
->>>>            /*
->>>>             * 0 - MSI-X vector
->>>> -         * 1 - 65535 are reserved
->>>> +         * 1 - Device feature bits 0 to 63
->>>> +         * 2 - 65535 are reserved
->>>>             */
->>>>            le16 resource;
->>>>            /*
->>>>             * The value to the given resource:
->>>>             * if resource = 0 (MSI-X vector), it's a 1-based count.
->>>> +         * if resource = 1 (Device feature bits 0 to 63), it's a feature bitmap.
->>>>             */
->>>>            le64 resource_val;
->>>>            u8 reserved[5];
->>>> -- 
->>>> 2.21.0
+> Also introduce the admin facility to allow manipulating features and configurations
+> in a generic manner. Using the admin command set, one can manipulate the device itself
+> and/or to manipulate, if possible, another device within the same device group (for now,
+> introduce only support of PCI SR-IOV devices grouping).
+> 
+> The admin command set will be extended in the future  to support more functionalities.
+> Some of these functionalities are already under discussions.
+> 
+> The admin virtqueue is the first management interface to issue admin commands from
+> the admin command set.
+> 
+> Motivation for choosing admin queue as first management interface:
+> 1. It is anticipated that admin queue will be used for managing and configuring
+>    many different type of resources. For example,
+>    a. PCI PF configuring PCI VF attributes.
+>    b. virtio device creating/destroying/configuring subfunctions discussed in [1]
+>    c. composing device config space of VF or SF such as mac address, number of VQs, virtio features
+> 
+>    Mapping all of them as configuration registers to MMIO will require large MMIO space,
+>    if done for each VF/SF. Such MMIO implementation in physical devices such as PCI PF and VF
+>    requires on-chip resources to complete within MMIO access latencies. Such resources are very
+>    expensive.
+> 
+> 2. Such limitation can be overcome by having smaller MMIO register set to build
+>    a command request response interface. However, such MMIO based command interface
+>    will be limited to serve single outstanding command execution. Such limitation can
+>    resulting in high device creation and composing time which can affect VM startup time.
+>    Often device can queue and service multiple commands in parallel, such command interface
+>    cannot use parallelism offered by the device.
+> 
+> 3. When a command wants to DMA data from one or more physical addresses, for example in the future a
+>    live migration command may need to fetch device state consist of config space, tens of
+>    VQs state, VLAN and MAC table, per VQ partial outstanding block IO list database and more.
+>    Packing one or more DMA addresses over new command interface will be burden some and continue
+>    to suffer single outstanding command execution latencies. Such limitation is not good for time
+>    sensitive live migration use cases.
+> 
+> 4. A virtio queue overcomes all the above limitations. It also supports DMA and multiple outstanding
+>    descriptors. Similar mechanism exist today for device specific configuration - the control VQ.
+> 
+> A future work can add another management interface to issue admin commands.
+> 
+> [1] https://lists.oasis-open.org/archives/virtio-comment/202108/msg00025.html
+> 
+> This series include the comments and fixes from V1-V4 of the initial patch sets ("VIRTIO: Provision maximum
+> MSI-X vectors for a VF" and "Introduce virtio subsystem and Admin virtqueue" [2]).
+> This series was extended with additional RFC for setting managed device feature bits as another example for
+> using admin command set. Also device/driver negotiation for admin caps was introduced as a response for previous
+> comments on the mailing list.
+> 
+> [2] https://lists.oasis-open.org/archives/virtio-comment/202203/msg00005.html
+> 
+> 
+> Open issues:
+> 1. CCW and MMIO specification for admin_queue_index register
+> 
+> Changelog:
+>  - Merged MSI-X configuration series to current one.
+>  - Addressed comments from MST, Jason Wang and others.
+>  - simplified the interface.
+>  - added another resource management  as RFC (feature bits).
+> 
+> Max Gurtovoy (7):
+>   Introduce device group
+>   Introduce admin command set
+>   Introduce new destination type for admin commands
+>   Introduce virtio admin virtqueue
+>   Add miscellaneous configuration structure for PCI
+>   Introduce MGMT admin commands
+>   RFC: add initial support for configuring feature bits
+> 
+>  admin.tex        | 282 +++++++++++++++++++++++++++++++++++++++++++++++
+>  conformance.tex  |   3 +
+>  content.tex      | 118 +++++++++++++++++++-
+>  introduction.tex |  42 +++++++
+>  4 files changed, 443 insertions(+), 2 deletions(-)
+>  create mode 100644 admin.tex
+> 
+> -- 
+> 2.21.0
 
