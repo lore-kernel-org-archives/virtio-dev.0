@@ -1,8 +1,8 @@
 Return-Path: <mst@redhat.com>
-Date: Sun, 15 May 2022 10:49:12 -0400
+Date: Sun, 15 May 2022 10:57:53 -0400
 From: "Michael S. Tsirkin" <mst@redhat.com>
 Subject: Re: [PATCH v5 5/7] Add miscellaneous configuration structure for PCI
-Message-ID: <20220515104346-mutt-send-email-mst@kernel.org>
+Message-ID: <20220515105131-mutt-send-email-mst@kernel.org>
 References: <20220426225824.5918-1-mgurtovoy@nvidia.com>
  <20220426225824.5918-6-mgurtovoy@nvidia.com>
 MIME-Version: 1.0
@@ -23,6 +23,17 @@ On Wed, Apr 27, 2022 at 01:58:22AM +0300, Max Gurtovoy wrote:
 > 
 > Reviewed-by: Parav Pandit <parav@nvidia.com>
 > Signed-off-by: Max Gurtovoy <mgurtovoy@nvidia.com>
+
+
+I guess we discussed this but I forgot. Why do we have this new
+structure as opposed to just adding the value at the end of config
+structure? I was kind of hoping that the structure can be
+reused for CCW/MMIO and then we can add more use-cases with
+new transport and device independent structures.
+
+If we keep it transport specific I don't really understand why
+is it useful ...
+
 > ---
 >  conformance.tex |  2 ++
 >  content.tex     | 29 +++++++++++++++++++++++++++++
@@ -77,20 +88,10 @@ On Wed, Apr 27, 2022 at 01:58:22AM +0300, Max Gurtovoy wrote:
 > +
 > +The miscellaneous configuration structure is found at the bar and offset within the VIRTIO_PCI_CAP_MISC_CFG capability.
 
-not very clear what is within what.
-
-Simplify the sentence:
-
-The VIRTIO_PCI_CAP_MISC_CFG specifies the location of The miscellaneous
-configuration structure.
+If this is all there is going to be there, maybe just stick the value in
+the capability directly.
 
 > +Its layout is below.
-
-who's layout? and try to avoid using "below".
-better:
-
-The miscellaneous configuration structure has the following layout
-
 > +\begin{lstlisting}
 > +struct virtio_pci_misc_cfg {
 > +        le16 admin_queue_index;         /* read-only for driver */
@@ -103,25 +104,20 @@ The miscellaneous configuration structure has the following layout
 > +        This field is valid only if VIRTIO_F_ADMIN_VQ is set.
 > +\end{description}
 > +
+
+
+we need to explain that we will add more fields and drivers must
+not make assumptions that this structure is 2 bytes in size.
+look for a language like this in device specific and common
+structures.
+
 > +\devicenormative{\paragraph}{Miscellaneous configuration structure layout}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Miscellaneous configuration structure layout}
 > +The device MUST present VIRTIO_PCI_CAP_MISC_CFG capability when VIRTIO_F_ADMIN_VQ is set.
 > +
 > +The device MUST present a valid \field{admin_queue_index} when VIRTIO_F_ADMIN_VQ is set.
 > +
-
-set meaning "offered"?
-
 > +\drivernormative{\paragraph}{Miscellaneous configuration structure layout}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Miscellaneous configuration structure layout}
 > +The driver MUST NOT proceed with configuring the admin virtqueue in case VIRTIO_F_ADMIN_VQ is set and VIRTIO_PCI_CAP_MISC_CFG capability is not present.
-
-"set" is vague. do you mean "negotiated"?
-
-also then let's mandate not negotiating VIRTIO_F_ADMIN_VQ.
-
-also if you are addressing this, address the reverse case
-what to do without VIRTIO_F_ADMIN_VQ but with the capability.
-
-
 > +
 > +The driver MUST use the value of \field{admin_queue_index} to configure the admin virtqueue. For more details on virtqueue configuration see section \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / Virtqueue Configuration}.
 > +
