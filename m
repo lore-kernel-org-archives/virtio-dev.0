@@ -1,79 +1,217 @@
-Return-Path: <virtio-comment-return-3050-cohuck=redhat.com@lists.oasis-open.org>
-Sender: <virtio-comment@lists.oasis-open.org>
-List-Post: <mailto:virtio-comment@lists.oasis-open.org>
-List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
-From: Cornelia Huck <cohuck@redhat.com>
-In-Reply-To: <b2239b43-a542-2d54-ecb2-86c0f4e35dd0@nvidia.com>
+Return-Path: <mst@redhat.com>
+Date: Sun, 15 May 2022 11:23:39 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Subject: Re: [PATCH v5 2/7] Introduce admin command set
+Message-ID: <20220515111056-mutt-send-email-mst@kernel.org>
 References: <20220426225824.5918-1-mgurtovoy@nvidia.com>
- <20220426225824.5918-2-mgurtovoy@nvidia.com>
- <20220515112412-mutt-send-email-mst@kernel.org>
- <b2239b43-a542-2d54-ecb2-86c0f4e35dd0@nvidia.com>
-Date: Wed, 18 May 2022 15:32:35 +0200
-Message-ID: <87o7zvezkc.fsf@redhat.com>
+ <20220426225824.5918-3-mgurtovoy@nvidia.com>
 MIME-Version: 1.0
-Subject: Re: [virtio-comment] Re: [PATCH v5 1/7] Introduce device group
-Content-Type: text/plain
-To: Max Gurtovoy <mgurtovoy@nvidia.com>, "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>
-Cc: jasowang@redhat.com, virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, oren@nvidia.com, parav@nvidia.com, shahafs@nvidia.com, aadam@redhat.com, virtio@lists.oasis-open.org
+In-Reply-To: <20220426225824.5918-3-mgurtovoy@nvidia.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+To: Max Gurtovoy <mgurtovoy@nvidia.com>
+Cc: jasowang@redhat.com, virtio-comment@lists.oasis-open.org, cohuck@redhat.com, virtio-dev@lists.oasis-open.org, oren@nvidia.com, parav@nvidia.com, shahafs@nvidia.com, aadam@redhat.com, virtio@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, May 18 2022, Max Gurtovoy <mgurtovoy@nvidia.com> wrote:
+On Wed, Apr 27, 2022 at 01:58:19AM +0300, Max Gurtovoy wrote:
+> This command set is used for essential administrative and management
+> operations.
+> 
+> Admin commands should be submitted to a well defined management
+> interface.
+> 
+> Reviewed-by: Parav Pandit <parav@nvidia.com>
+> Signed-off-by: Max Gurtovoy <mgurtovoy@nvidia.com>
+> ---
+>  admin.tex   | 123 ++++++++++++++++++++++++++++++++++++++++++++++++++++
+>  content.tex |   2 +
+>  2 files changed, 125 insertions(+)
+>  create mode 100644 admin.tex
+> 
+> diff --git a/admin.tex b/admin.tex
+> new file mode 100644
+> index 0000000..6725daa
+> --- /dev/null
+> +++ b/admin.tex
+> @@ -0,0 +1,123 @@
+> +\section{Administration command set}\label{sec:Basic Facilities of a Virtio Device / Administration command set}
+> +
+> +The Administration command set (also known as Admin command set) defines the commands that can be issued using a management interface.
+> +This mechanism, for example, can be used by a system administrator that wants to configure a device before it is initialized by its driver.
+> +
+> +All the Admin commands are of the following form:
+> +
+> +\begin{lstlisting}
+> +struct virtio_admin_cmd {
+> +        /* Device-readable part */
+> +        le16 command;
+> +        /*
+> +         * 0 - self
+> +         * 1 - 65535 are reserved
+> +         */
+> +        le16 dst_type;
+> +        /* reserved for common cmd fields */
+> +        u8 reserved[20];
+> +        u8 command_specific_data[];
+> +
+> +        /* Device-writable part */
+> +        u8 status;
+> +        u8 command_specific_error;
+> +        u8 command_specific_result[];
+> +};
+> +\end{lstlisting}
+> +
+> +The following table describes the generic Admin status codes:
+> +
+> +\begin{tabular}{|l|l|l|}
+> +\hline
+> +Opcode & Status & Description \\
+> +\hline \hline
+> +00h   & VIRTIO_ADMIN_STATUS_OK    & successful completion  \\
+> +\hline
+> +01h   & VIRTIO_ADMIN_STATUS_CS_ERR    & command specific error  \\
+> +\hline
+> +02h   & VIRTIO_ADMIN_STATUS_COMMAND_UNSUPPORTED    & unsupported or invalid opcode  \\
+> +\hline
+> +03h   & VIRTIO_ADMIN_STATUS_INVALID_FIELD    & invalid field was set  \\
+> +\hline
+> +\end{tabular}
+> +
+> +The \field{command}, \field{dst_type} and \field{command_specific_data} are
+> +set by the driver, and the device sets the \field{status}, the
+> +\field{command_specific_error} and the \field{command_specific_result},
+> +if needed.
+> +
+> +Reserved common fields are ignored by the device and to be zeroed by the driver.
+> +
+> +The mandatory fields to be set by the driver, for all admin commands, are \field{command} and \field{dst_type}.
+> +
+> +The \field{command} defines the opcode for the command. The value for each command can be found in each command section.
+> +
+> +The \field{dst_type} defines the designated virtio device for the command. This value should be set to 0 (self).
+> +
+> +The \field{command_specific_error} should be inspected by the driver only if \field{status} is set to
+> +VIRTIO_ADMIN_STATUS_CS_ERR by the device. In this case, the content of \field{command_specific_error}
+> +holds the command specific error. If \field{status} is not set to VIRTIO_ADMIN_STATUS_CS_ERR, the
+> +\field{command_specific_error} value is undefined and should be ignored by the driver.
+> +
+> +The following table describes the Admin command set:
+> +
+> +\begin{tabular}{|l|l|l|}
+> +\hline
+> +Opcode & Command & M/O \\
+> +\hline \hline
+> +0000h   & VIRTIO_ADMIN_DEVICE_CAPS_IDENTIFY    & M  \\
+> +\hline
+> +0001h   & VIRTIO_ADMIN_DEVICE_CAPS_ACCEPT    & M  \\
+> +\hline
+> +0002h - 7FFFh   & Generic admin cmds    & -  \\
+> +\hline
+> +8000h - FFFFh   & Reserved    & - \\
+> +\hline
+> +\end{tabular}
+> +
+> +\subsection{VIRTIO ADMIN DEVICE CAPS IDENTIFY command}\label{sec:Basic Facilities of a Virtio Device / Admin command set / VIRTIO ADMIN DEVICE CAPS IDENTIFY command}
 
-> Hi MST,
->
-> On 5/15/2022 6:25 PM, Michael S. Tsirkin wrote:
->> On Wed, Apr 27, 2022 at 01:58:18AM +0300, Max Gurtovoy wrote:
->>> +\subsection{Device group}\label{sec:Introduction / Terminology / Device group}
->>> +
->>> +A device group includes one or more virtio devices.
->>> +Each virtio device has a unique virtio device id (vdev_id) within a device group. A valid vdev_id is a 64-bit field in the range of
->>> +0x0 - 0xFFFFFFFFFFFFFFF0. Vdev_id 0xFFFFFFFFFFFFFFFF is a value that refers to all devices in a device group and isn't a valid vdev_id.
->>> +
->>> +For now, the supported device groups are:
->>> +\begin{enumerate}
->>> +\item Type 1 - A virtio PCI SR-IOV physical function (PF) and its PCI SR-IOV virtual functions (VFs). For this group type, the PF device has vdev_id that is equal to 0
->>> +and the VF devices have vdev_id's that are equal to their vf_number (according to the PCI SR-IOV specification).
->>> +\end{enumerate}
->>> +
->>>   \section{Structure Specifications}\label{sec:Structure Specifications}
->>
->> In context of virtualization type 1 already refers to a specific type
->> of hypervisor.
->>
->> I suggest simply "SR-IOV type" - this way users do not need to remember
->> special terminology.
->
-> This is 12 lines addition commit with simple definition.
->
-> I didn't mentioned hypervisors here.
->
-> I will stick to your suggestion and use name instead of numbers 
-> (although I don't understand how can a use that knows how to read spec 
-> will be confused here), but I would like Jason and Cornelia to ack on 
-> this during this review cycle.
->
-> When we'll get 3 acks on this name - I'll update it for v6.
+why without _ here?
 
-So, do you want to imply some kind of numbering? I don't like "Type 1",
-either. If the type needs to be referenced in code, it should have a
-#define or such; otherwise, "SR-IOV type" would be fine.
+> +
+> +The VIRTIO_ADMIN_DEVICE_CAPS_IDENTIFY command has no command specific data set by the driver.
+> +The \field{command} is set to VIRTIO_ADMIN_DEVICE_CAPS_IDENTIFY by the driver.
+> +
+> +The device, upon success, returns a result that describes information about the designated virtio device.
+
+result really just means a result structure right? let's say so.
+
+> +This result is of form:
+> +\begin{lstlisting}
+> +struct virtio_admin_device_caps_identify_result {
+> +       /* Indicates which of the below fields were returned
+> +        * (1 means that field was returned):
+
+what does this mean "field is returned"? above restult is returned.
+
+> +        * Bit 0 - device_admin_caps
+> +        * Bits 1 - 63 - reserved for future fields
+> +        */
+> +       le64 attrs_mask;
+> +       /* This field indicates which of the below admin
+> +        * capabilities are supported by the device:
+> +        * Bits 0 - 63 - reserved for future capabilities.
+> +        */
+> +       le64 device_admin_caps;
 
 
-This publicly archived list offers a means to provide input to the
-OASIS Virtual I/O Device (VIRTIO) TC.
+so all of the field is reserved?
 
-In order to verify user consent to the Feedback License terms and
-to minimize spam in the list archive, subscription is required
-before posting.
+> +       u8 reserved[112];
+> +};
+> +\end{lstlisting}
+> +
+> +\subsection{VIRTIO ADMIN DEVICE CAPS ACCEPT command}\label{sec:Basic Facilities of a Virtio Device / Admin command set / VIRTIO ADMIN DEVICE CAPS ACCEPT command}
+> +
+> +The VIRTIO_ADMIN_DEVICE_CAPS_ACCEPT command is used by the driver to acknowledge those admin capabilities it understands and wishes to use.
 
-Subscribe: virtio-comment-subscribe@lists.oasis-open.org
-Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
-List help: virtio-comment-help@lists.oasis-open.org
-List archive: https://lists.oasis-open.org/archives/virtio-comment/
-Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
-List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
-Committee: https://www.oasis-open.org/committees/virtio/
-Join OASIS: https://www.oasis-open.org/join/
+
+ok so we have a protocol here, kind of like feature negotiation. Please write its description.
+e.g. is it ok to change accepted caps? when? can device change its caps
+etc etc etc.
+
+Avoiding this kind of spec work is exactly why me and jason keep telling
+you to consider just using features instead. Add a 64 bit admin features
+field to the PCI transport and be done with it. CCW and MMIO already
+have feature selector so it's trivial to add feature bits.
+
+
+> +The \field{command} is set to VIRTIO_ADMIN_DEVICE_CAPS_ACCEPT by the driver.
+> +
+> +The command specific data set by the driver is of form:
+> +\begin{lstlisting}
+> +struct virtio_admin_device_caps_accept_data {
+> +       /* Indicates which of the below fields were set
+> +        * (1 means that field is set):
+
+
+yes we all know that 1 means set.
+
+do you really mean field is valid maybe?
+
+
+> +        * Bit 0 - driver_admin_caps
+> +        * Bits 1 - 63 - reserved for future fields
+> +        */
+> +       le64 attrs_mask;
+
+looks like going overboard. just send 64 caps bits and be done with it.
+and rename accept_data to accept_caps.
+
+> +       /* This field indicates which of the below admin
+> +        * capabilities are supported by the driver:
+> +        * Bits 0 - 63 - reserved for future capabilities.
+> +        */
+> +       le64 driver_admin_caps;
+> +       u8 reserved[112];
+
+
+I just noticed this. Please do not add this huge amount of padding
+everywhere. instead, explain that device must be ready to accept
+a smaller or larger buffer depending on feature bits.
+
+> +};
+> +\end{lstlisting}
+> diff --git a/content.tex b/content.tex
+> index c6f116c..2e1df84 100644
+> --- a/content.tex
+> +++ b/content.tex
+> @@ -449,6 +449,8 @@ \section{Exporting Objects}\label{sec:Basic Facilities of a Virtio Device / Expo
+>  types. It is RECOMMENDED that devices generate version 4
+>  UUIDs as specified by \hyperref[intro:rfc4122]{[RFC4122]}.
+>  
+> +\input{admin.tex}
+> +
+>  \chapter{General Initialization And Device Operation}\label{sec:General Initialization And Device Operation}
+>  
+>  We start with an overview of device initialization, then expand on the
+> -- 
+> 2.21.0
 
