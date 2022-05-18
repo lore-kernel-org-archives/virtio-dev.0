@@ -1,73 +1,111 @@
 Return-Path: <mgurtovoy@nvidia.com>
-Message-ID: <bbec8c81-12e5-e0bd-acf0-eea4eef81a9e@nvidia.com>
-Date: Wed, 18 May 2022 17:36:05 +0300
+Message-ID: <1491ba9a-fb0f-9dba-337c-6ecbf573fad3@nvidia.com>
+Date: Wed, 18 May 2022 17:34:33 +0300
 Subject: Re: [PATCH v5 3/7] Introduce new destination type for admin commands
 References: <20220426225824.5918-1-mgurtovoy@nvidia.com>
  <20220426225824.5918-4-mgurtovoy@nvidia.com>
  <20220515110536-mutt-send-email-mst@kernel.org>
- <PH0PR12MB5481BB099226A96CF3DDD4D0DCCF9@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20220516193046-mutt-send-email-mst@kernel.org>
 From: Max Gurtovoy <mgurtovoy@nvidia.com>
-In-Reply-To: <20220516193046-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20220515110536-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
 Content-Language: en-US
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-To: "Michael S. Tsirkin" <mst@redhat.com>, Parav Pandit <parav@nvidia.com>
-Cc: "jasowang@redhat.com" <jasowang@redhat.com>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "cohuck@redhat.com" <cohuck@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Oren Duer <oren@nvidia.com>, Shahaf Shuler <shahafs@nvidia.com>, "aadam@redhat.com" <aadam@redhat.com>, "virtio@lists.oasis-open.org" <virtio@lists.oasis-open.org>
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: jasowang@redhat.com, virtio-comment@lists.oasis-open.org, cohuck@redhat.com, virtio-dev@lists.oasis-open.org, oren@nvidia.com, parav@nvidia.com, shahafs@nvidia.com, aadam@redhat.com, virtio@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
 
-On 5/17/2022 2:33 AM, Michael S. Tsirkin wrote:
-> On Mon, May 16, 2022 at 09:21:11PM +0000, Parav Pandit wrote:
->>> From: Michael S. Tsirkin <mst@redhat.com>
->>> Sent: Sunday, May 15, 2022 11:09 AM
->>>
->>>> ---
->>>>   admin.tex | 18 ++++++++++++++----
->>>>   1 file changed, 14 insertions(+), 4 deletions(-)
->>>>
->>>> diff --git a/admin.tex b/admin.tex
->>>> index 6725daa..f816c3b 100644
->>>> --- a/admin.tex
->>>> +++ b/admin.tex
->>>> @@ -11,11 +11,13 @@ \section{Administration command
->>> set}\label{sec:Basic Facilities of a Virtio Devi
->>>>           le16 command;
->>>>           /*
->>>>            * 0 - self
->>>> -         * 1 - 65535 are reserved
->>>> +         * 1 - other virtio device (identified by vdev_id) in the same device
->>> group
->>>> +         * 2 - 65535 are reserved
->>>>            */
->>>>           le16 dst_type;
->>>> +        le64 vdev_id;
->>> Alignment problems. Proposal:
->>>
->>> vdev_id
->>> dst_type
->>> command
->> I remember that this has come up internal review as well.
->> Though it is certainly good to naturally align, I don't think we have alignment problem spec wise based on below snippet of the spec [1].
->> It was kind of counter intuitive to see vdev_id before seeing what the actual command is.
->> That way current layout made more sense.
-> vdev_id and dst_type tell you where to send the command. They do not
-> depend on the command. In fact vdev_id -> dst_id might make sense.
+On 5/15/2022 6:09 PM, Michael S. Tsirkin wrote:
+> On Wed, Apr 27, 2022 at 01:58:20AM +0300, Max Gurtovoy wrote:
+>> Introduce a new mechanism to issue commands with dst_type field that is
+>> not "self". With the new mechanism, driver can set dst_type to 1
+>> and use the vdev_id common field to describe the designated vdev_id.
+>>
+>> This mechanism is useful for device groups with multiple devices
+>> with various different capabilities. For example, a type 1 device group
+>> that contains a PCI PF and its VF. For this group, a clever system
+>> administrator can use admin commands to manipulate the PF/VF resources.
+>>
+>> Reviewed-by: Parav Pandit <parav@nvidia.com>
+>> Signed-off-by: Max Gurtovoy <mgurtovoy@nvidia.com>
+>> ---
+>>   admin.tex | 18 ++++++++++++++----
+>>   1 file changed, 14 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/admin.tex b/admin.tex
+>> index 6725daa..f816c3b 100644
+>> --- a/admin.tex
+>> +++ b/admin.tex
+>> @@ -11,11 +11,13 @@ \section{Administration command set}\label{sec:Basic Facilities of a Virtio Devi
+>>           le16 command;
+>>           /*
+>>            * 0 - self
+>> -         * 1 - 65535 are reserved
+>> +         * 1 - other virtio device (identified by vdev_id) in the same device group
+>> +         * 2 - 65535 are reserved
+>>            */
+>>           le16 dst_type;
+>> +        le64 vdev_id;
+> Alignment problems. Proposal:
+>
+> vdev_id
+> dst_type
+> command
 
-vdev_id -> dst_id ??
+I don't understand what is the issue here. All sw-hw packets should be 
+__packed__
 
-what is this supposed to be ? Do you have example for -> in the spec ?
+why should I change the order to be something that is not intuitive ?
 
 >
->> There was some internal version or external, do not recall, where vdev_id was optional or was union.
->>
->> But I think if we always going have vdev_id, it can be naturally aligned like your above proposal.
->>
->> [1] "Structure Specifications
->> Many device and driver in-memory structure layouts are documented using the C struct syntax. All structures
->> are assumed to be without additional padding. To stress this, cases where common C compilers are known
->> to insert extra padding within structures are tagged using the GNU C __attribute__((packed)) syntax."
-> These are pathological cases due to legacy. Better avoided.
 >
+>>           /* reserved for common cmd fields */
+>> -        u8 reserved[20];
+>> +        u8 reserved[12];
+>>           u8 command_specific_data[];
+>>   
+>>           /* Device-writable part */
+>
+>> @@ -39,9 +41,11 @@ \section{Administration command set}\label{sec:Basic Facilities of a Virtio Devi
+>>   \hline
+>>   03h   & VIRTIO_ADMIN_STATUS_INVALID_FIELD    & invalid field was set  \\
+>>   \hline
+>> +04h   & VIRTIO_ADMIN_STATUS_INVALID_VDEV_ID    & invalid vdev_id was set  \\
+>> +\hline
+>>   \end{tabular}
+>>   
+>> -The \field{command}, \field{dst_type} and \field{command_specific_data} are
+>> +The \field{command}, \field{dst_type}, \field{vdev_id} and \field{command_specific_data} are
+>>   set by the driver, and the device sets the \field{status}, the
+>>   \field{command_specific_error} and the \field{command_specific_result},
+>>   if needed.
+>> @@ -50,9 +54,15 @@ \section{Administration command set}\label{sec:Basic Facilities of a Virtio Devi
+>>   
+>>   The mandatory fields to be set by the driver, for all admin commands, are \field{command} and \field{dst_type}.
+>>   
+>> +The optional unused fields to be zeroed by the driver.
+>> +
+>>   The \field{command} defines the opcode for the command. The value for each command can be found in each command section.
+>>   
+>> -The \field{dst_type} defines the designated virtio device for the command. This value should be set to 0 (self).
+>> +The \field{dst_type} defines the designated virtio device for the command. This value can be set to 0 (self) or 1 (other virtio device in the same device
+>> +group) by the driver. Not all the commands allow setting \field{dst_type} to 1. Refer to each command description explicitly to check whether this operation is allowed.
+>> +If \field{dst_type} is set to 0 by the driver, the \field{vdev_id} isn't valid, should be zeroed by the driver and should be ignored by the device.
+>> +If \field{dst_type} is set to 1 by the driver, the \field{vdev_id} is valid and used to describe the vdev_id of the designated virtio device (see section
+>> +\ref{sec:Introduction / Terminology / Device group} for vdev_id numbering for type 1 device groups).
+>>   
+>>   The \field{command_specific_error} should be inspected by the driver only if \field{status} is set to
+>>   VIRTIO_ADMIN_STATUS_CS_ERR by the device. In this case, the content of \field{command_specific_error}
+>
+> teminology is a bit inconsistent. would dst_id be better? it goes
+> together with dst_type after all.
+
+I don't think dst_id is better than vdev_id. Sorry.
+
+vdev_id is a unique identifier of a device inside a device group.
+
+>
+>> -- 
+>> 2.21.0
 
