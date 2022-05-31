@@ -1,15 +1,15 @@
-Return-Path: <virtio-dev-return-9567-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-9569-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 3CE789861B0
-	for <virtio-dev@lists.oasis-open.org>; Tue, 31 May 2022 05:24:17 +0000 (UTC)
-Date: Tue, 31 May 2022 01:24:09 -0400
+	by lists.oasis-open.org (Postfix) with ESMTP id E31C29861B0
+	for <virtio-dev@lists.oasis-open.org>; Tue, 31 May 2022 05:35:25 +0000 (UTC)
+Date: Tue, 31 May 2022 01:35:17 -0400
 From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20220531012211-mutt-send-email-mst@kernel.org>
+Message-ID: <20220531013205-mutt-send-email-mst@kernel.org>
 References: <20220507071533.104000-1-xuanzhuo@linux.alibaba.com>
  <20220530142324-mutt-send-email-mst@kernel.org>
  <1653963052.6600974-1-xuanzhuo@linux.alibaba.com>
@@ -44,7 +44,13 @@ On Tue, May 31, 2022 at 10:10:52AM +0800, Xuan Zhuo wrote:
 > 
 > Very happy to do this job.
 > 
-> I thinks "offset" can contain these requirements. No matter how many descriptors
+> I thinks "offset" can contain these requirements.
+
+I am not so sure. The issue is with all of the extension headers where
+the payload is is not always predictable, even for a
+given type.
+
+> No matter how many descriptors
 > are used, we treat multiple buffers as a continuous piece of memory. The device
 > places ip, tcp/udp at the specified location according to the specified offset.
 > 
@@ -139,11 +145,7 @@ On Tue, May 31, 2022 at 10:10:52AM +0800, Xuan Zhuo wrote:
 > >
 > >
 > > how do we know what types does device support?
-
-
-One idea here is to just have a feature bit per type.
-
-
+> >
 > > > +#define VIRTIO_NET_CTRL_SPLIT_HEADER       6
 > > > + #define VIRTIO_NET_CTRL_SPLIT_HEADER_SET   0
 > > > +\end{lstlisting}
