@@ -1,768 +1,687 @@
-Return-Path: <virtio-dev-return-9581-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-9582-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 542429865FD
-	for <virtio-dev@lists.oasis-open.org>; Thu,  2 Jun 2022 07:23:48 +0000 (UTC)
-Date: Thu, 2 Jun 2022 08:23:38 +0100
-From: Stefan Hajnoczi <stefanha@redhat.com>
-Message-ID: <Yphlet2cKT9ySAay@stefanha-x1.localdomain>
+From: Dmitry Fomichev <Dmitry.Fomichev@wdc.com>
+Date: Fri, 3 Jun 2022 02:30:29 +0000
+Message-ID: <bf9ea224c637ce7f202418359ac96a6a182f45bb.camel@wdc.com>
 References: <20220601235559.41091-1-dmitry.fomichev@wdc.com>
+	 <Yphlet2cKT9ySAay@stefanha-x1.localdomain>
+In-Reply-To: <Yphlet2cKT9ySAay@stefanha-x1.localdomain>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="DSsJd/dJ0H8bn7z1"
-Content-Disposition: inline
-In-Reply-To: <20220601235559.41091-1-dmitry.fomichev@wdc.com>
 Subject: Re: [virtio-dev] [RFC PATCH] virtio-blk: add zoned block device
  specification
-To: Dmitry Fomichev <dmitry.fomichev@wdc.com>
-Cc: virtio-dev@lists.oasis-open.org, virtio-comment@lists.oasis-open.org, Damien Le Moal <damien.lemoal@opensource.wdc.com>, Matias Bjorling <matias.bjorling@wdc.com>, Niklas Cassel <niklas.cassel@wdc.com>, Hans Holmberg <Hans.Holmberg@wdc.com>, Stefan Hajnoczi <stefanha@gmail.com>, Hannes Reinecke <hare@suse.de>, Sam Li <faithilikerun@gmail.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <243068035FD8EC48A053EFAD8D0852B1@namprd04.prod.outlook.com>
+Content-Transfer-Encoding: base64
+To: "stefanha@redhat.com" <stefanha@redhat.com>
+Cc: Niklas Cassel <Niklas.Cassel@wdc.com>, "hare@suse.de" <hare@suse.de>, "its@irrelevant.dk" <its@irrelevant.dk>, =?utf-8?B?TWF0aWFzIEJqw7hybGluZw==?= <Matias.Bjorling@wdc.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, Hans Holmberg <Hans.Holmberg@wdc.com>, "faithilikerun@gmail.com" <faithilikerun@gmail.com>, "damien.lemoal@opensource.wdc.com" <damien.lemoal@opensource.wdc.com>, "stefanha@gmail.com" <stefanha@gmail.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
---DSsJd/dJ0H8bn7z1
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-(Resending from my mailing list subscriber address so this makes it onto
-the list.)
-
-On Thu, 2 Jun 2022 at 00:56, Dmitry Fomichev <dmitry.fomichev@wdc.com> wrot=
-e:
->
-> Introduce support for Zoned Block Devices to virtio.
->
-> Zoned Block Devices (ZBDs) aim to achieve a better capacity, latency
-> and/or cost characteristics compared to commonly available block
-> devices by getting the entire LBA space of the device divided to block
-> regions that are much larger than the LBA size. These regions are
-> called zones and they can only be written sequentially. More details
-> about ZBDs can be found at
->
-> https://zonedstorage.io/docs/introduction/zoned-storage .
->
-> In its current form, the virtio protocol for block devices (virtio-blk)
-> is not aware of ZBDs but it allows the guest to successfully scan a
-> host-managed drive provided by the host. As the result, the
-> host-managed drive appears at the guest as a regular drive that will
-> operate erroneously under the most common write workloads.
->
-> To fix this, the virtio-blk protocol needs to be extended to add the
-> capabilities to convey the zone characteristics of host ZBDs to the
-> guest and to provide the support for ZBD-specific commands - Report
-> Zones, four zone operations and (optionally) Zone Append. The proposed
-> standard extension aims to provide this functionality.
->
-> This patch extends the virtio-blk section of virtio specification with
-> the minimum set of requirements that are necessary to support ZBDs.
-> The resulting device model is a subset of the models defined in ZAC/ZBC
-> and ZNS standards documents. The included functionality mirrors
-> the existing Linux kernel block layer ZBD support and should be
-> sufficient to handle the host-managed and host-aware HDDs that are on
-> the market today as well as ZNS SSDs that are entering the market at
-> the moment of this patch submission.
->
-> I have developed a proof of concept patch series that adds ZBD support
-> to virtio-blk Linux kernel driver by implementing the protocol
-> extensions defined in the spec patch. I would like to receive the
-> initial feedback on this specification patch before posting that series
-> to the block LKML.
->
-> I would like to thank the following people for their useful feedback
-> and suggestions while working on the initial iterations of this patch.
->
-> Damien Le Moal <damien.lemoal@opensource.wdc.com>
-> Matias Bj=F8rling <Matias.Bjorling@wdc.com>
-> Niklas Cassel <Niklas.Cassel@wdc.com>
-> Hans Holmberg <Hans.Holmberg@wdc.com>
->
-> Signed-off-by: Dmitry Fomichev <dmitry.fomichev@wdc.com>
-> ---
->  content.tex | 686 +++++++++++++++++++++++++++++++++++++++++++++++++++-
->  1 file changed, 685 insertions(+), 1 deletion(-)
->
-> diff --git a/content.tex b/content.tex
-> index 7508dd1..8ae7578 100644
-> --- a/content.tex
-> +++ b/content.tex
-> @@ -4557,6 +4557,11 @@ \subsection{Feature bits}\label{sec:Device Types /=
- Block Device / Feature bits}
->       maximum erase sectors count in \field{max_secure_erase_sectors} and
->       maximum erase segment number in \field{max_secure_erase_seg}.
->
-> +\item[VIRTIO_BLK_F_ZONED(17)] Device is a Zoned Block Device, that is, a=
- device
-> +       that behaves as defined by the T10 Zoned Block Command standard (=
-ZBC r05) or
-> +       the NVMe(TM) NVM Express Zoned Namespace Command Set Specificatio=
-n 1.1b
-> +       (ZNS).
-
-The rest of the spec doesn't mention ZBC/ZNS but at least the zone
-state machine is likely to be derived from these standards. Have you
-reviewed the license/IP terms of VIRTIO, ZBC, and ZNS to check that
-it's okay to do this? It's probably okay but I wanted to mention it
-because it would be a shame to discover an IP issue after the VIRTIO
-spec has been released.
-
-Also, the wording suggests to me that the spec will refer to ZBC/ZNS
-instead of defining the behavior itself, but actually you've written a
-full self-contained spec (which is great!). Maybe change "behaves as
-defined by" to "follows the zoned storage device model that is also
-supported by industry standards such as".
-
-
-> +
->  \end{description}
->
->  \subsubsection{Legacy Interface: Feature bits}\label{sec:Device Types / =
-Block Device / Feature bits / Legacy Interface: Feature bits}
-> @@ -4589,6 +4594,31 @@ \subsection{Device configuration layout}\label{sec=
-:Device Types / Block Device /
->  \field{max_secure_erase_sectors} \field{secure_erase_sector_alignment} a=
-re expressed
->  in 512-byte units if the VIRTIO_BLK_F_SECURE_ERASE feature bit is negoti=
-ated.
->
-> +If the VIRTIO_BLK_F_ZONED feature is negotiated, then in
-> +\field{virtio_blk_zoned_characteristics},
-> +\begin{itemize}
-> +\item \field{zone_sectors} value is expressed in 512-byte sectors.
-> +\item \field{max_append_sectors} value is expressed in 512-byte sectors.
-> +\item \field{write_granularity} value is expressed in bytes.
-> +\end{itemize}
-> +
-> +The \field{model} field in \field{zoned} may have the following values:
-> +VIRTIO_BLK_Z_HM(1) and VIRTIO_BLK_Z_HA(2).
-> +
-> +\begin{lstlisting}
-> +#define VIRTIO_BLK_Z_HM        1
-> +#define VIRTIO_BLK_Z_HA        2
-> +\end{lstlisting}
-> +
-> +If the VIRTIO_BLK_F_ZONED feature is negotiated, then
-> +\begin{itemize}
-> +\item The value of VIRTIO_BLK_Z_HM MUST be set by the device if it opera=
-tes
-> +    as a host-managed zoned block device.
-
-The term host-managed is not defined. Please either define it or
-include a reference to the zoned storage device model (maybe
-zonedstorage.io?).
-
-> +
-> +\item The value of VIRTIO_BLK_Z_HA MUST be set by the device if it opera=
-tes
-> +    as a host-aware zoned block device.
-
-The term host-aware is not defined.
-
-> +\end{itemize}
-
-The VIRTIO spec is organized into normative sections containing
-MUST/MAY/SHOULD and descriptive sections. MUST/MAY/SHOULD need to go
-in drivernormative or devicenormative sections and can't be used in
-descriptive sections.
-
-(I believe the reason for this is to give driver/device implementors a
-definitive list of normative statements they can easily review without
-re-reading the entire text of the specification.)
-This raises the question whether devices can offer VIRTIO_BLK_F_ZONED
-but fall back to regular block device operation if the driver does not
-negotiate the bit?
-
-This statement partially precludes that because it requires devices to
-disable VIRTIO_BLK_F_DISCARD if they advertize VIRTIO_BLK_F_ZONED. I
-think there is a way to allow VIRTIO_BLK_F_DISCARD in
-!VIRTIO_BLK_F_ZONED mode while forbidding it in VIRTIO_BLK_F_ZONED
-mode: the device can fail to set FEATURES_OK when the driver writes
-the Device Status field with VIRTIO_BLK_F_DISCARD &&
-VIRTIO_BLK_F_ZONED. That way a host-aware device in
-!VIRTIO_BLK_F_ZONED mode could allow VIRTIO_BLK_F_DISCARD. Is this
-useful?
-
-> +
-> +If the VIRTIO_BLK_F_ZONED feature is negotiated, then
-> +\begin{itemize}
-> +\item If the driver that can not support host-managed zoned devices
-> +    reads VIRTIO_BLK_Z_HM from the \field{model} field of \field{zoned},=
- the
-> +    driver MUST NOT set FEATURES_OK flag and instead set the FAILED bit.
-> +
-> +\item If the driver that can not support support zoned devices reads
-> +    VIRTIO_BLK_Z_HA from the \field{model} field of \field{zoned}, the d=
-river
-> +    MAY present the device to the guest as a non-zoned device. In this c=
-ase, the
-
-Please avoid using the terms "guest" or "host" in the virtualization
-sense and instead use "driver" and "device". VIRTIO can be used in
-non-virtualization use cases and it's clearer to avoid virtualization
-terminology.
-
-> +    driver SHOULD ignore all other fields in \field{zoned}.
-
-Why would the driver negotiate VIRTIO_BLK_F_ZONED if it doesn't
-support zoned devices?
-
-> +\end{itemize}
-> +
->  \devicenormative{\subsubsection}{Device Initialization}{Device Types / B=
-lock Device / Device Initialization}
->
->  Devices SHOULD always offer VIRTIO_BLK_F_FLUSH, and MUST offer it
-> @@ -4712,6 +4773,77 @@ \subsection{Device Initialization}\label{sec:Devic=
-e Types / Block Device / Devic
->  The device MUST initialize padding bytes \field{unused0} and
->  \field{unused1} to 0.
->
-> +If the device that is being initialized is a not a zoned device, the dev=
-ice MUST
-> +NOT offer the VIRTIO_BLK_F_ZONED feature.
-> +
-> +If the VIRTIO_BLK_F_ZONED bit is not set by the driver,
-> +\begin{itemize}
-> +\item the device with the VIRTIO_BLK_Z_HA zone model SHOULD proceed with=
- the
-> +    initialization while setting all zoned topology fields to zero.
-> +
-> +\item the device with the VIRTIO_BLK_Z_HM zone model MUST report the dev=
-ice
-> +    capacity in \field{capacity} in the configuration space as zero to p=
-revent
-> +    the use of the device that is incorrectly recognized by the driver as
-> +    a non-zoned device.
-
-I suggest changing this to "MUST fail to set the FEATURES_OK device
-status bit when the driver writes the Device Status field". That way
-the driver gets a clear error instead of seeing a virtio-blk device
-with 0 capacity.
-
-
-> +\end{itemize}
-> +
-> +If the VIRTIO_BLK_F_ZONED feature is negotiated,
-> +\begin{itemize}
-> +\item \field{zoned} can be read by the driver to discover the size of a =
-single
-> +    zone on the device. All zones of the device have the same size indic=
-ated by
-> +    the \field{zone_sectors} field of \field{zoned} except for the last =
-zone
-> +    that MAY be smaller than all other zones. The driver can calculate t=
-he
-> +    number of zones on the device as
-> +    \begin{lstlisting}
-> +        nr_zones =3D (capacity + zone_sectors - 1) / zone_sectors;
-> +    \end{lstlisting}
-> +    and the size of the last zone as
-> +    \begin{lstlisting}
-> +        zs_last =3D capacity - (nr_zones - 1) * zone_sectors;
-> +    \end{lstlisting}
-> +
-> +\item Zones consume volatile device resources while being in certain sta=
-tes and
-> +    the device MAY set limits on the number of zones that can be in thes=
-e states
-> +    simultaneously.
-> +
-> +    Zoned block devices use two internal counters to account for the dev=
-ice
-> +    resources in use, the number of currently open zones and the number =
-of
-> +    currently active zones.
-> +
-> +    Any zone state transition from a state that doesn't consume a zone r=
-esource
-> +    to a state that consumes the same resource increments the internal d=
-evice
-> +    counter for that resource. Any zone transition out of a state that c=
-onsumes
-> +    a zone resource to a state that doesn't consume the same resource de=
-crements
-> +    the counter. Any request that causes the device to exceed the report=
-ed zone
-> +    resource limits is terminated by the device with an error.
-
-"an error" is vague. I was wondering what the exact error should be.
-Please either mention the error codes here or add "as defined for
-specific commands later" so it's clear that the device doesn't get the
-choose the error code but they are defined by the spec.
-
-> +
-> +\item The \field{max_open_zones} field of the \field{zoned} structure ca=
-n be
-> +    read by the driver to discover the maximum number of zones that can =
-be open
-> +    on the device (zones in the implicit open or explicit open state). A=
- value
-> +    of zero indicates that the device does not have any limit on the num=
-ber of
-> +    open zones.
-> +
-> +\item The \field{max_active_zones} field of the \field{zoned} structure =
-can be
-> +    read by the driver to discover the maximum number zones that can be =
-active
-> +    on the device (zones in the implicit open, explicit open or closed s=
-tate).
-> +    A value of zero indicates that the device does not have any limit on=
- the
-> +    number of active zones.
-> +
-> +\item the \field{max_append_sectors} field of \field{zoned} can be read =
-by the
-> +    driver to get the maximum data size of a VIRTIO_BLK_T_ZONE_APPEND re=
-quest
-> +    issued to the device. The value of this field MUST NOT exceed the
-> +    \field{seg_max} * \field{size_max} value. A device MAY set the
-> +    \field{max_append_sectors} to zero if it doesn't support
-> +    VIRTIO_BLK_T_ZONE_APPEND requests.
-
-The MUST NOT/MAY statements need to be in a drivernormative section.
-There are more instances below.
-
-
-> +
-> +\item the \field{write_granularity} field of \field{zoned} can be read b=
-y the
-> +    driver to discover the offset and size alignment constraint for
-> +    VIRTIO_BLK_T_OUT and VIRTIO_BLK_T_ZONE_APPEND requests issued to
-> +    a sequential zone of the device.
-> +
-> +\item the device MUST initialize padding bytes \field{unused2} to 0.
-> +\end{itemize}
-> +
->  \subsubsection{Legacy Interface: Device Initialization}\label{sec:Device=
- Types / Block Device / Device Initialization / Legacy Interface: Device In=
-itialization}
->
->  Because legacy devices do not have FEATURES_OK, transitional devices
-> @@ -4738,7 +4870,8 @@ \subsubsection{Legacy Interface: Device Initializat=
-ion}\label{sec:Device Types /
->  \subsection{Device Operation}\label{sec:Device Types / Block Device / De=
-vice Operation}
->
->  The driver queues requests to the virtqueues, and they are used by
-> -the device (not necessarily in order). Each request is of form:
-> +the device (not necessarily in order). If the VIRTIO_BLK_F_ZONED feature
-> +is not negotiated, then each request is of form:
->
->  \begin{lstlisting}
->  struct virtio_blk_req {
-> @@ -4853,6 +4986,331 @@ \subsection{Device Operation}\label{sec:Device Ty=
-pes / Block Device / Device Ope
->  command produces VIRTIO_BLK_S_IOERR.  A segment may have completed
->  successfully, failed, or not been processed by the device.
->
-> +The following requirements only apply if the VIRTIO_BLK_F_ZONED feature =
-is
-> +negotiated.
-> +
-> +Each request is of form:
-> +
-> +\begin{lstlisting}
-> +struct virtio_blk_zoned_req {
-> +        le32 type;
-> +        le32 reserved;
-> +        le64 sector;
-> +        union zoned_params {
-> +                struct {
-> +                        /* ALL zone operation flag */
-> +                        __u8 all;
-> +                        __u8 unused1[3];
-> +                } mgmt_send;
-> +                struct {
-> +                        /* Partial zone report flag */
-> +                        __u8 partial;
-> +                        __u8 unused2[3];
-> +                } mgmt_receive;
-> +                struct {
-> +                        __u8 unused3[4];
-> +                } append;
-> +        } zone;
-> +        u8 data[];
-> +        le64 zone_result;
-> +        u8 status;
-> +        u8 reserved1[3];
-
-Please make status the last byte so device implementations can reuse
-their existing request completion code to handle virtio_blk_zoned_req.
-Either reserved1[] can be removed or it can be moved before status.
-
-Here is the non-union representation of the structs. Note that this
-means existing request processing code can handle IN/OUT/FLUSH even
-when VIRTIO_BLK_F_ZONED is negotiated. We don't need two different
-code paths for these common commands:
-
-/* IN/OUT/FLUSH/DISCARD/WRITE_ZEROES */
-struct virtio_blk_req {
-        le32 type;
-        le32 reserved;
-        le64 sector;
-        u8 data[];
-        u8 status;
-};
-
-/* ZONE_APPEND */
-struct virtio_blk_req_zone_append {
-        le32 type;
-        le32 reserved;
-        le64 sector;
-        u8 data[];
-        le64 zone_result;
-        u8 status;
-};
-
-/* ZONE_OPEN, ZONE_CLOSE, ZONE_FINISH, ZONE_RESET */
-struct virtio_blk_req_zone_mgmt_send {
-        le32 type;
-        le32 reserved;
-        le64 sector;
-        /* ALL zone operation flag */
-        __u8 all;
-        __u8 unused1[3];
-        u8 data[];
-        u8 status;
-};
-
-/* ZONE_REPORT */
-struct virtio_blk_req_zone_mgmt_receive {
-        le32 type;
-        le32 reserved;
-        le64 sector;
-        /* Partial zone report flag */
-        __u8 partial;
-        __u8 unused2[3];
-        u8 data[];
-        u8 status;
-};
-
-> +};
-> +\end{lstlisting}
-> +
-> +In addition to the request types defined for non-zoned devices, the type=
- of the
-> +request can be a zone report (VIRTIO_BLK_T_ZONE_REPORT), an explicit zon=
-e open
-> +(VIRTIO_BLK_T_ZONE_OPEN), an explicit zone close (VIRTIO_BLK_T_ZONE_CLOS=
-E), a
-> +zone finish (VIRTIO_BLK_T_ZONE_FINISH), a zone_append (VIRTIO_BLK_T_ZONE=
-_APPEND)
-> +or a zone reset (VIRTIO_BLK_T_ZONE_RESET).
-> +
-> +\begin{lstlisting}
-> +#define VIRTIO_BLK_T_ZONE_APPEND    15
-> +#define VIRTIO_BLK_T_ZONE_REPORT    16
-> +#define VIRTIO_BLK_T_ZONE_OPEN      18
-> +#define VIRTIO_BLK_T_ZONE_CLOSE     20
-> +#define VIRTIO_BLK_T_ZONE_FINISH    22
-> +#define VIRTIO_BLK_T_ZONE_RESET     24
-> +\end{lstlisting}
-> +
-> +Requests of the type VIRTIO_BLK_T_ZONE_REPORT are reads and requests of =
-the type
-
-Here "reads" means data transfers from the device to the driver rather
-than disk reads. I found that confusing. Maybe
-"VIRTIO_BLK_T_ZONE_REPORT transfer data from the device"?
-
-> +VIRTIO_BLK_T_ZONE_APPEND are writes. VIRTIO_BLK_T_ZONE_OPEN,
-> +VIRTIO_BLK_T_ZONE_CLOSE, VIRTIO_BLK_T_ZONE_FINISH and VIRTIO_BLK_T_ZONE_=
-RESET
-> +are non-data requests.
-> +
-> +In ZBD standards, the VIRTIO_BLK_T_ZONE_REPORT request belongs to "Zone
-
-"ZBD standards" is not defined. I think this refers to the zoned
-storage device model and its embodiment in the ZBC/ZNS specs.
-The configuration space fields already allow the driver to calculate
-the total number of zones. What is the purpose of partial=3D0, it
-doesn't seem to provide any new information?
-
-When the device marks a virtqueue buffer used, it indicates the number
-of bytes written (struct virtq_used_elem's len field). The driver can
-use this field to determine the number of descriptors filled in by the
-device. Is the nr_zones field really necessary?
-
-
-> +
-> +A zone descriptor has the following structure:
-> +
-> +\begin{lstlisting}
-> +struct virtio_blk_zone_descriptor {
-> +        le64   z_cap;
-> +        le64   z_start;
-> +        le64   z_wp;
-> +        u8     z_type;
-> +        u8     z_state;
-> +        u8     reserved[38];
-> +};
-> +\end{lstlisting}
-> +
-> +The zone descriptor field \field{z_type} \field{virtio_blk_zone_descript=
-or}
-> +indicates the type of the zone. The available types are VIRTIO_BLK_ZT_CO=
-NV(1),
-> +VIRTIO_BLK_ZT_SWR(2) or VIRTIO_BLK_ZT_SWP(3).
-> +
-> +\begin{lstlisting}
-> +#define VIRTIO_BLK_ZT_CONV     1
-> +#define VIRTIO_BLK_ZT_SWR      2
-> +#define VIRTIO_BLK_ZT_SWP      3
-> +\end{lstlisting}
-> +
-> +Read and write operations into zones with the VIRTIO_BLK_ZT_CONV (Conven=
-tional)
-> +type have the same behavior as read and write operations on a regular bl=
-ock
-> +device. Any block in a conventional zone can be read or written at any t=
-ime and
-> +in any order.
-> +
-> +Zones with VIRTIO_BLK_ZT_SWR (Sequential Write Required or SWR) can be r=
-ead
-> +randomly, but MUST be written sequentially at a certain point in the zon=
-e called
-> +the Write Pointer (WP). With every write, the Write Pointer is increment=
-ed by
-> +the number of sectors written.
-> +
-> +Zones with VIRTIO_BLK_ZT_SWP (Sequential Write Preferred or SWP) can be =
-read
-> +randomly and SHOULD be written sequentially, similarly to SWR zones. How=
-ever,
-> +SWP zones can accept random write operations, that is, VIRTIO_BLK_T_OUT =
-requests
-> +with a start sector different from the zone write pointer position.
-> +
-> +The field \field{z_state} of \field{virtio_blk_zone_descriptor} indicate=
-s the
-> +state of the device zone. The available zone states are VIRTIO_BLK_ZS_NO=
-T_WP(0),
-> +VIRTIO_BLK_ZS_EMPTY(1), VIRTIO_BLK_ZS_IOPEN(2), VIRTIO_BLK_ZS_EOPEN(3),
-> +VIRTIO_BLK_ZS_CLOSED(4), VIRTIO_BLK_ZS_RDONLY(13), VIRTIO_BLK_ZS_FULL(14=
-) and
-> +VIRTIO_BLK_ZS_OFFLINE(15).
-> +
-> +\begin{lstlisting}
-> +#define VIRTIO_BLK_ZS_NOT_WP   0
-> +#define VIRTIO_BLK_ZS_EMPTY    1
-> +#define VIRTIO_BLK_ZS_IOPEN    2
-> +#define VIRTIO_BLK_ZS_EOPEN    3
-> +#define VIRTIO_BLK_ZS_CLOSED   4
-> +#define VIRTIO_BLK_ZS_RDONLY   13
-> +#define VIRTIO_BLK_ZS_FULL     14
-> +#define VIRTIO_BLK_ZS_OFFLINE  15
-> +\end{lstlisting}
-> +
-> +Zones of the type VIRTIO_BLK_ZT_CONV are always reported by the device t=
-o be in
-> +the VIRTIO_BLK_ZS_NOT_WP state. Zones of the types VIRTIO_BLK_ZT_SWR and
-> +VIRTIO_BLK_ZT_SWP can not transition to the VIRTIO_BLK_ZS_NOT_WP state.
-> +
-> +Zones in VIRTIO_BLK_ZS_EMPTY (Empty), VIRTIO_BLK_ZS_IOPEN (Implicitly Op=
-en),
-> +VIRTIO_BLK_ZS_EOPEN (Explicitly Open) and VIRTIO_BLK_ZS_CLOSED (Closed) =
-state
-> +are writable, but zones in VIRTIO_BLK_ZS_RDONLY (Read-Only), VIRTIO_BLK_=
-ZS_FULL
-> +(Full) and VIRTIO_BLK_ZS_OFFLINE (Offline) state are not. The write poin=
-ter
-> +value (\field{z_wp}) is not valid for Read-Only, Full and Offline zones.
-> +
-> +The zone descriptor field \field{z_cap} contains the maximum number of 5=
-12-byte
-> +sectors that are available to be written with user data when the zone is=
- in the
-> +Empty state. This value shall be less than or equal to the \field{zone_s=
-ectors}
-> +value in \field{virtio_blk_zoned_characteristics} structure in the device
-> +configuration space.
-> +
-> +The zone descriptor field \field{z_start} contains the 64-bit address of=
- the
-> +first 512-byte sector of the zone.
-> +
-> +The zone descriptor field \field{z_wp} contains the 64-bit sector addres=
-s where
-> +the next write operation for this zone should be issued. This value is u=
-ndefined
-> +for conventional zones and for zones in VIRTIO_BLK_ZS_RDONLY, VIRTIO_BLK=
-_ZS_FULL
-> +and VIRTIO_BLK_ZS_OFFLINE state.
-> +
-> +Depending on their state, zones consume resources as follows:
-> +\begin{itemize}
-> +\item a zone in VIRTIO_BLK_ZS_IOPEN and VIRTIO_BLK_ZS_EOPEN state consum=
-es one
-> +    open zone resource and, additionally,
-> +
-> +\item a zone in VIRTIO_BLK_ZS_IOPEN, VIRTIO_BLK_ZS_EOPEN and
-> +    VIRTIO_BLK_ZS_CLOSED state consumes one active resource.
-> +\end{itemize}
-> +
-> +Attempts for zone transitions that violate zone resource limits MUST fai=
-l with
-> +VIRTIO_BLK_S_ZONE_OPEN_RESOURCE or VIRTIO_BLK_S_ZONE_ACTIVE_RESOURCE
-> +\field{zone_result}.
-
-Why use zone_result instead of the status field? The _S_ naming
-suggests this is a status field constant, not a zone_result constant.
-
-
-> +
-> +Zones in the VIRTIO_BLK_ZS_EMPTY (Empty) state have the write pointer va=
-lue
-> +equal to the start sector of the zone. In this state, the entire capacit=
-y of the
-> +zone is available for writing. A zone can transition from this state to
-> +\begin{itemize}
-> +\item VIRTIO_BLK_ZS_IOPEN when a successful VIRTIO_BLK_T_OUT request or
-> +    VIRTIO_BLK_T_ZONE_APPEND with a non-zero data size is received for t=
-he zone.
-> +
-> +\item VIRTIO_BLK_ZS_EOPEN when a successful VIRTIO_BLK_T_ZONE_OPEN reque=
-st is
-> +    received for the zone
-> +\end{itemize}
-> +
-> +When a VIRTIO_BLK_T_ZONE_RESET request is issued to an Empty zone, the r=
-equest
-> +is completed successfully and the zone stays in the VIRTIO_BLK_ZS_EMPTY =
-state.
-> +
-> +Zones in the VIRTIO_BLK_ZS_IOPEN (Implicitly Open) state can transition =
-=66rom
-> +this state to
-> +\begin{itemize}
-> +\item VIRTIO_BLK_ZS_EMPTY when a successful VIRTIO_BLK_T_ZONE_RESET requ=
-est is
-> +    received for the zone,
-> +
-> +\item VIRTIO_BLK_ZS_EOPEN when a successful VIRTIO_BLK_T_ZONE_OPEN reque=
-st is
-> +    received for the zone,
-> +
-> +\item VIRTIO_BLK_ZS_CLOSED when a successful VIRTIO_BLK_T_ZONE_CLOSE req=
-uest is
-> +    received for the zone,
-> +
-> +\item VIRTIO_BLK_ZS_CLOSED implicitly by the device when another zone is
-> +    entering the VIRTIO_BLK_ZS_IOPEN or VIRTIO_BLK_ZS_EOPEN state and th=
-e number
-> +    of currently open zones is at \field{max_open_zones} limit,
-> +
-> +\item VIRTIO_BLK_ZS_FULL when a successful VIRTIO_BLK_T_ZONE_FINISH requ=
-est is
-> +    received for the zone.
-> +
-> +\item VIRTIO_BLK_ZS_FULL when a successful VIRTIO_BLK_T_OUT or
-> +    VIRTIO_BLK_T_ZONE_APPEND request that causes the zone to reach its w=
-ritable
-> +    capacity is received for the zone.
-> +\end{itemize}
-> +
-> +Zones in the VIRTIO_BLK_ZS_EOPEN (Explicitly Open) state can transition =
-=66rom
-> +this state to
-> +\begin{itemize}
-> +\item VIRTIO_BLK_ZS_EMPTY when a successful VIRTIO_BLK_T_ZONE_RESET requ=
-est is
-> +    received for the zone,
-> +
-> +\item VIRTIO_BLK_ZS_EMPTY when a successful VIRTIO_BLK_T_ZONE_CLOSE requ=
-est is
-> +    received for the zone and the write pointer of the zone has the valu=
-e equal
-> +    to the start sector of the zone,
-> +
-> +\item VIRTIO_BLK_ZS_CLOSED when a successful VIRTIO_BLK_T_ZONE_CLOSE req=
-uest is
-> +    received for the zone and the zone write pointer is larger then the =
-start
-> +    sector of the zone,
-> +
-> +\item VIRTIO_BLK_ZS_FULL when a successful VIRTIO_BLK_T_ZONE_FINISH requ=
-est is
-> +    received for the zone,
-> +
-> +\item VIRTIO_BLK_ZS_FULL when a successful VIRTIO_BLK_T_OUT or
-> +    VIRTIO_BLK_T_ZONE_APPEND request that causes the zone to reach its w=
-ritable
-> +    capacity is received for the zone.
-> +\end{itemize}
-> +
-> +When a VIRTIO_BLK_T_ZONE_EOPEN request is issued to an Explicitly Open z=
-one, the
-> +request is completed successfully and the zone stays in the VIRTIO_BLK_Z=
-S_EOPEN
-> +state.
-> +
-> +Zones in the VIRTIO_BLK_ZS_CLOSED (Closed) state can transition from thi=
-s state
-> +to
-> +\begin{itemize}
-> +\item VIRTIO_BLK_ZS_EMPTY when a successful VIRTIO_BLK_T_ZONE_RESET requ=
-est is
-> +    received for the zone,
-> +
-> +\item VIRTIO_BLK_ZS_IOPEN when a successful VIRTIO_BLK_T_OUT request or
-> +    VIRTIO_BLK_T_ZONE_APPEND with a non-zero data size is received for t=
-he zone.
-> +
-> +\item VIRTIO_BLK_ZS_EOPEN when a successful VIRTIO_BLK_T_ZONE_OPEN reque=
-st is
-> +    received for the zone,
-> +\end{itemize}
-> +
-> +When a VIRTIO_BLK_T_ZONE_CLOSE request is issued to a Closed zone, the r=
-equest
-> +is completed successfully and the zone stays in the VIRTIO_BLK_ZS_CLOSED=
- state.
-> +
-> +Zones in the VIRTIO_BLK_ZS_FULL (Full) state can transition from this st=
-ate to
-> +VIRTIO_BLK_ZS_EMPTY when a successful VIRTIO_BLK_T_ZONE_RESET request is
-> +received for the zone
-> +
-> +When a VIRTIO_BLK_T_ZONE_FINISH request is issued to a Full zone, the re=
-quest
-> +is completed successfully and the zone stays in the VIRTIO_BLK_ZS_FULL s=
-tate.
-> +
-> +The device MAY automatically transition zones to VIRTIO_BLK_ZS_RDONLY
-> +(Read-Only) or VIRTIO_BLK_ZS_OFFLINE (Offline) state from any other stat=
-e. The
-> +device MAY also automatically transition zones in the Read-Only state to=
- the
-> +Offline state. Zones in the Offline state MAY NOT transition to any othe=
-r state.
-> +Such automatic transitions usually indicate hardware failures. The previ=
-ously
-> +written data may only be read from zones in the Read-Only state. Zones i=
-n the
-> +Offline state can not be read or written.
-
-What is the status code when this is attempted?
-
---DSsJd/dJ0H8bn7z1
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmKYZXoACgkQnKSrs4Gr
-c8gNLQf/YPXJDalQNB0732pC0S2TPOIqHmS55pijF6reFHakDf1LkLKtv3MLfXyz
-/1fNnBdnsDpeVRoR5rldP8zmV4mnIGyN7Wf5AoFi0nYfe09GD/ll2I7wMH4M5ZXH
-Q2/Hgi2NkqKwSdD22veMGqLJPdrgAxpy32VlaEMn8uq2S/b9DYYC4Yel+39WY5gX
-28Q0fp3JE1H0IPWUJzbRZiBMy2GDVdibgezc6+tpgajhsl+iFt6O4En7LazDVYTm
-YktMy7GvbGV0fZIJr9oEIP8mf+qX/5wKga6IsMw8oSG8FNosN8UI5MFSP2LbHfty
-9QfnCQawqk+KS4URvOjbs9MQymgDqA==
-=tfAS
------END PGP SIGNATURE-----
-
---DSsJd/dJ0H8bn7z1--
+T24gVGh1LCAyMDIyLTA2LTAyIGF0IDA4OjIzICswMTAwLCBTdGVmYW4gSGFqbm9jemkgd3JvdGU6
+DQo+IChSZXNlbmRpbmcgZnJvbSBteSBtYWlsaW5nIGxpc3Qgc3Vic2NyaWJlciBhZGRyZXNzIHNv
+IHRoaXMgbWFrZXMgaXQgb250bw0KPiB0aGUgbGlzdC4pDQo+IA0KPiBPbiBUaHUsIDIgSnVuIDIw
+MjIgYXQgMDA6NTYsIERtaXRyeSBGb21pY2hldiA8ZG1pdHJ5LmZvbWljaGV2QHdkYy5jb20+IHdy
+b3RlOg0KPiA+IA0KPiA+IEludHJvZHVjZSBzdXBwb3J0IGZvciBab25lZCBCbG9jayBEZXZpY2Vz
+IHRvIHZpcnRpby4NCj4gPiANCj4gPiBab25lZCBCbG9jayBEZXZpY2VzIChaQkRzKSBhaW0gdG8g
+YWNoaWV2ZSBhIGJldHRlciBjYXBhY2l0eSwgbGF0ZW5jeQ0KPiA+IGFuZC9vciBjb3N0IGNoYXJh
+Y3RlcmlzdGljcyBjb21wYXJlZCB0byBjb21tb25seSBhdmFpbGFibGUgYmxvY2sNCj4gPiBkZXZp
+Y2VzIGJ5IGdldHRpbmcgdGhlIGVudGlyZSBMQkEgc3BhY2Ugb2YgdGhlIGRldmljZSBkaXZpZGVk
+IHRvIGJsb2NrDQo+ID4gcmVnaW9ucyB0aGF0IGFyZSBtdWNoIGxhcmdlciB0aGFuIHRoZSBMQkEg
+c2l6ZS4gVGhlc2UgcmVnaW9ucyBhcmUNCj4gPiBjYWxsZWQgem9uZXMgYW5kIHRoZXkgY2FuIG9u
+bHkgYmUgd3JpdHRlbiBzZXF1ZW50aWFsbHkuIE1vcmUgZGV0YWlscw0KPiA+IGFib3V0IFpCRHMg
+Y2FuIGJlIGZvdW5kIGF0DQo+ID4gDQo+ID4gaHR0cHM6Ly96b25lZHN0b3JhZ2UuaW8vZG9jcy9p
+bnRyb2R1Y3Rpb24vem9uZWQtc3RvcmFnZcKgLg0KPiA+IA0KPiA+IEluIGl0cyBjdXJyZW50IGZv
+cm0sIHRoZSB2aXJ0aW8gcHJvdG9jb2wgZm9yIGJsb2NrIGRldmljZXMgKHZpcnRpby1ibGspDQo+
+ID4gaXMgbm90IGF3YXJlIG9mIFpCRHMgYnV0IGl0IGFsbG93cyB0aGUgZ3Vlc3QgdG8gc3VjY2Vz
+c2Z1bGx5IHNjYW4gYQ0KPiA+IGhvc3QtbWFuYWdlZCBkcml2ZSBwcm92aWRlZCBieSB0aGUgaG9z
+dC4gQXMgdGhlIHJlc3VsdCwgdGhlDQo+ID4gaG9zdC1tYW5hZ2VkIGRyaXZlIGFwcGVhcnMgYXQg
+dGhlIGd1ZXN0IGFzIGEgcmVndWxhciBkcml2ZSB0aGF0IHdpbGwNCj4gPiBvcGVyYXRlIGVycm9u
+ZW91c2x5IHVuZGVyIHRoZSBtb3N0IGNvbW1vbiB3cml0ZSB3b3JrbG9hZHMuDQo+ID4gDQo+ID4g
+VG8gZml4IHRoaXMsIHRoZSB2aXJ0aW8tYmxrIHByb3RvY29sIG5lZWRzIHRvIGJlIGV4dGVuZGVk
+IHRvIGFkZCB0aGUNCj4gPiBjYXBhYmlsaXRpZXMgdG8gY29udmV5IHRoZSB6b25lIGNoYXJhY3Rl
+cmlzdGljcyBvZiBob3N0IFpCRHMgdG8gdGhlDQo+ID4gZ3Vlc3QgYW5kIHRvIHByb3ZpZGUgdGhl
+IHN1cHBvcnQgZm9yIFpCRC1zcGVjaWZpYyBjb21tYW5kcyAtIFJlcG9ydA0KPiA+IFpvbmVzLCBm
+b3VyIHpvbmUgb3BlcmF0aW9ucyBhbmQgKG9wdGlvbmFsbHkpIFpvbmUgQXBwZW5kLiBUaGUgcHJv
+cG9zZWQNCj4gPiBzdGFuZGFyZCBleHRlbnNpb24gYWltcyB0byBwcm92aWRlIHRoaXMgZnVuY3Rp
+b25hbGl0eS4NCj4gPiANCj4gPiBUaGlzIHBhdGNoIGV4dGVuZHMgdGhlIHZpcnRpby1ibGsgc2Vj
+dGlvbiBvZiB2aXJ0aW8gc3BlY2lmaWNhdGlvbiB3aXRoDQo+ID4gdGhlIG1pbmltdW0gc2V0IG9m
+IHJlcXVpcmVtZW50cyB0aGF0IGFyZSBuZWNlc3NhcnkgdG8gc3VwcG9ydCBaQkRzLg0KPiA+IFRo
+ZSByZXN1bHRpbmcgZGV2aWNlIG1vZGVsIGlzIGEgc3Vic2V0IG9mIHRoZSBtb2RlbHMgZGVmaW5l
+ZCBpbiBaQUMvWkJDDQo+ID4gYW5kIFpOUyBzdGFuZGFyZHMgZG9jdW1lbnRzLiBUaGUgaW5jbHVk
+ZWQgZnVuY3Rpb25hbGl0eSBtaXJyb3JzDQo+ID4gdGhlIGV4aXN0aW5nIExpbnV4IGtlcm5lbCBi
+bG9jayBsYXllciBaQkQgc3VwcG9ydCBhbmQgc2hvdWxkIGJlDQo+ID4gc3VmZmljaWVudCB0byBo
+YW5kbGUgdGhlIGhvc3QtbWFuYWdlZCBhbmQgaG9zdC1hd2FyZSBIRERzIHRoYXQgYXJlIG9uDQo+
+ID4gdGhlIG1hcmtldCB0b2RheSBhcyB3ZWxsIGFzIFpOUyBTU0RzIHRoYXQgYXJlIGVudGVyaW5n
+IHRoZSBtYXJrZXQgYXQNCj4gPiB0aGUgbW9tZW50IG9mIHRoaXMgcGF0Y2ggc3VibWlzc2lvbi4N
+Cj4gPiANCj4gPiBJIGhhdmUgZGV2ZWxvcGVkIGEgcHJvb2Ygb2YgY29uY2VwdCBwYXRjaCBzZXJp
+ZXMgdGhhdCBhZGRzIFpCRCBzdXBwb3J0DQo+ID4gdG8gdmlydGlvLWJsayBMaW51eCBrZXJuZWwg
+ZHJpdmVyIGJ5IGltcGxlbWVudGluZyB0aGUgcHJvdG9jb2wNCj4gPiBleHRlbnNpb25zIGRlZmlu
+ZWQgaW4gdGhlIHNwZWMgcGF0Y2guIEkgd291bGQgbGlrZSB0byByZWNlaXZlIHRoZQ0KPiA+IGlu
+aXRpYWwgZmVlZGJhY2sgb24gdGhpcyBzcGVjaWZpY2F0aW9uIHBhdGNoIGJlZm9yZSBwb3N0aW5n
+IHRoYXQgc2VyaWVzDQo+ID4gdG8gdGhlIGJsb2NrIExLTUwuDQo+ID4gDQo+ID4gSSB3b3VsZCBs
+aWtlIHRvIHRoYW5rIHRoZSBmb2xsb3dpbmcgcGVvcGxlIGZvciB0aGVpciB1c2VmdWwgZmVlZGJh
+Y2sNCj4gPiBhbmQgc3VnZ2VzdGlvbnMgd2hpbGUgd29ya2luZyBvbiB0aGUgaW5pdGlhbCBpdGVy
+YXRpb25zIG9mIHRoaXMgcGF0Y2guDQo+ID4gDQo+ID4gRGFtaWVuIExlIE1vYWwgPGRhbWllbi5s
+ZW1vYWxAb3BlbnNvdXJjZS53ZGMuY29tPg0KPiA+IE1hdGlhcyBCasO4cmxpbmcgPE1hdGlhcy5C
+am9ybGluZ0B3ZGMuY29tPg0KPiA+IE5pa2xhcyBDYXNzZWwgPE5pa2xhcy5DYXNzZWxAd2RjLmNv
+bT4NCj4gPiBIYW5zIEhvbG1iZXJnIDxIYW5zLkhvbG1iZXJnQHdkYy5jb20+DQo+ID4gDQo+ID4g
+U2lnbmVkLW9mZi1ieTogRG1pdHJ5IEZvbWljaGV2IDxkbWl0cnkuZm9taWNoZXZAd2RjLmNvbT4N
+Cj4gPiAtLS0NCj4gPiDCoGNvbnRlbnQudGV4IHwgNjg2ICsrKysrKysrKysrKysrKysrKysrKysr
+KysrKysrKysrKysrKysrKysrKysrKysrKysrKy0NCj4gPiDCoDEgZmlsZSBjaGFuZ2VkLCA2ODUg
+aW5zZXJ0aW9ucygrKSwgMSBkZWxldGlvbigtKQ0KPiA+IA0KPiA+IGRpZmYgLS1naXQgYS9jb250
+ZW50LnRleCBiL2NvbnRlbnQudGV4DQo+ID4gaW5kZXggNzUwOGRkMS4uOGFlNzU3OCAxMDA2NDQN
+Cj4gPiAtLS0gYS9jb250ZW50LnRleA0KPiA+ICsrKyBiL2NvbnRlbnQudGV4DQo+ID4gQEAgLTQ1
+NTcsNiArNDU1NywxMSBAQCBcc3Vic2VjdGlvbntGZWF0dXJlIGJpdHN9XGxhYmVse3NlYzpEZXZp
+Y2UgVHlwZXMgLw0KPiA+IEJsb2NrIERldmljZSAvIEZlYXR1cmUgYml0c30NCj4gPiDCoMKgwqDC
+oMKgIG1heGltdW0gZXJhc2Ugc2VjdG9ycyBjb3VudCBpbiBcZmllbGR7bWF4X3NlY3VyZV9lcmFz
+ZV9zZWN0b3JzfSBhbmQNCj4gPiDCoMKgwqDCoMKgIG1heGltdW0gZXJhc2Ugc2VnbWVudCBudW1i
+ZXIgaW4gXGZpZWxke21heF9zZWN1cmVfZXJhc2Vfc2VnfS4NCj4gPiANCj4gPiArXGl0ZW1bVklS
+VElPX0JMS19GX1pPTkVEKDE3KV0gRGV2aWNlIGlzIGEgWm9uZWQgQmxvY2sgRGV2aWNlLCB0aGF0
+IGlzLCBhDQo+ID4gZGV2aWNlDQo+ID4gK8KgwqDCoMKgwqDCoCB0aGF0IGJlaGF2ZXMgYXMgZGVm
+aW5lZCBieSB0aGUgVDEwIFpvbmVkIEJsb2NrIENvbW1hbmQgc3RhbmRhcmQgKFpCQw0KPiA+IHIw
+NSkgb3INCj4gPiArwqDCoMKgwqDCoMKgIHRoZSBOVk1lKFRNKSBOVk0gRXhwcmVzcyBab25lZCBO
+YW1lc3BhY2UgQ29tbWFuZCBTZXQgU3BlY2lmaWNhdGlvbg0KPiA+IDEuMWINCj4gPiArwqDCoMKg
+wqDCoMKgIChaTlMpLg0KPiANCj4gVGhlIHJlc3Qgb2YgdGhlIHNwZWMgZG9lc24ndCBtZW50aW9u
+IFpCQy9aTlMgYnV0IGF0IGxlYXN0IHRoZSB6b25lDQo+IHN0YXRlIG1hY2hpbmUgaXMgbGlrZWx5
+IHRvIGJlIGRlcml2ZWQgZnJvbSB0aGVzZSBzdGFuZGFyZHMuIEhhdmUgeW91DQo+IHJldmlld2Vk
+IHRoZSBsaWNlbnNlL0lQIHRlcm1zIG9mIFZJUlRJTywgWkJDLCBhbmQgWk5TIHRvIGNoZWNrIHRo
+YXQNCj4gaXQncyBva2F5IHRvIGRvIHRoaXM/IEl0J3MgcHJvYmFibHkgb2theSBidXQgSSB3YW50
+ZWQgdG8gbWVudGlvbiBpdA0KPiBiZWNhdXNlIGl0IHdvdWxkIGJlIGEgc2hhbWUgdG8gZGlzY292
+ZXIgYW4gSVAgaXNzdWUgYWZ0ZXIgdGhlIFZJUlRJTw0KPiBzcGVjIGhhcyBiZWVuIHJlbGVhc2Vk
+Lg0KDQpJJ3ZlIHJlYWQgdGhlIHZpcnRpbyBMSUNFTlNFLm1kIGZpbGUgYW5kIHZpc2l0ZWQgdGhl
+IGxpbmtzIHRoYXQgYXJlIGluY2x1ZGVkIGluDQp0aGlzIGZpbGUuDQoNCkkgYW0gbm90IGEgbGVn
+YWwgZXhwZXJ0LCBidXQgSSBkb24ndCBleHBlY3QgYW55IElQLXJlbGF0ZWQgaXNzdWVzIHRvIGFy
+aXNlIGJ5DQppbmNsdWRpbmcgdGhpcyBwYXRjaC4gVGhlIFQxMCBjb21taXR0ZWUgaXMgYW4gSU5D
+SVRTIGVudGl0eSB3aGljaCBpcyBhIHBhcnQgb2YNCkFOU0ksIGEgcHVibGljIHN0YW5kYXJkcyBi
+b2R5LiBUaGlzIGlzIHRoZSBjb21taXR0ZWUgdGhhdCBkZXZlbG9wcyBTQ1NJIHN0YW5kYXJkcw0K
+dGhhdCBhcmUgYWxyZWFkeSBzdXBwb3J0ZWQgYnkgdGhlIHZpcnRpbyBzcGVjIGFuZCBaQkMgaXMg
+c2ltcGx5IGFub3RoZXIgU0NTSQ0Kc3RhbmRhcmQsIGFsb25nc2lkZSB3aXRoIFNQQywgU0JDIGFu
+ZCBzbyBvbi4gVGhlIG1lbWJlciBjb21wYW5pZXMgb2YgVDEwIHVzdWFsbHkNCmhhdmUgYSBsZWdh
+bCByZXZpZXcgcHJvY2VzcyB0byBtYWtlIHN1cmUgdGhhdCBhbGwgdGhlIHN0YW5kYXJkcyB0aGF0
+IGFyZSBiZWluZw0KcmVsZWFzZWQgYXJlIG5vdCBlbmN1bWJlcmVkIGJ5IGFueSBwYXRlbnQgY2xh
+aW1zLCBldGMuDQoNClpOUyBpcyBhIHByb2R1Y3Qgb2YgTlZNIEV4cHJlc3MsIGFuIG9wZW4gc3Rh
+bmRhcmQgY29uc29ydGl1bS4gSGVyZSBpcyB0aGUgcGFnZSBvbg0KdGhlaXIgc2l0ZSB0aGF0IGhh
+cyB0aGUgbGluayB0byBaTlMgY29tbWFuZCBzZXQgc3BlY2lmaWNhdGlvbiBwZGYgZmlsZSAtDQoN
+Cmh0dHBzOi8vbnZtZXhwcmVzcy5vcmcvZGV2ZWxvcGVycy9udm1lLWNvbW1hbmQtc2V0LXNwZWNp
+ZmljYXRpb25zLw0KDQpUaGlzIGNvbnNvcnRpdW0gYWxzbyBoYXMgYSBsZWdhbCByZXZpZXcgcHJv
+Y2VzcyBhbmQgSSBkb24ndCBmb3Jlc2VlIGFueSBJUC0NCnJlbGF0ZWQgZGlmZmljdWx0aWVzIHRo
+YXQgd291bGQgYXJpc2UgZnJvbSBmb2xsb3dpbmcgdGhpcyBzcGVjaWZpY2F0aW9uIGZvciB0aGUN
+CnB1cnBvc2VzIG9mIG1ha2luZyBhIHZpcnRpbyBaQkQgc3RhbmRhcmQuDQoNCj4gDQo+IEFsc28s
+IHRoZSB3b3JkaW5nIHN1Z2dlc3RzIHRvIG1lIHRoYXQgdGhlIHNwZWMgd2lsbCByZWZlciB0byBa
+QkMvWk5TDQo+IGluc3RlYWQgb2YgZGVmaW5pbmcgdGhlIGJlaGF2aW9yIGl0c2VsZiwgYnV0IGFj
+dHVhbGx5IHlvdSd2ZSB3cml0dGVuIGENCj4gZnVsbCBzZWxmLWNvbnRhaW5lZCBzcGVjICh3aGlj
+aCBpcyBncmVhdCEpLiBNYXliZSBjaGFuZ2UgImJlaGF2ZXMgYXMNCj4gZGVmaW5lZCBieSIgdG8g
+ImZvbGxvd3MgdGhlIHpvbmVkIHN0b3JhZ2UgZGV2aWNlIG1vZGVsIHRoYXQgaXMgYWxzbw0KPiBz
+dXBwb3J0ZWQgYnkgaW5kdXN0cnkgc3RhbmRhcmRzIHN1Y2ggYXMiLg0KDQpBZ3JlZWQsIHRoZSB3
+b3JkaW5nIGhlcmUgY291bGQgYmUgbW9yZSBwcmVjaXNlLiBUaGlzIGNvdWxkIGJlICJmb2xsb3dz
+IHRoZSB6b25lZA0Kc3RvcmFnZSBkZXZpY2UgYmVoYXZpb3IgdGhhdCBpcyBhbHNvIHN1cHBvcnRl
+ZCBieSBpbmR1c3RyeSBzdGFuZGFyZHMgc3VjaCBhcyIuIEkNCndvdWxkIGF2b2lkIHVzaW5nIHRo
+ZSB3b3JkICJtb2RlbCIgaGVyZSBiZWNhdXNlIGl0IHVzdWFsbHkgcmVmZXJzIHNwZWNpZmljYWxs
+eSB0bw0KaG9zdC1tYW5hZ2VkIHZzLiBob3N0LWF3YXJlIHZzLiBkcml2ZS1tYW5hZ2VkIGRldmlj
+ZSBtb2RlbHMgaW4gWkJEIHdvcmxkLg0KDQo+IA0KPiANCj4gPiArDQo+ID4gwqBcZW5ke2Rlc2Ny
+aXB0aW9ufQ0KPiA+IA0KPiA+IMKgXHN1YnN1YnNlY3Rpb257TGVnYWN5IEludGVyZmFjZTogRmVh
+dHVyZSBiaXRzfVxsYWJlbHtzZWM6RGV2aWNlIFR5cGVzIC8NCj4gPiBCbG9jayBEZXZpY2UgLyBG
+ZWF0dXJlIGJpdHMgLyBMZWdhY3kgSW50ZXJmYWNlOiBGZWF0dXJlIGJpdHN9DQo+ID4gQEAgLTQ1
+ODksNiArNDU5NCwzMSBAQCBcc3Vic2VjdGlvbntEZXZpY2UgY29uZmlndXJhdGlvbg0KPiA+IGxh
+eW91dH1cbGFiZWx7c2VjOkRldmljZSBUeXBlcyAvIEJsb2NrIERldmljZSAvDQo+ID4gwqBcZmll
+bGR7bWF4X3NlY3VyZV9lcmFzZV9zZWN0b3JzfSBcZmllbGR7c2VjdXJlX2VyYXNlX3NlY3Rvcl9h
+bGlnbm1lbnR9IGFyZQ0KPiA+IGV4cHJlc3NlZA0KPiA+IMKgaW4gNTEyLWJ5dGUgdW5pdHMgaWYg
+dGhlIFZJUlRJT19CTEtfRl9TRUNVUkVfRVJBU0UgZmVhdHVyZSBiaXQgaXMNCj4gPiBuZWdvdGlh
+dGVkLg0KPiA+IA0KPiA+ICtJZiB0aGUgVklSVElPX0JMS19GX1pPTkVEIGZlYXR1cmUgaXMgbmVn
+b3RpYXRlZCwgdGhlbiBpbg0KPiA+ICtcZmllbGR7dmlydGlvX2Jsa196b25lZF9jaGFyYWN0ZXJp
+c3RpY3N9LA0KPiA+ICtcYmVnaW57aXRlbWl6ZX0NCj4gPiArXGl0ZW0gXGZpZWxke3pvbmVfc2Vj
+dG9yc30gdmFsdWUgaXMgZXhwcmVzc2VkIGluIDUxMi1ieXRlIHNlY3RvcnMuDQo+ID4gK1xpdGVt
+IFxmaWVsZHttYXhfYXBwZW5kX3NlY3RvcnN9IHZhbHVlIGlzIGV4cHJlc3NlZCBpbiA1MTItYnl0
+ZSBzZWN0b3JzLg0KPiA+ICtcaXRlbSBcZmllbGR7d3JpdGVfZ3JhbnVsYXJpdHl9IHZhbHVlIGlz
+IGV4cHJlc3NlZCBpbiBieXRlcy4NCj4gPiArXGVuZHtpdGVtaXplfQ0KPiA+ICsNCj4gPiArVGhl
+IFxmaWVsZHttb2RlbH0gZmllbGQgaW4gXGZpZWxke3pvbmVkfSBtYXkgaGF2ZSB0aGUgZm9sbG93
+aW5nIHZhbHVlczoNCj4gPiArVklSVElPX0JMS19aX0hNKDEpIGFuZCBWSVJUSU9fQkxLX1pfSEEo
+MikuDQo+ID4gKw0KPiA+ICtcYmVnaW57bHN0bGlzdGluZ30NCj4gPiArI2RlZmluZSBWSVJUSU9f
+QkxLX1pfSE3CoMKgwqDCoMKgwqDCoCAxDQo+ID4gKyNkZWZpbmUgVklSVElPX0JMS19aX0hBwqDC
+oMKgwqDCoMKgwqAgMg0KPiA+ICtcZW5ke2xzdGxpc3Rpbmd9DQo+ID4gKw0KPiA+ICtJZiB0aGUg
+VklSVElPX0JMS19GX1pPTkVEIGZlYXR1cmUgaXMgbmVnb3RpYXRlZCwgdGhlbg0KPiA+ICtcYmVn
+aW57aXRlbWl6ZX0NCj4gPiArXGl0ZW0gVGhlIHZhbHVlIG9mIFZJUlRJT19CTEtfWl9ITSBNVVNU
+IGJlIHNldCBieSB0aGUgZGV2aWNlIGlmIGl0IG9wZXJhdGVzDQo+ID4gK8KgwqDCoCBhcyBhIGhv
+c3QtbWFuYWdlZCB6b25lZCBibG9jayBkZXZpY2UuDQo+IA0KPiBUaGUgdGVybSBob3N0LW1hbmFn
+ZWQgaXMgbm90IGRlZmluZWQuIFBsZWFzZSBlaXRoZXIgZGVmaW5lIGl0IG9yDQo+IGluY2x1ZGUg
+YSByZWZlcmVuY2UgdG8gdGhlIHpvbmVkIHN0b3JhZ2UgZGV2aWNlIG1vZGVsIChtYXliZQ0KPiB6
+b25lZHN0b3JhZ2UuaW8/KS4NCg0KT0ssIGluZGVlZC4gVGhlcmUgaXMgc29tZSB0ZXh0IGxhdGVy
+IGluIHRoZSBwYXRjaCBkZXNjcmliaW5nIHRoZSBkaWZmZXJlbmNlcw0KYmV0d2VlbiBTZXF1ZW50
+aWFsIFdyaXRlIFJlcXVpcmVkIChTV1IpIGFuZCBTZXF1ZW50aWFsIFdyaXRlIFByZWZlcnJlZCAo
+U1dQKQ0Kem9uZXMsIGJ1dCB0aGUgd29yZGluZyB0aGF0IHJlbGF0ZXMgSE0gdG8gU1dSIGFuZCBI
+QSB0byBTV1AgaXMgbWlzc2luZywgd2lsbCBhZGQNCml0IGhlcmUuDQoNCj4gDQo+ID4gKw0KPiA+
+ICtcaXRlbSBUaGUgdmFsdWUgb2YgVklSVElPX0JMS19aX0hBIE1VU1QgYmUgc2V0IGJ5IHRoZSBk
+ZXZpY2UgaWYgaXQgb3BlcmF0ZXMNCj4gPiArwqDCoMKgIGFzIGEgaG9zdC1hd2FyZSB6b25lZCBi
+bG9jayBkZXZpY2UuDQo+IA0KPiBUaGUgdGVybSBob3N0LWF3YXJlIGlzIG5vdCBkZWZpbmVkLg0K
+PiANCj4gPiArXGVuZHtpdGVtaXplfQ0KPiANCj4gVGhlIFZJUlRJTyBzcGVjIGlzIG9yZ2FuaXpl
+ZCBpbnRvIG5vcm1hdGl2ZSBzZWN0aW9ucyBjb250YWluaW5nDQo+IE1VU1QvTUFZL1NIT1VMRCBh
+bmQgZGVzY3JpcHRpdmUgc2VjdGlvbnMuIE1VU1QvTUFZL1NIT1VMRCBuZWVkIHRvIGdvDQo+IGlu
+IGRyaXZlcm5vcm1hdGl2ZSBvciBkZXZpY2Vub3JtYXRpdmUgc2VjdGlvbnMgYW5kIGNhbid0IGJl
+IHVzZWQgaW4NCj4gZGVzY3JpcHRpdmUgc2VjdGlvbnMuDQo+IChJIGJlbGlldmUgdGhlIHJlYXNv
+biBmb3IgdGhpcyBpcyB0byBnaXZlIGRyaXZlci9kZXZpY2UgaW1wbGVtZW50b3JzIGENCj4gZGVm
+aW5pdGl2ZSBsaXN0IG9mIG5vcm1hdGl2ZSBzdGF0ZW1lbnRzIHRoZXkgY2FuIGVhc2lseSByZXZp
+ZXcgd2l0aG91dA0KPiByZS1yZWFkaW5nIHRoZSBlbnRpcmUgdGV4dCBvZiB0aGUgc3BlY2lmaWNh
+dGlvbi4pDQoNCg0KR290IGl0LCB3aWxsIHJld29yZC4NCg0KPiArDQo+ICBcYmVnaW57bHN0bGlz
+dGluZ30NCj4gIHN0cnVjdCB2aXJ0aW9fYmxrX2NvbmZpZyB7DQo+ICAgICAgICAgIGxlNjQgY2Fw
+YWNpdHk7DQo+IEBAIC00NjIzLDYgKzQ2NTMsMTUgQEAgXHN1YnNlY3Rpb257RGV2aWNlIGNvbmZp
+Z3VyYXRpb24NCmxheW91dH1cbGFiZWx7c2VjOkRldmljZSBUeXBlcyAvIEJsb2NrIERldmljZSAv
+DQo+ICAgICAgICAgIGxlMzIgbWF4X3NlY3VyZV9lcmFzZV9zZWN0b3JzOw0KPiAgICAgICAgICBs
+ZTMyIG1heF9zZWN1cmVfZXJhc2Vfc2VnOw0KPiAgICAgICAgICBsZTMyIHNlY3VyZV9lcmFzZV9z
+ZWN0b3JfYWxpZ25tZW50Ow0KPiArICAgICAgICBzdHJ1Y3QgdmlydGlvX2Jsa196b25lZF9jaGFy
+YWN0ZXJpc3RpY3Mgew0KPiArICAgICAgICAgICAgICAgIGxlMzIgem9uZV9zZWN0b3JzOw0KPiAr
+ICAgICAgICAgICAgICAgIGxlMzIgbWF4X29wZW5fem9uZXM7DQo+ICsgICAgICAgICAgICAgICAg
+bGUzMiBtYXhfYWN0aXZlX3pvbmVzOw0KPiArICAgICAgICAgICAgICAgIGxlMzIgbWF4X2FwcGVu
+ZF9zZWN0b3JzOw0KPiArICAgICAgICAgICAgICAgIGxlMzIgd3JpdGVfZ3JhbnVsYXJpdHk7DQo+
+ICsgICAgICAgICAgICAgICAgdTggbW9kZWw7DQo+ICsgICAgICAgICAgICAgICAgdTggdW51c2Vk
+MlszXTsNCj4gKyAgICAgICAgfSB6b25lZDsNCj4gIH07DQo+ICBcZW5ke2xzdGxpc3Rpbmd9DQo+
+DQo+IEBAIC00Njg2LDYgKzQ3MjUsMTAgQEAgXHN1YnNlY3Rpb257RGV2aWNlIEluaXRpYWxpemF0
+aW9ufVxsYWJlbHtzZWM6RGV2aWNlDQpUeXBlcyAvIEJsb2NrIERldmljZSAvIERldmljDQo+ICAg
+ICAgXGZpZWxke3NlY3VyZV9lcmFzZV9zZWN0b3JfYWxpZ25tZW50fSBjYW4gYmUgdXNlZCBieSBP
+UyB3aGVuIHNwbGl0dGluZyBhDQo+ICAgICAgcmVxdWVzdCBiYXNlZCBvbiBhbGlnbm1lbnQuDQo+
+DQo+ICtcaXRlbSBJZiB0aGUgVklSVElPX0JMS19GX1pPTkVEIGZlYXR1cmUgaXMgbmVnb3RpYXRl
+ZCwgdGhlIGZpZWxkcyBpbg0KPiArICAgIFxmaWVsZHt6b25lZH0gY2FuIGJlIHJlYWQgYnkgdGhl
+IGRyaXZlciB0byBkZXRlcm1pbmUgdGhlIHpvbmUNCj4gKyAgICBjaGFyYWN0ZXJpc3RpY3Mgb2Yg
+dGhlIGRldmljZS4gQWxsIFxmaWVsZHt6b25lZH0gZmllbGRzIGFyZSByZWFkLW9ubHkuDQo+ICsN
+Cj4gIFxlbmR7ZW51bWVyYXRlfQ0KPg0KPiAgXGRyaXZlcm5vcm1hdGl2ZXtcc3Vic3Vic2VjdGlv
+bn17RGV2aWNlIEluaXRpYWxpemF0aW9ufXtEZXZpY2UgVHlwZXMgLyBCbG9jaw0KRGV2aWNlIC8g
+RGV2aWNlIEluaXRpYWxpemF0aW9ufQ0KPiBAQCAtNDcwMSw2ICs0NzQ0LDI0IEBAIFxzdWJzZWN0
+aW9ue0RldmljZSBJbml0aWFsaXphdGlvbn1cbGFiZWx7c2VjOkRldmljZQ0KVHlwZXMgLyBCbG9j
+ayBEZXZpY2UgLyBEZXZpYw0KPiAgVGhlIGRyaXZlciBNVVNUIE5PVCByZWFkIFxmaWVsZHt3cml0
+ZWJhY2t9IGJlZm9yZSBzZXR0aW5nDQo+ICB0aGUgRkVBVFVSRVNfT0sgXGZpZWxke2RldmljZSBz
+dGF0dXN9IGJpdC4NCj4NCj4gK0RyaXZlcnMgU0hPVUxEIE5PVCBuZWdvdGlhdGUgVklSVElPX0JM
+S19GX1pPTkVEIGZlYXR1cmUgaWYgdGhleSBhcmUgaW5jYXBhYmxlDQo+ICtvZiBzdXBwb3J0aW5n
+IGRldmljZXMgd2l0aCB0aGUgVklSVElPX0JMS19aX0hNIG9yIFZJUlRJT19CTEtfWl9IQSB6b25l
+ZCBtb2RlbC4NCg0KPiBUaGlzIHJhaXNlcyB0aGUgcXVlc3Rpb24gd2hldGhlciBkZXZpY2VzIGNh
+biBvZmZlciBWSVJUSU9fQkxLX0ZfWk9ORUQNCj4gYnV0IGZhbGwgYmFjayB0byByZWd1bGFyIGJs
+b2NrIGRldmljZSBvcGVyYXRpb24gaWYgdGhlIGRyaXZlciBkb2VzIG5vdA0KPiBuZWdvdGlhdGUg
+dGhlIGJpdD8NCg0KSXQgY291bGQgYmUgdXNlZnVsIChmb3IgdGVzdGluZy9kZXZlbG9wbWVudCwg
+ZXRjLikgdG8gYWxsb3cgdGhlIGRldmljZSB0byBvZmZlcg0KdGhlIFZJUlRJT19CTEtfRl9aT05F
+RCBmZWF0dXJlIGV2ZW4gd2hlbiB0aGUgYWN0dWFsIGJhY2tpbmcgYmxvY2sgZGV2aWNlIGlzIG5v
+dA0Kem9uZWQuIEluIHRoaXMgY2FzZSwgaXQgdGhlIGRyaXZlciBpcyBjYXBhYmxlIG9mIGhhbmRs
+aW5nIFpCRHMsIGl0IHdpbGwgYWNjZXB0wqBpdA0KYW5kIHRoZSBpL28gc2hvdWxkIGJlIG9wZXJh
+dGlvbmFsIHZpYSB2aXJ0aW9fYmxrX3pvbmVkX3JlcSByZXF1ZXN0cyB3aXRoDQpWSVJUSU9fQkxL
+X1pfTk9ORSBtb2RlbC4gVGhlcmVmb3JlIHRoZXJlIGlzIGEgU0hPVUxEIE5PVC4gUGVyaGFwcyBp
+dCBpcyB3b3J0aCBpdA0KdG8gYWRkIHRoaXMgZXhwbGFuYXRpb24gdG8gdGhlIHRleHQuLi4gb3Ig
+bm90IHRvIGFsbG93IHRoaXMgYXQgYWxsIGFuZCBjaGFuZ2UgdGhlDQp0ZXh0IHRvICJtdXN0IG5v
+dCIuDQoNClJlZ2FyZGluZyBmYWxsYmFja3MsIHRoZXJlIGFyZSBjbGF1c2VzIGJlbG93IHRoYXQg
+ZGVmaW5lIHRoZXNlIHNpdHVhdGlvbnMgYW5kDQp0aGV5IG1vc3RseSBib2lsIGRvd24gdG8gdGhl
+IGZvbGxvd2luZyAtDQoxLiBpZiB0aGUgZGV2aWNlIG9mZmVycyBWSVJUSU9fQkxLX0ZfWk9ORUQg
+d2l0aCBhbiBITSBiYWNraW5nIGRldmljZSBhbmQgdGhlDQpkcml2ZXIgZG9lc24ndCBuZWdvdGlh
+dGUgdGhlIGZlYXR1cmUsIHRoZSBkZXZpY2UgbmVlZHMgdG8gZGlzYWxsb3cgdGhlIGRldmljZSB0
+bw0Kb3BlcmF0ZSBieSBub3Qgc2V0dGluZyBGRUFUVVJFU19PSyBiaXQuDQoyLiBpZiB0aGUgZGV2
+aWNlIG9mZmVycyBWSVJUSU9fQkxLX0ZfWk9ORUQgd2l0aCBhbiAqSEEqIGJhY2tpbmcgZGV2aWNl
+IGFuZCB0aGUNCmRyaXZlciBkb2Vzbid0IG5lZ290aWF0ZSB0aGUgZmVhdHVyZSwgdGhlIGRldmlj
+ZSBuZWVkcyB0byBwcmVzZW50IHRoZSBkZXZpY2UgYXMNCm5vbi16b25lZCBiZWNhdXNlIGluIHRo
+aXMgY2FzZSBpdCB3aWxsIHN0aWxsIHdvcmsuDQoNCj4gKw0KPiArSWYgdGhlIFZJUlRJT19CTEtf
+Rl9aT05FRCBmZWF0dXJlIGlzIG9mZmVyZWQgYnkgdGhlIGRldmljZSwgdGhlDQo+ICtWSVJUSU9f
+QkxLX0ZfRElTQ0FSRCBmZWF0dXJlIE1VU1QgTk9UIGJlIG9mZmVyZWQuDQo+IA0KPiBUaGlzIHN0
+YXRlbWVudCBwYXJ0aWFsbHkgcHJlY2x1ZGVzIHRoYXQgYmVjYXVzZSBpdCByZXF1aXJlcyBkZXZp
+Y2VzIHRvDQo+IGRpc2FibGUgVklSVElPX0JMS19GX0RJU0NBUkQgaWYgdGhleSBhZHZlcnRpemUg
+VklSVElPX0JMS19GX1pPTkVELiBJDQo+IHRoaW5rIHRoZXJlIGlzIGEgd2F5IHRvIGFsbG93IFZJ
+UlRJT19CTEtfRl9ESVNDQVJEIGluDQo+ICFWSVJUSU9fQkxLX0ZfWk9ORUQgbW9kZSB3aGlsZSBm
+b3JiaWRkaW5nIGl0IGluIFZJUlRJT19CTEtfRl9aT05FRA0KPiBtb2RlOiB0aGUgZGV2aWNlIGNh
+biBmYWlsIHRvIHNldCBGRUFUVVJFU19PSyB3aGVuIHRoZSBkcml2ZXIgd3JpdGVzDQo+IHRoZSBE
+ZXZpY2UgU3RhdHVzIGZpZWxkIHdpdGggVklSVElPX0JMS19GX0RJU0NBUkQgJiYNCj4gVklSVElP
+X0JMS19GX1pPTkVELiBUaGF0IHdheSBhIGhvc3QtYXdhcmUgZGV2aWNlIGluDQo+ICFWSVJUSU9f
+QkxLX0ZfWk9ORUQgbW9kZSBjb3VsZCBhbGxvdyBWSVJUSU9fQkxLX0ZfRElTQ0FSRC4gSXMgdGhp
+cw0KPiB1c2VmdWw/DQoNCkdvb2QgY2F0Y2gsIEkgdmVyaWZpZWQgdGhhdCBIQSBkZXZpY2VzIGNh
+biB1c3VhbGx5IGhhbmRsZSBkaXNjYXJkLiBJbiB0aGlzIGNhc2UsDQp0aGUgY2xhdXNlIGFib3Zl
+IGJlY29tZXMgdG9vIHN0cmljdC4gUGVyaGFwcyBpdCBzaG91bGQgYmUgY2hhbmdlZCB0bw0KDQpJ
+ZiB0aGUgVklSVElPX0JMS19GX1pPTkVEIGZlYXR1cmUgaXMgb2ZmZXJlZCBieSB0aGUgZGV2aWNl
+IHdpdGggdGhlDQpWSVJUSU9fQkxLX1pfSE0gem9uZSBtb2RlbCwgdGhlbg0KIC0gdGhlIFZJUlRJ
+T19CTEtfRl9ESVNDQVJEIGZlYXR1cmUgbXVzdCBub3QgYmUgb2ZmZXJlZCBieSB0aGUgZHJpdmVy
+Lg0KIC0gaWYgdGhlIGRyaXZlciBzZXRzIGJvdGggVklSVElPX0JMS19GX0RJU0NBUkQgYW5kIFZJ
+UlRJT19CTEtfRl9aT05FRCBmZWF0dXJlDQpiaXRzLCB0aGUgZGV2aWNlIG11c3QgZmFpbCBieSBu
+b3Qgc2V0dGluZyBGRUFUVVJFU19PSyBiaXQuDQoNCj4gDQo+ID4gKw0KPiA+ICtJZiB0aGUgVklS
+VElPX0JMS19GX1pPTkVEIGZlYXR1cmUgaXMgbmVnb3RpYXRlZCwgdGhlbg0KPiA+ICtcYmVnaW57
+aXRlbWl6ZX0NCj4gPiArXGl0ZW0gSWYgdGhlIGRyaXZlciB0aGF0IGNhbiBub3Qgc3VwcG9ydCBo
+b3N0LW1hbmFnZWQgem9uZWQgZGV2aWNlcw0KPiA+ICvCoMKgwqAgcmVhZHMgVklSVElPX0JMS19a
+X0hNIGZyb20gdGhlIFxmaWVsZHttb2RlbH0gZmllbGQgb2YgXGZpZWxke3pvbmVkfSwgdGhlDQo+
+ID4gK8KgwqDCoCBkcml2ZXIgTVVTVCBOT1Qgc2V0IEZFQVRVUkVTX09LIGZsYWcgYW5kIGluc3Rl
+YWQgc2V0IHRoZSBGQUlMRUQgYml0Lg0KPiA+ICsNCj4gPiArXGl0ZW0gSWYgdGhlIGRyaXZlciB0
+aGF0IGNhbiBub3Qgc3VwcG9ydCBzdXBwb3J0IHpvbmVkIGRldmljZXMgcmVhZHMNCj4gPiArwqDC
+oMKgIFZJUlRJT19CTEtfWl9IQSBmcm9tIHRoZSBcZmllbGR7bW9kZWx9IGZpZWxkIG9mIFxmaWVs
+ZHt6b25lZH0sIHRoZQ0KPiA+IGRyaXZlcg0KPiA+ICvCoMKgwqAgTUFZIHByZXNlbnQgdGhlIGRl
+dmljZSB0byB0aGUgZ3Vlc3QgYXMgYSBub24tem9uZWQgZGV2aWNlLiBJbiB0aGlzIGNhc2UsDQo+
+ID4gdGhlDQo+IA0KPiBQbGVhc2UgYXZvaWQgdXNpbmcgdGhlIHRlcm1zICJndWVzdCIgb3IgImhv
+c3QiIGluIHRoZSB2aXJ0dWFsaXphdGlvbg0KPiBzZW5zZSBhbmQgaW5zdGVhZCB1c2UgImRyaXZl
+ciIgYW5kICJkZXZpY2UiLiBWSVJUSU8gY2FuIGJlIHVzZWQgaW4NCj4gbm9uLXZpcnR1YWxpemF0
+aW9uIHVzZSBjYXNlcyBhbmQgaXQncyBjbGVhcmVyIHRvIGF2b2lkIHZpcnR1YWxpemF0aW9uDQo+
+IHRlcm1pbm9sb2d5Lg0KDQpPSywgd2lsbCBjaGFuZ2UgdGhpcy4NCg0KPiANCj4gPiArwqDCoMKg
+IGRyaXZlciBTSE9VTEQgaWdub3JlIGFsbCBvdGhlciBmaWVsZHMgaW4gXGZpZWxke3pvbmVkfS4N
+Cj4gDQo+IFdoeSB3b3VsZCB0aGUgZHJpdmVyIG5lZ290aWF0ZSBWSVJUSU9fQkxLX0ZfWk9ORUQg
+aWYgaXQgZG9lc24ndA0KPiBzdXBwb3J0IHpvbmVkIGRldmljZXM/DQoNClRoaXMgY292ZXJzIGNh
+c2VzIHdoZW4gdGhlIGRyaXZlciBjYW4gcmVjb2duaXplIHRoZSBWSVJUSU9fQkxLX0ZfWk9ORUQg
+ZmVhdHVyZSwNCmJ1dCBpdCBpcyBpbmNhcGFibGUgdG8gc3VwcG9ydCBaQkRzIGZvciBzb21lIHJl
+YXNvbi4gRm9yIGV4YW1wbGUsIHRoZSBMaW51eA0KdmlydGlvLWJsayBkcml2ZXIgY291bGQgYmUg
+dXAgdG8gZGF0ZSB3aXRoIFpCRCBzdXBwb3J0LCBidXQgaWYgdGhlIGtlcm5lbCBpcw0KYnVpbHQg
+d2l0aG91dCBDT05GSUdfQkxLX0RFVl9aT05FRCBvcHRpb24sIGl0IHdpbGwgbm90IGJlIGFibGUg
+dG8gaGFuZGxlIEhNDQpkZXZpY2VzLiBCdXQgaXQgc3RpbGwgY2FuIGRlYWwgd2l0aCBIQSBkcml2
+ZXMgaW4gdGhpcyBjYXNlLg0KDQo+IA0KPiA+ICtcZW5ke2l0ZW1pemV9DQo+ID4gKw0KPiA+IMKg
+XGRldmljZW5vcm1hdGl2ZXtcc3Vic3Vic2VjdGlvbn17RGV2aWNlIEluaXRpYWxpemF0aW9ufXtE
+ZXZpY2UgVHlwZXMgLyBCbG9jaw0KPiA+IERldmljZSAvIERldmljZSBJbml0aWFsaXphdGlvbn0N
+Cj4gPiANCj4gPiDCoERldmljZXMgU0hPVUxEIGFsd2F5cyBvZmZlciBWSVJUSU9fQkxLX0ZfRkxV
+U0gsIGFuZCBNVVNUIG9mZmVyIGl0DQo+ID4gQEAgLTQ3MTIsNiArNDc3Myw3NyBAQCBcc3Vic2Vj
+dGlvbntEZXZpY2UgSW5pdGlhbGl6YXRpb259XGxhYmVse3NlYzpEZXZpY2UNCj4gPiBUeXBlcyAv
+IEJsb2NrIERldmljZSAvIERldmljDQo+ID4gwqBUaGUgZGV2aWNlIE1VU1QgaW5pdGlhbGl6ZSBw
+YWRkaW5nIGJ5dGVzIFxmaWVsZHt1bnVzZWQwfSBhbmQNCj4gPiDCoFxmaWVsZHt1bnVzZWQxfSB0
+byAwLg0KPiA+IA0KPiA+ICtJZiB0aGUgZGV2aWNlIHRoYXQgaXMgYmVpbmcgaW5pdGlhbGl6ZWQg
+aXMgYSBub3QgYSB6b25lZCBkZXZpY2UsIHRoZSBkZXZpY2UNCj4gPiBNVVNUDQo+ID4gK05PVCBv
+ZmZlciB0aGUgVklSVElPX0JMS19GX1pPTkVEIGZlYXR1cmUuDQo+ID4gKw0KPiA+ICtJZiB0aGUg
+VklSVElPX0JMS19GX1pPTkVEIGJpdCBpcyBub3Qgc2V0IGJ5IHRoZSBkcml2ZXIsDQo+ID4gK1xi
+ZWdpbntpdGVtaXplfQ0KPiA+ICtcaXRlbSB0aGUgZGV2aWNlIHdpdGggdGhlIFZJUlRJT19CTEtf
+Wl9IQSB6b25lIG1vZGVsIFNIT1VMRCBwcm9jZWVkIHdpdGggdGhlDQo+ID4gK8KgwqDCoCBpbml0
+aWFsaXphdGlvbiB3aGlsZSBzZXR0aW5nIGFsbCB6b25lZCB0b3BvbG9neSBmaWVsZHMgdG8gemVy
+by4NCj4gPiArDQo+ID4gK1xpdGVtIHRoZSBkZXZpY2Ugd2l0aCB0aGUgVklSVElPX0JMS19aX0hN
+IHpvbmUgbW9kZWwgTVVTVCByZXBvcnQgdGhlIGRldmljZQ0KPiA+ICvCoMKgwqAgY2FwYWNpdHkg
+aW4gXGZpZWxke2NhcGFjaXR5fSBpbiB0aGUgY29uZmlndXJhdGlvbiBzcGFjZSBhcyB6ZXJvIHRv
+DQo+ID4gcHJldmVudA0KPiA+ICvCoMKgwqAgdGhlIHVzZSBvZiB0aGUgZGV2aWNlIHRoYXQgaXMg
+aW5jb3JyZWN0bHkgcmVjb2duaXplZCBieSB0aGUgZHJpdmVyIGFzDQo+ID4gK8KgwqDCoCBhIG5v
+bi16b25lZCBkZXZpY2UuDQo+IA0KPiBJIHN1Z2dlc3QgY2hhbmdpbmcgdGhpcyB0byAiTVVTVCBm
+YWlsIHRvIHNldCB0aGUgRkVBVFVSRVNfT0sgZGV2aWNlDQo+IHN0YXR1cyBiaXQgd2hlbiB0aGUg
+ZHJpdmVyIHdyaXRlcyB0aGUgRGV2aWNlIFN0YXR1cyBmaWVsZCIuIFRoYXQgd2F5DQo+IHRoZSBk
+cml2ZXIgZ2V0cyBhIGNsZWFyIGVycm9yIGluc3RlYWQgb2Ygc2VlaW5nIGEgdmlydGlvLWJsayBk
+ZXZpY2UNCj4gd2l0aCAwIGNhcGFjaXR5Lg0KDQpPSy4gSSB3YXMgdW5kZXIgaW1wcmVzc2lvbiB0
+aGF0IG9ubHkgdGhlIGRyaXZlciBjYW4gZG8gdGhpcy4gSXQncyBjZXJ0YWlubHkNCmJldHRlciB0
+byBmYWlsIHRoZSBpbml0aWFsaXphdGlvbiBpbiB0aGlzIGNhc2UuDQoNCj4gDQo+IA0KPiA+ICtc
+ZW5ke2l0ZW1pemV9DQo+ID4gKw0KPiA+ICtJZiB0aGUgVklSVElPX0JMS19GX1pPTkVEIGZlYXR1
+cmUgaXMgbmVnb3RpYXRlZCwNCj4gPiArXGJlZ2lue2l0ZW1pemV9DQo+ID4gK1xpdGVtIFxmaWVs
+ZHt6b25lZH0gY2FuIGJlIHJlYWQgYnkgdGhlIGRyaXZlciB0byBkaXNjb3ZlciB0aGUgc2l6ZSBv
+ZiBhDQo+ID4gc2luZ2xlDQo+ID4gK8KgwqDCoCB6b25lIG9uIHRoZSBkZXZpY2UuIEFsbCB6b25l
+cyBvZiB0aGUgZGV2aWNlIGhhdmUgdGhlIHNhbWUgc2l6ZSBpbmRpY2F0ZWQNCj4gPiBieQ0KPiA+
+ICvCoMKgwqAgdGhlIFxmaWVsZHt6b25lX3NlY3RvcnN9IGZpZWxkIG9mIFxmaWVsZHt6b25lZH0g
+ZXhjZXB0IGZvciB0aGUgbGFzdCB6b25lDQo+ID4gK8KgwqDCoCB0aGF0IE1BWSBiZSBzbWFsbGVy
+IHRoYW4gYWxsIG90aGVyIHpvbmVzLiBUaGUgZHJpdmVyIGNhbiBjYWxjdWxhdGUgdGhlDQo+ID4g
+K8KgwqDCoCBudW1iZXIgb2Ygem9uZXMgb24gdGhlIGRldmljZSBhcw0KPiA+ICvCoMKgwqAgXGJl
+Z2lue2xzdGxpc3Rpbmd9DQo+ID4gK8KgwqDCoMKgwqDCoMKgIG5yX3pvbmVzID0gKGNhcGFjaXR5
+ICsgem9uZV9zZWN0b3JzIC0gMSkgLyB6b25lX3NlY3RvcnM7DQo+ID4gK8KgwqDCoCBcZW5ke2xz
+dGxpc3Rpbmd9DQo+ID4gK8KgwqDCoCBhbmQgdGhlIHNpemUgb2YgdGhlIGxhc3Qgem9uZSBhcw0K
+PiA+ICvCoMKgwqAgXGJlZ2lue2xzdGxpc3Rpbmd9DQo+ID4gK8KgwqDCoMKgwqDCoMKgIHpzX2xh
+c3QgPSBjYXBhY2l0eSAtIChucl96b25lcyAtIDEpICogem9uZV9zZWN0b3JzOw0KPiA+ICvCoMKg
+wqAgXGVuZHtsc3RsaXN0aW5nfQ0KPiA+ICsNCj4gPiArXGl0ZW0gWm9uZXMgY29uc3VtZSB2b2xh
+dGlsZSBkZXZpY2UgcmVzb3VyY2VzIHdoaWxlIGJlaW5nIGluIGNlcnRhaW4gc3RhdGVzDQo+ID4g
+YW5kDQo+ID4gK8KgwqDCoCB0aGUgZGV2aWNlIE1BWSBzZXQgbGltaXRzIG9uIHRoZSBudW1iZXIg
+b2Ygem9uZXMgdGhhdCBjYW4gYmUgaW4gdGhlc2UNCj4gPiBzdGF0ZXMNCj4gPiArwqDCoMKgIHNp
+bXVsdGFuZW91c2x5Lg0KPiA+ICsNCj4gPiArwqDCoMKgIFpvbmVkIGJsb2NrIGRldmljZXMgdXNl
+IHR3byBpbnRlcm5hbCBjb3VudGVycyB0byBhY2NvdW50IGZvciB0aGUgZGV2aWNlDQo+ID4gK8Kg
+wqDCoCByZXNvdXJjZXMgaW4gdXNlLCB0aGUgbnVtYmVyIG9mIGN1cnJlbnRseSBvcGVuIHpvbmVz
+IGFuZCB0aGUgbnVtYmVyIG9mDQo+ID4gK8KgwqDCoCBjdXJyZW50bHkgYWN0aXZlIHpvbmVzLg0K
+PiA+ICsNCj4gPiArwqDCoMKgIEFueSB6b25lIHN0YXRlIHRyYW5zaXRpb24gZnJvbSBhIHN0YXRl
+IHRoYXQgZG9lc24ndCBjb25zdW1lIGEgem9uZQ0KPiA+IHJlc291cmNlDQo+ID4gK8KgwqDCoCB0
+byBhIHN0YXRlIHRoYXQgY29uc3VtZXMgdGhlIHNhbWUgcmVzb3VyY2UgaW5jcmVtZW50cyB0aGUg
+aW50ZXJuYWwNCj4gPiBkZXZpY2UNCj4gPiArwqDCoMKgIGNvdW50ZXIgZm9yIHRoYXQgcmVzb3Vy
+Y2UuIEFueSB6b25lIHRyYW5zaXRpb24gb3V0IG9mIGEgc3RhdGUgdGhhdA0KPiA+IGNvbnN1bWVz
+DQo+ID4gK8KgwqDCoCBhIHpvbmUgcmVzb3VyY2UgdG8gYSBzdGF0ZSB0aGF0IGRvZXNuJ3QgY29u
+c3VtZSB0aGUgc2FtZSByZXNvdXJjZQ0KPiA+IGRlY3JlbWVudHMNCj4gPiArwqDCoMKgIHRoZSBj
+b3VudGVyLiBBbnkgcmVxdWVzdCB0aGF0IGNhdXNlcyB0aGUgZGV2aWNlIHRvIGV4Y2VlZCB0aGUg
+cmVwb3J0ZWQNCj4gPiB6b25lDQo+ID4gK8KgwqDCoCByZXNvdXJjZSBsaW1pdHMgaXMgdGVybWlu
+YXRlZCBieSB0aGUgZGV2aWNlIHdpdGggYW4gZXJyb3IuDQo+IA0KPiAiYW4gZXJyb3IiIGlzIHZh
+Z3VlLiBJIHdhcyB3b25kZXJpbmcgd2hhdCB0aGUgZXhhY3QgZXJyb3Igc2hvdWxkIGJlLg0KPiBQ
+bGVhc2UgZWl0aGVyIG1lbnRpb24gdGhlIGVycm9yIGNvZGVzIGhlcmUgb3IgYWRkICJhcyBkZWZp
+bmVkIGZvcg0KPiBzcGVjaWZpYyBjb21tYW5kcyBsYXRlciIgc28gaXQncyBjbGVhciB0aGF0IHRo
+ZSBkZXZpY2UgZG9lc24ndCBnZXQgdGhlDQo+IGNob29zZSB0aGUgZXJyb3IgY29kZSBidXQgdGhl
+eSBhcmUgZGVmaW5lZCBieSB0aGUgc3BlYy4NCg0KUmlnaHQuIFRoZSBlcnJvciBpcyBkZWZpbmVk
+IGxhdGVyIGluIHRoZSB0ZXh0LCBpdCdzIHdvcnRoIG1lbnRpb25pbmcgaXQgaGVyZS4NCg0KPiAN
+Cj4gPiArDQo+ID4gK1xpdGVtIFRoZSBcZmllbGR7bWF4X29wZW5fem9uZXN9IGZpZWxkIG9mIHRo
+ZSBcZmllbGR7em9uZWR9IHN0cnVjdHVyZSBjYW4gYmUNCj4gPiArwqDCoMKgIHJlYWQgYnkgdGhl
+IGRyaXZlciB0byBkaXNjb3ZlciB0aGUgbWF4aW11bSBudW1iZXIgb2Ygem9uZXMgdGhhdCBjYW4g
+YmUNCj4gPiBvcGVuDQo+ID4gK8KgwqDCoCBvbiB0aGUgZGV2aWNlICh6b25lcyBpbiB0aGUgaW1w
+bGljaXQgb3BlbiBvciBleHBsaWNpdCBvcGVuIHN0YXRlKS4gQQ0KPiA+IHZhbHVlDQo+ID4gK8Kg
+wqDCoCBvZiB6ZXJvIGluZGljYXRlcyB0aGF0IHRoZSBkZXZpY2UgZG9lcyBub3QgaGF2ZSBhbnkg
+bGltaXQgb24gdGhlIG51bWJlcg0KPiA+IG9mDQo+ID4gK8KgwqDCoCBvcGVuIHpvbmVzLg0KPiA+
+ICsNCj4gPiArXGl0ZW0gVGhlIFxmaWVsZHttYXhfYWN0aXZlX3pvbmVzfSBmaWVsZCBvZiB0aGUg
+XGZpZWxke3pvbmVkfSBzdHJ1Y3R1cmUgY2FuDQo+ID4gYmUNCj4gPiArwqDCoMKgIHJlYWQgYnkg
+dGhlIGRyaXZlciB0byBkaXNjb3ZlciB0aGUgbWF4aW11bSBudW1iZXIgem9uZXMgdGhhdCBjYW4g
+YmUNCj4gPiBhY3RpdmUNCj4gPiArwqDCoMKgIG9uIHRoZSBkZXZpY2UgKHpvbmVzIGluIHRoZSBp
+bXBsaWNpdCBvcGVuLCBleHBsaWNpdCBvcGVuIG9yIGNsb3NlZA0KPiA+IHN0YXRlKS4NCj4gPiAr
+wqDCoMKgIEEgdmFsdWUgb2YgemVybyBpbmRpY2F0ZXMgdGhhdCB0aGUgZGV2aWNlIGRvZXMgbm90
+IGhhdmUgYW55IGxpbWl0IG9uIHRoZQ0KPiA+ICvCoMKgwqAgbnVtYmVyIG9mIGFjdGl2ZSB6b25l
+cy4NCj4gPiArDQo+ID4gK1xpdGVtIHRoZSBcZmllbGR7bWF4X2FwcGVuZF9zZWN0b3JzfSBmaWVs
+ZCBvZiBcZmllbGR7em9uZWR9IGNhbiBiZSByZWFkIGJ5DQo+ID4gdGhlDQo+ID4gK8KgwqDCoCBk
+cml2ZXIgdG8gZ2V0IHRoZSBtYXhpbXVtIGRhdGEgc2l6ZSBvZiBhIFZJUlRJT19CTEtfVF9aT05F
+X0FQUEVORA0KPiA+IHJlcXVlc3QNCj4gPiArwqDCoMKgIGlzc3VlZCB0byB0aGUgZGV2aWNlLiBU
+aGUgdmFsdWUgb2YgdGhpcyBmaWVsZCBNVVNUIE5PVCBleGNlZWQgdGhlDQo+ID4gK8KgwqDCoCBc
+ZmllbGR7c2VnX21heH0gKiBcZmllbGR7c2l6ZV9tYXh9IHZhbHVlLiBBIGRldmljZSBNQVkgc2V0
+IHRoZQ0KPiA+ICvCoMKgwqAgXGZpZWxke21heF9hcHBlbmRfc2VjdG9yc30gdG8gemVybyBpZiBp
+dCBkb2Vzbid0IHN1cHBvcnQNCj4gPiArwqDCoMKgIFZJUlRJT19CTEtfVF9aT05FX0FQUEVORCBy
+ZXF1ZXN0cy4NCj4gDQo+IFRoZSBNVVNUIE5PVC9NQVkgc3RhdGVtZW50cyBuZWVkIHRvIGJlIGlu
+IGEgZHJpdmVybm9ybWF0aXZlIHNlY3Rpb24uDQo+IFRoZXJlIGFyZSBtb3JlIGluc3RhbmNlcyBi
+ZWxvdy4NCg0KWWVhLCBJIG5lZWQgdG8gc29ydCB0aGlzIG91dCBldmVyeXdoZXJlIGluIHRoZSBw
+YXRjaC4NCg0KPiANCj4gDQo+ID4gKw0KPiA+ICtcaXRlbSB0aGUgXGZpZWxke3dyaXRlX2dyYW51
+bGFyaXR5fSBmaWVsZCBvZiBcZmllbGR7em9uZWR9IGNhbiBiZSByZWFkIGJ5DQo+ID4gdGhlDQo+
+ID4gK8KgwqDCoCBkcml2ZXIgdG8gZGlzY292ZXIgdGhlIG9mZnNldCBhbmQgc2l6ZSBhbGlnbm1l
+bnQgY29uc3RyYWludCBmb3INCj4gPiArwqDCoMKgIFZJUlRJT19CTEtfVF9PVVQgYW5kIFZJUlRJ
+T19CTEtfVF9aT05FX0FQUEVORCByZXF1ZXN0cyBpc3N1ZWQgdG8NCj4gPiArwqDCoMKgIGEgc2Vx
+dWVudGlhbCB6b25lIG9mIHRoZSBkZXZpY2UuDQo+ID4gKw0KPiA+ICtcaXRlbSB0aGUgZGV2aWNl
+IE1VU1QgaW5pdGlhbGl6ZSBwYWRkaW5nIGJ5dGVzIFxmaWVsZHt1bnVzZWQyfSB0byAwLg0KPiA+
+ICtcZW5ke2l0ZW1pemV9DQo+ID4gKw0KPiA+IMKgXHN1YnN1YnNlY3Rpb257TGVnYWN5IEludGVy
+ZmFjZTogRGV2aWNlIEluaXRpYWxpemF0aW9ufVxsYWJlbHtzZWM6RGV2aWNlDQo+ID4gVHlwZXMg
+LyBCbG9jayBEZXZpY2UgLyBEZXZpY2UgSW5pdGlhbGl6YXRpb24gLyBMZWdhY3kgSW50ZXJmYWNl
+OiBEZXZpY2UNCj4gPiBJbml0aWFsaXphdGlvbn0NCj4gPiANCj4gPiDCoEJlY2F1c2UgbGVnYWN5
+IGRldmljZXMgZG8gbm90IGhhdmUgRkVBVFVSRVNfT0ssIHRyYW5zaXRpb25hbCBkZXZpY2VzDQo+
+ID4gQEAgLTQ3MzgsNyArNDg3MCw4IEBAIFxzdWJzdWJzZWN0aW9ue0xlZ2FjeSBJbnRlcmZhY2U6
+IERldmljZQ0KPiA+IEluaXRpYWxpemF0aW9ufVxsYWJlbHtzZWM6RGV2aWNlIFR5cGVzIC8NCj4g
+PiDCoFxzdWJzZWN0aW9ue0RldmljZSBPcGVyYXRpb259XGxhYmVse3NlYzpEZXZpY2UgVHlwZXMg
+LyBCbG9jayBEZXZpY2UgLyBEZXZpY2UNCj4gPiBPcGVyYXRpb259DQo+ID4gDQo+ID4gwqBUaGUg
+ZHJpdmVyIHF1ZXVlcyByZXF1ZXN0cyB0byB0aGUgdmlydHF1ZXVlcywgYW5kIHRoZXkgYXJlIHVz
+ZWQgYnkNCj4gPiAtdGhlIGRldmljZSAobm90IG5lY2Vzc2FyaWx5IGluIG9yZGVyKS4gRWFjaCBy
+ZXF1ZXN0IGlzIG9mIGZvcm06DQo+ID4gK3RoZSBkZXZpY2UgKG5vdCBuZWNlc3NhcmlseSBpbiBv
+cmRlcikuIElmIHRoZSBWSVJUSU9fQkxLX0ZfWk9ORUQgZmVhdHVyZQ0KPiA+ICtpcyBub3QgbmVn
+b3RpYXRlZCwgdGhlbiBlYWNoIHJlcXVlc3QgaXMgb2YgZm9ybToNCj4gPiANCj4gPiDCoFxiZWdp
+bntsc3RsaXN0aW5nfQ0KPiA+IMKgc3RydWN0IHZpcnRpb19ibGtfcmVxIHsNCj4gPiBAQCAtNDg1
+Myw2ICs0OTg2LDMzMSBAQCBcc3Vic2VjdGlvbntEZXZpY2UgT3BlcmF0aW9ufVxsYWJlbHtzZWM6
+RGV2aWNlIFR5cGVzDQo+ID4gLyBCbG9jayBEZXZpY2UgLyBEZXZpY2UgT3BlDQo+ID4gwqBjb21t
+YW5kIHByb2R1Y2VzIFZJUlRJT19CTEtfU19JT0VSUi7CoCBBIHNlZ21lbnQgbWF5IGhhdmUgY29t
+cGxldGVkDQo+ID4gwqBzdWNjZXNzZnVsbHksIGZhaWxlZCwgb3Igbm90IGJlZW4gcHJvY2Vzc2Vk
+IGJ5IHRoZSBkZXZpY2UuDQo+ID4gDQo+ID4gK1RoZSBmb2xsb3dpbmcgcmVxdWlyZW1lbnRzIG9u
+bHkgYXBwbHkgaWYgdGhlIFZJUlRJT19CTEtfRl9aT05FRCBmZWF0dXJlIGlzDQo+ID4gK25lZ290
+aWF0ZWQuDQo+ID4gKw0KPiA+ICtFYWNoIHJlcXVlc3QgaXMgb2YgZm9ybToNCj4gPiArDQo+ID4g
+K1xiZWdpbntsc3RsaXN0aW5nfQ0KPiA+ICtzdHJ1Y3QgdmlydGlvX2Jsa196b25lZF9yZXEgew0K
+PiA+ICvCoMKgwqDCoMKgwqDCoCBsZTMyIHR5cGU7DQo+ID4gK8KgwqDCoMKgwqDCoMKgIGxlMzIg
+cmVzZXJ2ZWQ7DQo+ID4gK8KgwqDCoMKgwqDCoMKgIGxlNjQgc2VjdG9yOw0KPiA+ICvCoMKgwqDC
+oMKgwqDCoCB1bmlvbiB6b25lZF9wYXJhbXMgew0KPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqAgc3RydWN0IHsNCj4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoCAvKiBBTEwgem9uZSBvcGVyYXRpb24gZmxhZyAqLw0KPiA+ICvCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIF9fdTggYWxsOw0KPiA+ICvC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIF9fdTggdW51c2Vk
+MVszXTsNCj4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIH0gbWdtdF9zZW5kOw0K
+PiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgc3RydWN0IHsNCj4gPiArwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAvKiBQYXJ0aWFsIHpvbmUg
+cmVwb3J0IGZsYWcgKi8NCj4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoCBfX3U4IHBhcnRpYWw7DQo+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqAgX191OCB1bnVzZWQyWzNdOw0KPiA+ICvCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqAgfSBtZ210X3JlY2VpdmU7DQo+ID4gK8KgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoCBzdHJ1Y3Qgew0KPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgIF9fdTggdW51c2VkM1s0XTsNCj4gPiArwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgIH0gYXBwZW5kOw0KPiA+ICvCoMKgwqDCoMKgwqDCoCB9IHpvbmU7DQo+
+ID4gK8KgwqDCoMKgwqDCoMKgIHU4IGRhdGFbXTsNCj4gPiArwqDCoMKgwqDCoMKgwqAgbGU2NCB6
+b25lX3Jlc3VsdDsNCj4gPiArwqDCoMKgwqDCoMKgwqAgdTggc3RhdHVzOw0KPiA+ICvCoMKgwqDC
+oMKgwqDCoCB1OCByZXNlcnZlZDFbM107DQo+IA0KPiBQbGVhc2UgbWFrZSBzdGF0dXMgdGhlIGxh
+c3QgYnl0ZSBzbyBkZXZpY2UgaW1wbGVtZW50YXRpb25zIGNhbiByZXVzZQ0KPiB0aGVpciBleGlz
+dGluZyByZXF1ZXN0IGNvbXBsZXRpb24gY29kZSB0byBoYW5kbGUgdmlydGlvX2Jsa196b25lZF9y
+ZXEuDQo+IEVpdGhlciByZXNlcnZlZDFbXSBjYW4gYmUgcmVtb3ZlZCBvciBpdCBjYW4gYmUgbW92
+ZWQgYmVmb3JlIHN0YXR1cy4NCg0KT0suDQoNCj4gDQo+IEhlcmUgaXMgdGhlIG5vbi11bmlvbiBy
+ZXByZXNlbnRhdGlvbiBvZiB0aGUgc3RydWN0cy4gTm90ZSB0aGF0IHRoaXMNCj4gbWVhbnMgZXhp
+c3RpbmcgcmVxdWVzdCBwcm9jZXNzaW5nIGNvZGUgY2FuIGhhbmRsZSBJTi9PVVQvRkxVU0ggZXZl
+bg0KPiB3aGVuIFZJUlRJT19CTEtfRl9aT05FRCBpcyBuZWdvdGlhdGVkLiBXZSBkb24ndCBuZWVk
+IHR3byBkaWZmZXJlbnQNCj4gY29kZSBwYXRocyBmb3IgdGhlc2UgY29tbW9uIGNvbW1hbmRzOg0K
+PiANCj4gLyogSU4vT1VUL0ZMVVNIL0RJU0NBUkQvV1JJVEVfWkVST0VTICovDQo+IHN0cnVjdCB2
+aXJ0aW9fYmxrX3JlcSB7DQo+IMKgwqDCoMKgwqDCoMKgIGxlMzIgdHlwZTsNCj4gwqDCoMKgwqDC
+oMKgwqAgbGUzMiByZXNlcnZlZDsNCj4gwqDCoMKgwqDCoMKgwqAgbGU2NCBzZWN0b3I7DQo+IMKg
+wqDCoMKgwqDCoMKgIHU4IGRhdGFbXTsNCj4gwqDCoMKgwqDCoMKgwqAgdTggc3RhdHVzOw0KPiB9
+Ow0KPiANCj4gLyogWk9ORV9BUFBFTkQgKi8NCj4gc3RydWN0IHZpcnRpb19ibGtfcmVxX3pvbmVf
+YXBwZW5kIHsNCj4gwqDCoMKgwqDCoMKgwqAgbGUzMiB0eXBlOw0KPiDCoMKgwqDCoMKgwqDCoCBs
+ZTMyIHJlc2VydmVkOw0KPiDCoMKgwqDCoMKgwqDCoCBsZTY0IHNlY3RvcjsNCj4gwqDCoMKgwqDC
+oMKgwqAgdTggZGF0YVtdOw0KPiDCoMKgwqDCoMKgwqDCoCBsZTY0IHpvbmVfcmVzdWx0Ow0KPiDC
+oMKgwqDCoMKgwqDCoCB1OCBzdGF0dXM7DQo+IH07DQo+IA0KPiAvKiBaT05FX09QRU4sIFpPTkVf
+Q0xPU0UsIFpPTkVfRklOSVNILCBaT05FX1JFU0VUICovDQo+IHN0cnVjdCB2aXJ0aW9fYmxrX3Jl
+cV96b25lX21nbXRfc2VuZCB7DQo+IMKgwqDCoMKgwqDCoMKgIGxlMzIgdHlwZTsNCj4gwqDCoMKg
+wqDCoMKgwqAgbGUzMiByZXNlcnZlZDsNCj4gwqDCoMKgwqDCoMKgwqAgbGU2NCBzZWN0b3I7DQo+
+IMKgwqDCoMKgwqDCoMKgIC8qIEFMTCB6b25lIG9wZXJhdGlvbiBmbGFnICovDQo+IMKgwqDCoMKg
+wqDCoMKgIF9fdTggYWxsOw0KPiDCoMKgwqDCoMKgwqDCoCBfX3U4IHVudXNlZDFbM107DQo+IMKg
+wqDCoMKgwqDCoMKgIHU4IGRhdGFbXTsNCj4gwqDCoMKgwqDCoMKgwqAgdTggc3RhdHVzOw0KPiB9
+Ow0KPiANCj4gLyogWk9ORV9SRVBPUlQgKi8NCj4gc3RydWN0IHZpcnRpb19ibGtfcmVxX3pvbmVf
+bWdtdF9yZWNlaXZlIHsNCj4gwqDCoMKgwqDCoMKgwqAgbGUzMiB0eXBlOw0KPiDCoMKgwqDCoMKg
+wqDCoCBsZTMyIHJlc2VydmVkOw0KPiDCoMKgwqDCoMKgwqDCoCBsZTY0IHNlY3RvcjsNCj4gwqDC
+oMKgwqDCoMKgwqAgLyogUGFydGlhbCB6b25lIHJlcG9ydCBmbGFnICovDQo+IMKgwqDCoMKgwqDC
+oMKgIF9fdTggcGFydGlhbDsNCj4gwqDCoMKgwqDCoMKgwqAgX191OCB1bnVzZWQyWzNdOw0KPiDC
+oMKgwqDCoMKgwqDCoCB1OCBkYXRhW107DQo+IMKgwqDCoMKgwqDCoMKgIHU4IHN0YXR1czsNCj4g
+fTsNCg0KV2UgZmVsdCB0aGF0IGl0IGlzIGxlc3MgY29uZnVzaW5nIHRvIGhhdmUgYSBzaW5nbGUg
+WkJEIHJlcXVlc3Qgc3RydWN0dXJlIHNvIHRoZXJlDQppcyAxOjEgcmVsYXRpb25zaGlwIGJldHdl
+ZW4gdGhlIFZJUlRJT19CTEtfRl9aT05FRCBiaXQgdmFsdWUgYW5kIHRoZSBjaG9pY2Ugb2YNCnRo
+ZSByZXF1ZXN0IC0NCg0KVklSVElPX0JMS19GX1pPTkVEIG9mZiAtPiAgdmlydGlvX2Jsa19yZXEN
+ClZJUlRJT19CTEtfRl9aT05FRCBvbiAtPiAgdmlydGlvX2Jsa196b25lZF9yZXENCg0KV2UgYWxz
+byB3YW50IHRvIG1ha2Ugc3VyZSB0aGF0IHpvbmUgbWFuYWdlbWVudC9zZW5kL3JlY2VpdmUgYW5k
+IGFwcGVuZCByZXF1ZXN0cw0KYXJlIGFsd2F5cyB0aGUgc2FtZSBzaXplIGFuZCBpdCBzaG91bGQg
+YmUgZWFzaWVyIHdpdGggYSBzaW5nbGUgcmVxdWVzdA0Kc3RydWN0dXJlLsKgDQoNCkl0IGlzIHBv
+c3NpYmxlIHRvIHVzZSBhIHNpbXBsZXIsIGJ1dCBsZXNzIHN0cnVjdHVyZWQgdW5pb24gaGVyZSAt
+DQoNCnN0cnVjdCB2aXJ0aW9fYmxrX3pvbmVkX3JlcSB7DQogICAgICAgIGxlMzIgdHlwZTsNCiAg
+ICAgICAgbGUzMiByZXNlcnZlZDsNCiAgICAgICAgbGU2NCBzZWN0b3I7DQogICAgICAgIHVuaW9u
+IHpvbmVkX3BhcmFtcyB7DQoJICAgICAgICAvKiBBTEwgem9uZSBvcGVyYXRpb24gZmxhZyAqLw0K
+CSAgICAgICAgX191OCBhbGw7DQoJICAgICAgICAvKiBQYXJ0aWFsIHpvbmUgcmVwb3J0IGZsYWcg
+Ki8NCgkgICAgICAgIF9fdTggcGFydGlhbDsNCgkgICAgICAgIF9fdTMyIHJzdmQxOw0KICAgICAg
+ICB9IHpvbmU7DQogICAgICAgIHU4IGRhdGFbXTsNCiAgICAgICAgbGU2NCB6b25lX3Jlc3VsdDsN
+CiAgICAgICAgdTggcmVzZXJ2ZWQxWzNdOw0KICAgICAgICB1OCBzdGF0dXM7DQp9DQoNClVzaW5n
+IHRoZSBzaW5nbGUgY29kZSBwYXRoIGlzIHZlcnkgaW1wb3J0YW50IGFuZCB0aGUgUG9DIExpbnV4
+IGRyaXZlciBjb2RlIHRoYXQgSQ0KaGF2ZSBza2V0Y2hlZCB1cCBhY2hpZXZlcyB0aGF0LiBTaW5j
+ZSB0aGUgcmVxdWVzdCBoZWFkZXIgaXMgaWRlbnRpY2FsIGZvciB0aGUNCmJvdGggY2FzZXMsIEkg
+aG9wZSB0aGF0IGl0IGNhbiBiZSBkb25lIGluIFFFTVUgdG9vLg0KDQo+IA0KPiA+ICt9Ow0KPiA+
+ICtcZW5ke2xzdGxpc3Rpbmd9DQo+ID4gKw0KPiA+ICtJbiBhZGRpdGlvbiB0byB0aGUgcmVxdWVz
+dCB0eXBlcyBkZWZpbmVkIGZvciBub24tem9uZWQgZGV2aWNlcywgdGhlIHR5cGUgb2YNCj4gPiB0
+aGUNCj4gPiArcmVxdWVzdCBjYW4gYmUgYSB6b25lIHJlcG9ydCAoVklSVElPX0JMS19UX1pPTkVf
+UkVQT1JUKSwgYW4gZXhwbGljaXQgem9uZQ0KPiA+IG9wZW4NCj4gPiArKFZJUlRJT19CTEtfVF9a
+T05FX09QRU4pLCBhbiBleHBsaWNpdCB6b25lIGNsb3NlIChWSVJUSU9fQkxLX1RfWk9ORV9DTE9T
+RSksDQo+ID4gYQ0KPiA+ICt6b25lIGZpbmlzaCAoVklSVElPX0JMS19UX1pPTkVfRklOSVNIKSwg
+YSB6b25lX2FwcGVuZA0KPiA+IChWSVJUSU9fQkxLX1RfWk9ORV9BUFBFTkQpDQo+ID4gK29yIGEg
+em9uZSByZXNldCAoVklSVElPX0JMS19UX1pPTkVfUkVTRVQpLg0KPiA+ICsNCj4gPiArXGJlZ2lu
+e2xzdGxpc3Rpbmd9DQo+ID4gKyNkZWZpbmUgVklSVElPX0JMS19UX1pPTkVfQVBQRU5EwqDCoMKg
+IDE1DQo+ID4gKyNkZWZpbmUgVklSVElPX0JMS19UX1pPTkVfUkVQT1JUwqDCoMKgIDE2DQo+ID4g
+KyNkZWZpbmUgVklSVElPX0JMS19UX1pPTkVfT1BFTsKgwqDCoMKgwqAgMTgNCj4gPiArI2RlZmlu
+ZSBWSVJUSU9fQkxLX1RfWk9ORV9DTE9TRcKgwqDCoMKgIDIwDQo+ID4gKyNkZWZpbmUgVklSVElP
+X0JMS19UX1pPTkVfRklOSVNIwqDCoMKgIDIyDQo+ID4gKyNkZWZpbmUgVklSVElPX0JMS19UX1pP
+TkVfUkVTRVTCoMKgwqDCoCAyNA0KPiA+ICtcZW5ke2xzdGxpc3Rpbmd9DQo+ID4gKw0KPiA+ICtS
+ZXF1ZXN0cyBvZiB0aGUgdHlwZSBWSVJUSU9fQkxLX1RfWk9ORV9SRVBPUlQgYXJlIHJlYWRzIGFu
+ZCByZXF1ZXN0cyBvZiB0aGUNCj4gPiB0eXBlDQo+IA0KPiBIZXJlICJyZWFkcyIgbWVhbnMgZGF0
+YSB0cmFuc2ZlcnMgZnJvbSB0aGUgZGV2aWNlIHRvIHRoZSBkcml2ZXIgcmF0aGVyDQo+IHRoYW4g
+ZGlzayByZWFkcy4gSSBmb3VuZCB0aGF0IGNvbmZ1c2luZy4gTWF5YmUNCj4gIlZJUlRJT19CTEtf
+VF9aT05FX1JFUE9SVCB0cmFuc2ZlciBkYXRhIGZyb20gdGhlIGRldmljZSI/DQoNClN1cmUsIHlv
+dXIgd29yZGluZyBpcyBiZXR0ZXIuDQoNCj4gRm9yIGEgY3VyDQo+ID4gK1ZJUlRJT19CTEtfVF9a
+T05FX0FQUEVORCBhcmUgd3JpdGVzLiBWSVJUSU9fQkxLX1RfWk9ORV9PUEVOLA0KPiA+ICtWSVJU
+SU9fQkxLX1RfWk9ORV9DTE9TRSwgVklSVElPX0JMS19UX1pPTkVfRklOSVNIIGFuZA0KPiA+IFZJ
+UlRJT19CTEtfVF9aT05FX1JFU0VUDQo+ID4gK2FyZSBub24tZGF0YSByZXF1ZXN0cy4NCj4gPiAr
+DQo+ID4gK0luIFpCRCBzdGFuZGFyZHMsIHRoZSBWSVJUSU9fQkxLX1RfWk9ORV9SRVBPUlQgcmVx
+dWVzdCBiZWxvbmdzIHRvICJab25lDQo+IA0KPiAiWkJEIHN0YW5kYXJkcyIgaXMgbm90IGRlZmlu
+ZWQuIEkgdGhpbmsgdGhpcyByZWZlcnMgdG8gdGhlIHpvbmVkDQo+IHN0b3JhZ2UgZGV2aWNlIG1v
+ZGVsIGFuZCBpdHMgZW1ib2RpbWVudCBpbiB0aGUgWkJDL1pOUyBzcGVjcy4NCg0KPiBUaGUgY29u
+ZmlndXJhdGlvbiBzcGFjZSBmaWVsZHMgYWxyZWFkeSBhbGxvdyB0aGUgZHJpdmVyIHRvIGNhbGN1
+bGF0ZQ0KPiB0aGUgdG90YWwgbnVtYmVyIG9mIHpvbmVzLiBXaGF0IGlzIHRoZSBwdXJwb3NlIG9m
+IHBhcnRpYWw9MCwgaXQNCj4gZG9lc24ndCBzZWVtIHRvIHByb3ZpZGUgYW55IG5ldyBpbmZvcm1h
+dGlvbj8NCg0KQm90aCBaQkMgYW5kIFpOUyBoYXZlIHRoaXMgY2F0ZWdvcml6YXRpb24uICJaQkQg
+c3RhbmRhcmRzIiBjYW4gYmUgZGVmaW5lZCBlYXJsaWVyDQppbiB0aGUgdGV4dCBhcyBhIGNhdGNo
+YWxsIGZvciBaQkMvWk5TLg0KDQpJZiBwYXJ0aWFsIGlzIDAsIHRoZSBucl96b25lcyB3aWxsIGNv
+bnRhaW4gdGhlIG51bWJlciBvZiB6b25lcyB0aGF0IHBvdGVudGlhbGx5DQpjYW4gYmUgcmVwb3J0
+ZWQgc3RhcnRpbmcgZnJvbSB0aGUgcmVxdWVzdCAic2VjdG9yIiBwb3NpdGlvbiBhbmQgdW50aWwg
+dGhlIGVuZCBvZg0Kc2VjdG9yIHJhbmdlIG9mIHRoZSBkZXZpY2UuIEl0IGRvZXMgbm90IG5lY2Vz
+c2FyaWx5IGVxdWFsIHRoZSB0b3RhbCBudW1iZXIgb2YNCnpvbmVzIG9uIHRoZSBkcml2ZS4gDQoN
+Cj4gDQo+IFdoZW4gdGhlIGRldmljZSBtYXJrcyBhIHZpcnRxdWV1ZSBidWZmZXIgdXNlZCwgaXQg
+aW5kaWNhdGVzIHRoZSBudW1iZXINCj4gb2YgYnl0ZXMgd3JpdHRlbiAoc3RydWN0IHZpcnRxX3Vz
+ZWRfZWxlbSdzIGxlbiBmaWVsZCkuIFRoZSBkcml2ZXIgY2FuDQo+IHVzZSB0aGlzIGZpZWxkIHRv
+IGRldGVybWluZSB0aGUgbnVtYmVyIG9mIGRlc2NyaXB0b3JzIGZpbGxlZCBpbiBieSB0aGUNCj4g
+ZGV2aWNlLiBJcyB0aGUgbnJfem9uZXMgZmllbGQgcmVhbGx5IG5lY2Vzc2FyeT8NCg0KVGhpcyBm
+aWVsZCBjYW4gaGVscCB3aGVuIHRoZSBidWZmZXIgaXMgbGFyZ2VyIHRoYW4gdGhlIHJldHVybmVk
+IG51bWJlciBvZg0KZGVzY3JpcHRvcnMsIGJ1dCBucl96b25lcyBpcyBzdGlsbCBuZWVkZWQgZm9y
+IHRoZSBwYXJ0aWFsPTAgY2FzZSBhYm92ZS4NCg0KPiANCj4gDQo+ID4gKw0KPiA+ICtBIHpvbmUg
+ZGVzY3JpcHRvciBoYXMgdGhlIGZvbGxvd2luZyBzdHJ1Y3R1cmU6DQo+ID4gKw0KPiA+ICtcYmVn
+aW57bHN0bGlzdGluZ30NCj4gPiArc3RydWN0IHZpcnRpb19ibGtfem9uZV9kZXNjcmlwdG9yIHsN
+Cj4gPiArwqDCoMKgwqDCoMKgwqAgbGU2NMKgwqAgel9jYXA7DQo+ID4gK8KgwqDCoMKgwqDCoMKg
+IGxlNjTCoMKgIHpfc3RhcnQ7DQo+ID4gK8KgwqDCoMKgwqDCoMKgIGxlNjTCoMKgIHpfd3A7DQo+
+ID4gK8KgwqDCoMKgwqDCoMKgIHU4wqDCoMKgwqAgel90eXBlOw0KPiA+ICvCoMKgwqDCoMKgwqDC
+oCB1OMKgwqDCoMKgIHpfc3RhdGU7DQo+ID4gK8KgwqDCoMKgwqDCoMKgIHU4wqDCoMKgwqAgcmVz
+ZXJ2ZWRbMzhdOw0KPiA+ICt9Ow0KPiA+ICtcZW5ke2xzdGxpc3Rpbmd9DQo+ID4gKw0KPiA+ICtU
+aGUgem9uZSBkZXNjcmlwdG9yIGZpZWxkIFxmaWVsZHt6X3R5cGV9IFxmaWVsZHt2aXJ0aW9fYmxr
+X3pvbmVfZGVzY3JpcHRvcn0NCj4gPiAraW5kaWNhdGVzIHRoZSB0eXBlIG9mIHRoZSB6b25lLiBU
+aGUgYXZhaWxhYmxlIHR5cGVzIGFyZQ0KPiA+IFZJUlRJT19CTEtfWlRfQ09OVigxKSwNCj4gPiAr
+VklSVElPX0JMS19aVF9TV1IoMikgb3IgVklSVElPX0JMS19aVF9TV1AoMykuDQo+ID4gKw0KPiA+
+ICtcYmVnaW57bHN0bGlzdGluZ30NCj4gPiArI2RlZmluZSBWSVJUSU9fQkxLX1pUX0NPTlbCoMKg
+wqDCoCAxDQo+ID4gKyNkZWZpbmUgVklSVElPX0JMS19aVF9TV1LCoMKgwqDCoMKgIDINCj4gPiAr
+I2RlZmluZSBWSVJUSU9fQkxLX1pUX1NXUMKgwqDCoMKgwqAgMw0KPiA+ICtcZW5ke2xzdGxpc3Rp
+bmd9DQo+ID4gKw0KPiA+ICtSZWFkIGFuZCB3cml0ZSBvcGVyYXRpb25zIGludG8gem9uZXMgd2l0
+aCB0aGUgVklSVElPX0JMS19aVF9DT05WDQo+ID4gKENvbnZlbnRpb25hbCkNCj4gPiArdHlwZSBo
+YXZlIHRoZSBzYW1lIGJlaGF2aW9yIGFzIHJlYWQgYW5kIHdyaXRlIG9wZXJhdGlvbnMgb24gYSBy
+ZWd1bGFyIGJsb2NrDQo+ID4gK2RldmljZS4gQW55IGJsb2NrIGluIGEgY29udmVudGlvbmFsIHpv
+bmUgY2FuIGJlIHJlYWQgb3Igd3JpdHRlbiBhdCBhbnkgdGltZQ0KPiA+IGFuZA0KPiA+ICtpbiBh
+bnkgb3JkZXIuDQo+ID4gKw0KPiA+ICtab25lcyB3aXRoIFZJUlRJT19CTEtfWlRfU1dSIChTZXF1
+ZW50aWFsIFdyaXRlIFJlcXVpcmVkIG9yIFNXUikgY2FuIGJlIHJlYWQNCj4gPiArcmFuZG9tbHks
+IGJ1dCBNVVNUIGJlIHdyaXR0ZW4gc2VxdWVudGlhbGx5IGF0IGEgY2VydGFpbiBwb2ludCBpbiB0
+aGUgem9uZQ0KPiA+IGNhbGxlZA0KPiA+ICt0aGUgV3JpdGUgUG9pbnRlciAoV1ApLiBXaXRoIGV2
+ZXJ5IHdyaXRlLCB0aGUgV3JpdGUgUG9pbnRlciBpcyBpbmNyZW1lbnRlZA0KPiA+IGJ5DQo+ID4g
+K3RoZSBudW1iZXIgb2Ygc2VjdG9ycyB3cml0dGVuLg0KPiA+ICsNCj4gPiArWm9uZXMgd2l0aCBW
+SVJUSU9fQkxLX1pUX1NXUCAoU2VxdWVudGlhbCBXcml0ZSBQcmVmZXJyZWQgb3IgU1dQKSBjYW4g
+YmUgcmVhZA0KPiA+ICtyYW5kb21seSBhbmQgU0hPVUxEIGJlIHdyaXR0ZW4gc2VxdWVudGlhbGx5
+LCBzaW1pbGFybHkgdG8gU1dSIHpvbmVzLg0KPiA+IEhvd2V2ZXIsDQo+ID4gK1NXUCB6b25lcyBj
+YW4gYWNjZXB0IHJhbmRvbSB3cml0ZSBvcGVyYXRpb25zLCB0aGF0IGlzLCBWSVJUSU9fQkxLX1Rf
+T1VUDQo+ID4gcmVxdWVzdHMNCj4gPiArd2l0aCBhIHN0YXJ0IHNlY3RvciBkaWZmZXJlbnQgZnJv
+bSB0aGUgem9uZSB3cml0ZSBwb2ludGVyIHBvc2l0aW9uLg0KPiA+ICsNCj4gPiArVGhlIGZpZWxk
+IFxmaWVsZHt6X3N0YXRlfSBvZiBcZmllbGR7dmlydGlvX2Jsa196b25lX2Rlc2NyaXB0b3J9IGlu
+ZGljYXRlcw0KPiA+IHRoZQ0KPiA+ICtzdGF0ZSBvZiB0aGUgZGV2aWNlIHpvbmUuIFRoZSBhdmFp
+bGFibGUgem9uZSBzdGF0ZXMgYXJlDQo+ID4gVklSVElPX0JMS19aU19OT1RfV1AoMCksDQo+ID4g
+K1ZJUlRJT19CTEtfWlNfRU1QVFkoMSksIFZJUlRJT19CTEtfWlNfSU9QRU4oMiksIFZJUlRJT19C
+TEtfWlNfRU9QRU4oMyksDQo+ID4gK1ZJUlRJT19CTEtfWlNfQ0xPU0VEKDQpLCBWSVJUSU9fQkxL
+X1pTX1JET05MWSgxMyksIFZJUlRJT19CTEtfWlNfRlVMTCgxNCkNCj4gPiBhbmQNCj4gPiArVklS
+VElPX0JMS19aU19PRkZMSU5FKDE1KS4NCj4gPiArDQo+ID4gK1xiZWdpbntsc3RsaXN0aW5nfQ0K
+PiA+ICsjZGVmaW5lIFZJUlRJT19CTEtfWlNfTk9UX1dQwqDCoCAwDQo+ID4gKyNkZWZpbmUgVklS
+VElPX0JMS19aU19FTVBUWcKgwqDCoCAxDQo+ID4gKyNkZWZpbmUgVklSVElPX0JMS19aU19JT1BF
+TsKgwqDCoCAyDQo+ID4gKyNkZWZpbmUgVklSVElPX0JMS19aU19FT1BFTsKgwqDCoCAzDQo+ID4g
+KyNkZWZpbmUgVklSVElPX0JMS19aU19DTE9TRUTCoMKgIDQNCj4gPiArI2RlZmluZSBWSVJUSU9f
+QkxLX1pTX1JET05MWcKgwqAgMTMNCj4gPiArI2RlZmluZSBWSVJUSU9fQkxLX1pTX0ZVTEzCoMKg
+wqDCoCAxNA0KPiA+ICsjZGVmaW5lIFZJUlRJT19CTEtfWlNfT0ZGTElORcKgIDE1DQo+ID4gK1xl
+bmR7bHN0bGlzdGluZ30NCj4gPiArDQo+ID4gK1pvbmVzIG9mIHRoZSB0eXBlIFZJUlRJT19CTEtf
+WlRfQ09OViBhcmUgYWx3YXlzIHJlcG9ydGVkIGJ5IHRoZSBkZXZpY2UgdG8gYmUNCj4gPiBpbg0K
+PiA+ICt0aGUgVklSVElPX0JMS19aU19OT1RfV1Agc3RhdGUuIFpvbmVzIG9mIHRoZSB0eXBlcyBW
+SVJUSU9fQkxLX1pUX1NXUiBhbmQNCj4gPiArVklSVElPX0JMS19aVF9TV1AgY2FuIG5vdCB0cmFu
+c2l0aW9uIHRvIHRoZSBWSVJUSU9fQkxLX1pTX05PVF9XUCBzdGF0ZS4NCj4gPiArDQo+ID4gK1pv
+bmVzIGluIFZJUlRJT19CTEtfWlNfRU1QVFkgKEVtcHR5KSwgVklSVElPX0JMS19aU19JT1BFTiAo
+SW1wbGljaXRseSBPcGVuKSwNCj4gPiArVklSVElPX0JMS19aU19FT1BFTiAoRXhwbGljaXRseSBP
+cGVuKSBhbmQgVklSVElPX0JMS19aU19DTE9TRUQgKENsb3NlZCkNCj4gPiBzdGF0ZQ0KPiA+ICth
+cmUgd3JpdGFibGUsIGJ1dCB6b25lcyBpbiBWSVJUSU9fQkxLX1pTX1JET05MWSAoUmVhZC1Pbmx5
+KSwNCj4gPiBWSVJUSU9fQkxLX1pTX0ZVTEwNCj4gPiArKEZ1bGwpIGFuZCBWSVJUSU9fQkxLX1pT
+X09GRkxJTkUgKE9mZmxpbmUpIHN0YXRlIGFyZSBub3QuIFRoZSB3cml0ZSBwb2ludGVyDQo+ID4g
+K3ZhbHVlIChcZmllbGR7el93cH0pIGlzIG5vdCB2YWxpZCBmb3IgUmVhZC1Pbmx5LCBGdWxsIGFu
+ZCBPZmZsaW5lIHpvbmVzLg0KPiA+ICsNCj4gPiArVGhlIHpvbmUgZGVzY3JpcHRvciBmaWVsZCBc
+ZmllbGR7el9jYXB9IGNvbnRhaW5zIHRoZSBtYXhpbXVtIG51bWJlciBvZiA1MTItDQo+ID4gYnl0
+ZQ0KPiA+ICtzZWN0b3JzIHRoYXQgYXJlIGF2YWlsYWJsZSB0byBiZSB3cml0dGVuIHdpdGggdXNl
+ciBkYXRhIHdoZW4gdGhlIHpvbmUgaXMgaW4NCj4gPiB0aGUNCj4gPiArRW1wdHkgc3RhdGUuIFRo
+aXMgdmFsdWUgc2hhbGwgYmUgbGVzcyB0aGFuIG9yIGVxdWFsIHRvIHRoZQ0KPiA+IFxmaWVsZHt6
+b25lX3NlY3RvcnN9DQo+ID4gK3ZhbHVlIGluIFxmaWVsZHt2aXJ0aW9fYmxrX3pvbmVkX2NoYXJh
+Y3RlcmlzdGljc30gc3RydWN0dXJlIGluIHRoZSBkZXZpY2UNCj4gPiArY29uZmlndXJhdGlvbiBz
+cGFjZS4NCj4gPiArDQo+ID4gK1RoZSB6b25lIGRlc2NyaXB0b3IgZmllbGQgXGZpZWxke3pfc3Rh
+cnR9IGNvbnRhaW5zIHRoZSA2NC1iaXQgYWRkcmVzcyBvZiB0aGUNCj4gPiArZmlyc3QgNTEyLWJ5
+dGUgc2VjdG9yIG9mIHRoZSB6b25lLg0KPiA+ICsNCj4gPiArVGhlIHpvbmUgZGVzY3JpcHRvciBm
+aWVsZCBcZmllbGR7el93cH0gY29udGFpbnMgdGhlIDY0LWJpdCBzZWN0b3IgYWRkcmVzcw0KPiA+
+IHdoZXJlDQo+ID4gK3RoZSBuZXh0IHdyaXRlIG9wZXJhdGlvbiBmb3IgdGhpcyB6b25lIHNob3Vs
+ZCBiZSBpc3N1ZWQuIFRoaXMgdmFsdWUgaXMNCj4gPiB1bmRlZmluZWQNCj4gPiArZm9yIGNvbnZl
+bnRpb25hbCB6b25lcyBhbmQgZm9yIHpvbmVzIGluIFZJUlRJT19CTEtfWlNfUkRPTkxZLA0KPiA+
+IFZJUlRJT19CTEtfWlNfRlVMTA0KPiA+ICthbmQgVklSVElPX0JMS19aU19PRkZMSU5FIHN0YXRl
+Lg0KPiA+ICsNCj4gPiArRGVwZW5kaW5nIG9uIHRoZWlyIHN0YXRlLCB6b25lcyBjb25zdW1lIHJl
+c291cmNlcyBhcyBmb2xsb3dzOg0KPiA+ICtcYmVnaW57aXRlbWl6ZX0NCj4gPiArXGl0ZW0gYSB6
+b25lIGluIFZJUlRJT19CTEtfWlNfSU9QRU4gYW5kIFZJUlRJT19CTEtfWlNfRU9QRU4gc3RhdGUg
+Y29uc3VtZXMNCj4gPiBvbmUNCj4gPiArwqDCoMKgIG9wZW4gem9uZSByZXNvdXJjZSBhbmQsIGFk
+ZGl0aW9uYWxseSwNCj4gPiArDQo+ID4gK1xpdGVtIGEgem9uZSBpbiBWSVJUSU9fQkxLX1pTX0lP
+UEVOLCBWSVJUSU9fQkxLX1pTX0VPUEVOIGFuZA0KPiA+ICvCoMKgwqAgVklSVElPX0JMS19aU19D
+TE9TRUQgc3RhdGUgY29uc3VtZXMgb25lIGFjdGl2ZSByZXNvdXJjZS4NCj4gPiArXGVuZHtpdGVt
+aXplfQ0KPiA+ICsNCj4gPiArQXR0ZW1wdHMgZm9yIHpvbmUgdHJhbnNpdGlvbnMgdGhhdCB2aW9s
+YXRlIHpvbmUgcmVzb3VyY2UgbGltaXRzIE1VU1QgZmFpbA0KPiA+IHdpdGgNCj4gPiArVklSVElP
+X0JMS19TX1pPTkVfT1BFTl9SRVNPVVJDRSBvciBWSVJUSU9fQkxLX1NfWk9ORV9BQ1RJVkVfUkVT
+T1VSQ0UNCj4gPiArXGZpZWxke3pvbmVfcmVzdWx0fS4NCj4gDQo+IFdoeSB1c2Ugem9uZV9yZXN1
+bHQgaW5zdGVhZCBvZiB0aGUgc3RhdHVzIGZpZWxkPyBUaGUgX1NfIG5hbWluZw0KPiBzdWdnZXN0
+cyB0aGlzIGlzIGEgc3RhdHVzIGZpZWxkIGNvbnN0YW50LCBub3QgYSB6b25lX3Jlc3VsdCBjb25z
+dGFudC4NCg0Kem9uZV9yZXN1bHQgb25seSBhIHZhbGlkIFpCRCBlcnJvciBpZiB0aGUgc3RhdHVz
+IGlzIFZJUlRJT19CTEtfU19JT0VSUi4gSWYgdGhlDQpzdGF0dXMgaXMgVklSVElPX0JMS19TX09L
+LCB0aGlzIGZpZWxkIG1heSBjb250YWluIEFMQkEgZm9yIFpvbmUgQXBwZW5kIHJlcXVlc3QuDQpJ
+dCBpcyBwb3NzaWJsZSB0byBqdXN0IGRlZmluZSB0aGUgWkJELXNwZWNpZmljIGVycm9yIGNvZGVz
+IGZvbGxvd2luZw0KVklSVElPX0JMS19TX1VOU1VQUCwgYnV0IEkgdGhpbmsgaXQgaXMgY2xlYW5l
+ciB0byBjcmVhdGUgYSBzZXBhcmF0ZSBudW1iZXJpbmcgZm9yDQpaQkQtc3BlY2lmaWMgY29kZXMg
+YW5kIGtlZXAgdGhlIG5vbi16b25lZCBlcnJvcnMgYXMtaXMgaW4gdGhlaXIgaW1wcmVzc2l2ZQ0K
+c2ltcGxpY2l0eS4NCg0KVGhlIFpCRCBlcnJvciBjb2RlcyBhbGwgY3VycmVudGx5IGhhdmUgX1Nf
+Wk9ORV8gbmFtaW5nLCBidXQgaXQgbWlnaHQgYmUgYmV0dGVyIHRvDQp1c2Ugc29tZXRoaW5nIGxp
+a2UgX1pSXyBmb3IgZXhhbXBsZSwgaS5lLg0KDQojZGVmaW5lIFZJUlRJT19CTEtfWlJfSU5WQUxJ
+RF9DTUQgICAgIDANCiNkZWZpbmUgVklSVElPX0JMS19aUl9VTkFMSUdORURfV1AgICAgMQ0KI2Rl
+ZmluZSBWSVJUSU9fQkxLX1pSX09QRU5fUkVTT1VSQ0UgICAyDQojZGVmaW5lIFZJUlRJT19CTEtf
+WlJfQUNUSVZFX1JFU09VUkNFIDMNCg0KPiANCj4gDQo+ID4gKw0KPiA+ICtab25lcyBpbiB0aGUg
+VklSVElPX0JMS19aU19FTVBUWSAoRW1wdHkpIHN0YXRlIGhhdmUgdGhlIHdyaXRlIHBvaW50ZXIg
+dmFsdWUNCj4gPiArZXF1YWwgdG8gdGhlIHN0YXJ0IHNlY3RvciBvZiB0aGUgem9uZS4gSW4gdGhp
+cyBzdGF0ZSwgdGhlIGVudGlyZSBjYXBhY2l0eSBvZg0KPiA+IHRoZQ0KPiA+ICt6b25lIGlzIGF2
+YWlsYWJsZSBmb3Igd3JpdGluZy4gQSB6b25lIGNhbiB0cmFuc2l0aW9uIGZyb20gdGhpcyBzdGF0
+ZSB0bw0KPiA+ICtcYmVnaW57aXRlbWl6ZX0NCj4gPiArXGl0ZW0gVklSVElPX0JMS19aU19JT1BF
+TiB3aGVuIGEgc3VjY2Vzc2Z1bCBWSVJUSU9fQkxLX1RfT1VUIHJlcXVlc3Qgb3INCj4gPiArwqDC
+oMKgIFZJUlRJT19CTEtfVF9aT05FX0FQUEVORCB3aXRoIGEgbm9uLXplcm8gZGF0YSBzaXplIGlz
+IHJlY2VpdmVkIGZvciB0aGUNCj4gPiB6b25lLg0KPiA+ICsNCj4gPiArXGl0ZW0gVklSVElPX0JM
+S19aU19FT1BFTiB3aGVuIGEgc3VjY2Vzc2Z1bCBWSVJUSU9fQkxLX1RfWk9ORV9PUEVOIHJlcXVl
+c3QNCj4gPiBpcw0KPiA+ICvCoMKgwqAgcmVjZWl2ZWQgZm9yIHRoZSB6b25lDQo+ID4gK1xlbmR7
+aXRlbWl6ZX0NCj4gPiArDQo+ID4gK1doZW4gYSBWSVJUSU9fQkxLX1RfWk9ORV9SRVNFVCByZXF1
+ZXN0IGlzIGlzc3VlZCB0byBhbiBFbXB0eSB6b25lLCB0aGUNCj4gPiByZXF1ZXN0DQo+ID4gK2lz
+IGNvbXBsZXRlZCBzdWNjZXNzZnVsbHkgYW5kIHRoZSB6b25lIHN0YXlzIGluIHRoZSBWSVJUSU9f
+QkxLX1pTX0VNUFRZDQo+ID4gc3RhdGUuDQo+ID4gKw0KPiA+ICtab25lcyBpbiB0aGUgVklSVElP
+X0JMS19aU19JT1BFTiAoSW1wbGljaXRseSBPcGVuKSBzdGF0ZSBjYW4gdHJhbnNpdGlvbiBmcm9t
+DQo+ID4gK3RoaXMgc3RhdGUgdG8NCj4gPiArXGJlZ2lue2l0ZW1pemV9DQo+ID4gK1xpdGVtIFZJ
+UlRJT19CTEtfWlNfRU1QVFkgd2hlbiBhIHN1Y2Nlc3NmdWwgVklSVElPX0JMS19UX1pPTkVfUkVT
+RVQgcmVxdWVzdA0KPiA+IGlzDQo+ID4gK8KgwqDCoCByZWNlaXZlZCBmb3IgdGhlIHpvbmUsDQo+
+ID4gKw0KPiA+ICtcaXRlbSBWSVJUSU9fQkxLX1pTX0VPUEVOIHdoZW4gYSBzdWNjZXNzZnVsIFZJ
+UlRJT19CTEtfVF9aT05FX09QRU4gcmVxdWVzdA0KPiA+IGlzDQo+ID4gK8KgwqDCoCByZWNlaXZl
+ZCBmb3IgdGhlIHpvbmUsDQo+ID4gKw0KPiA+ICtcaXRlbSBWSVJUSU9fQkxLX1pTX0NMT1NFRCB3
+aGVuIGEgc3VjY2Vzc2Z1bCBWSVJUSU9fQkxLX1RfWk9ORV9DTE9TRSByZXF1ZXN0DQo+ID4gaXMN
+Cj4gPiArwqDCoMKgIHJlY2VpdmVkIGZvciB0aGUgem9uZSwNCj4gPiArDQo+ID4gK1xpdGVtIFZJ
+UlRJT19CTEtfWlNfQ0xPU0VEIGltcGxpY2l0bHkgYnkgdGhlIGRldmljZSB3aGVuIGFub3RoZXIg
+em9uZSBpcw0KPiA+ICvCoMKgwqAgZW50ZXJpbmcgdGhlIFZJUlRJT19CTEtfWlNfSU9QRU4gb3Ig
+VklSVElPX0JMS19aU19FT1BFTiBzdGF0ZSBhbmQgdGhlDQo+ID4gbnVtYmVyDQo+ID4gK8KgwqDC
+oCBvZiBjdXJyZW50bHkgb3BlbiB6b25lcyBpcyBhdCBcZmllbGR7bWF4X29wZW5fem9uZXN9IGxp
+bWl0LA0KPiA+ICsNCj4gPiArXGl0ZW0gVklSVElPX0JMS19aU19GVUxMIHdoZW4gYSBzdWNjZXNz
+ZnVsIFZJUlRJT19CTEtfVF9aT05FX0ZJTklTSCByZXF1ZXN0DQo+ID4gaXMNCj4gPiArwqDCoMKg
+IHJlY2VpdmVkIGZvciB0aGUgem9uZS4NCj4gPiArDQo+ID4gK1xpdGVtIFZJUlRJT19CTEtfWlNf
+RlVMTCB3aGVuIGEgc3VjY2Vzc2Z1bCBWSVJUSU9fQkxLX1RfT1VUIG9yDQo+ID4gK8KgwqDCoCBW
+SVJUSU9fQkxLX1RfWk9ORV9BUFBFTkQgcmVxdWVzdCB0aGF0IGNhdXNlcyB0aGUgem9uZSB0byBy
+ZWFjaCBpdHMNCj4gPiB3cml0YWJsZQ0KPiA+ICvCoMKgwqAgY2FwYWNpdHkgaXMgcmVjZWl2ZWQg
+Zm9yIHRoZSB6b25lLg0KPiA+ICtcZW5ke2l0ZW1pemV9DQo+ID4gKw0KPiA+ICtab25lcyBpbiB0
+aGUgVklSVElPX0JMS19aU19FT1BFTiAoRXhwbGljaXRseSBPcGVuKSBzdGF0ZSBjYW4gdHJhbnNp
+dGlvbiBmcm9tDQo+ID4gK3RoaXMgc3RhdGUgdG8NCj4gPiArXGJlZ2lue2l0ZW1pemV9DQo+ID4g
+K1xpdGVtIFZJUlRJT19CTEtfWlNfRU1QVFkgd2hlbiBhIHN1Y2Nlc3NmdWwgVklSVElPX0JMS19U
+X1pPTkVfUkVTRVQgcmVxdWVzdA0KPiA+IGlzDQo+ID4gK8KgwqDCoCByZWNlaXZlZCBmb3IgdGhl
+IHpvbmUsDQo+ID4gKw0KPiA+ICtcaXRlbSBWSVJUSU9fQkxLX1pTX0VNUFRZIHdoZW4gYSBzdWNj
+ZXNzZnVsIFZJUlRJT19CTEtfVF9aT05FX0NMT1NFIHJlcXVlc3QNCj4gPiBpcw0KPiA+ICvCoMKg
+wqAgcmVjZWl2ZWQgZm9yIHRoZSB6b25lIGFuZCB0aGUgd3JpdGUgcG9pbnRlciBvZiB0aGUgem9u
+ZSBoYXMgdGhlIHZhbHVlDQo+ID4gZXF1YWwNCj4gPiArwqDCoMKgIHRvIHRoZSBzdGFydCBzZWN0
+b3Igb2YgdGhlIHpvbmUsDQo+ID4gKw0KPiA+ICtcaXRlbSBWSVJUSU9fQkxLX1pTX0NMT1NFRCB3
+aGVuIGEgc3VjY2Vzc2Z1bCBWSVJUSU9fQkxLX1RfWk9ORV9DTE9TRSByZXF1ZXN0DQo+ID4gaXMN
+Cj4gPiArwqDCoMKgIHJlY2VpdmVkIGZvciB0aGUgem9uZSBhbmQgdGhlIHpvbmUgd3JpdGUgcG9p
+bnRlciBpcyBsYXJnZXIgdGhlbiB0aGUNCj4gPiBzdGFydA0KPiA+ICvCoMKgwqAgc2VjdG9yIG9m
+IHRoZSB6b25lLA0KPiA+ICsNCj4gPiArXGl0ZW0gVklSVElPX0JMS19aU19GVUxMIHdoZW4gYSBz
+dWNjZXNzZnVsIFZJUlRJT19CTEtfVF9aT05FX0ZJTklTSCByZXF1ZXN0DQo+ID4gaXMNCj4gPiAr
+wqDCoMKgIHJlY2VpdmVkIGZvciB0aGUgem9uZSwNCj4gPiArDQo+ID4gK1xpdGVtIFZJUlRJT19C
+TEtfWlNfRlVMTCB3aGVuIGEgc3VjY2Vzc2Z1bCBWSVJUSU9fQkxLX1RfT1VUIG9yDQo+ID4gK8Kg
+wqDCoCBWSVJUSU9fQkxLX1RfWk9ORV9BUFBFTkQgcmVxdWVzdCB0aGF0IGNhdXNlcyB0aGUgem9u
+ZSB0byByZWFjaCBpdHMNCj4gPiB3cml0YWJsZQ0KPiA+ICvCoMKgwqAgY2FwYWNpdHkgaXMgcmVj
+ZWl2ZWQgZm9yIHRoZSB6b25lLg0KPiA+ICtcZW5ke2l0ZW1pemV9DQo+ID4gKw0KPiA+ICtXaGVu
+IGEgVklSVElPX0JMS19UX1pPTkVfRU9QRU4gcmVxdWVzdCBpcyBpc3N1ZWQgdG8gYW4gRXhwbGlj
+aXRseSBPcGVuIHpvbmUsDQo+ID4gdGhlDQo+ID4gK3JlcXVlc3QgaXMgY29tcGxldGVkIHN1Y2Nl
+c3NmdWxseSBhbmQgdGhlIHpvbmUgc3RheXMgaW4gdGhlDQo+ID4gVklSVElPX0JMS19aU19FT1BF
+Tg0KPiA+ICtzdGF0ZS4NCj4gPiArDQo+ID4gK1pvbmVzIGluIHRoZSBWSVJUSU9fQkxLX1pTX0NM
+T1NFRCAoQ2xvc2VkKSBzdGF0ZSBjYW4gdHJhbnNpdGlvbiBmcm9tIHRoaXMNCj4gPiBzdGF0ZQ0K
+PiA+ICt0bw0KPiA+ICtcYmVnaW57aXRlbWl6ZX0NCj4gPiArXGl0ZW0gVklSVElPX0JMS19aU19F
+TVBUWSB3aGVuIGEgc3VjY2Vzc2Z1bCBWSVJUSU9fQkxLX1RfWk9ORV9SRVNFVCByZXF1ZXN0DQo+
+ID4gaXMNCj4gPiArwqDCoMKgIHJlY2VpdmVkIGZvciB0aGUgem9uZSwNCj4gPiArDQo+ID4gK1xp
+dGVtIFZJUlRJT19CTEtfWlNfSU9QRU4gd2hlbiBhIHN1Y2Nlc3NmdWwgVklSVElPX0JMS19UX09V
+VCByZXF1ZXN0IG9yDQo+ID4gK8KgwqDCoCBWSVJUSU9fQkxLX1RfWk9ORV9BUFBFTkQgd2l0aCBh
+IG5vbi16ZXJvIGRhdGEgc2l6ZSBpcyByZWNlaXZlZCBmb3IgdGhlDQo+ID4gem9uZS4NCj4gPiAr
+DQo+ID4gK1xpdGVtIFZJUlRJT19CTEtfWlNfRU9QRU4gd2hlbiBhIHN1Y2Nlc3NmdWwgVklSVElP
+X0JMS19UX1pPTkVfT1BFTiByZXF1ZXN0DQo+ID4gaXMNCj4gPiArwqDCoMKgIHJlY2VpdmVkIGZv
+ciB0aGUgem9uZSwNCj4gPiArXGVuZHtpdGVtaXplfQ0KPiA+ICsNCj4gPiArV2hlbiBhIFZJUlRJ
+T19CTEtfVF9aT05FX0NMT1NFIHJlcXVlc3QgaXMgaXNzdWVkIHRvIGEgQ2xvc2VkIHpvbmUsIHRo
+ZQ0KPiA+IHJlcXVlc3QNCj4gPiAraXMgY29tcGxldGVkIHN1Y2Nlc3NmdWxseSBhbmQgdGhlIHpv
+bmUgc3RheXMgaW4gdGhlIFZJUlRJT19CTEtfWlNfQ0xPU0VEDQo+ID4gc3RhdGUuDQo+ID4gKw0K
+PiA+ICtab25lcyBpbiB0aGUgVklSVElPX0JMS19aU19GVUxMIChGdWxsKSBzdGF0ZSBjYW4gdHJh
+bnNpdGlvbiBmcm9tIHRoaXMgc3RhdGUNCj4gPiB0bw0KPiA+ICtWSVJUSU9fQkxLX1pTX0VNUFRZ
+IHdoZW4gYSBzdWNjZXNzZnVsIFZJUlRJT19CTEtfVF9aT05FX1JFU0VUIHJlcXVlc3QgaXMNCj4g
+PiArcmVjZWl2ZWQgZm9yIHRoZSB6b25lDQo+ID4gKw0KPiA+ICtXaGVuIGEgVklSVElPX0JMS19U
+X1pPTkVfRklOSVNIIHJlcXVlc3QgaXMgaXNzdWVkIHRvIGEgRnVsbCB6b25lLCB0aGUNCj4gPiBy
+ZXF1ZXN0DQo+ID4gK2lzIGNvbXBsZXRlZCBzdWNjZXNzZnVsbHkgYW5kIHRoZSB6b25lIHN0YXlz
+IGluIHRoZSBWSVJUSU9fQkxLX1pTX0ZVTEwNCj4gPiBzdGF0ZS4NCj4gPiArDQo+ID4gK1RoZSBk
+ZXZpY2UgTUFZIGF1dG9tYXRpY2FsbHkgdHJhbnNpdGlvbiB6b25lcyB0byBWSVJUSU9fQkxLX1pT
+X1JET05MWQ0KPiA+ICsoUmVhZC1Pbmx5KSBvciBWSVJUSU9fQkxLX1pTX09GRkxJTkUgKE9mZmxp
+bmUpIHN0YXRlIGZyb20gYW55IG90aGVyIHN0YXRlLg0KPiA+IFRoZQ0KPiA+ICtkZXZpY2UgTUFZ
+IGFsc28gYXV0b21hdGljYWxseSB0cmFuc2l0aW9uIHpvbmVzIGluIHRoZSBSZWFkLU9ubHkgc3Rh
+dGUgdG8gdGhlDQo+ID4gK09mZmxpbmUgc3RhdGUuIFpvbmVzIGluIHRoZSBPZmZsaW5lIHN0YXRl
+IE1BWSBOT1QgdHJhbnNpdGlvbiB0byBhbnkgb3RoZXINCj4gPiBzdGF0ZS4NCj4gPiArU3VjaCBh
+dXRvbWF0aWMgdHJhbnNpdGlvbnMgdXN1YWxseSBpbmRpY2F0ZSBoYXJkd2FyZSBmYWlsdXJlcy4g
+VGhlDQo+ID4gcHJldmlvdXNseQ0KPiA+ICt3cml0dGVuIGRhdGEgbWF5IG9ubHkgYmUgcmVhZCBm
+cm9tIHpvbmVzIGluIHRoZSBSZWFkLU9ubHkgc3RhdGUuIFpvbmVzIGluDQo+ID4gdGhlDQo+ID4g
+K09mZmxpbmUgc3RhdGUgY2FuIG5vdCBiZSByZWFkIG9yIHdyaXR0ZW4uDQo+IA0KPiBXaGF0IGlz
+IHRoZSBzdGF0dXMgY29kZSB3aGVuIHRoaXMgaXMgYXR0ZW1wdGVkPw0KDQpJdCBpcyBzdGF0ZWQg
+ZWxzZXdoZXJlIC0NCkFsbCByZXF1ZXN0cyBpc3N1ZWQgdG8gYSB6b25lIGluIHRoZSBWSVJUSU9f
+QkxLX1pTX09GRkxJTkUgc3RhdGUgU0hBTEwgYmUNCmNvbXBsZXRlZCB3aXRoIFZJUlRJT19CTEtf
+U19JT0VSUiBcZmllbGR7c3RhdHVzfSBhbmQNClZJUlRJT19CTEtfU19aT05FX0lOVkFMSURfQ01E
+IHZhbHVlIGluIHRoZSBmaWVsZCBcZmllbGR7em9uZV9yZXN1bHR9Lg0KDQoNCg0K
 
