@@ -1,143 +1,97 @@
-Return-Path: <mst@redhat.com>
-Date: Mon, 2 May 2022 08:16:59 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: Re: [virtio] [PATCH] acknowledgements: update for 1.2
-Message-ID: <20220502081625-mutt-send-email-mst@kernel.org>
-References: <20220502113914.20119-1-mst@redhat.com>
- <874k286sjs.fsf@redhat.com>
+Return-Path: <virtio-comment-return-3108-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-comment@lists.oasis-open.org>
+List-Post: <mailto:virtio-comment@lists.oasis-open.org>
+List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
+References: <877d61wuc0.fsf@linaro.org>
+ <80aace95-6c39-c7b9-61ba-70d60bcd08b2@quicinc.com>
+ <c642058f36321cb7dfdfaa4664f5323841b65450.camel@sipsolutions.net>
+ <a3856ec8-90d6-df19-2b5f-bc42700b09db@quicinc.com>
+From: Alex =?utf-8?Q?Benn=C3=A9e?= <alex.bennee@linaro.org>
+Date: Wed, 08 Jun 2022 13:28:25 +0100
+In-reply-to: <a3856ec8-90d6-df19-2b5f-bc42700b09db@quicinc.com>
+Message-ID: <87v8tbtjpv.fsf@linaro.org>
 MIME-Version: 1.0
-In-Reply-To: <874k286sjs.fsf@redhat.com>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Disposition: inline
+Subject: [virtio-comment] Re: [Stratos-dev] Next VirtIO device for Project Stratos?
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-To: Cornelia Huck <cohuck@redhat.com>
-Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, virtio@lists.oasis-open.org
+To: Trilok Soni <quic_tsoni@quicinc.com>
+Cc: Johannes Berg <johannes@sipsolutions.net>, stratos-dev@op-lists.linaro.org, virtio-dev@lists.oasis-open.org, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, Matt Spencer <Matt.Spencer@arm.com>, Gerd Hoffmann <kraxel@redhat.com>, Arnd Bergmann <arnd.bergmann@linaro.org>, Christian Pinto <c.pinto@virtualopensystems.com>, Namhyung Kim <namhyung@kernel.org>, Petre Eftime <epetre@amazon.com>, Peter Hilber <peter.hilber@opensynergy.com>, Marcel Holtmann <marcel@holtmann.org>, "Michael S. Tsirkin" <mst@redhat.com>, Stefan Hajnoczi <stefanha@redhat.com>, quic_pdaly@quicinc.com, pdaly@quicinc.com, svaddagi@qti.qualcomm.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Mon, May 02, 2022 at 02:13:43PM +0200, Cornelia Huck wrote:
-> On Mon, May 02 2022, "Michael S. Tsirkin" <mst@redhat.com> wrote:
->=20
-> > To keep things simple I decided to just move the previous content
-> > to a historical acknowledgements section and add a new one.
->=20
-> Yes, that makes sense.
->=20
-> Btw: do we update the affiliations of people who moved employers in the
-> meantime? Or do we reflect the state at the time they contributed?
 
-I'd say at the time they contributed, my assumption is it is not
-an individual contribution.
+Trilok Soni <quic_tsoni@quicinc.com> writes:
 
-> >
-> > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> > ---
-> >
-> >
-> >  acknowledgements.tex | 75 +++++++++++++++++++++++++++++++++++++++++++-
-> >  1 file changed, 74 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/acknowledgements.tex b/acknowledgements.tex
-> > index 4520cd3..1c0a155 100644
-> > --- a/acknowledgements.tex
-> > +++ b/acknowledgements.tex
-> > @@ -5,6 +5,78 @@ \chapter{Acknowledgements}\label{chap:Acknowledgements}
-> > =20
-> >  The following individuals have participated in the creation of this sp=
-ecification and are gratefully acknowledged:
-> > =20
-> > +\subsection*{Participants}
-> > +Alexander Duyck, Intel \newline
-> > +Alex Benn=E9e, Linaro \newline
-> > +Anton Yakovlev, OpenSynergy \newline
-> > +Arseny Krasnov, Kaspersky Lab \newline
-> > +Cornelia Huck, Red Hat \newline
-> > +David Hildenbrand, Red Hat \newline
-> > +David Stevens, Chromium \newline
-> > +Dr. David Alan Gilbert, Red Hat \newline
-> > +Enrico Granata, Google \newline
-> > +Eugenio P=E9rez, Red Hat \newline
-> > +Felipe Franciosi, Nutanix \newline
-> > +Gaetan Harter, OpenSynergy \newline
-> > +Gerd Hoffmann, Red Hat \newline
-> > +Gurchetan Singh, Chromium \newline
-> > +Halil Pasic, IBM \newline
-> > +Hao Chen, Google \newline
-> > +Huang Yang, Intel \newline
-> > +Jan Kiszka, Siemens \newline
-> > +Jean-Philippe Brucker, Linaro \newline
-> > +Jiang Wang, Bytedance \newline
-> > +Jie Deng, Intel \newline
-> > +Joel Nider, Individual \newline
-> > +Johannes Berg, Intel \newline
-> > +Junji Wei, Bytedance \newline
-> > +Keiichi Watanabe, Chromium \newline
-> > +Marcel Holtmann, Individual \newline
-> > +Max Gurtovoy, Nvidia \newline
-> > +Michael S. Tsirkin, Red Hat \newline
-> > +Nikos Dragazis, Arrikto \newline
-> > +Pankaj Gupta, Red Hat \newline
-> > +Paolo Bonzini, Red Hat \newline
-> > +Parav Pandit, Nvidia \newline
-> > +Peter Hilber, OpenSynergy \newline
-> > +Petre Eftime, Amazon \newline
-> > +Philipp Hahn, Univention \newline
-> > +Rob Bradford, Intel \newline
-> > +Stefan Fritsch, Individual \newline
-> > +Stefan Hajnoczi, Red Hat \newline
-> > +Stefano Garzarella, Red Hat \newline
-> > +Taylor Stark, Microsoft \newline
-> > +Tiwei Bie, Intel \newline
-> > +Viresh Kumar, Linaro \newline
-> > +Vitaly Mireyno, Marvell \newline
-> > +Xuan Zhuo, Alibaba \newline
-> > +Yadong Qi, Intel \newline
-> > +Yoni Bettan, Red Hat \newline
-> > +Yuri Benditovich, Red Hat / Daynix \newline
-> > +
-> > +The following non-members have provided valuable feedback on this
-> > +specification and are gratefully acknowledged:
-> > +
-> > +\subsection*{Reviewers}
-> > +Christophe de Dinechin, Red Hat \newline
-> > +Gil Savir, Intel \newline
-> > +Ruchika Gupta, Linaro \newline
-> > +Arnd Bergmann, Individual \newline
-> > +Bing Zhu, Intel \newline
-> > +Eduardo Habkost, Red Hat \newline
-> > +Eric Auger, Red Hat \newline
-> > +Jason Wang, Red Hat \newline
-> > +Jens Freimann, Red Hat \newline
-> > +Kevin Tian, Intel \newline
-> > +Linus Walleij, Linaro \newline
-> > +Matti M=F6ll, OpenSynergy \newline
-> > +Tomas Winkler, Intel \newline
-> > +Yang Huang, Intel \newline
-> > +
-> > +
-> > +The following individuals have participated in the creation of
-> > +previous versions of this specification and are gratefully acknowledge=
-d:
-> > +
-> >  \subsection*{Participants}
-> >  Allen Chia, Oracle	\newline
-> >  Amit Shah,	Red Hat	\newline
-> > @@ -59,7 +131,8 @@ \subsection*{Participants}
-> >  Wei Wang, Intel	\newline
-> >  Xin Zeng, Intel	\newline
-> > =20
-> > -The following non-members have provided valuable feedback on this
-> > +The following non-members have provided valuable feedback on
-> > +previous versions of this
-> >  specification and are gratefully acknowledged:
-> > =20
-> >  \subsection*{Reviewers}
-> > --=20
-> > MST
-> >
-> >
-> > ---------------------------------------------------------------------
-> > To unsubscribe from this mail list, you must leave the OASIS TC that=20
-> > generates this mail.  Follow this link to all your TCs in OASIS at:
-> > https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php =
+> On 6/1/2022 1:06 PM, Johannes Berg wrote:
+>> Hi,
+>> Not sure if there was anything you wanted me to comment on, but
+>> since
+>> I'm "the wifi guy" ... :)
+>>=20
+>>>> mac80211 wlan / 10
+>> FWIW, even though I'm the mac80211 maintainer, I'm not aware of a
+>> specification or implementation of this ... I don't know what this is at
+>> all.
+>>=20
+>>>> mac80211 hwsim wireless simulation device / 29
+>> This I implemented (both a driver in mac80211-hwsim in the kernel,
+>> as
+>> well as a device in wmediumd), but I wouldn't really necessarily
+>> recommend using it for anything but testing.
 
+I assume the use-case for this is something like a virtualised Android
+OS. For cloud native testing I guess a simulation device provides enough of
+what you need to exercise the guests network stack. However for real
+deployments you need something to allow selection of networks and
+reporting of network quality.
+
+I'm not super familiar with the wifi stack but is this all usually
+handled in one place or do multiple userspace daemons interrogate the
+kernel APIs for this information?
+
+If it all comes through one place perhaps it's enough for it to be given
+a pipe to the host to make those queries - effectively creating a proxy
+to the real host kernel interface?
+
+>>> I am not sure if this related but virtio-ethernet keeps coming to us as
+>>> requirement, I am not sure about the what is the support available in
+>>> the various projects including Xen. This is a non-Mobile requirement
+>>> particularly from the IOT or Auto segments. It will be nice to do adb
+>>> over ethernet in the guest VM from the host shell.
+>> For ethernet you have normal virtio-net.
+>
+> Thanks. Virtio-net is available, but I think e2e usecase w/ Type-1
+> Hypervisor is what I am looking for. I believe CrosVM also supports
+> Virtio-net but I am not sure if it works w/ Xen or not.
+
+In normal Xen you would have a Dom0 with a traditional kernel driver to
+service the backend. In a more modular setup you might want to have a
+driver domain that combines the backend with the real HW driver running
+as a unikernel?
+
+>
+> ---Trilok Soni
+
+
+--=20
+Alex Benn=C3=A9e
+
+This publicly archived list offers a means to provide input to the=0D
+OASIS Virtual I/O Device (VIRTIO) TC.=0D
+=0D
+In order to verify user consent to the Feedback License terms and=0D
+to minimize spam in the list archive, subscription is required=0D
+before posting.=0D
+=0D
+Subscribe: virtio-comment-subscribe@lists.oasis-open.org=0D
+Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org=0D
+List help: virtio-comment-help@lists.oasis-open.org=0D
+List archive: https://lists.oasis-open.org/archives/virtio-comment/=0D
+Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf=
+=0D
+List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lis=
+ts=0D
+Committee: https://www.oasis-open.org/committees/virtio/=0D
+Join OASIS: https://www.oasis-open.org/join/
 
