@@ -1,128 +1,186 @@
-Return-Path: <virtio-dev-return-9633-cohuck=redhat.com@lists.oasis-open.org>
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 6CC21986315
-	for <virtio-dev@lists.oasis-open.org>; Sun, 26 Jun 2022 06:43:35 +0000 (UTC)
-Date: Sun, 26 Jun 2022 02:43:27 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20220626022121-mutt-send-email-mst@kernel.org>
-References: <bcfa29cc-72bc-a2ef-0f7b-a882cada66b0@demindiro.com>
- <d6a014d1-e56e-6631-e0cd-cf51c1865a67@demindiro.com>
+Return-Path: <xuanzhuo@linux.alibaba.com>
+From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Subject: [PATCH v4] virtio_net: support split header
+Date: Fri, 17 Jun 2022 15:16:01 +0800
+Message-Id: <20220617071601.42447-1-xuanzhuo@linux.alibaba.com>
 MIME-Version: 1.0
-In-Reply-To: <d6a014d1-e56e-6631-e0cd-cf51c1865a67@demindiro.com>
-Subject: Re: [virtio-dev] virtio-gpu: Clarification regarding
- VIRTIO_GPU_CMD_TRANSFER_TO_HOST_2D
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-To: David Hoppenbrouwers <virtio-oasis@demindiro.com>
-Cc: virtio-dev@lists.oasis-open.org, Gerd Hoffmann <kraxel@redhat.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="US-ASCII"; x-default=true
+To: cohuck@redhat.com, kangjie.xu@linux.alibaba.com, virtio-dev@lists.oasis-open.org
+Cc: jasowang@redhat.com, "Michael S. Tsirkin" <mst@redhat.com>, hengqi@linux.alibaba.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Sat, Jun 25, 2022 at 03:45:46PM +0200, David Hoppenbrouwers wrote:
-> Hello,
-> 
-> I believe there is a bug in QEMU's implementation of
-> VIRTIO_GPU_CMD_TRANSFER_TO_HOST_2D. However it is not clear to me what
-> the correct behaviour should be.
-> 
-> The specification says the driver must "allocate a framebuffer from
-> guest ram, and attach it as backing storage to the resource just
-> created". To me this implies that the size of the backing storage must
-> match the size of the resource.
-> 
-> Consequently I intuitively expect that to update a rectangle R in the
-> resource the same rectangle must be updated in the backing store, i.e:
-> 
->      +--------------------+    +--------------------+
->      |                    |    |                    |
->      |        Host        |    |       Backing      |
->      |      Resource      |    |       Storage      |
->      |   +-----+          |    |   +-----+          |
->      |   |     |          |    |   |     |          |
->      |   |  R  |          |    |   |  R  |          |
->      |   |     |          |    |   |     |          |
->      |   +-----+          |    |   +-----+          |
->      +--------------------+    +--------------------+
-> 
-> However, QEMU actually starts drawing from the upper-left corner of the
-> backing storage:
-> 
->      +--------------------+    +-----+--------------+
->      |                    |    |     |              |
->      |        Host        |    |  R  | Backing      |
->      |      Resource      |    |     | Storage      |
->      |   +-----+          |    +-----+              |
->      |   |     |          |    |                    |
->      |   |  R  |          |    |                    |
->      |   |     |          |    |                    |
->      |   +-----+          |    |                    |
->      +--------------------+    +--------------------+
-> 
-> Reading the specification again I realized it does not explicitly
-> mandate that the size of the backing storage must match the size of the
-> resource. But if that were the case I would expect QEMU to behave like this:
-> 
->      +--------------------+    +--------------------+
->      |                    |    |      R     +-------+
->      |        Host        |    +------------+       |
->      |      Resource      |    |                    |
->      |   +-----+          |    |       Backing      |
->      |   |     |          |    |       Storage      |
->      |   |  R  |          |    |                    |
->      |   |     |          |    |                    |
->      |   +-----+          |    |                    |
->      +--------------------+    +--------------------+
-> 
-> The relevant code in QEMU is in virtio_gpu_transfer_to_host_2d:
-> 
->      format = pixman_image_get_format(res->image);
->      bpp = DIV_ROUND_UP(PIXMAN_FORMAT_BPP(format), 8);
->      stride = pixman_image_get_stride(res->image);
-> 
->      if (t2d.offset || t2d.r.x || t2d.r.y ||
->          t2d.r.width != pixman_image_get_width(res->image)) {
->          void *img_data = pixman_image_get_data(res->image);
->          for (h = 0; h < t2d.r.height; h++) {
->              src_offset = t2d.offset + stride * h;
->              dst_offset = (t2d.r.y + h) * stride + (t2d.r.x * bpp);
-> 
->              iov_to_buf(res->iov, res->iov_cnt, src_offset,
->                         (uint8_t *)img_data
->                         + dst_offset, t2d.r.width * bpp);
-> 
-> I would expect src_offset to either be
-> 
->      src_offset = dst_offset;
-> 
-> if the backing storage's size is supposed to match the resource's size.
-> If not, I'd expect src_offset to be
-> 
->      src_offset = t2d.offset + t2d.r.width * h;
-> 
-> 
-> My question boils down to:
-> 
-> - Is QEMU's implementation correct?
->    - If yes, what is the motivation behind it? Especially, what is the
-> purpose of the explicit offset?
->    - If not, what is the expected behaviour?
-> 
-> 
-> With kind regards,
-> David Hoppenbrouwers
+The purpose of this feature is to split the header and the payload of
+the packet.
 
-+cc Gerd.
+|                    receive buffer                                    |
+|                       0th descriptor             | 1th descriptor    |
+| virtnet hdr | mac | ip hdr | tcp hdr|<-- hold -->|   payload         |
 
-> ---------------------------------------------------------------------
-> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+We can use a buffer plus a separate page when allocating the receive
+buffer. In this way, we can ensure that all payloads can be
+independently in a page, which is very beneficial for the zerocopy
+implemented by the upper layer.
 
+Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Reviewed-by: Heng Qi <hengqi@linux.alibaba.com>
+Reviewed-by: Kangjie Xu <kangjie.xu@linux.alibaba.com>
+---
+v4:
+    1. fix typo @Cornelia Huck @Jason Wang
+    2. do not split header for IP fragmentation packet. @Jason Wang
 
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+v3:
+    1. Fix some syntax issues
+    2. Fix some terminology issues
+    3. It is not unified with ip alignment, so ip alignment is not included
+    4. Make it clear that the device must support four types, in the case of
+    successful negotiation.
+
+ conformance.tex |  2 ++
+ content.tex     | 88 +++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 90 insertions(+)
+
+diff --git a/conformance.tex b/conformance.tex
+index 663e7c3..6f561fb 100644
+--- a/conformance.tex
++++ b/conformance.tex
+@@ -149,6 +149,7 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
+ \item \ref{drivernormative:Device Types / Network Device / Device Operation / Control Virtqueue / Automatic receive steering in multiqueue mode}
+ \item \ref{drivernormative:Device Types / Network Device / Device Operation / Control Virtqueue / Offloads State Configuration / Setting Offloads State}
+ \item \ref{drivernormative:Device Types / Network Device / Device Operation / Control Virtqueue / Receive-side scaling (RSS) }
++\item \ref{drivernormative:Device Types / Network Device / Device Operation / Control Virtqueue / Split Header}
+ \end{itemize}
+
+ \conformance{\subsection}{Block Driver Conformance}\label{sec:Conformance / Driver Conformance / Block Driver Conformance}
+@@ -411,6 +412,7 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
+ \item \ref{devicenormative:Device Types / Network Device / Device Operation / Control Virtqueue / Gratuitous Packet Sending}
+ \item \ref{devicenormative:Device Types / Network Device / Device Operation / Control Virtqueue / Automatic receive steering in multiqueue mode}
+ \item \ref{devicenormative:Device Types / Network Device / Device Operation / Control Virtqueue / Receive-side scaling (RSS) / RSS processing}
++\item \ref{devicenormative:Device Types / Network Device / Device Operation / Control Virtqueue / Split Header}
+ \end{itemize}
+
+ \conformance{\subsection}{Block Device Conformance}\label{sec:Conformance / Device Conformance / Block Device Conformance}
+diff --git a/content.tex b/content.tex
+index 7508dd1..78e0ce8 100644
+--- a/content.tex
++++ b/content.tex
+@@ -3084,6 +3084,9 @@ \subsection{Feature bits}\label{sec:Device Types / Network Device / Feature bits
+ \item[VIRTIO_NET_F_CTRL_MAC_ADDR(23)] Set MAC address through control
+     channel.
+
++\item[VIRTIO_NET_F_SPLIT_HEADER (55)] Device supports splitting the protocol
++    header and the payload.
++
+ \item[VIRTIO_NET_F_HOST_USO (56)] Device can receive USO packets. Unlike UFO
+  (fragmenting the packet) the USO splits large UDP packet
+  to several segments when each of these smaller packets has UDP header.
+@@ -3131,6 +3134,7 @@ \subsubsection{Feature bit requirements}\label{sec:Device Types / Network Device
+ \item[VIRTIO_NET_F_CTRL_MAC_ADDR] Requires VIRTIO_NET_F_CTRL_VQ.
+ \item[VIRTIO_NET_F_RSC_EXT] Requires VIRTIO_NET_F_HOST_TSO4 or VIRTIO_NET_F_HOST_TSO6.
+ \item[VIRTIO_NET_F_RSS] Requires VIRTIO_NET_F_CTRL_VQ.
++\item[VIRTIO_NET_F_SPLIT_HEADER] Requires VIRTIO_NET_F_CTRL_VQ.
+ \end{description}
+
+ \subsubsection{Legacy Interface: Feature bits}\label{sec:Device Types / Network Device / Feature bits / Legacy Interface: Feature bits}
+@@ -3362,6 +3366,7 @@ \subsection{Device Operation}\label{sec:Device Types / Network Device / Device O
+ #define VIRTIO_NET_HDR_F_NEEDS_CSUM    1
+ #define VIRTIO_NET_HDR_F_DATA_VALID    2
+ #define VIRTIO_NET_HDR_F_RSC_INFO      4
++#define VIRTIO_NET_HDR_F_SPLIT_HEADER  8
+         u8 flags;
+ #define VIRTIO_NET_HDR_GSO_NONE        0
+ #define VIRTIO_NET_HDR_GSO_TCPV4       1
+@@ -4463,6 +4468,89 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
+ according to the native endian of the guest rather than
+ (necessarily when not using the legacy interface) little-endian.
+
++\paragraph{Split Header}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Split Header}
++
++If the VIRTIO_NET_F_SPLIT_HEADER feature is negotiated,
++the device supports splitting the protocol header and the payload.
++The protocol header and the payload will be separated into different
++descriptors.
++
++\subparagraph{Split Header}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Split Header / Setting Split Header}
++
++To configure the split header, the following layout structure and definitions
++are used:
++
++\begin{lstlisting}
++struct virtio_net_split_header_config {
++#define VIRTIO_NET_SPLIT_HEADER_TYPE_TCP4     (1 << 0)
++#define VIRTIO_NET_SPLIT_HEADER_TYPE_TCP6     (1 << 1)
++#define VIRTIO_NET_SPLIT_HEADER_TYPE_UDP4     (1 << 2)
++#define VIRTIO_NET_SPLIT_HEADER_TYPE_UDP6     (1 << 3)
++    le64 type;
++};
++
++#define VIRTIO_NET_CTRL_SPLIT_HEADER       6
++ #define VIRTIO_NET_CTRL_SPLIT_HEADER_SET   0
++\end{lstlisting}
++
++The class VIRTIO_NET_CTRL_SPLIT_HEADER has one command:
++VIRTIO_NET_CTRL_SPLIT_HEADER_SET applies the new split header configuration.
++
++The driver can enable or disable split header for different protocols by
++setting or clearing corresponding bits in \field{type}.
++
++\begin{itemize}
++    \item VIRTIO_NET_SPLIT_HEADER_TYPE_TCP4: split after ipv4 tcp header
++    \item VIRTIO_NET_SPLIT_HEADER_TYPE_TCP6: split after ipv6 tcp header
++    \item VIRTIO_NET_SPLIT_HEADER_TYPE_UDP4: split after ipv4 udp header
++    \item VIRTIO_NET_SPLIT_HEADER_TYPE_UDP6: split after ipv6 udp header
++\end{itemize}
++
++\devicenormative{\subparagraph}{Setting Split Header}{Device Types / Network Device / Device Operation / Control Virtqueue / Split Header}
++
++A device MUST initialize \field{type} to 0, and MUST set it to 0
++upon device reset.
++
++If VIRTIO_NET_F_SPLIT_HEADER is negotiated, the device MUST support
++VIRTIO_NET_SPLIT_HEADER_TYPE_TCP4, VIRTIO_NET_SPLIT_HEADER_TYPE_TCP6,
++VIRTIO_NET_SPLIT_HEADER_TYPE_UDP4, VIRTIO_NET_SPLIT_HEADER_TYPE_UDP6.
++
++A device MUST NOT split the header in the following cases:
++\begin{itemize}
++    \item the device does not recognize the protocol of the packet.
++    \item the packet is an IP fragmentation.
++    \item \field{type} does not include the protocol of the packet.
++    \item the buffer consists of only one descriptor.
++    \item the total size of the virtio net header and the protocol header exceeds
++        the size of the first descriptor.
++    \item when VIRTIO_NET_F_MRG_RXBUF is not negotiated and the size of the
++        payload exceeds the size of the descriptor chain starting from the 2nd
++        descriptor.
++\end{itemize}
++
++If the header is split by the device, the \field{flags} of structure
++virtio_net_hdr MUST contain VIRTIO_NET_HDR_F_SPLIT_HEADER. The protocol header
++MUST be on the buffer specified by the first descriptor, following the virtio
++net header. The payload MUST start from the second descriptor. The device MUST
++set \field{hdr_len} of structure virtio_net_hdr to the length of the protocol
++header.
++
++If the header is split by the device, VIRTIO_NET_F_MRG_RXBUF is negotiated,
++and the received packet is spread over multiple buffers, when the device uses a
++buffer other than the first, if the buffer consists of multiple descriptors, the
++device MUST skip the first descriptor of the buffer, because the first
++descriptor is used to carry the protocol header.
++
++\drivernormative{\subparagraph}{Setting Split Header}{Device Types / Network Device / Device Operation / Control Virtqueue / Split Header}
++
++If the VIRTIO_NET_HDR_F_SPLIT_HEADER bit in \field{flags} is set, the driver
++MUST treat the contents of \field{hdr_len} as the length of the protocol header
++inside the first descriptor.
++
++If the split header is enabled, the buffers submitted to receiveq by the
++driver SHOULD be composed of at least two descriptors. The buffer specified by
++the first descriptor SHOULD be able to accommodate the virtio net header and the
++protocol header.
+
+ \subsubsection{Legacy Interface: Framing Requirements}\label{sec:Device
+ Types / Network Device / Legacy Interface: Framing Requirements}
+--
+2.31.0
 
