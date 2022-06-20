@@ -1,136 +1,129 @@
-Return-Path: <jasowang@redhat.com>
+Return-Path: <mst@redhat.com>
+Date: Mon, 20 Jun 2022 18:26:01 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Subject: Re: [virtio-comment] Re: [PATCH v5 2/7] Introduce admin command set
+Message-ID: <20220620170913-mutt-send-email-mst@kernel.org>
+References: <20220426225824.5918-1-mgurtovoy@nvidia.com>
+ <20220426225824.5918-3-mgurtovoy@nvidia.com>
+ <20220515111056-mutt-send-email-mst@kernel.org>
+ <e6446d40-9144-b615-b7ea-e807600b6aab@nvidia.com>
+ <87leuzeypw.fsf@redhat.com>
+ <1a323f19-6651-c2e1-73c7-2e8b5213a24d@nvidia.com>
 MIME-Version: 1.0
-References: <PH0PR12MB5481D968013490C396CD2944DCDC9@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20220620055014-mutt-send-email-mst@kernel.org> <PH0PR12MB5481BB1BE6102DC78E555DEDDCB09@PH0PR12MB5481.namprd12.prod.outlook.com>
- <CACGkMEsCrjLWri6TZ3yjf4qTWeXn-Bma-RY1HZFLbVS4ApyuVQ@mail.gmail.com>
- <PH0PR12MB5481E6E87639E07C885666F6DCB59@PH0PR12MB5481.namprd12.prod.outlook.com>
- <CACGkMEuHO5oBgFAkPnOZ8b3z+H5E2xXgM6FqbZdUuZB-2wX0UQ@mail.gmail.com>
- <PH0PR12MB54812D95E7E8D828831BA268DCB59@PH0PR12MB5481.namprd12.prod.outlook.com>
- <CACGkMEuF8Eshy8vKfpX_-P66wXGiBowRTwurUMUq9K0FxbfKBA@mail.gmail.com>
- <20220628095247-mutt-send-email-mst@kernel.org> <CACGkMEtrcOhvO=bgdkszCb+Pc8aydG4Wh4CZhPTGVvvywoV2kQ@mail.gmail.com>
- <20220629045321-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20220629045321-mutt-send-email-mst@kernel.org>
-From: Jason Wang <jasowang@redhat.com>
-Date: Thu, 30 Jun 2022 09:53:08 +0800
-Message-ID: <CACGkMEu7xrsY0u+ptDNLmomOEq0Rh-cWBADHK5y8_wccQ4pPUg@mail.gmail.com>
-Subject: Re: [virtio-comment] RE: [PATCH v5 2/7] Introduce admin command set
-Content-Type: text/plain; charset="UTF-8"
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Parav Pandit <parav@nvidia.com>, Max Gurtovoy <mgurtovoy@nvidia.com>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "cohuck@redhat.com" <cohuck@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Oren Duer <oren@nvidia.com>, Shahaf Shuler <shahafs@nvidia.com>, "aadam@redhat.com" <aadam@redhat.com>, "virtio@lists.oasis-open.org" <virtio@lists.oasis-open.org>
+In-Reply-To: <1a323f19-6651-c2e1-73c7-2e8b5213a24d@nvidia.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+To: Max Gurtovoy <mgurtovoy@nvidia.com>
+Cc: Cornelia Huck <cohuck@redhat.com>, jasowang@redhat.com, virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, oren@nvidia.com, parav@nvidia.com, shahafs@nvidia.com, aadam@redhat.com, virtio@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, Jun 29, 2022 at 5:02 PM Michael S. Tsirkin <mst@redhat.com> wrote:
->
-> On Wed, Jun 29, 2022 at 04:43:18PM +0800, Jason Wang wrote:
-> > On Tue, Jun 28, 2022 at 10:24 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > >
-> > > On Thu, Jun 23, 2022 at 11:34:42AM +0800, Jason Wang wrote:
-> > > > On Thu, Jun 23, 2022 at 10:57 AM Parav Pandit <parav@nvidia.com> wrote:
-> > > > >
-> > > > >
-> > > > > > From: Jason Wang <jasowang@redhat.com>
-> > > > > > Sent: Wednesday, June 22, 2022 10:42 PM
-> > > > >
-> > > > > [..]
-> > > > > > > Are you suggesting only feature bits through register-based transport or all
-> > > > > > commands via register-based transport?
-> > > > > >
-> > > > > > For feature bits, if we don't have admin virtqueue as transport,
-> > > > > Right.
-> > > > > Management tasks (features) done via AQ are negotiated via the AQ (regardless of device type being management dev or managed dev).
-> > > > > It is not replacing usual feature bits negotiation that has strong relationships with device initialization sequence.
-> > > >
-> > > > Just to clarify,
-> > > >
-> > > > E.g if the admin virtqueue is implemented in PF. I suggest using the
-> > > > existing PCI transport based feature negotiation since:
-> > > >
-> > > > 1) we have selector, so we don't need any new registered and we don't
-> > > > need worry about the scalability
-> > >
-> > >
-> > > I think this is a point that needs addressing.
-> > >
-> > > To be more specific. The concern raised was that feature bits are memory
-> > > mapped. Accessing them on PCI requires an MMIO write. According to the
-> > > PCI spec it is not legal for a device to defer accepting a write until
-> > > another write is accepted (since that leads to deadlocks).
-> > > Thus any info programmed using MMIO writes has to reside in
-> > > on-card memory and can not be offloaded to system RAM.
-> >
-> > Probably, but it can be offloaded via other ways. We had already used
-> > 2 for e.g feature_sel, it works for the past 5+ years, I guess having
-> > 4 more should work for the future 10 years. We only have this "issue"
-> > for some specific hardware (e.g we used to have similar discussion
-> > when somebody posted pci endpoint device support for virtio-net).
-> >
-> > Note that this is only an "issue" for the management device (PF),
->
-> The claim was that for nesting purposes we might want to add
-> admin queue to the VFs as well.
+On Wed, May 18, 2022 at 05:16:13PM +0300, Max Gurtovoy wrote:
+> 
+> On 5/18/2022 4:50 PM, Cornelia Huck wrote:
+> > On Wed, May 18 2022, Max Gurtovoy <mgurtovoy@nvidia.com> wrote:
+> > 
+> > > On 5/15/2022 6:23 PM, Michael S. Tsirkin wrote:
+> > > > On Wed, Apr 27, 2022 at 01:58:19AM +0300, Max Gurtovoy wrote:
+> > > > > This command set is used for essential administrative and management
+> > > > > operations.
+> > > > > 
+> > > > > Admin commands should be submitted to a well defined management
+> > > > > interface.
+> > > > > 
+> > > > > Reviewed-by: Parav Pandit <parav@nvidia.com>
+> > > > > Signed-off-by: Max Gurtovoy <mgurtovoy@nvidia.com>
+> > > > > ---
+> > > > >    admin.tex   | 123 ++++++++++++++++++++++++++++++++++++++++++++++++++++
+> > > > >    content.tex |   2 +
+> > > > >    2 files changed, 125 insertions(+)
+> > > > >    create mode 100644 admin.tex
+> > > > > 
+> > > > > +The VIRTIO_ADMIN_DEVICE_CAPS_ACCEPT command is used by the driver to acknowledge those admin capabilities it understands and wishes to use.
+> > > > ok so we have a protocol here, kind of like feature negotiation. Please write its description.
+> > > > e.g. is it ok to change accepted caps? when? can device change its caps
+> > > > etc etc etc.
+> > > I don't understand what does this mean to change a cap ?
+> > > 
+> > > Device can offer a cap and driver can accept it if it wishes to use it.
+> > > 
+> > > That is it.
+> > > 
+> > > I added this mechanism just for your request.
+> > > 
+> > > I never saw a device that asks acceptance from driver but I did my best
+> > > to fulfill your request.
+> > > 
+> > > > Avoiding this kind of spec work is exactly why me and jason keep telling
+> > > > you to consider just using features instead. Add a 64 bit admin features
+> > > > field to the PCI transport and be done with it. CCW and MMIO already
+> > > > have feature selector so it's trivial to add feature bits.
+> > > It's not scalable for admin mechanism and I don't want to perform 100
+> > > write/read from configuration space instead of doing all in 1 admin command.
+> > Why use the config space for that; just use feature bits, there are
+> > enough of those, and we already have a defined protocol.
+> 
+> can you please propose something concrete ?
+> 
+> that will be scalable and will not add complexity to the feature negotiation
+> mechanism we have today ?
 
-So at least from the current usage (MSI-X allocation), I don't see why
-an admin queue is needed for VF.
+I think you just say: "feature bits 64 to 127 are reserved for management
+purposes" or something to this end. Then each command (or a group if
+they are related) maps to a feature bit.
 
-And in the case of nesting, it would be much easier to use MMIO
-registers. Qemu is free to map it to any function of the device.
+There's a cost in that the feature bits map to driver feature bits
+which are writeable on device memory. But the cost scales well as
+it's per group and not per device in a group.
 
->
-> > having several more bytes of register just for the PF doesn't seem
-> > expensive. We know we can use admin virtqueue as a transport for
-> > managed devices.
->
-> Did you post a prototype spec patch of this at some point? I do not recall.
 
-I did it here.
+> > 
+> > > > 
+> > > > > +The \field{command} is set to VIRTIO_ADMIN_DEVICE_CAPS_ACCEPT by the driver.
+> > > > > +
+> > > > > +The command specific data set by the driver is of form:
+> > > > > +\begin{lstlisting}
+> > > > > +struct virtio_admin_device_caps_accept_data {
+> > > > > +       /* Indicates which of the below fields were set
+> > > > > +        * (1 means that field is set):
+> > > > yes we all know that 1 means set.
+> > > > 
+> > > > do you really mean field is valid maybe?
+> > > yes valid == set.
+> > > > 
+> > > > > +        * Bit 0 - driver_admin_caps
+> > > > > +        * Bits 1 - 63 - reserved for future fields
+> > > > > +        */
+> > > > > +       le64 attrs_mask;
+> > > > looks like going overboard. just send 64 caps bits and be done with it.
+> > > > and rename accept_data to accept_caps.
+> > > this is the command specific data.
+> > > > > +       /* This field indicates which of the below admin
+> > > > > +        * capabilities are supported by the driver:
+> > > > > +        * Bits 0 - 63 - reserved for future capabilities.
+> > > > > +        */
+> > > > > +       le64 driver_admin_caps;
+> > > > > +       u8 reserved[112];
+> > > > I just noticed this. Please do not add this huge amount of padding
+> > > > everywhere. instead, explain that device must be ready to accept
+> > > > a smaller or larger buffer depending on feature bits.
+> > > It's not huge. It's 128B command data.
+> > > 
+> > > We will be sorry in the future for not doing extendable API.
+> > > 
+> > > I prefer keep it 128B unless there is a concrete reason for not doing so.
+> > So just use a variable length structure, that should be extendable for
+> > all future use cases.
+> 
+> I don't know how to develop compatible HW that use variable length
+> structure.
 
-https://lists.oasis-open.org/archives/virtio-comment/202108/msg00025.html
+There's a length field accompanying each descriptor.
 
-Thanks
+> And why ? without any good reason.
 
->
-> > >
-> > > After thinking about these issues I have an idea:
-> > >
-> > > At the moment VQs are already never programmed before FEATURES_OK,
-> > > features are never programmed after FEATURES_OK.
-> > > This implies that device can actually store features in
-> > > VQ state registers temporarily until FEATURES_OK.
-> > > This is more than 24 bytes of memory per VQ, with at least
-> > > one data VQ and one admin VQ, this will be sufficient for a long time.
-> >
-> > Something like
-> >
-> > struct virtio_pci_common_cfg {
-> >       union {
-> >             virtqueue_state;
-> >              features;
-> >        }
-> > }
-> >
-> > ?
->
->
-> Yea! Except in verilog.
->
-> > >
-> > > Thus, all that we need to do is prohibit programming VQs
-> > > before FEATURES_OK more strongly.
-> > > I can work on that if the idea is acceptable to others.
-> >
-> > Note sure, it looks to me if such kind of device is popular, it might
-> > be better to have new PCI transport for non-register behaviour
-> > devices.
-> >
-> > Thanks
-> >
-> > >
-> > >
-> > >
-> >
-> > >
-> > > --
-> > > MST
-> > >
->
+To save memory space if we ever map the commands to memory: it's a
+limited resource, often limited to 32 bit, but sometimes even to 16 bit.
+
+-- 
+MST
 
