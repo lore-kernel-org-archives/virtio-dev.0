@@ -1,31 +1,22 @@
-Return-Path: <virtio-dev-return-9623-cohuck=redhat.com@lists.oasis-open.org>
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 7794C986519
-	for <virtio-dev@lists.oasis-open.org>; Wed, 22 Jun 2022 06:25:39 +0000 (UTC)
-Message-ID: <1655878285.0271184-1-xuanzhuo@linux.alibaba.com>
-Date: Wed, 22 Jun 2022 14:11:25 +0800
-From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Return-Path: <jasowang@redhat.com>
+MIME-Version: 1.0
 References: <20220617071601.42447-1-xuanzhuo@linux.alibaba.com>
- <20220617053424-mutt-send-email-mst@kernel.org>
- <1655694827.4273274-1-xuanzhuo@linux.alibaba.com>
- <20220621062752-mutt-send-email-mst@kernel.org>
- <aaaf8a80-f30b-9e36-cc83-809d992c93cb@redhat.com>
+ <20220617053424-mutt-send-email-mst@kernel.org> <1655694827.4273274-1-xuanzhuo@linux.alibaba.com>
+ <20220621062752-mutt-send-email-mst@kernel.org> <aaaf8a80-f30b-9e36-cc83-809d992c93cb@redhat.com>
  <20220622020715-mutt-send-email-mst@kernel.org>
 In-Reply-To: <20220622020715-mutt-send-email-mst@kernel.org>
-Subject: [virtio-dev] Re: [PATCH v4] virtio_net: support split header
+From: Jason Wang <jasowang@redhat.com>
+Date: Thu, 23 Jun 2022 11:39:45 +0800
+Message-ID: <CACGkMEvvf=Aug_8CQrYwVrvH2BzFVATe=tvk=rzE-jowE_G+eg@mail.gmail.com>
+Subject: Re: [PATCH v4] virtio_net: support split header
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: cohuck@redhat.com, kangjie.xu@linux.alibaba.com, virtio-dev@lists.oasis-open.org, hengqi@linux.alibaba.com, Jason Wang <jasowang@redhat.com>
+Cc: Xuan Zhuo <xuanzhuo@linux.alibaba.com>, Cornelia Huck <cohuck@redhat.com>, kangjie.xu@linux.alibaba.com, Virtio-Dev <virtio-dev@lists.oasis-open.org>, hengqi@linux.alibaba.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, 22 Jun 2022 02:08:19 -0400, "Michael S. Tsirkin" <mst@redhat.com> w=
-rote:
+On Wed, Jun 22, 2022 at 2:08 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+>
 > On Wed, Jun 22, 2022 at 11:52:30AM +0800, Jason Wang wrote:
 > >
 > > =E5=9C=A8 2022/6/21 18:54, Michael S. Tsirkin =E5=86=99=E9=81=93:
@@ -72,13 +63,12 @@ he
 > The current proposal seems to rely on descriptor framing,
 > this is using an offset instead.
 
-Yes, we can use offset instead, and don't use descriptor in spec. But in
-implementation, we must use multiple descriptors to combine hdr buf and pay=
-load
-buf(page).
+Yes, but framing is just an implicit specification of the offset (the
+length of the first descriptor).
 
-Thanks.
+Thanks
 
+>
 >
 > >
 > > > and if header is > offset then flag in packet will simply not be set.
@@ -197,7 +187,7 @@ protocols in
 > > > > > VIRTIO_NET_F_SPLIT_UDP6
 > > > > >
 > > > > > Accordingly below we say everywhere:
-> > > > > =09if one of
+> > > > >         if one of
 > > > > > VIRTIO_NET_F_SPLIT_TCP4,VIRTIO_NET_F_SPLIT_TCP6,VIRTIO_NET_F_SPLI=
 T_UDP4,VIRTIO_NET_F_SPLIT_UDP6
 > > > > >
@@ -489,8 +479,4 @@ ts}
 > > > > > > --
 > > > > > > 2.31.0
 >
-
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
