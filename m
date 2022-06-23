@@ -1,88 +1,51 @@
-Return-Path: <jasowang@redhat.com>
+Return-Path: <parav@nvidia.com>
+From: Parav Pandit <parav@nvidia.com>
+Subject: RE: [virtio-comment] RE: [PATCH v5 2/7] Introduce admin command set
+Date: Thu, 23 Jun 2022 02:07:21 +0000
+Message-ID: <PH0PR12MB5481E6E87639E07C885666F6DCB59@PH0PR12MB5481.namprd12.prod.outlook.com>
+References: <20220426225824.5918-1-mgurtovoy@nvidia.com>
+ <20220426225824.5918-3-mgurtovoy@nvidia.com>
+ <20220515111056-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB5481DD681A0172899E09BC6CDCCF9@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20220517074130-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB5481D968013490C396CD2944DCDC9@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20220620055014-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB5481BB1BE6102DC78E555DEDDCB09@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <CACGkMEsCrjLWri6TZ3yjf4qTWeXn-Bma-RY1HZFLbVS4ApyuVQ@mail.gmail.com>
+In-Reply-To: <CACGkMEsCrjLWri6TZ3yjf4qTWeXn-Bma-RY1HZFLbVS4ApyuVQ@mail.gmail.com>
 MIME-Version: 1.0
-References: <20220426225824.5918-1-mgurtovoy@nvidia.com> <20220426225824.5918-3-mgurtovoy@nvidia.com>
- <20220515111056-mutt-send-email-mst@kernel.org> <PH0PR12MB5481DD681A0172899E09BC6CDCCF9@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20220517074130-mutt-send-email-mst@kernel.org> <PH0PR12MB5481D968013490C396CD2944DCDC9@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20220620055014-mutt-send-email-mst@kernel.org> <PH0PR12MB5481BB1BE6102DC78E555DEDDCB09@PH0PR12MB5481.namprd12.prod.outlook.com>
-In-Reply-To: <PH0PR12MB5481BB1BE6102DC78E555DEDDCB09@PH0PR12MB5481.namprd12.prod.outlook.com>
-From: Jason Wang <jasowang@redhat.com>
-Date: Thu, 23 Jun 2022 09:26:32 +0800
-Message-ID: <CACGkMEsCrjLWri6TZ3yjf4qTWeXn-Bma-RY1HZFLbVS4ApyuVQ@mail.gmail.com>
-Subject: Re: [virtio-comment] RE: [PATCH v5 2/7] Introduce admin command set
-Content-Type: text/plain; charset="UTF-8"
-To: Parav Pandit <parav@nvidia.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+To: Jason Wang <jasowang@redhat.com>
 Cc: "Michael S. Tsirkin" <mst@redhat.com>, Max Gurtovoy <mgurtovoy@nvidia.com>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "cohuck@redhat.com" <cohuck@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Oren Duer <oren@nvidia.com>, Shahaf Shuler <shahafs@nvidia.com>, "aadam@redhat.com" <aadam@redhat.com>, "virtio@lists.oasis-open.org" <virtio@lists.oasis-open.org>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Mon, Jun 20, 2022 at 7:06 PM Parav Pandit <parav@nvidia.com> wrote:
->
->
->
-> > From: Michael S. Tsirkin <mst@redhat.com>
-> > Sent: Monday, June 20, 2022 6:00 AM
-> >
-> > On Tue, May 31, 2022 at 08:39:24PM +0000, Parav Pandit wrote:
-> > > > And as I said, you will need much more spec work to reach the level
-> > > > to which features are specified - and note we are not yet happy with
-> > > > how features are
-> > > Can you be specific of the work that you are expecting in this v5 version?
-> >
-> > I proposed getting rid of attrs_mask/device_admin_caps and instead specify
-> > that e.g. feature bits 64 to 95 are reserved for management purposes.
-> > Maybe just add a 32 bit register, or maybe "extended features"
-> > with a selector and length like mmio and ccw already do, up to you.
-> > I think Cornelia likes this suggestion too.
-> >
-> > This would replace functionality of the
-> > VIRTIO_ADMIN_DEVICE_CAPS_IDENTIFY/VIRTIO_ADMIN_DEVICE_CAPS_AC
-> > CEPT
-> > commands and have the advantage of being generally well specified and
-> > understood.
-> >
-> > Is this acceptable? Or is there a reason the new commands are preferable?
->
-> We prefer the new commands for following reason.
->
-> 1. proposed new command doesn't demand exposing registers in the PCI memory mapped area
-> 2. Today AQ is perceived in to be PF, but it doesn't have to be. For next 10 years spec may evolve to have AQ for some other purpose on VFs/SFs.
-> Such devices scale at much higher magnitude than PFs.
-> And exposing memory mapped registers for rare functionality is the last thing to do in my mind.
-> 3. Placements of such features bits in an AQ gives device lot more flexibility on _how_ to implement them. Some in sw, fw, hw, memory die etc.
-> Placement of them in PCI register space reduces these options.
->
-> So exposing them something in PCI register space has to have strong technical reason than just simplicity of access.
-
-I think I know the advantages of admin virtqueue. But this part looks
-suspicious and actually the reverse,
-
-1) register based transport have been used for years, it's natural to
-add features based on the existing transport and what you suggest here
-limit the new features to be carried with those transports
-2) admin virtqueue is heavy weight in use cases like nesting, we need
-a simple interface
-3) admin virtqueue is not the universal transport for all cases, we've
-already had DMA/CMA based transports (e.g ccw and rproc)
-
-We'd better decouple features from the transport and allow it to be
-used by both admin virtqueue and other transports.
-
-Thanks
-
->
-> This publicly archived list offers a means to provide input to the
-> OASIS Virtual I/O Device (VIRTIO) TC.
->
-> In order to verify user consent to the Feedback License terms and
-> to minimize spam in the list archive, subscription is required
-> before posting.
->
-> Subscribe: virtio-comment-subscribe@lists.oasis-open.org
-> Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
-> List help: virtio-comment-help@lists.oasis-open.org
-> List archive: https://lists.oasis-open.org/archives/virtio-comment/
-> Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
-> List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
-> Committee: https://www.oasis-open.org/committees/virtio/
-> Join OASIS: https://www.oasis-open.org/join/
->
+DQoNCj4gRnJvbTogSmFzb24gV2FuZyA8amFzb3dhbmdAcmVkaGF0LmNvbT4NCj4gU2VudDogV2Vk
+bmVzZGF5LCBKdW5lIDIyLCAyMDIyIDk6MjcgUE0NCg0KPiA+IDEuIHByb3Bvc2VkIG5ldyBjb21t
+YW5kIGRvZXNuJ3QgZGVtYW5kIGV4cG9zaW5nIHJlZ2lzdGVycyBpbiB0aGUgUENJDQo+ID4gbWVt
+b3J5IG1hcHBlZCBhcmVhIDIuIFRvZGF5IEFRIGlzIHBlcmNlaXZlZCBpbiB0byBiZSBQRiwgYnV0
+IGl0IGRvZXNuJ3QNCj4gaGF2ZSB0byBiZS4gRm9yIG5leHQgMTAgeWVhcnMgc3BlYyBtYXkgZXZv
+bHZlIHRvIGhhdmUgQVEgZm9yIHNvbWUgb3RoZXINCj4gcHVycG9zZSBvbiBWRnMvU0ZzLg0KPiA+
+IFN1Y2ggZGV2aWNlcyBzY2FsZSBhdCBtdWNoIGhpZ2hlciBtYWduaXR1ZGUgdGhhbiBQRnMuDQo+
+ID4gQW5kIGV4cG9zaW5nIG1lbW9yeSBtYXBwZWQgcmVnaXN0ZXJzIGZvciByYXJlIGZ1bmN0aW9u
+YWxpdHkgaXMgdGhlIGxhc3QNCj4gdGhpbmcgdG8gZG8gaW4gbXkgbWluZC4NCj4gPiAzLiBQbGFj
+ZW1lbnRzIG9mIHN1Y2ggZmVhdHVyZXMgYml0cyBpbiBhbiBBUSBnaXZlcyBkZXZpY2UgbG90IG1v
+cmUgZmxleGliaWxpdHkNCj4gb24gX2hvd18gdG8gaW1wbGVtZW50IHRoZW0uIFNvbWUgaW4gc3cs
+IGZ3LCBodywgbWVtb3J5IGRpZSBldGMuDQo+ID4gUGxhY2VtZW50IG9mIHRoZW0gaW4gUENJIHJl
+Z2lzdGVyIHNwYWNlIHJlZHVjZXMgdGhlc2Ugb3B0aW9ucy4NCj4gPg0KPiA+IFNvIGV4cG9zaW5n
+IHRoZW0gc29tZXRoaW5nIGluIFBDSSByZWdpc3RlciBzcGFjZSBoYXMgdG8gaGF2ZSBzdHJvbmcN
+Cj4gdGVjaG5pY2FsIHJlYXNvbiB0aGFuIGp1c3Qgc2ltcGxpY2l0eSBvZiBhY2Nlc3MuDQo+IA0K
+PiBJIHRoaW5rIEkga25vdyB0aGUgYWR2YW50YWdlcyBvZiBhZG1pbiB2aXJ0cXVldWUuIEJ1dCB0
+aGlzIHBhcnQgbG9va3MNCj4gc3VzcGljaW91cyBhbmQgYWN0dWFsbHkgdGhlIHJldmVyc2UsDQo+
+IA0KPiAxKSByZWdpc3RlciBiYXNlZCB0cmFuc3BvcnQgaGF2ZSBiZWVuIHVzZWQgZm9yIHllYXJz
+LCBpdCdzIG5hdHVyYWwgdG8gYWRkDQo+IGZlYXR1cmVzIGJhc2VkIG9uIHRoZSBleGlzdGluZyB0
+cmFuc3BvcnQgYW5kIHdoYXQgeW91IHN1Z2dlc3QgaGVyZSBsaW1pdCB0aGUNCj4gbmV3IGZlYXR1
+cmVzIHRvIGJlIGNhcnJpZWQgd2l0aCB0aG9zZSB0cmFuc3BvcnRzDQo+IDIpIGFkbWluIHZpcnRx
+dWV1ZSBpcyBoZWF2eSB3ZWlnaHQgaW4gdXNlIGNhc2VzIGxpa2UgbmVzdGluZywgd2UgbmVlZCBh
+DQo+IHNpbXBsZSBpbnRlcmZhY2UNCj4gMykgYWRtaW4gdmlydHF1ZXVlIGlzIG5vdCB0aGUgdW5p
+dmVyc2FsIHRyYW5zcG9ydCBmb3IgYWxsIGNhc2VzLCB3ZSd2ZSBhbHJlYWR5DQo+IGhhZCBETUEv
+Q01BIGJhc2VkIHRyYW5zcG9ydHMgKGUuZyBjY3cgYW5kIHJwcm9jKQ0KPg0KQXJlIHlvdSBzdWdn
+ZXN0aW5nIG9ubHkgZmVhdHVyZSBiaXRzIHRocm91Z2ggcmVnaXN0ZXItYmFzZWQgdHJhbnNwb3J0
+IG9yIGFsbCBjb21tYW5kcyB2aWEgcmVnaXN0ZXItYmFzZWQgdHJhbnNwb3J0Pw0K
 
