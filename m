@@ -1,88 +1,77 @@
-Return-Path: <mst@redhat.com>
-Date: Wed, 6 Jul 2022 06:10:16 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: Re: [virtio-dev] RE: [PATCH v5 0/7] Introduce device group and
- device management
-Message-ID: <20220706060642-mutt-send-email-mst@kernel.org>
+Return-Path: <virtio-comment-return-3210-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-comment@lists.oasis-open.org>
+List-Post: <mailto:virtio-comment@lists.oasis-open.org>
+List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
+From: Parav Pandit <parav@nvidia.com>
+Date: Wed, 6 Jul 2022 10:46:58 +0000
+Message-ID: <PH0PR12MB54813572FAFC870217F187F6DC809@PH0PR12MB5481.namprd12.prod.outlook.com>
 References: <20220426225824.5918-1-mgurtovoy@nvidia.com>
  <20220705095514-mutt-send-email-mst@kernel.org>
  <PH0PR12MB5481D9416A601E6F2D4A32FFDC819@PH0PR12MB5481.namprd12.prod.outlook.com>
  <CACGkMEtxLP+6Y2NhekjKLe0T28JVcdE0g+_d1-wO_T9cLGCZQw@mail.gmail.com>
-MIME-Version: 1.0
 In-Reply-To: <CACGkMEtxLP+6Y2NhekjKLe0T28JVcdE0g+_d1-wO_T9cLGCZQw@mail.gmail.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+MIME-Version: 1.0
+Subject: [virtio-comment] RE: [virtio-dev] RE: [PATCH v5 0/7] Introduce device group and device
+ management
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 To: Jason Wang <jasowang@redhat.com>
-Cc: Parav Pandit <parav@nvidia.com>, Max Gurtovoy <mgurtovoy@nvidia.com>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "cohuck@redhat.com" <cohuck@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Oren Duer <oren@nvidia.com>, Shahaf Shuler <shahafs@nvidia.com>, "aadam@redhat.com" <aadam@redhat.com>, "virtio@lists.oasis-open.org" <virtio@lists.oasis-open.org>
+Cc: "Michael S. Tsirkin" <mst@redhat.com>, Max Gurtovoy <mgurtovoy@nvidia.com>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "cohuck@redhat.com" <cohuck@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Oren Duer <oren@nvidia.com>, Shahaf Shuler <shahafs@nvidia.com>, "aadam@redhat.com" <aadam@redhat.com>, "virtio@lists.oasis-open.org" <virtio@lists.oasis-open.org>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Weird, I see Jason's reply in the archives:
-
-https://www.mail-archive.com/virtio-dev@lists.oasis-open.org/msg08603.html
-
-but not the original message by Parav.
-
-
-Prav, I will send an email to OASIS tech support, it's important
-that communication is archived.
-
-
-
-
-On Wed, Jul 06, 2022 at 10:54:08AM +0800, Jason Wang wrote:
-> On Tue, Jul 5, 2022 at 11:11 PM Parav Pandit <parav@nvidia.com> wrote:
-> >
-> >
-> > > From: Michael S. Tsirkin <mst@redhat.com>
-> > > Sent: Tuesday, July 5, 2022 9:57 AM
-> > >
-> > > On Wed, Apr 27, 2022 at 01:58:17AM +0300, Max Gurtovoy wrote:
-> > > > Hi,
-> > > > A device group definition will help extending the virtio specefication
-> > > > for various future features that require a notion of grouping devices
-> > > > together or managing devices inside a group. A device group include one or
-> > > more virtio devices.
-> > > > For now, only support for type 1 device group was added.
-> > >
-> > > How about posting a new version? I frankly think between the hardware
-> > > hack I proposed and the new admin queue transport proposal, we do not
-> > > need to work hard to save on writeable registers and so for starters at least
-> > > we can just use feature bits instead of the query capability command.
-> >
-> > Reader and writer via different channel is really a hack.
-> > It still doesn't help to have efficient hw.
-> 
-> So having 2 or 4 32bit registers just for PF doesn't seem expensive to
-> me. Another 64/128 bit should be sufficient for the future 5 or 10
-> years.
-> 
-> >
-> > What is the technical reason to use feature bits which has strong relationships with device initialization sequence?
-> 
-> Using admin virtqueue may suffer from bootstrapping issues. Especially
-> the features that may affect the vring itself.
-> 
-> E.g we may want to have
-> 
-> 1) new vring layouts (similar to packed virtqueue)
-> 2) new way to coalesce/suppress notification (similar to event index)
-> 3) new way to notify the device (similar to notification data)
-> 
-> Those features can't be negotiated by admin virtqueue.
-> 
-> Thanks
-> 
-> > The proposed bits are AQ functionality bits and not per_say device feature bits?
-> >
-> > This enables to build device in lot more flexible (and frankly simple way).
-> > Looking at sw guest driver being simple to use existing limited 64-bits is just one part of it.
-> >
-> > And when AQ exists, most of the plumbing comes for free.
-> > So I fail to see the simplicity benefit of overloading feature bits for things that has no relation to device init sequence.
-> >
-> >
-> > ---------------------------------------------------------------------
-> > To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> > For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
-> >
+DQo+IEZyb206IEphc29uIFdhbmcgPGphc293YW5nQHJlZGhhdC5jb20+DQo+IFNlbnQ6IFR1ZXNk
+YXksIEp1bHkgNSwgMjAyMiAxMDo1NCBQTQ0KPiANCj4gT24gVHVlLCBKdWwgNSwgMjAyMiBhdCAx
+MToxMSBQTSBQYXJhdiBQYW5kaXQgPHBhcmF2QG52aWRpYS5jb20+IHdyb3RlOg0KPiA+DQo+ID4N
+Cj4gPiA+IEZyb206IE1pY2hhZWwgUy4gVHNpcmtpbiA8bXN0QHJlZGhhdC5jb20+DQo+ID4gPiBT
+ZW50OiBUdWVzZGF5LCBKdWx5IDUsIDIwMjIgOTo1NyBBTQ0KPiA+ID4NCj4gPiA+IE9uIFdlZCwg
+QXByIDI3LCAyMDIyIGF0IDAxOjU4OjE3QU0gKzAzMDAsIE1heCBHdXJ0b3ZveSB3cm90ZToNCj4g
+PiA+ID4gSGksDQo+ID4gPiA+IEEgZGV2aWNlIGdyb3VwIGRlZmluaXRpb24gd2lsbCBoZWxwIGV4
+dGVuZGluZyB0aGUgdmlydGlvDQo+ID4gPiA+IHNwZWNlZmljYXRpb24gZm9yIHZhcmlvdXMgZnV0
+dXJlIGZlYXR1cmVzIHRoYXQgcmVxdWlyZSBhIG5vdGlvbiBvZg0KPiA+ID4gPiBncm91cGluZyBk
+ZXZpY2VzIHRvZ2V0aGVyIG9yIG1hbmFnaW5nIGRldmljZXMgaW5zaWRlIGEgZ3JvdXAuIEENCj4g
+PiA+ID4gZGV2aWNlIGdyb3VwIGluY2x1ZGUgb25lIG9yDQo+ID4gPiBtb3JlIHZpcnRpbyBkZXZp
+Y2VzLg0KPiA+ID4gPiBGb3Igbm93LCBvbmx5IHN1cHBvcnQgZm9yIHR5cGUgMSBkZXZpY2UgZ3Jv
+dXAgd2FzIGFkZGVkLg0KPiA+ID4NCj4gPiA+IEhvdyBhYm91dCBwb3N0aW5nIGEgbmV3IHZlcnNp
+b24/IEkgZnJhbmtseSB0aGluayBiZXR3ZWVuIHRoZQ0KPiA+ID4gaGFyZHdhcmUgaGFjayBJIHBy
+b3Bvc2VkIGFuZCB0aGUgbmV3IGFkbWluIHF1ZXVlIHRyYW5zcG9ydCBwcm9wb3NhbCwNCj4gPiA+
+IHdlIGRvIG5vdCBuZWVkIHRvIHdvcmsgaGFyZCB0byBzYXZlIG9uIHdyaXRlYWJsZSByZWdpc3Rl
+cnMgYW5kIHNvDQo+ID4gPiBmb3Igc3RhcnRlcnMgYXQgbGVhc3Qgd2UgY2FuIGp1c3QgdXNlIGZl
+YXR1cmUgYml0cyBpbnN0ZWFkIG9mIHRoZSBxdWVyeQ0KPiBjYXBhYmlsaXR5IGNvbW1hbmQuDQo+
+ID4NCj4gPiBSZWFkZXIgYW5kIHdyaXRlciB2aWEgZGlmZmVyZW50IGNoYW5uZWwgaXMgcmVhbGx5
+IGEgaGFjay4NCj4gPiBJdCBzdGlsbCBkb2Vzbid0IGhlbHAgdG8gaGF2ZSBlZmZpY2llbnQgaHcu
+DQo+IA0KPiBTbyBoYXZpbmcgMiBvciA0IDMyYml0IHJlZ2lzdGVycyBqdXN0IGZvciBQRiBkb2Vz
+bid0IHNlZW0gZXhwZW5zaXZlIHRvIG1lLg0KPiBBbm90aGVyIDY0LzEyOCBiaXQgc2hvdWxkIGJl
+IHN1ZmZpY2llbnQgZm9yIHRoZSBmdXR1cmUgNSBvciAxMCB5ZWFycy4NCj4gDQo+ID4NCj4gPiBX
+aGF0IGlzIHRoZSB0ZWNobmljYWwgcmVhc29uIHRvIHVzZSBmZWF0dXJlIGJpdHMgd2hpY2ggaGFz
+IHN0cm9uZw0KPiByZWxhdGlvbnNoaXBzIHdpdGggZGV2aWNlIGluaXRpYWxpemF0aW9uIHNlcXVl
+bmNlPw0KPiANCj4gVXNpbmcgYWRtaW4gdmlydHF1ZXVlIG1heSBzdWZmZXIgZnJvbSBib290c3Ry
+YXBwaW5nIGlzc3Vlcy4gRXNwZWNpYWxseSB0aGUNCj4gZmVhdHVyZXMgdGhhdCBtYXkgYWZmZWN0
+IHRoZSB2cmluZyBpdHNlbGYuDQo+IA0KPiBFLmcgd2UgbWF5IHdhbnQgdG8gaGF2ZQ0KPiANCj4g
+MSkgbmV3IHZyaW5nIGxheW91dHMgKHNpbWlsYXIgdG8gcGFja2VkIHZpcnRxdWV1ZSkNCj4gMikg
+bmV3IHdheSB0byBjb2FsZXNjZS9zdXBwcmVzcyBub3RpZmljYXRpb24gKHNpbWlsYXIgdG8gZXZl
+bnQgaW5kZXgpDQo+IDMpIG5ldyB3YXkgdG8gbm90aWZ5IHRoZSBkZXZpY2UgKHNpbWlsYXIgdG8g
+bm90aWZpY2F0aW9uIGRhdGEpDQo+IA0KPiBUaG9zZSBmZWF0dXJlcyBjYW4ndCBiZSBuZWdvdGlh
+dGVkIGJ5IGFkbWluIHZpcnRxdWV1ZS4NClN1cmUuIFRoZXJlIGlzIG5vIG1vdGl2YXRpb24gdG8g
+bmVnb3RpYXRlIHRoZW0gdmlhIEFRIGVpdGhlci4NCk15IGFzayBpcyBiZWxvdy4NCmEuIGZ1bmN0
+aW9uYWxpdHkgZG9uZSBvdmVyIEFRIGlzIG5lZ290aWF0ZWQgdmlhIEFRLCB0aGluZ3MgdGhhdCBo
+YXMgbm8gcmVsYXRpb24gdG8gZGV2aWNlIGluaXQgc2VxdWVuY2UNCmIuIGZ1bmN0aW9uYWxpdHkg
+b2YgdGhlIGRldmljZSB0aGF0IGhhcyBzdHJvbmcgcmVsYXRpb24gdG8gZGV2aWNlIGluaXQgc2Vx
+dWVuY2Ugc3RheXMgYXMgdG9kYXkgdmlhIGZlYXR1cmUgYml0cy4NCkZvciBleGFtcGxlLCB0aGUg
+Y2FzZXMgeW91IGRlc2NyaWJlZCBhYm92ZS4NCg0KPiANCj4gVGhhbmtzDQo+IA0KPiA+IFRoZSBw
+cm9wb3NlZCBiaXRzIGFyZSBBUSBmdW5jdGlvbmFsaXR5IGJpdHMgYW5kIG5vdCBwZXJfc2F5IGRl
+dmljZSBmZWF0dXJlDQo+IGJpdHM/DQo+ID4NCj4gPiBUaGlzIGVuYWJsZXMgdG8gYnVpbGQgZGV2
+aWNlIGluIGxvdCBtb3JlIGZsZXhpYmxlIChhbmQgZnJhbmtseSBzaW1wbGUgd2F5KS4NCj4gPiBM
+b29raW5nIGF0IHN3IGd1ZXN0IGRyaXZlciBiZWluZyBzaW1wbGUgdG8gdXNlIGV4aXN0aW5nIGxp
+bWl0ZWQgNjQtYml0cyBpcyBqdXN0DQo+IG9uZSBwYXJ0IG9mIGl0Lg0KPiA+DQo+ID4gQW5kIHdo
+ZW4gQVEgZXhpc3RzLCBtb3N0IG9mIHRoZSBwbHVtYmluZyBjb21lcyBmb3IgZnJlZS4NCj4gPiBT
+byBJIGZhaWwgdG8gc2VlIHRoZSBzaW1wbGljaXR5IGJlbmVmaXQgb2Ygb3ZlcmxvYWRpbmcgZmVh
+dHVyZSBiaXRzIGZvciB0aGluZ3MNCj4gdGhhdCBoYXMgbm8gcmVsYXRpb24gdG8gZGV2aWNlIGlu
+aXQgc2VxdWVuY2UuDQo+ID4NCj4gPg0KPiA+IC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQ0KPiA+IFRvIHVuc3Vic2Ny
+aWJlLCBlLW1haWw6IHZpcnRpby1kZXYtdW5zdWJzY3JpYmVAbGlzdHMub2FzaXMtb3Blbi5vcmcN
+Cj4gPiBGb3IgYWRkaXRpb25hbCBjb21tYW5kcywgZS1tYWlsOiB2aXJ0aW8tZGV2LWhlbHBAbGlz
+dHMub2FzaXMtb3Blbi5vcmcNCj4gPg0KDQo=
 
