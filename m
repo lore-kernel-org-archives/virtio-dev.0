@@ -1,142 +1,71 @@
-Return-Path: <xuanzhuo@linux.alibaba.com>
-Message-ID: <1658747308.7691371-2-xuanzhuo@linux.alibaba.com>
-Subject: Re: [virtio-dev] [PATCH v5] virtio_net: support split header
-Date: Mon, 25 Jul 2022 19:08:28 +0800
-From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-References: <20220720094140.123106-1-xuanzhuo@linux.alibaba.com>
- <87leshmp1y.fsf@redhat.com>
-In-Reply-To: <87leshmp1y.fsf@redhat.com>
-Content-Type: text/plain; charset="US-ASCII"; x-default=true
-To: Cornelia Huck <cohuck@redhat.com>
-Cc: jasowang@redhat.com, "Michael S. Tsirkin" <mst@redhat.com>, hengqi@linux.alibaba.com, Kangjie Xu <kangjie.xu@linux.alibaba.com>, virtio-dev@lists.oasis-open.org
+Return-Path: <virtio-return-3804-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio@lists.oasis-open.org>
+List-Post: <mailto:virtio@lists.oasis-open.org>
+List-Help: <mailto:virtio-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
+Date: Wed, 13 Jul 2022 16:51:27 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20220713205126.406514-1-mst@redhat.com>
+MIME-Version: 1.0
+Subject: [virtio] [PATCH] editorial: introduction: fix IBM link
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+To: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+Cc: virtio@lists.oasis-open.org, Paul Knight <paul.knight@oasis-open.org>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Mon, 25 Jul 2022 13:04:09 +0200, Cornelia Huck <cohuck@redhat.com> wrote:
-> On Wed, Jul 20 2022, Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
->
-> > The purpose of this feature is to split the header and the payload of
-> > the packet.
-> >
-> > |                    receive buffer                                    |
-> > |                       0th descriptor             | 1th descriptor    |
-> > | virtnet hdr | mac | ip hdr | tcp hdr|<-- hold -->|   payload         |
-> >
-> > We can use a buffer plus a separate page when allocating the receive
-> > buffer. In this way, we can ensure that all payloads can be
-> > independently in a page, which is very beneficial for the zerocopy
-> > implemented by the upper layer.
-> >
-> > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> > Reviewed-by: Heng Qi <hengqi@linux.alibaba.com>
-> > Reviewed-by: Kangjie Xu <kangjie.xu@linux.alibaba.com>
-> > ---
-> > v5:
-> >     1. Determine when hdr_len is credible in the process of rx
-> >     2. Clean up the use of buffers and descriptors
-> >     3. Clarify the meaning of used lenght if the first descriptor is skipped in the case of merge
-> >
-> > v4:
-> >     1. fix typo @Cornelia Huck @Jason Wang
-> >     2. do not split header for IP fragmentation packet. @Jason Wang
-> >
-> > v3:
-> >     1. Fix some syntax issues
-> >     2. Fix some terminology issues
-> >     3. It is not unified with ip alignment, so ip alignment is not included
-> >     4. Make it clear that the device must support four types, in the case of
-> >     successful negotiation.
-> >
-> >
-> >
-> >  conformance.tex |  2 +
-> >  content.tex     | 97 +++++++++++++++++++++++++++++++++++++++++++++++--
-> >  2 files changed, 96 insertions(+), 3 deletions(-)
->
-> (...)
->
-> > @@ -3786,7 +3791,8 @@ \subsubsection{Processing of Incoming Packets}\label{sec:Device Types / Network
-> >  not set VIRTIO_NET_HDR_F_RSC_INFO bit in \field{flags}.
-> >
-> >  If one of the VIRTIO_NET_F_GUEST_TSO4, TSO6 or UFO options have
-> > -been negotiated, the device SHOULD set \field{hdr_len} to a value
-> > +been negotiated and the VIRTIO_NET_HDR_F_SPLIT_HEADER bit in \field{flags}
-> > +is not set, the device SHOULD set \field{hdr_len} to a value
-> >  not less than the length of the headers, including the transport
-> >  header.
->
-> One thing I find a bit hard to figure out is what hdr_len is supposed to
-> look like if the SPLIT_HEADER flag is actually on. It is explained in
-> the split header section, but I feel like the reader is left a bit
-> hanging here.
->
-> Not sure how to solve this; maybe simply add a pointer to the split
-> header specification below?
+OLD
 
-OK, I will try.
+[S390    z/Architecture Principles of Operation, IBM Publication SA22-7832,
+PoP]     http://publibfi.boulder.ibm.com/epubs/pdf/dz9zr009.pdf, and any fu=
+ture
+         revisions=C2=A0=C2=A0
+
+NEW (should be)
+
+[S390 PoP] z/Architecture Principles of Operation, IBM Publication SA22-783=
+2,
+https://www.ibm.com/docs/en/SSQ2R2_15.0.0/com.ibm.tpf.toolkit.hlasm.doc/
+dz9zr006.pdf, and any future revisions
+
+[only changes the hyperlink]
+
+Reported-by: Paul Knight <paul.knight@oasis-open.org>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+---
+ introduction.tex | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/introduction.tex b/introduction.tex
+index aa9ec1b..a9491cf 100644
+--- a/introduction.tex
++++ b/introduction.tex
+@@ -44,7 +44,7 @@ \section{Normative References}\label{sec:Normative Refere=
+nces}
+ Leach, P., Mealling, M., and R. Salz, ``A Universally Unique
+ IDentifier (UUID) URN Namespace'', RFC 4122, DOI 10.17487/RFC4122,
+ July 2005. \newline\url{http://www.ietf.org/rfc/rfc4122.txt}\\
+-=09\phantomsection\label{intro:S390 PoP}\textbf{[S390 PoP]} & z/Architectu=
+re Principles of Operation, IBM Publication SA22-7832, \newline\url{http://=
+publibfi.boulder.ibm.com/epubs/pdf/dz9zr009.pdf}, and any future revisions\=
+\
++=09\phantomsection\label{intro:S390 PoP}\textbf{[S390 PoP]} & z/Architectu=
+re Principles of Operation, IBM Publication SA22-7832, \newline\url{https:/=
+/www.ibm.com/docs/en/SSQ2R2_15.0.0/com.ibm.tpf.toolkit.hlasm.doc/dz9zr006.p=
+df}, and any future revisions\\
+ =09\phantomsection\label{intro:S390 Common I/O}\textbf{[S390
+ Common I/O]} & ESA/390 Common I/O-Device and Self-Description, IBM Publica=
+tion SA22-7204, \newline\url{https://www.ibm.com/resources/publications/Out=
+putPubsDetails?PubID=3DSA22720401}, and any future revisions\\
+ =09\phantomsection\label{intro:PCI}\textbf{[PCI]} &
+--=20
+MST
 
 
->
-> (...)
->
-> > +A device MUST NOT split the header encounter any of the following cases:
->
-> Maybe "A device MUST NOT split the header if it encounters any of the
-> following cases"?
-
-Will fix.
-
->
-> > +\begin{itemize}
-> > +    \item the device does not recognize the protocol of the packet.
-> > +    \item the packet is an IP fragmentation.
-> > +    \item \field{type} does not include the protocol of the packet.
-> > +    \item the buffer consists of only one descriptor.
-> > +    \item the total size of the virtio net header and the protocol header exceeds
-> > +        the size of the first descriptor.
-> > +    \item when VIRTIO_NET_F_MRG_RXBUF is not negotiated and the size of the
-> > +        payload exceeds the size of the descriptor chain starting from the 2nd
-> > +        descriptor.
-> > +\end{itemize}
-> > +
-> > +If the header is split by the device, the VIRTIO_NET_HDR_F_SPLIT_HEADER bit
-> > +in \field{flags} MUST be set. The protocol header MUST be on the first
-> > +descriptor, following the virtio net header. The payload MUST start from the
-> > +second descriptor. The device MUST set \field{hdr_len} of structure
-> > +virtio_net_hdr to the length of the protocol header.
-> > +
-> > +If the header is split by the device, VIRTIO_NET_F_MRG_RXBUF is negotiated,
-> > +and the received packet is spread over multiple buffers, when the device uses a
-> > +buffer other than the first, if the buffer consists of multiple descriptors, the
-> > +device MUST skip the first descriptor, because the first descriptor is used to
-> > +carry the protocol header. The used length still reports the number of bytes it
-> > +has written to memory.
->
-> Personally, I find this paragraph hard to follow... maybe something like
-> the following:
->
-> "If all of the following applies:
-> \begin{itemize}
->     \item the header is split by the device,
->     \item VIRTIO_NET_F_MRG_RXBUF has been negotiated,
->     \item the received packet is split over multiple buffers,
->     \item the device uses a buffer other than the first, [*]
->     \item the buffer consists of multiple descriptors
-> \end {itemize}
-> the device MUST skip the first descriptor, because the first descriptor
-> is used to carry the protocol header. The used length still reports the
-> number of bytes it has written to memory."
-
-Will fix.
-
->
-> Although I'm not quite sure what [*] means, the first of what?
-
-
-I mean:
-	the device uses a buffer other than the first buffer.
-
-I will fix it in next version.
-
-
-Thanks.
+---------------------------------------------------------------------
+To unsubscribe from this mail list, you must leave the OASIS TC that=20
+generates this mail.  Follow this link to all your TCs in OASIS at:
+https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php=20
 
