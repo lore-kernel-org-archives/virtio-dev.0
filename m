@@ -1,71 +1,67 @@
-Return-Path: <virtio-return-3804-cohuck=redhat.com@lists.oasis-open.org>
-Sender: <virtio@lists.oasis-open.org>
-List-Post: <mailto:virtio@lists.oasis-open.org>
-List-Help: <mailto:virtio-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-Date: Wed, 13 Jul 2022 16:51:27 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20220713205126.406514-1-mst@redhat.com>
+Return-Path: <virtio-comment-return-3233-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-comment@lists.oasis-open.org>
+List-Post: <mailto:virtio-comment@lists.oasis-open.org>
+List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
+Date: Fri, 15 Jul 2022 18:56:16 +0200
+From: Halil Pasic <pasic@linux.ibm.com>
+Message-ID: <20220715185616.58042258.pasic@linux.ibm.com>
+In-Reply-To: <20220713205126.406514-1-mst@redhat.com>
+References: <20220713205126.406514-1-mst@redhat.com>
 MIME-Version: 1.0
-Subject: [virtio] [PATCH] editorial: introduction: fix IBM link
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Subject: Re: [virtio-comment] [PATCH] editorial: introduction: fix IBM link
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-To: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
-Cc: virtio@lists.oasis-open.org, Paul Knight <paul.knight@oasis-open.org>
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, virtio@lists.oasis-open.org, Paul Knight <paul.knight@oasis-open.org>, Halil Pasic <pasic@linux.ibm.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-OLD
+On Wed, 13 Jul 2022 16:51:27 -0400
+"Michael S. Tsirkin" <mst@redhat.com> wrote:
 
-[S390    z/Architecture Principles of Operation, IBM Publication SA22-7832,
-PoP]     http://publibfi.boulder.ibm.com/epubs/pdf/dz9zr009.pdf, and any fu=
-ture
-         revisions=C2=A0=C2=A0
-
-NEW (should be)
-
-[S390 PoP] z/Architecture Principles of Operation, IBM Publication SA22-783=
+> OLD
+>=20
+> [S390    z/Architecture Principles of Operation, IBM Publication SA22-783=
 2,
-https://www.ibm.com/docs/en/SSQ2R2_15.0.0/com.ibm.tpf.toolkit.hlasm.doc/
-dz9zr006.pdf, and any future revisions
+> PoP]     http://publibfi.boulder.ibm.com/epubs/pdf/dz9zr009.pdf, and any =
+future
+>          revisions=C2=A0=C2=A0
+>=20
+> NEW (should be)
+>=20
+> [S390 PoP] z/Architecture Principles of Operation, IBM Publication SA22-7=
+832,
+> https://www.ibm.com/docs/en/SSQ2R2_15.0.0/com.ibm.tpf.toolkit.hlasm.doc/
+> dz9zr006.pdf, and any future revisions
+>=20
+> [only changes the hyperlink]
+>=20
+> Reported-by: Paul Knight <paul.knight@oasis-open.org>
+> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 
-[only changes the hyperlink]
+Hm, the new link links to an older revision... The old link seems to
+work for me, but I don't know which one is more canonical and supposed
+to be more robust. Will do some digging. The new one does look cleaner
+though.
 
-Reported-by: Paul Knight <paul.knight@oasis-open.org>
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
----
- introduction.tex | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Regards,
+Halil
 
-diff --git a/introduction.tex b/introduction.tex
-index aa9ec1b..a9491cf 100644
---- a/introduction.tex
-+++ b/introduction.tex
-@@ -44,7 +44,7 @@ \section{Normative References}\label{sec:Normative Refere=
-nces}
- Leach, P., Mealling, M., and R. Salz, ``A Universally Unique
- IDentifier (UUID) URN Namespace'', RFC 4122, DOI 10.17487/RFC4122,
- July 2005. \newline\url{http://www.ietf.org/rfc/rfc4122.txt}\\
--=09\phantomsection\label{intro:S390 PoP}\textbf{[S390 PoP]} & z/Architectu=
-re Principles of Operation, IBM Publication SA22-7832, \newline\url{http://=
-publibfi.boulder.ibm.com/epubs/pdf/dz9zr009.pdf}, and any future revisions\=
-\
-+=09\phantomsection\label{intro:S390 PoP}\textbf{[S390 PoP]} & z/Architectu=
-re Principles of Operation, IBM Publication SA22-7832, \newline\url{https:/=
-/www.ibm.com/docs/en/SSQ2R2_15.0.0/com.ibm.tpf.toolkit.hlasm.doc/dz9zr006.p=
-df}, and any future revisions\\
- =09\phantomsection\label{intro:S390 Common I/O}\textbf{[S390
- Common I/O]} & ESA/390 Common I/O-Device and Self-Description, IBM Publica=
-tion SA22-7204, \newline\url{https://www.ibm.com/resources/publications/Out=
-putPubsDetails?PubID=3DSA22720401}, and any future revisions\\
- =09\phantomsection\label{intro:PCI}\textbf{[PCI]} &
---=20
-MST
+This publicly archived list offers a means to provide input to the
+OASIS Virtual I/O Device (VIRTIO) TC.
 
+In order to verify user consent to the Feedback License terms and
+to minimize spam in the list archive, subscription is required
+before posting.
 
----------------------------------------------------------------------
-To unsubscribe from this mail list, you must leave the OASIS TC that=20
-generates this mail.  Follow this link to all your TCs in OASIS at:
-https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php=20
+Subscribe: virtio-comment-subscribe@lists.oasis-open.org
+Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
+List help: virtio-comment-help@lists.oasis-open.org
+List archive: https://lists.oasis-open.org/archives/virtio-comment/
+Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
+List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lis=
+ts
+Committee: https://www.oasis-open.org/committees/virtio/
+Join OASIS: https://www.oasis-open.org/join/
 
