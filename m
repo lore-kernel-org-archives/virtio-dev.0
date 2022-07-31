@@ -1,95 +1,72 @@
 Return-Path: <mgurtovoy@nvidia.com>
 From: Max Gurtovoy <mgurtovoy@nvidia.com>
-Subject: [PATCH v6 0/5] Introduce device group and device management
-Date: Sun, 31 Jul 2022 18:43:49 +0300
-Message-ID: <20220731154354.15698-1-mgurtovoy@nvidia.com>
+Subject: [PATCH v6 1/5] Introduce device group
+Date: Sun, 31 Jul 2022 18:43:50 +0300
+Message-ID: <20220731154354.15698-2-mgurtovoy@nvidia.com>
+In-Reply-To: <20220731154354.15698-1-mgurtovoy@nvidia.com>
+References: <20220731154354.15698-1-mgurtovoy@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 To: jasowang@redhat.com, virtio-comment@lists.oasis-open.org, mst@redhat.com, cohuck@redhat.com, virtio-dev@lists.oasis-open.org
 Cc: oren@nvidia.com, parav@nvidia.com, shahafs@nvidia.com, aadam@redhat.com, virtio@lists.oasis-open.org, eperezma@redhat.com, Max Gurtovoy <mgurtovoy@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Hi,
-A device group definition will help extending the virtio specefication for
-various future features that require a notion of grouping devices together or
-managing devices inside a group. A device group include one or more virtio devices.
-For now, only support 2 device group types was added.
+Each device group has a type. For now, define 2 initial types of device
+groups: Self type and SR-IOV type.
 
-Also introduce the admin facility to allow manipulating features and configurations
-in a generic manner. Using the admin command set, one can manipulate the device itself
-and/or to manipulate, if possible, another device within the same device group (for now,
-introduce only support of PCI SR-IOV devices grouping managemant).
+Self type - A group that has a single virtio device as a member.
 
-The admin command set will be extended in the future to support more functionalities.
-Some of these functionalities are already under discussions.
+SR-IOV type - A virtio PCI SR-IOV physical function (PF) and its
+PCI SR-IOV virtual functions (VFs). This group may contain one or more
+virtio devices.
 
-The admin virtqueue is the first management interface to issue admin commands from
-the admin command set.
+Each device group has a unique identifier. This identifier is the group
+identifier (group_id).
 
-Motivation for choosing admin queue as first management interface:
-1. It is anticipated that admin queue will be used for managing and configuring
-   many different type of resources. For example,
-   a. PCI PF configuring PCI VF attributes.
-   b. virtio device creating/destroying/configuring subfunctions discussed in [1]
-   c. composing device config space of VF or SF such as mac address, number of VQs, virtio features
+Each device within a device group has a unique identifier. This identifier
+is the group member identifier (group_member_id).
 
-   Mapping all of them as configuration registers to MMIO will require large MMIO space,
-   if done for each VF/SF. Such MMIO implementation in physical devices such as PCI PF and VF
-   requires on-chip resources to complete within MMIO access latencies. Such resources are very
-   expensive.
+Reviewed-by: Parav Pandit <parav@nvidia.com>
+Signed-off-by: Max Gurtovoy <mgurtovoy@nvidia.com>
+---
+ introduction.tex | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
 
-2. Such limitation can be overcome by having smaller MMIO register set to build
-   a command request response interface. However, such MMIO based command interface
-   will be limited to serve single outstanding command execution. Such limitation can
-   resulting in high device creation and composing time which can affect VM startup time.
-   Often device can queue and service multiple commands in parallel, such command interface
-   cannot use parallelism offered by the device.
-
-3. When a command wants to DMA data from one or more physical addresses, for example in the future a
-   live migration command may need to fetch device state consist of config space, tens of
-   VQs state, VLAN and MAC table, per VQ partial outstanding block IO list database and more.
-   Packing one or more DMA addresses over new command interface will be burden some and continue
-   to suffer single outstanding command execution latencies. Such limitation is not good for time
-   sensitive live migration use cases.
-
-4. A virtio queue overcomes all the above limitations. It also supports DMA and multiple outstanding
-   descriptors. Similar mechanism exist today for device specific configuration - the control VQ.
-
-A future work can add another management interface to issue admin commands.
-
-[1] https://lists.oasis-open.org/archives/virtio-comment/202108/msg00025.html
-
-This series include the comments and fixes from V1-V5 of the initial patch sets ("VIRTIO: Provision maximum
-MSI-X vectors for a VF" and "Introduce virtio subsystem and Admin virtqueue" [2]).
-This series was updated with management for device feature bits instead of MSI-X vector provisioning as example for
-using admin command set. Also add dedicated feature bits for the new management capabilities as was discussed in the
-previous atempts.
-
-[2] https://lists.oasis-open.org/archives/virtio-comment/202203/msg00005.html
-
-
-Open issues:
-1. CCW and MMIO specification for admin_queue_index register
-
-Changelog:
- - remove MSI-X configuration patch from current version.
- - Addressed comments from MST, Jason Wang and others (feature bits, self device group).
- - simplified the interface.
-
-
-Max Gurtovoy (5):
-  Introduce device group
-  Introduce admin command set
-  Introduce virtio admin virtqueue
-  Add admin_queue_index register to PCI common configuration structure
-  Introduce MGMT admin commands
-
- admin.tex        | 188 +++++++++++++++++++++++++++++++++++++++++++++++
- content.tex      |  68 ++++++++++++++++-
- introduction.tex |  54 ++++++++++++++
- 3 files changed, 308 insertions(+), 2 deletions(-)
- create mode 100644 admin.tex
-
+diff --git a/introduction.tex b/introduction.tex
+index aa9ec1b..e8bde45 100644
+--- a/introduction.tex
++++ b/introduction.tex
+@@ -156,6 +156,30 @@ \subsection{Transition from earlier specification drafts}\label{sec:Transition f
+ sections tagged "Legacy Interface" in the section title.
+ These highlight the changes made since the earlier drafts.
+ 
++\subsection{Device group}\label{sec:Introduction / Terminology / Device group}
++
++A device group includes one or more virtio devices. Each device group has a unique group identifier (group_id).
++A device can be a member of one or more device groups.
++A device within a group is identified by a unique group member identifier (group_member_id).
++The scope of the group member identifier is within the group. In other words, two device groups can have overlap group member identifiers.
++A group member identifier is a 64-bit value in range of 0x0 - 0xFFFFFFFFFFFFFFF0.
++A special group member identifier value of 0xFFFFFFFFFFFFFFFF refers to all the devices in a device group.
++
++The supported device groups are:
++\begin{enumerate}
++\item Self type (group identifier = 0) - this group has only one device in the group. Each virtio device is a member of at least one device group, the Self type group.
++For this group type, the device is identified by group member identifier of 0.
++
++\item SR-IOV type (group identifier = 1) - this group includes a virtio PCI SR-IOV physical function (PF) and all its virtual functions (VFs).
++For this group type, the PF device has group member identifier of 0. Each VF group member identifier equals the PCI VF number according to the PCI Express Base Specification
++(Single Root I/O Virtualization and Sharing chapter). Devices that are members in this group use the Virtio PCI transport (for more details see \ref{sec:Virtio Transport Options / Virtio Over PCI Bus}).
++\end{enumerate}
++
++\begin{note}
++  The same device can be identified by different identifiers within different groups. For example, A virtual function device has a group
++  member identifier equals to 0 within Self type group and a group member identifier equals to VF number (e.g 4) within SR-IOV type group.
++\end{note}
++
+ \section{Structure Specifications}\label{sec:Structure Specifications}
+ 
+ Many device and driver in-memory structure layouts are documented using
 -- 
 2.21.0
 
