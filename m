@@ -1,249 +1,95 @@
-Return-Path: <virtio-dev-return-9677-cohuck=redhat.com@lists.oasis-open.org>
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 0F6D0986338
-	for <virtio-dev@lists.oasis-open.org>; Mon,  1 Aug 2022 06:59:47 +0000 (UTC)
-From: Heng Qi <hengqi@linux.alibaba.com>
-Date: Mon,  1 Aug 2022 14:59:42 +0800
-Message-Id: <1659337182-128890-1-git-send-email-hengqi@linux.alibaba.com>
-Subject: [virtio-dev] [PATCH] virtio_net: support split header
-Content-Type: text/plain; charset="US-ASCII"; x-default=true
-To: virtio-dev@lists.oasis-open.org
-Cc: jasowang@redhat.com, mst@redhat.com, xuanzhuo@linux.alibaba.com, kangjie.xu@linux.alibaba.com
+Return-Path: <mgurtovoy@nvidia.com>
+From: Max Gurtovoy <mgurtovoy@nvidia.com>
+Subject: [PATCH v6 0/5] Introduce device group and device management
+Date: Sun, 31 Jul 2022 18:43:49 +0300
+Message-ID: <20220731154354.15698-1-mgurtovoy@nvidia.com>
+MIME-Version: 1.0
+Content-Type: text/plain
+To: jasowang@redhat.com, virtio-comment@lists.oasis-open.org, mst@redhat.com, cohuck@redhat.com, virtio-dev@lists.oasis-open.org
+Cc: oren@nvidia.com, parav@nvidia.com, shahafs@nvidia.com, aadam@redhat.com, virtio@lists.oasis-open.org, eperezma@redhat.com, Max Gurtovoy <mgurtovoy@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Hi,
+A device group definition will help extending the virtio specefication for
+various future features that require a notion of grouping devices together or
+managing devices inside a group. A device group include one or more virtio devices.
+For now, only support 2 device group types was added.
 
-The purpose of this feature is to split the header and the payload of
-the packet.
+Also introduce the admin facility to allow manipulating features and configurations
+in a generic manner. Using the admin command set, one can manipulate the device itself
+and/or to manipulate, if possible, another device within the same device group (for now,
+introduce only support of PCI SR-IOV devices grouping managemant).
 
-|                    receive buffer                                    |
-|                       0th descriptor             | 1th descriptor    |
-| virtnet hdr | mac | ip hdr | tcp hdr|<-- hold -->|   payload         |
+The admin command set will be extended in the future to support more functionalities.
+Some of these functionalities are already under discussions.
 
-We can use a buffer plus a separate page when allocating the receive
-buffer. In this way, we can ensure that all payloads can be
-independently in a page, which is very beneficial for the zerocopy
-implemented by the upper layer.
+The admin virtqueue is the first management interface to issue admin commands from
+the admin command set.
 
-Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Signed-off-by: Heng Qi <hengqi@linux.alibaba.com>
-Reviewed-by: Kangjie Xu <kangjie.xu@linux.alibaba.com>
----
+Motivation for choosing admin queue as first management interface:
+1. It is anticipated that admin queue will be used for managing and configuring
+   many different type of resources. For example,
+   a. PCI PF configuring PCI VF attributes.
+   b. virtio device creating/destroying/configuring subfunctions discussed in [1]
+   c. composing device config space of VF or SF such as mac address, number of VQs, virtio features
 
-v6:
-    1. Fix some syntax issues. @Cornelia Huck
-    2. Clarify some paragraphs. @Cornelia Huck
-    3. Determine the device what to do if it does not perform header split on a packet.
+   Mapping all of them as configuration registers to MMIO will require large MMIO space,
+   if done for each VF/SF. Such MMIO implementation in physical devices such as PCI PF and VF
+   requires on-chip resources to complete within MMIO access latencies. Such resources are very
+   expensive.
 
-v5:
-    1. Determine when hdr_len is credible in the process of rx
-    2. Clean up the use of buffers and descriptors
-    3. Clarify the meaning of used lenght if the first descriptor is skipped in the case of merge
+2. Such limitation can be overcome by having smaller MMIO register set to build
+   a command request response interface. However, such MMIO based command interface
+   will be limited to serve single outstanding command execution. Such limitation can
+   resulting in high device creation and composing time which can affect VM startup time.
+   Often device can queue and service multiple commands in parallel, such command interface
+   cannot use parallelism offered by the device.
 
-v4:
-    1. fix typo @Cornelia Huck @Jason Wang
-    2. do not split header for IP fragmentation packet. @Jason Wang
+3. When a command wants to DMA data from one or more physical addresses, for example in the future a
+   live migration command may need to fetch device state consist of config space, tens of
+   VQs state, VLAN and MAC table, per VQ partial outstanding block IO list database and more.
+   Packing one or more DMA addresses over new command interface will be burden some and continue
+   to suffer single outstanding command execution latencies. Such limitation is not good for time
+   sensitive live migration use cases.
 
-v3:
-    1. Fix some syntax issues
-    2. Fix some terminology issues
-    3. It is not unified with ip alignment, so ip alignment is not included
-    4. Make it clear that the device must support four types, in the case of
-    successful negotiation.
+4. A virtio queue overcomes all the above limitations. It also supports DMA and multiple outstanding
+   descriptors. Similar mechanism exist today for device specific configuration - the control VQ.
 
- conformance.tex |   2 +
- content.tex     | 111 ++++++++++++++++++++++++++++++++++++++++++++++++++++++--
- 2 files changed, 109 insertions(+), 4 deletions(-)
+A future work can add another management interface to issue admin commands.
 
-diff --git a/conformance.tex b/conformance.tex
-index 2b86fc6..bd0f463 100644
---- a/conformance.tex
-+++ b/conformance.tex
-@@ -150,6 +150,7 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
- \item \ref{drivernormative:Device Types / Network Device / Device Operation / Control Virtqueue / Offloads State Configuration / Setting Offloads State}
- \item \ref{drivernormative:Device Types / Network Device / Device Operation / Control Virtqueue / Receive-side scaling (RSS) }
- \item \ref{drivernormative:Device Types / Network Device / Device Operation / Control Virtqueue / Notifications Coalescing}
-+\item \ref{drivernormative:Device Types / Network Device / Device Operation / Control Virtqueue / Split Header}
- \end{itemize}
- 
- \conformance{\subsection}{Block Driver Conformance}\label{sec:Conformance / Driver Conformance / Block Driver Conformance}
-@@ -415,6 +416,7 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
- \item \ref{devicenormative:Device Types / Network Device / Device Operation / Control Virtqueue / Automatic receive steering in multiqueue mode}
- \item \ref{devicenormative:Device Types / Network Device / Device Operation / Control Virtqueue / Receive-side scaling (RSS) / RSS processing}
- \item \ref{devicenormative:Device Types / Network Device / Device Operation / Control Virtqueue / Notifications Coalescing}
-+\item \ref{devicenormative:Device Types / Network Device / Device Operation / Control Virtqueue / Split Header}
- \end{itemize}
- 
- \conformance{\subsection}{Block Device Conformance}\label{sec:Conformance / Device Conformance / Block Device Conformance}
-diff --git a/content.tex b/content.tex
-index e863709..74c36fe 100644
---- a/content.tex
-+++ b/content.tex
-@@ -3084,6 +3084,9 @@ \subsection{Feature bits}\label{sec:Device Types / Network Device / Feature bits
- \item[VIRTIO_NET_F_CTRL_MAC_ADDR(23)] Set MAC address through control
-     channel.
- 
-+\item[VIRTIO_NET_F_SPLIT_HEADER (52)] Device supports splitting the protocol
-+    header and the payload.
-+
- \item[VIRTIO_NET_F_NOTF_COAL(53)] Device supports notifications coalescing.
- 
- \item[VIRTIO_NET_F_GUEST_USO4 (54)] Driver can receive USOv4 packets.
-@@ -3140,6 +3143,7 @@ \subsubsection{Feature bit requirements}\label{sec:Device Types / Network Device
- \item[VIRTIO_NET_F_NOTF_COAL] Requires VIRTIO_NET_F_CTRL_VQ.
- \item[VIRTIO_NET_F_RSC_EXT] Requires VIRTIO_NET_F_HOST_TSO4 or VIRTIO_NET_F_HOST_TSO6.
- \item[VIRTIO_NET_F_RSS] Requires VIRTIO_NET_F_CTRL_VQ.
-+\item[VIRTIO_NET_F_SPLIT_HEADER] Requires VIRTIO_NET_F_CTRL_VQ.
- \end{description}
- 
- \subsubsection{Legacy Interface: Feature bits}\label{sec:Device Types / Network Device / Feature bits / Legacy Interface: Feature bits}
-@@ -3371,6 +3375,7 @@ \subsection{Device Operation}\label{sec:Device Types / Network Device / Device O
- #define VIRTIO_NET_HDR_F_NEEDS_CSUM    1
- #define VIRTIO_NET_HDR_F_DATA_VALID    2
- #define VIRTIO_NET_HDR_F_RSC_INFO      4
-+#define VIRTIO_NET_HDR_F_SPLIT_HEADER  8
-         u8 flags;
- #define VIRTIO_NET_HDR_GSO_NONE        0
- #define VIRTIO_NET_HDR_GSO_TCPV4       1
-@@ -3799,9 +3804,10 @@ \subsubsection{Processing of Incoming Packets}\label{sec:Device Types / Network
- not set VIRTIO_NET_HDR_F_RSC_INFO bit in \field{flags}.
- 
- If one of the VIRTIO_NET_F_GUEST_TSO4, TSO6, UFO, USO4 or USO6 options have
--been negotiated, the device SHOULD set \field{hdr_len} to a value
-+been negotiated and the VIRTIO_NET_HDR_F_SPLIT_HEADER bit in \field{flags}
-+is not set, the device SHOULD set \field{hdr_len} to a value
- not less than the length of the headers, including the transport
--header.
-+header \ref{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Split Header / Setting Split Header}.
- 
- If the VIRTIO_NET_F_GUEST_CSUM feature has been negotiated, the
- device MAY set the VIRTIO_NET_HDR_F_DATA_VALID bit in
-@@ -3820,9 +3826,13 @@ \subsubsection{Processing of Incoming Packets}\label{sec:Device Types / Network
- driver MUST NOT use the \field{csum_start} and \field{csum_offset}.
- 
- If one of the VIRTIO_NET_F_GUEST_TSO4, TSO6, UFO, USO4 or USO6 options have
--been negotiated, the driver MAY use \field{hdr_len} only as a hint about the
-+been negotiated and the VIRTIO_NET_HDR_F_SPLIT_HEADER bit in \field{flags}
-+is not set, the driver MAY use \field{hdr_len} only as a hint about the
- transport header size.
--The driver MUST NOT rely on \field{hdr_len} to be correct.
-+
-+If the VIRTIO_NET_HDR_F_SPLIT_HEADER bit in \field{flags} is not set, the driver
-+MUST NOT rely on \field{hdr_len} to be correct.
-+
- \begin{note}
- This is due to various bugs in implementations.
- \end{note}
-@@ -4483,6 +4493,99 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
- according to the native endian of the guest rather than
- (necessarily when not using the legacy interface) little-endian.
- 
-+\paragraph{Split Header}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Split Header}
-+
-+If the VIRTIO_NET_F_SPLIT_HEADER feature is negotiated,
-+the device supports splitting the protocol header and the payload.
-+The protocol header and the payload will be separated into different
-+descriptors.
-+
-+\subparagraph{Split Header}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Split Header / Setting Split Header}
-+
-+To configure the split header, the following layout structure and definitions
-+are used:
-+
-+\begin{lstlisting}
-+struct virtio_net_split_header_config {
-+#define VIRTIO_NET_SPLIT_HEADER_TYPE_TCP4     (1 << 0)
-+#define VIRTIO_NET_SPLIT_HEADER_TYPE_TCP6     (1 << 1)
-+#define VIRTIO_NET_SPLIT_HEADER_TYPE_UDP4     (1 << 2)
-+#define VIRTIO_NET_SPLIT_HEADER_TYPE_UDP6     (1 << 3)
-+    le64 type;
-+};
-+
-+#define VIRTIO_NET_CTRL_SPLIT_HEADER       6
-+ #define VIRTIO_NET_CTRL_SPLIT_HEADER_SET   0
-+\end{lstlisting}
-+
-+The class VIRTIO_NET_CTRL_SPLIT_HEADER has one command:
-+VIRTIO_NET_CTRL_SPLIT_HEADER_SET applies the new split header configuration.
-+
-+The driver can enable or disable split header for different protocols by
-+setting or clearing corresponding bits in \field{type}.
-+
-+\begin{itemize}
-+    \item VIRTIO_NET_SPLIT_HEADER_TYPE_TCP4: split after ipv4 tcp header
-+    \item VIRTIO_NET_SPLIT_HEADER_TYPE_TCP6: split after ipv6 tcp header
-+    \item VIRTIO_NET_SPLIT_HEADER_TYPE_UDP4: split after ipv4 udp header
-+    \item VIRTIO_NET_SPLIT_HEADER_TYPE_UDP6: split after ipv6 udp header
-+\end{itemize}
-+
-+\devicenormative{\subparagraph}{Setting Split Header}{Device Types / Network Device / Device Operation / Control Virtqueue / Split Header}
-+
-+A device MUST initialize \field{type} to 0, and MUST set it to 0
-+upon device reset.
-+
-+If VIRTIO_NET_F_SPLIT_HEADER is negotiated, the device MUST support
-+VIRTIO_NET_SPLIT_HEADER_TYPE_TCP4, VIRTIO_NET_SPLIT_HEADER_TYPE_TCP6,
-+VIRTIO_NET_SPLIT_HEADER_TYPE_UDP4, VIRTIO_NET_SPLIT_HEADER_TYPE_UDP6.
-+
-+A device MUST NOT split the header if it encounters any of the following cases:
-+\begin{itemize}
-+    \item the device does not recognize the protocol of the packet.
-+    \item the packet is an IP fragmentation.
-+    \item \field{type} does not include the protocol of the packet.
-+    \item the buffer consists of only one descriptor.
-+    \item the total size of the virtio net header and the protocol header exceeds
-+        the size of the first descriptor.
-+    \item when VIRTIO_NET_F_MRG_RXBUF is not negotiated and the size of the
-+        payload exceeds the size of the descriptor chain starting from the 2nd
-+        descriptor.
-+\end{itemize}
-+
-+If the header is split by the device, the VIRTIO_NET_HDR_F_SPLIT_HEADER bit
-+in \field{flags} MUST be set. The protocol header MUST be on the first
-+descriptor, following the virtio net header. The payload MUST start from the
-+second descriptor. The device MUST set \field{hdr_len} of structure
-+virtio_net_hdr to the length of the protocol header.
-+
-+If all of the following applies:
-+\begin{itemize}
-+    \item the header is split by the device.
-+    \item VIRTIO_NET_F_MRG_RXBUF has been negotiated.
-+    \item the received packet is spread over multiple buffers.
-+\end {itemize}
-+then if the device uses the buffers after the 1st buffer, and the buffer
-+consists of multiple descriptors, the device MUST skip the first descriptor,
-+because the first descriptor is used to carry the protocol header.
-+The used length still reports the number of bytes it has written to memory.
-+
-+If VIRTIO_NET_F_SPLIT_HEADER is negotiated, but the device does not split the header
-+and the buffer consists of at least two descriptors, the device MUST put the virtio net header
-+in the first descriptor, and MUST NOT set the VIRTIO_NET_HDR_F_SPLIT_HEADER bit in \field{flags}.
-+The device MUST use the second descriptor to store the packet, since the first descriptor
-+is designed to accommodate the header and is tiny for the packet.
-+
-+\drivernormative{\subparagraph}{Setting Split Header}{Device Types / Network Device / Device Operation / Control Virtqueue / Split Header}
-+
-+If the VIRTIO_NET_HDR_F_SPLIT_HEADER bit in \field{flags} is set, the driver
-+MUST treat the contents of \field{hdr_len} as the length of the protocol header
-+inside the first descriptor.
-+
-+If the split header is enabled, the buffers submitted to receiveq by the
-+driver SHOULD be composed of at least two descriptors.
-+When the buffer consists of two descriptors, the length of the first
-+descriptor MUST be greater than the one of the virtio net header.
- 
- \paragraph{Notifications Coalescing}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Notifications Coalescing}
- 
+[1] https://lists.oasis-open.org/archives/virtio-comment/202108/msg00025.html
+
+This series include the comments and fixes from V1-V5 of the initial patch sets ("VIRTIO: Provision maximum
+MSI-X vectors for a VF" and "Introduce virtio subsystem and Admin virtqueue" [2]).
+This series was updated with management for device feature bits instead of MSI-X vector provisioning as example for
+using admin command set. Also add dedicated feature bits for the new management capabilities as was discussed in the
+previous atempts.
+
+[2] https://lists.oasis-open.org/archives/virtio-comment/202203/msg00005.html
+
+
+Open issues:
+1. CCW and MMIO specification for admin_queue_index register
+
+Changelog:
+ - remove MSI-X configuration patch from current version.
+ - Addressed comments from MST, Jason Wang and others (feature bits, self device group).
+ - simplified the interface.
+
+
+Max Gurtovoy (5):
+  Introduce device group
+  Introduce admin command set
+  Introduce virtio admin virtqueue
+  Add admin_queue_index register to PCI common configuration structure
+  Introduce MGMT admin commands
+
+ admin.tex        | 188 +++++++++++++++++++++++++++++++++++++++++++++++
+ content.tex      |  68 ++++++++++++++++-
+ introduction.tex |  54 ++++++++++++++
+ 3 files changed, 308 insertions(+), 2 deletions(-)
+ create mode 100644 admin.tex
+
 -- 
-1.8.3.1
-
-
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+2.21.0
 
