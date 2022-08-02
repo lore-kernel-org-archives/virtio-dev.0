@@ -1,156 +1,200 @@
-Return-Path: <mst@redhat.com>
-Date: Thu, 4 Aug 2022 02:26:38 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: Re: [virtio-comment] Re: [PATCH v6 4/5] Add admin_queue_index
- register to PCI common configuration structure
-Message-ID: <20220804022046-mutt-send-email-mst@kernel.org>
-References: <20220731154354.15698-1-mgurtovoy@nvidia.com>
- <20220731154354.15698-5-mgurtovoy@nvidia.com>
- <20220731170049-mutt-send-email-mst@kernel.org>
- <00153057-1332-047a-2ce7-20570cb6fe31@nvidia.com>
- <20220801020359-mutt-send-email-mst@kernel.org>
- <a2677ced-4d46-5fe5-a20a-f47091edf4c7@nvidia.com>
+Return-Path: <parav@nvidia.com>
+From: Parav Pandit <parav@nvidia.com>
+Subject: RE: [virtio-dev] RE: [PATCH v5 0/7] Introduce device group and device
+ management
+Date: Tue, 2 Aug 2022 17:40:23 +0000
+Message-ID: <PH0PR12MB54812EC8C4E0378B24D249ACDC9D9@PH0PR12MB5481.namprd12.prod.outlook.com>
+References: <20220705095514-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB5481D9416A601E6F2D4A32FFDC819@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20220706061051-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB54817E0D45D613834A3C42A4DC809@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20220724170744-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB5481269E252B7DD8EFE2109DDC929@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20220724191530-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB548127CD9F333F8F92580531DC959@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20220725030303-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB54812685041A59D642227920DC989@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20220731112614-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20220731112614-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <a2677ced-4d46-5fe5-a20a-f47091edf4c7@nvidia.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-To: Max Gurtovoy <mgurtovoy@nvidia.com>
-Cc: jasowang@redhat.com, virtio-comment@lists.oasis-open.org, cohuck@redhat.com, virtio-dev@lists.oasis-open.org, oren@nvidia.com, parav@nvidia.com, shahafs@nvidia.com, aadam@redhat.com, virtio@lists.oasis-open.org, eperezma@redhat.com
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: Max Gurtovoy <mgurtovoy@nvidia.com>, "jasowang@redhat.com" <jasowang@redhat.com>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "cohuck@redhat.com" <cohuck@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Oren Duer <oren@nvidia.com>, Shahaf Shuler <shahafs@nvidia.com>, "aadam@redhat.com" <aadam@redhat.com>, "virtio@lists.oasis-open.org" <virtio@lists.oasis-open.org>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Thu, Aug 04, 2022 at 03:01:44AM +0300, Max Gurtovoy wrote:
-> 
-> On 8/1/2022 9:13 AM, Michael S. Tsirkin wrote:
-> > On Mon, Aug 01, 2022 at 03:11:58AM +0300, Max Gurtovoy wrote:
-> > > On 8/1/2022 12:03 AM, Michael S. Tsirkin wrote:
-> > > > On Sun, Jul 31, 2022 at 06:43:53PM +0300, Max Gurtovoy wrote:
-> > > > > This new register will be used for querying the index of the admin
-> > > > > virtqueue of a virtio device. To configure, reset or enable the admin
-> > > > > virtqueue, the driver should follow existing queue configuration/setup
-> > > > > sequence.
-> > > > > 
-> > > > > Reviewed-by: Parav Pandit <parav@nvidia.com>
-> > > > > Signed-off-by: Max Gurtovoy <mgurtovoy@nvidia.com>
-> > > > Can you please at least add text to MMIO and CCW that drivers and
-> > > > devices must not negotiate the new feature bit? Will help avoid confusion.
-> > > why this is needed ? who will create a device and expose bits that it
-> > > doesn't know how to implement.
-> > Any multi-transport implementation actually.
-> > For example, on a Linux guest the default is to add a feature bit to all
-> > transports. Extra care is needed to actually only add it
-> > to the PCI transport. With qemu, same applies to features in
-> > include/hw/virtio/virtio.h.
-> 
-> I don't know how a reasonable driver will want to negotiate feature bits
-> that a device didn't expose.
 
-As a result of a bug.
+> From: Michael S. Tsirkin <mst@redhat.com>
+> Sent: Sunday, July 31, 2022 11:39 AM
+>=20
+> On Sat, Jul 30, 2022 at 01:21:20PM +0000, Parav Pandit wrote:
+> > > > Not a good reason to introduce something inferior.
+> > >
+> > > Avoiding duplication and focusing on low hanging fruit are all sound
+> > > engineering principles.
+> > >
+> > It is not a duplication.
+> > I iterate again. The bits we asked to put in the Aq commands are the on=
+e
+> that does not need to be negotiated early.
+> > Feature bits were mis-used to put all things in there because in past a
+> generic AQ didn't exists.
+> > And there is no reason for that past decision to influence current prop=
+osal.
+> >
+> > Feature bits that are so basic for device bring up stage, stays in feat=
+ure bits
+> area defined today.
+> > Hence, its not a duplication.
+>=20
+> Let's take a look at a network device for example.
+>=20
+>=20
+> =09\item[VIRTIO_NET_F_CSUM (0)] Device handles packets with partial
+> checksum.   This
+> =09  ``checksum offload'' is a common feature on modern network cards.
+>=20
+> =09\item[VIRTIO_NET_F_GUEST_CSUM (1)] Driver handles packets with
+> partial checksum.
+>=20
+> =09\item[VIRTIO_NET_F_CTRL_GUEST_OFFLOADS (2)] Control channel
+> offloads
+> =09=09reconfiguration support.
+>=20
+> =09\item[VIRTIO_NET_F_MTU(3)] Device maximum MTU reporting is
+> supported. If
+> =09    offered by the device, device advises driver about the value of
+> =09    its maximum MTU. If negotiated, the driver uses \field{mtu} as
+> =09    the maximum MTU value.
+>=20
+> =09\item[VIRTIO_NET_F_MAC (5)] Device has given MAC address.
+>=20
+> =09\item[VIRTIO_NET_F_GUEST_TSO4 (7)] Driver can receive TSOv4.
+>=20
+> =09\item[VIRTIO_NET_F_GUEST_TSO6 (8)] Driver can receive TSOv6.
+>=20
+> =09\item[VIRTIO_NET_F_GUEST_ECN (9)] Driver can receive TSO with
+> ECN.
+>=20
+> =09\item[VIRTIO_NET_F_GUEST_UFO (10)] Driver can receive UFO.
+>=20
+> =09\item[VIRTIO_NET_F_HOST_TSO4 (11)] Device can receive TSOv4.
+>=20
+> =09\item[VIRTIO_NET_F_HOST_TSO6 (12)] Device can receive TSOv6.
+>=20
+> =09\item[VIRTIO_NET_F_HOST_ECN (13)] Device can receive TSO with
+> ECN.
+>=20
+> =09\item[VIRTIO_NET_F_HOST_UFO (14)] Device can receive UFO.
+>=20
+> =09\item[VIRTIO_NET_F_MRG_RXBUF (15)] Driver can merge receive
+> buffers.
+>=20
+> =09\item[VIRTIO_NET_F_STATUS (16)] Configuration status field is
+> =09    available.
+>=20
+> =09\item[VIRTIO_NET_F_CTRL_VQ (17)] Control channel is available.
+>=20
+> =09\item[VIRTIO_NET_F_CTRL_RX (18)] Control channel RX mode
+> support.
+>=20
+> =09\item[VIRTIO_NET_F_CTRL_VLAN (19)] Control channel VLAN
+> filtering.
+>=20
+> =09\item[VIRTIO_NET_F_GUEST_ANNOUNCE(21)] Driver can send
+> gratuitous
+> =09    packets.
+>=20
+> =09\item[VIRTIO_NET_F_MQ(22)] Device supports multiqueue with
+> automatic
+> =09    receive steering.
+>=20
+> =09\item[VIRTIO_NET_F_CTRL_MAC_ADDR(23)] Set MAC address
+> through control
+> =09    channel.
+>=20
+> =09\item[VIRTIO_NET_F_NOTF_COAL(53)] Device supports notifications
+> coalescing.
+>=20
+> =09\item[VIRTIO_NET_F_GUEST_USO4 (54)] Driver can receive USOv4
+> packets.
+>=20
+> =09\item[VIRTIO_NET_F_GUEST_USO6 (55)] Driver can receive USOv6
+> packets.
+>=20
+> =09\item[VIRTIO_NET_F_HOST_USO (56)] Device can receive USO
+> packets. Unlike UFO
+> =09 (fragmenting the packet) the USO splits large UDP packet
+> =09 to several segments when each of these smaller packets has UDP
+> header.
+>=20
+> =09\item[VIRTIO_NET_F_HASH_REPORT(57)] Device can report per-
+> packet hash
+> =09    value and a type of calculated hash.
+>=20
+> =09\item[VIRTIO_NET_F_GUEST_HDRLEN(59)] Driver can provide the
+> exact \field{hdr_len}
+> =09    value. Device benefits from knowing the exact header length.
+>=20
+> =09\item[VIRTIO_NET_F_RSS(60)] Device supports RSS (receive-side
+> scaling)
+> =09    with Toeplitz hash calculation and configurable hash
+> =09    parameters for receive steering.
+>=20
+> =09\item[VIRTIO_NET_F_RSC_EXT(61)] Device can process duplicated
+> ACKs
+> =09    and report number of coalesced segments and duplicated ACKs.
+>=20
+> =09\item[VIRTIO_NET_F_STANDBY(62)] Device may act as a standby for
+> a primary
+> =09    device with the same MAC address.
+>=20
+> =09\item[VIRTIO_NET_F_SPEED_DUPLEX(63)] Device reports speed and
+> duplex.
+>=20
+>=20
+> which of these are basic for bring up stage?
+>=20
+>=20
+As you pointed all above fields has zero relation to the device initializat=
+ion.
+Those can be very well-done post device init stage over an AQ.
+The fact that such queue never existed before, it was logic to extend the f=
+eature bits.
+Otherwise, they are very well suitable to be negotiated over net CVQ or new=
+ AQ.
+> > >
+> > Even for non SIOV devices?
+>=20
+> Yes.
+In that case it is no different than the AQ. :)
+Not sure what are we debating for.
+You say that feature bits of the VF _itself_ are negotiated over a transpor=
+t queue by VF itself.
+Including the above one that you listed?
+Right?
+If so, that is useful.
+Yet to review the rfc.
 
-> Please suggest whatever you want me to add and where.
-> 
-> I don't mind adding this but I don't want to waste cycle of review on that
-> so I need exact guideline and not hints please.
-
-Sure. So
-
-"The driver MUST NOT negotiate VIRTIO_F_ADMIN_QUEUE. This is because
-there is as yet no way for the driver to discover the index of the admin
-queue."
-
-in Device Initialization chapter.
-
-And similarly add a device normative:
-
-"The device MUST NOT offer VIRTIO_F_ADMIN_QUEUE. This is because
-there is as yet no way to device to expose the index of the admin
-queue."
-
-
-
-> > 
-> > > And if I'll add it, we might forget to remove it later on.
-> > When we add the implementation I'm reasonably sure we won't forget to
-> > remove text saying it's not implemented.
-> 
-> Ok.
-> 
-> 
-> > 
-> > > > > ---
-> > > > >    content.tex | 10 ++++++++++
-> > > > >    1 file changed, 10 insertions(+)
-> > > > > 
-> > > > > diff --git a/content.tex b/content.tex
-> > > > > index c15423e..5fda1a0 100644
-> > > > > --- a/content.tex
-> > > > > +++ b/content.tex
-> > > > > @@ -904,6 +904,9 @@ \subsubsection{Common configuration structure layout}\label{sec:Virtio Transport
-> > > > >            le64 queue_device;              /* read-write */
-> > > > >            le16 queue_notify_data;         /* read-only for driver */
-> > > > >            le16 queue_reset;               /* read-write */
-> > > > > +
-> > > > > +        /* About admin virtqueue. */
-> > > > > +        le16 admin_queue_index;         /* read-only for driver */
-> > > > >    };
-> > > > >    \end{lstlisting}
-> > > > > @@ -989,6 +992,10 @@ \subsubsection{Common configuration structure layout}\label{sec:Virtio Transport
-> > > > >            This field exists only if VIRTIO_F_RING_RESET has been
-> > > > >            negotiated. (see \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Reset}).
-> > > > > +\item[\field{admin_queue_index}]
-> > > > > +        The device uses this to report the index of the admin virtqueue.
-> > > > > +        This field always exists. Its value is valid only if VIRTIO_F_ADMIN_VQ has been negotiated.
-> > > > > +
-> > > > >    \end{description}
-> > > > >    \devicenormative{\paragraph}{Common configuration structure layout}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Common configuration structure layout}
-> > > > we have a mess with this exists versus valid. I think exists is the same
-> > > the bigest mess that we have is for things like ring_reset that are
-> > > optionally exist according to bit negotiation.
-> > I think this optionally exist does not mean much, just that
-> > it should not be accessed
-> 
-> If I understand the word "exist" translation correctly, it doesn't mean what
-> you said about "shouldn't be accessed".
-> 
-> > > about valid - the driver shouldn't even look on registers that it didn't
-> > > negotiated it's feature bits. There is no reason to do so.
-> > > So yes, there is a mess but not in our proposal.
-> > Right. I propose removing "This field always exists." just
-> > say that it's valid with VIRTIO_F_ADMIN_VQ.
-> 
-> Why removing ? does it exist always or not ?
-
-It doesn't. For example existing devices do not have it.
-
-
-> > 
-> > > > is valid personally. Do others object if we say same as for reset here?
-> > > > Not a big deal either way, we need to clean this up later.
-> > > > 
-> > > > > @@ -1075,6 +1082,9 @@ \subsubsection{Common configuration structure layout}\label{sec:Virtio Transport
-> > > > >    were used before the queue reset.
-> > > > >    (see \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Reset}).
-> > > > > +For configuring the admin virtqueue, the driver MUST use the value of \field{admin_queue_index}.
-> > > > > +For more details on virtqueue configuration see section \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / Virtqueue Configuration}.
-> > > > > +
-> > > > >    \subsubsection{Notification structure layout}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Notification capability}
-> > > > >    The notification location is found using the VIRTIO_PCI_CAP_NOTIFY_CFG
-> > > > > -- 
-> > > > > 2.21.0
-> > 
-> > This publicly archived list offers a means to provide input to the
-> > OASIS Virtual I/O Device (VIRTIO) TC.
-> > 
-> > In order to verify user consent to the Feedback License terms and
-> > to minimize spam in the list archive, subscription is required
-> > before posting.
-> > 
-> > Subscribe: virtio-comment-subscribe@lists.oasis-open.org
-> > Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
-> > List help: virtio-comment-help@lists.oasis-open.org
-> > List archive: https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Flists.oasis-open.org%2Farchives%2Fvirtio-comment%2F&amp;data=05%7C01%7Cmgurtovoy%40nvidia.com%7C46caf90d77cb4e2e7d1b08da7384fbe5%7C43083d15727340c1b7db39efd9ccc17a%7C0%7C0%7C637949312238253496%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&amp;sdata=72o5SFbI1Ai5twIQXF0Onn2TTorpuIlWoqp46tpUgrQ%3D&amp;reserved=0
-> > Feedback License: https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.oasis-open.org%2Fwho%2Fipr%2Ffeedback_license.pdf&amp;data=05%7C01%7Cmgurtovoy%40nvidia.com%7C46caf90d77cb4e2e7d1b08da7384fbe5%7C43083d15727340c1b7db39efd9ccc17a%7C0%7C0%7C637949312238253496%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&amp;sdata=7%2FdpXHFFpA7j97vIqLFXfaVQMj1FmDX2Ldwwzytpuuw%3D&amp;reserved=0
-> > List Guidelines: https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.oasis-open.org%2Fpolicies-guidelines%2Fmailing-lists&amp;data=05%7C01%7Cmgurtovoy%40nvidia.com%7C46caf90d77cb4e2e7d1b08da7384fbe5%7C43083d15727340c1b7db39efd9ccc17a%7C0%7C0%7C637949312238253496%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&amp;sdata=lN2X%2BC%2BoHvd90YL%2BSf3FSleiNJYZnfTqRWSdDpK2wAc%3D&amp;reserved=0
-> > Committee: https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.oasis-open.org%2Fcommittees%2Fvirtio%2F&amp;data=05%7C01%7Cmgurtovoy%40nvidia.com%7C46caf90d77cb4e2e7d1b08da7384fbe5%7C43083d15727340c1b7db39efd9ccc17a%7C0%7C0%7C637949312238253496%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&amp;sdata=5FFookod06loAfQ8uGp3HmeuEUdP2lurXWtPNOnCtNY%3D&amp;reserved=0
-> > Join OASIS: https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.oasis-open.org%2Fjoin%2F&amp;data=05%7C01%7Cmgurtovoy%40nvidia.com%7C46caf90d77cb4e2e7d1b08da7384fbe5%7C43083d15727340c1b7db39efd9ccc17a%7C0%7C0%7C637949312238253496%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&amp;sdata=1OJe%2BI1%2FsWYMIaM0PIZjMKmcC%2FpGAoOkHr%2Bi4E4AJOE%3D&amp;reserved=0
-> > 
+> > > Not 100% sure what you are saing here, so I think you should post a
+> > > new version, yes. Generally iterating faster is a good idea. If you
+> > > feel you didn't get enough feedback on a given version and some time
+> > > passed try pinging people.
+> > Without closing the discussion, I have seen same topic come up again an=
+d
+> again in future version.
+> > So even though new series is up for posting, we better close the
+> discussion.
+>=20
+> That's a mistake, it will be harder for you to make progress like this.
+> Reviewers have limited attention span and memory, text bitrots, you decid=
+e
+> to make unrelated changes yourself... Sorry I'm repeating myself but iter=
+ate
+> quickly in the open even if there are known issues not addressed yet, jus=
+t
+> make very sure to be open and detailed about issues you addressed and
+> known issues you did not address.
+Ok. Thanks for the useful direction.
 
