@@ -1,72 +1,134 @@
-Return-Path: <mst@redhat.com>
-Date: Thu, 4 Aug 2022 02:20:21 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: Re: [virtio-comment] Re: [PATCH v6 1/5] Introduce device group
-Message-ID: <20220804021729-mutt-send-email-mst@kernel.org>
+Return-Path: <mgurtovoy@nvidia.com>
+Message-ID: <a2677ced-4d46-5fe5-a20a-f47091edf4c7@nvidia.com>
+Date: Thu, 4 Aug 2022 03:01:44 +0300
+Subject: Re: [virtio-comment] Re: [PATCH v6 4/5] Add admin_queue_index
+ register to PCI common configuration structure
 References: <20220731154354.15698-1-mgurtovoy@nvidia.com>
- <20220731154354.15698-2-mgurtovoy@nvidia.com>
- <20220802092302-mutt-send-email-mst@kernel.org>
- <60b5ce57-eb41-cbe8-79b6-027808e6bb24@nvidia.com>
+ <20220731154354.15698-5-mgurtovoy@nvidia.com>
+ <20220731170049-mutt-send-email-mst@kernel.org>
+ <00153057-1332-047a-2ce7-20570cb6fe31@nvidia.com>
+ <20220801020359-mutt-send-email-mst@kernel.org>
+From: Max Gurtovoy <mgurtovoy@nvidia.com>
+In-Reply-To: <20220801020359-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <60b5ce57-eb41-cbe8-79b6-027808e6bb24@nvidia.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-To: Max Gurtovoy <mgurtovoy@nvidia.com>
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: "Michael S. Tsirkin" <mst@redhat.com>
 Cc: jasowang@redhat.com, virtio-comment@lists.oasis-open.org, cohuck@redhat.com, virtio-dev@lists.oasis-open.org, oren@nvidia.com, parav@nvidia.com, shahafs@nvidia.com, aadam@redhat.com, virtio@lists.oasis-open.org, eperezma@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Thu, Aug 04, 2022 at 02:45:40AM +0300, Max Gurtovoy wrote:
-> 
-> On 8/2/2022 4:41 PM, Michael S. Tsirkin wrote:
-> > I feel some of my latest review opened some questions that I don't have
-> > good answers for and might have felt a bit rambling.
-> > So to focus the discussion:
-> > 
-> > On Sun, Jul 31, 2022 at 06:43:50PM +0300, Max Gurtovoy wrote:
-> > > +A device can be a member of one or more device groups.
-> > Presumably this is so we can e.g. create subfunctions inside a VF.
-> > A VF now is a member of a SRIOV and SIOV type groups and we
-> > can use type to distinguish between these.
-> > 
-> > We should probably be explicit that each of these groups has to
-> > have a distinct group type then.
-> > 
-> > And this raises the question: different types have different
-> > capabilities. So let's say admin queue is used to both
-> > control features for SRIOV VFs and to create SIOV SFs.
-> > I guess we'll have a feature bit to say "command to create
-> > SIOV SFs is supported" but how do we say that this command
-> > is only supported for VFs not SFs?
-> > 
-> > Do we just make features list a superset of what is supported and simply
-> > say in the spec which commands are legal with which group types?
-> > 
-> > 
-> > Jason Cornelia what do you think?
-> > 
-> > 
-> > 
-> > > +\item Self type (group identifier = 0) - this group has only one device in the group. Each virtio device is a member of at least one device group, the Self type group.
-> > Presumably, this is here so we can send commands that refer to the
-> > device itself as opposed to a group member (e.g. to
-> > PF as opposed to VF). Is that right?
-> yes.
-> > 
-> > It's handy but again the problem here is, this refers to
-> > device as part of which group? Let's just drop this type?
-> 
-> You suggested this type in our meeting. And this was one of the major
-> changes from v5 --> v6.
 
-Not just me but yes. I only just realized the problem we have with
-device being part of multiple groups. Let's see what the fix is.
+On 8/1/2022 9:13 AM, Michael S. Tsirkin wrote:
+> On Mon, Aug 01, 2022 at 03:11:58AM +0300, Max Gurtovoy wrote:
+>> On 8/1/2022 12:03 AM, Michael S. Tsirkin wrote:
+>>> On Sun, Jul 31, 2022 at 06:43:53PM +0300, Max Gurtovoy wrote:
+>>>> This new register will be used for querying the index of the admin
+>>>> virtqueue of a virtio device. To configure, reset or enable the admin
+>>>> virtqueue, the driver should follow existing queue configuration/setup
+>>>> sequence.
+>>>>
+>>>> Reviewed-by: Parav Pandit <parav@nvidia.com>
+>>>> Signed-off-by: Max Gurtovoy <mgurtovoy@nvidia.com>
+>>> Can you please at least add text to MMIO and CCW that drivers and
+>>> devices must not negotiate the new feature bit? Will help avoid confusion.
+>> why this is needed ? who will create a device and expose bits that it
+>> doesn't know how to implement.
+> Any multi-transport implementation actually.
+> For example, on a Linux guest the default is to add a feature bit to all
+> transports. Extra care is needed to actually only add it
+> to the PCI transport. With qemu, same applies to features in
+> include/hw/virtio/virtio.h.
 
-> 
-> How do you suggest sending admin commands to yourself ? the way I suggested
-> in previous versions ?
+I don't know how a reasonable driver will want to negotiate feature bits 
+that a device didn't expose.
 
-I don't know yet. I am sorry I only saw this now.
+Please suggest whatever you want me to add and where.
 
-> > 
-> > 
+I don't mind adding this but I don't want to waste cycle of review on 
+that so I need exact guideline and not hints please.
+
+>
+>> And if I'll add it, we might forget to remove it later on.
+> When we add the implementation I'm reasonably sure we won't forget to
+> remove text saying it's not implemented.
+
+Ok.
+
+
+>
+>>>> ---
+>>>>    content.tex | 10 ++++++++++
+>>>>    1 file changed, 10 insertions(+)
+>>>>
+>>>> diff --git a/content.tex b/content.tex
+>>>> index c15423e..5fda1a0 100644
+>>>> --- a/content.tex
+>>>> +++ b/content.tex
+>>>> @@ -904,6 +904,9 @@ \subsubsection{Common configuration structure layout}\label{sec:Virtio Transport
+>>>>            le64 queue_device;              /* read-write */
+>>>>            le16 queue_notify_data;         /* read-only for driver */
+>>>>            le16 queue_reset;               /* read-write */
+>>>> +
+>>>> +        /* About admin virtqueue. */
+>>>> +        le16 admin_queue_index;         /* read-only for driver */
+>>>>    };
+>>>>    \end{lstlisting}
+>>>> @@ -989,6 +992,10 @@ \subsubsection{Common configuration structure layout}\label{sec:Virtio Transport
+>>>>            This field exists only if VIRTIO_F_RING_RESET has been
+>>>>            negotiated. (see \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Reset}).
+>>>> +\item[\field{admin_queue_index}]
+>>>> +        The device uses this to report the index of the admin virtqueue.
+>>>> +        This field always exists. Its value is valid only if VIRTIO_F_ADMIN_VQ has been negotiated.
+>>>> +
+>>>>    \end{description}
+>>>>    \devicenormative{\paragraph}{Common configuration structure layout}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Common configuration structure layout}
+>>> we have a mess with this exists versus valid. I think exists is the same
+>> the bigest mess that we have is for things like ring_reset that are
+>> optionally exist according to bit negotiation.
+> I think this optionally exist does not mean much, just that
+> it should not be accessed
+
+If I understand the word "exist" translation correctly, it doesn't mean 
+what you said about "shouldn't be accessed".
+
+>> about valid - the driver shouldn't even look on registers that it didn't
+>> negotiated it's feature bits. There is no reason to do so.
+>> So yes, there is a mess but not in our proposal.
+> Right. I propose removing "This field always exists." just
+> say that it's valid with VIRTIO_F_ADMIN_VQ.
+
+Why removing ? does it exist always or not ?
+
+>
+>>> is valid personally. Do others object if we say same as for reset here?
+>>> Not a big deal either way, we need to clean this up later.
+>>>
+>>>> @@ -1075,6 +1082,9 @@ \subsubsection{Common configuration structure layout}\label{sec:Virtio Transport
+>>>>    were used before the queue reset.
+>>>>    (see \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Reset}).
+>>>> +For configuring the admin virtqueue, the driver MUST use the value of \field{admin_queue_index}.
+>>>> +For more details on virtqueue configuration see section \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / Virtqueue Configuration}.
+>>>> +
+>>>>    \subsubsection{Notification structure layout}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Notification capability}
+>>>>    The notification location is found using the VIRTIO_PCI_CAP_NOTIFY_CFG
+>>>> -- 
+>>>> 2.21.0
+>
+> This publicly archived list offers a means to provide input to the
+> OASIS Virtual I/O Device (VIRTIO) TC.
+>
+> In order to verify user consent to the Feedback License terms and
+> to minimize spam in the list archive, subscription is required
+> before posting.
+>
+> Subscribe: virtio-comment-subscribe@lists.oasis-open.org
+> Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
+> List help: virtio-comment-help@lists.oasis-open.org
+> List archive: https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Flists.oasis-open.org%2Farchives%2Fvirtio-comment%2F&amp;data=05%7C01%7Cmgurtovoy%40nvidia.com%7C46caf90d77cb4e2e7d1b08da7384fbe5%7C43083d15727340c1b7db39efd9ccc17a%7C0%7C0%7C637949312238253496%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&amp;sdata=72o5SFbI1Ai5twIQXF0Onn2TTorpuIlWoqp46tpUgrQ%3D&amp;reserved=0
+> Feedback License: https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.oasis-open.org%2Fwho%2Fipr%2Ffeedback_license.pdf&amp;data=05%7C01%7Cmgurtovoy%40nvidia.com%7C46caf90d77cb4e2e7d1b08da7384fbe5%7C43083d15727340c1b7db39efd9ccc17a%7C0%7C0%7C637949312238253496%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&amp;sdata=7%2FdpXHFFpA7j97vIqLFXfaVQMj1FmDX2Ldwwzytpuuw%3D&amp;reserved=0
+> List Guidelines: https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.oasis-open.org%2Fpolicies-guidelines%2Fmailing-lists&amp;data=05%7C01%7Cmgurtovoy%40nvidia.com%7C46caf90d77cb4e2e7d1b08da7384fbe5%7C43083d15727340c1b7db39efd9ccc17a%7C0%7C0%7C637949312238253496%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&amp;sdata=lN2X%2BC%2BoHvd90YL%2BSf3FSleiNJYZnfTqRWSdDpK2wAc%3D&amp;reserved=0
+> Committee: https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.oasis-open.org%2Fcommittees%2Fvirtio%2F&amp;data=05%7C01%7Cmgurtovoy%40nvidia.com%7C46caf90d77cb4e2e7d1b08da7384fbe5%7C43083d15727340c1b7db39efd9ccc17a%7C0%7C0%7C637949312238253496%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&amp;sdata=5FFookod06loAfQ8uGp3HmeuEUdP2lurXWtPNOnCtNY%3D&amp;reserved=0
+> Join OASIS: https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.oasis-open.org%2Fjoin%2F&amp;data=05%7C01%7Cmgurtovoy%40nvidia.com%7C46caf90d77cb4e2e7d1b08da7384fbe5%7C43083d15727340c1b7db39efd9ccc17a%7C0%7C0%7C637949312238253496%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&amp;sdata=1OJe%2BI1%2FsWYMIaM0PIZjMKmcC%2FpGAoOkHr%2Bi4E4AJOE%3D&amp;reserved=0
+>
 
