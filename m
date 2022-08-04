@@ -1,14 +1,14 @@
-Return-Path: <virtio-dev-return-9797-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-9700-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 From: Dmitry Fomichev <dmitry.fomichev@wdc.com>
-Date: Tue, 16 Aug 2022 21:39:45 -0400
-Message-Id: <20220817013945.137865-1-dmitry.fomichev@wdc.com>
+Date: Thu,  4 Aug 2022 18:40:57 -0400
+Message-Id: <20220804224057.169856-1-dmitry.fomichev@wdc.com>
 MIME-Version: 1.0
-Subject: [virtio-dev] [PATCH v4] virtio-blk: add zoned block device specification
+Subject: [virtio-dev] [RFC PATCH v3] virtio-blk: add zoned block device specification
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 To: virtio-dev@lists.oasis-open.org, virtio-comment@lists.oasis-open.org
@@ -61,38 +61,6 @@ Matias Bj=C3=B8rling <Matias.Bjorling@wdc.com>
 Niklas Cassel <Niklas.Cassel@wdc.com>
 Hans Holmberg <Hans.Holmberg@wdc.com>
 
-v3 -> v4:
-
-Address additional feedback from Stefan:
-
- - align the append sector field to 8 bytes instead of 4
-
- - define "zone sector address" in the non-normative section and use
-   this term in the text in a consistent way. Make sure it is clear
-   that the value is in bytes.
-
- - move portions of VIRTIO_BLK_T_ZONE_REPORT description to the
-   non-normative section
-
- - clarify the wording about reading of unwritten data
-
- - editorial changes
-
-v2 -> v3:
-
-A few changes made as the result of off-list discussions with Stefan,
-Damien and Hannes:
-
- - drop virtblk_zoned_req for zoned devices and define a union for
-   virtio request in header that is specific to ZONE APPEND request
-
- - drop support for ALL bit in all zone operations except for RESET
-   ZONE. For this zone management operation, define a new request type,
-   VIRTIO_BLK_T_ZONE_RESET_ALL. This way, the zone management out
-   request header is no longer necessary
-
- - editorial changes
-
 v1 -> v2:
 
 Address Stefan's review comments:
@@ -111,13 +79,28 @@ Address Stefan's review comments:
 
  - make a few editorial changes
 
+v2 -> v3:
+
+A few changes made as the result of off-list discussions with Stefan,
+Damien and Hannes:
+
+ - drop virtblk_zoned_req for zoned devices and define a union for
+   virtio request in header that is specific to ZONE APPEND request
+
+ - drop support for ALL bit in all zone operations except for RESET
+   ZONE. For this zone management operation, define a new request type,
+   VIRTIO_BLK_T_ZONE_RESET_ALL. This way, the zone management out
+   request header is no longer necessary
+
+ - editorial changes
+
 Signed-off-by: Dmitry Fomichev <dmitry.fomichev@wdc.com>
 ---
- content.tex | 664 +++++++++++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 662 insertions(+), 2 deletions(-)
+ content.tex | 660 +++++++++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 658 insertions(+), 2 deletions(-)
 
 diff --git a/content.tex b/content.tex
-index 7508dd1..0be6aba 100644
+index 7508dd1..cfb8727 100644
 --- a/content.tex
 +++ b/content.tex
 @@ -4557,6 +4557,13 @@ \subsection{Feature bits}\label{sec:Device Types / B=
@@ -412,7 +395,19 @@ ypes / Block Device / Device Initialization / Legacy Interface: Device Init=
 ialization}
 =20
  Because legacy devices do not have FEATURES_OK, transitional devices
-@@ -4746,7 +4927,15 @@ \subsection{Device Operation}\label{sec:Device Types=
+@@ -4738,7 +4919,8 @@ \subsubsection{Legacy Interface: Device Initializatio=
+n}\label{sec:Device Types /
+ \subsection{Device Operation}\label{sec:Device Types / Block Device / Devi=
+ce Operation}
+=20
+ The driver queues requests to the virtqueues, and they are used by
+-the device (not necessarily in order). Each request is of form:
++the device (not necessarily in order). If the VIRTIO_BLK_F_ZONED feature
++is not negotiated, then each request is of form:
+=20
+ \begin{lstlisting}
+ struct virtio_blk_req {
+@@ -4746,7 +4928,15 @@ \subsection{Device Operation}\label{sec:Device Types=
  / Block Device / Device Ope
          le32 reserved;
          le64 sector;
@@ -423,25 +418,14 @@ ialization}
 +
 +                struct {
 +                        u8 status;
-+                        u8 reserved[7];
++                        u8 reserved[3];
 +                        le64 append_sector;
 +                } zone_append_in_hdr;
 +        };
  };
  \end{lstlisting}
 =20
-@@ -4770,7 +4959,7 @@ \subsection{Device Operation}\label{sec:Device Types =
-/ Block Device / Device Ope
-=20
- The \field{sector} number indicates the offset (multiplied by 512) where
- the read or write is to occur. This field is unused and set to 0 for
--commands other than read or write.
-+commands other than read, write and some zone operations.
-=20
- VIRTIO_BLK_T_IN requests populate \field{data} with the contents of sector=
-s
- read from the block device (in multiples of 512 bytes).  VIRTIO_BLK_T_OUT
-@@ -4853,6 +5042,299 @@ \subsection{Device Operation}\label{sec:Device Type=
+@@ -4853,6 +5043,290 @@ \subsection{Device Operation}\label{sec:Device Type=
 s / Block Device / Device Ope
  command produces VIRTIO_BLK_S_IOERR.  A segment may have completed
  successfully, failed, or not been processed by the device.
@@ -489,24 +473,11 @@ D,
 +
 +Requests of the type VIRTIO_BLK_T_ZONE_REPORT are reads and requests of th=
 e type
-+VIRTIO_BLK_T_ZONE_APPEND are writes. VIRTIO_BLK_T_ZONE_OPEN,
++VIRTIO_BLK_T_ZONE_APPEND transfer data from the device. VIRTIO_BLK_T_ZONE_=
+OPEN,
 +VIRTIO_BLK_T_ZONE_CLOSE, VIRTIO_BLK_T_ZONE_FINISH, VIRTIO_BLK_T_ZONE_RESET=
  and
 +VIRTIO_BLK_T_ZONE_RESET_ALL are non-data requests.
-+
-+Zone sector address is a 64-bit address of the first 512-byte sector of th=
-e
-+zone.
-+
-+VIRTIO_BLK_T_ZONE_OPEN, VIRTIO_BLK_T_ZONE_CLOSE, VIRTIO_BLK_T_ZONE_FINISH =
-and
-+VIRTIO_BLK_T_ZONE_RESET requests make the zone operation to act on a parti=
-cular
-+zone specified by the zone sector address in the \field{sector} of the req=
-uest.
-+
-+VIRTIO_BLK_T_ZONE_RESET_ALL request acts upon all applicable zones of the
-+device. The \field{sector} value is not used for this request.
 +
 +In ZBD standards, the VIRTIO_BLK_T_ZONE_REPORT request belongs to "Zone
 +Management Receive" command category and VIRTIO_BLK_T_ZONE_OPEN,
@@ -631,15 +602,17 @@ tors}
 +value in \field{virtio_blk_zoned_characteristics} structure in the device
 +configuration space.
 +
-+The zone descriptor field \field{z_start} contains the zone sector address=
-.
-+
-+The zone descriptor field \field{z_wp} contains the sector address where t=
++The zone descriptor field \field{z_start} contains the 64-bit address of t=
 he
-+next write operation for this zone should be issued. This value is undefin=
-ed
-+for conventional zones and for zones in VIRTIO_BLK_ZS_RDONLY,
-+VIRTIO_BLK_ZS_FULL and VIRTIO_BLK_ZS_OFFLINE state.
++first 512-byte sector of the zone.
++
++The zone descriptor field \field{z_wp} contains the 64-bit sector address =
+where
++the next write operation for this zone should be issued. This value is und=
+efined
++for conventional zones and for zones in VIRTIO_BLK_ZS_RDONLY, VIRTIO_BLK_Z=
+S_FULL
++and VIRTIO_BLK_ZS_OFFLINE state.
 +
 +Depending on their state, zones consume resources as follows:
 +\begin{itemize}
@@ -658,10 +631,9 @@ with
 +
 +Zones in the VIRTIO_BLK_ZS_EMPTY (Empty) state have the write pointer valu=
 e
-+equal to the sector address of the zone. In this state, the entire capacit=
-y of
-+the zone is available for writing. A zone can transition from this state t=
-o
++equal to the start sector of the zone. In this state, the entire capacity =
+of the
++zone is available for writing. A zone can transition from this state to
 +\begin{itemize}
 +\item VIRTIO_BLK_ZS_IOPEN when a successful VIRTIO_BLK_T_OUT request or
 +    VIRTIO_BLK_T_ZONE_APPEND with a non-zero data size is received for the=
@@ -836,7 +808,7 @@ model
 vice / Device Operation}
 =20
  A driver MUST NOT submit a request which would cause a read or write
-@@ -4899,6 +5381,50 @@ \subsection{Device Operation}\label{sec:Device Types=
+@@ -4899,6 +5373,51 @@ \subsection{Device Operation}\label{sec:Device Types=
  / Block Device / Device Ope
  successfully, failed, or were processed by the device at all if the reques=
 t
@@ -845,39 +817,42 @@ t
 +The following requirements only apply if the VIRTIO_BLK_F_ZONED feature is
 +negotiated.
 +
-+A zone sector address provided by the driver MUST be a multiple of 512 byt=
-es.
++When forming a VIRTIO_BLK_T_ZONE_REPORT request, the driver sets the secto=
+r
++address of the starting zone to report to \field{sector}.
 +
-+When forming a VIRTIO_BLK_T_ZONE_REPORT request, the driver MUST set a sec=
-tor
-+within the sector range of the starting zone to report to \field{sector} f=
-ield.
-+It MAY be a sector that is different from the zone sector address.
++VIRTIO_BLK_T_ZONE_OPEN, VIRTIO_BLK_T_ZONE_CLOSE, VIRTIO_BLK_T_ZONE_FINISH =
+and
++VIRTIO_BLK_T_ZONE_RESET requests make the zone operation to act on a parti=
+cular
++zone specified by the zone sector address in the \field{sector} of the req=
+uest.
++The zone sector address is a 64-bit value expressed in 512-byte units that
++points at the first sector in the target zone.
 +
-+In VIRTIO_BLK_T_ZONE_OPEN, VIRTIO_BLK_T_ZONE_CLOSE, VIRTIO_BLK_T_ZONE_FINI=
-SH and
-+VIRTIO_BLK_T_ZONE_RESET requests, the driver MUST set \field{sector} field=
- to
-+point at the first sector in the target zone.
-+
-+In VIRTIO_BLK_T_ZONE_RESET_ALL request, the driver MUST set the field
-+\field{sector} to zero value.
++VIRTIO_BLK_T_ZONE_RESET_ALL request acts upon all applicable zones of the
++device. For this request, the driver MUST set the field \field{sector} to =
+zero
++value.
 +
 +The \field{sector} field of the VIRTIO_BLK_T_ZONE_APPEND request MUST spec=
 ify
-+the zone sector address of the zone to which data is to be appended at the
-+position of the write pointer. The size of the data that is appended MUST =
-be a
-+multiple of 512 bytes and MUST NOT exceed the \field{max_append_sectors} v=
-alue
-+provided by the device in \field{virtio_blk_zoned_characteristics} configu=
-ration
-+space structure.
++the first sector of the zone to which data is to be appended at the positi=
+on of
++the write pointer. The zone sector address is a 64-bit value expressed in
++512-byte units that points anywhere in the target zone. The size of the da=
+ta
++that is appended MUST NOT exceed the \field{max_append_sectors} value prov=
+ided
++by the device in \field{virtio_blk_zoned_characteristics} configuration sp=
+ace
++structure.
 +
 +Upon a successful completion of a VIRTIO_BLK_T_ZONE_APPEND request, the dr=
 iver
-+MAY read the starting sector location of the written data from the request
-+field \field{append_sector}.
++SHOULD read the starting sector location of the written data from the requ=
+est field
++\field{append_sector}.
 +
 +All VIRTIO_BLK_T_OUT requests issued by the driver to sequential zones and
 +VIRTIO_BLK_T_ZONE_APPEND requests MUST have:
@@ -905,7 +880,7 @@ ts
 vice / Device Operation}
 =20
  A device MUST set the \field{status} byte to VIRTIO_BLK_S_IOERR
-@@ -4990,6 +5516,140 @@ \subsection{Device Operation}\label{sec:Device Type=
+@@ -4990,6 +5509,143 @@ \subsection{Device Operation}\label{sec:Device Type=
 s / Block Device / Device Ope
    simplfy passthrough implementations from eMMC devices.
  \end{note}
@@ -1069,6 +1044,10 @@ ope
 +\item Fail the request. Depending on the driver implementation, this may p=
 revent
 +the device from becoming operational.
++
++\item Return stale, previously written data to the driver. This approach i=
+s the
++least preferred for its obvious negative security implications.
 +\end{enumerate}
 +
 +If the both VIRTIO_BLK_F_ZONED and VIRTIO_BLK_F_SECURE_ERASE features are
