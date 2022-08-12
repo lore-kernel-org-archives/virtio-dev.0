@@ -1,138 +1,43 @@
-Return-Path: <virtio-return-3855-cohuck=redhat.com@lists.oasis-open.org>
-Sender: <virtio@lists.oasis-open.org>
-List-Post: <mailto:virtio@lists.oasis-open.org>
-List-Help: <mailto:virtio-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-From: Cornelia Huck <cohuck@redhat.com>
-In-Reply-To: <20220830144854.7853a573.pasic@linux.ibm.com>
+Return-Path: <mst@redhat.com>
+Date: Fri, 12 Aug 2022 13:19:25 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Subject: [PATCH RFC v7 7/8] admin: document that structures can be shorter or
+ longer
+Message-ID: <20220812171841.12183-8-mst@redhat.com>
 References: <20220812171841.12183-1-mst@redhat.com>
- <20220812171841.12183-7-mst@redhat.com>
- <20220816164811.16464110.pasic@linux.ibm.com>
- <20220816114216-mutt-send-email-mst@kernel.org>
- <20220818153958.7219f6b8.pasic@linux.ibm.com>
- <20220829142401-mutt-send-email-mst@kernel.org>
- <20220830144854.7853a573.pasic@linux.ibm.com>
-Date: Tue, 30 Aug 2022 16:31:14 +0200
-Message-ID: <87mtblerbh.fsf@redhat.com>
 MIME-Version: 1.0
-Subject: Re: [virtio] [PATCH RFC v7 6/8] ccw: disallow ADMIN_VQ
-Content-Type: text/plain
-To: Halil Pasic <pasic@linux.ibm.com>, "Michael S. Tsirkin" <mst@redhat.com>
-Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, jasowang@redhat.com, sgarzare@redhat.com, stefanha@redhat.com, nrupal.jani@intel.com, Piotr.Uminski@intel.com, hang.yuan@intel.com, virtio@lists.oasis-open.org, Zhu Lingshan <lingshan.zhu@intel.com>, oren@nvidia.com, parav@nvidia.com, shahafs@nvidia.com, aadam@redhat.com, eperezma@redhat.com, Max Gurtovoy <mgurtovoy@nvidia.com>, Halil Pasic <pasic@linux.ibm.com>
+In-Reply-To: <20220812171841.12183-1-mst@redhat.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+To: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, jasowang@redhat.com, mst@redhat.com, cohuck@redhat.com, sgarzare@redhat.com, stefanha@redhat.com, nrupal.jani@intel.com, Piotr.Uminski@intel.com, hang.yuan@intel.com
+Cc: virtio@lists.oasis-open.org, Zhu Lingshan <lingshan.zhu@intel.com>, oren@nvidia.com, parav@nvidia.com, shahafs@nvidia.com, aadam@redhat.com, eperezma@redhat.com, Max Gurtovoy <mgurtovoy@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-[finally got around to looking at this thread]
+ensures forward and backward compatibility as long as
+we tuck new structures at the end.
 
-On Tue, Aug 30 2022, Halil Pasic <pasic@linux.ibm.com> wrote:
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+---
+ admin.tex | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-> On Mon, 29 Aug 2022 14:28:05 -0400
-> "Michael S. Tsirkin" <mst@redhat.com> wrote:
->
->> On Thu, Aug 18, 2022 at 03:39:58PM +0200, Halil Pasic wrote:
-> [..]
->> > Fair point!
->> > 
->> > I would prefer a driver normative which goes like this:
->> > 
->> > """
->> > A driver SHOULD NOT accept features (i.e. have code that would do so if
->> > the feature is offered) if the feature is not supported by the driver
->> > (e.g. because unsupported by the transport), even if the specification
->> > implies that the device can not offer these features in the first place
->> > (e.g. because the feature is not yet supported by the transport.
->> > """  
->> 
->> ok. why not MUST NOT?
->
-> I'm fine with MUST NOT. Since this is a general statement (i.e. not
-> scoped to ADMIN_VQ) I felt like SHOULD NOT is a bit safer because
-> provided somebody is doing this wrong for some feature already, it
-> wouldn't render that implementation outright non-compliant. But I
-> believe this is just a theoretical possibility. I'm fine with MUST NOT.
-
-I'd assume that any driver that does this (accept a feature even if not
-supported by the transport) today is already broken, so yes, MUST NOT is
-the way to go here IMHO.
-
->
->> 
->> > And a similar device normative as well, which just that it may not offer
->> > such features.
->> > 
->> > """
->> > Note: The rationale behind the [reference to the normative] is that
->> > while some features can not be implemented within the boundaries of the
->> > current virtio specification, future incarnations of the specificaton may
->> > make such implementations possible.  A most prominent example is optional
->> > features dependent on optional virtio facilities whose transport specific
->> > implementation is not yet specified for some transports. Should one end
->> > gain the ability to support these features, the old implementation which
->> > made the assumption that the other end will make sure these features are
->> > not negotiated would end up negotiating something it can't actually
->> > support.
->> > """
->> > 
->> > 
->> >   
->> > > 
->> > > So, Maybe just add text
->> > > 
->> > > Note: future versions of this specification will allow setting ADMIN_VQ
->> > > for driver and device. Device MUST NOT assume driver does not
->> > > acknowledge ADMIN_VQ if offered.  
->> > 
->> > I would not lean out of the window and promise something with regards to
->> > future versions of this spec.  
->> 
->> s/will/might/
->
-> With this change it works like a charm!
-
-Works for me as well. (Although I'd use definite articles with device
-and driver.)
-
->
->> 
->> > > 
->> > > And similarly for drivers:
->> > > 
->> > > Note: future versions of this specification will allow setting ADMIN_VQ
->> > > for driver and device. Drivers MUST NOT assume ADMIN_VQ if not offered.
-
-Same here.
-
->> > >   
->> > 
->> > I think we can then make a note which references the generic normative
->> > for each feature affected where it suits us.
->> >   
->> > > > 
->> > > > If we want, we can also state what needs to be done in general when
->> > > > features are unsupported by the transport. And yes, that normative
->> > > > material in my opinion.
->> > > > 
->> > > > Regards,
->> > > > Halil    
->> > > 
->> > > 
->> > > Are there other examples? I want to call out the list explicitly because
->> > > it is so easy to enable an extra feature by mistake.
->> > >   
->> > 
->> > I don't think CCW supports the shared memory yet... But I may be wrong.
-
-You are right about this one. I think we never figured out an
-architecture that would work with a mix of virtio-ccw and virtio-pci
-devices...
-
-I think ring reset and notification data should also be on that list of
-non-supported features. Things like SR_IOV obviously don't make sense
-for ccw, so they will never be implemented.
-
-
----------------------------------------------------------------------
-To unsubscribe from this mail list, you must leave the OASIS TC that 
-generates this mail.  Follow this link to all your TCs in OASIS at:
-https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
+diff --git a/admin.tex b/admin.tex
+index a0008c7..99b6c2a 100644
+--- a/admin.tex
++++ b/admin.tex
+@@ -136,6 +136,12 @@ \subsection{Group administration commands}\label{sec:Basic Facilities of a Virti
+ holds the command specific error. If \field{status} is not set to VIRTIO_ADMIN_STATUS_CS_ERR, the
+ \field{command_specific_error} value is undefined and should be ignored by the driver.
+ 
++It is legal for the driver to submit commands with device-writeable and
++device-readable structures both shorter and longer than what
++is described in this specification. Device silently truncates the
++structures to the shorter of the two (submitted by driver and
++described in this specification).
++
+ \section{Administration Virtqueue}\label{sec:Basic Facilities of a Virtio Device / Group Administration Virtqueues}
+ 
+ An administration virtqueue of a parent device is used to submit
+-- 
+MST
 
