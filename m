@@ -1,117 +1,61 @@
 Return-Path: <mst@redhat.com>
-Date: Thu, 18 Aug 2022 23:50:18 -0400
+Date: Fri, 12 Aug 2022 13:19:16 -0400
 From: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: Re: [PATCH RFC v7 4/8] Add admin_queue_index register to PCI common
- configuration structure
-Message-ID: <20220818234857-mutt-send-email-mst@kernel.org>
+Subject: [PATCH RFC v7 5/8] MMIO: disallow using admin vq bit
+Message-ID: <20220812171841.12183-6-mst@redhat.com>
 References: <20220812171841.12183-1-mst@redhat.com>
- <20220812171841.12183-5-mst@redhat.com>
- <CACGkMEsf1JpnTYoJS94R=Yy9Rh3ScFK3sPg6GJSDxgXC2dA1+w@mail.gmail.com>
- <2d7d7ac5-5746-4d36-d29d-328c6dc8dc28@nvidia.com>
- <CACGkMEsHmb0MT=xguYVOFfagdeaSJJ5uC6ke7ww=RoELAy+GsA@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <CACGkMEsHmb0MT=xguYVOFfagdeaSJJ5uC6ke7ww=RoELAy+GsA@mail.gmail.com>
+In-Reply-To: <20220812171841.12183-1-mst@redhat.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-To: Jason Wang <jasowang@redhat.com>
-Cc: Max Gurtovoy <mgurtovoy@nvidia.com>, virtio-comment@lists.oasis-open.org, Virtio-Dev <virtio-dev@lists.oasis-open.org>, Cornelia Huck <cohuck@redhat.com>, Stefano Garzarella <sgarzare@redhat.com>, Stefan Hajnoczi <stefanha@redhat.com>, nrupal.jani@intel.com, "Uminski, Piotr" <Piotr.Uminski@intel.com>, hang.yuan@intel.com, virtio@lists.oasis-open.org, Zhu Lingshan <lingshan.zhu@intel.com>, Oren Duer <oren@nvidia.com>, Parav Pandit <parav@nvidia.com>, Shahaf Shuler <shahafs@nvidia.com>, Ariel Adam <aadam@redhat.com>, eperezma <eperezma@redhat.com>
+To: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, jasowang@redhat.com, mst@redhat.com, cohuck@redhat.com, sgarzare@redhat.com, stefanha@redhat.com, nrupal.jani@intel.com, Piotr.Uminski@intel.com, hang.yuan@intel.com
+Cc: virtio@lists.oasis-open.org, Zhu Lingshan <lingshan.zhu@intel.com>, oren@nvidia.com, parav@nvidia.com, shahafs@nvidia.com, aadam@redhat.com, eperezma@redhat.com, Max Gurtovoy <mgurtovoy@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Fri, Aug 19, 2022 at 08:28:41AM +0800, Jason Wang wrote:
-> On Thu, Aug 18, 2022 at 4:55 PM Max Gurtovoy <mgurtovoy@nvidia.com> wrote:
-> >
-> >
-> > On 8/18/2022 11:49 AM, Jason Wang wrote:
-> > > On Sat, Aug 13, 2022 at 1:19 AM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > >> From: Max Gurtovoy <mgurtovoy@nvidia.com>
-> > >>
-> > >> This new register will be used for querying the index of the admin
-> > >> virtqueue of a virtio device. To configure, reset or enable the admin
-> > >> virtqueue, the driver should follow existing queue configuration/setup
-> > >> sequence.
-> > >>
-> > >> Signed-off-by: Max Gurtovoy <mgurtovoy@nvidia.com>
-> > >> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> > >> ---
-> > >>   content.tex | 14 ++++++++++++++
-> > >>   1 file changed, 14 insertions(+)
-> > >>
-> > >> diff --git a/content.tex b/content.tex
-> > >> index 6ce1c07..297cb4a 100644
-> > >> --- a/content.tex
-> > >> +++ b/content.tex
-> > >> @@ -904,6 +904,9 @@ \subsubsection{Common configuration structure layout}\label{sec:Virtio Transport
-> > >>           le64 queue_device;              /* read-write */
-> > >>           le16 queue_notify_data;         /* read-only for driver */
-> > >>           le16 queue_reset;               /* read-write */
-> > >> +
-> > >> +        /* About the administration virtqueue. */
-> > >> +        le16 admin_queue_index;         /* read-only for driver */
-> > > Is there a chance that we may have multiple admin virtqueues?
-> >
-> > No, same as we probably can't have multiple ctrl virtqueues..
-> 
-> For control virtqueue, it's technically possible but doesn't have too
-> much value.
-> 
-> But for admin virtqueue we can:
-> 
-> admin vq 1: group 1
-> admin vq 2: group 2
-> 
-> ?
-> 
-> Thanks
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+---
+ conformance.tex | 1 +
+ content.tex     | 8 ++++++++
+ 2 files changed, 9 insertions(+)
 
-I don't see how *that* will solve scalability issues, e.g. a group might have
-10k devices. Just allowing submitting commands to any of multiple admin
-vqs might make sense. I'm looking for a clean interface to expose that
-though and don't see it yet.
-
-
-> >
-> >
-> > >
-> > > Thanks
-> > >
-> > >
-> > >>   };
-> > >>   \end{lstlisting}
-> > >>
-> > >> @@ -989,6 +992,10 @@ \subsubsection{Common configuration structure layout}\label{sec:Virtio Transport
-> > >>           This field exists only if VIRTIO_F_RING_RESET has been
-> > >>           negotiated. (see \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Reset}).
-> > >>
-> > >> +\item[\field{admin_queue_index}]
-> > >> +        The device uses this to report the index of the administration virtqueue.
-> > >> +        This field is valid only if VIRTIO_F_ADMIN_VQ has been negotiated.
-> > >> +
-> > >>   \end{description}
-> > >>
-> > >>   \devicenormative{\paragraph}{Common configuration structure layout}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Common configuration structure layout}
-> > >> @@ -1075,6 +1082,9 @@ \subsubsection{Common configuration structure layout}\label{sec:Virtio Transport
-> > >>   were used before the queue reset.
-> > >>   (see \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Reset}).
-> > >>
-> > >> +If VIRTIO_F_ADMIN_VQ has been negotiated, the driver MUST
-> > >> +configure the administration virtqueue using the value of \field{admin_queue_index}.
-> > >> +
-> > >>   \subsubsection{Notification structure layout}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Notification capability}
-> > >>
-> > >>   The notification location is found using the VIRTIO_PCI_CAP_NOTIFY_CFG
-> > >> @@ -6947,6 +6957,10 @@ \chapter{Reserved Feature Bits}\label{sec:Reserved Feature Bits}
-> > >>     See \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Reset}.
-> > >>
-> > >>     \item[VIRTIO_F_ADMIN_VQ (41)] This feature indicates that an administration virtqueue is supported.
-> > >> +  At the moment this feature is only supported for devices using
-> > >> +  \ref{sec:Virtio Transport Options / Virtio Over PCI
-> > >> +         Bus}~\nameref{sec:Virtio Transport Options / Virtio Over PCI Bus}
-> > >> +         as the transport.
-> > >>
-> > >>   \end{description}
-> > >>
-> > >> --
-> > >> MST
-> > >>
-> >
+diff --git a/conformance.tex b/conformance.tex
+index c3c1d3e..161b5e0 100644
+--- a/conformance.tex
++++ b/conformance.tex
+@@ -383,6 +383,7 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
+ An MMIO device MUST conform to the following normative statements:
+ 
+ \begin{itemize}
++\item \ref{devicenormative:Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operation / Device Initialization}
+ \item \ref{devicenormative:Virtio Transport Options / Virtio Over MMIO / MMIO Device Register Layout}
+ \end{itemize}
+ 
+diff --git a/content.tex b/content.tex
+index 297cb4a..76b5a28 100644
+--- a/content.tex
++++ b/content.tex
+@@ -2079,6 +2079,11 @@ \subsection{MMIO-specific Initialization And Device Operation}\label{sec:Virtio
+ 
+ \subsubsection{Device Initialization}\label{sec:Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operation / Device Initialization}
+ 
++\devicenormative{\paragraph}{Device Initialization}{Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operation / Device Initialization}
++
++Device MUST NOT set bit VIRTIO_F_ADMIN_VQ (bit 41) in
++DeviceFeatures.
++
+ \drivernormative{\paragraph}{Device Initialization}{Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operation / Device Initialization}
+ 
+ The driver MUST start the device initialization by reading and
+@@ -2093,6 +2098,9 @@ \subsubsection{Device Initialization}\label{sec:Virtio Transport Options / Virti
+ Further initialization MUST follow the procedure described in
+ \ref{sec:General Initialization And Device Operation / Device Initialization}~\nameref{sec:General Initialization And Device Operation / Device Initialization}.
+ 
++Driver MUST NOT set bit VIRTIO_F_ADMIN_VQ (bit 41) in
++DriverFeatures even if offered by the device.
++
+ \subsubsection{Virtqueue Configuration}\label{sec:Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operation / Virtqueue Configuration}
+ 
+ The driver will typically initialize the virtual queue in the following way:
+-- 
+MST
 
