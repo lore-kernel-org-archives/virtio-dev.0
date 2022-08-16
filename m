@@ -1,186 +1,232 @@
-Return-Path: <virtio-dev-return-9875-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-9785-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 8C9E59864E2
-	for <virtio-dev@lists.oasis-open.org>; Thu,  1 Sep 2022 02:11:16 +0000 (UTC)
-From: Gavin Li <gavinl@nvidia.com>
-Date: Thu, 1 Sep 2022 05:10:38 +0300
-Message-ID: <20220901021038.84751-3-gavinl@nvidia.com>
-In-Reply-To: <20220901021038.84751-1-gavinl@nvidia.com>
-References: <20220901021038.84751-1-gavinl@nvidia.com>
-MIME-Version: 1.0
-Subject: [virtio-dev] [PATCH v5 2/2] virtio-net: use mtu size as buffer length for big packets
-Content-Type: text/plain
-Content-Transfer-Encoding: quoted-printable
-To: stephen@networkplumber.org, davem@davemloft.net, jesse.brandeburg@intel.com, alexander.h.duyck@intel.com, kuba@kernel.org, sridhar.samudrala@intel.com, jasowang@redhat.com, loseweigh@gmail.com, netdev@vger.kernel.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, mst@redhat.com
-Cc: gavi@nvidia.com, parav@nvidia.com, Xuan Zhuo <xuanzhuo@linux.alibaba.com>, Si-Wei Liu <si-wei.liu@oracle.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 10EBB98638B
+	for <virtio-dev@lists.oasis-open.org>; Tue, 16 Aug 2022 09:35:01 +0000 (UTC)
+From: Heng Qi <hengqi@linux.alibaba.com>
+Date: Tue, 16 Aug 2022 17:34:55 +0800
+Message-Id: <1660642495-104002-1-git-send-email-hengqi@linux.alibaba.com>
+Subject: [virtio-dev] [PATCH v7] virtio_net: support split header
+Content-Type: text/plain; charset="US-ASCII"; x-default=true
+To: virtio-dev@lists.oasis-open.org
+Cc: jasowang@redhat.com, mst@redhat.com, xuanzhuo@linux.alibaba.com, kangjie.xu@linux.alibaba.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Currently add_recvbuf_big() allocates MAX_SKB_FRAGS segments for big
-packets even when GUEST_* offloads are not present on the device.
-However, if guest GSO is not supported, it would be sufficient to
-allocate segments to cover just up the MTU size and no further.
-Allocating the maximum amount of segments results in a large waste of
-buffer space in the queue, which limits the number of packets that can
-be buffered and can result in reduced performance.
+From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 
-Therefore, if guest GSO is not supported, use the MTU to calculate the
-optimal amount of segments required.
+The purpose of this feature is to split the header and the payload of
+the packet.
 
-When guest offload is enabled at runtime, RQ already has packets of bytes
-less than 64K. So when packet of 64KB arrives, all the packets of such
-size will be dropped. and RQ is now not usable.
+|                    receive buffer                                    |
+|                       0th descriptor             | 1th descriptor    |
+| virtnet hdr | mac | ip hdr | tcp hdr|<-- hold -->|   payload         |
 
-So this means that during set_guest_offloads() phase, RQs have to be
-destroyed and recreated, which requires almost driver reload.
+We can use a buffer plus a separate page when allocating the receive
+buffer. In this way, we can ensure that all payloads can be
+independently in a page, which is very beneficial for the zerocopy
+implemented by the upper layer.
 
-If VIRTIO_NET_F_CTRL_GUEST_OFFLOADS has been negotiated, then it should
-always treat them as GSO enabled.
-
-Accordingly, for now the assumption is that if guest GSO has been
-negotiated then it has been enabled, even if it's actually been disabled
-at runtime through VIRTIO_NET_F_CTRL_GUEST_OFFLOADS.
-
-Below is the iperf TCP test results over a Mellanox NIC, using vDPA for
-1 VQ, queue size 1024, before and after the change, with the iperf
-server running over the virtio-net interface.
-
-MTU(Bytes)/Bandwidth (Gbit/s)
-             Before   After
-  1500        22.5     22.4
-  9000        12.8     25.9
-
-Signed-off-by: Gavin Li <gavinl@nvidia.com>
-Reviewed-by: Gavi Teitz <gavi@nvidia.com>
-Reviewed-by: Parav Pandit <parav@nvidia.com>
-Reviewed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Reviewed-by: Si-Wei Liu <si-wei.liu@oracle.com>
+Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Signed-off-by: Heng Qi <hengqi@linux.alibaba.com>
+Reviewed-by: Kangjie Xu <kangjie.xu@linux.alibaba.com>
 ---
-changelog:
-v4->v5
-- Addressed comments from Michael S. Tsirkin
-- Improve commit message
-v3->v4
-- Addressed comments from Si-Wei
-- Rename big_packets_sg_num with big_packets_num_skbfrags
-v2->v3
-- Addressed comments from Si-Wei
-- Simplify the condition check to enable the optimization
-v1->v2
-- Addressed comments from Jason, Michael, Si-Wei.
-- Remove the flag of guest GSO support, set sg_num for big packets and
-  use it directly
-- Recalculate sg_num for big packets in virtnet_set_guest_offloads
-- Replace the round up algorithm with DIV_ROUND_UP
----
- drivers/net/virtio_net.c | 37 ++++++++++++++++++++++++-------------
- 1 file changed, 24 insertions(+), 13 deletions(-)
+v7:
+	1. Fix some presentation issues.
+	2. Use "split transport header". @Jason Wang
+	3. Clarify some paragraphs. @Cornelia Huck
+	4. determine the device what to do if it does not perform header split on a packet.
 
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index f831a0290998..dbffd5f56fb8 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -225,6 +225,9 @@ struct virtnet_info {
- =09/* I like... big packets and I cannot lie! */
- =09bool big_packets;
-=20
-+=09/* number of sg entries allocated for big packets */
-+=09unsigned int big_packets_num_skbfrags;
+v6:
+	1. Fix some syntax issues. @Cornelia Huck
+	2. Clarify some paragraphs. @Cornelia Huck
+	3. Determine the device what to do if it does not perform header split on a packet.
+
+v5:
+	1. Determine when hdr_len is credible in the process of rx
+	2. Clean up the use of buffers and descriptors
+	3. Clarify the meaning of used lenght if the first descriptor is skipped in the case of merge
+
+v4:
+	1. fix typo @Cornelia Huck @Jason Wang
+	2. do not split header for IP fragmentation packet. @Jason Wang
+
+v3:
+	1. Fix some syntax issues
+	2. Fix some terminology issues
+	3. It is not unified with ip alignment, so ip alignment is not included
+	4. Make it clear that the device must support four types, in the case of successful negotiation.
+
+ conformance.tex |   2 ++
+ content.tex     | 102 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 104 insertions(+)
+
+diff --git a/conformance.tex b/conformance.tex
+index 2b86fc6..4e2b82e 100644
+--- a/conformance.tex
++++ b/conformance.tex
+@@ -150,6 +150,7 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
+ \item \ref{drivernormative:Device Types / Network Device / Device Operation / Control Virtqueue / Offloads State Configuration / Setting Offloads State}
+ \item \ref{drivernormative:Device Types / Network Device / Device Operation / Control Virtqueue / Receive-side scaling (RSS) }
+ \item \ref{drivernormative:Device Types / Network Device / Device Operation / Control Virtqueue / Notifications Coalescing}
++\item \ref{drivernormative:Device Types / Network Device / Device Operation / Control Virtqueue / Split Transport Header}
+ \end{itemize}
+ 
+ \conformance{\subsection}{Block Driver Conformance}\label{sec:Conformance / Driver Conformance / Block Driver Conformance}
+@@ -415,6 +416,7 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
+ \item \ref{devicenormative:Device Types / Network Device / Device Operation / Control Virtqueue / Automatic receive steering in multiqueue mode}
+ \item \ref{devicenormative:Device Types / Network Device / Device Operation / Control Virtqueue / Receive-side scaling (RSS) / RSS processing}
+ \item \ref{devicenormative:Device Types / Network Device / Device Operation / Control Virtqueue / Notifications Coalescing}
++\item \ref{devicenormative:Device Types / Network Device / Device Operation / Control Virtqueue / Split Transport Header}
+ \end{itemize}
+ 
+ \conformance{\subsection}{Block Device Conformance}\label{sec:Conformance / Device Conformance / Block Device Conformance}
+diff --git a/content.tex b/content.tex
+index e863709..5676da9 100644
+--- a/content.tex
++++ b/content.tex
+@@ -3084,6 +3084,9 @@ \subsection{Feature bits}\label{sec:Device Types / Network Device / Feature bits
+ \item[VIRTIO_NET_F_CTRL_MAC_ADDR(23)] Set MAC address through control
+     channel.
+ 
++\item[VIRTIO_NET_F_SPLIT_TRANSPORT_HEADER (52)] Device supports splitting
++    the transport header and the payload.
 +
- =09/* Host will merge rx buffers for big packets (shake it! shake it!) */
- =09bool mergeable_rx_bufs;
-=20
-@@ -1331,10 +1334,10 @@ static int add_recvbuf_big(struct virtnet_info *vi,=
- struct receive_queue *rq,
- =09char *p;
- =09int i, err, offset;
-=20
--=09sg_init_table(rq->sg, MAX_SKB_FRAGS + 2);
-+=09sg_init_table(rq->sg, vi->big_packets_num_skbfrags + 2);
-=20
--=09/* page in rq->sg[MAX_SKB_FRAGS + 1] is list tail */
--=09for (i =3D MAX_SKB_FRAGS + 1; i > 1; --i) {
-+=09/* page in rq->sg[vi->big_packets_num_skbfrags + 1] is list tail */
-+=09for (i =3D vi->big_packets_num_skbfrags + 1; i > 1; --i) {
- =09=09first =3D get_a_page(rq, gfp);
- =09=09if (!first) {
- =09=09=09if (list)
-@@ -1365,7 +1368,7 @@ static int add_recvbuf_big(struct virtnet_info *vi, s=
-truct receive_queue *rq,
-=20
- =09/* chain first in list head */
- =09first->private =3D (unsigned long)list;
--=09err =3D virtqueue_add_inbuf(rq->vq, rq->sg, MAX_SKB_FRAGS + 2,
-+=09err =3D virtqueue_add_inbuf(rq->vq, rq->sg, vi->big_packets_num_skbfrag=
-s + 2,
- =09=09=09=09  first, gfp);
- =09if (err < 0)
- =09=09give_pages(rq, first);
-@@ -3690,13 +3693,27 @@ static bool virtnet_check_guest_gso(const struct vi=
-rtnet_info *vi)
- =09=09virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_UFO);
- }
-=20
-+static void virtnet_set_big_packets_fields(struct virtnet_info *vi, const =
-int mtu)
-+{
-+=09bool guest_gso =3D virtnet_check_guest_gso(vi);
+ \item[VIRTIO_NET_F_NOTF_COAL(53)] Device supports notifications coalescing.
+ 
+ \item[VIRTIO_NET_F_GUEST_USO4 (54)] Driver can receive USOv4 packets.
+@@ -3140,6 +3143,7 @@ \subsubsection{Feature bit requirements}\label{sec:Device Types / Network Device
+ \item[VIRTIO_NET_F_NOTF_COAL] Requires VIRTIO_NET_F_CTRL_VQ.
+ \item[VIRTIO_NET_F_RSC_EXT] Requires VIRTIO_NET_F_HOST_TSO4 or VIRTIO_NET_F_HOST_TSO6.
+ \item[VIRTIO_NET_F_RSS] Requires VIRTIO_NET_F_CTRL_VQ.
++\item[VIRTIO_NET_F_SPLIT_TRANSPORT_HEADER] Requires VIRTIO_NET_F_CTRL_VQ.
+ \end{description}
+ 
+ \subsubsection{Legacy Interface: Feature bits}\label{sec:Device Types / Network Device / Feature bits / Legacy Interface: Feature bits}
+@@ -3371,6 +3375,7 @@ \subsection{Device Operation}\label{sec:Device Types / Network Device / Device O
+ #define VIRTIO_NET_HDR_F_NEEDS_CSUM    1
+ #define VIRTIO_NET_HDR_F_DATA_VALID    2
+ #define VIRTIO_NET_HDR_F_RSC_INFO      4
++#define VIRTIO_NET_HDR_F_SPLIT_TRANSPORT_HEADER  8
+         u8 flags;
+ #define VIRTIO_NET_HDR_GSO_NONE        0
+ #define VIRTIO_NET_HDR_GSO_TCPV4       1
+@@ -3823,6 +3828,11 @@ \subsubsection{Processing of Incoming Packets}\label{sec:Device Types / Network
+ been negotiated, the driver MAY use \field{hdr_len} only as a hint about the
+ transport header size.
+ The driver MUST NOT rely on \field{hdr_len} to be correct.
 +
-+=09/* If device can receive ANY guest GSO packets, regardless of mtu,
-+=09 * allocate packets of maximum size, otherwise limit it to only
-+=09 * mtu size worth only.
-+=09 */
-+=09if (mtu > ETH_DATA_LEN || guest_gso) {
-+=09=09vi->big_packets =3D true;
-+=09=09vi->big_packets_num_skbfrags =3D guest_gso ? MAX_SKB_FRAGS : DIV_ROU=
-ND_UP(mtu, PAGE_SIZE);
-+=09}
-+}
++If the VIRTIO_NET_HDR_F_SPLIT_TRANSPORT_HEADER bit in \field{flags} is set,
++the driver SHOULD treat the \field{hdr_len} as the length of the transport header
++inside the first descriptor.
 +
- static int virtnet_probe(struct virtio_device *vdev)
- {
- =09int i, err =3D -ENOMEM;
- =09struct net_device *dev;
- =09struct virtnet_info *vi;
- =09u16 max_queue_pairs;
--=09int mtu;
-+=09int mtu =3D 0;
-=20
- =09/* Find if host supports multiqueue/rss virtio_net device */
- =09max_queue_pairs =3D 1;
-@@ -3784,10 +3801,6 @@ static int virtnet_probe(struct virtio_device *vdev)
- =09INIT_WORK(&vi->config_work, virtnet_config_changed_work);
- =09spin_lock_init(&vi->refill_lock);
-=20
--=09/* If we can receive ANY GSO packets, we must allocate large ones. */
--=09if (virtnet_check_guest_gso(vi))
--=09=09vi->big_packets =3D true;
--
- =09if (virtio_has_feature(vdev, VIRTIO_NET_F_MRG_RXBUF))
- =09=09vi->mergeable_rx_bufs =3D true;
-=20
-@@ -3853,12 +3866,10 @@ static int virtnet_probe(struct virtio_device *vdev=
-)
-=20
- =09=09dev->mtu =3D mtu;
- =09=09dev->max_mtu =3D mtu;
--
--=09=09/* TODO: size buffers correctly in this case. */
--=09=09if (dev->mtu > ETH_DATA_LEN)
--=09=09=09vi->big_packets =3D true;
- =09}
-=20
-+=09virtnet_set_big_packets_fields(vi, mtu);
+ \begin{note}
+ This is due to various bugs in implementations.
+ \end{note}
+@@ -4483,6 +4493,98 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
+ according to the native endian of the guest rather than
+ (necessarily when not using the legacy interface) little-endian.
+ 
++\paragraph{Split Transport Header}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Split Transport Header}
 +
- =09if (vi->any_header_sg)
- =09=09dev->needed_headroom =3D vi->hdr_len;
-=20
---=20
-2.31.1
++If the VIRTIO_NET_F_SPLIT_TRANSPORT_HEADER feature is negotiated,
++the device supports splitting the transport header and the payload.
++The transport header and the payload will be separated into different
++descriptors.
++
++\subparagraph{Split Transport Header}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Split Transport Header / Setting Split Transport Header}
++
++To configure the split transport header, the following layout structure and definitions
++are used:
++
++\begin{lstlisting}
++struct virtio_net_split_transport_header_config {
++#define VIRTIO_NET_SPLIT_TRANSPORT_HEADER_TYPE_TCP4     (1 << 0)
++#define VIRTIO_NET_SPLIT_TRANSPORT_HEADER_TYPE_TCP6     (1 << 1)
++#define VIRTIO_NET_SPLIT_TRANSPORT_HEADER_TYPE_UDP4     (1 << 2)
++#define VIRTIO_NET_SPLIT_TRANSPORT_HEADER_TYPE_UDP6     (1 << 3)
++    le64 type;
++};
++
++#define VIRTIO_NET_CTRL_SPLIT_TRANSPORT_HEADER       6
++ #define VIRTIO_NET_CTRL_SPLIT_TRANSPORT_HEADER_SET   0
++\end{lstlisting}
++
++The class VIRTIO_NET_CTRL_SPLIT_TRANSPORT_HEADER has one command:
++VIRTIO_NET_CTRL_SPLIT_TRANSPORT_HEADER_SET applies the new split transport header configuration.
++
++The driver can enable or disable split transport header for different protocols by
++setting or clearing corresponding bits in \field{type}.
++
++\begin{itemize}
++    \item VIRTIO_NET_SPLIT_TRANSPORT_HEADER_TYPE_TCP4: split after ipv4 tcp header
++    \item VIRTIO_NET_SPLIT_TRANSPORT_HEADER_TYPE_TCP6: split after ipv6 tcp header
++    \item VIRTIO_NET_SPLIT_TRANSPORT_HEADER_TYPE_UDP4: split after ipv4 udp header
++    \item VIRTIO_NET_SPLIT_TRANSPORT_HEADER_TYPE_UDP6: split after ipv6 udp header
++\end{itemize}
++
++\devicenormative{\subparagraph}{Setting Split Transport Header}{Device Types / Network Device / Device Operation / Control Virtqueue / Split Transport Header}
++
++A device MUST initialize \field{type} to 0, and MUST set it to 0
++upon device reset.
++
++If VIRTIO_NET_F_SPLIT_TRANSPORT_HEADER is negotiated, the device MUST support
++VIRTIO_NET_SPLIT_TRANSPORT_HEADER_TYPE_TCP4, VIRTIO_NET_SPLIT_TRANSPORT_HEADER_TYPE_TCP6,
++VIRTIO_NET_SPLIT_TRANSPORT_HEADER_TYPE_UDP4, VIRTIO_NET_SPLIT_TRANSPORT_HEADER_TYPE_UDP6.
++
++A device MUST NOT split the transport header if it encounters any of the following cases:
++\begin{itemize}
++    \item the device does not recognize the protocol of the packet.
++    \item the packet is an IP fragmentation.
++    \item \field{type} does not include the protocol of the packet.
++    \item the buffer consists of only one descriptor.
++    \item the total size of the virtio net header and the transport header exceeds
++        the size of the first descriptor.
++    \item when VIRTIO_NET_F_MRG_RXBUF is not negotiated and the size of the
++        payload exceeds the size of the descriptor chain starting from the 2nd
++        descriptor.
++\end{itemize}
++
++If the header is split by the device, the VIRTIO_NET_HDR_F_SPLIT_TRANSPORT_HEADER bit
++in \field{flags} MUST be set. The transport header MUST be on the first
++descriptor, following the virtio net header. The payload MUST start from the
++second descriptor. The device MUST set \field{hdr_len} of structure
++virtio_net_hdr to the length of the transport header.
++
++If all of the following applies:
++\begin{itemize}
++    \item the header is split by the device.
++    \item VIRTIO_NET_F_MRG_RXBUF has been negotiated.
++    \item the received packet is spread over multiple buffers.
++\end {itemize}
++then if the device uses the buffers after the 1st buffer, and the buffer
++consists of multiple descriptors, the device MUST skip the first descriptor,
++because the first descriptor is used to carry the transport header.
++The used length still reports the number of bytes it has written to memory.
++
++If VIRTIO_NET_F_SPLIT_TRANSPORT_HEADER is negotiated, but the device does not split the
++virtio net header and the transport header, and the buffer consists of at least two
++descriptors, the device MUST start with the first descriptor to store the packet, and
++MUST NOT set the VIRTIO_NET_HDR_F_SPLIT_TRANSPORT_HEADER bit in \field{flags}.
++
++\drivernormative{\subparagraph}{Setting Split Transport Header}{Device Types / Network Device / Device Operation / Control Virtqueue / Split Transport Header}
++
++If the VIRTIO_NET_HDR_F_SPLIT_TRANSPORT_HEADER bit in \field{flags} is set, the driver
++MUST treat the contents of \field{hdr_len} as the length of the transport header
++inside the first descriptor.
++
++If the split transport header is enabled, the buffers submitted to receiveq by the
++driver MUST be composed of at least two descriptors.
++When the buffer consists of two descriptors, the length of the first
++descriptor MUST be greater than the one of the virtio net header.
+ 
+ \paragraph{Notifications Coalescing}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Notifications Coalescing}
+ 
+-- 
+1.8.3.1
 
 
 ---------------------------------------------------------------------
