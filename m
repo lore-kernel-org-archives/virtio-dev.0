@@ -1,43 +1,70 @@
-Return-Path: <mst@redhat.com>
-Date: Fri, 12 Aug 2022 13:19:20 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: [PATCH RFC v7 6/8] ccw: disallow ADMIN_VQ
-Message-ID: <20220812171841.12183-7-mst@redhat.com>
+Return-Path: <pasic@linux.ibm.com>
+Date: Tue, 16 Aug 2022 16:48:11 +0200
+From: Halil Pasic <pasic@linux.ibm.com>
+Subject: Re: [virtio] [PATCH RFC v7 6/8] ccw: disallow ADMIN_VQ
+Message-ID: <20220816164811.16464110.pasic@linux.ibm.com>
+In-Reply-To: <20220812171841.12183-7-mst@redhat.com>
 References: <20220812171841.12183-1-mst@redhat.com>
+	<20220812171841.12183-7-mst@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <20220812171841.12183-1-mst@redhat.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-To: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, jasowang@redhat.com, mst@redhat.com, cohuck@redhat.com, sgarzare@redhat.com, stefanha@redhat.com, nrupal.jani@intel.com, Piotr.Uminski@intel.com, hang.yuan@intel.com
-Cc: virtio@lists.oasis-open.org, Zhu Lingshan <lingshan.zhu@intel.com>, oren@nvidia.com, parav@nvidia.com, shahafs@nvidia.com, aadam@redhat.com, eperezma@redhat.com, Max Gurtovoy <mgurtovoy@nvidia.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, jasowang@redhat.com, cohuck@redhat.com, sgarzare@redhat.com, stefanha@redhat.com, nrupal.jani@intel.com, Piotr.Uminski@intel.com, hang.yuan@intel.com, virtio@lists.oasis-open.org, Zhu Lingshan <lingshan.zhu@intel.com>, oren@nvidia.com, parav@nvidia.com, shahafs@nvidia.com, aadam@redhat.com, eperezma@redhat.com, Max Gurtovoy <mgurtovoy@nvidia.com>, Halil Pasic <pasic@linux.ibm.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
----
- content.tex | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+On Fri, 12 Aug 2022 13:19:20 -0400
+"Michael S. Tsirkin" <mst@redhat.com> wrote:
 
-diff --git a/content.tex b/content.tex
-index 76b5a28..53be680 100644
---- a/content.tex
-+++ b/content.tex
-@@ -2668,6 +2668,16 @@ \subsubsection{Handling Device Features}\label{sec:Virtio Transport Options / Vi
- uses the CCW_CMD_WRITE_FEAT command, denoting a \field{features}/\field{index}
- combination.
- 
-+\devicenormative{\paragraph}{Handling Device Features}{Virtio Transport Options / Virtio over channel I/O / Device Initialization / Handling Device Features}
-+
-+Device MUST NOT set bit VIRTIO_F_ADMIN_VQ (bit 41) in
-+DeviceFeatures.
-+
-+\drivernormative{\paragraph}{Handling Device Features}{Virtio Transport Options / Virtio over channel I/O / Device Initialization / Handling Device Features}
-+
-+Driver MUST NOT set bit VIRTIO_F_ADMIN_VQ (bit 41) in
-+DriverFeatures even if offered by the device.
-+
- \subsubsection{Device Configuration}\label{sec:Virtio Transport Options / Virtio over channel I/O / Device Initialization / Device Configuration}
- 
- The device's configuration space is located in host memory.
--- 
-MST
+> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+> ---
+>  content.tex | 10 ++++++++++
+>  1 file changed, 10 insertions(+)
+> 
+> diff --git a/content.tex b/content.tex
+> index 76b5a28..53be680 100644
+> --- a/content.tex
+> +++ b/content.tex
+> @@ -2668,6 +2668,16 @@ \subsubsection{Handling Device Features}\label{sec:Virtio Transport Options / Vi
+>  uses the CCW_CMD_WRITE_FEAT command, denoting a \field{features}/\field{index}
+>  combination.
+>  
+> +\devicenormative{\paragraph}{Handling Device Features}{Virtio Transport Options / Virtio over channel I/O / Device Initialization / Handling Device Features}
+> +
+> +Device MUST NOT set bit VIRTIO_F_ADMIN_VQ (bit 41) in
+> +DeviceFeatures.
+> +
+> +\drivernormative{\paragraph}{Handling Device Features}{Virtio Transport Options / Virtio over channel I/O / Device Initialization / Handling Device Features}
+> +
+> +Driver MUST NOT set bit VIRTIO_F_ADMIN_VQ (bit 41) in
+> +DriverFeatures even if offered by the device.
+> +
+
+I'm not sure I understand the intention here. I believe what we try to
+accomplish here is the following. The Channel I/O transport *currently*
+does not support the VIRTIO_F_ADMIN_VQ feature. It is not like we want
+to state that the feature VIRTIO_F_ADMIN_VQ won't ever be supported by
+the Channel I/O transport. Or am I wrong?
+
+If my assumptions are right, then the old incarnation of the spec could
+contradict the new incarnation of the spec. Thus I would prefer something
+like.
+
+"""
+Currently the following features are not supported by the Channel I/O
+transport:
+* VIRTIO_F_ADMIN_VQ
+"""
+
+
+If we want, we can also state what needs to be done in general when
+features are unsupported by the transport. And yes, that normative
+material in my opinion.
+
+Regards,
+Halil
+
+>  \subsubsection{Device Configuration}\label{sec:Virtio Transport Options / Virtio over channel I/O / Device Initialization / Device Configuration}
+>  
+>  The device's configuration space is located in host memory.
 
