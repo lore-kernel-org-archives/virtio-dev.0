@@ -1,107 +1,342 @@
-Return-Path: <virtio-dev-return-9799-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-9792-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id E29AC9863BB
-	for <virtio-dev@lists.oasis-open.org>; Wed, 17 Aug 2022 05:28:59 +0000 (UTC)
-From: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
-Date: Wed, 17 Aug 2022 05:28:43 +0000
-Message-ID: <fa74606c-36d9-a4eb-b62a-54631c7fa41c@sberdevices.ru>
+	by lists.oasis-open.org (Postfix) with ESMTP id C40BF9863BA
+	for <virtio-dev@lists.oasis-open.org>; Tue, 16 Aug 2022 16:27:29 +0000 (UTC)
+Date: Tue, 16 Aug 2022 02:31:22 +0000
+From: Bobby Eshleman <bobbyeshleman@gmail.com>
+Message-ID: <YvsBei6p30vw7b9I@bullseye>
 References: <cover.1660362668.git.bobby.eshleman@bytedance.com>
- <d81818b868216c774613dd03641fcfe63cc55a45.1660362668.git.bobby.eshleman@bytedance.com>
- <YvsBYyPFnKRhvPfp@bullseye>
-In-Reply-To: <YvsBYyPFnKRhvPfp@bullseye>
+ <5a93c5aad99d79f028d349cb7e3c128c65d5d7e2.1660362668.git.bobby.eshleman@bytedance.com>
 MIME-Version: 1.0
-Subject: Re: [virtio-dev] Re: [PATCH 2/6] vsock: return errors other than
- -ENOMEM to socket
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <6B57B3ABE02F19489494D8714B6D1A53@sberdevices.ru>
-Content-Transfer-Encoding: base64
-To: Bobby Eshleman <bobbyeshleman@gmail.com>, Bobby Eshleman <bobby.eshleman@gmail.com>
-Cc: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Bobby Eshleman <bobby.eshleman@bytedance.com>, Cong Wang <cong.wang@bytedance.com>, Jiang Wang <jiang.wang@bytedance.com>, Stefan Hajnoczi <stefanha@redhat.com>, Stefano Garzarella <sgarzare@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, "K. Y.
- Srinivasan" <kys@microsoft.com>, Haiyang Zhang <haiyangz@microsoft.com>, Stephen Hemminger <sthemmin@microsoft.com>, Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>
+In-Reply-To: <5a93c5aad99d79f028d349cb7e3c128c65d5d7e2.1660362668.git.bobby.eshleman@bytedance.com>
+Subject: [virtio-dev] Re: [PATCH 3/6] vsock: add netdev to vhost/virtio vsock
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+To: Bobby Eshleman <bobby.eshleman@gmail.com>
+Cc: virtio-dev@lists.oasis-open.org, Bobby Eshleman <bobby.eshleman@bytedance.com>, Cong Wang <cong.wang@bytedance.com>, Jiang Wang <jiang.wang@bytedance.com>, Stefan Hajnoczi <stefanha@redhat.com>, Stefano Garzarella <sgarzare@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, kvm@vger.kernel.org, virtualization@lists.linux-foundation.org, netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-T24gMTYuMDguMjAyMiAwNTozMCwgQm9iYnkgRXNobGVtYW4gd3JvdGU6DQo+IENDJ2luZyB2aXJ0
-aW8tZGV2QGxpc3RzLm9hc2lzLW9wZW4ub3JnDQo+IA0KPiBPbiBNb24sIEF1ZyAxNSwgMjAyMiBh
-dCAxMDo1NjowNUFNIC0wNzAwLCBCb2JieSBFc2hsZW1hbiB3cm90ZToNCj4+IFRoaXMgY29tbWl0
-IGFsbG93cyB2c29jayBpbXBsZW1lbnRhdGlvbnMgdG8gcmV0dXJuIGVycm9ycw0KPj4gdG8gdGhl
-IHNvY2tldCBsYXllciBvdGhlciB0aGFuIC1FTk9NRU0uIE9uZSBpbW1lZGlhdGUgZWZmZWN0DQo+
-PiBvZiB0aGlzIGlzIHRoYXQgdXBvbiB0aGUgc2tfc25kYnVmIHRocmVzaG9sZCBiZWluZyByZWFj
-aGVkIC1FQUdBSU4NCj4+IHdpbGwgYmUgcmV0dXJuZWQgYW5kIHVzZXJzcGFjZSBtYXkgdGhyb3R0
-bGUgYXBwcm9wcmlhdGVseS4NCj4+DQo+PiBSZXN1bHRpbmdseSwgYSBrbm93biBpc3N1ZSB3aXRo
-IHVwZXJmIGlzIHJlc29sdmVkWzFdLg0KPj4NCj4+IEFkZGl0aW9uYWxseSwgdG8gcHJlc2VydmUg
-bGVnYWN5IGJlaGF2aW9yIGZvciBub24tdmlydGlvDQo+PiBpbXBsZW1lbnRhdGlvbnMsIGh5cGVy
-di92bWNpIGZvcmNlIGVycm9ycyB0byBiZSAtRU5PTUVNIHNvIHRoYXQgYmVoYXZpb3INCj4+IGlz
-IHVuY2hhbmdlZC4NCj4+DQo+PiBbMV06IGh0dHBzOi8vZ2l0bGFiLmNvbS92c29jay92c29jay8t
-L2lzc3Vlcy8xDQo+Pg0KPj4gU2lnbmVkLW9mZi1ieTogQm9iYnkgRXNobGVtYW4gPGJvYmJ5LmVz
-aGxlbWFuQGJ5dGVkYW5jZS5jb20+DQo+PiAtLS0NCj4+ICBpbmNsdWRlL2xpbnV4L3ZpcnRpb192
-c29jay5oICAgICAgICAgICAgfCAzICsrKw0KPj4gIG5ldC92bXdfdnNvY2svYWZfdnNvY2suYyAg
-ICAgICAgICAgICAgICB8IDMgKystDQo+PiAgbmV0L3Ztd192c29jay9oeXBlcnZfdHJhbnNwb3J0
-LmMgICAgICAgIHwgMiArLQ0KPj4gIG5ldC92bXdfdnNvY2svdmlydGlvX3RyYW5zcG9ydF9jb21t
-b24uYyB8IDMgLS0tDQo+PiAgbmV0L3Ztd192c29jay92bWNpX3RyYW5zcG9ydC5jICAgICAgICAg
-IHwgOSArKysrKysrKy0NCj4+ICA1IGZpbGVzIGNoYW5nZWQsIDE0IGluc2VydGlvbnMoKyksIDYg
-ZGVsZXRpb25zKC0pDQo+Pg0KPj4gZGlmZiAtLWdpdCBhL2luY2x1ZGUvbGludXgvdmlydGlvX3Zz
-b2NrLmggYi9pbmNsdWRlL2xpbnV4L3ZpcnRpb192c29jay5oDQo+PiBpbmRleCAxN2VkMDE0NjY4
-NzUuLjlhMzdlZGRiYjg3YSAxMDA2NDQNCj4+IC0tLSBhL2luY2x1ZGUvbGludXgvdmlydGlvX3Zz
-b2NrLmgNCj4+ICsrKyBiL2luY2x1ZGUvbGludXgvdmlydGlvX3Zzb2NrLmgNCj4+IEBAIC04LDYg
-KzgsOSBAQA0KPj4gICNpbmNsdWRlIDxuZXQvc29jay5oPg0KPj4gICNpbmNsdWRlIDxuZXQvYWZf
-dnNvY2suaD4NCj4+ICANCj4+ICsvKiBUaHJlc2hvbGQgZm9yIGRldGVjdGluZyBzbWFsbCBwYWNr
-ZXRzIHRvIGNvcHkgKi8NCj4+ICsjZGVmaW5lIEdPT0RfQ09QWV9MRU4gIDEyOA0KPj4gKw0KPj4g
-IGVudW0gdmlydGlvX3Zzb2NrX21ldGFkYXRhX2ZsYWdzIHsNCj4+ICAJVklSVElPX1ZTT0NLX01F
-VEFEQVRBX0ZMQUdTX1JFUExZCQk9IEJJVCgwKSwNCj4+ICAJVklSVElPX1ZTT0NLX01FVEFEQVRB
-X0ZMQUdTX1RBUF9ERUxJVkVSRUQJPSBCSVQoMSksDQo+PiBkaWZmIC0tZ2l0IGEvbmV0L3Ztd192
-c29jay9hZl92c29jay5jIGIvbmV0L3Ztd192c29jay9hZl92c29jay5jDQo+PiBpbmRleCBlMzQ4
-YjJkMDllYWMuLjE4OTNmOGFhZmE0OCAxMDA2NDQNCj4+IC0tLSBhL25ldC92bXdfdnNvY2svYWZf
-dnNvY2suYw0KPj4gKysrIGIvbmV0L3Ztd192c29jay9hZl92c29jay5jDQo+PiBAQCAtMTg0NCw4
-ICsxODQ0LDkgQEAgc3RhdGljIGludCB2c29ja19jb25uZWN0aWJsZV9zZW5kbXNnKHN0cnVjdCBz
-b2NrZXQgKnNvY2ssIHN0cnVjdCBtc2doZHIgKm1zZywNCj4+ICAJCQl3cml0dGVuID0gdHJhbnNw
-b3J0LT5zdHJlYW1fZW5xdWV1ZSh2c2ssDQo+PiAgCQkJCQltc2csIGxlbiAtIHRvdGFsX3dyaXR0
-ZW4pOw0KPj4gIAkJfQ0KPj4gKw0KPj4gIAkJaWYgKHdyaXR0ZW4gPCAwKSB7DQo+PiAtCQkJZXJy
-ID0gLUVOT01FTTsNCj4+ICsJCQllcnIgPSB3cml0dGVuOw0KPj4gIAkJCWdvdG8gb3V0X2VycjsN
-Cj4+ICAJCX0NCklJVUMsIGZvciBzdHJlYW0sIHRoaXMgdGhpbmcgd2lsbCBoYXZlIGVmZmVjdCwg
-b25seSBvbmUgZmlyc3QgdHJhbnNwb3J0IGFjY2VzcyBmYWlscy4gSW4gdGhpcw0KY2FzZSAndG90
-YWxfd3JpdHRlbicgd2lsbCBiZSAwLCBzbyAnZXJyJyA9PSAnd3JpdHRlbicgd2lsbCBiZSByZXR1
-cm5lZC4gQnV0IHdoZW4gJ3RvdGFsX3dyaXR0ZW4gPiAwJywNCidlcnInIHdpbGwgYmUgb3Zlcndy
-aXR0ZW4gYnkgJ3RvdGFsX3dyaXR0ZW4nIGJlbG93LCBwcmVzZXJ2aW5nIGN1cnJlbnQgYmVoYXZp
-b3VyLiBJcyBpdCB3aGF0IFlvdQ0Kc3VwcG9zZWQ/DQoNClRoYW5rcw0KPj4gIA0KPj4gZGlmZiAt
-LWdpdCBhL25ldC92bXdfdnNvY2svaHlwZXJ2X3RyYW5zcG9ydC5jIGIvbmV0L3Ztd192c29jay9o
-eXBlcnZfdHJhbnNwb3J0LmMNCj4+IGluZGV4IGZkOTgyMjllM2RiMy4uZTk5YWVhNTcxZjZmIDEw
-MDY0NA0KPj4gLS0tIGEvbmV0L3Ztd192c29jay9oeXBlcnZfdHJhbnNwb3J0LmMNCj4+ICsrKyBi
-L25ldC92bXdfdnNvY2svaHlwZXJ2X3RyYW5zcG9ydC5jDQo+PiBAQCAtNjg3LDcgKzY4Nyw3IEBA
-IHN0YXRpYyBzc2l6ZV90IGh2c19zdHJlYW1fZW5xdWV1ZShzdHJ1Y3QgdnNvY2tfc29jayAqdnNr
-LCBzdHJ1Y3QgbXNnaGRyICptc2csDQo+PiAgCWlmIChieXRlc193cml0dGVuKQ0KPj4gIAkJcmV0
-ID0gYnl0ZXNfd3JpdHRlbjsNCj4+ICAJa2ZyZWUoc2VuZF9idWYpOw0KPj4gLQlyZXR1cm4gcmV0
-Ow0KPj4gKwlyZXR1cm4gcmV0IDwgMCA/IC1FTk9NRU0gOiByZXQ7DQo+PiAgfQ0KPj4gIA0KPj4g
-IHN0YXRpYyBzNjQgaHZzX3N0cmVhbV9oYXNfZGF0YShzdHJ1Y3QgdnNvY2tfc29jayAqdnNrKQ0K
-Pj4gZGlmZiAtLWdpdCBhL25ldC92bXdfdnNvY2svdmlydGlvX3RyYW5zcG9ydF9jb21tb24uYyBi
-L25ldC92bXdfdnNvY2svdmlydGlvX3RyYW5zcG9ydF9jb21tb24uYw0KPj4gaW5kZXggOTIwNTc4
-NTk3YmI5Li5kNTc4MDU5OWZlOTMgMTAwNjQ0DQo+PiAtLS0gYS9uZXQvdm13X3Zzb2NrL3ZpcnRp
-b190cmFuc3BvcnRfY29tbW9uLmMNCj4+ICsrKyBiL25ldC92bXdfdnNvY2svdmlydGlvX3RyYW5z
-cG9ydF9jb21tb24uYw0KPj4gQEAgLTIzLDkgKzIzLDYgQEANCj4+ICAvKiBIb3cgbG9uZyB0byB3
-YWl0IGZvciBncmFjZWZ1bCBzaHV0ZG93biBvZiBhIGNvbm5lY3Rpb24gKi8NCj4+ICAjZGVmaW5l
-IFZTT0NLX0NMT1NFX1RJTUVPVVQgKDggKiBIWikNCj4+ICANCj4+IC0vKiBUaHJlc2hvbGQgZm9y
-IGRldGVjdGluZyBzbWFsbCBwYWNrZXRzIHRvIGNvcHkgKi8NCj4+IC0jZGVmaW5lIEdPT0RfQ09Q
-WV9MRU4gIDEyOA0KPj4gLQ0KPj4gIHN0YXRpYyBjb25zdCBzdHJ1Y3QgdmlydGlvX3RyYW5zcG9y
-dCAqDQo+PiAgdmlydGlvX3RyYW5zcG9ydF9nZXRfb3BzKHN0cnVjdCB2c29ja19zb2NrICp2c2sp
-DQo+PiAgew0KPj4gZGlmZiAtLWdpdCBhL25ldC92bXdfdnNvY2svdm1jaV90cmFuc3BvcnQuYyBi
-L25ldC92bXdfdnNvY2svdm1jaV90cmFuc3BvcnQuYw0KPj4gaW5kZXggYjE0ZjBlZDc0MjdiLi5j
-OTI3YTkwZGM4NTkgMTAwNjQ0DQo+PiAtLS0gYS9uZXQvdm13X3Zzb2NrL3ZtY2lfdHJhbnNwb3J0
-LmMNCj4+ICsrKyBiL25ldC92bXdfdnNvY2svdm1jaV90cmFuc3BvcnQuYw0KPj4gQEAgLTE4Mzgs
-NyArMTgzOCwxNCBAQCBzdGF0aWMgc3NpemVfdCB2bWNpX3RyYW5zcG9ydF9zdHJlYW1fZW5xdWV1
-ZSgNCj4+ICAJc3RydWN0IG1zZ2hkciAqbXNnLA0KPj4gIAlzaXplX3QgbGVuKQ0KPj4gIHsNCj4+
-IC0JcmV0dXJuIHZtY2lfcXBhaXJfZW5xdWV2KHZtY2lfdHJhbnModnNrKS0+cXBhaXIsIG1zZywg
-bGVuLCAwKTsNCj4+ICsJaW50IGVycjsNCj4+ICsNCj4+ICsJZXJyID0gdm1jaV9xcGFpcl9lbnF1
-ZXYodm1jaV90cmFucyh2c2spLT5xcGFpciwgbXNnLCBsZW4sIDApOw0KPj4gKw0KPj4gKwlpZiAo
-ZXJyIDwgMCkNCj4+ICsJCWVyciA9IC1FTk9NRU07DQo+PiArDQo+PiArCXJldHVybiBlcnI7DQo+
-PiAgfQ0KPj4gIA0KPj4gIHN0YXRpYyBzNjQgdm1jaV90cmFuc3BvcnRfc3RyZWFtX2hhc19kYXRh
-KHN0cnVjdCB2c29ja19zb2NrICp2c2spDQo+PiAtLSANCj4+IDIuMzUuMQ0KPj4NCj4gDQo+IC0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLQ0KPiBUbyB1bnN1YnNjcmliZSwgZS1tYWlsOiB2aXJ0aW8tZGV2LXVuc3Vic2Ny
-aWJlQGxpc3RzLm9hc2lzLW9wZW4ub3JnDQo+IEZvciBhZGRpdGlvbmFsIGNvbW1hbmRzLCBlLW1h
-aWw6IHZpcnRpby1kZXYtaGVscEBsaXN0cy5vYXNpcy1vcGVuLm9yZw0KPiANCg0K
+CC'ing virtio-dev@lists.oasis-open.org
+
+On Mon, Aug 15, 2022 at 10:56:06AM -0700, Bobby Eshleman wrote:
+> In order to support usage of qdisc on vsock traffic, this commit
+> introduces a struct net_device to vhost and virtio vsock.
+> 
+> Two new devices are created, vhost-vsock for vhost and virtio-vsock
+> for virtio. The devices are attached to the respective transports.
+> 
+> To bypass the usage of the device, the user may "down" the associated
+> network interface using common tools. For example, "ip link set dev
+> virtio-vsock down" lets vsock bypass the net_device and qdisc entirely,
+> simply using the FIFO logic of the prior implementation.
+> 
+> For both hosts and guests, there is one device for all G2H vsock sockets
+> and one device for all H2G vsock sockets. This makes sense for guests
+> because the driver only supports a single vsock channel (one pair of
+> TX/RX virtqueues), so one device and qdisc fits. For hosts, this may not
+> seem ideal for some workloads. However, it is possible to use a
+> multi-queue qdisc, where a given queue is responsible for a range of
+> sockets. This seems to be a better solution than having one device per
+> socket, which may yield a very large number of devices and qdiscs, all
+> of which are dynamically being created and destroyed. Because of this
+> dynamism, it would also require a complex policy management daemon, as
+> devices would constantly be spun up and down as sockets were created and
+> destroyed. To avoid this, one device and qdisc also applies to all H2G
+> sockets.
+> 
+> Signed-off-by: Bobby Eshleman <bobby.eshleman@bytedance.com>
+> ---
+>  drivers/vhost/vsock.c                   |  19 +++-
+>  include/linux/virtio_vsock.h            |  10 +++
+>  net/vmw_vsock/virtio_transport.c        |  19 +++-
+>  net/vmw_vsock/virtio_transport_common.c | 112 +++++++++++++++++++++++-
+>  4 files changed, 152 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
+> index f8601d93d94d..b20ddec2664b 100644
+> --- a/drivers/vhost/vsock.c
+> +++ b/drivers/vhost/vsock.c
+> @@ -927,13 +927,30 @@ static int __init vhost_vsock_init(void)
+>  				  VSOCK_TRANSPORT_F_H2G);
+>  	if (ret < 0)
+>  		return ret;
+> -	return misc_register(&vhost_vsock_misc);
+> +
+> +	ret = virtio_transport_init(&vhost_transport, "vhost-vsock");
+> +	if (ret < 0)
+> +		goto out_unregister;
+> +
+> +	ret = misc_register(&vhost_vsock_misc);
+> +	if (ret < 0)
+> +		goto out_transport_exit;
+> +	return ret;
+> +
+> +out_transport_exit:
+> +	virtio_transport_exit(&vhost_transport);
+> +
+> +out_unregister:
+> +	vsock_core_unregister(&vhost_transport.transport);
+> +	return ret;
+> +
+>  };
+>  
+>  static void __exit vhost_vsock_exit(void)
+>  {
+>  	misc_deregister(&vhost_vsock_misc);
+>  	vsock_core_unregister(&vhost_transport.transport);
+> +	virtio_transport_exit(&vhost_transport);
+>  };
+>  
+>  module_init(vhost_vsock_init);
+> diff --git a/include/linux/virtio_vsock.h b/include/linux/virtio_vsock.h
+> index 9a37eddbb87a..5d7e7fbd75f8 100644
+> --- a/include/linux/virtio_vsock.h
+> +++ b/include/linux/virtio_vsock.h
+> @@ -91,10 +91,20 @@ struct virtio_transport {
+>  	/* This must be the first field */
+>  	struct vsock_transport transport;
+>  
+> +	/* Used almost exclusively for qdisc */
+> +	struct net_device *dev;
+> +
+>  	/* Takes ownership of the packet */
+>  	int (*send_pkt)(struct sk_buff *skb);
+>  };
+>  
+> +int
+> +virtio_transport_init(struct virtio_transport *t,
+> +		      const char *name);
+> +
+> +void
+> +virtio_transport_exit(struct virtio_transport *t);
+> +
+>  ssize_t
+>  virtio_transport_stream_dequeue(struct vsock_sock *vsk,
+>  				struct msghdr *msg,
+> diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
+> index 3bb293fd8607..c6212eb38d3c 100644
+> --- a/net/vmw_vsock/virtio_transport.c
+> +++ b/net/vmw_vsock/virtio_transport.c
+> @@ -131,7 +131,9 @@ virtio_transport_send_pkt_work(struct work_struct *work)
+>  		 * the vq
+>  		 */
+>  		if (ret < 0) {
+> -			skb_queue_head(&vsock->send_pkt_queue, skb);
+> +			spin_lock_bh(&vsock->send_pkt_queue.lock);
+> +			__skb_queue_head(&vsock->send_pkt_queue, skb);
+> +			spin_unlock_bh(&vsock->send_pkt_queue.lock);
+>  			break;
+>  		}
+>  
+> @@ -676,7 +678,9 @@ static void virtio_vsock_vqs_del(struct virtio_vsock *vsock)
+>  		kfree_skb(skb);
+>  	mutex_unlock(&vsock->tx_lock);
+>  
+> -	skb_queue_purge(&vsock->send_pkt_queue);
+> +	spin_lock_bh(&vsock->send_pkt_queue.lock);
+> +	__skb_queue_purge(&vsock->send_pkt_queue);
+> +	spin_unlock_bh(&vsock->send_pkt_queue.lock);
+>  
+>  	/* Delete virtqueues and flush outstanding callbacks if any */
+>  	vdev->config->del_vqs(vdev);
+> @@ -760,6 +764,8 @@ static void virtio_vsock_remove(struct virtio_device *vdev)
+>  	flush_work(&vsock->event_work);
+>  	flush_work(&vsock->send_pkt_work);
+>  
+> +	virtio_transport_exit(&virtio_transport);
+> +
+>  	mutex_unlock(&the_virtio_vsock_mutex);
+>  
+>  	kfree(vsock);
+> @@ -844,12 +850,18 @@ static int __init virtio_vsock_init(void)
+>  	if (ret)
+>  		goto out_wq;
+>  
+> -	ret = register_virtio_driver(&virtio_vsock_driver);
+> +	ret = virtio_transport_init(&virtio_transport, "virtio-vsock");
+>  	if (ret)
+>  		goto out_vci;
+>  
+> +	ret = register_virtio_driver(&virtio_vsock_driver);
+> +	if (ret)
+> +		goto out_transport;
+> +
+>  	return 0;
+>  
+> +out_transport:
+> +	virtio_transport_exit(&virtio_transport);
+>  out_vci:
+>  	vsock_core_unregister(&virtio_transport.transport);
+>  out_wq:
+> @@ -861,6 +873,7 @@ static void __exit virtio_vsock_exit(void)
+>  {
+>  	unregister_virtio_driver(&virtio_vsock_driver);
+>  	vsock_core_unregister(&virtio_transport.transport);
+> +	virtio_transport_exit(&virtio_transport);
+>  	destroy_workqueue(virtio_vsock_workqueue);
+>  }
+>  
+> diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
+> index d5780599fe93..bdf16fff054f 100644
+> --- a/net/vmw_vsock/virtio_transport_common.c
+> +++ b/net/vmw_vsock/virtio_transport_common.c
+> @@ -16,6 +16,7 @@
+>  
+>  #include <net/sock.h>
+>  #include <net/af_vsock.h>
+> +#include <net/pkt_sched.h>
+>  
+>  #define CREATE_TRACE_POINTS
+>  #include <trace/events/vsock_virtio_transport_common.h>
+> @@ -23,6 +24,93 @@
+>  /* How long to wait for graceful shutdown of a connection */
+>  #define VSOCK_CLOSE_TIMEOUT (8 * HZ)
+>  
+> +struct virtio_transport_priv {
+> +	struct virtio_transport *trans;
+> +};
+> +
+> +static netdev_tx_t virtio_transport_start_xmit(struct sk_buff *skb, struct net_device *dev)
+> +{
+> +	struct virtio_transport *t =
+> +		((struct virtio_transport_priv *)netdev_priv(dev))->trans;
+> +	int ret;
+> +
+> +	ret = t->send_pkt(skb);
+> +	if (unlikely(ret == -ENODEV))
+> +		return NETDEV_TX_BUSY;
+> +
+> +	return NETDEV_TX_OK;
+> +}
+> +
+> +const struct net_device_ops virtio_transport_netdev_ops = {
+> +	.ndo_start_xmit = virtio_transport_start_xmit,
+> +};
+> +
+> +static void virtio_transport_setup(struct net_device *dev)
+> +{
+> +	dev->netdev_ops = &virtio_transport_netdev_ops;
+> +	dev->needs_free_netdev = true;
+> +	dev->flags = IFF_NOARP;
+> +	dev->mtu = VIRTIO_VSOCK_MAX_PKT_BUF_SIZE;
+> +	dev->tx_queue_len = DEFAULT_TX_QUEUE_LEN;
+> +}
+> +
+> +static int ifup(struct net_device *dev)
+> +{
+> +	int ret;
+> +
+> +	rtnl_lock();
+> +	ret = dev_open(dev, NULL) ? -ENOMEM : 0;
+> +	rtnl_unlock();
+> +
+> +	return ret;
+> +}
+> +
+> +/* virtio_transport_init - initialize a virtio vsock transport layer
+> + *
+> + * @t: ptr to the virtio transport struct to initialize
+> + * @name: the name of the net_device to be created.
+> + *
+> + * Return 0 on success, otherwise negative errno.
+> + */
+> +int virtio_transport_init(struct virtio_transport *t, const char *name)
+> +{
+> +	struct virtio_transport_priv *priv;
+> +	int ret;
+> +
+> +	t->dev = alloc_netdev(sizeof(*priv), name, NET_NAME_UNKNOWN, virtio_transport_setup);
+> +	if (!t->dev)
+> +		return -ENOMEM;
+> +
+> +	priv = netdev_priv(t->dev);
+> +	priv->trans = t;
+> +
+> +	ret = register_netdev(t->dev);
+> +	if (ret < 0)
+> +		goto out_free_netdev;
+> +
+> +	ret = ifup(t->dev);
+> +	if (ret < 0)
+> +		goto out_unregister_netdev;
+> +
+> +	return 0;
+> +
+> +out_unregister_netdev:
+> +	unregister_netdev(t->dev);
+> +
+> +out_free_netdev:
+> +	free_netdev(t->dev);
+> +
+> +	return ret;
+> +}
+> +
+> +void virtio_transport_exit(struct virtio_transport *t)
+> +{
+> +	if (t->dev) {
+> +		unregister_netdev(t->dev);
+> +		free_netdev(t->dev);
+> +	}
+> +}
+> +
+>  static const struct virtio_transport *
+>  virtio_transport_get_ops(struct vsock_sock *vsk)
+>  {
+> @@ -147,6 +235,24 @@ static u16 virtio_transport_get_type(struct sock *sk)
+>  		return VIRTIO_VSOCK_TYPE_SEQPACKET;
+>  }
+>  
+> +/* Return pkt->len on success, otherwise negative errno */
+> +static int virtio_transport_send_pkt(const struct virtio_transport *t, struct sk_buff *skb)
+> +{
+> +	int ret;
+> +	int len = skb->len;
+> +
+> +	if (unlikely(!t->dev || !(t->dev->flags & IFF_UP)))
+> +		return t->send_pkt(skb);
+> +
+> +	skb->dev = t->dev;
+> +	ret = dev_queue_xmit(skb);
+> +
+> +	if (likely(ret == NET_XMIT_SUCCESS || ret == NET_XMIT_CN))
+> +		return len;
+> +
+> +	return -ENOMEM;
+> +}
+> +
+>  /* This function can only be used on connecting/connected sockets,
+>   * since a socket assigned to a transport is required.
+>   *
+> @@ -202,9 +308,7 @@ static int virtio_transport_send_pkt_info(struct vsock_sock *vsk,
+>  
+>  	virtio_transport_inc_tx_pkt(vvs, skb);
+>  
+> -	err = t_ops->send_pkt(skb);
+> -
+> -	return err < 0 ? -ENOMEM : err;
+> +	return virtio_transport_send_pkt(t_ops, skb);
+>  }
+>  
+>  static bool virtio_transport_inc_rx_pkt(struct virtio_vsock_sock *vvs,
+> @@ -834,7 +938,7 @@ static int virtio_transport_reset_no_sock(const struct virtio_transport *t,
+>  		return -ENOTCONN;
+>  	}
+>  
+> -	return t->send_pkt(reply);
+> +	return virtio_transport_send_pkt(t, reply);
+>  }
+>  
+>  /* This function should be called with sk_lock held and SOCK_DONE set */
+> -- 
+> 2.35.1
+> 
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
