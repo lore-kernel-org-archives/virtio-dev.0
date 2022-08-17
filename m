@@ -1,132 +1,107 @@
-Return-Path: <virtio-dev-return-9791-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-9799-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 3F2879863BA
-	for <virtio-dev@lists.oasis-open.org>; Tue, 16 Aug 2022 16:27:08 +0000 (UTC)
-Date: Tue, 16 Aug 2022 02:30:59 +0000
-From: Bobby Eshleman <bobbyeshleman@gmail.com>
-Message-ID: <YvsBYyPFnKRhvPfp@bullseye>
+	by lists.oasis-open.org (Postfix) with ESMTP id E29AC9863BB
+	for <virtio-dev@lists.oasis-open.org>; Wed, 17 Aug 2022 05:28:59 +0000 (UTC)
+From: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+Date: Wed, 17 Aug 2022 05:28:43 +0000
+Message-ID: <fa74606c-36d9-a4eb-b62a-54631c7fa41c@sberdevices.ru>
 References: <cover.1660362668.git.bobby.eshleman@bytedance.com>
  <d81818b868216c774613dd03641fcfe63cc55a45.1660362668.git.bobby.eshleman@bytedance.com>
+ <YvsBYyPFnKRhvPfp@bullseye>
+In-Reply-To: <YvsBYyPFnKRhvPfp@bullseye>
 MIME-Version: 1.0
-In-Reply-To: <d81818b868216c774613dd03641fcfe63cc55a45.1660362668.git.bobby.eshleman@bytedance.com>
-Subject: [virtio-dev] Re: [PATCH 2/6] vsock: return errors other than -ENOMEM to socket
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-To: Bobby Eshleman <bobby.eshleman@gmail.com>
-Cc: virtio-dev@lists.oasis-open.org, Bobby Eshleman <bobby.eshleman@bytedance.com>, Cong Wang <cong.wang@bytedance.com>, Jiang Wang <jiang.wang@bytedance.com>, Stefan Hajnoczi <stefanha@redhat.com>, Stefano Garzarella <sgarzare@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, "K. Y. Srinivasan" <kys@microsoft.com>, Haiyang Zhang <haiyangz@microsoft.com>, Stephen Hemminger <sthemmin@microsoft.com>, Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>, kvm@vger.kernel.org, virtualization@lists.linux-foundation.org, netdev@vger.kernel.org, linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org
+Subject: Re: [virtio-dev] Re: [PATCH 2/6] vsock: return errors other than
+ -ENOMEM to socket
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <6B57B3ABE02F19489494D8714B6D1A53@sberdevices.ru>
+Content-Transfer-Encoding: base64
+To: Bobby Eshleman <bobbyeshleman@gmail.com>, Bobby Eshleman <bobby.eshleman@gmail.com>
+Cc: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Bobby Eshleman <bobby.eshleman@bytedance.com>, Cong Wang <cong.wang@bytedance.com>, Jiang Wang <jiang.wang@bytedance.com>, Stefan Hajnoczi <stefanha@redhat.com>, Stefano Garzarella <sgarzare@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, "K. Y.
+ Srinivasan" <kys@microsoft.com>, Haiyang Zhang <haiyangz@microsoft.com>, Stephen Hemminger <sthemmin@microsoft.com>, Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-CC'ing virtio-dev@lists.oasis-open.org
-
-On Mon, Aug 15, 2022 at 10:56:05AM -0700, Bobby Eshleman wrote:
-> This commit allows vsock implementations to return errors
-> to the socket layer other than -ENOMEM. One immediate effect
-> of this is that upon the sk_sndbuf threshold being reached -EAGAIN
-> will be returned and userspace may throttle appropriately.
-> 
-> Resultingly, a known issue with uperf is resolved[1].
-> 
-> Additionally, to preserve legacy behavior for non-virtio
-> implementations, hyperv/vmci force errors to be -ENOMEM so that behavior
-> is unchanged.
-> 
-> [1]: https://gitlab.com/vsock/vsock/-/issues/1
-> 
-> Signed-off-by: Bobby Eshleman <bobby.eshleman@bytedance.com>
-> ---
->  include/linux/virtio_vsock.h            | 3 +++
->  net/vmw_vsock/af_vsock.c                | 3 ++-
->  net/vmw_vsock/hyperv_transport.c        | 2 +-
->  net/vmw_vsock/virtio_transport_common.c | 3 ---
->  net/vmw_vsock/vmci_transport.c          | 9 ++++++++-
->  5 files changed, 14 insertions(+), 6 deletions(-)
-> 
-> diff --git a/include/linux/virtio_vsock.h b/include/linux/virtio_vsock.h
-> index 17ed01466875..9a37eddbb87a 100644
-> --- a/include/linux/virtio_vsock.h
-> +++ b/include/linux/virtio_vsock.h
-> @@ -8,6 +8,9 @@
->  #include <net/sock.h>
->  #include <net/af_vsock.h>
->  
-> +/* Threshold for detecting small packets to copy */
-> +#define GOOD_COPY_LEN  128
-> +
->  enum virtio_vsock_metadata_flags {
->  	VIRTIO_VSOCK_METADATA_FLAGS_REPLY		= BIT(0),
->  	VIRTIO_VSOCK_METADATA_FLAGS_TAP_DELIVERED	= BIT(1),
-> diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
-> index e348b2d09eac..1893f8aafa48 100644
-> --- a/net/vmw_vsock/af_vsock.c
-> +++ b/net/vmw_vsock/af_vsock.c
-> @@ -1844,8 +1844,9 @@ static int vsock_connectible_sendmsg(struct socket *sock, struct msghdr *msg,
->  			written = transport->stream_enqueue(vsk,
->  					msg, len - total_written);
->  		}
-> +
->  		if (written < 0) {
-> -			err = -ENOMEM;
-> +			err = written;
->  			goto out_err;
->  		}
->  
-> diff --git a/net/vmw_vsock/hyperv_transport.c b/net/vmw_vsock/hyperv_transport.c
-> index fd98229e3db3..e99aea571f6f 100644
-> --- a/net/vmw_vsock/hyperv_transport.c
-> +++ b/net/vmw_vsock/hyperv_transport.c
-> @@ -687,7 +687,7 @@ static ssize_t hvs_stream_enqueue(struct vsock_sock *vsk, struct msghdr *msg,
->  	if (bytes_written)
->  		ret = bytes_written;
->  	kfree(send_buf);
-> -	return ret;
-> +	return ret < 0 ? -ENOMEM : ret;
->  }
->  
->  static s64 hvs_stream_has_data(struct vsock_sock *vsk)
-> diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
-> index 920578597bb9..d5780599fe93 100644
-> --- a/net/vmw_vsock/virtio_transport_common.c
-> +++ b/net/vmw_vsock/virtio_transport_common.c
-> @@ -23,9 +23,6 @@
->  /* How long to wait for graceful shutdown of a connection */
->  #define VSOCK_CLOSE_TIMEOUT (8 * HZ)
->  
-> -/* Threshold for detecting small packets to copy */
-> -#define GOOD_COPY_LEN  128
-> -
->  static const struct virtio_transport *
->  virtio_transport_get_ops(struct vsock_sock *vsk)
->  {
-> diff --git a/net/vmw_vsock/vmci_transport.c b/net/vmw_vsock/vmci_transport.c
-> index b14f0ed7427b..c927a90dc859 100644
-> --- a/net/vmw_vsock/vmci_transport.c
-> +++ b/net/vmw_vsock/vmci_transport.c
-> @@ -1838,7 +1838,14 @@ static ssize_t vmci_transport_stream_enqueue(
->  	struct msghdr *msg,
->  	size_t len)
->  {
-> -	return vmci_qpair_enquev(vmci_trans(vsk)->qpair, msg, len, 0);
-> +	int err;
-> +
-> +	err = vmci_qpair_enquev(vmci_trans(vsk)->qpair, msg, len, 0);
-> +
-> +	if (err < 0)
-> +		err = -ENOMEM;
-> +
-> +	return err;
->  }
->  
->  static s64 vmci_transport_stream_has_data(struct vsock_sock *vsk)
-> -- 
-> 2.35.1
-> 
-
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+T24gMTYuMDguMjAyMiAwNTozMCwgQm9iYnkgRXNobGVtYW4gd3JvdGU6DQo+IENDJ2luZyB2aXJ0
+aW8tZGV2QGxpc3RzLm9hc2lzLW9wZW4ub3JnDQo+IA0KPiBPbiBNb24sIEF1ZyAxNSwgMjAyMiBh
+dCAxMDo1NjowNUFNIC0wNzAwLCBCb2JieSBFc2hsZW1hbiB3cm90ZToNCj4+IFRoaXMgY29tbWl0
+IGFsbG93cyB2c29jayBpbXBsZW1lbnRhdGlvbnMgdG8gcmV0dXJuIGVycm9ycw0KPj4gdG8gdGhl
+IHNvY2tldCBsYXllciBvdGhlciB0aGFuIC1FTk9NRU0uIE9uZSBpbW1lZGlhdGUgZWZmZWN0DQo+
+PiBvZiB0aGlzIGlzIHRoYXQgdXBvbiB0aGUgc2tfc25kYnVmIHRocmVzaG9sZCBiZWluZyByZWFj
+aGVkIC1FQUdBSU4NCj4+IHdpbGwgYmUgcmV0dXJuZWQgYW5kIHVzZXJzcGFjZSBtYXkgdGhyb3R0
+bGUgYXBwcm9wcmlhdGVseS4NCj4+DQo+PiBSZXN1bHRpbmdseSwgYSBrbm93biBpc3N1ZSB3aXRo
+IHVwZXJmIGlzIHJlc29sdmVkWzFdLg0KPj4NCj4+IEFkZGl0aW9uYWxseSwgdG8gcHJlc2VydmUg
+bGVnYWN5IGJlaGF2aW9yIGZvciBub24tdmlydGlvDQo+PiBpbXBsZW1lbnRhdGlvbnMsIGh5cGVy
+di92bWNpIGZvcmNlIGVycm9ycyB0byBiZSAtRU5PTUVNIHNvIHRoYXQgYmVoYXZpb3INCj4+IGlz
+IHVuY2hhbmdlZC4NCj4+DQo+PiBbMV06IGh0dHBzOi8vZ2l0bGFiLmNvbS92c29jay92c29jay8t
+L2lzc3Vlcy8xDQo+Pg0KPj4gU2lnbmVkLW9mZi1ieTogQm9iYnkgRXNobGVtYW4gPGJvYmJ5LmVz
+aGxlbWFuQGJ5dGVkYW5jZS5jb20+DQo+PiAtLS0NCj4+ICBpbmNsdWRlL2xpbnV4L3ZpcnRpb192
+c29jay5oICAgICAgICAgICAgfCAzICsrKw0KPj4gIG5ldC92bXdfdnNvY2svYWZfdnNvY2suYyAg
+ICAgICAgICAgICAgICB8IDMgKystDQo+PiAgbmV0L3Ztd192c29jay9oeXBlcnZfdHJhbnNwb3J0
+LmMgICAgICAgIHwgMiArLQ0KPj4gIG5ldC92bXdfdnNvY2svdmlydGlvX3RyYW5zcG9ydF9jb21t
+b24uYyB8IDMgLS0tDQo+PiAgbmV0L3Ztd192c29jay92bWNpX3RyYW5zcG9ydC5jICAgICAgICAg
+IHwgOSArKysrKysrKy0NCj4+ICA1IGZpbGVzIGNoYW5nZWQsIDE0IGluc2VydGlvbnMoKyksIDYg
+ZGVsZXRpb25zKC0pDQo+Pg0KPj4gZGlmZiAtLWdpdCBhL2luY2x1ZGUvbGludXgvdmlydGlvX3Zz
+b2NrLmggYi9pbmNsdWRlL2xpbnV4L3ZpcnRpb192c29jay5oDQo+PiBpbmRleCAxN2VkMDE0NjY4
+NzUuLjlhMzdlZGRiYjg3YSAxMDA2NDQNCj4+IC0tLSBhL2luY2x1ZGUvbGludXgvdmlydGlvX3Zz
+b2NrLmgNCj4+ICsrKyBiL2luY2x1ZGUvbGludXgvdmlydGlvX3Zzb2NrLmgNCj4+IEBAIC04LDYg
+KzgsOSBAQA0KPj4gICNpbmNsdWRlIDxuZXQvc29jay5oPg0KPj4gICNpbmNsdWRlIDxuZXQvYWZf
+dnNvY2suaD4NCj4+ICANCj4+ICsvKiBUaHJlc2hvbGQgZm9yIGRldGVjdGluZyBzbWFsbCBwYWNr
+ZXRzIHRvIGNvcHkgKi8NCj4+ICsjZGVmaW5lIEdPT0RfQ09QWV9MRU4gIDEyOA0KPj4gKw0KPj4g
+IGVudW0gdmlydGlvX3Zzb2NrX21ldGFkYXRhX2ZsYWdzIHsNCj4+ICAJVklSVElPX1ZTT0NLX01F
+VEFEQVRBX0ZMQUdTX1JFUExZCQk9IEJJVCgwKSwNCj4+ICAJVklSVElPX1ZTT0NLX01FVEFEQVRB
+X0ZMQUdTX1RBUF9ERUxJVkVSRUQJPSBCSVQoMSksDQo+PiBkaWZmIC0tZ2l0IGEvbmV0L3Ztd192
+c29jay9hZl92c29jay5jIGIvbmV0L3Ztd192c29jay9hZl92c29jay5jDQo+PiBpbmRleCBlMzQ4
+YjJkMDllYWMuLjE4OTNmOGFhZmE0OCAxMDA2NDQNCj4+IC0tLSBhL25ldC92bXdfdnNvY2svYWZf
+dnNvY2suYw0KPj4gKysrIGIvbmV0L3Ztd192c29jay9hZl92c29jay5jDQo+PiBAQCAtMTg0NCw4
+ICsxODQ0LDkgQEAgc3RhdGljIGludCB2c29ja19jb25uZWN0aWJsZV9zZW5kbXNnKHN0cnVjdCBz
+b2NrZXQgKnNvY2ssIHN0cnVjdCBtc2doZHIgKm1zZywNCj4+ICAJCQl3cml0dGVuID0gdHJhbnNw
+b3J0LT5zdHJlYW1fZW5xdWV1ZSh2c2ssDQo+PiAgCQkJCQltc2csIGxlbiAtIHRvdGFsX3dyaXR0
+ZW4pOw0KPj4gIAkJfQ0KPj4gKw0KPj4gIAkJaWYgKHdyaXR0ZW4gPCAwKSB7DQo+PiAtCQkJZXJy
+ID0gLUVOT01FTTsNCj4+ICsJCQllcnIgPSB3cml0dGVuOw0KPj4gIAkJCWdvdG8gb3V0X2VycjsN
+Cj4+ICAJCX0NCklJVUMsIGZvciBzdHJlYW0sIHRoaXMgdGhpbmcgd2lsbCBoYXZlIGVmZmVjdCwg
+b25seSBvbmUgZmlyc3QgdHJhbnNwb3J0IGFjY2VzcyBmYWlscy4gSW4gdGhpcw0KY2FzZSAndG90
+YWxfd3JpdHRlbicgd2lsbCBiZSAwLCBzbyAnZXJyJyA9PSAnd3JpdHRlbicgd2lsbCBiZSByZXR1
+cm5lZC4gQnV0IHdoZW4gJ3RvdGFsX3dyaXR0ZW4gPiAwJywNCidlcnInIHdpbGwgYmUgb3Zlcndy
+aXR0ZW4gYnkgJ3RvdGFsX3dyaXR0ZW4nIGJlbG93LCBwcmVzZXJ2aW5nIGN1cnJlbnQgYmVoYXZp
+b3VyLiBJcyBpdCB3aGF0IFlvdQ0Kc3VwcG9zZWQ/DQoNClRoYW5rcw0KPj4gIA0KPj4gZGlmZiAt
+LWdpdCBhL25ldC92bXdfdnNvY2svaHlwZXJ2X3RyYW5zcG9ydC5jIGIvbmV0L3Ztd192c29jay9o
+eXBlcnZfdHJhbnNwb3J0LmMNCj4+IGluZGV4IGZkOTgyMjllM2RiMy4uZTk5YWVhNTcxZjZmIDEw
+MDY0NA0KPj4gLS0tIGEvbmV0L3Ztd192c29jay9oeXBlcnZfdHJhbnNwb3J0LmMNCj4+ICsrKyBi
+L25ldC92bXdfdnNvY2svaHlwZXJ2X3RyYW5zcG9ydC5jDQo+PiBAQCAtNjg3LDcgKzY4Nyw3IEBA
+IHN0YXRpYyBzc2l6ZV90IGh2c19zdHJlYW1fZW5xdWV1ZShzdHJ1Y3QgdnNvY2tfc29jayAqdnNr
+LCBzdHJ1Y3QgbXNnaGRyICptc2csDQo+PiAgCWlmIChieXRlc193cml0dGVuKQ0KPj4gIAkJcmV0
+ID0gYnl0ZXNfd3JpdHRlbjsNCj4+ICAJa2ZyZWUoc2VuZF9idWYpOw0KPj4gLQlyZXR1cm4gcmV0
+Ow0KPj4gKwlyZXR1cm4gcmV0IDwgMCA/IC1FTk9NRU0gOiByZXQ7DQo+PiAgfQ0KPj4gIA0KPj4g
+IHN0YXRpYyBzNjQgaHZzX3N0cmVhbV9oYXNfZGF0YShzdHJ1Y3QgdnNvY2tfc29jayAqdnNrKQ0K
+Pj4gZGlmZiAtLWdpdCBhL25ldC92bXdfdnNvY2svdmlydGlvX3RyYW5zcG9ydF9jb21tb24uYyBi
+L25ldC92bXdfdnNvY2svdmlydGlvX3RyYW5zcG9ydF9jb21tb24uYw0KPj4gaW5kZXggOTIwNTc4
+NTk3YmI5Li5kNTc4MDU5OWZlOTMgMTAwNjQ0DQo+PiAtLS0gYS9uZXQvdm13X3Zzb2NrL3ZpcnRp
+b190cmFuc3BvcnRfY29tbW9uLmMNCj4+ICsrKyBiL25ldC92bXdfdnNvY2svdmlydGlvX3RyYW5z
+cG9ydF9jb21tb24uYw0KPj4gQEAgLTIzLDkgKzIzLDYgQEANCj4+ICAvKiBIb3cgbG9uZyB0byB3
+YWl0IGZvciBncmFjZWZ1bCBzaHV0ZG93biBvZiBhIGNvbm5lY3Rpb24gKi8NCj4+ICAjZGVmaW5l
+IFZTT0NLX0NMT1NFX1RJTUVPVVQgKDggKiBIWikNCj4+ICANCj4+IC0vKiBUaHJlc2hvbGQgZm9y
+IGRldGVjdGluZyBzbWFsbCBwYWNrZXRzIHRvIGNvcHkgKi8NCj4+IC0jZGVmaW5lIEdPT0RfQ09Q
+WV9MRU4gIDEyOA0KPj4gLQ0KPj4gIHN0YXRpYyBjb25zdCBzdHJ1Y3QgdmlydGlvX3RyYW5zcG9y
+dCAqDQo+PiAgdmlydGlvX3RyYW5zcG9ydF9nZXRfb3BzKHN0cnVjdCB2c29ja19zb2NrICp2c2sp
+DQo+PiAgew0KPj4gZGlmZiAtLWdpdCBhL25ldC92bXdfdnNvY2svdm1jaV90cmFuc3BvcnQuYyBi
+L25ldC92bXdfdnNvY2svdm1jaV90cmFuc3BvcnQuYw0KPj4gaW5kZXggYjE0ZjBlZDc0MjdiLi5j
+OTI3YTkwZGM4NTkgMTAwNjQ0DQo+PiAtLS0gYS9uZXQvdm13X3Zzb2NrL3ZtY2lfdHJhbnNwb3J0
+LmMNCj4+ICsrKyBiL25ldC92bXdfdnNvY2svdm1jaV90cmFuc3BvcnQuYw0KPj4gQEAgLTE4Mzgs
+NyArMTgzOCwxNCBAQCBzdGF0aWMgc3NpemVfdCB2bWNpX3RyYW5zcG9ydF9zdHJlYW1fZW5xdWV1
+ZSgNCj4+ICAJc3RydWN0IG1zZ2hkciAqbXNnLA0KPj4gIAlzaXplX3QgbGVuKQ0KPj4gIHsNCj4+
+IC0JcmV0dXJuIHZtY2lfcXBhaXJfZW5xdWV2KHZtY2lfdHJhbnModnNrKS0+cXBhaXIsIG1zZywg
+bGVuLCAwKTsNCj4+ICsJaW50IGVycjsNCj4+ICsNCj4+ICsJZXJyID0gdm1jaV9xcGFpcl9lbnF1
+ZXYodm1jaV90cmFucyh2c2spLT5xcGFpciwgbXNnLCBsZW4sIDApOw0KPj4gKw0KPj4gKwlpZiAo
+ZXJyIDwgMCkNCj4+ICsJCWVyciA9IC1FTk9NRU07DQo+PiArDQo+PiArCXJldHVybiBlcnI7DQo+
+PiAgfQ0KPj4gIA0KPj4gIHN0YXRpYyBzNjQgdm1jaV90cmFuc3BvcnRfc3RyZWFtX2hhc19kYXRh
+KHN0cnVjdCB2c29ja19zb2NrICp2c2spDQo+PiAtLSANCj4+IDIuMzUuMQ0KPj4NCj4gDQo+IC0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLQ0KPiBUbyB1bnN1YnNjcmliZSwgZS1tYWlsOiB2aXJ0aW8tZGV2LXVuc3Vic2Ny
+aWJlQGxpc3RzLm9hc2lzLW9wZW4ub3JnDQo+IEZvciBhZGRpdGlvbmFsIGNvbW1hbmRzLCBlLW1h
+aWw6IHZpcnRpby1kZXYtaGVscEBsaXN0cy5vYXNpcy1vcGVuLm9yZw0KPiANCg0K
 
