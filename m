@@ -1,21 +1,23 @@
-Return-Path: <mgurtovoy@nvidia.com>
-Message-ID: <9e232018-ce0a-e936-b962-69f5cba469f3@nvidia.com>
-Date: Wed, 17 Aug 2022 01:26:09 +0300
-Subject: Re: [PATCH RFC v7 2/8] Introduce group administration commands
-References: <20220812171841.12183-1-mst@redhat.com>
- <20220812171841.12183-3-mst@redhat.com>
-From: Max Gurtovoy <mgurtovoy@nvidia.com>
-In-Reply-To: <20220812171841.12183-3-mst@redhat.com>
+Return-Path: <virtio-comment-return-3387-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-comment@lists.oasis-open.org>
+List-Post: <mailto:virtio-comment@lists.oasis-open.org>
+List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
 MIME-Version: 1.0
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: "Michael S. Tsirkin" <mst@redhat.com>, virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, jasowang@redhat.com, cohuck@redhat.com, sgarzare@redhat.com, stefanha@redhat.com, nrupal.jani@intel.com, Piotr.Uminski@intel.com, hang.yuan@intel.com
-Cc: virtio@lists.oasis-open.org, Zhu Lingshan <lingshan.zhu@intel.com>, oren@nvidia.com, parav@nvidia.com, shahafs@nvidia.com, aadam@redhat.com, eperezma@redhat.com
+References: <20220812171841.12183-1-mst@redhat.com> <20220812171841.12183-3-mst@redhat.com>
+In-Reply-To: <20220812171841.12183-3-mst@redhat.com>
+From: Jason Wang <jasowang@redhat.com>
+Date: Thu, 18 Aug 2022 16:46:45 +0800
+Message-ID: <CACGkMEu3uJWAZ3_Q4xX40-DRWgBXCzrLtYO9hP9dTET4DQfrZg@mail.gmail.com>
+Subject: [virtio-comment] Re: [PATCH RFC v7 2/8] Introduce group administration commands
+Content-Type: text/plain; charset="UTF-8"
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: virtio-comment@lists.oasis-open.org, Virtio-Dev <virtio-dev@lists.oasis-open.org>, Cornelia Huck <cohuck@redhat.com>, Stefano Garzarella <sgarzare@redhat.com>, Stefan Hajnoczi <stefanha@redhat.com>, nrupal.jani@intel.com, "Uminski, Piotr" <Piotr.Uminski@intel.com>, hang.yuan@intel.com, virtio@lists.oasis-open.org, Zhu Lingshan <lingshan.zhu@intel.com>, Oren Duer <oren@nvidia.com>, Parav Pandit <parav@nvidia.com>, Shahaf Shuler <shahafs@nvidia.com>, Ariel Adam <aadam@redhat.com>, eperezma <eperezma@redhat.com>, Max Gurtovoy <mgurtovoy@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-
-On 8/12/2022 8:19 PM, Michael S. Tsirkin wrote:
+On Sat, Aug 13, 2022 at 1:19 AM Michael S. Tsirkin <mst@redhat.com> wrote:
+>
 > From: Max Gurtovoy <mgurtovoy@nvidia.com>
 >
 > These commands are used for essential administrative and management
@@ -27,64 +29,53 @@ On 8/12/2022 8:19 PM, Michael S. Tsirkin wrote:
 > Signed-off-by: Max Gurtovoy <mgurtovoy@nvidia.com>
 > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 > ---
->   admin.tex | 99 ++++++++++++++++++++++++++++++++++++++++++++++++++++---
->   1 file changed, 94 insertions(+), 5 deletions(-)
+>  admin.tex | 99 ++++++++++++++++++++++++++++++++++++++++++++++++++++---
+>  1 file changed, 94 insertions(+), 5 deletions(-)
 >
 > diff --git a/admin.tex b/admin.tex
 > index 6e9434a..4840dd4 100644
 > --- a/admin.tex
 > +++ b/admin.tex
 > @@ -9,8 +9,10 @@ \section{Device groups}\label{sec:Basic Facilities of a Virtio Device / Device g
->   \item[Parent device]
->           or parent, the device controlling the group.
->   \item[Member device]
+>  \item[Parent device]
+>          or parent, the device controlling the group.
+>  \item[Member device]
 > -        a device within a group. Parent device itself may, or may
-> -	not be a member of the group.
+> -       not be a member of the group.
 > +        a device within a group. Parent device itself is not
-> +	a member of the group. In the future it is envisoned that
-> +	new group types may be introduced where the parent
-> +	device is a member of the group.
+> +       a member of the group. In the future it is envisoned that
+> +       new group types may be introduced where the parent
+> +       device is a member of the group.
 
-If we will agree on the content, the above changed should be squashed to 
-patch 1/8.
+This part should go with patch 1?
 
-
->   \item[Member identifier]
->           each member has this indentifier, unique within the group
->   	and used to address it through the parent device.
+>  \item[Member identifier]
+>          each member has this indentifier, unique within the group
+>         and used to address it through the parent device.
 > @@ -20,9 +22,10 @@ \section{Device groups}\label{sec:Basic Facilities of a Virtio Device / Device g
->   	and what kind of control does the parent have.
->   \item[Group identifier]
->   	each group has this identifier, unique within the parent device.
-> -	this specifies the group type and possibly selects the
-> -	group if multiple groups of the same type can be controlled by the same
-> -	parent device.
-> +	This specifies the group type. In the future it is
-> +	envisoned that new group types will be introduced where the group
-> +	identifier also selects the group if multiple groups of the same
-> +	type can be controlled by the same parent device.
-If we will agree on the content, the above changed should be squashed to 
-patch 1/8.
->   \end{description}
->   
->   A single group type is currently specified:
+>         and what kind of control does the parent have.
+>  \item[Group identifier]
+>         each group has this identifier, unique within the parent device.
+> -       this specifies the group type and possibly selects the
+> -       group if multiple groups of the same type can be controlled by the same
+> -       parent device.
+> +       This specifies the group type. In the future it is
+> +       envisoned that new group types will be introduced where the group
+> +       identifier also selects the group if multiple groups of the same
+> +       type can be controlled by the same parent device.
+>  \end{description}
+>
+>  A single group type is currently specified:
 > @@ -46,4 +49,90 @@ \section{Device groups}\label{sec:Basic Facilities of a Virtio Device / Device g
->   PCI transport (see \ref{sec:Virtio Transport Options / Virtio Over PCI Bus}).
->   \end{description}
->   
+>  PCI transport (see \ref{sec:Virtio Transport Options / Virtio Over PCI Bus}).
+>  \end{description}
+>
 > +\subsection{Group administration commands}\label{sec:Basic Facilities of a Virtio Device / Group administration commands}
 > +
 > +Group administration commands can be issued through a parent
 > +device to control member devices of a group.  This mechanism can
 > +be used, for example, to configure a member device before it is
-> +initialized by its driver..
-
-It also used for query/accept optional admin command as was introduced 
-in patch 8/8.
-
-We need to mention somewhere that if group_member_id == 0 the designated 
-device is self (and reserve this value).
-
+> +initialized by its driver.
 > +
 > +All the group administration commands are of the following form:
 > +
@@ -97,6 +88,21 @@ device is self (and reserve this value).
 > +         * 2 - 65535 reserved
 > +         */
 > +        le16 group_id;
+
+I wonder about the implication of this field. Does it mean:
+
+1) a single admin virtqueue that manage two group of VFs
+
+or
+
+2) a single admin virtqueue that manages both VFs and SFs (then
+'group_type' should be better?)
+
+If it's 1, the group id seems not sufficient. If it's 2, I wonder if
+it scales (using a single admin virtqueue to manage both VF and SF).
+
+Thanks
+
 > +        /* unused, reserved for future extensions */
 > +        u8 reserved1[12];
 > +        le64 group_member_id;
@@ -165,5 +171,25 @@ device is self (and reserve this value).
 > +contents of \field{command_specific_error}
 > +holds the command specific error. If \field{status} is not set to VIRTIO_ADMIN_STATUS_CS_ERR, the
 > +\field{command_specific_error} value is undefined and should be ignored by the driver.
->   
+>
+> --
+> MST
+>
+
+
+This publicly archived list offers a means to provide input to the
+OASIS Virtual I/O Device (VIRTIO) TC.
+
+In order to verify user consent to the Feedback License terms and
+to minimize spam in the list archive, subscription is required
+before posting.
+
+Subscribe: virtio-comment-subscribe@lists.oasis-open.org
+Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
+List help: virtio-comment-help@lists.oasis-open.org
+List archive: https://lists.oasis-open.org/archives/virtio-comment/
+Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
+List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
+Committee: https://www.oasis-open.org/committees/virtio/
+Join OASIS: https://www.oasis-open.org/join/
 
