@@ -1,54 +1,57 @@
-Return-Path: <mgurtovoy@nvidia.com>
-Message-ID: <35cd4803-7c81-348a-d84b-9b444ad090c5@nvidia.com>
-Date: Wed, 17 Aug 2022 02:06:20 +0300
-Subject: Re: [PATCH RFC v7 8/8] admin command list discovery
-References: <20220812171841.12183-1-mst@redhat.com>
- <20220812171841.12183-9-mst@redhat.com>
-From: Max Gurtovoy <mgurtovoy@nvidia.com>
-In-Reply-To: <20220812171841.12183-9-mst@redhat.com>
+Return-Path: <jasowang@redhat.com>
 MIME-Version: 1.0
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: "Michael S. Tsirkin" <mst@redhat.com>, virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, jasowang@redhat.com, cohuck@redhat.com, sgarzare@redhat.com, stefanha@redhat.com, nrupal.jani@intel.com, Piotr.Uminski@intel.com, hang.yuan@intel.com
-Cc: virtio@lists.oasis-open.org, Zhu Lingshan <lingshan.zhu@intel.com>, oren@nvidia.com, parav@nvidia.com, shahafs@nvidia.com, aadam@redhat.com, eperezma@redhat.com
+References: <20220812171841.12183-1-mst@redhat.com> <20220812171841.12183-9-mst@redhat.com>
+In-Reply-To: <20220812171841.12183-9-mst@redhat.com>
+From: Jason Wang <jasowang@redhat.com>
+Date: Thu, 18 Aug 2022 16:51:39 +0800
+Message-ID: <CACGkMEswsT04mXmRKuN2uGT82i9+3RyO+4_j7OGu2fDKOJM9Kg@mail.gmail.com>
+Subject: Re: [PATCH RFC v7 8/8] admin command list discovery
+Content-Type: text/plain; charset="UTF-8"
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: virtio-comment@lists.oasis-open.org, Virtio-Dev <virtio-dev@lists.oasis-open.org>, Cornelia Huck <cohuck@redhat.com>, Stefano Garzarella <sgarzare@redhat.com>, Stefan Hajnoczi <stefanha@redhat.com>, nrupal.jani@intel.com, "Uminski, Piotr" <Piotr.Uminski@intel.com>, hang.yuan@intel.com, virtio@lists.oasis-open.org, Zhu Lingshan <lingshan.zhu@intel.com>, Oren Duer <oren@nvidia.com>, Parav Pandit <parav@nvidia.com>, Shahaf Shuler <shahafs@nvidia.com>, Ariel Adam <aadam@redhat.com>, eperezma <eperezma@redhat.com>, Max Gurtovoy <mgurtovoy@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-
-On 8/12/2022 8:19 PM, Michael S. Tsirkin wrote:
+On Sat, Aug 13, 2022 at 1:19 AM Michael S. Tsirkin <mst@redhat.com> wrote:
+>
 > From: Max Gurtovoy <mgurtovoy@nvidia.com>
 >
 > Add commands to find out which commands does each group support.
 > This will be useful once we have multiple group types.
+
+I still wonder if it's better to just use different types of
+virtqueues, it seems more simple than this.
+
+Thanks
+
 >
 > Signed-off-by: Max Gurtovoy <mgurtovoy@nvidia.com>
 > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 > ---
->   admin.tex | 72 +++++++++++++++++++++++++++++++++++++++++++++++++++++--
->   1 file changed, 70 insertions(+), 2 deletions(-)
+>  admin.tex | 72 +++++++++++++++++++++++++++++++++++++++++++++++++++++--
+>  1 file changed, 70 insertions(+), 2 deletions(-)
 >
 > diff --git a/admin.tex b/admin.tex
 > index 99b6c2a..5956c48 100644
 > --- a/admin.tex
 > +++ b/admin.tex
 > @@ -96,9 +96,11 @@ \subsection{Group administration commands}\label{sec:Basic Facilities of a Virti
->   
->   \begin{tabular}{|l|l|}
->   \hline
+>
+>  \begin{tabular}{|l|l|}
+>  \hline
 > -opcode & Command Description \\
 > +opcode & Name & Command Description \\
->   \hline \hline
+>  \hline \hline
 > -0000h - 7FFFh   & Group administration commands    \\
 > +0000h & VIRTIO_ADMIN_CMD_LIST_QUERY & Provides to driver list of commands supported for this group type    \\
 > +0001h & VIRTIO_ADMIN_CMD_LIST_ACCEPT & Provides to device list of commands used for this group type \\
 > +0002h - 7FFFh & - &  Group administration commands    \\
->   \hline
->   8000h - FFFFh   & Reserved    \\
->   \hline
+>  \hline
+>  8000h - FFFFh   & Reserved    \\
+>  \hline
 > @@ -142,6 +144,72 @@ \subsection{Group administration commands}\label{sec:Basic Facilities of a Virti
->   structures to the shorter of the two (submitted by driver and
->   described in this specification).
->   
+>  structures to the shorter of the two (submitted by driver and
+>  described in this specification).
+>
 > +Before sending any other commands for any member of a specific
 > +group to the device, the driver issues the commands
 > +VIRTIO_ADMIN_CMD_LIST_QUERY and VIRTIO_ADMIN_CMD_LIST_ACCEPT.
@@ -57,15 +60,6 @@ On 8/12/2022 8:19 PM, Michael S. Tsirkin wrote:
 > +Commands VIRTIO_ADMIN_CMD_LIST_QUERY and VIRTIO_ADMIN_CMD_LIST_ACCEPT
 > +both use the following structure describing the
 > +command opcodes:
-
-Maybe we can create mandatory cmds VIRTIO_ADMIN_CMD_READABLE_SIZE_QUERY, 
-VIRTIO_ADMIN_CMD_READABLE_SIZE_ACCEPT and 
-VIRTIO_ADMIN_CMD_WRITABLE_SIZE_QUERY, 
-VIRTIO_ADMIN_CMD_WRITABLE_SIZE_ACCEPT ?
-
-So both sides will agree on the sizes and no surprises will happen 
-during the runtime ?
-
 > +
 > +\begin{lstlisting}
 > +struct virtio_admin_cmd_list {
@@ -79,7 +73,6 @@ during the runtime ?
 > +is supported. For example, the array of size 2 including
 > +the values 0x3 and 0x1 indicates that only opcodes 0, 1 and 32
 > +are supported.
-0x3 in device_admin_cmds[0] and 0x1 in device_admin_cmds[1].
 > +
 > +Accordingly, bits 0 and 1 corresponding to opcode 0
 > +(VIRTIO_ADMIN_CMD_LIST_QUERY) and 1 (VIRTIO_ADMIN_CMD_LIST_ACCEPT) must
@@ -125,7 +118,10 @@ during the runtime ?
 > +It is assumed that all members in a group support and are used
 > +with the same list of commands.
 > +
->   \section{Administration Virtqueue}\label{sec:Basic Facilities of a Virtio Device / Group Administration Virtqueues}
->   
->   An administration virtqueue of a parent device is used to submit
+>  \section{Administration Virtqueue}\label{sec:Basic Facilities of a Virtio Device / Group Administration Virtqueues}
+>
+>  An administration virtqueue of a parent device is used to submit
+> --
+> MST
+>
 
