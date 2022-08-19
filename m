@@ -1,523 +1,383 @@
-Return-Path: <virtio-dev-return-9816-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-9822-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 6E296986466
-	for <virtio-dev@lists.oasis-open.org>; Thu, 18 Aug 2022 20:50:04 +0000 (UTC)
-Date: Tue, 16 Aug 2022 20:52:49 +0000
-From: Bobby Eshleman <bobbyeshleman@gmail.com>
-Message-ID: <YvwBT6kPudOyRBqe@bullseye>
+	by lists.oasis-open.org (Postfix) with ESMTP id 4BC1B98646B
+	for <virtio-dev@lists.oasis-open.org>; Fri, 19 Aug 2022 04:31:10 +0000 (UTC)
+From: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+Date: Fri, 19 Aug 2022 04:30:38 +0000
+Message-ID: <42022d5682b3fc10752c12c201e96b0bf1c130d5.camel@sberdevices.ru>
 References: <cover.1660362668.git.bobby.eshleman@bytedance.com>
- <3cb082f1c88f3f2ef1fc250dbc0745fb79c745c7.1660362668.git.bobby.eshleman@bytedance.com>
- <YvsBqpEoq1tbgj8A@bullseye>
- <9a411184-9b14-ee72-dcbf-05271139db0a@sberdevices.ru>
- <aea0855e-a417-d475-71ab-7fdea1cc4d31@sberdevices.ru>
- <YvtqPQhs0uQHuwID@bullseye>
- <5419b3e9629d76f24ae5fe5e3ce35deb2ad7d6cc.camel@sberdevices.ru>
+	 <3cb082f1c88f3f2ef1fc250dbc0745fb79c745c7.1660362668.git.bobby.eshleman@bytedance.com>
+	 <YvsBqpEoq1tbgj8A@bullseye>
+	 <9a411184-9b14-ee72-dcbf-05271139db0a@sberdevices.ru>
+	 <aea0855e-a417-d475-71ab-7fdea1cc4d31@sberdevices.ru>
+	 <YvtqPQhs0uQHuwID@bullseye>
+	 <5419b3e9629d76f24ae5fe5e3ce35deb2ad7d6cc.camel@sberdevices.ru>
+	 <YvwBT6kPudOyRBqe@bullseye>
+In-Reply-To: <YvwBT6kPudOyRBqe@bullseye>
 MIME-Version: 1.0
-In-Reply-To: <5419b3e9629d76f24ae5fe5e3ce35deb2ad7d6cc.camel@sberdevices.ru>
 Subject: Re: [virtio-dev] Re: [PATCH 5/6] virtio/vsock: add support for dgram
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-To: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <20C3F2B02A3CBE488EDB0AB0B228DF02@sberdevices.ru>
+Content-Transfer-Encoding: base64
+To: "bobbyeshleman@gmail.com" <bobbyeshleman@gmail.com>
 Cc: "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "jasowang@redhat.com" <jasowang@redhat.com>, "bobby.eshleman@gmail.com" <bobby.eshleman@gmail.com>, "davem@davemloft.net" <davem@davemloft.net>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "stefanha@redhat.com" <stefanha@redhat.com>, "bobby.eshleman@bytedance.com" <bobby.eshleman@bytedance.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "pabeni@redhat.com" <pabeni@redhat.com>, "edumazet@google.com" <edumazet@google.com>, "jiang.wang@bytedance.com" <jiang.wang@bytedance.com>, "sgarzare@redhat.com" <sgarzare@redhat.com>, "kuba@kernel.org" <kuba@kernel.org>, "cong.wang@bytedance.com" <cong.wang@bytedance.com>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "mst@redhat.com" <mst@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Thu, Aug 18, 2022 at 08:35:48AM +0000, Arseniy Krasnov wrote:
-> On Tue, 2022-08-16 at 09:58 +0000, Bobby Eshleman wrote:
-> > On Wed, Aug 17, 2022 at 05:42:08AM +0000, Arseniy Krasnov wrote:
-> > > On 17.08.2022 08:01, Arseniy Krasnov wrote:
-> > > > On 16.08.2022 05:32, Bobby Eshleman wrote:
-> > > > > CC'ing virtio-dev@lists.oasis-open.org
-> > > > > 
-> > > > > On Mon, Aug 15, 2022 at 10:56:08AM -0700, Bobby Eshleman wrote:
-> > > > > > This patch supports dgram in virtio and on the vhost side.
-> > > > Hello,
-> > > > 
-> > > > sorry, i don't understand, how this maintains message boundaries?
-> > > > Or it
-> > > > is unnecessary for SOCK_DGRAM?
-> > > > 
-> > > > Thanks
-> > > > > > Signed-off-by: Jiang Wang <jiang.wang@bytedance.com>
-> > > > > > Signed-off-by: Bobby Eshleman <bobby.eshleman@bytedance.com>
-> > > > > > ---
-> > > > > >  drivers/vhost/vsock.c                   |   2 +-
-> > > > > >  include/net/af_vsock.h                  |   2 +
-> > > > > >  include/uapi/linux/virtio_vsock.h       |   1 +
-> > > > > >  net/vmw_vsock/af_vsock.c                |  26 +++-
-> > > > > >  net/vmw_vsock/virtio_transport.c        |   2 +-
-> > > > > >  net/vmw_vsock/virtio_transport_common.c | 173
-> > > > > > ++++++++++++++++++++++--
-> > > > > >  6 files changed, 186 insertions(+), 20 deletions(-)
-> > > > > > 
-> > > > > > diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
-> > > > > > index a5d1bdb786fe..3dc72a5647ca 100644
-> > > > > > --- a/drivers/vhost/vsock.c
-> > > > > > +++ b/drivers/vhost/vsock.c
-> > > > > > @@ -925,7 +925,7 @@ static int __init vhost_vsock_init(void)
-> > > > > >  	int ret;
-> > > > > >  
-> > > > > >  	ret = vsock_core_register(&vhost_transport.transport,
-> > > > > > -				  VSOCK_TRANSPORT_F_H2G);
-> > > > > > +				  VSOCK_TRANSPORT_F_H2G |
-> > > > > > VSOCK_TRANSPORT_F_DGRAM);
-> > > > > >  	if (ret < 0)
-> > > > > >  		return ret;
-> > > > > >  
-> > > > > > diff --git a/include/net/af_vsock.h b/include/net/af_vsock.h
-> > > > > > index 1c53c4c4d88f..37e55c81e4df 100644
-> > > > > > --- a/include/net/af_vsock.h
-> > > > > > +++ b/include/net/af_vsock.h
-> > > > > > @@ -78,6 +78,8 @@ struct vsock_sock {
-> > > > > >  s64 vsock_stream_has_data(struct vsock_sock *vsk);
-> > > > > >  s64 vsock_stream_has_space(struct vsock_sock *vsk);
-> > > > > >  struct sock *vsock_create_connected(struct sock *parent);
-> > > > > > +int vsock_bind_stream(struct vsock_sock *vsk,
-> > > > > > +		      struct sockaddr_vm *addr);
-> > > > > >  
-> > > > > >  /**** TRANSPORT ****/
-> > > > > >  
-> > > > > > diff --git a/include/uapi/linux/virtio_vsock.h
-> > > > > > b/include/uapi/linux/virtio_vsock.h
-> > > > > > index 857df3a3a70d..0975b9c88292 100644
-> > > > > > --- a/include/uapi/linux/virtio_vsock.h
-> > > > > > +++ b/include/uapi/linux/virtio_vsock.h
-> > > > > > @@ -70,6 +70,7 @@ struct virtio_vsock_hdr {
-> > > > > >  enum virtio_vsock_type {
-> > > > > >  	VIRTIO_VSOCK_TYPE_STREAM = 1,
-> > > > > >  	VIRTIO_VSOCK_TYPE_SEQPACKET = 2,
-> > > > > > +	VIRTIO_VSOCK_TYPE_DGRAM = 3,
-> > > > > >  };
-> > > > > >  
-> > > > > >  enum virtio_vsock_op {
-> > > > > > diff --git a/net/vmw_vsock/af_vsock.c
-> > > > > > b/net/vmw_vsock/af_vsock.c
-> > > > > > index 1893f8aafa48..87e4ae1866d3 100644
-> > > > > > --- a/net/vmw_vsock/af_vsock.c
-> > > > > > +++ b/net/vmw_vsock/af_vsock.c
-> > > > > > @@ -675,6 +675,19 @@ static int
-> > > > > > __vsock_bind_connectible(struct vsock_sock *vsk,
-> > > > > >  	return 0;
-> > > > > >  }
-> > > > > >  
-> > > > > > +int vsock_bind_stream(struct vsock_sock *vsk,
-> > > > > > +		      struct sockaddr_vm *addr)
-> > > > > > +{
-> > > > > > +	int retval;
-> > > > > > +
-> > > > > > +	spin_lock_bh(&vsock_table_lock);
-> > > > > > +	retval = __vsock_bind_connectible(vsk, addr);
-> > > > > > +	spin_unlock_bh(&vsock_table_lock);
-> > > > > > +
-> > > > > > +	return retval;
-> > > > > > +}
-> > > > > > +EXPORT_SYMBOL(vsock_bind_stream);
-> > > > > > +
-> > > > > >  static int __vsock_bind_dgram(struct vsock_sock *vsk,
-> > > > > >  			      struct sockaddr_vm *addr)
-> > > > > >  {
-> > > > > > @@ -2363,11 +2376,16 @@ int vsock_core_register(const struct
-> > > > > > vsock_transport *t, int features)
-> > > > > >  	}
-> > > > > >  
-> > > > > >  	if (features & VSOCK_TRANSPORT_F_DGRAM) {
-> > > > > > -		if (t_dgram) {
-> > > > > > -			err = -EBUSY;
-> > > > > > -			goto err_busy;
-> > > > > > +		/* TODO: always chose the G2H variant over
-> > > > > > others, support nesting later */
-> > > > > > +		if (features & VSOCK_TRANSPORT_F_G2H) {
-> > > > > > +			if (t_dgram)
-> > > > > > +				pr_warn("virtio_vsock: t_dgram
-> > > > > > already set\n");
-> > > > > > +			t_dgram = t;
-> > > > > > +		}
-> > > > > > +
-> > > > > > +		if (!t_dgram) {
-> > > > > > +			t_dgram = t;
-> > > > > >  		}
-> > > > > > -		t_dgram = t;
-> > > > > >  	}
-> > > > > >  
-> > > > > >  	if (features & VSOCK_TRANSPORT_F_LOCAL) {
-> > > > > > diff --git a/net/vmw_vsock/virtio_transport.c
-> > > > > > b/net/vmw_vsock/virtio_transport.c
-> > > > > > index 073314312683..d4526ca462d2 100644
-> > > > > > --- a/net/vmw_vsock/virtio_transport.c
-> > > > > > +++ b/net/vmw_vsock/virtio_transport.c
-> > > > > > @@ -850,7 +850,7 @@ static int __init virtio_vsock_init(void)
-> > > > > >  		return -ENOMEM;
-> > > > > >  
-> > > > > >  	ret = vsock_core_register(&virtio_transport.transport,
-> > > > > > -				  VSOCK_TRANSPORT_F_G2H);
-> > > > > > +				  VSOCK_TRANSPORT_F_G2H |
-> > > > > > VSOCK_TRANSPORT_F_DGRAM);
-> > > > > >  	if (ret)
-> > > > > >  		goto out_wq;
-> > > > > >  
-> > > > > > diff --git a/net/vmw_vsock/virtio_transport_common.c
-> > > > > > b/net/vmw_vsock/virtio_transport_common.c
-> > > > > > index bdf16fff054f..aedb48728677 100644
-> > > > > > --- a/net/vmw_vsock/virtio_transport_common.c
-> > > > > > +++ b/net/vmw_vsock/virtio_transport_common.c
-> > > > > > @@ -229,7 +229,9 @@
-> > > > > > EXPORT_SYMBOL_GPL(virtio_transport_deliver_tap_pkt);
-> > > > > >  
-> > > > > >  static u16 virtio_transport_get_type(struct sock *sk)
-> > > > > >  {
-> > > > > > -	if (sk->sk_type == SOCK_STREAM)
-> > > > > > +	if (sk->sk_type == SOCK_DGRAM)
-> > > > > > +		return VIRTIO_VSOCK_TYPE_DGRAM;
-> > > > > > +	else if (sk->sk_type == SOCK_STREAM)
-> > > > > >  		return VIRTIO_VSOCK_TYPE_STREAM;
-> > > > > >  	else
-> > > > > >  		return VIRTIO_VSOCK_TYPE_SEQPACKET;
-> > > > > > @@ -287,22 +289,29 @@ static int
-> > > > > > virtio_transport_send_pkt_info(struct vsock_sock *vsk,
-> > > > > >  	vvs = vsk->trans;
-> > > > > >  
-> > > > > >  	/* we can send less than pkt_len bytes */
-> > > > > > -	if (pkt_len > VIRTIO_VSOCK_MAX_PKT_BUF_SIZE)
-> > > > > > -		pkt_len = VIRTIO_VSOCK_MAX_PKT_BUF_SIZE;
-> > > > > > +	if (pkt_len > VIRTIO_VSOCK_MAX_PKT_BUF_SIZE) {
-> > > > > > +		if (info->type != VIRTIO_VSOCK_TYPE_DGRAM)
-> > > > > > +			pkt_len =
-> > > > > > VIRTIO_VSOCK_MAX_PKT_BUF_SIZE;
-> > > > > > +		else
-> > > > > > +			return 0;
-> > > > > > +	}
-> > > > > >  
-> > > > > > -	/* virtio_transport_get_credit might return less than
-> > > > > > pkt_len credit */
-> > > > > > -	pkt_len = virtio_transport_get_credit(vvs, pkt_len);
-> > > > > > +	if (info->type != VIRTIO_VSOCK_TYPE_DGRAM) {
-> > > > > > +		/* virtio_transport_get_credit might return
-> > > > > > less than pkt_len credit */
-> > > > > > +		pkt_len = virtio_transport_get_credit(vvs,
-> > > > > > pkt_len);
-> > > > > >  
-> > > > > > -	/* Do not send zero length OP_RW pkt */
-> > > > > > -	if (pkt_len == 0 && info->op == VIRTIO_VSOCK_OP_RW)
-> > > > > > -		return pkt_len;
-> > > > > > +		/* Do not send zero length OP_RW pkt */
-> > > > > > +		if (pkt_len == 0 && info->op ==
-> > > > > > VIRTIO_VSOCK_OP_RW)
-> > > > > > +			return pkt_len;
-> > > > > > +	}
-> > > > > >  
-> > > > > >  	skb = virtio_transport_alloc_skb(info, pkt_len,
-> > > > > >  					 src_cid, src_port,
-> > > > > >  					 dst_cid, dst_port,
-> > > > > >  					 &err);
-> > > > > >  	if (!skb) {
-> > > > > > -		virtio_transport_put_credit(vvs, pkt_len);
-> > > > > > +		if (info->type != VIRTIO_VSOCK_TYPE_DGRAM)
-> > > > > > +			virtio_transport_put_credit(vvs,
-> > > > > > pkt_len);
-> > > > > >  		return err;
-> > > > > >  	}
-> > > > > >  
-> > > > > > @@ -586,6 +595,61 @@
-> > > > > > virtio_transport_seqpacket_dequeue(struct vsock_sock *vsk,
-> > > > > >  }
-> > > > > >  EXPORT_SYMBOL_GPL(virtio_transport_seqpacket_dequeue);
-> > > > > >  
-> > > > > > +static ssize_t
-> > > > > > +virtio_transport_dgram_do_dequeue(struct vsock_sock *vsk,
-> > > > > > +				  struct msghdr *msg, size_t
-> > > > > > len)
-> > > > > > +{
-> > > > > > +	struct virtio_vsock_sock *vvs = vsk->trans;
-> > > > > > +	struct sk_buff *skb;
-> > > > > > +	size_t total = 0;
-> > > > > > +	u32 free_space;
-> > > > > > +	int err = -EFAULT;
-> > > > > > +
-> > > > > > +	spin_lock_bh(&vvs->rx_lock);
-> > > > > > +	if (total < len && !skb_queue_empty_lockless(&vvs-
-> > > > > > >rx_queue)) {
-> > > > > > +		skb = __skb_dequeue(&vvs->rx_queue);
-> > > > > > +
-> > > > > > +		total = len;
-> > > > > > +		if (total > skb->len - vsock_metadata(skb)-
-> > > > > > >off)
-> > > > > > +			total = skb->len - vsock_metadata(skb)-
-> > > > > > >off;
-> > > > > > +		else if (total < skb->len -
-> > > > > > vsock_metadata(skb)->off)
-> > > > > > +			msg->msg_flags |= MSG_TRUNC;
-> > > > > > +
-> > > > > > +		/* sk_lock is held by caller so no one else can
-> > > > > > dequeue.
-> > > > > > +		 * Unlock rx_lock since memcpy_to_msg() may
-> > > > > > sleep.
-> > > > > > +		 */
-> > > > > > +		spin_unlock_bh(&vvs->rx_lock);
-> > > > > > +
-> > > > > > +		err = memcpy_to_msg(msg, skb->data +
-> > > > > > vsock_metadata(skb)->off, total);
-> > > > > > +		if (err)
-> > > > > > +			return err;
-> > > > > > +
-> > > > > > +		spin_lock_bh(&vvs->rx_lock);
-> > > > > > +
-> > > > > > +		virtio_transport_dec_rx_pkt(vvs, skb);
-> > > > > > +		consume_skb(skb);
-> > > > > > +	}
-> > > > > > +
-> > > > > > +	free_space = vvs->buf_alloc - (vvs->fwd_cnt - vvs-
-> > > > > > >last_fwd_cnt);
-> > > > > > +
-> > > > > > +	spin_unlock_bh(&vvs->rx_lock);
-> > > > > > +
-> > > > > > +	if (total > 0 && msg->msg_name) {
-> > > > > > +		/* Provide the address of the sender. */
-> > > > > > +		DECLARE_SOCKADDR(struct sockaddr_vm *, vm_addr,
-> > > > > > msg->msg_name);
-> > > > > > +
-> > > > > > +		vsock_addr_init(vm_addr,
-> > > > > > le64_to_cpu(vsock_hdr(skb)->src_cid),
-> > > > > > +				le32_to_cpu(vsock_hdr(skb)-
-> > > > > > >src_port));
-> > > > > > +		msg->msg_namelen = sizeof(*vm_addr);
-> > > > > > +	}
-> > > > > > +	return total;
-> > > > > > +}
-> > > > > > +
-> > > > > > +static s64 virtio_transport_dgram_has_data(struct vsock_sock
-> > > > > > *vsk)
-> > > > > > +{
-> > > > > > +	return virtio_transport_stream_has_data(vsk);
-> > > > > > +}
-> > > > > > +
-> > > > > >  int
-> > > > > >  virtio_transport_seqpacket_enqueue(struct vsock_sock *vsk,
-> > > > > >  				   struct msghdr *msg,
-> > > > > > @@ -611,7 +675,66 @@ virtio_transport_dgram_dequeue(struct
-> > > > > > vsock_sock *vsk,
-> > > > > >  			       struct msghdr *msg,
-> > > > > >  			       size_t len, int flags)
-> > > > > >  {
-> > > > > > -	return -EOPNOTSUPP;
-> > > > > > +	struct sock *sk;
-> > > > > > +	size_t err = 0;
-> > > > > > +	long timeout;
-> > > > > > +
-> > > > > > +	DEFINE_WAIT(wait);
-> > > > > > +
-> > > > > > +	sk = &vsk->sk;
-> > > > > > +	err = 0;
-> > > > > > +
-> > > > > > +	if (flags & MSG_OOB || flags & MSG_ERRQUEUE || flags &
-> > > > > > MSG_PEEK)
-> > > > > > +		return -EOPNOTSUPP;
-> > > > > > +
-> > > > > > +	lock_sock(sk);
-> > > > > > +
-> > > > > > +	if (!len)
-> > > > > > +		goto out;
-> > > > > > +
-> > > > > > +	timeout = sock_rcvtimeo(sk, flags & MSG_DONTWAIT);
-> > > > > > +
-> > > > > > +	while (1) {
-> > > > > > +		s64 ready;
-> > > > > > +
-> > > > > > +		prepare_to_wait(sk_sleep(sk), &wait,
-> > > > > > TASK_INTERRUPTIBLE);
-> > > > > > +		ready = virtio_transport_dgram_has_data(vsk);
-> > > > > > +
-> > > > > > +		if (ready == 0) {
-> > > > > > +			if (timeout == 0) {
-> > > > > > +				err = -EAGAIN;
-> > > > > > +				finish_wait(sk_sleep(sk),
-> > > > > > &wait);
-> > > > > > +				break;
-> > > > > > +			}
-> > > > > > +
-> > > > > > +			release_sock(sk);
-> > > > > > +			timeout = schedule_timeout(timeout);
-> > > > > > +			lock_sock(sk);
-> > > > > > +
-> > > > > > +			if (signal_pending(current)) {
-> > > > > > +				err = sock_intr_errno(timeout);
-> > > > > > +				finish_wait(sk_sleep(sk),
-> > > > > > &wait);
-> > > > > > +				break;
-> > > > > > +			} else if (timeout == 0) {
-> > > > > > +				err = -EAGAIN;
-> > > > > > +				finish_wait(sk_sleep(sk),
-> > > > > > &wait);
-> > > > > > +				break;
-> > > > > > +			}
-> > > > > > +		} else {
-> > > > > > +			finish_wait(sk_sleep(sk), &wait);
-> > > > > > +
-> > > > > > +			if (ready < 0) {
-> > > > > > +				err = -ENOMEM;
-> > > > > > +				goto out;
-> > > > > > +			}
-> > > > > > +
-> > > > > > +			err =
-> > > > > > virtio_transport_dgram_do_dequeue(vsk, msg, len);
-> > > > > > +			break;
-> > > > > > +		}
-> > > > > > +	}
-> > > > > > +out:
-> > > > > > +	release_sock(sk);
-> > > > > > +	return err;
-> > > > > >  }
-> > > > > >  EXPORT_SYMBOL_GPL(virtio_transport_dgram_dequeue);
-> > > ^^^
-> > > May be, this generic data waiting logic should be in af_vsock.c, as
-> > > for stream/seqpacket?
-> > > In this way, another transport which supports SOCK_DGRAM could
-> > > reuse it.
-> > 
-> > I think that is a great idea. I'll test that change for v2.
-> > 
-> > Thanks.
-> 
-> Also for v2, i tested Your patchset a little bit(write here to not
-> spread over all mails):
-> 1) seqpacket test in vsock_test.c fails(seems MSG_EOR flag issue)
-
-I will investigate.
-
-> 2) i can't do rmmod with the following config(after testing):
->    CONFIG_VSOCKETS=m
->    CONFIG_VIRTIO_VSOCKETS=m
->    CONFIG_VIRTIO_VSOCKETS_COMMON=m
->    CONFIG_VHOST=m
->    CONFIG_VHOST_VSOCK=m
->    Guest is shutdown, but rmmod fails.
-> 3) virtio_transport_init + virtio_transport_exit seems must be
->    under EXPORT_SYMBOL_GPL(), because both used in another module.
-
-Definitely, will fix.
-
-> 4) I tried to send 5kb(or 20kb not matter) piece of data, but got      
->    kernel panic both in guest and later in host.
-> 
-
-Thanks for catching that. I can reproduce it intermittently, but only
-for seqpacket. Did you happen to see this for other socket types as
-well?
-
-Thanks
-
-> Thank You
-> > 
-> > > > > >  
-> > > > > > @@ -819,13 +942,13 @@
-> > > > > > EXPORT_SYMBOL_GPL(virtio_transport_stream_allow);
-> > > > > >  int virtio_transport_dgram_bind(struct vsock_sock *vsk,
-> > > > > >  				struct sockaddr_vm *addr)
-> > > > > >  {
-> > > > > > -	return -EOPNOTSUPP;
-> > > > > > +	return vsock_bind_stream(vsk, addr);
-> > > > > >  }
-> > > > > >  EXPORT_SYMBOL_GPL(virtio_transport_dgram_bind);
-> > > > > >  
-> > > > > >  bool virtio_transport_dgram_allow(u32 cid, u32 port)
-> > > > > >  {
-> > > > > > -	return false;
-> > > > > > +	return true;
-> > > > > >  }
-> > > > > >  EXPORT_SYMBOL_GPL(virtio_transport_dgram_allow);
-> > > > > >  
-> > > > > > @@ -861,7 +984,16 @@ virtio_transport_dgram_enqueue(struct
-> > > > > > vsock_sock *vsk,
-> > > > > >  			       struct msghdr *msg,
-> > > > > >  			       size_t dgram_len)
-> > > > > >  {
-> > > > > > -	return -EOPNOTSUPP;
-> > > > > > +	struct virtio_vsock_pkt_info info = {
-> > > > > > +		.op = VIRTIO_VSOCK_OP_RW,
-> > > > > > +		.msg = msg,
-> > > > > > +		.pkt_len = dgram_len,
-> > > > > > +		.vsk = vsk,
-> > > > > > +		.remote_cid = remote_addr->svm_cid,
-> > > > > > +		.remote_port = remote_addr->svm_port,
-> > > > > > +	};
-> > > > > > +
-> > > > > > +	return virtio_transport_send_pkt_info(vsk, &info);
-> > > > > >  }
-> > > > > >  EXPORT_SYMBOL_GPL(virtio_transport_dgram_enqueue);
-> > > > > >  
-> > > > > > @@ -1165,6 +1297,12 @@ virtio_transport_recv_connected(struct
-> > > > > > sock *sk,
-> > > > > >  	struct virtio_vsock_hdr *hdr = vsock_hdr(skb);
-> > > > > >  	int err = 0;
-> > > > > >  
-> > > > > > +	if (le16_to_cpu(vsock_hdr(skb)->type) ==
-> > > > > > VIRTIO_VSOCK_TYPE_DGRAM) {
-> > > > > > +		virtio_transport_recv_enqueue(vsk, skb);
-> > > > > > +		sk->sk_data_ready(sk);
-> > > > > > +		return err;
-> > > > > > +	}
-> > > > > > +
-> > > > > >  	switch (le16_to_cpu(hdr->op)) {
-> > > > > >  	case VIRTIO_VSOCK_OP_RW:
-> > > > > >  		virtio_transport_recv_enqueue(vsk, skb);
-> > > > > > @@ -1320,7 +1458,8 @@ virtio_transport_recv_listen(struct
-> > > > > > sock *sk, struct sk_buff *skb,
-> > > > > >  static bool virtio_transport_valid_type(u16 type)
-> > > > > >  {
-> > > > > >  	return (type == VIRTIO_VSOCK_TYPE_STREAM) ||
-> > > > > > -	       (type == VIRTIO_VSOCK_TYPE_SEQPACKET);
-> > > > > > +	       (type == VIRTIO_VSOCK_TYPE_SEQPACKET) ||
-> > > > > > +	       (type == VIRTIO_VSOCK_TYPE_DGRAM);
-> > > > > >  }
-> > > > > >  
-> > > > > >  /* We are under the virtio-vsock's vsock->rx_lock or vhost-
-> > > > > > vsock's vq->mutex
-> > > > > > @@ -1384,6 +1523,11 @@ void virtio_transport_recv_pkt(struct
-> > > > > > virtio_transport *t,
-> > > > > >  		goto free_pkt;
-> > > > > >  	}
-> > > > > >  
-> > > > > > +	if (sk->sk_type == SOCK_DGRAM) {
-> > > > > > +		virtio_transport_recv_connected(sk, skb);
-> > > > > > +		goto out;
-> > > > > > +	}
-> > > > > > +
-> > > > > >  	space_available = virtio_transport_space_update(sk,
-> > > > > > skb);
-> > > > > >  
-> > > > > >  	/* Update CID in case it has changed after a transport
-> > > > > > reset event */
-> > > > > > @@ -1415,6 +1559,7 @@ void virtio_transport_recv_pkt(struct
-> > > > > > virtio_transport *t,
-> > > > > >  		break;
-> > > > > >  	}
-> > > > > >  
-> > > > > > +out:
-> > > > > >  	release_sock(sk);
-> > > > > >  
-> > > > > >  	/* Release refcnt obtained when we fetched this socket
-> > > > > > out of the
-> > > > > > -- 
-> > > > > > 2.35.1
-> > > > > > 
-> > > > > 
-> > > > > -------------------------------------------------------------
-> > > > > --------
-> > > > > To unsubscribe, e-mail: 
-> > > > > virtio-dev-unsubscribe@lists.oasis-open.org
-> > > > > For additional commands, e-mail: 
-> > > > > virtio-dev-help@lists.oasis-open.org
-> > > > > 
-> > 
-> > ---------------------------------------------------------------------
-> > To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> > For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
-> > 
-
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+T24gVHVlLCAyMDIyLTA4LTE2IGF0IDIwOjUyICswMDAwLCBCb2JieSBFc2hsZW1hbiB3cm90ZToN
+Cj4gT24gVGh1LCBBdWcgMTgsIDIwMjIgYXQgMDg6MzU6NDhBTSArMDAwMCwgQXJzZW5peSBLcmFz
+bm92IHdyb3RlOg0KPiA+IE9uIFR1ZSwgMjAyMi0wOC0xNiBhdCAwOTo1OCArMDAwMCwgQm9iYnkg
+RXNobGVtYW4gd3JvdGU6DQo+ID4gPiBPbiBXZWQsIEF1ZyAxNywgMjAyMiBhdCAwNTo0MjowOEFN
+ICswMDAwLCBBcnNlbml5IEtyYXNub3Ygd3JvdGU6DQo+ID4gPiA+IE9uIDE3LjA4LjIwMjIgMDg6
+MDEsIEFyc2VuaXkgS3Jhc25vdiB3cm90ZToNCj4gPiA+ID4gPiBPbiAxNi4wOC4yMDIyIDA1OjMy
+LCBCb2JieSBFc2hsZW1hbiB3cm90ZToNCj4gPiA+ID4gPiA+IENDJ2luZyB2aXJ0aW8tZGV2QGxp
+c3RzLm9hc2lzLW9wZW4ub3JnDQo+ID4gPiA+ID4gPiANCj4gPiA+ID4gPiA+IE9uIE1vbiwgQXVn
+IDE1LCAyMDIyIGF0IDEwOjU2OjA4QU0gLTA3MDAsIEJvYmJ5IEVzaGxlbWFuDQo+ID4gPiA+ID4g
+PiB3cm90ZToNCj4gPiA+ID4gPiA+ID4gVGhpcyBwYXRjaCBzdXBwb3J0cyBkZ3JhbSBpbiB2aXJ0
+aW8gYW5kIG9uIHRoZSB2aG9zdA0KPiA+ID4gPiA+ID4gPiBzaWRlLg0KPiA+ID4gPiA+IEhlbGxv
+LA0KPiA+ID4gPiA+IA0KPiA+ID4gPiA+IHNvcnJ5LCBpIGRvbid0IHVuZGVyc3RhbmQsIGhvdyB0
+aGlzIG1haW50YWlucyBtZXNzYWdlDQo+ID4gPiA+ID4gYm91bmRhcmllcz8NCj4gPiA+ID4gPiBP
+ciBpdA0KPiA+ID4gPiA+IGlzIHVubmVjZXNzYXJ5IGZvciBTT0NLX0RHUkFNPw0KPiA+ID4gPiA+
+IA0KPiA+ID4gPiA+IFRoYW5rcw0KPiA+ID4gPiA+ID4gPiBTaWduZWQtb2ZmLWJ5OiBKaWFuZyBX
+YW5nIDxqaWFuZy53YW5nQGJ5dGVkYW5jZS5jb20+DQo+ID4gPiA+ID4gPiA+IFNpZ25lZC1vZmYt
+Ynk6IEJvYmJ5IEVzaGxlbWFuIDwNCj4gPiA+ID4gPiA+ID4gYm9iYnkuZXNobGVtYW5AYnl0ZWRh
+bmNlLmNvbT4NCj4gPiA+ID4gPiA+ID4gLS0tDQo+ID4gPiA+ID4gPiA+ICBkcml2ZXJzL3Zob3N0
+L3Zzb2NrLmMgICAgICAgICAgICAgICAgICAgfCAgIDIgKy0NCj4gPiA+ID4gPiA+ID4gIGluY2x1
+ZGUvbmV0L2FmX3Zzb2NrLmggICAgICAgICAgICAgICAgICB8ICAgMiArDQo+ID4gPiA+ID4gPiA+
+ICBpbmNsdWRlL3VhcGkvbGludXgvdmlydGlvX3Zzb2NrLmggICAgICAgfCAgIDEgKw0KPiA+ID4g
+PiA+ID4gPiAgbmV0L3Ztd192c29jay9hZl92c29jay5jICAgICAgICAgICAgICAgIHwgIDI2ICsr
+Ky0NCj4gPiA+ID4gPiA+ID4gIG5ldC92bXdfdnNvY2svdmlydGlvX3RyYW5zcG9ydC5jICAgICAg
+ICB8ICAgMiArLQ0KPiA+ID4gPiA+ID4gPiAgbmV0L3Ztd192c29jay92aXJ0aW9fdHJhbnNwb3J0
+X2NvbW1vbi5jIHwgMTczDQo+ID4gPiA+ID4gPiA+ICsrKysrKysrKysrKysrKysrKysrKystLQ0K
+PiA+ID4gPiA+ID4gPiAgNiBmaWxlcyBjaGFuZ2VkLCAxODYgaW5zZXJ0aW9ucygrKSwgMjAgZGVs
+ZXRpb25zKC0pDQo+ID4gPiA+ID4gPiA+IA0KPiA+ID4gPiA+ID4gPiBkaWZmIC0tZ2l0IGEvZHJp
+dmVycy92aG9zdC92c29jay5jDQo+ID4gPiA+ID4gPiA+IGIvZHJpdmVycy92aG9zdC92c29jay5j
+DQo+ID4gPiA+ID4gPiA+IGluZGV4IGE1ZDFiZGI3ODZmZS4uM2RjNzJhNTY0N2NhIDEwMDY0NA0K
+PiA+ID4gPiA+ID4gPiAtLS0gYS9kcml2ZXJzL3Zob3N0L3Zzb2NrLmMNCj4gPiA+ID4gPiA+ID4g
+KysrIGIvZHJpdmVycy92aG9zdC92c29jay5jDQo+ID4gPiA+ID4gPiA+IEBAIC05MjUsNyArOTI1
+LDcgQEAgc3RhdGljIGludCBfX2luaXQNCj4gPiA+ID4gPiA+ID4gdmhvc3RfdnNvY2tfaW5pdCh2
+b2lkKQ0KPiA+ID4gPiA+ID4gPiAgCWludCByZXQ7DQo+ID4gPiA+ID4gPiA+ICANCj4gPiA+ID4g
+PiA+ID4gIAlyZXQgPSB2c29ja19jb3JlX3JlZ2lzdGVyKCZ2aG9zdF90cmFuc3BvcnQudHJhbnNw
+b3J0LA0KPiA+ID4gPiA+ID4gPiAtCQkJCSAgVlNPQ0tfVFJBTlNQT1JUX0ZfSDJHKTsNCj4gPiA+
+ID4gPiA+ID4gKwkJCQkgIFZTT0NLX1RSQU5TUE9SVF9GX0gyRyB8DQo+ID4gPiA+ID4gPiA+IFZT
+T0NLX1RSQU5TUE9SVF9GX0RHUkFNKTsNCj4gPiA+ID4gPiA+ID4gIAlpZiAocmV0IDwgMCkNCj4g
+PiA+ID4gPiA+ID4gIAkJcmV0dXJuIHJldDsNCj4gPiA+ID4gPiA+ID4gIA0KPiA+ID4gPiA+ID4g
+PiBkaWZmIC0tZ2l0IGEvaW5jbHVkZS9uZXQvYWZfdnNvY2suaA0KPiA+ID4gPiA+ID4gPiBiL2lu
+Y2x1ZGUvbmV0L2FmX3Zzb2NrLmgNCj4gPiA+ID4gPiA+ID4gaW5kZXggMWM1M2M0YzRkODhmLi4z
+N2U1NWM4MWU0ZGYgMTAwNjQ0DQo+ID4gPiA+ID4gPiA+IC0tLSBhL2luY2x1ZGUvbmV0L2FmX3Zz
+b2NrLmgNCj4gPiA+ID4gPiA+ID4gKysrIGIvaW5jbHVkZS9uZXQvYWZfdnNvY2suaA0KPiA+ID4g
+PiA+ID4gPiBAQCAtNzgsNiArNzgsOCBAQCBzdHJ1Y3QgdnNvY2tfc29jayB7DQo+ID4gPiA+ID4g
+PiA+ICBzNjQgdnNvY2tfc3RyZWFtX2hhc19kYXRhKHN0cnVjdCB2c29ja19zb2NrICp2c2spOw0K
+PiA+ID4gPiA+ID4gPiAgczY0IHZzb2NrX3N0cmVhbV9oYXNfc3BhY2Uoc3RydWN0IHZzb2NrX3Nv
+Y2sgKnZzayk7DQo+ID4gPiA+ID4gPiA+ICBzdHJ1Y3Qgc29jayAqdnNvY2tfY3JlYXRlX2Nvbm5l
+Y3RlZChzdHJ1Y3Qgc29jaw0KPiA+ID4gPiA+ID4gPiAqcGFyZW50KTsNCj4gPiA+ID4gPiA+ID4g
+K2ludCB2c29ja19iaW5kX3N0cmVhbShzdHJ1Y3QgdnNvY2tfc29jayAqdnNrLA0KPiA+ID4gPiA+
+ID4gPiArCQkgICAgICBzdHJ1Y3Qgc29ja2FkZHJfdm0gKmFkZHIpOw0KPiA+ID4gPiA+ID4gPiAg
+DQo+ID4gPiA+ID4gPiA+ICAvKioqKiBUUkFOU1BPUlQgKioqKi8NCj4gPiA+ID4gPiA+ID4gIA0K
+PiA+ID4gPiA+ID4gPiBkaWZmIC0tZ2l0IGEvaW5jbHVkZS91YXBpL2xpbnV4L3ZpcnRpb192c29j
+ay5oDQo+ID4gPiA+ID4gPiA+IGIvaW5jbHVkZS91YXBpL2xpbnV4L3ZpcnRpb192c29jay5oDQo+
+ID4gPiA+ID4gPiA+IGluZGV4IDg1N2RmM2EzYTcwZC4uMDk3NWI5Yzg4MjkyIDEwMDY0NA0KPiA+
+ID4gPiA+ID4gPiAtLS0gYS9pbmNsdWRlL3VhcGkvbGludXgvdmlydGlvX3Zzb2NrLmgNCj4gPiA+
+ID4gPiA+ID4gKysrIGIvaW5jbHVkZS91YXBpL2xpbnV4L3ZpcnRpb192c29jay5oDQo+ID4gPiA+
+ID4gPiA+IEBAIC03MCw2ICs3MCw3IEBAIHN0cnVjdCB2aXJ0aW9fdnNvY2tfaGRyIHsNCj4gPiA+
+ID4gPiA+ID4gIGVudW0gdmlydGlvX3Zzb2NrX3R5cGUgew0KPiA+ID4gPiA+ID4gPiAgCVZJUlRJ
+T19WU09DS19UWVBFX1NUUkVBTSA9IDEsDQo+ID4gPiA+ID4gPiA+ICAJVklSVElPX1ZTT0NLX1RZ
+UEVfU0VRUEFDS0VUID0gMiwNCj4gPiA+ID4gPiA+ID4gKwlWSVJUSU9fVlNPQ0tfVFlQRV9ER1JB
+TSA9IDMsDQo+ID4gPiA+ID4gPiA+ICB9Ow0KPiA+ID4gPiA+ID4gPiAgDQo+ID4gPiA+ID4gPiA+
+ICBlbnVtIHZpcnRpb192c29ja19vcCB7DQo+ID4gPiA+ID4gPiA+IGRpZmYgLS1naXQgYS9uZXQv
+dm13X3Zzb2NrL2FmX3Zzb2NrLmMNCj4gPiA+ID4gPiA+ID4gYi9uZXQvdm13X3Zzb2NrL2FmX3Zz
+b2NrLmMNCj4gPiA+ID4gPiA+ID4gaW5kZXggMTg5M2Y4YWFmYTQ4Li44N2U0YWUxODY2ZDMgMTAw
+NjQ0DQo+ID4gPiA+ID4gPiA+IC0tLSBhL25ldC92bXdfdnNvY2svYWZfdnNvY2suYw0KPiA+ID4g
+PiA+ID4gPiArKysgYi9uZXQvdm13X3Zzb2NrL2FmX3Zzb2NrLmMNCj4gPiA+ID4gPiA+ID4gQEAg
+LTY3NSw2ICs2NzUsMTkgQEAgc3RhdGljIGludA0KPiA+ID4gPiA+ID4gPiBfX3Zzb2NrX2JpbmRf
+Y29ubmVjdGlibGUoc3RydWN0IHZzb2NrX3NvY2sgKnZzaywNCj4gPiA+ID4gPiA+ID4gIAlyZXR1
+cm4gMDsNCj4gPiA+ID4gPiA+ID4gIH0NCj4gPiA+ID4gPiA+ID4gIA0KPiA+ID4gPiA+ID4gPiAr
+aW50IHZzb2NrX2JpbmRfc3RyZWFtKHN0cnVjdCB2c29ja19zb2NrICp2c2ssDQo+ID4gPiA+ID4g
+PiA+ICsJCSAgICAgIHN0cnVjdCBzb2NrYWRkcl92bSAqYWRkcikNCj4gPiA+ID4gPiA+ID4gK3sN
+Cj4gPiA+ID4gPiA+ID4gKwlpbnQgcmV0dmFsOw0KPiA+ID4gPiA+ID4gPiArDQo+ID4gPiA+ID4g
+PiA+ICsJc3Bpbl9sb2NrX2JoKCZ2c29ja190YWJsZV9sb2NrKTsNCj4gPiA+ID4gPiA+ID4gKwly
+ZXR2YWwgPSBfX3Zzb2NrX2JpbmRfY29ubmVjdGlibGUodnNrLCBhZGRyKTsNCj4gPiA+ID4gPiA+
+ID4gKwlzcGluX3VubG9ja19iaCgmdnNvY2tfdGFibGVfbG9jayk7DQo+ID4gPiA+ID4gPiA+ICsN
+Cj4gPiA+ID4gPiA+ID4gKwlyZXR1cm4gcmV0dmFsOw0KPiA+ID4gPiA+ID4gPiArfQ0KPiA+ID4g
+PiA+ID4gPiArRVhQT1JUX1NZTUJPTCh2c29ja19iaW5kX3N0cmVhbSk7DQo+ID4gPiA+ID4gPiA+
+ICsNCj4gPiA+ID4gPiA+ID4gIHN0YXRpYyBpbnQgX192c29ja19iaW5kX2RncmFtKHN0cnVjdCB2
+c29ja19zb2NrICp2c2ssDQo+ID4gPiA+ID4gPiA+ICAJCQkgICAgICBzdHJ1Y3Qgc29ja2FkZHJf
+dm0gKmFkZHIpDQo+ID4gPiA+ID4gPiA+ICB7DQo+ID4gPiA+ID4gPiA+IEBAIC0yMzYzLDExICsy
+Mzc2LDE2IEBAIGludCB2c29ja19jb3JlX3JlZ2lzdGVyKGNvbnN0DQo+ID4gPiA+ID4gPiA+IHN0
+cnVjdA0KPiA+ID4gPiA+ID4gPiB2c29ja190cmFuc3BvcnQgKnQsIGludCBmZWF0dXJlcykNCj4g
+PiA+ID4gPiA+ID4gIAl9DQo+ID4gPiA+ID4gPiA+ICANCj4gPiA+ID4gPiA+ID4gIAlpZiAoZmVh
+dHVyZXMgJiBWU09DS19UUkFOU1BPUlRfRl9ER1JBTSkgew0KPiA+ID4gPiA+ID4gPiAtCQlpZiAo
+dF9kZ3JhbSkgew0KPiA+ID4gPiA+ID4gPiAtCQkJZXJyID0gLUVCVVNZOw0KPiA+ID4gPiA+ID4g
+PiAtCQkJZ290byBlcnJfYnVzeTsNCj4gPiA+ID4gPiA+ID4gKwkJLyogVE9ETzogYWx3YXlzIGNo
+b3NlIHRoZSBHMkggdmFyaWFudCBvdmVyDQo+ID4gPiA+ID4gPiA+IG90aGVycywgc3VwcG9ydCBu
+ZXN0aW5nIGxhdGVyICovDQo+ID4gPiA+ID4gPiA+ICsJCWlmIChmZWF0dXJlcyAmIFZTT0NLX1RS
+QU5TUE9SVF9GX0cySCkgew0KPiA+ID4gPiA+ID4gPiArCQkJaWYgKHRfZGdyYW0pDQo+ID4gPiA+
+ID4gPiA+ICsJCQkJcHJfd2FybigidmlydGlvX3Zzb2NrOiB0X2RncmFtDQo+ID4gPiA+ID4gPiA+
+IGFscmVhZHkgc2V0XG4iKTsNCj4gPiA+ID4gPiA+ID4gKwkJCXRfZGdyYW0gPSB0Ow0KPiA+ID4g
+PiA+ID4gPiArCQl9DQo+ID4gPiA+ID4gPiA+ICsNCj4gPiA+ID4gPiA+ID4gKwkJaWYgKCF0X2Rn
+cmFtKSB7DQo+ID4gPiA+ID4gPiA+ICsJCQl0X2RncmFtID0gdDsNCj4gPiA+ID4gPiA+ID4gIAkJ
+fQ0KPiA+ID4gPiA+ID4gPiAtCQl0X2RncmFtID0gdDsNCj4gPiA+ID4gPiA+ID4gIAl9DQo+ID4g
+PiA+ID4gPiA+ICANCj4gPiA+ID4gPiA+ID4gIAlpZiAoZmVhdHVyZXMgJiBWU09DS19UUkFOU1BP
+UlRfRl9MT0NBTCkgew0KPiA+ID4gPiA+ID4gPiBkaWZmIC0tZ2l0IGEvbmV0L3Ztd192c29jay92
+aXJ0aW9fdHJhbnNwb3J0LmMNCj4gPiA+ID4gPiA+ID4gYi9uZXQvdm13X3Zzb2NrL3ZpcnRpb190
+cmFuc3BvcnQuYw0KPiA+ID4gPiA+ID4gPiBpbmRleCAwNzMzMTQzMTI2ODMuLmQ0NTI2Y2E0NjJk
+MiAxMDA2NDQNCj4gPiA+ID4gPiA+ID4gLS0tIGEvbmV0L3Ztd192c29jay92aXJ0aW9fdHJhbnNw
+b3J0LmMNCj4gPiA+ID4gPiA+ID4gKysrIGIvbmV0L3Ztd192c29jay92aXJ0aW9fdHJhbnNwb3J0
+LmMNCj4gPiA+ID4gPiA+ID4gQEAgLTg1MCw3ICs4NTAsNyBAQCBzdGF0aWMgaW50IF9faW5pdA0K
+PiA+ID4gPiA+ID4gPiB2aXJ0aW9fdnNvY2tfaW5pdCh2b2lkKQ0KPiA+ID4gPiA+ID4gPiAgCQly
+ZXR1cm4gLUVOT01FTTsNCj4gPiA+ID4gPiA+ID4gIA0KPiA+ID4gPiA+ID4gPiAgCXJldCA9IHZz
+b2NrX2NvcmVfcmVnaXN0ZXIoJnZpcnRpb190cmFuc3BvcnQudHJhbnNwb3J0LA0KPiA+ID4gPiA+
+ID4gPiAtCQkJCSAgVlNPQ0tfVFJBTlNQT1JUX0ZfRzJIKTsNCj4gPiA+ID4gPiA+ID4gKwkJCQkg
+IFZTT0NLX1RSQU5TUE9SVF9GX0cySCB8DQo+ID4gPiA+ID4gPiA+IFZTT0NLX1RSQU5TUE9SVF9G
+X0RHUkFNKTsNCj4gPiA+ID4gPiA+ID4gIAlpZiAocmV0KQ0KPiA+ID4gPiA+ID4gPiAgCQlnb3Rv
+IG91dF93cTsNCj4gPiA+ID4gPiA+ID4gIA0KPiA+ID4gPiA+ID4gPiBkaWZmIC0tZ2l0IGEvbmV0
+L3Ztd192c29jay92aXJ0aW9fdHJhbnNwb3J0X2NvbW1vbi5jDQo+ID4gPiA+ID4gPiA+IGIvbmV0
+L3Ztd192c29jay92aXJ0aW9fdHJhbnNwb3J0X2NvbW1vbi5jDQo+ID4gPiA+ID4gPiA+IGluZGV4
+IGJkZjE2ZmZmMDU0Zi4uYWVkYjQ4NzI4Njc3IDEwMDY0NA0KPiA+ID4gPiA+ID4gPiAtLS0gYS9u
+ZXQvdm13X3Zzb2NrL3ZpcnRpb190cmFuc3BvcnRfY29tbW9uLmMNCj4gPiA+ID4gPiA+ID4gKysr
+IGIvbmV0L3Ztd192c29jay92aXJ0aW9fdHJhbnNwb3J0X2NvbW1vbi5jDQo+ID4gPiA+ID4gPiA+
+IEBAIC0yMjksNyArMjI5LDkgQEANCj4gPiA+ID4gPiA+ID4gRVhQT1JUX1NZTUJPTF9HUEwodmly
+dGlvX3RyYW5zcG9ydF9kZWxpdmVyX3RhcF9wa3QpOw0KPiA+ID4gPiA+ID4gPiAgDQo+ID4gPiA+
+ID4gPiA+ICBzdGF0aWMgdTE2IHZpcnRpb190cmFuc3BvcnRfZ2V0X3R5cGUoc3RydWN0IHNvY2sg
+KnNrKQ0KPiA+ID4gPiA+ID4gPiAgew0KPiA+ID4gPiA+ID4gPiAtCWlmIChzay0+c2tfdHlwZSA9
+PSBTT0NLX1NUUkVBTSkNCj4gPiA+ID4gPiA+ID4gKwlpZiAoc2stPnNrX3R5cGUgPT0gU09DS19E
+R1JBTSkNCj4gPiA+ID4gPiA+ID4gKwkJcmV0dXJuIFZJUlRJT19WU09DS19UWVBFX0RHUkFNOw0K
+PiA+ID4gPiA+ID4gPiArCWVsc2UgaWYgKHNrLT5za190eXBlID09IFNPQ0tfU1RSRUFNKQ0KPiA+
+ID4gPiA+ID4gPiAgCQlyZXR1cm4gVklSVElPX1ZTT0NLX1RZUEVfU1RSRUFNOw0KPiA+ID4gPiA+
+ID4gPiAgCWVsc2UNCj4gPiA+ID4gPiA+ID4gIAkJcmV0dXJuIFZJUlRJT19WU09DS19UWVBFX1NF
+UVBBQ0tFVDsNCj4gPiA+ID4gPiA+ID4gQEAgLTI4NywyMiArMjg5LDI5IEBAIHN0YXRpYyBpbnQN
+Cj4gPiA+ID4gPiA+ID4gdmlydGlvX3RyYW5zcG9ydF9zZW5kX3BrdF9pbmZvKHN0cnVjdCB2c29j
+a19zb2NrICp2c2ssDQo+ID4gPiA+ID4gPiA+ICAJdnZzID0gdnNrLT50cmFuczsNCj4gPiA+ID4g
+PiA+ID4gIA0KPiA+ID4gPiA+ID4gPiAgCS8qIHdlIGNhbiBzZW5kIGxlc3MgdGhhbiBwa3RfbGVu
+IGJ5dGVzICovDQo+ID4gPiA+ID4gPiA+IC0JaWYgKHBrdF9sZW4gPiBWSVJUSU9fVlNPQ0tfTUFY
+X1BLVF9CVUZfU0laRSkNCj4gPiA+ID4gPiA+ID4gLQkJcGt0X2xlbiA9IFZJUlRJT19WU09DS19N
+QVhfUEtUX0JVRl9TSVpFOw0KPiA+ID4gPiA+ID4gPiArCWlmIChwa3RfbGVuID4gVklSVElPX1ZT
+T0NLX01BWF9QS1RfQlVGX1NJWkUpIHsNCj4gPiA+ID4gPiA+ID4gKwkJaWYgKGluZm8tPnR5cGUg
+IT0gVklSVElPX1ZTT0NLX1RZUEVfREdSQU0pDQo+ID4gPiA+ID4gPiA+ICsJCQlwa3RfbGVuID0N
+Cj4gPiA+ID4gPiA+ID4gVklSVElPX1ZTT0NLX01BWF9QS1RfQlVGX1NJWkU7DQo+ID4gPiA+ID4g
+PiA+ICsJCWVsc2UNCj4gPiA+ID4gPiA+ID4gKwkJCXJldHVybiAwOw0KPiA+ID4gPiA+ID4gPiAr
+CX0NCj4gPiA+ID4gPiA+ID4gIA0KPiA+ID4gPiA+ID4gPiAtCS8qIHZpcnRpb190cmFuc3BvcnRf
+Z2V0X2NyZWRpdCBtaWdodCByZXR1cm4gbGVzcyB0aGFuDQo+ID4gPiA+ID4gPiA+IHBrdF9sZW4g
+Y3JlZGl0ICovDQo+ID4gPiA+ID4gPiA+IC0JcGt0X2xlbiA9IHZpcnRpb190cmFuc3BvcnRfZ2V0
+X2NyZWRpdCh2dnMsIHBrdF9sZW4pOw0KPiA+ID4gPiA+ID4gPiArCWlmIChpbmZvLT50eXBlICE9
+IFZJUlRJT19WU09DS19UWVBFX0RHUkFNKSB7DQo+ID4gPiA+ID4gPiA+ICsJCS8qIHZpcnRpb190
+cmFuc3BvcnRfZ2V0X2NyZWRpdCBtaWdodCByZXR1cm4NCj4gPiA+ID4gPiA+ID4gbGVzcyB0aGFu
+IHBrdF9sZW4gY3JlZGl0ICovDQo+ID4gPiA+ID4gPiA+ICsJCXBrdF9sZW4gPSB2aXJ0aW9fdHJh
+bnNwb3J0X2dldF9jcmVkaXQodnZzLA0KPiA+ID4gPiA+ID4gPiBwa3RfbGVuKTsNCj4gPiA+ID4g
+PiA+ID4gIA0KPiA+ID4gPiA+ID4gPiAtCS8qIERvIG5vdCBzZW5kIHplcm8gbGVuZ3RoIE9QX1JX
+IHBrdCAqLw0KPiA+ID4gPiA+ID4gPiAtCWlmIChwa3RfbGVuID09IDAgJiYgaW5mby0+b3AgPT0g
+VklSVElPX1ZTT0NLX09QX1JXKQ0KPiA+ID4gPiA+ID4gPiAtCQlyZXR1cm4gcGt0X2xlbjsNCj4g
+PiA+ID4gPiA+ID4gKwkJLyogRG8gbm90IHNlbmQgemVybyBsZW5ndGggT1BfUlcgcGt0ICovDQo+
+ID4gPiA+ID4gPiA+ICsJCWlmIChwa3RfbGVuID09IDAgJiYgaW5mby0+b3AgPT0NCj4gPiA+ID4g
+PiA+ID4gVklSVElPX1ZTT0NLX09QX1JXKQ0KPiA+ID4gPiA+ID4gPiArCQkJcmV0dXJuIHBrdF9s
+ZW47DQo+ID4gPiA+ID4gPiA+ICsJfQ0KPiA+ID4gPiA+ID4gPiAgDQo+ID4gPiA+ID4gPiA+ICAJ
+c2tiID0gdmlydGlvX3RyYW5zcG9ydF9hbGxvY19za2IoaW5mbywgcGt0X2xlbiwNCj4gPiA+ID4g
+PiA+ID4gIAkJCQkJIHNyY19jaWQsIHNyY19wb3J0LA0KPiA+ID4gPiA+ID4gPiAgCQkJCQkgZHN0
+X2NpZCwgZHN0X3BvcnQsDQo+ID4gPiA+ID4gPiA+ICAJCQkJCSAmZXJyKTsNCj4gPiA+ID4gPiA+
+ID4gIAlpZiAoIXNrYikgew0KPiA+ID4gPiA+ID4gPiAtCQl2aXJ0aW9fdHJhbnNwb3J0X3B1dF9j
+cmVkaXQodnZzLCBwa3RfbGVuKTsNCj4gPiA+ID4gPiA+ID4gKwkJaWYgKGluZm8tPnR5cGUgIT0g
+VklSVElPX1ZTT0NLX1RZUEVfREdSQU0pDQo+ID4gPiA+ID4gPiA+ICsJCQl2aXJ0aW9fdHJhbnNw
+b3J0X3B1dF9jcmVkaXQodnZzLA0KPiA+ID4gPiA+ID4gPiBwa3RfbGVuKTsNCj4gPiA+ID4gPiA+
+ID4gIAkJcmV0dXJuIGVycjsNCj4gPiA+ID4gPiA+ID4gIAl9DQo+ID4gPiA+ID4gPiA+ICANCj4g
+PiA+ID4gPiA+ID4gQEAgLTU4Niw2ICs1OTUsNjEgQEANCj4gPiA+ID4gPiA+ID4gdmlydGlvX3Ry
+YW5zcG9ydF9zZXFwYWNrZXRfZGVxdWV1ZShzdHJ1Y3QgdnNvY2tfc29jaw0KPiA+ID4gPiA+ID4g
+PiAqdnNrLA0KPiA+ID4gPiA+ID4gPiAgfQ0KPiA+ID4gPiA+ID4gPiAgRVhQT1JUX1NZTUJPTF9H
+UEwodmlydGlvX3RyYW5zcG9ydF9zZXFwYWNrZXRfZGVxdWV1ZSk7DQo+ID4gPiA+ID4gPiA+ICAN
+Cj4gPiA+ID4gPiA+ID4gK3N0YXRpYyBzc2l6ZV90DQo+ID4gPiA+ID4gPiA+ICt2aXJ0aW9fdHJh
+bnNwb3J0X2RncmFtX2RvX2RlcXVldWUoc3RydWN0IHZzb2NrX3NvY2sNCj4gPiA+ID4gPiA+ID4g
+KnZzaywNCj4gPiA+ID4gPiA+ID4gKwkJCQkgIHN0cnVjdCBtc2doZHIgKm1zZywgc2l6ZV90DQo+
+ID4gPiA+ID4gPiA+IGxlbikNCj4gPiA+ID4gPiA+ID4gK3sNCj4gPiA+ID4gPiA+ID4gKwlzdHJ1
+Y3QgdmlydGlvX3Zzb2NrX3NvY2sgKnZ2cyA9IHZzay0+dHJhbnM7DQo+ID4gPiA+ID4gPiA+ICsJ
+c3RydWN0IHNrX2J1ZmYgKnNrYjsNCj4gPiA+ID4gPiA+ID4gKwlzaXplX3QgdG90YWwgPSAwOw0K
+PiA+ID4gPiA+ID4gPiArCXUzMiBmcmVlX3NwYWNlOw0KPiA+ID4gPiA+ID4gPiArCWludCBlcnIg
+PSAtRUZBVUxUOw0KPiA+ID4gPiA+ID4gPiArDQo+ID4gPiA+ID4gPiA+ICsJc3Bpbl9sb2NrX2Jo
+KCZ2dnMtPnJ4X2xvY2spOw0KPiA+ID4gPiA+ID4gPiArCWlmICh0b3RhbCA8IGxlbiAmJiAhc2ti
+X3F1ZXVlX2VtcHR5X2xvY2tsZXNzKCZ2dnMtDQo+ID4gPiA+ID4gPiA+ID4gcnhfcXVldWUpKSB7
+DQo+ID4gPiA+ID4gPiA+ICsJCXNrYiA9IF9fc2tiX2RlcXVldWUoJnZ2cy0+cnhfcXVldWUpOw0K
+PiA+ID4gPiA+ID4gPiArDQo+ID4gPiA+ID4gPiA+ICsJCXRvdGFsID0gbGVuOw0KPiA+ID4gPiA+
+ID4gPiArCQlpZiAodG90YWwgPiBza2ItPmxlbiAtIHZzb2NrX21ldGFkYXRhKHNrYiktDQo+ID4g
+PiA+ID4gPiA+ID4gb2ZmKQ0KPiA+ID4gPiA+ID4gPiArCQkJdG90YWwgPSBza2ItPmxlbiAtIHZz
+b2NrX21ldGFkYXRhKHNrYiktDQo+ID4gPiA+ID4gPiA+ID4gb2ZmOw0KPiA+ID4gPiA+ID4gPiAr
+CQllbHNlIGlmICh0b3RhbCA8IHNrYi0+bGVuIC0NCj4gPiA+ID4gPiA+ID4gdnNvY2tfbWV0YWRh
+dGEoc2tiKS0+b2ZmKQ0KPiA+ID4gPiA+ID4gPiArCQkJbXNnLT5tc2dfZmxhZ3MgfD0gTVNHX1RS
+VU5DOw0KPiA+ID4gPiA+ID4gPiArDQo+ID4gPiA+ID4gPiA+ICsJCS8qIHNrX2xvY2sgaXMgaGVs
+ZCBieSBjYWxsZXIgc28gbm8gb25lIGVsc2UgY2FuDQo+ID4gPiA+ID4gPiA+IGRlcXVldWUuDQo+
+ID4gPiA+ID4gPiA+ICsJCSAqIFVubG9jayByeF9sb2NrIHNpbmNlIG1lbWNweV90b19tc2coKSBt
+YXkNCj4gPiA+ID4gPiA+ID4gc2xlZXAuDQo+ID4gPiA+ID4gPiA+ICsJCSAqLw0KPiA+ID4gPiA+
+ID4gPiArCQlzcGluX3VubG9ja19iaCgmdnZzLT5yeF9sb2NrKTsNCj4gPiA+ID4gPiA+ID4gKw0K
+PiA+ID4gPiA+ID4gPiArCQllcnIgPSBtZW1jcHlfdG9fbXNnKG1zZywgc2tiLT5kYXRhICsNCj4g
+PiA+ID4gPiA+ID4gdnNvY2tfbWV0YWRhdGEoc2tiKS0+b2ZmLCB0b3RhbCk7DQo+ID4gPiA+ID4g
+PiA+ICsJCWlmIChlcnIpDQo+ID4gPiA+ID4gPiA+ICsJCQlyZXR1cm4gZXJyOw0KPiA+ID4gPiA+
+ID4gPiArDQo+ID4gPiA+ID4gPiA+ICsJCXNwaW5fbG9ja19iaCgmdnZzLT5yeF9sb2NrKTsNCj4g
+PiA+ID4gPiA+ID4gKw0KPiA+ID4gPiA+ID4gPiArCQl2aXJ0aW9fdHJhbnNwb3J0X2RlY19yeF9w
+a3QodnZzLCBza2IpOw0KPiA+ID4gPiA+ID4gPiArCQljb25zdW1lX3NrYihza2IpOw0KPiA+ID4g
+PiA+ID4gPiArCX0NCj4gPiA+ID4gPiA+ID4gKw0KPiA+ID4gPiA+ID4gPiArCWZyZWVfc3BhY2Ug
+PSB2dnMtPmJ1Zl9hbGxvYyAtICh2dnMtPmZ3ZF9jbnQgLSB2dnMtDQo+ID4gPiA+ID4gPiA+ID4g
+bGFzdF9md2RfY250KTsNCj4gPiA+ID4gPiA+ID4gKw0KPiA+ID4gPiA+ID4gPiArCXNwaW5fdW5s
+b2NrX2JoKCZ2dnMtPnJ4X2xvY2spOw0KPiA+ID4gPiA+ID4gPiArDQo+ID4gPiA+ID4gPiA+ICsJ
+aWYgKHRvdGFsID4gMCAmJiBtc2ctPm1zZ19uYW1lKSB7DQo+ID4gPiA+ID4gPiA+ICsJCS8qIFBy
+b3ZpZGUgdGhlIGFkZHJlc3Mgb2YgdGhlIHNlbmRlci4gKi8NCj4gPiA+ID4gPiA+ID4gKwkJREVD
+TEFSRV9TT0NLQUREUihzdHJ1Y3Qgc29ja2FkZHJfdm0gKiwgdm1fYWRkciwNCj4gPiA+ID4gPiA+
+ID4gbXNnLT5tc2dfbmFtZSk7DQo+ID4gPiA+ID4gPiA+ICsNCj4gPiA+ID4gPiA+ID4gKwkJdnNv
+Y2tfYWRkcl9pbml0KHZtX2FkZHIsDQo+ID4gPiA+ID4gPiA+IGxlNjRfdG9fY3B1KHZzb2NrX2hk
+cihza2IpLT5zcmNfY2lkKSwNCj4gPiA+ID4gPiA+ID4gKwkJCQlsZTMyX3RvX2NwdSh2c29ja19o
+ZHIoc2tiKS0NCj4gPiA+ID4gPiA+ID4gPiBzcmNfcG9ydCkpOw0KPiA+ID4gPiA+ID4gPiArCQlt
+c2ctPm1zZ19uYW1lbGVuID0gc2l6ZW9mKCp2bV9hZGRyKTsNCj4gPiA+ID4gPiA+ID4gKwl9DQo+
+ID4gPiA+ID4gPiA+ICsJcmV0dXJuIHRvdGFsOw0KPiA+ID4gPiA+ID4gPiArfQ0KPiA+ID4gPiA+
+ID4gPiArDQo+ID4gPiA+ID4gPiA+ICtzdGF0aWMgczY0IHZpcnRpb190cmFuc3BvcnRfZGdyYW1f
+aGFzX2RhdGEoc3RydWN0DQo+ID4gPiA+ID4gPiA+IHZzb2NrX3NvY2sNCj4gPiA+ID4gPiA+ID4g
+KnZzaykNCj4gPiA+ID4gPiA+ID4gK3sNCj4gPiA+ID4gPiA+ID4gKwlyZXR1cm4gdmlydGlvX3Ry
+YW5zcG9ydF9zdHJlYW1faGFzX2RhdGEodnNrKTsNCj4gPiA+ID4gPiA+ID4gK30NCj4gPiA+ID4g
+PiA+ID4gKw0KPiA+ID4gPiA+ID4gPiAgaW50DQo+ID4gPiA+ID4gPiA+ICB2aXJ0aW9fdHJhbnNw
+b3J0X3NlcXBhY2tldF9lbnF1ZXVlKHN0cnVjdCB2c29ja19zb2NrDQo+ID4gPiA+ID4gPiA+ICp2
+c2ssDQo+ID4gPiA+ID4gPiA+ICAJCQkJICAgc3RydWN0IG1zZ2hkciAqbXNnLA0KPiA+ID4gPiA+
+ID4gPiBAQCAtNjExLDcgKzY3NSw2NiBAQA0KPiA+ID4gPiA+ID4gPiB2aXJ0aW9fdHJhbnNwb3J0
+X2RncmFtX2RlcXVldWUoc3RydWN0DQo+ID4gPiA+ID4gPiA+IHZzb2NrX3NvY2sgKnZzaywNCj4g
+PiA+ID4gPiA+ID4gIAkJCSAgICAgICBzdHJ1Y3QgbXNnaGRyICptc2csDQo+ID4gPiA+ID4gPiA+
+ICAJCQkgICAgICAgc2l6ZV90IGxlbiwgaW50IGZsYWdzKQ0KPiA+ID4gPiA+ID4gPiAgew0KPiA+
+ID4gPiA+ID4gPiAtCXJldHVybiAtRU9QTk9UU1VQUDsNCj4gPiA+ID4gPiA+ID4gKwlzdHJ1Y3Qg
+c29jayAqc2s7DQo+ID4gPiA+ID4gPiA+ICsJc2l6ZV90IGVyciA9IDA7DQo+ID4gPiA+ID4gPiA+
+ICsJbG9uZyB0aW1lb3V0Ow0KPiA+ID4gPiA+ID4gPiArDQo+ID4gPiA+ID4gPiA+ICsJREVGSU5F
+X1dBSVQod2FpdCk7DQo+ID4gPiA+ID4gPiA+ICsNCj4gPiA+ID4gPiA+ID4gKwlzayA9ICZ2c2st
+PnNrOw0KPiA+ID4gPiA+ID4gPiArCWVyciA9IDA7DQo+ID4gPiA+ID4gPiA+ICsNCj4gPiA+ID4g
+PiA+ID4gKwlpZiAoZmxhZ3MgJiBNU0dfT09CIHx8IGZsYWdzICYgTVNHX0VSUlFVRVVFIHx8IGZs
+YWdzICYNCj4gPiA+ID4gPiA+ID4gTVNHX1BFRUspDQo+ID4gPiA+ID4gPiA+ICsJCXJldHVybiAt
+RU9QTk9UU1VQUDsNCj4gPiA+ID4gPiA+ID4gKw0KPiA+ID4gPiA+ID4gPiArCWxvY2tfc29jayhz
+ayk7DQo+ID4gPiA+ID4gPiA+ICsNCj4gPiA+ID4gPiA+ID4gKwlpZiAoIWxlbikNCj4gPiA+ID4g
+PiA+ID4gKwkJZ290byBvdXQ7DQo+ID4gPiA+ID4gPiA+ICsNCj4gPiA+ID4gPiA+ID4gKwl0aW1l
+b3V0ID0gc29ja19yY3Z0aW1lbyhzaywgZmxhZ3MgJiBNU0dfRE9OVFdBSVQpOw0KPiA+ID4gPiA+
+ID4gPiArDQo+ID4gPiA+ID4gPiA+ICsJd2hpbGUgKDEpIHsNCj4gPiA+ID4gPiA+ID4gKwkJczY0
+IHJlYWR5Ow0KPiA+ID4gPiA+ID4gPiArDQo+ID4gPiA+ID4gPiA+ICsJCXByZXBhcmVfdG9fd2Fp
+dChza19zbGVlcChzayksICZ3YWl0LA0KPiA+ID4gPiA+ID4gPiBUQVNLX0lOVEVSUlVQVElCTEUp
+Ow0KPiA+ID4gPiA+ID4gPiArCQlyZWFkeSA9IHZpcnRpb190cmFuc3BvcnRfZGdyYW1faGFzX2Rh
+dGEodnNrKTsNCj4gPiA+ID4gPiA+ID4gKw0KPiA+ID4gPiA+ID4gPiArCQlpZiAocmVhZHkgPT0g
+MCkgew0KPiA+ID4gPiA+ID4gPiArCQkJaWYgKHRpbWVvdXQgPT0gMCkgew0KPiA+ID4gPiA+ID4g
+PiArCQkJCWVyciA9IC1FQUdBSU47DQo+ID4gPiA+ID4gPiA+ICsJCQkJZmluaXNoX3dhaXQoc2tf
+c2xlZXAoc2spLA0KPiA+ID4gPiA+ID4gPiAmd2FpdCk7DQo+ID4gPiA+ID4gPiA+ICsJCQkJYnJl
+YWs7DQo+ID4gPiA+ID4gPiA+ICsJCQl9DQo+ID4gPiA+ID4gPiA+ICsNCj4gPiA+ID4gPiA+ID4g
+KwkJCXJlbGVhc2Vfc29jayhzayk7DQo+ID4gPiA+ID4gPiA+ICsJCQl0aW1lb3V0ID0gc2NoZWR1
+bGVfdGltZW91dCh0aW1lb3V0KTsNCj4gPiA+ID4gPiA+ID4gKwkJCWxvY2tfc29jayhzayk7DQo+
+ID4gPiA+ID4gPiA+ICsNCj4gPiA+ID4gPiA+ID4gKwkJCWlmIChzaWduYWxfcGVuZGluZyhjdXJy
+ZW50KSkgew0KPiA+ID4gPiA+ID4gPiArCQkJCWVyciA9IHNvY2tfaW50cl9lcnJubyh0aW1lb3V0
+KTsNCj4gPiA+ID4gPiA+ID4gKwkJCQlmaW5pc2hfd2FpdChza19zbGVlcChzayksDQo+ID4gPiA+
+ID4gPiA+ICZ3YWl0KTsNCj4gPiA+ID4gPiA+ID4gKwkJCQlicmVhazsNCj4gPiA+ID4gPiA+ID4g
+KwkJCX0gZWxzZSBpZiAodGltZW91dCA9PSAwKSB7DQo+ID4gPiA+ID4gPiA+ICsJCQkJZXJyID0g
+LUVBR0FJTjsNCj4gPiA+ID4gPiA+ID4gKwkJCQlmaW5pc2hfd2FpdChza19zbGVlcChzayksDQo+
+ID4gPiA+ID4gPiA+ICZ3YWl0KTsNCj4gPiA+ID4gPiA+ID4gKwkJCQlicmVhazsNCj4gPiA+ID4g
+PiA+ID4gKwkJCX0NCj4gPiA+ID4gPiA+ID4gKwkJfSBlbHNlIHsNCj4gPiA+ID4gPiA+ID4gKwkJ
+CWZpbmlzaF93YWl0KHNrX3NsZWVwKHNrKSwgJndhaXQpOw0KPiA+ID4gPiA+ID4gPiArDQo+ID4g
+PiA+ID4gPiA+ICsJCQlpZiAocmVhZHkgPCAwKSB7DQo+ID4gPiA+ID4gPiA+ICsJCQkJZXJyID0g
+LUVOT01FTTsNCj4gPiA+ID4gPiA+ID4gKwkJCQlnb3RvIG91dDsNCj4gPiA+ID4gPiA+ID4gKwkJ
+CX0NCj4gPiA+ID4gPiA+ID4gKw0KPiA+ID4gPiA+ID4gPiArCQkJZXJyID0NCj4gPiA+ID4gPiA+
+ID4gdmlydGlvX3RyYW5zcG9ydF9kZ3JhbV9kb19kZXF1ZXVlKHZzaywgbXNnLCBsZW4pOw0KPiA+
+ID4gPiA+ID4gPiArCQkJYnJlYWs7DQo+ID4gPiA+ID4gPiA+ICsJCX0NCj4gPiA+ID4gPiA+ID4g
+Kwl9DQo+ID4gPiA+ID4gPiA+ICtvdXQ6DQo+ID4gPiA+ID4gPiA+ICsJcmVsZWFzZV9zb2NrKHNr
+KTsNCj4gPiA+ID4gPiA+ID4gKwlyZXR1cm4gZXJyOw0KPiA+ID4gPiA+ID4gPiAgfQ0KPiA+ID4g
+PiA+ID4gPiAgRVhQT1JUX1NZTUJPTF9HUEwodmlydGlvX3RyYW5zcG9ydF9kZ3JhbV9kZXF1ZXVl
+KTsNCj4gPiA+ID4gXl5eDQo+ID4gPiA+IE1heSBiZSwgdGhpcyBnZW5lcmljIGRhdGEgd2FpdGlu
+ZyBsb2dpYyBzaG91bGQgYmUgaW4NCj4gPiA+ID4gYWZfdnNvY2suYywgYXMNCj4gPiA+ID4gZm9y
+IHN0cmVhbS9zZXFwYWNrZXQ/DQo+ID4gPiA+IEluIHRoaXMgd2F5LCBhbm90aGVyIHRyYW5zcG9y
+dCB3aGljaCBzdXBwb3J0cyBTT0NLX0RHUkFNIGNvdWxkDQo+ID4gPiA+IHJldXNlIGl0Lg0KPiA+
+ID4gDQo+ID4gPiBJIHRoaW5rIHRoYXQgaXMgYSBncmVhdCBpZGVhLiBJJ2xsIHRlc3QgdGhhdCBj
+aGFuZ2UgZm9yIHYyLg0KPiA+ID4gDQo+ID4gPiBUaGFua3MuDQo+ID4gDQo+ID4gQWxzbyBmb3Ig
+djIsIGkgdGVzdGVkIFlvdXIgcGF0Y2hzZXQgYSBsaXR0bGUgYml0KHdyaXRlIGhlcmUgdG8gbm90
+DQo+ID4gc3ByZWFkIG92ZXIgYWxsIG1haWxzKToNCj4gPiAxKSBzZXFwYWNrZXQgdGVzdCBpbiB2
+c29ja190ZXN0LmMgZmFpbHMoc2VlbXMgTVNHX0VPUiBmbGFnIGlzc3VlKQ0KPiANCj4gSSB3aWxs
+IGludmVzdGlnYXRlLg0KPiANCj4gPiAyKSBpIGNhbid0IGRvIHJtbW9kIHdpdGggdGhlIGZvbGxv
+d2luZyBjb25maWcoYWZ0ZXIgdGVzdGluZyk6DQo+ID4gICAgQ09ORklHX1ZTT0NLRVRTPW0NCj4g
+PiAgICBDT05GSUdfVklSVElPX1ZTT0NLRVRTPW0NCj4gPiAgICBDT05GSUdfVklSVElPX1ZTT0NL
+RVRTX0NPTU1PTj1tDQo+ID4gICAgQ09ORklHX1ZIT1NUPW0NCj4gPiAgICBDT05GSUdfVkhPU1Rf
+VlNPQ0s9bQ0KPiA+ICAgIEd1ZXN0IGlzIHNodXRkb3duLCBidXQgcm1tb2QgZmFpbHMuDQo+ID4g
+MykgdmlydGlvX3RyYW5zcG9ydF9pbml0ICsgdmlydGlvX3RyYW5zcG9ydF9leGl0IHNlZW1zIG11
+c3QgYmUNCj4gPiAgICB1bmRlciBFWFBPUlRfU1lNQk9MX0dQTCgpLCBiZWNhdXNlIGJvdGggdXNl
+ZCBpbiBhbm90aGVyIG1vZHVsZS4NCj4gDQo+IERlZmluaXRlbHksIHdpbGwgZml4Lg0KPiANCj4g
+PiA0KSBJIHRyaWVkIHRvIHNlbmQgNWtiKG9yIDIwa2Igbm90IG1hdHRlcikgcGllY2Ugb2YgZGF0
+YSwgYnV0DQo+ID4gZ290ICAgICAgDQo+ID4gICAga2VybmVsIHBhbmljIGJvdGggaW4gZ3Vlc3Qg
+YW5kIGxhdGVyIGluIGhvc3QuDQo+ID4gDQo+IA0KPiBUaGFua3MgZm9yIGNhdGNoaW5nIHRoYXQu
+IEkgY2FuIHJlcHJvZHVjZSBpdCBpbnRlcm1pdHRlbnRseSwgYnV0IG9ubHkNCj4gZm9yIHNlcXBh
+Y2tldC4gRGlkIHlvdSBoYXBwZW4gdG8gc2VlIHRoaXMgZm9yIG90aGVyIHNvY2tldCB0eXBlcyBh
+cw0KPiB3ZWxsPw0KPiANCj4gVGhhbmtzDQoNCkkgZ290IHRoaXMgZm9yIFNPQ0tfREdSQU0sIGkg
+ZGlkbnQgdGVzdCBzZXFwYWNrZXQgb3Igc3RyZWFtLg0KDQpUaGFua3MsIEFyc2VuaXkNCg0KPiAN
+Cj4gPiBUaGFuayBZb3UNCj4gPiA+ID4gPiA+ID4gIA0KPiA+ID4gPiA+ID4gPiBAQCAtODE5LDEz
+ICs5NDIsMTMgQEANCj4gPiA+ID4gPiA+ID4gRVhQT1JUX1NZTUJPTF9HUEwodmlydGlvX3RyYW5z
+cG9ydF9zdHJlYW1fYWxsb3cpOw0KPiA+ID4gPiA+ID4gPiAgaW50IHZpcnRpb190cmFuc3BvcnRf
+ZGdyYW1fYmluZChzdHJ1Y3QgdnNvY2tfc29jayAqdnNrLA0KPiA+ID4gPiA+ID4gPiAgCQkJCXN0
+cnVjdCBzb2NrYWRkcl92bSAqYWRkcikNCj4gPiA+ID4gPiA+ID4gIHsNCj4gPiA+ID4gPiA+ID4g
+LQlyZXR1cm4gLUVPUE5PVFNVUFA7DQo+ID4gPiA+ID4gPiA+ICsJcmV0dXJuIHZzb2NrX2JpbmRf
+c3RyZWFtKHZzaywgYWRkcik7DQo+ID4gPiA+ID4gPiA+ICB9DQo+ID4gPiA+ID4gPiA+ICBFWFBP
+UlRfU1lNQk9MX0dQTCh2aXJ0aW9fdHJhbnNwb3J0X2RncmFtX2JpbmQpOw0KPiA+ID4gPiA+ID4g
+PiAgDQo+ID4gPiA+ID4gPiA+ICBib29sIHZpcnRpb190cmFuc3BvcnRfZGdyYW1fYWxsb3codTMy
+IGNpZCwgdTMyIHBvcnQpDQo+ID4gPiA+ID4gPiA+ICB7DQo+ID4gPiA+ID4gPiA+IC0JcmV0dXJu
+IGZhbHNlOw0KPiA+ID4gPiA+ID4gPiArCXJldHVybiB0cnVlOw0KPiA+ID4gPiA+ID4gPiAgfQ0K
+PiA+ID4gPiA+ID4gPiAgRVhQT1JUX1NZTUJPTF9HUEwodmlydGlvX3RyYW5zcG9ydF9kZ3JhbV9h
+bGxvdyk7DQo+ID4gPiA+ID4gPiA+ICANCj4gPiA+ID4gPiA+ID4gQEAgLTg2MSw3ICs5ODQsMTYg
+QEANCj4gPiA+ID4gPiA+ID4gdmlydGlvX3RyYW5zcG9ydF9kZ3JhbV9lbnF1ZXVlKHN0cnVjdA0K
+PiA+ID4gPiA+ID4gPiB2c29ja19zb2NrICp2c2ssDQo+ID4gPiA+ID4gPiA+ICAJCQkgICAgICAg
+c3RydWN0IG1zZ2hkciAqbXNnLA0KPiA+ID4gPiA+ID4gPiAgCQkJICAgICAgIHNpemVfdCBkZ3Jh
+bV9sZW4pDQo+ID4gPiA+ID4gPiA+ICB7DQo+ID4gPiA+ID4gPiA+IC0JcmV0dXJuIC1FT1BOT1RT
+VVBQOw0KPiA+ID4gPiA+ID4gPiArCXN0cnVjdCB2aXJ0aW9fdnNvY2tfcGt0X2luZm8gaW5mbyA9
+IHsNCj4gPiA+ID4gPiA+ID4gKwkJLm9wID0gVklSVElPX1ZTT0NLX09QX1JXLA0KPiA+ID4gPiA+
+ID4gPiArCQkubXNnID0gbXNnLA0KPiA+ID4gPiA+ID4gPiArCQkucGt0X2xlbiA9IGRncmFtX2xl
+biwNCj4gPiA+ID4gPiA+ID4gKwkJLnZzayA9IHZzaywNCj4gPiA+ID4gPiA+ID4gKwkJLnJlbW90
+ZV9jaWQgPSByZW1vdGVfYWRkci0+c3ZtX2NpZCwNCj4gPiA+ID4gPiA+ID4gKwkJLnJlbW90ZV9w
+b3J0ID0gcmVtb3RlX2FkZHItPnN2bV9wb3J0LA0KPiA+ID4gPiA+ID4gPiArCX07DQo+ID4gPiA+
+ID4gPiA+ICsNCj4gPiA+ID4gPiA+ID4gKwlyZXR1cm4gdmlydGlvX3RyYW5zcG9ydF9zZW5kX3Br
+dF9pbmZvKHZzaywgJmluZm8pOw0KPiA+ID4gPiA+ID4gPiAgfQ0KPiA+ID4gPiA+ID4gPiAgRVhQ
+T1JUX1NZTUJPTF9HUEwodmlydGlvX3RyYW5zcG9ydF9kZ3JhbV9lbnF1ZXVlKTsNCj4gPiA+ID4g
+PiA+ID4gIA0KPiA+ID4gPiA+ID4gPiBAQCAtMTE2NSw2ICsxMjk3LDEyIEBADQo+ID4gPiA+ID4g
+PiA+IHZpcnRpb190cmFuc3BvcnRfcmVjdl9jb25uZWN0ZWQoc3RydWN0DQo+ID4gPiA+ID4gPiA+
+IHNvY2sgKnNrLA0KPiA+ID4gPiA+ID4gPiAgCXN0cnVjdCB2aXJ0aW9fdnNvY2tfaGRyICpoZHIg
+PSB2c29ja19oZHIoc2tiKTsNCj4gPiA+ID4gPiA+ID4gIAlpbnQgZXJyID0gMDsNCj4gPiA+ID4g
+PiA+ID4gIA0KPiA+ID4gPiA+ID4gPiArCWlmIChsZTE2X3RvX2NwdSh2c29ja19oZHIoc2tiKS0+
+dHlwZSkgPT0NCj4gPiA+ID4gPiA+ID4gVklSVElPX1ZTT0NLX1RZUEVfREdSQU0pIHsNCj4gPiA+
+ID4gPiA+ID4gKwkJdmlydGlvX3RyYW5zcG9ydF9yZWN2X2VucXVldWUodnNrLCBza2IpOw0KPiA+
+ID4gPiA+ID4gPiArCQlzay0+c2tfZGF0YV9yZWFkeShzayk7DQo+ID4gPiA+ID4gPiA+ICsJCXJl
+dHVybiBlcnI7DQo+ID4gPiA+ID4gPiA+ICsJfQ0KPiA+ID4gPiA+ID4gPiArDQo+ID4gPiA+ID4g
+PiA+ICAJc3dpdGNoIChsZTE2X3RvX2NwdShoZHItPm9wKSkgew0KPiA+ID4gPiA+ID4gPiAgCWNh
+c2UgVklSVElPX1ZTT0NLX09QX1JXOg0KPiA+ID4gPiA+ID4gPiAgCQl2aXJ0aW9fdHJhbnNwb3J0
+X3JlY3ZfZW5xdWV1ZSh2c2ssIHNrYik7DQo+ID4gPiA+ID4gPiA+IEBAIC0xMzIwLDcgKzE0NTgs
+OCBAQCB2aXJ0aW9fdHJhbnNwb3J0X3JlY3ZfbGlzdGVuKHN0cnVjdA0KPiA+ID4gPiA+ID4gPiBz
+b2NrICpzaywgc3RydWN0IHNrX2J1ZmYgKnNrYiwNCj4gPiA+ID4gPiA+ID4gIHN0YXRpYyBib29s
+IHZpcnRpb190cmFuc3BvcnRfdmFsaWRfdHlwZSh1MTYgdHlwZSkNCj4gPiA+ID4gPiA+ID4gIHsN
+Cj4gPiA+ID4gPiA+ID4gIAlyZXR1cm4gKHR5cGUgPT0gVklSVElPX1ZTT0NLX1RZUEVfU1RSRUFN
+KSB8fA0KPiA+ID4gPiA+ID4gPiAtCSAgICAgICAodHlwZSA9PSBWSVJUSU9fVlNPQ0tfVFlQRV9T
+RVFQQUNLRVQpOw0KPiA+ID4gPiA+ID4gPiArCSAgICAgICAodHlwZSA9PSBWSVJUSU9fVlNPQ0tf
+VFlQRV9TRVFQQUNLRVQpIHx8DQo+ID4gPiA+ID4gPiA+ICsJICAgICAgICh0eXBlID09IFZJUlRJ
+T19WU09DS19UWVBFX0RHUkFNKTsNCj4gPiA+ID4gPiA+ID4gIH0NCj4gPiA+ID4gPiA+ID4gIA0K
+PiA+ID4gPiA+ID4gPiAgLyogV2UgYXJlIHVuZGVyIHRoZSB2aXJ0aW8tdnNvY2sncyB2c29jay0+
+cnhfbG9jayBvcg0KPiA+ID4gPiA+ID4gPiB2aG9zdC0NCj4gPiA+ID4gPiA+ID4gdnNvY2sncyB2
+cS0+bXV0ZXgNCj4gPiA+ID4gPiA+ID4gQEAgLTEzODQsNiArMTUyMywxMSBAQCB2b2lkDQo+ID4g
+PiA+ID4gPiA+IHZpcnRpb190cmFuc3BvcnRfcmVjdl9wa3Qoc3RydWN0DQo+ID4gPiA+ID4gPiA+
+IHZpcnRpb190cmFuc3BvcnQgKnQsDQo+ID4gPiA+ID4gPiA+ICAJCWdvdG8gZnJlZV9wa3Q7DQo+
+ID4gPiA+ID4gPiA+ICAJfQ0KPiA+ID4gPiA+ID4gPiAgDQo+ID4gPiA+ID4gPiA+ICsJaWYgKHNr
+LT5za190eXBlID09IFNPQ0tfREdSQU0pIHsNCj4gPiA+ID4gPiA+ID4gKwkJdmlydGlvX3RyYW5z
+cG9ydF9yZWN2X2Nvbm5lY3RlZChzaywgc2tiKTsNCj4gPiA+ID4gPiA+ID4gKwkJZ290byBvdXQ7
+DQo+ID4gPiA+ID4gPiA+ICsJfQ0KPiA+ID4gPiA+ID4gPiArDQo+ID4gPiA+ID4gPiA+ICAJc3Bh
+Y2VfYXZhaWxhYmxlID0gdmlydGlvX3RyYW5zcG9ydF9zcGFjZV91cGRhdGUoc2ssDQo+ID4gPiA+
+ID4gPiA+IHNrYik7DQo+ID4gPiA+ID4gPiA+ICANCj4gPiA+ID4gPiA+ID4gIAkvKiBVcGRhdGUg
+Q0lEIGluIGNhc2UgaXQgaGFzIGNoYW5nZWQgYWZ0ZXIgYSB0cmFuc3BvcnQNCj4gPiA+ID4gPiA+
+ID4gcmVzZXQgZXZlbnQgKi8NCj4gPiA+ID4gPiA+ID4gQEAgLTE0MTUsNiArMTU1OSw3IEBAIHZv
+aWQNCj4gPiA+ID4gPiA+ID4gdmlydGlvX3RyYW5zcG9ydF9yZWN2X3BrdChzdHJ1Y3QNCj4gPiA+
+ID4gPiA+ID4gdmlydGlvX3RyYW5zcG9ydCAqdCwNCj4gPiA+ID4gPiA+ID4gIAkJYnJlYWs7DQo+
+ID4gPiA+ID4gPiA+ICAJfQ0KPiA+ID4gPiA+ID4gPiAgDQo+ID4gPiA+ID4gPiA+ICtvdXQ6DQo+
+ID4gPiA+ID4gPiA+ICAJcmVsZWFzZV9zb2NrKHNrKTsNCj4gPiA+ID4gPiA+ID4gIA0KPiA+ID4g
+PiA+ID4gPiAgCS8qIFJlbGVhc2UgcmVmY250IG9idGFpbmVkIHdoZW4gd2UgZmV0Y2hlZCB0aGlz
+IHNvY2tldA0KPiA+ID4gPiA+ID4gPiBvdXQgb2YgdGhlDQo+ID4gPiA+ID4gPiA+IC0tIA0KPiA+
+ID4gPiA+ID4gPiAyLjM1LjENCj4gPiA+ID4gPiA+ID4gDQo+ID4gPiA+ID4gPiANCj4gPiA+ID4g
+PiA+IC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLQ0KPiA+ID4gPiA+ID4gLS0tLQ0KPiA+ID4gPiA+ID4gLS0tLS0tLS0NCj4gPiA+ID4gPiA+
+IFRvIHVuc3Vic2NyaWJlLCBlLW1haWw6IA0KPiA+ID4gPiA+ID4gdmlydGlvLWRldi11bnN1YnNj
+cmliZUBsaXN0cy5vYXNpcy1vcGVuLm9yZw0KPiA+ID4gPiA+ID4gRm9yIGFkZGl0aW9uYWwgY29t
+bWFuZHMsIGUtbWFpbDogDQo+ID4gPiA+ID4gPiB2aXJ0aW8tZGV2LWhlbHBAbGlzdHMub2FzaXMt
+b3Blbi5vcmcNCj4gPiA+ID4gPiA+IA0KPiA+ID4gDQo+ID4gPiAtLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0NCj4gPiA+IC0tLS0t
+LQ0KPiA+ID4gVG8gdW5zdWJzY3JpYmUsIGUtbWFpbDogDQo+ID4gPiB2aXJ0aW8tZGV2LXVuc3Vi
+c2NyaWJlQGxpc3RzLm9hc2lzLW9wZW4ub3JnDQo+ID4gPiBGb3IgYWRkaXRpb25hbCBjb21tYW5k
+cywgZS1tYWlsOiANCj4gPiA+IHZpcnRpby1kZXYtaGVscEBsaXN0cy5vYXNpcy1vcGVuLm9yZw0K
+PiA+ID4gDQo=
 
