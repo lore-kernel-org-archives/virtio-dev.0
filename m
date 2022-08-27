@@ -1,231 +1,294 @@
-Return-Path: <virtio-dev-return-9837-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-9842-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 0D3B69864F0
-	for <virtio-dev@lists.oasis-open.org>; Thu, 25 Aug 2022 18:21:28 +0000 (UTC)
-MIME-Version: 1.0
+	by lists.oasis-open.org (Postfix) with ESMTP id 96DCB98656D
+	for <virtio-dev@lists.oasis-open.org>; Sat, 27 Aug 2022 09:39:18 +0000 (UTC)
+Date: Sat, 27 Aug 2022 11:39:09 +0200
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+Message-ID: <20220827093909.ag3zi7k525k4zuqq@pengutronix.de>
 References: <20220825134449.18803-1-harald.mommer@opensynergy.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="ieyz4olm27kc2bjr"
+Content-Disposition: inline
 In-Reply-To: <20220825134449.18803-1-harald.mommer@opensynergy.com>
-From: Arnd Bergmann <arnd@kernel.org>
-Date: Thu, 25 Aug 2022 20:21:06 +0200
-Message-ID: <CAK8P3a1biW1qygRS8Mf0F5n8e6044+W-5v+Gnv+gh+Cyzj-Vjg@mail.gmail.com>
-Subject: Re: [virtio-dev] [RFC PATCH 1/1] can: virtio: Initial virtio CAN driver.
-Content-Type: text/plain; charset="UTF-8"
+Subject: [virtio-dev] Re: [RFC PATCH 1/1] can: virtio: Initial virtio CAN driver.
 To: Harald Mommer <harald.mommer@opensynergy.com>
-Cc: virtio-dev@lists.oasis-open.org, linux-can@vger.kernel.org, netdev@vger.kernel.org, linux-kernel@vger.kernel.org, Wolfgang Grandegger <wg@grandegger.com>, Marc Kleine-Budde <mkl@pengutronix.de>, "David S . Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, Dariusz Stojaczyk <Dariusz.Stojaczyk@opensynergy.com>, Harald Mommer <hmo@opensynergy.com>, Stratos Mailing List <stratos-dev@op-lists.linaro.org>
+Cc: virtio-dev@lists.oasis-open.org, linux-can@vger.kernel.org, netdev@vger.kernel.org, linux-kernel@vger.kernel.org, Wolfgang Grandegger <wg@grandegger.com>, "David S . Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, Dariusz Stojaczyk <Dariusz.Stojaczyk@opensynergy.com>, Harald Mommer <hmo@opensynergy.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-() b
-On Thu, Aug 25, 2022 at 3:44 PM Harald Mommer
-<harald.mommer@opensynergy.com> wrote:
->
+--ieyz4olm27kc2bjr
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On 25.08.2022 15:44:49, Harald Mommer wrote:
 > - CAN Control
->
+>=20
 >   - "ip link set up can0" starts the virtual CAN controller,
 >   - "ip link set up can0" stops the virtual CAN controller
->
+>=20
 > - CAN RX
->
+>=20
 >   Receive CAN frames. CAN frames can be standard or extended, classic or
 >   CAN FD. Classic CAN RTR frames are supported.
->
+>=20
 > - CAN TX
->
+>=20
 >   Send CAN frames. CAN frames can be standard or extended, classic or
 >   CAN FD. Classic CAN RTR frames are supported.
->
+>=20
 > - CAN Event indication (BusOff)
->
+>=20
 >   The bus off handling is considered code complete but until now bus off
 >   handling is largely untested.
->
-> Signed-off-by: Harald Mommer <hmo@opensynergy.com>
 
-This looks nice overall, but as you say there is still some work needed in all
-the details. I've done a rough first pass at reviewing it, but I have
-no specific
-understanding of CAN, so these are mostly generic comments about
-coding style or network drivers.
+Is there an Open Source implementation of the host side of this
+interface?
 
->  drivers/net/can/Kconfig                 |    1 +
->  drivers/net/can/Makefile                |    1 +
->  drivers/net/can/virtio_can/Kconfig      |   12 +
->  drivers/net/can/virtio_can/Makefile     |    5 +
->  drivers/net/can/virtio_can/virtio_can.c | 1176 +++++++++++++++++++++++
->  include/uapi/linux/virtio_can.h         |   69 ++
+Please fix these checkpatch warnings:
 
-Since the driver is just one file, you probably don't need the subdirectory.
+| WARNING: added, moved or deleted file(s), does MAINTAINERS need updating?
+| #65:=20
+| new file mode 100644
+|=20
+| WARNING: Use #include <linux/atomic.h> instead of <asm/atomic.h>
+| #105: FILE: drivers/net/can/virtio_can/virtio_can.c:7:
+| +#include <asm/atomic.h>
+|=20
+| WARNING: __always_unused or __maybe_unused is preferred over __attribute_=
+_((__unused__))
+| #186: FILE: drivers/net/can/virtio_can/virtio_can.c:88:
+| +static void __attribute__((unused))
+|=20
+| WARNING: Avoid crashing the kernel - try using WARN_ON & recovery code ra=
+ther than BUG() or BUG_ON()
+| #263: FILE: drivers/net/can/virtio_can/virtio_can.c:165:
+| +	BUG_ON(prio !=3D 0); /* Currently only 1 priority */
+|=20
+| WARNING: Avoid crashing the kernel - try using WARN_ON & recovery code ra=
+ther than BUG() or BUG_ON()
+| #264: FILE: drivers/net/can/virtio_can/virtio_can.c:166:
+| +	BUG_ON(atomic_read(&priv->tx_inflight[0]) >=3D priv->can.echo_skb_max);
+|=20
+| WARNING: Avoid crashing the kernel - try using WARN_ON & recovery code ra=
+ther than BUG() or BUG_ON()
+| #279: FILE: drivers/net/can/virtio_can/virtio_can.c:181:
+| +	BUG_ON(prio >=3D VIRTIO_CAN_PRIO_COUNT);
+|=20
+| WARNING: Avoid crashing the kernel - try using WARN_ON & recovery code ra=
+ther than BUG() or BUG_ON()
+| #280: FILE: drivers/net/can/virtio_can/virtio_can.c:182:
+| +	BUG_ON(idx >=3D priv->can.echo_skb_max);
+|=20
+| WARNING: Avoid crashing the kernel - try using WARN_ON & recovery code ra=
+ther than BUG() or BUG_ON()
+| #281: FILE: drivers/net/can/virtio_can/virtio_can.c:183:
+| +	BUG_ON(atomic_read(&priv->tx_inflight[prio]) =3D=3D 0);
+|=20
+| WARNING: networking block comments don't use an empty /* line, use /* Com=
+ment...
+| #288: FILE: drivers/net/can/virtio_can/virtio_can.c:190:
+| +/*
+| + * Create a scatter-gather list representing our input buffer and put
+|=20
+| WARNING: networking block comments don't use an empty /* line, use /* Com=
+ment...
+| #309: FILE: drivers/net/can/virtio_can/virtio_can.c:211:
+| +/*
+| + * Send a control message with message type either
+|=20
+| WARNING: networking block comments don't use an empty /* line, use /* Com=
+ment...
+| #332: FILE: drivers/net/can/virtio_can/virtio_can.c:234:
+| +	/*
+| +	 * The function may be serialized by rtnl lock. Not sure.
+|=20
+| WARNING: networking block comments don't use an empty /* line, use /* Com=
+ment...
+| #382: FILE: drivers/net/can/virtio_can/virtio_can.c:284:
+| +/*
+| + * See also m_can.c/m_can_set_mode()
+|=20
+| WARNING: networking block comments don't use an empty /* line, use /* Com=
+ment...
+| #408: FILE: drivers/net/can/virtio_can/virtio_can.c:310:
+| +/*
+| + * Called by issuing "ip link set up can0"
+|=20
+| WARNING: networking block comments don't use an empty /* line, use /* Com=
+ment...
+| #443: FILE: drivers/net/can/virtio_can/virtio_can.c:345:
+| +	/*
+| +	 * Keep RX napi active to allow dropping of pending RX CAN messages,
+|=20
+| WARNING: networking block comments don't use an empty /* line, use /* Com=
+ment...
+| #481: FILE: drivers/net/can/virtio_can/virtio_can.c:383:
+| +	/*
+| +	 * No local check for CAN_RTR_FLAG or FD frame against negotiated
+|=20
+| WARNING: networking block comments don't use an empty /* line, use /* Com=
+ment...
+| #521: FILE: drivers/net/can/virtio_can/virtio_can.c:423:
+| +		/*
+| +		 * May happen if
+|=20
+| WARNING: Avoid crashing the kernel - try using WARN_ON & recovery code ra=
+ther than BUG() or BUG_ON()
+| #533: FILE: drivers/net/can/virtio_can/virtio_can.c:435:
+| +	BUG_ON(can_tx_msg->putidx < 0);
+|=20
+| WARNING: networking block comments don't use an empty /* line, use /* Com=
+ment...
+| #613: FILE: drivers/net/can/virtio_can/virtio_can.c:515:
+| +		/*
+| +		 * Here also frames with result !=3D VIRTIO_CAN_RESULT_OK are
+|=20
+| WARNING: networking block comments don't use an empty /* line, use /* Com=
+ment...
+| #646: FILE: drivers/net/can/virtio_can/virtio_can.c:548:
+| +/*
+| + * Poll TX used queue for sent CAN messages
+|=20
+| WARNING: networking block comments don't use an empty /* line, use /* Com=
+ment...
+| #675: FILE: drivers/net/can/virtio_can/virtio_can.c:577:
+| +/*
+| + * This function is the NAPI RX poll function and NAPI guarantees that t=
+his
+|=20
+| WARNING: Avoid crashing the kernel - try using WARN_ON & recovery code ra=
+ther than BUG() or BUG_ON()
+| #698: FILE: drivers/net/can/virtio_can/virtio_can.c:600:
+| +	BUG_ON(len < header_size);
+|=20
+| WARNING: networking block comments don't use an empty /* line, use /* Com=
+ment...
+| #813: FILE: drivers/net/can/virtio_can/virtio_can.c:715:
+| +/*
+| + * See m_can_poll() / m_can_handle_state_errors() m_can_handle_state_cha=
+nge().
+|=20
+| WARNING: networking block comments don't use an empty /* line, use /* Com=
+ment...
+| #855: FILE: drivers/net/can/virtio_can/virtio_can.c:757:
+| +/*
+| + * Poll RX used queue for received CAN messages
+|=20
+| WARNING: networking block comments don't use an empty /* line, use /* Com=
+ment...
+| #897: FILE: drivers/net/can/virtio_can/virtio_can.c:799:
+| +		/*
+| +		 * The interrupt function is not assumed to be interrupted by
+|=20
+| WARNING: Avoid crashing the kernel - try using WARN_ON & recovery code ra=
+ther than BUG() or BUG_ON()
+| #904: FILE: drivers/net/can/virtio_can/virtio_can.c:806:
+| +		BUG_ON(len < sizeof(struct virtio_can_event_ind));
+|=20
+| WARNING: networking block comments don't use an empty /* line, use /* Com=
+ment...
+| #966: FILE: drivers/net/can/virtio_can/virtio_can.c:868:
+| +	/*
+| +	 * The order of RX and TX is exactly the opposite as in console and
+|=20
+| WARNING: Avoid crashing the kernel - try using WARN_ON & recovery code ra=
+ther than BUG() or BUG_ON()
+| #976: FILE: drivers/net/can/virtio_can/virtio_can.c:878:
+| +	BUG_ON(!priv);
+|=20
+| WARNING: Avoid crashing the kernel - try using WARN_ON & recovery code ra=
+ther than BUG() or BUG_ON()
+| #977: FILE: drivers/net/can/virtio_can/virtio_can.c:879:
+| +	BUG_ON(!priv->vdev);
+|=20
+| WARNING: networking block comments don't use an empty /* line, use /* Com=
+ment...
+| #1004: FILE: drivers/net/can/virtio_can/virtio_can.c:906:
+| +	/*
+| +	 * From here we have dead silence from the device side so no locks
+|=20
+| WARNING: networking block comments don't use an empty /* line, use /* Com=
+ment...
+| #1025: FILE: drivers/net/can/virtio_can/virtio_can.c:927:
+| +	/*
+| +	 * Is keeping track of allocated elements by an own linked list
+|=20
+| WARNING: Avoid crashing the kernel - try using WARN_ON & recovery code ra=
+ther than BUG() or BUG_ON()
+| #1060: FILE: drivers/net/can/virtio_can/virtio_can.c:962:
+| +	BUG_ON(!vdev);
+|=20
+| WARNING: networking block comments don't use an empty /* line, use /* Com=
+ment...
+| #1063: FILE: drivers/net/can/virtio_can/virtio_can.c:965:
+| +	/*
+| +	 * CAN needs always access to the config space.
+|=20
+| WARNING: Avoid crashing the kernel - try using WARN_ON & recovery code ra=
+ther than BUG() or BUG_ON()
+| #1090: FILE: drivers/net/can/virtio_can/virtio_can.c:992:
+| +	BUG_ON(!vdev);
+|=20
+| WARNING: networking block comments don't use an empty /* line, use /* Com=
+ment...
+| #1144: FILE: drivers/net/can/virtio_can/virtio_can.c:1046:
+| +	/*
+| +	 * It is possible to consider the number of TX queue places to
+|=20
+| WARNING: networking block comments don't use an empty /* line, use /* Com=
+ment...
+| #1185: FILE: drivers/net/can/virtio_can/virtio_can.c:1087:
+| +/*
+| + * Compare with m_can.c/m_can_suspend(), virtio_net.c/virtnet_freeze() a=
+nd
+|=20
+| WARNING: networking block comments don't use an empty /* line, use /* Com=
+ment...
+| #1210: FILE: drivers/net/can/virtio_can/virtio_can.c:1112:
+| +/*
+| + * Compare with m_can.c/m_can_resume(), virtio_net.c/virtnet_restore() a=
+nd
+|=20
+| WARNING: Prefer "GPL" over "GPL v2" - see commit bf7fbeeae6db ("module: C=
+ure the MODULE_LICENSE "GPL" vs. "GPL v2" bogosity")
+| #1273: FILE: drivers/net/can/virtio_can/virtio_can.c:1175:
+| +MODULE_LICENSE("GPL v2");
+|=20
+| WARNING: From:/Signed-off-by: email address mismatch: 'From: Harald Momme=
+r <harald.mommer@opensynergy.com>' !=3D 'Signed-off-by: Harald Mommer <hmo@=
+opensynergy.com>'
+|=20
+| total: 0 errors, 38 warnings, 1275 lines checked
 
-> +struct virtio_can_tx {
-> +       struct list_head list;
-> +       int prio; /* Currently always 0 "normal priority" */
-> +       int putidx;
-> +       struct virtio_can_tx_out tx_out;
-> +       struct virtio_can_tx_in tx_in;
-> +};
+regards,
+Marc
 
-Having a linked list of these appears to add a little extra complexity.
-If they are always processed in sequence, using an array would be
-much simpler, as you just need to remember the index.
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
-> +#ifdef DEBUG
-> +static void __attribute__((unused))
-> +virtio_can_hexdump(const void *data, size_t length, size_t base)
-> +{
-> +#define VIRTIO_CAN_MAX_BYTES_PER_LINE 16u
+--ieyz4olm27kc2bjr
+Content-Type: application/pgp-signature; name="signature.asc"
 
-This seems to duplicate print_hex_dump(), maybe just use that?
+-----BEGIN PGP SIGNATURE-----
 
-> +
-> +       while (!virtqueue_get_buf(vq, &len) && !virtqueue_is_broken(vq))
-> +               cpu_relax();
-> +
-> +       mutex_unlock(&priv->ctrl_lock);
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmMJ5jkACgkQrX5LkNig
+013IKwf/RPiDEx4DFsE7WOeFH67+0EDKByuackmB/TwczClnhN22zvAezavzFC35
+dKs/xlC4tZ8k3yO8QMxIjb8EUQDPovXx8XKAVNztmMwdwimwYxeGjanCFyzFqz5m
+qqcNOK1s/RqJ5mP4tHWzkbvZuf1mtrvk1cuDs53P6nbLkCVWp4AtYJihYRC+Ve2B
+0o/5aHPMMQQ4qPEw2WNbKQcoNFwQ2UUzgXwwgrX00MXgfbUUS0h4Fs9R9FEiFLyN
+sSEd3aK9ZJs8j98UuK/qvRxE6mjgBdXwUqk8QQ1eU27rtVOabBdMYQkaj34G4Zsd
+WPlEdwBHmPrwnorafH/mrg3nG50/Aw==
+=K4OV
+-----END PGP SIGNATURE-----
 
-A busy loop is probably not what you want here. Maybe just
-wait_for_completion() until the callback happens?
-
-> +       /* Push loopback echo. Will be looped back on TX interrupt/TX NAPI */
-> +       can_put_echo_skb(skb, dev, can_tx_msg->putidx, 0);
-> +
-> +       err = virtqueue_add_sgs(vq, sgs, 1u, 1u, can_tx_msg, GFP_ATOMIC);
-> +       if (err != 0) {
-> +               list_del(&can_tx_msg->list);
-> +               virtio_can_free_tx_idx(priv, can_tx_msg->prio,
-> +                                      can_tx_msg->putidx);
-> +               netif_stop_queue(dev);
-> +               spin_unlock_irqrestore(&priv->tx_lock, flags);
-> +               kfree(can_tx_msg);
-> +               if (err == -ENOSPC)
-> +                       netdev_info(dev, "TX: Stop queue, no space left\n");
-> +               else
-> +                       netdev_warn(dev, "TX: Stop queue, reason = %d\n", err);
-> +               return NETDEV_TX_BUSY;
-> +       }
-> +
-> +       if (!virtqueue_kick(vq))
-> +               netdev_err(dev, "%s(): Kick failed\n", __func__);
-> +
-> +       spin_unlock_irqrestore(&priv->tx_lock, flags);
-
-There should not be a need for a spinlock or disabling interrupts
-in the xmit function. What exactly are you protecting against here?
-
-As a further optimization, you may want to use the xmit_more()
-function, as the virtqueue kick is fairly expensive and can be
-batched here.
-
-> +       kfree(can_tx_msg);
-> +
-> +       /* Flow control */
-> +       if (netif_queue_stopped(dev)) {
-> +               netdev_info(dev, "TX ACK: Wake up stopped queue\n");
-> +               netif_wake_queue(dev);
-> +       }
-
-You may want to add netdev_sent_queue()/netdev_completed_queue()
-based BQL flow control here as well, so you don't have to rely on the
-queue filling up completely.
-
-> +static int virtio_can_probe(struct virtio_device *vdev)
-> +{
-> +       struct net_device *dev;
-> +       struct virtio_can_priv *priv;
-> +       int err;
-> +       unsigned int echo_skb_max;
-> +       unsigned int idx;
-> +       u16 lo_tx = VIRTIO_CAN_ECHO_SKB_MAX;
-> +
-> +       BUG_ON(!vdev);
-
-Not a useful debug check, just remove the BUG_ON(!vdev), here and elsewhere
-
-> +
-> +       echo_skb_max = lo_tx;
-> +       dev = alloc_candev(sizeof(struct virtio_can_priv), echo_skb_max);
-> +       if (!dev)
-> +               return -ENOMEM;
-> +
-> +       priv = netdev_priv(dev);
-> +
-> +       dev_info(&vdev->dev, "echo_skb_max = %u\n", priv->can.echo_skb_max);
-
-Also remove the prints, I assume this is left over from
-initial debugging.
-
-> +       priv->can.do_set_mode = virtio_can_set_mode;
-> +       priv->can.state = CAN_STATE_STOPPED;
-> +       /* Set Virtio CAN supported operations */
-> +       priv->can.ctrlmode_supported = CAN_CTRLMODE_BERR_REPORTING;
-> +       if (virtio_has_feature(vdev, VIRTIO_CAN_F_CAN_FD)) {
-> +               dev_info(&vdev->dev, "CAN FD is supported\n");
-
-> +       } else {
-> +               dev_info(&vdev->dev, "CAN FD not supported\n");
-> +       }
-
-Same here. There should be a way to see CAN FD support as an interactive
-user, but there is no point printing it to the console.
-
-> +
-> +       register_virtio_can_dev(dev);
-> +
-> +       /* Initialize virtqueues */
-> +       err = virtio_can_find_vqs(priv);
-> +       if (err != 0)
-> +               goto on_failure;
-
-Should the register_virtio_can_dev() be done here? I would expect this to be
-the last thing after setting up the queues.
-
-> +static struct virtio_driver virtio_can_driver = {
-> +       .feature_table = features,
-> +       .feature_table_size = ARRAY_SIZE(features),
-> +       .feature_table_legacy = NULL,
-> +       .feature_table_size_legacy = 0u,
-> +       .driver.name =  KBUILD_MODNAME,
-> +       .driver.owner = THIS_MODULE,
-> +       .id_table =     virtio_can_id_table,
-> +       .validate =     virtio_can_validate,
-> +       .probe =        virtio_can_probe,
-> +       .remove =       virtio_can_remove,
-> +       .config_changed = NULL,
-> +#ifdef CONFIG_PM_SLEEP
-> +       .freeze =       virtio_can_freeze,
-> +       .restore =      virtio_can_restore,
-> +#endif
-
-You can remove the #ifdef here and above, and replace that with the
-pm_sleep_ptr() macro in the assignment.
-
-> diff --git a/include/uapi/linux/virtio_can.h b/include/uapi/linux/virtio_can.h
-> new file mode 100644
-> index 000000000000..0ca75c7a98ee
-> --- /dev/null
-> +++ b/include/uapi/linux/virtio_can.h
-> @@ -0,0 +1,69 @@
-> +/* SPDX-License-Identifier: BSD-3-Clause */
-> +/*
-> + * Copyright (C) 2021 OpenSynergy GmbH
-> + */
-> +#ifndef _LINUX_VIRTIO_VIRTIO_CAN_H
-> +#define _LINUX_VIRTIO_VIRTIO_CAN_H
-> +
-> +#include <linux/types.h>
-> +#include <linux/virtio_types.h>
-> +#include <linux/virtio_ids.h>
-> +#include <linux/virtio_config.h>
-
-Maybe a link to the specification here? I assume the definitions in this file
-are all lifted from that document, rather than specific to the driver, right?
-
-         Arnd
-
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+--ieyz4olm27kc2bjr--
 
