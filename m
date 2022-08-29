@@ -1,190 +1,162 @@
 Return-Path: <mst@redhat.com>
-Date: Wed, 31 Aug 2022 10:50:21 -0400
+Date: Mon, 29 Aug 2022 14:28:05 -0400
 From: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: Re: [virtio] Re: [virtio-dev] Re: [virtio] [PATCH RFC v7 6/8] ccw:
- disallow ADMIN_VQ
-Message-ID: <20220831104233-mutt-send-email-mst@kernel.org>
+Subject: Re: [virtio] [PATCH RFC v7 6/8] ccw: disallow ADMIN_VQ
+Message-ID: <20220829142401-mutt-send-email-mst@kernel.org>
 References: <20220812171841.12183-1-mst@redhat.com>
  <20220812171841.12183-7-mst@redhat.com>
  <20220816164811.16464110.pasic@linux.ibm.com>
  <20220816114216-mutt-send-email-mst@kernel.org>
  <20220818153958.7219f6b8.pasic@linux.ibm.com>
- <20220818235403-mutt-send-email-mst@kernel.org>
- <20220824014519.028ee16d.pasic@linux.ibm.com>
- <20220828052839-mutt-send-email-mst@kernel.org>
- <20220831163349.545f726d.pasic@linux.ibm.com>
 MIME-Version: 1.0
-In-Reply-To: <20220831163349.545f726d.pasic@linux.ibm.com>
+In-Reply-To: <20220818153958.7219f6b8.pasic@linux.ibm.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 To: Halil Pasic <pasic@linux.ibm.com>
 Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, jasowang@redhat.com, cohuck@redhat.com, sgarzare@redhat.com, stefanha@redhat.com, nrupal.jani@intel.com, Piotr.Uminski@intel.com, hang.yuan@intel.com, virtio@lists.oasis-open.org, Zhu Lingshan <lingshan.zhu@intel.com>, oren@nvidia.com, parav@nvidia.com, shahafs@nvidia.com, aadam@redhat.com, eperezma@redhat.com, Max Gurtovoy <mgurtovoy@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, Aug 31, 2022 at 04:33:49PM +0200, Halil Pasic wrote:
-> On Sun, 28 Aug 2022 05:35:53 -0400
+On Thu, Aug 18, 2022 at 03:39:58PM +0200, Halil Pasic wrote:
+> On Tue, 16 Aug 2022 11:48:43 -0400
 > "Michael S. Tsirkin" <mst@redhat.com> wrote:
 > 
-> > > > Like here:
-> > > > 	 +Driver MUST NOT set bit VIRTIO_F_ADMIN_VQ (bit 41) in
-> > > > 	 +DriverFeatures even if offered by the device.
+> > On Tue, Aug 16, 2022 at 04:48:11PM +0200, Halil Pasic wrote:
+> > > On Fri, 12 Aug 2022 13:19:20 -0400
+> > > "Michael S. Tsirkin" <mst@redhat.com> wrote:
+> > >   
+> > > > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+> > > > ---
+> > > >  content.tex | 10 ++++++++++
+> > > >  1 file changed, 10 insertions(+)
 > > > > 
-> > > > This makes sure that drivers do not make an assumption that
-> > > > devices do not set the bit. But yes, maybe spell it out:
-> > > > 
-> > > > 	 +Driver MUST NOT set bit VIRTIO_F_ADMIN_VQ (bit 41) in
-> > > > 	 +DriverFeatures even if offered by the device.
-> > > > 	 +Driver MUST NOT assume that device does not offer VIRTIO_F_ADMIN_VQ.
-> > > > 	 +In particular driver MUST NOT fail feature negotiation if
-> > > > 	 +device offers VIRTIO_F_ADMIN_VQ.
-> > > > 
-> > > > ok now?  
+> > > > diff --git a/content.tex b/content.tex
+> > > > index 76b5a28..53be680 100644
+> > > > --- a/content.tex
+> > > > +++ b/content.tex
+> > > > @@ -2668,6 +2668,16 @@ \subsubsection{Handling Device Features}\label{sec:Virtio Transport Options / Vi
+> > > >  uses the CCW_CMD_WRITE_FEAT command, denoting a \field{features}/\field{index}
+> > > >  combination.
+> > > >  
+> > > > +\devicenormative{\paragraph}{Handling Device Features}{Virtio Transport Options / Virtio over channel I/O / Device Initialization / Handling Device Features}
+> > > > +
+> > > > +Device MUST NOT set bit VIRTIO_F_ADMIN_VQ (bit 41) in
+> > > > +DeviceFeatures.
+> > > > +
+> > > > +\drivernormative{\paragraph}{Handling Device Features}{Virtio Transport Options / Virtio over channel I/O / Device Initialization / Handling Device Features}
+> > > > +
+> > > > +Driver MUST NOT set bit VIRTIO_F_ADMIN_VQ (bit 41) in
+> > > > +DriverFeatures even if offered by the device.
+> > > > +  
 > > > 
-> > > Sorry, it still does not work for me. But I may be wrong. My problem
-> > > is that what we mean is the following:
+> > > I'm not sure I understand the intention here. I believe what we try to
+> > > accomplish here is the following. The Channel I/O transport *currently*
+> > > does not support the VIRTIO_F_ADMIN_VQ feature. It is not like we want
+> > > to state that the feature VIRTIO_F_ADMIN_VQ won't ever be supported by
+> > > the Channel I/O transport. Or am I wrong?
+> > >
+> > > If my assumptions are right, then the old incarnation of the spec could
+> > > contradict the new incarnation of the spec. Thus I would prefer something
+> > > like.  
+> > 
+> > Relaxing requirenents is always okay.
+> 
+> Are you telling me, that for instance a driver author may not rely on
+> even the MUST type device normative behavior stated by the spec, because
+> future incarnations of the spec could relax the requirements towards this
+> particular device, for example by removing that device normative
+> statement?
+> 
+> I always imagined, if the spec says the device or the driver MUST
+> "something", then I as the implementer of the other end (driver or
+> device, can rely on that "something"). If this assumption is wrong then
+> I'm have to re-examine my entire mental model of the spec.
+> 
+> > 
 > > > 
-> > > If the driver (where driver includes both the transport part and the
-> > > transport agnostic part) does not support VIRTIO_F_ADMIN_VQ then it must
-> > > not set VIRTIO_F_ADMIN_VQ. And any reasoning along the lines "hey the
-> > > device was not supposed to offer that bit in the first place" is
-> > > misguided.  
+> > > """
+> > > Currently the following features are not supported by the Channel I/O
+> > > transport:
+> > > * VIRTIO_F_ADMIN_VQ
+> > > """  
 > > 
-> > Yes, this is exactly what I'm trying to prevent here.
+> > what I want to prevent is driver saying "oh device will not set ADMIN_VQ
+> > so it's ok to acknowledge it if offered, it is never offered even
+> > though it does not suport it".
+> > because then it becomes impossible to know when actually a new driver
+> > appears with actual support.
+> 
+> Fair point!
+> 
+> I would prefer a driver normative which goes like this:
+> 
+> """
+> A driver SHOULD NOT accept features (i.e. have code that would do so if
+> the feature is offered) if the feature is not supported by the driver
+> (e.g. because unsupported by the transport), even if the specification
+> implies that the device can not offer these features in the first place
+> (e.g. because the feature is not yet supported by the transport.
+> """
+
+ok. why not MUST NOT?
+
+> And a similar device normative as well, which just that it may not offer
+> such features.
+> 
+> """
+> Note: The rationale behind the [reference to the normative] is that
+> while some features can not be implemented within the boundaries of the
+> current virtio specification, future incarnations of the specificaton may
+> make such implementations possible.  A most prominent example is optional
+> features dependent on optional virtio facilities whose transport specific
+> implementation is not yet specified for some transports. Should one end
+> gain the ability to support these features, the old implementation which
+> made the assumption that the other end will make sure these features are
+> not negotiated would end up negotiating something it can't actually
+> support.
+> """
+> 
+> 
+> 
 > > 
-> > > The crucial part here is that the MUST NOT accept VIRTIO_F_ADMIN_VQ
-> > > partee is only applicable if the driver does not support
-> > > VIRTIO_F_ADMIN_VQ. That is, if we happen to extend the Channel I/O transport, and we
-> > > decide to implement VIRTIO_F_ADMIN_VQ for the over Channel I/O devices,
-> > > that MUST NOT accept does not get in the way.  
+> > So, Maybe just add text
 > > 
-> > Then we'll describe how it works in the spec and then drop this.
+> > Note: future versions of this specification will allow setting ADMIN_VQ
+> > for driver and device. Device MUST NOT assume driver does not
+> > acknowledge ADMIN_VQ if offered.
+> 
+> I would not lean out of the window and promise something with regards to
+> future versions of this spec.
+
+s/will/might/
+
 > > 
-> > > My problem with your proposal is, that the MUST NOT is not guarded by a
-> > > proper precondition (it is a prohibition that does not allow for any
-> > > exceptions).
+> > And similarly for drivers:
+> > 
+> > Note: future versions of this specification will allow setting ADMIN_VQ
+> > for driver and device. Drivers MUST NOT assume ADMIN_VQ if not offered.
+> > 
+> 
+> I think we can then make a note which references the generic normative
+> for each feature affected where it suits us.
+> 
 > > > 
-> > > I would very much like Conny to chime in on this.
+> > > If we want, we can also state what needs to be done in general when
+> > > features are unsupported by the transport. And yes, that normative
+> > > material in my opinion.
 > > > 
 > > > Regards,
 > > > Halil  
 > > 
-> > But we do this all the time. We disallow some behaviour then
-> > following spec versions start allowing it.
 > > 
-> > Basically removing a requirement is ok as long as the other side
-> > does not rely on it.
+> > Are there other examples? I want to call out the list explicitly because
+> > it is so easy to enable an extra feature by mistake.
 > > 
 > 
-> Sorry I don't want to delay this any further. It is unlikely to
-> do any harm so I'm fine with moving forward with this.
+> I don't think CCW supports the shared memory yet... But I may be wrong.
 > 
-> TLDR: I agree: it would be safe to remove both of the statements
-> you introduce with this patch once the transport gains support
-> for the feature.
-> 
-> But I would still prefer being generic about the problem and maintaining
-> a list of not (yet) supported features rather than adding and removing
-> normative statement pairs. Just like we do for features, and also in your
-> cfg_type example.
-> 
-> The rest are my thoughts on the implications. 
-> 
-> You seem to say that all the normative statements may be classified
-> into two categories:
-> C1) the other side does not rely on this requirement
-> C2) the other side does rely on this requirement
-> 
-> The requirements form C1 can be removed form future versions of the
-> spec, and devices may start not honoring these without breaking
-> compatibility because the other side did not rely on these being held
-> up in the first place.
-> 
-> The requirements from C2 can not be removed from future versions of the
-> spec, because a device compliant to the previous version of the spec
-> that relies on this requirement being fulfilled would break. And
-> interchangeability is about compatibility and interoperability -- so
-> that is no good.
-> 
-> I understand that reasoning. But what I don't understand is the
-> following: how is the reader of the specification supposed to decide
-> if a certain requirement is a C1 requirement or a C2 requirement.
-> Misclassifying a requirement could obviously pose a problem.
-
-The reader is supposed to satisfy all requirements.
-Whether it is ok to rely on requirements is a problem that
-unfortunately we don't always clarify.
-
-
-> Some examples where it may not be entirely obvious if it is C1 or C2:
-> 
-> 2.1.2:
-> The device MUST NOT consume buffers or send any used buffer
-> notifications to the driver before DRIVER_OK. 
-> 
-> 2.2.1
-> The driver MUST NOT accept a feature which the device did not offer, and
-> MUST NOT accept a feature which requires another feature which was not
-> accepted.
-> 
-> 2.4.1
-> Drivers MUST NOT limit structure size and device configuration space
-> size.
-> 
-> After some more thinking... Regarding whether the other side (B) is
-> allowed to rely on a certain normative requirement or not really boils
-> down to the question is there a normative statement that explicitly prohibits
-> the other side (B) to rely on the property of the other side (A) that is
-> implied by the first normative statement. I think feature bits are a
-> good example.
-> 
-> I think, it would conceptually simplify things a lot if the avoided
-> normative statements that we hope to drop in the future. 
-> 
-> This is a rather academic discussion and probably not a worthwhile one.
-
-I absolutely understand where you are coming from... I'm fine just using
-SHOULD NOT here for now.
-Do you feel that's the way to go or have you changed your mind?
-Couldn't figure it out.
-
-
-
-But generally, I feel C1 is the default unless there is text that
-explicitly says C2.
-
-
-> 
-> 
-> > For example, we had this for a while:
 > > 
+> > > >  \subsubsection{Device Configuration}\label{sec:Virtio Transport Options / Virtio over channel I/O / Device Initialization / Device Configuration}
+> > > >  
+> > > >  The device's configuration space is located in host memory.  
 > > 
-> > 	The driver MUST ignore any vendor-specific capability structure which has
-> > 	a reserved \field{cfg_type} value.
-> > 
-> > 
-> > but the meaning of a "reserved cfg_type" changed over time, allowing
-> > driver to access new cfg_type values.
-> 
-> Right! I completely agree, our goal is that version N and version N+M
-> should be interoperable.  And that does not mean that every
-> device/driver that is compliant to version N+M must also be compliant
-> to the version N of the spec. I agree that having when adding new
-> stuff the entity implementing the new stuff must be non-compliant
-> to the statements of the previous specification that say the unknown
-> stuff must be fenced.
-> 
-> Yet I prefer phrasings like this one where the phrasing of statement is
-> still valid for all future versions of the spec (just the parameters
-> change: in this case what is reserved and what is not).
-> 
-> Regards,
-> Halil
-
-
-I guess it's a matter of taste.
-What worries me is that it's so easy to miss these implications.
-
-
--- 
-MST
 
