@@ -1,67 +1,453 @@
-Return-Path: <virtio-dev-return-9841-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-9845-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 9807498656D
-	for <virtio-dev@lists.oasis-open.org>; Fri, 26 Aug 2022 18:33:07 +0000 (UTC)
-From: Parav Pandit <parav@nvidia.com>
-Date: Fri, 26 Aug 2022 18:33:04 +0000
-Message-ID: <PH0PR12MB54817615D702376C33188518DC759@PH0PR12MB5481.namprd12.prod.outlook.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 28F19986399
+	for <virtio-dev@lists.oasis-open.org>; Mon, 29 Aug 2022 01:43:37 +0000 (UTC)
+Message-ID: <9dc5c23b-b814-7188-3c5d-4051bb148949@nvidia.com>
+Date: Mon, 29 Aug 2022 09:43:20 +0800
 References: <20220825123840.20239-1-gavinl@nvidia.com>
  <20220825123840.20239-3-gavinl@nvidia.com>
  <27204c1c-1767-c968-0481-c052370875d8@oracle.com>
- <PH0PR12MB5481BB5F85A7115A07FBC315DC759@PH0PR12MB5481.namprd12.prod.outlook.com>
- <784140bb-53d1-e00b-f79a-7b95b0c1052f@oracle.com>
-In-Reply-To: <784140bb-53d1-e00b-f79a-7b95b0c1052f@oracle.com>
+From: Gavin Li <gavinl@nvidia.com>
+In-Reply-To: <27204c1c-1767-c968-0481-c052370875d8@oracle.com>
 MIME-Version: 1.0
-Subject: RE: [virtio-dev] [PATCH RESEND v2 2/2] virtio-net: use mtu size as
+Subject: Re: [virtio-dev] [PATCH RESEND v2 2/2] virtio-net: use mtu size as
  buffer length for big packets
+Content-Type: multipart/alternative;
+ boundary="------------1gkd7g7z0EOkmmH0ZZRchb2Y"
 Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-To: Si-Wei Liu <si-wei.liu@oracle.com>, Gavin Li <gavinl@nvidia.com>, "stephen@networkplumber.org" <stephen@networkplumber.org>, "davem@davemloft.net" <davem@davemloft.net>, "jesse.brandeburg@intel.com" <jesse.brandeburg@intel.com>, "alexander.h.duyck@intel.com" <alexander.h.duyck@intel.com>, "kuba@kernel.org" <kuba@kernel.org>, "sridhar.samudrala@intel.com" <sridhar.samudrala@intel.com>, "jasowang@redhat.com" <jasowang@redhat.com>, "loseweigh@gmail.com" <loseweigh@gmail.com>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "mst@redhat.com" <mst@redhat.com>
-Cc: Gavi Teitz <gavi@nvidia.com>
+To: Si-Wei Liu <si-wei.liu@oracle.com>, stephen@networkplumber.org, davem@davemloft.net, jesse.brandeburg@intel.com, alexander.h.duyck@intel.com, kuba@kernel.org, sridhar.samudrala@intel.com, jasowang@redhat.com, loseweigh@gmail.com, netdev@vger.kernel.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, mst@redhat.com
+Cc: gavi@nvidia.com, parav@nvidia.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-DQoNCj4gRnJvbTogU2ktV2VpIExpdSA8c2ktd2VpLmxpdUBvcmFjbGUuY29tPg0KPiBTZW50OiBG
-cmlkYXksIEF1Z3VzdCAyNiwgMjAyMiAyOjA1IFBNDQo+IA0KDQo+ID4gKwkvKiBJZiB3ZSBjYW4g
-cmVjZWl2ZSBBTlkgR1NPIHBhY2tldHMsIHdlIG11c3QgYWxsb2NhdGUgbGFyZ2Ugb25lcy4NCj4g
-Ki8NCj4gPiArCWlmIChtdHUgPiBFVEhfREFUQV9MRU4gfHwgZ3Vlc3RfZ3NvKSB7DQo+ID4gKwkJ
-dmktPmJpZ19wYWNrZXRzID0gdHJ1ZTsNCj4gPiArCQkvKiBpZiB0aGUgZ3Vlc3Qgb2ZmbG9hZCBp
-cyBvZmZlcmVkIGJ5IHRoZSBkZXZpY2UsIHVzZXIgY2FuDQo+IG1vZGlmeQ0KPiA+ICsJCSAqIG9m
-ZmxvYWQgY2FwYWJpbGl0eS4gSW4gc3VjaCBwb3N0ZWQgYnVmZmVycyBtYXkgc2hvcnQgZmFsbCBv
-Zg0KPiBzaXplLg0KPiA+ICsJCSAqIEhlbmNlIGFsbG9jYXRlIGZvciBtYXggc2l6ZS4NCj4gPiAr
-CQkgKi8NCj4gPiArCQlpZiAodmlydGlvX2hhc19mZWF0dXJlKHZpLT52ZGV2LA0KPiBWSVJUSU9f
-TkVUX0ZfQ1RSTF9HVUVTVF9PRkZMT0FEUykpDQo+ID4gKwkJCXZpLT5iaWdfcGFja2V0c19zZ19u
-dW0gPSBNQVhfU0tCX0ZSQUdTOw0KPiA+PiBNQVhfU0tCX0ZSQUdTIGlzIG5lZWRlZCB3aGVuIGFu
-eSBvZiB0aGUgZ3Vlc3RfZ3NvIGNhcGFiaWxpdHkgaXMNCj4gb2ZmZXJlZC4gVGhpcyBpcyBwZXIg
-c3BlYyByZWdhcmRsZXNzIGlmDQo+IFZJUlRJT19ORVRfRl9DVFJMX0dVRVNUX09GRkxPQURTIGlz
-IG5lZ290aWF0ZWQgb3Igbm90LiBRdW90aW5nIHNwZWM6DQo+ID4NCj4gPg0KPiA+PiBJZiBWSVJU
-SU9fTkVUX0ZfTVJHX1JYQlVGIGlzIG5vdCBuZWdvdGlhdGVkOg0KPiA+PiBJZiBWSVJUSU9fTkVU
-X0ZfR1VFU1RfVFNPNCwgVklSVElPX05FVF9GX0dVRVNUX1RTTzYgb3INCj4gVklSVElPX05FVF9G
-X0dVRVNUX1VGTyBhcmUgbmVnb3RpYXRlZCwgdGhlIGRyaXZlciBTSE9VTEQgcG9wdWxhdGUgdGhl
-DQo+IHJlY2VpdmUgcXVldWUocykgd2l0aCBidWZmZXJzIG9mIGF0IGxlYXN0IDY1NTYyIGJ5dGVz
-Lg0KPiA+DQo+ID4gU3BlYyByZWNvbW1lbmRhdGlvbiBpcyBnb29kIGhlcmUsIGJ1dCBMaW51eCBk
-cml2ZXIga25vd3MgdGhhdCBzdWNoDQo+IG9mZmxvYWQgc2V0dGluZ3MgY2Fubm90IGNoYW5nZSBp
-ZiB0aGUgYWJvdmUgZmVhdHVyZSBpcyBub3Qgb2ZmZXJlZC4NCj4gPiBTbyBJIHRoaW5rIHdlIHNo
-b3VsZCBhZGQgdGhlIGNvbW1lbnQgYW5kIHJlZmVyZW5jZSB0byB0aGUgY29kZSB0byBoYXZlDQo+
-IHRoaXMgb3B0aW1pemF0aW9uLg0KPiANCj4gSSBkb24ndCBnZXQgd2hhdCB5b3UgbWVhbiBieSBv
-cHRpbWl6YXRpb24gaGVyZS4gU2F5IGlmDQo+IFZJUlRJT19ORVRfRl9HVUVTVF9UU080IGlzIG5l
-Z290aWF0ZWQgd2hpbGUNCj4gVklSVElPX05FVF9GX0NUUkxfR1VFU1RfT0ZGTE9BRFMgaXMgbm90
-IG9mZmVyZWQsIHdoeSB5b3UgY29uc2lkZXIgaXQNCj4gYW4gb3B0aW1pemF0aW9uIHRvIHBvc3Qg
-b25seSBNVFUgc2l6ZWQgKHdpdGggcm91bmR1cCB0byBwYWdlKSBidWZmZXJzPw0KPiBXb3VsZG4n
-dCBpdCBiZSBhbiBpc3N1ZSBpZiB0aGUgZGV2aWNlIGlzIHBhc3NpbmcgdXAgYWdncmVnYXRlZCBH
-U08gcGFja2V0cyBvZg0KPiB1cCB0byA2NEtCPyBOb3RlZCwgR1VFU1RfR1NPIGlzIGltcGxpZWQg
-b24gd2hlbiB0aGUgY29ycmVzcG9uZGluZw0KPiBmZWF0dXJlIGJpdCBpcyBuZWdvdGlhdGVkLCBy
-ZWdhcmRsZXNzIHRoZSBwcmVzZW5jZSBvZg0KPiBWSVJUSU9fTkVUX0ZfQ1RSTF9HVUVTVF9PRkZM
-T0FEUyBiaXQuDQo+IA0KWW91IGFyZSByaWdodC4NCk5FVElGX0ZfR1JPX0hXIHNldHRpbmcgb2Yg
-dGhlIG5ldGRldiBpcyBhbHJlYWR5IGd1YXJkZWQgYnkgVklSVElPX05FVF9GX0NUUkxfR1VFU1Rf
-T0ZGTE9BRFMgYml0IGNoZWNrLg0KU28sIGl0cyBmaW5lLiBJIG1pc3NlZCB0aGF0IGNvZGUgcHJl
-dmlvdXNseS4NCg0KSSBhZ3JlZSB0aGUgY29uZGl0aW9uIGNoZWNrIHNob3VsZCBiZSBzaW1wbGVy
-IGxpa2UgYmVsb3cuDQoNCmlmIChndWVzdF9nc28gfHwgbXR1ID4gRVRIX0RBVEFfTEVOKSB7DQoJ
-dmktPmJpZ19wYWNrZXRzID0gdHJ1ZTsNCgl2aS0+YmlnX3BhY2tldHNfc2dfbnVtID0gZ3Vlc3Rf
-Z3NvID8gTUFYX1NLQl9GUkFHUyA6IERJVl9ST1VORF9VUChtdHUsIFBBR0VfU0laRSk7DQp9DQo=
+--------------1gkd7g7z0EOkmmH0ZZRchb2Y
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+
+
+On 8/26/2022 4:52 PM, Si-Wei Liu wrote:
+> *External email: Use caution opening links or attachments*
+>
+>
+> Sorry for the delay. Didn't notice as this thread was not addressed to 
+> my work email. Please copy to my work email if it needs my immediate 
+> attention.
+>
+> On 8/25/2022 5:38 AM, Gavin Li wrote:
+>> Currently add_recvbuf_big() allocates MAX_SKB_FRAGS segments for big
+>> packets even when GUEST_* offloads are not present on the device.
+>> However, if guest GSO is not supported, it would be sufficient to
+>> allocate segments to cover just up the MTU size and no further.
+>> Allocating the maximum amount of segments results in a large waste of
+>> buffer space in the queue, which limits the number of packets that can
+>> be buffered and can result in reduced performance.
+>>
+>> Therefore, if guest GSO is not supported, use the MTU to calculate the
+>> optimal amount of segments required.
+>>
+>> When guest offload is enabled at runtime, RQ already has packets of bytes
+>> less than 64K. So when packet of 64KB arrives, all the packets of such
+>> size will be dropped. and RQ is now not usable.
+>>
+>> So this means that during set_guest_offloads() phase, RQs have to be
+>> destroyed and recreated, which requires almost driver reload.
+> Yes, this needs VIRTIO_F_RING_RESET and disable_vq_and_reset() to be 
+> done on RQ and refill it with appropriate size of buffer. Not for this 
+> patch anyway.
+>> If VIRTIO_NET_F_CTRL_GUEST_OFFLOADS has been negotiated, then it should
+>> always treat them as GSO enabled.
+>>
+>> Below is the iperf TCP test results over a Mellanox NIC, using vDPA for
+>> 1 VQ, queue size 1024, before and after the change, with the iperf
+>> server running over the virtio-net interface.
+>>
+>> MTU(Bytes)/Bandwidth (Gbit/s)
+>>               Before   After
+>>    1500        22.5     22.4
+>>    9000        12.8     25.9
+>>
+>> Signed-off-by: Gavin Li<gavinl@nvidia.com>
+>> Reviewed-by: Gavi Teitz<gavi@nvidia.com>
+>> Reviewed-by: Parav Pandit<parav@nvidia.com>
+>> ---
+>> changelog:
+>> v1->v2
+>> - Addressed comments from Jason, Michael, Si-Wei.
+>> - Remove the flag of guest GSO support, set sg_num for big packets and
+>>    use it directly
+>> - Recalculate sg_num for big packets in virtnet_set_guest_offloads
+>> - Replace the round up algorithm with DIV_ROUND_UP
+>> ---
+>>   drivers/net/virtio_net.c | 41 +++++++++++++++++++++++++++-------------
+>>   1 file changed, 28 insertions(+), 13 deletions(-)
+>>
+>> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+>> index e1904877d461..ec8c135a26d6 100644
+>> --- a/drivers/net/virtio_net.c
+>> +++ b/drivers/net/virtio_net.c
+>> @@ -225,6 +225,9 @@ struct virtnet_info {
+>>   	/* I like... big packets and I cannot lie! */
+>>   	bool big_packets;
+>>   
+>> +	/* number of sg entries allocated for big packets */
+>> +	unsigned int big_packets_sg_num;
+>> +
+>>   	/* Host will merge rx buffers for big packets (shake it! shake it!) */
+>>   	bool mergeable_rx_bufs;
+>>   
+>> @@ -1331,10 +1334,10 @@ static int add_recvbuf_big(struct virtnet_info *vi, struct receive_queue *rq,
+>>   	char *p;
+>>   	int i, err, offset;
+>>   
+>> -	sg_init_table(rq->sg, MAX_SKB_FRAGS + 2);
+>> +	sg_init_table(rq->sg, vi->big_packets_sg_num + 2);
+>>   
+>> -	/* page in rq->sg[MAX_SKB_FRAGS + 1] is list tail */
+>> -	for (i = MAX_SKB_FRAGS + 1; i > 1; --i) {
+>> +	/* page in rq->sg[vi->big_packets_sg_num + 1] is list tail */
+>> +	for (i = vi->big_packets_sg_num + 1; i > 1; --i) {
+>>   		first = get_a_page(rq, gfp);
+>>   		if (!first) {
+>>   			if (list)
+>> @@ -1365,7 +1368,7 @@ static int add_recvbuf_big(struct virtnet_info *vi, struct receive_queue *rq,
+>>   
+>>   	/* chain first in list head */
+>>   	first->private = (unsigned long)list;
+>> -	err = virtqueue_add_inbuf(rq->vq, rq->sg, MAX_SKB_FRAGS + 2,
+>> +	err = virtqueue_add_inbuf(rq->vq, rq->sg, vi->big_packets_sg_num + 2,
+>>   				  first, gfp);
+>>   	if (err < 0)
+>>   		give_pages(rq, first);
+>> @@ -3690,13 +3693,31 @@ static bool virtnet_check_guest_gso(const struct virtnet_info *vi)
+>>   		virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_UFO));
+>>   }
+>>   
+>> +static void virtnet_set_big_packets_fields(struct virtnet_info *vi, const int mtu)
+>> +{
+>> +	bool guest_gso = virtnet_check_guest_gso(vi);
+>> +
+>> +	/* If we can receive ANY GSO packets, we must allocate large ones. */
+>> +	if (mtu > ETH_DATA_LEN || guest_gso) {
+>> +		vi->big_packets = true;
+>> +		/* if the guest offload is offered by the device, user can modify
+>> +		 * offload capability. In such posted buffers may short fall of size.
+>> +		 * Hence allocate for max size.
+>> +		 */
+>> +		if (virtio_has_feature(vi->vdev, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS))
+>> +			vi->big_packets_sg_num = MAX_SKB_FRAGS;
+> MAX_SKB_FRAGS is needed when any of the guest_gso capability is 
+> offered. This is per spec regardless if 
+> VIRTIO_NET_F_CTRL_GUEST_OFFLOADS is negotiated or not. Quoting spec:
+>
+>> If VIRTIO_NET_F_MRG_RXBUF is not negotiated:
+>>
+>>   * If VIRTIO_NET_F_GUEST_TSO4, VIRTIO_NET_F_GUEST_TSO6 or
+>>     VIRTIO_NET_F_GUEST_UFO are negotiated, the driver SHOULD populate
+>>     the receive queue(s) with buffers of at least 65562 bytes.
+>>
+>
+> I would just simply put:
+> vi->big_packets_sg_num = guest_gso ? MAX_SKB_FRAGS : DIV_ROUND_UP(mtu, PAGE_SIZE);
+ACK
+>
+> There needs to be another patch to address the 
+> virtnet_set_guest_offloads() case. For now just leave with a TODO 
+> comment and keep it as-is (don't start with full MAX_SKB_FRAGS segments).
+>> +		else
+>> +			vi->big_packets_sg_num = DIV_ROUND_UP(mtu, PAGE_SIZE);
+>> +	}
+>> +}
+>> +
+>>   static int virtnet_probe(struct virtio_device *vdev)
+>>   {
+>>   	int i, err = -ENOMEM;
+>>   	struct net_device *dev;
+>>   	struct virtnet_info *vi;
+>>   	u16 max_queue_pairs;
+>> -	int mtu;
+>> +	int mtu = 0;
+>>   
+>>   	/* Find if host supports multiqueue/rss virtio_net device */
+>>   	max_queue_pairs = 1;
+>> @@ -3784,10 +3805,6 @@ static int virtnet_probe(struct virtio_device *vdev)
+>>   	INIT_WORK(&vi->config_work, virtnet_config_changed_work);
+>>   	spin_lock_init(&vi->refill_lock);
+>>   
+>> -	/* If we can receive ANY GSO packets, we must allocate large ones. */
+>> -	if (virtnet_check_guest_gso(vi))
+>> -		vi->big_packets = true;
+>> -
+>>   	if (virtio_has_feature(vdev, VIRTIO_NET_F_MRG_RXBUF))
+>>   		vi->mergeable_rx_bufs = true;
+>>   
+>> @@ -3853,12 +3870,10 @@ static int virtnet_probe(struct virtio_device *vdev)
+>>   
+>>   		dev->mtu = mtu;
+>>   		dev->max_mtu = mtu;
+>> -
+>> -		/* TODO: size buffers correctly in this case. */
+>> -		if (dev->mtu > ETH_DATA_LEN)
+>> -			vi->big_packets = true;
+>>   	}
+>>   
+> Can we add a comment here to note that this essentially has to be 
+> dev->max_mtu when F_MTU is negotiated. The implicit assumption of mtu 
+> being 0 when F_MTU is not negotiated is not so obvious to readers.
+>
+> Thanks,
+> -Siwei
+>> +	virtnet_set_big_packets_fields(vi, mtu);
+>> +
+>>   	if (vi->any_header_sg)
+>>   		dev->needed_headroom = vi->hdr_len;
+>>   
+>
+--------------1gkd7g7z0EOkmmH0ZZRchb2Y
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+<html><head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  </head>
+  <body>
+    <p><br>
+    </p>
+    <div class="moz-cite-prefix">On 8/26/2022 4:52 PM, Si-Wei Liu wrote:<br>
+    </div>
+    <blockquote type="cite" cite="mid:27204c1c-1767-c968-0481-c052370875d8@oracle.com">
+      
+      <table border="1" bgcolor="#FFEB9C">
+        <tbody>
+          <tr>
+            <td><font size="1" face="verdana" color="black"><b>External
+                  email: Use caution opening links or attachments</b>
+              </font></td>
+          </tr>
+        </tbody>
+      </table>
+      <br>
+      <div>Sorry for the delay. Didn't notice as this thread was not
+        addressed to my work email. Please copy to my work email if it
+        needs my immediate attention.<br>
+        <br>
+        <div class="moz-cite-prefix">On 8/25/2022 5:38 AM, Gavin Li
+          wrote:<br>
+        </div>
+        <blockquote type="cite" cite="mid:20220825123840.20239-3-gavinl@nvidia.com">
+          <pre class="moz-quote-pre" wrap="">Currently add_recvbuf_big() allocates MAX_SKB_FRAGS segments for big
+packets even when GUEST_* offloads are not present on the device.
+However, if guest GSO is not supported, it would be sufficient to
+allocate segments to cover just up the MTU size and no further.
+Allocating the maximum amount of segments results in a large waste of
+buffer space in the queue, which limits the number of packets that can
+be buffered and can result in reduced performance.
+
+Therefore, if guest GSO is not supported, use the MTU to calculate the
+optimal amount of segments required.
+
+When guest offload is enabled at runtime, RQ already has packets of bytes
+less than 64K. So when packet of 64KB arrives, all the packets of such
+size will be dropped. and RQ is now not usable.
+
+So this means that during set_guest_offloads() phase, RQs have to be
+destroyed and recreated, which requires almost driver reload.</pre>
+        </blockquote>
+        Yes, this needs VIRTIO_F_RING_RESET and disable_vq_and_reset()
+        to be done on RQ and refill it with appropriate size of buffer.
+        Not for this patch anyway.<br>
+        <blockquote type="cite" cite="mid:20220825123840.20239-3-gavinl@nvidia.com">
+          <pre class="moz-quote-pre" wrap="">If VIRTIO_NET_F_CTRL_GUEST_OFFLOADS has been negotiated, then it should
+always treat them as GSO enabled.
+
+Below is the iperf TCP test results over a Mellanox NIC, using vDPA for
+1 VQ, queue size 1024, before and after the change, with the iperf
+server running over the virtio-net interface.
+
+MTU(Bytes)/Bandwidth (Gbit/s)
+             Before   After
+  1500        22.5     22.4
+  9000        12.8     25.9
+
+Signed-off-by: Gavin Li <a class="moz-txt-link-rfc2396E" href="mailto:gavinl@nvidia.com" moz-do-not-send="true">&lt;gavinl@nvidia.com&gt;</a>
+Reviewed-by: Gavi Teitz <a class="moz-txt-link-rfc2396E" href="mailto:gavi@nvidia.com" moz-do-not-send="true">&lt;gavi@nvidia.com&gt;</a>
+Reviewed-by: Parav Pandit <a class="moz-txt-link-rfc2396E" href="mailto:parav@nvidia.com" moz-do-not-send="true">&lt;parav@nvidia.com&gt;</a>
+---
+changelog:
+v1-&gt;v2
+- Addressed comments from Jason, Michael, Si-Wei.
+- Remove the flag of guest GSO support, set sg_num for big packets and
+  use it directly
+- Recalculate sg_num for big packets in virtnet_set_guest_offloads
+- Replace the round up algorithm with DIV_ROUND_UP
+---
+ drivers/net/virtio_net.c | 41 +++++++++++++++++++++++++++-------------
+ 1 file changed, 28 insertions(+), 13 deletions(-)
+
+diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+index e1904877d461..ec8c135a26d6 100644
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -225,6 +225,9 @@ struct virtnet_info {
+ 	/* I like... big packets and I cannot lie! */
+ 	bool big_packets;
+ 
++	/* number of sg entries allocated for big packets */
++	unsigned int big_packets_sg_num;
++
+ 	/* Host will merge rx buffers for big packets (shake it! shake it!) */
+ 	bool mergeable_rx_bufs;
+ 
+@@ -1331,10 +1334,10 @@ static int add_recvbuf_big(struct virtnet_info *vi, struct receive_queue *rq,
+ 	char *p;
+ 	int i, err, offset;
+ 
+-	sg_init_table(rq-&gt;sg, MAX_SKB_FRAGS + 2);
++	sg_init_table(rq-&gt;sg, vi-&gt;big_packets_sg_num + 2);
+ 
+-	/* page in rq-&gt;sg[MAX_SKB_FRAGS + 1] is list tail */
+-	for (i = MAX_SKB_FRAGS + 1; i &gt; 1; --i) {
++	/* page in rq-&gt;sg[vi-&gt;big_packets_sg_num + 1] is list tail */
++	for (i = vi-&gt;big_packets_sg_num + 1; i &gt; 1; --i) {
+ 		first = get_a_page(rq, gfp);
+ 		if (!first) {
+ 			if (list)
+@@ -1365,7 +1368,7 @@ static int add_recvbuf_big(struct virtnet_info *vi, struct receive_queue *rq,
+ 
+ 	/* chain first in list head */
+ 	first-&gt;private = (unsigned long)list;
+-	err = virtqueue_add_inbuf(rq-&gt;vq, rq-&gt;sg, MAX_SKB_FRAGS + 2,
++	err = virtqueue_add_inbuf(rq-&gt;vq, rq-&gt;sg, vi-&gt;big_packets_sg_num + 2,
+ 				  first, gfp);
+ 	if (err &lt; 0)
+ 		give_pages(rq, first);
+@@ -3690,13 +3693,31 @@ static bool virtnet_check_guest_gso(const struct virtnet_info *vi)
+ 		virtio_has_feature(vi-&gt;vdev, VIRTIO_NET_F_GUEST_UFO));
+ }
+ 
++static void virtnet_set_big_packets_fields(struct virtnet_info *vi, const int mtu)
++{
++	bool guest_gso = virtnet_check_guest_gso(vi);
++
++	/* If we can receive ANY GSO packets, we must allocate large ones. */
++	if (mtu &gt; ETH_DATA_LEN || guest_gso) {
++		vi-&gt;big_packets = true;
++		/* if the guest offload is offered by the device, user can modify
++		 * offload capability. In such posted buffers may short fall of size.
++		 * Hence allocate for max size.
++		 */
++		if (virtio_has_feature(vi-&gt;vdev, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS))
++			vi-&gt;big_packets_sg_num = MAX_SKB_FRAGS;</pre>
+        </blockquote>
+        MAX_SKB_FRAGS is needed when any of the guest_gso capability is
+        offered. This is per spec regardless if
+        VIRTIO_NET_F_CTRL_GUEST_OFFLOADS is negotiated or not. Quoting
+        spec:<br>
+        <br>
+        <blockquote type="cite"><span style="color: rgb(0, 0, 0);
+            font-family: Arial, Helvetica, sans-serif; font-size:
+            13.3333px; font-style: normal; font-variant-ligatures:
+            normal; font-variant-caps: normal; font-weight: 400;
+            letter-spacing: normal; orphans: 2; text-align: left;
+            text-indent: 0px; text-transform: none; white-space: normal;
+            widows: 2; word-spacing: 0px; -webkit-text-stroke-width:
+            0px; text-decoration-thickness: initial;
+            text-decoration-style: initial; text-decoration-color:
+            initial; display: inline !important; float: none;">If
+            VIRTIO_NET_F_MRG_RXBUF is not negotiated:</span>
+          <ul class="itemize2" style="color: rgb(0, 0, 0); font-family:
+            Arial, Helvetica, sans-serif; font-size: 13.3333px;
+            font-style: normal; font-variant-ligatures: normal;
+            font-variant-caps: normal; font-weight: 400; letter-spacing:
+            normal; orphans: 2; text-align: left; text-indent: 0px;
+            text-transform: none; white-space: normal; widows: 2;
+            word-spacing: 0px; -webkit-text-stroke-width: 0px;
+            text-decoration-thickness: initial; text-decoration-style:
+            initial; text-decoration-color: initial;">
+            <li class="itemize">If VIRTIO_NET_F_GUEST_TSO4,
+              VIRTIO_NET_F_GUEST_TSO6 or VIRTIO_NET_F_GUEST_UFO are
+              negotiated, the driver SHOULD populate the receive
+              queue(s) with buffers of at least 65562 bytes.</li>
+          </ul>
+        </blockquote>
+        <br>
+        I would just simply put:<br>
+        <pre class="moz-quote-pre" wrap="">vi-&gt;big_packets_sg_num = guest_gso ? MAX_SKB_FRAGS : DIV_ROUND_UP(mtu, PAGE_SIZE);</pre>
+      </div>
+    </blockquote>
+    ACK<br>
+    <blockquote type="cite" cite="mid:27204c1c-1767-c968-0481-c052370875d8@oracle.com">
+      <div>
+        <pre class="moz-quote-pre" wrap="">
+
+</pre>
+        There needs to be another patch to address the
+        virtnet_set_guest_offloads() case. For now just leave with a
+        TODO comment and keep it as-is (don't start with full
+        MAX_SKB_FRAGS segments).
+        <br>
+        <blockquote type="cite" cite="mid:20220825123840.20239-3-gavinl@nvidia.com">
+          <pre class="moz-quote-pre" wrap="">+		else
++			vi-&gt;big_packets_sg_num = DIV_ROUND_UP(mtu, PAGE_SIZE);
++	}
++}
++
+ static int virtnet_probe(struct virtio_device *vdev)
+ {
+ 	int i, err = -ENOMEM;
+ 	struct net_device *dev;
+ 	struct virtnet_info *vi;
+ 	u16 max_queue_pairs;
+-	int mtu;
++	int mtu = 0;
+ 
+ 	/* Find if host supports multiqueue/rss virtio_net device */
+ 	max_queue_pairs = 1;
+@@ -3784,10 +3805,6 @@ static int virtnet_probe(struct virtio_device *vdev)
+ 	INIT_WORK(&amp;vi-&gt;config_work, virtnet_config_changed_work);
+ 	spin_lock_init(&amp;vi-&gt;refill_lock);
+ 
+-	/* If we can receive ANY GSO packets, we must allocate large ones. */
+-	if (virtnet_check_guest_gso(vi))
+-		vi-&gt;big_packets = true;
+-
+ 	if (virtio_has_feature(vdev, VIRTIO_NET_F_MRG_RXBUF))
+ 		vi-&gt;mergeable_rx_bufs = true;
+ 
+@@ -3853,12 +3870,10 @@ static int virtnet_probe(struct virtio_device *vdev)
+ 
+ 		dev-&gt;mtu = mtu;
+ 		dev-&gt;max_mtu = mtu;
+-
+-		/* TODO: size buffers correctly in this case. */
+-		if (dev-&gt;mtu &gt; ETH_DATA_LEN)
+-			vi-&gt;big_packets = true;
+ 	}
+ </pre>
+        </blockquote>
+        Can we add a comment here to note that this essentially has to
+        be dev-&gt;max_mtu when F_MTU is negotiated. The implicit
+        assumption of mtu being 0 when F_MTU is not negotiated is not so
+        obvious to readers.<br>
+        <br>
+        Thanks,<br>
+        -Siwei<br>
+        <blockquote type="cite" cite="mid:20220825123840.20239-3-gavinl@nvidia.com">
+          <pre class="moz-quote-pre" wrap="">+	virtnet_set_big_packets_fields(vi, mtu);
++
+ 	if (vi-&gt;any_header_sg)
+ 		dev-&gt;needed_headroom = vi-&gt;hdr_len;
+ 
+</pre>
+        </blockquote>
+        <br>
+      </div>
+    </blockquote>
+  </body>
+</html>
+
+--------------1gkd7g7z0EOkmmH0ZZRchb2Y--
 
