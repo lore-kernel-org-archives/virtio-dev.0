@@ -1,127 +1,146 @@
-Return-Path: <prvs=23974adae=dmitry.fomichev@wdc.com>
-From: Dmitry Fomichev <Dmitry.Fomichev@wdc.com>
-Subject: Re: [virtio-dev] [PATCH v5] virtio-blk: add zoned block device
- specification
-Date: Sun, 4 Sep 2022 16:55:07 +0000
-Message-ID: <223eff30c00a8c1577ee8a59039ae10e6742bc63.camel@wdc.com>
-References: <20220829005818.12532-1-dmitry.fomichev@wdc.com>
-	 <87v8qbds4l.fsf@redhat.com>
-In-Reply-To: <87v8qbds4l.fsf@redhat.com>
+Return-Path: <pasic@linux.ibm.com>
+Date: Fri, 2 Sep 2022 01:33:47 +0200
+From: Halil Pasic <pasic@linux.ibm.com>
+Subject: Re: [virtio] Re: [virtio-dev] Re: [virtio] [PATCH RFC v7 6/8] ccw:
+ disallow ADMIN_VQ
+Message-ID: <20220902013347.2cc8b344.pasic@linux.ibm.com>
+In-Reply-To: <20220831104233-mutt-send-email-mst@kernel.org>
+References: <20220812171841.12183-1-mst@redhat.com>
+	<20220812171841.12183-7-mst@redhat.com>
+	<20220816164811.16464110.pasic@linux.ibm.com>
+	<20220816114216-mutt-send-email-mst@kernel.org>
+	<20220818153958.7219f6b8.pasic@linux.ibm.com>
+	<20220818235403-mutt-send-email-mst@kernel.org>
+	<20220824014519.028ee16d.pasic@linux.ibm.com>
+	<20220828052839-mutt-send-email-mst@kernel.org>
+	<20220831163349.545f726d.pasic@linux.ibm.com>
+	<20220831104233-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <6C206627B9ED82428B7005DBB9812619@namprd04.prod.outlook.com>
-Content-Transfer-Encoding: base64
-To: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "cohuck@redhat.com" <cohuck@redhat.com>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>
-Cc: "its@irrelevant.dk" <its@irrelevant.dk>, Niklas Cassel <Niklas.Cassel@wdc.com>, "hare@suse.de" <hare@suse.de>, "faithilikerun@gmail.com" <faithilikerun@gmail.com>, =?utf-8?B?TWF0aWFzIEJqw7hybGluZw==?= <Matias.Bjorling@wdc.com>, Hans Holmberg <Hans.Holmberg@wdc.com>, "damien.lemoal@opensource.wdc.com" <damien.lemoal@opensource.wdc.com>, "stefanha@gmail.com" <stefanha@gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, jasowang@redhat.com, cohuck@redhat.com, sgarzare@redhat.com, stefanha@redhat.com, nrupal.jani@intel.com, Piotr.Uminski@intel.com, hang.yuan@intel.com, virtio@lists.oasis-open.org, Zhu Lingshan <lingshan.zhu@intel.com>, oren@nvidia.com, parav@nvidia.com, shahafs@nvidia.com, aadam@redhat.com, eperezma@redhat.com, Max Gurtovoy <mgurtovoy@nvidia.com>, Halil Pasic <pasic@linux.ibm.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-T24gTW9uLCAyMDIyLTA4LTI5IGF0IDE2OjQ2ICswMjAwLCBDb3JuZWxpYSBIdWNrIHdyb3RlOg0K
-PiBPbiBTdW4sIEF1ZyAyOCAyMDIyLCBEbWl0cnkgRm9taWNoZXYgPGRtaXRyeS5mb21pY2hldkB3
-ZGMuY29tPiB3cm90ZToNCj4gDQo+ID4gSW50cm9kdWNlIHN1cHBvcnQgZm9yIFpvbmVkIEJsb2Nr
-IERldmljZXMgdG8gdmlydGlvLg0KPiA+IA0KPiA+IFpvbmVkIEJsb2NrIERldmljZXMgKFpCRHMp
-IGFpbSB0byBhY2hpZXZlIGEgYmV0dGVyIGNhcGFjaXR5LCBsYXRlbmN5DQo+ID4gYW5kL29yIGNv
-c3QgY2hhcmFjdGVyaXN0aWNzIGNvbXBhcmVkIHRvIGNvbW1vbmx5IGF2YWlsYWJsZSBibG9jaw0K
-PiA+IGRldmljZXMgYnkgZ2V0dGluZyB0aGUgZW50aXJlIExCQSBzcGFjZSBvZiB0aGUgZGV2aWNl
-IGRpdmlkZWQgdG8gYmxvY2sNCj4gPiByZWdpb25zIHRoYXQgYXJlIG11Y2ggbGFyZ2VyIHRoYW4g
-dGhlIExCQSBzaXplLiBUaGVzZSByZWdpb25zIGFyZQ0KPiA+IGNhbGxlZCB6b25lcyBhbmQgdGhl
-eSBjYW4gb25seSBiZSB3cml0dGVuIHNlcXVlbnRpYWxseS4gTW9yZSBkZXRhaWxzDQo+ID4gYWJv
-dXQgWkJEcyBjYW4gYmUgZm91bmQgYXQNCj4gPiANCj4gPiBodHRwczovL3pvbmVkc3RvcmFnZS5p
-by9kb2NzL2ludHJvZHVjdGlvbi96b25lZC1zdG9yYWdlwqAuDQo+ID4gDQo+ID4gSW4gaXRzIGN1
-cnJlbnQgZm9ybSwgdGhlIHZpcnRpbyBwcm90b2NvbCBmb3IgYmxvY2sgZGV2aWNlcyAodmlydGlv
-LWJsaykNCj4gPiBpcyBub3QgYXdhcmUgb2YgWkJEcyBidXQgaXQgYWxsb3dzIHRoZSBkcml2ZXIg
-dG8gc3VjY2Vzc2Z1bGx5IHNjYW4gYQ0KPiA+IGhvc3QtbWFuYWdlZCBkcml2ZSBwcm92aWRlZCBi
-eSB0aGUgdmlydGlvIGJsb2NrIGRldmljZS4gQXMgdGhlIHJlc3VsdCwNCj4gPiB0aGUgaG9zdC1t
-YW5hZ2VkIGRyaXZlIGlzIHJlY29nbml6ZWQgYnkgdmlydGlvIGRyaXZlciBhcyBhIHJlZ3VsYXIs
-DQo+ID4gbm9uLXpvbmVkIGRyaXZlIHRoYXQgd2lsbCBvcGVyYXRlIGVycm9uZW91c2x5IHVuZGVy
-IHRoZSBtb3N0IGNvbW1vbg0KPiA+IHdyaXRlIHdvcmtsb2Fkcy4gSG9zdC1hd2FyZSBaQkRzIGFy
-ZSBjdXJyZW50bHkgdXNhYmxlLCBidXQgdGhlaXINCj4gPiBwZXJmb3JtYW5jZSBtYXkgbm90IGJl
-IG9wdGltYWwgYmVjYXVzZSB0aGUgZHJpdmVyIGNhbiBvbmx5IHNlZSB0aGVtIGFzDQo+ID4gbm9u
-LXpvbmVkIGJsb2NrIGRldmljZXMuDQo+ID4gDQo+ID4gVG8gZml4IHRoaXMsIHRoZSB2aXJ0aW8t
-YmxrIHByb3RvY29sIG5lZWRzIHRvIGJlIGV4dGVuZGVkIHRvIGFkZCB0aGUNCj4gPiBjYXBhYmls
-aXRpZXMgdG8gY29udmV5IHRoZSB6b25lIGNoYXJhY3RlcmlzdGljcyBvZiBaQkRzIGF0IHRoZSBk
-ZXZpY2UNCj4gPiBzaWRlIHRvIHRoZSBkcml2ZXIgYW5kIHRvIHByb3ZpZGUgc3VwcG9ydCBmb3Ig
-WkJELXNwZWNpZmljIGNvbW1hbmRzIC0NCj4gPiBSZXBvcnQgWm9uZXMsIGZvdXIgem9uZSBvcGVy
-YXRpb25zIChPcGVuLCBDbG9zZSwgRmluaXNoIGFuZCBSZXNldCkgYW5kDQo+ID4gKG9wdGlvbmFs
-bHkpIFpvbmUgQXBwZW5kLiBUaGUgcHJvcG9zZWQgc3RhbmRhcmQgZXh0ZW5zaW9uIGFpbXMgdG8N
-Cj4gPiBkZWZpbmUgdGhpcyBuZXcgZnVuY3Rpb25hbGl0eS4NCj4gPiANCj4gPiBUaGlzIHBhdGNo
-IGV4dGVuZHMgdGhlIHZpcnRpby1ibGsgc2VjdGlvbiBvZiB2aXJ0aW8gc3BlY2lmaWNhdGlvbiB3
-aXRoDQo+ID4gdGhlIG1pbmltdW0gc2V0IG9mIHJlcXVpcmVtZW50cyB0aGF0IGFyZSBuZWNlc3Nh
-cnkgdG8gc3VwcG9ydCBaQkRzLg0KPiA+IFRoZSByZXN1bHRpbmcgZGV2aWNlIG1vZGVsIGlzIGEg
-c3Vic2V0IG9mIHRoZSBtb2RlbHMgZGVmaW5lZCBpbiBaQUMvWkJDDQo+ID4gYW5kIFpOUyBzdGFu
-ZGFyZHMgZG9jdW1lbnRzLiBUaGUgaW5jbHVkZWQgZnVuY3Rpb25hbGl0eSBtaXJyb3JzDQo+ID4g
-dGhlIGV4aXN0aW5nIExpbnV4IGtlcm5lbCBibG9jayBsYXllciBaQkQgc3VwcG9ydCBhbmQgc2hv
-dWxkIGJlDQo+ID4gc3VmZmljaWVudCB0byBoYW5kbGUgdGhlIGhvc3QtbWFuYWdlZCBhbmQgaG9z
-dC1hd2FyZSBIRERzIHRoYXQgYXJlIG9uDQo+ID4gdGhlIG1hcmtldCB0b2RheSBhcyB3ZWxsIGFz
-IFpOUyBTU0RzIHRoYXQgYXJlIGVudGVyaW5nIHRoZSBtYXJrZXQgYXQNCj4gPiB0aGUgdGltZSBv
-ZiBzdWJtaXNzaW9uIG9mIHRoaXMgcGF0Y2guDQo+ID4gDQo+ID4gSSB3b3VsZCBsaWtlIHRvIHRo
-YW5rIHRoZSBmb2xsb3dpbmcgcGVvcGxlIGZvciB0aGVpciB1c2VmdWwgZmVlZGJhY2sNCj4gPiBh
-bmQgc3VnZ2VzdGlvbnMgd2hpbGUgd29ya2luZyBvbiB0aGUgaW5pdGlhbCBpdGVyYXRpb25zIG9m
-IHRoaXMgcGF0Y2guDQo+ID4gDQo+ID4gRGFtaWVuIExlIE1vYWwgPGRhbWllbi5sZW1vYWxAb3Bl
-bnNvdXJjZS53ZGMuY29tPg0KPiA+IE1hdGlhcyBCasO4cmxpbmcgPE1hdGlhcy5Cam9ybGluZ0B3
-ZGMuY29tPg0KPiA+IE5pa2xhcyBDYXNzZWwgPE5pa2xhcy5DYXNzZWxAd2RjLmNvbT4NCj4gPiBI
-YW5zIEhvbG1iZXJnIDxIYW5zLkhvbG1iZXJnQHdkYy5jb20+DQo+ID4gDQo+ID4gRml4ZXM6IGh0
-dHBzOi8vZ2l0aHViLmNvbS9vYXNpcy10Y3MvdmlydGlvLXNwZWMvaXNzdWVzLzE0Mw0KPiA+IFNp
-Z25lZC1vZmYtYnk6IERtaXRyeSBGb21pY2hldiA8ZG1pdHJ5LmZvbWljaGV2QHdkYy5jb20+DQo+
-IA0KPiAoLi4uKQ0KPiANCg0KPHNuaXA+DQoNCj4gSXMgaXQgb2sgZm9yIHRoZSBkZXZpY2UgdG8g
-b2ZmZXIgYm90aCBGX0RJU0NBUkQgYW5kIEZfWk9ORUQgd2l0aCBaX0hBIG9yDQo+IFpfTk9ORT8g
-SW4gdGhhdCBjYXNlLCBpcyBpdCBvayBmb3IgdGhlIGRyaXZlciB0byBuZWdvdGlhdGUgYm90aA0K
-PiBGX0RJU0NBUkQgYW5kIEZfWk9ORUQsIG9yIGRvZXMgaXQgbmVlZCB0byBwaWNrIGF0IG1vc3Qg
-b25lIG9mIHRoZW0/DQoNCkdvb2QgcG9pbnQsIHdlIG5lZWQgdG8gY2xhcmlmeSB0aGF0IGZvciBI
-QS9OT05FIGRldmljZXMgdGhlIGRpc2NhcmQgZmVhdHVyZSBpcw0KbmVnb3RpYXRlZCB0aGUgc2Ft
-ZSB3YXkgYXMgZm9yIHJlZ3VsYXIgYmxvY2sgZGV2aWNlcyBubyBtYXR0ZXIgd2hhdCBpcyB0aGUN
-CnNldHRpbmcgb2YgRl9aT05FRCBiaXQuIA0KDQo+IA0KPiA+ICsNCj4gPiArSWYgdGhlIFZJUlRJ
-T19CTEtfRl9aT05FRCBmZWF0dXJlIGlzIG5lZ290aWF0ZWQsIHRoZW4NCj4gPiArXGJlZ2lue2l0
-ZW1pemV9DQo+ID4gK1xpdGVtIGlmIHRoZSBkcml2ZXIgdGhhdCBjYW4gbm90IHN1cHBvcnQgaG9z
-dC1tYW5hZ2VkIHpvbmVkIGRldmljZXMNCj4gPiArwqDCoMKgIHJlYWRzIFZJUlRJT19CTEtfWl9I
-TSBmcm9tIHRoZSBcZmllbGR7bW9kZWx9IGZpZWxkIG9mIFxmaWVsZHt6b25lZH0sIHRoZQ0KPiA+
-ICvCoMKgwqAgZHJpdmVyIE1VU1QgTk9UIHNldCBGRUFUVVJFU19PSyBmbGFnIGFuZCBpbnN0ZWFk
-IHNldCB0aGUgRkFJTEVEIGJpdC4NCj4gDQo+IFtJJ2xsIHNraXAgY29tbWVudGluZyBvbiAibmVn
-b3RpYXRlZCIgdnMgIm9mZmVyZWQiLCBhcyB3ZSBuZWVkIHRvIGNsYXJpZnkNCj4gdGhhdCBjb21w
-cmVoZW5zaXZlbHkgaW4gdGhlIHdob2xlIGRvY3VtZW50Ll0NCj4gDQo+IENvdWxkIHRoZSBkcml2
-ZXIgc2ltcGx5IHJlamVjdCBGX1pPTkVEIGluIHRoYXQgY2FzZT8gVGhlIGRldmljZSBjYW4NCj4g
-YWx3YXlzIGZhaWwgc2V0dGluZyBGRUFUVVJFU19PSyBpZiB0aGUgZHJpdmVyIGRvZXMgbm90IGFj
-Y2VwdCBhIGZlYXR1cmUNCj4gdGhhdCBpcyBuZWVkZWQuIE1heWJlIG1ha2UgdGhpcyBhICJTSE9V
-TEQgTk9UIj8NCg0KTXkgdGhpbmtpbmcgYWJvdXQgRl9aT05FRCBmZWF0dXJlIGlzIHRoYXQgdGhl
-IGRyaXZlciBzaG91bGQgYWdyZWUgdG8gaXQgaWYgaXQgaXMNCnVwIHRvIGRhdGUgdG8gcmVjb2du
-aXplIGFuZCBpbXBsZW1lbnQgaXQuIEJ1dCwgZXZlbiBpZiB0aGUgY29kZSBpcyByZWNlbnQgZW5v
-dWdoLA0KdGhlIGRyaXZlciBpbiBzb21lIGNhc2VzIG1heSBub3QgYmUgYWJsZSB0byBoYW5kbGUg
-em9uZWQgZGV2aWNlcy4gRm9yIGV4YW1wbGUsDQp0aGUgTGludXgga2VybmVsIHZpcnRpby1ibGsg
-ZHJpdmVyIGNvdWxkIGltcGxlbWVudCB0aGlzIHNwZWMgZXh0ZW5zaW9uLCBidXQgdGhlDQprZXJu
-ZWwgbWF5IGJlIGJ1aWx0IHdpdGhvdXQgQ09ORklHX0JMS19ERVZfWk9ORUQgY29uZmlndXJhdGlv
-biBvcHRpb24uIElmIHRoaXMgaXMNCnRoZSBjYXNlLCB0aGUgZHJpdmVyIG11c3QgcHJldmVudCBI
-TSBkZXZpY2VzIGZyb20gYmVpbmcgc3VjY2Vzc2Z1bGx5IHNjYW5uZWQgYXMNCnJlZ3VsYXIgYmxv
-Y2sgZGV2aWNlcy4NCg0KPiANCj4gPiArDQo+ID4gK1xpdGVtIGlmIHRoZSBkcml2ZXIgdGhhdCBj
-YW4gbm90IHN1cHBvcnQgc3VwcG9ydCB6b25lZCBkZXZpY2VzIHJlYWRzDQo+ID4gK8KgwqDCoCBW
-SVJUSU9fQkxLX1pfSEEgZnJvbSB0aGUgXGZpZWxke21vZGVsfSBmaWVsZCBvZiBcZmllbGR7em9u
-ZWR9LCB0aGUNCj4gPiBkcml2ZXINCj4gPiArwqDCoMKgIE1BWSBoYW5kbGUgdGhlIGRldmljZSBh
-cyBhIG5vbi16b25lZCBkZXZpY2UuIEluIHRoaXMgY2FzZSwgdGhlDQo+ID4gK8KgwqDCoCBkcml2
-ZXIgU0hPVUxEIGlnbm9yZSBhbGwgb3RoZXIgZmllbGRzIGluIFxmaWVsZHt6b25lZH0uDQo+IA0K
-PiBJIHdvdWxkIGV4cGVjdCBhIGRyaXZlciB0aGF0IGRvZXMgbm90IHN1cHBvcnQgem9uZWQgZGV2
-aWNlcyBhdCBhbGwgdG8NCj4gYWx3YXlzIHJlamVjdCBGX1pPTkVEIChpbmNsdWRpbmcgb2xkZXIg
-ZHJpdmVycykuIFNob3VsZCB3ZSBtYW5kYXRlIHRoYXQNCj4gdGhlIGRyaXZlciBkb2VzIG5vdCBh
-Y2NlcHQgRl9aT05FRCBpZiBpdCBjYW5ub3QgaGFuZGxlIGl0Pw0KDQpUaGUgRl9aT05FRCBmZWF0
-dXJlIG1heSBiZSBlbmFibGVkIGV2ZW4gdGhlIGJhY2tpbmcgZGV2aWNlIGlzIGhvc3QtYXdhcmUg
-b3Igbm9uLQ0Kem9uZWQgZm9yIGRlYnVnZ2luZywgdHJvdWJsZXNob290aW5nLCBldGMuIEluIHRo
-aXMgY2FzZSwgdGhlIGRyaXZlciB3aWxsIHByZXNlbnQNCkhBIGRldmljZXMgdG8gdGhlIHN5c3Rl
-bSBhcyBub24tem9uZWQgaWYgaXQgY2FuJ3QgcHJlc2VudCB0aGVtIGFzIHpvbmVkLiBUaGlzDQp3
-aWxsIG5vdCB3b3JrIGZvciBob3N0LW1hbmFnZWQgZHJpdmVzIGFuZCB3ZSBoYXZlIHRvIGtlZXAg
-dGhlIE1VU1QgTk9UIGZvciBITS4NCg0KDQo8c25pcD4NCg0KPiANCj4gDQo+ID4gK1RoZSB6b25l
-IGRlc2NyaXB0b3IgZmllbGQgXGZpZWxke3pfdHlwZX0gXGZpZWxke3ZpcnRpb19ibGtfem9uZV9k
-ZXNjcmlwdG9yfQ0KPiA+ICtpbmRpY2F0ZXMgdGhlIHR5cGUgb2YgdGhlIHpvbmUuIFRoZSBhdmFp
-bGFibGUgdHlwZXMgYXJlDQo+ID4gVklSVElPX0JMS19aVF9DT05WKDEpLA0KPiA+ICtWSVJUSU9f
-QkxLX1pUX1NXUigyKSBvciBWSVJUSU9fQkxLX1pUX1NXUCgzKS4NCj4gDQo+ICJUaGUgZm9sbG93
-aW5nIHR5cGVzIGFyZSBhdmFpbGFibGU6IiA/DQoNCkkgd2FzIHRyeWluZyB0byBiZSBjb25zaXN0
-ZW50IHdpdGggdGhlIHdheSBvdGhlciBjb25zdGFudCB2YWx1ZXMgYXJlIGRlZmluZWQgaW4NCnRo
-ZSB2aXJ0YmxrIHNlY3Rpb24gb2YgdGhlIGRvY3VtZW50LiBUaGlzIHdheSwgaG93ZXZlciwgaXMg
-bXVjaCBsZXNzIGN1bWJlcnNvbWUsDQp3aWxsIGdsYWRseSBtYWtlIHRoaXMgY2hhbmdlIDopDQoN
-CkRGDQoNCj4gDQo+ID4gKw0KPiA+ICtcYmVnaW57bHN0bGlzdGluZ30NCj4gPiArI2RlZmluZSBW
-SVJUSU9fQkxLX1pUX0NPTlbCoMKgwqDCoCAxDQo+ID4gKyNkZWZpbmUgVklSVElPX0JMS19aVF9T
-V1LCoMKgwqDCoMKgIDINCj4gPiArI2RlZmluZSBWSVJUSU9fQkxLX1pUX1NXUMKgwqDCoMKgwqAg
-Mw0KPiA+ICtcZW5ke2xzdGxpc3Rpbmd9DQo+ID4gKw0KPiA+ICtSZWFkIGFuZCB3cml0ZSBvcGVy
-YXRpb25zIGludG8gem9uZXMgd2l0aCB0aGUgVklSVElPX0JMS19aVF9DT05WDQo+ID4gKENvbnZl
-bnRpb25hbCkNCj4gPiArdHlwZSBoYXZlIHRoZSBzYW1lIGJlaGF2aW9yIGFzIHJlYWQgYW5kIHdy
-aXRlIG9wZXJhdGlvbnMgb24gYSByZWd1bGFyIGJsb2NrDQo+ID4gK2RldmljZS4gQW55IGJsb2Nr
-IGluIGEgY29udmVudGlvbmFsIHpvbmUgY2FuIGJlIHJlYWQgb3Igd3JpdHRlbiBhdCBhbnkgdGlt
-ZQ0KPiA+IGFuZA0KPiA+ICtpbiBhbnkgb3JkZXIuDQoNCg0K
+On Wed, 31 Aug 2022 10:50:21 -0400
+"Michael S. Tsirkin" <mst@redhat.com> wrote:
+
+> > You seem to say that all the normative statements may be classified
+> > into two categories:
+> > C1) the other side does not rely on this requirement
+> > C2) the other side does rely on this requirement
+> > 
+> > The requirements form C1 can be removed form future versions of the
+> > spec, and devices may start not honoring these without breaking
+> > compatibility because the other side did not rely on these being held
+> > up in the first place.
+> > 
+> > The requirements from C2 can not be removed from future versions of the
+> > spec, because a device compliant to the previous version of the spec
+> > that relies on this requirement being fulfilled would break. And
+> > interchangeability is about compatibility and interoperability -- so
+> > that is no good.
+> > 
+> > I understand that reasoning. But what I don't understand is the
+> > following: how is the reader of the specification supposed to decide
+> > if a certain requirement is a C1 requirement or a C2 requirement.
+> > Misclassifying a requirement could obviously pose a problem.  
+> 
+> The reader is supposed to satisfy all requirements.
+
+I fullheartheadly agree with that. Ideally just both sides (the
+device and the driver) satisfying all the normative requirements would
+guarantee a favorable outcome for the end user: interoperability and at
+least basic functionality.
+
+I'm not sure we are there yet with virtio. 
+
+> Whether it is ok to rely on requirements is a problem that
+> unfortunately we don't always clarify.
+
+I believe, we want the people to rely on the spec. AFAIU the
+normative statements are the parts of the spec that are the
+deserve the most to be relied upon.
+
+[..]
+
+
+> > 
+> > I think, it would conceptually simplify things a lot if the avoided
+> > normative statements that we hope to drop in the future. 
+> > 
+> > This is a rather academic discussion and probably not a worthwhile one.  
+> 
+> I absolutely understand where you are coming from... I'm fine just using
+> SHOULD NOT here for now.
+
+If we stick with the statement pair like proposed in this patch, in my
+opinion only MUST NOT works. Let me cite those:
+"""
++\devicenormative{\paragraph}{Handling Device Features}{Virtio Transport Options / Virtio over channel I/O / Device Initialization / Handling Device Features}
++
++Device MUST NOT set bit VIRTIO_F_ADMIN_VQ (bit 41) in
++DeviceFeatures.
++
++\drivernormative{\paragraph}{Handling Device Features}{Virtio Transport Options / Virtio over channel I/O / Device Initialization / Handling Device Features}
++
++Driver MUST NOT set bit VIRTIO_F_ADMIN_VQ (bit 41) in
++DriverFeatures even if offered by the device.
+"""
+
+By the way I just noticed that in the second normative above the heading
+says "Device Features" while the normative itself makes a statement about
+"DriverFeatures".
+
+IMHO we can remove both together, because any implementation that could
+be adversely affected by the removal of both is non-conforming because
+it violates one of these MUST NOT statements.
+
+Also for the approach:  generic statement about handling feature
+negotiations for features are non-viable in certain constellations (e.g.
+some transport or the platform, or whatever lacks support or renders the
+feature impossible to implement) + a list of features not supported by
+certain transport, I came to prefer MUST NOT.
+
+> Do you feel that's the way to go or have you changed your mind?
+> Couldn't figure it out.
+> 
+
+I believe we are fine either way, but generic statement + list of cases
+where this is known to apply is nicer to work with and evolve.
+ 
+> 
+> But generally, I feel C1 is the default unless there is text that
+> explicitly says C2.
+> 
+
+Here we disagree. I believe most of our normative statements are such
+that the can be relied upon by everyone including the other side.
+
+[..]
+> > Yet I prefer phrasings like this one where the phrasing of statement is
+> > still valid for all future versions of the spec (just the parameters
+> > change: in this case what is reserved and what is not).
+> > 
+> > Regards,
+> > Halil  
+> 
+> 
+> I guess it's a matter of taste.
+> What worries me is that it's so easy to miss these implications.
+
+I agree, it is a matter of taste. I believe what we code-wise want
+is a transport specific mask both on the end of the device and on the
+end of the driver which ensures that bits that corresponding features can
+not be supported by entity that is doing its part of the negotiation are
+not set. I believe having a list of such features in the specification
+for each transport at an easy to locate place i s easier to map to code
+than a bunch of normative statement pairs. And also manipulating this
+list (adding to it, or removing form it) looks more straightforward to
+me.
+
+But I'm fine with either solution.
+
+Regards,
+Halil
 
