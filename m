@@ -1,176 +1,661 @@
-Return-Path: <virtio-dev-return-9939-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-9882-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 24577986584
-	for <virtio-dev@lists.oasis-open.org>; Fri,  9 Sep 2022 10:23:05 +0000 (UTC)
-Date: Fri, 9 Sep 2022 18:22:59 +0800
-From: Heng Qi <hengqi@linux.alibaba.com>
-Message-ID: <20220909102259.GA64822@h68b04307.sqa.eu95>
+	by lists.oasis-open.org (Postfix) with ESMTP id 6273C9864EB
+	for <virtio-dev@lists.oasis-open.org>; Fri,  2 Sep 2022 08:26:37 +0000 (UTC)
+Message-ID: <7e223f08-5555-aa8d-b255-df8ccf308a3e@linux.alibaba.com>
+Date: Fri, 2 Sep 2022 16:26:30 +0800
+MIME-Version: 1.0
 References: <1660642495-104002-1-git-send-email-hengqi@linux.alibaba.com>
  <CACGkMEuy2m7PagJwccx3QSnasuJpnF0MtKn-1MQSJ3sPLjvjew@mail.gmail.com>
- <d091f3e4-3d69-f0ba-5c6b-d3e05ca6b88c@linux.alibaba.com>
- <20220904162337-mutt-send-email-mst@kernel.org>
-MIME-Version: 1.0
-In-Reply-To: <20220904162337-mutt-send-email-mst@kernel.org>
-Subject: Re: [virtio-dev] Re: [PATCH v7] virtio_net: support split header
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: virtio-dev@lists.oasis-open.org, jasowang@redhat.com, xuanzhuo@linux.alibaba.com, kangjie.xu@linux.alibaba.com
+From: Heng Qi <hengqi@linux.alibaba.com>
+In-Reply-To: <CACGkMEuy2m7PagJwccx3QSnasuJpnF0MtKn-1MQSJ3sPLjvjew@mail.gmail.com>
+Subject: [virtio-dev] Re: [PATCH v7] virtio_net: support split header
+Content-Type: multipart/alternative;
+ boundary="------------Rx29vOdaiX8mRhIEb8OufYjs"
+To: Jason Wang <jasowang@redhat.com>
+Cc: virtio-dev@lists.oasis-open.org, mst@redhat.com, xuanzhuo@linux.alibaba.com, kangjie.xu@linux.alibaba.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Sun, Sep 04, 2022 at 04:27:38PM -0400, Michael S. Tsirkin wrote:
-> On Fri, Sep 02, 2022 at 03:36:25PM +0800, Heng Qi wrote:
-> > We need to clarify that the purpose of header splitting is to make all payloads
-> > can be independently in a page, which is beneficial for the zerocopy
-> > implemented by the upper layer.
-> 
-> absolutely, pls add motivation.
-> 
-> > If the driver does not enforce that the buffers submitted to the receiveq MUST
-> > be composed of at least two descriptors, then header splitting will become meaningless,
-> > or the VIRTIO_NET_F_SPLIT_TRANSPORT_HEADER feature should not be negotiated at this time.
-> > 
-> > 
-> > Thanks.
-> > 
-> > 
-> 
-> 
-> This seems very narrow and unecessarily wasteful of descriptors.
-> What is wrong in this:
-> 
-> <header>...<padding>... <beginning of page><data>
-> 
-> seems to achieve the goal of data in a separate page without
-> using extra descriptors.
-> 
-> thus my proposal to replace the requirement of a separate
-> descriptor with an offset of data from beginning of
-> buffer that driver sets.
+--------------Rx29vOdaiX8mRhIEb8OufYjs
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
+
+
+=E5=9C=A8 2022/9/2 =E4=B8=8B=E5=8D=882:21, Jason Wang =E5=86=99=E9=81=93:
+> On Tue, Aug 16, 2022 at 5:35 PM Heng Qi<hengqi@linux.alibaba.com>  wrote:
+>> From: Xuan Zhuo<xuanzhuo@linux.alibaba.com>
+>>
+>> The purpose of this feature is to split the header and the payload of
+>> the packet.
+>>
+>> |                    receive buffer                                    |
+>> |                       0th descriptor             | 1th descriptor    |
+>> | virtnet hdr | mac | ip hdr | tcp hdr|<-- hold -->|   payload         |
+>>
+>> We can use a buffer plus a separate page when allocating the receive
+>> buffer. In this way, we can ensure that all payloads can be
+>> independently in a page, which is very beneficial for the zerocopy
+>> implemented by the upper layer.
+>>
+>> Signed-off-by: Xuan Zhuo<xuanzhuo@linux.alibaba.com>
+>> Signed-off-by: Heng Qi<hengqi@linux.alibaba.com>
+>> Reviewed-by: Kangjie Xu<kangjie.xu@linux.alibaba.com>
+>> ---
+>> v7:
+>>          1. Fix some presentation issues.
+>>          2. Use "split transport header". @Jason Wang
+>>          3. Clarify some paragraphs. @Cornelia Huck
+>>          4. determine the device what to do if it does not perform heade=
+r split on a packet.
+>>
+>> v6:
+>>          1. Fix some syntax issues. @Cornelia Huck
+>>          2. Clarify some paragraphs. @Cornelia Huck
+>>          3. Determine the device what to do if it does not perform heade=
+r split on a packet.
+>>
+>> v5:
+>>          1. Determine when hdr_len is credible in the process of rx
+>>          2. Clean up the use of buffers and descriptors
+>>          3. Clarify the meaning of used lenght if the first descriptor i=
+s skipped in the case of merge
+>>
+>> v4:
+>>          1. fix typo @Cornelia Huck @Jason Wang
+>>          2. do not split header for IP fragmentation packet. @Jason Wang
+>>
+>> v3:
+>>          1. Fix some syntax issues
+>>          2. Fix some terminology issues
+>>          3. It is not unified with ip alignment, so ip alignment is not =
+included
+>>          4. Make it clear that the device must support four types, in th=
+e case of successful negotiation.
+>>
+>>   conformance.tex |   2 ++
+>>   content.tex     | 102 ++++++++++++++++++++++++++++++++++++++++++++++++=
+++++++++
+>>   2 files changed, 104 insertions(+)
+>>
+>> diff --git a/conformance.tex b/conformance.tex
+>> index 2b86fc6..4e2b82e 100644
+>> --- a/conformance.tex
+>> +++ b/conformance.tex
+>> @@ -150,6 +150,7 @@ \section{Conformance Targets}\label{sec:Conformance =
+/ Conformance Targets}
+>>   \item \ref{drivernormative:Device Types / Network Device / Device Oper=
+ation / Control Virtqueue / Offloads State Configuration / Setting Offloads=
+ State}
+>>   \item \ref{drivernormative:Device Types / Network Device / Device Oper=
+ation / Control Virtqueue / Receive-side scaling (RSS) }
+>>   \item \ref{drivernormative:Device Types / Network Device / Device Oper=
+ation / Control Virtqueue / Notifications Coalescing}
+>> +\item \ref{drivernormative:Device Types / Network Device / Device Opera=
+tion / Control Virtqueue / Split Transport Header}
+>>   \end{itemize}
+>>
+>>   \conformance{\subsection}{Block Driver Conformance}\label{sec:Conforma=
+nce / Driver Conformance / Block Driver Conformance}
+>> @@ -415,6 +416,7 @@ \section{Conformance Targets}\label{sec:Conformance =
+/ Conformance Targets}
+>>   \item \ref{devicenormative:Device Types / Network Device / Device Oper=
+ation / Control Virtqueue / Automatic receive steering in multiqueue mode}
+>>   \item \ref{devicenormative:Device Types / Network Device / Device Oper=
+ation / Control Virtqueue / Receive-side scaling (RSS) / RSS processing}
+>>   \item \ref{devicenormative:Device Types / Network Device / Device Oper=
+ation / Control Virtqueue / Notifications Coalescing}
+>> +\item \ref{devicenormative:Device Types / Network Device / Device Opera=
+tion / Control Virtqueue / Split Transport Header}
+>>   \end{itemize}
+>>
+>>   \conformance{\subsection}{Block Device Conformance}\label{sec:Conforma=
+nce / Device Conformance / Block Device Conformance}
+>> diff --git a/content.tex b/content.tex
+>> index e863709..5676da9 100644
+>> --- a/content.tex
+>> +++ b/content.tex
+>> @@ -3084,6 +3084,9 @@ \subsection{Feature bits}\label{sec:Device Types /=
+ Network Device / Feature bits
+>>   \item[VIRTIO_NET_F_CTRL_MAC_ADDR(23)] Set MAC address through control
+>>       channel.
+>>
+>> +\item[VIRTIO_NET_F_SPLIT_TRANSPORT_HEADER (52)] Device supports splitti=
+ng
+>> +    the transport header and the payload.
+>> +
+>>   \item[VIRTIO_NET_F_NOTF_COAL(53)] Device supports notifications coales=
+cing.
+>>
+>>   \item[VIRTIO_NET_F_GUEST_USO4 (54)] Driver can receive USOv4 packets.
+>> @@ -3140,6 +3143,7 @@ \subsubsection{Feature bit requirements}\label{sec=
+:Device Types / Network Device
+>>   \item[VIRTIO_NET_F_NOTF_COAL] Requires VIRTIO_NET_F_CTRL_VQ.
+>>   \item[VIRTIO_NET_F_RSC_EXT] Requires VIRTIO_NET_F_HOST_TSO4 or VIRTIO_=
+NET_F_HOST_TSO6.
+>>   \item[VIRTIO_NET_F_RSS] Requires VIRTIO_NET_F_CTRL_VQ.
+>> +\item[VIRTIO_NET_F_SPLIT_TRANSPORT_HEADER] Requires VIRTIO_NET_F_CTRL_V=
+Q.
+>>   \end{description}
+>>
+>>   \subsubsection{Legacy Interface: Feature bits}\label{sec:Device Types =
+/ Network Device / Feature bits / Legacy Interface: Feature bits}
+>> @@ -3371,6 +3375,7 @@ \subsection{Device Operation}\label{sec:Device Typ=
+es / Network Device / Device O
+>>   #define VIRTIO_NET_HDR_F_NEEDS_CSUM    1
+>>   #define VIRTIO_NET_HDR_F_DATA_VALID    2
+>>   #define VIRTIO_NET_HDR_F_RSC_INFO      4
+>> +#define VIRTIO_NET_HDR_F_SPLIT_TRANSPORT_HEADER  8
+>>           u8 flags;
+>>   #define VIRTIO_NET_HDR_GSO_NONE        0
+>>   #define VIRTIO_NET_HDR_GSO_TCPV4       1
+>> @@ -3823,6 +3828,11 @@ \subsubsection{Processing of Incoming Packets}\la=
+bel{sec:Device Types / Network
+>>   been negotiated, the driver MAY use \field{hdr_len} only as a hint abo=
+ut the
+>>   transport header size.
+>>   The driver MUST NOT rely on \field{hdr_len} to be correct.
+>> +
+>> +If the VIRTIO_NET_HDR_F_SPLIT_TRANSPORT_HEADER bit in \field{flags} is =
+set,
+>> +the driver SHOULD treat the \field{hdr_len} as the length of the transp=
+ort header
+>> +inside the first descriptor.
+>> +
+>>   \begin{note}
+>>   This is due to various bugs in implementations.
+>>   \end{note}
+>> @@ -4483,6 +4493,98 @@ \subsubsection{Control Virtqueue}\label{sec:Devic=
+e Types / Network Device / Devi
+>>   according to the native endian of the guest rather than
+>>   (necessarily when not using the legacy interface) little-endian.
+>>
+>> +\paragraph{Split Transport Header}\label{sec:Device Types / Network Dev=
+ice / Device Operation / Control Virtqueue / Split Transport Header}
+>> +
+>> +If the VIRTIO_NET_F_SPLIT_TRANSPORT_HEADER feature is negotiated,
+>> +the device supports splitting the transport header and the payload.
+>> +The transport header and the payload will be separated into different
+>> +descriptors.
+>> +
+>> +\subparagraph{Split Transport Header}\label{sec:Device Types / Network =
+Device / Device Operation / Control Virtqueue / Split Transport Header / Se=
+tting Split Transport Header}
+>> +
+>> +To configure the split transport header, the following layout structure=
+ and definitions
+>> +are used:
+>> +
+>> +\begin{lstlisting}
+>> +struct virtio_net_split_transport_header_config {
+>> +#define VIRTIO_NET_SPLIT_TRANSPORT_HEADER_TYPE_TCP4     (1 << 0)
+>> +#define VIRTIO_NET_SPLIT_TRANSPORT_HEADER_TYPE_TCP6     (1 << 1)
+>> +#define VIRTIO_NET_SPLIT_TRANSPORT_HEADER_TYPE_UDP4     (1 << 2)
+>> +#define VIRTIO_NET_SPLIT_TRANSPORT_HEADER_TYPE_UDP6     (1 << 3)
+>> +    le64 type;
+>> +};
+>> +
+>> +#define VIRTIO_NET_CTRL_SPLIT_TRANSPORT_HEADER       6
+>> + #define VIRTIO_NET_CTRL_SPLIT_TRANSPORT_HEADER_SET   0
+>> +\end{lstlisting}
+>> +
+>> +The class VIRTIO_NET_CTRL_SPLIT_TRANSPORT_HEADER has one command:
+>> +VIRTIO_NET_CTRL_SPLIT_TRANSPORT_HEADER_SET applies the new split transp=
+ort header configuration.
+>> +
+>> +The driver can enable or disable split transport header for different p=
+rotocols by
+>> +setting or clearing corresponding bits in \field{type}.
+>> +
+>> +\begin{itemize}
+>> +    \item VIRTIO_NET_SPLIT_TRANSPORT_HEADER_TYPE_TCP4: split after ipv4=
+ tcp header
+>> +    \item VIRTIO_NET_SPLIT_TRANSPORT_HEADER_TYPE_TCP6: split after ipv6=
+ tcp header
+>> +    \item VIRTIO_NET_SPLIT_TRANSPORT_HEADER_TYPE_UDP4: split after ipv4=
+ udp header
+>> +    \item VIRTIO_NET_SPLIT_TRANSPORT_HEADER_TYPE_UDP6: split after ipv6=
+ udp header
+>> +\end{itemize}
+>> +
+>> +\devicenormative{\subparagraph}{Setting Split Transport Header}{Device =
+Types / Network Device / Device Operation / Control Virtqueue / Split Trans=
+port Header}
+>> +
+>> +A device MUST initialize \field{type} to 0, and MUST set it to 0
+>> +upon device reset.
+> Nit: type is a field of the command, not something belongs to the
+> device. (though an implementation should record the types internally).
+> maybe it's better to say
 >
+> A device MUST disable header splitting upon reset and initialization?
+>
+>> +
+>> +If VIRTIO_NET_F_SPLIT_TRANSPORT_HEADER is negotiated, the device MUST s=
+upport
+>> +VIRTIO_NET_SPLIT_TRANSPORT_HEADER_TYPE_TCP4, VIRTIO_NET_SPLIT_TRANSPORT=
+_HEADER_TYPE_TCP6,
+>> +VIRTIO_NET_SPLIT_TRANSPORT_HEADER_TYPE_UDP4, VIRTIO_NET_SPLIT_TRANSPORT=
+_HEADER_TYPE_UDP6.
+>> +
+>> +A device MUST NOT split the transport header if it encounters any of th=
+e following cases:
+>> +\begin{itemize}
+>> +    \item the device does not recognize the protocol of the packet.
+>> +    \item the packet is an IP fragmentation.
+>> +    \item \field{type} does not include the protocol of the packet.
+> "The splitting of the specific transport protocol is not enabled via
+> VIRTIO_NET_CTRL_SPLIT_TRANSPORT_HEADER_SET?"
+>
+>> +    \item the buffer consists of only one descriptor.
+>> +    \item the total size of the virtio net header and the transport hea=
+der exceeds
+>> +        the size of the first descriptor.
+>> +    \item when VIRTIO_NET_F_MRG_RXBUF is not negotiated and the size of=
+ the
+>> +        payload exceeds the size of the descriptor chain starting from =
+the 2nd
+>> +        descriptor.
+>> +\end{itemize}
+>> +
+>> +If the header is split by the device, the VIRTIO_NET_HDR_F_SPLIT_TRANSP=
+ORT_HEADER bit
+>> +in \field{flags} MUST be set. The transport header MUST be on the first
+>> +descriptor, following the virtio net header. The payload MUST start fro=
+m the
+>> +second descriptor. The device MUST set \field{hdr_len} of structure
+>> +virtio_net_hdr to the length of the transport header.
+>> +
+>> +If all of the following applies:
+>> +\begin{itemize}
+>> +    \item the header is split by the device.
+>> +    \item VIRTIO_NET_F_MRG_RXBUF has been negotiated.
+>> +    \item the received packet is spread over multiple buffers.
+>> +\end {itemize}
+>> +then if the device uses the buffers after the 1st buffer, and the buffe=
+r
+> "the following buffers"?
+>
+>> +consists of multiple descriptors, the device MUST skip the first descri=
+ptor,
+> "skip the first descriptor of the following buffers"?
+>
+>> +because the first descriptor is used to carry the transport header.
+>> +The used length still reports the number of bytes it has written to mem=
+ory.
+>> +
+>> +If VIRTIO_NET_F_SPLIT_TRANSPORT_HEADER is negotiated, but the device do=
+es not split the
+>> +virtio net header and the transport header, and the buffer consists of =
+at least two
+>> +descriptors, the device MUST start with the first descriptor to store t=
+he packet, and
+>> +MUST NOT set the VIRTIO_NET_HDR_F_SPLIT_TRANSPORT_HEADER bit in \field{=
+flags}.
+> Is this intended to describe what happens if the device doesn't split
+> the header? If yes, I wonder if it's better to just drop this.
+> (Duplicated with message framing part?)
+>
+Imagine a case, when the driver tells the device to split the header
+only for the TCP protocol through the VIRTIO_NET_CTRL_SPLIT_TRANSPORT_HEADE=
+R
+command, then all the UDP protocol packets will not be split headers,
+and these UDP packets cannot be dropped.
+
+When receiving one of these UDP packets, the device MUST start with
+the first descriptor to store the packet, and MUST NOT set
+the VIRTIO_NET_HDR_F_SPLIT_TRANSPORT_HEADER bit in \field{flags}.
+
+Thanks.
 
 
-We have carefully considered your suggestion. 
+--------------Rx29vOdaiX8mRhIEb8OufYjs
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-Let's summarize the schemes we've considered before and now.
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3DUTF-8=
+">
+  </head>
+  <body>
+    <p><br>
+    </p>
+    <div class=3D"moz-cite-prefix">=E5=9C=A8 2022/9/2 =E4=B8=8B=E5=8D=882:2=
+1, Jason Wang =E5=86=99=E9=81=93:<br>
+    </div>
+    <blockquote type=3D"cite"
+cite=3D"mid:CACGkMEuy2m7PagJwccx3QSnasuJpnF0MtKn-1MQSJ3sPLjvjew@mail.gmail.=
+com">
+      <pre class=3D"moz-quote-pre" wrap=3D"">On Tue, Aug 16, 2022 at 5:35 P=
+M Heng Qi <a class=3D"moz-txt-link-rfc2396E" href=3D"mailto:hengqi@linux.al=
+ibaba.com">&lt;hengqi@linux.alibaba.com&gt;</a> wrote:
+</pre>
+      <blockquote type=3D"cite">
+        <pre class=3D"moz-quote-pre" wrap=3D"">
+From: Xuan Zhuo <a class=3D"moz-txt-link-rfc2396E" href=3D"mailto:xuanzhuo@=
+linux.alibaba.com">&lt;xuanzhuo@linux.alibaba.com&gt;</a>
 
-1. Scheme A ( refer to spec v7 )
+The purpose of this feature is to split the header and the payload of
+the packet.
 
-We refer to spec v7 and earlier as scheme A for short. Review scheme A below: 
-|                         receive buffer                            | 
-|              0th descriptor                      | 1th descriptor | 
-| virtnet hdr | mac | ip hdr | tcp hdr|<-- hold -->|      payload   | 
+|                    receive buffer                                    |
+|                       0th descriptor             | 1th descriptor    |
+| virtnet hdr | mac | ip hdr | tcp hdr|&lt;-- hold --&gt;|   payload       =
+  |
 
-We use a buffer plus a separate page when allocating the receive
-buffer. In this way, we can ensure that all payloads can be put
-independently in a page, which is very beneficial for the zerocopy 
-implemented by the upper layer. 
+We can use a buffer plus a separate page when allocating the receive
+buffer. In this way, we can ensure that all payloads can be
+independently in a page, which is very beneficial for the zerocopy
+implemented by the upper layer.
 
-Scheme A better solves the problem of headroom, tailroom and
-memory waste, but as you said, this solution relies on descriptor chain. 
+Signed-off-by: Xuan Zhuo <a class=3D"moz-txt-link-rfc2396E" href=3D"mailto:=
+xuanzhuo@linux.alibaba.com">&lt;xuanzhuo@linux.alibaba.com&gt;</a>
+Signed-off-by: Heng Qi <a class=3D"moz-txt-link-rfc2396E" href=3D"mailto:he=
+ngqi@linux.alibaba.com">&lt;hengqi@linux.alibaba.com&gt;</a>
+Reviewed-by: Kangjie Xu <a class=3D"moz-txt-link-rfc2396E" href=3D"mailto:k=
+angjie.xu@linux.alibaba.com">&lt;kangjie.xu@linux.alibaba.com&gt;</a>
+---
+v7:
+        1. Fix some presentation issues.
+        2. Use "split transport header". @Jason Wang
+        3. Clarify some paragraphs. @Cornelia Huck
+        4. determine the device what to do if it does not perform header sp=
+lit on a packet.
 
-2. Scheme B ( refer to your suggestion )
+v6:
+        1. Fix some syntax issues. @Cornelia Huck
+        2. Clarify some paragraphs. @Cornelia Huck
+        3. Determine the device what to do if it does not perform header sp=
+lit on a packet.
 
-Our rethinking approach is no longer based on descriptor chain.
- 
-We refer to your proposed offset-based scheme as scheme B.
-As you suggested, scheme B gives the device a buffer, using offset to
-indicate where to place the payload. Like this: 
+v5:
+        1. Determine when hdr_len is credible in the process of rx
+        2. Clean up the use of buffers and descriptors
+        3. Clarify the meaning of used lenght if the first descriptor is sk=
+ipped in the case of merge
 
-<header>...<padding>... <beginning of page><data> 
+v4:
+        1. fix typo @Cornelia Huck @Jason Wang
+        2. do not split header for IP fragmentation packet. @Jason Wang
 
-But how to apply for this buffer?
-Since we want the payload to be placed on a separate page, the method
-we consider is to directly alloc two pages from driver of contiguous memory. 
+v3:
+        1. Fix some syntax issues
+        2. Fix some terminology issues
+        3. It is not unified with ip alignment, so ip alignment is not incl=
+uded
+        4. Make it clear that the device must support four types, in the ca=
+se of successful negotiation.
 
-Then the beginning of this contiguous memory is used to store the headroom,
-and the contiguous memory after the headroom is directly handed over to the device.
-Similar to the following: 
+ conformance.tex |   2 ++
+ content.tex     | 102 ++++++++++++++++++++++++++++++++++++++++++++++++++++=
+++++
+ 2 files changed, 104 insertions(+)
 
-[------------------ receive buffer(2 pages) ------------------------------] 
-[<------------first page -------------------><------ second page -------->] 
-[<-----><virtnet hdr> <mac,ip,tcp>..<padding><       payload             >] 
-   ^    ^
-   |    |
-   |    pointer to device
-   |
-   |
-   Driver reserved, the later part is filled
+diff --git a/conformance.tex b/conformance.tex
+index 2b86fc6..4e2b82e 100644
+--- a/conformance.tex
++++ b/conformance.tex
+@@ -150,6 +150,7 @@ \section{Conformance Targets}\label{sec:Conformance / C=
+onformance Targets}
+ \item \ref{drivernormative:Device Types / Network Device / Device Operatio=
+n / Control Virtqueue / Offloads State Configuration / Setting Offloads Sta=
+te}
+ \item \ref{drivernormative:Device Types / Network Device / Device Operatio=
+n / Control Virtqueue / Receive-side scaling (RSS) }
+ \item \ref{drivernormative:Device Types / Network Device / Device Operatio=
+n / Control Virtqueue / Notifications Coalescing}
++\item \ref{drivernormative:Device Types / Network Device / Device Operatio=
+n / Control Virtqueue / Split Transport Header}
+ \end{itemize}
 
-3. Scheme C (this sheme we have sent to you on September 7th, maybe you miss it.)
+ \conformance{\subsection}{Block Driver Conformance}\label{sec:Conformance =
+/ Driver Conformance / Block Driver Conformance}
+@@ -415,6 +416,7 @@ \section{Conformance Targets}\label{sec:Conformance / C=
+onformance Targets}
+ \item \ref{devicenormative:Device Types / Network Device / Device Operatio=
+n / Control Virtqueue / Automatic receive steering in multiqueue mode}
+ \item \ref{devicenormative:Device Types / Network Device / Device Operatio=
+n / Control Virtqueue / Receive-side scaling (RSS) / RSS processing}
+ \item \ref{devicenormative:Device Types / Network Device / Device Operatio=
+n / Control Virtqueue / Notifications Coalescing}
++\item \ref{devicenormative:Device Types / Network Device / Device Operatio=
+n / Control Virtqueue / Split Transport Header}
+ \end{itemize}
 
-Based on your previous suggestion, we also considered another new scheme C. 
-This scheme is implemented based on mergeable buffer, filling a separate page each time. 
+ \conformance{\subsection}{Block Device Conformance}\label{sec:Conformance =
+/ Device Conformance / Block Device Conformance}
+diff --git a/content.tex b/content.tex
+index e863709..5676da9 100644
+--- a/content.tex
++++ b/content.tex
+@@ -3084,6 +3084,9 @@ \subsection{Feature bits}\label{sec:Device Types / Ne=
+twork Device / Feature bits
+ \item[VIRTIO_NET_F_CTRL_MAC_ADDR(23)] Set MAC address through control
+     channel.
 
-If the split header is negotiated and the packet can be successfully split by the device,
-the device needs to find at least two buffers, namely two pages, one for the virtio-net header
-and transport header, and the other for the payload. Like the following: 
++\item[VIRTIO_NET_F_SPLIT_TRANSPORT_HEADER (52)] Device supports splitting
++    the transport header and the payload.
++
+ \item[VIRTIO_NET_F_NOTF_COAL(53)] Device supports notifications coalescing=
+.
 
-|                       receive buffer1(page)      |     receive buffer2 (page)   | 
-| virtnet hdr | mac | ip hdr | tcp hdr|<-- hold -->|         payload              | 
+ \item[VIRTIO_NET_F_GUEST_USO4 (54)] Driver can receive USOv4 packets.
+@@ -3140,6 +3143,7 @@ \subsubsection{Feature bit requirements}\label{sec:De=
+vice Types / Network Device
+ \item[VIRTIO_NET_F_NOTF_COAL] Requires VIRTIO_NET_F_CTRL_VQ.
+ \item[VIRTIO_NET_F_RSC_EXT] Requires VIRTIO_NET_F_HOST_TSO4 or VIRTIO_NET_=
+F_HOST_TSO6.
+ \item[VIRTIO_NET_F_RSS] Requires VIRTIO_NET_F_CTRL_VQ.
++\item[VIRTIO_NET_F_SPLIT_TRANSPORT_HEADER] Requires VIRTIO_NET_F_CTRL_VQ.
+ \end{description}
 
-At the same time, if XDP is considered, then the device needs to add headroom at the
-beginning of receive buffer1 when receiving packets, so that the driver can process
-programs similar to XDP. 
+ \subsubsection{Legacy Interface: Feature bits}\label{sec:Device Types / Ne=
+twork Device / Feature bits / Legacy Interface: Feature bits}
+@@ -3371,6 +3375,7 @@ \subsection{Device Operation}\label{sec:Device Types =
+/ Network Device / Device O
+ #define VIRTIO_NET_HDR_F_NEEDS_CSUM    1
+ #define VIRTIO_NET_HDR_F_DATA_VALID    2
+ #define VIRTIO_NET_HDR_F_RSC_INFO      4
++#define VIRTIO_NET_HDR_F_SPLIT_TRANSPORT_HEADER  8
+         u8 flags;
+ #define VIRTIO_NET_HDR_GSO_NONE        0
+ #define VIRTIO_NET_HDR_GSO_TCPV4       1
+@@ -3823,6 +3828,11 @@ \subsubsection{Processing of Incoming Packets}\label=
+{sec:Device Types / Network
+ been negotiated, the driver MAY use \field{hdr_len} only as a hint about t=
+he
+ transport header size.
+ The driver MUST NOT rely on \field{hdr_len} to be correct.
++
++If the VIRTIO_NET_HDR_F_SPLIT_TRANSPORT_HEADER bit in \field{flags} is set=
+,
++the driver SHOULD treat the \field{hdr_len} as the length of the transport=
+ header
++inside the first descriptor.
++
+ \begin{note}
+ This is due to various bugs in implementations.
+ \end{note}
+@@ -4483,6 +4493,98 @@ \subsubsection{Control Virtqueue}\label{sec:Device T=
+ypes / Network Device / Devi
+ according to the native endian of the guest rather than
+ (necessarily when not using the legacy interface) little-endian.
 
-In order to solve this problem, scheme C introduce an offset which requires
-the device to write data from the offset to receive buffer1, like the following: 
++\paragraph{Split Transport Header}\label{sec:Device Types / Network Device=
+ / Device Operation / Control Virtqueue / Split Transport Header}
++
++If the VIRTIO_NET_F_SPLIT_TRANSPORT_HEADER feature is negotiated,
++the device supports splitting the transport header and the payload.
++The transport header and the payload will be separated into different
++descriptors.
++
++\subparagraph{Split Transport Header}\label{sec:Device Types / Network Dev=
+ice / Device Operation / Control Virtqueue / Split Transport Header / Setti=
+ng Split Transport Header}
++
++To configure the split transport header, the following layout structure an=
+d definitions
++are used:
++
++\begin{lstlisting}
++struct virtio_net_split_transport_header_config {
++#define VIRTIO_NET_SPLIT_TRANSPORT_HEADER_TYPE_TCP4     (1 &lt;&lt; 0)
++#define VIRTIO_NET_SPLIT_TRANSPORT_HEADER_TYPE_TCP6     (1 &lt;&lt; 1)
++#define VIRTIO_NET_SPLIT_TRANSPORT_HEADER_TYPE_UDP4     (1 &lt;&lt; 2)
++#define VIRTIO_NET_SPLIT_TRANSPORT_HEADER_TYPE_UDP6     (1 &lt;&lt; 3)
++    le64 type;
++};
++
++#define VIRTIO_NET_CTRL_SPLIT_TRANSPORT_HEADER       6
++ #define VIRTIO_NET_CTRL_SPLIT_TRANSPORT_HEADER_SET   0
++\end{lstlisting}
++
++The class VIRTIO_NET_CTRL_SPLIT_TRANSPORT_HEADER has one command:
++VIRTIO_NET_CTRL_SPLIT_TRANSPORT_HEADER_SET applies the new split transport=
+ header configuration.
++
++The driver can enable or disable split transport header for different prot=
+ocols by
++setting or clearing corresponding bits in \field{type}.
++
++\begin{itemize}
++    \item VIRTIO_NET_SPLIT_TRANSPORT_HEADER_TYPE_TCP4: split after ipv4 tc=
+p header
++    \item VIRTIO_NET_SPLIT_TRANSPORT_HEADER_TYPE_TCP6: split after ipv6 tc=
+p header
++    \item VIRTIO_NET_SPLIT_TRANSPORT_HEADER_TYPE_UDP4: split after ipv4 ud=
+p header
++    \item VIRTIO_NET_SPLIT_TRANSPORT_HEADER_TYPE_UDP6: split after ipv6 ud=
+p header
++\end{itemize}
++
++\devicenormative{\subparagraph}{Setting Split Transport Header}{Device Typ=
+es / Network Device / Device Operation / Control Virtqueue / Split Transpor=
+t Header}
++
++A device MUST initialize \field{type} to 0, and MUST set it to 0
++upon device reset.
+</pre>
+      </blockquote>
+      <pre class=3D"moz-quote-pre" wrap=3D"">
+Nit: type is a field of the command, not something belongs to the
+device. (though an implementation should record the types internally).
+maybe it's better to say
 
-|                   receive buffer (page)                                 | receive buffer (page) | 
-| <-- offset(hold) --> | virtnet hdr | mac | ip hdr | tcp hdr|<-- hold -->|         payload       | 
-^
-|
-pointer to device
-					   
+A device MUST disable header splitting upon reset and initialization?
+
+</pre>
+      <blockquote type=3D"cite">
+        <pre class=3D"moz-quote-pre" wrap=3D"">+
++If VIRTIO_NET_F_SPLIT_TRANSPORT_HEADER is negotiated, the device MUST supp=
+ort
++VIRTIO_NET_SPLIT_TRANSPORT_HEADER_TYPE_TCP4, VIRTIO_NET_SPLIT_TRANSPORT_HE=
+ADER_TYPE_TCP6,
++VIRTIO_NET_SPLIT_TRANSPORT_HEADER_TYPE_UDP4, VIRTIO_NET_SPLIT_TRANSPORT_HE=
+ADER_TYPE_UDP6.
++
++A device MUST NOT split the transport header if it encounters any of the f=
+ollowing cases:
++\begin{itemize}
++    \item the device does not recognize the protocol of the packet.
++    \item the packet is an IP fragmentation.
++    \item \field{type} does not include the protocol of the packet.
+</pre>
+      </blockquote>
+      <pre class=3D"moz-quote-pre" wrap=3D"">
+"The splitting of the specific transport protocol is not enabled via
+VIRTIO_NET_CTRL_SPLIT_TRANSPORT_HEADER_SET?"
+
+</pre>
+      <blockquote type=3D"cite">
+        <pre class=3D"moz-quote-pre" wrap=3D"">+    \item the buffer consis=
+ts of only one descriptor.
++    \item the total size of the virtio net header and the transport header=
+ exceeds
++        the size of the first descriptor.
++    \item when VIRTIO_NET_F_MRG_RXBUF is not negotiated and the size of th=
+e
++        payload exceeds the size of the descriptor chain starting from the=
+ 2nd
++        descriptor.
++\end{itemize}
++
++If the header is split by the device, the VIRTIO_NET_HDR_F_SPLIT_TRANSPORT=
+_HEADER bit
++in \field{flags} MUST be set. The transport header MUST be on the first
++descriptor, following the virtio net header. The payload MUST start from t=
+he
++second descriptor. The device MUST set \field{hdr_len} of structure
++virtio_net_hdr to the length of the transport header.
++
++If all of the following applies:
++\begin{itemize}
++    \item the header is split by the device.
++    \item VIRTIO_NET_F_MRG_RXBUF has been negotiated.
++    \item the received packet is spread over multiple buffers.
++\end {itemize}
++then if the device uses the buffers after the 1st buffer, and the buffer
+</pre>
+      </blockquote>
+      <pre class=3D"moz-quote-pre" wrap=3D"">
+"the following buffers"?
+
+</pre>
+      <blockquote type=3D"cite">
+        <pre class=3D"moz-quote-pre" wrap=3D"">+consists of multiple descri=
+ptors, the device MUST skip the first descriptor,
+</pre>
+      </blockquote>
+      <pre class=3D"moz-quote-pre" wrap=3D"">
+"skip the first descriptor of the following buffers"?
+
+</pre>
+      <blockquote type=3D"cite">
+        <pre class=3D"moz-quote-pre" wrap=3D"">+because the first descripto=
+r is used to carry the transport header.
++The used length still reports the number of bytes it has written to memory=
+.
++
++If VIRTIO_NET_F_SPLIT_TRANSPORT_HEADER is negotiated, but the device does =
+not split the
++virtio net header and the transport header, and the buffer consists of at =
+least two
++descriptors, the device MUST start with the first descriptor to store the =
+packet, and
++MUST NOT set the VIRTIO_NET_HDR_F_SPLIT_TRANSPORT_HEADER bit in \field{fla=
+gs}.
+</pre>
+      </blockquote>
+      <pre class=3D"moz-quote-pre" wrap=3D"">
+Is this intended to describe what happens if the device doesn't split
+the header? If yes, I wonder if it's better to just drop this.
+(Duplicated with message framing part?)
+
+</pre>
+    </blockquote>
+    <pre>
+Imagine a case, when the driver tells the device to split the header
+only for the TCP protocol through the VIRTIO_NET_CTRL_SPLIT_TRANSPORT_HEADE=
+R
+command, then all the UDP protocol packets will not be split headers,
+and these UDP packets cannot be dropped.=20
+
+When receiving one of these UDP packets, the device MUST start with
+the first descriptor to store the packet, and MUST NOT set
+the VIRTIO_NET_HDR_F_SPLIT_TRANSPORT_HEADER bit in \field{flags}.
+
+Thanks.
 
 
-4. Summarize
+</pre>
+  </body>
+</html>
 
-Then we simply compare the advantages and disadvantages of scheme A(spec v7),
-scheme B (offset buffer(2 pages)) and scheme C (based on mergeable buffer): 
-
-1). descriptor chain: 
-         i)  A depends on desciptor chain;
-         ii) B, C do not depend on desciptor chain. 
-
-2). page alloc 
-         i) B fills with two consecutive pages, which causes a great waste of memory
-                for small packages such as arp;
-         ii) C fills with a single page, slightly better than B. 
-
-3). Memory waste: 
-         i) The memory waste of scheme A is mainly the 0th descriptor
-                that is skipped by the device;
-         ii) When scheme B and scheme C successfully split the header,
-                there is a huge waste of the first page, but the first page
-                can be quickly released by copying in driver. 
-
-4). headroom 
-         i) The headrooms of plan A and plan B are reserved;
-         ii) Scheme C requires the driver to set offset to let the device skip
-                offset when using receive buffer1. 
-
-Which plan do you prefer? 
-
-Thanks. 
-
-
-
-> 
-> -- 
-> MST
-> 
-> 
-> ---------------------------------------------------------------------
-> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
-
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+--------------Rx29vOdaiX8mRhIEb8OufYjs--
 
