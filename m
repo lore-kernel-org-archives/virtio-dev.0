@@ -1,159 +1,104 @@
-Return-Path: <virtio-dev-return-9943-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-9884-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id A8679986584
-	for <virtio-dev@lists.oasis-open.org>; Fri,  9 Sep 2022 16:05:18 +0000 (UTC)
-Date: Fri, 9 Sep 2022 12:05:10 -0400
-From: Stefan Hajnoczi <stefanha@redhat.com>
-Message-ID: <YxtkNp66VCUzXVpk@fedora>
-References: <6f4f611e95cf49b0b16b37efba6bf78a@HIMDWSMB01.ad.harman.com>
- <Ys1704UaN4/e3/Rf@stefanha-x1.localdomain>
- <1657894712677.5057@harman.com>
- <YtGayTbaFh9cbp/U@stefanha-x1.localdomain>
- <1662713522072.6550@harman.com>
+From: Alyssa Ross <hi@alyssa.is>
+In-Reply-To: <877d61wuc0.fsf@linaro.org>
+References: <877d61wuc0.fsf@linaro.org>
+Date: Sat, 03 Sep 2022 07:43:08 +0000
+Message-ID: <87r10svr77.fsf@alyssa.is>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="+kNeTn/2z4RP5rvr"
-Content-Disposition: inline
-In-Reply-To: <1662713522072.6550@harman.com>
-Subject: Re: [virtio-dev] VM memory protection and zero-copy transfers.
-To: "Afsa, Baptiste" <Baptiste.Afsa@harman.com>
-Cc: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Jean-Philippe Brucker <jean-philippe@linaro.org>, "Michael S. Tsirkin" <mst@redhat.com>
+Content-Type: multipart/signed; boundary="=-=-=";
+	micalg=pgp-sha256; protocol="application/pgp-signature"
+Subject: Re: [virtio-dev] Next VirtIO device for Project Stratos?
+To: Alex =?utf-8?Q?Benn=C3=A9e?= <alex.bennee@linaro.org>, stratos-dev@op-lists.linaro.org, virtio-dev@lists.oasis-open.org, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>
+Cc: Viresh Kumar <viresh.kumar@linaro.org>, Mathieu Poirier <mathieu.poirier@linaro.org>, Mike Holmes <mike.holmes@linaro.org>, Matt Spencer <Matt.Spencer@arm.com>, Peter Griffin <peter.griffin@linaro.org>, Dan Milea <dan.milea@windriver.com>, Bill Mills <bill.mills@linaro.org>, Francois Ozog <francois.ozog@linaro.org>, Johannes Berg <johannes@sipsolutions.net>, Gerd Hoffmann <kraxel@redhat.com>, Arnd Bergmann <arnd.bergmann@linaro.org>, Christian Pinto <c.pinto@virtualopensystems.com>, Namhyung Kim <namhyung@kernel.org>, Petre Eftime <epetre@amazon.com>, Peter Hilber <peter.hilber@opensynergy.com>, Marcel Holtmann <marcel@holtmann.org>, "Michael S. Tsirkin" <mst@redhat.com>, Stefan Hajnoczi <stefanha@redhat.com>, Puck Meerburg <puck@puckipedia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
---+kNeTn/2z4RP5rvr
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+--=-=-=
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Sep 09, 2022 at 08:52:02AM +0000, Afsa, Baptiste wrote:
-> Hello,
->=20
-> I ran some benchmarks to compare the performances achieved by the swiotlb
-> approach and our dynamic memory granting solution while using different b=
-uffer
-> sizes. Without any surprise, the swiotlb approach performs much better wh=
-en the
-> buffers are small. Actually for small buffers, the performances are on pa=
-r with
-> the original configuration where the entire memory is shared. Of course t=
-hese
-> results are specific to the platform I used and the system workload (e.g.=
- CPU
-> utilization, caches utilization).
->=20
-> At the moment we are not planning to add a mechanism that would take the
-> decision between copying or granting the buffers dynamically based on the=
-ir
-> sizes, but this experience showed us that devices that uses small packets=
- would
-> benefits from going through the swiotlb. So we are considering making this
-> configurable on a per-device basis in our solution.
->=20
-> We have also experimented with the use of a virtual IOMMU on the guest si=
-de and
-> we have a few concerns with this option.
->=20
-> If we add a virtual IOMMU, we can see mapping commands being issued as vi=
-rtio
-> buffers are exchanged between the device and the driver. However the kern=
-el
-> controls the mappings from DMA addresses to physical addresses. In theory=
-, we
-> could remap the memory in the host address space to "implement" these map=
-pings
-> but we have some additional constraints that make this approach problemat=
-ic.
->=20
-> Our solution runs on systems where the physical IOMMU does not support ad=
-dress
-> translation. So we rely on having an identity mapping between the guest a=
-ddress
-> space and the physical address space to allow the guest OS to initiate DMA
-> transactions. If the memory that we import for virtio buffers uses transl=
-ated
-> addresses, these buffers cannot be used in DMA transactions.
->=20
-> We also have an issue with letting the driver control the exported memory
-> through an IOMMU. If we do this, we need to consider what will happen if =
-the
-> guest unmaps a virtio buffer while it is in use on the device side.
->=20
-> Although it looks possible to recover from such a scenario in the case of=
- a
-> device doing CPU accesses to the shared memory, things get more complicat=
-ed if
-> we start considering that the buffer may be involved in a DMA transaction.
->=20
-> In some previous projects, we have learned that the ability for the hardw=
-are
-> device and/or its associated driver to recover from an aborted transactio=
-n is
-> not something that we can rely upon in the general case.
->=20
-> For this reason, in our typical memory granting scenarios, we usually "lo=
-ck" the
-> shared memory regions to prevent the exporter from revoking the mappings =
-until
-> the importer says it is ok to do so.
->=20
-> Note that locking the mappings could be applied here as well. In this cas=
-e, we
-> would still use this concept of shadow virtqueues and the hypervisor woul=
-d be
-> responsible for locking/unlocking the virtio buffers as they cycle betwee=
-n the
-> device and the driver. This design is likely to be slower than the origin=
-al
-> implementation as the cost of locking the mappings is significant (i.e. a=
-n extra
-> page table walk to validate the memory regions).
->=20
-> As we discussed in this thread, there are a few options available to enab=
-le
-> virtio in configurations where the VM address spaces are isolated. I thin=
-k they
-> all have different trade-offs. Our approach certainly have some drawbacks=
- but it
-> also addresses some specific considerations that are relevant in our use
-> case. Different configurations will probably require different solutions =
-to this
-> question.
->=20
-> What would be the next steps to go forward with adding a new feature bit =
-such as
-> the one I discussed in my original email? Should we prepare a patch on the
-> specification and post it here for further discussions?
+Hi Alex and everyone else, just catching up on some mail and wanted to
+clarify some things:
 
-Hi Baptiste,
-Thanks for sharing your findings. As the next step please send your
-VIRTIO spec change proposal to the mailing list so they can be discussed
-in detail.
+Alex Benn=C3=A9e <alex.bennee@linaro.org> writes:
 
-Example commands for sending spec patch emails are here:
-https://github.com/oasis-tcs/virtio-spec#providing-feedback
+> This email is driven by a brain storming session at a recent sprint
+> where we considered what VirtIO devices we should look at implementing
+> next. I ended up going through all the assigned device IDs hunting for
+> missing spec discussion and existing drivers so I'd welcome feedback
+> from anybody actively using them - especially as my suppositions about
+> device types I'm not familiar with may be way off!
+>
+> [...snip...]
+>
+> GPU device / 16
+> ---------------
+>
+> This is now a fairly mature part of the spec and has implementations is
+> the kernel, QEMU and a vhost-user backend. However as is commensurate
+> with the complexity of GPUs there is ongoing development moving from the
+> VirGL OpenGL encapsulation to a thing called GFXSTREAM which is meant to
+> make some things easier.
+>
+> A potential area of interest here is working out what the differences
+> are in use cases between virtio-gpu and virtio-wayland. virtio-wayland
+> is currently a ChromeOS only invention so hasn't seen any upstreaming or
+> specification work but may make more sense where multiple VMs are
+> drawing only elements of a final display which is composited by a master
+> program. For further reading see Alyssa's write-up:
+>
+>   https://alyssa.is/using-virtio-wl/
+>
+> I'm not sure how widely used the existing vhost-user backend is for
+> virtio-gpu but it could present an opportunity for a more beefy rust-vmm
+> backend implementation?
 
-Thanks,
-Stefan
+As I understand it, virtio-wayland is effectively deprecated in favour
+of sending Wayland messages over cross-domain virtio-gpu contexts.  It's
+possible to do this now with an upstream kernel, whereas virtio-wayland
+always required a custom driver in the Chromium kernel.
 
---+kNeTn/2z4RP5rvr
+But crosvm is still the only implementation of a virtio-gpu device that
+supports Wayland over cross-domain contexts, so it would be great to see
+a more generic implementation.  Especially because, while crosvm can
+share its virtio-gpu device over vhost-user, it does so in a way that's
+incompatible with the standardised vhost-user-gpu as implemented by
+QEMU.  When I asked the crosvm developers in their Matrix channel what
+it would take to use the standard vhost-user-gpu variant, they said that
+the standard variant was lacking functionality they needed, like mapping
+and unmapping GPU buffers into the guest.
+
+So if we wanted to push forward with getting making Wayland over
+virttio-gpu less crosvm specific, I suppose the first step would be to
+figure out with the crosvm developers what functionality is missing in
+the vhost-user-gpu protocol.  That would then make it possible to use
+crosvm's device (with the Wayland support) with other VMMs like QEMU.
+
+(CCing my colleage Puck, who has also been working with me on getting
+Wayland over virtio-gpu up and running outside of Chrome OS.)
+
+--=-=-=
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmMbZDYACgkQnKSrs4Gr
-c8jA/Af9FcHW/DLUeOieuXipjBn0fIXCB+QLWbpRRbADMylYyVo68Q1P3jUe/Ed+
-8HKIF77xC1DOIarRDXFReRLZeRYJt8KF5wbkzHULemOciKR3/He0HgVwZifaMzaq
-VjeM7mWw5tGfW/yVssvDlbuxUp5PTh9559bUvqhy3buisbz9lKOiz222PJmwM3dB
-eODxo6qnIWCJLWrEv+x2K/NlczdYyJ38GHnGoFeIYtldewWAskrfYmjEim3fcroy
-DsRctFHmaJwj43ge7ph0GduKugVktGwEXWyvM5XySdAPtWR42xR/09QtXdxgDYor
-Hc9DInEL7murAPfqPverSh6yj0Cs7g==
-=k0cu
+iQIzBAEBCAAdFiEEH9wgcxqlHM/ARR3h+dvtSFmyccAFAmMTBY4ACgkQ+dvtSFmy
+ccB34w/9F/Z/38E7I8IOQF5j9KwZCp05tvkNo2eDvtGBLP/MAccWsa1ONNgVwdcl
++d7l1hnp0jmsyJ5nX3Z+6CDVvFO5ZuEZiLUA4dtJPvPDLZAqSIpiXSq4cYkQOfKe
+R/NV+PA73rA2oIqQdM7znipJLVuCJV7j5sXXgCjks80XXBdbDzDgFBPreElyZCsO
+w2+Vrk+AODbuwYrJbMR1Hj9qzLVtTXnZI7i5P8e4b4/8U67UznBan62NBFqe680n
+Ne5/gGSOpbc2aGwlR9NbP1cZnlxsicPwdFRjs1HnSzLLPcZpIQmlajgscP+kAu/p
+pll/ka/vUPjML9VYEi0I1ph0GxbObWSsGhXrhtIUm2zIXV+QwcxUoNXr/FM3ojkJ
+gXfdWP2Pv3WXEHud/7qXW5MCHipZgrybkUZv7oSsGq3FCZ1syhW9+P2vtvYiD/Kv
+VtSQlvMT41rtQK3H0AgwtLpHfKTW95w+67CBSGua7t1CvvGnDqngniZOmA1FsE5d
+U4kW1AIOQGiWllmcpkY67B4gUDU2Do7KOuPQTuLoL1BZgZhwByz8qQk0T68o7gAn
+3/S9t0fj/fq44wlPRW2uAQLAUS5DGmeckcYtSC2Xo5F+AwDzypzdpACySoyw0Hzl
+8PLqG/bXhW6zDEDK95uT4mN4NZvrmv1CFqApnFFdsB7Q/UvKjLI=
+=66r7
 -----END PGP SIGNATURE-----
-
---+kNeTn/2z4RP5rvr--
+--=-=-=--
 
