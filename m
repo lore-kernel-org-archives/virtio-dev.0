@@ -1,224 +1,891 @@
-Return-Path: <virtio-dev-return-9995-cohuck=redhat.com@lists.oasis-open.org>
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 84E9C986611
-	for <virtio-dev@lists.oasis-open.org>; Thu, 29 Sep 2022 11:58:54 +0000 (UTC)
-Message-ID: <1664452083.421573-1-xuanzhuo@linux.alibaba.com>
-Date: Thu, 29 Sep 2022 19:48:03 +0800
-From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-References: <1663297006-64248-1-git-send-email-hengqi@linux.alibaba.com>
- <3c3cc916-c605-1ed2-d3ff-d8d8ce668f17@redhat.com>
- <20220920032824.GA125047@h68b04307.sqa.eu95>
- <CACGkMEtOHXtNtG13Zxpc+bhYJVyefp999kttz4YcPi22nMBSpQ@mail.gmail.com>
- <1663903426.8765974-1-xuanzhuo@linux.alibaba.com>
- <CACGkMEsmqngS-HYPzzV8b9dmv95=W6dJebAa=asXGmo7VEAnoA@mail.gmail.com>
- <20220923013341-mutt-send-email-mst@kernel.org>
- <619af5b3-4c38-955f-0f7f-f351f5a9527e@redhat.com>
- <20220928093530-mutt-send-email-mst@kernel.org>
- <CACGkMEsKHBo+tgJrADif9y5qLF-OHoK7pO6YvQBa-edjjPwVJQ@mail.gmail.com>
- <20220929022523-mutt-send-email-mst@kernel.org>
- <1664439842.0523622-1-xuanzhuo@linux.alibaba.com>
- <20220929052841-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20220929052841-mutt-send-email-mst@kernel.org>
-Subject: Re: [virtio-dev] [PATCH v8] virtio_net: support for split transport header
-Content-Type: text/plain; charset="US-ASCII"; x-default=true
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Virtio-Dev <virtio-dev@lists.oasis-open.org>, Kangjie Xu <kangjie.xu@linux.alibaba.com>, Heng Qi <hengqi@linux.alibaba.com>, Jason Wang <jasowang@redhat.com>
+Return-Path: <prvs=23974adae=dmitry.fomichev@wdc.com>
+From: Dmitry Fomichev <dmitry.fomichev@wdc.com>
+Subject: [PATCH v6] virtio-blk: add zoned block device specification
+Date: Sun,  4 Sep 2022 12:56:01 -0400
+Message-Id: <20220904165601.170769-1-dmitry.fomichev@wdc.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: virtio-dev@lists.oasis-open.org, virtio-comment@lists.oasis-open.org
+Cc: Damien Le Moal <damien.lemoal@opensource.wdc.com>, Stefan Hajnoczi <stefanha@gmail.com>, Hannes Reinecke <hare@suse.de>, Cornelia Huck <cohuck@redhat.com>, Matias Bjorling <matias.bjorling@wdc.com>, Niklas Cassel <niklas.cassel@wdc.com>, Hans Holmberg <Hans.Holmberg@wdc.com>, Klaus Jensen <its@irrelevant.dk>, Sam Li <faithilikerun@gmail.com>, Dmitry Fomichev <dmitry.fomichev@wdc.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Thu, 29 Sep 2022 06:06:41 -0400, "Michael S. Tsirkin" <mst@redhat.com> wrote:
-> On Thu, Sep 29, 2022 at 04:24:02PM +0800, Xuan Zhuo wrote:
-> > On Thu, 29 Sep 2022 03:04:03 -0400, "Michael S. Tsirkin" <mst@redhat.com> wrote:
-> > > On Thu, Sep 29, 2022 at 09:48:33AM +0800, Jason Wang wrote:
-> > > > On Wed, Sep 28, 2022 at 9:39 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > > > >
-> > > > > On Mon, Sep 26, 2022 at 04:06:17PM +0800, Jason Wang wrote:
-> > > > > > > Jason I think the issue with previous proposals is that they conflict
-> > > > > > > with VIRTIO_F_ANY_LAYOUT. We have repeatedly found that giving the
-> > > > > > > driver flexibility in arranging the packet in memory is benefitial.
-> > > > > >
-> > > > > >
-> > > > > > Yes, but I didn't found how it can conflict the any_layout. Device can just
-> > > > > > to not split the header when the layout doesn't fit for header splitting.
-> > > > > > (And this seems the case even if we're using buffers).
-> > > > >
-> > > > > Well spec says:
-> > > > >
-> > > > >         indicates to both the device and the driver that no
-> > > > >         assumptions were made about framing.
-> > > > >
-> > > > > if device assumes that descriptor boundaries are where
-> > > > > driver wants packet to be stored that is clearly
-> > > > > an assumption.
-> > > >
-> > > > Yes but what I want to say is, the device can choose to not split the
-> > > > packet if the framing doesn't fit. Does it still comply with the above
-> > > > description?
-> > > >
-> > > > Thanks
-> > >
-> > > The point of ANY_LAYOUT is to give drivers maximum flexibility.
-> > > For example, if driver wants to split the header at some specific
-> > > offset this is already possible without extra functionality.
-> > >
-> > > Let's keep it that way.
-> > >
-> > > Now, let's formulate what are some of the problems with the current way.
-> > >
-> > >
-> > >
-> > > A- mergeable buffers is even more flexible, since a single packet
-> > >   is built up of multiple buffers.
-> >
-> > If I understand correctly, this is our v8.
->
-> I think it is, or at least close.
->
-> > > And in theory device can
-> > >   choose arbitrary set of buffers to store a packet.
-> > >   So you could supply a small buffer for headers followed by a bigger
-> > >   one for payload, in theory even without any changes.
-> >
-> > This is very interesting, I did not think of this point.
-> > This is helpful to reduce the waste of memory.
->
-> Hmm good point. I should add: since we are no longer fully using the
-> first buffer the feature has a memory cost and - in case of a cache
-> pressure - can degrade performance rather than improve it.
-> Thus, allowing flexibility for both devices and drivers at runtime
-> rather than fixing things through features thus sounds like a good idea.
->
->
-> > >   Problem 1: However since this is not how devices currently operate,
-> > >   a feature bit would be helpful.
-> > >
-> > >   Problem 2: Also, in the past we found it useful to be able to figure out whether
-> > >   packet fits in a single buffer without looking at the header.
-> > >   For this reason, we have this text:
-> > >
-> > > 	If a receive packet is spread over multiple buffers, the device
-> > > 	MUST use all buffers but the last (i.e. the first \field{num_buffers} -
-> > > 	1 buffers) completely up to the full length of each buffer
-> > > 	supplied by the driver.
-> > >
-> > >   if we want to keep this optimization and allow using a separate
-> > >   buffer for headers, then I think we could rely on the feature bit
-> > >   from Problem 1 and just make an exception for the first buffer.
-> > >   Also num_buffers is then always >= 2, maybe state this to avoid
-> > >   confusion.
-> > >
-> >
-> > Yes, I think this is feasible.
->
->
-> Thinking more about this, a question is what to do about packets without
-> split header. I can see several options
-> A- add some buffers just for the non split case. without in-order they
->   can just stay available. with in-order they have to be recycled which
->   might be expensive.
->   They will also occupy space in the ring. more memory costs.
->   Don't much like it for above reasons.
->   OTOH then I wanted to work on partial-order anyway. Maybe it's time
->   to prioritize that work.
+Introduce support for Zoned Block Devices to virtio.
 
-Yes, I also prefer order processing, although we mess up the order, which is
-good in some cases.
+Zoned Block Devices (ZBDs) aim to achieve a better capacity, latency
+and/or cost characteristics compared to commonly available block
+devices by getting the entire LBA space of the device divided to block
+regions that are much larger than the LBA size. These regions are
+called zones and they can only be written sequentially. More details
+about ZBDs can be found at
 
->
-> B- write all of the packet in the payload buffer and just skip header buffer (e.g. make it 0 size?)
->   payload within packet will be misaligned then. Do we care? maybe not -
->   this was supposed to be an exception. In this case:
->   Problem B: where should virtio net header
->   go then? we can put it in the header buffer still, or we can
->   store it linear with the packet.  or we can leave both options, up to device.
->   what is better might depend on
->   different factors.  any chance of performance testing?
+https://zonedstorage.io/docs/introduction/zoned-storage .
 
+In its current form, the virtio protocol for block devices (virtio-blk)
+is not aware of ZBDs but it allows the driver to successfully scan a
+host-managed drive provided by the virtio block device. As the result,
+the host-managed drive is recognized by virtio driver as a regular,
+non-zoned drive that will operate erroneously under the most common
+write workloads. Host-aware ZBDs are currently usable, but their
+performance may not be optimal because the driver can only see them as
+non-zoned block devices.
 
-avail ring:
-| small buffer | page | small buffer | page | small buffer | page | small buffer | page |
+To fix this, the virtio-blk protocol needs to be extended to add the
+capabilities to convey the zone characteristics of ZBDs at the device
+side to the driver and to provide support for ZBD-specific commands -
+Report Zones, four zone operations (Open, Close, Finish and Reset) and
+(optionally) Zone Append. The proposed standard extension aims to
+define this new functionality.
 
-In this case, I think it is a good idea to set the small buffer to 0 size for
-non-split headers.
+This patch extends the virtio-blk section of virtio specification with
+the minimum set of requirements that are necessary to support ZBDs.
+The resulting device model is a subset of the models defined in ZAC/ZBC
+and ZNS standards documents. The included functionality mirrors
+the existing Linux kernel block layer ZBD support and should be
+sufficient to handle the host-managed and host-aware HDDs that are on
+the market today as well as ZNS SSDs that are entering the market at
+the time of submission of this patch.
 
-This is an advantage over desc chain. The desc chain can only put the virtio-net
-header in the small buffer.
+I would like to thank the following people for their useful feedback
+and suggestions while working on the initial iterations of this patch.
 
+Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Matias Bjørling <Matias.Bjorling@wdc.com>
+Niklas Cassel <Niklas.Cassel@wdc.com>
+Hans Holmberg <Hans.Holmberg@wdc.com>
 
+Fixes: https://github.com/oasis-tcs/virtio-spec/issues/143
+Signed-off-by: Dmitry Fomichev <dmitry.fomichev@wdc.com>
+---
 
->
-> > >
-> > >
-> > >
-> > >
-> > > B- without mergeable, there's no flexibility. In particular, there can
-> > > not be uninitialized space between header and data. If we had flexibility here, this could be
-> > > helpful for alignment, security, etc.
-> > > Unfortunately, our hands are tied:
-> > >
-> > >
-> > > 	\field{len} is particularly useful
-> > > 	for drivers using untrusted buffers: if a driver does not know exactly
-> > > 	how much has been written by the device, the driver would have to zero
-> > > 	the buffer in advance to ensure no data leakage occurs.
-> > >
-> > > 	For example, a network driver may hand a received buffer directly to
-> > > 	an unprivileged userspace application.  If the network device has not
-> > > 	overwritten the bytes which were in that buffer, this could leak the
-> > > 	contents of freed memory from other processes to the application.
-> >
-> >
-> > I don't think this is very troublesome, the device can memset the hole by 0.
->
-> Yes it can. But that has a performance cost. How large - depends on the
-> hole size and a bunch of other factors.
+v5 -> v6:
 
-The actual hole size is not large, general IP + TCP size.
+Address review comments from Cornelia Huck:
 
-Thanks
+ - add a clause to disallow VIRTIO_BLK_F_ZONED feature to be offered by
+   legacy devices
 
+ - clarify VIRTIO_BLK_F_DISCARD negotiation procedure for zoned devices
 
->
-> > >
-> > >
-> > > so all buffers have to be initialized completely up to the reported
-> > > used length.
-> > >
-> > > It could be that the guarantee is not relevant in some use-cases.
-> > > We would have to specify that this is an exception to the rule,
-> > > explain that drivers must be careful about information leaks.
-> > > Let's say there's a feature bit that adds uninitialized space
-> > > somewhere. How much was added? We can find out by parsing the
-> > > packet but once you start doing that just to assemble the skb
-> > > you have already lost performance.
-> > > So lots of spec work, some security risks, and unclear performance.
-> > >
-> > >
-> > >
-> > >
-> > > Is above a fair summary?
-> > >
-> > >
-> > >
-> > > If yes I would say let's address A, but make sure we ask drivers
-> > > to clear the new feature bit if there's no mergeable
-> > > (as opposed to e.g. failing probe) so we can add
-> > > support for !mergeable down the road.
-> > >
-> > >
-> > >
-> > >
-> > >
-> > > --
-> > > MST
-> > >
->
+ - simplify definitions of constant values that are specific to zoned
+   devices
 
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+ - editorial changes
+
+v4 -> v5:
+
+Add Fixes tag pointing to the corresponding GitHub issue.
+
+Improve the patch changelog.
+
+v3 -> v4:
+
+Address additional feedback from Stefan:
+
+ - align the append sector field to 8 bytes instead of 4
+
+ - define "zone sector address" in the non-normative section and use
+   this term in the text in a consistent way. Make sure it is clear
+   that the value is in bytes.
+
+ - move portions of VIRTIO_BLK_T_ZONE_REPORT description to the
+   non-normative section
+
+ - clarify the wording about reading of unwritten data
+
+ - editorial changes
+
+v2 -> v3:
+
+A few changes made as the result of off-list discussions with Stefan,
+Damien and Hannes:
+
+ - drop virtblk_zoned_req for zoned devices and define a union for
+   virtio request in header that is specific to ZONE APPEND request
+
+ - drop support for ALL bit in all zone operations except for RESET
+   ZONE. For this zone management operation, define a new request type,
+   VIRTIO_BLK_T_ZONE_RESET_ALL. This way, the zone management out
+   request header is no longer necessary
+
+ - editorial changes
+
+v1 -> v2:
+
+Address Stefan's review comments:
+
+ - move normative clauses to normative sections
+
+ - remove the "partial" bit in zone report
+
+ - change layout of virtio_blk_zoned_req. The "all" flag becomes a bit
+   in "zone" bit field struct. This leaves 31 bits for potential future
+   extensions. Move the status byte to be the last one in the struct
+
+ - set ZBD-specific error codes in the status field, not in
+   "zoned_result" field. The former "zoned_result" member now becomes
+   "append_sector"
+
+ - make a few editorial changes
+---
+ content.tex | 667 +++++++++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 665 insertions(+), 2 deletions(-)
+
+diff --git a/content.tex b/content.tex
+index 7508dd1..bbc52ad 100644
+--- a/content.tex
++++ b/content.tex
+@@ -4557,6 +4557,13 @@ \subsection{Feature bits}\label{sec:Device Types / Block Device / Feature bits}
+      maximum erase sectors count in \field{max_secure_erase_sectors} and
+      maximum erase segment number in \field{max_secure_erase_seg}.
+ 
++\item[VIRTIO_BLK_F_ZONED(17)] Device is a Zoned Block Device, that is, a device
++	that follows the zoned storage device behavior that is also supported by
++	industry standards such as the T10 Zoned Block Command standard (ZBC r05) or
++	the NVMe(TM) NVM Express Zoned Namespace Command Set Specification 1.1b
++	(ZNS). For brevity, these standard documents are referred as "ZBD standards"
++	from this point on in the text.
++
+ \end{description}
+ 
+ \subsubsection{Legacy Interface: Feature bits}\label{sec:Device Types / Block Device / Feature bits / Legacy Interface: Feature bits}
+@@ -4572,6 +4579,11 @@ \subsubsection{Legacy Interface: Feature bits}\label{sec:Device Types / Block De
+   called VIRTIO_BLK_F_WCE.
+ \end{note}
+ 
++\begin{note}
++  VIRTIO_BLK_F_ZONED feature cannot be properly negotiated without FEATURES_OK
++  bit. Legacy devices MUST NOT offer VIRTIO_BLK_F_ZONED feature bit.
++\end{note}
++
+ \subsection{Device configuration layout}\label{sec:Device Types / Block Device / Device configuration layout}
+ 
+ The \field{capacity} of the device (expressed in 512-byte sectors) is always
+@@ -4589,6 +4601,74 @@ \subsection{Device configuration layout}\label{sec:Device Types / Block Device /
+ \field{max_secure_erase_sectors} \field{secure_erase_sector_alignment} are expressed
+ in 512-byte units if the VIRTIO_BLK_F_SECURE_ERASE feature bit is negotiated.
+ 
++If the VIRTIO_BLK_F_ZONED feature is negotiated, then in
++\field{virtio_blk_zoned_characteristics},
++\begin{itemize}
++\item \field{zone_sectors} value is expressed in 512-byte sectors.
++\item \field{max_append_sectors} value is expressed in 512-byte sectors.
++\item \field{write_granularity} value is expressed in bytes.
++\end{itemize}
++
++The \field{model} field in \field{zoned} may have the following values:
++
++\begin{lstlisting}
++#define VIRTIO_BLK_Z_NONE      0
++#define VIRTIO_BLK_Z_HM        1
++#define VIRTIO_BLK_Z_HA        2
++\end{lstlisting}
++
++Depending on their design, zoned block devices may follow several possible
++models of operation. The three models that are standardized for ZBDs are
++drive-managed, host-managed and host-aware.
++
++While being zoned internally, drive-managed ZBDs behave exactly like regular,
++non-zoned block devices. For the purposes of virtio standardization,
++drive-managed ZBDs can always be treated as non-zoned devices. These devices
++have the VIRTIO_BLK_Z_NONE model value set in the \field{model} field in
++\field{zoned}.
++
++Devices that offer VIRTIO_BLK_F_ZONED feature while reporting VIRTIO_BLK_Z_NONE
++zoned model commonly do so for testing and development purposes.
++
++Host-managed zoned block devices have their LBA range divided to Sequential
++Write Required (SWR) zones that require some additional handling from the host
++for sustainable operation. All write requests to SWR zones must be sequential
++and the zones with some data need to be reset before that data can be rewritten.
++Host-managed devices support a set of ZBD-specific I/O requests that can be used
++by the host to manage device zones. Host-managed devices report VIRTIO_BLK_Z_HM
++in the \field{model} field in \field{zoned}.
++
++Host-aware zoned block devices have their LBA range divided to Sequential
++Write Preferred (SWP) zones that support the random write access, similar to
++regular non-zoned devices. However, the device I/O performance might not be
++optimal if SWP zones are used in a random I/O pattern. SWP zones also support
++the same set of ZBD-specific I/O requests as host-managed devices that allow
++host-aware devices to be managed by any host that supports zoned block devices
++to achieve its optimum performance. Host-aware devices report VIRTIO_BLK_Z_HA
++in the \field{model} field in \field{zoned}.
++
++Both SWR zones and SWP zones are sometimes referred as sequential zones.
++
++During device operation, sequential zones can be in one of the following states:
++empty, implicitly-open, explicitly-open, closed and full. The state machine that
++governs the transitions between these states is described later in this document.
++
++SWR and SWP zones consume volatile device resources while being in certain
++states and the device may set limits on the number of zones that can be in these
++states simultaneously.
++
++Zoned block devices use two internal counters to account for the device
++resources in use, the number of currently open zones and the number of currently
++active zones.
++
++Any zone state transition from a state that doesn't consume a zone resource to a
++state that consumes the same resource increments the internal device counter for
++that resource. Any zone transition out of a state that consumes a zone resource
++to a state that doesn't consume the same resource decrements the counter. Any
++request that causes the device to exceed the reported zone resource limits is
++terminated by the device with a "zone resources exceeded" error as defined for
++specific commands later.
++
+ \begin{lstlisting}
+ struct virtio_blk_config {
+         le64 capacity;
+@@ -4623,6 +4703,15 @@ \subsection{Device configuration layout}\label{sec:Device Types / Block Device /
+         le32 max_secure_erase_sectors;
+         le32 max_secure_erase_seg;
+         le32 secure_erase_sector_alignment;
++        struct virtio_blk_zoned_characteristics {
++                le32 zone_sectors;
++                le32 max_open_zones;
++                le32 max_active_zones;
++                le32 max_append_sectors;
++                le32 write_granularity;
++                u8 model;
++                u8 unused2[3];
++        } zoned;
+ };
+ \end{lstlisting}
+ 
+@@ -4686,6 +4775,10 @@ \subsection{Device Initialization}\label{sec:Device Types / Block Device / Devic
+     \field{secure_erase_sector_alignment} can be used by OS when splitting a
+     request based on alignment.
+ 
++\item If the VIRTIO_BLK_F_ZONED feature is negotiated, the fields in
++    \field{zoned} can be read by the driver to determine the zone
++    characteristics of the device. All \field{zoned} fields are read-only.
++
+ \end{enumerate}
+ 
+ \drivernormative{\subsubsection}{Device Initialization}{Device Types / Block Device / Device Initialization}
+@@ -4701,6 +4794,29 @@ \subsection{Device Initialization}\label{sec:Device Types / Block Device / Devic
+ The driver MUST NOT read \field{writeback} before setting
+ the FEATURES_OK \field{device status} bit.
+ 
++Drivers SHOULD NOT negotiate VIRTIO_BLK_F_ZONED feature if they are incapable
++of supporting devices with the VIRTIO_BLK_Z_HM or VIRTIO_BLK_Z_HA zoned model.
++
++If the VIRTIO_BLK_F_ZONED feature is offered by the device with the
++VIRTIO_BLK_Z_HM zone model, then the VIRTIO_BLK_F_DISCARD feature MUST NOT be
++offered by the driver.
++
++If the VIRTIO_BLK_F_ZONED feature and VIRTIO_BLK_F_DISCARD feature are both
++offered by the device with the VIRTIO_BLK_Z_HA or VIRTIO_BLK_Z_NONE zone model,
++then the driver MAY negotiate these two bits independently.
++
++If the VIRTIO_BLK_F_ZONED feature is negotiated, then
++\begin{itemize}
++\item if the driver that can not support host-managed zoned devices
++    reads VIRTIO_BLK_Z_HM from the \field{model} field of \field{zoned}, the
++    driver MUST NOT set FEATURES_OK flag and instead set the FAILED bit.
++
++\item if the driver that can not support zoned devices reads VIRTIO_BLK_Z_HA
++    from the \field{model} field of \field{zoned}, the driver
++    MAY handle the device as a non-zoned device. In this case, the
++    driver SHOULD ignore all other fields in \field{zoned}.
++\end{itemize}
++
+ \devicenormative{\subsubsection}{Device Initialization}{Device Types / Block Device / Device Initialization}
+ 
+ Devices SHOULD always offer VIRTIO_BLK_F_FLUSH, and MUST offer it
+@@ -4712,6 +4828,74 @@ \subsection{Device Initialization}\label{sec:Device Types / Block Device / Devic
+ The device MUST initialize padding bytes \field{unused0} and
+ \field{unused1} to 0.
+ 
++If the device that is being initialized is a not a zoned device, the device
++SHOULD NOT offer the VIRTIO_BLK_F_ZONED feature.
++
++If the VIRTIO_BLK_F_ZONED feature is not accepted by the driver,
++\begin{itemize}
++\item the device with the VIRTIO_BLK_Z_HA zone model SHOULD proceed with the
++    initialization while setting all zoned characteristics fields to zero.
++
++\item the device with the VIRTIO_BLK_Z_HM zone model MUST fail to set the
++    FEATURES_OK device status bit when the driver writes the Device Status
++    field.
++\end{itemize}
++
++If the VIRTIO_BLK_F_ZONED feature is negotiated, then the \field{model} field in
++\field{zoned} struct in the configuration space MUST be set by the device
++\begin{itemize}
++\item to the value of VIRTIO_BLK_Z_NONE if it operates as a drive-managed
++    zoned block device or a non-zoned block device.
++
++\item to the value of VIRTIO_BLK_Z_HM if it operates as a host-managed zoned
++    block device.
++
++\item to the value of VIRTIO_BLK_Z_HA if it operates as a host-aware zoned
++    block device.
++\end{itemize}
++
++If the VIRTIO_BLK_F_ZONED feature is negotiated,
++\begin{itemize}
++\item the \field{zone_sectors} field of \field{zoned} MUST be set by the device
++    to the size of a single zone on the device. All zones of the device have the
++    same size indicated by \field{zone_sectors} except for the last zone that
++    MAY be smaller than all other zones. The driver can calculate the number of
++    zones on the device as
++    \begin{lstlisting}
++        nr_zones = (capacity + zone_sectors - 1) / zone_sectors;
++    \end{lstlisting}
++    and the size of the last zone as
++    \begin{lstlisting}
++        zs_last = capacity - (nr_zones - 1) * zone_sectors;
++    \end{lstlisting}
++
++\item The \field{max_open_zones} field of the \field{zoned} structure MUST be
++    set by the device to the maximum number of zones that can be open on the
++    device (zones in the implicit open or explicit open state). A value
++    of zero indicates that the device does not have any limit on the number of
++    open zones.
++
++\item The \field{max_active_zones} field of the \field{zoned} structure MUST
++    be set by the device to the maximum number zones that can be active on the
++    device (zones in the implicit open, explicit open or closed state). A value
++    of zero indicates that the device does not have any limit on the number of
++    active zones.
++
++\item the \field{max_append_sectors} field of \field{zoned} MUST be set by
++    the device to the maximum data size of a VIRTIO_BLK_T_ZONE_APPEND request
++    that can be successfully issued to the device. The value of this field MUST
++    NOT exceed the \field{seg_max} * \field{size_max} value. A device MAY set
++    the \field{max_append_sectors} to zero if it doesn't support
++    VIRTIO_BLK_T_ZONE_APPEND requests.
++
++\item the \field{write_granularity} field of \field{zoned} MUST be set by the
++    device to the offset and size alignment constraint for VIRTIO_BLK_T_OUT
++    and VIRTIO_BLK_T_ZONE_APPEND requests issued to a sequential zone of the
++    device.
++
++\item the device MUST initialize padding bytes \field{unused2} to 0.
++\end{itemize}
++
+ \subsubsection{Legacy Interface: Device Initialization}\label{sec:Device Types / Block Device / Device Initialization / Legacy Interface: Device Initialization}
+ 
+ Because legacy devices do not have FEATURES_OK, transitional devices
+@@ -4746,7 +4930,15 @@ \subsection{Device Operation}\label{sec:Device Types / Block Device / Device Ope
+         le32 reserved;
+         le64 sector;
+         u8 data[];
+-        u8 status;
++        union {
++                u8 status;
++
++                struct {
++                        u8 status;
++                        u8 reserved[7];
++                        le64 append_sector;
++                } zone_append_in_hdr;
++        };
+ };
+ \end{lstlisting}
+ 
+@@ -4770,7 +4962,7 @@ \subsection{Device Operation}\label{sec:Device Types / Block Device / Device Ope
+ 
+ The \field{sector} number indicates the offset (multiplied by 512) where
+ the read or write is to occur. This field is unused and set to 0 for
+-commands other than read or write.
++commands other than read, write and some zone operations.
+ 
+ VIRTIO_BLK_T_IN requests populate \field{data} with the contents of sectors
+ read from the block device (in multiples of 512 bytes).  VIRTIO_BLK_T_OUT
+@@ -4853,6 +5045,299 @@ \subsection{Device Operation}\label{sec:Device Types / Block Device / Device Ope
+ command produces VIRTIO_BLK_S_IOERR.  A segment may have completed
+ successfully, failed, or not been processed by the device.
+ 
++The following requirements only apply if the VIRTIO_BLK_F_ZONED feature is
++negotiated.
++
++In addition to the request types defined for non-zoned devices, the type of the
++request can be a zone report (VIRTIO_BLK_T_ZONE_REPORT), an explicit zone open
++(VIRTIO_BLK_T_ZONE_OPEN), an explicit zone close (VIRTIO_BLK_T_ZONE_CLOSE), a
++zone finish (VIRTIO_BLK_T_ZONE_FINISH), a zone_append
++(VIRTIO_BLK_T_ZONE_APPEND), a zone reset (VIRTIO_BLK_T_ZONE_RESET) or a zone
++reset all (VIRTIO_BLK_T_ZONE_RESET_ALL).
++
++\begin{lstlisting}
++#define VIRTIO_BLK_T_ZONE_APPEND    15
++#define VIRTIO_BLK_T_ZONE_REPORT    16
++#define VIRTIO_BLK_T_ZONE_OPEN      18
++#define VIRTIO_BLK_T_ZONE_CLOSE     20
++#define VIRTIO_BLK_T_ZONE_FINISH    22
++#define VIRTIO_BLK_T_ZONE_RESET     24
++#define VIRTIO_BLK_T_ZONE_RESET_ALL 26
++\end{lstlisting}
++
++Requests of type VIRTIO_BLK_T_OUT, VIRTIO_BLK_T_ZONE_OPEN,
++VIRTIO_BLK_T_ZONE_CLOSE, VIRTIO_BLK_T_ZONE_FINISH, VIRTIO_BLK_T_ZONE_APPEND,
++VIRTIO_BLK_T_ZONE_RESET or VIRTIO_BLK_T_ZONE_RESET_ALL may be completed by the
++device with VIRTIO_BLK_S_OK, VIRTIO_BLK_S_IOERR or VIRTIO_BLK_S_UNSUPP
++\field{status}, or, additionally, with  VIRTIO_BLK_S_ZONE_INVALID_CMD,
++VIRTIO_BLK_S_ZONE_UNALIGNED_WP, VIRTIO_BLK_S_ZONE_OPEN_RESOURCE or
++VIRTIO_BLK_S_ZONE_ACTIVE_RESOURCE ZBD-specific status codes.
++
++\begin{lstlisting}
++#define VIRTIO_BLK_S_ZONE_INVALID_CMD     3
++#define VIRTIO_BLK_S_ZONE_UNALIGNED_WP    4
++#define VIRTIO_BLK_S_ZONE_OPEN_RESOURCE   5
++#define VIRTIO_BLK_S_ZONE_ACTIVE_RESOURCE 6
++\end{lstlisting}
++
++Requests of the type VIRTIO_BLK_T_ZONE_REPORT are reads and requests of the type
++VIRTIO_BLK_T_ZONE_APPEND are writes. VIRTIO_BLK_T_ZONE_OPEN,
++VIRTIO_BLK_T_ZONE_CLOSE, VIRTIO_BLK_T_ZONE_FINISH, VIRTIO_BLK_T_ZONE_RESET and
++VIRTIO_BLK_T_ZONE_RESET_ALL are non-data requests.
++
++Zone sector address is a 64-bit address of the first 512-byte sector of the
++zone.
++
++VIRTIO_BLK_T_ZONE_OPEN, VIRTIO_BLK_T_ZONE_CLOSE, VIRTIO_BLK_T_ZONE_FINISH and
++VIRTIO_BLK_T_ZONE_RESET requests make the zone operation to act on a particular
++zone specified by the zone sector address in the \field{sector} of the request.
++
++VIRTIO_BLK_T_ZONE_RESET_ALL request acts upon all applicable zones of the
++device. The \field{sector} value is not used for this request.
++
++In ZBD standards, the VIRTIO_BLK_T_ZONE_REPORT request belongs to "Zone
++Management Receive" command category and VIRTIO_BLK_T_ZONE_OPEN,
++VIRTIO_BLK_T_ZONE_CLOSE, VIRTIO_BLK_T_ZONE_FINISH and
++VIRTIO_BLK_T_ZONE_RESET/VIRTIO_BLK_T_ZONE_RESET_ALL requests are categorized as
++"Zone Management Send" commands. VIRTIO_BLK_T_ZONE_APPEND is categorized
++separately from the zone management commands and is the only request that uses
++\field{zone_append_in_hdr} structure in \field{virtio_blk_req} to return
++to the driver the sector at which the data has been appended to the zone.
++
++VIRTIO_BLK_T_ZONE_REPORT is a read request that returns the information about
++the current state of zones on the device starting from the zone containing the
++\field{sector} of the request. The report consists of a header followed by zero
++or more zone descriptors.
++
++A zone report reply has the following structure:
++
++\begin{lstlisting}
++struct virtio_blk_zone_report {
++        le64   nr_zones;
++        u8     reserved[56];
++        struct virtio_blk_zone_descriptor zones[];
++};
++\end{lstlisting}
++
++The device sets the \field{nr_zones} field in the report header to the number of
++fully transferred zone descriptors in the data buffer.
++
++A zone descriptor has the following structure:
++
++\begin{lstlisting}
++struct virtio_blk_zone_descriptor {
++        le64   z_cap;
++        le64   z_start;
++        le64   z_wp;
++        u8     z_type;
++        u8     z_state;
++        u8     reserved[38];
++};
++\end{lstlisting}
++
++The zone descriptor field \field{z_type} \field{virtio_blk_zone_descriptor}
++indicates the type of the zone.
++
++The following zone types are available:
++
++\begin{lstlisting}
++#define VIRTIO_BLK_ZT_CONV     1
++#define VIRTIO_BLK_ZT_SWR      2
++#define VIRTIO_BLK_ZT_SWP      3
++\end{lstlisting}
++
++Read and write operations into zones with the VIRTIO_BLK_ZT_CONV (Conventional)
++type have the same behavior as read and write operations on a regular block
++device. Any block in a conventional zone can be read or written at any time and
++in any order.
++
++Zones with VIRTIO_BLK_ZT_SWR can be read randomly, but must be written
++sequentially at a certain point in the zone called the Write Pointer (WP). With
++every write, the Write Pointer is incremented by the number of sectors written.
++
++Zones with VIRTIO_BLK_ZT_SWP can be read randomly and should be written
++sequentially, similarly to SWR zones. However, SWP zones can accept random write
++operations, that is, VIRTIO_BLK_T_OUT requests with a start sector different
++from the zone write pointer position.
++
++The field \field{z_state} of \field{virtio_blk_zone_descriptor} indicates the
++state of the device zone.
++
++The following zone states are available:
++
++\begin{lstlisting}
++#define VIRTIO_BLK_ZS_NOT_WP   0
++#define VIRTIO_BLK_ZS_EMPTY    1
++#define VIRTIO_BLK_ZS_IOPEN    2
++#define VIRTIO_BLK_ZS_EOPEN    3
++#define VIRTIO_BLK_ZS_CLOSED   4
++#define VIRTIO_BLK_ZS_RDONLY   13
++#define VIRTIO_BLK_ZS_FULL     14
++#define VIRTIO_BLK_ZS_OFFLINE  15
++\end{lstlisting}
++
++Zones of the type VIRTIO_BLK_ZT_CONV are always reported by the device to be in
++the VIRTIO_BLK_ZS_NOT_WP state. Zones of the types VIRTIO_BLK_ZT_SWR and
++VIRTIO_BLK_ZT_SWP can not transition to the VIRTIO_BLK_ZS_NOT_WP state.
++
++Zones in VIRTIO_BLK_ZS_EMPTY (Empty), VIRTIO_BLK_ZS_IOPEN (Implicitly Open),
++VIRTIO_BLK_ZS_EOPEN (Explicitly Open) and VIRTIO_BLK_ZS_CLOSED (Closed) state
++are writable, but zones in VIRTIO_BLK_ZS_RDONLY (Read-Only), VIRTIO_BLK_ZS_FULL
++(Full) and VIRTIO_BLK_ZS_OFFLINE (Offline) state are not. The write pointer
++value (\field{z_wp}) is not valid for Read-Only, Full and Offline zones.
++
++The zone descriptor field \field{z_cap} contains the maximum number of 512-byte
++sectors that are available to be written with user data when the zone is in the
++Empty state. This value shall be less than or equal to the \field{zone_sectors}
++value in \field{virtio_blk_zoned_characteristics} structure in the device
++configuration space.
++
++The zone descriptor field \field{z_start} contains the zone sector address.
++
++The zone descriptor field \field{z_wp} contains the sector address where the
++next write operation for this zone should be issued. This value is undefined
++for conventional zones and for zones in VIRTIO_BLK_ZS_RDONLY,
++VIRTIO_BLK_ZS_FULL and VIRTIO_BLK_ZS_OFFLINE state.
++
++Depending on their state, zones consume resources as follows:
++\begin{itemize}
++\item a zone in VIRTIO_BLK_ZS_IOPEN and VIRTIO_BLK_ZS_EOPEN state consumes one
++    open zone resource and, additionally,
++
++\item a zone in VIRTIO_BLK_ZS_IOPEN, VIRTIO_BLK_ZS_EOPEN and
++    VIRTIO_BLK_ZS_CLOSED state consumes one active resource.
++\end{itemize}
++
++Attempts for zone transitions that violate zone resource limits must fail with
++VIRTIO_BLK_S_ZONE_OPEN_RESOURCE or VIRTIO_BLK_S_ZONE_ACTIVE_RESOURCE
++\field{status}.
++
++Zones in the VIRTIO_BLK_ZS_EMPTY (Empty) state have the write pointer value
++equal to the sector address of the zone. In this state, the entire capacity of
++the zone is available for writing. A zone can transition from this state to
++\begin{itemize}
++\item VIRTIO_BLK_ZS_IOPEN when a successful VIRTIO_BLK_T_OUT request or
++    VIRTIO_BLK_T_ZONE_APPEND with a non-zero data size is received for the zone.
++
++\item VIRTIO_BLK_ZS_EOPEN when a successful VIRTIO_BLK_T_ZONE_OPEN request is
++    received for the zone
++\end{itemize}
++
++When a VIRTIO_BLK_T_ZONE_RESET request is issued to an Empty zone, the request
++is completed successfully and the zone stays in the VIRTIO_BLK_ZS_EMPTY state.
++
++Zones in the VIRTIO_BLK_ZS_IOPEN (Implicitly Open) state transition from
++this state to
++\begin{itemize}
++\item VIRTIO_BLK_ZS_EMPTY when a successful VIRTIO_BLK_T_ZONE_RESET request is
++    received for the zone,
++
++\item VIRTIO_BLK_ZS_EOPEN when a successful VIRTIO_BLK_T_ZONE_OPEN request is
++    received for the zone,
++
++\item VIRTIO_BLK_ZS_CLOSED when a successful VIRTIO_BLK_T_ZONE_CLOSE request is
++    received for the zone,
++
++\item VIRTIO_BLK_ZS_CLOSED implicitly by the device when another zone is
++    entering the VIRTIO_BLK_ZS_IOPEN or VIRTIO_BLK_ZS_EOPEN state and the number
++    of currently open zones is at \field{max_open_zones} limit,
++
++\item VIRTIO_BLK_ZS_FULL when a successful VIRTIO_BLK_T_ZONE_FINISH request is
++    received for the zone.
++
++\item VIRTIO_BLK_ZS_FULL when a successful VIRTIO_BLK_T_OUT or
++    VIRTIO_BLK_T_ZONE_APPEND request that causes the zone to reach its writable
++    capacity is received for the zone.
++\end{itemize}
++
++Zones in the VIRTIO_BLK_ZS_EOPEN (Explicitly Open) state transition from
++this state to
++\begin{itemize}
++\item VIRTIO_BLK_ZS_EMPTY when a successful VIRTIO_BLK_T_ZONE_RESET request is
++    received for the zone,
++
++\item VIRTIO_BLK_ZS_EMPTY when a successful VIRTIO_BLK_T_ZONE_CLOSE request is
++    received for the zone and the write pointer of the zone has the value equal
++    to the start sector of the zone,
++
++\item VIRTIO_BLK_ZS_CLOSED when a successful VIRTIO_BLK_T_ZONE_CLOSE request is
++    received for the zone and the zone write pointer is larger then the start
++    sector of the zone,
++
++\item VIRTIO_BLK_ZS_FULL when a successful VIRTIO_BLK_T_ZONE_FINISH request is
++    received for the zone,
++
++\item VIRTIO_BLK_ZS_FULL when a successful VIRTIO_BLK_T_OUT or
++    VIRTIO_BLK_T_ZONE_APPEND request that causes the zone to reach its writable
++    capacity is received for the zone.
++\end{itemize}
++
++When a VIRTIO_BLK_T_ZONE_EOPEN request is issued to an Explicitly Open zone, the
++request is completed successfully and the zone stays in the VIRTIO_BLK_ZS_EOPEN
++state.
++
++Zones in the VIRTIO_BLK_ZS_CLOSED (Closed) state transition from this state
++to
++\begin{itemize}
++\item VIRTIO_BLK_ZS_EMPTY when a successful VIRTIO_BLK_T_ZONE_RESET request is
++    received for the zone,
++
++\item VIRTIO_BLK_ZS_IOPEN when a successful VIRTIO_BLK_T_OUT request or
++    VIRTIO_BLK_T_ZONE_APPEND with a non-zero data size is received for the zone.
++
++\item VIRTIO_BLK_ZS_EOPEN when a successful VIRTIO_BLK_T_ZONE_OPEN request is
++    received for the zone,
++\end{itemize}
++
++When a VIRTIO_BLK_T_ZONE_CLOSE request is issued to a Closed zone, the request
++is completed successfully and the zone stays in the VIRTIO_BLK_ZS_CLOSED state.
++
++Zones in the VIRTIO_BLK_ZS_FULL (Full) state can transition from this state to
++VIRTIO_BLK_ZS_EMPTY when a successful VIRTIO_BLK_T_ZONE_RESET request is
++received for the zone
++
++When a VIRTIO_BLK_T_ZONE_FINISH request is issued to a Full zone, the request
++is completed successfully and the zone stays in the VIRTIO_BLK_ZS_FULL state.
++
++The device may automatically transition zones to VIRTIO_BLK_ZS_RDONLY
++(Read-Only) or VIRTIO_BLK_ZS_OFFLINE (Offline) state from any other state. The
++device may also automatically transition zones in the Read-Only state to the
++Offline state. Zones in the Offline state may not transition to any other state.
++Such automatic transitions usually indicate hardware failures. The previously
++written data may only be read from zones in the Read-Only state. Zones in the
++Offline state can not be read or written.
++
++VIRTIO_BLK_S_ZONE_UNALIGNED_WP is set by the device when the request received
++from the driver attempts to perform a write to an SWR zone and at least one of
++the following conditions is met:
++
++\begin{itemize}
++\item the starting sector of the request is not equal to the current value of
++    the zone write pointer.
++
++\item the ending sector of the request data multiplied by 512 is not a multiple
++    of the value reported by the device in the field \field{write_granularity}
++    in the device configuration space.
++\end{itemize}
++
++VIRTIO_BLK_S_ZONE_OPEN_RESOURCE is set by the device when a zone operation or
++write request received from the driver can not be handled without exceeding the
++\field{max_open_zones} limit value reported by the device in the configuration
++space.
++
++VIRTIO_BLK_S_ZONE_ACTIVE_RESOURCE is set by the device when a zone operation or
++write request received from the driver can not be handled without exceeding the
++\field{max_active_zones} limit value reported by the device in the configuration
++space.
++
++A zone transition request that leads to both the \field{max_open_zones} and the
++\field{max_active_zones} limits to be exceeded is terminated by the device with
++VIRTIO_BLK_S_ZONE_ACTIVE_RESOURCE \field{status} value.
++
++The device reports all other error conditions related to zoned block model
++operation by setting the VIRTIO_BLK_S_ZONE_INVALID_CMD value in
++\field{status} of \field{virtio_blk_req} structure.
++
+ \drivernormative{\subsubsection}{Device Operation}{Device Types / Block Device / Device Operation}
+ 
+ A driver MUST NOT submit a request which would cause a read or write
+@@ -4899,6 +5384,50 @@ \subsection{Device Operation}\label{sec:Device Types / Block Device / Device Ope
+ successfully, failed, or were processed by the device at all if the request
+ failed with VIRTIO_BLK_S_IOERR.
+ 
++The following requirements only apply if the VIRTIO_BLK_F_ZONED feature is
++negotiated.
++
++A zone sector address provided by the driver MUST be a multiple of 512 bytes.
++
++When forming a VIRTIO_BLK_T_ZONE_REPORT request, the driver MUST set a sector
++within the sector range of the starting zone to report to \field{sector} field.
++It MAY be a sector that is different from the zone sector address.
++
++In VIRTIO_BLK_T_ZONE_OPEN, VIRTIO_BLK_T_ZONE_CLOSE, VIRTIO_BLK_T_ZONE_FINISH and
++VIRTIO_BLK_T_ZONE_RESET requests, the driver MUST set \field{sector} field to
++point at the first sector in the target zone.
++
++In VIRTIO_BLK_T_ZONE_RESET_ALL request, the driver MUST set the field
++\field{sector} to zero value.
++
++The \field{sector} field of the VIRTIO_BLK_T_ZONE_APPEND request MUST specify
++the zone sector address of the zone to which data is to be appended at the
++position of the write pointer. The size of the data that is appended MUST be a
++multiple of 512 bytes and MUST NOT exceed the \field{max_append_sectors} value
++provided by the device in \field{virtio_blk_zoned_characteristics} configuration
++space structure.
++
++Upon a successful completion of a VIRTIO_BLK_T_ZONE_APPEND request, the driver
++MAY read the starting sector location of the written data from the request
++field \field{append_sector}.
++
++All VIRTIO_BLK_T_OUT requests issued by the driver to sequential zones and
++VIRTIO_BLK_T_ZONE_APPEND requests MUST have:
++
++\begin{enumerate}
++\item the data size that is a multiple of the number of bytes reported
++    by the device in the field \field{write_granularity} in the
++    \field{virtio_blk_zoned_characteristics} configuration space structure.
++
++\item the value of the field \field{sector} that is a multiple of the number of
++    bytes reported by the device in the field \field{write_granularity} in the
++    \field{virtio_blk_zoned_characteristics} configuration space structure.
++
++\item the data size that will not exceed the writable zone capacity when its
++    value is added to the current value of the write pointer of the zone.
++
++\end{enumerate}
++
+ \devicenormative{\subsubsection}{Device Operation}{Device Types / Block Device / Device Operation}
+ 
+ A device MUST set the \field{status} byte to VIRTIO_BLK_S_IOERR
+@@ -4990,6 +5519,140 @@ \subsection{Device Operation}\label{sec:Device Types / Block Device / Device Ope
+   simplfy passthrough implementations from eMMC devices.
+ \end{note}
+ 
++If the VIRTIO_BLK_F_ZONED feature is not negotiated, the device MUST reject
++VIRTIO_BLK_T_ZONE_REPORT, VIRTIO_BLK_T_ZONE_OPEN, VIRTIO_BLK_T_ZONE_CLOSE,
++VIRTIO_BLK_T_ZONE_FINISH, VIRTIO_BLK_T_ZONE_APPEND, VIRTIO_BLK_T_ZONE_RESET and
++VIRTIO_BLK_T_ZONE_RESET_ALL requests with VIRTIO_BLK_S_UNSUPP status.
++
++The following device requirements only apply if the VIRTIO_BLK_F_ZONED feature
++is negotiated.
++
++If a request of type VIRTIO_BLK_T_ZONE_OPEN, VIRTIO_BLK_T_ZONE_CLOSE,
++VIRTIO_BLK_T_ZONE_FINISH or VIRTIO_BLK_T_ZONE_RESET is issued for a Conventional
++zone (type VIRTIO_BLK_ZT_CONV), the device MUST complete the request with
++VIRTIO_BLK_S_ZONE_INVALID_CMD \field{status}.
++
++If the zone specified by the VIRTIO_BLK_T_ZONE_APPEND request is not a SWR zone,
++then the request SHALL be completed with VIRTIO_BLK_S_ZONE_INVALID_CMD
++\field{status}.
++
++The device handles a VIRTIO_BLK_T_ZONE_OPEN request with the by attempting to
++change the state of the zone with the \field{sector} address to
++VIRTIO_BLK_ZS_EOPEN. If the transition to this state can not be performed, the
++request MUST be completed with VIRTIO_BLK_S_ZONE_INVALID_CMD \field{status}. If,
++while processing this request, the available zone resources are insufficient,
++then the zone state does not change and the request MUST be completed with
++VIRTIO_BLK_S_ZONE_OPEN_RESOURCE or VIRTIO_BLK_S_ZONE_ACTIVE_RESOURCE value in
++the field \field{status}.
++
++The device handles a VIRTIO_BLK_T_ZONE_CLOSE request by attempting to change the
++state of the zone with the \field{sector} address to VIRTIO_BLK_ZS_CLOSED. If
++the transition to this state can not be performed, the request MUST be completed
++with VIRTIO_BLK_S_ZONE_INVALID_CMD value in the field \field{status}.
++
++The device handles a VIRTIO_BLK_T_ZONE_FINISH request by attempting to change
++the state of the zone with the \field{sector} address to VIRTIO_BLK_ZS_FULL. If
++the transition to this state can not be performed, the zone state does not
++change and the request MUST be completed with VIRTIO_BLK_S_ZONE_INVALID_CMD
++value in the field \field{status}.
++
++The device handles a VIRTIO_BLK_T_ZONE_RESET request by attempting to change the
++state of the zone with the \field{sector} address to VIRTIO_BLK_ZS_EMPTY state.
++If the transition to this state can not be performed, the zone state does not
++change and the request MUST be completed with VIRTIO_BLK_S_ZONE_INVALID_CMD
++value in the field \field{status}.
++
++The device handles a VIRTIO_BLK_T_ZONE_RESET_ALL request by transitioning all
++sequential device zones in VIRTIO_BLK_ZS_IOPEN, VIRTIO_BLK_ZS_EOPEN,
++VIRTIO_BLK_ZS_CLOSED and VIRTIO_BLK_ZS_FULL state to VIRTIO_BLK_ZS_EMPTY state.
++
++Upon receiving a VIRTIO_BLK_T_ZONE_APPEND request or a VIRTIO_BLK_T_OUT
++request issued to a SWR zone in VIRTIO_BLK_ZS_EMPTY or VIRTIO_BLK_ZS_CLOSED
++state, the device attempts to perform the transition of the zone to
++VIRTIO_BLK_ZS_IOPEN state before writing data. This transition may fail due to
++insufficient open and/or active zone resources available on the device. In this
++case, the request MUST be completed with VIRTIO_BLK_S_ZONE_OPEN_RESOURCE or
++VIRTIO_BLK_S_ZONE_ACTIVE_RESOURCE value in the \field{status}.
++
++If the \field{sector} field in the VIRTIO_BLK_T_ZONE_APPEND request does not
++specify the lowest sector for a zone, then the request SHALL be completed with
++VIRTIO_BLK_S_ZONE_INVALID_CMD value in \field{status}.
++
++A VIRTIO_BLK_T_ZONE_APPEND request or a VIRTIO_BLK_T_OUT request that has the
++data range that that exceeds the remaining writable capacity for the zone, then
++the request SHALL be completed with VIRTIO_BLK_S_ZONE_INVALID_CMD value in
++\field{status}.
++
++If a request of the type VIRTIO_BLK_T_ZONE_APPEND is completed with
++VIRTIO_BLK_S_OK status, the field \field{append_sector} in
++\field{zone_append_in_hdr} field in \field{virtio_blk_req} MUST be set by
++the device to contain the start sector of the data written to the zone.
++
++A VIRTIO_BLK_T_ZONE_APPEND request that has the data size that exceeds
++\field{max_append_sectors} configuration space value, then,
++\begin{itemize}
++\item if \field{max_append_sectors} configuration space value is reported as
++    zero by the device, the request SHALL be completed with VIRTIO_BLK_S_UNSUPP
++    \field{status}.
++
++\item if \field{max_append_sectors} configuration space value is reported as
++    a non-zero value by the device, the request SHALL be completed with
++    VIRTIO_BLK_S_ZONE_INVALID_CMD \field{status}.
++\end{itemize}
++
++If a VIRTIO_BLK_T_ZONE_APPEND request, a VIRTIO_BLK_T_IN request or a
++VIRTIO_BLK_T_OUT request issued to a SWR zone has the range that has sectors in
++more than one zone, then the request SHALL completed with
++VIRTIO_BLK_S_ZONE_INVALID_CMD value in the field \field{status}.
++
++A VIRTIO_BLK_T_OUT request that has the \field{sector} value that is not aligned
++with the write pointer for the zone, then the request SHALL completed with
++VIRTIO_BLK_S_ZONE_UNALIGNED_WP value in the field \field{status}.
++
++In order to avoid resource-related errors while opening zones implicitly, the
++device MAY automatically transition zones in VIRTIO_BLK_ZS_IOPEN state to
++VIRTIO_BLK_ZS_CLOSED state.
++
++All VIRTIO_BLK_T_OUT requests or VIRTIO_BLK_T_ZONE_APPEND requests issued
++to a zone in the VIRTIO_BLK_ZS_RDONLY state SHALL be completed with
++VIRTIO_BLK_S_ZONE_INVALID_CMD \field{status}.
++
++All requests issued to a zone in the VIRTIO_BLK_ZS_OFFLINE state SHALL be
++completed with VIRTIO_BLK_S_ZONE_INVALID_CMD value in the field \field{status}.
++
++The device MUST consider the data that is read above the write pointer of a zone
++as unwritten data. The sectors between the write pointer position and the upper
++write boundary of the zone during VIRTIO_BLK_T_ZONE_FINISH request processing
++are also considered unwritten data.
++
++When unwritten data is present in the sector range of a read request, the device
++MUST process this data in one of the following ways -
++
++\begin{enumerate}
++\item Fill the unwritten data with a device-specific byte pattern. The
++configuration, control and reporting of this byte pattern is beyond the scope
++of this standard. This is the preferred approach.
++
++\item Fail the request. Depending on the driver implementation, this may prevent
++the device from becoming operational.
++\end{enumerate}
++
++If the both VIRTIO_BLK_F_ZONED and VIRTIO_BLK_F_SECURE_ERASE features are
++negotiated, then
++
++\begin{enumerate}
++\item the field \field{secure_erase_sector_alignment} in the configuration space
++of the device MUST be a multiple of \field{zone_sectors} value reported in the
++device configuration space.
++
++\item the data size in VIRTIO_BLK_T_SECURE_ERASE requests MUST be a multiple of
++\field{zone_sectors} value in the device configuration space.
++\end{enumerate}
++
++The device MUST handle a VIRTIO_BLK_T_SECURE_ERASE request in the same way it
++handles VIRTIO_BLK_T_ZONE_RESET request for the zone range specified in the
++VIRTIO_BLK_T_SECURE_ERASE request.
++
+ \subsubsection{Legacy Interface: Device Operation}\label{sec:Device Types / Block Device / Device Operation / Legacy Interface: Device Operation}
+ When using the legacy interface, transitional devices and drivers
+ MUST format the fields in struct virtio_blk_req
+-- 
+2.34.1
 
