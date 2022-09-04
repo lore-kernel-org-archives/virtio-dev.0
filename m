@@ -1,210 +1,127 @@
-Return-Path: <virtio-dev-return-9916-cohuck=redhat.com@lists.oasis-open.org>
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 7EDDF986538
-	for <virtio-dev@lists.oasis-open.org>; Wed,  7 Sep 2022 17:15:50 +0000 (UTC)
-Date: Wed, 7 Sep 2022 13:15:41 -0400
-From: Stefan Hajnoczi <stefanha@redhat.com>
-Message-ID: <YxjRvZr6alY6OkPb@fedora>
-References: <877d61wuc0.fsf@linaro.org>
- <87r10svr77.fsf@alyssa.is>
- <YxZbrmFlQZp6rR9E@fedora>
- <YxeEcN+k5fUGt/Yq@work-vm>
- <YxeNkJJwJMsBURXI@fedora>
- <YximF3/B3cgiQzYx@work-vm>
+Return-Path: <prvs=23974adae=dmitry.fomichev@wdc.com>
+From: Dmitry Fomichev <Dmitry.Fomichev@wdc.com>
+Subject: Re: [virtio-dev] [PATCH v5] virtio-blk: add zoned block device
+ specification
+Date: Sun, 4 Sep 2022 16:55:07 +0000
+Message-ID: <223eff30c00a8c1577ee8a59039ae10e6742bc63.camel@wdc.com>
+References: <20220829005818.12532-1-dmitry.fomichev@wdc.com>
+	 <87v8qbds4l.fsf@redhat.com>
+In-Reply-To: <87v8qbds4l.fsf@redhat.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="7wlpPLYkSQR7nCmu"
-Content-Disposition: inline
-In-Reply-To: <YximF3/B3cgiQzYx@work-vm>
-Subject: Re: [virtio-dev] Next VirtIO device for Project Stratos?
-To: "Dr. David Alan Gilbert" <dgilbert@redhat.com>
-Cc: Alyssa Ross <hi@alyssa.is>, Alex =?iso-8859-1?Q?Benn=E9e?= <alex.bennee@linaro.org>, stratos-dev@op-lists.linaro.org, virtio-dev@lists.oasis-open.org, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, Viresh Kumar <viresh.kumar@linaro.org>, Mathieu Poirier <mathieu.poirier@linaro.org>, Mike Holmes <mike.holmes@linaro.org>, Matt Spencer <Matt.Spencer@arm.com>, Peter Griffin <peter.griffin@linaro.org>, Dan Milea <dan.milea@windriver.com>, Bill Mills <bill.mills@linaro.org>, Francois Ozog <francois.ozog@linaro.org>, Johannes Berg <johannes@sipsolutions.net>, Gerd Hoffmann <kraxel@redhat.com>, Arnd Bergmann <arnd.bergmann@linaro.org>, Christian Pinto <c.pinto@virtualopensystems.com>, Namhyung Kim <namhyung@kernel.org>, Petre Eftime <epetre@amazon.com>, Peter Hilber <peter.hilber@opensynergy.com>, Marcel Holtmann <marcel@holtmann.org>, "Michael S. Tsirkin" <mst@redhat.com>, Puck Meerburg <puck@puckipedia.com>, Gurchetan Singh <gurchetansingh@chromium.org>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <6C206627B9ED82428B7005DBB9812619@namprd04.prod.outlook.com>
+Content-Transfer-Encoding: base64
+To: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "cohuck@redhat.com" <cohuck@redhat.com>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>
+Cc: "its@irrelevant.dk" <its@irrelevant.dk>, Niklas Cassel <Niklas.Cassel@wdc.com>, "hare@suse.de" <hare@suse.de>, "faithilikerun@gmail.com" <faithilikerun@gmail.com>, =?utf-8?B?TWF0aWFzIEJqw7hybGluZw==?= <Matias.Bjorling@wdc.com>, Hans Holmberg <Hans.Holmberg@wdc.com>, "damien.lemoal@opensource.wdc.com" <damien.lemoal@opensource.wdc.com>, "stefanha@gmail.com" <stefanha@gmail.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
---7wlpPLYkSQR7nCmu
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Wed, Sep 07, 2022 at 03:09:27PM +0100, Dr. David Alan Gilbert wrote:
-> * Stefan Hajnoczi (stefanha@redhat.com) wrote:
-> > On Tue, Sep 06, 2022 at 06:33:36PM +0100, Dr. David Alan Gilbert wrote:
-> > > * Stefan Hajnoczi (stefanha@redhat.com) wrote:
-> > > > On Sat, Sep 03, 2022 at 07:43:08AM +0000, Alyssa Ross wrote:
-> > > > > Hi Alex and everyone else, just catching up on some mail and want=
-ed to
-> > > > > clarify some things:
-> > > > >=20
-> > > > > Alex Benn=E9e <alex.bennee@linaro.org> writes:
-> > > > >=20
-> > > > > > This email is driven by a brain storming session at a recent sp=
-rint
-> > > > > > where we considered what VirtIO devices we should look at imple=
-menting
-> > > > > > next. I ended up going through all the assigned device IDs hunt=
-ing for
-> > > > > > missing spec discussion and existing drivers so I'd welcome fee=
-dback
-> > > > > > from anybody actively using them - especially as my supposition=
-s about
-> > > > > > device types I'm not familiar with may be way off!
-> > > > > >
-> > > > > > [...snip...]
-> > > > > >
-> > > > > > GPU device / 16
-> > > > > > ---------------
-> > > > > >
-> > > > > > This is now a fairly mature part of the spec and has implementa=
-tions is
-> > > > > > the kernel, QEMU and a vhost-user backend. However as is commen=
-surate
-> > > > > > with the complexity of GPUs there is ongoing development moving=
- from the
-> > > > > > VirGL OpenGL encapsulation to a thing called GFXSTREAM which is=
- meant to
-> > > > > > make some things easier.
-> > > > > >
-> > > > > > A potential area of interest here is working out what the diffe=
-rences
-> > > > > > are in use cases between virtio-gpu and virtio-wayland. virtio-=
-wayland
-> > > > > > is currently a ChromeOS only invention so hasn't seen any upstr=
-eaming or
-> > > > > > specification work but may make more sense where multiple VMs a=
-re
-> > > > > > drawing only elements of a final display which is composited by=
- a master
-> > > > > > program. For further reading see Alyssa's write-up:
-> > > > > >
-> > > > > >   https://alyssa.is/using-virtio-wl/
-> > > > > >
-> > > > > > I'm not sure how widely used the existing vhost-user backend is=
- for
-> > > > > > virtio-gpu but it could present an opportunity for a more beefy=
- rust-vmm
-> > > > > > backend implementation?
-> > > > >=20
-> > > > > As I understand it, virtio-wayland is effectively deprecated in f=
-avour
-> > > > > of sending Wayland messages over cross-domain virtio-gpu contexts=
-=2E  It's
-> > > > > possible to do this now with an upstream kernel, whereas virtio-w=
-ayland
-> > > > > always required a custom driver in the Chromium kernel.
-> > > > >=20
-> > > > > But crosvm is still the only implementation of a virtio-gpu devic=
-e that
-> > > > > supports Wayland over cross-domain contexts, so it would be great=
- to see
-> > > > > a more generic implementation.  Especially because, while crosvm =
-can
-> > > > > share its virtio-gpu device over vhost-user, it does so in a way =
-that's
-> > > > > incompatible with the standardised vhost-user-gpu as implemented =
-by
-> > > > > QEMU.  When I asked the crosvm developers in their Matrix channel=
- what
-> > > > > it would take to use the standard vhost-user-gpu variant, they sa=
-id that
-> > > > > the standard variant was lacking functionality they needed, like =
-mapping
-> > > > > and unmapping GPU buffers into the guest.
-> > > >=20
-> > > > That sounds somewhat similar to virtiofs and its DAX Window, which =
-needs
-> > > > vhost-user protocol extensions because of how memory is handled. Da=
-vid
-> > > > Gilbert wrote the QEMU virtiofs DAX patches, which are under
-> > > > development.
-> > > >=20
-> > > > I took a quick look at the virtio-gpu specs. If the crosvm behavior=
- you
-> > > > mentioned is covered in the VIRTIO spec then I guess it's the "host
-> > > > visible memory region"?
-> > > >=20
-> > > > (If it's not in the VIRTIO spec then a spec change needs to be prop=
-osed
-> > > > first and a vhost-user protocol spec change can then support that n=
-ew
-> > > > virtio-gpu feature.)
-> > > >=20
-> > > > The VIRTIO_GPU_CMD_RESOURCE_MAP_BLOB command maps the device's reso=
-urce
-> > > > into the host visible memory region so that the driver can see it.
-> > > >=20
-> > > > The virtiofs DAX window uses vhost-user slave channel messages to
-> > > > provide file descriptors and offsets for QEMU to mmap. QEMU mmaps t=
-he
-> > > > file pages into the shared memory region seen by the guest driver.
-> > > >=20
-> > > > Maybe an equivalent mechanism is needed for virtio-gpu so a device
-> > > > resource file descriptor can be passed to QEMU and then mmapped so =
-the
-> > > > guest driver can see the pages?
-> > > >=20
-> > > > I think it's possible to unify the virtiofs and virtio-gpu extensio=
-ns to
-> > > > the vhost-user protocol. Two new slave channel messages are needed:=
- "map
-> > > > <fd, offset, len> to shared memory resource <n>" and "unmap <offset,
-> > > >  len> from shared memory resource <n>". Both devices could use these
-> > > > messages to implement their respective DAX Window and Blob Resource
-> > > > functionality.
-> > >=20
-> > > It might be possible; but there's a bunch of lifetime/alignment/etc
-> > > questions to be answered.
-> > >=20
-> > > For virtiofs DAX we carve out a chunk of a BAR as a 'cache' (unfortun=
-ate
-> > > name) that we can then do mappings into.
-> > >=20
-> > > The VHOST_USER_SLAVE_FS_MAP/UNMAP commands can do the mapping:
-> > > https://gitlab.com/virtio-fs/qemu/-/commit/7c29854da484afd7ca95acbd2e=
-4acfc2c75ef491
-> > > https://gitlab.com/virtio-fs/qemu/-/commit/f32bc2524035931856aa218ce1=
-8efa029b9eed02
-> > >=20
-> > > those might do what you want if you can figure out a way to generalise
-> > > the bar to map them into.
-> > >=20
-> > > There are some problems; KVM gets really really upset if you try and
-> > > access an area that doesn't have a mapping or is mapped to a truncated
-> > > file;  do you want the guest to be able to crash like that?
-> >=20
-> > I think you are pointing out the existing problems with virtiofs
-> > map/unmap and not new issues related to virtio-gpu or generalizing the
-> > vhost-user messages?
-> >=20
->=20
-> Right, although what I don't have a feel of here is the semantics of the
-> things that are being mapped in the GPU case, and what possibility that
-> the driver mapping them has to pick some bad offset.
-
-I don't know either. I hope Gurchetan or Gerd can explain how the
-virtio-gpu Shared Memory Region is used and whether accesses to unmapped
-portions of the region are expected.
-
-Stefan
-
---7wlpPLYkSQR7nCmu
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEyBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmMY0b0ACgkQnKSrs4Gr
-c8hH2wf4od2Dndo2RY552zppe3HgyTZLbDBUojUpwUn5BV8C9N9pKDHGHPahXF1y
-jL3A5FGMxOnd7OUBJb0/dEUEV45LBxGq79yNWHaCHMegTZnbyAcmgFCuHmv+Vk7D
-a6TtOe6Au+ybLyCgK3H5H5FAWIqdmJ+f/sWjvZGjU4ImKabRM75NNisDhmJ7sshQ
-qCVwRyaeE59vvP/GQiUooMMxCtMxbt0/2E39QZwBfsCpTs/ebZXLGgWp568OPix3
-ZqBSvE3amYE08vG/Uulr8J9Hw+JjYJR1tLmc8nrsL7en9Ej8dKhx9ipPKU491fp3
-FeRoMr4vp6nB3N0UkUZzt2gN0+OX
-=DyDw
------END PGP SIGNATURE-----
-
---7wlpPLYkSQR7nCmu--
+T24gTW9uLCAyMDIyLTA4LTI5IGF0IDE2OjQ2ICswMjAwLCBDb3JuZWxpYSBIdWNrIHdyb3RlOg0K
+PiBPbiBTdW4sIEF1ZyAyOCAyMDIyLCBEbWl0cnkgRm9taWNoZXYgPGRtaXRyeS5mb21pY2hldkB3
+ZGMuY29tPiB3cm90ZToNCj4gDQo+ID4gSW50cm9kdWNlIHN1cHBvcnQgZm9yIFpvbmVkIEJsb2Nr
+IERldmljZXMgdG8gdmlydGlvLg0KPiA+IA0KPiA+IFpvbmVkIEJsb2NrIERldmljZXMgKFpCRHMp
+IGFpbSB0byBhY2hpZXZlIGEgYmV0dGVyIGNhcGFjaXR5LCBsYXRlbmN5DQo+ID4gYW5kL29yIGNv
+c3QgY2hhcmFjdGVyaXN0aWNzIGNvbXBhcmVkIHRvIGNvbW1vbmx5IGF2YWlsYWJsZSBibG9jaw0K
+PiA+IGRldmljZXMgYnkgZ2V0dGluZyB0aGUgZW50aXJlIExCQSBzcGFjZSBvZiB0aGUgZGV2aWNl
+IGRpdmlkZWQgdG8gYmxvY2sNCj4gPiByZWdpb25zIHRoYXQgYXJlIG11Y2ggbGFyZ2VyIHRoYW4g
+dGhlIExCQSBzaXplLiBUaGVzZSByZWdpb25zIGFyZQ0KPiA+IGNhbGxlZCB6b25lcyBhbmQgdGhl
+eSBjYW4gb25seSBiZSB3cml0dGVuIHNlcXVlbnRpYWxseS4gTW9yZSBkZXRhaWxzDQo+ID4gYWJv
+dXQgWkJEcyBjYW4gYmUgZm91bmQgYXQNCj4gPiANCj4gPiBodHRwczovL3pvbmVkc3RvcmFnZS5p
+by9kb2NzL2ludHJvZHVjdGlvbi96b25lZC1zdG9yYWdlwqAuDQo+ID4gDQo+ID4gSW4gaXRzIGN1
+cnJlbnQgZm9ybSwgdGhlIHZpcnRpbyBwcm90b2NvbCBmb3IgYmxvY2sgZGV2aWNlcyAodmlydGlv
+LWJsaykNCj4gPiBpcyBub3QgYXdhcmUgb2YgWkJEcyBidXQgaXQgYWxsb3dzIHRoZSBkcml2ZXIg
+dG8gc3VjY2Vzc2Z1bGx5IHNjYW4gYQ0KPiA+IGhvc3QtbWFuYWdlZCBkcml2ZSBwcm92aWRlZCBi
+eSB0aGUgdmlydGlvIGJsb2NrIGRldmljZS4gQXMgdGhlIHJlc3VsdCwNCj4gPiB0aGUgaG9zdC1t
+YW5hZ2VkIGRyaXZlIGlzIHJlY29nbml6ZWQgYnkgdmlydGlvIGRyaXZlciBhcyBhIHJlZ3VsYXIs
+DQo+ID4gbm9uLXpvbmVkIGRyaXZlIHRoYXQgd2lsbCBvcGVyYXRlIGVycm9uZW91c2x5IHVuZGVy
+IHRoZSBtb3N0IGNvbW1vbg0KPiA+IHdyaXRlIHdvcmtsb2Fkcy4gSG9zdC1hd2FyZSBaQkRzIGFy
+ZSBjdXJyZW50bHkgdXNhYmxlLCBidXQgdGhlaXINCj4gPiBwZXJmb3JtYW5jZSBtYXkgbm90IGJl
+IG9wdGltYWwgYmVjYXVzZSB0aGUgZHJpdmVyIGNhbiBvbmx5IHNlZSB0aGVtIGFzDQo+ID4gbm9u
+LXpvbmVkIGJsb2NrIGRldmljZXMuDQo+ID4gDQo+ID4gVG8gZml4IHRoaXMsIHRoZSB2aXJ0aW8t
+YmxrIHByb3RvY29sIG5lZWRzIHRvIGJlIGV4dGVuZGVkIHRvIGFkZCB0aGUNCj4gPiBjYXBhYmls
+aXRpZXMgdG8gY29udmV5IHRoZSB6b25lIGNoYXJhY3RlcmlzdGljcyBvZiBaQkRzIGF0IHRoZSBk
+ZXZpY2UNCj4gPiBzaWRlIHRvIHRoZSBkcml2ZXIgYW5kIHRvIHByb3ZpZGUgc3VwcG9ydCBmb3Ig
+WkJELXNwZWNpZmljIGNvbW1hbmRzIC0NCj4gPiBSZXBvcnQgWm9uZXMsIGZvdXIgem9uZSBvcGVy
+YXRpb25zIChPcGVuLCBDbG9zZSwgRmluaXNoIGFuZCBSZXNldCkgYW5kDQo+ID4gKG9wdGlvbmFs
+bHkpIFpvbmUgQXBwZW5kLiBUaGUgcHJvcG9zZWQgc3RhbmRhcmQgZXh0ZW5zaW9uIGFpbXMgdG8N
+Cj4gPiBkZWZpbmUgdGhpcyBuZXcgZnVuY3Rpb25hbGl0eS4NCj4gPiANCj4gPiBUaGlzIHBhdGNo
+IGV4dGVuZHMgdGhlIHZpcnRpby1ibGsgc2VjdGlvbiBvZiB2aXJ0aW8gc3BlY2lmaWNhdGlvbiB3
+aXRoDQo+ID4gdGhlIG1pbmltdW0gc2V0IG9mIHJlcXVpcmVtZW50cyB0aGF0IGFyZSBuZWNlc3Nh
+cnkgdG8gc3VwcG9ydCBaQkRzLg0KPiA+IFRoZSByZXN1bHRpbmcgZGV2aWNlIG1vZGVsIGlzIGEg
+c3Vic2V0IG9mIHRoZSBtb2RlbHMgZGVmaW5lZCBpbiBaQUMvWkJDDQo+ID4gYW5kIFpOUyBzdGFu
+ZGFyZHMgZG9jdW1lbnRzLiBUaGUgaW5jbHVkZWQgZnVuY3Rpb25hbGl0eSBtaXJyb3JzDQo+ID4g
+dGhlIGV4aXN0aW5nIExpbnV4IGtlcm5lbCBibG9jayBsYXllciBaQkQgc3VwcG9ydCBhbmQgc2hv
+dWxkIGJlDQo+ID4gc3VmZmljaWVudCB0byBoYW5kbGUgdGhlIGhvc3QtbWFuYWdlZCBhbmQgaG9z
+dC1hd2FyZSBIRERzIHRoYXQgYXJlIG9uDQo+ID4gdGhlIG1hcmtldCB0b2RheSBhcyB3ZWxsIGFz
+IFpOUyBTU0RzIHRoYXQgYXJlIGVudGVyaW5nIHRoZSBtYXJrZXQgYXQNCj4gPiB0aGUgdGltZSBv
+ZiBzdWJtaXNzaW9uIG9mIHRoaXMgcGF0Y2guDQo+ID4gDQo+ID4gSSB3b3VsZCBsaWtlIHRvIHRo
+YW5rIHRoZSBmb2xsb3dpbmcgcGVvcGxlIGZvciB0aGVpciB1c2VmdWwgZmVlZGJhY2sNCj4gPiBh
+bmQgc3VnZ2VzdGlvbnMgd2hpbGUgd29ya2luZyBvbiB0aGUgaW5pdGlhbCBpdGVyYXRpb25zIG9m
+IHRoaXMgcGF0Y2guDQo+ID4gDQo+ID4gRGFtaWVuIExlIE1vYWwgPGRhbWllbi5sZW1vYWxAb3Bl
+bnNvdXJjZS53ZGMuY29tPg0KPiA+IE1hdGlhcyBCasO4cmxpbmcgPE1hdGlhcy5Cam9ybGluZ0B3
+ZGMuY29tPg0KPiA+IE5pa2xhcyBDYXNzZWwgPE5pa2xhcy5DYXNzZWxAd2RjLmNvbT4NCj4gPiBI
+YW5zIEhvbG1iZXJnIDxIYW5zLkhvbG1iZXJnQHdkYy5jb20+DQo+ID4gDQo+ID4gRml4ZXM6IGh0
+dHBzOi8vZ2l0aHViLmNvbS9vYXNpcy10Y3MvdmlydGlvLXNwZWMvaXNzdWVzLzE0Mw0KPiA+IFNp
+Z25lZC1vZmYtYnk6IERtaXRyeSBGb21pY2hldiA8ZG1pdHJ5LmZvbWljaGV2QHdkYy5jb20+DQo+
+IA0KPiAoLi4uKQ0KPiANCg0KPHNuaXA+DQoNCj4gSXMgaXQgb2sgZm9yIHRoZSBkZXZpY2UgdG8g
+b2ZmZXIgYm90aCBGX0RJU0NBUkQgYW5kIEZfWk9ORUQgd2l0aCBaX0hBIG9yDQo+IFpfTk9ORT8g
+SW4gdGhhdCBjYXNlLCBpcyBpdCBvayBmb3IgdGhlIGRyaXZlciB0byBuZWdvdGlhdGUgYm90aA0K
+PiBGX0RJU0NBUkQgYW5kIEZfWk9ORUQsIG9yIGRvZXMgaXQgbmVlZCB0byBwaWNrIGF0IG1vc3Qg
+b25lIG9mIHRoZW0/DQoNCkdvb2QgcG9pbnQsIHdlIG5lZWQgdG8gY2xhcmlmeSB0aGF0IGZvciBI
+QS9OT05FIGRldmljZXMgdGhlIGRpc2NhcmQgZmVhdHVyZSBpcw0KbmVnb3RpYXRlZCB0aGUgc2Ft
+ZSB3YXkgYXMgZm9yIHJlZ3VsYXIgYmxvY2sgZGV2aWNlcyBubyBtYXR0ZXIgd2hhdCBpcyB0aGUN
+CnNldHRpbmcgb2YgRl9aT05FRCBiaXQuIA0KDQo+IA0KPiA+ICsNCj4gPiArSWYgdGhlIFZJUlRJ
+T19CTEtfRl9aT05FRCBmZWF0dXJlIGlzIG5lZ290aWF0ZWQsIHRoZW4NCj4gPiArXGJlZ2lue2l0
+ZW1pemV9DQo+ID4gK1xpdGVtIGlmIHRoZSBkcml2ZXIgdGhhdCBjYW4gbm90IHN1cHBvcnQgaG9z
+dC1tYW5hZ2VkIHpvbmVkIGRldmljZXMNCj4gPiArwqDCoMKgIHJlYWRzIFZJUlRJT19CTEtfWl9I
+TSBmcm9tIHRoZSBcZmllbGR7bW9kZWx9IGZpZWxkIG9mIFxmaWVsZHt6b25lZH0sIHRoZQ0KPiA+
+ICvCoMKgwqAgZHJpdmVyIE1VU1QgTk9UIHNldCBGRUFUVVJFU19PSyBmbGFnIGFuZCBpbnN0ZWFk
+IHNldCB0aGUgRkFJTEVEIGJpdC4NCj4gDQo+IFtJJ2xsIHNraXAgY29tbWVudGluZyBvbiAibmVn
+b3RpYXRlZCIgdnMgIm9mZmVyZWQiLCBhcyB3ZSBuZWVkIHRvIGNsYXJpZnkNCj4gdGhhdCBjb21w
+cmVoZW5zaXZlbHkgaW4gdGhlIHdob2xlIGRvY3VtZW50Ll0NCj4gDQo+IENvdWxkIHRoZSBkcml2
+ZXIgc2ltcGx5IHJlamVjdCBGX1pPTkVEIGluIHRoYXQgY2FzZT8gVGhlIGRldmljZSBjYW4NCj4g
+YWx3YXlzIGZhaWwgc2V0dGluZyBGRUFUVVJFU19PSyBpZiB0aGUgZHJpdmVyIGRvZXMgbm90IGFj
+Y2VwdCBhIGZlYXR1cmUNCj4gdGhhdCBpcyBuZWVkZWQuIE1heWJlIG1ha2UgdGhpcyBhICJTSE9V
+TEQgTk9UIj8NCg0KTXkgdGhpbmtpbmcgYWJvdXQgRl9aT05FRCBmZWF0dXJlIGlzIHRoYXQgdGhl
+IGRyaXZlciBzaG91bGQgYWdyZWUgdG8gaXQgaWYgaXQgaXMNCnVwIHRvIGRhdGUgdG8gcmVjb2du
+aXplIGFuZCBpbXBsZW1lbnQgaXQuIEJ1dCwgZXZlbiBpZiB0aGUgY29kZSBpcyByZWNlbnQgZW5v
+dWdoLA0KdGhlIGRyaXZlciBpbiBzb21lIGNhc2VzIG1heSBub3QgYmUgYWJsZSB0byBoYW5kbGUg
+em9uZWQgZGV2aWNlcy4gRm9yIGV4YW1wbGUsDQp0aGUgTGludXgga2VybmVsIHZpcnRpby1ibGsg
+ZHJpdmVyIGNvdWxkIGltcGxlbWVudCB0aGlzIHNwZWMgZXh0ZW5zaW9uLCBidXQgdGhlDQprZXJu
+ZWwgbWF5IGJlIGJ1aWx0IHdpdGhvdXQgQ09ORklHX0JMS19ERVZfWk9ORUQgY29uZmlndXJhdGlv
+biBvcHRpb24uIElmIHRoaXMgaXMNCnRoZSBjYXNlLCB0aGUgZHJpdmVyIG11c3QgcHJldmVudCBI
+TSBkZXZpY2VzIGZyb20gYmVpbmcgc3VjY2Vzc2Z1bGx5IHNjYW5uZWQgYXMNCnJlZ3VsYXIgYmxv
+Y2sgZGV2aWNlcy4NCg0KPiANCj4gPiArDQo+ID4gK1xpdGVtIGlmIHRoZSBkcml2ZXIgdGhhdCBj
+YW4gbm90IHN1cHBvcnQgc3VwcG9ydCB6b25lZCBkZXZpY2VzIHJlYWRzDQo+ID4gK8KgwqDCoCBW
+SVJUSU9fQkxLX1pfSEEgZnJvbSB0aGUgXGZpZWxke21vZGVsfSBmaWVsZCBvZiBcZmllbGR7em9u
+ZWR9LCB0aGUNCj4gPiBkcml2ZXINCj4gPiArwqDCoMKgIE1BWSBoYW5kbGUgdGhlIGRldmljZSBh
+cyBhIG5vbi16b25lZCBkZXZpY2UuIEluIHRoaXMgY2FzZSwgdGhlDQo+ID4gK8KgwqDCoCBkcml2
+ZXIgU0hPVUxEIGlnbm9yZSBhbGwgb3RoZXIgZmllbGRzIGluIFxmaWVsZHt6b25lZH0uDQo+IA0K
+PiBJIHdvdWxkIGV4cGVjdCBhIGRyaXZlciB0aGF0IGRvZXMgbm90IHN1cHBvcnQgem9uZWQgZGV2
+aWNlcyBhdCBhbGwgdG8NCj4gYWx3YXlzIHJlamVjdCBGX1pPTkVEIChpbmNsdWRpbmcgb2xkZXIg
+ZHJpdmVycykuIFNob3VsZCB3ZSBtYW5kYXRlIHRoYXQNCj4gdGhlIGRyaXZlciBkb2VzIG5vdCBh
+Y2NlcHQgRl9aT05FRCBpZiBpdCBjYW5ub3QgaGFuZGxlIGl0Pw0KDQpUaGUgRl9aT05FRCBmZWF0
+dXJlIG1heSBiZSBlbmFibGVkIGV2ZW4gdGhlIGJhY2tpbmcgZGV2aWNlIGlzIGhvc3QtYXdhcmUg
+b3Igbm9uLQ0Kem9uZWQgZm9yIGRlYnVnZ2luZywgdHJvdWJsZXNob290aW5nLCBldGMuIEluIHRo
+aXMgY2FzZSwgdGhlIGRyaXZlciB3aWxsIHByZXNlbnQNCkhBIGRldmljZXMgdG8gdGhlIHN5c3Rl
+bSBhcyBub24tem9uZWQgaWYgaXQgY2FuJ3QgcHJlc2VudCB0aGVtIGFzIHpvbmVkLiBUaGlzDQp3
+aWxsIG5vdCB3b3JrIGZvciBob3N0LW1hbmFnZWQgZHJpdmVzIGFuZCB3ZSBoYXZlIHRvIGtlZXAg
+dGhlIE1VU1QgTk9UIGZvciBITS4NCg0KDQo8c25pcD4NCg0KPiANCj4gDQo+ID4gK1RoZSB6b25l
+IGRlc2NyaXB0b3IgZmllbGQgXGZpZWxke3pfdHlwZX0gXGZpZWxke3ZpcnRpb19ibGtfem9uZV9k
+ZXNjcmlwdG9yfQ0KPiA+ICtpbmRpY2F0ZXMgdGhlIHR5cGUgb2YgdGhlIHpvbmUuIFRoZSBhdmFp
+bGFibGUgdHlwZXMgYXJlDQo+ID4gVklSVElPX0JMS19aVF9DT05WKDEpLA0KPiA+ICtWSVJUSU9f
+QkxLX1pUX1NXUigyKSBvciBWSVJUSU9fQkxLX1pUX1NXUCgzKS4NCj4gDQo+ICJUaGUgZm9sbG93
+aW5nIHR5cGVzIGFyZSBhdmFpbGFibGU6IiA/DQoNCkkgd2FzIHRyeWluZyB0byBiZSBjb25zaXN0
+ZW50IHdpdGggdGhlIHdheSBvdGhlciBjb25zdGFudCB2YWx1ZXMgYXJlIGRlZmluZWQgaW4NCnRo
+ZSB2aXJ0YmxrIHNlY3Rpb24gb2YgdGhlIGRvY3VtZW50LiBUaGlzIHdheSwgaG93ZXZlciwgaXMg
+bXVjaCBsZXNzIGN1bWJlcnNvbWUsDQp3aWxsIGdsYWRseSBtYWtlIHRoaXMgY2hhbmdlIDopDQoN
+CkRGDQoNCj4gDQo+ID4gKw0KPiA+ICtcYmVnaW57bHN0bGlzdGluZ30NCj4gPiArI2RlZmluZSBW
+SVJUSU9fQkxLX1pUX0NPTlbCoMKgwqDCoCAxDQo+ID4gKyNkZWZpbmUgVklSVElPX0JMS19aVF9T
+V1LCoMKgwqDCoMKgIDINCj4gPiArI2RlZmluZSBWSVJUSU9fQkxLX1pUX1NXUMKgwqDCoMKgwqAg
+Mw0KPiA+ICtcZW5ke2xzdGxpc3Rpbmd9DQo+ID4gKw0KPiA+ICtSZWFkIGFuZCB3cml0ZSBvcGVy
+YXRpb25zIGludG8gem9uZXMgd2l0aCB0aGUgVklSVElPX0JMS19aVF9DT05WDQo+ID4gKENvbnZl
+bnRpb25hbCkNCj4gPiArdHlwZSBoYXZlIHRoZSBzYW1lIGJlaGF2aW9yIGFzIHJlYWQgYW5kIHdy
+aXRlIG9wZXJhdGlvbnMgb24gYSByZWd1bGFyIGJsb2NrDQo+ID4gK2RldmljZS4gQW55IGJsb2Nr
+IGluIGEgY29udmVudGlvbmFsIHpvbmUgY2FuIGJlIHJlYWQgb3Igd3JpdHRlbiBhdCBhbnkgdGlt
+ZQ0KPiA+IGFuZA0KPiA+ICtpbiBhbnkgb3JkZXIuDQoNCg0K
 
