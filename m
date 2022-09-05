@@ -1,104 +1,131 @@
-Return-Path: <virtio-dev-return-9884-cohuck=redhat.com@lists.oasis-open.org>
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-From: Alyssa Ross <hi@alyssa.is>
-In-Reply-To: <877d61wuc0.fsf@linaro.org>
-References: <877d61wuc0.fsf@linaro.org>
-Date: Sat, 03 Sep 2022 07:43:08 +0000
-Message-ID: <87r10svr77.fsf@alyssa.is>
+Return-Path: <virtio-comment-return-3430-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-comment@lists.oasis-open.org>
+List-Post: <mailto:virtio-comment@lists.oasis-open.org>
+List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
+References: <877d61wuc0.fsf@linaro.org> <87r10svr77.fsf@alyssa.is>
+From: Alex =?utf-8?Q?Benn=C3=A9e?= <alex.bennee@linaro.org>
+Date: Mon, 05 Sep 2022 16:22:32 +0100
+In-reply-to: <87r10svr77.fsf@alyssa.is>
+Message-ID: <87v8q1keul.fsf@linaro.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-	micalg=pgp-sha256; protocol="application/pgp-signature"
-Subject: Re: [virtio-dev] Next VirtIO device for Project Stratos?
-To: Alex =?utf-8?Q?Benn=C3=A9e?= <alex.bennee@linaro.org>, stratos-dev@op-lists.linaro.org, virtio-dev@lists.oasis-open.org, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>
-Cc: Viresh Kumar <viresh.kumar@linaro.org>, Mathieu Poirier <mathieu.poirier@linaro.org>, Mike Holmes <mike.holmes@linaro.org>, Matt Spencer <Matt.Spencer@arm.com>, Peter Griffin <peter.griffin@linaro.org>, Dan Milea <dan.milea@windriver.com>, Bill Mills <bill.mills@linaro.org>, Francois Ozog <francois.ozog@linaro.org>, Johannes Berg <johannes@sipsolutions.net>, Gerd Hoffmann <kraxel@redhat.com>, Arnd Bergmann <arnd.bergmann@linaro.org>, Christian Pinto <c.pinto@virtualopensystems.com>, Namhyung Kim <namhyung@kernel.org>, Petre Eftime <epetre@amazon.com>, Peter Hilber <peter.hilber@opensynergy.com>, Marcel Holtmann <marcel@holtmann.org>, "Michael S. Tsirkin" <mst@redhat.com>, Stefan Hajnoczi <stefanha@redhat.com>, Puck Meerburg <puck@puckipedia.com>
-List-ID: <virtio-dev.lists.oasis-open.org>
-
---=-=-=
+Subject: [virtio-comment] Re: [virtio-dev] Next VirtIO device for Project Stratos?
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
+To: Alyssa Ross <hi@alyssa.is>
+Cc: stratos-dev@op-lists.linaro.org, virtio-dev@lists.oasis-open.org, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, Viresh Kumar <viresh.kumar@linaro.org>, Mathieu Poirier <mathieu.poirier@linaro.org>, Mike Holmes <mike.holmes@linaro.org>, Matt Spencer <Matt.Spencer@arm.com>, Peter Griffin <peter.griffin@linaro.org>, Gerd Hoffmann <kraxel@redhat.com>, Arnd Bergmann <arnd.bergmann@linaro.org>, Peter Hilber <peter.hilber@opensynergy.com>, "Michael S. Tsirkin" <mst@redhat.com>, Stefan Hajnoczi <stefanha@redhat.com>, Puck Meerburg <puck@puckipedia.com>, Mikhail Golubev <Mikhail.Golubev@opensynergy.com>, Andriy Tryshnivskyy <andriy.tryshnivskyy@opensynergy.com>, Vasyl Vavrychuk <vasyl.vavrychuk@opensynergy.com>
+List-ID: <virtio-dev.lists.oasis-open.org>
 
-Hi Alex and everyone else, just catching up on some mail and wanted to
-clarify some things:
 
-Alex Benn=C3=A9e <alex.bennee@linaro.org> writes:
+Alyssa Ross <hi@alyssa.is> writes:
 
-> This email is driven by a brain storming session at a recent sprint
-> where we considered what VirtIO devices we should look at implementing
-> next. I ended up going through all the assigned device IDs hunting for
-> missing spec discussion and existing drivers so I'd welcome feedback
-> from anybody actively using them - especially as my suppositions about
-> device types I'm not familiar with may be way off!
+> [[PGP Signed Part:Undecided]]
+> Hi Alex and everyone else, just catching up on some mail and wanted to
+> clarify some things:
 >
-> [...snip...]
+> Alex Benn=C3=A9e <alex.bennee@linaro.org> writes:
 >
-> GPU device / 16
-> ---------------
+>> This email is driven by a brain storming session at a recent sprint
+>> where we considered what VirtIO devices we should look at implementing
+>> next. I ended up going through all the assigned device IDs hunting for
+>> missing spec discussion and existing drivers so I'd welcome feedback
+>> from anybody actively using them - especially as my suppositions about
+>> device types I'm not familiar with may be way off!
+>>
+>> [...snip...]
+>>
+>> GPU device / 16
+>> ---------------
+>>
+>> This is now a fairly mature part of the spec and has implementations is
+>> the kernel, QEMU and a vhost-user backend. However as is commensurate
+>> with the complexity of GPUs there is ongoing development moving from the
+>> VirGL OpenGL encapsulation to a thing called GFXSTREAM which is meant to
+>> make some things easier.
+>>
+>> A potential area of interest here is working out what the differences
+>> are in use cases between virtio-gpu and virtio-wayland. virtio-wayland
+>> is currently a ChromeOS only invention so hasn't seen any upstreaming or
+>> specification work but may make more sense where multiple VMs are
+>> drawing only elements of a final display which is composited by a master
+>> program. For further reading see Alyssa's write-up:
+>>
+>>   https://alyssa.is/using-virtio-wl/
+>>
+>> I'm not sure how widely used the existing vhost-user backend is for
+>> virtio-gpu but it could present an opportunity for a more beefy rust-vmm
+>> backend implementation?
 >
-> This is now a fairly mature part of the spec and has implementations is
-> the kernel, QEMU and a vhost-user backend. However as is commensurate
-> with the complexity of GPUs there is ongoing development moving from the
-> VirGL OpenGL encapsulation to a thing called GFXSTREAM which is meant to
-> make some things easier.
+> As I understand it, virtio-wayland is effectively deprecated in favour
+> of sending Wayland messages over cross-domain virtio-gpu contexts.  It's
+> possible to do this now with an upstream kernel, whereas virtio-wayland
+> always required a custom driver in the Chromium kernel.
+
+That's good to know. I guess there is nothing that prevents the final
+display of virtual GPUs from multiple guests being mapped onto the
+final presentation? The automotive use case seems to treat each
+individual VM with a UI as presenting a surface which the final console
+manager composites up together depending on safety rules to display to
+the user.
+
+> But crosvm is still the only implementation of a virtio-gpu device that
+> supports Wayland over cross-domain contexts, so it would be great to see
+> a more generic implementation.  Especially because, while crosvm can
+> share its virtio-gpu device over vhost-user, it does so in a way that's
+> incompatible with the standardised vhost-user-gpu as implemented by
+> QEMU.  When I asked the crosvm developers in their Matrix channel what
+> it would take to use the standard vhost-user-gpu variant, they said that
+> the standard variant was lacking functionality they needed, like mapping
+> and unmapping GPU buffers into the guest.
+
+Is this related to ensuring allocated buffers are properly aligned in
+the host address space so the HW can use them without needing to copy
+them again? I seem to recall this was one of the topics that came up in
+one of the AGL VirtIO GPU workshops with the OpenSynergy people:
+
+  https://confluence.automotivelinux.org/pages/viewpage.action?spaceKey=3DV=
+E&title=3DMeeting+Agenda#MeetingAgenda-Jan20,2021
+
+zero-copy is a goal everyone seems to want to make the mapping from
+virtual to real hardware as efficient as possible. Of course zero-copy
+is very much in opposition to more memory isolation between guests and
+hosts (e.g. Xen/pKVM). Everyone it seems wants the moon on a stick.
+
+> So if we wanted to push forward with getting making Wayland over
+> virttio-gpu less crosvm specific, I suppose the first step would be to
+> figure out with the crosvm developers what functionality is missing in
+> the vhost-user-gpu protocol.  That would then make it possible to use
+> crosvm's device (with the Wayland support) with other VMMs like QEMU.
 >
-> A potential area of interest here is working out what the differences
-> are in use cases between virtio-gpu and virtio-wayland. virtio-wayland
-> is currently a ChromeOS only invention so hasn't seen any upstreaming or
-> specification work but may make more sense where multiple VMs are
-> drawing only elements of a final display which is composited by a master
-> program. For further reading see Alyssa's write-up:
+> (CCing my colleage Puck, who has also been working with me on getting
+> Wayland over virtio-gpu up and running outside of Chrome OS.)
+
+Thanks. I'm very much an outside observer when it comes to GPUs so
+welcome the expert input ;-)
+
 >
->   https://alyssa.is/using-virtio-wl/
->
-> I'm not sure how widely used the existing vhost-user backend is for
-> virtio-gpu but it could present an opportunity for a more beefy rust-vmm
-> backend implementation?
+> [[End of PGP Signed Part]]
 
-As I understand it, virtio-wayland is effectively deprecated in favour
-of sending Wayland messages over cross-domain virtio-gpu contexts.  It's
-possible to do this now with an upstream kernel, whereas virtio-wayland
-always required a custom driver in the Chromium kernel.
 
-But crosvm is still the only implementation of a virtio-gpu device that
-supports Wayland over cross-domain contexts, so it would be great to see
-a more generic implementation.  Especially because, while crosvm can
-share its virtio-gpu device over vhost-user, it does so in a way that's
-incompatible with the standardised vhost-user-gpu as implemented by
-QEMU.  When I asked the crosvm developers in their Matrix channel what
-it would take to use the standard vhost-user-gpu variant, they said that
-the standard variant was lacking functionality they needed, like mapping
-and unmapping GPU buffers into the guest.
+--=20
+Alex Benn=C3=A9e
 
-So if we wanted to push forward with getting making Wayland over
-virttio-gpu less crosvm specific, I suppose the first step would be to
-figure out with the crosvm developers what functionality is missing in
-the vhost-user-gpu protocol.  That would then make it possible to use
-crosvm's device (with the Wayland support) with other VMMs like QEMU.
-
-(CCing my colleage Puck, who has also been working with me on getting
-Wayland over virtio-gpu up and running outside of Chrome OS.)
-
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEEH9wgcxqlHM/ARR3h+dvtSFmyccAFAmMTBY4ACgkQ+dvtSFmy
-ccB34w/9F/Z/38E7I8IOQF5j9KwZCp05tvkNo2eDvtGBLP/MAccWsa1ONNgVwdcl
-+d7l1hnp0jmsyJ5nX3Z+6CDVvFO5ZuEZiLUA4dtJPvPDLZAqSIpiXSq4cYkQOfKe
-R/NV+PA73rA2oIqQdM7znipJLVuCJV7j5sXXgCjks80XXBdbDzDgFBPreElyZCsO
-w2+Vrk+AODbuwYrJbMR1Hj9qzLVtTXnZI7i5P8e4b4/8U67UznBan62NBFqe680n
-Ne5/gGSOpbc2aGwlR9NbP1cZnlxsicPwdFRjs1HnSzLLPcZpIQmlajgscP+kAu/p
-pll/ka/vUPjML9VYEi0I1ph0GxbObWSsGhXrhtIUm2zIXV+QwcxUoNXr/FM3ojkJ
-gXfdWP2Pv3WXEHud/7qXW5MCHipZgrybkUZv7oSsGq3FCZ1syhW9+P2vtvYiD/Kv
-VtSQlvMT41rtQK3H0AgwtLpHfKTW95w+67CBSGua7t1CvvGnDqngniZOmA1FsE5d
-U4kW1AIOQGiWllmcpkY67B4gUDU2Do7KOuPQTuLoL1BZgZhwByz8qQk0T68o7gAn
-3/S9t0fj/fq44wlPRW2uAQLAUS5DGmeckcYtSC2Xo5F+AwDzypzdpACySoyw0Hzl
-8PLqG/bXhW6zDEDK95uT4mN4NZvrmv1CFqApnFFdsB7Q/UvKjLI=
-=66r7
------END PGP SIGNATURE-----
---=-=-=--
+This publicly archived list offers a means to provide input to the=0D
+OASIS Virtual I/O Device (VIRTIO) TC.=0D
+=0D
+In order to verify user consent to the Feedback License terms and=0D
+to minimize spam in the list archive, subscription is required=0D
+before posting.=0D
+=0D
+Subscribe: virtio-comment-subscribe@lists.oasis-open.org=0D
+Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org=0D
+List help: virtio-comment-help@lists.oasis-open.org=0D
+List archive: https://lists.oasis-open.org/archives/virtio-comment/=0D
+Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf=
+=0D
+List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lis=
+ts=0D
+Committee: https://www.oasis-open.org/committees/virtio/=0D
+Join OASIS: https://www.oasis-open.org/join/
 
