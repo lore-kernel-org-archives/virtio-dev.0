@@ -1,45 +1,66 @@
-Return-Path: <virtio-dev-return-9960-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-9946-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 3D1B0986458
-	for <virtio-dev@lists.oasis-open.org>; Tue, 20 Sep 2022 13:46:13 +0000 (UTC)
-Message-ID: <0a97bab1-2d5e-073b-e439-4e6e745dad52@nvidia.com>
-Date: Tue, 20 Sep 2022 21:45:55 +0800
-References: <20220901021038.84751-1-gavinl@nvidia.com>
- <76fca691-aff5-ad9e-6228-0377e2890a05@nvidia.com>
- <20220919083552.60449589@kernel.org>
+	by lists.oasis-open.org (Postfix) with ESMTP id DAA289865A6
+	for <virtio-dev@lists.oasis-open.org>; Wed, 14 Sep 2022 14:50:09 +0000 (UTC)
 From: Gavin Li <gavinl@nvidia.com>
-In-Reply-To: <20220919083552.60449589@kernel.org>
+Date: Wed, 14 Sep 2022 17:49:09 +0300
+Message-ID: <20220914144911.56422-1-gavinl@nvidia.com>
 MIME-Version: 1.0
-Subject: Re: [virtio-dev] [PATCH v5 0/2] Improve virtio performance for 9k mtu
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Jakub Kicinski <kuba@kernel.org>
-Cc: stephen@networkplumber.org, davem@davemloft.net, jesse.brandeburg@intel.com, sridhar.samudrala@intel.com, jasowang@redhat.com, loseweigh@gmail.com, netdev@vger.kernel.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, mst@redhat.com, gavi@nvidia.com, parav@nvidia.com
+Subject: [virtio-dev] [PATCH v6 0/2] Improve virtio performance for 9k mtu
+Content-Type: text/plain
+Content-Transfer-Encoding: quoted-printable
+To: mst@redhat.com, stephen@networkplumber.org, davem@davemloft.net, jesse.brandeburg@intel.com, kuba@kernel.org, sridhar.samudrala@intel.com, jasowang@redhat.com, loseweigh@gmail.com, netdev@vger.kernel.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+This small series contains two patches that improves virtio netdevice
+performance for 9K mtu when GRO/ guest TSO is disabled.
 
-On 9/19/2022 11:35 PM, Jakub Kicinski wrote:
-> External email: Use caution opening links or attachments
->
->
-> On Wed, 7 Sep 2022 10:57:01 +0800 Gavin Li wrote:
->> Hi Dave/Jakub, Michael,
->>
->> Sorry for the previous email formatting.
->> Should this 2-patch series merge through virtio tree or netdev tree?
-> netdev seems appropriate, sorry for the delay
+Gavin Li (2):
+  virtio-net: introduce and use helper function for guest gso support
+    checks
+---
+changelog:
+v4->v5
+- Addressed comments from Michael S. Tsirkin
+- Remove unnecessary () in return clause
+v1->v2
+- Add new patch
+---
+  virtio-net: use mtu size as buffer length for big packets
+---
+changelog:
+v5->v6
+- Addressed comments from Jason and Michael S. Tsirkin
+- Remove wrong commit log description
+- Rename virtnet_set_big_packets_fields with virtnet_set_big_packets
+- Add more test results for different feature combinations
+v4->v5
+- Addressed comments from Michael S. Tsirkin
+- Improve commit message
+v3->v4
+- Addressed comments from Si-Wei
+- Rename big_packets_sg_num with big_packets_num_skbfrags
+v2->v3
+- Addressed comments from Si-Wei
+- Simplify the condition check to enable the optimization
+v1->v2
+- Addressed comments from Jason, Michael, Si-Wei.
+- Remove the flag of guest GSO support, set sg_num for big packets and
+  use it directly
+- Recalculate sg_num for big packets in virtnet_set_guest_offloads
+- Replace the round up algorithm with DIV_ROUND_UP
+---
 
-Sorry for the non-text format issue of last mail.
+ drivers/net/virtio_net.c | 48 ++++++++++++++++++++++++++--------------
+ 1 file changed, 32 insertions(+), 16 deletions(-)
 
-v6 is posted at link 
-https://lore.kernel.org/netdev/20220914144911.56422-1-gavinl@nvidia.com/
-Would you please review it?
+--=20
+2.31.1
 
 
 ---------------------------------------------------------------------
