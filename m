@@ -1,733 +1,257 @@
-Return-Path: <virtio-dev-return-9953-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-9955-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 225DA9865B8
-	for <virtio-dev@lists.oasis-open.org>; Mon, 19 Sep 2022 02:29:40 +0000 (UTC)
-From: Dmitry Fomichev <dmitry.fomichev@wdc.com>
-Date: Sun, 18 Sep 2022 22:29:21 -0400
-Message-Id: <20220919022921.946344-4-dmitry.fomichev@wdc.com>
-In-Reply-To: <20220919022921.946344-1-dmitry.fomichev@wdc.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 765BB9863EA
+	for <virtio-dev@lists.oasis-open.org>; Tue, 20 Sep 2022 01:51:27 +0000 (UTC)
+From: Dmitry Fomichev <Dmitry.Fomichev@wdc.com>
+Date: Tue, 20 Sep 2022 01:51:07 +0000
+Message-ID: <79186306eecace92e779dee7b2d4a86a38b5dca4.camel@wdc.com>
 References: <20220919022921.946344-1-dmitry.fomichev@wdc.com>
+	 <20220919022921.946344-4-dmitry.fomichev@wdc.com>
+	 <20220919133853.2xsamyvr66qeogko@quentin>
+	 <44dfb47f-a59f-b236-03bf-5d25d7f206b5@opensource.wdc.com>
+In-Reply-To: <44dfb47f-a59f-b236-03bf-5d25d7f206b5@opensource.wdc.com>
 MIME-Version: 1.0
-Subject: [virtio-dev] [PATCH 3/3] virtio-blk: add support for zoned block devices
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="US-ASCII"; x-default=true
-To: Jens Axboe <axboe@kernel.dk>, Damien Le Moal <damien.lemoal@opensource.wdc.com>, Stefan Hajnoczi <stefanha@gmail.com>, Hannes Reinecke <hare@suse.de>, Sam Li <faithilikerun@gmail.com>
-Cc: linux-block@vger.kernel.org, virtio-dev@lists.oasis-open.org, Dmitry Fomichev <dmitry.fomichev@wdc.com>
+Subject: [virtio-dev] Re: [PATCH 3/3] virtio-blk: add support for zoned block devices
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <316215279D4C894EA02702F34B58166E@namprd04.prod.outlook.com>
+Content-Transfer-Encoding: base64
+To: "pankydev8@gmail.com" <pankydev8@gmail.com>, "damien.lemoal@opensource.wdc.com" <damien.lemoal@opensource.wdc.com>
+Cc: "faithilikerun@gmail.com" <faithilikerun@gmail.com>, "hare@suse.de" <hare@suse.de>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "p.raghav@samsung.com" <p.raghav@samsung.com>, "javier.gonz@samsung.com" <javier.gonz@samsung.com>, "axboe@kernel.dk" <axboe@kernel.dk>, "k.jensen@samsung.com" <k.jensen@samsung.com>, "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>, "stefanha@gmail.com" <stefanha@gmail.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-This patch adds support for Zoned Block Devices (ZBDs) to the kernel
-virtio-blk driver.
-
-The patch accompanies the virtio-blk ZBD support draft that is now
-being proposed for standardization. The latest version of the draft is
-linked at
-
-https://github.com/oasis-tcs/virtio-spec/issues/143 .
-
-The QEMU zoned device code that implements these protocol extensions
-has been developed by Sam Li and it is currently in review at the QEMU
-mailing list.
-
-A number of virtblk request structure changes has been introduced to
-accommodate the functionality that is specific to zoned block devices
-and, most importantly, make room for carrying the Zoned Append sector
-value from the device back to the driver along with the request status.
-
-The zone-specific code in the patch is heavily influenced by NVMe ZNS
-code in drivers/nvme/host/zns.c, but it is simpler because the proposed
-virtio ZBD draft only covers the zoned device features that are
-relevant to the zoned functionality provided by Linux block layer.
-
-Co-developed-by: Stefan Hajnoczi <stefanha@gmail.com>
-Signed-off-by: Stefan Hajnoczi <stefanha@gmail.com>
-Signed-off-by: Dmitry Fomichev <dmitry.fomichev@wdc.com>
----
- drivers/block/virtio_blk.c      | 381 ++++++++++++++++++++++++++++++--
- include/uapi/linux/virtio_blk.h | 106 +++++++++
- 2 files changed, 469 insertions(+), 18 deletions(-)
-
-diff --git a/drivers/block/virtio_blk.c b/drivers/block/virtio_blk.c
-index 9a6aa94a212c..202f0446d5dc 100644
---- a/drivers/block/virtio_blk.c
-+++ b/drivers/block/virtio_blk.c
-@@ -80,22 +80,51 @@ struct virtio_blk {
- =09int num_vqs;
- =09int io_queues[HCTX_MAX_TYPES];
- =09struct virtio_blk_vq *vqs;
-+
-+=09/* For zoned device */
-+=09unsigned int zone_sectors;
- };
-=20
- struct virtblk_req {
-+=09/* Out header */
- =09struct virtio_blk_outhdr out_hdr;
--=09u8 status;
-+
-+=09/* In header */
-+=09union {
-+=09=09u8 status;
-+
-+=09=09/*
-+=09=09 * The zone append command has an extended in header.
-+=09=09 * The status field in zone_append_in_hdr must have
-+=09=09 * the same offset in virtblk_req as the non-zoned
-+=09=09 * status field above.
-+=09=09 */
-+=09=09struct {
-+=09=09=09u8 status;
-+=09=09=09u8 reserved[7];
-+=09=09=09u64 append_sector;
-+=09=09} zone_append_in_hdr;
-+=09};
-+
-+=09size_t in_hdr_len;
-+
- =09struct sg_table sg_table;
- =09struct scatterlist sg[];
- };
-=20
--static inline blk_status_t virtblk_result(struct virtblk_req *vbr)
-+static inline blk_status_t virtblk_result(u8 status)
- {
--=09switch (vbr->status) {
-+=09switch (status) {
- =09case VIRTIO_BLK_S_OK:
- =09=09return BLK_STS_OK;
- =09case VIRTIO_BLK_S_UNSUPP:
- =09=09return BLK_STS_NOTSUPP;
-+=09case VIRTIO_BLK_S_ZONE_OPEN_RESOURCE:
-+=09=09return BLK_STS_ZONE_OPEN_RESOURCE;
-+=09case VIRTIO_BLK_S_ZONE_ACTIVE_RESOURCE:
-+=09=09return BLK_STS_ZONE_ACTIVE_RESOURCE;
-+=09case VIRTIO_BLK_S_IOERR:
-+=09case VIRTIO_BLK_S_ZONE_UNALIGNED_WP:
- =09default:
- =09=09return BLK_STS_IOERR;
- =09}
-@@ -111,11 +140,11 @@ static inline struct virtio_blk_vq *get_virtio_blk_vq=
-(struct blk_mq_hw_ctx *hctx
-=20
- static int virtblk_add_req(struct virtqueue *vq, struct virtblk_req *vbr)
- {
--=09struct scatterlist hdr, status, *sgs[3];
-+=09struct scatterlist out_hdr, in_hdr, *sgs[3];
- =09unsigned int num_out =3D 0, num_in =3D 0;
-=20
--=09sg_init_one(&hdr, &vbr->out_hdr, sizeof(vbr->out_hdr));
--=09sgs[num_out++] =3D &hdr;
-+=09sg_init_one(&out_hdr, &vbr->out_hdr, sizeof(vbr->out_hdr));
-+=09sgs[num_out++] =3D &out_hdr;
-=20
- =09if (vbr->sg_table.nents) {
- =09=09if (vbr->out_hdr.type & cpu_to_virtio32(vq->vdev, VIRTIO_BLK_T_OUT))
-@@ -124,8 +153,8 @@ static int virtblk_add_req(struct virtqueue *vq, struct=
- virtblk_req *vbr)
- =09=09=09sgs[num_out + num_in++] =3D vbr->sg_table.sgl;
- =09}
-=20
--=09sg_init_one(&status, &vbr->status, sizeof(vbr->status));
--=09sgs[num_out + num_in++] =3D &status;
-+=09sg_init_one(&in_hdr, &vbr->status, vbr->in_hdr_len);
-+=09sgs[num_out + num_in++] =3D &in_hdr;
-=20
- =09return virtqueue_add_sgs(vq, sgs, num_out, num_in, vbr, GFP_ATOMIC);
- }
-@@ -214,21 +243,22 @@ static blk_status_t virtblk_setup_cmd(struct virtio_d=
-evice *vdev,
- =09=09=09=09      struct request *req,
- =09=09=09=09      struct virtblk_req *vbr)
- {
-+=09size_t in_hdr_len =3D sizeof(vbr->status);
- =09bool unmap =3D false;
- =09u32 type;
-+=09u64 sector =3D 0;
-=20
--=09vbr->out_hdr.sector =3D 0;
-+=09/* Set fields for all request types */
-+=09vbr->out_hdr.ioprio =3D cpu_to_virtio32(vdev, req_get_ioprio(req));
-=20
- =09switch (req_op(req)) {
- =09case REQ_OP_READ:
- =09=09type =3D VIRTIO_BLK_T_IN;
--=09=09vbr->out_hdr.sector =3D cpu_to_virtio64(vdev,
--=09=09=09=09=09=09      blk_rq_pos(req));
-+=09=09sector =3D blk_rq_pos(req);
- =09=09break;
- =09case REQ_OP_WRITE:
- =09=09type =3D VIRTIO_BLK_T_OUT;
--=09=09vbr->out_hdr.sector =3D cpu_to_virtio64(vdev,
--=09=09=09=09=09=09      blk_rq_pos(req));
-+=09=09sector =3D blk_rq_pos(req);
- =09=09break;
- =09case REQ_OP_FLUSH:
- =09=09type =3D VIRTIO_BLK_T_FLUSH;
-@@ -240,16 +270,42 @@ static blk_status_t virtblk_setup_cmd(struct virtio_d=
-evice *vdev,
- =09=09type =3D VIRTIO_BLK_T_WRITE_ZEROES;
- =09=09unmap =3D !(req->cmd_flags & REQ_NOUNMAP);
- =09=09break;
--=09case REQ_OP_DRV_IN:
--=09=09type =3D VIRTIO_BLK_T_GET_ID;
-+=09case REQ_OP_ZONE_OPEN:
-+=09=09type =3D VIRTIO_BLK_T_ZONE_OPEN;
-+=09=09sector =3D blk_rq_pos(req);
- =09=09break;
-+=09case REQ_OP_ZONE_CLOSE:
-+=09=09type =3D VIRTIO_BLK_T_ZONE_CLOSE;
-+=09=09sector =3D blk_rq_pos(req);
-+=09=09break;
-+=09case REQ_OP_ZONE_FINISH:
-+=09=09type =3D VIRTIO_BLK_T_ZONE_FINISH;
-+=09=09sector =3D blk_rq_pos(req);
-+=09=09break;
-+=09case REQ_OP_ZONE_APPEND:
-+=09=09type =3D VIRTIO_BLK_T_ZONE_APPEND;
-+=09=09sector =3D blk_rq_pos(req);
-+=09=09in_hdr_len =3D sizeof(vbr->zone_append_in_hdr);
-+=09=09break;
-+=09case REQ_OP_ZONE_RESET:
-+=09=09type =3D VIRTIO_BLK_T_ZONE_RESET;
-+=09=09sector =3D blk_rq_pos(req);
-+=09=09break;
-+=09case REQ_OP_ZONE_RESET_ALL:
-+=09=09type =3D VIRTIO_BLK_T_ZONE_RESET_ALL;
-+=09=09break;
-+=09case REQ_OP_DRV_IN:
-+=09=09/* Out header already filled in, nothing to do */
-+=09=09return 0;
- =09default:
- =09=09WARN_ON_ONCE(1);
- =09=09return BLK_STS_IOERR;
- =09}
-=20
-+=09/* Set fields for non-REQ_OP_DRV_IN request types */
-+=09vbr->in_hdr_len =3D in_hdr_len;
- =09vbr->out_hdr.type =3D cpu_to_virtio32(vdev, type);
--=09vbr->out_hdr.ioprio =3D cpu_to_virtio32(vdev, req_get_ioprio(req));
-+=09vbr->out_hdr.sector =3D cpu_to_virtio64(vdev, sector);
-=20
- =09if (type =3D=3D VIRTIO_BLK_T_DISCARD || type =3D=3D VIRTIO_BLK_T_WRITE_=
-ZEROES) {
- =09=09if (virtblk_setup_discard_write_zeroes(req, unmap))
-@@ -262,10 +318,15 @@ static blk_status_t virtblk_setup_cmd(struct virtio_d=
-evice *vdev,
- static inline void virtblk_request_done(struct request *req)
- {
- =09struct virtblk_req *vbr =3D blk_mq_rq_to_pdu(req);
-+=09int status =3D virtblk_result(vbr->status);
-=20
- =09virtblk_unmap_data(req, vbr);
- =09virtblk_cleanup_cmd(req);
--=09blk_mq_end_request(req, virtblk_result(vbr));
-+
-+=09if (req_op(req) =3D=3D REQ_OP_ZONE_APPEND)
-+=09=09req->__sector =3D le64_to_cpu(vbr->zone_append_in_hdr.append_sector)=
-;
-+
-+=09blk_mq_end_request(req, status);
- }
-=20
- static void virtblk_done(struct virtqueue *vq)
-@@ -452,6 +513,270 @@ static void virtio_queue_rqs(struct request **rqlist)
- =09*rqlist =3D requeue_list;
- }
-=20
-+#ifdef CONFIG_BLK_DEV_ZONED
-+static void *virtblk_alloc_report_buffer(struct virtio_blk *vblk,
-+=09=09=09=09=09  unsigned int nr_zones,
-+=09=09=09=09=09  unsigned int zone_sectors,
-+=09=09=09=09=09  size_t *buflen)
-+{
-+=09struct request_queue *q =3D vblk->disk->queue;
-+=09size_t bufsize;
-+=09void *buf;
-+
-+=09nr_zones =3D min_t(unsigned int, nr_zones,
-+=09=09=09 get_capacity(vblk->disk) >> ilog2(zone_sectors));
-+
-+=09bufsize =3D sizeof(struct virtio_blk_zone_report) +
-+=09=09nr_zones * sizeof(struct virtio_blk_zone_descriptor);
-+=09bufsize =3D min_t(size_t, bufsize,
-+=09=09=09queue_max_hw_sectors(q) << SECTOR_SHIFT);
-+=09bufsize =3D min_t(size_t, bufsize, queue_max_segments(q) << PAGE_SHIFT)=
-;
-+
-+=09while (bufsize >=3D sizeof(struct virtio_blk_zone_report)) {
-+=09=09buf =3D __vmalloc(bufsize, GFP_KERNEL | __GFP_NORETRY);
-+=09=09if (buf) {
-+=09=09=09*buflen =3D bufsize;
-+=09=09=09return buf;
-+=09=09}
-+=09=09bufsize >>=3D 1;
-+=09}
-+
-+=09return NULL;
-+}
-+
-+static int virtblk_submit_zone_report(struct virtio_blk *vblk,
-+=09=09=09=09       char *report_buf, size_t report_len,
-+=09=09=09=09       sector_t sector)
-+{
-+=09struct request_queue *q =3D vblk->disk->queue;
-+=09struct request *req;
-+=09struct virtblk_req *vbr;
-+=09int err;
-+
-+=09req =3D blk_mq_alloc_request(q, REQ_OP_DRV_IN, 0);
-+=09if (IS_ERR(req))
-+=09=09return PTR_ERR(req);
-+
-+=09vbr =3D blk_mq_rq_to_pdu(req);
-+=09vbr->in_hdr_len =3D sizeof(vbr->status);
-+=09vbr->out_hdr.type =3D cpu_to_virtio32(vblk->vdev, VIRTIO_BLK_T_ZONE_REP=
-ORT);
-+=09vbr->out_hdr.sector =3D cpu_to_virtio64(vblk->vdev, sector);
-+
-+=09err =3D blk_rq_map_kern(q, req, report_buf, report_len, GFP_KERNEL);
-+=09if (err)
-+=09=09goto out;
-+
-+=09blk_execute_rq(req, false);
-+=09err =3D blk_status_to_errno(virtblk_result(vbr->status));
-+out:
-+=09blk_mq_free_request(req);
-+=09return err;
-+}
-+
-+static int virtblk_parse_zone(struct virtio_blk *vblk,
-+=09=09=09       struct virtio_blk_zone_descriptor *entry,
-+=09=09=09       unsigned int idx, unsigned int zone_sectors,
-+=09=09=09       report_zones_cb cb, void *data)
-+{
-+=09struct blk_zone zone =3D { };
-+
-+=09if (entry->z_type !=3D VIRTIO_BLK_ZT_SWR &&
-+=09    entry->z_type !=3D VIRTIO_BLK_ZT_SWP &&
-+=09    entry->z_type !=3D VIRTIO_BLK_ZT_CONV) {
-+=09=09dev_err(&vblk->vdev->dev, "invalid zone type %#x\n",
-+=09=09=09entry->z_type);
-+=09=09return -EINVAL;
-+=09}
-+
-+=09zone.type =3D entry->z_type;
-+=09zone.cond =3D entry->z_state;
-+=09zone.len =3D zone_sectors;
-+=09zone.capacity =3D le64_to_cpu(entry->z_cap);
-+=09zone.start =3D le64_to_cpu(entry->z_start);
-+=09if (zone.cond =3D=3D BLK_ZONE_COND_FULL)
-+=09=09zone.wp =3D zone.start + zone.len;
-+=09else
-+=09=09zone.wp =3D le64_to_cpu(entry->z_wp);
-+
-+=09return cb(&zone, idx, data);
-+}
-+
-+static int virtblk_report_zones(struct gendisk *disk, sector_t sector,
-+=09=09=09=09 unsigned int nr_zones, report_zones_cb cb,
-+=09=09=09=09 void *data)
-+{
-+=09struct virtio_blk *vblk =3D disk->private_data;
-+=09struct virtio_blk_zone_report *report;
-+=09unsigned int zone_sectors =3D vblk->zone_sectors;
-+=09unsigned int nz, i;
-+=09int ret, zone_idx =3D 0;
-+=09size_t buflen;
-+
-+=09if (WARN_ON_ONCE(!vblk->zone_sectors))
-+=09=09return -EOPNOTSUPP;
-+
-+=09report =3D virtblk_alloc_report_buffer(vblk, nr_zones,
-+=09=09=09=09=09     zone_sectors, &buflen);
-+=09if (!report)
-+=09=09return -ENOMEM;
-+
-+=09sector &=3D ~(zone_sectors - 1);
-+=09while (zone_idx < nr_zones && sector < get_capacity(vblk->disk)) {
-+=09=09memset(report, 0, buflen);
-+
-+=09=09ret =3D virtblk_submit_zone_report(vblk, (char *)report,
-+=09=09=09=09=09=09 buflen, sector);
-+=09=09if (ret) {
-+=09=09=09if (ret > 0)
-+=09=09=09=09ret =3D -EIO;
-+=09=09=09goto out_free;
-+=09=09}
-+
-+=09=09nz =3D min((unsigned int)le64_to_cpu(report->nr_zones), nr_zones);
-+=09=09if (!nz)
-+=09=09=09break;
-+
-+=09=09for (i =3D 0; i < nz && zone_idx < nr_zones; i++) {
-+=09=09=09ret =3D virtblk_parse_zone(vblk, &report->zones[i],
-+=09=09=09=09=09=09 zone_idx, zone_sectors, cb, data);
-+=09=09=09if (ret)
-+=09=09=09=09goto out_free;
-+=09=09=09zone_idx++;
-+=09=09}
-+
-+=09=09sector +=3D zone_sectors * nz;
-+=09}
-+
-+=09if (zone_idx > 0)
-+=09=09ret =3D zone_idx;
-+=09else
-+=09=09ret =3D -EINVAL;
-+out_free:
-+=09kvfree(report);
-+=09return ret;
-+}
-+
-+static void virtblk_revalidate_zones(struct virtio_blk *vblk)
-+{
-+=09u8 model;
-+
-+=09if (!vblk->zone_sectors)
-+=09=09return;
-+
-+=09virtio_cread(vblk->vdev, struct virtio_blk_config,
-+=09=09     zoned.model, &model);
-+=09if (!blk_revalidate_disk_zones(vblk->disk, NULL))
-+=09=09set_capacity_and_notify(vblk->disk, 0);
-+}
-+
-+static int virtblk_probe_zoned_device(struct virtio_device *vdev,
-+=09=09=09=09       struct virtio_blk *vblk,
-+=09=09=09=09       struct request_queue *q)
-+{
-+=09u32 v;
-+=09u8 model;
-+=09int ret;
-+
-+=09virtio_cread(vdev, struct virtio_blk_config,
-+=09=09     zoned.model, &model);
-+
-+=09switch (model) {
-+=09case VIRTIO_BLK_Z_NONE:
-+=09=09return 0;
-+=09case VIRTIO_BLK_Z_HM:
-+=09=09break;
-+=09case VIRTIO_BLK_Z_HA:
-+=09=09/*
-+=09=09 * Present the host-aware device as a regular drive.
-+=09=09 * TODO It is possible to add an option to make it appear
-+=09=09 * in the system as a zoned drive.
-+=09=09 */
-+=09=09return 0;
-+=09default:
-+=09=09dev_err(&vdev->dev, "unsupported zone model %d\n", model);
-+=09=09return -EINVAL;
-+=09}
-+
-+=09dev_dbg(&vdev->dev, "probing host-managed zoned device\n");
-+
-+=09disk_set_zoned(vblk->disk, BLK_ZONED_HM);
-+=09blk_queue_flag_set(QUEUE_FLAG_ZONE_RESETALL, q);
-+
-+=09virtio_cread(vdev, struct virtio_blk_config,
-+=09=09     zoned.max_open_zones, &v);
-+=09disk_set_max_open_zones(vblk->disk, le32_to_cpu(v));
-+
-+=09dev_dbg(&vdev->dev, "max open zones =3D %u\n", le32_to_cpu(v));
-+
-+=09virtio_cread(vdev, struct virtio_blk_config,
-+=09=09     zoned.max_active_zones, &v);
-+=09disk_set_max_active_zones(vblk->disk, le32_to_cpu(v));
-+=09dev_info(&vdev->dev, "max active zones =3D %u\n", le32_to_cpu(v));
-+
-+=09virtio_cread(vdev, struct virtio_blk_config,
-+=09=09     zoned.write_granularity, &v);
-+=09if (!v) {
-+=09=09dev_warn(&vdev->dev, "zero write granularity reported\n");
-+=09=09return -ENODEV;
-+=09}
-+=09blk_queue_physical_block_size(q, le32_to_cpu(v));
-+=09blk_queue_io_min(q, le32_to_cpu(v));
-+
-+=09dev_dbg(&vdev->dev, "write granularity =3D %u\n", le32_to_cpu(v));
-+
-+=09/*
-+=09 * virtio ZBD specification doesn't require zones to be a power of
-+=09 * two sectors in size, but the code in this driver expects that.
-+=09 */
-+=09virtio_cread(vdev, struct virtio_blk_config, zoned.zone_sectors, &v);
-+=09if (v =3D=3D 0 || !is_power_of_2(v)) {
-+=09=09dev_err(&vdev->dev,
-+=09=09=09"zoned device with non power of two zone size %u\n", v);
-+=09=09return -ENODEV;
-+=09}
-+
-+=09dev_dbg(&vdev->dev, "zone sectors =3D %u\n", le32_to_cpu(v));
-+=09vblk->zone_sectors =3D le32_to_cpu(v);
-+
-+=09if (virtio_has_feature(vdev, VIRTIO_BLK_F_DISCARD)) {
-+=09=09dev_warn(&vblk->vdev->dev,
-+=09=09=09 "ignoring negotiated F_DISCARD for zoned device\n");
-+=09=09blk_queue_max_discard_sectors(q, 0);
-+=09}
-+
-+=09ret =3D blk_revalidate_disk_zones(vblk->disk, NULL);
-+=09if (!ret) {
-+=09=09virtio_cread(vdev, struct virtio_blk_config,
-+=09=09=09     zoned.max_append_sectors, &v);
-+=09=09if (!v) {
-+=09=09=09dev_warn(&vdev->dev, "zero max_append_sectors reported\n");
-+=09=09=09return -ENODEV;
-+=09=09}
-+=09=09blk_queue_max_zone_append_sectors(q, le32_to_cpu(v));
-+=09=09dev_dbg(&vdev->dev, "max append sectors =3D %u\n", le32_to_cpu(v));
-+
-+=09}
-+
-+=09return ret;
-+}
-+
-+#else
-+
-+/*
-+ * Zoned block device support is not configured in this kernel.
-+ * We only need to define a few symbols to avoid compilation errors.
-+ */
-+#define virtblk_report_zones       NULL
-+static inline void virtblk_revalidate_zones(struct virtio_blk *vblk)
-+{
-+}
-+static inline int virtblk_probe_zoned_device(struct virtio_device *vdev,
-+=09=09=09struct virtio_blk *vblk, struct request_queue *q)
-+{
-+=09return -EOPNOTSUPP;
-+}
-+#endif /* CONFIG_BLK_DEV_ZONED */
-+
- /* return id (s/n) string for *disk to *id_str
-  */
- static int virtblk_get_id(struct gendisk *disk, char *id_str)
-@@ -459,18 +784,24 @@ static int virtblk_get_id(struct gendisk *disk, char =
-*id_str)
- =09struct virtio_blk *vblk =3D disk->private_data;
- =09struct request_queue *q =3D vblk->disk->queue;
- =09struct request *req;
-+=09struct virtblk_req *vbr;
- =09int err;
-=20
- =09req =3D blk_mq_alloc_request(q, REQ_OP_DRV_IN, 0);
- =09if (IS_ERR(req))
- =09=09return PTR_ERR(req);
-=20
-+=09vbr =3D blk_mq_rq_to_pdu(req);
-+=09vbr->in_hdr_len =3D sizeof(vbr->status);
-+=09vbr->out_hdr.type =3D cpu_to_virtio32(vblk->vdev, VIRTIO_BLK_T_GET_ID);
-+=09vbr->out_hdr.sector =3D 0;
-+
- =09err =3D blk_rq_map_kern(q, req, id_str, VIRTIO_BLK_ID_BYTES, GFP_KERNEL=
-);
- =09if (err)
- =09=09goto out;
-=20
- =09blk_execute_rq(req, false);
--=09err =3D blk_status_to_errno(virtblk_result(blk_mq_rq_to_pdu(req)));
-+=09err =3D blk_status_to_errno(virtblk_result(vbr->status));
- out:
- =09blk_mq_free_request(req);
- =09return err;
-@@ -521,6 +852,7 @@ static const struct block_device_operations virtblk_fop=
-s =3D {
- =09.owner  =09=3D THIS_MODULE,
- =09.getgeo=09=09=3D virtblk_getgeo,
- =09.free_disk=09=3D virtblk_free_disk,
-+=09.report_zones=09=3D virtblk_report_zones,
- };
-=20
- static int index_to_minor(int index)
-@@ -591,6 +923,7 @@ static void virtblk_config_changed_work(struct work_str=
-uct *work)
- =09struct virtio_blk *vblk =3D
- =09=09container_of(work, struct virtio_blk, config_work);
-=20
-+=09virtblk_revalidate_zones(vblk);
- =09virtblk_update_capacity(vblk, true);
- }
-=20
-@@ -1081,6 +1414,15 @@ static int virtblk_probe(struct virtio_device *vdev)
- =09virtblk_update_capacity(vblk, false);
- =09virtio_device_ready(vdev);
-=20
-+=09if (virtio_has_feature(vdev, VIRTIO_BLK_F_ZONED)) {
-+=09=09err =3D virtblk_probe_zoned_device(vdev, vblk, q);
-+=09=09if (err)
-+=09=09=09goto out_cleanup_disk;
-+=09}
-+
-+=09dev_info(&vdev->dev, "blk config size: %zu\n",
-+=09=09sizeof(struct virtio_blk_config));
-+
- =09err =3D device_add_disk(&vdev->dev, vblk->disk, virtblk_attr_groups);
- =09if (err)
- =09=09goto out_cleanup_disk;
-@@ -1180,6 +1522,9 @@ static unsigned int features[] =3D {
- =09VIRTIO_BLK_F_RO, VIRTIO_BLK_F_BLK_SIZE,
- =09VIRTIO_BLK_F_FLUSH, VIRTIO_BLK_F_TOPOLOGY, VIRTIO_BLK_F_CONFIG_WCE,
- =09VIRTIO_BLK_F_MQ, VIRTIO_BLK_F_DISCARD, VIRTIO_BLK_F_WRITE_ZEROES,
-+#ifdef CONFIG_BLK_DEV_ZONED
-+=09VIRTIO_BLK_F_ZONED,
-+#endif /* CONFIG_BLK_DEV_ZONED */
- };
-=20
- static struct virtio_driver virtio_blk =3D {
-diff --git a/include/uapi/linux/virtio_blk.h b/include/uapi/linux/virtio_bl=
-k.h
-index d9122674a539..cec9abf56b65 100644
---- a/include/uapi/linux/virtio_blk.h
-+++ b/include/uapi/linux/virtio_blk.h
-@@ -40,6 +40,7 @@
- #define VIRTIO_BLK_F_MQ=09=0912=09/* support more than one vq */
- #define VIRTIO_BLK_F_DISCARD=0913=09/* DISCARD is supported */
- #define VIRTIO_BLK_F_WRITE_ZEROES=0914=09/* WRITE ZEROES is supported */
-+#define VIRTIO_BLK_F_ZONED=09=0917=09/* Zoned block device */
-=20
- /* Legacy feature bits */
- #ifndef VIRTIO_BLK_NO_LEGACY
-@@ -124,6 +125,17 @@ struct virtio_blk_config {
-=20
- =09/* Secure erase fields that are defined in the virtio spec */
- =09__u8 sec_erase[12];
-+
-+=09/* Zoned block device characteristics (if VIRTIO_BLK_F_ZONED) */
-+=09struct virtio_blk_zoned_characteristics {
-+=09=09__virtio32 zone_sectors;
-+=09=09__virtio32 max_open_zones;
-+=09=09__virtio32 max_active_zones;
-+=09=09__virtio32 max_append_sectors;
-+=09=09__virtio32 write_granularity;
-+=09=09__u8 model;
-+=09=09__u8 unused2[3];
-+=09} zoned;
- } __attribute__((packed));
-=20
- /*
-@@ -158,6 +170,27 @@ struct virtio_blk_config {
- /* Write zeroes command */
- #define VIRTIO_BLK_T_WRITE_ZEROES=0913
-=20
-+/* Zone append command */
-+#define VIRTIO_BLK_T_ZONE_APPEND    15
-+
-+/* Report zones command */
-+#define VIRTIO_BLK_T_ZONE_REPORT    16
-+
-+/* Open zone command */
-+#define VIRTIO_BLK_T_ZONE_OPEN      18
-+
-+/* Close zone command */
-+#define VIRTIO_BLK_T_ZONE_CLOSE     20
-+
-+/* Finish zone command */
-+#define VIRTIO_BLK_T_ZONE_FINISH    22
-+
-+/* Reset zone command */
-+#define VIRTIO_BLK_T_ZONE_RESET     24
-+
-+/* Reset All zones command */
-+#define VIRTIO_BLK_T_ZONE_RESET_ALL 26
-+
- #ifndef VIRTIO_BLK_NO_LEGACY
- /* Barrier before this op. */
- #define VIRTIO_BLK_T_BARRIER=090x80000000
-@@ -177,6 +210,72 @@ struct virtio_blk_outhdr {
- =09__virtio64 sector;
- };
-=20
-+/*
-+ * Supported zoned device models.
-+ */
-+
-+/* Regular block device */
-+#define VIRTIO_BLK_Z_NONE      0
-+/* Host-managed zoned device */
-+#define VIRTIO_BLK_Z_HM        1
-+/* Host-aware zoned device */
-+#define VIRTIO_BLK_Z_HA        2
-+
-+/*
-+ * Zone descriptor. A part of VIRTIO_BLK_T_ZONE_REPORT command reply.
-+ */
-+struct virtio_blk_zone_descriptor {
-+=09/* Zone capacity */
-+=09__virtio64 z_cap;
-+=09/* The starting sector of the zone */
-+=09__virtio64 z_start;
-+=09/* Zone write pointer position in sectors */
-+=09__virtio64 z_wp;
-+=09/* Zone type */
-+=09__u8 z_type;
-+=09/* Zone state */
-+=09__u8 z_state;
-+=09__u8 reserved[38];
-+};
-+
-+struct virtio_blk_zone_report {
-+=09__virtio64 nr_zones;
-+=09__u8 reserved[56];
-+=09struct virtio_blk_zone_descriptor zones[];
-+};
-+
-+/*
-+ * Supported zone types.
-+ */
-+
-+/* Conventional zone */
-+#define VIRTIO_BLK_ZT_CONV         1
-+/* Sequential Write Required zone */
-+#define VIRTIO_BLK_ZT_SWR          2
-+/* Sequential Write Preferred zone */
-+#define VIRTIO_BLK_ZT_SWP          3
-+
-+/*
-+ * Zone states that are available for zones of all types.
-+ */
-+
-+/* Not a write pointer (conventional zones only) */
-+#define VIRTIO_BLK_ZS_NOT_WP       0
-+/* Empty */
-+#define VIRTIO_BLK_ZS_EMPTY        1
-+/* Implicitly Open */
-+#define VIRTIO_BLK_ZS_IOPEN        2
-+/* Explicitly Open */
-+#define VIRTIO_BLK_ZS_EOPEN        3
-+/* Closed */
-+#define VIRTIO_BLK_ZS_CLOSED       4
-+/* Read-Only */
-+#define VIRTIO_BLK_ZS_RDONLY       13
-+/* Full */
-+#define VIRTIO_BLK_ZS_FULL         14
-+/* Offline */
-+#define VIRTIO_BLK_ZS_OFFLINE      15
-+
- /* Unmap this range (only valid for write zeroes command) */
- #define VIRTIO_BLK_WRITE_ZEROES_FLAG_UNMAP=090x00000001
-=20
-@@ -203,4 +302,11 @@ struct virtio_scsi_inhdr {
- #define VIRTIO_BLK_S_OK=09=090
- #define VIRTIO_BLK_S_IOERR=091
- #define VIRTIO_BLK_S_UNSUPP=092
-+
-+/* Error codes that are specific to zoned block devices */
-+#define VIRTIO_BLK_S_ZONE_INVALID_CMD     3
-+#define VIRTIO_BLK_S_ZONE_UNALIGNED_WP    4
-+#define VIRTIO_BLK_S_ZONE_OPEN_RESOURCE   5
-+#define VIRTIO_BLK_S_ZONE_ACTIVE_RESOURCE 6
-+
- #endif /* _LINUX_VIRTIO_BLK_H */
---=20
-2.34.1
-
-
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+SGkgUGFua2FqLCBEYW1pZW4sCgpPbiBUdWUsIDIwMjItMDktMjAgYXQgMDg6NTkgKzA5MDAsIERh
+bWllbiBMZSBNb2FsIHdyb3RlOgo+IE9uIDkvMTkvMjIgMjI6NDEsIFBhbmthaiBSYWdoYXYgd3Jv
+dGU6Cj4gPiBIaSBEbWl0cnksCj4gPiAKPiA+IE9uIFN1biwgU2VwIDE4LCAyMDIyIGF0IDEwOjI5
+OjIxUE0gLTA0MDAsIERtaXRyeSBGb21pY2hldiB3cm90ZToKPiA+ID4gVGhlIHpvbmUtc3BlY2lm
+aWMgY29kZSBpbiB0aGUgcGF0Y2ggaXMgaGVhdmlseSBpbmZsdWVuY2VkIGJ5IE5WTWUgWk5TCj4g
+PiA+IGNvZGUgaW4gZHJpdmVycy9udm1lL2hvc3Qvem5zLmMsIGJ1dCBpdCBpcyBzaW1wbGVyIGJl
+Y2F1c2UgdGhlIHByb3Bvc2VkCj4gPiA+IHZpcnRpbyBaQkQgZHJhZnQgb25seSBjb3ZlcnMgdGhl
+IHpvbmVkIGRldmljZSBmZWF0dXJlcyB0aGF0IGFyZQo+ID4gPiByZWxldmFudCB0byB0aGUgem9u
+ZWQgZnVuY3Rpb25hbGl0eSBwcm92aWRlZCBieSBMaW51eCBibG9jayBsYXllci4KPiA+ID4gCj4g
+PiBUaGVyZSBpcyBhIHBhcmFsbGVsIHdvcmsgZ29pbmcgb24gdG8gc3VwcG9ydCBub24tcG8yIHpv
+bmUgc2l6ZXMgaW4gTGludXgKPiA+IGJsb2NrIGxheWVyIGFuZCBkcml2ZXJzWzFdLiBJIGRvbid0
+IHNlZSBhbnkgcmVhc29uIHdoeSB3ZSBzaG91bGRuJ3QgbWFrZQo+ID4gdGhlIGNhbGN1bGF0aW9u
+cyBnZW5lcmljIGhlcmUgaW5zdGVhZCBvZiBwdXR0aW5nIHRoZSBjb25zdHJhaW50IG9uIHpvbmUK
+PiA+IHNlY3RvcnMgdG8gYmUgcG8yIGFzIHRoZSB2aXJ0aW8gc3BlYyBhbHNvIHN1cHBvcnRzIGl0
+Lgo+IAo+IFRoYXQgc2VyaWVzIGlzIG5vdCB1cHN0cmVhbSwgc28gaW1wbGVtZW50aW5nIGFnYWlu
+c3Qgd291bGQgbm90IGJlIHRoZQo+IGNvcnJlY3QgYXBwcm9hY2gsIGVzcGVjaWFsbHkgZ2l2ZW4g
+dGhhdCB0aGlzIHdvdWxkIGFsc28gaW1wYWN0IHFlbXUgY29kZS4KPiAKCkkgYW0gYXdhcmUgYWJv
+dXQgdGhlIGVmZm9ydCB0byBzdXBwb3J0IG5vbi1eMiB6b25lIHNpemVzIGluIHRoZSBrZXJuZWwg
+YW5kIHRoaXMKYWN0aXZpdHkgYWN0dWFsbHkgbWFkZSBtZSBkcm9wIHRoZSBeMiB6b25lIHNpemUg
+cmVxdWlyZW1lbnQgZnJvbSB0aGUgdmlydGlvLXpiZApzcGVjaWZpY2F0aW9uLiBJIHRoaW5rIHRo
+YXQgdGhlIGJlc3Qgd2F5IHRvIGFkZCBub24tXjIgem9uZSBzaXplIHN1cHBvcnQgdG8gdGhpcwpk
+cml2ZXIgY291bGQgYmUgYSBmb2xsb3cgdXAgcGF0Y2ggdG8gdGhpcyBzZXJpZXMuIFRoaXMgd2F5
+LCB3ZSB3b24ndCByZWx5IG9uIHRoZQpjb2RlIHRoYXQgaXMgbm90IHlldCBtZXJnZWQgdXBzdHJl
+YW0uCgo8dGhlcmUgaXMgb25lIG1vcmUgY29tbWVudCBhYm91dCB5b3VyIHByb3Bvc2VkIGNoYW5n
+ZXMgYmVsb3c+Cgo+ID4gCj4gPiBJIHRvb2sgYSBxdWljayBsb29rLCBhbmQgY2hhbmdpbmcgdGhl
+IGNhbGN1bGF0aW9ucyBmcm9tIHBvMiBzcGVjaWZpYyB0bwo+ID4gZ2VuZXJpYyB3aWxsIG5vdCBi
+ZSBpbiB0aGUgaG90IHBhdGggYW5kIGNhbiBiZSB0cml2aWFsbHkgY2hhbmdlZC4gSSBoYXZlCj4g
+PiBzdWdnZXN0ZWQgdGhlIGNoYW5nZXMgaW5saW5lIHRvIG1ha2UgdGhlIHZpcnRpbyBibGsgZHJp
+dmVyIHpvbmUgc2l6ZSAKPiA+IGFnbm9zdGljLiBJIGhhdmVuJ3QgdGVzdGVkIHRoZSBjaGFuZ2Vz
+IGJ1dCBpdCBpcyB2ZXJ5Cj4gPiBzaW1pbGFyIHRvIHRoZSBjaGFuZ2VzIEkgZGlkIGluIHRoZSBk
+cml2ZXJzL252bWUvaG9zdC96bnMuYyBpbiBteSBwYXRjaAo+ID4gc2VyaWVzWzJdLgo+ID4gCj4g
+PiBbMV0KPiA+IGh0dHBzOi8vbG9yZS5rZXJuZWwub3JnL2xpbnV4LWJsb2NrLzIwMjIwOTEyMDgy
+MjA0LjUxMTg5LTEtcC5yYWdoYXZAc2Ftc3VuZy5jb20vCj4gPiBbMl0KPiA+IGh0dHBzOi8vbG9y
+ZS5rZXJuZWwub3JnL2xpbnV4LWJsb2NrLzIwMjIwOTEyMDgyMjA0LjUxMTg5LTYtcC5yYWdoYXZA
+c2Ftc3VuZy5jb20vCj4gPiAKPiA+ID4gQ28tZGV2ZWxvcGVkLWJ5OiBTdGVmYW4gSGFqbm9jemkg
+PHN0ZWZhbmhhQGdtYWlsLmNvbT4KPiA+ID4gU2lnbmVkLW9mZi1ieTogU3RlZmFuIEhham5vY3pp
+IDxzdGVmYW5oYUBnbWFpbC5jb20+Cj4gPiA+IFNpZ25lZC1vZmYtYnk6IERtaXRyeSBGb21pY2hl
+diA8ZG1pdHJ5LmZvbWljaGV2QHdkYy5jb20+Cj4gPiA+IC0tLQo+ID4gPiDCoGRyaXZlcnMvYmxv
+Y2svdmlydGlvX2Jsay5jwqDCoMKgwqDCoCB8IDM4MSArKysrKysrKysrKysrKysrKysrKysrKysr
+KysrKystLQo+ID4gPiDCoGluY2x1ZGUvdWFwaS9saW51eC92aXJ0aW9fYmxrLmggfCAxMDYgKysr
+KysrKysrCj4gPiA+IMKgMiBmaWxlcyBjaGFuZ2VkLCA0NjkgaW5zZXJ0aW9ucygrKSwgMTggZGVs
+ZXRpb25zKC0pCj4gPiA+IAo+ID4gPHNuaXA+Cj4gPiA+ICsjaWZkZWYgQ09ORklHX0JMS19ERVZf
+Wk9ORUQKPiA+ID4gK3N0YXRpYyB2b2lkICp2aXJ0YmxrX2FsbG9jX3JlcG9ydF9idWZmZXIoc3Ry
+dWN0IHZpcnRpb19ibGsgKnZibGssCj4gPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB1bnNp
+Z25lZCBpbnQgbnJfem9uZXMsCj4gPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB1bnNpZ25l
+ZCBpbnQgem9uZV9zZWN0b3JzLAo+ID4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgc2l6ZV90
+ICpidWZsZW4pCj4gPiA+ICt7Cj4gPiA+ICvCoMKgwqDCoMKgwqDCoHN0cnVjdCByZXF1ZXN0X3F1
+ZXVlICpxID0gdmJsay0+ZGlzay0+cXVldWU7Cj4gPiA+ICvCoMKgwqDCoMKgwqDCoHNpemVfdCBi
+dWZzaXplOwo+ID4gPiArwqDCoMKgwqDCoMKgwqB2b2lkICpidWY7Cj4gPiA+ICsKPiA+IC3CoMKg
+wqDCoMKgwqDCoG5yX3pvbmVzID0gbWluX3QodW5zaWduZWQgaW50LCBucl96b25lcywKPiA+IC3C
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGdldF9jYXBhY2l0
+eSh2YmxrLT5kaXNrKSA+PiBpbG9nMih6b25lX3NlY3RvcnMpKTsKPiA+IAo+ID4gK8KgwqDCoMKg
+wqDCoMKgbnJfem9uZXMgPSBtaW5fdCh1bnNpZ25lZCBpbnQsIG5yX3pvbmVzLAo+ID4gK8KgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgZGl2NjRfdTY0KGdldF9j
+YXBhY2l0eSh2YmxrLT5kaXNrKSwgem9uZV9zZWN0b3JzKSk7Cj4gPiAKPiA+ID4gKwo+ID4gPiAr
+wqDCoMKgwqDCoMKgwqBidWZzaXplID0gc2l6ZW9mKHN0cnVjdCB2aXJ0aW9fYmxrX3pvbmVfcmVw
+b3J0KSArCj4gPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBucl96b25lcyAqIHNp
+emVvZihzdHJ1Y3QgdmlydGlvX2Jsa196b25lX2Rlc2NyaXB0b3IpOwo+ID4gPiArwqDCoMKgwqDC
+oMKgwqBidWZzaXplID0gbWluX3Qoc2l6ZV90LCBidWZzaXplLAo+ID4gPiArwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoHF1ZXVlX21heF9od19zZWN0b3JzKHEp
+IDw8IFNFQ1RPUl9TSElGVCk7Cj4gPiA+ICvCoMKgwqDCoMKgwqDCoGJ1ZnNpemUgPSBtaW5fdChz
+aXplX3QsIGJ1ZnNpemUsIHF1ZXVlX21heF9zZWdtZW50cyhxKSA8PAo+ID4gPiBQQUdFX1NISUZU
+KTsKPiA+ID4gKwo+ID4gPiArwqDCoMKgwqDCoMKgwqB3aGlsZSAoYnVmc2l6ZSA+PSBzaXplb2Yo
+c3RydWN0IHZpcnRpb19ibGtfem9uZV9yZXBvcnQpKSB7Cj4gPiA+ICvCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqBidWYgPSBfX3ZtYWxsb2MoYnVmc2l6ZSwgR0ZQX0tFUk5FTCB8IF9fR0ZQ
+X05PUkVUUlkpOwo+ID4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgaWYgKGJ1Zikg
+ewo+ID4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCpi
+dWZsZW4gPSBidWZzaXplOwo+ID4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoHJldHVybiBidWY7Cj4gPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqB9Cj4gPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBidWZzaXplID4+PSAx
+Owo+ID4gPiArwqDCoMKgwqDCoMKgwqB9Cj4gPiA+ICsKPiA+ID4gK8KgwqDCoMKgwqDCoMKgcmV0
+dXJuIE5VTEw7Cj4gPiA+ICt9Cj4gPiA+ICsKPiA+ID4gK3N0YXRpYyBpbnQgdmlydGJsa19zdWJt
+aXRfem9uZV9yZXBvcnQoc3RydWN0IHZpcnRpb19ibGsgKnZibGssCj4gPiA+ICvCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoCBjaGFyICpyZXBvcnRfYnVmLCBzaXplX3QgcmVwb3J0X2xlbiwKPiA+ID4gK8KgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgIHNlY3Rvcl90IHNlY3RvcikKPiA+ID4gK3sKPiA+ID4gK8KgwqDCoMKgwqDC
+oMKgc3RydWN0IHJlcXVlc3RfcXVldWUgKnEgPSB2YmxrLT5kaXNrLT5xdWV1ZTsKPiA+ID4gK8Kg
+wqDCoMKgwqDCoMKgc3RydWN0IHJlcXVlc3QgKnJlcTsKPiA+ID4gK8KgwqDCoMKgwqDCoMKgc3Ry
+dWN0IHZpcnRibGtfcmVxICp2YnI7Cj4gPiA+ICvCoMKgwqDCoMKgwqDCoGludCBlcnI7Cj4gPiA+
+ICsKPiA+ID4gK8KgwqDCoMKgwqDCoMKgcmVxID0gYmxrX21xX2FsbG9jX3JlcXVlc3QocSwgUkVR
+X09QX0RSVl9JTiwgMCk7Cj4gPiA+ICvCoMKgwqDCoMKgwqDCoGlmIChJU19FUlIocmVxKSkKPiA+
+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoHJldHVybiBQVFJfRVJSKHJlcSk7Cj4g
+PiA+ICsKPiA+ID4gK8KgwqDCoMKgwqDCoMKgdmJyID0gYmxrX21xX3JxX3RvX3BkdShyZXEpOwo+
+ID4gPiArwqDCoMKgwqDCoMKgwqB2YnItPmluX2hkcl9sZW4gPSBzaXplb2YodmJyLT5zdGF0dXMp
+Owo+ID4gPiArwqDCoMKgwqDCoMKgwqB2YnItPm91dF9oZHIudHlwZSA9IGNwdV90b192aXJ0aW8z
+Mih2YmxrLT52ZGV2LAo+ID4gPiBWSVJUSU9fQkxLX1RfWk9ORV9SRVBPUlQpOwo+ID4gPiArwqDC
+oMKgwqDCoMKgwqB2YnItPm91dF9oZHIuc2VjdG9yID0gY3B1X3RvX3ZpcnRpbzY0KHZibGstPnZk
+ZXYsIHNlY3Rvcik7Cj4gPiA+ICsKPiA+ID4gK8KgwqDCoMKgwqDCoMKgZXJyID0gYmxrX3JxX21h
+cF9rZXJuKHEsIHJlcSwgcmVwb3J0X2J1ZiwgcmVwb3J0X2xlbiwgR0ZQX0tFUk5FTCk7Cj4gPiA+
+ICvCoMKgwqDCoMKgwqDCoGlmIChlcnIpCj4gPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqBnb3RvIG91dDsKPiA+ID4gKwo+ID4gPiArwqDCoMKgwqDCoMKgwqBibGtfZXhlY3V0ZV9y
+cShyZXEsIGZhbHNlKTsKPiA+ID4gK8KgwqDCoMKgwqDCoMKgZXJyID0gYmxrX3N0YXR1c190b19l
+cnJubyh2aXJ0YmxrX3Jlc3VsdCh2YnItPnN0YXR1cykpOwo+ID4gPiArb3V0OnJldHVybiAtRU5P
+REVWOwo+ID4gPiArwqDCoMKgwqDCoMKgwqBibGtfbXFfZnJlZV9yZXF1ZXN0KHJlcSk7Cj4gPiA+
+ICvCoMKgwqDCoMKgwqDCoHJldHVybiBlcnI7Cj4gPiA+ICt9Cj4gPiA+ICsKPiA+ID4gK3N0YXRp
+YyBpbnQgdmlydGJsa19wYXJzZV96b25lKHN0cnVjdCB2aXJ0aW9fYmxrICp2YmxrLAo+ID4gPiAr
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oCBzdHJ1Y3QgdmlydGlvX2Jsa196b25lX2Rlc2NyaXB0b3IgKmVudHJ5LAo+ID4gPiArwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB1bnNp
+Z25lZCBpbnQgaWR4LCB1bnNpZ25lZCBpbnQgem9uZV9zZWN0b3JzLAo+ID4gPiArwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCByZXBvcnRf
+em9uZXNfY2IgY2IsIHZvaWQgKmRhdGEpCj4gPiA+ICt7Cj4gPiA+ICvCoMKgwqDCoMKgwqDCoHN0
+cnVjdCBibGtfem9uZSB6b25lID0geyB9Owo+ID4gPiArCj4gPiA+ICvCoMKgwqDCoMKgwqDCoGlm
+IChlbnRyeS0+el90eXBlICE9IFZJUlRJT19CTEtfWlRfU1dSICYmCj4gPiA+ICvCoMKgwqDCoMKg
+wqDCoMKgwqDCoCBlbnRyeS0+el90eXBlICE9IFZJUlRJT19CTEtfWlRfU1dQICYmCj4gPiA+ICvC
+oMKgwqDCoMKgwqDCoMKgwqDCoCBlbnRyeS0+el90eXBlICE9IFZJUlRJT19CTEtfWlRfQ09OVikg
+ewo+ID4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgZGV2X2VycigmdmJsay0+dmRl
+di0+ZGV2LCAiaW52YWxpZCB6b25lIHR5cGUgJSN4XG4iLAo+ID4gPiArwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoGVudHJ5LT56X3R5cGUpOwo+ID4gPiArwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgcmV0dXJuIC1FSU5WQUw7Cj4gPiA+ICvCoMKgwqDC
+oMKgwqDCoH0KPiA+ID4gKwo+ID4gPiArwqDCoMKgwqDCoMKgwqB6b25lLnR5cGUgPSBlbnRyeS0+
+el90eXBlOwo+ID4gPiArwqDCoMKgwqDCoMKgwqB6b25lLmNvbmQgPSBlbnRyeS0+el9zdGF0ZTsK
+PiA+ID4gK8KgwqDCoMKgwqDCoMKgem9uZS5sZW4gPSB6b25lX3NlY3RvcnM7Cj4gPiA+ICvCoMKg
+wqDCoMKgwqDCoHpvbmUuY2FwYWNpdHkgPSBsZTY0X3RvX2NwdShlbnRyeS0+el9jYXApOwo+ID4g
+PiArwqDCoMKgwqDCoMKgwqB6b25lLnN0YXJ0ID0gbGU2NF90b19jcHUoZW50cnktPnpfc3RhcnQp
+Owo+ID4gPiArwqDCoMKgwqDCoMKgwqBpZiAoem9uZS5jb25kID09IEJMS19aT05FX0NPTkRfRlVM
+TCkKPiA+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoHpvbmUud3AgPSB6b25lLnN0
+YXJ0ICsgem9uZS5sZW47Cj4gPiA+ICvCoMKgwqDCoMKgwqDCoGVsc2UKPiA+ID4gK8KgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoHpvbmUud3AgPSBsZTY0X3RvX2NwdShlbnRyeS0+el93cCk7
+Cj4gPiA+ICsKPiA+ID4gK8KgwqDCoMKgwqDCoMKgcmV0dXJuIGNiKCZ6b25lLCBpZHgsIGRhdGEp
+Owo+ID4gPiArfQo+ID4gPiArCj4gPiA+ICtzdGF0aWMgaW50IHZpcnRibGtfcmVwb3J0X3pvbmVz
+KHN0cnVjdCBnZW5kaXNrICpkaXNrLCBzZWN0b3JfdCBzZWN0b3IsCj4gPiA+ICvCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB1bnNp
+Z25lZCBpbnQgbnJfem9uZXMsIHJlcG9ydF96b25lc19jYiBjYiwKPiA+ID4gK8KgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHZvaWQg
+KmRhdGEpCj4gPiA+ICt7Cj4gPiA+ICvCoMKgwqDCoMKgwqDCoHN0cnVjdCB2aXJ0aW9fYmxrICp2
+YmxrID0gZGlzay0+cHJpdmF0ZV9kYXRhOwo+ID4gPiArwqDCoMKgwqDCoMKgwqBzdHJ1Y3Qgdmly
+dGlvX2Jsa196b25lX3JlcG9ydCAqcmVwb3J0Owo+ID4gPiArwqDCoMKgwqDCoMKgwqB1bnNpZ25l
+ZCBpbnQgem9uZV9zZWN0b3JzID0gdmJsay0+em9uZV9zZWN0b3JzOwo+ID4gPiArwqDCoMKgwqDC
+oMKgwqB1bnNpZ25lZCBpbnQgbnosIGk7Cj4gPiA+ICvCoMKgwqDCoMKgwqDCoGludCByZXQsIHpv
+bmVfaWR4ID0gMDsKPiA+ID4gK8KgwqDCoMKgwqDCoMKgc2l6ZV90IGJ1ZmxlbjsKPiA+ICvCoMKg
+wqDCoMKgwqDCoHU2NCByZW1haW5kZXI7Cj4gPiA+ICsKPiA+ID4gK8KgwqDCoMKgwqDCoMKgaWYg
+KFdBUk5fT05fT05DRSghdmJsay0+em9uZV9zZWN0b3JzKSkKPiA+ID4gK8KgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoHJldHVybiAtRU9QTk9UU1VQUDsKPiA+ID4gKwo+ID4gPiArwqDCoMKg
+wqDCoMKgwqByZXBvcnQgPSB2aXJ0YmxrX2FsbG9jX3JlcG9ydF9idWZmZXIodmJsaywgbnJfem9u
+ZXMsCj4gPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB6b25lX3NlY3RvcnMsICZi
+dWZsZW4pOwo+ID4gPiArwqDCoMKgwqDCoMKgwqBpZiAoIXJlcG9ydCkKPiA+ID4gK8KgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoHJldHVybiAtRU5PTUVNOwo+ID4gPiArCj4gPiAtwqDCoMKg
+wqDCoMKgwqBzZWN0b3IgJj0gfih6b25lX3NlY3RvcnMgLSAxKTsKPiA+IAo+ID4gK8KgwqDCoMKg
+wqDCoMKgZGl2NjRfdTY0X3JlbShzZWN0b3IsIHpvbmVfc2VjdG9ycywgJnJlbWFpbmRlcik7Cj4g
+PiArwqDCoMKgwqDCoMKgwqBzZWN0b3IgLT0gcmVtYWluZGVyOwo+ID4gPiArwqDCoMKgwqDCoMKg
+wqB3aGlsZSAoem9uZV9pZHggPCBucl96b25lcyAmJiBzZWN0b3IgPCBnZXRfY2FwYWNpdHkodmJs
+ay0+ZGlzaykpIHsKPiA+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoG1lbXNldChy
+ZXBvcnQsIDAsIGJ1Zmxlbik7Cj4gPiA+ICsKPiA+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoHJldCA9IHZpcnRibGtfc3VibWl0X3pvbmVfcmVwb3J0KHZibGssIChjaGFyICopcmVw
+b3J0LAo+ID4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBidWZsZW4s
+IHNlY3Rvcik7Cj4gPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBpZiAocmV0KSB7
+Cj4gPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgaWYg
+KHJldCA+IDApCj4gPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoHJldCA9IC1FSU87Cj4gPiA+ICvCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgZ290byBvdXRfZnJlZTsKPiA+ID4gK8KgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoH0KPiA+ID4gKwo+ID4gPiArwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgbnogPSBtaW4oKHVuc2lnbmVkIGludClsZTY0X3RvX2NwdShyZXBvcnQt
+Pm5yX3pvbmVzKSwKPiA+ID4gbnJfem9uZXMpOwo+ID4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgaWYgKCFueikKPiA+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqBicmVhazsKPiA+ID4gKwo+ID4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgZm9yIChpID0gMDsgaSA8IG56ICYmIHpvbmVfaWR4IDwgbnJfem9uZXM7IGkrKykg
+ewo+ID4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoHJl
+dCA9IHZpcnRibGtfcGFyc2Vfem9uZSh2YmxrLCAmcmVwb3J0LT56b25lc1tpXSwKPiA+ID4gK8Kg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgem9uZV9pZHgsIHpvbmVfc2VjdG9y
+cywKPiA+ID4gY2IsIGRhdGEpOwo+ID4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoGlmIChyZXQpCj4gPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoGdvdG8gb3V0X2ZyZWU7Cj4gPiA+
+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgem9uZV9pZHgr
+KzsKPiA+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoH0KPiA+ID4gKwo+ID4gPiAr
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgc2VjdG9yICs9IHpvbmVfc2VjdG9ycyAqIG56
+Owo+ID4gPiArwqDCoMKgwqDCoMKgwqB9Cj4gPiA+ICsKPiA+ID4gK8KgwqDCoMKgwqDCoMKgaWYg
+KHpvbmVfaWR4ID4gMCkKPiA+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoHJldCA9
+IHpvbmVfaWR4Owo+ID4gPiArwqDCoMKgwqDCoMKgwqBlbHNlCj4gPiA+ICvCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqByZXQgPSAtRUlOVkFMOwo+ID4gPiArb3V0X2ZyZWU6Cj4gPiA+ICvC
+oMKgwqDCoMKgwqDCoGt2ZnJlZShyZXBvcnQpOwo+ID4gPiArwqDCoMKgwqDCoMKgwqByZXR1cm4g
+cmV0Owo+ID4gPiArfQo+ID4gPiArCj4gPiA8c25pcD4KPiA+ID4gK3N0YXRpYyBpbnQgdmlydGJs
+a19wcm9iZV96b25lZF9kZXZpY2Uoc3RydWN0IHZpcnRpb19kZXZpY2UgKnZkZXYsCj4gPiA+ICvC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoCBzdHJ1Y3QgdmlydGlvX2JsayAqdmJsaywKPiA+ID4gK8KgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgIHN0cnVjdCByZXF1ZXN0X3F1ZXVlICpxKQo+ID4gPiArewo+ID4gPHNuaXA+Cj4g
+PiA+ICvCoMKgwqDCoMKgwqDCoGJsa19xdWV1ZV9waHlzaWNhbF9ibG9ja19zaXplKHEsIGxlMzJf
+dG9fY3B1KHYpKTsKPiA+ID4gK8KgwqDCoMKgwqDCoMKgYmxrX3F1ZXVlX2lvX21pbihxLCBsZTMy
+X3RvX2NwdSh2KSk7Cj4gPiA+ICsKPiA+ID4gK8KgwqDCoMKgwqDCoMKgZGV2X2RiZygmdmRldi0+
+ZGV2LCAid3JpdGUgZ3JhbnVsYXJpdHkgPSAldVxuIiwgbGUzMl90b19jcHUodikpOwo+ID4gPiAr
+Cj4gPiAtwqDCoMKgwqDCoMKgwqAvKgo+ID4gLcKgwqDCoMKgwqDCoMKgICogdmlydGlvIFpCRCBz
+cGVjaWZpY2F0aW9uIGRvZXNuJ3QgcmVxdWlyZSB6b25lcyB0byBiZSBhIHBvd2VyIG9mCj4gPiAt
+wqDCoMKgwqDCoMKgwqAgKiB0d28gc2VjdG9ycyBpbiBzaXplLCBidXQgdGhlIGNvZGUgaW4gdGhp
+cyBkcml2ZXIgZXhwZWN0cyB0aGF0Lgo+ID4gLcKgwqDCoMKgwqDCoMKgICovCj4gPiAtwqDCoMKg
+wqDCoMKgwqB2aXJ0aW9fY3JlYWQodmRldiwgc3RydWN0IHZpcnRpb19ibGtfY29uZmlnLCB6b25l
+ZC56b25lX3NlY3RvcnMsICZ2KTsKPiA+IC3CoMKgwqDCoMKgwqDCoGlmICh2ID09IDAgfHwgIWlz
+X3Bvd2VyX29mXzIodikpIHsKPiA+IC3CoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBkZXZf
+ZXJyKCZ2ZGV2LT5kZXYsCj4gPiAtwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoCJ6b25lZCBkZXZpY2Ugd2l0aCBub24gcG93ZXIgb2YgdHdvIHpvbmUgc2l6ZSAl
+dVxuIiwKPiA+IHYpOwo+ID4gLcKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoHJldHVybiAt
+RU5PREVWOwo+ID4gLcKgwqDCoMKgwqDCoMKgfQoKVGhpcyBwYXJ0IGNhbid0IGJlIG9taXR0ZWQg
+ZW50aXJlbHkgYmVjYXVzZSBpdCBjb250YWlucyB0aGUgY2FsbCB0byByZWFkCnpvbmVfc2VjdG9y
+cyB2YWx1ZSBmcm9tIHZpcnRpby1ibGsgY29uZmlndXJhdGlvbiBzcGFjZS4gVGhpcyBjb2RlIGlu
+c3RlYWQgY291bGQKYmUgY2hhbmdlZCB0byBzb21ldGhpbmcgbGlrZQoKCXZpcnRpb19jcmVhZCh2
+ZGV2LCBzdHJ1Y3QgdmlydGlvX2Jsa19jb25maWcsIHpvbmVkLnpvbmVfc2VjdG9ycywgJnYpOwoJ
+aWYgKHYgPT0gMCkgewoJCWRldl9lcnIoJnZkZXYtPmRldiwKCQkJInpvbmVkIGRldmljZSB3aXRo
+IHplcm8gem9uZSBzaXplICV1XG4iLCB2KTsKCQlyZXR1cm4gLUVOT0RFVjsKCX0KCkRGCgo+ID4g
+PiArCj4gPiA+ICvCoMKgwqDCoMKgwqDCoGRldl9kYmcoJnZkZXYtPmRldiwgInpvbmUgc2VjdG9y
+cyA9ICV1XG4iLCBsZTMyX3RvX2NwdSh2KSk7Cj4gPiA+ICvCoMKgwqDCoMKgwqDCoHZibGstPnpv
+bmVfc2VjdG9ycyA9IGxlMzJfdG9fY3B1KHYpOwo+ID4gPiArCj4gPiA+ICvCoMKgwqDCoMKgwqDC
+oGlmICh2aXJ0aW9faGFzX2ZlYXR1cmUodmRldiwgVklSVElPX0JMS19GX0RJU0NBUkQpKSB7Cj4g
+PiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBkZXZfd2FybigmdmJsay0+dmRldi0+
+ZGV2LAo+ID4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oCAiaWdub3JpbmcgbmVnb3RpYXRlZCBGX0RJU0NBUkQgZm9yIHpvbmVkCj4gPiA+IGRldmljZVxu
+Iik7Cj4gPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBibGtfcXVldWVfbWF4X2Rp
+c2NhcmRfc2VjdG9ycyhxLCAwKTsKPiA+ID4gK8KgwqDCoMKgwqDCoMKgfQo+ID4gPiArCj4gPiA+
+ICvCoMKgwqDCoMKgwqDCoHJldCA9IGJsa19yZXZhbGlkYXRlX2Rpc2tfem9uZXModmJsay0+ZGlz
+aywgTlVMTCk7Cj4gPiA+ICvCoMKgwqDCoMKgwqDCoGlmICghcmV0KSB7Cj4gPiA+ICvCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqB2aXJ0aW9fY3JlYWQodmRldiwgc3RydWN0IHZpcnRpb19i
+bGtfY29uZmlnLAo+ID4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgIHpvbmVkLm1heF9hcHBlbmRfc2VjdG9ycywgJnYpOwo+ID4gPiArwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgaWYgKCF2KSB7Cj4gPiA+ICvCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgZGV2X3dhcm4oJnZkZXYtPmRldiwgInpl
+cm8gbWF4X2FwcGVuZF9zZWN0b3JzCj4gPiA+IHJlcG9ydGVkXG4iKTsKPiA+ID4gK8KgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqByZXR1cm4gLUVOT0RFVjsKPiA+
+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoH0KPiA+ID4gK8KgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoGJsa19xdWV1ZV9tYXhfem9uZV9hcHBlbmRfc2VjdG9ycyhxLCBsZTMy
+X3RvX2NwdSh2KSk7Cj4gPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBkZXZfZGJn
+KCZ2ZGV2LT5kZXYsICJtYXggYXBwZW5kIHNlY3RvcnMgPSAldVxuIiwKPiA+ID4gbGUzMl90b19j
+cHUodikpOwo+ID4gPiArCj4gPiA+ICvCoMKgwqDCoMKgwqDCoH0KPiA+ID4gKwo+ID4gPiArwqDC
+oMKgwqDCoMKgwqByZXR1cm4gcmV0Owo+ID4gPiArfQo+ID4gPiArCj4gPiAKPiAKCg==
 
