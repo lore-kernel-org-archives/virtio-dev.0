@@ -1,29 +1,28 @@
-Return-Path: <virtio-dev-return-9963-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-9973-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 2AB109865DF
-	for <virtio-dev@lists.oasis-open.org>; Wed, 21 Sep 2022 06:23:30 +0000 (UTC)
-MIME-Version: 1.0
+	by lists.oasis-open.org (Postfix) with ESMTP id B089D986602
+	for <virtio-dev@lists.oasis-open.org>; Fri, 23 Sep 2022 03:33:43 +0000 (UTC)
+Message-ID: <1663903426.8765974-1-xuanzhuo@linux.alibaba.com>
+Date: Fri, 23 Sep 2022 11:23:46 +0800
+From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 References: <1663297006-64248-1-git-send-email-hengqi@linux.alibaba.com>
- <3c3cc916-c605-1ed2-d3ff-d8d8ce668f17@redhat.com> <20220920032824.GA125047@h68b04307.sqa.eu95>
+ <3c3cc916-c605-1ed2-d3ff-d8d8ce668f17@redhat.com>
+ <20220920032824.GA125047@h68b04307.sqa.eu95>
  <CACGkMEtOHXtNtG13Zxpc+bhYJVyefp999kttz4YcPi22nMBSpQ@mail.gmail.com>
 In-Reply-To: <CACGkMEtOHXtNtG13Zxpc+bhYJVyefp999kttz4YcPi22nMBSpQ@mail.gmail.com>
-From: Jason Wang <jasowang@redhat.com>
-Date: Wed, 21 Sep 2022 14:23:15 +0800
-Message-ID: <CACGkMEvMeQJn1q4XAr4wcTa6bGLrkBDKMYL96BTbf2n=8J4fqw@mail.gmail.com>
 Subject: Re: [virtio-dev] [PATCH v8] virtio_net: support for split transport header
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-To: Heng Qi <hengqi@linux.alibaba.com>
-Cc: Virtio-Dev <virtio-dev@lists.oasis-open.org>, "Michael S. Tsirkin" <mst@redhat.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>, Kangjie Xu <kangjie.xu@linux.alibaba.com>
+To: Jason Wang <jasowang@redhat.com>
+Cc: Virtio-Dev <virtio-dev@lists.oasis-open.org>, "Michael S. Tsirkin" <mst@redhat.com>, Kangjie Xu <kangjie.xu@linux.alibaba.com>, Heng Qi <hengqi@linux.alibaba.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, Sep 21, 2022 at 2:20 PM Jason Wang <jasowang@redhat.com> wrote:
->
+On Wed, 21 Sep 2022 14:20:19 +0800, Jason Wang <jasowang@redhat.com> wrote:
 > On Tue, Sep 20, 2022 at 11:28 AM Heng Qi <hengqi@linux.alibaba.com> wrote=
 :
 > >
@@ -274,6 +273,65 @@ ly one descriptor.
 > Especially considering that using a descriptor chain is not hard. And
 > I'm not sure we should care too much on the overhead since the
 > splitting is enabled by the administrator when it needs e.g zerocopy.
+
+
+It's overwhelmed us, and we haven't been able to agree on this.
+
+Michael doesn't want to use desc chain, it's not just a performance issue. =
+In an
+early email, he mentioned that desc chain may be abandoned in the future. S=
+o we
+have been trying not to rely on desc chain.
+
+If we can't make a feature depend only on mergeable, should we use solution=
+ B?
+
+     2. Scheme B ( refer to your suggestion )
+
+     Our rethinking approach is no longer based on descriptor chain.
+
+     We refer to your proposed offset-based scheme as scheme B.
+     As you suggested, scheme B gives the device a buffer, using offset to
+     indicate where to place the payload. Like this:
+
+     <header>...<padding>... <beginning of page><data>
+
+     But how to apply for this buffer?
+     Since we want the payload to be placed on a separate page, the method
+     we consider is to directly alloc two pages from driver of contiguous m=
+emory.
+
+     Then the beginning of this contiguous memory is used to store the head=
+room,
+     and the contiguous memory after the headroom is directly handed over t=
+o the device.
+     Similar to the following:
+
+     [------------------ receive buffer(2 pages) --------------------------=
+----]
+     [<------------first page -------------------><------ second page -----=
+--->]
+     [<-----><virtnet hdr> <mac,ip,tcp>..<padding><       payload          =
+   >]
+        ^    ^
+        |    |
+        |    pointer to device
+        |
+        |
+        Driver reserved, the later part is filled
+
+We have already entered v8, but we have not been able to reach an agreement=
+ on
+the basic capabilities. I want to solve this problem first.
+
+@Jason @Michael
+
+Thanks.
+
+
+
+
+
 >
 > >
 > > > >+    \item The total size of the virtio net header and the transport=
@@ -290,12 +348,6 @@ ch as GSO-enabled cases.
 fer) - (\field{offset} + \filed{max_len}) $
 > > in the first buffer to build the non-linear data area of the socket buf=
 fer.
-
-But this doesn't answer the question, without max_len, if tailroom is
-needed, we can simply allocate a larger buffer?
-
-Thanks
-
 > >
 > > >
 > > > >+\end{itemize}
@@ -380,7 +432,12 @@ ize of the virtio net header.
 ork Device / Device Operation / Control Virtqueue / Notifications Coalescin=
 g}
 > >
-
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+>
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
