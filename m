@@ -1,23 +1,26 @@
-Return-Path: <prvs=269104d58=damien.lemoal@opensource.wdc.com>
-Message-ID: <6ce52e0a-f150-9602-9e28-065dcbed9b4a@opensource.wdc.com>
-Date: Tue, 4 Oct 2022 16:39:43 +0900
-MIME-Version: 1.0
-Subject: Re: [PATCH v6] virtio-blk: add zoned block device specification
+Return-Path: <stefanha@redhat.com>
+Date: Tue, 4 Oct 2022 12:03:11 -0400
+From: Stefan Hajnoczi <stefanha@redhat.com>
+Subject: Re: [virtio-dev] [PATCH v6] virtio-blk: add zoned block device
+ specification
+Message-ID: <YzxZP1J03f+EPyp/@fedora>
 References: <20220904165601.170769-1-dmitry.fomichev@wdc.com>
-From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="wY1kM1Rt0izhfTAL"
+Content-Disposition: inline
 In-Reply-To: <20220904165601.170769-1-dmitry.fomichev@wdc.com>
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-To: Dmitry Fomichev <dmitry.fomichev@wdc.com>, virtio-dev@lists.oasis-open.org, virtio-comment@lists.oasis-open.org
-Cc: Stefan Hajnoczi <stefanha@gmail.com>, Hannes Reinecke <hare@suse.de>, Cornelia Huck <cohuck@redhat.com>, Matias Bjorling <matias.bjorling@wdc.com>, Niklas Cassel <niklas.cassel@wdc.com>, Hans Holmberg <Hans.Holmberg@wdc.com>, Klaus Jensen <its@irrelevant.dk>, Sam Li <faithilikerun@gmail.com>
+To: Dmitry Fomichev <dmitry.fomichev@wdc.com>
+Cc: virtio-dev@lists.oasis-open.org, virtio-comment@lists.oasis-open.org, Damien Le Moal <damien.lemoal@opensource.wdc.com>, Stefan Hajnoczi <stefanha@gmail.com>, Hannes Reinecke <hare@suse.de>, Cornelia Huck <cohuck@redhat.com>, Matias Bjorling <matias.bjorling@wdc.com>, Niklas Cassel <niklas.cassel@wdc.com>, Hans Holmberg <Hans.Holmberg@wdc.com>, Klaus Jensen <its@irrelevant.dk>, Sam Li <faithilikerun@gmail.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Dmitry,
 
-Please see some comments inline. For clarity, I kept all the text.
+--wY1kM1Rt0izhfTAL
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On 2022/09/05 1:56, Dmitry Fomichev wrote:
+On Sun, Sep 04, 2022 at 12:56:01PM -0400, Dmitry Fomichev wrote:
 > Introduce support for Zoned Block Devices to virtio.
 >=20
 > Zoned Block Devices (ZBDs) aim to achieve a better capacity, latency
@@ -58,14 +61,21 @@ On 2022/09/05 1:56, Dmitry Fomichev wrote:
 > and suggestions while working on the initial iterations of this patch.
 >=20
 > Damien Le Moal <damien.lemoal@opensource.wdc.com>
-> Matias Bj=C3=B8rling <Matias.Bjorling@wdc.com>
+> Matias Bj=F8rling <Matias.Bjorling@wdc.com>
 > Niklas Cassel <Niklas.Cassel@wdc.com>
 > Hans Holmberg <Hans.Holmberg@wdc.com>
 >=20
 > Fixes: https://github.com/oasis-tcs/virtio-spec/issues/143
 > Signed-off-by: Dmitry Fomichev <dmitry.fomichev@wdc.com>
 > ---
->=20
+
+Hi Dmitry,
+I have reviewed the spec. Please see the comments below. They are minor
+issues and overall I think this can be merged soon.
+
+Thanks,
+Stefan
+
 > v5 -> v6:
 >=20
 > Address review comments from Cornelia Huck:
@@ -150,15 +160,13 @@ On 2022/09/05 1:56, Dmitry Fomichev wrote:
 > =20
 > +\item[VIRTIO_BLK_F_ZONED(17)] Device is a Zoned Block Device, that is, a=
  device
-> +=09that follows the zoned storage device behavior that is also supported=
- by
-> +=09industry standards such as the T10 Zoned Block Command standard (ZBC =
-r05) or
-> +=09the NVMe(TM) NVM Express Zoned Namespace Command Set Specification 1.=
-1b
-> +=09(ZNS). For brevity, these standard documents are referred as "ZBD sta=
-ndards"
-> +=09from this point on in the text.
+> +	that follows the zoned storage device behavior that is also supported by
+> +	industry standards such as the T10 Zoned Block Command standard (ZBC r0=
+5) or
+> +	the NVMe(TM) NVM Express Zoned Namespace Command Set Specification 1.1b
+> +	(ZNS). For brevity, these standard documents are referred as "ZBD stand=
+ards"
+> +	from this point on in the text.
 > +
 >  \end{description}
 > =20
@@ -174,6 +182,9 @@ el{sec:Device Types / Block De
 RES_OK
 > +  bit. Legacy devices MUST NOT offer VIRTIO_BLK_F_ZONED feature bit.
 > +\end{note}
+
+This belongs in a devicenormative section because it uses MUST NOT.
+
 > +
 >  \subsection{Device configuration layout}\label{sec:Device Types / Block =
 Device / Device configuration layout}
@@ -219,31 +230,13 @@ ices
 > +Devices that offer VIRTIO_BLK_F_ZONED feature while reporting VIRTIO_BLK=
 _Z_NONE
 > +zoned model commonly do so for testing and development purposes.
-
-Hmmm, I think we should change this to clearly state that a device offering
-VIRTIO_BLK_F_ZONED with a VIRTIO_BLK_Z_NONE zone model do so to indicate to=
- the
-driver that the device is a drive-managed one. And in such case, the driver
-should treat the device as a regular non-zoned block device.
-
-This would be the equivalent of the SCSI "zoned" field in the block device
-characteristics VPD page set to 01b ("Device server implements device manag=
-ed
-zoned block device capabilities").
-
 > +
 > +Host-managed zoned block devices have their LBA range divided to Sequent=
 ial
-
-s/divided to/divided into
-
 > +Write Required (SWR) zones that require some additional handling from th=
 e host
 > +for sustainable operation. All write requests to SWR zones must be seque=
 ntial
-
-s/sustainable/correct
-
 > +and the zones with some data need to be reset before that data can be re=
 written.
 > +Host-managed devices support a set of ZBD-specific I/O requests that can=
@@ -252,13 +245,9 @@ written.
 LK_Z_HM
 > +in the \field{model} field in \field{zoned}.
 > +
-> +Host-aware zoned block devices have their LBA range divided to Sequentia=
-l
+> +Host-aware zoned block devices have their LBA range divided to Sequential
 > +Write Preferred (SWP) zones that support the random write access, simila=
 r to
-
-s/the random write access/random write accesses
-
 > +regular non-zoned devices. However, the device I/O performance might not=
  be
 > +optimal if SWP zones are used in a random I/O pattern. SWP zones also su=
@@ -298,7 +287,7 @@ nter for
 > +that resource. Any zone transition out of a state that consumes a zone r=
 esource
 > +to a state that doesn't consume the same resource decrements the counter=
-. Any
+=2E Any
 > +request that causes the device to exceed the reported zone resource limi=
 ts is
 > +terminated by the device with a "zone resources exceeded" error as defin=
@@ -373,13 +362,6 @@ Z_HA
 > +    from the \field{model} field of \field{zoned}, the driver
 > +    MAY handle the device as a non-zoned device. In this case, the
 > +    driver SHOULD ignore all other fields in \field{zoned}.
-
-Back to my point above about the VIRTIO_BLK_F_ZONED+VIRTIO_BLK_Z_NONE for d=
-rive
-managed devices, should we may be add a similar as HM and HA entry here for=
- this
-drive managed case ?
-
 > +\end{itemize}
 > +
 >  \devicenormative{\subsubsection}{Device Initialization}{Device Types / B=
@@ -401,12 +383,8 @@ ice
  the
 > +    initialization while setting all zoned characteristics fields to zer=
 o.
-
-Mention VIRTIO_BLK_Z_NONE for the drive managed case here too ?
-
 > +
-> +\item the device with the VIRTIO_BLK_Z_HM zone model MUST fail to set th=
-e
+> +\item the device with the VIRTIO_BLK_Z_HM zone model MUST fail to set the
 > +    FEATURES_OK device status bit when the driver writes the Device Stat=
 us
 > +    field.
@@ -414,17 +392,10 @@ us
 > +
 > +If the VIRTIO_BLK_F_ZONED feature is negotiated, then the \field{model} =
 field in
-> +\field{zoned} struct in the configuration space MUST be set by the devic=
-e
+> +\field{zoned} struct in the configuration space MUST be set by the device
 > +\begin{itemize}
-> +\item to the value of VIRTIO_BLK_Z_NONE if it operates as a drive-manage=
-d
+> +\item to the value of VIRTIO_BLK_Z_NONE if it operates as a drive-managed
 > +    zoned block device or a non-zoned block device.
-
-I think my comments above about the drive managed case are consistent with =
-this
-point and would greatly clarify how drive managed devices must be handled.
-
 > +
 > +\item to the value of VIRTIO_BLK_Z_HM if it operates as a host-managed z=
 oned
@@ -436,16 +407,6 @@ ed
 > +\end{itemize}
 > +
 > +If the VIRTIO_BLK_F_ZONED feature is negotiated,
-
-All of the below information is valid only for the VIRTIO_BLK_Z_HM and
-VIRTIO_BLK_Z_HA cases. So shouldn't this be added as a condition in the sen=
-tence
-above ? E.g. something like:
-
-If the VIRTIO_BLK_F_ZONED feature is negotiated and the device \field{model=
-}
-field in \field{zoned} struct is VIRTIO_BLK_Z_HM or VIRTIO_BLK_Z_HA,
-
 > +\begin{itemize}
 > +\item the \field{zone_sectors} field of \field{zoned} MUST be set by the=
  device
@@ -527,6 +488,34 @@ es / Block Device / Device Ope
 > +        };
 >  };
 >  \end{lstlisting}
+
+Does sizeof(struct virtio_blk_req) always includes the reserved[] and
+append_sector fields? Or only when type =3D=3D VIRTIO_BLK_T_ZONE_APPEND?
+
+In the latter case using the C union syntax is confusing. Maybe define a
+separate struct virtio_blk_zone_append_req as follows:
+
+  struct virtio_blk_zone_append_req {
+      struct virtio_blk_req common;
+      u8 reserved[7];
+      le64 append_sector;
+  };
+
+That way it's clear that struct virtio_blk_req always comes first and
+VIRTIO_BLK_T_ZONE_APPEND requests also have the extra reserved[] and
+append_sector fields.
+
+Alternatively, the extra fields could be described in a separate struct
+and the text would say "struct virtio_blk_req is followed immediately
+(without padding) by struct virtio_blk_zone_append_in_hdr":
+
+  struct virtio_blk_zone_append_in_hdr {
+      u8 reserved[7]; /* padding after struct virtio_blk_req::status */
+      le64 append_sector;
+  };
+
+I think either way is less confusing than using C union syntax.
+
 > =20
 > @@ -4770,7 +4962,7 @@ \subsection{Device Operation}\label{sec:Device Type=
 s / Block Device / Device Ope
@@ -538,8 +527,7 @@ s / Block Device / Device Ope
 > =20
 >  VIRTIO_BLK_T_IN requests populate \field{data} with the contents of sect=
 ors
->  read from the block device (in multiples of 512 bytes).  VIRTIO_BLK_T_OU=
-T
+>  read from the block device (in multiples of 512 bytes).  VIRTIO_BLK_T_OUT
 > @@ -4853,6 +5045,299 @@ \subsection{Device Operation}\label{sec:Device Ty=
 pes / Block Device / Device Ope
 >  command produces VIRTIO_BLK_S_IOERR.  A segment may have completed
@@ -605,8 +593,7 @@ ticular
 > +zone specified by the zone sector address in the \field{sector} of the r=
 equest.
 > +
-> +VIRTIO_BLK_T_ZONE_RESET_ALL request acts upon all applicable zones of th=
-e
+> +VIRTIO_BLK_T_ZONE_RESET_ALL request acts upon all applicable zones of the
 > +device. The \field{sector} value is not used for this request.
 > +
 > +In ZBD standards, the VIRTIO_BLK_T_ZONE_REPORT request belongs to "Zone
@@ -618,8 +605,7 @@ ized as
 > +separately from the zone management commands and is the only request tha=
 t uses
 > +\field{zone_append_in_hdr} structure in \field{virtio_blk_req} to return
-> +to the driver the sector at which the data has been appended to the zone=
-.
+> +to the driver the sector at which the data has been appended to the zone.
 > +
 > +VIRTIO_BLK_T_ZONE_REPORT is a read request that returns the information =
 about
@@ -720,16 +706,6 @@ ZS_FULL
 > +(Full) and VIRTIO_BLK_ZS_OFFLINE (Offline) state are not. The write poin=
 ter
 > +value (\field{z_wp}) is not valid for Read-Only, Full and Offline zones.
-
-Note here: empty and closed zones may actually not be writable if the maxim=
-um
-number of open zones is already reached with explicitly open zones by the h=
-ost.
-But I am not entirely sure if this is a level of details we want at this po=
-int
-in the text since you are describing state transitions in more details belo=
-w.
-
 > +
 > +The zone descriptor field \field{z_cap} contains the maximum number of 5=
 12-byte
@@ -737,8 +713,7 @@ w.
  in the
 > +Empty state. This value shall be less than or equal to the \field{zone_s=
 ectors}
-> +value in \field{virtio_blk_zoned_characteristics} structure in the devic=
-e
+> +value in \field{virtio_blk_zoned_characteristics} structure in the device
 > +configuration space.
 > +
 > +The zone descriptor field \field{z_start} contains the zone sector addre=
@@ -859,11 +834,6 @@ ate
 > +\item VIRTIO_BLK_ZS_EMPTY when a successful VIRTIO_BLK_T_ZONE_RESET requ=
 est is
 > +    received for the zone,
-
-Missing VIRTIO_BLK_T_ZONE_RESET_ALL (same comment for the above transitions=
- to
-empty)
-
 > +
 > +\item VIRTIO_BLK_ZS_IOPEN when a successful VIRTIO_BLK_T_OUT request or
 > +    VIRTIO_BLK_T_ZONE_APPEND with a non-zero data size is received for t=
@@ -883,6 +853,12 @@ equest
 ate to
 > +VIRTIO_BLK_ZS_EMPTY when a successful VIRTIO_BLK_T_ZONE_RESET request is
 > +received for the zone
+
+Missing period ('.').
+
+I also suggest removing "can" so it says "Zones in the
+VIRTIO_BLK_ZS_FULL (Full) state transition from this state to ...".
+
 > +
 > +When a VIRTIO_BLK_T_ZONE_FINISH request is issued to a Full zone, the re=
 quest
@@ -918,12 +894,6 @@ ultiple
 > +    of the value reported by the device in the field \field{write_granul=
 arity}
 > +    in the device configuration space.
-
-Shouldn't this case return a more regular VIRTIO_BLK_S_ZONE_INVALID_CMD err=
-or
-code ? That would allow differenciating from the start sector not being ali=
-gned.
-
 > +\end{itemize}
 > +
 > +VIRTIO_BLK_S_ZONE_OPEN_RESOURCE is set by the device when a zone operati=
@@ -993,10 +963,6 @@ he
 T be a
 > +multiple of 512 bytes and MUST NOT exceed the \field{max_append_sectors}=
  value
-
-must be a multiple of field \field{write_granularity}, no ? Same as for
-VIRTIO_BLK_T_OUT as described below.
-
 > +provided by the device in \field{virtio_blk_zoned_characteristics} confi=
 guration
 > +space structure.
@@ -1026,8 +992,7 @@ re.
 > +
 > +\item the data size that will not exceed the writable zone capacity when=
  its
-> +    value is added to the current value of the write pointer of the zone=
-.
+> +    value is added to the current value of the write pointer of the zone.
 > +
 > +\end{enumerate}
 > +
@@ -1055,8 +1020,7 @@ eature
 > +If a request of type VIRTIO_BLK_T_ZONE_OPEN, VIRTIO_BLK_T_ZONE_CLOSE,
 > +VIRTIO_BLK_T_ZONE_FINISH or VIRTIO_BLK_T_ZONE_RESET is issued for a Conv=
 entional
-> +zone (type VIRTIO_BLK_ZT_CONV), the device MUST complete the request wit=
-h
+> +zone (type VIRTIO_BLK_ZT_CONV), the device MUST complete the request with
 > +VIRTIO_BLK_S_ZONE_INVALID_CMD \field{status}.
 > +
 > +If the zone specified by the VIRTIO_BLK_T_ZONE_APPEND request is not a S=
@@ -1066,14 +1030,12 @@ WR zone,
 > +
 > +The device handles a VIRTIO_BLK_T_ZONE_OPEN request with the by attempti=
 ng to
+
+s/with the//
+
 > +change the state of the zone with the \field{sector} address to
 > +VIRTIO_BLK_ZS_EOPEN. If the transition to this state can not be performe=
 d, the
-
-The first sentence of this paragraph does not parse. I the the "with the" w=
-ords
-need to be removed. Then it is OK.
-
 > +request MUST be completed with VIRTIO_BLK_S_ZONE_INVALID_CMD \field{stat=
 us}. If,
 > +while processing this request, the available zone resources are insuffic=
@@ -1140,22 +1102,14 @@ d with
 s the
 > +data range that that exceeds the remaining writable capacity for the zon=
 e, then
-
-s/data range that that exceeds/data range that exceeds
-
 > +the request SHALL be completed with VIRTIO_BLK_S_ZONE_INVALID_CMD value =
 in
 > +\field{status}.
 > +
 > +If a request of the type VIRTIO_BLK_T_ZONE_APPEND is completed with
 > +VIRTIO_BLK_S_OK status, the field \field{append_sector} in
-> +\field{zone_append_in_hdr} field in \field{virtio_blk_req} MUST be set b=
-y
+> +\field{zone_append_in_hdr} field in \field{virtio_blk_req} MUST be set by
 > +the device to contain the start sector of the data written to the zone.
-
-s/start sector/first sector, to avoid confusion with zone start sector, may=
-be ?
-
 > +
 > +A VIRTIO_BLK_T_ZONE_APPEND request that has the data size that exceeds
 > +\field{max_append_sectors} configuration space value, then,
@@ -1176,38 +1130,33 @@ d as
 > +VIRTIO_BLK_T_OUT request issued to a SWR zone has the range that has sec=
 tors in
 > +more than one zone, then the request SHALL completed with
-
-s/completed/be completed
-
 > +VIRTIO_BLK_S_ZONE_INVALID_CMD value in the field \field{status}.
 > +
 > +A VIRTIO_BLK_T_OUT request that has the \field{sector} value that is not=
  aligned
 > +with the write pointer for the zone, then the request SHALL completed wi=
 th
-
-same
-
 > +VIRTIO_BLK_S_ZONE_UNALIGNED_WP value in the field \field{status}.
 > +
 > +In order to avoid resource-related errors while opening zones implicitly=
 , the
-> +device MAY automatically transition zones in VIRTIO_BLK_ZS_IOPEN state t=
-o
+> +device MAY automatically transition zones in VIRTIO_BLK_ZS_IOPEN state to
 > +VIRTIO_BLK_ZS_CLOSED state.
 > +
-> +All VIRTIO_BLK_T_OUT requests or VIRTIO_BLK_T_ZONE_APPEND requests issue=
-d
+> +All VIRTIO_BLK_T_OUT requests or VIRTIO_BLK_T_ZONE_APPEND requests issued
 > +to a zone in the VIRTIO_BLK_ZS_RDONLY state SHALL be completed with
 > +VIRTIO_BLK_S_ZONE_INVALID_CMD \field{status}.
 > +
-> +All requests issued to a zone in the VIRTIO_BLK_ZS_OFFLINE state SHALL b=
-e
+> +All requests issued to a zone in the VIRTIO_BLK_ZS_OFFLINE state SHALL be
 > +completed with VIRTIO_BLK_S_ZONE_INVALID_CMD value in the field \field{s=
 tatus}.
 > +
 > +The device MUST consider the data that is read above the write pointer o=
 f a zone
+
+"beyond the write pointer" may be clearer than "above the write
+pointer".
+
 > +as unwritten data. The sectors between the write pointer position and th=
 e upper
 > +write boundary of the zone during VIRTIO_BLK_T_ZONE_FINISH request proce=
@@ -1229,14 +1178,7 @@ scope
 > +the device from becoming operational.
 > +\end{enumerate}
 > +
-> +If the both VIRTIO_BLK_F_ZONED and VIRTIO_BLK_F_SECURE_ERASE features ar=
-e
-
-s/the both/both the ?
-
-(as I am not a native english speaker, I am not 100% sure about this one th=
-ough :))
-
+> +If the both VIRTIO_BLK_F_ZONED and VIRTIO_BLK_F_SECURE_ERASE features are
 > +negotiated, then
 > +
 > +\begin{enumerate}
@@ -1261,9 +1203,30 @@ the
 s / Block Device / Device Operation / Legacy Interface: Device Operation}
 >  When using the legacy interface, transitional devices and drivers
 >  MUST format the fields in struct virtio_blk_req
+> --=20
+> 2.34.1
+>=20
+>=20
+>=20
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+>=20
 
---=20
-Damien Le Moal
-Western Digital Research
+--wY1kM1Rt0izhfTAL
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmM8WT8ACgkQnKSrs4Gr
+c8itgwf/btYflzFIqMfpzSL4QpW6BaK0pYWl6AZ+xW+bn5rwVAVtZ7u1rMRigBsb
+1jJtojNr+s3WhwohqwEX3CXTdBZz+TvkbAj/XuomjKik4sILOmlgDVj0wmGuUyXO
+1fNxh8cfPQcsAyh3ThvPai0vzwuN0q5heEIzO9DUNbtuYGLrzvWvBoEUzAXZ/fvW
+yL7uLWJM/TdKcf7swUq/dhBI6x4JB/PMyXkq4nGqBH2qw42v0hSCLyJtEvWO11aX
+YhHOiDCI7q9Xd5NChax1ex8XD0oEULh4dArqyfaYlxySjFdHKR24HEheQBP2/kQz
+pJ3wCNdCcw8O8PwMWf/IjQ6yLXwkGg==
+=sTmD
+-----END PGP SIGNATURE-----
+
+--wY1kM1Rt0izhfTAL--
 
