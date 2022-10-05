@@ -1,81 +1,53 @@
-Return-Path: <stefanha@redhat.com>
-Date: Thu, 6 Oct 2022 11:11:13 -0400
-From: Stefan Hajnoczi <stefanha@redhat.com>
-Subject: Re: [virtio-dev] [PATCH v6] virtio-blk: add zoned block device
- specification
-Message-ID: <Yz7wEeUdVQT3y7u5@fedora>
-References: <20220904165601.170769-1-dmitry.fomichev@wdc.com>
+Return-Path: <virtio-dev-return-9998-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id F16B1986690
+	for <virtio-dev@lists.oasis-open.org>; Wed,  5 Oct 2022 10:29:13 +0000 (UTC)
+From: Parav Pandit <parav@nvidia.com>
+Date: Wed, 5 Oct 2022 10:29:10 +0000
+Message-ID: <PH0PR12MB54817CD89ECD1D0856103421DC5D9@PH0PR12MB5481.namprd12.prod.outlook.com>
+References: <20220901021038.84751-1-gavinl@nvidia.com>
+	<20220901021038.84751-3-gavinl@nvidia.com>
+	<20220922052734-mutt-send-email-mst@kernel.org>
+	<PH0PR12MB5481374E6A14EFC39533F9A8DC4E9@PH0PR12MB5481.namprd12.prod.outlook.com>
+	<20220922060753-mutt-send-email-mst@kernel.org>
+ <20220922053458.66f31136@kernel.org>
+In-Reply-To: <20220922053458.66f31136@kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="F+2TplJk+JzgjBFp"
-Content-Disposition: inline
-In-Reply-To: <20220904165601.170769-1-dmitry.fomichev@wdc.com>
-To: Dmitry Fomichev <dmitry.fomichev@wdc.com>
-Cc: virtio-dev@lists.oasis-open.org, virtio-comment@lists.oasis-open.org, Damien Le Moal <damien.lemoal@opensource.wdc.com>, Stefan Hajnoczi <stefanha@gmail.com>, Hannes Reinecke <hare@suse.de>, Cornelia Huck <cohuck@redhat.com>, Matias Bjorling <matias.bjorling@wdc.com>, Niklas Cassel <niklas.cassel@wdc.com>, Hans Holmberg <Hans.Holmberg@wdc.com>, Klaus Jensen <its@irrelevant.dk>, Sam Li <faithilikerun@gmail.com>
+Subject: [virtio-dev] RE: [PATCH v5 2/2] virtio-net: use mtu size as buffer length for big
+ packets
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+To: Jakub Kicinski <kuba@kernel.org>, "Michael S. Tsirkin" <mst@redhat.com>
+Cc: Gavin Li <gavinl@nvidia.com>, "stephen@networkplumber.org" <stephen@networkplumber.org>, "davem@davemloft.net" <davem@davemloft.net>, "jesse.brandeburg@intel.com" <jesse.brandeburg@intel.com>, "alexander.h.duyck@intel.com" <alexander.h.duyck@intel.com>, "sridhar.samudrala@intel.com" <sridhar.samudrala@intel.com>, "jasowang@redhat.com" <jasowang@redhat.com>, "loseweigh@gmail.com" <loseweigh@gmail.com>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Gavi Teitz <gavi@nvidia.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>, Si-Wei Liu <si-wei.liu@oracle.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+> From: Jakub Kicinski <kuba@kernel.org>
+> Sent: Thursday, September 22, 2022 6:05 PM
+>=20
+> On Thu, 22 Sep 2022 06:14:59 -0400 Michael S. Tsirkin wrote:
+> > It's nitpicking to be frank. v6 arrived while I was traveling and I
+> > didn't notice it.  I see Jason acked that so I guess I will just apply
+> > as is.
+>=20
+> Oh, you wanna take it? The split on who takes virtio_net is a touch uncle=
+ar
+> but if it makes more sense here to go via virtio feel free to slap my ack=
+ on the
+> v6.
 
---F+2TplJk+JzgjBFp
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Michael,
 
-On Sun, Sep 04, 2022 at 12:56:01PM -0400, Dmitry Fomichev wrote:
-> @@ -4746,7 +4930,15 @@ \subsection{Device Operation}\label{sec:Device Types / Block Device / Device Ope
->          le32 reserved;
->          le64 sector;
->          u8 data[];
-> -        u8 status;
-> +        union {
-> +                u8 status;
-> +
-> +                struct {
-> +                        u8 status;
-> +                        u8 reserved[7];
-> +                        le64 append_sector;
-> +                } zone_append_in_hdr;
-> +        };
+Did you get a chance to take this?
+I don't see it at https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost=
+.git/log/?h=3Dlinux-next
 
-If a zone append request is sent to a device without VIRTIO_BLK_F_ZONED,
-then should the device store VIRTIO_BLK_S_UNSUPP to status or to
-zone_append_in_hdr.status?
-
-(I think the answer is status.)
-
-It seems simpler to avoid this problem and instead define:
-
-  struct virtio_blk_zone_append_in_hdr {
-      le64 append_sector;
-  }
-
-and say that zone append requests have this struct *before* struct
-virtio_blk_in_hdr. So the layout is:
-
-  le32 type;
-  le32 reserved;
-  le64 sector;
-  u8 data[];
-  le64 append_sector;
-  u8 status;
-
-That way the location of the status field does not change, it's always
-the last byte.
-
-Stefan
-
---F+2TplJk+JzgjBFp
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmM+8BEACgkQnKSrs4Gr
-c8hi6Af7Bz7HCMjdqgtm2lwRxObyicLmKc5Fy2kIIGZqOjgsVLmqaqk4mCBnRzkU
-qqCYujzn1yh6XyQRNwIMI7gUzm/J13odooLrsfJrO7qH6DwCEaMfMuMS0f88vZ9Y
-tjlfw7fsoy7kQZEIV3+vNyGprTOOYuwO1z7C8D2vmrf+GgyW8dFkjBXpwxcOvwZP
-2rBPP05rWWceV1nUA6EqDrm6YQRLbcSgxWePBNSyS+q53nD4D42kOAOvK7JZ1YoJ
-yBka9XQrOJyo13TnwC+KAA0biolHpSJpjOMxmT1lg+baHlZknJZnhhUZtqLm19Kk
-UFcGpFKGVbSqjd4vHYfRrIMRl/DAlw==
-=j0lA
------END PGP SIGNATURE-----
-
---F+2TplJk+JzgjBFp--
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
