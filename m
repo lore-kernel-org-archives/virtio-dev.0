@@ -1,146 +1,205 @@
-Return-Path: <pasic@linux.ibm.com>
-Date: Fri, 2 Sep 2022 01:33:47 +0200
-From: Halil Pasic <pasic@linux.ibm.com>
-Subject: Re: [virtio] Re: [virtio-dev] Re: [virtio] [PATCH RFC v7 6/8] ccw:
- disallow ADMIN_VQ
-Message-ID: <20220902013347.2cc8b344.pasic@linux.ibm.com>
-In-Reply-To: <20220831104233-mutt-send-email-mst@kernel.org>
-References: <20220812171841.12183-1-mst@redhat.com>
-	<20220812171841.12183-7-mst@redhat.com>
-	<20220816164811.16464110.pasic@linux.ibm.com>
-	<20220816114216-mutt-send-email-mst@kernel.org>
-	<20220818153958.7219f6b8.pasic@linux.ibm.com>
-	<20220818235403-mutt-send-email-mst@kernel.org>
-	<20220824014519.028ee16d.pasic@linux.ibm.com>
-	<20220828052839-mutt-send-email-mst@kernel.org>
-	<20220831163349.545f726d.pasic@linux.ibm.com>
-	<20220831104233-mutt-send-email-mst@kernel.org>
+Return-Path: <virtio-dev-return-10005-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id B302798650D
+	for <virtio-dev@lists.oasis-open.org>; Sat,  8 Oct 2022 04:37:59 +0000 (UTC)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 8bit
+References: <1663297006-64248-1-git-send-email-hengqi@linux.alibaba.com>
+ <3c3cc916-c605-1ed2-d3ff-d8d8ce668f17@redhat.com> <20220920032824.GA125047@h68b04307.sqa.eu95>
+ <CACGkMEtOHXtNtG13Zxpc+bhYJVyefp999kttz4YcPi22nMBSpQ@mail.gmail.com>
+ <1663903426.8765974-1-xuanzhuo@linux.alibaba.com> <CACGkMEsmqngS-HYPzzV8b9dmv95=W6dJebAa=asXGmo7VEAnoA@mail.gmail.com>
+ <20220923013341-mutt-send-email-mst@kernel.org> <619af5b3-4c38-955f-0f7f-f351f5a9527e@redhat.com>
+ <20220928093530-mutt-send-email-mst@kernel.org> <CACGkMEsKHBo+tgJrADif9y5qLF-OHoK7pO6YvQBa-edjjPwVJQ@mail.gmail.com>
+ <20220929022523-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20220929022523-mutt-send-email-mst@kernel.org>
+From: Jason Wang <jasowang@redhat.com>
+Date: Sat, 8 Oct 2022 12:37:45 +0800
+Message-ID: <CACGkMEvmVJVCG-W-phG_JkVnEy_EpKRgG38LexTzStn7dADztw@mail.gmail.com>
+Subject: Re: [virtio-dev] [PATCH v8] virtio_net: support for split transport header
+Content-Type: text/plain; charset="UTF-8"
 To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, jasowang@redhat.com, cohuck@redhat.com, sgarzare@redhat.com, stefanha@redhat.com, nrupal.jani@intel.com, Piotr.Uminski@intel.com, hang.yuan@intel.com, virtio@lists.oasis-open.org, Zhu Lingshan <lingshan.zhu@intel.com>, oren@nvidia.com, parav@nvidia.com, shahafs@nvidia.com, aadam@redhat.com, eperezma@redhat.com, Max Gurtovoy <mgurtovoy@nvidia.com>, Halil Pasic <pasic@linux.ibm.com>
+Cc: Xuan Zhuo <xuanzhuo@linux.alibaba.com>, Virtio-Dev <virtio-dev@lists.oasis-open.org>, Kangjie Xu <kangjie.xu@linux.alibaba.com>, Heng Qi <hengqi@linux.alibaba.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, 31 Aug 2022 10:50:21 -0400
-"Michael S. Tsirkin" <mst@redhat.com> wrote:
+On Thu, Sep 29, 2022 at 3:04 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+>
+> On Thu, Sep 29, 2022 at 09:48:33AM +0800, Jason Wang wrote:
+> > On Wed, Sep 28, 2022 at 9:39 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+> > >
+> > > On Mon, Sep 26, 2022 at 04:06:17PM +0800, Jason Wang wrote:
+> > > > > Jason I think the issue with previous proposals is that they conflict
+> > > > > with VIRTIO_F_ANY_LAYOUT. We have repeatedly found that giving the
+> > > > > driver flexibility in arranging the packet in memory is benefitial.
+> > > >
+> > > >
+> > > > Yes, but I didn't found how it can conflict the any_layout. Device can just
+> > > > to not split the header when the layout doesn't fit for header splitting.
+> > > > (And this seems the case even if we're using buffers).
+> > >
+> > > Well spec says:
+> > >
+> > >         indicates to both the device and the driver that no
+> > >         assumptions were made about framing.
+> > >
+> > > if device assumes that descriptor boundaries are where
+> > > driver wants packet to be stored that is clearly
+> > > an assumption.
+> >
+> > Yes but what I want to say is, the device can choose to not split the
+> > packet if the framing doesn't fit. Does it still comply with the above
+> > description?
+> >
+> > Thanks
+>
+> The point of ANY_LAYOUT is to give drivers maximum flexibility.
+> For example, if driver wants to split the header at some specific
+> offset this is already possible without extra functionality.
 
-> > You seem to say that all the normative statements may be classified
-> > into two categories:
-> > C1) the other side does not rely on this requirement
-> > C2) the other side does rely on this requirement
-> > 
-> > The requirements form C1 can be removed form future versions of the
-> > spec, and devices may start not honoring these without breaking
-> > compatibility because the other side did not rely on these being held
-> > up in the first place.
-> > 
-> > The requirements from C2 can not be removed from future versions of the
-> > spec, because a device compliant to the previous version of the spec
-> > that relies on this requirement being fulfilled would break. And
-> > interchangeability is about compatibility and interoperability -- so
-> > that is no good.
-> > 
-> > I understand that reasoning. But what I don't understand is the
-> > following: how is the reader of the specification supposed to decide
-> > if a certain requirement is a C1 requirement or a C2 requirement.
-> > Misclassifying a requirement could obviously pose a problem.  
-> 
-> The reader is supposed to satisfy all requirements.
+I'm not sure how this would work without the support from the device.
+This probably can only work if:
 
-I fullheartheadly agree with that. Ideally just both sides (the
-device and the driver) satisfying all the normative requirements would
-guarantee a favorable outcome for the end user: interoperability and at
-least basic functionality.
+1) the driver know what kind of packet it can receive
+2) protocol have fixed length of the header
 
-I'm not sure we are there yet with virtio. 
+This is probably not true consider:
 
-> Whether it is ok to rely on requirements is a problem that
-> unfortunately we don't always clarify.
-
-I believe, we want the people to rely on the spec. AFAIU the
-normative statements are the parts of the spec that are the
-deserve the most to be relied upon.
-
-[..]
+1) TCP and UDP have different header length
+2) IPv6 has an variable length of the header
 
 
-> > 
-> > I think, it would conceptually simplify things a lot if the avoided
-> > normative statements that we hope to drop in the future. 
-> > 
-> > This is a rather academic discussion and probably not a worthwhile one.  
-> 
-> I absolutely understand where you are coming from... I'm fine just using
-> SHOULD NOT here for now.
+>
+> Let's keep it that way.
+>
+> Now, let's formulate what are some of the problems with the current way.
+>
+>
+>
+> A- mergeable buffers is even more flexible, since a single packet
+>   is built up of multiple buffers. And in theory device can
+>   choose arbitrary set of buffers to store a packet.
+>   So you could supply a small buffer for headers followed by a bigger
+>   one for payload, in theory even without any changes.
+>   Problem 1: However since this is not how devices currently operate,
+>   a feature bit would be helpful.
 
-If we stick with the statement pair like proposed in this patch, in my
-opinion only MUST NOT works. Let me cite those:
-"""
-+\devicenormative{\paragraph}{Handling Device Features}{Virtio Transport Options / Virtio over channel I/O / Device Initialization / Handling Device Features}
-+
-+Device MUST NOT set bit VIRTIO_F_ADMIN_VQ (bit 41) in
-+DeviceFeatures.
-+
-+\drivernormative{\paragraph}{Handling Device Features}{Virtio Transport Options / Virtio over channel I/O / Device Initialization / Handling Device Features}
-+
-+Driver MUST NOT set bit VIRTIO_F_ADMIN_VQ (bit 41) in
-+DriverFeatures even if offered by the device.
-"""
+How do we know the bigger buffer is sufficient for the packet? If we
+try to allocate 64K (not sufficient for the future even) it breaks the
+effort of the mergeable buffer:
 
-By the way I just noticed that in the second normative above the heading
-says "Device Features" while the normative itself makes a statement about
-"DriverFeatures".
+header buffer #1
+payload buffer #1
+header buffer #2
+payload buffer #2
 
-IMHO we can remove both together, because any implementation that could
-be adversely affected by the removal of both is non-conforming because
-it violates one of these MUST NOT statements.
+Is the device expected to
 
-Also for the approach:  generic statement about handling feature
-negotiations for features are non-viable in certain constellations (e.g.
-some transport or the platform, or whatever lacks support or renders the
-feature impossible to implement) + a list of features not supported by
-certain transport, I came to prefer MUST NOT.
+1) fill payload in header buffer #2, this breaks the effort that we
+want to make payload page aligned
+2) skip header buffer #2, in this case, the device assumes the framing
+when it breaks any layout
 
-> Do you feel that's the way to go or have you changed your mind?
-> Couldn't figure it out.
-> 
+>
+>   Problem 2: Also, in the past we found it useful to be able to figure out whether
+>   packet fits in a single buffer without looking at the header.
+>   For this reason, we have this text:
+>
+>         If a receive packet is spread over multiple buffers, the device
+>         MUST use all buffers but the last (i.e. the first \field{num_buffers} -
+>         1 buffers) completely up to the full length of each buffer
+>         supplied by the driver.
+>
+>   if we want to keep this optimization and allow using a separate
+>   buffer for headers, then I think we could rely on the feature bit
+>   from Problem 1 and just make an exception for the first buffer.
+>   Also num_buffers is then always >= 2, maybe state this to avoid
+>   confusion.
+>
+>
+>
+>
+>
+> B- without mergeable, there's no flexibility. In particular, there can
+> not be uninitialized space between header and data.
 
-I believe we are fine either way, but generic statement + list of cases
-where this is known to apply is nicer to work with and evolve.
- 
-> 
-> But generally, I feel C1 is the default unless there is text that
-> explicitly says C2.
-> 
+I had two questions
 
-Here we disagree. I believe most of our normative statements are such
-that the can be relied upon by everyone including the other side.
+1) why is this not a problem of mergeable? There's no guarantee that
+the header is just the length of what the driver allocates for header
+buffer anyhow
 
-[..]
-> > Yet I prefer phrasings like this one where the phrasing of statement is
-> > still valid for all future versions of the spec (just the parameters
-> > change: in this case what is reserved and what is not).
-> > 
-> > Regards,
-> > Halil  
-> 
-> 
-> I guess it's a matter of taste.
-> What worries me is that it's so easy to miss these implications.
+E.g the header length could be smaller than the header buffer, the
+device still needs to skip part of the space in the header buffer.
 
-I agree, it is a matter of taste. I believe what we code-wise want
-is a transport specific mask both on the end of the device and on the
-end of the driver which ensures that bits that corresponding features can
-not be supported by entity that is doing its part of the negotiation are
-not set. I believe having a list of such features in the specification
-for each transport at an easy to locate place i s easier to map to code
-than a bunch of normative statement pairs. And also manipulating this
-list (adding to it, or removing form it) looks more straightforward to
-me.
+2) it should be the responsibility of the driver to handle the
+uninitialized space, it should do anything that is necessary for
+security, more below
 
-But I'm fine with either solution.
+> If we had flexibility here, this could be
+> helpful for alignment, security, etc.
+> Unfortunately, our hands are tied:
+>
+>
+>         \field{len} is particularly useful
+>         for drivers using untrusted buffers: if a driver does not know exactly
+>         how much has been written by the device, the driver would have to zero
+>         the buffer in advance to ensure no data leakage occurs.
+>
+>         For example, a network driver may hand a received buffer directly to
+>         an unprivileged userspace application.  If the network device has not
+>         overwritten the bytes which were in that buffer, this could leak the
+>         contents of freed memory from other processes to the application.
 
-Regards,
-Halil
+This should be a bug of the driver. For example, if the driver wants
+to implement zerocopy, it must guarantee that every byte was written
+by the device before mapping it to the userspace, if it can't it
+should do the copy instead.
+
+>
+>
+> so all buffers have to be initialized completely up to the reported
+> used length.
+>
+> It could be that the guarantee is not relevant in some use-cases.
+> We would have to specify that this is an exception to the rule,
+> explain that drivers must be careful about information leaks.
+> Let's say there's a feature bit that adds uninitialized space
+> somewhere. How much was added? We can find out by parsing the
+> packet but once you start doing that just to assemble the skb
+> you have already lost performance.
+
+I don't get here, for those uninitialized spaces, it looks just
+tailroom for the skb.
+
+Thanks
+
+> So lots of spec work, some security risks, and unclear performance.
+>
+>
+>
+>
+> Is above a fair summary?
+>
+>
+>
+> If yes I would say let's address A, but make sure we ask drivers
+> to clear the new feature bit if there's no mergeable
+> (as opposed to e.g. failing probe) so we can add
+> support for !mergeable down the road.
+>
+>
+>
+>
+>
+> --
+> MST
+>
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
