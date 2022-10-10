@@ -1,18 +1,16 @@
-Return-Path: <virtio-dev-return-10006-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-10007-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id AC01F9866F4
-	for <virtio-dev@lists.oasis-open.org>; Sun,  9 Oct 2022 01:53:06 +0000 (UTC)
-Message-ID: <1665280184.4548671-1-xuanzhuo@linux.alibaba.com>
-Date: Sun, 9 Oct 2022 09:49:44 +0800
-From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-References: <1663297006-64248-1-git-send-email-hengqi@linux.alibaba.com>
- <3c3cc916-c605-1ed2-d3ff-d8d8ce668f17@redhat.com>
- <20220920032824.GA125047@h68b04307.sqa.eu95>
+	by lists.oasis-open.org (Postfix) with ESMTP id 0A5609862AF
+	for <virtio-dev@lists.oasis-open.org>; Mon, 10 Oct 2022 17:12:07 +0000 (UTC)
+Date: Mon, 10 Oct 2022 13:11:56 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20221009155501-mutt-send-email-mst@kernel.org>
+References: <20220920032824.GA125047@h68b04307.sqa.eu95>
  <CACGkMEtOHXtNtG13Zxpc+bhYJVyefp999kttz4YcPi22nMBSpQ@mail.gmail.com>
  <1663903426.8765974-1-xuanzhuo@linux.alibaba.com>
  <CACGkMEsmqngS-HYPzzV8b9dmv95=W6dJebAa=asXGmo7VEAnoA@mail.gmail.com>
@@ -22,14 +20,17 @@ References: <1663297006-64248-1-git-send-email-hengqi@linux.alibaba.com>
  <CACGkMEsKHBo+tgJrADif9y5qLF-OHoK7pO6YvQBa-edjjPwVJQ@mail.gmail.com>
  <20220929022523-mutt-send-email-mst@kernel.org>
  <CACGkMEvmVJVCG-W-phG_JkVnEy_EpKRgG38LexTzStn7dADztw@mail.gmail.com>
+MIME-Version: 1.0
 In-Reply-To: <CACGkMEvmVJVCG-W-phG_JkVnEy_EpKRgG38LexTzStn7dADztw@mail.gmail.com>
-Subject: Re: [virtio-dev] [PATCH v8] virtio_net: support for split transport header
-Content-Type: text/plain; charset="US-ASCII"; x-default=true
+Subject: Re: [virtio-dev] [PATCH v8] virtio_net: support for split transport
+ header
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 To: Jason Wang <jasowang@redhat.com>
-Cc: Virtio-Dev <virtio-dev@lists.oasis-open.org>, Kangjie Xu <kangjie.xu@linux.alibaba.com>, Heng Qi <hengqi@linux.alibaba.com>, "Michael S. Tsirkin" <mst@redhat.com>
+Cc: Xuan Zhuo <xuanzhuo@linux.alibaba.com>, Virtio-Dev <virtio-dev@lists.oasis-open.org>, Kangjie Xu <kangjie.xu@linux.alibaba.com>, Heng Qi <hengqi@linux.alibaba.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Sat, 8 Oct 2022 12:37:45 +0800, Jason Wang <jasowang@redhat.com> wrote:
+On Sat, Oct 08, 2022 at 12:37:45PM +0800, Jason Wang wrote:
 > On Thu, Sep 29, 2022 at 3:04 PM Michael S. Tsirkin <mst@redhat.com> wrote:
 > >
 > > On Thu, Sep 29, 2022 at 09:48:33AM +0800, Jason Wang wrote:
@@ -63,19 +64,32 @@ On Sat, 8 Oct 2022 12:37:45 +0800, Jason Wang <jasowang@redhat.com> wrote:
 > > The point of ANY_LAYOUT is to give drivers maximum flexibility.
 > > For example, if driver wants to split the header at some specific
 > > offset this is already possible without extra functionality.
->
+> 
 > I'm not sure how this would work without the support from the device.
 > This probably can only work if:
->
+> 
 > 1) the driver know what kind of packet it can receive
 > 2) protocol have fixed length of the header
->
+> 
 > This is probably not true consider:
->
+> 
 > 1) TCP and UDP have different header length
 > 2) IPv6 has an variable length of the header
->
->
+
+We currently say:
+
+If a receive packet is spread over multiple buffers, the device
+MUST use all buffers but the last (i.e. the first \field{num_buffers} -
+1 buffers) completely up to the full length of each buffer
+supplied by the driver.
+
+the idea is basically just to lift this requirement for specific
+packets. Things certainly worked before, this is just an
+optimization.
+
+
+
+> 
 > >
 > > Let's keep it that way.
 > >
@@ -90,23 +104,23 @@ On Sat, 8 Oct 2022 12:37:45 +0800, Jason Wang <jasowang@redhat.com> wrote:
 > >   one for payload, in theory even without any changes.
 > >   Problem 1: However since this is not how devices currently operate,
 > >   a feature bit would be helpful.
->
+> 
 > How do we know the bigger buffer is sufficient for the packet? If we
 > try to allocate 64K (not sufficient for the future even) it breaks the
 > effort of the mergeable buffer:
->
+> 
 > header buffer #1
 > payload buffer #1
 > header buffer #2
 > payload buffer #2
->
+> 
 > Is the device expected to
->
+> 
 > 1) fill payload in header buffer #2, this breaks the effort that we
 > want to make payload page aligned
 > 2) skip header buffer #2, in this case, the device assumes the framing
 > when it breaks any layout
->
+> 
 > >
 > >   Problem 2: Also, in the past we found it useful to be able to figure out whether
 > >   packet fits in a single buffer without looking at the header.
@@ -129,20 +143,20 @@ On Sat, 8 Oct 2022 12:37:45 +0800, Jason Wang <jasowang@redhat.com> wrote:
 > >
 > > B- without mergeable, there's no flexibility. In particular, there can
 > > not be uninitialized space between header and data.
->
+> 
 > I had two questions
->
+> 
 > 1) why is this not a problem of mergeable? There's no guarantee that
 > the header is just the length of what the driver allocates for header
 > buffer anyhow
->
+> 
 > E.g the header length could be smaller than the header buffer, the
 > device still needs to skip part of the space in the header buffer.
->
+> 
 > 2) it should be the responsibility of the driver to handle the
 > uninitialized space, it should do anything that is necessary for
 > security, more below
->
+> 
 > > If we had flexibility here, this could be
 > > helpful for alignment, security, etc.
 > > Unfortunately, our hands are tied:
@@ -157,12 +171,12 @@ On Sat, 8 Oct 2022 12:37:45 +0800, Jason Wang <jasowang@redhat.com> wrote:
 > >         an unprivileged userspace application.  If the network device has not
 > >         overwritten the bytes which were in that buffer, this could leak the
 > >         contents of freed memory from other processes to the application.
->
+> 
 > This should be a bug of the driver. For example, if the driver wants
 > to implement zerocopy, it must guarantee that every byte was written
 > by the device before mapping it to the userspace, if it can't it
 > should do the copy instead.
->
+> 
 > >
 > >
 > > so all buffers have to be initialized completely up to the reported
@@ -175,20 +189,12 @@ On Sat, 8 Oct 2022 12:37:45 +0800, Jason Wang <jasowang@redhat.com> wrote:
 > > somewhere. How much was added? We can find out by parsing the
 > > packet but once you start doing that just to assemble the skb
 > > you have already lost performance.
->
+> 
 > I don't get here, for those uninitialized spaces, it looks just
 > tailroom for the skb.
-
-
-I think the core of the problem here is that the uninitialized space within the
-range of specified in the len.
-
-Thanks.
-
-
->
+> 
 > Thanks
->
+> 
 > > So lots of spec work, some security risks, and unclear performance.
 > >
 > >
@@ -210,7 +216,7 @@ Thanks.
 > > --
 > > MST
 > >
->
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
