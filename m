@@ -1,350 +1,201 @@
-Return-Path: <virtio-dev-return-10066-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-10024-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 521CC986579
-	for <virtio-dev@lists.oasis-open.org>; Thu, 20 Oct 2022 08:16:07 +0000 (UTC)
-Date: Thu, 20 Oct 2022 16:16:01 +0800
-From: Heng Qi <hengqi@linux.alibaba.com>
-Message-ID: <20221020081601.GA48712@h68b04307.sqa.eu95>
-References: <20220920032824.GA125047@h68b04307.sqa.eu95>
- <CACGkMEtOHXtNtG13Zxpc+bhYJVyefp999kttz4YcPi22nMBSpQ@mail.gmail.com>
- <1663903426.8765974-1-xuanzhuo@linux.alibaba.com>
- <CACGkMEsmqngS-HYPzzV8b9dmv95=W6dJebAa=asXGmo7VEAnoA@mail.gmail.com>
- <20220923013341-mutt-send-email-mst@kernel.org>
- <619af5b3-4c38-955f-0f7f-f351f5a9527e@redhat.com>
- <20220928093530-mutt-send-email-mst@kernel.org>
- <CACGkMEsKHBo+tgJrADif9y5qLF-OHoK7pO6YvQBa-edjjPwVJQ@mail.gmail.com>
- <20220929022523-mutt-send-email-mst@kernel.org>
- <CACGkMEvmVJVCG-W-phG_JkVnEy_EpKRgG38LexTzStn7dADztw@mail.gmail.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 300FC986301
+	for <virtio-dev@lists.oasis-open.org>; Mon, 17 Oct 2022 07:47:30 +0000 (UTC)
+From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Date: Mon, 17 Oct 2022 15:47:22 +0800
+Message-Id: <20221017074724.89569-1-xuanzhuo@linux.alibaba.com>
 MIME-Version: 1.0
-In-Reply-To: <CACGkMEvmVJVCG-W-phG_JkVnEy_EpKRgG38LexTzStn7dADztw@mail.gmail.com>
-Subject: Re: [virtio-dev] [PATCH v8] virtio_net: support for split transport
- header
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Subject: [virtio-dev] [PATCH 0/2] introduce virtio-ism: internal shared memory device
 Content-Transfer-Encoding: quoted-printable
-To: Jason Wang <jasowang@redhat.com>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>, Virtio-Dev <virtio-dev@lists.oasis-open.org>, Kangjie Xu <kangjie.xu@linux.alibaba.com>
+Content-Type: text/plain; charset="US-ASCII"; x-default=true
+To: virtio-dev@lists.oasis-open.org
+Cc: hans@linux.alibaba.com, herongguang@linux.alibaba.com, zmlcc@linux.alibaba.com, dust.li@linux.alibaba.com, tonylu@linux.alibaba.com, zhenzao@linux.alibaba.com, helinguo@linux.alibaba.com, gerry@linux.alibaba.com, xuanzhuo@linux.alibaba.com, mst@redhat.com, cohuck@redhat.com, jasowang@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Sat, Oct 08, 2022 at 12:37:45PM +0800, Jason Wang wrote:
-> On Thu, Sep 29, 2022 at 3:04 PM Michael S. Tsirkin <mst@redhat.com> wrote=
-:
-> >
-> > On Thu, Sep 29, 2022 at 09:48:33AM +0800, Jason Wang wrote:
-> > > On Wed, Sep 28, 2022 at 9:39 PM Michael S. Tsirkin <mst@redhat.com> w=
-rote:
-> > > >
-> > > > On Mon, Sep 26, 2022 at 04:06:17PM +0800, Jason Wang wrote:
-> > > > > > Jason I think the issue with previous proposals is that they co=
-nflict
-> > > > > > with VIRTIO_F_ANY_LAYOUT. We have repeatedly found that giving =
-the
-> > > > > > driver flexibility in arranging the packet in memory is benefit=
-ial.
-> > > > >
-> > > > >
-> > > > > Yes, but I didn't found how it can conflict the any_layout. Devic=
-e can just
-> > > > > to not split the header when the layout doesn't fit for header sp=
-litting.
-> > > > > (And this seems the case even if we're using buffers).
-> > > >
-> > > > Well spec says:
-> > > >
-> > > >         indicates to both the device and the driver that no
-> > > >         assumptions were made about framing.
-> > > >
-> > > > if device assumes that descriptor boundaries are where
-> > > > driver wants packet to be stored that is clearly
-> > > > an assumption.
-> > >
-> > > Yes but what I want to say is, the device can choose to not split the
-> > > packet if the framing doesn't fit. Does it still comply with the abov=
-e
-> > > description?
-> > >
-> > > Thanks
-> >
-> > The point of ANY_LAYOUT is to give drivers maximum flexibility.
-> > For example, if driver wants to split the header at some specific
-> > offset this is already possible without extra functionality.
->=20
-> I'm not sure how this would work without the support from the device.
-> This probably can only work if:
->=20
-> 1) the driver know what kind of packet it can receive
-> 2) protocol have fixed length of the header
->=20
-> This is probably not true consider:
->=20
-> 1) TCP and UDP have different header length
-> 2) IPv6 has an variable length of the header
->=20
->=20
-> >
-> > Let's keep it that way.
-> >
-> > Now, let's formulate what are some of the problems with the current way=
-.
-> >
-> >
-> >
-> > A- mergeable buffers is even more flexible, since a single packet
-> >   is built up of multiple buffers. And in theory device can
-> >   choose arbitrary set of buffers to store a packet.
-> >   So you could supply a small buffer for headers followed by a bigger
-> >   one for payload, in theory even without any changes.
-> >   Problem 1: However since this is not how devices currently operate,
-> >   a feature bit would be helpful.
->=20
-> How do we know the bigger buffer is sufficient for the packet? If we
-> try to allocate 64K (not sufficient for the future even) it breaks the
-> effort of the mergeable buffer:
->=20
-> header buffer #1
-> payload buffer #1
-> header buffer #2
-> payload buffer #2
->=20
-> Is the device expected to
->=20
-> 1) fill payload in header buffer #2, this breaks the effort that we
-> want to make payload page aligned
-> 2) skip header buffer #2, in this case, the device assumes the framing
-> when it breaks any layout
->=20
-> >
-> >   Problem 2: Also, in the past we found it useful to be able to figure =
-out whether
-> >   packet fits in a single buffer without looking at the header.
-> >   For this reason, we have this text:
-> >
-> >         If a receive packet is spread over multiple buffers, the device
-> >         MUST use all buffers but the last (i.e. the first \field{num_bu=
-ffers} -
-> >         1 buffers) completely up to the full length of each buffer
-> >         supplied by the driver.
-> >
-> >   if we want to keep this optimization and allow using a separate
-> >   buffer for headers, then I think we could rely on the feature bit
-> >   from Problem 1 and just make an exception for the first buffer.
-> >   Also num_buffers is then always >=3D 2, maybe state this to avoid
-> >   confusion.
-> >
-> >
-> >
-> >
-> >
-> > B- without mergeable, there's no flexibility. In particular, there can
-> > not be uninitialized space between header and data.
->=20
-> I had two questions
->=20
-> 1) why is this not a problem of mergeable? There's no guarantee that
-> the header is just the length of what the driver allocates for header
-> buffer anyhow
->=20
-> E.g the header length could be smaller than the header buffer, the
-> device still needs to skip part of the space in the header buffer.
->=20
-> 2) it should be the responsibility of the driver to handle the
-> uninitialized space, it should do anything that is necessary for
-> security, more below
->=20
+Hello everyone,
+
+# Background
+
+Nowadays, there is a common scenario to accelerate communication between
+different VMs and containers, including light weight virtual machine based
+containers. One way to achieve this is to colocate them on the same host.
+However, the performance of inter-VM communication through network stack is=
+ not
+optimal and may also waste extra CPU cycles. This scenario has been discuss=
+ed
+many times, but still no generic solution available [1] [2] [3].
+
+With pci-ivshmem + SMC(Shared Memory Communications: [4]) based PoC[5],
+We found that by changing the communication channel between VMs from TCP to=
+ SMC
+with shared memory, we can achieve superior performance for a common
+socket-based application[5]:
+  - latency reduced by about 50%
+  - throughput increased by about 300%
+  - CPU consumption reduced by about 50%
+
+Since there is no particularly suitable shared memory management solution
+matches the need for SMC(See ## Comparison with existing technology), and v=
+irtio
+is the standard for communication in the virtualization world, we want to
+implement a virtio-ism device based on virtio, which can support on-demand
+memory sharing across VMs, containers or VM-container. To match the needs o=
+f SMC,
+the virtio-ism device need to support:
+
+1. Dynamic provision: shared memory regions are dynamically allocated and
+   provisioned.
+2. Multi-region management: the shared memory is divided into regions,
+   and a peer may allocate one or more regions from the same shared memory
+   device.
+3. Permission control: The permission of each region can be set seperately.
+
+# Virtio ism device
+
+ISM devices provide the ability to share memory between different guests on=
+ a
+host. A guest's memory got from ism device can be shared with multiple peer=
+s at
+the same time. This shared relationship can be dynamically created and rele=
+ased.
+
+The shared memory obtained from the device is divided into multiple ism reg=
+ions
+for share. ISM device provides a mechanism to notify other ism region refer=
+rers
+of content update events.
+
+# Usage (SMC as example)
+
+Maybe there is one of possible use cases:
+
+1. SMC calls the interface ism_alloc_region() of the ism driver to return t=
+he
+   location of a memory region in the PCI space and a token.
+2. The ism driver mmap the memory region and return to SMC with the token
+3. SMC passes the token to the connected peer
+3. the peer calls the ism driver interface ism_attach_region(token) to
+   get the location of the PCI space of the shared memory
 
 
-We've talked a bit more about split header so far, but there still seem to
-be some issues, so let's recap.
+# About hot plugging of the ism device
 
-=E4=B8=80=E3=80=81 Method Discussion Review
+   Hot plugging of devices is a heavier, possibly failed, time-consuming, a=
+nd
+   less scalable operation. So, we don't plan to support it for now.
 
-In order to adapt to the Eric's tcp receive interface to achieve zero copy,
-header and payload are required to be stored separately, and the payload is
-stored in a paged alignment way. Therefore, we have discussed several optio=
-ns
-for split header as follows:
+# Comparison with existing technology
 
-1: method A ( depend on the descriptor chain )
-|                         receive buffer                            |=20
-|              0th descriptor                      | 1th descriptor |=20
-| virtnet hdr | mac | ip hdr | tcp hdr|<-- hold -->|      payload   |=20
-Method A uses a buffer plus a separate page when allocating the receive
-buffer. In this way, we can ensure that all payloads can be put
-independently in a page, which is very beneficial for the zerocopy=20
-implemented by the upper layer.=20
+## ivshmem or ivshmem 2.0 of Qemu
 
-The advantage of method A is that the implementation is clearer, it can sup=
-port normal
-header spit and the rollback conditions. It can also easily support xdp. Th=
-e downside is
-that devices operating directly on the descriptor chain may cause the layer=
-ing violation,
-and also affect the performance.
+   1. ivshmem 1.0 is a large piece of memory that can be seen by all device=
+s that
+   use this VM, so the security is not enough.
 
-2. method B ( depend on mergeable buffer)
-|                   receive buffer (page)                                 |=
- receive buffer (page) |=20
-| <-- offset(hold) --> | virtnet hdr | mac | ip hdr | tcp hdr|<-- hold -->|=
-         payload       |=20
-^
-|
-pointer to device
+   2. ivshmem 2.0 is a shared memory belonging to a VM that can be read-onl=
+y by all
+   other VMs that use the ivshmem 2.0 shared memory device, which also does=
+ not
+   meet our needs in terms of security.
 
-Method B is based on your previous suggestion, it is implemented based
-on mergeable buffer, filling a separate page each time.=20
+## vhost-pci and virtiovhostuser
 
-If the split header is negotiated and the packet can be successfully split =
-by the device,
-the device needs to find at least two buffers, namely two pages, one for th=
-e virtio-net header
-and transport header, and the other for the payload.
+   Does not support dynamic allocation and therefore not suitable for SMC.
 
-The advantage of method B is that it relies on mergeable buffer instead of =
-the descriptor chain.
-It overcomes the shortcomings of method A and can achieve the purpose of th=
-e device focusing
-on the buffer instead of the descriptor. Its disadvantage is that it causes=
- memory waste.
+# Design
 
-3. method C ( depend on mergeable buffer )
-| small buffer | data buffer (page) | small buffer | data buffer (page) | s=
-mall buffer | data buffer (page) |
+   This is a structure diagram based on ism sharing between two vms.
 
-Method B fills a separate page each time, while method C needs to fill the =
-small buffer and
-page buffer separately. Method C puts the header in small buffer and the pa=
-yload in a page.
+    |----------------------------------------------------------------------=
+---------------------------------------|
+    | |------------------------------------------------|       |-----------=
+-------------------------------------| |
+    | | Guest                                          |       | Guest     =
+                                     | |
+    | |                                                |       |           =
+                                     | |
+    | |   ----------------                             |       |   --------=
+--------                             | |
+    | |   |    driver    |     [M1]   [M2]   [M3]      |       |   |    dri=
+ver    |             [M2]   [M3]     | |
+    | |   ----------------       |      |      |       |       |   --------=
+--------               |      |      | |
+    | |    |cq|                  |map   |map   |map    |       |    |cq|   =
+                       |map   |map   | |
+    | |    |  |                  |      |      |       |       |    |  |   =
+                       |      |      | |
+    | |    |  |                -------------------     |       |    |  |   =
+             --------------------    | |
+    | |----|--|----------------|  device memory  |-----|       |----|--|---=
+-------------|  device memory   |----| |
+    | |    |  |                -------------------     |       |    |  |   =
+             --------------------    | |
+    | |                                |               |       |           =
+                    |                | |
+    | |                                |               |       |           =
+                    |                | |
+    | | Qemu                           |               |       | Qemu      =
+                    |                | |
+    | |--------------------------------+---------------|       |-----------=
+--------------------+----------------| |
+    |                                  |                                   =
+                    |                  |
+    |                                  |                                   =
+                    |                  |
+    |                                  |------------------------------+----=
+--------------------|                  |
+    |                                                                 |    =
+                                       |
+    |                                                                 |    =
+                                       |
+    |                                                   -------------------=
+-------                                |
+    |                                                    | M1 |   | M2 |   =
+| M3 |                                 |
+    |                                                   -------------------=
+-------                                |
+    |                                                                      =
+                                       |
+    | HOST                                                                 =
+                                       |
+    -----------------------------------------------------------------------=
+----------------------------------------
 
-The advantage of method C is that some buffers are filled for header and da=
-ta respectively,
-which reduces the memory waste of method B. However, this method is difficu=
-lt to weigh
-the number of filled header buffers and data buffers, and an unreasonable p=
-roportion will
-affect performance. For example, in a scenario with a large number of large=
- packets,
-too many header buffers will affect performance, or in a scenario with a la=
-rge number of small
-packets, too many data buffers can also affect performance. At the same tim=
-e, if some protocols
-with a large number of packets do not support split header, the existence o=
-f the header buffers
-will also affect performance.
+# POC code
 
-=E4=BA=8C=E3=80=81Points of agreement and disagreement
+   Kernel: https://github.com/fengidri/linux-kernel-virtio-ism/commits/ism
+   Qemu:   https://github.com/fengidri/qemu/commits/ism
 
-1. What we have now agreed upon is that:
-None of the three methods break VIRTIO_F_ANY_LAYOUT, they make virtio net h=
-eader and
-packet header stored together.
+If there are any problems, please point them out.
 
-We have now agreed to relax the following in the split header scenario,
-=09"indicates to both the device and the driver that no assumptions were ma=
-de about framing."
-because when a bigger packet comes, and a data buffer is not enough to stor=
-e this packet,
-the device either chooses to skip the next header buffer to break what the =
-spec says above,
-or chooses not to skip the header buffer and cannot make payload page align=
-ed.
-Therefore, all three methods need to relax the above requirements.
+Hope to hear from you, thank you.
 
-2. What we haven't now agreed upon is that:
-The point where we don't agree now is that we don't have a more precise dis=
-cussion of which
-approach to take, but we're still bouncing between approaches.
-At present, all three approaches seem to achieve our requirements, but each=
- has advantages
-and disadvantages. Should we focus on the most important points, such as pe=
-rformance to choose.
-It seems a little difficult to cover everything?
-
-=E4=B8=89=E3=80=81Two forms of implementing receive zerocopy
-
-the Eric's tcp receive interface requires the header and payload are stored=
- in separate buffers, and the payload is
-stored in a paged alignment way.
-
-Now, io_uring also proposes a new receive zerocopy method, which requires h=
-eader and payload
-to be stored in separate buffers, but does not require payload page aligned=
-.
-https://lore.kernel.org/io-uring/20221007211713.170714-1-jonathan.lemon@gma=
-il.com/T/#m678770d1fa7040fd76ed35026b93dfcbf25f6196
+[1] https://projectacrn.github.io/latest/tutorials/enable_ivshmem.html
+[2] https://dl.acm.org/doi/10.1145/2847562
+[3] https://hal.archives-ouvertes.fr/hal-00368622/document
+[4] https://lwn.net/Articles/711071/
+[5] https://lore.kernel.org/netdev/20220720170048.20806-1-tonylu@linux.alib=
+aba.com/T/
 
 
-Thanks.
+Xuan Zhuo (2):
+  Reserve device id for ISM device
+  virtio-ism: introduce new device virtio-ism
 
-> > If we had flexibility here, this could be
-> > helpful for alignment, security, etc.
-> > Unfortunately, our hands are tied:
-> >
-> >
-> >         \field{len} is particularly useful
-> >         for drivers using untrusted buffers: if a driver does not know =
-exactly
-> >         how much has been written by the device, the driver would have =
-to zero
-> >         the buffer in advance to ensure no data leakage occurs.
-> >
-> >         For example, a network driver may hand a received buffer direct=
-ly to
-> >         an unprivileged userspace application.  If the network device h=
-as not
-> >         overwritten the bytes which were in that buffer, this could lea=
-k the
-> >         contents of freed memory from other processes to the applicatio=
-n.
->=20
-> This should be a bug of the driver. For example, if the driver wants
-> to implement zerocopy, it must guarantee that every byte was written
-> by the device before mapping it to the userspace, if it can't it
-> should do the copy instead.
->=20
-> >
-> >
-> > so all buffers have to be initialized completely up to the reported
-> > used length.
-> >
-> > It could be that the guarantee is not relevant in some use-cases.
-> > We would have to specify that this is an exception to the rule,
-> > explain that drivers must be careful about information leaks.
-> > Let's say there's a feature bit that adds uninitialized space
-> > somewhere. How much was added? We can find out by parsing the
-> > packet but once you start doing that just to assemble the skb
-> > you have already lost performance.
->=20
-> I don't get here, for those uninitialized spaces, it looks just
-> tailroom for the skb.
->=20
-> Thanks
->=20
-> > So lots of spec work, some security risks, and unclear performance.
-> >
-> >
-> >
-> >
-> > Is above a fair summary?
-> >
-> >
-> >
-> > If yes I would say let's address A, but make sure we ask drivers
-> > to clear the new feature bit if there's no mergeable
-> > (as opposed to e.g. failing probe) so we can add
-> > support for !mergeable down the road.
-> >
-> >
-> >
-> >
-> >
-> > --
-> > MST
-> >
+ content.tex    |   3 +
+ virtio-ism.tex | 340 +++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 343 insertions(+)
+ create mode 100644 virtio-ism.tex
+
+--
+2.32.0.3.g01195cf9f
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
