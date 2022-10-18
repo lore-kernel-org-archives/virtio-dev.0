@@ -1,229 +1,231 @@
-Return-Path: <virtio-dev-return-10030-cohuck=redhat.com@lists.oasis-open.org>
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 744F898626B
-	for <virtio-dev@lists.oasis-open.org>; Tue, 18 Oct 2022 03:15:10 +0000 (UTC)
-Date: Tue, 18 Oct 2022 11:15:04 +0800
-From: "dust.li" <dust.li@linux.alibaba.com>
-Message-ID: <20221018031504.GF65725@linux.alibaba.com>
-Reply-To: dust.li@linux.alibaba.com
-References: <20221017074724.89569-1-xuanzhuo@linux.alibaba.com>
- <CACGkMEuh0N5sQ1K2Bk70Z-CrQSFb8ttp9vBG+tMypg3pAB0Mpg@mail.gmail.com>
+Return-Path: <jasowang@redhat.com>
+Message-ID: <21c7b74f-358c-1f74-2c51-74380ce48184@redhat.com>
+Date: Tue, 18 Oct 2022 15:29:03 +0800
 MIME-Version: 1.0
-In-Reply-To: <CACGkMEuh0N5sQ1K2Bk70Z-CrQSFb8ttp9vBG+tMypg3pAB0Mpg@mail.gmail.com>
 Subject: Re: [virtio-dev] [PATCH 0/2] introduce virtio-ism: internal shared
  memory device
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-To: Jason Wang <jasowang@redhat.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Cc: virtio-dev@lists.oasis-open.org, hans@linux.alibaba.com, herongguang@linux.alibaba.com, zmlcc@linux.alibaba.com, tonylu@linux.alibaba.com, zhenzao@linux.alibaba.com, helinguo@linux.alibaba.com, gerry@linux.alibaba.com, mst@redhat.com, cohuck@redhat.com, Stefan Hajnoczi <stefanha@redhat.com>
+References: <20221017074724.89569-1-xuanzhuo@linux.alibaba.com>
+ <CACGkMEuh0N5sQ1K2Bk70Z-CrQSFb8ttp9vBG+tMypg3pAB0Mpg@mail.gmail.com>
+ <20221018031504.GF65725@linux.alibaba.com>
+From: Jason Wang <jasowang@redhat.com>
+In-Reply-To: <20221018031504.GF65725@linux.alibaba.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+To: dust.li@linux.alibaba.com, Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Cc: virtio-dev@lists.oasis-open.org, hans@linux.alibaba.com, herongguang@linux.alibaba.com, zmlcc@linux.alibaba.com, tonylu@linux.alibaba.com, zhenzao@linux.alibaba.com, helinguo@linux.alibaba.com, gerry@linux.alibaba.com, mst@redhat.com, cohuck@redhat.com, Stefan Hajnoczi <stefanha@redhat.com>, Xie Yongji <xieyongji@bytedance.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Mon, Oct 17, 2022 at 04:17:31PM +0800, Jason Wang wrote:
->Adding Stefan.
+
+在 2022/10/18 11:15, dust.li 写道:
+> On Mon, Oct 17, 2022 at 04:17:31PM +0800, Jason Wang wrote:
+>> Adding Stefan.
+>>
+>>
+>> On Mon, Oct 17, 2022 at 3:47 PM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
+>>> Hello everyone,
+>>>
+>>> # Background
+>>>
+>>> Nowadays, there is a common scenario to accelerate communication between
+>>> different VMs and containers, including light weight virtual machine based
+>>> containers. One way to achieve this is to colocate them on the same host.
+>>> However, the performance of inter-VM communication through network stack is not
+>>> optimal and may also waste extra CPU cycles. This scenario has been discussed
+>>> many times, but still no generic solution available [1] [2] [3].
+>>>
+>>> With pci-ivshmem + SMC(Shared Memory Communications: [4]) based PoC[5],
+>>> We found that by changing the communication channel between VMs from TCP to SMC
+>>> with shared memory, we can achieve superior performance for a common
+>>> socket-based application[5]:
+>>>    - latency reduced by about 50%
+>>>    - throughput increased by about 300%
+>>>    - CPU consumption reduced by about 50%
+>>>
+>>> Since there is no particularly suitable shared memory management solution
+>>> matches the need for SMC(See ## Comparison with existing technology), and virtio
+>>> is the standard for communication in the virtualization world, we want to
+>>> implement a virtio-ism device based on virtio, which can support on-demand
+>>> memory sharing across VMs, containers or VM-container. To match the needs of SMC,
+>>> the virtio-ism device need to support:
+>>>
+>>> 1. Dynamic provision: shared memory regions are dynamically allocated and
+>>>     provisioned.
+>>> 2. Multi-region management: the shared memory is divided into regions,
+>>>     and a peer may allocate one or more regions from the same shared memory
+>>>     device.
+>>> 3. Permission control: The permission of each region can be set seperately.
+>> Looks like virtio-ROCE
+>>
+>> https://lore.kernel.org/all/20220511095900.343-1-xieyongji@bytedance.com/T/
+> Thanks for your reply!
+>
+> Yes, RoCE is OK for SMC and can support all those features.
+> And SMC already support RoCE now.
+>
+> The biggest advantage of virito-ism compared to roce is performance.
+> When 2 VMs are on the same host. With RoCE, the RDMA device still need
+> to do a memory copy to transfer the data from one VM to another, regardless
+> of the devcie is implemented by software or hardware.
+> But with this virito-ism device, the memory can be truely shared between
+> 2 VMs, and no memory copy is needed in the datapath.
+
+
+Adding Yong Ji for more thoughts.
+
+
 >
 >
->On Mon, Oct 17, 2022 at 3:47 PM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
->>
->> Hello everyone,
->>
->> # Background
->>
->> Nowadays, there is a common scenario to accelerate communication between
->> different VMs and containers, including light weight virtual machine based
->> containers. One way to achieve this is to colocate them on the same host.
->> However, the performance of inter-VM communication through network stack is not
->> optimal and may also waste extra CPU cycles. This scenario has been discussed
->> many times, but still no generic solution available [1] [2] [3].
->>
->> With pci-ivshmem + SMC(Shared Memory Communications: [4]) based PoC[5],
->> We found that by changing the communication channel between VMs from TCP to SMC
->> with shared memory, we can achieve superior performance for a common
->> socket-based application[5]:
->>   - latency reduced by about 50%
->>   - throughput increased by about 300%
->>   - CPU consumption reduced by about 50%
->>
->> Since there is no particularly suitable shared memory management solution
->> matches the need for SMC(See ## Comparison with existing technology), and virtio
->> is the standard for communication in the virtualization world, we want to
->> implement a virtio-ism device based on virtio, which can support on-demand
->> memory sharing across VMs, containers or VM-container. To match the needs of SMC,
->> the virtio-ism device need to support:
->>
->> 1. Dynamic provision: shared memory regions are dynamically allocated and
->>    provisioned.
->> 2. Multi-region management: the shared memory is divided into regions,
->>    and a peer may allocate one or more regions from the same shared memory
->>    device.
->> 3. Permission control: The permission of each region can be set seperately.
+>> and virtio-vhost-user can satisfy the requirement?
+> XuanZhuo has already listed the reasons, but I want to say something
+> more about that.
 >
->Looks like virtio-ROCE
+> We throught about virtio-vhost-user before, and I think the biggest
+> different between virtio-vhost-user and virtio-ism device is where
+> the shared memory comes from.
 >
->https://lore.kernel.org/all/20220511095900.343-1-xieyongji@bytedance.com/T/
+> IIUC, with virtio-vhost-user, the shared memory belongs to the front-end
+> VM, and mapped to the backend VM. But with virtio-ism device, the shared
+> memory is from the device, and mapped to both VMs.
 
-Thanks for your reply!
 
-Yes, RoCE is OK for SMC and can support all those features.
-And SMC already support RoCE now.
-
-The biggest advantage of virito-ism compared to roce is performance.
-When 2 VMs are on the same host. With RoCE, the RDMA device still need
-to do a memory copy to transfer the data from one VM to another, regardless
-of the devcie is implemented by software or hardware.
-But with this virito-ism device, the memory can be truely shared between
-2 VMs, and no memory copy is needed in the datapath.
+It doesn't differ from the view of host (qemu)? Even it is, it should 
+not be hard to mandate the virtio-vhost-user to use memory belong to the 
+device.
 
 
 >
->and virtio-vhost-user can satisfy the requirement?
+> So, with virtio-vhost-user, if the front-end VM want to disconnect with
+> the back-end VM, it has no way to do it. If the front-end VM has
+> disconnect and released its reference to the shared memory, but the
+> back-end VM didn't(intentional or unintentional), the front-end VM
+> cannot reuse that memory.
 
-XuanZhuo has already listed the reasons, but I want to say something
-more about that.
 
-We throught about virtio-vhost-user before, and I think the biggest
-different between virtio-vhost-user and virtio-ism device is where
-the shared memory comes from.
+This can be mandated by the hypervisor (Qemu), isn't it?
 
-IIUC, with virtio-vhost-user, the shared memory belongs to the front-end
-VM, and mapped to the backend VM. But with virtio-ism device, the shared
-memory is from the device, and mapped to both VMs.
+Thanks
 
-So, with virtio-vhost-user, if the front-end VM want to disconnect with
-the back-end VM, it has no way to do it. If the front-end VM has
-disconnect and released its reference to the shared memory, but the
-back-end VM didn't(intentional or unintentional), the front-end VM
-cannot reuse that memory. This creates a big security hole.
 
-With virtio-ism, we can avoid that using a backend server to account
-the shared memory usage of each VM. Since the shared memory belongs
-to the device, any VM who has released its reference to the shared
-memory will no longer be accounted, thus can allocate new memory from
-the device.
-
-Thanks.
-
+> This creates a big security hole.
 >
->>
->> # Virtio ism device
->>
->> ISM devices provide the ability to share memory between different guests on a
->> host. A guest's memory got from ism device can be shared with multiple peers at
->> the same time. This shared relationship can be dynamically created and released.
->>
->> The shared memory obtained from the device is divided into multiple ism regions
->> for share. ISM device provides a mechanism to notify other ism region referrers
->> of content update events.
->>
->> # Usage (SMC as example)
->>
->> Maybe there is one of possible use cases:
->>
->> 1. SMC calls the interface ism_alloc_region() of the ism driver to return the
->>    location of a memory region in the PCI space and a token.
->> 2. The ism driver mmap the memory region and return to SMC with the token
->> 3. SMC passes the token to the connected peer
->> 3. the peer calls the ism driver interface ism_attach_region(token) to
->>    get the location of the PCI space of the shared memory
->>
->>
->> # About hot plugging of the ism device
->>
->>    Hot plugging of devices is a heavier, possibly failed, time-consuming, and
->>    less scalable operation. So, we don't plan to support it for now.
->>
->> # Comparison with existing technology
->>
->> ## ivshmem or ivshmem 2.0 of Qemu
->>
->>    1. ivshmem 1.0 is a large piece of memory that can be seen by all devices that
->>    use this VM, so the security is not enough.
->>
->>    2. ivshmem 2.0 is a shared memory belonging to a VM that can be read-only by all
->>    other VMs that use the ivshmem 2.0 shared memory device, which also does not
->>    meet our needs in terms of security.
->>
->> ## vhost-pci and virtiovhostuser
->>
->>    Does not support dynamic allocation and therefore not suitable for SMC.
+> With virtio-ism, we can avoid that using a backend server to account
+> the shared memory usage of each VM. Since the shared memory belongs
+> to the device, any VM who has released its reference to the shared
+> memory will no longer be accounted, thus can allocate new memory from
+> the device.
 >
->I think this is an implementation issue, we can support VHOST IOTLB
->message then the regions could be added/removed on demand.
+> Thanks.
 >
->Thanks
->
+>>> # Virtio ism device
+>>>
+>>> ISM devices provide the ability to share memory between different guests on a
+>>> host. A guest's memory got from ism device can be shared with multiple peers at
+>>> the same time. This shared relationship can be dynamically created and released.
+>>>
+>>> The shared memory obtained from the device is divided into multiple ism regions
+>>> for share. ISM device provides a mechanism to notify other ism region referrers
+>>> of content update events.
+>>>
+>>> # Usage (SMC as example)
+>>>
+>>> Maybe there is one of possible use cases:
+>>>
+>>> 1. SMC calls the interface ism_alloc_region() of the ism driver to return the
+>>>     location of a memory region in the PCI space and a token.
+>>> 2. The ism driver mmap the memory region and return to SMC with the token
+>>> 3. SMC passes the token to the connected peer
+>>> 3. the peer calls the ism driver interface ism_attach_region(token) to
+>>>     get the location of the PCI space of the shared memory
+>>>
+>>>
+>>> # About hot plugging of the ism device
+>>>
+>>>     Hot plugging of devices is a heavier, possibly failed, time-consuming, and
+>>>     less scalable operation. So, we don't plan to support it for now.
+>>>
+>>> # Comparison with existing technology
+>>>
+>>> ## ivshmem or ivshmem 2.0 of Qemu
+>>>
+>>>     1. ivshmem 1.0 is a large piece of memory that can be seen by all devices that
+>>>     use this VM, so the security is not enough.
+>>>
+>>>     2. ivshmem 2.0 is a shared memory belonging to a VM that can be read-only by all
+>>>     other VMs that use the ivshmem 2.0 shared memory device, which also does not
+>>>     meet our needs in terms of security.
+>>>
+>>> ## vhost-pci and virtiovhostuser
+>>>
+>>>     Does not support dynamic allocation and therefore not suitable for SMC.
+>> I think this is an implementation issue, we can support VHOST IOTLB
+>> message then the regions could be added/removed on demand.
 >>
->> # Design
+>> Thanks
 >>
->>    This is a structure diagram based on ism sharing between two vms.
->>
->>     |-------------------------------------------------------------------------------------------------------------|
->>     | |------------------------------------------------|       |------------------------------------------------| |
->>     | | Guest                                          |       | Guest                                          | |
->>     | |                                                |       |                                                | |
->>     | |   ----------------                             |       |   ----------------                             | |
->>     | |   |    driver    |     [M1]   [M2]   [M3]      |       |   |    driver    |             [M2]   [M3]     | |
->>     | |   ----------------       |      |      |       |       |   ----------------               |      |      | |
->>     | |    |cq|                  |map   |map   |map    |       |    |cq|                          |map   |map   | |
->>     | |    |  |                  |      |      |       |       |    |  |                          |      |      | |
->>     | |    |  |                -------------------     |       |    |  |                --------------------    | |
->>     | |----|--|----------------|  device memory  |-----|       |----|--|----------------|  device memory   |----| |
->>     | |    |  |                -------------------     |       |    |  |                --------------------    | |
->>     | |                                |               |       |                               |                | |
->>     | |                                |               |       |                               |                | |
->>     | | Qemu                           |               |       | Qemu                          |                | |
->>     | |--------------------------------+---------------|       |-------------------------------+----------------| |
->>     |                                  |                                                       |                  |
->>     |                                  |                                                       |                  |
->>     |                                  |------------------------------+------------------------|                  |
->>     |                                                                 |                                           |
->>     |                                                                 |                                           |
->>     |                                                   --------------------------                                |
->>     |                                                    | M1 |   | M2 |   | M3 |                                 |
->>     |                                                   --------------------------                                |
->>     |                                                                                                             |
->>     | HOST                                                                                                        |
->>     ---------------------------------------------------------------------------------------------------------------
->>
->> # POC code
->>
->>    Kernel: https://github.com/fengidri/linux-kernel-virtio-ism/commits/ism
->>    Qemu:   https://github.com/fengidri/qemu/commits/ism
->>
->> If there are any problems, please point them out.
->>
->> Hope to hear from you, thank you.
->>
->> [1] https://projectacrn.github.io/latest/tutorials/enable_ivshmem.html
->> [2] https://dl.acm.org/doi/10.1145/2847562
->> [3] https://hal.archives-ouvertes.fr/hal-00368622/document
->> [4] https://lwn.net/Articles/711071/
->> [5] https://lore.kernel.org/netdev/20220720170048.20806-1-tonylu@linux.alibaba.com/T/
->>
->>
->> Xuan Zhuo (2):
->>   Reserve device id for ISM device
->>   virtio-ism: introduce new device virtio-ism
->>
->>  content.tex    |   3 +
->>  virtio-ism.tex | 340 +++++++++++++++++++++++++++++++++++++++++++++++++
->>  2 files changed, 343 insertions(+)
->>  create mode 100644 virtio-ism.tex
->>
->> --
->> 2.32.0.3.g01195cf9f
->>
->>
->> ---------------------------------------------------------------------
->> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
->> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
->>
-
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+>>> # Design
+>>>
+>>>     This is a structure diagram based on ism sharing between two vms.
+>>>
+>>>      |-------------------------------------------------------------------------------------------------------------|
+>>>      | |------------------------------------------------|       |------------------------------------------------| |
+>>>      | | Guest                                          |       | Guest                                          | |
+>>>      | |                                                |       |                                                | |
+>>>      | |   ----------------                             |       |   ----------------                             | |
+>>>      | |   |    driver    |     [M1]   [M2]   [M3]      |       |   |    driver    |             [M2]   [M3]     | |
+>>>      | |   ----------------       |      |      |       |       |   ----------------               |      |      | |
+>>>      | |    |cq|                  |map   |map   |map    |       |    |cq|                          |map   |map   | |
+>>>      | |    |  |                  |      |      |       |       |    |  |                          |      |      | |
+>>>      | |    |  |                -------------------     |       |    |  |                --------------------    | |
+>>>      | |----|--|----------------|  device memory  |-----|       |----|--|----------------|  device memory   |----| |
+>>>      | |    |  |                -------------------     |       |    |  |                --------------------    | |
+>>>      | |                                |               |       |                               |                | |
+>>>      | |                                |               |       |                               |                | |
+>>>      | | Qemu                           |               |       | Qemu                          |                | |
+>>>      | |--------------------------------+---------------|       |-------------------------------+----------------| |
+>>>      |                                  |                                                       |                  |
+>>>      |                                  |                                                       |                  |
+>>>      |                                  |------------------------------+------------------------|                  |
+>>>      |                                                                 |                                           |
+>>>      |                                                                 |                                           |
+>>>      |                                                   --------------------------                                |
+>>>      |                                                    | M1 |   | M2 |   | M3 |                                 |
+>>>      |                                                   --------------------------                                |
+>>>      |                                                                                                             |
+>>>      | HOST                                                                                                        |
+>>>      ---------------------------------------------------------------------------------------------------------------
+>>>
+>>> # POC code
+>>>
+>>>     Kernel: https://github.com/fengidri/linux-kernel-virtio-ism/commits/ism
+>>>     Qemu:   https://github.com/fengidri/qemu/commits/ism
+>>>
+>>> If there are any problems, please point them out.
+>>>
+>>> Hope to hear from you, thank you.
+>>>
+>>> [1] https://projectacrn.github.io/latest/tutorials/enable_ivshmem.html
+>>> [2] https://dl.acm.org/doi/10.1145/2847562
+>>> [3] https://hal.archives-ouvertes.fr/hal-00368622/document
+>>> [4] https://lwn.net/Articles/711071/
+>>> [5] https://lore.kernel.org/netdev/20220720170048.20806-1-tonylu@linux.alibaba.com/T/
+>>>
+>>>
+>>> Xuan Zhuo (2):
+>>>    Reserve device id for ISM device
+>>>    virtio-ism: introduce new device virtio-ism
+>>>
+>>>   content.tex    |   3 +
+>>>   virtio-ism.tex | 340 +++++++++++++++++++++++++++++++++++++++++++++++++
+>>>   2 files changed, 343 insertions(+)
+>>>   create mode 100644 virtio-ism.tex
+>>>
+>>> --
+>>> 2.32.0.3.g01195cf9f
+>>>
+>>>
+>>> ---------------------------------------------------------------------
+>>> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+>>> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+>>>
 
