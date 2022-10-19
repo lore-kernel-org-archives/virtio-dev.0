@@ -1,258 +1,159 @@
-Return-Path: <virtio-dev-return-10061-cohuck=redhat.com@lists.oasis-open.org>
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id C229598656C
-	for <virtio-dev@lists.oasis-open.org>; Wed, 19 Oct 2022 09:14:04 +0000 (UTC)
-MIME-Version: 1.0
-References: <20221017074724.89569-1-xuanzhuo@linux.alibaba.com>
- <CACGkMEuh0N5sQ1K2Bk70Z-CrQSFb8ttp9vBG+tMypg3pAB0Mpg@mail.gmail.com>
- <1666146893.4959266-1-xuanzhuo@linux.alibaba.com> <CACGkMEsS1no70rcg_YHip1UYt+sFF2nTOBahvvi-e_VqL-NgJw@mail.gmail.com>
- <1666152510.9531486-1-xuanzhuo@linux.alibaba.com> <CACGkMEvHXp+NPxWYeSp_J8PYCT72GD9-jL3wYT6yC-6QxhMKFw@mail.gmail.com>
- <1666159341.0495708-1-xuanzhuo@linux.alibaba.com> <Y0+wRQ59IoWTs7h0@TonyMac-Alibaba>
- <36c27c6b-e8b5-5597-d1b0-c7fd3c3388dd@redhat.com> <44E44B6B-F979-425E-A63D-95D1AAA14435@linux.alibaba.com>
-In-Reply-To: <44E44B6B-F979-425E-A63D-95D1AAA14435@linux.alibaba.com>
-From: Jason Wang <jasowang@redhat.com>
-Date: Wed, 19 Oct 2022 17:13:46 +0800
-Message-ID: <CACGkMEvwqQJHRZhYC4puiUKOpPzaebePe1=MT-wyT_4fPT=kcw@mail.gmail.com>
+Return-Path: <tonylu@linux.alibaba.com>
+Date: Wed, 19 Oct 2022 18:01:24 +0800
+From: Tony Lu <tonylu@linux.alibaba.com>
 Subject: Re: [virtio-dev] [PATCH 0/2] introduce virtio-ism: internal shared
  memory device
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: Gerry <gerry@linux.alibaba.com>
-Cc: Tony Lu <tonylu@linux.alibaba.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>, virtio-dev@lists.oasis-open.org, hans@linux.alibaba.com, herongguang@linux.alibaba.com, zmlcc@linux.alibaba.com, dust.li@linux.alibaba.com, zhenzao@linux.alibaba.com, helinguo@linux.alibaba.com, mst@redhat.com, cohuck@redhat.com, Stefan Hajnoczi <stefanha@redhat.com>, Yongji Xie <xieyongji@bytedance.com>
+Message-ID: <Y0/K9Fdv2JS9O935@TonyMac-Alibaba>
+Reply-To: Tony Lu <tonylu@linux.alibaba.com>
+References: <20221017074724.89569-1-xuanzhuo@linux.alibaba.com>
+ <CACGkMEuh0N5sQ1K2Bk70Z-CrQSFb8ttp9vBG+tMypg3pAB0Mpg@mail.gmail.com>
+ <1666146893.4959266-1-xuanzhuo@linux.alibaba.com>
+ <CACGkMEsS1no70rcg_YHip1UYt+sFF2nTOBahvvi-e_VqL-NgJw@mail.gmail.com>
+ <1666152510.9531486-1-xuanzhuo@linux.alibaba.com>
+ <CACGkMEvHXp+NPxWYeSp_J8PYCT72GD9-jL3wYT6yC-6QxhMKFw@mail.gmail.com>
+ <1666159341.0495708-1-xuanzhuo@linux.alibaba.com>
+ <Y0+wRQ59IoWTs7h0@TonyMac-Alibaba>
+ <36c27c6b-e8b5-5597-d1b0-c7fd3c3388dd@redhat.com>
+MIME-Version: 1.0
+In-Reply-To: <36c27c6b-e8b5-5597-d1b0-c7fd3c3388dd@redhat.com>
+Content-Type: text/plain; charset="gb2312"
+Content-Disposition: inline
+Content-Transfer-Encoding: base64
+To: Jason Wang <jasowang@redhat.com>
+Cc: Xuan Zhuo <xuanzhuo@linux.alibaba.com>, virtio-dev@lists.oasis-open.org, hans@linux.alibaba.com, herongguang@linux.alibaba.com, zmlcc@linux.alibaba.com, dust.li@linux.alibaba.com, zhenzao@linux.alibaba.com, helinguo@linux.alibaba.com, gerry@linux.alibaba.com, mst@redhat.com, cohuck@redhat.com, Stefan Hajnoczi <stefanha@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, Oct 19, 2022 at 5:10 PM Gerry <gerry@linux.alibaba.com> wrote:
->
->
->
-> > 2022=E5=B9=B410=E6=9C=8819=E6=97=A5 17:04=EF=BC=8CJason Wang <jasowang@=
-redhat.com> =E5=86=99=E9=81=93=EF=BC=9A
-> >
-> >
-> > =E5=9C=A8 2022/10/19 16:07, Tony Lu =E5=86=99=E9=81=93:
-> >> On Wed, Oct 19, 2022 at 02:02:21PM +0800, Xuan Zhuo wrote:
-> >>> On Wed, 19 Oct 2022 12:36:35 +0800, Jason Wang <jasowang@redhat.com> =
-wrote:
-> >>>> On Wed, Oct 19, 2022 at 12:22 PM Xuan Zhuo <xuanzhuo@linux.alibaba.c=
-om> wrote:
-> >>>>> On Wed, 19 Oct 2022 11:56:52 +0800, Jason Wang <jasowang@redhat.com=
-> wrote:
-> >>>>>> On Wed, Oct 19, 2022 at 10:42 AM Xuan Zhuo <xuanzhuo@linux.alibaba=
-.com> wrote:
-> >>>>>>> On Mon, 17 Oct 2022 16:17:31 +0800, Jason Wang <jasowang@redhat.c=
-om> wrote:
-> >>>>>>>
-> >>>>>>>
-> >>>>>>> Hi Jason,
-> >>>>>>>
-> >>>>>>> I think there may be some problems with the direction we are disc=
-ussing.
-> >>>>>> Probably not.
-> >>>>>>
-> >>>>>> As far as we are focusing on technology, there's nothing wrong fro=
-m my
-> >>>>>> perspective. And this is how the community works. Your idea needs =
-to
-> >>>>>> be justified and people are free to raise any technical questions
-> >>>>>> especially considering you've posted a spec change with prototype
-> >>>>>> codes but not only the idea.
-> >>>>>>
-> >>>>>>> Our
-> >>>>>>> goal is to add an new ism device. As far as the spec is concerned=
-, we are not
-> >>>>>>> concerned with the implementation of the backend.
-> >>>>>>>
-> >>>>>>> The direction we should discuss is what is the difference between=
- the ism device
-> >>>>>>> and other devices such as virtio-net, and whether it is necessary=
- to introduce
-> >>>>>>> this new device.
-> >>>>>> This is somehow what I want to ask, actually it's not a comparison
-> >>>>>> with virtio-net but:
-> >>>>>>
-> >>>>>> - virtio-roce
-> >>>>>> - virtio-vhost-user
-> >>>>>> - virtio-(p)mem
-> >>>>>>
-> >>>>>> or whether we can simply add features to those devices to achieve =
-what
-> >>>>>> you want to do here.
-> >>>>>
-> >>>>> Yes, this is my priority to discuss.
-> >>>>>
-> >>>>> At the moment, I think the most similar to ism is the Vhost-user De=
-vice Backend
-> >>>>> of virtio-vhost-user.
-> >>>>>
-> >>>>> My understanding of it is to map any virtio device to another vm as=
- a vvu
-> >>>>> device.
-> >>>> Yes, so a possible way is to have a device with memory zone/region
-> >>>> provision and management then map it via virtio-vhost-user.
-> >>>
-> >>> Yes, there is such a possibility. virtio-vhost-user makes me feel tha=
-t what can
-> >>> be shared is the function implementation of map.
-> >>>
-> >>> But in the vm to provide the interface to the upper layer, I think th=
-is is the
-> >>> work of ism.
-> >>>
-> >>> But one of the reasons why I didn't use virtio-vhost-user directly is=
- that in
-> >>> another vm, the guest can operate the vvu device, which we hope that =
-both sides
-> >>> are equal to the ism device.
-> >>>
-> >>> So I want to agree on a question first: who will provide the upper la=
-yer with
-> >>> the ability to share the memory area?
-> >>>
-> >>> Our answer is a new ism device. How does this device achieve memory s=
-haring, I
-> >>> think is the second question.
-> >>>
-> >>>
-> >>>>> From this design purpose, I think the two are different.
-> >>>>>
-> >>>>> Of course, you might want to extend it, it does have some similarit=
-ies and uses
-> >>>>> a lot of similar techniques.
-> >>>> I don't have any preference so far. If you think your idea makes mor=
-e
-> >>>> sense, then try your best to justify it in the list.
-> >>>>
-> >>>>> So we can really discuss in this direction, whether
-> >>>>> the vvu device can be extended to achieve the purpose of ism, or wh=
-ether the
-> >>>>> design goals can be agreed.
-> >>>> I've added Stefan in the loop, let's hear from him.
-> >>>>
-> >>>>> Or, in the direction of memory sharing in the backend, can ism and =
-vvu be merged?
-> >>>>> Should device/driver APIs remain independent?
-> >>>> Btw, you mentioned that one possible user of ism is the smc, but I
-> >>>> don't see how it connects to that with your prototype driver.
-> >>> Yes, we originally had plans, but the virtio spec was considered for =
-submission,
-> >>> so this was not included. Maybe, we should have included this part @T=
-ony
-> >>>
-> >>> A brief introduction is that SMC currently has a corresponding
-> >>> s390/net/ism_drv.c and we will replace this in the virtualization sce=
-nario.
-> >
-> >
-> > Ok, I see. So I think the goal is to implement something in virtio that=
- is functional equivalent to IBM ISM device.
-> >
-> >
-> >>>
-> >>> Thanks.
-> >>>
-> >> SMC is a network protocol which is modeled by shared memory rather tha=
-n
-> >> packet.
-> >
-> >
-> > After reading more SMC from IBM website, I think you meant SMC-D here. =
-And I wonder in order to have a complete SMC solution we still need virtio-=
-ROCE for inter host communcation?
-> Absolutely, a complete solution includes SMC-R remote peers and SMC-D for=
- local peers:)
-
-Ok, great.
-
->
->
-> >
-> >>  Actually the basic required interfaces of SMC device are:
-> >>
-> >>   - alloc / free memory region, each connection peer has two memory
-> >>      regions dynamically for sending and receiving ring buffer.
-> >>   - attach / detach memory region, remote attaches local-allocated
-> >>      sending region as receiving region, vice versa.
-> >>   - notify, tell peer to read data and update cursor.
-> >>
-> >> Then the device can be registered as SMC ISM device. Of course, SMC
-> >> also requires some modification to adapt it.
-> >
-> >
-> > Looking at s390 ism driver it requires other stuffs like vlan add/remov=
-e or gid query, do we need them as well?
-> We plan to get rid of vlan support,
-
-Please explain this in the changelog or cover letter.
-
-> but we do need interface to query gid etc.
-
-Ok, so let's add that in the next version.
-
-> And the virtio-queue helps us much to implement a control communication c=
-hannel to support those operations.
-
-Right.
-
-Thanks
-
->
-> >
-> > Thanks
-> >
-> >
-> >>
-> >> Cheers,
-> >> Tony Lu
-> >>
-> >>>> Thanks
-> >>>>
-> >>>>> Thanks.
-> >>>>>
-> >>>>>
-> >>>>>>> How to share the backend with other deivce is another problem.
-> >>>>>> Yes, anything that is used for your virito-ism prototype can be us=
-ed
-> >>>>>> for other devices.
-> >>>>>>
-> >>>>>>> Our goal is to dynamically obtain a piece of memory to share with=
- other vms.
-> >>>>>> So at this level, I don't see the exact difference compared to
-> >>>>>> virtio-vhost-user. Let's just focus on the API that carries on the
-> >>>>>> semantic:
-> >>>>>>
-> >>>>>> - map/unmap
-> >>>>>> - permission update
-> >>>>>>
-> >>>>>> The only missing piece is the per region notification.
-> >>>>>>
-> >>>>>>> In a connection, this memory will be used repeatedly. As far as S=
-MC is concerned,
-> >>>>>>> it will use it as a ring. Of course, we also need a notify mechan=
-ism.
-> >>>>>>>
-> >>>>>>> That's what we're aiming for, so we should first discuss whether =
-this
-> >>>>>>> requirement is reasonable.
-> >>>>>> So unless somebody said "no", it is fine until now.
-> >>>>>>
-> >>>>>>> I think it's a feature currently not supported by
-> >>>>>>> other devices specified by the current virtio spce.
-> >>>>>> Probably, but we've already had rfcs for roce and vhost-user.
-> >>>>>>
-> >>>>>> Thanks
-> >>>>>>
-> >>>>>>> Thanks.
-> >>>>>>>
-> >>>>>>>
->
-
-
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
-
+T24gV2VkLCBPY3QgMTksIDIwMjIgYXQgMDU6MDQ6NThQTSArMDgwMCwgSmFzb24gV2FuZyB3cm90
+ZToKPiAKPiDU2iAyMDIyLzEwLzE5IDE2OjA3LCBUb255IEx1INC0tcA6Cj4gPiBPbiBXZWQsIE9j
+dCAxOSwgMjAyMiBhdCAwMjowMjoyMVBNICswODAwLCBYdWFuIFpodW8gd3JvdGU6Cj4gPiA+IE9u
+IFdlZCwgMTkgT2N0IDIwMjIgMTI6MzY6MzUgKzA4MDAsIEphc29uIFdhbmcgPGphc293YW5nQHJl
+ZGhhdC5jb20+IHdyb3RlOgo+ID4gPiA+IE9uIFdlZCwgT2N0IDE5LCAyMDIyIGF0IDEyOjIyIFBN
+IFh1YW4gWmh1byA8eHVhbnpodW9AbGludXguYWxpYmFiYS5jb20+IHdyb3RlOgo+ID4gPiA+ID4g
+T24gV2VkLCAxOSBPY3QgMjAyMiAxMTo1Njo1MiArMDgwMCwgSmFzb24gV2FuZyA8amFzb3dhbmdA
+cmVkaGF0LmNvbT4gd3JvdGU6Cj4gPiA+ID4gPiA+IE9uIFdlZCwgT2N0IDE5LCAyMDIyIGF0IDEw
+OjQyIEFNIFh1YW4gWmh1byA8eHVhbnpodW9AbGludXguYWxpYmFiYS5jb20+IHdyb3RlOgo+ID4g
+PiA+ID4gPiA+IE9uIE1vbiwgMTcgT2N0IDIwMjIgMTY6MTc6MzEgKzA4MDAsIEphc29uIFdhbmcg
+PGphc293YW5nQHJlZGhhdC5jb20+IHdyb3RlOgo+ID4gPiA+ID4gPiA+IAo+ID4gPiA+ID4gPiA+
+IAo+ID4gPiA+ID4gPiA+IEhpIEphc29uLAo+ID4gPiA+ID4gPiA+IAo+ID4gPiA+ID4gPiA+IEkg
+dGhpbmsgdGhlcmUgbWF5IGJlIHNvbWUgcHJvYmxlbXMgd2l0aCB0aGUgZGlyZWN0aW9uIHdlIGFy
+ZSBkaXNjdXNzaW5nLgo+ID4gPiA+ID4gPiBQcm9iYWJseSBub3QuCj4gPiA+ID4gPiA+IAo+ID4g
+PiA+ID4gPiBBcyBmYXIgYXMgd2UgYXJlIGZvY3VzaW5nIG9uIHRlY2hub2xvZ3ksIHRoZXJlJ3Mg
+bm90aGluZyB3cm9uZyBmcm9tIG15Cj4gPiA+ID4gPiA+IHBlcnNwZWN0aXZlLiBBbmQgdGhpcyBp
+cyBob3cgdGhlIGNvbW11bml0eSB3b3Jrcy4gWW91ciBpZGVhIG5lZWRzIHRvCj4gPiA+ID4gPiA+
+IGJlIGp1c3RpZmllZCBhbmQgcGVvcGxlIGFyZSBmcmVlIHRvIHJhaXNlIGFueSB0ZWNobmljYWwg
+cXVlc3Rpb25zCj4gPiA+ID4gPiA+IGVzcGVjaWFsbHkgY29uc2lkZXJpbmcgeW91J3ZlIHBvc3Rl
+ZCBhIHNwZWMgY2hhbmdlIHdpdGggcHJvdG90eXBlCj4gPiA+ID4gPiA+IGNvZGVzIGJ1dCBub3Qg
+b25seSB0aGUgaWRlYS4KPiA+ID4gPiA+ID4gCj4gPiA+ID4gPiA+ID4gT3VyCj4gPiA+ID4gPiA+
+ID4gZ29hbCBpcyB0byBhZGQgYW4gbmV3IGlzbSBkZXZpY2UuIEFzIGZhciBhcyB0aGUgc3BlYyBp
+cyBjb25jZXJuZWQsIHdlIGFyZSBub3QKPiA+ID4gPiA+ID4gPiBjb25jZXJuZWQgd2l0aCB0aGUg
+aW1wbGVtZW50YXRpb24gb2YgdGhlIGJhY2tlbmQuCj4gPiA+ID4gPiA+ID4gCj4gPiA+ID4gPiA+
+ID4gVGhlIGRpcmVjdGlvbiB3ZSBzaG91bGQgZGlzY3VzcyBpcyB3aGF0IGlzIHRoZSBkaWZmZXJl
+bmNlIGJldHdlZW4gdGhlIGlzbSBkZXZpY2UKPiA+ID4gPiA+ID4gPiBhbmQgb3RoZXIgZGV2aWNl
+cyBzdWNoIGFzIHZpcnRpby1uZXQsIGFuZCB3aGV0aGVyIGl0IGlzIG5lY2Vzc2FyeSB0byBpbnRy
+b2R1Y2UKPiA+ID4gPiA+ID4gPiB0aGlzIG5ldyBkZXZpY2UuCj4gPiA+ID4gPiA+IFRoaXMgaXMg
+c29tZWhvdyB3aGF0IEkgd2FudCB0byBhc2ssIGFjdHVhbGx5IGl0J3Mgbm90IGEgY29tcGFyaXNv
+bgo+ID4gPiA+ID4gPiB3aXRoIHZpcnRpby1uZXQgYnV0Ogo+ID4gPiA+ID4gPiAKPiA+ID4gPiA+
+ID4gLSB2aXJ0aW8tcm9jZQo+ID4gPiA+ID4gPiAtIHZpcnRpby12aG9zdC11c2VyCj4gPiA+ID4g
+PiA+IC0gdmlydGlvLShwKW1lbQo+ID4gPiA+ID4gPiAKPiA+ID4gPiA+ID4gb3Igd2hldGhlciB3
+ZSBjYW4gc2ltcGx5IGFkZCBmZWF0dXJlcyB0byB0aG9zZSBkZXZpY2VzIHRvIGFjaGlldmUgd2hh
+dAo+ID4gPiA+ID4gPiB5b3Ugd2FudCB0byBkbyBoZXJlLgo+ID4gPiA+ID4gCj4gPiA+ID4gPiBZ
+ZXMsIHRoaXMgaXMgbXkgcHJpb3JpdHkgdG8gZGlzY3Vzcy4KPiA+ID4gPiA+IAo+ID4gPiA+ID4g
+QXQgdGhlIG1vbWVudCwgSSB0aGluayB0aGUgbW9zdCBzaW1pbGFyIHRvIGlzbSBpcyB0aGUgVmhv
+c3QtdXNlciBEZXZpY2UgQmFja2VuZAo+ID4gPiA+ID4gb2YgdmlydGlvLXZob3N0LXVzZXIuCj4g
+PiA+ID4gPiAKPiA+ID4gPiA+IE15IHVuZGVyc3RhbmRpbmcgb2YgaXQgaXMgdG8gbWFwIGFueSB2
+aXJ0aW8gZGV2aWNlIHRvIGFub3RoZXIgdm0gYXMgYSB2dnUKPiA+ID4gPiA+IGRldmljZS4KPiA+
+ID4gPiBZZXMsIHNvIGEgcG9zc2libGUgd2F5IGlzIHRvIGhhdmUgYSBkZXZpY2Ugd2l0aCBtZW1v
+cnkgem9uZS9yZWdpb24KPiA+ID4gPiBwcm92aXNpb24gYW5kIG1hbmFnZW1lbnQgdGhlbiBtYXAg
+aXQgdmlhIHZpcnRpby12aG9zdC11c2VyLgo+ID4gPiAKPiA+ID4gWWVzLCB0aGVyZSBpcyBzdWNo
+IGEgcG9zc2liaWxpdHkuIHZpcnRpby12aG9zdC11c2VyIG1ha2VzIG1lIGZlZWwgdGhhdCB3aGF0
+IGNhbgo+ID4gPiBiZSBzaGFyZWQgaXMgdGhlIGZ1bmN0aW9uIGltcGxlbWVudGF0aW9uIG9mIG1h
+cC4KPiA+ID4gCj4gPiA+IEJ1dCBpbiB0aGUgdm0gdG8gcHJvdmlkZSB0aGUgaW50ZXJmYWNlIHRv
+IHRoZSB1cHBlciBsYXllciwgSSB0aGluayB0aGlzIGlzIHRoZQo+ID4gPiB3b3JrIG9mIGlzbS4K
+PiA+ID4gCj4gPiA+IEJ1dCBvbmUgb2YgdGhlIHJlYXNvbnMgd2h5IEkgZGlkbid0IHVzZSB2aXJ0
+aW8tdmhvc3QtdXNlciBkaXJlY3RseSBpcyB0aGF0IGluCj4gPiA+IGFub3RoZXIgdm0sIHRoZSBn
+dWVzdCBjYW4gb3BlcmF0ZSB0aGUgdnZ1IGRldmljZSwgd2hpY2ggd2UgaG9wZSB0aGF0IGJvdGgg
+c2lkZXMKPiA+ID4gYXJlIGVxdWFsIHRvIHRoZSBpc20gZGV2aWNlLgo+ID4gPiAKPiA+ID4gU28g
+SSB3YW50IHRvIGFncmVlIG9uIGEgcXVlc3Rpb24gZmlyc3Q6IHdobyB3aWxsIHByb3ZpZGUgdGhl
+IHVwcGVyIGxheWVyIHdpdGgKPiA+ID4gdGhlIGFiaWxpdHkgdG8gc2hhcmUgdGhlIG1lbW9yeSBh
+cmVhPwo+ID4gPiAKPiA+ID4gT3VyIGFuc3dlciBpcyBhIG5ldyBpc20gZGV2aWNlLiBIb3cgZG9l
+cyB0aGlzIGRldmljZSBhY2hpZXZlIG1lbW9yeSBzaGFyaW5nLCBJCj4gPiA+IHRoaW5rIGlzIHRo
+ZSBzZWNvbmQgcXVlc3Rpb24uCj4gPiA+IAo+ID4gPiAKPiA+ID4gPiA+ICBGcm9tIHRoaXMgZGVz
+aWduIHB1cnBvc2UsIEkgdGhpbmsgdGhlIHR3byBhcmUgZGlmZmVyZW50Lgo+ID4gPiA+ID4gCj4g
+PiA+ID4gPiBPZiBjb3Vyc2UsIHlvdSBtaWdodCB3YW50IHRvIGV4dGVuZCBpdCwgaXQgZG9lcyBo
+YXZlIHNvbWUgc2ltaWxhcml0aWVzIGFuZCB1c2VzCj4gPiA+ID4gPiBhIGxvdCBvZiBzaW1pbGFy
+IHRlY2huaXF1ZXMuCj4gPiA+ID4gSSBkb24ndCBoYXZlIGFueSBwcmVmZXJlbmNlIHNvIGZhci4g
+SWYgeW91IHRoaW5rIHlvdXIgaWRlYSBtYWtlcyBtb3JlCj4gPiA+ID4gc2Vuc2UsIHRoZW4gdHJ5
+IHlvdXIgYmVzdCB0byBqdXN0aWZ5IGl0IGluIHRoZSBsaXN0Lgo+ID4gPiA+IAo+ID4gPiA+ID4g
+U28gd2UgY2FuIHJlYWxseSBkaXNjdXNzIGluIHRoaXMgZGlyZWN0aW9uLCB3aGV0aGVyCj4gPiA+
+ID4gPiB0aGUgdnZ1IGRldmljZSBjYW4gYmUgZXh0ZW5kZWQgdG8gYWNoaWV2ZSB0aGUgcHVycG9z
+ZSBvZiBpc20sIG9yIHdoZXRoZXIgdGhlCj4gPiA+ID4gPiBkZXNpZ24gZ29hbHMgY2FuIGJlIGFn
+cmVlZC4KPiA+ID4gPiBJJ3ZlIGFkZGVkIFN0ZWZhbiBpbiB0aGUgbG9vcCwgbGV0J3MgaGVhciBm
+cm9tIGhpbS4KPiA+ID4gPiAKPiA+ID4gPiA+IE9yLCBpbiB0aGUgZGlyZWN0aW9uIG9mIG1lbW9y
+eSBzaGFyaW5nIGluIHRoZSBiYWNrZW5kLCBjYW4gaXNtIGFuZCB2dnUgYmUgbWVyZ2VkPwo+ID4g
+PiA+ID4gU2hvdWxkIGRldmljZS9kcml2ZXIgQVBJcyByZW1haW4gaW5kZXBlbmRlbnQ/Cj4gPiA+
+ID4gQnR3LCB5b3UgbWVudGlvbmVkIHRoYXQgb25lIHBvc3NpYmxlIHVzZXIgb2YgaXNtIGlzIHRo
+ZSBzbWMsIGJ1dCBJCj4gPiA+ID4gZG9uJ3Qgc2VlIGhvdyBpdCBjb25uZWN0cyB0byB0aGF0IHdp
+dGggeW91ciBwcm90b3R5cGUgZHJpdmVyLgo+ID4gPiBZZXMsIHdlIG9yaWdpbmFsbHkgaGFkIHBs
+YW5zLCBidXQgdGhlIHZpcnRpbyBzcGVjIHdhcyBjb25zaWRlcmVkIGZvciBzdWJtaXNzaW9uLAo+
+ID4gPiBzbyB0aGlzIHdhcyBub3QgaW5jbHVkZWQuIE1heWJlLCB3ZSBzaG91bGQgaGF2ZSBpbmNs
+dWRlZCB0aGlzIHBhcnQgQFRvbnkKPiA+ID4gCj4gPiA+IEEgYnJpZWYgaW50cm9kdWN0aW9uIGlz
+IHRoYXQgU01DIGN1cnJlbnRseSBoYXMgYSBjb3JyZXNwb25kaW5nCj4gPiA+IHMzOTAvbmV0L2lz
+bV9kcnYuYyBhbmQgd2Ugd2lsbCByZXBsYWNlIHRoaXMgaW4gdGhlIHZpcnR1YWxpemF0aW9uIHNj
+ZW5hcmlvLgo+IAo+IAo+IE9rLCBJIHNlZS4gU28gSSB0aGluayB0aGUgZ29hbCBpcyB0byBpbXBs
+ZW1lbnQgc29tZXRoaW5nIGluIHZpcnRpbyB0aGF0IGlzCj4gZnVuY3Rpb25hbCBlcXVpdmFsZW50
+IHRvIElCTSBJU00gZGV2aWNlLgo+IAoKWWVzLCBJQk0gSVNNIGRldmljZXMgZG8gc29tZXRoaW5n
+IHNpbWlsYXIgYW5kIGl0IGluc3BpcmVkIHRoaXMuCgo+IAo+ID4gPiAKPiA+ID4gVGhhbmtzLgo+
+ID4gPiAKPiA+IFNNQyBpcyBhIG5ldHdvcmsgcHJvdG9jb2wgd2hpY2ggaXMgbW9kZWxlZCBieSBz
+aGFyZWQgbWVtb3J5IHJhdGhlciB0aGFuCj4gPiBwYWNrZXQuCj4gCj4gCj4gQWZ0ZXIgcmVhZGlu
+ZyBtb3JlIFNNQyBmcm9tIElCTSB3ZWJzaXRlLCBJIHRoaW5rIHlvdSBtZWFudCBTTUMtRCBoZXJl
+LiBBbmQgSQo+IHdvbmRlciBpbiBvcmRlciB0byBoYXZlIGEgY29tcGxldGUgU01DIHNvbHV0aW9u
+IHdlIHN0aWxsIG5lZWQgdmlydGlvLVJPQ0UKPiBmb3IgaW50ZXIgaG9zdCBjb21tdW5jYXRpb24/
+Cj4gCgpNb3N0bHkgeWVzLgoKU01DLUQgaXMgdGhlIHBhcnQgb2Ygd2hvbGUgU01DIHNvbHV0aW9u
+LiBTTUMgc3VwcG9ydHMgbXVsdGlwbGUKdW5kZXJseWluZyBkZXZpY2UsIC1EIG1lYW5zIElTTSBk
+ZXZpY2UsIC1SIG1lYW5zIFJETUEgZGV2aWNlLiBUaGUga2V5CmRhdGEgbW9kZWwgaXMgc2hhcmVk
+IG1lbW9yeSwgU01DIHVzZXMgUkRNQSAoLVIpIG9yIElTTSgtRCkgdG8gKnNoYXJlKgptZW1vcnkg
+YmV0d2VlbiBwZWVycywgYW5kIGl0IHdpbGwgY2hvb3NlIHRoZSBzdWl0YWJsZSBkZXZpY2Ugb24g
+ZGVtYW5kCmR1cmluZyBoYW5kc2hha2luZy4gSWYgdGhlcmUgd2FzIG5vIHN1aXRhYmxlIGRldmlj
+ZSwgaXQgd291bGQgZmFsbCBiYWNrCnRvIFRDUC4gU28gdmlydGlvLVJPQ0UgaXMgbm90IHJlcXVp
+cmVkLgoKPiAKPiA+ICAgQWN0dWFsbHkgdGhlIGJhc2ljIHJlcXVpcmVkIGludGVyZmFjZXMgb2Yg
+U01DIGRldmljZSBhcmU6Cj4gPiAKPiA+ICAgIC0gYWxsb2MgLyBmcmVlIG1lbW9yeSByZWdpb24s
+IGVhY2ggY29ubmVjdGlvbiBwZWVyIGhhcyB0d28gbWVtb3J5Cj4gPiAJcmVnaW9ucyBkeW5hbWlj
+YWxseSBmb3Igc2VuZGluZyBhbmQgcmVjZWl2aW5nIHJpbmcgYnVmZmVyLgo+ID4gICAgLSBhdHRh
+Y2ggLyBkZXRhY2ggbWVtb3J5IHJlZ2lvbiwgcmVtb3RlIGF0dGFjaGVzIGxvY2FsLWFsbG9jYXRl
+ZAo+ID4gCXNlbmRpbmcgcmVnaW9uIGFzIHJlY2VpdmluZyByZWdpb24sIHZpY2UgdmVyc2EuCj4g
+PiAgICAtIG5vdGlmeSwgdGVsbCBwZWVyIHRvIHJlYWQgZGF0YSBhbmQgdXBkYXRlIGN1cnNvci4K
+PiA+IAo+ID4gVGhlbiB0aGUgZGV2aWNlIGNhbiBiZSByZWdpc3RlcmVkIGFzIFNNQyBJU00gZGV2
+aWNlLiBPZiBjb3Vyc2UsIFNNQwo+ID4gYWxzbyByZXF1aXJlcyBzb21lIG1vZGlmaWNhdGlvbiB0
+byBhZGFwdCBpdC4KPiAKPiAKPiBMb29raW5nIGF0IHMzOTAgaXNtIGRyaXZlciBpdCByZXF1aXJl
+cyBvdGhlciBzdHVmZnMgbGlrZSB2bGFuIGFkZC9yZW1vdmUgb3IKPiBnaWQgcXVlcnksIGRvIHdl
+IG5lZWQgdGhlbSBhcyB3ZWxsPwoKdmxhbiBpcyBub3QgcmVxdWlyZWQgaW4gdGhpcyB1c2UgY2Fz
+ZS4gSVNNIHVzZXMgZ2lkIHRvIGlkZW50aWZpZWQgZWFjaApvdGhlcnMsIG1heWJlIHdlIGNvdWxk
+IGltcGxlbWVudCBpdCBpbiB2aXJ0aW8gd2F5cy4KClRvIHN1cHBvcnQgdmlydGlvLWlzbSBzbW9v
+dGhseSwgdGhlIGludGVyZmFjZXMgb2YgSVNNIGRyaXZlciBzdGlsbCBuZWVkCnRvIGJlIGFkanVz
+dGVkLiBJIHdpbGwgcHV0IGl0IG9uIHRoZSB0YWJsZSB3aXRoIElCTSBwZW9wbGUuCgpDaGVlcnMs
+ClRvbnkgTHUKCj4gCj4gVGhhbmtzCj4gCj4gCj4gPiAKPiA+IENoZWVycywKPiA+IFRvbnkgTHUK
+PiA+IAo+ID4gPiA+IFRoYW5rcwo+ID4gPiA+IAo+ID4gPiA+ID4gVGhhbmtzLgo+ID4gPiA+ID4g
+Cj4gPiA+ID4gPiAKPiA+ID4gPiA+ID4gPiBIb3cgdG8gc2hhcmUgdGhlIGJhY2tlbmQgd2l0aCBv
+dGhlciBkZWl2Y2UgaXMgYW5vdGhlciBwcm9ibGVtLgo+ID4gPiA+ID4gPiBZZXMsIGFueXRoaW5n
+IHRoYXQgaXMgdXNlZCBmb3IgeW91ciB2aXJpdG8taXNtIHByb3RvdHlwZSBjYW4gYmUgdXNlZAo+
+ID4gPiA+ID4gPiBmb3Igb3RoZXIgZGV2aWNlcy4KPiA+ID4gPiA+ID4gCj4gPiA+ID4gPiA+ID4g
+T3VyIGdvYWwgaXMgdG8gZHluYW1pY2FsbHkgb2J0YWluIGEgcGllY2Ugb2YgbWVtb3J5IHRvIHNo
+YXJlIHdpdGggb3RoZXIgdm1zLgo+ID4gPiA+ID4gPiBTbyBhdCB0aGlzIGxldmVsLCBJIGRvbid0
+IHNlZSB0aGUgZXhhY3QgZGlmZmVyZW5jZSBjb21wYXJlZCB0bwo+ID4gPiA+ID4gPiB2aXJ0aW8t
+dmhvc3QtdXNlci4gTGV0J3MganVzdCBmb2N1cyBvbiB0aGUgQVBJIHRoYXQgY2FycmllcyBvbiB0
+aGUKPiA+ID4gPiA+ID4gc2VtYW50aWM6Cj4gPiA+ID4gPiA+IAo+ID4gPiA+ID4gPiAtIG1hcC91
+bm1hcAo+ID4gPiA+ID4gPiAtIHBlcm1pc3Npb24gdXBkYXRlCj4gPiA+ID4gPiA+IAo+ID4gPiA+
+ID4gPiBUaGUgb25seSBtaXNzaW5nIHBpZWNlIGlzIHRoZSBwZXIgcmVnaW9uIG5vdGlmaWNhdGlv
+bi4KPiA+ID4gPiA+ID4gCj4gPiA+ID4gPiA+ID4gSW4gYSBjb25uZWN0aW9uLCB0aGlzIG1lbW9y
+eSB3aWxsIGJlIHVzZWQgcmVwZWF0ZWRseS4gQXMgZmFyIGFzIFNNQyBpcyBjb25jZXJuZWQsCj4g
+PiA+ID4gPiA+ID4gaXQgd2lsbCB1c2UgaXQgYXMgYSByaW5nLiBPZiBjb3Vyc2UsIHdlIGFsc28g
+bmVlZCBhIG5vdGlmeSBtZWNoYW5pc20uCj4gPiA+ID4gPiA+ID4gCj4gPiA+ID4gPiA+ID4gVGhh
+dCdzIHdoYXQgd2UncmUgYWltaW5nIGZvciwgc28gd2Ugc2hvdWxkIGZpcnN0IGRpc2N1c3Mgd2hl
+dGhlciB0aGlzCj4gPiA+ID4gPiA+ID4gcmVxdWlyZW1lbnQgaXMgcmVhc29uYWJsZS4KPiA+ID4g
+PiA+ID4gU28gdW5sZXNzIHNvbWVib2R5IHNhaWQgIm5vIiwgaXQgaXMgZmluZSB1bnRpbCBub3cu
+Cj4gPiA+ID4gPiA+IAo+ID4gPiA+ID4gPiA+IEkgdGhpbmsgaXQncyBhIGZlYXR1cmUgY3VycmVu
+dGx5IG5vdCBzdXBwb3J0ZWQgYnkKPiA+ID4gPiA+ID4gPiBvdGhlciBkZXZpY2VzIHNwZWNpZmll
+ZCBieSB0aGUgY3VycmVudCB2aXJ0aW8gc3BjZS4KPiA+ID4gPiA+ID4gUHJvYmFibHksIGJ1dCB3
+ZSd2ZSBhbHJlYWR5IGhhZCByZmNzIGZvciByb2NlIGFuZCB2aG9zdC11c2VyLgo+ID4gPiA+ID4g
+PiAKPiA+ID4gPiA+ID4gVGhhbmtzCj4gPiA+ID4gPiA+IAo+ID4gPiA+ID4gPiA+IFRoYW5rcy4K
+PiA+ID4gPiA+ID4gPiAKPiA+ID4gPiA+ID4gPiAKCg==
