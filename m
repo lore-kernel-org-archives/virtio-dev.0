@@ -1,125 +1,62 @@
-Return-Path: <virtio-dev-return-10003-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-10101-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id E056E9866F4
-	for <virtio-dev@lists.oasis-open.org>; Fri,  7 Oct 2022 16:57:03 +0000 (UTC)
-From: Usama Arif <usama.arif@bytedance.com>
-Date: Fri,  7 Oct 2022 17:56:42 +0100
-Message-Id: <20221007165643.3920613-4-usama.arif@bytedance.com>
-In-Reply-To: <20221007165643.3920613-1-usama.arif@bytedance.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 5789A98642B
+	for <virtio-dev@lists.oasis-open.org>; Mon, 31 Oct 2022 13:05:01 +0000 (UTC)
+Date: Thu, 27 Oct 2022 17:27:28 -0400
+From: Stefan Hajnoczi <stefanha@redhat.com>
+Message-ID: <Y1r3wEnQwTsZqGWg@fedora>
 References: <20221007165643.3920613-1-usama.arif@bytedance.com>
+ <20221007165643.3920613-4-usama.arif@bytedance.com>
 MIME-Version: 1.0
-Subject: [virtio-dev] [PATCH v3 3/4] content: Introduce driver/device auxiliary notifications for MMIO
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="US-ASCII"; x-default=true
-To: virtio-dev@lists.oasis-open.org
-Cc: mst@redhat.com, stefanha@redhat.com, ndragazis@arrikto.com, fam.zheng@bytedance.com, liangma@liangbit.com, Usama Arif <usama.arif@bytedance.com>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="Au/cWD3+9Ci2dusG"
+Content-Disposition: inline
+In-Reply-To: <20221007165643.3920613-4-usama.arif@bytedance.com>
+Subject: [virtio-dev] Re: [PATCH v3 3/4] content: Introduce driver/device auxiliary
+ notifications for MMIO
+To: Usama Arif <usama.arif@bytedance.com>
+Cc: virtio-dev@lists.oasis-open.org, mst@redhat.com, ndragazis@arrikto.com, fam.zheng@bytedance.com, liangma@liangbit.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-This includes the additions to the corresponding device and driver
-conformances.
+--Au/cWD3+9Ci2dusG
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Usama Arif <usama.arif@bytedance.com>
-Signed-off-by: Stefan Hajnoczi <stefanha@redhat.com>
-Signed-off-by: Nikos Dragazis <ndragazis@arrikto.com>
----
- content.tex | 25 +++++++++++++++++++++++--
- 1 file changed, 23 insertions(+), 2 deletions(-)
+On Fri, Oct 07, 2022 at 05:56:42PM +0100, Usama Arif wrote:
+> This includes the additions to the corresponding device and driver
+> conformances.
+>=20
+> Signed-off-by: Usama Arif <usama.arif@bytedance.com>
+> Signed-off-by: Stefan Hajnoczi <stefanha@redhat.com>
 
-diff --git a/content.tex b/content.tex
-index 33362b7..8968fcd 100644
---- a/content.tex
-+++ b/content.tex
-@@ -2049,6 +2049,8 @@ \subsection{MMIO Device Register Layout}\label{sec:Vi=
-rtio Transport Options / Vi
-         in at least one of the active virtual queues.
-       \item [Configuration Change Notification] - bit 1 - the interrupt wa=
-s
-         asserted because the configuration of the device has changed.
-+      \item [Device-specific Driver Auxiliary Notification] - bit 2 - the =
-interrupt was
-+        asserted because a device-specific event occurred to notify the dr=
-iver.
-     \end{description}
-   }
-   \hline=20
-@@ -2121,6 +2123,19 @@ \subsection{MMIO Device Register Layout}\label{sec:V=
-irtio Transport Options / Vi
-     apply to the queue selected by writing to \field{QueueSel}.
-   }
-   \hline
-+  \mmioreg{DeviceAuxNotificationIndex}{Device Auxiliary Notifier}{0xd0}{W}=
-{
-+    Writing to this register selects the device auxiliary
-+    notification index to which \field{DeviceAuxiliaryNotificationData} ap=
-ply to.
-+    The number of device auxiliary notifications and their purpose is
-+    device-specific.
-+  }
-+  \mmioreg{DeviceAuxNotificationData}{Device Auxiliary Notification Data}{=
-0xd4}{W}{
-+    Writing to this register notifies the device that a device auxiliary
-+    notification has occured corresponding to the index indicated by
-+    \field{DeviceAuxNotificationIndex}. The value written to this register=
- has
-+    a device-specific meaning.
-+  }
-+  \hline
-   \mmioreg{ConfigGeneration}{Configuration atomicity value}{0x0fc}{R}{
-     Reading from this register returns a value describing a version of the=
- device-specific configuration space (see \field{Config}).
-     The driver can then access the configuration space and, when finished,=
- read \field{ConfigGeneration} again.
-@@ -2156,6 +2171,9 @@ \subsection{MMIO Device Register Layout}\label{sec:Vi=
-rtio Transport Options / Vi
-=20
- The device MUST NOT access virtual queue contents when \field{QueueReady} =
-is zero (0x0).
-=20
-+The device MUST ignore device auxiliary notifications for invalid device a=
-uxiliary notification
-+indices.
-+
- If VIRTIO_F_RING_RESET has been negotiated, the device MUST present a 0 in
- \field{QueueReset} on reset.
-=20
-@@ -2234,6 +2252,8 @@ \subsubsection{Device Initialization}\label{sec:Virti=
-o Transport Options / Virti
- Drivers not expecting shared memory MUST NOT use the shared
- memory registers.
-=20
-+Drivers not expecting device auxiliary notifications MUST NOT use the devi=
-ce auxiliary notification register.
-+
- Further initialization MUST follow the procedure described in
- \ref{sec:General Initialization And Device Operation / Device Initializati=
-on}~\nameref{sec:General Initialization And Device Operation / Device Initi=
-alization}.
-=20
-@@ -2287,8 +2307,9 @@ \subsubsection{Notifications From The Device}\label{s=
-ec:Virtio Transport Options
- The memory mapped virtio device is using a single, dedicated
- interrupt signal, which is asserted when at least one of the
- bits described in the description of \field{InterruptStatus}
--is set. This is how the device sends a used buffer notification
--or a configuration change notification to the device.
-+is set. This is how the device sends a
-+used buffer/configuration change/device-specific notification to the
-+device.
-=20
- \drivernormative{\paragraph}{Notifications From The Device}{Virtio Transpo=
-rt Options / Virtio Over MMIO / MMIO-specific Initialization And Device Ope=
-ration / Notifications From The Device}
- After receiving an interrupt, the driver MUST read
---=20
-2.25.1
+You can keep this. One thought:
 
+I realized that virtio-mmio support won't be very useful until
+virtio-mmio gets MSI-X support because drivers currently cannot
+differentiate between device auxiliary notifications.
 
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+Stefan
+
+--Au/cWD3+9Ci2dusG
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmNa98AACgkQnKSrs4Gr
+c8gbqAgAkkH5ksWWCyGMrMN5dgiz4cfUuPPIRKW8d77kWUj5m05wPa2/OtPt5HHR
+4KCP8v+TNRCxa9ooLCzWjaSq1PIzggyGlSaQvG65JTC9rprPpZkXk4mr3Khc9Ogy
+/n81xq3Hb87BDF2Y/NRTooeaQ7fIFUaBZZkB5upd0W7spZKlYztA9gLEwLxqic9v
+gJ7sIYa/WkP9hAWCVNHytd6FTPMBcOY7QCvw77aU0BdL0vWbq+2VVNA5aF8j6rUy
+oAIWdI/az8RPgsaQ+jUgaImuYqLl1k9Fthn8MGQExgpnt/3gY8HgV0XYXwPhO8An
+lw+OAXuqRoegezVCQcIsoGsNWdmVMw==
+=NGk4
+-----END PGP SIGNATURE-----
+
+--Au/cWD3+9Ci2dusG--
 
