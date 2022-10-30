@@ -1,98 +1,104 @@
-Return-Path: <jan.kiszka@siemens.com>
-Message-ID: <1942d5c0-48e0-fd4c-5cfc-5ab31ae25914@siemens.com>
-Date: Tue, 18 Oct 2022 09:32:51 +0200
+Return-Path: <virtio-dev-return-10098-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id C3B07983EFA
+	for <virtio-dev@lists.oasis-open.org>; Sun, 30 Oct 2022 04:35:55 +0000 (UTC)
+From: Dmitry Fomichev <dmitry.fomichev@wdc.com>
+Date: Sun, 30 Oct 2022 00:35:43 -0400
+Message-Id: <20221030043545.974223-1-dmitry.fomichev@wdc.com>
 MIME-Version: 1.0
-Subject: Re: [virtio-dev] [PATCH 0/2] introduce virtio-ism: internal shared
- memory device
-References: <20221017074724.89569-1-xuanzhuo@linux.alibaba.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <20221017074724.89569-1-xuanzhuo@linux.alibaba.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-To: Xuan Zhuo <xuanzhuo@linux.alibaba.com>, virtio-dev@lists.oasis-open.org
-Cc: hans@linux.alibaba.com, herongguang@linux.alibaba.com, zmlcc@linux.alibaba.com, dust.li@linux.alibaba.com, tonylu@linux.alibaba.com, zhenzao@linux.alibaba.com, helinguo@linux.alibaba.com, gerry@linux.alibaba.com, mst@redhat.com, cohuck@redhat.com, jasowang@redhat.com
+Subject: [virtio-dev] [PATCH v4 0/2] virtio-blk: support zoned block devices
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="US-ASCII"; x-default=true
+To: Jens Axboe <axboe@kernel.dk>, linux-block@vger.kernel.org, Damien Le Moal <damien.lemoal@opensource.wdc.com>, Stefan Hajnoczi <stefanha@gmail.com>, Hannes Reinecke <hare@suse.de>, Sam Li <faithilikerun@gmail.com>
+Cc: virtio-dev@lists.oasis-open.org, Dmitry Fomichev <dmitry.fomichev@wdc.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On 17.10.22 09:47, Xuan Zhuo wrote:
-> Hello everyone,
-> 
-> # Background
-> 
-> Nowadays, there is a common scenario to accelerate communication between
-> different VMs and containers, including light weight virtual machine based
-> containers. One way to achieve this is to colocate them on the same host.
-> However, the performance of inter-VM communication through network stack is not
-> optimal and may also waste extra CPU cycles. This scenario has been discussed
-> many times, but still no generic solution available [1] [2] [3].
-> 
-> With pci-ivshmem + SMC(Shared Memory Communications: [4]) based PoC[5],
-> We found that by changing the communication channel between VMs from TCP to SMC
-> with shared memory, we can achieve superior performance for a common
-> socket-based application[5]:
->   - latency reduced by about 50%
->   - throughput increased by about 300%
->   - CPU consumption reduced by about 50%
-> 
-> Since there is no particularly suitable shared memory management solution
-> matches the need for SMC(See ## Comparison with existing technology), and virtio
-> is the standard for communication in the virtualization world, we want to
-> implement a virtio-ism device based on virtio, which can support on-demand
-> memory sharing across VMs, containers or VM-container. To match the needs of SMC,
-> the virtio-ism device need to support:
-> 
-> 1. Dynamic provision: shared memory regions are dynamically allocated and
->    provisioned.
-> 2. Multi-region management: the shared memory is divided into regions,
->    and a peer may allocate one or more regions from the same shared memory
->    device.
-> 3. Permission control: The permission of each region can be set seperately.
-> 
-> # Virtio ism device
-> 
-> ISM devices provide the ability to share memory between different guests on a
-> host. A guest's memory got from ism device can be shared with multiple peers at
-> the same time. This shared relationship can be dynamically created and released.
-> 
-> The shared memory obtained from the device is divided into multiple ism regions
-> for share. ISM device provides a mechanism to notify other ism region referrers
-> of content update events.
-> 
-> # Usage (SMC as example)
-> 
-> Maybe there is one of possible use cases:
-> 
-> 1. SMC calls the interface ism_alloc_region() of the ism driver to return the
->    location of a memory region in the PCI space and a token.
-> 2. The ism driver mmap the memory region and return to SMC with the token
-> 3. SMC passes the token to the connected peer
-> 3. the peer calls the ism driver interface ism_attach_region(token) to
->    get the location of the PCI space of the shared memory
-> 
-> 
-> # About hot plugging of the ism device
-> 
->    Hot plugging of devices is a heavier, possibly failed, time-consuming, and
->    less scalable operation. So, we don't plan to support it for now.
-> 
-> # Comparison with existing technology
-> 
-> ## ivshmem or ivshmem 2.0 of Qemu
-> 
->    1. ivshmem 1.0 is a large piece of memory that can be seen by all devices that
->    use this VM, so the security is not enough.
-> 
->    2. ivshmem 2.0 is a shared memory belonging to a VM that can be read-only by all
->    other VMs that use the ivshmem 2.0 shared memory device, which also does not
->    meet our needs in terms of security.
+In its current form, the virtio protocol for block devices (virtio-blk)
+is not aware of zoned block devices (ZBDs) but it allows the driver to
+successfully scan a host-managed drive provided by the virtio block
+device. As the result, the host-managed drive is recognized by the
+virtio driver as a regular, non-zoned drive that will operate
+erroneously under the most common write workloads. Host-aware ZBDs are
+currently usable, but their performance may not be optimal because the
+driver can only see them as non-zoned block devices.
 
-This is addressed by establishing separate links between VMs (modeled
-with separate devices). That is a trade-off between simplicity of the
-model and convenience, for sure.
+To fix this, the virtio-blk protocol needs to be extended to add the
+capabilities to convey the zone characteristics of ZBDs at the device
+side to the driver and to provide support for ZBD-specific commands -
+Report Zones, four zone operations (Open, Close, Finish and Reset) and
+(optionally) Zone Append.
 
-Jan
+The required virtio-blk protocol extensions are currently under review
+at OASIS Technical Committee and the specification patch is linked at
 
--- 
-Siemens AG, Technology
-Competence Center Embedded Linux
+https://github.com/oasis-tcs/virtio-spec/issues/143 .
+
+The QEMU zoned device code that implements these protocol extensions
+has been developed by Sam Li, an intern, as a part of Outreachy
+community mentorship initiative. The latest version of the QEMU
+patchset can be found here:
+
+https://lists.gnu.org/archive/html/qemu-devel/2022-09/msg01469.html
+
+This patch series modifies the virtio block driver code to implement
+the above virtio specification extensions. This patch has been tested
+to be compatible with the QEMU implementation referred above.
+
+v3 -> v4:
+
+ - Fix the units in max ZA / write granularity check
+ - Remove unneeded dev_info message
+
+v2 -> v3:
+
+ - Change the request in-header layout to always make the status byte
+   to be the last byte of the in-header. For all requests except Zone
+   Append, the in-header consists only of the status byte. For Zone
+   Append, an extended in-header is defined that consists of the zone
+   append sector followed by the status byte
+
+ - In zone report handler, validate the zone type/condition values
+   that are received from the device and convert them from the values
+   defined in the virtio_blk ZBD spec extension to the values defined
+   in the block layer
+
+ - During ZBD scan, check that max_append_sectors is not smaller than
+   the write granularity
+
+ - Fix sparse warnings
+
+v1 -> v2:
+
+ - Rebase to the current head of development. The second patch in the
+   previous version is no longer needed as the secure erase support has
+   now been added to virtio_blk driver
+
+ - Fix a couple of bugs in zone report code
+
+ - Clean up ZBD probe code
+
+This version DOESN'T include the additional request layout changes that
+are being discussed at the OASIS TC. An updated patch series will be
+posted to the list when those changes are finalized.
+
+Dmitry Fomichev (2):
+  virtio-blk: use a helper to handle request queuing errors
+  virtio-blk: add support for zoned block devices
+
+ drivers/block/virtio_blk.c      | 467 +++++++++++++++++++++++++++++---
+ include/uapi/linux/virtio_blk.h | 105 +++++++
+ 2 files changed, 540 insertions(+), 32 deletions(-)
+
+--=20
+2.34.1
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
