@@ -1,406 +1,324 @@
-Return-Path: <virtio-dev-return-10176-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-10110-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id F0B6598667B
-	for <virtio-dev@lists.oasis-open.org>; Fri, 18 Nov 2022 09:25:47 +0000 (UTC)
-Message-ID: <91b7321b-0f36-6165-bc25-a4586a868b9c@linux.alibaba.com>
-Date: Fri, 18 Nov 2022 17:25:41 +0800
+	by lists.oasis-open.org (Postfix) with ESMTP id 089D798644C
+	for <virtio-dev@lists.oasis-open.org>; Tue,  1 Nov 2022 12:04:35 +0000 (UTC)
+From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Date: Tue,  1 Nov 2022 20:04:26 +0800
+Message-Id: <20221101120428.9500-1-xuanzhuo@linux.alibaba.com>
 MIME-Version: 1.0
-References: <20221109113336.121773-1-hengqi@linux.alibaba.com>
- <20221109113336.121773-3-hengqi@linux.alibaba.com>
- <CACGkMEtVMLKDGfXzhbVshO2DkHmU6ayNH=-EJg2ins9jJYjGNg@mail.gmail.com>
- <77551372-bab9-5e55-d290-f50ebc6cad14@linux.alibaba.com>
- <CAOEp5OcgAVTO+ds6RGw1e-Wk_vtmsH8bX0YSHDfVrz+1JDvWkw@mail.gmail.com>
- <807c72ba-73cd-939f-1ab8-8c7e6765761a@linux.alibaba.com>
- <CACGkMEuECnCqx-5hZtNbKs07MQ2e=56OD+M40BVSy4MNzN=F+Q@mail.gmail.com>
- <0c579d31-120f-60af-3b87-53d8aefcaa91@linux.alibaba.com>
- <CACGkMEv1YS-QTeQwJzysMYFucYAZ4m2+qPjax=6i1evOMnpRsA@mail.gmail.com>
- <155e22e7-e646-73cb-3cb1-e0525e3a6905@linux.alibaba.com>
- <CACGkMEt7Ozc_jnd6fF57a7yYF9YUD2SP4JyyyaSxcy3wk0_8eA@mail.gmail.com>
- <dc278c2c-eab9-067f-7082-a4e6bcd3b28f@linux.alibaba.com>
- <CACGkMEtgqQ-9VcM25=88ztHi0pZY0_7xnaku+SAu4CFaEWcLYw@mail.gmail.com>
-From: Heng Qi <hengqi@linux.alibaba.com>
-In-Reply-To: <CACGkMEtgqQ-9VcM25=88ztHi0pZY0_7xnaku+SAu4CFaEWcLYw@mail.gmail.com>
-Subject: Re: [virtio-dev] Re: [PATCH 2/2] virtio_net: support inner header
- hash for GRE-encapsulated packets
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Subject: [virtio-dev] [PATCH v1 0/2] introduce virtio-ism: internal shared memory device
 Content-Transfer-Encoding: quoted-printable
-To: Jason Wang <jasowang@redhat.com>
-Cc: Yuri Benditovich <yuri.benditovich@daynix.com>, virtio-dev@lists.oasis-open.org, "Michael S . Tsirkin" <mst@redhat.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Content-Type: text/plain; charset="US-ASCII"; x-default=true
+To: virtio-dev@lists.oasis-open.org
+Cc: hans@linux.alibaba.com, herongguang@linux.alibaba.com, zmlcc@linux.alibaba.com, dust.li@linux.alibaba.com, tonylu@linux.alibaba.com, zhenzao@linux.alibaba.com, helinguo@linux.alibaba.com, gerry@linux.alibaba.com, xuanzhuo@linux.alibaba.com, mst@redhat.com, cohuck@redhat.com, jasowang@redhat.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+Hello everyone,
+
+# Background
+
+    Nowadays, there is a common scenario to accelerate communication betwee=
+n
+    different VMs and containers, including light weight virtual machine ba=
+sed
+    containers. One way to achieve this is to colocate them on the same hos=
+t.
+    However, the performance of inter-VM communication through network stac=
+k is
+    not optimal and may also waste extra CPU cycles. This scenario has been
+    discussed many times, but still no generic solution available [1] [2] [=
+3].
+
+    With pci-ivshmem + SMC(Shared Memory Communications: [4]) based PoC[5],
+    We found that by changing the communication channel between VMs from TC=
+P to
+    SMC with shared memory, we can achieve superior performance for a commo=
+n
+    socket-based application[5]:
+      - latency reduced by about 50%
+      - throughput increased by about 300%
+      - CPU consumption reduced by about 50%
+
+    Since there is no particularly suitable shared memory management soluti=
+on
+    matches the need for SMC(See ## Comparison with existing technology), a=
+nd
+    virtio is the standard for communication in the virtualization world, w=
+e
+    want to implement a virtio-ism device based on virtio, which can suppor=
+t
+    on-demand memory sharing across VMs, containers or VM-container. To mat=
+ch
+    the needs of SMC, the virtio-ism device need to support:
+
+    1. Dynamic provision: shared memory regions are dynamically allocated a=
+nd
+       provisioned.
+    2. Multi-region management: the shared memory is divided into regions,
+       and a peer may allocate one or more regions from the same shared mem=
+ory
+       device.
+    3. Permission control: the permission of each region can be set seperat=
+ely.
+    4. Dynamic connection: each ism region of a device can be shared with
+       different devices, eventually a device can be shared with thousands =
+of
+       devices
+
+# Virtio ISM device
+
+    ISM devices provide the ability to share memory between different guest=
+s on
+    a host. A guest's memory got from ism device can be shared with multipl=
+e
+    peers at the same time. This shared relationship can be dynamically cre=
+ated
+    and released.
+
+    The shared memory obtained from the device is divided into multiple ism
+    regions for share. ISM device provides a mechanism to notify other ism
+    region referrers of content update events.
+
+## Design
+
+    This is a structure diagram based on ism sharing between two vms.
+
+    |----------------------------------------------------------------------=
+---------------------------------------|
+    | |------------------------------------------------|       |-----------=
+-------------------------------------| |
+    | | Guest                                          |       | Guest     =
+                                     | |
+    | |                                                |       |           =
+                                     | |
+    | |   ----------------                             |       |   --------=
+--------                             | |
+    | |   |    driver    |     [M1]   [M2]   [M3]      |       |   |    dri=
+ver    |             [M2]   [M3]     | |
+    | |   ----------------       |      |      |       |       |   --------=
+--------               |      |      | |
+    | |    |cq|                  |map   |map   |map    |       |    |cq|   =
+                       |map   |map   | |
+    | |    |  |                  |      |      |       |       |    |  |   =
+                       |      |      | |
+    | |    |  |                -------------------     |       |    |  |   =
+             --------------------    | |
+    | |----|--|----------------|  device memory  |-----|       |----|--|---=
+-------------|  device memory   |----| |
+    | |    |  |                -------------------     |       |    |  |   =
+             --------------------    | |
+    | |                                |               |       |           =
+                    |                | |
+    | |                                |               |       |           =
+                    |                | |
+    | | Qemu                           |               |       | Qemu      =
+                    |                | |
+    | |--------------------------------+---------------|       |-----------=
+--------------------+----------------| |
+    |                                  |                                   =
+                    |                  |
+    |                                  |                                   =
+                    |                  |
+    |                                  |------------------------------+----=
+--------------------|                  |
+    |                                                                 |    =
+                                       |
+    |                                                                 |    =
+                                       |
+    |                                                   -------------------=
+-------                                |
+    |                                                    | M1 |   | M2 |   =
+| M3 |                                 |
+    |                                                   -------------------=
+-------                                |
+    |                                                                      =
+                                       |
+    | HOST                                                                 =
+                                       |
+    -----------------------------------------------------------------------=
+----------------------------------------
+
+## Inspiration
+
+    Our design idea for virtio-ism comes from IBM's ISM device, to pay trib=
+ute,
+    we directly name this device "ism".
+
+    Information about IBM ism device and SMC:
+      1. SMC reference: https://www.ibm.com/docs/en/zos/2.5.0?topic=3Dsyste=
+m-shared-memory-communications
+      2. SMC-Dv2 and ISMv2 introduction: https://www.newera.com/INFO/SMCv2_=
+Introduction_10-15-2020.pdf
+      3. ISM device: https://www.ibm.com/docs/en/linux-on-systems?topic=3Dn=
+-ism-device-driver-1
+      4. SMC protocol (including SMC-D): https://www.ibm.com/support/pages/=
+system/files/inline-files/IBM%20Shared%20Memory%20Communications%20Version%=
+202_2.pdf
+      5. SMC-D FAQ: https://www.ibm.com/support/pages/system/files/inline-f=
+iles/2021-02-09-SMC-D-FAQ.pdf
+
+## ISM VLAN
+
+    Since SMC uses TCP to handshake with IP facilities, virtio-ism device i=
+s not
+    bound to existing IP device, and the latest ISMv2 device doesn't requir=
+e
+    VLAN. So it is not necessary for virtio-ism to support VLAN attributes.
+
+## Live Migration
+
+    Currently SMC-D doesn't support migration to another device or fallback=
+. And
+    SMC-R supports migration to another link, no fallback.
+
+    So we may not support live migration for the time being.
+
+## About hot plugging of the ism device
+
+    Hot plugging of devices is a heavier, possibly failed, time-consuming, =
+and
+    less scalable operation. So, we don't plan to support it for now.
 
 
-=E5=9C=A8 2022/11/18 =E4=B8=8B=E5=8D=883:34, Jason Wang =E5=86=99=E9=81=93:
-> On Thu, Nov 17, 2022 at 3:49 PM Heng Qi <hengqi@linux.alibaba.com> wrote:
->>
->>
->> =E5=9C=A8 2022/11/17 =E4=B8=8B=E5=8D=882:09, Jason Wang =E5=86=99=E9=81=
-=93:
->>> On Thu, Nov 17, 2022 at 2:00 PM Heng Qi <hengqi@linux.alibaba.com> wrot=
-e:
->>>>
->>>> =E5=9C=A8 2022/11/17 =E4=B8=8B=E5=8D=881:34, Jason Wang =E5=86=99=E9=
-=81=93:
->>>>> On Thu, Nov 17, 2022 at 1:01 PM Heng Qi <hengqi@linux.alibaba.com> wr=
-ote:
->>>>>> =E5=9C=A8 2022/11/17 =E4=B8=8B=E5=8D=8812:29, Jason Wang =E5=86=99=
-=E9=81=93:
->>>>>>> On Thu, Nov 17, 2022 at 10:53 AM Heng Qi <hengqi@linux.alibaba.com>=
- wrote:
->>>>>>>> =E5=9C=A8 2022/11/17 =E4=B8=8A=E5=8D=887:32, Yuri Benditovich =E5=
-=86=99=E9=81=93:
->>>>>>>>> I would suggest to specify also the hash type the device should r=
-eport
->>>>>>>>> in case the hash reporting feature is enabled. For example, shoul=
-d the
->>>>>>>>> device specify somehow in the report that the hash was calculated=
- on
->>>>>>>>> the inner header or on the regular header?
->>>>>>>> It seems unnecessary. The calculation of RSS hash using the regula=
-r or
->>>>>>>> inner header is actually
->>>>>>>> transparent to the driver, and after the hash value and hash type
->>>>>>>> calculated by the device,
->>>>>>>> the feedback on skb is that skb only has L4 or L3 hash boolean typ=
-e.
->>>>>>> I think what Yuri meant is what if the user wants to calculate hash
->>>>>>> based on the inner header? Do we need VIRTIO_NET_HASH_TYPE_GRE_XXX?
->>>>>> Yes, if the user wants to calculate the hash on the inner header, th=
+# Usage (SMC as example)
+
+    There is one of possible use cases:
+
+    1. SMC calls the interface ism_alloc_region() of the ism driver to retu=
+rn
+       the location of a memory region in the PCI space and a token.
+    2. The ism driver mmap the memory region and return to SMC with the tok=
 en
->>>>>> we need VIRTIO_NET_HASH_TYPE_GRE_INNER,
->>>>>> if the user wants to calculate the hash on the outer header, then we
->>>>>> don=E2=80=99t need to use VIRTIO_NET_HASH_TYPE_GRE_INNER,
->>>>>> just keep the previous default behavior.
->>>>> I actually meant should we add VIRTIO_NET_HASH_REPORT_GRE_XXX?
->>>> VIRTIO_NET_HASH_REPORT_GRE_XXX does not seem to need to be added.
->>>>
->>>> _HASH_TYPE_GRE_INNER is a special hash type, which is used in
->>>> combination with other hash types,
->>>> indicating that the sd, sdfn, etc. of the inner or outer header are us=
-ed
->>>> to calculate the hash.
->>>> The device can report the following true types to the driver to meet t=
-he
->>>> subsequent requirements of driver.
->>>>
->>>> \begin{lstlisting}
->>>> #define VIRTIO_NET_HASH_REPORT_NONE            0
->>>> #define VIRTIO_NET_HASH_REPORT_IPv4            1
->>>> #define VIRTIO_NET_HASH_REPORT_TCPv4           2
->>>> #define VIRTIO_NET_HASH_REPORT_UDPv4           3
->>>> #define VIRTIO_NET_HASH_REPORT_IPv6            4
->>>> #define VIRTIO_NET_HASH_REPORT_TCPv6           5
->>>> #define VIRTIO_NET_HASH_REPORT_UDPv6           6
->>>> #define VIRTIO_NET_HASH_REPORT_IPv6_EX         7
->>>> #define VIRTIO_NET_HASH_REPORT_TCPv6_EX        8
->>>> #define VIRTIO_NET_HASH_REPORT_UDPv6_EX        9
->>>> \end{lstlisting}
->>>>
->>>> As for whether the device uses the outer or inner header to calculate
->>>> the hash information,
->>>> the driver does not seem to need to know?
->>> We can't assume the behaviour of the driver actually. E.g driver may
->>> try to do rx classification based on the rxhash.
->> Ok, I think this is reasonable and we shouldn't hide certain information=
+    3. SMC passes the token to the connected peer
+    4. the peer calls the ism driver interface ism_attach_region(token) to
+       get the location of the PCI space of the shared memory
+    5. The connected pair communicating through the shared memory
+
+# Comparison with existing technology
+
+## ivshmem or ivshmem 2.0 of Qemu
+
+   1. ivshmem 1.0 is a large piece of memory that can be seen by all device=
+s
+      that use this VM, so the security is not enough.
+
+   2. ivshmem 2.0 is a shared memory belonging to a VM that can be read-onl=
+y by
+      all other VMs that use the ivshmem 2.0 shared memory device, which al=
+so
+      does not meet our needs in terms of security.
+
+## vhost-pci and virtiovhostuser
+
+    1. does not support dynamic allocation
+    2. one device just support connect to one vm
+
+
+# POC CODE
+## Qemu:
+        https://github.com/fengidri/qemu/compare/7422cd20c4780ccdc7395d2dfa=
+ee33cb7d246d43...ism?expand=3D1
+
+    Start qemu with option "--device virtio-ism-pci,disable-legacy=3Don, di=
+sable-modern=3Doff".
+
+##  Kernel (ism driver and smc support):
+        https://github.com/fengidri/linux-kernel-virtio-ism/compare/6f8101e=
+b21bab480537027e62c4b17021fb7ea5d...xuanzhuo/smc-d-virtio-ism
+
+    There are three modules:
+
+        virtio-ism.ko
+        virtio-ism-smc.ko
+        virtio-ism-dev.ko.
+
+    The latter two modules depend on the first one.
+
+    virtio-ism-smc.ko virtio-ism-dev.ko should not be used at the same time=
 .
->>
->> Then I'll add VIRTIO_NET_HASH_REPORT_GRE_INNER, considering that
->> \field{hash_types} is a 32-bit bitmap,
->> and \field{hash_report} is a 16-bit integer, in order to be compatible
->> with existing hash computing devices,
->> we can use the first 8 bits of \field{hash_report} as a tunnel-related
->> flag, and the last 8 bits of \field{hash_report}
->> represent the hash five-tuple, e.g. VIRTIO_NET_HASH_TYPE_TCPv4.
->>
->> That is, if the value of the obtained \field{hash_report} is greater
->> than 256, it means that the driver wants
->> the device to calculate the hash for the inner header of the
->> tunnel-encapsulated packet . And if the value is less
->> than 256, the default outer header hashing will be performed.
->>
->> Do you think this proposal is feasible?=F0=9F=98=81
-> Any advantages of this over simply making padding_reserved a part of
-> the hash report?
 
-Thanks for the reminder, using padding_reserved seems cleaner.
+### virtio-ism-smc.ko
+    Support SMC-D works with virtio-ism.
 
-> Thanks
->
->> Thanks.
->>
->>> Thanks
->>>
->>>> Thanks.
->>>>
->>>>> Thanks
->>>>>
->>>>>> This is a configurable hash specification.
->>>>>>
->>>>>> Thanks.
->>>>>>
->>>>>>> Thanks
->>>>>>>
->>>>>>>> Thanks.
->>>>>>>>
->>>>>>>>> On Thu, Nov 10, 2022 at 5:41 AM Heng Qi <hengqi@linux.alibaba.com=
-> wrote:
->>>>>>>>>> =E5=9C=A8 2022/11/10 =E4=B8=8A=E5=8D=8811:35, Jason Wang =E5=86=
-=99=E9=81=93:
->>>>>>>>>>> On Wed, Nov 9, 2022 at 7:33 PM Heng Qi <hengqi@linux.alibaba.co=
-m> wrote:
->>>>>>>>>>>> From: Heng Qi <henqqi@linux.alibaba.com>
->>>>>>>>>>>>
->>>>>>>>>>>> When VIRTIO_NET_F_RSS is negotiated and the tunnel is used to
->>>>>>>>>>>> encapsulate the packets, the hash calculated using the outer h=
-eader
->>>>>>>>>>>> of the receive packets is always fixed for the same flow packe=
-ts,
->>>>>>>>>>>> i.e. they will be steered to the same receive queue.
->>>>>>>>>>>>
->>>>>>>>>>>> We add a VIRTIO_NET_HASH_TYPE_GRE_INNER bitmask in \field{hash=
-_types},
->>>>>>>>>>>> which instructs the device to calculate the hash using the inn=
-er headers
->>>>>>>>>>>> of GRE-encapsulated packets.
->>>>>>>>>>>>
->>>>>>>>>>>> Signed-off-by: Heng Qi <henqqi@linux.alibaba.com>
->>>>>>>>>>>> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
->>>>>>>>>>>> ---
->>>>>>>>>>>>        content.tex | 116 +++++++++++++++++++++++++++++++++++++=
-+++++++++++++++
->>>>>>>>>>>>        1 file changed, 116 insertions(+)
->>>>>>>>>>>>
->>>>>>>>>>>> diff --git a/content.tex b/content.tex
->>>>>>>>>>>> index 6fabf1d..319d401 100644
->>>>>>>>>>>> --- a/content.tex
->>>>>>>>>>>> +++ b/content.tex
->>>>>>>>>>>> @@ -3883,6 +3883,10 @@ \subsubsection{Processing of Incoming P=
-ackets}\label{sec:Device Types / Network
->>>>>>>>>>>>        #define VIRTIO_NET_HASH_TYPE_TCP_EX            (1 << 7)
->>>>>>>>>>>>        #define VIRTIO_NET_HASH_TYPE_UDP_EX            (1 << 8)
->>>>>>>>>>>>        \end{lstlisting}
->>>>>>>>>>>> +Hash types applicable to inner payloads of GRE-encapsulated p=
-ackets
->>>>>>>>>>>> +\begin{lstlisting}
->>>>>>>>>>>> +#define VIRTIO_NET_HASH_TYPE_GRE_INNER         (1 << 9)
->>>>>>>>>>>> +\end{lstlisting}
->>>>>>>>>>>>
->>>>>>>>>>>>        \subparagraph{IPv4 packets}
->>>>>>>>>>>>        \label{sec:Device Types / Network Device / Device Opera=
-tion / Processing of Incoming Packets / Hash calculation for incoming packe=
-ts / IPv4 packets}
->>>>>>>>>>>> @@ -3975,6 +3979,114 @@ \subsubsection{Processing of Incoming =
-Packets}\label{sec:Device Types / Network
->>>>>>>>>>>>        (see \ref{sec:Device Types / Network Device / Device Op=
-eration / Processing of Incoming Packets / Hash calculation for incoming pa=
-ckets / IPv6 packets without extension header}).
->>>>>>>>>>>>        \end{itemize}
->>>>>>>>>>>>
->>>>>>>>>>>> +\subparagraph{Inner payloads of GRE-encapsulated packets}
->>>>>>>>>>>> +\label{sec:Device Types / Network Device / Device Operation /=
- Processing of Incoming Packets / Hash calculation for incoming packets / I=
-nner payloads of GRE-encapsulated packets}}
->>>>>>>>>>>> +VIRTIO_NET_HASH_TYPE_GRE_INNER bit MUST be set at the same ti=
-me as one of
->>>>>>>>>>>> +the bits between VIRTIO_NET_HASH_TYPE_IPv4 and VIRTIO_NET_HAS=
-H_TYPE_UDP_EX.
->>>>>>>>>>> "MUST" keyword must belong to the normative section.
->>>>>>>>>> Okay. Thanks for pointing out.
->>>>>>>>>>
->>>>>>>>>>>> +
->>>>>>>>>>>> +The device calculates the hash on GRE-encapsulated packets wh=
-ose inner payloads
->>>>>>>>>>>> +are IPv4 packets according to 'Enabled hash types' bitmasks a=
-s follows:
->>>>>>>>>>>> +\begin{itemize}
->>>>>>>>>>>> +  \item If both VIRTIO_NET_HASH_TYPE_GRE_INNER and VIRTIO_NET=
-_HASH_TYPE_TCPv4 bits
->>>>>>>>>>>> +      are set, and the GRE-encapsulated packet has an inner T=
-CPv4 header in its
->>>>>>>>>>>> +      payload, the hash is calculated over the following fiel=
-ds:
->>>>>>>>>>>> +    \begin{itemsize}
->>>>>>>>>>>> +      \item Inner source IP address
->>>>>>>>>>>> +      \item Inner destination IP address
->>>>>>>>>>>> +      \item Inner source TCP port
->>>>>>>>>>>> +      \item Inner destination TCP port
->>>>>>>>>>>> +    \end{itemsize}
->>>>>>>>>>>> +  \item Else if both VIRTIO_NET_HASH_TYPE_GRE_INNER and VIRTI=
-O_NET_HASH_TYPE_UDPv4
->>>>>>>>>>>> +      bits are set, and the GRE-encapsulated packet has an in=
-ner UDPv4 header in
->>>>>>>>>>>> +      its payload, the hash is calculated over the following =
-fields:
->>>>>>>>>>>> +    \begin{itemsize}
->>>>>>>>>>>> +      \item Inner source IP address
->>>>>>>>>>>> +      \item Inner destination IP address
->>>>>>>>>>>> +      \item Inner source UDP port
->>>>>>>>>>>> +      \item Inner destination UDP port
->>>>>>>>>>>> +    \end{itemize}
->>>>>>>>>>>> +  \item Else if both VIRTIO_NET_HASH_TYPE_GRE_INNER and VIRTI=
-O_NET_HASH_TYPE_IPv4
->>>>>>>>>>>> +      bits are set, the hash is calculated over the following=
- fields:
->>>>>>>>>>>> +    \begin{itemsize}
->>>>>>>>>>>> +      \item Inner source IP address
->>>>>>>>>>>> +      \item Inner destination IP address
->>>>>>>>>>>> +    \end{itemsize}
->>>>>>>>>>>> +  \item Else the device does not calculate the hash
->>>>>>>>>>>> +\end{itemize}
->>>>>>>>>>>> +
->>>>>>>>>>>> +The device calculates the hash on GRE-encapsulated packets wh=
-ose inner payloads
->>>>>>>>>>>> +are IPv6 packets without extension headers according to 'Enab=
-led hash types'
->>>>>>>>>>>> +bitmasks as follows:
->>>>>>>>>>>> +\begin{itemsize}
->>>>>>>>>>>> +  \item If both VIRTIO_NET_HASH_TYPE_GRE_INNER and VIRTIO_NET=
-_HASH_TYPE_TCPv6
->>>>>>>>>>>> +      bits are set, and the GRE-encapsulated packet has an in=
-ner TCPv6 header in
->>>>>>>>>>>> +      its payload, the hash is calculated over the following =
-fields:
->>>>>>>>>>>> +    \begin{itemsize}
->>>>>>>>>>>> +      \item Inner source IPv6 address
->>>>>>>>>>>> +      \item Inner destination IPv6 address
->>>>>>>>>>>> +      \item Inner source TCP port
->>>>>>>>>>>> +      \item Inner destination TCP port
->>>>>>>>>>>> +    \end{itemsize}
->>>>>>>>>>>> +  \item Else if both VIRTIO_NET_HASH_TYPE_GRE_INNER and VIRTI=
-O_NET_HASH_TYPE_UDPv6
->>>>>>>>>>>> +      bits are set, and the GRE-encapsulated packet has an in=
-ner UDPv6 header in
->>>>>>>>>>>> +      its payload, the hash is calculated over the following =
-fields:
->>>>>>>>>>>> +    \begin{itemsize}
->>>>>>>>>>>> +      \item Inner source IPv6 address
->>>>>>>>>>>> +      \item Inner destination IPv6 address
->>>>>>>>>>>> +      \item Inner source UDP port
->>>>>>>>>>>> +      \item Inner destination UDP port
->>>>>>>>>>>> +    \end{itemize}
->>>>>>>>>>>> +  \item Else if both VIRTIO_NET_HASH_TYPE_GRE_INNER and VIRTI=
-O_NET_HASH_TYPE_IPv6
->>>>>>>>>>>> +      bits are set, the hash is calculated over the following=
- fields:
->>>>>>>>>>>> +    \begin{itemsize}
->>>>>>>>>>>> +      \item Inner source IPv6 address
->>>>>>>>>>>> +      \item Inner destination IPv6 address
->>>>>>>>>>>> +    \end{itemsize}
->>>>>>>>>>>> +  \item Else the device does not calculate the hash
->>>>>>>>>>>> +\end{itemize}
->>>>>>>>>>>> +
->>>>>>>>>>>> +The device calculates the hash on GRE-encapsulated packets wh=
-ose inner payloads
->>>>>>>>>>>> +are IPv6 packets with extension headers according to 'Enabled=
- hash types'
->>>>>>>>>>>> +bitmasks as follows:
->>>>>>>>>>>> +\begin{itemsize}
->>>>>>>>>>>> +  \item If both VIRTIO_NET_HASH_TYPE_GRE_INNER and VIRTIO_NET=
-_HASH_TYPE_TCP_EX
->>>>>>>>>>>> +      bits are set, and the GRE-encapsulated packet has an in=
-ner TCPv6 header in
->>>>>>>>>>>> +      its payload, the hash is calculated over the following =
-fields:
->>>>>>>>>>>> +    \begin{itemize}
->>>>>>>>>>>> +      \item Home address from the home address option in the =
-IPv6 destination options
->>>>>>>>>>> Is this inner or outer?
->>>>>>>>>>>
->>>>>>>>>>> Thanks
->>>>>>>>>>>
->>>>>>>>>>>> +          header. If the extension header is not present, use=
- the Source IPv6 address.
->>>>>>>>>>>> +      \item IPv6 address that is contained in the Routing-Hea=
-der-Type-2 from the
->>>>>>>>>>>> +          associated extension header. If the extension heade=
-r is not present, use
->>>>>>>>>>>> +          the Destination IPv6 address.
->>>>>>>>>>>> +      \item Source TCP port
->>>>>>>>>>>> +      \item Destination TCP port
->>>>>>>>>>>> +    \end{itemize}
->>>>>>>>>>>> +  \item Else if both VIRTIO_NET_HASH_TYPE_GRE_INNER and VIRTI=
-O_NET_HASH_TYPE_UDP_EX
->>>>>>>>>>>> +  bits are set, and the GRE-encapsulated packet has an inner =
-UDPv6 header in its
->>>>>>>>>>>> +  payload, the hash is calculated over the following fields:
->>>>>>>>>>>> +    \begin{itemsize}
->>>>>>>>>>>> +      \item Home address from the home address option in the =
-IPv6 destination options
->>>>>>>>>>>> +          header. If the extension header is not present, use=
- the Source IPv6 address.
->>>>>>>>>>>> +      \item IPv6 address that is contained in the Routing-Hea=
-der-Type-2 from the
->>>>>>>>>>>> +          associated extension header. If the extension heade=
-r is not present, use the
->>>>>>>>>>>> +          Destination IPv6 address.
->>>>>>>>>>>> +      \item Source UDP port
->>>>>>>>>>>> +      \item Destination UDP port
->>>>>>>>>>>> +    \end{itemize}
->>>>>>>>>>>> +  \item Else if both VIRTIO_NET_HASH_TYPE_GRE_INNER and VIRTI=
-O_NET_HASH_TYPE_IP_EX
->>>>>>>>>>>> +      bits are set, the hash is calculated over the following=
- fields:
->>>>>>>>>>>> +    \begin{itemsize}
->>>>>>>>>>>> +      \item Home address from the home address option in the =
-IPv6 destination options
->>>>>>>>>>>> +          header. If the extension header is not present, use=
- the Source IPv6 address.
->>>>>>>>>>>> +      \item IPv6 address that is contained in the Routing-Hea=
-der-Type-2 from the
->>>>>>>>>>>> +          associated extension header. If the extension heade=
-r is not present, use the
->>>>>>>>>>>> +          Destination IPv6 address.
->>>>>>>>>>>> +    \end{itemize}
->>>>>>>>>>>> +  \item Else skip IPv6 extension headers and calculate the ha=
-sh as defined for
->>>>>>>>>>>> +      a GRE-encapsulated packet whose inner payload is an IPv=
-6 packet without
->>>>>>>>>>>> +      extension headers
->>>>>>>>>>>> +\end{itemsize}
->>>>>>>>>>>> +
->>>>>>>>>>>>        \paragraph{Hash reporting for incoming packets}
->>>>>>>>>>>>        \label{sec:Device Types / Network Device / Device Opera=
-tion / Processing of Incoming Packets / Hash reporting for incoming packets=
-}
->>>>>>>>>>>>
->>>>>>>>>>>> @@ -4005,6 +4117,10 @@ \subsubsection{Processing of Incoming P=
-ackets}\label{sec:Device Types / Network
->>>>>>>>>>>>        #define VIRTIO_NET_HASH_REPORT_UDPv6_EX        9
->>>>>>>>>>>>        \end{lstlisting}
->>>>>>>>>>>>
->>>>>>>>>>>> +VIRTIO_NET_HASH_TYPE_GRE_INNER bit is not included in \field{=
-hash_report},
->>>>>>>>>>>> +it just indicates that the hash is calculated using the inner=
- header inside
->>>>>>>>>>>> +the GRE-encapsulated packet.
->>>>>>>>>>>> +
->>>>>>>>>>>>        \subsubsection{Control Virtqueue}\label{sec:Device Type=
-s / Network Device / Device Operation / Control Virtqueue}
->>>>>>>>>>>>
->>>>>>>>>>>>        The driver uses the control virtqueue (if VIRTIO_NET_F_=
-CTRL_VQ is
->>>>>>>>>>>> --
->>>>>>>>>>>> 2.19.1.6.gb485710b
->>>>>>>>>>>>
->>>>>>>>>> ----------------------------------------------------------------=
------
->>>>>>>>>> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.=
-org
->>>>>>>>>> For additional commands, e-mail: virtio-dev-help@lists.oasis-ope=
-n.org
->>>>>>>>>>
->>>>>>>> ------------------------------------------------------------------=
----
->>>>>>>> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.or=
-g
->>>>>>>> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.=
-org
->>>>>>>>
+    Use SMC with virtio-ism to accelerate inter-VM communication.
+
+    1. insmod virtio-ism-smc module, this module bridges SMC and virio-ism.
+    2. use smc-tools [1] to get the device name of SMC-D based on virtio-is=
+m.
+
+      $ smcd d # here is _virtio2_
+      FID  Type  PCI-ID        PCHID  InUse  #LGs  PNET-ID
+      0000 0     virtio2       0000   Yes       1  *C1
+
+    3. add the nic and SMC-D device to the same pnet, do it in both client =
+and server.
+
+      $ smc_pnet -a -I eth1 c1 # use eth1 to setup SMC connection
+      $ smc_pnet -a -D virtio2 c1 # virtio2 is the virtio-ism device
+
+    4. use SMC to accelerate your application, smc_run in [1] can do this.
+
+      # smc_run use LD_PRELOAD to hijack socket syscall with AF_SMC
+      $ smc_run sockperf server --tcp # run in server
+      $ smc_run sockperf tp --tcp -i a.b.c.d # run in client
+
+    [1] https://github.com/ibm-s390-linux/smc-tools
+
+    Notice: The current POC state, we only tested some basic functions.
+
+### virtio-ism-dev.ko
+    Provide /dev/virtio-ism interface, allow users to use Virtio-ISM device
+    directly.
+
+    Try tools/virtio/virtio-ism/virtio-ism-mmap.c
+
+    Usage:
+         insmod virtio-ism-dev module.
+
+         vm1: virtio-ism-mmap alloc -> token
+         vm2: virtio-ism-mmap attach <token>
+
+         vm1 will write to shared memory, then notify vm2.
+         After vm2 receive notify, then read from shared memory.
+
+
+# References
+
+    [1] https://projectacrn.github.io/latest/tutorials/enable_ivshmem.html
+    [2] https://dl.acm.org/doi/10.1145/2847562
+    [3] https://hal.archives-ouvertes.fr/hal-00368622/document
+    [4] https://lwn.net/Articles/711071/
+    [5] https://lore.kernel.org/netdev/20220720170048.20806-1-tonylu@linux.=
+alibaba.com/T/
+
+
+If there are any problems, please point them out.
+Hope to hear from you, thank you.
+
+v1:
+   1. cover letter adding explanation of ism vlan
+   2. spec add gid
+   3. explain the source of ideas about ism
+   4. POC support virtio-ism-smc.ko virtio-ism-dev.ko and support virtio-is=
+m-mmap
+
+
+Xuan Zhuo (2):
+  Reserve device id for ISM device
+  virtio-ism: introduce new device virtio-ism
+
+ content.tex    |   3 +
+ virtio-ism.tex | 350 +++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 353 insertions(+)
+ create mode 100644 virtio-ism.tex
+
+--=20
+2.32.0.3.g01195cf9f
 
 
 ---------------------------------------------------------------------
