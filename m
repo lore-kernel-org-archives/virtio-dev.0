@@ -1,396 +1,680 @@
-Return-Path: <virtio-dev-return-10123-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-10113-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 94A9B986399
-	for <virtio-dev@lists.oasis-open.org>; Mon,  7 Nov 2022 12:31:04 +0000 (UTC)
-From: Cornelia Huck <cohuck@redhat.com>
-In-Reply-To: <20220825133410.18367-1-harald.mommer@opensynergy.com>
-References: <20220825133410.18367-1-harald.mommer@opensynergy.com>
-Date: Mon, 07 Nov 2022 13:30:58 +0100
-Message-ID: <87o7tj2bgd.fsf@redhat.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 730059865A5
+	for <virtio-dev@lists.oasis-open.org>; Wed,  2 Nov 2022 20:25:01 +0000 (UTC)
+Date: Wed, 2 Nov 2022 16:24:54 -0400
+From: Stefan Hajnoczi <stefanha@redhat.com>
+Message-ID: <Y2LSFhg58PTHrmLo@fedora>
+References: <20221030043545.974223-1-dmitry.fomichev@wdc.com>
+ <20221030043545.974223-3-dmitry.fomichev@wdc.com>
 MIME-Version: 1.0
-Subject: [virtio-dev] Re: [virtio-comment] [RFC PATCH v2 1/1] virtio-can: Device
- specification - 2nd RFC draft.
-Content-Type: text/plain
-To: Harald Mommer <harald.mommer@opensynergy.com>, virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, linux-can@vger.kernel.org
-Cc: Dariusz Stojaczyk <Dariusz.Stojaczyk@opensynergy.com>, Harald Mommer <harald.mommer@opensynergy.com>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="+hnGzeQbkMcGAqTs"
+Content-Disposition: inline
+In-Reply-To: <20221030043545.974223-3-dmitry.fomichev@wdc.com>
+Subject: Re: [virtio-dev] [PATCH v4 2/2] virtio-blk: add support for zoned
+ block devices
+To: Dmitry Fomichev <dmitry.fomichev@wdc.com>
+Cc: Jens Axboe <axboe@kernel.dk>, linux-block@vger.kernel.org, Damien Le Moal <damien.lemoal@opensource.wdc.com>, Stefan Hajnoczi <stefanha@gmail.com>, Hannes Reinecke <hare@suse.de>, Sam Li <faithilikerun@gmail.com>, virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Thu, Aug 25 2022, Harald Mommer <harald.mommer@opensynergy.com> wrote:
+--+hnGzeQbkMcGAqTs
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> virtio-can is a virtual CAN device. It provides a way to give access to
-> a CAN controller from a driver guest. The device is aimed to be used by
-> driver guests running a HLOS as well as by driver guests running a
-> typical RTOS as used in controller environments.
-
-Note that I'm not familiar with CAN, so I'll comment mostly from a
-virtio spec POV.
-
->
-> This is the reworked (2nd) version of the specification after having
-> gotten some feedback on the virtio lists and the Linux CAN mailing
-> lists. (The 1st now outdated version of the specification draft has been
-> sent out on 1-Apr-2021 to the virtio lists.) There is now also a virtio
-> CAN Linux driver which in the meantime has become good enough to be
-> shown.
->
-> There were a lot of changes, only mentioning the most important ones
-> omitting editorial changes.
->
-> - Classic CAN is indeed non-mandatory, so a feature bit is needed.
->   According to ISO all CAN controllers support classic CAN but it may be
->   disabled by configuration. So classic CAN is indeed a feature which
->   may not be available in some environments.
->
-> - Introduce a new feature flag VIRTIO_CAN_F_LATE_TX_ACK. While marking
->   as used after the actual transmission has been done on the CAN bus
->   this cannot be implemented reliably in all environments. SocketCAN is
->   affected at least under heavy load for TX and RX.
->
-> - RTR frames were requested on the Linux mailing list. They cannot be
->   supported when the underlying CAN driver backend is a 3rd party
->   AUTOSAR driver as AUTOSAR CAN does not support RTR frames. A feature
->   flag VIRTIO_CAN_F_RTR_FRAMES has been added to make support of RTR
->   frames an optional feature.
->
-> - Add le32 flags. There is now a reserved field in both RX and TX
->   messages which might serve to contain an AUTOSAR hardware object
->   handle or similar in a future version of the specification without
->   need to change the layout of the RX and TX message structures.
->
-> - Removal of priorities and config space. Priorities cannot be supported
->   using SocketCAN, the information delivered in the config space cannot
->   be determined using SocketCAN. Support of different priorities was
->   anyway too much for a first version of a specification. If priorities
->   are supported in a future version there will probably be only 2
->   different priorities, normal and high. In a future version of the
->   specification high priority messages may either be supported by using
->   a flag bit in the TX message but most probably the better solution
->   will be to add add a dedicated 2nd TX queue for high priority messages
->   in a review comment. But as already said priorities are not for now.
-
-Please keep the change log separate from the description.
-
-[Most people add a S-o-b, although we don't enforce DCO.]
-
+On Sun, Oct 30, 2022 at 12:35:45AM -0400, Dmitry Fomichev wrote:
+> This patch adds support for Zoned Block Devices (ZBDs) to the kernel
+> virtio-blk driver.
+>=20
+> The patch accompanies the virtio-blk ZBD support draft that is now
+> being proposed for standardization. The latest version of the draft is
+> linked at
+>=20
+> https://github.com/oasis-tcs/virtio-spec/issues/143 .
+>=20
+> The QEMU zoned device code that implements these protocol extensions
+> has been developed by Sam Li and it is currently in review at the QEMU
+> mailing list.
+>=20
+> A number of virtblk request structure changes has been introduced to
+> accommodate the functionality that is specific to zoned block devices
+> and, most importantly, make room for carrying the Zoned Append sector
+> value from the device back to the driver along with the request status.
+>=20
+> The zone-specific code in the patch is heavily influenced by NVMe ZNS
+> code in drivers/nvme/host/zns.c, but it is simpler because the proposed
+> virtio ZBD draft only covers the zoned device features that are
+> relevant to the zoned functionality provided by Linux block layer.
+>=20
+> Co-developed-by: Stefan Hajnoczi <stefanha@gmail.com>
+> Signed-off-by: Stefan Hajnoczi <stefanha@gmail.com>
+> Signed-off-by: Dmitry Fomichev <dmitry.fomichev@wdc.com>
 > ---
->  conformance.tex  |  27 +++++-
->  content.tex      |   1 +
->  introduction.tex |   2 +
->  virtio-can.tex   | 229 +++++++++++++++++++++++++++++++++++++++++++++++
->  4 files changed, 255 insertions(+), 4 deletions(-)
->  create mode 100644 virtio-can.tex
+>  drivers/block/virtio_blk.c      | 438 ++++++++++++++++++++++++++++++--
+>  include/uapi/linux/virtio_blk.h | 105 ++++++++
+>  2 files changed, 524 insertions(+), 19 deletions(-)
+>=20
+> diff --git a/drivers/block/virtio_blk.c b/drivers/block/virtio_blk.c
+> index 3efe3da5f8c2..03b5302fac6e 100644
+> --- a/drivers/block/virtio_blk.c
+> +++ b/drivers/block/virtio_blk.c
+> @@ -15,6 +15,7 @@
+>  #include <linux/blk-mq.h>
+>  #include <linux/blk-mq-virtio.h>
+>  #include <linux/numa.h>
+> +#include <linux/vmalloc.h>
+>  #include <uapi/linux/virtio_ring.h>
+> =20
+>  #define PART_BITS 4
+> @@ -80,22 +81,51 @@ struct virtio_blk {
+>  	int num_vqs;
+>  	int io_queues[HCTX_MAX_TYPES];
+>  	struct virtio_blk_vq *vqs;
+> +
+> +	/* For zoned device */
+> +	unsigned int zone_sectors;
+>  };
+> =20
+>  struct virtblk_req {
+> +	/* Out header */
+>  	struct virtio_blk_outhdr out_hdr;
+> -	u8 status;
+> +
+> +	/* In header */
+> +	union {
+> +		struct {
+> +			u8 status;
+> +		} common;
+> +
+> +		/*
+> +		 * The zone append command has an extended in header.
+> +		 * The status field in zone_append_in_hdr must always
+> +		 * be the last byte.
+> +		 */
+> +		struct {
+> +			__virtio64 sector;
+> +			u8 status;
+> +		} zone_append;
+> +	} in_hdr;
+> +
+> +	size_t in_hdr_len;
+> +
+>  	struct sg_table sg_table;
+>  	struct scatterlist sg[];
+>  };
+> =20
+> -static inline blk_status_t virtblk_result(struct virtblk_req *vbr)
+> +static inline blk_status_t virtblk_result(u8 status)
+>  {
+> -	switch (vbr->status) {
+> +	switch (status) {
+>  	case VIRTIO_BLK_S_OK:
+>  		return BLK_STS_OK;
+>  	case VIRTIO_BLK_S_UNSUPP:
+>  		return BLK_STS_NOTSUPP;
+> +	case VIRTIO_BLK_S_ZONE_OPEN_RESOURCE:
+> +		return BLK_STS_ZONE_OPEN_RESOURCE;
+> +	case VIRTIO_BLK_S_ZONE_ACTIVE_RESOURCE:
+> +		return BLK_STS_ZONE_ACTIVE_RESOURCE;
+> +	case VIRTIO_BLK_S_IOERR:
+> +	case VIRTIO_BLK_S_ZONE_UNALIGNED_WP:
+>  	default:
+>  		return BLK_STS_IOERR;
+>  	}
+> @@ -111,11 +141,11 @@ static inline struct virtio_blk_vq *get_virtio_blk_=
+vq(struct blk_mq_hw_ctx *hctx
+> =20
+>  static int virtblk_add_req(struct virtqueue *vq, struct virtblk_req *vbr)
+>  {
+> -	struct scatterlist hdr, status, *sgs[3];
+> +	struct scatterlist out_hdr, in_hdr, *sgs[3];
+>  	unsigned int num_out =3D 0, num_in =3D 0;
+> =20
+> -	sg_init_one(&hdr, &vbr->out_hdr, sizeof(vbr->out_hdr));
+> -	sgs[num_out++] =3D &hdr;
+> +	sg_init_one(&out_hdr, &vbr->out_hdr, sizeof(vbr->out_hdr));
+> +	sgs[num_out++] =3D &out_hdr;
+> =20
+>  	if (vbr->sg_table.nents) {
+>  		if (vbr->out_hdr.type & cpu_to_virtio32(vq->vdev, VIRTIO_BLK_T_OUT))
+> @@ -124,8 +154,8 @@ static int virtblk_add_req(struct virtqueue *vq, stru=
+ct virtblk_req *vbr)
+>  			sgs[num_out + num_in++] =3D vbr->sg_table.sgl;
+>  	}
+> =20
+> -	sg_init_one(&status, &vbr->status, sizeof(vbr->status));
+> -	sgs[num_out + num_in++] =3D &status;
+> +	sg_init_one(&in_hdr, &vbr->in_hdr.common.status, vbr->in_hdr_len);
+> +	sgs[num_out + num_in++] =3D &in_hdr;
+> =20
+>  	return virtqueue_add_sgs(vq, sgs, num_out, num_in, vbr, GFP_ATOMIC);
+>  }
+> @@ -214,21 +244,22 @@ static blk_status_t virtblk_setup_cmd(struct virtio=
+_device *vdev,
+>  				      struct request *req,
+>  				      struct virtblk_req *vbr)
+>  {
+> +	size_t in_hdr_len =3D sizeof(vbr->in_hdr.common.status);
+>  	bool unmap =3D false;
+>  	u32 type;
+> +	u64 sector =3D 0;
+> =20
+> -	vbr->out_hdr.sector =3D 0;
+> +	/* Set fields for all request types */
+> +	vbr->out_hdr.ioprio =3D cpu_to_virtio32(vdev, req_get_ioprio(req));
+> =20
+>  	switch (req_op(req)) {
+>  	case REQ_OP_READ:
+>  		type =3D VIRTIO_BLK_T_IN;
+> -		vbr->out_hdr.sector =3D cpu_to_virtio64(vdev,
+> -						      blk_rq_pos(req));
+> +		sector =3D blk_rq_pos(req);
+>  		break;
+>  	case REQ_OP_WRITE:
+>  		type =3D VIRTIO_BLK_T_OUT;
+> -		vbr->out_hdr.sector =3D cpu_to_virtio64(vdev,
+> -						      blk_rq_pos(req));
+> +		sector =3D blk_rq_pos(req);
+>  		break;
+>  	case REQ_OP_FLUSH:
+>  		type =3D VIRTIO_BLK_T_FLUSH;
+> @@ -243,16 +274,42 @@ static blk_status_t virtblk_setup_cmd(struct virtio=
+_device *vdev,
+>  	case REQ_OP_SECURE_ERASE:
+>  		type =3D VIRTIO_BLK_T_SECURE_ERASE;
+>  		break;
+> -	case REQ_OP_DRV_IN:
+> -		type =3D VIRTIO_BLK_T_GET_ID;
+> +	case REQ_OP_ZONE_OPEN:
+> +		type =3D VIRTIO_BLK_T_ZONE_OPEN;
+> +		sector =3D blk_rq_pos(req);
+>  		break;
+> +	case REQ_OP_ZONE_CLOSE:
+> +		type =3D VIRTIO_BLK_T_ZONE_CLOSE;
+> +		sector =3D blk_rq_pos(req);
+> +		break;
+> +	case REQ_OP_ZONE_FINISH:
+> +		type =3D VIRTIO_BLK_T_ZONE_FINISH;
+> +		sector =3D blk_rq_pos(req);
+> +		break;
+> +	case REQ_OP_ZONE_APPEND:
+> +		type =3D VIRTIO_BLK_T_ZONE_APPEND;
+> +		sector =3D blk_rq_pos(req);
+> +		in_hdr_len =3D sizeof(vbr->in_hdr.zone_append);
+> +		break;
+> +	case REQ_OP_ZONE_RESET:
+> +		type =3D VIRTIO_BLK_T_ZONE_RESET;
+> +		sector =3D blk_rq_pos(req);
+> +		break;
+> +	case REQ_OP_ZONE_RESET_ALL:
+> +		type =3D VIRTIO_BLK_T_ZONE_RESET_ALL;
+> +		break;
+> +	case REQ_OP_DRV_IN:
+> +		/* Out header already filled in, nothing to do */
+> +		return 0;
+>  	default:
+>  		WARN_ON_ONCE(1);
+>  		return BLK_STS_IOERR;
+>  	}
+> =20
+> +	/* Set fields for non-REQ_OP_DRV_IN request types */
+> +	vbr->in_hdr_len =3D in_hdr_len;
+>  	vbr->out_hdr.type =3D cpu_to_virtio32(vdev, type);
+> -	vbr->out_hdr.ioprio =3D cpu_to_virtio32(vdev, req_get_ioprio(req));
+> +	vbr->out_hdr.sector =3D cpu_to_virtio64(vdev, sector);
+> =20
+>  	if (type =3D=3D VIRTIO_BLK_T_DISCARD || type =3D=3D VIRTIO_BLK_T_WRITE_=
+ZEROES ||
+>  	    type =3D=3D VIRTIO_BLK_T_SECURE_ERASE) {
+> @@ -263,13 +320,30 @@ static blk_status_t virtblk_setup_cmd(struct virtio=
+_device *vdev,
+>  	return 0;
+>  }
+> =20
+> +/*
+> + * The status byte is always the last byte of the virtblk request
+> + * in-header. This helper fetches its value for all in-header formats
+> + * that are currently defined.
+> + */
+> +static inline u8 virtblk_vbr_status(struct virtblk_req *vbr)
+> +{
+> +	return *((u8 *)&vbr->in_hdr + vbr->in_hdr_len - 1);
+> +}
+> +
+>  static inline void virtblk_request_done(struct request *req)
+>  {
+>  	struct virtblk_req *vbr =3D blk_mq_rq_to_pdu(req);
+> +	blk_status_t status =3D virtblk_result(virtblk_vbr_status(vbr));
+> +	struct virtio_blk *vblk =3D req->mq_hctx->queue->queuedata;
+> =20
+>  	virtblk_unmap_data(req, vbr);
+>  	virtblk_cleanup_cmd(req);
+> -	blk_mq_end_request(req, virtblk_result(vbr));
+> +
+> +	if (req_op(req) =3D=3D REQ_OP_ZONE_APPEND)
+> +		req->__sector =3D virtio64_to_cpu(vblk->vdev,
+> +						vbr->in_hdr.zone_append.sector);
+> +
+> +	blk_mq_end_request(req, status);
+>  }
+> =20
+>  static void virtblk_done(struct virtqueue *vq)
+> @@ -455,6 +529,315 @@ static void virtio_queue_rqs(struct request **rqlis=
+t)
+>  	*rqlist =3D requeue_list;
+>  }
+> =20
+> +#ifdef CONFIG_BLK_DEV_ZONED
+> +static void *virtblk_alloc_report_buffer(struct virtio_blk *vblk,
+> +					  unsigned int nr_zones,
+> +					  unsigned int zone_sectors,
+> +					  size_t *buflen)
+> +{
+> +	struct request_queue *q =3D vblk->disk->queue;
+> +	size_t bufsize;
+> +	void *buf;
+> +
+> +	nr_zones =3D min_t(unsigned int, nr_zones,
+> +			 get_capacity(vblk->disk) >> ilog2(zone_sectors));
+> +
+> +	bufsize =3D sizeof(struct virtio_blk_zone_report) +
+> +		nr_zones * sizeof(struct virtio_blk_zone_descriptor);
+> +	bufsize =3D min_t(size_t, bufsize,
+> +			queue_max_hw_sectors(q) << SECTOR_SHIFT);
+> +	bufsize =3D min_t(size_t, bufsize, queue_max_segments(q) << PAGE_SHIFT);
+> +
+> +	while (bufsize >=3D sizeof(struct virtio_blk_zone_report)) {
+> +		buf =3D __vmalloc(bufsize, GFP_KERNEL | __GFP_NORETRY);
+> +		if (buf) {
+> +			*buflen =3D bufsize;
+> +			return buf;
+> +		}
+> +		bufsize >>=3D 1;
+> +	}
+> +
+> +	return NULL;
+> +}
+> +
+> +static int virtblk_submit_zone_report(struct virtio_blk *vblk,
+> +				       char *report_buf, size_t report_len,
+> +				       sector_t sector)
+> +{
+> +	struct request_queue *q =3D vblk->disk->queue;
+> +	struct request *req;
+> +	struct virtblk_req *vbr;
+> +	int err;
+> +
+> +	req =3D blk_mq_alloc_request(q, REQ_OP_DRV_IN, 0);
+> +	if (IS_ERR(req))
+> +		return PTR_ERR(req);
+> +
+> +	vbr =3D blk_mq_rq_to_pdu(req);
+> +	vbr->in_hdr_len =3D sizeof(vbr->in_hdr.common.status);
+> +	vbr->out_hdr.type =3D cpu_to_virtio32(vblk->vdev, VIRTIO_BLK_T_ZONE_REP=
+ORT);
+> +	vbr->out_hdr.sector =3D cpu_to_virtio64(vblk->vdev, sector);
+> +
+> +	err =3D blk_rq_map_kern(q, req, report_buf, report_len, GFP_KERNEL);
+> +	if (err)
+> +		goto out;
+> +
+> +	blk_execute_rq(req, false);
+> +	err =3D blk_status_to_errno(virtblk_result(vbr->in_hdr.common.status));
+> +out:
+> +	blk_mq_free_request(req);
+> +	return err;
+> +}
+> +
+> +static int virtblk_parse_zone(struct virtio_blk *vblk,
+> +			       struct virtio_blk_zone_descriptor *entry,
+> +			       unsigned int idx, unsigned int zone_sectors,
+> +			       report_zones_cb cb, void *data)
+> +{
+> +	struct blk_zone zone =3D { };
+> +
+> +	zone.start =3D virtio64_to_cpu(vblk->vdev, entry->z_start);
+> +	zone.capacity =3D virtio64_to_cpu(vblk->vdev, entry->z_cap);
+> +
+> +	switch (entry->z_type) {
+> +	case VIRTIO_BLK_ZT_SWR:
+> +		zone.type =3D BLK_ZONE_TYPE_SEQWRITE_REQ;
+> +		break;
+> +	case VIRTIO_BLK_ZT_SWP:
+> +		zone.type =3D BLK_ZONE_TYPE_SEQWRITE_PREF;
+> +		break;
+> +	case VIRTIO_BLK_ZT_CONV:
+> +		zone.type =3D BLK_ZONE_TYPE_CONVENTIONAL;
+> +		break;
+> +	default:
+> +		dev_err(&vblk->vdev->dev, "zone %llu: invalid type %#x\n",
+> +			zone.start, entry->z_type);
+> +		return -EINVAL;
+> +	}
+> +
+> +	switch (entry->z_state) {
+> +	case VIRTIO_BLK_ZS_EMPTY:
+> +		zone.cond =3D BLK_ZONE_COND_EMPTY;
+> +		break;
+> +	case VIRTIO_BLK_ZS_CLOSED:
+> +		zone.cond =3D BLK_ZONE_COND_CLOSED;
+> +		break;
+> +	case VIRTIO_BLK_ZS_FULL:
+> +		zone.cond =3D BLK_ZONE_COND_FULL;
+> +		break;
+> +	case VIRTIO_BLK_ZS_EOPEN:
+> +		zone.cond =3D BLK_ZONE_COND_EXP_OPEN;
+> +		break;
+> +	case VIRTIO_BLK_ZS_IOPEN:
+> +		zone.cond =3D BLK_ZONE_COND_IMP_OPEN;
+> +		break;
+> +	case VIRTIO_BLK_ZS_NOT_WP:
+> +		zone.cond =3D BLK_ZONE_COND_NOT_WP;
+> +		break;
+> +	case VIRTIO_BLK_ZS_RDONLY:
+> +		zone.cond =3D BLK_ZONE_COND_READONLY;
+> +		break;
+> +	case VIRTIO_BLK_ZS_OFFLINE:
+> +		zone.cond =3D BLK_ZONE_COND_OFFLINE;
+> +		break;
+> +	default:
+> +		dev_err(&vblk->vdev->dev, "zone %llu: invalid condition %#x\n",
+> +			zone.start, entry->z_state);
+> +		return -EINVAL;
+> +	}
+> +
+> +	zone.len =3D zone_sectors;
+> +	if (zone.cond =3D=3D BLK_ZONE_COND_FULL)
+> +		zone.wp =3D zone.start + zone.len;
 
-(...)
+Is this correct on devices where the last zone !=3D zone_sectors? Maybe it
+doesn't matter?
 
-> diff --git a/virtio-can.tex b/virtio-can.tex
-> new file mode 100644
-> index 0000000..ef4de7b
-> --- /dev/null
-> +++ b/virtio-can.tex
-> @@ -0,0 +1,229 @@
-> +\section{CAN Device}\label{sec:Device Types / CAN Device}
-> +
-> +virtio-can is a virtio based CAN (Controller Area Network) controller.
-> +It is used to give a virtual machine access to a CAN bus. The CAN bus
-> +might either be a physical CAN bus or a virtual CAN bus between virtual
-> +machines or a combination of both.
-> +
-> +\subsection{Device ID}\label{sec:Device Types / CAN Device / Device ID}
-> +
-> +36
-> +
-> +\subsection{Virtqueues}\label{sec:Device Types / CAN Device / Virtqueues}
-> +
-> +\begin{description}
-> +\item[0] Txq
-> +\item[1] Rxq
-> +\item[2] Controlq
-> +\item[3] Indicationq
-> +\end{description}
-> +
-> +The \field{Txq} is used to send CAN packets to the CAN bus.
-> +
-> +The \field{Rxq} is used to receive CAN packets from the CAN bus.
-> +
-> +The \field{Controlq} is used to control the state of the CAN controller.
-> +
-> +The \field{Indicationq} is used to receive unsolicited indications of
-> +CAN controller state changes.
-> +
-> +\devicenormative{\subsubsection}{Feature bits}{Device Types / CAN Device / Feature bits}
+> +	else
+> +		zone.wp =3D virtio64_to_cpu(vblk->vdev, entry->z_wp);
 
-We usually don't put the whole feature bit specification into a
-normative section, especially as it applies to both device and
-driver. A device normative section is for statements like "The device
-MUST offer <feature> if <condition> applies", and a driver normative
-section for things like "The driver MUST accept <feature> if offered".
+Is a sanity check needed here? The device is not trusted and must not be
+able to trigger out-of-bounds accesses based on zone.wp or similar.
 
 > +
-> +Actual CAN controllers support Extended CAN IDs with 29 bits (CAN~2.0B)
-> +as well as Standard CAN IDs with 11 bits (CAN~2.0A). The support of
-> +CAN~2.0B Extended CAN IDs is considered as mandatory for this
-> +specification.
+> +	return cb(&zone, idx, data);
+> +}
 > +
-> +\begin{description}
+> +static int virtblk_report_zones(struct gendisk *disk, sector_t sector,
+> +				 unsigned int nr_zones, report_zones_cb cb,
+> +				 void *data)
+> +{
+> +	struct virtio_blk *vblk =3D disk->private_data;
+> +	struct virtio_blk_zone_report *report;
+> +	unsigned long long nz, i;
+> +	size_t buflen;
+> +	unsigned int zone_sectors =3D vblk->zone_sectors;
+> +	int ret, zone_idx =3D 0;
 > +
-> +\item[VIRTIO_CAN_F_CAN_CLASSIC (0)]
+> +	if (WARN_ON_ONCE(!vblk->zone_sectors))
+> +		return -EOPNOTSUPP;
 > +
-> +The device supports classic CAN frames with a maximum payload size of 8
-> +bytes.
+> +	report =3D virtblk_alloc_report_buffer(vblk, nr_zones,
+> +					     zone_sectors, &buflen);
+> +	if (!report)
+> +		return -ENOMEM;
 > +
-> +\item[VIRTIO_CAN_F_CAN_FD (1)]
-> +
-> +The device supports CAN FD frames with a maximum payload size of 64
-> +bytes.
-> +
-> +\item[VIRTIO_CAN_F_RTR_FRAMES (2)]
-> +
-> +The device supports RTR (remote transmission request) frames. RTR frames
-> +are only supported with classic CAN.
+> +	while (zone_idx < nr_zones && sector < get_capacity(vblk->disk)) {
 
-Are any combinations of those three feature bits valid (both to be
-offered, and to be negotiated?) It looks like F_RTR_FRAMES would only
-work with F_CAN_CLASSIC?
+Why is zone_idx a signed int while nr_zones is an unsigned int?
 
+> +		memset(report, 0, buflen);
 > +
-> +\item[VIRTIO_CAN_F_LATE_TX_ACK (3)]
+> +		ret =3D virtblk_submit_zone_report(vblk, (char *)report,
+> +						 buflen, sector);
+> +		if (ret) {
+> +			if (ret > 0)
+> +				ret =3D -EIO;
+> +			goto out_free;
+> +		}
+> +		nz =3D min(virtio64_to_cpu(vblk->vdev, report->nr_zones),
+> +			 (u64)nr_zones);
+> +		if (!nz)
+> +			break;
 > +
-> +The virtio CAN device marks transmission requests from the \field{Txq}
-> +as used after the CAN message has been transmitted on the CAN bus.
-> +Without this feature flag negotiated the device is allowed to mark
+> +		for (i =3D 0; i < nz && zone_idx < nr_zones; i++) {
+> +			ret =3D virtblk_parse_zone(vblk, &report->zones[i],
+> +						 zone_idx, zone_sectors, cb, data);
+> +			if (ret)
+> +				goto out_free;
+> +
+> +			sector =3D virtio64_to_cpu(vblk->vdev,
+> +						 report->zones[i].z_start) +
+> +				 zone_sectors;
+> +			zone_idx++;
+> +		}
+> +	}
+> +
+> +	if (zone_idx > 0)
+> +		ret =3D zone_idx;
+> +	else
+> +		ret =3D -EINVAL;
+> +out_free:
+> +	kvfree(report);
+> +	return ret;
+> +}
+> +
+> +static void virtblk_revalidate_zones(struct virtio_blk *vblk)
+> +{
+> +	u8 model;
+> +
+> +	if (!vblk->zone_sectors)
+> +		return;
+> +
+> +	virtio_cread(vblk->vdev, struct virtio_blk_config,
+> +		     zoned.model, &model);
 
-"If this feature bit has not been negotiated, ..."
+model is unused? If used, then it needs to be validated like in
+virtblk_probe_zoned_device().
 
-> +transmission requests already as used when the CAN message has been
-> +scheduled for transmission but might not yet have been transmitted on
-> +the CAN bus.
+> +	if (!blk_revalidate_disk_zones(vblk->disk, NULL))
+> +		set_capacity_and_notify(vblk->disk, 0);
+> +}
 > +
-> +\end{description}
+> +static int virtblk_probe_zoned_device(struct virtio_device *vdev,
+> +				       struct virtio_blk *vblk,
+> +				       struct request_queue *q)
+> +{
+> +	u32 v, wg;
+> +	u8 model;
+> +	int ret;
 > +
-> +\drivernormative{\subsubsection}{Device Initialization}{Device Types / CAN Device / Initialization}
+> +	virtio_cread(vdev, struct virtio_blk_config,
+> +		     zoned.model, &model);
 > +
-> +\begin{enumerate}
+> +	switch (model) {
+> +	case VIRTIO_BLK_Z_NONE:
+> +		return 0;
+> +	case VIRTIO_BLK_Z_HM:
+> +		break;
+> +	case VIRTIO_BLK_Z_HA:
+> +		/*
+> +		 * Present the host-aware device as a regular drive.
+> +		 * TODO It is possible to add an option to make it appear
+> +		 * in the system as a zoned drive.
+> +		 */
+> +		return 0;
+> +	default:
+> +		dev_err(&vdev->dev, "unsupported zone model %d\n", model);
+> +		return -EINVAL;
+> +	}
 > +
-> +\item Read the feature bits and negotiate with the device.
+> +	dev_dbg(&vdev->dev, "probing host-managed zoned device\n");
+> +
+> +	disk_set_zoned(vblk->disk, BLK_ZONED_HM);
+> +	blk_queue_flag_set(QUEUE_FLAG_ZONE_RESETALL, q);
+> +
+> +	virtio_cread(vdev, struct virtio_blk_config,
+> +		     zoned.max_open_zones, &v);
+> +	disk_set_max_open_zones(vblk->disk, v);
+> +
+> +	dev_dbg(&vdev->dev, "max open zones =3D %u\n", v);
+> +
+> +	virtio_cread(vdev, struct virtio_blk_config,
+> +		     zoned.max_active_zones, &v);
+> +	disk_set_max_active_zones(vblk->disk, v);
+> +	dev_dbg(&vdev->dev, "max active zones =3D %u\n", v);
+> +
+> +	virtio_cread(vdev, struct virtio_blk_config,
+> +		     zoned.write_granularity, &wg);
+> +	if (!wg) {
+> +		dev_warn(&vdev->dev, "zero write granularity reported\n");
+> +		return -ENODEV;
+> +	}
+> +	blk_queue_physical_block_size(q, wg);
+> +	blk_queue_io_min(q, wg);
+> +
+> +	dev_dbg(&vdev->dev, "write granularity =3D %u\n", wg);
+> +
+> +	/*
+> +	 * virtio ZBD specification doesn't require zones to be a power of
+> +	 * two sectors in size, but the code in this driver expects that.
+> +	 */
+> +	virtio_cread(vdev, struct virtio_blk_config, zoned.zone_sectors,
+> +		     &vblk->zone_sectors);
+> +	if (vblk->zone_sectors =3D=3D 0 || !is_power_of_2(vblk->zone_sectors)) {
+> +		dev_err(&vdev->dev,
+> +			"zoned device with non power of two zone size %u\n",
+> +			vblk->zone_sectors);
+> +		return -ENODEV;
+> +	}
+> +	dev_dbg(&vdev->dev, "zone sectors =3D %u\n", vblk->zone_sectors);
+> +
+> +	if (virtio_has_feature(vdev, VIRTIO_BLK_F_DISCARD)) {
+> +		dev_warn(&vblk->vdev->dev,
+> +			 "ignoring negotiated F_DISCARD for zoned device\n");
+> +		blk_queue_max_discard_sectors(q, 0);
+> +	}
+> +
+> +	ret =3D blk_revalidate_disk_zones(vblk->disk, NULL);
+> +	if (!ret) {
+> +		virtio_cread(vdev, struct virtio_blk_config,
+> +			     zoned.max_append_sectors, &v);
+> +		if (!v) {
+> +			dev_warn(&vdev->dev, "zero max_append_sectors reported\n");
+> +			return -ENODEV;
+> +		}
+> +		if ((v << SECTOR_SHIFT) < wg) {
+> +			dev_err(&vdev->dev,
+> +				"write granularity %u exceeds max_append_sectors %u limit\n",
+> +				wg, v);
+> +			return -ENODEV;
+> +		}
+> +
+> +		blk_queue_max_zone_append_sectors(q, v);
+> +		dev_dbg(&vdev->dev, "max append sectors =3D %u\n", v);
+> +	}
+> +
+> +	return ret;
+> +}
+> +
+> +#else
+> +
+> +/*
+> + * Zoned block device support is not configured in this kernel.
+> + * We only need to define a few symbols to avoid compilation errors.
+> + */
+> +#define virtblk_report_zones       NULL
+> +static inline void virtblk_revalidate_zones(struct virtio_blk *vblk)
+> +{
+> +}
+> +static inline int virtblk_probe_zoned_device(struct virtio_device *vdev,
+> +			struct virtio_blk *vblk, struct request_queue *q)
+> +{
+> +	return -EOPNOTSUPP;
+> +}
+> +#endif /* CONFIG_BLK_DEV_ZONED */
+> +
+>  /* return id (s/n) string for *disk to *id_str
+>   */
+>  static int virtblk_get_id(struct gendisk *disk, char *id_str)
+> @@ -462,18 +845,24 @@ static int virtblk_get_id(struct gendisk *disk, cha=
+r *id_str)
+>  	struct virtio_blk *vblk =3D disk->private_data;
+>  	struct request_queue *q =3D vblk->disk->queue;
+>  	struct request *req;
+> +	struct virtblk_req *vbr;
+>  	int err;
+> =20
+>  	req =3D blk_mq_alloc_request(q, REQ_OP_DRV_IN, 0);
+>  	if (IS_ERR(req))
+>  		return PTR_ERR(req);
+> =20
+> +	vbr =3D blk_mq_rq_to_pdu(req);
+> +	vbr->in_hdr_len =3D sizeof(vbr->in_hdr.common.status);
+> +	vbr->out_hdr.type =3D cpu_to_virtio32(vblk->vdev, VIRTIO_BLK_T_GET_ID);
+> +	vbr->out_hdr.sector =3D 0;
+> +
+>  	err =3D blk_rq_map_kern(q, req, id_str, VIRTIO_BLK_ID_BYTES, GFP_KERNEL=
+);
+>  	if (err)
+>  		goto out;
+> =20
+>  	blk_execute_rq(req, false);
+> -	err =3D blk_status_to_errno(virtblk_result(blk_mq_rq_to_pdu(req)));
+> +	err =3D blk_status_to_errno(virtblk_result(vbr->in_hdr.common.status));
+>  out:
+>  	blk_mq_free_request(req);
+>  	return err;
+> @@ -524,6 +913,7 @@ static const struct block_device_operations virtblk_f=
+ops =3D {
+>  	.owner  	=3D THIS_MODULE,
+>  	.getgeo		=3D virtblk_getgeo,
+>  	.free_disk	=3D virtblk_free_disk,
+> +	.report_zones	=3D virtblk_report_zones,
 
-I think this step is redundant.
+Does virtblk_report_zones() need:
 
-> +
-> +\item The driver MUST populate the \field{Rxq} with empty
-> +device-writeable buffers of at least the struct virtio_can_rx size to be
-> +ready for the reception of CAN messages.
+  mutex_lock(&vblk->vdev_mutex);
 
-virtio_can_rx is only defined further below, and, IIUC, depends on the
-frames that are supported. Can this be expressed as a kind of absolute
-value (depending on the negotiated features)?
+  if (!vblk->vdev) {
+      ret =3D -ENXIO;
+      goto out;
+  }
 
-> +
-> +\item The driver MUST populate the \field{Indicationq} with empty
-> +device-writeable buffers of at least the struct virtio_can_event_ind size
-> +so that the CAN device is able to provide status change indications to the
-> +virtio CAN driver.
+  ...
 
-Is virtio_can_event_ind always supposed to be an le16 value? If yes,
-it would probably be easier to specify that here.
+  mutex_unlock(&vblk->vdev_mutex);
+  return ret;
 
-> +
-> +\end{enumerate}
-> +
-> +\subsection{Device Operation}\label{sec:Device Types / CAN Device / Device Operation}
-> +
-> +A device operation has an outcome which is described by one of the
-> +following values:
-> +
-> +\begin{lstlisting}
-> +#define VIRTIO_CAN_RESULT_OK     0u
-> +#define VIRTIO_CAN_RESULT_NOT_OK 1u
-> +\end{lstlisting}
-> +
-> +Other values are to be treated like VIRTIO_CAN_RESULT_NOT_OK.
-> +
-> +The type of a CAN message identifier is determined by \field{flags}. The
-> +3 most significant bits of
-> +\field{can_id} do not bear the information about the type of the CAN
-> +message identifier and are 0.
-> +
-> +\begin{lstlisting}
-> +#define VIRTIO_CAN_FLAGS_FD            0x4000U
-> +#define VIRTIO_CAN_FLAGS_EXTENDED      0x8000U
-> +#define VIRTIO_CAN_FLAGS_RTR           0x2000U
-> +\end{lstlisting}
+?
 
-You refer to the "flags" and "can_id" fields, but it is unclear in which
-structure. Would this benefit from reordering?
+This is necessary when vblk->vdev is access by code that is reachable
+after virtblk_remove() has been called (e.g. PCI hot unplug). In this
+case the block device still exists and userspace processes may have file
+descriptors open, but the underlying virtio-blk device is gone.
 
-> +
-> +\subsubsection{Controller Mode}\label{sec:Device Types / CAN Device / Device Operation / Controller Mode}
-> +
-> +The general format of a request in the \field{Controlq} is
-> +
-> +\begin{lstlisting}
-> +struct virtio_can_control_out {
-> +#define VIRTIO_CAN_SET_CTRL_MODE_START  0x0201u
-> +#define VIRTIO_CAN_SET_CTRL_MODE_STOP   0x0202u
-> +        le16 msg_type; 
-> +};
-> +\end{lstlisting}
-> +
-> +To participate in bus communication the CAN controller is started by
-> +sending a VIRTIO_CAN_SET_CTRL_MODE_START control message, to stop
-> +participating in bus communication it is stopped by sending a
-> +VIRTIO_CAN_SET_CTRL_MODE_STOP control message. Both requests are
-> +confirmed by the result of the operation.
-> +
-> +\begin{lstlisting}
-> +struct virtio_can_control_in {
-> +        u8 result;
-> +};
-> +\end{lstlisting}
-> +
-> +If the transition succeeded the \field{result} is VIRTIO_CAN_RESULT_OK
-> +otherwise it is VIRTIO_CAN_RESULT_NOT_OK. The device marks the request
-> +used when the CAN controller has finalized the transition to the
-> +requested controller mode.
-> +
-> +On transition to the STOPPED state the device cancels all CAN messages
-> +already pending for transmission and marks them as used with
-> +\field{result} VIRTIO_CAN_RESULT_NOT_OK. In the STOPPED state the
-> +device marks messages received from the
-> +\field{Txq} as used with \field{result} VIRTIO_CAN_RESULT_NOT_OK without
-> +transmitting them to the CAN bus.
-> +
-> +Initially the CAN controller is in the STOPPED state.
+I think this may be necessary since ioctl(BLKREPORTZONE) can still be
+called after virtblk_remove()?
 
-Is that an internal state of the controller that can be changed from the
-outside?
+See the vdev_mutex field doc comment for more information.
 
-> +
-> +Control queue messages are processed in order.
-> +
-> +\devicenormative{\subsubsection}{CAN Message Transmission}{Device Types / CAN Device / Device Operation / CAN Message Transmission}
+Stefan
 
-I think this should be a normal subsection, as you describe not only
-what the device needs to do, but also what the driver does. Maybe use
-separate normative sections for MUST statements?
+--+hnGzeQbkMcGAqTs
+Content-Type: application/pgp-signature; name="signature.asc"
 
-> +
-> +Messages are transmitted by placing outgoing CAN messages in the
-> +\field{Txq} virtqueue.
+-----BEGIN PGP SIGNATURE-----
 
-Who places the messages? The driver? Probably better to use active voice
-here.
+iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmNi0hYACgkQnKSrs4Gr
+c8iMoQf+P7OTmnHKZbvBLN/bJtcTMJNwa4POdN8vRhHkCw9cQ8kJRJK9ZOCO1mrW
+lMX+zepvBKc+UoY5oWnjeaDl6AXfVmyXsm0akZcvih4q7Y8u4PIAevumUBVADcKl
+Jm+v5Dt5HTszCeS/xn/J/SHlmLhXTeYloVEvprKn71fdptM75gFWMSPxeLLQOhGI
+3Jnl69Atw4gjRYcsghwupkPYNT0hMXQ6V75lGJbXCxKQZ88Ud2K4HZZeAeqsXNGC
+TK8clSfQJt75XBnJrQwVHrOBsoh/bNY6JUCVE7a4rujqSsJukqrZNDnMtgVr5eFd
+9pXPb6fUEqKsr+Qz2mFIHfJxxA19jw==
+=47it
+-----END PGP SIGNATURE-----
 
-> +
-> +\begin{lstlisting}
-> +struct virtio_can_tx_out {
-> +#define VIRTIO_CAN_TX 0x0001u
-> +        le16 msg_type;
-> +        le16 reserved;
-> +        le32 flags;
-> +        le32 can_id;
-> +        u8 sdu[];
-> +};
-> +
-> +struct virtio_can_tx_in {
-> +        u8 result;
-> +};
-> +\end{lstlisting}
-> +
-> +The length of \field{sdu} is implicit in the length of the device
-> +read-only descriptors.
-
-Not sure what this means -- does that mean that any length of the
-desriptors is ok, as long as it fits the whole structure?
-
-> +
-> +If transmission of a CAN frame type is requested for which support has
-> +not been negotiated \field{result} shall be set to
-> +VIRTIO_CAN_RESULT_NOT_OK and the message shall not be scheduled for
-> +transmission.
-
-This probably should rather be something like "The device MUST reject
-any CAN frame type for which support has not been negotiated with
-VIRTIO_CAN_RESULT_NOT_OK in \field{result} and MUST NOT schedule the
-message for transmission."
-
-> +
-> +If \field{can_id} or field{sdu} length are out of range or the CAN
-> +controller is in an invalid state \field{result} shall be set to
-> +VIRTIO_CAN_RESULT_NOT_OK and the message shall not be scheduled for
-> +transmission.
-
-Same here.
-
-> +
-> +If the parameters are valid the message is scheduled for transmission.
-> +
-> +If feature VIRTIO_CAN_F_CAN_LATE_TX_ACK has been negotiated the
-> +transmission request MUST be marked as used with \field{result} set to
-> +VIRTIO_CAN_OK after the CAN controller acknowledged the successful
-> +transmission on the CAN bus. Without feature
-> +VIRTIO_CAN_F_CAN_LATE_TX_ACK negotiated the transmission request MAY
-> +already be marked as used with \field{result} set to VIRTIO_CAN_OK when
-> +the transmission request has been processed by the virtio CAN device and
-> +send down the protocol stack being scheduled for transmission.
-> +
-> +\subsubsection{CAN Message Reception}\label{sec:Device Types / CAN Device / Device Operation / CAN Message Reception}
-> +
-> +Messages can be received by providing empty incoming buffers to the
-> +virtqueue \field{Rxq}.
-> +
-> +\begin{lstlisting}
-> +struct virtio_can_rx {
-> +#define VIRTIO_CAN_RX 0x0101u
-> +        le16 msg_type;
-> +        le16 reserved;
-> +        le32 flags;
-> +        le32 can_id;
-> +        u8 sdu[];
-> +};
-> +\end{lstlisting}
-> +
-> +If the feature VIRTIO_CAN_F_CAN_FD has been negotiated the maximal
-> +possible \field{sdu} length is 64, if the feature has not been
-> +negotiated the maximal possible \field{sdu} length is 8.
-> +
-> +The actual length of the \field{sdu} is calculated from the length of the
-> +driver read-only descriptors.
-
-So the provided descriptors must fit at least the size of the structure
-plus whatever length the negotiated frame sizes support? Can the driver
-negotiate F_CAN_FD and still provide descriptors that only allow an sdu
-of length 8?
-
-> +
-> +\subsubsection{BusOff Indication}\label{sec:Device Types / CAN Device / Device Operation / BusOff Indication}
-> +
-> +There are certain error conditions so that the physical CAN controller
-> +has to stop participating in CAN communication on the bus. If such an
-> +error condition occurs the device informs the driver about the
-> +unsolicited CAN controller state change by a CAN BusOff indication.
-> +
-> +\begin{lstlisting}
-> +struct virtio_can_event_ind {
-> +#define VIRTIO_CAN_BUSOFF_IND 0x0301u
-> +        le16 msg_type;
-> +};
-> +\end{lstlisting}
-> +
-> +After bus-off detection the CAN controller is in STOPPED state. The CAN
-> +module does not participate in bus communication any more so all CAN
-
-s/module/device/ ?
-
-> +messages pending for transmission are put into the used queue with
-> +\field{result} VIRTIO_CAN_RESULT_NOT_OK.
-
-
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+--+hnGzeQbkMcGAqTs--
 
