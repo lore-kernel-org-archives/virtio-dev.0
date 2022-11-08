@@ -1,142 +1,117 @@
-Return-Path: <virtio-dev-return-10129-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-10124-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 7C71B98640B
-	for <virtio-dev@lists.oasis-open.org>; Tue,  8 Nov 2022 19:22:31 +0000 (UTC)
-Message-ID: <bcf9fd32-1078-2c7f-0c2a-5848ac6571e8@opensynergy.com>
-Date: Tue, 8 Nov 2022 20:22:25 +0100
-From: Harald Mommer <hmo@opensynergy.com>
-References: <20221104172421.8271-1-Harald.Mommer@opensynergy.com>
- <20221104172421.8271-3-Harald.Mommer@opensynergy.com>
- <CAMZ6RqLUCs0W8ZP2jAUsFMUXgHTjce649Gu+jnz_S1x_0ER6YQ@mail.gmail.com>
- <9008244e-10ea-7983-50da-4716e213d119@opensynergy.com>
-In-Reply-To: <9008244e-10ea-7983-50da-4716e213d119@opensynergy.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 926629863C3
+	for <virtio-dev@lists.oasis-open.org>; Tue,  8 Nov 2022 04:07:23 +0000 (UTC)
+From: Dmitry Fomichev <dmitry.fomichev@wdc.com>
+Date: Mon,  7 Nov 2022 23:07:16 -0500
+Message-Id: <20221108040718.2785649-1-dmitry.fomichev@wdc.com>
 MIME-Version: 1.0
-Subject: [virtio-dev] Re: [RFC PATCH v2 2/2] can: virtio: Add virtio_can to MAINTAINERS
- file.
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Subject: [virtio-dev] [PATCH v5 0/2] virtio-blk: support zoned block devices
 Content-Transfer-Encoding: quoted-printable
-To: Vincent Mailhol <vincent.mailhol@gmail.com>, Harald Mommer <Harald.Mommer@opensynergy.com>
-Cc: virtio-dev@lists.oasis-open.org, linux-can@vger.kernel.org, netdev@vger.kernel.org, linux-kernel@vger.kernel.org, Wolfgang Grandegger <wg@grandegger.com>, Marc Kleine-Budde <mkl@pengutronix.de>, "David S . Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, Dariusz Stojaczyk <Dariusz.Stojaczyk@opensynergy.com>
+Content-Type: text/plain; charset="US-ASCII"; x-default=true
+To: Jens Axboe <axboe@kernel.dk>, linux-block@vger.kernel.org, Damien Le Moal <damien.lemoal@opensource.wdc.com>, Stefan Hajnoczi <stefanha@gmail.com>, Hannes Reinecke <hare@suse.de>, Sam Li <faithilikerun@gmail.com>
+Cc: virtio-dev@lists.oasis-open.org, Dmitry Fomichev <dmitry.fomichev@wdc.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Hello Vincent,
+In its current form, the virtio protocol for block devices (virtio-blk)
+is not aware of zoned block devices (ZBDs) but it allows the driver to
+successfully scan a host-managed drive provided by the virtio block
+device. As the result, the host-managed drive is recognized by the
+virtio driver as a regular, non-zoned drive that will operate
+erroneously under the most common write workloads. Host-aware ZBDs are
+currently usable, but their performance may not be optimal because the
+driver can only see them as non-zoned block devices.
 
-sorry, my mistake, got it. I was absolutely convinced that commit 1 only=20
-contained the code changes and commit 2 only contained the maintainers=20
-file. But this is not the case, there was a last minute change and then=20
-I did it wrong in git.
+To fix this, the virtio-blk protocol needs to be extended to add the
+capabilities to convey the zone characteristics of ZBDs at the device
+side to the driver and to provide support for ZBD-specific commands -
+Report Zones, four zone operations (Open, Close, Finish and Reset) and
+(optionally) Zone Append.
 
-Regards
-Harald
+The required virtio-blk protocol extensions are currently under review
+at OASIS Technical Committee and the specification patch is linked at
 
-On 08.11.22 20:13, Harald Mommer wrote:
-> Hello Vincent,
->
-> what I see here are places from v1 which should be now obsolete and of=20
-> no further interest. There was a patch v1, this has been reworked and=20
-> now comes v2 which supersedes v1. Squashing is something I could do if=20
-> I had 2 commits which should be joined together but here is probably=20
-> not meant to squash the virtio_can.[ch] code file commit with the=20
-> MAINTAINERS file commit.
->
-> Could be that I misunderstood the way how is worked with patches on=20
-> the mailing lists, don't know. I do absolutely not understand what you=20
-> mean here.
->
-> Regards
-> Harald
->
-> On 05.11.22 11:14, Vincent Mailhol wrote:
->> On Sat. 5 Nov. 2022 at 02:29, Harald Mommer
->> <Harald.Mommer@opensynergy.com> wrote:
->>> From: Harald Mommer <harald.mommer@opensynergy.com>
->>>
->>> Signed-off-by: Harald Mommer <Harald.Mommer@opensynergy.com>
->>> ---
->>> =C2=A0 MAINTAINERS=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 | 7 +++++++
->>> =C2=A0 drivers/net/can/virtio_can.c | 6 ++----
->>> =C2=A0 2 files changed, 9 insertions(+), 4 deletions(-)
->>>
->>> diff --git a/MAINTAINERS b/MAINTAINERS
->>> index 379945f82a64..01b2738b7c16 100644
->>> --- a/MAINTAINERS
->>> +++ b/MAINTAINERS
->>> @@ -21692,6 +21692,13 @@ F:=C2=A0=C2=A0=C2=A0=C2=A0 drivers/vhost/scsi.=
-c
->>> =C2=A0 F:=C2=A0=C2=A0=C2=A0=C2=A0 include/uapi/linux/virtio_blk.h
->>> =C2=A0 F:=C2=A0=C2=A0=C2=A0=C2=A0 include/uapi/linux/virtio_scsi.h
->>>
->>> +VIRTIO CAN DRIVER
->>> +M:=C2=A0=C2=A0=C2=A0=C2=A0 "Harald Mommer" <harald.mommer@opensynergy.=
-com>
->>> +L:=C2=A0=C2=A0=C2=A0=C2=A0 linux-can@vger.kernel.org
->>> +S:=C2=A0=C2=A0=C2=A0=C2=A0 Maintained
->>> +F:=C2=A0=C2=A0=C2=A0=C2=A0 drivers/net/can/virtio_can.c
->>> +F:=C2=A0=C2=A0=C2=A0=C2=A0 include/uapi/linux/virtio_can.h
->>> +
->>> =C2=A0 VIRTIO CONSOLE DRIVER
->>> =C2=A0 M:=C2=A0=C2=A0=C2=A0=C2=A0 Amit Shah <amit@kernel.org>
->>> =C2=A0 L:=C2=A0=C2=A0=C2=A0=C2=A0 virtualization@lists.linux-foundation=
-.org
->>> diff --git a/drivers/net/can/virtio_can.c=20
->>> b/drivers/net/can/virtio_can.c
->>> index 43cf1c9e4afd..0e87172bbddf 100644
->>> --- a/drivers/net/can/virtio_can.c
->>> +++ b/drivers/net/can/virtio_can.c
->>> @@ -1,7 +1,7 @@
->>> -// SPDX-License-Identifier: GPL-2.0+
->>> +// SPDX-License-Identifier: GPL-2.0-only
->> Please squash this in the previous patch.
->>
->>> =C2=A0 /*
->>> =C2=A0=C2=A0 * CAN bus driver for the Virtio CAN controller
->>> - * Copyright (C) 2021 OpenSynergy GmbH
->>> + * Copyright (C) 2021-2022 OpenSynergy GmbH
->> Same.
->>
->>> =C2=A0=C2=A0 */
->>>
->>> =C2=A0 #include <linux/atomic.h>
->>> @@ -793,8 +793,6 @@ static void virtio_can_populate_vqs(struct=20
->>> virtio_device *vdev)
->>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 unsigned int idx;
->>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 int ret;
->>>
->>> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 // TODO: Think again a moment if =
-here locks already may be=20
->>> needed!
->> Same.
->>
->>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 /* Fill RX queue */
->>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 vq =3D priv->vqs[VIRTI=
-O_CAN_QUEUE_RX];
->>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 for (idx =3D 0u; idx <=
- ARRAY_SIZE(priv->rpkt); idx++) {
->>> --=20
->>> 2.17.1
->>>
+https://github.com/oasis-tcs/virtio-spec/issues/143 .
+
+The QEMU zoned device code that implements these protocol extensions
+has been developed by Sam Li, an intern, as a part of Outreachy
+community mentorship initiative. The latest versions of the QEMU
+patch series can be found here:
+
+https://lists.gnu.org/archive/html/qemu-devel/2022-10/msg05195.html
+https://lists.gnu.org/archive/html/qemu-devel/2022-10/msg05205.html
+https://lists.gnu.org/archive/html/qemu-devel/2022-10/msg05896.html
+
+This patch series modifies the virtio block driver code to implement
+the above virtio specification extensions. This patch has been tested
+to be compatible with the QEMU implementation referred above.
+
+v4 -> v5:
+
+Address review comments from Stefan:
+
+ - Take vdev_mutex in virtblk_report_zones() to prevent a potential
+   race with virtblk_remove()
+
+ - Check the current zoned model in virtblk_revalidate_zones() and
+   reset the request queue zoned model to NONE if the reported model
+   is not VIRTIO_BLK_Z_HM
+
+ - Add the comment in virtblk_parse_zone() explaining why sanity
+   checks are not needed in that function
+
+v3 -> v4:
+
+ - Fix the units in max ZA / write granularity check
+ - Remove unneeded dev_info message
+
+v2 -> v3:
+
+ - Change the request in-header layout to always make the status byte
+   to be the last byte of the in-header. For all requests except Zone
+   Append, the in-header consists only of the status byte. For Zone
+   Append, an extended in-header is defined that consists of the zone
+   append sector followed by the status byte
+
+ - In zone report handler, validate the zone type/condition values
+   that are received from the device and convert them from the values
+   defined in the virtio_blk ZBD spec extension to the values defined
+   in the block layer
+
+ - During ZBD scan, check that max_append_sectors is not smaller than
+   the write granularity
+
+ - Fix sparse warnings
+
+v1 -> v2:
+
+ - Rebase to the current head of development. The second patch in the
+   previous version is no longer needed as the secure erase support has
+   now been added to virtio_blk driver
+
+ - Fix a couple of bugs in zone report code
+
+ - Clean up ZBD probe code
+
+This version DOESN'T include the additional request layout changes that
+are being discussed at the OASIS TC. An updated patch series will be
+posted to the list when those changes are finalized.
+
+Dmitry Fomichev (2):
+  virtio-blk: use a helper to handle request queuing errors
+  virtio-blk: add support for zoned block devices
+
+ drivers/block/virtio_blk.c      | 488 +++++++++++++++++++++++++++++---
+ include/uapi/linux/virtio_blk.h | 105 +++++++
+ 2 files changed, 561 insertions(+), 32 deletions(-)
+
 --=20
-Dipl.-Ing. Harald Mommer
-Senior Software Engineer
-
-OpenSynergy GmbH
-Rotherstr. 20, 10245 Berlin
-
-Phone:  +49 (30) 60 98 540-0 <=3D=3D Zentrale
-Fax:    +49 (30) 60 98 540-99
-E-Mail: harald.mommer@opensynergy.com
-
-www.opensynergy.com
-
-Handelsregister: Amtsgericht Charlottenburg, HRB 108616B
-Gesch=C3=A4ftsf=C3=BChrer/Managing Director: Regis Adjamah
+2.34.1
 
 
 ---------------------------------------------------------------------
