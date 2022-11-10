@@ -1,14 +1,14 @@
-Return-Path: <virtio-dev-return-10147-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-10148-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 262B498650C
-	for <virtio-dev@lists.oasis-open.org>; Thu, 10 Nov 2022 03:38:05 +0000 (UTC)
-Message-ID: <ac5a1f79-2e33-8983-b021-5dfd6938f9d1@linux.alibaba.com>
-Date: Thu, 10 Nov 2022 11:37:56 +0800
+	by lists.oasis-open.org (Postfix) with ESMTP id DB7CE98650C
+	for <virtio-dev@lists.oasis-open.org>; Thu, 10 Nov 2022 03:41:33 +0000 (UTC)
+Message-ID: <77551372-bab9-5e55-d290-f50ebc6cad14@linux.alibaba.com>
+Date: Thu, 10 Nov 2022 11:41:25 +0800
 MIME-Version: 1.0
 References: <20221109113336.121773-1-hengqi@linux.alibaba.com>
  <20221109113336.121773-3-hengqi@linux.alibaba.com>
@@ -79,6 +79,9 @@ of
 >> +the bits between VIRTIO_NET_HASH_TYPE_IPv4 and VIRTIO_NET_HASH_TYPE_UDP=
 _EX.
 > "MUST" keyword must belong to the normative section.
+
+Okay. Thanks for pointing out.
+
 >
 >> +
 >> +The device calculates the hash on GRE-encapsulated packets whose inner =
@@ -170,11 +173,6 @@ header in
 >> +      \item Home address from the home address option in the IPv6 desti=
 nation options
 > Is this inner or outer?
-
-It's the inner header.=C2=A0 I'll make this statement clear.
-
-Thanks.
-
 >
 > Thanks
 >
