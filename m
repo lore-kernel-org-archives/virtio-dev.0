@@ -1,113 +1,83 @@
-Return-Path: <virtio-dev-return-10286-cohuck=redhat.com@lists.oasis-open.org>
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Message-ID: <358e4b4f-0fe8-3f17-dbf2-efb0c3c93218@amazon.es>
-Date: Fri, 25 Nov 2022 13:41:34 +0100
+Return-Path: <mst@redhat.com>
+Date: Sun, 20 Nov 2022 20:25:15 -0500
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Subject: [PATCH v8 0/9] Introduce device group and device management
+Message-ID: <20221121012419.317406-1-mst@redhat.com>
 MIME-Version: 1.0
-References: <20221121162756.350032-1-mst@redhat.com>
- <20221121162756.350032-4-mst@redhat.com>
-From: Babis Chalios <bchalios@amazon.es>
-In-Reply-To: <20221121162756.350032-4-mst@redhat.com>
-Subject: [virtio-dev] Re: [PATCH RFC 3/3] rng: leak detection support
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: base64
-To: "Michael S. Tsirkin" <mst@redhat.com>, virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, "Cali, Marco" <xmarcalx@amazon.co.uk>, "Graf (AWS), Alexander" <graf@amazon.de>, "Jason A. Donenfeld" <Jason@zx2c4.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+To: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, jasowang@redhat.com, mst@redhat.com, cohuck@redhat.com, sgarzare@redhat.com, stefanha@redhat.com, nrupal.jani@intel.com, Piotr.Uminski@intel.com, hang.yuan@intel.com
+Cc: virtio@lists.oasis-open.org, Zhu Lingshan <lingshan.zhu@intel.com>, pasic@linux.ibm.com, Shahaf Shuler <shahafs@nvidia.com>, Parav Pandit <parav@nvidia.com>, Max Gurtovoy <mgurtovoy@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-SGkgTWljaGFlbCwKCkFuZCB0aGFua3MgYSBsb3Qgb24gdGhlIGVmZm9ydCBvbiB0aGF0LgoKT24g
-MjEvMTEvMjIgMTc6MzAsIE1pY2hhZWwgUy4gVHNpcmtpbiB3cm90ZToKPiBDQVVUSU9OOiBUaGlz
-IGVtYWlsIG9yaWdpbmF0ZWQgZnJvbSBvdXRzaWRlIG9mIHRoZSBvcmdhbml6YXRpb24uIERvIG5v
-dCBjbGljayBsaW5rcyBvciBvcGVuIGF0dGFjaG1lbnRzIHVubGVzcyB5b3UgY2FuIGNvbmZpcm0g
-dGhlIHNlbmRlciBhbmQga25vdyB0aGUgY29udGVudCBpcyBzYWZlLgo+Cj4KPgo+IEFkZCB2aXJ0
-cXVldWVzIHRvIHN1cHBvcnQgcmVwb3J0aW5nIGVudHJvcHkgbGVha3MgKHNpbWlsYXIgdG8gdmly
-dGlvIGJhc2VkIHZtZ2VuaWQpLgo+Cj4gU2lnbmVkLW9mZi1ieTogTWljaGFlbCBTLiBUc2lya2lu
-IDxtc3RAcmVkaGF0LmNvbT4KPiAtLS0KPiAgIHZpcnRpby1ybmcudGV4IHwgNjEgKysrKysrKysr
-KysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKy0KPiAgIDEgZmlsZSBjaGFu
-Z2VkLCA2MCBpbnNlcnRpb25zKCspLCAxIGRlbGV0aW9uKC0pCj4KPiBkaWZmIC0tZ2l0IGEvdmly
-dGlvLXJuZy50ZXggYi92aXJ0aW8tcm5nLnRleAo+IGluZGV4IDFlYzcxNjQuLjQ3NjBkZmEgMTAw
-NjQ0Cj4gLS0tIGEvdmlydGlvLXJuZy50ZXgKPiArKysgYi92aXJ0aW8tcm5nLnRleAo+IEBAIC05
-LDEwICs5LDE0IEBAIFxzdWJzZWN0aW9ue0RldmljZSBJRH1cbGFiZWx7c2VjOkRldmljZSBUeXBl
-cyAvIEVudHJvcHkgRGV2aWNlIC8gRGV2aWNlIElEfQo+ICAgXHN1YnNlY3Rpb257VmlydHF1ZXVl
-c31cbGFiZWx7c2VjOkRldmljZSBUeXBlcyAvIEVudHJvcHkgRGV2aWNlIC8gVmlydHF1ZXVlc30K
-PiAgIFxiZWdpbntkZXNjcmlwdGlvbn0KPiAgIFxpdGVtWzBdIHJlcXVlc3RxCj4gK1xpdGVtWzFd
-IGxlYWtxMSAob25seSBpZiBWSVJUSU9fUk5HX0ZfTEVBSyBpcyBvZmZlcmVkKQo+ICtcaXRlbVsy
-XSBsZWFrcTIgKG9ubHkgaWYgVklSVElPX1JOR19GX0xFQUsgaXMgb2ZmZXJlZCkKPiAgIFxlbmR7
-ZGVzY3JpcHRpb259Cj4KPiAgIFxzdWJzZWN0aW9ue0ZlYXR1cmUgYml0c31cbGFiZWx7c2VjOkRl
-dmljZSBUeXBlcyAvIEVudHJvcHkgRGV2aWNlIC8gRmVhdHVyZSBiaXRzfQo+IC0gIE5vbmUgY3Vy
-cmVudGx5IGRlZmluZWQKPiArXGJlZ2lue2Rlc2NyaXB0aW9ufQo+ICtcaXRlbVtWSVJUSU9fUk5H
-X0ZfTEVBSyAoMCldIERldmljZSBjYW4gcmVwb3J0IGFuZCBoYW5kbGUgaW5mb3JtYXRpb24gbGVh
-a3MuCj4gK1xlbmR7ZGVzY3JpcHRpb259Cj4KPiAgIFxzdWJzZWN0aW9ue0RldmljZSBjb25maWd1
-cmF0aW9uIGxheW91dH1cbGFiZWx7c2VjOkRldmljZSBUeXBlcyAvIEVudHJvcHkgRGV2aWNlIC8g
-RGV2aWNlIGNvbmZpZ3VyYXRpb24gbGF5b3V0fQo+ICAgICBOb25lIGN1cnJlbnRseSBkZWZpbmVk
-Lgo+IEBAIC0yMSw2ICsyNSw3IEBAIFxzdWJzZWN0aW9ue0RldmljZSBJbml0aWFsaXphdGlvbn1c
-bGFiZWx7c2VjOkRldmljZSBUeXBlcyAvIEVudHJvcHkgRGV2aWNlIC8gRGV2Cj4KPiAgIFxiZWdp
-bntlbnVtZXJhdGV9Cj4gICBcaXRlbSBUaGUgXGZpZWxke3JlcXVlc3RxfSB2aXJ0cXVldWUgaXMg
-aW5pdGlhbGl6ZWQKPiArXGl0ZW0gSWYgVklSVElPX1JOR19GX0xFQUsgaGFzIGJlZW4gbmVnb3Rp
-YXRlZCwgXGZpZWxke2xlYWtxMX0gYW5kIFxmaWVsZHtsZWFrcTJ9IGFyZSBpbml0aWFsaXplZAo+
-ICAgXGVuZHtlbnVtZXJhdGV9Cj4KPiAgIFxzdWJzZWN0aW9ue0RldmljZSBPcGVyYXRpb259XGxh
-YmVse3NlYzpEZXZpY2UgVHlwZXMgLyBFbnRyb3B5IERldmljZSAvIERldmljZSBPcGVyYXRpb259
-Cj4gQEAgLTQxLDMgKzQ2LDU3IEBAIFxzdWJzZWN0aW9ue0RldmljZSBPcGVyYXRpb259XGxhYmVs
-e3NlYzpEZXZpY2UgVHlwZXMgLyBFbnRyb3B5IERldmljZSAvIERldmljZSBPCj4gICBUaGUgZGV2
-aWNlIE1VU1QgcGxhY2Ugb25lIG9yIG1vcmUgcmFuZG9tIGJ5dGVzIGludG8gdGhlIGJ1ZmZlcgo+
-ICAgbWFkZSBhdmFpbGFibGUgdG8gaXQgdGhyb3VnaCBcZmllbGR7cmVxdWVzdHF9LCBidXQgaXQK
-PiAgIE1BWSB1c2UgbGVzcyB0aGFuIHRoZSBlbnRpcmUgYnVmZmVyIGxlbmd0aC4KPiArCj4gK1xz
-dWJzdWJzZWN0aW9ue1JlcG9ydGluZyBJbmZvcm1hdGlvbiBMZWFrc317RGV2aWNlIFR5cGVzIC8g
-RW50cm9weSBEZXZpY2UgLyBEZXZpY2UgT3BlcmF0aW9uIC8gUmVwb3J0aW5nIEluZm9ybWF0aW9u
-IExlYWtzfQo+ICsKPiArVGhlIGRldmljZSBtaWdodCwgYWZ0ZXIgdGhlIGZhY3QsIGRldGVjdCB0
-aGF0IHNvbWUgb2YgdGhlIGVudHJvcHkKPiAraXQgc3VwcGxpZWQgdG8gdGhlIGRyaXZlciBoYXMg
-YWZ0ZXIgdGhlIGZhY3QgZGVncmFkZWQgaW4gcXVhbGl0eQo+ICtvciBsZWFrZWQgdG8gdGhlIG91
-dHNpZGUgd29ybGQuICBPbmUgZXhhbXBsZSBpcyB3aGVuIHRoZSBkZXZpY2UKPiAraXMgcGFydCBv
-ZiB0aGUgdmlydHVhbCBtYWNoaW5lIHVuZGVyZ29pbmcgYSByZXN0b3JlIGZyb20gc25hcHNob3QK
-PiArb3BlcmF0aW9uLiBBbm90aGVyIGV4YW1wbGUgaXMgd2hlbiB0aGUgaW5mb3JtYXRpb24gbGVh
-a3MgZnJvbSB0aGUKPiAraG9zdCBzeXN0ZW0gdGhyb3VnaCBhIHNpZGUtY2hhbm5lbC4KPiArCj4g
-K1RoZSBkcml2ZXIgd291bGQgdHlwaWNhbGx5IHJlYWN0IGJ5IGNhdXNpbmcgcmVnZW5lcmF0aW9u
-IG9mIGFueQo+ICtpbmZvcm1hdGlvbiB0aGF0IG1pZ2h0IGhhdmUgbGVha2VkIGFuZCB0aGF0IGhh
-cyB0byBiZSBzZWNyZXQgb3IKPiArdW5pcXVlLiAgSXQgaXMgdW5kZXJzdG9vZCB0aGF0IHdoZW4g
-YW4gaW5mb3JtYXRpb24gbGVhayBoYXMgYmVlbgo+ICtkZXRlY3RlZCBpdCBpcyBsaWtlbHkgbm90
-IGxpbWl0ZWQgdG8gdGhlIGVudHJvcHkgcmVjZWl2ZWQgdGhyb3VnaAo+ICt0aGUgc3BlY2lmaWMg
-ZGV2aWNlLiBJbiBwYXJ0aWN1bGFyLCB0aGlzIGlzIHRoZSBjYXNlIGZvcgo+ICtzbmFwc2hvdGlu
-ZyBJdCBpcyB0aHVzIHN1Z2dlc3RlZCB0aGF0IHRoZSBzeXN0ZW0gZnVsbHkKPiArcmVnZW5lcmF0
-ZSBhbnkgdW5pcXVlL3NlY3JldCBpbmZvcm1hdGlvbiBpbiB0aGlzIHNjZW5hcmlvLgo+ICsKPiAr
-SWYgVklSVElPX1JOR19GX0xFQUsgaGFzIGJlZW4gbmVnb3RpYXRlZCB0aGUgZGV2aWNlIGNhbiBy
-ZXBvcnQKPiArc3VjaCBsZWFrcyB0byB0aGUgZHJpdmVyIHRocm91Z2ggYSBzZXQgb2YgZGVkaWNh
-dGVkIGxlYWsKPiArcXVldWVzOiBcZmllbGR7bGVha3ExfSBhbmQgXGZpZWxke2xlYWtxMn0uCj4g
-Kwo+ICtCdWZmZXJzIGFkZGVkIHRvIHRoZSBsZWFrIHF1ZXVlcyBjYW4gaGF2ZSBvbmUgb2YgdHdv
-IGZvcm1zOgo+ICtcYmVnaW57ZW51bWVyYXRlfQo+ICtcaXRlbSBBIHdyaXRlLW9ubHkgYnVmZmVy
-LiBJdCB3aWxsIGJlIGNvbXBsZXRlbHkgZmlsbGVkIGJ5IHJhbmRvbSBkYXRhIGJ5IHRoZSBkZXZp
-Y2UuCj4gK1xpdGVtIEEgYnVmZmVyIGNvbnNpc3Rpbmcgb2YgcmVhZC1vbmx5IHNlY3Rpb24gZm9s
-bG93ZWQgYnkgYQo+ICt3cml0ZS1vbmx5IHNlY3Rpb24sIGJvdGggb2YgaWRlbnRpY2FsIHNpemUu
-IFRoZQo+ICtkZXZpY2Ugd2lsbCBjb3B5IGRhdGEgZnJvbSB0aGUgcmVhZC1vbmx5IHNlY3Rpb24g
-dG8gdGhlIHdyaXRlLW9ubHkKPiArc2VjdGlvbi4KPiArXGVuZHtlbnVtZXJhdGV9Cj4gKwo+ICtU
-aGUgc3RlcHMgZm9yIG9wZXJhdGluZyB0aGUgdmlydHF1ZXVlIGFyZToKPiArCj4gK1xiZWdpbntl
-bnVtZXJhdGV9Cj4gK1xpdGVtIEF0IGVhY2ggdGltZSwgb25seSBvbmUgb2YgXGZpZWxke2xlYWtx
-MX0sIFxmaWVsZHtsZWFrcTJ9IGlzIGFjdGl2ZQo+ICsgICAgICAoaGFzIGJ1ZmZlcnMgYWRkZWQv
-dXNlZCkuCj4gK1xpdGVtIEFmdGVyIGluaXRpYWxpemF0aW9uLCBcZmllbGR7bGVha3ExfSBpcyBh
-Y3RpdmUuCj4gK1xpdGVtIERyaXZlciBhZGRzIG11bHRpcGxlIGJ1ZmZlcnMgdG8gdGhlIGFjdGl2
-ZSBsZWFrIHF1ZXVlLgo+ICtcaXRlbSBUaGUgYnVmZmVycyBhcmUgbm90IHVzZWQgdW50aWwgYW4g
-aW5mb3JtYXRpb24gbGVhayBpcwo+ICsgICAgICBkZXRlY3RlZCwgYXMgbG9uZyBhcyB0aGF0IGlz
-IHRoZSBjYXNlIGRyaXZlciBjYW4KPiArICAgICAgYWRkIG1vcmUgYnVmZmVycyB0byB0aGUgYWN0
-aXZlIHF1ZXVlLgo+ICtcaXRlbSBVcG9uIGRldGVjdGluZyBhbiBpbmZvcm1hdGlvbiBsZWFrLCBk
-ZXZpY2Ugc3RhcnRzCj4gKyAgICAgIHVzaW5nIGJ1ZmZlcnMgaW4gdGhlIGFjdGl2ZSBsZWFrIHF1
-ZXVlLgo+ICtcaXRlbSBVcG9uIGRldGVjdGluZyB0aGF0IGJ1ZmZlcnMgaGF2ZSBiZWVuIHVzZWQs
-IGRyaXZlcgo+ICsgICAgICBzd2l0Y2hlcyB0byBhbm90aGVyIGxlYWsgcXVldWUgbWFraW5nIGl0
-IGFjdGl2ZQo+ICsgICAgICAoZS5nLiBmcm9tIFxmaWVsZHtsZWFrcTF9IHRvIFxmaWVsZHtsZWFr
-cTJ9IG9yIHZpY2UgdmVyc2EpLgo+ICsgICAgICBJdCB0aGVuIHN0YXJ0cyBhZGRpbmcgYnVmZmVy
-cyB0byB0aGUgbmV3IGxlYWsgcXVldWUuCj4gK1xpdGVtIERldmljZSB3aWxsIGtlZXAgdXNpbmcg
-YnVmZmVycyBpbiB0aGUgYWN0aXZlIGxlYWsgcXVldWUKPiArICAgICAgdW50aWwgaXQgZGV0ZWN0
-cyB0aGF0IGJvdGggdGhlIGN1cnJlbnQgbGVhayBxdWV1ZSBpcyBlbXB0eSBhbmQgYW5vdGhlcgo+
-ICsgICAgICBsZWFrIHF1ZXVlIGhhcyBidWZmZXJzLiBBdCB0aGF0IHBvaW50IGRldmljZSBzd2l0
-Y2hlcyB0bwo+ICsgICAgICBhbm90aGVyIGxlYWsgcXVldWUsIG1ha2luZyBpdCBhY3RpdmUuCj4g
-K1xpdGVtIEFmdGVyIHRoZSBzd2l0Y2gsIGJ1ZmZlcnMgZnJvbSB0aGUgbmV3IGxlYWsgcXVldWUg
-YXJlIG5vdAo+ICsgICAgICB1c2VkIHVudGlsIGFuIGluZm9ybWF0aW9uIGxlYWsgaXMgZGV0ZWN0
-ZWQuCj4gK1xlbmR7ZW51bWVyYXRlfQo+IC0tCj4gTVNUCj4KCkkgYW0gdGFraW5nIG5vdyBhIGNs
-b3NlciBsb29rIHRvIHRyeWluZyB0byBzZWUgYW55IHBvdGVudGlhbCAKcmFjZS1jb25kaXRpb25z
-IGJ1dCBpbiBhIGZpcnN0IGdsYW5jZSBpdCBsb29rcyBvayB0byBtZS4KQ3VyaW91cyB0byBzZWUg
-d2hhdCBKYXNvbiB0aGlua3MgdG9vLgoKQ2hlZXJzLApCYWJpcwpBbWF6b24gU3BhaW4gU2Vydmlj
-ZXMgc29jaWVkYWQgbGltaXRhZGEgdW5pcGVyc29uYWwsIENhbGxlIFJhbWlyZXogZGUgUHJhZG8g
-NSwgMjgwNDUgTWFkcmlkLiBSZWdpc3RybyBNZXJjYW50aWwgZGUgTWFkcmlkIC4gVG9tbyAyMjQ1
-OCAuIEZvbGlvIDEwMiAuIEhvamEgTS00MDEyMzQgLiBDSUYgQjg0NTcwOTM2Cg==
+This is out of RFC, since we have two commands which are useful
+to discover supported group types (ATM can be none or SR-IOV).
+
+Change log:
+
+since v7:
+	make high level error codes match linux, with virtio specific codes
+		in a separate field
+	renamed _ACCEPT to _USE since that's what it does
+	clarified forward compatibility and non pci transports
+	support multiple admin vqs
+	conformance statements
+	lots of changes all over the place to I changed author from Max
+	to myself. Don't need to take credit but also don't want
+	to blame Max for my mistakes.
+
+since v6:
+
+	- removed some extentions intended for future use.
+	  We'll do them when we get there.
+
+	- brought back command list query from v5 in a simplified form -
+	  it's here to address the case where a single parent
+	  can address multiple groups, such as PF addressing
+	  transport vq and sriov vfs.
+
+	- attempt to make terminology more formal.
+	In particular a term for whoever controls the group.
+ 	I am still going back
+	and forth between "parent" and "owner" - owner might
+	be better after all since it will work if we ever
+	have a self group. For now it's parent.
+
+TODO (maybe?) - probably ok to defer until this part is upstream:
+
+	Add "all members" member id.
+
+	Add commands for MSI, feature discovery.
+
+	Add commands for transport vq.
+
+
+My intent is to try and support both SR-IOV and SIOV
+usecases with the same structure and maybe even the same
+VQ.
+
+For example, it might make sense to split creating/destroying
+SIOV devices from the transport passing data from the guest - the
+driver would then not negotiate VIRTIO_F_SR_IOV (which
+then means auto-provisioning).
+
+
+Michael S. Tsirkin (9):
+  virtio: document forward compatibility guarantees
+  admin: introduce device group and related concepts
+  admin: introduce group administration commands
+  admin: introduce virtio admin virtqueues
+  pci: add admin vq registers to virtio over pci
+  mmio: document ADMIN_VQ as reserved
+  ccw: document ADMIN_VQ as reserved
+  admin: command list discovery
+  admin: conformance clauses
+
+ admin.tex   | 403 ++++++++++++++++++++++++++++++++++++++++++++++++++++
+ content.tex | 103 +++++++++++++-
+ 2 files changed, 504 insertions(+), 2 deletions(-)
+ create mode 100644 admin.tex
+
+-- 
+MST
 
