@@ -1,96 +1,118 @@
-Return-Path: <virtio-comment-return-3499-cohuck=redhat.com@lists.oasis-open.org>
-Sender: <virtio-comment@lists.oasis-open.org>
-List-Post: <mailto:virtio-comment@lists.oasis-open.org>
-List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
-From: Cornelia Huck <cohuck@redhat.com>
-In-Reply-To: <20221122151416-mutt-send-email-mst@kernel.org>
+Return-Path: <mst@redhat.com>
+Date: Sun, 20 Nov 2022 20:25:27 -0500
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Subject: [PATCH v8 3/9] admin: introduce group administration commands
+Message-ID: <20221121012419.317406-4-mst@redhat.com>
 References: <20221121012419.317406-1-mst@redhat.com>
- <20221121012419.317406-3-mst@redhat.com> <878rk3fau0.fsf@redhat.com>
- <20221122151416-mutt-send-email-mst@kernel.org>
-Date: Wed, 23 Nov 2022 10:26:25 +0100
-Message-ID: <87pmdenhry.fsf@redhat.com>
 MIME-Version: 1.0
-Subject: [virtio-comment] Re: [PATCH v8 2/9] admin: introduce device group and related concepts
-Content-Type: text/plain
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, jasowang@redhat.com, sgarzare@redhat.com, stefanha@redhat.com, nrupal.jani@intel.com, Piotr.Uminski@intel.com, hang.yuan@intel.com, virtio@lists.oasis-open.org, Zhu Lingshan <lingshan.zhu@intel.com>, pasic@linux.ibm.com, Shahaf Shuler <shahafs@nvidia.com>, Parav Pandit <parav@nvidia.com>, Max Gurtovoy <mgurtovoy@nvidia.com>
+In-Reply-To: <20221121012419.317406-1-mst@redhat.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+To: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, jasowang@redhat.com, mst@redhat.com, cohuck@redhat.com, sgarzare@redhat.com, stefanha@redhat.com, nrupal.jani@intel.com, Piotr.Uminski@intel.com, hang.yuan@intel.com
+Cc: virtio@lists.oasis-open.org, Zhu Lingshan <lingshan.zhu@intel.com>, pasic@linux.ibm.com, Shahaf Shuler <shahafs@nvidia.com>, Parav Pandit <parav@nvidia.com>, Max Gurtovoy <mgurtovoy@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Tue, Nov 22 2022, "Michael S. Tsirkin" <mst@redhat.com> wrote:
+This introduces a general structure for group administration commands,
+used to control device groups through their owner.
 
-> On Tue, Nov 22, 2022 at 01:11:19PM +0100, Cornelia Huck wrote:
->> On Sun, Nov 20 2022, "Michael S. Tsirkin" <mst@redhat.com> wrote:
->> > +\item[Member device]
->> > +        a device within a group. Owner device itself is not
->> 
->> s/Owner/The owner/
->> 
->> > +	a member of the group. In the future it is envisoned that
->> > +	new group types may be introduced where the owner
->> > +	device is a member of the group.
->> 
->> So, shouldn't it rather be: "Whether the owner device itself is a member
->> of the group depends on the type of the group." ?
->> Or do we want to
->> prefer the owner _not_ being a member of the group?
->
-> Maybe I will drop this "In the future" thing. We'll cross that bridge
-> when we get to it.
+Following patches will introduce specific commands and an interface for
+submitting these commands to the owner.
 
-Ok, I think we can expand this later, if needed.
+Signed-off-by: Max Gurtovoy <mgurtovoy@nvidia.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+---
+ admin.tex | 80 +++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 80 insertions(+)
 
->
->> > +\item[Member identifier]
->> > +        each member has this identifier, unique within the group
->> > +	and used to address it through the owner device.
->> > +\item[Group type identifier]
->> > +	specifies what kind of member devices there are in a
->> > +	group, how is the member identifier interpreted
->> 
->> "how the member indentifier is interpreted, ..."
->> 
->> > +	and what kind of control does the owner have.
->> 
->> s/does the owner have/the owner has/
->> 
->> > +	At the moment, a given owner can control
->> > +	a single group of a given type, thus the type and
->> > +	the owner together identify the group.
->> > +	It is envisioned that this last restriction might be relaxed in the future,
->> > +	with multiple groups of the same type for a given owner.
->> 
->> Hm...
->> 
->> "A given owner may control a single group of a given type (which means
->> that the type and the owner together identify the group), or multiple
->> groups of the same type. Currently, only a single group per owner is
->> supported." ?
->> 
->> Basically, I'd prefer if we spelled out what is possible in general, and
->> then add a comment that only a subset of the possibilities is currently
->> implemented.
->
-> I feel I went too broad here. Let's just drop the "It is envisioned"
-> for now.
-
-Ok, let's drop the "At the moment" prefix as well :)
-
-
-This publicly archived list offers a means to provide input to the
-OASIS Virtual I/O Device (VIRTIO) TC.
-
-In order to verify user consent to the Feedback License terms and
-to minimize spam in the list archive, subscription is required
-before posting.
-
-Subscribe: virtio-comment-subscribe@lists.oasis-open.org
-Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
-List help: virtio-comment-help@lists.oasis-open.org
-List archive: https://lists.oasis-open.org/archives/virtio-comment/
-Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
-List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
-Committee: https://www.oasis-open.org/committees/virtio/
-Join OASIS: https://www.oasis-open.org/join/
+diff --git a/admin.tex b/admin.tex
+index 4337db0..507e188 100644
+--- a/admin.tex
++++ b/admin.tex
+@@ -47,4 +47,84 @@ \section{Device groups}\label{sec:Basic Facilities of a Virtio Device / Device g
+ PCI transport (see \ref{sec:Virtio Transport Options / Virtio Over PCI Bus}).
+ \end{description}
+ 
++\subsection{Group administration commands}\label{sec:Basic Facilities of a Virtio Device / Device groups / Group administration commands}
+ 
++Group administration commands can be issued through an owner
++device to control member devices of a group.  This mechanism can
++be used, for example, to configure a member device before it is
++initialized by its driver.
++
++All the group administration commands are of the following form:
++
++\begin{lstlisting}
++struct virtio_admin_cmd {
++        /* Device-readable part */
++        le16 opcode;
++        /*
++         * 1 - SR-IOV
++         * 2 - 65535 reserved
++         */
++        le16 group_type;
++        /* unused, reserved for future extensions */
++        u8 reserved1[12];
++        le64 group_member_id;
++        u8 command_specific_data[];
++
++        /* Device-writable part */
++        le16 status;
++        /* unused, reserved for future extensions */
++        u8 reserved2[6];
++        u8 command_specific_result[];
++};
++\end{lstlisting}
++
++For all commands, \field{opcode}, \field{group_id} and if
++necessary \field{group_member_id} and \field{command_specific_data} are
++set by the driver, and the owner device sets \field{status} and if
++needed \field{status_qualifier} and
++\field{command_specific_result}.
++
++As a rule, any unused device-readable fields are set to zero by the driver
++and ignored by the device.  Any unused device-writeable fields are set to zero
++by the device and ignored by the driver.
++
++\field{opcode} specifies the command. The valid
++values for \field{opcode} can be found in the following table:
++
++\begin{tabular}{|l|l|}
++\hline
++opcode & Command Description \\
++\hline \hline
++0000h - 7FFFh   & Group administration commands    \\
++\hline
++8000h - FFFFh   & Reserved    \\
++\hline
++\end{tabular}
++
++The \field{group_id} specifies the device group.
++The \field{group_member_id} specifies the member device within the group.
++See section \ref{sec:Introduction / Terminology / Device group}
++for the definition of the group identifier and group member
++identifier.
++
++The following table describes possible \field{status} values,
++to simplify common implementations, these are intentionally
++matching common Linux names and error numbers:
++
++\begin{tabular}{|l|l|l|}
++\hline
++Status & Name & Description \\
++\hline \hline
++00h   & VIRTIO_ADMIN_STATUS_OK    & successful completion  \\
++\hline
++01h   & VIRTIO_ADMIN_STATUS_INVALID_OPCODE    & unsupported or invalid \field{opcode}  \\
++\hline
++02h   & VIRTIO_ADMIN_STATUS_INVALID_FIELD    & invalid field within command specific data  \\
++\hline
++03h   & VIRTIO_ADMIN_STATUS_INVALID_GROUP    & invalid group identifier was set  \\
++\hline
++04h   & VIRTIO_ADMIN_STATUS_INVALID_MEM    & invalid group member identifier was set  \\
++\hline
++other   & -    & group administration command error  \\
++\hline
++\end{tabular}
+-- 
+MST
 
