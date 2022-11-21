@@ -1,8 +1,8 @@
 Return-Path: <mst@redhat.com>
-Date: Mon, 21 Nov 2022 11:48:03 -0500
+Date: Mon, 21 Nov 2022 12:09:45 -0500
 From: "Michael S. Tsirkin" <mst@redhat.com>
 Subject: Re: [PATCH v8 7/9] ccw: document ADMIN_VQ as reserved
-Message-ID: <20221121113915-mutt-send-email-mst@kernel.org>
+Message-ID: <20221121115828-mutt-send-email-mst@kernel.org>
 References: <20221121012419.317406-1-mst@redhat.com>
  <20221121012419.317406-8-mst@redhat.com>
  <87r0xw5mod.fsf@redhat.com>
@@ -52,15 +52,7 @@ On Mon, Nov 21, 2022 at 04:53:22PM +0100, Cornelia Huck wrote:
 > shared memory, ...) -- would it make sense to add a separate patch
 > listing all of the features not yet supported prior to adding all of the
 > admin vq infrastructure? Otherwise, this section is a bit misleading.
-
-OK Makes sense.
-
-MMIO has both.
-
-I'm not sure how I should refer to shared memory - I think
-ATM it's just VIRTIO_PMEM_F_SHMEM_REGION that's using it, right?
-
-
+> 
 > (What is the situation for MMIO?)
 > 
 > > +
@@ -71,4 +63,30 @@ ATM it's just VIRTIO_PMEM_F_SHMEM_REGION that's using it, right?
 > >  \chapter{Device Types}\label{sec:Device Types}
 > >  
 > >  On top of the queues, config space and feature negotiation facilities
+
+OK I think for now the following is sufficient, right?
+Separately, we should make an effort to document that these
+features are transport specific and not supported on all transports:
+happily VIRTIO_F_RING_RESET is only used in drivers/virtio/virtio_pci_modern.c
+for now, and VIRTIO_PMEM_F_SHMEM_REGION seems to be unused by Linux.
+
+    ccw: document more reserved features
+    
+    vq reset and shared memory are unsupported, too.
+    
+    Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+
+diff --git a/content.tex b/content.tex
+index 30f8efb..776fc56 100644
+--- a/content.tex
++++ b/content.tex
+@@ -2978,6 +2978,8 @@ \subsection{Features reserved for future use}\label{sec:Virtio Transport Options
+ \begin{itemize}
+ 
+ \item VIRTIO_F_ADMIN_VQ
++\item VIRTIO_F_RING_RESET
++\item Shared memory regions including VIRTIO_PMEM_F_SHMEM_REGION
+ 
+ \end{itemize}
+ 
 
