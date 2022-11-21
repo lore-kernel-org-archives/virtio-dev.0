@@ -1,8 +1,8 @@
 Return-Path: <mst@redhat.com>
-Date: Sun, 20 Nov 2022 20:25:39 -0500
+Date: Sun, 20 Nov 2022 20:25:43 -0500
 From: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: [PATCH v8 6/9] mmio: document ADMIN_VQ as reserved
-Message-ID: <20221121012419.317406-7-mst@redhat.com>
+Subject: [PATCH v8 7/9] ccw: document ADMIN_VQ as reserved
+Message-ID: <20221121012419.317406-8-mst@redhat.com>
 References: <20221121012419.317406-1-mst@redhat.com>
 MIME-Version: 1.0
 In-Reply-To: <20221121012419.317406-1-mst@redhat.com>
@@ -25,16 +25,16 @@ Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
  1 file changed, 12 insertions(+)
 
 diff --git a/content.tex b/content.tex
-index 03cbd3f..9c74fa9 100644
+index 9c74fa9..7111929 100644
 --- a/content.tex
 +++ b/content.tex
-@@ -2357,6 +2357,18 @@ \subsection{Legacy interface}\label{sec:Virtio Transport Options / Virtio Over M
- 
- Notification mechanisms did not change.
+@@ -2971,6 +2971,18 @@ \subsubsection{Resetting Devices}\label{sec:Virtio Transport Options / Virtio ov
+ MAY also choose to verify reset completion by reading \field{device status} via
+ CCW_CMD_READ_STATUS and checking whether it is 0 afterwards.
  
 +\subsection{Features reserved for future use}\label{sec:Virtio Transport Options / Virtio Over MMIO / Features reserved for future use}
 +
-+At this time, devices and drivers utilizing Virtio Over MMIO
++At this time, devices and drivers utilizing Virtio over channel I/O
 +do not support the following features:
 +\begin{itemize}
 +
@@ -44,9 +44,9 @@ index 03cbd3f..9c74fa9 100644
 +
 +These features are reserved for future use.
 +
- \section{Virtio Over Channel I/O}\label{sec:Virtio Transport Options / Virtio Over Channel I/O}
+ \chapter{Device Types}\label{sec:Device Types}
  
- S/390 based virtual machines support neither PCI nor MMIO, so a
+ On top of the queues, config space and feature negotiation facilities
 -- 
 MST
 
