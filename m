@@ -1,96 +1,85 @@
-Return-Path: <mst@redhat.com>
-Date: Sun, 20 Nov 2022 20:25:35 -0500
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: [PATCH v8 5/9] pci: add admin vq registers to virtio over pci
-Message-ID: <20221121012419.317406-6-mst@redhat.com>
+Return-Path: <virtio-dev-return-10201-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id B560D986435
+	for <virtio-dev@lists.oasis-open.org>; Tue, 22 Nov 2022 14:46:47 +0000 (UTC)
+From: Cornelia Huck <cohuck@redhat.com>
+In-Reply-To: <20221121012419.317406-6-mst@redhat.com>
 References: <20221121012419.317406-1-mst@redhat.com>
+ <20221121012419.317406-6-mst@redhat.com>
+Date: Tue, 22 Nov 2022 15:46:38 +0100
+Message-ID: <87zgcjdp2p.fsf@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <20221121012419.317406-1-mst@redhat.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-To: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, jasowang@redhat.com, mst@redhat.com, cohuck@redhat.com, sgarzare@redhat.com, stefanha@redhat.com, nrupal.jani@intel.com, Piotr.Uminski@intel.com, hang.yuan@intel.com
+Subject: [virtio-dev] Re: [PATCH v8 5/9] pci: add admin vq registers to virtio over pci
+Content-Type: text/plain
+To: "Michael S. Tsirkin" <mst@redhat.com>, virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, jasowang@redhat.com, mst@redhat.com, sgarzare@redhat.com, stefanha@redhat.com, nrupal.jani@intel.com, Piotr.Uminski@intel.com, hang.yuan@intel.com
 Cc: virtio@lists.oasis-open.org, Zhu Lingshan <lingshan.zhu@intel.com>, pasic@linux.ibm.com, Shahaf Shuler <shahafs@nvidia.com>, Parav Pandit <parav@nvidia.com>, Max Gurtovoy <mgurtovoy@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Add new registers to the PCI common configuration structure.
+On Sun, Nov 20 2022, "Michael S. Tsirkin" <mst@redhat.com> wrote:
 
-These registers will be used for querying the indices of the admin
-virtqueues of the owner device. To configure, reset or enable the admin
-virtqueues, the driver should follow existing queue configuration/setup
-sequence.
+> Add new registers to the PCI common configuration structure.
+>
+> These registers will be used for querying the indices of the admin
+> virtqueues of the owner device. To configure, reset or enable the admin
+> virtqueues, the driver should follow existing queue configuration/setup
+> sequence.
+>
+> Signed-off-by: Max Gurtovoy <mgurtovoy@nvidia.com>
+> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+> ---
+>  content.tex | 34 ++++++++++++++++++++++++++++++++++
+>  1 file changed, 34 insertions(+)
 
-Signed-off-by: Max Gurtovoy <mgurtovoy@nvidia.com>
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
----
- content.tex | 34 ++++++++++++++++++++++++++++++++++
- 1 file changed, 34 insertions(+)
+(...)
 
-diff --git a/content.tex b/content.tex
-index d2fd1de..03cbd3f 100644
---- a/content.tex
-+++ b/content.tex
-@@ -941,6 +941,10 @@ \subsubsection{Common configuration structure layout}\label{sec:Virtio Transport
-         le64 queue_device;              /* read-write */
-         le16 queue_notify_data;         /* read-only for driver */
-         le16 queue_reset;               /* read-write */
-+
-+        /* About the administration virtqueue. */
-+        le16 admin_queue_index;         /* read-only for driver */
-+        le16 admin_queue_num;         /* read-only for driver */
- };
- \end{lstlisting}
- 
-@@ -1026,6 +1030,19 @@ \subsubsection{Common configuration structure layout}\label{sec:Virtio Transport
-         This field exists only if VIRTIO_F_RING_RESET has been
-         negotiated. (see \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Reset}).
- 
-+\item[\field{admin_queue_index}]
-+        The device uses this to report the index of the first administration virtqueue.
-+        This field is valid only if VIRTIO_F_ADMIN_VQ has been negotiated.
-+\item[\field{admin_queue_num}]
-+	The device uses this to report the number of the
-+	supported administration virtqueues.  Virtqueues with index
-+	between \field{admin_queue_index} and (\field{admin_queue_index} +
-+	\field{admin_queue_num}) inclusive serve as administration
-+	virtqueues.
-+	Thus the number of administration virtqueues equals
-+	(\field{admin_queue_num} + 1).
-+	This field is valid only if VIRTIO_F_ADMIN_VQ has been
-+	negotiated.
- \end{description}
- 
- \devicenormative{\paragraph}{Common configuration structure layout}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Common configuration structure layout}
-@@ -1112,6 +1129,14 @@ \subsubsection{Common configuration structure layout}\label{sec:Virtio Transport
- were used before the queue reset.
- (see \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Reset}).
- 
-+If VIRTIO_F_ADMIN_VQ has been negotiated, and if the driver
-+configures any administration virtqueues, the driver MUST
-+configure the administration virtqueues using the index
-+in the range \field{admin_queue_index} to
-+\field{admin_queue_index} + \field{admin_queue_num} inclusive.
-+The driver MAY configure less administration virtqueues than
-+supported by the device.
-+
- \subsubsection{Notification structure layout}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Notification capability}
- 
- The notification location is found using the VIRTIO_PCI_CAP_NOTIFY_CFG
-@@ -6986,6 +7011,15 @@ \chapter{Reserved Feature Bits}\label{sec:Reserved Feature Bits}
-   See \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Reset}.
- 
-   \item[VIRTIO_F_ADMIN_VQ (41)] This feature indicates that an administration virtqueue is supported.
-+  At the moment this feature is only supported for devices using
-+  \ref{sec:Virtio Transport Options / Virtio Over PCI
-+	  Bus}~\nameref{sec:Virtio Transport Options / Virtio Over PCI Bus}
-+	  as the transport and is reserved for future use for
-+	  devices using other transports (see
-+	  \ref{drivernormative:Basic Facilities of a Virtio Device / Feature Bits}
-+	and
-+	\ref{devicenormative:Basic Facilities of a Virtio Device / Feature Bits} for
-+	handling features reserved for future use.
- 
- \end{description}
- 
--- 
-MST
+> @@ -1112,6 +1129,14 @@ \subsubsection{Common configuration structure layout}\label{sec:Virtio Transport
+>  were used before the queue reset.
+>  (see \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Reset}).
+>  
+> +If VIRTIO_F_ADMIN_VQ has been negotiated, and if the driver
+> +configures any administration virtqueues, the driver MUST
+> +configure the administration virtqueues using the index
+> +in the range \field{admin_queue_index} to
+> +\field{admin_queue_index} + \field{admin_queue_num} inclusive.
+> +The driver MAY configure less administration virtqueues than
+> +supported by the device.
+
+Is the driver allowed to pick any admin queue from within the range,
+e.g. queues 2 and 5, and leave the rest?
+
+> +
+>  \subsubsection{Notification structure layout}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Notification capability}
+>  
+>  The notification location is found using the VIRTIO_PCI_CAP_NOTIFY_CFG
+> @@ -6986,6 +7011,15 @@ \chapter{Reserved Feature Bits}\label{sec:Reserved Feature Bits}
+>    See \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Reset}.
+>  
+>    \item[VIRTIO_F_ADMIN_VQ (41)] This feature indicates that an administration virtqueue is supported.
+> +  At the moment this feature is only supported for devices using
+> +  \ref{sec:Virtio Transport Options / Virtio Over PCI
+> +	  Bus}~\nameref{sec:Virtio Transport Options / Virtio Over PCI Bus}
+> +	  as the transport and is reserved for future use for
+> +	  devices using other transports (see
+> +	  \ref{drivernormative:Basic Facilities of a Virtio Device / Feature Bits}
+> +	and
+> +	\ref{devicenormative:Basic Facilities of a Virtio Device / Feature Bits} for
+> +	handling features reserved for future use.
+>  
+>  \end{description}
+>  
+
+We don't say for any other feature which transports support it; do we
+really need to state it here explicitly if we have the rules for
+reserved feature bits in place? It simply will be neither offered nor
+accepted if the device and driver use an unsupported transport.
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
