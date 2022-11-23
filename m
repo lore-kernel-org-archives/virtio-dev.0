@@ -1,60 +1,88 @@
-Return-Path: <xuanzhuo@linux.alibaba.com>
-Message-ID: <1669795611.7596157-1-xuanzhuo@linux.alibaba.com>
-Subject: Re: [PATCH v1] content: reserve device ID 44 for ISM device
-Date: Wed, 30 Nov 2022 16:06:51 +0800
-From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-References: <20221130080248.49418-1-xuanzhuo@linux.alibaba.com>
-In-Reply-To: <20221130080248.49418-1-xuanzhuo@linux.alibaba.com>
-Content-Type: text/plain; charset="US-ASCII"; x-default=true
-To: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Cc: hans@linux.alibaba.com, herongguang@linux.alibaba.com, zmlcc@linux.alibaba.com, dust.li@linux.alibaba.com, tonylu@linux.alibaba.com, zhenzao@linux.alibaba.com, helinguo@linux.alibaba.com, gerry@linux.alibaba.com, mst@redhat.com, cohuck@redhat.com, jasowang@redhat.com, Jan Kiszka <jan.kiszka@siemens.com>, virtio-dev@lists.oasis-open.org
+Return-Path: <mst@redhat.com>
+Date: Wed, 23 Nov 2022 16:07:56 -0500
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Subject: [PATCH v9 00/10] Introduce device group and device management
+Message-ID: <20221123210706.21476-1-mst@redhat.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+To: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, jasowang@redhat.com, mst@redhat.com, cohuck@redhat.com, sgarzare@redhat.com, stefanha@redhat.com, nrupal.jani@intel.com, Piotr.Uminski@intel.com, hang.yuan@intel.com
+Cc: virtio@lists.oasis-open.org, Zhu Lingshan <lingshan.zhu@intel.com>, pasic@linux.ibm.com, Shahaf Shuler <shahafs@nvidia.com>, Parav Pandit <parav@nvidia.com>, Max Gurtovoy <mgurtovoy@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, 30 Nov 2022 16:02:48 +0800, Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
-> The virtio-ism device provides the ability to share memory between
-> different guests on a host. A guest's memory got from ism device can be
-> shared with multiple peers at the same time. This shared relationship
-> can be dynamically created and released.
->
-> The shared memory obtained from the device is divided into multiple ism
-> regions for share. ISM device provides a mechanism to notify other ism
-> region referrers of content update events.
->
-> This patch is to reserve the next available device ID for virtio-ism.
 
-Fixes: https://github.com/oasis-tcs/virtio-spec/issues/150
+Change log:
 
-I think we can vote first to merge this first.
+since v8:
+	addressed comments by Cornelia - as we agreed on list
+	
+since v7:
+	make high level error codes match linux, with virtio specific codes
+		in a separate field
+	renamed _ACCEPT to _USE since that's what it does
+	clarified forward compatibility and non pci transports
+	support multiple admin vqs
+	conformance statements
+	lots of changes all over the place to I changed author from Max
+	to myself. Don't need to take credit but also don't want
+	to blame Max for my mistakes.
 
-Thanks.
+since v6:
+
+	- removed some extentions intended for future use.
+	  We'll do them when we get there.
+
+	- brought back command list query from v5 in a simplified form -
+	  it's here to address the case where a single parent
+	  can address multiple groups, such as PF addressing
+	  transport vq and sriov vfs.
+
+	- attempt to make terminology more formal.
+	In particular a term for whoever controls the group.
+ 	I am still going back
+	and forth between "parent" and "owner" - owner might
+	be better after all since it will work if we ever
+	have a self group. For now it's parent.
+
+TODO (maybe?) - probably ok to defer until this part is upstream:
+
+	Add "all members" member id.
+
+	Add commands for MSI, feature discovery.
+
+	Add commands for transport vq.
 
 
->
-> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> Signed-off-by: Jiang Liu <gerry@linux.alibaba.com>
-> Signed-off-by: Dust Li <dust.li@linux.alibaba.com>
-> Signed-off-by: Tony Lu <tonylu@linux.alibaba.com>
-> Signed-off-by: Helin Guo <helinguo@linux.alibaba.com>
-> Signed-off-by: Hans Zhang <hans@linux.alibaba.com>
-> Signed-off-by: He Rongguang <herongguang@linux.alibaba.com>
-> ---
->  content.tex | 2 ++
->  1 file changed, 2 insertions(+)
->
-> diff --git a/content.tex b/content.tex
-> index 91ba76c..7302365 100644
-> --- a/content.tex
-> +++ b/content.tex
-> @@ -2992,6 +2992,8 @@ \chapter{Device Types}\label{sec:Device Types}
->  \hline
->  43         &   Camera device \\
->  \hline
-> +44         &   ISM device \\
-> +\hline
->  \end{tabular}
->
->  Some of the devices above are unspecified by this document,
-> --
-> 2.32.0.3.g01195cf9f
->
+My intent is to try and support both SR-IOV and SIOV
+usecases with the same structure and maybe even the same
+VQ.
+
+For example, it might make sense to split creating/destroying
+SIOV devices from the transport passing data from the guest - the
+driver would then not negotiate VIRTIO_F_SR_IOV (which
+then means auto-provisioning).
+
+This is out of RFC, since we have two commands which are useful
+to discover supported group types (ATM can be none or SR-IOV).
+
+
+Michael S. Tsirkin (10):
+  virtio: document forward compatibility guarantees
+  admin: introduce device group and related concepts
+  admin: introduce group administration commands
+  admin: introduce virtio admin virtqueues
+  pci: add admin vq registers to virtio over pci
+  mmio: document ADMIN_VQ as reserved
+  ccw: document ADMIN_VQ as reserved
+  admin: command list discovery
+  admin: conformance clauses
+  ccw: document more reserved features
+
+ admin.tex   | 435 ++++++++++++++++++++++++++++++++++++++++++++++++++++
+ content.tex | 111 +++++++++++++-
+ 2 files changed, 544 insertions(+), 2 deletions(-)
+ create mode 100644 admin.tex
+
+-- 
+MST
 
