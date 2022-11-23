@@ -1,118 +1,136 @@
 Return-Path: <mst@redhat.com>
-Date: Fri, 25 Nov 2022 07:08:14 -0500
+Date: Wed, 23 Nov 2022 16:08:09 -0500
 From: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: Re: [virtio-dev] Re: [PATCH v9 02/10] admin: introduce device group
- and related concepts
-Message-ID: <20221125070700-mutt-send-email-mst@kernel.org>
+Subject: [PATCH v9 03/10] admin: introduce group administration commands
+Message-ID: <20221123210706.21476-4-mst@redhat.com>
 References: <20221123210706.21476-1-mst@redhat.com>
- <20221123210706.21476-3-mst@redhat.com>
- <CACGkMEuuHgJ-yZmMAu0L=piUmZa8sY-v7e5FyTrpUSdZML5KUA@mail.gmail.com>
- <20221124020650-mutt-send-email-mst@kernel.org>
- <CACGkMEtF0WLEiDPQw5W7o0f+JvkFSbX++uOc-SPYHsnFMXyJgw@mail.gmail.com>
- <20221124031554-mutt-send-email-mst@kernel.org>
- <87h6yoh7pj.fsf@redhat.com>
- <5731c35c-f24d-3667-b3be-c2f86f849b92@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <5731c35c-f24d-3667-b3be-c2f86f849b92@redhat.com>
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <20221123210706.21476-1-mst@redhat.com>
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-To: Jason Wang <jasowang@redhat.com>
-Cc: Cornelia Huck <cohuck@redhat.com>, virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, sgarzare@redhat.com, stefanha@redhat.com, nrupal.jani@intel.com, Piotr.Uminski@intel.com, hang.yuan@intel.com, virtio@lists.oasis-open.org, Zhu Lingshan <lingshan.zhu@intel.com>, pasic@linux.ibm.com, Shahaf Shuler <shahafs@nvidia.com>, Parav Pandit <parav@nvidia.com>, Max Gurtovoy <mgurtovoy@nvidia.com>
+To: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, jasowang@redhat.com, mst@redhat.com, cohuck@redhat.com, sgarzare@redhat.com, stefanha@redhat.com, nrupal.jani@intel.com, Piotr.Uminski@intel.com, hang.yuan@intel.com
+Cc: virtio@lists.oasis-open.org, Zhu Lingshan <lingshan.zhu@intel.com>, pasic@linux.ibm.com, Shahaf Shuler <shahafs@nvidia.com>, Parav Pandit <parav@nvidia.com>, Max Gurtovoy <mgurtovoy@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Fri, Nov 25, 2022 at 11:23:09AM +0800, Jason Wang wrote:
-> 
-> 在 2022/11/24 20:12, Cornelia Huck 写道:
-> > On Thu, Nov 24 2022, "Michael S. Tsirkin" <mst@redhat.com> wrote:
-> > 
-> > > On Thu, Nov 24, 2022 at 03:37:42PM +0800, Jason Wang wrote:
-> > > > On Thu, Nov 24, 2022 at 3:08 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > > > > On Thu, Nov 24, 2022 at 01:41:41PM +0800, Jason Wang wrote:
-> > > > > > On Thu, Nov 24, 2022 at 5:08 AM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > > > > > > +The following group types, and their identifiers, are currently specified):
-> > > > > > > +\begin{description}
-> > > > > > > +\item[SR-IOV group type (0x1)]
-> > > > > > > +This device group has a PCI Single Root I/O Virtualization
-> > > > > > > +(SR-IOV) physical function (PF) device as the owner and includes
-> > > > > > > +all its SR-IOV virtual functions (VFs) as members (see
-> > > > > > > +\hyperref[intro:PCIe]{[PCIe]}).
-> > > > > > So I wonder what's the advantage of using a global identifier over the
-> > > > > > transport specific one. There's almost no way for CCW/MMIO to use
-> > > > > > SR-IOV. Limiting it to PCI seems much easier and avoids layer
-> > > > > > violation.
-> > > > > > 
-> > > > > > Thanks
-> > > > > So we burn up an identifier, ccw and mmio won't be able to use it.
-> > > > > Big deal? Why?
-> > > > Because it is transport specific. The basic facility should be
-> > > > transport independent.
-> > > I tried this but the result is spread all over the spec
-> > > and does not result in a readable cohesive whole.
-> 
-> 
-> I may miss something, but it looks to me it's just a subsection in the PCI
-> transport to describe the SR-IOV group identifier.
-> 
+This introduces a general structure for group administration commands,
+used to control device groups through their owner.
 
+Following patches will introduce specific commands and an interface for
+submitting these commands to the owner.
 
-right so everything is in admin.tex except for the identifier
-which is in pci. I find this split annoying - not enough material
-here where splitting makes things cleaner.
-But we can move it down the road.
+Signed-off-by: Max Gurtovoy <mgurtovoy@nvidia.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+---
+ admin.tex | 98 +++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 98 insertions(+)
 
-
-> > > So we give up on the transport independent purity a bit and it
-> > > seems worth it.
-> > > Also explained this in the cover letter - have you seen that?
-> 
-> 
-> Sorry, I don't.
-> 
-> 
-> > > 
-> > > 
-> > > 
-> > > > > And I think we might find a use for this with MMIO
-> > > > > down the road with some kind of passthrough. Who knows.
-> > > > Probably, but can it be modeled exactly as what SR-IOV looks like? Or
-> > > > anyhow, it's not too late to define this for MMIO at that time. For
-> > > > example, we know MSI-X may work for MMIO but we define it only for PCI
-> > > > now.
-> > > > 
-> > > > Thanks
-> > > Right. So if we reserve the id for all transports then it will
-> > > be easy to do.
-> > Also, if we go with transport-specific ids, we might end up with
-> > different ids per transport when we add a future transport-independent
-> > feature.
-> 
-> 
-> I'm not sure this is a real problem:
-> 
-> 1) all the basic facilities are now transport-independent but they are
-> implemented via different transport specific registers/commands/offsets etc.
-> 2) I'm not quite sure there would be a transport-independent group
-> identifier other than the virtqueue transport, so I wonder if it makes sense
-> to split the id space into global ones as well as the transport specific
-> ones
-> 
-> 
-> >   The global id space really should be big enough to accommodate
-> > even single-transport groups.
-> 
-> 
-> Yes, so it's not about the space but about whether or it it's
-> worth/correct/expensive to describe a transport specific identifier in the
-> basic facility part.
-> 
-> Thanks
-> 
-> 
-> > 
-> > 
-> > ---------------------------------------------------------------------
-> > To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> > For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
-> > 
+diff --git a/admin.tex b/admin.tex
+index 6ebdd05..1dca136 100644
+--- a/admin.tex
++++ b/admin.tex
+@@ -42,4 +42,102 @@ \section{Device groups}\label{sec:Basic Facilities of a Virtio Device / Device g
+ PCI transport (see \ref{sec:Virtio Transport Options / Virtio Over PCI Bus}).
+ \end{description}
+ 
++\subsection{Group administration commands}\label{sec:Basic Facilities of a Virtio Device / Device groups / Group administration commands}
+ 
++Group administration commands can be issued through an owner
++device to control member devices of a group.  This mechanism can
++be used, for example, to configure a member device before it is
++initialized by its driver.
++
++All the group administration commands are of the following form:
++
++\begin{lstlisting}
++struct virtio_admin_cmd {
++        /* Device-readable part */
++        le16 opcode;
++        /*
++         * 1 - SR-IOV
++         * 2 - 65535 reserved
++         */
++        le16 group_type;
++        /* unused, reserved for future extensions */
++        u8 reserved1[12];
++        le64 group_member_id;
++        u8 command_specific_data[];
++
++        /* Device-writable part */
++        le16 status;
++        le16 status_qualifier;
++        /* unused, reserved for future extensions */
++        u8 reserved2[4];
++        u8 command_specific_result[];
++};
++\end{lstlisting}
++
++For all commands, \field{opcode}, \field{group_type} and if
++necessary \field{group_member_id} and \field{command_specific_data} are
++set by the driver, and the owner device sets \field{status} and if
++needed \field{status_qualifier} and
++\field{command_specific_result}.
++
++As a rule, any unused device-readable fields are set to zero by the driver
++and ignored by the device.  Any unused device-writeable fields are set to zero
++by the device and ignored by the driver.
++
++\field{opcode} specifies the command. The valid
++values for \field{opcode} can be found in the following table:
++
++\begin{tabular}{|l|l|}
++\hline
++opcode & Name & Command Description \\
++\hline \hline
++0x0000 - 0x7FFF & - &  Group administration commands    \\
++\hline
++0x8000 - 0xFFFF & - & Reserved    \\
++\hline
++\end{tabular}
++
++The \field{group_type} specifies the group type identifier.
++The \field{group_member_id} specifies the member identifier within the group.
++See section \ref{sec:Introduction / Terminology / Device group}
++for the definition of the group type identifier and group member
++identifier.
++
++The following table describes possible \field{status} values;
++to simplify common implementations, they are intentionally
++matching common Linux names and error numbers:
++
++\begin{tabular}{|l|l|l|}
++\hline
++Status (decimal) & Name & Description \\
++\hline \hline
++00   & VIRTIO_ADMIN_STATUS_OK    & successful completion  \\
++\hline
++22   & VIRTIO_ADMIN_STATUS_EINVAL    & invalid command \\
++\hline
++other   & -    & group administration command error  \\
++\hline
++\end{tabular}
++
++When \field{status} is VIRTIO_ADMIN_STATUS_OK, \field{status_qialifier}
++is reserved and set to zero by the device.
++
++When \field{status} is VIRTIO_ADMIN_STATUS_EINVAL,
++the following table describes possible \field{status_qialifier} values:
++\begin{tabular}{|l|l|l|}
++\hline
++Status & Name & Description \\
++\hline \hline
++0x00   & VIRTIO_ADMIN_STATUS_Q_INVALID_COMMAND   & command error: no additional information  \\
++\hline
++0x01   & VIRTIO_ADMIN_STATUS_Q_INVALID_OPCODE    & unsupported or invalid \field{opcode}  \\
++\hline
++0x02   & VIRTIO_ADMIN_STATUS_Q_INVALID_FIELD    & unsupported or invalid field within \field{command_specific_data}  \\
++\hline
++0x03   & VIRTIO_ADMIN_STATUS_Q_INVALID_GROUP    & unsupported or invalid \field{group_type} \\
++\hline
++0x04   & VIRTIO_ADMIN_STATUS_Q_INVALID_MEM    & unsupported or invalid \field{group_member_id} \\
++\hline
++0x05-0xFFFF   & -    & reserved for future use \\
++\hline
++\end{tabular}
+-- 
+MST
 
