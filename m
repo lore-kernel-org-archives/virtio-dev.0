@@ -1,134 +1,108 @@
-Return-Path: <jasowang@redhat.com>
-Message-ID: <28de259e-d910-e37c-aeaa-01bfa7616ae0@redhat.com>
-Date: Mon, 28 Nov 2022 14:14:43 +0800
-MIME-Version: 1.0
-Subject: Re: [PATCH v9 01/10] virtio: document forward compatibility
- guarantees
+Return-Path: <mst@redhat.com>
+Date: Wed, 23 Nov 2022 16:08:05 -0500
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Subject: [PATCH v9 02/10] admin: introduce device group and related concepts
+Message-ID: <20221123210706.21476-3-mst@redhat.com>
 References: <20221123210706.21476-1-mst@redhat.com>
- <20221123210706.21476-2-mst@redhat.com>
- <CACGkMEtk6YLic7zjDj-yd36piLSjx5h18eXYs4rKD=uKdqprzw@mail.gmail.com>
- <20221124015254-mutt-send-email-mst@kernel.org>
- <CACGkMEuxYxXU+bYGh79=-KzRRKA-hTvEkTbxej7c=8dB_Q_jZA@mail.gmail.com>
- <20221124031018-mutt-send-email-mst@kernel.org> <87k03kh80p.fsf@redhat.com>
- <4fdaf9b6-46e3-c56d-309c-0208d1c6eaf7@redhat.com> <87zgcfgw1a.fsf@redhat.com>
-From: Jason Wang <jasowang@redhat.com>
-In-Reply-To: <87zgcfgw1a.fsf@redhat.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-To: Cornelia Huck <cohuck@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>
-Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, sgarzare@redhat.com, stefanha@redhat.com, nrupal.jani@intel.com, Piotr.Uminski@intel.com, hang.yuan@intel.com, virtio@lists.oasis-open.org, Zhu Lingshan <lingshan.zhu@intel.com>, pasic@linux.ibm.com, Shahaf Shuler <shahafs@nvidia.com>, Parav Pandit <parav@nvidia.com>, Max Gurtovoy <mgurtovoy@nvidia.com>
+MIME-Version: 1.0
+In-Reply-To: <20221123210706.21476-1-mst@redhat.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+To: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, jasowang@redhat.com, mst@redhat.com, cohuck@redhat.com, sgarzare@redhat.com, stefanha@redhat.com, nrupal.jani@intel.com, Piotr.Uminski@intel.com, hang.yuan@intel.com
+Cc: virtio@lists.oasis-open.org, Zhu Lingshan <lingshan.zhu@intel.com>, pasic@linux.ibm.com, Shahaf Shuler <shahafs@nvidia.com>, Parav Pandit <parav@nvidia.com>, Max Gurtovoy <mgurtovoy@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+Each device group has a type. For now, define one initial group:
 
-在 2022/11/25 18:37, Cornelia Huck 写道:
-> On Fri, Nov 25 2022, Jason Wang <jasowang@redhat.com> wrote:
->
->> 在 2022/11/24 20:05, Cornelia Huck 写道:
->>> On Thu, Nov 24 2022, "Michael S. Tsirkin" <mst@redhat.com> wrote:
->>>
->>>> On Thu, Nov 24, 2022 at 03:34:19PM +0800, Jason Wang wrote:
->>>>> On Thu, Nov 24, 2022 at 2:59 PM Michael S. Tsirkin <mst@redhat.com> wrote:
->>>>>> On Thu, Nov 24, 2022 at 12:33:52PM +0800, Jason Wang wrote:
->>>>>>> On Thu, Nov 24, 2022 at 5:08 AM Michael S. Tsirkin <mst@redhat.com> wrote:
->>>>>>>> Feature negotiation forms the basis of forward compatibility
->>>>>>>> guarantees of virtio but has never been properly documented.
->>>>>>>> Do it now.
->>>>>>>>
->>>>>>>> Suggested-by: Halil Pasic <pasic@linux.ibm.com>
->>>>>>>> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
->>>>>>>> ---
->>>>>>>>    content.tex | 42 ++++++++++++++++++++++++++++++++++++++++++
->>>>>>>>    1 file changed, 42 insertions(+)
->>>>>>>>
->>>>>>>> diff --git a/content.tex b/content.tex
->>>>>>>> index 3051399..e3203be 100644
->>>>>>>> --- a/content.tex
->>>>>>>> +++ b/content.tex
->>>>>>>> @@ -114,21 +114,63 @@ \section{Feature Bits}\label{sec:Basic Facilities of a Virtio Device / Feature B
->>>>>>>>    In particular, new fields in the device configuration space are
->>>>>>>>    indicated by offering a new feature bit.
->>>>>>>>
->>>>>>>> +To keep te feature negotiation mechanism extensible, it is important
->>>>>>>> +that devices \em{do not} offer any feature bits that they would not be
->>>>>>>> +able to handle if the driver accepted them (even though drivers are not
->>>>>>>> +supposed to accept them in the first place even if offered, according to
->>>>>>>> +this version of the specification.)
->>>>>>> It looks to me if we want to clarify like this, feature negotiation is
->>>>>>> not sufficient. Do we need to do something similar in other basic
->>>>>>> facilities? Generally, we probably need to do this for facilities that
->>>>>>> are similar to features (status, virtqueue size and others).
->>>>>> I'm not sure about "not sufficient". It's sufficient as long
->>>>>> as you just want to extend features. What triggered this
->>>>>> work is adding a transport specific feature.
->>>>> E.g:
->>>>>
->>>>> For status: Devices do not offer any status bit it would not be able to handle.
->>>>> For virtqueue size:  Devices do not offer virtqueue size it would not
->>>>> be able to handle.
->>>>>
->>>>> ?
->>>> Jason I think what you miss here is this part:
->>>>
->>>> "even though drivers are not
->>>> supposed to accept them in the first place even if offered, according to
->>>> this version of the specification"
->>>>
->>>> does not apply to status and virtqueue size.
->>>>
->>>>
->>>> Let me clarify what all this means.
->>>> It seems safe for a device to offer a reserved feature bit
->>
->> This depends really on the behaviour of the drivers.
->>
->>
->>>> since drivers are not supposed to accept it.
->>
->> So this is the case of the ADMIN_VQ.
->>
->>
->>>> This text says device must not rely on this.
->>>>
->>>> How would this apply to status or vq size? I don't see.
->>> Me neither... for the status, it's about either the driver noting its
->>> progress, or the device indicating that a reset is needed. The only case
->>> where setting something requires kind of an ack is FEATURES_OK, and
->>> there we already spell out the conditions clearly.
->>
->> I basically meant something like:
->>
->> Assuming we have a feature like VIRTIO_RING_F_NEW and a new status bit
->> was mapped to this feature, VIRTIO_CONFIG_S_NEW. And for some reason
->> this feature is reserved for some transports. Should we mention device
->> does not offer VIRTIO_CONFIG_S_NEW as well, or we assume it is implied
->> that we don't offer VIRTIO_CONFIG_S_NEW in this case?
-> I'm not sure that adding a feature-specific status bit would make sense,
-> given that the status bits either need to work before feature
-> negotiation is complete, or are actually needed for feature negotiation.
+SR-IOV type - PCI SR-IOV virtual functions (VFs) of a given
+PCI SR-IOV physical function (PF). This group may contain one or more
+virtio devices.
 
+Each device within a group has a unique identifier. This identifier
+is the group member identifier.
 
-It can work only after the feature negotiation. E.g the device stop 
-(only makes sense after DRIVER_OK is set).
+Note: one can argue both ways whether the new device group handling
+functionality (this and following patches) is closer
+to a new device type or a new transport type.
 
+However, I expect that we will add more features in the near future. To
+facilitate this as much as possible of the text is located in the new
+admin chapter.
 
-> Also, the status-bit space is way more limited than the feature-bit
-> space. Therefore, I think we can safely ignore the status bits.
->
->>
->>> For the queue size,
->>> we specify that the device states what it can support, and that the
->>> driver may only reduce it, that seems clear enough to me.
->>
->> Similar to the above, assuming a feature VIRTIO_R_F_MAXSIZE_XXX, and it
->> is reserved. Should we mention that the new max virtqueue size should
->> not be advertised or it is implied in the feature advertisement?
-> I'd say it's implied in the feature bit handling already.
+I did my best to minimize transport-specific text.
 
+Signed-off-by: Max Gurtovoy <mgurtovoy@nvidia.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+---
+ admin.tex   | 45 +++++++++++++++++++++++++++++++++++++++++++++
+ content.tex |  2 ++
+ 2 files changed, 47 insertions(+)
+ create mode 100644 admin.tex
 
-Ok.
-
-Thanks
-
->
+diff --git a/admin.tex b/admin.tex
+new file mode 100644
+index 0000000..6ebdd05
+--- /dev/null
++++ b/admin.tex
+@@ -0,0 +1,45 @@
++\section{Device groups}\label{sec:Basic Facilities of a Virtio Device / Device groups}
++
++It is occasionally useful to have a device control a group of
++other devices. Terminology used in such cases:
++
++\begin{description}
++\item[Device group]
++        or just group, includes zero or more devices.
++\item[Owner device]
++        or owner, the device controlling the group.
++\item[Member device]
++        a device within a group. The owner device itself is not
++	a member of the group.
++\item[Member identifier]
++        each member has this identifier, unique within the group
++	and used to address it through the owner device.
++\item[Group type identifier]
++	specifies what kind of member devices there are in a
++	group, how is the member identifier is interpreted
++	and what kind of control the owner has.
++	A given owner can control a single group of a given type,
++	thus the type and the owner together identify the group.
++\end{description}
++
++The following group types, and their identifiers, are currently specified):
++\begin{description}
++\item[SR-IOV group type (0x1)]
++This device group has a PCI Single Root I/O Virtualization
++(SR-IOV) physical function (PF) device as the owner and includes
++all its SR-IOV virtual functions (VFs) as members (see
++\hyperref[intro:PCIe]{[PCIe]}).
++
++The PF device itself is not a member of the group.
++
++The group type identifier for this group is 0x1.
++
++A member identifier for this group can have a value 0x1 to 0xFFFF
++and equals the SR-IOV VF number of the member device (see
++\hyperref[intro:PCIe]{[PCIe]}).
++
++Both owner and member devices for this group type use the Virtio
++PCI transport (see \ref{sec:Virtio Transport Options / Virtio Over PCI Bus}).
++\end{description}
++
++
+diff --git a/content.tex b/content.tex
+index e3203be..3f3585d 100644
+--- a/content.tex
++++ b/content.tex
+@@ -491,6 +491,8 @@ \section{Exporting Objects}\label{sec:Basic Facilities of a Virtio Device / Expo
+ types. It is RECOMMENDED that devices generate version 4
+ UUIDs as specified by \hyperref[intro:rfc4122]{[RFC4122]}.
+ 
++\input{admin.tex}
++
+ \chapter{General Initialization And Device Operation}\label{sec:General Initialization And Device Operation}
+ 
+ We start with an overview of device initialization, then expand on the
+-- 
+MST
 
