@@ -1,39 +1,42 @@
-Return-Path: <jasowang@redhat.com>
-Message-ID: <b9b96419-66ab-f182-c720-34ec229e3b86@redhat.com>
-Date: Fri, 25 Nov 2022 11:38:56 +0800
-MIME-Version: 1.0
-Subject: Re: [PATCH v9 09/10] admin: conformance clauses
+Return-Path: <mst@redhat.com>
+Date: Wed, 23 Nov 2022 16:08:34 -0500
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Subject: [PATCH RFC v9 10/10] ccw: document more reserved features
+Message-ID: <20221123210706.21476-11-mst@redhat.com>
 References: <20221123210706.21476-1-mst@redhat.com>
- <20221123210706.21476-10-mst@redhat.com>
- <CACGkMEsDi3+iU3QjQ4Mqp5yQc0epOqLZXnYTnqaoPwtB6pvF7A@mail.gmail.com>
- <87bkowh6za.fsf@redhat.com>
-From: Jason Wang <jasowang@redhat.com>
-In-Reply-To: <87bkowh6za.fsf@redhat.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-To: Cornelia Huck <cohuck@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>
-Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, sgarzare@redhat.com, stefanha@redhat.com, nrupal.jani@intel.com, Piotr.Uminski@intel.com, hang.yuan@intel.com, virtio@lists.oasis-open.org, Zhu Lingshan <lingshan.zhu@intel.com>, pasic@linux.ibm.com, Shahaf Shuler <shahafs@nvidia.com>, Parav Pandit <parav@nvidia.com>, Max Gurtovoy <mgurtovoy@nvidia.com>
+MIME-Version: 1.0
+In-Reply-To: <20221123210706.21476-1-mst@redhat.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+To: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, jasowang@redhat.com, mst@redhat.com, cohuck@redhat.com, sgarzare@redhat.com, stefanha@redhat.com, nrupal.jani@intel.com, Piotr.Uminski@intel.com, hang.yuan@intel.com
+Cc: virtio@lists.oasis-open.org, Zhu Lingshan <lingshan.zhu@intel.com>, pasic@linux.ibm.com, Shahaf Shuler <shahafs@nvidia.com>, Parav Pandit <parav@nvidia.com>, Max Gurtovoy <mgurtovoy@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+vq reset and shared memory are unsupported, too.
 
-在 2022/11/24 20:28, Cornelia Huck 写道:
-> On Thu, Nov 24 2022, Jason Wang <jasowang@redhat.com> wrote:
->
->> On Thu, Nov 24, 2022 at 5:08 AM Michael S. Tsirkin <mst@redhat.com> wrote:
->>> +The device MUST support device-readable and device-writeable buffers
->>> +shorter than described in this specification, by
->>> +\begin{enumerate}
->>> +\item assuming that any data that would be read outside the
->>> +device-readable buffers is set to zero, and
->> s/"is set"/"are set"
-> I think "is set" is actually correct.
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+---
 
 
-You are right.
+This is not strictly part of this patchset, but just to
+give you the idea of how we can expand this down the road.
 
-Thanks
+ content.tex | 2 ++
+ 1 file changed, 2 insertions(+)
 
-
->
+diff --git a/content.tex b/content.tex
+index 6c3758d..bfcf9fe 100644
+--- a/content.tex
++++ b/content.tex
+@@ -2983,6 +2983,8 @@ \subsection{Features reserved for future use}\label{sec:Virtio Transport Options
+ \begin{itemize}
+ 
+ \item VIRTIO_F_ADMIN_VQ
++\item VIRTIO_F_RING_RESET
++\item Shared memory regions including VIRTIO_PMEM_F_SHMEM_REGION
+ 
+ \end{itemize}
+ 
+-- 
+MST
 
