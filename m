@@ -1,122 +1,113 @@
-Return-Path: <virtio-dev-return-10191-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-10286-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id E35E0986350
-	for <virtio-dev@lists.oasis-open.org>; Mon, 21 Nov 2022 16:30:34 +0000 (UTC)
-Date: Mon, 21 Nov 2022 11:30:25 -0500
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20221121162756.350032-4-mst@redhat.com>
-References: <20221121162756.350032-1-mst@redhat.com>
+Message-ID: <358e4b4f-0fe8-3f17-dbf2-efb0c3c93218@amazon.es>
+Date: Fri, 25 Nov 2022 13:41:34 +0100
 MIME-Version: 1.0
-In-Reply-To: <20221121162756.350032-1-mst@redhat.com>
-Subject: [virtio-dev] [PATCH RFC 3/3] rng: leak detection support
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-To: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, "Cali, Marco" <xmarcalx@amazon.co.uk>, "Graf (AWS), Alexander" <graf@amazon.de>, "Chalios, Babis" <bchalios@amazon.es>, "Jason A. Donenfeld" <Jason@zx2c4.com>
+References: <20221121162756.350032-1-mst@redhat.com>
+ <20221121162756.350032-4-mst@redhat.com>
+From: Babis Chalios <bchalios@amazon.es>
+In-Reply-To: <20221121162756.350032-4-mst@redhat.com>
+Subject: [virtio-dev] Re: [PATCH RFC 3/3] rng: leak detection support
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: base64
+To: "Michael S. Tsirkin" <mst@redhat.com>, virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, "Cali, Marco" <xmarcalx@amazon.co.uk>, "Graf (AWS), Alexander" <graf@amazon.de>, "Jason A. Donenfeld" <Jason@zx2c4.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Add virtqueues to support reporting entropy leaks (similar to virtio based vmgenid).
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
----
- virtio-rng.tex | 61 +++++++++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 60 insertions(+), 1 deletion(-)
-
-diff --git a/virtio-rng.tex b/virtio-rng.tex
-index 1ec7164..4760dfa 100644
---- a/virtio-rng.tex
-+++ b/virtio-rng.tex
-@@ -9,10 +9,14 @@ \subsection{Device ID}\label{sec:Device Types / Entropy Device / Device ID}
- \subsection{Virtqueues}\label{sec:Device Types / Entropy Device / Virtqueues}
- \begin{description}
- \item[0] requestq
-+\item[1] leakq1 (only if VIRTIO_RNG_F_LEAK is offered)
-+\item[2] leakq2 (only if VIRTIO_RNG_F_LEAK is offered)
- \end{description}
- 
- \subsection{Feature bits}\label{sec:Device Types / Entropy Device / Feature bits}
--  None currently defined
-+\begin{description}
-+\item[VIRTIO_RNG_F_LEAK (0)] Device can report and handle information leaks.
-+\end{description}
- 
- \subsection{Device configuration layout}\label{sec:Device Types / Entropy Device / Device configuration layout}
-   None currently defined.
-@@ -21,6 +25,7 @@ \subsection{Device Initialization}\label{sec:Device Types / Entropy Device / Dev
- 
- \begin{enumerate}
- \item The \field{requestq} virtqueue is initialized
-+\item If VIRTIO_RNG_F_LEAK has been negotiated, \field{leakq1} and \field{leakq2} are initialized
- \end{enumerate}
- 
- \subsection{Device Operation}\label{sec:Device Types / Entropy Device / Device Operation}
-@@ -41,3 +46,57 @@ \subsection{Device Operation}\label{sec:Device Types / Entropy Device / Device O
- The device MUST place one or more random bytes into the buffer
- made available to it through \field{requestq}, but it
- MAY use less than the entire buffer length.
-+
-+\subsubsection{Reporting Information Leaks}{Device Types / Entropy Device / Device Operation / Reporting Information Leaks}
-+
-+The device might, after the fact, detect that some of the entropy
-+it supplied to the driver has after the fact degraded in quality
-+or leaked to the outside world.  One example is when the device
-+is part of the virtual machine undergoing a restore from snapshot
-+operation. Another example is when the information leaks from the
-+host system through a side-channel.
-+
-+The driver would typically react by causing regeneration of any
-+information that might have leaked and that has to be secret or
-+unique.  It is understood that when an information leak has been
-+detected it is likely not limited to the entropy received through
-+the specific device. In particular, this is the case for
-+snapshoting It is thus suggested that the system fully
-+regenerate any unique/secret information in this scenario.
-+
-+If VIRTIO_RNG_F_LEAK has been negotiated the device can report
-+such leaks to the driver through a set of dedicated leak
-+queues: \field{leakq1} and \field{leakq2}.
-+
-+Buffers added to the leak queues can have one of two forms:
-+\begin{enumerate}
-+\item A write-only buffer. It will be completely filled by random data by the device.
-+\item A buffer consisting of read-only section followed by a
-+write-only section, both of identical size. The
-+device will copy data from the read-only section to the write-only
-+section.
-+\end{enumerate}
-+
-+The steps for operating the virtqueue are:
-+
-+\begin{enumerate}
-+\item At each time, only one of \field{leakq1}, \field{leakq2} is active
-+      (has buffers added/used).
-+\item After initialization, \field{leakq1} is active.
-+\item Driver adds multiple buffers to the active leak queue.
-+\item The buffers are not used until an information leak is
-+      detected, as long as that is the case driver can
-+      add more buffers to the active queue.
-+\item Upon detecting an information leak, device starts
-+      using buffers in the active leak queue.
-+\item Upon detecting that buffers have been used, driver
-+      switches to another leak queue making it active
-+      (e.g. from \field{leakq1} to \field{leakq2} or vice versa).
-+      It then starts adding buffers to the new leak queue.
-+\item Device will keep using buffers in the active leak queue
-+      until it detects that both the current leak queue is empty and another
-+      leak queue has buffers. At that point device switches to
-+      another leak queue, making it active.
-+\item After the switch, buffers from the new leak queue are not
-+      used until an information leak is detected.
-+\end{enumerate}
--- 
-MST
-
-
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+SGkgTWljaGFlbCwKCkFuZCB0aGFua3MgYSBsb3Qgb24gdGhlIGVmZm9ydCBvbiB0aGF0LgoKT24g
+MjEvMTEvMjIgMTc6MzAsIE1pY2hhZWwgUy4gVHNpcmtpbiB3cm90ZToKPiBDQVVUSU9OOiBUaGlz
+IGVtYWlsIG9yaWdpbmF0ZWQgZnJvbSBvdXRzaWRlIG9mIHRoZSBvcmdhbml6YXRpb24uIERvIG5v
+dCBjbGljayBsaW5rcyBvciBvcGVuIGF0dGFjaG1lbnRzIHVubGVzcyB5b3UgY2FuIGNvbmZpcm0g
+dGhlIHNlbmRlciBhbmQga25vdyB0aGUgY29udGVudCBpcyBzYWZlLgo+Cj4KPgo+IEFkZCB2aXJ0
+cXVldWVzIHRvIHN1cHBvcnQgcmVwb3J0aW5nIGVudHJvcHkgbGVha3MgKHNpbWlsYXIgdG8gdmly
+dGlvIGJhc2VkIHZtZ2VuaWQpLgo+Cj4gU2lnbmVkLW9mZi1ieTogTWljaGFlbCBTLiBUc2lya2lu
+IDxtc3RAcmVkaGF0LmNvbT4KPiAtLS0KPiAgIHZpcnRpby1ybmcudGV4IHwgNjEgKysrKysrKysr
+KysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKy0KPiAgIDEgZmlsZSBjaGFu
+Z2VkLCA2MCBpbnNlcnRpb25zKCspLCAxIGRlbGV0aW9uKC0pCj4KPiBkaWZmIC0tZ2l0IGEvdmly
+dGlvLXJuZy50ZXggYi92aXJ0aW8tcm5nLnRleAo+IGluZGV4IDFlYzcxNjQuLjQ3NjBkZmEgMTAw
+NjQ0Cj4gLS0tIGEvdmlydGlvLXJuZy50ZXgKPiArKysgYi92aXJ0aW8tcm5nLnRleAo+IEBAIC05
+LDEwICs5LDE0IEBAIFxzdWJzZWN0aW9ue0RldmljZSBJRH1cbGFiZWx7c2VjOkRldmljZSBUeXBl
+cyAvIEVudHJvcHkgRGV2aWNlIC8gRGV2aWNlIElEfQo+ICAgXHN1YnNlY3Rpb257VmlydHF1ZXVl
+c31cbGFiZWx7c2VjOkRldmljZSBUeXBlcyAvIEVudHJvcHkgRGV2aWNlIC8gVmlydHF1ZXVlc30K
+PiAgIFxiZWdpbntkZXNjcmlwdGlvbn0KPiAgIFxpdGVtWzBdIHJlcXVlc3RxCj4gK1xpdGVtWzFd
+IGxlYWtxMSAob25seSBpZiBWSVJUSU9fUk5HX0ZfTEVBSyBpcyBvZmZlcmVkKQo+ICtcaXRlbVsy
+XSBsZWFrcTIgKG9ubHkgaWYgVklSVElPX1JOR19GX0xFQUsgaXMgb2ZmZXJlZCkKPiAgIFxlbmR7
+ZGVzY3JpcHRpb259Cj4KPiAgIFxzdWJzZWN0aW9ue0ZlYXR1cmUgYml0c31cbGFiZWx7c2VjOkRl
+dmljZSBUeXBlcyAvIEVudHJvcHkgRGV2aWNlIC8gRmVhdHVyZSBiaXRzfQo+IC0gIE5vbmUgY3Vy
+cmVudGx5IGRlZmluZWQKPiArXGJlZ2lue2Rlc2NyaXB0aW9ufQo+ICtcaXRlbVtWSVJUSU9fUk5H
+X0ZfTEVBSyAoMCldIERldmljZSBjYW4gcmVwb3J0IGFuZCBoYW5kbGUgaW5mb3JtYXRpb24gbGVh
+a3MuCj4gK1xlbmR7ZGVzY3JpcHRpb259Cj4KPiAgIFxzdWJzZWN0aW9ue0RldmljZSBjb25maWd1
+cmF0aW9uIGxheW91dH1cbGFiZWx7c2VjOkRldmljZSBUeXBlcyAvIEVudHJvcHkgRGV2aWNlIC8g
+RGV2aWNlIGNvbmZpZ3VyYXRpb24gbGF5b3V0fQo+ICAgICBOb25lIGN1cnJlbnRseSBkZWZpbmVk
+Lgo+IEBAIC0yMSw2ICsyNSw3IEBAIFxzdWJzZWN0aW9ue0RldmljZSBJbml0aWFsaXphdGlvbn1c
+bGFiZWx7c2VjOkRldmljZSBUeXBlcyAvIEVudHJvcHkgRGV2aWNlIC8gRGV2Cj4KPiAgIFxiZWdp
+bntlbnVtZXJhdGV9Cj4gICBcaXRlbSBUaGUgXGZpZWxke3JlcXVlc3RxfSB2aXJ0cXVldWUgaXMg
+aW5pdGlhbGl6ZWQKPiArXGl0ZW0gSWYgVklSVElPX1JOR19GX0xFQUsgaGFzIGJlZW4gbmVnb3Rp
+YXRlZCwgXGZpZWxke2xlYWtxMX0gYW5kIFxmaWVsZHtsZWFrcTJ9IGFyZSBpbml0aWFsaXplZAo+
+ICAgXGVuZHtlbnVtZXJhdGV9Cj4KPiAgIFxzdWJzZWN0aW9ue0RldmljZSBPcGVyYXRpb259XGxh
+YmVse3NlYzpEZXZpY2UgVHlwZXMgLyBFbnRyb3B5IERldmljZSAvIERldmljZSBPcGVyYXRpb259
+Cj4gQEAgLTQxLDMgKzQ2LDU3IEBAIFxzdWJzZWN0aW9ue0RldmljZSBPcGVyYXRpb259XGxhYmVs
+e3NlYzpEZXZpY2UgVHlwZXMgLyBFbnRyb3B5IERldmljZSAvIERldmljZSBPCj4gICBUaGUgZGV2
+aWNlIE1VU1QgcGxhY2Ugb25lIG9yIG1vcmUgcmFuZG9tIGJ5dGVzIGludG8gdGhlIGJ1ZmZlcgo+
+ICAgbWFkZSBhdmFpbGFibGUgdG8gaXQgdGhyb3VnaCBcZmllbGR7cmVxdWVzdHF9LCBidXQgaXQK
+PiAgIE1BWSB1c2UgbGVzcyB0aGFuIHRoZSBlbnRpcmUgYnVmZmVyIGxlbmd0aC4KPiArCj4gK1xz
+dWJzdWJzZWN0aW9ue1JlcG9ydGluZyBJbmZvcm1hdGlvbiBMZWFrc317RGV2aWNlIFR5cGVzIC8g
+RW50cm9weSBEZXZpY2UgLyBEZXZpY2UgT3BlcmF0aW9uIC8gUmVwb3J0aW5nIEluZm9ybWF0aW9u
+IExlYWtzfQo+ICsKPiArVGhlIGRldmljZSBtaWdodCwgYWZ0ZXIgdGhlIGZhY3QsIGRldGVjdCB0
+aGF0IHNvbWUgb2YgdGhlIGVudHJvcHkKPiAraXQgc3VwcGxpZWQgdG8gdGhlIGRyaXZlciBoYXMg
+YWZ0ZXIgdGhlIGZhY3QgZGVncmFkZWQgaW4gcXVhbGl0eQo+ICtvciBsZWFrZWQgdG8gdGhlIG91
+dHNpZGUgd29ybGQuICBPbmUgZXhhbXBsZSBpcyB3aGVuIHRoZSBkZXZpY2UKPiAraXMgcGFydCBv
+ZiB0aGUgdmlydHVhbCBtYWNoaW5lIHVuZGVyZ29pbmcgYSByZXN0b3JlIGZyb20gc25hcHNob3QK
+PiArb3BlcmF0aW9uLiBBbm90aGVyIGV4YW1wbGUgaXMgd2hlbiB0aGUgaW5mb3JtYXRpb24gbGVh
+a3MgZnJvbSB0aGUKPiAraG9zdCBzeXN0ZW0gdGhyb3VnaCBhIHNpZGUtY2hhbm5lbC4KPiArCj4g
+K1RoZSBkcml2ZXIgd291bGQgdHlwaWNhbGx5IHJlYWN0IGJ5IGNhdXNpbmcgcmVnZW5lcmF0aW9u
+IG9mIGFueQo+ICtpbmZvcm1hdGlvbiB0aGF0IG1pZ2h0IGhhdmUgbGVha2VkIGFuZCB0aGF0IGhh
+cyB0byBiZSBzZWNyZXQgb3IKPiArdW5pcXVlLiAgSXQgaXMgdW5kZXJzdG9vZCB0aGF0IHdoZW4g
+YW4gaW5mb3JtYXRpb24gbGVhayBoYXMgYmVlbgo+ICtkZXRlY3RlZCBpdCBpcyBsaWtlbHkgbm90
+IGxpbWl0ZWQgdG8gdGhlIGVudHJvcHkgcmVjZWl2ZWQgdGhyb3VnaAo+ICt0aGUgc3BlY2lmaWMg
+ZGV2aWNlLiBJbiBwYXJ0aWN1bGFyLCB0aGlzIGlzIHRoZSBjYXNlIGZvcgo+ICtzbmFwc2hvdGlu
+ZyBJdCBpcyB0aHVzIHN1Z2dlc3RlZCB0aGF0IHRoZSBzeXN0ZW0gZnVsbHkKPiArcmVnZW5lcmF0
+ZSBhbnkgdW5pcXVlL3NlY3JldCBpbmZvcm1hdGlvbiBpbiB0aGlzIHNjZW5hcmlvLgo+ICsKPiAr
+SWYgVklSVElPX1JOR19GX0xFQUsgaGFzIGJlZW4gbmVnb3RpYXRlZCB0aGUgZGV2aWNlIGNhbiBy
+ZXBvcnQKPiArc3VjaCBsZWFrcyB0byB0aGUgZHJpdmVyIHRocm91Z2ggYSBzZXQgb2YgZGVkaWNh
+dGVkIGxlYWsKPiArcXVldWVzOiBcZmllbGR7bGVha3ExfSBhbmQgXGZpZWxke2xlYWtxMn0uCj4g
+Kwo+ICtCdWZmZXJzIGFkZGVkIHRvIHRoZSBsZWFrIHF1ZXVlcyBjYW4gaGF2ZSBvbmUgb2YgdHdv
+IGZvcm1zOgo+ICtcYmVnaW57ZW51bWVyYXRlfQo+ICtcaXRlbSBBIHdyaXRlLW9ubHkgYnVmZmVy
+LiBJdCB3aWxsIGJlIGNvbXBsZXRlbHkgZmlsbGVkIGJ5IHJhbmRvbSBkYXRhIGJ5IHRoZSBkZXZp
+Y2UuCj4gK1xpdGVtIEEgYnVmZmVyIGNvbnNpc3Rpbmcgb2YgcmVhZC1vbmx5IHNlY3Rpb24gZm9s
+bG93ZWQgYnkgYQo+ICt3cml0ZS1vbmx5IHNlY3Rpb24sIGJvdGggb2YgaWRlbnRpY2FsIHNpemUu
+IFRoZQo+ICtkZXZpY2Ugd2lsbCBjb3B5IGRhdGEgZnJvbSB0aGUgcmVhZC1vbmx5IHNlY3Rpb24g
+dG8gdGhlIHdyaXRlLW9ubHkKPiArc2VjdGlvbi4KPiArXGVuZHtlbnVtZXJhdGV9Cj4gKwo+ICtU
+aGUgc3RlcHMgZm9yIG9wZXJhdGluZyB0aGUgdmlydHF1ZXVlIGFyZToKPiArCj4gK1xiZWdpbntl
+bnVtZXJhdGV9Cj4gK1xpdGVtIEF0IGVhY2ggdGltZSwgb25seSBvbmUgb2YgXGZpZWxke2xlYWtx
+MX0sIFxmaWVsZHtsZWFrcTJ9IGlzIGFjdGl2ZQo+ICsgICAgICAoaGFzIGJ1ZmZlcnMgYWRkZWQv
+dXNlZCkuCj4gK1xpdGVtIEFmdGVyIGluaXRpYWxpemF0aW9uLCBcZmllbGR7bGVha3ExfSBpcyBh
+Y3RpdmUuCj4gK1xpdGVtIERyaXZlciBhZGRzIG11bHRpcGxlIGJ1ZmZlcnMgdG8gdGhlIGFjdGl2
+ZSBsZWFrIHF1ZXVlLgo+ICtcaXRlbSBUaGUgYnVmZmVycyBhcmUgbm90IHVzZWQgdW50aWwgYW4g
+aW5mb3JtYXRpb24gbGVhayBpcwo+ICsgICAgICBkZXRlY3RlZCwgYXMgbG9uZyBhcyB0aGF0IGlz
+IHRoZSBjYXNlIGRyaXZlciBjYW4KPiArICAgICAgYWRkIG1vcmUgYnVmZmVycyB0byB0aGUgYWN0
+aXZlIHF1ZXVlLgo+ICtcaXRlbSBVcG9uIGRldGVjdGluZyBhbiBpbmZvcm1hdGlvbiBsZWFrLCBk
+ZXZpY2Ugc3RhcnRzCj4gKyAgICAgIHVzaW5nIGJ1ZmZlcnMgaW4gdGhlIGFjdGl2ZSBsZWFrIHF1
+ZXVlLgo+ICtcaXRlbSBVcG9uIGRldGVjdGluZyB0aGF0IGJ1ZmZlcnMgaGF2ZSBiZWVuIHVzZWQs
+IGRyaXZlcgo+ICsgICAgICBzd2l0Y2hlcyB0byBhbm90aGVyIGxlYWsgcXVldWUgbWFraW5nIGl0
+IGFjdGl2ZQo+ICsgICAgICAoZS5nLiBmcm9tIFxmaWVsZHtsZWFrcTF9IHRvIFxmaWVsZHtsZWFr
+cTJ9IG9yIHZpY2UgdmVyc2EpLgo+ICsgICAgICBJdCB0aGVuIHN0YXJ0cyBhZGRpbmcgYnVmZmVy
+cyB0byB0aGUgbmV3IGxlYWsgcXVldWUuCj4gK1xpdGVtIERldmljZSB3aWxsIGtlZXAgdXNpbmcg
+YnVmZmVycyBpbiB0aGUgYWN0aXZlIGxlYWsgcXVldWUKPiArICAgICAgdW50aWwgaXQgZGV0ZWN0
+cyB0aGF0IGJvdGggdGhlIGN1cnJlbnQgbGVhayBxdWV1ZSBpcyBlbXB0eSBhbmQgYW5vdGhlcgo+
+ICsgICAgICBsZWFrIHF1ZXVlIGhhcyBidWZmZXJzLiBBdCB0aGF0IHBvaW50IGRldmljZSBzd2l0
+Y2hlcyB0bwo+ICsgICAgICBhbm90aGVyIGxlYWsgcXVldWUsIG1ha2luZyBpdCBhY3RpdmUuCj4g
+K1xpdGVtIEFmdGVyIHRoZSBzd2l0Y2gsIGJ1ZmZlcnMgZnJvbSB0aGUgbmV3IGxlYWsgcXVldWUg
+YXJlIG5vdAo+ICsgICAgICB1c2VkIHVudGlsIGFuIGluZm9ybWF0aW9uIGxlYWsgaXMgZGV0ZWN0
+ZWQuCj4gK1xlbmR7ZW51bWVyYXRlfQo+IC0tCj4gTVNUCj4KCkkgYW0gdGFraW5nIG5vdyBhIGNs
+b3NlciBsb29rIHRvIHRyeWluZyB0byBzZWUgYW55IHBvdGVudGlhbCAKcmFjZS1jb25kaXRpb25z
+IGJ1dCBpbiBhIGZpcnN0IGdsYW5jZSBpdCBsb29rcyBvayB0byBtZS4KQ3VyaW91cyB0byBzZWUg
+d2hhdCBKYXNvbiB0aGlua3MgdG9vLgoKQ2hlZXJzLApCYWJpcwpBbWF6b24gU3BhaW4gU2Vydmlj
+ZXMgc29jaWVkYWQgbGltaXRhZGEgdW5pcGVyc29uYWwsIENhbGxlIFJhbWlyZXogZGUgUHJhZG8g
+NSwgMjgwNDUgTWFkcmlkLiBSZWdpc3RybyBNZXJjYW50aWwgZGUgTWFkcmlkIC4gVG9tbyAyMjQ1
+OCAuIEZvbGlvIDEwMiAuIEhvamEgTS00MDEyMzQgLiBDSUYgQjg0NTcwOTM2Cg==
 
