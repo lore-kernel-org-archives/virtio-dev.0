@@ -1,90 +1,49 @@
-Return-Path: <virtio-comment-return-3619-cohuck=redhat.com@lists.oasis-open.org>
-Sender: <virtio-comment@lists.oasis-open.org>
-List-Post: <mailto:virtio-comment@lists.oasis-open.org>
-List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
-From: Parav Pandit <parav@nvidia.com>
-Date: Sun, 25 Dec 2022 02:11:32 +0200
-Message-ID: <20221225001132.92694-1-parav@nvidia.com>
-MIME-Version: 1.0
-Subject: [virtio-comment] [PATCH] virtio-network: Clarify VLAN filter table configuration
-Content-Type: text/plain
+Return-Path: <virtio-dev-return-10333-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id E86A59863FE
+	for <virtio-dev@lists.oasis-open.org>; Tue, 20 Dec 2022 14:51:15 +0000 (UTC)
+From: Marcel Holtmann <marcel@holtmann.org>
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.120.41.1.1\))
+Message-Id: <809854E1-BB69-4639-8B53-C33E88C78E85@holtmann.org>
+Date: Tue, 20 Dec 2022 15:51:13 +0100
+Subject: [virtio-dev] Correct way to specify virtio_foo_config structures?
+Content-Type: text/plain;
+	charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-To: mst@redhat.com, virtio-dev@lists.oasis-open.org
-Cc: virtio-comment@lists.oasis-open.org, si-wei.liu@oracle.com, Parav
- Pandit <parav@nvidia.com>
+To: virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-The filtering behavior of the VLAN filter commands is not very clear as
-discussed in thread [1].
+Hi,
 
-Hence, add the command description and device requirements for it.
+what is the correct way for a VIRTIO_F_VERSION_1 modern device to specify t=
+he
+virtio_foo_config structure. Should I make it __attribute__((packed))? What=
+ field
+types should be used. Everything __virtio{16,32} or better __le{16,32}? Can=
+ we
+have __u8 and do they have to 16-bit or 32-bit aligned.
 
-[1] https://www.mail-archive.com/qemu-devel@nongnu.org/msg912392.html
-Fixes: https://github.com/oasis-tcs/virtio-spec/issues/147
-Suggested-by: Si-Wei Liu <si-wei.liu@oracle.com>
-Signed-off-by: Parav Pandit <parav@nvidia.com>
----
- virtio-network.tex | 23 +++++++++++++++++++++++
- 1 file changed, 23 insertions(+)
+When looking at the various examples, I see multiple combinations. What is =
+the
+prefered virtio_cread accessor method to be used. For example the virtio_cr=
+ead_le
+states something like =E2=80=9Cmodern=E2=80=9D in his comment. So the prefe=
+rence is to specify
+the virtio_foo_config in little-endian?
 
-diff --git a/virtio-network.tex b/virtio-network.tex
-index b05ce61..e2b28d9 100644
---- a/virtio-network.tex
-+++ b/virtio-network.tex
-@@ -1210,6 +1210,29 @@ \subsubsection{Control Virtqueue}\label{sec:Device T=
-ypes / Network Device / Devi
- Both the VIRTIO_NET_CTRL_VLAN_ADD and VIRTIO_NET_CTRL_VLAN_DEL
- command take a little-endian 16-bit VLAN id as the command-specific-data.
-=20
-+VIRTIO_NET_CTRL_VLAN_ADD command adds the specified VLAN to the VLAN
-+filtering table.
-+
-+VIRTIO_NET_CTRL_VLAN_DEL command removes specified VLAN from the VLAN
-+filtering table which was previously added using
-+VIRTIO_NET_CTRL_VLAN_ADD command.
-+
-+\devicenormative{\subparagraph}{VLAN Filtering}{Device Types / Network Dev=
-ice / Device Operation / Control Virtqueue / VLAN Filtering}
-+
-+When VIRTIO_NET_F_CTRL_VLAN is not negotiated, the device accepts all
-+VLAN tagged packets which matches  device's filter configuration.
-+
-+When VIRTIO_NET_F_CTRL_VLAN is negotiated, the device starts with empty
-+VLAN filtering table.
-+
-+When VIRTIO_NET_F_CTRL_VLAN is negotiated, the device accepts all the
-+VLAN tagged packets whose VLAN tag is found in the VLAN filtering table;
-+device should drop all VLAN tagged packets whose VLAN tag is not found
-+in the VLAN filtering table.
-+
-+When VIRTIO_NET_F_CTRL_VLAN is negotiated, the device accepts all
-+untagged packets which matches device's filter configuration.
-+
- \subparagraph{Legacy Interface: VLAN Filtering}\label{sec:Device Types / N=
-etwork Device / Device Operation / Control Virtqueue / VLAN Filtering / Leg=
-acy Interface: VLAN Filtering}
- When using the legacy interface, transitional devices and drivers
- MUST format the VLAN id
---=20
-2.26.2
+Any insights are appreciated.
+
+Regards
+
+Marcel
 
 
-This publicly archived list offers a means to provide input to the
-OASIS Virtual I/O Device (VIRTIO) TC.
-
-In order to verify user consent to the Feedback License terms and
-to minimize spam in the list archive, subscription is required
-before posting.
-
-Subscribe: virtio-comment-subscribe@lists.oasis-open.org
-Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
-List help: virtio-comment-help@lists.oasis-open.org
-List archive: https://lists.oasis-open.org/archives/virtio-comment/
-Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
-List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lis=
-ts
-Committee: https://www.oasis-open.org/committees/virtio/
-Join OASIS: https://www.oasis-open.org/join/
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
