@@ -1,597 +1,235 @@
-Return-Path: <xuanzhuo@linux.alibaba.com>
-From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Subject: [PATCH v2 1/1] virtio-ism: introduce new device virtio-ism
-Date: Fri, 23 Dec 2022 16:19:39 +0800
-Message-Id: <20221223081939.26506-2-xuanzhuo@linux.alibaba.com>
-In-Reply-To: <20221223081939.26506-1-xuanzhuo@linux.alibaba.com>
-References: <20221223081939.26506-1-xuanzhuo@linux.alibaba.com>
+Return-Path: <virtio-dev-return-10337-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id C532F9863D8
+	for <virtio-dev@lists.oasis-open.org>; Wed, 21 Dec 2022 10:17:38 +0000 (UTC)
+From: Alvaro Karsz <alvaro.karsz@solid-run.com>
+Date: Wed, 21 Dec 2022 12:17:29 +0200
+Message-Id: <20221221101729.648097-1-alvaro.karsz@solid-run.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Subject: [virtio-dev] [PATCH] virtio_net: support low and high rate of notification coalescing sets
+Content-Transfer-Encoding: quoted-printable
 Content-Type: text/plain; charset="US-ASCII"; x-default=true
-To: virtio-comment@lists.oasis-open.org
-Cc: hans@linux.alibaba.com, herongguang@linux.alibaba.com, zmlcc@linux.alibaba.com, dust.li@linux.alibaba.com, tonylu@linux.alibaba.com, zhenzao@linux.alibaba.com, helinguo@linux.alibaba.com, gerry@linux.alibaba.com, xuanzhuo@linux.alibaba.com, mst@redhat.com, cohuck@redhat.com, jasowang@redhat.com, Jan Kiszka <jan.kiszka@siemens.com>, wintera@linux.ibm.com, kgraul@linux.ibm.com, wenjia@linux.ibm.com, jaka@linux.ibm.com, hca@linux.ibm.com, twinkler@linux.ibm.com, raspl@linux.ibm.com, virtio-dev@lists.oasis-open.org
+To: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+Cc: jasowang@redhat.com, mst@redhat.com, Alvaro Karsz <alvaro.karsz@solid-run.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-The virtio ism device provides and manages many memory ism regions in
-host. These ism regions can be alloc/attach/detach by driver. Every
-ism region can be shared by token with other VM after allocation.
-The driver obtains the memory region on the host through the memory on
-the device.
+This patch adds a new feature VIRTIO_NET_F_NOTF_COAL_LOW_HIGH,
+and adds 2 new commands to VIRTIO_NET_CTRL_NOTF_COAL class:
+=09* VIRTIO_NET_CTRL_NOTF_COAL_LOW_SET - create a low-rate set of
+=09  coalescing parameters. the device should switch to this set when
+=09  the packet rate (packets per second) reaches the pkt_rate_low threshol=
+d.
 
-|-------------------------------------------------------------------------------------------------------------|
-| |------------------------------------------------|       |------------------------------------------------| |
-| | Guest                                          |       | Guest                                          | |
-| |                                                |       |                                                | |
-| |   ----------------                             |       |   ----------------                             | |
-| |   |    driver    |     [M1]   [M2]   [M3]      |       |   |    driver    |             [M2]   [M3]     | |
-| |   ----------------       |      |      |       |       |   ----------------               |      |      | |
-| |    |cq|                  |map   |map   |map    |       |    |cq|                          |map   |map   | |
-| |    |  |                  |      |      |       |       |    |  |                          |      |      | |
-| |    |  |                -------------------     |       |    |  |                --------------------    | |
-| |----|--|----------------|  device memory  |-----|       |----|--|----------------|  device memory   |----| |
-| |    |  |                -------------------     |       |    |  |                --------------------    | |
-| |                                |               |       |                               |                | |
-| |                                |               |       |                               |                | |
-| | Qemu                           |               |       | Qemu                          |                | |
-| |--------------------------------+---------------|       |-------------------------------+----------------| |
-|                                  |                                                       |                  |
-|                                  |                                                       |                  |
-|                                  |------------------------------+------------------------|                  |
-|                                                                 |                                           |
-|                                                                 |                                           |
-|                                                   --------------------------                                |
-|                                                    | M1 |   | M2 |   | M3 |                                 |
-|                                                   --------------------------                                |
-|                                                                                                             |
-| HOST                                                                                                        |
----------------------------------------------------------------------------------------------------------------
+=09* VIRTIO_NET_CTRL_NOTF_COAL_HIGH_SET - create a high-rate set of
+          coalescing parameters. the device should switch to this set when
+          the packet rate (packets per second) reaches the pkt_rate_high th=
+reshold.
 
-Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Signed-off-by: Jiang Liu <gerry@linux.alibaba.com>
-Signed-off-by: Dust Li <dust.li@linux.alibaba.com>
-Signed-off-by: Tony Lu <tonylu@linux.alibaba.com>
-Signed-off-by: Helin Guo <helinguo@linux.alibaba.com>
-Signed-off-by: Hans Zhang <hans@linux.alibaba.com>
-Signed-off-by: He Rongguang <herongguang@linux.alibaba.com>
+A device may have up to 3 sets, and should switch between them based on
+the packet rate.
+
+Signed-off-by: Alvaro Karsz <alvaro.karsz@solid-run.com>
 ---
- conformance.tex |  24 +++
- content.tex     |   1 +
- virtio-ism.tex  | 472 ++++++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 497 insertions(+)
- create mode 100644 virtio-ism.tex
+ content.tex | 61 ++++++++++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 60 insertions(+), 1 deletion(-)
 
-diff --git a/conformance.tex b/conformance.tex
-index c3c1d3e..7c3cbc3 100644
---- a/conformance.tex
-+++ b/conformance.tex
-@@ -335,6 +335,15 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
- \item \ref{drivernormative:Device Types / PMEM Device / Device Initialization}
- \end{itemize}
- 
-+\conformance{\subsection}{ISM Driver Conformance}\label{sec:Conformance / Driver Conformance / ISM Driver Conformance}
-+
-+A ISM driver MUST conform to the following normative statements:
-+
-+\begin{itemize}
-+\item \ref{drivernormative:Device Types / ISM Device / Device Initialization}
-+\item \ref{drivernormative:Device Types / ISM Device / Device Operation / Alloc ISM Region}
-+\end{itemize}
-+
- \conformance{\section}{Device Conformance}\label{sec:Conformance / Device Conformance}
- 
- A device MUST conform to the following normative statements:
-@@ -621,6 +630,21 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
- \item \ref{devicenormative:Device Types / PMEM Device / Device Operation / Virtqueue return}
- \end{itemize}
- 
-+\conformance{\subsection}{ISM Device Conformance}\label{sec:Conformance / Device Conformance / ISM Device Conformance}
-+
-+A ISM device MUST conform to the following normative statements:
-+
-+\begin{itemize}
-+\item \ref{devicenormative:Device Types / ISM Device / Device configuration layout}
-+\item \ref{devicenormative:Device Types / ISM Device / Device Initialization}
-+\item \ref{devicenormative:Device Types / ISM Device / Device Operation / Alloc ISM Region}
-+\item \ref{devicenormative:Device Types / ISM Device / Device Operation / Attach ISM Region}
-+\item \ref{devicenormative:Device Types / ISM Device / Device Operation / Detach ISM Region}
-+\item \ref{devicenormative:Device Types / ISM Device / Device Operation / Grant ISM Region}
-+\item \ref{devicenormative:Device Types / ISM Device / Device Operation / Inform Event IRQ Vector}
-+\item \ref{devicenormative:Device Types / ISM Device / Device Operation / Event Filter}
-+\end{itemize}
-+
- \conformance{\section}{Legacy Interface: Transitional Device and Transitional Driver Conformance}\label{sec:Conformance / Legacy Interface: Transitional Device and Transitional Driver Conformance}
- A conformant implementation MUST be either transitional or
- non-transitional, see \ref{intro:Legacy
 diff --git a/content.tex b/content.tex
-index 96f4723..fe02aec 100644
+index 96f4723..969f945 100644
 --- a/content.tex
 +++ b/content.tex
-@@ -7545,6 +7545,7 @@ \subsubsection{Legacy Interface: Framing Requirements}\label{sec:Device
- \input{virtio-scmi.tex}
- \input{virtio-gpio.tex}
- \input{virtio-pmem.tex}
-+\input{virtio-ism.tex}
- 
- \chapter{Reserved Feature Bits}\label{sec:Reserved Feature Bits}
- 
-diff --git a/virtio-ism.tex b/virtio-ism.tex
-new file mode 100644
-index 0000000..7f09c43
---- /dev/null
-+++ b/virtio-ism.tex
-@@ -0,0 +1,472 @@
-+\section{ISM Device}\label{sec:Device Types / ISM Device}
+@@ -3088,6 +3088,8 @@ \subsection{Feature bits}\label{sec:Device Types / Ne=
+twork Device / Feature bits
+ \item[VIRTIO_NET_F_CTRL_MAC_ADDR(23)] Set MAC address through control
+     channel.
+=20
++\item[VIRTIO_NET_F_NOTF_COAL_LOW_HIGH(50)] Device supports notifications c=
+oalescing low rate and high rate sets.
 +
-+\begin{lstlisting}
-+|-------------------------------------------------------------------------------------------------------------|
-+| |------------------------------------------------|    |------------------------------------------------|    |
-+| | VM                      [M1]   [M2]   [M3]     |    | VM                             [M2]   [M3]     |    |
-+| |                          |      |      |       |    |                                 |      |       |    |
-+| |   -----------------------|------|------|---    |    |   ------------------------------|------|---    |    |
-+| |   |             driver   |      |      |  |    |    |   |             driver          |      |  |    |    |
-+| |   -----------------------|------|------|---    |    |   ------------------------------|------|---    |    |
-+| |    |cq|                  |map   |map   |map    |    |    |cq|                         |map   |map    |    |
-+| |    |  |                  |      |      |       |    |    |  |                         |      |       |    |
-+| |    |  |                -------------------     |    |    |  |                -------------------     |    |
-+| |----|--|----------------|  device memory  |-----|    |----|--|----------------|  device memory  |-----|    |
-+| |    |  |                -------------------     |    |    |  |                -------------------     |    |
-+| |                                |               |    |                                |               |    |
-+| |                                |               |    |                                |               |    |
-+| |                                |               |    |                                |               |    |
-+| |--------------------------------+---------------|    |--------------------------------+---------------|    |
-+|                                  |                                                       |                  |
-+|                                  |                                                       |                  |
-+|                                  |------------------------------+------------------------|                  |
-+|                                                                 |                                           |
-+|                                                                 |                                           |
-+|                                                   --------------------------                                |
-+|                                                    | M1 |   | M2 |   | M3 |                                 |
-+|                                                   --------------------------                                |
-+|                                                                                                             |
-+|                                                                                                             |
-+|-------------------------------------------------------------------------------------------------------------|
-+\end{lstlisting}
-+
-+ISM(Internal Shared Memory) device provides the ability to share memory between
-+different VMs launched from the same entity. A vm's memory got from ISM device
-+can be shared with multiple peers at the same time. This shared relationship can
-+be dynamically created and released.
-+
-+The contiguous shared memory obtained from the device is divided into multiple
-+ism regions for share.
-+
-+ISM device provides a mechanism to notify other ism region referrers of events.
-+
-+
-+\subsection{Device ID}\label{sec:Device Types / ISM Device / Device ID}
-+	44
-+
-+\subsection{Virtqueues}\label{sec:Device Types / ISM Device / Virtqueues}
-+\begin{description}
-+\item[0] controlq
-+\item[1] eventq
-+\end{description}
-+
-+\subsection{Device configuration layout}\label{sec:Device Types / ISM Device / Device configuration layout}
-+
-+\begin{lstlisting}
-+struct virtio_ism_config {
-+	le64 gid;
-+	le64 devid;
-+	le64 chunk_size;
-+	le64 notify_size;
-+};
-+\end{lstlisting}
-+
-+\begin{description}
-+    \item[\field{gid}] \field{gid} is used to identify different entity that
-+        launches the VMs. Only the ism devices with the same \field{gid} can
-+        share the ism regions. Therefore, this value is unique in the
-+        world-wide.
-+
-+    \item[\field{devid}] the device id is used to identify different ism devices
-+        on the same entity.
-+
-+    \item[\field{chunk_size}] the size of the every ism chunk.
-+        Large shared memories are divided into multiple chunks, and one time
-+        will take up at least one chunk.
-+
-+    \item[\field{notify_size}] the size of the notify address.
-+\end{description}
-+
-+\devicenormative{\subsubsection}{Device configuration layout}{Device Types / ISM Device / Device configuration layout}
-+
-+The device MUST ensure that the \field{gid} on the same entity i
-+same and different from the \field{gid} on other entity.
-+
-+On the same entity, the device MUST ensure that the \field{devid} is unique.
-+
-+\field{chunk_size} MUST be a power of two.
-+
-+\subsection{Event}\label{sec:Device Types / Network Device / Device Operation / Event}
-+
-+\begin{lstlisting}
-+#define   VIRTIO_ISM_EVENT_UPDATE (1 << 0)
-+#define   VIRTIO_ISM_EVENT_ATTACH (1 << 1)
-+#define   VIRTIO_ISM_EVENT_DETACH (1 << 2)
-+\end{lstlisting}
-+
-+\begin{description}
-+    \item[VIRTIO_ISM_EVENT_UPDATE]
-+        The driver kick the notify area to notify other peers of the update
-+        event of the ism region content.
-+
-+    \item[VIRTIO_ISM_EVENT_ATTACH] A new device attaches the ism region.
-+    \item[VIRTIO_ISM_EVENT_DETACH] A device detaches the ism region.
-+\end{description}
-+
-+The ism device supports event notification of the ism region. When a device
-+kick/attach/detach a region, other ism region referrers may receive related
-+events.
-+
-+A buffer received from eventq can contain multiple event structures.
-+
-+\begin{lstlisting}
-+struct virtio_ism_event_update {
-+	le64 ev_type;
-+	le64 offset;
-+	le64 devid;
+ \item[VIRTIO_NET_F_NOTF_COAL(53)] Device supports notifications coalescing=
+.
+=20
+ \item[VIRTIO_NET_F_GUEST_USO4 (54)] Driver can receive USOv4 packets.
+@@ -3142,6 +3144,7 @@ \subsubsection{Feature bit requirements}\label{sec:De=
+vice Types / Network Device
+ \item[VIRTIO_NET_F_MQ] Requires VIRTIO_NET_F_CTRL_VQ.
+ \item[VIRTIO_NET_F_CTRL_MAC_ADDR] Requires VIRTIO_NET_F_CTRL_VQ.
+ \item[VIRTIO_NET_F_NOTF_COAL] Requires VIRTIO_NET_F_CTRL_VQ.
++\item[VIRTIO_NET_F_NOTF_COAL_LOW_HIGH] Requires VIRTIO_NET_F_NOTF_COAL.
+ \item[VIRTIO_NET_F_RSC_EXT] Requires VIRTIO_NET_F_HOST_TSO4 or VIRTIO_NET_=
+F_HOST_TSO6.
+ \item[VIRTIO_NET_F_RSS] Requires VIRTIO_NET_F_CTRL_VQ.
+ \end{description}
+@@ -4504,9 +4507,25 @@ \subsubsection{Control Virtqueue}\label{sec:Device T=
+ypes / Network Device / Devi
+     le32 tx_usecs;
+ };
+=20
++//Only if VIRTIO_NET_F_NOTF_COAL_LOW_HIGH negotiated
++struct virtio_net_ctrl_coal_low {
++        le32 pkt_rate_low;
++        struct virtio_net_ctrl_coal_tx tx;
++        struct virtio_net_ctrl_coal_rx rx;
 +};
 +
-+struct virtio_ism_event_attach_detach {
-+	le64 ev_type;
-+	le64 offset;
-+	le64 devid;
-+	le64 peers;
++//Only if VIRTIO_NET_F_NOTF_COAL_LOW_HIGH negotiated
++struct virtio_net_ctrl_coal_high {
++        le32 pkt_rate_high;
++        struct virtio_net_ctrl_coal_tx tx;
++        struct virtio_net_ctrl_coal_rx rx;
 +};
 +
-+\end{lstlisting}
-+
-+\begin{description}
-+\item[\field{ev_type}] The type of event, the driver can get the size of the
-+    structure based on this.
-+
-+\item[\field{offset}] The offset of ism regions with the event.
-+
-+\item[\field{devid}] \field{devid} of the device that generated events.
-+\item[\field{peers}] The number of the ism region referres (does not include the
-+    device that receiving this event)
-+
-+\end{description}
-+
-+
-+\subsection{Permissions}\label{sec:Device Types / Network Device / Device Operation / Permission}
-+
-+The permissions of a ism region determine whether this ism region can be
-+attached and the read and write permissions after attach.
-+
-+The driver can set the default permissions, or set permissions for some certain
-+devices.
-+
-+When a driver has the management permission of the ism region, then it can
-+modify the permissions of this ism region. By default, only the device that
-+allocated the ism region has this permission.
-+
-+\subsection{Device Initialization}\label{sec:Device Types / ISM Device / Device Initialization}
-+
-+\devicenormative{\subsubsection}{Device Initialization}{Device Types / ISM Device / Device Initialization}
-+
-+The device MUST generate a \field{devid}. \field{devid} remains unchanged
-+during reset. \field{devid} MUST NOT be 0.
-+
-+The device shares memory to the driver based on shared memory regions
-+\ref{sec:Basic Facilities of a Virtio Device / Shared Memory Regions}.
-+However, it does not need to allocate physical memory during initialization.
-+
-+The \field{shmid} of a region MUST be one of the following
-+\begin{lstlisting}
-+enum virtio_ism_shm_id {
-+	VIRTIO_ISM_SHM_ID_UNDEFINED = 0,
-+	VIRTIO_ISM_SHM_ID_REGIONS   = 1,
-+	VIRTIO_ISM_SHM_ID_NOTIFY    = 2,
-+};
-+\end{lstlisting}
-+
-+The shared memory whose shmid is VIRTIO_ISM_SHM_ID_REGIONS is used to implement
-+ism regions. If there are multiple shared memories whose shmid is
-+VIRTIO_ISM_SHM_ID_REGIONS, they are used as contiguous memory in the order of
-+acquisition.
-+
-+The device MUST also provides a shared memory with VIRTIO_ISM_SHM_ID_NOTIFY to
-+the driver. This memory area is used for notify, and each ism region MUST have a
-+corresponding notify address inside this area, and the size of the notify
-+address is \field{notify_size};
-+
-+\drivernormative{\subsubsection}{Device Initialization}{Device Types / ISM Device / Device Initialization}
-+
-+The driver MUST query all shared memory regions supported by the device.
-+(see \ref{sec:Basic Facilities of a Virtio Device / Shared Memory Regions})
-+
-+
-+\subsection{Control Virtqueue}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue}
-+
-+The driver uses the control virtqueue send commands to implement operations on
-+the ism region and some global configurations.
-+
-+All commands are of the following form:
-+\begin{lstlisting}
-+struct virtio_ism_ctrl {
-+	u8 class;
-+	u8 command;
-+	u8 command_specific_data[];
-+	u8 ack;
-+	u8 command_specific_data_reply[];
-+};
-+
-+/* ack values */
-+#define VIRTIO_ISM_OK      0
-+#define VIRTIO_ISM_ERR     255
-+
-+#define VIRTIO_ISM_ENOENT  2
-+#define VIRTIO_ISM_E2BIG   7
-+#define VIRTIO_ISM_ENOMEM  12
-+#define VIRTIO_ISM_ENOSPEC 28
-+
-+#define VIRTIO_ISM_PERM_EATTACH 100
-+#define VIRTIO_ISM_PERM_EREAD   101
-+#define VIRTIO_ISM_PERM_EWRITE  102
-+\end{lstlisting}
-+
-+The \field{class}, \field{command} and command-specific-data are set by the
-+driver, and the device sets the \field{ack} byte and optionally
-+\field{command-specific-data-reply}.
-+
-+\subsection{Device Operation}  \label{sec:Device Types / ISM Driver / Device Operation}
-+
-+\subsubsection{Alloc ISM Region}\label{sec:Device Types / ISM Device / Device Operation / Alloc ISM Region}
-+
-+Based on controlq, the driver can request an ism region to be allocated.
-+
-+The ism region obtained from the device will carry a token, which can be passed
-+to other VMs for attaching to this ism region.
-+
-+\begin{lstlisting}
-+struct virtio_ism_area {
-+	le64 offset;
-+	le64 size;
-+}
-+
-+struct virtio_ism_ctrl_alloc {
-+	le64 size;
-+};
-+
-+struct virtio_ism_ctrl_alloc_reply {
-+	le64 token;
-+	le64 num;
-+    struct virtio_ism_area area[];
-+};
-+
-+#define VIRTIO_ISM_CTRL_ALLOC  0
-+	#define VIRTIO_ISM_CTRL_ALLOC_REGION 0
-+\end{lstlisting}
-+
-+
-+\devicenormative{\subparagraph}{Alloc ISM Region}{Device Types / ISM Device / Device Operation / Alloc ISM Region}
-+
-+The device sets \field{ack} to VIRTIO_ISM_OK after successfully assigning the
-+physical ism region. At the same time, a new token MUST be dynamically created
-+for this ism region. \field{offset} is the location of this ism region in shared
-+memory.
-+
-+If there is no free chunk, the device MUST set \field{ack} to VIRTIO_ISM_NOSPEC.
-+
-+If new physical memory cannot be allocated, the device MUST set
-+\field{ack} to VIRTIO_ISM_NOMEM.
-+
-+The device MUST clear the new ism region before committing to the driver.
-+
-+If \field{size} is greater than \field{chunk_size}, this time the distribution
-+may occupy multiple chunks, then the device fills the offset and size of each
-+chunk into \field {offset} \field {size}.
-+
-+If \field{size} is smaller than \field{chunk_size}, the ism region also
-+occupies one chunk in the shared memory space.
-+
-+\field{num} is the number of the array \field{offset} and \field{size}.
-+
-+If virtio_ism_ctrl_alloc_reply is not enough, the device MUST set the \field{ack}
-+to VIRTIO_ISM_E2BIG.
-+
-+\drivernormative{\subparagraph}{Alloc ISM Region}{Device Types / ISM Device / Device Operation / Alloc ISM Region}
-+
-+After the alloc request is successful, the driver MUST only use the range
-+\field{offset} to \field{offset} + \field{size} - 1.
-+
-+\subsubsection{Attach ISM Region}\label{sec:Device Types / ISM Device / Device Operation / Attach ISM Region}
-+
-+Based on controlq, the driver can request to attach an ism region with a
-+specified token.
-+
-+\begin{lstlisting}
-+struct virtio_ism_ctrl_attach {
-+	le64 token;
-+	le64 rw_perm;
-+};
-+
-+struct virtio_ism_ctrl_attach_reply {
-+	le64 num;
-+    struct virtio_ism_area area[];
-+};
-+
-+#define VIRTIO_ISM_CTRL_ATTACH  1
-+	#define VIRTIO_ISM_CTRL_ATTACH_REGION 0
-+\end{lstlisting}
-+\devicenormative{\subparagraph}{Attach ISM Region}{Device Types / ISM Device / Device Operation / Attach ISM Region}
-+
-+The device sets \field{ack} to VIRTIO_ISM_OK after successfully finding and
-+assigning the physical ism region. \field{offset} is the location of this ism
-+region in shared memory.
-+
-+If there is no free chunk, the device MUST set \field{ack} to VIRTIO_ISM_NOSPEC.
-+
-+If the ism region specified by \field{token} does not exist, the device MUST set
-+\field{ack} to VIRTIO_ISM_ENOENT.
-+
-+If the device does not has the VIRTIO_ISM_PERM_ATTACH, the device MUST set
-+\field{ack} to VIRTIO_ISM_PERM_EATTACH.
-+
-+If \field{rw_perm} include VIRTIO_ISM_PERM_READ, but the device does not
-+ has the VIRTIO_ISM_PERM_READ for this region, the device MUST set \field{ack}
-+ to VIRTIO_ISM_PERM_EREAD.
-+
-+If \field{rw_perm} include VIRTIO_ISM_PERM_WRITE, but the device does not
-+ has the VIRTIO_ISM_PERM_WRITE for this region, the device MUST set \field{ack}
-+ to VIRTIO_ISM_PERM_EWRITE.
-+
-+The device MUST set the read and write permissions of the physical memory based on
-+\field{rw_perm}.
-+
-+If \field{size} is greater than \field{chunk_size}, this time the distribution
-+may occupy multiple chunks, and the offset and size of each chunk fill in
-+\field {offset} \field {size}.
-+
-+If \field{size} is smaller than \field{chunk_size}, the ism region also
-+occupies \field{chunk_size} in the shared memory space.
-+
-+\field{num} is the number of the array \field{offset} and \field{size}.
-+
-+If virtio_ism_ctrl_alloc_reply is not enough, the device MUST set the \field{ack}
-+to VIRTIO_ISM_E2BIG and set the \field{num} for next request.
-+
-+\subsubsection{Detach ISM Region}\label{sec:Device Types / ISM Device / Device Operation / Detach ISM Region}
-+Based on controlq, the device can release references to the ism region.
-+
-+\begin{lstlisting}
-+struct virtio_ism_ctrl_detach {
-+	le64 token;
-+};
-+
-+#define VIRTIO_ISM_CTRL_DETACH  2
-+	#define VIRTIO_ISM_CTRL_DETACH_REGION 0
-+\end{lstlisting}
-+
-+\devicenormative{\subparagraph}{Detach ISM Region}{Device Types / ISM Device / Device Operation / Detach ISM Region}
-+
-+If the ism region specified by \field{token} is not attached, the device MUST set
-+\field{ack} to VIRTIO_ISM_ENOENT.
-+
-+The device MUST release the physical memory of this ism region.
-+
-+\subsubsection{Grant ISM Region}\label{sec:Device Types / ISM Device / Device Operation / Grant ISM Region}
-+Based on controlq, the driver can set the permissions for each ism
-+region.
-+
-+\begin{lstlisting}
-+struct virtio_ism_ctrl_grant_default {
-+	le64 token;
-+	le64 permissions;
-+};
-+
-+struct virtio_ism_ctrl_grant {
-+	le64 token;
-+	le64 permissions;
-+	le64 peer_devid;
-+};
-+
-+#define VIRTIO_ISM_CTRL_GRANT  3
-+	#define VIRTIO_ISM_CTRL_GRANT_SET_DEFAULT    0
-+	#define VIRTIO_ISM_CTRL_GRANT_SET_FOR_DEVICE 1
-+
-+#define VIRTIO_ISM_PERM_READ       (1 << 0)
-+#define VIRTIO_ISM_PERM_WRITE      (1 << 1)
-+
-+#define VIRTIO_ISM_PERM_ATTACH     (1 << 2)
-+
-+#define VIRTIO_ISM_PERM_MANAGE     (1 << 3)
-+#define VIRTIO_ISM_PERM_CLEAN_DEFAULT     (1 << 4)
-+
-+\end{lstlisting}
-+
-+\begin{description}
-+\item[VIRTIO_ISM_PERM_READ] read permission
-+\item[VIRTIO_ISM_PERM_WRITE] write permission
-+\item[VIRTIO_ISM_PERM_ATTACH] attach permission
-+
-+\item[VIRTIO_ISM_PERM_MANAGE] Management permission, the device with this
-+	permission can modify the permission of this ism region. By default, only
-+	the device that allocated the region has this permission.
-+
-+\item[VIRTIO_ISM_PERM_DENY_DEFAULT] Clean all permissions of default, just used
-+    with VIRTIO_ISM_CTRL_GRANT_SET_FOR_DEVICE.
-+
-+\end{description}
-+
-+Permission control is divided into two categories, one is the permission for the
-+specified device, and the other is the default permission.
-+
-+\devicenormative{\subparagraph}{Grant ISM Region}{Device Types / ISM Device / Device Operation / Grant ISM Region}
-+
-+If the ism region specified by \field{token} is not attached, the device MUST set
-+\field{ack} to VIRTIO_ISM_ENOENT.
-+
-+The device MUST respond to the driver's request based on the permissions the
-+device has.
-+
-+The default permissions of the newly allocated ism region MUST be VIRTIO_ISM_PERM_READ | VIRTIO_ISM_PERM_WRITE | VIRTIO_ISM_PERM_ATTACH.
-+The device that allocated the ism region MUST has the perm (VIRTIO_ISM_PERM_READ | VIRTIO_ISM_PERM_WRITE | VIRTIO_ISM_PERM_ATTACH | VIRTIO_ISM_PERM_MANAGE) for this region.
-+
-+\subsubsection{Inform Update Event IRQ Vector}\label{sec:Device Types / ISM Device / Device Operation / Inform Update Event IRQ Vector}
-+
-+For the region update event, the driver can choose to bind a interrupt for
-+region. If successful, then this region's update event will no longer pass
-+through eventq, but the interrupt of the binding is directly triggered.
-+
-+\begin{lstlisting}
-+struct virtio_ism_ctrl_irq_vector {
-+	le64 token;
-+	le64 vector;
-+};
-+
-+#define VIRTIO_ISM_CTRL_EVENT_VECTOR  4
-+	#define VIRTIO_ISM_CTRL_EVENT_VECTOR_SET 0
-+\end{lstlisting}
-+
-+
-+\devicenormative{\subparagraph}{Inform Event IRQ Vector}{Device Types / ISM Device / Device Operation / Inform Event IRQ Vector}
-+
-+The device MUST record the relationship between the ism region and the vector
-+notified by the driver, and notify the update event of this region to driver
-+by the corresponding vector.
-+
-+
-+\subsubsection{Events Filter}\label{sec:Device Types / ISM Device / Device Operation / Event Filter}
-+
-+The driver can filter the event to choose which events to receive. The driver
-+can set the default filter for all regions, or set filter for some specified ism
-+regions.
-+
-+\begin{lstlisting}
-+struct virtio_ism_ctrl_events_filter_def {
-+	le64 ev_type;
-+};
-+
-+struct virtio_ism_ctrl_events_filter {
-+	le64 ev_type;
-+ 	le64 token;
-+};
-+
-+#define VIRTIO_ISM_CTRL_EVENTS_FILTER  5
-+	#define VIRTIO_ISM_CTRL_EVENTS_FILTER_SET_DEFAULT 0
-+	#define VIRTIO_ISM_CTRL_EVENTS_FILTER_SET_REGION  1
-+\end{lstlisting}
-+
-+The \field{ev_type} is a bitmask. See \ref{sec:Device Types / Network Device / Device Operation / Event}
-+
-+\devicenormative{\subparagraph}{Events Filter}{Device Types / ISM Device / Device Operation / Event Filter}
-+
-+After initialization of reset, the default \field{ev_type} MUST be VIRTIO_ISM_EVENT_UPDATE.
-+
-+The modification of the driver for the default events filter MUST NOT affect the region
-+with a separate events filter.
-+
-+
-+
-+
--- 
-2.32.0.3.g01195cf9f
+ #define VIRTIO_NET_CTRL_NOTF_COAL 6
+  #define VIRTIO_NET_CTRL_NOTF_COAL_TX_SET  0
+  #define VIRTIO_NET_CTRL_NOTF_COAL_RX_SET 1
++ #define VIRTIO_NET_CTRL_NOTF_COAL_LOW_SET 2 //Only if VIRTIO_NET_F_NOTF_C=
+OAL_LOW_HIGH negotiated
++ #define VIRTIO_NET_CTRL_NOTF_COAL_HIGH_SET 3 //Only if VIRTIO_NET_F_NOTF_=
+COAL_LOW_HIGH negotiated
+ \end{lstlisting}
+=20
+ Coalescing parameters:
+@@ -4515,13 +4534,17 @@ \subsubsection{Control Virtqueue}\label{sec:Device =
+Types / Network Device / Devi
+ \item \field{tx_usecs}: Maximum number of usecs to delay a TX notification=
+.
+ \item \field{rx_max_packets}: Maximum number of packets to receive before =
+a RX notification.
+ \item \field{tx_max_packets}: Maximum number of packets to send before a T=
+X notification.
++\item \field{pkt_rate_low}: Threshold for low packet rate set (packets per=
+ second).
++\item \field{pkt_rate_high}: Threshold for high packet rate set (packets p=
+er second).
+ \end{itemize}
+=20
+=20
+-The class VIRTIO_NET_CTRL_NOTF_COAL has 2 commands:
++The class VIRTIO_NET_CTRL_NOTF_COAL has 4 commands:
+ \begin{enumerate}
+ \item VIRTIO_NET_CTRL_NOTF_COAL_TX_SET: set the \field{tx_usecs} and \fiel=
+d{tx_max_packets} parameters.
+ \item VIRTIO_NET_CTRL_NOTF_COAL_RX_SET: set the \field{rx_usecs} and \fiel=
+d{rx_max_packets} parameters.
++\item VIRTIO_NET_CTRL_NOTF_COAL_LOW_SET: set the \field{rx_usecs}, \field{=
+rx_max_packets}, \field{tx_usecs} and \field{tx_max_packets} set for a rate=
+ of \field{pkt_rate_low} or less packets per second.
++\item VIRTIO_NET_CTRL_NOTF_COAL_HIGH_SET: set the \field{rx_usecs}, \field=
+{rx_max_packets}, \field{tx_usecs} and \field{tx_max_packets} set for a rat=
+e of \field{pkt_rate_high} or more packets per second.
+ \end{enumerate}
+=20
+ \subparagraph{RX Notifications}\label{sec:Device Types / Network Device / =
+Device Operation / Control Virtqueue / Notifications Coalescing / RX Notifi=
+cations}
+@@ -4554,18 +4577,54 @@ \subsubsection{Control Virtqueue}\label{sec:Device =
+Types / Network Device / Devi
+ \item If the notifications are not suppressed by the driver, the device wi=
+ll send an used buffer notification, otherwise, the device will not send an=
+ used buffer notification as long as the notifications are suppressed.
+ \end{itemize}
+=20
++\subparagraph{Low/High Rate Notifications Sets}\label{sec:Device Types / N=
+etwork Device / Device Operation / Control Virtqueue / Notifications Coales=
+cing / Low/High Rate Notifications Sets}
++
++If the VIRTIO_NET_F_NOTF_COAL_LOW_HIGH feature is negotiated, the driver m=
+ay send VIRTIO_NET_CTRL_NOTF_COAL_LOW_SET/VIRTIO_NET_CTRL_NOTF_COAL_HIGH_SE=
+T commands to the device.
++
++The virtio_net_ctrl_coal_low struct defines a set of coalescing parameters=
+ (\field{rx_usecs}, \field{tx_usecs}, \field{rx_max_packets} and \field{tx_=
+max_packets}) that should be used when the packets rate is equal or lower t=
+han \field{pkt_rate_low} packets per second.
++
++The virtio_net_ctrl_coal_high struct defines a set of coalescing parameter=
+s (\field{rx_usecs}, \field{tx_usecs}, \field{rx_max_packets} and \field{tx=
+_max_packets}) that should be used when the packets rate is equal or higher=
+ than \field{pkt_rate_high} packets per second.
++
++A device may have up to 3 sets of coalescing parameters, and should switch=
+ between the sets based on the packet rate.
++
++A device may have only a low rate set, in this case, it should coalesce no=
+tifications only when the packet rate crosses down the \field{pkt_rate_low}=
+ threshold.
++
++A device may have only a high rate set, in this case, it should coalesce n=
+otifications only when the packet rate crosses up the \field{pkt_rate_high}=
+ threshold.
++
++A device may have only a high rate set and a low rate set, in this case, i=
+t should coalesce notifications only when the packet rate crosses up the \f=
+ield{pkt_rate_high} threshold, or crosses down the \field{pkt_rate_low} thr=
+eshold.
++
+ \drivernormative{\subparagraph}{Notifications Coalescing}{Device Types / N=
+etwork Device / Device Operation / Control Virtqueue / Notifications Coales=
+cing}
+=20
+ If the VIRTIO_NET_F_NOTF_COAL feature has not been negotiated, the driver =
+MUST NOT issue VIRTIO_NET_CTRL_NOTF_COAL commands.
+=20
++If the VIRTIO_NET_F_NOTF_COAL_LOW_HIGH feature has not been negotiated, th=
+e driver MUST NOT issue VIRTIO_NET_CTRL_NOTF_COAL_LOW_SET/VIRTIO_NET_CTRL_N=
+OTF_COAL_HIGH_SET commands.
++
++The driver SHOULD issue a VIRTIO_NET_CTRL_NOTF_COAL_LOW_SET command with \=
+field{pkt_rate_low} 0 in order to remove the low rate set.
++
++The driver SHOULD issue a VIRTIO_NET_CTRL_NOTF_COAL_HIGH_SET command with =
+\field{pkt_rate_high} 0 in order to remove the high rate set.
++
++The driver MUST NOT issue a VIRTIO_NET_CTRL_NOTF_COAL_LOW_SET command with=
+ \field{pkt_rate_low} equal or higher than \field{pkt_rate_high}, if VIRTIO=
+_NET_CTRL_NOTF_COAL_HIGH_SET was issued.
++
++The driver MUST NOT issue a VIRTIO_NET_CTRL_NOTF_COAL_HIGH_SET command wit=
+h \field{pkt_rate_high} equal or lower than \field{pkt_rate_low}, if VIRTIO=
+_NET_CTRL_NOTF_COAL_LOW_SET was issued.
++
+ \devicenormative{\subparagraph}{Notifications Coalescing}{Device Types / N=
+etwork Device / Device Operation / Control Virtqueue / Notifications Coales=
+cing}
+=20
+ A device SHOULD respond to the VIRTIO_NET_CTRL_NOTF_COAL commands with VIR=
+TIO_NET_ERR if it was not able to change the parameters.
+=20
+ A device SHOULD NOT send used buffer notifications to the driver, if the n=
+otifications are suppressed as explained in \ref{sec:Basic Facilities of a =
+Virtio Device / Virtqueues / Used Buffer Notification Suppression}, even if=
+ the coalescing counters expired.
+=20
++The device MUST remove the low rate set if a VIRTIO_NET_CTRL_NOTF_COAL_LOW=
+_SET command with \field{pkt_rate_low} 0 is received.
++
++The device MUST remove the high rate set if a VIRTIO_NET_CTRL_NOTF_COAL_HI=
+GH_SET command with \field{pkt_rate_high} 0 is received.
++
++The device MUST respond with VIRTIO_NET_ERR to a VIRTIO_NET_CTRL_NOTF_COAL=
+_LOW_SET command with \field{pkt_rate_low} equal or higher than \field{pkt_=
+rate_high}, if a high rate set is being used.
++
++The device MUST respond with VIRTIO_NET_ERR to a VIRTIO_NET_CTRL_NOTF_COAL=
+_HIGH_SET command with \field{pkt_rate_high} equal or lower than \field{pkt=
+_rate_low}, if a low rate set is being used.
++
+ Upon reset, a device MUST initialize all coalescing parameters to 0.
+=20
++Upon reset, a device MUST not have a low rate and high rate sets.
++
+ \subsubsection{Legacy Interface: Framing Requirements}\label{sec:Device
+ Types / Network Device / Legacy Interface: Framing Requirements}
+=20
+--=20
+2.32.0
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
