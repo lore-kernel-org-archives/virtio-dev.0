@@ -1,129 +1,284 @@
-Return-Path: <virtio-dev-return-10315-cohuck=redhat.com@lists.oasis-open.org>
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Message-ID: <116b25ed-c4f1-8dda-0b6e-42fb83779b0e@amazon.es>
-Date: Mon, 12 Dec 2022 11:10:23 +0100
+Return-Path: <xuanzhuo@linux.alibaba.com>
+From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Subject: [PATCH v2 0/1] introduce virtio-ism: internal shared memory device
+Date: Fri, 23 Dec 2022 16:19:38 +0800
+Message-Id: <20221223081939.26506-1-xuanzhuo@linux.alibaba.com>
 MIME-Version: 1.0
-From: Babis Chalios <bchalios@amazon.es>
-References: <20221121162756.350032-1-mst@redhat.com>
- <20221121162756.350032-4-mst@redhat.com>
- <358e4b4f-0fe8-3f17-dbf2-efb0c3c93218@amazon.es>
-In-Reply-To: <358e4b4f-0fe8-3f17-dbf2-efb0c3c93218@amazon.es>
-Subject: Re: [virtio-dev] Re: [PATCH RFC 3/3] rng: leak detection support
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: base64
-To: "Michael S. Tsirkin" <mst@redhat.com>, virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, "Cali, Marco" <xmarcalx@amazon.co.uk>, "Graf (AWS), Alexander" <graf@amazon.de>, "Jason A. Donenfeld" <Jason@zx2c4.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="US-ASCII"; x-default=true
+To: virtio-comment@lists.oasis-open.org
+Cc: hans@linux.alibaba.com, herongguang@linux.alibaba.com, zmlcc@linux.alibaba.com, dust.li@linux.alibaba.com, tonylu@linux.alibaba.com, zhenzao@linux.alibaba.com, helinguo@linux.alibaba.com, gerry@linux.alibaba.com, xuanzhuo@linux.alibaba.com, mst@redhat.com, cohuck@redhat.com, jasowang@redhat.com, Jan Kiszka <jan.kiszka@siemens.com>, wintera@linux.ibm.com, kgraul@linux.ibm.com, wenjia@linux.ibm.com, jaka@linux.ibm.com, hca@linux.ibm.com, twinkler@linux.ibm.com, raspl@linux.ibm.com, virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-SGkgTWljaGFlbCwKCk9uIDI1LzExLzIyIDEzOjQxLCBCYWJpcyBDaGFsaW9zIHdyb3RlOgo+IEhp
-IE1pY2hhZWwsCj4KPiBBbmQgdGhhbmtzIGEgbG90IG9uIHRoZSBlZmZvcnQgb24gdGhhdC4KPgo+
-IE9uIDIxLzExLzIyIDE3OjMwLCBNaWNoYWVsIFMuIFRzaXJraW4gd3JvdGU6Cj4+IENBVVRJT046
-IFRoaXMgZW1haWwgb3JpZ2luYXRlZCBmcm9tIG91dHNpZGUgb2YgdGhlIG9yZ2FuaXphdGlvbi4g
-RG8gCj4+IG5vdCBjbGljayBsaW5rcyBvciBvcGVuIGF0dGFjaG1lbnRzIHVubGVzcyB5b3UgY2Fu
-IGNvbmZpcm0gdGhlIHNlbmRlciAKPj4gYW5kIGtub3cgdGhlIGNvbnRlbnQgaXMgc2FmZS4KPj4K
-Pj4KPj4KPj4gQWRkIHZpcnRxdWV1ZXMgdG8gc3VwcG9ydCByZXBvcnRpbmcgZW50cm9weSBsZWFr
-cyAoc2ltaWxhciB0byB2aXJ0aW8gCj4+IGJhc2VkIHZtZ2VuaWQpLgo+Pgo+PiBTaWduZWQtb2Zm
-LWJ5OiBNaWNoYWVsIFMuIFRzaXJraW4gPG1zdEByZWRoYXQuY29tPgo+PiAtLS0KPj4gwqAgdmly
-dGlvLXJuZy50ZXggfCA2MSArKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysr
-KysrKysrKysrLQo+PiDCoCAxIGZpbGUgY2hhbmdlZCwgNjAgaW5zZXJ0aW9ucygrKSwgMSBkZWxl
-dGlvbigtKQo+Pgo+PiBkaWZmIC0tZ2l0IGEvdmlydGlvLXJuZy50ZXggYi92aXJ0aW8tcm5nLnRl
-eAo+PiBpbmRleCAxZWM3MTY0Li40NzYwZGZhIDEwMDY0NAo+PiAtLS0gYS92aXJ0aW8tcm5nLnRl
-eAo+PiArKysgYi92aXJ0aW8tcm5nLnRleAo+PiBAQCAtOSwxMCArOSwxNCBAQCBcc3Vic2VjdGlv
-bntEZXZpY2UgSUR9XGxhYmVse3NlYzpEZXZpY2UgVHlwZXMgLyAKPj4gRW50cm9weSBEZXZpY2Ug
-LyBEZXZpY2UgSUR9Cj4+IMKgIFxzdWJzZWN0aW9ue1ZpcnRxdWV1ZXN9XGxhYmVse3NlYzpEZXZp
-Y2UgVHlwZXMgLyBFbnRyb3B5IERldmljZSAvIAo+PiBWaXJ0cXVldWVzfQo+PiDCoCBcYmVnaW57
-ZGVzY3JpcHRpb259Cj4+IMKgIFxpdGVtWzBdIHJlcXVlc3RxCj4+ICtcaXRlbVsxXSBsZWFrcTEg
-KG9ubHkgaWYgVklSVElPX1JOR19GX0xFQUsgaXMgb2ZmZXJlZCkKPj4gK1xpdGVtWzJdIGxlYWtx
-MiAob25seSBpZiBWSVJUSU9fUk5HX0ZfTEVBSyBpcyBvZmZlcmVkKQo+PiDCoCBcZW5ke2Rlc2Ny
-aXB0aW9ufQo+Pgo+PiDCoCBcc3Vic2VjdGlvbntGZWF0dXJlIGJpdHN9XGxhYmVse3NlYzpEZXZp
-Y2UgVHlwZXMgLyBFbnRyb3B5IERldmljZSAvIAo+PiBGZWF0dXJlIGJpdHN9Cj4+IC3CoCBOb25l
-IGN1cnJlbnRseSBkZWZpbmVkCj4+ICtcYmVnaW57ZGVzY3JpcHRpb259Cj4+ICtcaXRlbVtWSVJU
-SU9fUk5HX0ZfTEVBSyAoMCldIERldmljZSBjYW4gcmVwb3J0IGFuZCBoYW5kbGUgCj4+IGluZm9y
-bWF0aW9uIGxlYWtzLgo+PiArXGVuZHtkZXNjcmlwdGlvbn0KPj4KPj4gwqAgXHN1YnNlY3Rpb257
-RGV2aWNlIGNvbmZpZ3VyYXRpb24gbGF5b3V0fVxsYWJlbHtzZWM6RGV2aWNlIFR5cGVzIC8gCj4+
-IEVudHJvcHkgRGV2aWNlIC8gRGV2aWNlIGNvbmZpZ3VyYXRpb24gbGF5b3V0fQo+PiDCoMKgwqAg
-Tm9uZSBjdXJyZW50bHkgZGVmaW5lZC4KPj4gQEAgLTIxLDYgKzI1LDcgQEAgXHN1YnNlY3Rpb257
-RGV2aWNlIEluaXRpYWxpemF0aW9ufVxsYWJlbHtzZWM6RGV2aWNlIAo+PiBUeXBlcyAvIEVudHJv
-cHkgRGV2aWNlIC8gRGV2Cj4+Cj4+IMKgIFxiZWdpbntlbnVtZXJhdGV9Cj4+IMKgIFxpdGVtIFRo
-ZSBcZmllbGR7cmVxdWVzdHF9IHZpcnRxdWV1ZSBpcyBpbml0aWFsaXplZAo+PiArXGl0ZW0gSWYg
-VklSVElPX1JOR19GX0xFQUsgaGFzIGJlZW4gbmVnb3RpYXRlZCwgXGZpZWxke2xlYWtxMX0gYW5k
-IAo+PiBcZmllbGR7bGVha3EyfSBhcmUgaW5pdGlhbGl6ZWQKPj4gwqAgXGVuZHtlbnVtZXJhdGV9
-Cj4+Cj4+IMKgIFxzdWJzZWN0aW9ue0RldmljZSBPcGVyYXRpb259XGxhYmVse3NlYzpEZXZpY2Ug
-VHlwZXMgLyBFbnRyb3B5IAo+PiBEZXZpY2UgLyBEZXZpY2UgT3BlcmF0aW9ufQo+PiBAQCAtNDEs
-MyArNDYsNTcgQEAgXHN1YnNlY3Rpb257RGV2aWNlIE9wZXJhdGlvbn1cbGFiZWx7c2VjOkRldmlj
-ZSAKPj4gVHlwZXMgLyBFbnRyb3B5IERldmljZSAvIERldmljZSBPCj4+IMKgIFRoZSBkZXZpY2Ug
-TVVTVCBwbGFjZSBvbmUgb3IgbW9yZSByYW5kb20gYnl0ZXMgaW50byB0aGUgYnVmZmVyCj4+IMKg
-IG1hZGUgYXZhaWxhYmxlIHRvIGl0IHRocm91Z2ggXGZpZWxke3JlcXVlc3RxfSwgYnV0IGl0Cj4+
-IMKgIE1BWSB1c2UgbGVzcyB0aGFuIHRoZSBlbnRpcmUgYnVmZmVyIGxlbmd0aC4KPj4gKwo+PiAr
-XHN1YnN1YnNlY3Rpb257UmVwb3J0aW5nIEluZm9ybWF0aW9uIExlYWtzfXtEZXZpY2UgVHlwZXMg
-LyBFbnRyb3B5IAo+PiBEZXZpY2UgLyBEZXZpY2UgT3BlcmF0aW9uIC8gUmVwb3J0aW5nIEluZm9y
-bWF0aW9uIExlYWtzfQo+PiArCj4+ICtUaGUgZGV2aWNlIG1pZ2h0LCBhZnRlciB0aGUgZmFjdCwg
-ZGV0ZWN0IHRoYXQgc29tZSBvZiB0aGUgZW50cm9weQo+PiAraXQgc3VwcGxpZWQgdG8gdGhlIGRy
-aXZlciBoYXMgYWZ0ZXIgdGhlIGZhY3QgZGVncmFkZWQgaW4gcXVhbGl0eQo+PiArb3IgbGVha2Vk
-IHRvIHRoZSBvdXRzaWRlIHdvcmxkLsKgIE9uZSBleGFtcGxlIGlzIHdoZW4gdGhlIGRldmljZQo+
-PiAraXMgcGFydCBvZiB0aGUgdmlydHVhbCBtYWNoaW5lIHVuZGVyZ29pbmcgYSByZXN0b3JlIGZy
-b20gc25hcHNob3QKPj4gK29wZXJhdGlvbi4gQW5vdGhlciBleGFtcGxlIGlzIHdoZW4gdGhlIGlu
-Zm9ybWF0aW9uIGxlYWtzIGZyb20gdGhlCj4+ICtob3N0IHN5c3RlbSB0aHJvdWdoIGEgc2lkZS1j
-aGFubmVsLgo+PiArCj4+ICtUaGUgZHJpdmVyIHdvdWxkIHR5cGljYWxseSByZWFjdCBieSBjYXVz
-aW5nIHJlZ2VuZXJhdGlvbiBvZiBhbnkKPj4gK2luZm9ybWF0aW9uIHRoYXQgbWlnaHQgaGF2ZSBs
-ZWFrZWQgYW5kIHRoYXQgaGFzIHRvIGJlIHNlY3JldCBvcgo+PiArdW5pcXVlLsKgIEl0IGlzIHVu
-ZGVyc3Rvb2QgdGhhdCB3aGVuIGFuIGluZm9ybWF0aW9uIGxlYWsgaGFzIGJlZW4KPj4gK2RldGVj
-dGVkIGl0IGlzIGxpa2VseSBub3QgbGltaXRlZCB0byB0aGUgZW50cm9weSByZWNlaXZlZCB0aHJv
-dWdoCj4+ICt0aGUgc3BlY2lmaWMgZGV2aWNlLiBJbiBwYXJ0aWN1bGFyLCB0aGlzIGlzIHRoZSBj
-YXNlIGZvcgo+PiArc25hcHNob3RpbmcgSXQgaXMgdGh1cyBzdWdnZXN0ZWQgdGhhdCB0aGUgc3lz
-dGVtIGZ1bGx5Cj4+ICtyZWdlbmVyYXRlIGFueSB1bmlxdWUvc2VjcmV0IGluZm9ybWF0aW9uIGlu
-IHRoaXMgc2NlbmFyaW8uCj4+ICsKPj4gK0lmIFZJUlRJT19STkdfRl9MRUFLIGhhcyBiZWVuIG5l
-Z290aWF0ZWQgdGhlIGRldmljZSBjYW4gcmVwb3J0Cj4+ICtzdWNoIGxlYWtzIHRvIHRoZSBkcml2
-ZXIgdGhyb3VnaCBhIHNldCBvZiBkZWRpY2F0ZWQgbGVhawo+PiArcXVldWVzOiBcZmllbGR7bGVh
-a3ExfSBhbmQgXGZpZWxke2xlYWtxMn0uCj4+ICsKPj4gK0J1ZmZlcnMgYWRkZWQgdG8gdGhlIGxl
-YWsgcXVldWVzIGNhbiBoYXZlIG9uZSBvZiB0d28gZm9ybXM6Cj4+ICtcYmVnaW57ZW51bWVyYXRl
-fQo+PiArXGl0ZW0gQSB3cml0ZS1vbmx5IGJ1ZmZlci4gSXQgd2lsbCBiZSBjb21wbGV0ZWx5IGZp
-bGxlZCBieSByYW5kb20gCj4+IGRhdGEgYnkgdGhlIGRldmljZS4KPj4gK1xpdGVtIEEgYnVmZmVy
-IGNvbnNpc3Rpbmcgb2YgcmVhZC1vbmx5IHNlY3Rpb24gZm9sbG93ZWQgYnkgYQo+PiArd3JpdGUt
-b25seSBzZWN0aW9uLCBib3RoIG9mIGlkZW50aWNhbCBzaXplLiBUaGUKPj4gK2RldmljZSB3aWxs
-IGNvcHkgZGF0YSBmcm9tIHRoZSByZWFkLW9ubHkgc2VjdGlvbiB0byB0aGUgd3JpdGUtb25seQo+
-PiArc2VjdGlvbi4KPj4gK1xlbmR7ZW51bWVyYXRlfQo+PiArCj4+ICtUaGUgc3RlcHMgZm9yIG9w
-ZXJhdGluZyB0aGUgdmlydHF1ZXVlIGFyZToKPj4gKwo+PiArXGJlZ2lue2VudW1lcmF0ZX0KPj4g
-K1xpdGVtIEF0IGVhY2ggdGltZSwgb25seSBvbmUgb2YgXGZpZWxke2xlYWtxMX0sIFxmaWVsZHts
-ZWFrcTJ9IGlzIAo+PiBhY3RpdmUKPj4gK8KgwqDCoMKgwqAgKGhhcyBidWZmZXJzIGFkZGVkL3Vz
-ZWQpLgo+PiArXGl0ZW0gQWZ0ZXIgaW5pdGlhbGl6YXRpb24sIFxmaWVsZHtsZWFrcTF9IGlzIGFj
-dGl2ZS4KPj4gK1xpdGVtIERyaXZlciBhZGRzIG11bHRpcGxlIGJ1ZmZlcnMgdG8gdGhlIGFjdGl2
-ZSBsZWFrIHF1ZXVlLgo+PiArXGl0ZW0gVGhlIGJ1ZmZlcnMgYXJlIG5vdCB1c2VkIHVudGlsIGFu
-IGluZm9ybWF0aW9uIGxlYWsgaXMKPj4gK8KgwqDCoMKgwqAgZGV0ZWN0ZWQsIGFzIGxvbmcgYXMg
-dGhhdCBpcyB0aGUgY2FzZSBkcml2ZXIgY2FuCj4+ICvCoMKgwqDCoMKgIGFkZCBtb3JlIGJ1ZmZl
-cnMgdG8gdGhlIGFjdGl2ZSBxdWV1ZS4KPj4gK1xpdGVtIFVwb24gZGV0ZWN0aW5nIGFuIGluZm9y
-bWF0aW9uIGxlYWssIGRldmljZSBzdGFydHMKPj4gK8KgwqDCoMKgwqAgdXNpbmcgYnVmZmVycyBp
-biB0aGUgYWN0aXZlIGxlYWsgcXVldWUuCj4+ICtcaXRlbSBVcG9uIGRldGVjdGluZyB0aGF0IGJ1
-ZmZlcnMgaGF2ZSBiZWVuIHVzZWQsIGRyaXZlcgo+PiArwqDCoMKgwqDCoCBzd2l0Y2hlcyB0byBh
-bm90aGVyIGxlYWsgcXVldWUgbWFraW5nIGl0IGFjdGl2ZQo+PiArwqDCoMKgwqDCoCAoZS5nLiBm
-cm9tIFxmaWVsZHtsZWFrcTF9IHRvIFxmaWVsZHtsZWFrcTJ9IG9yIHZpY2UgdmVyc2EpLgo+PiAr
-wqDCoMKgwqDCoCBJdCB0aGVuIHN0YXJ0cyBhZGRpbmcgYnVmZmVycyB0byB0aGUgbmV3IGxlYWsg
-cXVldWUuCj4+ICtcaXRlbSBEZXZpY2Ugd2lsbCBrZWVwIHVzaW5nIGJ1ZmZlcnMgaW4gdGhlIGFj
-dGl2ZSBsZWFrIHF1ZXVlCj4+ICvCoMKgwqDCoMKgIHVudGlsIGl0IGRldGVjdHMgdGhhdCBib3Ro
-IHRoZSBjdXJyZW50IGxlYWsgcXVldWUgaXMgZW1wdHkgYW5kIAo+PiBhbm90aGVyCj4+ICvCoMKg
-wqDCoMKgIGxlYWsgcXVldWUgaGFzIGJ1ZmZlcnMuIEF0IHRoYXQgcG9pbnQgZGV2aWNlIHN3aXRj
-aGVzIHRvCj4+ICvCoMKgwqDCoMKgIGFub3RoZXIgbGVhayBxdWV1ZSwgbWFraW5nIGl0IGFjdGl2
-ZS4KSSBhc3N1bWUgYnkgInVzaW5nIiBoZXJlIHlvdSBtZWFuIHRoYXQgdGhlIGRldmljZSB3aWxs
-IHBlcmZvcm0gZGlyZWN0bHkgCnRoZSBhY3Rpb24KZGVzY3JpYmVkIGJ5IHRoZSBidWZmZXJzIG9u
-Y2UgdGhleSBiZWNvbWUgYXZhaWxhYmxlIHRvIGl0LiBJcyBteSAKdW5kZXJzdGFuZGluZyBjb3Jy
-ZWN0PwoKQWxzbywgd2hhdCBoYXBwZW5zIGlmIGF0IHRoaXMgcG9pbnQgKHRoZXJlIGFyZSBidWZm
-ZXJzIG9uIHRoZSAib2xkIiAKYWN0aXZlIGxlYWsgcXVldWUpIGFuZCBhCm5ldyBpbmZvcm1hdGlv
-biBsZWFrIGlzIGRldGVjdGVkPyBTaG91bGQgd2UgY2xhcmlmeSB0aGlzIGNhc2U/Cgo+PiArXGl0
-ZW0gQWZ0ZXIgdGhlIHN3aXRjaCwgYnVmZmVycyBmcm9tIHRoZSBuZXcgbGVhayBxdWV1ZSBhcmUg
-bm90Cj4+ICvCoMKgwqDCoMKgIHVzZWQgdW50aWwgYW4gaW5mb3JtYXRpb24gbGVhayBpcyBkZXRl
-Y3RlZC4KPj4gK1xlbmR7ZW51bWVyYXRlfQo+PiAtLSAKPj4gTVNUCj4+Cj4KPiBJIGFtIHRha2lu
-ZyBub3cgYSBjbG9zZXIgbG9vayB0byB0cnlpbmcgdG8gc2VlIGFueSBwb3RlbnRpYWwgCj4gcmFj
-ZS1jb25kaXRpb25zIGJ1dCBpbiBhIGZpcnN0IGdsYW5jZSBpdCBsb29rcyBvayB0byBtZS4KPiBD
-dXJpb3VzIHRvIHNlZSB3aGF0IEphc29uIHRoaW5rcyB0b28uCj4KPiBDaGVlcnMsCj4gQmFiaXMK
-PiBBbWF6b24gU3BhaW4gU2VydmljZXMgc29jaWVkYWQgbGltaXRhZGEgdW5pcGVyc29uYWwsIENh
-bGxlIFJhbWlyZXogZGUgCj4gUHJhZG8gNSwgMjgwNDUgTWFkcmlkLiBSZWdpc3RybyBNZXJjYW50
-aWwgZGUgTWFkcmlkIC4gVG9tbyAyMjQ1OCAuIAo+IEZvbGlvIDEwMiAuIEhvamEgTS00MDEyMzQg
-LiBDSUYgQjg0NTcwOTM2CgoKQ2hlZXJzLApCYWJpcwoKQW1hem9uIFNwYWluIFNlcnZpY2VzIHNv
-Y2llZGFkIGxpbWl0YWRhIHVuaXBlcnNvbmFsLCBDYWxsZSBSYW1pcmV6IGRlIFByYWRvIDUsIDI4
-MDQ1IE1hZHJpZC4gUmVnaXN0cm8gTWVyY2FudGlsIGRlIE1hZHJpZCAuIFRvbW8gMjI0NTggLiBG
-b2xpbyAxMDIgLiBIb2phIE0tNDAxMjM0IC4gQ0lGIEI4NDU3MDkzNgo=
+Hello everyone,
+
+# Background
+
+    Nowadays, there is a common scenario to accelerate communication between
+    different VMs and containers, including light weight virtual machine based
+    containers. One way to achieve this is to colocate them on the same host.
+    However, the performance of inter-VM communication through network stack is
+    not optimal and may also waste extra CPU cycles. This scenario has been
+    discussed many times, but still no generic solution available [1] [2] [3].
+
+    With pci-ivshmem + SMC(Shared Memory Communications: [4]) based PoC[5],
+    We found that by changing the communication channel between VMs from TCP to
+    SMC with shared memory, we can achieve superior performance for a common
+    socket-based application[5]:
+      - latency reduced by about 50%
+      - throughput increased by about 300%
+      - CPU consumption reduced by about 50%
+
+    Since there is no particularly suitable shared memory management solution
+    matches the need for SMC(See ## Comparison with existing technology), and
+    virtio is the standard for communication in the virtualization world, we
+    want to implement a virtio-ism device based on virtio, which can support
+    on-demand memory sharing across VMs, containers or VM-container. To match
+    the needs of SMC, the virtio-ism device need to support:
+
+    1. Dynamic provision: shared memory regions are dynamically allocated and
+       provisioned.
+    2. Multi-region management: the shared memory is divided into regions,
+       and a peer may allocate one or more regions from the same shared memory
+       device.
+    3. Permission control: the permission of each region can be set seperately.
+    4. Dynamic connection: each ism region of a device can be shared with
+       different devices, eventually a device can be shared with thousands of
+       devices
+
+# Virtio ISM device
+
+    ISM devices provide the ability to share memory between different guests on
+    a host. A guest's memory got from ism device can be shared with multiple
+    peers at the same time. This shared relationship can be dynamically created
+    and released.
+
+    The shared memory obtained from the device is divided into multiple ism
+    regions for share. ISM device provides a mechanism to notify other ism
+    region referrers of content update events.
+
+## Design
+
+    This is a structure diagram based on ism sharing between two vms.
+
+    |-------------------------------------------------------------------------------------------------------------|
+    | |------------------------------------------------|       |------------------------------------------------| |
+    | | Guest                                          |       | Guest                                          | |
+    | |                                                |       |                                                | |
+    | |   ----------------                             |       |   ----------------                             | |
+    | |   |    driver    |     [M1]   [M2]   [M3]      |       |   |    driver    |             [M2]   [M3]     | |
+    | |   ----------------       |      |      |       |       |   ----------------               |      |      | |
+    | |    |cq|                  |map   |map   |map    |       |    |cq|                          |map   |map   | |
+    | |    |  |                  |      |      |       |       |    |  |                          |      |      | |
+    | |    |  |                -------------------     |       |    |  |                --------------------    | |
+    | |----|--|----------------|  device memory  |-----|       |----|--|----------------|  device memory   |----| |
+    | |    |  |                -------------------     |       |    |  |                --------------------    | |
+    | |                                |               |       |                               |                | |
+    | |                                |               |       |                               |                | |
+    | | Qemu                           |               |       | Qemu                          |                | |
+    | |--------------------------------+---------------|       |-------------------------------+----------------| |
+    |                                  |                                                       |                  |
+    |                                  |                                                       |                  |
+    |                                  |------------------------------+------------------------|                  |
+    |                                                                 |                                           |
+    |                                                                 |                                           |
+    |                                                   --------------------------                                |
+    |                                                    | M1 |   | M2 |   | M3 |                                 |
+    |                                                   --------------------------                                |
+    |                                                                                                             |
+    | HOST                                                                                                        |
+    ---------------------------------------------------------------------------------------------------------------
+
+## Inspiration
+
+    Our design idea for virtio-ism comes from IBM's ISM device, to pay tribute,
+    we directly name this device "ism".
+
+    Information about IBM ism device and SMC:
+      1. SMC reference: https://www.ibm.com/docs/en/zos/2.5.0?topic=system-shared-memory-communications
+      2. SMC-Dv2 and ISMv2 introduction: https://www.newera.com/INFO/SMCv2_Introduction_10-15-2020.pdf
+      3. ISM device: https://www.ibm.com/docs/en/linux-on-systems?topic=n-ism-device-driver-1
+      4. SMC protocol (including SMC-D): https://www.ibm.com/support/pages/system/files/inline-files/IBM%20Shared%20Memory%20Communications%20Version%202_2.pdf
+      5. SMC-D FAQ: https://www.ibm.com/support/pages/system/files/inline-files/2021-02-09-SMC-D-FAQ.pdf
+
+## ISM VLAN
+
+    Since SMC uses TCP to handshake with IP facilities, virtio-ism device is not
+    bound to existing IP device, and the latest ISMv2 device doesn't require
+    VLAN. So it is not necessary for virtio-ism to support VLAN attributes.
+
+## Live Migration
+
+    Currently SMC-D doesn't support migration to another device or fallback. And
+    SMC-R supports migration to another link, no fallback.
+
+    So we may not support live migration for the time being.
+
+## About hot plugging of the ism device
+
+    Hot plugging of devices is a heavier, possibly failed, time-consuming, and
+    less scalable operation. So, we don't plan to support it for now.
+
+
+# Usage (SMC as example)
+
+    There is one of possible use cases:
+
+    1. SMC calls the interface ism_alloc_region() of the ism driver to return
+       the location of a memory region in the PCI space and a token.
+    2. The ism driver mmap the memory region and return to SMC with the token
+    3. SMC passes the token to the connected peer
+    4. the peer calls the ism driver interface ism_attach_region(token) to
+       get the location of the PCI space of the shared memory
+    5. The connected pair communicating through the shared memory
+
+# Comparison with existing technology
+
+## ivshmem or ivshmem 2.0 of Qemu
+
+   1. ivshmem 1.0 is a large piece of memory that can be seen by all devices
+      that use this VM, so the security is not enough.
+
+   2. ivshmem 2.0 is a shared memory belonging to a VM that can be read-only by
+      all other VMs that use the ivshmem 2.0 shared memory device, which also
+      does not meet our needs in terms of security.
+
+## vhost-pci and virtiovhostuser
+
+    1. does not support dynamic allocation
+    2. one device just support connect to one vm
+
+
+# POC CODE
+
+There are no functions related to eventq and perm yet.
+
+## Qemu (virtio ism device):
+
+     https://github.com/fengidri/qemu/compare/7d66b74c4dd0d74d12c1d3d6de366242b13ed76d...ism-upstream-1216?expand=1
+
+    Start qemu with option "--device virtio-ism-pci,disable-legacy=on, disable-modern=off".
+
+##  Kernel (virtio ism driver and smc support):
+
+     https://github.com/fengidri/linux-kernel-virtio-ism/compare/6f8101eb21bab480537027e62c4b17021fb7ea5d...ism-upstream-1223
+
+
+### SMC
+
+    Support SMC-D works with virtio-ism.
+
+    Use SMC with virtio-ism to accelerate inter-VM communication.
+
+    1. insmod virtio-ism and smc module.
+    2. use smc-tools [1] to get the device name of SMC-D based on virtio-ism.
+
+      $ smcd d # here is _virtio2_
+      FID  Type  PCI-ID        PCHID  InUse  #LGs  PNET-ID
+      0000 0     virtio2       0000   Yes       1  *C1
+
+    3. add the nic and SMC-D device to the same pnet, do it in both client and server.
+
+      $ smc_pnet -a -I eth1 c1 # use eth1 to setup SMC connection
+      $ smc_pnet -a -D virtio2 c1 # virtio2 is the virtio-ism device
+
+    4. use SMC to accelerate your application, smc_run in [1] can do this.
+
+      # smc_run use LD_PRELOAD to hijack socket syscall with AF_SMC
+      $ smc_run sockperf server --tcp # run in server
+      $ smc_run sockperf tp --tcp -i a.b.c.d # run in client
+
+    [1] https://github.com/ibm-s390-linux/smc-tools
+
+    Notice: The current POC state, we only tested some basic functions.
+
+### App inside user space
+
+    The ism driver provide /dev/vismX interface, allow users to use Virtio-ISM
+    device in user space directly.
+
+    Try tools/virtio/virtio-ism/virtio-ism-mmap
+
+    Usage:
+         cd tools/virtio/virtio-ism/; make
+         insmode virtio-ism.ko
+
+    case1: communicate
+
+       vm1: ./virtio-ism-mmap alloc -> token
+       vm2: ./virtio-ism-mmap attach -t <token> --write-msg AAAA --commit
+
+       vm2 will write msg to shared memory, then notify vm1. After vm1 receive
+       notify, then read from shared memory.
+
+    case2: ping-pong test.
+
+        vm1: ./virtio-ism-mmap server
+        vm2: ./virtio-ism-mmap -i 192.168.122.101 pp
+
+        1. server alloc one ism region
+        2. client get the token by tcp
+
+        3. client commit(kick) to server, server recv notify, commit(kick) to client
+        4. loop #3
+
+    case3: throughput test.
+
+        vm1: ./virtio-ism-mmap server
+        vm2: ./virtio-ism-mmap -i 192.168.122.101 tp
+
+        1. server alloc one ism region
+        2. client get the token by tcp
+
+        3. client write 1M data to ism region
+        4. client commit(kick) to server
+        5. server recv notify, copy the data, the commit(kick) back to client
+        6. loop #3-#5
+
+    case4: throughput test with protocol defined by user.
+
+        vm1: ./virtio-ism-mmap server
+        vm2: ./virtio-ism-mmap -i 192.168.122.101 tp --polling --tp-chunks 15 --msg-size 64k -n 50000
+
+        Used the ism region as a ring.
+
+        In this scene, client and server are in the polling mode. Test it on
+        my machine, the maximum can reach 12GBps
+
+# References
+
+    [1] https://projectacrn.github.io/latest/tutorials/enable_ivshmem.html
+    [2] https://dl.acm.org/doi/10.1145/2847562
+    [3] https://hal.archives-ouvertes.fr/hal-00368622/document
+    [4] https://lwn.net/Articles/711071/
+    [5] https://lore.kernel.org/netdev/20220720170048.20806-1-tonylu@linux.alibaba.com/T/
+
+
+If there are any problems, please point them out.
+Hope to hear from you, thank you.
+
+v2:
+   1. add Attach/Detach event
+   2. add Events Filter
+   3. allow Alloc/Attach huge region
+   4. remove host/guest terms
+
+v1:
+   1. cover letter adding explanation of ism vlan
+   2. spec add gid
+   3. explain the source of ideas about ism
+   4. POC support virtio-ism-smc.ko virtio-ism-dev.ko and support virtio-ism-mmap
+
+
+Xuan Zhuo (1):
+  virtio-ism: introduce new device virtio-ism
+
+ conformance.tex |  24 +++
+ content.tex     |   1 +
+ virtio-ism.tex  | 472 ++++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 497 insertions(+)
+ create mode 100644 virtio-ism.tex
+
+-- 
+2.32.0.3.g01195cf9f
 
