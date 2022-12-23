@@ -1,8 +1,10 @@
 Return-Path: <xuanzhuo@linux.alibaba.com>
 From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Subject: [PATCH v2 0/1] introduce virtio-ism: internal shared memory device
-Date: Fri, 23 Dec 2022 16:13:53 +0800
-Message-Id: <20221223081354.15026-1-xuanzhuo@linux.alibaba.com>
+Subject: [PATCH v2 1/1] virtio-ism: introduce new device virtio-ism
+Date: Fri, 23 Dec 2022 16:13:54 +0800
+Message-Id: <20221223081354.15026-2-xuanzhuo@linux.alibaba.com>
+In-Reply-To: <20221223081354.15026-1-xuanzhuo@linux.alibaba.com>
+References: <20221223081354.15026-1-xuanzhuo@linux.alibaba.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain; charset="US-ASCII"; x-default=true
@@ -10,275 +12,586 @@ To: virtio-dev@lists.oasis-open.org
 Cc: hans@linux.alibaba.com, herongguang@linux.alibaba.com, zmlcc@linux.alibaba.com, dust.li@linux.alibaba.com, tonylu@linux.alibaba.com, zhenzao@linux.alibaba.com, helinguo@linux.alibaba.com, gerry@linux.alibaba.com, xuanzhuo@linux.alibaba.com, mst@redhat.com, cohuck@redhat.com, jasowang@redhat.com, Jan Kiszka <jan.kiszka@siemens.com>, wintera@linux.ibm.com, kgraul@linux.ibm.com, wenjia@linux.ibm.com, jaka@linux.ibm.com, hca@linux.ibm.com, twinkler@linux.ibm.com, raspl@linux.ibm.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Hello everyone,
-
-# Background
-
-    Nowadays, there is a common scenario to accelerate communication between
-    different VMs and containers, including light weight virtual machine based
-    containers. One way to achieve this is to colocate them on the same host.
-    However, the performance of inter-VM communication through network stack is
-    not optimal and may also waste extra CPU cycles. This scenario has been
-    discussed many times, but still no generic solution available [1] [2] [3].
-
-    With pci-ivshmem + SMC(Shared Memory Communications: [4]) based PoC[5],
-    We found that by changing the communication channel between VMs from TCP to
-    SMC with shared memory, we can achieve superior performance for a common
-    socket-based application[5]:
-      - latency reduced by about 50%
-      - throughput increased by about 300%
-      - CPU consumption reduced by about 50%
-
-    Since there is no particularly suitable shared memory management solution
-    matches the need for SMC(See ## Comparison with existing technology), and
-    virtio is the standard for communication in the virtualization world, we
-    want to implement a virtio-ism device based on virtio, which can support
-    on-demand memory sharing across VMs, containers or VM-container. To match
-    the needs of SMC, the virtio-ism device need to support:
-
-    1. Dynamic provision: shared memory regions are dynamically allocated and
-       provisioned.
-    2. Multi-region management: the shared memory is divided into regions,
-       and a peer may allocate one or more regions from the same shared memory
-       device.
-    3. Permission control: the permission of each region can be set seperately.
-    4. Dynamic connection: each ism region of a device can be shared with
-       different devices, eventually a device can be shared with thousands of
-       devices
-
-# Virtio ISM device
-
-    ISM devices provide the ability to share memory between different guests on
-    a host. A guest's memory got from ism device can be shared with multiple
-    peers at the same time. This shared relationship can be dynamically created
-    and released.
-
-    The shared memory obtained from the device is divided into multiple ism
-    regions for share. ISM device provides a mechanism to notify other ism
-    region referrers of content update events.
-
-## Design
-
-    This is a structure diagram based on ism sharing between two vms.
-
-    |-------------------------------------------------------------------------------------------------------------|
-    | |------------------------------------------------|       |------------------------------------------------| |
-    | | Guest                                          |       | Guest                                          | |
-    | |                                                |       |                                                | |
-    | |   ----------------                             |       |   ----------------                             | |
-    | |   |    driver    |     [M1]   [M2]   [M3]      |       |   |    driver    |             [M2]   [M3]     | |
-    | |   ----------------       |      |      |       |       |   ----------------               |      |      | |
-    | |    |cq|                  |map   |map   |map    |       |    |cq|                          |map   |map   | |
-    | |    |  |                  |      |      |       |       |    |  |                          |      |      | |
-    | |    |  |                -------------------     |       |    |  |                --------------------    | |
-    | |----|--|----------------|  device memory  |-----|       |----|--|----------------|  device memory   |----| |
-    | |    |  |                -------------------     |       |    |  |                --------------------    | |
-    | |                                |               |       |                               |                | |
-    | |                                |               |       |                               |                | |
-    | | Qemu                           |               |       | Qemu                          |                | |
-    | |--------------------------------+---------------|       |-------------------------------+----------------| |
-    |                                  |                                                       |                  |
-    |                                  |                                                       |                  |
-    |                                  |------------------------------+------------------------|                  |
-    |                                                                 |                                           |
-    |                                                                 |                                           |
-    |                                                   --------------------------                                |
-    |                                                    | M1 |   | M2 |   | M3 |                                 |
-    |                                                   --------------------------                                |
-    |                                                                                                             |
-    | HOST                                                                                                        |
-    ---------------------------------------------------------------------------------------------------------------
-
-## Inspiration
-
-    Our design idea for virtio-ism comes from IBM's ISM device, to pay tribute,
-    we directly name this device "ism".
-
-    Information about IBM ism device and SMC:
-      1. SMC reference: https://www.ibm.com/docs/en/zos/2.5.0?topic=system-shared-memory-communications
-      2. SMC-Dv2 and ISMv2 introduction: https://www.newera.com/INFO/SMCv2_Introduction_10-15-2020.pdf
-      3. ISM device: https://www.ibm.com/docs/en/linux-on-systems?topic=n-ism-device-driver-1
-      4. SMC protocol (including SMC-D): https://www.ibm.com/support/pages/system/files/inline-files/IBM%20Shared%20Memory%20Communications%20Version%202_2.pdf
-      5. SMC-D FAQ: https://www.ibm.com/support/pages/system/files/inline-files/2021-02-09-SMC-D-FAQ.pdf
-
-## ISM VLAN
-
-    Since SMC uses TCP to handshake with IP facilities, virtio-ism device is not
-    bound to existing IP device, and the latest ISMv2 device doesn't require
-    VLAN. So it is not necessary for virtio-ism to support VLAN attributes.
-
-## Live Migration
-
-    Currently SMC-D doesn't support migration to another device or fallback. And
-    SMC-R supports migration to another link, no fallback.
-
-    So we may not support live migration for the time being.
-
-## About hot plugging of the ism device
-
-    Hot plugging of devices is a heavier, possibly failed, time-consuming, and
-    less scalable operation. So, we don't plan to support it for now.
-
-
-# Usage (SMC as example)
-
-    There is one of possible use cases:
-
-    1. SMC calls the interface ism_alloc_region() of the ism driver to return
-       the location of a memory region in the PCI space and a token.
-    2. The ism driver mmap the memory region and return to SMC with the token
-    3. SMC passes the token to the connected peer
-    4. the peer calls the ism driver interface ism_attach_region(token) to
-       get the location of the PCI space of the shared memory
-    5. The connected pair communicating through the shared memory
-
-# Comparison with existing technology
-
-## ivshmem or ivshmem 2.0 of Qemu
-
-   1. ivshmem 1.0 is a large piece of memory that can be seen by all devices
-      that use this VM, so the security is not enough.
-
-   2. ivshmem 2.0 is a shared memory belonging to a VM that can be read-only by
-      all other VMs that use the ivshmem 2.0 shared memory device, which also
-      does not meet our needs in terms of security.
-
-## vhost-pci and virtiovhostuser
-
-    1. does not support dynamic allocation
-    2. one device just support connect to one vm
-
-
-# POC CODE
-
-There are no functions related to eventq and perm yet.
-
-## Qemu (virtio ism device):
-
-     https://github.com/fengidri/qemu/compare/7d66b74c4dd0d74d12c1d3d6de366242b13ed76d...ism-upstream-1216?expand=1
-
-    Start qemu with option "--device virtio-ism-pci,disable-legacy=on, disable-modern=off".
-
-##  Kernel (virtio ism driver and smc support):
-
-     https://github.com/fengidri/linux-kernel-virtio-ism/compare/6f8101eb21bab480537027e62c4b17021fb7ea5d...ism-upstream-1223
-
-
-### SMC
-
-    Support SMC-D works with virtio-ism.
-
-    Use SMC with virtio-ism to accelerate inter-VM communication.
-
-    1. insmod virtio-ism and smc module.
-    2. use smc-tools [1] to get the device name of SMC-D based on virtio-ism.
-
-      $ smcd d # here is _virtio2_
-      FID  Type  PCI-ID        PCHID  InUse  #LGs  PNET-ID
-      0000 0     virtio2       0000   Yes       1  *C1
-
-    3. add the nic and SMC-D device to the same pnet, do it in both client and server.
-
-      $ smc_pnet -a -I eth1 c1 # use eth1 to setup SMC connection
-      $ smc_pnet -a -D virtio2 c1 # virtio2 is the virtio-ism device
-
-    4. use SMC to accelerate your application, smc_run in [1] can do this.
-
-      # smc_run use LD_PRELOAD to hijack socket syscall with AF_SMC
-      $ smc_run sockperf server --tcp # run in server
-      $ smc_run sockperf tp --tcp -i a.b.c.d # run in client
-
-    [1] https://github.com/ibm-s390-linux/smc-tools
-
-    Notice: The current POC state, we only tested some basic functions.
-
-### App inside user space
-
-    The ism driver provide /dev/vismX interface, allow users to use Virtio-ISM
-    device in user space directly.
-
-    Try tools/virtio/virtio-ism/virtio-ism-mmap
-
-    Usage:
-         cd tools/virtio/virtio-ism/; make
-         insmode virtio-ism.ko
-
-    case1: communicate
-
-       vm1: ./virtio-ism-mmap alloc -> token
-       vm2: ./virtio-ism-mmap attach -t <token> --write-msg AAAA --commit
-
-       vm2 will write msg to shared memory, then notify vm1. After vm1 receive
-       notify, then read from shared memory.
-
-    case2: ping-pong test.
-
-        vm1: ./virtio-ism-mmap server
-        vm2: ./virtio-ism-mmap -i 192.168.122.101 pp
-
-        1. server alloc one ism region
-        2. client get the token by tcp
-
-        3. client commit(kick) to server, server recv notify, commit(kick) to client
-        4. loop #3
-
-    case3: throughput test.
-
-        vm1: ./virtio-ism-mmap server
-        vm2: ./virtio-ism-mmap -i 192.168.122.101 tp
-
-        1. server alloc one ism region
-        2. client get the token by tcp
-
-        3. client write 1M data to ism region
-        4. client commit(kick) to server
-        5. server recv notify, copy the data, the commit(kick) back to client
-        6. loop #3-#5
-
-    case4: throughput test with protocol defined by user.
-
-        vm1: ./virtio-ism-mmap server
-        vm2: ./virtio-ism-mmap -i 192.168.122.101 tp --polling --tp-chunks 15 --msg-size 64k -n 50000
-
-        Used the ism region as a ring.
-
-        In this scene, client and server are in the polling mode. Test it on
-        my machine, the maximum can reach 12GBps
-
-# References
-
-    [1] https://projectacrn.github.io/latest/tutorials/enable_ivshmem.html
-    [2] https://dl.acm.org/doi/10.1145/2847562
-    [3] https://hal.archives-ouvertes.fr/hal-00368622/document
-    [4] https://lwn.net/Articles/711071/
-    [5] https://lore.kernel.org/netdev/20220720170048.20806-1-tonylu@linux.alibaba.com/T/
-
-
-If there are any problems, please point them out.
-Hope to hear from you, thank you.
-
-v2:
-   1. add Attach/Detach event
-   2. add Events Filter
-   3. allow Alloc/Attach huge region
-   4. remove host/guest terms
-
-v1:
-   1. cover letter adding explanation of ism vlan
-   2. spec add gid
-   3. explain the source of ideas about ism
-   4. POC support virtio-ism-smc.ko virtio-ism-dev.ko and support virtio-ism-mmap
-
-
-Xuan Zhuo (1):
-  virtio-ism: introduce new device virtio-ism
-
+The virtio ism device provides and manages many memory ism regions in
+host. These ism regions can be alloc/attach/detach by driver. Every
+ism region can be shared by token with other VM after allocation.
+The driver obtains the memory region on the host through the memory on
+the device.
+
+|-------------------------------------------------------------------------------------------------------------|
+| |------------------------------------------------|       |------------------------------------------------| |
+| | Guest                                          |       | Guest                                          | |
+| |                                                |       |                                                | |
+| |   ----------------                             |       |   ----------------                             | |
+| |   |    driver    |     [M1]   [M2]   [M3]      |       |   |    driver    |             [M2]   [M3]     | |
+| |   ----------------       |      |      |       |       |   ----------------               |      |      | |
+| |    |cq|                  |map   |map   |map    |       |    |cq|                          |map   |map   | |
+| |    |  |                  |      |      |       |       |    |  |                          |      |      | |
+| |    |  |                -------------------     |       |    |  |                --------------------    | |
+| |----|--|----------------|  device memory  |-----|       |----|--|----------------|  device memory   |----| |
+| |    |  |                -------------------     |       |    |  |                --------------------    | |
+| |                                |               |       |                               |                | |
+| |                                |               |       |                               |                | |
+| | Qemu                           |               |       | Qemu                          |                | |
+| |--------------------------------+---------------|       |-------------------------------+----------------| |
+|                                  |                                                       |                  |
+|                                  |                                                       |                  |
+|                                  |------------------------------+------------------------|                  |
+|                                                                 |                                           |
+|                                                                 |                                           |
+|                                                   --------------------------                                |
+|                                                    | M1 |   | M2 |   | M3 |                                 |
+|                                                   --------------------------                                |
+|                                                                                                             |
+| HOST                                                                                                        |
+---------------------------------------------------------------------------------------------------------------
+
+Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Signed-off-by: Jiang Liu <gerry@linux.alibaba.com>
+Signed-off-by: Dust Li <dust.li@linux.alibaba.com>
+Signed-off-by: Tony Lu <tonylu@linux.alibaba.com>
+Signed-off-by: Helin Guo <helinguo@linux.alibaba.com>
+Signed-off-by: Hans Zhang <hans@linux.alibaba.com>
+Signed-off-by: He Rongguang <herongguang@linux.alibaba.com>
+---
  conformance.tex |  24 +++
  content.tex     |   1 +
  virtio-ism.tex  | 472 ++++++++++++++++++++++++++++++++++++++++++++++++
  3 files changed, 497 insertions(+)
  create mode 100644 virtio-ism.tex
 
+diff --git a/conformance.tex b/conformance.tex
+index c3c1d3e..7c3cbc3 100644
+--- a/conformance.tex
++++ b/conformance.tex
+@@ -335,6 +335,15 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
+ \item \ref{drivernormative:Device Types / PMEM Device / Device Initialization}
+ \end{itemize}
+ 
++\conformance{\subsection}{ISM Driver Conformance}\label{sec:Conformance / Driver Conformance / ISM Driver Conformance}
++
++A ISM driver MUST conform to the following normative statements:
++
++\begin{itemize}
++\item \ref{drivernormative:Device Types / ISM Device / Device Initialization}
++\item \ref{drivernormative:Device Types / ISM Device / Device Operation / Alloc ISM Region}
++\end{itemize}
++
+ \conformance{\section}{Device Conformance}\label{sec:Conformance / Device Conformance}
+ 
+ A device MUST conform to the following normative statements:
+@@ -621,6 +630,21 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
+ \item \ref{devicenormative:Device Types / PMEM Device / Device Operation / Virtqueue return}
+ \end{itemize}
+ 
++\conformance{\subsection}{ISM Device Conformance}\label{sec:Conformance / Device Conformance / ISM Device Conformance}
++
++A ISM device MUST conform to the following normative statements:
++
++\begin{itemize}
++\item \ref{devicenormative:Device Types / ISM Device / Device configuration layout}
++\item \ref{devicenormative:Device Types / ISM Device / Device Initialization}
++\item \ref{devicenormative:Device Types / ISM Device / Device Operation / Alloc ISM Region}
++\item \ref{devicenormative:Device Types / ISM Device / Device Operation / Attach ISM Region}
++\item \ref{devicenormative:Device Types / ISM Device / Device Operation / Detach ISM Region}
++\item \ref{devicenormative:Device Types / ISM Device / Device Operation / Grant ISM Region}
++\item \ref{devicenormative:Device Types / ISM Device / Device Operation / Inform Event IRQ Vector}
++\item \ref{devicenormative:Device Types / ISM Device / Device Operation / Event Filter}
++\end{itemize}
++
+ \conformance{\section}{Legacy Interface: Transitional Device and Transitional Driver Conformance}\label{sec:Conformance / Legacy Interface: Transitional Device and Transitional Driver Conformance}
+ A conformant implementation MUST be either transitional or
+ non-transitional, see \ref{intro:Legacy
+diff --git a/content.tex b/content.tex
+index 96f4723..fe02aec 100644
+--- a/content.tex
++++ b/content.tex
+@@ -7545,6 +7545,7 @@ \subsubsection{Legacy Interface: Framing Requirements}\label{sec:Device
+ \input{virtio-scmi.tex}
+ \input{virtio-gpio.tex}
+ \input{virtio-pmem.tex}
++\input{virtio-ism.tex}
+ 
+ \chapter{Reserved Feature Bits}\label{sec:Reserved Feature Bits}
+ 
+diff --git a/virtio-ism.tex b/virtio-ism.tex
+new file mode 100644
+index 0000000..7f09c43
+--- /dev/null
++++ b/virtio-ism.tex
+@@ -0,0 +1,472 @@
++\section{ISM Device}\label{sec:Device Types / ISM Device}
++
++\begin{lstlisting}
++|-------------------------------------------------------------------------------------------------------------|
++| |------------------------------------------------|    |------------------------------------------------|    |
++| | VM                      [M1]   [M2]   [M3]     |    | VM                             [M2]   [M3]     |    |
++| |                          |      |      |       |    |                                 |      |       |    |
++| |   -----------------------|------|------|---    |    |   ------------------------------|------|---    |    |
++| |   |             driver   |      |      |  |    |    |   |             driver          |      |  |    |    |
++| |   -----------------------|------|------|---    |    |   ------------------------------|------|---    |    |
++| |    |cq|                  |map   |map   |map    |    |    |cq|                         |map   |map    |    |
++| |    |  |                  |      |      |       |    |    |  |                         |      |       |    |
++| |    |  |                -------------------     |    |    |  |                -------------------     |    |
++| |----|--|----------------|  device memory  |-----|    |----|--|----------------|  device memory  |-----|    |
++| |    |  |                -------------------     |    |    |  |                -------------------     |    |
++| |                                |               |    |                                |               |    |
++| |                                |               |    |                                |               |    |
++| |                                |               |    |                                |               |    |
++| |--------------------------------+---------------|    |--------------------------------+---------------|    |
++|                                  |                                                       |                  |
++|                                  |                                                       |                  |
++|                                  |------------------------------+------------------------|                  |
++|                                                                 |                                           |
++|                                                                 |                                           |
++|                                                   --------------------------                                |
++|                                                    | M1 |   | M2 |   | M3 |                                 |
++|                                                   --------------------------                                |
++|                                                                                                             |
++|                                                                                                             |
++|-------------------------------------------------------------------------------------------------------------|
++\end{lstlisting}
++
++ISM(Internal Shared Memory) device provides the ability to share memory between
++different VMs launched from the same entity. A vm's memory got from ISM device
++can be shared with multiple peers at the same time. This shared relationship can
++be dynamically created and released.
++
++The contiguous shared memory obtained from the device is divided into multiple
++ism regions for share.
++
++ISM device provides a mechanism to notify other ism region referrers of events.
++
++
++\subsection{Device ID}\label{sec:Device Types / ISM Device / Device ID}
++	44
++
++\subsection{Virtqueues}\label{sec:Device Types / ISM Device / Virtqueues}
++\begin{description}
++\item[0] controlq
++\item[1] eventq
++\end{description}
++
++\subsection{Device configuration layout}\label{sec:Device Types / ISM Device / Device configuration layout}
++
++\begin{lstlisting}
++struct virtio_ism_config {
++	le64 gid;
++	le64 devid;
++	le64 chunk_size;
++	le64 notify_size;
++};
++\end{lstlisting}
++
++\begin{description}
++    \item[\field{gid}] \field{gid} is used to identify different entity that
++        launches the VMs. Only the ism devices with the same \field{gid} can
++        share the ism regions. Therefore, this value is unique in the
++        world-wide.
++
++    \item[\field{devid}] the device id is used to identify different ism devices
++        on the same entity.
++
++    \item[\field{chunk_size}] the size of the every ism chunk.
++        Large shared memories are divided into multiple chunks, and one time
++        will take up at least one chunk.
++
++    \item[\field{notify_size}] the size of the notify address.
++\end{description}
++
++\devicenormative{\subsubsection}{Device configuration layout}{Device Types / ISM Device / Device configuration layout}
++
++The device MUST ensure that the \field{gid} on the same entity i
++same and different from the \field{gid} on other entity.
++
++On the same entity, the device MUST ensure that the \field{devid} is unique.
++
++\field{chunk_size} MUST be a power of two.
++
++\subsection{Event}\label{sec:Device Types / Network Device / Device Operation / Event}
++
++\begin{lstlisting}
++#define   VIRTIO_ISM_EVENT_UPDATE (1 << 0)
++#define   VIRTIO_ISM_EVENT_ATTACH (1 << 1)
++#define   VIRTIO_ISM_EVENT_DETACH (1 << 2)
++\end{lstlisting}
++
++\begin{description}
++    \item[VIRTIO_ISM_EVENT_UPDATE]
++        The driver kick the notify area to notify other peers of the update
++        event of the ism region content.
++
++    \item[VIRTIO_ISM_EVENT_ATTACH] A new device attaches the ism region.
++    \item[VIRTIO_ISM_EVENT_DETACH] A device detaches the ism region.
++\end{description}
++
++The ism device supports event notification of the ism region. When a device
++kick/attach/detach a region, other ism region referrers may receive related
++events.
++
++A buffer received from eventq can contain multiple event structures.
++
++\begin{lstlisting}
++struct virtio_ism_event_update {
++	le64 ev_type;
++	le64 offset;
++	le64 devid;
++};
++
++struct virtio_ism_event_attach_detach {
++	le64 ev_type;
++	le64 offset;
++	le64 devid;
++	le64 peers;
++};
++
++\end{lstlisting}
++
++\begin{description}
++\item[\field{ev_type}] The type of event, the driver can get the size of the
++    structure based on this.
++
++\item[\field{offset}] The offset of ism regions with the event.
++
++\item[\field{devid}] \field{devid} of the device that generated events.
++\item[\field{peers}] The number of the ism region referres (does not include the
++    device that receiving this event)
++
++\end{description}
++
++
++\subsection{Permissions}\label{sec:Device Types / Network Device / Device Operation / Permission}
++
++The permissions of a ism region determine whether this ism region can be
++attached and the read and write permissions after attach.
++
++The driver can set the default permissions, or set permissions for some certain
++devices.
++
++When a driver has the management permission of the ism region, then it can
++modify the permissions of this ism region. By default, only the device that
++allocated the ism region has this permission.
++
++\subsection{Device Initialization}\label{sec:Device Types / ISM Device / Device Initialization}
++
++\devicenormative{\subsubsection}{Device Initialization}{Device Types / ISM Device / Device Initialization}
++
++The device MUST generate a \field{devid}. \field{devid} remains unchanged
++during reset. \field{devid} MUST NOT be 0.
++
++The device shares memory to the driver based on shared memory regions
++\ref{sec:Basic Facilities of a Virtio Device / Shared Memory Regions}.
++However, it does not need to allocate physical memory during initialization.
++
++The \field{shmid} of a region MUST be one of the following
++\begin{lstlisting}
++enum virtio_ism_shm_id {
++	VIRTIO_ISM_SHM_ID_UNDEFINED = 0,
++	VIRTIO_ISM_SHM_ID_REGIONS   = 1,
++	VIRTIO_ISM_SHM_ID_NOTIFY    = 2,
++};
++\end{lstlisting}
++
++The shared memory whose shmid is VIRTIO_ISM_SHM_ID_REGIONS is used to implement
++ism regions. If there are multiple shared memories whose shmid is
++VIRTIO_ISM_SHM_ID_REGIONS, they are used as contiguous memory in the order of
++acquisition.
++
++The device MUST also provides a shared memory with VIRTIO_ISM_SHM_ID_NOTIFY to
++the driver. This memory area is used for notify, and each ism region MUST have a
++corresponding notify address inside this area, and the size of the notify
++address is \field{notify_size};
++
++\drivernormative{\subsubsection}{Device Initialization}{Device Types / ISM Device / Device Initialization}
++
++The driver MUST query all shared memory regions supported by the device.
++(see \ref{sec:Basic Facilities of a Virtio Device / Shared Memory Regions})
++
++
++\subsection{Control Virtqueue}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue}
++
++The driver uses the control virtqueue send commands to implement operations on
++the ism region and some global configurations.
++
++All commands are of the following form:
++\begin{lstlisting}
++struct virtio_ism_ctrl {
++	u8 class;
++	u8 command;
++	u8 command_specific_data[];
++	u8 ack;
++	u8 command_specific_data_reply[];
++};
++
++/* ack values */
++#define VIRTIO_ISM_OK      0
++#define VIRTIO_ISM_ERR     255
++
++#define VIRTIO_ISM_ENOENT  2
++#define VIRTIO_ISM_E2BIG   7
++#define VIRTIO_ISM_ENOMEM  12
++#define VIRTIO_ISM_ENOSPEC 28
++
++#define VIRTIO_ISM_PERM_EATTACH 100
++#define VIRTIO_ISM_PERM_EREAD   101
++#define VIRTIO_ISM_PERM_EWRITE  102
++\end{lstlisting}
++
++The \field{class}, \field{command} and command-specific-data are set by the
++driver, and the device sets the \field{ack} byte and optionally
++\field{command-specific-data-reply}.
++
++\subsection{Device Operation}  \label{sec:Device Types / ISM Driver / Device Operation}
++
++\subsubsection{Alloc ISM Region}\label{sec:Device Types / ISM Device / Device Operation / Alloc ISM Region}
++
++Based on controlq, the driver can request an ism region to be allocated.
++
++The ism region obtained from the device will carry a token, which can be passed
++to other VMs for attaching to this ism region.
++
++\begin{lstlisting}
++struct virtio_ism_area {
++	le64 offset;
++	le64 size;
++}
++
++struct virtio_ism_ctrl_alloc {
++	le64 size;
++};
++
++struct virtio_ism_ctrl_alloc_reply {
++	le64 token;
++	le64 num;
++    struct virtio_ism_area area[];
++};
++
++#define VIRTIO_ISM_CTRL_ALLOC  0
++	#define VIRTIO_ISM_CTRL_ALLOC_REGION 0
++\end{lstlisting}
++
++
++\devicenormative{\subparagraph}{Alloc ISM Region}{Device Types / ISM Device / Device Operation / Alloc ISM Region}
++
++The device sets \field{ack} to VIRTIO_ISM_OK after successfully assigning the
++physical ism region. At the same time, a new token MUST be dynamically created
++for this ism region. \field{offset} is the location of this ism region in shared
++memory.
++
++If there is no free chunk, the device MUST set \field{ack} to VIRTIO_ISM_NOSPEC.
++
++If new physical memory cannot be allocated, the device MUST set
++\field{ack} to VIRTIO_ISM_NOMEM.
++
++The device MUST clear the new ism region before committing to the driver.
++
++If \field{size} is greater than \field{chunk_size}, this time the distribution
++may occupy multiple chunks, then the device fills the offset and size of each
++chunk into \field {offset} \field {size}.
++
++If \field{size} is smaller than \field{chunk_size}, the ism region also
++occupies one chunk in the shared memory space.
++
++\field{num} is the number of the array \field{offset} and \field{size}.
++
++If virtio_ism_ctrl_alloc_reply is not enough, the device MUST set the \field{ack}
++to VIRTIO_ISM_E2BIG.
++
++\drivernormative{\subparagraph}{Alloc ISM Region}{Device Types / ISM Device / Device Operation / Alloc ISM Region}
++
++After the alloc request is successful, the driver MUST only use the range
++\field{offset} to \field{offset} + \field{size} - 1.
++
++\subsubsection{Attach ISM Region}\label{sec:Device Types / ISM Device / Device Operation / Attach ISM Region}
++
++Based on controlq, the driver can request to attach an ism region with a
++specified token.
++
++\begin{lstlisting}
++struct virtio_ism_ctrl_attach {
++	le64 token;
++	le64 rw_perm;
++};
++
++struct virtio_ism_ctrl_attach_reply {
++	le64 num;
++    struct virtio_ism_area area[];
++};
++
++#define VIRTIO_ISM_CTRL_ATTACH  1
++	#define VIRTIO_ISM_CTRL_ATTACH_REGION 0
++\end{lstlisting}
++\devicenormative{\subparagraph}{Attach ISM Region}{Device Types / ISM Device / Device Operation / Attach ISM Region}
++
++The device sets \field{ack} to VIRTIO_ISM_OK after successfully finding and
++assigning the physical ism region. \field{offset} is the location of this ism
++region in shared memory.
++
++If there is no free chunk, the device MUST set \field{ack} to VIRTIO_ISM_NOSPEC.
++
++If the ism region specified by \field{token} does not exist, the device MUST set
++\field{ack} to VIRTIO_ISM_ENOENT.
++
++If the device does not has the VIRTIO_ISM_PERM_ATTACH, the device MUST set
++\field{ack} to VIRTIO_ISM_PERM_EATTACH.
++
++If \field{rw_perm} include VIRTIO_ISM_PERM_READ, but the device does not
++ has the VIRTIO_ISM_PERM_READ for this region, the device MUST set \field{ack}
++ to VIRTIO_ISM_PERM_EREAD.
++
++If \field{rw_perm} include VIRTIO_ISM_PERM_WRITE, but the device does not
++ has the VIRTIO_ISM_PERM_WRITE for this region, the device MUST set \field{ack}
++ to VIRTIO_ISM_PERM_EWRITE.
++
++The device MUST set the read and write permissions of the physical memory based on
++\field{rw_perm}.
++
++If \field{size} is greater than \field{chunk_size}, this time the distribution
++may occupy multiple chunks, and the offset and size of each chunk fill in
++\field {offset} \field {size}.
++
++If \field{size} is smaller than \field{chunk_size}, the ism region also
++occupies \field{chunk_size} in the shared memory space.
++
++\field{num} is the number of the array \field{offset} and \field{size}.
++
++If virtio_ism_ctrl_alloc_reply is not enough, the device MUST set the \field{ack}
++to VIRTIO_ISM_E2BIG and set the \field{num} for next request.
++
++\subsubsection{Detach ISM Region}\label{sec:Device Types / ISM Device / Device Operation / Detach ISM Region}
++Based on controlq, the device can release references to the ism region.
++
++\begin{lstlisting}
++struct virtio_ism_ctrl_detach {
++	le64 token;
++};
++
++#define VIRTIO_ISM_CTRL_DETACH  2
++	#define VIRTIO_ISM_CTRL_DETACH_REGION 0
++\end{lstlisting}
++
++\devicenormative{\subparagraph}{Detach ISM Region}{Device Types / ISM Device / Device Operation / Detach ISM Region}
++
++If the ism region specified by \field{token} is not attached, the device MUST set
++\field{ack} to VIRTIO_ISM_ENOENT.
++
++The device MUST release the physical memory of this ism region.
++
++\subsubsection{Grant ISM Region}\label{sec:Device Types / ISM Device / Device Operation / Grant ISM Region}
++Based on controlq, the driver can set the permissions for each ism
++region.
++
++\begin{lstlisting}
++struct virtio_ism_ctrl_grant_default {
++	le64 token;
++	le64 permissions;
++};
++
++struct virtio_ism_ctrl_grant {
++	le64 token;
++	le64 permissions;
++	le64 peer_devid;
++};
++
++#define VIRTIO_ISM_CTRL_GRANT  3
++	#define VIRTIO_ISM_CTRL_GRANT_SET_DEFAULT    0
++	#define VIRTIO_ISM_CTRL_GRANT_SET_FOR_DEVICE 1
++
++#define VIRTIO_ISM_PERM_READ       (1 << 0)
++#define VIRTIO_ISM_PERM_WRITE      (1 << 1)
++
++#define VIRTIO_ISM_PERM_ATTACH     (1 << 2)
++
++#define VIRTIO_ISM_PERM_MANAGE     (1 << 3)
++#define VIRTIO_ISM_PERM_CLEAN_DEFAULT     (1 << 4)
++
++\end{lstlisting}
++
++\begin{description}
++\item[VIRTIO_ISM_PERM_READ] read permission
++\item[VIRTIO_ISM_PERM_WRITE] write permission
++\item[VIRTIO_ISM_PERM_ATTACH] attach permission
++
++\item[VIRTIO_ISM_PERM_MANAGE] Management permission, the device with this
++	permission can modify the permission of this ism region. By default, only
++	the device that allocated the region has this permission.
++
++\item[VIRTIO_ISM_PERM_DENY_DEFAULT] Clean all permissions of default, just used
++    with VIRTIO_ISM_CTRL_GRANT_SET_FOR_DEVICE.
++
++\end{description}
++
++Permission control is divided into two categories, one is the permission for the
++specified device, and the other is the default permission.
++
++\devicenormative{\subparagraph}{Grant ISM Region}{Device Types / ISM Device / Device Operation / Grant ISM Region}
++
++If the ism region specified by \field{token} is not attached, the device MUST set
++\field{ack} to VIRTIO_ISM_ENOENT.
++
++The device MUST respond to the driver's request based on the permissions the
++device has.
++
++The default permissions of the newly allocated ism region MUST be VIRTIO_ISM_PERM_READ | VIRTIO_ISM_PERM_WRITE | VIRTIO_ISM_PERM_ATTACH.
++The device that allocated the ism region MUST has the perm (VIRTIO_ISM_PERM_READ | VIRTIO_ISM_PERM_WRITE | VIRTIO_ISM_PERM_ATTACH | VIRTIO_ISM_PERM_MANAGE) for this region.
++
++\subsubsection{Inform Update Event IRQ Vector}\label{sec:Device Types / ISM Device / Device Operation / Inform Update Event IRQ Vector}
++
++For the region update event, the driver can choose to bind a interrupt for
++region. If successful, then this region's update event will no longer pass
++through eventq, but the interrupt of the binding is directly triggered.
++
++\begin{lstlisting}
++struct virtio_ism_ctrl_irq_vector {
++	le64 token;
++	le64 vector;
++};
++
++#define VIRTIO_ISM_CTRL_EVENT_VECTOR  4
++	#define VIRTIO_ISM_CTRL_EVENT_VECTOR_SET 0
++\end{lstlisting}
++
++
++\devicenormative{\subparagraph}{Inform Event IRQ Vector}{Device Types / ISM Device / Device Operation / Inform Event IRQ Vector}
++
++The device MUST record the relationship between the ism region and the vector
++notified by the driver, and notify the update event of this region to driver
++by the corresponding vector.
++
++
++\subsubsection{Events Filter}\label{sec:Device Types / ISM Device / Device Operation / Event Filter}
++
++The driver can filter the event to choose which events to receive. The driver
++can set the default filter for all regions, or set filter for some specified ism
++regions.
++
++\begin{lstlisting}
++struct virtio_ism_ctrl_events_filter_def {
++	le64 ev_type;
++};
++
++struct virtio_ism_ctrl_events_filter {
++	le64 ev_type;
++ 	le64 token;
++};
++
++#define VIRTIO_ISM_CTRL_EVENTS_FILTER  5
++	#define VIRTIO_ISM_CTRL_EVENTS_FILTER_SET_DEFAULT 0
++	#define VIRTIO_ISM_CTRL_EVENTS_FILTER_SET_REGION  1
++\end{lstlisting}
++
++The \field{ev_type} is a bitmask. See \ref{sec:Device Types / Network Device / Device Operation / Event}
++
++\devicenormative{\subparagraph}{Events Filter}{Device Types / ISM Device / Device Operation / Event Filter}
++
++After initialization of reset, the default \field{ev_type} MUST be VIRTIO_ISM_EVENT_UPDATE.
++
++The modification of the driver for the default events filter MUST NOT affect the region
++with a separate events filter.
++
++
++
++
 -- 
 2.32.0.3.g01195cf9f
 
