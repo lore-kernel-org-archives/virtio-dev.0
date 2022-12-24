@@ -1,58 +1,109 @@
-Return-Path: <virtio-comment-return-3613-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-comment-return-3615-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio-comment@lists.oasis-open.org>
 List-Post: <mailto:virtio-comment@lists.oasis-open.org>
 List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
 From: Parav Pandit <parav@nvidia.com>
-Date: Sat, 24 Dec 2022 20:13:35 +0200
-Message-ID: <20221224181335.74111-1-parav@nvidia.com>
+Date: Sat, 24 Dec 2022 20:30:10 +0200
+Message-ID: <20221224183010.74297-1-parav@nvidia.com>
 MIME-Version: 1.0
-Subject: [virtio-comment] [PATCH] virtio-network: Fix spelling errors
+Subject: [virtio-comment] [PATCH] virtio-network: Avoid confusion between a card and a device
 Content-Type: text/plain
 Content-Transfer-Encoding: quoted-printable
 To: mst@redhat.com, virtio-dev@lists.oasis-open.org
 Cc: virtio-comment@lists.oasis-open.org, Parav Pandit <parav@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Fix two spelling errors in the virtio network device specification.
+Ethernet card is a relatively vague term in context of virtio network
+device specification. A Ethernet card in the industry has one to
+multiple ports, one to multiple PCI functions.
 
-This patch is on top of change of [1].
+Historically virtio network device is documented as a Ethernet card.
+However it is usually just a single virtual Ethernet device.
+
+Hence, avoid this confusing term 'card' and align the specification
+to adhere to widely used specification term as 'device' used for all
+virtio device types.
+
+This patch is on top of change [1].
 
 [1] https://lists.oasis-open.org/archives/virtio-dev/202212/msg00042.html
 
+Fixes: https://github.com/oasis-tcs/virtio-spec/issues/154
 Signed-off-by: Parav Pandit <parav@nvidia.com>
 ---
- virtio-network.tex | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ content.tex        | 6 +++---
+ virtio-network.tex | 6 +++---
+ 2 files changed, 6 insertions(+), 6 deletions(-)
 
+diff --git a/content.tex b/content.tex
+index 5baef90..37e7943 100644
+--- a/content.tex
++++ b/content.tex
+@@ -619,7 +619,7 @@ \subsection{PCI Device Discovery}\label{sec:Virtio Tran=
+sport Options / Virtio Ov
+ \hline
+ Transitional PCI Device ID  &  Virtio Device    \\
+ \hline \hline
+-0x1000      &   network card     \\
++0x1000      &   network device     \\
+ \hline
+ 0x1001     &   block device     \\
+ \hline
+@@ -635,7 +635,7 @@ \subsection{PCI Device Discovery}\label{sec:Virtio Tran=
+sport Options / Virtio Ov
+ \hline
+ \end{tabular}
+=20
+-For example, the network card device with the Virtio Device ID 1
++For example, the network device device with the Virtio Device ID 1
+ has the PCI Device ID 0x1041 or the Transitional PCI Device ID 0x1000.
+=20
+ The PCI Subsystem Vendor ID and the PCI Subsystem Device ID MAY reflect
+@@ -2912,7 +2912,7 @@ \chapter{Device Types}\label{sec:Device Types}
+ \hline \hline
+ 0          & reserved (invalid) \\
+ \hline
+-1          &   network card     \\
++1          &   network device     \\
+ \hline
+ 2          &   block device     \\
+ \hline
 diff --git a/virtio-network.tex b/virtio-network.tex
-index 92e3906..28ed343 100644
+index 28ed343..b05ce61 100644
 --- a/virtio-network.tex
 +++ b/virtio-network.tex
-@@ -331,7 +331,7 @@ \subsection{Device Initialization}\label{sec:Device Typ=
+@@ -1,6 +1,6 @@
+ \section{Network Device}\label{sec:Device Types / Network Device}
+=20
+-The virtio network device is a virtual ethernet card, and is the
++The virtio network device is a virtual ethernet device, and is the
+ most complex of the devices supported so far by virtio. It has
+ enhanced rapidly and demonstrates clearly how support for new
+ features are added to an existing device. Empty buffers are
+@@ -33,7 +33,7 @@ \subsection{Feature bits}\label{sec:Device Types / Networ=
+k Device / Feature bits
+=20
+ \begin{description}
+ \item[VIRTIO_NET_F_CSUM (0)] Device handles packets with partial checksum.=
+   This=20
+-  ``checksum offload'' is a common feature on modern network cards.
++  ``checksum offload'' is a common feature on modern network device.
+=20
+ \item[VIRTIO_NET_F_GUEST_CSUM (1)] Driver handles packets with partial che=
+cksum.
+=20
+@@ -323,7 +323,7 @@ \subsection{Device Initialization}\label{sec:Device Typ=
 es / Network Device / Dev
-   Otherwise, the driver assumes it's active.
 =20
- \item A performant driver would indicate that it will generate checksumles=
-s
--  packets by negotating the VIRTIO_NET_F_CSUM feature.
-+  packets by negotiating the VIRTIO_NET_F_CSUM feature.
+ \item If the VIRTIO_NET_F_MAC feature bit is set, the configuration
+   space \field{mac} entry indicates the ``physical'' address of the
+-  network card, otherwise the driver would typically generate a random
++  network device, otherwise the driver would typically generate a random
+   local MAC address.
 =20
- \item If that feature is negotiated, a driver can use TCP segmentation or =
-UDP
-   segmentation/fragmentation offload by negotiating the VIRTIO_NET_F_HOST_=
-TSO4 (IPv4
-@@ -1062,7 +1062,7 @@ \subsubsection{Control Virtqueue}\label{sec:Device Ty=
-pes / Network Device / Devi
- \begin{itemize}
- \item VIRTIO_NET_CTRL_RX_PROMISC turns promiscuous mode on and
- off. The command-specific-data is one byte containing 0 (off) or
--1 (on). If promiscous mode is on, the device SHOULD receive all
-+1 (on). If promiscuous mode is on, the device SHOULD receive all
- incoming packets.
- This SHOULD take effect even if one of the other modes set by
- a VIRTIO_NET_CTRL_RX class command is on.
+ \item If the VIRTIO_NET_F_STATUS feature bit is negotiated, the link
 --=20
 2.26.2
 
