@@ -1,102 +1,76 @@
-Return-Path: <virtio-dev-return-10370-cohuck=redhat.com@lists.oasis-open.org>
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Return-Path: <virtio-comment-return-3613-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-comment@lists.oasis-open.org>
+List-Post: <mailto:virtio-comment@lists.oasis-open.org>
+List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
 From: Parav Pandit <parav@nvidia.com>
-Date: Sun, 25 Dec 2022 02:37:27 +0200
-Message-ID: <20221225003727.103495-1-parav@nvidia.com>
+Date: Sat, 24 Dec 2022 20:13:35 +0200
+Message-ID: <20221224181335.74111-1-parav@nvidia.com>
 MIME-Version: 1.0
-Subject: [virtio-dev] [PATCH v1] virtio-network: Clarify VLAN filter table configuration
+Subject: [virtio-comment] [PATCH] virtio-network: Fix spelling errors
 Content-Type: text/plain
 Content-Transfer-Encoding: quoted-printable
 To: mst@redhat.com, virtio-dev@lists.oasis-open.org
-Cc: virtio-comment@lists.oasis-open.org, si-wei.liu@oracle.com, Parav
- Pandit <parav@nvidia.com>
+Cc: virtio-comment@lists.oasis-open.org, Parav Pandit <parav@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-The filtering behavior of the VLAN filter commands is not very clear as
-discussed in thread [1].
+Fix two spelling errors in the virtio network device specification.
 
-Hence, add the command description and device requirements for it.
+This patch is on top of change of [1].
 
-[1] https://www.mail-archive.com/qemu-devel@nongnu.org/msg912392.html
-Fixes: https://github.com/oasis-tcs/virtio-spec/issues/147
-Suggested-by: Si-Wei Liu <si-wei.liu@oracle.com>
+[1] https://lists.oasis-open.org/archives/virtio-dev/202212/msg00042.html
+
 Signed-off-by: Parav Pandit <parav@nvidia.com>
 ---
-changelog:
-v0->v1:
-- added missing conformance section link
----
- conformance.tex    |  1 +
- virtio-network.tex | 23 +++++++++++++++++++++++
- 2 files changed, 24 insertions(+)
+ virtio-network.tex | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/conformance.tex b/conformance.tex
-index c3c1d3e..478fb80 100644
---- a/conformance.tex
-+++ b/conformance.tex
-@@ -412,6 +412,7 @@ \section{Conformance Targets}\label{sec:Conformance / C=
-onformance Targets}
- \item \ref{devicenormative:Device Types / Network Device / Device Operatio=
-n / Processing of Incoming Packets}
- \item \ref{devicenormative:Device Types / Network Device / Device Operatio=
-n / Control Virtqueue / Packet Receive Filtering}
- \item \ref{devicenormative:Device Types / Network Device / Device Operatio=
-n / Control Virtqueue / Setting MAC Address Filtering}
-+\item \ref{devicenormative:Device Types / Network Device / Device Operatio=
-n / Control Virtqueue / VLAN Filtering}
- \item \ref{devicenormative:Device Types / Network Device / Device Operatio=
-n / Control Virtqueue / Gratuitous Packet Sending}
- \item \ref{devicenormative:Device Types / Network Device / Device Operatio=
-n / Control Virtqueue / Automatic receive steering in multiqueue mode}
- \item \ref{devicenormative:Device Types / Network Device / Device Operatio=
-n / Control Virtqueue / Receive-side scaling (RSS) / RSS processing}
 diff --git a/virtio-network.tex b/virtio-network.tex
-index e7cdd6f..1b8fde9 100644
+index 92e3906..28ed343 100644
 --- a/virtio-network.tex
 +++ b/virtio-network.tex
-@@ -1210,6 +1210,29 @@ \subsubsection{Control Virtqueue}\label{sec:Device T=
-ypes / Network Device / Devi
- Both the VIRTIO_NET_CTRL_VLAN_ADD and VIRTIO_NET_CTRL_VLAN_DEL
- command take a little-endian 16-bit VLAN id as the command-specific-data.
+@@ -331,7 +331,7 @@ \subsection{Device Initialization}\label{sec:Device Typ=
+es / Network Device / Dev
+   Otherwise, the driver assumes it's active.
 =20
-+VIRTIO_NET_CTRL_VLAN_ADD command adds the specified VLAN to the VLAN
-+filtering table.
-+
-+VIRTIO_NET_CTRL_VLAN_DEL command removes specified VLAN from the VLAN
-+filtering table which was previously added using
-+VIRTIO_NET_CTRL_VLAN_ADD command.
-+
-+\devicenormative{\subparagraph}{VLAN Filtering}{Device Types / Network Dev=
-ice / Device Operation / Control Virtqueue / VLAN Filtering}
-+
-+When VIRTIO_NET_F_CTRL_VLAN is not negotiated, the device accepts all
-+VLAN tagged packets which matches  device's filter configuration.
-+
-+When VIRTIO_NET_F_CTRL_VLAN is negotiated, the device starts with empty
-+VLAN filtering table.
-+
-+When VIRTIO_NET_F_CTRL_VLAN is negotiated, the device accepts all the
-+VLAN tagged packets whose VLAN tag is found in the VLAN filtering table;
-+device should drop all VLAN tagged packets whose VLAN tag is not found
-+in the VLAN filtering table.
-+
-+When VIRTIO_NET_F_CTRL_VLAN is negotiated, the device accepts all
-+untagged packets which matches device's filter configuration.
-+
- \subparagraph{Legacy Interface: VLAN Filtering}\label{sec:Device Types / N=
-etwork Device / Device Operation / Control Virtqueue / VLAN Filtering / Leg=
-acy Interface: VLAN Filtering}
- When using the legacy interface, transitional devices and drivers
- MUST format the VLAN id
+ \item A performant driver would indicate that it will generate checksumles=
+s
+-  packets by negotating the VIRTIO_NET_F_CSUM feature.
++  packets by negotiating the VIRTIO_NET_F_CSUM feature.
+=20
+ \item If that feature is negotiated, a driver can use TCP segmentation or =
+UDP
+   segmentation/fragmentation offload by negotiating the VIRTIO_NET_F_HOST_=
+TSO4 (IPv4
+@@ -1062,7 +1062,7 @@ \subsubsection{Control Virtqueue}\label{sec:Device Ty=
+pes / Network Device / Devi
+ \begin{itemize}
+ \item VIRTIO_NET_CTRL_RX_PROMISC turns promiscuous mode on and
+ off. The command-specific-data is one byte containing 0 (off) or
+-1 (on). If promiscous mode is on, the device SHOULD receive all
++1 (on). If promiscuous mode is on, the device SHOULD receive all
+ incoming packets.
+ This SHOULD take effect even if one of the other modes set by
+ a VIRTIO_NET_CTRL_RX class command is on.
 --=20
 2.26.2
 
 
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+This publicly archived list offers a means to provide input to the
+OASIS Virtual I/O Device (VIRTIO) TC.
+
+In order to verify user consent to the Feedback License terms and
+to minimize spam in the list archive, subscription is required
+before posting.
+
+Subscribe: virtio-comment-subscribe@lists.oasis-open.org
+Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
+List help: virtio-comment-help@lists.oasis-open.org
+List archive: https://lists.oasis-open.org/archives/virtio-comment/
+Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
+List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lis=
+ts
+Committee: https://www.oasis-open.org/committees/virtio/
+Join OASIS: https://www.oasis-open.org/join/
 
