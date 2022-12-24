@@ -1,3263 +1,3832 @@
-Return-Path: <virtio-comment-return-3610-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-comment-return-3612-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio-comment@lists.oasis-open.org>
 List-Post: <mailto:virtio-comment@lists.oasis-open.org>
 List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
 From: Parav Pandit <parav@nvidia.com>
-Date: Sat, 24 Dec 2022 20:06:18 +0200
-Message-ID: <20221224180619.73959-6-parav@nvidia.com>
+Date: Sat, 24 Dec 2022 20:06:19 +0200
+Message-ID: <20221224180619.73959-7-parav@nvidia.com>
 In-Reply-To: <20221224180619.73959-1-parav@nvidia.com>
 References: <20221224180619.73959-1-parav@nvidia.com>
 MIME-Version: 1.0
-Subject: [virtio-comment] [PATCH 5/6] virtio-block: Maintain block device spec in separate file
+Subject: [virtio-comment] [PATCH 6/6] virtio-network: Maintain network device spec in separate file
 Content-Type: text/plain
 Content-Transfer-Encoding: quoted-printable
 To: mst@redhat.com, virtio-dev@lists.oasis-open.org
 Cc: virtio-comment@lists.oasis-open.org, Parav Pandit <parav@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Move virtio block device specification to its own file similar to
+Move virtio network device specification to its own file similar to
 recent virtio devices.
 
 Fixes: https://github.com/oasis-tcs/virtio-spec/issues/153
 Signed-off-by: Parav Pandit <parav@nvidia.com>
 ---
- content.tex      | 1315 +---------------------------------------------
- virtio-block.tex | 1315 ++++++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 1316 insertions(+), 1314 deletions(-)
- create mode 100644 virtio-block.tex
+ content.tex        | 1596 +-------------------------------------------
+ virtio-network.tex | 1596 ++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 1597 insertions(+), 1595 deletions(-)
+ create mode 100644 virtio-network.tex
 
 diff --git a/content.tex b/content.tex
-index 0a25765..9f9180b 100644
+index 9f9180b..5baef90 100644
 --- a/content.tex
 +++ b/content.tex
-@@ -4598,1320 +4598,7 @@ \subsubsection{Legacy Interface: Framing Requireme=
-nts}\label{sec:Device
- See \ref{sec:Basic
- Facilities of a Virtio Device / Virtqueues / Message Framing}.
+@@ -3003,1601 +3003,7 @@ \chapter{Device Types}\label{sec:Device Types}
+ entirely, or live on outside this standard.  We shall speak of
+ them no further.
 =20
--\section{Block Device}\label{sec:Device Types / Block Device}
+-\section{Network Device}\label{sec:Device Types / Network Device}
 -
--The virtio block device is a simple virtual block device (ie.
--disk). Read and write requests (and other exotic requests) are
--placed in one of its queues, and serviced (probably out of order) by the
--device except where noted.
+-The virtio network device is a virtual ethernet card, and is the
+-most complex of the devices supported so far by virtio. It has
+-enhanced rapidly and demonstrates clearly how support for new
+-features are added to an existing device. Empty buffers are
+-placed in one virtqueue for receiving packets, and outgoing
+-packets are enqueued into another for transmission in that order.
+-A third command queue is used to control advanced filtering
+-features.
 -
--\subsection{Device ID}\label{sec:Device Types / Block Device / Device ID}
--  2
--
--\subsection{Virtqueues}\label{sec:Device Types / Block Device / Virtqueues=
+-\subsection{Device ID}\label{sec:Device Types / Network Device / Device ID=
 }
+-
+- 1
+-
+-\subsection{Virtqueues}\label{sec:Device Types / Network Device / Virtqueu=
+es}
+-
 -\begin{description}
--\item[0] requestq1
+-\item[0] receiveq1
+-\item[1] transmitq1
 -\item[\ldots]
--\item[N-1] requestqN
+-\item[2(N-1)] receiveqN
+-\item[2(N-1)+1] transmitqN
+-\item[2N] controlq
 -\end{description}
 -
-- N=3D1 if VIRTIO_BLK_F_MQ is not negotiated, otherwise N is set by
-- \field{num_queues}.
+- N=3D1 if neither VIRTIO_NET_F_MQ nor VIRTIO_NET_F_RSS are negotiated, oth=
+erwise N is set by
+- \field{max_virtqueue_pairs}.
 -
--\subsection{Feature bits}\label{sec:Device Types / Block Device / Feature =
-bits}
+- controlq only exists if VIRTIO_NET_F_CTRL_VQ set.
+-
+-\subsection{Feature bits}\label{sec:Device Types / Network Device / Featur=
+e bits}
 -
 -\begin{description}
--\item[VIRTIO_BLK_F_SIZE_MAX (1)] Maximum size of any single segment is
--    in \field{size_max}.
+-\item[VIRTIO_NET_F_CSUM (0)] Device handles packets with partial checksum.=
+   This=20
+-  ``checksum offload'' is a common feature on modern network cards.
 -
--\item[VIRTIO_BLK_F_SEG_MAX (2)] Maximum number of segments in a
--    request is in \field{seg_max}.
+-\item[VIRTIO_NET_F_GUEST_CSUM (1)] Driver handles packets with partial che=
+cksum.
 -
--\item[VIRTIO_BLK_F_GEOMETRY (4)] Disk-style geometry specified in
--    \field{geometry}.
+-\item[VIRTIO_NET_F_CTRL_GUEST_OFFLOADS (2)] Control channel offloads
+-        reconfiguration support.
 -
--\item[VIRTIO_BLK_F_RO (5)] Device is read-only.
+-\item[VIRTIO_NET_F_MTU(3)] Device maximum MTU reporting is supported. If
+-    offered by the device, device advises driver about the value of
+-    its maximum MTU. If negotiated, the driver uses \field{mtu} as
+-    the maximum MTU value.
 -
--\item[VIRTIO_BLK_F_BLK_SIZE (6)] Block size of disk is in \field{blk_size}=
+-\item[VIRTIO_NET_F_MAC (5)] Device has given MAC address.
+-
+-\item[VIRTIO_NET_F_GUEST_TSO4 (7)] Driver can receive TSOv4.
+-
+-\item[VIRTIO_NET_F_GUEST_TSO6 (8)] Driver can receive TSOv6.
+-
+-\item[VIRTIO_NET_F_GUEST_ECN (9)] Driver can receive TSO with ECN.
+-
+-\item[VIRTIO_NET_F_GUEST_UFO (10)] Driver can receive UFO.
+-
+-\item[VIRTIO_NET_F_HOST_TSO4 (11)] Device can receive TSOv4.
+-
+-\item[VIRTIO_NET_F_HOST_TSO6 (12)] Device can receive TSOv6.
+-
+-\item[VIRTIO_NET_F_HOST_ECN (13)] Device can receive TSO with ECN.
+-
+-\item[VIRTIO_NET_F_HOST_UFO (14)] Device can receive UFO.
+-
+-\item[VIRTIO_NET_F_MRG_RXBUF (15)] Driver can merge receive buffers.
+-
+-\item[VIRTIO_NET_F_STATUS (16)] Configuration status field is
+-    available.
+-
+-\item[VIRTIO_NET_F_CTRL_VQ (17)] Control channel is available.
+-
+-\item[VIRTIO_NET_F_CTRL_RX (18)] Control channel RX mode support.
+-
+-\item[VIRTIO_NET_F_CTRL_VLAN (19)] Control channel VLAN filtering.
+-
+-\item[VIRTIO_NET_F_GUEST_ANNOUNCE(21)] Driver can send gratuitous
+-    packets.
+-
+-\item[VIRTIO_NET_F_MQ(22)] Device supports multiqueue with automatic
+-    receive steering.
+-
+-\item[VIRTIO_NET_F_CTRL_MAC_ADDR(23)] Set MAC address through control
+-    channel.
+-
+-\item[VIRTIO_NET_F_NOTF_COAL(53)] Device supports notifications coalescing=
 .
 -
--\item[VIRTIO_BLK_F_FLUSH (9)] Cache flush command support.
+-\item[VIRTIO_NET_F_GUEST_USO4 (54)] Driver can receive USOv4 packets.
 -
--\item[VIRTIO_BLK_F_TOPOLOGY (10)] Device exports information on optimal I/=
-O
--    alignment.
+-\item[VIRTIO_NET_F_GUEST_USO6 (55)] Driver can receive USOv6 packets.
 -
--\item[VIRTIO_BLK_F_CONFIG_WCE (11)] Device can toggle its cache between wr=
-iteback
--    and writethrough modes.
+-\item[VIRTIO_NET_F_HOST_USO (56)] Device can receive USO packets. Unlike U=
+FO
+- (fragmenting the packet) the USO splits large UDP packet
+- to several segments when each of these smaller packets has UDP header.
 -
--\item[VIRTIO_BLK_F_MQ (12)] Device supports multiqueue.
+-\item[VIRTIO_NET_F_HASH_REPORT(57)] Device can report per-packet hash
+-    value and a type of calculated hash.
 -
--\item[VIRTIO_BLK_F_DISCARD (13)] Device can support discard command, maxim=
-um
--    discard sectors size in \field{max_discard_sectors} and maximum discar=
-d
--    segment number in \field{max_discard_seg}.
+-\item[VIRTIO_NET_F_GUEST_HDRLEN(59)] Driver can provide the exact \field{h=
+dr_len}
+-    value. Device benefits from knowing the exact header length.
 -
--\item[VIRTIO_BLK_F_WRITE_ZEROES (14)] Device can support write zeroes comm=
-and,
--     maximum write zeroes sectors size in \field{max_write_zeroes_sectors}=
- and
--     maximum write zeroes segment number in \field{max_write_zeroes_seg}.
+-\item[VIRTIO_NET_F_RSS(60)] Device supports RSS (receive-side scaling)
+-    with Toeplitz hash calculation and configurable hash
+-    parameters for receive steering.
 -
--\item[VIRTIO_BLK_F_LIFETIME (15)] Device supports providing storage lifeti=
-me
--     information.
+-\item[VIRTIO_NET_F_RSC_EXT(61)] Device can process duplicated ACKs
+-    and report number of coalesced segments and duplicated ACKs.
 -
--\item[VIRTIO_BLK_F_SECURE_ERASE (16)] Device supports secure erase command=
-,
--     maximum erase sectors count in \field{max_secure_erase_sectors} and
--     maximum erase segment number in \field{max_secure_erase_seg}.
+-\item[VIRTIO_NET_F_STANDBY(62)] Device may act as a standby for a primary
+-    device with the same MAC address.
 -
--\item[VIRTIO_BLK_F_ZONED(17)] Device is a Zoned Block Device, that is, a d=
-evice
--=09that follows the zoned storage device behavior that is also supported b=
-y
--=09industry standards such as the T10 Zoned Block Command standard (ZBC r0=
-5) or
--=09the NVMe(TM) NVM Express Zoned Namespace Command Set Specification 1.1b
--=09(ZNS). For brevity, these standard documents are referred as "ZBD stand=
-ards"
--=09from this point on in the text.
--
+-\item[VIRTIO_NET_F_SPEED_DUPLEX(63)] Device reports speed and duplex.
 -\end{description}
 -
--\subsubsection{Legacy Interface: Feature bits}\label{sec:Device Types / Bl=
-ock Device / Feature bits / Legacy Interface: Feature bits}
+-\subsubsection{Feature bit requirements}\label{sec:Device Types / Network =
+Device / Feature bits / Feature bit requirements}
+-
+-Some networking feature bits require other networking feature bits
+-(see \ref{drivernormative:Basic Facilities of a Virtio Device / Feature Bi=
+ts}):
 -
 -\begin{description}
--\item[VIRTIO_BLK_F_BARRIER (0)] Device supports request barriers.
+-\item[VIRTIO_NET_F_GUEST_TSO4] Requires VIRTIO_NET_F_GUEST_CSUM.
+-\item[VIRTIO_NET_F_GUEST_TSO6] Requires VIRTIO_NET_F_GUEST_CSUM.
+-\item[VIRTIO_NET_F_GUEST_ECN] Requires VIRTIO_NET_F_GUEST_TSO4 or VIRTIO_N=
+ET_F_GUEST_TSO6.
+-\item[VIRTIO_NET_F_GUEST_UFO] Requires VIRTIO_NET_F_GUEST_CSUM.
+-\item[VIRTIO_NET_F_GUEST_USO4] Requires VIRTIO_NET_F_GUEST_CSUM.
+-\item[VIRTIO_NET_F_GUEST_USO6] Requires VIRTIO_NET_F_GUEST_CSUM.
 -
--\item[VIRTIO_BLK_F_SCSI (7)] Device supports scsi packet commands.
+-\item[VIRTIO_NET_F_HOST_TSO4] Requires VIRTIO_NET_F_CSUM.
+-\item[VIRTIO_NET_F_HOST_TSO6] Requires VIRTIO_NET_F_CSUM.
+-\item[VIRTIO_NET_F_HOST_ECN] Requires VIRTIO_NET_F_HOST_TSO4 or VIRTIO_NET=
+_F_HOST_TSO6.
+-\item[VIRTIO_NET_F_HOST_UFO] Requires VIRTIO_NET_F_CSUM.
+-\item[VIRTIO_NET_F_HOST_USO] Requires VIRTIO_NET_F_CSUM.
+-
+-\item[VIRTIO_NET_F_CTRL_RX] Requires VIRTIO_NET_F_CTRL_VQ.
+-\item[VIRTIO_NET_F_CTRL_VLAN] Requires VIRTIO_NET_F_CTRL_VQ.
+-\item[VIRTIO_NET_F_GUEST_ANNOUNCE] Requires VIRTIO_NET_F_CTRL_VQ.
+-\item[VIRTIO_NET_F_MQ] Requires VIRTIO_NET_F_CTRL_VQ.
+-\item[VIRTIO_NET_F_CTRL_MAC_ADDR] Requires VIRTIO_NET_F_CTRL_VQ.
+-\item[VIRTIO_NET_F_NOTF_COAL] Requires VIRTIO_NET_F_CTRL_VQ.
+-\item[VIRTIO_NET_F_RSC_EXT] Requires VIRTIO_NET_F_HOST_TSO4 or VIRTIO_NET_=
+F_HOST_TSO6.
+-\item[VIRTIO_NET_F_RSS] Requires VIRTIO_NET_F_CTRL_VQ.
 -\end{description}
 -
--\begin{note}
--  In the legacy interface, VIRTIO_BLK_F_FLUSH was also
--  called VIRTIO_BLK_F_WCE.
--\end{note}
+-\subsubsection{Legacy Interface: Feature bits}\label{sec:Device Types / Ne=
+twork Device / Feature bits / Legacy Interface: Feature bits}
+-\begin{description}
+-\item[VIRTIO_NET_F_GSO (6)] Device handles packets with any GSO type. This=
+ was supposed to indicate segmentation offload support, but
+-upon further investigation it became clear that multiple bits were needed.
+-\item[VIRTIO_NET_F_GUEST_RSC4 (41)] Device coalesces TCPIP v4 packets. Thi=
+s was implemented by hypervisor patch for certification
+-purposes and current Windows driver depends on it. It will not function if=
+ virtio-net device reports this feature.
+-\item[VIRTIO_NET_F_GUEST_RSC6 (42)] Device coalesces TCPIP v6 packets. Sim=
+ilar to VIRTIO_NET_F_GUEST_RSC4.
+-\end{description}
 -
--\subsection{Device configuration layout}\label{sec:Device Types / Block De=
-vice / Device configuration layout}
+-\subsection{Device configuration layout}\label{sec:Device Types / Network =
+Device / Device configuration layout}
+-\label{sec:Device Types / Block Device / Feature bits / Device configurati=
+on layout}
 -
--The \field{capacity} of the device (expressed in 512-byte sectors) is alwa=
-ys
--present. The availability of the others all depend on various feature
--bits as indicated above.
--
--The field \field{num_queues} only exists if VIRTIO_BLK_F_MQ is set. This f=
-ield specifies
--the number of queues.
--
--The parameters in the configuration space of the device \field{max_discard=
-_sectors}
--\field{discard_sector_alignment} are expressed in 512-byte units if the
--VIRTIO_BLK_F_DISCARD feature bit is negotiated. The \field{max_write_zeroe=
-s_sectors}
--is expressed in 512-byte units if the VIRTIO_BLK_F_WRITE_ZEROES feature
--bit is negotiated. The parameters in the configuration space of the device
--\field{max_secure_erase_sectors} \field{secure_erase_sector_alignment} are=
- expressed
--in 512-byte units if the VIRTIO_BLK_F_SECURE_ERASE feature bit is negotiat=
-ed.
--
--If the VIRTIO_BLK_F_ZONED feature is negotiated, then in
--\field{virtio_blk_zoned_characteristics},
--\begin{itemize}
--\item \field{zone_sectors} value is expressed in 512-byte sectors.
--\item \field{max_append_sectors} value is expressed in 512-byte sectors.
--\item \field{write_granularity} value is expressed in bytes.
--\end{itemize}
--
--The \field{model} field in \field{zoned} may have the following values:
+-Device configuration fields are listed below, they are read-only for a dri=
+ver. The \field{mac} address field
+-always exists (though is only valid if VIRTIO_NET_F_MAC is set), and
+-\field{status} only exists if VIRTIO_NET_F_STATUS is set. Two
+-read-only bits (for the driver) are currently defined for the status field=
+:
+-VIRTIO_NET_S_LINK_UP and VIRTIO_NET_S_ANNOUNCE.
 -
 -\begin{lstlisting}
--#define VIRTIO_BLK_Z_NONE      0
--#define VIRTIO_BLK_Z_HM        1
--#define VIRTIO_BLK_Z_HA        2
+-#define VIRTIO_NET_S_LINK_UP     1
+-#define VIRTIO_NET_S_ANNOUNCE    2
 -\end{lstlisting}
 -
--Depending on their design, zoned block devices may follow several possible
--models of operation. The three models that are standardized for ZBDs are
--drive-managed, host-managed and host-aware.
--
--While being zoned internally, drive-managed ZBDs behave exactly like regul=
-ar,
--non-zoned block devices. For the purposes of virtio standardization,
--drive-managed ZBDs can always be treated as non-zoned devices. These devic=
-es
--have the VIRTIO_BLK_Z_NONE model value set in the \field{model} field in
--\field{zoned}.
--
--Devices that offer the VIRTIO_BLK_F_ZONED feature while reporting the
--VIRTIO_BLK_Z_NONE zoned model are drive-managed zoned block devices. In th=
-is
--case, the driver treats the device as a regular non-zoned block device.
--
--Host-managed zoned block devices have their LBA range divided into Sequent=
-ial
--Write Required (SWR) zones that require some additional handling by the ho=
-st
--for correct operation. All write requests to SWR zones are required be
--sequential and zones containing some written data need to be reset before =
-that
--data can be rewritten. Host-managed devices support a set of ZBD-specific =
-I/O
--requests that can be used by the host to manage device zones. Host-managed
--devices report VIRTIO_BLK_Z_HM in the \field{model} field in \field{zoned}=
-.
--
--Host-aware zoned block devices have their LBA range divided to Sequential
--Write Preferred (SWP) zones that support random write access, similar to
--regular non-zoned devices. However, the device I/O performance might not b=
-e
--optimal if SWP zones are used in a random I/O pattern. SWP zones also supp=
-ort
--the same set of ZBD-specific I/O requests as host-managed devices that all=
-ow
--host-aware devices to be managed by any host that supports zoned block dev=
-ices
--to achieve its optimum performance. Host-aware devices report VIRTIO_BLK_Z=
-_HA
--in the \field{model} field in \field{zoned}.
--
--Both SWR zones and SWP zones are sometimes referred as sequential zones.
--
--During device operation, sequential zones can be in one of the following s=
-tates:
--empty, implicitly-open, explicitly-open, closed and full. The state machin=
-e that
--governs the transitions between these states is described later in this do=
-cument.
--
--SWR and SWP zones consume volatile device resources while being in certain
--states and the device may set limits on the number of zones that can be in=
- these
--states simultaneously.
--
--Zoned block devices use two internal counters to account for the device
--resources in use, the number of currently open zones and the number of cur=
-rently
--active zones.
--
--Any zone state transition from a state that doesn't consume a zone resourc=
-e to a
--state that consumes the same resource increments the internal device count=
-er for
--that resource. Any zone transition out of a state that consumes a zone res=
-ource
--to a state that doesn't consume the same resource decrements the counter. =
-Any
--request that causes the device to exceed the reported zone resource limits=
- is
--terminated by the device with a "zone resources exceeded" error as defined=
- for
--specific commands later.
--
--\begin{lstlisting}
--struct virtio_blk_config {
--        le64 capacity;
--        le32 size_max;
--        le32 seg_max;
--        struct virtio_blk_geometry {
--                le16 cylinders;
--                u8 heads;
--                u8 sectors;
--        } geometry;
--        le32 blk_size;
--        struct virtio_blk_topology {
--                // # of logical blocks per physical block (log2)
--                u8 physical_block_exp;
--                // offset of first aligned logical block
--                u8 alignment_offset;
--                // suggested minimum I/O size in blocks
--                le16 min_io_size;
--                // optimal (suggested maximum) I/O size in blocks
--                le32 opt_io_size;
--        } topology;
--        u8 writeback;
--        u8 unused0;
--        u16 num_queues;
--        le32 max_discard_sectors;
--        le32 max_discard_seg;
--        le32 discard_sector_alignment;
--        le32 max_write_zeroes_sectors;
--        le32 max_write_zeroes_seg;
--        u8 write_zeroes_may_unmap;
--        u8 unused1[3];
--        le32 max_secure_erase_sectors;
--        le32 max_secure_erase_seg;
--        le32 secure_erase_sector_alignment;
--        struct virtio_blk_zoned_characteristics {
--                le32 zone_sectors;
--                le32 max_open_zones;
--                le32 max_active_zones;
--                le32 max_append_sectors;
--                le32 write_granularity;
--                u8 model;
--                u8 unused2[3];
--        } zoned;
--};
--\end{lstlisting}
--
--
--\subsubsection{Legacy Interface: Device configuration layout}\label{sec:De=
-vice Types / Block Device / Device configuration layout / Legacy Interface:=
- Device configuration layout}
--When using the legacy interface, transitional devices and drivers
--MUST format the fields in struct virtio_blk_config
--according to the native endian of the guest rather than
--(necessarily when not using the legacy interface) little-endian.
--
--
--\subsection{Device Initialization}\label{sec:Device Types / Block Device /=
- Device Initialization}
--
--\begin{enumerate}
--\item The device size can be read from \field{capacity}.
--
--\item If the VIRTIO_BLK_F_BLK_SIZE feature is negotiated,
--  \field{blk_size} can be read to determine the optimal sector size
--  for the driver to use. This does not affect the units used in
--  the protocol (always 512 bytes), but awareness of the correct
--  value can affect performance.
--
--\item If the VIRTIO_BLK_F_RO feature is set by the device, any write
--  requests will fail.
--
--\item If the VIRTIO_BLK_F_TOPOLOGY feature is negotiated, the fields in th=
-e
--  \field{topology} struct can be read to determine the physical block size=
- and optimal
--  I/O lengths for the driver to use. This also does not affect the units
--  in the protocol, only performance.
--
--\item If the VIRTIO_BLK_F_CONFIG_WCE feature is negotiated, the cache
--  mode can be read or set through the \field{writeback} field.  0 correspo=
-nds
--  to a writethrough cache, 1 to a writeback cache\footnote{Consistent with
--    \ref{devicenormative:Device Types / Block Device / Device Operation},
--    a writethrough cache can be defined broadly as a cache that commits
--    writes to persistent device backend storage before reporting their
--    completion. For example, a battery-backed writeback cache actually
--    counts as writethrough according to this definition.}.  The cache mode
--  after reset can be either writeback or writethrough.  The actual
--  mode can be determined by reading \field{writeback} after feature
--  negotiation.
--
--\item If the VIRTIO_BLK_F_DISCARD feature is negotiated,
--    \field{max_discard_sectors} and \field{max_discard_seg} can be read
--    to determine the maximum discard sectors and maximum number of discard
--    segments for the block driver to use. \field{discard_sector_alignment}
--    can be used by OS when splitting a request based on alignment.
--
--\item If the VIRTIO_BLK_F_WRITE_ZEROES feature is negotiated,
--    \field{max_write_zeroes_sectors} and \field{max_write_zeroes_seg} can
--    be read to determine the maximum write zeroes sectors and maximum
--    number of write zeroes segments for the block driver to use.
--
--\item If the VIRTIO_BLK_F_MQ feature is negotiated, \field{num_queues} fie=
-ld
--    can be read to determine the number of queues.
--
--\item If the VIRTIO_BLK_F_SECURE_ERASE feature is negotiated,
--    \field{max_secure_erase_sectors} and \field{max_secure_erase_seg} can =
-be read
--    to determine the maximum secure erase sectors and maximum number of
--    secure erase segments for the block driver to use.
--    \field{secure_erase_sector_alignment} can be used by OS when splitting=
- a
--    request based on alignment.
--
--\item If the VIRTIO_BLK_F_ZONED feature is negotiated, the fields in
--    \field{zoned} can be read by the driver to determine the zone
--    characteristics of the device. All \field{zoned} fields are read-only.
--
--\end{enumerate}
--
--\drivernormative{\subsubsection}{Device Initialization}{Device Types / Blo=
-ck Device / Device Initialization}
--
--Drivers SHOULD NOT negotiate VIRTIO_BLK_F_FLUSH if they are incapable of
--sending VIRTIO_BLK_T_FLUSH commands.
--
--If neither VIRTIO_BLK_F_CONFIG_WCE nor VIRTIO_BLK_F_FLUSH are
--negotiated, the driver MAY deduce the presence of a writethrough cache.
--If VIRTIO_BLK_F_CONFIG_WCE was not negotiated but VIRTIO_BLK_F_FLUSH was,
--the driver SHOULD assume presence of a writeback cache.
--
--The driver MUST NOT read \field{writeback} before setting
--the FEATURES_OK \field{device status} bit.
--
--Drivers MUST NOT negotiate the VIRTIO_BLK_F_ZONED feature if they are inca=
-pable
--of supporting devices with the VIRTIO_BLK_Z_HM, VIRTIO_BLK_Z_HA or
--VIRTIO_BLK_Z_NONE zoned model.
--
--If the VIRTIO_BLK_F_ZONED feature is offered by the device with the
--VIRTIO_BLK_Z_HM zone model, then the VIRTIO_BLK_F_DISCARD feature MUST NOT=
- be
--offered by the driver.
--
--If the VIRTIO_BLK_F_ZONED feature and VIRTIO_BLK_F_DISCARD feature are bot=
-h
--offered by the device with the VIRTIO_BLK_Z_HA or VIRTIO_BLK_Z_NONE zone m=
-odel,
--then the driver MAY negotiate these two bits independently.
--
--If the VIRTIO_BLK_F_ZONED feature is negotiated, then
--\begin{itemize}
--\item if the driver that can not support host-managed zoned devices
--    reads VIRTIO_BLK_Z_HM from the \field{model} field of \field{zoned}, t=
-he
--    driver MUST NOT set FEATURES_OK flag and instead set the FAILED bit.
--
--\item if the driver that can not support zoned devices reads VIRTIO_BLK_Z_=
-HA
--    from the \field{model} field of \field{zoned}, the driver
--    MAY handle the device as a non-zoned device. In this case, the
--    driver SHOULD ignore all other fields in \field{zoned}.
--\end{itemize}
--
--\devicenormative{\subsubsection}{Device Initialization}{Device Types / Blo=
-ck Device / Device Initialization}
--
--Devices SHOULD always offer VIRTIO_BLK_F_FLUSH, and MUST offer it
--if they offer VIRTIO_BLK_F_CONFIG_WCE.
--
--If VIRTIO_BLK_F_CONFIG_WCE is negotiated but VIRTIO_BLK_F_FLUSH
--is not, the device MUST initialize \field{writeback} to 0.
--
--The device MUST initialize padding bytes \field{unused0} and
--\field{unused1} to 0.
--
--If the device that is being initialized is a not a zoned device, the devic=
-e
--SHOULD NOT offer the VIRTIO_BLK_F_ZONED feature.
--
--The VIRTIO_BLK_F_ZONED feature cannot be properly negotiated without
--FEATURES_OK bit. Legacy devices MUST NOT offer VIRTIO_BLK_F_ZONED feature =
-bit.
--
--If the VIRTIO_BLK_F_ZONED feature is not accepted by the driver,
--\begin{itemize}
--\item the device with the VIRTIO_BLK_Z_HA or VIRTIO_BLK_Z_NONE zone model =
-SHOULD
--    proceed with the initialization while setting all zoned characteristic=
-s
--    fields to zero.
--
--\item the device with the VIRTIO_BLK_Z_HM zone model MUST fail to set the
--    FEATURES_OK device status bit when the driver writes the Device Status
--    field.
--\end{itemize}
--
--If the VIRTIO_BLK_F_ZONED feature is negotiated, then the \field{model} fi=
-eld in
--\field{zoned} struct in the configuration space MUST be set by the device
--\begin{itemize}
--\item to the value of VIRTIO_BLK_Z_NONE if it operates as a drive-managed
--    zoned block device or a non-zoned block device.
--
--\item to the value of VIRTIO_BLK_Z_HM if it operates as a host-managed zon=
-ed
--    block device.
--
--\item to the value of VIRTIO_BLK_Z_HA if it operates as a host-aware zoned
--    block device.
--\end{itemize}
--
--If the VIRTIO_BLK_F_ZONED feature is negotiated and the device \field{mode=
-l}
--field in \field{zoned} struct is VIRTIO_BLK_Z_HM or VIRTIO_BLK_Z_HA,
--
--\begin{itemize}
--\item the \field{zone_sectors} field of \field{zoned} MUST be set by the d=
-evice
--    to the size of a single zone on the device. All zones of the device ha=
-ve the
--    same size indicated by \field{zone_sectors} except for the last zone t=
-hat
--    MAY be smaller than all other zones. The driver can calculate the numb=
-er of
--    zones on the device as
--    \begin{lstlisting}
--        nr_zones =3D (capacity + zone_sectors - 1) / zone_sectors;
--    \end{lstlisting}
--    and the size of the last zone as
--    \begin{lstlisting}
--        zs_last =3D capacity - (nr_zones - 1) * zone_sectors;
--    \end{lstlisting}
--
--\item The \field{max_open_zones} field of the \field{zoned} structure MUST=
- be
--    set by the device to the maximum number of zones that can be open on t=
-he
--    device (zones in the implicit open or explicit open state). A value
--    of zero indicates that the device does not have any limit on the numbe=
-r of
--    open zones.
--
--\item The \field{max_active_zones} field of the \field{zoned} structure MU=
-ST
--    be set by the device to the maximum number zones that can be active on=
- the
--    device (zones in the implicit open, explicit open or closed state). A =
-value
--    of zero indicates that the device does not have any limit on the numbe=
-r of
--    active zones.
--
--\item the \field{max_append_sectors} field of \field{zoned} MUST be set by
--    the device to the maximum data size of a VIRTIO_BLK_T_ZONE_APPEND requ=
-est
--    that can be successfully issued to the device. The value of this field=
- MUST
--    NOT exceed the \field{seg_max} * \field{size_max} value. A device MAY =
-set
--    the \field{max_append_sectors} to zero if it doesn't support
--    VIRTIO_BLK_T_ZONE_APPEND requests.
--
--\item the \field{write_granularity} field of \field{zoned} MUST be set by =
-the
--    device to the offset and size alignment constraint for VIRTIO_BLK_T_OU=
-T
--    and VIRTIO_BLK_T_ZONE_APPEND requests issued to a sequential zone of t=
-he
--    device.
--
--\item the device MUST initialize padding bytes \field{unused2} to 0.
--\end{itemize}
--
--\subsubsection{Legacy Interface: Device Initialization}\label{sec:Device T=
-ypes / Block Device / Device Initialization / Legacy Interface: Device Init=
-ialization}
--
--Because legacy devices do not have FEATURES_OK, transitional devices
--MUST implement slightly different behavior around feature negotiation
--when used through the legacy interface.  In particular, when using the
--legacy interface:
--
--\begin{itemize}
--\item the driver MAY read or write \field{writeback} before setting
--  the DRIVER or DRIVER_OK \field{device status} bit
--
--\item the device MUST NOT modify the cache mode (and \field{writeback})
--  as a result of a driver setting a status bit, unless
--  the DRIVER_OK bit is being set and the driver has not set the
--  VIRTIO_BLK_F_CONFIG_WCE driver feature bit.
--
--\item the device MUST NOT modify the cache mode (and \field{writeback})
--  as a result of a driver modifying the driver feature bits, for example
--  if the driver sets the VIRTIO_BLK_F_CONFIG_WCE driver feature bit but
--  does not set the VIRTIO_BLK_F_FLUSH bit.
--\end{itemize}
--
--
--\subsection{Device Operation}\label{sec:Device Types / Block Device / Devi=
-ce Operation}
--
--The driver queues requests to the virtqueues, and they are used by
--the device (not necessarily in order). Each request except
--VIRTIO_BLK_T_ZONE_APPEND is of form:
--
--\begin{lstlisting}
--struct virtio_blk_req {
--        le32 type;
--        le32 reserved;
--        le64 sector;
--        u8 data[];
--        u8 status;
--};
--\end{lstlisting}
--
--The type of the request is either a read (VIRTIO_BLK_T_IN), a write
--(VIRTIO_BLK_T_OUT), a discard (VIRTIO_BLK_T_DISCARD), a write zeroes
--(VIRTIO_BLK_T_WRITE_ZEROES), a flush (VIRTIO_BLK_T_FLUSH), a get device ID
--string command (VIRTIO_BLK_T_GET_ID), a secure erase
--(VIRTIO_BLK_T_SECURE_ERASE), or a get device lifetime command
--(VIRTIO_BLK_T_GET_LIFETIME).
--
--\begin{lstlisting}
--#define VIRTIO_BLK_T_IN           0
--#define VIRTIO_BLK_T_OUT          1
--#define VIRTIO_BLK_T_FLUSH        4
--#define VIRTIO_BLK_T_GET_ID       8
--#define VIRTIO_BLK_T_GET_LIFETIME 10
--#define VIRTIO_BLK_T_DISCARD      11
--#define VIRTIO_BLK_T_WRITE_ZEROES 13
--#define VIRTIO_BLK_T_SECURE_ERASE   14
--\end{lstlisting}
--
--The \field{sector} number indicates the offset (multiplied by 512) where
--the read or write is to occur. This field is unused and set to 0 for
--commands other than read, write and some zone operations.
--
--VIRTIO_BLK_T_IN requests populate \field{data} with the contents of sector=
-s
--read from the block device (in multiples of 512 bytes).  VIRTIO_BLK_T_OUT
--requests write the contents of \field{data} to the block device (in multip=
-les
--of 512 bytes).
--
--The \field{data} used for discard, secure erase or write zeroes commands
--consists of one or more segments. The maximum number of segments is
--\field{max_discard_seg} for discard commands, \field{max_secure_erase_seg}=
- for
--secure erase commands and \field{max_write_zeroes_seg} for write zeroes
--commands.
--Each segment is of form:
--
--\begin{lstlisting}
--struct virtio_blk_discard_write_zeroes {
--       le64 sector;
--       le32 num_sectors;
--       struct {
--               le32 unmap:1;
--               le32 reserved:31;
--       } flags;
--};
--\end{lstlisting}
--
--\field{sector} indicates the starting offset (in 512-byte units) of the
--segment, while \field{num_sectors} indicates the number of sectors in each
--discarded range. \field{unmap} is only used in write zeroes commands and a=
-llows
--the device to discard the specified range, provided that following reads r=
-eturn
--zeroes.
--
--VIRTIO_BLK_T_GET_ID requests fetch the device ID string from the device in=
-to
--\field{data}.  The device ID string is a NUL-padded ASCII string up to 20 =
-bytes
--long.  If the string is 20 bytes long then there is no NUL terminator.
--
--The \field{data} used for VIRTIO_BLK_T_GET_LIFETIME requests is populated
--by the device, and is of the form
--
--\begin{lstlisting}
--struct virtio_blk_lifetime {
--  le16 pre_eol_info;
--  le16 device_lifetime_est_typ_a;
--  le16 device_lifetime_est_typ_b;
--};
--\end{lstlisting}
--
--The \field{pre_eol_info} specifies the percentage of reserved blocks
--that are consumed and will have one of these values:
--
--\begin{lstlisting}
--/* Value not available */
--#define VIRTIO_BLK_PRE_EOL_INFO_UNDEFINED    0
--/* < 80% of reserved blocks are consumed */
--#define VIRTIO_BLK_PRE_EOL_INFO_NORMAL       1
--/* 80% of reserved blocks are consumed */
--#define VIRTIO_BLK_PRE_EOL_INFO_WARNING      2
--/* 90% of reserved blocks are consumed */
--#define VIRTIO_BLK_PRE_EOL_INFO_URGENT       3
--/* All others values are reserved */
--\end{lstlisting}
--
--The \field{device_lifetime_est_typ_a} refers to wear of SLC cells and is p=
-rovided
--in increments of 10%, with 0 meaning undefined, 1 meaning up-to 10% of lif=
-etime
--used, and so on, thru to 11 meaning estimated lifetime exceeded.
--All values above 11 are reserved.
--
--The \field{device_lifetime_est_typ_b} refers to wear of MLC cells and is p=
-rovided
--with the same semantics as \field{device_lifetime_est_typ_a}.
--
--The final \field{status} byte is written by the device: either
--VIRTIO_BLK_S_OK for success, VIRTIO_BLK_S_IOERR for device or driver
--error or VIRTIO_BLK_S_UNSUPP for a request unsupported by device:
--
--\begin{lstlisting}
--#define VIRTIO_BLK_S_OK        0
--#define VIRTIO_BLK_S_IOERR     1
--#define VIRTIO_BLK_S_UNSUPP    2
--\end{lstlisting}
--
--The status of individual segments is indeterminate when a discard or write=
- zero
--command produces VIRTIO_BLK_S_IOERR.  A segment may have completed
--successfully, failed, or not been processed by the device.
--
--The following requirements only apply if the VIRTIO_BLK_F_ZONED feature is
--negotiated.
--
--In addition to the request types defined for non-zoned devices, the type o=
-f the
--request can be a zone report (VIRTIO_BLK_T_ZONE_REPORT), an explicit zone =
-open
--(VIRTIO_BLK_T_ZONE_OPEN), a zone close (VIRTIO_BLK_T_ZONE_CLOSE), a zone f=
-inish
--(VIRTIO_BLK_T_ZONE_FINISH), a zone_append (VIRTIO_BLK_T_ZONE_APPEND), a zo=
-ne
--reset (VIRTIO_BLK_T_ZONE_RESET) or a zone reset all
--(VIRTIO_BLK_T_ZONE_RESET_ALL).
--
--\begin{lstlisting}
--#define VIRTIO_BLK_T_ZONE_APPEND    15
--#define VIRTIO_BLK_T_ZONE_REPORT    16
--#define VIRTIO_BLK_T_ZONE_OPEN      18
--#define VIRTIO_BLK_T_ZONE_CLOSE     20
--#define VIRTIO_BLK_T_ZONE_FINISH    22
--#define VIRTIO_BLK_T_ZONE_RESET     24
--#define VIRTIO_BLK_T_ZONE_RESET_ALL 26
--\end{lstlisting}
--
--Requests of type VIRTIO_BLK_T_OUT, VIRTIO_BLK_T_ZONE_OPEN,
--VIRTIO_BLK_T_ZONE_CLOSE, VIRTIO_BLK_T_ZONE_FINISH, VIRTIO_BLK_T_ZONE_APPEN=
-D,
--VIRTIO_BLK_T_ZONE_RESET or VIRTIO_BLK_T_ZONE_RESET_ALL may be completed by=
- the
--device with VIRTIO_BLK_S_OK, VIRTIO_BLK_S_IOERR or VIRTIO_BLK_S_UNSUPP
--\field{status}, or, additionally, with  VIRTIO_BLK_S_ZONE_INVALID_CMD,
--VIRTIO_BLK_S_ZONE_UNALIGNED_WP, VIRTIO_BLK_S_ZONE_OPEN_RESOURCE or
--VIRTIO_BLK_S_ZONE_ACTIVE_RESOURCE ZBD-specific status codes.
--
--Besides the request status, VIRTIO_BLK_T_ZONE_APPEND requests return the
--starting sector of the appended data back to the driver. For this reason,
--the VIRTIO_BLK_T_ZONE_APPEND request has the layout that is extended to ha=
-ve
--the \field{append_sector} field to carry this value:
--
--\begin{lstlisting}
--struct virtio_blk_req_za {
--        le32 type;
--        le32 reserved;
--        le64 sector;
--        u8 data[];
--        le64 append_sector;
--        u8 status;
--};
--\end{lstlisting}
--
--\begin{lstlisting}
--#define VIRTIO_BLK_S_ZONE_INVALID_CMD     3
--#define VIRTIO_BLK_S_ZONE_UNALIGNED_WP    4
--#define VIRTIO_BLK_S_ZONE_OPEN_RESOURCE   5
--#define VIRTIO_BLK_S_ZONE_ACTIVE_RESOURCE 6
--\end{lstlisting}
--
--Requests of the type VIRTIO_BLK_T_ZONE_REPORT are reads and requests of th=
-e type
--VIRTIO_BLK_T_ZONE_APPEND are writes. VIRTIO_BLK_T_ZONE_OPEN,
--VIRTIO_BLK_T_ZONE_CLOSE, VIRTIO_BLK_T_ZONE_FINISH, VIRTIO_BLK_T_ZONE_RESET=
- and
--VIRTIO_BLK_T_ZONE_RESET_ALL are non-data requests.
--
--Zone sector address is a 64-bit address of the first 512-byte sector of th=
-e
--zone.
--
--VIRTIO_BLK_T_ZONE_OPEN, VIRTIO_BLK_T_ZONE_CLOSE, VIRTIO_BLK_T_ZONE_FINISH =
-and
--VIRTIO_BLK_T_ZONE_RESET requests make the zone operation to act on a parti=
-cular
--zone specified by the zone sector address in the \field{sector} of the req=
-uest.
--
--VIRTIO_BLK_T_ZONE_RESET_ALL request acts upon all applicable zones of the
--device. The \field{sector} value is not used for this request.
--
--In ZBD standards, the VIRTIO_BLK_T_ZONE_REPORT request belongs to "Zone
--Management Receive" command category and VIRTIO_BLK_T_ZONE_OPEN,
--VIRTIO_BLK_T_ZONE_CLOSE, VIRTIO_BLK_T_ZONE_FINISH and
--VIRTIO_BLK_T_ZONE_RESET/VIRTIO_BLK_T_ZONE_RESET_ALL requests are categoriz=
-ed as
--"Zone Management Send" commands. VIRTIO_BLK_T_ZONE_APPEND is categorized
--separately from zone management commands and is the only request that uses
--the \field{append_secctor} field \field{virtio_blk_req_za} to return
--to the driver the sector at which the data has been appended to the zone.
--
--VIRTIO_BLK_T_ZONE_REPORT is a read request that returns the information ab=
-out
--the current state of zones on the device starting from the zone containing=
- the
--\field{sector} of the request. The report consists of a header followed by=
- zero
--or more zone descriptors.
--
--A zone report reply has the following structure:
--
--\begin{lstlisting}
--struct virtio_blk_zone_report {
--        le64   nr_zones;
--        u8     reserved[56];
--        struct virtio_blk_zone_descriptor zones[];
--};
--\end{lstlisting}
--
--The device sets the \field{nr_zones} field in the report header to the num=
-ber of
--fully transferred zone descriptors in the data buffer.
--
--A zone descriptor has the following structure:
--
--\begin{lstlisting}
--struct virtio_blk_zone_descriptor {
--        le64   z_cap;
--        le64   z_start;
--        le64   z_wp;
--        u8     z_type;
--        u8     z_state;
--        u8     reserved[38];
--};
--\end{lstlisting}
--
--The zone descriptor field \field{z_type} \field{virtio_blk_zone_descriptor=
-}
--indicates the type of the zone.
--
--The following zone types are available:
--
--\begin{lstlisting}
--#define VIRTIO_BLK_ZT_CONV     1
--#define VIRTIO_BLK_ZT_SWR      2
--#define VIRTIO_BLK_ZT_SWP      3
--\end{lstlisting}
--
--Read and write operations into zones with the VIRTIO_BLK_ZT_CONV (Conventi=
-onal)
--type have the same behavior as read and write operations on a regular bloc=
-k
--device. Any block in a conventional zone can be read or written at any tim=
-e and
--in any order.
--
--Zones with VIRTIO_BLK_ZT_SWR can be read randomly, but must be written
--sequentially at a certain point in the zone called the Write Pointer (WP).=
- With
--every write, the Write Pointer is incremented by the number of sectors wri=
-tten.
--
--Zones with VIRTIO_BLK_ZT_SWP can be read randomly and should be written
--sequentially, similarly to SWR zones. However, SWP zones can accept random=
- write
--operations, that is, VIRTIO_BLK_T_OUT requests with a start sector differe=
-nt
--from the zone write pointer position.
--
--The field \field{z_state} of \field{virtio_blk_zone_descriptor} indicates =
-the
--state of the device zone.
--
--The following zone states are available:
--
--\begin{lstlisting}
--#define VIRTIO_BLK_ZS_NOT_WP   0
--#define VIRTIO_BLK_ZS_EMPTY    1
--#define VIRTIO_BLK_ZS_IOPEN    2
--#define VIRTIO_BLK_ZS_EOPEN    3
--#define VIRTIO_BLK_ZS_CLOSED   4
--#define VIRTIO_BLK_ZS_RDONLY   13
--#define VIRTIO_BLK_ZS_FULL     14
--#define VIRTIO_BLK_ZS_OFFLINE  15
--\end{lstlisting}
--
--Zones of the type VIRTIO_BLK_ZT_CONV are always reported by the device to =
-be in
--the VIRTIO_BLK_ZS_NOT_WP state. Zones of the types VIRTIO_BLK_ZT_SWR and
--VIRTIO_BLK_ZT_SWP can not transition to the VIRTIO_BLK_ZS_NOT_WP state.
--
--Zones in VIRTIO_BLK_ZS_EMPTY (Empty), VIRTIO_BLK_ZS_IOPEN (Implicitly Open=
-),
--VIRTIO_BLK_ZS_EOPEN (Explicitly Open) and VIRTIO_BLK_ZS_CLOSED (Closed) st=
-ate
--are writable, but zones in VIRTIO_BLK_ZS_RDONLY (Read-Only), VIRTIO_BLK_ZS=
-_FULL
--(Full) and VIRTIO_BLK_ZS_OFFLINE (Offline) state are not. The write pointe=
-r
--value (\field{z_wp}) is not valid for Read-Only, Full and Offline zones.
--
--The zone descriptor field \field{z_cap} contains the maximum number of 512=
--byte
--sectors that are available to be written with user data when the zone is i=
-n the
--Empty state. This value shall be less than or equal to the \field{zone_sec=
-tors}
--value in \field{virtio_blk_zoned_characteristics} structure in the device
--configuration space.
--
--The zone descriptor field \field{z_start} contains the zone sector address=
-.
--
--The zone descriptor field \field{z_wp} contains the sector address where t=
-he
--next write operation for this zone should be issued. This value is undefin=
-ed
--for conventional zones and for zones in VIRTIO_BLK_ZS_RDONLY,
--VIRTIO_BLK_ZS_FULL and VIRTIO_BLK_ZS_OFFLINE state.
--
--Depending on their state, zones consume resources as follows:
--\begin{itemize}
--\item a zone in VIRTIO_BLK_ZS_IOPEN and VIRTIO_BLK_ZS_EOPEN state consumes=
- one
--    open zone resource and, additionally,
--
--\item a zone in VIRTIO_BLK_ZS_IOPEN, VIRTIO_BLK_ZS_EOPEN and
--    VIRTIO_BLK_ZS_CLOSED state consumes one active resource.
--\end{itemize}
--
--Attempts for zone transitions that violate zone resource limits must fail =
-with
--VIRTIO_BLK_S_ZONE_OPEN_RESOURCE or VIRTIO_BLK_S_ZONE_ACTIVE_RESOURCE
--\field{status}.
--
--Zones in the VIRTIO_BLK_ZS_EMPTY (Empty) state have the write pointer valu=
-e
--equal to the sector address of the zone. In this state, the entire capacit=
-y of
--the zone is available for writing. A zone can transition from this state t=
-o
--\begin{itemize}
--\item VIRTIO_BLK_ZS_IOPEN when a successful VIRTIO_BLK_T_OUT request or
--    VIRTIO_BLK_T_ZONE_APPEND with a non-zero data size is received for the=
- zone.
--
--\item VIRTIO_BLK_ZS_EOPEN when a successful VIRTIO_BLK_T_ZONE_OPEN request=
- is
--    received for the zone
--\end{itemize}
--
--When a VIRTIO_BLK_T_ZONE_RESET request is issued to an Empty zone, the req=
-uest
--is completed successfully and the zone stays in the VIRTIO_BLK_ZS_EMPTY st=
-ate.
--
--Zones in the VIRTIO_BLK_ZS_IOPEN (Implicitly Open) state transition from
--this state to
--\begin{itemize}
--\item VIRTIO_BLK_ZS_EMPTY when a successful VIRTIO_BLK_T_ZONE_RESET reques=
-t is
--    received for the zone,
--
--\item VIRTIO_BLK_ZS_EMPTY when a successful VIRTIO_BLK_T_ZONE_RESET_ALL re=
-quest
--    is received by the device,
--
--\item VIRTIO_BLK_ZS_EOPEN when a successful VIRTIO_BLK_T_ZONE_OPEN request=
- is
--    received for the zone,
--
--\item VIRTIO_BLK_ZS_CLOSED when a successful VIRTIO_BLK_T_ZONE_CLOSE reque=
-st is
--    received for the zone,
--
--\item VIRTIO_BLK_ZS_CLOSED implicitly by the device when another zone is
--    entering the VIRTIO_BLK_ZS_IOPEN or VIRTIO_BLK_ZS_EOPEN state and the =
-number
--    of currently open zones is at \field{max_open_zones} limit,
--
--\item VIRTIO_BLK_ZS_FULL when a successful VIRTIO_BLK_T_ZONE_FINISH reques=
-t is
--    received for the zone.
--
--\item VIRTIO_BLK_ZS_FULL when a successful VIRTIO_BLK_T_OUT or
--    VIRTIO_BLK_T_ZONE_APPEND request that causes the zone to reach its wri=
-table
--    capacity is received for the zone.
--\end{itemize}
--
--Zones in the VIRTIO_BLK_ZS_EOPEN (Explicitly Open) state transition from
--this state to
--\begin{itemize}
--\item VIRTIO_BLK_ZS_EMPTY when a successful VIRTIO_BLK_T_ZONE_RESET reques=
-t is
--    received for the zone,
--
--\item VIRTIO_BLK_ZS_EMPTY when a successful VIRTIO_BLK_T_ZONE_RESET_ALL re=
-quest
--    is received by the device,
--
--\item VIRTIO_BLK_ZS_EMPTY when a successful VIRTIO_BLK_T_ZONE_CLOSE reques=
-t is
--    received for the zone and the write pointer of the zone has the value =
-equal
--    to the start sector of the zone,
--
--\item VIRTIO_BLK_ZS_CLOSED when a successful VIRTIO_BLK_T_ZONE_CLOSE reque=
-st is
--    received for the zone and the zone write pointer is larger then the st=
-art
--    sector of the zone,
--
--\item VIRTIO_BLK_ZS_FULL when a successful VIRTIO_BLK_T_ZONE_FINISH reques=
-t is
--    received for the zone,
--
--\item VIRTIO_BLK_ZS_FULL when a successful VIRTIO_BLK_T_OUT or
--    VIRTIO_BLK_T_ZONE_APPEND request that causes the zone to reach its wri=
-table
--    capacity is received for the zone.
--\end{itemize}
--
--When a VIRTIO_BLK_T_ZONE_EOPEN request is issued to an Explicitly Open zon=
-e, the
--request is completed successfully and the zone stays in the VIRTIO_BLK_ZS_=
-EOPEN
--state.
--
--Zones in the VIRTIO_BLK_ZS_CLOSED (Closed) state transition from this stat=
-e
--to
--\begin{itemize}
--\item VIRTIO_BLK_ZS_EMPTY when a successful VIRTIO_BLK_T_ZONE_RESET reques=
-t is
--    received for the zone,
--
--\item VIRTIO_BLK_ZS_EMPTY when a successful VIRTIO_BLK_T_ZONE_RESET_ALL re=
-quest
--    is received by the device,
--
--\item VIRTIO_BLK_ZS_IOPEN when a successful VIRTIO_BLK_T_OUT request or
--    VIRTIO_BLK_T_ZONE_APPEND with a non-zero data size is received for the=
- zone.
--
--\item VIRTIO_BLK_ZS_EOPEN when a successful VIRTIO_BLK_T_ZONE_OPEN request=
- is
--    received for the zone,
--\end{itemize}
--
--When a VIRTIO_BLK_T_ZONE_CLOSE request is issued to a Closed zone, the req=
-uest
--is completed successfully and the zone stays in the VIRTIO_BLK_ZS_CLOSED s=
-tate.
--
--Zones in the VIRTIO_BLK_ZS_FULL (Full) state transition from this state to
--VIRTIO_BLK_ZS_EMPTY when a successful VIRTIO_BLK_T_ZONE_RESET request is
--received for the zone or a successful VIRTIO_BLK_T_ZONE_RESET_ALL request =
-is
--received by the device.
--
--When a VIRTIO_BLK_T_ZONE_FINISH request is issued to a Full zone, the requ=
-est
--is completed successfully and the zone stays in the VIRTIO_BLK_ZS_FULL sta=
-te.
--
--The device may automatically transition zones to VIRTIO_BLK_ZS_RDONLY
--(Read-Only) or VIRTIO_BLK_ZS_OFFLINE (Offline) state from any other state.=
- The
--device may also automatically transition zones in the Read-Only state to t=
-he
--Offline state. Zones in the Offline state may not transition to any other =
-state.
--Such automatic transitions usually indicate hardware failures. The previou=
-sly
--written data may only be read from zones in the Read-Only state. Zones in =
-the
--Offline state can not be read or written.
--
--VIRTIO_BLK_S_ZONE_UNALIGNED_WP is set by the device when the request recei=
-ved
--from the driver attempts to perform a write to an SWR zone and at least on=
-e of
--the following conditions is met:
--
--\begin{itemize}
--\item the starting sector of the request is not equal to the current value=
- of
--    the zone write pointer.
--
--\item the ending sector of the request data multiplied by 512 is not a mul=
-tiple
--    of the value reported by the device in the field \field{write_granular=
-ity}
--    in the device configuration space.
--\end{itemize}
--
--VIRTIO_BLK_S_ZONE_OPEN_RESOURCE is set by the device when a zone operation=
- or
--write request received from the driver can not be handled without exceedin=
-g the
--\field{max_open_zones} limit value reported by the device in the configura=
-tion
--space.
--
--VIRTIO_BLK_S_ZONE_ACTIVE_RESOURCE is set by the device when a zone operati=
-on or
--write request received from the driver can not be handled without exceedin=
-g the
--\field{max_active_zones} limit value reported by the device in the configu=
-ration
--space.
--
--A zone transition request that leads to both the \field{max_open_zones} an=
-d the
--\field{max_active_zones} limits to be exceeded is terminated by the device=
- with
--VIRTIO_BLK_S_ZONE_ACTIVE_RESOURCE \field{status} value.
--
--The device reports all other error conditions related to zoned block model
--operation by setting the VIRTIO_BLK_S_ZONE_INVALID_CMD value in
--\field{status} of \field{virtio_blk_req} structure.
--
--\drivernormative{\subsubsection}{Device Operation}{Device Types / Block De=
-vice / Device Operation}
--
--The driver SHOULD check if the content of the \field{capacity} field has
--changed upon receiving a configuration change notification.
--
--A driver MUST NOT submit a request which would cause a read or write
--beyond \field{capacity}.
--
--A driver SHOULD accept the VIRTIO_BLK_F_RO feature if offered.
--
--A driver MUST set \field{sector} to 0 for a VIRTIO_BLK_T_FLUSH request.
--A driver SHOULD NOT include any data in a VIRTIO_BLK_T_FLUSH request.
--
--The length of \field{data} MUST be a multiple of 512 bytes for VIRTIO_BLK_=
-T_IN
--and VIRTIO_BLK_T_OUT requests.
--
--The length of \field{data} MUST be a multiple of the size of struct
--virtio_blk_discard_write_zeroes for VIRTIO_BLK_T_DISCARD,
--VIRTIO_BLK_T_SECURE_ERASE and VIRTIO_BLK_T_WRITE_ZEROES requests.
--
--The length of \field{data} MUST be 20 bytes for VIRTIO_BLK_T_GET_ID reques=
-ts.
--
--VIRTIO_BLK_T_DISCARD requests MUST NOT contain more than
--\field{max_discard_seg} struct virtio_blk_discard_write_zeroes segments in
--\field{data}.
--
--VIRTIO_BLK_T_SECURE_ERASE requests MUST NOT contain more than
--\field{max_secure_erase_seg} struct virtio_blk_discard_write_zeroes segmen=
-ts in
--\field{data}.
--
--VIRTIO_BLK_T_WRITE_ZEROES requests MUST NOT contain more than
--\field{max_write_zeroes_seg} struct virtio_blk_discard_write_zeroes segmen=
-ts in
--\field{data}.
--
--If the VIRTIO_BLK_F_CONFIG_WCE feature is negotiated, the driver MAY
--switch to writethrough or writeback mode by writing respectively 0 and
--1 to the \field{writeback} field.  After writing a 0 to \field{writeback},
--the driver MUST NOT assume that any volatile writes have been committed
--to persistent device backend storage.
--
--The \field{unmap} bit MUST be zero for discard commands.  The driver
--MUST NOT assume anything about the data returned by read requests after
--a range of sectors has been discarded.
--
--A driver MUST NOT assume that individual segments in a multi-segment
--VIRTIO_BLK_T_DISCARD or VIRTIO_BLK_T_WRITE_ZEROES request completed
--successfully, failed, or were processed by the device at all if the reques=
-t
--failed with VIRTIO_BLK_S_IOERR.
--
--The following requirements only apply if the VIRTIO_BLK_F_ZONED feature is
--negotiated.
--
--A zone sector address provided by the driver MUST be a multiple of 512 byt=
-es.
--
--When forming a VIRTIO_BLK_T_ZONE_REPORT request, the driver MUST set a sec=
-tor
--within the sector range of the starting zone to report to \field{sector} f=
-ield.
--It MAY be a sector that is different from the zone sector address.
--
--In VIRTIO_BLK_T_ZONE_OPEN, VIRTIO_BLK_T_ZONE_CLOSE, VIRTIO_BLK_T_ZONE_FINI=
-SH and
--VIRTIO_BLK_T_ZONE_RESET requests, the driver MUST set \field{sector} field=
- to
--point at the first sector in the target zone.
--
--In VIRTIO_BLK_T_ZONE_RESET_ALL request, the driver MUST set the field
--\field{sector} to zero value.
--
--The \field{sector} field of the VIRTIO_BLK_T_ZONE_APPEND request MUST spec=
-ify
--the zone sector address of the zone to which data is to be appended at the
--position of the write pointer. The size of the data that is appended MUST =
-be a
--multiple of \field{write_granularity} bytes and MUST NOT exceed the
--\field{max_append_sectors} value provided by the device in
--\field{virtio_blk_zoned_characteristics} configuration space structure.
--
--Upon a successful completion of a VIRTIO_BLK_T_ZONE_APPEND request, the dr=
-iver
--MAY read the starting sector location of the written data from the request
--field \field{append_sector}.
--
--All VIRTIO_BLK_T_OUT requests issued by the driver to sequential zones and
--VIRTIO_BLK_T_ZONE_APPEND requests MUST have:
--
--\begin{enumerate}
--\item the data size that is a multiple of the number of bytes reported
--    by the device in the field \field{write_granularity} in the
--    \field{virtio_blk_zoned_characteristics} configuration space structure=
-.
--
--\item the value of the field \field{sector} that is a multiple of the numb=
-er of
--    bytes reported by the device in the field \field{write_granularity} in=
- the
--    \field{virtio_blk_zoned_characteristics} configuration space structure=
-.
--
--\item the data size that will not exceed the writable zone capacity when i=
-ts
--    value is added to the current value of the write pointer of the zone.
--
--\end{enumerate}
--
--\devicenormative{\subsubsection}{Device Operation}{Device Types / Block De=
-vice / Device Operation}
--
--The device MAY change the content of the \field{capacity} field during
--operation of the device. When this happens, the device SHOULD trigger a
--configuration change notification.
--
--A device MUST set the \field{status} byte to VIRTIO_BLK_S_IOERR
--for a write request if the VIRTIO_BLK_F_RO feature if offered, and MUST NO=
-T
--write any data.
--
--The device MUST set the \field{status} byte to VIRTIO_BLK_S_UNSUPP for
--discard, secure erase and write zeroes commands if any unknown flag is set=
-.
--Furthermore, the device MUST set the \field{status} byte to
--VIRTIO_BLK_S_UNSUPP for discard commands if the \field{unmap} flag is set.
--
--For discard commands, the device MAY deallocate the specified range of
--sectors in the device backend storage.
--
--For write zeroes commands, if the \field{unmap} is set, the device MAY
--deallocate the specified range of sectors in the device backend storage,
--as if the discard command had been sent.  After a write zeroes command
--is completed, reads of the specified ranges of sectors MUST return
--zeroes.  This is true independent of whether \field{unmap} was set or clea=
-r.
--
--The device SHOULD clear the \field{write_zeroes_may_unmap} field of the
--virtio configuration space if and only if a write zeroes request cannot
--result in deallocating one or more sectors.  The device MAY change the
--content of the field during operation of the device; when this happens,
--the device SHOULD trigger a configuration change notification.
--
--A write is considered volatile when it is submitted; the contents of
--sectors covered by a volatile write are undefined in persistent device
--backend storage until the write becomes stable.  A write becomes stable
--once it is completed and one or more of the following conditions is true:
--
--\begin{enumerate}
--\item\label{item:flush1} neither VIRTIO_BLK_F_CONFIG_WCE nor
--  VIRTIO_BLK_F_FLUSH feature were negotiated, but VIRTIO_BLK_F_FLUSH was
--  offered by the device;
--
--\item\label{item:flush2} the VIRTIO_BLK_F_CONFIG_WCE feature was negotiate=
-d and the
--  \field{writeback} field in configuration space was 0 \textbf{all the tim=
-e between
--  the submission of the write and its completion};
--
--\item\label{item:flush3} a VIRTIO_BLK_T_FLUSH request is sent \textbf{afte=
-r the write is
--  completed} and is completed itself.
--\end{enumerate}
--
--If the device is backed by persistent storage, the device MUST ensure that
--stable writes are committed to it, before reporting completion of the writ=
-e
--(cases~\ref{item:flush1} and~\ref{item:flush2}) or the flush
--(case~\ref{item:flush3}).  Failure to do so can cause data loss
--in case of a crash.
--
--If the driver changes \field{writeback} between the submission of the writ=
-e
--and its completion, the write could be either volatile or stable when
--its completion is reported; in other words, the exact behavior is undefine=
-d.
--
--% According to the device requirements for device initialization:
--%   Offer(CONFIG_WCE) =3D> Offer(FLUSH).
--%
--% After reversing the implication:
--%   not Offer(FLUSH) =3D> not Offer(CONFIG_WCE).
--
--If VIRTIO_BLK_F_FLUSH was not offered by the
--  device\footnote{Note that in this case, according to
--  \ref{devicenormative:Device Types / Block Device / Device Initialization=
-},
--  the device will not have offered VIRTIO_BLK_F_CONFIG_WCE either.}, the
--device MAY also commit writes to persistent device backend storage before
--reporting their completion.  Unlike case~\ref{item:flush1}, however, this
--is not an absolute requirement of the specification.
--
--\begin{note}
--  An implementation that does not offer VIRTIO_BLK_F_FLUSH and does not co=
-mmit
--  completed writes will not be resilient to data loss in case of crashes.
--  Not offering VIRTIO_BLK_F_FLUSH is an absolute requirement
--  for implementations that do not wish to be safe against such data losses=
-.
--\end{note}
--
--If the device is backed by storage providing lifetime metrics (such as eMM=
-C
--or UFS persistent storage), the device SHOULD offer the VIRTIO_BLK_F_LIFET=
-IME
--flag. The flag MUST NOT be offered if the device is backed by storage for =
-which
--the lifetime metrics described in this document cannot be obtained or for =
-which
--such metrics have no useful meaning. If the metrics are offered, the devic=
-e MUST NOT
--send any reserved values, as defined in this specification.
--
--\begin{note}
--  The device lifetime metrics \field{pre_eol_info}, \field{device_lifetime=
-_est_a}
--  and \field{device_lifetime_est_b} are discussed in the JESD84-B50 specif=
-ication.
--
--  The complete JESD84-B50 is available at the JEDEC website (https://www.j=
-edec.org)
--  pursuant to JEDEC's licensing terms and conditions. This information is =
-provided to
--  simplfy passthrough implementations from eMMC devices.
--\end{note}
--
--If the VIRTIO_BLK_F_ZONED feature is not negotiated, the device MUST rejec=
-t
--VIRTIO_BLK_T_ZONE_REPORT, VIRTIO_BLK_T_ZONE_OPEN, VIRTIO_BLK_T_ZONE_CLOSE,
--VIRTIO_BLK_T_ZONE_FINISH, VIRTIO_BLK_T_ZONE_APPEND, VIRTIO_BLK_T_ZONE_RESE=
-T and
--VIRTIO_BLK_T_ZONE_RESET_ALL requests with VIRTIO_BLK_S_UNSUPP status.
--
--The following device requirements only apply if the VIRTIO_BLK_F_ZONED fea=
-ture
+-The following driver-read-only field, \field{max_virtqueue_pairs} only exi=
+sts if
+-VIRTIO_NET_F_MQ or VIRTIO_NET_F_RSS is set. This field specifies the maxim=
+um number
+-of each of transmit and receive virtqueues (receiveq1\ldots receiveqN
+-and transmitq1\ldots transmitqN respectively) that can be configured once =
+at least one of these features
 -is negotiated.
 -
--If a request of type VIRTIO_BLK_T_ZONE_OPEN, VIRTIO_BLK_T_ZONE_CLOSE,
--VIRTIO_BLK_T_ZONE_FINISH or VIRTIO_BLK_T_ZONE_RESET is issued for a Conven=
-tional
--zone (type VIRTIO_BLK_ZT_CONV), the device MUST complete the request with
--VIRTIO_BLK_S_ZONE_INVALID_CMD \field{status}.
+-The following driver-read-only field, \field{mtu} only exists if
+-VIRTIO_NET_F_MTU is set. This field specifies the maximum MTU for the driv=
+er to
+-use.
 -
--If the zone specified by the VIRTIO_BLK_T_ZONE_APPEND request is not a SWR=
- zone,
--then the request SHALL be completed with VIRTIO_BLK_S_ZONE_INVALID_CMD
--\field{status}.
+-The following two fields, \field{speed} and \field{duplex}, only
+-exist if VIRTIO_NET_F_SPEED_DUPLEX is set.
 -
--The device handles a VIRTIO_BLK_T_ZONE_OPEN request by attempting to chang=
-e the
--state of the zone with the \field{sector} address to VIRTIO_BLK_ZS_EOPEN. =
-If the
--transition to this state can not be performed, the request MUST be complet=
-ed
--with VIRTIO_BLK_S_ZONE_INVALID_CMD \field{status}. If, while processing th=
-is
--request, the available zone resources are insufficient, then the zone stat=
-e does
--not change and the request MUST be completed with
--VIRTIO_BLK_S_ZONE_OPEN_RESOURCE or VIRTIO_BLK_S_ZONE_ACTIVE_RESOURCE value=
- in
--the field \field{status}.
+-\field{speed} contains the device speed, in units of 1 MBit per
+-second, 0 to 0x7fffffff, or 0xffffffff for unknown speed.
 -
--The device handles a VIRTIO_BLK_T_ZONE_CLOSE request by attempting to chan=
-ge the
--state of the zone with the \field{sector} address to VIRTIO_BLK_ZS_CLOSED.=
- If
--the transition to this state can not be performed, the request MUST be com=
-pleted
--with VIRTIO_BLK_S_ZONE_INVALID_CMD value in the field \field{status}.
+-\field{duplex} has the values of 0x01 for full duplex, 0x00 for
+-half duplex and 0xff for unknown duplex state.
 -
--The device handles a VIRTIO_BLK_T_ZONE_FINISH request by attempting to cha=
-nge
--the state of the zone with the \field{sector} address to VIRTIO_BLK_ZS_FUL=
-L. If
--the transition to this state can not be performed, the zone state does not
--change and the request MUST be completed with VIRTIO_BLK_S_ZONE_INVALID_CM=
+-Both \field{speed} and \field{duplex} can change, thus the driver
+-is expected to re-read these values after receiving a
+-configuration change notification.
+-
+-\begin{lstlisting}
+-struct virtio_net_config {
+-        u8 mac[6];
+-        le16 status;
+-        le16 max_virtqueue_pairs;
+-        le16 mtu;
+-        le32 speed;
+-        u8 duplex;
+-        u8 rss_max_key_size;
+-        le16 rss_max_indirection_table_length;
+-        le32 supported_hash_types;
+-};
+-\end{lstlisting}
+-The following field, \field{rss_max_key_size} only exists if VIRTIO_NET_F_=
+RSS or VIRTIO_NET_F_HASH_REPORT is set.
+-It specifies the maximum supported length of RSS key in bytes.
+-
+-The following field, \field{rss_max_indirection_table_length} only exists =
+if VIRTIO_NET_F_RSS is set.
+-It specifies the maximum number of 16-bit entries in RSS indirection table=
+.
+-
+-The next field, \field{supported_hash_types} only exists if the device sup=
+ports hash calculation,
+-i.e. if VIRTIO_NET_F_RSS or VIRTIO_NET_F_HASH_REPORT is set.
+-
+-Field \field{supported_hash_types} contains the bitmask of supported hash =
+types.
+-See \ref{sec:Device Types / Network Device / Device Operation / Processing=
+ of Incoming Packets / Hash calculation for incoming packets / Supported/en=
+abled hash types} for details of supported hash types.
+-
+-\devicenormative{\subsubsection}{Device configuration layout}{Device Types=
+ / Network Device / Device configuration layout}
+-
+-The device MUST set \field{max_virtqueue_pairs} to between 1 and 0x8000 in=
+clusive,
+-if it offers VIRTIO_NET_F_MQ.
+-
+-The device MUST set \field{mtu} to between 68 and 65535 inclusive,
+-if it offers VIRTIO_NET_F_MTU.
+-
+-The device SHOULD set \field{mtu} to at least 1280, if it offers
+-VIRTIO_NET_F_MTU.
+-
+-The device MUST NOT modify \field{mtu} once it has been set.
+-
+-The device MUST NOT pass received packets that exceed \field{mtu} (plus lo=
+w
+-level ethernet header length) size with \field{gso_type} NONE or ECN
+-after VIRTIO_NET_F_MTU has been successfully negotiated.
+-
+-The device MUST forward transmitted packets of up to \field{mtu} (plus low
+-level ethernet header length) size with \field{gso_type} NONE or ECN, and =
+do
+-so without fragmentation, after VIRTIO_NET_F_MTU has been successfully
+-negotiated.
+-
+-The device MUST set \field{rss_max_key_size} to at least 40, if it offers
+-VIRTIO_NET_F_RSS or VIRTIO_NET_F_HASH_REPORT.
+-
+-The device MUST set \field{rss_max_indirection_table_length} to at least 1=
+28, if it offers
+-VIRTIO_NET_F_RSS.
+-
+-If the driver negotiates the VIRTIO_NET_F_STANDBY feature, the device MAY =
+act
+-as a standby device for a primary device with the same MAC address.
+-
+-If VIRTIO_NET_F_SPEED_DUPLEX has been negotiated, \field{speed}
+-MUST contain the device speed, in units of 1 MBit per second, 0 to
+-0x7ffffffff, or 0xfffffffff for unknown.
+-
+-If VIRTIO_NET_F_SPEED_DUPLEX has been negotiated, \field{duplex}
+-MUST have the values of 0x00 for full duplex, 0x01 for half
+-duplex, or 0xff for unknown.
+-
+-If VIRTIO_NET_F_SPEED_DUPLEX and VIRTIO_NET_F_STATUS have both
+-been negotiated, the device SHOULD NOT change the \field{speed} and
+-\field{duplex} fields as long as VIRTIO_NET_S_LINK_UP is set in
+-the \field{status}.
+-
+-\drivernormative{\subsubsection}{Device configuration layout}{Device Types=
+ / Network Device / Device configuration layout}
+-
+-A driver SHOULD negotiate VIRTIO_NET_F_MAC if the device offers it.
+-If the driver negotiates the VIRTIO_NET_F_MAC feature, the driver MUST set
+-the physical address of the NIC to \field{mac}.  Otherwise, it SHOULD
+-use a locally-administered MAC address (see \hyperref[intro:IEEE 802]{IEEE=
+ 802},
+-``9.2 48-bit universal LAN MAC addresses'').
+-
+-If the driver does not negotiate the VIRTIO_NET_F_STATUS feature, it SHOUL=
 D
--value in the field \field{status}.
+-assume the link is active, otherwise it SHOULD read the link status from
+-the bottom bit of \field{status}.
 -
--The device handles a VIRTIO_BLK_T_ZONE_RESET request by attempting to chan=
-ge the
--state of the zone with the \field{sector} address to VIRTIO_BLK_ZS_EMPTY s=
-tate.
--If the transition to this state can not be performed, the zone state does =
-not
--change and the request MUST be completed with VIRTIO_BLK_S_ZONE_INVALID_CM=
-D
--value in the field \field{status}.
+-A driver SHOULD negotiate VIRTIO_NET_F_MTU if the device offers it.
 -
--The device handles a VIRTIO_BLK_T_ZONE_RESET_ALL request by transitioning =
-all
--sequential device zones in VIRTIO_BLK_ZS_IOPEN, VIRTIO_BLK_ZS_EOPEN,
--VIRTIO_BLK_ZS_CLOSED and VIRTIO_BLK_ZS_FULL state to VIRTIO_BLK_ZS_EMPTY s=
-tate.
+-If the driver negotiates VIRTIO_NET_F_MTU, it MUST supply enough receive
+-buffers to receive at least one receive packet of size \field{mtu} (plus l=
+ow
+-level ethernet header length) with \field{gso_type} NONE or ECN.
 -
--Upon receiving a VIRTIO_BLK_T_ZONE_APPEND request or a VIRTIO_BLK_T_OUT
--request issued to a SWR zone in VIRTIO_BLK_ZS_EMPTY or VIRTIO_BLK_ZS_CLOSE=
-D
--state, the device attempts to perform the transition of the zone to
--VIRTIO_BLK_ZS_IOPEN state before writing data. This transition may fail du=
-e to
--insufficient open and/or active zone resources available on the device. In=
- this
--case, the request MUST be completed with VIRTIO_BLK_S_ZONE_OPEN_RESOURCE o=
-r
--VIRTIO_BLK_S_ZONE_ACTIVE_RESOURCE value in the \field{status}.
+-If the driver negotiates VIRTIO_NET_F_MTU, it MUST NOT transmit packets of
+-size exceeding the value of \field{mtu} (plus low level ethernet header le=
+ngth)
+-with \field{gso_type} NONE or ECN.
 -
--If the \field{sector} field in the VIRTIO_BLK_T_ZONE_APPEND request does n=
-ot
--specify the lowest sector for a zone, then the request SHALL be completed =
-with
--VIRTIO_BLK_S_ZONE_INVALID_CMD value in \field{status}.
+-A driver SHOULD negotiate the VIRTIO_NET_F_STANDBY feature if the device o=
+ffers it.
 -
--A VIRTIO_BLK_T_ZONE_APPEND request or a VIRTIO_BLK_T_OUT request that has =
-the
--data range that exceeds the remaining writable capacity for the zone, then=
- the
--request SHALL be completed with VIRTIO_BLK_S_ZONE_INVALID_CMD value in
--\field{status}.
+-If VIRTIO_NET_F_SPEED_DUPLEX has been negotiated,
+-the driver MUST treat any value of \field{speed} above
+-0x7fffffff as well as any value of \field{duplex} not
+-matching 0x00 or 0x01 as an unknown value.
 -
--If a request of the type VIRTIO_BLK_T_ZONE_APPEND is completed with
--VIRTIO_BLK_S_OK status, the field \field{append_sector} in
--\field{virtio_blk_req_za} MUST be set by the device to contain the first s=
-ector
--of the data written to the zone.
+-If VIRTIO_NET_F_SPEED_DUPLEX has been negotiated, the driver
+-SHOULD re-read \field{speed} and \field{duplex} after a
+-configuration change notification.
 -
--If a request of the type VIRTIO_BLK_T_ZONE_APPEND is completed with a stat=
-us
--other than VIRTIO_BLK_S_OK, the value of \field{append_sector} field in
--\field{virtio_blk_req_za} is undefined.
--
--A VIRTIO_BLK_T_ZONE_APPEND request that has the data size that exceeds
--\field{max_append_sectors} configuration space value, then,
--\begin{itemize}
--\item if \field{max_append_sectors} configuration space value is reported =
-as
--    zero by the device, the request SHALL be completed with VIRTIO_BLK_S_U=
-NSUPP
--    \field{status}.
--
--\item if \field{max_append_sectors} configuration space value is reported =
-as
--    a non-zero value by the device, the request SHALL be completed with
--    VIRTIO_BLK_S_ZONE_INVALID_CMD \field{status}.
--\end{itemize}
--
--If a VIRTIO_BLK_T_ZONE_APPEND request, a VIRTIO_BLK_T_IN request or a
--VIRTIO_BLK_T_OUT request issued to a SWR zone has the range that has secto=
-rs in
--more than one zone, then the request SHALL be completed with
--VIRTIO_BLK_S_ZONE_INVALID_CMD value in the field \field{status}.
--
--A VIRTIO_BLK_T_OUT request that has the \field{sector} value that is not a=
-ligned
--with the write pointer for the zone, then the request SHALL be completed w=
-ith
--VIRTIO_BLK_S_ZONE_UNALIGNED_WP value in the field \field{status}.
--
--In order to avoid resource-related errors while opening zones implicitly, =
-the
--device MAY automatically transition zones in VIRTIO_BLK_ZS_IOPEN state to
--VIRTIO_BLK_ZS_CLOSED state.
--
--All VIRTIO_BLK_T_OUT requests or VIRTIO_BLK_T_ZONE_APPEND requests issued
--to a zone in the VIRTIO_BLK_ZS_RDONLY state SHALL be completed with
--VIRTIO_BLK_S_ZONE_INVALID_CMD \field{status}.
--
--All requests issued to a zone in the VIRTIO_BLK_ZS_OFFLINE state SHALL be
--completed with VIRTIO_BLK_S_ZONE_INVALID_CMD value in the field \field{sta=
-tus}.
--
--The device MUST consider the sectors that are read between the write point=
-er
--position of a zone and the end of the last sector of the zone as unwritten=
- data.
--The sectors between the write pointer position and the end of the last sec=
-tor
--within the zone capacity during VIRTIO_BLK_T_ZONE_FINISH request processin=
-g are
--also considered unwritten data.
--
--When unwritten data is present in the sector range of a read request, the =
-device
--MUST process this data in one of the following ways -
--
--\begin{enumerate}
--\item Fill the unwritten data with a device-specific byte pattern. The
--configuration, control and reporting of this byte pattern is beyond the sc=
-ope
--of this standard. This is the preferred approach.
--
--\item Fail the request. Depending on the driver implementation, this may p=
-revent
--the device from becoming operational.
--\end{enumerate}
--
--If both the VIRTIO_BLK_F_ZONED and VIRTIO_BLK_F_SECURE_ERASE features are
--negotiated, then
--
--\begin{enumerate}
--\item the field \field{secure_erase_sector_alignment} in the configuration=
- space
--of the device MUST be a multiple of \field{zone_sectors} value reported in=
- the
--device configuration space.
--
--\item the data size in VIRTIO_BLK_T_SECURE_ERASE requests MUST be a multip=
-le of
--\field{zone_sectors} value in the device configuration space.
--\end{enumerate}
--
--The device MUST handle a VIRTIO_BLK_T_SECURE_ERASE request in the same way=
- it
--handles VIRTIO_BLK_T_ZONE_RESET request for the zone range specified in th=
-e
--VIRTIO_BLK_T_SECURE_ERASE request.
--
--\subsubsection{Legacy Interface: Device Operation}\label{sec:Device Types =
-/ Block Device / Device Operation / Legacy Interface: Device Operation}
+-\subsubsection{Legacy Interface: Device configuration layout}\label{sec:De=
+vice Types / Network Device / Device configuration layout / Legacy Interfac=
+e: Device configuration layout}
+-\label{sec:Device Types / Block Device / Feature bits / Device configurati=
+on layout / Legacy Interface: Device configuration layout}
 -When using the legacy interface, transitional devices and drivers
--MUST format the fields in struct virtio_blk_req
+-MUST format \field{status} and
+-\field{max_virtqueue_pairs} in struct virtio_net_config
 -according to the native endian of the guest rather than
 -(necessarily when not using the legacy interface) little-endian.
 -
--When using the legacy interface, transitional drivers
--SHOULD ignore the used length values.
--\begin{note}
--Historically, some devices put the total descriptor length,
--or the total length of device-writable buffers there,
--even when only the status byte was actually written.
--\end{note}
+-When using the legacy interface, \field{mac} is driver-writable
+-which provided a way for drivers to update the MAC without
+-negotiating VIRTIO_NET_F_CTRL_MAC_ADDR.
 -
--The \field{reserved} field was previously called \field{ioprio}.  \field{i=
-oprio}
--is a hint about the relative priorities of requests to the device:
--higher numbers indicate more important requests.
+-\subsection{Device Initialization}\label{sec:Device Types / Network Device=
+ / Device Initialization}
+-
+-A driver would perform a typical initialization routine like so:
+-
+-\begin{enumerate}
+-\item Identify and initialize the receive and
+-  transmission virtqueues, up to N of each kind. If
+-  VIRTIO_NET_F_MQ feature bit is negotiated,
+-  N=3D\field{max_virtqueue_pairs}, otherwise identify N=3D1.
+-
+-\item If the VIRTIO_NET_F_CTRL_VQ feature bit is negotiated,
+-  identify the control virtqueue.
+-
+-\item Fill the receive queues with buffers: see \ref{sec:Device Types / Ne=
+twork Device / Device Operation / Setting Up Receive Buffers}.
+-
+-\item Even with VIRTIO_NET_F_MQ, only receiveq1, transmitq1 and
+-  controlq are used by default.  The driver would send the
+-  VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET command specifying the
+-  number of the transmit and receive queues to use.
+-
+-\item If the VIRTIO_NET_F_MAC feature bit is set, the configuration
+-  space \field{mac} entry indicates the ``physical'' address of the
+-  network card, otherwise the driver would typically generate a random
+-  local MAC address.
+-
+-\item If the VIRTIO_NET_F_STATUS feature bit is negotiated, the link
+-  status comes from the bottom bit of \field{status}.
+-  Otherwise, the driver assumes it's active.
+-
+-\item A performant driver would indicate that it will generate checksumles=
+s
+-  packets by negotating the VIRTIO_NET_F_CSUM feature.
+-
+-\item If that feature is negotiated, a driver can use TCP segmentation or =
+UDP
+-  segmentation/fragmentation offload by negotiating the VIRTIO_NET_F_HOST_=
+TSO4 (IPv4
+-  TCP), VIRTIO_NET_F_HOST_TSO6 (IPv6 TCP), VIRTIO_NET_F_HOST_UFO
+-  (UDP fragmentation) and VIRTIO_NET_F_HOST_USO (UDP segmentation) feature=
+s.
+-
+-\item The converse features are also available: a driver can save
+-  the virtual device some work by negotiating these features.\note{For exa=
+mple, a network packet transported between two guests on
+-the same system might not need checksumming at all, nor segmentation,
+-if both guests are amenable.}
+-   The VIRTIO_NET_F_GUEST_CSUM feature indicates that partially
+-  checksummed packets can be received, and if it can do that then
+-  the VIRTIO_NET_F_GUEST_TSO4, VIRTIO_NET_F_GUEST_TSO6,
+-  VIRTIO_NET_F_GUEST_UFO, VIRTIO_NET_F_GUEST_ECN, VIRTIO_NET_F_GUEST_USO4
+-  and VIRTIO_NET_F_GUEST_USO6 are the input equivalents of the features de=
+scribed above.
+-  See \ref{sec:Device Types / Network Device / Device Operation /
+-Setting Up Receive Buffers}~\nameref{sec:Device Types / Network
+-Device / Device Operation / Setting Up Receive Buffers} and
+-\ref{sec:Device Types / Network Device / Device Operation /
+-Processing of Incoming Packets}~\nameref{sec:Device Types /
+-Network Device / Device Operation / Processing of Incoming Packets} below.
+-\end{enumerate}
+-
+-A truly minimal driver would only accept VIRTIO_NET_F_MAC and ignore
+-everything else.
+-
+-\subsection{Device Operation}\label{sec:Device Types / Network Device / De=
+vice Operation}
+-
+-Packets are transmitted by placing them in the
+-transmitq1\ldots transmitqN, and buffers for incoming packets are
+-placed in the receiveq1\ldots receiveqN. In each case, the packet
+-itself is preceded by a header:
 -
 -\begin{lstlisting}
--#define VIRTIO_BLK_T_FLUSH_OUT    5
--\end{lstlisting}
--
--The command VIRTIO_BLK_T_FLUSH_OUT was a synonym for VIRTIO_BLK_T_FLUSH;
--a driver MUST treat it as a VIRTIO_BLK_T_FLUSH command.
--
--\begin{lstlisting}
--#define VIRTIO_BLK_T_BARRIER     0x80000000
--\end{lstlisting}
--
--If the device has VIRTIO_BLK_F_BARRIER
--feature the high bit (VIRTIO_BLK_T_BARRIER) indicates that this
--request acts as a barrier and that all preceding requests SHOULD be
--complete before this one, and all following requests SHOULD NOT be
--started until this is complete.
--
--\begin{note} A barrier does not flush
--caches in the underlying backend device in host, and thus does not
--serve as data consistency guarantee.  Only a VIRTIO_BLK_T_FLUSH request
--does that.
--\end{note}
--
--Some older legacy devices did not commit completed writes to persistent
--device backend storage when VIRTIO_BLK_F_FLUSH was offered but not
--negotiated.  In order to work around this, the driver MAY set the
--\field{writeback} to 0 (if available) or it MAY send an explicit flush
--request after every completed write.
--
--If the device has VIRTIO_BLK_F_SCSI feature, it can also support
--scsi packet command requests, each of these requests is of form:
--
--\begin{lstlisting}
--/* All fields are in guest's native endian. */
--struct virtio_scsi_pc_req {
--        u32 type;
--        u32 ioprio;
--        u64 sector;
--        u8 cmd[];
--        u8 data[][512];
--#define SCSI_SENSE_BUFFERSIZE   96
--        u8 sense[SCSI_SENSE_BUFFERSIZE];
--        u32 errors;
--        u32 data_len;
--        u32 sense_len;
--        u32 residual;
--        u8 status;
+-struct virtio_net_hdr {
+-#define VIRTIO_NET_HDR_F_NEEDS_CSUM    1
+-#define VIRTIO_NET_HDR_F_DATA_VALID    2
+-#define VIRTIO_NET_HDR_F_RSC_INFO      4
+-        u8 flags;
+-#define VIRTIO_NET_HDR_GSO_NONE        0
+-#define VIRTIO_NET_HDR_GSO_TCPV4       1
+-#define VIRTIO_NET_HDR_GSO_UDP         3
+-#define VIRTIO_NET_HDR_GSO_TCPV6       4
+-#define VIRTIO_NET_HDR_GSO_UDP_L4      5
+-#define VIRTIO_NET_HDR_GSO_ECN      0x80
+-        u8 gso_type;
+-        le16 hdr_len;
+-        le16 gso_size;
+-        le16 csum_start;
+-        le16 csum_offset;
+-        le16 num_buffers;
+-        le32 hash_value;        (Only if VIRTIO_NET_F_HASH_REPORT negotiat=
+ed)
+-        le16 hash_report;       (Only if VIRTIO_NET_F_HASH_REPORT negotiat=
+ed)
+-        le16 padding_reserved;  (Only if VIRTIO_NET_F_HASH_REPORT negotiat=
+ed)
 -};
 -\end{lstlisting}
 -
--A request type can also be a scsi packet command (VIRTIO_BLK_T_SCSI_CMD or
--VIRTIO_BLK_T_SCSI_CMD_OUT).  The two types are equivalent, the device
--does not distinguish between them:
+-The controlq is used to control device features such as
+-filtering.
 -
--\begin{lstlisting}
--#define VIRTIO_BLK_T_SCSI_CMD     2
--#define VIRTIO_BLK_T_SCSI_CMD_OUT 3
--\end{lstlisting}
+-\subsubsection{Legacy Interface: Device Operation}\label{sec:Device Types =
+/ Network Device / Device Operation / Legacy Interface: Device Operation}
+-When using the legacy interface, transitional devices and drivers
+-MUST format the fields in struct virtio_net_hdr
+-according to the native endian of the guest rather than
+-(necessarily when not using the legacy interface) little-endian.
 -
--The \field{cmd} field is only present for scsi packet command requests,
--and indicates the command to perform. This field MUST reside in a
--single, separate device-readable buffer; command length can be derived
--from the length of this buffer.
+-The legacy driver only presented \field{num_buffers} in the struct virtio_=
+net_hdr
+-when VIRTIO_NET_F_MRG_RXBUF was negotiated; without that feature the
+-structure was 2 bytes shorter.
 -
--Note that these first three (four for scsi packet commands)
--fields are always device-readable: \field{data} is either device-readable
--or device-writable, depending on the request. The size of the read or
--write can be derived from the total size of the request buffers.
+-When using the legacy interface, the driver SHOULD ignore the
+-used length for the transmit queues
+-and the controlq queue.
+-\begin{note}
+-Historically, some devices put
+-the total descriptor length there, even though no data was
+-actually written.
+-\end{note}
 -
--\field{sense} is only present for scsi packet command requests,
--and indicates the buffer for scsi sense data.
+-\subsubsection{Packet Transmission}\label{sec:Device Types / Network Devic=
+e / Device Operation / Packet Transmission}
 -
--\field{data_len} is only present for scsi packet command
--requests, this field is deprecated, and SHOULD be ignored by the
--driver. Historically, devices copied data length there.
+-Transmitting a single packet is simple, but varies depending on
+-the different features the driver negotiated.
 -
--\field{sense_len} is only present for scsi packet command
--requests and indicates the number of bytes actually written to
--the \field{sense} buffer.
+-\begin{enumerate}
+-\item The driver can send a completely checksummed packet.  In this case,
+-  \field{flags} will be zero, and \field{gso_type} will be VIRTIO_NET_HDR_=
+GSO_NONE.
 -
--\field{residual} field is only present for scsi packet command
--requests and indicates the residual size, calculated as data
--length - number of bytes actually transferred.
+-\item If the driver negotiated VIRTIO_NET_F_CSUM, it can skip
+-  checksumming the packet:
+-  \begin{itemize}
+-  \item \field{flags} has the VIRTIO_NET_HDR_F_NEEDS_CSUM set,
 -
--\subsubsection{Legacy Interface: Framing Requirements}\label{sec:Device Ty=
-pes / Block Device / Legacy Interface: Framing Requirements}
+-  \item \field{csum_start} is set to the offset within the packet to begin=
+ checksumming,
+-    and
 -
--When using legacy interfaces, transitional drivers which have not
--negotiated VIRTIO_F_ANY_LAYOUT:
+-  \item \field{csum_offset} indicates how many bytes after the csum_start =
+the
+-    new (16 bit ones' complement) checksum is placed by the device.
 -
+-  \item The TCP checksum field in the packet is set to the sum
+-    of the TCP pseudo header, so that replacing it by the ones'
+-    complement checksum of the TCP header and body will give the
+-    correct result.
+-  \end{itemize}
+-
+-\begin{note}
+-For example, consider a partially checksummed TCP (IPv4) packet.
+-It will have a 14 byte ethernet header and 20 byte IP header
+-followed by the TCP header (with the TCP checksum field 16 bytes
+-into that header). \field{csum_start} will be 14+20 =3D 34 (the TCP
+-checksum includes the header), and \field{csum_offset} will be 16.
+-\end{note}
+-
+-\item If the driver negotiated
+-  VIRTIO_NET_F_HOST_TSO4, TSO6, USO or UFO, and the packet requires
+-  TCP segmentation, UDP segmentation or fragmentation, then \field{gso_typ=
+e}
+-  is set to VIRTIO_NET_HDR_GSO_TCPV4, TCPV6, UDP_L4 or UDP.
+-  (Otherwise, it is set to VIRTIO_NET_HDR_GSO_NONE). In this
+-  case, packets larger than 1514 bytes can be transmitted: the
+-  metadata indicates how to replicate the packet header to cut it
+-  into smaller packets. The other gso fields are set:
+-
+-  \begin{itemize}
+-  \item If the VIRTIO_NET_F_GUEST_HDRLEN feature has been negotiated,
+-    \field{hdr_len} indicates the header length that needs to be replicate=
+d
+-    for each packet. It's the number of bytes from the beginning of the pa=
+cket
+-    to the beginning of the transport payload.
+-    Otherwise, if the VIRTIO_NET_F_GUEST_HDRLEN feature has not been negot=
+iated,
+-    \field{hdr_len} is a hint to the device as to how much of the header
+-    needs to be kept to copy into each packet, usually set to the
+-    length of the headers, including the transport header\footnote{Due to =
+various bugs in implementations, this field is not useful
+-as a guarantee of the transport header size.
+-}.
+-
+-  \begin{note}
+-  Some devices benefit from knowledge of the exact header length.
+-  \end{note}
+-
+-  \item \field{gso_size} is the maximum size of each packet beyond that
+-    header (ie. MSS).
+-
+-  \item If the driver negotiated the VIRTIO_NET_F_HOST_ECN feature,
+-    the VIRTIO_NET_HDR_GSO_ECN bit in \field{gso_type}
+-    indicates that the TCP packet has the ECN bit set\footnote{This case i=
+s not handled by some older hardware, so is called out
+-specifically in the protocol.}.
+-   \end{itemize}
+-
+-\item \field{num_buffers} is set to zero.  This field is unused on transmi=
+tted packets.
+-
+-\item The header and packet are added as one output descriptor to the
+-  transmitq, and the device is notified of the new entry
+-  (see \ref{sec:Device Types / Network Device / Device Initialization}~\na=
+meref{sec:Device Types / Network Device / Device Initialization}).
+-\end{enumerate}
+-
+-\drivernormative{\paragraph}{Packet Transmission}{Device Types / Network D=
+evice / Device Operation / Packet Transmission}
+-
+-The driver MUST set \field{num_buffers} to zero.
+-
+-If VIRTIO_NET_F_CSUM is not negotiated, the driver MUST set
+-\field{flags} to zero and SHOULD supply a fully checksummed
+-packet to the device.
+-
+-If VIRTIO_NET_F_HOST_TSO4 is negotiated, the driver MAY set
+-\field{gso_type} to VIRTIO_NET_HDR_GSO_TCPV4 to request TCPv4
+-segmentation, otherwise the driver MUST NOT set
+-\field{gso_type} to VIRTIO_NET_HDR_GSO_TCPV4.
+-
+-If VIRTIO_NET_F_HOST_TSO6 is negotiated, the driver MAY set
+-\field{gso_type} to VIRTIO_NET_HDR_GSO_TCPV6 to request TCPv6
+-segmentation, otherwise the driver MUST NOT set
+-\field{gso_type} to VIRTIO_NET_HDR_GSO_TCPV6.
+-
+-If VIRTIO_NET_F_HOST_UFO is negotiated, the driver MAY set
+-\field{gso_type} to VIRTIO_NET_HDR_GSO_UDP to request UDP
+-fragmentation, otherwise the driver MUST NOT set
+-\field{gso_type} to VIRTIO_NET_HDR_GSO_UDP.
+-
+-If VIRTIO_NET_F_HOST_USO is negotiated, the driver MAY set
+-\field{gso_type} to VIRTIO_NET_HDR_GSO_UDP_L4 to request UDP
+-segmentation, otherwise the driver MUST NOT set
+-\field{gso_type} to VIRTIO_NET_HDR_GSO_UDP_L4.
+-
+-The driver SHOULD NOT send to the device TCP packets requiring segmentatio=
+n offload
+-which have the Explicit Congestion Notification bit set, unless the
+-VIRTIO_NET_F_HOST_ECN feature is negotiated, in which case the
+-driver MUST set the VIRTIO_NET_HDR_GSO_ECN bit in
+-\field{gso_type}.
+-
+-If the VIRTIO_NET_F_CSUM feature has been negotiated, the
+-driver MAY set the VIRTIO_NET_HDR_F_NEEDS_CSUM bit in
+-\field{flags}, if so:
+-\begin{enumerate}
+-\item the driver MUST validate the packet checksum at
+-=09offset \field{csum_offset} from \field{csum_start} as well as all
+-=09preceding offsets;
+-\item the driver MUST set the packet checksum stored in the
+-=09buffer to the TCP/UDP pseudo header;
+-\item the driver MUST set \field{csum_start} and
+-=09\field{csum_offset} such that calculating a ones'
+-=09complement checksum from \field{csum_start} up until the end of
+-=09the packet and storing the result at offset \field{csum_offset}
+-=09from  \field{csum_start} will result in a fully checksummed
+-=09packet;
+-\end{enumerate}
+-
+-If none of the VIRTIO_NET_F_HOST_TSO4, TSO6, USO or UFO options have
+-been negotiated, the driver MUST set \field{gso_type} to
+-VIRTIO_NET_HDR_GSO_NONE.
+-
+-If \field{gso_type} differs from VIRTIO_NET_HDR_GSO_NONE, then
+-the driver MUST also set the VIRTIO_NET_HDR_F_NEEDS_CSUM bit in
+-\field{flags} and MUST set \field{gso_size} to indicate the
+-desired MSS.
+-
+-If one of the VIRTIO_NET_F_HOST_TSO4, TSO6, USO or UFO options have
+-been negotiated:
 -\begin{itemize}
--\item MUST use a single 8-byte descriptor containing \field{type},
--  \field{reserved} and \field{sector}, followed by descriptors
--  for \field{data}, then finally a separate 1-byte descriptor
--  for \field{status}.
+-\item If the VIRTIO_NET_F_GUEST_HDRLEN feature has been negotiated,
+-=09and \field{gso_type} differs from VIRTIO_NET_HDR_GSO_NONE,
+-=09the driver MUST set \field{hdr_len} to a value equal to the length
+-=09of the headers, including the transport header.
 -
--\item For SCSI commands there are additional constraints.
--  \field{sense} MUST reside in a
--  single separate device-writable descriptor of size 96 bytes,
--  and \field{errors}, \field{data_len}, \field{sense_len} and
--  \field{residual} MUST reside a single separate
--  device-writable descriptor.
+-\item If the VIRTIO_NET_F_GUEST_HDRLEN feature has not been negotiated,
+-=09or \field{gso_type} is VIRTIO_NET_HDR_GSO_NONE,
+-=09the driver SHOULD set \field{hdr_len} to a value
+-=09not less than the length of the headers, including the transport
+-=09header.
 -\end{itemize}
 -
--See \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Message Fr=
-aming}.
+-The driver SHOULD accept the VIRTIO_NET_F_GUEST_HDRLEN feature if it has
+-been offered, and if it's able to provide the exact header length.
 -
-+\input{virtio-block.tex}
+-The driver MUST NOT set the VIRTIO_NET_HDR_F_DATA_VALID and
+-VIRTIO_NET_HDR_F_RSC_INFO bits in \field{flags}.
+-
+-\devicenormative{\paragraph}{Packet Transmission}{Device Types / Network D=
+evice / Device Operation / Packet Transmission}
+-The device MUST ignore \field{flag} bits that it does not recognize.
+-
+-If VIRTIO_NET_HDR_F_NEEDS_CSUM bit in \field{flags} is not set, the
+-device MUST NOT use the \field{csum_start} and \field{csum_offset}.
+-
+-If one of the VIRTIO_NET_F_HOST_TSO4, TSO6, USO or UFO options have
+-been negotiated:
+-\begin{itemize}
+-\item If the VIRTIO_NET_F_GUEST_HDRLEN feature has been negotiated,
+-=09and \field{gso_type} differs from VIRTIO_NET_HDR_GSO_NONE,
+-=09the device MAY use \field{hdr_len} as the transport header size.
+-
+-=09\begin{note}
+-=09Caution should be taken by the implementation so as to prevent
+-=09a malicious driver from attacking the device by setting an incorrect hd=
+r_len.
+-=09\end{note}
+-
+-\item If the VIRTIO_NET_F_GUEST_HDRLEN feature has not been negotiated,
+-=09or \field{gso_type} is VIRTIO_NET_HDR_GSO_NONE,
+-=09the device MAY use \field{hdr_len} only as a hint about the
+-=09transport header size.
+-=09The device MUST NOT rely on \field{hdr_len} to be correct.
+-
+-=09\begin{note}
+-=09This is due to various bugs in implementations.
+-=09\end{note}
+-\end{itemize}
+-
+-If VIRTIO_NET_HDR_F_NEEDS_CSUM is not set, the device MUST NOT
+-rely on the packet checksum being correct.
+-\paragraph{Packet Transmission Interrupt}\label{sec:Device Types / Network=
+ Device / Device Operation / Packet Transmission / Packet Transmission Inte=
+rrupt}
+-
+-Often a driver will suppress transmission virtqueue interrupts
+-and check for used packets in the transmit path of following
+-packets.
+-
+-The normal behavior in this interrupt handler is to retrieve
+-used buffers from the virtqueue and free the corresponding
+-headers and packets.
+-
+-\subsubsection{Setting Up Receive Buffers}\label{sec:Device Types / Networ=
+k Device / Device Operation / Setting Up Receive Buffers}
+-
+-It is generally a good idea to keep the receive virtqueue as
+-fully populated as possible: if it runs out, network performance
+-will suffer.
+-
+-If the VIRTIO_NET_F_GUEST_TSO4, VIRTIO_NET_F_GUEST_TSO6,
+-VIRTIO_NET_F_GUEST_UFO, VIRTIO_NET_F_GUEST_USO4 or VIRTIO_NET_F_GUEST_USO6
+-features are used, the maximum incoming packet
+-will be to 65550 bytes long (the maximum size of a
+-TCP or UDP packet, plus the 14 byte ethernet header), otherwise
+-1514 bytes.  The 12-byte struct virtio_net_hdr is prepended to this,
+-making for 65562 or 1526 bytes.
+-
+-\drivernormative{\paragraph}{Setting Up Receive Buffers}{Device Types / Ne=
+twork Device / Device Operation / Setting Up Receive Buffers}
+-
+-\begin{itemize}
+-\item If VIRTIO_NET_F_MRG_RXBUF is not negotiated:
+-  \begin{itemize}
+-    \item If VIRTIO_NET_F_GUEST_TSO4, VIRTIO_NET_F_GUEST_TSO6, VIRTIO_NET_=
+F_GUEST_UFO,
+-=09VIRTIO_NET_F_GUEST_USO4 or VIRTIO_NET_F_GUEST_USO6 are negotiated, the =
+driver SHOULD populate
+-      the receive queue(s) with buffers of at least 65562 bytes.
+-    \item Otherwise, the driver SHOULD populate the receive queue(s)
+-      with buffers of at least 1526 bytes.
+-  \end{itemize}
+-\item If VIRTIO_NET_F_MRG_RXBUF is negotiated, each buffer MUST be at
+-least the size of the struct virtio_net_hdr.
+-\end{itemize}
+-
+-\begin{note}
+-Obviously each buffer can be split across multiple descriptor elements.
+-\end{note}
+-
+-If VIRTIO_NET_F_MQ is negotiated, each of receiveq1\ldots receiveqN
+-that will be used SHOULD be populated with receive buffers.
+-
+-\devicenormative{\paragraph}{Setting Up Receive Buffers}{Device Types / Ne=
+twork Device / Device Operation / Setting Up Receive Buffers}
+-
+-The device MUST set \field{num_buffers} to the number of descriptors used =
+to
+-hold the incoming packet.
+-
+-The device MUST use only a single descriptor if VIRTIO_NET_F_MRG_RXBUF
+-was not negotiated.
+-\begin{note}
+-{This means that \field{num_buffers} will always be 1
+-if VIRTIO_NET_F_MRG_RXBUF is not negotiated.}
+-\end{note}
+-
+-\subsubsection{Processing of Incoming Packets}\label{sec:Device Types / Ne=
+twork Device / Device Operation / Processing of Incoming Packets}
+-\label{sec:Device Types / Network Device / Device Operation / Processing o=
+f Packets}%old label for latexdiff
+-
+-When a packet is copied into a buffer in the receiveq, the
+-optimal path is to disable further used buffer notifications for the
+-receiveq and process packets until no more are found, then re-enable
+-them.
+-
+-Processing incoming packets involves:
+-
+-\begin{enumerate}
+-\item \field{num_buffers} indicates how many descriptors
+-  this packet is spread over (including this one): this will
+-  always be 1 if VIRTIO_NET_F_MRG_RXBUF was not negotiated.
+-  This allows receipt of large packets without having to allocate large
+-  buffers: a packet that does not fit in a single buffer can flow
+-  over to the next buffer, and so on. In this case, there will be
+-  at least \field{num_buffers} used buffers in the virtqueue, and the devi=
+ce
+-  chains them together to form a single packet in a way similar to
+-  how it would store it in a single buffer spread over multiple
+-  descriptors.
+-  The other buffers will not begin with a struct virtio_net_hdr.
+-
+-\item If
+-  \field{num_buffers} is one, then the entire packet will be
+-  contained within this buffer, immediately following the struct
+-  virtio_net_hdr.
+-\item If the VIRTIO_NET_F_GUEST_CSUM feature was negotiated, the
+-  VIRTIO_NET_HDR_F_DATA_VALID bit in \field{flags} can be
+-  set: if so, device has validated the packet checksum.
+-  In case of multiple encapsulated protocols, one level of checksums
+-  has been validated.
+-\end{enumerate}
+-
+-Additionally, VIRTIO_NET_F_GUEST_CSUM, TSO4, TSO6, UDP and ECN
+-features enable receive checksum, large receive offload and ECN
+-support which are the input equivalents of the transmit checksum,
+-transmit segmentation offloading and ECN features, as described
+-in \ref{sec:Device Types / Network Device / Device Operation /
+-Packet Transmission}:
+-\begin{enumerate}
+-\item If the VIRTIO_NET_F_GUEST_TSO4, TSO6, UFO, USO4 or USO6 options were
+-  negotiated, then \field{gso_type} MAY be something other than
+-  VIRTIO_NET_HDR_GSO_NONE, and \field{gso_size} field indicates the
+-  desired MSS (see Packet Transmission point 2).
+-\item If the VIRTIO_NET_F_RSC_EXT option was negotiated (this
+-  implies one of VIRTIO_NET_F_GUEST_TSO4, TSO6), the
+-  device processes also duplicated ACK segments, reports
+-  number of coalesced TCP segments in \field{csum_start} field and
+-  number of duplicated ACK segments in \field{csum_offset} field
+-  and sets bit VIRTIO_NET_HDR_F_RSC_INFO in \field{flags}.
+-\item If the VIRTIO_NET_F_GUEST_CSUM feature was negotiated, the
+-  VIRTIO_NET_HDR_F_NEEDS_CSUM bit in \field{flags} can be
+-  set: if so, the packet checksum at offset \field{csum_offset}
+-  from \field{csum_start} and any preceding checksums
+-  have been validated.  The checksum on the packet is incomplete and
+-  if bit VIRTIO_NET_HDR_F_RSC_INFO is not set in \field{flags},
+-  then \field{csum_start} and \field{csum_offset} indicate how to calculat=
+e it
+-  (see Packet Transmission point 1).
+-
+-\end{enumerate}
+-
+-If applicable, the device calculates per-packet hash for incoming packets =
+as
+-defined in \ref{sec:Device Types / Network Device / Device Operation / Pro=
+cessing of Incoming Packets / Hash calculation for incoming packets}.
+-
+-If applicable, the device reports hash information for incoming packets as
+-defined in \ref{sec:Device Types / Network Device / Device Operation / Pro=
+cessing of Incoming Packets / Hash reporting for incoming packets}.
+-
+-\devicenormative{\paragraph}{Processing of Incoming Packets}{Device Types =
+/ Network Device / Device Operation / Processing of Incoming Packets}
+-\label{devicenormative:Device Types / Network Device / Device Operation / =
+Processing of Packets}%old label for latexdiff
+-
+-If VIRTIO_NET_F_MRG_RXBUF has not been negotiated, the device MUST set
+-\field{num_buffers} to 1.
+-
+-If VIRTIO_NET_F_MRG_RXBUF has been negotiated, the device MUST set
+-\field{num_buffers} to indicate the number of buffers
+-the packet (including the header) is spread over.
+-
+-If a receive packet is spread over multiple buffers, the device
+-MUST use all buffers but the last (i.e. the first \field{num_buffers} -
+-1 buffers) completely up to the full length of each buffer
+-supplied by the driver.
+-
+-The device MUST use all buffers used by a single receive
+-packet together, such that at least \field{num_buffers} are
+-observed by driver as used.
+-
+-If VIRTIO_NET_F_GUEST_CSUM is not negotiated, the device MUST set
+-\field{flags} to zero and SHOULD supply a fully checksummed
+-packet to the driver.
+-
+-If VIRTIO_NET_F_GUEST_TSO4 is not negotiated, the device MUST NOT set
+-\field{gso_type} to VIRTIO_NET_HDR_GSO_TCPV4.
+-
+-If VIRTIO_NET_F_GUEST_UDP is not negotiated, the device MUST NOT set
+-\field{gso_type} to VIRTIO_NET_HDR_GSO_UDP.
+-
+-If VIRTIO_NET_F_GUEST_TSO6 is not negotiated, the device MUST NOT set
+-\field{gso_type} to VIRTIO_NET_HDR_GSO_TCPV6.
+-
+-If none of VIRTIO_NET_F_GUEST_USO4 or VIRTIO_NET_F_GUEST_USO6 have been ne=
+gotiated,
+-the device MUST NOT set \field{gso_type} to VIRTIO_NET_HDR_GSO_UDP_L4.
+-
+-The device SHOULD NOT send to the driver TCP packets requiring segmentatio=
+n offload
+-which have the Explicit Congestion Notification bit set, unless the
+-VIRTIO_NET_F_GUEST_ECN feature is negotiated, in which case the
+-device MUST set the VIRTIO_NET_HDR_GSO_ECN bit in
+-\field{gso_type}.
+-
+-If the VIRTIO_NET_F_GUEST_CSUM feature has been negotiated, the
+-device MAY set the VIRTIO_NET_HDR_F_NEEDS_CSUM bit in
+-\field{flags}, if so:
+-\begin{enumerate}
+-\item the device MUST validate the packet checksum at
+-=09offset \field{csum_offset} from \field{csum_start} as well as all
+-=09preceding offsets;
+-\item the device MUST set the packet checksum stored in the
+-=09receive buffer to the TCP/UDP pseudo header;
+-\item the device MUST set \field{csum_start} and
+-=09\field{csum_offset} such that calculating a ones'
+-=09complement checksum from \field{csum_start} up until the
+-=09end of the packet and storing the result at offset
+-=09\field{csum_offset} from  \field{csum_start} will result in a
+-=09fully checksummed packet;
+-\end{enumerate}
+-
+-If none of the VIRTIO_NET_F_GUEST_TSO4, TSO6, UFO, USO4 or USO6 options ha=
+ve
+-been negotiated, the device MUST set \field{gso_type} to
+-VIRTIO_NET_HDR_GSO_NONE.
+-
+-If \field{gso_type} differs from VIRTIO_NET_HDR_GSO_NONE, then
+-the device MUST also set the VIRTIO_NET_HDR_F_NEEDS_CSUM bit in
+-\field{flags} MUST set \field{gso_size} to indicate the desired MSS.
+-If VIRTIO_NET_F_RSC_EXT was negotiated, the device MUST also
+-set VIRTIO_NET_HDR_F_RSC_INFO bit in \field{flags},
+-set \field{csum_start} to number of coalesced TCP segments and
+-set \field{csum_offset} to number of received duplicated ACK segments.
+-
+-If VIRTIO_NET_F_RSC_EXT was not negotiated, the device MUST
+-not set VIRTIO_NET_HDR_F_RSC_INFO bit in \field{flags}.
+-
+-If one of the VIRTIO_NET_F_GUEST_TSO4, TSO6, UFO, USO4 or USO6 options hav=
+e
+-been negotiated, the device SHOULD set \field{hdr_len} to a value
+-not less than the length of the headers, including the transport
+-header.
+-
+-If the VIRTIO_NET_F_GUEST_CSUM feature has been negotiated, the
+-device MAY set the VIRTIO_NET_HDR_F_DATA_VALID bit in
+-\field{flags}, if so, the device MUST validate the packet
+-checksum (in case of multiple encapsulated protocols, one level
+-of checksums is validated).
+-
+-\drivernormative{\paragraph}{Processing of Incoming
+-Packets}{Device Types / Network Device / Device Operation /
+-Processing of Incoming Packets}
+-
+-The driver MUST ignore \field{flag} bits that it does not recognize.
+-
+-If VIRTIO_NET_HDR_F_NEEDS_CSUM bit in \field{flags} is not set or
+-if VIRTIO_NET_HDR_F_RSC_INFO bit \field{flags} is set, the
+-driver MUST NOT use the \field{csum_start} and \field{csum_offset}.
+-
+-If one of the VIRTIO_NET_F_GUEST_TSO4, TSO6, UFO, USO4 or USO6 options hav=
+e
+-been negotiated, the driver MAY use \field{hdr_len} only as a hint about t=
+he
+-transport header size.
+-The driver MUST NOT rely on \field{hdr_len} to be correct.
+-\begin{note}
+-This is due to various bugs in implementations.
+-\end{note}
+-
+-If neither VIRTIO_NET_HDR_F_NEEDS_CSUM nor
+-VIRTIO_NET_HDR_F_DATA_VALID is set, the driver MUST NOT
+-rely on the packet checksum being correct.
+-
+-\paragraph{Hash calculation for incoming packets}
+-\label{sec:Device Types / Network Device / Device Operation / Processing o=
+f Incoming Packets / Hash calculation for incoming packets}
+-
+-A device attempts to calculate a per-packet hash in the following cases:
+-\begin{itemize}
+-\item The feature VIRTIO_NET_F_RSS was negotiated. The device uses the has=
+h to determine the receive virtqueue to place incoming packets.
+-\item The feature VIRTIO_NET_F_HASH_REPORT was negotiated. The device repo=
+rts the hash value and the hash type with the packet.
+-\end{itemize}
+-
+-If the feature VIRTIO_NET_F_RSS was negotiated:
+-\begin{itemize}
+-\item The device uses \field{hash_types} of the virtio_net_rss_config stru=
+cture as 'Enabled hash types' bitmask.
+-\item The device uses a key as defined in \field{hash_key_data} and \field=
+{hash_key_length} of the virtio_net_rss_config structure (see
+-\ref{sec:Device Types / Network Device / Device Operation / Control Virtqu=
+eue / Receive-side scaling (RSS) / Setting RSS parameters}).
+-\end{itemize}
+-
+-If the feature VIRTIO_NET_F_RSS was not negotiated:
+-\begin{itemize}
+-\item The device uses \field{hash_types} of the virtio_net_hash_config str=
+ucture as 'Enabled hash types' bitmask.
+-\item The device uses a key as defined in \field{hash_key_data} and \field=
+{hash_key_length} of the virtio_net_hash_config structure (see
+-\ref{sec:Device Types / Network Device / Device Operation / Control Virtqu=
+eue / Automatic receive steering in multiqueue mode / Hash calculation}).
+-\end{itemize}
+-
+-Note that if the device offers VIRTIO_NET_F_HASH_REPORT, even if it suppor=
+ts only one pair of virtqueues, it MUST support
+-at least one of commands of VIRTIO_NET_CTRL_MQ class to configure reported=
+ hash parameters:
+-\begin{itemize}
+-\item If the device offers VIRTIO_NET_F_RSS, it MUST support VIRTIO_NET_CT=
+RL_MQ_RSS_CONFIG command per
+- \ref{sec:Device Types / Network Device / Device Operation / Control Virtq=
+ueue / Receive-side scaling (RSS) / Setting RSS parameters}.
+-\item Otherwise the device MUST support VIRTIO_NET_CTRL_MQ_HASH_CONFIG com=
+mand per
+- \ref{sec:Device Types / Network Device / Device Operation / Control Virtq=
+ueue / Automatic receive steering in multiqueue mode / Hash calculation}.
+-\end{itemize}
+-
+-\subparagraph{Supported/enabled hash types}
+-\label{sec:Device Types / Network Device / Device Operation / Processing o=
+f Incoming Packets / Hash calculation for incoming packets / Supported/enab=
+led hash types}
+-Hash types applicable for IPv4 packets:
+-\begin{lstlisting}
+-#define VIRTIO_NET_HASH_TYPE_IPv4              (1 << 0)
+-#define VIRTIO_NET_HASH_TYPE_TCPv4             (1 << 1)
+-#define VIRTIO_NET_HASH_TYPE_UDPv4             (1 << 2)
+-\end{lstlisting}
+-Hash types applicable for IPv6 packets without extension headers
+-\begin{lstlisting}
+-#define VIRTIO_NET_HASH_TYPE_IPv6              (1 << 3)
+-#define VIRTIO_NET_HASH_TYPE_TCPv6             (1 << 4)
+-#define VIRTIO_NET_HASH_TYPE_UDPv6             (1 << 5)
+-\end{lstlisting}
+-Hash types applicable for IPv6 packets with extension headers
+-\begin{lstlisting}
+-#define VIRTIO_NET_HASH_TYPE_IP_EX             (1 << 6)
+-#define VIRTIO_NET_HASH_TYPE_TCP_EX            (1 << 7)
+-#define VIRTIO_NET_HASH_TYPE_UDP_EX            (1 << 8)
+-\end{lstlisting}
+-
+-\subparagraph{IPv4 packets}
+-\label{sec:Device Types / Network Device / Device Operation / Processing o=
+f Incoming Packets / Hash calculation for incoming packets / IPv4 packets}
+-The device calculates the hash on IPv4 packets according to 'Enabled hash =
+types' bitmask as follows:
+-\begin{itemize}
+-\item If VIRTIO_NET_HASH_TYPE_TCPv4 is set and the packet has
+-a TCP header, the hash is calculated over the following fields:
+-\begin{itemize}
+-\item Source IP address
+-\item Destination IP address
+-\item Source TCP port
+-\item Destination TCP port
+-\end{itemize}
+-\item Else if VIRTIO_NET_HASH_TYPE_UDPv4 is set and the
+-packet has a UDP header, the hash is calculated over the following fields:
+-\begin{itemize}
+-\item Source IP address
+-\item Destination IP address
+-\item Source UDP port
+-\item Destination UDP port
+-\end{itemize}
+-\item Else if VIRTIO_NET_HASH_TYPE_IPv4 is set, the hash is
+-calculated over the following fields:
+-\begin{itemize}
+-\item Source IP address
+-\item Destination IP address
+-\end{itemize}
+-\item Else the device does not calculate the hash
+-\end{itemize}
+-
+-\subparagraph{IPv6 packets without extension header}
+-\label{sec:Device Types / Network Device / Device Operation / Processing o=
+f Incoming Packets / Hash calculation for incoming packets / IPv6 packets w=
+ithout extension header}
+-The device calculates the hash on IPv6 packets without extension
+-headers according to 'Enabled hash types' bitmask as follows:
+-\begin{itemize}
+-\item If VIRTIO_NET_HASH_TYPE_TCPv6 is set and the packet has
+-a TCPv6 header, the hash is calculated over the following fields:
+-\begin{itemize}
+-\item Source IPv6 address
+-\item Destination IPv6 address
+-\item Source TCP port
+-\item Destination TCP port
+-\end{itemize}
+-\item Else if VIRTIO_NET_HASH_TYPE_UDPv6 is set and the
+-packet has a UDPv6 header, the hash is calculated over the following field=
+s:
+-\begin{itemize}
+-\item Source IPv6 address
+-\item Destination IPv6 address
+-\item Source UDP port
+-\item Destination UDP port
+-\end{itemize}
+-\item Else if VIRTIO_NET_HASH_TYPE_IPv6 is set, the hash is
+-calculated over the following fields:
+-\begin{itemize}
+-\item Source IPv6 address
+-\item Destination IPv6 address
+-\end{itemize}
+-\item Else the device does not calculate the hash
+-\end{itemize}
+-
+-\subparagraph{IPv6 packets with extension header}
+-\label{sec:Device Types / Network Device / Device Operation / Processing o=
+f Incoming Packets / Hash calculation for incoming packets / IPv6 packets w=
+ith extension header}
+-The device calculates the hash on IPv6 packets with extension
+-headers according to 'Enabled hash types' bitmask as follows:
+-\begin{itemize}
+-\item If VIRTIO_NET_HASH_TYPE_TCP_EX is set and the packet
+-has a TCPv6 header, the hash is calculated over the following fields:
+-\begin{itemize}
+-\item Home address from the home address option in the IPv6 destination op=
+tions header. If the extension header is not present, use the Source IPv6 a=
+ddress.
+-\item IPv6 address that is contained in the Routing-Header-Type-2 from the=
+ associated extension header. If the extension header is not present, use t=
+he Destination IPv6 address.
+-\item Source TCP port
+-\item Destination TCP port
+-\end{itemize}
+-\item Else if VIRTIO_NET_HASH_TYPE_UDP_EX is set and the
+-packet has a UDPv6 header, the hash is calculated over the following field=
+s:
+-\begin{itemize}
+-\item Home address from the home address option in the IPv6 destination op=
+tions header. If the extension header is not present, use the Source IPv6 a=
+ddress.
+-\item IPv6 address that is contained in the Routing-Header-Type-2 from the=
+ associated extension header. If the extension header is not present, use t=
+he Destination IPv6 address.
+-\item Source UDP port
+-\item Destination UDP port
+-\end{itemize}
+-\item Else if VIRTIO_NET_HASH_TYPE_IP_EX is set, the hash is
+-calculated over the following fields:
+-\begin{itemize}
+-\item Home address from the home address option in the IPv6 destination op=
+tions header. If the extension header is not present, use the Source IPv6 a=
+ddress.
+-\item IPv6 address that is contained in the Routing-Header-Type-2 from the=
+ associated extension header. If the extension header is not present, use t=
+he Destination IPv6 address.
+-\end{itemize}
+-\item Else skip IPv6 extension headers and calculate the hash as
+-defined for an IPv6 packet without extension headers
+-(see \ref{sec:Device Types / Network Device / Device Operation / Processin=
+g of Incoming Packets / Hash calculation for incoming packets / IPv6 packet=
+s without extension header}).
+-\end{itemize}
+-
+-\paragraph{Hash reporting for incoming packets}
+-\label{sec:Device Types / Network Device / Device Operation / Processing o=
+f Incoming Packets / Hash reporting for incoming packets}
+-
+-If VIRTIO_NET_F_HASH_REPORT was negotiated and
+- the device has calculated the hash for the packet, the device fills \fiel=
+d{hash_report} with the report type of calculated hash
+-and \field{hash_value} with the value of calculated hash.
+-
+-If VIRTIO_NET_F_HASH_REPORT was negotiated but due to any reason the
+-hash was not calculated, the device sets \field{hash_report} to VIRTIO_NET=
+_HASH_REPORT_NONE.
+-
+-Possible values that the device can report in \field{hash_report} are defi=
+ned below.
+-They correspond to supported hash types defined in
+-\ref{sec:Device Types / Network Device / Device Operation / Processing of =
+Incoming Packets / Hash calculation for incoming packets / Supported/enable=
+d hash types}
+-as follows:
+-
+-VIRTIO_NET_HASH_TYPE_XXX =3D 1 << (VIRTIO_NET_HASH_REPORT_XXX - 1)
+-
+-\begin{lstlisting}
+-#define VIRTIO_NET_HASH_REPORT_NONE            0
+-#define VIRTIO_NET_HASH_REPORT_IPv4            1
+-#define VIRTIO_NET_HASH_REPORT_TCPv4           2
+-#define VIRTIO_NET_HASH_REPORT_UDPv4           3
+-#define VIRTIO_NET_HASH_REPORT_IPv6            4
+-#define VIRTIO_NET_HASH_REPORT_TCPv6           5
+-#define VIRTIO_NET_HASH_REPORT_UDPv6           6
+-#define VIRTIO_NET_HASH_REPORT_IPv6_EX         7
+-#define VIRTIO_NET_HASH_REPORT_TCPv6_EX        8
+-#define VIRTIO_NET_HASH_REPORT_UDPv6_EX        9
+-\end{lstlisting}
+-
+-\subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device =
+/ Device Operation / Control Virtqueue}
+-
+-The driver uses the control virtqueue (if VIRTIO_NET_F_CTRL_VQ is
+-negotiated) to send commands to manipulate various features of
+-the device which would not easily map into the configuration
+-space.
+-
+-All commands are of the following form:
+-
+-\begin{lstlisting}
+-struct virtio_net_ctrl {
+-        u8 class;
+-        u8 command;
+-        u8 command-specific-data[];
+-        u8 ack;
+-};
+-
+-/* ack values */
+-#define VIRTIO_NET_OK     0
+-#define VIRTIO_NET_ERR    1
+-\end{lstlisting}
+-
+-The \field{class}, \field{command} and command-specific-data are set by th=
+e
+-driver, and the device sets the \field{ack} byte. There is little it can
+-do except issue a diagnostic if \field{ack} is not
+-VIRTIO_NET_OK.
+-
+-\paragraph{Packet Receive Filtering}\label{sec:Device Types / Network Devi=
+ce / Device Operation / Control Virtqueue / Packet Receive Filtering}
+-\label{sec:Device Types / Network Device / Device Operation / Control Virt=
+queue / Setting Promiscuous Mode}%old label for latexdiff
+-
+-If the VIRTIO_NET_F_CTRL_RX and VIRTIO_NET_F_CTRL_RX_EXTRA
+-features are negotiated, the driver can send control commands for
+-promiscuous mode, multicast, unicast and broadcast receiving.
+-
+-\begin{note}
+-In general, these commands are best-effort: unwanted
+-packets could still arrive.
+-\end{note}
+-
+-\begin{lstlisting}
+-#define VIRTIO_NET_CTRL_RX    0
+- #define VIRTIO_NET_CTRL_RX_PROMISC      0
+- #define VIRTIO_NET_CTRL_RX_ALLMULTI     1
+- #define VIRTIO_NET_CTRL_RX_ALLUNI       2
+- #define VIRTIO_NET_CTRL_RX_NOMULTI      3
+- #define VIRTIO_NET_CTRL_RX_NOUNI        4
+- #define VIRTIO_NET_CTRL_RX_NOBCAST      5
+-\end{lstlisting}
+-
+-
+-\devicenormative{\subparagraph}{Packet Receive Filtering}{Device Types / N=
+etwork Device / Device Operation / Control Virtqueue / Packet Receive Filte=
+ring}
+-
+-If the VIRTIO_NET_F_CTRL_RX feature has been negotiated,
+-the device MUST support the following VIRTIO_NET_CTRL_RX class
+-commands:
+-\begin{itemize}
+-\item VIRTIO_NET_CTRL_RX_PROMISC turns promiscuous mode on and
+-off. The command-specific-data is one byte containing 0 (off) or
+-1 (on). If promiscous mode is on, the device SHOULD receive all
+-incoming packets.
+-This SHOULD take effect even if one of the other modes set by
+-a VIRTIO_NET_CTRL_RX class command is on.
+-\item VIRTIO_NET_CTRL_RX_ALLMULTI turns all-multicast receive on and
+-off. The command-specific-data is one byte containing 0 (off) or
+-1 (on). When all-multicast receive is on the device SHOULD allow
+-all incoming multicast packets.
+-\end{itemize}
+-
+-If the VIRTIO_NET_F_CTRL_RX_EXTRA feature has been negotiated,
+-the device MUST support the following VIRTIO_NET_CTRL_RX class
+-commands:
+-\begin{itemize}
+-\item VIRTIO_NET_CTRL_RX_ALLUNI turns all-unicast receive on and
+-off. The command-specific-data is one byte containing 0 (off) or
+-1 (on). When all-unicast receive is on the device SHOULD allow
+-all incoming unicast packets.
+-\item VIRTIO_NET_CTRL_RX_NOMULTI suppresses multicast receive.
+-The command-specific-data is one byte containing 0 (multicast
+-receive allowed) or 1 (multicast receive suppressed).
+-When multicast receive is suppressed, the device SHOULD NOT
+-send multicast packets to the driver.
+-This SHOULD take effect even if VIRTIO_NET_CTRL_RX_ALLMULTI is on.
+-This filter SHOULD NOT apply to broadcast packets.
+-\item VIRTIO_NET_CTRL_RX_NOUNI suppresses unicast receive.
+-The command-specific-data is one byte containing 0 (unicast
+-receive allowed) or 1 (unicast receive suppressed).
+-When unicast receive is suppressed, the device SHOULD NOT
+-send unicast packets to the driver.
+-This SHOULD take effect even if VIRTIO_NET_CTRL_RX_ALLUNI is on.
+-\item VIRTIO_NET_CTRL_RX_NOBCAST suppresses broadcast receive.
+-The command-specific-data is one byte containing 0 (broadcast
+-receive allowed) or 1 (broadcast receive suppressed).
+-When broadcast receive is suppressed, the device SHOULD NOT
+-send broadcast packets to the driver.
+-This SHOULD take effect even if VIRTIO_NET_CTRL_RX_ALLMULTI is on.
+-\end{itemize}
+-
+-\drivernormative{\subparagraph}{Packet Receive Filtering}{Device Types / N=
+etwork Device / Device Operation / Control Virtqueue / Packet Receive Filte=
+ring}
+-
+-If the VIRTIO_NET_F_CTRL_RX feature has not been negotiated,
+-the driver MUST NOT issue commands VIRTIO_NET_CTRL_RX_PROMISC or
+-VIRTIO_NET_CTRL_RX_ALLMULTI.
+-
+-If the VIRTIO_NET_F_CTRL_RX_EXTRA feature has not been negotiated,
+-the driver MUST NOT issue commands
+- VIRTIO_NET_CTRL_RX_ALLUNI,
+- VIRTIO_NET_CTRL_RX_NOMULTI,
+- VIRTIO_NET_CTRL_RX_NOUNI or
+- VIRTIO_NET_CTRL_RX_NOBCAST.
+-
+-\paragraph{Setting MAC Address Filtering}\label{sec:Device Types / Network=
+ Device / Device Operation / Control Virtqueue / Setting MAC Address Filter=
+ing}
+-
+-If the VIRTIO_NET_F_CTRL_RX feature is negotiated, the driver can
+-send control commands for MAC address filtering.
+-
+-\begin{lstlisting}
+-struct virtio_net_ctrl_mac {
+-        le32 entries;
+-        u8 macs[entries][6];
+-};
+-
+-#define VIRTIO_NET_CTRL_MAC    1
+- #define VIRTIO_NET_CTRL_MAC_TABLE_SET        0
+- #define VIRTIO_NET_CTRL_MAC_ADDR_SET         1
+-\end{lstlisting}
+-
+-The device can filter incoming packets by any number of destination
+-MAC addresses\footnote{Since there are no guarantees, it can use a hash fi=
+lter or
+-silently switch to allmulti or promiscuous mode if it is given too
+-many addresses.
+-}. This table is set using the class
+-VIRTIO_NET_CTRL_MAC and the command VIRTIO_NET_CTRL_MAC_TABLE_SET. The
+-command-specific-data is two variable length tables of 6-byte MAC
+-addresses (as described in struct virtio_net_ctrl_mac). The first table co=
+ntains unicast addresses, and the second
+-contains multicast addresses.
+-
+-The VIRTIO_NET_CTRL_MAC_ADDR_SET command is used to set the
+-default MAC address which rx filtering
+-accepts (and if VIRTIO_NET_F_MAC has been negotiated,
+-this will be reflected in \field{mac} in config space).
+-
+-The command-specific-data for VIRTIO_NET_CTRL_MAC_ADDR_SET is
+-the 6-byte MAC address.
+-
+-\devicenormative{\subparagraph}{Setting MAC Address Filtering}{Device Type=
+s / Network Device / Device Operation / Control Virtqueue / Setting MAC Add=
+ress Filtering}
+-
+-The device MUST have an empty MAC filtering table on reset.
+-
+-The device MUST update the MAC filtering table before it consumes
+-the VIRTIO_NET_CTRL_MAC_TABLE_SET command.
+-
+-The device MUST update \field{mac} in config space before it consumes
+-the VIRTIO_NET_CTRL_MAC_ADDR_SET command, if VIRTIO_NET_F_MAC has
+-been negotiated.
+-
+-The device SHOULD drop incoming packets which have a destination MAC which
+-matches neither the \field{mac} (or that set with VIRTIO_NET_CTRL_MAC_ADDR=
+_SET)
+-nor the MAC filtering table.
+-
+-\drivernormative{\subparagraph}{Setting MAC Address Filtering}{Device Type=
+s / Network Device / Device Operation / Control Virtqueue / Setting MAC Add=
+ress Filtering}
+-
+-If VIRTIO_NET_F_CTRL_RX has not been negotiated,
+-the driver MUST NOT issue VIRTIO_NET_CTRL_MAC class commands.
+-
+-If VIRTIO_NET_F_CTRL_RX has been negotiated,
+-the driver SHOULD issue VIRTIO_NET_CTRL_MAC_ADDR_SET
+-to set the default mac if it is different from \field{mac}.
+-
+-The driver MUST follow the VIRTIO_NET_CTRL_MAC_TABLE_SET command
+-by a le32 number, followed by that number of non-multicast
+-MAC addresses, followed by another le32 number, followed by
+-that number of multicast addresses.  Either number MAY be 0.
+-
+-\subparagraph{Legacy Interface: Setting MAC Address Filtering}\label{sec:D=
+evice Types / Network Device / Device Operation / Control Virtqueue / Setti=
+ng MAC Address Filtering / Legacy Interface: Setting MAC Address Filtering}
+-When using the legacy interface, transitional devices and drivers
+-MUST format \field{entries} in struct virtio_net_ctrl_mac
+-according to the native endian of the guest rather than
+-(necessarily when not using the legacy interface) little-endian.
+-
+-Legacy drivers that didn't negotiate VIRTIO_NET_F_CTRL_MAC_ADDR
+-changed \field{mac} in config space when NIC is accepting
+-incoming packets. These drivers always wrote the mac value from
+-first to last byte, therefore after detecting such drivers,
+-a transitional device MAY defer MAC update, or MAY defer
+-processing incoming packets until driver writes the last byte
+-of \field{mac} in the config space.
+-
+-\paragraph{VLAN Filtering}\label{sec:Device Types / Network Device / Devic=
+e Operation / Control Virtqueue / VLAN Filtering}
+-
+-If the driver negotiates the VIRTIO_NET_F_CTRL_VLAN feature, it
+-can control a VLAN filter table in the device.
+-
+-\begin{note}
+-Similar to the MAC address based filtering, the VLAN filtering
+-is also best-effort: unwanted packets could still arrive.
+-\end{note}
+-
+-\begin{lstlisting}
+-#define VIRTIO_NET_CTRL_VLAN       2
+- #define VIRTIO_NET_CTRL_VLAN_ADD             0
+- #define VIRTIO_NET_CTRL_VLAN_DEL             1
+-\end{lstlisting}
+-
+-Both the VIRTIO_NET_CTRL_VLAN_ADD and VIRTIO_NET_CTRL_VLAN_DEL
+-command take a little-endian 16-bit VLAN id as the command-specific-data.
+-
+-\subparagraph{Legacy Interface: VLAN Filtering}\label{sec:Device Types / N=
+etwork Device / Device Operation / Control Virtqueue / VLAN Filtering / Leg=
+acy Interface: VLAN Filtering}
+-When using the legacy interface, transitional devices and drivers
+-MUST format the VLAN id
+-according to the native endian of the guest rather than
+-(necessarily when not using the legacy interface) little-endian.
+-
+-\paragraph{Gratuitous Packet Sending}\label{sec:Device Types / Network Dev=
+ice / Device Operation / Control Virtqueue / Gratuitous Packet Sending}
+-
+-If the driver negotiates the VIRTIO_NET_F_GUEST_ANNOUNCE (depends
+-on VIRTIO_NET_F_CTRL_VQ), the device can ask the driver to send gratuitous
+-packets; this is usually done after the guest has been physically
+-migrated, and needs to announce its presence on the new network
+-links. (As hypervisor does not have the knowledge of guest
+-network configuration (eg. tagged vlan) it is simplest to prod
+-the guest in this way).
+-
+-\begin{lstlisting}
+-#define VIRTIO_NET_CTRL_ANNOUNCE       3
+- #define VIRTIO_NET_CTRL_ANNOUNCE_ACK             0
+-\end{lstlisting}
+-
+-The driver checks VIRTIO_NET_S_ANNOUNCE bit in the device configuration \f=
+ield{status} field
+-when it notices the changes of device configuration. The
+-command VIRTIO_NET_CTRL_ANNOUNCE_ACK is used to indicate that
+-driver has received the notification and device clears the
+-VIRTIO_NET_S_ANNOUNCE bit in \field{status}.
+-
+-Processing this notification involves:
+-
+-\begin{enumerate}
+-\item Sending the gratuitous packets (eg. ARP) or marking there are pendin=
+g
+-  gratuitous packets to be sent and letting deferred routine to
+-  send them.
+-
+-\item Sending VIRTIO_NET_CTRL_ANNOUNCE_ACK command through control
+-  vq.
+-\end{enumerate}
+-
+-\drivernormative{\subparagraph}{Gratuitous Packet Sending}{Device Types / =
+Network Device / Device Operation / Control Virtqueue / Gratuitous Packet S=
+ending}
+-
+-If the driver negotiates VIRTIO_NET_F_GUEST_ANNOUNCE, it SHOULD notify
+-network peers of its new location after it sees the VIRTIO_NET_S_ANNOUNCE =
+bit
+-in \field{status}.  The driver MUST send a command on the command queue
+-with class VIRTIO_NET_CTRL_ANNOUNCE and command VIRTIO_NET_CTRL_ANNOUNCE_A=
+CK.
+-
+-\devicenormative{\subparagraph}{Gratuitous Packet Sending}{Device Types / =
+Network Device / Device Operation / Control Virtqueue / Gratuitous Packet S=
+ending}
+-
+-If VIRTIO_NET_F_GUEST_ANNOUNCE is negotiated, the device MUST clear the
+-VIRTIO_NET_S_ANNOUNCE bit in \field{status} upon receipt of a command buff=
+er
+-with class VIRTIO_NET_CTRL_ANNOUNCE and command VIRTIO_NET_CTRL_ANNOUNCE_A=
+CK
+-before marking the buffer as used.
+-
+-\paragraph{Device operation in multiqueue mode}\label{sec:Device Types / N=
+etwork Device / Device Operation / Control Virtqueue / Device operation in =
+multiqueue mode}
+-
+-This specification defines the following modes that a device MAY implement=
+ for operation with multiple transmit/receive virtqueues:
+-\begin{itemize}
+-\item Automatic receive steering as defined in \ref{sec:Device Types / Net=
+work Device / Device Operation / Control Virtqueue / Automatic receive stee=
+ring in multiqueue mode}.
+- If a device supports this mode, it offers the VIRTIO_NET_F_MQ feature bit=
+.
+-\item Receive-side scaling as defined in \ref{devicenormative:Device Types=
+ / Network Device / Device Operation / Control Virtqueue / Receive-side sca=
+ling (RSS) / RSS processing}.
+- If a device supports this mode, it offers the VIRTIO_NET_F_RSS feature bi=
+t.
+-\end{itemize}
+-
+-A device MAY support one of these features or both. The driver MAY negotia=
+te any set of these features that the device supports.
+-
+-Multiqueue is disabled by default.
+-
+-The driver enables multiqueue by sending a command using \field{class} VIR=
+TIO_NET_CTRL_MQ. The \field{command} selects the mode of multiqueue operati=
+on, as follows:
+-\begin{lstlisting}
+-#define VIRTIO_NET_CTRL_MQ    4
+- #define VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET        0 (for automatic receive s=
+teering)
+- #define VIRTIO_NET_CTRL_MQ_RSS_CONFIG          1 (for configurable receiv=
+e steering)
+- #define VIRTIO_NET_CTRL_MQ_HASH_CONFIG         2 (for configurable hash c=
+alculation)
+-\end{lstlisting}
+-
+-If more than one multiqueue mode is negotiated, the resulting device confi=
+guration is defined by the last command sent by the driver.
+-
+-\paragraph{Automatic receive steering in multiqueue mode}\label{sec:Device=
+ Types / Network Device / Device Operation / Control Virtqueue / Automatic =
+receive steering in multiqueue mode}
+-
+-If the driver negotiates the VIRTIO_NET_F_MQ feature bit (depends on VIRTI=
+O_NET_F_CTRL_VQ), it MAY transmit outgoing packets on one
+-of the multiple transmitq1\ldots transmitqN and ask the device to
+-queue incoming packets into one of the multiple receiveq1\ldots receiveqN
+-depending on the packet flow.
+-
+-The driver enables multiqueue by
+-sending the VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET command, specifying
+-the number of the transmit and receive queues to be used up to
+-\field{max_virtqueue_pairs}; subsequently,
+-transmitq1\ldots transmitqn and receiveq1\ldots receiveqn where
+-n=3D\field{virtqueue_pairs} MAY be used.
+-\begin{lstlisting}
+-struct virtio_net_ctrl_mq_pairs_set {
+-       le16 virtqueue_pairs;
+-};
+-#define VIRTIO_NET_CTRL_MQ_VQ_PAIRS_MIN        1
+-#define VIRTIO_NET_CTRL_MQ_VQ_PAIRS_MAX        0x8000
+-
+-\end{lstlisting}
+-
+-When multiqueue is enabled by VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET command, the=
+ device MUST use automatic receive steering
+-based on packet flow. Programming of the receive steering
+-classificator is implicit. After the driver transmitted a packet of a
+-flow on transmitqX, the device SHOULD cause incoming packets for that flow=
+ to
+-be steered to receiveqX. For uni-directional protocols, or where
+-no packets have been transmitted yet, the device MAY steer a packet
+-to a random queue out of the specified receiveq1\ldots receiveqn.
+-
+-Multiqueue is disabled by VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET with \field{virt=
+queue_pairs} to 1 (this is
+-the default) and waiting for the device to use the command buffer.
+-
+-\drivernormative{\subparagraph}{Automatic receive steering in multiqueue m=
+ode}{Device Types / Network Device / Device Operation / Control Virtqueue /=
+ Automatic receive steering in multiqueue mode}
+-
+-The driver MUST configure the virtqueues before enabling them with the=20
+-VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET command.
+-
+-The driver MUST NOT request a \field{virtqueue_pairs} of 0 or
+-greater than \field{max_virtqueue_pairs} in the device configuration space=
+.
+-
+-The driver MUST queue packets only on any transmitq1 before the=20
+-VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET command.
+-
+-The driver MUST NOT queue packets on transmit queues greater than
+-\field{virtqueue_pairs} once it has placed the VIRTIO_NET_CTRL_MQ_VQ_PAIRS=
+_SET command in the available ring.
+-
+-\devicenormative{\subparagraph}{Automatic receive steering in multiqueue m=
+ode}{Device Types / Network Device / Device Operation / Control Virtqueue /=
+ Automatic receive steering in multiqueue mode}
+-
+-After initialization of reset, the device MUST queue packets only on recei=
+veq1.
+-
+-The device MUST NOT queue packets on receive queues greater than
+-\field{virtqueue_pairs} once it has placed the
+-VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET command in a used buffer.
+-
+-If the destination receive queue is being reset (See \ref{sec:Basic Facili=
+ties of a Virtio Device / Virtqueues / Virtqueue Reset}),
+-the device SHOULD re-select another random queue. If all receive queues ar=
+e
+-being reset, the device MUST drop the packet.
+-
+-\subparagraph{Legacy Interface: Automatic receive steering in multiqueue m=
+ode}\label{sec:Device Types / Network Device / Device Operation / Control V=
+irtqueue / Automatic receive steering in multiqueue mode / Legacy Interface=
+: Automatic receive steering in multiqueue mode}
+-When using the legacy interface, transitional devices and drivers
+-MUST format \field{virtqueue_pairs}
+-according to the native endian of the guest rather than
+-(necessarily when not using the legacy interface) little-endian.
+-
+-\subparagraph{Hash calculation}\label{sec:Device Types / Network Device / =
+Device Operation / Control Virtqueue / Automatic receive steering in multiq=
+ueue mode / Hash calculation}
+-If VIRTIO_NET_F_HASH_REPORT was negotiated and the device uses automatic r=
+eceive steering,
+-the device MUST support a command to configure hash calculation parameters=
+.
+-
+-The driver provides parameters for hash calculation as follows:
+-
+-\field{class} VIRTIO_NET_CTRL_MQ, \field{command} VIRTIO_NET_CTRL_MQ_HASH_=
+CONFIG.
+-
+-The \field{command-specific-data} has following format:
+-\begin{lstlisting}
+-struct virtio_net_hash_config {
+-    le32 hash_types;
+-    le16 reserved[4];
+-    u8 hash_key_length;
+-    u8 hash_key_data[hash_key_length];
+-};
+-\end{lstlisting}
+-Field \field{hash_types} contains a bitmask of allowed hash types as
+-defined in
+-\ref{sec:Device Types / Network Device / Device Operation / Processing of =
+Incoming Packets / Hash calculation for incoming packets / Supported/enable=
+d hash types}.
+-Initially the device has all hash types disabled and reports only VIRTIO_N=
+ET_HASH_REPORT_NONE.
+-
+-Field \field{reserved} MUST contain zeroes. It is defined to make the stru=
+cture to match the layout of virtio_net_rss_config structure,
+-defined in \ref{sec:Device Types / Network Device / Device Operation / Con=
+trol Virtqueue / Receive-side scaling (RSS)}.
+-
+-Fields \field{hash_key_length} and \field{hash_key_data} define the key to=
+ be used in hash calculation.
+-
+-\paragraph{Receive-side scaling (RSS)}\label{sec:Device Types / Network De=
+vice / Device Operation / Control Virtqueue / Receive-side scaling (RSS)}
+-A device offers the feature VIRTIO_NET_F_RSS if it supports RSS receive st=
+eering with Toeplitz hash calculation and configurable parameters.
+-
+-A driver queries RSS capabilities of the device by reading device configur=
+ation as defined in \ref{sec:Device Types / Network Device / Device configu=
+ration layout}
+-
+-\subparagraph{Setting RSS parameters}\label{sec:Device Types / Network Dev=
+ice / Device Operation / Control Virtqueue / Receive-side scaling (RSS) / S=
+etting RSS parameters}
+-
+-Driver sends a VIRTIO_NET_CTRL_MQ_RSS_CONFIG command using the following f=
+ormat for \field{command-specific-data}:
+-\begin{lstlisting}
+-struct virtio_net_rss_config {
+-    le32 hash_types;
+-    le16 indirection_table_mask;
+-    le16 unclassified_queue;
+-    le16 indirection_table[indirection_table_length];
+-    le16 max_tx_vq;
+-    u8 hash_key_length;
+-    u8 hash_key_data[hash_key_length];
+-};
+-\end{lstlisting}
+-Field \field{hash_types} contains a bitmask of allowed hash types as
+-defined in
+-\ref{sec:Device Types / Network Device / Device Operation / Processing of =
+Incoming Packets / Hash calculation for incoming packets / Supported/enable=
+d hash types}.
+-
+-Field \field{indirection_table_mask} is a mask to be applied to
+-the calculated hash to produce an index in the
+-\field{indirection_table} array.
+-Number of entries in \field{indirection_table} is (\field{indirection_tabl=
+e_mask} + 1).
+-
+-Field \field{unclassified_queue} contains the 0-based index of
+-the receive virtqueue to place unclassified packets in. Index 0 correspond=
+s to receiveq1.
+-
+-Field \field{indirection_table} contains an array of 0-based indices of re=
+ceive virtqueus. Index 0 corresponds to receiveq1.
+-
+-A driver sets \field{max_tx_vq} to inform a device how many transmit virtq=
+ueues it may use (transmitq1\ldots transmitq \field{max_tx_vq}).
+-
+-Fields \field{hash_key_length} and \field{hash_key_data} define the key to=
+ be used in hash calculation.
+-
+-\drivernormative{\subparagraph}{Setting RSS parameters}{Device Types / Net=
+work Device / Device Operation / Control Virtqueue / Receive-side scaling (=
+RSS) }
+-
+-A driver MUST NOT send the VIRTIO_NET_CTRL_MQ_RSS_CONFIG command if the fe=
+ature VIRTIO_NET_F_RSS has not been negotiated.
+-
+-A driver MUST fill the \field{indirection_table} array only with indices o=
+f enabled queues. Index 0 corresponds to receiveq1.
+-
+-The number of entries in \field{indirection_table} (\field{indirection_tab=
+le_mask} + 1) MUST be a power of two.
+-
+-A driver MUST use \field{indirection_table_mask} values that are less than=
+ \field{rss_max_indirection_table_length} reported by a device.
+-
+-A driver MUST NOT set any VIRTIO_NET_HASH_TYPE_ flags that are not support=
+ed by a device.
+-
+-\devicenormative{\subparagraph}{RSS processing}{Device Types / Network Dev=
+ice / Device Operation / Control Virtqueue / Receive-side scaling (RSS) / R=
+SS processing}
+-The device MUST determine the destination queue for a network packet as fo=
+llows:
+-\begin{itemize}
+-\item Calculate the hash of the packet as defined in \ref{sec:Device Types=
+ / Network Device / Device Operation / Processing of Incoming Packets / Has=
+h calculation for incoming packets}.
+-\item If the device did not calculate the hash for the specific packet, th=
+e device directs the packet to the receiveq specified by \field{unclassifie=
+d_queue} of virtio_net_rss_config structure (value of 0 corresponds to rece=
+iveq1).
+-\item Apply \field{indirection_table_mask} to the calculated hash and use =
+the result as the index in the indirection table to get 0-based number of d=
+estination receiveq (value of 0 corresponds to receiveq1).
+-\item If the destination receive queue is being reset (See \ref{sec:Basic =
+Facilities of a Virtio Device / Virtqueues / Virtqueue Reset}), the device =
+MUST drop the packet.
+-\end{itemize}
+-
+-\paragraph{Offloads State Configuration}\label{sec:Device Types / Network =
+Device / Device Operation / Control Virtqueue / Offloads State Configuratio=
+n}
+-
+-If the VIRTIO_NET_F_CTRL_GUEST_OFFLOADS feature is negotiated, the driver =
+can
+-send control commands for dynamic offloads state configuration.
+-
+-\subparagraph{Setting Offloads State}\label{sec:Device Types / Network Dev=
+ice / Device Operation / Control Virtqueue / Offloads State Configuration /=
+ Setting Offloads State}
+-
+-To configure the offloads, the following layout structure and
+-definitions are used:
+-
+-\begin{lstlisting}
+-le64 offloads;
+-
+-#define VIRTIO_NET_F_GUEST_CSUM       1
+-#define VIRTIO_NET_F_GUEST_TSO4       7
+-#define VIRTIO_NET_F_GUEST_TSO6       8
+-#define VIRTIO_NET_F_GUEST_ECN        9
+-#define VIRTIO_NET_F_GUEST_UFO        10
+-#define VIRTIO_NET_F_GUEST_USO4       54
+-#define VIRTIO_NET_F_GUEST_USO6       55
+-
+-#define VIRTIO_NET_CTRL_GUEST_OFFLOADS       5
+- #define VIRTIO_NET_CTRL_GUEST_OFFLOADS_SET   0
+-\end{lstlisting}
+-
+-The class VIRTIO_NET_CTRL_GUEST_OFFLOADS has one command:
+-VIRTIO_NET_CTRL_GUEST_OFFLOADS_SET applies the new offloads configuration.
+-
+-le64 value passed as command data is a bitmask, bits set define
+-offloads to be enabled, bits cleared - offloads to be disabled.
+-
+-There is a corresponding device feature for each offload. Upon feature
+-negotiation corresponding offload gets enabled to preserve backward
+-compatibility.
+-
+-\drivernormative{\subparagraph}{Setting Offloads State}{Device Types / Net=
+work Device / Device Operation / Control Virtqueue / Offloads State Configu=
+ration / Setting Offloads State}
+-
+-A driver MUST NOT enable an offload for which the appropriate feature
+-has not been negotiated.
+-
+-\subparagraph{Legacy Interface: Setting Offloads State}\label{sec:Device T=
+ypes / Network Device / Device Operation / Control Virtqueue / Offloads Sta=
+te Configuration / Setting Offloads State / Legacy Interface: Setting Offlo=
+ads State}
+-When using the legacy interface, transitional devices and drivers
+-MUST format \field{offloads}
+-according to the native endian of the guest rather than
+-(necessarily when not using the legacy interface) little-endian.
+-
+-
+-\paragraph{Notifications Coalescing}\label{sec:Device Types / Network Devi=
+ce / Device Operation / Control Virtqueue / Notifications Coalescing}
+-
+-If the VIRTIO_NET_F_NOTF_COAL feature is negotiated, the driver can
+-send control commands for dynamically changing the coalescing parameters.
+-
+-\begin{lstlisting}
+-struct virtio_net_ctrl_coal_rx {
+-    le32 rx_max_packets;
+-    le32 rx_usecs;
+-};
+-
+-struct virtio_net_ctrl_coal_tx {
+-    le32 tx_max_packets;
+-    le32 tx_usecs;
+-};
+-
+-#define VIRTIO_NET_CTRL_NOTF_COAL 6
+- #define VIRTIO_NET_CTRL_NOTF_COAL_TX_SET  0
+- #define VIRTIO_NET_CTRL_NOTF_COAL_RX_SET 1
+-\end{lstlisting}
+-
+-Coalescing parameters:
+-\begin{itemize}
+-\item \field{rx_usecs}: Maximum number of usecs to delay a RX notification=
+.
+-\item \field{tx_usecs}: Maximum number of usecs to delay a TX notification=
+.
+-\item \field{rx_max_packets}: Maximum number of packets to receive before =
+a RX notification.
+-\item \field{tx_max_packets}: Maximum number of packets to send before a T=
+X notification.
+-\end{itemize}
+-
+-
+-The class VIRTIO_NET_CTRL_NOTF_COAL has 2 commands:
+-\begin{enumerate}
+-\item VIRTIO_NET_CTRL_NOTF_COAL_TX_SET: set the \field{tx_usecs} and \fiel=
+d{tx_max_packets} parameters.
+-\item VIRTIO_NET_CTRL_NOTF_COAL_RX_SET: set the \field{rx_usecs} and \fiel=
+d{rx_max_packets} parameters.
+-\end{enumerate}
+-
+-\subparagraph{RX Notifications}\label{sec:Device Types / Network Device / =
+Device Operation / Control Virtqueue / Notifications Coalescing / RX Notifi=
+cations}
+-
+-If, for example:
+-\begin{itemize}
+-\item \field{rx_usecs} =3D 10.
+-\item \field{rx_max_packets} =3D 15.
+-\end{itemize}
+-
+-The device will operate as follows:
+-
+-\begin{itemize}
+-\item The device will count received packets until it accumulates 15, or u=
+ntil 10 usecs elapsed since the first one was received.
+-\item If the notifications are not suppressed by the driver, the device wi=
+ll send an used buffer notification, otherwise, the device will not send an=
+ used buffer notification as long as the notifications are suppressed.
+-\end{itemize}
+-
+-\subparagraph{TX Notifications}\label{sec:Device Types / Network Device / =
+Device Operation / Control Virtqueue / Notifications Coalescing / TX Notifi=
+cations}
+-
+-If, for example:
+-\begin{itemize}
+-\item \field{tx_usecs} =3D 10.
+-\item \field{tx_max_packets} =3D 15.
+-\end{itemize}
+-
+-The device will operate as follows:
+-
+-\begin{itemize}
+-\item The device will count sent packets until it accumulates 15, or until=
+ 10 usecs elapsed since the first one was sent.
+-\item If the notifications are not suppressed by the driver, the device wi=
+ll send an used buffer notification, otherwise, the device will not send an=
+ used buffer notification as long as the notifications are suppressed.
+-\end{itemize}
+-
+-\drivernormative{\subparagraph}{Notifications Coalescing}{Device Types / N=
+etwork Device / Device Operation / Control Virtqueue / Notifications Coales=
+cing}
+-
+-If the VIRTIO_NET_F_NOTF_COAL feature has not been negotiated, the driver =
+MUST NOT issue VIRTIO_NET_CTRL_NOTF_COAL commands.
+-
+-\devicenormative{\subparagraph}{Notifications Coalescing}{Device Types / N=
+etwork Device / Device Operation / Control Virtqueue / Notifications Coales=
+cing}
+-
+-A device SHOULD respond to the VIRTIO_NET_CTRL_NOTF_COAL commands with VIR=
+TIO_NET_ERR if it was not able to change the parameters.
+-
+-A device SHOULD NOT send used buffer notifications to the driver, if the n=
+otifications are suppressed as explained in \ref{sec:Basic Facilities of a =
+Virtio Device / Virtqueues / Used Buffer Notification Suppression}, even if=
+ the coalescing counters expired.
+-
+-Upon reset, a device MUST initialize all coalescing parameters to 0.
+-
+-\subsubsection{Legacy Interface: Framing Requirements}\label{sec:Device
+-Types / Network Device / Legacy Interface: Framing Requirements}
+-
+-When using legacy interfaces, transitional drivers which have not
+-negotiated VIRTIO_F_ANY_LAYOUT MUST use a single descriptor for the
+-struct virtio_net_hdr on both transmit and receive, with the
+-network data in the following descriptors.
+-
+-Additionally, when using the control virtqueue (see \ref{sec:Device
+-Types / Network Device / Device Operation / Control Virtqueue})
+-, transitional drivers which have not
+-negotiated VIRTIO_F_ANY_LAYOUT MUST:
+-\begin{itemize}
+-\item for all commands, use a single 2-byte descriptor including the first=
+ two
+-fields: \field{class} and \field{command}
+-\item for all commands except VIRTIO_NET_CTRL_MAC_TABLE_SET
+-use a single descriptor including command-specific-data
+-with no padding.
+-\item for the VIRTIO_NET_CTRL_MAC_TABLE_SET command use exactly
+-two descriptors including command-specific-data with no padding:
+-the first of these descriptors MUST include the
+-virtio_net_ctrl_mac table structure for the unicast addresses with no padd=
+ing,
+-the second of these descriptors MUST include the
+-virtio_net_ctrl_mac table structure for the multicast addresses
+-with no padding.
+-\item for all commands, use a single 1-byte descriptor for the
+-\field{ack} field
+-\end{itemize}
+-
+-See \ref{sec:Basic
+-Facilities of a Virtio Device / Virtqueues / Message Framing}.
+-
++\input{virtio-network.tex}
+ \input{virtio-block.tex}
  \input{virtio-console.tex}
  \input{virtio-entropy.tex}
- \input{virtio-mem-balloon.tex}
-diff --git a/virtio-block.tex b/virtio-block.tex
+diff --git a/virtio-network.tex b/virtio-network.tex
 new file mode 100644
-index 0000000..60cdde6
+index 0000000..92e3906
 --- /dev/null
-+++ b/virtio-block.tex
-@@ -0,0 +1,1315 @@
-+\section{Block Device}\label{sec:Device Types / Block Device}
++++ b/virtio-network.tex
+@@ -0,0 +1,1596 @@
++\section{Network Device}\label{sec:Device Types / Network Device}
 +
-+The virtio block device is a simple virtual block device (ie.
-+disk). Read and write requests (and other exotic requests) are
-+placed in one of its queues, and serviced (probably out of order) by the
-+device except where noted.
++The virtio network device is a virtual ethernet card, and is the
++most complex of the devices supported so far by virtio. It has
++enhanced rapidly and demonstrates clearly how support for new
++features are added to an existing device. Empty buffers are
++placed in one virtqueue for receiving packets, and outgoing
++packets are enqueued into another for transmission in that order.
++A third command queue is used to control advanced filtering
++features.
 +
-+\subsection{Device ID}\label{sec:Device Types / Block Device / Device ID}
-+  2
-+
-+\subsection{Virtqueues}\label{sec:Device Types / Block Device / Virtqueues=
++\subsection{Device ID}\label{sec:Device Types / Network Device / Device ID=
 }
++
++ 1
++
++\subsection{Virtqueues}\label{sec:Device Types / Network Device / Virtqueu=
+es}
++
 +\begin{description}
-+\item[0] requestq1
++\item[0] receiveq1
++\item[1] transmitq1
 +\item[\ldots]
-+\item[N-1] requestqN
++\item[2(N-1)] receiveqN
++\item[2(N-1)+1] transmitqN
++\item[2N] controlq
 +\end{description}
 +
-+ N=3D1 if VIRTIO_BLK_F_MQ is not negotiated, otherwise N is set by
-+ \field{num_queues}.
++ N=3D1 if neither VIRTIO_NET_F_MQ nor VIRTIO_NET_F_RSS are negotiated, oth=
+erwise N is set by
++ \field{max_virtqueue_pairs}.
 +
-+\subsection{Feature bits}\label{sec:Device Types / Block Device / Feature =
-bits}
++ controlq only exists if VIRTIO_NET_F_CTRL_VQ set.
++
++\subsection{Feature bits}\label{sec:Device Types / Network Device / Featur=
+e bits}
 +
 +\begin{description}
-+\item[VIRTIO_BLK_F_SIZE_MAX (1)] Maximum size of any single segment is
-+    in \field{size_max}.
++\item[VIRTIO_NET_F_CSUM (0)] Device handles packets with partial checksum.=
+   This=20
++  ``checksum offload'' is a common feature on modern network cards.
 +
-+\item[VIRTIO_BLK_F_SEG_MAX (2)] Maximum number of segments in a
-+    request is in \field{seg_max}.
++\item[VIRTIO_NET_F_GUEST_CSUM (1)] Driver handles packets with partial che=
+cksum.
 +
-+\item[VIRTIO_BLK_F_GEOMETRY (4)] Disk-style geometry specified in
-+    \field{geometry}.
++\item[VIRTIO_NET_F_CTRL_GUEST_OFFLOADS (2)] Control channel offloads
++        reconfiguration support.
 +
-+\item[VIRTIO_BLK_F_RO (5)] Device is read-only.
++\item[VIRTIO_NET_F_MTU(3)] Device maximum MTU reporting is supported. If
++    offered by the device, device advises driver about the value of
++    its maximum MTU. If negotiated, the driver uses \field{mtu} as
++    the maximum MTU value.
 +
-+\item[VIRTIO_BLK_F_BLK_SIZE (6)] Block size of disk is in \field{blk_size}=
++\item[VIRTIO_NET_F_MAC (5)] Device has given MAC address.
++
++\item[VIRTIO_NET_F_GUEST_TSO4 (7)] Driver can receive TSOv4.
++
++\item[VIRTIO_NET_F_GUEST_TSO6 (8)] Driver can receive TSOv6.
++
++\item[VIRTIO_NET_F_GUEST_ECN (9)] Driver can receive TSO with ECN.
++
++\item[VIRTIO_NET_F_GUEST_UFO (10)] Driver can receive UFO.
++
++\item[VIRTIO_NET_F_HOST_TSO4 (11)] Device can receive TSOv4.
++
++\item[VIRTIO_NET_F_HOST_TSO6 (12)] Device can receive TSOv6.
++
++\item[VIRTIO_NET_F_HOST_ECN (13)] Device can receive TSO with ECN.
++
++\item[VIRTIO_NET_F_HOST_UFO (14)] Device can receive UFO.
++
++\item[VIRTIO_NET_F_MRG_RXBUF (15)] Driver can merge receive buffers.
++
++\item[VIRTIO_NET_F_STATUS (16)] Configuration status field is
++    available.
++
++\item[VIRTIO_NET_F_CTRL_VQ (17)] Control channel is available.
++
++\item[VIRTIO_NET_F_CTRL_RX (18)] Control channel RX mode support.
++
++\item[VIRTIO_NET_F_CTRL_VLAN (19)] Control channel VLAN filtering.
++
++\item[VIRTIO_NET_F_GUEST_ANNOUNCE(21)] Driver can send gratuitous
++    packets.
++
++\item[VIRTIO_NET_F_MQ(22)] Device supports multiqueue with automatic
++    receive steering.
++
++\item[VIRTIO_NET_F_CTRL_MAC_ADDR(23)] Set MAC address through control
++    channel.
++
++\item[VIRTIO_NET_F_NOTF_COAL(53)] Device supports notifications coalescing=
 .
 +
-+\item[VIRTIO_BLK_F_FLUSH (9)] Cache flush command support.
++\item[VIRTIO_NET_F_GUEST_USO4 (54)] Driver can receive USOv4 packets.
 +
-+\item[VIRTIO_BLK_F_TOPOLOGY (10)] Device exports information on optimal I/=
-O
-+    alignment.
++\item[VIRTIO_NET_F_GUEST_USO6 (55)] Driver can receive USOv6 packets.
 +
-+\item[VIRTIO_BLK_F_CONFIG_WCE (11)] Device can toggle its cache between wr=
-iteback
-+    and writethrough modes.
++\item[VIRTIO_NET_F_HOST_USO (56)] Device can receive USO packets. Unlike U=
+FO
++ (fragmenting the packet) the USO splits large UDP packet
++ to several segments when each of these smaller packets has UDP header.
 +
-+\item[VIRTIO_BLK_F_MQ (12)] Device supports multiqueue.
++\item[VIRTIO_NET_F_HASH_REPORT(57)] Device can report per-packet hash
++    value and a type of calculated hash.
 +
-+\item[VIRTIO_BLK_F_DISCARD (13)] Device can support discard command, maxim=
-um
-+    discard sectors size in \field{max_discard_sectors} and maximum discar=
-d
-+    segment number in \field{max_discard_seg}.
++\item[VIRTIO_NET_F_GUEST_HDRLEN(59)] Driver can provide the exact \field{h=
+dr_len}
++    value. Device benefits from knowing the exact header length.
 +
-+\item[VIRTIO_BLK_F_WRITE_ZEROES (14)] Device can support write zeroes comm=
-and,
-+     maximum write zeroes sectors size in \field{max_write_zeroes_sectors}=
- and
-+     maximum write zeroes segment number in \field{max_write_zeroes_seg}.
++\item[VIRTIO_NET_F_RSS(60)] Device supports RSS (receive-side scaling)
++    with Toeplitz hash calculation and configurable hash
++    parameters for receive steering.
 +
-+\item[VIRTIO_BLK_F_LIFETIME (15)] Device supports providing storage lifeti=
-me
-+     information.
++\item[VIRTIO_NET_F_RSC_EXT(61)] Device can process duplicated ACKs
++    and report number of coalesced segments and duplicated ACKs.
 +
-+\item[VIRTIO_BLK_F_SECURE_ERASE (16)] Device supports secure erase command=
-,
-+     maximum erase sectors count in \field{max_secure_erase_sectors} and
-+     maximum erase segment number in \field{max_secure_erase_seg}.
++\item[VIRTIO_NET_F_STANDBY(62)] Device may act as a standby for a primary
++    device with the same MAC address.
 +
-+\item[VIRTIO_BLK_F_ZONED(17)] Device is a Zoned Block Device, that is, a d=
-evice
-+=09that follows the zoned storage device behavior that is also supported b=
-y
-+=09industry standards such as the T10 Zoned Block Command standard (ZBC r0=
-5) or
-+=09the NVMe(TM) NVM Express Zoned Namespace Command Set Specification 1.1b
-+=09(ZNS). For brevity, these standard documents are referred as "ZBD stand=
-ards"
-+=09from this point on in the text.
-+
++\item[VIRTIO_NET_F_SPEED_DUPLEX(63)] Device reports speed and duplex.
 +\end{description}
 +
-+\subsubsection{Legacy Interface: Feature bits}\label{sec:Device Types / Bl=
-ock Device / Feature bits / Legacy Interface: Feature bits}
++\subsubsection{Feature bit requirements}\label{sec:Device Types / Network =
+Device / Feature bits / Feature bit requirements}
++
++Some networking feature bits require other networking feature bits
++(see \ref{drivernormative:Basic Facilities of a Virtio Device / Feature Bi=
+ts}):
 +
 +\begin{description}
-+\item[VIRTIO_BLK_F_BARRIER (0)] Device supports request barriers.
++\item[VIRTIO_NET_F_GUEST_TSO4] Requires VIRTIO_NET_F_GUEST_CSUM.
++\item[VIRTIO_NET_F_GUEST_TSO6] Requires VIRTIO_NET_F_GUEST_CSUM.
++\item[VIRTIO_NET_F_GUEST_ECN] Requires VIRTIO_NET_F_GUEST_TSO4 or VIRTIO_N=
+ET_F_GUEST_TSO6.
++\item[VIRTIO_NET_F_GUEST_UFO] Requires VIRTIO_NET_F_GUEST_CSUM.
++\item[VIRTIO_NET_F_GUEST_USO4] Requires VIRTIO_NET_F_GUEST_CSUM.
++\item[VIRTIO_NET_F_GUEST_USO6] Requires VIRTIO_NET_F_GUEST_CSUM.
 +
-+\item[VIRTIO_BLK_F_SCSI (7)] Device supports scsi packet commands.
++\item[VIRTIO_NET_F_HOST_TSO4] Requires VIRTIO_NET_F_CSUM.
++\item[VIRTIO_NET_F_HOST_TSO6] Requires VIRTIO_NET_F_CSUM.
++\item[VIRTIO_NET_F_HOST_ECN] Requires VIRTIO_NET_F_HOST_TSO4 or VIRTIO_NET=
+_F_HOST_TSO6.
++\item[VIRTIO_NET_F_HOST_UFO] Requires VIRTIO_NET_F_CSUM.
++\item[VIRTIO_NET_F_HOST_USO] Requires VIRTIO_NET_F_CSUM.
++
++\item[VIRTIO_NET_F_CTRL_RX] Requires VIRTIO_NET_F_CTRL_VQ.
++\item[VIRTIO_NET_F_CTRL_VLAN] Requires VIRTIO_NET_F_CTRL_VQ.
++\item[VIRTIO_NET_F_GUEST_ANNOUNCE] Requires VIRTIO_NET_F_CTRL_VQ.
++\item[VIRTIO_NET_F_MQ] Requires VIRTIO_NET_F_CTRL_VQ.
++\item[VIRTIO_NET_F_CTRL_MAC_ADDR] Requires VIRTIO_NET_F_CTRL_VQ.
++\item[VIRTIO_NET_F_NOTF_COAL] Requires VIRTIO_NET_F_CTRL_VQ.
++\item[VIRTIO_NET_F_RSC_EXT] Requires VIRTIO_NET_F_HOST_TSO4 or VIRTIO_NET_=
+F_HOST_TSO6.
++\item[VIRTIO_NET_F_RSS] Requires VIRTIO_NET_F_CTRL_VQ.
 +\end{description}
 +
-+\begin{note}
-+  In the legacy interface, VIRTIO_BLK_F_FLUSH was also
-+  called VIRTIO_BLK_F_WCE.
-+\end{note}
++\subsubsection{Legacy Interface: Feature bits}\label{sec:Device Types / Ne=
+twork Device / Feature bits / Legacy Interface: Feature bits}
++\begin{description}
++\item[VIRTIO_NET_F_GSO (6)] Device handles packets with any GSO type. This=
+ was supposed to indicate segmentation offload support, but
++upon further investigation it became clear that multiple bits were needed.
++\item[VIRTIO_NET_F_GUEST_RSC4 (41)] Device coalesces TCPIP v4 packets. Thi=
+s was implemented by hypervisor patch for certification
++purposes and current Windows driver depends on it. It will not function if=
+ virtio-net device reports this feature.
++\item[VIRTIO_NET_F_GUEST_RSC6 (42)] Device coalesces TCPIP v6 packets. Sim=
+ilar to VIRTIO_NET_F_GUEST_RSC4.
++\end{description}
 +
-+\subsection{Device configuration layout}\label{sec:Device Types / Block De=
-vice / Device configuration layout}
++\subsection{Device configuration layout}\label{sec:Device Types / Network =
+Device / Device configuration layout}
++\label{sec:Device Types / Block Device / Feature bits / Device configurati=
+on layout}
 +
-+The \field{capacity} of the device (expressed in 512-byte sectors) is alwa=
-ys
-+present. The availability of the others all depend on various feature
-+bits as indicated above.
-+
-+The field \field{num_queues} only exists if VIRTIO_BLK_F_MQ is set. This f=
-ield specifies
-+the number of queues.
-+
-+The parameters in the configuration space of the device \field{max_discard=
-_sectors}
-+\field{discard_sector_alignment} are expressed in 512-byte units if the
-+VIRTIO_BLK_F_DISCARD feature bit is negotiated. The \field{max_write_zeroe=
-s_sectors}
-+is expressed in 512-byte units if the VIRTIO_BLK_F_WRITE_ZEROES feature
-+bit is negotiated. The parameters in the configuration space of the device
-+\field{max_secure_erase_sectors} \field{secure_erase_sector_alignment} are=
- expressed
-+in 512-byte units if the VIRTIO_BLK_F_SECURE_ERASE feature bit is negotiat=
-ed.
-+
-+If the VIRTIO_BLK_F_ZONED feature is negotiated, then in
-+\field{virtio_blk_zoned_characteristics},
-+\begin{itemize}
-+\item \field{zone_sectors} value is expressed in 512-byte sectors.
-+\item \field{max_append_sectors} value is expressed in 512-byte sectors.
-+\item \field{write_granularity} value is expressed in bytes.
-+\end{itemize}
-+
-+The \field{model} field in \field{zoned} may have the following values:
++Device configuration fields are listed below, they are read-only for a dri=
+ver. The \field{mac} address field
++always exists (though is only valid if VIRTIO_NET_F_MAC is set), and
++\field{status} only exists if VIRTIO_NET_F_STATUS is set. Two
++read-only bits (for the driver) are currently defined for the status field=
+:
++VIRTIO_NET_S_LINK_UP and VIRTIO_NET_S_ANNOUNCE.
 +
 +\begin{lstlisting}
-+#define VIRTIO_BLK_Z_NONE      0
-+#define VIRTIO_BLK_Z_HM        1
-+#define VIRTIO_BLK_Z_HA        2
++#define VIRTIO_NET_S_LINK_UP     1
++#define VIRTIO_NET_S_ANNOUNCE    2
 +\end{lstlisting}
 +
-+Depending on their design, zoned block devices may follow several possible
-+models of operation. The three models that are standardized for ZBDs are
-+drive-managed, host-managed and host-aware.
-+
-+While being zoned internally, drive-managed ZBDs behave exactly like regul=
-ar,
-+non-zoned block devices. For the purposes of virtio standardization,
-+drive-managed ZBDs can always be treated as non-zoned devices. These devic=
-es
-+have the VIRTIO_BLK_Z_NONE model value set in the \field{model} field in
-+\field{zoned}.
-+
-+Devices that offer the VIRTIO_BLK_F_ZONED feature while reporting the
-+VIRTIO_BLK_Z_NONE zoned model are drive-managed zoned block devices. In th=
-is
-+case, the driver treats the device as a regular non-zoned block device.
-+
-+Host-managed zoned block devices have their LBA range divided into Sequent=
-ial
-+Write Required (SWR) zones that require some additional handling by the ho=
-st
-+for correct operation. All write requests to SWR zones are required be
-+sequential and zones containing some written data need to be reset before =
-that
-+data can be rewritten. Host-managed devices support a set of ZBD-specific =
-I/O
-+requests that can be used by the host to manage device zones. Host-managed
-+devices report VIRTIO_BLK_Z_HM in the \field{model} field in \field{zoned}=
-.
-+
-+Host-aware zoned block devices have their LBA range divided to Sequential
-+Write Preferred (SWP) zones that support random write access, similar to
-+regular non-zoned devices. However, the device I/O performance might not b=
-e
-+optimal if SWP zones are used in a random I/O pattern. SWP zones also supp=
-ort
-+the same set of ZBD-specific I/O requests as host-managed devices that all=
-ow
-+host-aware devices to be managed by any host that supports zoned block dev=
-ices
-+to achieve its optimum performance. Host-aware devices report VIRTIO_BLK_Z=
-_HA
-+in the \field{model} field in \field{zoned}.
-+
-+Both SWR zones and SWP zones are sometimes referred as sequential zones.
-+
-+During device operation, sequential zones can be in one of the following s=
-tates:
-+empty, implicitly-open, explicitly-open, closed and full. The state machin=
-e that
-+governs the transitions between these states is described later in this do=
-cument.
-+
-+SWR and SWP zones consume volatile device resources while being in certain
-+states and the device may set limits on the number of zones that can be in=
- these
-+states simultaneously.
-+
-+Zoned block devices use two internal counters to account for the device
-+resources in use, the number of currently open zones and the number of cur=
-rently
-+active zones.
-+
-+Any zone state transition from a state that doesn't consume a zone resourc=
-e to a
-+state that consumes the same resource increments the internal device count=
-er for
-+that resource. Any zone transition out of a state that consumes a zone res=
-ource
-+to a state that doesn't consume the same resource decrements the counter. =
-Any
-+request that causes the device to exceed the reported zone resource limits=
- is
-+terminated by the device with a "zone resources exceeded" error as defined=
- for
-+specific commands later.
-+
-+\begin{lstlisting}
-+struct virtio_blk_config {
-+        le64 capacity;
-+        le32 size_max;
-+        le32 seg_max;
-+        struct virtio_blk_geometry {
-+                le16 cylinders;
-+                u8 heads;
-+                u8 sectors;
-+        } geometry;
-+        le32 blk_size;
-+        struct virtio_blk_topology {
-+                // # of logical blocks per physical block (log2)
-+                u8 physical_block_exp;
-+                // offset of first aligned logical block
-+                u8 alignment_offset;
-+                // suggested minimum I/O size in blocks
-+                le16 min_io_size;
-+                // optimal (suggested maximum) I/O size in blocks
-+                le32 opt_io_size;
-+        } topology;
-+        u8 writeback;
-+        u8 unused0;
-+        u16 num_queues;
-+        le32 max_discard_sectors;
-+        le32 max_discard_seg;
-+        le32 discard_sector_alignment;
-+        le32 max_write_zeroes_sectors;
-+        le32 max_write_zeroes_seg;
-+        u8 write_zeroes_may_unmap;
-+        u8 unused1[3];
-+        le32 max_secure_erase_sectors;
-+        le32 max_secure_erase_seg;
-+        le32 secure_erase_sector_alignment;
-+        struct virtio_blk_zoned_characteristics {
-+                le32 zone_sectors;
-+                le32 max_open_zones;
-+                le32 max_active_zones;
-+                le32 max_append_sectors;
-+                le32 write_granularity;
-+                u8 model;
-+                u8 unused2[3];
-+        } zoned;
-+};
-+\end{lstlisting}
-+
-+
-+\subsubsection{Legacy Interface: Device configuration layout}\label{sec:De=
-vice Types / Block Device / Device configuration layout / Legacy Interface:=
- Device configuration layout}
-+When using the legacy interface, transitional devices and drivers
-+MUST format the fields in struct virtio_blk_config
-+according to the native endian of the guest rather than
-+(necessarily when not using the legacy interface) little-endian.
-+
-+
-+\subsection{Device Initialization}\label{sec:Device Types / Block Device /=
- Device Initialization}
-+
-+\begin{enumerate}
-+\item The device size can be read from \field{capacity}.
-+
-+\item If the VIRTIO_BLK_F_BLK_SIZE feature is negotiated,
-+  \field{blk_size} can be read to determine the optimal sector size
-+  for the driver to use. This does not affect the units used in
-+  the protocol (always 512 bytes), but awareness of the correct
-+  value can affect performance.
-+
-+\item If the VIRTIO_BLK_F_RO feature is set by the device, any write
-+  requests will fail.
-+
-+\item If the VIRTIO_BLK_F_TOPOLOGY feature is negotiated, the fields in th=
-e
-+  \field{topology} struct can be read to determine the physical block size=
- and optimal
-+  I/O lengths for the driver to use. This also does not affect the units
-+  in the protocol, only performance.
-+
-+\item If the VIRTIO_BLK_F_CONFIG_WCE feature is negotiated, the cache
-+  mode can be read or set through the \field{writeback} field.  0 correspo=
-nds
-+  to a writethrough cache, 1 to a writeback cache\footnote{Consistent with
-+    \ref{devicenormative:Device Types / Block Device / Device Operation},
-+    a writethrough cache can be defined broadly as a cache that commits
-+    writes to persistent device backend storage before reporting their
-+    completion. For example, a battery-backed writeback cache actually
-+    counts as writethrough according to this definition.}.  The cache mode
-+  after reset can be either writeback or writethrough.  The actual
-+  mode can be determined by reading \field{writeback} after feature
-+  negotiation.
-+
-+\item If the VIRTIO_BLK_F_DISCARD feature is negotiated,
-+    \field{max_discard_sectors} and \field{max_discard_seg} can be read
-+    to determine the maximum discard sectors and maximum number of discard
-+    segments for the block driver to use. \field{discard_sector_alignment}
-+    can be used by OS when splitting a request based on alignment.
-+
-+\item If the VIRTIO_BLK_F_WRITE_ZEROES feature is negotiated,
-+    \field{max_write_zeroes_sectors} and \field{max_write_zeroes_seg} can
-+    be read to determine the maximum write zeroes sectors and maximum
-+    number of write zeroes segments for the block driver to use.
-+
-+\item If the VIRTIO_BLK_F_MQ feature is negotiated, \field{num_queues} fie=
-ld
-+    can be read to determine the number of queues.
-+
-+\item If the VIRTIO_BLK_F_SECURE_ERASE feature is negotiated,
-+    \field{max_secure_erase_sectors} and \field{max_secure_erase_seg} can =
-be read
-+    to determine the maximum secure erase sectors and maximum number of
-+    secure erase segments for the block driver to use.
-+    \field{secure_erase_sector_alignment} can be used by OS when splitting=
- a
-+    request based on alignment.
-+
-+\item If the VIRTIO_BLK_F_ZONED feature is negotiated, the fields in
-+    \field{zoned} can be read by the driver to determine the zone
-+    characteristics of the device. All \field{zoned} fields are read-only.
-+
-+\end{enumerate}
-+
-+\drivernormative{\subsubsection}{Device Initialization}{Device Types / Blo=
-ck Device / Device Initialization}
-+
-+Drivers SHOULD NOT negotiate VIRTIO_BLK_F_FLUSH if they are incapable of
-+sending VIRTIO_BLK_T_FLUSH commands.
-+
-+If neither VIRTIO_BLK_F_CONFIG_WCE nor VIRTIO_BLK_F_FLUSH are
-+negotiated, the driver MAY deduce the presence of a writethrough cache.
-+If VIRTIO_BLK_F_CONFIG_WCE was not negotiated but VIRTIO_BLK_F_FLUSH was,
-+the driver SHOULD assume presence of a writeback cache.
-+
-+The driver MUST NOT read \field{writeback} before setting
-+the FEATURES_OK \field{device status} bit.
-+
-+Drivers MUST NOT negotiate the VIRTIO_BLK_F_ZONED feature if they are inca=
-pable
-+of supporting devices with the VIRTIO_BLK_Z_HM, VIRTIO_BLK_Z_HA or
-+VIRTIO_BLK_Z_NONE zoned model.
-+
-+If the VIRTIO_BLK_F_ZONED feature is offered by the device with the
-+VIRTIO_BLK_Z_HM zone model, then the VIRTIO_BLK_F_DISCARD feature MUST NOT=
- be
-+offered by the driver.
-+
-+If the VIRTIO_BLK_F_ZONED feature and VIRTIO_BLK_F_DISCARD feature are bot=
-h
-+offered by the device with the VIRTIO_BLK_Z_HA or VIRTIO_BLK_Z_NONE zone m=
-odel,
-+then the driver MAY negotiate these two bits independently.
-+
-+If the VIRTIO_BLK_F_ZONED feature is negotiated, then
-+\begin{itemize}
-+\item if the driver that can not support host-managed zoned devices
-+    reads VIRTIO_BLK_Z_HM from the \field{model} field of \field{zoned}, t=
-he
-+    driver MUST NOT set FEATURES_OK flag and instead set the FAILED bit.
-+
-+\item if the driver that can not support zoned devices reads VIRTIO_BLK_Z_=
-HA
-+    from the \field{model} field of \field{zoned}, the driver
-+    MAY handle the device as a non-zoned device. In this case, the
-+    driver SHOULD ignore all other fields in \field{zoned}.
-+\end{itemize}
-+
-+\devicenormative{\subsubsection}{Device Initialization}{Device Types / Blo=
-ck Device / Device Initialization}
-+
-+Devices SHOULD always offer VIRTIO_BLK_F_FLUSH, and MUST offer it
-+if they offer VIRTIO_BLK_F_CONFIG_WCE.
-+
-+If VIRTIO_BLK_F_CONFIG_WCE is negotiated but VIRTIO_BLK_F_FLUSH
-+is not, the device MUST initialize \field{writeback} to 0.
-+
-+The device MUST initialize padding bytes \field{unused0} and
-+\field{unused1} to 0.
-+
-+If the device that is being initialized is a not a zoned device, the devic=
-e
-+SHOULD NOT offer the VIRTIO_BLK_F_ZONED feature.
-+
-+The VIRTIO_BLK_F_ZONED feature cannot be properly negotiated without
-+FEATURES_OK bit. Legacy devices MUST NOT offer VIRTIO_BLK_F_ZONED feature =
-bit.
-+
-+If the VIRTIO_BLK_F_ZONED feature is not accepted by the driver,
-+\begin{itemize}
-+\item the device with the VIRTIO_BLK_Z_HA or VIRTIO_BLK_Z_NONE zone model =
-SHOULD
-+    proceed with the initialization while setting all zoned characteristic=
-s
-+    fields to zero.
-+
-+\item the device with the VIRTIO_BLK_Z_HM zone model MUST fail to set the
-+    FEATURES_OK device status bit when the driver writes the Device Status
-+    field.
-+\end{itemize}
-+
-+If the VIRTIO_BLK_F_ZONED feature is negotiated, then the \field{model} fi=
-eld in
-+\field{zoned} struct in the configuration space MUST be set by the device
-+\begin{itemize}
-+\item to the value of VIRTIO_BLK_Z_NONE if it operates as a drive-managed
-+    zoned block device or a non-zoned block device.
-+
-+\item to the value of VIRTIO_BLK_Z_HM if it operates as a host-managed zon=
-ed
-+    block device.
-+
-+\item to the value of VIRTIO_BLK_Z_HA if it operates as a host-aware zoned
-+    block device.
-+\end{itemize}
-+
-+If the VIRTIO_BLK_F_ZONED feature is negotiated and the device \field{mode=
-l}
-+field in \field{zoned} struct is VIRTIO_BLK_Z_HM or VIRTIO_BLK_Z_HA,
-+
-+\begin{itemize}
-+\item the \field{zone_sectors} field of \field{zoned} MUST be set by the d=
-evice
-+    to the size of a single zone on the device. All zones of the device ha=
-ve the
-+    same size indicated by \field{zone_sectors} except for the last zone t=
-hat
-+    MAY be smaller than all other zones. The driver can calculate the numb=
-er of
-+    zones on the device as
-+    \begin{lstlisting}
-+        nr_zones =3D (capacity + zone_sectors - 1) / zone_sectors;
-+    \end{lstlisting}
-+    and the size of the last zone as
-+    \begin{lstlisting}
-+        zs_last =3D capacity - (nr_zones - 1) * zone_sectors;
-+    \end{lstlisting}
-+
-+\item The \field{max_open_zones} field of the \field{zoned} structure MUST=
- be
-+    set by the device to the maximum number of zones that can be open on t=
-he
-+    device (zones in the implicit open or explicit open state). A value
-+    of zero indicates that the device does not have any limit on the numbe=
-r of
-+    open zones.
-+
-+\item The \field{max_active_zones} field of the \field{zoned} structure MU=
-ST
-+    be set by the device to the maximum number zones that can be active on=
- the
-+    device (zones in the implicit open, explicit open or closed state). A =
-value
-+    of zero indicates that the device does not have any limit on the numbe=
-r of
-+    active zones.
-+
-+\item the \field{max_append_sectors} field of \field{zoned} MUST be set by
-+    the device to the maximum data size of a VIRTIO_BLK_T_ZONE_APPEND requ=
-est
-+    that can be successfully issued to the device. The value of this field=
- MUST
-+    NOT exceed the \field{seg_max} * \field{size_max} value. A device MAY =
-set
-+    the \field{max_append_sectors} to zero if it doesn't support
-+    VIRTIO_BLK_T_ZONE_APPEND requests.
-+
-+\item the \field{write_granularity} field of \field{zoned} MUST be set by =
-the
-+    device to the offset and size alignment constraint for VIRTIO_BLK_T_OU=
-T
-+    and VIRTIO_BLK_T_ZONE_APPEND requests issued to a sequential zone of t=
-he
-+    device.
-+
-+\item the device MUST initialize padding bytes \field{unused2} to 0.
-+\end{itemize}
-+
-+\subsubsection{Legacy Interface: Device Initialization}\label{sec:Device T=
-ypes / Block Device / Device Initialization / Legacy Interface: Device Init=
-ialization}
-+
-+Because legacy devices do not have FEATURES_OK, transitional devices
-+MUST implement slightly different behavior around feature negotiation
-+when used through the legacy interface.  In particular, when using the
-+legacy interface:
-+
-+\begin{itemize}
-+\item the driver MAY read or write \field{writeback} before setting
-+  the DRIVER or DRIVER_OK \field{device status} bit
-+
-+\item the device MUST NOT modify the cache mode (and \field{writeback})
-+  as a result of a driver setting a status bit, unless
-+  the DRIVER_OK bit is being set and the driver has not set the
-+  VIRTIO_BLK_F_CONFIG_WCE driver feature bit.
-+
-+\item the device MUST NOT modify the cache mode (and \field{writeback})
-+  as a result of a driver modifying the driver feature bits, for example
-+  if the driver sets the VIRTIO_BLK_F_CONFIG_WCE driver feature bit but
-+  does not set the VIRTIO_BLK_F_FLUSH bit.
-+\end{itemize}
-+
-+
-+\subsection{Device Operation}\label{sec:Device Types / Block Device / Devi=
-ce Operation}
-+
-+The driver queues requests to the virtqueues, and they are used by
-+the device (not necessarily in order). Each request except
-+VIRTIO_BLK_T_ZONE_APPEND is of form:
-+
-+\begin{lstlisting}
-+struct virtio_blk_req {
-+        le32 type;
-+        le32 reserved;
-+        le64 sector;
-+        u8 data[];
-+        u8 status;
-+};
-+\end{lstlisting}
-+
-+The type of the request is either a read (VIRTIO_BLK_T_IN), a write
-+(VIRTIO_BLK_T_OUT), a discard (VIRTIO_BLK_T_DISCARD), a write zeroes
-+(VIRTIO_BLK_T_WRITE_ZEROES), a flush (VIRTIO_BLK_T_FLUSH), a get device ID
-+string command (VIRTIO_BLK_T_GET_ID), a secure erase
-+(VIRTIO_BLK_T_SECURE_ERASE), or a get device lifetime command
-+(VIRTIO_BLK_T_GET_LIFETIME).
-+
-+\begin{lstlisting}
-+#define VIRTIO_BLK_T_IN           0
-+#define VIRTIO_BLK_T_OUT          1
-+#define VIRTIO_BLK_T_FLUSH        4
-+#define VIRTIO_BLK_T_GET_ID       8
-+#define VIRTIO_BLK_T_GET_LIFETIME 10
-+#define VIRTIO_BLK_T_DISCARD      11
-+#define VIRTIO_BLK_T_WRITE_ZEROES 13
-+#define VIRTIO_BLK_T_SECURE_ERASE   14
-+\end{lstlisting}
-+
-+The \field{sector} number indicates the offset (multiplied by 512) where
-+the read or write is to occur. This field is unused and set to 0 for
-+commands other than read, write and some zone operations.
-+
-+VIRTIO_BLK_T_IN requests populate \field{data} with the contents of sector=
-s
-+read from the block device (in multiples of 512 bytes).  VIRTIO_BLK_T_OUT
-+requests write the contents of \field{data} to the block device (in multip=
-les
-+of 512 bytes).
-+
-+The \field{data} used for discard, secure erase or write zeroes commands
-+consists of one or more segments. The maximum number of segments is
-+\field{max_discard_seg} for discard commands, \field{max_secure_erase_seg}=
- for
-+secure erase commands and \field{max_write_zeroes_seg} for write zeroes
-+commands.
-+Each segment is of form:
-+
-+\begin{lstlisting}
-+struct virtio_blk_discard_write_zeroes {
-+       le64 sector;
-+       le32 num_sectors;
-+       struct {
-+               le32 unmap:1;
-+               le32 reserved:31;
-+       } flags;
-+};
-+\end{lstlisting}
-+
-+\field{sector} indicates the starting offset (in 512-byte units) of the
-+segment, while \field{num_sectors} indicates the number of sectors in each
-+discarded range. \field{unmap} is only used in write zeroes commands and a=
-llows
-+the device to discard the specified range, provided that following reads r=
-eturn
-+zeroes.
-+
-+VIRTIO_BLK_T_GET_ID requests fetch the device ID string from the device in=
-to
-+\field{data}.  The device ID string is a NUL-padded ASCII string up to 20 =
-bytes
-+long.  If the string is 20 bytes long then there is no NUL terminator.
-+
-+The \field{data} used for VIRTIO_BLK_T_GET_LIFETIME requests is populated
-+by the device, and is of the form
-+
-+\begin{lstlisting}
-+struct virtio_blk_lifetime {
-+  le16 pre_eol_info;
-+  le16 device_lifetime_est_typ_a;
-+  le16 device_lifetime_est_typ_b;
-+};
-+\end{lstlisting}
-+
-+The \field{pre_eol_info} specifies the percentage of reserved blocks
-+that are consumed and will have one of these values:
-+
-+\begin{lstlisting}
-+/* Value not available */
-+#define VIRTIO_BLK_PRE_EOL_INFO_UNDEFINED    0
-+/* < 80% of reserved blocks are consumed */
-+#define VIRTIO_BLK_PRE_EOL_INFO_NORMAL       1
-+/* 80% of reserved blocks are consumed */
-+#define VIRTIO_BLK_PRE_EOL_INFO_WARNING      2
-+/* 90% of reserved blocks are consumed */
-+#define VIRTIO_BLK_PRE_EOL_INFO_URGENT       3
-+/* All others values are reserved */
-+\end{lstlisting}
-+
-+The \field{device_lifetime_est_typ_a} refers to wear of SLC cells and is p=
-rovided
-+in increments of 10%, with 0 meaning undefined, 1 meaning up-to 10% of lif=
-etime
-+used, and so on, thru to 11 meaning estimated lifetime exceeded.
-+All values above 11 are reserved.
-+
-+The \field{device_lifetime_est_typ_b} refers to wear of MLC cells and is p=
-rovided
-+with the same semantics as \field{device_lifetime_est_typ_a}.
-+
-+The final \field{status} byte is written by the device: either
-+VIRTIO_BLK_S_OK for success, VIRTIO_BLK_S_IOERR for device or driver
-+error or VIRTIO_BLK_S_UNSUPP for a request unsupported by device:
-+
-+\begin{lstlisting}
-+#define VIRTIO_BLK_S_OK        0
-+#define VIRTIO_BLK_S_IOERR     1
-+#define VIRTIO_BLK_S_UNSUPP    2
-+\end{lstlisting}
-+
-+The status of individual segments is indeterminate when a discard or write=
- zero
-+command produces VIRTIO_BLK_S_IOERR.  A segment may have completed
-+successfully, failed, or not been processed by the device.
-+
-+The following requirements only apply if the VIRTIO_BLK_F_ZONED feature is
-+negotiated.
-+
-+In addition to the request types defined for non-zoned devices, the type o=
-f the
-+request can be a zone report (VIRTIO_BLK_T_ZONE_REPORT), an explicit zone =
-open
-+(VIRTIO_BLK_T_ZONE_OPEN), a zone close (VIRTIO_BLK_T_ZONE_CLOSE), a zone f=
-inish
-+(VIRTIO_BLK_T_ZONE_FINISH), a zone_append (VIRTIO_BLK_T_ZONE_APPEND), a zo=
-ne
-+reset (VIRTIO_BLK_T_ZONE_RESET) or a zone reset all
-+(VIRTIO_BLK_T_ZONE_RESET_ALL).
-+
-+\begin{lstlisting}
-+#define VIRTIO_BLK_T_ZONE_APPEND    15
-+#define VIRTIO_BLK_T_ZONE_REPORT    16
-+#define VIRTIO_BLK_T_ZONE_OPEN      18
-+#define VIRTIO_BLK_T_ZONE_CLOSE     20
-+#define VIRTIO_BLK_T_ZONE_FINISH    22
-+#define VIRTIO_BLK_T_ZONE_RESET     24
-+#define VIRTIO_BLK_T_ZONE_RESET_ALL 26
-+\end{lstlisting}
-+
-+Requests of type VIRTIO_BLK_T_OUT, VIRTIO_BLK_T_ZONE_OPEN,
-+VIRTIO_BLK_T_ZONE_CLOSE, VIRTIO_BLK_T_ZONE_FINISH, VIRTIO_BLK_T_ZONE_APPEN=
-D,
-+VIRTIO_BLK_T_ZONE_RESET or VIRTIO_BLK_T_ZONE_RESET_ALL may be completed by=
- the
-+device with VIRTIO_BLK_S_OK, VIRTIO_BLK_S_IOERR or VIRTIO_BLK_S_UNSUPP
-+\field{status}, or, additionally, with  VIRTIO_BLK_S_ZONE_INVALID_CMD,
-+VIRTIO_BLK_S_ZONE_UNALIGNED_WP, VIRTIO_BLK_S_ZONE_OPEN_RESOURCE or
-+VIRTIO_BLK_S_ZONE_ACTIVE_RESOURCE ZBD-specific status codes.
-+
-+Besides the request status, VIRTIO_BLK_T_ZONE_APPEND requests return the
-+starting sector of the appended data back to the driver. For this reason,
-+the VIRTIO_BLK_T_ZONE_APPEND request has the layout that is extended to ha=
-ve
-+the \field{append_sector} field to carry this value:
-+
-+\begin{lstlisting}
-+struct virtio_blk_req_za {
-+        le32 type;
-+        le32 reserved;
-+        le64 sector;
-+        u8 data[];
-+        le64 append_sector;
-+        u8 status;
-+};
-+\end{lstlisting}
-+
-+\begin{lstlisting}
-+#define VIRTIO_BLK_S_ZONE_INVALID_CMD     3
-+#define VIRTIO_BLK_S_ZONE_UNALIGNED_WP    4
-+#define VIRTIO_BLK_S_ZONE_OPEN_RESOURCE   5
-+#define VIRTIO_BLK_S_ZONE_ACTIVE_RESOURCE 6
-+\end{lstlisting}
-+
-+Requests of the type VIRTIO_BLK_T_ZONE_REPORT are reads and requests of th=
-e type
-+VIRTIO_BLK_T_ZONE_APPEND are writes. VIRTIO_BLK_T_ZONE_OPEN,
-+VIRTIO_BLK_T_ZONE_CLOSE, VIRTIO_BLK_T_ZONE_FINISH, VIRTIO_BLK_T_ZONE_RESET=
- and
-+VIRTIO_BLK_T_ZONE_RESET_ALL are non-data requests.
-+
-+Zone sector address is a 64-bit address of the first 512-byte sector of th=
-e
-+zone.
-+
-+VIRTIO_BLK_T_ZONE_OPEN, VIRTIO_BLK_T_ZONE_CLOSE, VIRTIO_BLK_T_ZONE_FINISH =
-and
-+VIRTIO_BLK_T_ZONE_RESET requests make the zone operation to act on a parti=
-cular
-+zone specified by the zone sector address in the \field{sector} of the req=
-uest.
-+
-+VIRTIO_BLK_T_ZONE_RESET_ALL request acts upon all applicable zones of the
-+device. The \field{sector} value is not used for this request.
-+
-+In ZBD standards, the VIRTIO_BLK_T_ZONE_REPORT request belongs to "Zone
-+Management Receive" command category and VIRTIO_BLK_T_ZONE_OPEN,
-+VIRTIO_BLK_T_ZONE_CLOSE, VIRTIO_BLK_T_ZONE_FINISH and
-+VIRTIO_BLK_T_ZONE_RESET/VIRTIO_BLK_T_ZONE_RESET_ALL requests are categoriz=
-ed as
-+"Zone Management Send" commands. VIRTIO_BLK_T_ZONE_APPEND is categorized
-+separately from zone management commands and is the only request that uses
-+the \field{append_secctor} field \field{virtio_blk_req_za} to return
-+to the driver the sector at which the data has been appended to the zone.
-+
-+VIRTIO_BLK_T_ZONE_REPORT is a read request that returns the information ab=
-out
-+the current state of zones on the device starting from the zone containing=
- the
-+\field{sector} of the request. The report consists of a header followed by=
- zero
-+or more zone descriptors.
-+
-+A zone report reply has the following structure:
-+
-+\begin{lstlisting}
-+struct virtio_blk_zone_report {
-+        le64   nr_zones;
-+        u8     reserved[56];
-+        struct virtio_blk_zone_descriptor zones[];
-+};
-+\end{lstlisting}
-+
-+The device sets the \field{nr_zones} field in the report header to the num=
-ber of
-+fully transferred zone descriptors in the data buffer.
-+
-+A zone descriptor has the following structure:
-+
-+\begin{lstlisting}
-+struct virtio_blk_zone_descriptor {
-+        le64   z_cap;
-+        le64   z_start;
-+        le64   z_wp;
-+        u8     z_type;
-+        u8     z_state;
-+        u8     reserved[38];
-+};
-+\end{lstlisting}
-+
-+The zone descriptor field \field{z_type} \field{virtio_blk_zone_descriptor=
-}
-+indicates the type of the zone.
-+
-+The following zone types are available:
-+
-+\begin{lstlisting}
-+#define VIRTIO_BLK_ZT_CONV     1
-+#define VIRTIO_BLK_ZT_SWR      2
-+#define VIRTIO_BLK_ZT_SWP      3
-+\end{lstlisting}
-+
-+Read and write operations into zones with the VIRTIO_BLK_ZT_CONV (Conventi=
-onal)
-+type have the same behavior as read and write operations on a regular bloc=
-k
-+device. Any block in a conventional zone can be read or written at any tim=
-e and
-+in any order.
-+
-+Zones with VIRTIO_BLK_ZT_SWR can be read randomly, but must be written
-+sequentially at a certain point in the zone called the Write Pointer (WP).=
- With
-+every write, the Write Pointer is incremented by the number of sectors wri=
-tten.
-+
-+Zones with VIRTIO_BLK_ZT_SWP can be read randomly and should be written
-+sequentially, similarly to SWR zones. However, SWP zones can accept random=
- write
-+operations, that is, VIRTIO_BLK_T_OUT requests with a start sector differe=
-nt
-+from the zone write pointer position.
-+
-+The field \field{z_state} of \field{virtio_blk_zone_descriptor} indicates =
-the
-+state of the device zone.
-+
-+The following zone states are available:
-+
-+\begin{lstlisting}
-+#define VIRTIO_BLK_ZS_NOT_WP   0
-+#define VIRTIO_BLK_ZS_EMPTY    1
-+#define VIRTIO_BLK_ZS_IOPEN    2
-+#define VIRTIO_BLK_ZS_EOPEN    3
-+#define VIRTIO_BLK_ZS_CLOSED   4
-+#define VIRTIO_BLK_ZS_RDONLY   13
-+#define VIRTIO_BLK_ZS_FULL     14
-+#define VIRTIO_BLK_ZS_OFFLINE  15
-+\end{lstlisting}
-+
-+Zones of the type VIRTIO_BLK_ZT_CONV are always reported by the device to =
-be in
-+the VIRTIO_BLK_ZS_NOT_WP state. Zones of the types VIRTIO_BLK_ZT_SWR and
-+VIRTIO_BLK_ZT_SWP can not transition to the VIRTIO_BLK_ZS_NOT_WP state.
-+
-+Zones in VIRTIO_BLK_ZS_EMPTY (Empty), VIRTIO_BLK_ZS_IOPEN (Implicitly Open=
-),
-+VIRTIO_BLK_ZS_EOPEN (Explicitly Open) and VIRTIO_BLK_ZS_CLOSED (Closed) st=
-ate
-+are writable, but zones in VIRTIO_BLK_ZS_RDONLY (Read-Only), VIRTIO_BLK_ZS=
-_FULL
-+(Full) and VIRTIO_BLK_ZS_OFFLINE (Offline) state are not. The write pointe=
-r
-+value (\field{z_wp}) is not valid for Read-Only, Full and Offline zones.
-+
-+The zone descriptor field \field{z_cap} contains the maximum number of 512=
--byte
-+sectors that are available to be written with user data when the zone is i=
-n the
-+Empty state. This value shall be less than or equal to the \field{zone_sec=
-tors}
-+value in \field{virtio_blk_zoned_characteristics} structure in the device
-+configuration space.
-+
-+The zone descriptor field \field{z_start} contains the zone sector address=
-.
-+
-+The zone descriptor field \field{z_wp} contains the sector address where t=
-he
-+next write operation for this zone should be issued. This value is undefin=
-ed
-+for conventional zones and for zones in VIRTIO_BLK_ZS_RDONLY,
-+VIRTIO_BLK_ZS_FULL and VIRTIO_BLK_ZS_OFFLINE state.
-+
-+Depending on their state, zones consume resources as follows:
-+\begin{itemize}
-+\item a zone in VIRTIO_BLK_ZS_IOPEN and VIRTIO_BLK_ZS_EOPEN state consumes=
- one
-+    open zone resource and, additionally,
-+
-+\item a zone in VIRTIO_BLK_ZS_IOPEN, VIRTIO_BLK_ZS_EOPEN and
-+    VIRTIO_BLK_ZS_CLOSED state consumes one active resource.
-+\end{itemize}
-+
-+Attempts for zone transitions that violate zone resource limits must fail =
-with
-+VIRTIO_BLK_S_ZONE_OPEN_RESOURCE or VIRTIO_BLK_S_ZONE_ACTIVE_RESOURCE
-+\field{status}.
-+
-+Zones in the VIRTIO_BLK_ZS_EMPTY (Empty) state have the write pointer valu=
-e
-+equal to the sector address of the zone. In this state, the entire capacit=
-y of
-+the zone is available for writing. A zone can transition from this state t=
-o
-+\begin{itemize}
-+\item VIRTIO_BLK_ZS_IOPEN when a successful VIRTIO_BLK_T_OUT request or
-+    VIRTIO_BLK_T_ZONE_APPEND with a non-zero data size is received for the=
- zone.
-+
-+\item VIRTIO_BLK_ZS_EOPEN when a successful VIRTIO_BLK_T_ZONE_OPEN request=
- is
-+    received for the zone
-+\end{itemize}
-+
-+When a VIRTIO_BLK_T_ZONE_RESET request is issued to an Empty zone, the req=
-uest
-+is completed successfully and the zone stays in the VIRTIO_BLK_ZS_EMPTY st=
-ate.
-+
-+Zones in the VIRTIO_BLK_ZS_IOPEN (Implicitly Open) state transition from
-+this state to
-+\begin{itemize}
-+\item VIRTIO_BLK_ZS_EMPTY when a successful VIRTIO_BLK_T_ZONE_RESET reques=
-t is
-+    received for the zone,
-+
-+\item VIRTIO_BLK_ZS_EMPTY when a successful VIRTIO_BLK_T_ZONE_RESET_ALL re=
-quest
-+    is received by the device,
-+
-+\item VIRTIO_BLK_ZS_EOPEN when a successful VIRTIO_BLK_T_ZONE_OPEN request=
- is
-+    received for the zone,
-+
-+\item VIRTIO_BLK_ZS_CLOSED when a successful VIRTIO_BLK_T_ZONE_CLOSE reque=
-st is
-+    received for the zone,
-+
-+\item VIRTIO_BLK_ZS_CLOSED implicitly by the device when another zone is
-+    entering the VIRTIO_BLK_ZS_IOPEN or VIRTIO_BLK_ZS_EOPEN state and the =
-number
-+    of currently open zones is at \field{max_open_zones} limit,
-+
-+\item VIRTIO_BLK_ZS_FULL when a successful VIRTIO_BLK_T_ZONE_FINISH reques=
-t is
-+    received for the zone.
-+
-+\item VIRTIO_BLK_ZS_FULL when a successful VIRTIO_BLK_T_OUT or
-+    VIRTIO_BLK_T_ZONE_APPEND request that causes the zone to reach its wri=
-table
-+    capacity is received for the zone.
-+\end{itemize}
-+
-+Zones in the VIRTIO_BLK_ZS_EOPEN (Explicitly Open) state transition from
-+this state to
-+\begin{itemize}
-+\item VIRTIO_BLK_ZS_EMPTY when a successful VIRTIO_BLK_T_ZONE_RESET reques=
-t is
-+    received for the zone,
-+
-+\item VIRTIO_BLK_ZS_EMPTY when a successful VIRTIO_BLK_T_ZONE_RESET_ALL re=
-quest
-+    is received by the device,
-+
-+\item VIRTIO_BLK_ZS_EMPTY when a successful VIRTIO_BLK_T_ZONE_CLOSE reques=
-t is
-+    received for the zone and the write pointer of the zone has the value =
-equal
-+    to the start sector of the zone,
-+
-+\item VIRTIO_BLK_ZS_CLOSED when a successful VIRTIO_BLK_T_ZONE_CLOSE reque=
-st is
-+    received for the zone and the zone write pointer is larger then the st=
-art
-+    sector of the zone,
-+
-+\item VIRTIO_BLK_ZS_FULL when a successful VIRTIO_BLK_T_ZONE_FINISH reques=
-t is
-+    received for the zone,
-+
-+\item VIRTIO_BLK_ZS_FULL when a successful VIRTIO_BLK_T_OUT or
-+    VIRTIO_BLK_T_ZONE_APPEND request that causes the zone to reach its wri=
-table
-+    capacity is received for the zone.
-+\end{itemize}
-+
-+When a VIRTIO_BLK_T_ZONE_EOPEN request is issued to an Explicitly Open zon=
-e, the
-+request is completed successfully and the zone stays in the VIRTIO_BLK_ZS_=
-EOPEN
-+state.
-+
-+Zones in the VIRTIO_BLK_ZS_CLOSED (Closed) state transition from this stat=
-e
-+to
-+\begin{itemize}
-+\item VIRTIO_BLK_ZS_EMPTY when a successful VIRTIO_BLK_T_ZONE_RESET reques=
-t is
-+    received for the zone,
-+
-+\item VIRTIO_BLK_ZS_EMPTY when a successful VIRTIO_BLK_T_ZONE_RESET_ALL re=
-quest
-+    is received by the device,
-+
-+\item VIRTIO_BLK_ZS_IOPEN when a successful VIRTIO_BLK_T_OUT request or
-+    VIRTIO_BLK_T_ZONE_APPEND with a non-zero data size is received for the=
- zone.
-+
-+\item VIRTIO_BLK_ZS_EOPEN when a successful VIRTIO_BLK_T_ZONE_OPEN request=
- is
-+    received for the zone,
-+\end{itemize}
-+
-+When a VIRTIO_BLK_T_ZONE_CLOSE request is issued to a Closed zone, the req=
-uest
-+is completed successfully and the zone stays in the VIRTIO_BLK_ZS_CLOSED s=
-tate.
-+
-+Zones in the VIRTIO_BLK_ZS_FULL (Full) state transition from this state to
-+VIRTIO_BLK_ZS_EMPTY when a successful VIRTIO_BLK_T_ZONE_RESET request is
-+received for the zone or a successful VIRTIO_BLK_T_ZONE_RESET_ALL request =
-is
-+received by the device.
-+
-+When a VIRTIO_BLK_T_ZONE_FINISH request is issued to a Full zone, the requ=
-est
-+is completed successfully and the zone stays in the VIRTIO_BLK_ZS_FULL sta=
-te.
-+
-+The device may automatically transition zones to VIRTIO_BLK_ZS_RDONLY
-+(Read-Only) or VIRTIO_BLK_ZS_OFFLINE (Offline) state from any other state.=
- The
-+device may also automatically transition zones in the Read-Only state to t=
-he
-+Offline state. Zones in the Offline state may not transition to any other =
-state.
-+Such automatic transitions usually indicate hardware failures. The previou=
-sly
-+written data may only be read from zones in the Read-Only state. Zones in =
-the
-+Offline state can not be read or written.
-+
-+VIRTIO_BLK_S_ZONE_UNALIGNED_WP is set by the device when the request recei=
-ved
-+from the driver attempts to perform a write to an SWR zone and at least on=
-e of
-+the following conditions is met:
-+
-+\begin{itemize}
-+\item the starting sector of the request is not equal to the current value=
- of
-+    the zone write pointer.
-+
-+\item the ending sector of the request data multiplied by 512 is not a mul=
-tiple
-+    of the value reported by the device in the field \field{write_granular=
-ity}
-+    in the device configuration space.
-+\end{itemize}
-+
-+VIRTIO_BLK_S_ZONE_OPEN_RESOURCE is set by the device when a zone operation=
- or
-+write request received from the driver can not be handled without exceedin=
-g the
-+\field{max_open_zones} limit value reported by the device in the configura=
-tion
-+space.
-+
-+VIRTIO_BLK_S_ZONE_ACTIVE_RESOURCE is set by the device when a zone operati=
-on or
-+write request received from the driver can not be handled without exceedin=
-g the
-+\field{max_active_zones} limit value reported by the device in the configu=
-ration
-+space.
-+
-+A zone transition request that leads to both the \field{max_open_zones} an=
-d the
-+\field{max_active_zones} limits to be exceeded is terminated by the device=
- with
-+VIRTIO_BLK_S_ZONE_ACTIVE_RESOURCE \field{status} value.
-+
-+The device reports all other error conditions related to zoned block model
-+operation by setting the VIRTIO_BLK_S_ZONE_INVALID_CMD value in
-+\field{status} of \field{virtio_blk_req} structure.
-+
-+\drivernormative{\subsubsection}{Device Operation}{Device Types / Block De=
-vice / Device Operation}
-+
-+The driver SHOULD check if the content of the \field{capacity} field has
-+changed upon receiving a configuration change notification.
-+
-+A driver MUST NOT submit a request which would cause a read or write
-+beyond \field{capacity}.
-+
-+A driver SHOULD accept the VIRTIO_BLK_F_RO feature if offered.
-+
-+A driver MUST set \field{sector} to 0 for a VIRTIO_BLK_T_FLUSH request.
-+A driver SHOULD NOT include any data in a VIRTIO_BLK_T_FLUSH request.
-+
-+The length of \field{data} MUST be a multiple of 512 bytes for VIRTIO_BLK_=
-T_IN
-+and VIRTIO_BLK_T_OUT requests.
-+
-+The length of \field{data} MUST be a multiple of the size of struct
-+virtio_blk_discard_write_zeroes for VIRTIO_BLK_T_DISCARD,
-+VIRTIO_BLK_T_SECURE_ERASE and VIRTIO_BLK_T_WRITE_ZEROES requests.
-+
-+The length of \field{data} MUST be 20 bytes for VIRTIO_BLK_T_GET_ID reques=
-ts.
-+
-+VIRTIO_BLK_T_DISCARD requests MUST NOT contain more than
-+\field{max_discard_seg} struct virtio_blk_discard_write_zeroes segments in
-+\field{data}.
-+
-+VIRTIO_BLK_T_SECURE_ERASE requests MUST NOT contain more than
-+\field{max_secure_erase_seg} struct virtio_blk_discard_write_zeroes segmen=
-ts in
-+\field{data}.
-+
-+VIRTIO_BLK_T_WRITE_ZEROES requests MUST NOT contain more than
-+\field{max_write_zeroes_seg} struct virtio_blk_discard_write_zeroes segmen=
-ts in
-+\field{data}.
-+
-+If the VIRTIO_BLK_F_CONFIG_WCE feature is negotiated, the driver MAY
-+switch to writethrough or writeback mode by writing respectively 0 and
-+1 to the \field{writeback} field.  After writing a 0 to \field{writeback},
-+the driver MUST NOT assume that any volatile writes have been committed
-+to persistent device backend storage.
-+
-+The \field{unmap} bit MUST be zero for discard commands.  The driver
-+MUST NOT assume anything about the data returned by read requests after
-+a range of sectors has been discarded.
-+
-+A driver MUST NOT assume that individual segments in a multi-segment
-+VIRTIO_BLK_T_DISCARD or VIRTIO_BLK_T_WRITE_ZEROES request completed
-+successfully, failed, or were processed by the device at all if the reques=
-t
-+failed with VIRTIO_BLK_S_IOERR.
-+
-+The following requirements only apply if the VIRTIO_BLK_F_ZONED feature is
-+negotiated.
-+
-+A zone sector address provided by the driver MUST be a multiple of 512 byt=
-es.
-+
-+When forming a VIRTIO_BLK_T_ZONE_REPORT request, the driver MUST set a sec=
-tor
-+within the sector range of the starting zone to report to \field{sector} f=
-ield.
-+It MAY be a sector that is different from the zone sector address.
-+
-+In VIRTIO_BLK_T_ZONE_OPEN, VIRTIO_BLK_T_ZONE_CLOSE, VIRTIO_BLK_T_ZONE_FINI=
-SH and
-+VIRTIO_BLK_T_ZONE_RESET requests, the driver MUST set \field{sector} field=
- to
-+point at the first sector in the target zone.
-+
-+In VIRTIO_BLK_T_ZONE_RESET_ALL request, the driver MUST set the field
-+\field{sector} to zero value.
-+
-+The \field{sector} field of the VIRTIO_BLK_T_ZONE_APPEND request MUST spec=
-ify
-+the zone sector address of the zone to which data is to be appended at the
-+position of the write pointer. The size of the data that is appended MUST =
-be a
-+multiple of \field{write_granularity} bytes and MUST NOT exceed the
-+\field{max_append_sectors} value provided by the device in
-+\field{virtio_blk_zoned_characteristics} configuration space structure.
-+
-+Upon a successful completion of a VIRTIO_BLK_T_ZONE_APPEND request, the dr=
-iver
-+MAY read the starting sector location of the written data from the request
-+field \field{append_sector}.
-+
-+All VIRTIO_BLK_T_OUT requests issued by the driver to sequential zones and
-+VIRTIO_BLK_T_ZONE_APPEND requests MUST have:
-+
-+\begin{enumerate}
-+\item the data size that is a multiple of the number of bytes reported
-+    by the device in the field \field{write_granularity} in the
-+    \field{virtio_blk_zoned_characteristics} configuration space structure=
-.
-+
-+\item the value of the field \field{sector} that is a multiple of the numb=
-er of
-+    bytes reported by the device in the field \field{write_granularity} in=
- the
-+    \field{virtio_blk_zoned_characteristics} configuration space structure=
-.
-+
-+\item the data size that will not exceed the writable zone capacity when i=
-ts
-+    value is added to the current value of the write pointer of the zone.
-+
-+\end{enumerate}
-+
-+\devicenormative{\subsubsection}{Device Operation}{Device Types / Block De=
-vice / Device Operation}
-+
-+The device MAY change the content of the \field{capacity} field during
-+operation of the device. When this happens, the device SHOULD trigger a
-+configuration change notification.
-+
-+A device MUST set the \field{status} byte to VIRTIO_BLK_S_IOERR
-+for a write request if the VIRTIO_BLK_F_RO feature if offered, and MUST NO=
-T
-+write any data.
-+
-+The device MUST set the \field{status} byte to VIRTIO_BLK_S_UNSUPP for
-+discard, secure erase and write zeroes commands if any unknown flag is set=
-.
-+Furthermore, the device MUST set the \field{status} byte to
-+VIRTIO_BLK_S_UNSUPP for discard commands if the \field{unmap} flag is set.
-+
-+For discard commands, the device MAY deallocate the specified range of
-+sectors in the device backend storage.
-+
-+For write zeroes commands, if the \field{unmap} is set, the device MAY
-+deallocate the specified range of sectors in the device backend storage,
-+as if the discard command had been sent.  After a write zeroes command
-+is completed, reads of the specified ranges of sectors MUST return
-+zeroes.  This is true independent of whether \field{unmap} was set or clea=
-r.
-+
-+The device SHOULD clear the \field{write_zeroes_may_unmap} field of the
-+virtio configuration space if and only if a write zeroes request cannot
-+result in deallocating one or more sectors.  The device MAY change the
-+content of the field during operation of the device; when this happens,
-+the device SHOULD trigger a configuration change notification.
-+
-+A write is considered volatile when it is submitted; the contents of
-+sectors covered by a volatile write are undefined in persistent device
-+backend storage until the write becomes stable.  A write becomes stable
-+once it is completed and one or more of the following conditions is true:
-+
-+\begin{enumerate}
-+\item\label{item:flush1} neither VIRTIO_BLK_F_CONFIG_WCE nor
-+  VIRTIO_BLK_F_FLUSH feature were negotiated, but VIRTIO_BLK_F_FLUSH was
-+  offered by the device;
-+
-+\item\label{item:flush2} the VIRTIO_BLK_F_CONFIG_WCE feature was negotiate=
-d and the
-+  \field{writeback} field in configuration space was 0 \textbf{all the tim=
-e between
-+  the submission of the write and its completion};
-+
-+\item\label{item:flush3} a VIRTIO_BLK_T_FLUSH request is sent \textbf{afte=
-r the write is
-+  completed} and is completed itself.
-+\end{enumerate}
-+
-+If the device is backed by persistent storage, the device MUST ensure that
-+stable writes are committed to it, before reporting completion of the writ=
-e
-+(cases~\ref{item:flush1} and~\ref{item:flush2}) or the flush
-+(case~\ref{item:flush3}).  Failure to do so can cause data loss
-+in case of a crash.
-+
-+If the driver changes \field{writeback} between the submission of the writ=
-e
-+and its completion, the write could be either volatile or stable when
-+its completion is reported; in other words, the exact behavior is undefine=
-d.
-+
-+% According to the device requirements for device initialization:
-+%   Offer(CONFIG_WCE) =3D> Offer(FLUSH).
-+%
-+% After reversing the implication:
-+%   not Offer(FLUSH) =3D> not Offer(CONFIG_WCE).
-+
-+If VIRTIO_BLK_F_FLUSH was not offered by the
-+  device\footnote{Note that in this case, according to
-+  \ref{devicenormative:Device Types / Block Device / Device Initialization=
-},
-+  the device will not have offered VIRTIO_BLK_F_CONFIG_WCE either.}, the
-+device MAY also commit writes to persistent device backend storage before
-+reporting their completion.  Unlike case~\ref{item:flush1}, however, this
-+is not an absolute requirement of the specification.
-+
-+\begin{note}
-+  An implementation that does not offer VIRTIO_BLK_F_FLUSH and does not co=
-mmit
-+  completed writes will not be resilient to data loss in case of crashes.
-+  Not offering VIRTIO_BLK_F_FLUSH is an absolute requirement
-+  for implementations that do not wish to be safe against such data losses=
-.
-+\end{note}
-+
-+If the device is backed by storage providing lifetime metrics (such as eMM=
-C
-+or UFS persistent storage), the device SHOULD offer the VIRTIO_BLK_F_LIFET=
-IME
-+flag. The flag MUST NOT be offered if the device is backed by storage for =
-which
-+the lifetime metrics described in this document cannot be obtained or for =
-which
-+such metrics have no useful meaning. If the metrics are offered, the devic=
-e MUST NOT
-+send any reserved values, as defined in this specification.
-+
-+\begin{note}
-+  The device lifetime metrics \field{pre_eol_info}, \field{device_lifetime=
-_est_a}
-+  and \field{device_lifetime_est_b} are discussed in the JESD84-B50 specif=
-ication.
-+
-+  The complete JESD84-B50 is available at the JEDEC website (https://www.j=
-edec.org)
-+  pursuant to JEDEC's licensing terms and conditions. This information is =
-provided to
-+  simplfy passthrough implementations from eMMC devices.
-+\end{note}
-+
-+If the VIRTIO_BLK_F_ZONED feature is not negotiated, the device MUST rejec=
-t
-+VIRTIO_BLK_T_ZONE_REPORT, VIRTIO_BLK_T_ZONE_OPEN, VIRTIO_BLK_T_ZONE_CLOSE,
-+VIRTIO_BLK_T_ZONE_FINISH, VIRTIO_BLK_T_ZONE_APPEND, VIRTIO_BLK_T_ZONE_RESE=
-T and
-+VIRTIO_BLK_T_ZONE_RESET_ALL requests with VIRTIO_BLK_S_UNSUPP status.
-+
-+The following device requirements only apply if the VIRTIO_BLK_F_ZONED fea=
-ture
++The following driver-read-only field, \field{max_virtqueue_pairs} only exi=
+sts if
++VIRTIO_NET_F_MQ or VIRTIO_NET_F_RSS is set. This field specifies the maxim=
+um number
++of each of transmit and receive virtqueues (receiveq1\ldots receiveqN
++and transmitq1\ldots transmitqN respectively) that can be configured once =
+at least one of these features
 +is negotiated.
 +
-+If a request of type VIRTIO_BLK_T_ZONE_OPEN, VIRTIO_BLK_T_ZONE_CLOSE,
-+VIRTIO_BLK_T_ZONE_FINISH or VIRTIO_BLK_T_ZONE_RESET is issued for a Conven=
-tional
-+zone (type VIRTIO_BLK_ZT_CONV), the device MUST complete the request with
-+VIRTIO_BLK_S_ZONE_INVALID_CMD \field{status}.
++The following driver-read-only field, \field{mtu} only exists if
++VIRTIO_NET_F_MTU is set. This field specifies the maximum MTU for the driv=
+er to
++use.
 +
-+If the zone specified by the VIRTIO_BLK_T_ZONE_APPEND request is not a SWR=
- zone,
-+then the request SHALL be completed with VIRTIO_BLK_S_ZONE_INVALID_CMD
-+\field{status}.
++The following two fields, \field{speed} and \field{duplex}, only
++exist if VIRTIO_NET_F_SPEED_DUPLEX is set.
 +
-+The device handles a VIRTIO_BLK_T_ZONE_OPEN request by attempting to chang=
-e the
-+state of the zone with the \field{sector} address to VIRTIO_BLK_ZS_EOPEN. =
-If the
-+transition to this state can not be performed, the request MUST be complet=
-ed
-+with VIRTIO_BLK_S_ZONE_INVALID_CMD \field{status}. If, while processing th=
-is
-+request, the available zone resources are insufficient, then the zone stat=
-e does
-+not change and the request MUST be completed with
-+VIRTIO_BLK_S_ZONE_OPEN_RESOURCE or VIRTIO_BLK_S_ZONE_ACTIVE_RESOURCE value=
- in
-+the field \field{status}.
++\field{speed} contains the device speed, in units of 1 MBit per
++second, 0 to 0x7fffffff, or 0xffffffff for unknown speed.
 +
-+The device handles a VIRTIO_BLK_T_ZONE_CLOSE request by attempting to chan=
-ge the
-+state of the zone with the \field{sector} address to VIRTIO_BLK_ZS_CLOSED.=
- If
-+the transition to this state can not be performed, the request MUST be com=
-pleted
-+with VIRTIO_BLK_S_ZONE_INVALID_CMD value in the field \field{status}.
++\field{duplex} has the values of 0x01 for full duplex, 0x00 for
++half duplex and 0xff for unknown duplex state.
 +
-+The device handles a VIRTIO_BLK_T_ZONE_FINISH request by attempting to cha=
-nge
-+the state of the zone with the \field{sector} address to VIRTIO_BLK_ZS_FUL=
-L. If
-+the transition to this state can not be performed, the zone state does not
-+change and the request MUST be completed with VIRTIO_BLK_S_ZONE_INVALID_CM=
++Both \field{speed} and \field{duplex} can change, thus the driver
++is expected to re-read these values after receiving a
++configuration change notification.
++
++\begin{lstlisting}
++struct virtio_net_config {
++        u8 mac[6];
++        le16 status;
++        le16 max_virtqueue_pairs;
++        le16 mtu;
++        le32 speed;
++        u8 duplex;
++        u8 rss_max_key_size;
++        le16 rss_max_indirection_table_length;
++        le32 supported_hash_types;
++};
++\end{lstlisting}
++The following field, \field{rss_max_key_size} only exists if VIRTIO_NET_F_=
+RSS or VIRTIO_NET_F_HASH_REPORT is set.
++It specifies the maximum supported length of RSS key in bytes.
++
++The following field, \field{rss_max_indirection_table_length} only exists =
+if VIRTIO_NET_F_RSS is set.
++It specifies the maximum number of 16-bit entries in RSS indirection table=
+.
++
++The next field, \field{supported_hash_types} only exists if the device sup=
+ports hash calculation,
++i.e. if VIRTIO_NET_F_RSS or VIRTIO_NET_F_HASH_REPORT is set.
++
++Field \field{supported_hash_types} contains the bitmask of supported hash =
+types.
++See \ref{sec:Device Types / Network Device / Device Operation / Processing=
+ of Incoming Packets / Hash calculation for incoming packets / Supported/en=
+abled hash types} for details of supported hash types.
++
++\devicenormative{\subsubsection}{Device configuration layout}{Device Types=
+ / Network Device / Device configuration layout}
++
++The device MUST set \field{max_virtqueue_pairs} to between 1 and 0x8000 in=
+clusive,
++if it offers VIRTIO_NET_F_MQ.
++
++The device MUST set \field{mtu} to between 68 and 65535 inclusive,
++if it offers VIRTIO_NET_F_MTU.
++
++The device SHOULD set \field{mtu} to at least 1280, if it offers
++VIRTIO_NET_F_MTU.
++
++The device MUST NOT modify \field{mtu} once it has been set.
++
++The device MUST NOT pass received packets that exceed \field{mtu} (plus lo=
+w
++level ethernet header length) size with \field{gso_type} NONE or ECN
++after VIRTIO_NET_F_MTU has been successfully negotiated.
++
++The device MUST forward transmitted packets of up to \field{mtu} (plus low
++level ethernet header length) size with \field{gso_type} NONE or ECN, and =
+do
++so without fragmentation, after VIRTIO_NET_F_MTU has been successfully
++negotiated.
++
++The device MUST set \field{rss_max_key_size} to at least 40, if it offers
++VIRTIO_NET_F_RSS or VIRTIO_NET_F_HASH_REPORT.
++
++The device MUST set \field{rss_max_indirection_table_length} to at least 1=
+28, if it offers
++VIRTIO_NET_F_RSS.
++
++If the driver negotiates the VIRTIO_NET_F_STANDBY feature, the device MAY =
+act
++as a standby device for a primary device with the same MAC address.
++
++If VIRTIO_NET_F_SPEED_DUPLEX has been negotiated, \field{speed}
++MUST contain the device speed, in units of 1 MBit per second, 0 to
++0x7ffffffff, or 0xfffffffff for unknown.
++
++If VIRTIO_NET_F_SPEED_DUPLEX has been negotiated, \field{duplex}
++MUST have the values of 0x00 for full duplex, 0x01 for half
++duplex, or 0xff for unknown.
++
++If VIRTIO_NET_F_SPEED_DUPLEX and VIRTIO_NET_F_STATUS have both
++been negotiated, the device SHOULD NOT change the \field{speed} and
++\field{duplex} fields as long as VIRTIO_NET_S_LINK_UP is set in
++the \field{status}.
++
++\drivernormative{\subsubsection}{Device configuration layout}{Device Types=
+ / Network Device / Device configuration layout}
++
++A driver SHOULD negotiate VIRTIO_NET_F_MAC if the device offers it.
++If the driver negotiates the VIRTIO_NET_F_MAC feature, the driver MUST set
++the physical address of the NIC to \field{mac}.  Otherwise, it SHOULD
++use a locally-administered MAC address (see \hyperref[intro:IEEE 802]{IEEE=
+ 802},
++``9.2 48-bit universal LAN MAC addresses'').
++
++If the driver does not negotiate the VIRTIO_NET_F_STATUS feature, it SHOUL=
 D
-+value in the field \field{status}.
++assume the link is active, otherwise it SHOULD read the link status from
++the bottom bit of \field{status}.
 +
-+The device handles a VIRTIO_BLK_T_ZONE_RESET request by attempting to chan=
-ge the
-+state of the zone with the \field{sector} address to VIRTIO_BLK_ZS_EMPTY s=
-tate.
-+If the transition to this state can not be performed, the zone state does =
-not
-+change and the request MUST be completed with VIRTIO_BLK_S_ZONE_INVALID_CM=
-D
-+value in the field \field{status}.
++A driver SHOULD negotiate VIRTIO_NET_F_MTU if the device offers it.
 +
-+The device handles a VIRTIO_BLK_T_ZONE_RESET_ALL request by transitioning =
-all
-+sequential device zones in VIRTIO_BLK_ZS_IOPEN, VIRTIO_BLK_ZS_EOPEN,
-+VIRTIO_BLK_ZS_CLOSED and VIRTIO_BLK_ZS_FULL state to VIRTIO_BLK_ZS_EMPTY s=
-tate.
++If the driver negotiates VIRTIO_NET_F_MTU, it MUST supply enough receive
++buffers to receive at least one receive packet of size \field{mtu} (plus l=
+ow
++level ethernet header length) with \field{gso_type} NONE or ECN.
 +
-+Upon receiving a VIRTIO_BLK_T_ZONE_APPEND request or a VIRTIO_BLK_T_OUT
-+request issued to a SWR zone in VIRTIO_BLK_ZS_EMPTY or VIRTIO_BLK_ZS_CLOSE=
-D
-+state, the device attempts to perform the transition of the zone to
-+VIRTIO_BLK_ZS_IOPEN state before writing data. This transition may fail du=
-e to
-+insufficient open and/or active zone resources available on the device. In=
- this
-+case, the request MUST be completed with VIRTIO_BLK_S_ZONE_OPEN_RESOURCE o=
-r
-+VIRTIO_BLK_S_ZONE_ACTIVE_RESOURCE value in the \field{status}.
++If the driver negotiates VIRTIO_NET_F_MTU, it MUST NOT transmit packets of
++size exceeding the value of \field{mtu} (plus low level ethernet header le=
+ngth)
++with \field{gso_type} NONE or ECN.
 +
-+If the \field{sector} field in the VIRTIO_BLK_T_ZONE_APPEND request does n=
-ot
-+specify the lowest sector for a zone, then the request SHALL be completed =
-with
-+VIRTIO_BLK_S_ZONE_INVALID_CMD value in \field{status}.
++A driver SHOULD negotiate the VIRTIO_NET_F_STANDBY feature if the device o=
+ffers it.
 +
-+A VIRTIO_BLK_T_ZONE_APPEND request or a VIRTIO_BLK_T_OUT request that has =
-the
-+data range that exceeds the remaining writable capacity for the zone, then=
- the
-+request SHALL be completed with VIRTIO_BLK_S_ZONE_INVALID_CMD value in
-+\field{status}.
++If VIRTIO_NET_F_SPEED_DUPLEX has been negotiated,
++the driver MUST treat any value of \field{speed} above
++0x7fffffff as well as any value of \field{duplex} not
++matching 0x00 or 0x01 as an unknown value.
 +
-+If a request of the type VIRTIO_BLK_T_ZONE_APPEND is completed with
-+VIRTIO_BLK_S_OK status, the field \field{append_sector} in
-+\field{virtio_blk_req_za} MUST be set by the device to contain the first s=
-ector
-+of the data written to the zone.
++If VIRTIO_NET_F_SPEED_DUPLEX has been negotiated, the driver
++SHOULD re-read \field{speed} and \field{duplex} after a
++configuration change notification.
 +
-+If a request of the type VIRTIO_BLK_T_ZONE_APPEND is completed with a stat=
-us
-+other than VIRTIO_BLK_S_OK, the value of \field{append_sector} field in
-+\field{virtio_blk_req_za} is undefined.
-+
-+A VIRTIO_BLK_T_ZONE_APPEND request that has the data size that exceeds
-+\field{max_append_sectors} configuration space value, then,
-+\begin{itemize}
-+\item if \field{max_append_sectors} configuration space value is reported =
-as
-+    zero by the device, the request SHALL be completed with VIRTIO_BLK_S_U=
-NSUPP
-+    \field{status}.
-+
-+\item if \field{max_append_sectors} configuration space value is reported =
-as
-+    a non-zero value by the device, the request SHALL be completed with
-+    VIRTIO_BLK_S_ZONE_INVALID_CMD \field{status}.
-+\end{itemize}
-+
-+If a VIRTIO_BLK_T_ZONE_APPEND request, a VIRTIO_BLK_T_IN request or a
-+VIRTIO_BLK_T_OUT request issued to a SWR zone has the range that has secto=
-rs in
-+more than one zone, then the request SHALL be completed with
-+VIRTIO_BLK_S_ZONE_INVALID_CMD value in the field \field{status}.
-+
-+A VIRTIO_BLK_T_OUT request that has the \field{sector} value that is not a=
-ligned
-+with the write pointer for the zone, then the request SHALL be completed w=
-ith
-+VIRTIO_BLK_S_ZONE_UNALIGNED_WP value in the field \field{status}.
-+
-+In order to avoid resource-related errors while opening zones implicitly, =
-the
-+device MAY automatically transition zones in VIRTIO_BLK_ZS_IOPEN state to
-+VIRTIO_BLK_ZS_CLOSED state.
-+
-+All VIRTIO_BLK_T_OUT requests or VIRTIO_BLK_T_ZONE_APPEND requests issued
-+to a zone in the VIRTIO_BLK_ZS_RDONLY state SHALL be completed with
-+VIRTIO_BLK_S_ZONE_INVALID_CMD \field{status}.
-+
-+All requests issued to a zone in the VIRTIO_BLK_ZS_OFFLINE state SHALL be
-+completed with VIRTIO_BLK_S_ZONE_INVALID_CMD value in the field \field{sta=
-tus}.
-+
-+The device MUST consider the sectors that are read between the write point=
-er
-+position of a zone and the end of the last sector of the zone as unwritten=
- data.
-+The sectors between the write pointer position and the end of the last sec=
-tor
-+within the zone capacity during VIRTIO_BLK_T_ZONE_FINISH request processin=
-g are
-+also considered unwritten data.
-+
-+When unwritten data is present in the sector range of a read request, the =
-device
-+MUST process this data in one of the following ways -
-+
-+\begin{enumerate}
-+\item Fill the unwritten data with a device-specific byte pattern. The
-+configuration, control and reporting of this byte pattern is beyond the sc=
-ope
-+of this standard. This is the preferred approach.
-+
-+\item Fail the request. Depending on the driver implementation, this may p=
-revent
-+the device from becoming operational.
-+\end{enumerate}
-+
-+If both the VIRTIO_BLK_F_ZONED and VIRTIO_BLK_F_SECURE_ERASE features are
-+negotiated, then
-+
-+\begin{enumerate}
-+\item the field \field{secure_erase_sector_alignment} in the configuration=
- space
-+of the device MUST be a multiple of \field{zone_sectors} value reported in=
- the
-+device configuration space.
-+
-+\item the data size in VIRTIO_BLK_T_SECURE_ERASE requests MUST be a multip=
-le of
-+\field{zone_sectors} value in the device configuration space.
-+\end{enumerate}
-+
-+The device MUST handle a VIRTIO_BLK_T_SECURE_ERASE request in the same way=
- it
-+handles VIRTIO_BLK_T_ZONE_RESET request for the zone range specified in th=
-e
-+VIRTIO_BLK_T_SECURE_ERASE request.
-+
-+\subsubsection{Legacy Interface: Device Operation}\label{sec:Device Types =
-/ Block Device / Device Operation / Legacy Interface: Device Operation}
++\subsubsection{Legacy Interface: Device configuration layout}\label{sec:De=
+vice Types / Network Device / Device configuration layout / Legacy Interfac=
+e: Device configuration layout}
++\label{sec:Device Types / Block Device / Feature bits / Device configurati=
+on layout / Legacy Interface: Device configuration layout}
 +When using the legacy interface, transitional devices and drivers
-+MUST format the fields in struct virtio_blk_req
++MUST format \field{status} and
++\field{max_virtqueue_pairs} in struct virtio_net_config
 +according to the native endian of the guest rather than
 +(necessarily when not using the legacy interface) little-endian.
 +
-+When using the legacy interface, transitional drivers
-+SHOULD ignore the used length values.
-+\begin{note}
-+Historically, some devices put the total descriptor length,
-+or the total length of device-writable buffers there,
-+even when only the status byte was actually written.
-+\end{note}
++When using the legacy interface, \field{mac} is driver-writable
++which provided a way for drivers to update the MAC without
++negotiating VIRTIO_NET_F_CTRL_MAC_ADDR.
 +
-+The \field{reserved} field was previously called \field{ioprio}.  \field{i=
-oprio}
-+is a hint about the relative priorities of requests to the device:
-+higher numbers indicate more important requests.
++\subsection{Device Initialization}\label{sec:Device Types / Network Device=
+ / Device Initialization}
++
++A driver would perform a typical initialization routine like so:
++
++\begin{enumerate}
++\item Identify and initialize the receive and
++  transmission virtqueues, up to N of each kind. If
++  VIRTIO_NET_F_MQ feature bit is negotiated,
++  N=3D\field{max_virtqueue_pairs}, otherwise identify N=3D1.
++
++\item If the VIRTIO_NET_F_CTRL_VQ feature bit is negotiated,
++  identify the control virtqueue.
++
++\item Fill the receive queues with buffers: see \ref{sec:Device Types / Ne=
+twork Device / Device Operation / Setting Up Receive Buffers}.
++
++\item Even with VIRTIO_NET_F_MQ, only receiveq1, transmitq1 and
++  controlq are used by default.  The driver would send the
++  VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET command specifying the
++  number of the transmit and receive queues to use.
++
++\item If the VIRTIO_NET_F_MAC feature bit is set, the configuration
++  space \field{mac} entry indicates the ``physical'' address of the
++  network card, otherwise the driver would typically generate a random
++  local MAC address.
++
++\item If the VIRTIO_NET_F_STATUS feature bit is negotiated, the link
++  status comes from the bottom bit of \field{status}.
++  Otherwise, the driver assumes it's active.
++
++\item A performant driver would indicate that it will generate checksumles=
+s
++  packets by negotating the VIRTIO_NET_F_CSUM feature.
++
++\item If that feature is negotiated, a driver can use TCP segmentation or =
+UDP
++  segmentation/fragmentation offload by negotiating the VIRTIO_NET_F_HOST_=
+TSO4 (IPv4
++  TCP), VIRTIO_NET_F_HOST_TSO6 (IPv6 TCP), VIRTIO_NET_F_HOST_UFO
++  (UDP fragmentation) and VIRTIO_NET_F_HOST_USO (UDP segmentation) feature=
+s.
++
++\item The converse features are also available: a driver can save
++  the virtual device some work by negotiating these features.\note{For exa=
+mple, a network packet transported between two guests on
++the same system might not need checksumming at all, nor segmentation,
++if both guests are amenable.}
++   The VIRTIO_NET_F_GUEST_CSUM feature indicates that partially
++  checksummed packets can be received, and if it can do that then
++  the VIRTIO_NET_F_GUEST_TSO4, VIRTIO_NET_F_GUEST_TSO6,
++  VIRTIO_NET_F_GUEST_UFO, VIRTIO_NET_F_GUEST_ECN, VIRTIO_NET_F_GUEST_USO4
++  and VIRTIO_NET_F_GUEST_USO6 are the input equivalents of the features de=
+scribed above.
++  See \ref{sec:Device Types / Network Device / Device Operation /
++Setting Up Receive Buffers}~\nameref{sec:Device Types / Network
++Device / Device Operation / Setting Up Receive Buffers} and
++\ref{sec:Device Types / Network Device / Device Operation /
++Processing of Incoming Packets}~\nameref{sec:Device Types /
++Network Device / Device Operation / Processing of Incoming Packets} below.
++\end{enumerate}
++
++A truly minimal driver would only accept VIRTIO_NET_F_MAC and ignore
++everything else.
++
++\subsection{Device Operation}\label{sec:Device Types / Network Device / De=
+vice Operation}
++
++Packets are transmitted by placing them in the
++transmitq1\ldots transmitqN, and buffers for incoming packets are
++placed in the receiveq1\ldots receiveqN. In each case, the packet
++itself is preceded by a header:
 +
 +\begin{lstlisting}
-+#define VIRTIO_BLK_T_FLUSH_OUT    5
-+\end{lstlisting}
-+
-+The command VIRTIO_BLK_T_FLUSH_OUT was a synonym for VIRTIO_BLK_T_FLUSH;
-+a driver MUST treat it as a VIRTIO_BLK_T_FLUSH command.
-+
-+\begin{lstlisting}
-+#define VIRTIO_BLK_T_BARRIER     0x80000000
-+\end{lstlisting}
-+
-+If the device has VIRTIO_BLK_F_BARRIER
-+feature the high bit (VIRTIO_BLK_T_BARRIER) indicates that this
-+request acts as a barrier and that all preceding requests SHOULD be
-+complete before this one, and all following requests SHOULD NOT be
-+started until this is complete.
-+
-+\begin{note} A barrier does not flush
-+caches in the underlying backend device in host, and thus does not
-+serve as data consistency guarantee.  Only a VIRTIO_BLK_T_FLUSH request
-+does that.
-+\end{note}
-+
-+Some older legacy devices did not commit completed writes to persistent
-+device backend storage when VIRTIO_BLK_F_FLUSH was offered but not
-+negotiated.  In order to work around this, the driver MAY set the
-+\field{writeback} to 0 (if available) or it MAY send an explicit flush
-+request after every completed write.
-+
-+If the device has VIRTIO_BLK_F_SCSI feature, it can also support
-+scsi packet command requests, each of these requests is of form:
-+
-+\begin{lstlisting}
-+/* All fields are in guest's native endian. */
-+struct virtio_scsi_pc_req {
-+        u32 type;
-+        u32 ioprio;
-+        u64 sector;
-+        u8 cmd[];
-+        u8 data[][512];
-+#define SCSI_SENSE_BUFFERSIZE   96
-+        u8 sense[SCSI_SENSE_BUFFERSIZE];
-+        u32 errors;
-+        u32 data_len;
-+        u32 sense_len;
-+        u32 residual;
-+        u8 status;
++struct virtio_net_hdr {
++#define VIRTIO_NET_HDR_F_NEEDS_CSUM    1
++#define VIRTIO_NET_HDR_F_DATA_VALID    2
++#define VIRTIO_NET_HDR_F_RSC_INFO      4
++        u8 flags;
++#define VIRTIO_NET_HDR_GSO_NONE        0
++#define VIRTIO_NET_HDR_GSO_TCPV4       1
++#define VIRTIO_NET_HDR_GSO_UDP         3
++#define VIRTIO_NET_HDR_GSO_TCPV6       4
++#define VIRTIO_NET_HDR_GSO_UDP_L4      5
++#define VIRTIO_NET_HDR_GSO_ECN      0x80
++        u8 gso_type;
++        le16 hdr_len;
++        le16 gso_size;
++        le16 csum_start;
++        le16 csum_offset;
++        le16 num_buffers;
++        le32 hash_value;        (Only if VIRTIO_NET_F_HASH_REPORT negotiat=
+ed)
++        le16 hash_report;       (Only if VIRTIO_NET_F_HASH_REPORT negotiat=
+ed)
++        le16 padding_reserved;  (Only if VIRTIO_NET_F_HASH_REPORT negotiat=
+ed)
 +};
 +\end{lstlisting}
 +
-+A request type can also be a scsi packet command (VIRTIO_BLK_T_SCSI_CMD or
-+VIRTIO_BLK_T_SCSI_CMD_OUT).  The two types are equivalent, the device
-+does not distinguish between them:
++The controlq is used to control device features such as
++filtering.
 +
-+\begin{lstlisting}
-+#define VIRTIO_BLK_T_SCSI_CMD     2
-+#define VIRTIO_BLK_T_SCSI_CMD_OUT 3
-+\end{lstlisting}
++\subsubsection{Legacy Interface: Device Operation}\label{sec:Device Types =
+/ Network Device / Device Operation / Legacy Interface: Device Operation}
++When using the legacy interface, transitional devices and drivers
++MUST format the fields in struct virtio_net_hdr
++according to the native endian of the guest rather than
++(necessarily when not using the legacy interface) little-endian.
 +
-+The \field{cmd} field is only present for scsi packet command requests,
-+and indicates the command to perform. This field MUST reside in a
-+single, separate device-readable buffer; command length can be derived
-+from the length of this buffer.
++The legacy driver only presented \field{num_buffers} in the struct virtio_=
+net_hdr
++when VIRTIO_NET_F_MRG_RXBUF was negotiated; without that feature the
++structure was 2 bytes shorter.
 +
-+Note that these first three (four for scsi packet commands)
-+fields are always device-readable: \field{data} is either device-readable
-+or device-writable, depending on the request. The size of the read or
-+write can be derived from the total size of the request buffers.
++When using the legacy interface, the driver SHOULD ignore the
++used length for the transmit queues
++and the controlq queue.
++\begin{note}
++Historically, some devices put
++the total descriptor length there, even though no data was
++actually written.
++\end{note}
 +
-+\field{sense} is only present for scsi packet command requests,
-+and indicates the buffer for scsi sense data.
++\subsubsection{Packet Transmission}\label{sec:Device Types / Network Devic=
+e / Device Operation / Packet Transmission}
 +
-+\field{data_len} is only present for scsi packet command
-+requests, this field is deprecated, and SHOULD be ignored by the
-+driver. Historically, devices copied data length there.
++Transmitting a single packet is simple, but varies depending on
++the different features the driver negotiated.
 +
-+\field{sense_len} is only present for scsi packet command
-+requests and indicates the number of bytes actually written to
-+the \field{sense} buffer.
++\begin{enumerate}
++\item The driver can send a completely checksummed packet.  In this case,
++  \field{flags} will be zero, and \field{gso_type} will be VIRTIO_NET_HDR_=
+GSO_NONE.
 +
-+\field{residual} field is only present for scsi packet command
-+requests and indicates the residual size, calculated as data
-+length - number of bytes actually transferred.
++\item If the driver negotiated VIRTIO_NET_F_CSUM, it can skip
++  checksumming the packet:
++  \begin{itemize}
++  \item \field{flags} has the VIRTIO_NET_HDR_F_NEEDS_CSUM set,
 +
-+\subsubsection{Legacy Interface: Framing Requirements}\label{sec:Device Ty=
-pes / Block Device / Legacy Interface: Framing Requirements}
++  \item \field{csum_start} is set to the offset within the packet to begin=
+ checksumming,
++    and
 +
-+When using legacy interfaces, transitional drivers which have not
-+negotiated VIRTIO_F_ANY_LAYOUT:
++  \item \field{csum_offset} indicates how many bytes after the csum_start =
+the
++    new (16 bit ones' complement) checksum is placed by the device.
 +
++  \item The TCP checksum field in the packet is set to the sum
++    of the TCP pseudo header, so that replacing it by the ones'
++    complement checksum of the TCP header and body will give the
++    correct result.
++  \end{itemize}
++
++\begin{note}
++For example, consider a partially checksummed TCP (IPv4) packet.
++It will have a 14 byte ethernet header and 20 byte IP header
++followed by the TCP header (with the TCP checksum field 16 bytes
++into that header). \field{csum_start} will be 14+20 =3D 34 (the TCP
++checksum includes the header), and \field{csum_offset} will be 16.
++\end{note}
++
++\item If the driver negotiated
++  VIRTIO_NET_F_HOST_TSO4, TSO6, USO or UFO, and the packet requires
++  TCP segmentation, UDP segmentation or fragmentation, then \field{gso_typ=
+e}
++  is set to VIRTIO_NET_HDR_GSO_TCPV4, TCPV6, UDP_L4 or UDP.
++  (Otherwise, it is set to VIRTIO_NET_HDR_GSO_NONE). In this
++  case, packets larger than 1514 bytes can be transmitted: the
++  metadata indicates how to replicate the packet header to cut it
++  into smaller packets. The other gso fields are set:
++
++  \begin{itemize}
++  \item If the VIRTIO_NET_F_GUEST_HDRLEN feature has been negotiated,
++    \field{hdr_len} indicates the header length that needs to be replicate=
+d
++    for each packet. It's the number of bytes from the beginning of the pa=
+cket
++    to the beginning of the transport payload.
++    Otherwise, if the VIRTIO_NET_F_GUEST_HDRLEN feature has not been negot=
+iated,
++    \field{hdr_len} is a hint to the device as to how much of the header
++    needs to be kept to copy into each packet, usually set to the
++    length of the headers, including the transport header\footnote{Due to =
+various bugs in implementations, this field is not useful
++as a guarantee of the transport header size.
++}.
++
++  \begin{note}
++  Some devices benefit from knowledge of the exact header length.
++  \end{note}
++
++  \item \field{gso_size} is the maximum size of each packet beyond that
++    header (ie. MSS).
++
++  \item If the driver negotiated the VIRTIO_NET_F_HOST_ECN feature,
++    the VIRTIO_NET_HDR_GSO_ECN bit in \field{gso_type}
++    indicates that the TCP packet has the ECN bit set\footnote{This case i=
+s not handled by some older hardware, so is called out
++specifically in the protocol.}.
++   \end{itemize}
++
++\item \field{num_buffers} is set to zero.  This field is unused on transmi=
+tted packets.
++
++\item The header and packet are added as one output descriptor to the
++  transmitq, and the device is notified of the new entry
++  (see \ref{sec:Device Types / Network Device / Device Initialization}~\na=
+meref{sec:Device Types / Network Device / Device Initialization}).
++\end{enumerate}
++
++\drivernormative{\paragraph}{Packet Transmission}{Device Types / Network D=
+evice / Device Operation / Packet Transmission}
++
++The driver MUST set \field{num_buffers} to zero.
++
++If VIRTIO_NET_F_CSUM is not negotiated, the driver MUST set
++\field{flags} to zero and SHOULD supply a fully checksummed
++packet to the device.
++
++If VIRTIO_NET_F_HOST_TSO4 is negotiated, the driver MAY set
++\field{gso_type} to VIRTIO_NET_HDR_GSO_TCPV4 to request TCPv4
++segmentation, otherwise the driver MUST NOT set
++\field{gso_type} to VIRTIO_NET_HDR_GSO_TCPV4.
++
++If VIRTIO_NET_F_HOST_TSO6 is negotiated, the driver MAY set
++\field{gso_type} to VIRTIO_NET_HDR_GSO_TCPV6 to request TCPv6
++segmentation, otherwise the driver MUST NOT set
++\field{gso_type} to VIRTIO_NET_HDR_GSO_TCPV6.
++
++If VIRTIO_NET_F_HOST_UFO is negotiated, the driver MAY set
++\field{gso_type} to VIRTIO_NET_HDR_GSO_UDP to request UDP
++fragmentation, otherwise the driver MUST NOT set
++\field{gso_type} to VIRTIO_NET_HDR_GSO_UDP.
++
++If VIRTIO_NET_F_HOST_USO is negotiated, the driver MAY set
++\field{gso_type} to VIRTIO_NET_HDR_GSO_UDP_L4 to request UDP
++segmentation, otherwise the driver MUST NOT set
++\field{gso_type} to VIRTIO_NET_HDR_GSO_UDP_L4.
++
++The driver SHOULD NOT send to the device TCP packets requiring segmentatio=
+n offload
++which have the Explicit Congestion Notification bit set, unless the
++VIRTIO_NET_F_HOST_ECN feature is negotiated, in which case the
++driver MUST set the VIRTIO_NET_HDR_GSO_ECN bit in
++\field{gso_type}.
++
++If the VIRTIO_NET_F_CSUM feature has been negotiated, the
++driver MAY set the VIRTIO_NET_HDR_F_NEEDS_CSUM bit in
++\field{flags}, if so:
++\begin{enumerate}
++\item the driver MUST validate the packet checksum at
++=09offset \field{csum_offset} from \field{csum_start} as well as all
++=09preceding offsets;
++\item the driver MUST set the packet checksum stored in the
++=09buffer to the TCP/UDP pseudo header;
++\item the driver MUST set \field{csum_start} and
++=09\field{csum_offset} such that calculating a ones'
++=09complement checksum from \field{csum_start} up until the end of
++=09the packet and storing the result at offset \field{csum_offset}
++=09from  \field{csum_start} will result in a fully checksummed
++=09packet;
++\end{enumerate}
++
++If none of the VIRTIO_NET_F_HOST_TSO4, TSO6, USO or UFO options have
++been negotiated, the driver MUST set \field{gso_type} to
++VIRTIO_NET_HDR_GSO_NONE.
++
++If \field{gso_type} differs from VIRTIO_NET_HDR_GSO_NONE, then
++the driver MUST also set the VIRTIO_NET_HDR_F_NEEDS_CSUM bit in
++\field{flags} and MUST set \field{gso_size} to indicate the
++desired MSS.
++
++If one of the VIRTIO_NET_F_HOST_TSO4, TSO6, USO or UFO options have
++been negotiated:
 +\begin{itemize}
-+\item MUST use a single 8-byte descriptor containing \field{type},
-+  \field{reserved} and \field{sector}, followed by descriptors
-+  for \field{data}, then finally a separate 1-byte descriptor
-+  for \field{status}.
++\item If the VIRTIO_NET_F_GUEST_HDRLEN feature has been negotiated,
++=09and \field{gso_type} differs from VIRTIO_NET_HDR_GSO_NONE,
++=09the driver MUST set \field{hdr_len} to a value equal to the length
++=09of the headers, including the transport header.
 +
-+\item For SCSI commands there are additional constraints.
-+  \field{sense} MUST reside in a
-+  single separate device-writable descriptor of size 96 bytes,
-+  and \field{errors}, \field{data_len}, \field{sense_len} and
-+  \field{residual} MUST reside a single separate
-+  device-writable descriptor.
++\item If the VIRTIO_NET_F_GUEST_HDRLEN feature has not been negotiated,
++=09or \field{gso_type} is VIRTIO_NET_HDR_GSO_NONE,
++=09the driver SHOULD set \field{hdr_len} to a value
++=09not less than the length of the headers, including the transport
++=09header.
 +\end{itemize}
 +
-+See \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Message Fr=
-aming}.
++The driver SHOULD accept the VIRTIO_NET_F_GUEST_HDRLEN feature if it has
++been offered, and if it's able to provide the exact header length.
++
++The driver MUST NOT set the VIRTIO_NET_HDR_F_DATA_VALID and
++VIRTIO_NET_HDR_F_RSC_INFO bits in \field{flags}.
++
++\devicenormative{\paragraph}{Packet Transmission}{Device Types / Network D=
+evice / Device Operation / Packet Transmission}
++The device MUST ignore \field{flag} bits that it does not recognize.
++
++If VIRTIO_NET_HDR_F_NEEDS_CSUM bit in \field{flags} is not set, the
++device MUST NOT use the \field{csum_start} and \field{csum_offset}.
++
++If one of the VIRTIO_NET_F_HOST_TSO4, TSO6, USO or UFO options have
++been negotiated:
++\begin{itemize}
++\item If the VIRTIO_NET_F_GUEST_HDRLEN feature has been negotiated,
++=09and \field{gso_type} differs from VIRTIO_NET_HDR_GSO_NONE,
++=09the device MAY use \field{hdr_len} as the transport header size.
++
++=09\begin{note}
++=09Caution should be taken by the implementation so as to prevent
++=09a malicious driver from attacking the device by setting an incorrect hd=
+r_len.
++=09\end{note}
++
++\item If the VIRTIO_NET_F_GUEST_HDRLEN feature has not been negotiated,
++=09or \field{gso_type} is VIRTIO_NET_HDR_GSO_NONE,
++=09the device MAY use \field{hdr_len} only as a hint about the
++=09transport header size.
++=09The device MUST NOT rely on \field{hdr_len} to be correct.
++
++=09\begin{note}
++=09This is due to various bugs in implementations.
++=09\end{note}
++\end{itemize}
++
++If VIRTIO_NET_HDR_F_NEEDS_CSUM is not set, the device MUST NOT
++rely on the packet checksum being correct.
++\paragraph{Packet Transmission Interrupt}\label{sec:Device Types / Network=
+ Device / Device Operation / Packet Transmission / Packet Transmission Inte=
+rrupt}
++
++Often a driver will suppress transmission virtqueue interrupts
++and check for used packets in the transmit path of following
++packets.
++
++The normal behavior in this interrupt handler is to retrieve
++used buffers from the virtqueue and free the corresponding
++headers and packets.
++
++\subsubsection{Setting Up Receive Buffers}\label{sec:Device Types / Networ=
+k Device / Device Operation / Setting Up Receive Buffers}
++
++It is generally a good idea to keep the receive virtqueue as
++fully populated as possible: if it runs out, network performance
++will suffer.
++
++If the VIRTIO_NET_F_GUEST_TSO4, VIRTIO_NET_F_GUEST_TSO6,
++VIRTIO_NET_F_GUEST_UFO, VIRTIO_NET_F_GUEST_USO4 or VIRTIO_NET_F_GUEST_USO6
++features are used, the maximum incoming packet
++will be to 65550 bytes long (the maximum size of a
++TCP or UDP packet, plus the 14 byte ethernet header), otherwise
++1514 bytes.  The 12-byte struct virtio_net_hdr is prepended to this,
++making for 65562 or 1526 bytes.
++
++\drivernormative{\paragraph}{Setting Up Receive Buffers}{Device Types / Ne=
+twork Device / Device Operation / Setting Up Receive Buffers}
++
++\begin{itemize}
++\item If VIRTIO_NET_F_MRG_RXBUF is not negotiated:
++  \begin{itemize}
++    \item If VIRTIO_NET_F_GUEST_TSO4, VIRTIO_NET_F_GUEST_TSO6, VIRTIO_NET_=
+F_GUEST_UFO,
++=09VIRTIO_NET_F_GUEST_USO4 or VIRTIO_NET_F_GUEST_USO6 are negotiated, the =
+driver SHOULD populate
++      the receive queue(s) with buffers of at least 65562 bytes.
++    \item Otherwise, the driver SHOULD populate the receive queue(s)
++      with buffers of at least 1526 bytes.
++  \end{itemize}
++\item If VIRTIO_NET_F_MRG_RXBUF is negotiated, each buffer MUST be at
++least the size of the struct virtio_net_hdr.
++\end{itemize}
++
++\begin{note}
++Obviously each buffer can be split across multiple descriptor elements.
++\end{note}
++
++If VIRTIO_NET_F_MQ is negotiated, each of receiveq1\ldots receiveqN
++that will be used SHOULD be populated with receive buffers.
++
++\devicenormative{\paragraph}{Setting Up Receive Buffers}{Device Types / Ne=
+twork Device / Device Operation / Setting Up Receive Buffers}
++
++The device MUST set \field{num_buffers} to the number of descriptors used =
+to
++hold the incoming packet.
++
++The device MUST use only a single descriptor if VIRTIO_NET_F_MRG_RXBUF
++was not negotiated.
++\begin{note}
++{This means that \field{num_buffers} will always be 1
++if VIRTIO_NET_F_MRG_RXBUF is not negotiated.}
++\end{note}
++
++\subsubsection{Processing of Incoming Packets}\label{sec:Device Types / Ne=
+twork Device / Device Operation / Processing of Incoming Packets}
++\label{sec:Device Types / Network Device / Device Operation / Processing o=
+f Packets}%old label for latexdiff
++
++When a packet is copied into a buffer in the receiveq, the
++optimal path is to disable further used buffer notifications for the
++receiveq and process packets until no more are found, then re-enable
++them.
++
++Processing incoming packets involves:
++
++\begin{enumerate}
++\item \field{num_buffers} indicates how many descriptors
++  this packet is spread over (including this one): this will
++  always be 1 if VIRTIO_NET_F_MRG_RXBUF was not negotiated.
++  This allows receipt of large packets without having to allocate large
++  buffers: a packet that does not fit in a single buffer can flow
++  over to the next buffer, and so on. In this case, there will be
++  at least \field{num_buffers} used buffers in the virtqueue, and the devi=
+ce
++  chains them together to form a single packet in a way similar to
++  how it would store it in a single buffer spread over multiple
++  descriptors.
++  The other buffers will not begin with a struct virtio_net_hdr.
++
++\item If
++  \field{num_buffers} is one, then the entire packet will be
++  contained within this buffer, immediately following the struct
++  virtio_net_hdr.
++\item If the VIRTIO_NET_F_GUEST_CSUM feature was negotiated, the
++  VIRTIO_NET_HDR_F_DATA_VALID bit in \field{flags} can be
++  set: if so, device has validated the packet checksum.
++  In case of multiple encapsulated protocols, one level of checksums
++  has been validated.
++\end{enumerate}
++
++Additionally, VIRTIO_NET_F_GUEST_CSUM, TSO4, TSO6, UDP and ECN
++features enable receive checksum, large receive offload and ECN
++support which are the input equivalents of the transmit checksum,
++transmit segmentation offloading and ECN features, as described
++in \ref{sec:Device Types / Network Device / Device Operation /
++Packet Transmission}:
++\begin{enumerate}
++\item If the VIRTIO_NET_F_GUEST_TSO4, TSO6, UFO, USO4 or USO6 options were
++  negotiated, then \field{gso_type} MAY be something other than
++  VIRTIO_NET_HDR_GSO_NONE, and \field{gso_size} field indicates the
++  desired MSS (see Packet Transmission point 2).
++\item If the VIRTIO_NET_F_RSC_EXT option was negotiated (this
++  implies one of VIRTIO_NET_F_GUEST_TSO4, TSO6), the
++  device processes also duplicated ACK segments, reports
++  number of coalesced TCP segments in \field{csum_start} field and
++  number of duplicated ACK segments in \field{csum_offset} field
++  and sets bit VIRTIO_NET_HDR_F_RSC_INFO in \field{flags}.
++\item If the VIRTIO_NET_F_GUEST_CSUM feature was negotiated, the
++  VIRTIO_NET_HDR_F_NEEDS_CSUM bit in \field{flags} can be
++  set: if so, the packet checksum at offset \field{csum_offset}
++  from \field{csum_start} and any preceding checksums
++  have been validated.  The checksum on the packet is incomplete and
++  if bit VIRTIO_NET_HDR_F_RSC_INFO is not set in \field{flags},
++  then \field{csum_start} and \field{csum_offset} indicate how to calculat=
+e it
++  (see Packet Transmission point 1).
++
++\end{enumerate}
++
++If applicable, the device calculates per-packet hash for incoming packets =
+as
++defined in \ref{sec:Device Types / Network Device / Device Operation / Pro=
+cessing of Incoming Packets / Hash calculation for incoming packets}.
++
++If applicable, the device reports hash information for incoming packets as
++defined in \ref{sec:Device Types / Network Device / Device Operation / Pro=
+cessing of Incoming Packets / Hash reporting for incoming packets}.
++
++\devicenormative{\paragraph}{Processing of Incoming Packets}{Device Types =
+/ Network Device / Device Operation / Processing of Incoming Packets}
++\label{devicenormative:Device Types / Network Device / Device Operation / =
+Processing of Packets}%old label for latexdiff
++
++If VIRTIO_NET_F_MRG_RXBUF has not been negotiated, the device MUST set
++\field{num_buffers} to 1.
++
++If VIRTIO_NET_F_MRG_RXBUF has been negotiated, the device MUST set
++\field{num_buffers} to indicate the number of buffers
++the packet (including the header) is spread over.
++
++If a receive packet is spread over multiple buffers, the device
++MUST use all buffers but the last (i.e. the first \field{num_buffers} -
++1 buffers) completely up to the full length of each buffer
++supplied by the driver.
++
++The device MUST use all buffers used by a single receive
++packet together, such that at least \field{num_buffers} are
++observed by driver as used.
++
++If VIRTIO_NET_F_GUEST_CSUM is not negotiated, the device MUST set
++\field{flags} to zero and SHOULD supply a fully checksummed
++packet to the driver.
++
++If VIRTIO_NET_F_GUEST_TSO4 is not negotiated, the device MUST NOT set
++\field{gso_type} to VIRTIO_NET_HDR_GSO_TCPV4.
++
++If VIRTIO_NET_F_GUEST_UDP is not negotiated, the device MUST NOT set
++\field{gso_type} to VIRTIO_NET_HDR_GSO_UDP.
++
++If VIRTIO_NET_F_GUEST_TSO6 is not negotiated, the device MUST NOT set
++\field{gso_type} to VIRTIO_NET_HDR_GSO_TCPV6.
++
++If none of VIRTIO_NET_F_GUEST_USO4 or VIRTIO_NET_F_GUEST_USO6 have been ne=
+gotiated,
++the device MUST NOT set \field{gso_type} to VIRTIO_NET_HDR_GSO_UDP_L4.
++
++The device SHOULD NOT send to the driver TCP packets requiring segmentatio=
+n offload
++which have the Explicit Congestion Notification bit set, unless the
++VIRTIO_NET_F_GUEST_ECN feature is negotiated, in which case the
++device MUST set the VIRTIO_NET_HDR_GSO_ECN bit in
++\field{gso_type}.
++
++If the VIRTIO_NET_F_GUEST_CSUM feature has been negotiated, the
++device MAY set the VIRTIO_NET_HDR_F_NEEDS_CSUM bit in
++\field{flags}, if so:
++\begin{enumerate}
++\item the device MUST validate the packet checksum at
++=09offset \field{csum_offset} from \field{csum_start} as well as all
++=09preceding offsets;
++\item the device MUST set the packet checksum stored in the
++=09receive buffer to the TCP/UDP pseudo header;
++\item the device MUST set \field{csum_start} and
++=09\field{csum_offset} such that calculating a ones'
++=09complement checksum from \field{csum_start} up until the
++=09end of the packet and storing the result at offset
++=09\field{csum_offset} from  \field{csum_start} will result in a
++=09fully checksummed packet;
++\end{enumerate}
++
++If none of the VIRTIO_NET_F_GUEST_TSO4, TSO6, UFO, USO4 or USO6 options ha=
+ve
++been negotiated, the device MUST set \field{gso_type} to
++VIRTIO_NET_HDR_GSO_NONE.
++
++If \field{gso_type} differs from VIRTIO_NET_HDR_GSO_NONE, then
++the device MUST also set the VIRTIO_NET_HDR_F_NEEDS_CSUM bit in
++\field{flags} MUST set \field{gso_size} to indicate the desired MSS.
++If VIRTIO_NET_F_RSC_EXT was negotiated, the device MUST also
++set VIRTIO_NET_HDR_F_RSC_INFO bit in \field{flags},
++set \field{csum_start} to number of coalesced TCP segments and
++set \field{csum_offset} to number of received duplicated ACK segments.
++
++If VIRTIO_NET_F_RSC_EXT was not negotiated, the device MUST
++not set VIRTIO_NET_HDR_F_RSC_INFO bit in \field{flags}.
++
++If one of the VIRTIO_NET_F_GUEST_TSO4, TSO6, UFO, USO4 or USO6 options hav=
+e
++been negotiated, the device SHOULD set \field{hdr_len} to a value
++not less than the length of the headers, including the transport
++header.
++
++If the VIRTIO_NET_F_GUEST_CSUM feature has been negotiated, the
++device MAY set the VIRTIO_NET_HDR_F_DATA_VALID bit in
++\field{flags}, if so, the device MUST validate the packet
++checksum (in case of multiple encapsulated protocols, one level
++of checksums is validated).
++
++\drivernormative{\paragraph}{Processing of Incoming
++Packets}{Device Types / Network Device / Device Operation /
++Processing of Incoming Packets}
++
++The driver MUST ignore \field{flag} bits that it does not recognize.
++
++If VIRTIO_NET_HDR_F_NEEDS_CSUM bit in \field{flags} is not set or
++if VIRTIO_NET_HDR_F_RSC_INFO bit \field{flags} is set, the
++driver MUST NOT use the \field{csum_start} and \field{csum_offset}.
++
++If one of the VIRTIO_NET_F_GUEST_TSO4, TSO6, UFO, USO4 or USO6 options hav=
+e
++been negotiated, the driver MAY use \field{hdr_len} only as a hint about t=
+he
++transport header size.
++The driver MUST NOT rely on \field{hdr_len} to be correct.
++\begin{note}
++This is due to various bugs in implementations.
++\end{note}
++
++If neither VIRTIO_NET_HDR_F_NEEDS_CSUM nor
++VIRTIO_NET_HDR_F_DATA_VALID is set, the driver MUST NOT
++rely on the packet checksum being correct.
++
++\paragraph{Hash calculation for incoming packets}
++\label{sec:Device Types / Network Device / Device Operation / Processing o=
+f Incoming Packets / Hash calculation for incoming packets}
++
++A device attempts to calculate a per-packet hash in the following cases:
++\begin{itemize}
++\item The feature VIRTIO_NET_F_RSS was negotiated. The device uses the has=
+h to determine the receive virtqueue to place incoming packets.
++\item The feature VIRTIO_NET_F_HASH_REPORT was negotiated. The device repo=
+rts the hash value and the hash type with the packet.
++\end{itemize}
++
++If the feature VIRTIO_NET_F_RSS was negotiated:
++\begin{itemize}
++\item The device uses \field{hash_types} of the virtio_net_rss_config stru=
+cture as 'Enabled hash types' bitmask.
++\item The device uses a key as defined in \field{hash_key_data} and \field=
+{hash_key_length} of the virtio_net_rss_config structure (see
++\ref{sec:Device Types / Network Device / Device Operation / Control Virtqu=
+eue / Receive-side scaling (RSS) / Setting RSS parameters}).
++\end{itemize}
++
++If the feature VIRTIO_NET_F_RSS was not negotiated:
++\begin{itemize}
++\item The device uses \field{hash_types} of the virtio_net_hash_config str=
+ucture as 'Enabled hash types' bitmask.
++\item The device uses a key as defined in \field{hash_key_data} and \field=
+{hash_key_length} of the virtio_net_hash_config structure (see
++\ref{sec:Device Types / Network Device / Device Operation / Control Virtqu=
+eue / Automatic receive steering in multiqueue mode / Hash calculation}).
++\end{itemize}
++
++Note that if the device offers VIRTIO_NET_F_HASH_REPORT, even if it suppor=
+ts only one pair of virtqueues, it MUST support
++at least one of commands of VIRTIO_NET_CTRL_MQ class to configure reported=
+ hash parameters:
++\begin{itemize}
++\item If the device offers VIRTIO_NET_F_RSS, it MUST support VIRTIO_NET_CT=
+RL_MQ_RSS_CONFIG command per
++ \ref{sec:Device Types / Network Device / Device Operation / Control Virtq=
+ueue / Receive-side scaling (RSS) / Setting RSS parameters}.
++\item Otherwise the device MUST support VIRTIO_NET_CTRL_MQ_HASH_CONFIG com=
+mand per
++ \ref{sec:Device Types / Network Device / Device Operation / Control Virtq=
+ueue / Automatic receive steering in multiqueue mode / Hash calculation}.
++\end{itemize}
++
++\subparagraph{Supported/enabled hash types}
++\label{sec:Device Types / Network Device / Device Operation / Processing o=
+f Incoming Packets / Hash calculation for incoming packets / Supported/enab=
+led hash types}
++Hash types applicable for IPv4 packets:
++\begin{lstlisting}
++#define VIRTIO_NET_HASH_TYPE_IPv4              (1 << 0)
++#define VIRTIO_NET_HASH_TYPE_TCPv4             (1 << 1)
++#define VIRTIO_NET_HASH_TYPE_UDPv4             (1 << 2)
++\end{lstlisting}
++Hash types applicable for IPv6 packets without extension headers
++\begin{lstlisting}
++#define VIRTIO_NET_HASH_TYPE_IPv6              (1 << 3)
++#define VIRTIO_NET_HASH_TYPE_TCPv6             (1 << 4)
++#define VIRTIO_NET_HASH_TYPE_UDPv6             (1 << 5)
++\end{lstlisting}
++Hash types applicable for IPv6 packets with extension headers
++\begin{lstlisting}
++#define VIRTIO_NET_HASH_TYPE_IP_EX             (1 << 6)
++#define VIRTIO_NET_HASH_TYPE_TCP_EX            (1 << 7)
++#define VIRTIO_NET_HASH_TYPE_UDP_EX            (1 << 8)
++\end{lstlisting}
++
++\subparagraph{IPv4 packets}
++\label{sec:Device Types / Network Device / Device Operation / Processing o=
+f Incoming Packets / Hash calculation for incoming packets / IPv4 packets}
++The device calculates the hash on IPv4 packets according to 'Enabled hash =
+types' bitmask as follows:
++\begin{itemize}
++\item If VIRTIO_NET_HASH_TYPE_TCPv4 is set and the packet has
++a TCP header, the hash is calculated over the following fields:
++\begin{itemize}
++\item Source IP address
++\item Destination IP address
++\item Source TCP port
++\item Destination TCP port
++\end{itemize}
++\item Else if VIRTIO_NET_HASH_TYPE_UDPv4 is set and the
++packet has a UDP header, the hash is calculated over the following fields:
++\begin{itemize}
++\item Source IP address
++\item Destination IP address
++\item Source UDP port
++\item Destination UDP port
++\end{itemize}
++\item Else if VIRTIO_NET_HASH_TYPE_IPv4 is set, the hash is
++calculated over the following fields:
++\begin{itemize}
++\item Source IP address
++\item Destination IP address
++\end{itemize}
++\item Else the device does not calculate the hash
++\end{itemize}
++
++\subparagraph{IPv6 packets without extension header}
++\label{sec:Device Types / Network Device / Device Operation / Processing o=
+f Incoming Packets / Hash calculation for incoming packets / IPv6 packets w=
+ithout extension header}
++The device calculates the hash on IPv6 packets without extension
++headers according to 'Enabled hash types' bitmask as follows:
++\begin{itemize}
++\item If VIRTIO_NET_HASH_TYPE_TCPv6 is set and the packet has
++a TCPv6 header, the hash is calculated over the following fields:
++\begin{itemize}
++\item Source IPv6 address
++\item Destination IPv6 address
++\item Source TCP port
++\item Destination TCP port
++\end{itemize}
++\item Else if VIRTIO_NET_HASH_TYPE_UDPv6 is set and the
++packet has a UDPv6 header, the hash is calculated over the following field=
+s:
++\begin{itemize}
++\item Source IPv6 address
++\item Destination IPv6 address
++\item Source UDP port
++\item Destination UDP port
++\end{itemize}
++\item Else if VIRTIO_NET_HASH_TYPE_IPv6 is set, the hash is
++calculated over the following fields:
++\begin{itemize}
++\item Source IPv6 address
++\item Destination IPv6 address
++\end{itemize}
++\item Else the device does not calculate the hash
++\end{itemize}
++
++\subparagraph{IPv6 packets with extension header}
++\label{sec:Device Types / Network Device / Device Operation / Processing o=
+f Incoming Packets / Hash calculation for incoming packets / IPv6 packets w=
+ith extension header}
++The device calculates the hash on IPv6 packets with extension
++headers according to 'Enabled hash types' bitmask as follows:
++\begin{itemize}
++\item If VIRTIO_NET_HASH_TYPE_TCP_EX is set and the packet
++has a TCPv6 header, the hash is calculated over the following fields:
++\begin{itemize}
++\item Home address from the home address option in the IPv6 destination op=
+tions header. If the extension header is not present, use the Source IPv6 a=
+ddress.
++\item IPv6 address that is contained in the Routing-Header-Type-2 from the=
+ associated extension header. If the extension header is not present, use t=
+he Destination IPv6 address.
++\item Source TCP port
++\item Destination TCP port
++\end{itemize}
++\item Else if VIRTIO_NET_HASH_TYPE_UDP_EX is set and the
++packet has a UDPv6 header, the hash is calculated over the following field=
+s:
++\begin{itemize}
++\item Home address from the home address option in the IPv6 destination op=
+tions header. If the extension header is not present, use the Source IPv6 a=
+ddress.
++\item IPv6 address that is contained in the Routing-Header-Type-2 from the=
+ associated extension header. If the extension header is not present, use t=
+he Destination IPv6 address.
++\item Source UDP port
++\item Destination UDP port
++\end{itemize}
++\item Else if VIRTIO_NET_HASH_TYPE_IP_EX is set, the hash is
++calculated over the following fields:
++\begin{itemize}
++\item Home address from the home address option in the IPv6 destination op=
+tions header. If the extension header is not present, use the Source IPv6 a=
+ddress.
++\item IPv6 address that is contained in the Routing-Header-Type-2 from the=
+ associated extension header. If the extension header is not present, use t=
+he Destination IPv6 address.
++\end{itemize}
++\item Else skip IPv6 extension headers and calculate the hash as
++defined for an IPv6 packet without extension headers
++(see \ref{sec:Device Types / Network Device / Device Operation / Processin=
+g of Incoming Packets / Hash calculation for incoming packets / IPv6 packet=
+s without extension header}).
++\end{itemize}
++
++\paragraph{Hash reporting for incoming packets}
++\label{sec:Device Types / Network Device / Device Operation / Processing o=
+f Incoming Packets / Hash reporting for incoming packets}
++
++If VIRTIO_NET_F_HASH_REPORT was negotiated and
++ the device has calculated the hash for the packet, the device fills \fiel=
+d{hash_report} with the report type of calculated hash
++and \field{hash_value} with the value of calculated hash.
++
++If VIRTIO_NET_F_HASH_REPORT was negotiated but due to any reason the
++hash was not calculated, the device sets \field{hash_report} to VIRTIO_NET=
+_HASH_REPORT_NONE.
++
++Possible values that the device can report in \field{hash_report} are defi=
+ned below.
++They correspond to supported hash types defined in
++\ref{sec:Device Types / Network Device / Device Operation / Processing of =
+Incoming Packets / Hash calculation for incoming packets / Supported/enable=
+d hash types}
++as follows:
++
++VIRTIO_NET_HASH_TYPE_XXX =3D 1 << (VIRTIO_NET_HASH_REPORT_XXX - 1)
++
++\begin{lstlisting}
++#define VIRTIO_NET_HASH_REPORT_NONE            0
++#define VIRTIO_NET_HASH_REPORT_IPv4            1
++#define VIRTIO_NET_HASH_REPORT_TCPv4           2
++#define VIRTIO_NET_HASH_REPORT_UDPv4           3
++#define VIRTIO_NET_HASH_REPORT_IPv6            4
++#define VIRTIO_NET_HASH_REPORT_TCPv6           5
++#define VIRTIO_NET_HASH_REPORT_UDPv6           6
++#define VIRTIO_NET_HASH_REPORT_IPv6_EX         7
++#define VIRTIO_NET_HASH_REPORT_TCPv6_EX        8
++#define VIRTIO_NET_HASH_REPORT_UDPv6_EX        9
++\end{lstlisting}
++
++\subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device =
+/ Device Operation / Control Virtqueue}
++
++The driver uses the control virtqueue (if VIRTIO_NET_F_CTRL_VQ is
++negotiated) to send commands to manipulate various features of
++the device which would not easily map into the configuration
++space.
++
++All commands are of the following form:
++
++\begin{lstlisting}
++struct virtio_net_ctrl {
++        u8 class;
++        u8 command;
++        u8 command-specific-data[];
++        u8 ack;
++};
++
++/* ack values */
++#define VIRTIO_NET_OK     0
++#define VIRTIO_NET_ERR    1
++\end{lstlisting}
++
++The \field{class}, \field{command} and command-specific-data are set by th=
+e
++driver, and the device sets the \field{ack} byte. There is little it can
++do except issue a diagnostic if \field{ack} is not
++VIRTIO_NET_OK.
++
++\paragraph{Packet Receive Filtering}\label{sec:Device Types / Network Devi=
+ce / Device Operation / Control Virtqueue / Packet Receive Filtering}
++\label{sec:Device Types / Network Device / Device Operation / Control Virt=
+queue / Setting Promiscuous Mode}%old label for latexdiff
++
++If the VIRTIO_NET_F_CTRL_RX and VIRTIO_NET_F_CTRL_RX_EXTRA
++features are negotiated, the driver can send control commands for
++promiscuous mode, multicast, unicast and broadcast receiving.
++
++\begin{note}
++In general, these commands are best-effort: unwanted
++packets could still arrive.
++\end{note}
++
++\begin{lstlisting}
++#define VIRTIO_NET_CTRL_RX    0
++ #define VIRTIO_NET_CTRL_RX_PROMISC      0
++ #define VIRTIO_NET_CTRL_RX_ALLMULTI     1
++ #define VIRTIO_NET_CTRL_RX_ALLUNI       2
++ #define VIRTIO_NET_CTRL_RX_NOMULTI      3
++ #define VIRTIO_NET_CTRL_RX_NOUNI        4
++ #define VIRTIO_NET_CTRL_RX_NOBCAST      5
++\end{lstlisting}
++
++
++\devicenormative{\subparagraph}{Packet Receive Filtering}{Device Types / N=
+etwork Device / Device Operation / Control Virtqueue / Packet Receive Filte=
+ring}
++
++If the VIRTIO_NET_F_CTRL_RX feature has been negotiated,
++the device MUST support the following VIRTIO_NET_CTRL_RX class
++commands:
++\begin{itemize}
++\item VIRTIO_NET_CTRL_RX_PROMISC turns promiscuous mode on and
++off. The command-specific-data is one byte containing 0 (off) or
++1 (on). If promiscous mode is on, the device SHOULD receive all
++incoming packets.
++This SHOULD take effect even if one of the other modes set by
++a VIRTIO_NET_CTRL_RX class command is on.
++\item VIRTIO_NET_CTRL_RX_ALLMULTI turns all-multicast receive on and
++off. The command-specific-data is one byte containing 0 (off) or
++1 (on). When all-multicast receive is on the device SHOULD allow
++all incoming multicast packets.
++\end{itemize}
++
++If the VIRTIO_NET_F_CTRL_RX_EXTRA feature has been negotiated,
++the device MUST support the following VIRTIO_NET_CTRL_RX class
++commands:
++\begin{itemize}
++\item VIRTIO_NET_CTRL_RX_ALLUNI turns all-unicast receive on and
++off. The command-specific-data is one byte containing 0 (off) or
++1 (on). When all-unicast receive is on the device SHOULD allow
++all incoming unicast packets.
++\item VIRTIO_NET_CTRL_RX_NOMULTI suppresses multicast receive.
++The command-specific-data is one byte containing 0 (multicast
++receive allowed) or 1 (multicast receive suppressed).
++When multicast receive is suppressed, the device SHOULD NOT
++send multicast packets to the driver.
++This SHOULD take effect even if VIRTIO_NET_CTRL_RX_ALLMULTI is on.
++This filter SHOULD NOT apply to broadcast packets.
++\item VIRTIO_NET_CTRL_RX_NOUNI suppresses unicast receive.
++The command-specific-data is one byte containing 0 (unicast
++receive allowed) or 1 (unicast receive suppressed).
++When unicast receive is suppressed, the device SHOULD NOT
++send unicast packets to the driver.
++This SHOULD take effect even if VIRTIO_NET_CTRL_RX_ALLUNI is on.
++\item VIRTIO_NET_CTRL_RX_NOBCAST suppresses broadcast receive.
++The command-specific-data is one byte containing 0 (broadcast
++receive allowed) or 1 (broadcast receive suppressed).
++When broadcast receive is suppressed, the device SHOULD NOT
++send broadcast packets to the driver.
++This SHOULD take effect even if VIRTIO_NET_CTRL_RX_ALLMULTI is on.
++\end{itemize}
++
++\drivernormative{\subparagraph}{Packet Receive Filtering}{Device Types / N=
+etwork Device / Device Operation / Control Virtqueue / Packet Receive Filte=
+ring}
++
++If the VIRTIO_NET_F_CTRL_RX feature has not been negotiated,
++the driver MUST NOT issue commands VIRTIO_NET_CTRL_RX_PROMISC or
++VIRTIO_NET_CTRL_RX_ALLMULTI.
++
++If the VIRTIO_NET_F_CTRL_RX_EXTRA feature has not been negotiated,
++the driver MUST NOT issue commands
++ VIRTIO_NET_CTRL_RX_ALLUNI,
++ VIRTIO_NET_CTRL_RX_NOMULTI,
++ VIRTIO_NET_CTRL_RX_NOUNI or
++ VIRTIO_NET_CTRL_RX_NOBCAST.
++
++\paragraph{Setting MAC Address Filtering}\label{sec:Device Types / Network=
+ Device / Device Operation / Control Virtqueue / Setting MAC Address Filter=
+ing}
++
++If the VIRTIO_NET_F_CTRL_RX feature is negotiated, the driver can
++send control commands for MAC address filtering.
++
++\begin{lstlisting}
++struct virtio_net_ctrl_mac {
++        le32 entries;
++        u8 macs[entries][6];
++};
++
++#define VIRTIO_NET_CTRL_MAC    1
++ #define VIRTIO_NET_CTRL_MAC_TABLE_SET        0
++ #define VIRTIO_NET_CTRL_MAC_ADDR_SET         1
++\end{lstlisting}
++
++The device can filter incoming packets by any number of destination
++MAC addresses\footnote{Since there are no guarantees, it can use a hash fi=
+lter or
++silently switch to allmulti or promiscuous mode if it is given too
++many addresses.
++}. This table is set using the class
++VIRTIO_NET_CTRL_MAC and the command VIRTIO_NET_CTRL_MAC_TABLE_SET. The
++command-specific-data is two variable length tables of 6-byte MAC
++addresses (as described in struct virtio_net_ctrl_mac). The first table co=
+ntains unicast addresses, and the second
++contains multicast addresses.
++
++The VIRTIO_NET_CTRL_MAC_ADDR_SET command is used to set the
++default MAC address which rx filtering
++accepts (and if VIRTIO_NET_F_MAC has been negotiated,
++this will be reflected in \field{mac} in config space).
++
++The command-specific-data for VIRTIO_NET_CTRL_MAC_ADDR_SET is
++the 6-byte MAC address.
++
++\devicenormative{\subparagraph}{Setting MAC Address Filtering}{Device Type=
+s / Network Device / Device Operation / Control Virtqueue / Setting MAC Add=
+ress Filtering}
++
++The device MUST have an empty MAC filtering table on reset.
++
++The device MUST update the MAC filtering table before it consumes
++the VIRTIO_NET_CTRL_MAC_TABLE_SET command.
++
++The device MUST update \field{mac} in config space before it consumes
++the VIRTIO_NET_CTRL_MAC_ADDR_SET command, if VIRTIO_NET_F_MAC has
++been negotiated.
++
++The device SHOULD drop incoming packets which have a destination MAC which
++matches neither the \field{mac} (or that set with VIRTIO_NET_CTRL_MAC_ADDR=
+_SET)
++nor the MAC filtering table.
++
++\drivernormative{\subparagraph}{Setting MAC Address Filtering}{Device Type=
+s / Network Device / Device Operation / Control Virtqueue / Setting MAC Add=
+ress Filtering}
++
++If VIRTIO_NET_F_CTRL_RX has not been negotiated,
++the driver MUST NOT issue VIRTIO_NET_CTRL_MAC class commands.
++
++If VIRTIO_NET_F_CTRL_RX has been negotiated,
++the driver SHOULD issue VIRTIO_NET_CTRL_MAC_ADDR_SET
++to set the default mac if it is different from \field{mac}.
++
++The driver MUST follow the VIRTIO_NET_CTRL_MAC_TABLE_SET command
++by a le32 number, followed by that number of non-multicast
++MAC addresses, followed by another le32 number, followed by
++that number of multicast addresses.  Either number MAY be 0.
++
++\subparagraph{Legacy Interface: Setting MAC Address Filtering}\label{sec:D=
+evice Types / Network Device / Device Operation / Control Virtqueue / Setti=
+ng MAC Address Filtering / Legacy Interface: Setting MAC Address Filtering}
++When using the legacy interface, transitional devices and drivers
++MUST format \field{entries} in struct virtio_net_ctrl_mac
++according to the native endian of the guest rather than
++(necessarily when not using the legacy interface) little-endian.
++
++Legacy drivers that didn't negotiate VIRTIO_NET_F_CTRL_MAC_ADDR
++changed \field{mac} in config space when NIC is accepting
++incoming packets. These drivers always wrote the mac value from
++first to last byte, therefore after detecting such drivers,
++a transitional device MAY defer MAC update, or MAY defer
++processing incoming packets until driver writes the last byte
++of \field{mac} in the config space.
++
++\paragraph{VLAN Filtering}\label{sec:Device Types / Network Device / Devic=
+e Operation / Control Virtqueue / VLAN Filtering}
++
++If the driver negotiates the VIRTIO_NET_F_CTRL_VLAN feature, it
++can control a VLAN filter table in the device.
++
++\begin{note}
++Similar to the MAC address based filtering, the VLAN filtering
++is also best-effort: unwanted packets could still arrive.
++\end{note}
++
++\begin{lstlisting}
++#define VIRTIO_NET_CTRL_VLAN       2
++ #define VIRTIO_NET_CTRL_VLAN_ADD             0
++ #define VIRTIO_NET_CTRL_VLAN_DEL             1
++\end{lstlisting}
++
++Both the VIRTIO_NET_CTRL_VLAN_ADD and VIRTIO_NET_CTRL_VLAN_DEL
++command take a little-endian 16-bit VLAN id as the command-specific-data.
++
++\subparagraph{Legacy Interface: VLAN Filtering}\label{sec:Device Types / N=
+etwork Device / Device Operation / Control Virtqueue / VLAN Filtering / Leg=
+acy Interface: VLAN Filtering}
++When using the legacy interface, transitional devices and drivers
++MUST format the VLAN id
++according to the native endian of the guest rather than
++(necessarily when not using the legacy interface) little-endian.
++
++\paragraph{Gratuitous Packet Sending}\label{sec:Device Types / Network Dev=
+ice / Device Operation / Control Virtqueue / Gratuitous Packet Sending}
++
++If the driver negotiates the VIRTIO_NET_F_GUEST_ANNOUNCE (depends
++on VIRTIO_NET_F_CTRL_VQ), the device can ask the driver to send gratuitous
++packets; this is usually done after the guest has been physically
++migrated, and needs to announce its presence on the new network
++links. (As hypervisor does not have the knowledge of guest
++network configuration (eg. tagged vlan) it is simplest to prod
++the guest in this way).
++
++\begin{lstlisting}
++#define VIRTIO_NET_CTRL_ANNOUNCE       3
++ #define VIRTIO_NET_CTRL_ANNOUNCE_ACK             0
++\end{lstlisting}
++
++The driver checks VIRTIO_NET_S_ANNOUNCE bit in the device configuration \f=
+ield{status} field
++when it notices the changes of device configuration. The
++command VIRTIO_NET_CTRL_ANNOUNCE_ACK is used to indicate that
++driver has received the notification and device clears the
++VIRTIO_NET_S_ANNOUNCE bit in \field{status}.
++
++Processing this notification involves:
++
++\begin{enumerate}
++\item Sending the gratuitous packets (eg. ARP) or marking there are pendin=
+g
++  gratuitous packets to be sent and letting deferred routine to
++  send them.
++
++\item Sending VIRTIO_NET_CTRL_ANNOUNCE_ACK command through control
++  vq.
++\end{enumerate}
++
++\drivernormative{\subparagraph}{Gratuitous Packet Sending}{Device Types / =
+Network Device / Device Operation / Control Virtqueue / Gratuitous Packet S=
+ending}
++
++If the driver negotiates VIRTIO_NET_F_GUEST_ANNOUNCE, it SHOULD notify
++network peers of its new location after it sees the VIRTIO_NET_S_ANNOUNCE =
+bit
++in \field{status}.  The driver MUST send a command on the command queue
++with class VIRTIO_NET_CTRL_ANNOUNCE and command VIRTIO_NET_CTRL_ANNOUNCE_A=
+CK.
++
++\devicenormative{\subparagraph}{Gratuitous Packet Sending}{Device Types / =
+Network Device / Device Operation / Control Virtqueue / Gratuitous Packet S=
+ending}
++
++If VIRTIO_NET_F_GUEST_ANNOUNCE is negotiated, the device MUST clear the
++VIRTIO_NET_S_ANNOUNCE bit in \field{status} upon receipt of a command buff=
+er
++with class VIRTIO_NET_CTRL_ANNOUNCE and command VIRTIO_NET_CTRL_ANNOUNCE_A=
+CK
++before marking the buffer as used.
++
++\paragraph{Device operation in multiqueue mode}\label{sec:Device Types / N=
+etwork Device / Device Operation / Control Virtqueue / Device operation in =
+multiqueue mode}
++
++This specification defines the following modes that a device MAY implement=
+ for operation with multiple transmit/receive virtqueues:
++\begin{itemize}
++\item Automatic receive steering as defined in \ref{sec:Device Types / Net=
+work Device / Device Operation / Control Virtqueue / Automatic receive stee=
+ring in multiqueue mode}.
++ If a device supports this mode, it offers the VIRTIO_NET_F_MQ feature bit=
+.
++\item Receive-side scaling as defined in \ref{devicenormative:Device Types=
+ / Network Device / Device Operation / Control Virtqueue / Receive-side sca=
+ling (RSS) / RSS processing}.
++ If a device supports this mode, it offers the VIRTIO_NET_F_RSS feature bi=
+t.
++\end{itemize}
++
++A device MAY support one of these features or both. The driver MAY negotia=
+te any set of these features that the device supports.
++
++Multiqueue is disabled by default.
++
++The driver enables multiqueue by sending a command using \field{class} VIR=
+TIO_NET_CTRL_MQ. The \field{command} selects the mode of multiqueue operati=
+on, as follows:
++\begin{lstlisting}
++#define VIRTIO_NET_CTRL_MQ    4
++ #define VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET        0 (for automatic receive s=
+teering)
++ #define VIRTIO_NET_CTRL_MQ_RSS_CONFIG          1 (for configurable receiv=
+e steering)
++ #define VIRTIO_NET_CTRL_MQ_HASH_CONFIG         2 (for configurable hash c=
+alculation)
++\end{lstlisting}
++
++If more than one multiqueue mode is negotiated, the resulting device confi=
+guration is defined by the last command sent by the driver.
++
++\paragraph{Automatic receive steering in multiqueue mode}\label{sec:Device=
+ Types / Network Device / Device Operation / Control Virtqueue / Automatic =
+receive steering in multiqueue mode}
++
++If the driver negotiates the VIRTIO_NET_F_MQ feature bit (depends on VIRTI=
+O_NET_F_CTRL_VQ), it MAY transmit outgoing packets on one
++of the multiple transmitq1\ldots transmitqN and ask the device to
++queue incoming packets into one of the multiple receiveq1\ldots receiveqN
++depending on the packet flow.
++
++The driver enables multiqueue by
++sending the VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET command, specifying
++the number of the transmit and receive queues to be used up to
++\field{max_virtqueue_pairs}; subsequently,
++transmitq1\ldots transmitqn and receiveq1\ldots receiveqn where
++n=3D\field{virtqueue_pairs} MAY be used.
++\begin{lstlisting}
++struct virtio_net_ctrl_mq_pairs_set {
++       le16 virtqueue_pairs;
++};
++#define VIRTIO_NET_CTRL_MQ_VQ_PAIRS_MIN        1
++#define VIRTIO_NET_CTRL_MQ_VQ_PAIRS_MAX        0x8000
++
++\end{lstlisting}
++
++When multiqueue is enabled by VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET command, the=
+ device MUST use automatic receive steering
++based on packet flow. Programming of the receive steering
++classificator is implicit. After the driver transmitted a packet of a
++flow on transmitqX, the device SHOULD cause incoming packets for that flow=
+ to
++be steered to receiveqX. For uni-directional protocols, or where
++no packets have been transmitted yet, the device MAY steer a packet
++to a random queue out of the specified receiveq1\ldots receiveqn.
++
++Multiqueue is disabled by VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET with \field{virt=
+queue_pairs} to 1 (this is
++the default) and waiting for the device to use the command buffer.
++
++\drivernormative{\subparagraph}{Automatic receive steering in multiqueue m=
+ode}{Device Types / Network Device / Device Operation / Control Virtqueue /=
+ Automatic receive steering in multiqueue mode}
++
++The driver MUST configure the virtqueues before enabling them with the=20
++VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET command.
++
++The driver MUST NOT request a \field{virtqueue_pairs} of 0 or
++greater than \field{max_virtqueue_pairs} in the device configuration space=
+.
++
++The driver MUST queue packets only on any transmitq1 before the=20
++VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET command.
++
++The driver MUST NOT queue packets on transmit queues greater than
++\field{virtqueue_pairs} once it has placed the VIRTIO_NET_CTRL_MQ_VQ_PAIRS=
+_SET command in the available ring.
++
++\devicenormative{\subparagraph}{Automatic receive steering in multiqueue m=
+ode}{Device Types / Network Device / Device Operation / Control Virtqueue /=
+ Automatic receive steering in multiqueue mode}
++
++After initialization of reset, the device MUST queue packets only on recei=
+veq1.
++
++The device MUST NOT queue packets on receive queues greater than
++\field{virtqueue_pairs} once it has placed the
++VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET command in a used buffer.
++
++If the destination receive queue is being reset (See \ref{sec:Basic Facili=
+ties of a Virtio Device / Virtqueues / Virtqueue Reset}),
++the device SHOULD re-select another random queue. If all receive queues ar=
+e
++being reset, the device MUST drop the packet.
++
++\subparagraph{Legacy Interface: Automatic receive steering in multiqueue m=
+ode}\label{sec:Device Types / Network Device / Device Operation / Control V=
+irtqueue / Automatic receive steering in multiqueue mode / Legacy Interface=
+: Automatic receive steering in multiqueue mode}
++When using the legacy interface, transitional devices and drivers
++MUST format \field{virtqueue_pairs}
++according to the native endian of the guest rather than
++(necessarily when not using the legacy interface) little-endian.
++
++\subparagraph{Hash calculation}\label{sec:Device Types / Network Device / =
+Device Operation / Control Virtqueue / Automatic receive steering in multiq=
+ueue mode / Hash calculation}
++If VIRTIO_NET_F_HASH_REPORT was negotiated and the device uses automatic r=
+eceive steering,
++the device MUST support a command to configure hash calculation parameters=
+.
++
++The driver provides parameters for hash calculation as follows:
++
++\field{class} VIRTIO_NET_CTRL_MQ, \field{command} VIRTIO_NET_CTRL_MQ_HASH_=
+CONFIG.
++
++The \field{command-specific-data} has following format:
++\begin{lstlisting}
++struct virtio_net_hash_config {
++    le32 hash_types;
++    le16 reserved[4];
++    u8 hash_key_length;
++    u8 hash_key_data[hash_key_length];
++};
++\end{lstlisting}
++Field \field{hash_types} contains a bitmask of allowed hash types as
++defined in
++\ref{sec:Device Types / Network Device / Device Operation / Processing of =
+Incoming Packets / Hash calculation for incoming packets / Supported/enable=
+d hash types}.
++Initially the device has all hash types disabled and reports only VIRTIO_N=
+ET_HASH_REPORT_NONE.
++
++Field \field{reserved} MUST contain zeroes. It is defined to make the stru=
+cture to match the layout of virtio_net_rss_config structure,
++defined in \ref{sec:Device Types / Network Device / Device Operation / Con=
+trol Virtqueue / Receive-side scaling (RSS)}.
++
++Fields \field{hash_key_length} and \field{hash_key_data} define the key to=
+ be used in hash calculation.
++
++\paragraph{Receive-side scaling (RSS)}\label{sec:Device Types / Network De=
+vice / Device Operation / Control Virtqueue / Receive-side scaling (RSS)}
++A device offers the feature VIRTIO_NET_F_RSS if it supports RSS receive st=
+eering with Toeplitz hash calculation and configurable parameters.
++
++A driver queries RSS capabilities of the device by reading device configur=
+ation as defined in \ref{sec:Device Types / Network Device / Device configu=
+ration layout}
++
++\subparagraph{Setting RSS parameters}\label{sec:Device Types / Network Dev=
+ice / Device Operation / Control Virtqueue / Receive-side scaling (RSS) / S=
+etting RSS parameters}
++
++Driver sends a VIRTIO_NET_CTRL_MQ_RSS_CONFIG command using the following f=
+ormat for \field{command-specific-data}:
++\begin{lstlisting}
++struct virtio_net_rss_config {
++    le32 hash_types;
++    le16 indirection_table_mask;
++    le16 unclassified_queue;
++    le16 indirection_table[indirection_table_length];
++    le16 max_tx_vq;
++    u8 hash_key_length;
++    u8 hash_key_data[hash_key_length];
++};
++\end{lstlisting}
++Field \field{hash_types} contains a bitmask of allowed hash types as
++defined in
++\ref{sec:Device Types / Network Device / Device Operation / Processing of =
+Incoming Packets / Hash calculation for incoming packets / Supported/enable=
+d hash types}.
++
++Field \field{indirection_table_mask} is a mask to be applied to
++the calculated hash to produce an index in the
++\field{indirection_table} array.
++Number of entries in \field{indirection_table} is (\field{indirection_tabl=
+e_mask} + 1).
++
++Field \field{unclassified_queue} contains the 0-based index of
++the receive virtqueue to place unclassified packets in. Index 0 correspond=
+s to receiveq1.
++
++Field \field{indirection_table} contains an array of 0-based indices of re=
+ceive virtqueus. Index 0 corresponds to receiveq1.
++
++A driver sets \field{max_tx_vq} to inform a device how many transmit virtq=
+ueues it may use (transmitq1\ldots transmitq \field{max_tx_vq}).
++
++Fields \field{hash_key_length} and \field{hash_key_data} define the key to=
+ be used in hash calculation.
++
++\drivernormative{\subparagraph}{Setting RSS parameters}{Device Types / Net=
+work Device / Device Operation / Control Virtqueue / Receive-side scaling (=
+RSS) }
++
++A driver MUST NOT send the VIRTIO_NET_CTRL_MQ_RSS_CONFIG command if the fe=
+ature VIRTIO_NET_F_RSS has not been negotiated.
++
++A driver MUST fill the \field{indirection_table} array only with indices o=
+f enabled queues. Index 0 corresponds to receiveq1.
++
++The number of entries in \field{indirection_table} (\field{indirection_tab=
+le_mask} + 1) MUST be a power of two.
++
++A driver MUST use \field{indirection_table_mask} values that are less than=
+ \field{rss_max_indirection_table_length} reported by a device.
++
++A driver MUST NOT set any VIRTIO_NET_HASH_TYPE_ flags that are not support=
+ed by a device.
++
++\devicenormative{\subparagraph}{RSS processing}{Device Types / Network Dev=
+ice / Device Operation / Control Virtqueue / Receive-side scaling (RSS) / R=
+SS processing}
++The device MUST determine the destination queue for a network packet as fo=
+llows:
++\begin{itemize}
++\item Calculate the hash of the packet as defined in \ref{sec:Device Types=
+ / Network Device / Device Operation / Processing of Incoming Packets / Has=
+h calculation for incoming packets}.
++\item If the device did not calculate the hash for the specific packet, th=
+e device directs the packet to the receiveq specified by \field{unclassifie=
+d_queue} of virtio_net_rss_config structure (value of 0 corresponds to rece=
+iveq1).
++\item Apply \field{indirection_table_mask} to the calculated hash and use =
+the result as the index in the indirection table to get 0-based number of d=
+estination receiveq (value of 0 corresponds to receiveq1).
++\item If the destination receive queue is being reset (See \ref{sec:Basic =
+Facilities of a Virtio Device / Virtqueues / Virtqueue Reset}), the device =
+MUST drop the packet.
++\end{itemize}
++
++\paragraph{Offloads State Configuration}\label{sec:Device Types / Network =
+Device / Device Operation / Control Virtqueue / Offloads State Configuratio=
+n}
++
++If the VIRTIO_NET_F_CTRL_GUEST_OFFLOADS feature is negotiated, the driver =
+can
++send control commands for dynamic offloads state configuration.
++
++\subparagraph{Setting Offloads State}\label{sec:Device Types / Network Dev=
+ice / Device Operation / Control Virtqueue / Offloads State Configuration /=
+ Setting Offloads State}
++
++To configure the offloads, the following layout structure and
++definitions are used:
++
++\begin{lstlisting}
++le64 offloads;
++
++#define VIRTIO_NET_F_GUEST_CSUM       1
++#define VIRTIO_NET_F_GUEST_TSO4       7
++#define VIRTIO_NET_F_GUEST_TSO6       8
++#define VIRTIO_NET_F_GUEST_ECN        9
++#define VIRTIO_NET_F_GUEST_UFO        10
++#define VIRTIO_NET_F_GUEST_USO4       54
++#define VIRTIO_NET_F_GUEST_USO6       55
++
++#define VIRTIO_NET_CTRL_GUEST_OFFLOADS       5
++ #define VIRTIO_NET_CTRL_GUEST_OFFLOADS_SET   0
++\end{lstlisting}
++
++The class VIRTIO_NET_CTRL_GUEST_OFFLOADS has one command:
++VIRTIO_NET_CTRL_GUEST_OFFLOADS_SET applies the new offloads configuration.
++
++le64 value passed as command data is a bitmask, bits set define
++offloads to be enabled, bits cleared - offloads to be disabled.
++
++There is a corresponding device feature for each offload. Upon feature
++negotiation corresponding offload gets enabled to preserve backward
++compatibility.
++
++\drivernormative{\subparagraph}{Setting Offloads State}{Device Types / Net=
+work Device / Device Operation / Control Virtqueue / Offloads State Configu=
+ration / Setting Offloads State}
++
++A driver MUST NOT enable an offload for which the appropriate feature
++has not been negotiated.
++
++\subparagraph{Legacy Interface: Setting Offloads State}\label{sec:Device T=
+ypes / Network Device / Device Operation / Control Virtqueue / Offloads Sta=
+te Configuration / Setting Offloads State / Legacy Interface: Setting Offlo=
+ads State}
++When using the legacy interface, transitional devices and drivers
++MUST format \field{offloads}
++according to the native endian of the guest rather than
++(necessarily when not using the legacy interface) little-endian.
++
++
++\paragraph{Notifications Coalescing}\label{sec:Device Types / Network Devi=
+ce / Device Operation / Control Virtqueue / Notifications Coalescing}
++
++If the VIRTIO_NET_F_NOTF_COAL feature is negotiated, the driver can
++send control commands for dynamically changing the coalescing parameters.
++
++\begin{lstlisting}
++struct virtio_net_ctrl_coal_rx {
++    le32 rx_max_packets;
++    le32 rx_usecs;
++};
++
++struct virtio_net_ctrl_coal_tx {
++    le32 tx_max_packets;
++    le32 tx_usecs;
++};
++
++#define VIRTIO_NET_CTRL_NOTF_COAL 6
++ #define VIRTIO_NET_CTRL_NOTF_COAL_TX_SET  0
++ #define VIRTIO_NET_CTRL_NOTF_COAL_RX_SET 1
++\end{lstlisting}
++
++Coalescing parameters:
++\begin{itemize}
++\item \field{rx_usecs}: Maximum number of usecs to delay a RX notification=
+.
++\item \field{tx_usecs}: Maximum number of usecs to delay a TX notification=
+.
++\item \field{rx_max_packets}: Maximum number of packets to receive before =
+a RX notification.
++\item \field{tx_max_packets}: Maximum number of packets to send before a T=
+X notification.
++\end{itemize}
++
++
++The class VIRTIO_NET_CTRL_NOTF_COAL has 2 commands:
++\begin{enumerate}
++\item VIRTIO_NET_CTRL_NOTF_COAL_TX_SET: set the \field{tx_usecs} and \fiel=
+d{tx_max_packets} parameters.
++\item VIRTIO_NET_CTRL_NOTF_COAL_RX_SET: set the \field{rx_usecs} and \fiel=
+d{rx_max_packets} parameters.
++\end{enumerate}
++
++\subparagraph{RX Notifications}\label{sec:Device Types / Network Device / =
+Device Operation / Control Virtqueue / Notifications Coalescing / RX Notifi=
+cations}
++
++If, for example:
++\begin{itemize}
++\item \field{rx_usecs} =3D 10.
++\item \field{rx_max_packets} =3D 15.
++\end{itemize}
++
++The device will operate as follows:
++
++\begin{itemize}
++\item The device will count received packets until it accumulates 15, or u=
+ntil 10 usecs elapsed since the first one was received.
++\item If the notifications are not suppressed by the driver, the device wi=
+ll send an used buffer notification, otherwise, the device will not send an=
+ used buffer notification as long as the notifications are suppressed.
++\end{itemize}
++
++\subparagraph{TX Notifications}\label{sec:Device Types / Network Device / =
+Device Operation / Control Virtqueue / Notifications Coalescing / TX Notifi=
+cations}
++
++If, for example:
++\begin{itemize}
++\item \field{tx_usecs} =3D 10.
++\item \field{tx_max_packets} =3D 15.
++\end{itemize}
++
++The device will operate as follows:
++
++\begin{itemize}
++\item The device will count sent packets until it accumulates 15, or until=
+ 10 usecs elapsed since the first one was sent.
++\item If the notifications are not suppressed by the driver, the device wi=
+ll send an used buffer notification, otherwise, the device will not send an=
+ used buffer notification as long as the notifications are suppressed.
++\end{itemize}
++
++\drivernormative{\subparagraph}{Notifications Coalescing}{Device Types / N=
+etwork Device / Device Operation / Control Virtqueue / Notifications Coales=
+cing}
++
++If the VIRTIO_NET_F_NOTF_COAL feature has not been negotiated, the driver =
+MUST NOT issue VIRTIO_NET_CTRL_NOTF_COAL commands.
++
++\devicenormative{\subparagraph}{Notifications Coalescing}{Device Types / N=
+etwork Device / Device Operation / Control Virtqueue / Notifications Coales=
+cing}
++
++A device SHOULD respond to the VIRTIO_NET_CTRL_NOTF_COAL commands with VIR=
+TIO_NET_ERR if it was not able to change the parameters.
++
++A device SHOULD NOT send used buffer notifications to the driver, if the n=
+otifications are suppressed as explained in \ref{sec:Basic Facilities of a =
+Virtio Device / Virtqueues / Used Buffer Notification Suppression}, even if=
+ the coalescing counters expired.
++
++Upon reset, a device MUST initialize all coalescing parameters to 0.
++
++\subsubsection{Legacy Interface: Framing Requirements}\label{sec:Device
++Types / Network Device / Legacy Interface: Framing Requirements}
++
++When using legacy interfaces, transitional drivers which have not
++negotiated VIRTIO_F_ANY_LAYOUT MUST use a single descriptor for the
++struct virtio_net_hdr on both transmit and receive, with the
++network data in the following descriptors.
++
++Additionally, when using the control virtqueue (see \ref{sec:Device
++Types / Network Device / Device Operation / Control Virtqueue})
++, transitional drivers which have not
++negotiated VIRTIO_F_ANY_LAYOUT MUST:
++\begin{itemize}
++\item for all commands, use a single 2-byte descriptor including the first=
+ two
++fields: \field{class} and \field{command}
++\item for all commands except VIRTIO_NET_CTRL_MAC_TABLE_SET
++use a single descriptor including command-specific-data
++with no padding.
++\item for the VIRTIO_NET_CTRL_MAC_TABLE_SET command use exactly
++two descriptors including command-specific-data with no padding:
++the first of these descriptors MUST include the
++virtio_net_ctrl_mac table structure for the unicast addresses with no padd=
+ing,
++the second of these descriptors MUST include the
++virtio_net_ctrl_mac table structure for the multicast addresses
++with no padding.
++\item for all commands, use a single 1-byte descriptor for the
++\field{ack} field
++\end{itemize}
++
++See \ref{sec:Basic
++Facilities of a Virtio Device / Virtqueues / Message Framing}.
 +
 +
 --=20
