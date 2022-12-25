@@ -1,114 +1,72 @@
-Return-Path: <virtio-comment-return-3620-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-comment-return-3619-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio-comment@lists.oasis-open.org>
 List-Post: <mailto:virtio-comment@lists.oasis-open.org>
 List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
 From: Parav Pandit <parav@nvidia.com>
-Date: Sun, 25 Dec 2022 02:20:48 +0200
-Message-ID: <20221225002048.92896-1-parav@nvidia.com>
+Date: Sun, 25 Dec 2022 02:11:32 +0200
+Message-ID: <20221225001132.92694-1-parav@nvidia.com>
 MIME-Version: 1.0
-Subject: [virtio-comment] [PATCH v1] virtio-network: Avoid confusion between a card and a device
+Subject: [virtio-comment] [PATCH] virtio-network: Clarify VLAN filter table configuration
 Content-Type: text/plain
 Content-Transfer-Encoding: quoted-printable
 To: mst@redhat.com, virtio-dev@lists.oasis-open.org
-Cc: virtio-comment@lists.oasis-open.org, Parav Pandit <parav@nvidia.com>
+Cc: virtio-comment@lists.oasis-open.org, si-wei.liu@oracle.com, Parav
+ Pandit <parav@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Ethernet card is a relatively vague term in context of virtio network
-device specification. A Ethernet card in the industry has one to
-multiple ports, one to multiple PCI functions.
+The filtering behavior of the VLAN filter commands is not very clear as
+discussed in thread [1].
 
-Historically virtio network device is documented as a Ethernet card.
-However it is usually just a single virtual Ethernet device.
+Hence, add the command description and device requirements for it.
 
-Hence, avoid this confusing term 'card' and align the specification
-to adhere to widely used specification term as 'device' used for all
-virtio device types.
-
-This patch is on top of change [1].
-
-[1] https://lists.oasis-open.org/archives/virtio-dev/202212/msg00042.html
-
-Fixes: https://github.com/oasis-tcs/virtio-spec/issues/154
+[1] https://www.mail-archive.com/qemu-devel@nongnu.org/msg912392.html
+Fixes: https://github.com/oasis-tcs/virtio-spec/issues/147
+Suggested-by: Si-Wei Liu <si-wei.liu@oracle.com>
 Signed-off-by: Parav Pandit <parav@nvidia.com>
 ---
-changelog:
-v0->v1:
-- removed device word twice
-- corrected grammar for changing from card to device
----
- content.tex        | 6 +++---
- virtio-network.tex | 6 +++---
- 2 files changed, 6 insertions(+), 6 deletions(-)
+ virtio-network.tex | 23 +++++++++++++++++++++++
+ 1 file changed, 23 insertions(+)
 
-diff --git a/content.tex b/content.tex
-index 5baef90..b3ef881 100644
---- a/content.tex
-+++ b/content.tex
-@@ -619,7 +619,7 @@ \subsection{PCI Device Discovery}\label{sec:Virtio Tran=
-sport Options / Virtio Ov
- \hline
- Transitional PCI Device ID  &  Virtio Device    \\
- \hline \hline
--0x1000      &   network card     \\
-+0x1000      &   network device     \\
- \hline
- 0x1001     &   block device     \\
- \hline
-@@ -635,7 +635,7 @@ \subsection{PCI Device Discovery}\label{sec:Virtio Tran=
-sport Options / Virtio Ov
- \hline
- \end{tabular}
-=20
--For example, the network card device with the Virtio Device ID 1
-+For example, the network device with the Virtio Device ID 1
- has the PCI Device ID 0x1041 or the Transitional PCI Device ID 0x1000.
-=20
- The PCI Subsystem Vendor ID and the PCI Subsystem Device ID MAY reflect
-@@ -2912,7 +2912,7 @@ \chapter{Device Types}\label{sec:Device Types}
- \hline \hline
- 0          & reserved (invalid) \\
- \hline
--1          &   network card     \\
-+1          &   network device     \\
- \hline
- 2          &   block device     \\
- \hline
 diff --git a/virtio-network.tex b/virtio-network.tex
-index 28ed343..e7cdd6f 100644
+index b05ce61..e2b28d9 100644
 --- a/virtio-network.tex
 +++ b/virtio-network.tex
-@@ -1,6 +1,6 @@
- \section{Network Device}\label{sec:Device Types / Network Device}
+@@ -1210,6 +1210,29 @@ \subsubsection{Control Virtqueue}\label{sec:Device T=
+ypes / Network Device / Devi
+ Both the VIRTIO_NET_CTRL_VLAN_ADD and VIRTIO_NET_CTRL_VLAN_DEL
+ command take a little-endian 16-bit VLAN id as the command-specific-data.
 =20
--The virtio network device is a virtual ethernet card, and is the
-+The virtio network device is a virtual ethernet device, and is the
- most complex of the devices supported so far by virtio. It has
- enhanced rapidly and demonstrates clearly how support for new
- features are added to an existing device. Empty buffers are
-@@ -33,7 +33,7 @@ \subsection{Feature bits}\label{sec:Device Types / Networ=
-k Device / Feature bits
-=20
- \begin{description}
- \item[VIRTIO_NET_F_CSUM (0)] Device handles packets with partial checksum.=
-   This=20
--  ``checksum offload'' is a common feature on modern network cards.
-+  ``checksum offload'' is a common feature of a modern network device.
-=20
- \item[VIRTIO_NET_F_GUEST_CSUM (1)] Driver handles packets with partial che=
-cksum.
-=20
-@@ -323,7 +323,7 @@ \subsection{Device Initialization}\label{sec:Device Typ=
-es / Network Device / Dev
-=20
- \item If the VIRTIO_NET_F_MAC feature bit is set, the configuration
-   space \field{mac} entry indicates the ``physical'' address of the
--  network card, otherwise the driver would typically generate a random
-+  network device, otherwise the driver would typically generate a random
-   local MAC address.
-=20
- \item If the VIRTIO_NET_F_STATUS feature bit is negotiated, the link
++VIRTIO_NET_CTRL_VLAN_ADD command adds the specified VLAN to the VLAN
++filtering table.
++
++VIRTIO_NET_CTRL_VLAN_DEL command removes specified VLAN from the VLAN
++filtering table which was previously added using
++VIRTIO_NET_CTRL_VLAN_ADD command.
++
++\devicenormative{\subparagraph}{VLAN Filtering}{Device Types / Network Dev=
+ice / Device Operation / Control Virtqueue / VLAN Filtering}
++
++When VIRTIO_NET_F_CTRL_VLAN is not negotiated, the device accepts all
++VLAN tagged packets which matches  device's filter configuration.
++
++When VIRTIO_NET_F_CTRL_VLAN is negotiated, the device starts with empty
++VLAN filtering table.
++
++When VIRTIO_NET_F_CTRL_VLAN is negotiated, the device accepts all the
++VLAN tagged packets whose VLAN tag is found in the VLAN filtering table;
++device should drop all VLAN tagged packets whose VLAN tag is not found
++in the VLAN filtering table.
++
++When VIRTIO_NET_F_CTRL_VLAN is negotiated, the device accepts all
++untagged packets which matches device's filter configuration.
++
+ \subparagraph{Legacy Interface: VLAN Filtering}\label{sec:Device Types / N=
+etwork Device / Device Operation / Control Virtqueue / VLAN Filtering / Leg=
+acy Interface: VLAN Filtering}
+ When using the legacy interface, transitional devices and drivers
+ MUST format the VLAN id
 --=20
 2.26.2
 
