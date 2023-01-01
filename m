@@ -1,16 +1,16 @@
-Return-Path: <virtio-comment-return-3640-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-comment-return-3643-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio-comment@lists.oasis-open.org>
 List-Post: <mailto:virtio-comment@lists.oasis-open.org>
 List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
 From: Parav Pandit <parav@nvidia.com>
-Date: Sun, 1 Jan 2023 20:08:18 +0200
-Message-ID: <20230101180824.325172-15-parav@nvidia.com>
+Date: Sun, 1 Jan 2023 20:08:19 +0200
+Message-ID: <20230101180824.325172-16-parav@nvidia.com>
 In-Reply-To: <20230101180824.325172-1-parav@nvidia.com>
 References: <20230101180824.325172-1-parav@nvidia.com>
 MIME-Version: 1.0
-Subject: [virtio-comment] [PATCH v1 14/20] virtio-iommu: Maintain iommu device spec in separate directory
+Subject: [virtio-comment] [PATCH v1 15/20] virtio-sound: Maintain sound device spec in separate directory
 Content-Type: text/plain
 Content-Transfer-Encoding: quoted-printable
 To: mst@redhat.com, virtio-dev@lists.oasis-open.org
@@ -28,180 +28,167 @@ changelog:
 v0->v1:
 - new patch
 ---
- conformance.tex                               | 37 +------------------
+ conformance.tex                               | 32 +------------------
  content.tex                                   |  2 +-
- .../virtio-iommu/device-conformance.tex       | 16 ++++++++
- .../virtio-iommu/device.tex                   |  0
- .../virtio-iommu/driver-conformance.tex       | 17 +++++++++
- 5 files changed, 36 insertions(+), 36 deletions(-)
- create mode 100644 device-types/virtio-iommu/device-conformance.tex
- rename virtio-iommu.tex =3D> device-types/virtio-iommu/device.tex (100%)
- create mode 100644 device-types/virtio-iommu/driver-conformance.tex
+ .../virtio-sound/device-conformance.tex       | 16 ++++++++++
+ .../virtio-sound/device.tex                   |  0
+ .../virtio-sound/driver-conformance.tex       | 13 ++++++++
+ 5 files changed, 31 insertions(+), 32 deletions(-)
+ create mode 100644 device-types/virtio-sound/device-conformance.tex
+ rename virtio-sound.tex =3D> device-types/virtio-sound/device.tex (100%)
+ create mode 100644 device-types/virtio-sound/driver-conformance.tex
 
 diff --git a/conformance.tex b/conformance.tex
-index c109fbd..88ae166 100644
+index 88ae166..3535065 100644
 --- a/conformance.tex
 +++ b/conformance.tex
-@@ -145,24 +145,7 @@ \section{Conformance Targets}\label{sec:Conformance / =
+@@ -146,20 +146,7 @@ \section{Conformance Targets}\label{sec:Conformance / =
 Conformance Targets}
- \import{device-types/virtio-vsock/}{driver-conformance}
  \import{device-types/virtio-fs/}{driver-conformance}
  \import{device-types/virtio-rpmb/}{driver-conformance}
+ \import{device-types/virtio-iommu/}{driver-conformance}
 -
--\conformance{\subsection}{IOMMU Driver Conformance}\label{sec:Conformance =
-/ Driver Conformance / IOMMU Driver Conformance}
--
--An IOMMU driver MUST conform to the following normative statements:
--
--\begin{itemize}
--\item \ref{drivernormative:Device Types / IOMMU Device / Feature bits}
--\item \ref{drivernormative:Device Types / IOMMU Device / Device configurat=
-ion layout}
--\item \ref{drivernormative:Device Types / IOMMU Device / Device Initializa=
-tion}
--\item \ref{drivernormative:Device Types / IOMMU Device / Device operations=
-}
--\item \ref{drivernormative:Device Types / IOMMU Device / Device operations=
- / ATTACH request}
--\item \ref{drivernormative:Device Types / IOMMU Device / Device operations=
- / DETACH request}
--\item \ref{drivernormative:Device Types / IOMMU Device / Device operations=
- / MAP request}
--\item \ref{drivernormative:Device Types / IOMMU Device / Device operations=
- / UNMAP request}
--\item \ref{drivernormative:Device Types / IOMMU Device / Device operations=
- / PROBE request}
--\item \ref{drivernormative:Device Types / IOMMU Device / Device operations=
- / PROBE properties / RESVMEM}
--\item \ref{drivernormative:Device Types / IOMMU Device / Device operations=
- / Fault reporting}
--\end{itemize}
-+\import{device-types/virtio-iommu/}{driver-conformance}
-=20
- \conformance{\subsection}{Sound Driver Conformance}\label{sec:Conformance =
+-\conformance{\subsection}{Sound Driver Conformance}\label{sec:Conformance =
 / Driver Conformance / Sound Driver Conformance}
-=20
-@@ -305,23 +288,7 @@ \section{Conformance Targets}\label{sec:Conformance / =
-Conformance Targets}
- \import{device-types/virtio-vsock/}{device-conformance}
- \import{device-types/virtio-fs/}{device-conformance}
- \import{device-types/virtio-rpmb/}{device-conformance}
 -
--\conformance{\subsection}{IOMMU Device Conformance}\label{sec:Conformance =
-/ Device Conformance / IOMMU Device Conformance}
--
--An IOMMU device MUST conform to the following normative statements:
+-A sound driver MUST conform to the following normative statements:
 -
 -\begin{itemize}
--\item \ref{devicenormative:Device Types / IOMMU Device / Feature bits}
--\item \ref{devicenormative:Device Types / IOMMU Device / Device configurat=
-ion layout}
--\item \ref{devicenormative:Device Types / IOMMU Device / Device operations=
-}
--\item \ref{devicenormative:Device Types / IOMMU Device / Device operations=
- / ATTACH request}
--\item \ref{devicenormative:Device Types / IOMMU Device / Device operations=
- / DETACH request}
--\item \ref{devicenormative:Device Types / IOMMU Device / Device operations=
- / MAP request}
--\item \ref{devicenormative:Device Types / IOMMU Device / Device operations=
- / UNMAP request}
--\item \ref{devicenormative:Device Types / IOMMU Device / Device operations=
- / PROBE request}
--\item \ref{devicenormative:Device Types / IOMMU Device / Device operations=
- / PROBE properties / RESVMEM}
--\item \ref{devicenormative:Device Types / IOMMU Device / Device operations=
- / Fault reporting}
+-\item \ref{drivernormative:Device Types / Sound Device / Device Initializa=
+tion}
+-\item \ref{drivernormative:Device Types / Sound Device / Item Information =
+Request}
+-\item \ref{drivernormative:Device Types / Sound Device / Device Operation =
+/ PCM Stream Parameters}
+-\item \ref{drivernormative:Device Types / Sound Device / Device Operation =
+/ PCM Output Stream}
+-\item \ref{drivernormative:Device Types / Sound Device / Device Operation =
+/ PCM Input Stream}
+-\item \ref{drivernormative:Device Types / Sound Device / Device Operation =
+/ Control Element Value}
+-\item \ref{drivernormative:Device Types / Sound Device / Device Operation =
+/ Control Element Metadata}
 -\end{itemize}
-+\import{device-types/virtio-iommu/}{device-conformance}
++\import{device-types/virtio-sound/}{driver-conformance}
 =20
- \conformance{\subsection}{Sound Device Conformance}\label{sec:Conformance =
+ \conformance{\subsection}{Memory Driver Conformance}\label{sec:Conformance=
+ / Driver Conformance / Memory Driver Conformance}
+=20
+@@ -290,23 +277,6 @@ \section{Conformance Targets}\label{sec:Conformance / =
+Conformance Targets}
+ \import{device-types/virtio-rpmb/}{device-conformance}
+ \import{device-types/virtio-iommu/}{device-conformance}
+=20
+-\conformance{\subsection}{Sound Device Conformance}\label{sec:Conformance =
 / Device Conformance / Sound Device Conformance}
+-
+-A sound device MUST conform to the following normative statements:
+-
+-\begin{itemize}
+-\item \ref{devicenormative:Device Types / Sound Device / Device Operation =
+/ Jack Information}
+-\item \ref{devicenormative:Device Types / Sound Device / Device Operation =
+/ PCM Stream Information}
+-\item \ref{devicenormative:Device Types / Sound Device / Device Operation =
+/ PCM Stream Parameters}
+-\item \ref{devicenormative:Device Types / Sound Device / Device Operation =
+/ PCM Stream Release}
+-\item \ref{devicenormative:Device Types / Sound Device / Device Operation =
+/ PCM Output Stream}
+-\item \ref{devicenormative:Device Types / Sound Device / Device Operation =
+/ PCM Input Stream}
+-\item \ref{devicenormative:Device Types / Sound Device / Device Operation =
+/ Channel Map Information}
+-\item \ref{devicenormative:Device Types / Sound Device / Device Operation =
+/ Control Element Information}
+-\item \ref{devicenormative:Device Types / Sound Device / Device Operation =
+/ Control Element Metadata}
+-\item \ref{devicenormative:Device Types / Sound Device / Device Operation =
+/ Control Element Notifications}
+-\end{itemize}
+-
+ \conformance{\subsection}{Memory Device Conformance}\label{sec:Conformance=
+ / Device Conformance / Memory Device Conformance}
 =20
+ A memory device MUST conform to the following normative statements:
 diff --git a/content.tex b/content.tex
-index 13a2a94..49f3edc 100644
+index 49f3edc..e42a8a9 100644
 --- a/content.tex
 +++ b/content.tex
-@@ -3014,7 +3014,7 @@ \chapter{Device Types}\label{sec:Device Types}
- \import{device-types/virtio-crypto/}{device}
+@@ -3015,7 +3015,7 @@ \chapter{Device Types}\label{sec:Device Types}
  \import{device-types/virtio-vsock/}{device}
  \import{device-types/virtio-fs/}{device}
--\input{virtio-iommu.tex}
-+\import{device-types/virtio-iommu/}{device}
- \input{virtio-sound.tex}
+ \import{device-types/virtio-iommu/}{device}
+-\input{virtio-sound.tex}
++\import{device-types/virtio-sound/}{device}
  \input{virtio-mem.tex}
  \input{virtio-i2c.tex}
-diff --git a/device-types/virtio-iommu/device-conformance.tex b/device-type=
-s/virtio-iommu/device-conformance.tex
+ \input{virtio-scmi.tex}
+diff --git a/device-types/virtio-sound/device-conformance.tex b/device-type=
+s/virtio-sound/device-conformance.tex
 new file mode 100644
-index 0000000..bc5b3b8
+index 0000000..7b900c2
 --- /dev/null
-+++ b/device-types/virtio-iommu/device-conformance.tex
++++ b/device-types/virtio-sound/device-conformance.tex
 @@ -0,0 +1,16 @@
-+\conformance{\subsection}{IOMMU Device Conformance}\label{sec:Conformance =
-/ Device Conformance / IOMMU Device Conformance}
++\conformance{\subsection}{Sound Device Conformance}\label{sec:Conformance =
+/ Device Conformance / Sound Device Conformance}
 +
-+An IOMMU device MUST conform to the following normative statements:
++A sound device MUST conform to the following normative statements:
 +
 +\begin{itemize}
-+\item \ref{devicenormative:Device Types / IOMMU Device / Feature bits}
-+\item \ref{devicenormative:Device Types / IOMMU Device / Device configurat=
-ion layout}
-+\item \ref{devicenormative:Device Types / IOMMU Device / Device operations=
-}
-+\item \ref{devicenormative:Device Types / IOMMU Device / Device operations=
- / ATTACH request}
-+\item \ref{devicenormative:Device Types / IOMMU Device / Device operations=
- / DETACH request}
-+\item \ref{devicenormative:Device Types / IOMMU Device / Device operations=
- / MAP request}
-+\item \ref{devicenormative:Device Types / IOMMU Device / Device operations=
- / UNMAP request}
-+\item \ref{devicenormative:Device Types / IOMMU Device / Device operations=
- / PROBE request}
-+\item \ref{devicenormative:Device Types / IOMMU Device / Device operations=
- / PROBE properties / RESVMEM}
-+\item \ref{devicenormative:Device Types / IOMMU Device / Device operations=
- / Fault reporting}
++\item \ref{devicenormative:Device Types / Sound Device / Device Operation =
+/ Jack Information}
++\item \ref{devicenormative:Device Types / Sound Device / Device Operation =
+/ PCM Stream Information}
++\item \ref{devicenormative:Device Types / Sound Device / Device Operation =
+/ PCM Stream Parameters}
++\item \ref{devicenormative:Device Types / Sound Device / Device Operation =
+/ PCM Stream Release}
++\item \ref{devicenormative:Device Types / Sound Device / Device Operation =
+/ PCM Output Stream}
++\item \ref{devicenormative:Device Types / Sound Device / Device Operation =
+/ PCM Input Stream}
++\item \ref{devicenormative:Device Types / Sound Device / Device Operation =
+/ Channel Map Information}
++\item \ref{devicenormative:Device Types / Sound Device / Device Operation =
+/ Control Element Information}
++\item \ref{devicenormative:Device Types / Sound Device / Device Operation =
+/ Control Element Metadata}
++\item \ref{devicenormative:Device Types / Sound Device / Device Operation =
+/ Control Element Notifications}
 +\end{itemize}
-diff --git a/virtio-iommu.tex b/device-types/virtio-iommu/device.tex
+diff --git a/virtio-sound.tex b/device-types/virtio-sound/device.tex
 similarity index 100%
-rename from virtio-iommu.tex
-rename to device-types/virtio-iommu/device.tex
-diff --git a/device-types/virtio-iommu/driver-conformance.tex b/device-type=
-s/virtio-iommu/driver-conformance.tex
+rename from virtio-sound.tex
+rename to device-types/virtio-sound/device.tex
+diff --git a/device-types/virtio-sound/driver-conformance.tex b/device-type=
+s/virtio-sound/driver-conformance.tex
 new file mode 100644
-index 0000000..0c7bf91
+index 0000000..9a910cd
 --- /dev/null
-+++ b/device-types/virtio-iommu/driver-conformance.tex
-@@ -0,0 +1,17 @@
-+\conformance{\subsection}{IOMMU Driver Conformance}\label{sec:Conformance =
-/ Driver Conformance / IOMMU Driver Conformance}
++++ b/device-types/virtio-sound/driver-conformance.tex
+@@ -0,0 +1,13 @@
++\conformance{\subsection}{Sound Driver Conformance}\label{sec:Conformance =
+/ Driver Conformance / Sound Driver Conformance}
 +
-+An IOMMU driver MUST conform to the following normative statements:
++A sound driver MUST conform to the following normative statements:
 +
 +\begin{itemize}
-+\item \ref{drivernormative:Device Types / IOMMU Device / Feature bits}
-+\item \ref{drivernormative:Device Types / IOMMU Device / Device configurat=
-ion layout}
-+\item \ref{drivernormative:Device Types / IOMMU Device / Device Initializa=
++\item \ref{drivernormative:Device Types / Sound Device / Device Initializa=
 tion}
-+\item \ref{drivernormative:Device Types / IOMMU Device / Device operations=
-}
-+\item \ref{drivernormative:Device Types / IOMMU Device / Device operations=
- / ATTACH request}
-+\item \ref{drivernormative:Device Types / IOMMU Device / Device operations=
- / DETACH request}
-+\item \ref{drivernormative:Device Types / IOMMU Device / Device operations=
- / MAP request}
-+\item \ref{drivernormative:Device Types / IOMMU Device / Device operations=
- / UNMAP request}
-+\item \ref{drivernormative:Device Types / IOMMU Device / Device operations=
- / PROBE request}
-+\item \ref{drivernormative:Device Types / IOMMU Device / Device operations=
- / PROBE properties / RESVMEM}
-+\item \ref{drivernormative:Device Types / IOMMU Device / Device operations=
- / Fault reporting}
++\item \ref{drivernormative:Device Types / Sound Device / Item Information =
+Request}
++\item \ref{drivernormative:Device Types / Sound Device / Device Operation =
+/ PCM Stream Parameters}
++\item \ref{drivernormative:Device Types / Sound Device / Device Operation =
+/ PCM Output Stream}
++\item \ref{drivernormative:Device Types / Sound Device / Device Operation =
+/ PCM Input Stream}
++\item \ref{drivernormative:Device Types / Sound Device / Device Operation =
+/ Control Element Value}
++\item \ref{drivernormative:Device Types / Sound Device / Device Operation =
+/ Control Element Metadata}
 +\end{itemize}
 --=20
 2.26.2
