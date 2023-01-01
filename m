@@ -1,23 +1,23 @@
-Return-Path: <virtio-comment-return-3639-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-comment-return-3634-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio-comment@lists.oasis-open.org>
 List-Post: <mailto:virtio-comment@lists.oasis-open.org>
 List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
 From: Parav Pandit <parav@nvidia.com>
-Date: Sun, 1 Jan 2023 20:08:13 +0200
-Message-ID: <20230101180824.325172-10-parav@nvidia.com>
+Date: Sun, 1 Jan 2023 20:08:14 +0200
+Message-ID: <20230101180824.325172-11-parav@nvidia.com>
 In-Reply-To: <20230101180824.325172-1-parav@nvidia.com>
 References: <20230101180824.325172-1-parav@nvidia.com>
 MIME-Version: 1.0
-Subject: [virtio-comment] [PATCH v1 09/20] virtio-input: Maintain input device spec in separate directory
+Subject: [virtio-comment] [PATCH v1 10/20] virtio-crypto: Maintain crypto device spec in separate directory
 Content-Type: text/plain
 Content-Transfer-Encoding: quoted-printable
 To: mst@redhat.com, virtio-dev@lists.oasis-open.org
 Cc: virtio-comment@lists.oasis-open.org, Parav Pandit <parav@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Move virtio input device specification to its own file similar to
+Move virtio crypto device specification to its own file similar to
 recent virtio devices.
 While at it, place device specification, its driver and device
 conformance into its own directory to have self contained device
@@ -30,112 +30,168 @@ changelog:
 v0->v1:
 - moved to device specific directory
 ---
- conformance.tex                               | 20 ++-----------------
+ conformance.tex                               | 31 ++-----------------
  content.tex                                   |  2 +-
- .../virtio-input/device-conformance.tex       |  8 ++++++++
- .../virtio-input/device.tex                   |  0
- .../virtio-input/driver-conformance.tex       |  8 ++++++++
- 5 files changed, 19 insertions(+), 19 deletions(-)
- create mode 100644 device-types/virtio-input/device-conformance.tex
- rename virtio-input.tex =3D> device-types/virtio-input/device.tex (100%)
- create mode 100644 device-types/virtio-input/driver-conformance.tex
+ .../virtio-crypto/device-conformance.tex      | 13 ++++++++
+ .../virtio-crypto/device.tex                  |  0
+ .../virtio-crypto/driver-conformance.tex      | 14 +++++++++
+ 5 files changed, 30 insertions(+), 30 deletions(-)
+ create mode 100644 device-types/virtio-crypto/device-conformance.tex
+ rename virtio-crypto.tex =3D> device-types/virtio-crypto/device.tex (100%)
+ create mode 100644 device-types/virtio-crypto/driver-conformance.tex
 
 diff --git a/conformance.tex b/conformance.tex
-index 432b03c..8470e52 100644
+index 8470e52..67b7523 100644
 --- a/conformance.tex
 +++ b/conformance.tex
-@@ -140,15 +140,7 @@ \section{Conformance Targets}\label{sec:Conformance / =
+@@ -141,21 +141,7 @@ \section{Conformance Targets}\label{sec:Conformance / =
 Conformance Targets}
- \import{device-types/virtio-entropy/}{driver-conformance}
  \import{device-types/virtio-mem-balloon/}{driver-conformance}
  \import{device-types/virtio-scsi/}{driver-conformance}
+ \import{device-types/virtio-input/}{driver-conformance}
 -
--\conformance{\subsection}{Input Driver Conformance}\label{sec:Conformance =
-/ Driver Conformance / Input Driver Conformance}
+-\conformance{\subsection}{Crypto Driver Conformance}\label{sec:Conformance=
+ / Driver Conformance / Crypto Driver Conformance}
 -
--An input driver MUST conform to the following normative statements:
+-A Crypto driver MUST conform to the following normative statements:
 -
 -\begin{itemize}
--\item \ref{drivernormative:Device Types / Input Device / Device Initializa=
-tion}
--\item \ref{drivernormative:Device Types / Input Device / Device Operation}
+-\item \ref{drivernormative:Device Types / Crypto Device / Device configura=
+tion layout}
+-\item \ref{drivernormative:Device Types / Crypto Device / Device Initializ=
+ation}
+-\item \ref{drivernormative:Device Types / Crypto Device / Device Operation=
+ / Control Virtqueue / Session operation / Session operation: create sessio=
+n}
+-\item \ref{drivernormative:Device Types / Crypto Device / Device Operation=
+ / Control Virtqueue / Session operation / Session operation: destroy sessi=
+on}
+-\item \ref{drivernormative:Device Types / Crypto Device / Device Operation=
+ / HASH Service Operation}
+-\item \ref{drivernormative:Device Types / Crypto Device / Device Operation=
+ / MAC Service Operation}
+-\item \ref{drivernormative:Device Types / Crypto Device / Device Operation=
+ / Symmetric algorithms Operation}
+-\item \ref{drivernormative:Device Types / Crypto Device / Device Operation=
+ / AEAD Service Operation}
 -\end{itemize}
-+\import{device-types/virtio-input/}{driver-conformance}
++\import{device-types/virtio-crypto/}{driver-conformance}
 =20
- \conformance{\subsection}{Crypto Driver Conformance}\label{sec:Conformance=
- / Driver Conformance / Crypto Driver Conformance}
+ \conformance{\subsection}{Socket Driver Conformance}\label{sec:Conformance=
+ / Driver Conformance / Socket Driver Conformance}
 =20
-@@ -348,15 +340,7 @@ \section{Conformance Targets}\label{sec:Conformance / =
+@@ -341,20 +327,7 @@ \section{Conformance Targets}\label{sec:Conformance / =
 Conformance Targets}
- \import{device-types/virtio-mem-balloon/}{device-conformance}
  \import{device-types/virtio-scsi/}{device-conformance}
  \import{device-types/virtio-gpu/}{device-conformance}
+ \import{device-types/virtio-input/}{device-conformance}
 -
--\conformance{\subsection}{Input Device Conformance}\label{sec:Conformance =
-/ Device Conformance / Input Device Conformance}
+-\conformance{\subsection}{Crypto Device Conformance}\label{sec:Conformance=
+ / Device Conformance / Crypto Device Conformance}
 -
--An input device MUST conform to the following normative statements:
+-A Crypto device MUST conform to the following normative statements:
 -
 -\begin{itemize}
--\item \ref{devicenormative:Device Types / Input Device / Device Initializa=
-tion}
--\item \ref{devicenormative:Device Types / Input Device / Device Operation}
+-\item \ref{devicenormative:Device Types / Crypto Device / Device configura=
+tion layout}
+-\item \ref{devicenormative:Device Types / Crypto Device / Device Operation=
+ / Control Virtqueue / Session operation / Session operation: create sessio=
+n}
+-\item \ref{devicenormative:Device Types / Crypto Device / Device Operation=
+ / Control Virtqueue / Session operation / Session operation: destroy sessi=
+on}
+-\item \ref{devicenormative:Device Types / Crypto Device / Device Operation=
+ / HASH Service Operation}
+-\item \ref{devicenormative:Device Types / Crypto Device / Device Operation=
+ / MAC Service Operation}
+-\item \ref{devicenormative:Device Types / Crypto Device / Device Operation=
+ / Symmetric algorithms Operation}
+-\item \ref{devicenormative:Device Types / Crypto Device / Device Operation=
+ / AEAD Service Operation}
 -\end{itemize}
-+\import{device-types/virtio-input/}{device-conformance}
++\import{device-types/virtio-crypto/}{device-conformance}
 =20
- \conformance{\subsection}{Crypto Device Conformance}\label{sec:Conformance=
- / Device Conformance / Crypto Device Conformance}
+ \conformance{\subsection}{Socket Device Conformance}\label{sec:Conformance=
+ / Device Conformance / Socket Device Conformance}
 =20
 diff --git a/content.tex b/content.tex
-index 4f16ad8..b1d8474 100644
+index b1d8474..3d0cba0 100644
 --- a/content.tex
 +++ b/content.tex
-@@ -3010,7 +3010,7 @@ \chapter{Device Types}\label{sec:Device Types}
- \import{device-types/virtio-mem-balloon/}{device}
+@@ -3011,7 +3011,7 @@ \chapter{Device Types}\label{sec:Device Types}
  \import{device-types/virtio-scsi/}{device}
  \import{device-types/virtio-gpu/}{device}
--\input{virtio-input.tex}
-+\import{device-types/virtio-input/}{device}
- \input{virtio-crypto.tex}
+ \import{device-types/virtio-input/}{device}
+-\input{virtio-crypto.tex}
++\import{device-types/virtio-crypto/}{device}
  \input{virtio-vsock.tex}
  \input{virtio-fs.tex}
-diff --git a/device-types/virtio-input/device-conformance.tex b/device-type=
-s/virtio-input/device-conformance.tex
+ \input{virtio-rpmb.tex}
+diff --git a/device-types/virtio-crypto/device-conformance.tex b/device-typ=
+es/virtio-crypto/device-conformance.tex
 new file mode 100644
-index 0000000..173cdd6
+index 0000000..1667120
 --- /dev/null
-+++ b/device-types/virtio-input/device-conformance.tex
-@@ -0,0 +1,8 @@
-+\conformance{\subsection}{Input Device Conformance}\label{sec:Conformance =
-/ Device Conformance / Input Device Conformance}
++++ b/device-types/virtio-crypto/device-conformance.tex
+@@ -0,0 +1,13 @@
++\conformance{\subsection}{Crypto Device Conformance}\label{sec:Conformance=
+ / Device Conformance / Crypto Device Conformance}
 +
-+An input device MUST conform to the following normative statements:
++A Crypto device MUST conform to the following normative statements:
 +
 +\begin{itemize}
-+\item \ref{devicenormative:Device Types / Input Device / Device Initializa=
-tion}
-+\item \ref{devicenormative:Device Types / Input Device / Device Operation}
++\item \ref{devicenormative:Device Types / Crypto Device / Device configura=
+tion layout}
++\item \ref{devicenormative:Device Types / Crypto Device / Device Operation=
+ / Control Virtqueue / Session operation / Session operation: create sessio=
+n}
++\item \ref{devicenormative:Device Types / Crypto Device / Device Operation=
+ / Control Virtqueue / Session operation / Session operation: destroy sessi=
+on}
++\item \ref{devicenormative:Device Types / Crypto Device / Device Operation=
+ / HASH Service Operation}
++\item \ref{devicenormative:Device Types / Crypto Device / Device Operation=
+ / MAC Service Operation}
++\item \ref{devicenormative:Device Types / Crypto Device / Device Operation=
+ / Symmetric algorithms Operation}
++\item \ref{devicenormative:Device Types / Crypto Device / Device Operation=
+ / AEAD Service Operation}
 +\end{itemize}
-diff --git a/virtio-input.tex b/device-types/virtio-input/device.tex
+diff --git a/virtio-crypto.tex b/device-types/virtio-crypto/device.tex
 similarity index 100%
-rename from virtio-input.tex
-rename to device-types/virtio-input/device.tex
-diff --git a/device-types/virtio-input/driver-conformance.tex b/device-type=
-s/virtio-input/driver-conformance.tex
+rename from virtio-crypto.tex
+rename to device-types/virtio-crypto/device.tex
+diff --git a/device-types/virtio-crypto/driver-conformance.tex b/device-typ=
+es/virtio-crypto/driver-conformance.tex
 new file mode 100644
-index 0000000..5eb9dac
+index 0000000..672d0f6
 --- /dev/null
-+++ b/device-types/virtio-input/driver-conformance.tex
-@@ -0,0 +1,8 @@
-+\conformance{\subsection}{Input Driver Conformance}\label{sec:Conformance =
-/ Driver Conformance / Input Driver Conformance}
++++ b/device-types/virtio-crypto/driver-conformance.tex
+@@ -0,0 +1,14 @@
++\conformance{\subsection}{Crypto Driver Conformance}\label{sec:Conformance=
+ / Driver Conformance / Crypto Driver Conformance}
 +
-+An input driver MUST conform to the following normative statements:
++A Crypto driver MUST conform to the following normative statements:
 +
 +\begin{itemize}
-+\item \ref{drivernormative:Device Types / Input Device / Device Initializa=
-tion}
-+\item \ref{drivernormative:Device Types / Input Device / Device Operation}
++\item \ref{drivernormative:Device Types / Crypto Device / Device configura=
+tion layout}
++\item \ref{drivernormative:Device Types / Crypto Device / Device Initializ=
+ation}
++\item \ref{drivernormative:Device Types / Crypto Device / Device Operation=
+ / Control Virtqueue / Session operation / Session operation: create sessio=
+n}
++\item \ref{drivernormative:Device Types / Crypto Device / Device Operation=
+ / Control Virtqueue / Session operation / Session operation: destroy sessi=
+on}
++\item \ref{drivernormative:Device Types / Crypto Device / Device Operation=
+ / HASH Service Operation}
++\item \ref{drivernormative:Device Types / Crypto Device / Device Operation=
+ / MAC Service Operation}
++\item \ref{drivernormative:Device Types / Crypto Device / Device Operation=
+ / Symmetric algorithms Operation}
++\item \ref{drivernormative:Device Types / Crypto Device / Device Operation=
+ / AEAD Service Operation}
 +\end{itemize}
 --=20
 2.26.2
