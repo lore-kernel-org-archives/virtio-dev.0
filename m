@@ -1,70 +1,147 @@
-Return-Path: <virtio-comment-return-3713-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-comment-return-3644-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio-comment@lists.oasis-open.org>
 List-Post: <mailto:virtio-comment@lists.oasis-open.org>
 List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
-From: Cornelia Huck <cohuck@redhat.com>
-In-Reply-To: <20230101180824.325172-20-parav@nvidia.com>
+From: Parav Pandit <parav@nvidia.com>
+Date: Sun, 1 Jan 2023 20:08:24 +0200
+Message-ID: <20230101180824.325172-21-parav@nvidia.com>
+In-Reply-To: <20230101180824.325172-1-parav@nvidia.com>
 References: <20230101180824.325172-1-parav@nvidia.com>
- <20230101180824.325172-20-parav@nvidia.com>
-Date: Mon, 09 Jan 2023 14:11:28 +0100
-Message-ID: <87v8lfdf9b.fsf@redhat.com>
 MIME-Version: 1.0
-Subject: Re: [virtio-comment] [PATCH v1 19/20] virtio-gpio: Maintain gpio
- device spec in separate directory
+Subject: [virtio-comment] [PATCH v1 20/20] virtio-pmem: Maintain pmem device spec in separate directory
 Content-Type: text/plain
-To: Parav Pandit <parav@nvidia.com>, mst@redhat.com, virtio-dev@lists.oasis-open.org
+Content-Transfer-Encoding: quoted-printable
+To: mst@redhat.com, virtio-dev@lists.oasis-open.org
 Cc: virtio-comment@lists.oasis-open.org, Parav Pandit <parav@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Sun, Jan 01 2023, Parav Pandit <parav@nvidia.com> wrote:
+Place device specification, its driver and device
+conformance into its own directory to have self contained device
+specification.
 
-> Place device specification, its driver and device
-> conformance into its own directory to have self contained device
-> specification.
->
-> Fixes: https://github.com/oasis-tcs/virtio-spec/issues/153
-> Signed-off-by: Parav Pandit <parav@nvidia.com>
-> ---
-> changelog:
-> v0->v1:
-> - new patch
-> ---
->  conformance.tex                               | 21 +------------------
->  content.tex                                   |  2 +-
->  .../virtio-gpio/device-conformance.tex        |  9 ++++++++
->  .../virtio-gpio/device.tex                    |  0
->  .../virtio-gpio/driver-conformance.tex        |  9 ++++++++
->  5 files changed, 20 insertions(+), 21 deletions(-)
->  create mode 100644 device-types/virtio-gpio/device-conformance.tex
->  rename virtio-gpio.tex => device-types/virtio-gpio/device.tex (100%)
->  create mode 100644 device-types/virtio-gpio/driver-conformance.tex
+Fixes: https://github.com/oasis-tcs/virtio-spec/issues/153
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+---
+changelog:
+v0->v1:
+- new patch
+---
+ conformance.tex                               | 20 ++-----------------
+ content.tex                                   |  2 +-
+ .../virtio-pmem/device-conformance.tex        |  9 +++++++++
+ .../virtio-pmem/device.tex                    |  0
+ .../virtio-pmem/driver-conformance.tex        |  7 +++++++
+ 5 files changed, 19 insertions(+), 19 deletions(-)
+ create mode 100644 device-types/virtio-pmem/device-conformance.tex
+ rename virtio-pmem.tex =3D> device-types/virtio-pmem/device.tex (100%)
+ create mode 100644 device-types/virtio-pmem/driver-conformance.tex
 
-(...)
-
-> @@ -251,16 +242,6 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
->  \import{device-types/virtio-mem/}{device-conformance}
->  \import{device-types/virtio-scmi/}{device-conformance}
->  
-> -\conformance{\subsection}{GPIO Device Conformance}\label{sec:Conformance / Device Conformance / GPIO Device Conformance}
-> -
-> -A General Purpose Input/Output (GPIO) device MUST conform to the following
-> -normative statements:
-> -
-> -\begin{itemize}
-> -\item \ref{devicenormative:Device Types / GPIO Device / requestq Operation}
-> -\item \ref{devicenormative:Device Types / GPIO Device / eventq Operation}
-> -\end{itemize}
-> -
-
-Missing
-
-\import{device-types/virtio-gpio/}{device-conformance}
-
->  \conformance{\subsection}{PMEM Device Conformance}\label{sec:Conformance / Device Conformance / PMEM Device Conformance}
->  
->  A PMEM device MUST conform to the following normative statements:
+diff --git a/conformance.tex b/conformance.tex
+index 01c5782..95ee7ba 100644
+--- a/conformance.tex
++++ b/conformance.tex
+@@ -151,14 +151,7 @@ \section{Conformance Targets}\label{sec:Conformance / =
+Conformance Targets}
+ \import{device-types/virtio-i2c/}{driver-conformance}
+ \import{device-types/virtio-scmi/}{driver-conformance}
+ \import{device-types/virtio-gpio/}{driver-conformance}
+-
+-\conformance{\subsection}{PMEM Driver Conformance}\label{sec:Conformance /=
+ Driver Conformance / PMEM Driver Conformance}
+-
+-A PMEM driver MUST conform to the following normative statements:
+-
+-\begin{itemize}
+-\item \ref{drivernormative:Device Types / PMEM Device / Device Initializat=
+ion}
+-\end{itemize}
++\import{device-types/virtio-pmem/}{driver-conformance}
+=20
+ \conformance{\section}{Device Conformance}\label{sec:Conformance / Device =
+Conformance}
+=20
+@@ -241,16 +234,7 @@ \section{Conformance Targets}\label{sec:Conformance / =
+Conformance Targets}
+ \import{device-types/virtio-iommu/}{device-conformance}
+ \import{device-types/virtio-mem/}{device-conformance}
+ \import{device-types/virtio-scmi/}{device-conformance}
+-
+-\conformance{\subsection}{PMEM Device Conformance}\label{sec:Conformance /=
+ Device Conformance / PMEM Device Conformance}
+-
+-A PMEM device MUST conform to the following normative statements:
+-
+-\begin{itemize}
+-\item \ref{devicenormative:Device Types / PMEM Device / Device Initializat=
+ion}
+-\item \ref{devicenormative:Device Types / PMEM Device / Device Operation /=
+ Virtqueue flush}
+-\item \ref{devicenormative:Device Types / PMEM Device / Device Operation /=
+ Virtqueue return}
+-\end{itemize}
++\import{device-types/virtio-pmem/}{device-conformance}
+=20
+ \conformance{\section}{Legacy Interface: Transitional Device and Transitio=
+nal Driver Conformance}\label{sec:Conformance / Legacy Interface: Transitio=
+nal Device and Transitional Driver Conformance}
+ A conformant implementation MUST be either transitional or
+diff --git a/content.tex b/content.tex
+index fd4890b..e2efea4 100644
+--- a/content.tex
++++ b/content.tex
+@@ -3020,7 +3020,7 @@ \chapter{Device Types}\label{sec:Device Types}
+ \import{device-types/virtio-i2c/}{device}
+ \import{device-types/virtio-scmi/}{device}
+ \import{device-types/virtio-gpio/}{device}
+-\input{virtio-pmem.tex}
++\import{device-types/virtio-pmem/}{device}
+=20
+ \chapter{Reserved Feature Bits}\label{sec:Reserved Feature Bits}
+=20
+diff --git a/device-types/virtio-pmem/device-conformance.tex b/device-types=
+/virtio-pmem/device-conformance.tex
+new file mode 100644
+index 0000000..e06862c
+--- /dev/null
++++ b/device-types/virtio-pmem/device-conformance.tex
+@@ -0,0 +1,9 @@
++\conformance{\subsection}{PMEM Device Conformance}\label{sec:Conformance /=
+ Device Conformance / PMEM Device Conformance}
++
++A PMEM device MUST conform to the following normative statements:
++
++\begin{itemize}
++\item \ref{devicenormative:Device Types / PMEM Device / Device Initializat=
+ion}
++\item \ref{devicenormative:Device Types / PMEM Device / Device Operation /=
+ Virtqueue flush}
++\item \ref{devicenormative:Device Types / PMEM Device / Device Operation /=
+ Virtqueue return}
++\end{itemize}
+diff --git a/virtio-pmem.tex b/device-types/virtio-pmem/device.tex
+similarity index 100%
+rename from virtio-pmem.tex
+rename to device-types/virtio-pmem/device.tex
+diff --git a/device-types/virtio-pmem/driver-conformance.tex b/device-types=
+/virtio-pmem/driver-conformance.tex
+new file mode 100644
+index 0000000..620804c
+--- /dev/null
++++ b/device-types/virtio-pmem/driver-conformance.tex
+@@ -0,0 +1,7 @@
++\conformance{\subsection}{PMEM Driver Conformance}\label{sec:Conformance /=
+ Driver Conformance / PMEM Driver Conformance}
++
++A PMEM driver MUST conform to the following normative statements:
++
++\begin{itemize}
++\item \ref{drivernormative:Device Types / PMEM Device / Device Initializat=
+ion}
++\end{itemize}
+--=20
+2.26.2
 
 
 This publicly archived list offers a means to provide input to the
@@ -79,7 +156,8 @@ Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
 List help: virtio-comment-help@lists.oasis-open.org
 List archive: https://lists.oasis-open.org/archives/virtio-comment/
 Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
-List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
+List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lis=
+ts
 Committee: https://www.oasis-open.org/committees/virtio/
 Join OASIS: https://www.oasis-open.org/join/
 
