@@ -1,16 +1,16 @@
-Return-Path: <virtio-comment-return-3632-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-comment-return-3637-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio-comment@lists.oasis-open.org>
 List-Post: <mailto:virtio-comment@lists.oasis-open.org>
 List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
 From: Parav Pandit <parav@nvidia.com>
-Date: Sun, 1 Jan 2023 20:08:16 +0200
-Message-ID: <20230101180824.325172-13-parav@nvidia.com>
+Date: Sun, 1 Jan 2023 20:08:17 +0200
+Message-ID: <20230101180824.325172-14-parav@nvidia.com>
 In-Reply-To: <20230101180824.325172-1-parav@nvidia.com>
 References: <20230101180824.325172-1-parav@nvidia.com>
 MIME-Version: 1.0
-Subject: [virtio-comment] [PATCH v1 12/20] virtio-fs: Maintain file system device spec in separate directory
+Subject: [virtio-comment] [PATCH v1 13/20] virtio-rpmb: Maintain rpmb device spec in separate directory
 Content-Type: text/plain
 Content-Transfer-Encoding: quoted-printable
 To: mst@redhat.com, virtio-dev@lists.oasis-open.org
@@ -29,127 +29,126 @@ v0->v1:
 - new patch
 ---
  conformance.tex                               | 23 ++-----------------
- content.tex                                   |  2 +-
- device-types/virtio-fs/device-conformance.tex |  9 ++++++++
- .../virtio-fs/device.tex                      |  0
- device-types/virtio-fs/driver-conformance.tex | 10 ++++++++
+ content.tex                                   |  1 -
+ .../virtio-rpmb/device-conformance.tex        | 13 +++++++++++
+ .../virtio-rpmb/device.tex                    |  0
+ .../virtio-rpmb/driver-conformance.tex        |  7 ++++++
  5 files changed, 22 insertions(+), 22 deletions(-)
- create mode 100644 device-types/virtio-fs/device-conformance.tex
- rename virtio-fs.tex =3D> device-types/virtio-fs/device.tex (100%)
- create mode 100644 device-types/virtio-fs/driver-conformance.tex
+ create mode 100644 device-types/virtio-rpmb/device-conformance.tex
+ rename virtio-rpmb.tex =3D> device-types/virtio-rpmb/device.tex (100%)
+ create mode 100644 device-types/virtio-rpmb/driver-conformance.tex
 
 diff --git a/conformance.tex b/conformance.tex
-index 5f63bfb..56a2c16 100644
+index 56a2c16..c109fbd 100644
 --- a/conformance.tex
 +++ b/conformance.tex
-@@ -143,17 +143,7 @@ \section{Conformance Targets}\label{sec:Conformance / =
+@@ -144,14 +144,8 @@ \section{Conformance Targets}\label{sec:Conformance / =
 Conformance Targets}
- \import{device-types/virtio-input/}{driver-conformance}
  \import{device-types/virtio-crypto/}{driver-conformance}
  \import{device-types/virtio-vsock/}{driver-conformance}
+ \import{device-types/virtio-fs/}{driver-conformance}
++\import{device-types/virtio-rpmb/}{driver-conformance}
+=20
+-\conformance{\subsection}{RPMB Driver Conformance}\label{sec:Conformance /=
+ Driver Conformance / RPMB Driver Conformance}
 -
--\conformance{\subsection}{File System Driver Conformance}\label{sec:Confor=
-mance / Driver Conformance / File System Driver Conformance}
--
--A file system driver MUST conform to the following normative statements:
+-A RPMB driver MUST conform to the following normative statements:
 -
 -\begin{itemize}
--\item \ref{drivernormative:Device Types / File System Device / Device conf=
-iguration layout}
--\item \ref{drivernormative:Device Types / File System Device / Device Oper=
-ation / Device Operation: High Priority Queue}
--\item \ref{drivernormative:Device Types / File System Device / Device Oper=
-ation / Device Operation: Notification Queue}
--\item \ref{drivernormative:Device Types / File System Device / Device Oper=
-ation / Device Operation: DAX Window}
+-\item \ref{drivernormative:Device Types / RPMB Device / Device Operation}
 -\end{itemize}
-+\import{device-types/virtio-fs/}{driver-conformance}
+ \conformance{\subsection}{IOMMU Driver Conformance}\label{sec:Conformance =
+/ Driver Conformance / IOMMU Driver Conformance}
 =20
- \conformance{\subsection}{RPMB Driver Conformance}\label{sec:Conformance /=
- Driver Conformance / RPMB Driver Conformance}
-=20
-@@ -319,16 +309,7 @@ \section{Conformance Targets}\label{sec:Conformance / =
+ An IOMMU driver MUST conform to the following normative statements:
+@@ -310,20 +304,7 @@ \section{Conformance Targets}\label{sec:Conformance / =
 Conformance Targets}
- \import{device-types/virtio-input/}{device-conformance}
  \import{device-types/virtio-crypto/}{device-conformance}
  \import{device-types/virtio-vsock/}{device-conformance}
+ \import{device-types/virtio-fs/}{device-conformance}
 -
--\conformance{\subsection}{File System Device Conformance}\label{sec:Confor=
-mance / Device Conformance / File System Device Conformance}
+-\conformance{\subsection}{RPMB Device Conformance}\label{sec:Conformance /=
+ Device Conformance / RPMB Device Conformance}
 -
--A file system device MUST conform to the following normative statements:
+-An RPMB device MUST conform to the following normative statements:
 -
 -\begin{itemize}
--\item \ref{devicenormative:Device Types / File System Device / Device conf=
-iguration layout}
--\item \ref{devicenormative:Device Types / File System Device / Device Oper=
-ation / Device Operation: High Priority Queue}
--\item \ref{devicenormative:Device Types / File System Device / Device Oper=
-ation / Device Operation: DAX Window}
+-\item \ref{devicenormative:Device Types / RPMB Device / Device Initializat=
+ion}
+-\item \ref{devicenormative:Device Types / RPMB Device / Device Operation /=
+ Device Operation: Program Key}
+-\item \ref{devicenormative:Device Types / RPMB Device / Device Operation /=
+ Device Operation: Get Write Counter}
+-\item \ref{devicenormative:Device Types / RPMB Device / Device Operation /=
+ Device Operation: Data Write}
+-\item \ref{devicenormative:Device Types / RPMB Device / Device Operation /=
+ Device Operation: Data Read}
+-\item \ref{devicenormative:Device Types / RPMB Device / Device Operation /=
+ Device Operation: Result Read}
+-\item \ref{devicenormative:Device Types / RPMB Device / Device Operation}
 -\end{itemize}
-+\import{device-types/virtio-fs/}{device-conformance}
++\import{device-types/virtio-rpmb/}{device-conformance}
 =20
- \conformance{\subsection}{RPMB Device Conformance}\label{sec:Conformance /=
- Device Conformance / RPMB Device Conformance}
+ \conformance{\subsection}{IOMMU Device Conformance}\label{sec:Conformance =
+/ Device Conformance / IOMMU Device Conformance}
 =20
 diff --git a/content.tex b/content.tex
-index 1cee4c4..a486e36 100644
+index a486e36..13a2a94 100644
 --- a/content.tex
 +++ b/content.tex
-@@ -3013,7 +3013,7 @@ \chapter{Device Types}\label{sec:Device Types}
- \import{device-types/virtio-input/}{device}
+@@ -3014,7 +3014,6 @@ \chapter{Device Types}\label{sec:Device Types}
  \import{device-types/virtio-crypto/}{device}
  \import{device-types/virtio-vsock/}{device}
--\input{virtio-fs.tex}
-+\import{device-types/virtio-fs/}{device}
- \input{virtio-rpmb.tex}
+ \import{device-types/virtio-fs/}{device}
+-\input{virtio-rpmb.tex}
  \input{virtio-iommu.tex}
  \input{virtio-sound.tex}
-diff --git a/device-types/virtio-fs/device-conformance.tex b/device-types/v=
-irtio-fs/device-conformance.tex
+ \input{virtio-mem.tex}
+diff --git a/device-types/virtio-rpmb/device-conformance.tex b/device-types=
+/virtio-rpmb/device-conformance.tex
 new file mode 100644
-index 0000000..a86245e
+index 0000000..4a01e5a
 --- /dev/null
-+++ b/device-types/virtio-fs/device-conformance.tex
-@@ -0,0 +1,9 @@
-+\conformance{\subsection}{File System Device Conformance}\label{sec:Confor=
-mance / Device Conformance / File System Device Conformance}
++++ b/device-types/virtio-rpmb/device-conformance.tex
+@@ -0,0 +1,13 @@
++\conformance{\subsection}{RPMB Device Conformance}\label{sec:Conformance /=
+ Device Conformance / RPMB Device Conformance}
 +
-+A file system device MUST conform to the following normative statements:
++An RPMB device MUST conform to the following normative statements:
 +
 +\begin{itemize}
-+\item \ref{devicenormative:Device Types / File System Device / Device conf=
-iguration layout}
-+\item \ref{devicenormative:Device Types / File System Device / Device Oper=
-ation / Device Operation: High Priority Queue}
-+\item \ref{devicenormative:Device Types / File System Device / Device Oper=
-ation / Device Operation: DAX Window}
++\item \ref{devicenormative:Device Types / RPMB Device / Device Initializat=
+ion}
++\item \ref{devicenormative:Device Types / RPMB Device / Device Operation /=
+ Device Operation: Program Key}
++\item \ref{devicenormative:Device Types / RPMB Device / Device Operation /=
+ Device Operation: Get Write Counter}
++\item \ref{devicenormative:Device Types / RPMB Device / Device Operation /=
+ Device Operation: Data Write}
++\item \ref{devicenormative:Device Types / RPMB Device / Device Operation /=
+ Device Operation: Data Read}
++\item \ref{devicenormative:Device Types / RPMB Device / Device Operation /=
+ Device Operation: Result Read}
++\item \ref{devicenormative:Device Types / RPMB Device / Device Operation}
 +\end{itemize}
-diff --git a/virtio-fs.tex b/device-types/virtio-fs/device.tex
+diff --git a/virtio-rpmb.tex b/device-types/virtio-rpmb/device.tex
 similarity index 100%
-rename from virtio-fs.tex
-rename to device-types/virtio-fs/device.tex
-diff --git a/device-types/virtio-fs/driver-conformance.tex b/device-types/v=
-irtio-fs/driver-conformance.tex
+rename from virtio-rpmb.tex
+rename to device-types/virtio-rpmb/device.tex
+diff --git a/device-types/virtio-rpmb/driver-conformance.tex b/device-types=
+/virtio-rpmb/driver-conformance.tex
 new file mode 100644
-index 0000000..5a762ec
+index 0000000..0cdddac
 --- /dev/null
-+++ b/device-types/virtio-fs/driver-conformance.tex
-@@ -0,0 +1,10 @@
-+\conformance{\subsection}{File System Driver Conformance}\label{sec:Confor=
-mance / Driver Conformance / File System Driver Conformance}
++++ b/device-types/virtio-rpmb/driver-conformance.tex
+@@ -0,0 +1,7 @@
++\conformance{\subsection}{RPMB Driver Conformance}\label{sec:Conformance /=
+ Driver Conformance / RPMB Driver Conformance}
 +
-+A file system driver MUST conform to the following normative statements:
++A RPMB driver MUST conform to the following normative statements:
 +
 +\begin{itemize}
-+\item \ref{drivernormative:Device Types / File System Device / Device conf=
-iguration layout}
-+\item \ref{drivernormative:Device Types / File System Device / Device Oper=
-ation / Device Operation: High Priority Queue}
-+\item \ref{drivernormative:Device Types / File System Device / Device Oper=
-ation / Device Operation: Notification Queue}
-+\item \ref{drivernormative:Device Types / File System Device / Device Oper=
-ation / Device Operation: DAX Window}
++\item \ref{drivernormative:Device Types / RPMB Device / Device Operation}
 +\end{itemize}
 --=20
 2.26.2
