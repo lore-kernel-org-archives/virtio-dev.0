@@ -1,71 +1,80 @@
-Return-Path: <virtio-comment-return-3747-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-comment-return-3625-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio-comment@lists.oasis-open.org>
 List-Post: <mailto:virtio-comment@lists.oasis-open.org>
 List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
 From: Parav Pandit <parav@nvidia.com>
-Date: Mon, 9 Jan 2023 22:41:26 +0000
-Message-ID: <PH0PR12MB54814E201E11B8F1E30A4860DCFE9@PH0PR12MB5481.namprd12.prod.outlook.com>
+Date: Sun, 1 Jan 2023 20:08:06 +0200
+Message-ID: <20230101180824.325172-3-parav@nvidia.com>
+In-Reply-To: <20230101180824.325172-1-parav@nvidia.com>
 References: <20230101180824.325172-1-parav@nvidia.com>
- <20230101180824.325172-2-parav@nvidia.com>
- <20230109083745-mutt-send-email-mst@kernel.org>
- <PH0PR12MB54814FCB63E60BE7F5985A15DCFE9@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20230109140825-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20230109140825-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-Subject: [virtio-comment] RE: [PATCH v1 01/20] virtio-network: Maintain network device spec in
- separate directory
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
+Subject: [virtio-comment] [PATCH v1 02/20] virtio-network: Fix spelling errors
+Content-Type: text/plain
 Content-Transfer-Encoding: quoted-printable
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>
+To: mst@redhat.com, virtio-dev@lists.oasis-open.org
+Cc: virtio-comment@lists.oasis-open.org, Parav Pandit <parav@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+Fix two spelling errors in the virtio network device specification.
 
-> From: Michael S. Tsirkin <mst@redhat.com>
-> Sent: Monday, January 9, 2023 2:15 PM
->=20
-> > > So my preference is \\input for now.
-> > \\input doesn't support reading from the directory.
->=20
-> I just tested this and it seems to work fine:
->=20
-> \input{sub/file.tex}
->=20
-> what is the issue that you see?
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+---
+changelog:
+v0->v1:
+- new patch
 
-I was running with file_conformance.tex name and it doesn't like underscore=
- based named.
-And I lost track when I moved away from understore and missed to revert to =
-input again.
+---
+ device-types/virtio-network/device.tex | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
->=20
-> I think I prefer \\input as it's easier to understand.
+diff --git a/device-types/virtio-network/device.tex b/device-types/virtio-n=
+etwork/device.tex
+index 92e3906..28ed343 100644
+--- a/device-types/virtio-network/device.tex
++++ b/device-types/virtio-network/device.tex
+@@ -331,7 +331,7 @@ \subsection{Device Initialization}\label{sec:Device Typ=
+es / Network Device / Dev
+   Otherwise, the driver assumes it's active.
+=20
+ \item A performant driver would indicate that it will generate checksumles=
+s
+-  packets by negotating the VIRTIO_NET_F_CSUM feature.
++  packets by negotiating the VIRTIO_NET_F_CSUM feature.
+=20
+ \item If that feature is negotiated, a driver can use TCP segmentation or =
+UDP
+   segmentation/fragmentation offload by negotiating the VIRTIO_NET_F_HOST_=
+TSO4 (IPv4
+@@ -1062,7 +1062,7 @@ \subsubsection{Control Virtqueue}\label{sec:Device Ty=
+pes / Network Device / Devi
+ \begin{itemize}
+ \item VIRTIO_NET_CTRL_RX_PROMISC turns promiscuous mode on and
+ off. The command-specific-data is one byte containing 0 (off) or
+-1 (on). If promiscous mode is on, the device SHOULD receive all
++1 (on). If promiscuous mode is on, the device SHOULD receive all
+ incoming packets.
+ This SHOULD take effect even if one of the other modes set by
+ a VIRTIO_NET_CTRL_RX class command is on.
+--=20
+2.26.2
 
-Yes. I will respin with \input and directories.
 
->=20
-> --
-> MST
+This publicly archived list offers a means to provide input to the
+OASIS Virtual I/O Device (VIRTIO) TC.
 
+In order to verify user consent to the Feedback License terms and
+to minimize spam in the list archive, subscription is required
+before posting.
 
-This publicly archived list offers a means to provide input to the=0D
-OASIS Virtual I/O Device (VIRTIO) TC.=0D
-=0D
-In order to verify user consent to the Feedback License terms and=0D
-to minimize spam in the list archive, subscription is required=0D
-before posting.=0D
-=0D
-Subscribe: virtio-comment-subscribe@lists.oasis-open.org=0D
-Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org=0D
-List help: virtio-comment-help@lists.oasis-open.org=0D
-List archive: https://lists.oasis-open.org/archives/virtio-comment/=0D
-Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf=
-=0D
+Subscribe: virtio-comment-subscribe@lists.oasis-open.org
+Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
+List help: virtio-comment-help@lists.oasis-open.org
+List archive: https://lists.oasis-open.org/archives/virtio-comment/
+Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
 List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lis=
-ts=0D
-Committee: https://www.oasis-open.org/committees/virtio/=0D
+ts
+Committee: https://www.oasis-open.org/committees/virtio/
 Join OASIS: https://www.oasis-open.org/join/
 
