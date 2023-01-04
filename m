@@ -1,18 +1,25 @@
-Return-Path: <wintera@linux.ibm.com>
-Message-ID: <c572aa1f-e2a9-721e-5389-aec605fc439f@linux.ibm.com>
-Date: Wed, 4 Jan 2023 14:27:29 +0100
+Return-Path: <virtio-comment-return-3679-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-comment@lists.oasis-open.org>
+List-Post: <mailto:virtio-comment@lists.oasis-open.org>
+List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
+Message-ID: <88bdae7b-4ee0-8da8-5bb7-473957002bbe@linux.ibm.com>
+Date: Wed, 4 Jan 2023 14:52:10 +0100
 From: Alexandra Winter <wintera@linux.ibm.com>
-Subject: Re: [PATCH v2 0/1] introduce virtio-ism: internal shared memory
- device
-References: <20221223081939.26506-1-xuanzhuo@linux.alibaba.com>
-In-Reply-To: <20221223081939.26506-1-xuanzhuo@linux.alibaba.com>
+References: <c572aa1f-e2a9-721e-5389-aec605fc439f@linux.ibm.com>
+Reply-To: Alexandra Winter <wintera@linux.ibm.com>
+In-Reply-To: <c572aa1f-e2a9-721e-5389-aec605fc439f@linux.ibm.com>
 MIME-Version: 1.0
+Subject: [virtio-comment] Re: [PATCH v2 0/1] introduce virtio-ism: internal shared memory
+ device
 Content-Language: en-US
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 To: Xuan Zhuo <xuanzhuo@linux.alibaba.com>, virtio-comment@lists.oasis-open.org
 Cc: hans@linux.alibaba.com, herongguang@linux.alibaba.com, zmlcc@linux.alibaba.com, dust.li@linux.alibaba.com, tonylu@linux.alibaba.com, zhenzao@linux.alibaba.com, helinguo@linux.alibaba.com, gerry@linux.alibaba.com, mst@redhat.com, cohuck@redhat.com, jasowang@redhat.com, Jan Kiszka <jan.kiszka@siemens.com>, kgraul@linux.ibm.com, wenjia@linux.ibm.com, jaka@linux.ibm.com, hca@linux.ibm.com, twinkler@linux.ibm.com, raspl@linux.ibm.com, virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
+
 
 
 
@@ -315,4 +322,20 @@ of memory for performance and do not impact other connections.
 >  3 files changed, 497 insertions(+)
 >  create mode 100644 virtio-ism.tex
 > 
+
+This publicly archived list offers a means to provide input to the
+OASIS Virtual I/O Device (VIRTIO) TC.
+
+In order to verify user consent to the Feedback License terms and
+to minimize spam in the list archive, subscription is required
+before posting.
+
+Subscribe: virtio-comment-subscribe@lists.oasis-open.org
+Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
+List help: virtio-comment-help@lists.oasis-open.org
+List archive: https://lists.oasis-open.org/archives/virtio-comment/
+Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
+List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
+Committee: https://www.oasis-open.org/committees/virtio/
+Join OASIS: https://www.oasis-open.org/join/
 
