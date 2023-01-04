@@ -1,306 +1,358 @@
-Return-Path: <wenjia@linux.ibm.com>
-Message-ID: <534229dd-4c4d-d7b2-a90c-a448920bcca4@linux.ibm.com>
-Date: Wed, 25 Jan 2023 13:55:51 +0100
-Subject: Re: [PATCH v2 0/1] introduce virtio-ism: internal shared memory
- device
-References: <20221223081354.15026-1-xuanzhuo@linux.alibaba.com>
-From: Wenjia Zhang <wenjia@linux.ibm.com>
-In-Reply-To: <20221223081354.15026-1-xuanzhuo@linux.alibaba.com>
+Return-Path: <hengqi@linux.alibaba.com>
+From: Heng Qi <hengqi@linux.alibaba.com>
+Subject: [PATCH v7] virtio-net: support inner header hash
+Date: Wed,  4 Jan 2023 15:14:01 +0800
+Message-Id: <20230104071401.31746-1-hengqi@linux.alibaba.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Cc: virtio-dev@lists.oasis-open.org, hans@linux.alibaba.com, herongguang@linux.alibaba.com, zmlcc@linux.alibaba.com, dust.li@linux.alibaba.com, tonylu@linux.alibaba.com, zhenzao@linux.alibaba.com, helinguo@linux.alibaba.com, gerry@linux.alibaba.com, mst@redhat.com, cohuck@redhat.com, jasowang@redhat.com, Jan Kiszka <jan.kiszka@siemens.com>, wintera@linux.ibm.com, kgraul@linux.ibm.com, jaka@linux.ibm.com, hca@linux.ibm.com, twinkler@linux.ibm.com, raspl@linux.ibm.com
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="US-ASCII"; x-default=true
+To: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+Cc: "Michael S . Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, Yuri Benditovich <yuri.benditovich@daynix.com>, Cornelia Huck <cohuck@redhat.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+If the tunnel is used to encapsulate the packets, the hash calculated
+using the outer header of the receive packets is always fixed for the
+same flow packets, i.e. they will be steered to the same receive queue.
 
+We add a feature bit VIRTIO_NET_F_HASH_TUNNEL and related bitmasks
+in \field{hash_types}, which instructs the device to calculate the
+hash using the inner headers of tunnel-encapsulated packets. Besides,
+values in \field{hash_report_tunnel} are added to report tunnel types.
 
-On 23.12.22 09:13, Xuan Zhuo wrote:
-> Hello everyone,
-> 
-> # Background
-> 
->      Nowadays, there is a common scenario to accelerate communication between
->      different VMs and containers, including light weight virtual machine based
->      containers. One way to achieve this is to colocate them on the same host.
->      However, the performance of inter-VM communication through network stack is
->      not optimal and may also waste extra CPU cycles. This scenario has been
->      discussed many times, but still no generic solution available [1] [2] [3].
-> 
->      With pci-ivshmem + SMC(Shared Memory Communications: [4]) based PoC[5],
->      We found that by changing the communication channel between VMs from TCP to
->      SMC with shared memory, we can achieve superior performance for a common
->      socket-based application[5]:
->        - latency reduced by about 50%
->        - throughput increased by about 300%
->        - CPU consumption reduced by about 50%
-> 
->      Since there is no particularly suitable shared memory management solution
->      matches the need for SMC(See ## Comparison with existing technology), and
->      virtio is the standard for communication in the virtualization world, we
->      want to implement a virtio-ism device based on virtio, which can support
->      on-demand memory sharing across VMs, containers or VM-container. To match
->      the needs of SMC, the virtio-ism device need to support:
-> 
->      1. Dynamic provision: shared memory regions are dynamically allocated and
->         provisioned.
->      2. Multi-region management: the shared memory is divided into regions,
->         and a peer may allocate one or more regions from the same shared memory
->         device.
->      3. Permission control: the permission of each region can be set seperately.
->      4. Dynamic connection: each ism region of a device can be shared with
->         different devices, eventually a device can be shared with thousands of
->         devices
-> 
-> # Virtio ISM device
-> 
->      ISM devices provide the ability to share memory between different guests on
->      a host. A guest's memory got from ism device can be shared with multiple
->      peers at the same time. This shared relationship can be dynamically created
->      and released.
-> 
->      The shared memory obtained from the device is divided into multiple ism
->      regions for share. ISM device provides a mechanism to notify other ism
->      region referrers of content update events.
-> 
-> ## Design
-> 
->      This is a structure diagram based on ism sharing between two vms.
-> 
->      |-------------------------------------------------------------------------------------------------------------|
->      | |------------------------------------------------|       |------------------------------------------------| |
->      | | Guest                                          |       | Guest                                          | |
->      | |                                                |       |                                                | |
->      | |   ----------------                             |       |   ----------------                             | |
->      | |   |    driver    |     [M1]   [M2]   [M3]      |       |   |    driver    |             [M2]   [M3]     | |
->      | |   ----------------       |      |      |       |       |   ----------------               |      |      | |
->      | |    |cq|                  |map   |map   |map    |       |    |cq|                          |map   |map   | |
->      | |    |  |                  |      |      |       |       |    |  |                          |      |      | |
->      | |    |  |                -------------------     |       |    |  |                --------------------    | |
->      | |----|--|----------------|  device memory  |-----|       |----|--|----------------|  device memory   |----| |
->      | |    |  |                -------------------     |       |    |  |                --------------------    | |
->      | |                                |               |       |                               |                | |
->      | |                                |               |       |                               |                | |
->      | | Qemu                           |               |       | Qemu                          |                | |
->      | |--------------------------------+---------------|       |-------------------------------+----------------| |
->      |                                  |                                                       |                  |
->      |                                  |                                                       |                  |
->      |                                  |------------------------------+------------------------|                  |
->      |                                                                 |                                           |
->      |                                                                 |                                           |
->      |                                                   --------------------------                                |
->      |                                                    | M1 |   | M2 |   | M3 |                                 |
->      |                                                   --------------------------                                |
->      |                                                                                                             |
->      | HOST                                                                                                        |
->      ---------------------------------------------------------------------------------------------------------------
-> 
-> ## Inspiration
-> 
->      Our design idea for virtio-ism comes from IBM's ISM device, to pay tribute,
->      we directly name this device "ism".
-> 
->      Information about IBM ism device and SMC:
->        1. SMC reference: https://www.ibm.com/docs/en/zos/2.5.0?topic=system-shared-memory-communications
->        2. SMC-Dv2 and ISMv2 introduction: https://www.newera.com/INFO/SMCv2_Introduction_10-15-2020.pdf
->        3. ISM device: https://www.ibm.com/docs/en/linux-on-systems?topic=n-ism-device-driver-1
->        4. SMC protocol (including SMC-D): https://www.ibm.com/support/pages/system/files/inline-files/IBM%20Shared%20Memory%20Communications%20Version%202_2.pdf
->        5. SMC-D FAQ: https://www.ibm.com/support/pages/system/files/inline-files/2021-02-09-SMC-D-FAQ.pdf
-> 
-> ## ISM VLAN
-> 
->      Since SMC uses TCP to handshake with IP facilities, virtio-ism device is not
->      bound to existing IP device, and the latest ISMv2 device doesn't require
->      VLAN. So it is not necessary for virtio-ism to support VLAN attributes.
-> 
-> ## Live Migration
-> 
->      Currently SMC-D doesn't support migration to another device or fallback. And
->      SMC-R supports migration to another link, no fallback.
-> 
->      So we may not support live migration for the time being.
-> 
-> ## About hot plugging of the ism device
-> 
->      Hot plugging of devices is a heavier, possibly failed, time-consuming, and
->      less scalable operation. So, we don't plan to support it for now.
-> 
-> 
-> # Usage (SMC as example)
-> 
->      There is one of possible use cases:
-> 
->      1. SMC calls the interface ism_alloc_region() of the ism driver to return
->         the location of a memory region in the PCI space and a token.
->      2. The ism driver mmap the memory region and return to SMC with the token
->      3. SMC passes the token to the connected peer
->      4. the peer calls the ism driver interface ism_attach_region(token) to
->         get the location of the PCI space of the shared memory
->      5. The connected pair communicating through the shared memory
-> 
-> # Comparison with existing technology
-> 
-> ## ivshmem or ivshmem 2.0 of Qemu
-> 
->     1. ivshmem 1.0 is a large piece of memory that can be seen by all devices
->        that use this VM, so the security is not enough.
-> 
->     2. ivshmem 2.0 is a shared memory belonging to a VM that can be read-only by
->        all other VMs that use the ivshmem 2.0 shared memory device, which also
->        does not meet our needs in terms of security.
-> 
-> ## vhost-pci and virtiovhostuser
-> 
->      1. does not support dynamic allocation
->      2. one device just support connect to one vm
-> 
-> 
-> # POC CODE
-> 
-> There are no functions related to eventq and perm yet.
-> 
-> ## Qemu (virtio ism device):
-> 
->       https://github.com/fengidri/qemu/compare/7d66b74c4dd0d74d12c1d3d6de366242b13ed76d...ism-upstream-1216?expand=1
-> 
->      Start qemu with option "--device virtio-ism-pci,disable-legacy=on, disable-modern=off".
-> 
-> ##  Kernel (virtio ism driver and smc support):
-> 
->       https://github.com/fengidri/linux-kernel-virtio-ism/compare/6f8101eb21bab480537027e62c4b17021fb7ea5d...ism-upstream-1223
-> 
-I tried to run the PoC kernel on our platform and wanted to test the 
-main path of SMC-D and SMC-R flows as we used to firstly. Unfortunately, 
-most of our basic tests are failed and even ftrace could trigger a crash 
-which points that "Unable to handle kernel pointer dereference in 
-virtual kernel address space". Thus, I'm wondering:
+Fixes: https://github.com/oasis-tcs/virtio-spec/issues/151
 
-- What aspects of the PoC would you like to get feedback on? Which parts 
-are known to be not as good as they need to become? Or are known to need 
-to be significantly expanded upon for reaching non-RFC maturity? What is 
-suposed to stick around?
-- Is there a version that does not break the existing scenarios in the 
-pipe? Or maybe even already published somewhere else?
-- Are you aware of the recent refactoring in SMC-D: 
-https://git.kernel.org/netdev/net-next/c/8c81ba20349d ? Could you base 
-your next version on this code?
+Reviewed-by: Jason Wang <jasowang@redhat.com>
+Signed-off-by: Heng Qi <hengqi@linux.alibaba.com>
+Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+---
+v6:
+	1. Modify the wording of some sentences for clarity. @Michael S. Tsirkin
+	2. Fix some syntax issues. @Michael S. Tsirkin
 
+v5:
+	1. Fix some syntax and capitalization issues. @Michael S. Tsirkin
+	2. Use encapsulated/encaptulation uniformly. @Michael S. Tsirkin
+	3. Move the links to introduction section. @Michael S. Tsirkin
+	4. Clarify some sentences. @Michael S. Tsirkin
 
+v4:
+	1. Clarify some paragraphs. @Cornelia Huck
+	2. Fix the u8 type. @Cornelia Huck
 
-> 
-> ### SMC
-> 
->      Support SMC-D works with virtio-ism.
-> 
->      Use SMC with virtio-ism to accelerate inter-VM communication.
-> 
->      1. insmod virtio-ism and smc module.
->      2. use smc-tools [1] to get the device name of SMC-D based on virtio-ism.
-> 
->        $ smcd d # here is _virtio2_
->        FID  Type  PCI-ID        PCHID  InUse  #LGs  PNET-ID
->        0000 0     virtio2       0000   Yes       1  *C1
-> 
->      3. add the nic and SMC-D device to the same pnet, do it in both client and server.
-> 
->        $ smc_pnet -a -I eth1 c1 # use eth1 to setup SMC connection
->        $ smc_pnet -a -D virtio2 c1 # virtio2 is the virtio-ism device
-> 
->      4. use SMC to accelerate your application, smc_run in [1] can do this.
-> 
->        # smc_run use LD_PRELOAD to hijack socket syscall with AF_SMC
->        $ smc_run sockperf server --tcp # run in server
->        $ smc_run sockperf tp --tcp -i a.b.c.d # run in client
-> 
->      [1] https://github.com/ibm-s390-linux/smc-tools
-> 
->      Notice: The current POC state, we only tested some basic functions.
-> 
-> ### App inside user space
-> 
->      The ism driver provide /dev/vismX interface, allow users to use Virtio-ISM
->      device in user space directly.
-> 
->      Try tools/virtio/virtio-ism/virtio-ism-mmap
-> 
->      Usage:
->           cd tools/virtio/virtio-ism/; make
->           insmode virtio-ism.ko
-> 
->      case1: communicate
-> 
->         vm1: ./virtio-ism-mmap alloc -> token
->         vm2: ./virtio-ism-mmap attach -t <token> --write-msg AAAA --commit
-> 
->         vm2 will write msg to shared memory, then notify vm1. After vm1 receive
->         notify, then read from shared memory.
-> 
->      case2: ping-pong test.
-> 
->          vm1: ./virtio-ism-mmap server
->          vm2: ./virtio-ism-mmap -i 192.168.122.101 pp
-> 
->          1. server alloc one ism region
->          2. client get the token by tcp
-> 
->          3. client commit(kick) to server, server recv notify, commit(kick) to client
->          4. loop #3
-> 
->      case3: throughput test.
-> 
->          vm1: ./virtio-ism-mmap server
->          vm2: ./virtio-ism-mmap -i 192.168.122.101 tp
-> 
->          1. server alloc one ism region
->          2. client get the token by tcp
-> 
->          3. client write 1M data to ism region
->          4. client commit(kick) to server
->          5. server recv notify, copy the data, the commit(kick) back to client
->          6. loop #3-#5
-> 
->      case4: throughput test with protocol defined by user.
-> 
->          vm1: ./virtio-ism-mmap server
->          vm2: ./virtio-ism-mmap -i 192.168.122.101 tp --polling --tp-chunks 15 --msg-size 64k -n 50000
-> 
->          Used the ism region as a ring.
-> 
->          In this scene, client and server are in the polling mode. Test it on
->          my machine, the maximum can reach 12GBps
-> 
-> # References
-> 
->      [1] https://projectacrn.github.io/latest/tutorials/enable_ivshmem.html
->      [2] https://dl.acm.org/doi/10.1145/2847562
->      [3] https://hal.archives-ouvertes.fr/hal-00368622/document
->      [4] https://lwn.net/Articles/711071/
->      [5] https://lore.kernel.org/netdev/20220720170048.20806-1-tonylu@linux.alibaba.com/T/
-> 
-> 
-> If there are any problems, please point them out.
-> Hope to hear from you, thank you.
-> 
-> v2:
->     1. add Attach/Detach event
->     2. add Events Filter
->     3. allow Alloc/Attach huge region
->     4. remove host/guest terms
-> 
-> v1:
->     1. cover letter adding explanation of ism vlan
->     2. spec add gid
->     3. explain the source of ideas about ism
->     4. POC support virtio-ism-smc.ko virtio-ism-dev.ko and support virtio-ism-mmap
-> 
-> 
-> Xuan Zhuo (1):
->    virtio-ism: introduce new device virtio-ism
-> 
->   conformance.tex |  24 +++
->   content.tex     |   1 +
->   virtio-ism.tex  | 472 ++++++++++++++++++++++++++++++++++++++++++++++++
->   3 files changed, 497 insertions(+)
->   create mode 100644 virtio-ism.tex
-> 
+v3:
+	1. Rename VIRTIO_NET_F_HASH_GRE_VXLAN_GENEVE_INNER to VIRTIO_NET_F_HASH_TUNNEL. @Jason Wang
+	2. Make things clearer. @Jason Wang @Michael S. Tsirkin
+	3. Keep the possibility to use inner hash for automatic receive steering. @Jason Wang
+	4. Add the "Tunnel packet" paragraph to avoid repeating the GRE etc. many times. @Michael S. Tsirkin
+
+v2:
+	1. Add a feature bit for GRE/VXLAN/GENEVE inner hash. @Jason Wang
+	2. Chang \field{hash_tunnel} to \field{hash_report_tunnel}. @Jason Wang, @Michael S. Tsirkin
+
+v1:
+	1. Remove the patch for the bitmask fix. @Michael S. Tsirkin
+	2. Clarify some paragraphs. @Jason Wang
+	3. Add \field{hash_tunnel} and VIRTIO_NET_HASH_REPORT_GRE. @Yuri Benditovich
+
+ content.tex      | 191 +++++++++++++++++++++++++++++++++++++++++++++--
+ introduction.tex |  19 +++++
+ 2 files changed, 203 insertions(+), 7 deletions(-)
+
+diff --git a/content.tex b/content.tex
+index e863709..7845f6c 100644
+--- a/content.tex
++++ b/content.tex
+@@ -3084,6 +3084,9 @@ \subsection{Feature bits}\label{sec:Device Types / Network Device / Feature bits
+ \item[VIRTIO_NET_F_CTRL_MAC_ADDR(23)] Set MAC address through control
+     channel.
+ 
++\item[VIRTIO_NET_F_HASH_TUNNEL(52)] Device supports inner
++    header hash for GRE, VXLAN and GENEVE tunnel-encapsulated packets.
++
+ \item[VIRTIO_NET_F_NOTF_COAL(53)] Device supports notifications coalescing.
+ 
+ \item[VIRTIO_NET_F_GUEST_USO4 (54)] Driver can receive USOv4 packets.
+@@ -3095,7 +3098,8 @@ \subsection{Feature bits}\label{sec:Device Types / Network Device / Feature bits
+  to several segments when each of these smaller packets has UDP header.
+ 
+ \item[VIRTIO_NET_F_HASH_REPORT(57)] Device can report per-packet hash
+-    value and a type of calculated hash.
++    value, a type of calculated hash, and, if VIRTIO_NET_F_HASH_TUNNEL
++    is negotiated, an encapsulation packet type.
+ 
+ \item[VIRTIO_NET_F_GUEST_HDRLEN(59)] Driver can provide the exact \field{hdr_len}
+     value. Device benefits from knowing the exact header length.
+@@ -3140,6 +3144,7 @@ \subsubsection{Feature bit requirements}\label{sec:Device Types / Network Device
+ \item[VIRTIO_NET_F_NOTF_COAL] Requires VIRTIO_NET_F_CTRL_VQ.
+ \item[VIRTIO_NET_F_RSC_EXT] Requires VIRTIO_NET_F_HOST_TSO4 or VIRTIO_NET_F_HOST_TSO6.
+ \item[VIRTIO_NET_F_RSS] Requires VIRTIO_NET_F_CTRL_VQ.
++\item[VIRTIO_NET_F_HASH_TUNNEL] Requires VIRTIO_NET_F_CTRL_VQ.
+ \end{description}
+ 
+ \subsubsection{Legacy Interface: Feature bits}\label{sec:Device Types / Network Device / Feature bits / Legacy Interface: Feature bits}
+@@ -3386,7 +3391,8 @@ \subsection{Device Operation}\label{sec:Device Types / Network Device / Device O
+         le16 num_buffers;
+         le32 hash_value;        (Only if VIRTIO_NET_F_HASH_REPORT negotiated)
+         le16 hash_report;       (Only if VIRTIO_NET_F_HASH_REPORT negotiated)
+-        le16 padding_reserved;  (Only if VIRTIO_NET_F_HASH_REPORT negotiated)
++        u8 hash_report_tunnel;  (Only if VIRTIO_NET_F_HASH_REPORT negotiated, only valid of VIRTIO_NET_F_HASH_TUNNEL negotiated)
++        u8 padding_reserved;    (Only if VIRTIO_NET_F_HASH_REPORT negotiated)
+ };
+ \end{lstlisting}
+ 
+@@ -3837,7 +3843,8 @@ \subsubsection{Processing of Incoming Packets}\label{sec:Device Types / Network
+ A device attempts to calculate a per-packet hash in the following cases:
+ \begin{itemize}
+ \item The feature VIRTIO_NET_F_RSS was negotiated. The device uses the hash to determine the receive virtqueue to place incoming packets.
+-\item The feature VIRTIO_NET_F_HASH_REPORT was negotiated. The device reports the hash value and the hash type with the packet.
++\item The feature VIRTIO_NET_F_HASH_REPORT was negotiated. The device reports the hash value and the hash type. If additionally
++VIRTIO_NET_F_HASH_TUNNEL was negotiated, the device reports the encapsulation type as well.
+ \end{itemize}
+ 
+ If the feature VIRTIO_NET_F_RSS was negotiated:
+@@ -3863,8 +3870,36 @@ \subsubsection{Processing of Incoming Packets}\label{sec:Device Types / Network
+  \ref{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Automatic receive steering in multiqueue mode / Hash calculation}.
+ \end{itemize}
+ 
++\subparagraph{Tunnel/Encapsulated packet}
++\label{sec:Device Types / Network Device / Device Operation / Processing of Incoming Packets / Hash calculation for incoming packets / Tunnel/Encapsulated packet}
++A tunnel packet is encapsulated from the original packet based on the tunneling
++protocol (only a single level of encapsulation is currently supported). The
++encapsulated packet contains an outer header and an inner header, and the device
++calculates the hash over either the inner header or the outer header.
++
++When the feature VIRTIO_NET_F_HASH_TUNNEL is negotiated and the corresponding
++encapsulation type is set in \field{hash_types}, the hash for a specific type of
++encapsulated packet is calculated over the inner as opposed to outer header.
++Supported encapsulation types are listed in \ref{sec:Device Types / Network Device /
++Device Operation / Processing of Incoming Packets / Hash calculation for incoming packets /
++Supported/enabled hash types}.
++
++If both VIRTIO_NET_F_HASH_REPORT and VIRTIO_NET_F_HASH_TUNNEL are negotiated,
++the device can support inner hash calculation for \hyperref[intro:GRE]{[GRE]},
++\hyperref[intro:VXLAN]{[VXLAN]} and \hyperref[intro:GENEVE]{[GENEVE]}
++encapsulated packets, and the corresponding encapsulation type in \field{hash_types}
++is VIRTIO_NET_HASH_TYPE_{GRE, VXLAN, GENEVE}_INNER respectively. The value in
++\field{hash_report_tunnel} is VIRTIO_NET_HASH_REPORT_{NONE, GRE, VXLAN, GENEVE} respectively.
++
++If VIRTIO_NET_F_HASH_REPORT is negotiated but VIRTIO_NET_F_HASH_TUNNEL is not
++negotiated, the device calculates the hash over the outer header, and
++\field{hash_report} reports the hash type. \field{hash_report_tunnel}
++is no longer valid.
++
+ \subparagraph{Supported/enabled hash types}
+ \label{sec:Device Types / Network Device / Device Operation / Processing of Incoming Packets / Hash calculation for incoming packets / Supported/enabled hash types}
++This paragraph relies on definitions from \hyperref[intro:IP]{[IP]},
++\hyperref[intro:UDP]{[UDP]} and \hyperref[intro:TCP]{[TCP]}.
+ Hash types applicable for IPv4 packets:
+ \begin{lstlisting}
+ #define VIRTIO_NET_HASH_TYPE_IPv4              (1 << 0)
+@@ -3884,6 +3919,22 @@ \subsubsection{Processing of Incoming Packets}\label{sec:Device Types / Network
+ #define VIRTIO_NET_HASH_TYPE_UDP_EX            (1 << 8)
+ \end{lstlisting}
+ 
++If the feature VIRTIO_NET_F_HASH_TUNNEL is negotiated, the encapsulation
++hash type below indicates that the hash is calculated over the inner
++header of the encapsulated packet:
++Hash type applicable for inner payload of the gre-encapsulated packet
++\begin{lstlisting}
++#define VIRTIO_NET_HASH_TYPE_GRE_INNER         (1 << 9)
++\end{lstlisting}
++Hash type applicable for inner payload of the vxlan-encapsulated packet
++\begin{lstlisting}
++#define VIRTIO_NET_HASH_TYPE_VXLAN_INNER       (1 << 10)
++\end{lstlisting}
++Hash type applicable for inner payload of the geneve-encapsulated packet
++\begin{lstlisting}
++#define VIRTIO_NET_HASH_TYPE_GENEVE_INNER      (1 << 11)
++\end{lstlisting}
++
+ \subparagraph{IPv4 packets}
+ \label{sec:Device Types / Network Device / Device Operation / Processing of Incoming Packets / Hash calculation for incoming packets / IPv4 packets}
+ The device calculates the hash on IPv4 packets according to 'Enabled hash types' bitmask as follows:
+@@ -3975,15 +4026,125 @@ \subsubsection{Processing of Incoming Packets}\label{sec:Device Types / Network
+ (see \ref{sec:Device Types / Network Device / Device Operation / Processing of Incoming Packets / Hash calculation for incoming packets / IPv6 packets without extension header}).
+ \end{itemize}
+ 
++\subparagraph{Inner payload of an encapsulated packet}
++\label{sec:Device Types / Network Device / Device Operation / Processing of Incoming Packets / Hash calculation for incoming packets / Inner payload of the encapsulated packet}
++If the feature VIRTIO_NET_F_HASH_TUNNEL is negotiated and the corresponding
++encapsulation hash type is set in \field{hash_types}, the device calculates the
++inner header hash on an encapsulated packet (See \ref{sec:Device Types
++/ Network Device / Device Operation / Processing of Incoming Packets /
++Hash calculation for incoming packets / Tunnel/Encapsulated packet}) as follows:
++
++The device calculates the hash on the inner IPv4 packet of an encapsulated packet
++according to 'Enabled hash types' bitmask as follows:
++\begin{itemize}
++  \item If VIRTIO_NET_HASH_TYPE_TCPv4 is set and the encapsulated packet has an inner
++	TCPv4 header, the hash is calculated over the following fields:
++        \begin{itemsize}
++          \item inner Source IP address
++          \item inner Destination IP address
++          \item inner Source TCP port
++          \item inner Destination TCP port
++        \end{itemsize}
++  \item Else if VIRTIO_NET_HASH_TYPE_UDPv4 is set and the encapsulated packet has an
++	inner UDPv4 header, the hash is calculated over the following fields:
++        \begin{itemsize}
++          \item inner Source IP address
++          \item inner Destination IP address
++          \item inner Source UDP port
++          \item inner Destination UDP port
++        \end{itemize}
++  \item Else if VIRTIO_NET_HASH_TYPE_IPv4 is set, the hash is calculated over the
++	following fields:
++        \begin{itemsize}
++          \item inner Source IP address
++          \item inner Destination IP address
++        \end{itemsize}
++  \item Else the device does not calculate the hash
++\end{itemize}
++
++The device calculates the hash on the inner IPv6 packet without an extension header
++of an encapsulated packet according to 'Enabled hash types' bitmask as follows:
++\begin{itemize}
++  \item If VIRTIO_NET_HASH_TYPE_TCPv6 is set and the encapsulated packet has an inner
++	TCPv6 header, the hash is calculated over the following fields:
++        \begin{itemsize}
++          \item inner Source IPv6 address
++          \item inner Destination IPv6 address
++          \item inner Source TCP port
++          \item inner Destination TCP port
++        \end{itemsize}
++  \item Else if VIRTIO_NET_HASH_TYPE_UDPv6 is set and the encapsulated packet has an
++	inner UDPv6 header, the hash is calculated over the following fields:
++        \begin{itemsize}
++          \item inner Source IPv6 address
++          \item inner Destination IPv6 address
++          \item inner Source UDP port
++          \item inner Destination UDP port
++        \end{itemize}
++  \item Else if VIRTIO_NET_HASH_TYPE_IPv6 is set, the hash is calculated over the
++	following fields:
++        \begin{itemsize}
++          \item inner Source IPv6 address
++          \item inner Destination IPv6 address
++        \end{itemsize}
++  \item Else the device does not calculate the hash
++\end{itemize}
++
++The device calculates the hash on the inner IPv6 packet with an extension header
++of an encapsulated packet according to 'Enabled hash types' bitmask as follows:
++\begin{itemsize}
++  \item If VIRTIO_NET_HASH_TYPE_TCP_EX is set and the encapsulated packet has an inner
++	TCPv6 header, the hash is calculated over the following fields:
++        \begin{itemize}
++          \item Home address from the home address option in the inner IPv6 destination
++              options header. If the inner extension header is not present, use the
++              inner Source IPv6 address.
++          \item IPv6 address that is contained in the Routing-Header-Type-2 from the
++              associated inner extension header. If the inner extension header is not
++              present, use the inner Destination IPv6 address.
++          \item inner Source TCP port
++          \item inner Destination TCP port
++        \end{itemize}
++  \item Else if VIRTIO_NET_HASH_TYPE_UDP_EX is set and the encapsulated packet has an inner
++	UDPv6 header, the hash is calculated over the following fields:
++        \begin{itemsize}
++          \item Home address from the home address option in the inner IPv6 destination
++              options header. If the inner extension header is not present, use the
++              inner Source IPv6 address.
++          \item IPv6 address that is contained in the Routing-Header-Type-2 from the
++              associated inner extension header. If the inner extension header is not
++              present, use the inner Destination IPv6 address.
++          \item inner Source UDP port
++          \item inner Destination UDP port
++        \end{itemize}
++  \item Else if VIRTIO_NET_HASH_TYPE_IP_EX is set, the hash is calculated over the
++	following fields:
++        \begin{itemsize}
++          \item Home address from the home address option in the inner IPv6 destination
++              options header. If the inner extension header is not present, use the
++              inner Source IPv6 address.
++          \item IPv6 address that is contained in the Routing-Header-Type-2 from the
++              associated inner extension header. If the inner extension header is not
++              present, use the inner Destination IPv6 address.
++        \end{itemize}
++  \item Else skip the inner IPv6 extension header and calculate the inner header hash as
++	defined for an encapsulated packet whose inner payload is an IPv6 packet without
++	an extension header.
++\end{itemsize}
++
+ \paragraph{Hash reporting for incoming packets}
+ \label{sec:Device Types / Network Device / Device Operation / Processing of Incoming Packets / Hash reporting for incoming packets}
+ 
+-If VIRTIO_NET_F_HASH_REPORT was negotiated and
+- the device has calculated the hash for the packet, the device fills \field{hash_report} with the report type of calculated hash
+-and \field{hash_value} with the value of calculated hash.
++If VIRTIO_NET_F_HASH_REPORT was negotiated and the device has calculated the
++hash for the packet, the device fills \field{hash_report} with the report type
++of calculated hash, and \field{hash_value} with the value of calculated hash.
++Also, if VIRTIO_NET_F_HASH_TUNNEL was negotiated, the device needs to fill
++\field{hash_report_tunnel} with the report type of the encapsulated packet, and
++it is set to VIRTIO_NET_HASH_REPORT_TUNNEL_NONE for the unencapsulated packet.
+ 
+ If VIRTIO_NET_F_HASH_REPORT was negotiated but due to any reason the
+-hash was not calculated, the device sets \field{hash_report} to VIRTIO_NET_HASH_REPORT_NONE.
++hash was not calculated, the device sets \field{hash_report} to VIRTIO_NET_HASH_REPORT_NONE,
++and sets \field{hash_report_tunnel} to VIRTIO_NET_HASH_REPORT_TUNNEL_NONE.
+ 
+ Possible values that the device can report in \field{hash_report} are defined below.
+ They correspond to supported hash types defined in
+@@ -4005,6 +4166,22 @@ \subsubsection{Processing of Incoming Packets}\label{sec:Device Types / Network
+ #define VIRTIO_NET_HASH_REPORT_UDPv6_EX        9
+ \end{lstlisting}
+ 
++If \field{hash_report} differs from VIRTIO_NET_HASH_REPORT_NONE,
++\field{hash_report_tunnel} can report the type of the encapsulated
++packet to the driver over the inner header hash calculation.
++Possible values that the device can report in \field{hash_report_tunnel}
++are defined below:
++
++\begin{lstlisting}
++#define VIRTIO_NET_HASH_REPORT_TUNNEL_NONE     0
++#define VIRTIO_NET_HASH_REPORT_GRE             1
++#define VIRTIO_NET_HASH_REPORT_VXLAN           2
++#define VIRTIO_NET_HASH_REPORT_GENEVE          3
++\end{lstlisting}
++
++They correspond to supported hash types defined in
++\ref{sec:Device Types / Network Device / Device Operation / Processing of Incoming Packets / Hash calculation for incoming packets / Supported/enabled hash types}.
++
+ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue}
+ 
+ The driver uses the control virtqueue (if VIRTIO_NET_F_CTRL_VQ is
+diff --git a/introduction.tex b/introduction.tex
+index 287c5fc..ff01a9b 100644
+--- a/introduction.tex
++++ b/introduction.tex
+@@ -98,6 +98,25 @@ \section{Normative References}\label{sec:Normative References}
+ 	\phantomsection\label{intro:SEC1}\textbf{[SEC1]} &
+     Standards for Efficient Cryptography Group(SECG), ``SEC1: Elliptic Cureve Cryptography'', Version 1.0, September 2000.
+ 	\newline\url{https://www.secg.org/sec1-v2.pdf}\\
++	\phantomsection\label{intro:GRE}\textbf{[GRE]} &
++	Generic Routing Encapsulation
++	\newline\url{https://datatracker.ietf.org/doc/rfc2784/}\\
++	\phantomsection\label{intro:VXLAN}\textbf{[VXLAN]} &
++	Virtual eXtensible Local Area Network
++	\newline\url{https://datatracker.ietf.org/doc/rfc7348/}\\
++	\phantomsection\label{intro:GENEVE}\textbf{[GENEVE]} &
++	Generic Network Virtualization Encapsulation
++	\newline\url{https://datatracker.ietf.org/doc/rfc8926/}\\
++	\phantomsection\label{intro:IP}\textbf{[IP]} &
++	INTERNET PROTOCOL
++	\newline\url{https://www.rfc-editor.org/rfc/rfc791}\\
++	\phantomsection\label{intro:UDP}\textbf{[UDP]} &
++	User Datagram Protocol
++	\newline\url{https://www.rfc-editor.org/rfc/rfc768}\\
++	\phantomsection\label{intro:TCP}\textbf{[TCP]} &
++	TRANSMISSION CONTROL PROTOCOL
++	\newline\url{https://www.rfc-editor.org/rfc/rfc793}\\
++
+ 
+ \end{longtable}
+ 
+-- 
+2.19.1.6.gb485710b
 
