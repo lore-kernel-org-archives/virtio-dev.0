@@ -1,111 +1,95 @@
-Return-Path: <virtio-dev-return-10421-cohuck=redhat.com@lists.oasis-open.org>
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Message-ID: <111b68d2-5478-4bb5-4e23-c2950d09edf3@oracle.com>
-Date: Tue, 3 Jan 2023 17:48:51 -0800
+Return-Path: <virtio-comment-return-3671-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-comment@lists.oasis-open.org>
+List-Post: <mailto:virtio-comment@lists.oasis-open.org>
+List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
+From: Parav Pandit <parav@nvidia.com>
+Date: Wed, 4 Jan 2023 03:29:44 +0000
+Message-ID: <PH0PR12MB548102844BF0270CB912D7F3DCF59@PH0PR12MB5481.namprd12.prod.outlook.com>
 References: <20230103220709.357541-1-parav@nvidia.com>
-From: Si-Wei Liu <si-wei.liu@oracle.com>
-In-Reply-To: <20230103220709.357541-1-parav@nvidia.com>
+ <111b68d2-5478-4bb5-4e23-c2950d09edf3@oracle.com>
+In-Reply-To: <111b68d2-5478-4bb5-4e23-c2950d09edf3@oracle.com>
 MIME-Version: 1.0
-Subject: [virtio-dev] Re: [PATCH v3] virtio-network: Clarify VLAN filter table
+Subject: [virtio-comment] RE: [PATCH v3] virtio-network: Clarify VLAN filter table
  configuration
 Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Parav Pandit <parav@nvidia.com>, mst@redhat.com, virtio-dev@lists.oasis-open.org
-Cc: virtio-comment@lists.oasis-open.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+To: Si-Wei Liu <si-wei.liu@oracle.com>, "mst@redhat.com" <mst@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
+Cc: "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Hi Parav,
-
-Great write-up! Just a couple minor suggestions, please see below in line.
-
-On 1/3/2023 2:07 PM, Parav Pandit wrote:
-> The filtering behavior of the VLAN filter commands is not very clear as
-> discussed in thread [1].
->
-> Hence, add the command description and device requirements for it.
->
-> [1] https://www.mail-archive.com/qemu-devel@nongnu.org/msg912392.html
-> Fixes: https://github.com/oasis-tcs/virtio-spec/issues/147
-> Suggested-by: Si-Wei Liu <si-wei.liu@oracle.com>
-> Signed-off-by: Parav Pandit <parav@nvidia.com>
-> ---
-> changelog:
-> v2->v3:
-> - corrected grammar
-> - simplified description for untagged packets
-> v1->v2:
-> - adapt to new file path
-> v0->v1:
-> - added missing conformance section link
-> ---
->   .../virtio-network/device-conformance.tex      |  1 +
->   device-types/virtio-network/device.tex         | 18 ++++++++++++++++++
->   2 files changed, 19 insertions(+)
->
-> diff --git a/device-types/virtio-network/device-conformance.tex b/device-types/virtio-network/device-conformance.tex
-> index c686377..54f6783 100644
-> --- a/device-types/virtio-network/device-conformance.tex
-> +++ b/device-types/virtio-network/device-conformance.tex
-> @@ -9,6 +9,7 @@
->   \item \ref{devicenormative:Device Types / Network Device / Device Operation / Processing of Incoming Packets}
->   \item \ref{devicenormative:Device Types / Network Device / Device Operation / Control Virtqueue / Packet Receive Filtering}
->   \item \ref{devicenormative:Device Types / Network Device / Device Operation / Control Virtqueue / Setting MAC Address Filtering}
-> +\item \ref{devicenormative:Device Types / Network Device / Device Operation / Control Virtqueue / VLAN Filtering}
->   \item \ref{devicenormative:Device Types / Network Device / Device Operation / Control Virtqueue / Gratuitous Packet Sending}
->   \item \ref{devicenormative:Device Types / Network Device / Device Operation / Control Virtqueue / Automatic receive steering in multiqueue mode}
->   \item \ref{devicenormative:Device Types / Network Device / Device Operation / Control Virtqueue / Receive-side scaling (RSS) / RSS processing}
-> diff --git a/device-types/virtio-network/device.tex b/device-types/virtio-network/device.tex
-> index e7cdd6f..ea4b524 100644
-> --- a/device-types/virtio-network/device.tex
-> +++ b/device-types/virtio-network/device.tex
-> @@ -1210,6 +1210,24 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
->   Both the VIRTIO_NET_CTRL_VLAN_ADD and VIRTIO_NET_CTRL_VLAN_DEL
->   command take a little-endian 16-bit VLAN id as the command-specific-data.
->   
-> +VIRTIO_NET_CTRL_VLAN_ADD command adds the specified VLAN to the VLAN
-> +filtering table.
-> +
-> +VIRTIO_NET_CTRL_VLAN_DEL command removes specified VLAN from the VLAN
-> +filtering table which was previously added using
-> +VIRTIO_NET_CTRL_VLAN_ADD command.
-> +
-> +\devicenormative{\subparagraph}{VLAN Filtering}{Device Types / Network Device / Device Operation / Control Virtqueue / VLAN Filtering}
-> +
-> +When VIRTIO_NET_F_CTRL_VLAN is negotiated, the device starts with
-> +an empty VLAN filtering table.
-Should we mention this VLAN filtering table gets emptied on device reset?
-
-> +
-> +When VIRTIO_NET_F_CTRL_VLAN is negotiated, the device accepts all
-> +VLAN tagged packets whose VLAN tag is found in the VLAN filtering
-> +table; the device should drop all VLAN tagged packets whose VLAN tag
-> +is not found in the VLAN filtering table. The VLAN filtering table
-> +applies only to the VLAN tagged packets.
-I know what you want to convey with simplified wording. Since VLAN 
-filter table works differently with MAC address table 
-(VIRTIO_NET_F_CTRL_MAC_ADDR), should we explicitly state that the 
-assumed action without VLAN filter table is to pass VLAN tagged packet 
-when the specific feature is not negotiated? Like:
-
-...; if VIRTIO_NET_F_CTRL_VLAN is not negotiated, device does not have a 
-VLAN filter table thus MUST NOT specifically drop VLAN tagged packets.
-
-
-Regards,
--Siwei
-
-> +
->   \subparagraph{Legacy Interface: VLAN Filtering}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / VLAN Filtering / Legacy Interface: VLAN Filtering}
->   When using the legacy interface, transitional devices and drivers
->   MUST format the VLAN id
-
-
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+DQoNCj4gRnJvbTogU2ktV2VpIExpdSA8c2ktd2VpLmxpdUBvcmFjbGUuY29tPg0KPiBTZW50OiBU
+dWVzZGF5LCBKYW51YXJ5IDMsIDIwMjMgODo0OSBQTQ0KPiANCj4gSGkgUGFyYXYsDQo+IA0KPiBH
+cmVhdCB3cml0ZS11cCEgSnVzdCBhIGNvdXBsZSBtaW5vciBzdWdnZXN0aW9ucywgcGxlYXNlIHNl
+ZSBiZWxvdyBpbiBsaW5lLg0KPiANCj4gT24gMS8zLzIwMjMgMjowNyBQTSwgUGFyYXYgUGFuZGl0
+IHdyb3RlOg0KPiA+IFRoZSBmaWx0ZXJpbmcgYmVoYXZpb3Igb2YgdGhlIFZMQU4gZmlsdGVyIGNv
+bW1hbmRzIGlzIG5vdCB2ZXJ5IGNsZWFyDQo+ID4gYXMgZGlzY3Vzc2VkIGluIHRocmVhZCBbMV0u
+DQo+ID4NCj4gPiBIZW5jZSwgYWRkIHRoZSBjb21tYW5kIGRlc2NyaXB0aW9uIGFuZCBkZXZpY2Ug
+cmVxdWlyZW1lbnRzIGZvciBpdC4NCj4gPg0KPiA+IFsxXSBodHRwczovL3d3dy5tYWlsLWFyY2hp
+dmUuY29tL3FlbXUtDQo+IGRldmVsQG5vbmdudS5vcmcvbXNnOTEyMzkyLmh0bWwNCj4gPiBGaXhl
+czogaHR0cHM6Ly9naXRodWIuY29tL29hc2lzLXRjcy92aXJ0aW8tc3BlYy9pc3N1ZXMvMTQ3DQo+
+ID4gU3VnZ2VzdGVkLWJ5OiBTaS1XZWkgTGl1IDxzaS13ZWkubGl1QG9yYWNsZS5jb20+DQo+ID4g
+U2lnbmVkLW9mZi1ieTogUGFyYXYgUGFuZGl0IDxwYXJhdkBudmlkaWEuY29tPg0KPiA+IC0tLQ0K
+PiA+IGNoYW5nZWxvZzoNCj4gPiB2Mi0+djM6DQo+ID4gLSBjb3JyZWN0ZWQgZ3JhbW1hcg0KPiA+
+IC0gc2ltcGxpZmllZCBkZXNjcmlwdGlvbiBmb3IgdW50YWdnZWQgcGFja2V0cw0KPiA+IHYxLT52
+MjoNCj4gPiAtIGFkYXB0IHRvIG5ldyBmaWxlIHBhdGgNCj4gPiB2MC0+djE6DQo+ID4gLSBhZGRl
+ZCBtaXNzaW5nIGNvbmZvcm1hbmNlIHNlY3Rpb24gbGluaw0KPiA+IC0tLQ0KPiA+ICAgLi4uL3Zp
+cnRpby1uZXR3b3JrL2RldmljZS1jb25mb3JtYW5jZS50ZXggICAgICB8ICAxICsNCj4gPiAgIGRl
+dmljZS10eXBlcy92aXJ0aW8tbmV0d29yay9kZXZpY2UudGV4ICAgICAgICAgfCAxOCArKysrKysr
+KysrKysrKysrKysNCj4gPiAgIDIgZmlsZXMgY2hhbmdlZCwgMTkgaW5zZXJ0aW9ucygrKQ0KPiA+
+DQo+ID4gZGlmZiAtLWdpdCBhL2RldmljZS10eXBlcy92aXJ0aW8tbmV0d29yay9kZXZpY2UtY29u
+Zm9ybWFuY2UudGV4DQo+ID4gYi9kZXZpY2UtdHlwZXMvdmlydGlvLW5ldHdvcmsvZGV2aWNlLWNv
+bmZvcm1hbmNlLnRleA0KPiA+IGluZGV4IGM2ODYzNzcuLjU0ZjY3ODMgMTAwNjQ0DQo+ID4gLS0t
+IGEvZGV2aWNlLXR5cGVzL3ZpcnRpby1uZXR3b3JrL2RldmljZS1jb25mb3JtYW5jZS50ZXgNCj4g
+PiArKysgYi9kZXZpY2UtdHlwZXMvdmlydGlvLW5ldHdvcmsvZGV2aWNlLWNvbmZvcm1hbmNlLnRl
+eA0KPiA+IEBAIC05LDYgKzksNyBAQA0KPiA+ICAgXGl0ZW0gXHJlZntkZXZpY2Vub3JtYXRpdmU6
+RGV2aWNlIFR5cGVzIC8gTmV0d29yayBEZXZpY2UgLyBEZXZpY2UNCj4gT3BlcmF0aW9uIC8gUHJv
+Y2Vzc2luZyBvZiBJbmNvbWluZyBQYWNrZXRzfQ0KPiA+ICAgXGl0ZW0gXHJlZntkZXZpY2Vub3Jt
+YXRpdmU6RGV2aWNlIFR5cGVzIC8gTmV0d29yayBEZXZpY2UgLyBEZXZpY2UNCj4gT3BlcmF0aW9u
+IC8gQ29udHJvbCBWaXJ0cXVldWUgLyBQYWNrZXQgUmVjZWl2ZSBGaWx0ZXJpbmd9DQo+ID4gICBc
+aXRlbSBccmVme2RldmljZW5vcm1hdGl2ZTpEZXZpY2UgVHlwZXMgLyBOZXR3b3JrIERldmljZSAv
+IERldmljZQ0KPiA+IE9wZXJhdGlvbiAvIENvbnRyb2wgVmlydHF1ZXVlIC8gU2V0dGluZyBNQUMg
+QWRkcmVzcyBGaWx0ZXJpbmd9DQo+ID4gK1xpdGVtIFxyZWZ7ZGV2aWNlbm9ybWF0aXZlOkRldmlj
+ZSBUeXBlcyAvIE5ldHdvcmsgRGV2aWNlIC8gRGV2aWNlDQo+ID4gK09wZXJhdGlvbiAvIENvbnRy
+b2wgVmlydHF1ZXVlIC8gVkxBTiBGaWx0ZXJpbmd9DQo+ID4gICBcaXRlbSBccmVme2RldmljZW5v
+cm1hdGl2ZTpEZXZpY2UgVHlwZXMgLyBOZXR3b3JrIERldmljZSAvIERldmljZQ0KPiBPcGVyYXRp
+b24gLyBDb250cm9sIFZpcnRxdWV1ZSAvIEdyYXR1aXRvdXMgUGFja2V0IFNlbmRpbmd9DQo+ID4g
+ICBcaXRlbSBccmVme2RldmljZW5vcm1hdGl2ZTpEZXZpY2UgVHlwZXMgLyBOZXR3b3JrIERldmlj
+ZSAvIERldmljZQ0KPiBPcGVyYXRpb24gLyBDb250cm9sIFZpcnRxdWV1ZSAvIEF1dG9tYXRpYyBy
+ZWNlaXZlIHN0ZWVyaW5nIGluIG11bHRpcXVldWUNCj4gbW9kZX0NCj4gPiAgIFxpdGVtIFxyZWZ7
+ZGV2aWNlbm9ybWF0aXZlOkRldmljZSBUeXBlcyAvIE5ldHdvcmsgRGV2aWNlIC8gRGV2aWNlDQo+
+ID4gT3BlcmF0aW9uIC8gQ29udHJvbCBWaXJ0cXVldWUgLyBSZWNlaXZlLXNpZGUgc2NhbGluZyAo
+UlNTKSAvIFJTUw0KPiA+IHByb2Nlc3Npbmd9IGRpZmYgLS1naXQgYS9kZXZpY2UtdHlwZXMvdmly
+dGlvLW5ldHdvcmsvZGV2aWNlLnRleA0KPiA+IGIvZGV2aWNlLXR5cGVzL3ZpcnRpby1uZXR3b3Jr
+L2RldmljZS50ZXgNCj4gPiBpbmRleCBlN2NkZDZmLi5lYTRiNTI0IDEwMDY0NA0KPiA+IC0tLSBh
+L2RldmljZS10eXBlcy92aXJ0aW8tbmV0d29yay9kZXZpY2UudGV4DQo+ID4gKysrIGIvZGV2aWNl
+LXR5cGVzL3ZpcnRpby1uZXR3b3JrL2RldmljZS50ZXgNCj4gPiBAQCAtMTIxMCw2ICsxMjEwLDI0
+IEBAIFxzdWJzdWJzZWN0aW9ue0NvbnRyb2wNCj4gVmlydHF1ZXVlfVxsYWJlbHtzZWM6RGV2aWNl
+IFR5cGVzIC8gTmV0d29yayBEZXZpY2UgLyBEZXZpDQo+ID4gICBCb3RoIHRoZSBWSVJUSU9fTkVU
+X0NUUkxfVkxBTl9BREQgYW5kIFZJUlRJT19ORVRfQ1RSTF9WTEFOX0RFTA0KPiA+ICAgY29tbWFu
+ZCB0YWtlIGEgbGl0dGxlLWVuZGlhbiAxNi1iaXQgVkxBTiBpZCBhcyB0aGUgY29tbWFuZC1zcGVj
+aWZpYy1kYXRhLg0KPiA+DQo+ID4gK1ZJUlRJT19ORVRfQ1RSTF9WTEFOX0FERCBjb21tYW5kIGFk
+ZHMgdGhlIHNwZWNpZmllZCBWTEFOIHRvIHRoZQ0KPiBWTEFODQo+ID4gK2ZpbHRlcmluZyB0YWJs
+ZS4NCj4gPiArDQo+ID4gK1ZJUlRJT19ORVRfQ1RSTF9WTEFOX0RFTCBjb21tYW5kIHJlbW92ZXMg
+c3BlY2lmaWVkIFZMQU4gZnJvbSB0aGUNCj4gVkxBTg0KPiA+ICtmaWx0ZXJpbmcgdGFibGUgd2hp
+Y2ggd2FzIHByZXZpb3VzbHkgYWRkZWQgdXNpbmcNCj4gPiArVklSVElPX05FVF9DVFJMX1ZMQU5f
+QUREIGNvbW1hbmQuDQo+ID4gKw0KPiA+ICtcZGV2aWNlbm9ybWF0aXZle1xzdWJwYXJhZ3JhcGh9
+e1ZMQU4gRmlsdGVyaW5nfXtEZXZpY2UgVHlwZXMgLw0KPiA+ICtOZXR3b3JrIERldmljZSAvIERl
+dmljZSBPcGVyYXRpb24gLyBDb250cm9sIFZpcnRxdWV1ZSAvIFZMQU4NCj4gPiArRmlsdGVyaW5n
+fQ0KPiA+ICsNCj4gPiArV2hlbiBWSVJUSU9fTkVUX0ZfQ1RSTF9WTEFOIGlzIG5lZ290aWF0ZWQs
+IHRoZSBkZXZpY2Ugc3RhcnRzIHdpdGggYW4NCj4gPiArZW1wdHkgVkxBTiBmaWx0ZXJpbmcgdGFi
+bGUuDQo+IFNob3VsZCB3ZSBtZW50aW9uIHRoaXMgVkxBTiBmaWx0ZXJpbmcgdGFibGUgZ2V0cyBl
+bXB0aWVkIG9uIGRldmljZSByZXNldD8NCj4gDQpHb29kIHBvaW50LiBXaGVuIGEgZGV2aWNlIGlz
+IHJlc2V0IGFsbCB0aGUgY29uZmlndXJhdGlvbiBvZiB0aGUgZHJpdmVyIGdldHMgY2xlYXJlZC4N
+ClNvIGluc3RlYWQgb2YgZXhwbGljaXRseSBtZW50aW9uaW5nIGluIGVhY2ggY3RybCBmaWVsZCwg
+bGV0cyBkbyB0aGlzIGluIGdlbmVyaWMgcGxhY2UgaW4gdGhlICJEZXZpY2UgQ2xlYW51cCIgc2Vj
+dGlvbi4NCg0KQ3VycmVudGx5IGRldmljZSBjbGVhbnVwIHNlY3Rpb24gb25seSBleHBsaWNpdGx5
+IHRhbGtzIGFib3V0IHZpcnRpbyBvcGVyYXRpb24uDQpXaWxsIGRvIGluIGZvbGxvdyB1cCBwYXRj
+aCBpbiBjb21tb24gc2VjdGlvbi4NCg0KPiAuLi47IGlmIFZJUlRJT19ORVRfRl9DVFJMX1ZMQU4g
+aXMgbm90IG5lZ290aWF0ZWQsIGRldmljZSBkb2VzIG5vdCBoYXZlIGEgVkxBTg0KPiBmaWx0ZXIg
+dGFibGUgdGh1cyBNVVNUIE5PVCBzcGVjaWZpY2FsbHkgZHJvcCBWTEFOIHRhZ2dlZCBwYWNrZXRz
+Lg0KDQpBaCB5ZXMsIGZyb20gdjAgdG8gdjMsIHRoaXMgcGFydCBvZiB0aGUgdGV4dCBnb3QgbG9z
+dC4gSSB3aWxsIGFkZCBpdCBiYWNrLg0KVGhhbmtzLg0K
 
