@@ -1,91 +1,130 @@
-Return-Path: <virtio-comment-return-3702-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-comment-return-3698-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio-comment@lists.oasis-open.org>
 List-Post: <mailto:virtio-comment@lists.oasis-open.org>
 List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
 From: Parav Pandit <parav@nvidia.com>
-Date: Sun, 8 Jan 2023 17:06:09 +0000
-Message-ID: <PH0PR12MB54811189A5DD2C06063C66CEDCF99@PH0PR12MB5481.namprd12.prod.outlook.com>
-References: <20230108144659.438750-1-parav@nvidia.com>
- <20230108103653-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20230108103653-mutt-send-email-mst@kernel.org>
+Date: Fri, 6 Jan 2023 20:48:36 +0200
+Message-ID: <20230106184836.411867-1-parav@nvidia.com>
 MIME-Version: 1.0
-Subject: [virtio-comment] RE: [PATCH v6] virtio-network: Clarify VLAN filter table
- configuration
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
+Subject: [virtio-comment] [PATCH v5] virtio-network: Clarify VLAN filter table configuration
+Content-Type: text/plain
 Content-Transfer-Encoding: quoted-printable
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "si-wei.liu@oracle.com" <si-wei.liu@oracle.com>
+To: mst@redhat.com, virtio-dev@lists.oasis-open.org
+Cc: virtio-comment@lists.oasis-open.org, si-wei.liu@oracle.com, Parav
+ Pandit <parav@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+The filtering behavior of the VLAN filter commands is not very clear as
+discussed in thread [1].
+
+Hence, add the command description and device requirements for it.
+
+[1] https://www.mail-archive.com/qemu-devel@nongnu.org/msg912392.html
+Fixes: https://github.com/oasis-tcs/virtio-spec/issues/147
+Suggested-by: Si-Wei Liu <si-wei.liu@oracle.com>
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+---
+changelog:
+v4->v5:
+- reworded 'vlan filtering table' to 'vlan filter table' to match
+  to the existing description about vlan filtering
+- remove confusing text around VLAN_DEL command description
+- added missing article
+- reword device match configuration to device configuration
+- changed 'found' to 'present' and 'not found' to 'absent' to
+  consider vlan filter table as config table rather
+  than search table
+v3->v4:
+- added description for accepting vlan tagged packets when vlan
+  filter is not negotiated
+v2->v3:
+- corrected grammar
+- simplified description for untagged packets
+v1->v2:
+- adapt to new file path
+v0->v1:
+- added missing conformance section link
+---
+ .../virtio-network/device-conformance.tex     |  1 +
+ device-types/virtio-network/device.tex        | 20 +++++++++++++++++++
+ 2 files changed, 21 insertions(+)
+
+diff --git a/device-types/virtio-network/device-conformance.tex b/device-ty=
+pes/virtio-network/device-conformance.tex
+index c686377..54f6783 100644
+--- a/device-types/virtio-network/device-conformance.tex
++++ b/device-types/virtio-network/device-conformance.tex
+@@ -9,6 +9,7 @@
+ \item \ref{devicenormative:Device Types / Network Device / Device Operatio=
+n / Processing of Incoming Packets}
+ \item \ref{devicenormative:Device Types / Network Device / Device Operatio=
+n / Control Virtqueue / Packet Receive Filtering}
+ \item \ref{devicenormative:Device Types / Network Device / Device Operatio=
+n / Control Virtqueue / Setting MAC Address Filtering}
++\item \ref{devicenormative:Device Types / Network Device / Device Operatio=
+n / Control Virtqueue / VLAN Filtering}
+ \item \ref{devicenormative:Device Types / Network Device / Device Operatio=
+n / Control Virtqueue / Gratuitous Packet Sending}
+ \item \ref{devicenormative:Device Types / Network Device / Device Operatio=
+n / Control Virtqueue / Automatic receive steering in multiqueue mode}
+ \item \ref{devicenormative:Device Types / Network Device / Device Operatio=
+n / Control Virtqueue / Receive-side scaling (RSS) / RSS processing}
+diff --git a/device-types/virtio-network/device.tex b/device-types/virtio-n=
+etwork/device.tex
+index e7cdd6f..0fff7e5 100644
+--- a/device-types/virtio-network/device.tex
++++ b/device-types/virtio-network/device.tex
+@@ -1210,6 +1210,26 @@ \subsubsection{Control Virtqueue}\label{sec:Device T=
+ypes / Network Device / Devi
+ Both the VIRTIO_NET_CTRL_VLAN_ADD and VIRTIO_NET_CTRL_VLAN_DEL
+ command take a little-endian 16-bit VLAN id as the command-specific-data.
+=20
++VIRTIO_NET_CTRL_VLAN_ADD command adds the specified VLAN to the
++VLAN filter table.
++
++VIRTIO_NET_CTRL_VLAN_DEL command removes the specified VLAN from
++the VLAN filter table.
++
++\devicenormative{\subparagraph}{VLAN Filtering}{Device Types / Network Dev=
+ice / Device Operation / Control Virtqueue / VLAN Filtering}
++
++When VIRTIO_NET_F_CTRL_VLAN is not negotiated, the device accepts
++all VLAN tagged packets as per the device configuration.
++
++When VIRTIO_NET_F_CTRL_VLAN is negotiated, the device starts with
++an empty VLAN filter table.
++
++When VIRTIO_NET_F_CTRL_VLAN is negotiated, the device accepts all
++VLAN tagged packets whose VLAN tag is present in the VLAN
++filter table; the device should drop all VLAN tagged packets
++whose VLAN tag is absent in the VLAN filter table. The
++VLAN filter table applies only to the VLAN tagged packets.
++
+ \subparagraph{Legacy Interface: VLAN Filtering}\label{sec:Device Types / N=
+etwork Device / Device Operation / Control Virtqueue / VLAN Filtering / Leg=
+acy Interface: VLAN Filtering}
+ When using the legacy interface, transitional devices and drivers
+ MUST format the VLAN id
+--=20
+2.26.2
 
 
-> From: Michael S. Tsirkin <mst@redhat.com>
-> Sent: Sunday, January 8, 2023 10:39 AM
->=20
-> > +VIRTIO_NET_CTRL_VLAN_ADD command adds the specified VLAN to the
-> VLAN
-> > +filter table.
-> > +
-> > +VIRTIO_NET_CTRL_VLAN_DEL command removes the specified VLAN from
-> the
-> > +VLAN filter table.
-> > +
-Above two are functional description not placed in the requirements. So no =
-need for normative.
+This publicly archived list offers a means to provide input to the
+OASIS Virtual I/O Device (VIRTIO) TC.
 
-> > +\devicenormative{\subparagraph}{VLAN Filtering}{Device Types /
-> > +Network Device / Device Operation / Control Virtqueue / VLAN
-> > +Filtering}
-> > +
-> > +When VIRTIO_NET_F_CTRL_VLAN is not negotiated, the device accepts all
-> > +VLAN tagged packets as per the device configuration.
-> > +
-Above one adding must looks fine.
+In order to verify user consent to the Feedback License terms and
+to minimize spam in the list archive, subscription is required
+before posting.
 
-> > +When VIRTIO_NET_F_CTRL_VLAN is negotiated, the device starts with an
-> > +empty VLAN filter table.
-> > +
-I am inclined to move this out of requirements and write in the description=
- along with add/delete command.
-
-> > +When VIRTIO_NET_F_CTRL_VLAN is negotiated, the device accepts all
-> > +VLAN tagged packets whose VLAN tag is present in the VLAN filter
-> > +table;=20
-
-I will add must for above line.
-
-> > the device should drop all VLAN tagged packets whose VLAN tag
-> > +is absent in the VLAN filter table. The VLAN filter table applies
-> > +only to VLAN tagged packets.
-> > +
->=20
-Above one is written as should will change to "SHOULD".
-
-> We need to make them normative statements. As written they are not.
-> Either MUST or SHOULD in this case. I am guessing MUST since this was alw=
-ays
-> the intent we just never spelled it out?
-
-Right.
-
-This publicly archived list offers a means to provide input to the=0D
-OASIS Virtual I/O Device (VIRTIO) TC.=0D
-=0D
-In order to verify user consent to the Feedback License terms and=0D
-to minimize spam in the list archive, subscription is required=0D
-before posting.=0D
-=0D
-Subscribe: virtio-comment-subscribe@lists.oasis-open.org=0D
-Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org=0D
-List help: virtio-comment-help@lists.oasis-open.org=0D
-List archive: https://lists.oasis-open.org/archives/virtio-comment/=0D
-Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf=
-=0D
+Subscribe: virtio-comment-subscribe@lists.oasis-open.org
+Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
+List help: virtio-comment-help@lists.oasis-open.org
+List archive: https://lists.oasis-open.org/archives/virtio-comment/
+Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
 List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lis=
-ts=0D
-Committee: https://www.oasis-open.org/committees/virtio/=0D
+ts
+Committee: https://www.oasis-open.org/committees/virtio/
 Join OASIS: https://www.oasis-open.org/join/
 
