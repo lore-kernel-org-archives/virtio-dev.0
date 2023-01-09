@@ -1,8 +1,8 @@
 Return-Path: <parav@nvidia.com>
 From: Parav Pandit <parav@nvidia.com>
-Subject: [PATCH v2 13/20] virtio-rpmb: Maintain rpmb device spec in separate directory
-Date: Mon, 9 Jan 2023 18:28:42 +0200
-Message-ID: <20230109162849.463101-14-parav@nvidia.com>
+Subject: [PATCH v2 14/20] virtio-iommu: Maintain iommu device spec in separate directory
+Date: Mon, 9 Jan 2023 18:28:43 +0200
+Message-ID: <20230109162849.463101-15-parav@nvidia.com>
 In-Reply-To: <20230109162849.463101-1-parav@nvidia.com>
 References: <20230109162849.463101-1-parav@nvidia.com>
 MIME-Version: 1.0
@@ -21,132 +21,184 @@ Signed-off-by: Parav Pandit <parav@nvidia.com>
 ---
 changelog:
 v1->v2:
-- added missing device conformance reference entry
+- rebased
 v0->v1:
 - new patch
 ---
- conformance.tex                               | 23 ++-----------------
+ conformance.tex                               | 37 +------------------
  content.tex                                   |  2 +-
- .../virtio-rpmb/device-conformance.tex        | 13 +++++++++++
- .../virtio-rpmb/device.tex                    |  0
- .../virtio-rpmb/driver-conformance.tex        |  7 ++++++
- 5 files changed, 23 insertions(+), 22 deletions(-)
- create mode 100644 device-types/virtio-rpmb/device-conformance.tex
- rename virtio-rpmb.tex =3D> device-types/virtio-rpmb/device.tex (100%)
- create mode 100644 device-types/virtio-rpmb/driver-conformance.tex
+ .../virtio-iommu/device-conformance.tex       | 16 ++++++++
+ .../virtio-iommu/device.tex                   |  0
+ .../virtio-iommu/driver-conformance.tex       | 17 +++++++++
+ 5 files changed, 36 insertions(+), 36 deletions(-)
+ create mode 100644 device-types/virtio-iommu/device-conformance.tex
+ rename virtio-iommu.tex =3D> device-types/virtio-iommu/device.tex (100%)
+ create mode 100644 device-types/virtio-iommu/driver-conformance.tex
 
 diff --git a/conformance.tex b/conformance.tex
-index 56a2c16..c109fbd 100644
+index c109fbd..88ae166 100644
 --- a/conformance.tex
 +++ b/conformance.tex
-@@ -144,14 +144,8 @@ \section{Conformance Targets}\label{sec:Conformance / =
+@@ -145,24 +145,7 @@ \section{Conformance Targets}\label{sec:Conformance / =
 Conformance Targets}
- \import{device-types/virtio-crypto/}{driver-conformance}
  \import{device-types/virtio-vsock/}{driver-conformance}
  \import{device-types/virtio-fs/}{driver-conformance}
-+\import{device-types/virtio-rpmb/}{driver-conformance}
-=20
--\conformance{\subsection}{RPMB Driver Conformance}\label{sec:Conformance /=
- Driver Conformance / RPMB Driver Conformance}
+ \import{device-types/virtio-rpmb/}{driver-conformance}
 -
--A RPMB driver MUST conform to the following normative statements:
+-\conformance{\subsection}{IOMMU Driver Conformance}\label{sec:Conformance =
+/ Driver Conformance / IOMMU Driver Conformance}
+-
+-An IOMMU driver MUST conform to the following normative statements:
 -
 -\begin{itemize}
--\item \ref{drivernormative:Device Types / RPMB Device / Device Operation}
+-\item \ref{drivernormative:Device Types / IOMMU Device / Feature bits}
+-\item \ref{drivernormative:Device Types / IOMMU Device / Device configurat=
+ion layout}
+-\item \ref{drivernormative:Device Types / IOMMU Device / Device Initializa=
+tion}
+-\item \ref{drivernormative:Device Types / IOMMU Device / Device operations=
+}
+-\item \ref{drivernormative:Device Types / IOMMU Device / Device operations=
+ / ATTACH request}
+-\item \ref{drivernormative:Device Types / IOMMU Device / Device operations=
+ / DETACH request}
+-\item \ref{drivernormative:Device Types / IOMMU Device / Device operations=
+ / MAP request}
+-\item \ref{drivernormative:Device Types / IOMMU Device / Device operations=
+ / UNMAP request}
+-\item \ref{drivernormative:Device Types / IOMMU Device / Device operations=
+ / PROBE request}
+-\item \ref{drivernormative:Device Types / IOMMU Device / Device operations=
+ / PROBE properties / RESVMEM}
+-\item \ref{drivernormative:Device Types / IOMMU Device / Device operations=
+ / Fault reporting}
 -\end{itemize}
- \conformance{\subsection}{IOMMU Driver Conformance}\label{sec:Conformance =
-/ Driver Conformance / IOMMU Driver Conformance}
++\import{device-types/virtio-iommu/}{driver-conformance}
 =20
- An IOMMU driver MUST conform to the following normative statements:
-@@ -310,20 +304,7 @@ \section{Conformance Targets}\label{sec:Conformance / =
+ \conformance{\subsection}{Sound Driver Conformance}\label{sec:Conformance =
+/ Driver Conformance / Sound Driver Conformance}
+=20
+@@ -305,23 +288,7 @@ \section{Conformance Targets}\label{sec:Conformance / =
 Conformance Targets}
- \import{device-types/virtio-crypto/}{device-conformance}
  \import{device-types/virtio-vsock/}{device-conformance}
  \import{device-types/virtio-fs/}{device-conformance}
+ \import{device-types/virtio-rpmb/}{device-conformance}
 -
--\conformance{\subsection}{RPMB Device Conformance}\label{sec:Conformance /=
- Device Conformance / RPMB Device Conformance}
+-\conformance{\subsection}{IOMMU Device Conformance}\label{sec:Conformance =
+/ Device Conformance / IOMMU Device Conformance}
 -
--An RPMB device MUST conform to the following normative statements:
+-An IOMMU device MUST conform to the following normative statements:
 -
 -\begin{itemize}
--\item \ref{devicenormative:Device Types / RPMB Device / Device Initializat=
-ion}
--\item \ref{devicenormative:Device Types / RPMB Device / Device Operation /=
- Device Operation: Program Key}
--\item \ref{devicenormative:Device Types / RPMB Device / Device Operation /=
- Device Operation: Get Write Counter}
--\item \ref{devicenormative:Device Types / RPMB Device / Device Operation /=
- Device Operation: Data Write}
--\item \ref{devicenormative:Device Types / RPMB Device / Device Operation /=
- Device Operation: Data Read}
--\item \ref{devicenormative:Device Types / RPMB Device / Device Operation /=
- Device Operation: Result Read}
--\item \ref{devicenormative:Device Types / RPMB Device / Device Operation}
+-\item \ref{devicenormative:Device Types / IOMMU Device / Feature bits}
+-\item \ref{devicenormative:Device Types / IOMMU Device / Device configurat=
+ion layout}
+-\item \ref{devicenormative:Device Types / IOMMU Device / Device operations=
+}
+-\item \ref{devicenormative:Device Types / IOMMU Device / Device operations=
+ / ATTACH request}
+-\item \ref{devicenormative:Device Types / IOMMU Device / Device operations=
+ / DETACH request}
+-\item \ref{devicenormative:Device Types / IOMMU Device / Device operations=
+ / MAP request}
+-\item \ref{devicenormative:Device Types / IOMMU Device / Device operations=
+ / UNMAP request}
+-\item \ref{devicenormative:Device Types / IOMMU Device / Device operations=
+ / PROBE request}
+-\item \ref{devicenormative:Device Types / IOMMU Device / Device operations=
+ / PROBE properties / RESVMEM}
+-\item \ref{devicenormative:Device Types / IOMMU Device / Device operations=
+ / Fault reporting}
 -\end{itemize}
-+\import{device-types/virtio-rpmb/}{device-conformance}
++\import{device-types/virtio-iommu/}{device-conformance}
 =20
- \conformance{\subsection}{IOMMU Device Conformance}\label{sec:Conformance =
-/ Device Conformance / IOMMU Device Conformance}
+ \conformance{\subsection}{Sound Device Conformance}\label{sec:Conformance =
+/ Device Conformance / Sound Device Conformance}
 =20
 diff --git a/content.tex b/content.tex
-index a486e36..0150e3f 100644
+index 0150e3f..dfc8967 100644
 --- a/content.tex
 +++ b/content.tex
-@@ -3014,7 +3014,7 @@ \chapter{Device Types}\label{sec:Device Types}
- \import{device-types/virtio-crypto/}{device}
+@@ -3015,7 +3015,7 @@ \chapter{Device Types}\label{sec:Device Types}
  \import{device-types/virtio-vsock/}{device}
  \import{device-types/virtio-fs/}{device}
--\input{virtio-rpmb.tex}
-+\import{device-types/virtio-rpmb/}{device}
- \input{virtio-iommu.tex}
+ \import{device-types/virtio-rpmb/}{device}
+-\input{virtio-iommu.tex}
++\import{device-types/virtio-iommu/}{device}
  \input{virtio-sound.tex}
  \input{virtio-mem.tex}
-diff --git a/device-types/virtio-rpmb/device-conformance.tex b/device-types=
-/virtio-rpmb/device-conformance.tex
+ \input{virtio-i2c.tex}
+diff --git a/device-types/virtio-iommu/device-conformance.tex b/device-type=
+s/virtio-iommu/device-conformance.tex
 new file mode 100644
-index 0000000..4a01e5a
+index 0000000..bc5b3b8
 --- /dev/null
-+++ b/device-types/virtio-rpmb/device-conformance.tex
-@@ -0,0 +1,13 @@
-+\conformance{\subsection}{RPMB Device Conformance}\label{sec:Conformance /=
- Device Conformance / RPMB Device Conformance}
++++ b/device-types/virtio-iommu/device-conformance.tex
+@@ -0,0 +1,16 @@
++\conformance{\subsection}{IOMMU Device Conformance}\label{sec:Conformance =
+/ Device Conformance / IOMMU Device Conformance}
 +
-+An RPMB device MUST conform to the following normative statements:
++An IOMMU device MUST conform to the following normative statements:
 +
 +\begin{itemize}
-+\item \ref{devicenormative:Device Types / RPMB Device / Device Initializat=
-ion}
-+\item \ref{devicenormative:Device Types / RPMB Device / Device Operation /=
- Device Operation: Program Key}
-+\item \ref{devicenormative:Device Types / RPMB Device / Device Operation /=
- Device Operation: Get Write Counter}
-+\item \ref{devicenormative:Device Types / RPMB Device / Device Operation /=
- Device Operation: Data Write}
-+\item \ref{devicenormative:Device Types / RPMB Device / Device Operation /=
- Device Operation: Data Read}
-+\item \ref{devicenormative:Device Types / RPMB Device / Device Operation /=
- Device Operation: Result Read}
-+\item \ref{devicenormative:Device Types / RPMB Device / Device Operation}
++\item \ref{devicenormative:Device Types / IOMMU Device / Feature bits}
++\item \ref{devicenormative:Device Types / IOMMU Device / Device configurat=
+ion layout}
++\item \ref{devicenormative:Device Types / IOMMU Device / Device operations=
+}
++\item \ref{devicenormative:Device Types / IOMMU Device / Device operations=
+ / ATTACH request}
++\item \ref{devicenormative:Device Types / IOMMU Device / Device operations=
+ / DETACH request}
++\item \ref{devicenormative:Device Types / IOMMU Device / Device operations=
+ / MAP request}
++\item \ref{devicenormative:Device Types / IOMMU Device / Device operations=
+ / UNMAP request}
++\item \ref{devicenormative:Device Types / IOMMU Device / Device operations=
+ / PROBE request}
++\item \ref{devicenormative:Device Types / IOMMU Device / Device operations=
+ / PROBE properties / RESVMEM}
++\item \ref{devicenormative:Device Types / IOMMU Device / Device operations=
+ / Fault reporting}
 +\end{itemize}
-diff --git a/virtio-rpmb.tex b/device-types/virtio-rpmb/device.tex
+diff --git a/virtio-iommu.tex b/device-types/virtio-iommu/device.tex
 similarity index 100%
-rename from virtio-rpmb.tex
-rename to device-types/virtio-rpmb/device.tex
-diff --git a/device-types/virtio-rpmb/driver-conformance.tex b/device-types=
-/virtio-rpmb/driver-conformance.tex
+rename from virtio-iommu.tex
+rename to device-types/virtio-iommu/device.tex
+diff --git a/device-types/virtio-iommu/driver-conformance.tex b/device-type=
+s/virtio-iommu/driver-conformance.tex
 new file mode 100644
-index 0000000..0cdddac
+index 0000000..0c7bf91
 --- /dev/null
-+++ b/device-types/virtio-rpmb/driver-conformance.tex
-@@ -0,0 +1,7 @@
-+\conformance{\subsection}{RPMB Driver Conformance}\label{sec:Conformance /=
- Driver Conformance / RPMB Driver Conformance}
++++ b/device-types/virtio-iommu/driver-conformance.tex
+@@ -0,0 +1,17 @@
++\conformance{\subsection}{IOMMU Driver Conformance}\label{sec:Conformance =
+/ Driver Conformance / IOMMU Driver Conformance}
 +
-+A RPMB driver MUST conform to the following normative statements:
++An IOMMU driver MUST conform to the following normative statements:
 +
 +\begin{itemize}
-+\item \ref{drivernormative:Device Types / RPMB Device / Device Operation}
++\item \ref{drivernormative:Device Types / IOMMU Device / Feature bits}
++\item \ref{drivernormative:Device Types / IOMMU Device / Device configurat=
+ion layout}
++\item \ref{drivernormative:Device Types / IOMMU Device / Device Initializa=
+tion}
++\item \ref{drivernormative:Device Types / IOMMU Device / Device operations=
+}
++\item \ref{drivernormative:Device Types / IOMMU Device / Device operations=
+ / ATTACH request}
++\item \ref{drivernormative:Device Types / IOMMU Device / Device operations=
+ / DETACH request}
++\item \ref{drivernormative:Device Types / IOMMU Device / Device operations=
+ / MAP request}
++\item \ref{drivernormative:Device Types / IOMMU Device / Device operations=
+ / UNMAP request}
++\item \ref{drivernormative:Device Types / IOMMU Device / Device operations=
+ / PROBE request}
++\item \ref{drivernormative:Device Types / IOMMU Device / Device operations=
+ / PROBE properties / RESVMEM}
++\item \ref{drivernormative:Device Types / IOMMU Device / Device operations=
+ / Fault reporting}
 +\end{itemize}
 --=20
 2.26.2
