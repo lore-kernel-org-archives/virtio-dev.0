@@ -1,8 +1,8 @@
 Return-Path: <parav@nvidia.com>
 From: Parav Pandit <parav@nvidia.com>
-Subject: [PATCH v2 06/20] virtio-mem-balloon: Maintain mem balloon device spec in separate directory
-Date: Mon, 9 Jan 2023 18:28:35 +0200
-Message-ID: <20230109162849.463101-7-parav@nvidia.com>
+Subject: [PATCH v2 07/20] virtio-scsi: Maintain scsi host device spec in separate directory
+Date: Mon, 9 Jan 2023 18:28:36 +0200
+Message-ID: <20230109162849.463101-8-parav@nvidia.com>
 In-Reply-To: <20230109162849.463101-1-parav@nvidia.com>
 References: <20230109162849.463101-1-parav@nvidia.com>
 MIME-Version: 1.0
@@ -12,8 +12,8 @@ To: mst@redhat.com, virtio-dev@lists.oasis-open.org, cohuck@redhat.com
 Cc: virtio-comment@lists.oasis-open.org, Parav Pandit <parav@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Move virtio memory balloon device specification to its own file
-similar to recent virtio devices.
+Move virtio SCSI host device specification to its own file similar to
+recent virtio devices.
 While at it, place device specification, its driver and device
 conformance into its own directory to have self contained device
 specification.
@@ -25,1563 +25,1632 @@ changelog:
 v0->v1:
 - moved to device specific directory
 ---
- conformance.tex                               |  28 +-
- content.tex                                   | 636 +-----------------
- .../virtio-mem-balloon/device-conformance.tex |  12 +
- device-types/virtio-mem-balloon/device.tex    | 634 +++++++++++++++++
- .../virtio-mem-balloon/driver-conformance.tex |  12 +
- 5 files changed, 661 insertions(+), 661 deletions(-)
- create mode 100644 device-types/virtio-mem-balloon/device-conformance.tex
- create mode 100644 device-types/virtio-mem-balloon/device.tex
- create mode 100644 device-types/virtio-mem-balloon/driver-conformance.tex
+ conformance.tex                               |  23 +-
+ content.tex                                   | 712 +-----------------
+ .../virtio-scsi/device-conformance.tex        |  10 +
+ device-types/virtio-scsi/device.tex           | 709 +++++++++++++++++
+ .../virtio-scsi/driver-conformance.tex        |   9 +
+ 5 files changed, 731 insertions(+), 732 deletions(-)
+ create mode 100644 device-types/virtio-scsi/device-conformance.tex
+ create mode 100644 device-types/virtio-scsi/device.tex
+ create mode 100644 device-types/virtio-scsi/driver-conformance.tex
 
 diff --git a/conformance.tex b/conformance.tex
-index e5bb9d9..a92ed5f 100644
+index a92ed5f..10a5af3 100644
 --- a/conformance.tex
 +++ b/conformance.tex
-@@ -138,19 +138,7 @@ \section{Conformance Targets}\label{sec:Conformance / =
+@@ -139,16 +139,7 @@ \section{Conformance Targets}\label{sec:Conformance / =
 Conformance Targets}
- \import{device-types/virtio-block/}{driver-conformance}
  \import{device-types/virtio-console/}{driver-conformance}
  \import{device-types/virtio-entropy/}{driver-conformance}
+ \import{device-types/virtio-mem-balloon/}{driver-conformance}
 -
--\conformance{\subsection}{Traditional Memory Balloon Driver Conformance}\l=
-abel{sec:Conformance / Driver Conformance / Traditional Memory Balloon Driv=
-er Conformance}
+-\conformance{\subsection}{SCSI Host Driver Conformance}\label{sec:Conforma=
+nce / Driver Conformance / SCSI Host Driver Conformance}
 -
--A traditional memory balloon driver MUST conform to the following normativ=
-e statements:
+-An SCSI host driver MUST conform to the following normative statements:
 -
 -\begin{itemize}
--\item \ref{drivernormative:Device Types / Memory Balloon Device / Feature =
-bits}
--\item \ref{drivernormative:Device Types / Memory Balloon Device / Device O=
-peration}
--\item \ref{drivernormative:Device Types / Memory Balloon Device / Device O=
-peration / Memory Statistics}
--\item \ref{drivernormative:Device Types / Memory Balloon Device / Device O=
-peration / Free Page Hinting}
--\item \ref{drivernormative:Device Types / Memory Balloon Device / Device O=
-peration / Page Poison}
--\item \ref{drivernormative:Device Types / Memory Balloon Device / Device O=
-peration / Free Page Reporting}
+-\item \ref{drivernormative:Device Types / SCSI Host Device / Device config=
+uration layout}
+-\item \ref{drivernormative:Device Types / SCSI Host Device / Device Operat=
+ion / Device Operation: Request Queues}
+-\item \ref{drivernormative:Device Types / SCSI Host Device / Device Operat=
+ion / Device Operation: eventq}
 -\end{itemize}
-+\import{device-types/virtio-mem-balloon/}{driver-conformance}
++\import{device-types/virtio-scsi/}{driver-conformance}
 =20
- \conformance{\subsection}{SCSI Host Driver Conformance}\label{sec:Conforma=
-nce / Driver Conformance / SCSI Host Driver Conformance}
+ \conformance{\subsection}{Input Driver Conformance}\label{sec:Conformance =
+/ Driver Conformance / Input Driver Conformance}
 =20
-@@ -366,19 +354,7 @@ \section{Conformance Targets}\label{sec:Conformance / =
+@@ -355,17 +346,7 @@ \section{Conformance Targets}\label{sec:Conformance / =
 Conformance Targets}
- \import{device-types/virtio-block/}{device-conformance}
  \import{device-types/virtio-console/}{device-conformance}
  \import{device-types/virtio-entropy/}{device-conformance}
+ \import{device-types/virtio-mem-balloon/}{device-conformance}
 -
--\conformance{\subsection}{Traditional Memory Balloon Device Conformance}\l=
-abel{sec:Conformance / Device Conformance / Traditional Memory Balloon Devi=
-ce Conformance}
+-\conformance{\subsection}{SCSI Host Device Conformance}\label{sec:Conforma=
+nce / Device Conformance / SCSI Host Device Conformance}
 -
--A traditional memory balloon device MUST conform to the following normativ=
-e statements:
+-An SCSI host device MUST conform to the following normative statements:
 -
 -\begin{itemize}
--\item \ref{devicenormative:Device Types / Memory Balloon Device / Feature =
-bits}
--\item \ref{devicenormative:Device Types / Memory Balloon Device / Device O=
-peration}
--\item \ref{devicenormative:Device Types / Memory Balloon Device / Device O=
-peration / Memory Statistics}
--\item \ref{devicenormative:Device Types / Memory Balloon Device / Device O=
-peration / Free Page Hinting}
--\item \ref{devicenormative:Device Types / Memory Balloon Device / Device O=
-peration / Page Poison}
--\item \ref{devicenormative:Device Types / Memory Balloon Device / Device O=
-peration / Free Page Reporting}
+-\item \ref{devicenormative:Device Types / SCSI Host Device / Device config=
+uration layout}
+-\item \ref{devicenormative:Device Types / SCSI Host Device / Device Initia=
+lization}
+-\item \ref{devicenormative:Device Types / SCSI Host Device / Device Operat=
+ion / Device Operation: Request Queues}
+-\item \ref{devicenormative:Device Types / SCSI Host Device / Device Operat=
+ion / Device Operation: eventq}
 -\end{itemize}
-+\import{device-types/virtio-mem-balloon/}{device-conformance}
++\import{device-types/virtio-scsi/}{device-conformance}
 =20
- \conformance{\subsection}{SCSI Host Device Conformance}\label{sec:Conforma=
-nce / Device Conformance / SCSI Host Device Conformance}
+ \conformance{\subsection}{GPU Device Conformance}\label{sec:Conformance / =
+Device Conformance / GPU Device Conformance}
 =20
 diff --git a/content.tex b/content.tex
-index 953488e..d374ae2 100644
+index d374ae2..05d2f9c 100644
 --- a/content.tex
 +++ b/content.tex
-@@ -3007,641 +3007,7 @@ \chapter{Device Types}\label{sec:Device Types}
- \import{device-types/virtio-block/}{device}
+@@ -3008,717 +3008,7 @@ \chapter{Device Types}\label{sec:Device Types}
  \import{device-types/virtio-console/}{device}
  \import{device-types/virtio-entropy/}{device}
+ \import{device-types/virtio-mem-balloon/}{device}
 -
--\section{Traditional Memory Balloon Device}\label{sec:Device Types / Memor=
-y Balloon Device}
+-\section{SCSI Host Device}\label{sec:Device Types / SCSI Host Device}
 -
--This is the traditional balloon device.  The device number 13 is
--reserved for a new memory balloon interface, with different
--semantics, which is expected in a future version of the standard.
+-The virtio SCSI host device groups together one or more virtual
+-logical units (such as disks), and allows communicating to them
+-using the SCSI protocol. An instance of the device represents a
+-SCSI host to which many targets and LUNs are attached.
 -
--The traditional virtio memory balloon device is a primitive device for
--managing guest memory: the device asks for a certain amount of
--memory, and the driver supplies it (or withdraws it, if the device
--has more than it asks for). This allows the guest to adapt to
--changes in allowance of underlying physical memory. If the
--feature is negotiated, the device can also be used to communicate
--guest memory statistics to the host.
+-The virtio SCSI device services two kinds of requests:
+-\begin{itemize}
+-\item command requests for a logical unit;
 -
--\subsection{Device ID}\label{sec:Device Types / Memory Balloon Device / De=
-vice ID}
--  5
+-\item task management functions related to a logical unit, target or
+-  command.
+-\end{itemize}
 -
--\subsection{Virtqueues}\label{sec:Device Types / Memory Balloon Device / V=
-irtqueues}
+-The device is also able to send out notifications about added and
+-removed logical units. Together, these capabilities provide a
+-SCSI transport protocol that uses virtqueues as the transfer
+-medium. In the transport protocol, the virtio driver acts as the
+-initiator, while the virtio SCSI host provides one or more
+-targets that receive and process the requests.
+-
+-This section relies on definitions from \hyperref[intro:SAM]{SAM}.
+-
+-\subsection{Device ID}\label{sec:Device Types / SCSI Host Device / Device =
+ID}
+-  8
+-
+-\subsection{Virtqueues}\label{sec:Device Types / SCSI Host Device / Virtqu=
+eues}
+-
 -\begin{description}
--\item[0] inflateq
--\item[1] deflateq
--\item[2] statsq
--\item[3] free_page_vq
--\item[4] reporting_vq
+-\item[0] controlq
+-\item[1] eventq
+-\item[2\ldots n] request queues
 -\end{description}
 -
--  statsq only exists if VIRTIO_BALLOON_F_STATS_VQ is set.
+-\subsection{Feature bits}\label{sec:Device Types / SCSI Host Device / Feat=
+ure bits}
 -
--  free_page_vq only exists if VIRTIO_BALLOON_F_FREE_PAGE_HINT is set.
--
--  reporting_vq only exists if VIRTIO_BALLOON_F_PAGE_REPORTING is set.
--
--\subsection{Feature bits}\label{sec:Device Types / Memory Balloon Device /=
- Feature bits}
 -\begin{description}
--\item[VIRTIO_BALLOON_F_MUST_TELL_HOST (0)] Host has to be told before
--    pages from the balloon are used.
+-\item[VIRTIO_SCSI_F_INOUT (0)] A single request can include both
+-    device-readable and device-writable data buffers.
 -
--\item[VIRTIO_BALLOON_F_STATS_VQ (1)] A virtqueue for reporting guest
--    memory statistics is present.
--\item[VIRTIO_BALLOON_F_DEFLATE_ON_OOM (2) ] Deflate balloon on
--    guest out of memory condition.
--\item[ VIRTIO_BALLOON_F_FREE_PAGE_HINT(3) ] The device has support for fre=
-e
--    page hinting. A virtqueue for providing hints as to what memory is
--    currently free is present. Configuration field \field{free_page_hint_c=
-md_id}
--    is valid.
--\item[ VIRTIO_BALLOON_F_PAGE_POISON(4) ] A hint to the device, that the dr=
-iver
--    will immediately write \field{poison_val} to pages after deflating the=
-m.
--    Configuration field \field{poison_val} is valid.
--\item[ VIRTIO_BALLOON_F_PAGE_REPORTING(5) ] The device has support for fre=
-e
--    page reporting. A virtqueue for reporting free guest memory is present=
-.
+-\item[VIRTIO_SCSI_F_HOTPLUG (1)] The host SHOULD enable reporting of
+-    hot-plug and hot-unplug events for LUNs and targets on the SCSI bus.
+-    The guest SHOULD handle hot-plug and hot-unplug events.
 -
+-\item[VIRTIO_SCSI_F_CHANGE (2)] The host will report changes to LUN
+-    parameters via a VIRTIO_SCSI_T_PARAM_CHANGE event; the guest
+-    SHOULD handle them.
+-
+-\item[VIRTIO_SCSI_F_T10_PI (3)] The extended fields for T10 protection
+-    information (DIF/DIX) are included in the SCSI request header.
 -\end{description}
 -
--\drivernormative{\subsubsection}{Feature bits}{Device Types / Memory Ballo=
-on Device / Feature bits}
--The driver SHOULD accept the VIRTIO_BALLOON_F_MUST_TELL_HOST
--feature if offered by the device.
+-\subsection{Device configuration layout}\label{sec:Device Types / SCSI Hos=
+t Device / Device configuration layout}
 -
--The driver SHOULD clear the VIRTIO_BALLOON_F_PAGE_POISON flag if it will
--not immediately write \field{poison_val} to deflated pages (e.g., to
--initialize them, or fill them with a poison value).
--
--If the driver is expecting the pages to retain some initialized value,
--it MUST NOT accept VIRTIO_BALLOON_F_PAGE_REPORTING unless it also
--negotiates VIRTIO_BALLOON_F_PAGE_POISON.
--
--\devicenormative{\subsubsection}{Feature bits}{Device Types / Memory Ballo=
-on Device / Feature bits}
--If the device offers the VIRTIO_BALLOON_F_MUST_TELL_HOST feature
--bit, and if the driver did not accept this feature bit, the
--device MAY signal failure by failing to set FEATURES_OK
--\field{device status} bit when the driver writes it.
--\subparagraph{Legacy Interface: Feature bits}\label{sec:Device
--Types / Memory Balloon Device / Feature bits / Legacy Interface:
--Feature bits}
--As the legacy interface does not have a way to gracefully report feature
--negotiation failure, when using the legacy interface,
--transitional devices MUST support guests which do not negotiate
--VIRTIO_BALLOON_F_MUST_TELL_HOST feature, and SHOULD
--allow guest to use memory before notifying host if
--VIRTIO_BALLOON_F_MUST_TELL_HOST is not negotiated.
--
--\subsection{Device configuration layout}\label{sec:Device Types / Memory B=
-alloon Device / Device configuration layout}
--  \field{num_pages} and \field{actual} are always available.
--
--  \field{free_page_hint_cmd_id} is available if
--    VIRTIO_BALLOON_F_FREE_PAGE_HINT has been negotiated. The field is
--    read-only by the driver.
--  \field{poison_val} is available if VIRTIO_BALLOON_F_PAGE_POISON has been
--    negotiated.
+-  All fields of this configuration are always available.
 -
 -\begin{lstlisting}
--struct virtio_balloon_config {
--        le32 num_pages;
--        le32 actual;
--        le32 free_page_hint_cmd_id;
--        le32 poison_val;
+-struct virtio_scsi_config {
+-        le32 num_queues;
+-        le32 seg_max;
+-        le32 max_sectors;
+-        le32 cmd_per_lun;
+-        le32 event_info_size;
+-        le32 sense_size;
+-        le32 cdb_size;
+-        le16 max_channel;
+-        le16 max_target;
+-        le32 max_lun;
 -};
 -\end{lstlisting}
 -
--\subparagraph{Legacy Interface: Device configuration layout}\label{sec:Dev=
-ice Types / Memory Balloon Device / Device
--configuration layout / Legacy Interface: Device configuration layout}
+-\begin{description}
+-\item[\field{num_queues}] is the total number of request virtqueues expose=
+d by
+-    the device. The driver MAY use only one request queue,
+-    or it can use more to achieve better performance.
+-
+-\item[\field{seg_max}] is the maximum number of segments that can be in a
+-    command. A bidirectional command can include \field{seg_max} input
+-    segments and \field{seg_max} output segments.
+-
+-\item[\field{max_sectors}] is a hint to the driver about the maximum trans=
+fer
+-    size to use.
+-
+-\item[\field{cmd_per_lun}] tells the driver the maximum number of
+-    linked commands it can send to one LUN.
+-
+-\item[\field{event_info_size}] is the maximum size that the device will fi=
+ll
+-    for buffers that the driver places in the eventq. It is
+-    written by the device depending on the set of negotiated
+-    features.
+-
+-\item[\field{sense_size}] is the maximum size of the sense data that the
+-    device will write. The default value is written by the device
+-    and MUST be 96, but the driver can modify it. It is
+-    restored to the default when the device is reset.
+-
+-\item[\field{cdb_size}] is the maximum size of the CDB that the driver wil=
+l
+-    write. The default value is written by the device and MUST
+-    be 32, but the driver can likewise modify it. It is
+-    restored to the default when the device is reset.
+-
+-\item[\field{max_channel}, \field{max_target} and \field{max_lun}] can be
+-    used by the driver as hints to constrain scanning the logical units
+-    on the host to channel/target/logical unit numbers that are less than
+-    or equal to the value of the fields.  \field{max_channel} SHOULD
+-    be zero.  \field{max_target} SHOULD be less than or equal to 255.
+-    \field{max_lun} SHOULD be less than or equal to 16383.
+-\end{description}
+-
+-\drivernormative{\subsubsection}{Device configuration layout}{Device Types=
+ / SCSI Host Device / Device configuration layout}
+-
+-The driver MUST NOT write to device configuration fields other than
+-\field{sense_size} and \field{cdb_size}.
+-
+-The driver MUST NOT send more than \field{cmd_per_lun} linked commands
+-to one LUN, and MUST NOT send more than the virtqueue size number of
+-linked commands to one LUN.
+-
+-\devicenormative{\subsubsection}{Device configuration layout}{Device Types=
+ / SCSI Host Device / Device configuration layout}
+-
+-On reset, the device MUST set \field{sense_size} to 96 and
+-\field{cdb_size} to 32.
+-
+-\subsubsection{Legacy Interface: Device configuration layout}\label{sec:De=
+vice Types / SCSI Host Device / Device configuration layout / Legacy Interf=
+ace: Device configuration layout}
 -When using the legacy interface, transitional devices and drivers
--MUST format the fields in struct virtio_balloon_config
--according to the little-endian format.
--\begin{note}
--This is unlike the usual convention that legacy device fields are guest en=
-dian.
--\end{note}
+-MUST format the fields in struct virtio_scsi_config
+-according to the native endian of the guest rather than
+-(necessarily when not using the legacy interface) little-endian.
 -
--\subsection{Device Initialization}\label{sec:Device Types / Memory Balloon=
- Device / Device Initialization}
+-\devicenormative{\subsection}{Device Initialization}{Device Types / SCSI H=
+ost Device / Device Initialization}
 -
--The device initialization process is outlined below:
+-On initialization the driver SHOULD first discover the
+-device's virtqueues.
 -
--\begin{enumerate}
--\item The inflate and deflate virtqueues are identified.
+-If the driver uses the eventq, the driver SHOULD place at least one
+-buffer in the eventq.
 -
--\item If the VIRTIO_BALLOON_F_STATS_VQ feature bit is negotiated:
--  \begin{enumerate}
--  \item Identify the stats virtqueue.
--  \item Add one empty buffer to the stats virtqueue.
--  \end{enumerate}
+-The driver MAY immediately issue requests\footnote{For example, INQUIRY
+-or REPORT LUNS.} or task management functions\footnote{For example, I_T
+-RESET.}.
 -
--\item If the VIRTIO_BALLOON_F_FREE_PAGE_HINT feature bit is negotiated,
--  identify the free_page_vq.
--\item If the VIRTIO_BALLOON_F_PAGE_POISON feature bit is negotiated, updat=
-e
--  the \field{poison_val} configuration field.
--\item If the VIRTIO_BALLOON_F_PAGE_REPORTING feature bit is negotiated,
--  identify the reporting_vq.
+-\subsection{Device Operation}\label{sec:Device Types / SCSI Host Device / =
+Device Operation}
 -
--\item DRIVER_OK is set: device operation begins.
--
--\item If the VIRTIO_BALLOON_F_STATS_VQ feature bit is negotiated, then
--  notify the device about the stats virtqueue buffer.
--\item If the VIRTIO_BALLOON_F_PAGE_REPORTING feature bit is negotiated, th=
-en
--  begin reporting free pages to the device.
--\end{enumerate}
--
--\subsection{Device Operation}\label{sec:Device Types / Memory Balloon Devi=
-ce / Device Operation}
--
--The device is driven either by the receipt of a configuration
--change notification, or by changing guest memory needs, such as
--performing memory compaction or responding to out of memory
--conditions.
--
--\begin{enumerate}
--\item \field{num_pages} configuration field is examined. If this is
--  greater than the \field{actual} number of pages, the balloon wants
--  more memory from the guest.  If it is less than \field{actual},
--  the balloon doesn't need it all.
--
--\item To supply memory to the balloon (aka. inflate):
--  \begin{enumerate}
--  \item The driver constructs an array of addresses of unused memory
--    pages. These addresses are divided by 4096\footnote{This is historical=
-, and independent of the guest page size.
--} and the descriptor
--    describing the resulting 32-bit array is added to the inflateq.
--  \end{enumerate}
--
--\item To remove memory from the balloon (aka. deflate):
--  \begin{enumerate}
--  \item The driver constructs an array of addresses of memory pages
--    it has previously given to the balloon, as described above.
--    This descriptor is added to the deflateq.
--
--  \item If the VIRTIO_BALLOON_F_MUST_TELL_HOST feature is negotiated, the
--    guest informs the device of pages before it uses them.
--
--  \item Otherwise, the guest is allowed to re-use pages previously
--    given to the balloon before the device has acknowledged their
--    withdrawal\footnote{In this case, deflation advice is merely a courtes=
-y.
--}.
--  \end{enumerate}
--
--\item In either case, the device acknowledges inflate and deflate
--requests by using the descriptor.
--\item Once the device has acknowledged the inflation or
--  deflation, the driver updates \field{actual} to reflect the new number o=
-f pages in the balloon.
--\end{enumerate}
--
--\drivernormative{\subsubsection}{Device Operation}{Device Types / Memory B=
-alloon Device / Device Operation}
--The driver SHOULD supply pages to the balloon when \field{num_pages} is
--greater than the actual number of pages in the balloon.
--
--The driver MAY use pages from the balloon when \field{num_pages} is
--less than the actual number of pages in the balloon.
--
--The driver MAY supply pages to the balloon when \field{num_pages} is
--greater than or equal to the actual number of pages in the balloon.
--
--If VIRTIO_BALLOON_F_DEFLATE_ON_OOM has not been negotiated, the
--driver MUST NOT use pages from the balloon when \field{num_pages}
--is less than or equal to the actual number of pages in the
--balloon.
--
--If VIRTIO_BALLOON_F_DEFLATE_ON_OOM has been negotiated, the
--driver MAY use pages from the balloon when \field{num_pages}
--is less than or equal to the actual number of pages in the
--balloon if this is required for system stability
--(e.g. if memory is required by applications running within
-- the guest).
--
--The driver MUST use the deflateq to inform the device of pages that it
--wants to use from the balloon.
--
--If the VIRTIO_BALLOON_F_MUST_TELL_HOST feature is negotiated, the
--driver MUST NOT use pages from the balloon until
--the device has acknowledged the deflate request.
--
--Otherwise, if the VIRTIO_BALLOON_F_MUST_TELL_HOST feature is not
--negotiated, the driver MAY begin to re-use pages previously
--given to the balloon before the device has acknowledged the
--deflate request.
--
--In any case, the driver MUST NOT use pages from the balloon
--after adding the pages to the balloon, but before the device has
--acknowledged the inflate request.
--
--The driver MUST NOT request deflation of pages in
--the balloon before the device has acknowledged the inflate
--request.
--
--The driver MUST update \field{actual} after changing the number
--of pages in the balloon.
--
--The driver MAY update \field{actual} once after multiple
--inflate and deflate operations.
--
--\devicenormative{\subsubsection}{Device Operation}{Device Types / Memory B=
-alloon Device / Device Operation}
--
--The device MAY modify the contents of a page in the balloon
--after detecting its physical number in an inflate request
--and before acknowledging the inflate request by using the inflateq
--descriptor.
--
--If the VIRTIO_BALLOON_F_MUST_TELL_HOST feature is negotiated, the
--device MAY modify the contents of a page in the balloon
--after detecting its physical number in an inflate request
--and before detecting its physical number in a deflate request
--and acknowledging the deflate request.
+-Device operation consists of operating request queues, the control
+-queue and the event queue.
 -
 -\paragraph{Legacy Interface: Device Operation}\label{sec:Device
--Types / Memory Balloon Device / Device Operation / Legacy
+-Types / SCSI Host Device / Device Operation / Legacy
 -Interface: Device Operation}
 -When using the legacy interface, the driver SHOULD ignore the
 -used length values.
 -\begin{note}
--Historically, some devices put the total descriptor length there,
--even though no data was actually written.
+-Historically, devices put the total descriptor length,
+-or the total length of device-writable buffers there,
+-even when only part of the buffers were actually written.
 -\end{note}
--When using the legacy interface, the driver MUST write out all
--4 bytes each time it updates the \field{actual} value in the
--configuration space, using a single atomic operation.
 -
--When using the legacy interface, the device SHOULD NOT use the
--\field{actual} value written by the driver in the configuration
--space, until the last, most-significant byte of the value has been
--written.
--\begin{note}
--Historically, devices used the \field{actual} value, even though
--when using Virtio Over PCI Bus the device-specific configuration
--space was not guaranteed to be atomic. Using intermediate
--values during update by driver is best avoided, except for
--debugging.
+-\subsubsection{Device Operation: Request Queues}\label{sec:Device Types / =
+SCSI Host Device / Device Operation / Device Operation: Request Queues}
 -
--Historically, drivers using Virtio Over PCI Bus wrote the
--\field{actual} value by using multiple single-byte writes in
--order, from the least-significant to the most-significant value.
--\end{note}
--\subsubsection{Memory Statistics}\label{sec:Device Types / Memory Balloon =
-Device / Device Operation / Memory Statistics}
+-The driver queues requests to an arbitrary request queue, and
+-they are used by the device on that same queue. It is the
+-responsibility of the driver to ensure strict request ordering
+-for commands placed on different queues, because they will be
+-consumed with no order constraints.
 -
--The stats virtqueue is atypical because communication is driven
--by the device (not the driver). The channel becomes active at
--driver initialization time when the driver adds an empty buffer
--and notifies the device. A request for memory statistics proceeds
--as follows:
--
--\begin{enumerate}
--\item The device uses the buffer and sends a used buffer notification.
--
--\item The driver pops the used buffer and discards it.
--
--\item The driver collects memory statistics and writes them into a
--  new buffer.
--
--\item The driver adds the buffer to the virtqueue and notifies the
--  device.
--
--\item The device pops the buffer (retaining it to initiate a
--  subsequent request) and consumes the statistics.
--\end{enumerate}
--
--  Within the buffer, statistics are an array of 10-byte entries.
--  Each statistic consists of a 16 bit
--  tag and a 64 bit value. All statistics are optional and the
--  driver chooses which ones to supply. To guarantee backwards
--  compatibility, devices omit unsupported statistics.
+-Requests have the following format:
 -
 -\begin{lstlisting}
--struct virtio_balloon_stat {
--#define VIRTIO_BALLOON_S_SWAP_IN  0
--#define VIRTIO_BALLOON_S_SWAP_OUT 1
--#define VIRTIO_BALLOON_S_MAJFLT   2
--#define VIRTIO_BALLOON_S_MINFLT   3
--#define VIRTIO_BALLOON_S_MEMFREE  4
--#define VIRTIO_BALLOON_S_MEMTOT   5
--#define VIRTIO_BALLOON_S_AVAIL    6
--#define VIRTIO_BALLOON_S_CACHES   7
--#define VIRTIO_BALLOON_S_HTLB_PGALLOC 8
--#define VIRTIO_BALLOON_S_HTLB_PGFAIL  9
--        le16 tag;
--        le64 val;
--} __attribute__((packed));
+-struct virtio_scsi_req_cmd {
+-        // Device-readable part
+-        u8 lun[8];
+-        le64 id;
+-        u8 task_attr;
+-        u8 prio;
+-        u8 crn;
+-        u8 cdb[cdb_size];
+-        // The next three fields are only present if VIRTIO_SCSI_F_T10_PI
+-        // is negotiated.
+-        le32 pi_bytesout;
+-        le32 pi_bytesin;
+-        u8 pi_out[pi_bytesout];
+-        u8 dataout[];
+-
+-        // Device-writable part
+-        le32 sense_len;
+-        le32 residual;
+-        le16 status_qualifier;
+-        u8 status;
+-        u8 response;
+-        u8 sense[sense_size];
+-        // The next field is only present if VIRTIO_SCSI_F_T10_PI
+-        // is negotiated
+-        u8 pi_in[pi_bytesin];
+-        u8 datain[];
+-};
+-
+-
+-/* command-specific response values */
+-#define VIRTIO_SCSI_S_OK                0
+-#define VIRTIO_SCSI_S_OVERRUN           1
+-#define VIRTIO_SCSI_S_ABORTED           2
+-#define VIRTIO_SCSI_S_BAD_TARGET        3
+-#define VIRTIO_SCSI_S_RESET             4
+-#define VIRTIO_SCSI_S_BUSY              5
+-#define VIRTIO_SCSI_S_TRANSPORT_FAILURE 6
+-#define VIRTIO_SCSI_S_TARGET_FAILURE    7
+-#define VIRTIO_SCSI_S_NEXUS_FAILURE     8
+-#define VIRTIO_SCSI_S_FAILURE           9
+-
+-/* task_attr */
+-#define VIRTIO_SCSI_S_SIMPLE            0
+-#define VIRTIO_SCSI_S_ORDERED           1
+-#define VIRTIO_SCSI_S_HEAD              2
+-#define VIRTIO_SCSI_S_ACA               3
 -\end{lstlisting}
 -
--\drivernormative{\paragraph}{Memory Statistics}{Device Types / Memory Ball=
-oon Device / Device Operation / Memory Statistics}
--Normative statements in this section apply if and only if the
--VIRTIO_BALLOON_F_STATS_VQ feature has been negotiated.
+-\field{lun} addresses the REPORT LUNS well-known logical unit, or
+-a target and logical unit in the virtio-scsi device's SCSI domain.
+-When used to address the REPORT LUNS logical unit, \field{lun} is 0xC1,
+-0x01 and six zero bytes.  The virtio-scsi device SHOULD implement the
+-REPORT LUNS well-known logical unit.
 -
--The driver MUST make at most one buffer available to the device
--in the statsq, at all times.
+-When used to address a target and logical unit, the only supported format
+-for \field{lun} is: first byte set to 1, second byte set to target,
+-third and fourth byte representing a single level LUN structure, followed
+-by four zero bytes. With this representation, a virtio-scsi device can
+-serve up to 256 targets and 16384 LUNs per target.  The device MAY also
+-support having a well-known logical units in the third and fourth byte.
 -
--After initializing the device, the driver MUST make an output
--buffer available in the statsq.
+-\field{id} is the command identifier (``tag'').
 -
--Upon detecting that device has used a buffer in the statsq, the
--driver MUST make an output buffer available in the statsq.
+-\field{task_attr} defines the task attribute as in the table above, but
+-all task attributes MAY be mapped to SIMPLE by the device.  Some commands
+-are defined by SCSI standards as "implicit head of queue"; for such
+-commands, all task attributes MAY also be mapped to HEAD OF QUEUE.
+-Drivers and applications SHOULD NOT send a command with the ORDERED
+-task attribute if the command has an implicit HEAD OF QUEUE attribute,
+-because whether the ORDERED task attribute is honored is vendor-specific.
 -
--Before making an output buffer available in the statsq, the
--driver MUST initialize it, including one struct
--virtio_balloon_stat entry for each statistic that it supports.
+-\field{crn} may also be provided by clients, but is generally expected
+-to be 0. The maximum CRN value defined by the protocol is 255, since
+-CRN is stored in an 8-bit integer.
 -
--Driver MUST use an output buffer size which is a multiple of 6
--bytes for all buffers submitted to the statsq.
+-The CDB is included in \field{cdb} and its size, \field{cdb_size},
+-is taken from the configuration space.
 -
--Driver MAY supply struct virtio_balloon_stat entries in the
--output buffer submitted to the statsq in any order, without
--regard to \field{tag} values.
+-All of these fields are defined in \hyperref[intro:SAM]{SAM} and are
+-always device-readable.
 -
--Driver MAY supply a subset of all statistics in the output buffer
--submitted to the statsq.
+-\field{pi_bytesout} determines the size of the \field{pi_out} field
+-in bytes.  If it is nonzero, the \field{pi_out} field contains outgoing
+-protection information for write operations.  \field{pi_bytesin} determine=
+s
+-the size of the \field{pi_in} field in the device-writable section, in byt=
+es.
+-All three fields are only present if VIRTIO_SCSI_F_T10_PI has been negotia=
+ted.
 -
--Driver MUST supply the same subset of statistics in all buffers
--submitted to the statsq.
+-The remainder of the device-readable part is the data output buffer,
+-\field{dataout}.
 -
--\devicenormative{\paragraph}{Memory Statistics}{Device Types / Memory Ball=
-oon Device / Device Operation / Memory Statistics}
--Normative statements in this section apply if and only if  the
--VIRTIO_BALLOON_F_STATS_VQ feature has been negotiated.
+-\field{sense} and subsequent fields are always device-writable. \field{sen=
+se_len}
+-indicates the number of bytes actually written to the sense
+-buffer.
 -
--Within an output buffer submitted to the statsq,
--the device MUST ignore entries with \field{tag} values that it does not re=
-cognize.
+-\field{residual} indicates the residual size,
+-calculated as ``data_length - number_of_transferred_bytes'', for
+-read or write operations. For bidirectional commands, the
+-number_of_transferred_bytes includes both read and written bytes.
+-A \field{residual} that is less than the size of \field{datain} means that
+-\field{dataout} was processed entirely. A \field{residual} that
+-exceeds the size of \field{datain} means that \field{dataout} was
+-processed partially and \field{datain} was not processed at
+-all.
 -
--Within an output buffer submitted to the statsq,
--the device MUST accept struct virtio_balloon_stat entries in any
--order without regard to \field{tag} values.
+-If the \field{pi_bytesin} is nonzero, the \field{pi_in} field contains
+-incoming protection information for read operations.  \field{pi_in} is
+-only present if VIRTIO_SCSI_F_T10_PI has been negotiated\footnote{There
+-  is no separate residual size for \field{pi_bytesout} and
+-  \field{pi_bytesin}.  It can be computed from the \field{residual} field,
+-  the size of the data integrity information per sector, and the sizes
+-  of \field{pi_out}, \field{pi_in}, \field{dataout} and \field{datain}.}.
 -
--\paragraph{Legacy Interface: Memory Statistics}\label{sec:Device Types / M=
-emory Balloon Device / Device Operation / Memory Statistics / Legacy Interf=
-ace: Memory Statistics}
+-The remainder of the device-writable part is the data input buffer,
+-\field{datain}.
 -
+-
+-\devicenormative{\paragraph}{Device Operation: Request Queues}{Device Type=
+s / SCSI Host Device / Device Operation / Device Operation: Request Queues}
+-
+-The device MUST write the \field{status} byte as the status code as
+-defined in \hyperref[intro:SAM]{SAM}.
+-
+-The device MUST write the \field{response} byte as one of the following:
+-
+-\begin{description}
+-
+-\item[VIRTIO_SCSI_S_OK] when the request was completed and the \field{stat=
+us}
+-  byte is filled with a SCSI status code (not necessarily
+-  ``GOOD'').
+-
+-\item[VIRTIO_SCSI_S_OVERRUN] if the content of the CDB (such as the
+-  allocation length, parameter length or transfer size) requires
+-  more data than is available in the datain and dataout buffers.
+-
+-\item[VIRTIO_SCSI_S_ABORTED] if the request was cancelled due to an
+-  ABORT TASK or ABORT TASK SET task management function.
+-
+-\item[VIRTIO_SCSI_S_BAD_TARGET] if the request was never processed
+-  because the target indicated by \field{lun} does not exist.
+-
+-\item[VIRTIO_SCSI_S_RESET] if the request was cancelled due to a bus
+-  or device reset (including a task management function).
+-
+-\item[VIRTIO_SCSI_S_TRANSPORT_FAILURE] if the request failed due to a
+-  problem in the connection between the host and the target
+-  (severed link).
+-
+-\item[VIRTIO_SCSI_S_TARGET_FAILURE] if the target is suffering a
+-  failure and to tell the driver not to retry on other paths.
+-
+-\item[VIRTIO_SCSI_S_NEXUS_FAILURE] if the nexus is suffering a failure
+-  but retrying on other paths might yield a different result.
+-
+-\item[VIRTIO_SCSI_S_BUSY] if the request failed but retrying on the
+-  same path is likely to work.
+-
+-\item[VIRTIO_SCSI_S_FAILURE] for other host or driver error. In
+-  particular, if neither \field{dataout} nor \field{datain} is empty, and =
+the
+-  VIRTIO_SCSI_F_INOUT feature has not been negotiated, the
+-  request will be immediately returned with a response equal to
+-  VIRTIO_SCSI_S_FAILURE.
+-\end{description}
+-
+-All commands must be completed before the virtio-scsi device is
+-reset or unplugged.  The device MAY choose to abort them, or if
+-it does not do so MUST pick the VIRTIO_SCSI_S_FAILURE response.
+-
+-\drivernormative{\paragraph}{Device Operation: Request Queues}{Device Type=
+s / SCSI Host Device / Device Operation / Device Operation: Request Queues}
+-
+-\field{task_attr}, \field{prio} and \field{crn} SHOULD be zero.
+-
+-Upon receiving a VIRTIO_SCSI_S_TARGET_FAILURE response, the driver
+-SHOULD NOT retry the request on other paths.
+-
+-\paragraph{Legacy Interface: Device Operation: Request Queues}\label{sec:D=
+evice Types / SCSI Host Device / Device Operation / Device Operation: Reque=
+st Queues / Legacy Interface: Device Operation: Request Queues}
 -When using the legacy interface, transitional devices and drivers
--MUST format the fields in struct virtio_balloon_stat
+-MUST format the fields in struct virtio_scsi_req_cmd
 -according to the native endian of the guest rather than
 -(necessarily when not using the legacy interface) little-endian.
 -
--When using the legacy interface,
--the device SHOULD ignore all values in the first buffer in the
--statsq supplied by the driver after device initialization.
--\begin{note}
--Historically, drivers supplied an uninitialized buffer in the
--first buffer.
--\end{note}
--
--\subsubsection{Memory Statistics Tags}\label{sec:Device Types / Memory Bal=
-loon Device / Device Operation / Memory Statistics Tags}
--
--\begin{description}
--\item[VIRTIO_BALLOON_S_SWAP_IN (0)] The amount of memory that has been
--  swapped in (in bytes).
--
--\item[VIRTIO_BALLOON_S_SWAP_OUT (1)] The amount of memory that has been
--  swapped out to disk (in bytes).
--
--\item[VIRTIO_BALLOON_S_MAJFLT (2)] The number of major page faults that
--  have occurred.
--
--\item[VIRTIO_BALLOON_S_MINFLT (3)] The number of minor page faults that
--  have occurred.
--
--\item[VIRTIO_BALLOON_S_MEMFREE (4)] The amount of memory not being used
--  for any purpose (in bytes).
--
--\item[VIRTIO_BALLOON_S_MEMTOT (5)] The total amount of memory available
--  (in bytes).
--
--\item[VIRTIO_BALLOON_S_AVAIL (6)] An estimate of how much memory is availa=
-ble
--  (in bytes) for starting new applications, without pushing the system to =
-swap.
--
--\item[VIRTIO_BALLOON_S_CACHES (7)] The amount of memory, in bytes, that ca=
-n be
--  quickly reclaimed without additional I/O. Typically these pages are used=
- for
--  caching files from disk.
--
--\item[VIRTIO_BALLOON_S_HTLB_PGALLOC (8)] The number of successful hugetlb =
-page
--  allocations in the guest.
--
--\item[VIRTIO_BALLOON_S_HTLB_PGFAIL (9)] The number of failed hugetlb page
--  allocations in the guest.
--\end{description}
--
--\subsubsection{Free Page Hinting}\label{sec:Device Types / Memory Balloon =
-Device / Device Operation / Free Page Hinting}
--
--Free page hinting is designed to be used during migration to determine wha=
-t
--pages within the guest are currently unused so that they can be skipped ov=
-er
--while migrating the guest. The device will indicate that it is ready to st=
-art
--performing hinting by setting the \field{free_page_hint_cmd_id} to one of =
-the
--non-reserved values that can be used as a command ID. The following values
--are reserved:
--
--\begin{description}
--\item[VIRTIO_BALLOON_CMD_ID_STOP (0)] Any command ID previously supplied b=
-y
--  the device is invalid. The driver should stop hinting free pages until a
--  new command ID is supplied, but should not release any hinted pages for
--  use by the guest.
--
--\item[VIRTIO_BALLOON_CMD_ID_DONE (1)] Any command ID previously supplied b=
-y
--  the device is invalid. The driver should stop hinting free pages, and
--  should release all hinted pages for use by the guest.
--\end{description}
--
--When a hint is provided by the driver it indicates that the data contained
--in the given page is no longer needed and can be discarded. If the driver
--writes to the page this overrides the hint and the data will be retained.
--The contents of any stale pages that have not been written to since the
--page was hinted may be lost, and if read the contents of such pages will
--be uninitialized memory.
--
--A request for free page hinting proceeds as follows:
--
--\begin{enumerate}
--
--\item The driver examines the \field{free_page_hint_cmd_id} configuration =
-field.
--  If it contains a non-reserved value then free page hinting will begin.
--
--\item To supply free page hints:
--  \begin{enumerate}
--  \item The driver constructs an output buffer containing the new value fr=
-om
--    the \field{free_page_hint_cmd_id} configuration field and adds it to t=
-he
--    free_page_vq.
--  \item The driver maps a series of pages and adds them to the
--    free_page_vq as individual scatter-gather input buffer entries.
--  \item When the driver is no longer able to fetch additional pages to add
--    to the free_page_vq, it will construct an output buffer containing the
--    command ID VIRTIO_BALLOON_CMD_ID_STOP.
--  \end{enumerate}
--
--\item A round of hinting ends either when the driver is no longer able to
--  supply more pages for hinting as described above, or when the device
--  updates \field{free_page_hint_cmd_id} configuration field to contain eit=
-her
--  VIRTIO_BALLOON_CMD_ID_STOP or VIRTIO_BALLOON_CMD_ID_DONE.
--
--\item The device may follow VIRTIO_BALLOON_CMD_ID_STOP with a new
--  non-reserved value for the \field{free_page_hint_cmd_id} configuration
--  field in which case it will resume supplying free page hints.
--
--\item Otherwise, if the device provides VIRTIO_BALLOON_CMD_ID_DONE then
--  hinting is complete and the driver may release all previously hinted
--  pages for use by the guest.
--
--\end{enumerate}
--
--\drivernormative{\paragraph}{Free Page Hinting}{Device Types / Memory Ball=
-oon Device / Device Operation / Free Page Hinting}
--
--Normative statements in this section apply if the
--VIRTIO_BALLOON_F_FREE_PAGE_HINT feature has been negotiated.
--
--The driver MUST use an output buffer size of 4 bytes for all output
--buffers submitted to the free_page_vq.
--
--The driver MUST start hinting by providing an output buffer containing
--the current command ID for the given block of pages.
--
--The driver MUST NOT provide more than one output buffer containing the
--current command ID.
--
--The driver SHOULD supply pages to the free_page_vq as input buffers when
--\field{free_page_hint_cmd_id} specifies a value of 2 or greater.
--
--The driver SHOULD stop supplying pages for hinting when
--\field{free_page_hint_cmd_id} specifies a value of VIRTIO_BALLOON_CMD_ID_S=
-TOP
--or VIRTIO_BALLOON_CMD_ID_DONE.
--
--If the driver is unable to supply pages, it MUST complete hinting by addin=
-g
--an output buffer containing the command ID VIRTIO_BALLOON_CMD_ID_STOP.
--
--The driver MAY release hinted pages for use by the guest including when th=
-e
--device has not yet used the descriptor containing the hinting request.
--
--The driver MUST treat the content of all hinted pages as uninitialized
--memory.
--
--The driver MUST initialize the contents of any previously hinted page
--released before \field{free_page_hint_cmd_id} specifies a value of
--VIRTIO_BALLOON_CMD_ID_DONE.
--
--The driver SHOULD release all previously hinted pages once
--\field{free_page_hint_cmd_id} specifies a value of
--VIRTIO_BALLOON_CMD_ID_DONE.
--
--\devicenormative{\paragraph}{Free Page Hinting}{Device Types / Memory Ball=
-oon Device / Device Operation / Free Page Hinting}
--
--Normative statements in this section apply if the
--VIRTIO_BALLOON_F_FREE_PAGE_HINT feature has been negotiated.
--
--The device SHOULD set \field{free_page_hint_cmd_id} to
--VIRTIO_BALLOON_CMD_ID_STOP any time that it will not be able to make use
--of the hints provided by the driver.
--
--The device MUST NOT reuse a command ID until it has received an output
--buffer containing VIRTIO_BALLOON_CMD_ID_STOP from the driver.
--
--The device MUST ignore pages that are provided with a command ID that does
--not match the current value in \field{free_page_hint_cmd_id}.
--
--If the content of a previously hinted page has not been modified by the
--guest since the device issued the \field{free_page_hint_cmd_id} associated
--with the hint, the device MAY modify the contents of the page.
--
--The device MUST NOT modify the content of a previously hinted page after
--\field{free_page_hint_cmd_id} is set to VIRTIO_BALLOON_CMD_ID_DONE.
--
--The device MUST report a value of VIRTIO_BALLOON_CMD_ID_DONE in
--\field{free_page_hint_cmd_id} when it no longer has need for the
--previously hinted pages.
--
--\paragraph{Legacy Interface: Free Page Hinting}\label{sec:Device Types / M=
-emory Balloon Device / Device Operation / Free Page Hinting / Legacy Interf=
-ace: Free Page Hinting}
--
--When using the legacy interface, transitional devices and drivers MUST
--format the command ID field in output buffers according to the native
--endian of the guest rather than (necessarily when not using the legacy
--interface) little-endian.
--
--\subsubsection{Page Poison}\label{sec:Device Types / Memory Balloon Device=
- / Device Operation / Page Poison}
--
--Page Poison provides a way to notify the host that the guest is initializi=
-ng
--free pages with \field{poison_val}. When the feature is enabled, pages wil=
-l
--be immediately written to by the driver after deflating, and pages reporte=
-d
--by free page reporting will retain the value indicated by \field{poison_va=
-l}.
--
--If the guest is not initializing freed pages, the driver should reject the
--VIRTIO_BALLOON_F_PAGE_POISON feature.
--
--If VIRTIO_BALLOON_F_PAGE_POISON feature has been negotiated, the driver
--will place the initialization value into the \field{poison_val}
--configuration field data.
--
--\drivernormative{\paragraph}{Page Poison}{Device Types / Memory Balloon De=
-vice / Device Operation / Page Poison}
--
--Normative statements in this section apply if the
--VIRTIO_BALLOON_F_PAGE_POISON feature has been negotiated.
--
--The driver MUST initialize the deflated pages with \field{poison_val} when
--they are reused by the driver.
--
--The driver MUST populate the \field{poison_val} configuration data before
--setting the DRIVER_OK bit.
--
--The driver MUST NOT modify \field{poison_val} while the DRIVER_OK bit is s=
-et.
--
--\devicenormative{\paragraph}{Page Poison}{Device Types / Memory Balloon De=
-vice / Device Operation / Page Poison}
--
--Normative statements in this section apply if the
--VIRTIO_BALLOON_F_PAGE_POISON feature has been negotiated.
--
--The device MAY use the content of \field{poison_val} as a hint to guest
--behavior.
--
--\subsubsection{Free Page Reporting}\label{sec:Device Types / Memory Balloo=
-n Device / Device Operation / Free Page Reporting}
--
--Free Page Reporting provides a mechanism similar to balloon inflation,
--however it does not provide a deflation queue. Reported free pages can
--be reused by the driver after the reporting request has been acknowledged
--without notifying the device.
--
--The driver will begin reporting free pages. When exactly and which free
--pages are reported is up to the driver.
--
--\begin{enumerate}
--
--\item The driver determines it has enough pages available to begin
--  reporting free pages.
--
--\item The driver gathers free pages into a scatter-gather list and adds
--  them to the reporting_vq.
--
--\item The device acknowledges the reporting request by using the
--  reporting_vq descriptor.
--
--\item Once the device has acknowledged the report, the driver can reuse th=
-e
--  reported free pages when needed (e.g., by putting them back to free page
--  lists in the guest operating system).
--
--\item The driver can then continue to gather and report free pages until i=
-t
--  has determined it has reported a sufficient quantity of pages.
--
--\end{enumerate}
--
--\drivernormative{\paragraph}{Free Page Reporting}{Device Types / Memory Ba=
-lloon Device / Device Operation / Free Page Reporting}
--
--Normative statements in this section apply if the
--VIRTIO_BALLOON_F_PAGE_REPORTING feature has been negotiated.
--
--If the VIRTIO_BALLOON_F_PAGE_POISON feature has not been negotiated, then
--the driver MUST treat all reported pages as uninitialized memory.
--
--If the VIRTIO_BALLOON_F_PAGE_POISON feature has been negotiated, the
--driver MUST initialize all free pages with \field{poison_val} before
--reporting them.
--
--The driver MUST NOT use the reported pages until the device has
--acknowledged the reporting request.
--
--The driver MAY report free pages any time after DRIVER_OK is set.
--
--The driver SHOULD attempt to report large pages rather than smaller ones.
--
--The driver SHOULD avoid reading/writing reported pages if
--not strictly necessary.
--
--\devicenormative{\paragraph}{Free Page Reporting}{Device Types / Memory Ba=
-lloon Device / Device Operation / Free Page Reporting}
--
--Normative statements in this section apply if the
--VIRTIO_BALLOON_F_PAGE_REPORTING feature has been negotiated.
--
--If the VIRTIO_BALLOON_F_PAGE_POISON feature has not been negotiated, the
--device MAY modify the contents of any page supplied in a report request
--before acknowledging that request by using the reporting_vq descriptor.
--
--If the VIRTIO_BALLOON_F_PAGE_POISON feature has been negotiated, the devic=
-e
--MUST NOT modify the the content of a reported page to a value other than
--\field{poison_val}.
-+\import{device-types/virtio-mem-balloon/}{device}
-=20
- \section{SCSI Host Device}\label{sec:Device Types / SCSI Host Device}
-=20
-diff --git a/device-types/virtio-mem-balloon/device-conformance.tex b/devic=
-e-types/virtio-mem-balloon/device-conformance.tex
+-\subsubsection{Device Operation: controlq}\label{sec:Device Types / SCSI H=
+ost Device / Device Operation / Device Operation: controlq}
+-
+-The controlq is used for other SCSI transport operations.
+-Requests have the following format:
+-
+-{
+-\lstset{escapechar=3D\$}
+-\begin{lstlisting}
+-struct virtio_scsi_ctrl {
+-        le32 type;
+-$\ldots$
+-        u8 response;
+-};
+-
+-/* response values valid for all commands */
+-#define VIRTIO_SCSI_S_OK                       0
+-#define VIRTIO_SCSI_S_BAD_TARGET               3
+-#define VIRTIO_SCSI_S_BUSY                     5
+-#define VIRTIO_SCSI_S_TRANSPORT_FAILURE        6
+-#define VIRTIO_SCSI_S_TARGET_FAILURE           7
+-#define VIRTIO_SCSI_S_NEXUS_FAILURE            8
+-#define VIRTIO_SCSI_S_FAILURE                  9
+-#define VIRTIO_SCSI_S_INCORRECT_LUN            12
+-\end{lstlisting}
+-}
+-
+-The \field{type} identifies the remaining fields.
+-
+-The following commands are defined:
+-
+-\begin{itemize}
+-\item Task management function.
+-\begin{lstlisting}
+-#define VIRTIO_SCSI_T_TMF                      0
+-
+-#define VIRTIO_SCSI_T_TMF_ABORT_TASK           0
+-#define VIRTIO_SCSI_T_TMF_ABORT_TASK_SET       1
+-#define VIRTIO_SCSI_T_TMF_CLEAR_ACA            2
+-#define VIRTIO_SCSI_T_TMF_CLEAR_TASK_SET       3
+-#define VIRTIO_SCSI_T_TMF_I_T_NEXUS_RESET      4
+-#define VIRTIO_SCSI_T_TMF_LOGICAL_UNIT_RESET   5
+-#define VIRTIO_SCSI_T_TMF_QUERY_TASK           6
+-#define VIRTIO_SCSI_T_TMF_QUERY_TASK_SET       7
+-
+-struct virtio_scsi_ctrl_tmf {
+-        // Device-readable part
+-        le32 type;
+-        le32 subtype;
+-        u8   lun[8];
+-        le64 id;
+-        // Device-writable part
+-        u8   response;
+-};
+-
+-/* command-specific response values */
+-#define VIRTIO_SCSI_S_FUNCTION_COMPLETE        0
+-#define VIRTIO_SCSI_S_FUNCTION_SUCCEEDED       10
+-#define VIRTIO_SCSI_S_FUNCTION_REJECTED        11
+-\end{lstlisting}
+-
+-  The \field{type} is VIRTIO_SCSI_T_TMF; \field{subtype} defines which
+-  task management function. All
+-  fields except \field{response} are filled by the driver.
+-
+-  Other fields which are irrelevant for the requested TMF
+-  are ignored but they are still present. \field{lun}
+-  is in the same format specified for request queues; the
+-  single level LUN is ignored when the task management function
+-  addresses a whole I_T nexus. When relevant, the value of \field{id}
+-  is matched against the id values passed on the requestq.
+-
+-  The outcome of the task management function is written by the
+-  device in \field{response}. The command-specific response
+-  values map 1-to-1 with those defined in \hyperref[intro:SAM]{SAM}.
+-
+-  Task management function can affect the response value for commands that
+-  are in the request queue and have not been completed yet.  For example,
+-  the device MUST complete all active commands on a logical unit
+-  or target (possibly with a VIRTIO_SCSI_S_RESET response code)
+-  upon receiving a "logical unit reset" or "I_T nexus reset" TMF.
+-  Similarly, the device MUST complete the selected commands (possibly
+-  with a VIRTIO_SCSI_S_ABORTED response code) upon receiving an "abort
+-  task" or "abort task set" TMF.  Such effects MUST take place before
+-  the TMF itself is successfully completed, and the device MUST use
+-  memory barriers appropriately in order to ensure that the driver sees
+-  these writes in the correct order.
+-
+-\item Asynchronous notification query.
+-\begin{lstlisting}
+-#define VIRTIO_SCSI_T_AN_QUERY                    1
+-
+-struct virtio_scsi_ctrl_an {
+-    // Device-readable part
+-    le32 type;
+-    u8   lun[8];
+-    le32 event_requested;
+-    // Device-writable part
+-    le32 event_actual;
+-    u8   response;
+-};
+-
+-#define VIRTIO_SCSI_EVT_ASYNC_OPERATIONAL_CHANGE  2
+-#define VIRTIO_SCSI_EVT_ASYNC_POWER_MGMT          4
+-#define VIRTIO_SCSI_EVT_ASYNC_EXTERNAL_REQUEST    8
+-#define VIRTIO_SCSI_EVT_ASYNC_MEDIA_CHANGE        16
+-#define VIRTIO_SCSI_EVT_ASYNC_MULTI_HOST          32
+-#define VIRTIO_SCSI_EVT_ASYNC_DEVICE_BUSY         64
+-\end{lstlisting}
+-
+-  By sending this command, the driver asks the device which
+-  events the given LUN can report, as described in paragraphs 6.6
+-  and A.6 of \hyperref[intro:SCSI MMC]{SCSI MMC}. The driver writes the
+-  events it is interested in into \field{event_requested}; the device
+-  responds by writing the events that it supports into
+-  \field{event_actual}.
+-
+-  The \field{type} is VIRTIO_SCSI_T_AN_QUERY. \field{lun} and \field{event=
+_requested}
+-  are written by the driver. \field{event_actual} and \field{response}
+-  fields are written by the device.
+-
+-  No command-specific values are defined for the \field{response} byte.
+-
+-\item Asynchronous notification subscription.
+-\begin{lstlisting}
+-#define VIRTIO_SCSI_T_AN_SUBSCRIBE                2
+-
+-struct virtio_scsi_ctrl_an {
+-        // Device-readable part
+-        le32 type;
+-        u8   lun[8];
+-        le32 event_requested;
+-        // Device-writable part
+-        le32 event_actual;
+-        u8   response;
+-};
+-\end{lstlisting}
+-
+-  By sending this command, the driver asks the specified LUN to
+-  report events for its physical interface, again as described in
+-   \hyperref[intro:SCSI MMC]{SCSI MMC}. The driver writes the events it is
+-  interested in into \field{event_requested}; the device responds by
+-  writing the events that it supports into \field{event_actual}.
+-
+-  Event types are the same as for the asynchronous notification
+-  query message.
+-
+-  The \field{type} is VIRTIO_SCSI_T_AN_SUBSCRIBE. \field{lun} and
+-  \field{event_requested} are written by the driver.
+-  \field{event_actual} and \field{response} are written by the device.
+-
+-  No command-specific values are defined for the response byte.
+-\end{itemize}
+-
+-\paragraph{Legacy Interface: Device Operation: controlq}\label{sec:Device =
+Types / SCSI Host Device / Device Operation / Device Operation: controlq / =
+Legacy Interface: Device Operation: controlq}
+-
+-When using the legacy interface, transitional devices and drivers
+-MUST format the fields in struct virtio_scsi_ctrl, struct
+-virtio_scsi_ctrl_tmf, struct virtio_scsi_ctrl_an and struct
+-virtio_scsi_ctrl_an
+-according to the native endian of the guest rather than
+-(necessarily when not using the legacy interface) little-endian.
+-
+-
+-\subsubsection{Device Operation: eventq}\label{sec:Device Types / SCSI Hos=
+t Device / Device Operation / Device Operation: eventq}
+-
+-The eventq is populated by the driver for the device to report information=
+ on logical
+-units that are attached to it. In general, the device will not
+-queue events to cope with an empty eventq, and will end up
+-dropping events if it finds no buffer ready. However, when
+-reporting events for many LUNs (e.g. when a whole target
+-disappears), the device can throttle events to avoid dropping
+-them. For this reason, placing 10-15 buffers on the event queue
+-is sufficient.
+-
+-Buffers returned by the device on the eventq will be referred to
+-as ``events'' in the rest of this section. Events have the
+-following format:
+-
+-\begin{lstlisting}
+-#define VIRTIO_SCSI_T_EVENTS_MISSED   0x80000000
+-
+-struct virtio_scsi_event {
+-        // Device-writable part
+-        le32 event;
+-        u8  lun[8];
+-        le32 reason;
+-};
+-\end{lstlisting}
+-
+-The devices sets bit 31 in \field{event} to report lost events
+-due to missing buffers.
+-
+-The meaning of \field{reason} depends on the
+-contents of \field{event}. The following events are defined:
+-
+-\begin{itemize}
+-\item No event.
+-\begin{lstlisting}
+-#define VIRTIO_SCSI_T_NO_EVENT         0
+-\end{lstlisting}
+-
+-  This event is fired in the following cases:
+-
+-\begin{itemize}
+-\item When the device detects in the eventq a buffer that is
+-    shorter than what is indicated in the configuration field, it
+-    MAY use it immediately and put this dummy value in \field{event}.
+-    A well-written driver will never observe this
+-    situation.
+-
+-\item When events are dropped, the device MAY signal this event as
+-    soon as the drivers makes a buffer available, in order to
+-    request action from the driver. In this case, of course, this
+-    event will be reported with the VIRTIO_SCSI_T_EVENTS_MISSED
+-    flag.
+-\end{itemize}
+-
+-\item Transport reset
+-\begin{lstlisting}
+-#define VIRTIO_SCSI_T_TRANSPORT_RESET  1
+-
+-#define VIRTIO_SCSI_EVT_RESET_HARD         0
+-#define VIRTIO_SCSI_EVT_RESET_RESCAN       1
+-#define VIRTIO_SCSI_EVT_RESET_REMOVED      2
+-\end{lstlisting}
+-
+-  By sending this event, the device signals that a logical unit
+-  on a target has been reset, including the case of a new device
+-  appearing or disappearing on the bus. The device fills in all
+-  fields. \field{event} is set to
+-  VIRTIO_SCSI_T_TRANSPORT_RESET. \field{lun} addresses a
+-  logical unit in the SCSI host.
+-
+-  The \field{reason} value is one of the three \#define values appearing
+-  above:
+-
+-  \begin{description}
+-  \item[VIRTIO_SCSI_EVT_RESET_REMOVED] (``LUN/target removed'') is used
+-    if the target or logical unit is no longer able to receive
+-    commands.
+-
+-  \item[VIRTIO_SCSI_EVT_RESET_HARD] (``LUN hard reset'') is used if the
+-    logical unit has been reset, but is still present.
+-
+-  \item[VIRTIO_SCSI_EVT_RESET_RESCAN] (``rescan LUN/target'') is used if
+-    a target or logical unit has just appeared on the device.
+-  \end{description}
+-
+-  The ``removed'' and ``rescan'' events can happen when
+-  VIRTIO_SCSI_F_HOTPLUG feature was negotiated; when sent for LUN 0,
+-  they MAY apply to the entire target so the driver can ask the
+-  initiator to rescan the target to detect this.
+-
+-  Events will also be reported via sense codes (this obviously
+-  does not apply to newly appeared buses or targets, since the
+-  application has never discovered them):
+-
+-  \begin{itemize}
+-  \item ``LUN/target removed'' maps to sense key ILLEGAL REQUEST, asc
+-    0x25, ascq 0x00 (LOGICAL UNIT NOT SUPPORTED)
+-
+-  \item ``LUN hard reset'' maps to sense key UNIT ATTENTION, asc 0x29
+-    (POWER ON, RESET OR BUS DEVICE RESET OCCURRED)
+-
+-  \item ``rescan LUN/target'' maps to sense key UNIT ATTENTION, asc
+-    0x3f, ascq 0x0e (REPORTED LUNS DATA HAS CHANGED)
+-  \end{itemize}
+-
+-  The preferred way to detect transport reset is always to use
+-  events, because sense codes are only seen by the driver when it
+-  sends a SCSI command to the logical unit or target. However, in
+-  case events are dropped, the initiator will still be able to
+-  synchronize with the actual state of the controller if the
+-  driver asks the initiator to rescan of the SCSI bus. During the
+-  rescan, the initiator will be able to observe the above sense
+-  codes, and it will process them as if it the driver had
+-  received the equivalent event.
+-
+-  \item Asynchronous notification
+-\begin{lstlisting}
+-#define VIRTIO_SCSI_T_ASYNC_NOTIFY     2
+-\end{lstlisting}
+-
+-  By sending this event, the device signals that an asynchronous
+-  event was fired from a physical interface.
+-
+-  All fields are written by the device. \field{event} is set to
+-  VIRTIO_SCSI_T_ASYNC_NOTIFY. \field{lun} addresses a logical
+-  unit in the SCSI host. \field{reason} is a subset of the
+-  events that the driver has subscribed to via the ``Asynchronous
+-  notification subscription'' command.
+-
+-  \item LUN parameter change
+-\begin{lstlisting}
+-#define VIRTIO_SCSI_T_PARAM_CHANGE  3
+-\end{lstlisting}
+-
+-  By sending this event, the device signals a change in the configuration =
+parameters
+-  of a logical unit, for example the capacity or cache mode.
+-  \field{event} is set to VIRTIO_SCSI_T_PARAM_CHANGE.
+-  \field{lun} addresses a logical unit in the SCSI host.
+-
+-  The same event SHOULD also be reported as a unit attention condition.
+-  \field{reason} contains the additional sense code and additional sense c=
+ode qualifier,
+-  respectively in bits 0\ldots 7 and 8\ldots 15.
+-  \begin{note}
+-  For example, a change in capacity will be reported as asc 0x2a, ascq 0x0=
+9
+-  (CAPACITY DATA HAS CHANGED).
+-  \end{note}
+-
+-  For MMC devices (inquiry type 5) there would be some overlap between thi=
+s
+-  event and the asynchronous notification event, so for simplicity the hos=
+t never
+-  reports this event for MMC devices.
+-\end{itemize}
+-
+-\drivernormative{\paragraph}{Device Operation: eventq}{Device Types / SCSI=
+ Host Device / Device Operation / Device Operation: eventq}
+-
+-The driver SHOULD keep the eventq populated with buffers.  These
+-buffers MUST be device-writable, and SHOULD be at least
+-\field{event_info_size} bytes long, and MUST be at least the size of
+-struct virtio_scsi_event.
+-
+-If \field{event} has bit 31 set, the driver SHOULD
+-poll the logical units for unit attention conditions, and/or do
+-whatever form of bus scan is appropriate for the guest operating
+-system and SHOULD poll for asynchronous events manually using SCSI command=
+s.
+-
+-When receiving a VIRTIO_SCSI_T_TRANSPORT_RESET message with
+-\field{reason} set to VIRTIO_SCSI_EVT_RESET_REMOVED or
+-VIRTIO_SCSI_EVT_RESET_RESCAN for LUN 0, the driver SHOULD ask the
+-initiator to rescan the target, in order to detect the case when an
+-entire target has appeared or disappeared.
+-
+-\devicenormative{\paragraph}{Device Operation: eventq}{Device Types / SCSI=
+ Host Device / Device Operation / Device Operation: eventq}
+-
+-The device MUST set bit 31 in \field{event} if events were lost due to
+-missing buffers, and it MAY use a VIRTIO_SCSI_T_NO_EVENT event to report
+-this.
+-
+-The device MUST NOT send VIRTIO_SCSI_T_TRANSPORT_RESET messages
+-with \field{reason} set to VIRTIO_SCSI_EVT_RESET_REMOVED or
+-VIRTIO_SCSI_EVT_RESET_RESCAN unless VIRTIO_SCSI_F_HOTPLUG was negotiated.
+-
+-The device MUST NOT report VIRTIO_SCSI_T_PARAM_CHANGE for MMC devices.
+-
+-\paragraph{Legacy Interface: Device Operation: eventq}\label{sec:Device Ty=
+pes / SCSI Host Device / Device Operation / Device Operation: eventq / Lega=
+cy Interface: Device Operation: eventq}
+-When using the legacy interface, transitional devices and drivers
+-MUST format the fields in struct virtio_scsi_event
+-according to the native endian of the guest rather than
+-(necessarily when not using the legacy interface) little-endian.
+-
+-\subsubsection{Legacy Interface: Framing Requirements}\label{sec:Device
+-Types / SCSI Host Device / Legacy Interface: Framing Requirements}
+-
+-When using legacy interfaces, transitional drivers which have not
+-negotiated VIRTIO_F_ANY_LAYOUT MUST use a single descriptor for the
+-\field{lun}, \field{id}, \field{task_attr}, \field{prio},
+-\field{crn} and \field{cdb} fields, and MUST only use a single
+-descriptor for the \field{sense_len}, \field{residual},
+-\field{status_qualifier}, \field{status}, \field{response} and
+-\field{sense} fields.
+-
++\import{device-types/virtio-scsi/}{device}
+ \input{virtio-gpu.tex}
+ \input{virtio-input.tex}
+ \input{virtio-crypto.tex}
+diff --git a/device-types/virtio-scsi/device-conformance.tex b/device-types=
+/virtio-scsi/device-conformance.tex
 new file mode 100644
-index 0000000..ff9ac4f
+index 0000000..8dc859c
 --- /dev/null
-+++ b/device-types/virtio-mem-balloon/device-conformance.tex
-@@ -0,0 +1,12 @@
-+\conformance{\subsection}{Traditional Memory Balloon Device Conformance}\l=
-abel{sec:Conformance / Device Conformance / Traditional Memory Balloon Devi=
-ce Conformance}
++++ b/device-types/virtio-scsi/device-conformance.tex
+@@ -0,0 +1,10 @@
++\conformance{\subsection}{SCSI Host Device Conformance}\label{sec:Conforma=
+nce / Device Conformance / SCSI Host Device Conformance}
 +
-+A traditional memory balloon device MUST conform to the following normativ=
-e statements:
++An SCSI host device MUST conform to the following normative statements:
 +
 +\begin{itemize}
-+\item \ref{devicenormative:Device Types / Memory Balloon Device / Feature =
-bits}
-+\item \ref{devicenormative:Device Types / Memory Balloon Device / Device O=
-peration}
-+\item \ref{devicenormative:Device Types / Memory Balloon Device / Device O=
-peration / Memory Statistics}
-+\item \ref{devicenormative:Device Types / Memory Balloon Device / Device O=
-peration / Free Page Hinting}
-+\item \ref{devicenormative:Device Types / Memory Balloon Device / Device O=
-peration / Page Poison}
-+\item \ref{devicenormative:Device Types / Memory Balloon Device / Device O=
-peration / Free Page Reporting}
++\item \ref{devicenormative:Device Types / SCSI Host Device / Device config=
+uration layout}
++\item \ref{devicenormative:Device Types / SCSI Host Device / Device Initia=
+lization}
++\item \ref{devicenormative:Device Types / SCSI Host Device / Device Operat=
+ion / Device Operation: Request Queues}
++\item \ref{devicenormative:Device Types / SCSI Host Device / Device Operat=
+ion / Device Operation: eventq}
 +\end{itemize}
-diff --git a/device-types/virtio-mem-balloon/device.tex b/device-types/virt=
-io-mem-balloon/device.tex
+diff --git a/device-types/virtio-scsi/device.tex b/device-types/virtio-scsi=
+/device.tex
 new file mode 100644
-index 0000000..a1d9603
+index 0000000..904c4a7
 --- /dev/null
-+++ b/device-types/virtio-mem-balloon/device.tex
-@@ -0,0 +1,634 @@
-+\section{Traditional Memory Balloon Device}\label{sec:Device Types / Memor=
-y Balloon Device}
++++ b/device-types/virtio-scsi/device.tex
+@@ -0,0 +1,709 @@
++\section{SCSI Host Device}\label{sec:Device Types / SCSI Host Device}
 +
-+This is the traditional balloon device.  The device number 13 is
-+reserved for a new memory balloon interface, with different
-+semantics, which is expected in a future version of the standard.
++The virtio SCSI host device groups together one or more virtual
++logical units (such as disks), and allows communicating to them
++using the SCSI protocol. An instance of the device represents a
++SCSI host to which many targets and LUNs are attached.
 +
-+The traditional virtio memory balloon device is a primitive device for
-+managing guest memory: the device asks for a certain amount of
-+memory, and the driver supplies it (or withdraws it, if the device
-+has more than it asks for). This allows the guest to adapt to
-+changes in allowance of underlying physical memory. If the
-+feature is negotiated, the device can also be used to communicate
-+guest memory statistics to the host.
++The virtio SCSI device services two kinds of requests:
++\begin{itemize}
++\item command requests for a logical unit;
 +
-+\subsection{Device ID}\label{sec:Device Types / Memory Balloon Device / De=
-vice ID}
-+  5
++\item task management functions related to a logical unit, target or
++  command.
++\end{itemize}
 +
-+\subsection{Virtqueues}\label{sec:Device Types / Memory Balloon Device / V=
-irtqueues}
++The device is also able to send out notifications about added and
++removed logical units. Together, these capabilities provide a
++SCSI transport protocol that uses virtqueues as the transfer
++medium. In the transport protocol, the virtio driver acts as the
++initiator, while the virtio SCSI host provides one or more
++targets that receive and process the requests.
++
++This section relies on definitions from \hyperref[intro:SAM]{SAM}.
++
++\subsection{Device ID}\label{sec:Device Types / SCSI Host Device / Device =
+ID}
++  8
++
++\subsection{Virtqueues}\label{sec:Device Types / SCSI Host Device / Virtqu=
+eues}
++
 +\begin{description}
-+\item[0] inflateq
-+\item[1] deflateq
-+\item[2] statsq
-+\item[3] free_page_vq
-+\item[4] reporting_vq
++\item[0] controlq
++\item[1] eventq
++\item[2\ldots n] request queues
 +\end{description}
 +
-+  statsq only exists if VIRTIO_BALLOON_F_STATS_VQ is set.
++\subsection{Feature bits}\label{sec:Device Types / SCSI Host Device / Feat=
+ure bits}
 +
-+  free_page_vq only exists if VIRTIO_BALLOON_F_FREE_PAGE_HINT is set.
-+
-+  reporting_vq only exists if VIRTIO_BALLOON_F_PAGE_REPORTING is set.
-+
-+\subsection{Feature bits}\label{sec:Device Types / Memory Balloon Device /=
- Feature bits}
 +\begin{description}
-+\item[VIRTIO_BALLOON_F_MUST_TELL_HOST (0)] Host has to be told before
-+    pages from the balloon are used.
++\item[VIRTIO_SCSI_F_INOUT (0)] A single request can include both
++    device-readable and device-writable data buffers.
 +
-+\item[VIRTIO_BALLOON_F_STATS_VQ (1)] A virtqueue for reporting guest
-+    memory statistics is present.
-+\item[VIRTIO_BALLOON_F_DEFLATE_ON_OOM (2) ] Deflate balloon on
-+    guest out of memory condition.
-+\item[ VIRTIO_BALLOON_F_FREE_PAGE_HINT(3) ] The device has support for fre=
-e
-+    page hinting. A virtqueue for providing hints as to what memory is
-+    currently free is present. Configuration field \field{free_page_hint_c=
-md_id}
-+    is valid.
-+\item[ VIRTIO_BALLOON_F_PAGE_POISON(4) ] A hint to the device, that the dr=
-iver
-+    will immediately write \field{poison_val} to pages after deflating the=
-m.
-+    Configuration field \field{poison_val} is valid.
-+\item[ VIRTIO_BALLOON_F_PAGE_REPORTING(5) ] The device has support for fre=
-e
-+    page reporting. A virtqueue for reporting free guest memory is present=
-.
++\item[VIRTIO_SCSI_F_HOTPLUG (1)] The host SHOULD enable reporting of
++    hot-plug and hot-unplug events for LUNs and targets on the SCSI bus.
++    The guest SHOULD handle hot-plug and hot-unplug events.
 +
++\item[VIRTIO_SCSI_F_CHANGE (2)] The host will report changes to LUN
++    parameters via a VIRTIO_SCSI_T_PARAM_CHANGE event; the guest
++    SHOULD handle them.
++
++\item[VIRTIO_SCSI_F_T10_PI (3)] The extended fields for T10 protection
++    information (DIF/DIX) are included in the SCSI request header.
 +\end{description}
 +
-+\drivernormative{\subsubsection}{Feature bits}{Device Types / Memory Ballo=
-on Device / Feature bits}
-+The driver SHOULD accept the VIRTIO_BALLOON_F_MUST_TELL_HOST
-+feature if offered by the device.
++\subsection{Device configuration layout}\label{sec:Device Types / SCSI Hos=
+t Device / Device configuration layout}
 +
-+The driver SHOULD clear the VIRTIO_BALLOON_F_PAGE_POISON flag if it will
-+not immediately write \field{poison_val} to deflated pages (e.g., to
-+initialize them, or fill them with a poison value).
-+
-+If the driver is expecting the pages to retain some initialized value,
-+it MUST NOT accept VIRTIO_BALLOON_F_PAGE_REPORTING unless it also
-+negotiates VIRTIO_BALLOON_F_PAGE_POISON.
-+
-+\devicenormative{\subsubsection}{Feature bits}{Device Types / Memory Ballo=
-on Device / Feature bits}
-+If the device offers the VIRTIO_BALLOON_F_MUST_TELL_HOST feature
-+bit, and if the driver did not accept this feature bit, the
-+device MAY signal failure by failing to set FEATURES_OK
-+\field{device status} bit when the driver writes it.
-+\subparagraph{Legacy Interface: Feature bits}\label{sec:Device
-+Types / Memory Balloon Device / Feature bits / Legacy Interface:
-+Feature bits}
-+As the legacy interface does not have a way to gracefully report feature
-+negotiation failure, when using the legacy interface,
-+transitional devices MUST support guests which do not negotiate
-+VIRTIO_BALLOON_F_MUST_TELL_HOST feature, and SHOULD
-+allow guest to use memory before notifying host if
-+VIRTIO_BALLOON_F_MUST_TELL_HOST is not negotiated.
-+
-+\subsection{Device configuration layout}\label{sec:Device Types / Memory B=
-alloon Device / Device configuration layout}
-+  \field{num_pages} and \field{actual} are always available.
-+
-+  \field{free_page_hint_cmd_id} is available if
-+    VIRTIO_BALLOON_F_FREE_PAGE_HINT has been negotiated. The field is
-+    read-only by the driver.
-+  \field{poison_val} is available if VIRTIO_BALLOON_F_PAGE_POISON has been
-+    negotiated.
++  All fields of this configuration are always available.
 +
 +\begin{lstlisting}
-+struct virtio_balloon_config {
-+        le32 num_pages;
-+        le32 actual;
-+        le32 free_page_hint_cmd_id;
-+        le32 poison_val;
++struct virtio_scsi_config {
++        le32 num_queues;
++        le32 seg_max;
++        le32 max_sectors;
++        le32 cmd_per_lun;
++        le32 event_info_size;
++        le32 sense_size;
++        le32 cdb_size;
++        le16 max_channel;
++        le16 max_target;
++        le32 max_lun;
 +};
 +\end{lstlisting}
 +
-+\subparagraph{Legacy Interface: Device configuration layout}\label{sec:Dev=
-ice Types / Memory Balloon Device / Device
-+configuration layout / Legacy Interface: Device configuration layout}
++\begin{description}
++\item[\field{num_queues}] is the total number of request virtqueues expose=
+d by
++    the device. The driver MAY use only one request queue,
++    or it can use more to achieve better performance.
++
++\item[\field{seg_max}] is the maximum number of segments that can be in a
++    command. A bidirectional command can include \field{seg_max} input
++    segments and \field{seg_max} output segments.
++
++\item[\field{max_sectors}] is a hint to the driver about the maximum trans=
+fer
++    size to use.
++
++\item[\field{cmd_per_lun}] tells the driver the maximum number of
++    linked commands it can send to one LUN.
++
++\item[\field{event_info_size}] is the maximum size that the device will fi=
+ll
++    for buffers that the driver places in the eventq. It is
++    written by the device depending on the set of negotiated
++    features.
++
++\item[\field{sense_size}] is the maximum size of the sense data that the
++    device will write. The default value is written by the device
++    and MUST be 96, but the driver can modify it. It is
++    restored to the default when the device is reset.
++
++\item[\field{cdb_size}] is the maximum size of the CDB that the driver wil=
+l
++    write. The default value is written by the device and MUST
++    be 32, but the driver can likewise modify it. It is
++    restored to the default when the device is reset.
++
++\item[\field{max_channel}, \field{max_target} and \field{max_lun}] can be
++    used by the driver as hints to constrain scanning the logical units
++    on the host to channel/target/logical unit numbers that are less than
++    or equal to the value of the fields.  \field{max_channel} SHOULD
++    be zero.  \field{max_target} SHOULD be less than or equal to 255.
++    \field{max_lun} SHOULD be less than or equal to 16383.
++\end{description}
++
++\drivernormative{\subsubsection}{Device configuration layout}{Device Types=
+ / SCSI Host Device / Device configuration layout}
++
++The driver MUST NOT write to device configuration fields other than
++\field{sense_size} and \field{cdb_size}.
++
++The driver MUST NOT send more than \field{cmd_per_lun} linked commands
++to one LUN, and MUST NOT send more than the virtqueue size number of
++linked commands to one LUN.
++
++\devicenormative{\subsubsection}{Device configuration layout}{Device Types=
+ / SCSI Host Device / Device configuration layout}
++
++On reset, the device MUST set \field{sense_size} to 96 and
++\field{cdb_size} to 32.
++
++\subsubsection{Legacy Interface: Device configuration layout}\label{sec:De=
+vice Types / SCSI Host Device / Device configuration layout / Legacy Interf=
+ace: Device configuration layout}
 +When using the legacy interface, transitional devices and drivers
-+MUST format the fields in struct virtio_balloon_config
-+according to the little-endian format.
-+\begin{note}
-+This is unlike the usual convention that legacy device fields are guest en=
-dian.
-+\end{note}
++MUST format the fields in struct virtio_scsi_config
++according to the native endian of the guest rather than
++(necessarily when not using the legacy interface) little-endian.
 +
-+\subsection{Device Initialization}\label{sec:Device Types / Memory Balloon=
- Device / Device Initialization}
++\devicenormative{\subsection}{Device Initialization}{Device Types / SCSI H=
+ost Device / Device Initialization}
 +
-+The device initialization process is outlined below:
++On initialization the driver SHOULD first discover the
++device's virtqueues.
 +
-+\begin{enumerate}
-+\item The inflate and deflate virtqueues are identified.
++If the driver uses the eventq, the driver SHOULD place at least one
++buffer in the eventq.
 +
-+\item If the VIRTIO_BALLOON_F_STATS_VQ feature bit is negotiated:
-+  \begin{enumerate}
-+  \item Identify the stats virtqueue.
-+  \item Add one empty buffer to the stats virtqueue.
-+  \end{enumerate}
++The driver MAY immediately issue requests\footnote{For example, INQUIRY
++or REPORT LUNS.} or task management functions\footnote{For example, I_T
++RESET.}.
 +
-+\item If the VIRTIO_BALLOON_F_FREE_PAGE_HINT feature bit is negotiated,
-+  identify the free_page_vq.
-+\item If the VIRTIO_BALLOON_F_PAGE_POISON feature bit is negotiated, updat=
-e
-+  the \field{poison_val} configuration field.
-+\item If the VIRTIO_BALLOON_F_PAGE_REPORTING feature bit is negotiated,
-+  identify the reporting_vq.
++\subsection{Device Operation}\label{sec:Device Types / SCSI Host Device / =
+Device Operation}
 +
-+\item DRIVER_OK is set: device operation begins.
-+
-+\item If the VIRTIO_BALLOON_F_STATS_VQ feature bit is negotiated, then
-+  notify the device about the stats virtqueue buffer.
-+\item If the VIRTIO_BALLOON_F_PAGE_REPORTING feature bit is negotiated, th=
-en
-+  begin reporting free pages to the device.
-+\end{enumerate}
-+
-+\subsection{Device Operation}\label{sec:Device Types / Memory Balloon Devi=
-ce / Device Operation}
-+
-+The device is driven either by the receipt of a configuration
-+change notification, or by changing guest memory needs, such as
-+performing memory compaction or responding to out of memory
-+conditions.
-+
-+\begin{enumerate}
-+\item \field{num_pages} configuration field is examined. If this is
-+  greater than the \field{actual} number of pages, the balloon wants
-+  more memory from the guest.  If it is less than \field{actual},
-+  the balloon doesn't need it all.
-+
-+\item To supply memory to the balloon (aka. inflate):
-+  \begin{enumerate}
-+  \item The driver constructs an array of addresses of unused memory
-+    pages. These addresses are divided by 4096\footnote{This is historical=
-, and independent of the guest page size.
-+} and the descriptor
-+    describing the resulting 32-bit array is added to the inflateq.
-+  \end{enumerate}
-+
-+\item To remove memory from the balloon (aka. deflate):
-+  \begin{enumerate}
-+  \item The driver constructs an array of addresses of memory pages
-+    it has previously given to the balloon, as described above.
-+    This descriptor is added to the deflateq.
-+
-+  \item If the VIRTIO_BALLOON_F_MUST_TELL_HOST feature is negotiated, the
-+    guest informs the device of pages before it uses them.
-+
-+  \item Otherwise, the guest is allowed to re-use pages previously
-+    given to the balloon before the device has acknowledged their
-+    withdrawal\footnote{In this case, deflation advice is merely a courtes=
-y.
-+}.
-+  \end{enumerate}
-+
-+\item In either case, the device acknowledges inflate and deflate
-+requests by using the descriptor.
-+\item Once the device has acknowledged the inflation or
-+  deflation, the driver updates \field{actual} to reflect the new number o=
-f pages in the balloon.
-+\end{enumerate}
-+
-+\drivernormative{\subsubsection}{Device Operation}{Device Types / Memory B=
-alloon Device / Device Operation}
-+The driver SHOULD supply pages to the balloon when \field{num_pages} is
-+greater than the actual number of pages in the balloon.
-+
-+The driver MAY use pages from the balloon when \field{num_pages} is
-+less than the actual number of pages in the balloon.
-+
-+The driver MAY supply pages to the balloon when \field{num_pages} is
-+greater than or equal to the actual number of pages in the balloon.
-+
-+If VIRTIO_BALLOON_F_DEFLATE_ON_OOM has not been negotiated, the
-+driver MUST NOT use pages from the balloon when \field{num_pages}
-+is less than or equal to the actual number of pages in the
-+balloon.
-+
-+If VIRTIO_BALLOON_F_DEFLATE_ON_OOM has been negotiated, the
-+driver MAY use pages from the balloon when \field{num_pages}
-+is less than or equal to the actual number of pages in the
-+balloon if this is required for system stability
-+(e.g. if memory is required by applications running within
-+ the guest).
-+
-+The driver MUST use the deflateq to inform the device of pages that it
-+wants to use from the balloon.
-+
-+If the VIRTIO_BALLOON_F_MUST_TELL_HOST feature is negotiated, the
-+driver MUST NOT use pages from the balloon until
-+the device has acknowledged the deflate request.
-+
-+Otherwise, if the VIRTIO_BALLOON_F_MUST_TELL_HOST feature is not
-+negotiated, the driver MAY begin to re-use pages previously
-+given to the balloon before the device has acknowledged the
-+deflate request.
-+
-+In any case, the driver MUST NOT use pages from the balloon
-+after adding the pages to the balloon, but before the device has
-+acknowledged the inflate request.
-+
-+The driver MUST NOT request deflation of pages in
-+the balloon before the device has acknowledged the inflate
-+request.
-+
-+The driver MUST update \field{actual} after changing the number
-+of pages in the balloon.
-+
-+The driver MAY update \field{actual} once after multiple
-+inflate and deflate operations.
-+
-+\devicenormative{\subsubsection}{Device Operation}{Device Types / Memory B=
-alloon Device / Device Operation}
-+
-+The device MAY modify the contents of a page in the balloon
-+after detecting its physical number in an inflate request
-+and before acknowledging the inflate request by using the inflateq
-+descriptor.
-+
-+If the VIRTIO_BALLOON_F_MUST_TELL_HOST feature is negotiated, the
-+device MAY modify the contents of a page in the balloon
-+after detecting its physical number in an inflate request
-+and before detecting its physical number in a deflate request
-+and acknowledging the deflate request.
++Device operation consists of operating request queues, the control
++queue and the event queue.
 +
 +\paragraph{Legacy Interface: Device Operation}\label{sec:Device
-+Types / Memory Balloon Device / Device Operation / Legacy
++Types / SCSI Host Device / Device Operation / Legacy
 +Interface: Device Operation}
 +When using the legacy interface, the driver SHOULD ignore the
 +used length values.
 +\begin{note}
-+Historically, some devices put the total descriptor length there,
-+even though no data was actually written.
++Historically, devices put the total descriptor length,
++or the total length of device-writable buffers there,
++even when only part of the buffers were actually written.
 +\end{note}
-+When using the legacy interface, the driver MUST write out all
-+4 bytes each time it updates the \field{actual} value in the
-+configuration space, using a single atomic operation.
 +
-+When using the legacy interface, the device SHOULD NOT use the
-+\field{actual} value written by the driver in the configuration
-+space, until the last, most-significant byte of the value has been
-+written.
-+\begin{note}
-+Historically, devices used the \field{actual} value, even though
-+when using Virtio Over PCI Bus the device-specific configuration
-+space was not guaranteed to be atomic. Using intermediate
-+values during update by driver is best avoided, except for
-+debugging.
++\subsubsection{Device Operation: Request Queues}\label{sec:Device Types / =
+SCSI Host Device / Device Operation / Device Operation: Request Queues}
 +
-+Historically, drivers using Virtio Over PCI Bus wrote the
-+\field{actual} value by using multiple single-byte writes in
-+order, from the least-significant to the most-significant value.
-+\end{note}
-+\subsubsection{Memory Statistics}\label{sec:Device Types / Memory Balloon =
-Device / Device Operation / Memory Statistics}
++The driver queues requests to an arbitrary request queue, and
++they are used by the device on that same queue. It is the
++responsibility of the driver to ensure strict request ordering
++for commands placed on different queues, because they will be
++consumed with no order constraints.
 +
-+The stats virtqueue is atypical because communication is driven
-+by the device (not the driver). The channel becomes active at
-+driver initialization time when the driver adds an empty buffer
-+and notifies the device. A request for memory statistics proceeds
-+as follows:
-+
-+\begin{enumerate}
-+\item The device uses the buffer and sends a used buffer notification.
-+
-+\item The driver pops the used buffer and discards it.
-+
-+\item The driver collects memory statistics and writes them into a
-+  new buffer.
-+
-+\item The driver adds the buffer to the virtqueue and notifies the
-+  device.
-+
-+\item The device pops the buffer (retaining it to initiate a
-+  subsequent request) and consumes the statistics.
-+\end{enumerate}
-+
-+  Within the buffer, statistics are an array of 10-byte entries.
-+  Each statistic consists of a 16 bit
-+  tag and a 64 bit value. All statistics are optional and the
-+  driver chooses which ones to supply. To guarantee backwards
-+  compatibility, devices omit unsupported statistics.
++Requests have the following format:
 +
 +\begin{lstlisting}
-+struct virtio_balloon_stat {
-+#define VIRTIO_BALLOON_S_SWAP_IN  0
-+#define VIRTIO_BALLOON_S_SWAP_OUT 1
-+#define VIRTIO_BALLOON_S_MAJFLT   2
-+#define VIRTIO_BALLOON_S_MINFLT   3
-+#define VIRTIO_BALLOON_S_MEMFREE  4
-+#define VIRTIO_BALLOON_S_MEMTOT   5
-+#define VIRTIO_BALLOON_S_AVAIL    6
-+#define VIRTIO_BALLOON_S_CACHES   7
-+#define VIRTIO_BALLOON_S_HTLB_PGALLOC 8
-+#define VIRTIO_BALLOON_S_HTLB_PGFAIL  9
-+        le16 tag;
-+        le64 val;
-+} __attribute__((packed));
++struct virtio_scsi_req_cmd {
++        // Device-readable part
++        u8 lun[8];
++        le64 id;
++        u8 task_attr;
++        u8 prio;
++        u8 crn;
++        u8 cdb[cdb_size];
++        // The next three fields are only present if VIRTIO_SCSI_F_T10_PI
++        // is negotiated.
++        le32 pi_bytesout;
++        le32 pi_bytesin;
++        u8 pi_out[pi_bytesout];
++        u8 dataout[];
++
++        // Device-writable part
++        le32 sense_len;
++        le32 residual;
++        le16 status_qualifier;
++        u8 status;
++        u8 response;
++        u8 sense[sense_size];
++        // The next field is only present if VIRTIO_SCSI_F_T10_PI
++        // is negotiated
++        u8 pi_in[pi_bytesin];
++        u8 datain[];
++};
++
++
++/* command-specific response values */
++#define VIRTIO_SCSI_S_OK                0
++#define VIRTIO_SCSI_S_OVERRUN           1
++#define VIRTIO_SCSI_S_ABORTED           2
++#define VIRTIO_SCSI_S_BAD_TARGET        3
++#define VIRTIO_SCSI_S_RESET             4
++#define VIRTIO_SCSI_S_BUSY              5
++#define VIRTIO_SCSI_S_TRANSPORT_FAILURE 6
++#define VIRTIO_SCSI_S_TARGET_FAILURE    7
++#define VIRTIO_SCSI_S_NEXUS_FAILURE     8
++#define VIRTIO_SCSI_S_FAILURE           9
++
++/* task_attr */
++#define VIRTIO_SCSI_S_SIMPLE            0
++#define VIRTIO_SCSI_S_ORDERED           1
++#define VIRTIO_SCSI_S_HEAD              2
++#define VIRTIO_SCSI_S_ACA               3
 +\end{lstlisting}
 +
-+\drivernormative{\paragraph}{Memory Statistics}{Device Types / Memory Ball=
-oon Device / Device Operation / Memory Statistics}
-+Normative statements in this section apply if and only if the
-+VIRTIO_BALLOON_F_STATS_VQ feature has been negotiated.
++\field{lun} addresses the REPORT LUNS well-known logical unit, or
++a target and logical unit in the virtio-scsi device's SCSI domain.
++When used to address the REPORT LUNS logical unit, \field{lun} is 0xC1,
++0x01 and six zero bytes.  The virtio-scsi device SHOULD implement the
++REPORT LUNS well-known logical unit.
 +
-+The driver MUST make at most one buffer available to the device
-+in the statsq, at all times.
++When used to address a target and logical unit, the only supported format
++for \field{lun} is: first byte set to 1, second byte set to target,
++third and fourth byte representing a single level LUN structure, followed
++by four zero bytes. With this representation, a virtio-scsi device can
++serve up to 256 targets and 16384 LUNs per target.  The device MAY also
++support having a well-known logical units in the third and fourth byte.
 +
-+After initializing the device, the driver MUST make an output
-+buffer available in the statsq.
++\field{id} is the command identifier (``tag'').
 +
-+Upon detecting that device has used a buffer in the statsq, the
-+driver MUST make an output buffer available in the statsq.
++\field{task_attr} defines the task attribute as in the table above, but
++all task attributes MAY be mapped to SIMPLE by the device.  Some commands
++are defined by SCSI standards as "implicit head of queue"; for such
++commands, all task attributes MAY also be mapped to HEAD OF QUEUE.
++Drivers and applications SHOULD NOT send a command with the ORDERED
++task attribute if the command has an implicit HEAD OF QUEUE attribute,
++because whether the ORDERED task attribute is honored is vendor-specific.
 +
-+Before making an output buffer available in the statsq, the
-+driver MUST initialize it, including one struct
-+virtio_balloon_stat entry for each statistic that it supports.
++\field{crn} may also be provided by clients, but is generally expected
++to be 0. The maximum CRN value defined by the protocol is 255, since
++CRN is stored in an 8-bit integer.
 +
-+Driver MUST use an output buffer size which is a multiple of 6
-+bytes for all buffers submitted to the statsq.
++The CDB is included in \field{cdb} and its size, \field{cdb_size},
++is taken from the configuration space.
 +
-+Driver MAY supply struct virtio_balloon_stat entries in the
-+output buffer submitted to the statsq in any order, without
-+regard to \field{tag} values.
++All of these fields are defined in \hyperref[intro:SAM]{SAM} and are
++always device-readable.
 +
-+Driver MAY supply a subset of all statistics in the output buffer
-+submitted to the statsq.
++\field{pi_bytesout} determines the size of the \field{pi_out} field
++in bytes.  If it is nonzero, the \field{pi_out} field contains outgoing
++protection information for write operations.  \field{pi_bytesin} determine=
+s
++the size of the \field{pi_in} field in the device-writable section, in byt=
+es.
++All three fields are only present if VIRTIO_SCSI_F_T10_PI has been negotia=
+ted.
 +
-+Driver MUST supply the same subset of statistics in all buffers
-+submitted to the statsq.
++The remainder of the device-readable part is the data output buffer,
++\field{dataout}.
 +
-+\devicenormative{\paragraph}{Memory Statistics}{Device Types / Memory Ball=
-oon Device / Device Operation / Memory Statistics}
-+Normative statements in this section apply if and only if  the
-+VIRTIO_BALLOON_F_STATS_VQ feature has been negotiated.
++\field{sense} and subsequent fields are always device-writable. \field{sen=
+se_len}
++indicates the number of bytes actually written to the sense
++buffer.
 +
-+Within an output buffer submitted to the statsq,
-+the device MUST ignore entries with \field{tag} values that it does not re=
-cognize.
++\field{residual} indicates the residual size,
++calculated as ``data_length - number_of_transferred_bytes'', for
++read or write operations. For bidirectional commands, the
++number_of_transferred_bytes includes both read and written bytes.
++A \field{residual} that is less than the size of \field{datain} means that
++\field{dataout} was processed entirely. A \field{residual} that
++exceeds the size of \field{datain} means that \field{dataout} was
++processed partially and \field{datain} was not processed at
++all.
 +
-+Within an output buffer submitted to the statsq,
-+the device MUST accept struct virtio_balloon_stat entries in any
-+order without regard to \field{tag} values.
++If the \field{pi_bytesin} is nonzero, the \field{pi_in} field contains
++incoming protection information for read operations.  \field{pi_in} is
++only present if VIRTIO_SCSI_F_T10_PI has been negotiated\footnote{There
++  is no separate residual size for \field{pi_bytesout} and
++  \field{pi_bytesin}.  It can be computed from the \field{residual} field,
++  the size of the data integrity information per sector, and the sizes
++  of \field{pi_out}, \field{pi_in}, \field{dataout} and \field{datain}.}.
 +
-+\paragraph{Legacy Interface: Memory Statistics}\label{sec:Device Types / M=
-emory Balloon Device / Device Operation / Memory Statistics / Legacy Interf=
-ace: Memory Statistics}
++The remainder of the device-writable part is the data input buffer,
++\field{datain}.
 +
++
++\devicenormative{\paragraph}{Device Operation: Request Queues}{Device Type=
+s / SCSI Host Device / Device Operation / Device Operation: Request Queues}
++
++The device MUST write the \field{status} byte as the status code as
++defined in \hyperref[intro:SAM]{SAM}.
++
++The device MUST write the \field{response} byte as one of the following:
++
++\begin{description}
++
++\item[VIRTIO_SCSI_S_OK] when the request was completed and the \field{stat=
+us}
++  byte is filled with a SCSI status code (not necessarily
++  ``GOOD'').
++
++\item[VIRTIO_SCSI_S_OVERRUN] if the content of the CDB (such as the
++  allocation length, parameter length or transfer size) requires
++  more data than is available in the datain and dataout buffers.
++
++\item[VIRTIO_SCSI_S_ABORTED] if the request was cancelled due to an
++  ABORT TASK or ABORT TASK SET task management function.
++
++\item[VIRTIO_SCSI_S_BAD_TARGET] if the request was never processed
++  because the target indicated by \field{lun} does not exist.
++
++\item[VIRTIO_SCSI_S_RESET] if the request was cancelled due to a bus
++  or device reset (including a task management function).
++
++\item[VIRTIO_SCSI_S_TRANSPORT_FAILURE] if the request failed due to a
++  problem in the connection between the host and the target
++  (severed link).
++
++\item[VIRTIO_SCSI_S_TARGET_FAILURE] if the target is suffering a
++  failure and to tell the driver not to retry on other paths.
++
++\item[VIRTIO_SCSI_S_NEXUS_FAILURE] if the nexus is suffering a failure
++  but retrying on other paths might yield a different result.
++
++\item[VIRTIO_SCSI_S_BUSY] if the request failed but retrying on the
++  same path is likely to work.
++
++\item[VIRTIO_SCSI_S_FAILURE] for other host or driver error. In
++  particular, if neither \field{dataout} nor \field{datain} is empty, and =
+the
++  VIRTIO_SCSI_F_INOUT feature has not been negotiated, the
++  request will be immediately returned with a response equal to
++  VIRTIO_SCSI_S_FAILURE.
++\end{description}
++
++All commands must be completed before the virtio-scsi device is
++reset or unplugged.  The device MAY choose to abort them, or if
++it does not do so MUST pick the VIRTIO_SCSI_S_FAILURE response.
++
++\drivernormative{\paragraph}{Device Operation: Request Queues}{Device Type=
+s / SCSI Host Device / Device Operation / Device Operation: Request Queues}
++
++\field{task_attr}, \field{prio} and \field{crn} SHOULD be zero.
++
++Upon receiving a VIRTIO_SCSI_S_TARGET_FAILURE response, the driver
++SHOULD NOT retry the request on other paths.
++
++\paragraph{Legacy Interface: Device Operation: Request Queues}\label{sec:D=
+evice Types / SCSI Host Device / Device Operation / Device Operation: Reque=
+st Queues / Legacy Interface: Device Operation: Request Queues}
 +When using the legacy interface, transitional devices and drivers
-+MUST format the fields in struct virtio_balloon_stat
++MUST format the fields in struct virtio_scsi_req_cmd
 +according to the native endian of the guest rather than
 +(necessarily when not using the legacy interface) little-endian.
 +
-+When using the legacy interface,
-+the device SHOULD ignore all values in the first buffer in the
-+statsq supplied by the driver after device initialization.
-+\begin{note}
-+Historically, drivers supplied an uninitialized buffer in the
-+first buffer.
-+\end{note}
-+
-+\subsubsection{Memory Statistics Tags}\label{sec:Device Types / Memory Bal=
-loon Device / Device Operation / Memory Statistics Tags}
-+
-+\begin{description}
-+\item[VIRTIO_BALLOON_S_SWAP_IN (0)] The amount of memory that has been
-+  swapped in (in bytes).
-+
-+\item[VIRTIO_BALLOON_S_SWAP_OUT (1)] The amount of memory that has been
-+  swapped out to disk (in bytes).
-+
-+\item[VIRTIO_BALLOON_S_MAJFLT (2)] The number of major page faults that
-+  have occurred.
-+
-+\item[VIRTIO_BALLOON_S_MINFLT (3)] The number of minor page faults that
-+  have occurred.
-+
-+\item[VIRTIO_BALLOON_S_MEMFREE (4)] The amount of memory not being used
-+  for any purpose (in bytes).
-+
-+\item[VIRTIO_BALLOON_S_MEMTOT (5)] The total amount of memory available
-+  (in bytes).
-+
-+\item[VIRTIO_BALLOON_S_AVAIL (6)] An estimate of how much memory is availa=
-ble
-+  (in bytes) for starting new applications, without pushing the system to =
-swap.
-+
-+\item[VIRTIO_BALLOON_S_CACHES (7)] The amount of memory, in bytes, that ca=
-n be
-+  quickly reclaimed without additional I/O. Typically these pages are used=
- for
-+  caching files from disk.
-+
-+\item[VIRTIO_BALLOON_S_HTLB_PGALLOC (8)] The number of successful hugetlb =
-page
-+  allocations in the guest.
-+
-+\item[VIRTIO_BALLOON_S_HTLB_PGFAIL (9)] The number of failed hugetlb page
-+  allocations in the guest.
-+\end{description}
-+
-+\subsubsection{Free Page Hinting}\label{sec:Device Types / Memory Balloon =
-Device / Device Operation / Free Page Hinting}
-+
-+Free page hinting is designed to be used during migration to determine wha=
-t
-+pages within the guest are currently unused so that they can be skipped ov=
-er
-+while migrating the guest. The device will indicate that it is ready to st=
-art
-+performing hinting by setting the \field{free_page_hint_cmd_id} to one of =
-the
-+non-reserved values that can be used as a command ID. The following values
-+are reserved:
-+
-+\begin{description}
-+\item[VIRTIO_BALLOON_CMD_ID_STOP (0)] Any command ID previously supplied b=
-y
-+  the device is invalid. The driver should stop hinting free pages until a
-+  new command ID is supplied, but should not release any hinted pages for
-+  use by the guest.
-+
-+\item[VIRTIO_BALLOON_CMD_ID_DONE (1)] Any command ID previously supplied b=
-y
-+  the device is invalid. The driver should stop hinting free pages, and
-+  should release all hinted pages for use by the guest.
-+\end{description}
-+
-+When a hint is provided by the driver it indicates that the data contained
-+in the given page is no longer needed and can be discarded. If the driver
-+writes to the page this overrides the hint and the data will be retained.
-+The contents of any stale pages that have not been written to since the
-+page was hinted may be lost, and if read the contents of such pages will
-+be uninitialized memory.
-+
-+A request for free page hinting proceeds as follows:
-+
-+\begin{enumerate}
-+
-+\item The driver examines the \field{free_page_hint_cmd_id} configuration =
-field.
-+  If it contains a non-reserved value then free page hinting will begin.
-+
-+\item To supply free page hints:
-+  \begin{enumerate}
-+  \item The driver constructs an output buffer containing the new value fr=
-om
-+    the \field{free_page_hint_cmd_id} configuration field and adds it to t=
-he
-+    free_page_vq.
-+  \item The driver maps a series of pages and adds them to the
-+    free_page_vq as individual scatter-gather input buffer entries.
-+  \item When the driver is no longer able to fetch additional pages to add
-+    to the free_page_vq, it will construct an output buffer containing the
-+    command ID VIRTIO_BALLOON_CMD_ID_STOP.
-+  \end{enumerate}
-+
-+\item A round of hinting ends either when the driver is no longer able to
-+  supply more pages for hinting as described above, or when the device
-+  updates \field{free_page_hint_cmd_id} configuration field to contain eit=
-her
-+  VIRTIO_BALLOON_CMD_ID_STOP or VIRTIO_BALLOON_CMD_ID_DONE.
-+
-+\item The device may follow VIRTIO_BALLOON_CMD_ID_STOP with a new
-+  non-reserved value for the \field{free_page_hint_cmd_id} configuration
-+  field in which case it will resume supplying free page hints.
-+
-+\item Otherwise, if the device provides VIRTIO_BALLOON_CMD_ID_DONE then
-+  hinting is complete and the driver may release all previously hinted
-+  pages for use by the guest.
-+
-+\end{enumerate}
-+
-+\drivernormative{\paragraph}{Free Page Hinting}{Device Types / Memory Ball=
-oon Device / Device Operation / Free Page Hinting}
-+
-+Normative statements in this section apply if the
-+VIRTIO_BALLOON_F_FREE_PAGE_HINT feature has been negotiated.
-+
-+The driver MUST use an output buffer size of 4 bytes for all output
-+buffers submitted to the free_page_vq.
-+
-+The driver MUST start hinting by providing an output buffer containing
-+the current command ID for the given block of pages.
-+
-+The driver MUST NOT provide more than one output buffer containing the
-+current command ID.
-+
-+The driver SHOULD supply pages to the free_page_vq as input buffers when
-+\field{free_page_hint_cmd_id} specifies a value of 2 or greater.
-+
-+The driver SHOULD stop supplying pages for hinting when
-+\field{free_page_hint_cmd_id} specifies a value of VIRTIO_BALLOON_CMD_ID_S=
-TOP
-+or VIRTIO_BALLOON_CMD_ID_DONE.
-+
-+If the driver is unable to supply pages, it MUST complete hinting by addin=
-g
-+an output buffer containing the command ID VIRTIO_BALLOON_CMD_ID_STOP.
-+
-+The driver MAY release hinted pages for use by the guest including when th=
-e
-+device has not yet used the descriptor containing the hinting request.
-+
-+The driver MUST treat the content of all hinted pages as uninitialized
-+memory.
-+
-+The driver MUST initialize the contents of any previously hinted page
-+released before \field{free_page_hint_cmd_id} specifies a value of
-+VIRTIO_BALLOON_CMD_ID_DONE.
-+
-+The driver SHOULD release all previously hinted pages once
-+\field{free_page_hint_cmd_id} specifies a value of
-+VIRTIO_BALLOON_CMD_ID_DONE.
-+
-+\devicenormative{\paragraph}{Free Page Hinting}{Device Types / Memory Ball=
-oon Device / Device Operation / Free Page Hinting}
-+
-+Normative statements in this section apply if the
-+VIRTIO_BALLOON_F_FREE_PAGE_HINT feature has been negotiated.
-+
-+The device SHOULD set \field{free_page_hint_cmd_id} to
-+VIRTIO_BALLOON_CMD_ID_STOP any time that it will not be able to make use
-+of the hints provided by the driver.
-+
-+The device MUST NOT reuse a command ID until it has received an output
-+buffer containing VIRTIO_BALLOON_CMD_ID_STOP from the driver.
-+
-+The device MUST ignore pages that are provided with a command ID that does
-+not match the current value in \field{free_page_hint_cmd_id}.
-+
-+If the content of a previously hinted page has not been modified by the
-+guest since the device issued the \field{free_page_hint_cmd_id} associated
-+with the hint, the device MAY modify the contents of the page.
-+
-+The device MUST NOT modify the content of a previously hinted page after
-+\field{free_page_hint_cmd_id} is set to VIRTIO_BALLOON_CMD_ID_DONE.
-+
-+The device MUST report a value of VIRTIO_BALLOON_CMD_ID_DONE in
-+\field{free_page_hint_cmd_id} when it no longer has need for the
-+previously hinted pages.
-+
-+\paragraph{Legacy Interface: Free Page Hinting}\label{sec:Device Types / M=
-emory Balloon Device / Device Operation / Free Page Hinting / Legacy Interf=
-ace: Free Page Hinting}
-+
-+When using the legacy interface, transitional devices and drivers MUST
-+format the command ID field in output buffers according to the native
-+endian of the guest rather than (necessarily when not using the legacy
-+interface) little-endian.
-+
-+\subsubsection{Page Poison}\label{sec:Device Types / Memory Balloon Device=
- / Device Operation / Page Poison}
-+
-+Page Poison provides a way to notify the host that the guest is initializi=
-ng
-+free pages with \field{poison_val}. When the feature is enabled, pages wil=
-l
-+be immediately written to by the driver after deflating, and pages reporte=
-d
-+by free page reporting will retain the value indicated by \field{poison_va=
-l}.
-+
-+If the guest is not initializing freed pages, the driver should reject the
-+VIRTIO_BALLOON_F_PAGE_POISON feature.
-+
-+If VIRTIO_BALLOON_F_PAGE_POISON feature has been negotiated, the driver
-+will place the initialization value into the \field{poison_val}
-+configuration field data.
-+
-+\drivernormative{\paragraph}{Page Poison}{Device Types / Memory Balloon De=
-vice / Device Operation / Page Poison}
-+
-+Normative statements in this section apply if the
-+VIRTIO_BALLOON_F_PAGE_POISON feature has been negotiated.
-+
-+The driver MUST initialize the deflated pages with \field{poison_val} when
-+they are reused by the driver.
-+
-+The driver MUST populate the \field{poison_val} configuration data before
-+setting the DRIVER_OK bit.
-+
-+The driver MUST NOT modify \field{poison_val} while the DRIVER_OK bit is s=
-et.
-+
-+\devicenormative{\paragraph}{Page Poison}{Device Types / Memory Balloon De=
-vice / Device Operation / Page Poison}
-+
-+Normative statements in this section apply if the
-+VIRTIO_BALLOON_F_PAGE_POISON feature has been negotiated.
-+
-+The device MAY use the content of \field{poison_val} as a hint to guest
-+behavior.
-+
-+\subsubsection{Free Page Reporting}\label{sec:Device Types / Memory Balloo=
-n Device / Device Operation / Free Page Reporting}
-+
-+Free Page Reporting provides a mechanism similar to balloon inflation,
-+however it does not provide a deflation queue. Reported free pages can
-+be reused by the driver after the reporting request has been acknowledged
-+without notifying the device.
-+
-+The driver will begin reporting free pages. When exactly and which free
-+pages are reported is up to the driver.
-+
-+\begin{enumerate}
-+
-+\item The driver determines it has enough pages available to begin
-+  reporting free pages.
-+
-+\item The driver gathers free pages into a scatter-gather list and adds
-+  them to the reporting_vq.
-+
-+\item The device acknowledges the reporting request by using the
-+  reporting_vq descriptor.
-+
-+\item Once the device has acknowledged the report, the driver can reuse th=
-e
-+  reported free pages when needed (e.g., by putting them back to free page
-+  lists in the guest operating system).
-+
-+\item The driver can then continue to gather and report free pages until i=
-t
-+  has determined it has reported a sufficient quantity of pages.
-+
-+\end{enumerate}
-+
-+\drivernormative{\paragraph}{Free Page Reporting}{Device Types / Memory Ba=
-lloon Device / Device Operation / Free Page Reporting}
-+
-+Normative statements in this section apply if the
-+VIRTIO_BALLOON_F_PAGE_REPORTING feature has been negotiated.
-+
-+If the VIRTIO_BALLOON_F_PAGE_POISON feature has not been negotiated, then
-+the driver MUST treat all reported pages as uninitialized memory.
-+
-+If the VIRTIO_BALLOON_F_PAGE_POISON feature has been negotiated, the
-+driver MUST initialize all free pages with \field{poison_val} before
-+reporting them.
-+
-+The driver MUST NOT use the reported pages until the device has
-+acknowledged the reporting request.
-+
-+The driver MAY report free pages any time after DRIVER_OK is set.
-+
-+The driver SHOULD attempt to report large pages rather than smaller ones.
-+
-+The driver SHOULD avoid reading/writing reported pages if
-+not strictly necessary.
-+
-+\devicenormative{\paragraph}{Free Page Reporting}{Device Types / Memory Ba=
-lloon Device / Device Operation / Free Page Reporting}
-+
-+Normative statements in this section apply if the
-+VIRTIO_BALLOON_F_PAGE_REPORTING feature has been negotiated.
-+
-+If the VIRTIO_BALLOON_F_PAGE_POISON feature has not been negotiated, the
-+device MAY modify the contents of any page supplied in a report request
-+before acknowledging that request by using the reporting_vq descriptor.
-+
-+If the VIRTIO_BALLOON_F_PAGE_POISON feature has been negotiated, the devic=
-e
-+MUST NOT modify the the content of a reported page to a value other than
-+\field{poison_val}.
-diff --git a/device-types/virtio-mem-balloon/driver-conformance.tex b/devic=
-e-types/virtio-mem-balloon/driver-conformance.tex
-new file mode 100644
-index 0000000..f898d74
---- /dev/null
-+++ b/device-types/virtio-mem-balloon/driver-conformance.tex
-@@ -0,0 +1,12 @@
-+\conformance{\subsection}{Traditional Memory Balloon Driver Conformance}\l=
-abel{sec:Conformance / Driver Conformance / Traditional Memory Balloon Driv=
-er Conformance}
-+
-+A traditional memory balloon driver MUST conform to the following normativ=
-e statements:
++\subsubsection{Device Operation: controlq}\label{sec:Device Types / SCSI H=
+ost Device / Device Operation / Device Operation: controlq}
++
++The controlq is used for other SCSI transport operations.
++Requests have the following format:
++
++{
++\lstset{escapechar=3D\$}
++\begin{lstlisting}
++struct virtio_scsi_ctrl {
++        le32 type;
++$\ldots$
++        u8 response;
++};
++
++/* response values valid for all commands */
++#define VIRTIO_SCSI_S_OK                       0
++#define VIRTIO_SCSI_S_BAD_TARGET               3
++#define VIRTIO_SCSI_S_BUSY                     5
++#define VIRTIO_SCSI_S_TRANSPORT_FAILURE        6
++#define VIRTIO_SCSI_S_TARGET_FAILURE           7
++#define VIRTIO_SCSI_S_NEXUS_FAILURE            8
++#define VIRTIO_SCSI_S_FAILURE                  9
++#define VIRTIO_SCSI_S_INCORRECT_LUN            12
++\end{lstlisting}
++}
++
++The \field{type} identifies the remaining fields.
++
++The following commands are defined:
 +
 +\begin{itemize}
-+\item \ref{drivernormative:Device Types / Memory Balloon Device / Feature =
-bits}
-+\item \ref{drivernormative:Device Types / Memory Balloon Device / Device O=
-peration}
-+\item \ref{drivernormative:Device Types / Memory Balloon Device / Device O=
-peration / Memory Statistics}
-+\item \ref{drivernormative:Device Types / Memory Balloon Device / Device O=
-peration / Free Page Hinting}
-+\item \ref{drivernormative:Device Types / Memory Balloon Device / Device O=
-peration / Page Poison}
-+\item \ref{drivernormative:Device Types / Memory Balloon Device / Device O=
-peration / Free Page Reporting}
++\item Task management function.
++\begin{lstlisting}
++#define VIRTIO_SCSI_T_TMF                      0
++
++#define VIRTIO_SCSI_T_TMF_ABORT_TASK           0
++#define VIRTIO_SCSI_T_TMF_ABORT_TASK_SET       1
++#define VIRTIO_SCSI_T_TMF_CLEAR_ACA            2
++#define VIRTIO_SCSI_T_TMF_CLEAR_TASK_SET       3
++#define VIRTIO_SCSI_T_TMF_I_T_NEXUS_RESET      4
++#define VIRTIO_SCSI_T_TMF_LOGICAL_UNIT_RESET   5
++#define VIRTIO_SCSI_T_TMF_QUERY_TASK           6
++#define VIRTIO_SCSI_T_TMF_QUERY_TASK_SET       7
++
++struct virtio_scsi_ctrl_tmf {
++        // Device-readable part
++        le32 type;
++        le32 subtype;
++        u8   lun[8];
++        le64 id;
++        // Device-writable part
++        u8   response;
++};
++
++/* command-specific response values */
++#define VIRTIO_SCSI_S_FUNCTION_COMPLETE        0
++#define VIRTIO_SCSI_S_FUNCTION_SUCCEEDED       10
++#define VIRTIO_SCSI_S_FUNCTION_REJECTED        11
++\end{lstlisting}
++
++  The \field{type} is VIRTIO_SCSI_T_TMF; \field{subtype} defines which
++  task management function. All
++  fields except \field{response} are filled by the driver.
++
++  Other fields which are irrelevant for the requested TMF
++  are ignored but they are still present. \field{lun}
++  is in the same format specified for request queues; the
++  single level LUN is ignored when the task management function
++  addresses a whole I_T nexus. When relevant, the value of \field{id}
++  is matched against the id values passed on the requestq.
++
++  The outcome of the task management function is written by the
++  device in \field{response}. The command-specific response
++  values map 1-to-1 with those defined in \hyperref[intro:SAM]{SAM}.
++
++  Task management function can affect the response value for commands that
++  are in the request queue and have not been completed yet.  For example,
++  the device MUST complete all active commands on a logical unit
++  or target (possibly with a VIRTIO_SCSI_S_RESET response code)
++  upon receiving a "logical unit reset" or "I_T nexus reset" TMF.
++  Similarly, the device MUST complete the selected commands (possibly
++  with a VIRTIO_SCSI_S_ABORTED response code) upon receiving an "abort
++  task" or "abort task set" TMF.  Such effects MUST take place before
++  the TMF itself is successfully completed, and the device MUST use
++  memory barriers appropriately in order to ensure that the driver sees
++  these writes in the correct order.
++
++\item Asynchronous notification query.
++\begin{lstlisting}
++#define VIRTIO_SCSI_T_AN_QUERY                    1
++
++struct virtio_scsi_ctrl_an {
++    // Device-readable part
++    le32 type;
++    u8   lun[8];
++    le32 event_requested;
++    // Device-writable part
++    le32 event_actual;
++    u8   response;
++};
++
++#define VIRTIO_SCSI_EVT_ASYNC_OPERATIONAL_CHANGE  2
++#define VIRTIO_SCSI_EVT_ASYNC_POWER_MGMT          4
++#define VIRTIO_SCSI_EVT_ASYNC_EXTERNAL_REQUEST    8
++#define VIRTIO_SCSI_EVT_ASYNC_MEDIA_CHANGE        16
++#define VIRTIO_SCSI_EVT_ASYNC_MULTI_HOST          32
++#define VIRTIO_SCSI_EVT_ASYNC_DEVICE_BUSY         64
++\end{lstlisting}
++
++  By sending this command, the driver asks the device which
++  events the given LUN can report, as described in paragraphs 6.6
++  and A.6 of \hyperref[intro:SCSI MMC]{SCSI MMC}. The driver writes the
++  events it is interested in into \field{event_requested}; the device
++  responds by writing the events that it supports into
++  \field{event_actual}.
++
++  The \field{type} is VIRTIO_SCSI_T_AN_QUERY. \field{lun} and \field{event=
+_requested}
++  are written by the driver. \field{event_actual} and \field{response}
++  fields are written by the device.
++
++  No command-specific values are defined for the \field{response} byte.
++
++\item Asynchronous notification subscription.
++\begin{lstlisting}
++#define VIRTIO_SCSI_T_AN_SUBSCRIBE                2
++
++struct virtio_scsi_ctrl_an {
++        // Device-readable part
++        le32 type;
++        u8   lun[8];
++        le32 event_requested;
++        // Device-writable part
++        le32 event_actual;
++        u8   response;
++};
++\end{lstlisting}
++
++  By sending this command, the driver asks the specified LUN to
++  report events for its physical interface, again as described in
++   \hyperref[intro:SCSI MMC]{SCSI MMC}. The driver writes the events it is
++  interested in into \field{event_requested}; the device responds by
++  writing the events that it supports into \field{event_actual}.
++
++  Event types are the same as for the asynchronous notification
++  query message.
++
++  The \field{type} is VIRTIO_SCSI_T_AN_SUBSCRIBE. \field{lun} and
++  \field{event_requested} are written by the driver.
++  \field{event_actual} and \field{response} are written by the device.
++
++  No command-specific values are defined for the response byte.
++\end{itemize}
++
++\paragraph{Legacy Interface: Device Operation: controlq}\label{sec:Device =
+Types / SCSI Host Device / Device Operation / Device Operation: controlq / =
+Legacy Interface: Device Operation: controlq}
++
++When using the legacy interface, transitional devices and drivers
++MUST format the fields in struct virtio_scsi_ctrl, struct
++virtio_scsi_ctrl_tmf, struct virtio_scsi_ctrl_an and struct
++virtio_scsi_ctrl_an
++according to the native endian of the guest rather than
++(necessarily when not using the legacy interface) little-endian.
++
++
++\subsubsection{Device Operation: eventq}\label{sec:Device Types / SCSI Hos=
+t Device / Device Operation / Device Operation: eventq}
++
++The eventq is populated by the driver for the device to report information=
+ on logical
++units that are attached to it. In general, the device will not
++queue events to cope with an empty eventq, and will end up
++dropping events if it finds no buffer ready. However, when
++reporting events for many LUNs (e.g. when a whole target
++disappears), the device can throttle events to avoid dropping
++them. For this reason, placing 10-15 buffers on the event queue
++is sufficient.
++
++Buffers returned by the device on the eventq will be referred to
++as ``events'' in the rest of this section. Events have the
++following format:
++
++\begin{lstlisting}
++#define VIRTIO_SCSI_T_EVENTS_MISSED   0x80000000
++
++struct virtio_scsi_event {
++        // Device-writable part
++        le32 event;
++        u8  lun[8];
++        le32 reason;
++};
++\end{lstlisting}
++
++The devices sets bit 31 in \field{event} to report lost events
++due to missing buffers.
++
++The meaning of \field{reason} depends on the
++contents of \field{event}. The following events are defined:
++
++\begin{itemize}
++\item No event.
++\begin{lstlisting}
++#define VIRTIO_SCSI_T_NO_EVENT         0
++\end{lstlisting}
++
++  This event is fired in the following cases:
++
++\begin{itemize}
++\item When the device detects in the eventq a buffer that is
++    shorter than what is indicated in the configuration field, it
++    MAY use it immediately and put this dummy value in \field{event}.
++    A well-written driver will never observe this
++    situation.
++
++\item When events are dropped, the device MAY signal this event as
++    soon as the drivers makes a buffer available, in order to
++    request action from the driver. In this case, of course, this
++    event will be reported with the VIRTIO_SCSI_T_EVENTS_MISSED
++    flag.
++\end{itemize}
++
++\item Transport reset
++\begin{lstlisting}
++#define VIRTIO_SCSI_T_TRANSPORT_RESET  1
++
++#define VIRTIO_SCSI_EVT_RESET_HARD         0
++#define VIRTIO_SCSI_EVT_RESET_RESCAN       1
++#define VIRTIO_SCSI_EVT_RESET_REMOVED      2
++\end{lstlisting}
++
++  By sending this event, the device signals that a logical unit
++  on a target has been reset, including the case of a new device
++  appearing or disappearing on the bus. The device fills in all
++  fields. \field{event} is set to
++  VIRTIO_SCSI_T_TRANSPORT_RESET. \field{lun} addresses a
++  logical unit in the SCSI host.
++
++  The \field{reason} value is one of the three \#define values appearing
++  above:
++
++  \begin{description}
++  \item[VIRTIO_SCSI_EVT_RESET_REMOVED] (``LUN/target removed'') is used
++    if the target or logical unit is no longer able to receive
++    commands.
++
++  \item[VIRTIO_SCSI_EVT_RESET_HARD] (``LUN hard reset'') is used if the
++    logical unit has been reset, but is still present.
++
++  \item[VIRTIO_SCSI_EVT_RESET_RESCAN] (``rescan LUN/target'') is used if
++    a target or logical unit has just appeared on the device.
++  \end{description}
++
++  The ``removed'' and ``rescan'' events can happen when
++  VIRTIO_SCSI_F_HOTPLUG feature was negotiated; when sent for LUN 0,
++  they MAY apply to the entire target so the driver can ask the
++  initiator to rescan the target to detect this.
++
++  Events will also be reported via sense codes (this obviously
++  does not apply to newly appeared buses or targets, since the
++  application has never discovered them):
++
++  \begin{itemize}
++  \item ``LUN/target removed'' maps to sense key ILLEGAL REQUEST, asc
++    0x25, ascq 0x00 (LOGICAL UNIT NOT SUPPORTED)
++
++  \item ``LUN hard reset'' maps to sense key UNIT ATTENTION, asc 0x29
++    (POWER ON, RESET OR BUS DEVICE RESET OCCURRED)
++
++  \item ``rescan LUN/target'' maps to sense key UNIT ATTENTION, asc
++    0x3f, ascq 0x0e (REPORTED LUNS DATA HAS CHANGED)
++  \end{itemize}
++
++  The preferred way to detect transport reset is always to use
++  events, because sense codes are only seen by the driver when it
++  sends a SCSI command to the logical unit or target. However, in
++  case events are dropped, the initiator will still be able to
++  synchronize with the actual state of the controller if the
++  driver asks the initiator to rescan of the SCSI bus. During the
++  rescan, the initiator will be able to observe the above sense
++  codes, and it will process them as if it the driver had
++  received the equivalent event.
++
++  \item Asynchronous notification
++\begin{lstlisting}
++#define VIRTIO_SCSI_T_ASYNC_NOTIFY     2
++\end{lstlisting}
++
++  By sending this event, the device signals that an asynchronous
++  event was fired from a physical interface.
++
++  All fields are written by the device. \field{event} is set to
++  VIRTIO_SCSI_T_ASYNC_NOTIFY. \field{lun} addresses a logical
++  unit in the SCSI host. \field{reason} is a subset of the
++  events that the driver has subscribed to via the ``Asynchronous
++  notification subscription'' command.
++
++  \item LUN parameter change
++\begin{lstlisting}
++#define VIRTIO_SCSI_T_PARAM_CHANGE  3
++\end{lstlisting}
++
++  By sending this event, the device signals a change in the configuration =
+parameters
++  of a logical unit, for example the capacity or cache mode.
++  \field{event} is set to VIRTIO_SCSI_T_PARAM_CHANGE.
++  \field{lun} addresses a logical unit in the SCSI host.
++
++  The same event SHOULD also be reported as a unit attention condition.
++  \field{reason} contains the additional sense code and additional sense c=
+ode qualifier,
++  respectively in bits 0\ldots 7 and 8\ldots 15.
++  \begin{note}
++  For example, a change in capacity will be reported as asc 0x2a, ascq 0x0=
+9
++  (CAPACITY DATA HAS CHANGED).
++  \end{note}
++
++  For MMC devices (inquiry type 5) there would be some overlap between thi=
+s
++  event and the asynchronous notification event, so for simplicity the hos=
+t never
++  reports this event for MMC devices.
++\end{itemize}
++
++\drivernormative{\paragraph}{Device Operation: eventq}{Device Types / SCSI=
+ Host Device / Device Operation / Device Operation: eventq}
++
++The driver SHOULD keep the eventq populated with buffers.  These
++buffers MUST be device-writable, and SHOULD be at least
++\field{event_info_size} bytes long, and MUST be at least the size of
++struct virtio_scsi_event.
++
++If \field{event} has bit 31 set, the driver SHOULD
++poll the logical units for unit attention conditions, and/or do
++whatever form of bus scan is appropriate for the guest operating
++system and SHOULD poll for asynchronous events manually using SCSI command=
+s.
++
++When receiving a VIRTIO_SCSI_T_TRANSPORT_RESET message with
++\field{reason} set to VIRTIO_SCSI_EVT_RESET_REMOVED or
++VIRTIO_SCSI_EVT_RESET_RESCAN for LUN 0, the driver SHOULD ask the
++initiator to rescan the target, in order to detect the case when an
++entire target has appeared or disappeared.
++
++\devicenormative{\paragraph}{Device Operation: eventq}{Device Types / SCSI=
+ Host Device / Device Operation / Device Operation: eventq}
++
++The device MUST set bit 31 in \field{event} if events were lost due to
++missing buffers, and it MAY use a VIRTIO_SCSI_T_NO_EVENT event to report
++this.
++
++The device MUST NOT send VIRTIO_SCSI_T_TRANSPORT_RESET messages
++with \field{reason} set to VIRTIO_SCSI_EVT_RESET_REMOVED or
++VIRTIO_SCSI_EVT_RESET_RESCAN unless VIRTIO_SCSI_F_HOTPLUG was negotiated.
++
++The device MUST NOT report VIRTIO_SCSI_T_PARAM_CHANGE for MMC devices.
++
++\paragraph{Legacy Interface: Device Operation: eventq}\label{sec:Device Ty=
+pes / SCSI Host Device / Device Operation / Device Operation: eventq / Lega=
+cy Interface: Device Operation: eventq}
++When using the legacy interface, transitional devices and drivers
++MUST format the fields in struct virtio_scsi_event
++according to the native endian of the guest rather than
++(necessarily when not using the legacy interface) little-endian.
++
++\subsubsection{Legacy Interface: Framing Requirements}\label{sec:Device
++Types / SCSI Host Device / Legacy Interface: Framing Requirements}
++
++When using legacy interfaces, transitional drivers which have not
++negotiated VIRTIO_F_ANY_LAYOUT MUST use a single descriptor for the
++\field{lun}, \field{id}, \field{task_attr}, \field{prio},
++\field{crn} and \field{cdb} fields, and MUST only use a single
++descriptor for the \field{sense_len}, \field{residual},
++\field{status_qualifier}, \field{status}, \field{response} and
++\field{sense} fields.
+diff --git a/device-types/virtio-scsi/driver-conformance.tex b/device-types=
+/virtio-scsi/driver-conformance.tex
+new file mode 100644
+index 0000000..746951b
+--- /dev/null
++++ b/device-types/virtio-scsi/driver-conformance.tex
+@@ -0,0 +1,9 @@
++\conformance{\subsection}{SCSI Host Driver Conformance}\label{sec:Conforma=
+nce / Driver Conformance / SCSI Host Driver Conformance}
++
++An SCSI host driver MUST conform to the following normative statements:
++
++\begin{itemize}
++\item \ref{drivernormative:Device Types / SCSI Host Device / Device config=
+uration layout}
++\item \ref{drivernormative:Device Types / SCSI Host Device / Device Operat=
+ion / Device Operation: Request Queues}
++\item \ref{drivernormative:Device Types / SCSI Host Device / Device Operat=
+ion / Device Operation: eventq}
 +\end{itemize}
 --=20
 2.26.2
