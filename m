@@ -1,8 +1,8 @@
 Return-Path: <parav@nvidia.com>
 From: Parav Pandit <parav@nvidia.com>
-Subject: [PATCH v2 15/20] virtio-sound: Maintain sound device spec in separate directory
-Date: Mon, 9 Jan 2023 18:28:44 +0200
-Message-ID: <20230109162849.463101-16-parav@nvidia.com>
+Subject: [PATCH v2 16/20] virtio-mem: Maintain memory device spec in separate directory
+Date: Mon, 9 Jan 2023 18:28:45 +0200
+Message-ID: <20230109162849.463101-17-parav@nvidia.com>
 In-Reply-To: <20230109162849.463101-1-parav@nvidia.com>
 References: <20230109162849.463101-1-parav@nvidia.com>
 MIME-Version: 1.0
@@ -21,172 +21,160 @@ Signed-off-by: Parav Pandit <parav@nvidia.com>
 ---
 changelog:
 v1->v2:
-- added missing device conformance reference
+- rebased
 v0->v1:
 - new patch
 ---
- conformance.tex                               | 33 ++-----------------
+ conformance.tex                               | 30 ++-----------------
  content.tex                                   |  2 +-
- .../virtio-sound/device-conformance.tex       | 16 +++++++++
- .../virtio-sound/device.tex                   |  0
- .../virtio-sound/driver-conformance.tex       | 13 ++++++++
- 5 files changed, 32 insertions(+), 32 deletions(-)
- create mode 100644 device-types/virtio-sound/device-conformance.tex
- rename virtio-sound.tex =3D> device-types/virtio-sound/device.tex (100%)
- create mode 100644 device-types/virtio-sound/driver-conformance.tex
+ .../virtio-mem/device-conformance.tex         | 13 ++++++++
+ .../virtio-mem/device.tex                     |  0
+ .../virtio-mem/driver-conformance.tex         | 13 ++++++++
+ 5 files changed, 29 insertions(+), 29 deletions(-)
+ create mode 100644 device-types/virtio-mem/device-conformance.tex
+ rename virtio-mem.tex =3D> device-types/virtio-mem/device.tex (100%)
+ create mode 100644 device-types/virtio-mem/driver-conformance.tex
 
 diff --git a/conformance.tex b/conformance.tex
-index 88ae166..6f465a3 100644
+index 6f465a3..c43e8db 100644
 --- a/conformance.tex
 +++ b/conformance.tex
-@@ -146,20 +146,7 @@ \section{Conformance Targets}\label{sec:Conformance / =
+@@ -147,20 +147,7 @@ \section{Conformance Targets}\label{sec:Conformance / =
 Conformance Targets}
- \import{device-types/virtio-fs/}{driver-conformance}
  \import{device-types/virtio-rpmb/}{driver-conformance}
  \import{device-types/virtio-iommu/}{driver-conformance}
+ \import{device-types/virtio-sound/}{driver-conformance}
 -
--\conformance{\subsection}{Sound Driver Conformance}\label{sec:Conformance =
-/ Driver Conformance / Sound Driver Conformance}
+-\conformance{\subsection}{Memory Driver Conformance}\label{sec:Conformance=
+ / Driver Conformance / Memory Driver Conformance}
 -
--A sound driver MUST conform to the following normative statements:
+-A memory driver MUST conform to the following normative statements:
 -
 -\begin{itemize}
--\item \ref{drivernormative:Device Types / Sound Device / Device Initializa=
-tion}
--\item \ref{drivernormative:Device Types / Sound Device / Item Information =
-Request}
--\item \ref{drivernormative:Device Types / Sound Device / Device Operation =
-/ PCM Stream Parameters}
--\item \ref{drivernormative:Device Types / Sound Device / Device Operation =
-/ PCM Output Stream}
--\item \ref{drivernormative:Device Types / Sound Device / Device Operation =
-/ PCM Input Stream}
--\item \ref{drivernormative:Device Types / Sound Device / Device Operation =
-/ Control Element Value}
--\item \ref{drivernormative:Device Types / Sound Device / Device Operation =
-/ Control Element Metadata}
+-\item \ref{drivernormative:Device Types / Memory Device / Device configura=
+tion layout}
+-\item \ref{drivernormative:Device Types / Memory Device / Device Initializ=
+ation}
+-\item \ref{drivernormative:Device Types / Memory Device / Device Operation=
+}
+-\item \ref{drivernormative:Device Types / Memory Device / Device Operation=
+ / PLUG request}
+-\item \ref{drivernormative:Device Types / Memory Device / Device Operation=
+ / UNPLUG request}
+-\item \ref{drivernormative:Device Types / Memory Device / Device Operation=
+ / UNPLUG ALL request}
+-\item \ref{drivernormative:Device Types / Memory Device / Device Operation=
+ / STATE request}
 -\end{itemize}
-+\import{device-types/virtio-sound/}{driver-conformance}
++\import{device-types/virtio-mem/}{driver-conformance}
 =20
- \conformance{\subsection}{Memory Driver Conformance}\label{sec:Conformance=
- / Driver Conformance / Memory Driver Conformance}
+ \conformance{\subsection}{I2C Adapter Driver Conformance}\label{sec:Confor=
+mance / Driver Conformance / I2C Adapter Driver Conformance}
 =20
-@@ -289,23 +276,7 @@ \section{Conformance Targets}\label{sec:Conformance / =
+@@ -277,20 +264,7 @@ \section{Conformance Targets}\label{sec:Conformance / =
 Conformance Targets}
- \import{device-types/virtio-fs/}{device-conformance}
  \import{device-types/virtio-rpmb/}{device-conformance}
  \import{device-types/virtio-iommu/}{device-conformance}
+ \import{device-types/virtio-sound/}{device-conformance}
 -
--\conformance{\subsection}{Sound Device Conformance}\label{sec:Conformance =
-/ Device Conformance / Sound Device Conformance}
+-\conformance{\subsection}{Memory Device Conformance}\label{sec:Conformance=
+ / Device Conformance / Memory Device Conformance}
 -
--A sound device MUST conform to the following normative statements:
+-A memory device MUST conform to the following normative statements:
 -
 -\begin{itemize}
--\item \ref{devicenormative:Device Types / Sound Device / Device Operation =
-/ Jack Information}
--\item \ref{devicenormative:Device Types / Sound Device / Device Operation =
-/ PCM Stream Information}
--\item \ref{devicenormative:Device Types / Sound Device / Device Operation =
-/ PCM Stream Parameters}
--\item \ref{devicenormative:Device Types / Sound Device / Device Operation =
-/ PCM Stream Release}
--\item \ref{devicenormative:Device Types / Sound Device / Device Operation =
-/ PCM Output Stream}
--\item \ref{devicenormative:Device Types / Sound Device / Device Operation =
-/ PCM Input Stream}
--\item \ref{devicenormative:Device Types / Sound Device / Device Operation =
-/ Channel Map Information}
--\item \ref{devicenormative:Device Types / Sound Device / Device Operation =
-/ Control Element Information}
--\item \ref{devicenormative:Device Types / Sound Device / Device Operation =
-/ Control Element Metadata}
--\item \ref{devicenormative:Device Types / Sound Device / Device Operation =
-/ Control Element Notifications}
+-\item \ref{devicenormative:Device Types / Memory Device / Device configura=
+tion layout}
+-\item \ref{devicenormative:Device Types / Memory Device / Device Initializ=
+ation}
+-\item \ref{devicenormative:Device Types / Memory Device / Device Operation=
+}
+-\item \ref{devicenormative:Device Types / Memory Device / Device Operation=
+ / PLUG request}
+-\item \ref{devicenormative:Device Types / Memory Device / Device Operation=
+ / UNPLUG request}
+-\item \ref{devicenormative:Device Types / Memory Device / Device Operation=
+ / UNPLUG ALL request}
+-\item \ref{devicenormative:Device Types / Memory Device / Device Operation=
+ / STATE request}
 -\end{itemize}
-+\import{device-types/virtio-sound/}{device-conformance}
++\import{device-types/virtio-mem/}{device-conformance}
 =20
- \conformance{\subsection}{Memory Device Conformance}\label{sec:Conformance=
- / Device Conformance / Memory Device Conformance}
+ \conformance{\subsection}{I2C Adapter Device Conformance}\label{sec:Confor=
+mance / Device Conformance / I2C Adapter Device Conformance}
 =20
 diff --git a/content.tex b/content.tex
-index dfc8967..65d8532 100644
+index 65d8532..6466209 100644
 --- a/content.tex
 +++ b/content.tex
-@@ -3016,7 +3016,7 @@ \chapter{Device Types}\label{sec:Device Types}
- \import{device-types/virtio-fs/}{device}
+@@ -3017,7 +3017,7 @@ \chapter{Device Types}\label{sec:Device Types}
  \import{device-types/virtio-rpmb/}{device}
  \import{device-types/virtio-iommu/}{device}
--\input{virtio-sound.tex}
-+\import{device-types/virtio-sound/}{device}
- \input{virtio-mem.tex}
+ \import{device-types/virtio-sound/}{device}
+-\input{virtio-mem.tex}
++\import{device-types/virtio-mem/}{device}
  \input{virtio-i2c.tex}
  \input{virtio-scmi.tex}
-diff --git a/device-types/virtio-sound/device-conformance.tex b/device-type=
-s/virtio-sound/device-conformance.tex
+ \input{virtio-gpio.tex}
+diff --git a/device-types/virtio-mem/device-conformance.tex b/device-types/=
+virtio-mem/device-conformance.tex
 new file mode 100644
-index 0000000..7b900c2
+index 0000000..562d00b
 --- /dev/null
-+++ b/device-types/virtio-sound/device-conformance.tex
-@@ -0,0 +1,16 @@
-+\conformance{\subsection}{Sound Device Conformance}\label{sec:Conformance =
-/ Device Conformance / Sound Device Conformance}
-+
-+A sound device MUST conform to the following normative statements:
-+
-+\begin{itemize}
-+\item \ref{devicenormative:Device Types / Sound Device / Device Operation =
-/ Jack Information}
-+\item \ref{devicenormative:Device Types / Sound Device / Device Operation =
-/ PCM Stream Information}
-+\item \ref{devicenormative:Device Types / Sound Device / Device Operation =
-/ PCM Stream Parameters}
-+\item \ref{devicenormative:Device Types / Sound Device / Device Operation =
-/ PCM Stream Release}
-+\item \ref{devicenormative:Device Types / Sound Device / Device Operation =
-/ PCM Output Stream}
-+\item \ref{devicenormative:Device Types / Sound Device / Device Operation =
-/ PCM Input Stream}
-+\item \ref{devicenormative:Device Types / Sound Device / Device Operation =
-/ Channel Map Information}
-+\item \ref{devicenormative:Device Types / Sound Device / Device Operation =
-/ Control Element Information}
-+\item \ref{devicenormative:Device Types / Sound Device / Device Operation =
-/ Control Element Metadata}
-+\item \ref{devicenormative:Device Types / Sound Device / Device Operation =
-/ Control Element Notifications}
-+\end{itemize}
-diff --git a/virtio-sound.tex b/device-types/virtio-sound/device.tex
-similarity index 100%
-rename from virtio-sound.tex
-rename to device-types/virtio-sound/device.tex
-diff --git a/device-types/virtio-sound/driver-conformance.tex b/device-type=
-s/virtio-sound/driver-conformance.tex
-new file mode 100644
-index 0000000..9a910cd
---- /dev/null
-+++ b/device-types/virtio-sound/driver-conformance.tex
++++ b/device-types/virtio-mem/device-conformance.tex
 @@ -0,0 +1,13 @@
-+\conformance{\subsection}{Sound Driver Conformance}\label{sec:Conformance =
-/ Driver Conformance / Sound Driver Conformance}
++\conformance{\subsection}{Memory Device Conformance}\label{sec:Conformance=
+ / Device Conformance / Memory Device Conformance}
 +
-+A sound driver MUST conform to the following normative statements:
++A memory device MUST conform to the following normative statements:
 +
 +\begin{itemize}
-+\item \ref{drivernormative:Device Types / Sound Device / Device Initializa=
-tion}
-+\item \ref{drivernormative:Device Types / Sound Device / Item Information =
-Request}
-+\item \ref{drivernormative:Device Types / Sound Device / Device Operation =
-/ PCM Stream Parameters}
-+\item \ref{drivernormative:Device Types / Sound Device / Device Operation =
-/ PCM Output Stream}
-+\item \ref{drivernormative:Device Types / Sound Device / Device Operation =
-/ PCM Input Stream}
-+\item \ref{drivernormative:Device Types / Sound Device / Device Operation =
-/ Control Element Value}
-+\item \ref{drivernormative:Device Types / Sound Device / Device Operation =
-/ Control Element Metadata}
++\item \ref{devicenormative:Device Types / Memory Device / Device configura=
+tion layout}
++\item \ref{devicenormative:Device Types / Memory Device / Device Initializ=
+ation}
++\item \ref{devicenormative:Device Types / Memory Device / Device Operation=
+}
++\item \ref{devicenormative:Device Types / Memory Device / Device Operation=
+ / PLUG request}
++\item \ref{devicenormative:Device Types / Memory Device / Device Operation=
+ / UNPLUG request}
++\item \ref{devicenormative:Device Types / Memory Device / Device Operation=
+ / UNPLUG ALL request}
++\item \ref{devicenormative:Device Types / Memory Device / Device Operation=
+ / STATE request}
++\end{itemize}
+diff --git a/virtio-mem.tex b/device-types/virtio-mem/device.tex
+similarity index 100%
+rename from virtio-mem.tex
+rename to device-types/virtio-mem/device.tex
+diff --git a/device-types/virtio-mem/driver-conformance.tex b/device-types/=
+virtio-mem/driver-conformance.tex
+new file mode 100644
+index 0000000..553dd57
+--- /dev/null
++++ b/device-types/virtio-mem/driver-conformance.tex
+@@ -0,0 +1,13 @@
++\conformance{\subsection}{Memory Driver Conformance}\label{sec:Conformance=
+ / Driver Conformance / Memory Driver Conformance}
++
++A memory driver MUST conform to the following normative statements:
++
++\begin{itemize}
++\item \ref{drivernormative:Device Types / Memory Device / Device configura=
+tion layout}
++\item \ref{drivernormative:Device Types / Memory Device / Device Initializ=
+ation}
++\item \ref{drivernormative:Device Types / Memory Device / Device Operation=
+}
++\item \ref{drivernormative:Device Types / Memory Device / Device Operation=
+ / PLUG request}
++\item \ref{drivernormative:Device Types / Memory Device / Device Operation=
+ / UNPLUG request}
++\item \ref{drivernormative:Device Types / Memory Device / Device Operation=
+ / UNPLUG ALL request}
++\item \ref{drivernormative:Device Types / Memory Device / Device Operation=
+ / STATE request}
 +\end{itemize}
 --=20
 2.26.2
