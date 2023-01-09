@@ -1,209 +1,133 @@
-Return-Path: <virtio-comment-return-3655-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-comment-return-3742-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio-comment@lists.oasis-open.org>
 List-Post: <mailto:virtio-comment@lists.oasis-open.org>
 List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
-Date: Tue, 3 Jan 2023 06:01:08 -0500
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20230103055831-mutt-send-email-mst@kernel.org>
-References: <20230101180824.325172-1-parav@nvidia.com>
+From: Parav Pandit <parav@nvidia.com>
+Date: Mon, 9 Jan 2023 18:33:01 +0200
+Message-ID: <20230109163301.463208-1-parav@nvidia.com>
 MIME-Version: 1.0
-In-Reply-To: <20230101180824.325172-1-parav@nvidia.com>
-Subject: [virtio-comment] Re: [PATCH v1 00/20] Split device spec to its individual files
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-To: Parav Pandit <parav@nvidia.com>
-Cc: virtio-dev@lists.oasis-open.org, virtio-comment@lists.oasis-open.org
+Subject: [virtio-comment] [PATCH v8] virtio-network: Clarify VLAN filter table configuration
+Content-Type: text/plain
+Content-Transfer-Encoding: quoted-printable
+To: mst@redhat.com, virtio-dev@lists.oasis-open.org
+Cc: virtio-comment@lists.oasis-open.org, si-wei.liu@oracle.com, Parav
+ Pandit <parav@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Sun, Jan 01, 2023 at 08:08:04PM +0200, Parav Pandit wrote:
-> Relatively several of the recent device specifications are maintained
-> in their own specification file. Such separate files enables better
-> maintenance of the specification overall.
-> However, several of the initial virtio device specifications
-> are located in single file.
-> 
-> Hence, split them into their individual files.
-> 
-> Additionally, each device's driver and device conformance is
-> present in one giant conformance file all together.
-> 
-> As Michael suggest's move this device and driver conformance
-> section adjacent to device specification in each device specific
-> directory. This further makes device specification self-contained.
-> 
-> Added patch to fix spelling errors in network device
-> specification which was inherited from its previous file
-> location.
-> 
-> Patches do not change any part of the specification outcome
-> except fixing the spelling errors.
-> It only changes how the specification is maintained.
-> 
-> patch summary:
-> -------------
-> patch 1 to 7 creates new files for moving devices spec out of
-> content and conformance files.
-> patch 8 to 20 move existing dedicated file spec to new directory
-> and creates per device,driver conformance file for each device.
-> 
-> changelog:
-> ----------
-> v0->v1:
-> - move device spec to their own directory
-> - added split files for conformance and placed them adjacent to
->   device spec
-> - added patch to fix spelling errors in network device
-> 
+The filtering behavior of the VLAN filter commands is not very clear as
+discussed in thread [1].
 
-I personally slightly prefer a flat hierarchy.  So e.g.
-virtio-network.tex and virtio-network-conformance.tex
-matters when navigating in the web browser where going
-up and down a folder is infuriatingly slow.
+Hence, add the command description and device requirements for it.
 
-> Parav Pandit (20):
->   virtio-network: Maintain network device spec in separate directory
->   virtio-network: Fix spelling errors
->   virtio-block: Maintain block device spec in separate directory
->   virtio-console: Maintain console device spec in separate directory
->   virtio-entropy: Maintain entropy device spec in separate directory
->   virtio-mem-balloon: Maintain mem balloon device spec in separate
->     directory
->   virtio-scsi: Maintain scsi host device spec in separate directory
->   virtio-gpu: Maintain gpu device spec in separate directory
->   virtio-input: Maintain input device spec in separate directory
->   virtio-crypto: Maintain crypto device spec in separate directory
->   virtio-vsock: Maintain socket device spec in separate directory
->   virtio-fs: Maintain file system device spec in separate directory
->   virtio-rpmb: Maintain rpmb device spec in separate directory
->   virtio-iommu: Maintain iommu device spec in separate directory
->   virtio-sound: Maintain sound device spec in separate directory
->   virtio-mem: Maintain memory device spec in separate directory
->   virtio-i2c: Maintain i2c device spec in separate directory
->   virtio-scmi: Maintain scmi device spec in separate directory
->   virtio-gpio: Maintain gpio device spec in separate directory
->   virtio-pmem: Maintain pmem device spec in separate directory
-> 
->  conformance.tex                               |  453 +-
->  content.tex                                   | 4560 +----------------
->  .../virtio-block/device-conformance.tex       |    8 +
->  device-types/virtio-block/device.tex          | 1315 +++++
->  .../virtio-block/driver-conformance.tex       |    8 +
->  .../virtio-console/device-conformance.tex     |    8 +
->  device-types/virtio-console/device.tex        |  231 +
->  .../virtio-console/driver-conformance.tex     |    8 +
->  .../virtio-crypto/device-conformance.tex      |   13 +
->  .../virtio-crypto/device.tex                  |    0
->  .../virtio-crypto/driver-conformance.tex      |   14 +
->  .../virtio-entropy/device-conformance.tex     |    7 +
->  device-types/virtio-entropy/device.tex        |   42 +
->  .../virtio-entropy/driver-conformance.tex     |    7 +
->  device-types/virtio-fs/device-conformance.tex |    9 +
->  .../virtio-fs/device.tex                      |    0
->  device-types/virtio-fs/driver-conformance.tex |   10 +
->  .../virtio-gpio/device-conformance.tex        |    9 +
->  .../virtio-gpio/device.tex                    |    0
->  .../virtio-gpio/driver-conformance.tex        |    9 +
->  .../virtio-gpu/device-conformance.tex         |    8 +
->  .../virtio-gpu/device.tex                     |    0
->  .../virtio-i2c/device-conformance.tex         |    7 +
->  .../virtio-i2c/device.tex                     |    0
->  .../virtio-i2c/driver-conformance.tex         |    7 +
->  .../virtio-input/device-conformance.tex       |    8 +
->  .../virtio-input/device.tex                   |    0
->  .../virtio-input/driver-conformance.tex       |    8 +
->  .../virtio-iommu/device-conformance.tex       |   16 +
->  .../virtio-iommu/device.tex                   |    0
->  .../virtio-iommu/driver-conformance.tex       |   17 +
->  .../virtio-mem-balloon/device-conformance.tex |   12 +
->  device-types/virtio-mem-balloon/device.tex    |  634 +++
->  .../virtio-mem-balloon/driver-conformance.tex |   12 +
->  .../virtio-mem/device-conformance.tex         |   13 +
->  .../virtio-mem/device.tex                     |    0
->  .../virtio-mem/driver-conformance.tex         |   13 +
->  .../virtio-network/device-conformance.tex     |   16 +
->  device-types/virtio-network/device.tex        | 1596 ++++++
->  .../virtio-network/driver-conformance.tex     |   17 +
->  .../virtio-pmem/device-conformance.tex        |    9 +
->  .../virtio-pmem/device.tex                    |    0
->  .../virtio-pmem/driver-conformance.tex        |    7 +
->  .../virtio-rpmb/device-conformance.tex        |   13 +
->  .../virtio-rpmb/device.tex                    |    0
->  .../virtio-rpmb/driver-conformance.tex        |    7 +
->  .../virtio-scmi/device-conformance.tex        |   10 +
->  .../virtio-scmi/device.tex                    |    0
->  .../virtio-scmi/driver-conformance.tex        |    8 +
->  .../virtio-scsi/device-conformance.tex        |   10 +
->  device-types/virtio-scsi/device.tex           |  709 +++
->  .../virtio-scsi/driver-conformance.tex        |    9 +
->  .../virtio-sound/device-conformance.tex       |   16 +
->  .../virtio-sound/device.tex                   |    0
->  .../virtio-sound/driver-conformance.tex       |   13 +
->  .../virtio-vsock/device-conformance.tex       |    9 +
->  .../virtio-vsock/device.tex                   |    0
->  .../virtio-vsock/driver-conformance.tex       |   10 +
->  virtio.tex                                    |    1 +
->  59 files changed, 4965 insertions(+), 4961 deletions(-)
->  create mode 100644 device-types/virtio-block/device-conformance.tex
->  create mode 100644 device-types/virtio-block/device.tex
->  create mode 100644 device-types/virtio-block/driver-conformance.tex
->  create mode 100644 device-types/virtio-console/device-conformance.tex
->  create mode 100644 device-types/virtio-console/device.tex
->  create mode 100644 device-types/virtio-console/driver-conformance.tex
->  create mode 100644 device-types/virtio-crypto/device-conformance.tex
->  rename virtio-crypto.tex => device-types/virtio-crypto/device.tex (100%)
->  create mode 100644 device-types/virtio-crypto/driver-conformance.tex
->  create mode 100644 device-types/virtio-entropy/device-conformance.tex
->  create mode 100644 device-types/virtio-entropy/device.tex
->  create mode 100644 device-types/virtio-entropy/driver-conformance.tex
->  create mode 100644 device-types/virtio-fs/device-conformance.tex
->  rename virtio-fs.tex => device-types/virtio-fs/device.tex (100%)
->  create mode 100644 device-types/virtio-fs/driver-conformance.tex
->  create mode 100644 device-types/virtio-gpio/device-conformance.tex
->  rename virtio-gpio.tex => device-types/virtio-gpio/device.tex (100%)
->  create mode 100644 device-types/virtio-gpio/driver-conformance.tex
->  create mode 100644 device-types/virtio-gpu/device-conformance.tex
->  rename virtio-gpu.tex => device-types/virtio-gpu/device.tex (100%)
->  create mode 100644 device-types/virtio-i2c/device-conformance.tex
->  rename virtio-i2c.tex => device-types/virtio-i2c/device.tex (100%)
->  create mode 100644 device-types/virtio-i2c/driver-conformance.tex
->  create mode 100644 device-types/virtio-input/device-conformance.tex
->  rename virtio-input.tex => device-types/virtio-input/device.tex (100%)
->  create mode 100644 device-types/virtio-input/driver-conformance.tex
->  create mode 100644 device-types/virtio-iommu/device-conformance.tex
->  rename virtio-iommu.tex => device-types/virtio-iommu/device.tex (100%)
->  create mode 100644 device-types/virtio-iommu/driver-conformance.tex
->  create mode 100644 device-types/virtio-mem-balloon/device-conformance.tex
->  create mode 100644 device-types/virtio-mem-balloon/device.tex
->  create mode 100644 device-types/virtio-mem-balloon/driver-conformance.tex
->  create mode 100644 device-types/virtio-mem/device-conformance.tex
->  rename virtio-mem.tex => device-types/virtio-mem/device.tex (100%)
->  create mode 100644 device-types/virtio-mem/driver-conformance.tex
->  create mode 100644 device-types/virtio-network/device-conformance.tex
->  create mode 100644 device-types/virtio-network/device.tex
->  create mode 100644 device-types/virtio-network/driver-conformance.tex
->  create mode 100644 device-types/virtio-pmem/device-conformance.tex
->  rename virtio-pmem.tex => device-types/virtio-pmem/device.tex (100%)
->  create mode 100644 device-types/virtio-pmem/driver-conformance.tex
->  create mode 100644 device-types/virtio-rpmb/device-conformance.tex
->  rename virtio-rpmb.tex => device-types/virtio-rpmb/device.tex (100%)
->  create mode 100644 device-types/virtio-rpmb/driver-conformance.tex
->  create mode 100644 device-types/virtio-scmi/device-conformance.tex
->  rename virtio-scmi.tex => device-types/virtio-scmi/device.tex (100%)
->  create mode 100644 device-types/virtio-scmi/driver-conformance.tex
->  create mode 100644 device-types/virtio-scsi/device-conformance.tex
->  create mode 100644 device-types/virtio-scsi/device.tex
->  create mode 100644 device-types/virtio-scsi/driver-conformance.tex
->  create mode 100644 device-types/virtio-sound/device-conformance.tex
->  rename virtio-sound.tex => device-types/virtio-sound/device.tex (100%)
->  create mode 100644 device-types/virtio-sound/driver-conformance.tex
->  create mode 100644 device-types/virtio-vsock/device-conformance.tex
->  rename virtio-vsock.tex => device-types/virtio-vsock/device.tex (100%)
->  create mode 100644 device-types/virtio-vsock/driver-conformance.tex
-> 
-> -- 
-> 2.26.2
+[1] https://www.mail-archive.com/qemu-devel@nongnu.org/msg912392.html
+Fixes: https://github.com/oasis-tcs/virtio-spec/issues/147
+Suggested-by: Si-Wei Liu <si-wei.liu@oracle.com>
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+---
+changelog:
+v7->v8:
+- Fixed grammar
+v6->v7:
+- Moved VLAN filter table description from requirements to device
+  descrption section
+- Added MUST and SHOULD to device requirements
+v5->v6:
+- removed unwanted article
+v4->v5:
+- reworded 'vlan filtering table' to 'vlan filter table' to match
+  to the existing description about vlan filtering
+- remove confusing text around VLAN_DEL command description
+- added missing article
+- reword device match configuration to device configuration
+- changed 'found' to 'present' and 'not found' to 'absent' to
+  consider vlan filter table as config table rather
+  than search table
+v3->v4:
+- added description for accepting vlan tagged packets when vlan
+  filter is not negotiated
+v2->v3:
+- corrected grammar
+- simplified description for untagged packets
+v1->v2:
+- adapt to new file path
+v0->v1:
+- added missing conformance section link
+---
+ .../virtio-network/device-conformance.tex     |  1 +
+ device-types/virtio-network/device.tex        | 22 ++++++++++++++++++-
+ 2 files changed, 22 insertions(+), 1 deletion(-)
+
+diff --git a/device-types/virtio-network/device-conformance.tex b/device-ty=
+pes/virtio-network/device-conformance.tex
+index c686377..54f6783 100644
+--- a/device-types/virtio-network/device-conformance.tex
++++ b/device-types/virtio-network/device-conformance.tex
+@@ -9,6 +9,7 @@
+ \item \ref{devicenormative:Device Types / Network Device / Device Operatio=
+n / Processing of Incoming Packets}
+ \item \ref{devicenormative:Device Types / Network Device / Device Operatio=
+n / Control Virtqueue / Packet Receive Filtering}
+ \item \ref{devicenormative:Device Types / Network Device / Device Operatio=
+n / Control Virtqueue / Setting MAC Address Filtering}
++\item \ref{devicenormative:Device Types / Network Device / Device Operatio=
+n / Control Virtqueue / VLAN Filtering}
+ \item \ref{devicenormative:Device Types / Network Device / Device Operatio=
+n / Control Virtqueue / Gratuitous Packet Sending}
+ \item \ref{devicenormative:Device Types / Network Device / Device Operatio=
+n / Control Virtqueue / Automatic receive steering in multiqueue mode}
+ \item \ref{devicenormative:Device Types / Network Device / Device Operatio=
+n / Control Virtqueue / Receive-side scaling (RSS) / RSS processing}
+diff --git a/device-types/virtio-network/device.tex b/device-types/virtio-n=
+etwork/device.tex
+index e0637c5..7c89f30 100644
+--- a/device-types/virtio-network/device.tex
++++ b/device-types/virtio-network/device.tex
+@@ -1194,7 +1194,11 @@ \subsubsection{Control Virtqueue}\label{sec:Device T=
+ypes / Network Device / Devi
+ \paragraph{VLAN Filtering}\label{sec:Device Types / Network Device / Devic=
+e Operation / Control Virtqueue / VLAN Filtering}
+=20
+ If the driver negotiates the VIRTIO_NET_F_CTRL_VLAN feature, it
+-can control a VLAN filter table in the device.
++can control a VLAN filter table in the device. The VLAN filter
++table applies only to VLAN tagged packets.
++
++When VIRTIO_NET_F_CTRL_VLAN is negotiated, the device starts with
++an empty VLAN filter table.
+=20
+ \begin{note}
+ Similar to the MAC address based filtering, the VLAN filtering
+@@ -1210,6 +1214,22 @@ \subsubsection{Control Virtqueue}\label{sec:Device T=
+ypes / Network Device / Devi
+ Both the VIRTIO_NET_CTRL_VLAN_ADD and VIRTIO_NET_CTRL_VLAN_DEL
+ command take a little-endian 16-bit VLAN id as the command-specific-data.
+=20
++VIRTIO_NET_CTRL_VLAN_ADD command adds the specified VLAN to the
++VLAN filter table.
++
++VIRTIO_NET_CTRL_VLAN_DEL command removes the specified VLAN from
++the VLAN filter table.
++
++\devicenormative{\subparagraph}{VLAN Filtering}{Device Types / Network Dev=
+ice / Device Operation / Control Virtqueue / VLAN Filtering}
++
++When VIRTIO_NET_F_CTRL_VLAN is not negotiated, the device MUST
++accept all VLAN tagged packets as per the device configuration.
++
++When VIRTIO_NET_F_CTRL_VLAN is negotiated, the device MUST
++accept all VLAN tagged packets whose VLAN tag is present in
++the VLAN filter table and SHOULD drop all VLAN tagged packets
++whose VLAN tag is absent in the VLAN filter table.
++
+ \subparagraph{Legacy Interface: VLAN Filtering}\label{sec:Device Types / N=
+etwork Device / Device Operation / Control Virtqueue / VLAN Filtering / Leg=
+acy Interface: VLAN Filtering}
+ When using the legacy interface, transitional devices and drivers
+ MUST format the VLAN id
+--=20
+2.26.2
 
 
 This publicly archived list offers a means to provide input to the
@@ -218,7 +142,8 @@ Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
 List help: virtio-comment-help@lists.oasis-open.org
 List archive: https://lists.oasis-open.org/archives/virtio-comment/
 Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
-List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
+List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lis=
+ts
 Committee: https://www.oasis-open.org/committees/virtio/
 Join OASIS: https://www.oasis-open.org/join/
 
