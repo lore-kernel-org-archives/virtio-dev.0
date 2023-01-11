@@ -1,208 +1,110 @@
-Return-Path: <virtio-comment-return-3894-cohuck=redhat.com@lists.oasis-open.org>
-Sender: <virtio-comment@lists.oasis-open.org>
-List-Post: <mailto:virtio-comment@lists.oasis-open.org>
-List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
-From: Parav Pandit <parav@nvidia.com>
-Date: Fri, 20 Jan 2023 18:58:48 +0000
-Message-ID: <PH0PR12MB5481F544C09ECC79ED6E369CDCC59@PH0PR12MB5481.namprd12.prod.outlook.com>
-References: <20230112212632.763955-1-parav@nvidia.com>
- <20230120124450.7fdacf24.pasic@linux.ibm.com>
-In-Reply-To: <20230120124450.7fdacf24.pasic@linux.ibm.com>
+Return-Path: <virtio-dev-return-10543-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Message-ID: <eb567269-f1ec-9e64-9cf8-5cedd63cb669@amazon.es>
+Date: Wed, 11 Jan 2023 14:57:51 +0100
 MIME-Version: 1.0
-Subject: RE: [virtio-comment] [PATCH v4] virtio-net: Avoid confusion between a
- card and a device
+References: <20221121162756.350032-1-mst@redhat.com>
+ <20221121162756.350032-4-mst@redhat.com>
+From: Babis Chalios <bchalios@amazon.es>
+In-Reply-To: <20221121162756.350032-4-mst@redhat.com>
+Subject: [virtio-dev] Re: [PATCH RFC 3/3] rng: leak detection support
 Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-To: Halil Pasic <pasic@linux.ibm.com>
-Cc: "mst@redhat.com" <mst@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, Jason Wang <jasowang@redhat.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: base64
+To: "Michael S. Tsirkin" <mst@redhat.com>, virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, "Cali, Marco" <xmarcalx@amazon.co.uk>, "Graf (AWS), Alexander" <graf@amazon.de>, "Jason A. Donenfeld" <Jason@zx2c4.com>, amit@kernel.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-
-
-> From: Halil Pasic <pasic@linux.ibm.com>
-> Sent: Friday, January 20, 2023 6:45 AM
->=20
-> On Thu, 12 Jan 2023 23:26:32 +0200
-> Parav Pandit <parav@nvidia.com> wrote:
->=20
-> > Ethernet card is a relatively vague term in context of virtio network
-> > device specification. A Ethernet card in the industry has one to
-> > multiple ports, one to multiple PCI functions.
-> >
-> > Historically virtio network device is documented as a Ethernet card.
-> > However it is usually just a single virtual Ethernet device.
->=20
-> "Ethernet device" does not seem to be a well established term for what we=
- are
-> trying to express here.
->=20
-> Please compare:
-> https://en.wikipedia.org/w/index.php?search=3Dethernet+device
-> to
-> https://en.wikipedia.org/w/index.php?search=3Dethernet+card
->=20
-This is nowhere close to the modern virtio nic. :)
-But I get your point.
-
-> You can also have a look at
->=20
-> https://www.google.com/search?q=3D%22ethernet+device%22
->=20
-:)
-We virtio tc have better definitions for modern network interface cards at =
-[1] and [2].
-
-[1] https://drive.google.com/file/d/1EcQ3ObZ-X-LrEPPQ5Bv5zg38HtXRp9Am/view
-[2] https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-eni.html#netw=
-ork-cards
-
-> >
-> > Hence, avoid this confusing term 'card' and align the specification to
-> > adhere to widely used specification term as 'device' used for all
-> > virtio device types.
->=20
-> I don't think all the places you touch refer to the virtio device -- some=
- rather
-> are for describing what the nature of the virtio device (and its function=
-ality).
->=20
-I will revise this in v5.
-It will be better if you can review before the voting stage.
-
-> > -0x1000      &   network card     \\
-> > +0x1000      &   network device     \\
-Will keep this in v5.
-
->=20
-> This makes sense
->=20
-> >  \hline
-> >  0x1001     &   block device     \\
-> >  \hline
-> > @@ -635,7 +635,7 @@ \subsection{PCI Device Discovery}\label{sec:Virtio
-> > Transport Options / Virtio Ov  \hline  \end{tabular}
-> >
-> > -For example, the network card device with the Virtio Device ID 1
-> > +For example, the network device with the Virtio Device ID 1
-> >  has the PCI Device ID 0x1041 or the Transitional PCI Device ID 0x1000.
-> >
-> >  The PCI Subsystem Vendor ID and the PCI Subsystem Device ID MAY
-> > reflect @@ -2912,7 +2912,7 @@ \chapter{Device Types}\label{sec:Device
-> > Types}  \hline \hline
-> >  0          & reserved (invalid) \\
-> >  \hline
-> > -1          &   network card     \\
-> > +1          &   network device     \\
->=20
-> This too.
->=20
-Will keep this in v5.
-
-> >  \hline
-> >  2          &   block device     \\
-> >  \hline
-> > diff --git a/device-types/net/description.tex
-> > b/device-types/net/description.tex
-> > index 2bd82ee..7409f2a 100644
-> > --- a/device-types/net/description.tex
-> > +++ b/device-types/net/description.tex
-> > @@ -1,6 +1,6 @@
-> >  \section{Network Device}\label{sec:Device Types / Network Device}
-> >
-> > -The virtio network device is a virtual ethernet card, and is the
-> > +The virtio network device is a virtual ethernet device, and is the
->=20
-> See, before you change the subject is "virtio network *device*"
-> and we describe it as a "virtual ethernet *card*".
->=20
-> Yes we could replace card with NIC or network interface controller, or ne=
-twork
-> adapter, or adapter. But device does not work for me. Sorry.
-network interface controller is far crisp definition that I prefer.
-
->=20
-> >  most complex of the devices supported so far by virtio. It has
-> > enhanced rapidly and demonstrates clearly how support for new
-> > features are added to an existing device. Empty buffers are @@ -33,7
-> > +33,7 @@ \subsection{Feature bits}\label{sec:Device Types / Network
-> > Device / Feature bits
-> >
-> >  \begin{description}
-> >  \item[VIRTIO_NET_F_CSUM (0)] Device handles packets with partial
-> checksum.   This
-> > -  ``checksum offload'' is a common feature on modern network cards.
-> > +  ``checksum offload'' is a common feature of a modern network device.
->=20
-Now that I reread, this introductory line is out of context in feature defi=
-nition.
-I would rather rewrite this feature bit definition as below.
-
-From:
-VIRTIO_NET_F_CSUM (0) Device handles packets with partial checksum. This "c=
-hecksum offload" is a
-common feature on modern network cards.
-
-To:
-VIRTIO_NET_F_CSUM (0) Device handles packets with partial checksum offload.
-
-
-> Here again, we are not talking about the virtio device, but the real HW s=
-tuff
-> upon which the virtio device is modeled.
->=20
-> >
-> >  \item[VIRTIO_NET_F_GUEST_CSUM (1)] Driver handles packets with partial
-> checksum.
-> >
-> > @@ -323,7 +323,7 @@ \subsection{Device
-> > Initialization}\label{sec:Device Types / Network Device / Dev
-> >
-> >  \item If the VIRTIO_NET_F_MAC feature bit is set, the configuration
-> >    space \field{mac} entry indicates the ``physical'' address of the
-> > -  network card, otherwise the driver would typically generate a
-> > random
-> > +  network device, otherwise the driver would typically generate a
-> > + random
-> >    local MAC address.
->=20
-> I guess this also explains MAC in general, not scoped down to the virtio-=
-net
-> device.
->=20
-Feature bits are negotiated between driver and device.
-So I agree that "network device" or "network card" is wrong term here.
-I will change to just say device because rest of the whole spec for this an=
-d all feature bits talk about device.
-
-> All this given I'm not in favor of this patch!
->=20
-> Yes, I do think we can do better than "card", but in the cases above "dev=
-ice" is
-> not the right way to go.
->=20
-I agree, I will rephase the word around network interface controller instea=
-d of card.
-And rest the applicable places to say device.
-Will send v5 for review.
-
-This publicly archived list offers a means to provide input to the=0D
-OASIS Virtual I/O Device (VIRTIO) TC.=0D
-=0D
-In order to verify user consent to the Feedback License terms and=0D
-to minimize spam in the list archive, subscription is required=0D
-before posting.=0D
-=0D
-Subscribe: virtio-comment-subscribe@lists.oasis-open.org=0D
-Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org=0D
-List help: virtio-comment-help@lists.oasis-open.org=0D
-List archive: https://lists.oasis-open.org/archives/virtio-comment/=0D
-Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf=
-=0D
-List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lis=
-ts=0D
-Committee: https://www.oasis-open.org/committees/virtio/=0D
-Join OASIS: https://www.oasis-open.org/join/
+Q0NpbmcgQW1pdAoKT24gMjEvMTEvMjIgMTc6MzAsIE1pY2hhZWwgUy4gVHNpcmtpbiB3cm90ZToK
+PiBDQVVUSU9OOiBUaGlzIGVtYWlsIG9yaWdpbmF0ZWQgZnJvbSBvdXRzaWRlIG9mIHRoZSBvcmdh
+bml6YXRpb24uIERvIG5vdCBjbGljayBsaW5rcyBvciBvcGVuIGF0dGFjaG1lbnRzIHVubGVzcyB5
+b3UgY2FuIGNvbmZpcm0gdGhlIHNlbmRlciBhbmQga25vdyB0aGUgY29udGVudCBpcyBzYWZlLgo+
+Cj4KPgo+IEFkZCB2aXJ0cXVldWVzIHRvIHN1cHBvcnQgcmVwb3J0aW5nIGVudHJvcHkgbGVha3Mg
+KHNpbWlsYXIgdG8gdmlydGlvIGJhc2VkIHZtZ2VuaWQpLgo+Cj4gU2lnbmVkLW9mZi1ieTogTWlj
+aGFlbCBTLiBUc2lya2luIDxtc3RAcmVkaGF0LmNvbT4KPiAtLS0KPiAgIHZpcnRpby1ybmcudGV4
+IHwgNjEgKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKy0K
+PiAgIDEgZmlsZSBjaGFuZ2VkLCA2MCBpbnNlcnRpb25zKCspLCAxIGRlbGV0aW9uKC0pCj4KPiBk
+aWZmIC0tZ2l0IGEvdmlydGlvLXJuZy50ZXggYi92aXJ0aW8tcm5nLnRleAo+IGluZGV4IDFlYzcx
+NjQuLjQ3NjBkZmEgMTAwNjQ0Cj4gLS0tIGEvdmlydGlvLXJuZy50ZXgKPiArKysgYi92aXJ0aW8t
+cm5nLnRleAo+IEBAIC05LDEwICs5LDE0IEBAIFxzdWJzZWN0aW9ue0RldmljZSBJRH1cbGFiZWx7
+c2VjOkRldmljZSBUeXBlcyAvIEVudHJvcHkgRGV2aWNlIC8gRGV2aWNlIElEfQo+ICAgXHN1YnNl
+Y3Rpb257VmlydHF1ZXVlc31cbGFiZWx7c2VjOkRldmljZSBUeXBlcyAvIEVudHJvcHkgRGV2aWNl
+IC8gVmlydHF1ZXVlc30KPiAgIFxiZWdpbntkZXNjcmlwdGlvbn0KPiAgIFxpdGVtWzBdIHJlcXVl
+c3RxCj4gK1xpdGVtWzFdIGxlYWtxMSAob25seSBpZiBWSVJUSU9fUk5HX0ZfTEVBSyBpcyBvZmZl
+cmVkKQo+ICtcaXRlbVsyXSBsZWFrcTIgKG9ubHkgaWYgVklSVElPX1JOR19GX0xFQUsgaXMgb2Zm
+ZXJlZCkKPiAgIFxlbmR7ZGVzY3JpcHRpb259Cj4KPiAgIFxzdWJzZWN0aW9ue0ZlYXR1cmUgYml0
+c31cbGFiZWx7c2VjOkRldmljZSBUeXBlcyAvIEVudHJvcHkgRGV2aWNlIC8gRmVhdHVyZSBiaXRz
+fQo+IC0gIE5vbmUgY3VycmVudGx5IGRlZmluZWQKPiArXGJlZ2lue2Rlc2NyaXB0aW9ufQo+ICtc
+aXRlbVtWSVJUSU9fUk5HX0ZfTEVBSyAoMCldIERldmljZSBjYW4gcmVwb3J0IGFuZCBoYW5kbGUg
+aW5mb3JtYXRpb24gbGVha3MuCj4gK1xlbmR7ZGVzY3JpcHRpb259Cj4KPiAgIFxzdWJzZWN0aW9u
+e0RldmljZSBjb25maWd1cmF0aW9uIGxheW91dH1cbGFiZWx7c2VjOkRldmljZSBUeXBlcyAvIEVu
+dHJvcHkgRGV2aWNlIC8gRGV2aWNlIGNvbmZpZ3VyYXRpb24gbGF5b3V0fQo+ICAgICBOb25lIGN1
+cnJlbnRseSBkZWZpbmVkLgo+IEBAIC0yMSw2ICsyNSw3IEBAIFxzdWJzZWN0aW9ue0RldmljZSBJ
+bml0aWFsaXphdGlvbn1cbGFiZWx7c2VjOkRldmljZSBUeXBlcyAvIEVudHJvcHkgRGV2aWNlIC8g
+RGV2Cj4KPiAgIFxiZWdpbntlbnVtZXJhdGV9Cj4gICBcaXRlbSBUaGUgXGZpZWxke3JlcXVlc3Rx
+fSB2aXJ0cXVldWUgaXMgaW5pdGlhbGl6ZWQKPiArXGl0ZW0gSWYgVklSVElPX1JOR19GX0xFQUsg
+aGFzIGJlZW4gbmVnb3RpYXRlZCwgXGZpZWxke2xlYWtxMX0gYW5kIFxmaWVsZHtsZWFrcTJ9IGFy
+ZSBpbml0aWFsaXplZAo+ICAgXGVuZHtlbnVtZXJhdGV9Cj4KPiAgIFxzdWJzZWN0aW9ue0Rldmlj
+ZSBPcGVyYXRpb259XGxhYmVse3NlYzpEZXZpY2UgVHlwZXMgLyBFbnRyb3B5IERldmljZSAvIERl
+dmljZSBPcGVyYXRpb259Cj4gQEAgLTQxLDMgKzQ2LDU3IEBAIFxzdWJzZWN0aW9ue0RldmljZSBP
+cGVyYXRpb259XGxhYmVse3NlYzpEZXZpY2UgVHlwZXMgLyBFbnRyb3B5IERldmljZSAvIERldmlj
+ZSBPCj4gICBUaGUgZGV2aWNlIE1VU1QgcGxhY2Ugb25lIG9yIG1vcmUgcmFuZG9tIGJ5dGVzIGlu
+dG8gdGhlIGJ1ZmZlcgo+ICAgbWFkZSBhdmFpbGFibGUgdG8gaXQgdGhyb3VnaCBcZmllbGR7cmVx
+dWVzdHF9LCBidXQgaXQKPiAgIE1BWSB1c2UgbGVzcyB0aGFuIHRoZSBlbnRpcmUgYnVmZmVyIGxl
+bmd0aC4KPiArCj4gK1xzdWJzdWJzZWN0aW9ue1JlcG9ydGluZyBJbmZvcm1hdGlvbiBMZWFrc317
+RGV2aWNlIFR5cGVzIC8gRW50cm9weSBEZXZpY2UgLyBEZXZpY2UgT3BlcmF0aW9uIC8gUmVwb3J0
+aW5nIEluZm9ybWF0aW9uIExlYWtzfQo+ICsKPiArVGhlIGRldmljZSBtaWdodCwgYWZ0ZXIgdGhl
+IGZhY3QsIGRldGVjdCB0aGF0IHNvbWUgb2YgdGhlIGVudHJvcHkKPiAraXQgc3VwcGxpZWQgdG8g
+dGhlIGRyaXZlciBoYXMgYWZ0ZXIgdGhlIGZhY3QgZGVncmFkZWQgaW4gcXVhbGl0eQo+ICtvciBs
+ZWFrZWQgdG8gdGhlIG91dHNpZGUgd29ybGQuICBPbmUgZXhhbXBsZSBpcyB3aGVuIHRoZSBkZXZp
+Y2UKPiAraXMgcGFydCBvZiB0aGUgdmlydHVhbCBtYWNoaW5lIHVuZGVyZ29pbmcgYSByZXN0b3Jl
+IGZyb20gc25hcHNob3QKPiArb3BlcmF0aW9uLiBBbm90aGVyIGV4YW1wbGUgaXMgd2hlbiB0aGUg
+aW5mb3JtYXRpb24gbGVha3MgZnJvbSB0aGUKPiAraG9zdCBzeXN0ZW0gdGhyb3VnaCBhIHNpZGUt
+Y2hhbm5lbC4KPiArCj4gK1RoZSBkcml2ZXIgd291bGQgdHlwaWNhbGx5IHJlYWN0IGJ5IGNhdXNp
+bmcgcmVnZW5lcmF0aW9uIG9mIGFueQo+ICtpbmZvcm1hdGlvbiB0aGF0IG1pZ2h0IGhhdmUgbGVh
+a2VkIGFuZCB0aGF0IGhhcyB0byBiZSBzZWNyZXQgb3IKPiArdW5pcXVlLiAgSXQgaXMgdW5kZXJz
+dG9vZCB0aGF0IHdoZW4gYW4gaW5mb3JtYXRpb24gbGVhayBoYXMgYmVlbgo+ICtkZXRlY3RlZCBp
+dCBpcyBsaWtlbHkgbm90IGxpbWl0ZWQgdG8gdGhlIGVudHJvcHkgcmVjZWl2ZWQgdGhyb3VnaAo+
+ICt0aGUgc3BlY2lmaWMgZGV2aWNlLiBJbiBwYXJ0aWN1bGFyLCB0aGlzIGlzIHRoZSBjYXNlIGZv
+cgo+ICtzbmFwc2hvdGluZyBJdCBpcyB0aHVzIHN1Z2dlc3RlZCB0aGF0IHRoZSBzeXN0ZW0gZnVs
+bHkKPiArcmVnZW5lcmF0ZSBhbnkgdW5pcXVlL3NlY3JldCBpbmZvcm1hdGlvbiBpbiB0aGlzIHNj
+ZW5hcmlvLgo+ICsKPiArSWYgVklSVElPX1JOR19GX0xFQUsgaGFzIGJlZW4gbmVnb3RpYXRlZCB0
+aGUgZGV2aWNlIGNhbiByZXBvcnQKPiArc3VjaCBsZWFrcyB0byB0aGUgZHJpdmVyIHRocm91Z2gg
+YSBzZXQgb2YgZGVkaWNhdGVkIGxlYWsKPiArcXVldWVzOiBcZmllbGR7bGVha3ExfSBhbmQgXGZp
+ZWxke2xlYWtxMn0uCj4gKwo+ICtCdWZmZXJzIGFkZGVkIHRvIHRoZSBsZWFrIHF1ZXVlcyBjYW4g
+aGF2ZSBvbmUgb2YgdHdvIGZvcm1zOgo+ICtcYmVnaW57ZW51bWVyYXRlfQo+ICtcaXRlbSBBIHdy
+aXRlLW9ubHkgYnVmZmVyLiBJdCB3aWxsIGJlIGNvbXBsZXRlbHkgZmlsbGVkIGJ5IHJhbmRvbSBk
+YXRhIGJ5IHRoZSBkZXZpY2UuCj4gK1xpdGVtIEEgYnVmZmVyIGNvbnNpc3Rpbmcgb2YgcmVhZC1v
+bmx5IHNlY3Rpb24gZm9sbG93ZWQgYnkgYQo+ICt3cml0ZS1vbmx5IHNlY3Rpb24sIGJvdGggb2Yg
+aWRlbnRpY2FsIHNpemUuIFRoZQo+ICtkZXZpY2Ugd2lsbCBjb3B5IGRhdGEgZnJvbSB0aGUgcmVh
+ZC1vbmx5IHNlY3Rpb24gdG8gdGhlIHdyaXRlLW9ubHkKPiArc2VjdGlvbi4KPiArXGVuZHtlbnVt
+ZXJhdGV9Cj4gKwo+ICtUaGUgc3RlcHMgZm9yIG9wZXJhdGluZyB0aGUgdmlydHF1ZXVlIGFyZToK
+PiArCj4gK1xiZWdpbntlbnVtZXJhdGV9Cj4gK1xpdGVtIEF0IGVhY2ggdGltZSwgb25seSBvbmUg
+b2YgXGZpZWxke2xlYWtxMX0sIFxmaWVsZHtsZWFrcTJ9IGlzIGFjdGl2ZQo+ICsgICAgICAoaGFz
+IGJ1ZmZlcnMgYWRkZWQvdXNlZCkuCj4gK1xpdGVtIEFmdGVyIGluaXRpYWxpemF0aW9uLCBcZmll
+bGR7bGVha3ExfSBpcyBhY3RpdmUuCj4gK1xpdGVtIERyaXZlciBhZGRzIG11bHRpcGxlIGJ1ZmZl
+cnMgdG8gdGhlIGFjdGl2ZSBsZWFrIHF1ZXVlLgo+ICtcaXRlbSBUaGUgYnVmZmVycyBhcmUgbm90
+IHVzZWQgdW50aWwgYW4gaW5mb3JtYXRpb24gbGVhayBpcwo+ICsgICAgICBkZXRlY3RlZCwgYXMg
+bG9uZyBhcyB0aGF0IGlzIHRoZSBjYXNlIGRyaXZlciBjYW4KPiArICAgICAgYWRkIG1vcmUgYnVm
+ZmVycyB0byB0aGUgYWN0aXZlIHF1ZXVlLgo+ICtcaXRlbSBVcG9uIGRldGVjdGluZyBhbiBpbmZv
+cm1hdGlvbiBsZWFrLCBkZXZpY2Ugc3RhcnRzCj4gKyAgICAgIHVzaW5nIGJ1ZmZlcnMgaW4gdGhl
+IGFjdGl2ZSBsZWFrIHF1ZXVlLgo+ICtcaXRlbSBVcG9uIGRldGVjdGluZyB0aGF0IGJ1ZmZlcnMg
+aGF2ZSBiZWVuIHVzZWQsIGRyaXZlcgo+ICsgICAgICBzd2l0Y2hlcyB0byBhbm90aGVyIGxlYWsg
+cXVldWUgbWFraW5nIGl0IGFjdGl2ZQo+ICsgICAgICAoZS5nLiBmcm9tIFxmaWVsZHtsZWFrcTF9
+IHRvIFxmaWVsZHtsZWFrcTJ9IG9yIHZpY2UgdmVyc2EpLgo+ICsgICAgICBJdCB0aGVuIHN0YXJ0
+cyBhZGRpbmcgYnVmZmVycyB0byB0aGUgbmV3IGxlYWsgcXVldWUuCj4gK1xpdGVtIERldmljZSB3
+aWxsIGtlZXAgdXNpbmcgYnVmZmVycyBpbiB0aGUgYWN0aXZlIGxlYWsgcXVldWUKPiArICAgICAg
+dW50aWwgaXQgZGV0ZWN0cyB0aGF0IGJvdGggdGhlIGN1cnJlbnQgbGVhayBxdWV1ZSBpcyBlbXB0
+eSBhbmQgYW5vdGhlcgo+ICsgICAgICBsZWFrIHF1ZXVlIGhhcyBidWZmZXJzLiBBdCB0aGF0IHBv
+aW50IGRldmljZSBzd2l0Y2hlcyB0bwo+ICsgICAgICBhbm90aGVyIGxlYWsgcXVldWUsIG1ha2lu
+ZyBpdCBhY3RpdmUuCj4gK1xpdGVtIEFmdGVyIHRoZSBzd2l0Y2gsIGJ1ZmZlcnMgZnJvbSB0aGUg
+bmV3IGxlYWsgcXVldWUgYXJlIG5vdAo+ICsgICAgICB1c2VkIHVudGlsIGFuIGluZm9ybWF0aW9u
+IGxlYWsgaXMgZGV0ZWN0ZWQuCj4gK1xlbmR7ZW51bWVyYXRlfQo+IC0tCj4gTVNUCj4KCkNoZWVy
+cywKQmFiaXMKCkFtYXpvbiBTcGFpbiBTZXJ2aWNlcyBzb2NpZWRhZCBsaW1pdGFkYSB1bmlwZXJz
+b25hbCwgQ2FsbGUgUmFtaXJleiBkZSBQcmFkbyA1LCAyODA0NSBNYWRyaWQuIFJlZ2lzdHJvIE1l
+cmNhbnRpbCBkZSBNYWRyaWQgLiBUb21vIDIyNDU4IC4gRm9saW8gMTAyIC4gSG9qYSBNLTQwMTIz
+NCAuIENJRiBCODQ1NzA5MzYK
 
