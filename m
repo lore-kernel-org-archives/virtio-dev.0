@@ -1,40 +1,51 @@
-Return-Path: <mst@redhat.com>
-Date: Wed, 11 Jan 2023 09:55:59 -0500
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: Re: [virtio-dev] [PATCH v3 06/20] virtio-mem-balloon: Maintain mem
+Return-Path: <parav@nvidia.com>
+From: Parav Pandit <parav@nvidia.com>
+Subject: RE: [virtio-dev] [PATCH v3 06/20] virtio-mem-balloon: Maintain mem
  balloon device spec in separate directory
-Message-ID: <20230111095538-mutt-send-email-mst@kernel.org>
+Date: Wed, 11 Jan 2023 15:01:21 +0000
+Message-ID: <PH0PR12MB54814D2E4FAABC0A72EA5CE3DCFC9@PH0PR12MB5481.namprd12.prod.outlook.com>
 References: <20230110230358.528098-1-parav@nvidia.com>
  <20230110230358.528098-7-parav@nvidia.com>
  <b95d3aab-21c0-8256-a8bd-09e5b45cd206@redhat.com>
-MIME-Version: 1.0
 In-Reply-To: <b95d3aab-21c0-8256-a8bd-09e5b45cd206@redhat.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-To: David Hildenbrand <david@redhat.com>
-Cc: Parav Pandit <parav@nvidia.com>, virtio-dev@lists.oasis-open.org, cohuck@redhat.com, virtio-comment@lists.oasis-open.org
+MIME-Version: 1.0
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+To: David Hildenbrand <david@redhat.com>, "mst@redhat.com" <mst@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "cohuck@redhat.com" <cohuck@redhat.com>
+Cc: "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, Jan 11, 2023 at 03:14:10PM +0100, David Hildenbrand wrote:
-> On 11.01.23 00:03, Parav Pandit wrote:
-> > Move virtio memory balloon device specification to its own file
-> > similar to recent virtio devices.
-> > While at it, place device specification, its driver and device
-> > conformance into its own directory to have self contained device
-> > specification.
-> > 
-> > Fixes: https://github.com/oasis-tcs/virtio-spec/issues/153
-> > Signed-off-by: Parav Pandit <parav@nvidia.com>
-> > 
-> 
-> There is virtio-mem and there is virtio-balloon. Calling virtio-balloon
-> "virtio-mem-balloon" can easily lead to quite some confusion. Any particular
-> reason why not to stick to "virtio-balloon" ?
-
-Yea, virtio-balloon scans better.
-
-> -- 
-> Thanks,
-> 
-> David / dhildenb
+SGkgRGF2aWQsDQoNCj4gRnJvbTogRGF2aWQgSGlsZGVuYnJhbmQgPGRhdmlkQHJlZGhhdC5jb20+
+DQo+IFNlbnQ6IFdlZG5lc2RheSwgSmFudWFyeSAxMSwgMjAyMyA5OjE0IEFNDQo+IFRvOiBQYXJh
+diBQYW5kaXQgPHBhcmF2QG52aWRpYS5jb20+OyBtc3RAcmVkaGF0LmNvbTsgdmlydGlvLWRldkBs
+aXN0cy5vYXNpcy0NCj4gb3Blbi5vcmc7IGNvaHVja0ByZWRoYXQuY29tDQo+IENjOiB2aXJ0aW8t
+Y29tbWVudEBsaXN0cy5vYXNpcy1vcGVuLm9yZw0KPiBTdWJqZWN0OiBSZTogW3ZpcnRpby1kZXZd
+IFtQQVRDSCB2MyAwNi8yMF0gdmlydGlvLW1lbS1iYWxsb29uOiBNYWludGFpbiBtZW0NCj4gYmFs
+bG9vbiBkZXZpY2Ugc3BlYyBpbiBzZXBhcmF0ZSBkaXJlY3RvcnkNCj4gDQo+IE9uIDExLjAxLjIz
+IDAwOjAzLCBQYXJhdiBQYW5kaXQgd3JvdGU6DQo+ID4gTW92ZSB2aXJ0aW8gbWVtb3J5IGJhbGxv
+b24gZGV2aWNlIHNwZWNpZmljYXRpb24gdG8gaXRzIG93biBmaWxlDQo+ID4gc2ltaWxhciB0byBy
+ZWNlbnQgdmlydGlvIGRldmljZXMuDQo+ID4gV2hpbGUgYXQgaXQsIHBsYWNlIGRldmljZSBzcGVj
+aWZpY2F0aW9uLCBpdHMgZHJpdmVyIGFuZCBkZXZpY2UNCj4gPiBjb25mb3JtYW5jZSBpbnRvIGl0
+cyBvd24gZGlyZWN0b3J5IHRvIGhhdmUgc2VsZiBjb250YWluZWQgZGV2aWNlDQo+ID4gc3BlY2lm
+aWNhdGlvbi4NCj4gPg0KPiA+IEZpeGVzOiBodHRwczovL2dpdGh1Yi5jb20vb2FzaXMtdGNzL3Zp
+cnRpby1zcGVjL2lzc3Vlcy8xNTMNCj4gPiBTaWduZWQtb2ZmLWJ5OiBQYXJhdiBQYW5kaXQgPHBh
+cmF2QG52aWRpYS5jb20+DQo+ID4NCj4gDQo+IFRoZXJlIGlzIHZpcnRpby1tZW0gYW5kIHRoZXJl
+IGlzIHZpcnRpby1iYWxsb29uLiBDYWxsaW5nIHZpcnRpby1iYWxsb29uICJ2aXJ0aW8tDQo+IG1l
+bS1iYWxsb29uIiBjYW4gZWFzaWx5IGxlYWQgdG8gcXVpdGUgc29tZSBjb25mdXNpb24uIEFueSBw
+YXJ0aWN1bGFyIHJlYXNvbg0KPiB3aHkgbm90IHRvIHN0aWNrIHRvICJ2aXJ0aW8tYmFsbG9vbiIg
+Pw0KPiANCkhpc3RvcmljYWxseSBMaW51eCBtZW1vcnkgYmFsbG9vbiBkcml2ZXIgaW4gbGludXgg
+aXMgcGxhY2VkIGFzIHZpcnRpb19iYWxsb29uLmMNCkluIHZpcnRpbyBzcGVjLCBpbiB0aGUgZGV2
+aWNlIHR5cGUgaXMgaXQgbmFtZWQgYXMgIlRyYWRpdGlvbmFsIG1lbW9yeSBiYWxsb29uIGRldmlj
+ZSIuDQpTbywgSSBuYW1lZCB0aGUgZGlyZWN0b3J5IG5hbWUgY2xvc2UgdG8gYWN0dWFsIHNwZWMg
+Y29udGVudCBuYW1lLg0KQWRkaW5nIGxlZ2FjeS90cmFkaXRpb25hbCB3YXMgdG9vIGxvbmcuIDop
+DQpNYXkgYmUgdmlydGlvLW1lbS1sZWdhY3kgaXMgYmV0dGVyIHRvIGRpZmZlcmVudGlhdGUgYmV0
+d2VlbiBsZWdhY3kgYW5kIG5ldyBtZW0gZGV2aWNlPw0KDQpJbiB0aGlzIHBhdGNoc2V0LCBkaXJl
+Y3RvcmllcyBhcmUgbmFtZWQgd2l0aCAidmlydGlvLSIgcHJlZml4IHN1Y2ggYXMgdmlydGlvLXBt
+ZW0sIHZpcnRpby1zb3VuZC4NCg0KQW5vdGhlciBvcHRpb24gKHdoaWNoIEkgcHJlZmVyIGFzIEkg
+d3JpdGUgbm93KSBpcywNCkhvdyBhYm91dCB3ZSBkcm9wICJ2aXJ0aW8tIiBwcmVmaXggaW4gdGhl
+IGRpcmVjdG9yeSBuYW1lIGJlY2F1c2UgdGhpcyBpcyB0aGUgdmlydGlvIHNwZWMuDQoNCkFuZCBo
+YXZlIG5hbWVzIGFzDQpkZXZpY2UtdHlwZXMvc291bmQNCmRldmljZS10eXBlcy9sZWdhY3ktbWVt
+LWJhbGxvb24NCmRldmljZS10eXBlcy9tZW0NCmRldmljZS10eXBlcy9wbWVtDQoNClRoaXMgaXMg
+c2hvcnQgYW5kIGNvdmVycyBiYWxsb29uIHBhcnQgdG9vPw0KDQo=
 
