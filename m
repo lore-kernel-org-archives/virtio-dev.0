@@ -1,110 +1,63 @@
-Return-Path: <virtio-dev-return-10543-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-10570-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Message-ID: <eb567269-f1ec-9e64-9cf8-5cedd63cb669@amazon.es>
-Date: Wed, 11 Jan 2023 14:57:51 +0100
-MIME-Version: 1.0
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id 192989865B2
+	for <virtio-dev@lists.oasis-open.org>; Thu, 12 Jan 2023 07:02:57 +0000 (UTC)
+Date: Thu, 12 Jan 2023 02:02:49 -0500
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20230112020204-mutt-send-email-mst@kernel.org>
 References: <20221121162756.350032-1-mst@redhat.com>
- <20221121162756.350032-4-mst@redhat.com>
-From: Babis Chalios <bchalios@amazon.es>
-In-Reply-To: <20221121162756.350032-4-mst@redhat.com>
-Subject: [virtio-dev] Re: [PATCH RFC 3/3] rng: leak detection support
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: base64
-To: "Michael S. Tsirkin" <mst@redhat.com>, virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, "Cali, Marco" <xmarcalx@amazon.co.uk>, "Graf (AWS), Alexander" <graf@amazon.de>, "Jason A. Donenfeld" <Jason@zx2c4.com>, amit@kernel.org
+MIME-Version: 1.0
+In-Reply-To: <20221121162756.350032-1-mst@redhat.com>
+Subject: [virtio-dev] Re: [PATCH RFC 0/3] virtio-rng based entropy leak reporting
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+To: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, "Cali, Marco" <xmarcalx@amazon.co.uk>, "Graf (AWS), Alexander" <graf@amazon.de>, "Chalios, Babis" <bchalios@amazon.es>, "Jason A. Donenfeld" <Jason@zx2c4.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Q0NpbmcgQW1pdAoKT24gMjEvMTEvMjIgMTc6MzAsIE1pY2hhZWwgUy4gVHNpcmtpbiB3cm90ZToK
-PiBDQVVUSU9OOiBUaGlzIGVtYWlsIG9yaWdpbmF0ZWQgZnJvbSBvdXRzaWRlIG9mIHRoZSBvcmdh
-bml6YXRpb24uIERvIG5vdCBjbGljayBsaW5rcyBvciBvcGVuIGF0dGFjaG1lbnRzIHVubGVzcyB5
-b3UgY2FuIGNvbmZpcm0gdGhlIHNlbmRlciBhbmQga25vdyB0aGUgY29udGVudCBpcyBzYWZlLgo+
-Cj4KPgo+IEFkZCB2aXJ0cXVldWVzIHRvIHN1cHBvcnQgcmVwb3J0aW5nIGVudHJvcHkgbGVha3Mg
-KHNpbWlsYXIgdG8gdmlydGlvIGJhc2VkIHZtZ2VuaWQpLgo+Cj4gU2lnbmVkLW9mZi1ieTogTWlj
-aGFlbCBTLiBUc2lya2luIDxtc3RAcmVkaGF0LmNvbT4KPiAtLS0KPiAgIHZpcnRpby1ybmcudGV4
-IHwgNjEgKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKy0K
-PiAgIDEgZmlsZSBjaGFuZ2VkLCA2MCBpbnNlcnRpb25zKCspLCAxIGRlbGV0aW9uKC0pCj4KPiBk
-aWZmIC0tZ2l0IGEvdmlydGlvLXJuZy50ZXggYi92aXJ0aW8tcm5nLnRleAo+IGluZGV4IDFlYzcx
-NjQuLjQ3NjBkZmEgMTAwNjQ0Cj4gLS0tIGEvdmlydGlvLXJuZy50ZXgKPiArKysgYi92aXJ0aW8t
-cm5nLnRleAo+IEBAIC05LDEwICs5LDE0IEBAIFxzdWJzZWN0aW9ue0RldmljZSBJRH1cbGFiZWx7
-c2VjOkRldmljZSBUeXBlcyAvIEVudHJvcHkgRGV2aWNlIC8gRGV2aWNlIElEfQo+ICAgXHN1YnNl
-Y3Rpb257VmlydHF1ZXVlc31cbGFiZWx7c2VjOkRldmljZSBUeXBlcyAvIEVudHJvcHkgRGV2aWNl
-IC8gVmlydHF1ZXVlc30KPiAgIFxiZWdpbntkZXNjcmlwdGlvbn0KPiAgIFxpdGVtWzBdIHJlcXVl
-c3RxCj4gK1xpdGVtWzFdIGxlYWtxMSAob25seSBpZiBWSVJUSU9fUk5HX0ZfTEVBSyBpcyBvZmZl
-cmVkKQo+ICtcaXRlbVsyXSBsZWFrcTIgKG9ubHkgaWYgVklSVElPX1JOR19GX0xFQUsgaXMgb2Zm
-ZXJlZCkKPiAgIFxlbmR7ZGVzY3JpcHRpb259Cj4KPiAgIFxzdWJzZWN0aW9ue0ZlYXR1cmUgYml0
-c31cbGFiZWx7c2VjOkRldmljZSBUeXBlcyAvIEVudHJvcHkgRGV2aWNlIC8gRmVhdHVyZSBiaXRz
-fQo+IC0gIE5vbmUgY3VycmVudGx5IGRlZmluZWQKPiArXGJlZ2lue2Rlc2NyaXB0aW9ufQo+ICtc
-aXRlbVtWSVJUSU9fUk5HX0ZfTEVBSyAoMCldIERldmljZSBjYW4gcmVwb3J0IGFuZCBoYW5kbGUg
-aW5mb3JtYXRpb24gbGVha3MuCj4gK1xlbmR7ZGVzY3JpcHRpb259Cj4KPiAgIFxzdWJzZWN0aW9u
-e0RldmljZSBjb25maWd1cmF0aW9uIGxheW91dH1cbGFiZWx7c2VjOkRldmljZSBUeXBlcyAvIEVu
-dHJvcHkgRGV2aWNlIC8gRGV2aWNlIGNvbmZpZ3VyYXRpb24gbGF5b3V0fQo+ICAgICBOb25lIGN1
-cnJlbnRseSBkZWZpbmVkLgo+IEBAIC0yMSw2ICsyNSw3IEBAIFxzdWJzZWN0aW9ue0RldmljZSBJ
-bml0aWFsaXphdGlvbn1cbGFiZWx7c2VjOkRldmljZSBUeXBlcyAvIEVudHJvcHkgRGV2aWNlIC8g
-RGV2Cj4KPiAgIFxiZWdpbntlbnVtZXJhdGV9Cj4gICBcaXRlbSBUaGUgXGZpZWxke3JlcXVlc3Rx
-fSB2aXJ0cXVldWUgaXMgaW5pdGlhbGl6ZWQKPiArXGl0ZW0gSWYgVklSVElPX1JOR19GX0xFQUsg
-aGFzIGJlZW4gbmVnb3RpYXRlZCwgXGZpZWxke2xlYWtxMX0gYW5kIFxmaWVsZHtsZWFrcTJ9IGFy
-ZSBpbml0aWFsaXplZAo+ICAgXGVuZHtlbnVtZXJhdGV9Cj4KPiAgIFxzdWJzZWN0aW9ue0Rldmlj
-ZSBPcGVyYXRpb259XGxhYmVse3NlYzpEZXZpY2UgVHlwZXMgLyBFbnRyb3B5IERldmljZSAvIERl
-dmljZSBPcGVyYXRpb259Cj4gQEAgLTQxLDMgKzQ2LDU3IEBAIFxzdWJzZWN0aW9ue0RldmljZSBP
-cGVyYXRpb259XGxhYmVse3NlYzpEZXZpY2UgVHlwZXMgLyBFbnRyb3B5IERldmljZSAvIERldmlj
-ZSBPCj4gICBUaGUgZGV2aWNlIE1VU1QgcGxhY2Ugb25lIG9yIG1vcmUgcmFuZG9tIGJ5dGVzIGlu
-dG8gdGhlIGJ1ZmZlcgo+ICAgbWFkZSBhdmFpbGFibGUgdG8gaXQgdGhyb3VnaCBcZmllbGR7cmVx
-dWVzdHF9LCBidXQgaXQKPiAgIE1BWSB1c2UgbGVzcyB0aGFuIHRoZSBlbnRpcmUgYnVmZmVyIGxl
-bmd0aC4KPiArCj4gK1xzdWJzdWJzZWN0aW9ue1JlcG9ydGluZyBJbmZvcm1hdGlvbiBMZWFrc317
-RGV2aWNlIFR5cGVzIC8gRW50cm9weSBEZXZpY2UgLyBEZXZpY2UgT3BlcmF0aW9uIC8gUmVwb3J0
-aW5nIEluZm9ybWF0aW9uIExlYWtzfQo+ICsKPiArVGhlIGRldmljZSBtaWdodCwgYWZ0ZXIgdGhl
-IGZhY3QsIGRldGVjdCB0aGF0IHNvbWUgb2YgdGhlIGVudHJvcHkKPiAraXQgc3VwcGxpZWQgdG8g
-dGhlIGRyaXZlciBoYXMgYWZ0ZXIgdGhlIGZhY3QgZGVncmFkZWQgaW4gcXVhbGl0eQo+ICtvciBs
-ZWFrZWQgdG8gdGhlIG91dHNpZGUgd29ybGQuICBPbmUgZXhhbXBsZSBpcyB3aGVuIHRoZSBkZXZp
-Y2UKPiAraXMgcGFydCBvZiB0aGUgdmlydHVhbCBtYWNoaW5lIHVuZGVyZ29pbmcgYSByZXN0b3Jl
-IGZyb20gc25hcHNob3QKPiArb3BlcmF0aW9uLiBBbm90aGVyIGV4YW1wbGUgaXMgd2hlbiB0aGUg
-aW5mb3JtYXRpb24gbGVha3MgZnJvbSB0aGUKPiAraG9zdCBzeXN0ZW0gdGhyb3VnaCBhIHNpZGUt
-Y2hhbm5lbC4KPiArCj4gK1RoZSBkcml2ZXIgd291bGQgdHlwaWNhbGx5IHJlYWN0IGJ5IGNhdXNp
-bmcgcmVnZW5lcmF0aW9uIG9mIGFueQo+ICtpbmZvcm1hdGlvbiB0aGF0IG1pZ2h0IGhhdmUgbGVh
-a2VkIGFuZCB0aGF0IGhhcyB0byBiZSBzZWNyZXQgb3IKPiArdW5pcXVlLiAgSXQgaXMgdW5kZXJz
-dG9vZCB0aGF0IHdoZW4gYW4gaW5mb3JtYXRpb24gbGVhayBoYXMgYmVlbgo+ICtkZXRlY3RlZCBp
-dCBpcyBsaWtlbHkgbm90IGxpbWl0ZWQgdG8gdGhlIGVudHJvcHkgcmVjZWl2ZWQgdGhyb3VnaAo+
-ICt0aGUgc3BlY2lmaWMgZGV2aWNlLiBJbiBwYXJ0aWN1bGFyLCB0aGlzIGlzIHRoZSBjYXNlIGZv
-cgo+ICtzbmFwc2hvdGluZyBJdCBpcyB0aHVzIHN1Z2dlc3RlZCB0aGF0IHRoZSBzeXN0ZW0gZnVs
-bHkKPiArcmVnZW5lcmF0ZSBhbnkgdW5pcXVlL3NlY3JldCBpbmZvcm1hdGlvbiBpbiB0aGlzIHNj
-ZW5hcmlvLgo+ICsKPiArSWYgVklSVElPX1JOR19GX0xFQUsgaGFzIGJlZW4gbmVnb3RpYXRlZCB0
-aGUgZGV2aWNlIGNhbiByZXBvcnQKPiArc3VjaCBsZWFrcyB0byB0aGUgZHJpdmVyIHRocm91Z2gg
-YSBzZXQgb2YgZGVkaWNhdGVkIGxlYWsKPiArcXVldWVzOiBcZmllbGR7bGVha3ExfSBhbmQgXGZp
-ZWxke2xlYWtxMn0uCj4gKwo+ICtCdWZmZXJzIGFkZGVkIHRvIHRoZSBsZWFrIHF1ZXVlcyBjYW4g
-aGF2ZSBvbmUgb2YgdHdvIGZvcm1zOgo+ICtcYmVnaW57ZW51bWVyYXRlfQo+ICtcaXRlbSBBIHdy
-aXRlLW9ubHkgYnVmZmVyLiBJdCB3aWxsIGJlIGNvbXBsZXRlbHkgZmlsbGVkIGJ5IHJhbmRvbSBk
-YXRhIGJ5IHRoZSBkZXZpY2UuCj4gK1xpdGVtIEEgYnVmZmVyIGNvbnNpc3Rpbmcgb2YgcmVhZC1v
-bmx5IHNlY3Rpb24gZm9sbG93ZWQgYnkgYQo+ICt3cml0ZS1vbmx5IHNlY3Rpb24sIGJvdGggb2Yg
-aWRlbnRpY2FsIHNpemUuIFRoZQo+ICtkZXZpY2Ugd2lsbCBjb3B5IGRhdGEgZnJvbSB0aGUgcmVh
-ZC1vbmx5IHNlY3Rpb24gdG8gdGhlIHdyaXRlLW9ubHkKPiArc2VjdGlvbi4KPiArXGVuZHtlbnVt
-ZXJhdGV9Cj4gKwo+ICtUaGUgc3RlcHMgZm9yIG9wZXJhdGluZyB0aGUgdmlydHF1ZXVlIGFyZToK
-PiArCj4gK1xiZWdpbntlbnVtZXJhdGV9Cj4gK1xpdGVtIEF0IGVhY2ggdGltZSwgb25seSBvbmUg
-b2YgXGZpZWxke2xlYWtxMX0sIFxmaWVsZHtsZWFrcTJ9IGlzIGFjdGl2ZQo+ICsgICAgICAoaGFz
-IGJ1ZmZlcnMgYWRkZWQvdXNlZCkuCj4gK1xpdGVtIEFmdGVyIGluaXRpYWxpemF0aW9uLCBcZmll
-bGR7bGVha3ExfSBpcyBhY3RpdmUuCj4gK1xpdGVtIERyaXZlciBhZGRzIG11bHRpcGxlIGJ1ZmZl
-cnMgdG8gdGhlIGFjdGl2ZSBsZWFrIHF1ZXVlLgo+ICtcaXRlbSBUaGUgYnVmZmVycyBhcmUgbm90
-IHVzZWQgdW50aWwgYW4gaW5mb3JtYXRpb24gbGVhayBpcwo+ICsgICAgICBkZXRlY3RlZCwgYXMg
-bG9uZyBhcyB0aGF0IGlzIHRoZSBjYXNlIGRyaXZlciBjYW4KPiArICAgICAgYWRkIG1vcmUgYnVm
-ZmVycyB0byB0aGUgYWN0aXZlIHF1ZXVlLgo+ICtcaXRlbSBVcG9uIGRldGVjdGluZyBhbiBpbmZv
-cm1hdGlvbiBsZWFrLCBkZXZpY2Ugc3RhcnRzCj4gKyAgICAgIHVzaW5nIGJ1ZmZlcnMgaW4gdGhl
-IGFjdGl2ZSBsZWFrIHF1ZXVlLgo+ICtcaXRlbSBVcG9uIGRldGVjdGluZyB0aGF0IGJ1ZmZlcnMg
-aGF2ZSBiZWVuIHVzZWQsIGRyaXZlcgo+ICsgICAgICBzd2l0Y2hlcyB0byBhbm90aGVyIGxlYWsg
-cXVldWUgbWFraW5nIGl0IGFjdGl2ZQo+ICsgICAgICAoZS5nLiBmcm9tIFxmaWVsZHtsZWFrcTF9
-IHRvIFxmaWVsZHtsZWFrcTJ9IG9yIHZpY2UgdmVyc2EpLgo+ICsgICAgICBJdCB0aGVuIHN0YXJ0
-cyBhZGRpbmcgYnVmZmVycyB0byB0aGUgbmV3IGxlYWsgcXVldWUuCj4gK1xpdGVtIERldmljZSB3
-aWxsIGtlZXAgdXNpbmcgYnVmZmVycyBpbiB0aGUgYWN0aXZlIGxlYWsgcXVldWUKPiArICAgICAg
-dW50aWwgaXQgZGV0ZWN0cyB0aGF0IGJvdGggdGhlIGN1cnJlbnQgbGVhayBxdWV1ZSBpcyBlbXB0
-eSBhbmQgYW5vdGhlcgo+ICsgICAgICBsZWFrIHF1ZXVlIGhhcyBidWZmZXJzLiBBdCB0aGF0IHBv
-aW50IGRldmljZSBzd2l0Y2hlcyB0bwo+ICsgICAgICBhbm90aGVyIGxlYWsgcXVldWUsIG1ha2lu
-ZyBpdCBhY3RpdmUuCj4gK1xpdGVtIEFmdGVyIHRoZSBzd2l0Y2gsIGJ1ZmZlcnMgZnJvbSB0aGUg
-bmV3IGxlYWsgcXVldWUgYXJlIG5vdAo+ICsgICAgICB1c2VkIHVudGlsIGFuIGluZm9ybWF0aW9u
-IGxlYWsgaXMgZGV0ZWN0ZWQuCj4gK1xlbmR7ZW51bWVyYXRlfQo+IC0tCj4gTVNUCj4KCkNoZWVy
-cywKQmFiaXMKCkFtYXpvbiBTcGFpbiBTZXJ2aWNlcyBzb2NpZWRhZCBsaW1pdGFkYSB1bmlwZXJz
-b25hbCwgQ2FsbGUgUmFtaXJleiBkZSBQcmFkbyA1LCAyODA0NSBNYWRyaWQuIFJlZ2lzdHJvIE1l
-cmNhbnRpbCBkZSBNYWRyaWQgLiBUb21vIDIyNDU4IC4gRm9saW8gMTAyIC4gSG9qYSBNLTQwMTIz
-NCAuIENJRiBCODQ1NzA5MzYK
+On Mon, Nov 21, 2022 at 11:30:19AM -0500, Michael S. Tsirkin wrote:
+> Generally, entropy only grows. However, there are cases where
+> it goes down - for example, consider generating a one time
+> pad where someone managed to use a side channel to
+> steal its contents. By combining the seemingly random
+> pad with the stolen contents we have reversed the entropy.
+> 
+> This actually happens within VMs e.g. when time is reversed due
+> to snapshoting. Existing approaches for VMs include Microsoft's
+> VM GEN ID.
+> 
+> This draft proposes a feature in virtio rng for reporting such
+> leaks.
+> 
+> Patches 1,2 refactor existing draft text. Patch 3 adds new functionality.
+> 
+> TODO:
+> 	document theory of operation
+> 	add conformance clauses
+
+Guys any input on this? Anyone going to use this?
+
+> 
+> Michael S. Tsirkin (3):
+>   rng: move to a file of its own
+>   rng: be specific about the virtqueue
+>   rng: leak detection support
+> 
+>  content.tex    |  43 +--------------------
+>  virtio-rng.tex | 102 +++++++++++++++++++++++++++++++++++++++++++++++++
+>  2 files changed, 103 insertions(+), 42 deletions(-)
+>  create mode 100644 virtio-rng.tex
+> 
+> -- 
+> MST
+> 
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
