@@ -1,63 +1,59 @@
-Return-Path: <virtio-dev-return-10570-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-10623-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 192989865B2
-	for <virtio-dev@lists.oasis-open.org>; Thu, 12 Jan 2023 07:02:57 +0000 (UTC)
-Date: Thu, 12 Jan 2023 02:02:49 -0500
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20230112020204-mutt-send-email-mst@kernel.org>
-References: <20221121162756.350032-1-mst@redhat.com>
+Message-ID: <b84afe37-8cbb-ddc0-e5b0-e288743ec16c@amazon.es>
+Date: Mon, 16 Jan 2023 12:39:03 +0100
 MIME-Version: 1.0
-In-Reply-To: <20221121162756.350032-1-mst@redhat.com>
-Subject: [virtio-dev] Re: [PATCH RFC 0/3] virtio-rng based entropy leak reporting
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-To: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, "Cali, Marco" <xmarcalx@amazon.co.uk>, "Graf (AWS), Alexander" <graf@amazon.de>, "Chalios, Babis" <bchalios@amazon.es>, "Jason A. Donenfeld" <Jason@zx2c4.com>
+References: <20221121162756.350032-1-mst@redhat.com>
+ <20230112020204-mutt-send-email-mst@kernel.org>
+From: Babis Chalios <bchalios@amazon.es>
+In-Reply-To: <20230112020204-mutt-send-email-mst@kernel.org>
+Subject: Re: [virtio-dev] Re: [PATCH RFC 0/3] virtio-rng based entropy leak reporting
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: base64
+To: "Michael S. Tsirkin" <mst@redhat.com>, virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, "Cali, Marco" <xmarcalx@amazon.co.uk>, "Graf (AWS), Alexander" <graf@amazon.de>, "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc: amit@kernel.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Mon, Nov 21, 2022 at 11:30:19AM -0500, Michael S. Tsirkin wrote:
-> Generally, entropy only grows. However, there are cases where
-> it goes down - for example, consider generating a one time
-> pad where someone managed to use a side channel to
-> steal its contents. By combining the seemingly random
-> pad with the stolen contents we have reversed the entropy.
-> 
-> This actually happens within VMs e.g. when time is reversed due
-> to snapshoting. Existing approaches for VMs include Microsoft's
-> VM GEN ID.
-> 
-> This draft proposes a feature in virtio rng for reporting such
-> leaks.
-> 
-> Patches 1,2 refactor existing draft text. Patch 3 adds new functionality.
-> 
-> TODO:
-> 	document theory of operation
-> 	add conformance clauses
-
-Guys any input on this? Anyone going to use this?
-
-> 
-> Michael S. Tsirkin (3):
->   rng: move to a file of its own
->   rng: be specific about the virtqueue
->   rng: leak detection support
-> 
->  content.tex    |  43 +--------------------
->  virtio-rng.tex | 102 +++++++++++++++++++++++++++++++++++++++++++++++++
->  2 files changed, 103 insertions(+), 42 deletions(-)
->  create mode 100644 virtio-rng.tex
-> 
-> -- 
-> MST
-> 
-
-
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+SGkgTWljaGFlbCwKCk9uIDEyLzEvMjMgMDg6MDIsIE1pY2hhZWwgUy4gVHNpcmtpbiB3cm90ZToK
+PiBDQVVUSU9OOiBUaGlzIGVtYWlsIG9yaWdpbmF0ZWQgZnJvbSBvdXRzaWRlIG9mIHRoZSBvcmdh
+bml6YXRpb24uIERvIG5vdCBjbGljayBsaW5rcyBvciBvcGVuIGF0dGFjaG1lbnRzIHVubGVzcyB5
+b3UgY2FuIGNvbmZpcm0gdGhlIHNlbmRlciBhbmQga25vdyB0aGUgY29udGVudCBpcyBzYWZlLgo+
+Cj4KPgo+IE9uIE1vbiwgTm92IDIxLCAyMDIyIGF0IDExOjMwOjE5QU0gLTA1MDAsIE1pY2hhZWwg
+Uy4gVHNpcmtpbiB3cm90ZToKPj4gR2VuZXJhbGx5LCBlbnRyb3B5IG9ubHkgZ3Jvd3MuIEhvd2V2
+ZXIsIHRoZXJlIGFyZSBjYXNlcyB3aGVyZQo+PiBpdCBnb2VzIGRvd24gLSBmb3IgZXhhbXBsZSwg
+Y29uc2lkZXIgZ2VuZXJhdGluZyBhIG9uZSB0aW1lCj4+IHBhZCB3aGVyZSBzb21lb25lIG1hbmFn
+ZWQgdG8gdXNlIGEgc2lkZSBjaGFubmVsIHRvCj4+IHN0ZWFsIGl0cyBjb250ZW50cy4gQnkgY29t
+YmluaW5nIHRoZSBzZWVtaW5nbHkgcmFuZG9tCj4+IHBhZCB3aXRoIHRoZSBzdG9sZW4gY29udGVu
+dHMgd2UgaGF2ZSByZXZlcnNlZCB0aGUgZW50cm9weS4KPj4KPj4gVGhpcyBhY3R1YWxseSBoYXBw
+ZW5zIHdpdGhpbiBWTXMgZS5nLiB3aGVuIHRpbWUgaXMgcmV2ZXJzZWQgZHVlCj4+IHRvIHNuYXBz
+aG90aW5nLiBFeGlzdGluZyBhcHByb2FjaGVzIGZvciBWTXMgaW5jbHVkZSBNaWNyb3NvZnQncwo+
+PiBWTSBHRU4gSUQuCj4+Cj4+IFRoaXMgZHJhZnQgcHJvcG9zZXMgYSBmZWF0dXJlIGluIHZpcnRp
+byBybmcgZm9yIHJlcG9ydGluZyBzdWNoCj4+IGxlYWtzLgo+Pgo+PiBQYXRjaGVzIDEsMiByZWZh
+Y3RvciBleGlzdGluZyBkcmFmdCB0ZXh0LiBQYXRjaCAzIGFkZHMgbmV3IGZ1bmN0aW9uYWxpdHku
+Cj4+Cj4+IFRPRE86Cj4+ICAgICAgICBkb2N1bWVudCB0aGVvcnkgb2Ygb3BlcmF0aW9uCj4+ICAg
+ICAgICBhZGQgY29uZm9ybWFuY2UgY2xhdXNlcwo+IEd1eXMgYW55IGlucHV0IG9uIHRoaXM/IEFu
+eW9uZSBnb2luZyB0byB1c2UgdGhpcz8KCkkgcGxhbiB0byBwb3N0IGFuIFJGQyBwYXRjaCBmb3Ig
+bGludXggdmlydGlvLXJuZyBzaG93LWNhc2luZyB0aGlzIHdpdGggCkZpcmVjcmFja2VyLCB0aGlz
+IHdlZWsuCkFsc28sIEkgaGFkIHNlbnQgYW4gZS1tYWlsOiAKaHR0cHM6Ly93d3cubWFpbC1hcmNo
+aXZlLmNvbS92aXJ0aW8tZGV2QGxpc3RzLm9hc2lzLW9wZW4ub3JnL21zZzA5MTI4Lmh0bWwgCndp
+dGggc29tZSBxdWVzdGlvbnMsCm5vdCBzdXJlIHdoZXRoZXIgeW91IG1pc3NlZCBpdD8KCj4+IE1p
+Y2hhZWwgUy4gVHNpcmtpbiAoMyk6Cj4+ICAgIHJuZzogbW92ZSB0byBhIGZpbGUgb2YgaXRzIG93
+bgo+PiAgICBybmc6IGJlIHNwZWNpZmljIGFib3V0IHRoZSB2aXJ0cXVldWUKPj4gICAgcm5nOiBs
+ZWFrIGRldGVjdGlvbiBzdXBwb3J0Cj4+Cj4+ICAgY29udGVudC50ZXggICAgfCAgNDMgKy0tLS0t
+LS0tLS0tLS0tLS0tLS0tCj4+ICAgdmlydGlvLXJuZy50ZXggfCAxMDIgKysrKysrKysrKysrKysr
+KysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKwo+PiAgIDIgZmlsZXMgY2hhbmdlZCwg
+MTAzIGluc2VydGlvbnMoKyksIDQyIGRlbGV0aW9ucygtKQo+PiAgIGNyZWF0ZSBtb2RlIDEwMDY0
+NCB2aXJ0aW8tcm5nLnRleAo+Pgo+PiAtLQo+PiBNU1QKPj4KPgo+IC0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQo+IFRv
+IHVuc3Vic2NyaWJlLCBlLW1haWw6IHZpcnRpby1kZXYtdW5zdWJzY3JpYmVAbGlzdHMub2FzaXMt
+b3Blbi5vcmcKPiBGb3IgYWRkaXRpb25hbCBjb21tYW5kcywgZS1tYWlsOiB2aXJ0aW8tZGV2LWhl
+bHBAbGlzdHMub2FzaXMtb3Blbi5vcmcKPgoKQ2hlZXJzLApCYWJpcwoKCkFtYXpvbiBTcGFpbiBT
+ZXJ2aWNlcyBzb2NpZWRhZCBsaW1pdGFkYSB1bmlwZXJzb25hbCwgQ2FsbGUgUmFtaXJleiBkZSBQ
+cmFkbyA1LCAyODA0NSBNYWRyaWQuIFJlZ2lzdHJvIE1lcmNhbnRpbCBkZSBNYWRyaWQgLiBUb21v
+IDIyNDU4IC4gRm9saW8gMTAyIC4gSG9qYSBNLTQwMTIzNCAuIENJRiBCODQ1NzA5MzYK
 
