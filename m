@@ -1,218 +1,173 @@
-Return-Path: <virtio-comment-return-3854-cohuck=redhat.com@lists.oasis-open.org>
-Sender: <virtio-comment@lists.oasis-open.org>
-List-Post: <mailto:virtio-comment@lists.oasis-open.org>
-List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-10628-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+From: Parav Pandit <parav@nvidia.com>
+Date: Mon, 16 Jan 2023 19:42:01 +0000
+Message-ID: <PH0PR12MB5481A88FBABF45BC2736AC56DCC19@PH0PR12MB5481.namprd12.prod.outlook.com>
+References: <20230111152123.148889-1-alvaro.karsz@solid-run.com>
+In-Reply-To: <20230111152123.148889-1-alvaro.karsz@solid-run.com>
 MIME-Version: 1.0
-References: <20230111152123.148889-1-alvaro.karsz@solid-run.com> <20230116103009-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20230116103009-mutt-send-email-mst@kernel.org>
-From: Alvaro Karsz <alvaro.karsz@solid-run.com>
-Date: Tue, 17 Jan 2023 14:42:00 +0200
-Message-ID: <CAJs=3_D6T+Zkn3CrFPEYyR=pu3zmDAYnsgNrLYRRt9q0GjjjVQ@mail.gmail.com>
-Subject: [virtio-comment] Re: [PATCH v2] virtio_net: support low and high rate of notification coalescing
-Content-Type: text/plain; charset="UTF-8"
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, jasowang@redhat.com
+Subject: RE: [virtio-dev] [PATCH v2] virtio_net: support low and high rate of
+ notification coalescing
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+To: Alvaro Karsz <alvaro.karsz@solid-run.com>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
+Cc: "jasowang@redhat.com" <jasowang@redhat.com>, "mst@redhat.com" <mst@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-> >  #define VIRTIO_NET_CTRL_NOTF_COAL 6
-> >   #define VIRTIO_NET_CTRL_NOTF_COAL_TX_SET  0
-> >   #define VIRTIO_NET_CTRL_NOTF_COAL_RX_SET 1
-> > + #define VIRTIO_NET_CTRL_NOTF_COAL_LOW_TX_SET 2 //Only if VIRTIO_NET_F_NOTF_COAL_LOW_HIGH negotiated
-> > + #define VIRTIO_NET_CTRL_NOTF_COAL_LOW_RX_SET 3 //Only if VIRTIO_NET_F_NOTF_COAL_LOW_HIGH negotiated
-> > + #define VIRTIO_NET_CTRL_NOTF_COAL_HIGH_TX_SET 4 //Only if VIRTIO_NET_F_NOTF_COAL_LOW_HIGH negotiated
-> > + #define VIRTIO_NET_CTRL_NOTF_COAL_HIGH_RX_SET 5 //Only if VIRTIO_NET_F_NOTF_COAL_LOW_HIGH negotiated
->
-> add conformance statements for this requirement of
-> VIRTIO_NET_F_NOTF_COAL_LOW_HIGH too?
+Hi Alvaro,
 
-I did:
-> +If the VIRTIO_NET_F_NOTF_COAL_LOW_HIGH feature has not been negotiated, the driver MUST NOT issue low/high rate coalescing commands.
+> From: virtio-dev@lists.oasis-open.org <virtio-dev@lists.oasis-open.org> O=
+n
+> Behalf Of Alvaro Karsz
+>=20
+> This patch adds a new feature, VIRTIO_NET_F_NOTF_COAL_LOW_HIGH, while
+> clarifying/fixing existing coalescing concepts.
+>=20
+While its visible in the patch itself, what is being done,=20
+its important to mention the problem statement/motivation for the feature a=
+t start of the commit log as first step.
 
-> > -Coalescing parameters:
-> > +TX Coalescing parameters:
-> > +\begin{itemize}
-> > +\item \field{usecs}: Maximum number of usecs to delay a TX notification.
-> > +\item \field{max_packets}: Maximum number of packets to send before a TX notification.
-> > +\end{itemize}
-> > +
-> > +RX Coalescing parameters:
-> > +\begin{itemize}
-> > +\item \field{usecs}: Maximum number of usecs to delay a RX notification.
-> > +\item \field{max_packets}: Maximum number of packets to receive before a RX notification.
-> > +\end{itemize}
->
-> just unify these - TX/RX notification?
+So, can you please describe the motivation, what problem does the new comma=
+nd solve?
+It is likely that control entity which want to set different coalescing par=
+ameters likely wants to more than just two values.
+This is something already supported today.
 
-ok
+> The new feature adds 4 new commands to VIRTIO_NET_CTRL_NOTF_COAL
+> class:
+> =09- VIRTIO_NET_CTRL_NOTF_COAL_LOW_TX_SET - coalescing
+> parameters
+> =09  to use when the packet rate is equal or lower then the low
+> =09  threshold for TX.
+>         - VIRTIO_NET_CTRL_NOTF_COAL_LOW_RX_SET - coalescing parameters
+>           to use when the packet rate is equal or lower then the low
+>           threshold for RX.
+>         - VIRTIO_NET_CTRL_NOTF_COAL_HIGH_TX_SET - coalescing parameters
+>           to use when the packet rate is equal or higher then the high
+>           threshold for TX.
+>         - VIRTIO_NET_CTRL_NOTF_COAL_HIGH_RX_SET - coalescing parameters
+>           to use when the packet rate is equal or higher then the high
+>           threshold for RX.
+>=20
+> On top of the new feature, this patch:
+> =09- Unifies the virtio_net_ctrl_coal structs, since the one for tx
+> =09  and the one for rx are identical.
+> =09- Clarifies that the coalescing commands are best-effort.
+> =09- Specifies coalescing in respect to delivering interrupts when config
+>           changes.
+>=20
+They are best to be handled a pre-patch to this one.
+Please split them so that spec improvement work can progress while new feat=
+ures are under review.
 
-> > +General Coalescing parameters:
-> >  \begin{itemize}
-> > -\item \field{rx_usecs}: Maximum number of usecs to delay a RX notification.
-> > -\item \field{tx_usecs}: Maximum number of usecs to delay a TX notification.
-> > -\item \field{rx_max_packets}: Maximum number of packets to receive before a RX notification.
-> > -\item \field{tx_max_packets}: Maximum number of packets to send before a TX notification.
-> > +\item \field{pkt_rate}: Threshold for low/high packet rate coalescing parameters, in units of packets per second.
->
-> This isn't really clear. Besides it seems that with 100GB/s we can thinkably begin to
-> overflow a 32 bit value pretty soon.
+>=20
+> +\item[VIRTIO_NET_F_NOTF_COAL_LOW_HIGH(50)] Device supports
+> notifications coalescing low rate and high rate sets.
+> +
+Even though historically, many feature bits exists, adding more feature bit=
+s is not scalable.
+It is also limits to enable such functionality at very early stage in the d=
+evice configuration.
 
-I'll clarify the sentence.
-You're right about the 100Gb/s links, I can think of a few ways to address this:
+So, if at all this proceeds, we want the new admin q to discover and negoti=
+ate the new features.
+(Instead of features bits).
 
-1) We could increase the type to u64.
-2) We could change the pkt_rate units to packets per 100 usecs or some
-other arbitrary value.
-3) The user could choose the packet rate units using new fields in
-virtio_net_config.
+>  \item[VIRTIO_NET_F_NOTF_COAL(53)] Device supports notifications
+> coalescing.
+>=20
+>  \item[VIRTIO_NET_F_GUEST_USO4 (54)] Driver can receive USOv4 packets.
+> @@ -3142,6 +3144,7 @@ \subsubsection{Feature bit
+> requirements}\label{sec:Device Types / Network Device
+> \item[VIRTIO_NET_F_MQ] Requires VIRTIO_NET_F_CTRL_VQ.
+>  \item[VIRTIO_NET_F_CTRL_MAC_ADDR] Requires VIRTIO_NET_F_CTRL_VQ.
+>  \item[VIRTIO_NET_F_NOTF_COAL] Requires VIRTIO_NET_F_CTRL_VQ.
+> +\item[VIRTIO_NET_F_NOTF_COAL_LOW_HIGH] Requires
+> VIRTIO_NET_F_NOTF_COAL.
+>  \item[VIRTIO_NET_F_RSC_EXT] Requires VIRTIO_NET_F_HOST_TSO4 or
+> VIRTIO_NET_F_HOST_TSO6.
+>  \item[VIRTIO_NET_F_RSS] Requires VIRTIO_NET_F_CTRL_VQ.
+>  \end{description}
+> @@ -4493,43 +4496,62 @@ \subsubsection{Control
+> Virtqueue}\label{sec:Device Types / Network Device / Devi  If the
+> VIRTIO_NET_F_NOTF_COAL feature is negotiated, the driver can  send contro=
+l
+> commands for dynamically changing the coalescing parameters.
+>=20
+> +Note: In general, these commands are best-effort: A device could send a
+> notification even if it is not supposed to.
+> +
+>  \begin{lstlisting}
+> -struct virtio_net_ctrl_coal_rx {
+> -    le32 rx_max_packets;
+> -    le32 rx_usecs;
+> +struct virtio_net_ctrl_coal {
+> +    le32 max_packets;
+> +    le32 usecs;
+>  };
+>=20
+Please put this change in a pre-patch along with additional rework of below=
+.
 
-I think that the third option is the better choice here.
 
-> Also, how is this measured?
-> Do you expect device to average the rate over a whole second to decide?
-> Ethernet speeds start at 1MBit/sec right? I think these days if
-> we ask for # of packets in the last N usecs we won't go far
-> off the field. How much is N so as not to incur too much latency?
-> 100?
->
-> Or are we measuring X latest packets and testing how long it takes
-> to get them?
+> -struct virtio_net_ctrl_coal_tx {
+> -    le32 tx_max_packets;
+> -    le32 tx_usecs;
+> +struct virtio_net_ctrl_coal_threshold {
+> +    le32 pkt_rate;
+> +    struct virtio_net_ctrl_coal params;
+>  };
+>=20
+>  #define VIRTIO_NET_CTRL_NOTF_COAL 6
+>   #define VIRTIO_NET_CTRL_NOTF_COAL_TX_SET  0
+>   #define VIRTIO_NET_CTRL_NOTF_COAL_RX_SET 1
+> + #define VIRTIO_NET_CTRL_NOTF_COAL_LOW_TX_SET 2 //Only if
+> + VIRTIO_NET_F_NOTF_COAL_LOW_HIGH negotiated #define
+> + VIRTIO_NET_CTRL_NOTF_COAL_LOW_RX_SET 3 //Only if
+> + VIRTIO_NET_F_NOTF_COAL_LOW_HIGH negotiated #define
+> + VIRTIO_NET_CTRL_NOTF_COAL_HIGH_TX_SET 4 //Only if
+> + VIRTIO_NET_F_NOTF_COAL_LOW_HIGH negotiated #define
+> + VIRTIO_NET_CTRL_NOTF_COAL_HIGH_RX_SET 5 //Only if
+> + VIRTIO_NET_F_NOTF_COAL_LOW_HIGH negotiated
+>  \end{lstlisting}
+>=20
+> -Coalescing parameters:
+> +TX Coalescing parameters:
+> +\begin{itemize}
+> +\item \field{usecs}: Maximum number of usecs to delay a TX notification.
+> +\item \field{max_packets}: Maximum number of packets to send before a TX
+> notification.
+> +\end{itemize}
+> +
+> +RX Coalescing parameters:
+> +\begin{itemize}
+> +\item \field{usecs}: Maximum number of usecs to delay a RX notification.
+> +\item \field{max_packets}: Maximum number of packets to receive before a
+> RX notification.
+> +\end{itemize}
+> +
+> +General Coalescing parameters:
+>  \begin{itemize}
+> -\item \field{rx_usecs}: Maximum number of usecs to delay a RX notificati=
+on.
+> -\item \field{tx_usecs}: Maximum number of usecs to delay a TX notificati=
+on.
+> -\item \field{rx_max_packets}: Maximum number of packets to receive befor=
+e
+> a RX notification.
+> -\item \field{tx_max_packets}: Maximum number of packets to send before a
+> TX notification.
+> +\item \field{pkt_rate}: Threshold for low/high packet rate coalescing
+> parameters, in units of packets per second.
+>  \end{itemize}
+>=20
 
-Why do we want this to be part of the spec?
-I think that we should leave this to the device to decide.
-
-
-> > -The class VIRTIO_NET_CTRL_NOTF_COAL has 2 commands:
-> > +The class VIRTIO_NET_CTRL_NOTF_COAL has 6 commands:
-> >  \begin{enumerate}
-> > -\item VIRTIO_NET_CTRL_NOTF_COAL_TX_SET: set the \field{tx_usecs} and \field{tx_max_packets} parameters.
-> > -\item VIRTIO_NET_CTRL_NOTF_COAL_RX_SET: set the \field{rx_usecs} and \field{rx_max_packets} parameters.
-> > +\item VIRTIO_NET_CTRL_NOTF_COAL_TX_SET: set the \field{usecs} and \field{max_packets} coalescing parameters for TX.
-> > +\item VIRTIO_NET_CTRL_NOTF_COAL_RX_SET: set the \field{usecs} and \field{max_packets} coalescing parameters for RX.
-> > +\item VIRTIO_NET_CTRL_NOTF_COAL_LOW_TX_SET: set the \field{usecs} and \field{max_packets} coalescing parameters for packet rate of \field{pkt_rate} or lower, for TX.
-> > +\item VIRTIO_NET_CTRL_NOTF_COAL_LOW_RX_SET: set the \field{usecs} and \field{max_packets} coalescing parameters for packet rate of \field{pkt_rate} or lower, for RX.
-> > +\item VIRTIO_NET_CTRL_NOTF_COAL_HIGH_TX_SET: set the \field{usecs} and \field{max_packets} coalescing parameters for packet rate of \field{pkt_rate} or higher, for TX.
-> > +\item VIRTIO_NET_CTRL_NOTF_COAL_HIGH_RX_SET: set the \field{usecs} and \field{max_packets} coalescing parameters for packet rate of \field{pkt_rate} or higher, for RX.
->
->
-> how is
-
-I think that you missed a sentence here.
-
->
-> What is missing here is the theory of operation.
->
-> when are parameters set by VIRTIO_NET_CTRL_NOTF_COAL_RX_SET/VIRTIO_NET_CTRL_NOTF_COAL_TX_SET
-> used?
->
-> Am I guessing right that with VIRTIO_NET_F_NOTF_COAL_LOW_HIGH there
-> are 3 sets of parameters high medium and low, for rx and tx?
->
-
-Yes, we have the low and high sets, and the normal one
-(VIRTIO_NET_CTRL_NOTF_COAL_RX_SET/VIRTIO_NET_CTRL_NOTF_COAL_TX_SET)
-that should be used when the packet rate is not higher than the high
-threshold (if any), and not lower than the low threshold (if any).
-
-I'll explain it in the next version.
-
-I removed the "set" concept after v1 following your suggestion.
-Maybe we should define the concept and use it in the spec after all?
-
-> > +For example, \field{max_packets} = 15 for TX.
-> > +
->
-> drop empty line here pls.
-
-ok
-
-> > +If the VIRTIO_NET_F_NOTF_COAL_LOW_HIGH feature is negotiated, the driver can send the following low/high rate coalescing commands to the device:
-> > +
-> > +\begin{itemize}
-> > +\item VIRTIO_NET_CTRL_NOTF_COAL_LOW_TX_SET.
-> > +\item VIRTIO_NET_CTRL_NOTF_COAL_LOW_RX_SET.
-> > +\item VIRTIO_NET_CTRL_NOTF_COAL_HIGH_TX_SET.
-> > +\item VIRTIO_NET_CTRL_NOTF_COAL_HIGH_RX_SET.
-> > +\end{itemize}
-> > +
->
-> pls explain here how these commands all use
-> virtio_net_ctrl_coal_threshold.
-> and maybe rearrange so the explanation is closer to the definition.
-
-This is explained in the following part:
--The class VIRTIO_NET_CTRL_NOTF_COAL has 2 commands:
-+The class VIRTIO_NET_CTRL_NOTF_COAL has 6 commands:
- \begin{enumerate}
--\item VIRTIO_NET_CTRL_NOTF_COAL_TX_SET: set the \field{tx_usecs} and
-\field{tx_max_packets} parameters.
--\item VIRTIO_NET_CTRL_NOTF_COAL_RX_SET: set the \field{rx_usecs} and
-\field{rx_max_packets} parameters.
-+\item VIRTIO_NET_CTRL_NOTF_COAL_TX_SET: set the \field{usecs} and
-\field{max_packets} coalescing parameters for TX.
-+\item VIRTIO_NET_CTRL_NOTF_COAL_RX_SET: set the \field{usecs} and
-\field{max_packets} coalescing parameters for RX.
-+\item VIRTIO_NET_CTRL_NOTF_COAL_LOW_TX_SET: set the \field{usecs} and
-\field{max_packets} coalescing parameters for packet rate of
-\field{pkt_rate} or lower, for TX.
-+\item VIRTIO_NET_CTRL_NOTF_COAL_LOW_RX_SET: set the \field{usecs} and
-\field{max_packets} coalescing parameters for packet rate of
-\field{pkt_rate} or lower, for RX.
-+\item VIRTIO_NET_CTRL_NOTF_COAL_HIGH_TX_SET: set the \field{usecs}
-and \field{max_packets} coalescing parameters for packet rate of
-\field{pkt_rate} or higher, for TX.
-+\item VIRTIO_NET_CTRL_NOTF_COAL_HIGH_RX_SET: set the \field{usecs}
-and \field{max_packets} coalescing parameters for packet rate of
-\field{pkt_rate} or higher, for RX.
-
-I'll move it closer to the definition.
-
-> > +If the VIRTIO_NET_F_NOTF_COAL_LOW_HIGH feature has not been negotiated, the driver MUST NOT issue low/high rate coalescing commands.
-> > +
-> > +The driver SHOULD issue a low/high rate coalescing command with \field{pkt_rate} 0 in order to remove the low/high rate coalescing parameters.
->
-> and presumably this 0 is an exception to the "packet rate for high
-> threshold must not be lower than low threshold"?
-
-Yes, I'll add the exception.
-
-> > +The driver MUST NOT issue a VIRTIO_NET_CTRL_NOTF_COAL_LOW_TX_SET command with \field{pkt_rate} equal or higher than a \field{pkt_rate} previously sent with a VIRTIO_NET_CTRL_NOTF_COAL_HIGH_TX_SET command.
-> > +
-> > +The driver MUST NOT issue a VIRTIO_NET_CTRL_NOTF_COAL_LOW_RX_SET command with \field{pkt_rate} equal or higher than a \field{pkt_rate} previously sent with a VIRTIO_NET_CTRL_NOTF_COAL_HIGH_RX_SET command.
-> > +
-> > +The driver MUST NOT issue a VIRTIO_NET_CTRL_NOTF_COAL_HIGH_TX_SET command with \field{pkt_rate} equal or lower than a \field{pkt_rate} previously sent with a VIRTIO_NET_CTRL_NOTF_COAL_LOW_TX_SET command.
-> > +
-> > +The driver MUST NOT issue a VIRTIO_NET_CTRL_NOTF_COAL_HIGH_RX_SET command with \field{pkt_rate} equal or lower than a \field{pkt_rate} previously sent with a VIRTIO_NET_CTRL_NOTF_COAL_LOW_RX_SET command.
-> > +
->
-> actually these rules are annoying.
-> if i want to lower packet rate for both high and low,
-> and i happen to start with high, command may fail.
-> possible to fix but really just introducing more code for
-> now good reason.
-> what is the problem? if the rules make more than one set apply
-> let's allow device whatever set it wants?
-
-You're right, I'll drop these rules.
-
-Thanks,
-
-Alvaro
-
-This publicly archived list offers a means to provide input to the
-OASIS Virtual I/O Device (VIRTIO) TC.
-
-In order to verify user consent to the Feedback License terms and
-to minimize spam in the list archive, subscription is required
-before posting.
-
-Subscribe: virtio-comment-subscribe@lists.oasis-open.org
-Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
-List help: virtio-comment-help@lists.oasis-open.org
-List archive: https://lists.oasis-open.org/archives/virtio-comment/
-Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
-List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
-Committee: https://www.oasis-open.org/committees/virtio/
-Join OASIS: https://www.oasis-open.org/join/
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
