@@ -1,53 +1,47 @@
-Return-Path: <virtio-comment-return-3857-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-comment-return-3855-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio-comment@lists.oasis-open.org>
 List-Post: <mailto:virtio-comment@lists.oasis-open.org>
 List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
-Date: Tue, 17 Jan 2023 10:18:41 -0500
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20230117101430-mutt-send-email-mst@kernel.org>
-References: <20230111152123.148889-1-alvaro.karsz@solid-run.com>
- <PH0PR12MB5481A88FBABF45BC2736AC56DCC19@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20230116152504-mutt-send-email-mst@kernel.org>
- <PH0PR12MB548176D1EC760DB15826B08DDCC19@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20230116160634-mutt-send-email-mst@kernel.org>
- <CAJs=3_At3KQ0DvZ6P3bpZBvh9H3L5HHMeO-zq594dFG+MHA=bg@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <CAJs=3_At3KQ0DvZ6P3bpZBvh9H3L5HHMeO-zq594dFG+MHA=bg@mail.gmail.com>
+References: <20230111152123.148889-1-alvaro.karsz@solid-run.com> <PH0PR12MB5481A88FBABF45BC2736AC56DCC19@PH0PR12MB5481.namprd12.prod.outlook.com>
+In-Reply-To: <PH0PR12MB5481A88FBABF45BC2736AC56DCC19@PH0PR12MB5481.namprd12.prod.outlook.com>
+From: Alvaro Karsz <alvaro.karsz@solid-run.com>
+Date: Tue, 17 Jan 2023 14:44:42 +0200
+Message-ID: <CAJs=3_CQLqOC=KQ_-Syw6mWM0_SuehE_J9N8oexGihVA8dCBDQ@mail.gmail.com>
 Subject: [virtio-comment] Re: [virtio-dev] [PATCH v2] virtio_net: support low and high rate of
  notification coalescing
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-To: Alvaro Karsz <alvaro.karsz@solid-run.com>
-Cc: Parav Pandit <parav@nvidia.com>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "jasowang@redhat.com" <jasowang@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+To: Parav Pandit <parav@nvidia.com>
+Cc: "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "jasowang@redhat.com" <jasowang@redhat.com>, "mst@redhat.com" <mst@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Tue, Jan 17, 2023 at 03:03:43PM +0200, Alvaro Karsz wrote:
-> > By comparison this patch is an attempt to offload ethtool's
-> > --coalesce parameters to the card. IMO what it misses is
-> > completeness, e.g. sample-interval is not specified.
-> 
-> AFAIK sample-interval refers to the adaptive coalescing
-> (adaptive-rx/adaptive-tx) and not to high/low.
-> 
-> include/uapi/linux/ethtool.h:
->  * @rate_sample_interval: How often to do adaptive coalescing packet rate
->  * sampling, measured in seconds.  Must not be zero.
+Hi,
 
-Oh you are right. So sampling interval here is arbitrary,
-defined by the device. Worth documenting.
+> > This patch adds a new feature, VIRTIO_NET_F_NOTF_COAL_LOW_HIGH, while
+> > clarifying/fixing existing coalescing concepts.
+> >
+> While its visible in the patch itself, what is being done,
+> its important to mention the problem statement/motivation for the feature at start of the commit log as first step.
+>
+> So, can you please describe the motivation, what problem does the new command solve?
+> It is likely that control entity which want to set different coalescing parameters likely wants to more than just two values.
+> This is something already supported today.
 
-> > Also, introspection is missing and it's useful to avoid
-> > keeping all state in the driver.
-> 
-> I don't get it, can you please elaborate?
+I'll add a better commit log in the next version.
 
-I mean --show-coalesce
+> > On top of the new feature, this patch:
+> >       - Unifies the virtio_net_ctrl_coal structs, since the one for tx
+> >         and the one for rx are identical.
+> >       - Clarifies that the coalescing commands are best-effort.
+> >       - Specifies coalescing in respect to delivering interrupts when config
+> >           changes.
+> >
+> They are best to be handled a pre-patch to this one.
+> Please split them so that spec improvement work can progress while new features are under review.
 
--- 
-MST
-
+ok
 
 This publicly archived list offers a means to provide input to the
 OASIS Virtual I/O Device (VIRTIO) TC.
