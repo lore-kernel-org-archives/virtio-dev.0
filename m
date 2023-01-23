@@ -1,92 +1,47 @@
-Return-Path: <virtio-comment-return-3903-cohuck=redhat.com@lists.oasis-open.org>
-Sender: <virtio-comment@lists.oasis-open.org>
-List-Post: <mailto:virtio-comment@lists.oasis-open.org>
-List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
+Return-Path: <parav@nvidia.com>
 From: Parav Pandit <parav@nvidia.com>
-Date: Mon, 23 Jan 2023 14:54:49 +0000
-Message-ID: <PH0PR12MB54813997904BDC0E28FE4CACDCC89@PH0PR12MB5481.namprd12.prod.outlook.com>
-References: <20230110230945.528293-1-parav@nvidia.com>
-	<20230123124006.0cae9a96.pasic@linux.ibm.com>
-	<PH0PR12MB54814E64310DE64E19ABD7DADCC89@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20230123154947.35f1f52a.pasic@linux.ibm.com>
-In-Reply-To: <20230123154947.35f1f52a.pasic@linux.ibm.com>
+Subject: [PATCH] virtio-net: Improve control vq introductory description
+Date: Mon, 23 Jan 2023 03:16:51 +0200
+Message-ID: <20230123011651.804147-1-parav@nvidia.com>
 MIME-Version: 1.0
-Subject: [virtio-comment] RE: [virtio-dev] [PATCH v9] virtio-network: Clarify VLAN filter table
- configuration
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-To: Halil Pasic <pasic@linux.ibm.com>
-Cc: "mst@redhat.com" <mst@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "si-wei.liu@oracle.com" <si-wei.liu@oracle.com>
+Content-Type: text/plain
+To: mst@redhat.com, virtio-dev@lists.oasis-open.org, cohuck@redhat.com
+Cc: virtio-comment@lists.oasis-open.org, shahafs@nvidia.com, Parav Pandit <parav@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+The control VQ of the virtio network device is used for controlling
+multiple features, not just advanced steering control. The control VQ
+dynamically changes multiple features of the initialized device.
 
-> From: Halil Pasic <pasic@linux.ibm.com>
-> Sent: Monday, January 23, 2023 9:50 AM
->=20
-> On Mon, 23 Jan 2023 12:41:16 +0000
-> Parav Pandit <parav@nvidia.com> wrote:
->=20
-> > > From: Halil Pasic <pasic@linux.ibm.com>
-> > > Sent: Monday, January 23, 2023 6:40 AM
-> > >
-> > > On Wed, 11 Jan 2023 01:09:45 +0200
-> > > Parav Pandit <parav@nvidia.com> wrote:
-> > >
-> > > > The filtering behavior of the VLAN filter commands is not very
-> > > > clear as discussed in thread [1].
-> > >
-> > > >
-> > > > Hence, add the command description and device requirements for it.
-> > > >
-> > > > [1]
-> > > > https://lists.oasis-open.org/archives/virtio-dev/202301/msg00136.h
-> > > > tml
-> > >
-> > > Sorry I could not find the discussion. Can you point me to the email
-> > > where the discussion starts?
-> > >
-> > Latest patch is for this change is :
-> > https://lists.oasis-open.org/archives/virtio-dev/202301/msg00231.html
-> >
->=20
-> Sorry, my bad. Should I repost my feedback on v10 or should we continue h=
-ere?
-Feedback on v10 is better as it's the latest.
+Hence, update this area of control VQ introductory description.
 
-> AFAICT v10 is a rebase on the directory structure stuff, so the text shou=
-ld be the
-> same.
-Right. Text is same.
+This patch is on top of [1].
 
->=20
-> > There was past discussion at
-> > https://www.mail-archive.com/qemu-devel@nongnu.org/msg913433.html
->=20
-> That is a completely different discussion than provided under [1] in the =
-commit
-> message. Right? So the link provided is just wrong?
+[1] https://lists.oasis-open.org/archives/virtio-dev/202301/msg00272.html
 
-To keep things short, I think v10 patch and github issue description is goo=
-d enough details.
+Fixes: https://github.com/oasis-tcs/virtio-spec/issues/156
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+---
+ device-types/net/description.tex | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-This publicly archived list offers a means to provide input to the=0D
-OASIS Virtual I/O Device (VIRTIO) TC.=0D
-=0D
-In order to verify user consent to the Feedback License terms and=0D
-to minimize spam in the list archive, subscription is required=0D
-before posting.=0D
-=0D
-Subscribe: virtio-comment-subscribe@lists.oasis-open.org=0D
-Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org=0D
-List help: virtio-comment-help@lists.oasis-open.org=0D
-List archive: https://lists.oasis-open.org/archives/virtio-comment/=0D
-Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf=
-=0D
-List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lis=
-ts=0D
-Committee: https://www.oasis-open.org/committees/virtio/=0D
-Join OASIS: https://www.oasis-open.org/join/
+diff --git a/device-types/net/description.tex b/device-types/net/descriptio=
+n.tex
+index 41ae7f5..56bd672 100644
+--- a/device-types/net/description.tex
++++ b/device-types/net/description.tex
+@@ -8,7 +8,7 @@ \section{Network Device}\label{sec:Device Types / Network D=
+evice}
+ device. Empty buffers are placed in one virtqueue for receiving
+ packets, and outgoing packets are enqueued into another for
+ transmission in that order. A third command queue is used to
+-control advanced filtering features.
++dynamically manipulate various features of the initialized device.
+=20
+ \subsection{Device ID}\label{sec:Device Types / Network Device / Device ID=
+}
+=20
+--=20
+2.26.2
 
