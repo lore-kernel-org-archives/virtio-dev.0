@@ -1,183 +1,306 @@
-Return-Path: <xuanzhuo@linux.alibaba.com>
-Message-ID: <1673527259.9025202-7-xuanzhuo@linux.alibaba.com>
-Subject: Re: [virtio-dev] [PATCH v2 1/1] virtio-ism: introduce new device virtio-ism
-Date: Thu, 12 Jan 2023 20:40:59 +0800
-From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Return-Path: <wenjia@linux.ibm.com>
+Message-ID: <534229dd-4c4d-d7b2-a90c-a448920bcca4@linux.ibm.com>
+Date: Wed, 25 Jan 2023 13:55:51 +0100
+Subject: Re: [PATCH v2 0/1] introduce virtio-ism: internal shared memory
+ device
 References: <20221223081354.15026-1-xuanzhuo@linux.alibaba.com>
- <20221223081354.15026-2-xuanzhuo@linux.alibaba.com>
- <20230110233401.131cc97a.pasic@linux.ibm.com>
- <1673435333.1297436-1-xuanzhuo@linux.alibaba.com>
- <20230111221238.0ba94650.pasic@linux.ibm.com>
-In-Reply-To: <20230111221238.0ba94650.pasic@linux.ibm.com>
-Content-Type: text/plain; charset="US-ASCII"; x-default=true
-To: Halil Pasic <pasic@linux.ibm.com>
-Cc: virtio-dev@lists.oasis-open.org, hans@linux.alibaba.com, herongguang@linux.alibaba.com, zmlcc@linux.alibaba.com, dust.li@linux.alibaba.com, tonylu@linux.alibaba.com, zhenzao@linux.alibaba.com, helinguo@linux.alibaba.com, gerry@linux.alibaba.com, mst@redhat.com, cohuck@redhat.com, jasowang@redhat.com, Jan Kiszka <jan.kiszka@siemens.com>, wintera@linux.ibm.com, kgraul@linux.ibm.com, wenjia@linux.ibm.com, jaka@linux.ibm.com, hca@linux.ibm.com, twinkler@linux.ibm.com, raspl@linux.ibm.com, Halil Pasic <pasic@linux.ibm.com>
+From: Wenjia Zhang <wenjia@linux.ibm.com>
+In-Reply-To: <20221223081354.15026-1-xuanzhuo@linux.alibaba.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Cc: virtio-dev@lists.oasis-open.org, hans@linux.alibaba.com, herongguang@linux.alibaba.com, zmlcc@linux.alibaba.com, dust.li@linux.alibaba.com, tonylu@linux.alibaba.com, zhenzao@linux.alibaba.com, helinguo@linux.alibaba.com, gerry@linux.alibaba.com, mst@redhat.com, cohuck@redhat.com, jasowang@redhat.com, Jan Kiszka <jan.kiszka@siemens.com>, wintera@linux.ibm.com, kgraul@linux.ibm.com, jaka@linux.ibm.com, hca@linux.ibm.com, twinkler@linux.ibm.com, raspl@linux.ibm.com
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, 11 Jan 2023 22:12:38 +0100, Halil Pasic <pasic@linux.ibm.com> wrote:
-> On Wed, 11 Jan 2023 19:08:53 +0800
-> Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
->
-> > > > +The device shares memory to the driver based on shared memory regions
-> > > > +\ref{sec:Basic Facilities of a Virtio Device / Shared Memory Regions}.
-> > > > +However, it does not need to allocate physical memory during initialization.
-> > > > +
-> > > > +The \field{shmid} of a region MUST be one of the following
-> > > > +\begin{lstlisting}
-> > > > +enum virtio_ism_shm_id {
-> > > > +	VIRTIO_ISM_SHM_ID_UNDEFINED = 0,
-> > > > +	VIRTIO_ISM_SHM_ID_REGIONS   = 1,
-> > > > +	VIRTIO_ISM_SHM_ID_NOTIFY    = 2,
-> > > > +};
-> > > > +\end{lstlisting}
-> > > > +
-> > > > +The shared memory whose shmid is VIRTIO_ISM_SHM_ID_REGIONS is used to implement
-> > > > +ism regions.
-> > >
-> > > Hm. AFAIU, these are supposed to be used for exchanging data between the
-> > > VMs that are supposed to communicate with each other via ism.
-> > >
-> > > How does this relate to the following normative section:
-> > > """
-> > > 2.10.2 Device Requirements: Shared Memory Regions
-> > >
-> > > Shared memory regions MUST NOT expose shared memory regions which are used to control the operation of the device, nor to stream data.
-> > > """
-> >
-> > From https://lists.oasis-open.org/archives/virtio-comment/201906/msg00010.html
-> >
-> > 	I'm trying to find a way to say that people shouldn't side-step virtio
-> > 	queues by putting everything in a big blob of shared memory.
-> >
-> > So I think this should not be conflict.
->
-> AFAIU putting everything in a big blob of shared memory is what ISM
-> does. I'm not saying that this is bad. But I'm for sure confused.
->
-> In my opinion we should either clarify what is meant by that sentence
-> and maybe also why, or get rid of it.
->
-> @MST: What is your take on this?
->
-> >
-> > >
-> > > > If there are multiple shared memories whose shmid is
-> > > > +VIRTIO_ISM_SHM_ID_REGIONS, they are used as contiguous memory in the order of
-> > > > +acquisition.
-> > >
-> > > Hm, I used to think that the shmid is an unique identifier for a shared
-> > > memory region. How can multiple virtio shared memory regions have the
-> > > same shmid?
-> >
-> > Shmid is used to define what this sharing memory is used to do, not its unique
-> > identifier.
->
-> As far as I can tell the shmid is supposed to uniquely identify a single
-> shared memory region!
->
-> " A device may have multiple shared memory regions associated with it.
-> Each region has a shmid to identify it, the meaning of which is device-specific."
->
-> @MST: Can you please help us to get clarity on this?
->
-> BTW, this is why I pointed you to the corresponding MMIO interface:
-> """
-> SHMSel	             Shared memory id
-> 0x0ac
-> W
->
-> Writing to this register selects the shared memory region 2.10 following
-> operations on SHMLenLow, SHMLenHigh, SHMBaseLow and SHMBaseHigh apply
-> to.
->
-> SHMLenLow            Shared memory region 64 bit long length
-> 0x0b0
-> SHMLenHigh
-> 0x0b4
-> R
->
->
-> These registers return the length of the shared memory region in bytes,
-> as defined by the device for the region selected by the SHMSel register.
-> The lower 32 bits of the length are read from SHMLenLow and the higher
-> 32 bits from SHMLenHigh. Reading from a non-existent region (i.e. where
-> the ID written to SHMSel is unused) results in a length of -1.
->
->
-> SHMBaseLow         Shared memory region 64 bit long physical address
-> 0x0b8
-> SHMBaseHigh
-> 0x0bc
-> R
->
-> The driver reads these registers to discover the base address of the
-> region in physical address space. This address is chosen by the device
-> (or other part of the VMM). The lower 32 bits of the address are read
-> from SHMBaseLow with the higher 32 bits from SHMBaseHigh. Reading from a
-> non-existent region (i.e. where the ID written to SHMSel is unused)
-> results in a base address of 0xffffffffffffffff.
-> """
->
-> I.e. after you write the shmid into SHMSel you can obtain the base
-> address and the length of that region, provided there is a region
-> with that id.
->
-> >
-> > This is the point that device provides multiple shared memory areas.
-> > These memory areas are used to provide ISM Region.
-> >
->
-> Thus I don't think this is possible without violating the currently
-> standing rules on shared memory regions.
->
-> > >
-> > > Can you have a look at the MMIO interface for virtio shared memory
-> > > regions.
-> >
-> > Is there any special attention?
-> >
->
-> Please see above.
->
-> >
-> > >
-> > > How far what ISM tries to do consistent with virtio shared memory. I
-> > > mean, AFAIU once the shared memory is advertised, the  shared memory is
-> > > supposed to be there and accessible by the driver for both writes and
-> > > reads.
-> >
-> > Before allocation, VMM did not allocate physical memory for it. Therefore, it
-> > was illegal to read and write this memory.
->
-> I'm not sure whether generating addressing exceptions on accesses to the
-> advertised virtio shared memory regions is acceptable or not. Maybe
-> Michael, Connie and the TC members more versed in shared memory regions
-> can help us get clarity on this.
 
 
-First of all, the virtio shared memory region is only a capability of the
-hardware, and we don't necessarily map all of it to the OS when the device is
-initialized. We can only map the allocated ism region to the os.
+On 23.12.22 09:13, Xuan Zhuo wrote:
+> Hello everyone,
+> 
+> # Background
+> 
+>      Nowadays, there is a common scenario to accelerate communication between
+>      different VMs and containers, including light weight virtual machine based
+>      containers. One way to achieve this is to colocate them on the same host.
+>      However, the performance of inter-VM communication through network stack is
+>      not optimal and may also waste extra CPU cycles. This scenario has been
+>      discussed many times, but still no generic solution available [1] [2] [3].
+> 
+>      With pci-ivshmem + SMC(Shared Memory Communications: [4]) based PoC[5],
+>      We found that by changing the communication channel between VMs from TCP to
+>      SMC with shared memory, we can achieve superior performance for a common
+>      socket-based application[5]:
+>        - latency reduced by about 50%
+>        - throughput increased by about 300%
+>        - CPU consumption reduced by about 50%
+> 
+>      Since there is no particularly suitable shared memory management solution
+>      matches the need for SMC(See ## Comparison with existing technology), and
+>      virtio is the standard for communication in the virtualization world, we
+>      want to implement a virtio-ism device based on virtio, which can support
+>      on-demand memory sharing across VMs, containers or VM-container. To match
+>      the needs of SMC, the virtio-ism device need to support:
+> 
+>      1. Dynamic provision: shared memory regions are dynamically allocated and
+>         provisioned.
+>      2. Multi-region management: the shared memory is divided into regions,
+>         and a peer may allocate one or more regions from the same shared memory
+>         device.
+>      3. Permission control: the permission of each region can be set seperately.
+>      4. Dynamic connection: each ism region of a device can be shared with
+>         different devices, eventually a device can be shared with thousands of
+>         devices
+> 
+> # Virtio ISM device
+> 
+>      ISM devices provide the ability to share memory between different guests on
+>      a host. A guest's memory got from ism device can be shared with multiple
+>      peers at the same time. This shared relationship can be dynamically created
+>      and released.
+> 
+>      The shared memory obtained from the device is divided into multiple ism
+>      regions for share. ISM device provides a mechanism to notify other ism
+>      region referrers of content update events.
+> 
+> ## Design
+> 
+>      This is a structure diagram based on ism sharing between two vms.
+> 
+>      |-------------------------------------------------------------------------------------------------------------|
+>      | |------------------------------------------------|       |------------------------------------------------| |
+>      | | Guest                                          |       | Guest                                          | |
+>      | |                                                |       |                                                | |
+>      | |   ----------------                             |       |   ----------------                             | |
+>      | |   |    driver    |     [M1]   [M2]   [M3]      |       |   |    driver    |             [M2]   [M3]     | |
+>      | |   ----------------       |      |      |       |       |   ----------------               |      |      | |
+>      | |    |cq|                  |map   |map   |map    |       |    |cq|                          |map   |map   | |
+>      | |    |  |                  |      |      |       |       |    |  |                          |      |      | |
+>      | |    |  |                -------------------     |       |    |  |                --------------------    | |
+>      | |----|--|----------------|  device memory  |-----|       |----|--|----------------|  device memory   |----| |
+>      | |    |  |                -------------------     |       |    |  |                --------------------    | |
+>      | |                                |               |       |                               |                | |
+>      | |                                |               |       |                               |                | |
+>      | | Qemu                           |               |       | Qemu                          |                | |
+>      | |--------------------------------+---------------|       |-------------------------------+----------------| |
+>      |                                  |                                                       |                  |
+>      |                                  |                                                       |                  |
+>      |                                  |------------------------------+------------------------|                  |
+>      |                                                                 |                                           |
+>      |                                                                 |                                           |
+>      |                                                   --------------------------                                |
+>      |                                                    | M1 |   | M2 |   | M3 |                                 |
+>      |                                                   --------------------------                                |
+>      |                                                                                                             |
+>      | HOST                                                                                                        |
+>      ---------------------------------------------------------------------------------------------------------------
+> 
+> ## Inspiration
+> 
+>      Our design idea for virtio-ism comes from IBM's ISM device, to pay tribute,
+>      we directly name this device "ism".
+> 
+>      Information about IBM ism device and SMC:
+>        1. SMC reference: https://www.ibm.com/docs/en/zos/2.5.0?topic=system-shared-memory-communications
+>        2. SMC-Dv2 and ISMv2 introduction: https://www.newera.com/INFO/SMCv2_Introduction_10-15-2020.pdf
+>        3. ISM device: https://www.ibm.com/docs/en/linux-on-systems?topic=n-ism-device-driver-1
+>        4. SMC protocol (including SMC-D): https://www.ibm.com/support/pages/system/files/inline-files/IBM%20Shared%20Memory%20Communications%20Version%202_2.pdf
+>        5. SMC-D FAQ: https://www.ibm.com/support/pages/system/files/inline-files/2021-02-09-SMC-D-FAQ.pdf
+> 
+> ## ISM VLAN
+> 
+>      Since SMC uses TCP to handshake with IP facilities, virtio-ism device is not
+>      bound to existing IP device, and the latest ISMv2 device doesn't require
+>      VLAN. So it is not necessary for virtio-ism to support VLAN attributes.
+> 
+> ## Live Migration
+> 
+>      Currently SMC-D doesn't support migration to another device or fallback. And
+>      SMC-R supports migration to another link, no fallback.
+> 
+>      So we may not support live migration for the time being.
+> 
+> ## About hot plugging of the ism device
+> 
+>      Hot plugging of devices is a heavier, possibly failed, time-consuming, and
+>      less scalable operation. So, we don't plan to support it for now.
+> 
+> 
+> # Usage (SMC as example)
+> 
+>      There is one of possible use cases:
+> 
+>      1. SMC calls the interface ism_alloc_region() of the ism driver to return
+>         the location of a memory region in the PCI space and a token.
+>      2. The ism driver mmap the memory region and return to SMC with the token
+>      3. SMC passes the token to the connected peer
+>      4. the peer calls the ism driver interface ism_attach_region(token) to
+>         get the location of the PCI space of the shared memory
+>      5. The connected pair communicating through the shared memory
+> 
+> # Comparison with existing technology
+> 
+> ## ivshmem or ivshmem 2.0 of Qemu
+> 
+>     1. ivshmem 1.0 is a large piece of memory that can be seen by all devices
+>        that use this VM, so the security is not enough.
+> 
+>     2. ivshmem 2.0 is a shared memory belonging to a VM that can be read-only by
+>        all other VMs that use the ivshmem 2.0 shared memory device, which also
+>        does not meet our needs in terms of security.
+> 
+> ## vhost-pci and virtiovhostuser
+> 
+>      1. does not support dynamic allocation
+>      2. one device just support connect to one vm
+> 
+> 
+> # POC CODE
+> 
+> There are no functions related to eventq and perm yet.
+> 
+> ## Qemu (virtio ism device):
+> 
+>       https://github.com/fengidri/qemu/compare/7d66b74c4dd0d74d12c1d3d6de366242b13ed76d...ism-upstream-1216?expand=1
+> 
+>      Start qemu with option "--device virtio-ism-pci,disable-legacy=on, disable-modern=off".
+> 
+> ##  Kernel (virtio ism driver and smc support):
+> 
+>       https://github.com/fengidri/linux-kernel-virtio-ism/compare/6f8101eb21bab480537027e62c4b17021fb7ea5d...ism-upstream-1223
+> 
+I tried to run the PoC kernel on our platform and wanted to test the 
+main path of SMC-D and SMC-R flows as we used to firstly. Unfortunately, 
+most of our basic tests are failed and even ftrace could trigger a crash 
+which points that "Unable to handle kernel pointer dereference in 
+virtual kernel address space". Thus, I'm wondering:
 
-If we map all of it into the OS when the device is initialized, these memories
-only exist in the driver, and no one will access it. Only when the upper layer
-calls alloc/attach, we will provide an ism region to the upper layer for use,
-and the premise is that we have completed the mapping of physical memory.
-
->
-> I don't think it is per-se prohibited, but on the other hand, to me
-> virtio shared memory regions read more like memory that is supposed to
-> work , and less like an address space that may or may not be backed by
-> memory. So if this is allowed, maybe adding a sentence to the part that
-> describes virtio shared memory regions in the basic facilities portion of
-> the spec would be beneficial.
-
-I agree.
-
-Thanks.
+- What aspects of the PoC would you like to get feedback on? Which parts 
+are known to be not as good as they need to become? Or are known to need 
+to be significantly expanded upon for reaching non-RFC maturity? What is 
+suposed to stick around?
+- Is there a version that does not break the existing scenarios in the 
+pipe? Or maybe even already published somewhere else?
+- Are you aware of the recent refactoring in SMC-D: 
+https://git.kernel.org/netdev/net-next/c/8c81ba20349d ? Could you base 
+your next version on this code?
 
 
->
-> Regards,
-> Halil
+
+> 
+> ### SMC
+> 
+>      Support SMC-D works with virtio-ism.
+> 
+>      Use SMC with virtio-ism to accelerate inter-VM communication.
+> 
+>      1. insmod virtio-ism and smc module.
+>      2. use smc-tools [1] to get the device name of SMC-D based on virtio-ism.
+> 
+>        $ smcd d # here is _virtio2_
+>        FID  Type  PCI-ID        PCHID  InUse  #LGs  PNET-ID
+>        0000 0     virtio2       0000   Yes       1  *C1
+> 
+>      3. add the nic and SMC-D device to the same pnet, do it in both client and server.
+> 
+>        $ smc_pnet -a -I eth1 c1 # use eth1 to setup SMC connection
+>        $ smc_pnet -a -D virtio2 c1 # virtio2 is the virtio-ism device
+> 
+>      4. use SMC to accelerate your application, smc_run in [1] can do this.
+> 
+>        # smc_run use LD_PRELOAD to hijack socket syscall with AF_SMC
+>        $ smc_run sockperf server --tcp # run in server
+>        $ smc_run sockperf tp --tcp -i a.b.c.d # run in client
+> 
+>      [1] https://github.com/ibm-s390-linux/smc-tools
+> 
+>      Notice: The current POC state, we only tested some basic functions.
+> 
+> ### App inside user space
+> 
+>      The ism driver provide /dev/vismX interface, allow users to use Virtio-ISM
+>      device in user space directly.
+> 
+>      Try tools/virtio/virtio-ism/virtio-ism-mmap
+> 
+>      Usage:
+>           cd tools/virtio/virtio-ism/; make
+>           insmode virtio-ism.ko
+> 
+>      case1: communicate
+> 
+>         vm1: ./virtio-ism-mmap alloc -> token
+>         vm2: ./virtio-ism-mmap attach -t <token> --write-msg AAAA --commit
+> 
+>         vm2 will write msg to shared memory, then notify vm1. After vm1 receive
+>         notify, then read from shared memory.
+> 
+>      case2: ping-pong test.
+> 
+>          vm1: ./virtio-ism-mmap server
+>          vm2: ./virtio-ism-mmap -i 192.168.122.101 pp
+> 
+>          1. server alloc one ism region
+>          2. client get the token by tcp
+> 
+>          3. client commit(kick) to server, server recv notify, commit(kick) to client
+>          4. loop #3
+> 
+>      case3: throughput test.
+> 
+>          vm1: ./virtio-ism-mmap server
+>          vm2: ./virtio-ism-mmap -i 192.168.122.101 tp
+> 
+>          1. server alloc one ism region
+>          2. client get the token by tcp
+> 
+>          3. client write 1M data to ism region
+>          4. client commit(kick) to server
+>          5. server recv notify, copy the data, the commit(kick) back to client
+>          6. loop #3-#5
+> 
+>      case4: throughput test with protocol defined by user.
+> 
+>          vm1: ./virtio-ism-mmap server
+>          vm2: ./virtio-ism-mmap -i 192.168.122.101 tp --polling --tp-chunks 15 --msg-size 64k -n 50000
+> 
+>          Used the ism region as a ring.
+> 
+>          In this scene, client and server are in the polling mode. Test it on
+>          my machine, the maximum can reach 12GBps
+> 
+> # References
+> 
+>      [1] https://projectacrn.github.io/latest/tutorials/enable_ivshmem.html
+>      [2] https://dl.acm.org/doi/10.1145/2847562
+>      [3] https://hal.archives-ouvertes.fr/hal-00368622/document
+>      [4] https://lwn.net/Articles/711071/
+>      [5] https://lore.kernel.org/netdev/20220720170048.20806-1-tonylu@linux.alibaba.com/T/
+> 
+> 
+> If there are any problems, please point them out.
+> Hope to hear from you, thank you.
+> 
+> v2:
+>     1. add Attach/Detach event
+>     2. add Events Filter
+>     3. allow Alloc/Attach huge region
+>     4. remove host/guest terms
+> 
+> v1:
+>     1. cover letter adding explanation of ism vlan
+>     2. spec add gid
+>     3. explain the source of ideas about ism
+>     4. POC support virtio-ism-smc.ko virtio-ism-dev.ko and support virtio-ism-mmap
+> 
+> 
+> Xuan Zhuo (1):
+>    virtio-ism: introduce new device virtio-ism
+> 
+>   conformance.tex |  24 +++
+>   content.tex     |   1 +
+>   virtio-ism.tex  | 472 ++++++++++++++++++++++++++++++++++++++++++++++++
+>   3 files changed, 497 insertions(+)
+>   create mode 100644 virtio-ism.tex
+> 
 
