@@ -1,311 +1,338 @@
-Return-Path: <hengqi@linux.alibaba.com>
-Date: Tue, 31 Jan 2023 17:44:15 +0800
-From: Heng Qi <hengqi@linux.alibaba.com>
-Subject: Re: [virtio-comment] =?utf-8?B?5Zue5aSN?=
- =?utf-8?B?77yaW3ZpcnRpby1kZXY=?= =?utf-8?Q?=5D?= [PATCH v8] virtio_net:
- support for split transport header
-Message-ID: <20230131094415.GA31963@h68b04307.sqa.eu95>
-References: <1663903426.8765974-1-xuanzhuo@linux.alibaba.com>
+Return-Path: <virtio-comment-return-3933-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-comment@lists.oasis-open.org>
+List-Post: <mailto:virtio-comment@lists.oasis-open.org>
+List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
+From: Parav Pandit <parav@nvidia.com>
+Date: Tue, 31 Jan 2023 23:08:22 +0000
+Message-ID: <PH0PR12MB54814AE695F25009B7B9C038DCD09@PH0PR12MB5481.namprd12.prod.outlook.com>
+References: <20220920032824.GA125047@h68b04307.sqa.eu95>
+ <CACGkMEtOHXtNtG13Zxpc+bhYJVyefp999kttz4YcPi22nMBSpQ@mail.gmail.com>
+ <1663903426.8765974-1-xuanzhuo@linux.alibaba.com>
  <CACGkMEsmqngS-HYPzzV8b9dmv95=W6dJebAa=asXGmo7VEAnoA@mail.gmail.com>
  <20220923013341-mutt-send-email-mst@kernel.org>
  <619af5b3-4c38-955f-0f7f-f351f5a9527e@redhat.com>
  <20220928093530-mutt-send-email-mst@kernel.org>
  <CACGkMEsKHBo+tgJrADif9y5qLF-OHoK7pO6YvQBa-edjjPwVJQ@mail.gmail.com>
  <20220929022523-mutt-send-email-mst@kernel.org>
- <CACGkMEvmVJVCG-W-phG_JkVnEy_EpKRgG38LexTzStn7dADztw@mail.gmail.com>
- <20221020081601.GA48712@h68b04307.sqa.eu95>
+ <CACGkMEvmVJVCG-W-phG_JkVnEy_EpKRgG38LexTzStn7dADztw@mail.gmail.com>,<20221020081601.GA48712@h68b04307.sqa.eu95>
  <dd25da2a-a035-4437-967c-b59c09140ebc.hengqi@linux.alibaba.com>
-MIME-Version: 1.0
 In-Reply-To: <dd25da2a-a035-4437-967c-b59c09140ebc.hengqi@linux.alibaba.com>
+MIME-Version: 1.0
+Subject: =?utf-8?B?UkU6IFt2aXJ0aW8tY29tbWVudF0g5Zue5aSN77yaW3ZpcnRpby1kZXZdIFtQ?=
+ =?utf-8?B?QVRDSCB2OF0gdmlydGlvX25ldDogc3VwcG9ydCBmb3Igc3BsaXQgdHJhbnNw?=
+ =?utf-8?Q?ort_header?=
+Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-To: virtio-dev <virtio-dev@lists.oasis-open.org>, virtio-comment <virtio-comment@lists.oasis-open.org>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, Cornelia Huck <cohuck@redhat.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>, Kangjie Xu <kangjie.xu@linux.alibaba.com>
+Content-Transfer-Encoding: base64
+To: hengqi <hengqi@linux.alibaba.com>, virtio-dev <virtio-dev@lists.oasis-open.org>, virtio-comment <virtio-comment@lists.oasis-open.org>
+Cc: "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, Cornelia Huck <cohuck@redhat.com>, Kangjie Xu <kangjie.xu@linux.alibaba.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Tue, Jan 31, 2023 at 05:23:08PM +0800, hengqi wrote:
-> Hi, all.
-> Split header is a technique with important applications, such as Eric (https://lwn.net/Articles/754681/)
-> and Jonathan Lemon (https://lore.kernel.org/io-uring/20221007211713.170714-1- jonathan.lemon@gmail.com/T/#m678770d1fa7040fd76ed35026b93dfcbf25f6196)
-> realize the zero-copy technology respectively, they all have one thing in common that the header and
-> the payload need to be in separate buffers, and Eric's method requires the payload to be page-aligned.
-> We implemented zero-copy on the virtio-net driver according to Eric's method. The commands and
-> environment are as follows:
-> # environment
-> VM1<---->vhost-user<->OVS<->vhost-user<---->VM2
-> cpu Model name: Intel(R) Xeon(R) CPU E5-2682 v4 @ 2.50GHz
-> kernel version 6.0
-> # commands (linux/tools/testing/selftests/net)
-> ./tcp_mmap -s -z -4 -p 1000 &
-> ./tcp_mmap -H 10.0.0.2 -z -4 -p 1000
-> The performance data is as follows (implemented according to the split header v7 version,
-> https://lists.oasis-open.org/archives/virtio-dev/202209/msg00004.html):
-> # direct copy
-> 17.6604 s 10.08 s
-> # zero copy
-> 1.9 GB/s 3.3 GB/s
-
-Sorry for the formatting error caused by the application. It should be:
-#direct copy vs. zero copy
-17.6604 s        10.08 s
-1.9 GB/s         3.3 GB/s
-
-Thanks.
-
-> We discussed a lot before, the core point is the choice of method A and method C, we seem
-> to be unable to reach an agreement on this point, seeing the above summary and previous discussion (https://lists.oasis-open.org/archives/virtio-dev /202210/msg00017.html),
-> how can we resolve this conflict and let this important feature continue?
-> I really need your help. Cc Jason, Michael, Cornelia, Xuan.
-> Thanks.
-> ------------------------------------------------------------------
-> 发件人：Heng Qi <hengqi@linux.alibaba.com>
-> 发送时间：2022年10月20日(星期四) 16:34
-> 收件人：Jason Wang <jasowang@redhat.com>
-> 抄　送：Michael S. Tsirkin <mst@redhat.com>; Xuan Zhuo <xuanzhuo@linux.alibaba.com>; Virtio-Dev <virtio-dev@lists.oasis-open.org>; Kangjie Xu <kangjie.xu@linux.alibaba.com>
-> 主　题：Re: [virtio-dev] [PATCH v8] virtio_net: support for split transport header
-> On Sat, Oct 08, 2022 at 12:37:45PM +0800, Jason Wang wrote:
-> > On Thu, Sep 29, 2022 at 3:04 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > >
-> > > On Thu, Sep 29, 2022 at 09:48:33AM +0800, Jason Wang wrote:
-> > > > On Wed, Sep 28, 2022 at 9:39 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > > > >
-> > > > > On Mon, Sep 26, 2022 at 04:06:17PM +0800, Jason Wang wrote:
-> > > > > > > Jason I think the issue with previous proposals is that they conflict
-> > > > > > > with VIRTIO_F_ANY_LAYOUT. We have repeatedly found that giving the
-> > > > > > > driver flexibility in arranging the packet in memory is benefitial.
-> > > > > >
-> > > > > >
-> > > > > > Yes, but I didn't found how it can conflict the any_layout. Device can just
-> > > > > > to not split the header when the layout doesn't fit for header splitting.
-> > > > > > (And this seems the case even if we're using buffers).
-> > > > >
-> > > > > Well spec says:
-> > > > >
-> > > > > indicates to both the device and the driver that no
-> > > > > assumptions were made about framing.
-> > > > >
-> > > > > if device assumes that descriptor boundaries are where
-> > > > > driver wants packet to be stored that is clearly
-> > > > > an assumption.
-> > > >
-> > > > Yes but what I want to say is, the device can choose to not split the
-> > > > packet if the framing doesn't fit. Does it still comply with the above
-> > > > description?
-> > > >
-> > > > Thanks
-> > >
-> > > The point of ANY_LAYOUT is to give drivers maximum flexibility.
-> > > For example, if driver wants to split the header at some specific
-> > > offset this is already possible without extra functionality.
-> > 
-> > I'm not sure how this would work without the support from the device.
-> > This probably can only work if:
-> > 
-> > 1) the driver know what kind of packet it can receive
-> > 2) protocol have fixed length of the header
-> > 
-> > This is probably not true consider:
-> > 
-> > 1) TCP and UDP have different header length
-> > 2) IPv6 has an variable length of the header
-> > 
-> > 
-> > >
-> > > Let's keep it that way.
-> > >
-> > > Now, let's formulate what are some of the problems with the current way.
-> > >
-> > >
-> > >
-> > > A- mergeable buffers is even more flexible, since a single packet
-> > > is built up of multiple buffers. And in theory device can
-> > > choose arbitrary set of buffers to store a packet.
-> > > So you could supply a small buffer for headers followed by a bigger
-> > > one for payload, in theory even without any changes.
-> > > Problem 1: However since this is not how devices currently operate,
-> > > a feature bit would be helpful.
-> > 
-> > How do we know the bigger buffer is sufficient for the packet? If we
-> > try to allocate 64K (not sufficient for the future even) it breaks the
-> > effort of the mergeable buffer:
-> > 
-> > header buffer #1
-> > payload buffer #1
-> > header buffer #2
-> > payload buffer #2
-> > 
-> > Is the device expected to
-> > 
-> > 1) fill payload in header buffer #2, this breaks the effort that we
-> > want to make payload page aligned
-> > 2) skip header buffer #2, in this case, the device assumes the framing
-> > when it breaks any layout
-> > 
-> > >
-> > > Problem 2: Also, in the past we found it useful to be able to figure out whether
-> > > packet fits in a single buffer without looking at the header.
-> > > For this reason, we have this text:
-> > >
-> > > If a receive packet is spread over multiple buffers, the device
-> > > MUST use all buffers but the last (i.e. the first \field{num_buffers} -
-> > > 1 buffers) completely up to the full length of each buffer
-> > > supplied by the driver.
-> > >
-> > > if we want to keep this optimization and allow using a separate
-> > > buffer for headers, then I think we could rely on the feature bit
-> > > from Problem 1 and just make an exception for the first buffer.
-> > > Also num_buffers is then always >= 2, maybe state this to avoid
-> > > confusion.
-> > >
-> > >
-> > >
-> > >
-> > >
-> > > B- without mergeable, there's no flexibility. In particular, there can
-> > > not be uninitialized space between header and data.
-> > 
-> > I had two questions
-> > 
-> > 1) why is this not a problem of mergeable? There's no guarantee that
-> > the header is just the length of what the driver allocates for header
-> > buffer anyhow
-> > 
-> > E.g the header length could be smaller than the header buffer, the
-> > device still needs to skip part of the space in the header buffer.
-> > 
-> > 2) it should be the responsibility of the driver to handle the
-> > uninitialized space, it should do anything that is necessary for
-> > security, more below
-> > 
-> We've talked a bit more about split header so far, but there still seem to
-> be some issues, so let's recap.
-> 一、 Method Discussion Review
-> In order to adapt to the Eric's tcp receive interface to achieve zero copy,
-> header and payload are required to be stored separately, and the payload is
-> stored in a paged alignment way. Therefore, we have discussed several options
-> for split header as follows:
-> 1: method A ( depend on the descriptor chain )
-> | receive buffer | 
-> | 0th descriptor | 1th descriptor | 
-> | virtnet hdr | mac | ip hdr | tcp hdr|<-- hold -->| payload | 
-> Method A uses a buffer plus a separate page when allocating the receive
-> buffer. In this way, we can ensure that all payloads can be put
-> independently in a page, which is very beneficial for the zerocopy 
-> implemented by the upper layer. 
-> The advantage of method A is that the implementation is clearer, it can support normal
-> header spit and the rollback conditions. It can also easily support xdp. The downside is
-> that devices operating directly on the descriptor chain may cause the layering violation,
-> and also affect the performance.
-> 2. method B ( depend on mergeable buffer)
-> | receive buffer (page) | receive buffer (page) | 
-> | <-- offset(hold) --> | virtnet hdr | mac | ip hdr | tcp hdr|<-- hold -->| payload | 
-> ^
-> |
-> pointer to device
-> Method B is based on your previous suggestion, it is implemented based
-> on mergeable buffer, filling a separate page each time. 
-> If the split header is negotiated and the packet can be successfully split by the device,
-> the device needs to find at least two buffers, namely two pages, one for the virtio-net header
-> and transport header, and the other for the payload.
-> The advantage of method B is that it relies on mergeable buffer instead of the descriptor chain.
-> It overcomes the shortcomings of method A and can achieve the purpose of the device focusing
-> on the buffer instead of the descriptor. Its disadvantage is that it causes memory waste.
-> 3. method C ( depend on mergeable buffer )
-> | small buffer | data buffer (page) | small buffer | data buffer (page) | small buffer | data buffer (page) |
-> Method B fills a separate page each time, while method C needs to fill the small buffer and
-> page buffer separately. Method C puts the header in small buffer and the payload in a page.
-> The advantage of method C is that some buffers are filled for header and data respectively,
-> which reduces the memory waste of method B. However, this method is difficult to weigh
-> the number of filled header buffers and data buffers, and an unreasonable proportion will
-> affect performance. For example, in a scenario with a large number of large packets,
-> too many header buffers will affect performance, or in a scenario with a large number of small
-> packets, too many data buffers can also affect performance. At the same time, if some protocols
-> with a large number of packets do not support split header, the existence of the header buffers
-> will also affect performance.
-> 二、Points of agreement and disagreement
-> 1. What we have now agreed upon is that:
-> None of the three methods break VIRTIO_F_ANY_LAYOUT, they make virtio net header and
-> packet header stored together.
-> We have now agreed to relax the following in the split header scenario,
->  "indicates to both the device and the driver that no assumptions were made about framing."
-> because when a bigger packet comes, and a data buffer is not enough to store this packet,
-> the device either chooses to skip the next header buffer to break what the spec says above,
-> or chooses not to skip the header buffer and cannot make payload page aligned.
-> Therefore, all three methods need to relax the above requirements.
-> 2. What we haven't now agreed upon is that:
-> The point where we don't agree now is that we don't have a more precise discussion of which
-> approach to take, but we're still bouncing between approaches.
-> At present, all three approaches seem to achieve our requirements, but each has advantages
-> and disadvantages. Should we focus on the most important points, such as performance to choose.
-> It seems a little difficult to cover everything?
-> 三、Two forms of implementing receive zerocopy
-> the Eric's tcp receive interface requires the header and payload are stored in separate buffers, and the payload is
-> stored in a paged alignment way.
-> Now, io_uring also proposes a new receive zerocopy method, which requires header and payload
-> to be stored in separate buffers, but does not require payload page aligned.
-> https://lore.kernel.org/io-uring/20221007211713.170714-1-jonathan.lemon@gmail.com/T/#m678770d1fa7040fd76ed35026b93dfcbf25f6196
-> Thanks.
-> > > If we had flexibility here, this could be
-> > > helpful for alignment, security, etc.
-> > > Unfortunately, our hands are tied:
-> > >
-> > >
-> > > \field{len} is particularly useful
-> > > for drivers using untrusted buffers: if a driver does not know exactly
-> > > how much has been written by the device, the driver would have to zero
-> > > the buffer in advance to ensure no data leakage occurs.
-> > >
-> > > For example, a network driver may hand a received buffer directly to
-> > > an unprivileged userspace application. If the network device has not
-> > > overwritten the bytes which were in that buffer, this could leak the
-> > > contents of freed memory from other processes to the application.
-> > 
-> > This should be a bug of the driver. For example, if the driver wants
-> > to implement zerocopy, it must guarantee that every byte was written
-> > by the device before mapping it to the userspace, if it can't it
-> > should do the copy instead.
-> > 
-> > >
-> > >
-> > > so all buffers have to be initialized completely up to the reported
-> > > used length.
-> > >
-> > > It could be that the guarantee is not relevant in some use-cases.
-> > > We would have to specify that this is an exception to the rule,
-> > > explain that drivers must be careful about information leaks.
-> > > Let's say there's a feature bit that adds uninitialized space
-> > > somewhere. How much was added? We can find out by parsing the
-> > > packet but once you start doing that just to assemble the skb
-> > > you have already lost performance.
-> > 
-> > I don't get here, for those uninitialized spaces, it looks just
-> > tailroom for the skb.
-> > 
-> > Thanks
-> > 
-> > > So lots of spec work, some security risks, and unclear performance.
-> > >
-> > >
-> > >
-> > >
-> > > Is above a fair summary?
-> > >
-> > >
-> > >
-> > > If yes I would say let's address A, but make sure we ask drivers
-> > > to clear the new feature bit if there's no mergeable
-> > > (as opposed to e.g. failing probe) so we can add
-> > > support for !mergeable down the road.
-> > >
-> > >
-> > >
-> > >
-> > >
-> > > --
-> > > MST
-> > >
-> ---------------------------------------------------------------------
-> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+SGkgSGVuZyBRaSwNCg0KU29ycnkgZm9yIHRoZSBqb2luaW5nIHRoaXMgY29udmVyc2F0aW9uIGxp
+dHRsZSBsYXRlLg0KWW91ciBlbWFpbCBoYXMgdmVyeSB1c2VmdWwgc3VtbWFyeS4NCg0KVW5mb3J0
+dW5hdGVseSwgbm9uLXRleHQgY29udGVudCAoSFRNTCBjb250ZW50KSBkb2VzbuKAmXQgZ2V0IGFj
+aGlldmVkLg0KU28sIGNoYW5naW5nIHRoZSBmb3JtYXQgdG8gdGV4dCB0byBjYXB0dXJlIHlvdXIg
+dXNlZnVsIGNvbW1lbnRzLg0KSWYgeW91IGNhbiBjaGFuZ2UgeW91ciBlbWFpbCBjbGllbnQgc2V0
+dGluZ3MgdG8gYmUgdGV4dCBtb2RlLCBpdCB3aWxsIGJlIGVhc2llciB0byBjb252ZXJzZS4NCg0K
+V2UgaGF2ZSBlcXVhbCBpbnRlcmVzdCBpbiBoYXZpbmcgZWZmaWNpZW50IHNwbGl0IGhkciBzdXBw
+b3J0IGFuZCBkbyB0b2dldGhlciB3aXRoIHlvdS4NClBsZWFzZSBmaW5kIHJlc3BvbnNlICJyZXNw
+b25zZSIgdGFnIGJlbG93IGF0IHRoZSBlbmQgb2YgZW1haWwgdG8gYXZvaWQgdG9wIHBvc3Rpbmcu
+DQoNCkZyb206IHZpcnRpby1jb21tZW50QGxpc3RzLm9hc2lzLW9wZW4ub3JnIDx2aXJ0aW8tY29t
+bWVudEBsaXN0cy5vYXNpcy1vcGVuLm9yZz4gT24gQmVoYWxmIE9mIGhlbmdxaQ0KU2VudDogVHVl
+c2RheSwgSmFudWFyeSAzMSwgMjAyMyA0OjIzIEFNDQpUbzogdmlydGlvLWRldiA8dmlydGlvLWRl
+dkBsaXN0cy5vYXNpcy1vcGVuLm9yZz47IHZpcnRpby1jb21tZW50IDx2aXJ0aW8tY29tbWVudEBs
+aXN0cy5vYXNpcy1vcGVuLm9yZz4NCkNjOiBNaWNoYWVsIFMuIFRzaXJraW4gPG1zdEByZWRoYXQu
+Y29tPjsgSmFzb24gV2FuZyA8amFzb3dhbmdAcmVkaGF0LmNvbT47IENvcm5lbGlhIEh1Y2sgPGNv
+aHVja0ByZWRoYXQuY29tPjsgS2FuZ2ppZSBYdSA8a2FuZ2ppZS54dUBsaW51eC5hbGliYWJhLmNv
+bT47IFh1YW4gWmh1byA8eHVhbnpodW9AbGludXguYWxpYmFiYS5jb20+DQpTdWJqZWN0OiBbdmly
+dGlvLWNvbW1lbnRdIOWbnuWkje+8mlt2aXJ0aW8tZGV2XSBbUEFUQ0ggdjhdIHZpcnRpb19uZXQ6
+IHN1cHBvcnQgZm9yIHNwbGl0IHRyYW5zcG9ydCBoZWFkZXINCg0KSGksIGFsbC4NCg0KU3BsaXQg
+aGVhZGVyIGlzwqBhwqB0ZWNobmlxdWXCoHdpdGjCoGltcG9ydGFudMKgYXBwbGljYXRpb25zLMKg
+c3VjaMKgYXPCoEVyaWMgKGh0dHBzOi8vbHduLm5ldC9BcnRpY2xlcy83NTQ2ODEvKQ0KYW5kwqBK
+b25hdGhhbsKgTGVtb24gKGh0dHBzOi8vbG9yZS5rZXJuZWwub3JnL2lvLXVyaW5nLzIwMjIxMDA3
+MjExNzEzLjE3MDcxNC0xLcKgbWFpbHRvOmpvbmF0aGFuLmxlbW9uQGdtYWlsLmNvbS9ULyNtNjc4
+NzcwZDFmYTcwNDBmZDc2ZWQzNTAyNmI5M2RmY2JmMjVmNjE5NikNCnJlYWxpemXCoHRoZcKgemVy
+by1jb3B5wqB0ZWNobm9sb2d5wqByZXNwZWN0aXZlbHkswqB0aGV5wqBhbGzCoGhhdmXCoG9uZcKg
+dGhpbmfCoGluwqBjb21tb27CoHRoYXTCoHRoZcKgaGVhZGVywqBhbmQNCnRoZcKgcGF5bG9hZMKg
+bmVlZMKgdG/CoGJlwqBpbsKgc2VwYXJhdGXCoGJ1ZmZlcnMswqBhbmTCoEVyaWMnc8KgbWV0aG9k
+wqByZXF1aXJlc8KgdGhlwqBwYXlsb2FkwqB0b8KgYmXCoHBhZ2UtYWxpZ25lZC4NCg0KV2XCoGlt
+cGxlbWVudGVkwqB6ZXJvLWNvcHnCoG9uwqB0aGXCoHZpcnRpby1uZXTCoGRyaXZlcsKgYWNjb3Jk
+aW5nwqB0b8KgRXJpYydzwqBtZXRob2QuwqBUaGXCoGNvbW1hbmRzwqBhbmQNCmVudmlyb25tZW50
+wqBhcmXCoGFzwqBmb2xsb3dzOg0KI8KgZW52aXJvbm1lbnQNClZNMTwtLS0tPnZob3N0LXVzZXI8
+LT5PVlM8LT52aG9zdC11c2VyPC0tLS0+Vk0yDQpjcHXCoE1vZGVswqBuYW1lOsKgSW50ZWwoUinC
+oFhlb24oUinCoENQVcKgRTUtMjY4MsKgdjTCoEDCoDIuNTBHSHoNCmtlcm5lbCB2ZXJzaW9uIDYu
+MA0KDQojIGNvbW1hbmRzIChsaW51eC90b29scy90ZXN0aW5nL3NlbGZ0ZXN0cy9uZXQpDQouL3Rj
+cF9tbWFwwqAtc8KgLXrCoC00wqAtcMKgMTAwMMKgJg0KLi90Y3BfbW1hcMKgLUjCoDEwLjAuMC4y
+wqAtesKgLTTCoC1wwqAxMDAwDQoNClRoZcKgcGVyZm9ybWFuY2XCoGRhdGHCoGlzwqBhc8KgZm9s
+bG93c8KgKGltcGxlbWVudGVkwqBhY2NvcmRpbmfCoHRvwqB0aGXCoHNwbGl0wqBoZWFkZXLCoHY3
+wqB2ZXJzaW9uLA0KaHR0cHM6Ly9saXN0cy5vYXNpcy1vcGVuLm9yZy9hcmNoaXZlcy92aXJ0aW8t
+ZGV2LzIwMjIwOS9tc2cwMDAwNC5odG1sKToNCiPCoGRpcmVjdMKgY29weQ0KMTcuNjYwNMKgc8Kg
+MTAuMDjCoHMNCiMgemVybyBjb3B5DQoxLjnCoEdCL3PCoDMuM8KgR0Ivcw0KDQpXZcKgZGlzY3Vz
+c2VkwqBhwqBsb3TCoGJlZm9yZSzCoHRoZSBjb3JlwqBwb2ludMKgaXPCoHRoZcKgY2hvaWNlwqBv
+ZsKgbWV0aG9kwqBBwqBhbmTCoG1ldGhvZMKgQywgd2XCoHNlZW0NCnRvwqBiZcKgdW5hYmxlwqB0
+b8KgcmVhY2jCoGFuwqBhZ3JlZW1lbnTCoG9uwqB0aGlzwqBwb2ludCzCoHNlZWluZyB0aGXCoGFi
+b3ZlwqBzdW1tYXJ5wqBhbmTCoHByZXZpb3VzwqBkaXNjdXNzaW9uwqAoaHR0cHM6Ly9saXN0cy5v
+YXNpcy1vcGVuLm9yZy9hcmNoaXZlcy92aXJ0aW8tZGV2wqAvMjAyMjEwL21zZzAwMDE3Lmh0bWwp
+LA0KaG93wqBjYW7CoHdlwqByZXNvbHZlwqB0aGlzwqBjb25mbGljdMKgYW5kwqBsZXTCoHRoaXPC
+oGltcG9ydGFudCBmZWF0dXJlIGNvbnRpbnVlPw0KSSByZWFsbHkgbmVlZMKgeW91csKgaGVscC7C
+oENjwqBKYXNvbizCoE1pY2hhZWwswqBDb3JuZWxpYSzCoFh1YW4uDQoNClRoYW5rcy4NCi0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLQ0K5Y+R5Lu25Lq677yaSGVuZyBRaSA8bWFpbHRvOmhlbmdxaUBsaW51eC5hbGliYWJhLmNv
+bT4NCuWPkemAgeaXtumXtO+8mjIwMjLlubQxMOaciDIw5pelKOaYn+acn+WbmykgMTY6MzQNCuaU
+tuS7tuS6uu+8mkphc29uIFdhbmcgPG1haWx0bzpqYXNvd2FuZ0ByZWRoYXQuY29tPg0K5oqE44CA
+6YCB77yaTWljaGFlbCBTLiBUc2lya2luIDxtYWlsdG86bXN0QHJlZGhhdC5jb20+OyBYdWFuIFpo
+dW8gPG1haWx0bzp4dWFuemh1b0BsaW51eC5hbGliYWJhLmNvbT47IFZpcnRpby1EZXYgPG1haWx0
+bzp2aXJ0aW8tZGV2QGxpc3RzLm9hc2lzLW9wZW4ub3JnPjsgS2FuZ2ppZSBYdSA8bWFpbHRvOmth
+bmdqaWUueHVAbGludXguYWxpYmFiYS5jb20+DQrkuLvjgIDpopjvvJpSZTogW3ZpcnRpby1kZXZd
+IFtQQVRDSCB2OF0gdmlydGlvX25ldDogc3VwcG9ydCBmb3Igc3BsaXQgdHJhbnNwb3J0IGhlYWRl
+cg0KDQpPbsKgU2F0LMKgT2N0wqAwOCzCoDIwMjLCoGF0wqAxMjozNzo0NVBNwqArMDgwMCzCoEph
+c29uwqBXYW5nwqB3cm90ZToNCj7CoE9uwqBUaHUswqBTZXDCoDI5LMKgMjAyMsKgYXTCoDM6MDTC
+oFBNwqBNaWNoYWVswqBTLsKgVHNpcmtpbsKgPG1haWx0bzptc3RAcmVkaGF0LmNvbT7CoHdyb3Rl
+Og0KPsKgPg0KPsKgPsKgT27CoFRodSzCoFNlcMKgMjkswqAyMDIywqBhdMKgMDk6NDg6MzNBTcKg
+KzA4MDAswqBKYXNvbsKgV2FuZ8Kgd3JvdGU6DQo+wqA+wqA+wqBPbsKgV2VkLMKgU2VwwqAyOCzC
+oDIwMjLCoGF0wqA5OjM5wqBQTcKgTWljaGFlbMKgUy7CoFRzaXJraW7CoDxtYWlsdG86bXN0QHJl
+ZGhhdC5jb20+wqB3cm90ZToNCj7CoD7CoD7CoD4NCj7CoD7CoD7CoD7CoE9uwqBNb24swqBTZXDC
+oDI2LMKgMjAyMsKgYXTCoDA0OjA2OjE3UE3CoCswODAwLMKgSmFzb27CoFdhbmfCoHdyb3RlOg0K
+PsKgPsKgPsKgPsKgPsKgPsKgSmFzb27CoEnCoHRoaW5rwqB0aGXCoGlzc3VlwqB3aXRowqBwcmV2
+aW91c8KgcHJvcG9zYWxzwqBpc8KgdGhhdMKgdGhlecKgY29uZmxpY3QNCj7CoD7CoD7CoD7CoD7C
+oD7CoHdpdGjCoFZJUlRJT19GX0FOWV9MQVlPVVQuwqBXZcKgaGF2ZcKgcmVwZWF0ZWRsecKgZm91
+bmTCoHRoYXTCoGdpdmluZ8KgdGhlDQo+wqA+wqA+wqA+wqA+wqA+wqBkcml2ZXLCoGZsZXhpYmls
+aXR5wqBpbsKgYXJyYW5naW5nwqB0aGXCoHBhY2tldMKgaW7CoG1lbW9yecKgaXPCoGJlbmVmaXRp
+YWwuDQo+wqA+wqA+wqA+wqA+DQo+wqA+wqA+wqA+wqA+DQo+wqA+wqA+wqA+wqA+wqBZZXMswqBi
+dXTCoEnCoGRpZG4ndMKgZm91bmTCoGhvd8KgaXTCoGNhbsKgY29uZmxpY3TCoHRoZcKgYW55X2xh
+eW91dC7CoERldmljZcKgY2FuwqBqdXN0DQo+wqA+wqA+wqA+wqA+wqB0b8Kgbm90wqBzcGxpdMKg
+dGhlwqBoZWFkZXLCoHdoZW7CoHRoZcKgbGF5b3V0wqBkb2Vzbid0wqBmaXTCoGZvcsKgaGVhZGVy
+wqBzcGxpdHRpbmcuDQo+wqA+wqA+wqA+wqA+wqAoQW5kwqB0aGlzwqBzZWVtc8KgdGhlwqBjYXNl
+wqBldmVuwqBpZsKgd2UncmXCoHVzaW5nwqBidWZmZXJzKS4NCj7CoD7CoD7CoD4NCj7CoD7CoD7C
+oD7CoFdlbGzCoHNwZWPCoHNheXM6DQo+wqA+wqA+wqA+DQo+wqA+wqA+wqA+wqDCoMKgwqDCoMKg
+wqDCoMKgaW5kaWNhdGVzwqB0b8KgYm90aMKgdGhlwqBkZXZpY2XCoGFuZMKgdGhlwqBkcml2ZXLC
+oHRoYXTCoG5vDQo+wqA+wqA+wqA+wqDCoMKgwqDCoMKgwqDCoMKgYXNzdW1wdGlvbnPCoHdlcmXC
+oG1hZGXCoGFib3V0wqBmcmFtaW5nLg0KPsKgPsKgPsKgPg0KPsKgPsKgPsKgPsKgaWbCoGRldmlj
+ZcKgYXNzdW1lc8KgdGhhdMKgZGVzY3JpcHRvcsKgYm91bmRhcmllc8KgYXJlwqB3aGVyZQ0KPsKg
+PsKgPsKgPsKgZHJpdmVywqB3YW50c8KgcGFja2V0wqB0b8KgYmXCoHN0b3JlZMKgdGhhdMKgaXPC
+oGNsZWFybHkNCj7CoD7CoD7CoD7CoGFuwqBhc3N1bXB0aW9uLg0KPsKgPsKgPg0KPsKgPsKgPsKg
+WWVzwqBidXTCoHdoYXTCoEnCoHdhbnTCoHRvwqBzYXnCoGlzLMKgdGhlwqBkZXZpY2XCoGNhbsKg
+Y2hvb3NlwqB0b8Kgbm90wqBzcGxpdMKgdGhlDQo+wqA+wqA+wqBwYWNrZXTCoGlmwqB0aGXCoGZy
+YW1pbmfCoGRvZXNuJ3TCoGZpdC7CoERvZXPCoGl0wqBzdGlsbMKgY29tcGx5wqB3aXRowqB0aGXC
+oGFib3ZlDQo+wqA+wqA+wqBkZXNjcmlwdGlvbj8NCj7CoD7CoD4NCj7CoD7CoD7CoFRoYW5rcw0K
+PsKgPg0KPsKgPsKgVGhlwqBwb2ludMKgb2bCoEFOWV9MQVlPVVTCoGlzwqB0b8KgZ2l2ZcKgZHJp
+dmVyc8KgbWF4aW11bcKgZmxleGliaWxpdHkuDQo+wqA+wqBGb3LCoGV4YW1wbGUswqBpZsKgZHJp
+dmVywqB3YW50c8KgdG/CoHNwbGl0wqB0aGXCoGhlYWRlcsKgYXTCoHNvbWXCoHNwZWNpZmljDQo+
+wqA+wqBvZmZzZXTCoHRoaXPCoGlzwqBhbHJlYWR5wqBwb3NzaWJsZcKgd2l0aG91dMKgZXh0cmHC
+oGZ1bmN0aW9uYWxpdHkuDQo+wqANCj7CoEknbcKgbm90wqBzdXJlwqBob3fCoHRoaXPCoHdvdWxk
+wqB3b3JrwqB3aXRob3V0wqB0aGXCoHN1cHBvcnTCoGZyb23CoHRoZcKgZGV2aWNlLg0KPsKgVGhp
+c8KgcHJvYmFibHnCoGNhbsKgb25secKgd29ya8KgaWY6DQo+wqANCj7CoDEpwqB0aGXCoGRyaXZl
+csKga25vd8Kgd2hhdMKga2luZMKgb2bCoHBhY2tldMKgaXTCoGNhbsKgcmVjZWl2ZQ0KPsKgMinC
+oHByb3RvY29swqBoYXZlwqBmaXhlZMKgbGVuZ3RowqBvZsKgdGhlwqBoZWFkZXINCj7CoA0KPsKg
+VGhpc8KgaXPCoHByb2JhYmx5wqBub3TCoHRydWXCoGNvbnNpZGVyOg0KPsKgDQo+wqAxKcKgVENQ
+wqBhbmTCoFVEUMKgaGF2ZcKgZGlmZmVyZW50wqBoZWFkZXLCoGxlbmd0aA0KPsKgMinCoElQdjbC
+oGhhc8KgYW7CoHZhcmlhYmxlwqBsZW5ndGjCoG9mwqB0aGXCoGhlYWRlcg0KPsKgDQo+wqANCj7C
+oD4NCj7CoD7CoExldCdzwqBrZWVwwqBpdMKgdGhhdMKgd2F5Lg0KPsKgPg0KPsKgPsKgTm93LMKg
+bGV0J3PCoGZvcm11bGF0ZcKgd2hhdMKgYXJlwqBzb21lwqBvZsKgdGhlwqBwcm9ibGVtc8Kgd2l0
+aMKgdGhlwqBjdXJyZW50wqB3YXkuDQo+wqA+DQo+wqA+DQo+wqA+DQo+wqA+wqBBLcKgbWVyZ2Vh
+YmxlwqBidWZmZXJzwqBpc8KgZXZlbsKgbW9yZcKgZmxleGlibGUswqBzaW5jZcKgYcKgc2luZ2xl
+wqBwYWNrZXQNCj7CoD7CoMKgwqBpc8KgYnVpbHTCoHVwwqBvZsKgbXVsdGlwbGXCoGJ1ZmZlcnMu
+wqBBbmTCoGluwqB0aGVvcnnCoGRldmljZcKgY2FuDQo+wqA+wqDCoMKgY2hvb3NlwqBhcmJpdHJh
+cnnCoHNldMKgb2bCoGJ1ZmZlcnPCoHRvwqBzdG9yZcKgYcKgcGFja2V0Lg0KPsKgPsKgwqDCoFNv
+wqB5b3XCoGNvdWxkwqBzdXBwbHnCoGHCoHNtYWxswqBidWZmZXLCoGZvcsKgaGVhZGVyc8KgZm9s
+bG93ZWTCoGJ5wqBhwqBiaWdnZXINCj7CoD7CoMKgwqBvbmXCoGZvcsKgcGF5bG9hZCzCoGluwqB0
+aGVvcnnCoGV2ZW7CoHdpdGhvdXTCoGFuecKgY2hhbmdlcy4NCj7CoD7CoMKgwqBQcm9ibGVtwqAx
+OsKgSG93ZXZlcsKgc2luY2XCoHRoaXPCoGlzwqBub3TCoGhvd8KgZGV2aWNlc8KgY3VycmVudGx5
+wqBvcGVyYXRlLA0KPsKgPsKgwqDCoGHCoGZlYXR1cmXCoGJpdMKgd291bGTCoGJlwqBoZWxwZnVs
+Lg0KPsKgDQo+wqBIb3fCoGRvwqB3ZcKga25vd8KgdGhlwqBiaWdnZXLCoGJ1ZmZlcsKgaXPCoHN1
+ZmZpY2llbnTCoGZvcsKgdGhlwqBwYWNrZXQ/wqBJZsKgd2UNCj7CoHRyecKgdG/CoGFsbG9jYXRl
+wqA2NEvCoChub3TCoHN1ZmZpY2llbnTCoGZvcsKgdGhlwqBmdXR1cmXCoGV2ZW4pwqBpdMKgYnJl
+YWtzwqB0aGUNCj7CoGVmZm9ydMKgb2bCoHRoZcKgbWVyZ2VhYmxlwqBidWZmZXI6DQo+wqANCj7C
+oGhlYWRlcsKgYnVmZmVywqAjMQ0KPsKgcGF5bG9hZMKgYnVmZmVywqAjMQ0KPsKgaGVhZGVywqBi
+dWZmZXLCoCMyDQo+wqBwYXlsb2FkwqBidWZmZXLCoCMyDQo+wqANCj7CoElzwqB0aGXCoGRldmlj
+ZcKgZXhwZWN0ZWTCoHRvDQo+wqANCj7CoDEpwqBmaWxswqBwYXlsb2FkwqBpbsKgaGVhZGVywqBi
+dWZmZXLCoCMyLMKgdGhpc8KgYnJlYWtzwqB0aGXCoGVmZm9ydMKgdGhhdMKgd2UNCj7CoHdhbnTC
+oHRvwqBtYWtlwqBwYXlsb2FkwqBwYWdlwqBhbGlnbmVkDQo+wqAyKcKgc2tpcMKgaGVhZGVywqBi
+dWZmZXLCoCMyLMKgaW7CoHRoaXPCoGNhc2UswqB0aGXCoGRldmljZcKgYXNzdW1lc8KgdGhlwqBm
+cmFtaW5nDQo+wqB3aGVuwqBpdMKgYnJlYWtzwqBhbnnCoGxheW91dA0KPsKgDQo+wqA+DQo+wqA+
+wqDCoMKgUHJvYmxlbcKgMjrCoEFsc28swqBpbsKgdGhlwqBwYXN0wqB3ZcKgZm91bmTCoGl0wqB1
+c2VmdWzCoHRvwqBiZcKgYWJsZcKgdG/CoGZpZ3VyZcKgb3V0wqB3aGV0aGVyDQo+wqA+wqDCoMKg
+cGFja2V0wqBmaXRzwqBpbsKgYcKgc2luZ2xlwqBidWZmZXLCoHdpdGhvdXTCoGxvb2tpbmfCoGF0
+wqB0aGXCoGhlYWRlci4NCj7CoD7CoMKgwqBGb3LCoHRoaXPCoHJlYXNvbizCoHdlwqBoYXZlwqB0
+aGlzwqB0ZXh0Og0KPsKgPg0KPsKgPsKgwqDCoMKgwqDCoMKgwqDCoElmwqBhwqByZWNlaXZlwqBw
+YWNrZXTCoGlzwqBzcHJlYWTCoG92ZXLCoG11bHRpcGxlwqBidWZmZXJzLMKgdGhlwqBkZXZpY2UN
+Cj7CoD7CoMKgwqDCoMKgwqDCoMKgwqBNVVNUwqB1c2XCoGFsbMKgYnVmZmVyc8KgYnV0wqB0aGXC
+oGxhc3TCoChpLmUuwqB0aGXCoGZpcnN0wqBcZmllbGR7bnVtX2J1ZmZlcnN9wqAtDQo+wqA+wqDC
+oMKgwqDCoMKgwqDCoMKgMcKgYnVmZmVycynCoGNvbXBsZXRlbHnCoHVwwqB0b8KgdGhlwqBmdWxs
+wqBsZW5ndGjCoG9mwqBlYWNowqBidWZmZXINCj7CoD7CoMKgwqDCoMKgwqDCoMKgwqBzdXBwbGll
+ZMKgYnnCoHRoZcKgZHJpdmVyLg0KPsKgPg0KPsKgPsKgwqDCoGlmwqB3ZcKgd2FudMKgdG/CoGtl
+ZXDCoHRoaXPCoG9wdGltaXphdGlvbsKgYW5kwqBhbGxvd8KgdXNpbmfCoGHCoHNlcGFyYXRlDQo+
+wqA+wqDCoMKgYnVmZmVywqBmb3LCoGhlYWRlcnMswqB0aGVuwqBJwqB0aGlua8Kgd2XCoGNvdWxk
+wqByZWx5wqBvbsKgdGhlwqBmZWF0dXJlwqBiaXQNCj7CoD7CoMKgwqBmcm9twqBQcm9ibGVtwqAx
+wqBhbmTCoGp1c3TCoG1ha2XCoGFuwqBleGNlcHRpb27CoGZvcsKgdGhlwqBmaXJzdMKgYnVmZmVy
+Lg0KPsKgPsKgwqDCoEFsc2/CoG51bV9idWZmZXJzwqBpc8KgdGhlbsKgYWx3YXlzwqA+PcKgMizC
+oG1heWJlwqBzdGF0ZcKgdGhpc8KgdG/CoGF2b2lkDQo+wqA+wqDCoMKgY29uZnVzaW9uLg0KPsKg
+Pg0KPsKgPg0KPsKgPg0KPsKgPg0KPsKgPg0KPsKgPsKgQi3CoHdpdGhvdXTCoG1lcmdlYWJsZSzC
+oHRoZXJlJ3PCoG5vwqBmbGV4aWJpbGl0eS7CoEluwqBwYXJ0aWN1bGFyLMKgdGhlcmXCoGNhbg0K
+PsKgPsKgbm90wqBiZcKgdW5pbml0aWFsaXplZMKgc3BhY2XCoGJldHdlZW7CoGhlYWRlcsKgYW5k
+wqBkYXRhLg0KPsKgDQo+wqBJwqBoYWTCoHR3b8KgcXVlc3Rpb25zDQo+wqANCj7CoDEpwqB3aHnC
+oGlzwqB0aGlzwqBub3TCoGHCoHByb2JsZW3CoG9mwqBtZXJnZWFibGU/wqBUaGVyZSdzwqBub8Kg
+Z3VhcmFudGVlwqB0aGF0DQo+wqB0aGXCoGhlYWRlcsKgaXPCoGp1c3TCoHRoZcKgbGVuZ3RowqBv
+ZsKgd2hhdMKgdGhlwqBkcml2ZXLCoGFsbG9jYXRlc8KgZm9ywqBoZWFkZXINCj7CoGJ1ZmZlcsKg
+YW55aG93DQo+wqANCj7CoEUuZ8KgdGhlwqBoZWFkZXLCoGxlbmd0aMKgY291bGTCoGJlwqBzbWFs
+bGVywqB0aGFuwqB0aGXCoGhlYWRlcsKgYnVmZmVyLMKgdGhlDQo+wqBkZXZpY2XCoHN0aWxswqBu
+ZWVkc8KgdG/CoHNraXDCoHBhcnTCoG9mwqB0aGXCoHNwYWNlwqBpbsKgdGhlwqBoZWFkZXLCoGJ1
+ZmZlci4NCj7CoA0KPsKgMinCoGl0wqBzaG91bGTCoGJlwqB0aGXCoHJlc3BvbnNpYmlsaXR5wqBv
+ZsKgdGhlwqBkcml2ZXLCoHRvwqBoYW5kbGXCoHRoZQ0KPsKgdW5pbml0aWFsaXplZMKgc3BhY2Us
+wqBpdMKgc2hvdWxkwqBkb8KgYW55dGhpbmfCoHRoYXTCoGlzwqBuZWNlc3NhcnnCoGZvcg0KPsKg
+c2VjdXJpdHkswqBtb3JlwqBiZWxvdw0KPsKgDQoNCg0KV2UndmXCoHRhbGtlZMKgYcKgYml0wqBt
+b3JlwqBhYm91dMKgc3BsaXTCoGhlYWRlcsKgc2/CoGZhcizCoGJ1dMKgdGhlcmXCoHN0aWxswqBz
+ZWVtwqB0bw0KYmXCoHNvbWXCoGlzc3VlcyzCoHNvwqBsZXQnc8KgcmVjYXAuDQoNCuS4gOOAgcKg
+TWV0aG9kwqBEaXNjdXNzaW9uwqBSZXZpZXcNCg0KSW7CoG9yZGVywqB0b8KgYWRhcHTCoHRvwqB0
+aGXCoEVyaWMnc8KgdGNwwqByZWNlaXZlwqBpbnRlcmZhY2XCoHRvwqBhY2hpZXZlwqB6ZXJvwqBj
+b3B5LA0KaGVhZGVywqBhbmTCoHBheWxvYWTCoGFyZcKgcmVxdWlyZWTCoHRvwqBiZcKgc3RvcmVk
+wqBzZXBhcmF0ZWx5LMKgYW5kwqB0aGXCoHBheWxvYWTCoGlzDQpzdG9yZWTCoGluwqBhwqBwYWdl
+ZMKgYWxpZ25tZW50wqB3YXkuwqBUaGVyZWZvcmUswqB3ZcKgaGF2ZcKgZGlzY3Vzc2VkwqBzZXZl
+cmFswqBvcHRpb25zDQpmb3LCoHNwbGl0wqBoZWFkZXLCoGFzwqBmb2xsb3dzOg0KDQoxOsKgbWV0
+aG9kwqBBwqAowqBkZXBlbmTCoG9uwqB0aGXCoGRlc2NyaXB0b3LCoGNoYWluwqApDQp8wqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqByZWNlaXZlwqBidWZm
+ZXLCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oHzCoA0KfMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAwdGjCoGRlc2NyaXB0b3LCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoHzCoDF0aMKgZGVzY3JpcHRvcsKg
+fMKgDQp8wqB2aXJ0bmV0wqBoZHLCoHzCoG1hY8KgfMKgaXDCoGhkcsKgfMKgdGNwwqBoZHJ8PC0t
+wqBob2xkwqAtLT58wqDCoMKgwqDCoMKgcGF5bG9hZMKgwqDCoHzCoA0KTWV0aG9kwqBBwqB1c2Vz
+wqBhwqBidWZmZXLCoHBsdXPCoGHCoHNlcGFyYXRlwqBwYWdlwqB3aGVuwqBhbGxvY2F0aW5nwqB0
+aGXCoHJlY2VpdmUNCmJ1ZmZlci7CoEluwqB0aGlzwqB3YXkswqB3ZcKgY2FuwqBlbnN1cmXCoHRo
+YXTCoGFsbMKgcGF5bG9hZHPCoGNhbsKgYmXCoHB1dA0KaW5kZXBlbmRlbnRsecKgaW7CoGHCoHBh
+Z2UswqB3aGljaMKgaXPCoHZlcnnCoGJlbmVmaWNpYWzCoGZvcsKgdGhlwqB6ZXJvY29wecKgDQpp
+bXBsZW1lbnRlZMKgYnnCoHRoZcKgdXBwZXLCoGxheWVyLsKgDQoNClRoZcKgYWR2YW50YWdlwqBv
+ZsKgbWV0aG9kwqBBwqBpc8KgdGhhdMKgdGhlwqBpbXBsZW1lbnRhdGlvbsKgaXPCoGNsZWFyZXIs
+wqBpdMKgY2FuwqBzdXBwb3J0wqBub3JtYWwNCmhlYWRlcsKgc3BpdMKgYW5kwqB0aGXCoHJvbGxi
+YWNrwqBjb25kaXRpb25zLsKgSXTCoGNhbsKgYWxzb8KgZWFzaWx5wqBzdXBwb3J0wqB4ZHAuwqBU
+aGXCoGRvd25zaWRlwqBpcw0KdGhhdMKgZGV2aWNlc8Kgb3BlcmF0aW5nwqBkaXJlY3RsecKgb27C
+oHRoZcKgZGVzY3JpcHRvcsKgY2hhaW7CoG1hecKgY2F1c2XCoHRoZcKgbGF5ZXJpbmfCoHZpb2xh
+dGlvbiwNCmFuZMKgYWxzb8KgYWZmZWN0wqB0aGXCoHBlcmZvcm1hbmNlLg0KDQoyLsKgbWV0aG9k
+wqBCwqAowqBkZXBlbmTCoG9uwqBtZXJnZWFibGXCoGJ1ZmZlcikNCnzCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoHJlY2VpdmXCoGJ1ZmZlcsKgKHBhZ2UpwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgfMKg
+cmVjZWl2ZcKgYnVmZmVywqAocGFnZSnCoHzCoA0KfMKgPC0twqBvZmZzZXQoaG9sZCnCoC0tPsKg
+fMKgdmlydG5ldMKgaGRywqB8wqBtYWPCoHzCoGlwwqBoZHLCoHzCoHRjcMKgaGRyfDwtLcKgaG9s
+ZMKgLS0+fMKgwqDCoMKgwqDCoMKgwqDCoHBheWxvYWTCoMKgwqDCoMKgwqDCoHzCoA0KXg0KfA0K
+cG9pbnRlcsKgdG/CoGRldmljZQ0KDQpNZXRob2TCoELCoGlzwqBiYXNlZMKgb27CoHlvdXLCoHBy
+ZXZpb3VzwqBzdWdnZXN0aW9uLMKgaXTCoGlzwqBpbXBsZW1lbnRlZMKgYmFzZWQNCm9uwqBtZXJn
+ZWFibGXCoGJ1ZmZlcizCoGZpbGxpbmfCoGHCoHNlcGFyYXRlwqBwYWdlwqBlYWNowqB0aW1lLsKg
+DQoNCklmwqB0aGXCoHNwbGl0wqBoZWFkZXLCoGlzwqBuZWdvdGlhdGVkwqBhbmTCoHRoZcKgcGFj
+a2V0wqBjYW7CoGJlwqBzdWNjZXNzZnVsbHnCoHNwbGl0wqBiecKgdGhlwqBkZXZpY2UsDQp0aGXC
+oGRldmljZcKgbmVlZHPCoHRvwqBmaW5kwqBhdMKgbGVhc3TCoHR3b8KgYnVmZmVycyzCoG5hbWVs
+ecKgdHdvwqBwYWdlcyzCoG9uZcKgZm9ywqB0aGXCoHZpcnRpby1uZXTCoGhlYWRlcg0KYW5kwqB0
+cmFuc3BvcnTCoGhlYWRlcizCoGFuZMKgdGhlwqBvdGhlcsKgZm9ywqB0aGXCoHBheWxvYWQuDQoN
+ClRoZcKgYWR2YW50YWdlwqBvZsKgbWV0aG9kwqBCwqBpc8KgdGhhdMKgaXTCoHJlbGllc8Kgb27C
+oG1lcmdlYWJsZcKgYnVmZmVywqBpbnN0ZWFkwqBvZsKgdGhlwqBkZXNjcmlwdG9ywqBjaGFpbi4N
+Ckl0wqBvdmVyY29tZXPCoHRoZcKgc2hvcnRjb21pbmdzwqBvZsKgbWV0aG9kwqBBwqBhbmTCoGNh
+bsKgYWNoaWV2ZcKgdGhlwqBwdXJwb3NlwqBvZsKgdGhlwqBkZXZpY2XCoGZvY3VzaW5nDQpvbsKg
+dGhlwqBidWZmZXLCoGluc3RlYWTCoG9mwqB0aGXCoGRlc2NyaXB0b3IuwqBJdHPCoGRpc2FkdmFu
+dGFnZcKgaXPCoHRoYXTCoGl0wqBjYXVzZXPCoG1lbW9yecKgd2FzdGUuDQoNCjMuwqBtZXRob2TC
+oEPCoCjCoGRlcGVuZMKgb27CoG1lcmdlYWJsZcKgYnVmZmVywqApDQp8wqBzbWFsbMKgYnVmZmVy
+wqB8wqBkYXRhwqBidWZmZXLCoChwYWdlKcKgfMKgc21hbGzCoGJ1ZmZlcsKgfMKgZGF0YcKgYnVm
+ZmVywqAocGFnZSnCoHzCoHNtYWxswqBidWZmZXLCoHzCoGRhdGHCoGJ1ZmZlcsKgKHBhZ2UpwqB8
+DQoNCk1ldGhvZMKgQsKgZmlsbHPCoGHCoHNlcGFyYXRlwqBwYWdlwqBlYWNowqB0aW1lLMKgd2hp
+bGXCoG1ldGhvZMKgQ8KgbmVlZHPCoHRvwqBmaWxswqB0aGXCoHNtYWxswqBidWZmZXLCoGFuZA0K
+cGFnZcKgYnVmZmVywqBzZXBhcmF0ZWx5LsKgTWV0aG9kwqBDwqBwdXRzwqB0aGXCoGhlYWRlcsKg
+aW7CoHNtYWxswqBidWZmZXLCoGFuZMKgdGhlwqBwYXlsb2FkwqBpbsKgYcKgcGFnZS4NCg0KVGhl
+wqBhZHZhbnRhZ2XCoG9mwqBtZXRob2TCoEPCoGlzwqB0aGF0wqBzb21lwqBidWZmZXJzwqBhcmXC
+oGZpbGxlZMKgZm9ywqBoZWFkZXLCoGFuZMKgZGF0YcKgcmVzcGVjdGl2ZWx5LA0Kd2hpY2jCoHJl
+ZHVjZXPCoHRoZcKgbWVtb3J5wqB3YXN0ZcKgb2bCoG1ldGhvZMKgQi7CoEhvd2V2ZXIswqB0aGlz
+wqBtZXRob2TCoGlzwqBkaWZmaWN1bHTCoHRvwqB3ZWlnaA0KdGhlwqBudW1iZXLCoG9mwqBmaWxs
+ZWTCoGhlYWRlcsKgYnVmZmVyc8KgYW5kwqBkYXRhwqBidWZmZXJzLMKgYW5kwqBhbsKgdW5yZWFz
+b25hYmxlwqBwcm9wb3J0aW9uwqB3aWxsDQphZmZlY3TCoHBlcmZvcm1hbmNlLsKgRm9ywqBleGFt
+cGxlLMKgaW7CoGHCoHNjZW5hcmlvwqB3aXRowqBhwqBsYXJnZcKgbnVtYmVywqBvZsKgbGFyZ2XC
+oHBhY2tldHMsDQp0b2/CoG1hbnnCoGhlYWRlcsKgYnVmZmVyc8Kgd2lsbMKgYWZmZWN0wqBwZXJm
+b3JtYW5jZSzCoG9ywqBpbsKgYcKgc2NlbmFyaW/CoHdpdGjCoGHCoGxhcmdlwqBudW1iZXLCoG9m
+wqBzbWFsbA0KcGFja2V0cyzCoHRvb8KgbWFuecKgZGF0YcKgYnVmZmVyc8KgY2FuwqBhbHNvwqBh
+ZmZlY3TCoHBlcmZvcm1hbmNlLsKgQXTCoHRoZcKgc2FtZcKgdGltZSzCoGlmwqBzb21lwqBwcm90
+b2NvbHMNCndpdGjCoGHCoGxhcmdlwqBudW1iZXLCoG9mwqBwYWNrZXRzwqBkb8Kgbm90wqBzdXBw
+b3J0wqBzcGxpdMKgaGVhZGVyLMKgdGhlwqBleGlzdGVuY2XCoG9mwqB0aGXCoGhlYWRlcsKgYnVm
+ZmVycw0Kd2lsbMKgYWxzb8KgYWZmZWN0wqBwZXJmb3JtYW5jZS4NCg0K5LqM44CBUG9pbnRzwqBv
+ZsKgYWdyZWVtZW50wqBhbmTCoGRpc2FncmVlbWVudA0KDQoxLsKgV2hhdMKgd2XCoGhhdmXCoG5v
+d8KgYWdyZWVkwqB1cG9uwqBpc8KgdGhhdDoNCk5vbmXCoG9mwqB0aGXCoHRocmVlwqBtZXRob2Rz
+wqBicmVha8KgVklSVElPX0ZfQU5ZX0xBWU9VVCzCoHRoZXnCoG1ha2XCoHZpcnRpb8KgbmV0wqBo
+ZWFkZXLCoGFuZA0KcGFja2V0wqBoZWFkZXLCoHN0b3JlZMKgdG9nZXRoZXIuDQoNCldlwqBoYXZl
+wqBub3fCoGFncmVlZMKgdG/CoHJlbGF4wqB0aGXCoGZvbGxvd2luZ8KgaW7CoHRoZcKgc3BsaXTC
+oGhlYWRlcsKgc2NlbmFyaW8sDQrCoCJpbmRpY2F0ZXPCoHRvwqBib3RowqB0aGXCoGRldmljZcKg
+YW5kwqB0aGXCoGRyaXZlcsKgdGhhdMKgbm/CoGFzc3VtcHRpb25zwqB3ZXJlwqBtYWRlwqBhYm91
+dMKgZnJhbWluZy4iDQpiZWNhdXNlwqB3aGVuwqBhwqBiaWdnZXLCoHBhY2tldMKgY29tZXMswqBh
+bmTCoGHCoGRhdGHCoGJ1ZmZlcsKgaXPCoG5vdMKgZW5vdWdowqB0b8Kgc3RvcmXCoHRoaXPCoHBh
+Y2tldCwNCnRoZcKgZGV2aWNlwqBlaXRoZXLCoGNob29zZXPCoHRvwqBza2lwwqB0aGXCoG5leHTC
+oGhlYWRlcsKgYnVmZmVywqB0b8KgYnJlYWvCoHdoYXTCoHRoZcKgc3BlY8Kgc2F5c8KgYWJvdmUs
+DQpvcsKgY2hvb3Nlc8Kgbm90wqB0b8Kgc2tpcMKgdGhlwqBoZWFkZXLCoGJ1ZmZlcsKgYW5kwqBj
+YW5ub3TCoG1ha2XCoHBheWxvYWTCoHBhZ2XCoGFsaWduZWQuDQpUaGVyZWZvcmUswqBhbGzCoHRo
+cmVlwqBtZXRob2RzwqBuZWVkwqB0b8KgcmVsYXjCoHRoZcKgYWJvdmXCoHJlcXVpcmVtZW50cy4N
+Cg0KMi7CoFdoYXTCoHdlwqBoYXZlbid0wqBub3fCoGFncmVlZMKgdXBvbsKgaXPCoHRoYXQ6DQpU
+aGXCoHBvaW50wqB3aGVyZcKgd2XCoGRvbid0wqBhZ3JlZcKgbm93wqBpc8KgdGhhdMKgd2XCoGRv
+bid0wqBoYXZlwqBhwqBtb3JlwqBwcmVjaXNlwqBkaXNjdXNzaW9uwqBvZsKgd2hpY2gNCmFwcHJv
+YWNowqB0b8KgdGFrZSzCoGJ1dMKgd2UncmXCoHN0aWxswqBib3VuY2luZ8KgYmV0d2VlbsKgYXBw
+cm9hY2hlcy4NCkF0wqBwcmVzZW50LMKgYWxswqB0aHJlZcKgYXBwcm9hY2hlc8Kgc2VlbcKgdG/C
+oGFjaGlldmXCoG91csKgcmVxdWlyZW1lbnRzLMKgYnV0wqBlYWNowqBoYXPCoGFkdmFudGFnZXMN
+CmFuZMKgZGlzYWR2YW50YWdlcy7CoFNob3VsZMKgd2XCoGZvY3VzwqBvbsKgdGhlwqBtb3N0wqBp
+bXBvcnRhbnTCoHBvaW50cyzCoHN1Y2jCoGFzwqBwZXJmb3JtYW5jZcKgdG/CoGNob29zZS4NCkl0
+wqBzZWVtc8KgYcKgbGl0dGxlwqBkaWZmaWN1bHTCoHRvwqBjb3ZlcsKgZXZlcnl0aGluZz8NCg0K
+5LiJ44CBVHdvwqBmb3Jtc8Kgb2bCoGltcGxlbWVudGluZ8KgcmVjZWl2ZcKgemVyb2NvcHkNCg0K
+dGhlwqBFcmljJ3PCoHRjcMKgcmVjZWl2ZcKgaW50ZXJmYWNlwqByZXF1aXJlc8KgdGhlwqBoZWFk
+ZXLCoGFuZMKgcGF5bG9hZMKgYXJlwqBzdG9yZWTCoGluwqBzZXBhcmF0ZcKgYnVmZmVycyzCoGFu
+ZMKgdGhlwqBwYXlsb2FkwqBpcw0Kc3RvcmVkwqBpbsKgYcKgcGFnZWTCoGFsaWdubWVudMKgd2F5
+Lg0KDQpOb3cswqBpb191cmluZ8KgYWxzb8KgcHJvcG9zZXPCoGHCoG5ld8KgcmVjZWl2ZcKgemVy
+b2NvcHnCoG1ldGhvZCzCoHdoaWNowqByZXF1aXJlc8KgaGVhZGVywqBhbmTCoHBheWxvYWQNCnRv
+wqBiZcKgc3RvcmVkwqBpbsKgc2VwYXJhdGXCoGJ1ZmZlcnMswqBidXTCoGRvZXPCoG5vdMKgcmVx
+dWlyZcKgcGF5bG9hZMKgcGFnZcKgYWxpZ25lZC4NCmh0dHBzOi8vbG9yZS5rZXJuZWwub3JnL2lv
+LXVyaW5nLzIwMjIxMDA3MjExNzEzLjE3MDcxNC0xLWpvbmF0aGFuLmxlbW9uQGdtYWlsLmNvbS9U
+LyNtNjc4NzcwZDFmYTcwNDBmZDc2ZWQzNTAyNmI5M2RmY2JmMjVmNjE5Ng0KDQpSZXNwb25zZS4u
+Li4NCg0KUGFnZSBhbGlnbm1lbnQgcmVxdWlyZW1lbnRzIHNob3VsZCBub3QgY29tZSBmcm9tIHRo
+ZSB2aXJ0aW8gc3BlYy4NClRoZXJlIGFyZSBhIHZhcmlldHkgb2YgY2FzZXMgd2hpY2ggbWF5IHVz
+ZSBub24gcGFnZSBhbGlnbmVkIGRhdGEgYnVmZmVycy4NCmEuIEEga2VybmVsIG9ubHkgY29uc3Vt
+ZXIgY2FuIHVzZSBpdCB3aG8gZG9lc24ndCBoYXZlIG1tYXAgcmVxdWlyZW1lbnQuDQpiLiBBIFZR
+IGFjY2Vzc2libGUgZGlyZWN0bHkgaW4gdXNlciBzcGFjZSBtYXkgYWxzbyB1c2UgaXQgd2l0aG91
+dCBwYWdlIGFsaWdubWVudC4NCmMuIEEgc3lzdGVtIHdpdGggNjRrIHBhZ2Ugc2l6ZSwgcGFnZSBh
+bGlnbmVkIG1lbW9yeSBoYXMgYSBmYWlyIGFtb3VudCBvZiB3YXN0YWdlLg0KZC4gaW91cmluZyBl
+eGFtcGxlIHlvdSBwb2ludGVkLCBhbHNvIGhhcyBub24gcGFnZSBhbGlnbmVkIHVzZS4NCg0KU28g
+bGV0IHRoZSBkcml2ZXIgZGVhbCB3aXRoIGFsaWdubWVudCByZXN0cmljdGlvbiwgb3V0c2lkZSBv
+ZiB0aGUgdmlydGlvIHNwZWMuDQoNCkluIGhlYWRlciBkYXRhIHNwbGl0IGNhc2VzLCBkYXRhIGJ1
+ZmZlcnMgdXRpbGl6YXRpb24gaXMgbW9yZSBpbXBvcnRhbnQgdGhhbiB0aGUgdGlueSBoZWFkZXIg
+YnVmZmVycyB1dGlsaXphdGlvbi4NCkhvdyBhYm91dCBpZiB0aGUgaGVhZGVycyBkbyBub3QgaW50
+ZXJmZXJlIHdpdGggdGhlIGRhdGEgYnVmZmVycz8NCg0KSW4gb3RoZXIgd29yZHMsIHNheSBhIGdp
+dmVuIFJRIGhhcyBvcHRpb25hbGx5IGxpbmtlZCB0byBhIGNpcmN1bGFyIHF1ZXVlIG9mIGhlYWRl
+ciBidWZmZXJzLg0KQWxsIGhlYWRlciBidWZmZXJzIGFyZSBvZiB0aGUgc2FtZSBzaXplLCBzdXBw
+bGllZCBvbmUgdGltZS4NClRoaXMgaGVhZGVyIHNpemUgYW5kIGNpcmN1bGFyIHEgYWRkcmVzcyBp
+cyBjb25maWd1cmVkIG9uZSB0aW1lIGF0IFJRIGNyZWF0aW9uIHRpbWUuDQoNCldpdGggdGhpcyB0
+aGUgZGV2aWNlIGRvZXNuJ3QgbmVlZCB0byBwcm9jZXNzIGhlYWRlciBidWZmZXIgc2l6ZSBldmVy
+eSBzaW5nbGUgaW5jb21pbmcgcGFja2V0Lg0KRGF0YSBidWZmZXJzIGNhbiBjb250aW51ZSBhcyBj
+aGFpbnMgb3IgbWVyZ2VkIG1vZGUgY2FuIGJlIHN1cHBvcnRlZC4NCldoZW4gdGhlIHJlY2VpdmVk
+IHBhY2tldOKAmXMgaGVhZGVyIGNhbm5vdCBmaXQsIGl0IGNvbnRpbnVlcyBhcy1pcyBpbiB0aGUg
+ZGF0YSBidWZmZXIuDQpWaXJ0aW8gbmV0IGhkciBhcyBzdWdnZXN0IGluZGljYXRlcyB1c2FnZSBv
+ZiBoZHIgYnVmZmVyIG9mZnNldC9pbmRleC4NCg0KVGhpcyBtZXRob2QgaGFzIGZldyBiZW5lZml0
+cyBvbiBwZXJmIGFuZCBidWZmZXIgZWZmaWNpZW5jeSBhcyBiZWxvdy4NCjEuIERhdGEgYnVmZmVy
+cyBjYW4gYmUgZGlyZWN0bHkgbWFwcGVkIGF0IGJlc3QgdXRpbGl6YXRpb24NCjIuIERldmljZSBk
+b2Vzbid0IG5lZWQgdG8gbWF0Y2ggdXAgcGVyIHBhY2tldCBoZWFkZXIgc2l6ZXMgYW5kIGRlc2Ny
+aXB0b3Igc2l6ZXMsIGVmZmljaWVudCBmb3IgZGV2aWNlIHRvIGltcGxlbWVudA0KMy4gTm8gbmVl
+ZCB0byBrZWVwIHJlcG9zdGluZyB0aGUgaGVhZGVyIGJ1ZmZlcnMsIG9ubHkgaXRzIHRhaWwgaW5k
+ZXggdG8gYmUgdXBkYXRlZC4gDQpEaXJlY3RseSBnaXZlcyA1MCUgY3ljbGUgcmVkdWN0aW9uIG9u
+IGJ1ZmZlciB0cmF2ZXJzaW5nIG9uIGRyaXZlciBzaWRlIG9uIHJ4IHBhdGguDQo0LiBBYmlsaXR5
+IHRvIHNoYXJlIHRoaXMgaGVhZGVyIGJ1ZmZlciBxdWV1ZSBhbW9uZyBtdWx0aXBsZSBSUXMgaWYg
+bmVlZGVkLg0KNS4gSW4gdGhlIGZ1dHVyZSB0aGVyZSBtYXkgYmUgYW4gZXh0ZW5zaW9uIHRvIHBs
+YWNlIHRpbnkgd2hvbGUgcGFja2V0cyB0aGF0IGNhbiBmaXQgaW4gdGhlIGhlYWRlciBidWZmZXIg
+YWxzbyB0byBjb250YWluIHRoZSByZXN0IG9mIHRoZSBkYXRhLg0KNi4gRGV2aWNlIGNhbiBhbHdh
+eXMgZmFsbCBiYWNrIHRvIHBsYWNlIHBhY2tldCBoZWFkZXIgaW4gZGF0YSBidWZmZXIgd2hlbiBo
+ZWFkZXIgYnVmZmVyIGlzIG5vdCBhdmFpbGFibGUgb3Igc21hbGxlciB0aGFuIG5ld2VyIHByb3Rv
+Y29sDQo3LiBCZWNhdXNlIHRoZSBoZWFkZXIgYnVmZmVyIGNvbWVzIHZpcnR1YWxseSBjb250aWd1
+b3VzIG1lbW9yeSBhbmQgbm90IGludGVybWl4ZWQgd2l0aCBkYXRhIGJ1ZmZlcnMsIHRoZXJlIGlz
+bid0IHNtYWxsIHBlciBoZWFkZXIgYWxsb2NhdGlvbnMNCjguIEFsc28gd29ya3MgaW4gYm90aCBj
+aGFpbmVkIGFuZCBtZXJnZWQgbW9kZQ0KOS4gbWVtb3J5IHV0aWxpemF0aW9uIGZvciBhbiBSUSBv
+ZiBkZXB0aCAyNTYsIHdpdGggNEsgcGFnZSBzaXplIGZvciBkYXRhIGJ1ZmZlcnMgPSAxTSwgYW5k
+IGhkciBidWZmZXIgcGVyIHBhY2tldCA9IDI1NiAqIDEyOGJ5dGVzID0gb25seSAzJSBvZiB0aGUg
+ZGF0YSBidWZmZXIuDQpTbywgaW4gd29yc3QgY2FzZSB3aGVuIG5vIHBhY2tldCB1c2VzIHRoZSBo
+ZWFkZXIgYnVmZmVycyB3YXN0YWdlIGlzIG9ubHkgMyUuDQpXaGVuIGhpZ2ggbnVtYmVyIG9mIHBh
+Y2tldHMgbGFyZ2VyIHRoYW4gNEsgdXNlcyB0aGUgaGVhZGVyIGJ1ZmZlciwgc2F5IDhLIHBhY2tl
+dHMsIGhlYWRlciBidWZmZXIgdXRpbGl6YXRpb24gaXMgYXQgNTAlLiBTbywgd2FzdGFnZSBpcyBv
+bmx5IDEuNSUuDQpBdCAxNTAwIG10dSBtZXJnZWQgYnVmZmVyIGRhdGEgYnVmZmVyIHNpemUsIGl0
+IGlzIGFsc28gPCAxMCUgb2YgaGRyIGJ1ZmZlciBtZW1vcnkuDQpBbGwgMyBjYXNlcyBhcmUgdmVy
+eSBtYW5hZ2VhYmxlIHJhbmdlIG9mIGJ1ZmZlciB1dGlsaXphdGlvbi4NCg0KQ3JhZnRpbmcgYW5k
+IG1vZGlmeWluZyB0aGUgZmVhdHVyZSBiaXRzIGZyb20geW91ciB2NyB2ZXJzaW9uIGFuZCB2aXJ0
+aW8gbmV0IGhlYWRlciBpcyBub3QgZGlmZmljdWx0IHRvIGdldCB0aGVyZSBpZiB3ZSBsaWtlIHRo
+aXMgYXBwcm9hY2guDQo=
 
