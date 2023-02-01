@@ -1,9 +1,9 @@
 Return-Path: <mst@redhat.com>
-Date: Wed, 1 Feb 2023 01:47:16 -0500
+Date: Wed, 1 Feb 2023 01:56:46 -0500
 From: "Michael S. Tsirkin" <mst@redhat.com>
 Subject: Re: [virtio-comment] RE: [virtio-dev] [PATCH v7] virtio-net: support
  inner header hash
-Message-ID: <20230201014511-mutt-send-email-mst@kernel.org>
+Message-ID: <20230201015350-mutt-send-email-mst@kernel.org>
 References: <20230104071401.31746-1-hengqi@linux.alibaba.com>
  <PH0PR12MB54813142D74C1328873435E2DCC79@PH0PR12MB5481.namprd12.prod.outlook.com>
  <20230131055710.GC34480@h68b04307.sqa.eu95>
@@ -83,8 +83,15 @@ On Wed, Feb 01, 2023 at 01:51:25AM +0000, Parav Pandit wrote:
 > #2 should be in 2nd patch.
 > This is better to review.
 
-Oh, that's an interesting take. Do you feel we need more
-separate hash type bits then?
+Parav, you come to this discussion pretty late. Asking to split up
+the patch when it's v1/v2 is ok. Asking after others have
+already reviewed v6 is not you are making review easier
+for yourself but re-review harder for others who already
+have a mind map of the patch.
+
+In this case unless we really want to enable these separately
+(and frankly I don't see a good reason to) then
+splitting it up makes review more confusing.
 
 > Overall useful features. Thanks for adding.
 
