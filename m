@@ -1,19 +1,24 @@
-Return-Path: <mst@redhat.com>
-Date: Wed, 1 Feb 2023 01:56:46 -0500
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: Re: [virtio-comment] RE: [virtio-dev] [PATCH v7] virtio-net: support
- inner header hash
-Message-ID: <20230201015350-mutt-send-email-mst@kernel.org>
+Return-Path: <virtio-comment-return-3937-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-comment@lists.oasis-open.org>
+List-Post: <mailto:virtio-comment@lists.oasis-open.org>
+List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
+Date: Wed, 1 Feb 2023 15:14:47 +0800
+From: Heng Qi <hengqi@linux.alibaba.com>
+Message-ID: <20230201071447.GC114094@h68b04307.sqa.eu95>
 References: <20230104071401.31746-1-hengqi@linux.alibaba.com>
  <PH0PR12MB54813142D74C1328873435E2DCC79@PH0PR12MB5481.namprd12.prod.outlook.com>
  <20230131055710.GC34480@h68b04307.sqa.eu95>
  <PH0PR12MB5481A27116866CCE1000113FDCD19@PH0PR12MB5481.namprd12.prod.outlook.com>
 MIME-Version: 1.0
 In-Reply-To: <PH0PR12MB5481A27116866CCE1000113FDCD19@PH0PR12MB5481.namprd12.prod.outlook.com>
+Subject: Re: [virtio-comment] RE: [virtio-dev] [PATCH v7] virtio-net: support
+ inner header hash
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 To: Parav Pandit <parav@nvidia.com>
-Cc: Heng Qi <hengqi@linux.alibaba.com>, Jason Wang <jasowang@redhat.com>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Yuri Benditovich <yuri.benditovich@daynix.com>, Cornelia Huck <cohuck@redhat.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Cc: "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, Cornelia Huck <cohuck@redhat.com>, virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
 On Wed, Feb 01, 2023 at 01:51:25AM +0000, Parav Pandit wrote:
@@ -48,6 +53,9 @@ On Wed, Feb 01, 2023 at 01:51:25AM +0000, Parav Pandit wrote:
 > ..
 > There is no need to force the device.
 > LM will work as it will use both he values - the feature bit and the supported/negotiated hash type in the config space.
+
+Yes, that's exactly what we do now.
+
 > 
 > > > An additional bit map somewhere else should say supported hash over
 > > different tunneling types.
@@ -55,6 +63,9 @@ On Wed, Feb 01, 2023 at 01:51:25AM +0000, Parav Pandit wrote:
 > > 
 > > Yes, we use \field{supported_hash_types} to declare supported hash types.
 > Nice. So yes, just remove the description from the feature bits.
+
+The next version will see this modification.
+
 > [..]
 > > >
 > > > With the inclusion of tunnel outer header, it doesn't need to redefine the
@@ -76,22 +87,33 @@ On Wed, Feb 01, 2023 at 01:51:25AM +0000, Parav Pandit wrote:
 > Only description need to be simplified as below.
 > Please just change the text wording to indicate that when tunnel feature is negotiated, and if the hashing is performed by the device on the inner header, hash_report_tunnel will contain the valid outer tunnel type information.
 > 
+
+OK, I'll take your advice and make appropriate changes.
+
+Thanks.
+
 > Also, this patch is adding two functionalities.
 > 1. Inner header hash calculation of existing already defined hash types 
 > 2. outer header hash for new type for GRE,VXLAN,GENEVE.
 > #1 should be in 1st patch.
 > #2 should be in 2nd patch.
 > This is better to review.
-
-Parav, you come to this discussion pretty late. Asking to split up
-the patch when it's v1/v2 is ok. Asking after others have
-already reviewed v6 is not you are making review easier
-for yourself but re-review harder for others who already
-have a mind map of the patch.
-
-In this case unless we really want to enable these separately
-(and frankly I don't see a good reason to) then
-splitting it up makes review more confusing.
-
+> 
 > Overall useful features. Thanks for adding.
+
+This publicly archived list offers a means to provide input to the
+OASIS Virtual I/O Device (VIRTIO) TC.
+
+In order to verify user consent to the Feedback License terms and
+to minimize spam in the list archive, subscription is required
+before posting.
+
+Subscribe: virtio-comment-subscribe@lists.oasis-open.org
+Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
+List help: virtio-comment-help@lists.oasis-open.org
+List archive: https://lists.oasis-open.org/archives/virtio-comment/
+Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
+List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
+Committee: https://www.oasis-open.org/committees/virtio/
+Join OASIS: https://www.oasis-open.org/join/
 
