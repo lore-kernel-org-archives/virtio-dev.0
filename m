@@ -1,193 +1,120 @@
-Return-Path: <hengqi@linux.alibaba.com>
-Date: Tue, 31 Jan 2023 13:57:10 +0800
-From: Heng Qi <hengqi@linux.alibaba.com>
-Subject: Re: [virtio-comment] RE: [virtio-dev] [PATCH v7] virtio-net: support
- inner header hash
-Message-ID: <20230131055710.GC34480@h68b04307.sqa.eu95>
+Return-Path: <virtio-comment-return-3934-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-comment@lists.oasis-open.org>
+List-Post: <mailto:virtio-comment@lists.oasis-open.org>
+List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
+From: Parav Pandit <parav@nvidia.com>
+Date: Wed, 1 Feb 2023 01:51:25 +0000
+Message-ID: <PH0PR12MB5481A27116866CCE1000113FDCD19@PH0PR12MB5481.namprd12.prod.outlook.com>
 References: <20230104071401.31746-1-hengqi@linux.alibaba.com>
  <PH0PR12MB54813142D74C1328873435E2DCC79@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20230131055710.GC34480@h68b04307.sqa.eu95>
+In-Reply-To: <20230131055710.GC34480@h68b04307.sqa.eu95>
 MIME-Version: 1.0
-In-Reply-To: <PH0PR12MB54813142D74C1328873435E2DCC79@PH0PR12MB5481.namprd12.prod.outlook.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-To: Parav Pandit <parav@nvidia.com>
+Subject: RE: [virtio-comment] RE: [virtio-dev] [PATCH v7] virtio-net: support
+ inner header hash
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+To: Heng Qi <hengqi@linux.alibaba.com>
 Cc: Jason Wang <jasowang@redhat.com>, "Michael S . Tsirkin" <mst@redhat.com>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Yuri Benditovich <yuri.benditovich@daynix.com>, Cornelia Huck <cohuck@redhat.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, Jan 18, 2023 at 11:45:39PM +0000, Parav Pandit wrote:
-> 
-> 
-> > From: virtio-dev@lists.oasis-open.org <virtio-dev@lists.oasis-open.org> 
-> > Sent: Wednesday, January 4, 2023 2:14 AM
-> 
-> > If the tunnel is used to encapsulate the packets, the hash calculated using the
-> > outer header of the receive packets is always fixed for the same flow packets,
-> > i.e. they will be steered to the same receive queue.
-> 
-> > +\item[VIRTIO_NET_F_HASH_TUNNEL(52)] Device supports inner
-> > +    header hash for GRE, VXLAN and GENEVE tunnel-encapsulated packets.
-> > +
-> A device may not support all 3 at the same time.
-> Please remove mentioning tunneling protocols description from here.
-> Just say device support inner header hash ...
 
-Sorry for the late reply due to vacation.
 
-Good idea, Michael suggested doing the same. But we also discussed this issue:
-Early, we used a feature bit to force devices to support GRE and VXLAN (see
-https://lists.oasis-open.org/archives/virtio-dev/202211/msg00183.html ).
-Later Jason suggested to use VIRTIO_NET_F_HASH_TUNNEL instead of VIRTIO_NET_F_HASH_GRE_VXLAN_GENEVE_INNER (see
-https://lists.oasis-open.org/archives/virtio-dev/202212/msg00014.html ). Now Michael proposes to remove this list (see
-https://lists.oasis-open.org/archives/virtio-dev/202301/msg00079.html ), because the migration is based on the feature
-bit and hash types to determine whether the live migration is successful.
-> 
-> An additional bit map somewhere else should say supported hash over different tunneling types.
-> 
+> From: Heng Qi <hengqi@linux.alibaba.com>
+> Sent: Tuesday, January 31, 2023 12:57 AM
+>=20
+> On Wed, Jan 18, 2023 at 11:45:39PM +0000, Parav Pandit wrote:
+> >
+> >
+> > > From: virtio-dev@lists.oasis-open.org
+> > > <virtio-dev@lists.oasis-open.org>
+> > > Sent: Wednesday, January 4, 2023 2:14 AM
+> >
+> > > If the tunnel is used to encapsulate the packets, the hash
+> > > calculated using the outer header of the receive packets is always
+> > > fixed for the same flow packets, i.e. they will be steered to the sam=
+e
+> receive queue.
+> >
+> > > +\item[VIRTIO_NET_F_HASH_TUNNEL(52)] Device supports inner
+> > > +    header hash for GRE, VXLAN and GENEVE tunnel-encapsulated packet=
+s.
+> > > +
+> > A device may not support all 3 at the same time.
+> > Please remove mentioning tunneling protocols description from here.
+> > Just say device support inner header hash ...
+>=20
+> Sorry for the late reply due to vacation.
+>=20
+> Good idea, Michael suggested doing the same. But we also discussed this i=
+ssue:
+> Early, we used a feature bit to force devices to support GRE and VXLAN=20
+..
+There is no need to force the device.
+LM will work as it will use both he values - the feature bit and the suppor=
+ted/negotiated hash type in the config space.
 
-Yes, we use \field{supported_hash_types} to declare supported hash types.
+> > An additional bit map somewhere else should say supported hash over
+> different tunneling types.
+> >
+>=20
+> Yes, we use \field{supported_hash_types} to declare supported hash types.
+Nice. So yes, just remove the description from the feature bits.
+[..]
+> >
+> > With the inclusion of tunnel outer header, it doesn't need to redefine =
+the
+> hashing for inner packets which is exactly same without the tunnel.
+> > hash tunnel capability only indicates that hashing is done on the inner=
+ packets
+> as_before.
+> >
+>=20
+> This seems like a trade-off, and I can get rid of this if the simple stat=
+ement
+> "computing the hash for the inner header of the tunnel packet is the same=
+ as
+> without tunnel"
+> is also clear to the reader.
+> What do you think? Cc Jason and Michael.
+Not sure I follow your comment.
+Inclusion of outer header has zero change in inner header hash.
 
-> [...]
-> 
-> > +The device calculates the hash on the inner IPv4 packet of an
-> > +encapsulated packet according to 'Enabled hash types' bitmask as follows:
-> > +\begin{itemize}
-> > +  \item If VIRTIO_NET_HASH_TYPE_TCPv4 is set and the encapsulated packet
-> > has an inner
-> > +	TCPv4 header, the hash is calculated over the following fields:
-> > +        \begin{itemsize}
-> > +          \item inner Source IP address
-> > +          \item inner Destination IP address
-> > +          \item inner Source TCP port
-> > +          \item inner Destination TCP port
-> > +        \end{itemsize}
-> > +  \item Else if VIRTIO_NET_HASH_TYPE_UDPv4 is set and the encapsulated
-> > packet has an
-> > +	inner UDPv4 header, the hash is calculated over the following fields:
-> > +        \begin{itemsize}
-> > +          \item inner Source IP address
-> > +          \item inner Destination IP address
-> > +          \item inner Source UDP port
-> > +          \item inner Destination UDP port
-> > +        \end{itemize}
-> > +  \item Else if VIRTIO_NET_HASH_TYPE_IPv4 is set, the hash is calculated over
-> > the
-> > +	following fields:
-> > +        \begin{itemsize}
-> > +          \item inner Source IP address
-> > +          \item inner Destination IP address
-> > +        \end{itemsize}
-> > +  \item Else the device does not calculate the hash \end{itemize}
-> > +
-> > +The device calculates the hash on the inner IPv6 packet without an
-> > +extension header of an encapsulated packet according to 'Enabled hash types'
-> > bitmask as follows:
-> > +\begin{itemize}
-> > +  \item If VIRTIO_NET_HASH_TYPE_TCPv6 is set and the encapsulated packet
-> > has an inner
-> > +	TCPv6 header, the hash is calculated over the following fields:
-> > +        \begin{itemsize}
-> > +          \item inner Source IPv6 address
-> > +          \item inner Destination IPv6 address
-> > +          \item inner Source TCP port
-> > +          \item inner Destination TCP port
-> > +        \end{itemsize}
-> > +  \item Else if VIRTIO_NET_HASH_TYPE_UDPv6 is set and the encapsulated
-> > packet has an
-> > +	inner UDPv6 header, the hash is calculated over the following fields:
-> > +        \begin{itemsize}
-> > +          \item inner Source IPv6 address
-> > +          \item inner Destination IPv6 address
-> > +          \item inner Source UDP port
-> > +          \item inner Destination UDP port
-> > +        \end{itemize}
-> > +  \item Else if VIRTIO_NET_HASH_TYPE_IPv6 is set, the hash is calculated over
-> > the
-> > +	following fields:
-> > +        \begin{itemsize}
-> > +          \item inner Source IPv6 address
-> > +          \item inner Destination IPv6 address
-> > +        \end{itemsize}
-> > +  \item Else the device does not calculate the hash \end{itemize}
-> > +
-> > +The device calculates the hash on the inner IPv6 packet with an
-> > +extension header of an encapsulated packet according to 'Enabled hash types'
-> > bitmask as follows:
-> > +\begin{itemsize}
-> > +  \item If VIRTIO_NET_HASH_TYPE_TCP_EX is set and the encapsulated packet
-> > has an inner
-> > +	TCPv6 header, the hash is calculated over the following fields:
-> > +        \begin{itemize}
-> > +          \item Home address from the home address option in the inner IPv6
-> > destination
-> > +              options header. If the inner extension header is not present, use the
-> > +              inner Source IPv6 address.
-> > +          \item IPv6 address that is contained in the Routing-Header-Type-2 from
-> > the
-> > +              associated inner extension header. If the inner extension header is not
-> > +              present, use the inner Destination IPv6 address.
-> > +          \item inner Source TCP port
-> > +          \item inner Destination TCP port
-> > +        \end{itemize}
-> > +  \item Else if VIRTIO_NET_HASH_TYPE_UDP_EX is set and the encapsulated
-> > packet has an inner
-> > +	UDPv6 header, the hash is calculated over the following fields:
-> > +        \begin{itemsize}
-> > +          \item Home address from the home address option in the inner IPv6
-> > destination
-> > +              options header. If the inner extension header is not present, use the
-> > +              inner Source IPv6 address.
-> > +          \item IPv6 address that is contained in the Routing-Header-Type-2 from
-> > the
-> > +              associated inner extension header. If the inner extension header is not
-> > +              present, use the inner Destination IPv6 address.
-> > +          \item inner Source UDP port
-> > +          \item inner Destination UDP port
-> > +        \end{itemize}
-> > +  \item Else if VIRTIO_NET_HASH_TYPE_IP_EX is set, the hash is calculated
-> > over the
-> > +	following fields:
-> > +        \begin{itemsize}
-> > +          \item Home address from the home address option in the inner IPv6
-> > destination
-> > +              options header. If the inner extension header is not present, use the
-> > +              inner Source IPv6 address.
-> > +          \item IPv6 address that is contained in the Routing-Header-Type-2 from
-> > the
-> > +              associated inner extension header. If the inner extension header is not
-> > +              present, use the inner Destination IPv6 address.
-> > +        \end{itemize}
-> > +  \item Else skip the inner IPv6 extension header and calculate the inner
-> > header hash as
-> > +	defined for an encapsulated packet whose inner payload is an IPv6
-> > packet without
-> > +	an extension header.
-> > +\end{itemsize}
-> > +
-> 
-> With the inclusion of tunnel outer header, it doesn't need to redefine the hashing for inner packets which is exactly same without the tunnel.
-> hash tunnel capability only indicates that hashing is done on the inner packets as_before.
-> 
+The data structure etc is just fine in the patch you proposed.
+So, there is no need to redefine all over it again.
+Only description need to be simplified as below.
+Please just change the text wording to indicate that when tunnel feature is=
+ negotiated, and if the hashing is performed by the device on the inner hea=
+der, hash_report_tunnel will contain the valid outer tunnel type informatio=
+n.
 
-This seems like a trade-off, and I can get rid of this if the simple statement
-"computing the hash for the inner header of the tunnel packet is the same as without tunnel"
-is also clear to the reader.
-What do you think? Cc Jason and Michael.
+Also, this patch is adding two functionalities.
+1. Inner header hash calculation of existing already defined hash types=20
+2. outer header hash for new type for GRE,VXLAN,GENEVE.
+#1 should be in 1st patch.
+#2 should be in 2nd patch.
+This is better to review.
 
-Thanks.
+Overall useful features. Thanks for adding.
 
-> This publicly archived list offers a means to provide input to the
-> OASIS Virtual I/O Device (VIRTIO) TC.
-> 
-> In order to verify user consent to the Feedback License terms and
-> to minimize spam in the list archive, subscription is required
-> before posting.
-> 
-> Subscribe: virtio-comment-subscribe@lists.oasis-open.org
-> Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
-> List help: virtio-comment-help@lists.oasis-open.org
-> List archive: https://lists.oasis-open.org/archives/virtio-comment/
-> Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
-> List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
-> Committee: https://www.oasis-open.org/committees/virtio/
-> Join OASIS: https://www.oasis-open.org/join/
+This publicly archived list offers a means to provide input to the=0D
+OASIS Virtual I/O Device (VIRTIO) TC.=0D
+=0D
+In order to verify user consent to the Feedback License terms and=0D
+to minimize spam in the list archive, subscription is required=0D
+before posting.=0D
+=0D
+Subscribe: virtio-comment-subscribe@lists.oasis-open.org=0D
+Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org=0D
+List help: virtio-comment-help@lists.oasis-open.org=0D
+List archive: https://lists.oasis-open.org/archives/virtio-comment/=0D
+Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf=
+=0D
+List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lis=
+ts=0D
+Committee: https://www.oasis-open.org/committees/virtio/=0D
+Join OASIS: https://www.oasis-open.org/join/
 
