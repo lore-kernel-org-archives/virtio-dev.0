@@ -1,10 +1,10 @@
-Return-Path: <parav@nvidia.com>
-From: Parav Pandit <parav@nvidia.com>
-Subject: =?utf-8?B?UkU6IFt2aXJ0aW8tY29tbWVudF0g5Zue5aSN77yaW3ZpcnRpby1kZXZdIFtQ?=
- =?utf-8?B?QVRDSCB2OF0gdmlydGlvX25ldDogc3VwcG9ydCBmb3Igc3BsaXQgdHJhbnNw?=
- =?utf-8?Q?ort_header?=
-Date: Thu, 2 Feb 2023 01:45:21 +0000
-Message-ID: <PH0PR12MB54811F110E8854161A900BF7DCD69@PH0PR12MB5481.namprd12.prod.outlook.com>
+Return-Path: <hengqi@linux.alibaba.com>
+Message-ID: <4177d301-f9a0-0707-9e70-9109ec40378d@linux.alibaba.com>
+Date: Thu, 2 Feb 2023 11:45:09 +0800
+MIME-Version: 1.0
+Subject: =?UTF-8?B?UmU6IFt2aXJ0aW8tY29tbWVudF0g5Zue5aSN77yaW3ZpcnRpby1kZXZd?=
+ =?UTF-8?Q?_=5BPATCH_v8=5D_virtio=5Fnet=3A_support_for_split_transport_heade?=
+ =?UTF-8?Q?r?=
 References: <20220920032824.GA125047@h68b04307.sqa.eu95>
  <CACGkMEtOHXtNtG13Zxpc+bhYJVyefp999kttz4YcPi22nMBSpQ@mail.gmail.com>
  <1663903426.8765974-1-xuanzhuo@linux.alibaba.com>
@@ -19,114 +19,147 @@ References: <20220920032824.GA125047@h68b04307.sqa.eu95>
  <dd25da2a-a035-4437-967c-b59c09140ebc.hengqi@linux.alibaba.com>
  <PH0PR12MB54814AE695F25009B7B9C038DCD09@PH0PR12MB5481.namprd12.prod.outlook.com>
  <f13450f0-854d-123f-eb0b-b8bded5670b8@linux.alibaba.com>
-In-Reply-To: <f13450f0-854d-123f-eb0b-b8bded5670b8@linux.alibaba.com>
-MIME-Version: 1.0
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-To: Heng Qi <hengqi@linux.alibaba.com>, virtio-dev <virtio-dev@lists.oasis-open.org>, virtio-comment <virtio-comment@lists.oasis-open.org>
+ <PH0PR12MB54811F110E8854161A900BF7DCD69@PH0PR12MB5481.namprd12.prod.outlook.com>
+From: Heng Qi <hengqi@linux.alibaba.com>
+In-Reply-To: <PH0PR12MB54811F110E8854161A900BF7DCD69@PH0PR12MB5481.namprd12.prod.outlook.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+To: Parav Pandit <parav@nvidia.com>, virtio-dev <virtio-dev@lists.oasis-open.org>, virtio-comment <virtio-comment@lists.oasis-open.org>
 Cc: "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, Cornelia Huck <cohuck@redhat.com>, Kangjie Xu <kangjie.xu@linux.alibaba.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-DQo+IEZyb206IEhlbmcgUWkgPGhlbmdxaUBsaW51eC5hbGliYWJhLmNvbT4NCj4gU2VudDogV2Vk
-bmVzZGF5LCBGZWJydWFyeSAxLCAyMDIzIDg6MTggQU0NCg0KWy4uXQ0KDQo+ID4gUmVzcG9uc2Uu
-Li4uDQo+ID4NCj4gPiBQYWdlIGFsaWdubWVudCByZXF1aXJlbWVudHMgc2hvdWxkIG5vdCBjb21l
-IGZyb20gdGhlIHZpcnRpbyBzcGVjLg0KPiA+IFRoZXJlIGFyZSBhIHZhcmlldHkgb2YgY2FzZXMg
-d2hpY2ggbWF5IHVzZSBub24gcGFnZSBhbGlnbmVkIGRhdGEgYnVmZmVycy4NCj4gPiBhLiBBIGtl
-cm5lbCBvbmx5IGNvbnN1bWVyIGNhbiB1c2UgaXQgd2hvIGRvZXNuJ3QgaGF2ZSBtbWFwIHJlcXVp
-cmVtZW50Lg0KPiA+IGIuIEEgVlEgYWNjZXNzaWJsZSBkaXJlY3RseSBpbiB1c2VyIHNwYWNlIG1h
-eSBhbHNvIHVzZSBpdCB3aXRob3V0IHBhZ2UNCj4gYWxpZ25tZW50Lg0KPiA+IGMuIEEgc3lzdGVt
-IHdpdGggNjRrIHBhZ2Ugc2l6ZSwgcGFnZSBhbGlnbmVkIG1lbW9yeSBoYXMgYSBmYWlyIGFtb3Vu
-dCBvZg0KPiB3YXN0YWdlLg0KPiA+IGQuIGlvdXJpbmcgZXhhbXBsZSB5b3UgcG9pbnRlZCwgYWxz
-byBoYXMgbm9uIHBhZ2UgYWxpZ25lZCB1c2UuDQo+ID4NCj4gPiBTbyBsZXQgdGhlIGRyaXZlciBk
-ZWFsIHdpdGggYWxpZ25tZW50IHJlc3RyaWN0aW9uLCBvdXRzaWRlIG9mIHRoZSB2aXJ0aW8gc3Bl
-Yy4NCj4gPg0KPiA+IEluIGhlYWRlciBkYXRhIHNwbGl0IGNhc2VzLCBkYXRhIGJ1ZmZlcnMgdXRp
-bGl6YXRpb24gaXMgbW9yZSBpbXBvcnRhbnQgdGhhbiB0aGUNCj4gdGlueSBoZWFkZXIgYnVmZmVy
-cyB1dGlsaXphdGlvbi4NCj4gPiBIb3cgYWJvdXQgaWYgdGhlIGhlYWRlcnMgZG8gbm90IGludGVy
-ZmVyZSB3aXRoIHRoZSBkYXRhIGJ1ZmZlcnM/DQo+ID4NCj4gPiBJbiBvdGhlciB3b3Jkcywgc2F5
-IGEgZ2l2ZW4gUlEgaGFzIG9wdGlvbmFsbHkgbGlua2VkIHRvIGEgY2lyY3VsYXIgcXVldWUgb2YN
-Cj4gaGVhZGVyIGJ1ZmZlcnMuDQo+ID4gQWxsIGhlYWRlciBidWZmZXJzIGFyZSBvZiB0aGUgc2Ft
-ZSBzaXplLCBzdXBwbGllZCBvbmUgdGltZS4NCj4gPiBUaGlzIGhlYWRlciBzaXplIGFuZCBjaXJj
-dWxhciBxIGFkZHJlc3MgaXMgY29uZmlndXJlZCBvbmUgdGltZSBhdCBSUSBjcmVhdGlvbg0KPiB0
-aW1lLg0KPiA+DQo+ID4gV2l0aCB0aGlzIHRoZSBkZXZpY2UgZG9lc24ndCBuZWVkIHRvIHByb2Nl
-c3MgaGVhZGVyIGJ1ZmZlciBzaXplIGV2ZXJ5IHNpbmdsZQ0KPiBpbmNvbWluZyBwYWNrZXQuDQo+
-ID4gRGF0YSBidWZmZXJzIGNhbiBjb250aW51ZSBhcyBjaGFpbnMgb3IgbWVyZ2VkIG1vZGUgY2Fu
-IGJlIHN1cHBvcnRlZC4NCj4gPiBXaGVuIHRoZSByZWNlaXZlZCBwYWNrZXTigJlzIGhlYWRlciBj
-YW5ub3QgZml0LCBpdCBjb250aW51ZXMgYXMtaXMgaW4gdGhlIGRhdGENCj4gYnVmZmVyLg0KPiA+
-IFZpcnRpbyBuZXQgaGRyIGFzIHN1Z2dlc3QgaW5kaWNhdGVzIHVzYWdlIG9mIGhkciBidWZmZXIg
-b2Zmc2V0L2luZGV4Lg0KPiANCj4gVGhpcyBpcyBhIGdvb2QgZGlyZWN0aW9uLCB0aGFua3MgYSBs
-b3QgZm9yIHlvdXIgY29tbWVudHMsIHRoZSBuZXcgc3BsaXQgaGVhZGVyDQo+IG1ldGhvZCBtaWdo
-dCBsb29rIGxpa2UgdGhpczoNCj4gV2hlbiBhbGxvY2F0aW5nIHRoZSByZWNlaXZlIHF1ZXVlLCBh
-bGxvY2F0ZSBhIGNpcmN1bGFyIHF1ZXVlIHN0b3JpbmcgdGhlDQo+IGhlYWRlciBidWZmZXJzIGF0
-IHRoZSBkcml2ZXIgbGF5ZXIsIHdoaWNoIGlzIHNoYXJlZCB3aXRoIHRoZSBkZXZpY2UsIGFuZCBz
-ZXQgdGhlDQo+IGxlbmd0aCBvZiB0aGUgaGVhZGVyIGJ1ZmZlci4gVGhlIGxlbmd0aCBvZiB0aGUg
-Y2lyY3VsYXIgcXVldWUgaXMgdGhlIHNhbWUgYXMgdGhlDQo+IGxlbmd0aCBvZiB0aGUgZGVzY3Jp
-cHRvciB0YWJsZS4NCj4gDQo+IDEuIFdoZW4gYSBkYXRhIHBhY2tldCBpcyBzdWNjZXNzZnVsbHkg
-c3BsaXQsIGFsbCB2aXJ0aW8tbmV0LWhkciArIHRyYW5zcG9ydCBoZWFkZXJzDQo+IGFyZSBzdG9y
-ZWQgaW4gdGhlIGhlYWRlciBidWZmZXIsIGFuZCBWSVJUSU9fTkVUX0hEUl9GX1NQTElUX0hFQURF
-UiBpcyBzZXQNCj4gaW4gdGhlIGZsYWcgb2YgdmlydGlvLW5ldC1oZHI7IElmIHRoZSBoZWFkZXIg
-YnVmZmVyIGlzIG5vdCBlbm91Z2ggdG8gc3RvcmUgdmlydGlvLQ0KPiBuZXQtaGRyICsgdHJhbnNw
-b3J0IGhlYWRlciwgdGhlbiByb2xsIGJhY2ssIHRoYXQgaXMsIG5vdCBzcGxpdCB0aGUgcGFja2V0
-Ow0KPiANClJpZ2h0Lg0KDQo+IDIuIFdoZW4gYSBwYWNrZXQgaXMgbm90IHNwbGl0IGJ5IHRoZSBk
-ZXZpY2UgZm9yIHNvbWUgcmVhc29uLCB2aXJ0aW8tbmV0LWhkciBpcw0KPiBwbGFjZWQgaW4gdGhl
-IGhlYWRlciBidWZmZXIsIGFuZCB0aGUgdHJhbnNwb3J0IGhlYWRlciBhbmQgcGF5bG9hZCBhcmUg
-cGxhY2VkDQo+IGluIHRoZSBidWZmZXIuIEF0IHRoaXMgdGltZSwgeGRwIGlzIG5vdCBzdXBwb3J0
-ZWQsIGJlY2F1c2UgeGRwIHJlcXVpcmVzIHRoZQ0KPiB0cmFuc3BvcnQgaGVhZGVyIHRvIGJlIHBs
-YWNlZCBpbiB0aGUgZmlyc3QgYnVmZmVyLCB0aGUgaGVhZGVyIGJ1ZmZlci4gDQpJIGRvIG5vdCB1
-bmRlcnN0YW5kIHdoeSB0aGUgeGRwIGlzIG5vdCBzdXBwb3J0ZWQgaW4gdGhpcyBjYXNlLg0KSXNu
-J3QgaXQgdGhlIGNhc2UgdG9kYXksIHdoZXJlIHhkcF9wcmVwYXJlX2J1ZmYoKSBnZXRzIHRoZSBi
-dWZmZXIgd2l0aCBvZmZzZXQgYWZ0ZXIgdGhlIG5ldCBoZHI/DQpJbiB0aGUgYWJvdmUgY2FzZSB5
-b3UgbWVudGlvbmVkIHhkcCBnZXRzIHRvIHVzZWQgdGhlIHBhY2tldCBidWZmZXIgd2hlcmUgcGt0
-IGhkciArIGRhdGEgaXMgbG9jYXRlZC4NCg0KPiBUaGVuIHdoeQ0KPiBub3Qgc3RhcnQgc3Rvcmlu
-ZyBwYWNrZXRzIGZyb20gdGhlIGhlYWRlciBidWZmZXI/IElmIHRoaXMgaXMgdGhlIGNhc2UsIGlt
-YWdpbmUgYQ0KPiBzaXR1YXRpb246IElmIGFsbCBzbWFsbCBwYWNrZXRzIGFyZSBwdXQgaW50byB0
-aGUgaGVhZGVyIGJ1ZmZlcnMsIGFuZCB2aXJ0aW8gbmV0DQo+IGRyaXZlciByZWNlaXZlcyBwYWNr
-ZXRzIGFjY29yZGluZyB0byB0aGUgZGVzY3JpcHRvciB0YWJsZSBhbmQgdXNlZF9yaW5nLCBidXQg
-dGhlDQo+IGRhdGEgYnVmZmVycyBhcmUgZW1wdHkgYXQgdGhpcyB0aW1lLCB0aGVuIGNhbid0IHNl
-ZW0gdG8gY29udGludWU/IA0KSW4gZnV0dXJlIHdoZW4gc3VjaCBtb2RlIGlzIGV4dGVuZGVkLCB2
-cSBtZWNoYW5pc20gd2lsbCBiZSBleHRlbmRlZCB0byBoYW5kbGUgZGVzYyB0YWJsZSBhbmQgdXNl
-ZCByaW5nIGFueXdheS4NCg0KPiBJdCBzZWVtcyB0aGF0DQo+IHRoZSBvcGVyYXRpb24gb2YgY2ly
-Y3VsYXIgcXVldWUgaGFzIGJlY29tZSBhIHByb2R1Y2VyLWNvbnN1bWVyIHByb2JsZW0NCj4gYWdh
-aW4uDQo+IA0KSSBkaWRu4oCZdCBmb2xsb3cuDQoNCkkgdGVuZCB0byBpbWFnaW5lIHRoYXQgZHJp
-dmVyIGNvbnN1bWVkIG1ldGEgZGF0YSAodm5ldF9oZHIgYW5kIHVzZWQgcmluZykgc2hvdWxkIGJl
-IHBsYWNlZCB0b2dldGhlciBpbiBvbmUgYnVmZmVyIGFuZA0KQWN0dWFsIHBhY2tldCBoZWFkZXIg
-YW5kIGRhdGEgYmVsb25ncyB0byBvdGhlciBidWZmZXIuDQpUaGlzIHdheSB0aGVyZSBpcyBjbGVh
-ciBsYXllcmluZyBvZiBvd25lcnNoaXAuIEJ1dCBiZWZvcmUgd2UgZXhwbG9yZSB0aGlzIG9wdGlv
-biwgbGV0cyB1bmRlcnN0YW5kIHlvdXIgYWJvdmUgcG9pbnQuDQoNCj4gMy4gVGhlIG1lYW5pbmcg
-b2YgaGRyX2xlbiBpbiB2aXJ0aW8tbmV0LWhkcjoNCj4gIMKgwqDCoMKgIGkuIFdoZW4gc3BsaXR0
-aW5nIHN1Y2Nlc3NmdWxseTogaGRyX2xlbiByZXByZXNlbnRzIHRoZSBlZmZlY3RpdmUgbGVuZ3Ro
-IG9mIHRoZQ0KPiBoZWFkZXIgaW4gdGhlIGhlYWRlciBidWZmZXIuDQo+ICDCoMKgwqDCoCBpaS4g
-T24gdW5zdWNjZXNzZnVsIHNwbGl0OiBoZHJfbGVuIGlzIDAuDQo+IA0KPiBXaGF0IGRvIHlvdSB0
-aGluayBvZiB0aGlzIHBsYW4/IE9yIGlzIHRoZXJlIGEgYmV0dGVyIG9uZT8NCj4gDQo+IFRoYW5r
-cy4NCj4gDQo+ID4NCj4gPiBUaGlzIG1ldGhvZCBoYXMgZmV3IGJlbmVmaXRzIG9uIHBlcmYgYW5k
-IGJ1ZmZlciBlZmZpY2llbmN5IGFzIGJlbG93Lg0KPiA+IDEuIERhdGEgYnVmZmVycyBjYW4gYmUg
-ZGlyZWN0bHkgbWFwcGVkIGF0IGJlc3QgdXRpbGl6YXRpb24gMi4gRGV2aWNlDQo+ID4gZG9lc24n
-dCBuZWVkIHRvIG1hdGNoIHVwIHBlciBwYWNrZXQgaGVhZGVyIHNpemVzIGFuZCBkZXNjcmlwdG9y
-IHNpemVzLA0KPiA+IGVmZmljaWVudCBmb3IgZGV2aWNlIHRvIGltcGxlbWVudCAzLiBObyBuZWVk
-IHRvIGtlZXAgcmVwb3N0aW5nIHRoZSBoZWFkZXINCj4gYnVmZmVycywgb25seSBpdHMgdGFpbCBp
-bmRleCB0byBiZSB1cGRhdGVkLg0KPiA+IERpcmVjdGx5IGdpdmVzIDUwJSBjeWNsZSByZWR1Y3Rp
-b24gb24gYnVmZmVyIHRyYXZlcnNpbmcgb24gZHJpdmVyIHNpZGUgb24gcngNCj4gcGF0aC4NCj4g
-PiA0LiBBYmlsaXR5IHRvIHNoYXJlIHRoaXMgaGVhZGVyIGJ1ZmZlciBxdWV1ZSBhbW9uZyBtdWx0
-aXBsZSBSUXMgaWYgbmVlZGVkLg0KPiA+IDUuIEluIHRoZSBmdXR1cmUgdGhlcmUgbWF5IGJlIGFu
-IGV4dGVuc2lvbiB0byBwbGFjZSB0aW55IHdob2xlIHBhY2tldHMgdGhhdA0KPiBjYW4gZml0IGlu
-IHRoZSBoZWFkZXIgYnVmZmVyIGFsc28gdG8gY29udGFpbiB0aGUgcmVzdCBvZiB0aGUgZGF0YS4N
-Cj4gPiA2LiBEZXZpY2UgY2FuIGFsd2F5cyBmYWxsIGJhY2sgdG8gcGxhY2UgcGFja2V0IGhlYWRl
-ciBpbiBkYXRhIGJ1ZmZlcg0KPiA+IHdoZW4gaGVhZGVyIGJ1ZmZlciBpcyBub3QgYXZhaWxhYmxl
-IG9yIHNtYWxsZXIgdGhhbiBuZXdlciBwcm90b2NvbCA3Lg0KPiA+IEJlY2F1c2UgdGhlIGhlYWRl
-ciBidWZmZXIgY29tZXMgdmlydHVhbGx5IGNvbnRpZ3VvdXMgbWVtb3J5IGFuZCBub3QNCj4gPiBp
-bnRlcm1peGVkIHdpdGggZGF0YSBidWZmZXJzLCB0aGVyZSBpc24ndCBzbWFsbCBwZXIgaGVhZGVy
-IGFsbG9jYXRpb25zIDguIEFsc28NCj4gd29ya3MgaW4gYm90aCBjaGFpbmVkIGFuZCBtZXJnZWQg
-bW9kZSA5LiBtZW1vcnkgdXRpbGl6YXRpb24gZm9yIGFuIFJRIG9mDQo+IGRlcHRoIDI1Niwgd2l0
-aCA0SyBwYWdlIHNpemUgZm9yIGRhdGEgYnVmZmVycyA9IDFNLCBhbmQgaGRyIGJ1ZmZlciBwZXIg
-cGFja2V0ID0NCj4gMjU2ICogMTI4Ynl0ZXMgPSBvbmx5IDMlIG9mIHRoZSBkYXRhIGJ1ZmZlci4N
-Cj4gPiBTbywgaW4gd29yc3QgY2FzZSB3aGVuIG5vIHBhY2tldCB1c2VzIHRoZSBoZWFkZXIgYnVm
-ZmVycyB3YXN0YWdlIGlzIG9ubHkgMyUuDQo+ID4gV2hlbiBoaWdoIG51bWJlciBvZiBwYWNrZXRz
-IGxhcmdlciB0aGFuIDRLIHVzZXMgdGhlIGhlYWRlciBidWZmZXIsIHNheSA4Sw0KPiBwYWNrZXRz
-LCBoZWFkZXIgYnVmZmVyIHV0aWxpemF0aW9uIGlzIGF0IDUwJS4gU28sIHdhc3RhZ2UgaXMgb25s
-eSAxLjUlLg0KPiA+IEF0IDE1MDAgbXR1IG1lcmdlZCBidWZmZXIgZGF0YSBidWZmZXIgc2l6ZSwg
-aXQgaXMgYWxzbyA8IDEwJSBvZiBoZHIgYnVmZmVyDQo+IG1lbW9yeS4NCj4gPiBBbGwgMyBjYXNl
-cyBhcmUgdmVyeSBtYW5hZ2VhYmxlIHJhbmdlIG9mIGJ1ZmZlciB1dGlsaXphdGlvbi4NCj4gPg0K
-PiA+IENyYWZ0aW5nIGFuZCBtb2RpZnlpbmcgdGhlIGZlYXR1cmUgYml0cyBmcm9tIHlvdXIgdjcg
-dmVyc2lvbiBhbmQgdmlydGlvIG5ldA0KPiBoZWFkZXIgaXMgbm90IGRpZmZpY3VsdCB0byBnZXQg
-dGhlcmUgaWYgd2UgbGlrZSB0aGlzIGFwcHJvYWNoLg0KDQo=
+
+
+在 2023/2/2 上午9:45, Parav Pandit 写道:
+>> From: Heng Qi <hengqi@linux.alibaba.com>
+>> Sent: Wednesday, February 1, 2023 8:18 AM
+> [..]
+>
+>>> Response....
+>>>
+>>> Page alignment requirements should not come from the virtio spec.
+>>> There are a variety of cases which may use non page aligned data buffers.
+>>> a. A kernel only consumer can use it who doesn't have mmap requirement.
+>>> b. A VQ accessible directly in user space may also use it without page
+>> alignment.
+>>> c. A system with 64k page size, page aligned memory has a fair amount of
+>> wastage.
+>>> d. iouring example you pointed, also has non page aligned use.
+>>>
+>>> So let the driver deal with alignment restriction, outside of the virtio spec.
+>>>
+>>> In header data split cases, data buffers utilization is more important than the
+>> tiny header buffers utilization.
+>>> How about if the headers do not interfere with the data buffers?
+>>>
+>>> In other words, say a given RQ has optionally linked to a circular queue of
+>> header buffers.
+>>> All header buffers are of the same size, supplied one time.
+>>> This header size and circular q address is configured one time at RQ creation
+>> time.
+>>> With this the device doesn't need to process header buffer size every single
+>> incoming packet.
+>>> Data buffers can continue as chains or merged mode can be supported.
+>>> When the received packet’s header cannot fit, it continues as-is in the data
+>> buffer.
+>>> Virtio net hdr as suggest indicates usage of hdr buffer offset/index.
+>> This is a good direction, thanks a lot for your comments, the new split header
+>> method might look like this:
+>> When allocating the receive queue, allocate a circular queue storing the
+>> header buffers at the driver layer, which is shared with the device, and set the
+>> length of the header buffer. The length of the circular queue is the same as the
+>> length of the descriptor table.
+>>
+>> 1. When a data packet is successfully split, all virtio-net-hdr + transport headers
+>> are stored in the header buffer, and VIRTIO_NET_HDR_F_SPLIT_HEADER is set
+>> in the flag of virtio-net-hdr; If the header buffer is not enough to store virtio-
+>> net-hdr + transport header, then roll back, that is, not split the packet;
+>>
+> Right.
+>
+>> 2. When a packet is not split by the device for some reason, virtio-net-hdr is
+>> placed in the header buffer, and the transport header and payload are placed
+>> in the buffer. At this time, xdp is not supported, because xdp requires the
+>> transport header to be placed in the first buffer, the header buffer.
+> I do not understand why the xdp is not supported in this case.
+> Isn't it the case today, where xdp_prepare_buff() gets the buffer with offset after the net hdr?
+> In the above case you mentioned xdp gets to used the packet buffer where pkt hdr + data is located.
+
+The head buffer and data buffer are not continuous, but xdp requires the 
+data memory
+in the linear area to be continuous. When virtio-net-hdr is stored in 
+the header buffer,
+and the transport header and payload are in the data buffer, the 
+requirements of xdp are
+not met at this time. Many xdp kern programs and xdp core layers also 
+require the transport
+header to be placed in the linear region.
+
+>> Then why
+>> not start storing packets from the header buffer? If this is the case, imagine a
+>> situation: If all small packets are put into the header buffers, and virtio net
+>> driver receives packets according to the descriptor table and used_ring, but the
+>> data buffers are empty at this time, then can't seem to continue?
+> In future when such mode is extended, vq mechanism will be extended to handle desc table and used ring anyway.
+
+Yes, for example, we can support the descriptor table to allow placing a 
+buffer with a
+length of 0 as a placeholder to deal with the above problem.
+
+>
+>> It seems that
+>> the operation of circular queue has become a producer-consumer problem
+>> again.
+>>
+> I didn’t follow.
+>
+> I tend to imagine that driver consumed meta data (vnet_hdr and used ring) should be placed together in one buffer and
+
+Sorry, I didn't understand what you said, can you explain more clearly? 
+Do you mean that
+virtio-ner-hdr and some other metadata are placed in a buffer? How are 
+used ring and virtio-net-hdr
+placed together in one buffer?
+
+
+Thanks.
+
+> Actual packet header and data belongs to other buffer.
+> This way there is clear layering of ownership. But before we explore this option, lets understand your above point.
+>
+>> 3. The meaning of hdr_len in virtio-net-hdr:
+>>        i. When splitting successfully: hdr_len represents the effective length of the
+>> header in the header buffer.
+>>        ii. On unsuccessful split: hdr_len is 0.
+>>
+>> What do you think of this plan? Or is there a better one?
+>>
+>> Thanks.
+>>
+>>> This method has few benefits on perf and buffer efficiency as below.
+>>> 1. Data buffers can be directly mapped at best utilization 2. Device
+>>> doesn't need to match up per packet header sizes and descriptor sizes,
+>>> efficient for device to implement 3. No need to keep reposting the header
+>> buffers, only its tail index to be updated.
+>>> Directly gives 50% cycle reduction on buffer traversing on driver side on rx
+>> path.
+>>> 4. Ability to share this header buffer queue among multiple RQs if needed.
+>>> 5. In the future there may be an extension to place tiny whole packets that
+>> can fit in the header buffer also to contain the rest of the data.
+>>> 6. Device can always fall back to place packet header in data buffer
+>>> when header buffer is not available or smaller than newer protocol 7.
+>>> Because the header buffer comes virtually contiguous memory and not
+>>> intermixed with data buffers, there isn't small per header allocations 8. Also
+>> works in both chained and merged mode 9. memory utilization for an RQ of
+>> depth 256, with 4K page size for data buffers = 1M, and hdr buffer per packet =
+>> 256 * 128bytes = only 3% of the data buffer.
+>>> So, in worst case when no packet uses the header buffers wastage is only 3%.
+>>> When high number of packets larger than 4K uses the header buffer, say 8K
+>> packets, header buffer utilization is at 50%. So, wastage is only 1.5%.
+>>> At 1500 mtu merged buffer data buffer size, it is also < 10% of hdr buffer
+>> memory.
+>>> All 3 cases are very manageable range of buffer utilization.
+>>>
+>>> Crafting and modifying the feature bits from your v7 version and virtio net
+>> header is not difficult to get there if we like this approach.
 
