@@ -1,52 +1,112 @@
-Return-Path: <virtio-dev-return-10787-cohuck=redhat.com@lists.oasis-open.org>
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Message-ID: <a20442cc-3c92-7cd7-8e14-0ae4c09b19cf@linux.alibaba.com>
-Date: Wed, 8 Feb 2023 19:24:53 +0800
+Return-Path: <parav@nvidia.com>
+From: Parav Pandit <parav@nvidia.com>
+Subject: [PATCH v2] virtio-net: Improve introductory description
+Date: Thu, 2 Feb 2023 06:00:12 +0200
+Message-ID: <20230202040012.103782-1-parav@nvidia.com>
 MIME-Version: 1.0
-References: <20230207111634.75542-1-hengqi@linux.alibaba.com>
- <20230207090019-mutt-send-email-mst@kernel.org>
- <98c2cd3f-2f59-74e1-0b37-cbf2a9180bd4@linux.alibaba.com>
- <20230208050822-mutt-send-email-mst@kernel.org>
-From: Heng Qi <hengqi@linux.alibaba.com>
-In-Reply-To: <20230208050822-mutt-send-email-mst@kernel.org>
-Subject: Re: [virtio-dev] Re: [virtio-comment] [PATCH] virtio-net: support
- per-queue coalescing moderation
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: quoted-printable
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: "virtio-comment @ lists . oasis-open . org" <virtio-comment@lists.oasis-open.org>, "virtio-dev @ lists . oasis-open . org" <virtio-dev@lists.oasis-open.org>, Jason Wang <jasowang@redhat.com>, Parav Pandit <parav@nvidia.com>, Alvaro Karsz <alvaro.karsz@solid-run.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Content-Type: text/plain
+To: mst@redhat.com, virtio-dev@lists.oasis-open.org, cohuck@redhat.com
+Cc: virtio-comment@lists.oasis-open.org, shahafs@nvidia.com, Parav Pandit <parav@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+The control VQ of the virtio network device is used beyond advance
+steering control. The control VQ dynamically changes multiple features
+of the initialized device.
 
+Hence, update this area of control VQ introductory description at few
+places and also place the link to its description.
 
-=E5=9C=A8 2023/2/8 =E4=B8=8B=E5=8D=886:10, Michael S. Tsirkin =E5=86=99=E9=
-=81=93:
-> On Wed, Feb 08, 2023 at 09:57:54AM +0800, Heng Qi wrote:
->>> I think it's a good idea to do this on top of Alvaro's patch
->>> unifying these two structures.
->> I saw Alvaro's patch, but it doesn't seem to be stable yet, is there a g=
-ood
->> way for me to
->> unify the two structures, since a patch should only do one thing.
-> Problem is you were trying to change these existing structures too
-> so the patches conflicted. However I think at this point
-> we are in agreement on a new command with a new structure.
-> In this case there won't be a conflict as you are
-> not touching existing commands so no need for you
-> to depend on Alvaro's patch.
+Also update the introduction section to better describe receive and
+transmit virtqueues.
 
-I get it.
+Fixes: https://github.com/oasis-tcs/virtio-spec/issues/156
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+---
+This patch is on top of [1].
 
-Thanks.
+[1] https://lists.oasis-open.org/archives/virtio-dev/202301/msg00280.html
+---
+changelog:
+v1->v2:
+- corrected/added article before transmit and receive virtqueue
+- replaced listed with described
+- updated set to negotiated for CTRL_VQ
+- improved introduction wordings
+v0->v1:
+- replaced command queue to control virtqueue to reflect current state
+- added link of control vq to its detailed section
+- removed reference of cvq from more places that limits it to steering
+- Addressed Cornelia's review comments:
+- updated introduction section to better describe rq, sq, cvq.
+- explicitly wrote that cvq is optional along with its feature bit
+  related description
+- dropped few items from Cornelia's review as they do not exactly
+  fit with latest 1.2 specification as below.
+  - avoided listing number of queues in introduction as its linked to q
+    reset which can disable all queues
+  - avoid mentioning cvq as optional as there is better section for it
+  - avoid talking about queue pairs as spec and use cases allows not
+    operate in pairs mode
+---
+ device-types/net/description.tex | 21 +++++++++++----------
+ 1 file changed, 11 insertions(+), 10 deletions(-)
 
->
-
-
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+diff --git a/device-types/net/description.tex b/device-types/net/descriptio=
+n.tex
+index 88a5770..dedd6b1 100644
+--- a/device-types/net/description.tex
++++ b/device-types/net/description.tex
+@@ -2,13 +2,13 @@ \section{Network Device}\label{sec:Device Types / Network=
+ Device}
+=20
+ The virtio network device is a virtual network interface controller.
+ It consists of a virtual Ethernet link which connects the device
+-to the Ethernet network. It is the most complex of the devices
+-supported so far by virtio. It has enhanced rapidly and demonstrates
+-clearly how support for new features are added to an existing
+-device. Empty buffers are placed in one virtqueue for receiving
+-packets, and outgoing packets are enqueued into another for
+-transmission in that order. A third command queue is used to
+-control advanced filtering features.
++to the Ethernet network. The driver posts empty buffers in the
++receive virtqueue. The device receives the incoming packets from the link;
++the device places these incoming packets in the receive virtqueue buffers.
++The driver enqueues outgoing packets to the transmit virtqueue. The device
++dequeues these packets from the transmit virtqueue and sends them to
++the link. A control virtqueue is used to dynamically manipulate various
++features of the initialized device.
+=20
+ \subsection{Device ID}\label{sec:Device Types / Network Device / Device ID=
+}
+=20
+@@ -28,7 +28,8 @@ \subsection{Virtqueues}\label{sec:Device Types / Network =
+Device / Virtqueues}
+  N=3D1 if neither VIRTIO_NET_F_MQ nor VIRTIO_NET_F_RSS are negotiated, oth=
+erwise N is set by
+  \field{max_virtqueue_pairs}.
+=20
+- controlq only exists if VIRTIO_NET_F_CTRL_VQ set.
++controlq is optional; it only exists if VIRTIO_NET_F_CTRL_VQ is
++negotiated.
+=20
+ \subsection{Feature bits}\label{sec:Device Types / Network Device / Featur=
+e bits}
+=20
+@@ -389,8 +390,8 @@ \subsection{Device Operation}\label{sec:Device Types / =
+Network Device / Device O
+ };
+ \end{lstlisting}
+=20
+-The controlq is used to control device features such as
+-filtering.
++The controlq is used to control many device features described further in
++section \ref{sec:Device Types / Network Device / Device Operation / Contro=
+l Virtqueue}.
+=20
+ \subsubsection{Legacy Interface: Device Operation}\label{sec:Device Types =
+/ Network Device / Device Operation / Legacy Interface: Device Operation}
+ When using the legacy interface, transitional devices and drivers
+--=20
+2.26.2
 
