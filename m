@@ -1,10 +1,10 @@
-Return-Path: <hengqi@linux.alibaba.com>
-Message-ID: <4177d301-f9a0-0707-9e70-9109ec40378d@linux.alibaba.com>
-Date: Thu, 2 Feb 2023 11:45:09 +0800
-MIME-Version: 1.0
-Subject: =?UTF-8?B?UmU6IFt2aXJ0aW8tY29tbWVudF0g5Zue5aSN77yaW3ZpcnRpby1kZXZd?=
- =?UTF-8?Q?_=5BPATCH_v8=5D_virtio=5Fnet=3A_support_for_split_transport_heade?=
- =?UTF-8?Q?r?=
+Return-Path: <parav@nvidia.com>
+From: Parav Pandit <parav@nvidia.com>
+Subject: =?utf-8?B?UkU6IFt2aXJ0aW8tY29tbWVudF0g5Zue5aSN77yaW3ZpcnRpby1kZXZdIFtQ?=
+ =?utf-8?B?QVRDSCB2OF0gdmlydGlvX25ldDogc3VwcG9ydCBmb3Igc3BsaXQgdHJhbnNw?=
+ =?utf-8?Q?ort_header?=
+Date: Thu, 2 Feb 2023 04:20:57 +0000
+Message-ID: <PH0PR12MB5481FE4A979391E911FC2051DCD69@PH0PR12MB5481.namprd12.prod.outlook.com>
 References: <20220920032824.GA125047@h68b04307.sqa.eu95>
  <CACGkMEtOHXtNtG13Zxpc+bhYJVyefp999kttz4YcPi22nMBSpQ@mail.gmail.com>
  <1663903426.8765974-1-xuanzhuo@linux.alibaba.com>
@@ -20,146 +20,157 @@ References: <20220920032824.GA125047@h68b04307.sqa.eu95>
  <PH0PR12MB54814AE695F25009B7B9C038DCD09@PH0PR12MB5481.namprd12.prod.outlook.com>
  <f13450f0-854d-123f-eb0b-b8bded5670b8@linux.alibaba.com>
  <PH0PR12MB54811F110E8854161A900BF7DCD69@PH0PR12MB5481.namprd12.prod.outlook.com>
-From: Heng Qi <hengqi@linux.alibaba.com>
-In-Reply-To: <PH0PR12MB54811F110E8854161A900BF7DCD69@PH0PR12MB5481.namprd12.prod.outlook.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-To: Parav Pandit <parav@nvidia.com>, virtio-dev <virtio-dev@lists.oasis-open.org>, virtio-comment <virtio-comment@lists.oasis-open.org>
+ <4177d301-f9a0-0707-9e70-9109ec40378d@linux.alibaba.com>
+In-Reply-To: <4177d301-f9a0-0707-9e70-9109ec40378d@linux.alibaba.com>
+MIME-Version: 1.0
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+To: Heng Qi <hengqi@linux.alibaba.com>, virtio-dev <virtio-dev@lists.oasis-open.org>, virtio-comment <virtio-comment@lists.oasis-open.org>
 Cc: "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, Cornelia Huck <cohuck@redhat.com>, Kangjie Xu <kangjie.xu@linux.alibaba.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-
-
-在 2023/2/2 上午9:45, Parav Pandit 写道:
->> From: Heng Qi <hengqi@linux.alibaba.com>
->> Sent: Wednesday, February 1, 2023 8:18 AM
-> [..]
->
->>> Response....
->>>
->>> Page alignment requirements should not come from the virtio spec.
->>> There are a variety of cases which may use non page aligned data buffers.
->>> a. A kernel only consumer can use it who doesn't have mmap requirement.
->>> b. A VQ accessible directly in user space may also use it without page
->> alignment.
->>> c. A system with 64k page size, page aligned memory has a fair amount of
->> wastage.
->>> d. iouring example you pointed, also has non page aligned use.
->>>
->>> So let the driver deal with alignment restriction, outside of the virtio spec.
->>>
->>> In header data split cases, data buffers utilization is more important than the
->> tiny header buffers utilization.
->>> How about if the headers do not interfere with the data buffers?
->>>
->>> In other words, say a given RQ has optionally linked to a circular queue of
->> header buffers.
->>> All header buffers are of the same size, supplied one time.
->>> This header size and circular q address is configured one time at RQ creation
->> time.
->>> With this the device doesn't need to process header buffer size every single
->> incoming packet.
->>> Data buffers can continue as chains or merged mode can be supported.
->>> When the received packet’s header cannot fit, it continues as-is in the data
->> buffer.
->>> Virtio net hdr as suggest indicates usage of hdr buffer offset/index.
->> This is a good direction, thanks a lot for your comments, the new split header
->> method might look like this:
->> When allocating the receive queue, allocate a circular queue storing the
->> header buffers at the driver layer, which is shared with the device, and set the
->> length of the header buffer. The length of the circular queue is the same as the
->> length of the descriptor table.
->>
->> 1. When a data packet is successfully split, all virtio-net-hdr + transport headers
->> are stored in the header buffer, and VIRTIO_NET_HDR_F_SPLIT_HEADER is set
->> in the flag of virtio-net-hdr; If the header buffer is not enough to store virtio-
->> net-hdr + transport header, then roll back, that is, not split the packet;
->>
-> Right.
->
->> 2. When a packet is not split by the device for some reason, virtio-net-hdr is
->> placed in the header buffer, and the transport header and payload are placed
->> in the buffer. At this time, xdp is not supported, because xdp requires the
->> transport header to be placed in the first buffer, the header buffer.
-> I do not understand why the xdp is not supported in this case.
-> Isn't it the case today, where xdp_prepare_buff() gets the buffer with offset after the net hdr?
-> In the above case you mentioned xdp gets to used the packet buffer where pkt hdr + data is located.
-
-The head buffer and data buffer are not continuous, but xdp requires the 
-data memory
-in the linear area to be continuous. When virtio-net-hdr is stored in 
-the header buffer,
-and the transport header and payload are in the data buffer, the 
-requirements of xdp are
-not met at this time. Many xdp kern programs and xdp core layers also 
-require the transport
-header to be placed in the linear region.
-
->> Then why
->> not start storing packets from the header buffer? If this is the case, imagine a
->> situation: If all small packets are put into the header buffers, and virtio net
->> driver receives packets according to the descriptor table and used_ring, but the
->> data buffers are empty at this time, then can't seem to continue?
-> In future when such mode is extended, vq mechanism will be extended to handle desc table and used ring anyway.
-
-Yes, for example, we can support the descriptor table to allow placing a 
-buffer with a
-length of 0 as a placeholder to deal with the above problem.
-
->
->> It seems that
->> the operation of circular queue has become a producer-consumer problem
->> again.
->>
-> I didn’t follow.
->
-> I tend to imagine that driver consumed meta data (vnet_hdr and used ring) should be placed together in one buffer and
-
-Sorry, I didn't understand what you said, can you explain more clearly? 
-Do you mean that
-virtio-ner-hdr and some other metadata are placed in a buffer? How are 
-used ring and virtio-net-hdr
-placed together in one buffer?
-
-
-Thanks.
-
-> Actual packet header and data belongs to other buffer.
-> This way there is clear layering of ownership. But before we explore this option, lets understand your above point.
->
->> 3. The meaning of hdr_len in virtio-net-hdr:
->>        i. When splitting successfully: hdr_len represents the effective length of the
->> header in the header buffer.
->>        ii. On unsuccessful split: hdr_len is 0.
->>
->> What do you think of this plan? Or is there a better one?
->>
->> Thanks.
->>
->>> This method has few benefits on perf and buffer efficiency as below.
->>> 1. Data buffers can be directly mapped at best utilization 2. Device
->>> doesn't need to match up per packet header sizes and descriptor sizes,
->>> efficient for device to implement 3. No need to keep reposting the header
->> buffers, only its tail index to be updated.
->>> Directly gives 50% cycle reduction on buffer traversing on driver side on rx
->> path.
->>> 4. Ability to share this header buffer queue among multiple RQs if needed.
->>> 5. In the future there may be an extension to place tiny whole packets that
->> can fit in the header buffer also to contain the rest of the data.
->>> 6. Device can always fall back to place packet header in data buffer
->>> when header buffer is not available or smaller than newer protocol 7.
->>> Because the header buffer comes virtually contiguous memory and not
->>> intermixed with data buffers, there isn't small per header allocations 8. Also
->> works in both chained and merged mode 9. memory utilization for an RQ of
->> depth 256, with 4K page size for data buffers = 1M, and hdr buffer per packet =
->> 256 * 128bytes = only 3% of the data buffer.
->>> So, in worst case when no packet uses the header buffers wastage is only 3%.
->>> When high number of packets larger than 4K uses the header buffer, say 8K
->> packets, header buffer utilization is at 50%. So, wastage is only 1.5%.
->>> At 1500 mtu merged buffer data buffer size, it is also < 10% of hdr buffer
->> memory.
->>> All 3 cases are very manageable range of buffer utilization.
->>>
->>> Crafting and modifying the feature bits from your v7 version and virtio net
->> header is not difficult to get there if we like this approach.
+DQoNCj4gRnJvbTogSGVuZyBRaSA8aGVuZ3FpQGxpbnV4LmFsaWJhYmEuY29tPg0KPiBTZW50OiBX
+ZWRuZXNkYXksIEZlYnJ1YXJ5IDEsIDIwMjMgMTA6NDUgUE0NCj4gDQo+IOWcqCAyMDIzLzIvMiDk
+uIrljYg5OjQ1LCBQYXJhdiBQYW5kaXQg5YaZ6YGTOg0KPiA+PiBGcm9tOiBIZW5nIFFpIDxoZW5n
+cWlAbGludXguYWxpYmFiYS5jb20+DQo+ID4+IFNlbnQ6IFdlZG5lc2RheSwgRmVicnVhcnkgMSwg
+MjAyMyA4OjE4IEFNDQo+ID4gWy4uXQ0KPiA+DQo+ID4+PiBSZXNwb25zZS4uLi4NCj4gPj4+DQo+
+ID4+PiBQYWdlIGFsaWdubWVudCByZXF1aXJlbWVudHMgc2hvdWxkIG5vdCBjb21lIGZyb20gdGhl
+IHZpcnRpbyBzcGVjLg0KPiA+Pj4gVGhlcmUgYXJlIGEgdmFyaWV0eSBvZiBjYXNlcyB3aGljaCBt
+YXkgdXNlIG5vbiBwYWdlIGFsaWduZWQgZGF0YSBidWZmZXJzLg0KPiA+Pj4gYS4gQSBrZXJuZWwg
+b25seSBjb25zdW1lciBjYW4gdXNlIGl0IHdobyBkb2Vzbid0IGhhdmUgbW1hcCByZXF1aXJlbWVu
+dC4NCj4gPj4+IGIuIEEgVlEgYWNjZXNzaWJsZSBkaXJlY3RseSBpbiB1c2VyIHNwYWNlIG1heSBh
+bHNvIHVzZSBpdCB3aXRob3V0DQo+ID4+PiBwYWdlDQo+ID4+IGFsaWdubWVudC4NCj4gPj4+IGMu
+IEEgc3lzdGVtIHdpdGggNjRrIHBhZ2Ugc2l6ZSwgcGFnZSBhbGlnbmVkIG1lbW9yeSBoYXMgYSBm
+YWlyDQo+ID4+PiBhbW91bnQgb2YNCj4gPj4gd2FzdGFnZS4NCj4gPj4+IGQuIGlvdXJpbmcgZXhh
+bXBsZSB5b3UgcG9pbnRlZCwgYWxzbyBoYXMgbm9uIHBhZ2UgYWxpZ25lZCB1c2UuDQo+ID4+Pg0K
+PiA+Pj4gU28gbGV0IHRoZSBkcml2ZXIgZGVhbCB3aXRoIGFsaWdubWVudCByZXN0cmljdGlvbiwg
+b3V0c2lkZSBvZiB0aGUgdmlydGlvIHNwZWMuDQo+ID4+Pg0KPiA+Pj4gSW4gaGVhZGVyIGRhdGEg
+c3BsaXQgY2FzZXMsIGRhdGEgYnVmZmVycyB1dGlsaXphdGlvbiBpcyBtb3JlDQo+ID4+PiBpbXBv
+cnRhbnQgdGhhbiB0aGUNCj4gPj4gdGlueSBoZWFkZXIgYnVmZmVycyB1dGlsaXphdGlvbi4NCj4g
+Pj4+IEhvdyBhYm91dCBpZiB0aGUgaGVhZGVycyBkbyBub3QgaW50ZXJmZXJlIHdpdGggdGhlIGRh
+dGEgYnVmZmVycz8NCj4gPj4+DQo+ID4+PiBJbiBvdGhlciB3b3Jkcywgc2F5IGEgZ2l2ZW4gUlEg
+aGFzIG9wdGlvbmFsbHkgbGlua2VkIHRvIGEgY2lyY3VsYXINCj4gPj4+IHF1ZXVlIG9mDQo+ID4+
+IGhlYWRlciBidWZmZXJzLg0KPiA+Pj4gQWxsIGhlYWRlciBidWZmZXJzIGFyZSBvZiB0aGUgc2Ft
+ZSBzaXplLCBzdXBwbGllZCBvbmUgdGltZS4NCj4gPj4+IFRoaXMgaGVhZGVyIHNpemUgYW5kIGNp
+cmN1bGFyIHEgYWRkcmVzcyBpcyBjb25maWd1cmVkIG9uZSB0aW1lIGF0IFJRDQo+ID4+PiBjcmVh
+dGlvbg0KPiA+PiB0aW1lLg0KPiA+Pj4gV2l0aCB0aGlzIHRoZSBkZXZpY2UgZG9lc24ndCBuZWVk
+IHRvIHByb2Nlc3MgaGVhZGVyIGJ1ZmZlciBzaXplDQo+ID4+PiBldmVyeSBzaW5nbGUNCj4gPj4g
+aW5jb21pbmcgcGFja2V0Lg0KPiA+Pj4gRGF0YSBidWZmZXJzIGNhbiBjb250aW51ZSBhcyBjaGFp
+bnMgb3IgbWVyZ2VkIG1vZGUgY2FuIGJlIHN1cHBvcnRlZC4NCj4gPj4+IFdoZW4gdGhlIHJlY2Vp
+dmVkIHBhY2tldOKAmXMgaGVhZGVyIGNhbm5vdCBmaXQsIGl0IGNvbnRpbnVlcyBhcy1pcyBpbg0K
+PiA+Pj4gdGhlIGRhdGENCj4gPj4gYnVmZmVyLg0KPiA+Pj4gVmlydGlvIG5ldCBoZHIgYXMgc3Vn
+Z2VzdCBpbmRpY2F0ZXMgdXNhZ2Ugb2YgaGRyIGJ1ZmZlciBvZmZzZXQvaW5kZXguDQo+ID4+IFRo
+aXMgaXMgYSBnb29kIGRpcmVjdGlvbiwgdGhhbmtzIGEgbG90IGZvciB5b3VyIGNvbW1lbnRzLCB0
+aGUgbmV3DQo+ID4+IHNwbGl0IGhlYWRlciBtZXRob2QgbWlnaHQgbG9vayBsaWtlIHRoaXM6DQo+
+ID4+IFdoZW4gYWxsb2NhdGluZyB0aGUgcmVjZWl2ZSBxdWV1ZSwgYWxsb2NhdGUgYSBjaXJjdWxh
+ciBxdWV1ZSBzdG9yaW5nDQo+ID4+IHRoZSBoZWFkZXIgYnVmZmVycyBhdCB0aGUgZHJpdmVyIGxh
+eWVyLCB3aGljaCBpcyBzaGFyZWQgd2l0aCB0aGUNCj4gPj4gZGV2aWNlLCBhbmQgc2V0IHRoZSBs
+ZW5ndGggb2YgdGhlIGhlYWRlciBidWZmZXIuIFRoZSBsZW5ndGggb2YgdGhlDQo+ID4+IGNpcmN1
+bGFyIHF1ZXVlIGlzIHRoZSBzYW1lIGFzIHRoZSBsZW5ndGggb2YgdGhlIGRlc2NyaXB0b3IgdGFi
+bGUuDQo+ID4+DQo+ID4+IDEuIFdoZW4gYSBkYXRhIHBhY2tldCBpcyBzdWNjZXNzZnVsbHkgc3Bs
+aXQsIGFsbCB2aXJ0aW8tbmV0LWhkciArDQo+ID4+IHRyYW5zcG9ydCBoZWFkZXJzIGFyZSBzdG9y
+ZWQgaW4gdGhlIGhlYWRlciBidWZmZXIsIGFuZA0KPiA+PiBWSVJUSU9fTkVUX0hEUl9GX1NQTElU
+X0hFQURFUiBpcyBzZXQgaW4gdGhlIGZsYWcgb2YgdmlydGlvLW5ldC1oZHI7DQo+ID4+IElmIHRo
+ZSBoZWFkZXIgYnVmZmVyIGlzIG5vdCBlbm91Z2ggdG8gc3RvcmUgdmlydGlvLSBuZXQtaGRyICsN
+Cj4gPj4gdHJhbnNwb3J0IGhlYWRlciwgdGhlbiByb2xsIGJhY2ssIHRoYXQgaXMsIG5vdCBzcGxp
+dCB0aGUgcGFja2V0Ow0KPiA+Pg0KPiA+IFJpZ2h0Lg0KPiA+DQo+ID4+IDIuIFdoZW4gYSBwYWNr
+ZXQgaXMgbm90IHNwbGl0IGJ5IHRoZSBkZXZpY2UgZm9yIHNvbWUgcmVhc29uLA0KPiA+PiB2aXJ0
+aW8tbmV0LWhkciBpcyBwbGFjZWQgaW4gdGhlIGhlYWRlciBidWZmZXIsIGFuZCB0aGUgdHJhbnNw
+b3J0DQo+ID4+IGhlYWRlciBhbmQgcGF5bG9hZCBhcmUgcGxhY2VkIGluIHRoZSBidWZmZXIuIEF0
+IHRoaXMgdGltZSwgeGRwIGlzIG5vdA0KPiA+PiBzdXBwb3J0ZWQsIGJlY2F1c2UgeGRwIHJlcXVp
+cmVzIHRoZSB0cmFuc3BvcnQgaGVhZGVyIHRvIGJlIHBsYWNlZCBpbiB0aGUNCj4gZmlyc3QgYnVm
+ZmVyLCB0aGUgaGVhZGVyIGJ1ZmZlci4NCj4gPiBJIGRvIG5vdCB1bmRlcnN0YW5kIHdoeSB0aGUg
+eGRwIGlzIG5vdCBzdXBwb3J0ZWQgaW4gdGhpcyBjYXNlLg0KPiA+IElzbid0IGl0IHRoZSBjYXNl
+IHRvZGF5LCB3aGVyZSB4ZHBfcHJlcGFyZV9idWZmKCkgZ2V0cyB0aGUgYnVmZmVyIHdpdGggb2Zm
+c2V0DQo+IGFmdGVyIHRoZSBuZXQgaGRyPw0KPiA+IEluIHRoZSBhYm92ZSBjYXNlIHlvdSBtZW50
+aW9uZWQgeGRwIGdldHMgdG8gdXNlZCB0aGUgcGFja2V0IGJ1ZmZlciB3aGVyZQ0KPiBwa3QgaGRy
+ICsgZGF0YSBpcyBsb2NhdGVkLg0KPiANCj4gVGhlIGhlYWQgYnVmZmVyIGFuZCBkYXRhIGJ1ZmZl
+ciBhcmUgbm90IGNvbnRpbnVvdXMsIGJ1dCB4ZHAgcmVxdWlyZXMgdGhlIGRhdGENCj4gbWVtb3J5
+IGluIHRoZSBsaW5lYXIgYXJlYSB0byBiZSBjb250aW51b3VzLiBXaGVuIHZpcnRpby1uZXQtaGRy
+IGlzIHN0b3JlZCBpbg0KPiB0aGUgaGVhZGVyIGJ1ZmZlciwgYW5kIHRoZSB0cmFuc3BvcnQgaGVh
+ZGVyIGFuZCBwYXlsb2FkIGFyZSBpbiB0aGUgZGF0YSBidWZmZXIsDQo+IHRoZSByZXF1aXJlbWVu
+dHMgb2YgeGRwIGFyZSBub3QgbWV0IGF0IHRoaXMgdGltZS4gTWFueSB4ZHAga2VybiBwcm9ncmFt
+cyBhbmQNCj4geGRwIGNvcmUgbGF5ZXJzIGFsc28gcmVxdWlyZSB0aGUgdHJhbnNwb3J0IGhlYWRl
+ciB0byBiZSBwbGFjZWQgaW4gdGhlIGxpbmVhcg0KPiByZWdpb24uDQo+DQpMZXRzIGtlZXAgYXNp
+ZGUgYSB2aXJ0aW8gbmV0IGhkciBmb3IgYSBtb21lbnQuDQpQa3QgSERSIChMMiB0byBMNCkgaXMg
+aW4gYnVmZmVyX3R5cGVfMS4NClBrdCBEYXRhIChhZnRlciBMNCkgaXMgaW4gYnVmZmVyX3R5cGVf
+Mi4NClRoZXkgYXJlIG5vdCBjb250aWd1b3VzLg0KSW4gdGhpcyBjYXNlIFhEUCBkb2VzbuKAmXQg
+d29yay4NCkRpZCBJIHVuZGVyc3RhbmQgeW91IGNvcnJlY3RseT8NCklmIHNvLCB0aGVyZSBpcyBv
+bmdvaW5nIHdvcmsgdG8gc3VwcG9ydCBtdWx0aSBidWZmZXIgWERQLg0KV2Ugc2hvdWxkIGxvb2sg
+Zm9yd2FyZCB0byBoYXZlIHRoYXQgc3VwcG9ydCBpdCBpbiB0aGUgZnV0dXJlIGluIE9TLg0KIA0K
+PiA+PiBUaGVuIHdoeQ0KPiA+PiBub3Qgc3RhcnQgc3RvcmluZyBwYWNrZXRzIGZyb20gdGhlIGhl
+YWRlciBidWZmZXI/IElmIHRoaXMgaXMgdGhlDQo+ID4+IGNhc2UsIGltYWdpbmUgYQ0KPiA+PiBz
+aXR1YXRpb246IElmIGFsbCBzbWFsbCBwYWNrZXRzIGFyZSBwdXQgaW50byB0aGUgaGVhZGVyIGJ1
+ZmZlcnMsIGFuZA0KPiA+PiB2aXJ0aW8gbmV0IGRyaXZlciByZWNlaXZlcyBwYWNrZXRzIGFjY29y
+ZGluZyB0byB0aGUgZGVzY3JpcHRvciB0YWJsZQ0KPiA+PiBhbmQgdXNlZF9yaW5nLCBidXQgdGhl
+IGRhdGEgYnVmZmVycyBhcmUgZW1wdHkgYXQgdGhpcyB0aW1lLCB0aGVuIGNhbid0IHNlZW0NCj4g
+dG8gY29udGludWU/DQo+ID4gSW4gZnV0dXJlIHdoZW4gc3VjaCBtb2RlIGlzIGV4dGVuZGVkLCB2
+cSBtZWNoYW5pc20gd2lsbCBiZSBleHRlbmRlZCB0bw0KPiBoYW5kbGUgZGVzYyB0YWJsZSBhbmQg
+dXNlZCByaW5nIGFueXdheS4NCj4gDQo+IFllcywgZm9yIGV4YW1wbGUsIHdlIGNhbiBzdXBwb3J0
+IHRoZSBkZXNjcmlwdG9yIHRhYmxlIHRvIGFsbG93IHBsYWNpbmcgYSBidWZmZXINCj4gd2l0aCBh
+IGxlbmd0aCBvZiAwIGFzIGEgcGxhY2Vob2xkZXIgdG8gZGVhbCB3aXRoIHRoZSBhYm92ZSBwcm9i
+bGVtLg0KPiANCj4gPg0KPiA+PiBJdCBzZWVtcyB0aGF0DQo+ID4+IHRoZSBvcGVyYXRpb24gb2Yg
+Y2lyY3VsYXIgcXVldWUgaGFzIGJlY29tZSBhIHByb2R1Y2VyLWNvbnN1bWVyDQo+ID4+IHByb2Js
+ZW0gYWdhaW4uDQo+ID4+DQo+ID4gSSBkaWRu4oCZdCBmb2xsb3cuDQo+ID4NCj4gPiBJIHRlbmQg
+dG8gaW1hZ2luZSB0aGF0IGRyaXZlciBjb25zdW1lZCBtZXRhIGRhdGEgKHZuZXRfaGRyIGFuZCB1
+c2VkDQo+ID4gcmluZykgc2hvdWxkIGJlIHBsYWNlZCB0b2dldGhlciBpbiBvbmUgYnVmZmVyIGFu
+ZA0KPiANCj4gU29ycnksIEkgZGlkbid0IHVuZGVyc3RhbmQgd2hhdCB5b3Ugc2FpZCwgY2FuIHlv
+dSBleHBsYWluIG1vcmUgY2xlYXJseT8NCj4gRG8geW91IG1lYW4gdGhhdA0KPiB2aXJ0aW8tbmVy
+LWhkciBhbmQgc29tZSBvdGhlciBtZXRhZGF0YSBhcmUgcGxhY2VkIGluIGEgYnVmZmVyPyBIb3cg
+YXJlIHVzZWQNCj4gcmluZyBhbmQgdmlydGlvLW5ldC1oZHIgcGxhY2VkIHRvZ2V0aGVyIGluIG9u
+ZSBidWZmZXI/DQo+DQpXZSBjYW4gZXh0ZW5kIHZpcnRpbyBuZXQgdXNlZCByaW5nIHdoaWNoIHdp
+bGwgY29uc2lzdCBvZiwNCnN0cnVjdCB2aXJ0aW9fbmV0X3VzZWRfcmluZ19lbnRyeSB7DQoJc3Ry
+dWN0IHZpcnRpb19uZXRfaGRyIGhkcjsgLyogd2l0aCBwYWRkaW5nIGJ5dGVzICovDQoJc3RydWN0
+IHVzZWRfZWxlbSBlbGVtW107DQp9Ow0Kc3RydWN0IHZpcnRpb19uZXRfdXNlZF9yaW5nIHsNCglz
+dHJ1Y3QgdmlydGlvX25ldF91c2VkX3JpbmdfZW50cnkgcmluZ1tdOw0KfTsNCg0KV2l0aCBhYm92
+ZSBsYXllcmluZyBpcyBuaXQuDQpEcml2ZXIgbWV0YWRhdGEgc3RheXMgaW4gZHJpdmVyIGxldmVs
+IHN1Y2ggYXMgc29tZXRoaW5nIGxpa2UgYWJvdmUgc3RydWN0Lg0KSERSIGJ1ZmZlciBjYW4gaGF2
+ZSBjb25zdGFudCBzaXplIGhlYWQgcm9vbSB0b28sIHdoaWNoIGlzIGNhY2hlIGxpbmUgYWxpZ25l
+ZCB3aXRob3V0IGFueSBraW5kIG9mIHBhZGRpbmcuDQpObyBuZWVkIHRvIG1peCBkcml2ZXIgaW50
+ZXJuYWwgbWV0YSBkYXRhICh2bmV0X2hkciBhbmQgcGFja2V0IGhkcikgdG9nZXRoZXIuDQoNClRo
+aXMgbWF5IGZpbmQgaXRzIHVzZSBldmVuIHdpdGhvdXQgSERTLCB3aGVyZSBvbmUgcmVjZWl2ZWQg
+cGFja2V0cywgbWV0YWRhdGEgaXMgZm91bmQgYWRqYWNlbnQgaW4gc2luZ2xlIGNhY2hlIGxpbmUu
+DQoNCj4gDQo+IFRoYW5rcy4NCj4gDQo+ID4gQWN0dWFsIHBhY2tldCBoZWFkZXIgYW5kIGRhdGEg
+YmVsb25ncyB0byBvdGhlciBidWZmZXIuDQo+ID4gVGhpcyB3YXkgdGhlcmUgaXMgY2xlYXIgbGF5
+ZXJpbmcgb2Ygb3duZXJzaGlwLiBCdXQgYmVmb3JlIHdlIGV4cGxvcmUgdGhpcw0KPiBvcHRpb24s
+IGxldHMgdW5kZXJzdGFuZCB5b3VyIGFib3ZlIHBvaW50Lg0KPiA+DQo+ID4+IDMuIFRoZSBtZWFu
+aW5nIG9mIGhkcl9sZW4gaW4gdmlydGlvLW5ldC1oZHI6DQo+ID4+ICAgwqDCoMKgwqAgaS4gV2hl
+biBzcGxpdHRpbmcgc3VjY2Vzc2Z1bGx5OiBoZHJfbGVuIHJlcHJlc2VudHMgdGhlIGVmZmVjdGl2
+ZSBsZW5ndGggb2YNCj4gdGhlDQo+ID4+IGhlYWRlciBpbiB0aGUgaGVhZGVyIGJ1ZmZlci4NCj4g
+Pj4gICDCoMKgwqDCoCBpaS4gT24gdW5zdWNjZXNzZnVsIHNwbGl0OiBoZHJfbGVuIGlzIDAuDQo+
+ID4+DQo+ID4+IFdoYXQgZG8geW91IHRoaW5rIG9mIHRoaXMgcGxhbj8gT3IgaXMgdGhlcmUgYSBi
+ZXR0ZXIgb25lPw0KPiA+Pg0KPiA+PiBUaGFua3MuDQo+ID4+DQo+ID4+PiBUaGlzIG1ldGhvZCBo
+YXMgZmV3IGJlbmVmaXRzIG9uIHBlcmYgYW5kIGJ1ZmZlciBlZmZpY2llbmN5IGFzIGJlbG93Lg0K
+PiA+Pj4gMS4gRGF0YSBidWZmZXJzIGNhbiBiZSBkaXJlY3RseSBtYXBwZWQgYXQgYmVzdCB1dGls
+aXphdGlvbiAyLiBEZXZpY2UNCj4gPj4+IGRvZXNuJ3QgbmVlZCB0byBtYXRjaCB1cCBwZXIgcGFj
+a2V0IGhlYWRlciBzaXplcyBhbmQgZGVzY3JpcHRvciBzaXplcywNCj4gPj4+IGVmZmljaWVudCBm
+b3IgZGV2aWNlIHRvIGltcGxlbWVudCAzLiBObyBuZWVkIHRvIGtlZXAgcmVwb3N0aW5nIHRoZSBo
+ZWFkZXINCj4gPj4gYnVmZmVycywgb25seSBpdHMgdGFpbCBpbmRleCB0byBiZSB1cGRhdGVkLg0K
+PiA+Pj4gRGlyZWN0bHkgZ2l2ZXMgNTAlIGN5Y2xlIHJlZHVjdGlvbiBvbiBidWZmZXIgdHJhdmVy
+c2luZyBvbiBkcml2ZXIgc2lkZSBvbiByeA0KPiA+PiBwYXRoLg0KPiA+Pj4gNC4gQWJpbGl0eSB0
+byBzaGFyZSB0aGlzIGhlYWRlciBidWZmZXIgcXVldWUgYW1vbmcgbXVsdGlwbGUgUlFzIGlmIG5l
+ZWRlZC4NCj4gPj4+IDUuIEluIHRoZSBmdXR1cmUgdGhlcmUgbWF5IGJlIGFuIGV4dGVuc2lvbiB0
+byBwbGFjZSB0aW55IHdob2xlIHBhY2tldHMgdGhhdA0KPiA+PiBjYW4gZml0IGluIHRoZSBoZWFk
+ZXIgYnVmZmVyIGFsc28gdG8gY29udGFpbiB0aGUgcmVzdCBvZiB0aGUgZGF0YS4NCj4gPj4+IDYu
+IERldmljZSBjYW4gYWx3YXlzIGZhbGwgYmFjayB0byBwbGFjZSBwYWNrZXQgaGVhZGVyIGluIGRh
+dGEgYnVmZmVyDQo+ID4+PiB3aGVuIGhlYWRlciBidWZmZXIgaXMgbm90IGF2YWlsYWJsZSBvciBz
+bWFsbGVyIHRoYW4gbmV3ZXIgcHJvdG9jb2wgNy4NCj4gPj4+IEJlY2F1c2UgdGhlIGhlYWRlciBi
+dWZmZXIgY29tZXMgdmlydHVhbGx5IGNvbnRpZ3VvdXMgbWVtb3J5IGFuZCBub3QNCj4gPj4+IGlu
+dGVybWl4ZWQgd2l0aCBkYXRhIGJ1ZmZlcnMsIHRoZXJlIGlzbid0IHNtYWxsIHBlciBoZWFkZXIg
+YWxsb2NhdGlvbnMgOC4gQWxzbw0KPiA+PiB3b3JrcyBpbiBib3RoIGNoYWluZWQgYW5kIG1lcmdl
+ZCBtb2RlIDkuIG1lbW9yeSB1dGlsaXphdGlvbiBmb3IgYW4gUlEgb2YNCj4gPj4gZGVwdGggMjU2
+LCB3aXRoIDRLIHBhZ2Ugc2l6ZSBmb3IgZGF0YSBidWZmZXJzID0gMU0sIGFuZCBoZHIgYnVmZmVy
+IHBlcg0KPiBwYWNrZXQgPQ0KPiA+PiAyNTYgKiAxMjhieXRlcyA9IG9ubHkgMyUgb2YgdGhlIGRh
+dGEgYnVmZmVyLg0KPiA+Pj4gU28sIGluIHdvcnN0IGNhc2Ugd2hlbiBubyBwYWNrZXQgdXNlcyB0
+aGUgaGVhZGVyIGJ1ZmZlcnMgd2FzdGFnZSBpcyBvbmx5DQo+IDMlLg0KPiA+Pj4gV2hlbiBoaWdo
+IG51bWJlciBvZiBwYWNrZXRzIGxhcmdlciB0aGFuIDRLIHVzZXMgdGhlIGhlYWRlciBidWZmZXIs
+IHNheQ0KPiA4Sw0KPiA+PiBwYWNrZXRzLCBoZWFkZXIgYnVmZmVyIHV0aWxpemF0aW9uIGlzIGF0
+IDUwJS4gU28sIHdhc3RhZ2UgaXMgb25seSAxLjUlLg0KPiA+Pj4gQXQgMTUwMCBtdHUgbWVyZ2Vk
+IGJ1ZmZlciBkYXRhIGJ1ZmZlciBzaXplLCBpdCBpcyBhbHNvIDwgMTAlIG9mIGhkciBidWZmZXIN
+Cj4gPj4gbWVtb3J5Lg0KPiA+Pj4gQWxsIDMgY2FzZXMgYXJlIHZlcnkgbWFuYWdlYWJsZSByYW5n
+ZSBvZiBidWZmZXIgdXRpbGl6YXRpb24uDQo+ID4+Pg0KPiA+Pj4gQ3JhZnRpbmcgYW5kIG1vZGlm
+eWluZyB0aGUgZmVhdHVyZSBiaXRzIGZyb20geW91ciB2NyB2ZXJzaW9uIGFuZCB2aXJ0aW8gbmV0
+DQo+ID4+IGhlYWRlciBpcyBub3QgZGlmZmljdWx0IHRvIGdldCB0aGVyZSBpZiB3ZSBsaWtlIHRo
+aXMgYXBwcm9hY2guDQo=
 
