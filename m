@@ -1,54 +1,117 @@
-Return-Path: <virtio-comment-return-4276-cohuck=redhat.com@lists.oasis-open.org>
-Sender: <virtio-comment@lists.oasis-open.org>
-List-Post: <mailto:virtio-comment@lists.oasis-open.org>
-List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
+Return-Path: <parav@nvidia.com>
+From: Parav Pandit <parav@nvidia.com>
+Subject: [PATCH] content.tex Fix Driver notifications label
+Date: Fri, 3 Feb 2023 20:35:32 +0200
+Message-ID: <20230203183532.90685-1-parav@nvidia.com>
 MIME-Version: 1.0
-References: <20230216073222.1208265-1-alvaro.karsz@solid-run.com>
- <9db3b645-cc5e-5b96-24b2-7b9fda67053c@linux.alibaba.com> <CAJs=3_DbSMTM=AmWqXAAE82Sa_JSJHzS=tss_UxsOFmc57HN6Q@mail.gmail.com>
- <20230216064301-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20230216064301-mutt-send-email-mst@kernel.org>
-From: Alvaro Karsz <alvaro.karsz@solid-run.com>
-Date: Thu, 16 Feb 2023 13:52:41 +0200
-Message-ID: <CAJs=3_DKq_ZyV5q2KSLV=0WMc=cMYNMuD6FkHAC6j4sBt+2gSQ@mail.gmail.com>
-Subject: Re: [virtio-comment] Re: [PATCH v4] virtio-net: Fix and update
- VIRTIO_NET_F_NOTF_COAL feature
-Content-Type: text/plain; charset="UTF-8"
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Heng Qi <hengqi@linux.alibaba.com>, virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, jasowang@redhat.com, parav@nvidia.com, david.edmondson@oracle.com
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+To: mst@redhat.com, virtio-dev@lists.oasis-open.org, cohuck@redhat.com
+Cc: virtio-comment@lists.oasis-open.org, shahafs@nvidia.com, Parav Pandit <parav@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-> > Actually, no.
-> > \field{usecs} refers to the field in the struct.
-> > usecs refers to the units of measurement.
-> >
-> > So if for example \field{usecs} = 40, then it evaluates to 40 usecs ->
-> > "are met when 40 usecs elapses".
->
-> But this is not how it reads, people are not computers, and in the
-> compiled PDF \field{usec} just looks as usecs in italics.
->
-> > I can change the field name in the struct to "max_usecs" if people
-> > think it's necessary.
->
-> Maybe that's a good idea.
+Driver notifications section is under "Basic Facilities of a Virtio
+Device". However, the label is placed under "Virtqueues" section.
 
-I'll add it to v5
+Fix the label references.
 
-This publicly archived list offers a means to provide input to the
-OASIS Virtual I/O Device (VIRTIO) TC.
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+---
+ content.tex | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
-In order to verify user consent to the Feedback License terms and
-to minimize spam in the list archive, subscription is required
-before posting.
-
-Subscribe: virtio-comment-subscribe@lists.oasis-open.org
-Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
-List help: virtio-comment-help@lists.oasis-open.org
-List archive: https://lists.oasis-open.org/archives/virtio-comment/
-Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
-List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
-Committee: https://www.oasis-open.org/committees/virtio/
-Join OASIS: https://www.oasis-open.org/join/
+diff --git a/content.tex b/content.tex
+index df5ce16..874714f 100644
+--- a/content.tex
++++ b/content.tex
+@@ -396,7 +396,7 @@ \subsubsection{Virtqueue Re-enable}\label{sec:Basic Fac=
+ilities of a Virtio Devic
+=20
+ \input{packed-ring.tex}
+=20
+-\section{Driver Notifications} \label{sec:Virtqueues / Driver notification=
+s}
++\section{Driver Notifications} \label{sec:Basic Facilities of a Virtio Dev=
+ice / Driver notifications}
+ The driver is sometimes required to send an available buffer
+ notification to the device.
+=20
+@@ -1624,7 +1624,7 @@ \subsubsection{Available Buffer Notifications}\label{=
+sec:Virtio Transport Option
+ the following 32-bit value to the Queue Notify address:
+ \lstinputlisting{notifications-le.c}
+=20
+-See \ref{sec:Virtqueues / Driver notifications}~\nameref{sec:Virtqueues / =
+Driver notifications}
++See \ref{sec:Basic Facilities of a Virtio Device / Driver notifications}~\=
+nameref{sec:Basic Facilities of a Virtio Device / Driver notifications}
+ for the definition of the components.
+=20
+ See \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device L=
+ayout / Notification capability}
+@@ -1879,7 +1879,7 @@ \subsection{MMIO Device Register Layout}\label{sec:Vi=
+rtio Transport Options / Vi
+=20
+     \lstinputlisting{notifications-le.c}
+=20
+-    See \ref{sec:Virtqueues / Driver notifications}~\nameref{sec:Virtqueue=
+s / Driver notifications}
++    See \ref{sec:Basic Facilities of a Virtio Device / Driver notification=
+s}~\nameref{sec:Basic Facilities of a Virtio Device / Driver notifications}
+     for the definition of the components.
+   }
+   \hline=20
+@@ -2123,7 +2123,7 @@ \subsubsection{Available Buffer Notifications}\label{=
+sec:Virtio Transport Option
+ the following 32-bit value to \field{QueueNotify}:
+ \lstinputlisting{notifications-le.c}
+=20
+-See \ref{sec:Virtqueues / Driver notifications}~\nameref{sec:Virtqueues / =
+Driver notifications}
++See \ref{sec:Basic Facilities of a Virtio Device / Driver notifications}~\=
+nameref{sec:Basic Facilities of a Virtio Device / Driver notifications}
+ for the definition of the components.
+=20
+ \subsubsection{Notifications From The Device}\label{sec:Virtio Transport O=
+ptions / Virtio Over MMIO / MMIO-specific Initialization And Device Operati=
+on / Notifications From The Device}
+@@ -2845,7 +2845,7 @@ \subsubsection{Guest->Host Notification}\label{sec:Vi=
+rtio Transport Options / Vi
+ the value has the following format:
+ \lstinputlisting{notifications-be.c}
+=20
+-See \ref{sec:Virtqueues / Driver notifications}~\nameref{sec:Virtqueues / =
+Driver notifications}
++See \ref{sec:Basic Facilities of a Virtio Device / Driver notifications}~\=
+nameref{sec:Basic Facilities of a Virtio Device / Driver notifications}
+ for the definition of the components.
+=20
+ \devicenormative{\paragraph}{Guest->Host Notification}{Virtio Transport Op=
+tions / Virtio over channel I/O / Device Operation / Guest->Host Notificati=
+on}
+@@ -3091,12 +3091,12 @@ \chapter{Reserved Feature Bits}\label{sec:Reserved =
+Feature Bits}
+   \item[VIRTIO_F_NOTIFICATION_DATA(38)] This feature indicates
+   that the driver passes extra data (besides identifying the virtqueue)
+   in its device notifications.
+-  See \ref{sec:Virtqueues / Driver notifications}~\nameref{sec:Virtqueues =
+/ Driver notifications}.
++  See \ref{sec:Basic Facilities of a Virtio Device / Driver notifications}=
+~\nameref{sec:Basic Facilities of a Virtio Device / Driver notifications}.
+=20
+   \item[VIRTIO_F_NOTIF_CONFIG_DATA(39)] This feature indicates that the dr=
+iver
+   uses the data provided by the device as a virtqueue identifier in availa=
+ble
+   buffer notifications.
+-  As mentioned in section \ref{sec:Virtqueues / Driver notifications}, whe=
+n the
++  As mentioned in section \ref{sec:Basic Facilities of a Virtio Device / D=
+river notifications}, when the
+   driver is required to send an available buffer notification to the devic=
+e, it
+   sends the virtqueue number to be notified. The method of delivering
+   notifications is transport specific.
+--=20
+2.26.2
 
