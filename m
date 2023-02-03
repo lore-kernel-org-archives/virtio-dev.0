@@ -1,58 +1,64 @@
-Return-Path: <virtio-comment-return-4298-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-comment-return-3953-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio-comment@lists.oasis-open.org>
 List-Post: <mailto:virtio-comment@lists.oasis-open.org>
 List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
-Date: Thu, 16 Feb 2023 18:42:41 -0500
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20230216184217-mutt-send-email-mst@kernel.org>
-References: <20230216053457.414126-1-parav@nvidia.com>
- <87ttzm9gz0.fsf@redhat.com>
- <PH0PR12MB54812E87A2EE7C14D72C3FE2DCA09@PH0PR12MB5481.namprd12.prod.outlook.com>
+From: Parav Pandit <parav@nvidia.com>
+Date: Fri, 3 Feb 2023 22:16:14 +0200
+Message-ID: <20230203201620.107744-1-parav@nvidia.com>
 MIME-Version: 1.0
-In-Reply-To: <PH0PR12MB54812E87A2EE7C14D72C3FE2DCA09@PH0PR12MB5481.namprd12.prod.outlook.com>
-Subject: [virtio-comment] Re: [PATCH] changelog: Fix missing reference to driver notifications
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-To: Parav Pandit <parav@nvidia.com>
-Cc: Cornelia Huck <cohuck@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, Shahaf Shuler <shahafs@nvidia.com>
+Subject: [virtio-comment] [PATCH 0/6] Split transport specific files
+Content-Type: text/plain
+Content-Transfer-Encoding: quoted-printable
+To: mst@redhat.com, virtio-dev@lists.oasis-open.org, cohuck@redhat.com
+Cc: virtio-comment@lists.oasis-open.org, shahafs@nvidia.com, Parav Pandit <parav@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Thu, Feb 16, 2023 at 09:13:12PM +0000, Parav Pandit wrote:
-> 
-> > From: Cornelia Huck <cohuck@redhat.com>
-> > Sent: Thursday, February 16, 2023 3:01 AM
-> > 
-> > On Thu, Feb 16 2023, Parav Pandit <parav@nvidia.com> wrote:
-> > 
-> > > Cited commit in fixes tag missed to update the reference to drivers
-> > > notifications section in past change log.
-> > > Fix the reference.
-> > >
-> > > Fixes: be2ce1ee17e0 ("content.tex Fix Driver notifications label")
-> > > Signed-off-by: Parav Pandit <parav@nvidia.com>
-> > > ---
-> > >  cl-os.tex | 2 +-
-> > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > Does it really make sense to patch the changelog? This is about the
-> > 1.1->1.2 changes, and I'd assume it is only relevant for the released
-> > 1.2 spec. We'll replace the changelog anyway when we do the 1.3 release.
-> >
-> Right. I got it.
-> It should be fine to drop this patch.
-> I took a blind scan to make sure all the previous links exists now.
-> It isn't necessary from 1.2 to 1.3 as those entries will be removed as you say.
+Problem statement:
+Currently several tens of pages worth of transport specification
+is situated in single file. Many parts of the specification
+are already maintained in separate files.
 
-Right just post a patch to drop all of cl-os.tex.
+Such separate files enables better maintenance of the specification overall=
+.
 
-> > [Speaking of the 1.3 release, we really should be planning for it. Maybe target
-> > June or so, with a freeze in April?]
-> Very good point. Yes.
-> Not fully familiar yet, if its June end, may be May is alright too depending on changes in coming months.
-> I am sure you and Michael are better place to make this call.
+Solution:
+Follow the approach similar to rest of the spec, and keep
+transport specific spec in their individual files.
 
+This series is for fixing issue [1].
+
+[1] Fixes: https://github.com/oasis-tcs/virtio-spec/issues/157
+
+Please review.
+
+Patch summary:
+patch 1 moves pci transport to its own file
+patch 2 moves mmio transport to its own file
+patch 3 moves channel io transport to its own file
+patch 4 to 6 fixes spelling errors existed in the spec which are
+discovered during splitting the files
+
+Parav Pandit (6):
+  transport-pci: Split PCI transport to its own file
+  transport-mmio: Split MMIO transport to its own file
+  transport-channelio: Split Channel IO transport to its own file
+  transport-pci: Correct spelling errors
+  transport-mmio: Correct spelling errors
+  transport-channelio: Correct spelling errors
+
+ content.tex             | 2318 +--------------------------------------
+ transport-channelio.tex |  601 ++++++++++
+ transport-mmio.tex      |  552 ++++++++++
+ transport-pci.tex       | 1160 ++++++++++++++++++++
+ 4 files changed, 2316 insertions(+), 2315 deletions(-)
+ create mode 100644 transport-channelio.tex
+ create mode 100644 transport-mmio.tex
+ create mode 100644 transport-pci.tex
+
+--=20
+2.26.2
 
 
 This publicly archived list offers a means to provide input to the
@@ -67,7 +73,8 @@ Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
 List help: virtio-comment-help@lists.oasis-open.org
 List archive: https://lists.oasis-open.org/archives/virtio-comment/
 Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
-List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
+List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lis=
+ts
 Committee: https://www.oasis-open.org/committees/virtio/
 Join OASIS: https://www.oasis-open.org/join/
 
