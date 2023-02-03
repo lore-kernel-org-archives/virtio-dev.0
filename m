@@ -1,72 +1,99 @@
-Return-Path: <virtio-dev-return-10715-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-10702-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 2BFDD9862AE
-	for <virtio-dev@lists.oasis-open.org>; Sun,  5 Feb 2023 16:39:13 +0000 (UTC)
-Date: Sun, 5 Feb 2023 11:39:03 -0500
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20230205113759-mutt-send-email-mst@kernel.org>
-References: <20230205120801.1419067-1-alvaro.karsz@solid-run.com>
- <20230205151911.19678-1-alvaro.karsz@solid-run.com>
+	by lists.oasis-open.org (Postfix) with ESMTP id 86D82986763
+	for <virtio-dev@lists.oasis-open.org>; Fri,  3 Feb 2023 15:02:11 +0000 (UTC)
+Message-ID: <c20ee6cf-2aae-25ef-e97f-0e7fc3f9c5b6@opensynergy.com>
+Date: Fri, 3 Feb 2023 16:02:04 +0100
+References: <20220825134449.18803-1-harald.mommer@opensynergy.com>
+ <20220827093909.ag3zi7k525k4zuqq@pengutronix.de>
+ <40e3d678-b840-e780-c1da-367000724f69@opensynergy.com>
+ <c2c0ba34-2985-21ea-0809-b96a3aa5e401@siemens.com>
+ <36bb910c-4874-409b-ac71-d141cd1d8ecb@app.fastmail.com>
+From: Harald Mommer <hmo@opensynergy.com>
+In-Reply-To: <36bb910c-4874-409b-ac71-d141cd1d8ecb@app.fastmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20230205151911.19678-1-alvaro.karsz@solid-run.com>
-Subject: [virtio-dev] Re: [PATCH v2] virtio-net: Mention VIRTIO_NET_F_HASH_REPORT
- dependency on VIRTIO_NET_F_CTRL_VQ
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-To: Alvaro Karsz <alvaro.karsz@solid-run.com>
-Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, jasowang@redhat.com
+Subject: Re: [virtio-dev] Re: [RFC PATCH 1/1] can: virtio: Initial virtio CAN
+ driver.
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Arnd Bergmann <arnd@kernel.org>, Jan Kiszka <jan.kiszka@siemens.com>, Marc Kleine-Budde <mkl@pengutronix.de>, Harald Mommer <harald.mommer@opensynergy.com>
+Cc: virtio-dev@lists.oasis-open.org, linux-can@vger.kernel.org, Netdev <netdev@vger.kernel.org>, linux-kernel@vger.kernel.org, Wolfgang Grandegger <wg@grandegger.com>, "David S . Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, Dariusz Stojaczyk <Dariusz.Stojaczyk@opensynergy.com>, stratos-dev@op-lists.linaro.org, Matti Moell <Matti.Moell@opensynergy.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Sun, Feb 05, 2023 at 05:19:11PM +0200, Alvaro Karsz wrote:
-> If the VIRTIO_NET_F_HASH_REPORT feature is negotiated, the driver may
-> send VIRTIO_NET_CTRL_MQ_HASH_CONFIG commands, thus, the control VQ
-> feature should be negotiated.
-> 
-> ---
-> v2: Use SHOULD instead of Feature bit requirement, version 1.2 is already
->     out and doesn't include this depencency.
-> 
-> Signed-off-by: Alvaro Karsz <alvaro.karsz@solid-run.com>
-> 
->  device-types/net/description.tex | 5 +++++
->  1 file changed, 5 insertions(+)
-> 
-> diff --git a/device-types/net/description.tex b/device-types/net/description.tex
-> index 700a1cb..4270481 100644
-> --- a/device-types/net/description.tex
-> +++ b/device-types/net/description.tex
-> @@ -256,6 +256,9 @@ \subsection{Device configuration layout}\label{sec:Device Types / Network Device
->  \field{duplex} fields as long as VIRTIO_NET_S_LINK_UP is set in
->  the \field{status}.
->  
-> +The device SHOULD offer VIRTIO_NET_F_HASH_REPORT only if it offers
-> +VIRTIO_NET_F_CTRL_VQ as well.
-> +
+Hello,
 
-That only is confusing. Either say if A then B or if not A then not be.
+we had here at OpenSynergy an internal discussion about an open source 
+virtio-can device implementation.
 
->  \drivernormative{\subsubsection}{Device configuration layout}{Device Types / Network Device / Device configuration layout}
->  
->  A driver SHOULD negotiate VIRTIO_NET_F_MAC if the device offers it.
-> @@ -289,6 +292,8 @@ \subsection{Device configuration layout}\label{sec:Device Types / Network Device
->  SHOULD re-read \field{speed} and \field{duplex} after a
->  configuration change notification.
->  
-> +The driver SHOULD negotiate VIRTIO_NET_F_HASH_REPORT only if it negotiates VIRTIO_NET_F_CTRL_VQ.
-> +
+The outcome of this is now that an open source virtio-can device is to 
+be developed.
 
-Same.
+It has not yet been decided whether the open source device 
+implementation will be done using qemu or kvmtool (or something else?). 
+Negative or positive feedback for or against one of those is likely to 
+influence the decision what will be used as basis for the development. 
+Using kvmtool may be easier to do for me (to be investigated in detail) 
+but on the other hand we have some people around in the team who have 
+the knowledge to support with qemu.
 
->  \subsubsection{Legacy Interface: Device configuration layout}\label{sec:Device Types / Network Device / Device configuration layout / Legacy Interface: Device configuration layout}
->  \label{sec:Device Types / Block Device / Feature bits / Device configuration layout / Legacy Interface: Device configuration layout}
->  When using the legacy interface, transitional devices and drivers
-> -- 
-> 2.34.1
+
+On 04.11.22 18:03, Arnd Bergmann wrote:
+> On Fri, Nov 4, 2022, at 16:32, Jan Kiszka wrote:
+>> On 03.11.22 14:55, Harald Mommer wrote:
+>>> On 27.08.22 11:39, Marc Kleine-Budde wrote:
+>>>> Is there an Open Source implementation of the host side of this
+>>>> interface?
+>>> there is neither an open source device nor is it currently planned. The
+>>> device I'm developing is closed source.
+>> Likely not helpful long-term /wrt kernel QA - how should kernelci or
+>> others even have a chance to test the driver? Keep in mind that you are
+>> not proposing a specific driver for an Opensynergy hypervisor, rather
+>> for the open and vendor-agnostic virtio spec.
+>>
+>> But QEMU already supports both CAN and virtio, thus should be relatively
+>> easy to augment with this new device.
+> Agreed, either hooking into the qemu support, or having a separate
+> vhost-user backend that forwards data to the host stack would be
+> helpful here, in particular to see how the flow control works.
+
+What I would like to have is considering a CAN frame as sent when it was 
+sent on the bus (vs. given to the lower layers where it is only 
+scheduled for later transmission but not actually physically sent). This 
+behavior is enabled by feature flag VIRTIO_CAN_F_LATE_TX_ACK. But under 
+really heavy load conditions this does not work reliably. It looks like 
+the own transmitted frames are discarded sometimes in heavy overload.
+
+The reception of the own transmitted frames is used to trigger the state 
+transition from "TX pending" => "TX done" for a pending transmitted 
+frame in the device. So loosing those own transmitted frames leads to 
+the situation that "TX pending" frames stay in this state forever and 
+everything gets stuck quickly. So the feature flag 
+VIRTIO_CAN_F_LATE_TX_ACK is currently not usable reliably in Linux. 
+Either I need to find a good workaround or better a proper way to avoid 
+that any of those acknowledgement frames is lost ever. I've no good 
+solution found to cope with this yet.
+
+But without VIRTIO_CAN_F_LATE_TX_ACK there is also no working flow 
+control. Means I would like to see some day not only "how flow control 
+works" but also "that flow control works regardless how the CAN stack is 
+tortured".
+
+> IIRC when we discussed virtio-can on the stratos list, one of the
+> issues that was pointed out was filtering of frames for specific
+> CAN IDs in the host socketcan for assigning individual IDs to
+> separate guests.  It would be good to understand whether a generic
+> host implementation has the same problems, and what can be
+> done in socketcan to help with that.
+>
+>        Arnd
+>
+Harald
 
 
 ---------------------------------------------------------------------
