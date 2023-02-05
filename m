@@ -1,48 +1,53 @@
-Return-Path: <virtio-comment-return-3966-cohuck=redhat.com@lists.oasis-open.org>
-Sender: <virtio-comment@lists.oasis-open.org>
-List-Post: <mailto:virtio-comment@lists.oasis-open.org>
-List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
-MIME-Version: 1.0
-References: <20230111152123.148889-1-alvaro.karsz@solid-run.com>
- <PH0PR12MB5481A88FBABF45BC2736AC56DCC19@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20230116152504-mutt-send-email-mst@kernel.org> <PH0PR12MB548176D1EC760DB15826B08DDCC19@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20230116160634-mutt-send-email-mst@kernel.org> <CAJs=3_At3KQ0DvZ6P3bpZBvh9H3L5HHMeO-zq594dFG+MHA=bg@mail.gmail.com>
- <20230117101430-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20230117101430-mutt-send-email-mst@kernel.org>
+Return-Path: <virtio-dev-return-10711-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id 858339862CB
+	for <virtio-dev@lists.oasis-open.org>; Sun,  5 Feb 2023 12:08:08 +0000 (UTC)
 From: Alvaro Karsz <alvaro.karsz@solid-run.com>
-Date: Mon, 6 Feb 2023 10:10:55 +0200
-Message-ID: <CAJs=3_DJHcNyMTiG67KjE=mppEqjV0af37uytQ0Rby5Z-A_NxQ@mail.gmail.com>
-Subject: Re: [virtio-comment] Re: [virtio-dev] [PATCH v2] virtio_net: support
- low and high rate of notification coalescing
-Content-Type: text/plain; charset="UTF-8"
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Parav Pandit <parav@nvidia.com>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "jasowang@redhat.com" <jasowang@redhat.com>
+Date: Sun,  5 Feb 2023 14:08:01 +0200
+Message-Id: <20230205120801.1419067-1-alvaro.karsz@solid-run.com>
+MIME-Version: 1.0
+Subject: [virtio-dev] [PATCH] virtio-net: Mention that VIRTIO_NET_F_HASH_REPORT requires VIRTIO_NET_F_CTRL_VQ
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="US-ASCII"; x-default=true
+To: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+Cc: jasowang@redhat.com, mst@redhat.com, Alvaro Karsz <alvaro.karsz@solid-run.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Hi,
-I'm going to drop this patch and focus on a new patch to fix the
-existing notification coalescing feature, including:
-- Unifying the virtio_net_ctrl_coal structs.
-- Clarifying that the coalescing commands are best-effort.
-- Specifying coalescing in respect to delivering interrupts when config changes.
+If the VIRTIO_NET_F_HASH_REPORT feature is negotiated, the driver may
+send VIRTIO_NET_CTRL_MQ_HASH_CONFIG commands, thus, the control VQ
+feature must be negotiated.
 
-Thanks everyone for the comments.
+Signed-off-by: Alvaro Karsz <alvaro.karsz@solid-run.com>
+---
+ device-types/net/description.tex | 1 +
+ 1 file changed, 1 insertion(+)
 
-This publicly archived list offers a means to provide input to the
-OASIS Virtual I/O Device (VIRTIO) TC.
+diff --git a/device-types/net/description.tex b/device-types/net/descriptio=
+n.tex
+index 700a1cb..83cfe94 100644
+--- a/device-types/net/description.tex
++++ b/device-types/net/description.tex
+@@ -139,6 +139,7 @@ \subsubsection{Feature bit requirements}\label{sec:Devi=
+ce Types / Network Device
+ \item[VIRTIO_NET_F_NOTF_COAL] Requires VIRTIO_NET_F_CTRL_VQ.
+ \item[VIRTIO_NET_F_RSC_EXT] Requires VIRTIO_NET_F_HOST_TSO4 or VIRTIO_NET_=
+F_HOST_TSO6.
+ \item[VIRTIO_NET_F_RSS] Requires VIRTIO_NET_F_CTRL_VQ.
++\item[VIRTIO_NET_F_HASH_REPORT] Requires VIRTIO_NET_F_CTRL_VQ.
+ \end{description}
+=20
+ \subsubsection{Legacy Interface: Feature bits}\label{sec:Device Types / Ne=
+twork Device / Feature bits / Legacy Interface: Feature bits}
+--=20
+2.34.1
 
-In order to verify user consent to the Feedback License terms and
-to minimize spam in the list archive, subscription is required
-before posting.
 
-Subscribe: virtio-comment-subscribe@lists.oasis-open.org
-Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
-List help: virtio-comment-help@lists.oasis-open.org
-List archive: https://lists.oasis-open.org/archives/virtio-comment/
-Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
-List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
-Committee: https://www.oasis-open.org/committees/virtio/
-Join OASIS: https://www.oasis-open.org/join/
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
