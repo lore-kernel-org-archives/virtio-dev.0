@@ -1,175 +1,48 @@
-Return-Path: <parav@nvidia.com>
-From: Parav Pandit <parav@nvidia.com>
-Subject: RE: [PATCH v6] virtio-net: Avoid confusion between a card and a
- device
-Date: Mon, 6 Feb 2023 20:12:34 +0000
-Message-ID: <PH0PR12MB548197C51576FED082B4CE44DCDA9@PH0PR12MB5481.namprd12.prod.outlook.com>
-References: <20230123170645.1141842-1-parav@nvidia.com>
- <PH0PR12MB5481C9E9030566EF839F33CBDCD79@PH0PR12MB5481.namprd12.prod.outlook.com>
-In-Reply-To: <PH0PR12MB5481C9E9030566EF839F33CBDCD79@PH0PR12MB5481.namprd12.prod.outlook.com>
+Return-Path: <virtio-comment-return-3966-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-comment@lists.oasis-open.org>
+List-Post: <mailto:virtio-comment@lists.oasis-open.org>
+List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
 MIME-Version: 1.0
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-To: "mst@redhat.com" <mst@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "cohuck@redhat.com" <cohuck@redhat.com>, "pasic@linux.ibm.com" <pasic@linux.ibm.com>, "jasowang@redhat.com" <jasowang@redhat.com>
-Cc: "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, Shahaf Shuler <shahafs@nvidia.com>
+References: <20230111152123.148889-1-alvaro.karsz@solid-run.com>
+ <PH0PR12MB5481A88FBABF45BC2736AC56DCC19@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20230116152504-mutt-send-email-mst@kernel.org> <PH0PR12MB548176D1EC760DB15826B08DDCC19@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20230116160634-mutt-send-email-mst@kernel.org> <CAJs=3_At3KQ0DvZ6P3bpZBvh9H3L5HHMeO-zq594dFG+MHA=bg@mail.gmail.com>
+ <20230117101430-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20230117101430-mutt-send-email-mst@kernel.org>
+From: Alvaro Karsz <alvaro.karsz@solid-run.com>
+Date: Mon, 6 Feb 2023 10:10:55 +0200
+Message-ID: <CAJs=3_DJHcNyMTiG67KjE=mppEqjV0af37uytQ0Rby5Z-A_NxQ@mail.gmail.com>
+Subject: Re: [virtio-comment] Re: [virtio-dev] [PATCH v2] virtio_net: support
+ low and high rate of notification coalescing
+Content-Type: text/plain; charset="UTF-8"
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: Parav Pandit <parav@nvidia.com>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "jasowang@redhat.com" <jasowang@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+Hi,
+I'm going to drop this patch and focus on a new patch to fix the
+existing notification coalescing feature, including:
+- Unifying the virtio_net_ctrl_coal structs.
+- Clarifying that the coalescing commands are best-effort.
+- Specifying coalescing in respect to delivering interrupts when config changes.
 
-> From: Parav Pandit
-> Sent: Friday, February 3, 2023 8:46 AM
->=20
-> Hi Michael,
->=20
-> > From: Parav Pandit <parav@nvidia.com>
-> > Sent: Monday, January 23, 2023 12:07 PM
-> > To: mst@redhat.com; virtio-dev@lists.oasis-open.org;
-> > cohuck@redhat.com; pasic@linux.ibm.com; jasowang@redhat.com
-> > Cc: virtio-comment@lists.oasis-open.org; Shahaf Shuler
-> > <shahafs@nvidia.com>; Parav Pandit <parav@nvidia.com>
-> > Subject: [PATCH v6] virtio-net: Avoid confusion between a card and a
-> > device
-> >
-> > Historically virtio network device is documented as an Ethernet card.
-> > A modern card in the industry has one to multiple ports, one to
-> > multiple PCI functions. However the virtio network device is usually
-> > just a single link/port network interface controller.
-> >
-> > Hence, avoid this confusing term 'card' and align the specification to
-> > adhere to widely used specification term as 'device' used for all virti=
-o device
-> types.
-> >
-> > Replaced 'card' with 'network interface controller'.
-> >
-> > Fixes: https://github.com/oasis-tcs/virtio-spec/issues/154
-> > Signed-off-by: Parav Pandit <parav@nvidia.com>
-> > ---
-> > This patch is on top of change [1].
-> >
-> > [1]
-> > https://lists.oasis-open.org/archives/virtio-dev/202301/msg00210.html
->=20
-> This is due many days now.
-> I have also addressed the comment of Halil.
-> Other patches depend on this change, and they need to progress too.
-> This was reviewed by Jason Wang before. I dropped the Jason's reviewed-by=
- tag
-> due to one change in the wording.
->=20
-> Can you please initiate the voting?
+Thanks everyone for the comments.
 
-Michael,
-Can you please initiate voting?
+This publicly archived list offers a means to provide input to the
+OASIS Virtual I/O Device (VIRTIO) TC.
 
->=20
-> > ---
-> > changelog:
-> > v5->v6:
-> > - fixed 'consist' to 'consists'
-> > v4->v5:
-> > - replaced 'network card' with 'device' in the device initialization
-> >   section description
-> > - net device checksum feature bit description updated
-> > - rename card to network interface controller
-> > v3->v4:
-> > - rebased to new directory name
-> > v2->v3:
-> > - rebased to new file name
-> > v1->v2:
-> > - adapt to new file path
-> > v0->v1:
-> > - removed device word twice
-> > - corrected grammar for changing from card to device
-> > ---
-> >  content.tex                      |  6 +++---
-> >  device-types/net/description.tex | 22 +++++++++++-----------
-> >  2 files changed, 14 insertions(+), 14 deletions(-)
-> >
-> > diff --git a/content.tex b/content.tex index 0118b8a..df5ce16 100644
-> > --- a/content.tex
-> > +++ b/content.tex
-> > @@ -619,7 +619,7 @@ \subsection{PCI Device Discovery}\label{sec:Virtio
-> > Transport Options / Virtio Ov  \hline
-> >  Transitional PCI Device ID  &  Virtio Device    \\
-> >  \hline \hline
-> > -0x1000      &   network card     \\
-> > +0x1000      &   network device     \\
-> >  \hline
-> >  0x1001     &   block device     \\
-> >  \hline
-> > @@ -635,7 +635,7 @@ \subsection{PCI Device Discovery}\label{sec:Virtio
-> > Transport Options / Virtio Ov  \hline  \end{tabular}
-> >
-> > -For example, the network card device with the Virtio Device ID 1
-> > +For example, the network device with the Virtio Device ID 1
-> >  has the PCI Device ID 0x1041 or the Transitional PCI Device ID 0x1000.
-> >
-> >  The PCI Subsystem Vendor ID and the PCI Subsystem Device ID MAY
-> > reflect @@ -2912,7 +2912,7 @@ \chapter{Device Types}\label{sec:Device
-> > Types} \hline \hline
-> >  0          & reserved (invalid) \\
-> >  \hline
-> > -1          &   network card     \\
-> > +1          &   network device     \\
-> >  \hline
-> >  2          &   block device     \\
-> >  \hline
-> > diff --git a/device-types/net/description.tex
-> > b/device-types/net/description.tex
-> > index d3f9b52..e1341e6 100644
-> > --- a/device-types/net/description.tex
-> > +++ b/device-types/net/description.tex
-> > @@ -1,13 +1,14 @@
-> >  \section{Network Device}\label{sec:Device Types / Network Device}
-> >
-> > -The virtio network device is a virtual ethernet card, and is the
-> > -most complex of the devices supported so far by virtio. It has
-> > -enhanced rapidly and demonstrates clearly how support for new
-> > -features are added to an existing device. Empty buffers are -placed
-> > in one virtqueue for receiving packets, and outgoing -packets are enque=
-ued
-> into another for transmission in that order.
-> > -A third command queue is used to control advanced filtering -features.
-> > +The virtio network device is a virtual network interface controller.
-> > +It consists of a virtual Ethernet link which connects the device to
-> > +the Ethernet network. It is the most complex of the devices supported
-> > +so far by virtio. It has enhanced rapidly and demonstrates clearly
-> > +how support for new features are added to an existing device. Empty
-> > +buffers are placed in one virtqueue for receiving packets, and
-> > +outgoing packets are enqueued into another for transmission in that
-> > +order. A third command queue is used to control advanced filtering
-> features.
-> >
-> >  \subsection{Device ID}\label{sec:Device Types / Network Device /
-> > Device ID}
-> >
-> > @@ -32,8 +33,7 @@ \subsection{Virtqueues}\label{sec:Device Types /
-> > Network Device / Virtqueues}  \subsection{Feature
-> > bits}\label{sec:Device Types / Network Device / Feature bits}
-> >
-> >  \begin{description}
-> > -\item[VIRTIO_NET_F_CSUM (0)] Device handles packets with partial
-> > checksum.   This
-> > -  ``checksum offload'' is a common feature on modern network cards.
-> > +\item[VIRTIO_NET_F_CSUM (0)] Device handles packets with partial
-> > +checksum
-> > offload.
-> >
-> >  \item[VIRTIO_NET_F_GUEST_CSUM (1)] Driver handles packets with
-> > partial checksum.
-> >
-> > @@ -323,7 +323,7 @@ \subsection{Device
-> > Initialization}\label{sec:Device Types / Network Device / Dev
-> >
-> >  \item If the VIRTIO_NET_F_MAC feature bit is set, the configuration
-> >    space \field{mac} entry indicates the ``physical'' address of the
-> > -  network card, otherwise the driver would typically generate a
-> > random
-> > +  device, otherwise the driver would typically generate a random
-> >    local MAC address.
-> >
-> >  \item If the VIRTIO_NET_F_STATUS feature bit is negotiated, the link
-> > --
-> > 2.26.2
+In order to verify user consent to the Feedback License terms and
+to minimize spam in the list archive, subscription is required
+before posting.
+
+Subscribe: virtio-comment-subscribe@lists.oasis-open.org
+Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
+List help: virtio-comment-help@lists.oasis-open.org
+List archive: https://lists.oasis-open.org/archives/virtio-comment/
+Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
+List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
+Committee: https://www.oasis-open.org/committees/virtio/
+Join OASIS: https://www.oasis-open.org/join/
 
