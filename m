@@ -1,60 +1,74 @@
-Return-Path: <virtio-comment-return-4045-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-comment-return-4010-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio-comment@lists.oasis-open.org>
 List-Post: <mailto:virtio-comment@lists.oasis-open.org>
 List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
-Date: Wed, 8 Feb 2023 09:44:12 -0500
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20230208094330-mutt-send-email-mst@kernel.org>
+Message-ID: <1675823233.0015643-3-xuanzhuo@linux.alibaba.com>
+Date: Wed, 8 Feb 2023 10:27:13 +0800
+From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 References: <20230207111634.75542-1-hengqi@linux.alibaba.com>
  <20230207090019-mutt-send-email-mst@kernel.org>
  <1675820731.3018508-1-xuanzhuo@linux.alibaba.com>
  <PH0PR12MB54810448CDA1F3A21B283AF1DCD89@PH0PR12MB5481.namprd12.prod.outlook.com>
- <1675823090.089496-2-xuanzhuo@linux.alibaba.com>
- <PH0PR12MB5481EF640830788A2B6D62D2DCD89@PH0PR12MB5481.namprd12.prod.outlook.com>
- <3a1dbf6f-48ab-1eba-7f31-27e782a7ff12@linux.alibaba.com>
- <20230208091334-mutt-send-email-mst@kernel.org>
- <PH0PR12MB5481B432271067C449CB7725DCD89@PH0PR12MB5481.namprd12.prod.outlook.com>
-MIME-Version: 1.0
-In-Reply-To: <PH0PR12MB5481B432271067C449CB7725DCD89@PH0PR12MB5481.namprd12.prod.outlook.com>
-Subject: Re: [virtio-comment] [PATCH] virtio-net: support per-queue
- coalescing moderation
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+In-Reply-To: <PH0PR12MB54810448CDA1F3A21B283AF1DCD89@PH0PR12MB5481.namprd12.prod.outlook.com>
+Subject: Re: RE: [virtio-comment] [PATCH] virtio-net: support per-queue coalescing moderation
+Content-Type: text/plain; charset="US-ASCII"; x-default=true
 To: Parav Pandit <parav@nvidia.com>
-Cc: Heng Qi <hengqi@linux.alibaba.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>, "virtio-comment @ lists . oasis-open . org" <virtio-comment@lists.oasis-open.org>, "virtio-dev @ lists . oasis-open . org" <virtio-dev@lists.oasis-open.org>, Jason Wang <jasowang@redhat.com>, Alvaro Karsz <alvaro.karsz@solid-run.com>
+Cc: "virtio-comment @ lists . oasis-open . org" <virtio-comment@lists.oasis-open.org>, "virtio-dev @ lists . oasis-open .  org" <virtio-dev@lists.oasis-open.org>, Jason Wang <jasowang@redhat.com>, Alvaro Karsz <alvaro.karsz@solid-run.com>, Heng Qi <hengqi@linux.alibaba.com>, "Michael S. Tsirkin" <mst@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, Feb 08, 2023 at 02:37:55PM +0000, Parav Pandit wrote:
-> 
-> > From: Michael S. Tsirkin <mst@redhat.com>
-> > Sent: Wednesday, February 8, 2023 9:18 AM
-> > 
-> > On Wed, Feb 08, 2023 at 07:30:34PM +0800, Heng Qi wrote:
-> > > > I see two options.
-> > > > 1. Just have per VQ params. Software has the full knowledge of in which it is
-> > operating, and state remains at software level.
-> > > > This effectively achieves both the mode.
+On Wed, 8 Feb 2023 02:20:27 +0000, Parav Pandit <parav@nvidia.com> wrote:
+>
+> > From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> > Sent: Tuesday, February 7, 2023 8:46 PM
+> >
+> > On Tue, 7 Feb 2023 09:06:19 -0500, "Michael S. Tsirkin" <mst@redhat.com>
+> > wrote:
+> > > On Tue, Feb 07, 2023 at 07:16:34PM +0800, Heng Qi wrote:
+> > > > Currently, the coalescing profile is directly applied to all queues.
+> > > > This patch supports configuring the parameters for a specified queue.
 > > > >
-> > > > 2. Have a mode cmd,
-> > > > Mode = (a) per device or (b) per VQ (c) disable After the mode is
-> > > > set, driver can set per device or per VQ.
+> > > > When the traffic between queues is unbalanced, for example, one
+> > > > queue is busy and another queue is idle, then it will be very useful
+> > > > to control coalescing parameters at the queue granularity.
 > > >
-> > > I find this more clear.
+> > > ethtool does not support this though, does it? what's the plan?
+> >
+> >
+> > Although it can be done, I think it is difficult to let users use ethtool to modify
+> > the parameters of each queue.
+> >
+> > At present ethtool supports adaptive-rx/adaptive-tx. This is that the driver
+> > automatically adapted to the appropriate parameter. Generally, it is
+> > implemented using netdim in the driver. At this time, this interface is needed.
+> >
 > > >
-> > > Thanks.
+> > > > Signed-off-by: Heng Qi <hengqi@linux.alibaba.com>
+> > > > Reviewed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 > > >
-> > 
-> > Rereading this I think I misunderstood the proposal.
-> > Now we are burning memory on maintaining mode, and this information is
-> > duplicated.
-> > 
-> It is not maintained in the pci resident memory, so it doesn't hurt.
+> > > What I dislike about this interface is that if
+> > > VIRTIO_NET_F_PERQUEUE_NOTF_COAL is negotiated, then in the common
+> > case
+> > > of same parameters for all queues driver has to issue multiple
+> > > commands.
+> > > I can see either a special vq index (0xffff ?) or a special command
+> > > used to set it for all queues.
+> >
+> > Although the structure is very similar, in fact, adding a new command may be
+> > clearer.
+>
+> O(N) loop is not that bad when user want to issue change it per device, as this is something done very often.
 
-It can't reasonably be read from RAM at each packet, you need to cache it
-in memory.
+Considering the software device, I think that sending too many commands in a row
+may not be particularly friendly. I still want to retain global config.
 
+
+> Once per VQ is supported, driver may just use the default net-dim to have best out of box experience, whenever device supports it.
+
+I agree.
+
+Thanks.
 
 This publicly archived list offers a means to provide input to the
 OASIS Virtual I/O Device (VIRTIO) TC.
