@@ -1,47 +1,125 @@
-Return-Path: <virtio-dev-return-10797-cohuck=redhat.com@lists.oasis-open.org>
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-From: Parav Pandit <parav@nvidia.com>
-Date: Wed, 8 Feb 2023 13:52:52 +0000
-Message-ID: <PH0PR12MB54816D252CCF262048F15F42DCD89@PH0PR12MB5481.namprd12.prod.outlook.com>
+Return-Path: <virtio-comment-return-4029-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-comment@lists.oasis-open.org>
+List-Post: <mailto:virtio-comment@lists.oasis-open.org>
+List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
+Message-ID: <3a1dbf6f-48ab-1eba-7f31-27e782a7ff12@linux.alibaba.com>
+Date: Wed, 8 Feb 2023 19:30:34 +0800
+MIME-Version: 1.0
 References: <20230207111634.75542-1-hengqi@linux.alibaba.com>
  <20230207090019-mutt-send-email-mst@kernel.org>
  <1675820731.3018508-1-xuanzhuo@linux.alibaba.com>
  <PH0PR12MB54810448CDA1F3A21B283AF1DCD89@PH0PR12MB5481.namprd12.prod.outlook.com>
  <1675823090.089496-2-xuanzhuo@linux.alibaba.com>
  <PH0PR12MB5481EF640830788A2B6D62D2DCD89@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20230208050439-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20230208050439-mutt-send-email-mst@kernel.org>
-MIME-Version: 1.0
-Subject: [virtio-dev] RE: RE: [virtio-comment] [PATCH] virtio-net: support per-queue
- coalescing moderation
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
+From: Heng Qi <hengqi@linux.alibaba.com>
+In-Reply-To: <PH0PR12MB5481EF640830788A2B6D62D2DCD89@PH0PR12MB5481.namprd12.prod.outlook.com>
+Subject: Re: [virtio-comment] [PATCH] virtio-net: support per-queue coalescing
+ moderation
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: quoted-printable
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Xuan Zhuo <xuanzhuo@linux.alibaba.com>, "virtio-comment @ lists .
- oasis-open . org" <virtio-comment@lists.oasis-open.org>, "virtio-dev @ lists
- . oasis-open . org" <virtio-dev@lists.oasis-open.org>, Jason Wang <jasowang@redhat.com>, Alvaro Karsz <alvaro.karsz@solid-run.com>, Heng Qi <hengqi@linux.alibaba.com>
+To: Parav Pandit <parav@nvidia.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Cc: "virtio-comment @ lists . oasis-open . org" <virtio-comment@lists.oasis-open.org>, "virtio-dev @ lists . oasis-open . org" <virtio-dev@lists.oasis-open.org>, Jason Wang <jasowang@redhat.com>, Alvaro Karsz <alvaro.karsz@solid-run.com>, "Michael S. Tsirkin" <mst@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
 
-> From: Michael S. Tsirkin <mst@redhat.com>
-> Sent: Wednesday, February 8, 2023 5:07 AM
-> >
-> > 2. Have a mode cmd,
-> > Mode =3D (a) per device or (b) per VQ (c) disable After the mode is set=
-,
-> > driver can set per device or per VQ.
->=20
-> I like 2 better.  I also think a and b are enough. c can be achieved thro=
-ugh a.
->
-Yep. (c) is just to indicate that its disabled via the mode in a command.
 
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+=E5=9C=A8 2023/2/8 =E4=B8=8A=E5=8D=8810:43, Parav Pandit =E5=86=99=E9=81=93=
+:
+>> From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+>> Sent: Tuesday, February 7, 2023 9:25 PM
+>>
+>> On Wed, 8 Feb 2023 02:20:27 +0000, Parav Pandit <parav@nvidia.com> wrote=
+:
+>>>> From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+>>>> Sent: Tuesday, February 7, 2023 8:46 PM
+>>>>
+>>>> On Tue, 7 Feb 2023 09:06:19 -0500, "Michael S. Tsirkin"
+>>>> <mst@redhat.com>
+>>>> wrote:
+>>>>> On Tue, Feb 07, 2023 at 07:16:34PM +0800, Heng Qi wrote:
+>>>>>> Currently, the coalescing profile is directly applied to all queues.
+>>>>>> This patch supports configuring the parameters for a specified queue=
+.
+>>>>>>
+>>>>>> When the traffic between queues is unbalanced, for example, one
+>>>>>> queue is busy and another queue is idle, then it will be very
+>>>>>> useful to control coalescing parameters at the queue granularity.
+>>>>> ethtool does not support this though, does it? what's the plan?
+>>>>
+>>>> Although it can be done, I think it is difficult to let users use
+>>>> ethtool to modify the parameters of each queue.
+>>>>
+>>>> At present ethtool supports adaptive-rx/adaptive-tx. This is that
+>>>> the driver automatically adapted to the appropriate parameter.
+>>>> Generally, it is implemented using netdim in the driver. At this time,=
+ this
+>> interface is needed.
+>>>>>> Signed-off-by: Heng Qi <hengqi@linux.alibaba.com>
+>>>>>> Reviewed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+>>>>> What I dislike about this interface is that if
+>>>>> VIRTIO_NET_F_PERQUEUE_NOTF_COAL is negotiated, then in the
+>> common
+>>>> case
+>>>>> of same parameters for all queues driver has to issue multiple
+>>>>> commands.
+>>>>> I can see either a special vq index (0xffff ?) or a special
+>>>>> command used to set it for all queues.
+>>>> Although the structure is very similar, in fact, adding a new
+>>>> command may be clearer.
+>>> O(N) loop is not that bad when user want to issue change it per device,=
+ as this
+>> is something done very often.
+>>> Once per VQ is supported, driver may just use the default net-dim to ha=
+ve
+>> best out of box experience, whenever device supports it.
+>>
+>>
+>> So you mean, we only support the parameters based on Per-Queue. My
+>> original idea is to support two methods at the same time.
+> Yes, if we want to support both the modes, that better to have such comma=
+nd.
+> Because otherwise the device implementation is bit clumsy which needs to =
+do the guess work.
+
+I think whether it is a per-queue parameters or a per-device parameters,=20
+the latter should override the first, because we didn't make too many=20
+guesses about which is more important.
+
+>
+> Better to avoid such complexity in device around implicit and confusing b=
+ehavior.
+>
+> I see two options.
+> 1. Just have per VQ params. Software has the full knowledge of in which i=
+t is operating, and state remains at software level.
+> This effectively achieves both the mode.
+>
+> 2. Have a mode cmd,
+> Mode =3D (a) per device or (b) per VQ (c) disable
+> After the mode is set, driver can set per device or per VQ.
+
+I find this more clear.
+
+Thanks.
+
+
+
+This publicly archived list offers a means to provide input to the
+OASIS Virtual I/O Device (VIRTIO) TC.
+
+In order to verify user consent to the Feedback License terms and
+to minimize spam in the list archive, subscription is required
+before posting.
+
+Subscribe: virtio-comment-subscribe@lists.oasis-open.org
+Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
+List help: virtio-comment-help@lists.oasis-open.org
+List archive: https://lists.oasis-open.org/archives/virtio-comment/
+Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
+List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lis=
+ts
+Committee: https://www.oasis-open.org/committees/virtio/
+Join OASIS: https://www.oasis-open.org/join/
 
