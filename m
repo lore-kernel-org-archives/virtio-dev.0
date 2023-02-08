@@ -1,12 +1,10 @@
-Return-Path: <parav@nvidia.com>
-From: Parav Pandit <parav@nvidia.com>
-Subject: RE: [virtio-comment] RE: [virtio-dev] Re: [virtio-comment] Re: [PATCH
- v7] virtio-net: support inner header hash
-Date: Wed, 8 Feb 2023 14:05:52 +0000
-Message-ID: <PH0PR12MB54813DBBE112FC0E35B59E67DCD89@PH0PR12MB5481.namprd12.prod.outlook.com>
-References: <20230111042905-mutt-send-email-mst@kernel.org>
- <20230116080106.GA114763@h68b04307.sqa.eu95>
- <f7e5a6c8-ad4c-c60c-2d9e-cd64f6fdd90e@redhat.com>
+Return-Path: <mst@redhat.com>
+Date: Wed, 8 Feb 2023 09:10:09 -0500
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Subject: Re: [virtio-comment] RE: [virtio-dev] Re: [virtio-comment] Re:
+ [PATCH v7] virtio-net: support inner header hash
+Message-ID: <20230208090936-mutt-send-email-mst@kernel.org>
+References: <f7e5a6c8-ad4c-c60c-2d9e-cd64f6fdd90e@redhat.com>
  <20230131052834.GA34480@h68b04307.sqa.eu95>
  <5bee268d-a0dc-d649-4174-7b211a49e2f0@linux.alibaba.com>
  <PH0PR12MB5481CA073B96CC2828F8AA15DCD89@PH0PR12MB5481.namprd12.prod.outlook.com>
@@ -15,95 +13,93 @@ References: <20230111042905-mutt-send-email-mst@kernel.org>
  <20230208082210-mutt-send-email-mst@kernel.org>
  <PH0PR12MB5481A88AC7D4CA548F95FA95DCD89@PH0PR12MB5481.namprd12.prod.outlook.com>
  <20230208083938-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20230208083938-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB54813DBBE112FC0E35B59E67DCD89@PH0PR12MB5481.namprd12.prod.outlook.com>
 MIME-Version: 1.0
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-To: "Michael S. Tsirkin" <mst@redhat.com>
+In-Reply-To: <PH0PR12MB54813DBBE112FC0E35B59E67DCD89@PH0PR12MB5481.namprd12.prod.outlook.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+To: Parav Pandit <parav@nvidia.com>
 Cc: Heng Qi <hengqi@linux.alibaba.com>, Jason Wang <jasowang@redhat.com>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Yuri Benditovich <yuri.benditovich@daynix.com>, Cornelia Huck <cohuck@redhat.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-> From: Michael S. Tsirkin <mst@redhat.com>
-> Sent: Wednesday, February 8, 2023 8:52 AM
->=20
-> On Wed, Feb 08, 2023 at 01:38:36PM +0000, Parav Pandit wrote:
-> >
-> > > From: Michael S. Tsirkin <mst@redhat.com>
-> > > Sent: Wednesday, February 8, 2023 8:32 AM
+On Wed, Feb 08, 2023 at 02:05:52PM +0000, Parav Pandit wrote:
+> > From: Michael S. Tsirkin <mst@redhat.com>
+> > Sent: Wednesday, February 8, 2023 8:52 AM
+> > 
+> > On Wed, Feb 08, 2023 at 01:38:36PM +0000, Parav Pandit wrote:
 > > >
-> > > On Wed, Feb 08, 2023 at 05:18:32AM +0000, Parav Pandit wrote:
-> > > > > From: Heng Qi <hengqi@linux.alibaba.com>
-> > > > > Sent: Tuesday, February 7, 2023 10:25 PM
+> > > > From: Michael S. Tsirkin <mst@redhat.com>
+> > > > Sent: Wednesday, February 8, 2023 8:32 AM
 > > > >
-> > > > [..]
-> > > > > >>
-> > > > > >> Do you think we need both hash_types and hash_tunnel_types?
-> > > > > > In struct virtio_net_config we need two fields.
-> > > > > > a. supported_hash_types (already exists) b.
-> > > > > > supported_hash_tunnel_type
-> > > > > > -> bitmap indicating for which outer headers, inner hash
-> > > > > > -> calculation is
-> > > > > supported.
+> > > > On Wed, Feb 08, 2023 at 05:18:32AM +0000, Parav Pandit wrote:
+> > > > > > From: Heng Qi <hengqi@linux.alibaba.com>
+> > > > > > Sent: Tuesday, February 7, 2023 10:25 PM
 > > > > >
-> > > > > Thanks for the suggestion, we seem to have reached an agreement.
-> > > > >
+> > > > > [..]
+> > > > > > >>
+> > > > > > >> Do you think we need both hash_types and hash_tunnel_types?
+> > > > > > > In struct virtio_net_config we need two fields.
+> > > > > > > a. supported_hash_types (already exists) b.
+> > > > > > > supported_hash_tunnel_type
+> > > > > > > -> bitmap indicating for which outer headers, inner hash
+> > > > > > > -> calculation is
+> > > > > > supported.
 > > > > > >
-> > > > > > In struct virtio_net_hdr we need two fields.
-> > > > > > a. hash_report (already exists) b. hash_tunnel_type 8 bits ->
-> > > > > > absolute value indicating which outer header
-> > > > > exists when inner header hash calculated.
-> > > > > > You already have it in your patch named as hash_report_tunnel.
-> > > > > > May be better to name as hash_report_tunnel_type to make it
-> > > > > > clearer that its
-> > > > > type.
+> > > > > > Thanks for the suggestion, we seem to have reached an agreement.
+> > > > > >
+> > > > > > >
+> > > > > > > In struct virtio_net_hdr we need two fields.
+> > > > > > > a. hash_report (already exists) b. hash_tunnel_type 8 bits ->
+> > > > > > > absolute value indicating which outer header
+> > > > > > exists when inner header hash calculated.
+> > > > > > > You already have it in your patch named as hash_report_tunnel.
+> > > > > > > May be better to name as hash_report_tunnel_type to make it
+> > > > > > > clearer that its
+> > > > > > type.
+> > > > > >
+> > > > > > Sure.
+> > > > > >
+> > > > > > Thanks for your reply.
 > > > > >
-> > > > > Sure.
-> > > > >
-> > > > > Thanks for your reply.
+> > > > > I had one last question. Why do we need to inform the
+> > > > hash_report_tunnel_type of the outer header in the virtio_net_hdr?
+> > > > > Is this for debug? Or is there a use case that will process this value?
 > > > >
-> > > > I had one last question. Why do we need to inform the
-> > > hash_report_tunnel_type of the outer header in the virtio_net_hdr?
-> > > > Is this for debug? Or is there a use case that will process this va=
-lue?
+> > > > Well we have hash_report which is kind of similar (and also kind of
+> > > > pointless but I think it's there because WHQL wants it).
+> > > Hash_report is useful. It tells hash_value is in which namespace (ipv4-tcp/ipv4
+> > udp etc).
+> > > OS can use this value to find tcp connection in a given namespace.
 > > >
-> > > Well we have hash_report which is kind of similar (and also kind of
-> > > pointless but I think it's there because WHQL wants it).
-> > Hash_report is useful. It tells hash_value is in which namespace (ipv4-=
-tcp/ipv4
-> udp etc).
-> > OS can use this value to find tcp connection in a given namespace.
-> >
-> > > Maybe we can steal some bits
-> > > from there instead of a new field?
-> > >
-> > I do not have problem adding extra bits. I just don't find that just te=
-lling that
-> its vxlan or nvgre to the OS is useful.
-> > If OS needs to know about outer header details, it needs to know the VN=
-I
-> information than just telling vxlan.
->=20
-> This does make sense.
->=20
->=20
-> > >
-> > > I have a follow up question though: are we only hashing the inner
-> > > header or both inner and outer header? Somewhat confused on this.
-> > >
-> > I understood as inner header. But worth to describe it. May be there. N=
-eed to
-> read v8 patch.
->=20
-> Hmm. I just realized that there's a security problem with hashing just th=
-e inner
-> header: it allow users inside the tunnel control queueing outside.
-> By observing packet loss some information leaks between tunnels.
->=20
-Ah I know now.
-We are leaking outer header information inside the virtio net hdr, and oute=
-r header might be already stripped off by a different entity.
+> > > > Maybe we can steal some bits
+> > > > from there instead of a new field?
+> > > >
+> > > I do not have problem adding extra bits. I just don't find that just telling that
+> > its vxlan or nvgre to the OS is useful.
+> > > If OS needs to know about outer header details, it needs to know the VNI
+> > information than just telling vxlan.
+> > 
+> > This does make sense.
+> > 
+> > 
+> > > >
+> > > > I have a follow up question though: are we only hashing the inner
+> > > > header or both inner and outer header? Somewhat confused on this.
+> > > >
+> > > I understood as inner header. But worth to describe it. May be there. Need to
+> > read v8 patch.
+> > 
+> > Hmm. I just realized that there's a security problem with hashing just the inner
+> > header: it allow users inside the tunnel control queueing outside.
+> > By observing packet loss some information leaks between tunnels.
+> > 
+> Ah I know now.
+> We are leaking outer header information inside the virtio net hdr, and outer header might be already stripped off by a different entity.
+> 
+> I think the use case here is it's the same sw entity that owns the virtio net device does the encap/decap too.
 
-I think the use case here is it's the same sw entity that owns the virtio n=
-et device does the encap/decap too.
+No not exactly, we are leaking info between encap tunnels.
+
+-- 
+MST
 
