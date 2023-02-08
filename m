@@ -1,9 +1,9 @@
-Return-Path: <hengqi@linux.alibaba.com>
-Message-ID: <98ffa453-7a76-9afc-1861-8c46efef4705@linux.alibaba.com>
-Date: Wed, 8 Feb 2023 14:11:13 +0800
-MIME-Version: 1.0
-Subject: Re: [virtio-dev] Re: [virtio-comment] Re: [PATCH v7] virtio-net:
+Return-Path: <parav@nvidia.com>
+From: Parav Pandit <parav@nvidia.com>
+Subject: RE: [virtio-dev] Re: [virtio-comment] Re: [PATCH v7] virtio-net:
  support inner header hash
+Date: Wed, 8 Feb 2023 12:21:43 +0000
+Message-ID: <PH0PR12MB54817A1F42DAB9C24D0B73B2DCD89@PH0PR12MB5481.namprd12.prod.outlook.com>
 References: <20230104071401.31746-1-hengqi@linux.alibaba.com>
  <20230111042905-mutt-send-email-mst@kernel.org>
  <20230116080106.GA114763@h68b04307.sqa.eu95>
@@ -13,46 +13,46 @@ References: <20230104071401.31746-1-hengqi@linux.alibaba.com>
  <PH0PR12MB5481CA073B96CC2828F8AA15DCD89@PH0PR12MB5481.namprd12.prod.outlook.com>
  <52ddcc45-70e0-a670-9ac2-215e84eb12ba@linux.alibaba.com>
  <PH0PR12MB5481F054A6BA5C10831F0AA8DCD89@PH0PR12MB5481.namprd12.prod.outlook.com>
-From: Heng Qi <hengqi@linux.alibaba.com>
-In-Reply-To: <PH0PR12MB5481F054A6BA5C10831F0AA8DCD89@PH0PR12MB5481.namprd12.prod.outlook.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-To: Parav Pandit <parav@nvidia.com>, Jason Wang <jasowang@redhat.com>
+ <98ffa453-7a76-9afc-1861-8c46efef4705@linux.alibaba.com>
+In-Reply-To: <98ffa453-7a76-9afc-1861-8c46efef4705@linux.alibaba.com>
+MIME-Version: 1.0
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+To: Heng Qi <hengqi@linux.alibaba.com>, Jason Wang <jasowang@redhat.com>
 Cc: "Michael S . Tsirkin" <mst@redhat.com>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Yuri Benditovich <yuri.benditovich@daynix.com>, Cornelia Huck <cohuck@redhat.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-
-
-在 2023/2/8 下午1:18, Parav Pandit 写道:
->> From: Heng Qi <hengqi@linux.alibaba.com>
->> Sent: Tuesday, February 7, 2023 10:25 PM
-> [..]
->>>> Do you think we need both hash_types and hash_tunnel_types?
->>> In struct virtio_net_config we need two fields.
->>> a. supported_hash_types (already exists) b. supported_hash_tunnel_type
->>> -> bitmap indicating for which outer headers, inner hash calculation is
->> supported.
->>
->> Thanks for the suggestion, we seem to have reached an agreement.
->>
->>> In struct virtio_net_hdr we need two fields.
->>> a. hash_report (already exists)
->>> b. hash_tunnel_type 8 bits -> absolute value indicating which outer header
->> exists when inner header hash calculated.
->>> You already have it in your patch named as hash_report_tunnel.
->>> May be better to name as hash_report_tunnel_type to make it clearer that its
->> type.
->>
->> Sure.
->>
->> Thanks for your reply.
-> I had one last question. Why do we need to inform the hash_report_tunnel_type of the outer header in the virtio_net_hdr?
-> Is this for debug? Or is there a use case that will process this value?
-
-The driver may use it to do some statistical information, or do some rx 
-classification
-based on the rx hash, and we'd better not hide information from the driver.
-
-Thanks.
-
+DQo+IEZyb206IEhlbmcgUWkgPGhlbmdxaUBsaW51eC5hbGliYWJhLmNvbT4NCj4gU2VudDogV2Vk
+bmVzZGF5LCBGZWJydWFyeSA4LCAyMDIzIDE6MTEgQU0NCj4gDQo+IA0KPiDlnKggMjAyMy8yLzgg
+5LiL5Y2IMToxOCwgUGFyYXYgUGFuZGl0IOWGmemBkzoNCj4gPj4gRnJvbTogSGVuZyBRaSA8aGVu
+Z3FpQGxpbnV4LmFsaWJhYmEuY29tPg0KPiA+PiBTZW50OiBUdWVzZGF5LCBGZWJydWFyeSA3LCAy
+MDIzIDEwOjI1IFBNDQo+ID4gWy4uXQ0KPiA+Pj4+IERvIHlvdSB0aGluayB3ZSBuZWVkIGJvdGgg
+aGFzaF90eXBlcyBhbmQgaGFzaF90dW5uZWxfdHlwZXM/DQo+ID4+PiBJbiBzdHJ1Y3QgdmlydGlv
+X25ldF9jb25maWcgd2UgbmVlZCB0d28gZmllbGRzLg0KPiA+Pj4gYS4gc3VwcG9ydGVkX2hhc2hf
+dHlwZXMgKGFscmVhZHkgZXhpc3RzKSBiLg0KPiA+Pj4gc3VwcG9ydGVkX2hhc2hfdHVubmVsX3R5
+cGUNCj4gPj4+IC0+IGJpdG1hcCBpbmRpY2F0aW5nIGZvciB3aGljaCBvdXRlciBoZWFkZXJzLCBp
+bm5lciBoYXNoIGNhbGN1bGF0aW9uDQo+ID4+PiAtPiBpcw0KPiA+PiBzdXBwb3J0ZWQuDQo+ID4+
+DQo+ID4+IFRoYW5rcyBmb3IgdGhlIHN1Z2dlc3Rpb24sIHdlIHNlZW0gdG8gaGF2ZSByZWFjaGVk
+IGFuIGFncmVlbWVudC4NCj4gPj4NCj4gPj4+IEluIHN0cnVjdCB2aXJ0aW9fbmV0X2hkciB3ZSBu
+ZWVkIHR3byBmaWVsZHMuDQo+ID4+PiBhLiBoYXNoX3JlcG9ydCAoYWxyZWFkeSBleGlzdHMpDQo+
+ID4+PiBiLiBoYXNoX3R1bm5lbF90eXBlIDggYml0cyAtPiBhYnNvbHV0ZSB2YWx1ZSBpbmRpY2F0
+aW5nIHdoaWNoIG91dGVyDQo+ID4+PiBoZWFkZXINCj4gPj4gZXhpc3RzIHdoZW4gaW5uZXIgaGVh
+ZGVyIGhhc2ggY2FsY3VsYXRlZC4NCj4gPj4+IFlvdSBhbHJlYWR5IGhhdmUgaXQgaW4geW91ciBw
+YXRjaCBuYW1lZCBhcyBoYXNoX3JlcG9ydF90dW5uZWwuDQo+ID4+PiBNYXkgYmUgYmV0dGVyIHRv
+IG5hbWUgYXMgaGFzaF9yZXBvcnRfdHVubmVsX3R5cGUgdG8gbWFrZSBpdCBjbGVhcmVyDQo+ID4+
+PiB0aGF0IGl0cw0KPiA+PiB0eXBlLg0KPiA+Pg0KPiA+PiBTdXJlLg0KPiA+Pg0KPiA+PiBUaGFu
+a3MgZm9yIHlvdXIgcmVwbHkuDQo+ID4gSSBoYWQgb25lIGxhc3QgcXVlc3Rpb24uIFdoeSBkbyB3
+ZSBuZWVkIHRvIGluZm9ybSB0aGUNCj4gaGFzaF9yZXBvcnRfdHVubmVsX3R5cGUgb2YgdGhlIG91
+dGVyIGhlYWRlciBpbiB0aGUgdmlydGlvX25ldF9oZHI/DQo+ID4gSXMgdGhpcyBmb3IgZGVidWc/
+IE9yIGlzIHRoZXJlIGEgdXNlIGNhc2UgdGhhdCB3aWxsIHByb2Nlc3MgdGhpcyB2YWx1ZT8NCj4g
+DQo+IFRoZSBkcml2ZXIgbWF5IHVzZSBpdCB0byBkbyBzb21lIHN0YXRpc3RpY2FsIGluZm9ybWF0
+aW9uLCBvciBkbyBzb21lIHJ4DQo+IGNsYXNzaWZpY2F0aW9uIGJhc2VkIG9uIHRoZSByeCBoYXNo
+LCBhbmQgd2UnZCBiZXR0ZXIgbm90IGhpZGUgaW5mb3JtYXRpb24gZnJvbQ0KPiB0aGUgZHJpdmVy
+Lg0KPg0KU3RhdGlzdGljYWwgaW5mb3JtYXRpb24gaXMgYmV0dGVyIGdhdGhlcmVkIHZpYSBzdGF0
+cywgaW5zdGVhZCBvZiBhZGRpbmcgc3VjaCBjb2RlIGluIGRyaXZlciBkYXRhIHBhdGguDQoNCkl0
+IGlzIG5vdCBhYm91dCBoaWRpbmcuIA0KSXQgaGFzIG9udXMgb24gdGhlIGRhdGEgcGF0aCB0byBk
+ZXRlY3QgdGhlIHR1bm5lbCB0eXBlIGFuZCBwbGFjZSB0aGF0IHZpcnRpb19uZXRfaGRyLg0KU28g
+bGV0cyBmaW5kIG9uZSB1c2Ugb2YgaXQgaW4gZGF0YSBwYXRoIHdoaWNoIHN3IGVudGl0eSB3aWxs
+IHVzZSBpdC4NCg0KDQo=
 
