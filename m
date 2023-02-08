@@ -1,260 +1,311 @@
-Return-Path: <parav@nvidia.com>
-From: Parav Pandit <parav@nvidia.com>
-Subject: RE: [virtio-dev] Re: [virtio-comment] Re: [PATCH v7] virtio-net:
+Return-Path: <hengqi@linux.alibaba.com>
+Message-ID: <52ddcc45-70e0-a670-9ac2-215e84eb12ba@linux.alibaba.com>
+Date: Wed, 8 Feb 2023 11:24:40 +0800
+MIME-Version: 1.0
+Subject: Re: [virtio-dev] Re: [virtio-comment] Re: [PATCH v7] virtio-net:
  support inner header hash
-Date: Wed, 8 Feb 2023 03:19:47 +0000
-Message-ID: <PH0PR12MB5481CA073B96CC2828F8AA15DCD89@PH0PR12MB5481.namprd12.prod.outlook.com>
 References: <20230104071401.31746-1-hengqi@linux.alibaba.com>
  <20230111042905-mutt-send-email-mst@kernel.org>
  <20230116080106.GA114763@h68b04307.sqa.eu95>
  <f7e5a6c8-ad4c-c60c-2d9e-cd64f6fdd90e@redhat.com>
  <20230131052834.GA34480@h68b04307.sqa.eu95>
  <5bee268d-a0dc-d649-4174-7b211a49e2f0@linux.alibaba.com>
-In-Reply-To: <5bee268d-a0dc-d649-4174-7b211a49e2f0@linux.alibaba.com>
-MIME-Version: 1.0
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-To: Heng Qi <hengqi@linux.alibaba.com>, Jason Wang <jasowang@redhat.com>
+ <PH0PR12MB5481CA073B96CC2828F8AA15DCD89@PH0PR12MB5481.namprd12.prod.outlook.com>
+From: Heng Qi <hengqi@linux.alibaba.com>
+In-Reply-To: <PH0PR12MB5481CA073B96CC2828F8AA15DCD89@PH0PR12MB5481.namprd12.prod.outlook.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+To: Parav Pandit <parav@nvidia.com>, Jason Wang <jasowang@redhat.com>
 Cc: "Michael S . Tsirkin" <mst@redhat.com>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Yuri Benditovich <yuri.benditovich@daynix.com>, Cornelia Huck <cohuck@redhat.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-DQo+IEZyb206IEhlbmcgUWkgPGhlbmdxaUBsaW51eC5hbGliYWJhLmNvbT4NCj4gU2VudDogVHVl
-c2RheSwgRmVicnVhcnkgNywgMjAyMyA5OjMxIFBNDQo+IA0KPiDlnKggMjAyMy8xLzMxIOS4i+WN
-iDE6MjgsIEhlbmcgUWkg5YaZ6YGTOg0KPiA+IE9uIE1vbiwgSmFuIDE2LCAyMDIzIGF0IDA0OjQy
-OjExUE0gKzA4MDAsIEphc29uIFdhbmcgd3JvdGU6DQo+ID4+IOWcqCAyMDIzLzEvMTYgMTY6MDEs
-IEhlbmcgUWkg5YaZ6YGTOg0KPiA+Pj4gT24gV2VkLCBKYW4gMTEsIDIwMjMgYXQgMDQ6NDU6MTJB
-TSAtMDUwMCwgTWljaGFlbCBTLiBUc2lya2luIHdyb3RlOg0KPiA+Pj4+IE9uIFdlZCwgSmFuIDA0
-LCAyMDIzIGF0IDAzOjE0OjAxUE0gKzA4MDAsIEhlbmcgUWkgd3JvdGU6DQo+ID4+Pj4+IElmIHRo
-ZSB0dW5uZWwgaXMgdXNlZCB0byBlbmNhcHN1bGF0ZSB0aGUgcGFja2V0cywgdGhlIGhhc2gNCj4g
-Pj4+Pj4gY2FsY3VsYXRlZCB1c2luZyB0aGUgb3V0ZXIgaGVhZGVyIG9mIHRoZSByZWNlaXZlIHBh
-Y2tldHMgaXMgYWx3YXlzDQo+ID4+Pj4+IGZpeGVkIGZvciB0aGUgc2FtZSBmbG93IHBhY2tldHMs
-IGkuZS4gdGhleSB3aWxsIGJlIHN0ZWVyZWQgdG8gdGhlIHNhbWUNCj4gcmVjZWl2ZSBxdWV1ZS4N
-Cj4gPj4+Pj4NCj4gPj4+Pj4gV2UgYWRkIGEgZmVhdHVyZSBiaXQgVklSVElPX05FVF9GX0hBU0hf
-VFVOTkVMIGFuZCByZWxhdGVkDQo+IGJpdG1hc2tzDQo+ID4+Pj4+IGluIFxmaWVsZHtoYXNoX3R5
-cGVzfSwgd2hpY2ggaW5zdHJ1Y3RzIHRoZSBkZXZpY2UgdG8gY2FsY3VsYXRlIHRoZQ0KPiA+Pj4+
-PiBoYXNoIHVzaW5nIHRoZSBpbm5lciBoZWFkZXJzIG9mIHR1bm5lbC1lbmNhcHN1bGF0ZWQgcGFj
-a2V0cy4NCj4gPj4+Pj4gQmVzaWRlcywgdmFsdWVzIGluIFxmaWVsZHtoYXNoX3JlcG9ydF90dW5u
-ZWx9IGFyZSBhZGRlZCB0byByZXBvcnQgdHVubmVsDQo+IHR5cGVzLg0KPiA+Pj4+Pg0KPiA+Pj4+
-PiBGaXhlczoNCj4gPj4+Pj4gaHR0cHM6Ly9uYW0xMS5zYWZlbGlua3MucHJvdGVjdGlvbi5vdXRs
-b29rLmNvbS8/dXJsPWh0dHBzJTNBJTJGJTJGDQo+ID4+Pj4+IGdpdGh1Yi5jb20lMkZvYXNpcy10
-Y3MlMkZ2aXJ0aW8tDQo+IHNwZWMlMkZpc3N1ZXMlMkYxNTEmZGF0YT0wNSU3QzAxJTcNCj4gPj4+
-Pj4NCj4gQ3BhcmF2JTQwbnZpZGlhLmNvbSU3QzEyYmU2YzUxYjNjMDQ4NjBjMDE2MDhkYjA5N2M3
-OTZhJTdDNDMwODNkMTUNCj4gNw0KPiA+Pj4+Pg0KPiAyNzM0MGMxYjdkYjM5ZWZkOWNjYzE3YSU3
-QzAlN0MwJTdDNjM4MTE0MjAyOTkxMjIxMzY5JTdDVW5rbm93bg0KPiAlN0NUDQo+ID4+Pj4+DQo+
-IFdGcGJHWnNiM2Q4ZXlKV0lqb2lNQzR3TGpBd01EQWlMQ0pRSWpvaVYybHVNeklpTENKQlRpSTZJ
-azFoYVd3aUxDSg0KPiA+Pj4+Pg0KPiBYVkNJNk1uMCUzRCU3QzMwMDAlN0MlN0MlN0Mmc2RhdGE9
-NmZlRmd5OTRMTUNZZkcwTktQbEhDcjFBdmtDDQo+IE9INHY5DQo+ID4+Pj4+ICUyQm5Mb21Ya2xO
-cXMlM0QmcmVzZXJ2ZWQ9MA0KPiA+Pj4+Pg0KPiA+Pj4+PiBSZXZpZXdlZC1ieTogSmFzb24gV2Fu
-ZyA8amFzb3dhbmdAcmVkaGF0LmNvbT4NCj4gPj4+Pj4gU2lnbmVkLW9mZi1ieTogSGVuZyBRaSA8
-aGVuZ3FpQGxpbnV4LmFsaWJhYmEuY29tPg0KPiA+Pj4+PiBTaWduZWQtb2ZmLWJ5OiBYdWFuIFpo
-dW8gPHh1YW56aHVvQGxpbnV4LmFsaWJhYmEuY29tPg0KPiA+Pj4+PiAtLS0NCj4gPj4+Pj4gdjY6
-DQo+ID4+Pj4+IAkxLiBNb2RpZnkgdGhlIHdvcmRpbmcgb2Ygc29tZSBzZW50ZW5jZXMgZm9yIGNs
-YXJpdHkuIEBNaWNoYWVsIFMuDQo+IFRzaXJraW4NCj4gPj4+Pj4gCTIuIEZpeCBzb21lIHN5bnRh
-eCBpc3N1ZXMuIEBNaWNoYWVsIFMuIFRzaXJraW4NCj4gPj4+Pj4NCj4gPj4+Pj4gdjU6DQo+ID4+
-Pj4+IAkxLiBGaXggc29tZSBzeW50YXggYW5kIGNhcGl0YWxpemF0aW9uIGlzc3Vlcy4gQE1pY2hh
-ZWwgUy4gVHNpcmtpbg0KPiA+Pj4+PiAJMi4gVXNlIGVuY2Fwc3VsYXRlZC9lbmNhcHR1bGF0aW9u
-IHVuaWZvcm1seS4gQE1pY2hhZWwgUy4gVHNpcmtpbg0KPiA+Pj4+PiAJMy4gTW92ZSB0aGUgbGlu
-a3MgdG8gaW50cm9kdWN0aW9uIHNlY3Rpb24uIEBNaWNoYWVsIFMuIFRzaXJraW4NCj4gPj4+Pj4g
-CTQuIENsYXJpZnkgc29tZSBzZW50ZW5jZXMuIEBNaWNoYWVsIFMuIFRzaXJraW4NCj4gPj4+Pj4N
-Cj4gPj4+Pj4gdjQ6DQo+ID4+Pj4+IAkxLiBDbGFyaWZ5IHNvbWUgcGFyYWdyYXBocy4gQENvcm5l
-bGlhIEh1Y2sNCj4gPj4+Pj4gCTIuIEZpeCB0aGUgdTggdHlwZS4gQENvcm5lbGlhIEh1Y2sNCj4g
-Pj4+Pj4NCj4gPj4+Pj4gdjM6DQo+ID4+Pj4+IAkxLiBSZW5hbWUgVklSVElPX05FVF9GX0hBU0hf
-R1JFX1ZYTEFOX0dFTkVWRV9JTk5FUiB0bw0KPiBWSVJUSU9fTkVUX0ZfSEFTSF9UVU5ORUwuIEBK
-YXNvbiBXYW5nDQo+ID4+Pj4+IAkyLiBNYWtlIHRoaW5ncyBjbGVhcmVyLiBASmFzb24gV2FuZyBA
-TWljaGFlbCBTLiBUc2lya2luDQo+ID4+Pj4+IAkzLiBLZWVwIHRoZSBwb3NzaWJpbGl0eSB0byB1
-c2UgaW5uZXIgaGFzaCBmb3IgYXV0b21hdGljIHJlY2VpdmUgc3RlZXJpbmcuDQo+IEBKYXNvbiBX
-YW5nDQo+ID4+Pj4+IAk0LiBBZGQgdGhlICJUdW5uZWwgcGFja2V0IiBwYXJhZ3JhcGggdG8gYXZv
-aWQgcmVwZWF0aW5nIHRoZSBHUkUNCj4gPj4+Pj4gZXRjLiBtYW55IHRpbWVzLiBATWljaGFlbCBT
-LiBUc2lya2luDQo+ID4+Pj4+DQo+ID4+Pj4+IHYyOg0KPiA+Pj4+PiAJMS4gQWRkIGEgZmVhdHVy
-ZSBiaXQgZm9yIEdSRS9WWExBTi9HRU5FVkUgaW5uZXIgaGFzaC4gQEphc29uIFdhbmcNCj4gPj4+
-Pj4gCTIuIENoYW5nIFxmaWVsZHtoYXNoX3R1bm5lbH0gdG8gXGZpZWxke2hhc2hfcmVwb3J0X3R1
-bm5lbH0uDQo+ID4+Pj4+IEBKYXNvbiBXYW5nLCBATWljaGFlbCBTLiBUc2lya2luDQo+ID4+Pj4+
-DQo+ID4+Pj4+IHYxOg0KPiA+Pj4+PiAJMS4gUmVtb3ZlIHRoZSBwYXRjaCBmb3IgdGhlIGJpdG1h
-c2sgZml4LiBATWljaGFlbCBTLiBUc2lya2luDQo+ID4+Pj4+IAkyLiBDbGFyaWZ5IHNvbWUgcGFy
-YWdyYXBocy4gQEphc29uIFdhbmcNCj4gPj4+Pj4gCTMuIEFkZCBcZmllbGR7aGFzaF90dW5uZWx9
-IGFuZCBWSVJUSU9fTkVUX0hBU0hfUkVQT1JUX0dSRS4NCj4gQFl1cmkNCj4gPj4+Pj4gQmVuZGl0
-b3ZpY2gNCj4gPj4+Pj4NCj4gPj4+Pj4gICBjb250ZW50LnRleCAgICAgIHwgMTkxDQo+ICsrKysr
-KysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKy0tDQo+ID4+Pj4+ICAgaW50
-cm9kdWN0aW9uLnRleCB8ICAxOSArKysrKw0KPiA+Pj4+PiAgIDIgZmlsZXMgY2hhbmdlZCwgMjAz
-IGluc2VydGlvbnMoKyksIDcgZGVsZXRpb25zKC0pDQo+ID4+Pj4+DQo+ID4+Pj4+IGRpZmYgLS1n
-aXQgYS9jb250ZW50LnRleCBiL2NvbnRlbnQudGV4IGluZGV4IGU4NjM3MDkuLjc4NDVmNmMNCj4g
-Pj4+Pj4gMTAwNjQ0DQo+ID4+Pj4+IC0tLSBhL2NvbnRlbnQudGV4DQo+ID4+Pj4+ICsrKyBiL2Nv
-bnRlbnQudGV4DQo+ID4+Pj4+IEBAIC0zMDg0LDYgKzMwODQsOSBAQCBcc3Vic2VjdGlvbntGZWF0
-dXJlIGJpdHN9XGxhYmVse3NlYzpEZXZpY2UNCj4gVHlwZXMgLyBOZXR3b3JrIERldmljZSAvIEZl
-YXR1cmUgYml0cw0KPiA+Pj4+PiAgIFxpdGVtW1ZJUlRJT19ORVRfRl9DVFJMX01BQ19BRERSKDIz
-KV0gU2V0IE1BQyBhZGRyZXNzIHRocm91Z2gNCj4gY29udHJvbA0KPiA+Pj4+PiAgICAgICBjaGFu
-bmVsLg0KPiA+Pj4+PiArXGl0ZW1bVklSVElPX05FVF9GX0hBU0hfVFVOTkVMKDUyKV0gRGV2aWNl
-IHN1cHBvcnRzIGlubmVyDQo+ID4+Pj4+ICsgICAgaGVhZGVyIGhhc2ggZm9yIEdSRSwgVlhMQU4g
-YW5kIEdFTkVWRSB0dW5uZWwtZW5jYXBzdWxhdGVkDQo+IHBhY2tldHMuDQo+ID4+Pj4+ICsNCj4g
-Pj4+Pj4gICBcaXRlbVtWSVJUSU9fTkVUX0ZfTk9URl9DT0FMKDUzKV0gRGV2aWNlIHN1cHBvcnRz
-IG5vdGlmaWNhdGlvbnMNCj4gY29hbGVzY2luZy4NCj4gPj4+Pj4gICBcaXRlbVtWSVJUSU9fTkVU
-X0ZfR1VFU1RfVVNPNCAoNTQpXSBEcml2ZXIgY2FuIHJlY2VpdmUgVVNPdjQNCj4gcGFja2V0cy4N
-Cj4gPj4+Pj4gQEAgLTMwOTUsNyArMzA5OCw4IEBAIFxzdWJzZWN0aW9ue0ZlYXR1cmUgYml0c31c
-bGFiZWx7c2VjOkRldmljZQ0KPiBUeXBlcyAvIE5ldHdvcmsgRGV2aWNlIC8gRmVhdHVyZSBiaXRz
-DQo+ID4+Pj4+ICAgIHRvIHNldmVyYWwgc2VnbWVudHMgd2hlbiBlYWNoIG9mIHRoZXNlIHNtYWxs
-ZXIgcGFja2V0cyBoYXMgVURQDQo+IGhlYWRlci4NCj4gPj4+Pj4gICBcaXRlbVtWSVJUSU9fTkVU
-X0ZfSEFTSF9SRVBPUlQoNTcpXSBEZXZpY2UgY2FuIHJlcG9ydCBwZXItcGFja2V0DQo+IGhhc2gN
-Cj4gPj4+Pj4gLSAgICB2YWx1ZSBhbmQgYSB0eXBlIG9mIGNhbGN1bGF0ZWQgaGFzaC4NCj4gPj4+
-Pj4gKyAgICB2YWx1ZSwgYSB0eXBlIG9mIGNhbGN1bGF0ZWQgaGFzaCwgYW5kLCBpZg0KPiBWSVJU
-SU9fTkVUX0ZfSEFTSF9UVU5ORUwNCj4gPj4+Pj4gKyAgICBpcyBuZWdvdGlhdGVkLCBhbiBlbmNh
-cHN1bGF0aW9uIHBhY2tldCB0eXBlLg0KPiA+Pj4+PiAgIFxpdGVtW1ZJUlRJT19ORVRfRl9HVUVT
-VF9IRFJMRU4oNTkpXSBEcml2ZXIgY2FuIHByb3ZpZGUgdGhlIGV4YWN0DQo+IFxmaWVsZHtoZHJf
-bGVufQ0KPiA+Pj4+PiAgICAgICB2YWx1ZS4gRGV2aWNlIGJlbmVmaXRzIGZyb20ga25vd2luZyB0
-aGUgZXhhY3QgaGVhZGVyIGxlbmd0aC4NCj4gPj4+Pj4gQEAgLTMxNDAsNiArMzE0NCw3IEBAIFxz
-dWJzdWJzZWN0aW9ue0ZlYXR1cmUgYml0DQo+IHJlcXVpcmVtZW50c31cbGFiZWx7c2VjOkRldmlj
-ZSBUeXBlcyAvIE5ldHdvcmsgRGV2aWNlDQo+ID4+Pj4+ICAgXGl0ZW1bVklSVElPX05FVF9GX05P
-VEZfQ09BTF0gUmVxdWlyZXMgVklSVElPX05FVF9GX0NUUkxfVlEuDQo+ID4+Pj4+ICAgXGl0ZW1b
-VklSVElPX05FVF9GX1JTQ19FWFRdIFJlcXVpcmVzIFZJUlRJT19ORVRfRl9IT1NUX1RTTzQgb3IN
-Cj4gVklSVElPX05FVF9GX0hPU1RfVFNPNi4NCj4gPj4+Pj4gICBcaXRlbVtWSVJUSU9fTkVUX0Zf
-UlNTXSBSZXF1aXJlcyBWSVJUSU9fTkVUX0ZfQ1RSTF9WUS4NCj4gPj4+Pj4gK1xpdGVtW1ZJUlRJ
-T19ORVRfRl9IQVNIX1RVTk5FTF0gUmVxdWlyZXMNCj4gVklSVElPX05FVF9GX0NUUkxfVlEuDQo+
-ID4+Pj4+ICAgXGVuZHtkZXNjcmlwdGlvbn0NCj4gPj4+Pj4gICBcc3Vic3Vic2VjdGlvbntMZWdh
-Y3kgSW50ZXJmYWNlOiBGZWF0dXJlIGJpdHN9XGxhYmVse3NlYzpEZXZpY2UNCj4gPj4+Pj4gVHlw
-ZXMgLyBOZXR3b3JrIERldmljZSAvIEZlYXR1cmUgYml0cyAvIExlZ2FjeSBJbnRlcmZhY2U6IEZl
-YXR1cmUgYml0c30NCj4gQEAgLTMzODYsNyArMzM5MSw4IEBAIFxzdWJzZWN0aW9ue0RldmljZSBP
-cGVyYXRpb259XGxhYmVse3NlYzpEZXZpY2UNCj4gVHlwZXMgLyBOZXR3b3JrIERldmljZSAvIERl
-dmljZSBPDQo+ID4+Pj4+ICAgICAgICAgICBsZTE2IG51bV9idWZmZXJzOw0KPiA+Pj4+PiAgICAg
-ICAgICAgbGUzMiBoYXNoX3ZhbHVlOyAgICAgICAgKE9ubHkgaWYgVklSVElPX05FVF9GX0hBU0hf
-UkVQT1JUDQo+IG5lZ290aWF0ZWQpDQo+ID4+Pj4+ICAgICAgICAgICBsZTE2IGhhc2hfcmVwb3J0
-OyAgICAgICAoT25seSBpZiBWSVJUSU9fTkVUX0ZfSEFTSF9SRVBPUlQNCj4gbmVnb3RpYXRlZCkN
-Cj4gPj4+Pj4gLSAgICAgICAgbGUxNiBwYWRkaW5nX3Jlc2VydmVkOyAgKE9ubHkgaWYgVklSVElP
-X05FVF9GX0hBU0hfUkVQT1JUDQo+IG5lZ290aWF0ZWQpDQo+ID4+Pj4+ICsgICAgICAgIHU4IGhh
-c2hfcmVwb3J0X3R1bm5lbDsgIChPbmx5IGlmIFZJUlRJT19ORVRfRl9IQVNIX1JFUE9SVA0KPiA+
-Pj4+PiArIG5lZ290aWF0ZWQsIG9ubHkgdmFsaWQgb2YgVklSVElPX05FVF9GX0hBU0hfVFVOTkVM
-IG5lZ290aWF0ZWQpDQo+ID4+Pj4gb2YgLT4gaWY/DQo+ID4+PiBTb3JyeSBmb3IgdGhlIGxhdGUg
-cmVwbHkuDQo+ID4+PiBJdCdzIENvcm5lbGlhJ3Mgc3VnZ2VzdGlvbiwgYW5kICdvZicgc2VlbXMg
-dG8gd29yayBmaW5lLg0KPiA+Pj4NCj4gPj4+PiBhbHNvIGxldCdzIGFkZDogb3RoZXJ3aXNlIHJl
-c2VydmVkPw0KPiA+Pj4gU3VyZS4NCj4gPj4+DQo+ID4+Pj4+ICsgICAgICAgIHU4IHBhZGRpbmdf
-cmVzZXJ2ZWQ7ICAgIChPbmx5IGlmIFZJUlRJT19ORVRfRl9IQVNIX1JFUE9SVA0KPiBuZWdvdGlh
-dGVkKQ0KPiA+Pj4+PiAgIH07DQo+ID4+Pj4+ICAgXGVuZHtsc3RsaXN0aW5nfQ0KPiA+Pj4+PiBA
-QCAtMzgzNyw3ICszODQzLDggQEAgXHN1YnN1YnNlY3Rpb257UHJvY2Vzc2luZyBvZiBJbmNvbWlu
-Zw0KPiBQYWNrZXRzfVxsYWJlbHtzZWM6RGV2aWNlIFR5cGVzIC8gTmV0d29yaw0KPiA+Pj4+PiAg
-IEEgZGV2aWNlIGF0dGVtcHRzIHRvIGNhbGN1bGF0ZSBhIHBlci1wYWNrZXQgaGFzaCBpbiB0aGUg
-Zm9sbG93aW5nIGNhc2VzOg0KPiA+Pj4+PiAgIFxiZWdpbntpdGVtaXplfQ0KPiA+Pj4+PiAgIFxp
-dGVtIFRoZSBmZWF0dXJlIFZJUlRJT19ORVRfRl9SU1Mgd2FzIG5lZ290aWF0ZWQuIFRoZSBkZXZp
-Y2UgdXNlcw0KPiB0aGUgaGFzaCB0byBkZXRlcm1pbmUgdGhlIHJlY2VpdmUgdmlydHF1ZXVlIHRv
-IHBsYWNlIGluY29taW5nIHBhY2tldHMuDQo+ID4+Pj4+IC1caXRlbSBUaGUgZmVhdHVyZSBWSVJU
-SU9fTkVUX0ZfSEFTSF9SRVBPUlQgd2FzIG5lZ290aWF0ZWQuIFRoZQ0KPiBkZXZpY2UgcmVwb3J0
-cyB0aGUgaGFzaCB2YWx1ZSBhbmQgdGhlIGhhc2ggdHlwZSB3aXRoIHRoZSBwYWNrZXQuDQo+ID4+
-Pj4+ICtcaXRlbSBUaGUgZmVhdHVyZSBWSVJUSU9fTkVUX0ZfSEFTSF9SRVBPUlQgd2FzIG5lZ290
-aWF0ZWQuIFRoZQ0KPiA+Pj4+PiArZGV2aWNlIHJlcG9ydHMgdGhlIGhhc2ggdmFsdWUgYW5kIHRo
-ZSBoYXNoIHR5cGUuIElmIGFkZGl0aW9uYWxseQ0KPiBWSVJUSU9fTkVUX0ZfSEFTSF9UVU5ORUwg
-d2FzIG5lZ290aWF0ZWQsIHRoZSBkZXZpY2UgcmVwb3J0cyB0aGUNCj4gZW5jYXBzdWxhdGlvbiB0
-eXBlIGFzIHdlbGwuDQo+ID4+Pj4+ICAgXGVuZHtpdGVtaXplfQ0KPiA+Pj4+PiAgIElmIHRoZSBm
-ZWF0dXJlIFZJUlRJT19ORVRfRl9SU1Mgd2FzIG5lZ290aWF0ZWQ6DQo+ID4+Pj4+IEBAIC0zODYz
-LDggKzM4NzAsMzYgQEAgXHN1YnN1YnNlY3Rpb257UHJvY2Vzc2luZyBvZiBJbmNvbWluZw0KPiBQ
-YWNrZXRzfVxsYWJlbHtzZWM6RGV2aWNlIFR5cGVzIC8gTmV0d29yaw0KPiA+Pj4+PiAgICBccmVm
-e3NlYzpEZXZpY2UgVHlwZXMgLyBOZXR3b3JrIERldmljZSAvIERldmljZSBPcGVyYXRpb24gLyBD
-b250cm9sDQo+IFZpcnRxdWV1ZSAvIEF1dG9tYXRpYyByZWNlaXZlIHN0ZWVyaW5nIGluIG11bHRp
-cXVldWUgbW9kZSAvIEhhc2ggY2FsY3VsYXRpb259Lg0KPiA+Pj4+PiAgIFxlbmR7aXRlbWl6ZX0N
-Cj4gPj4+Pj4gK1xzdWJwYXJhZ3JhcGh7VHVubmVsL0VuY2Fwc3VsYXRlZCBwYWNrZXR9IFxsYWJl
-bHtzZWM6RGV2aWNlIFR5cGVzDQo+ID4+Pj4+ICsvIE5ldHdvcmsgRGV2aWNlIC8gRGV2aWNlIE9w
-ZXJhdGlvbiAvIFByb2Nlc3Npbmcgb2YgSW5jb21pbmcNCj4gPj4+Pj4gK1BhY2tldHMgLyBIYXNo
-IGNhbGN1bGF0aW9uIGZvciBpbmNvbWluZyBwYWNrZXRzIC8NCj4gPj4+Pj4gK1R1bm5lbC9FbmNh
-cHN1bGF0ZWQgcGFja2V0fSBBIHR1bm5lbCBwYWNrZXQgaXMgZW5jYXBzdWxhdGVkIGZyb20NCj4g
-Pj4+Pj4gK3RoZSBvcmlnaW5hbCBwYWNrZXQgYmFzZWQgb24gdGhlIHR1bm5lbGluZyBwcm90b2Nv
-bCAob25seSBhDQo+ID4+Pj4+ICtzaW5nbGUgbGV2ZWwgb2YgZW5jYXBzdWxhdGlvbiBpcyBjdXJy
-ZW50bHkgc3VwcG9ydGVkKS4gVGhlIGVuY2Fwc3VsYXRlZA0KPiBwYWNrZXQgY29udGFpbnMgYW4g
-b3V0ZXIgaGVhZGVyIGFuZCBhbiBpbm5lciBoZWFkZXIsIGFuZCB0aGUgZGV2aWNlIGNhbGN1bGF0
-ZXMNCj4gdGhlIGhhc2ggb3ZlciBlaXRoZXIgdGhlIGlubmVyIGhlYWRlciBvciB0aGUgb3V0ZXIg
-aGVhZGVyLg0KPiA+Pj4+PiArDQo+ID4+Pj4+ICtXaGVuIHRoZSBmZWF0dXJlIFZJUlRJT19ORVRf
-Rl9IQVNIX1RVTk5FTCBpcyBuZWdvdGlhdGVkIGFuZCB0aGUNCj4gPj4+Pj4gK2NvcnJlc3BvbmRp
-bmcgZW5jYXBzdWxhdGlvbiB0eXBlIGlzIHNldCBpbiBcZmllbGR7aGFzaF90eXBlc30sDQo+ID4+
-Pj4+ICt0aGUgaGFzaCBmb3IgYSBzcGVjaWZpYyB0eXBlIG9mIGVuY2Fwc3VsYXRlZCBwYWNrZXQg
-aXMgY2FsY3VsYXRlZCBvdmVyDQo+IHRoZSBpbm5lciBhcyBvcHBvc2VkIHRvIG91dGVyIGhlYWRl
-ci4NCj4gPj4+Pj4gK1N1cHBvcnRlZCBlbmNhcHN1bGF0aW9uIHR5cGVzIGFyZSBsaXN0ZWQgaW4g
-XHJlZntzZWM6RGV2aWNlIFR5cGVzDQo+ID4+Pj4+ICsvIE5ldHdvcmsgRGV2aWNlIC8gRGV2aWNl
-IE9wZXJhdGlvbiAvIFByb2Nlc3Npbmcgb2YgSW5jb21pbmcNCj4gPj4+Pj4gK1BhY2tldHMgLyBI
-YXNoIGNhbGN1bGF0aW9uIGZvciBpbmNvbWluZyBwYWNrZXRzIC8gU3VwcG9ydGVkL2VuYWJsZWQN
-Cj4gaGFzaCB0eXBlc30uDQo+ID4+Pj4+ICsNCj4gPj4+Pj4gK0lmIGJvdGggVklSVElPX05FVF9G
-X0hBU0hfUkVQT1JUIGFuZA0KPiBWSVJUSU9fTkVUX0ZfSEFTSF9UVU5ORUwgYXJlDQo+ID4+Pj4+
-ICtuZWdvdGlhdGVkLCB0aGUgZGV2aWNlIGNhbiBzdXBwb3J0IGlubmVyIGhhc2ggY2FsY3VsYXRp
-b24gZm9yDQo+ID4+Pj4+ICtcaHlwZXJyZWZbaW50cm86R1JFXXtbR1JFXX0sIFxoeXBlcnJlZltp
-bnRybzpWWExBTl17W1ZYTEFOXX0gYW5kDQo+ID4+Pj4+ICtcaHlwZXJyZWZbaW50cm86R0VORVZF
-XXtbR0VORVZFXX0gZW5jYXBzdWxhdGVkIHBhY2tldHMsIGFuZCB0aGUNCj4gPj4+Pj4gK2NvcnJl
-c3BvbmRpbmcgZW5jYXBzdWxhdGlvbiB0eXBlIGluIFxmaWVsZHtoYXNoX3R5cGVzfSBpcw0KPiA+
-Pj4+PiArVklSVElPX05FVF9IQVNIX1RZUEVfe0dSRSwgVlhMQU4sIEdFTkVWRX1fSU5ORVIgcmVz
-cGVjdGl2ZWx5Lg0KPiBUaGUgdmFsdWUgaW4gXGZpZWxke2hhc2hfcmVwb3J0X3R1bm5lbH0gaXMg
-VklSVElPX05FVF9IQVNIX1JFUE9SVF97Tk9ORSwNCj4gR1JFLCBWWExBTiwgR0VORVZFfSByZXNw
-ZWN0aXZlbHkuDQo+ID4+Pj4+ICsNCj4gPj4+Pj4gK0lmIFZJUlRJT19ORVRfRl9IQVNIX1JFUE9S
-VCBpcyBuZWdvdGlhdGVkIGJ1dA0KPiA+Pj4+PiArVklSVElPX05FVF9GX0hBU0hfVFVOTkVMIGlz
-IG5vdCBuZWdvdGlhdGVkLCB0aGUgZGV2aWNlIGNhbGN1bGF0ZXMNCj4gPj4+Pj4gK3RoZSBoYXNo
-IG92ZXIgdGhlIG91dGVyIGhlYWRlciwgYW5kIFxmaWVsZHtoYXNoX3JlcG9ydH0gcmVwb3J0cw0K
-PiA+Pj4+PiArdGhlIGhhc2ggdHlwZS4gXGZpZWxke2hhc2hfcmVwb3J0X3R1bm5lbH0gaXMgbm8g
-bG9uZ2VyIHZhbGlkLg0KPiA+Pj4+IERvZXMgdGhpcyBtZWFuIHRoYXQgVklSVElPX05FVF9IQVNI
-X1RZUEVfe0dSRSwgVlhMQU4sDQo+IEdFTkVWRX1fSU5ORVINCj4gPj4+PiBtdXN0IG5vdCBiZSBz
-ZXQgd2l0aG91dCBWSVJUSU9fTkVUX0ZfSEFTSF9UVU5ORUw/DQo+ID4+Pj4NCj4gPj4+IFllcy4N
-Cj4gPj4+DQo+ID4+Pj4gSWYgeWVzIHRoZW4gd2UgY2FuIGFkZCBjb25mb3JtYW5jZSBzdGF0ZW1l
-bnRzIHRvIHRoaXMgZW5kIGFuZCB0aGVuDQo+ID4+Pj4gZHJvcCB0aGUgIklmIHRoZSBmZWF0dXJl
-IFZJUlRJT19ORVRfRl9IQVNIX1RVTk5FTCBpcyBuZWdvdGlhdGVkIg0KPiA+Pj4+IGFsbCBvdmVy
-IHRoZSBwbGFjZSBqdXN0IHJlbHlpbmcgb24gaGFzaCB0eXBlIGJlaW5nIHNldCBpbnN0ZWFkLg0K
-PiA+Pj4gUGxlYXNlIHNlZSB0aGUgcmVzcG9uc2UgYmVsb3cuDQo+ID4+Pg0KPiA+Pj4+IEFsc28s
-IG5vdGUgdGhhdCBpdCBoYXMgdG8gYmUgb2sgZm9yIGRldmljZSB0byBleHBvc2UgaGFzaCB0eXBl
-cyB3aXRob3V0DQo+ID4+Pj4gbmVnb3RpYXRpbmcgVklSVElPX05FVF9GX0hBU0hfVFVOTkVMIHNp
-bmNlIHRoZXkgYXJlIGluIGNvbmZpZyBzcGFjZS4NCj4gPj4+PiBJZGVhOiBkbyB3ZSB3YW50IHRv
-IGRlY291cGxlIHRoZXNlIGNvbXBsZXRlbHk/IGhhdmUNCj4gVklSVElPX05FVF9GX0hBU0hfVFVO
-TkVMDQo+ID4+Pj4ganVzdCBhZGQgaGFzaF9yZXBvcnRfdHVubmVsIGFuZCBoYXZlIGhhc2ggdHlw
-ZXMgc3BlYWsgZm9yIHRoZW1zZWx2ZXM/DQo+ID4+Pj4gSXQgbWFrZXMgdGhpbmdzIG5pY2VseSBv
-cnRob2dvbmFsIGluIHRoYXQgaWYgb25lIGRvZXMgbm90IGNhcmUNCj4gPj4+PiBhYm91dCBrbm93
-aW5nIGVuY2Fwc3VsYXRpb24gdHlwZSAoZS5nLiBmb3IgUlNTKSBvbmUgY2FuIGRpc2FibGUNCj4g
-Pj4+PiBWSVJUSU9fTkVUX0ZfSEFTSF9UVU5ORUwuDQo+ID4+PiBUaGlzIHNlZW1zIHRvIGhhdmUg
-dGhlIGZvbGxvd2luZyAzIHByb2JsZW1zOg0KPiA+Pj4NCj4gPj4+IDEuIFRoaXMgd2lsbCBicmVh
-ayB0aGUgc3BlY2lmaWNhdGlvbi4gQXMgZGVzY3JpYmVkIGluIHRoZSBzcGVjaWZpY2F0aW9uLCBh
-bnkNCj4gZmllbGQNCj4gPj4+ICAgICBpbiB0aGUgY29uZmlndXJhdGlvbiBzcGFjZSBvbmx5IGV4
-aXN0cyB3aGVuIHRoZXJlIGlzIGEgY29ycmVzcG9uZGluZw0KPiBmZWF0dXJlIGJpdDoNCj4gPj4+
-ICAgICAiRGV2aWNlIGNvbmZpZ3VyYXRpb24gc3BhY2UgaXMgZ2VuZXJhbGx5IHVzZWQgZm9yIHJh
-cmVseS1jaGFuZ2luZyBvcg0KPiBpbml0aWFsaXphdGlvbi10aW1lIHBhcmFtZXRlcnMuDQo+ID4+
-PiAgICAgV2hlcmUgY29uZmlndXJhdGlvbiBmaWVsZHMgYXJlIG9wdGlvbmFsLCB0aGVpciBleGlz
-dGVuY2UgaXMgaW5kaWNhdGVkIGJ5DQo+IGZlYXR1cmUgYml0czogIiwNCj4gPj4+ICAgICB3aGlj
-aCBhbHNvIGFwcGxpZXMgdG8gc3VwcG9ydGVkX2hhc2hfdHlwZXMuDQo+ID4+Pg0KPiA+Pj4gMi4g
-SWYgSSdtIG5vdCB3cm9uZywgdGhpcyBzZWVtcyB0byBtYWtlIHRoZSBlbmNhcHN1bGF0aW9uIGhh
-c2ggdHlwZXMNCj4gZGVwZW5kZW50IG9uDQo+ID4+PiAgICAgVklSVElPX05FVF9GX1JTUywgY2Fu
-IHRoZSBkcml2ZXIgcmVhZCBzdXBwb3J0ZWRfaGFzaF90eXBlcw0KPiAoaW5jbHVkaW5nIGVuY2Fw
-c3VsYXRpb24NCj4gPj4+ICAgICBoYXNoIHR5cGVzKSBpZiBWSVJUSU9fTkVUX0ZfUlNTIGlzIG5v
-dCBuZWdvdGlhdGVkPyBCdXQgdGhhdCBzaG91bGRuJ3QgYmUNCj4gdGhlIGNhc2UsDQo+ID4+PiAg
-ICAgd2Ugb25seSB1c2UgZW5jYXBzdWxhdGlvbiBoYXNoIHR5cGVzIHRvIHByb3ZpZGUgZ3VpZGFu
-Y2UgZm9yIGhhc2gNCj4gY2FsY3VsYXRpb24sIGJ1dCBub3QNCj4gPj4+ICAgICBuZWNlc3Nhcmls
-eSB1c2UgaGFzaCB2YWx1ZXMgdG8gc2VsZWN0IHJlY2VpdmUgcXVldWVzICh1bmxlc3MNCj4gVklS
-VElPX05FVF9GX1JTUyBpcyBuZWdvdGlhdGVkKS4NCj4gPj4+DQo+ID4+PiAzLiBJZiBhbGwgc3Vw
-cG9ydGVkX2hhc2hfdHlwZXMgc3BlYWsgZm9yIHRoZW1zZWx2ZXMsIHdoeSBkbyB3ZSBuZWVkIHRo
-ZQ0KPiBWSVJUSU9fTkVUX0ZfSEFTSF9UVU5ORUwNCj4gPj4+ICAgICBmZWF0dXJlLCBiZWNhdXNl
-IGFzIGxvbmcgYXMgdGhlIGVuY2Fwc3VsYXRpb24gaGFzaCB0eXBlcyBleGlzdCBhbmQNCj4gVklS
-VElPX05FVF9GX0hBU0hfUkVQT1JUIGlzDQo+ID4+PiAgICAgbmVnb3RpYXRlZCwgaGFzaF9yZXBv
-cnRfdHVubmVsIGV4aXN0cyBjb3JyZXNwb25kaW5nbHkuICJoYXZlDQo+IFZJUlRJT19ORVRfRl9I
-QVNIX1RVTk5FTCBqdXN0IGFkZA0KPiA+Pj4gICAgIGhhc2hfcmVwb3J0X3R1bm5lbCI/IEl0IHNl
-ZW1zIGxpa2UgaGFzaF9yZXBvcnRfdHVubmVsIHdpbGwgb25seSB3b3JrIGlmDQo+IHRoZSBlbmNh
-cHN1bGF0aW9uIGhhc2gNCj4gPj4+ICAgICB0eXBlcyBhcmUgcHJlc2VudC4NCj4gPj4+DQo+ID4+
-PiBTbywgaWYgSSdtIG5vdCB3cm9uZywgdGhlIHJlYXNvbmFibGUgbG9naWMgc2hvdWxkIGJlIHRo
-YXQNCj4gVklSVElPX05FVF9GX0hBU0hfVFVOTkVMIGlzIG9ubHkgdXNlZA0KPiA+Pj4gdG8gZGVj
-bGFyZSB0aGF0IHRoZSBkZXZpY2Ugc3VwcG9ydHMgaW5uZXIgaGVhZGVyIGhhc2ggYW5kIGxldCB0
-aGUNCj4gY29ycmVzcG9uZGluZyBlbmNhcHN1bGF0aW9uDQo+ID4+PiBoYXNoIHR5cGUgZXhpc3Qs
-IHdoZW4gVklSVElPX05FVF9GX1JTUyBpcyBuZWdvdGlhdGVkLCB3ZSBjYW4gdXNlIHRoaXMNCj4g
-aGFzaCB2YWx1ZSB0byBzZWxlY3QgdGhlDQo+ID4+PiByZWNlaXZlIHF1ZXVlLiBDb25zaWRlcmlu
-ZyB0aGUgbWlncmF0aW9uIGF0IHRoZSBzYW1lIHRpbWUsIGlmIHRoZSBkc3QgZGV2aWNlDQo+IGRv
-ZXMgbm90IG5lZ290aWF0ZQ0KPiA+Pj4gVklSVElPX05FVF9GX0hBU0hfVFVOTkVMLCB0aGUgbWln
-cmF0aW9uIHdpbGwgZmFpbDsgb3RoZXJ3aXNlLCB1c2UNCj4gZW5jYXBzdWxhdGlvbiBoYXNoIHR5
-cGVzIHRvDQo+ID4+PiBkZXRlcm1pbmUgd2hldGhlciB0aGUgbWlncmF0aW9uIGNhbiBzdWNjZWVk
-Lg0KPiA+Pg0KPiA+PiBJIHRoaW5rIGl0IG1pZ2h0IGJlIGJldHRlciB0byBoYXZlIGNvbnNpc3Rl
-bmN5Og0KPiA+Pg0KPiA+PiAxKSBJZiBWSVJUSU9fTkVUX0ZfSEFTSF9UVU5ORUwgaW50cm9kdWNl
-cyBhIG5ldyBmaWVsZCBpbiB2bmV0DQo+ID4+IGhlYWRlciwgaXMgaXQgYmV0dGVyIHRvIGhhdmUg
-YSBuZXcgY29uZmlnIGZpbGVkIGluIHRoZSBjb25maWcgc3BhY2U/DQo+ID4+DQo+ID4+IG9yDQo+
-ID4+DQo+ID4+IDIpIElmIFZJUlRJT19ORVRfRl9IQVNIX1RVTk5FTCBkb2Vzbid0IGludHJvZHVj
-ZSBuZXcgY29uZmlnIGZpbGUsDQo+ID4+IHNob3VsZCB3ZSB0cnkgdG8gcmV1c2UgaGFzaF9yZXBv
-cnQ/DQo+ID4+DQo+ID4+IDEpIHNlZW1zIGJldHRlciBhbmQgY2xlYW5lciB0byBtZS4NCj4gPiBT
-b3JyeSBmb3IgdGhlIGxhdGUgcmVwbHkgZHVlIHRvIHZhY2F0aW9uLg0KPiA+DQo+ID4gR29vZCBw
-b2ludCwgaXQncyBjbGVhcmVyIHRvIHVzZSB0aGUgVklSVElPX05FVF9GX0hBU0hfVFVOTkVMIGZl
-YXR1cmUgdG8NCj4gPiBjb250cm9sIGFsbCBpbmZvcm1hdGlvbiByZWxhdGVkIHRvIGlubmVyIGhl
-YWRlciBoYXNoLg0KPiANCj4gSGksIFBhcmF2Lg0KPiANCj4gRG8geW91IHRoaW5rIHdlIG5lZWQg
-Ym90aCBoYXNoX3R5cGVzIGFuZCBoYXNoX3R1bm5lbF90eXBlcz8NCg0KSW4gc3RydWN0IHZpcnRp
-b19uZXRfY29uZmlnIHdlIG5lZWQgdHdvIGZpZWxkcy4NCmEuIHN1cHBvcnRlZF9oYXNoX3R5cGVz
-IChhbHJlYWR5IGV4aXN0cykNCmIuIHN1cHBvcnRlZF9oYXNoX3R1bm5lbF90eXBlIC0+IGJpdG1h
-cCBpbmRpY2F0aW5nIGZvciB3aGljaCBvdXRlciBoZWFkZXJzLCBpbm5lciBoYXNoIGNhbGN1bGF0
-aW9uIGlzIHN1cHBvcnRlZC4NCg0KSW4gc3RydWN0IHZpcnRpb19uZXRfaGRyIHdlIG5lZWQgdHdv
-IGZpZWxkcy4NCmEuIGhhc2hfcmVwb3J0IChhbHJlYWR5IGV4aXN0cykNCmIuIGhhc2hfdHVubmVs
-X3R5cGUgOCBiaXRzIC0+IGFic29sdXRlIHZhbHVlIGluZGljYXRpbmcgd2hpY2ggb3V0ZXIgaGVh
-ZGVyIGV4aXN0cyB3aGVuIGlubmVyIGhlYWRlciBoYXNoIGNhbGN1bGF0ZWQuDQpZb3UgYWxyZWFk
-eSBoYXZlIGl0IGluIHlvdXIgcGF0Y2ggbmFtZWQgYXMgaGFzaF9yZXBvcnRfdHVubmVsLg0KTWF5
-IGJlIGJldHRlciB0byBuYW1lIGFzIGhhc2hfcmVwb3J0X3R1bm5lbF90eXBlIHRvIG1ha2UgaXQg
-Y2xlYXJlciB0aGF0IGl0cyB0eXBlLg0K
+
+
+在 2023/2/8 上午11:19, Parav Pandit 写道:
+>> From: Heng Qi <hengqi@linux.alibaba.com>
+>> Sent: Tuesday, February 7, 2023 9:31 PM
+>>
+>> 在 2023/1/31 下午1:28, Heng Qi 写道:
+>>> On Mon, Jan 16, 2023 at 04:42:11PM +0800, Jason Wang wrote:
+>>>> 在 2023/1/16 16:01, Heng Qi 写道:
+>>>>> On Wed, Jan 11, 2023 at 04:45:12AM -0500, Michael S. Tsirkin wrote:
+>>>>>> On Wed, Jan 04, 2023 at 03:14:01PM +0800, Heng Qi wrote:
+>>>>>>> If the tunnel is used to encapsulate the packets, the hash
+>>>>>>> calculated using the outer header of the receive packets is always
+>>>>>>> fixed for the same flow packets, i.e. they will be steered to the same
+>> receive queue.
+>>>>>>> We add a feature bit VIRTIO_NET_F_HASH_TUNNEL and related
+>> bitmasks
+>>>>>>> in \field{hash_types}, which instructs the device to calculate the
+>>>>>>> hash using the inner headers of tunnel-encapsulated packets.
+>>>>>>> Besides, values in \field{hash_report_tunnel} are added to report tunnel
+>> types.
+>>>>>>> Fixes:
+>>>>>>> https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2F
+>>>>>>> github.com%2Foasis-tcs%2Fvirtio-
+>> spec%2Fissues%2F151&data=05%7C01%7
+>> Cparav%40nvidia.com%7C12be6c51b3c04860c01608db097c796a%7C43083d15
+>> 7
+>> 27340c1b7db39efd9ccc17a%7C0%7C0%7C638114202991221369%7CUnknown
+>> %7CT
+>> WFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJ
+>> XVCI6Mn0%3D%7C3000%7C%7C%7C&sdata=6feFgy94LMCYfG0NKPlHCr1AvkC
+>> OH4v9
+>>>>>>> %2BnLomXklNqs%3D&reserved=0
+>>>>>>>
+>>>>>>> Reviewed-by: Jason Wang <jasowang@redhat.com>
+>>>>>>> Signed-off-by: Heng Qi <hengqi@linux.alibaba.com>
+>>>>>>> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+>>>>>>> ---
+>>>>>>> v6:
+>>>>>>> 	1. Modify the wording of some sentences for clarity. @Michael S.
+>> Tsirkin
+>>>>>>> 	2. Fix some syntax issues. @Michael S. Tsirkin
+>>>>>>>
+>>>>>>> v5:
+>>>>>>> 	1. Fix some syntax and capitalization issues. @Michael S. Tsirkin
+>>>>>>> 	2. Use encapsulated/encaptulation uniformly. @Michael S. Tsirkin
+>>>>>>> 	3. Move the links to introduction section. @Michael S. Tsirkin
+>>>>>>> 	4. Clarify some sentences. @Michael S. Tsirkin
+>>>>>>>
+>>>>>>> v4:
+>>>>>>> 	1. Clarify some paragraphs. @Cornelia Huck
+>>>>>>> 	2. Fix the u8 type. @Cornelia Huck
+>>>>>>>
+>>>>>>> v3:
+>>>>>>> 	1. Rename VIRTIO_NET_F_HASH_GRE_VXLAN_GENEVE_INNER to
+>> VIRTIO_NET_F_HASH_TUNNEL. @Jason Wang
+>>>>>>> 	2. Make things clearer. @Jason Wang @Michael S. Tsirkin
+>>>>>>> 	3. Keep the possibility to use inner hash for automatic receive steering.
+>> @Jason Wang
+>>>>>>> 	4. Add the "Tunnel packet" paragraph to avoid repeating the GRE
+>>>>>>> etc. many times. @Michael S. Tsirkin
+>>>>>>>
+>>>>>>> v2:
+>>>>>>> 	1. Add a feature bit for GRE/VXLAN/GENEVE inner hash. @Jason Wang
+>>>>>>> 	2. Chang \field{hash_tunnel} to \field{hash_report_tunnel}.
+>>>>>>> @Jason Wang, @Michael S. Tsirkin
+>>>>>>>
+>>>>>>> v1:
+>>>>>>> 	1. Remove the patch for the bitmask fix. @Michael S. Tsirkin
+>>>>>>> 	2. Clarify some paragraphs. @Jason Wang
+>>>>>>> 	3. Add \field{hash_tunnel} and VIRTIO_NET_HASH_REPORT_GRE.
+>> @Yuri
+>>>>>>> Benditovich
+>>>>>>>
+>>>>>>>    content.tex      | 191
+>> +++++++++++++++++++++++++++++++++++++++++++++--
+>>>>>>>    introduction.tex |  19 +++++
+>>>>>>>    2 files changed, 203 insertions(+), 7 deletions(-)
+>>>>>>>
+>>>>>>> diff --git a/content.tex b/content.tex index e863709..7845f6c
+>>>>>>> 100644
+>>>>>>> --- a/content.tex
+>>>>>>> +++ b/content.tex
+>>>>>>> @@ -3084,6 +3084,9 @@ \subsection{Feature bits}\label{sec:Device
+>> Types / Network Device / Feature bits
+>>>>>>>    \item[VIRTIO_NET_F_CTRL_MAC_ADDR(23)] Set MAC address through
+>> control
+>>>>>>>        channel.
+>>>>>>> +\item[VIRTIO_NET_F_HASH_TUNNEL(52)] Device supports inner
+>>>>>>> +    header hash for GRE, VXLAN and GENEVE tunnel-encapsulated
+>> packets.
+>>>>>>> +
+>>>>>>>    \item[VIRTIO_NET_F_NOTF_COAL(53)] Device supports notifications
+>> coalescing.
+>>>>>>>    \item[VIRTIO_NET_F_GUEST_USO4 (54)] Driver can receive USOv4
+>> packets.
+>>>>>>> @@ -3095,7 +3098,8 @@ \subsection{Feature bits}\label{sec:Device
+>> Types / Network Device / Feature bits
+>>>>>>>     to several segments when each of these smaller packets has UDP
+>> header.
+>>>>>>>    \item[VIRTIO_NET_F_HASH_REPORT(57)] Device can report per-packet
+>> hash
+>>>>>>> -    value and a type of calculated hash.
+>>>>>>> +    value, a type of calculated hash, and, if
+>> VIRTIO_NET_F_HASH_TUNNEL
+>>>>>>> +    is negotiated, an encapsulation packet type.
+>>>>>>>    \item[VIRTIO_NET_F_GUEST_HDRLEN(59)] Driver can provide the exact
+>> \field{hdr_len}
+>>>>>>>        value. Device benefits from knowing the exact header length.
+>>>>>>> @@ -3140,6 +3144,7 @@ \subsubsection{Feature bit
+>> requirements}\label{sec:Device Types / Network Device
+>>>>>>>    \item[VIRTIO_NET_F_NOTF_COAL] Requires VIRTIO_NET_F_CTRL_VQ.
+>>>>>>>    \item[VIRTIO_NET_F_RSC_EXT] Requires VIRTIO_NET_F_HOST_TSO4 or
+>> VIRTIO_NET_F_HOST_TSO6.
+>>>>>>>    \item[VIRTIO_NET_F_RSS] Requires VIRTIO_NET_F_CTRL_VQ.
+>>>>>>> +\item[VIRTIO_NET_F_HASH_TUNNEL] Requires
+>> VIRTIO_NET_F_CTRL_VQ.
+>>>>>>>    \end{description}
+>>>>>>>    \subsubsection{Legacy Interface: Feature bits}\label{sec:Device
+>>>>>>> Types / Network Device / Feature bits / Legacy Interface: Feature bits}
+>> @@ -3386,7 +3391,8 @@ \subsection{Device Operation}\label{sec:Device
+>> Types / Network Device / Device O
+>>>>>>>            le16 num_buffers;
+>>>>>>>            le32 hash_value;        (Only if VIRTIO_NET_F_HASH_REPORT
+>> negotiated)
+>>>>>>>            le16 hash_report;       (Only if VIRTIO_NET_F_HASH_REPORT
+>> negotiated)
+>>>>>>> -        le16 padding_reserved;  (Only if VIRTIO_NET_F_HASH_REPORT
+>> negotiated)
+>>>>>>> +        u8 hash_report_tunnel;  (Only if VIRTIO_NET_F_HASH_REPORT
+>>>>>>> + negotiated, only valid of VIRTIO_NET_F_HASH_TUNNEL negotiated)
+>>>>>> of -> if?
+>>>>> Sorry for the late reply.
+>>>>> It's Cornelia's suggestion, and 'of' seems to work fine.
+>>>>>
+>>>>>> also let's add: otherwise reserved?
+>>>>> Sure.
+>>>>>
+>>>>>>> +        u8 padding_reserved;    (Only if VIRTIO_NET_F_HASH_REPORT
+>> negotiated)
+>>>>>>>    };
+>>>>>>>    \end{lstlisting}
+>>>>>>> @@ -3837,7 +3843,8 @@ \subsubsection{Processing of Incoming
+>> Packets}\label{sec:Device Types / Network
+>>>>>>>    A device attempts to calculate a per-packet hash in the following cases:
+>>>>>>>    \begin{itemize}
+>>>>>>>    \item The feature VIRTIO_NET_F_RSS was negotiated. The device uses
+>> the hash to determine the receive virtqueue to place incoming packets.
+>>>>>>> -\item The feature VIRTIO_NET_F_HASH_REPORT was negotiated. The
+>> device reports the hash value and the hash type with the packet.
+>>>>>>> +\item The feature VIRTIO_NET_F_HASH_REPORT was negotiated. The
+>>>>>>> +device reports the hash value and the hash type. If additionally
+>> VIRTIO_NET_F_HASH_TUNNEL was negotiated, the device reports the
+>> encapsulation type as well.
+>>>>>>>    \end{itemize}
+>>>>>>>    If the feature VIRTIO_NET_F_RSS was negotiated:
+>>>>>>> @@ -3863,8 +3870,36 @@ \subsubsection{Processing of Incoming
+>> Packets}\label{sec:Device Types / Network
+>>>>>>>     \ref{sec:Device Types / Network Device / Device Operation / Control
+>> Virtqueue / Automatic receive steering in multiqueue mode / Hash calculation}.
+>>>>>>>    \end{itemize}
+>>>>>>> +\subparagraph{Tunnel/Encapsulated packet} \label{sec:Device Types
+>>>>>>> +/ Network Device / Device Operation / Processing of Incoming
+>>>>>>> +Packets / Hash calculation for incoming packets /
+>>>>>>> +Tunnel/Encapsulated packet} A tunnel packet is encapsulated from
+>>>>>>> +the original packet based on the tunneling protocol (only a
+>>>>>>> +single level of encapsulation is currently supported). The encapsulated
+>> packet contains an outer header and an inner header, and the device calculates
+>> the hash over either the inner header or the outer header.
+>>>>>>> +
+>>>>>>> +When the feature VIRTIO_NET_F_HASH_TUNNEL is negotiated and the
+>>>>>>> +corresponding encapsulation type is set in \field{hash_types},
+>>>>>>> +the hash for a specific type of encapsulated packet is calculated over
+>> the inner as opposed to outer header.
+>>>>>>> +Supported encapsulation types are listed in \ref{sec:Device Types
+>>>>>>> +/ Network Device / Device Operation / Processing of Incoming
+>>>>>>> +Packets / Hash calculation for incoming packets / Supported/enabled
+>> hash types}.
+>>>>>>> +
+>>>>>>> +If both VIRTIO_NET_F_HASH_REPORT and
+>> VIRTIO_NET_F_HASH_TUNNEL are
+>>>>>>> +negotiated, the device can support inner hash calculation for
+>>>>>>> +\hyperref[intro:GRE]{[GRE]}, \hyperref[intro:VXLAN]{[VXLAN]} and
+>>>>>>> +\hyperref[intro:GENEVE]{[GENEVE]} encapsulated packets, and the
+>>>>>>> +corresponding encapsulation type in \field{hash_types} is
+>>>>>>> +VIRTIO_NET_HASH_TYPE_{GRE, VXLAN, GENEVE}_INNER respectively.
+>> The value in \field{hash_report_tunnel} is VIRTIO_NET_HASH_REPORT_{NONE,
+>> GRE, VXLAN, GENEVE} respectively.
+>>>>>>> +
+>>>>>>> +If VIRTIO_NET_F_HASH_REPORT is negotiated but
+>>>>>>> +VIRTIO_NET_F_HASH_TUNNEL is not negotiated, the device calculates
+>>>>>>> +the hash over the outer header, and \field{hash_report} reports
+>>>>>>> +the hash type. \field{hash_report_tunnel} is no longer valid.
+>>>>>> Does this mean that VIRTIO_NET_HASH_TYPE_{GRE, VXLAN,
+>> GENEVE}_INNER
+>>>>>> must not be set without VIRTIO_NET_F_HASH_TUNNEL?
+>>>>>>
+>>>>> Yes.
+>>>>>
+>>>>>> If yes then we can add conformance statements to this end and then
+>>>>>> drop the "If the feature VIRTIO_NET_F_HASH_TUNNEL is negotiated"
+>>>>>> all over the place just relying on hash type being set instead.
+>>>>> Please see the response below.
+>>>>>
+>>>>>> Also, note that it has to be ok for device to expose hash types without
+>>>>>> negotiating VIRTIO_NET_F_HASH_TUNNEL since they are in config space.
+>>>>>> Idea: do we want to decouple these completely? have
+>> VIRTIO_NET_F_HASH_TUNNEL
+>>>>>> just add hash_report_tunnel and have hash types speak for themselves?
+>>>>>> It makes things nicely orthogonal in that if one does not care
+>>>>>> about knowing encapsulation type (e.g. for RSS) one can disable
+>>>>>> VIRTIO_NET_F_HASH_TUNNEL.
+>>>>> This seems to have the following 3 problems:
+>>>>>
+>>>>> 1. This will break the specification. As described in the specification, any
+>> field
+>>>>>      in the configuration space only exists when there is a corresponding
+>> feature bit:
+>>>>>      "Device configuration space is generally used for rarely-changing or
+>> initialization-time parameters.
+>>>>>      Where configuration fields are optional, their existence is indicated by
+>> feature bits: ",
+>>>>>      which also applies to supported_hash_types.
+>>>>>
+>>>>> 2. If I'm not wrong, this seems to make the encapsulation hash types
+>> dependent on
+>>>>>      VIRTIO_NET_F_RSS, can the driver read supported_hash_types
+>> (including encapsulation
+>>>>>      hash types) if VIRTIO_NET_F_RSS is not negotiated? But that shouldn't be
+>> the case,
+>>>>>      we only use encapsulation hash types to provide guidance for hash
+>> calculation, but not
+>>>>>      necessarily use hash values to select receive queues (unless
+>> VIRTIO_NET_F_RSS is negotiated).
+>>>>> 3. If all supported_hash_types speak for themselves, why do we need the
+>> VIRTIO_NET_F_HASH_TUNNEL
+>>>>>      feature, because as long as the encapsulation hash types exist and
+>> VIRTIO_NET_F_HASH_REPORT is
+>>>>>      negotiated, hash_report_tunnel exists correspondingly. "have
+>> VIRTIO_NET_F_HASH_TUNNEL just add
+>>>>>      hash_report_tunnel"? It seems like hash_report_tunnel will only work if
+>> the encapsulation hash
+>>>>>      types are present.
+>>>>>
+>>>>> So, if I'm not wrong, the reasonable logic should be that
+>> VIRTIO_NET_F_HASH_TUNNEL is only used
+>>>>> to declare that the device supports inner header hash and let the
+>> corresponding encapsulation
+>>>>> hash type exist, when VIRTIO_NET_F_RSS is negotiated, we can use this
+>> hash value to select the
+>>>>> receive queue. Considering the migration at the same time, if the dst device
+>> does not negotiate
+>>>>> VIRTIO_NET_F_HASH_TUNNEL, the migration will fail; otherwise, use
+>> encapsulation hash types to
+>>>>> determine whether the migration can succeed.
+>>>> I think it might be better to have consistency:
+>>>>
+>>>> 1) If VIRTIO_NET_F_HASH_TUNNEL introduces a new field in vnet
+>>>> header, is it better to have a new config filed in the config space?
+>>>>
+>>>> or
+>>>>
+>>>> 2) If VIRTIO_NET_F_HASH_TUNNEL doesn't introduce new config file,
+>>>> should we try to reuse hash_report?
+>>>>
+>>>> 1) seems better and cleaner to me.
+>>> Sorry for the late reply due to vacation.
+>>>
+>>> Good point, it's clearer to use the VIRTIO_NET_F_HASH_TUNNEL feature to
+>>> control all information related to inner header hash.
+>> Hi, Parav.
+>>
+>> Do you think we need both hash_types and hash_tunnel_types?
+> In struct virtio_net_config we need two fields.
+> a. supported_hash_types (already exists)
+> b. supported_hash_tunnel_type -> bitmap indicating for which outer headers, inner hash calculation is supported.
+
+Thanks for the suggestion, we seem to have reached an agreement.
+
+>
+> In struct virtio_net_hdr we need two fields.
+> a. hash_report (already exists)
+> b. hash_tunnel_type 8 bits -> absolute value indicating which outer header exists when inner header hash calculated.
+> You already have it in your patch named as hash_report_tunnel.
+> May be better to name as hash_report_tunnel_type to make it clearer that its type.
+
+Sure.
+
+Thanks for your reply.
 
