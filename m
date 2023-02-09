@@ -1,60 +1,139 @@
-Return-Path: <mgurtovoy@nvidia.com>
-Message-ID: <46428e55-3241-000f-531c-ef2c6e532345@nvidia.com>
-Date: Wed, 15 Feb 2023 02:58:00 +0200
-Subject: Re: [PATCH v10 07/10] ccw: document ADMIN_VQ as reserved
+Return-Path: <mst@redhat.com>
+Date: Thu, 9 Feb 2023 07:14:00 -0500
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Subject: [PATCH v10 08/10] admin: command list discovery
+Message-ID: <20230209121221.15118-9-mst@redhat.com>
 References: <20230209121221.15118-1-mst@redhat.com>
- <20230209121221.15118-8-mst@redhat.com>
-From: Max Gurtovoy <mgurtovoy@nvidia.com>
-In-Reply-To: <20230209121221.15118-8-mst@redhat.com>
 MIME-Version: 1.0
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: "Michael S. Tsirkin" <mst@redhat.com>, virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, jasowang@redhat.com, cohuck@redhat.com, sgarzare@redhat.com, stefanha@redhat.com, nrupal.jani@intel.com, Piotr.Uminski@intel.com, hang.yuan@intel.com
-Cc: virtio@lists.oasis-open.org, Zhu Lingshan <lingshan.zhu@intel.com>, pasic@linux.ibm.com, Shahaf Shuler <shahafs@nvidia.com>, Parav Pandit <parav@nvidia.com>
+In-Reply-To: <20230209121221.15118-1-mst@redhat.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+To: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, jasowang@redhat.com, mst@redhat.com, cohuck@redhat.com, sgarzare@redhat.com, stefanha@redhat.com, nrupal.jani@intel.com, Piotr.Uminski@intel.com, hang.yuan@intel.com
+Cc: virtio@lists.oasis-open.org, Zhu Lingshan <lingshan.zhu@intel.com>, pasic@linux.ibm.com, Shahaf Shuler <shahafs@nvidia.com>, Parav Pandit <parav@nvidia.com>, Max Gurtovoy <mgurtovoy@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+Add commands to find out which commands does each group support,
+as well as enable their use by driver.
+This will be especially useful once we have multiple group types.
 
+An alternative is per-type VQs. This is possible but will
+require more per-transport work. Discovery through the vq
+helps keep things contained.
 
-On 09/02/2023 14:13, Michael S. Tsirkin wrote:
-> Adding relevant registers needs more work and it's not
-> clear what the use-case will be as currently only
-> the PCI transport is supported. But let's keep the
-> door open on this.
-> We already say it's reserved in a central place, but it
-> does not hurt to remind implementers to mask it.
-> 
-> Note: there are more features to add to this list.
-> Will be done later with a patch on top.
-> 
-> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> ---
->   content.tex | 12 ++++++++++++
->   1 file changed, 12 insertions(+)
-> 
-> diff --git a/content.tex b/content.tex
-> index f8bd1ab..6a50b39 100644
-> --- a/content.tex
-> +++ b/content.tex
-> @@ -2976,6 +2976,18 @@ \subsubsection{Resetting Devices}\label{sec:Virtio Transport Options / Virtio ov
->   MAY also choose to verify reset completion by reading \field{device status} via
->   CCW_CMD_READ_STATUS and checking whether it is 0 afterwards.
->   
-> +\subsection{Features reserved for future use}\label{sec:Virtio Transport Options / Virtio over channel I/O / Features reserved for future use}
-> +
-> +At this time, devices and drivers utilizing Virtio over channel I/O
-> +do not support the following features:
-> +\begin{itemize}
-> +
-> +\item VIRTIO_F_ADMIN_VQ
+Signed-off-by: Max Gurtovoy <mgurtovoy@nvidia.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+---
+ admin.tex | 90 ++++++++++++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 89 insertions(+), 1 deletion(-)
 
-same as in previous patch: what about missing support for SR-IOV feature ?
-> +
-> +\end{itemize}
-> +
-> +These features are reserved for future use.
-> +
->   \chapter{Device Types}\label{sec:Device Types}
->   
->   On top of the queues, config space and feature negotiation facilities
+diff --git a/admin.tex b/admin.tex
+index 3026a79..4de606a 100644
+--- a/admin.tex
++++ b/admin.tex
+@@ -98,7 +98,9 @@ \subsection{Group administration commands}\label{sec:Basic Facilities of a Virti
+ \hline
+ opcode & Name & Command Description \\
+ \hline \hline
+-0x0000 - 0x7FFF & - &  Group administration commands    \\
++0x0000 & VIRTIO_ADMIN_CMD_LIST_QUERY & Provides to driver list of commands supported for this group type    \\
++0x0001 & VIRTIO_ADMIN_CMD_LIST_USE & Provides to device list of commands used for this group type \\
++0x0002 - 0x7FFF & - &  Group administration commands    \\
+ \hline
+ 0x8000 - 0xFFFF & - & Reserved    \\
+ \hline
+@@ -149,6 +151,92 @@ \subsection{Group administration commands}\label{sec:Basic Facilities of a Virti
+ \hline
+ \end{tabular}
+ 
++Before sending any administration commands to the device, the driver
++needs to communicate to the device which commands it is going to
++use. Initially (after reset), only two commands are assumed to be used:
++VIRTIO_ADMIN_CMD_LIST_QUERY and VIRTIO_ADMIN_CMD_LIST_USE.
++
++Before sending any other commands for any member of a specific group to
++the device, the driver queries the supported commands via
++VIRTIO_ADMIN_CMD_LIST_QUERY and sends the commands it will use via
++VIRTIO_ADMIN_CMD_LIST_USE.
++
++Commands VIRTIO_ADMIN_CMD_LIST_QUERY and
++VIRTIO_ADMIN_CMD_LIST_USE
++both use the following structure describing the
++command opcodes:
++
++\begin{lstlisting}
++struct virtio_admin_cmd_list {
++       /* Indicates which of the below fields were returned
++       le64 device_admin_cmds[];
++};
++\end{lstlisting}
++
++This structure is an array of 64 bit values in little-endian byte
++order, in which a bit is set if the specific command opcode
++is supported. Thus, \field{device_admin_cmds[0]} refers to the first 32-bit value
++in this array corresponding to opcodes 0 to 63,
++\field{device_admin_cmds[1]} is the second 64-bit value
++corresponding to opcodes 64 to 127, etc.
++For example, the array of size 2 including
++the values 0x3 in \field{device_admin_cmds[0]}
++and 0x1 in \field{device_admin_cmds[1]} indicates that only
++opcodes 0, 1 and 64 are supported.
++The length of the array depends on the supported opcodes - it is
++large enough to include bits set for all supported opcodes,
++that is the length can be calculated by starting with the largest
++supported opcode adding one, dividing by 64 and rounding up.
++The array is also allowed to be larger and to additionally
++include an arbitrary number of all-zero entries.
++
++Accordingly, bits 0 and 1 corresponding to opcode 0
++(VIRTIO_ADMIN_CMD_LIST_QUERY) and 1
++(VIRTIO_ADMIN_CMD_LIST_USE) are
++always set in \field{device_admin_cmds[0]} returned by VIRTIO_ADMIN_CMD_LIST_QUERY.
++
++For the command VIRTIO_ADMIN_CMD_LIST_QUERY, \field{opcode} is set to 0x0.
++The \field{group_member_id} is unused. It is set to zero by driver.
++This command has no command specific data.
++The device, upon success, returns a result in
++\field{command_specific_result} in the format
++\field{struct virtio_admin_cmd_list} describing the
++list of administration commands supported for the given group.
++
++
++For the command VIRTIO_ADMIN_CMD_LIST_USE, \field{opcode}
++is set to 0x1.
++The \field{group_member_id} is unused. It is set to zero by driver.
++The \field{command_specific_data} is in the format
++\field{struct virtio_admin_cmd_list} describing the
++list of administration commands used by the driver.
++This command has no command specific result.
++
++The driver issues the command VIRTIO_ADMIN_CMD_LIST_QUERY to
++query the list of commands valid for this group and before sending
++any commands for any member of a group.
++
++The driver then enables use of some of the opcodes by sending to
++the device the command VIRTIO_ADMIN_CMD_LIST_USE with a subset
++of the list returned by VIRTIO_ADMIN_CMD_LIST_QUERY that is
++both understood and used by the driver.
++
++If the device supports the command list used by the driver, the
++device completes the command with status VIRTIO_ADMIN_STATUS_OK.
++If the device does not support the command list, the device
++completes the command with status
++VIRTIO_ADMIN_STATUS_INVALID_FIELD.
++
++Note: drivers are assumed not to set bits in device_admin_cmds
++if they are not familiar with how the command opcode
++is used, since devices could have dependencies between
++command opcodes.
++
++It is assumed that all members in a group support and are used
++with the same list of commands. However, for owner devices
++supporting multiple group types, the list of supported commands
++might differ between different group types.
++
+ \section{Administration Virtqueues}\label{sec:Basic Facilities of a Virtio Device / Administration Virtqueues}
+ 
+ An administration virtqueue of an owner device is used to submit
+-- 
+MST
 
