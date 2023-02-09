@@ -1,91 +1,96 @@
-Return-Path: <parav@nvidia.com>
-From: Parav Pandit <parav@nvidia.com>
-Subject: RE: [PATCH v10 04/10] admin: introduce virtio admin virtqueues
-Date: Sat, 11 Feb 2023 18:50:57 +0000
-Message-ID: <PH0PR12MB5481E9C5C0ACA3E8182004BCDCDF9@PH0PR12MB5481.namprd12.prod.outlook.com>
+Return-Path: <mst@redhat.com>
+Date: Thu, 9 Feb 2023 07:13:48 -0500
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Subject: [PATCH v10 05/10] pci: add admin vq registers to virtio over pci
+Message-ID: <20230209121221.15118-6-mst@redhat.com>
 References: <20230209121221.15118-1-mst@redhat.com>
- <20230209121221.15118-5-mst@redhat.com>
-In-Reply-To: <20230209121221.15118-5-mst@redhat.com>
 MIME-Version: 1.0
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-To: "Michael S. Tsirkin" <mst@redhat.com>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "jasowang@redhat.com" <jasowang@redhat.com>, "cohuck@redhat.com" <cohuck@redhat.com>, "sgarzare@redhat.com" <sgarzare@redhat.com>, "stefanha@redhat.com" <stefanha@redhat.com>, "nrupal.jani@intel.com" <nrupal.jani@intel.com>, "Piotr.Uminski@intel.com" <Piotr.Uminski@intel.com>, "hang.yuan@intel.com" <hang.yuan@intel.com>
-Cc: "virtio@lists.oasis-open.org" <virtio@lists.oasis-open.org>, Zhu Lingshan <lingshan.zhu@intel.com>, "pasic@linux.ibm.com" <pasic@linux.ibm.com>, Shahaf Shuler <shahafs@nvidia.com>, Max Gurtovoy <mgurtovoy@nvidia.com>
+In-Reply-To: <20230209121221.15118-1-mst@redhat.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+To: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, jasowang@redhat.com, mst@redhat.com, cohuck@redhat.com, sgarzare@redhat.com, stefanha@redhat.com, nrupal.jani@intel.com, Piotr.Uminski@intel.com, hang.yuan@intel.com
+Cc: virtio@lists.oasis-open.org, Zhu Lingshan <lingshan.zhu@intel.com>, pasic@linux.ibm.com, Shahaf Shuler <shahafs@nvidia.com>, Parav Pandit <parav@nvidia.com>, Max Gurtovoy <mgurtovoy@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+Add new registers to the PCI common configuration structure.
 
-> From: Michael S. Tsirkin <mst@redhat.com>
-> Sent: Thursday, February 9, 2023 7:14 AM
-> +
-> +If VIRTIO_F_ADMIN_VQ has been negotiated, an owner device exposes one
-An owner device supports one or more..
+These registers will be used for querying the indices of the admin
+virtqueues of the owner device. To configure, reset or enable the admin
+virtqueues, the driver should follow existing queue configuration/setup
+sequence.
 
-> +or more adminstration virtqueues. The number and locations of the
-> +administration virtqueues are exposed by the owner device in a
-> +transport specific manner.
-> +
-> +The driver submits commands by queueing them to an arbitrary
-Do you prefer 'driver adds commands' instead of two verbs of 'submitting' a=
-nd 'queueuing', like we discussed in other thread for enqueuing/post vs add=
-?
+Signed-off-by: Max Gurtovoy <mgurtovoy@nvidia.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+---
+ content.tex | 34 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 34 insertions(+)
 
-I prefer the driver enqueues command and device process them in order.
-
-> +administration virtqueue, and they are processed by the device in the
-> +order in which they are queued. It is the responsibility of the driver
-> +to ensure ordering for commands placed on different administration
-ordering of commands reads better than ordering for commands to me.
-
-> +virtqueues, because they will be executed with no order constraints.
-> +
-> +Administration virtqueues are used as follows:
-Does it have to be plural to describe an operation?
-
-> +\begin{itemize}
-> +\item The driver submits the command using the \field{struct
-> +virtio_admin_cmd} structure using a buffer consisting of two parts: a
-> +device-readable one followed by a device-writable one.
-> +\item the device-readable part includes fields from \field{opcode}
-> +through \field{command_specific_data}.
-> +\item the device-writeable buffer includes fields from \field{status}
-> +through \field{command_specific_result} inclusive.
-> +\end{itemize}
-> +
-> +For each command, this specification describes a distinct format
-> +structure used for \field{command_specific_data} and
-> +\field{command_specific_result}, the length of these fields depends on
-> +the command.
-> +
-> +However, to ensure forward compatibility \begin{itemize} \item drivers
-> +are allowed to submit buffers that are longer than what the device
-> +expects (that is, longer than the length of \field{opcode} through
-> +\field{command_specific_data}).
-> +This allows the driver to maintain
-> +a single format structure even if some structure fields are unused by
-> +the device.
-> +\item drivers are allowed to submit buffers that are shorter than what
-> +the device expects (that is, shorter than the length of \field{status}
-> +through \field{command_specific_result}). This allows the device to
-> +maintain a single format structure even if some structure fields are
-> +unused by the driver.
-> +\end{itemize}
-> +
-> +The device compares the length of each part (device-readable and
-> +device-writeable) of the buffer as submitted by driver to what it
-> +expects and then silently truncates the structures to either the length
-> +submitted by the driver, or the length described in this specification,
-> +whichever is shorter.  The device silently ignores any data falling
-> +outside the shorter of the two lengths. Any missing fields are
-> +interpreted as set to zero.
-> +
-> +Similarly, the driver compares the used buffer length of the buffer to
-> +what it expects and then silently truncates the structure to the used
-> +buffer length.
-> +The driver silently ignores any data falling outside the used buffer
-> +length reported by the device.  Any missing fields are interpreted as
-> +set to zero.
-Above buffer size description is very well written.
-I don't remember this in earlier version. May be was there.
-Thanks.
+diff --git a/content.tex b/content.tex
+index c8647c9..2d9b903 100644
+--- a/content.tex
++++ b/content.tex
+@@ -946,6 +946,10 @@ \subsubsection{Common configuration structure layout}\label{sec:Virtio Transport
+         le64 queue_device;              /* read-write */
+         le16 queue_notify_data;         /* read-only for driver */
+         le16 queue_reset;               /* read-write */
++
++        /* About the administration virtqueue. */
++        le16 admin_queue_index;         /* read-only for driver */
++        le16 admin_queue_num;         /* read-only for driver */
+ };
+ \end{lstlisting}
+ 
+@@ -1031,6 +1035,19 @@ \subsubsection{Common configuration structure layout}\label{sec:Virtio Transport
+         This field exists only if VIRTIO_F_RING_RESET has been
+         negotiated. (see \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Reset}).
+ 
++\item[\field{admin_queue_index}]
++        The device uses this to report the index of the first administration virtqueue.
++        This field is valid only if VIRTIO_F_ADMIN_VQ has been negotiated.
++\item[\field{admin_queue_num}]
++	The device uses this to report the number of the
++	supported administration virtqueues.  Virtqueues with index
++	between \field{admin_queue_index} and (\field{admin_queue_index} +
++	\field{admin_queue_num}) inclusive serve as administration
++	virtqueues.
++	Thus the number of administration virtqueues equals
++	(\field{admin_queue_num} + 1).
++	This field is valid only if VIRTIO_F_ADMIN_VQ has been
++	negotiated.
+ \end{description}
+ 
+ \devicenormative{\paragraph}{Common configuration structure layout}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Common configuration structure layout}
+@@ -1117,6 +1134,14 @@ \subsubsection{Common configuration structure layout}\label{sec:Virtio Transport
+ were used before the queue reset.
+ (see \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Reset}).
+ 
++If VIRTIO_F_ADMIN_VQ has been negotiated, and if the driver
++configures any administration virtqueues, the driver MUST
++configure the administration virtqueues using the index
++in the range \field{admin_queue_index} to
++\field{admin_queue_index} + \field{admin_queue_num} inclusive.
++The driver MAY configure less administration virtqueues than
++supported by the device.
++
+ \subsubsection{Notification structure layout}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Notification capability}
+ 
+ The notification location is found using the VIRTIO_PCI_CAP_NOTIFY_CFG
+@@ -7684,6 +7709,15 @@ \chapter{Reserved Feature Bits}\label{sec:Reserved Feature Bits}
+ 
+   \item[VIRTIO_F_ADMIN_VQ(41)] This feature indicates that the device exposes one or more
+   administration virtqueues.
++  At the moment this feature is only supported for devices using
++  \ref{sec:Virtio Transport Options / Virtio Over PCI
++	  Bus}~\nameref{sec:Virtio Transport Options / Virtio Over PCI Bus}
++	  as the transport and is reserved for future use for
++	  devices using other transports (see
++	  \ref{drivernormative:Basic Facilities of a Virtio Device / Feature Bits}
++	and
++	\ref{devicenormative:Basic Facilities of a Virtio Device / Feature Bits} for
++	handling features reserved for future use.
+ 
+ \end{description}
+ 
+-- 
+MST
 
