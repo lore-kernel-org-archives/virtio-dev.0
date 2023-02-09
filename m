@@ -1,12 +1,9 @@
-Return-Path: <virtio-comment-return-4088-cohuck=redhat.com@lists.oasis-open.org>
-Sender: <virtio-comment@lists.oasis-open.org>
-List-Post: <mailto:virtio-comment@lists.oasis-open.org>
-List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
-Message-ID: <eea0ca26-99c7-c5d7-a0e3-c6a37951f544@linux.alibaba.com>
-Date: Thu, 9 Feb 2023 13:20:33 +0800
-MIME-Version: 1.0
+Return-Path: <parav@nvidia.com>
+From: Parav Pandit <parav@nvidia.com>
+Subject: RE: [virtio-dev] Re: [virtio-comment] Re: [PATCH v7] virtio-net:
+ support inner header hash
+Date: Thu, 9 Feb 2023 05:34:06 +0000
+Message-ID: <PH0PR12MB5481A67E9B1362BB18CEDDC4DCD99@PH0PR12MB5481.namprd12.prod.outlook.com>
 References: <20230104071401.31746-1-hengqi@linux.alibaba.com>
  <20230111042905-mutt-send-email-mst@kernel.org>
  <20230116080106.GA114763@h68b04307.sqa.eu95>
@@ -18,95 +15,51 @@ References: <20230104071401.31746-1-hengqi@linux.alibaba.com>
  <PH0PR12MB5481F054A6BA5C10831F0AA8DCD89@PH0PR12MB5481.namprd12.prod.outlook.com>
  <98ffa453-7a76-9afc-1861-8c46efef4705@linux.alibaba.com>
  <PH0PR12MB54817A1F42DAB9C24D0B73B2DCD89@PH0PR12MB5481.namprd12.prod.outlook.com>
-From: Heng Qi <hengqi@linux.alibaba.com>
-In-Reply-To: <PH0PR12MB54817A1F42DAB9C24D0B73B2DCD89@PH0PR12MB5481.namprd12.prod.outlook.com>
-Subject: [virtio-comment] Re: [virtio-dev] Re: [virtio-comment] Re: [PATCH v7] virtio-net:
- support inner header hash
-Content-Type: text/plain; charset=UTF-8; format=flowed
+ <eea0ca26-99c7-c5d7-a0e3-c6a37951f544@linux.alibaba.com>
+In-Reply-To: <eea0ca26-99c7-c5d7-a0e3-c6a37951f544@linux.alibaba.com>
+MIME-Version: 1.0
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-To: Parav Pandit <parav@nvidia.com>, Yuri Benditovich <yuri.benditovich@daynix.com>
+To: Heng Qi <hengqi@linux.alibaba.com>, Yuri Benditovich <yuri.benditovich@daynix.com>
 Cc: "Michael S . Tsirkin" <mst@redhat.com>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Cornelia Huck <cohuck@redhat.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>, Jason Wang <jasowang@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
 
+> From: Heng Qi <hengqi@linux.alibaba.com>
+> Sent: Thursday, February 9, 2023 12:21 AM
 
-=E5=9C=A8 2023/2/8 =E4=B8=8B=E5=8D=888:21, Parav Pandit =E5=86=99=E9=81=93:
->> From: Heng Qi <hengqi@linux.alibaba.com>
->> Sent: Wednesday, February 8, 2023 1:11 AM
->>
->>
->> =E5=9C=A8 2023/2/8 =E4=B8=8B=E5=8D=881:18, Parav Pandit =E5=86=99=E9=81=
-=93:
->>>> From: Heng Qi <hengqi@linux.alibaba.com>
->>>> Sent: Tuesday, February 7, 2023 10:25 PM
->>> [..]
->>>>>> Do you think we need both hash_types and hash_tunnel_types?
->>>>> In struct virtio_net_config we need two fields.
->>>>> a. supported_hash_types (already exists) b.
->>>>> supported_hash_tunnel_type
->>>>> -> bitmap indicating for which outer headers, inner hash calculation
->>>>> -> is
->>>> supported.
->>>>
->>>> Thanks for the suggestion, we seem to have reached an agreement.
->>>>
->>>>> In struct virtio_net_hdr we need two fields.
->>>>> a. hash_report (already exists)
->>>>> b. hash_tunnel_type 8 bits -> absolute value indicating which outer
->>>>> header
->>>> exists when inner header hash calculated.
->>>>> You already have it in your patch named as hash_report_tunnel.
->>>>> May be better to name as hash_report_tunnel_type to make it clearer
->>>>> that its
->>>> type.
->>>>
->>>> Sure.
->>>>
->>>> Thanks for your reply.
->>> I had one last question. Why do we need to inform the
->> hash_report_tunnel_type of the outer header in the virtio_net_hdr?
->>> Is this for debug? Or is there a use case that will process this value?
->> The driver may use it to do some statistical information, or do some rx
->> classification based on the rx hash, and we'd better not hide informatio=
-n from
->> the driver.
->>
-> Statistical information is better gathered via stats, instead of adding s=
-uch code in driver data path.
+> >>>> Thanks for your reply.
+> >>> I had one last question. Why do we need to inform the
+> >> hash_report_tunnel_type of the outer header in the virtio_net_hdr?
+> >>> Is this for debug? Or is there a use case that will process this valu=
+e?
+> >> The driver may use it to do some statistical information, or do some
+> >> rx classification based on the rx hash, and we'd better not hide
+> >> information from the driver.
+> >>
+> > Statistical information is better gathered via stats, instead of adding=
+ such code
+> in driver data path.
+>=20
+> A cautionary note : the source of hash_report_tunnel comes from the
+> discussion here
+> https://lists.oasis-open.org/archives/virtio-dev/202211/msg00063.html
 
-A cautionary note : the source of hash_report_tunnel comes from the=20
-discussion here=20
-https://lists.oasis-open.org/archives/virtio-dev/202211/msg00063.html .
-If I understand correctly, if virtio-net-hdr also has=20
-hash_report_tunnel, how does the driver do statistics?
+> If I understand correctly, if virtio-net-hdr also has hash_report_tunnel,=
+ how
+> does the driver do statistics?
+I am asking to avoid having hash_report_tunnel in virtio_net_hdr if it is o=
+nly for the statistics purpose.
+If it has more use than just statistics, I like to understand its use in rx=
+ packet processing flow, if there is any and to describe in commit log too.
 
-CC Yuri for some opinions.
+Below [1] says about driver doing some rx classification. It is unclear on =
+inner or outer.
+The response is not very clear to me, about how this field is useful.
 
-Thanks.
+[1] https://lists.oasis-open.org/archives/virtio-dev/202211/msg00063.html
 
->
-> It is not about hiding.
-> It has onus on the data path to detect the tunnel type and place that vir=
-tio_net_hdr.
-> So lets find one use of it in data path which sw entity will use it.
->
->
-
-
-This publicly archived list offers a means to provide input to the
-OASIS Virtual I/O Device (VIRTIO) TC.
-
-In order to verify user consent to the Feedback License terms and
-to minimize spam in the list archive, subscription is required
-before posting.
-
-Subscribe: virtio-comment-subscribe@lists.oasis-open.org
-Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
-List help: virtio-comment-help@lists.oasis-open.org
-List archive: https://lists.oasis-open.org/archives/virtio-comment/
-Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
-List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lis=
-ts
-Committee: https://www.oasis-open.org/committees/virtio/
-Join OASIS: https://www.oasis-open.org/join/
+If driver needs to know the statistics of it, it can query them from the de=
+vice by introducing statistics cmd.
 
