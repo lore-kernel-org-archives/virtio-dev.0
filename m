@@ -1,10 +1,8 @@
 Return-Path: <parav@nvidia.com>
 From: Parav Pandit <parav@nvidia.com>
-Subject: [PATCH v2 6/6] transport-ccw: Correct spelling errors
-Date: Fri, 17 Feb 2023 17:49:05 +0200
-Message-ID: <20230217154905.33619-7-parav@nvidia.com>
-In-Reply-To: <20230217154905.33619-1-parav@nvidia.com>
-References: <20230217154905.33619-1-parav@nvidia.com>
+Subject: [PATCH v2] virtio-net: Define configuration field layout before its description
+Date: Thu, 9 Feb 2023 06:52:28 +0200
+Message-ID: <20230209045228.212309-1-parav@nvidia.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 Content-Type: text/plain
@@ -12,76 +10,123 @@ To: mst@redhat.com, virtio-dev@lists.oasis-open.org, cohuck@redhat.com
 Cc: virtio-comment@lists.oasis-open.org, shahafs@nvidia.com, Parav Pandit <parav@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Now that we have individual files, fix reported spelling errors.
+Currently some fields of the virtio_net_config structure are defined
+before introducing the structure and some are defined after
+introducing virtio_net_config.
+Better to define the configuration layout first followed by
+description of all the fields.
 
-While at it, remove extra white spaces.
+Device configuration fields are described in the section. Change wording
+from 'listed' to 'described' as suggested in patch [1].
+
+While rewording the configuration layout, mention only one time that all
+the fields of the configuration layout are read-only. Remove read-only
+wording from individual fields.
+
+[1] https://lists.oasis-open.org/archives/virtio-dev/202302/msg00004.html
 
 Signed-off-by: Parav Pandit <parav@nvidia.com>
 ---
 changelog:
 v1->v2:
-- remove trailing white spaces
+- remove read-only wording from multiple places
+v0->v1:
+- Change wording about device configuration field introduction
+- remove duplicate read-only wording for status field
+- reword sentence to read it better
 ---
- transport-ccw.tex | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ device-types/net/description.tex | 48 +++++++++++++++++---------------
+ 1 file changed, 26 insertions(+), 22 deletions(-)
 
-diff --git a/transport-ccw.tex b/transport-ccw.tex
-index 93401a4..c492cb9 100644
---- a/transport-ccw.tex
-+++ b/transport-ccw.tex
-@@ -56,13 +56,13 @@ \subsection{Basic Concepts}\label{sec:Virtio Transport =
-Options / Virtio over cha
- \end{tabular}
+diff --git a/device-types/net/description.tex b/device-types/net/descriptio=
+n.tex
+index bdf4810..719ebd4 100644
+--- a/device-types/net/description.tex
++++ b/device-types/net/description.tex
+@@ -156,26 +156,43 @@ \subsubsection{Legacy Interface: Feature bits}\label{=
+sec:Device Types / Network
+ \subsection{Device configuration layout}\label{sec:Device Types / Network =
+Device / Device configuration layout}
+ \label{sec:Device Types / Block Device / Feature bits / Device configurati=
+on layout}
 =20
- A virtio-ccw proxy device facilitates:
--\begin{itemize}=20
-+\begin{itemize}
- \item Discovery and attachment of virtio devices (as described above).
- \item Initialization of virtqueues and transport-specific facilities (usin=
-g
-       virtio-specific channel commands).
- \item Notifications (via hypercall and a combination of I/O interrupts
-       and indicator bits).
--\end{itemize}=20
-+\end{itemize}
+-Device configuration fields are listed below, they are read-only for a dri=
+ver. The \field{mac} address field
+-always exists (though is only valid if VIRTIO_NET_F_MAC is set), and
+-\field{status} only exists if VIRTIO_NET_F_STATUS is set. Two
+-read-only bits (for the driver) are currently defined for the status field=
+:
+-VIRTIO_NET_S_LINK_UP and VIRTIO_NET_S_ANNOUNCE.
++The network device has the following device configuration layout.
++These device configuration fields are read-only for the driver.
++
++\begin{lstlisting}
++struct virtio_net_config {
++        u8 mac[6];
++        le16 status;
++        le16 max_virtqueue_pairs;
++        le16 mtu;
++        le32 speed;
++        u8 duplex;
++        u8 rss_max_key_size;
++        le16 rss_max_indirection_table_length;
++        le32 supported_hash_types;
++};
++\end{lstlisting}
++
++The \field{mac} address field always exists (although it is only
++valid if VIRTIO_NET_F_MAC is set).
++
++The \field{status} only exists if VIRTIO_NET_F_STATUS is set.
++Two bits are currently defined for the status field: VIRTIO_NET_S_LINK_UP
++and VIRTIO_NET_S_ANNOUNCE.
 =20
- \subsubsection{Channel Commands for Virtio}\label{sec:Virtio Transport Opt=
-ions / Virtio
- over channel I/O / Basic Concepts/ Channel Commands for Virtio}
-@@ -107,7 +107,7 @@ \subsubsection{Notifications}\label{sec:Virtio Transpor=
-t Options / Virtio
- Host->Guest Notification / Notification via Classic I/O Interrupts} and
- \ref{sec:Virtio Transport Options / Virtio over channel I/O / Device
- Operation / Host->Guest Notification / Notification via Adapter I/O
--Interrupts} respectively.=20
-+Interrupts} respectively.
+ \begin{lstlisting}
+ #define VIRTIO_NET_S_LINK_UP     1
+ #define VIRTIO_NET_S_ANNOUNCE    2
+ \end{lstlisting}
 =20
- Configuration change notifications are done using so-called classic I/O
- interrupts. The initialization is described in section \ref{sec:Virtio
-@@ -413,7 +413,7 @@ \subsubsection{Setting Up Indicators}\label{sec:Virtio =
-Transport Options / Virti
- \begin{itemize}
- \item a summary indicator byte covering the virtqueues for one or more
-   virtio-ccw proxy devices
--\item a set of contigous indicator bits for the virtqueues for a
-+\item a set of contiguous indicator bits for the virtqueues for a
-   virtio-ccw proxy device
- \end{itemize}
+-The following driver-read-only field, \field{max_virtqueue_pairs} only exi=
+sts if
++The following field, \field{max_virtqueue_pairs} only exists if
+ VIRTIO_NET_F_MQ or VIRTIO_NET_F_RSS is set. This field specifies the maxim=
+um number
+ of each of transmit and receive virtqueues (receiveq1\ldots receiveqN
+ and transmitq1\ldots transmitqN respectively) that can be configured once =
+at least one of these features
+ is negotiated.
 =20
-@@ -563,7 +563,7 @@ \subsubsection{Guest->Host Notification}\label{sec:Virt=
-io Transport Options / Vi
+-The following driver-read-only field, \field{mtu} only exists if
+-VIRTIO_NET_F_MTU is set. This field specifies the maximum MTU for the driv=
+er to
+-use.
++The following field, \field{mtu} only exists if VIRTIO_NET_F_MTU is set.
++This field specifies the maximum MTU for the driver to use.
 =20
- \drivernormative{\paragraph}{Guest->Host Notification}{Virtio Transport Op=
-tions / Virtio over channel I/O / Device Operation / Guest->Host Notificati=
-on}
+ The following two fields, \field{speed} and \field{duplex}, only
+ exist if VIRTIO_NET_F_SPEED_DUPLEX is set.
+@@ -190,19 +207,6 @@ \subsection{Device configuration layout}\label{sec:Dev=
+ice Types / Network Device
+ is expected to re-read these values after receiving a
+ configuration change notification.
 =20
--For each notification, the driver SHOULD use GPR4 to pass the host cookie =
-received in GPR2 from the previous notication.
-+For each notification, the driver SHOULD use GPR4 to pass the host cookie =
-received in GPR2 from the previous notification.
+-\begin{lstlisting}
+-struct virtio_net_config {
+-        u8 mac[6];
+-        le16 status;
+-        le16 max_virtqueue_pairs;
+-        le16 mtu;
+-        le32 speed;
+-        u8 duplex;
+-        u8 rss_max_key_size;
+-        le16 rss_max_indirection_table_length;
+-        le32 supported_hash_types;
+-};
+-\end{lstlisting}
+ The following field, \field{rss_max_key_size} only exists if VIRTIO_NET_F_=
+RSS or VIRTIO_NET_F_HASH_REPORT is set.
+ It specifies the maximum supported length of RSS key in bytes.
 =20
- \begin{note}
- For example:
 --=20
 2.26.2
 
