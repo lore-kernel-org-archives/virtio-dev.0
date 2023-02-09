@@ -1,117 +1,95 @@
-Return-Path: <virtio-dev-return-10858-cohuck=redhat.com@lists.oasis-open.org>
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id A8E04986586
-	for <virtio-dev@lists.oasis-open.org>; Thu,  9 Feb 2023 12:13:35 +0000 (UTC)
-Date: Thu, 9 Feb 2023 07:13:28 -0500
+Return-Path: <mst@redhat.com>
+Date: Thu, 9 Feb 2023 07:13:32 -0500
 From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20230209121221.15118-1-mst@redhat.com>
+Subject: [PATCH v10 01/10] virtio: document forward compatibility guarantees
+Message-ID: <20230209121221.15118-2-mst@redhat.com>
+References: <20230209121221.15118-1-mst@redhat.com>
 MIME-Version: 1.0
-Subject: [virtio-dev] [PATCH v10 00/10] Introduce device group and device management
+In-Reply-To: <20230209121221.15118-1-mst@redhat.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 To: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, jasowang@redhat.com, mst@redhat.com, cohuck@redhat.com, sgarzare@redhat.com, stefanha@redhat.com, nrupal.jani@intel.com, Piotr.Uminski@intel.com, hang.yuan@intel.com
 Cc: virtio@lists.oasis-open.org, Zhu Lingshan <lingshan.zhu@intel.com>, pasic@linux.ibm.com, Shahaf Shuler <shahafs@nvidia.com>, Parav Pandit <parav@nvidia.com>, Max Gurtovoy <mgurtovoy@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+Feature negotiation forms the basis of forward compatibility
+guarantees of virtio but has never been properly documented.
+Do it now.
 
-Thanks to everyone who commented!  Here's v10 after a longish
-hiccup - I hope this is close to being ready. I'm especially
-interested to hear whether this is in a good enough shape to
-serve as basis for vq transport.
+Suggested-by: Halil Pasic <pasic@linux.ibm.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+---
+ content.tex | 42 ++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 42 insertions(+)
 
-Thanks!
-
-Change log:
-
-since v9:
-	addressed review comments:
-		multiple typo fixes
-		made command list array 64 bit - easier future proofing
-		clarifications around group type and admin command concepts
-		lots of clarifications around structure
-			trucation for forwards and backwards compatibility -
-			hopefully things are clear now
-
-since v8:
-	addressed comments by Cornelia - as we agreed on list
-	
-since v7:
-	make high level error codes match linux, with virtio specific codes
-		in a separate field
-	renamed _ACCEPT to _USE since that's what it does
-	clarified forward compatibility and non pci transports
-	support multiple admin vqs
-	conformance statements
-	lots of changes all over the place to I changed author from Max
-	to myself. Don't need to take credit but also don't want
-	to blame Max for my mistakes.
-
-since v6:
-
-	- removed some extentions intended for future use.
-	  We'll do them when we get there.
-
-	- brought back command list query from v5 in a simplified form -
-	  it's here to address the case where a single parent
-	  can address multiple groups, such as PF addressing
-	  transport vq and sriov vfs.
-
-	- attempt to make terminology more formal.
-	In particular a term for whoever controls the group.
- 	I am still going back
-	and forth between "parent" and "owner" - owner might
-	be better after all since it will work if we ever
-	have a self group. For now it's parent.
-
-TODO (maybe?) - probably ok to defer until this part is upstream:
-
-	Add "all members" member id.
-
-	Add commands for MSI, feature discovery.
-
-	Add commands for transport vq.
-
-
-My intent is to try and support both SR-IOV and SIOV
-usecases with the same structure and maybe even the same
-VQ.
-
-For example, it might make sense to split creating/destroying
-SIOV devices from the transport passing data from the guest - the
-driver would then not negotiate VIRTIO_F_SR_IOV (which
-then means auto-provisioning).
-
-This is out of RFC, since we have two commands which are useful
-to discover supported group types (ATM can be none or SR-IOV).
-
-
-Michael S. Tsirkin (10):
-  virtio: document forward compatibility guarantees
-  admin: introduce device group and related concepts
-  admin: introduce group administration commands
-  admin: introduce virtio admin virtqueues
-  pci: add admin vq registers to virtio over pci
-  mmio: document ADMIN_VQ as reserved
-  ccw: document ADMIN_VQ as reserved
-  admin: command list discovery
-  admin: conformance clauses
-  ccw: document more reserved features
-
- admin.tex   | 501 ++++++++++++++++++++++++++++++++++++++++++++++++++++
- content.tex | 111 +++++++++++-
- 2 files changed, 610 insertions(+), 2 deletions(-)
- create mode 100644 admin.tex
-
+diff --git a/content.tex b/content.tex
+index 0e474dd..0c2d917 100644
+--- a/content.tex
++++ b/content.tex
+@@ -114,21 +114,63 @@ \section{Feature Bits}\label{sec:Basic Facilities of a Virtio Device / Feature B
+ In particular, new fields in the device configuration space are
+ indicated by offering a new feature bit.
+ 
++To keep the feature negotiation mechanism extensible, it is important
++that devices \em{do not} offer any feature bits that they would not be
++able to handle if the driver accepted them (even though drivers are not
++supposed to accept them in the first place even if offered, according to
++this version of the specification.) Likewise, it is important that
++drivers \em{do not} accept feature bits they do not know how to handle
++(even though devices are not supposed to offer them in the first place,
++according to this version of the specification.) The preferred way for
++handling reserved and unexpected features is that the driver ignores
++them.
++
++In particular, this is
++especially important for features limited to specific transports,
++as enabling these for more transports in future versions of the
++specification is highly likely to require changing the behaviour
++from drivers and devices.  Drivers and devices supporting
++multiple transports need to carefully maintain per-transport
++lists of allowed features.
++
+ \drivernormative{\subsection}{Feature Bits}{Basic Facilities of a Virtio Device / Feature Bits}
+ The driver MUST NOT accept a feature which the device did not offer,
+ and MUST NOT accept a feature which requires another feature which was
+ not accepted.
+ 
++The driver MUST validate the feature bits offered by the device.
++The driver MUST ignore and MUST NOT accept any feature bit that is
++\begin{itemize}
++\item not described in this specification,
++\item marked as reserved,
++\item not supported for the specific transport,
++\item not defined for the device type.
++\end{itemize}
++
+ The driver SHOULD go into backwards compatibility mode
+ if the device does not offer a feature it understands, otherwise MUST
+ set the FAILED \field{device status} bit and cease initialization.
+ 
++By contrast, the driver MUST NOT fail solely because a feature
++it does not understand has been offered by the device.
++
+ \devicenormative{\subsection}{Feature Bits}{Basic Facilities of a Virtio Device / Feature Bits}
+ The device MUST NOT offer a feature which requires another feature
+ which was not offered.  The device SHOULD accept any valid subset
+ of features the driver accepts, otherwise it MUST fail to set the
+ FEATURES_OK \field{device status} bit when the driver writes it.
+ 
++The device MUST NOT offer feature bits corresponding to features
++it would not support if accepted by the driver (even if the
++driver is prohibited from accepting the feature bits by the
++specification); for the sake of clarity, this refers to feature
++bits not described in this specification, reserved feature bits
++and feature bits reserved or not supported for the specific
++transport or the specific device type, but this does not preclude
++devices written to a future version of this specification from
++offering such feature bits should such a specification have a
++provision for devices to support the corresponding features.
++
+ If a device has successfully negotiated a set of features
+ at least once (by accepting the FEATURES_OK \field{device
+ status} bit during device initialization), then it SHOULD
 -- 
 MST
-
-
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
