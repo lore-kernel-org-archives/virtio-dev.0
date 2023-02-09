@@ -1,151 +1,229 @@
-Return-Path: <david.edmondson@oracle.com>
+Return-Path: <mst@redhat.com>
+Date: Thu, 9 Feb 2023 07:14:04 -0500
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Subject: [PATCH v10 09/10] admin: conformance clauses
+Message-ID: <20230209121221.15118-10-mst@redhat.com>
 References: <20230209121221.15118-1-mst@redhat.com>
- <20230209121221.15118-9-mst@redhat.com>
-From: David Edmondson <david.edmondson@oracle.com>
-Subject: Re: [virtio-comment] [PATCH v10 08/10] admin: command list discovery
-Date: Mon, 13 Feb 2023 12:27:09 +0000
-In-reply-to: <20230209121221.15118-9-mst@redhat.com>
-Message-ID: <m2ttzpzqu5.fsf@oracle.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: virtio-dev@lists.oasis-open.org, jasowang@redhat.com, cohuck@redhat.com, sgarzare@redhat.com, stefanha@redhat.com, nrupal.jani@intel.com, Piotr.Uminski@intel.com, hang.yuan@intel.com, virtio@lists.oasis-open.org, Zhu Lingshan <lingshan.zhu@intel.com>, pasic@linux.ibm.com, Shahaf Shuler <shahafs@nvidia.com>, Parav Pandit <parav@nvidia.com>, Max Gurtovoy <mgurtovoy@nvidia.com>, virtio-comment@lists.oasis-open.org
+In-Reply-To: <20230209121221.15118-1-mst@redhat.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+To: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, jasowang@redhat.com, mst@redhat.com, cohuck@redhat.com, sgarzare@redhat.com, stefanha@redhat.com, nrupal.jani@intel.com, Piotr.Uminski@intel.com, hang.yuan@intel.com
+Cc: virtio@lists.oasis-open.org, Zhu Lingshan <lingshan.zhu@intel.com>, pasic@linux.ibm.com, Shahaf Shuler <shahafs@nvidia.com>, Parav Pandit <parav@nvidia.com>, Max Gurtovoy <mgurtovoy@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+Add conformance clauses for admin commands and admin virtqueues.
 
-On Thursday, 2023-02-09 at 07:14:00 -05, Michael S. Tsirkin wrote:
-> Add commands to find out which commands does each group support,
-> as well as enable their use by driver.
-> This will be especially useful once we have multiple group types.
->
-> An alternative is per-type VQs. This is possible but will
-> require more per-transport work. Discovery through the vq
-> helps keep things contained.
->
-> Signed-off-by: Max Gurtovoy <mgurtovoy@nvidia.com>
-> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> ---
->  admin.tex | 90 ++++++++++++++++++++++++++++++++++++++++++++++++++++++-
->  1 file changed, 89 insertions(+), 1 deletion(-)
->
-> diff --git a/admin.tex b/admin.tex
-> index 3026a79..4de606a 100644
-> --- a/admin.tex
-> +++ b/admin.tex
-> @@ -98,7 +98,9 @@ \subsection{Group administration commands}\label{sec:Basic Facilities of a Virti
->  \hline
->  opcode & Name & Command Description \\
->  \hline \hline
-> -0x0000 - 0x7FFF & - &  Group administration commands    \\
-> +0x0000 & VIRTIO_ADMIN_CMD_LIST_QUERY & Provides to driver list of commands supported for this group type    \\
-> +0x0001 & VIRTIO_ADMIN_CMD_LIST_USE & Provides to device list of commands used for this group type \\
-> +0x0002 - 0x7FFF & - &  Group administration commands    \\
->  \hline
->  0x8000 - 0xFFFF & - & Reserved    \\
->  \hline
-> @@ -149,6 +151,92 @@ \subsection{Group administration commands}\label{sec:Basic Facilities of a Virti
->  \hline
->  \end{tabular}
->  
-> +Before sending any administration commands to the device, the driver
-> +needs to communicate to the device which commands it is going to
-> +use. Initially (after reset), only two commands are assumed to be used:
-> +VIRTIO_ADMIN_CMD_LIST_QUERY and VIRTIO_ADMIN_CMD_LIST_USE.
-> +
-> +Before sending any other commands for any member of a specific group to
-> +the device, the driver queries the supported commands via
-> +VIRTIO_ADMIN_CMD_LIST_QUERY and sends the commands it will use via
-> +VIRTIO_ADMIN_CMD_LIST_USE.
-> +
-> +Commands VIRTIO_ADMIN_CMD_LIST_QUERY and
-> +VIRTIO_ADMIN_CMD_LIST_USE
-> +both use the following structure describing the
-> +command opcodes:
-> +
-> +\begin{lstlisting}
-> +struct virtio_admin_cmd_list {
-> +       /* Indicates which of the below fields were returned
-> +       le64 device_admin_cmds[];
-> +};
-> +\end{lstlisting}
-> +
-> +This structure is an array of 64 bit values in little-endian byte
-> +order, in which a bit is set if the specific command opcode
-> +is supported. Thus, \field{device_admin_cmds[0]} refers to the first
-> 32-bit value
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+---
+ admin.tex | 190 ++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 190 insertions(+)
 
-64-bit value.
-
-> +in this array corresponding to opcodes 0 to 63,
-> +\field{device_admin_cmds[1]} is the second 64-bit value
-> +corresponding to opcodes 64 to 127, etc.
-> +For example, the array of size 2 including
-> +the values 0x3 in \field{device_admin_cmds[0]}
-> +and 0x1 in \field{device_admin_cmds[1]} indicates that only
-> +opcodes 0, 1 and 64 are supported.
-> +The length of the array depends on the supported opcodes - it is
-> +large enough to include bits set for all supported opcodes,
-> +that is the length can be calculated by starting with the largest
-> +supported opcode adding one, dividing by 64 and rounding up.
-> +The array is also allowed to be larger and to additionally
-> +include an arbitrary number of all-zero entries.
-> +
-> +Accordingly, bits 0 and 1 corresponding to opcode 0
-
-"opcodes"
-
-> +(VIRTIO_ADMIN_CMD_LIST_QUERY) and 1
-> +(VIRTIO_ADMIN_CMD_LIST_USE) are
-> +always set in \field{device_admin_cmds[0]} returned by VIRTIO_ADMIN_CMD_LIST_QUERY.
-> +
-> +For the command VIRTIO_ADMIN_CMD_LIST_QUERY, \field{opcode} is set to 0x0.
-> +The \field{group_member_id} is unused. It is set to zero by driver.
-> +This command has no command specific data.
-> +The device, upon success, returns a result in
-> +\field{command_specific_result} in the format
-> +\field{struct virtio_admin_cmd_list} describing the
-> +list of administration commands supported for the given group.
-> +
-> +
-> +For the command VIRTIO_ADMIN_CMD_LIST_USE, \field{opcode}
-> +is set to 0x1.
-> +The \field{group_member_id} is unused. It is set to zero by driver.
-> +The \field{command_specific_data} is in the format
-> +\field{struct virtio_admin_cmd_list} describing the
-> +list of administration commands used by the driver.
-> +This command has no command specific result.
-> +
-> +The driver issues the command VIRTIO_ADMIN_CMD_LIST_QUERY to
-> +query the list of commands valid for this group and before sending
-> +any commands for any member of a group.
-> +
-> +The driver then enables use of some of the opcodes by sending to
-> +the device the command VIRTIO_ADMIN_CMD_LIST_USE with a subset
-> +of the list returned by VIRTIO_ADMIN_CMD_LIST_QUERY that is
-> +both understood and used by the driver.
-> +
-> +If the device supports the command list used by the driver, the
-> +device completes the command with status VIRTIO_ADMIN_STATUS_OK.
-> +If the device does not support the command list, the device
-> +completes the command with status
-> +VIRTIO_ADMIN_STATUS_INVALID_FIELD.
-> +
-> +Note: drivers are assumed not to set bits in device_admin_cmds
-
-\field{device_admin_cmds}
-
-> +if they are not familiar with how the command opcode
-> +is used, since devices could have dependencies between
-> +command opcodes.
-> +
-> +It is assumed that all members in a group support and are used
-> +with the same list of commands. However, for owner devices
-> +supporting multiple group types, the list of supported commands
-> +might differ between different group types.
-> +
->  \section{Administration Virtqueues}\label{sec:Basic Facilities of a Virtio Device / Administration Virtqueues}
->  
->  An administration virtqueue of an owner device is used to submit
+diff --git a/admin.tex b/admin.tex
+index 4de606a..f9b1b68 100644
+--- a/admin.tex
++++ b/admin.tex
+@@ -237,6 +237,119 @@ \subsection{Group administration commands}\label{sec:Basic Facilities of a Virti
+ supporting multiple group types, the list of supported commands
+ might differ between different group types.
+ 
++\devicenormative{\paragraph}{Group administration commands}{Basic Facilities of a Virtio Device / Device groups / Group administration commands}
++
++The device MUST validate \field{opcode}, \field{group_type} and
++\field{group_member_id}, and if any of these has an invalid or
++unsupported value, set \field{status} to
++VIRTIO_ADMIN_STATUS_EINVAL and set \field{status_qualifier}
++accordingly:
++\begin{itemize}
++\item if \field{group_type} is invalid, \field{status_qualifier}
++	MUST be set to VIRTIO_ADMIN_STATUS_Q_INVALID_GROUP;
++\item otherwise, if \field{opcode} is invalid,
++	\field{status_qualifier} MUST be set to
++	VIRTIO_ADMIN_STATUS_Q_INVALID_OPCODE;
++\item otherwise, if \field{group_member_id} is used by the
++	specific command and is invalid, \field{status_qualifier} MUST be
++	set to VIRTIO_ADMIN_STATUS_Q_INVALID_MEM.
++\end{itemize}
++
++If a command completes successfully, the device MUST set
++\field{status} to VIRTIO_ADMIN_STATUS_OK.
++
++If a command fails, the device MUST set
++\field{status} to a value different from VIRTIO_ADMIN_STATUS_OK.
++
++If \field{status} is set to VIRTIO_ADMIN_STATUS_EINVAL, the
++device state MUST NOT change, that is the command MUST NOT have
++any side effects on the device, in particular the device MUST not
++enter an error state as a result of this command.
++
++If a command fails, the device state generally SHOULD NOT change,
++as far as possible.
++
++The device MAY enforce additional restrictions and dependencies on
++opcodes used by the driver and MAY fail the command
++VIRTIO_ADMIN_CMD_LIST_USE with \field{status} set to VIRTIO_ADMIN_STATUS_EINVAL
++and \field{status_qualifier} set to VIRTIO_ADMIN_STATUS_Q_INVALID_FIELD
++if the list of commands used violate internal device dependencies.
++
++If the device supports multiple group types, commands for each group
++type MUST operate independently of each other, in particular,
++the device MAY return different results for VIRTIO_ADMIN_CMD_LIST_QUERY
++for different group types.
++
++After reset, if the device supports a given group type
++and before receiving VIRTIO_ADMIN_CMD_LIST_USE for this group type
++the device MUST assume
++that the list of legal commands used by the driver consists of
++the two commands VIRTIO_ADMIN_CMD_LIST_QUERY and VIRTIO_ADMIN_CMD_LIST_USE.
++
++After completing VIRTIO_ADMIN_CMD_LIST_USE successfully,
++the device MUST set the list of legal commands used by the driver
++to the one supplied in \field{command_specific_data}.
++
++The device MUST set the list of legal commands used by the driver
++to the one supplied in VIRTIO_ADMIN_CMD_LIST_USE.
++
++The device MUST validate commands against the list used by
++the driver and MUST fail any commands not in the list with
++\field{status} set to VIRTIO_ADMIN_STATUS_EINVAL
++and \field{status_qualifier} set to
++VIRTIO_ADMIN_STATUS_Q_INVALID_OPCODE.
++
++The list of supported commands MUST NOT shrink (but MAY expand):
++after reporting a given command as supported through
++VIRTIO_ADMIN_CMD_LIST_QUERY the device MUST NOT later report it
++as unsupported.  Further, after a given set of commands has been
++used (via a successful VIRTIO_ADMIN_CMD_LIST_USE), then after a
++device or system reset the device SHOULD complete successfully
++any following calls to VIRTIO_ADMIN_CMD_LIST_USE with the same
++list of commands; if this command VIRTIO_ADMIN_CMD_LIST_USE fails
++after a device or system reset, the device MUST not fail it
++solely because of the command list used.  Failure to do so would
++interfere with resuming from suspend and error recovery.
++
++
++\drivernormative{\paragraph}{Group administration commands}{Basic Facilities of a Virtio Device / Device groups / Group administration commands}
++
++The driver MAY discover whether device supports a specific group type
++by issuing VIRTIO_ADMIN_CMD_LIST_QUERY with the matching
++\field{group_type}.
++
++The driver MUST issue VIRTIO_ADMIN_CMD_LIST_USE
++and wait for it to be completed with status
++VIRTIO_ADMIN_STATUS_OK before issuing any commands
++(except for the initial VIRTIO_ADMIN_CMD_LIST_QUERY
++and VIRTIO_ADMIN_CMD_LIST_USE).
++
++The driver SHOULD NOT set bits in device_admin_cmds
++if it is not familiar with how the command opcode
++is used, as dependencies between command opcodes might exist.
++
++The driver MUST NOT request (via VIRTIO_ADMIN_CMD_LIST_USE)
++the use of any commands not previously reported as
++supported for the same group type by VIRTIO_ADMIN_CMD_LIST_QUERY.
++
++The driver MUST NOT use any commands for a given group type
++before sending VIRTIO_ADMIN_CMD_LIST_USE with the correct
++list of command opcodes and group type.
++
++The driver MAY block use of VIRTIO_ADMIN_CMD_LIST_QUERY and
++VIRTIO_ADMIN_CMD_LIST_USE by issuing VIRTIO_ADMIN_CMD_LIST_USE
++with respective bits cleared in \field{command_specific_data}.
++
++The driver MUST handle a command error with a reserved \field{status}
++value in the same way as \field{status} set to VIRTIO_ADMIN_STATUS_EINVAL
++(except possibly for different error reporting/diagnostic messages).
++
++The driver MUST handle a command error with a reserved
++\field{status_qualifier} value in the same way as
++\field{status_qualifier} set to
++VIRTIO_ADMIN_STATUS_Q_INVALID_COMMAND (except possibly for
++different error reporting/diagnostic messages).
++
+ \section{Administration Virtqueues}\label{sec:Basic Facilities of a Virtio Device / Administration Virtqueues}
+ 
+ An administration virtqueue of an owner device is used to submit
+@@ -309,3 +422,80 @@ \section{Administration Virtqueues}\label{sec:Basic Facilities of a Virtio Devic
+ of the specification are designed, new fields can be added to the
+ tail of a structure, with the driver/device using the full
+ structure without concern for versioning.
++
++\devicenormative{\paragraph}{Group administration commands}{Basic Facilities of a Virtio Device / Administration virtqueues}
++
++The device MUST support device-readable and device-writeable buffers
++shorter than described in this specification, by
++\begin{enumerate}
++\item acting as if any data that would be read outside the
++device-readable buffers is set to zero, and
++\item discarding data that would be written outside the
++specified device-writeable buffers.
++\end{enumerate}
++
++The device MUST support device-readable and device-writeable buffers
++longer than described in this specification, by
++\begin{enumerate}
++\item ignoring any data in device-readable buffers outside
++the expected length, and
++\item only writing the expected structure to the device-writeable
++buffers, ignoring any extra buffers, and reporting the
++actual length of data written, in bytes,
++as buffer used length.
++\end{enumerate}
++
++The device SHOULD initialize the device-writeable buffer
++up to the length of the structure described by this specification or
++the length of the buffer supplied by the driver (even if the buffer is
++all set to zero), whichever is shorter.
++
++The device MUST NOT fail a command solely because the buffers
++provided are shorter or longer than described in this
++specification.
++
++The device MUST initialize the device-writeable part of
++\field{struct virtio_admin_cmd} that is a multiple of 64 bit in
++size.
++
++The device MUST initialize \field{status} in \field{struct
++virtio_admin_cmd}.
++
++The device MUST process commands on a given administration virtqueue
++in the order in which they are queued.
++
++If multiple administration virtqueues have been configured,
++device MAY process commands on distinct virtqueues with
++no order constraints.
++
++\drivernormative{\paragraph}{Group administration commands}{Basic Facilities of a Virtio Device / Administration virtqueues}
++
++The driver MAY supply device-readable or device-writeable parts
++of \field{struct virtio_admin_cmd} that are longer than described in
++this specification.
++
++The driver SHOULD supply device-readable part of
++\field{struct virtio_admin_cmd} that is at least as
++large as the structure described by this specification
++(even if the structure is all set to zero).
++
++The driver MUST supply both device-readable or device-writeable parts
++of \field{struct virtio_admin_cmd} that are a multiple of 64 bit
++in length.
++
++The device MUST supply both device-readable or device-writeable parts
++of \field{struct virtio_admin_cmd} that are larger than zero in
++length. However, \field{command_specific_data} and
++\field{command_specific_result} MAY be zero in length, unless
++specified otherwise for the command.
++
++The driver MUST NOT assume that the device will initialize the whole
++device-writeable part of \field{struct virtio_admin_cmd} as described in the specification; instead,
++the driver MUST act as if the structure
++outside the part of the buffer used by the device
++is set to zero.
++
++If multiple administration virtqueues have been configured,
++the driver MUST ensure ordering for commands
++placed on different administration virtqueues.
++>>>>>>> 29f6525... admin: conformance clauses
 -- 
-They like the smell of it in Hollywood.
+MST
 
