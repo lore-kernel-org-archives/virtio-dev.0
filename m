@@ -1,65 +1,57 @@
-Return-Path: <virtio-comment-return-4151-cohuck=redhat.com@lists.oasis-open.org>
-Sender: <virtio-comment@lists.oasis-open.org>
-List-Post: <mailto:virtio-comment@lists.oasis-open.org>
-List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
-MIME-Version: 1.0
+Return-Path: <virtio-dev-return-10914-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+From: Parav Pandit <parav@nvidia.com>
+Date: Sat, 11 Feb 2023 15:57:11 +0000
+Message-ID: <PH0PR12MB548128F8E4E3E0B032C5D694DCDF9@PH0PR12MB5481.namprd12.prod.outlook.com>
 References: <20230210070130.21811-1-hengqi@linux.alibaba.com>
  <PH0PR12MB548155EF2CB09C6C88B75C44DCDE9@PH0PR12MB5481.namprd12.prod.outlook.com>
  <CAJs=3_Dy5HrQs0PaPjNvwCUe0oYs0AhsEMKHVyXyYujfaeacUw@mail.gmail.com>
- <601ef040-bac2-dd6d-b32c-2029be17c071@linux.alibaba.com> <CAJs=3_Az-v8dm3NO6hgEm27zPfk2=6PMu93rzzvinnuD7MHUKQ@mail.gmail.com>
+ <601ef040-bac2-dd6d-b32c-2029be17c071@linux.alibaba.com>
+ <CAJs=3_Az-v8dm3NO6hgEm27zPfk2=6PMu93rzzvinnuD7MHUKQ@mail.gmail.com>
  <PH0PR12MB548169C04642C7C7585FF7FFDCDF9@PH0PR12MB5481.namprd12.prod.outlook.com>
-In-Reply-To: <PH0PR12MB548169C04642C7C7585FF7FFDCDF9@PH0PR12MB5481.namprd12.prod.outlook.com>
-From: Alvaro Karsz <alvaro.karsz@solid-run.com>
-Date: Sat, 11 Feb 2023 17:46:40 +0200
-Message-ID: <CAJs=3_BmSzMYn7OtB9EY4+D9oo11PV5__GtCxy+arbeWHgZZ6A@mail.gmail.com>
-Subject: Re: [virtio-comment] Re: [PATCH v2] virtio-net: support the virtqueue
+ <CAJs=3_BmSzMYn7OtB9EY4+D9oo11PV5__GtCxy+arbeWHgZZ6A@mail.gmail.com>
+In-Reply-To: <CAJs=3_BmSzMYn7OtB9EY4+D9oo11PV5__GtCxy+arbeWHgZZ6A@mail.gmail.com>
+MIME-Version: 1.0
+Subject: [virtio-dev] RE: [virtio-comment] Re: [PATCH v2] virtio-net: support the virtqueue
  coalescing moderation
-Content-Type: text/plain; charset="UTF-8"
-To: Parav Pandit <parav@nvidia.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+To: Alvaro Karsz <alvaro.karsz@solid-run.com>
 Cc: Heng Qi <hengqi@linux.alibaba.com>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "Michael S . Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-You write "both are configured", "try to configure both", "disable one
-and switch to other" "mixed mode" etc..
-
-But no modes/levels are mentioned in the patch, not once.
-
-I totally agree that *if* we define 2 modes, we should have strict
-rules on how to switch between modes and how to operate with both
-modes.
-
-But if we decide to have modes, your suggestion is not enough IMO, we
-should explicitly define the modes.
-
-In my POV, we should have no modes at all, everything is per queue,
-and VIRTIO_NET_CTRL_NOTF_COAL_RX_SET is exactly the same as iterating
-through the RX queues and issuing a VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET
-command.
-
-Every queue will use the last coalescing parameters it received from
-the driver, regardless to the command used to deliver the parameters.
-
-No modes at all.
-
-I really don't see what we gain from having different operation modes.
-
-I thought that we agreed not to have operation modes in v1.
-
-This publicly archived list offers a means to provide input to the
-OASIS Virtual I/O Device (VIRTIO) TC.
-
-In order to verify user consent to the Feedback License terms and
-to minimize spam in the list archive, subscription is required
-before posting.
-
-Subscribe: virtio-comment-subscribe@lists.oasis-open.org
-Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
-List help: virtio-comment-help@lists.oasis-open.org
-List archive: https://lists.oasis-open.org/archives/virtio-comment/
-Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
-List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
-Committee: https://www.oasis-open.org/committees/virtio/
-Join OASIS: https://www.oasis-open.org/join/
+PiBGcm9tOiBBbHZhcm8gS2Fyc3ogPGFsdmFyby5rYXJzekBzb2xpZC1ydW4uY29tPg0KPiBTZW50
+OiBTYXR1cmRheSwgRmVicnVhcnkgMTEsIDIwMjMgMTA6NDcgQU0NCj4gDQo+IFlvdSB3cml0ZSAi
+Ym90aCBhcmUgY29uZmlndXJlZCIsICJ0cnkgdG8gY29uZmlndXJlIGJvdGgiLCAiZGlzYWJsZSBv
+bmUgYW5kDQo+IHN3aXRjaCB0byBvdGhlciIgIm1peGVkIG1vZGUiIGV0Yy4uDQo+IA0KPiBCdXQg
+bm8gbW9kZXMvbGV2ZWxzIGFyZSBtZW50aW9uZWQgaW4gdGhlIHBhdGNoLCBub3Qgb25jZS4NCg0K
+dXNpbmcgUlhfU0VUIGFuZCBWUV9TRVQgc2ltdWx0YW5lb3VzbHkgaW1wbGllcyAiYm90aCwgbWl4
+ZWQgbW9kZSwgY29uZmlndXJlZCBib3RoIi4NClNwZWMgY2Fubm90IGJlIHNpbGVudCBhYm91dCBp
+dC4NCkRpZCBJIG1pc3MgdGhlIHJlcXVpcmVtZW50cyBzZWN0aW9uIHRoYXQgZGVzY3JpYmVzIHRo
+ZSBiZWhhdmlvciBvZiBhYm92ZSB0d28gY29tbWFuZHMgaW4gY29tYmluYXRpb24/DQoNCj4gDQo+
+IEkgdG90YWxseSBhZ3JlZSB0aGF0ICppZiogd2UgZGVmaW5lIDIgbW9kZXMsIHdlIHNob3VsZCBo
+YXZlIHN0cmljdCBydWxlcyBvbiBob3cNCj4gdG8gc3dpdGNoIGJldHdlZW4gbW9kZXMgYW5kIGhv
+dyB0byBvcGVyYXRlIHdpdGggYm90aCBtb2Rlcy4NCj4NCkV2ZW4gd2l0aG91dCBhbnkgZXhwbGlj
+aXQgbW9kZSwgd2UgbmVlZCB0byBkZWZpbmUgYmVoYXZpb3Igb2YgdHdvIGNvbW1hbmRzIGludm9r
+ZWQgb25lIGFmdGVyIHRoZSBvdGhlci4NCiANCj4gQnV0IGlmIHdlIGRlY2lkZSB0byBoYXZlIG1v
+ZGVzLCB5b3VyIHN1Z2dlc3Rpb24gaXMgbm90IGVub3VnaCBJTU8sIHdlIHNob3VsZA0KPiBleHBs
+aWNpdGx5IGRlZmluZSB0aGUgbW9kZXMuDQo+IA0KPiBJbiBteSBQT1YsIHdlIHNob3VsZCBoYXZl
+IG5vIG1vZGVzIGF0IGFsbCwgZXZlcnl0aGluZyBpcyBwZXIgcXVldWUsIGFuZA0KPiBWSVJUSU9f
+TkVUX0NUUkxfTk9URl9DT0FMX1JYX1NFVCBpcyBleGFjdGx5IHRoZSBzYW1lIGFzIGl0ZXJhdGlu
+Zw0KPiB0aHJvdWdoIHRoZSBSWCBxdWV1ZXMgYW5kIGlzc3VpbmcgYSBWSVJUSU9fTkVUX0NUUkxf
+Tk9URl9DT0FMX1ZRX1NFVA0KPiBjb21tYW5kLg0KPiANCj4gRXZlcnkgcXVldWUgd2lsbCB1c2Ug
+dGhlIGxhc3QgY29hbGVzY2luZyBwYXJhbWV0ZXJzIGl0IHJlY2VpdmVkIGZyb20gdGhlIGRyaXZl
+ciwNCj4gcmVnYXJkbGVzcyB0byB0aGUgY29tbWFuZCB1c2VkIHRvIGRlbGl2ZXIgdGhlIHBhcmFt
+ZXRlcnMuDQo+DQpUaGlzIHRvIGJlIHBhcnQgb2YgdGhlIHNwZWMuIEkgZG9u4oCZdCBzZWUgaXQg
+b3IgSSBtaXNzZWQgaXQ/DQogDQo+IE5vIG1vZGVzIGF0IGFsbC4NCj4gDQo+IEkgcmVhbGx5IGRv
+bid0IHNlZSB3aGF0IHdlIGdhaW4gZnJvbSBoYXZpbmcgZGlmZmVyZW50IG9wZXJhdGlvbiBtb2Rl
+cy4NCj4gDQo+IEkgdGhvdWdodCB0aGF0IHdlIGFncmVlZCBub3QgdG8gaGF2ZSBvcGVyYXRpb24g
+bW9kZXMgaW4gdjEuDQpXZSBhZ3JlZWQgdG8gbm90IGhhdmUgZXhwbGljaXQgbW9kZSwgYXQgY29u
+ZGl0aW9uIHRvIGRlZmluZSB0aGUgY2xlYXIgYmVoYXZpb3Igb24gd2hhdCBzaG91bGQgaGFwcGVu
+IHdoZW4gYm90aCBjb21tYW5kcyBhcmUgdXNlZCBvbmUgYWZ0ZXIgb3RoZXIuDQoNCg==
 
