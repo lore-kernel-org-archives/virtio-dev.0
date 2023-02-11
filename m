@@ -1,72 +1,77 @@
-Return-Path: <virtio-dev-return-10938-cohuck=redhat.com@lists.oasis-open.org>
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id C4DED986319
-	for <virtio-dev@lists.oasis-open.org>; Sun, 12 Feb 2023 21:08:45 +0000 (UTC)
-Date: Sun, 12 Feb 2023 16:08:36 -0500
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20230212160656-mutt-send-email-mst@kernel.org>
+Return-Path: <virtio-comment-return-4148-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-comment@lists.oasis-open.org>
+List-Post: <mailto:virtio-comment@lists.oasis-open.org>
+List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
+From: Parav Pandit <parav@nvidia.com>
+Date: Sat, 11 Feb 2023 13:47:16 +0000
+Message-ID: <PH0PR12MB548143E73BFAD7207F60F5DFDCDF9@PH0PR12MB5481.namprd12.prod.outlook.com>
 References: <20230210070130.21811-1-hengqi@linux.alibaba.com>
  <PH0PR12MB548155EF2CB09C6C88B75C44DCDE9@PH0PR12MB5481.namprd12.prod.outlook.com>
  <CAJs=3_Dy5HrQs0PaPjNvwCUe0oYs0AhsEMKHVyXyYujfaeacUw@mail.gmail.com>
- <601ef040-bac2-dd6d-b32c-2029be17c071@linux.alibaba.com>
- <CAJs=3_Az-v8dm3NO6hgEm27zPfk2=6PMu93rzzvinnuD7MHUKQ@mail.gmail.com>
- <20230212152122-mutt-send-email-mst@kernel.org>
- <CAJs=3_CpUtc36kxQURiZhpDe4YYasWDQYoMpdfKaEq5LE0v3Bw@mail.gmail.com>
+In-Reply-To: <CAJs=3_Dy5HrQs0PaPjNvwCUe0oYs0AhsEMKHVyXyYujfaeacUw@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <CAJs=3_CpUtc36kxQURiZhpDe4YYasWDQYoMpdfKaEq5LE0v3Bw@mail.gmail.com>
-Subject: [virtio-dev] Re: [virtio-comment] Re: [PATCH v2] virtio-net: support the
- virtqueue coalescing moderation
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Subject: [virtio-comment] RE: [PATCH v2] virtio-net: support the virtqueue coalescing
+ moderation
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 To: Alvaro Karsz <alvaro.karsz@solid-run.com>
-Cc: Heng Qi <hengqi@linux.alibaba.com>, Parav Pandit <parav@nvidia.com>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Jason Wang <jasowang@redhat.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Cc: Heng Qi <hengqi@linux.alibaba.com>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "Michael S . Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Sun, Feb 12, 2023 at 10:53:50PM +0200, Alvaro Karsz wrote:
-> > I'm not sure the specific property is even a feature and not a bug.
-> > One can argue e.g. that ethtool should fail with EBUSY rather
-> > than being silently overwritten.
-> > Thats why I feel this kind of policy is best set by driver.
-> 
-> When you write "set by driver", you mean that [X] the spec needs to
-> define the driver behavior in this case, or that [Y] every driver
-> should decide what's best?
-> I'll answer to [X], if you meant [Y] the following part is not relevant.
-
-Y.
-
-> If we talk implementation here, I would probably implement it like that:
-> 
-> net_dim_start_tx:
->         set_ethtool_blocking_bool
->         save_current_coalescing_params  # Maybe?
->         clear_all_tx_coalescing_params     # NOTF_COAL_TX_SET 0
->         do_net_dim
-> 
-> net_dim_stop_tx:
->       restore_prev_ethtool_coalesing_params
->       clear_ethtool_blocking_bool
-> 
-> It's reasonable to assume that sending a ethtool set coalesce when
-> netdim is operating will affect the performance.
-> 
-> But, windows' virtio_net driver may want to use _CTRL_NOTF_COAL_TX_SET
-> in its adaptive algorithm, and may have no userspace tool to configure
-> these parameters.
-> If we force the driver to clear/block some commands while using
-> others, we may do more harm than good in windows' case.
-> 
-> This is just my personal perspective.
-> 
-> I think that this is an important feature either way.
-
-
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+DQoNCj4gRnJvbTogQWx2YXJvIEthcnN6IDxhbHZhcm8ua2Fyc3pAc29saWQtcnVuLmNvbT4NCj4g
+U2VudDogU2F0dXJkYXksIEZlYnJ1YXJ5IDExLCAyMDIzIDM6NDUgQU0NCj4gDQo+ID4gUGxlYXNl
+IGFkZCBzaG9ydCBkZXNjcmlwdGlvbiBzb21ldGhpbmcgbGlrZSwNCj4gPg0KPiA+IFdoZW4gdGhl
+IGRyaXZlciBwcmVmZXJzIHRvIHVzZSBwZXIgdmlydHF1ZXVlIG5vdGlmaWNhdGlvbnMgY29hbGVz
+Y2luZywgYW5kIGlmDQo+IHF1ZXVlIGdyb3VwICh0cmFuc21pdCBvciByZWNlaXZlKSBsZXZlbCBu
+b3RpZmljYXRpb24gY29hbGVzY2luZyBpcyBlbmFibGVkLCBkcml2ZXINCj4gU0hPVUxEIGZpcnN0
+IGRpc2FibGUgZGV2aWNlIGxldmVsIG5vdGlmaWNhdGlvbiBjb2FsZXNjaW5nLg0KPiA+IE9yIGl0
+IHNob3VsZCBiZSwNCj4gPg0KPiANCj4gSSBkaXNhZ3JlZSBoZXJlLg0KPiBJTU8gInF1ZXVlIGdy
+b3VwIGxldmVsIG5vdGlmaWNhdGlvbiBjb2FsZXNjaW5nIiBpcyBub3Qgc29tZXRoaW5nIHRvIGVu
+YWJsZSBvcg0KPiBkaXNhYmxlLCBidXQgYSBzaG9ydGN1dCB0byBzZXQgYWxsIFRYL1JYIHF1ZXVl
+cyBhdCBvbmNlLg0KVGhhdCBzaG9ydCBjdXQgaXMgdGhlIGVuYWJsZS9kaXNhYmxlbWVudC4NCg0K
+PiBXaHkgc2hvdWxkIHRoZSBzcGVjIGZvcmNlIGEgZHJpdmVyIHRvICJkaXNhYmxlIGRldmljZSBs
+ZXZlbCBub3RpZmljYXRpb24NCj4gY29hbGVzY2luZyIgKEkgYXNzdW1lIHlvdSBtZWFuIHNlbmQg
+YQ0KPiBWSVJUSU9fTkVUX0NUUkxfTk9URl9DT0FMX1tUL1JdWF9TRVQgY29tbWFuZCB3aXRoIHpl
+cm9zKT8NClllcy4gQmVjYXVzZSB0byBoYXZlIHdlbGwgZGVmaW5lZCBiZWhhdmlvciB3aGVuIHN3
+IGNvbmZpZ3VyZWQgYm90aCBvbmUgYWZ0ZXIgdGhlIGFub3RoZXIuDQoNCj4gV2hhdCBpZiB0aGUg
+ZHJpdmVyIHNlbmRzIGEgVklSVElPX05FVF9DVFJMX05PVEZfQ09BTF9bVC9SXVhfU0VUDQo+IGNv
+bW1hbmQsIGFuZCB0aGVuIGEgc2luZ2xlIHF1ZXVlIHRyYWZmaWMgaW5jcmVhc2VzPyB3aHkgc2hv
+dWxkIGl0IHplcm8gdGhlDQo+IHBhcmFtZXRlcnMgdG8gYWxsIG90aGVyIHF1ZXVlcz8NClRoYXQg
+aXMgc2hvcnQgdHJhbnNpdGlvbiB3aGVuIGRyaXZlciBpcyBzd2l0Y2hpbmcgb3ZlciB0byBwZXIg
+cXVldWUgbW9kZS4NClRoaXMgaXMgZmluZSB0byBoYXZlIHNob3J0IGdsaXRjaC4NCg0KPiBJIHRo
+aW5rIHRoYXQgdGhpcyBzaG91bGQgYmUgZGlzY3Vzc2VkIGluIHRoZSBkcml2ZXIgaW1wbGVtZW50
+YXRpb24gc3RhZ2UsIG5vdCBpbg0KPiB0aGUgc3BlYy4NCj4gDQpUaGVyZSBzaG91bGQgYmUgYSBj
+bGVhciBndWlkYW5jZSBvbiBob3cgZGV2aWNlIHNob3VsZCBiZWhhdmUgd2hlbiBib3RoIHBlciBx
+IGFuZCBwZXIgZGV2aWNlIGFyZSBjb25maWd1cmVkLg0KDQo+ID4gVmlydHF1ZXVlIGxldmVsIG5v
+dGlmaWNhdGlvbnMgY29hbGVzY2luZywgYW5kIGRldmljZSBsZXZlbCBub3RpZmljYXRpb25zIGNh
+biBiZQ0KPiBlbmFibGVkIHRvZ2V0aGVyLg0KPiA+IFdoZW4gYm90aCBvZiB0aGVtIGFyZSBlbmFi
+bGVkLCBwZXIgdmlydHF1ZXVlIG5vdGlmaWNhdGlvbnMgY29hbGVzY2luZyB0YWtlDQo+IHByaW9y
+aXR5IG92ZXIgcXVldWUgZ3JvdXAgbGV2ZWwuDQo+IA0KPiBIb3cgZG8geW91IGVuYWJsZSAgVmly
+dHF1ZXVlIGxldmVsIG5vdGlmaWNhdGlvbnMgY29hbGVzY2luZz8gV2h5IGFyZSB0aGV5DQo+IGRp
+ZmZlcmVudCBlbnRpdGllcz8NClVzaW5nIHRoZSBuZXcgY29tbWFuZCB0aGF0IGhhcyB2cW4gaW4g
+aXQuDQoNCj4gSSBkb24ndCB0aGluayB0aGF0IHdlIHNob3VsZCBoYXZlIHByaW9yaXRpZXMsIGJ1
+dCB0aGUgbGFzdCBjb21tYW5kIHNob3VsZCBiZSB0aGUNCj4gb25lIHRoYXQgZGljdGF0ZXMgdGhl
+IGNvYWxlc2NpbmcgcGFyYW1ldGVycy4NCj4gDQpQcmlvcml0eSBpcyBhcHBsaWNhYmxlIHdoZW4g
+ZHJpdmVyIGhhcyBpc3N1ZWQgYm90aCB0aGUgY29tbWFuZHMuIFBlciB0eC9yeCwgYW5kIHBlciB2
+cW4uDQoNCj4gRm9yIGV4YW1wbGUsIGxldCdzIGxvb2sgYXQgdnEwIChSWCk6DQo+IERldmljZSBy
+ZWNlaXZlcyBWSVJUSU9fTkVUX0NUUkxfTk9URl9DT0FMX1JYX1NFVCwgdnEwIHNob3VsZCBjaGFu
+Z2UNCj4gdGhlIHBhcmFtZXRlcnMgYWNjb3JkaW5nbHkgKGFsbCBSWCB2cXMgc2hvdWxkIGRvIHRo
+ZSBzYW1lKS4NCj4gVGhlbiBkZXZpY2UgcmVjZWl2ZXMgVklSVElPX05FVF9DVFJMX05PVEZfQ09B
+TF9WUV9TRVQgd2l0aCB2cW4gPSAwLA0KPiB2cTAgY2hhbmdlcyB0aGUgcGFyYW1ldGVycyBhY2Nv
+cmRpbmdseSAoYWxsIFJYIHZxcyBhcmUgc3RpbGwgdXNpbmcgdGhlICJvbGQiDQo+IHBhcmFtZXRl
+cnMpIFRoZW4gZGV2aWNlIHJlY2VpdmVzIFZJUlRJT19ORVRfQ1RSTF9OT1RGX0NPQUxfUlhfU0VU
+LCB2cTANCj4gY2hhbmdlcyB0aGUgcGFyYW1ldGVycyBhY2NvcmRpbmdseSAoYWxsIFJYIHZxcyBz
+aG91bGQgZG8gdGhlIHNhbWUpLg0KSW4gdGhpcyBleGFtcGxlLCBwZXIgVlEgd2VyZSBvdmVycmlk
+ZGVuIHdpdGggcGVyIGRldmljZS4NClllcywgc28gdGhlIGxhc3Qgb25lIGlzIGFwcGxpY2FibGUs
+IHNvIHByaW9yaXR5IG9mIGxhc3Qgb25lIGFwcGxpZXMuDQoNCldlIGNvbnRpbnVlIHRvIHJlZnVz
+ZSB0byBhZGQgdGhlIG1vZGUsIGFuZCBoZW5jZSBuZWVkIHRvIHN1cHBseSB0aGVzZSBkZXNjcmlw
+dGlvbiBvZiBib3RoIHRoZSBzZXF1ZW5jZSBvbiBob3cgZGV2aWNlIHNob3VsZCBiZWhhdmUuDQoN
+ClNlcXVlbmNlXzE6DQoxLiB0eC9yeCBncm91cCBsZXZlbA0KMi4gcGVyIHZxbiBsZXZlbA0KV2hl
+biAjMiBpcyBkb25lLCBWUSdzIHdob3NlIHBlciB2cSBsZXZlbCBpcyBjb25maWd1cmVkLCBmb2xs
+b3dzIHZxbiwgcmVzdCBvZiB0aGUgVlFzIGZvbGxvdyAjMS4NCg0KU2VxdWVuY2VfMjoNCjEuIHBl
+ciB2cW4NCjIuIHR4L3J4IGdyb3VwIGxldmVsDQpXaGVuICMyIGlzIGRvbmUsIGdyb3VwIGxldmVs
+IG92ZXJyaWRlcyB0aGUgcGVyIHZxbiBwYXJhbWV0ZXJzLiANCg==
 
