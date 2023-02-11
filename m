@@ -1,44 +1,42 @@
-Return-Path: <virtio-return-3988-cohuck=redhat.com@lists.oasis-open.org>
-Sender: <virtio@lists.oasis-open.org>
-List-Post: <mailto:virtio@lists.oasis-open.org>
-List-Help: <mailto:virtio-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-subscribe@lists.oasis-open.org>
-From: Cornelia Huck <cohuck@redhat.com>
-In-Reply-To: <873579d8ue.fsf@redhat.com>
+Return-Path: <parav@nvidia.com>
+From: Parav Pandit <parav@nvidia.com>
+Subject: RE: [PATCH v10 00/10] Introduce device group and device management
+Date: Sat, 11 Feb 2023 18:49:52 +0000
+Message-ID: <PH0PR12MB54817FB7BA47369974018BAFDCDF9@PH0PR12MB5481.namprd12.prod.outlook.com>
 References: <20230209121221.15118-1-mst@redhat.com>
- <20230209121221.15118-11-mst@redhat.com> <873579d8ue.fsf@redhat.com>
-Date: Mon, 13 Feb 2023 14:04:41 +0100
-Message-ID: <87zg9hbtsm.fsf@redhat.com>
+In-Reply-To: <20230209121221.15118-1-mst@redhat.com>
 MIME-Version: 1.0
-Subject: Re: [virtio] Re: [PATCH v10 10/10] ccw: document more reserved
- features
-Content-Type: text/plain
-To: "Michael S. Tsirkin" <mst@redhat.com>, virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, jasowang@redhat.com, mst@redhat.com, sgarzare@redhat.com, stefanha@redhat.com, nrupal.jani@intel.com, Piotr.Uminski@intel.com, hang.yuan@intel.com
-Cc: virtio@lists.oasis-open.org, Zhu Lingshan <lingshan.zhu@intel.com>, pasic@linux.ibm.com, Shahaf Shuler <shahafs@nvidia.com>, Parav Pandit <parav@nvidia.com>, Max Gurtovoy <mgurtovoy@nvidia.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+To: "Michael S. Tsirkin" <mst@redhat.com>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "jasowang@redhat.com" <jasowang@redhat.com>, "cohuck@redhat.com" <cohuck@redhat.com>, "sgarzare@redhat.com" <sgarzare@redhat.com>, "stefanha@redhat.com" <stefanha@redhat.com>, "nrupal.jani@intel.com" <nrupal.jani@intel.com>, "Piotr.Uminski@intel.com" <Piotr.Uminski@intel.com>, "hang.yuan@intel.com" <hang.yuan@intel.com>
+Cc: "virtio@lists.oasis-open.org" <virtio@lists.oasis-open.org>, Zhu Lingshan <lingshan.zhu@intel.com>, "pasic@linux.ibm.com" <pasic@linux.ibm.com>, Shahaf Shuler <shahafs@nvidia.com>, Max Gurtovoy <mgurtovoy@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Mon, Feb 13 2023, Cornelia Huck <cohuck@redhat.com> wrote:
 
-> On Thu, Feb 09 2023, "Michael S. Tsirkin" <mst@redhat.com> wrote:
->
->> vq reset and shared memory are unsupported, too.
->>
->> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
->> ---
->>
->>
->> This is not strictly part of this patchset, but just to
->> give you the idea of how we can expand this down the road.
->
-> We could split this out to a separate change on top. I think I should
-> just open an issue for that.
+> From: Michael S. Tsirkin <mst@redhat.com>
+> Sent: Thursday, February 9, 2023 7:13 AM
 
-Opened https://github.com/oasis-tcs/virtio-spec/issues/160.
+[..]
 
+> My intent is to try and support both SR-IOV and SIOV usecases with the sa=
+me
+> structure and maybe even the same VQ.
+>=20
+Probably it is implicit, but is better for us to mention few examples use c=
+ases here something like,
 
----------------------------------------------------------------------
-To unsubscribe from this mail list, you must leave the OASIS TC that 
-generates this mail.  Follow this link to all your TCs in OASIS at:
-https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
+Admin queue is an infrastructure to support use cases like:
+a. SIOV devices life cycles management (create, destroy, query, configure)
+b. SR-IOV VF device/resource management (SR-PCIM)
+c. May be transport
+
+> For example, it might make sense to split creating/destroying SIOV device=
+s
+> from the transport passing data from the guest - the driver would then no=
+t
+> negotiate VIRTIO_F_SR_IOV (which then means auto-provisioning).
+
+Above intermixing of SIOV and SR_IOV is very confusing.
+Can you please drop it and have simpler examples like above?
 
