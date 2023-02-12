@@ -1,77 +1,118 @@
-Return-Path: <virtio-comment-return-4148-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-comment-return-4166-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio-comment@lists.oasis-open.org>
 List-Post: <mailto:virtio-comment@lists.oasis-open.org>
 List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
-From: Parav Pandit <parav@nvidia.com>
-Date: Sat, 11 Feb 2023 13:47:16 +0000
-Message-ID: <PH0PR12MB548143E73BFAD7207F60F5DFDCDF9@PH0PR12MB5481.namprd12.prod.outlook.com>
+Date: Sun, 12 Feb 2023 04:35:37 -0500
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Message-ID: <20230212043434-mutt-send-email-mst@kernel.org>
 References: <20230210070130.21811-1-hengqi@linux.alibaba.com>
  <PH0PR12MB548155EF2CB09C6C88B75C44DCDE9@PH0PR12MB5481.namprd12.prod.outlook.com>
  <CAJs=3_Dy5HrQs0PaPjNvwCUe0oYs0AhsEMKHVyXyYujfaeacUw@mail.gmail.com>
-In-Reply-To: <CAJs=3_Dy5HrQs0PaPjNvwCUe0oYs0AhsEMKHVyXyYujfaeacUw@mail.gmail.com>
+ <PH0PR12MB548143E73BFAD7207F60F5DFDCDF9@PH0PR12MB5481.namprd12.prod.outlook.com>
 MIME-Version: 1.0
-Subject: [virtio-comment] RE: [PATCH v2] virtio-net: support the virtqueue coalescing
+In-Reply-To: <PH0PR12MB548143E73BFAD7207F60F5DFDCDF9@PH0PR12MB5481.namprd12.prod.outlook.com>
+Subject: [virtio-comment] Re: [PATCH v2] virtio-net: support the virtqueue coalescing
  moderation
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-To: Alvaro Karsz <alvaro.karsz@solid-run.com>
-Cc: Heng Qi <hengqi@linux.alibaba.com>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "Michael S . Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+To: Parav Pandit <parav@nvidia.com>
+Cc: Alvaro Karsz <alvaro.karsz@solid-run.com>, Heng Qi <hengqi@linux.alibaba.com>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Jason Wang <jasowang@redhat.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-DQoNCj4gRnJvbTogQWx2YXJvIEthcnN6IDxhbHZhcm8ua2Fyc3pAc29saWQtcnVuLmNvbT4NCj4g
-U2VudDogU2F0dXJkYXksIEZlYnJ1YXJ5IDExLCAyMDIzIDM6NDUgQU0NCj4gDQo+ID4gUGxlYXNl
-IGFkZCBzaG9ydCBkZXNjcmlwdGlvbiBzb21ldGhpbmcgbGlrZSwNCj4gPg0KPiA+IFdoZW4gdGhl
-IGRyaXZlciBwcmVmZXJzIHRvIHVzZSBwZXIgdmlydHF1ZXVlIG5vdGlmaWNhdGlvbnMgY29hbGVz
-Y2luZywgYW5kIGlmDQo+IHF1ZXVlIGdyb3VwICh0cmFuc21pdCBvciByZWNlaXZlKSBsZXZlbCBu
-b3RpZmljYXRpb24gY29hbGVzY2luZyBpcyBlbmFibGVkLCBkcml2ZXINCj4gU0hPVUxEIGZpcnN0
-IGRpc2FibGUgZGV2aWNlIGxldmVsIG5vdGlmaWNhdGlvbiBjb2FsZXNjaW5nLg0KPiA+IE9yIGl0
-IHNob3VsZCBiZSwNCj4gPg0KPiANCj4gSSBkaXNhZ3JlZSBoZXJlLg0KPiBJTU8gInF1ZXVlIGdy
-b3VwIGxldmVsIG5vdGlmaWNhdGlvbiBjb2FsZXNjaW5nIiBpcyBub3Qgc29tZXRoaW5nIHRvIGVu
-YWJsZSBvcg0KPiBkaXNhYmxlLCBidXQgYSBzaG9ydGN1dCB0byBzZXQgYWxsIFRYL1JYIHF1ZXVl
-cyBhdCBvbmNlLg0KVGhhdCBzaG9ydCBjdXQgaXMgdGhlIGVuYWJsZS9kaXNhYmxlbWVudC4NCg0K
-PiBXaHkgc2hvdWxkIHRoZSBzcGVjIGZvcmNlIGEgZHJpdmVyIHRvICJkaXNhYmxlIGRldmljZSBs
-ZXZlbCBub3RpZmljYXRpb24NCj4gY29hbGVzY2luZyIgKEkgYXNzdW1lIHlvdSBtZWFuIHNlbmQg
-YQ0KPiBWSVJUSU9fTkVUX0NUUkxfTk9URl9DT0FMX1tUL1JdWF9TRVQgY29tbWFuZCB3aXRoIHpl
-cm9zKT8NClllcy4gQmVjYXVzZSB0byBoYXZlIHdlbGwgZGVmaW5lZCBiZWhhdmlvciB3aGVuIHN3
-IGNvbmZpZ3VyZWQgYm90aCBvbmUgYWZ0ZXIgdGhlIGFub3RoZXIuDQoNCj4gV2hhdCBpZiB0aGUg
-ZHJpdmVyIHNlbmRzIGEgVklSVElPX05FVF9DVFJMX05PVEZfQ09BTF9bVC9SXVhfU0VUDQo+IGNv
-bW1hbmQsIGFuZCB0aGVuIGEgc2luZ2xlIHF1ZXVlIHRyYWZmaWMgaW5jcmVhc2VzPyB3aHkgc2hv
-dWxkIGl0IHplcm8gdGhlDQo+IHBhcmFtZXRlcnMgdG8gYWxsIG90aGVyIHF1ZXVlcz8NClRoYXQg
-aXMgc2hvcnQgdHJhbnNpdGlvbiB3aGVuIGRyaXZlciBpcyBzd2l0Y2hpbmcgb3ZlciB0byBwZXIg
-cXVldWUgbW9kZS4NClRoaXMgaXMgZmluZSB0byBoYXZlIHNob3J0IGdsaXRjaC4NCg0KPiBJIHRo
-aW5rIHRoYXQgdGhpcyBzaG91bGQgYmUgZGlzY3Vzc2VkIGluIHRoZSBkcml2ZXIgaW1wbGVtZW50
-YXRpb24gc3RhZ2UsIG5vdCBpbg0KPiB0aGUgc3BlYy4NCj4gDQpUaGVyZSBzaG91bGQgYmUgYSBj
-bGVhciBndWlkYW5jZSBvbiBob3cgZGV2aWNlIHNob3VsZCBiZWhhdmUgd2hlbiBib3RoIHBlciBx
-IGFuZCBwZXIgZGV2aWNlIGFyZSBjb25maWd1cmVkLg0KDQo+ID4gVmlydHF1ZXVlIGxldmVsIG5v
-dGlmaWNhdGlvbnMgY29hbGVzY2luZywgYW5kIGRldmljZSBsZXZlbCBub3RpZmljYXRpb25zIGNh
-biBiZQ0KPiBlbmFibGVkIHRvZ2V0aGVyLg0KPiA+IFdoZW4gYm90aCBvZiB0aGVtIGFyZSBlbmFi
-bGVkLCBwZXIgdmlydHF1ZXVlIG5vdGlmaWNhdGlvbnMgY29hbGVzY2luZyB0YWtlDQo+IHByaW9y
-aXR5IG92ZXIgcXVldWUgZ3JvdXAgbGV2ZWwuDQo+IA0KPiBIb3cgZG8geW91IGVuYWJsZSAgVmly
-dHF1ZXVlIGxldmVsIG5vdGlmaWNhdGlvbnMgY29hbGVzY2luZz8gV2h5IGFyZSB0aGV5DQo+IGRp
-ZmZlcmVudCBlbnRpdGllcz8NClVzaW5nIHRoZSBuZXcgY29tbWFuZCB0aGF0IGhhcyB2cW4gaW4g
-aXQuDQoNCj4gSSBkb24ndCB0aGluayB0aGF0IHdlIHNob3VsZCBoYXZlIHByaW9yaXRpZXMsIGJ1
-dCB0aGUgbGFzdCBjb21tYW5kIHNob3VsZCBiZSB0aGUNCj4gb25lIHRoYXQgZGljdGF0ZXMgdGhl
-IGNvYWxlc2NpbmcgcGFyYW1ldGVycy4NCj4gDQpQcmlvcml0eSBpcyBhcHBsaWNhYmxlIHdoZW4g
-ZHJpdmVyIGhhcyBpc3N1ZWQgYm90aCB0aGUgY29tbWFuZHMuIFBlciB0eC9yeCwgYW5kIHBlciB2
-cW4uDQoNCj4gRm9yIGV4YW1wbGUsIGxldCdzIGxvb2sgYXQgdnEwIChSWCk6DQo+IERldmljZSBy
-ZWNlaXZlcyBWSVJUSU9fTkVUX0NUUkxfTk9URl9DT0FMX1JYX1NFVCwgdnEwIHNob3VsZCBjaGFu
-Z2UNCj4gdGhlIHBhcmFtZXRlcnMgYWNjb3JkaW5nbHkgKGFsbCBSWCB2cXMgc2hvdWxkIGRvIHRo
-ZSBzYW1lKS4NCj4gVGhlbiBkZXZpY2UgcmVjZWl2ZXMgVklSVElPX05FVF9DVFJMX05PVEZfQ09B
-TF9WUV9TRVQgd2l0aCB2cW4gPSAwLA0KPiB2cTAgY2hhbmdlcyB0aGUgcGFyYW1ldGVycyBhY2Nv
-cmRpbmdseSAoYWxsIFJYIHZxcyBhcmUgc3RpbGwgdXNpbmcgdGhlICJvbGQiDQo+IHBhcmFtZXRl
-cnMpIFRoZW4gZGV2aWNlIHJlY2VpdmVzIFZJUlRJT19ORVRfQ1RSTF9OT1RGX0NPQUxfUlhfU0VU
-LCB2cTANCj4gY2hhbmdlcyB0aGUgcGFyYW1ldGVycyBhY2NvcmRpbmdseSAoYWxsIFJYIHZxcyBz
-aG91bGQgZG8gdGhlIHNhbWUpLg0KSW4gdGhpcyBleGFtcGxlLCBwZXIgVlEgd2VyZSBvdmVycmlk
-ZGVuIHdpdGggcGVyIGRldmljZS4NClllcywgc28gdGhlIGxhc3Qgb25lIGlzIGFwcGxpY2FibGUs
-IHNvIHByaW9yaXR5IG9mIGxhc3Qgb25lIGFwcGxpZXMuDQoNCldlIGNvbnRpbnVlIHRvIHJlZnVz
-ZSB0byBhZGQgdGhlIG1vZGUsIGFuZCBoZW5jZSBuZWVkIHRvIHN1cHBseSB0aGVzZSBkZXNjcmlw
-dGlvbiBvZiBib3RoIHRoZSBzZXF1ZW5jZSBvbiBob3cgZGV2aWNlIHNob3VsZCBiZWhhdmUuDQoN
-ClNlcXVlbmNlXzE6DQoxLiB0eC9yeCBncm91cCBsZXZlbA0KMi4gcGVyIHZxbiBsZXZlbA0KV2hl
-biAjMiBpcyBkb25lLCBWUSdzIHdob3NlIHBlciB2cSBsZXZlbCBpcyBjb25maWd1cmVkLCBmb2xs
-b3dzIHZxbiwgcmVzdCBvZiB0aGUgVlFzIGZvbGxvdyAjMS4NCg0KU2VxdWVuY2VfMjoNCjEuIHBl
-ciB2cW4NCjIuIHR4L3J4IGdyb3VwIGxldmVsDQpXaGVuICMyIGlzIGRvbmUsIGdyb3VwIGxldmVs
-IG92ZXJyaWRlcyB0aGUgcGVyIHZxbiBwYXJhbWV0ZXJzLiANCg==
+On Sat, Feb 11, 2023 at 01:47:16PM +0000, Parav Pandit wrote:
+> 
+> 
+> > From: Alvaro Karsz <alvaro.karsz@solid-run.com>
+> > Sent: Saturday, February 11, 2023 3:45 AM
+> > 
+> > > Please add short description something like,
+> > >
+> > > When the driver prefers to use per virtqueue notifications coalescing, and if
+> > queue group (transmit or receive) level notification coalescing is enabled, driver
+> > SHOULD first disable device level notification coalescing.
+> > > Or it should be,
+> > >
+> > 
+> > I disagree here.
+> > IMO "queue group level notification coalescing" is not something to enable or
+> > disable, but a shortcut to set all TX/RX queues at once.
+> That short cut is the enable/disablement.
+> 
+> > Why should the spec force a driver to "disable device level notification
+> > coalescing" (I assume you mean send a
+> > VIRTIO_NET_CTRL_NOTF_COAL_[T/R]X_SET command with zeros)?
+> Yes. Because to have well defined behavior when sw configured both one after the another.
+> 
+> > What if the driver sends a VIRTIO_NET_CTRL_NOTF_COAL_[T/R]X_SET
+> > command, and then a single queue traffic increases? why should it zero the
+> > parameters to all other queues?
+> That is short transition when driver is switching over to per queue mode.
+> This is fine to have short glitch.
+> 
+> > I think that this should be discussed in the driver implementation stage, not in
+> > the spec.
+> > 
+> There should be a clear guidance on how device should behave when both per q and per device are configured.
+> 
+> > > Virtqueue level notifications coalescing, and device level notifications can be
+> > enabled together.
+> > > When both of them are enabled, per virtqueue notifications coalescing take
+> > priority over queue group level.
+> > 
+> > How do you enable  Virtqueue level notifications coalescing? Why are they
+> > different entities?
+> Using the new command that has vqn in it.
+> 
+> > I don't think that we should have priorities, but the last command should be the
+> > one that dictates the coalescing parameters.
+> > 
+> Priority is applicable when driver has issued both the commands. Per tx/rx, and per vqn.
+> 
+> > For example, let's look at vq0 (RX):
+> > Device receives VIRTIO_NET_CTRL_NOTF_COAL_RX_SET, vq0 should change
+> > the parameters accordingly (all RX vqs should do the same).
+> > Then device receives VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET with vqn = 0,
+> > vq0 changes the parameters accordingly (all RX vqs are still using the "old"
+> > parameters) Then device receives VIRTIO_NET_CTRL_NOTF_COAL_RX_SET, vq0
+> > changes the parameters accordingly (all RX vqs should do the same).
+> In this example, per VQ were overridden with per device.
+> Yes, so the last one is applicable, so priority of last one applies.
+> 
+> We continue to refuse to add the mode, and hence need to supply these description of both the sequence on how device should behave.
+> 
+> Sequence_1:
+> 1. tx/rx group level
+> 2. per vqn level
+> When #2 is done, VQ's whose per vq level is configured, follows vqn, rest of the VQs follow #1.
+> 
+> Sequence_2:
+> 1. per vqn
+> 2. tx/rx group level
+> When #2 is done, group level overrides the per vqn parameters. 
+
+Since there's apparently some room for misunderstanding, I think adding these examples can't hurt.
+I would also be more specific and just use specific numbers in the
+example, to avoid any ambiguity.
+
+-- 
+MST
+
+
+This publicly archived list offers a means to provide input to the
+OASIS Virtual I/O Device (VIRTIO) TC.
+
+In order to verify user consent to the Feedback License terms and
+to minimize spam in the list archive, subscription is required
+before posting.
+
+Subscribe: virtio-comment-subscribe@lists.oasis-open.org
+Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
+List help: virtio-comment-help@lists.oasis-open.org
+List archive: https://lists.oasis-open.org/archives/virtio-comment/
+Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
+List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
+Committee: https://www.oasis-open.org/committees/virtio/
+Join OASIS: https://www.oasis-open.org/join/
 
