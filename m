@@ -1,77 +1,44 @@
-Return-Path: <virtio-comment-return-4258-cohuck=redhat.com@lists.oasis-open.org>
-Sender: <virtio-comment@lists.oasis-open.org>
-List-Post: <mailto:virtio-comment@lists.oasis-open.org>
-List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
-From: Cornelia Huck <cohuck@redhat.com>
-In-Reply-To: <20230215075915-mutt-send-email-mst@kernel.org>
+Return-Path: <parav@nvidia.com>
+From: Parav Pandit <parav@nvidia.com>
+Subject: RE: [PATCH] content.tex Fix Driver notifications label
+Date: Wed, 15 Feb 2023 21:53:55 +0000
+Message-ID: <PH0PR12MB5481A47EF49115D98E310521DCA39@PH0PR12MB5481.namprd12.prod.outlook.com>
 References: <20230203183532.90685-1-parav@nvidia.com>
- <87k00p9331.fsf@redhat.com>
- <20230215061424-mutt-send-email-mst@kernel.org>
- <871qmrdstu.fsf@redhat.com>
- <20230215075915-mutt-send-email-mst@kernel.org>
-Date: Wed, 15 Feb 2023 16:08:26 +0100
-Message-ID: <87y1ozc6fp.fsf@redhat.com>
+ <87k00p9331.fsf@redhat.com> <20230215061424-mutt-send-email-mst@kernel.org>
+ <871qmrdstu.fsf@redhat.com> <20230215075915-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20230215075915-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-Subject: [virtio-comment] Re: [PATCH] content.tex Fix Driver notifications label
-Content-Type: text/plain
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Parav Pandit <parav@nvidia.com>, virtio-dev@lists.oasis-open.org, virtio-comment@lists.oasis-open.org, shahafs@nvidia.com
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+To: "Michael S. Tsirkin" <mst@redhat.com>, Cornelia Huck <cohuck@redhat.com>
+Cc: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, Shahaf Shuler <shahafs@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Wed, Feb 15 2023, "Michael S. Tsirkin" <mst@redhat.com> wrote:
 
-> On Wed, Feb 15, 2023 at 01:19:25PM +0100, Cornelia Huck wrote:
->> On Wed, Feb 15 2023, "Michael S. Tsirkin" <mst@redhat.com> wrote:
->> 
->> > On Fri, Feb 10, 2023 at 12:23:14PM +0100, Cornelia Huck wrote:
->> >> On Fri, Feb 03 2023, Parav Pandit <parav@nvidia.com> wrote:
->> >> 
->> >> > Driver notifications section is under "Basic Facilities of a Virtio
->> >> > Device". However, the label is placed under "Virtqueues" section.
->> >> >
->> >> > Fix the label references.
->> >> >
->> >> > Signed-off-by: Parav Pandit <parav@nvidia.com>
->> >> > ---
->> >> >  content.tex | 14 +++++++-------
->> >> >  1 file changed, 7 insertions(+), 7 deletions(-)
->> >> 
->> >> Not sure if it was originally intended to sit unter the virtqueues
->> >> section (it was lifted up one level as it disappeared under the packet
->> >> ring section), might have been.
->> >> 
->> >> It probably makes sense to not try and move it back into the virtqueues
->> >> section, and instead do your change. Other opinions?
->> >
->> > Acked-by: Michael S. Tsirkin <mst@redhat.com>
->> >
->> > Minor fix does not need a vote.
->> > Cornelia are you applying this?
->> 
->> Pushed.
->
-> btw did you try to generate a diff pdf? when changing labels it is
-> sometimes necessary to keep old ones around too as diff
-> needs old and new links to work.
+> From: Michael S. Tsirkin <mst@redhat.com>
+> Sent: Wednesday, February 15, 2023 8:00 AM
+>=20
+> btw did you try to generate a diff pdf? when changing labels it is someti=
+mes
+> necessary to keep old ones around too as diff needs old and new links to =
+work.
 
-I'm at least not seeing obvious errors.
+I generated the new pdf before pushing the patch.=20
+I couldn't generate the diff pdf using ./makediffpdf.sh
 
+I get error on running makediff.sh virtio.tex
 
-This publicly archived list offers a means to provide input to the
-OASIS Virtual I/O Device (VIRTIO) TC.
-
-In order to verify user consent to the Feedback License terms and
-to minimize spam in the list archive, subscription is required
-before posting.
-
-Subscribe: virtio-comment-subscribe@lists.oasis-open.org
-Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
-List help: virtio-comment-help@lists.oasis-open.org
-List archive: https://lists.oasis-open.org/archives/virtio-comment/
-Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
-List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
-Committee: https://www.oasis-open.org/committees/virtio/
-Join OASIS: https://www.oasis-open.org/join/
+Warning: command \@chapapp containing @ found in
+Warning: virtio.tex.
+Warning: consider using --makeatletter if the result is not compilable.
+Warning: command \@chapapp containing @ found in
+Warning: ./main.tex.
+Warning: consider using --makeatletter if the result is not compilable.
+Submodule path 'latexdiff' not initialized
+Maybe you want to use 'update --init'?
+make: Entering directory '/images/parav/upstream/virtio-spec/latexdiff'
+make: *** No rule to make target 'mkdirs'.  Stop.
+make: Leaving directory '/images/parav/upstream/virtio-spec/latexdiff'
+./makediff.sh: line 51: ./latexdiff-fast: No such file or directory
 
