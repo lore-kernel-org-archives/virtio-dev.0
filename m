@@ -1,90 +1,42 @@
-Return-Path: <hengqi@linux.alibaba.com>
-Message-ID: <f26d28f7-d213-28d7-df7f-513c1d39930f@linux.alibaba.com>
-Date: Thu, 16 Feb 2023 14:57:37 +0800
-MIME-Version: 1.0
-Subject: Re: [virtio-dev] RE: [virtio-comment] [PATCH v8] virtio-net: support
- inner header hash
+Return-Path: <virtio-comment-return-4278-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-comment@lists.oasis-open.org>
+List-Post: <mailto:virtio-comment@lists.oasis-open.org>
+List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
+From: Parav Pandit <parav@nvidia.com>
+Date: Thu, 16 Feb 2023 13:25:10 +0000
+Message-ID: <PH0PR12MB54817FE1744032D13AAFB74EDCA09@PH0PR12MB5481.namprd12.prod.outlook.com>
 References: <20230208090836.74355-1-hengqi@linux.alibaba.com>
  <0f73e9c7-5080-d01c-0f63-dd23942fa71b@linux.alibaba.com>
  <PH0PR12MB54817EAF86DF11B9FB0DCB8EDCDD9@PH0PR12MB5481.namprd12.prod.outlook.com>
-From: Heng Qi <hengqi@linux.alibaba.com>
-In-Reply-To: <PH0PR12MB54817EAF86DF11B9FB0DCB8EDCDD9@PH0PR12MB5481.namprd12.prod.outlook.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-To: Parav Pandit <parav@nvidia.com>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
+ <f26d28f7-d213-28d7-df7f-513c1d39930f@linux.alibaba.com>
+In-Reply-To: <f26d28f7-d213-28d7-df7f-513c1d39930f@linux.alibaba.com>
+MIME-Version: 1.0
+Subject: [virtio-comment] RE: [virtio-dev] RE: [virtio-comment] [PATCH v8] virtio-net: support
+ inner header hash
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+To: Heng Qi <hengqi@linux.alibaba.com>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
 Cc: Jason Wang <jasowang@redhat.com>, "Michael S . Tsirkin" <mst@redhat.com>, Cornelia Huck <cohuck@redhat.com>, Yuri Benditovich <yuri.benditovich@daynix.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-
-
-在 2023/2/14 上午5:42, Parav Pandit 写道:
->
->> From: Heng Qi <hengqi@linux.alibaba.com>
->> Sent: Monday, February 13, 2023 8:05 AM
->> Hi, all.
->>
->> Do you have any comments on this version?
->>
->> Thanks.
->>
->> 在 2023/2/8 下午5:08, Heng Qi 写道:
->>> If the tunnel is used to encapsulate the packets, the hash calculated
->>> using the outer header of the receive packets is always fixed for the
->>> same flow packets, i.e. they will be steered to the same receive queue.
->>>
->>> We add a feature bit VIRTIO_NET_F_HASH_TUNNEL and related bitmasks in
->>> \field{hash_tunnel_types}, which instructs the device to calculate the
->>> hash using the inner headers of tunnel-encapsulated packets. Besides,
->>> values in \field{hash_report_tunnel_types} are added to report tunnel types.
->>>
->>> Note that VIRTIO_NET_F_HASH_TUNNEL only indicates the ability of the
->>> inner header hash, and does not give the device the ability to use the
->>> hash value to select a receiving queue to place the packet.
->>>
-> [..]
->>> @@ -3384,9 +3396,10 @@ \subsection{Device Operation}\label{sec:Device
->> Types / Network Device / Device O
->>>            le16 csum_start;
->>>            le16 csum_offset;
->>>            le16 num_buffers;
->>> -        le32 hash_value;        (Only if VIRTIO_NET_F_HASH_REPORT
->> negotiated)
->>> -        le16 hash_report;       (Only if VIRTIO_NET_F_HASH_REPORT
->> negotiated)
->>> -        le16 padding_reserved;  (Only if VIRTIO_NET_F_HASH_REPORT
->> negotiated)
->>> +        le32 hash_value;              (Only if VIRTIO_NET_F_HASH_REPORT
->> negotiated)
->>> +        le16 hash_report;             (Only if VIRTIO_NET_F_HASH_REPORT
->> negotiated)
->>> +        u8 hash_report_tunnel_types;  (Only if VIRTIO_NET_F_HASH_REPORT
-> I am yet to review the changes of v8.
-> But the quick response is, I do not see a use case of above field by sw driver.
-> And this addition requires the core hw data path to supply this value.
-> Without good motivation, it is hard to have it here.
-
-I'm really okay with this, the tunnel type seems to help the software 
-driver do more things in the future,
-for example, the driver may not want to use the outer hash value when 
-forwarding packets. But if there is
-really no practical scenario for the driver at present, then let us hide 
-the tunnel types in the \field{hash_report}?
-
->
-> What is valuable is to have a VNI already identified and coming to the driver, like a hash value.
-
-This is too specific to a certain tunnel protocol, not every protocol 
-has corresponding VNI information.
-
-Thanks.
-
-> This can cut down the cpu processing power, in outer header packet processing.
-> However, that is relatively a different feature than inner hash.
->
-> So, my input is to omit hash_report_tunnel_types.
-> Will respond to Michael question in other thread.
->
-> ---------------------------------------------------------------------
-> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+DQoNCj4gRnJvbTogSGVuZyBRaSA8aGVuZ3FpQGxpbnV4LmFsaWJhYmEuY29tPg0KPiBTZW50OiBU
+aHVyc2RheSwgRmVicnVhcnkgMTYsIDIwMjMgMTo1OCBBTQ0KPiANCj4gSSdtIHJlYWxseSBva2F5
+IHdpdGggdGhpcywgdGhlIHR1bm5lbCB0eXBlIHNlZW1zIHRvIGhlbHAgdGhlIHNvZnR3YXJlIGRy
+aXZlciBkbw0KPiBtb3JlIHRoaW5ncyBpbiB0aGUgZnV0dXJlLCBmb3IgZXhhbXBsZSwgdGhlIGRy
+aXZlciBtYXkgbm90IHdhbnQgdG8gdXNlIHRoZQ0KPiBvdXRlciBoYXNoIHZhbHVlIHdoZW4gZm9y
+d2FyZGluZyBwYWNrZXRzLiBCdXQgaWYgdGhlcmUgaXMgcmVhbGx5IG5vIHByYWN0aWNhbA0KPiBz
+Y2VuYXJpbyBmb3IgdGhlIGRyaXZlciBhdCBwcmVzZW50LCB0aGVuIGxldCB1cyBoaWRlIHRoZSB0
+dW5uZWwgdHlwZXMgaW4gdGhlDQo+IFxmaWVsZHtoYXNoX3JlcG9ydH0/DQo+DQpSaWdodC4gTGV0
+cyBvbWl0IGhhc2hfcmVwb3J0IGluIHZpcnRpb19uZXRfaGRyLg0KIA0KPiA+DQo+ID4gV2hhdCBp
+cyB2YWx1YWJsZSBpcyB0byBoYXZlIGEgVk5JIGFscmVhZHkgaWRlbnRpZmllZCBhbmQgY29taW5n
+IHRvIHRoZSBkcml2ZXIsDQo+IGxpa2UgYSBoYXNoIHZhbHVlLg0KPiANCj4gVGhpcyBpcyB0b28g
+c3BlY2lmaWMgdG8gYSBjZXJ0YWluIHR1bm5lbCBwcm90b2NvbCwgbm90IGV2ZXJ5IHByb3RvY29s
+IGhhcw0KPiBjb3JyZXNwb25kaW5nIFZOSSBpbmZvcm1hdGlvbi4NCj4gDQpUcnVlLiBJIHdhcyBj
+b25zaWRlcmluZyBhIGhhc2ggb2YgdGhlIGdlbmVyaWMgb3V0ZXIgaGVhZGVyIHRocm91Z2ggd2hp
+Y2ggaXQgY2FuIHJlYWNoIHRvIGdlbmVyaWMgdHVubmVsLg0KQnV0IGl0IGlzIGEgdmVyeSBkaWZm
+ZXJlbnQgZmVhdHVyZSBvZiBpdHMgb3duLCBzbyB5ZXMsIGJldHRlciB0byBzcGxpdCBhbmQgcHJv
+Y2VlZCB3aXRoIHRoaXMgdG8gaW1wcm92ZSBpbm5lciBoYXNoLg0K
 
