@@ -1,54 +1,38 @@
-Return-Path: <virtio-dev-return-11080-cohuck=redhat.com@lists.oasis-open.org>
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id D51D498676D
-	for <virtio-dev@lists.oasis-open.org>; Fri, 17 Feb 2023 10:57:55 +0000 (UTC)
-Date: Fri, 17 Feb 2023 05:57:48 -0500
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <20230217055700-mutt-send-email-mst@kernel.org>
-References: <20230216145611.1361327-1-alvaro.karsz@solid-run.com>
- <20230217043305-mutt-send-email-mst@kernel.org>
- <CAJs=3_Bkg+hRTaV2ooZHwOib666yFzRGgVosd_pO7EsZHokf-w@mail.gmail.com>
- <20230217052731-mutt-send-email-mst@kernel.org>
- <CAJs=3_B-q6NbtNTqZuwyHn6eENYb+NpUijDXvnwW55bBYQcyGg@mail.gmail.com>
+Return-Path: <parav@nvidia.com>
+From: Parav Pandit <parav@nvidia.com>
+Subject: [PATCH] changelog: Fix missing reference to driver notifications
+Date: Thu, 16 Feb 2023 07:34:57 +0200
+Message-ID: <20230216053457.414126-1-parav@nvidia.com>
 MIME-Version: 1.0
-In-Reply-To: <CAJs=3_B-q6NbtNTqZuwyHn6eENYb+NpUijDXvnwW55bBYQcyGg@mail.gmail.com>
-Subject: [virtio-dev] Re: [PATCH v5] virtio-net: Fix and update VIRTIO_NET_F_NOTF_COAL
- feature
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-To: Alvaro Karsz <alvaro.karsz@solid-run.com>
-Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, jasowang@redhat.com, hengqi@linux.alibaba.com, parav@nvidia.com, david.edmondson@oracle.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+To: mst@redhat.com, virtio-dev@lists.oasis-open.org, cohuck@redhat.com
+Cc: virtio-comment@lists.oasis-open.org, shahafs@nvidia.com, Parav Pandit <parav@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Fri, Feb 17, 2023 at 12:36:32PM +0200, Alvaro Karsz wrote:
-> > sounds good. maybe "counting packets and microseconds"? to make clear
-> > timer resets too.
-> >
-> > > I don't really mind, If you think that the device implementation is
-> > > not essential here and we should add your suggestion, I'm ok with
-> > > that.
-> >
-> > I don't mind, your proposal seems good too.
-> 
-> Ok, so I'll add:
-> "... whichever happens first.
-> After  the notification conditions are met,
+Cited commit in fixes tag missed to update the reference to drivers
+notifications section in past change log.
+Fix the reference.
 
-maybe just "afterwards" for brevity and to stress it is after sending interrupt
-so it does not affect the interrupt only the next one.
+Fixes: be2ce1ee17e0 ("content.tex Fix Driver notifications label")
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+---
+ cl-os.tex | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> the device waits for the
-> next packet and starts counting  packets and microseconds again."
-> 
-> Thanks!
-
-
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+diff --git a/cl-os.tex b/cl-os.tex
+index 5ae8a7b..a7364b7 100644
+--- a/cl-os.tex
++++ b/cl-os.tex
+@@ -254,7 +254,7 @@
+=20
+ Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+=20
+-See \ref{sec:Virtqueues / Driver notifications}.
++See \ref{sec:Basic Facilities of a Virtio Device / Driver notifications}.
+  } \\
+ \hline
+ 8f2c4e03eae8 & 27 Oct 2019 & Eugenio P=C3=A9rez & { block: Add multiqueue
+--=20
+2.26.2
 
