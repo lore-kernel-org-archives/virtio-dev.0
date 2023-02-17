@@ -1,8 +1,8 @@
 Return-Path: <parav@nvidia.com>
 From: Parav Pandit <parav@nvidia.com>
-Subject: [PATCH v2 2/6] transport-mmio: Split MMIO transport to its own file
-Date: Fri, 17 Feb 2023 17:49:01 +0200
-Message-ID: <20230217154905.33619-3-parav@nvidia.com>
+Subject: [PATCH v2 3/6] transport-ccw: Split Channel IO transport to its own file
+Date: Fri, 17 Feb 2023 17:49:02 +0200
+Message-ID: <20230217154905.33619-4-parav@nvidia.com>
 In-Reply-To: <20230217154905.33619-1-parav@nvidia.com>
 References: <20230217154905.33619-1-parav@nvidia.com>
 MIME-Version: 1.0
@@ -12,1345 +12,1439 @@ To: mst@redhat.com, virtio-dev@lists.oasis-open.org, cohuck@redhat.com
 Cc: virtio-comment@lists.oasis-open.org, shahafs@nvidia.com, Parav Pandit <parav@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Place MMIO transport specification in its own file to better maintain it.
+Place Channel IO transport specification in its own file to
+better maintain it.
 
 Fixes: https://github.com/oasis-tcs/virtio-spec/issues/157
 Signed-off-by: Parav Pandit <parav@nvidia.com>
 ---
- content.tex        | 554 +--------------------------------------------
- transport-mmio.tex | 552 ++++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 553 insertions(+), 553 deletions(-)
- create mode 100644 transport-mmio.tex
+changelog:
+v1->v2:
+- renamed file to transport-ccw.tex
+---
+ content.tex       | 603 +---------------------------------------------
+ transport-ccw.tex | 601 +++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 602 insertions(+), 602 deletions(-)
+ create mode 100644 transport-ccw.tex
 
 diff --git a/content.tex b/content.tex
-index be911e6..80c28df 100644
+index 80c28df..cff548a 100644
 --- a/content.tex
 +++ b/content.tex
-@@ -580,559 +580,7 @@ \chapter{Virtio Transport Options}\label{sec:Virtio T=
+@@ -581,608 +581,7 @@ \chapter{Virtio Transport Options}\label{sec:Virtio T=
 ransport Options}
- into virtio general and bus-specific sections.
 =20
  \input{transport-pci.tex}
+ \input{transport-mmio.tex}
 -
--\subsection{MMIO Device Discovery}\label{sec:Virtio Transport Options / Vi=
-rtio Over MMIO / MMIO Device Discovery}
+-\section{Virtio Over Channel I/O}\label{sec:Virtio Transport Options / Vir=
+tio Over Channel I/O}
 -
--Unlike PCI, MMIO provides no generic device discovery mechanism.  For each
--device, the guest OS will need to know the location of the registers
--and interrupt(s) used.  The suggested binding for systems using
--flattened device trees is shown in this example:
+-S/390 based virtual machines support neither PCI nor MMIO, so a
+-different transport is needed there.
+-
+-virtio-ccw uses the standard channel I/O based mechanism used for
+-the majority of devices on S/390. A virtual channel device with a
+-special control unit type acts as proxy to the virtio device
+-(similar to the way virtio-pci uses a PCI device) and
+-configuration and operation of the virtio device is accomplished
+-(mostly) via channel commands. This means virtio devices are
+-discoverable via standard operating system algorithms, and adding
+-virtio support is mainly a question of supporting a new control
+-unit type.
+-
+-As the S/390 is a big endian machine, the data structures transmitted
+-via channel commands are big-endian: this is made clear by use of
+-the types be16, be32 and be64.
+-
+-\subsection{Basic Concepts}\label{sec:Virtio Transport Options / Virtio ov=
+er channel I/O / Basic Concepts}
+-
+-As a proxy device, virtio-ccw uses a channel-attached I/O control
+-unit with a special control unit type (0x3832) and a control unit
+-model corresponding to the attached virtio device's subsystem
+-device ID, accessed via a virtual I/O subchannel and a virtual
+-channel path of type 0x32. This proxy device is discoverable via
+-normal channel subsystem device discovery (usually a STORE
+-SUBCHANNEL loop) and answers to the basic channel commands:
+-
+-\begin{itemize}
+-\item NO-OPERATION (0x03)
+-\item BASIC SENSE (0x04)
+-\item TRANSFER IN CHANNEL (0x08)
+-\item SENSE ID (0xe4)
+-\end{itemize}
+-
+-For a virtio-ccw proxy device, SENSE ID will return the following
+-information:
+-
+-\begin{tabular}{ |l|l|l| }
+-\hline
+-Bytes & Description & Contents \\
+-\hline \hline
+-0     & reserved              & 0xff \\
+-\hline
+-1-2   & control unit type     & 0x3832 \\
+-\hline
+-3     & control unit model    & <virtio device id> \\
+-\hline
+-4-5   & device type           & zeroes (unset) \\
+-\hline
+-6     & device model          & zeroes (unset) \\
+-\hline
+-7-255 & extended SenseId data & zeroes (unset) \\
+-\hline
+-\end{tabular}
+-
+-A virtio-ccw proxy device facilitates:
+-\begin{itemize}=20
+-\item Discovery and attachment of virtio devices (as described above).
+-\item Initialization of virtqueues and transport-specific facilities (usin=
+g
+-      virtio-specific channel commands).
+-\item Notifications (via hypercall and a combination of I/O interrupts
+-      and indicator bits).
+-\end{itemize}=20
+-
+-\subsubsection{Channel Commands for Virtio}\label{sec:Virtio Transport Opt=
+ions / Virtio
+-over channel I/O / Basic Concepts/ Channel Commands for Virtio}
+-
+-In addition to the basic channel commands, virtio-ccw defines a
+-set of channel commands related to configuration and operation of
+-virtio:
 -
 -\begin{lstlisting}
--// EXAMPLE: virtio_block device taking 512 bytes at 0x1e000, interrupt 42.
--virtio_block@1e000 {
--        compatible =3D "virtio,mmio";
--        reg =3D <0x1e000 0x200>;
--        interrupts =3D <42>;
--}
+-#define CCW_CMD_SET_VQ 0x13
+-#define CCW_CMD_VDEV_RESET 0x33
+-#define CCW_CMD_SET_IND 0x43
+-#define CCW_CMD_SET_CONF_IND 0x53
+-#define CCW_CMD_SET_IND_ADAPTER 0x73
+-#define CCW_CMD_READ_FEAT 0x12
+-#define CCW_CMD_WRITE_FEAT 0x11
+-#define CCW_CMD_READ_CONF 0x22
+-#define CCW_CMD_WRITE_CONF 0x21
+-#define CCW_CMD_WRITE_STATUS 0x31
+-#define CCW_CMD_READ_VQ_CONF 0x32
+-#define CCW_CMD_SET_VIRTIO_REV 0x83
+-#define CCW_CMD_READ_STATUS 0x72
 -\end{lstlisting}
 -
--\subsection{MMIO Device Register Layout}\label{sec:Virtio Transport Option=
-s / Virtio Over MMIO / MMIO Device Register Layout}
+-\subsubsection{Notifications}\label{sec:Virtio Transport Options / Virtio
+-over channel I/O / Basic Concepts/ Notifications}
 -
--MMIO virtio devices provide a set of memory mapped control
--registers followed by a device-specific configuration space,
--described in the table~\ref{tab:Virtio Trasport Options / Virtio Over MMIO=
- / MMIO Device Register Layout}.
+-Available buffer notifications are realized as a hypercall. No additional
+-setup by the driver is needed. The operation of available buffer
+-notifications is described in section \ref{sec:Virtio Transport Options /
+-Virtio over channel I/O / Device Operation / Guest->Host Notification}.
 -
--All register values are organized as Little Endian.
+-Used buffer notifications are realized either as so-called classic or
+-adapter I/O interrupts depending on a transport level negotiation. The
+-initialization is described in sections \ref{sec:Virtio Transport Options
+-/ Virtio over channel I/O / Device Initialization / Setting Up Indicators
+-/ Setting Up Classic Queue Indicators} and \ref{sec:Virtio Transport
+-Options / Virtio over channel I/O / Device Initialization / Setting Up
+-Indicators / Setting Up Two-Stage Queue Indicators} respectively.  The
+-operation of each flavor is described in sections \ref{sec:Virtio
+-Transport Options / Virtio over channel I/O / Device Operation /
+-Host->Guest Notification / Notification via Classic I/O Interrupts} and
+-\ref{sec:Virtio Transport Options / Virtio over channel I/O / Device
+-Operation / Host->Guest Notification / Notification via Adapter I/O
+-Interrupts} respectively.=20
 -
--\newcommand{\mmioreg}[5]{% Name Function Offset Direction Description
--  {\field{#1}} \newline #3 \newline #4 & {\bf#2} \newline #5 \\
--}
+-Configuration change notifications are done using so-called classic I/O
+-interrupts. The initialization is described in section \ref{sec:Virtio
+-Transport Options / Virtio over channel I/O / Device Initialization /
+-Setting Up Indicators / Setting Up Configuration Change Indicators} and
+-the operation in section \ref{sec:Virtio Transport Options / Virtio over
+-channel I/O / Device Operation / Host->Guest Notification / Notification
+-via Classic I/O Interrupts}.
 -
--\newcommand{\mmiodreg}[7]{% NameHigh NameLow Function OffsetHigh OffsetLow=
- Direction Description
--  {\field{#1}} \newline #4 \newline {\field{#2}} \newline #5 \newline #6 &=
- {\bf#3} \newline #7 \\
--}
+-\devicenormative{\subsubsection}{Basic Concepts}{Virtio Transport Options =
+/ Virtio over channel I/O / Basic Concepts}
 -
--\begin{longtable}{p{0.2\textwidth}p{0.7\textwidth}}
--  \caption {MMIO Device Register Layout}
--  \label{tab:Virtio Trasport Options / Virtio Over MMIO / MMIO Device Regi=
-ster Layout} \\
--  \hline
--  \mmioreg{Name}{Function}{Offset from base}{Direction}{Description}=20
--  \hline=20
--  \hline=20
--  \endfirsthead
--  \hline
--  \mmioreg{Name}{Function}{Offset from the base}{Direction}{Description}=
-=20
--  \hline=20
--  \hline=20
--  \endhead
--  \endfoot
--  \endlastfoot
--  \mmioreg{MagicValue}{Magic value}{0x000}{R}{%
--    0x74726976
--    (a Little Endian equivalent of the ``virt'' string).
--  }=20
--  \hline
--  \mmioreg{Version}{Device version number}{0x004}{R}{%
--    0x2.
--    \begin{note}
--      Legacy devices (see \ref{sec:Virtio Transport Options / Virtio Over =
-MMIO / Legacy interface}~\nameref{sec:Virtio Transport Options / Virtio Ove=
-r MMIO / Legacy interface}) used 0x1.
--    \end{note}
--  }
--  \hline=20
--  \mmioreg{DeviceID}{Virtio Subsystem Device ID}{0x008}{R}{%
--    See \ref{sec:Device Types}~\nameref{sec:Device Types} for possible val=
-ues.
--    Value zero (0x0) is used to
--    define a system memory map with placeholder devices at static,
--    well known addresses, assigning functions to them depending
--    on user's needs.
--  }
--  \hline=20
--  \mmioreg{VendorID}{Virtio Subsystem Vendor ID}{0x00c}{R}{}
--  \hline=20
--  \mmioreg{DeviceFeatures}{Flags representing features the device supports=
-}{0x010}{R}{%
--    Reading from this register returns 32 consecutive flag bits,
--    the least significant bit depending on the last value written to
--    \field{DeviceFeaturesSel}. Access to this register returns
--    bits $\field{DeviceFeaturesSel}*32$ to $(\field{DeviceFeaturesSel}*32)=
-+31$, eg.
--    feature bits 0 to 31 if \field{DeviceFeaturesSel} is set to 0 and
--    features bits 32 to 63 if \field{DeviceFeaturesSel} is set to 1.
--    Also see \ref{sec:Basic Facilities of a Virtio Device / Feature Bits}~=
-\nameref{sec:Basic Facilities of a Virtio Device / Feature Bits}.
--  }
--  \hline=20
--  \mmioreg{DeviceFeaturesSel}{Device (host) features word selection.}{0x01=
-4}{W}{%
--    Writing to this register selects a set of 32 device feature bits
--    accessible by reading from \field{DeviceFeatures}.
--  }
--  \hline=20
--  \mmioreg{DriverFeatures}{Flags representing device features understood a=
-nd activated by the driver}{0x020}{W}{%
--    Writing to this register sets 32 consecutive flag bits, the least sign=
-ificant
--    bit depending on the last value written to \field{DriverFeaturesSel}.
--     Access to this register sets bits $\field{DriverFeaturesSel}*32$
--    to $(\field{DriverFeaturesSel}*32)+31$, eg. feature bits 0 to 31 if
--    \field{DriverFeaturesSel} is set to 0 and features bits 32 to 63 if
--    \field{DriverFeaturesSel} is set to 1. Also see \ref{sec:Basic Facilit=
-ies of a Virtio Device / Feature Bits}~\nameref{sec:Basic Facilities of a V=
-irtio Device / Feature Bits}.
--  }
--  \hline=20
--  \mmioreg{DriverFeaturesSel}{Activated (guest) features word selection}{0=
-x024}{W}{%
--    Writing to this register selects a set of 32 activated feature
--    bits accessible by writing to \field{DriverFeatures}.
--  }
--  \hline=20
--  \mmioreg{QueueSel}{Virtual queue index}{0x030}{W}{%
--    Writing to this register selects the virtual queue that the
--    following operations on \field{QueueNumMax}, \field{QueueNum}, \field{=
-QueueReady},
--    \field{QueueDescLow}, \field{QueueDescHigh}, \field{QueueDriverlLow}, =
-\field{QueueDriverHigh},
--    \field{QueueDeviceLow}, \field{QueueDeviceHigh} and \field{QueueReset}=
- apply to. The index
--    number of the first queue is zero (0x0).=20
--  }
--  \hline=20
--  \mmioreg{QueueNumMax}{Maximum virtual queue size}{0x034}{R}{%
--    Reading from the register returns the maximum size (number of
--    elements) of the queue the device is ready to process or
--    zero (0x0) if the queue is not available. This applies to the
--    queue selected by writing to \field{QueueSel}.
--  }
--  \hline=20
--  \mmioreg{QueueNum}{Virtual queue size}{0x038}{W}{%
--    Queue size is the number of elements in the queue.
--    Writing to this register notifies the device what size of the
--    queue the driver will use. This applies to the queue selected by
--    writing to \field{QueueSel}.
--  }
--  \hline=20
--  \mmioreg{QueueReady}{Virtual queue ready bit}{0x044}{RW}{%
--    Writing one (0x1) to this register notifies the device that it can
--    execute requests from this virtual queue. Reading from this register
--    returns the last value written to it. Both read and write
--    accesses apply to the queue selected by writing to \field{QueueSel}.
--  }
--  \hline=20
--  \mmioreg{QueueNotify}{Queue notifier}{0x050}{W}{%
--    Writing a value to this register notifies the device that
--    there are new buffers to process in a queue.
+-The virtio-ccw device acts like a normal channel device, as specified
+-in \hyperref[intro:S390 PoP]{[S390 PoP]} and \hyperref[intro:S390 Common I=
+/O]{[S390 Common I/O]}. In particular:
 -
--    When VIRTIO_F_NOTIFICATION_DATA has not been negotiated,
--    the value written is the queue index.
+-\begin{itemize}
+-\item A device MUST post a unit check with command reject for any command
+-  it does not support.
 -
--    When VIRTIO_F_NOTIFICATION_DATA has been negotiated,
--    the \field{Notification data} value has the following format:
+-\item If a driver did not suppress length checks for a channel command,
+-  the device MUST present a subchannel status as detailed in the
+-  architecture when the actual length did not match the expected length.
 -
--    \lstinputlisting{notifications-le.c}
+-\item If a driver did suppress length checks for a channel command, the
+-  device MUST present a check condition if the transmitted data does
+-  not contain enough data to process the command. If the driver submitted
+-  a buffer that was too long, the device SHOULD accept the command.
+-\end{itemize}
 -
--    See \ref{sec:Basic Facilities of a Virtio Device / Driver notification=
-s}~\nameref{sec:Basic Facilities of a Virtio Device / Driver notifications}
--    for the definition of the components.
--  }
--  \hline=20
--  \mmioreg{InterruptStatus}{Interrupt status}{0x60}{R}{%
--    Reading from this register returns a bit mask of events that
--    caused the device interrupt to be asserted.
--    The following events are possible:
--    \begin{description}
--      \item[Used Buffer Notification] - bit 0 - the interrupt was asserted
--        because the device has used a buffer
--        in at least one of the active virtual queues.
--      \item [Configuration Change Notification] - bit 1 - the interrupt wa=
-s
--        asserted because the configuration of the device has changed.
--    \end{description}
--  }
--  \hline=20
--  \mmioreg{InterruptACK}{Interrupt acknowledge}{0x064}{W}{%
--    Writing a value with bits set as defined in \field{InterruptStatus}
--    to this register notifies the device that events causing
--    the interrupt have been handled.
--  }
--  \hline=20
--  \mmioreg{Status}{Device status}{0x070}{RW}{%
--    Reading from this register returns the current device status
--    flags.
--    Writing non-zero values to this register sets the status flags,
--    indicating the driver progress. Writing zero (0x0) to this
--    register triggers a device reset.=20
--    See also p. \ref{sec:Virtio Transport Options / Virtio Over MMIO / MMI=
-O-specific Initialization And Device Operation / Device Initialization}~\na=
-meref{sec:Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initi=
-alization And Device Operation / Device Initialization}.
--  }
--  \hline=20
--  \mmiodreg{QueueDescLow}{QueueDescHigh}{Virtual queue's Descriptor Area 6=
-4 bit long physical address}{0x080}{0x084}{W}{%
--    Writing to these two registers (lower 32 bits of the address
--    to \field{QueueDescLow}, higher 32 bits to \field{QueueDescHigh}) noti=
-fies
--    the device about location of the Descriptor Area of the queue
--    selected by writing to \field{QueueSel} register.
--  }
--  \hline=20
--  \mmiodreg{QueueDriverLow}{QueueDriverHigh}{Virtual queue's Driver Area 6=
-4 bit long physical address}{0x090}{0x094}{W}{%
--    Writing to these two registers (lower 32 bits of the address
--    to \field{QueueDriverLow}, higher 32 bits to \field{QueueDriverHigh}) =
-notifies
--    the device about location of the Driver Area of the queue
--    selected by writing to \field{QueueSel}.
--  }
--  \hline=20
--  \mmiodreg{QueueDeviceLow}{QueueDeviceHigh}{Virtual queue's Device Area 6=
-4 bit long physical address}{0x0a0}{0x0a4}{W}{%
--    Writing to these two registers (lower 32 bits of the address
--    to \field{QueueDeviceLow}, higher 32 bits to \field{QueueDeviceHigh}) =
-notifies
--    the device about location of the Device Area of the queue
--    selected by writing to \field{QueueSel}.
--  }
--  \hline=20
--  \mmioreg{SHMSel}{Shared memory id}{0x0ac}{W}{%
--    Writing to this register selects the shared memory region \ref{sec:Bas=
-ic Facilities of a Virtio Device / Shared Memory Regions}
--    following operations on \field{SHMLenLow}, \field{SHMLenHigh},
--    \field{SHMBaseLow} and \field{SHMBaseHigh} apply to.
--  }
--  \hline=20
--  \mmiodreg{SHMLenLow}{SHMLenHigh}{Shared memory region 64 bit long length=
-}{0x0b0}{0x0b4}{R}{%
--    These registers return the length of the shared memory
--    region in bytes, as defined by the device for the region selected by
--    the \field{SHMSel} register.  The lower 32 bits of the length
--    are read from \field{SHMLenLow} and the higher 32 bits from
--    \field{SHMLenHigh}.  Reading from a non-existent
--    region (i.e. where the ID written to \field{SHMSel} is unused)
--    results in a length of -1.
--  }
--  \hline=20
--  \mmiodreg{SHMBaseLow}{SHMBaseHigh}{Shared memory region 64 bit long phys=
-ical address}{0x0b8}{0x0bc}{R}{%
--    The driver reads these registers to discover the base address
--    of the region in physical address space.  This address is
--    chosen by the device (or other part of the VMM).
--    The lower 32 bits of the address are read from \field{SHMBaseLow}
--    with the higher 32 bits from \field{SHMBaseHigh}.  Reading
--    from a non-existent region (i.e. where the ID written to
--    \field{SHMSel} is unused) results in a base address of
--    0xffffffffffffffff.
--  }
--  \hline=20
--  \mmioreg{QueueReset}{Virtual queue reset bit}{0x0c0}{RW}{%
--    If VIRTIO_F_RING_RESET has been negotiated, writing one (0x1) to this
--    register selectively resets the queue. Both read and write accesses
--    apply to the queue selected by writing to \field{QueueSel}.
--  }
--  \hline
--  \mmioreg{ConfigGeneration}{Configuration atomicity value}{0x0fc}{R}{
--    Reading from this register returns a value describing a version of the=
- device-specific configuration space (see \field{Config}).
--    The driver can then access the configuration space and, when finished,=
- read \field{ConfigGeneration} again.
--    If no part of the configuration space has changed between these two \f=
-ield{ConfigGeneration} reads, the returned values are identical.
--    If the values are different, the configuration space accesses were not=
- atomic and the driver has to perform the operations again.
--    See also \ref {sec:Basic Facilities of a Virtio Device / Device Config=
-uration Space}.
--  }
--  \hline=20
--  \mmioreg{Config}{Configuration space}{0x100+}{RW}{
--    Device-specific configuration space starts at the offset 0x100
--    and is accessed with byte alignment. Its meaning and size
--    depend on the device and the driver.
--  }
--  \hline
--\end{longtable}
+-\drivernormative{\subsubsection}{Basic Concepts}{Virtio Transport Options =
+/ Virtio over channel I/O / Basic Concepts}
 -
--\devicenormative{\subsubsection}{MMIO Device Register Layout}{Virtio Trans=
-port Options / Virtio Over MMIO / MMIO Device Register Layout}
+-A driver for virtio-ccw devices MUST check for a control unit
+-type of 0x3832 and MUST ignore the device type and model.
 -
--The device MUST return 0x74726976 in \field{MagicValue}.
+-A driver SHOULD attempt to provide the correct length in a channel
+-command even if it suppresses length checks for that command.
 -
--The device MUST return value 0x2 in \field{Version}.
+-\subsection{Device Initialization}\label{sec:Virtio Transport Options / Vi=
+rtio over channel I/O / Device Initialization}
 -
--The device MUST present each event by setting the corresponding bit in \fi=
-eld{InterruptStatus} from the
--moment it takes place, until the driver acknowledges the interrupt
--by writing a corresponding bit mask to the \field{InterruptACK} register. =
- Bits which
--do not represent events which took place MUST be zero.
+-virtio-ccw uses several channel commands to set up a device.
 -
--Upon reset, the device MUST clear all bits in \field{InterruptStatus} and =
-ready bits in the
--\field{QueueReady} register for all queues in the device.
+-\subsubsection{Setting the Virtio Revision}\label{sec:Virtio Transport Opt=
+ions / Virtio over channel I/O / Device Initialization / Setting the Virtio=
+ Revision}
 -
--The device MUST change value returned in \field{ConfigGeneration} if there=
- is any risk of a
--driver seeing an inconsistent configuration state.
+-CCW_CMD_SET_VIRTIO_REV is issued by the driver to set the revision of
+-the virtio-ccw transport it intends to drive the device with. It uses the
+-following communication structure:
 -
--The device MUST NOT access virtual queue contents when \field{QueueReady} =
-is zero (0x0).
+-\begin{lstlisting}
+-struct virtio_rev_info {
+-        be16 revision;
+-        be16 length;
+-        u8 data[];
+-};
+-\end{lstlisting}
 -
--If VIRTIO_F_RING_RESET has been negotiated, the device MUST present a 0 in
--\field{QueueReset} on reset.
+-\field{revision} contains the desired revision id, \field{length} the leng=
+th of the
+-data portion and \field{data} revision-dependent additional desired option=
+s.
 -
--If VIRTIO_F_RING_RESET has been negotiated, The device MUST present a 0 in
--\field{QueueReset} after the virtqueue is enabled with \field{QueueReady}.
+-The following values are supported:
 -
--The device MUST reset the queue when 1 is written to \field{QueueReset}. T=
-he
--device MUST continue to present 1 in \field{QueueReset} as long as the que=
-ue reset
--is ongoing. The device MUST present 0 in both \field{QueueReset} and \fiel=
-d{QueueReady}
--when queue reset has completed.
--(see \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue=
- Reset}).
+-\begin{tabular}{ |l|l|l|l| }
+-\hline
+-\field{revision} & \field{length} & \field{data}      & remarks \\
+-\hline \hline
+-0        & 0      & <empty>   & legacy interface; transitional devices onl=
+y \\
+-\hline
+-1        & 0      & <empty>   & Virtio 1 \\
+-\hline
+-2        & 0      & <empty>   & CCW_CMD_READ_STATUS support \\
+-\hline
+-3-n      &        &           & reserved for later revisions \\
+-\hline
+-\end{tabular}
 -
--\drivernormative{\subsubsection}{MMIO Device Register Layout}{Virtio Trans=
-port Options / Virtio Over MMIO / MMIO Device Register Layout}
--The driver MUST NOT access memory locations not described in the
--table \ref{tab:Virtio Trasport Options / Virtio Over MMIO / MMIO Device Re=
-gister Layout}
--(or, in case of the configuration space, described in the device specifica=
-tion),
--MUST NOT write to the read-only registers (direction R) and
--MUST NOT read from the write-only registers (direction W).
+-Note that a change in the virtio standard does not necessarily
+-correspond to a change in the virtio-ccw revision.
 -
--The driver MUST only use 32 bit wide and aligned reads and writes to acces=
-s the control registers
--described in table \ref{tab:Virtio Trasport Options / Virtio Over MMIO / M=
-MIO Device Register Layout}.
--For the device-specific configuration space, the driver MUST use 8 bit wid=
-e accesses for
--8 bit wide fields, 16 bit wide and aligned accesses for 16 bit wide fields=
- and 32 bit wide and
--aligned accesses for 32 and 64 bit wide fields.
+-\devicenormative{\paragraph}{Setting the Virtio Revision}{Virtio Transport=
+ Options / Virtio over channel I/O / Device Initialization / Setting the Vi=
+rtio Revision}
 -
--The driver MUST ignore a device with \field{MagicValue} which is not 0x747=
-26976,
--although it MAY report an error.
+-A device MUST post a unit check with command reject for any \field{revisio=
+n}
+-it does not support. For any invalid combination of \field{revision}, \fie=
+ld{length}
+-and \field{data}, it MUST post a unit check with command reject as well. A
+-non-transitional device MUST reject revision id 0.
 -
--The driver MUST ignore a device with \field{Version} which is not 0x2,
--although it MAY report an error.
+-A device SHOULD answer with command reject to any virtio-ccw specific
+-channel command that is not contained in the revision selected by the
+-driver.
 -
--The driver MUST ignore a device with \field{DeviceID} 0x0,
--but MUST NOT report any error.
+-A device MUST answer with command reject to any attempt to select a differ=
+ent revision
+-after a revision has been successfully selected by the driver.
 -
--Before reading from \field{DeviceFeatures}, the driver MUST write a value =
-to \field{DeviceFeaturesSel}.
+-A device MUST treat the revision as unset from the time the associated
+-subchannel has been enabled until a revision has been successfully set
+-by the driver. This implies that revisions are not persistent across
+-disabling and enabling of the associated subchannel.
 -
--Before writing to the \field{DriverFeatures} register, the driver MUST wri=
-te a value to the \field{DriverFeaturesSel} register.
+-\drivernormative{\paragraph}{Setting the Virtio Revision}{Virtio Transport=
+ Options / Virtio over channel I/O / Device Initialization / Setting the Vi=
+rtio Revision}
 -
--The driver MUST write a value to \field{QueueNum} which is less than
--or equal to the value presented by the device in \field{QueueNumMax}.
+-A driver SHOULD start with trying to set the highest revision it
+-supports and continue with lower revisions if it gets a command reject.
 -
--When \field{QueueReady} is not zero, the driver MUST NOT access
--\field{QueueNum}, \field{QueueDescLow}, \field{QueueDescHigh},
--\field{QueueDriverLow}, \field{QueueDriverHigh}, \field{QueueDeviceLow}, \=
-field{QueueDeviceHigh}.
+-A driver MUST NOT issue any other virtio-ccw specific channel commands
+-prior to setting the revision.
 -
--To stop using the queue the driver MUST write zero (0x0) to this
--\field{QueueReady} and MUST read the value back to ensure
--synchronization.
+-After a revision has been successfully selected by the driver, it
+-MUST NOT attempt to select a different revision.
 -
--The driver MUST ignore undefined bits in \field{InterruptStatus}.
+-\paragraph{Legacy Interfaces: A Note on Setting the Virtio Revision}\label=
+{sec:Virtio Transport Options / Virtio over channel I/O / Device Initializa=
+tion / Setting the Virtio Revision / Legacy Interfaces: A Note on Setting t=
+he Virtio Revision}
 -
--The driver MUST write a value with a bit mask describing events it handled=
- into \field{InterruptACK} when
--it finishes handling an interrupt and MUST NOT set any of the undefined bi=
-ts in the value.
+-A legacy device will not support the CCW_CMD_SET_VIRTIO_REV and answer
+-with a command reject. A non-transitional driver MUST stop trying to
+-operate this device in that case. A transitional driver MUST operate
+-the device as if it had been able to set revision 0.
 -
--If VIRTIO_F_RING_RESET has been negotiated, after the driver writes 1 to
--\field{QueueReset} to reset the queue, the driver MUST NOT consider queue
--reset to be complete until it reads back 0 in \field{QueueReset}. The driv=
-er
--MAY re-enable the queue by writing 1 to \field{QueueReady} after ensuring
--that other virtqueue fields have been set up correctly. The driver MAY set
--driver-writeable queue configuration values to different values than those
--that were used before the queue reset.
--(see \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue=
- Reset}).
+-A legacy driver will not issue the CCW_CMD_SET_VIRTIO_REV prior to
+-issuing other virtio-ccw specific channel commands. A non-transitional
+-device therefore MUST answer any such attempts with a command reject.
+-A transitional device MUST assume in this case that the driver is a
+-legacy driver and continue as if the driver selected revision 0. This
+-implies that the device MUST reject any command not valid for revision
+-0, including a subsequent CCW_CMD_SET_VIRTIO_REV.
 -
--\subsection{MMIO-specific Initialization And Device Operation}\label{sec:V=
-irtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization A=
-nd Device Operation}
+-\subsubsection{Configuring a Virtqueue}\label{sec:Virtio Transport Options=
+ / Virtio over channel I/O / Device Initialization / Configuring a Virtqueu=
+e}
 -
--\subsubsection{Device Initialization}\label{sec:Virtio Transport Options /=
- Virtio Over MMIO / MMIO-specific Initialization And Device Operation / Dev=
-ice Initialization}
+-CCW_CMD_READ_VQ_CONF is issued by the driver to obtain information
+-about a queue. It uses the following structure for communicating:
 -
--\drivernormative{\paragraph}{Device Initialization}{Virtio Transport Optio=
-ns / Virtio Over MMIO / MMIO-specific Initialization And Device Operation /=
- Device Initialization}
+-\begin{lstlisting}
+-struct vq_config_block {
+-        be16 index;
+-        be16 max_num;
+-};
+-\end{lstlisting}
 -
--The driver MUST start the device initialization by reading and
--checking values from \field{MagicValue} and \field{Version}.
--If both values are valid, it MUST read \field{DeviceID}
--and if its value is zero (0x0) MUST abort initialization and
--MUST NOT access any other register.
+-The requested number of buffers for queue \field{index} is returned in
+-\field{max_num}.
 -
--Drivers not expecting shared memory MUST NOT use the shared
--memory registers.
+-Afterwards, CCW_CMD_SET_VQ is issued by the driver to inform the
+-device about the location used for its queue. The transmitted
+-structure is
 -
--Further initialization MUST follow the procedure described in
--\ref{sec:General Initialization And Device Operation / Device Initializati=
-on}~\nameref{sec:General Initialization And Device Operation / Device Initi=
-alization}.
+-\begin{lstlisting}
+-struct vq_info_block {
+-        be64 desc;
+-        be32 res0;
+-        be16 index;
+-        be16 num;
+-        be64 driver;
+-        be64 device;
+-};
+-\end{lstlisting}
 -
--\subsubsection{Virtqueue Configuration}\label{sec:Virtio Transport Options=
- / Virtio Over MMIO / MMIO-specific Initialization And Device Operation / V=
-irtqueue Configuration}
+-\field{desc}, \field{driver} and \field{device} contain the guest
+-addresses for the descriptor area,
+-available area and used area for queue \field{index}, respectively. The ac=
+tual
+-virtqueue size (number of allocated buffers) is transmitted in \field{num}=
+.
 -
--The driver will typically initialize the virtual queue in the following wa=
-y:
+-\devicenormative{\paragraph}{Configuring a Virtqueue}{Virtio Transport Opt=
+ions / Virtio over channel I/O / Device Initialization / Configuring a Virt=
+queue}
 -
--\begin{enumerate}
--\item Select the queue writing its index (first queue is 0) to
--   \field{QueueSel}.
+-\field{res0} is reserved and MUST be ignored by the device.
 -
--\item Check if the queue is not already in use: read \field{QueueReady},
--   and expect a returned value of zero (0x0).
+-\paragraph{Legacy Interface: A Note on Configuring a Virtqueue}\label{sec:=
+Virtio Transport Options / Virtio over channel I/O / Device Initialization =
+/ Configuring a Virtqueue / Legacy Interface: A Note on Configuring a Virtq=
+ueue}
 -
--\item Read maximum queue size (number of elements) from
--   \field{QueueNumMax}. If the returned value is zero (0x0) the
--   queue is not available.
+-For a legacy driver or for a driver that selected revision 0,
+-CCW_CMD_SET_VQ uses the following communication block:
 -
--\item Allocate and zero the queue memory, making sure the memory
--   is physically contiguous.
+-\begin{lstlisting}
+-struct vq_info_block_legacy {
+-        be64 queue;
+-        be32 align;
+-        be16 index;
+-        be16 num;
+-};
+-\end{lstlisting}
 -
--\item Notify the device about the queue size by writing the size to
--   \field{QueueNum}.
+-\field{queue} contains the guest address for queue \field{index}, \field{n=
+um} the number of buffers
+-and \field{align} the alignment. The queue layout follows \ref{sec:Basic F=
+acilities of a Virtio Device / Virtqueues / Legacy Interfaces: A Note on Vi=
+rtqueue Layout}~\nameref{sec:Basic Facilities of a Virtio Device / Virtqueu=
+es / Legacy Interfaces: A Note on Virtqueue Layout}.
 -
--\item Write physical addresses of the queue's Descriptor Area,
--   Driver Area and Device Area to (respectively) the
--   \field{QueueDescLow}/\field{QueueDescHigh},
--   \field{QueueDriverLow}/\field{QueueDriverHigh} and
--   \field{QueueDeviceLow}/\field{QueueDeviceHigh} register pairs.
+-\subsubsection{Communicating Status Information}\label{sec:Virtio Transpor=
+t Options / Virtio over channel I/O / Device Initialization / Communicating=
+ Status Information}
 -
--\item Write 0x1 to \field{QueueReady}.
--\end{enumerate}
+-The driver changes the status of a device via the
+-CCW_CMD_WRITE_STATUS command, which transmits an 8 bit status
+-value.
 -
--\subsubsection{Available Buffer Notifications}\label{sec:Virtio Transport =
-Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operat=
-ion / Available Buffer Notifications}
+-As described in
+-\ref{devicenormative:Basic Facilities of a Virtio Device / Feature Bits},
+-a device sometimes fails to set the \field{device status} field: For examp=
+le, it
+-might fail to accept the FEATURES_OK status bit during device initializati=
+on.
+-
+-With revision 2, CCW_CMD_READ_STATUS is defined: It reads an 8 bit status
+-value from the device and acts as a reverse operation to CCW_CMD_WRITE_STA=
+TUS.
+-
+-\drivernormative{\paragraph}{Communicating Status Information}{Virtio Tran=
+sport Options / Virtio over channel I/O / Device Initialization / Communica=
+ting Status Information}
+-
+-If the device posts a unit check with command reject in response to the
+-CCW_CMD_WRITE_STATUS command, the driver MUST assume that the device faile=
+d
+-to set the status and the \field{device status} field retained
+-its previous value.
+-
+-If at least revision 2 has been negotiated, the driver SHOULD use the
+-CCW_CMD_READ_STATUS command to retrieve the \field{device status} field af=
+ter
+-a configuration change has been detected.
+-
+-If not at least revision 2 has been negotiated, the driver MUST NOT attemp=
+t
+-to issue the CCW_CMD_READ_STATUS command.
+-
+-\devicenormative{\paragraph}{Communicating Status Information}{Virtio Tran=
+sport Options / Virtio over channel I/O / Device Initialization / Communica=
+ting Status Information}
+-
+-If the device fails to set the \field{device status} field
+-to the value written by the driver, the device MUST assure
+-that the \field{device status} field is left unchanged and
+-MUST post a unit check with command reject.
+-
+-If at least revision 2 has been negotiated, the device MUST return the
+-current \field{device status} field if the CCW_CMD_READ_STATUS
+-command is issued.
+-
+-\subsubsection{Handling Device Features}\label{sec:Virtio Transport Option=
+s / Virtio over channel I/O / Device Initialization / Handling Device Featu=
+res}
+-
+-Feature bits are arranged in an array of 32 bit values, making
+-for a total of 8192 feature bits. Feature bits are in
+-little-endian byte order.
+-
+-The CCW commands dealing with features use the following
+-communication block:
+-
+-\begin{lstlisting}
+-struct virtio_feature_desc {
+-        le32 features;
+-        u8 index;
+-};
+-\end{lstlisting}
+-
+-\field{features} are the 32 bits of features currently accessed, while
+-\field{index} describes which of the feature bit values is to be
+-accessed. No padding is added at the end of the structure, it is
+-exactly 5 bytes in length.
+-
+-The guest obtains the device's device feature set via the
+-CCW_CMD_READ_FEAT command. The device stores the features at \field{index}
+-to \field{features}.
+-
+-For communicating its supported features to the device, the driver
+-uses the CCW_CMD_WRITE_FEAT command, denoting a \field{features}/\field{in=
+dex}
+-combination.
+-
+-\subsubsection{Device Configuration}\label{sec:Virtio Transport Options / =
+Virtio over channel I/O / Device Initialization / Device Configuration}
+-
+-The device's configuration space is located in host memory.
+-
+-To obtain information from the configuration space, the driver
+-uses CCW_CMD_READ_CONF, specifying the guest memory for the device
+-to write to.
+-
+-For changing configuration information, the driver uses
+-CCW_CMD_WRITE_CONF, specifying the guest memory for the device to
+-read from.
+-
+-In both cases, the complete configuration space is transmitted.  This
+-allows the driver to compare the new configuration space with the old
+-version, and keep a generation count internally whenever it changes.
+-
+-\subsubsection{Setting Up Indicators}\label{sec:Virtio Transport Options /=
+ Virtio over channel I/O / Device Initialization / Setting Up Indicators}
+-
+-In order to set up the indicator bits for host->guest notification,
+-the driver uses different channel commands depending on whether it
+-wishes to use traditional I/O interrupts tied to a subchannel or
+-adapter I/O interrupts for virtqueue notifications. For any given
+-device, the two mechanisms are mutually exclusive.
+-
+-For the configuration change indicators, only a mechanism using
+-traditional I/O interrupts is provided, regardless of whether
+-traditional or adapter I/O interrupts are used for virtqueue
+-notifications.
+-
+-\paragraph{Setting Up Classic Queue Indicators}\label{sec:Virtio Transport=
+ Options / Virtio over channel I/O / Device Initialization / Setting Up Ind=
+icators / Setting Up Classic Queue Indicators}
+-
+-Indicators for notification via classic I/O interrupts are contained
+-in a 64 bit value per virtio-ccw proxy device.
+-
+-To communicate the location of the indicator bits for host->guest
+-notification, the driver uses the CCW_CMD_SET_IND command,
+-pointing to a location containing the guest address of the
+-indicators in a 64 bit value.
+-
+-If the driver has already set up two-staged queue indicators via the
+-CCW_CMD_SET_IND_ADAPTER command, the device MUST post a unit check
+-with command reject to any subsequent CCW_CMD_SET_IND command.
+-
+-\paragraph{Setting Up Configuration Change Indicators}\label{sec:Virtio Tr=
+ansport Options / Virtio over channel I/O / Device Initialization / Setting=
+ Up Indicators / Setting Up Configuration Change Indicators}
+-
+-Indicators for configuration change host->guest notification are
+-contained in a 64 bit value per virtio-ccw proxy device.
+-
+-To communicate the location of the indicator bits used in the
+-configuration change host->guest notification, the driver issues the
+-CCW_CMD_SET_CONF_IND command, pointing to a location containing the
+-guest address of the indicators in a 64 bit value.
+-
+-\paragraph{Setting Up Two-Stage Queue Indicators}\label{sec:Virtio Transpo=
+rt Options / Virtio over channel I/O / Device Initialization / Setting Up I=
+ndicators / Setting Up Two-Stage Queue Indicators}
+-
+-Indicators for notification via adapter I/O interrupts consist of
+-two stages:
+-\begin{itemize}
+-\item a summary indicator byte covering the virtqueues for one or more
+-  virtio-ccw proxy devices
+-\item a set of contigous indicator bits for the virtqueues for a
+-  virtio-ccw proxy device
+-\end{itemize}
+-
+-To communicate the location of the summary and queue indicator bits,
+-the driver uses the CCW_CMD_SET_IND_ADAPTER command with the following
+-payload:
+-
+-\begin{lstlisting}
+-struct virtio_thinint_area {
+-        be64 summary_indicator;
+-        be64 indicator;
+-        be64 bit_nr;
+-        u8 isc;
+-} __attribute__ ((packed));
+-\end{lstlisting}
+-
+-\field{summary_indicator} contains the guest address of the 8 bit summary
+-indicator.
+-\field{indicator} contains the guest address of an area wherein the indica=
+tors
+-for the devices are contained, starting at \field{bit_nr}, one bit per
+-virtqueue of the device. Bit numbers start at the left, i.e. the most
+-significant bit in the first byte is assigned the bit number 0.
+-\field{isc} contains the I/O interruption subclass to be used for the adap=
+ter
+-I/O interrupt. It MAY be different from the isc used by the proxy
+-virtio-ccw device's subchannel.
+-No padding is added at the end of the structure, it is exactly 25 bytes
+-in length.
+-
+-
+-\devicenormative{\subparagraph}{Setting Up Two-Stage Queue Indicators}{Vir=
+tio Transport Options / Virtio over channel I/O / Device Initialization / S=
+etting Up Indicators / Setting Up Two-Stage Queue Indicators}
+-If the driver has already set up classic queue indicators via the
+-CCW_CMD_SET_IND command, the device MUST post a unit check with
+-command reject to any subsequent CCW_CMD_SET_IND_ADAPTER command.
+-
+-\paragraph{Legacy Interfaces: A Note on Setting Up Indicators}\label{sec:V=
+irtio Transport Options / Virtio over channel I/O / Device Initialization /=
+ Setting Up Indicators / Legacy Interfaces: A Note on Setting Up Indicators=
+}
+-
+-In some cases, legacy devices will only support classic queue indicators;
+-in that case, they will reject CCW_CMD_SET_IND_ADAPTER as they don't know =
+that
+-command. Some legacy devices will support two-stage queue indicators, thou=
+gh,
+-and a driver will be able to successfully use CCW_CMD_SET_IND_ADAPTER to s=
+et
+-them up.
+-
+-\subsection{Device Operation}\label{sec:Virtio Transport Options / Virtio =
+over channel I/O / Device Operation}
+-
+-\subsubsection{Host->Guest Notification}\label{sec:Virtio Transport Option=
+s / Virtio over channel I/O / Device Operation / Host->Guest Notification}
+-
+-There are two modes of operation regarding host->guest notification,
+-classic I/O interrupts and adapter I/O interrupts. The mode to be
+-used is determined by the driver by using CCW_CMD_SET_IND respectively
+-CCW_CMD_SET_IND_ADAPTER to set up queue indicators.
+-
+-For configuration changes, the driver always uses classic I/O
+-interrupts.
+-
+-\paragraph{Notification via Classic I/O Interrupts}\label{sec:Virtio Trans=
+port Options / Virtio over channel I/O / Device Operation / Host->Guest Not=
+ification / Notification via Classic I/O Interrupts}
+-
+-If the driver used the CCW_CMD_SET_IND command to set up queue
+-indicators, the device will use classic I/O interrupts for
+-host->guest notification about virtqueue activity.
+-
+-For notifying the driver of virtqueue buffers, the device sets the
+-corresponding bit in the guest-provided indicators. If an
+-interrupt is not already pending for the subchannel, the device
+-generates an unsolicited I/O interrupt.
+-
+-If the device wants to notify the driver about configuration
+-changes, it sets bit 0 in the configuration indicators and
+-generates an unsolicited I/O interrupt, if needed. This also
+-applies if adapter I/O interrupts are used for queue notifications.
+-
+-\paragraph{Notification via Adapter I/O Interrupts}\label{sec:Virtio Trans=
+port Options / Virtio over channel I/O / Device Operation / Host->Guest Not=
+ification / Notification via Adapter I/O Interrupts}
+-
+-If the driver used the CCW_CMD_SET_IND_ADAPTER command to set up
+-queue indicators, the device will use adapter I/O interrupts for
+-host->guest notification about virtqueue activity.
+-
+-For notifying the driver of virtqueue buffers, the device sets the
+-bit in the guest-provided indicator area at the corresponding offset.
+-The guest-provided summary indicator is set to 0x01. An adapter I/O
+-interrupt for the corresponding interruption subclass is generated.
+-
+-The recommended way to process an adapter I/O interrupt by the driver
+-is as follows:
+-
+-\begin{itemize}
+-\item Process all queue indicator bits associated with the summary indicat=
+or.
+-\item Clear the summary indicator, performing a synchronization (memory
+-barrier) afterwards.
+-\item Process all queue indicator bits associated with the summary indicat=
+or
+-again.
+-\end{itemize}
+-
+-\devicenormative{\subparagraph}{Notification via Adapter I/O Interrupts}{V=
+irtio Transport Options / Virtio over channel I/O / Device Operation / Host=
+->Guest Notification / Notification via Adapter I/O Interrupts}
+-
+-The device SHOULD only generate an adapter I/O interrupt if the
+-summary indicator had not been set prior to notification.
+-
+-\drivernormative{\subparagraph}{Notification via Adapter I/O Interrupts}{V=
+irtio Transport Options / Virtio over channel I/O / Device Operation / Host=
+->Guest Notification / Notification via Adapter I/O Interrupts}
+-The driver
+-MUST clear the summary indicator after receiving an adapter I/O
+-interrupt before it processes the queue indicators.
+-
+-\paragraph{Legacy Interfaces: A Note on Host->Guest Notification}\label{se=
+c:Virtio Transport Options / Virtio over channel I/O / Device Operation / H=
+ost->Guest Notification / Legacy Interfaces: A Note on Host->Guest Notifica=
+tion}
+-
+-As legacy devices and drivers support only classic queue indicators,
+-host->guest notification will always be done via classic I/O interrupts.
+-
+-\subsubsection{Guest->Host Notification}\label{sec:Virtio Transport Option=
+s / Virtio over channel I/O / Device Operation / Guest->Host Notification}
+-
+-For notifying the device of virtqueue buffers, the driver
+-unfortunately can't use a channel command (the asynchronous
+-characteristics of channel I/O interact badly with the host block
+-I/O backend). Instead, it uses a diagnose 0x500 call with subcode
+-3 specifying the queue, as follows:
+-
+-\begin{tabular}{ |l|l|l| }
+-\hline
+-GPR  &   Input Value     & Output Value \\
+-\hline \hline
+-  1   &       0x3         &              \\
+-\hline
+-  2   &  Subchannel ID    & Host Cookie  \\
+-\hline
+-  3   & Notification data &              \\
+-\hline
+-  4   &   Host Cookie     &              \\
+-\hline
+-\end{tabular}
 -
 -When VIRTIO_F_NOTIFICATION_DATA has not been negotiated,
--the driver sends an available buffer notification to the device by writing
--the 16-bit virtqueue index
--of the queue to be notified to \field{QueueNotify}.
+-the \field{Notification data} contains the Virtqueue number.
 -
 -When VIRTIO_F_NOTIFICATION_DATA has been negotiated,
--the driver sends an available buffer notification to the device by writing
--the following 32-bit value to \field{QueueNotify}:
--\lstinputlisting{notifications-le.c}
+-the value has the following format:
+-\lstinputlisting{notifications-be.c}
 -
 -See \ref{sec:Basic Facilities of a Virtio Device / Driver notifications}~\=
 nameref{sec:Basic Facilities of a Virtio Device / Driver notifications}
 -for the definition of the components.
 -
--\subsubsection{Notifications From The Device}\label{sec:Virtio Transport O=
-ptions / Virtio Over MMIO / MMIO-specific Initialization And Device Operati=
-on / Notifications From The Device}
+-\devicenormative{\paragraph}{Guest->Host Notification}{Virtio Transport Op=
+tions / Virtio over channel I/O / Device Operation / Guest->Host Notificati=
+on}
+-The device MUST ignore bits 0-31 (counting from the left) of GPR2.
+-This aligns passing the subchannel ID with the way it is passed
+-for the existing I/O instructions.
 -
--The memory mapped virtio device is using a single, dedicated
--interrupt signal, which is asserted when at least one of the
--bits described in the description of \field{InterruptStatus}
--is set. This is how the device sends a used buffer notification
--or a configuration change notification to the device.
+-The device MAY return a 64-bit host cookie in GPR2 to speed up the
+-notification execution.
 -
--\drivernormative{\paragraph}{Notifications From The Device}{Virtio Transpo=
-rt Options / Virtio Over MMIO / MMIO-specific Initialization And Device Ope=
-ration / Notifications From The Device}
--After receiving an interrupt, the driver MUST read
--\field{InterruptStatus} to check what caused the interrupt (see the
--register description).  The used buffer notification bit being set
--SHOULD be interpreted as a used buffer notification for each active
--virtqueue.  After the interrupt is handled, the driver MUST acknowledge
--it by writing a bit mask corresponding to the handled events to the
--InterruptACK register.
+-\drivernormative{\paragraph}{Guest->Host Notification}{Virtio Transport Op=
+tions / Virtio over channel I/O / Device Operation / Guest->Host Notificati=
+on}
 -
--\subsection{Legacy interface}\label{sec:Virtio Transport Options / Virtio =
-Over MMIO / Legacy interface}
+-For each notification, the driver SHOULD use GPR4 to pass the host cookie =
+received in GPR2 from the previous notication.
 -
--The legacy MMIO transport used page-based addressing, resulting
--in a slightly different control register layout, the device
--initialization and the virtual queue configuration procedure.
+-\begin{note}
+-For example:
+-\begin{lstlisting}
+-info->cookie =3D do_notify(schid,
+-                         virtqueue_get_queue_index(vq),
+-                         info->cookie);
+-\end{lstlisting}
+-\end{note}
 -
--Table \ref{tab:Virtio Trasport Options / Virtio Over MMIO / MMIO Device Le=
-gacy Register Layout}=20
--presents control registers layout, omitting
--descriptions of registers which did not change their function
--nor behaviour:
+-\subsubsection{Resetting Devices}\label{sec:Virtio Transport Options / Vir=
+tio over channel I/O / Device Operation / Resetting Devices}
 -
--\begin{longtable}{p{0.2\textwidth}p{0.7\textwidth}}
--  \caption {MMIO Device Legacy Register Layout}
--  \label{tab:Virtio Trasport Options / Virtio Over MMIO / MMIO Device Lega=
-cy Register Layout} \\
--  \hline
--  \mmioreg{Name}{Function}{Offset from base}{Direction}{Description}=20
--  \hline=20
--  \hline=20
--  \endfirsthead
--  \hline
--  \mmioreg{Name}{Function}{Offset from the base}{Direction}{Description}=
+-In order to reset a device, a driver sends the
+-CCW_CMD_VDEV_RESET command. This command does not carry any payload.
+-
+-The device signals completion of the virtio reset operation through succes=
+sful
+-conclusion of the CCW_CMD_VDEV_RESET channel command. In particular, the
+-command not only triggers the reset operation, but the reset operation is
+-already completed when the operation concludes successfully.
+-
+-\devicenormative{\paragraph}{Resetting Devices}{Virtio Transport Options /=
+ Virtio over channel I/O / Device Operation / Resetting Devices}
+-
+-The device MUST finish the virtio reset operation and reinitialize
+-\field{device status} to zero before it concludes the CCW_CMD_VDEV_RESET
+-command successfully.
+-
+-The device MUST NOT send notifications or interact with the queues after
+-it signaled successful conclusion of the CCW_CMD_VDEV_RESET command.
+-
+-\drivernormative{\paragraph}{Resetting Devices}{Virtio Transport Options /=
+ Virtio over channel I/O / Device Operation / Resetting Devices}
+-
+-The driver MAY consider the virtio reset operation to be complete already =
+after
+-successful conclusion of the CCW_CMD_VDEV_RESET channel command, although =
+it
+-MAY also choose to verify reset completion by reading \field{device status=
+} via
+-CCW_CMD_READ_STATUS and checking whether it is 0 afterwards.
++\input{transport-ccw.tex}
 =20
--  \hline=20
--  \hline=20
--  \endhead
--  \endfoot
--  \endlastfoot
--  \mmioreg{MagicValue}{Magic value}{0x000}{R}{}
--  \hline
--  \mmioreg{Version}{Device version number}{0x004}{R}{Legacy device returns=
- value 0x1.}
--  \hline
--  \mmioreg{DeviceID}{Virtio Subsystem Device ID}{0x008}{R}{}
--  \hline
--  \mmioreg{VendorID}{Virtio Subsystem Vendor ID}{0x00c}{R}{}
--  \hline
--  \mmioreg{HostFeatures}{Flags representing features the device supports}{=
-0x010}{R}{}
--  \hline
--  \mmioreg{HostFeaturesSel}{Device (host) features word selection.}{0x014}=
-{W}{}
--  \hline
--  \mmioreg{GuestFeatures}{Flags representing device features understood an=
-d activated by the driver}{0x020}{W}{}
--  \hline
--  \mmioreg{GuestFeaturesSel}{Activated (guest) features word selection}{0x=
-024}{W}{}
--  \hline=20
--  \mmioreg{GuestPageSize}{Guest page size}{0x028}{W}{%
--    The driver writes the guest page size in bytes to the
--    register during initialization, before any queues are used.
--    This value should be a power of 2 and is used by the device to
--    calculate the Guest address of the first queue page
--    (see QueuePFN).
--  }
--  \hline
--  \mmioreg{QueueSel}{Virtual queue index}{0x030}{W}{%
--    Writing to this register selects the virtual queue that the
--    following operations on the \field{QueueNumMax}, \field{QueueNum}, \fi=
-eld{QueueAlign}
--    and \field{QueuePFN} registers apply to. The index
--    number of the first queue is zero (0x0).=20
--.
--  }
--  \hline
--  \mmioreg{QueueNumMax}{Maximum virtual queue size}{0x034}{R}{%
--    Reading from the register returns the maximum size of the queue
--    the device is ready to process or zero (0x0) if the queue is not
--    available. This applies to the queue selected by writing to
--    \field{QueueSel} and is allowed only when \field{QueuePFN} is set to z=
-ero
--    (0x0), so when the queue is not actively used.
--  }
--  \hline
--  \mmioreg{QueueNum}{Virtual queue size}{0x038}{W}{%
--    Queue size is the number of elements in the queue.
--    Writing to this register notifies the device what size of the
--    queue the driver will use. This applies to the queue selected by
--    writing to \field{QueueSel}.
--  }
--  \hline
--  \mmioreg{QueueAlign}{Used Ring alignment in the virtual queue}{0x03c}{W}=
-{%
--    Writing to this register notifies the device about alignment
--    boundary of the Used Ring in bytes. This value should be a power
--    of 2 and applies to the queue selected by writing to \field{QueueSel}.
--  }
--  \hline
--  \mmioreg{QueuePFN}{Guest physical page number of the virtual queue}{0x04=
-0}{RW}{%
--    Writing to this register notifies the device about location of the
--    virtual queue in the Guest's physical address space. This value
--    is the index number of a page starting with the queue
--    Descriptor Table. Value zero (0x0) means physical address zero
--    (0x00000000) and is illegal. When the driver stops using the
--    queue it writes zero (0x0) to this register.
--    Reading from this register returns the currently used page
--    number of the queue, therefore a value other than zero (0x0)
--    means that the queue is in use.
--    Both read and write accesses apply to the queue selected by
--    writing to \field{QueueSel}.
--  }
--  \hline
--  \mmioreg{QueueNotify}{Queue notifier}{0x050}{W}{}
--  \hline
--  \mmioreg{InterruptStatus}{Interrupt status}{0x60}{R}{}
--  \hline
--  \mmioreg{InterruptACK}{Interrupt acknowledge}{0x064}{W}{}
--  \hline
--  \mmioreg{Status}{Device status}{0x070}{RW}{%
--    Reading from this register returns the current device status
--    flags.
--    Writing non-zero values to this register sets the status flags,
--    indicating the OS/driver progress. Writing zero (0x0) to this
--    register triggers a device reset. The device
--    sets \field{QueuePFN} to zero (0x0) for all queues in the device.
--    Also see \ref{sec:General Initialization And Device Operation / Device=
- Initialization}~\nameref{sec:General Initialization And Device Operation /=
- Device Initialization}.
--  }
--  \hline
--  \mmioreg{Config}{Configuration space}{0x100+}{RW}{}
--  \hline
--\end{longtable}
--
--The virtual queue page size is defined by writing to \field{GuestPageSize}=
-,
--as written by the guest. The driver does this before the
--virtual queues are configured.
--
--The virtual queue layout follows
--p. \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Legacy Inte=
-rfaces: A Note on Virtqueue Layout}~\nameref{sec:Basic Facilities of a Virt=
-io Device / Virtqueues / Legacy Interfaces: A Note on Virtqueue Layout},
--with the alignment defined in \field{QueueAlign}.
--
--The virtual queue is configured as follows:
--\begin{enumerate}
--\item Select the queue writing its index (first queue is 0) to
--   \field{QueueSel}.
--
--\item Check if the queue is not already in use: read \field{QueuePFN},
--   expecting a returned value of zero (0x0).
--
--\item Read maximum queue size (number of elements) from
--   \field{QueueNumMax}. If the returned value is zero (0x0) the
--   queue is not available.
--
--\item Allocate and zero the queue pages in contiguous virtual
--   memory, aligning the Used Ring to an optimal boundary (usually
--   page size). The driver should choose a queue size smaller than or
--   equal to \field{QueueNumMax}.
--
--\item Notify the device about the queue size by writing the size to
--   \field{QueueNum}.
--
--\item Notify the device about the used alignment by writing its value
--   in bytes to \field{QueueAlign}.
--
--\item Write the physical number of the first page of the queue to
--   the \field{QueuePFN} register.
--\end{enumerate}
--
--Notification mechanisms did not change.
-+\input{transport-mmio.tex}
+ \chapter{Device Types}\label{sec:Device Types}
 =20
- \section{Virtio Over Channel I/O}\label{sec:Virtio Transport Options / Vir=
-tio Over Channel I/O}
-=20
-diff --git a/transport-mmio.tex b/transport-mmio.tex
+diff --git a/transport-ccw.tex b/transport-ccw.tex
 new file mode 100644
-index 0000000..7f2e0c3
+index 0000000..93401a4
 --- /dev/null
-+++ b/transport-mmio.tex
-@@ -0,0 +1,552 @@
-+\subsection{MMIO Device Discovery}\label{sec:Virtio Transport Options / Vi=
-rtio Over MMIO / MMIO Device Discovery}
++++ b/transport-ccw.tex
+@@ -0,0 +1,601 @@
++\section{Virtio Over Channel I/O}\label{sec:Virtio Transport Options / Vir=
+tio Over Channel I/O}
 +
-+Unlike PCI, MMIO provides no generic device discovery mechanism.  For each
-+device, the guest OS will need to know the location of the registers
-+and interrupt(s) used.  The suggested binding for systems using
-+flattened device trees is shown in this example:
++S/390 based virtual machines support neither PCI nor MMIO, so a
++different transport is needed there.
++
++virtio-ccw uses the standard channel I/O based mechanism used for
++the majority of devices on S/390. A virtual channel device with a
++special control unit type acts as proxy to the virtio device
++(similar to the way virtio-pci uses a PCI device) and
++configuration and operation of the virtio device is accomplished
++(mostly) via channel commands. This means virtio devices are
++discoverable via standard operating system algorithms, and adding
++virtio support is mainly a question of supporting a new control
++unit type.
++
++As the S/390 is a big endian machine, the data structures transmitted
++via channel commands are big-endian: this is made clear by use of
++the types be16, be32 and be64.
++
++\subsection{Basic Concepts}\label{sec:Virtio Transport Options / Virtio ov=
+er channel I/O / Basic Concepts}
++
++As a proxy device, virtio-ccw uses a channel-attached I/O control
++unit with a special control unit type (0x3832) and a control unit
++model corresponding to the attached virtio device's subsystem
++device ID, accessed via a virtual I/O subchannel and a virtual
++channel path of type 0x32. This proxy device is discoverable via
++normal channel subsystem device discovery (usually a STORE
++SUBCHANNEL loop) and answers to the basic channel commands:
++
++\begin{itemize}
++\item NO-OPERATION (0x03)
++\item BASIC SENSE (0x04)
++\item TRANSFER IN CHANNEL (0x08)
++\item SENSE ID (0xe4)
++\end{itemize}
++
++For a virtio-ccw proxy device, SENSE ID will return the following
++information:
++
++\begin{tabular}{ |l|l|l| }
++\hline
++Bytes & Description & Contents \\
++\hline \hline
++0     & reserved              & 0xff \\
++\hline
++1-2   & control unit type     & 0x3832 \\
++\hline
++3     & control unit model    & <virtio device id> \\
++\hline
++4-5   & device type           & zeroes (unset) \\
++\hline
++6     & device model          & zeroes (unset) \\
++\hline
++7-255 & extended SenseId data & zeroes (unset) \\
++\hline
++\end{tabular}
++
++A virtio-ccw proxy device facilitates:
++\begin{itemize}=20
++\item Discovery and attachment of virtio devices (as described above).
++\item Initialization of virtqueues and transport-specific facilities (usin=
+g
++      virtio-specific channel commands).
++\item Notifications (via hypercall and a combination of I/O interrupts
++      and indicator bits).
++\end{itemize}=20
++
++\subsubsection{Channel Commands for Virtio}\label{sec:Virtio Transport Opt=
+ions / Virtio
++over channel I/O / Basic Concepts/ Channel Commands for Virtio}
++
++In addition to the basic channel commands, virtio-ccw defines a
++set of channel commands related to configuration and operation of
++virtio:
 +
 +\begin{lstlisting}
-+// EXAMPLE: virtio_block device taking 512 bytes at 0x1e000, interrupt 42.
-+virtio_block@1e000 {
-+        compatible =3D "virtio,mmio";
-+        reg =3D <0x1e000 0x200>;
-+        interrupts =3D <42>;
-+}
++#define CCW_CMD_SET_VQ 0x13
++#define CCW_CMD_VDEV_RESET 0x33
++#define CCW_CMD_SET_IND 0x43
++#define CCW_CMD_SET_CONF_IND 0x53
++#define CCW_CMD_SET_IND_ADAPTER 0x73
++#define CCW_CMD_READ_FEAT 0x12
++#define CCW_CMD_WRITE_FEAT 0x11
++#define CCW_CMD_READ_CONF 0x22
++#define CCW_CMD_WRITE_CONF 0x21
++#define CCW_CMD_WRITE_STATUS 0x31
++#define CCW_CMD_READ_VQ_CONF 0x32
++#define CCW_CMD_SET_VIRTIO_REV 0x83
++#define CCW_CMD_READ_STATUS 0x72
 +\end{lstlisting}
 +
-+\subsection{MMIO Device Register Layout}\label{sec:Virtio Transport Option=
-s / Virtio Over MMIO / MMIO Device Register Layout}
++\subsubsection{Notifications}\label{sec:Virtio Transport Options / Virtio
++over channel I/O / Basic Concepts/ Notifications}
 +
-+MMIO virtio devices provide a set of memory mapped control
-+registers followed by a device-specific configuration space,
-+described in the table~\ref{tab:Virtio Trasport Options / Virtio Over MMIO=
- / MMIO Device Register Layout}.
++Available buffer notifications are realized as a hypercall. No additional
++setup by the driver is needed. The operation of available buffer
++notifications is described in section \ref{sec:Virtio Transport Options /
++Virtio over channel I/O / Device Operation / Guest->Host Notification}.
 +
-+All register values are organized as Little Endian.
++Used buffer notifications are realized either as so-called classic or
++adapter I/O interrupts depending on a transport level negotiation. The
++initialization is described in sections \ref{sec:Virtio Transport Options
++/ Virtio over channel I/O / Device Initialization / Setting Up Indicators
++/ Setting Up Classic Queue Indicators} and \ref{sec:Virtio Transport
++Options / Virtio over channel I/O / Device Initialization / Setting Up
++Indicators / Setting Up Two-Stage Queue Indicators} respectively.  The
++operation of each flavor is described in sections \ref{sec:Virtio
++Transport Options / Virtio over channel I/O / Device Operation /
++Host->Guest Notification / Notification via Classic I/O Interrupts} and
++\ref{sec:Virtio Transport Options / Virtio over channel I/O / Device
++Operation / Host->Guest Notification / Notification via Adapter I/O
++Interrupts} respectively.=20
 +
-+\newcommand{\mmioreg}[5]{% Name Function Offset Direction Description
-+  {\field{#1}} \newline #3 \newline #4 & {\bf#2} \newline #5 \\
-+}
++Configuration change notifications are done using so-called classic I/O
++interrupts. The initialization is described in section \ref{sec:Virtio
++Transport Options / Virtio over channel I/O / Device Initialization /
++Setting Up Indicators / Setting Up Configuration Change Indicators} and
++the operation in section \ref{sec:Virtio Transport Options / Virtio over
++channel I/O / Device Operation / Host->Guest Notification / Notification
++via Classic I/O Interrupts}.
 +
-+\newcommand{\mmiodreg}[7]{% NameHigh NameLow Function OffsetHigh OffsetLow=
- Direction Description
-+  {\field{#1}} \newline #4 \newline {\field{#2}} \newline #5 \newline #6 &=
- {\bf#3} \newline #7 \\
-+}
++\devicenormative{\subsubsection}{Basic Concepts}{Virtio Transport Options =
+/ Virtio over channel I/O / Basic Concepts}
 +
-+\begin{longtable}{p{0.2\textwidth}p{0.7\textwidth}}
-+  \caption {MMIO Device Register Layout}
-+  \label{tab:Virtio Trasport Options / Virtio Over MMIO / MMIO Device Regi=
-ster Layout} \\
-+  \hline
-+  \mmioreg{Name}{Function}{Offset from base}{Direction}{Description}=20
-+  \hline=20
-+  \hline=20
-+  \endfirsthead
-+  \hline
-+  \mmioreg{Name}{Function}{Offset from the base}{Direction}{Description}=
-=20
-+  \hline=20
-+  \hline=20
-+  \endhead
-+  \endfoot
-+  \endlastfoot
-+  \mmioreg{MagicValue}{Magic value}{0x000}{R}{%
-+    0x74726976
-+    (a Little Endian equivalent of the ``virt'' string).
-+  }=20
-+  \hline
-+  \mmioreg{Version}{Device version number}{0x004}{R}{%
-+    0x2.
-+    \begin{note}
-+      Legacy devices (see \ref{sec:Virtio Transport Options / Virtio Over =
-MMIO / Legacy interface}~\nameref{sec:Virtio Transport Options / Virtio Ove=
-r MMIO / Legacy interface}) used 0x1.
-+    \end{note}
-+  }
-+  \hline=20
-+  \mmioreg{DeviceID}{Virtio Subsystem Device ID}{0x008}{R}{%
-+    See \ref{sec:Device Types}~\nameref{sec:Device Types} for possible val=
-ues.
-+    Value zero (0x0) is used to
-+    define a system memory map with placeholder devices at static,
-+    well known addresses, assigning functions to them depending
-+    on user's needs.
-+  }
-+  \hline=20
-+  \mmioreg{VendorID}{Virtio Subsystem Vendor ID}{0x00c}{R}{}
-+  \hline=20
-+  \mmioreg{DeviceFeatures}{Flags representing features the device supports=
-}{0x010}{R}{%
-+    Reading from this register returns 32 consecutive flag bits,
-+    the least significant bit depending on the last value written to
-+    \field{DeviceFeaturesSel}. Access to this register returns
-+    bits $\field{DeviceFeaturesSel}*32$ to $(\field{DeviceFeaturesSel}*32)=
-+31$, eg.
-+    feature bits 0 to 31 if \field{DeviceFeaturesSel} is set to 0 and
-+    features bits 32 to 63 if \field{DeviceFeaturesSel} is set to 1.
-+    Also see \ref{sec:Basic Facilities of a Virtio Device / Feature Bits}~=
-\nameref{sec:Basic Facilities of a Virtio Device / Feature Bits}.
-+  }
-+  \hline=20
-+  \mmioreg{DeviceFeaturesSel}{Device (host) features word selection.}{0x01=
-4}{W}{%
-+    Writing to this register selects a set of 32 device feature bits
-+    accessible by reading from \field{DeviceFeatures}.
-+  }
-+  \hline=20
-+  \mmioreg{DriverFeatures}{Flags representing device features understood a=
-nd activated by the driver}{0x020}{W}{%
-+    Writing to this register sets 32 consecutive flag bits, the least sign=
-ificant
-+    bit depending on the last value written to \field{DriverFeaturesSel}.
-+     Access to this register sets bits $\field{DriverFeaturesSel}*32$
-+    to $(\field{DriverFeaturesSel}*32)+31$, eg. feature bits 0 to 31 if
-+    \field{DriverFeaturesSel} is set to 0 and features bits 32 to 63 if
-+    \field{DriverFeaturesSel} is set to 1. Also see \ref{sec:Basic Facilit=
-ies of a Virtio Device / Feature Bits}~\nameref{sec:Basic Facilities of a V=
-irtio Device / Feature Bits}.
-+  }
-+  \hline=20
-+  \mmioreg{DriverFeaturesSel}{Activated (guest) features word selection}{0=
-x024}{W}{%
-+    Writing to this register selects a set of 32 activated feature
-+    bits accessible by writing to \field{DriverFeatures}.
-+  }
-+  \hline=20
-+  \mmioreg{QueueSel}{Virtual queue index}{0x030}{W}{%
-+    Writing to this register selects the virtual queue that the
-+    following operations on \field{QueueNumMax}, \field{QueueNum}, \field{=
-QueueReady},
-+    \field{QueueDescLow}, \field{QueueDescHigh}, \field{QueueDriverlLow}, =
-\field{QueueDriverHigh},
-+    \field{QueueDeviceLow}, \field{QueueDeviceHigh} and \field{QueueReset}=
- apply to. The index
-+    number of the first queue is zero (0x0).=20
-+  }
-+  \hline=20
-+  \mmioreg{QueueNumMax}{Maximum virtual queue size}{0x034}{R}{%
-+    Reading from the register returns the maximum size (number of
-+    elements) of the queue the device is ready to process or
-+    zero (0x0) if the queue is not available. This applies to the
-+    queue selected by writing to \field{QueueSel}.
-+  }
-+  \hline=20
-+  \mmioreg{QueueNum}{Virtual queue size}{0x038}{W}{%
-+    Queue size is the number of elements in the queue.
-+    Writing to this register notifies the device what size of the
-+    queue the driver will use. This applies to the queue selected by
-+    writing to \field{QueueSel}.
-+  }
-+  \hline=20
-+  \mmioreg{QueueReady}{Virtual queue ready bit}{0x044}{RW}{%
-+    Writing one (0x1) to this register notifies the device that it can
-+    execute requests from this virtual queue. Reading from this register
-+    returns the last value written to it. Both read and write
-+    accesses apply to the queue selected by writing to \field{QueueSel}.
-+  }
-+  \hline=20
-+  \mmioreg{QueueNotify}{Queue notifier}{0x050}{W}{%
-+    Writing a value to this register notifies the device that
-+    there are new buffers to process in a queue.
++The virtio-ccw device acts like a normal channel device, as specified
++in \hyperref[intro:S390 PoP]{[S390 PoP]} and \hyperref[intro:S390 Common I=
+/O]{[S390 Common I/O]}. In particular:
 +
-+    When VIRTIO_F_NOTIFICATION_DATA has not been negotiated,
-+    the value written is the queue index.
++\begin{itemize}
++\item A device MUST post a unit check with command reject for any command
++  it does not support.
 +
-+    When VIRTIO_F_NOTIFICATION_DATA has been negotiated,
-+    the \field{Notification data} value has the following format:
++\item If a driver did not suppress length checks for a channel command,
++  the device MUST present a subchannel status as detailed in the
++  architecture when the actual length did not match the expected length.
 +
-+    \lstinputlisting{notifications-le.c}
++\item If a driver did suppress length checks for a channel command, the
++  device MUST present a check condition if the transmitted data does
++  not contain enough data to process the command. If the driver submitted
++  a buffer that was too long, the device SHOULD accept the command.
++\end{itemize}
 +
-+    See \ref{sec:Basic Facilities of a Virtio Device / Driver notification=
-s}~\nameref{sec:Basic Facilities of a Virtio Device / Driver notifications}
-+    for the definition of the components.
-+  }
-+  \hline=20
-+  \mmioreg{InterruptStatus}{Interrupt status}{0x60}{R}{%
-+    Reading from this register returns a bit mask of events that
-+    caused the device interrupt to be asserted.
-+    The following events are possible:
-+    \begin{description}
-+      \item[Used Buffer Notification] - bit 0 - the interrupt was asserted
-+        because the device has used a buffer
-+        in at least one of the active virtual queues.
-+      \item [Configuration Change Notification] - bit 1 - the interrupt wa=
-s
-+        asserted because the configuration of the device has changed.
-+    \end{description}
-+  }
-+  \hline=20
-+  \mmioreg{InterruptACK}{Interrupt acknowledge}{0x064}{W}{%
-+    Writing a value with bits set as defined in \field{InterruptStatus}
-+    to this register notifies the device that events causing
-+    the interrupt have been handled.
-+  }
-+  \hline=20
-+  \mmioreg{Status}{Device status}{0x070}{RW}{%
-+    Reading from this register returns the current device status
-+    flags.
-+    Writing non-zero values to this register sets the status flags,
-+    indicating the driver progress. Writing zero (0x0) to this
-+    register triggers a device reset.=20
-+    See also p. \ref{sec:Virtio Transport Options / Virtio Over MMIO / MMI=
-O-specific Initialization And Device Operation / Device Initialization}~\na=
-meref{sec:Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initi=
-alization And Device Operation / Device Initialization}.
-+  }
-+  \hline=20
-+  \mmiodreg{QueueDescLow}{QueueDescHigh}{Virtual queue's Descriptor Area 6=
-4 bit long physical address}{0x080}{0x084}{W}{%
-+    Writing to these two registers (lower 32 bits of the address
-+    to \field{QueueDescLow}, higher 32 bits to \field{QueueDescHigh}) noti=
-fies
-+    the device about location of the Descriptor Area of the queue
-+    selected by writing to \field{QueueSel} register.
-+  }
-+  \hline=20
-+  \mmiodreg{QueueDriverLow}{QueueDriverHigh}{Virtual queue's Driver Area 6=
-4 bit long physical address}{0x090}{0x094}{W}{%
-+    Writing to these two registers (lower 32 bits of the address
-+    to \field{QueueDriverLow}, higher 32 bits to \field{QueueDriverHigh}) =
-notifies
-+    the device about location of the Driver Area of the queue
-+    selected by writing to \field{QueueSel}.
-+  }
-+  \hline=20
-+  \mmiodreg{QueueDeviceLow}{QueueDeviceHigh}{Virtual queue's Device Area 6=
-4 bit long physical address}{0x0a0}{0x0a4}{W}{%
-+    Writing to these two registers (lower 32 bits of the address
-+    to \field{QueueDeviceLow}, higher 32 bits to \field{QueueDeviceHigh}) =
-notifies
-+    the device about location of the Device Area of the queue
-+    selected by writing to \field{QueueSel}.
-+  }
-+  \hline=20
-+  \mmioreg{SHMSel}{Shared memory id}{0x0ac}{W}{%
-+    Writing to this register selects the shared memory region \ref{sec:Bas=
-ic Facilities of a Virtio Device / Shared Memory Regions}
-+    following operations on \field{SHMLenLow}, \field{SHMLenHigh},
-+    \field{SHMBaseLow} and \field{SHMBaseHigh} apply to.
-+  }
-+  \hline=20
-+  \mmiodreg{SHMLenLow}{SHMLenHigh}{Shared memory region 64 bit long length=
-}{0x0b0}{0x0b4}{R}{%
-+    These registers return the length of the shared memory
-+    region in bytes, as defined by the device for the region selected by
-+    the \field{SHMSel} register.  The lower 32 bits of the length
-+    are read from \field{SHMLenLow} and the higher 32 bits from
-+    \field{SHMLenHigh}.  Reading from a non-existent
-+    region (i.e. where the ID written to \field{SHMSel} is unused)
-+    results in a length of -1.
-+  }
-+  \hline=20
-+  \mmiodreg{SHMBaseLow}{SHMBaseHigh}{Shared memory region 64 bit long phys=
-ical address}{0x0b8}{0x0bc}{R}{%
-+    The driver reads these registers to discover the base address
-+    of the region in physical address space.  This address is
-+    chosen by the device (or other part of the VMM).
-+    The lower 32 bits of the address are read from \field{SHMBaseLow}
-+    with the higher 32 bits from \field{SHMBaseHigh}.  Reading
-+    from a non-existent region (i.e. where the ID written to
-+    \field{SHMSel} is unused) results in a base address of
-+    0xffffffffffffffff.
-+  }
-+  \hline=20
-+  \mmioreg{QueueReset}{Virtual queue reset bit}{0x0c0}{RW}{%
-+    If VIRTIO_F_RING_RESET has been negotiated, writing one (0x1) to this
-+    register selectively resets the queue. Both read and write accesses
-+    apply to the queue selected by writing to \field{QueueSel}.
-+  }
-+  \hline
-+  \mmioreg{ConfigGeneration}{Configuration atomicity value}{0x0fc}{R}{
-+    Reading from this register returns a value describing a version of the=
- device-specific configuration space (see \field{Config}).
-+    The driver can then access the configuration space and, when finished,=
- read \field{ConfigGeneration} again.
-+    If no part of the configuration space has changed between these two \f=
-ield{ConfigGeneration} reads, the returned values are identical.
-+    If the values are different, the configuration space accesses were not=
- atomic and the driver has to perform the operations again.
-+    See also \ref {sec:Basic Facilities of a Virtio Device / Device Config=
-uration Space}.
-+  }
-+  \hline=20
-+  \mmioreg{Config}{Configuration space}{0x100+}{RW}{
-+    Device-specific configuration space starts at the offset 0x100
-+    and is accessed with byte alignment. Its meaning and size
-+    depend on the device and the driver.
-+  }
-+  \hline
-+\end{longtable}
++\drivernormative{\subsubsection}{Basic Concepts}{Virtio Transport Options =
+/ Virtio over channel I/O / Basic Concepts}
 +
-+\devicenormative{\subsubsection}{MMIO Device Register Layout}{Virtio Trans=
-port Options / Virtio Over MMIO / MMIO Device Register Layout}
++A driver for virtio-ccw devices MUST check for a control unit
++type of 0x3832 and MUST ignore the device type and model.
 +
-+The device MUST return 0x74726976 in \field{MagicValue}.
++A driver SHOULD attempt to provide the correct length in a channel
++command even if it suppresses length checks for that command.
 +
-+The device MUST return value 0x2 in \field{Version}.
++\subsection{Device Initialization}\label{sec:Virtio Transport Options / Vi=
+rtio over channel I/O / Device Initialization}
 +
-+The device MUST present each event by setting the corresponding bit in \fi=
-eld{InterruptStatus} from the
-+moment it takes place, until the driver acknowledges the interrupt
-+by writing a corresponding bit mask to the \field{InterruptACK} register. =
- Bits which
-+do not represent events which took place MUST be zero.
++virtio-ccw uses several channel commands to set up a device.
 +
-+Upon reset, the device MUST clear all bits in \field{InterruptStatus} and =
-ready bits in the
-+\field{QueueReady} register for all queues in the device.
++\subsubsection{Setting the Virtio Revision}\label{sec:Virtio Transport Opt=
+ions / Virtio over channel I/O / Device Initialization / Setting the Virtio=
+ Revision}
 +
-+The device MUST change value returned in \field{ConfigGeneration} if there=
- is any risk of a
-+driver seeing an inconsistent configuration state.
++CCW_CMD_SET_VIRTIO_REV is issued by the driver to set the revision of
++the virtio-ccw transport it intends to drive the device with. It uses the
++following communication structure:
 +
-+The device MUST NOT access virtual queue contents when \field{QueueReady} =
-is zero (0x0).
++\begin{lstlisting}
++struct virtio_rev_info {
++        be16 revision;
++        be16 length;
++        u8 data[];
++};
++\end{lstlisting}
 +
-+If VIRTIO_F_RING_RESET has been negotiated, the device MUST present a 0 in
-+\field{QueueReset} on reset.
++\field{revision} contains the desired revision id, \field{length} the leng=
+th of the
++data portion and \field{data} revision-dependent additional desired option=
+s.
 +
-+If VIRTIO_F_RING_RESET has been negotiated, The device MUST present a 0 in
-+\field{QueueReset} after the virtqueue is enabled with \field{QueueReady}.
++The following values are supported:
 +
-+The device MUST reset the queue when 1 is written to \field{QueueReset}. T=
-he
-+device MUST continue to present 1 in \field{QueueReset} as long as the que=
-ue reset
-+is ongoing. The device MUST present 0 in both \field{QueueReset} and \fiel=
-d{QueueReady}
-+when queue reset has completed.
-+(see \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue=
- Reset}).
++\begin{tabular}{ |l|l|l|l| }
++\hline
++\field{revision} & \field{length} & \field{data}      & remarks \\
++\hline \hline
++0        & 0      & <empty>   & legacy interface; transitional devices onl=
+y \\
++\hline
++1        & 0      & <empty>   & Virtio 1 \\
++\hline
++2        & 0      & <empty>   & CCW_CMD_READ_STATUS support \\
++\hline
++3-n      &        &           & reserved for later revisions \\
++\hline
++\end{tabular}
 +
-+\drivernormative{\subsubsection}{MMIO Device Register Layout}{Virtio Trans=
-port Options / Virtio Over MMIO / MMIO Device Register Layout}
-+The driver MUST NOT access memory locations not described in the
-+table \ref{tab:Virtio Trasport Options / Virtio Over MMIO / MMIO Device Re=
-gister Layout}
-+(or, in case of the configuration space, described in the device specifica=
-tion),
-+MUST NOT write to the read-only registers (direction R) and
-+MUST NOT read from the write-only registers (direction W).
++Note that a change in the virtio standard does not necessarily
++correspond to a change in the virtio-ccw revision.
 +
-+The driver MUST only use 32 bit wide and aligned reads and writes to acces=
-s the control registers
-+described in table \ref{tab:Virtio Trasport Options / Virtio Over MMIO / M=
-MIO Device Register Layout}.
-+For the device-specific configuration space, the driver MUST use 8 bit wid=
-e accesses for
-+8 bit wide fields, 16 bit wide and aligned accesses for 16 bit wide fields=
- and 32 bit wide and
-+aligned accesses for 32 and 64 bit wide fields.
++\devicenormative{\paragraph}{Setting the Virtio Revision}{Virtio Transport=
+ Options / Virtio over channel I/O / Device Initialization / Setting the Vi=
+rtio Revision}
 +
-+The driver MUST ignore a device with \field{MagicValue} which is not 0x747=
-26976,
-+although it MAY report an error.
++A device MUST post a unit check with command reject for any \field{revisio=
+n}
++it does not support. For any invalid combination of \field{revision}, \fie=
+ld{length}
++and \field{data}, it MUST post a unit check with command reject as well. A
++non-transitional device MUST reject revision id 0.
 +
-+The driver MUST ignore a device with \field{Version} which is not 0x2,
-+although it MAY report an error.
++A device SHOULD answer with command reject to any virtio-ccw specific
++channel command that is not contained in the revision selected by the
++driver.
 +
-+The driver MUST ignore a device with \field{DeviceID} 0x0,
-+but MUST NOT report any error.
++A device MUST answer with command reject to any attempt to select a differ=
+ent revision
++after a revision has been successfully selected by the driver.
 +
-+Before reading from \field{DeviceFeatures}, the driver MUST write a value =
-to \field{DeviceFeaturesSel}.
++A device MUST treat the revision as unset from the time the associated
++subchannel has been enabled until a revision has been successfully set
++by the driver. This implies that revisions are not persistent across
++disabling and enabling of the associated subchannel.
 +
-+Before writing to the \field{DriverFeatures} register, the driver MUST wri=
-te a value to the \field{DriverFeaturesSel} register.
++\drivernormative{\paragraph}{Setting the Virtio Revision}{Virtio Transport=
+ Options / Virtio over channel I/O / Device Initialization / Setting the Vi=
+rtio Revision}
 +
-+The driver MUST write a value to \field{QueueNum} which is less than
-+or equal to the value presented by the device in \field{QueueNumMax}.
++A driver SHOULD start with trying to set the highest revision it
++supports and continue with lower revisions if it gets a command reject.
 +
-+When \field{QueueReady} is not zero, the driver MUST NOT access
-+\field{QueueNum}, \field{QueueDescLow}, \field{QueueDescHigh},
-+\field{QueueDriverLow}, \field{QueueDriverHigh}, \field{QueueDeviceLow}, \=
-field{QueueDeviceHigh}.
++A driver MUST NOT issue any other virtio-ccw specific channel commands
++prior to setting the revision.
 +
-+To stop using the queue the driver MUST write zero (0x0) to this
-+\field{QueueReady} and MUST read the value back to ensure
-+synchronization.
++After a revision has been successfully selected by the driver, it
++MUST NOT attempt to select a different revision.
 +
-+The driver MUST ignore undefined bits in \field{InterruptStatus}.
++\paragraph{Legacy Interfaces: A Note on Setting the Virtio Revision}\label=
+{sec:Virtio Transport Options / Virtio over channel I/O / Device Initializa=
+tion / Setting the Virtio Revision / Legacy Interfaces: A Note on Setting t=
+he Virtio Revision}
 +
-+The driver MUST write a value with a bit mask describing events it handled=
- into \field{InterruptACK} when
-+it finishes handling an interrupt and MUST NOT set any of the undefined bi=
-ts in the value.
++A legacy device will not support the CCW_CMD_SET_VIRTIO_REV and answer
++with a command reject. A non-transitional driver MUST stop trying to
++operate this device in that case. A transitional driver MUST operate
++the device as if it had been able to set revision 0.
 +
-+If VIRTIO_F_RING_RESET has been negotiated, after the driver writes 1 to
-+\field{QueueReset} to reset the queue, the driver MUST NOT consider queue
-+reset to be complete until it reads back 0 in \field{QueueReset}. The driv=
-er
-+MAY re-enable the queue by writing 1 to \field{QueueReady} after ensuring
-+that other virtqueue fields have been set up correctly. The driver MAY set
-+driver-writeable queue configuration values to different values than those
-+that were used before the queue reset.
-+(see \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue=
- Reset}).
++A legacy driver will not issue the CCW_CMD_SET_VIRTIO_REV prior to
++issuing other virtio-ccw specific channel commands. A non-transitional
++device therefore MUST answer any such attempts with a command reject.
++A transitional device MUST assume in this case that the driver is a
++legacy driver and continue as if the driver selected revision 0. This
++implies that the device MUST reject any command not valid for revision
++0, including a subsequent CCW_CMD_SET_VIRTIO_REV.
 +
-+\subsection{MMIO-specific Initialization And Device Operation}\label{sec:V=
-irtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization A=
-nd Device Operation}
++\subsubsection{Configuring a Virtqueue}\label{sec:Virtio Transport Options=
+ / Virtio over channel I/O / Device Initialization / Configuring a Virtqueu=
+e}
 +
-+\subsubsection{Device Initialization}\label{sec:Virtio Transport Options /=
- Virtio Over MMIO / MMIO-specific Initialization And Device Operation / Dev=
-ice Initialization}
++CCW_CMD_READ_VQ_CONF is issued by the driver to obtain information
++about a queue. It uses the following structure for communicating:
 +
-+\drivernormative{\paragraph}{Device Initialization}{Virtio Transport Optio=
-ns / Virtio Over MMIO / MMIO-specific Initialization And Device Operation /=
- Device Initialization}
++\begin{lstlisting}
++struct vq_config_block {
++        be16 index;
++        be16 max_num;
++};
++\end{lstlisting}
 +
-+The driver MUST start the device initialization by reading and
-+checking values from \field{MagicValue} and \field{Version}.
-+If both values are valid, it MUST read \field{DeviceID}
-+and if its value is zero (0x0) MUST abort initialization and
-+MUST NOT access any other register.
++The requested number of buffers for queue \field{index} is returned in
++\field{max_num}.
 +
-+Drivers not expecting shared memory MUST NOT use the shared
-+memory registers.
++Afterwards, CCW_CMD_SET_VQ is issued by the driver to inform the
++device about the location used for its queue. The transmitted
++structure is
 +
-+Further initialization MUST follow the procedure described in
-+\ref{sec:General Initialization And Device Operation / Device Initializati=
-on}~\nameref{sec:General Initialization And Device Operation / Device Initi=
-alization}.
++\begin{lstlisting}
++struct vq_info_block {
++        be64 desc;
++        be32 res0;
++        be16 index;
++        be16 num;
++        be64 driver;
++        be64 device;
++};
++\end{lstlisting}
 +
-+\subsubsection{Virtqueue Configuration}\label{sec:Virtio Transport Options=
- / Virtio Over MMIO / MMIO-specific Initialization And Device Operation / V=
-irtqueue Configuration}
++\field{desc}, \field{driver} and \field{device} contain the guest
++addresses for the descriptor area,
++available area and used area for queue \field{index}, respectively. The ac=
+tual
++virtqueue size (number of allocated buffers) is transmitted in \field{num}=
+.
 +
-+The driver will typically initialize the virtual queue in the following wa=
-y:
++\devicenormative{\paragraph}{Configuring a Virtqueue}{Virtio Transport Opt=
+ions / Virtio over channel I/O / Device Initialization / Configuring a Virt=
+queue}
 +
-+\begin{enumerate}
-+\item Select the queue writing its index (first queue is 0) to
-+   \field{QueueSel}.
++\field{res0} is reserved and MUST be ignored by the device.
 +
-+\item Check if the queue is not already in use: read \field{QueueReady},
-+   and expect a returned value of zero (0x0).
++\paragraph{Legacy Interface: A Note on Configuring a Virtqueue}\label{sec:=
+Virtio Transport Options / Virtio over channel I/O / Device Initialization =
+/ Configuring a Virtqueue / Legacy Interface: A Note on Configuring a Virtq=
+ueue}
 +
-+\item Read maximum queue size (number of elements) from
-+   \field{QueueNumMax}. If the returned value is zero (0x0) the
-+   queue is not available.
++For a legacy driver or for a driver that selected revision 0,
++CCW_CMD_SET_VQ uses the following communication block:
 +
-+\item Allocate and zero the queue memory, making sure the memory
-+   is physically contiguous.
++\begin{lstlisting}
++struct vq_info_block_legacy {
++        be64 queue;
++        be32 align;
++        be16 index;
++        be16 num;
++};
++\end{lstlisting}
 +
-+\item Notify the device about the queue size by writing the size to
-+   \field{QueueNum}.
++\field{queue} contains the guest address for queue \field{index}, \field{n=
+um} the number of buffers
++and \field{align} the alignment. The queue layout follows \ref{sec:Basic F=
+acilities of a Virtio Device / Virtqueues / Legacy Interfaces: A Note on Vi=
+rtqueue Layout}~\nameref{sec:Basic Facilities of a Virtio Device / Virtqueu=
+es / Legacy Interfaces: A Note on Virtqueue Layout}.
 +
-+\item Write physical addresses of the queue's Descriptor Area,
-+   Driver Area and Device Area to (respectively) the
-+   \field{QueueDescLow}/\field{QueueDescHigh},
-+   \field{QueueDriverLow}/\field{QueueDriverHigh} and
-+   \field{QueueDeviceLow}/\field{QueueDeviceHigh} register pairs.
++\subsubsection{Communicating Status Information}\label{sec:Virtio Transpor=
+t Options / Virtio over channel I/O / Device Initialization / Communicating=
+ Status Information}
 +
-+\item Write 0x1 to \field{QueueReady}.
-+\end{enumerate}
++The driver changes the status of a device via the
++CCW_CMD_WRITE_STATUS command, which transmits an 8 bit status
++value.
 +
-+\subsubsection{Available Buffer Notifications}\label{sec:Virtio Transport =
-Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operat=
-ion / Available Buffer Notifications}
++As described in
++\ref{devicenormative:Basic Facilities of a Virtio Device / Feature Bits},
++a device sometimes fails to set the \field{device status} field: For examp=
+le, it
++might fail to accept the FEATURES_OK status bit during device initializati=
+on.
++
++With revision 2, CCW_CMD_READ_STATUS is defined: It reads an 8 bit status
++value from the device and acts as a reverse operation to CCW_CMD_WRITE_STA=
+TUS.
++
++\drivernormative{\paragraph}{Communicating Status Information}{Virtio Tran=
+sport Options / Virtio over channel I/O / Device Initialization / Communica=
+ting Status Information}
++
++If the device posts a unit check with command reject in response to the
++CCW_CMD_WRITE_STATUS command, the driver MUST assume that the device faile=
+d
++to set the status and the \field{device status} field retained
++its previous value.
++
++If at least revision 2 has been negotiated, the driver SHOULD use the
++CCW_CMD_READ_STATUS command to retrieve the \field{device status} field af=
+ter
++a configuration change has been detected.
++
++If not at least revision 2 has been negotiated, the driver MUST NOT attemp=
+t
++to issue the CCW_CMD_READ_STATUS command.
++
++\devicenormative{\paragraph}{Communicating Status Information}{Virtio Tran=
+sport Options / Virtio over channel I/O / Device Initialization / Communica=
+ting Status Information}
++
++If the device fails to set the \field{device status} field
++to the value written by the driver, the device MUST assure
++that the \field{device status} field is left unchanged and
++MUST post a unit check with command reject.
++
++If at least revision 2 has been negotiated, the device MUST return the
++current \field{device status} field if the CCW_CMD_READ_STATUS
++command is issued.
++
++\subsubsection{Handling Device Features}\label{sec:Virtio Transport Option=
+s / Virtio over channel I/O / Device Initialization / Handling Device Featu=
+res}
++
++Feature bits are arranged in an array of 32 bit values, making
++for a total of 8192 feature bits. Feature bits are in
++little-endian byte order.
++
++The CCW commands dealing with features use the following
++communication block:
++
++\begin{lstlisting}
++struct virtio_feature_desc {
++        le32 features;
++        u8 index;
++};
++\end{lstlisting}
++
++\field{features} are the 32 bits of features currently accessed, while
++\field{index} describes which of the feature bit values is to be
++accessed. No padding is added at the end of the structure, it is
++exactly 5 bytes in length.
++
++The guest obtains the device's device feature set via the
++CCW_CMD_READ_FEAT command. The device stores the features at \field{index}
++to \field{features}.
++
++For communicating its supported features to the device, the driver
++uses the CCW_CMD_WRITE_FEAT command, denoting a \field{features}/\field{in=
+dex}
++combination.
++
++\subsubsection{Device Configuration}\label{sec:Virtio Transport Options / =
+Virtio over channel I/O / Device Initialization / Device Configuration}
++
++The device's configuration space is located in host memory.
++
++To obtain information from the configuration space, the driver
++uses CCW_CMD_READ_CONF, specifying the guest memory for the device
++to write to.
++
++For changing configuration information, the driver uses
++CCW_CMD_WRITE_CONF, specifying the guest memory for the device to
++read from.
++
++In both cases, the complete configuration space is transmitted.  This
++allows the driver to compare the new configuration space with the old
++version, and keep a generation count internally whenever it changes.
++
++\subsubsection{Setting Up Indicators}\label{sec:Virtio Transport Options /=
+ Virtio over channel I/O / Device Initialization / Setting Up Indicators}
++
++In order to set up the indicator bits for host->guest notification,
++the driver uses different channel commands depending on whether it
++wishes to use traditional I/O interrupts tied to a subchannel or
++adapter I/O interrupts for virtqueue notifications. For any given
++device, the two mechanisms are mutually exclusive.
++
++For the configuration change indicators, only a mechanism using
++traditional I/O interrupts is provided, regardless of whether
++traditional or adapter I/O interrupts are used for virtqueue
++notifications.
++
++\paragraph{Setting Up Classic Queue Indicators}\label{sec:Virtio Transport=
+ Options / Virtio over channel I/O / Device Initialization / Setting Up Ind=
+icators / Setting Up Classic Queue Indicators}
++
++Indicators for notification via classic I/O interrupts are contained
++in a 64 bit value per virtio-ccw proxy device.
++
++To communicate the location of the indicator bits for host->guest
++notification, the driver uses the CCW_CMD_SET_IND command,
++pointing to a location containing the guest address of the
++indicators in a 64 bit value.
++
++If the driver has already set up two-staged queue indicators via the
++CCW_CMD_SET_IND_ADAPTER command, the device MUST post a unit check
++with command reject to any subsequent CCW_CMD_SET_IND command.
++
++\paragraph{Setting Up Configuration Change Indicators}\label{sec:Virtio Tr=
+ansport Options / Virtio over channel I/O / Device Initialization / Setting=
+ Up Indicators / Setting Up Configuration Change Indicators}
++
++Indicators for configuration change host->guest notification are
++contained in a 64 bit value per virtio-ccw proxy device.
++
++To communicate the location of the indicator bits used in the
++configuration change host->guest notification, the driver issues the
++CCW_CMD_SET_CONF_IND command, pointing to a location containing the
++guest address of the indicators in a 64 bit value.
++
++\paragraph{Setting Up Two-Stage Queue Indicators}\label{sec:Virtio Transpo=
+rt Options / Virtio over channel I/O / Device Initialization / Setting Up I=
+ndicators / Setting Up Two-Stage Queue Indicators}
++
++Indicators for notification via adapter I/O interrupts consist of
++two stages:
++\begin{itemize}
++\item a summary indicator byte covering the virtqueues for one or more
++  virtio-ccw proxy devices
++\item a set of contigous indicator bits for the virtqueues for a
++  virtio-ccw proxy device
++\end{itemize}
++
++To communicate the location of the summary and queue indicator bits,
++the driver uses the CCW_CMD_SET_IND_ADAPTER command with the following
++payload:
++
++\begin{lstlisting}
++struct virtio_thinint_area {
++        be64 summary_indicator;
++        be64 indicator;
++        be64 bit_nr;
++        u8 isc;
++} __attribute__ ((packed));
++\end{lstlisting}
++
++\field{summary_indicator} contains the guest address of the 8 bit summary
++indicator.
++\field{indicator} contains the guest address of an area wherein the indica=
+tors
++for the devices are contained, starting at \field{bit_nr}, one bit per
++virtqueue of the device. Bit numbers start at the left, i.e. the most
++significant bit in the first byte is assigned the bit number 0.
++\field{isc} contains the I/O interruption subclass to be used for the adap=
+ter
++I/O interrupt. It MAY be different from the isc used by the proxy
++virtio-ccw device's subchannel.
++No padding is added at the end of the structure, it is exactly 25 bytes
++in length.
++
++
++\devicenormative{\subparagraph}{Setting Up Two-Stage Queue Indicators}{Vir=
+tio Transport Options / Virtio over channel I/O / Device Initialization / S=
+etting Up Indicators / Setting Up Two-Stage Queue Indicators}
++If the driver has already set up classic queue indicators via the
++CCW_CMD_SET_IND command, the device MUST post a unit check with
++command reject to any subsequent CCW_CMD_SET_IND_ADAPTER command.
++
++\paragraph{Legacy Interfaces: A Note on Setting Up Indicators}\label{sec:V=
+irtio Transport Options / Virtio over channel I/O / Device Initialization /=
+ Setting Up Indicators / Legacy Interfaces: A Note on Setting Up Indicators=
+}
++
++In some cases, legacy devices will only support classic queue indicators;
++in that case, they will reject CCW_CMD_SET_IND_ADAPTER as they don't know =
+that
++command. Some legacy devices will support two-stage queue indicators, thou=
+gh,
++and a driver will be able to successfully use CCW_CMD_SET_IND_ADAPTER to s=
+et
++them up.
++
++\subsection{Device Operation}\label{sec:Virtio Transport Options / Virtio =
+over channel I/O / Device Operation}
++
++\subsubsection{Host->Guest Notification}\label{sec:Virtio Transport Option=
+s / Virtio over channel I/O / Device Operation / Host->Guest Notification}
++
++There are two modes of operation regarding host->guest notification,
++classic I/O interrupts and adapter I/O interrupts. The mode to be
++used is determined by the driver by using CCW_CMD_SET_IND respectively
++CCW_CMD_SET_IND_ADAPTER to set up queue indicators.
++
++For configuration changes, the driver always uses classic I/O
++interrupts.
++
++\paragraph{Notification via Classic I/O Interrupts}\label{sec:Virtio Trans=
+port Options / Virtio over channel I/O / Device Operation / Host->Guest Not=
+ification / Notification via Classic I/O Interrupts}
++
++If the driver used the CCW_CMD_SET_IND command to set up queue
++indicators, the device will use classic I/O interrupts for
++host->guest notification about virtqueue activity.
++
++For notifying the driver of virtqueue buffers, the device sets the
++corresponding bit in the guest-provided indicators. If an
++interrupt is not already pending for the subchannel, the device
++generates an unsolicited I/O interrupt.
++
++If the device wants to notify the driver about configuration
++changes, it sets bit 0 in the configuration indicators and
++generates an unsolicited I/O interrupt, if needed. This also
++applies if adapter I/O interrupts are used for queue notifications.
++
++\paragraph{Notification via Adapter I/O Interrupts}\label{sec:Virtio Trans=
+port Options / Virtio over channel I/O / Device Operation / Host->Guest Not=
+ification / Notification via Adapter I/O Interrupts}
++
++If the driver used the CCW_CMD_SET_IND_ADAPTER command to set up
++queue indicators, the device will use adapter I/O interrupts for
++host->guest notification about virtqueue activity.
++
++For notifying the driver of virtqueue buffers, the device sets the
++bit in the guest-provided indicator area at the corresponding offset.
++The guest-provided summary indicator is set to 0x01. An adapter I/O
++interrupt for the corresponding interruption subclass is generated.
++
++The recommended way to process an adapter I/O interrupt by the driver
++is as follows:
++
++\begin{itemize}
++\item Process all queue indicator bits associated with the summary indicat=
+or.
++\item Clear the summary indicator, performing a synchronization (memory
++barrier) afterwards.
++\item Process all queue indicator bits associated with the summary indicat=
+or
++again.
++\end{itemize}
++
++\devicenormative{\subparagraph}{Notification via Adapter I/O Interrupts}{V=
+irtio Transport Options / Virtio over channel I/O / Device Operation / Host=
+->Guest Notification / Notification via Adapter I/O Interrupts}
++
++The device SHOULD only generate an adapter I/O interrupt if the
++summary indicator had not been set prior to notification.
++
++\drivernormative{\subparagraph}{Notification via Adapter I/O Interrupts}{V=
+irtio Transport Options / Virtio over channel I/O / Device Operation / Host=
+->Guest Notification / Notification via Adapter I/O Interrupts}
++The driver
++MUST clear the summary indicator after receiving an adapter I/O
++interrupt before it processes the queue indicators.
++
++\paragraph{Legacy Interfaces: A Note on Host->Guest Notification}\label{se=
+c:Virtio Transport Options / Virtio over channel I/O / Device Operation / H=
+ost->Guest Notification / Legacy Interfaces: A Note on Host->Guest Notifica=
+tion}
++
++As legacy devices and drivers support only classic queue indicators,
++host->guest notification will always be done via classic I/O interrupts.
++
++\subsubsection{Guest->Host Notification}\label{sec:Virtio Transport Option=
+s / Virtio over channel I/O / Device Operation / Guest->Host Notification}
++
++For notifying the device of virtqueue buffers, the driver
++unfortunately can't use a channel command (the asynchronous
++characteristics of channel I/O interact badly with the host block
++I/O backend). Instead, it uses a diagnose 0x500 call with subcode
++3 specifying the queue, as follows:
++
++\begin{tabular}{ |l|l|l| }
++\hline
++GPR  &   Input Value     & Output Value \\
++\hline \hline
++  1   &       0x3         &              \\
++\hline
++  2   &  Subchannel ID    & Host Cookie  \\
++\hline
++  3   & Notification data &              \\
++\hline
++  4   &   Host Cookie     &              \\
++\hline
++\end{tabular}
 +
 +When VIRTIO_F_NOTIFICATION_DATA has not been negotiated,
-+the driver sends an available buffer notification to the device by writing
-+the 16-bit virtqueue index
-+of the queue to be notified to \field{QueueNotify}.
++the \field{Notification data} contains the Virtqueue number.
 +
 +When VIRTIO_F_NOTIFICATION_DATA has been negotiated,
-+the driver sends an available buffer notification to the device by writing
-+the following 32-bit value to \field{QueueNotify}:
-+\lstinputlisting{notifications-le.c}
++the value has the following format:
++\lstinputlisting{notifications-be.c}
 +
 +See \ref{sec:Basic Facilities of a Virtio Device / Driver notifications}~\=
 nameref{sec:Basic Facilities of a Virtio Device / Driver notifications}
 +for the definition of the components.
 +
-+\subsubsection{Notifications From The Device}\label{sec:Virtio Transport O=
-ptions / Virtio Over MMIO / MMIO-specific Initialization And Device Operati=
-on / Notifications From The Device}
++\devicenormative{\paragraph}{Guest->Host Notification}{Virtio Transport Op=
+tions / Virtio over channel I/O / Device Operation / Guest->Host Notificati=
+on}
++The device MUST ignore bits 0-31 (counting from the left) of GPR2.
++This aligns passing the subchannel ID with the way it is passed
++for the existing I/O instructions.
 +
-+The memory mapped virtio device is using a single, dedicated
-+interrupt signal, which is asserted when at least one of the
-+bits described in the description of \field{InterruptStatus}
-+is set. This is how the device sends a used buffer notification
-+or a configuration change notification to the device.
++The device MAY return a 64-bit host cookie in GPR2 to speed up the
++notification execution.
 +
-+\drivernormative{\paragraph}{Notifications From The Device}{Virtio Transpo=
-rt Options / Virtio Over MMIO / MMIO-specific Initialization And Device Ope=
-ration / Notifications From The Device}
-+After receiving an interrupt, the driver MUST read
-+\field{InterruptStatus} to check what caused the interrupt (see the
-+register description).  The used buffer notification bit being set
-+SHOULD be interpreted as a used buffer notification for each active
-+virtqueue.  After the interrupt is handled, the driver MUST acknowledge
-+it by writing a bit mask corresponding to the handled events to the
-+InterruptACK register.
++\drivernormative{\paragraph}{Guest->Host Notification}{Virtio Transport Op=
+tions / Virtio over channel I/O / Device Operation / Guest->Host Notificati=
+on}
 +
-+\subsection{Legacy interface}\label{sec:Virtio Transport Options / Virtio =
-Over MMIO / Legacy interface}
++For each notification, the driver SHOULD use GPR4 to pass the host cookie =
+received in GPR2 from the previous notication.
 +
-+The legacy MMIO transport used page-based addressing, resulting
-+in a slightly different control register layout, the device
-+initialization and the virtual queue configuration procedure.
++\begin{note}
++For example:
++\begin{lstlisting}
++info->cookie =3D do_notify(schid,
++                         virtqueue_get_queue_index(vq),
++                         info->cookie);
++\end{lstlisting}
++\end{note}
 +
-+Table \ref{tab:Virtio Trasport Options / Virtio Over MMIO / MMIO Device Le=
-gacy Register Layout}=20
-+presents control registers layout, omitting
-+descriptions of registers which did not change their function
-+nor behaviour:
++\subsubsection{Resetting Devices}\label{sec:Virtio Transport Options / Vir=
+tio over channel I/O / Device Operation / Resetting Devices}
 +
-+\begin{longtable}{p{0.2\textwidth}p{0.7\textwidth}}
-+  \caption {MMIO Device Legacy Register Layout}
-+  \label{tab:Virtio Trasport Options / Virtio Over MMIO / MMIO Device Lega=
-cy Register Layout} \\
-+  \hline
-+  \mmioreg{Name}{Function}{Offset from base}{Direction}{Description}=20
-+  \hline=20
-+  \hline=20
-+  \endfirsthead
-+  \hline
-+  \mmioreg{Name}{Function}{Offset from the base}{Direction}{Description}=
-=20
-+  \hline=20
-+  \hline=20
-+  \endhead
-+  \endfoot
-+  \endlastfoot
-+  \mmioreg{MagicValue}{Magic value}{0x000}{R}{}
-+  \hline
-+  \mmioreg{Version}{Device version number}{0x004}{R}{Legacy device returns=
- value 0x1.}
-+  \hline
-+  \mmioreg{DeviceID}{Virtio Subsystem Device ID}{0x008}{R}{}
-+  \hline
-+  \mmioreg{VendorID}{Virtio Subsystem Vendor ID}{0x00c}{R}{}
-+  \hline
-+  \mmioreg{HostFeatures}{Flags representing features the device supports}{=
-0x010}{R}{}
-+  \hline
-+  \mmioreg{HostFeaturesSel}{Device (host) features word selection.}{0x014}=
-{W}{}
-+  \hline
-+  \mmioreg{GuestFeatures}{Flags representing device features understood an=
-d activated by the driver}{0x020}{W}{}
-+  \hline
-+  \mmioreg{GuestFeaturesSel}{Activated (guest) features word selection}{0x=
-024}{W}{}
-+  \hline=20
-+  \mmioreg{GuestPageSize}{Guest page size}{0x028}{W}{%
-+    The driver writes the guest page size in bytes to the
-+    register during initialization, before any queues are used.
-+    This value should be a power of 2 and is used by the device to
-+    calculate the Guest address of the first queue page
-+    (see QueuePFN).
-+  }
-+  \hline
-+  \mmioreg{QueueSel}{Virtual queue index}{0x030}{W}{%
-+    Writing to this register selects the virtual queue that the
-+    following operations on the \field{QueueNumMax}, \field{QueueNum}, \fi=
-eld{QueueAlign}
-+    and \field{QueuePFN} registers apply to. The index
-+    number of the first queue is zero (0x0).=20
-+.
-+  }
-+  \hline
-+  \mmioreg{QueueNumMax}{Maximum virtual queue size}{0x034}{R}{%
-+    Reading from the register returns the maximum size of the queue
-+    the device is ready to process or zero (0x0) if the queue is not
-+    available. This applies to the queue selected by writing to
-+    \field{QueueSel} and is allowed only when \field{QueuePFN} is set to z=
-ero
-+    (0x0), so when the queue is not actively used.
-+  }
-+  \hline
-+  \mmioreg{QueueNum}{Virtual queue size}{0x038}{W}{%
-+    Queue size is the number of elements in the queue.
-+    Writing to this register notifies the device what size of the
-+    queue the driver will use. This applies to the queue selected by
-+    writing to \field{QueueSel}.
-+  }
-+  \hline
-+  \mmioreg{QueueAlign}{Used Ring alignment in the virtual queue}{0x03c}{W}=
-{%
-+    Writing to this register notifies the device about alignment
-+    boundary of the Used Ring in bytes. This value should be a power
-+    of 2 and applies to the queue selected by writing to \field{QueueSel}.
-+  }
-+  \hline
-+  \mmioreg{QueuePFN}{Guest physical page number of the virtual queue}{0x04=
-0}{RW}{%
-+    Writing to this register notifies the device about location of the
-+    virtual queue in the Guest's physical address space. This value
-+    is the index number of a page starting with the queue
-+    Descriptor Table. Value zero (0x0) means physical address zero
-+    (0x00000000) and is illegal. When the driver stops using the
-+    queue it writes zero (0x0) to this register.
-+    Reading from this register returns the currently used page
-+    number of the queue, therefore a value other than zero (0x0)
-+    means that the queue is in use.
-+    Both read and write accesses apply to the queue selected by
-+    writing to \field{QueueSel}.
-+  }
-+  \hline
-+  \mmioreg{QueueNotify}{Queue notifier}{0x050}{W}{}
-+  \hline
-+  \mmioreg{InterruptStatus}{Interrupt status}{0x60}{R}{}
-+  \hline
-+  \mmioreg{InterruptACK}{Interrupt acknowledge}{0x064}{W}{}
-+  \hline
-+  \mmioreg{Status}{Device status}{0x070}{RW}{%
-+    Reading from this register returns the current device status
-+    flags.
-+    Writing non-zero values to this register sets the status flags,
-+    indicating the OS/driver progress. Writing zero (0x0) to this
-+    register triggers a device reset. The device
-+    sets \field{QueuePFN} to zero (0x0) for all queues in the device.
-+    Also see \ref{sec:General Initialization And Device Operation / Device=
- Initialization}~\nameref{sec:General Initialization And Device Operation /=
- Device Initialization}.
-+  }
-+  \hline
-+  \mmioreg{Config}{Configuration space}{0x100+}{RW}{}
-+  \hline
-+\end{longtable}
++In order to reset a device, a driver sends the
++CCW_CMD_VDEV_RESET command. This command does not carry any payload.
 +
-+The virtual queue page size is defined by writing to \field{GuestPageSize}=
-,
-+as written by the guest. The driver does this before the
-+virtual queues are configured.
++The device signals completion of the virtio reset operation through succes=
+sful
++conclusion of the CCW_CMD_VDEV_RESET channel command. In particular, the
++command not only triggers the reset operation, but the reset operation is
++already completed when the operation concludes successfully.
 +
-+The virtual queue layout follows
-+p. \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Legacy Inte=
-rfaces: A Note on Virtqueue Layout}~\nameref{sec:Basic Facilities of a Virt=
-io Device / Virtqueues / Legacy Interfaces: A Note on Virtqueue Layout},
-+with the alignment defined in \field{QueueAlign}.
++\devicenormative{\paragraph}{Resetting Devices}{Virtio Transport Options /=
+ Virtio over channel I/O / Device Operation / Resetting Devices}
 +
-+The virtual queue is configured as follows:
-+\begin{enumerate}
-+\item Select the queue writing its index (first queue is 0) to
-+   \field{QueueSel}.
++The device MUST finish the virtio reset operation and reinitialize
++\field{device status} to zero before it concludes the CCW_CMD_VDEV_RESET
++command successfully.
 +
-+\item Check if the queue is not already in use: read \field{QueuePFN},
-+   expecting a returned value of zero (0x0).
++The device MUST NOT send notifications or interact with the queues after
++it signaled successful conclusion of the CCW_CMD_VDEV_RESET command.
 +
-+\item Read maximum queue size (number of elements) from
-+   \field{QueueNumMax}. If the returned value is zero (0x0) the
-+   queue is not available.
++\drivernormative{\paragraph}{Resetting Devices}{Virtio Transport Options /=
+ Virtio over channel I/O / Device Operation / Resetting Devices}
 +
-+\item Allocate and zero the queue pages in contiguous virtual
-+   memory, aligning the Used Ring to an optimal boundary (usually
-+   page size). The driver should choose a queue size smaller than or
-+   equal to \field{QueueNumMax}.
-+
-+\item Notify the device about the queue size by writing the size to
-+   \field{QueueNum}.
-+
-+\item Notify the device about the used alignment by writing its value
-+   in bytes to \field{QueueAlign}.
-+
-+\item Write the physical number of the first page of the queue to
-+   the \field{QueuePFN} register.
-+\end{enumerate}
-+
-+Notification mechanisms did not change.
++The driver MAY consider the virtio reset operation to be complete already =
+after
++successful conclusion of the CCW_CMD_VDEV_RESET channel command, although =
+it
++MAY also choose to verify reset completion by reading \field{device status=
+} via
++CCW_CMD_READ_STATUS and checking whether it is 0 afterwards.
 --=20
 2.26.2
 
