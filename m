@@ -1,51 +1,55 @@
-Return-Path: <mst@redhat.com>
-Date: Fri, 17 Feb 2023 04:14:49 -0500
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: Re: [PATCH v1 6/6] transport-channelio: Correct spelling errors
-Message-ID: <20230217041419-mutt-send-email-mst@kernel.org>
+Return-Path: <virtio-comment-return-4336-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-comment@lists.oasis-open.org>
+List-Post: <mailto:virtio-comment@lists.oasis-open.org>
+List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
+From: Parav Pandit <parav@nvidia.com>
+Date: Fri, 17 Feb 2023 13:58:18 +0000
+Message-ID: <PH0PR12MB548149ACB2728B3884CF55EEDCA19@PH0PR12MB5481.namprd12.prod.outlook.com>
 References: <20230217013008.16062-1-parav@nvidia.com>
  <20230217013008.16062-7-parav@nvidia.com>
+ <20230217041419-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20230217041419-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <20230217013008.16062-7-parav@nvidia.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-To: Parav Pandit <parav@nvidia.com>
-Cc: virtio-dev@lists.oasis-open.org, cohuck@redhat.com, virtio-comment@lists.oasis-open.org, shahafs@nvidia.com
+Subject: [virtio-comment] RE: [PATCH v1 6/6] transport-channelio: Correct spelling errors
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "cohuck@redhat.com" <cohuck@redhat.com>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, Shahaf Shuler <shahafs@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Fri, Feb 17, 2023 at 03:30:08AM +0200, Parav Pandit wrote:
-> Now that we have individual files, fix reported spelling errors.
-> 
-> Signed-off-by: Parav Pandit <parav@nvidia.com>
 
-Why not transport-ccw? We abbreviated pci and mmio didn't we?
+> From: Michael S. Tsirkin <mst@redhat.com>
+> Sent: Friday, February 17, 2023 4:15 AM
+> On Fri, Feb 17, 2023 at 03:30:08AM +0200, Parav Pandit wrote:
+> > Now that we have individual files, fix reported spelling errors.
+> >
+> > Signed-off-by: Parav Pandit <parav@nvidia.com>
+>=20
+> Why not transport-ccw? We abbreviated pci and mmio didn't we?
 
-> ---
->  transport-channelio.tex | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/transport-channelio.tex b/transport-channelio.tex
-> index 93401a4..e25a7c1 100644
-> --- a/transport-channelio.tex
-> +++ b/transport-channelio.tex
-> @@ -413,7 +413,7 @@ \subsubsection{Setting Up Indicators}\label{sec:Virtio Transport Options / Virti
->  \begin{itemize}
->  \item a summary indicator byte covering the virtqueues for one or more
->    virtio-ccw proxy devices
-> -\item a set of contigous indicator bits for the virtqueues for a
-> +\item a set of contiguous indicator bits for the virtqueues for a
->    virtio-ccw proxy device
->  \end{itemize}
->  
-> @@ -563,7 +563,7 @@ \subsubsection{Guest->Host Notification}\label{sec:Virtio Transport Options / Vi
->  
->  \drivernormative{\paragraph}{Guest->Host Notification}{Virtio Transport Options / Virtio over channel I/O / Device Operation / Guest->Host Notification}
->  
-> -For each notification, the driver SHOULD use GPR4 to pass the host cookie received in GPR2 from the previous notication.
-> +For each notification, the driver SHOULD use GPR4 to pass the host cookie received in GPR2 from the previous notification.
->  
->  \begin{note}
->  For example:
-> -- 
-> 2.26.2
+No specific reason.
+Channel io was more intuitive to me compared reading the chapter name.
+Didn't know what the second c and w stand for in channel io.
+Will change to ccw.
+
+This publicly archived list offers a means to provide input to the=0D
+OASIS Virtual I/O Device (VIRTIO) TC.=0D
+=0D
+In order to verify user consent to the Feedback License terms and=0D
+to minimize spam in the list archive, subscription is required=0D
+before posting.=0D
+=0D
+Subscribe: virtio-comment-subscribe@lists.oasis-open.org=0D
+Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org=0D
+List help: virtio-comment-help@lists.oasis-open.org=0D
+List archive: https://lists.oasis-open.org/archives/virtio-comment/=0D
+Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf=
+=0D
+List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lis=
+ts=0D
+Committee: https://www.oasis-open.org/committees/virtio/=0D
+Join OASIS: https://www.oasis-open.org/join/
 
