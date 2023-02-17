@@ -1,142 +1,248 @@
-Return-Path: <virtio-comment-return-4356-cohuck=redhat.com@lists.oasis-open.org>
-Sender: <virtio-comment@lists.oasis-open.org>
-List-Post: <mailto:virtio-comment@lists.oasis-open.org>
-List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
-Message-ID: <ab41026f-36e2-f95e-be99-09a5c580497d@linux.alibaba.com>
-Date: Sat, 18 Feb 2023 00:36:02 +0800
-MIME-Version: 1.0
+Return-Path: <mst@redhat.com>
+Date: Fri, 17 Feb 2023 05:04:13 -0500
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Subject: Re: [PATCH v3] virtio-net: support the virtqueue coalescing
+ moderation
+Message-ID: <20230217050310-mutt-send-email-mst@kernel.org>
 References: <20230216144301.57728-1-hengqi@linux.alibaba.com>
- <CAJs=3_AS5qZ5ZcHWod+U5NSQazmZNgMkMvqGghr3aNsqSapRFA@mail.gmail.com>
- <20230217093110.GA124425@h68b04307.sqa.eu95>
- <CAJs=3_B95eUsMRqsY+4u0R77HQVntP44CpR+iMfNL-NbW5jHfw@mail.gmail.com>
- <20230217045446-mutt-send-email-mst@kernel.org>
-From: Heng Qi <hengqi@linux.alibaba.com>
-In-Reply-To: <20230217045446-mutt-send-email-mst@kernel.org>
-Subject: Re: [virtio-comment] Re: [virtio-dev] Re: [virtio-comment] [PATCH v3]
- virtio-net: support the virtqueue coalescing moderation
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
-To: "Michael S. Tsirkin" <mst@redhat.com>, Alvaro Karsz <alvaro.karsz@solid-run.com>
+MIME-Version: 1.0
+In-Reply-To: <20230216144301.57728-1-hengqi@linux.alibaba.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+To: Heng Qi <hengqi@linux.alibaba.com>
 Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, Parav Pandit <parav@nvidia.com>, Yuri Benditovich <yuri.benditovich@daynix.com>, Jason Wang <jasowang@redhat.com>, Cornelia Huck <cohuck@redhat.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-
-=E5=9C=A8 2023/2/17 =E4=B8=8B=E5=8D=886:07, Michael S. Tsirkin =E5=86=99=E9=
-=81=93:
-> On Fri, Feb 17, 2023 at 11:40:15AM +0200, Alvaro Karsz wrote:
->>>> Maybe we can use struct virtio_net_ctrl_coal inside struct
->>>> virtio_net_ctrl_coal_vq instead of repeating max_usecs and
->>>> max_packets?
->>>> I'm not sure if it would be confusing, what do you think?
->>>>
->>> Hi Alvaro.
->>>
->>> I guess you mean one of the following two forms:
->>>
->>> #1
->>> struct virtio_net_ctrl_coal {
->>>      le32 max_packets;
->>>      le32 max_usecs;
->>> };
->>>
->>> struct virtio_net_ctrl_coal_vq {
->>>      le16 vqn;
->>>      le16 reserved;
->>>      struct virtio_net_ctrl_coal coal;
->>> } coal_vq;
->>>
->>> #2
->>> struct virtio_net_ctrl_coal {
->>>      le32 max_packets;
->>>      le32 max_usecs;
->>>      le16 vqn; // if _F_VQ_NOTF_COAL is negotiated
->>>      le16 reserved; // if _F_VQ_NOTF_COAL is negotiated
->>> };
->>>
->>> If it's #1, I think the format is a bit ugly, it's not semantic to use =
-coal_vq to send global commands when _F_VQ_NOTF_COAL is not negotiated, and=
- the presence of vqn and reserved is awkward.
->>> If it's #2, I think this is a bit like the v1 version, using virtio_net=
-_ctrl_coal as a virtual queue to send commands does not seem to be semantic=
-, but it is indeed more unified in function.
->>>
->>> I think we should hear from Michael and Parav.
->>>
->> I meant #1.
->> We can see virtio_net_ctrl_coal as a struct holding coalescing
->> parameters, regardless of the commands.
->> Yes, let's wait for more comments on that.
-> Reusing virtio_net_ctrl_coal is a nice thought. Makes it a bit clearer
-> these have exactly the same role.
-> Whether to put vqn first or last does not matter imho.
->
->>>>> +Virtqueue coalescing parameters:
->>>>> +\begin{itemize}
->>>>> +\item \field{vqn}: The virtqueue number of the enabled transmit or r=
-eceive virtqueue, excluding the control virtqueue.
->>>>> +\item \field{max_packets}: The maximum number of packets sent/receiv=
-ed by the specified virtqueue before a TX/RX notification.
->>>>> +\item \field{max_usecs}: The maximum number of TX/RX usecs that the =
-specified virtqueue delays a TX/RX notification.
->>>>> +\end{itemize}
->>>>> +
->>>>> +\field{reserved} is reserved and it is ignored by the device.
->>>>> +
->>>> max_packets is the same with VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET and with
->>>> VIRTIO_NET_CTRL_NOTF_COAL_[T/R]X_SET.
->>>> ("Maximum number of packets to receive/send before a RX/TX notificatio=
-n").
->>>> The fact that this is applied to all VQs or to a specific one is
->>>> derived from the command.
->>>> Same for max_usecs.
->>>> Maybe we can join the coalescing parameters somehow instead of
->>>> repeating the explanations?
->>>>
->> Any thoughts on this part?
-> I think I agree. Generally I think we should first of all describe the
-> new VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET, moving all explanation text
-> to that.
->
-> Then just explain that VIRTIO_NET_CTRL_NOTF_COAL_TX_SET and
-> VIRTIO_NET_CTRL_NOTF_COAL_RX_SET have the same effect
-> as VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET repeated for
-> all currently enabled tx/rx vqs.
-> Plus maybe a single annotated example where there's a mix of
-> VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET, VIRTIO_NET_CTRL_NOTF_COAL_RX_SET and
-> VIRTIO_NET_CTRL_NOTF_COAL_TX_SET commands. For example with 2 vq pairs:
->
-> 1. VIRTIO_NET_CTRL_NOTF_COAL_RX_SET sets for vq 0 and 2, vq 1 and 3 retai=
-n reset value
-> 2. VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET sets vq 0, vq 2 retains value from 1
-> 3. VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET sets vq 1, vq 3 retains reset value
-> 4. VIRTIO_NET_CTRL_NOTF_COAL_TX_SET overrides command 3
->
-> no need for many examples.
+On Thu, Feb 16, 2023 at 10:43:01PM +0800, Heng Qi wrote:
+> Currently coalescing parameters are grouped for all transmit and receive
+> virtqueues. This patch supports setting or getting the parameters for a
+> specified virtqueue, and a typical application of this function is netdim[1].
+> 
+> When the traffic between virtqueues is unbalanced, for example, one virtqueue
+> is busy and another virtqueue is idle, then it will be very useful to
+> control coalescing parameters at the virtqueue granularity.
+> 
+> [1] https://docs.kernel.org/networking/net_dim.html
+> 
+> Signed-off-by: Heng Qi <hengqi@linux.alibaba.com>
+> Reviewed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> ---
+> v2->v3:
+>     1. Add the netdim link. @Parav Pandit
+>     2. VIRTIO_NET_F_VQ_NOTF_COAL no longer depends on VIRTIO_NET_F_NOTF_COAL. @Michael S. Tsirkin, @Alvaro Karsz
+>     3. _VQ_GET is explained more. @Michael S. Tsirkin
+>     4. Add more examples to avoid misunderstandings. @Michael S. Tsirkin
+>     5. Clarify some statements. @Michael S. Tsirkin, @Parav Pandit, @Alvaro Karsz
+>     6. Adjust the virtio_net_ctrl_coal_vq structure. @Michael S. Tsirkin
+>     7. Fix some typos. @Michael S. Tsirkin
+> 
+> v1->v2:
+>     1. Rename VIRTIO_NET_F_PERQUEUE_NOTF_COAL to VIRTIO_NET_F_VQ_NOTF_COAL. @Michael S. Tsirkin
+>     2. Use the \field{vqn} instead of the qid. @Michael S. Tsirkin
+>     3. Unify tx and rx control structres into one structure virtio_net_ctrl_coal_vq. @Michael S. Tsirkin
+>     4. Add a new control command VIRTIO_NET_CTRL_NOTF_COAL_VQ. @Michael S. Tsirkin, @Parav Pandit, @Alvaro Karsz
+>     5. The special value 0xFFF is removed because VIRTIO_NET_CTRL_NOTF_COAL can be used. @Alvaro Karsz
+>     6. Clarify some special scenarios. @Michael S. Tsirkin, @Parav Pandit, @Alvaro Karsz
+> 
+>  content.tex | 130 ++++++++++++++++++++++++++++++++++++++++++++++++++--
+>  1 file changed, 126 insertions(+), 4 deletions(-)
+> 
+> diff --git a/content.tex b/content.tex
+> index e863709..7f99503 100644
+> --- a/content.tex
+> +++ b/content.tex
+> @@ -3084,6 +3084,9 @@ \subsection{Feature bits}\label{sec:Device Types / Network Device / Feature bits
+>  \item[VIRTIO_NET_F_CTRL_MAC_ADDR(23)] Set MAC address through control
+>      channel.
+>  
+> +\item[VIRTIO_NET_F_VQ_NOTF_COAL(52)] Device supports the virtqueue
+> +    notifications coalescing.
 
 
-Good idea. This is a clear and comprehensive example.
+btw no "the" here. 1st time we mention it. and notification not
+notifications - reduced relative here, uses the singular form.
 
-Thanks.
-
-
->
-
-This publicly archived list offers a means to provide input to the
-OASIS Virtual I/O Device (VIRTIO) TC.
-
-In order to verify user consent to the Feedback License terms and
-to minimize spam in the list archive, subscription is required
-before posting.
-
-Subscribe: virtio-comment-subscribe@lists.oasis-open.org
-Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
-List help: virtio-comment-help@lists.oasis-open.org
-List archive: https://lists.oasis-open.org/archives/virtio-comment/
-Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
-List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lis=
-ts
-Committee: https://www.oasis-open.org/committees/virtio/
-Join OASIS: https://www.oasis-open.org/join/
+> +
+>  \item[VIRTIO_NET_F_NOTF_COAL(53)] Device supports notifications coalescing.
+>  
+>  \item[VIRTIO_NET_F_GUEST_USO4 (54)] Driver can receive USOv4 packets.
+> @@ -3140,6 +3143,7 @@ \subsubsection{Feature bit requirements}\label{sec:Device Types / Network Device
+>  \item[VIRTIO_NET_F_NOTF_COAL] Requires VIRTIO_NET_F_CTRL_VQ.
+>  \item[VIRTIO_NET_F_RSC_EXT] Requires VIRTIO_NET_F_HOST_TSO4 or VIRTIO_NET_F_HOST_TSO6.
+>  \item[VIRTIO_NET_F_RSS] Requires VIRTIO_NET_F_CTRL_VQ.
+> +\item[VIRTIO_NET_F_VQ_NOTF_COAL] Requires VIRTIO_NET_F_CTRL_VQ.
+>  \end{description}
+>  
+>  \subsubsection{Legacy Interface: Feature bits}\label{sec:Device Types / Network Device / Feature bits / Legacy Interface: Feature bits}
+> @@ -4501,8 +4505,11 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
+>  };
+>  
+>  #define VIRTIO_NET_CTRL_NOTF_COAL 6
+> - #define VIRTIO_NET_CTRL_NOTF_COAL_TX_SET  0
+> + #define VIRTIO_NET_CTRL_NOTF_COAL_TX_SET 0
+>   #define VIRTIO_NET_CTRL_NOTF_COAL_RX_SET 1
+> + #define VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET 2
+> + #define VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET 3
+> +
+>  \end{lstlisting}
+>  
+>  Coalescing parameters:
+> @@ -4514,12 +4521,67 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
+>  \end{itemize}
+>  
+>  
+> -The class VIRTIO_NET_CTRL_NOTF_COAL has 2 commands:
+> +The class VIRTIO_NET_CTRL_NOTF_COAL has 4 commands:
+>  \begin{enumerate}
+>  \item VIRTIO_NET_CTRL_NOTF_COAL_TX_SET: set the \field{tx_usecs} and \field{tx_max_packets} parameters.
+>  \item VIRTIO_NET_CTRL_NOTF_COAL_RX_SET: set the \field{rx_usecs} and \field{rx_max_packets} parameters.
+> +\item VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET: set the \field{max_packets} and \field{max_usecs} parameters for a enabled
+> +                                        transmit/receive virtqueue whose number is \field{vqn}.
+> +\item VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET: the device gets the \field{max_packets} and \field{max_usecs} parameters of
+> +                                        a enabled transmit/receive virtqueue whose number is \field{vqn}, and then
+> +                                        responds them to the driver.
+>  \end{enumerate}
+>  
+> +If the VIRTIO_NET_F_VQ_NOTF_COAL feature is negotiated:
+> +1. a driver can send a VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET command to set the coalescing
+> +   parameters of a enabled transmit/receive virtqueue.
+> +2. a driver can send a VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET command to a device, and the device
+> +   responds to the driver with the coalescing parameters of a enabled transmit/receive virtqueue.
+> +
+> +\begin{lstlisting}
+> +struct virtio_net_ctrl_coal_vq {
+> +    le16 vqn;
+> +    le16 reserved;
+> +    le32 max_packets;
+> +    le32 max_usecs;
+> +};
+> +\end{lstlisting}
+> +
+> +Virtqueue coalescing parameters:
+> +\begin{itemize}
+> +\item \field{vqn}: The virtqueue number of the enabled transmit or receive virtqueue, excluding the control virtqueue.
+> +\item \field{max_packets}: The maximum number of packets sent/received by the specified virtqueue before a TX/RX notification.
+> +\item \field{max_usecs}: The maximum number of TX/RX usecs that the specified virtqueue delays a TX/RX notification.
+> +\end{itemize}
+> +
+> +\field{reserved} is reserved and it is ignored by the device.
+> +
+> +THe value of \field{vqn} satisfies $ 0 \leq vqn < max_virtqueue_pairs \ast 2 $.
+> +The conversion between \field{vqn} and transmitq/receiveq index:
+> +\begin{itemize}
+> +$ \lfloor vqn / 2 \rfloor $ is the index of the corresponding receiveq.
+> +$ \lfloor (vqn / 2) + 1 \rfloor $ is the index of the corresponding tranmitq.
+> +\end{itemize}
+> +
+> +The VIRTIO_NET_CTRL_NOTF_COAL_RX_SET command is the same as the VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET
+> +command repeated for each virtqueue of receiveq1\ldots receiveqN.
+> +
+> +The VIRTIO_NET_CTRL_NOTF_COAL_TX_SET command is the same as the VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET
+> +command repeated for each virtqueue of transmitq1\ldots transmitqN.
+> +
+> +If coalescing parameters are being set, the device applies the last coalescing parameters received for a
+> +virtqueue, regardless of the command used to deliver the parameters. For example:
+> +# Command sequence 1:
+> +1. VIRTIO_NET_CTRL_NOTF_COAL_RX_SET command with $ \field{max_packets} = 15 $ and $ \field{max_usecs} = 10 $
+> +2. VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET command with $ \field{vqn} = 0 $, $ \field{max_packets} = 12 $ and $ \field{max_usecs} = 8 $
+> +After #2 command is applied by the device, the coalescing parameters of receiveq1 are $ \field{max_packets} = 12 $ and $ \field{max_usecs} = 8 $,
+> +and the coalescing parameters of receiveq2\ldots receiveqN are $ \field{max_packets} = 15 $ and $ \field{max_usecs} = 10 $.
+> +
+> +# Command sequence 2:
+> +1. VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET command with $ \field{vqn} = 0 $, $ \field{max_packets} = 12 $ and $ \field{max_usecs} = 8 $
+> +2. VIRTIO_NET_CTRL_NOTF_COAL_RX_SET command with $ \field{max_packets} = 15 $ and $ \field{max_usecs} = 10 $
+> +After #2 command is applied by the device, the coalescing parameters of receiveq1\ldots receiveqN are $ \field{max_packets} = 15 $ and $ \field{max_usecs} = 10 $.
+> +
+>  \subparagraph{RX Notifications}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Notifications Coalescing / RX Notifications}
+>  
+>  If, for example:
+> @@ -4532,9 +4594,33 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
+>  
+>  \begin{itemize}
+>  \item The device will count received packets until it accumulates 15, or until 10 usecs elapsed since the first one was received.
+> -\item If the notifications are not suppressed by the driver, the device will send an used buffer notification, otherwise, the device will not send an used buffer notification as long as the notifications are suppressed.
+> +\item If the notifications are not suppressed by the driver, the device will send an used buffer notification, otherwise,
+> +      the device will not send an used buffer notification as long as the notifications are suppressed.
+> +\end{itemize}
+> +
+> +Example of setting coalescing parameters for a receive virtqueue:
+> +\begin{itemize}
+> +\item \field{max_packets} = 15
+> +\item \field{max_usecs} = 10
+> +\item \field{vqn} = 0
+> +\end{itemize}
+> +
+> +The device will operate as follows:
+> +\begin{itemize}
+> +\item The device applies the coalescing parameters to receiveq1 because its virtqueue number is 0.
+> +\item The device will count received packets on receiveq1 until it accumulates 15, or until 10 usecs elapsed since the first one was received.
+> +\item If the notifications are not suppressed by the driver, the device will send an used buffer notification, otherwise,
+> +      the device will not send an used buffer notification as long as the notifications are suppressed.
+> +\end{itemize}
+> +
+> +Example of getting coalescing parameters from a receive virtqueue:
+> +\begin{itemize}
+> +\item \field{vqn} = 0.
+>  \end{itemize}
+>  
+> +The device gets the values of the \field{max_packets} and \field{max_usecs} parameters from the receiveq1 whose virtqueue number is 0,
+> +and then responds them to the driver.
+> +
+>  \subparagraph{TX Notifications}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Notifications Coalescing / TX Notifications}
+>  
+>  If, for example:
+> @@ -4550,14 +4636,50 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
+>  \item If the notifications are not suppressed by the driver, the device will send an used buffer notification, otherwise, the device will not send an used buffer notification as long as the notifications are suppressed.
+>  \end{itemize}
+>  
+> +Example of setting coalescing parameters for a transmit virtqueue:
+> +\begin{itemize}
+> +\item \field{max_packets} = 15
+> +\item \field{max_usecs} = 10
+> +\item \field{vqn} = 1
+> +\end{itemize}
+> +
+> +The device will operate as follows:
+> +
+> +\begin{itemize}
+> +\item The device applies the coalescing parameters to transmitq1 because its virtqueue number is 1.
+> +\item The device will count sent packets on transmitq1 until it accumulates 15, or until 10 usecs elapsed since the first one was sent.
+> +\item If the notifications are not suppressed by the driver, the device will send an used buffer notification, otherwise,
+> +      the device will not send an used buffer notification as long as the notifications are suppressed.
+> +\end{itemize}
+> +
+> +Example of getting coalescing parameters from a transmit virtqueue:
+> +\begin{itemize}
+> +\item \field{vqn} = 1.
+> +\end{itemize}
+> +
+> +The device gets the values of the \field{max_packets} and \field{max_usecs} parameters from the transmitq1 whose virtqueue number is 1,
+> +and then responds them to the driver.
+> +
+>  \drivernormative{\subparagraph}{Notifications Coalescing}{Device Types / Network Device / Device Operation / Control Virtqueue / Notifications Coalescing}
+>  
+> -If the VIRTIO_NET_F_NOTF_COAL feature has not been negotiated, the driver MUST NOT issue VIRTIO_NET_CTRL_NOTF_COAL commands.
+> +If neither the VIRTIO_NET_F_NOTF_COAL nor the VIRTIO_NET_F_VQ_NOTF_COAL feature
+> +has not been negotiated, the driver MUST NOT issue VIRTIO_NET_CTRL_NOTF_COAL commands.
+> +
+> +If the VIRTIO_NET_F_VQ_NOTF_COAL feature is negotiated, the driver MUST set \field{vqn}
+> +to a legal value, that is, \field{vqn} points to an enabled transmit/receive virtqueue.
+> +
+> +A driver MAY NOT get exactly the same value as the coalescing parameter it was set to, for example it MAY get a value that is a power of 2.
+>  
+>  \devicenormative{\subparagraph}{Notifications Coalescing}{Device Types / Network Device / Device Operation / Control Virtqueue / Notifications Coalescing}
+>  
+>  A device SHOULD respond to the VIRTIO_NET_CTRL_NOTF_COAL commands with VIRTIO_NET_ERR if it was not able to change the parameters.
+>  
+> +When a device receives a virtqueue command to set/get coalescing parameters for a virtqueue with number \field{vqn},
+> +if the virtqueue is not enabled, the device SHOULD respond to the command with VIRTIO_NET_ERR.
+> +
+> +A device MAY NOT set the coalescing parameter to the exact same value as the one passed in by a driver. For example,
+> +the value of \field{max_packets} set by the driver is 15, but the device MAY store a value that is a power of 2, that is, 16.
+> +
+>  A device SHOULD NOT send used buffer notifications to the driver, if the notifications are suppressed as explained in \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Used Buffer Notification Suppression}, even if the coalescing counters expired.
+>  
+>  Upon reset, a device MUST initialize all coalescing parameters to 0.
+> -- 
+> 2.19.1.6.gb485710b
 
