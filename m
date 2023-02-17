@@ -1,55 +1,63 @@
-Return-Path: <virtio-comment-return-4336-cohuck=redhat.com@lists.oasis-open.org>
-Sender: <virtio-comment@lists.oasis-open.org>
-List-Post: <mailto:virtio-comment@lists.oasis-open.org>
-List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
+Return-Path: <parav@nvidia.com>
 From: Parav Pandit <parav@nvidia.com>
-Date: Fri, 17 Feb 2023 13:58:18 +0000
-Message-ID: <PH0PR12MB548149ACB2728B3884CF55EEDCA19@PH0PR12MB5481.namprd12.prod.outlook.com>
-References: <20230217013008.16062-1-parav@nvidia.com>
- <20230217013008.16062-7-parav@nvidia.com>
- <20230217041419-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20230217041419-mutt-send-email-mst@kernel.org>
+Subject: [PATCH v2 0/6] Split transport specific files
+Date: Fri, 17 Feb 2023 17:48:59 +0200
+Message-ID: <20230217154905.33619-1-parav@nvidia.com>
 MIME-Version: 1.0
-Subject: [virtio-comment] RE: [PATCH v1 6/6] transport-channelio: Correct spelling errors
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "cohuck@redhat.com" <cohuck@redhat.com>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, Shahaf Shuler <shahafs@nvidia.com>
+Content-Type: text/plain
+To: mst@redhat.com, virtio-dev@lists.oasis-open.org, cohuck@redhat.com
+Cc: virtio-comment@lists.oasis-open.org, shahafs@nvidia.com, Parav Pandit <parav@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+Problem statement:
+Currently several tens of pages worth of transport specification
+is situated in single file. Many parts of the specification
+are already maintained in separate files.
 
-> From: Michael S. Tsirkin <mst@redhat.com>
-> Sent: Friday, February 17, 2023 4:15 AM
-> On Fri, Feb 17, 2023 at 03:30:08AM +0200, Parav Pandit wrote:
-> > Now that we have individual files, fix reported spelling errors.
-> >
-> > Signed-off-by: Parav Pandit <parav@nvidia.com>
->=20
-> Why not transport-ccw? We abbreviated pci and mmio didn't we?
+Such separate files enables better maintenance of the specification overall=
+.
 
-No specific reason.
-Channel io was more intuitive to me compared reading the chapter name.
-Didn't know what the second c and w stand for in channel io.
-Will change to ccw.
+Solution:
+Follow the approach similar to rest of the spec, and keep
+transport specific spec in their individual files.
 
-This publicly archived list offers a means to provide input to the=0D
-OASIS Virtual I/O Device (VIRTIO) TC.=0D
-=0D
-In order to verify user consent to the Feedback License terms and=0D
-to minimize spam in the list archive, subscription is required=0D
-before posting.=0D
-=0D
-Subscribe: virtio-comment-subscribe@lists.oasis-open.org=0D
-Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org=0D
-List help: virtio-comment-help@lists.oasis-open.org=0D
-List archive: https://lists.oasis-open.org/archives/virtio-comment/=0D
-Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf=
-=0D
-List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lis=
-ts=0D
-Committee: https://www.oasis-open.org/committees/virtio/=0D
-Join OASIS: https://www.oasis-open.org/join/
+This series is for fixing issue [1].
+
+[1] Fixes: https://github.com/oasis-tcs/virtio-spec/issues/157
+
+Please review.
+
+Patch summary:
+patch 1 moves pci transport to its own file
+patch 2 moves mmio transport to its own file
+patch 3 moves channel io transport to its own file
+patch 4 to 6 fixes spelling errors existed in the spec which are
+discovered during splitting the files
+
+changelog:
+v1->v2:
+- renamed transport-channelio.tex to transport-ccw.tex
+- removed trailing white spaces in transport-ccw.tex
+
+
+Parav Pandit (6):
+  transport-pci: Split PCI transport to its own file
+  transport-mmio: Split MMIO transport to its own file
+  transport-ccw: Split Channel IO transport to its own file
+  transport-pci: Correct spelling errors
+  transport-mmio: Correct spelling errors
+  transport-ccw: Correct spelling errors
+
+ content.tex        | 2318 +-------------------------------------------
+ transport-ccw.tex  |  601 ++++++++++++
+ transport-mmio.tex |  552 +++++++++++
+ transport-pci.tex  | 1160 ++++++++++++++++++++++
+ 4 files changed, 2316 insertions(+), 2315 deletions(-)
+ create mode 100644 transport-ccw.tex
+ create mode 100644 transport-mmio.tex
+ create mode 100644 transport-pci.tex
+
+--=20
+2.26.2
 
