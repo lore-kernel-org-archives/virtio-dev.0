@@ -1,12 +1,12 @@
-Return-Path: <virtio-comment-return-4354-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-comment-return-4355-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio-comment@lists.oasis-open.org>
 List-Post: <mailto:virtio-comment@lists.oasis-open.org>
 List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
-From: Parav Pandit <parav@nvidia.com>
-Date: Fri, 17 Feb 2023 16:24:11 +0000
-Message-ID: <PH0PR12MB5481F2A332FF5765EF9F8FFFDCA19@PH0PR12MB5481.namprd12.prod.outlook.com>
+Message-ID: <3dd44592-1481-86c8-0612-67d4479c6655@linux.alibaba.com>
+Date: Sat, 18 Feb 2023 00:32:46 +0800
+MIME-Version: 1.0
 References: <20230208090836.74355-1-hengqi@linux.alibaba.com>
  <20230213171113-mutt-send-email-mst@kernel.org>
  <b7fb5b84-2939-3d4d-b12f-998ce238ea21@linux.alibaba.com>
@@ -14,64 +14,68 @@ References: <20230208090836.74355-1-hengqi@linux.alibaba.com>
  <fe901a5a-bd78-640a-bcb9-8b13d309a680@linux.alibaba.com>
  <20230217092215-mutt-send-email-mst@kernel.org>
  <20230217153614.GA117623@h68b04307.sqa.eu95>
-In-Reply-To: <20230217153614.GA117623@h68b04307.sqa.eu95>
-MIME-Version: 1.0
-Subject: [virtio-comment] RE: [virtio-dev] Re: [virtio-comment] Re: [virtio-dev] Re: [PATCH v8]
+ <PH0PR12MB5481F2A332FF5765EF9F8FFFDCA19@PH0PR12MB5481.namprd12.prod.outlook.com>
+From: Heng Qi <hengqi@linux.alibaba.com>
+In-Reply-To: <PH0PR12MB5481F2A332FF5765EF9F8FFFDCA19@PH0PR12MB5481.namprd12.prod.outlook.com>
+Subject: [virtio-comment] Re: [virtio-dev] Re: [virtio-comment] Re: [virtio-dev] Re: [PATCH v8]
  virtio-net: support inner header hash
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: quoted-printable
-To: Heng Qi <hengqi@linux.alibaba.com>, "Michael S. Tsirkin" <mst@redhat.com>
+To: Parav Pandit <parav@nvidia.com>, "Michael S. Tsirkin" <mst@redhat.com>
 Cc: "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Jason Wang <jasowang@redhat.com>, Cornelia Huck <cohuck@redhat.com>, Yuri Benditovich <yuri.benditovich@daynix.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
 
-> From: virtio-dev@lists.oasis-open.org <virtio-dev@lists.oasis-open.org> O=
-n
-> Behalf Of Heng Qi
+=E5=9C=A8 2023/2/18 =E4=B8=8A=E5=8D=8812:24, Parav Pandit =E5=86=99=E9=81=
+=93:
+>> From: virtio-dev@lists.oasis-open.org <virtio-dev@lists.oasis-open.org> =
+On
+>> Behalf Of Heng Qi
+> [..]
+>
+>> We assume that hash_report_tunnel_types is still present in the next ver=
+sion,
+> I am little lost.
 
-[..]
+Hi, Parav.
 
-> We assume that hash_report_tunnel_types is still present in the next vers=
-ion,
+You are not lost. I'm just answering some of Michael's questions and=20
+making assumptions. :)
 
-I am little lost.
-I thought we all agreed that reporting just the tunnel type in data path pa=
-th virtio_net_hdr is not useful to sw.
-And hence we should omit in the virtio_net_hdr.
+> I thought we all agreed that reporting just the tunnel type in data path =
+path virtio_net_hdr is not useful to sw.
+> And hence we should omit in the virtio_net_hdr.
+>
+> Did I miss the motivation to add it back?
+> If not, probably it is better to review and discuss v9 without it, which =
+will be easier to discuss.
+>
+>> but it only exists in virtio net hdr and should be populated by the devi=
+ce after
+>> the hash calculation. hash_tunnel_types already controls whether the dev=
+ice
+>> computes internal header hashes.
+>>
+>>>> I don't really follow this, hash_report_tunnel_type is better off
+>>>> keeping it "report" literally.
+>>>
+>>> Talking about VIRTIO_NET_F_HASH_TUNNEL here. Not
+>>> hash_report_tunnel_type.
 
-Did I miss the motivation to add it back?
-If not, probably it is better to review and discuss v9 without it, which wi=
-ll be easier to discuss.
+This publicly archived list offers a means to provide input to the
+OASIS Virtual I/O Device (VIRTIO) TC.
 
-> but it only exists in virtio net hdr and should be populated by the devic=
-e after
-> the hash calculation. hash_tunnel_types already controls whether the devi=
-ce
-> computes internal header hashes.
->=20
-> > > I don't really follow this, hash_report_tunnel_type is better off
-> > > keeping it "report" literally.
-> >
-> >
-> > Talking about VIRTIO_NET_F_HASH_TUNNEL here. Not
-> > hash_report_tunnel_type.
+In order to verify user consent to the Feedback License terms and
+to minimize spam in the list archive, subscription is required
+before posting.
 
-This publicly archived list offers a means to provide input to the=0D
-OASIS Virtual I/O Device (VIRTIO) TC.=0D
-=0D
-In order to verify user consent to the Feedback License terms and=0D
-to minimize spam in the list archive, subscription is required=0D
-before posting.=0D
-=0D
-Subscribe: virtio-comment-subscribe@lists.oasis-open.org=0D
-Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org=0D
-List help: virtio-comment-help@lists.oasis-open.org=0D
-List archive: https://lists.oasis-open.org/archives/virtio-comment/=0D
-Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf=
-=0D
+Subscribe: virtio-comment-subscribe@lists.oasis-open.org
+Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
+List help: virtio-comment-help@lists.oasis-open.org
+List archive: https://lists.oasis-open.org/archives/virtio-comment/
+Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
 List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lis=
-ts=0D
-Committee: https://www.oasis-open.org/committees/virtio/=0D
+ts
+Committee: https://www.oasis-open.org/committees/virtio/
 Join OASIS: https://www.oasis-open.org/join/
 
