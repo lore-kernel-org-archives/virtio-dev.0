@@ -1,56 +1,109 @@
 Return-Path: <parav@nvidia.com>
 From: Parav Pandit <parav@nvidia.com>
-Subject: RE: [PATCH v3 1/2] virtio-net: Describe dev cfg fields read only
-Date: Thu, 23 Feb 2023 05:50:07 +0000
-Message-ID: <PH0PR12MB548196EE7943A0388E52AB02DCAB9@PH0PR12MB5481.namprd12.prod.outlook.com>
-References: <20230217154529.33508-2-parav@nvidia.com>
- <87wn4byqqb.fsf@redhat.com> <20230221124013-mutt-send-email-mst@kernel.org>
- <PH0PR12MB5481AC76D8FDB8E53956EAE4DCA59@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20230221125057-mutt-send-email-mst@kernel.org>
- <PH0PR12MB54815BA778BE4039755B7D6FDCA59@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20230221130713-mutt-send-email-mst@kernel.org> <87356yaxaz.fsf@redhat.com>
- <20230222064936-mutt-send-email-mst@kernel.org> <87wn49aopg.fsf@redhat.com>
- <20230222075157-mutt-send-email-mst@kernel.org> <87ttzdal0p.fsf@redhat.com>
-In-Reply-To: <87ttzdal0p.fsf@redhat.com>
+Subject: [PATCH v3 2/2] virtio-net: Define cfg fields before description
+Date: Fri, 17 Feb 2023 17:45:29 +0200
+Message-ID: <20230217154529.33508-3-parav@nvidia.com>
+In-Reply-To: <20230217154529.33508-1-parav@nvidia.com>
+References: <20230217154529.33508-1-parav@nvidia.com>
 MIME-Version: 1.0
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-To: Cornelia Huck <cohuck@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>
-Cc: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, Shahaf Shuler <shahafs@nvidia.com>
+Content-Type: text/plain
+To: mst@redhat.com, virtio-dev@lists.oasis-open.org, cohuck@redhat.com
+Cc: virtio-comment@lists.oasis-open.org, shahafs@nvidia.com, Parav Pandit <parav@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+Currently some fields of the virtio_net_config structure are defined
+before introducing the structure and some are defined after
+introducing virtio_net_config.
+Better to define the configuration layout first followed by
+description of all the fields.
 
+Device configuration fields are described in the section. Change wording
+from 'listed' to 'described' as suggested in patch [1].
 
-> From: Cornelia Huck <cohuck@redhat.com>
-> Sent: Wednesday, February 22, 2023 8:27 AM
+[1] https://lists.oasis-open.org/archives/virtio-dev/202302/msg00004.html
 
-> > We can just skip adding a new requirement completely - we'll never get
-> > there with a compliant driver.  This is what we do e.g. for MMIO.
-> > Why not?
->=20
-> That would be fine with me as well.
->=20
-> > This has an advantage as this allows backing config with regular RAM.
-> > Also I feel that since it always said "read only for driver" then this
-> > implies a restriction on driver not the device.
->=20
-> Indeed. The normative statement below should be enough to make that "read=
--
-> only for the driver" thing obvious.
->=20
-> >
-> >> >
-> >> >
-> >> >> >
-> >> >> >>
-> >> >> >> Driver section:
-> >> >> >> Driver must not write to read-only fields.
-> >> >>
-> >> >> "The driver MUST NOT write to any config space field."
+Fixes: https://github.com/oasis-tcs/virtio-spec/issues/161
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+---
+changelog:
+v2->v3:
+- split the patch for read only description as prepration patch
+v1->v2:
+- remove read-only wording from multiple places
+v0->v1:
+- Change wording about device configuration field introduction
+- remove duplicate read-only wording for status field
+- reword sentence to read it better
+---
+ device-types/net/description.tex | 40 ++++++++++++++++++--------------
+ 1 file changed, 22 insertions(+), 18 deletions(-)
 
-I addressed the comments in v4 at [1].
-
-[1] https://lists.oasis-open.org/archives/virtio-dev/202302/msg00523.html
-Please review.
+diff --git a/device-types/net/description.tex b/device-types/net/descriptio=
+n.tex
+index 81e1135..c4bb64e 100644
+--- a/device-types/net/description.tex
++++ b/device-types/net/description.tex
+@@ -156,11 +156,28 @@ \subsubsection{Legacy Interface: Feature bits}\label{=
+sec:Device Types / Network
+ \subsection{Device configuration layout}\label{sec:Device Types / Network =
+Device / Device configuration layout}
+ \label{sec:Device Types / Block Device / Feature bits / Device configurati=
+on layout}
+=20
+-Device configuration fields are listed below. The \field{mac} address fiel=
+d
+-always exists (though is only valid if VIRTIO_NET_F_MAC is set), and
+-\field{status} only exists if VIRTIO_NET_F_STATUS is set. Two
+-bits (for the driver) are currently defined for the status field:
+-VIRTIO_NET_S_LINK_UP and VIRTIO_NET_S_ANNOUNCE.
++The network device has the following device configuration layout.
++
++\begin{lstlisting}
++struct virtio_net_config {
++        u8 mac[6];
++        le16 status;
++        le16 max_virtqueue_pairs;
++        le16 mtu;
++        le32 speed;
++        u8 duplex;
++        u8 rss_max_key_size;
++        le16 rss_max_indirection_table_length;
++        le32 supported_hash_types;
++};
++\end{lstlisting}
++
++The \field{mac} address field always exists (although it is only
++valid if VIRTIO_NET_F_MAC is set).
++
++The \field{status} only exists if VIRTIO_NET_F_STATUS is set.
++Two bits are currently defined for the status field: VIRTIO_NET_S_LINK_UP
++and VIRTIO_NET_S_ANNOUNCE.
+=20
+ \begin{lstlisting}
+ #define VIRTIO_NET_S_LINK_UP     1
+@@ -190,19 +207,6 @@ \subsection{Device configuration layout}\label{sec:Dev=
+ice Types / Network Device
+ is expected to re-read these values after receiving a
+ configuration change notification.
+=20
+-\begin{lstlisting}
+-struct virtio_net_config {
+-        u8 mac[6];
+-        le16 status;
+-        le16 max_virtqueue_pairs;
+-        le16 mtu;
+-        le32 speed;
+-        u8 duplex;
+-        u8 rss_max_key_size;
+-        le16 rss_max_indirection_table_length;
+-        le32 supported_hash_types;
+-};
+-\end{lstlisting}
+ The following field, \field{rss_max_key_size} only exists if VIRTIO_NET_F_=
+RSS or VIRTIO_NET_F_HASH_REPORT is set.
+ It specifies the maximum supported length of RSS key in bytes.
+=20
+--=20
+2.26.2
 
