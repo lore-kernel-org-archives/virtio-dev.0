@@ -1,31 +1,80 @@
-Return-Path: <virtio-dev-return-11114-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-11109-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 9046E9862A8
-	for <virtio-dev@lists.oasis-open.org>; Sun, 19 Feb 2023 13:02:47 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 9E615986788
+	for <virtio-dev@lists.oasis-open.org>; Sat, 18 Feb 2023 12:34:33 +0000 (UTC)
+Date: Sat, 18 Feb 2023 20:34:24 +0800 (CST)
+From: miya1903 <miya1903@163.com>
 MIME-Version: 1.0
-References: <20230219090312.1457138-1-alvaro.karsz@solid-run.com> <20230219075403-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20230219075403-mutt-send-email-mst@kernel.org>
-From: Alvaro Karsz <alvaro.karsz@solid-run.com>
-Date: Sun, 19 Feb 2023 15:02:09 +0200
-Message-ID: <CAJs=3_C8DW2A86_E09-i=uNtqpcdaXmJQqz8BaKZkP2FY4wBYQ@mail.gmail.com>
-Subject: [virtio-dev] Re: [PATCH v6] virtio-net: Fix and update VIRTIO_NET_F_NOTF_COAL feature
-Content-Type: text/plain; charset="UTF-8"
-To: "Michael S. Tsirkin" <mst@redhat.com>, hengqi@linux.alibaba.com
-Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, jasowang@redhat.com, parav@nvidia.com
+Message-ID: <1d0e9697.1f5b.1866484b7e7.Coremail.miya1903@163.com>
+Subject: [virtio-dev] Question on Indirect descriptors
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_29602_251423653.1676723664871"
+To: virtio-dev@lists.oasis-open.org
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Heng,
-Thanks for your work too!
+------=_Part_29602_251423653.1676723664871
+Content-Type: text/plain; charset=GBK
+Content-Transfer-Encoding: base64
 
-Michael,
-Thanks, I"ll fix the grammar in v7.
+SGksCgoKSSBoYXZlIHNlcnZhbCBxdWVzdGlvbnMgb24gIkluZGlyZWN0IERlc2NyaXB0b3JzIiBp
+biB0aGUgdmlydGlvIHNwZWM6CjEpIERvZXMgbGVuLzE2IGlzIGxlc3MgdGhhbiBvciBlcXVhbCB0
+byB0aGUgUXVldWUgU2l6ZSBvZiB0aGUgZGV2aWNlPwogICAgc3RydWN0IGluZGlyZWN0X2Rlc2Ny
+aXB0b3JfdGFibGUgewogICAgICAgIC8qIFRoZSBhY3R1YWwgZGVzY3JpcHRvcnMgKDE2IGJ5dGVz
+IGVhY2gpICovCiAgICAgICAgc3RydWN0IHZpcnRxX2Rlc2MgZGVzY1tsZW4gLyAxNl07CiAgICB9
+OwoKCjIpIFRoZSB2aXJ0aW8gc3BlYyBzYWlkICJBIGRyaXZlciBNVVNUIE5PVCBjcmVhdGUgYSBk
+ZXNjcmlwdG9yIGNoYWluIGxvbmdlcgogICAgdGhhbiB0aGUgUXVldWUgU2l6ZSBvZiB0aGUgZGV2
+aWNlIi4gSWYgYW4gSU8gcmVxdWVzdCBzZXQgTiBub3JtYWwgY2hhaW5lZAogICAgZGVzY3JpcHRv
+cnMgZm9sbG93ZWQgYnkgYSBzaW5nbGUgZGVzY3JpcHRvciB3aXRoIGZsYWcmVklSVFFfREVTQ19G
+X0lORElSRUNULAogICAgd2hpY2ggaGFzIE0gY2hhaW5lZCBkZXNjcmlwdG9ycyBpbiB0aGUgaW5k
+aXJlY3QgZGVzY3JpcHRvciB0YWJsZS4gRG9lcyBpdCBoYXMgdGhlCiAgICBsaW1pdGF0aW9uIHRo
+YXQgTitNIG11c3QgbGVzcyB0aGFuIG9yIGVxdWFsIHRvIHRoZSBRdWV1ZSBTaXplIG9mIHRoZSBk
+ZXZpY2U/CgoKVGhhbmtzLApZQU4=
+------=_Part_29602_251423653.1676723664871
+Content-Type: text/html; charset=GBK
+Content-Transfer-Encoding: base64
 
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+PGRpdiBzdHlsZT0ibGluZS1oZWlnaHQ6MS43O2NvbG9yOiMwMDAwMDA7Zm9udC1zaXplOjE0cHg7
+Zm9udC1mYW1pbHk6QXJpYWwiPjxkaXYgc3R5bGU9Im1hcmdpbjogMHB4OyB3b3JkLWJyZWFrOiBi
+cmVhay13b3JkICFpbXBvcnRhbnQ7Ij5IaSw8L2Rpdj48ZGl2IHN0eWxlPSJtYXJnaW46IDBweDsg
+d29yZC1icmVhazogYnJlYWstd29yZCAhaW1wb3J0YW50OyI+PGJyIHN0eWxlPSJ3b3JkLWJyZWFr
+OiBicmVhay13b3JkICFpbXBvcnRhbnQ7Ij48L2Rpdj48ZGl2IHN0eWxlPSJtYXJnaW46IDBweDsg
+d29yZC1icmVhazogYnJlYWstd29yZCAhaW1wb3J0YW50OyI+SSBoYXZlIHNlcnZhbCBxdWVzdGlv
+bnMgb24gIkluZGlyZWN0IERlc2NyaXB0b3JzIiBpbiB0aGUgdmlydGlvIHNwZWM6PC9kaXY+PGRp
+diBzdHlsZT0ibWFyZ2luOiAwcHg7IHdvcmQtYnJlYWs6IGJyZWFrLXdvcmQgIWltcG9ydGFudDsi
+PjEpIERvZXMgbGVuLzE2IGlzIGxlc3MgdGhhbiBvciBlcXVhbCB0byB0aGUgUXVldWUgU2l6ZSBv
+ZiB0aGUgZGV2aWNlPzwvZGl2PjxkaXYgc3R5bGU9Im1hcmdpbjogMHB4OyB3b3JkLWJyZWFrOiBi
+cmVhay13b3JkICFpbXBvcnRhbnQ7Ij4mbmJzcDsgJm5ic3A7IHN0cnVjdCBpbmRpcmVjdF9kZXNj
+cmlwdG9yX3RhYmxlIHs8L2Rpdj48ZGl2IHN0eWxlPSJtYXJnaW46IDBweDsgd29yZC1icmVhazog
+YnJlYWstd29yZCAhaW1wb3J0YW50OyI+Jm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7IC8qIFRo
+ZSBhY3R1YWwgZGVzY3JpcHRvcnMgKDE2IGJ5dGVzIGVhY2gpICovPC9kaXY+PGRpdiBzdHlsZT0i
+bWFyZ2luOiAwcHg7IHdvcmQtYnJlYWs6IGJyZWFrLXdvcmQgIWltcG9ydGFudDsiPiZuYnNwOyAm
+bmJzcDsgJm5ic3A7ICZuYnNwOyBzdHJ1Y3QgdmlydHFfZGVzYyBkZXNjW2xlbiAvIDE2XTs8L2Rp
+dj48ZGl2IHN0eWxlPSJtYXJnaW46IDBweDsgd29yZC1icmVhazogYnJlYWstd29yZCAhaW1wb3J0
+YW50OyI+Jm5ic3A7ICZuYnNwOyB9OzwvZGl2PjxkaXYgc3R5bGU9Im1hcmdpbjogMHB4OyB3b3Jk
+LWJyZWFrOiBicmVhay13b3JkICFpbXBvcnRhbnQ7Ij48YnIgc3R5bGU9IndvcmQtYnJlYWs6IGJy
+ZWFrLXdvcmQgIWltcG9ydGFudDsiPjwvZGl2PjxkaXYgc3R5bGU9Im1hcmdpbjogMHB4OyB3b3Jk
+LWJyZWFrOiBicmVhay13b3JkICFpbXBvcnRhbnQ7Ij4yKSBUaGUgdmlydGlvIHNwZWMgc2FpZCAi
+QSBkcml2ZXIgTVVTVCBOT1QgY3JlYXRlIGEgZGVzY3JpcHRvciBjaGFpbiBsb25nZXI8L2Rpdj48
+ZGl2IHN0eWxlPSJtYXJnaW46IDBweDsgd29yZC1icmVhazogYnJlYWstd29yZCAhaW1wb3J0YW50
+OyI+Jm5ic3A7ICZuYnNwOyB0aGFuIHRoZSBRdWV1ZSBTaXplIG9mIHRoZSBkZXZpY2UiLiBJZiBh
+biBJTyByZXF1ZXN0IHNldCBOIG5vcm1hbCBjaGFpbmVkPC9kaXY+PGRpdiBzdHlsZT0ibWFyZ2lu
+OiAwcHg7IHdvcmQtYnJlYWs6IGJyZWFrLXdvcmQgIWltcG9ydGFudDsiPiZuYnNwOyAmbmJzcDsg
+ZGVzY3JpcHRvcnMgZm9sbG93ZWQgYnkgYSBzaW5nbGUgZGVzY3JpcHRvciB3aXRoIGZsYWcmYW1w
+O1ZJUlRRX0RFU0NfRl9JTkRJUkVDVCw8L2Rpdj48ZGl2IHN0eWxlPSJtYXJnaW46IDBweDsgd29y
+ZC1icmVhazogYnJlYWstd29yZCAhaW1wb3J0YW50OyI+Jm5ic3A7ICZuYnNwOyB3aGljaCBoYXMg
+TSBjaGFpbmVkIGRlc2NyaXB0b3JzIGluIHRoZSBpbmRpcmVjdCBkZXNjcmlwdG9yIHRhYmxlLiBE
+b2VzIGl0IGhhcyB0aGU8L2Rpdj48ZGl2IHN0eWxlPSJtYXJnaW46IDBweDsgd29yZC1icmVhazog
+YnJlYWstd29yZCAhaW1wb3J0YW50OyI+Jm5ic3A7ICZuYnNwOyBsaW1pdGF0aW9uIHRoYXQgTitN
+IG11c3QgbGVzcyB0aGFuIG9yIGVxdWFsIHRvIHRoZSBRdWV1ZSBTaXplIG9mIHRoZSBkZXZpY2U/
+PC9kaXY+PGRpdiBzdHlsZT0ibWFyZ2luOiAwcHg7IHdvcmQtYnJlYWs6IGJyZWFrLXdvcmQgIWlt
+cG9ydGFudDsiPjxiciBzdHlsZT0id29yZC1icmVhazogYnJlYWstd29yZCAhaW1wb3J0YW50OyI+
+PC9kaXY+PGRpdiBzdHlsZT0ibWFyZ2luOiAwcHg7IHdvcmQtYnJlYWs6IGJyZWFrLXdvcmQgIWlt
+cG9ydGFudDsiPlRoYW5rcyw8L2Rpdj48ZGl2IHN0eWxlPSJtYXJnaW46IDBweDsgd29yZC1icmVh
+azogYnJlYWstd29yZCAhaW1wb3J0YW50OyI+WUFOPC9kaXY+PC9kaXY+
+------=_Part_29602_251423653.1676723664871--
 
