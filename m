@@ -1,54 +1,86 @@
-Return-Path: <virtio-comment-return-4375-cohuck=redhat.com@lists.oasis-open.org>
-Sender: <virtio-comment@lists.oasis-open.org>
-List-Post: <mailto:virtio-comment@lists.oasis-open.org>
-List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
-From: Cornelia Huck <cohuck@redhat.com>
-In-Reply-To: <PH0PR12MB5481D8AC4A1FA5A9342BB198DCA19@PH0PR12MB5481.namprd12.prod.outlook.com>
-References: <20230214180405.364920-1-parav@nvidia.com>
- <87ilg1aehi.fsf@redhat.com>
- <PH0PR12MB5481F4E1099DF88D667DBD2CDCA09@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20230216104714-mutt-send-email-mst@kernel.org>
- <87cz69a98e.fsf@redhat.com>
- <PH0PR12MB54814F1CCBA0CD40A4908274DCA09@PH0PR12MB5481.namprd12.prod.outlook.com>
- <87a61da7zi.fsf@redhat.com>
- <PH0PR12MB5481D8AC4A1FA5A9342BB198DCA19@PH0PR12MB5481.namprd12.prod.outlook.com>
-Date: Mon, 20 Feb 2023 14:34:23 +0100
-Message-ID: <87ilfwlau8.fsf@redhat.com>
+Return-Path: <virtio-dev-return-11120-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id D8C409863C5
+	for <virtio-dev@lists.oasis-open.org>; Mon, 20 Feb 2023 09:35:56 +0000 (UTC)
+From: Alvaro Karsz <alvaro.karsz@solid-run.com>
+Date: Mon, 20 Feb 2023 11:35:51 +0200
+Message-Id: <20230220093551.1619951-1-alvaro.karsz@solid-run.com>
 MIME-Version: 1.0
-Subject: [virtio-comment] RE: [virtio-dev] Re: [virtio-comment] RE: [PATCH v6] virtio-net:
- Improve introductory description
-Content-Type: text/plain
-To: Parav Pandit <parav@nvidia.com>, "Michael S. Tsirkin" <mst@redhat.com>
-Cc: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, Shahaf Shuler <shahafs@nvidia.com>, David Edmondson <david.edmondson@oracle.com>
+Subject: [virtio-dev] [PATCH] virtio-net: define the VIRTIO_NET_F_CTRL_RX_EXTRA feature bit
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="US-ASCII"; x-default=true
+To: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+Cc: jasowang@redhat.com, mst@redhat.com, hengqi@linux.alibaba.com, parav@nvidia.com, Alvaro Karsz <alvaro.karsz@solid-run.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Fri, Feb 17 2023, Parav Pandit <parav@nvidia.com> wrote:
+The VIRTIO_NET_F_CTRL_RX_EXTRA feature bit is mentioned in the spec
+since version 1.0, but it's not properly defined.
 
-> Yes, can you please withdraw the ballot [1] as it contains stale reference to the patch?
->
-> [1] https://www.oasis-open.org/apps/org/workgroup/virtio/ballot.php?id=3758
->
-> Also please create new ballot as the github link is now updated for the issue [2].
-> [2] https://github.com/oasis-tcs/virtio-spec/issues/156
+This patch defined the feature bit and defined the dependency on VIRTIO_NET=
+_F_CTRL_VQ.
 
-Done.
+Since this dependency was missed in previous versions, we add it now as
+a "SHOULD".
+
+Fixes: https://github.com/oasis-tcs/virtio-spec/issues/162
+
+Signed-off-by: Alvaro Karsz <alvaro.karsz@solid-run.com>
+---
+ device-types/net/description.tex | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/device-types/net/description.tex b/device-types/net/descriptio=
+n.tex
+index 8487ccd..cf37da5 100644
+--- a/device-types/net/description.tex
++++ b/device-types/net/description.tex
+@@ -74,6 +74,8 @@ \subsection{Feature bits}\label{sec:Device Types / Networ=
+k Device / Feature bits
+=20
+ \item[VIRTIO_NET_F_CTRL_VLAN (19)] Control channel VLAN filtering.
+=20
++\item[VIRTIO_NET_F_CTRL_RX_EXTRA (20)]=09Control channel RX extra mode sup=
+port.
++
+ \item[VIRTIO_NET_F_GUEST_ANNOUNCE(21)] Driver can send gratuitous
+     packets.
+=20
+@@ -259,6 +261,9 @@ \subsection{Device configuration layout}\label{sec:Devi=
+ce Types / Network Device
+ The device SHOULD NOT offer VIRTIO_NET_F_HASH_REPORT if it
+ does not offer VIRTIO_NET_F_CTRL_VQ.
+=20
++The device SHOULD NOT offer VIRTIO_NET_F_CTRL_RX_EXTRA if it
++does not offer VIRTIO_NET_F_CTRL_VQ.
++
+ \drivernormative{\subsubsection}{Device configuration layout}{Device Types=
+ / Network Device / Device configuration layout}
+=20
+ A driver SHOULD negotiate VIRTIO_NET_F_MAC if the device offers it.
+@@ -295,6 +300,9 @@ \subsection{Device configuration layout}\label{sec:Devi=
+ce Types / Network Device
+ A driver SHOULD NOT negotiate VIRTIO_NET_F_HASH_REPORT if it
+ does not negotiate VIRTIO_NET_F_CTRL_VQ.
+=20
++A driver SHOULD NOT negotiate VIRTIO_NET_F_CTRL_RX_EXTRA if it
++does not negotiate VIRTIO_NET_F_CTRL_VQ.
++
+ \subsubsection{Legacy Interface: Device configuration layout}\label{sec:De=
+vice Types / Network Device / Device configuration layout / Legacy Interfac=
+e: Device configuration layout}
+ \label{sec:Device Types / Block Device / Feature bits / Device configurati=
+on layout / Legacy Interface: Device configuration layout}
+ When using the legacy interface, transitional devices and drivers
+--=20
+2.34.1
 
 
-This publicly archived list offers a means to provide input to the
-OASIS Virtual I/O Device (VIRTIO) TC.
-
-In order to verify user consent to the Feedback License terms and
-to minimize spam in the list archive, subscription is required
-before posting.
-
-Subscribe: virtio-comment-subscribe@lists.oasis-open.org
-Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
-List help: virtio-comment-help@lists.oasis-open.org
-List archive: https://lists.oasis-open.org/archives/virtio-comment/
-Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
-List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
-Committee: https://www.oasis-open.org/committees/virtio/
-Join OASIS: https://www.oasis-open.org/join/
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
