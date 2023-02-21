@@ -1,9 +1,9 @@
-Return-Path: <parav@nvidia.com>
-From: Parav Pandit <parav@nvidia.com>
-Subject: RE: [virtio-dev] RE: [virtio-comment] RE: [PATCH v9] virtio-net:
+Return-Path: <mst@redhat.com>
+Date: Tue, 21 Feb 2023 12:13:55 -0500
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Subject: Re: [virtio-dev] RE: [virtio-comment] RE: [PATCH v9] virtio-net:
  support inner header hash
-Date: Tue, 21 Feb 2023 16:50:56 +0000
-Message-ID: <PH0PR12MB5481DFE61340CB9ACED1DEEADCA59@PH0PR12MB5481.namprd12.prod.outlook.com>
+Message-ID: <20230221121312-mutt-send-email-mst@kernel.org>
 References: <20230218143715.841-1-hengqi@linux.alibaba.com>
  <PH0PR12MB5481224CBC059BD482347133DCA59@PH0PR12MB5481.namprd12.prod.outlook.com>
  <9ff76a6e-fd77-4cf3-a9ad-546696ab843d@linux.alibaba.com>
@@ -11,31 +11,41 @@ References: <20230218143715.841-1-hengqi@linux.alibaba.com>
  <f7080485-e8bd-048f-b8ea-cd86757f7b1c@linux.alibaba.com>
  <PH0PR12MB548135774CD69A5A5F475FB2DCA59@PH0PR12MB5481.namprd12.prod.outlook.com>
  <85de2618-6018-5436-6e8a-4d5253b42e64@linux.alibaba.com>
-In-Reply-To: <85de2618-6018-5436-6e8a-4d5253b42e64@linux.alibaba.com>
+ <PH0PR12MB5481DFE61340CB9ACED1DEEADCA59@PH0PR12MB5481.namprd12.prod.outlook.com>
 MIME-Version: 1.0
-Content-Language: en-US
+In-Reply-To: <PH0PR12MB5481DFE61340CB9ACED1DEEADCA59@PH0PR12MB5481.namprd12.prod.outlook.com>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-To: Heng Qi <hengqi@linux.alibaba.com>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
-Cc: "Michael S . Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, Yuri Benditovich <yuri.benditovich@daynix.com>, Cornelia Huck <cohuck@redhat.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+To: Parav Pandit <parav@nvidia.com>
+Cc: Heng Qi <hengqi@linux.alibaba.com>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Jason Wang <jasowang@redhat.com>, Yuri Benditovich <yuri.benditovich@daynix.com>, Cornelia Huck <cohuck@redhat.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-DQo+IEZyb206IEhlbmcgUWkgPGhlbmdxaUBsaW51eC5hbGliYWJhLmNvbT4NCj4gU2VudDogVHVl
-c2RheSwgRmVicnVhcnkgMjEsIDIwMjMgMTE6NDQgQU0NCg0KPiA+IFBhdGNoLTEgdG8gaW50cm9k
-dWNlIHRoZSBmZWF0dXJlIGJpdCwgZGVzY3JpcHRpb24sIGFuZCBsaW5rIHRvIENWUSBkZXBlbmRl
-bmN5Lg0KPiA+IFBhdGNoLTIgZm9yIGl0cyBsaW5rIGluIHZpcnRpb19uZXRfY29uZmlnIHN0cnVj
-dHVyZSBhbmQgZGVzY3JpcHRpb24uDQo+ID4gUGF0Y2gtMyBmb3IgbmV3IGNvbW1hbmQgdG91Y2hp
-bmcgY29udHJvbCBWUSBwaWVjZXMuDQo+IA0KPiBZZXMsIGFuZCB5b3Ugc2VlbSB0byBoYXZlIG1p
-c3NlZCBteSBvdGhlciByZXBsaWVzIGluIHRoaXMgdGhyZWFkOiksIEkgcmVwaHJhc2VkDQpXYXMg
-aXQgY29tbWVudCAiQW5kIHZpcnRpb19uZXRfaGFzaF9jb25maWcgc2VlbXMgdG8gc3VmZmljZSBl
-eGNlcHQgZm9yIGxlMTYgcmVzZXJ2ZWRbNF0uIiA/DQpJIGRvbuKAmXQgc2VlIHRoZXNlIHJlc2Vy
-dmVkIGZpZWxkcyBpbiB0aGUgY3VycmVudCBzdHJ1Y3R1cmUuDQoNCj4gaXQgaGVyZToNCj4gdmly
-dGlvX25ldF9oYXNoX2NvbmZpZyBzZWVtcyB0byBiZSByZXVzYWJsZSwgYXMgdGhlIHY5IHBhdGNo
-IGlzIGRvaW5nLCB3aHkNCj4gZG9uJ3Qgd2UgcmUtdXNlIGl0Pw0KPiBUaGUgcmVhc29uIEkgY2Fu
-IHRoaW5rIG9mIGlzIHRvIG5vdCBleHBhbmQgdGhlIHZpcnRpb19uZXRfaGFzaF9jb25maWcgc3Ry
-dWN0dXJlLA0KPiBqdXN0IHNldCBhIHNlcGFyYXRlIHN0cnVjdHVyZSBmb3IgVklSVElPX05FVF9G
-X0hBU0hfVFVOTkVMIGFuZCBpbmNsdWRlDQo+IGhhc2hfdHVubmVsX3R5cGVzPw0KDQpUaGUgcGFy
-dCB0aGF0IEkgYW0gbWlzc2luZyBpcywgaG93IGRvIHRvIHJldXNlIHZpcnRpb19uZXRfaGFzaF9j
-b25maWcgYW5kIHNheSBpZ25vcmUgYWxsIHRoZSBleGlzdGluZyBmaWVsZHMgcmVsYXRlZCB0byBy
-c3MsIGJ1dCBvbmx5IGNvbnNpZGVyIGhhc2hfdHVubmVsX3R5cGVzPw0K
+On Tue, Feb 21, 2023 at 04:50:56PM +0000, Parav Pandit wrote:
+> 
+> > From: Heng Qi <hengqi@linux.alibaba.com>
+> > Sent: Tuesday, February 21, 2023 11:44 AM
+> 
+> > > Patch-1 to introduce the feature bit, description, and link to CVQ dependency.
+> > > Patch-2 for its link in virtio_net_config structure and description.
+> > > Patch-3 for new command touching control VQ pieces.
+> > 
+> > Yes, and you seem to have missed my other replies in this thread:), I rephrased
+> Was it comment "And virtio_net_hash_config seems to suffice except for le16 reserved[4]." ?
+> I don’t see these reserved fields in the current structure.
+> 
+> > it here:
+> > virtio_net_hash_config seems to be reusable, as the v9 patch is doing, why
+> > don't we re-use it?
+> > The reason I can think of is to not expand the virtio_net_hash_config structure,
+> > just set a separate structure for VIRTIO_NET_F_HASH_TUNNEL and include
+> > hash_tunnel_types?
+> 
+> The part that I am missing is, how do to reuse virtio_net_hash_config and say ignore all the existing fields related to rss, but only consider hash_tunnel_types?
+
+Like a union?  The answer is, don't. Just lay out fields
+one after another.
+
+-- 
+MST
 
