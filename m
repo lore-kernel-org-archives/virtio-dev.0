@@ -1,12 +1,9 @@
-Return-Path: <virtio-comment-return-4414-cohuck=redhat.com@lists.oasis-open.org>
-Sender: <virtio-comment@lists.oasis-open.org>
-List-Post: <mailto:virtio-comment@lists.oasis-open.org>
-List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
-From: Parav Pandit <parav@nvidia.com>
-Date: Tue, 21 Feb 2023 17:40:51 +0000
-Message-ID: <PH0PR12MB5481C5C95B6EED553CC97797DCA59@PH0PR12MB5481.namprd12.prod.outlook.com>
+Return-Path: <mst@redhat.com>
+Date: Tue, 21 Feb 2023 12:44:18 -0500
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Subject: Re: [virtio-dev] RE: [virtio-comment] RE: [PATCH v9] virtio-net:
+ support inner header hash
+Message-ID: <20230221124233-mutt-send-email-mst@kernel.org>
 References: <20230218143715.841-1-hengqi@linux.alibaba.com>
  <PH0PR12MB5481224CBC059BD482347133DCA59@PH0PR12MB5481.namprd12.prod.outlook.com>
  <9ff76a6e-fd77-4cf3-a9ad-546696ab843d@linux.alibaba.com>
@@ -16,27 +13,38 @@ References: <20230218143715.841-1-hengqi@linux.alibaba.com>
  <85de2618-6018-5436-6e8a-4d5253b42e64@linux.alibaba.com>
  <PH0PR12MB5481DFE61340CB9ACED1DEEADCA59@PH0PR12MB5481.namprd12.prod.outlook.com>
  <20230221121312-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20230221121312-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB5481C5C95B6EED553CC97797DCA59@PH0PR12MB5481.namprd12.prod.outlook.com>
 MIME-Version: 1.0
-Subject: [virtio-comment] RE: [virtio-dev] RE: [virtio-comment] RE: [PATCH v9] virtio-net:
- support inner header hash
-Content-Language: en-US
+In-Reply-To: <PH0PR12MB5481C5C95B6EED553CC97797DCA59@PH0PR12MB5481.namprd12.prod.outlook.com>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-To: "Michael S. Tsirkin" <mst@redhat.com>
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+To: Parav Pandit <parav@nvidia.com>
 Cc: Heng Qi <hengqi@linux.alibaba.com>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Jason Wang <jasowang@redhat.com>, Yuri Benditovich <yuri.benditovich@daynix.com>, Cornelia Huck <cohuck@redhat.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-DQo+IEZyb206IE1pY2hhZWwgUy4gVHNpcmtpbiA8bXN0QHJlZGhhdC5jb20+DQo+IFNlbnQ6IFR1
-ZXNkYXksIEZlYnJ1YXJ5IDIxLCAyMDIzIDEyOjE0IFBNDQo+ID4gVGhlIHBhcnQgdGhhdCBJIGFt
-IG1pc3NpbmcgaXMsIGhvdyBkbyB0byByZXVzZSB2aXJ0aW9fbmV0X2hhc2hfY29uZmlnIGFuZCBz
-YXkNCj4gaWdub3JlIGFsbCB0aGUgZXhpc3RpbmcgZmllbGRzIHJlbGF0ZWQgdG8gcnNzLCBidXQg
-b25seSBjb25zaWRlcg0KPiBoYXNoX3R1bm5lbF90eXBlcz8NCj4gDQo+IExpa2UgYSB1bmlvbj8g
-IFRoZSBhbnN3ZXIgaXMsIGRvbid0LiBKdXN0IGxheSBvdXQgZmllbGRzIG9uZSBhZnRlciBhbm90
-aGVyLg0KPiANCkluIHRoYXQgY2FzZSBkcml2ZXIgbmVlZHMgdG8gZmlsbCB1cCBhbGwgdGhlIGZp
-ZWxkcyB3aGljaCBhcmUgbm90IHJlbGF0ZWQgdG8gaGFzaF90dW5uZWxfdHlwZXMgYW5kIHRoZSBk
-ZXZpY2UgYWxzbyBuZWVkcyB0byBjb21wYXJlIHdpdGggdGhlIHByZXZpb3VzIGNvbmZpZyBhbmQg
-aWdub3JlIGl0Lg0KRG9lc27igJl0IGxvb2sgbGlrZSBhIGdvb2QgdXNlIG9mIGV4aXN0aW5nIGNv
-bW1hbmRzIGFuZCBzdy9mdyB1c2FnZSBmb3IgaXQuDQpTaG91bGRu4oCZdCB3ZSBoYXZlIHRoZSBl
-eHBsaWNpdCBjb21tYW5kIGZvciBzZXR0aW5nIHR1bm5lbCB0eXBlcz8NCg==
+On Tue, Feb 21, 2023 at 05:40:51PM +0000, Parav Pandit wrote:
+> 
+> > From: Michael S. Tsirkin <mst@redhat.com>
+> > Sent: Tuesday, February 21, 2023 12:14 PM
+> > > The part that I am missing is, how do to reuse virtio_net_hash_config and say
+> > ignore all the existing fields related to rss, but only consider
+> > hash_tunnel_types?
+> > 
+> > Like a union?  The answer is, don't. Just lay out fields one after another.
+> > 
+> In that case driver needs to fill up all the fields which are not
+> related to hash_tunnel_types and the device also needs to compare with
+> the previous config and ignore it.  Doesn’t look like a good use of
+> existing commands and sw/fw usage for it.  Shouldn’t we have the
+> explicit command for setting tunnel types?
+
+I don't know what's proposed at this point, this is too vague.
+I feel which tunnels to hash for inner header is not different
+from which transports to hash. If device wants to know
+what changes it can compare. I expect generally devices will
+just apply the new config without caring what changed exactly.
+
+-- 
+MST
 
