@@ -1,9 +1,9 @@
-Return-Path: <parav@nvidia.com>
-From: Parav Pandit <parav@nvidia.com>
-Subject: RE: [virtio-dev] RE: [virtio-comment] RE: [PATCH v9] virtio-net:
- support inner header hash
-Date: Tue, 21 Feb 2023 17:54:35 +0000
-Message-ID: <PH0PR12MB54818CB68B1EB4078686CC45DCA59@PH0PR12MB5481.namprd12.prod.outlook.com>
+Return-Path: <hengqi@linux.alibaba.com>
+Message-ID: <913230f2-24bc-a2b0-1a5e-c0f1414f888d@linux.alibaba.com>
+Date: Wed, 22 Feb 2023 01:17:25 +0800
+MIME-Version: 1.0
+Subject: Re: [virtio-comment] RE: [virtio-dev] RE: [virtio-comment] RE: [PATCH
+ v9] virtio-net: support inner header hash
 References: <20230218143715.841-1-hengqi@linux.alibaba.com>
  <PH0PR12MB5481224CBC059BD482347133DCA59@PH0PR12MB5481.namprd12.prod.outlook.com>
  <9ff76a6e-fd77-4cf3-a9ad-546696ab843d@linux.alibaba.com>
@@ -12,47 +12,40 @@ References: <20230218143715.841-1-hengqi@linux.alibaba.com>
  <PH0PR12MB548135774CD69A5A5F475FB2DCA59@PH0PR12MB5481.namprd12.prod.outlook.com>
  <85de2618-6018-5436-6e8a-4d5253b42e64@linux.alibaba.com>
  <PH0PR12MB5481DFE61340CB9ACED1DEEADCA59@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20230221121312-mutt-send-email-mst@kernel.org>
- <PH0PR12MB5481C5C95B6EED553CC97797DCA59@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20230221124233-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20230221124233-mutt-send-email-mst@kernel.org>
-MIME-Version: 1.0
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Heng Qi <hengqi@linux.alibaba.com>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Jason Wang <jasowang@redhat.com>, Yuri Benditovich <yuri.benditovich@daynix.com>, Cornelia Huck <cohuck@redhat.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+From: Heng Qi <hengqi@linux.alibaba.com>
+In-Reply-To: <PH0PR12MB5481DFE61340CB9ACED1DEEADCA59@PH0PR12MB5481.namprd12.prod.outlook.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+To: Parav Pandit <parav@nvidia.com>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
+Cc: "Michael S . Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, Yuri Benditovich <yuri.benditovich@daynix.com>, Cornelia Huck <cohuck@redhat.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-DQo+IEZyb206IE1pY2hhZWwgUy4gVHNpcmtpbiA8bXN0QHJlZGhhdC5jb20+DQo+IFNlbnQ6IFR1
-ZXNkYXksIEZlYnJ1YXJ5IDIxLCAyMDIzIDEyOjQ0IFBNDQo+IA0KPiBPbiBUdWUsIEZlYiAyMSwg
-MjAyMyBhdCAwNTo0MDo1MVBNICswMDAwLCBQYXJhdiBQYW5kaXQgd3JvdGU6DQo+ID4NCj4gPiA+
-IEZyb206IE1pY2hhZWwgUy4gVHNpcmtpbiA8bXN0QHJlZGhhdC5jb20+DQo+ID4gPiBTZW50OiBU
-dWVzZGF5LCBGZWJydWFyeSAyMSwgMjAyMyAxMjoxNCBQTQ0KPiA+ID4gPiBUaGUgcGFydCB0aGF0
-IEkgYW0gbWlzc2luZyBpcywgaG93IGRvIHRvIHJldXNlDQo+ID4gPiA+IHZpcnRpb19uZXRfaGFz
-aF9jb25maWcgYW5kIHNheQ0KPiA+ID4gaWdub3JlIGFsbCB0aGUgZXhpc3RpbmcgZmllbGRzIHJl
-bGF0ZWQgdG8gcnNzLCBidXQgb25seSBjb25zaWRlcg0KPiA+ID4gaGFzaF90dW5uZWxfdHlwZXM/
-DQo+ID4gPg0KPiA+ID4gTGlrZSBhIHVuaW9uPyAgVGhlIGFuc3dlciBpcywgZG9uJ3QuIEp1c3Qg
-bGF5IG91dCBmaWVsZHMgb25lIGFmdGVyIGFub3RoZXIuDQo+ID4gPg0KPiA+IEluIHRoYXQgY2Fz
-ZSBkcml2ZXIgbmVlZHMgdG8gZmlsbCB1cCBhbGwgdGhlIGZpZWxkcyB3aGljaCBhcmUgbm90DQo+
-ID4gcmVsYXRlZCB0byBoYXNoX3R1bm5lbF90eXBlcyBhbmQgdGhlIGRldmljZSBhbHNvIG5lZWRz
-IHRvIGNvbXBhcmUgd2l0aA0KPiA+IHRoZSBwcmV2aW91cyBjb25maWcgYW5kIGlnbm9yZSBpdC4g
-IERvZXNu4oCZdCBsb29rIGxpa2UgYSBnb29kIHVzZSBvZg0KPiA+IGV4aXN0aW5nIGNvbW1hbmRz
-IGFuZCBzdy9mdyB1c2FnZSBmb3IgaXQuICBTaG91bGRu4oCZdCB3ZSBoYXZlIHRoZQ0KPiA+IGV4
-cGxpY2l0IGNvbW1hbmQgZm9yIHNldHRpbmcgdHVubmVsIHR5cGVzPw0KPiANCj4gSSBkb24ndCBr
-bm93IHdoYXQncyBwcm9wb3NlZCBhdCB0aGlzIHBvaW50LCB0aGlzIGlzIHRvbyB2YWd1ZS4NClBy
-b3Bvc2FsIGlzIHRvIGhhdmUgbmV3IGNvbW1hbmQgbGlrZSBob3cgSGVuZyBkcmFmdGVkIGluIGxh
-dGVzdCBlbWFpbC4NCg0KPiBJIGZlZWwgd2hpY2ggdHVubmVscyB0byBoYXNoIGZvciBpbm5lciBo
-ZWFkZXIgaXMgbm90IGRpZmZlcmVudCBmcm9tIHdoaWNoDQo+IHRyYW5zcG9ydHMgdG8gaGFzaC4g
-SWYgZGV2aWNlIHdhbnRzIHRvIGtub3cgd2hhdCBjaGFuZ2VzIGl0IGNhbiBjb21wYXJlLiBJDQo+
-IGV4cGVjdCBnZW5lcmFsbHkgZGV2aWNlcyB3aWxsIGp1c3QgYXBwbHkgdGhlIG5ldyBjb25maWcg
-d2l0aG91dCBjYXJpbmcgd2hhdA0KPiBjaGFuZ2VkIGV4YWN0bHkuDQpJbiBhIGRldmljZSB3aGVu
-IHRoaW5ncyBhcmUgcHJvZ3JhbW1lZCwgaXQgb2Z0ZW4gcmVxdWlyZXMgcmVtb3ZpbmcgdGhlIHBy
-ZXZpb3VzIGNvbmZpZ3VyYXRpb24gYW5kIHJlLWFwcGx5IHRoZSBuZXcgb25lLg0KVGhpcyByZXN1
-bHRzIGluIHdyb25nIHN0ZWVyaW5nIGZvciBzZXZlcmFsIHRlbnMgb2YgbWljcm8gdG8gbWlsbGkg
-c2Vjb25kcyBmb3Igbm8gYXBwYXJlbnQgcmVhc29uLg0KSGVuY2UsIGNvbXBhcmlzb24gaXMgb2Z0
-ZW4gbmVlZGVkIGZvciB0aGUgYmVzdCBleHBlcmllbmNlLg0KQW5kIHRob3NlIGFyZSBqdXN0IG92
-ZXJoZWFkcyBvbiB0aGUgZGV2aWNlIGFuZCBkcml2ZXIgc2lkZSB3aXRob3V0IGFueSBhcHBhcmVu
-dCBnYWluIG90aGVyIHRoYW4gcmV1c2luZyBzb21lIHN0cnVjdHVyZSBvZiByc3MuDQpIZW5jZSwg
-YSBzZXBhcmF0ZSBjb21tYW5kIGlzIG1vcmUgZWZmaWNpZW50IGNob2ljZS4NCg0KDQoNCg0K
+
+
+在 2023/2/22 上午12:50, Parav Pandit 写道:
+>> From: Heng Qi <hengqi@linux.alibaba.com>
+>> Sent: Tuesday, February 21, 2023 11:44 AM
+>>> Patch-1 to introduce the feature bit, description, and link to CVQ dependency.
+>>> Patch-2 for its link in virtio_net_config structure and description.
+>>> Patch-3 for new command touching control VQ pieces.
+>> Yes, and you seem to have missed my other replies in this thread:), I rephrased
+> Was it comment "And virtio_net_hash_config seems to suffice except for le16 reserved[4]." ?
+> I don’t see these reserved fields in the current structure.
+>
+>> it here:
+>> virtio_net_hash_config seems to be reusable, as the v9 patch is doing, why
+>> don't we re-use it?
+>> The reason I can think of is to not expand the virtio_net_hash_config structure,
+>> just set a separate structure for VIRTIO_NET_F_HASH_TUNNEL and include
+>> hash_tunnel_types?
+> The part that I am missing is, how do to reuse virtio_net_hash_config and say ignore all the existing fields related to rss, but only consider hash_tunnel_types?
+
+Are you referring to such a command?
+
+#define VIRTIO_NET_CTRL_HASH_TUNNEL_TYPE 1
+struct virtio_net_tunnel_type_config {
+      le32 hash_tunnel_types;
+};
+
+Thanks.
 
