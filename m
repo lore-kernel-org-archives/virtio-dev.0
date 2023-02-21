@@ -1,88 +1,113 @@
-Return-Path: <parav@nvidia.com>
-From: Parav Pandit <parav@nvidia.com>
-Subject: [PATCH v5 6/6] transport-ccw: Fix spellings and white spaces
-Date: Sat, 25 Feb 2023 00:22:15 +0200
-Message-ID: <20230224222215.339715-7-parav@nvidia.com>
-In-Reply-To: <20230224222215.339715-1-parav@nvidia.com>
-References: <20230224222215.339715-1-parav@nvidia.com>
+Return-Path: <virtio-dev-return-11150-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id ECA4D986461
+	for <virtio-dev@lists.oasis-open.org>; Tue, 21 Feb 2023 09:51:03 +0000 (UTC)
+From: Viresh Kumar <viresh.kumar@linaro.org>
+Date: Tue, 21 Feb 2023 15:20:41 +0530
+Message-Id: <d9beee5f7b4a4acdb5f5eff8af55bed50b33d722.1676971686.git.viresh.kumar@linaro.org>
 MIME-Version: 1.0
+Subject: [virtio-dev] [RFC QEMU] docs: vhost-user: Add custom memory mapping support
 Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain
-To: mst@redhat.com, virtio-dev@lists.oasis-open.org, cohuck@redhat.com
-Cc: virtio-comment@lists.oasis-open.org, shahafs@nvidia.com, Parav Pandit <parav@nvidia.com>
+Content-Type: text/plain; charset="US-ASCII"; x-default=true
+To: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, "Michael S. Tsirkin" <mst@redhat.com>
+Cc: Viresh Kumar <viresh.kumar@linaro.org>, Vincent Guittot <vincent.guittot@linaro.org>, =?UTF-8?q?Alex=20Benn=C3=A9e?= <alex.bennee@linaro.org>, stratos-dev@op-lists.linaro.org, Oleksandr Tyshchenko <olekstysh@gmail.com>, xen-devel@lists.xen.org, Andrew Cooper <andrew.cooper3@citrix.com>, Juergen Gross <jgross@suse.com>, Sebastien Boeuf <sebastien.boeuf@intel.com>, Liu Jiang <gerry@linux.alibaba.com>, Mathieu Poirier <mathieu.poirier@linaro.org>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-Now that we have individual files, fix reported spelling errors.
+The current model of memory mapping at the back-end works fine with
+Qemu, where a standard call to mmap() for the respective file
+descriptor, passed from front-end, is generally all we need to do before
+the front-end can start accessing the guest memory.
 
-While at it, remove extra white spaces.
+There are other complex cases though, where we need more information at
+the backend and need to do more than just an mmap() call. For example,
+Xen, a type-1 hypervisor, currently supports memory mapping via two
+different methods, foreign-mapping (via /dev/privcmd) and grant-dev (via
+/dev/gntdev). In both these cases, the back-end needs to call mmap()
+followed by an ioctl() (or vice-versa), and need to pass extra
+information via the ioctl(), like the Xen domain-id of the guest whose
+memory we are trying to map.
 
-Fixes: https://github.com/oasis-tcs/virtio-spec/issues/157
-Signed-off-by: Parav Pandit <parav@nvidia.com>
+Add a new protocol feature, 'VHOST_USER_PROTOCOL_F_CUSTOM_MMAP', which
+lets the back-end know about the additional memory mapping requirements.
+When this feature is negotiated, the front-end can send the
+'VHOST_USER_CUSTOM_MMAP' message type to provide the additional
+information to the back-end.
+
+Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
 ---
-changelog:
-v1->v2:
-- remove trailing white spaces
----
- transport-ccw.tex | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ docs/interop/vhost-user.rst | 32 ++++++++++++++++++++++++++++++++
+ 1 file changed, 32 insertions(+)
 
-diff --git a/transport-ccw.tex b/transport-ccw.tex
-index 93401a4..c492cb9 100644
---- a/transport-ccw.tex
-+++ b/transport-ccw.tex
-@@ -56,13 +56,13 @@ \subsection{Basic Concepts}\label{sec:Virtio Transport =
-Options / Virtio over cha
- \end{tabular}
+diff --git a/docs/interop/vhost-user.rst b/docs/interop/vhost-user.rst
+index 3f18ab424eb0..f2b1d705593a 100644
+--- a/docs/interop/vhost-user.rst
++++ b/docs/interop/vhost-user.rst
+@@ -258,6 +258,23 @@ Inflight description
 =20
- A virtio-ccw proxy device facilitates:
--\begin{itemize}=20
-+\begin{itemize}
- \item Discovery and attachment of virtio devices (as described above).
- \item Initialization of virtqueues and transport-specific facilities (usin=
-g
-       virtio-specific channel commands).
- \item Notifications (via hypercall and a combination of I/O interrupts
-       and indicator bits).
--\end{itemize}=20
-+\end{itemize}
+ :queue size: a 16-bit size of virtqueues
 =20
- \subsubsection{Channel Commands for Virtio}\label{sec:Virtio Transport Opt=
-ions / Virtio
- over channel I/O / Basic Concepts/ Channel Commands for Virtio}
-@@ -107,7 +107,7 @@ \subsubsection{Notifications}\label{sec:Virtio Transpor=
-t Options / Virtio
- Host->Guest Notification / Notification via Classic I/O Interrupts} and
- \ref{sec:Virtio Transport Options / Virtio over channel I/O / Device
- Operation / Host->Guest Notification / Notification via Adapter I/O
--Interrupts} respectively.=20
-+Interrupts} respectively.
++Custom mmap description
++^^^^^^^^^^^^^^^^^^^^^^^
++
+++-------+-------+
++| flags | value |
+++-------+-------+
++
++:flags: 64-bit bit field
++
++- Bit 0 is Xen foreign memory access flag - needs Xen foreign memory mappi=
+ng.
++- Bit 1 is Xen grant memory access flag - needs Xen grant memory mapping.
++
++:value: a 64-bit hypervisor specific value.
++
++- For Xen foreign or grant memory access, this is set with guest's xen dom=
+ain
++  id.
++
+ C structure
+ -----------
 =20
- Configuration change notifications are done using so-called classic I/O
- interrupts. The initialization is described in section \ref{sec:Virtio
-@@ -413,7 +413,7 @@ \subsubsection{Setting Up Indicators}\label{sec:Virtio =
-Transport Options / Virti
- \begin{itemize}
- \item a summary indicator byte covering the virtqueues for one or more
-   virtio-ccw proxy devices
--\item a set of contigous indicator bits for the virtqueues for a
-+\item a set of contiguous indicator bits for the virtqueues for a
-   virtio-ccw proxy device
- \end{itemize}
+@@ -867,6 +884,7 @@ Protocol features
+   #define VHOST_USER_PROTOCOL_F_INBAND_NOTIFICATIONS 14
+   #define VHOST_USER_PROTOCOL_F_CONFIGURE_MEM_SLOTS  15
+   #define VHOST_USER_PROTOCOL_F_STATUS               16
++  #define VHOST_USER_PROTOCOL_F_CUSTOM_MMAP          17
 =20
-@@ -563,7 +563,7 @@ \subsubsection{Guest->Host Notification}\label{sec:Virt=
-io Transport Options / Vi
+ Front-end message types
+ -----------------------
+@@ -1422,6 +1440,20 @@ Front-end message types
+   query the back-end for its device status as defined in the Virtio
+   specification.
 =20
- \drivernormative{\paragraph}{Guest->Host Notification}{Virtio Transport Op=
-tions / Virtio over channel I/O / Device Operation / Guest->Host Notificati=
-on}
++``VHOST_USER_CUSTOM_MMAP``
++  :id: 41
++  :equivalent ioctl: N/A
++  :request payload: Custom mmap description
++  :reply payload: N/A
++
++  When the ``VHOST_USER_PROTOCOL_F_CUSTOM_MMAP`` protocol feature has been
++  successfully negotiated, this message is submitted by the front-end to
++  notify the back-end of the special memory mapping requirements, that the
++  back-end needs to take care of, while mapping any memory regions sent
++  over by the front-end. The front-end must send this message before
++  any memory-regions are sent to the back-end via ``VHOST_USER_SET_MEM_TAB=
+LE``
++  or ``VHOST_USER_ADD_MEM_REG`` message types.
++
 =20
--For each notification, the driver SHOULD use GPR4 to pass the host cookie =
-received in GPR2 from the previous notication.
-+For each notification, the driver SHOULD use GPR4 to pass the host cookie =
-received in GPR2 from the previous notification.
-=20
- \begin{note}
- For example:
+ Back-end message types
+ ----------------------
 --=20
-2.26.2
+2.31.1.272.g89b43f80a514
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
