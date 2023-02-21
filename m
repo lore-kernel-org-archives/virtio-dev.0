@@ -1,71 +1,136 @@
-Return-Path: <parav@nvidia.com>
-From: Parav Pandit <parav@nvidia.com>
-Subject: RE: [virtio-comment] RE: [PATCH v9] virtio-net: support inner header
- hash
-Date: Tue, 21 Feb 2023 15:32:00 +0000
-Message-ID: <PH0PR12MB548135774CD69A5A5F475FB2DCA59@PH0PR12MB5481.namprd12.prod.outlook.com>
+Return-Path: <virtio-comment-return-4408-cohuck=redhat.com@lists.oasis-open.org>
+Sender: <virtio-comment@lists.oasis-open.org>
+List-Post: <mailto:virtio-comment@lists.oasis-open.org>
+List-Help: <mailto:virtio-comment-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-comment-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-comment-subscribe@lists.oasis-open.org>
+Message-ID: <85de2618-6018-5436-6e8a-4d5253b42e64@linux.alibaba.com>
+Date: Wed, 22 Feb 2023 00:44:26 +0800
+MIME-Version: 1.0
 References: <20230218143715.841-1-hengqi@linux.alibaba.com>
  <PH0PR12MB5481224CBC059BD482347133DCA59@PH0PR12MB5481.namprd12.prod.outlook.com>
  <9ff76a6e-fd77-4cf3-a9ad-546696ab843d@linux.alibaba.com>
  <PH0PR12MB5481E635794E2B63B9A110A3DCA59@PH0PR12MB5481.namprd12.prod.outlook.com>
  <f7080485-e8bd-048f-b8ea-cd86757f7b1c@linux.alibaba.com>
-In-Reply-To: <f7080485-e8bd-048f-b8ea-cd86757f7b1c@linux.alibaba.com>
-MIME-Version: 1.0
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-To: Heng Qi <hengqi@linux.alibaba.com>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
+ <PH0PR12MB548135774CD69A5A5F475FB2DCA59@PH0PR12MB5481.namprd12.prod.outlook.com>
+From: Heng Qi <hengqi@linux.alibaba.com>
+In-Reply-To: <PH0PR12MB548135774CD69A5A5F475FB2DCA59@PH0PR12MB5481.namprd12.prod.outlook.com>
+Subject: [virtio-comment] Re: [virtio-dev] RE: [virtio-comment] RE: [PATCH v9] virtio-net:
+ support inner header hash
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
+To: Parav Pandit <parav@nvidia.com>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
 Cc: "Michael S . Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, Yuri Benditovich <yuri.benditovich@daynix.com>, Cornelia Huck <cohuck@redhat.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-DQo+IEZyb206IEhlbmcgUWkgPGhlbmdxaUBsaW51eC5hbGliYWJhLmNvbT4NCj4gU2VudDogVHVl
-c2RheSwgRmVicnVhcnkgMjEsIDIwMjMgODozNCBBTQ0KDQo+ID4gRXZlbiB3aXRob3V0IGEgcXVl
-dWUgb3ZlcmZsb3csIHRoaXMgc2hhcmVkIHJlY2VpdmUgcXVldWUgbWF5IG5vdCBoYXZlIGENCj4g
-YmFsYW5jZWQgbnVtYmVyIG9mIHBhY2tldHMuDQo+ID4gRm9yIGV4YW1wbGUsIHR1bm5lbC0yIG9j
-Y3VwaWVkIDkwJSBvZiB0aGUgcXVldWUgYW5kIGxlZnQgb25seSAxMCUgZm9yDQo+IHR1bm5lbC0x
-Lg0KPiA+IFNvLCB5b3VyIGV4YW1wbGUgaXMgcmlnaHQgKGFuZCBleHRyZW1lKSwgYSBnZW5lcmlj
-IG1lbnRpb24gb2YgUW9TIGNvdmVycw0KPiBib3RoIGFzcGVjdHMuDQo+ID4NCj4gPiBTZWNvbmRs
-eSAidXNlciBpbnNpZGUgdGhlIHR1bm5lbCIgaXMgY2hhbGxlbmdpbmcgdG8gZXhwbGFpbi4NCj4g
-PiBJbiBhYm92ZSBzZW50ZW5jZSB0YWxrcyBzcGVjaWZpY2FsbHkgYWJvdXQgdGhlICJyZWNlaXZl
-IHF1ZXVlIiBhcyBhbiBvYmplY3QuDQo+ID4NCj4gDQo+ICJvdmVyZmxvdyIgaW4gbXkgZXhhbXBs
-ZS4gSWYgd2Ugb25seSB1c2UgYSBvbmUtc2VudGVuY2Ugc3VtbWFyeSB0byBkZXNjcmliZQ0KPiB0
-dW5uZWwgcmlza3MsIHRoZW4gSSB0aGluayB0aGlzIHN1YnBhcmFncmFwaCBpcyBjYWxsZWQgIlFv
-UyBwcm9ibGVtIGZvciB0dW5uZWwNCj4gaGFzaCIuDQo+IA0KWWVzLCBUdW5uZWwgUW9zIGxpbWl0
-YXRpb25zDQoNCj4gPj4gc3RydWN0IHZpcnRpb19uZXRfcnNzX2NvbmZpZyB7DQo+ID4+Pj4gICAg
-ICAgIGxlMzIgaGFzaF90eXBlczsNCj4gPj4+PiArICAgIGxlMzIgaGFzaF90dW5uZWxfdHlwZXM7
-DQo+ID4+PiBUaGlzIGZpZWxkIGlzIG5vdCBuZWVkZWQgYXMgZGV2aWNlIGNvbmZpZyBzcGFjZSBh
-ZHZlcnRpc2VtZW50IGZvcg0KPiA+Pj4gdGhlIHN1cHBvcnQNCj4gPj4gaXMgZW5vdWdoLg0KPiA+
-Pg0KPiA+PiBJZiBzbywgdmlydGlvX25ldF9oYXNoX2NvbmZpZyBkb2VzIG5vdCByZXF1aXJlIGhh
-c2hfdHVubmVsX3R5cGVzIHdoZW4NCj4gPj4gaXQgZG9lcyBub3QgbmVlZCB0byBjb25maWd1cmUg
-dGhlIHNwZWNpZmljIHR1bm5lbChzKS4NCj4gPj4NCj4gPj4+IElmIHRoZSBpbnRlbnQgaXMgdG8g
-ZW5hYmxlIGhhc2hpbmcgZm9yIHRoZSBzcGVjaWZpYyB0dW5uZWwocyksIGFuDQo+ID4+PiBpbmRp
-dmlkdWFsDQo+ID4+IGNvbW1hbmQgaXMgYmV0dGVyLg0KPiA+Pg0KPiA+PiBEcml2ZXJzIE1BWSBm
-aWx0ZXIgb3V0IHNvbWUgdHVubmVsaW5nIHR5cGVzIHdoZW4gbmVnb3RpYXRpbmcgdGhpcyBmZWF0
-dXJlLg0KPiA+PiBEbyB5b3UgdGhpbmsgaXQgd291bGQgYmUgYmV0dGVyIGZvciB1cyB0byBhZGQg
-YSBzZXBhcmF0ZSBjb21tYW5kPyBJDQo+ID4+IGRvbid0IHNlZSB0b29scyBsaWtlIGV0aHRvb2wg
-dGhhdCBjYW4gY29uZmlndXJlIHNwZWNpZmljIHR1bm5lbHMgaW4gdXNlcnNwYWNlLg0KPiA+Pg0K
-PiA+IFRoZSByZWFzb24gSSBwcm9wb3NlZCBkaWZmZXJlbnQgY29tbWFuZCBpcywgTGV0J3Mgc2F5
-IHdlIGhhdmUgb25seQ0KPiA+IHNpbmdsZSBjb21tYW5kLg0KPiA+IFJzcyBjb25maWcgY29tbWFu
-ZCBoYXMgbWFueSBvdGhlciBmaWVsZHMgdW5yZWxhdGVkIHRvIHRoZSBpbm5lciBoYXNoLg0KPiAN
-Cj4gWWVzLiBGb3IgaW5uZXIgaGFzaCwgZmllbGRzIHN1Y2ggYXMgaW5kaXJlY3Rpb24gdGFibGUg
-YXJlIGlycmVsZXZhbnQuDQo+IA0KUmlnaHQuDQoNCj4gPiBIZW5jZSwgdG8gZW5hYmxlIGlubmVy
-IGhhc2gsIHRoZSBkcml2ZXIgbmVlZHMgdG8gc3VwcGx5IHRoZSBleGFjdCBzYW1lIHZhbHVlDQo+
-IGZvciB1bnJlbGF0ZWQgZmllbGRzIHRvIHRoZSBzYW1lIHZhbHVlLg0KPiA+IEFuZCBkZXZpY2Ug
-bmVlZHMgdG8gY29tcGFyZSBpdCB3aXRoIHRoZSBvbGQgdmFsdWUgYW5kIG1haW50YWluIHNvbWUg
-c29ydCBvZg0KPiBjYWNoZSB0byBkZXJpdmUgdGhhdCBub3RoaW5nIGNoYW5nZXMgZnJvbSB0aGUg
-cHJldmlvdXMgaGFzaCBjb25maWcsIGhlbmNlLA0KPiBpZ25vcmUgaHcgY29uZmlndXJhdGlvbiBm
-b3IgcnNzLg0KPiA+DQo+ID4gVGhpcyBtZWNoYW5pc20gc2xvd3MgZG93biB0aGUgY29tbWFuZCBm
-b3IgdGhlIHVucmVsYXRlZCB0YXNrLg0KPiANCj4gVG90YWxseSBhZ3JlZS4NCj4gDQo+ID4gSGVu
-Y2UsIEkgYW0gY29uc2lkZXJpbmcgYSBzZXBhcmF0ZSBjb21tYW5kIHRoYXQgd291bGQgYmUgc2lt
-cGxlIGZvciB0aGUNCj4gZGV2aWNlIGFuZCBkcml2ZXIgdG8gaW1wbGVtZW50Lg0KPiANCj4gSSBh
-Z3JlZSB3aXRoIHlvdS4gRG8geW91IHdhbnQgbWUgdG8gZG8gaXQgaW4gdGhpcyBwYXRjaCwgb3Ig
-c2hvdWxkIHdlIGRvIGl0IGluDQo+IGFub3RoZXIgcGF0Y2g/DQo+IA0KDQpJdCBzaG91bGQgYmUg
-aW4gdGhpcyBwYXRjaCBzZXQgYmVjYXVzZSBlbmFibGVtZW50IGluIHRoZSBkZXZpY2UgaXMgbGlu
-a2VkIHRvIHRoaXMgY2FwYWJpbGl0eSBleHBvc2VkIGluIHRoaXMgcGF0Y2guDQoNCkZyb20gcGF0
-Y2ggc3BsaXQgcG9pbnQgb2YgdmlldywNCg0KUGF0Y2gtMSB0byBpbnRyb2R1Y2UgdGhlIGZlYXR1
-cmUgYml0LCBkZXNjcmlwdGlvbiwgYW5kIGxpbmsgdG8gQ1ZRIGRlcGVuZGVuY3kuDQpQYXRjaC0y
-IGZvciBpdHMgbGluayBpbiB2aXJ0aW9fbmV0X2NvbmZpZyBzdHJ1Y3R1cmUgYW5kIGRlc2NyaXB0
-aW9uLg0KUGF0Y2gtMyBmb3IgbmV3IGNvbW1hbmQgdG91Y2hpbmcgY29udHJvbCBWUSBwaWVjZXMu
-DQoNCldlIGNhbiBhbHdheXMgc3F1YXNoIHRoZSBwYXRjaCB0byBzaW5nbGUgd2hlbi9pZiBpdCBp
-cyBoYXJkIHRvIHVuZGVyc3RhbmQgaW4gbXVsdGlwbGUgcGF0Y2hlcy4NCg==
+
+
+=E5=9C=A8 2023/2/21 =E4=B8=8B=E5=8D=8811:32, Parav Pandit =E5=86=99=E9=81=
+=93:
+>> From: Heng Qi <hengqi@linux.alibaba.com>
+>> Sent: Tuesday, February 21, 2023 8:34 AM
+>>> Even without a queue overflow, this shared receive queue may not have a
+>> balanced number of packets.
+>>> For example, tunnel-2 occupied 90% of the queue and left only 10% for
+>> tunnel-1.
+>>> So, your example is right (and extreme), a generic mention of QoS cover=
+s
+>> both aspects.
+>>> Secondly "user inside the tunnel" is challenging to explain.
+>>> In above sentence talks specifically about the "receive queue" as an ob=
+ject.
+>>>
+>> "overflow" in my example. If we only use a one-sentence summary to descr=
+ibe
+>> tunnel risks, then I think this subparagraph is called "QoS problem for =
+tunnel
+>> hash".
+>>
+> Yes, Tunnel Qos limitations
+>
+>>>> struct virtio_net_rss_config {
+>>>>>>         le32 hash_types;
+>>>>>> +    le32 hash_tunnel_types;
+>>>>> This field is not needed as device config space advertisement for
+>>>>> the support
+>>>> is enough.
+>>>>
+>>>> If so, virtio_net_hash_config does not require hash_tunnel_types when
+>>>> it does not need to configure the specific tunnel(s).
+>>>>
+>>>>> If the intent is to enable hashing for the specific tunnel(s), an
+>>>>> individual
+>>>> command is better.
+>>>>
+>>>> Drivers MAY filter out some tunneling types when negotiating this feat=
+ure.
+>>>> Do you think it would be better for us to add a separate command? I
+>>>> don't see tools like ethtool that can configure specific tunnels in us=
+erspace.
+>>>>
+>>> The reason I proposed different command is, Let's say we have only
+>>> single command.
+>>> Rss config command has many other fields unrelated to the inner hash.
+>> Yes. For inner hash, fields such as indirection table are irrelevant.
+>>
+> Right.
+>
+>>> Hence, to enable inner hash, the driver needs to supply the exact same =
+value
+>> for unrelated fields to the same value.
+>>> And device needs to compare it with the old value and maintain some sor=
+t of
+>> cache to derive that nothing changes from the previous hash config, henc=
+e,
+>> ignore hw configuration for rss.
+>>> This mechanism slows down the command for the unrelated task.
+>> Totally agree.
+>>
+>>> Hence, I am considering a separate command that would be simple for the
+>> device and driver to implement.
+>>
+>> I agree with you. Do you want me to do it in this patch, or should we do=
+ it in
+>> another patch?
+>>
+> It should be in this patch set because enablement in the device is linked=
+ to this capability exposed in this patch.
+>
+>  From patch split point of view,
+>
+> Patch-1 to introduce the feature bit, description, and link to CVQ depend=
+ency.
+> Patch-2 for its link in virtio_net_config structure and description.
+> Patch-3 for new command touching control VQ pieces.
+
+Yes, and you seem to have missed my other replies in this thread:), I=20
+rephrased it here:
+virtio_net_hash_config seems to be reusable, as the v9 patch is doing,=20
+why don't we re-use it?
+The reason I can think of is to not expand the virtio_net_hash_config=20
+structure, just set a separate
+structure for VIRTIO_NET_F_HASH_TUNNEL and include hash_tunnel_types?
+
+Thanks.
+>
+> We can always squash the patch to single when/if it is hard to understand=
+ in multiple patches.
+
+
+This publicly archived list offers a means to provide input to the
+OASIS Virtual I/O Device (VIRTIO) TC.
+
+In order to verify user consent to the Feedback License terms and
+to minimize spam in the list archive, subscription is required
+before posting.
+
+Subscribe: virtio-comment-subscribe@lists.oasis-open.org
+Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
+List help: virtio-comment-help@lists.oasis-open.org
+List archive: https://lists.oasis-open.org/archives/virtio-comment/
+Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
+List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lis=
+ts
+Committee: https://www.oasis-open.org/committees/virtio/
+Join OASIS: https://www.oasis-open.org/join/
 
