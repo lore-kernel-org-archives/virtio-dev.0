@@ -1,25 +1,27 @@
-Return-Path: <virtio-dev-return-11130-cohuck=redhat.com@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-11158-cohuck=redhat.com@lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id E4208986461
+	for <virtio-dev@lists.oasis-open.org>; Tue, 21 Feb 2023 15:37:21 +0000 (UTC)
+From: Cornelia Huck <cohuck@redhat.com>
+In-Reply-To: <20230217154529.33508-2-parav@nvidia.com>
 References: <20230217154529.33508-1-parav@nvidia.com>
  <20230217154529.33508-2-parav@nvidia.com>
-From: David Edmondson <david.edmondson@oracle.com>
-Date: Mon, 20 Feb 2023 14:46:04 +0000
-In-reply-to: <20230217154529.33508-2-parav@nvidia.com>
-Message-ID: <m2bkloe6o6.fsf@oracle.com>
+Date: Tue, 21 Feb 2023 16:37:16 +0100
+Message-ID: <87wn4byqqb.fsf@redhat.com>
 MIME-Version: 1.0
-Subject: Re: [virtio-dev] [PATCH v3 1/2] virtio-net: Describe dev cfg fields
- read only
+Subject: [virtio-dev] Re: [PATCH v3 1/2] virtio-net: Describe dev cfg fields read only
 Content-Type: text/plain
-To: Parav Pandit <parav@nvidia.com>
-Cc: mst@redhat.com, cohuck@redhat.com, virtio-comment@lists.oasis-open.org, shahafs@nvidia.com, virtio-dev@lists.oasis-open.org
+To: Parav Pandit <parav@nvidia.com>, mst@redhat.com, virtio-dev@lists.oasis-open.org
+Cc: virtio-comment@lists.oasis-open.org, shahafs@nvidia.com, Parav Pandit <parav@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+On Fri, Feb 17 2023, Parav Pandit <parav@nvidia.com> wrote:
 
-On Friday, 2023-02-17 at 17:45:28 +02, Parav Pandit wrote:
 > Device configuration fields are read only. Avoid duplicating this
 > description for multiple fields.
 >
@@ -28,9 +30,6 @@ On Friday, 2023-02-17 at 17:45:28 +02, Parav Pandit wrote:
 >
 > Fixes: https://github.com/oasis-tcs/virtio-spec/issues/161
 > Signed-off-by: Parav Pandit <parav@nvidia.com>
-
-Reviewed-by: David Edmondson <david.edmondson@oracle.com>
-
 > ---
 > changelog:
 > v2->v3:
@@ -49,10 +48,20 @@ Reviewed-by: David Edmondson <david.edmondson@oracle.com>
 >  
 > -Device configuration fields are listed below, they are read-only for a driver. The \field{mac} address field
 > +Device configuration fields are listed below. The \field{mac} address field
+
+I would not remove this here, as I don't think we should move a simple
+statement into the conformance section (see below.) It does makes sense
+to remove the duplicate read-only annotations from the individual
+fields.
+
 >  always exists (though is only valid if VIRTIO_NET_F_MAC is set), and
 >  \field{status} only exists if VIRTIO_NET_F_STATUS is set. Two
 > -read-only bits (for the driver) are currently defined for the status field:
 > +bits (for the driver) are currently defined for the status field:
+
+What does "bits (for the driver)" mean? It made sense together with
+"read-only", but I would drop "(for the driver)" as well.
+
 >  VIRTIO_NET_S_LINK_UP and VIRTIO_NET_S_ANNOUNCE.
 >  
 >  \begin{lstlisting}
@@ -79,12 +88,18 @@ Reviewed-by: David Edmondson <david.edmondson@oracle.com>
 >  \drivernormative{\subsubsection}{Device configuration layout}{Device Types / Network Device / Device configuration layout}
 >  
 > +All the device configuration fields are read-only for the driver.
+
+Not sure if this makes a good normative clause, I would rather give the
+driver something actionable:
+
+"A driver SHOULD NOT try to write to any of the device configuration
+fields."
+
 > +
 >  A driver SHOULD negotiate VIRTIO_NET_F_MAC if the device offers it.
 >  If the driver negotiates the VIRTIO_NET_F_MAC feature, the driver MUST set
 >  the physical address of the NIC to \field{mac}.  Otherwise, it SHOULD
--- 
-I'm not the reason you're looking for redemption.
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
