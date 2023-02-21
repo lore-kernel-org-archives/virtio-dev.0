@@ -1,128 +1,71 @@
-Return-Path: <hengqi@linux.alibaba.com>
-Message-ID: <f7080485-e8bd-048f-b8ea-cd86757f7b1c@linux.alibaba.com>
-Date: Tue, 21 Feb 2023 21:34:24 +0800
-MIME-Version: 1.0
-Subject: Re: [virtio-comment] RE: [PATCH v9] virtio-net: support inner header
+Return-Path: <parav@nvidia.com>
+From: Parav Pandit <parav@nvidia.com>
+Subject: RE: [virtio-comment] RE: [PATCH v9] virtio-net: support inner header
  hash
+Date: Tue, 21 Feb 2023 15:32:00 +0000
+Message-ID: <PH0PR12MB548135774CD69A5A5F475FB2DCA59@PH0PR12MB5481.namprd12.prod.outlook.com>
 References: <20230218143715.841-1-hengqi@linux.alibaba.com>
  <PH0PR12MB5481224CBC059BD482347133DCA59@PH0PR12MB5481.namprd12.prod.outlook.com>
  <9ff76a6e-fd77-4cf3-a9ad-546696ab843d@linux.alibaba.com>
  <PH0PR12MB5481E635794E2B63B9A110A3DCA59@PH0PR12MB5481.namprd12.prod.outlook.com>
-From: Heng Qi <hengqi@linux.alibaba.com>
-In-Reply-To: <PH0PR12MB5481E635794E2B63B9A110A3DCA59@PH0PR12MB5481.namprd12.prod.outlook.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-To: Parav Pandit <parav@nvidia.com>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
+ <f7080485-e8bd-048f-b8ea-cd86757f7b1c@linux.alibaba.com>
+In-Reply-To: <f7080485-e8bd-048f-b8ea-cd86757f7b1c@linux.alibaba.com>
+MIME-Version: 1.0
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+To: Heng Qi <hengqi@linux.alibaba.com>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
 Cc: "Michael S . Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, Yuri Benditovich <yuri.benditovich@daynix.com>, Cornelia Huck <cohuck@redhat.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-
-在 2023/2/21 下午8:47, Parav Pandit 写道:
->
->> From: virtio-comment@lists.oasis-open.org <virtio-comment@lists.oasis-
->> open.org> On Behalf Of Heng Qi
->>>> Also, a feature bit VIRTIO_NET_F_HASH_REPORT_TUNNEL are added to
->>>> report an encapsulation type, and the feature depends on
->>>> VIRTIO_NET_F_HASH_REPORT.
->>> As we discussed that tunnel type alone is not useful the sw, neither as an
->> individual field nor merged with some other field.
->>> Hence, please remove this feature bit. HASH_TUNNEL is good enough.
->>> Please remove the references to it at more places below.
->> If we don't want it at all, I'll remove it and references to it.
->>
-> Ok. thanks.
-> [..]
->>>>    #define VIRTIO_NET_HASH_TYPE_UDP_EX            (1 << 8)
->>>>    \end{lstlisting}
->>>>
->>> Lets please remove the below encoding.
->> Here is the encoding of the hash tunnel types, I guess you are referring to
->> remove the encoding of the hash_report_tunnel types?
->>
-> Right.
-> [..]
->>>> +RSS to select queues for placement. When a user inside a tunnel
->>>> +tries to control the enqueuing of encapsulated packets, then the
->>>> +user can flood the device with invaild packets, and the flooded
->>>> +packets may be hashed into the same queue as packets in other normal
->>>> +tunnels, which causing
->>>> the queue to overflow.
->>>>
->>> Invalid packets are confusing and the wording of "which causing" is not
->> proper.
->>> There is some duplicate wording below too.
->>>
->>> I think above and below risk can be summarized in bit simpler manner.
->>>
->>> How about,
->>>
->>> When a specific receive queue is shared to receive packets of multiple
->> tunnels, there is no quality of service for packets of multiple tunnels.
->>> +
->> I think this sentence can be used as a starting summary, and readers may still
->> need to expand the explanation.
->> Do you think the following description is ok?
->> "
->> When a specific receive queue is shared to receive encapsulating packets of
->> multiple tunnels, there is no quality of service for these packets of multiple
->> tunnels.
->> For example:
->> A user inside the tunnel floods a device with packets, then the packets are
->> hashed into the shared receive queue and cause the queue to overflow, and
->> this increases packet loss and latency for other tunnels.
->> "
-> Even without a queue overflow, this shared receive queue may not have a balanced number of packets.
-> For example, tunnel-2 occupied 90% of the queue and left only 10% for tunnel-1.
-> So, your example is right (and extreme), a generic mention of QoS covers both aspects.
->
-> Secondly "user inside the tunnel" is challenging to explain.
-> In above sentence talks specifically about the "receive queue" as an object.
->   
-
-"overflow" in my example. If we only use a one-sentence summary to 
-describe tunnel risks, then I think this subparagraph is called "QoS 
-problem for tunnel hash".
-
->> struct virtio_net_rss_config {
->>>>        le32 hash_types;
->>>> +    le32 hash_tunnel_types;
->>> This field is not needed as device config space advertisement for the support
->> is enough.
->>
->> If so, virtio_net_hash_config does not require hash_tunnel_types when it does
->> not need to configure the specific tunnel(s).
->>
->>> If the intent is to enable hashing for the specific tunnel(s), an individual
->> command is better.
->>
->> Drivers MAY filter out some tunneling types when negotiating this feature.
->> Do you think it would be better for us to add a separate command? I don't see
->> tools like ethtool that can configure specific tunnels in userspace.
->>
-> The reason I proposed different command is,
-> Let's say we have only single command.
-> Rss config command has many other fields unrelated to the inner hash.
-
-Yes. For inner hash, fields such as indirection table are irrelevant.
-
-> Hence, to enable inner hash, the driver needs to supply the exact same value for unrelated fields to the same value.
-> And device needs to compare it with the old value and maintain some sort of cache to derive that nothing changes from the previous hash config, hence, ignore hw configuration for rss.
->
-> This mechanism slows down the command for the unrelated task.
-
-Totally agree.
-
-> Hence, I am considering a separate command that would be simple for the device and driver to implement.
-
-I agree with you. Do you want me to do it in this patch, or should we do 
-it in another patch?
-
-Thanks! :)
-
->
->>> Regardless, this new field cannot be in the middle of the new structure as it
->> breaks backward compatibility.
->> Yes, you are right. I'll fix this.
->>
->> Thank you very much!
+DQo+IEZyb206IEhlbmcgUWkgPGhlbmdxaUBsaW51eC5hbGliYWJhLmNvbT4NCj4gU2VudDogVHVl
+c2RheSwgRmVicnVhcnkgMjEsIDIwMjMgODozNCBBTQ0KDQo+ID4gRXZlbiB3aXRob3V0IGEgcXVl
+dWUgb3ZlcmZsb3csIHRoaXMgc2hhcmVkIHJlY2VpdmUgcXVldWUgbWF5IG5vdCBoYXZlIGENCj4g
+YmFsYW5jZWQgbnVtYmVyIG9mIHBhY2tldHMuDQo+ID4gRm9yIGV4YW1wbGUsIHR1bm5lbC0yIG9j
+Y3VwaWVkIDkwJSBvZiB0aGUgcXVldWUgYW5kIGxlZnQgb25seSAxMCUgZm9yDQo+IHR1bm5lbC0x
+Lg0KPiA+IFNvLCB5b3VyIGV4YW1wbGUgaXMgcmlnaHQgKGFuZCBleHRyZW1lKSwgYSBnZW5lcmlj
+IG1lbnRpb24gb2YgUW9TIGNvdmVycw0KPiBib3RoIGFzcGVjdHMuDQo+ID4NCj4gPiBTZWNvbmRs
+eSAidXNlciBpbnNpZGUgdGhlIHR1bm5lbCIgaXMgY2hhbGxlbmdpbmcgdG8gZXhwbGFpbi4NCj4g
+PiBJbiBhYm92ZSBzZW50ZW5jZSB0YWxrcyBzcGVjaWZpY2FsbHkgYWJvdXQgdGhlICJyZWNlaXZl
+IHF1ZXVlIiBhcyBhbiBvYmplY3QuDQo+ID4NCj4gDQo+ICJvdmVyZmxvdyIgaW4gbXkgZXhhbXBs
+ZS4gSWYgd2Ugb25seSB1c2UgYSBvbmUtc2VudGVuY2Ugc3VtbWFyeSB0byBkZXNjcmliZQ0KPiB0
+dW5uZWwgcmlza3MsIHRoZW4gSSB0aGluayB0aGlzIHN1YnBhcmFncmFwaCBpcyBjYWxsZWQgIlFv
+UyBwcm9ibGVtIGZvciB0dW5uZWwNCj4gaGFzaCIuDQo+IA0KWWVzLCBUdW5uZWwgUW9zIGxpbWl0
+YXRpb25zDQoNCj4gPj4gc3RydWN0IHZpcnRpb19uZXRfcnNzX2NvbmZpZyB7DQo+ID4+Pj4gICAg
+ICAgIGxlMzIgaGFzaF90eXBlczsNCj4gPj4+PiArICAgIGxlMzIgaGFzaF90dW5uZWxfdHlwZXM7
+DQo+ID4+PiBUaGlzIGZpZWxkIGlzIG5vdCBuZWVkZWQgYXMgZGV2aWNlIGNvbmZpZyBzcGFjZSBh
+ZHZlcnRpc2VtZW50IGZvcg0KPiA+Pj4gdGhlIHN1cHBvcnQNCj4gPj4gaXMgZW5vdWdoLg0KPiA+
+Pg0KPiA+PiBJZiBzbywgdmlydGlvX25ldF9oYXNoX2NvbmZpZyBkb2VzIG5vdCByZXF1aXJlIGhh
+c2hfdHVubmVsX3R5cGVzIHdoZW4NCj4gPj4gaXQgZG9lcyBub3QgbmVlZCB0byBjb25maWd1cmUg
+dGhlIHNwZWNpZmljIHR1bm5lbChzKS4NCj4gPj4NCj4gPj4+IElmIHRoZSBpbnRlbnQgaXMgdG8g
+ZW5hYmxlIGhhc2hpbmcgZm9yIHRoZSBzcGVjaWZpYyB0dW5uZWwocyksIGFuDQo+ID4+PiBpbmRp
+dmlkdWFsDQo+ID4+IGNvbW1hbmQgaXMgYmV0dGVyLg0KPiA+Pg0KPiA+PiBEcml2ZXJzIE1BWSBm
+aWx0ZXIgb3V0IHNvbWUgdHVubmVsaW5nIHR5cGVzIHdoZW4gbmVnb3RpYXRpbmcgdGhpcyBmZWF0
+dXJlLg0KPiA+PiBEbyB5b3UgdGhpbmsgaXQgd291bGQgYmUgYmV0dGVyIGZvciB1cyB0byBhZGQg
+YSBzZXBhcmF0ZSBjb21tYW5kPyBJDQo+ID4+IGRvbid0IHNlZSB0b29scyBsaWtlIGV0aHRvb2wg
+dGhhdCBjYW4gY29uZmlndXJlIHNwZWNpZmljIHR1bm5lbHMgaW4gdXNlcnNwYWNlLg0KPiA+Pg0K
+PiA+IFRoZSByZWFzb24gSSBwcm9wb3NlZCBkaWZmZXJlbnQgY29tbWFuZCBpcywgTGV0J3Mgc2F5
+IHdlIGhhdmUgb25seQ0KPiA+IHNpbmdsZSBjb21tYW5kLg0KPiA+IFJzcyBjb25maWcgY29tbWFu
+ZCBoYXMgbWFueSBvdGhlciBmaWVsZHMgdW5yZWxhdGVkIHRvIHRoZSBpbm5lciBoYXNoLg0KPiAN
+Cj4gWWVzLiBGb3IgaW5uZXIgaGFzaCwgZmllbGRzIHN1Y2ggYXMgaW5kaXJlY3Rpb24gdGFibGUg
+YXJlIGlycmVsZXZhbnQuDQo+IA0KUmlnaHQuDQoNCj4gPiBIZW5jZSwgdG8gZW5hYmxlIGlubmVy
+IGhhc2gsIHRoZSBkcml2ZXIgbmVlZHMgdG8gc3VwcGx5IHRoZSBleGFjdCBzYW1lIHZhbHVlDQo+
+IGZvciB1bnJlbGF0ZWQgZmllbGRzIHRvIHRoZSBzYW1lIHZhbHVlLg0KPiA+IEFuZCBkZXZpY2Ug
+bmVlZHMgdG8gY29tcGFyZSBpdCB3aXRoIHRoZSBvbGQgdmFsdWUgYW5kIG1haW50YWluIHNvbWUg
+c29ydCBvZg0KPiBjYWNoZSB0byBkZXJpdmUgdGhhdCBub3RoaW5nIGNoYW5nZXMgZnJvbSB0aGUg
+cHJldmlvdXMgaGFzaCBjb25maWcsIGhlbmNlLA0KPiBpZ25vcmUgaHcgY29uZmlndXJhdGlvbiBm
+b3IgcnNzLg0KPiA+DQo+ID4gVGhpcyBtZWNoYW5pc20gc2xvd3MgZG93biB0aGUgY29tbWFuZCBm
+b3IgdGhlIHVucmVsYXRlZCB0YXNrLg0KPiANCj4gVG90YWxseSBhZ3JlZS4NCj4gDQo+ID4gSGVu
+Y2UsIEkgYW0gY29uc2lkZXJpbmcgYSBzZXBhcmF0ZSBjb21tYW5kIHRoYXQgd291bGQgYmUgc2lt
+cGxlIGZvciB0aGUNCj4gZGV2aWNlIGFuZCBkcml2ZXIgdG8gaW1wbGVtZW50Lg0KPiANCj4gSSBh
+Z3JlZSB3aXRoIHlvdS4gRG8geW91IHdhbnQgbWUgdG8gZG8gaXQgaW4gdGhpcyBwYXRjaCwgb3Ig
+c2hvdWxkIHdlIGRvIGl0IGluDQo+IGFub3RoZXIgcGF0Y2g/DQo+IA0KDQpJdCBzaG91bGQgYmUg
+aW4gdGhpcyBwYXRjaCBzZXQgYmVjYXVzZSBlbmFibGVtZW50IGluIHRoZSBkZXZpY2UgaXMgbGlu
+a2VkIHRvIHRoaXMgY2FwYWJpbGl0eSBleHBvc2VkIGluIHRoaXMgcGF0Y2guDQoNCkZyb20gcGF0
+Y2ggc3BsaXQgcG9pbnQgb2YgdmlldywNCg0KUGF0Y2gtMSB0byBpbnRyb2R1Y2UgdGhlIGZlYXR1
+cmUgYml0LCBkZXNjcmlwdGlvbiwgYW5kIGxpbmsgdG8gQ1ZRIGRlcGVuZGVuY3kuDQpQYXRjaC0y
+IGZvciBpdHMgbGluayBpbiB2aXJ0aW9fbmV0X2NvbmZpZyBzdHJ1Y3R1cmUgYW5kIGRlc2NyaXB0
+aW9uLg0KUGF0Y2gtMyBmb3IgbmV3IGNvbW1hbmQgdG91Y2hpbmcgY29udHJvbCBWUSBwaWVjZXMu
+DQoNCldlIGNhbiBhbHdheXMgc3F1YXNoIHRoZSBwYXRjaCB0byBzaW5nbGUgd2hlbi9pZiBpdCBp
+cyBoYXJkIHRvIHVuZGVyc3RhbmQgaW4gbXVsdGlwbGUgcGF0Y2hlcy4NCg==
 
