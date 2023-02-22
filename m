@@ -1,127 +1,186 @@
 Return-Path: <hengqi@linux.alibaba.com>
-Message-ID: <8c545ec2-331d-45de-82c0-7e7151db62ac@linux.alibaba.com>
-Date: Wed, 22 Feb 2023 10:51:20 +0800
+Message-ID: <32675f1a-5da4-dc78-a03f-8c173f59c7da@linux.alibaba.com>
+Date: Wed, 22 Feb 2023 10:34:39 +0800
 MIME-Version: 1.0
-Subject: Re: [virtio-dev] Re: [PATCH v9] virtio-net: support inner header hash
+Subject: Re: [virtio-dev] RE: [PATCH v9] virtio-net: support inner header hash
 References: <20230218143715.841-1-hengqi@linux.alibaba.com>
  <PH0PR12MB5481224CBC059BD482347133DCA59@PH0PR12MB5481.namprd12.prod.outlook.com>
  <20230221115147-mutt-send-email-mst@kernel.org>
  <PH0PR12MB54815A89628D17FA1F455F2BDCA59@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20230221161551-mutt-send-email-mst@kernel.org>
- <PH0PR12MB54812CB5FBE771428A1D06BFDCA59@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20230221163930-mutt-send-email-mst@kernel.org>
- <PH0PR12MB54816DA52C42EE769C4CBAF4DCA59@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20230221180945-mutt-send-email-mst@kernel.org>
 From: Heng Qi <hengqi@linux.alibaba.com>
-In-Reply-To: <20230221180945-mutt-send-email-mst@kernel.org>
+In-Reply-To: <PH0PR12MB54815A89628D17FA1F455F2BDCA59@PH0PR12MB5481.namprd12.prod.outlook.com>
 Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Transfer-Encoding: 8bit
-To: "Michael S. Tsirkin" <mst@redhat.com>, Parav Pandit <parav@nvidia.com>
+To: Parav Pandit <parav@nvidia.com>, "Michael S. Tsirkin" <mst@redhat.com>
 Cc: "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Jason Wang <jasowang@redhat.com>, Yuri Benditovich <yuri.benditovich@daynix.com>, Cornelia Huck <cohuck@redhat.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
 
 
-在 2023/2/22 上午7:18, Michael S. Tsirkin 写道:
-> On Tue, Feb 21, 2023 at 10:32:11PM +0000, Parav Pandit wrote:
->>> From: Michael S. Tsirkin <mst@redhat.com>
->>> Sent: Tuesday, February 21, 2023 4:46 PM
->>>
->>> What is this information driver can't observe? It sees all the packets after all,
->>> we are not stripping tunneling headers.
->> Just the tunnel type.
->> If/when that tunnel header is stripped, it gets complicated where tunnel type is still present in the virtio_net_hdr because hash_report_tunnel feature bit is negotiated.
-> whoever strips off the tunnel has I imagine strip off the virtio net hdr
-> too - everything else in it such as gso type refers to the outer packet.
+在 2023/2/22 上午3:29, Parav Pandit 写道:
 >
->>> I also don't really know what are upper layer drivers - for sure layering of
->>> drivers is not covered in the spec for now so I am not sure what do you mean by
->>> that.  The risk I mentioned is leaking the information *on the network*.
+>> From: Michael S. Tsirkin <mst@redhat.com>
+>> Sent: Tuesday, February 21, 2023 12:06 PM
+>>
+>> On Tue, Feb 21, 2023 at 04:20:59AM +0000, Parav Pandit wrote:
+>>>> From: Heng Qi <hengqi@linux.alibaba.com>
+>>>> Sent: Saturday, February 18, 2023 9:37 AM
+>>>> If the tunnel is used to encapsulate the packets, the hash
+>>>> calculated using the
+>>> s/hash calculated/hash is calculated
 >>>
->> Got it.
->>
+>>>> outer header of the receive packets is always fixed for the same
+>>>> flow packets, i.e. they will be steered to the same receive queue.
+>>>>
+>>> A little descriptive commit message like below reads better to me.
+>>> Currently, when a received packet is an encapsulated packet meaning there
+>> is an outer and an inner header, virtio device is unable to calculate the hash for
+>> the inner header.
+>>> Due to this limitation, multiple different flows identified by the inner header
+>> for the same outer header result in selecting the same receive queue.
+>>> This effectively disables the RSS, resulting in poor receive performance.
 >>>
->>>
->>>>>>> \begin{lstlisting}  struct virtio_net_rss_config {
->>>>>>>>>       le32 hash_types;
->>>>>>>>> +    le32 hash_tunnel_types;
->>>>>>>> This field is not needed as device config space advertisement
->>>>>>>> for the support
->>>>>>> is enough.
->>>>>>>> If the intent is to enable hashing for the specific tunnel(s),
->>>>>>>> an individual
->>>>>>> command is better.
->>>>>>>
->>>>>>> new command? I am not sure why we want that. why not handle
->>>>>>> tunnels like we do other protocols?
->>>>>> I didn't follow.
->>>>>> We probably discussed in another thread that to set M bits, it is
->>>>>> wise to avoid
->>>>> setting N other bits just to keep the command happy, where N >>> M
->>>>> and these N have a very strong relation in hw resource setup and packet
->>> steering.
->>>>>> Any examples of 'other protocols'?
->>>>> #define VIRTIO_NET_HASH_TYPE_IPv4              (1 << 0)
->>>>> #define VIRTIO_NET_HASH_TYPE_TCPv4             (1 << 1)
->>>>> #define VIRTIO_NET_HASH_TYPE_UDPv4             (1 << 2)
->>>>>
->>>>> this kind of thing.
->>>>>
->>>>> I don't see how a tunnel is different fundamentally. Why does it
->>>>> need its own field?
->>>> Driver is in control to enable/disable tunnel based inner hash acceleration
->>> only when its needed.
->>>> This way certain data path hw parsers can be enabled/disabled.
->>>> Without this it will be always enabled even if there may not be any user of it.
->>>> Device has scope to optimize this flow.
->>> I feel you misunderstand the question. Or maybe I misunderstand what you are
->>> proposing.  So tunnels need their own bits. But why a separate field and not just
->>> more bits along the existing ones?
->> Because the hashing is not covering the outer header contents.
+>>> Hence, to overcome this limitation, a new feature is introduced using a
+>> feature bit VIRTIO_NET_F_HASH_TUNNEL.
+>>> This feature enables the device to advertise the capability to calculate the
+>> hash for the inner packet header.
+>>> Thereby regaining better RSS performance in presence of outer packet
+>> header.
 >>
->> We may be still not discussing the same.
->> So let me refresh the context.
+>> I think this is a good description however Parav I think it is important to make
+>> contributors write their own commit messages so they know what is the reason
+>> for the proposed change.
+> Sure. Contributor can rewrite it.
+>
+>> What's good for the goose is good for the gander -
+>> contributors should explain why their change to spec is benefitial but reviewers
+>> should also explain why their changes to the patch are benefitial, and "reads
+>> better to me" does not cut it - it does not allow the contributor to improve with
+>> time.  It's more than about a single contribution, see?
 >>
->> The question of discussion was,
->> Scenario:
->> 1. device advertises the ability to hash on the inner packet header.
->> 2. device prefers that driver enable it only when it needs to use this extra packet parser in hardware.
->>
->> There are 3 options.
->> a. Because the feature is negotiated, it means it is enabled for all the tunnel types.
->> Pros:
->> 1. No need to extend cvq cmd.
->> Cons:
->> 1. device parser is always enabled, and the driver never uses it. This may result in inferior rx performance.
->>
->> b. Since the feature is useful in a narrow case of sw-based vxlan etc driver, better not to enable hw for it.
->> Hence, have the knob to explicitly enable in hw.
->> So have the cvq command.
->> b.1 should it be combined with the existing command?
->> Cons:
->> a. when the driver wants to enable hash on inner, it needs to supply the exact same RSS config as before. Sw overhead with no gain.
->> b. device needs to parse new command value, compare with old config, and drop the RSS config, just enable inner hashing hw parser.
->> Or destroy the old rss config and re-apply. This results in weird behavior for the short interval with no apparent gain.
->>
->> b.2 should it be on its own command?
->> Pros:
->> a. device and driver doesn't need to bother about b.1.a and b.1.b.
->> b. still benefits from not always enabling hw parser, as this is not a common case.
->> c. has the ability to enable when needed.
-> I prefer b.1. With reporting of the tunnel type gone I don't see a
-> fundamental difference between hashing over tunneling types and other
-> protocol types we support.  It's just a flag telling device over which
-> bits to calculate the hash. We don't have a separate command for hashing
-> of TCPv6, why have it for vxlan?  Extending with more HASH_TYPE makes
-> total sense to me, seems to fit better with the existing design and will
-> make patch smaller.
+> I provided an example template on how to write problem_description -> solution commit log.
+>
+> At the beginning, I said "little descriptive" to explain why it reads better.
+> But it seems, even more verbosity is needed even for the reviewer to suggest.
+> I didn't see this often happening by other reviewers, but I make a note of it now, at least I can improve from this feedback.
+>
+> I imagined that the contributor would see the pattern as problem->solution in the example commit log and follow in the future patches.
 
-+1.
+Yes, we describe commits in the "as is -> problem -> solution" pattern, 
+and it's good to refer to some better examples for clarity.
 
-It is infrequent to configure the *tunnel hash types* through commands, 
-and when configuring the *hash types*,
-the hash key and indirection table are not required too.
+> Giving example of current patch was best to describe how to write it.
+>
+>> In this case I would say the issue is that motivation for the change is never
+>> explained.
+>>> When a specific receive queue is shared to receive packets of multiple
+>> tunnels, there is no quality of service for packets of multiple tunnels.
+>>
+>> "shared to receive" is not grammatical either :)
+>>
+> "Shared by multiple tunnels" will make it grammatical?
+>
+>> If you are talking about a security risk you need to explain
+>> 1- what is the threat, what configurations are affected.
+>> 2- what is the attack type: DOS, information leak, etc.
+>> 3- how to mitigate it
+>>
+>> This text touches a bit on 1 and 2 but not in an ordererly way.
+>>
+>>
+> it is best effort based.
+>
+> #3 is outside the scope of this patch set.
+>
+>>> +
+>>>> +This can pose several security risks:
+>>>> +\begin{itemize}
+>>>> +\item  Encapsulated packets in the normal tunnels cannot be
+>>>> +enqueued due to
+>>>> queue
+>>>> +       overflow, resulting in a large amount of packet loss.
+>>>> +\item  The delay and retransmission of packets in the normal
+>>>> +tunnels are
+>>>> extremely increased.
+>>> This is something very protocol specific and doesn't belong here.
+>> I don't see how it's specific - many protocols have retransmission and are
+>> affected by delays. "extremely increased" sounds unrammatical to me though.
+>>
+>>
+> I am not sure where you want to lead this discussion.
+> I am trying to help the spec and feature definition to be compact enough to progress.
+
+Thanks!
 
 >
+> It is specific to a protocol(s) and somehow arbitrarily concluded with a large number of packet losses.
+> Maybe only one ICMP packet got dropped and retransmit was just one packet.
+> Maybe it was TCP with selective retransmit enabled/disabled.
 >
+> As far as receive side is concerned, it should say that there is no QoS among different tunnels.
+> The user will figure out how to mitigate when such QoS is not available. Either to run in best-effort mode or mitigate differently.
+
+Yes, our cloud security and cloud network team will configure and use 
+inner hash on dpdk. In fact I discussed with them the security issues 
+between tunnels,
+and I will quote their solutions to tunnel attacks below, but this is a 
+problem between the tunnels, not the introduction of inner hash.
+I don't think we need to focus too much on this, but I'll do my best to 
+describe the security issues between tunnels in v10.
+
+"
+This is not a problem with the inner hash, it is a general problem with 
+the outer hash.
+I communicated with our people who are doing cloud security (they are 
+also one of the demanders of inner hash),
+and it is a common problem for one tunnel to attack another tunnel.
+
+For example, there is a tunnel t1; a tunnel t2; a tunnel endpoint VTEP0, 
+and the vni id of t1 is id1, and the vni id of v2 is id2; a VM.
+
+At this time, regardless of the inner hash or the outer hash, the 
+traffic of tunnel t1 and tunnel t2 will reach the VM through VTEP0 
+(whether it is a single queue or multiple queues),
+and may be placed on the same queue to cause queue overflow.
+
+# Solutions:
+1. Some current forwarding tools such as DPDK have good forwarding 
+performance, and it is difficult to fill up the queue;
+2. or switch the attack traffic to the attack clusters;
+3. or connect the traffic of different tunnels to different network card 
+ports or network devices.
+4..
+"
+
+>
+>>>> +\item  The user can observe the traffic information and enqueue
+>>>> +information
+>>>> of other normal
+>>>> +       tunnels, and conduct targeted DoS attacks.
+>>> Once hash_report_tunnel_types is removed, this second attack is no longer
+>> applicable.
+>>> Hence, please remove this too.
+>>
+>> ?
+>> I don't get how removing a field helps DoS.
+>>
+> I meant for the "observe and enqueue" part of the tunnel as not applicable.
+>
+>> \begin{lstlisting}  struct virtio_net_rss_config {
+>>>>       le32 hash_types;
+>>>> +    le32 hash_tunnel_types;
+>>> This field is not needed as device config space advertisement for the support
+>> is enough.
+>>> If the intent is to enable hashing for the specific tunnel(s), an individual
+>> command is better.
+>>
+>> new command? I am not sure why we want that. why not handle tunnels like
+>> we do other protocols?
+> I didn't follow.
+> We probably discussed in another thread that to set M bits, it is wise to avoid setting N other bits just to keep the command happy, where N >>> M and these N have a very strong relation in hw resource setup and packet steering.
+> Any examples of 'other protocols'?
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
