@@ -1,34 +1,67 @@
 Return-Path: <parav@nvidia.com>
 From: Parav Pandit <parav@nvidia.com>
-Subject: RE: [PATCH v3 0/2] virtio-net: Improve dev config layout
-Date: Tue, 21 Feb 2023 13:30:38 +0000
-Message-ID: <PH0PR12MB5481865B12E7B23862B0F140DCA59@PH0PR12MB5481.namprd12.prod.outlook.com>
-References: <20230217154529.33508-1-parav@nvidia.com>
-In-Reply-To: <20230217154529.33508-1-parav@nvidia.com>
+Subject: [PATCH v4 0/6] Split transport specific files
+Date: Thu, 23 Feb 2023 06:09:13 +0200
+Message-ID: <20230223040919.166617-1-parav@nvidia.com>
 MIME-Version: 1.0
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-To: "mst@redhat.com" <mst@redhat.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "cohuck@redhat.com" <cohuck@redhat.com>
-Cc: "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, Shahaf Shuler <shahafs@nvidia.com>
+Content-Type: text/plain
+To: mst@redhat.com, virtio-dev@lists.oasis-open.org, cohuck@redhat.com
+Cc: virtio-comment@lists.oasis-open.org, shahafs@nvidia.com, Parav Pandit <parav@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
+Problem statement:
+Currently several tens of pages worth of transport specification
+is situated in single file. Many parts of the specification
+are already maintained in separate files.
 
-> From: Parav Pandit <parav@nvidia.com>
-> Sent: Friday, February 17, 2023 10:45 AM
+Such separate files enables better maintenance of the specification overall=
+.
 
-> Patch summary:
-> patch-1: consolidate read only field at one place in driver requirements
-> patch-2: define device configuration layout before describing its fields.
->=20
-> changelog:
-> v2->v3:
-> - split into two patches
-> - move read only description to driver requirements section
+Solution:
+Follow the approach similar to rest of the spec, and keep
+transport specific spec in their individual files.
 
-These 2 patches are reviewed.
-Can you please open a ballot for it?
-Github issue: https://lists.oasis-open.org/archives/virtio-dev/202302/msg00=
-405.html
-And the github description has the latest link this time. :)
+This series is for fixing issue [1].
+
+[1] Fixes: https://github.com/oasis-tcs/virtio-spec/issues/157
+
+Please review.
+
+Patch summary:
+patch 1 moves pci transport to its own file
+patch 2 moves mmio transport to its own file
+patch 3 moves channel io transport to its own file
+patch 4 to 6 fixes spelling errors existed in the spec which are
+discovered during splitting the files
+
+changelog:
+v3->v4:
+- added github issue number fixes tag to patches 4 to 6
+v2->v3:
+- updated subject for patches 4 to 6
+v1->v2:
+- renamed transport-channelio.tex to transport-ccw.tex
+- removed trailing white spaces in transport-ccw.tex
+
+
+Parav Pandit (6):
+  transport-pci: Split PCI transport to its own file
+  transport-mmio: Split MMIO transport to its own file
+  transport-ccw: Split Channel IO transport to its own file
+  transport-pci: Fix spellings and white spaces
+  transport-mmio: Fix spellings and white spaces
+  transport-ccw: Fix spellings and white spaces
+
+ content.tex        | 2318 +-------------------------------------------
+ transport-ccw.tex  |  601 ++++++++++++
+ transport-mmio.tex |  552 +++++++++++
+ transport-pci.tex  | 1160 ++++++++++++++++++++++
+ 4 files changed, 2316 insertions(+), 2315 deletions(-)
+ create mode 100644 transport-ccw.tex
+ create mode 100644 transport-mmio.tex
+ create mode 100644 transport-pci.tex
+
+--=20
+2.26.2
 
