@@ -1,96 +1,79 @@
-Return-Path: <mst@redhat.com>
-Date: Mon, 27 Feb 2023 12:36:25 -0500
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: Re: [PATCH 2/3] transport-mmio: Rename QueueNum register
-Message-ID: <20230227123423-mutt-send-email-mst@kernel.org>
+Return-Path: <parav@nvidia.com>
+From: Parav Pandit <parav@nvidia.com>
+Subject: [PATCH 3/3] transport-mmio: Refer to the vq by its number
+Date: Thu, 23 Feb 2023 07:46:24 +0200
+Message-ID: <20230223054624.168042-4-parav@nvidia.com>
+In-Reply-To: <20230223054624.168042-1-parav@nvidia.com>
 References: <20230223054624.168042-1-parav@nvidia.com>
- <20230223054624.168042-3-parav@nvidia.com>
 MIME-Version: 1.0
-In-Reply-To: <20230223054624.168042-3-parav@nvidia.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-To: Parav Pandit <parav@nvidia.com>
-Cc: virtio-dev@lists.oasis-open.org, cohuck@redhat.com, virtio-comment@lists.oasis-open.org, shahafs@nvidia.com
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+To: mst@redhat.com, virtio-dev@lists.oasis-open.org, cohuck@redhat.com
+Cc: virtio-comment@lists.oasis-open.org, shahafs@nvidia.com, Parav Pandit <parav@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Thu, Feb 23, 2023 at 07:46:23AM +0200, Parav Pandit wrote:
-> Currently, the specification uses virtqueue index and number
-> interchangeably to refer to the virtqueue.
-> 
-> It is better to identify it using one terminology.
-> 
-> Two registers QueueNumMax and QueueNum actually reflect the queue size
-> or queue depth indicating max and actual number of entries in the queue.
-> Equivalent register in PCI transport is named differently as queue_size.
-> 
-> To bring consistency between pci and mmio transport, and to avoid
-> confusion between number and index, rename the QueueNumMax and QueueNum
-> registers to QueueSizeMax and QueueSize respectively.
-> 
-> [1] https://lists.oasis-open.org/archives/virtio-dev/202302/msg00527.html
-> 
-> Fixes: https://github.com/oasis-tcs/virtio-spec/issues/163
-> Signed-off-by: Parav Pandit <parav@nvidia.com>
+Currently specification uses virtqueue index and
+number interchangeably to refer to the virtqueue.
 
-I think this is a good change but it will confuse people
-who have e.g. a driver source and are trying to match
-it to te spec. Suggestions below
+Instead refer to it by its number.
 
+This patch is on top of [1].
 
-> ---
->  transport-mmio.tex | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
-> 
-> diff --git a/transport-mmio.tex b/transport-mmio.tex
-> index 65bae54..c59975e 100644
-> --- a/transport-mmio.tex
-> +++ b/transport-mmio.tex
-> @@ -104,14 +104,14 @@ \subsection{MMIO Device Register Layout}\label{sec:Virtio Transport Options / Vi
->      number of the first queue is zero (0x0).
->    }
->    \hline
-> -  \mmioreg{QueueNumMax}{Maximum virtual queue size}{0x034}{R}{%
-> +  \mmioreg{QueueSizeMax}{Maximum virtual queue size}{0x034}{R}{%
+[1] https://lists.oasis-open.org/archives/virtio-dev/202302/msg00527.html
 
-I would add something like "Note: this was previously known as QueueNumMax"
-and same elsewhere.
+Fixes: https://github.com/oasis-tcs/virtio-spec/issues/163
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+---
+ transport-mmio.tex | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
->      Reading from the register returns the maximum size (number of
->      elements) of the queue the device is ready to process or
->      zero (0x0) if the queue is not available. This applies to the
->      queue selected by writing to \field{QueueSel}.
-
->    }
->    \hline
-> -  \mmioreg{QueueNum}{Virtual queue size}{0x038}{W}{%
-> +  \mmioreg{QueueSize}{Virtual queue size}{0x038}{W}{%
->      Queue size is the number of elements in the queue.
->      Writing to this register notifies the device what size of the
->      queue the driver will use. This applies to the queue selected by
-> @@ -459,7 +459,7 @@ \subsection{Legacy interface}\label{sec:Virtio Transport Options / Virtio Over M
->  .
->    }
->    \hline
-> -  \mmioreg{QueueNumMax}{Maximum virtual queue size}{0x034}{R}{%
-> +  \mmioreg{QueueSizeMax}{Maximum virtual queue size}{0x034}{R}{%
->      Reading from the register returns the maximum size of the queue
->      the device is ready to process or zero (0x0) if the queue is not
->      available. This applies to the queue selected by writing to
-
-Same here.
-
-> @@ -467,7 +467,7 @@ \subsection{Legacy interface}\label{sec:Virtio Transport Options / Virtio Over M
->      (0x0), so when the queue is not actively used.
->    }
->    \hline
-> -  \mmioreg{QueueNum}{Virtual queue size}{0x038}{W}{%
-> +  \mmioreg{QueueSize}{Virtual queue size}{0x038}{W}{%
->      Queue size is the number of elements in the queue.
->      Writing to this register notifies the device what size of the
->      queue the driver will use. This applies to the queue selected by
-
-And here.
-
-> -- 
-> 2.26.2
+diff --git a/transport-mmio.tex b/transport-mmio.tex
+index c59975e..324cecf 100644
+--- a/transport-mmio.tex
++++ b/transport-mmio.tex
+@@ -96,7 +96,7 @@ \subsection{MMIO Device Register Layout}\label{sec:Virtio=
+ Transport Options / Vi
+     bits accessible by writing to \field{DriverFeatures}.
+   }
+   \hline
+-  \mmioreg{QueueSel}{Virtual queue index}{0x030}{W}{%
++  \mmioreg{QueueSel}{Virtual queue number}{0x030}{W}{%
+     Writing to this register selects the virtual queue that the
+     following operations on \field{QueueNumMax}, \field{QueueNum}, \field{=
+QueueReady},
+     \field{QueueDescLow}, \field{QueueDescHigh}, \field{QueueDriverlLow}, =
+\field{QueueDriverHigh},
+@@ -130,7 +130,7 @@ \subsection{MMIO Device Register Layout}\label{sec:Virt=
+io Transport Options / Vi
+     there are new buffers to process in a queue.
+=20
+     When VIRTIO_F_NOTIFICATION_DATA has not been negotiated,
+-    the value written is the queue index.
++    the value written is the queue number.
+=20
+     When VIRTIO_F_NOTIFICATION_DATA has been negotiated,
+     the \field{Notification data} value has the following format:
+@@ -373,7 +373,7 @@ \subsubsection{Available Buffer Notifications}\label{se=
+c:Virtio Transport Option
+=20
+ When VIRTIO_F_NOTIFICATION_DATA has not been negotiated,
+ the driver sends an available buffer notification to the device by writing
+-the 16-bit virtqueue index
++the 16-bit virtqueue number
+ of the queue to be notified to \field{QueueNotify}.
+=20
+ When VIRTIO_F_NOTIFICATION_DATA has been negotiated,
+@@ -451,7 +451,7 @@ \subsection{Legacy interface}\label{sec:Virtio Transpor=
+t Options / Virtio Over M
+     (see QueuePFN).
+   }
+   \hline
+-  \mmioreg{QueueSel}{Virtual queue index}{0x030}{W}{%
++  \mmioreg{QueueSel}{Virtual queue number}{0x030}{W}{%
+     Writing to this register selects the virtual queue that the
+     following operations on the \field{QueueNumMax}, \field{QueueNum}, \fi=
+eld{QueueAlign}
+     and \field{QueuePFN} registers apply to. The index
+--=20
+2.26.2
 
