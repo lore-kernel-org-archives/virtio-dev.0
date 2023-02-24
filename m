@@ -1,338 +1,172 @@
-Return-Path: <tonylu@linux.alibaba.com>
-Date: Wed, 1 Mar 2023 17:34:05 +0800
-From: Tony Lu <tonylu@linux.alibaba.com>
-Subject: Re: [PATCH v2 0/1] introduce virtio-ism: internal shared memory
- device
-Message-ID: <Y/8cDWIU3VFDCRAY@TONYMAC-ALIBABA.local>
-Reply-To: Tony Lu <tonylu@linux.alibaba.com>
-References: <20221223081354.15026-1-xuanzhuo@linux.alibaba.com>
- <534229dd-4c4d-d7b2-a90c-a448920bcca4@linux.ibm.com>
+Return-Path: <virtio-dev-return-11258-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+	aws-us-west-2-korg-lkml-1.web.codeaurora.org
+Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0F207C6FA8E
+	for <virtio-dev@archiver.kernel.org>; Fri, 24 Feb 2023 17:10:22 +0000 (UTC)
+Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 324842B05F
+	for <virtio-dev@archiver.kernel.org>; Fri, 24 Feb 2023 17:10:22 +0000 (UTC)
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id 141CC98678D
+	for <virtio-dev@archiver.kernel.org>; Fri, 24 Feb 2023 17:10:22 +0000 (UTC)
+Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
+	by lists.oasis-open.org (Postfix) with QMQP
+	id E795698665E; Fri, 24 Feb 2023 17:10:21 +0000 (UTC)
+Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
+List-Id: <virtio-dev.lists.oasis-open.org>
+Precedence: bulk
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
+	by lists.oasis-open.org (Postfix) with ESMTP id D563E986673
+	for <virtio-dev@lists.oasis-open.org>; Fri, 24 Feb 2023 17:10:21 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at kavi.com
+X-MC-Unique: _ytmLgurP5yW1WFse3_ckg-1
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=cIsRP8OVR050/vb6Qbd5xpiOBnQDQ1G6v4okU7neglQ=;
+        b=aKvpaNB46Sc6vYYIVQ0SIBrjezB/Inl8D9Ot0xdafM0Hu2S9pvhrUPI4HYJNJFg8Ye
+         7l/84WT2HNJQSZykDD1gz5YFBdYlJbkbfeBAisG/cUTZq95+VMH+gBx6ST0kxufETKAv
+         K/3PiSsc/3Jl1IkG4YKqDgp1DI8h5jduNmvw2RhzKAVJrHLQ/aTIKPg9JiKi5rHltSQX
+         2cIvkUdB0DcjtIwZT4Ggjy1S4Vao+N8XGxgZQ5dsZxxZYaWcj4Fv2M/RF6mEBj9N8D3T
+         /gfnZCiTruSrOXTTqwGk89ylgDXfXqc3QJa8CS/u4nkIy17+zBKIhgLtwBndnhsQnIZo
+         yUmw==
+X-Gm-Message-State: AO0yUKXh6nEKZ3xdYYTcS8kfPbxhv1M6JZXrHJkkwiz/kIn2a41QQBvn
+	WTNLhgJAxVEXMFxOYUMtmpB0v6fs8lZivcsbNTMlp8hMA11G+hOnCyo/KphImUP8Oo19FxWOKZU
+	VpGyky7iNGKyTbtwF2Rpr/s3EvHzl
+X-Received: by 2002:a5d:47a1:0:b0:2c5:519f:307a with SMTP id 1-20020a5d47a1000000b002c5519f307amr302387wrb.30.1677258618481;
+        Fri, 24 Feb 2023 09:10:18 -0800 (PST)
+X-Google-Smtp-Source: AK7set8M8+KMR+mlAC8mDM9uLSQlP/fhWoAtzLXs2ihUMMTN4yit9WOM0izFYT3o5EX1zAKnLDBgpw==
+X-Received: by 2002:a5d:47a1:0:b0:2c5:519f:307a with SMTP id 1-20020a5d47a1000000b002c5519f307amr302364wrb.30.1677258618156;
+        Fri, 24 Feb 2023 09:10:18 -0800 (PST)
+Date: Fri, 24 Feb 2023 12:10:14 -0500
+From: "Michael S. Tsirkin" <mst@redhat.com>
+To: Heng Qi <hengqi@linux.alibaba.com>
+Cc: Parav Pandit <parav@nvidia.com>,
+	"virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
+	"virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
+	Jason Wang <jasowang@redhat.com>,
+	Yuri Benditovich <yuri.benditovich@daynix.com>,
+	Cornelia Huck <cohuck@redhat.com>,
+	Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+	"ailan@redhat.com" <ailan@redhat.com>
+Message-ID: <20230224120744-mutt-send-email-mst@kernel.org>
+References: <20230218143715.841-1-hengqi@linux.alibaba.com>
+ <20230223080358-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB5481FD1A82D37157AFCFC541DCAB9@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20230224030725-mutt-send-email-mst@kernel.org>
+ <f8d09582-749f-11f6-90d1-ac7413ed6937@linux.alibaba.com>
 MIME-Version: 1.0
-In-Reply-To: <534229dd-4c4d-d7b2-a90c-a448920bcca4@linux.ibm.com>
-Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <f8d09582-749f-11f6-90d1-ac7413ed6937@linux.alibaba.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-To: Wenjia Zhang <wenjia@linux.ibm.com>
-Cc: Xuan Zhuo <xuanzhuo@linux.alibaba.com>, virtio-dev@lists.oasis-open.org, hans@linux.alibaba.com, herongguang@linux.alibaba.com, zmlcc@linux.alibaba.com, dust.li@linux.alibaba.com, zhenzao@linux.alibaba.com, helinguo@linux.alibaba.com, gerry@linux.alibaba.com, mst@redhat.com, cohuck@redhat.com, jasowang@redhat.com, Jan Kiszka <jan.kiszka@siemens.com>, wintera@linux.ibm.com, kgraul@linux.ibm.com, jaka@linux.ibm.com, hca@linux.ibm.com, twinkler@linux.ibm.com, raspl@linux.ibm.com
-List-ID: <virtio-dev.lists.oasis-open.org>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [virtio-dev] Re: [PATCH v9] virtio-net: support inner header hash
+Message-ID: <20230224171014.SQWnHto-GKy8HpCYZ8_iGS-pe9EJdi5TPC63uQO1MQM@z>
 
-On Wed, Jan 25, 2023 at 01:55:51PM +0100, Wenjia Zhang wrote:
+On Fri, Feb 24, 2023 at 10:38:37PM +0800, Heng Qi wrote:
 > 
 > 
-> On 23.12.22 09:13, Xuan Zhuo wrote:
-> > Hello everyone,
-> > 
-> > # Background
-> > 
-> >      Nowadays, there is a common scenario to accelerate communication between
-> >      different VMs and containers, including light weight virtual machine based
-> >      containers. One way to achieve this is to colocate them on the same host.
-> >      However, the performance of inter-VM communication through network stack is
-> >      not optimal and may also waste extra CPU cycles. This scenario has been
-> >      discussed many times, but still no generic solution available [1] [2] [3].
-> > 
-> >      With pci-ivshmem + SMC(Shared Memory Communications: [4]) based PoC[5],
-> >      We found that by changing the communication channel between VMs from TCP to
-> >      SMC with shared memory, we can achieve superior performance for a common
-> >      socket-based application[5]:
-> >        - latency reduced by about 50%
-> >        - throughput increased by about 300%
-> >        - CPU consumption reduced by about 50%
-> > 
-> >      Since there is no particularly suitable shared memory management solution
-> >      matches the need for SMC(See ## Comparison with existing technology), and
-> >      virtio is the standard for communication in the virtualization world, we
-> >      want to implement a virtio-ism device based on virtio, which can support
-> >      on-demand memory sharing across VMs, containers or VM-container. To match
-> >      the needs of SMC, the virtio-ism device need to support:
-> > 
-> >      1. Dynamic provision: shared memory regions are dynamically allocated and
-> >         provisioned.
-> >      2. Multi-region management: the shared memory is divided into regions,
-> >         and a peer may allocate one or more regions from the same shared memory
-> >         device.
-> >      3. Permission control: the permission of each region can be set seperately.
-> >      4. Dynamic connection: each ism region of a device can be shared with
-> >         different devices, eventually a device can be shared with thousands of
-> >         devices
-> > 
-> > # Virtio ISM device
-> > 
-> >      ISM devices provide the ability to share memory between different guests on
-> >      a host. A guest's memory got from ism device can be shared with multiple
-> >      peers at the same time. This shared relationship can be dynamically created
-> >      and released.
-> > 
-> >      The shared memory obtained from the device is divided into multiple ism
-> >      regions for share. ISM device provides a mechanism to notify other ism
-> >      region referrers of content update events.
-> > 
-> > ## Design
-> > 
-> >      This is a structure diagram based on ism sharing between two vms.
-> > 
-> >      |-------------------------------------------------------------------------------------------------------------|
-> >      | |------------------------------------------------|       |------------------------------------------------| |
-> >      | | Guest                                          |       | Guest                                          | |
-> >      | |                                                |       |                                                | |
-> >      | |   ----------------                             |       |   ----------------                             | |
-> >      | |   |    driver    |     [M1]   [M2]   [M3]      |       |   |    driver    |             [M2]   [M3]     | |
-> >      | |   ----------------       |      |      |       |       |   ----------------               |      |      | |
-> >      | |    |cq|                  |map   |map   |map    |       |    |cq|                          |map   |map   | |
-> >      | |    |  |                  |      |      |       |       |    |  |                          |      |      | |
-> >      | |    |  |                -------------------     |       |    |  |                --------------------    | |
-> >      | |----|--|----------------|  device memory  |-----|       |----|--|----------------|  device memory   |----| |
-> >      | |    |  |                -------------------     |       |    |  |                --------------------    | |
-> >      | |                                |               |       |                               |                | |
-> >      | |                                |               |       |                               |                | |
-> >      | | Qemu                           |               |       | Qemu                          |                | |
-> >      | |--------------------------------+---------------|       |-------------------------------+----------------| |
-> >      |                                  |                                                       |                  |
-> >      |                                  |                                                       |                  |
-> >      |                                  |------------------------------+------------------------|                  |
-> >      |                                                                 |                                           |
-> >      |                                                                 |                                           |
-> >      |                                                   --------------------------                                |
-> >      |                                                    | M1 |   | M2 |   | M3 |                                 |
-> >      |                                                   --------------------------                                |
-> >      |                                                                                                             |
-> >      | HOST                                                                                                        |
-> >      ---------------------------------------------------------------------------------------------------------------
-> > 
-> > ## Inspiration
-> > 
-> >      Our design idea for virtio-ism comes from IBM's ISM device, to pay tribute,
-> >      we directly name this device "ism".
-> > 
-> >      Information about IBM ism device and SMC:
-> >        1. SMC reference: https://www.ibm.com/docs/en/zos/2.5.0?topic=system-shared-memory-communications
-> >        2. SMC-Dv2 and ISMv2 introduction: https://www.newera.com/INFO/SMCv2_Introduction_10-15-2020.pdf
-> >        3. ISM device: https://www.ibm.com/docs/en/linux-on-systems?topic=n-ism-device-driver-1
-> >        4. SMC protocol (including SMC-D): https://www.ibm.com/support/pages/system/files/inline-files/IBM%20Shared%20Memory%20Communications%20Version%202_2.pdf
-> >        5. SMC-D FAQ: https://www.ibm.com/support/pages/system/files/inline-files/2021-02-09-SMC-D-FAQ.pdf
-> > 
-> > ## ISM VLAN
-> > 
-> >      Since SMC uses TCP to handshake with IP facilities, virtio-ism device is not
-> >      bound to existing IP device, and the latest ISMv2 device doesn't require
-> >      VLAN. So it is not necessary for virtio-ism to support VLAN attributes.
-> > 
-> > ## Live Migration
-> > 
-> >      Currently SMC-D doesn't support migration to another device or fallback. And
-> >      SMC-R supports migration to another link, no fallback.
-> > 
-> >      So we may not support live migration for the time being.
-> > 
-> > ## About hot plugging of the ism device
-> > 
-> >      Hot plugging of devices is a heavier, possibly failed, time-consuming, and
-> >      less scalable operation. So, we don't plan to support it for now.
-> > 
-> > 
-> > # Usage (SMC as example)
-> > 
-> >      There is one of possible use cases:
-> > 
-> >      1. SMC calls the interface ism_alloc_region() of the ism driver to return
-> >         the location of a memory region in the PCI space and a token.
-> >      2. The ism driver mmap the memory region and return to SMC with the token
-> >      3. SMC passes the token to the connected peer
-> >      4. the peer calls the ism driver interface ism_attach_region(token) to
-> >         get the location of the PCI space of the shared memory
-> >      5. The connected pair communicating through the shared memory
-> > 
-> > # Comparison with existing technology
-> > 
-> > ## ivshmem or ivshmem 2.0 of Qemu
-> > 
-> >     1. ivshmem 1.0 is a large piece of memory that can be seen by all devices
-> >        that use this VM, so the security is not enough.
-> > 
-> >     2. ivshmem 2.0 is a shared memory belonging to a VM that can be read-only by
-> >        all other VMs that use the ivshmem 2.0 shared memory device, which also
-> >        does not meet our needs in terms of security.
-> > 
-> > ## vhost-pci and virtiovhostuser
-> > 
-> >      1. does not support dynamic allocation
-> >      2. one device just support connect to one vm
-> > 
-> > 
-> > # POC CODE
-> > 
-> > There are no functions related to eventq and perm yet.
-> > 
-> > ## Qemu (virtio ism device):
-> > 
-> >       https://github.com/fengidri/qemu/compare/7d66b74c4dd0d74d12c1d3d6de366242b13ed76d...ism-upstream-1216?expand=1
-> > 
-> >      Start qemu with option "--device virtio-ism-pci,disable-legacy=on, disable-modern=off".
-> > 
-> > ##  Kernel (virtio ism driver and smc support):
-> > 
-> >       https://github.com/fengidri/linux-kernel-virtio-ism/compare/6f8101eb21bab480537027e62c4b17021fb7ea5d...ism-upstream-1223
-> > 
-> I tried to run the PoC kernel on our platform and wanted to test the main
-> path of SMC-D and SMC-R flows as we used to firstly. Unfortunately, most of
-> our basic tests are failed and even ftrace could trigger a crash which
-> points that "Unable to handle kernel pointer dereference in virtual kernel
-> address space". Thus, I'm wondering:
-
-Thanks Wenjia for your patient about this early version PoC.
-
-Emm :-( there have some issues on different platform, and this version
-isn't fully tested. We are going to refine this patch set, and refactor
-with new APIs of SMC.
-
+> 在 2023/2/24 下午4:13, Michael S. Tsirkin 写道:
+> > On Thu, Feb 23, 2023 at 02:40:46PM +0000, Parav Pandit wrote:
+> > > 
+> > > > From: Michael S. Tsirkin <mst@redhat.com>
+> > > > Sent: Thursday, February 23, 2023 8:14 AM
+> > > > 
+> > > > On Sat, Feb 18, 2023 at 10:37:15PM +0800, Heng Qi wrote:
+> > > 
+> > > > So for RSS specifically, we brain-stormed with Amnon (Cc'd) and came up with
+> > > > an idea: RSS indirection table entries are 16 bit but onlu 15 bits are used to
+> > > > indentify an RX queue.
+> > > > We can use the remaining bit as a "tunnel bit" to signal whether to use the
+> > > > inner or the outer hash for queue selection.
+> > > > 
+> > > I further brainstormed internally with Saeed and Rony on this.
+> > > 
+> > > The inner hash is only needed for GRE, IPIP etc.
+> > > For VXLAN and NVGRE Linux kernel transmit side uses the entropy of the source port of the outer header.
+> > > It does that based on the inner header.
+> > > Refer to [1] as one example.
+> > > 
+> > > [1] https://elixir.bootlin.com/linux/latest/source/drivers/net/geneve.c#L922
+> > But I think hash was requested for RSS with dpdk, no?
 > 
-> - What aspects of the PoC would you like to get feedback on? Which parts are
-> known to be not as good as they need to become? Or are known to need to be
-> significantly expanded upon for reaching non-RFC maturity? What is suposed
-> to stick around?
-> - Is there a version that does not break the existing scenarios in the pipe?
-> Or maybe even already published somewhere else?
-
-SMC with virtio-ism is inspired by IBM ISM device. virtio-ism can serves
-SMC and gives SMC an ability to support inter-VM connection. To get this
-done, we have two parts of work to do:
-- propose virtio-ism device,
-- and let SMC support it.
-
-So we are going to invite you to discuss the proposal about virtio-ism
-and how to do in SMC. We're very glad to hear your advice. The code is
-in very early version, and try to help people understand our approach,
-also it only published here and wait for your comments and advice.
-
-When virtio-ism is accepted and implemented, we will send formal RFC to
-SMC mail list. 
-
-> - Are you aware of the recent refactoring in SMC-D:
-> https://git.kernel.org/netdev/net-next/c/8c81ba20349d ? Could you base your
-> next version on this code?
-
-Yes, we are going to do it in next version. The refactoring work really
-helps us to support virtio-ism.
-
-Cheers,
-Tony Lu
-
-> 
+> I think yes, at least probably the first customer to use the feature might
+> be dpdk.:)
 > 
 > 
 > > 
-> > ### SMC
+> > > > The lookup will work like this then:
+> > > > 
+> > > > calculate outer hash
+> > > > if (rss[outer hash] & tunnel bit)
+> > > Tunnel bit, you mean tunneled packet, right?
+> > this idea stores a bit in the indirection table
+> > which signals which of the hashes to use for rss
+> 
+> This allows inner hash to have the ability to select a queue and place
+> packets to the queue (that is, parallel to RSS),
+> which seems to be different from our discussion before v9. 🙁
+> 
+> Thanks.
+
+Not exactly. The idea is that we start with outer hash.
+Based on that we use rss table to decide whether to use the inner hash.
+
+Given that Parav claims it's difficult to implement in
+hardware I'm not insisting this idea is included
+in the patchset. We can add it later.
+
+
 > > 
-> >      Support SMC-D works with virtio-ism.
+> > > > then
+> > > > 	calculate inner hash
+> > > > 	return rss[inner hash] & ~tunnel bit
+> > > Why to end with a tunnel bit?
 > > 
-> >      Use SMC with virtio-ism to accelerate inter-VM communication.
+> > this just clears the bit so we end up with a vq number.
 > > 
-> >      1. insmod virtio-ism and smc module.
-> >      2. use smc-tools [1] to get the device name of SMC-D based on virtio-ism.
-> > 
-> >        $ smcd d # here is _virtio2_
-> >        FID  Type  PCI-ID        PCHID  InUse  #LGs  PNET-ID
-> >        0000 0     virtio2       0000   Yes       1  *C1
-> > 
-> >      3. add the nic and SMC-D device to the same pnet, do it in both client and server.
-> > 
-> >        $ smc_pnet -a -I eth1 c1 # use eth1 to setup SMC connection
-> >        $ smc_pnet -a -D virtio2 c1 # virtio2 is the virtio-ism device
-> > 
-> >      4. use SMC to accelerate your application, smc_run in [1] can do this.
-> > 
-> >        # smc_run use LD_PRELOAD to hijack socket syscall with AF_SMC
-> >        $ smc_run sockperf server --tcp # run in server
-> >        $ smc_run sockperf tp --tcp -i a.b.c.d # run in client
-> > 
-> >      [1] https://github.com/ibm-s390-linux/smc-tools
-> > 
-> >      Notice: The current POC state, we only tested some basic functions.
-> > 
-> > ### App inside user space
-> > 
-> >      The ism driver provide /dev/vismX interface, allow users to use Virtio-ISM
-> >      device in user space directly.
-> > 
-> >      Try tools/virtio/virtio-ism/virtio-ism-mmap
-> > 
-> >      Usage:
-> >           cd tools/virtio/virtio-ism/; make
-> >           insmode virtio-ism.ko
-> > 
-> >      case1: communicate
-> > 
-> >         vm1: ./virtio-ism-mmap alloc -> token
-> >         vm2: ./virtio-ism-mmap attach -t <token> --write-msg AAAA --commit
-> > 
-> >         vm2 will write msg to shared memory, then notify vm1. After vm1 receive
-> >         notify, then read from shared memory.
-> > 
-> >      case2: ping-pong test.
-> > 
-> >          vm1: ./virtio-ism-mmap server
-> >          vm2: ./virtio-ism-mmap -i 192.168.122.101 pp
-> > 
-> >          1. server alloc one ism region
-> >          2. client get the token by tcp
-> > 
-> >          3. client commit(kick) to server, server recv notify, commit(kick) to client
-> >          4. loop #3
-> > 
-> >      case3: throughput test.
-> > 
-> >          vm1: ./virtio-ism-mmap server
-> >          vm2: ./virtio-ism-mmap -i 192.168.122.101 tp
-> > 
-> >          1. server alloc one ism region
-> >          2. client get the token by tcp
-> > 
-> >          3. client write 1M data to ism region
-> >          4. client commit(kick) to server
-> >          5. server recv notify, copy the data, the commit(kick) back to client
-> >          6. loop #3-#5
-> > 
-> >      case4: throughput test with protocol defined by user.
-> > 
-> >          vm1: ./virtio-ism-mmap server
-> >          vm2: ./virtio-ism-mmap -i 192.168.122.101 tp --polling --tp-chunks 15 --msg-size 64k -n 50000
-> > 
-> >          Used the ism region as a ring.
-> > 
-> >          In this scene, client and server are in the polling mode. Test it on
-> >          my machine, the maximum can reach 12GBps
-> > 
-> > # References
-> > 
-> >      [1] https://projectacrn.github.io/latest/tutorials/enable_ivshmem.html
-> >      [2] https://dl.acm.org/doi/10.1145/2847562
-> >      [3] https://hal.archives-ouvertes.fr/hal-00368622/document
-> >      [4] https://lwn.net/Articles/711071/
-> >      [5] https://lore.kernel.org/netdev/20220720170048.20806-1-tonylu@linux.alibaba.com/T/
+> > > > else
+> > > > 	return rss[outer hash]
+> > > > 
+> > > > 
+> > > > this fixes the security issue returning us back to status quo : specific tunnels can
+> > > > be directed to separate queues.
+> > > > 
+> > > The number of tunnels is far higher than the number of queues with para virt driver doing decap.
+> > True. This seeks to get us back to where we are before the feature:
+> > driver can send specific outer hashes to specific queues.
+> > outer hash collisions remain a problem.
 > > 
 > > 
-> > If there are any problems, please point them out.
-> > Hope to hear from you, thank you.
+> > > > This is for RSS.
+> > > > 
+> > > > 
+> > > > For hash reporting indirection table is not used.
+> > > > Maybe it is enough to signal to driver that inner hash was used.
+> > > > We do need that signalling though.
+> > > > 
+> > > > My question would be whether it's practical to implement in hardware.
+> > > In above example, hw calculating double hash is difficult without much gain.
+> > > Either calculating on one inner or outer makes sense.
+> > > 
+> > > Signaling whether calculated on inner or outer is fine because hw exactly tells what it did.
+> > This, in a sense, is what reporting hash tunnel type did.
+> > Do you now think we need it?
 > > 
-> > v2:
-> >     1. add Attach/Detach event
-> >     2. add Events Filter
-> >     3. allow Alloc/Attach huge region
-> >     4. remove host/guest terms
-> > 
-> > v1:
-> >     1. cover letter adding explanation of ism vlan
-> >     2. spec add gid
-> >     3. explain the source of ideas about ism
-> >     4. POC support virtio-ism-smc.ko virtio-ism-dev.ko and support virtio-ism-mmap
-> > 
-> > 
-> > Xuan Zhuo (1):
-> >    virtio-ism: introduce new device virtio-ism
-> > 
-> >   conformance.tex |  24 +++
-> >   content.tex     |   1 +
-> >   virtio-ism.tex  | 472 ++++++++++++++++++++++++++++++++++++++++++++++++
-> >   3 files changed, 497 insertions(+)
-> >   create mode 100644 virtio-ism.tex
-> > 
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
