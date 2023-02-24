@@ -1,53 +1,75 @@
 Return-Path: <parav@nvidia.com>
 From: Parav Pandit <parav@nvidia.com>
-Subject: [PATCH v1 0/3] Rename queue index to queue number
-Date: Sat, 25 Feb 2023 00:27:15 +0200
-Message-ID: <20230224222718.339883-1-parav@nvidia.com>
+Subject: [PATCH v1 1/3] transport-pci: Refer to the vq by its number
+Date: Sat, 25 Feb 2023 00:27:16 +0200
+Message-ID: <20230224222718.339883-2-parav@nvidia.com>
+In-Reply-To: <20230224222718.339883-1-parav@nvidia.com>
+References: <20230224222718.339883-1-parav@nvidia.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 Content-Type: text/plain
 To: mst@redhat.com, virtio-dev@lists.oasis-open.org, cohuck@redhat.com
-Cc: virtio-comment@lists.oasis-open.org, shahafs@nvidia.com, Parav Pandit <parav@nvidia.com>
+Cc: virtio-comment@lists.oasis-open.org, shahafs@nvidia.com, Parav Pandit <parav@nvidia.com>, Jiri Pirko <jiri@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-1. Currently, virtqueue is identified between driver and device
-interchangeably using either number of index terminology.
+Currently specification uses virtqueue index and
+number interchangeably to refer to the virtqueue.
 
-2. Between PCI and MMIO transport the queue size (depth) is
-defined as queue_size and QueueNum respectively.
+Instead refer to it by its number.
 
-To avoid confusion and to have consistency, unify them to use as Number.
+This patch is on top of [1].
 
-Solution:
-Use virtqueue number description, and rename MMIO register as QueueSize.
+[1] https://lists.oasis-open.org/archives/virtio-dev/202302/msg00527.html
 
-Patch summary:
-patch-1 renames index to number for pci transport
-patch-2 renames mmio register from Num to Size
-patch-3 renames index to number for mmio transport
+Fixes: https://github.com/oasis-tcs/virtio-spec/issues/163
+Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+---
+ transport-pci.tex | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-Please review.
-This series fixes the issue [1].
-
-This series is on top of [2].
-
-[1] https://github.com/oasis-tcs/virtio-spec/issues/163
-[2] https://lists.oasis-open.org/archives/virtio-dev/202302/msg00578.html
-
-changelog:
-v0->v1:
-- rebase on [2]
-- added reviewed-by of Jiri
-
-Parav Pandit (3):
-  transport-pci: Refer to the vq by its number
-  transport-mmio: Rename QueueNum register
-  transport-mmio: Refer to the vq by its number
-
- transport-mmio.tex | 16 ++++++++--------
- transport-pci.tex  |  6 +++---
- 2 files changed, 11 insertions(+), 11 deletions(-)
-
+diff --git a/transport-pci.tex b/transport-pci.tex
+index 01fb652..0642107 100644
+--- a/transport-pci.tex
++++ b/transport-pci.tex
+@@ -1005,7 +1005,7 @@ \subsubsection{Device Initialization}\label{sec:Virti=
+o Transport Options / Virti
+ The driver typically does this as follows, for each virtqueue a device has=
+:
+=20
+ \begin{enumerate}
+-\item Write the virtqueue index (first queue is 0) to \field{queue_select}=
+.
++\item Write the virtqueue number (first queue is 0) to \field{queue_select=
+}.
+=20
+ \item Read the virtqueue size from \field{queue_size}. This controls how b=
+ig the virtqueue is
+   (see \ref{sec:Basic Facilities of a Virtio Device / Virtqueues}~\nameref=
+{sec:Basic Facilities of a Virtio Device / Virtqueues}). If this field is 0=
+, the virtqueue does not exist.
+@@ -1035,7 +1035,7 @@ \subsubsection{Available Buffer Notifications}\label{=
+sec:Virtio Transport Option
+=20
+ When VIRTIO_F_NOTIFICATION_DATA has not been negotiated,
+ the driver sends an available buffer notification to the device by writing
+-the 16-bit virtqueue index
++the 16-bit virtqueue number
+ of this virtqueue to the Queue Notify address.
+=20
+ When VIRTIO_F_NOTIFICATION_DATA has been negotiated,
+@@ -1053,7 +1053,7 @@ \subsubsection{Available Buffer Notifications}\label{=
+sec:Virtio Transport Option
+ If VIRTIO_F_NOTIF_CONFIG_DATA has been negotiated:
+ \begin{itemize}
+ \item If VIRTIO_F_NOTIFICATION_DATA has not been negotiated, the driver MU=
+ST use the
+-\field{queue_notify_data} value instead of the virtqueue index.
++\field{queue_notify_data} value instead of the virtqueue number.
+ \item If VIRTIO_F_NOTIFICATION_DATA has been negotiated, the driver MUST s=
+et the
+ \field{vqn} field to the \field{queue_notify_data} value.
+ \end{itemize}
 --=20
 2.26.2
 
