@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-11258-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-11260-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0F207C6FA8E
-	for <virtio-dev@archiver.kernel.org>; Fri, 24 Feb 2023 17:10:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id EEAE3C64ED8
+	for <virtio-dev@archiver.kernel.org>; Fri, 24 Feb 2023 22:23:04 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 324842B05F
-	for <virtio-dev@archiver.kernel.org>; Fri, 24 Feb 2023 17:10:22 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 2E4F842B65
+	for <virtio-dev@archiver.kernel.org>; Fri, 24 Feb 2023 22:23:04 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 141CC98678D
-	for <virtio-dev@archiver.kernel.org>; Fri, 24 Feb 2023 17:10:22 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 2070D9867C6
+	for <virtio-dev@archiver.kernel.org>; Fri, 24 Feb 2023 22:23:04 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id E795698665E; Fri, 24 Feb 2023 17:10:21 +0000 (UTC)
+	id 0CA7D9867BD; Fri, 24 Feb 2023 22:23:04 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-Id: <virtio-dev.lists.oasis-open.org>
 Precedence: bulk
@@ -23,147 +23,140 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id D563E986673
-	for <virtio-dev@lists.oasis-open.org>; Fri, 24 Feb 2023 17:10:21 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id B53479867A5;
+	Fri, 24 Feb 2023 22:22:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: _ytmLgurP5yW1WFse3_ckg-1
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=cIsRP8OVR050/vb6Qbd5xpiOBnQDQ1G6v4okU7neglQ=;
-        b=aKvpaNB46Sc6vYYIVQ0SIBrjezB/Inl8D9Ot0xdafM0Hu2S9pvhrUPI4HYJNJFg8Ye
-         7l/84WT2HNJQSZykDD1gz5YFBdYlJbkbfeBAisG/cUTZq95+VMH+gBx6ST0kxufETKAv
-         K/3PiSsc/3Jl1IkG4YKqDgp1DI8h5jduNmvw2RhzKAVJrHLQ/aTIKPg9JiKi5rHltSQX
-         2cIvkUdB0DcjtIwZT4Ggjy1S4Vao+N8XGxgZQ5dsZxxZYaWcj4Fv2M/RF6mEBj9N8D3T
-         /gfnZCiTruSrOXTTqwGk89ylgDXfXqc3QJa8CS/u4nkIy17+zBKIhgLtwBndnhsQnIZo
-         yUmw==
-X-Gm-Message-State: AO0yUKXh6nEKZ3xdYYTcS8kfPbxhv1M6JZXrHJkkwiz/kIn2a41QQBvn
-	WTNLhgJAxVEXMFxOYUMtmpB0v6fs8lZivcsbNTMlp8hMA11G+hOnCyo/KphImUP8Oo19FxWOKZU
-	VpGyky7iNGKyTbtwF2Rpr/s3EvHzl
-X-Received: by 2002:a5d:47a1:0:b0:2c5:519f:307a with SMTP id 1-20020a5d47a1000000b002c5519f307amr302387wrb.30.1677258618481;
-        Fri, 24 Feb 2023 09:10:18 -0800 (PST)
-X-Google-Smtp-Source: AK7set8M8+KMR+mlAC8mDM9uLSQlP/fhWoAtzLXs2ihUMMTN4yit9WOM0izFYT3o5EX1zAKnLDBgpw==
-X-Received: by 2002:a5d:47a1:0:b0:2c5:519f:307a with SMTP id 1-20020a5d47a1000000b002c5519f307amr302364wrb.30.1677258618156;
-        Fri, 24 Feb 2023 09:10:18 -0800 (PST)
-Date: Fri, 24 Feb 2023 12:10:14 -0500
-From: "Michael S. Tsirkin" <mst@redhat.com>
-To: Heng Qi <hengqi@linux.alibaba.com>
-Cc: Parav Pandit <parav@nvidia.com>,
-	"virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
-	"virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
-	Jason Wang <jasowang@redhat.com>,
-	Yuri Benditovich <yuri.benditovich@daynix.com>,
-	Cornelia Huck <cohuck@redhat.com>,
-	Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-	"ailan@redhat.com" <ailan@redhat.com>
-Message-ID: <20230224120744-mutt-send-email-mst@kernel.org>
-References: <20230218143715.841-1-hengqi@linux.alibaba.com>
- <20230223080358-mutt-send-email-mst@kernel.org>
- <PH0PR12MB5481FD1A82D37157AFCFC541DCAB9@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20230224030725-mutt-send-email-mst@kernel.org>
- <f8d09582-749f-11f6-90d1-ac7413ed6937@linux.alibaba.com>
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=AyS+Yd1OD1QfzIjdZ8Oc9P2kYAh4x6ZF+rJ1RfX3CU8uzOQ9MyadjG0gqptYkTuS0SXHT2Td43o1bZPbyQHVoNhq4zZt1mu3PVswpEznyByJlQxMMx39ezjujERbZ+5PHt7+k+Po0ZAaMcTYIHRyTQDQq96CaoBe23kkmqzrPu/QdjMyY1A80eauGCHm+t4Dcn/M6rixwLe2YxuyZCGQVngdLMr+bZ+Lci4qt1EqQ87DmrUqBB+qAlxn8pCPsuA2wegsu06/gAEHI5nhOz0qgC6eiH5U64qYQqWnM/+L17NmLJ3P2ftl4zp4NOienBk66/7zA0Dr1tRip5VOHe1bug==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=dDjO2qZa51JNx0cbGDHaJXOWXiH/kBjd4yRKmJjXNrM=;
+ b=AR6qyZhvJYqLWMvaSM9ZVuEiOGGLqjqxrESrgyntLYimDc1tPzXyYJSOotb2EFxDf4pR7KGTE5ErmP5bFJjvWs3kBcmFhiRlb+y9VAhc97GCj4I8b4x5G8TwBTg5jbQIY2+O3vBSPhIA8fxg1I6XBLdh7UY02t4arYieJDNGFCeewayKdkXsA24B/NxV7K4Q33Jh0TRWeKXZ83fP3ANELfREzH4DKqbBYgf4nXqLDvWEtb0DX3h0rhc91Mli4XXxr7Mf/2IMbluecVpwB1Dg8q1Rsr2haLP7FFELRd/i1UlfP1DCmwx+9kKLFqk82dSpVn/Z5r0UGhSnFenMxLDb5Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=redhat.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+From: Parav Pandit <parav@nvidia.com>
+To: <mst@redhat.com>, <virtio-dev@lists.oasis-open.org>, <cohuck@redhat.com>
+CC: <virtio-comment@lists.oasis-open.org>, <shahafs@nvidia.com>, Parav Pandit
+	<parav@nvidia.com>
+Date: Sat, 25 Feb 2023 00:22:13 +0200
+Message-ID: <20230224222215.339715-5-parav@nvidia.com>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20230224222215.339715-1-parav@nvidia.com>
+References: <20230224222215.339715-1-parav@nvidia.com>
 MIME-Version: 1.0
-In-Reply-To: <f8d09582-749f-11f6-90d1-ac7413ed6937@linux.alibaba.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Subject: Re: [virtio-dev] Re: [PATCH v9] virtio-net: support inner header hash
-Message-ID: <20230224171014.SQWnHto-GKy8HpCYZ8_iGS-pe9EJdi5TPC63uQO1MQM@z>
+Content-Type: text/plain
+X-Originating-IP: [10.126.231.37]
+X-ClientProxiedBy: rnnvmail201.nvidia.com (10.129.68.8) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BN8NAM11FT069:EE_|IA0PR12MB7651:EE_
+X-MS-Office365-Filtering-Correlation-Id: 5cb10770-071f-4dc9-a228-08db16b5a6c9
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	lJrVMoK1WAELnjieOYzkzaNfyEe5G8HeVQME+PAJTUMNkFJ0GjjsYobHtsTrGNweZPHTW5UiwhklD1Sf64I0dyIT2/0uftfwPMAL4SLADuhdLYQvmM3urTwSwdGnydB3F3IJHvtwfXPzyO2aau1mBIkhQL5LtDmhnRxtg2OtVBZJ5vRHho2Zxoj7IGvaGLmnF50F8t63+KKmH+hD3yZ4tQCgHJr8vNs8zZcNUn/Qnrqs+UhtMT6PNM/RHLsuBOFap/0vN57YjifRHv46GEnjzr8Jy2n3cFs+1V7Kgt4aUsnmV5XE+88NxcHuWMCudS9at1Lmm3DmGgPrtJZEUZMe1Ma5Og+JtsxHXDpqB4cqtNEcWY7yn57BCg5F2oBlMkkzy0E56iQxUnR0tyeu9TJsU/+yLsGI4USFxkzdWGsdYHBGmAOhWgxGzTbOPi4srPWxk5hYgPHHboKeS097uMIfTjyGaqRoRpNM71/zcJGQQLTdNdY2VoWDZvDjG8YhnOn73RtBhpUOQVRz+ywwHL3w4Hnq/Q6xBSI+1M5Gy4fHwj9/vNhyUxHqZwfZ4Kguunru64rD8leK6kHPBhgobHU9DGRpAV7dD1B1OwUgdjLT06wK/s3Azh8ufHAkPKOg9qBhlYdqGn/F7ZbXNJCMR9jTok5SYawm82xedsH0hB/mC4w5MDDr3rohBdCUkxS77KCnBDqeCnc0DqyahkhgZmxj9Oetn83VurGYBlohjmYQ39Gm1SLZmTMkNv4+r/EDea3wP7uNB/AUnQZ43Lhg4Hx1mg==
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(396003)(39860400002)(376002)(346002)(136003)(451199018)(40470700004)(36840700001)(46966006)(4326008)(83380400001)(82310400005)(86362001)(40480700001)(16526019)(186003)(7636003)(34020700004)(356005)(36860700001)(336012)(110136005)(82740400003)(47076005)(54906003)(316002)(2616005)(8676002)(6666004)(26005)(70206006)(426003)(1076003)(70586007)(478600001)(966005)(40460700003)(107886003)(5660300002)(36756003)(2906002)(41300700001)(8936002);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Feb 2023 22:22:44.4149
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5cb10770-071f-4dc9-a228-08db16b5a6c9
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BN8NAM11FT069.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB7651
+Subject: [virtio-dev] [PATCH v5 4/6] transport-pci: Fix spellings and white spaces
+Message-ID: <20230224222213.7glbBgFvJqGMNp7aqXSHk2ES3GWqMvvkcd3xyiiz4sQ@z>
 
-On Fri, Feb 24, 2023 at 10:38:37PM +0800, Heng Qi wrote:
-> 
-> 
-> 在 2023/2/24 下午4:13, Michael S. Tsirkin 写道:
-> > On Thu, Feb 23, 2023 at 02:40:46PM +0000, Parav Pandit wrote:
-> > > 
-> > > > From: Michael S. Tsirkin <mst@redhat.com>
-> > > > Sent: Thursday, February 23, 2023 8:14 AM
-> > > > 
-> > > > On Sat, Feb 18, 2023 at 10:37:15PM +0800, Heng Qi wrote:
-> > > 
-> > > > So for RSS specifically, we brain-stormed with Amnon (Cc'd) and came up with
-> > > > an idea: RSS indirection table entries are 16 bit but onlu 15 bits are used to
-> > > > indentify an RX queue.
-> > > > We can use the remaining bit as a "tunnel bit" to signal whether to use the
-> > > > inner or the outer hash for queue selection.
-> > > > 
-> > > I further brainstormed internally with Saeed and Rony on this.
-> > > 
-> > > The inner hash is only needed for GRE, IPIP etc.
-> > > For VXLAN and NVGRE Linux kernel transmit side uses the entropy of the source port of the outer header.
-> > > It does that based on the inner header.
-> > > Refer to [1] as one example.
-> > > 
-> > > [1] https://elixir.bootlin.com/linux/latest/source/drivers/net/geneve.c#L922
-> > But I think hash was requested for RSS with dpdk, no?
-> 
-> I think yes, at least probably the first customer to use the feature might
-> be dpdk.:)
-> 
-> 
-> > 
-> > > > The lookup will work like this then:
-> > > > 
-> > > > calculate outer hash
-> > > > if (rss[outer hash] & tunnel bit)
-> > > Tunnel bit, you mean tunneled packet, right?
-> > this idea stores a bit in the indirection table
-> > which signals which of the hashes to use for rss
-> 
-> This allows inner hash to have the ability to select a queue and place
-> packets to the queue (that is, parallel to RSS),
-> which seems to be different from our discussion before v9. 🙁
-> 
-> Thanks.
+Now that we have individual files, fix reported spelling errors.
 
-Not exactly. The idea is that we start with outer hash.
-Based on that we use rss table to decide whether to use the inner hash.
+While at it, remove trailing white spaces.
 
-Given that Parav claims it's difficult to implement in
-hardware I'm not insisting this idea is included
-in the patchset. We can add it later.
+Fixes: https://github.com/oasis-tcs/virtio-spec/issues/157
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+---
+changelog:
+v0->v1:
+- removed many trailing white spaces
+---
+ transport-pci.tex | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-
-> > 
-> > > > then
-> > > > 	calculate inner hash
-> > > > 	return rss[inner hash] & ~tunnel bit
-> > > Why to end with a tunnel bit?
-> > 
-> > this just clears the bit so we end up with a vq number.
-> > 
-> > > > else
-> > > > 	return rss[outer hash]
-> > > > 
-> > > > 
-> > > > this fixes the security issue returning us back to status quo : specific tunnels can
-> > > > be directed to separate queues.
-> > > > 
-> > > The number of tunnels is far higher than the number of queues with para virt driver doing decap.
-> > True. This seeks to get us back to where we are before the feature:
-> > driver can send specific outer hashes to specific queues.
-> > outer hash collisions remain a problem.
-> > 
-> > 
-> > > > This is for RSS.
-> > > > 
-> > > > 
-> > > > For hash reporting indirection table is not used.
-> > > > Maybe it is enough to signal to driver that inner hash was used.
-> > > > We do need that signalling though.
-> > > > 
-> > > > My question would be whether it's practical to implement in hardware.
-> > > In above example, hw calculating double hash is difficult without much gain.
-> > > Either calculating on one inner or outer makes sense.
-> > > 
-> > > Signaling whether calculated on inner or outer is fine because hw exactly tells what it did.
-> > This, in a sense, is what reporting hash tunnel type did.
-> > Do you now think we need it?
-> > 
+diff --git a/transport-pci.tex b/transport-pci.tex
+index 9c820f9..01fb652 100644
+--- a/transport-pci.tex
++++ b/transport-pci.tex
+@@ -5,7 +5,7 @@ \section{Virtio Over PCI Bus}\label{sec:Virtio Transport Options / Virtio Over P
+ A Virtio device can be implemented as any kind of PCI device:
+ a Conventional PCI device or a PCI Express
+ device.  To assure designs meet the latest level
+-requirements, see 
++requirements, see
+ the PCI-SIG home page at \url{http://www.pcisig.com} for any
+ approved changes.
+ 
+@@ -14,7 +14,7 @@ \section{Virtio Over PCI Bus}\label{sec:Virtio Transport Options / Virtio Over P
+ guest an interface that meets the specification requirements of
+ the appropriate PCI specification: \hyperref[intro:PCI]{[PCI]}
+ and \hyperref[intro:PCIe]{[PCIe]}
+-respectively. 
++respectively.
+ 
+ \subsection{PCI Device Discovery}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Discovery}
+ 
+@@ -586,7 +586,7 @@ \subsubsection{ISR status capability}\label{sec:Virtio Transport Options / Virti
+ 
+ \devicenormative{\paragraph}{ISR status capability}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / ISR status capability}
+ 
+-The device MUST present at least one VIRTIO_PCI_CAP_ISR_CFG capability.  
++The device MUST present at least one VIRTIO_PCI_CAP_ISR_CFG capability.
+ 
+ The device MUST set the Device Configuration Interrupt bit
+ in \field{ISR status} before sending a device configuration
+@@ -945,7 +945,7 @@ \subsubsection{Device Initialization}\label{sec:Virtio Transport Options / Virti
+ \end{lstlisting}
+ 
+ Note that mapping an event to vector might require device to
+-allocate internal device resources, and thus could fail. 
++allocate internal device resources, and thus could fail.
+ 
+ \devicenormative{\subparagraph}{MSI-X Vector Configuration}{Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / MSI-X Vector Configuration}
+ 
+@@ -973,7 +973,7 @@ \subsubsection{Device Initialization}\label{sec:Virtio Transport Options / Virti
+ unless it is impossible for the device to satisfy the mapping
+ request.  Devices MUST report mapping
+ failures by returning the NO_VECTOR value when the relevant
+-\field{config_msix_vector}/\field{queue_msix_vector} field is read. 
++\field{config_msix_vector}/\field{queue_msix_vector} field is read.
+ 
+ \drivernormative{\subparagraph}{MSI-X Vector Configuration}{Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / MSI-X Vector Configuration}
+ 
+@@ -981,7 +981,7 @@ \subsubsection{Device Initialization}\label{sec:Virtio Transport Options / Virti
+ Driver MAY fall back on using INT\#x interrupts for a device
+ which only supports one MSI-X vector (MSI-X Table Size = 0).
+ 
+-Driver MAY intepret the Table Size as a hint from the device
++Driver MAY interpret the Table Size as a hint from the device
+ for the suggested number of MSI-X vectors to use.
+ 
+ Driver MUST NOT attempt to map an event to a vector
+-- 
+2.26.2
 
 
 ---------------------------------------------------------------------
