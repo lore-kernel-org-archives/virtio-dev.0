@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-11261-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-11262-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9C5CAC7EE23
-	for <virtio-dev@archiver.kernel.org>; Fri, 24 Feb 2023 22:23:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 7CF90C64ED8
+	for <virtio-dev@archiver.kernel.org>; Fri, 24 Feb 2023 22:23:59 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 068BF2B053
-	for <virtio-dev@archiver.kernel.org>; Fri, 24 Feb 2023 22:23:13 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id E4389330A4
+	for <virtio-dev@archiver.kernel.org>; Fri, 24 Feb 2023 22:23:58 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id CD806986847
-	for <virtio-dev@archiver.kernel.org>; Fri, 24 Feb 2023 22:23:12 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id CF9CB986871
+	for <virtio-dev@archiver.kernel.org>; Fri, 24 Feb 2023 22:23:58 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 9BF5998678A; Fri, 24 Feb 2023 22:23:12 +0000 (UTC)
+	id B29C89867CA; Fri, 24 Feb 2023 22:23:58 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-Id: <virtio-dev.lists.oasis-open.org>
 Precedence: bulk
@@ -23,35 +23,33 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 7A46E986784;
-	Fri, 24 Feb 2023 22:22:46 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 145BF9867DB;
+	Fri, 24 Feb 2023 22:22:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=irJ058F8HXcTAeTCmbYJe5qo6qujJArY6RY62UiaS76EKnQ/DHmxpBkRqk+x/SAjtc8PtfHcl6okXm0pfHTr+5PqpvnpV4vqamxaY/5pngyPVn3dvR80hvp/AJQ/L8rhEZD7CxftmalaD804AXWdQmb6T2QyvOIQjo49J1IbWKIH12f31bisylN1UVFvnbHHiNlWZyqraWW/RZOB87YXIUb4foZgjU702gSpm55nJIkdDWSHl72emI324wC35POElG2P7jXWCcz0tJzyE5zTqXgO+dv3NxRUEMbAVOfk1Ap6HLjK3e3lcebrtfAt6hWV8BBo1Y0uwW6ePPWwZSJ9Zg==
+ b=kDNLuEt3cPpV5C2L45T9iPZCUzgQU+eDfHaWIpwhfM+yor4+AlhUplZE3gp9D4ms8d6MxfbWgXmHwMOZE1cqZx4j31KlPChwdRpCyGgZ0XkjXqIydmuAIww51rawBok6BV0hHyJVxssUCrhdMEWY9s20puTk7Tjhz0SUhYUvxwrgQeiL8LbPPW7bIanGm1p3vnZWInb9ESqbBv3pIXzsckU1UjlGbDBXIVdACacWsbTsbOwU9P1oxBzzOPztlcj2cpS0KPHO/WWcDJTFIsgXJGEQWVb3VFNC2gu8M/S8e3gTA78TnoHaFmn3oRBev5/lzTkz9y+Db1me8jxcpZb9+g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=CW2MBbBc4jeof3NrRmxL0KJYkwoLNPBLPzuL3CcmB4E=;
- b=Ijfr+vBSNVRbH9PdqnX5FgibgcJigpbWbL5IOem6Mj+1d9i6+XdjjgRNxqqkfafHaNBHAZ85Xf5KkLpIeQ0U33PivbAenOwmEQIPMdaab8jJ8zCjKV33++E82uODCuYIXkEoRWodBLObD7njASraxpPOe7c0Qe7VPLVKDpG3/PBpjEvN2ZJfhqheY/MlNSKbrGFEmE81arcFyIrskq38p9yXP+pQLHs7mgPUQB+NoDKUmdZTKW8d3EQBLz/hi21MXb9NvTHOVghJ9tDITUTHuSPr6gR2dYAZms3IB9mNaMK99LHaJXPYcficW96KbZjmrJNKi1Ah53M0LiTKa5+D8Q==
+ bh=RlQTfAjgaOPbYSPWBHKpzvNZnQMY94R1c2YECyWF2N4=;
+ b=lrb8BR32qIXVhUAQc/URT/j4zIh6jevVn9yzrUo6h/Hel2GI57SX7ZB3W7MW3vhZrB+s29kcriPVJlCsSF5YdCEmJKHazXo0eiAeNqHNk9zZ1h0qlFYoWBjd6qc3zh3jQbLd7FLH8GgxYwCTYSgCH6/rB9ULh+2X6zpNHC7d1mBMigmPNdej7MrUIhIbPnRuTd7/Wb4lHnUY6kX78UsYnnfFPYEGFQy1EexR9BsRwAXq+LG7pJScsohs0Z/ALJzTEXa2dKiq2sxwLuC58hVGyDIGLdvn24GrORR+kkBWGsi62opGV9RO7aluF0TsDtgj8kadaJzYWdWlHDaZQUenxg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=redhat.com smtp.mailfrom=nvidia.com;
+ 216.228.117.161) smtp.rcpttodomain=redhat.com smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
  dkim=none (message not signed); arc=none
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
 From: Parav Pandit <parav@nvidia.com>
 To: <mst@redhat.com>, <virtio-dev@lists.oasis-open.org>, <cohuck@redhat.com>
 CC: <virtio-comment@lists.oasis-open.org>, <shahafs@nvidia.com>, Parav Pandit
 	<parav@nvidia.com>
-Date: Sat, 25 Feb 2023 00:22:11 +0200
-Message-ID: <20230224222215.339715-3-parav@nvidia.com>
+Date: Sat, 25 Feb 2023 00:22:09 +0200
+Message-ID: <20230224222215.339715-1-parav@nvidia.com>
 X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20230224222215.339715-1-parav@nvidia.com>
-References: <20230224222215.339715-1-parav@nvidia.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -60,1190 +58,82 @@ X-ClientProxiedBy: rnnvmail201.nvidia.com (10.129.68.8) To
  rnnvmail201.nvidia.com (10.129.68.8)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT084:EE_|DS7PR12MB8231:EE_
-X-MS-Office365-Filtering-Correlation-Id: 0fafc35c-9023-4d3f-eb3e-08db16b5a369
+X-MS-TrafficTypeDiagnostic: BN8NAM11FT051:EE_|BN9PR12MB5195:EE_
+X-MS-Office365-Filtering-Correlation-Id: 6e80700f-47fd-4d0c-dd2d-08db16b5a3dc
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	G8aj4OEFp7lMkFCsmoKyHqUnK0fRNlN9k5e3WU73+caayAIcQix5Zh1ysWWEQO9xbcpuKxLTePOsDv+Gf8vp4UkTI5DX4j09Zy6xQZe+XqGfsiuX7CqmuemNWyWhCyAWlu5iMDEMmb/s9qE8ZG1AedshJOQ/8oXYIU13i/oglLzlN92V4cbjzjxDYI1vm921jwZyp2nnrBEeUjcvbvEqxWphndWRT76sFambi0YS7W8VcmTiwDvPKanDjeV/XVdbUEquvbmEAdFsjAB7IY9+UHoE2ElcWF5BVkUxo1OjtoVcREULUkBO7+feDuQTae8vIjASqbtOSAcZejkWzROYbX6qNchDoBRGZwAn/nrhrL/UOnD34n5ze59+yLJZw/kS6Zvo2HObpiDjJecjR78kQdgegEBDWLUO2+r+RnjTyb6vA+1/TyQwAcBISvuZDBh26aJNDaDzLvUCvJys6wAb+5YcsaDZqZuctRwXP/K+vhgLyBP3biEs7fz/mCP1GOEaS1sjFW4yKmLkvzwp7P4/J3lLv1qQcoy8gtqqVH7i1W2OhN9vpM8kStj//imje7SQlNmsMHAiPgXsL+2Pf6sGB+bFbGL/udxEgZRGYS8M+8p0mb+K1SZdhWkeKygbRFYkAAnotrbCGxElYzfmL95oxq/K6HEARfrED47emYdCBdHELVnEfDDByUmQgksYGtaevW7yARckFb90HOyqqYshiAv4Z3ixRXx3xy5dNGIknTCCaTHZZkghscnxqjoOpYw3tSKoFukNvCWc3imTqRX31Q==
+	MDhEYy77nd8ic7a15ddTPT1fRLLJOEhqxZgydmGeOMf/pQwOmsXkMaNB7Vdw0wC85ztvmnefqIUtJ0aGd2h2AeunOpESbDDZEWRKyvA0V9wi9JPlaB9Cua5lZfvjxv7q3BhnZvC52CB+OzFtRfvYlU3vyfOHXVsU4fLgVDb0rfu86o4giOu/oN64sKsa01u8yYMD17CwoDyROsyrkGor9ynAx3fEZb27DD70XPKLJGm/CMCIprmI/hTl8iVVoqd3eVcshD+PF9jrdoQCRMhxyLwhnqtOj/7xqL/PyY0cKXeeLtqr06M8pWZuI/h+pZsttYf5uX5Pwi9/drAHzqGSTH5NFIrU8g98reVOXzCTMbM3mK5h9JoCpUMVhU2B8oJ4AwQkPMuRl54QVIJNdX2Ig+XIRnCEqUaiTxr6W+12hiPQliRspTP+J67JAi1OZfYwKf5r1KOXYRhI5rCTF2b0JJYMyCTYMvds68Yw1dYuPQbhUiUyXaVVgZODtArfDwny1IIA7JF7HPSlxZbyw66RJ2rQWdRmhp26BBAt9sCRJxwcoSaeQIl8+xprwIYAXuzA8pgmWxa8vPuC9oxM+6KbDRbrrnUKZFdFT/uGwUnBXjfYtBkgHhF0f0LKyzPCH1xqqqL/VF3zX+RjQUTsin1waOScSUREzycahUJHjwmtAwxqO143cb+X3ZYSLNWeJ1idWMRKmCgyjt9D3d+BQWszFSZKnLqfx2nDpilNPCoe+xOqh1SGfIs+vHHEvA9ENmoD+bDLQG64fMoqvQtwxeDApg==
 X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(376002)(346002)(396003)(39860400002)(136003)(451199018)(36840700001)(46966006)(40470700004)(1076003)(6666004)(186003)(16526019)(107886003)(26005)(36860700001)(34020700004)(41300700001)(426003)(47076005)(40460700003)(82310400005)(83380400001)(356005)(86362001)(7636003)(82740400003)(36756003)(40480700001)(2616005)(336012)(70586007)(70206006)(8676002)(4326008)(2906002)(8936002)(30864003)(5660300002)(966005)(478600001)(110136005)(54906003)(316002)(579004)(559001);DIR:OUT;SFP:1101;
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(39860400002)(346002)(376002)(396003)(136003)(451199018)(36840700001)(40470700004)(46966006)(478600001)(16526019)(356005)(1076003)(8936002)(6666004)(186003)(36756003)(26005)(8676002)(107886003)(41300700001)(5660300002)(34020700004)(40480700001)(2616005)(82310400005)(47076005)(966005)(2906002)(336012)(70586007)(36860700001)(110136005)(82740400003)(86362001)(4326008)(54906003)(426003)(70206006)(7636003)(316002)(83380400001)(40460700003);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Feb 2023 22:22:38.8014
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Feb 2023 22:22:39.4765
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0fafc35c-9023-4d3f-eb3e-08db16b5a369
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6e80700f-47fd-4d0c-dd2d-08db16b5a3dc
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	DM6NAM11FT084.eop-nam11.prod.protection.outlook.com
+	BN8NAM11FT051.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB8231
-Subject: [virtio-dev] [PATCH v5 2/6] transport-mmio: Split MMIO transport to its own file
-Message-ID: <20230224222211.3_1l2KyXMUdWmSyW5-R87UUSqQvVGv9nK3stZqH7Qtc@z>
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR12MB5195
+Subject: [virtio-dev] [PATCH v5 0/6] Split transport specific files
+Message-ID: <20230224222209.HgEfT8dYA8OcYOP6lSQQNxpoGOcaXGtgzw5BC7nN-Uc@z>
 
-Place MMIO transport specification in its own file to better maintain it.
+Problem statement:
+Currently several tens of pages worth of transport specification
+is situated in single file. Many parts of the specification
+are already maintained in separate files.
 
-Fixes: https://github.com/oasis-tcs/virtio-spec/issues/157
-Signed-off-by: Parav Pandit <parav@nvidia.com>
----
+Such separate files enables better maintenance of the specification overall.
+
+Solution:
+Follow the approach similar to rest of the spec, and keep
+transport specific spec in their individual files.
+
+This series is for fixing issue [1].
+
+[1] Fixes: https://github.com/oasis-tcs/virtio-spec/issues/157
+
+Please review.
+
+Patch summary:
+patch 1 moves pci transport to its own file
+patch 2 moves mmio transport to its own file
+patch 3 moves channel io transport to its own file
+patch 4 to 6 fixes spelling errors existed in the spec which are
+discovered during splitting the files
+
 changelog:
 v4->v5:
-- added mmio introduction hunk which was in wrong pci file
----
- content.tex        | 566 +--------------------------------------------
- transport-mmio.tex | 564 ++++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 565 insertions(+), 565 deletions(-)
- create mode 100644 transport-mmio.tex
+- fix mmio few lines hunk was in wrong pci file
+v3->v4:
+- added github issue number fixes tag to patches 4 to 6
+v2->v3:
+- updated subject for patches 4 to 6
+v1->v2:
+- renamed transport-channelio.tex to transport-ccw.tex
+- removed trailing white spaces in transport-ccw.tex
 
-diff --git a/content.tex b/content.tex
-index a88e3f6..80c28df 100644
---- a/content.tex
-+++ b/content.tex
-@@ -580,571 +580,7 @@ \chapter{Virtio Transport Options}\label{sec:Virtio Transport Options}
- into virtio general and bus-specific sections.
- 
- \input{transport-pci.tex}
--
--\section{Virtio Over MMIO}\label{sec:Virtio Transport Options / Virtio Over MMIO}
--
--Virtual environments without PCI support (a common situation in
--embedded devices models) might use simple memory mapped device
--(``virtio-mmio'') instead of the PCI device.
--
--The memory mapped virtio device behaviour is based on the PCI
--device specification. Therefore most operations including device
--initialization, queues configuration and buffer transfers are
--nearly identical. Existing differences are described in the
--following sections.
--
--\subsection{MMIO Device Discovery}\label{sec:Virtio Transport Options / Virtio Over MMIO / MMIO Device Discovery}
--
--Unlike PCI, MMIO provides no generic device discovery mechanism.  For each
--device, the guest OS will need to know the location of the registers
--and interrupt(s) used.  The suggested binding for systems using
--flattened device trees is shown in this example:
--
--\begin{lstlisting}
--// EXAMPLE: virtio_block device taking 512 bytes at 0x1e000, interrupt 42.
--virtio_block@1e000 {
--        compatible = "virtio,mmio";
--        reg = <0x1e000 0x200>;
--        interrupts = <42>;
--}
--\end{lstlisting}
--
--\subsection{MMIO Device Register Layout}\label{sec:Virtio Transport Options / Virtio Over MMIO / MMIO Device Register Layout}
--
--MMIO virtio devices provide a set of memory mapped control
--registers followed by a device-specific configuration space,
--described in the table~\ref{tab:Virtio Trasport Options / Virtio Over MMIO / MMIO Device Register Layout}.
--
--All register values are organized as Little Endian.
--
--\newcommand{\mmioreg}[5]{% Name Function Offset Direction Description
--  {\field{#1}} \newline #3 \newline #4 & {\bf#2} \newline #5 \\
--}
--
--\newcommand{\mmiodreg}[7]{% NameHigh NameLow Function OffsetHigh OffsetLow Direction Description
--  {\field{#1}} \newline #4 \newline {\field{#2}} \newline #5 \newline #6 & {\bf#3} \newline #7 \\
--}
--
--\begin{longtable}{p{0.2\textwidth}p{0.7\textwidth}}
--  \caption {MMIO Device Register Layout}
--  \label{tab:Virtio Trasport Options / Virtio Over MMIO / MMIO Device Register Layout} \\
--  \hline
--  \mmioreg{Name}{Function}{Offset from base}{Direction}{Description} 
--  \hline 
--  \hline 
--  \endfirsthead
--  \hline
--  \mmioreg{Name}{Function}{Offset from the base}{Direction}{Description} 
--  \hline 
--  \hline 
--  \endhead
--  \endfoot
--  \endlastfoot
--  \mmioreg{MagicValue}{Magic value}{0x000}{R}{%
--    0x74726976
--    (a Little Endian equivalent of the ``virt'' string).
--  } 
--  \hline
--  \mmioreg{Version}{Device version number}{0x004}{R}{%
--    0x2.
--    \begin{note}
--      Legacy devices (see \ref{sec:Virtio Transport Options / Virtio Over MMIO / Legacy interface}~\nameref{sec:Virtio Transport Options / Virtio Over MMIO / Legacy interface}) used 0x1.
--    \end{note}
--  }
--  \hline 
--  \mmioreg{DeviceID}{Virtio Subsystem Device ID}{0x008}{R}{%
--    See \ref{sec:Device Types}~\nameref{sec:Device Types} for possible values.
--    Value zero (0x0) is used to
--    define a system memory map with placeholder devices at static,
--    well known addresses, assigning functions to them depending
--    on user's needs.
--  }
--  \hline 
--  \mmioreg{VendorID}{Virtio Subsystem Vendor ID}{0x00c}{R}{}
--  \hline 
--  \mmioreg{DeviceFeatures}{Flags representing features the device supports}{0x010}{R}{%
--    Reading from this register returns 32 consecutive flag bits,
--    the least significant bit depending on the last value written to
--    \field{DeviceFeaturesSel}. Access to this register returns
--    bits $\field{DeviceFeaturesSel}*32$ to $(\field{DeviceFeaturesSel}*32)+31$, eg.
--    feature bits 0 to 31 if \field{DeviceFeaturesSel} is set to 0 and
--    features bits 32 to 63 if \field{DeviceFeaturesSel} is set to 1.
--    Also see \ref{sec:Basic Facilities of a Virtio Device / Feature Bits}~\nameref{sec:Basic Facilities of a Virtio Device / Feature Bits}.
--  }
--  \hline 
--  \mmioreg{DeviceFeaturesSel}{Device (host) features word selection.}{0x014}{W}{%
--    Writing to this register selects a set of 32 device feature bits
--    accessible by reading from \field{DeviceFeatures}.
--  }
--  \hline 
--  \mmioreg{DriverFeatures}{Flags representing device features understood and activated by the driver}{0x020}{W}{%
--    Writing to this register sets 32 consecutive flag bits, the least significant
--    bit depending on the last value written to \field{DriverFeaturesSel}.
--     Access to this register sets bits $\field{DriverFeaturesSel}*32$
--    to $(\field{DriverFeaturesSel}*32)+31$, eg. feature bits 0 to 31 if
--    \field{DriverFeaturesSel} is set to 0 and features bits 32 to 63 if
--    \field{DriverFeaturesSel} is set to 1. Also see \ref{sec:Basic Facilities of a Virtio Device / Feature Bits}~\nameref{sec:Basic Facilities of a Virtio Device / Feature Bits}.
--  }
--  \hline 
--  \mmioreg{DriverFeaturesSel}{Activated (guest) features word selection}{0x024}{W}{%
--    Writing to this register selects a set of 32 activated feature
--    bits accessible by writing to \field{DriverFeatures}.
--  }
--  \hline 
--  \mmioreg{QueueSel}{Virtual queue index}{0x030}{W}{%
--    Writing to this register selects the virtual queue that the
--    following operations on \field{QueueNumMax}, \field{QueueNum}, \field{QueueReady},
--    \field{QueueDescLow}, \field{QueueDescHigh}, \field{QueueDriverlLow}, \field{QueueDriverHigh},
--    \field{QueueDeviceLow}, \field{QueueDeviceHigh} and \field{QueueReset} apply to. The index
--    number of the first queue is zero (0x0). 
--  }
--  \hline 
--  \mmioreg{QueueNumMax}{Maximum virtual queue size}{0x034}{R}{%
--    Reading from the register returns the maximum size (number of
--    elements) of the queue the device is ready to process or
--    zero (0x0) if the queue is not available. This applies to the
--    queue selected by writing to \field{QueueSel}.
--  }
--  \hline 
--  \mmioreg{QueueNum}{Virtual queue size}{0x038}{W}{%
--    Queue size is the number of elements in the queue.
--    Writing to this register notifies the device what size of the
--    queue the driver will use. This applies to the queue selected by
--    writing to \field{QueueSel}.
--  }
--  \hline 
--  \mmioreg{QueueReady}{Virtual queue ready bit}{0x044}{RW}{%
--    Writing one (0x1) to this register notifies the device that it can
--    execute requests from this virtual queue. Reading from this register
--    returns the last value written to it. Both read and write
--    accesses apply to the queue selected by writing to \field{QueueSel}.
--  }
--  \hline 
--  \mmioreg{QueueNotify}{Queue notifier}{0x050}{W}{%
--    Writing a value to this register notifies the device that
--    there are new buffers to process in a queue.
--
--    When VIRTIO_F_NOTIFICATION_DATA has not been negotiated,
--    the value written is the queue index.
--
--    When VIRTIO_F_NOTIFICATION_DATA has been negotiated,
--    the \field{Notification data} value has the following format:
--
--    \lstinputlisting{notifications-le.c}
--
--    See \ref{sec:Basic Facilities of a Virtio Device / Driver notifications}~\nameref{sec:Basic Facilities of a Virtio Device / Driver notifications}
--    for the definition of the components.
--  }
--  \hline 
--  \mmioreg{InterruptStatus}{Interrupt status}{0x60}{R}{%
--    Reading from this register returns a bit mask of events that
--    caused the device interrupt to be asserted.
--    The following events are possible:
--    \begin{description}
--      \item[Used Buffer Notification] - bit 0 - the interrupt was asserted
--        because the device has used a buffer
--        in at least one of the active virtual queues.
--      \item [Configuration Change Notification] - bit 1 - the interrupt was
--        asserted because the configuration of the device has changed.
--    \end{description}
--  }
--  \hline 
--  \mmioreg{InterruptACK}{Interrupt acknowledge}{0x064}{W}{%
--    Writing a value with bits set as defined in \field{InterruptStatus}
--    to this register notifies the device that events causing
--    the interrupt have been handled.
--  }
--  \hline 
--  \mmioreg{Status}{Device status}{0x070}{RW}{%
--    Reading from this register returns the current device status
--    flags.
--    Writing non-zero values to this register sets the status flags,
--    indicating the driver progress. Writing zero (0x0) to this
--    register triggers a device reset. 
--    See also p. \ref{sec:Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operation / Device Initialization}~\nameref{sec:Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operation / Device Initialization}.
--  }
--  \hline 
--  \mmiodreg{QueueDescLow}{QueueDescHigh}{Virtual queue's Descriptor Area 64 bit long physical address}{0x080}{0x084}{W}{%
--    Writing to these two registers (lower 32 bits of the address
--    to \field{QueueDescLow}, higher 32 bits to \field{QueueDescHigh}) notifies
--    the device about location of the Descriptor Area of the queue
--    selected by writing to \field{QueueSel} register.
--  }
--  \hline 
--  \mmiodreg{QueueDriverLow}{QueueDriverHigh}{Virtual queue's Driver Area 64 bit long physical address}{0x090}{0x094}{W}{%
--    Writing to these two registers (lower 32 bits of the address
--    to \field{QueueDriverLow}, higher 32 bits to \field{QueueDriverHigh}) notifies
--    the device about location of the Driver Area of the queue
--    selected by writing to \field{QueueSel}.
--  }
--  \hline 
--  \mmiodreg{QueueDeviceLow}{QueueDeviceHigh}{Virtual queue's Device Area 64 bit long physical address}{0x0a0}{0x0a4}{W}{%
--    Writing to these two registers (lower 32 bits of the address
--    to \field{QueueDeviceLow}, higher 32 bits to \field{QueueDeviceHigh}) notifies
--    the device about location of the Device Area of the queue
--    selected by writing to \field{QueueSel}.
--  }
--  \hline 
--  \mmioreg{SHMSel}{Shared memory id}{0x0ac}{W}{%
--    Writing to this register selects the shared memory region \ref{sec:Basic Facilities of a Virtio Device / Shared Memory Regions}
--    following operations on \field{SHMLenLow}, \field{SHMLenHigh},
--    \field{SHMBaseLow} and \field{SHMBaseHigh} apply to.
--  }
--  \hline 
--  \mmiodreg{SHMLenLow}{SHMLenHigh}{Shared memory region 64 bit long length}{0x0b0}{0x0b4}{R}{%
--    These registers return the length of the shared memory
--    region in bytes, as defined by the device for the region selected by
--    the \field{SHMSel} register.  The lower 32 bits of the length
--    are read from \field{SHMLenLow} and the higher 32 bits from
--    \field{SHMLenHigh}.  Reading from a non-existent
--    region (i.e. where the ID written to \field{SHMSel} is unused)
--    results in a length of -1.
--  }
--  \hline 
--  \mmiodreg{SHMBaseLow}{SHMBaseHigh}{Shared memory region 64 bit long physical address}{0x0b8}{0x0bc}{R}{%
--    The driver reads these registers to discover the base address
--    of the region in physical address space.  This address is
--    chosen by the device (or other part of the VMM).
--    The lower 32 bits of the address are read from \field{SHMBaseLow}
--    with the higher 32 bits from \field{SHMBaseHigh}.  Reading
--    from a non-existent region (i.e. where the ID written to
--    \field{SHMSel} is unused) results in a base address of
--    0xffffffffffffffff.
--  }
--  \hline 
--  \mmioreg{QueueReset}{Virtual queue reset bit}{0x0c0}{RW}{%
--    If VIRTIO_F_RING_RESET has been negotiated, writing one (0x1) to this
--    register selectively resets the queue. Both read and write accesses
--    apply to the queue selected by writing to \field{QueueSel}.
--  }
--  \hline
--  \mmioreg{ConfigGeneration}{Configuration atomicity value}{0x0fc}{R}{
--    Reading from this register returns a value describing a version of the device-specific configuration space (see \field{Config}).
--    The driver can then access the configuration space and, when finished, read \field{ConfigGeneration} again.
--    If no part of the configuration space has changed between these two \field{ConfigGeneration} reads, the returned values are identical.
--    If the values are different, the configuration space accesses were not atomic and the driver has to perform the operations again.
--    See also \ref {sec:Basic Facilities of a Virtio Device / Device Configuration Space}.
--  }
--  \hline 
--  \mmioreg{Config}{Configuration space}{0x100+}{RW}{
--    Device-specific configuration space starts at the offset 0x100
--    and is accessed with byte alignment. Its meaning and size
--    depend on the device and the driver.
--  }
--  \hline
--\end{longtable}
--
--\devicenormative{\subsubsection}{MMIO Device Register Layout}{Virtio Transport Options / Virtio Over MMIO / MMIO Device Register Layout}
--
--The device MUST return 0x74726976 in \field{MagicValue}.
--
--The device MUST return value 0x2 in \field{Version}.
--
--The device MUST present each event by setting the corresponding bit in \field{InterruptStatus} from the
--moment it takes place, until the driver acknowledges the interrupt
--by writing a corresponding bit mask to the \field{InterruptACK} register.  Bits which
--do not represent events which took place MUST be zero.
--
--Upon reset, the device MUST clear all bits in \field{InterruptStatus} and ready bits in the
--\field{QueueReady} register for all queues in the device.
--
--The device MUST change value returned in \field{ConfigGeneration} if there is any risk of a
--driver seeing an inconsistent configuration state.
--
--The device MUST NOT access virtual queue contents when \field{QueueReady} is zero (0x0).
--
--If VIRTIO_F_RING_RESET has been negotiated, the device MUST present a 0 in
--\field{QueueReset} on reset.
--
--If VIRTIO_F_RING_RESET has been negotiated, The device MUST present a 0 in
--\field{QueueReset} after the virtqueue is enabled with \field{QueueReady}.
--
--The device MUST reset the queue when 1 is written to \field{QueueReset}. The
--device MUST continue to present 1 in \field{QueueReset} as long as the queue reset
--is ongoing. The device MUST present 0 in both \field{QueueReset} and \field{QueueReady}
--when queue reset has completed.
--(see \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Reset}).
--
--\drivernormative{\subsubsection}{MMIO Device Register Layout}{Virtio Transport Options / Virtio Over MMIO / MMIO Device Register Layout}
--The driver MUST NOT access memory locations not described in the
--table \ref{tab:Virtio Trasport Options / Virtio Over MMIO / MMIO Device Register Layout}
--(or, in case of the configuration space, described in the device specification),
--MUST NOT write to the read-only registers (direction R) and
--MUST NOT read from the write-only registers (direction W).
--
--The driver MUST only use 32 bit wide and aligned reads and writes to access the control registers
--described in table \ref{tab:Virtio Trasport Options / Virtio Over MMIO / MMIO Device Register Layout}.
--For the device-specific configuration space, the driver MUST use 8 bit wide accesses for
--8 bit wide fields, 16 bit wide and aligned accesses for 16 bit wide fields and 32 bit wide and
--aligned accesses for 32 and 64 bit wide fields.
--
--The driver MUST ignore a device with \field{MagicValue} which is not 0x74726976,
--although it MAY report an error.
--
--The driver MUST ignore a device with \field{Version} which is not 0x2,
--although it MAY report an error.
--
--The driver MUST ignore a device with \field{DeviceID} 0x0,
--but MUST NOT report any error.
--
--Before reading from \field{DeviceFeatures}, the driver MUST write a value to \field{DeviceFeaturesSel}.
--
--Before writing to the \field{DriverFeatures} register, the driver MUST write a value to the \field{DriverFeaturesSel} register.
--
--The driver MUST write a value to \field{QueueNum} which is less than
--or equal to the value presented by the device in \field{QueueNumMax}.
--
--When \field{QueueReady} is not zero, the driver MUST NOT access
--\field{QueueNum}, \field{QueueDescLow}, \field{QueueDescHigh},
--\field{QueueDriverLow}, \field{QueueDriverHigh}, \field{QueueDeviceLow}, \field{QueueDeviceHigh}.
--
--To stop using the queue the driver MUST write zero (0x0) to this
--\field{QueueReady} and MUST read the value back to ensure
--synchronization.
--
--The driver MUST ignore undefined bits in \field{InterruptStatus}.
--
--The driver MUST write a value with a bit mask describing events it handled into \field{InterruptACK} when
--it finishes handling an interrupt and MUST NOT set any of the undefined bits in the value.
--
--If VIRTIO_F_RING_RESET has been negotiated, after the driver writes 1 to
--\field{QueueReset} to reset the queue, the driver MUST NOT consider queue
--reset to be complete until it reads back 0 in \field{QueueReset}. The driver
--MAY re-enable the queue by writing 1 to \field{QueueReady} after ensuring
--that other virtqueue fields have been set up correctly. The driver MAY set
--driver-writeable queue configuration values to different values than those
--that were used before the queue reset.
--(see \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Reset}).
--
--\subsection{MMIO-specific Initialization And Device Operation}\label{sec:Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operation}
--
--\subsubsection{Device Initialization}\label{sec:Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operation / Device Initialization}
--
--\drivernormative{\paragraph}{Device Initialization}{Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operation / Device Initialization}
--
--The driver MUST start the device initialization by reading and
--checking values from \field{MagicValue} and \field{Version}.
--If both values are valid, it MUST read \field{DeviceID}
--and if its value is zero (0x0) MUST abort initialization and
--MUST NOT access any other register.
--
--Drivers not expecting shared memory MUST NOT use the shared
--memory registers.
--
--Further initialization MUST follow the procedure described in
--\ref{sec:General Initialization And Device Operation / Device Initialization}~\nameref{sec:General Initialization And Device Operation / Device Initialization}.
--
--\subsubsection{Virtqueue Configuration}\label{sec:Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operation / Virtqueue Configuration}
--
--The driver will typically initialize the virtual queue in the following way:
--
--\begin{enumerate}
--\item Select the queue writing its index (first queue is 0) to
--   \field{QueueSel}.
--
--\item Check if the queue is not already in use: read \field{QueueReady},
--   and expect a returned value of zero (0x0).
--
--\item Read maximum queue size (number of elements) from
--   \field{QueueNumMax}. If the returned value is zero (0x0) the
--   queue is not available.
--
--\item Allocate and zero the queue memory, making sure the memory
--   is physically contiguous.
--
--\item Notify the device about the queue size by writing the size to
--   \field{QueueNum}.
--
--\item Write physical addresses of the queue's Descriptor Area,
--   Driver Area and Device Area to (respectively) the
--   \field{QueueDescLow}/\field{QueueDescHigh},
--   \field{QueueDriverLow}/\field{QueueDriverHigh} and
--   \field{QueueDeviceLow}/\field{QueueDeviceHigh} register pairs.
--
--\item Write 0x1 to \field{QueueReady}.
--\end{enumerate}
--
--\subsubsection{Available Buffer Notifications}\label{sec:Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operation / Available Buffer Notifications}
--
--When VIRTIO_F_NOTIFICATION_DATA has not been negotiated,
--the driver sends an available buffer notification to the device by writing
--the 16-bit virtqueue index
--of the queue to be notified to \field{QueueNotify}.
--
--When VIRTIO_F_NOTIFICATION_DATA has been negotiated,
--the driver sends an available buffer notification to the device by writing
--the following 32-bit value to \field{QueueNotify}:
--\lstinputlisting{notifications-le.c}
--
--See \ref{sec:Basic Facilities of a Virtio Device / Driver notifications}~\nameref{sec:Basic Facilities of a Virtio Device / Driver notifications}
--for the definition of the components.
--
--\subsubsection{Notifications From The Device}\label{sec:Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operation / Notifications From The Device}
--
--The memory mapped virtio device is using a single, dedicated
--interrupt signal, which is asserted when at least one of the
--bits described in the description of \field{InterruptStatus}
--is set. This is how the device sends a used buffer notification
--or a configuration change notification to the device.
--
--\drivernormative{\paragraph}{Notifications From The Device}{Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operation / Notifications From The Device}
--After receiving an interrupt, the driver MUST read
--\field{InterruptStatus} to check what caused the interrupt (see the
--register description).  The used buffer notification bit being set
--SHOULD be interpreted as a used buffer notification for each active
--virtqueue.  After the interrupt is handled, the driver MUST acknowledge
--it by writing a bit mask corresponding to the handled events to the
--InterruptACK register.
--
--\subsection{Legacy interface}\label{sec:Virtio Transport Options / Virtio Over MMIO / Legacy interface}
--
--The legacy MMIO transport used page-based addressing, resulting
--in a slightly different control register layout, the device
--initialization and the virtual queue configuration procedure.
--
--Table \ref{tab:Virtio Trasport Options / Virtio Over MMIO / MMIO Device Legacy Register Layout} 
--presents control registers layout, omitting
--descriptions of registers which did not change their function
--nor behaviour:
--
--\begin{longtable}{p{0.2\textwidth}p{0.7\textwidth}}
--  \caption {MMIO Device Legacy Register Layout}
--  \label{tab:Virtio Trasport Options / Virtio Over MMIO / MMIO Device Legacy Register Layout} \\
--  \hline
--  \mmioreg{Name}{Function}{Offset from base}{Direction}{Description} 
--  \hline 
--  \hline 
--  \endfirsthead
--  \hline
--  \mmioreg{Name}{Function}{Offset from the base}{Direction}{Description} 
--  \hline 
--  \hline 
--  \endhead
--  \endfoot
--  \endlastfoot
--  \mmioreg{MagicValue}{Magic value}{0x000}{R}{}
--  \hline
--  \mmioreg{Version}{Device version number}{0x004}{R}{Legacy device returns value 0x1.}
--  \hline
--  \mmioreg{DeviceID}{Virtio Subsystem Device ID}{0x008}{R}{}
--  \hline
--  \mmioreg{VendorID}{Virtio Subsystem Vendor ID}{0x00c}{R}{}
--  \hline
--  \mmioreg{HostFeatures}{Flags representing features the device supports}{0x010}{R}{}
--  \hline
--  \mmioreg{HostFeaturesSel}{Device (host) features word selection.}{0x014}{W}{}
--  \hline
--  \mmioreg{GuestFeatures}{Flags representing device features understood and activated by the driver}{0x020}{W}{}
--  \hline
--  \mmioreg{GuestFeaturesSel}{Activated (guest) features word selection}{0x024}{W}{}
--  \hline 
--  \mmioreg{GuestPageSize}{Guest page size}{0x028}{W}{%
--    The driver writes the guest page size in bytes to the
--    register during initialization, before any queues are used.
--    This value should be a power of 2 and is used by the device to
--    calculate the Guest address of the first queue page
--    (see QueuePFN).
--  }
--  \hline
--  \mmioreg{QueueSel}{Virtual queue index}{0x030}{W}{%
--    Writing to this register selects the virtual queue that the
--    following operations on the \field{QueueNumMax}, \field{QueueNum}, \field{QueueAlign}
--    and \field{QueuePFN} registers apply to. The index
--    number of the first queue is zero (0x0). 
--.
--  }
--  \hline
--  \mmioreg{QueueNumMax}{Maximum virtual queue size}{0x034}{R}{%
--    Reading from the register returns the maximum size of the queue
--    the device is ready to process or zero (0x0) if the queue is not
--    available. This applies to the queue selected by writing to
--    \field{QueueSel} and is allowed only when \field{QueuePFN} is set to zero
--    (0x0), so when the queue is not actively used.
--  }
--  \hline
--  \mmioreg{QueueNum}{Virtual queue size}{0x038}{W}{%
--    Queue size is the number of elements in the queue.
--    Writing to this register notifies the device what size of the
--    queue the driver will use. This applies to the queue selected by
--    writing to \field{QueueSel}.
--  }
--  \hline
--  \mmioreg{QueueAlign}{Used Ring alignment in the virtual queue}{0x03c}{W}{%
--    Writing to this register notifies the device about alignment
--    boundary of the Used Ring in bytes. This value should be a power
--    of 2 and applies to the queue selected by writing to \field{QueueSel}.
--  }
--  \hline
--  \mmioreg{QueuePFN}{Guest physical page number of the virtual queue}{0x040}{RW}{%
--    Writing to this register notifies the device about location of the
--    virtual queue in the Guest's physical address space. This value
--    is the index number of a page starting with the queue
--    Descriptor Table. Value zero (0x0) means physical address zero
--    (0x00000000) and is illegal. When the driver stops using the
--    queue it writes zero (0x0) to this register.
--    Reading from this register returns the currently used page
--    number of the queue, therefore a value other than zero (0x0)
--    means that the queue is in use.
--    Both read and write accesses apply to the queue selected by
--    writing to \field{QueueSel}.
--  }
--  \hline
--  \mmioreg{QueueNotify}{Queue notifier}{0x050}{W}{}
--  \hline
--  \mmioreg{InterruptStatus}{Interrupt status}{0x60}{R}{}
--  \hline
--  \mmioreg{InterruptACK}{Interrupt acknowledge}{0x064}{W}{}
--  \hline
--  \mmioreg{Status}{Device status}{0x070}{RW}{%
--    Reading from this register returns the current device status
--    flags.
--    Writing non-zero values to this register sets the status flags,
--    indicating the OS/driver progress. Writing zero (0x0) to this
--    register triggers a device reset. The device
--    sets \field{QueuePFN} to zero (0x0) for all queues in the device.
--    Also see \ref{sec:General Initialization And Device Operation / Device Initialization}~\nameref{sec:General Initialization And Device Operation / Device Initialization}.
--  }
--  \hline
--  \mmioreg{Config}{Configuration space}{0x100+}{RW}{}
--  \hline
--\end{longtable}
--
--The virtual queue page size is defined by writing to \field{GuestPageSize},
--as written by the guest. The driver does this before the
--virtual queues are configured.
--
--The virtual queue layout follows
--p. \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Legacy Interfaces: A Note on Virtqueue Layout}~\nameref{sec:Basic Facilities of a Virtio Device / Virtqueues / Legacy Interfaces: A Note on Virtqueue Layout},
--with the alignment defined in \field{QueueAlign}.
--
--The virtual queue is configured as follows:
--\begin{enumerate}
--\item Select the queue writing its index (first queue is 0) to
--   \field{QueueSel}.
--
--\item Check if the queue is not already in use: read \field{QueuePFN},
--   expecting a returned value of zero (0x0).
--
--\item Read maximum queue size (number of elements) from
--   \field{QueueNumMax}. If the returned value is zero (0x0) the
--   queue is not available.
--
--\item Allocate and zero the queue pages in contiguous virtual
--   memory, aligning the Used Ring to an optimal boundary (usually
--   page size). The driver should choose a queue size smaller than or
--   equal to \field{QueueNumMax}.
--
--\item Notify the device about the queue size by writing the size to
--   \field{QueueNum}.
--
--\item Notify the device about the used alignment by writing its value
--   in bytes to \field{QueueAlign}.
--
--\item Write the physical number of the first page of the queue to
--   the \field{QueuePFN} register.
--\end{enumerate}
--
--Notification mechanisms did not change.
-+\input{transport-mmio.tex}
- 
- \section{Virtio Over Channel I/O}\label{sec:Virtio Transport Options / Virtio Over Channel I/O}
- 
-diff --git a/transport-mmio.tex b/transport-mmio.tex
-new file mode 100644
-index 0000000..e12a652
---- /dev/null
-+++ b/transport-mmio.tex
-@@ -0,0 +1,564 @@
-+\section{Virtio Over MMIO}\label{sec:Virtio Transport Options / Virtio Over MMIO}
-+
-+Virtual environments without PCI support (a common situation in
-+embedded devices models) might use simple memory mapped device
-+(``virtio-mmio'') instead of the PCI device.
-+
-+The memory mapped virtio device behaviour is based on the PCI
-+device specification. Therefore most operations including device
-+initialization, queues configuration and buffer transfers are
-+nearly identical. Existing differences are described in the
-+following sections.
-+
-+\subsection{MMIO Device Discovery}\label{sec:Virtio Transport Options / Virtio Over MMIO / MMIO Device Discovery}
-+
-+Unlike PCI, MMIO provides no generic device discovery mechanism.  For each
-+device, the guest OS will need to know the location of the registers
-+and interrupt(s) used.  The suggested binding for systems using
-+flattened device trees is shown in this example:
-+
-+\begin{lstlisting}
-+// EXAMPLE: virtio_block device taking 512 bytes at 0x1e000, interrupt 42.
-+virtio_block@1e000 {
-+        compatible = "virtio,mmio";
-+        reg = <0x1e000 0x200>;
-+        interrupts = <42>;
-+}
-+\end{lstlisting}
-+
-+\subsection{MMIO Device Register Layout}\label{sec:Virtio Transport Options / Virtio Over MMIO / MMIO Device Register Layout}
-+
-+MMIO virtio devices provide a set of memory mapped control
-+registers followed by a device-specific configuration space,
-+described in the table~\ref{tab:Virtio Trasport Options / Virtio Over MMIO / MMIO Device Register Layout}.
-+
-+All register values are organized as Little Endian.
-+
-+\newcommand{\mmioreg}[5]{% Name Function Offset Direction Description
-+  {\field{#1}} \newline #3 \newline #4 & {\bf#2} \newline #5 \\
-+}
-+
-+\newcommand{\mmiodreg}[7]{% NameHigh NameLow Function OffsetHigh OffsetLow Direction Description
-+  {\field{#1}} \newline #4 \newline {\field{#2}} \newline #5 \newline #6 & {\bf#3} \newline #7 \\
-+}
-+
-+\begin{longtable}{p{0.2\textwidth}p{0.7\textwidth}}
-+  \caption {MMIO Device Register Layout}
-+  \label{tab:Virtio Trasport Options / Virtio Over MMIO / MMIO Device Register Layout} \\
-+  \hline
-+  \mmioreg{Name}{Function}{Offset from base}{Direction}{Description} 
-+  \hline 
-+  \hline 
-+  \endfirsthead
-+  \hline
-+  \mmioreg{Name}{Function}{Offset from the base}{Direction}{Description} 
-+  \hline 
-+  \hline 
-+  \endhead
-+  \endfoot
-+  \endlastfoot
-+  \mmioreg{MagicValue}{Magic value}{0x000}{R}{%
-+    0x74726976
-+    (a Little Endian equivalent of the ``virt'' string).
-+  } 
-+  \hline
-+  \mmioreg{Version}{Device version number}{0x004}{R}{%
-+    0x2.
-+    \begin{note}
-+      Legacy devices (see \ref{sec:Virtio Transport Options / Virtio Over MMIO / Legacy interface}~\nameref{sec:Virtio Transport Options / Virtio Over MMIO / Legacy interface}) used 0x1.
-+    \end{note}
-+  }
-+  \hline 
-+  \mmioreg{DeviceID}{Virtio Subsystem Device ID}{0x008}{R}{%
-+    See \ref{sec:Device Types}~\nameref{sec:Device Types} for possible values.
-+    Value zero (0x0) is used to
-+    define a system memory map with placeholder devices at static,
-+    well known addresses, assigning functions to them depending
-+    on user's needs.
-+  }
-+  \hline 
-+  \mmioreg{VendorID}{Virtio Subsystem Vendor ID}{0x00c}{R}{}
-+  \hline 
-+  \mmioreg{DeviceFeatures}{Flags representing features the device supports}{0x010}{R}{%
-+    Reading from this register returns 32 consecutive flag bits,
-+    the least significant bit depending on the last value written to
-+    \field{DeviceFeaturesSel}. Access to this register returns
-+    bits $\field{DeviceFeaturesSel}*32$ to $(\field{DeviceFeaturesSel}*32)+31$, eg.
-+    feature bits 0 to 31 if \field{DeviceFeaturesSel} is set to 0 and
-+    features bits 32 to 63 if \field{DeviceFeaturesSel} is set to 1.
-+    Also see \ref{sec:Basic Facilities of a Virtio Device / Feature Bits}~\nameref{sec:Basic Facilities of a Virtio Device / Feature Bits}.
-+  }
-+  \hline 
-+  \mmioreg{DeviceFeaturesSel}{Device (host) features word selection.}{0x014}{W}{%
-+    Writing to this register selects a set of 32 device feature bits
-+    accessible by reading from \field{DeviceFeatures}.
-+  }
-+  \hline 
-+  \mmioreg{DriverFeatures}{Flags representing device features understood and activated by the driver}{0x020}{W}{%
-+    Writing to this register sets 32 consecutive flag bits, the least significant
-+    bit depending on the last value written to \field{DriverFeaturesSel}.
-+     Access to this register sets bits $\field{DriverFeaturesSel}*32$
-+    to $(\field{DriverFeaturesSel}*32)+31$, eg. feature bits 0 to 31 if
-+    \field{DriverFeaturesSel} is set to 0 and features bits 32 to 63 if
-+    \field{DriverFeaturesSel} is set to 1. Also see \ref{sec:Basic Facilities of a Virtio Device / Feature Bits}~\nameref{sec:Basic Facilities of a Virtio Device / Feature Bits}.
-+  }
-+  \hline 
-+  \mmioreg{DriverFeaturesSel}{Activated (guest) features word selection}{0x024}{W}{%
-+    Writing to this register selects a set of 32 activated feature
-+    bits accessible by writing to \field{DriverFeatures}.
-+  }
-+  \hline 
-+  \mmioreg{QueueSel}{Virtual queue index}{0x030}{W}{%
-+    Writing to this register selects the virtual queue that the
-+    following operations on \field{QueueNumMax}, \field{QueueNum}, \field{QueueReady},
-+    \field{QueueDescLow}, \field{QueueDescHigh}, \field{QueueDriverlLow}, \field{QueueDriverHigh},
-+    \field{QueueDeviceLow}, \field{QueueDeviceHigh} and \field{QueueReset} apply to. The index
-+    number of the first queue is zero (0x0). 
-+  }
-+  \hline 
-+  \mmioreg{QueueNumMax}{Maximum virtual queue size}{0x034}{R}{%
-+    Reading from the register returns the maximum size (number of
-+    elements) of the queue the device is ready to process or
-+    zero (0x0) if the queue is not available. This applies to the
-+    queue selected by writing to \field{QueueSel}.
-+  }
-+  \hline 
-+  \mmioreg{QueueNum}{Virtual queue size}{0x038}{W}{%
-+    Queue size is the number of elements in the queue.
-+    Writing to this register notifies the device what size of the
-+    queue the driver will use. This applies to the queue selected by
-+    writing to \field{QueueSel}.
-+  }
-+  \hline 
-+  \mmioreg{QueueReady}{Virtual queue ready bit}{0x044}{RW}{%
-+    Writing one (0x1) to this register notifies the device that it can
-+    execute requests from this virtual queue. Reading from this register
-+    returns the last value written to it. Both read and write
-+    accesses apply to the queue selected by writing to \field{QueueSel}.
-+  }
-+  \hline 
-+  \mmioreg{QueueNotify}{Queue notifier}{0x050}{W}{%
-+    Writing a value to this register notifies the device that
-+    there are new buffers to process in a queue.
-+
-+    When VIRTIO_F_NOTIFICATION_DATA has not been negotiated,
-+    the value written is the queue index.
-+
-+    When VIRTIO_F_NOTIFICATION_DATA has been negotiated,
-+    the \field{Notification data} value has the following format:
-+
-+    \lstinputlisting{notifications-le.c}
-+
-+    See \ref{sec:Basic Facilities of a Virtio Device / Driver notifications}~\nameref{sec:Basic Facilities of a Virtio Device / Driver notifications}
-+    for the definition of the components.
-+  }
-+  \hline 
-+  \mmioreg{InterruptStatus}{Interrupt status}{0x60}{R}{%
-+    Reading from this register returns a bit mask of events that
-+    caused the device interrupt to be asserted.
-+    The following events are possible:
-+    \begin{description}
-+      \item[Used Buffer Notification] - bit 0 - the interrupt was asserted
-+        because the device has used a buffer
-+        in at least one of the active virtual queues.
-+      \item [Configuration Change Notification] - bit 1 - the interrupt was
-+        asserted because the configuration of the device has changed.
-+    \end{description}
-+  }
-+  \hline 
-+  \mmioreg{InterruptACK}{Interrupt acknowledge}{0x064}{W}{%
-+    Writing a value with bits set as defined in \field{InterruptStatus}
-+    to this register notifies the device that events causing
-+    the interrupt have been handled.
-+  }
-+  \hline 
-+  \mmioreg{Status}{Device status}{0x070}{RW}{%
-+    Reading from this register returns the current device status
-+    flags.
-+    Writing non-zero values to this register sets the status flags,
-+    indicating the driver progress. Writing zero (0x0) to this
-+    register triggers a device reset. 
-+    See also p. \ref{sec:Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operation / Device Initialization}~\nameref{sec:Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operation / Device Initialization}.
-+  }
-+  \hline 
-+  \mmiodreg{QueueDescLow}{QueueDescHigh}{Virtual queue's Descriptor Area 64 bit long physical address}{0x080}{0x084}{W}{%
-+    Writing to these two registers (lower 32 bits of the address
-+    to \field{QueueDescLow}, higher 32 bits to \field{QueueDescHigh}) notifies
-+    the device about location of the Descriptor Area of the queue
-+    selected by writing to \field{QueueSel} register.
-+  }
-+  \hline 
-+  \mmiodreg{QueueDriverLow}{QueueDriverHigh}{Virtual queue's Driver Area 64 bit long physical address}{0x090}{0x094}{W}{%
-+    Writing to these two registers (lower 32 bits of the address
-+    to \field{QueueDriverLow}, higher 32 bits to \field{QueueDriverHigh}) notifies
-+    the device about location of the Driver Area of the queue
-+    selected by writing to \field{QueueSel}.
-+  }
-+  \hline 
-+  \mmiodreg{QueueDeviceLow}{QueueDeviceHigh}{Virtual queue's Device Area 64 bit long physical address}{0x0a0}{0x0a4}{W}{%
-+    Writing to these two registers (lower 32 bits of the address
-+    to \field{QueueDeviceLow}, higher 32 bits to \field{QueueDeviceHigh}) notifies
-+    the device about location of the Device Area of the queue
-+    selected by writing to \field{QueueSel}.
-+  }
-+  \hline 
-+  \mmioreg{SHMSel}{Shared memory id}{0x0ac}{W}{%
-+    Writing to this register selects the shared memory region \ref{sec:Basic Facilities of a Virtio Device / Shared Memory Regions}
-+    following operations on \field{SHMLenLow}, \field{SHMLenHigh},
-+    \field{SHMBaseLow} and \field{SHMBaseHigh} apply to.
-+  }
-+  \hline 
-+  \mmiodreg{SHMLenLow}{SHMLenHigh}{Shared memory region 64 bit long length}{0x0b0}{0x0b4}{R}{%
-+    These registers return the length of the shared memory
-+    region in bytes, as defined by the device for the region selected by
-+    the \field{SHMSel} register.  The lower 32 bits of the length
-+    are read from \field{SHMLenLow} and the higher 32 bits from
-+    \field{SHMLenHigh}.  Reading from a non-existent
-+    region (i.e. where the ID written to \field{SHMSel} is unused)
-+    results in a length of -1.
-+  }
-+  \hline 
-+  \mmiodreg{SHMBaseLow}{SHMBaseHigh}{Shared memory region 64 bit long physical address}{0x0b8}{0x0bc}{R}{%
-+    The driver reads these registers to discover the base address
-+    of the region in physical address space.  This address is
-+    chosen by the device (or other part of the VMM).
-+    The lower 32 bits of the address are read from \field{SHMBaseLow}
-+    with the higher 32 bits from \field{SHMBaseHigh}.  Reading
-+    from a non-existent region (i.e. where the ID written to
-+    \field{SHMSel} is unused) results in a base address of
-+    0xffffffffffffffff.
-+  }
-+  \hline 
-+  \mmioreg{QueueReset}{Virtual queue reset bit}{0x0c0}{RW}{%
-+    If VIRTIO_F_RING_RESET has been negotiated, writing one (0x1) to this
-+    register selectively resets the queue. Both read and write accesses
-+    apply to the queue selected by writing to \field{QueueSel}.
-+  }
-+  \hline
-+  \mmioreg{ConfigGeneration}{Configuration atomicity value}{0x0fc}{R}{
-+    Reading from this register returns a value describing a version of the device-specific configuration space (see \field{Config}).
-+    The driver can then access the configuration space and, when finished, read \field{ConfigGeneration} again.
-+    If no part of the configuration space has changed between these two \field{ConfigGeneration} reads, the returned values are identical.
-+    If the values are different, the configuration space accesses were not atomic and the driver has to perform the operations again.
-+    See also \ref {sec:Basic Facilities of a Virtio Device / Device Configuration Space}.
-+  }
-+  \hline 
-+  \mmioreg{Config}{Configuration space}{0x100+}{RW}{
-+    Device-specific configuration space starts at the offset 0x100
-+    and is accessed with byte alignment. Its meaning and size
-+    depend on the device and the driver.
-+  }
-+  \hline
-+\end{longtable}
-+
-+\devicenormative{\subsubsection}{MMIO Device Register Layout}{Virtio Transport Options / Virtio Over MMIO / MMIO Device Register Layout}
-+
-+The device MUST return 0x74726976 in \field{MagicValue}.
-+
-+The device MUST return value 0x2 in \field{Version}.
-+
-+The device MUST present each event by setting the corresponding bit in \field{InterruptStatus} from the
-+moment it takes place, until the driver acknowledges the interrupt
-+by writing a corresponding bit mask to the \field{InterruptACK} register.  Bits which
-+do not represent events which took place MUST be zero.
-+
-+Upon reset, the device MUST clear all bits in \field{InterruptStatus} and ready bits in the
-+\field{QueueReady} register for all queues in the device.
-+
-+The device MUST change value returned in \field{ConfigGeneration} if there is any risk of a
-+driver seeing an inconsistent configuration state.
-+
-+The device MUST NOT access virtual queue contents when \field{QueueReady} is zero (0x0).
-+
-+If VIRTIO_F_RING_RESET has been negotiated, the device MUST present a 0 in
-+\field{QueueReset} on reset.
-+
-+If VIRTIO_F_RING_RESET has been negotiated, The device MUST present a 0 in
-+\field{QueueReset} after the virtqueue is enabled with \field{QueueReady}.
-+
-+The device MUST reset the queue when 1 is written to \field{QueueReset}. The
-+device MUST continue to present 1 in \field{QueueReset} as long as the queue reset
-+is ongoing. The device MUST present 0 in both \field{QueueReset} and \field{QueueReady}
-+when queue reset has completed.
-+(see \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Reset}).
-+
-+\drivernormative{\subsubsection}{MMIO Device Register Layout}{Virtio Transport Options / Virtio Over MMIO / MMIO Device Register Layout}
-+The driver MUST NOT access memory locations not described in the
-+table \ref{tab:Virtio Trasport Options / Virtio Over MMIO / MMIO Device Register Layout}
-+(or, in case of the configuration space, described in the device specification),
-+MUST NOT write to the read-only registers (direction R) and
-+MUST NOT read from the write-only registers (direction W).
-+
-+The driver MUST only use 32 bit wide and aligned reads and writes to access the control registers
-+described in table \ref{tab:Virtio Trasport Options / Virtio Over MMIO / MMIO Device Register Layout}.
-+For the device-specific configuration space, the driver MUST use 8 bit wide accesses for
-+8 bit wide fields, 16 bit wide and aligned accesses for 16 bit wide fields and 32 bit wide and
-+aligned accesses for 32 and 64 bit wide fields.
-+
-+The driver MUST ignore a device with \field{MagicValue} which is not 0x74726976,
-+although it MAY report an error.
-+
-+The driver MUST ignore a device with \field{Version} which is not 0x2,
-+although it MAY report an error.
-+
-+The driver MUST ignore a device with \field{DeviceID} 0x0,
-+but MUST NOT report any error.
-+
-+Before reading from \field{DeviceFeatures}, the driver MUST write a value to \field{DeviceFeaturesSel}.
-+
-+Before writing to the \field{DriverFeatures} register, the driver MUST write a value to the \field{DriverFeaturesSel} register.
-+
-+The driver MUST write a value to \field{QueueNum} which is less than
-+or equal to the value presented by the device in \field{QueueNumMax}.
-+
-+When \field{QueueReady} is not zero, the driver MUST NOT access
-+\field{QueueNum}, \field{QueueDescLow}, \field{QueueDescHigh},
-+\field{QueueDriverLow}, \field{QueueDriverHigh}, \field{QueueDeviceLow}, \field{QueueDeviceHigh}.
-+
-+To stop using the queue the driver MUST write zero (0x0) to this
-+\field{QueueReady} and MUST read the value back to ensure
-+synchronization.
-+
-+The driver MUST ignore undefined bits in \field{InterruptStatus}.
-+
-+The driver MUST write a value with a bit mask describing events it handled into \field{InterruptACK} when
-+it finishes handling an interrupt and MUST NOT set any of the undefined bits in the value.
-+
-+If VIRTIO_F_RING_RESET has been negotiated, after the driver writes 1 to
-+\field{QueueReset} to reset the queue, the driver MUST NOT consider queue
-+reset to be complete until it reads back 0 in \field{QueueReset}. The driver
-+MAY re-enable the queue by writing 1 to \field{QueueReady} after ensuring
-+that other virtqueue fields have been set up correctly. The driver MAY set
-+driver-writeable queue configuration values to different values than those
-+that were used before the queue reset.
-+(see \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Reset}).
-+
-+\subsection{MMIO-specific Initialization And Device Operation}\label{sec:Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operation}
-+
-+\subsubsection{Device Initialization}\label{sec:Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operation / Device Initialization}
-+
-+\drivernormative{\paragraph}{Device Initialization}{Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operation / Device Initialization}
-+
-+The driver MUST start the device initialization by reading and
-+checking values from \field{MagicValue} and \field{Version}.
-+If both values are valid, it MUST read \field{DeviceID}
-+and if its value is zero (0x0) MUST abort initialization and
-+MUST NOT access any other register.
-+
-+Drivers not expecting shared memory MUST NOT use the shared
-+memory registers.
-+
-+Further initialization MUST follow the procedure described in
-+\ref{sec:General Initialization And Device Operation / Device Initialization}~\nameref{sec:General Initialization And Device Operation / Device Initialization}.
-+
-+\subsubsection{Virtqueue Configuration}\label{sec:Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operation / Virtqueue Configuration}
-+
-+The driver will typically initialize the virtual queue in the following way:
-+
-+\begin{enumerate}
-+\item Select the queue writing its index (first queue is 0) to
-+   \field{QueueSel}.
-+
-+\item Check if the queue is not already in use: read \field{QueueReady},
-+   and expect a returned value of zero (0x0).
-+
-+\item Read maximum queue size (number of elements) from
-+   \field{QueueNumMax}. If the returned value is zero (0x0) the
-+   queue is not available.
-+
-+\item Allocate and zero the queue memory, making sure the memory
-+   is physically contiguous.
-+
-+\item Notify the device about the queue size by writing the size to
-+   \field{QueueNum}.
-+
-+\item Write physical addresses of the queue's Descriptor Area,
-+   Driver Area and Device Area to (respectively) the
-+   \field{QueueDescLow}/\field{QueueDescHigh},
-+   \field{QueueDriverLow}/\field{QueueDriverHigh} and
-+   \field{QueueDeviceLow}/\field{QueueDeviceHigh} register pairs.
-+
-+\item Write 0x1 to \field{QueueReady}.
-+\end{enumerate}
-+
-+\subsubsection{Available Buffer Notifications}\label{sec:Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operation / Available Buffer Notifications}
-+
-+When VIRTIO_F_NOTIFICATION_DATA has not been negotiated,
-+the driver sends an available buffer notification to the device by writing
-+the 16-bit virtqueue index
-+of the queue to be notified to \field{QueueNotify}.
-+
-+When VIRTIO_F_NOTIFICATION_DATA has been negotiated,
-+the driver sends an available buffer notification to the device by writing
-+the following 32-bit value to \field{QueueNotify}:
-+\lstinputlisting{notifications-le.c}
-+
-+See \ref{sec:Basic Facilities of a Virtio Device / Driver notifications}~\nameref{sec:Basic Facilities of a Virtio Device / Driver notifications}
-+for the definition of the components.
-+
-+\subsubsection{Notifications From The Device}\label{sec:Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operation / Notifications From The Device}
-+
-+The memory mapped virtio device is using a single, dedicated
-+interrupt signal, which is asserted when at least one of the
-+bits described in the description of \field{InterruptStatus}
-+is set. This is how the device sends a used buffer notification
-+or a configuration change notification to the device.
-+
-+\drivernormative{\paragraph}{Notifications From The Device}{Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operation / Notifications From The Device}
-+After receiving an interrupt, the driver MUST read
-+\field{InterruptStatus} to check what caused the interrupt (see the
-+register description).  The used buffer notification bit being set
-+SHOULD be interpreted as a used buffer notification for each active
-+virtqueue.  After the interrupt is handled, the driver MUST acknowledge
-+it by writing a bit mask corresponding to the handled events to the
-+InterruptACK register.
-+
-+\subsection{Legacy interface}\label{sec:Virtio Transport Options / Virtio Over MMIO / Legacy interface}
-+
-+The legacy MMIO transport used page-based addressing, resulting
-+in a slightly different control register layout, the device
-+initialization and the virtual queue configuration procedure.
-+
-+Table \ref{tab:Virtio Trasport Options / Virtio Over MMIO / MMIO Device Legacy Register Layout} 
-+presents control registers layout, omitting
-+descriptions of registers which did not change their function
-+nor behaviour:
-+
-+\begin{longtable}{p{0.2\textwidth}p{0.7\textwidth}}
-+  \caption {MMIO Device Legacy Register Layout}
-+  \label{tab:Virtio Trasport Options / Virtio Over MMIO / MMIO Device Legacy Register Layout} \\
-+  \hline
-+  \mmioreg{Name}{Function}{Offset from base}{Direction}{Description} 
-+  \hline 
-+  \hline 
-+  \endfirsthead
-+  \hline
-+  \mmioreg{Name}{Function}{Offset from the base}{Direction}{Description} 
-+  \hline 
-+  \hline 
-+  \endhead
-+  \endfoot
-+  \endlastfoot
-+  \mmioreg{MagicValue}{Magic value}{0x000}{R}{}
-+  \hline
-+  \mmioreg{Version}{Device version number}{0x004}{R}{Legacy device returns value 0x1.}
-+  \hline
-+  \mmioreg{DeviceID}{Virtio Subsystem Device ID}{0x008}{R}{}
-+  \hline
-+  \mmioreg{VendorID}{Virtio Subsystem Vendor ID}{0x00c}{R}{}
-+  \hline
-+  \mmioreg{HostFeatures}{Flags representing features the device supports}{0x010}{R}{}
-+  \hline
-+  \mmioreg{HostFeaturesSel}{Device (host) features word selection.}{0x014}{W}{}
-+  \hline
-+  \mmioreg{GuestFeatures}{Flags representing device features understood and activated by the driver}{0x020}{W}{}
-+  \hline
-+  \mmioreg{GuestFeaturesSel}{Activated (guest) features word selection}{0x024}{W}{}
-+  \hline 
-+  \mmioreg{GuestPageSize}{Guest page size}{0x028}{W}{%
-+    The driver writes the guest page size in bytes to the
-+    register during initialization, before any queues are used.
-+    This value should be a power of 2 and is used by the device to
-+    calculate the Guest address of the first queue page
-+    (see QueuePFN).
-+  }
-+  \hline
-+  \mmioreg{QueueSel}{Virtual queue index}{0x030}{W}{%
-+    Writing to this register selects the virtual queue that the
-+    following operations on the \field{QueueNumMax}, \field{QueueNum}, \field{QueueAlign}
-+    and \field{QueuePFN} registers apply to. The index
-+    number of the first queue is zero (0x0). 
-+.
-+  }
-+  \hline
-+  \mmioreg{QueueNumMax}{Maximum virtual queue size}{0x034}{R}{%
-+    Reading from the register returns the maximum size of the queue
-+    the device is ready to process or zero (0x0) if the queue is not
-+    available. This applies to the queue selected by writing to
-+    \field{QueueSel} and is allowed only when \field{QueuePFN} is set to zero
-+    (0x0), so when the queue is not actively used.
-+  }
-+  \hline
-+  \mmioreg{QueueNum}{Virtual queue size}{0x038}{W}{%
-+    Queue size is the number of elements in the queue.
-+    Writing to this register notifies the device what size of the
-+    queue the driver will use. This applies to the queue selected by
-+    writing to \field{QueueSel}.
-+  }
-+  \hline
-+  \mmioreg{QueueAlign}{Used Ring alignment in the virtual queue}{0x03c}{W}{%
-+    Writing to this register notifies the device about alignment
-+    boundary of the Used Ring in bytes. This value should be a power
-+    of 2 and applies to the queue selected by writing to \field{QueueSel}.
-+  }
-+  \hline
-+  \mmioreg{QueuePFN}{Guest physical page number of the virtual queue}{0x040}{RW}{%
-+    Writing to this register notifies the device about location of the
-+    virtual queue in the Guest's physical address space. This value
-+    is the index number of a page starting with the queue
-+    Descriptor Table. Value zero (0x0) means physical address zero
-+    (0x00000000) and is illegal. When the driver stops using the
-+    queue it writes zero (0x0) to this register.
-+    Reading from this register returns the currently used page
-+    number of the queue, therefore a value other than zero (0x0)
-+    means that the queue is in use.
-+    Both read and write accesses apply to the queue selected by
-+    writing to \field{QueueSel}.
-+  }
-+  \hline
-+  \mmioreg{QueueNotify}{Queue notifier}{0x050}{W}{}
-+  \hline
-+  \mmioreg{InterruptStatus}{Interrupt status}{0x60}{R}{}
-+  \hline
-+  \mmioreg{InterruptACK}{Interrupt acknowledge}{0x064}{W}{}
-+  \hline
-+  \mmioreg{Status}{Device status}{0x070}{RW}{%
-+    Reading from this register returns the current device status
-+    flags.
-+    Writing non-zero values to this register sets the status flags,
-+    indicating the OS/driver progress. Writing zero (0x0) to this
-+    register triggers a device reset. The device
-+    sets \field{QueuePFN} to zero (0x0) for all queues in the device.
-+    Also see \ref{sec:General Initialization And Device Operation / Device Initialization}~\nameref{sec:General Initialization And Device Operation / Device Initialization}.
-+  }
-+  \hline
-+  \mmioreg{Config}{Configuration space}{0x100+}{RW}{}
-+  \hline
-+\end{longtable}
-+
-+The virtual queue page size is defined by writing to \field{GuestPageSize},
-+as written by the guest. The driver does this before the
-+virtual queues are configured.
-+
-+The virtual queue layout follows
-+p. \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Legacy Interfaces: A Note on Virtqueue Layout}~\nameref{sec:Basic Facilities of a Virtio Device / Virtqueues / Legacy Interfaces: A Note on Virtqueue Layout},
-+with the alignment defined in \field{QueueAlign}.
-+
-+The virtual queue is configured as follows:
-+\begin{enumerate}
-+\item Select the queue writing its index (first queue is 0) to
-+   \field{QueueSel}.
-+
-+\item Check if the queue is not already in use: read \field{QueuePFN},
-+   expecting a returned value of zero (0x0).
-+
-+\item Read maximum queue size (number of elements) from
-+   \field{QueueNumMax}. If the returned value is zero (0x0) the
-+   queue is not available.
-+
-+\item Allocate and zero the queue pages in contiguous virtual
-+   memory, aligning the Used Ring to an optimal boundary (usually
-+   page size). The driver should choose a queue size smaller than or
-+   equal to \field{QueueNumMax}.
-+
-+\item Notify the device about the queue size by writing the size to
-+   \field{QueueNum}.
-+
-+\item Notify the device about the used alignment by writing its value
-+   in bytes to \field{QueueAlign}.
-+
-+\item Write the physical number of the first page of the queue to
-+   the \field{QueuePFN} register.
-+\end{enumerate}
-+
-+Notification mechanisms did not change.
+
+Parav Pandit (6):
+  transport-pci: Split PCI transport to its own file
+  transport-mmio: Split MMIO transport to its own file
+  transport-ccw: Split Channel IO transport to its own file
+  transport-pci: Fix spellings and white spaces
+  transport-mmio: Fix spellings and white spaces
+  transport-ccw: Fix spellings and white spaces
+
+ content.tex        | 2318 +-------------------------------------------
+ transport-ccw.tex  |  601 ++++++++++++
+ transport-mmio.tex |  564 +++++++++++
+ transport-pci.tex  | 1149 ++++++++++++++++++++++
+ 4 files changed, 2317 insertions(+), 2315 deletions(-)
+ create mode 100644 transport-ccw.tex
+ create mode 100644 transport-mmio.tex
+ create mode 100644 transport-pci.tex
+
 -- 
 2.26.2
 
