@@ -1,70 +1,53 @@
-Return-Path: <mst@redhat.com>
-Date: Mon, 27 Feb 2023 12:39:39 -0500
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: Re: [PATCH 0/3] Rename queue index to queue number
-Message-ID: <20230227123751-mutt-send-email-mst@kernel.org>
-References: <20230223054624.168042-1-parav@nvidia.com>
+Return-Path: <parav@nvidia.com>
+From: Parav Pandit <parav@nvidia.com>
+Subject: [PATCH 0/3] Cleanup for PCI transitional common cfg
+Date: Sun, 26 Feb 2023 00:29:58 +0200
+Message-ID: <20230225223001.430522-1-parav@nvidia.com>
 MIME-Version: 1.0
-In-Reply-To: <20230223054624.168042-1-parav@nvidia.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-To: Parav Pandit <parav@nvidia.com>
-Cc: virtio-dev@lists.oasis-open.org, cohuck@redhat.com, virtio-comment@lists.oasis-open.org, shahafs@nvidia.com, Yuri Benditovich <yuri.benditovich@daynix.com>
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+To: mst@redhat.com, virtio-dev@lists.oasis-open.org, cohuck@redhat.com
+Cc: virtio-comment@lists.oasis-open.org, shahafs@nvidia.com, Parav Pandit <parav@nvidia.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Thu, Feb 23, 2023 at 07:46:21AM +0200, Parav Pandit wrote:
-> 1. Currently, virtqueue is identified between driver and device
-> interchangeably using either number of index terminology.
-> 
-> 2. Between PCI and MMIO transport the queue size (depth) is
-> defined as queue_size and QueueNum respectively.
-> 
-> To avoid confusion and to have consistency, unify them to use as Number.
-> 
-> Solution:
-> Use virtqueue number description, and rename MMIO register as QueueSize.
-> 
-> Patch summary:
-> patch-1 renames index to number for pci transport
-> patch-2 renames mmio register from Num to Size
-> patch-3 renames index to number for mmio transport
-> 
-> Please review.
-> This series fixes the issue [1].
-> 
-> This series is on top of [2].
-> 
-> [1] https://github.com/oasis-tcs/virtio-spec/issues/163
-> [2] https://lists.oasis-open.org/archives/virtio-dev/202302/msg00527.html
+Legacy interface PCI Device layout description has following issues.
 
-What about RSS description in net? That says:
+1. repeated 'structure' word
+2. virtio header was defined the 0.9.5 spec. It is referred with
+   different keywards in this section with multiple different words
+   as (a) virtio header, (b) general headers, (c) legacy configuration
+   structure, (d) virtio common configuration structure and
+   (e) other fields.
+3. Driver and device requirements listing is intermixed.
+4. spelling error of structure
+5. Legacy interface common configuration requirements are not adjacent
+   to 1.x comm
 
-description.tex:Field \field{unclassified_queue} contains the 0-based index of
+Hence, this short series overcomes above issues.
 
-is the index same as vq number? or something different?
+Patch summary:
+patch-1 overcomes above 1 to 4 issues
+patch-2 splits feature bit operations from config layout
+patch-3 relocate requirements adjacent to 1.x requirements
 
+This series is in top of [1], [2] and [3].
 
+Fixes: https://github.com/oasis-tcs/virtio-spec/issues/164
+Please review.
 
+[1] https://lists.oasis-open.org/archives/virtio-dev/202302/msg00578.html
+[2] https://lists.oasis-open.org/archives/virtio-dev/202302/msg00585.html
+[3] https://lists.oasis-open.org/archives/virtio-dev/202302/msg00597.html
 
+Parav Pandit (3):
+  transport-pci: Improve PCI legacy device layout description
+  transport-pci: Split notes of PCI Device Layout
+  transport-pci: Relocate common config legacy interface
 
-> ---
-> Cornelia:
-> I was not sure about ccw for vq_config_block and vq_info_block structures
-> index field refers to the queue number or not.
-> Can you please clarify?
-> 
-> If it vqn, I will send v1 by replacing index to vqn to be
-> consistent with other part of the spec which also uses vqn.
-> 
-> Parav Pandit (3):
->   transport-pci: Refer to the vq by its number
->   transport-mmio: Rename QueueNum register
->   transport-mmio: Refer to the vq by its number
-> 
->  transport-mmio.tex | 16 ++++++++--------
->  transport-pci.tex  |  6 +++---
->  2 files changed, 11 insertions(+), 11 deletions(-)
-> 
-> -- 
-> 2.26.2
+ conformance.tex   |   3 +-
+ transport-pci.tex | 182 +++++++++++++++++++++++++---------------------
+ 2 files changed, 102 insertions(+), 83 deletions(-)
+
+--=20
+2.26.2
 
