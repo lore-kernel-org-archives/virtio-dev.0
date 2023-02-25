@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-11290-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-11291-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9843AC64EC7
-	for <virtio-dev@archiver.kernel.org>; Sat, 25 Feb 2023 23:08:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id EB976C64EC7
+	for <virtio-dev@archiver.kernel.org>; Sat, 25 Feb 2023 23:15:18 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id E1B332B064
-	for <virtio-dev@archiver.kernel.org>; Sat, 25 Feb 2023 23:08:51 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 1BBD02B055
+	for <virtio-dev@archiver.kernel.org>; Sat, 25 Feb 2023 23:15:18 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id C0965986790
-	for <virtio-dev@archiver.kernel.org>; Sat, 25 Feb 2023 23:08:51 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id E7229986784
+	for <virtio-dev@archiver.kernel.org>; Sat, 25 Feb 2023 23:15:17 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id A595B9866A9; Sat, 25 Feb 2023 23:08:51 +0000 (UTC)
+	id D34AE98413F; Sat, 25 Feb 2023 23:15:17 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-Id: <virtio-dev.lists.oasis-open.org>
 Precedence: bulk
@@ -23,240 +23,146 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 93BF89866B0
-	for <virtio-dev@lists.oasis-open.org>; Sat, 25 Feb 2023 23:08:51 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id C1FAA9866B0
+	for <virtio-dev@lists.oasis-open.org>; Sat, 25 Feb 2023 23:15:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: 0iAzJmCUOkC_U4WlMdIAQg-1
+X-MC-Unique: BH6hSniEPQSL1dTklAFd7Q-1
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=htWjR4ucVS2IZxqKiPFa6isJuqD47rsuhRRuWTd8J4A=;
-        b=j3/UyE7ztVrGmHKdeGadAafuRjowpnkpET1CS54Gxx4CXovthsvP3VZjiRg9ka9FR2
-         Ku6OpPVVYl0CZSz7PY4rYFNIss85dCAegJh9Xb7E2xPzoZkrWJnvNn6E7AEioW3HD/Wz
-         CrGLEkIA685ZMGqBGZtaD1L1tNUCMXali6F9LhndknYnc5sSDb1F9ImFjDEr9AEzA4Gd
-         sY1Hd15gxTpDARzN+c62mGBG5s8DU5wOwpQG2DwGTbvG2fz2wZf/BfmDywEPSDr0Z4kG
-         amPvH5CvavAPEaNjWcUiVA57P0Z/G6QK4IIMdaO0ZUst+vij1dVScfGoKq7EeekxBZu0
-         v8Vg==
-X-Gm-Message-State: AO0yUKXAj9iHkn5M7QeNMxPpDyA21OCqrF4XlPxfxYNP6qa4YOotI9xq
-	cMcsQ7BJtWYYkWnnXT8AsQeFg5Tg6XlipByUL3a46HuYeZPM0wgfKWTUKLxmc6tdJYA6cN1B0y5
-	ig6qj1waDRRaxIHYeHwl7Ww8aa+DF
-X-Received: by 2002:a05:600c:1895:b0:3e2:f80:3df1 with SMTP id x21-20020a05600c189500b003e20f803df1mr15322448wmp.19.1677366527930;
-        Sat, 25 Feb 2023 15:08:47 -0800 (PST)
-X-Google-Smtp-Source: AK7set/dNio/VsThEYM5cHMmAwDSMBQRoTavicuA3ssl68rm6XYSkJ6jfyn5GU6YCTxaQweoeO0bMg==
-X-Received: by 2002:a05:600c:1895:b0:3e2:f80:3df1 with SMTP id x21-20020a05600c189500b003e20f803df1mr15322441wmp.19.1677366527509;
-        Sat, 25 Feb 2023 15:08:47 -0800 (PST)
-Date: Sat, 25 Feb 2023 18:08:43 -0500
+        bh=2iEIrrsS7u0YfKZgoJBiarXcf0H1NNpODCN5Wdn09lA=;
+        b=lrnCV83c2ZsWEpsJX2pn0WmO07WRCXvSDnP8JD+Zgf4mvxvyh84fVr1lOTscCg0DJM
+         CRwI5DPih7vfXTxeh55VzSS7txzYIzpSUkadLdJCTZln7UvM4M5EIGLChb0qhtEC0LiF
+         UKyEE0LA2v8WrEjtLBoouBYNdUmnDg6QtrLuY+YfXzRCr3UIw6eWhRdr6UCEUtwozxpI
+         HD7GxU1YDll/ru3h1BGJOGxyDbSbORGWkiAbl6ladBNiyepwMxWcBprWo4spvL63PGYC
+         fOmtM/VqKPh6XI4axcKeQe1wAATjE79anCTHWxmuhvDI3yjIr94aukEPXdydmTz14ukJ
+         7C2A==
+X-Gm-Message-State: AO0yUKVE/BAFSRMexBn2RdfOm9/8FrDwnaznHkmz10i1MjPyOS2RDYu8
+	Mzexk3gCnaTxpw2FCO1v4vWoE2FI9dcAahLx7Bf1vTVmfo6ENzhIxQLyd7KNJmUokQb+t7IC6/y
+	Xu1rVZs33FlRVCrlXXhPDPg8Y8sb7
+X-Received: by 2002:a5d:6502:0:b0:2c5:fb6d:33e5 with SMTP id x2-20020a5d6502000000b002c5fb6d33e5mr16691696wru.0.1677366914024;
+        Sat, 25 Feb 2023 15:15:14 -0800 (PST)
+X-Google-Smtp-Source: AK7set9v12hZvZt1nbMExX0U1PpH/UjDctEqxpq3Yf8YATo0ZjtlYu4aLbO9s703iC0EBAZA4Pgk9A==
+X-Received: by 2002:a5d:6502:0:b0:2c5:fb6d:33e5 with SMTP id x2-20020a5d6502000000b002c5fb6d33e5mr16691692wru.0.1677366913595;
+        Sat, 25 Feb 2023 15:15:13 -0800 (PST)
+Date: Sat, 25 Feb 2023 18:15:09 -0500
 From: "Michael S. Tsirkin" <mst@redhat.com>
 To: Parav Pandit <parav@nvidia.com>
 Cc: virtio-dev@lists.oasis-open.org, cohuck@redhat.com,
 	virtio-comment@lists.oasis-open.org, shahafs@nvidia.com
-Message-ID: <20230225180014-mutt-send-email-mst@kernel.org>
+Message-ID: <20230225180932-mutt-send-email-mst@kernel.org>
 References: <20230225223001.430522-1-parav@nvidia.com>
- <20230225223001.430522-2-parav@nvidia.com>
+ <20230225223001.430522-3-parav@nvidia.com>
 MIME-Version: 1.0
-In-Reply-To: <20230225223001.430522-2-parav@nvidia.com>
+In-Reply-To: <20230225223001.430522-3-parav@nvidia.com>
 X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: redhat.com
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Subject: [virtio-dev] Re: [PATCH 1/3] transport-pci: Improve PCI legacy device layout
- description
-Message-ID: <20230225230843.6Si9bZXnDJJZag_Ur1A90Z1tZ0XQa281dMQJOZZ62RE@z>
+Subject: [virtio-dev] Re: [PATCH 2/3] transport-pci: Split notes of PCI Device Layout
+Message-ID: <20230225231509.xqSkHxPD0YJJG6txuMSQnUDaZsA_NVwOF_0rU4pVII4@z>
 
-On Sun, Feb 26, 2023 at 12:29:59AM +0200, Parav Pandit wrote:
-> Legacy interface PCI Device layout description has following issues.
+On Sun, Feb 26, 2023 at 12:30:00AM +0200, Parav Pandit wrote:
+> Currently single legacy interface section describes PCI common
+> configuration layout and feature bits operation for the
+> legacy interface.
+> Secondly common configuration structure description of legacy interface
+> is not adjacent to the the respective normal device requirements for
+> same.
 > 
-> 1. repeated 'structure' word
-> 2. virtio header was defined the 0.9.5 spec. In a legacy interface
->    section it is referred with different keywards
->    as (a) virtio header, (b) general headers, (c) legacy configuration
->    structure, (d) virtio common configuration structure and
->    (e) other fields.
-> 3. Driver and device requirements listing is intermixed.
-> 4. spelling error of structure
+> Hence, split PCI Device Layout legacy interface section into two
+> parts. First subsection for common configuration and second
+> subsection for feature bits.
 > 
-> Hence, rewrite the description to eliminate above issues as below.
+> Subsequent patch relocates common configuration legacy interface to
+> appropriate matching location.
 > 
-> 1. Removed repeated structure word
-> 2. Fix spelling of structure
-> 3. Place all device requirements toegether
-> 3. Define legacy configuration structure that consist of
->    a. legacy common configuration structure and
->    b. device specific configuration structure
-> 4. Rewrite section around above changes
-> 
-> This is only an editorial change.
-
-No, editorial changes are things like spelling corrections.
-
-I have trouble reviewing
-because I have no idea why you are making each change.
-
-E.g. you just rewrote a bunch of text and I frankly don't know
-why. For example:
-
-	-When using the legacy interface, transitional drivers
-	-MUST use the legacy configuration structure in BAR0 in the first
-	-I/O region of the PCI device, as documented below.
-
-is now apparently:
-
-	+When used through the legacy interface, the legacy common
-	+configuration structure has the following layout:
-
-and this is better? why? we are replacing a clear requirement
-which applied to drivers with a vague statement which
-I can't say what it applies to.
-
-Any chance of splitting these things up? Maybe that will help.
-
-Apropos I don't know that we want to spend much time on legacy sections.
-Really with legacy code is the main source of documentation -
-if drivers work then you are golden. If they don't appealing
-to spec will not help.
-
-
-
 > Fixes: https://github.com/oasis-tcs/virtio-spec/issues/164
 > Signed-off-by: Parav Pandit <parav@nvidia.com>
+
+I don't care really. However this does much more than move text around
+as it claim to do:
+
+
 > ---
->  transport-pci.tex | 93 ++++++++++++++++++++++++++---------------------
->  1 file changed, 52 insertions(+), 41 deletions(-)
+>  conformance.tex   |  4 +++-
+>  transport-pci.tex | 19 ++++++++++++-------
+>  2 files changed, 15 insertions(+), 8 deletions(-)
 > 
+> diff --git a/conformance.tex b/conformance.tex
+> index 01ccd69..0d3616f 100644
+> --- a/conformance.tex
+> +++ b/conformance.tex
+> @@ -262,7 +262,9 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
+>  \item Section \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Message Framing / Legacy Interface: Message Framing}
+>  \item Section \ref{sec:General Initialization And Device Operation / Device Initialization / Legacy Interface: Device Initialization}
+>  \item Section \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Discovery / Legacy Interfaces: A Note on PCI Device Discovery}
+> -\item Section \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Legacy Interfaces: A Note on PCI Device Layout}
+> +\item Section \ref{sec:Virtio Transport Options / Virtio Over PCI Bus/ Virtio Structure PCI Capabilities / Legacy Interfaces: A Note on Common
+> +configuration Layout}
+> +\item Section \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / Virtio Structure PCI Capabilities / Legacy Interface: A Note on feature bits}
+>  \item Section \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / Virtio Device Configuration Layout Detection / Legacy Interface: A Note on Device Layout Detection}
+>  \item Section \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / Virtqueue Configuration / Legacy Interface: A Note on Virtqueue Configuration}
+>  \item Section \ref{sec:Virtio Transport Options / Virtio Over MMIO / Legacy interface}
 > diff --git a/transport-pci.tex b/transport-pci.tex
-> index 5d22e6f..9ee37ba 100644
+> index 9ee37ba..9d4c713 100644
 > --- a/transport-pci.tex
 > +++ b/transport-pci.tex
-> @@ -769,25 +769,19 @@ \subsubsection{PCI configuration access capability}\label{sec:Virtio Transport O
+> @@ -767,7 +767,10 @@ \subsubsection{PCI configuration access capability}\label{sec:Virtio Transport O
+>  specified by some other Virtio Structure PCI Capability
+>  of type other than \field{VIRTIO_PCI_CAP_PCI_CFG}.
 >  
->  \subsubsection{Legacy Interfaces: A Note on PCI Device Layout}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Legacy Interfaces: A Note on PCI Device Layout}
+> -\subsubsection{Legacy Interfaces: A Note on PCI Device Layout}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Legacy Interfaces: A Note on PCI Device Layout}
+> +\subsubsection{Legacy Interfaces: A Note on Common configuration
+> +Layout}\label{sec:Virtio Transport Options / Virtio Over PCI Bus
+> +/ Virtio Structure PCI Capabilities / Legacy Interfaces: A Note on Common
+> +configuration Layout}
 >  
-> -Transitional devices MUST present part of configuration
-> -registers in a legacy configuration structure in BAR0 in the first I/O
-> -region of the PCI device, as documented below.
-> -When using the legacy interface, transitional drivers
-> -MUST use the legacy configuration structure in BAR0 in the first
-> -I/O region of the PCI device, as documented below.
-> -
-> -When using the legacy interface the driver MAY access
-> -the device-specific configuration region using any width accesses, and
-> -a transitional device MUST present driver with the same results as
-> -when accessed using the ``natural'' access method (i.e.
-> -32-bit accesses for 32-bit fields, etc).
-> -
-> -Note that this is possible because while the virtio common configuration structure is PCI
-> -(i.e. little) endian, when using the legacy interface the device-specific
-> -configuration region is encoded in the native endian of the guest (where such distinction is
-> -applicable).
-> -
-> -When used through the legacy interface, the virtio common configuration structure looks as follows:
-> +The transitional device MUST present part of the configuration
-> +registers in a legacy configuration structure in BAR0 in the
-> +first I/O region of the PCI Device.
-> +
-> +The legacy configuration structure is described below.
-> +It consists of two parts.
-> +\begin{enumerate}
-> +  \item Legacy common configuration structure
-> +  \item Device configuration structure (optional)
-> +\end{enumerate}
-> +
-> +When used through the legacy interface, the legacy common
-> +configuration structure has the following layout:
+>  The transitional device MUST present part of the configuration
+>  registers in a legacy configuration structure in BAR0 in the
+
+
+Please do not split up labels to multiple lines like this, it is hard to
+find and fix them if you do.
+
+> @@ -852,13 +855,15 @@ \subsubsection{Legacy Interfaces: A Note on PCI Device Layout}\label{sec:Virtio
+>  is encoded in the native endian of the guest (where such
+>  distinction is applicable).
 >  
->  \begin{tabularx}{\textwidth}{ |X||X|X|X|X|X|X|X|X| }
->  \hline
-> @@ -801,8 +795,8 @@ \subsubsection{Legacy Interfaces: A Note on PCI Device Layout}\label{sec:Virtio
->  \hline
->  \end{tabularx}
+> -When accessing the device-specific configuration structure
+> -using the legacy interface, transitional drivers MUST access
+> -the device-specific configuration structure
+> -at an offset immediately following the legacy common
+> -configuration structure.
+> +The transitional driver when using the legacy interface MUST
+> +the device-specific configuration structure at an offset
+> +immediately following the legacy common configuration structure.
+
+Oh great and in the process of presumably just moving stuff around you
+are also losing text - the result is agrammatical, and much less clear
+than the original.
+
+
 >  
-> -If MSI-X is enabled for the device, two additional fields
-> -immediately follow this header:
-> +When MSI-X capability is enabled on the device, the device MUST
-> +present two additional fields immediately following the above fields:
->  
->  \begin{tabular}{ |l||l|l| }
->  \hline
-> @@ -814,14 +808,12 @@ \subsubsection{Legacy Interfaces: A Note on PCI Device Layout}\label{sec:Virtio
->  \hline
->  \end{tabular}
->  
-> -Note: When MSI-X capability is enabled, device-specific configuration starts at
-> -byte offset 24 in virtio common configuration structure structure. When MSI-X capability is not
-> -enabled, device-specific configuration starts at byte offset 20 in virtio
-> -header.  ie. once you enable MSI-X on the device, the other fields move.
-> -If you turn it off again, they move back!
-> +The device configuration structure is optional. Its existence
-> +is decided by each device type. The transitional device MUST
-> +present the device-specific configuration structure if any at an
-> +offset immediately following the legacy common configuration structure.
->  
-> -Any device-specific configuration space immediately follows
-> -these general headers:
-> +The device configuration structure:
->  
->  \begin{tabular}{|l||l|l|}
->  \hline
-> @@ -833,25 +825,44 @@ \subsubsection{Legacy Interfaces: A Note on PCI Device Layout}\label{sec:Virtio
->  \hline
->  \end{tabular}
->  
-> -When accessing the device-specific configuration space
-> -using the legacy interface, transitional
-> -drivers MUST access the device-specific configuration space
-> -at an offset immediately following the general headers.
-> -
-> -When using the legacy interface, transitional
-> -devices MUST present the device-specific configuration space
-> -if any at an offset immediately following the general headers.
-> -
 > -Note that only Feature Bits 0 to 31 are accessible through the
-> -Legacy Interface. When used through the Legacy Interface,
-> -Transitional Devices MUST assume that Feature Bits 32 to 63
-> -are not acknowledged by Driver.
-> +Note: The device configuration structure byte offset is
-> +calculated dynamically; when MSI-X capability is enabled, the
-> +device configuration structure is located at byte offset 24,
-> +when MSI-X capability is disabled, the device configuration
-> +structure is located at byte offset 20.
->  
->  As legacy devices had no \field{config_generation} field,
->  see \ref{sec:Basic Facilities of a Virtio Device / Device
->  Configuration Space / Legacy Interface: Device Configuration
->  Space}~\nameref{sec:Basic Facilities of a Virtio Device / Device Configuration Space / Legacy Interface: Device Configuration Space} for workarounds.
->  
-> +When using the legacy interface, the transitional driver MUST
-> +use the legacy configuration structure in BAR0 in the first
-> +I/O region of the PCI device.
+> +\subsubsection{Legacy Interface: A Note on feature
+> +bits}\label{sec:Virtio Transport Options / Virtio Over PCI Bus /
+> +Virtio Structure PCI Capabilities / Legacy Interface: A Note on feature bits}
 > +
-> +When using the legacy interface, the driver MAY access
-> +the device-specific configuration structure using any width
-> +accesses and the transitional device MUST present the driver with
-> +the same results as when accessed using the ``natural'' access
-> +method (i.e. 32-bit accesses for 32-bit fields, etc).
-> +
-> +Note that this is possible because while the legacy common
-> +configuration structure is PCI (i.e. little) endian, when using
-> +the legacy interface the device-specific configuration structure
-> +is encoded in the native endian of the guest (where such
-> +distinction is applicable).
-> +
-> +When accessing the device-specific configuration structure
-> +using the legacy interface, transitional drivers MUST access
-> +the device-specific configuration structure
-> +at an offset immediately following the legacy common
-> +configuration structure.
-> +
-> +Note that only Feature Bits 0 to 31 are accessible through the
-> +Legacy Interface. When used through the Legacy Interface,
-> +the transitional device MUST assume that Feature Bits 32 to 63
-> +are not acknowledged by the driver.
-> +
->  \subsubsection{Non-transitional Device With Legacy Driver: A Note
->  on PCI Device Layout}\label{sec:Virtio Transport Options / Virtio
->  Over PCI Bus / PCI Device Layout / Non-transitional Device With
+> +Only Feature Bits 0 to 31 are accessible through the
+>  Legacy Interface. When used through the Legacy Interface,
+>  the transitional device MUST assume that Feature Bits 32 to 63
+>  are not acknowledged by the driver.
+
+And you are dropping "Note" here because why? Seems notable
+in that there are more feature bits, someone might miss this
+fact.
+
+
+
+
 > -- 
 > 2.26.2
 
