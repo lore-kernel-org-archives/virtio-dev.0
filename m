@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-11303-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-11304-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 2BD7BC64ED6
-	for <virtio-dev@archiver.kernel.org>; Mon, 27 Feb 2023 04:07:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 622AAC64ED8
+	for <virtio-dev@archiver.kernel.org>; Mon, 27 Feb 2023 07:24:55 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 53EA22A825
-	for <virtio-dev@archiver.kernel.org>; Mon, 27 Feb 2023 04:07:39 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 7FDB92B042
+	for <virtio-dev@archiver.kernel.org>; Mon, 27 Feb 2023 07:24:54 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 4B87C986420
-	for <virtio-dev@archiver.kernel.org>; Mon, 27 Feb 2023 04:07:39 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 5EC8098641C
+	for <virtio-dev@archiver.kernel.org>; Mon, 27 Feb 2023 07:24:54 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 41EF4983E8F; Mon, 27 Feb 2023 04:07:39 +0000 (UTC)
+	id 463C29863ED; Mon, 27 Feb 2023 07:24:54 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-Id: <virtio-dev.lists.oasis-open.org>
 Precedence: bulk
@@ -23,224 +23,174 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 2F7CB9863ED
-	for <virtio-dev@lists.oasis-open.org>; Mon, 27 Feb 2023 04:07:39 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 323469863FE
+	for <virtio-dev@lists.oasis-open.org>; Mon, 27 Feb 2023 07:24:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: bQvbBOKxOW-KV6qQALQTbw-1
+X-MC-Unique: ofrl2C5pOUitUh9QUtQXEw-1
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=quoYUSRl9dN14AEE9NDn5cKwYO+eJljvVY5/RgzE7rc=;
-        b=O4a6RAN/9IQWUgF6GKt41/4WC/is+4CRx7kEEeMVbjYkztkscROi/e39k09lpE/NtW
-         eSlnc+gZcEhaguNYTBn9+UL5XjTejULetmHIOwHupzDk+LNcaFXKquWNDWkbpYoj4L9/
-         O5SHV+Ve8lscEyEuJy9jgWS5bkDqwLeXSArBXQ7pWZ+w0BNb8ED18pAw8K5p9S6Yam3y
-         RZ43qqUehjDwrfelkbobLafKL5LqZ8D4wPmjj2Sp7YDI/cHRFyXrn2da634sE0RAjtVJ
-         KmpcqrYpTA23PcH4qx94Fq/dQ/z14kTBdOU8daNQJ7d88v/C/csRO/zjcYFAI4rD/O0b
-         8ixA==
-X-Gm-Message-State: AO0yUKX2MjmA1bZU8EylbbfuOAMyvxDYB6jDxFvxcD0TdyxY5N1N9Wpi
-	oQH8ub04NUho7gQWY6wTLSMsxzLtzXOJpi+TT4a4IcTuvBJzTa9P62NqjpHHwBdjvFhqZk9dVYc
-	eAWRL6GNcRcUHJNhexHDyTbm/DN/O9nYzXWET6GtatNKc
-X-Received: by 2002:a9d:4d8e:0:b0:688:cf52:6e18 with SMTP id u14-20020a9d4d8e000000b00688cf526e18mr4223981otk.4.1677470848642;
-        Sun, 26 Feb 2023 20:07:28 -0800 (PST)
-X-Google-Smtp-Source: AK7set8L4V/JOd37++shxcwn7SzgQHMntM3SFEWECbvfdmyaI+52a7rftTxjIapVxVUxAiO394tJ1OccPvAAQAIT5Lg=
-X-Received: by 2002:a9d:4d8e:0:b0:688:cf52:6e18 with SMTP id
- u14-20020a9d4d8e000000b00688cf526e18mr4223977otk.4.1677470848344; Sun, 26 Feb
- 2023 20:07:28 -0800 (PST)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=hzrZpIfois3ckxVfTGJ0KeXmdJHNDUohDoom6oSD3bA=;
+        b=HzfWZ1V79eRHWqtv89MCOVhuv6kVI8r7n4w3Y1kHrXhfH839H6vCKHniErHKvFKeFD
+         Gh3DIaq4dOi5aoK5rNdYjneKySw00O/KL5RybuLV9RaiROexT7LySspaYW3TEb1rqrk/
+         R+Z9wrfmkfUZBshLBgmj3LYQYywtDOu/wtWXuw47X4MRp+S0ix3ahoEefYI6+R9HGwT/
+         uj8angC//jUzzKhcjZ+XCnRcI0QIDoZLlJJx7c5pW7+6R4EpzjoHS7dv0UiPKbgH60Ak
+         X7J2Ker9P1+eCoPxaJ0DuHaZUMIki71Vx09ycfkK6E2YEcDoqSDGcm5b8JI8LbBoKZjw
+         CvXw==
+X-Gm-Message-State: AO0yUKW3vhNcOzPDVn5oVbt8zvMxF6KF10vXHo+LsrGDsDxYZr2n5UxD
+	A7EIEK9Lz1J6Isp2BAXs16LGI12lDligt/8A1elqSwY+as8A5AvVEJNHwC5NL0qt3DOcWhNmMv4
+	xIPPP4vCxyW1Ab0rE+cE/3lIjKOO/
+X-Received: by 2002:a17:906:e208:b0:87f:546d:7cb5 with SMTP id gf8-20020a170906e20800b0087f546d7cb5mr34307820ejb.37.1677482688852;
+        Sun, 26 Feb 2023 23:24:48 -0800 (PST)
+X-Google-Smtp-Source: AK7set9Ewr2t7N44lRpf2G66OB0D3u4JXYuDR/NvWoLbQeapN2GssKBGHfjxfO9/PhxnTOxUC0OA2Q==
+X-Received: by 2002:a17:906:e208:b0:87f:546d:7cb5 with SMTP id gf8-20020a170906e20800b0087f546d7cb5mr34307807ejb.37.1677482688517;
+        Sun, 26 Feb 2023 23:24:48 -0800 (PST)
+Date: Mon, 27 Feb 2023 02:24:44 -0500
+From: "Michael S. Tsirkin" <mst@redhat.com>
+To: Parav Pandit <parav@nvidia.com>
+Cc: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
+	"cohuck@redhat.com" <cohuck@redhat.com>,
+	"virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
+	Shahaf Shuler <shahafs@nvidia.com>
+Message-ID: <20230227022133-mutt-send-email-mst@kernel.org>
+References: <20230224231232.340814-1-parav@nvidia.com>
+ <20230224231232.340814-3-parav@nvidia.com>
+ <20230225121237-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB5481088CBC9B4C99D2527A92DCA99@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20230225174948-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB5481D5D69A3123EEE65BA0C2DCAF9@PH0PR12MB5481.namprd12.prod.outlook.com>
 MIME-Version: 1.0
-References: <20230218143715.841-1-hengqi@linux.alibaba.com>
- <20230221124518-mutt-send-email-mst@kernel.org> <4d123e32-1ad0-e692-7fa6-0565eb34c487@redhat.com>
- <0f53212f-a89b-ad3c-73e3-a7a7b5533058@linux.alibaba.com> <1047920c-5dd5-8f31-0c4c-a108f36155f8@redhat.com>
- <20230223075934-mutt-send-email-mst@kernel.org> <CACGkMEvc2Px_Zz11R5QYwMXYm_j5rsYV2LrZt5yf8tZQxuT_Bg@mail.gmail.com>
- <20230224030509-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20230224030509-mutt-send-email-mst@kernel.org>
-From: Jason Wang <jasowang@redhat.com>
-Date: Mon, 27 Feb 2023 12:07:17 +0800
-Message-ID: <CACGkMEuOu=6qKQO2TJ0B6ZLRH_-rGtZMYVtw7gn+BFbnJgWkrw@mail.gmail.com>
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Heng Qi <hengqi@linux.alibaba.com>, virtio-comment@lists.oasis-open.org, 
-	virtio-dev@lists.oasis-open.org, Parav Pandit <parav@nvidia.com>, 
-	Yuri Benditovich <yuri.benditovich@daynix.com>, Cornelia Huck <cohuck@redhat.com>, 
-	Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+In-Reply-To: <PH0PR12MB5481D5D69A3123EEE65BA0C2DCAF9@PH0PR12MB5481.namprd12.prod.outlook.com>
 X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-Subject: [virtio-dev] Re: [PATCH v9] virtio-net: support inner header hash
-Message-ID: <20230227040717.QA8Xufmez_JA_OVvHIDg6VAWjHHYLeYWxIU2Btl7k3w@z>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Subject: [virtio-dev] Re: [PATCH 2/2] transport-pci: Move transitional device id to legacy
+ section
+Message-ID: <20230227072444.-NI0hazU6BrWpuCTDbTSMYxT-lyGFzklfP6fuuaThVA@z>
 
-On Fri, Feb 24, 2023 at 4:06=E2=80=AFPM Michael S. Tsirkin <mst@redhat.com>=
- wrote:
->
-> On Fri, Feb 24, 2023 at 10:26:30AM +0800, Jason Wang wrote:
-> > On Thu, Feb 23, 2023 at 9:03 PM Michael S. Tsirkin <mst@redhat.com> wro=
-te:
+On Mon, Feb 27, 2023 at 02:48:50AM +0000, Parav Pandit wrote:
+> 
+> > From: Michael S. Tsirkin <mst@redhat.com>
+> > Sent: Saturday, February 25, 2023 5:58 PM
+> > 
+> > On Sat, Feb 25, 2023 at 09:38:16PM +0000, Parav Pandit wrote:
 > > >
-> > > On Thu, Feb 23, 2023 at 10:50:48AM +0800, Jason Wang wrote:
-> > > > Hi:
+> > > > From: Michael S. Tsirkin <mst@redhat.com>
+> > > > Sent: Saturday, February 25, 2023 12:27 PM
 > > > >
-> > > > =E5=9C=A8 2023/2/22 14:46, Heng Qi =E5=86=99=E9=81=93:
-> > > > > Hi, Jason. Long time no see. :)
+> > > > On Sat, Feb 25, 2023 at 01:12:32AM +0200, Parav Pandit wrote:
+> > > > > Currently PCI device requirements section contains mix of
+> > > > > normative statements for for regular (non transitional) device and
+> > > > > transitional device under one section.
 > > > > >
-> > > > > =E5=9C=A8 2023/2/22 =E4=B8=8A=E5=8D=8811:22, Jason Wang =E5=86=99=
-=E9=81=93:
-> > > > > >
-> > > > > > =E5=9C=A8 2023/2/22 01:50, Michael S. Tsirkin =E5=86=99=E9=81=
-=93:
-> > > > > > > On Sat, Feb 18, 2023 at 10:37:15PM +0800, Heng Qi wrote:
-> > > > > > > > +\subparagraph{Security risks between encapsulated packets =
-and RSS}
-> > > > > > > > +There may be potential security risks when encapsulated
-> > > > > > > > packets using RSS to
-> > > > > > > > +select queues for placement. When a user inside a tunnel
-> > > > > > > > tries to control the
-> > > > > >
-> > > > > >
-> > > > > > What do you mean by "user" here? Is it a remote or local one?
-> > > > > >
-> > > > >
-> > > > > I mean a remote attacker who is not under the control of the tunn=
-el
-> > > > > owner.
+> > > > > Some requirements of the transitional device are also located in
+> > > > > legacy interface section which is the right section for it.
 > > > >
+> > > > > Hence,
+> > > > > 1. Move transitional device requirements to their designated Legacy
+> > > > >    interface section
+> > > > > 2. Describe regular device requirements without quoting it as "non
+> > > > >    transitional device"
 > > > >
-> > > > Anything may the tunnel different? I think this can happen even wit=
-hout
-> > > > tunnel (and even with single queue).
+> > > > I do not think this is the way to go.
+> > > >
+> > > > Spec covers the functioning of modern devices and the transitional
+> > > > devices when operated by modern drivers.
+> > > We do not have a modern driver term in the spec.
+> > > We have the legacy driver and the transitional driver in spec.
+> > > The modern driver is the way of Linux implementation as far as I understand
+> > that binds to transitional and nontransitional devices.
+> > 
+> > Technically, non-transitional:
+> > 
+> > 	Devices or drivers with no legacy compatibility are referred to as
+> > 	non-transitional devices and drivers, respectively.
+> > 
+> Right.
+> So the movement by this patch aligns to what you described above.
+> 
+> > 
+> > > > The text that covers using modern interfaces belongs in the regular section.
+> > > >
+> > > What do you mean by modern interfaces in the context of spec?
 > > >
-> > > I think you are missing the fact that tunnel is normally a
-> > > security boundary: users within the tunnel can not control
-> > > what is happening outside.
-> > > The feature breaks the encapsulation somewhat.
-> >
-> > I'm not sure I understand here, if we allow hash based on the inner
-> > packet, is it something that you meant the things that are happening
-> > outside? It doesn't differ too much from the case where the tunnel is
-> > not used. It's impossible to prevent what a remote user is trying to
-> > send, and if there's a NIC behaviour that depends on the packet
-> > content, the behaviour of the NIC is somehow under the control of the
-> > remote user.
-> >
-> > Since we only care about the device driver interface, what we can do
-> > is probably:
-> >
-> > 1) allow the driver to disable the inner hash when it spots a
-> > potential (D)DOS. And in the device, a fair queueing looks like a must
-> > but it should be the implementation details.
->
-> this breaks rss
-
-Not sure I get here, what I want to say is that the issue described
-here is not something than can be addressed in the level of hashing or
-RSS. It needs to be processed before the packet can arrive at any hash
-filters in the RX pipeline.
-
-There's probably no need to mention in now consider we haven't (or
-there's probably no need to) defined a full RX pipeline.
-
->
-> > 2) hash based on both outer and inner
->
-> this might help a bit
->
+> > > Spec at beginning says "Requirements pertaining to transitional devices and
+> > drivers is contained in sections named 'Legacy Interface'
+> > > like this one."
+> > 
+> > yes, but also:
+> > 
+> > 	When device is used through the legacy interface, transitional
+> > 	devices and transitional drivers MUST operate according to the
+> > 	requirements documented within these legacy interface sections.
+> > 	Specification text within these sections generally does not apply
+> > 	to non-transitional devices.
+> > 
+> o.k. transitional device related description is moved to the legacy interfaces section.
+> 
+> 
+> > 
+> > > So the content I moved is for the "transitional device" to the Legacy interface
+> > section.
 > > >
-> > > For example without tunneling it is possible
-> > > to create a special "bad guy queue" and direct specific tunnels
-> > > there by playing with key and indirection table.
-> >
-> > Anything makes the tunneling different? We can still do this via the
-> > inner header hash, or at least we can disable the inner hash if we see
-> > a remote DOS.
-> >
-> > Thanks
->
-> the difference is that tunneling is used for security/partitioning.
+> > > A Linux implementation is free to implement a modern driver that probes
+> > transitional and non-transitional devices.
+> > 
+> > Let's not confuse things please. Legacy sections talk about the legacy interface.
+> Yes, it talks about legacy interface.
+> But not limited to only legacy interface.
+> It describes the transitional device interface to like the below revision id example.
 
-The problem is that we don't/can't support all type of tunnel. It
-should be no difference with an old virtio-net device without tunnel
-hashing.
+No, rev id 0 is a legacy requirement.
+transitional and non-transitional drivers cope with any revision just
+fine.
 
-Btw, this kind of 1:1 hash features seems not scalable and flexible.
-It requires an endless extension on bits/fields. Modern NICs allow the
-user to customize the hash calculation, for virtio-net we can allow to
-use eBPF program to classify the packets. It seems to be more flexible
-and scalable and there's almost no maintain burden in the spec (only
-bytecode is required, no need any fancy features/interactions like
-maps), easy to be migrated etc.
 
-Prototype is also easy, tun/tap had an eBPF classifier for years.
+> > If something applies when device is not used through the legacy interface then
+> > it does not belong in the legacy section.
+> > 
+> > What you are missing is that a non-transitional driver must work with a
+> > transitional device. Similarly a non-transitional device must work with a
+> > transitional driver.
+> > Things you are trying to move are relevant for this.
+> > 
+> > 
+> A description of device id vs revision id for a transitional device in the different section is weird.
+> This patch brings them under same section.
 
-Thanks
+And that is not a good idea IMO.
 
->
+> > 
+> > > > Legacy devices and drivers are covered in separate legacy sections
+> > > > which are non-normative (not because they have to, but simply
+> > > > because writing normative sections for legacy devices would be extra
+> > effort).
+> > > >
+> > > > Take this example. Modern drivers ignore revision, but transitional
+> > > > ones need to have 0 because this is what legacy drivers expect.
+> > > > Reporting 0 in revision this belongs in legacy section.
+> > > >
+> > > Sure. And that is how the spec is documented as you have described.
 > > >
-> > > > How to mitigate those attackers seems more like a implementation de=
-tails
-> > > > where might require fair queuing or other QOS technology which has =
-been well
-> > > > studied.
-> > > >
-> > > > It seems out of the scope of the spec (unless we want to let driver
-> > > > manageable QOS).
-> > > >
-> > > > Thanks
-> > > >
-> > > >
-> > > > >
-> > > > > Thanks.
-> > > > >
-> > > > > >
-> > > > > > > > +enqueuing of encapsulated packets, then the user can flood
-> > > > > > > > the device with invaild
-> > > > > > > > +packets, and the flooded packets may be hashed into the
-> > > > > > > > same queue as packets in
-> > > > > > > > +other normal tunnels, which causing the queue to overflow.
-> > > > > > > > +
-> > > > > > > > +This can pose several security risks:
-> > > > > > > > +\begin{itemize}
-> > > > > > > > +\item  Encapsulated packets in the normal tunnels cannot b=
-e
-> > > > > > > > enqueued due to queue
-> > > > > > > > +       overflow, resulting in a large amount of packet los=
-s.
-> > > > > > > > +\item  The delay and retransmission of packets in the
-> > > > > > > > normal tunnels are extremely increased.
-> > > > > > > > +\item  The user can observe the traffic information and
-> > > > > > > > enqueue information of other normal
-> > > > > > > > +       tunnels, and conduct targeted DoS attacks.
-> > > > > > > > +\end{\itemize}
-> > > > > > > > +
-> > > > > > > Hmm with this all written out it sounds pretty severe.
-> > > > > >
-> > > > > >
-> > > > > > I think we need first understand whether or not it's a problem =
-that
-> > > > > > we need to solve at spec level:
-> > > > > >
-> > > > > > 1) anything make encapsulated packets different or why we can't=
- hit
-> > > > > > this problem without encapsulation
-> > > > > >
-> > > > > > 2) whether or not it's the implementation details that the spec
-> > > > > > doesn't need to care (or how it is solved in real NIC)
-> > > > > >
-> > > > > > Thanks
-> > > > > >
-> > > > > >
-> > > > > > > At this point with no ways to mitigate, I don't feel this is =
-something
-> > > > > > > e.g. Linux can enable.  I am not going to nack the spec patch=
- if
-> > > > > > > others  find this somehow useful e.g. for dpdk.
-> > > > > > > How about CC e.g. dpdk devs or whoever else is going to use t=
-his
-> > > > > > > and asking them for the opinion?
-> > > > > > >
-> > > > > > >
-> > > > >
-> > >
->
+> > > "Transitional devices MUST have a PCI Revision ID of 0.".
+> > 
+> > And that's in the legacy section.
+> > 
+> Right. And similarly Transitional device id also now with this patch in legacy section.
+
+
+The logic is this: people who do not care about legacy interface should be able to ignore
+legacy sections.
+
+Your patch moves statements relevant for people with modern drivers
+utilizing transitional devices and vice versa to legacy sections.
+Not good.
+
+-- 
+MST
 
 
 ---------------------------------------------------------------------
