@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-11300-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-11301-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 31AAFC6FA8E
-	for <virtio-dev@archiver.kernel.org>; Mon, 27 Feb 2023 03:02:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id B624CC64ED6
+	for <virtio-dev@archiver.kernel.org>; Mon, 27 Feb 2023 03:05:51 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 6FACA2A827
-	for <virtio-dev@archiver.kernel.org>; Mon, 27 Feb 2023 03:02:18 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 204122A82A
+	for <virtio-dev@archiver.kernel.org>; Mon, 27 Feb 2023 03:05:51 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 6A027986603
-	for <virtio-dev@archiver.kernel.org>; Mon, 27 Feb 2023 03:02:18 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 16F2D986628
+	for <virtio-dev@archiver.kernel.org>; Mon, 27 Feb 2023 03:05:51 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 5EFF49863FE; Mon, 27 Feb 2023 03:02:18 +0000 (UTC)
+	id 0CE1B98640E; Mon, 27 Feb 2023 03:05:51 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-Id: <virtio-dev.lists.oasis-open.org>
 Precedence: bulk
@@ -23,16 +23,16 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 4BCC09863DD;
-	Mon, 27 Feb 2023 03:02:14 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id EDECE9863DD;
+	Mon, 27 Feb 2023 03:05:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=oPBc6YcJYMNgO+qLHR93HzBwd+FL7qMEFgVvBA/2dN88hVGfPOlIJoFuRKgb45Hv3UIwrlhMhB++229hxMrQCJUx4hI5HgsbdpmP8lrgtf4kH0GAz3BynLbcUYfq3f4ObZfkfj0iBDwkeRARMdw4sXek1J6AQ8Wc2EBf1W5ny9xv6rFaGTM/KnZvtDvNuXJyn7z/X9Iv2uoZATxnoLEW0T426FRn5sDkX2jj0f9s7pHHOR2Vogj1LUyzXokmkgTh8EnfP7pbqxx7WwbH0Z8iDCbvYWMGTkPkpaF5+COCe21P2+mWNfQf8JOhx0RrLeR4sD0kPGQ+48zhlYtsB7jotw==
+ b=D487CxLlj0fZw71Devtk1BG5MHWpCKQOs0FhVOsUTnoxFuVVxwG8j4rZVbKex0DNtMZs5/zf4xvZUiWWlzEImq/xWOmaQZ9mDJ5NcfiQecV7agACXU2MQMJVetk5lO0As/+8FXtmV3s4k00wpqPuF0yK5+/PYVID/7hJBQvqX5yLKzA/ollg8zxwUhJjTO2MQpEfWZVzgsl85IUnNYpMfFgk1LJFtqaiCtA3V1BmsY995e8Q+5FaXXHVNMk20NX67iXmcRZbbg1uYklxiseix55A7p0IgMA+L2scZyjdyFGMbrBXGmNZKwEgpt2jiRIvaXJDWdMSkevlWd2l0GAEfw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=W2RCLQTLgxU2EpD4rxI3V1uuNVwn7Edwa8opVcjL2Hg=;
- b=lA/gdwIbe1kLSQv04+TEis0ePq2KAKwAGhLpf2F3aa1HKv+B0WBDBclRp3FV5zy2TX7PQFBUJsuhKMsDsGO6g4aXF2+df+op+krLVdqt7p6ieywmIdutVvGizc6Nv4i0HZ1bdPigerWZ3W3aBEPRAg4NKho4WjiGr3afChdCTjOfz6P0BpLrFvGYJLW2MS07bwPr5JQm4xDszW9saSsJXWafJfa59QFHx6pgq748bpS84Bl96HH1YNy6NX7SWNsMeUhS62rMVEiPeND6yYo12eslkfdVnajSsbSWUPlwhvC2AcQYwpJF7nsx4aF1xq63+bOpf8DAJGf2NcAj7q+kVQ==
+ bh=CiNYFVIJ6Z5bQMFsbhYv2uig0oY/c8oeIMUkF/lrhHM=;
+ b=l9rkibJCJlilmcus8vkvqvMdCYxvwRuFU7JWLAvuzP4gfswAb2Tyl//MA3q5Mlq2nHd2Dkk0Fe+A01ImnyWwrVOe9fkgsr/qPmAggrPhcKT2rEt2qd5dmWlr4EwljgWgd/bRvqUKAJQF2/z7yad7k4lbYPkgRCWdG3v8q7JYvP4EA40zFhzF4KfcwU75T1nWscSnAk1fYFU48gUFPpYE4ljENhQk/hBSev4Sq4MezAWqj5bBOSoLZZCDXcZkBT25Cz2Hj+TEZd4PBvGMgkfs9+hQfzXu4OvSZdd/M/OoL3YZIquVhFeK2b2u9jRnl5QIrML/WF3qNd66RRzk1FOX+Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
@@ -42,15 +42,14 @@ CC: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
 	"cohuck@redhat.com" <cohuck@redhat.com>,
 	"virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
 	Shahaf Shuler <shahafs@nvidia.com>
-Thread-Topic: [PATCH 1/3] transport-pci: Improve PCI legacy device layout
- description
-Thread-Index: AQHZSWjEIPFmNZhzs0+igQhMYO1WBa7gSWSAgAHRxpA=
-Date: Mon, 27 Feb 2023 03:02:10 +0000
-Message-ID: <PH0PR12MB54817FED59372B4F965B473FDCAF9@PH0PR12MB5481.namprd12.prod.outlook.com>
+Thread-Topic: [PATCH 2/3] transport-pci: Split notes of PCI Device Layout
+Thread-Index: AQHZSWjGYtg9y2MCw0CMWWJyTPvcGa7gSzCAgAHR3QA=
+Date: Mon, 27 Feb 2023 03:05:46 +0000
+Message-ID: <PH0PR12MB54811C842A5C55065DABC71BDCAF9@PH0PR12MB5481.namprd12.prod.outlook.com>
 References: <20230225223001.430522-1-parav@nvidia.com>
- <20230225223001.430522-2-parav@nvidia.com>
- <20230225180014-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20230225180014-mutt-send-email-mst@kernel.org>
+ <20230225223001.430522-3-parav@nvidia.com>
+ <20230225180932-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20230225180932-mutt-send-email-mst@kernel.org>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach:
@@ -58,136 +57,188 @@ X-MS-TNEF-Correlator:
 authentication-results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: PH0PR12MB5481:EE_|SA1PR12MB8093:EE_
-x-ms-office365-filtering-correlation-id: 5f956357-33ea-4bf8-f7cf-08db186f04de
+x-ms-traffictypediagnostic: PH0PR12MB5481:EE_|SJ0PR12MB7036:EE_
+x-ms-office365-filtering-correlation-id: fe2040be-7cce-4d37-aaaa-08db186f8583
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
 x-microsoft-antispam-message-info:
- n2+B2+n0jxuMfapyVSwTspJPCEPZ3Yu9LXcFD6VFV66xauwORh3xmAHQlJ1T2I8L61uY6MbdQjVcaTx6wVl7rjxkqeJi49c7oYEfUKu9DvhZyTWOaYLPlaUsT16k7iOkrTImiy4m5uN7ui+tEF1ZcSUljhzXxqILIA4Fz6CjZQg8kVPiZvj+t8SOMCZMzY5bvW/3pcdWO4XYu5oqaf+p6zS4tAm1WtXbAvwnlbRsgm0gB+E2VNuW9JM3bCbYu+cinDvHwvM6/rkE62r8qOrG7i5r0dIrAxlQAD08YTNQdZ1HBiuyQwQ05Q5iA9d1wok7SvMyVHBR8uSjRac1BJpZSjwkp6fv+JPjFMZ09CyXO+gRr/puvoAvFGuCLXWKCdsJWv45px0ScL7U/njQiFAYRQMhRiBXx+pj8AR0mwsY/++N1gomplEajil4khlaBqjf2BqWDjeViPXAwWnQ9bfkGc0x/SaXShaHbH1IflsSKXp55PF33VxuvRyMOfCHwfndIlkhlVB85x3vIZNVGt8FyMglX0E/lyvWqon7O3NWFXpSiRVe/fRs0CmSMZ8vGC03ZbJ9pmjhaOcn+lbRevP5R5wWTRN5fo38EpOSKoserQ2Nv+7FuHiAro2yFPlYdpdGO3fbRFZtF58ddLOvn0640d8UMKkiviletDtdi9KbFuPm2RZOC5ouFdyrtVlxvFEmtZaDGAxwYa/rmhpiICpnPg==
+ 0jiHPxLOXgrwAilz569hxR1lwtBrak/OFhZsRLHSQAzdWYKU2cxd4qUA0oDL5wJNB8xRX94hnjIe5xpcKBTdtjI/w5/9dUGtOCM5WlOU7ozG59XDvLqpkWMpEFuFokb+8ERzNWb3WfjNzUvPlEcrhZLYMItMSuOYuyeD/fapxS093NBdkn59z4PKysqJMBJsdRjXN7pY8WmaE0Hu9yu+aaBVYBOhVTSA2WUc1R3li3q8/fb+IHxbiLor1TkUJ8NFs6xqYVoM7wDwxjjbsHfdQYhKdtmZN6XfSOMb+NcZeNpaFmIViXWBE47EAKyttEmDejZhz6PJugOxHwVwmsDe54M/ss72X82slRL71HuKxN6R+/ZV21Ov6h7yl/rU4VHD3/ekiT8p+0BYgM6hdDsYg++RcJIMau0ofM69mqFfxDEMZNzBqqehdVAk3bRsWiC8Ynk8KhEEBSN6gomE1jyMV78CcjERKZWDmGdOv3HulMUBhpgWMHZ5ou6DqDd32VA3Dcq8rjMuPMJzC81lSiKYIse9jBkJSE7BsjE37/tLdQ5v63ba5I+FgWaM7f/26RM4t+Mk5+J5jRgGBq8g/hLYlAjsSkZd03jGIWqCptmk7VbUDib2X9SkUhAHbOP0bW9pkmgNegfoyegiw1okMNDpWLdIHXQ9a+7sLAzxWhJHGSt5ggg1hOCoOO8S60q1lQp/h363Y122WtrSSF/nPWmWhHHG5quLC6/8rSV/rCYeLvusukJhTYjtzvKlP6MD+yFa
 x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(136003)(396003)(366004)(39860400002)(376002)(346002)(451199018)(66476007)(38070700005)(122000001)(86362001)(55016003)(33656002)(38100700002)(5660300002)(478600001)(71200400001)(2906002)(7696005)(54906003)(8936002)(316002)(52536014)(41300700001)(76116006)(66556008)(66946007)(9686003)(107886003)(26005)(64756008)(66446008)(8676002)(186003)(6506007)(6916009)(4326008);DIR:OUT;SFP:1101;
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(366004)(346002)(376002)(136003)(39860400002)(396003)(451199018)(316002)(54906003)(33656002)(86362001)(55016003)(38100700002)(122000001)(6506007)(107886003)(83380400001)(38070700005)(186003)(26005)(9686003)(5660300002)(71200400001)(8936002)(2906002)(7696005)(52536014)(966005)(478600001)(4326008)(41300700001)(8676002)(6916009)(76116006)(66946007)(66556008)(66446008)(64756008)(66476007);DIR:OUT;SFP:1101;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
 x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?IVq1WPDkDRLmS1SxV0qYvNhMPT3e4fedZWBESWUObWWTt7WqFisHFLJQgTME?=
- =?us-ascii?Q?W3sIxWn4DxS9v3sfK5LkvyCvz3E1huBZ8okkgM6+xt7LYlGtphyhxveHjVlc?=
- =?us-ascii?Q?l38uugmGWPykix8vVbGoSKhPg8uy1QCmC4tmtNoIBSYkrUjQgx8zteqis9HZ?=
- =?us-ascii?Q?h+htq+AOrSQoupiSBBffajcumNI5qjfpYH+ErPLR46rDa3uiA9PkU9PGu6TG?=
- =?us-ascii?Q?Sgd1UoADWvJs3GXMp98Qbm4/wqj7jL8gyfM4q7LyTxDkjHad2H5YMgh6xt+I?=
- =?us-ascii?Q?fE0ifPMdtnZ1dxc2Yeu6PKWz3jPtYZzSk2kmujYSNY1ttMl3zKagitZVcT53?=
- =?us-ascii?Q?A5MlhrSFeXoc+wZ7S6JSv698rHWHxSrMG20N6A8UScDPsJc3YqkjGBJ/nJHp?=
- =?us-ascii?Q?g5xHaKpwf1SZl/iVteuU7XNug0cw5DPbQMX5/ai2F+Xh5D3nx1ZuhCRyX/G9?=
- =?us-ascii?Q?z/tuNJwNFiFkWzHUy7wG3WlKZy6dlNGSWSwWnGYXn3oakq+a6fMIYJaS8hIC?=
- =?us-ascii?Q?OjfkaJr8XcG+KUao2178W5GZs3lmBUN5rbEvjzNw1YmmzFkBQbBTtDRVWWHP?=
- =?us-ascii?Q?r6l50aG6GZGzczYBAgyn2puk5v6wTSTG5W6WylYDe22sXjZUN90wlfQUNVTU?=
- =?us-ascii?Q?b4qMdFrsLLNnrQkRwKeknBCsd/Mo0P5kyjcamB1cdpQjVzJp7Mnldl2+r3wq?=
- =?us-ascii?Q?kHGTwXZBBGjccALEbn//t3A0Sfact5GdPqh11SEG/LwFMMfobco01JtbgZjH?=
- =?us-ascii?Q?yAB9JRxZ1RD9SNXuriNBrerDhJfLEy5K+ILx3pvKM9Dl5HMfjilES+Ov5i1G?=
- =?us-ascii?Q?6XA/f9aYPsLbGiEO3d2MtaqZ+qRk6+2oHTTmQazDRQK4VqyhdKxyS/NTnXNY?=
- =?us-ascii?Q?7kETEai1d35aNE/hvgJfe8A1FoiMPEKq8LaDyh9nrS8xH6zpCzRJLmSUcf88?=
- =?us-ascii?Q?iXFi1u+lXhK/Tzbpt63MHDdld54CgDlhPp2beM8EZVAedZinqXfl+Ilkx1CC?=
- =?us-ascii?Q?WPwDHak2XKPFLmYHX3riuSXKNz8ZAtsEytRlXdL9gRi4R0c05AOvKv7bEukl?=
- =?us-ascii?Q?n2GaGNvl2HM8WOVQw9oxan6NKabwWnzL7Qy8wLP9D7l60hBoy8v/2k4pf00s?=
- =?us-ascii?Q?J7LkFuTLScxFw3Dcu8b3O3odfSNAoYbMCsrW99BSDail7AKJYfi1Uwz+SPCh?=
- =?us-ascii?Q?muFoU6s7CZSNU8cF4BtEvVTK4a4MevMN3weHJvve/Qku8CLnneHja3AGaFo+?=
- =?us-ascii?Q?zI0372XWgxnpstHNevMVzKww6eQ2xvs3wjmppSNiXiW9RAAWu/IaRrrSFMtS?=
- =?us-ascii?Q?jzzxG2ND448bTtKcwVaYiM+Y7i66PmC1ySEQDtrvxObOceXqGm6JYYQKlhGM?=
- =?us-ascii?Q?2x0fUAjbd5p7oXIki6dlYCo7zQFtbcwgP6ivgLDNPOzNQQz04DLWXnufijIm?=
- =?us-ascii?Q?XisXYv6vxJDd/05TsL/vO/S3+tcEzgFliIOTFsXY8Sw0PcV/whcckosqQmWw?=
- =?us-ascii?Q?txUGgFfKUUpc91Toib8bkJ5Jx8StMMwwCvQzCV/JyJjsyyVJOY/VxVrck44E?=
- =?us-ascii?Q?1Lsh5kcrpsfD+enEPt0=3D?=
+ =?us-ascii?Q?qr92KJi5SCELY1kbI9GznzjPVdXsRKupEL2juWe5gFbibRbXjM3GUUxUcfsd?=
+ =?us-ascii?Q?/mRqDEkor/WkkiHqQjtX495P/MTxs5t3W7b903Yq+PfLrPYQo082zgFfuc/0?=
+ =?us-ascii?Q?hxEJ8yTDWNN8RvEt67k1AXHjj1cBAv3tAR0WfnZokxM9bM+zeX9J/6w/REFF?=
+ =?us-ascii?Q?nPbG1fS09uKk6rZqs0BqLWronLU4JvyOUxwFJBRGXd3qgXtGmzXrI3+bEEVe?=
+ =?us-ascii?Q?fV2re2wcbbBtU3bE8A6Jd/bt+SqZfha0J71NlXX5FdbebAKCFAeDxEcQvs6B?=
+ =?us-ascii?Q?aBgQvTCVGz2li/+0uk+pJMi6nAo1naFMkbzqrG9JseqoEeWQ0bi+8irmG4rC?=
+ =?us-ascii?Q?lxIS03ytzQ6W4JsfU2gl8uaYT6+Qbi6HylHEMpO5iETxQfrch9KFz2SbHTq3?=
+ =?us-ascii?Q?GAareY/W9iccL4n64bgybOcVNiH0ZCVA3x6S3Y8NDiUIF5Tbw9h+QD5ox8Yq?=
+ =?us-ascii?Q?3qU9gBDbbjqQBSicl6TDTdJadeKWxyzkD7VEIZR/w7tLnHVCDSRwsZxeTsgf?=
+ =?us-ascii?Q?1F4L/24P0JeE4RjgIAGjpCezwWZEEe8tq6T5VHVap/gvzlKkDHZR0wmejU/S?=
+ =?us-ascii?Q?LBPLvbJmTb10MwxEaX2WjSmI9hGDF/vpT5shMfYwIlhvfpxeJVc1f13EjS7N?=
+ =?us-ascii?Q?nI8Xgb9M6ECHpUVjKNfjpplvp6ulnOHSraIM3yINKRQVfGlSscezXbUHHgMz?=
+ =?us-ascii?Q?fshqN9nKdhNfXv/JhtrKu2FDTW5h2CLMlLDeTcziZAYpOPk0nLiVid7XgRyq?=
+ =?us-ascii?Q?xjyQPNdiik76G/WWaoj1JaYy/vJPmRTufwoL5HZSQC7Ed3MDqB5SFTSTHvWp?=
+ =?us-ascii?Q?8LU0uzf057lZdktv/N4SzWQ/j5G2IW/Qrbdk/ZD6UCxNEwjiWPGfKQGxIj+E?=
+ =?us-ascii?Q?JAjBDGydmPlulmS6LpJj9bBcETsJJoKdUOrdBHZEb34ZPb7Jned+Mx5VmOTO?=
+ =?us-ascii?Q?EdGXVgNk5icZrSROn1+GMFcC4y/CRk4SFCoHW3ewzngaI7jUGajg5cbOGo/2?=
+ =?us-ascii?Q?3/zeH3qkWKG40BlzV8eDS/oE7MC22x3g8sOVxJ5P08942YOhYdZ5PSI9kQpI?=
+ =?us-ascii?Q?YK/45gj29vYKVZbFebLSk+ksVb4Am02cA7jcTA1ZHIUb7dT7Gq0yLDWziUGz?=
+ =?us-ascii?Q?VpAfXyvsLSgk1IiMM1b4Orlpty4oSup97dy05p68UGtt7/RicL3L6yX+XVkl?=
+ =?us-ascii?Q?ZDWQUrk1mr56ZhRIoQVkNVFfFwKyzSe2fOgn7ui+zyfQi2zBFh9NOmFa6p9O?=
+ =?us-ascii?Q?0LlHabm/rdwihQNrC3EHbIHAOHm47CYlsD3Ez3qXle9t6+GejyDv8eVPFm5p?=
+ =?us-ascii?Q?iLGRN/x/75kuJ8Y/shUxRTUqPIPqTfOTfY0PWSS4J/lcYIOgrdtlxXf8nZOq?=
+ =?us-ascii?Q?6EtLj3uMGx3uLQ5Fp4V+TDZhhzJVuYCzJ8dVg7oT0ucOOj8WkNAXYs56wYuA?=
+ =?us-ascii?Q?5XCkdyX9N6jnRW09FoMGXdCweEbWFoZd/E2uhGmw2+z/HRTOOL/gD6gsl5rg?=
+ =?us-ascii?Q?SDzerhQc7ZGecuFU4pIoWiIdMFITP3VYmBTUtm0pd6v3fpspTXEO6wBRiyG6?=
+ =?us-ascii?Q?P9fR/p1VF885QheBgww=3D?=
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: Nvidia.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5f956357-33ea-4bf8-f7cf-08db186f04de
-X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Feb 2023 03:02:10.5058
+X-MS-Exchange-CrossTenant-Network-Message-Id: fe2040be-7cce-4d37-aaaa-08db186f8583
+X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Feb 2023 03:05:46.3174
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 5Zx8oM+l840aGhvksyB29ZuP+B1EFpuqc0GGsfCyyX5abNJEdKqMNXcoI7QoTwSxpDmXPDoHlA4gFm8hvDNpZg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB8093
-Subject: [virtio-dev] RE: [PATCH 1/3] transport-pci: Improve PCI legacy device layout
- description
-Message-ID: <20230227030210.rks9U8uKkYYpxpaQWDVMXBTDj4LJ6WbbwVhDGWoBVss@z>
+X-MS-Exchange-CrossTenant-userprincipalname: JCoWYqUp9xeVawPhxIcY3riKUXO3P5izZvsEIj4peFsSFuihynhJuwgn6XjoWOcGD0/A2V3eZx6jfbHfPJP0OA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB7036
+Subject: [virtio-dev] RE: [PATCH 2/3] transport-pci: Split notes of PCI Device Layout
+Message-ID: <20230227030546.9lYj-MKQeR_1Oe9xhlTmmRnUVVIM0ZVh-vOsywXQdMs@z>
 
 
 > From: Michael S. Tsirkin <mst@redhat.com>
-> Sent: Saturday, February 25, 2023 6:09 PM
-> On Sun, Feb 26, 2023 at 12:29:59AM +0200, Parav Pandit wrote:
-> > Legacy interface PCI Device layout description has following issues.
+> Sent: Saturday, February 25, 2023 6:15 PM
+>=20
+> On Sun, Feb 26, 2023 at 12:30:00AM +0200, Parav Pandit wrote:
+> > Currently single legacy interface section describes PCI common
+> > configuration layout and feature bits operation for the legacy
+> > interface.
+> > Secondly common configuration structure description of legacy
+> > interface is not adjacent to the the respective normal device
+> > requirements for same.
 > >
-> > 1. repeated 'structure' word
-> > 2. virtio header was defined the 0.9.5 spec. In a legacy interface
-> >    section it is referred with different keywards
-> >    as (a) virtio header, (b) general headers, (c) legacy configuration
-> >    structure, (d) virtio common configuration structure and
-> >    (e) other fields.
-> > 3. Driver and device requirements listing is intermixed.
-> > 4. spelling error of structure
+> > Hence, split PCI Device Layout legacy interface section into two
+> > parts. First subsection for common configuration and second subsection
+> > for feature bits.
 > >
-> > Hence, rewrite the description to eliminate above issues as below.
+> > Subsequent patch relocates common configuration legacy interface to
+> > appropriate matching location.
 > >
-> > 1. Removed repeated structure word
-> > 2. Fix spelling of structure
-> > 3. Place all device requirements toegether 3. Define legacy
-> > configuration structure that consist of
-> >    a. legacy common configuration structure and
-> >    b. device specific configuration structure 4. Rewrite section
-> > around above changes
+> > Fixes: https://github.com/oasis-tcs/virtio-spec/issues/164
+> > Signed-off-by: Parav Pandit <parav@nvidia.com>
+>=20
+> I don't care really. However this does much more than move text around as=
+ it
+> claim to do:
+>=20
+>=20
+> > ---
+> >  conformance.tex   |  4 +++-
+> >  transport-pci.tex | 19 ++++++++++++-------
+> >  2 files changed, 15 insertions(+), 8 deletions(-)
 > >
-> > This is only an editorial change.
+> > diff --git a/conformance.tex b/conformance.tex index 01ccd69..0d3616f
+> > 100644
+> > --- a/conformance.tex
+> > +++ b/conformance.tex
+> > @@ -262,7 +262,9 @@ \section{Conformance
+> > Targets}\label{sec:Conformance / Conformance Targets}  \item Section
+> > \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Message
+> > Framing / Legacy Interface: Message Framing}  \item Section
+> > \ref{sec:General Initialization And Device Operation / Device
+> > Initialization / Legacy Interface: Device Initialization}  \item
+> > Section \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI
+> > Device Discovery / Legacy Interfaces: A Note on PCI Device Discovery}
+> > -\item Section \ref{sec:Virtio Transport Options / Virtio Over PCI Bus
+> > / PCI Device Layout / Legacy Interfaces: A Note on PCI Device Layout}
+> > +\item Section \ref{sec:Virtio Transport Options / Virtio Over PCI
+> > +Bus/ Virtio Structure PCI Capabilities / Legacy Interfaces: A Note on
+> > +Common configuration Layout} \item Section \ref{sec:Virtio Transport
+> > +Options / Virtio Over PCI Bus / Virtio Structure PCI Capabilities /
+> > +Legacy Interface: A Note on feature bits}
+> >  \item Section \ref{sec:Virtio Transport Options / Virtio Over PCI Bus
+> > / PCI-specific Initialization And Device Operation / Device
+> > Initialization / Virtio Device Configuration Layout Detection / Legacy
+> > Interface: A Note on Device Layout Detection}  \item Section
+> > \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific
+> > Initialization And Device Operation / Device Initialization /
+> > Virtqueue Configuration / Legacy Interface: A Note on Virtqueue
+> > Configuration}  \item Section \ref{sec:Virtio Transport Options /
+> > Virtio Over MMIO / Legacy interface} diff --git a/transport-pci.tex
+> > b/transport-pci.tex index 9ee37ba..9d4c713 100644
+> > --- a/transport-pci.tex
+> > +++ b/transport-pci.tex
+> > @@ -767,7 +767,10 @@ \subsubsection{PCI configuration access
+> > capability}\label{sec:Virtio Transport O  specified by some other
+> > Virtio Structure PCI Capability  of type other than
+> \field{VIRTIO_PCI_CAP_PCI_CFG}.
+> >
+> > -\subsubsection{Legacy Interfaces: A Note on PCI Device
+> > Layout}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI
+> > Device Layout / Legacy Interfaces: A Note on PCI Device Layout}
+> > +\subsubsection{Legacy Interfaces: A Note on Common configuration
+> > +Layout}\label{sec:Virtio Transport Options / Virtio Over PCI Bus /
+> > +Virtio Structure PCI Capabilities / Legacy Interfaces: A Note on
+> > +Common configuration Layout}
+> >
+> >  The transitional device MUST present part of the configuration
+> > registers in a legacy configuration structure in BAR0 in the
 >=20
-> No, editorial changes are things like spelling corrections.
 >=20
-Got it. Will drop this remark.
+> Please do not split up labels to multiple lines like this, it is hard to =
+find and fix
+> them if you do.
+>=20
+Will fix it.
 
-> I have trouble reviewing
-> because I have no idea why you are making each change.
+> > @@ -852,13 +855,15 @@ \subsubsection{Legacy Interfaces: A Note on PCI
+> > Device Layout}\label{sec:Virtio  is encoded in the native endian of
+> > the guest (where such  distinction is applicable).
+> >
+> > -When accessing the device-specific configuration structure -using the
+> > legacy interface, transitional drivers MUST access -the
+> > device-specific configuration structure -at an offset immediately
+> > following the legacy common -configuration structure.
+> > +The transitional driver when using the legacy interface MUST the
+> > +device-specific configuration structure at an offset immediately
+> > +following the legacy common configuration structure.
 >=20
-After documenting legacy interface in the spec, we cannot claim that driver=
- is the source =3D specification.
-Currently transitional device and pci device do not scale well (or doesn't =
-scale at all).
-We are working on supporting it and having better defined transitional devi=
-ce seems important part of it.
+> Oh great and in the process of presumably just moving stuff around you ar=
+e
+> also losing text - the result is agrammatical, and much less clear than t=
+he
+> original.
+>=20
+I missed "access".
+While splitting the patch, a hunk got in the wrong patch.
+Will fix it.
+Thank for the catch.
 
-> E.g. you just rewrote a bunch of text and I frankly don't know why. For e=
-xample:
 >=20
-> 	-When using the legacy interface, transitional drivers
-> 	-MUST use the legacy configuration structure in BAR0 in the first
-> 	-I/O region of the PCI device, as documented below.
+> >
+> > -Note that only Feature Bits 0 to 31 are accessible through the
+> > +\subsubsection{Legacy Interface: A Note on feature
+> > +bits}\label{sec:Virtio Transport Options / Virtio Over PCI Bus /
+> > +Virtio Structure PCI Capabilities / Legacy Interface: A Note on
+> > +feature bits}
+> > +
+> > +Only Feature Bits 0 to 31 are accessible through the
+> >  Legacy Interface. When used through the Legacy Interface,  the
+> > transitional device MUST assume that Feature Bits 32 to 63  are not
+> > acknowledged by the driver.
 >=20
-> is now apparently:
->=20
-> 	+When used through the legacy interface, the legacy common
-> 	+configuration structure has the following layout:
->=20
-> and this is better? why? we are replacing a clear requirement which appli=
-ed to
-
-Because as I explained in the commit log, that one structure is named using=
- 5 different names.
-
-> drivers with a vague statement which I can't say what it applies to.
->=20
-> Any chance of splitting these things up? Maybe that will help.
->=20
-That's a good idea. Yes. I will split these patches to smaller one.
-
-> Apropos I don't know that we want to spend much time on legacy sections.
-Transitional devices are very much in use and documenting them well is impo=
-rtant to build scalable transitional devices.
-
-> Really with legacy code is the main source of documentation - if drivers =
-work
-> then you are golden. If they don't appealing to spec will not help.
-
-Yes, so don't want to add additional text. Just correcting the current one.
+> And you are dropping "Note" here because why? Seems notable in that there
+> are more feature bits, someone might miss this fact.
+The heading is "A Note ..."
+Hence, I dropped the Note from the sentence.
+But if you really care, can add it back...
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
