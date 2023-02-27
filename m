@@ -1,110 +1,119 @@
-Return-Path: <mst@redhat.com>
-Date: Fri, 24 Feb 2023 12:10:14 -0500
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: Re: [virtio-dev] Re: [PATCH v9] virtio-net: support inner header hash
-Message-ID: <20230224120744-mutt-send-email-mst@kernel.org>
+Return-Path: <parav@nvidia.com>
+From: Parav Pandit <parav@nvidia.com>
+Subject: RE: [PATCH v9] virtio-net: support inner header hash
+Date: Mon, 27 Feb 2023 00:29:33 +0000
+Message-ID: <PH0PR12MB54819632C955C5D087117416DCAF9@PH0PR12MB5481.namprd12.prod.outlook.com>
 References: <20230218143715.841-1-hengqi@linux.alibaba.com>
  <20230223080358-mutt-send-email-mst@kernel.org>
  <PH0PR12MB5481FD1A82D37157AFCFC541DCAB9@PH0PR12MB5481.namprd12.prod.outlook.com>
  <20230224030725-mutt-send-email-mst@kernel.org>
- <f8d09582-749f-11f6-90d1-ac7413ed6937@linux.alibaba.com>
+In-Reply-To: <20230224030725-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <f8d09582-749f-11f6-90d1-ac7413ed6937@linux.alibaba.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-To: Heng Qi <hengqi@linux.alibaba.com>
-Cc: Parav Pandit <parav@nvidia.com>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Jason Wang <jasowang@redhat.com>, Yuri Benditovich <yuri.benditovich@daynix.com>, Cornelia Huck <cohuck@redhat.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>, "ailan@redhat.com" <ailan@redhat.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: Heng Qi <hengqi@linux.alibaba.com>, "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Jason Wang <jasowang@redhat.com>, Yuri Benditovich <yuri.benditovich@daynix.com>, Cornelia Huck <cohuck@redhat.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>, "ailan@redhat.com" <ailan@redhat.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Fri, Feb 24, 2023 at 10:38:37PM +0800, Heng Qi wrote:
-> 
-> 
-> 在 2023/2/24 下午4:13, Michael S. Tsirkin 写道:
-> > On Thu, Feb 23, 2023 at 02:40:46PM +0000, Parav Pandit wrote:
-> > > 
-> > > > From: Michael S. Tsirkin <mst@redhat.com>
-> > > > Sent: Thursday, February 23, 2023 8:14 AM
-> > > > 
-> > > > On Sat, Feb 18, 2023 at 10:37:15PM +0800, Heng Qi wrote:
-> > > 
-> > > > So for RSS specifically, we brain-stormed with Amnon (Cc'd) and came up with
-> > > > an idea: RSS indirection table entries are 16 bit but onlu 15 bits are used to
-> > > > indentify an RX queue.
-> > > > We can use the remaining bit as a "tunnel bit" to signal whether to use the
-> > > > inner or the outer hash for queue selection.
-> > > > 
-> > > I further brainstormed internally with Saeed and Rony on this.
-> > > 
-> > > The inner hash is only needed for GRE, IPIP etc.
-> > > For VXLAN and NVGRE Linux kernel transmit side uses the entropy of the source port of the outer header.
-> > > It does that based on the inner header.
-> > > Refer to [1] as one example.
-> > > 
-> > > [1] https://elixir.bootlin.com/linux/latest/source/drivers/net/geneve.c#L922
-> > But I think hash was requested for RSS with dpdk, no?
-> 
-> I think yes, at least probably the first customer to use the feature might
-> be dpdk.:)
-> 
-> 
-> > 
-> > > > The lookup will work like this then:
-> > > > 
-> > > > calculate outer hash
-> > > > if (rss[outer hash] & tunnel bit)
-> > > Tunnel bit, you mean tunneled packet, right?
-> > this idea stores a bit in the indirection table
-> > which signals which of the hashes to use for rss
-> 
-> This allows inner hash to have the ability to select a queue and place
-> packets to the queue (that is, parallel to RSS),
-> which seems to be different from our discussion before v9. 🙁
-> 
-> Thanks.
 
-Not exactly. The idea is that we start with outer hash.
-Based on that we use rss table to decide whether to use the inner hash.
+> From: Michael S. Tsirkin <mst@redhat.com>
+> Sent: Friday, February 24, 2023 3:13 AM
 
-Given that Parav claims it's difficult to implement in
-hardware I'm not insisting this idea is included
-in the patchset. We can add it later.
+[..]
+> > The inner hash is only needed for GRE, IPIP etc.
+> > For VXLAN and NVGRE Linux kernel transmit side uses the entropy of the
+> source port of the outer header.
+> > It does that based on the inner header.
+> > Refer to [1] as one example.
+> >
+> > [1]
+> > https://elixir.bootlin.com/linux/latest/source/drivers/net/geneve.c#L9
+> > 22
+>=20
+> But I think hash was requested for RSS with dpdk, no?
+>=20
+Yes, but if src inserts the entropy (dpdk or kernel), UDP based tunnel can =
+live with outer header hash.
+Ip over ip, gre tunnels needs benefit if queues do not overflow or the proc=
+essing is fast enough as Heng explained.
 
 
-> > 
-> > > > then
-> > > > 	calculate inner hash
-> > > > 	return rss[inner hash] & ~tunnel bit
-> > > Why to end with a tunnel bit?
-> > 
-> > this just clears the bit so we end up with a vq number.
-> > 
-> > > > else
-> > > > 	return rss[outer hash]
-> > > > 
-> > > > 
-> > > > this fixes the security issue returning us back to status quo : specific tunnels can
-> > > > be directed to separate queues.
-> > > > 
-> > > The number of tunnels is far higher than the number of queues with para virt driver doing decap.
-> > True. This seeks to get us back to where we are before the feature:
-> > driver can send specific outer hashes to specific queues.
-> > outer hash collisions remain a problem.
-> > 
-> > 
-> > > > This is for RSS.
-> > > > 
-> > > > 
-> > > > For hash reporting indirection table is not used.
-> > > > Maybe it is enough to signal to driver that inner hash was used.
-> > > > We do need that signalling though.
-> > > > 
-> > > > My question would be whether it's practical to implement in hardware.
-> > > In above example, hw calculating double hash is difficult without much gain.
-> > > Either calculating on one inner or outer makes sense.
-> > > 
-> > > Signaling whether calculated on inner or outer is fine because hw exactly tells what it did.
-> > This, in a sense, is what reporting hash tunnel type did.
-> > Do you now think we need it?
-> > 
+> > > The lookup will work like this then:
+> > >
+> > > calculate outer hash
+> > > if (rss[outer hash] & tunnel bit)
+> > Tunnel bit, you mean tunneled packet, right?
+>=20
+> this idea stores a bit in the indirection table which signals which of th=
+e hashes
+> to use for rss
+>=20
+> > > then
+> > > =09calculate inner hash
+> > > =09return rss[inner hash] & ~tunnel bit
+> > Why to end with a tunnel bit?
+>=20
+>=20
+> this just clears the bit so we end up with a vq number.
+>=20
+> > > else
+> > > =09return rss[outer hash]
+> > >
+> > >
+
+Above scheme partitions the rss indirection table into two parts.
+1. one for tunnel processing
+2. second without it. (this one uses outer hash as today)
+
+When #1 is done in your example, it is without hierarchy.
+So inner hash can still result in collision, as before in same VQ.=20
+Say VQ 0,1,2,3.
+Indirection is setup so that 0,1 has tunnel bit set.
+2,3 has tunnel bit cleared.
+Rss of our hash finds it true and inner hash for two different tunnel is st=
+ill maps to single VQ.
+
+> > > this fixes the security issue returning us back to status quo :
+> > > specific tunnels can be directed to separate queues.
+> > >
+> > The number of tunnels is far higher than the number of queues with para=
+ virt
+> driver doing decap.
+>=20
+> True. This seeks to get us back to where we are before the feature:
+> driver can send specific outer hashes to specific queues.
+> outer hash collisions remain a problem.
+>=20
+So far mlx5 device has done hash on inner header for non udp.
+
+For steering packets to specific queues is done by flow programming to the =
+specific RQs which supports for outer, and inner both.
+Ethtool -config-nfc has it for long time too, such flow steering is due for=
+ virtio net too.
+It is orthogonal to RSS.
+
+>=20
+> > >
+> > > This is for RSS.
+> > >
+> > >
+> > > For hash reporting indirection table is not used.
+> > > Maybe it is enough to signal to driver that inner hash was used.
+> > > We do need that signalling though.
+> > >
+> > > My question would be whether it's practical to implement in hardware.
+> >
+> > In above example, hw calculating double hash is difficult without much =
+gain.
+> > Either calculating on one inner or outer makes sense.
+> >
+> > Signaling whether calculated on inner or outer is fine because hw exact=
+ly tells
+> what it did.
+>=20
+> This, in a sense, is what reporting hash tunnel type did.
+> Do you now think we need it?
+
+I don't see a consumer sw of it.
 
