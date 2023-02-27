@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-11302-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-11303-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id E27EEC64ED6
-	for <virtio-dev@archiver.kernel.org>; Mon, 27 Feb 2023 03:07:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 2BD7BC64ED6
+	for <virtio-dev@archiver.kernel.org>; Mon, 27 Feb 2023 04:07:39 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 16A1F2A82A
-	for <virtio-dev@archiver.kernel.org>; Mon, 27 Feb 2023 03:07:46 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 53EA22A825
+	for <virtio-dev@archiver.kernel.org>; Mon, 27 Feb 2023 04:07:39 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 0FD1C986654
-	for <virtio-dev@archiver.kernel.org>; Mon, 27 Feb 2023 03:07:46 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 4B87C986420
+	for <virtio-dev@archiver.kernel.org>; Mon, 27 Feb 2023 04:07:39 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 0460F986605; Mon, 27 Feb 2023 03:07:46 +0000 (UTC)
+	id 41EF4983E8F; Mon, 27 Feb 2023 04:07:39 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-Id: <virtio-dev.lists.oasis-open.org>
 Precedence: bulk
@@ -23,123 +23,225 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id E1D009863DD;
-	Mon, 27 Feb 2023 03:07:43 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 2F7CB9863ED
+	for <virtio-dev@lists.oasis-open.org>; Mon, 27 Feb 2023 04:07:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MrddRjA08UXpVO39K655wVUDHrC68/Jx94lxa3vtpDnIOInrz3c91Sqm2PEKk72W2gj7tsUs5585gxj4Y5vboPo0jm/pVyuLt7A6Z38gcNCb+vZc4YgfCav8WX6k16LsrzwQUtpYBcWX0oEvf8Mh9TjNrz6/b5cVma1JbD9eaeh3fAKL7aoKHFogcaauk2YozEVBgiqaEkn/lJW26ZCsmR0oa5dWaQBVSWL5VdOcH2SXtW/nR6DJK2yLf/GvWtjl63txYEoY6zyfhmkup7l+IlJ6bkeIZmcJbLAvXCjNVfzV6KftmFUndh3H90hu+x9sRDshxI7eziWyNmjCAfFvfw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=pwGLxL3NkdxFM7z+G7js17Hi9cb36vpvPBSVcWZ4cpo=;
- b=kmao+d7nV2NyZYDbTap333K9wBPIDAdNcGbOBOaf9g5a4eUUbN/NQtTWg3yzajMtqLDJQZTW45hblDppHBQlzPxkBI8BBUZHOkA10UQy8oszSdks35vP47we078qDLfUQaa5UZm50wCZEi5+YfGyI5waAV7vP4dwmjvOGpv/BWNIoVVd2MMi49gtjwTjOcutnvdtFLZKbHmCPalcThPV+SSCZy0DaaeH7sBNbQRYflEa++JFqFcocIsrvFiOiNPu3WkoYXTcMB79hD0CsfGXlO3XY84166kCVXbItZ9mhkxmMLg46+y4F3O8ODh5JtW/L6BNBqs20K1nHc9IzBF2Pg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-From: Parav Pandit <parav@nvidia.com>
-To: "Michael S. Tsirkin" <mst@redhat.com>
-CC: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
-	"cohuck@redhat.com" <cohuck@redhat.com>,
-	"virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
-	Shahaf Shuler <shahafs@nvidia.com>
-Thread-Topic: [PATCH 3/3] transport-pci: Relocate common config legacy
- interface
-Thread-Index: AQHZSWjGRIGryXxju0264DstWdboeq7gS3sAgAHSnPA=
-Date: Mon, 27 Feb 2023 03:07:41 +0000
-Message-ID: <PH0PR12MB5481691F4FADD7A4660D849CDCAF9@PH0PR12MB5481.namprd12.prod.outlook.com>
-References: <20230225223001.430522-1-parav@nvidia.com>
- <20230225223001.430522-4-parav@nvidia.com>
- <20230225181523-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20230225181523-mutt-send-email-mst@kernel.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: PH0PR12MB5481:EE_|SJ0PR12MB7036:EE_
-x-ms-office365-filtering-correlation-id: 4fecece2-84ae-4c66-664d-08db186fca22
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info:
- /wRBX0qHFNaso3sqPV/DjLO+PB0kM3P1Hb4Tu6bXuwJ8d9P9gT3FUBOLOj2cKjHjlgV7VqIjpryJVJONW8h7USlq+CtyENluijxeL2ZmU0uf3O5c9izqdZ3iEukJ5b6wMoTUXEBs3woqWsR5gj3oY4UkTNE1CK8az0x8rujsBlUB4IvinOzCh7UvqKvFs9JUP3ni+EWC5E8eNxgN0C7ab7Y22CA0SEhbGcm2xVFE+EbiUPZK7cv4ZWHCc5rMl4XiqLg7DmyugSdll8vLZWWjfCy9nTPFVdVSp7qtl9Gm8pJjOXn7q4eqLMB9L22LukGVEmFzVew+wc7+VIqsbuL2j8KydKCeRZtrjUkZ03I7mY1AnCYGhAVyRIMMWj8EbFvoLEc71kmPQr0pMr1BxkgUkw80qz4eGARgQo6vSySPECleTG/zl8g58CxIRfgBnGTUFFPdNZ4PH2sq6A2qb1fsF237HAYOKwqiLjWSkbc988S5GJmun2P8QU3/rpl0+rf4AdBiM62TZjkSgqmxobdr+5ToLoqUwEiJLd8URgKU+NmOcTNP4yHZoHpXBkolIj1qUxVnILawQkSyhzVPJjaT/wJzk3PUbZ20mpnOqIwZ86bQlJX9MM69bLsfCnQMy1meI61AlRwQI/gJLrHF04ht7jYqpj2QfQRA2Kz+sn/V49EJzty+I8x5moYMqy4j1RgzInxs+xI8NbwaAhwpOke3kNfL/7pzr0teAqcnYJbCbcAxduPPETB+jMZ6pYPmXCvS
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(366004)(346002)(376002)(136003)(39860400002)(396003)(451199018)(316002)(54906003)(33656002)(86362001)(55016003)(38100700002)(122000001)(6506007)(107886003)(83380400001)(38070700005)(186003)(26005)(9686003)(5660300002)(71200400001)(8936002)(2906002)(7696005)(52536014)(966005)(478600001)(4326008)(41300700001)(8676002)(6916009)(4744005)(76116006)(66946007)(66556008)(66446008)(64756008)(66476007);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?w6JYRmB97OuOwqrTJrnFe7IXpCpMb0WDS8cNuVfUNO7qI94GcN5pKRfy3FZO?=
- =?us-ascii?Q?g6scW2AyHgbx0NBeqPBJooGLXc2jWihMcgrOhaqdFuHMlQhsBiKacT7LFqw4?=
- =?us-ascii?Q?0LfJ3FQPGWtUDXiL9il7+TpojKIzbUBT0SXSadwF9VyUPhtLzr9x2+MEWXbG?=
- =?us-ascii?Q?vbY7iIK6Qi4oh2t1titMJUSI1k1x5QRlRf4OgHD7NebhoWDAdz+cPHsRbhIn?=
- =?us-ascii?Q?OCIut3biKS7ciyBx4Tu8fg9LVZtSwbR/UYjfFPTY/txgfg8KtKfvmnfyP29Y?=
- =?us-ascii?Q?FUOMos2CXb73WXhVrCkJxLDummI2pqdvpoKxCC5GqwR8nh8s4iO3NTH01AO6?=
- =?us-ascii?Q?AS6dCXGe+c8M0mmjLh4Rqw/kdI1G1N/Zso4da07lUGlT48F90vLNy9Wb2Y28?=
- =?us-ascii?Q?dtTh3ymU/1DUCYsKiJOy5Zlqsm3dDBrNKUmMi53ZT5A70cs46C5cmNi+FjjB?=
- =?us-ascii?Q?OF+fCYTw1iMhkvquESsQKzoAVzbYbDabWvQHm/H3hGeVzojg/NUjPob0PhLQ?=
- =?us-ascii?Q?gAUa+Cf6L4urlTmCCGzo+qz4bOkviIs4Y/fhS1VbeZzk5CNGnuwTsPpIv2Bu?=
- =?us-ascii?Q?CGUXbtB9B8/zn0Q7r8KNWFaNUSvSoDe9KFkoW1cIivXj611dc3pKRuAvZMNL?=
- =?us-ascii?Q?6y2krOX3h+Bi2CbwTxD67IlyTDAs+W3XAN2rDT7AvnAB4TMj/CykVRIvfEwP?=
- =?us-ascii?Q?iJRBET2VijbjklU+NSW1TMKZP5AXkRTq5LCoaJ4bWGmLxYVixoKp9rrF8wdk?=
- =?us-ascii?Q?ROaMNZTDgBxF6/E6x0m3IpaJMyNwPPoxDCULGYb+b3ut0DrsWgkPZDIK+62L?=
- =?us-ascii?Q?3waJvoHIbrqUk1cjppNsBdJKTMOXYX84fN91ArQeiIv6P+gpaQ9ewaCRIhTs?=
- =?us-ascii?Q?3eA4xuOmPOTQoDH8EscIb4KhrDz6C7r5Mc/O35X4BHEldnX78G7p1oCISUmW?=
- =?us-ascii?Q?Tj6Mxl1Jmd80v84tG3h7yIJYYgqQXjkHJWKyxrHTzaaF02fYKV4UuacDW9BF?=
- =?us-ascii?Q?VkYCtbNzsjz6QQdnR55DSJCEVSTP/58UNu23GPpq2jfsUXLza1EGg2Hztb0b?=
- =?us-ascii?Q?Q06DNSDPV+7AGKMv4M3CNa+xwLW2Bho69YoopwHTVuhGtL8PRRJ5V/Ney/Su?=
- =?us-ascii?Q?BkotPDkUnOHww+H1zfhBW3b7kfk+NCzM+bsGPtjPJ9UjiNhMNDgVwEj+faXY?=
- =?us-ascii?Q?pTEhR2qa/gvS1c/kCq0QIdk/Al3W7R+5Ihtdhr8lPXk5fc1TWTre9fMB8Ob0?=
- =?us-ascii?Q?j3AjX5E+wrmohDGeQDsPy/QXS9fTnAiwLrf42odIbU0eX5etXHbNjnE97W8F?=
- =?us-ascii?Q?MxZxQmxgnCEtV9gGSsMMbDTYR91bdIX7z/Xp9HlcVP2nZgcvkq/Mk+n1NjmR?=
- =?us-ascii?Q?cHXLxUeT3G8WCN9UpVWp2b+JiI+73wPBKiKysz/2RAKY6Oj1MI961SWVnbNs?=
- =?us-ascii?Q?+Vqe1+r/FQ0dlprO7dRsfw0+Ve7zJqXhZnOv6Xz/A2fHJuJamMCagLeEnfKI?=
- =?us-ascii?Q?niddNjxX7f3Qa9OiB/Nq3jA+GoE5RnuvKUzN0teCAdOALNkrJf5ZpfrNkCLv?=
- =?us-ascii?Q?hoQKyKmHwBim9xojxW0=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+X-MC-Unique: bQvbBOKxOW-KV6qQALQTbw-1
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=quoYUSRl9dN14AEE9NDn5cKwYO+eJljvVY5/RgzE7rc=;
+        b=O4a6RAN/9IQWUgF6GKt41/4WC/is+4CRx7kEEeMVbjYkztkscROi/e39k09lpE/NtW
+         eSlnc+gZcEhaguNYTBn9+UL5XjTejULetmHIOwHupzDk+LNcaFXKquWNDWkbpYoj4L9/
+         O5SHV+Ve8lscEyEuJy9jgWS5bkDqwLeXSArBXQ7pWZ+w0BNb8ED18pAw8K5p9S6Yam3y
+         RZ43qqUehjDwrfelkbobLafKL5LqZ8D4wPmjj2Sp7YDI/cHRFyXrn2da634sE0RAjtVJ
+         KmpcqrYpTA23PcH4qx94Fq/dQ/z14kTBdOU8daNQJ7d88v/C/csRO/zjcYFAI4rD/O0b
+         8ixA==
+X-Gm-Message-State: AO0yUKX2MjmA1bZU8EylbbfuOAMyvxDYB6jDxFvxcD0TdyxY5N1N9Wpi
+	oQH8ub04NUho7gQWY6wTLSMsxzLtzXOJpi+TT4a4IcTuvBJzTa9P62NqjpHHwBdjvFhqZk9dVYc
+	eAWRL6GNcRcUHJNhexHDyTbm/DN/O9nYzXWET6GtatNKc
+X-Received: by 2002:a9d:4d8e:0:b0:688:cf52:6e18 with SMTP id u14-20020a9d4d8e000000b00688cf526e18mr4223981otk.4.1677470848642;
+        Sun, 26 Feb 2023 20:07:28 -0800 (PST)
+X-Google-Smtp-Source: AK7set8L4V/JOd37++shxcwn7SzgQHMntM3SFEWECbvfdmyaI+52a7rftTxjIapVxVUxAiO394tJ1OccPvAAQAIT5Lg=
+X-Received: by 2002:a9d:4d8e:0:b0:688:cf52:6e18 with SMTP id
+ u14-20020a9d4d8e000000b00688cf526e18mr4223977otk.4.1677470848344; Sun, 26 Feb
+ 2023 20:07:28 -0800 (PST)
 MIME-Version: 1.0
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4fecece2-84ae-4c66-664d-08db186fca22
-X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Feb 2023 03:07:41.3652
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: FYRc1YtnNESjB7s874wmoOWqb835cu+QGX2cVUTsOfBE1jgaNAwuurrtUgMxOMsqCTxXrkwaBxnj/nxgc96yPw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB7036
-Subject: [virtio-dev] RE: [PATCH 3/3] transport-pci: Relocate common config legacy
- interface
-Message-ID: <20230227030741.4oE0BZvdjZYACiIlVyeYMtfbqlnlewyrZGJKo6uGEDI@z>
+References: <20230218143715.841-1-hengqi@linux.alibaba.com>
+ <20230221124518-mutt-send-email-mst@kernel.org> <4d123e32-1ad0-e692-7fa6-0565eb34c487@redhat.com>
+ <0f53212f-a89b-ad3c-73e3-a7a7b5533058@linux.alibaba.com> <1047920c-5dd5-8f31-0c4c-a108f36155f8@redhat.com>
+ <20230223075934-mutt-send-email-mst@kernel.org> <CACGkMEvc2Px_Zz11R5QYwMXYm_j5rsYV2LrZt5yf8tZQxuT_Bg@mail.gmail.com>
+ <20230224030509-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20230224030509-mutt-send-email-mst@kernel.org>
+From: Jason Wang <jasowang@redhat.com>
+Date: Mon, 27 Feb 2023 12:07:17 +0800
+Message-ID: <CACGkMEuOu=6qKQO2TJ0B6ZLRH_-rGtZMYVtw7gn+BFbnJgWkrw@mail.gmail.com>
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: Heng Qi <hengqi@linux.alibaba.com>, virtio-comment@lists.oasis-open.org, 
+	virtio-dev@lists.oasis-open.org, Parav Pandit <parav@nvidia.com>, 
+	Yuri Benditovich <yuri.benditovich@daynix.com>, Cornelia Huck <cohuck@redhat.com>, 
+	Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Subject: [virtio-dev] Re: [PATCH v9] virtio-net: support inner header hash
+Message-ID: <20230227040717.QA8Xufmez_JA_OVvHIDg6VAWjHHYLeYWxIU2Btl7k3w@z>
 
+On Fri, Feb 24, 2023 at 4:06=E2=80=AFPM Michael S. Tsirkin <mst@redhat.com>=
+ wrote:
+>
+> On Fri, Feb 24, 2023 at 10:26:30AM +0800, Jason Wang wrote:
+> > On Thu, Feb 23, 2023 at 9:03 PM Michael S. Tsirkin <mst@redhat.com> wro=
+te:
+> > >
+> > > On Thu, Feb 23, 2023 at 10:50:48AM +0800, Jason Wang wrote:
+> > > > Hi:
+> > > >
+> > > > =E5=9C=A8 2023/2/22 14:46, Heng Qi =E5=86=99=E9=81=93:
+> > > > > Hi, Jason. Long time no see. :)
+> > > > >
+> > > > > =E5=9C=A8 2023/2/22 =E4=B8=8A=E5=8D=8811:22, Jason Wang =E5=86=99=
+=E9=81=93:
+> > > > > >
+> > > > > > =E5=9C=A8 2023/2/22 01:50, Michael S. Tsirkin =E5=86=99=E9=81=
+=93:
+> > > > > > > On Sat, Feb 18, 2023 at 10:37:15PM +0800, Heng Qi wrote:
+> > > > > > > > +\subparagraph{Security risks between encapsulated packets =
+and RSS}
+> > > > > > > > +There may be potential security risks when encapsulated
+> > > > > > > > packets using RSS to
+> > > > > > > > +select queues for placement. When a user inside a tunnel
+> > > > > > > > tries to control the
+> > > > > >
+> > > > > >
+> > > > > > What do you mean by "user" here? Is it a remote or local one?
+> > > > > >
+> > > > >
+> > > > > I mean a remote attacker who is not under the control of the tunn=
+el
+> > > > > owner.
+> > > >
+> > > >
+> > > > Anything may the tunnel different? I think this can happen even wit=
+hout
+> > > > tunnel (and even with single queue).
+> > >
+> > > I think you are missing the fact that tunnel is normally a
+> > > security boundary: users within the tunnel can not control
+> > > what is happening outside.
+> > > The feature breaks the encapsulation somewhat.
+> >
+> > I'm not sure I understand here, if we allow hash based on the inner
+> > packet, is it something that you meant the things that are happening
+> > outside? It doesn't differ too much from the case where the tunnel is
+> > not used. It's impossible to prevent what a remote user is trying to
+> > send, and if there's a NIC behaviour that depends on the packet
+> > content, the behaviour of the NIC is somehow under the control of the
+> > remote user.
+> >
+> > Since we only care about the device driver interface, what we can do
+> > is probably:
+> >
+> > 1) allow the driver to disable the inner hash when it spots a
+> > potential (D)DOS. And in the device, a fair queueing looks like a must
+> > but it should be the implementation details.
+>
+> this breaks rss
 
-> From: Michael S. Tsirkin <mst@redhat.com>
-> Sent: Saturday, February 25, 2023 6:16 PM
->=20
-> On Sun, Feb 26, 2023 at 12:30:01AM +0200, Parav Pandit wrote:
-> > Relocate legacy interface section of common configuration structure
-> > near where 1.x based common configuration structure is defined.
+Not sure I get here, what I want to say is that the issue described
+here is not something than can be addressed in the level of hashing or
+RSS. It needs to be processed before the packet can arrive at any hash
+filters in the RX pipeline.
+
+There's probably no need to mention in now consider we haven't (or
+there's probably no need to) defined a full RX pipeline.
+
+>
+> > 2) hash based on both outer and inner
+>
+> this might help a bit
+>
+> > >
+> > > For example without tunneling it is possible
+> > > to create a special "bad guy queue" and direct specific tunnels
+> > > there by playing with key and indirection table.
 > >
-> > This aligns the spec to follow rest of the other Legacy interfaces
-> > section.
+> > Anything makes the tunneling different? We can still do this via the
+> > inner header hash, or at least we can disable the inner hash if we see
+> > a remote DOS.
 > >
-> > Fixes: https://github.com/oasis-tcs/virtio-spec/issues/164
-> > Signed-off-by: Parav Pandit <parav@nvidia.com>
-> > ---
-> >  conformance.tex   |   3 +-
-> >  transport-pci.tex | 186
-> > +++++++++++++++++++++++-----------------------
-> >  2 files changed, 95 insertions(+), 94 deletions(-)
-> >
->=20
-> I can't be bothered to check whether this actually just moves text around=
- or
-> also changes a bunch of stuff on the way.
->=20
-I will generate pdf after these each patch in this series to make sure that=
- no text is changed.
+> > Thanks
+>
+> the difference is that tunneling is used for security/partitioning.
+
+The problem is that we don't/can't support all type of tunnel. It
+should be no difference with an old virtio-net device without tunnel
+hashing.
+
+Btw, this kind of 1:1 hash features seems not scalable and flexible.
+It requires an endless extension on bits/fields. Modern NICs allow the
+user to customize the hash calculation, for virtio-net we can allow to
+use eBPF program to classify the packets. It seems to be more flexible
+and scalable and there's almost no maintain burden in the spec (only
+bytecode is required, no need any fancy features/interactions like
+maps), easy to be migrated etc.
+
+Prototype is also easy, tun/tap had an eBPF classifier for years.
+
+Thanks
+
+>
+> > >
+> > > > How to mitigate those attackers seems more like a implementation de=
+tails
+> > > > where might require fair queuing or other QOS technology which has =
+been well
+> > > > studied.
+> > > >
+> > > > It seems out of the scope of the spec (unless we want to let driver
+> > > > manageable QOS).
+> > > >
+> > > > Thanks
+> > > >
+> > > >
+> > > > >
+> > > > > Thanks.
+> > > > >
+> > > > > >
+> > > > > > > > +enqueuing of encapsulated packets, then the user can flood
+> > > > > > > > the device with invaild
+> > > > > > > > +packets, and the flooded packets may be hashed into the
+> > > > > > > > same queue as packets in
+> > > > > > > > +other normal tunnels, which causing the queue to overflow.
+> > > > > > > > +
+> > > > > > > > +This can pose several security risks:
+> > > > > > > > +\begin{itemize}
+> > > > > > > > +\item  Encapsulated packets in the normal tunnels cannot b=
+e
+> > > > > > > > enqueued due to queue
+> > > > > > > > +       overflow, resulting in a large amount of packet los=
+s.
+> > > > > > > > +\item  The delay and retransmission of packets in the
+> > > > > > > > normal tunnels are extremely increased.
+> > > > > > > > +\item  The user can observe the traffic information and
+> > > > > > > > enqueue information of other normal
+> > > > > > > > +       tunnels, and conduct targeted DoS attacks.
+> > > > > > > > +\end{\itemize}
+> > > > > > > > +
+> > > > > > > Hmm with this all written out it sounds pretty severe.
+> > > > > >
+> > > > > >
+> > > > > > I think we need first understand whether or not it's a problem =
+that
+> > > > > > we need to solve at spec level:
+> > > > > >
+> > > > > > 1) anything make encapsulated packets different or why we can't=
+ hit
+> > > > > > this problem without encapsulation
+> > > > > >
+> > > > > > 2) whether or not it's the implementation details that the spec
+> > > > > > doesn't need to care (or how it is solved in real NIC)
+> > > > > >
+> > > > > > Thanks
+> > > > > >
+> > > > > >
+> > > > > > > At this point with no ways to mitigate, I don't feel this is =
+something
+> > > > > > > e.g. Linux can enable.  I am not going to nack the spec patch=
+ if
+> > > > > > > others  find this somehow useful e.g. for dpdk.
+> > > > > > > How about CC e.g. dpdk devs or whoever else is going to use t=
+his
+> > > > > > > and asking them for the opinion?
+> > > > > > >
+> > > > > > >
+> > > > >
+> > >
+>
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
