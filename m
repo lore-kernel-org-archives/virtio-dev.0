@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-11334-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-11335-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0D4ACC64EC7
-	for <virtio-dev@archiver.kernel.org>; Tue, 28 Feb 2023 11:05:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id D02ABC7EE2E
+	for <virtio-dev@archiver.kernel.org>; Tue, 28 Feb 2023 11:17:02 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 321DB2B061
-	for <virtio-dev@archiver.kernel.org>; Tue, 28 Feb 2023 11:05:25 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 0D2CC2A88B
+	for <virtio-dev@archiver.kernel.org>; Tue, 28 Feb 2023 11:17:02 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 173FF986602
-	for <virtio-dev@archiver.kernel.org>; Tue, 28 Feb 2023 11:05:25 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 03FB3986624
+	for <virtio-dev@archiver.kernel.org>; Tue, 28 Feb 2023 11:17:02 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 01DC5983EFA; Tue, 28 Feb 2023 11:05:25 +0000 (UTC)
+	id ED35A9865FA; Tue, 28 Feb 2023 11:17:01 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-Id: <virtio-dev.lists.oasis-open.org>
 Precedence: bulk
@@ -23,156 +23,69 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 9DB679865FA
-	for <virtio-dev@lists.oasis-open.org>; Tue, 28 Feb 2023 11:05:03 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id D8FF7986601
+	for <virtio-dev@lists.oasis-open.org>; Tue, 28 Feb 2023 11:17:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: PMeYL5-NOUGG4mrt48qu3A-1
+X-MC-Unique: N1ivNJDHMSSRr_9MnelFMg-1
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1677582299;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=bpgi36v5fbPu7GIyXSZ3bszRj03IlFVjkt9be9XW2JM=;
-        b=azyTWbqNQOlZLdMjFnDEbcjjKhb1LwY16L1nIlCVncUCk0Hd/nMxGqKj/Tak9Kkp9O
-         utwQlWfvWR+RIdsjwiuPCobyoNPXvhZT0cD3rpvhbPMuG/d6njYIwfbxurWTIyHcaAKX
-         gUGfJTPhZWS1Zzs5chJfVfGx9XvCOvHk73wxowgShMlVkzP/MxVC83CM0xFVEJuxvTu4
-         NO89ppGT+X+O2A5JW7/dei1SM0m1kQhK3Ze9kkLTavR04K7ZKX+I/3UIOYRxN9AQtrBA
-         GJHUwop87rusT699EHlqujDtlxNgKG6RuU/1O/0oVW0FmFDPY+tMc8CIwMZibW6oH74K
-         +pBg==
-X-Gm-Message-State: AO0yUKVwOAuQ4nEdNnoWifreSAq4O1Hcbzno08d6wuHyhizxNKhBu3L8
-	6PD2lnIdU+Q7GfE9scTMwdnMn0EVK9kUP5i8M5O+/NcjBemCwmjDMxkAvz3Tz7XP5VTKQJXm+ux
-	7XVPUB3w4Eap+BvLylbCVnddU/5ze
-X-Received: by 2002:a17:906:31c9:b0:8c7:f906:7fa8 with SMTP id f9-20020a17090631c900b008c7f9067fa8mr2080942ejf.38.1677582299512;
-        Tue, 28 Feb 2023 03:04:59 -0800 (PST)
-X-Google-Smtp-Source: AK7set/aMdLgVFLEesYQT55gmzVGL+aUKBEjQXyHJhC78T7L9UPOPif9knvBlgiwzS4nQQUQpEumCQ==
-X-Received: by 2002:a17:906:31c9:b0:8c7:f906:7fa8 with SMTP id f9-20020a17090631c900b008c7f9067fa8mr2080918ejf.38.1677582299174;
-        Tue, 28 Feb 2023 03:04:59 -0800 (PST)
-Date: Tue, 28 Feb 2023 06:04:55 -0500
+        d=1e100.net; s=20210112; t=1677583015;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=oUlwg9Cfd16D4Ky7HVKIJj9ryi6beyue9OG3PP96gEo=;
+        b=er8Uc2QhadLM6gXULd2wBwMRRP7nCGF72pSmAVDW62C+5/rVHkJbDL7ZHAQRAPNol+
+         weCvp6FxlnsNNpcHi7e7y9JnlJHn20//5OetPqnjjhKheHJPebn6ZCI2aLZHT0shKeDF
+         CXpgzEQIxBYnEwRxkka/kDwShcO+HaXOlPd6oYAmvFnqX16dNenAMcMyaY7oMkpHAzor
+         t7EoBiD2mDebW/GbbuQwWpq4I3Kf9pLhMX1e8zhlg/gUobpgeamqJ52V8zvZ0/6cNyDA
+         IGNSMzXbpGI8zA8usY2LZVNdifjElGaVfiQrFKgb6ric3mrjd7eBXT379h9P/vWXn7yd
+         NDwg==
+X-Gm-Message-State: AO0yUKV/SJ3zLfIuZlcWnE6KDhaITgbn7i1Z3bpt10Z0FUF/XFzzFtqw
+	rmVYcW3nTAsws0r9g21FxJnNojbIyr3SVa9cXd9Nc+k5SKVf12vQgQINpbiWG21HJObhAoyZF1v
+	2ClrCOxVz6Wc0vu6K3mYf76h03BUW
+X-Received: by 2002:adf:fdd2:0:b0:2c8:b9cb:885e with SMTP id i18-20020adffdd2000000b002c8b9cb885emr1396177wrs.24.1677583015124;
+        Tue, 28 Feb 2023 03:16:55 -0800 (PST)
+X-Google-Smtp-Source: AK7set/yapztiY3wDxblEn0c87V0wYjQPt5JgYiwPoOR1mbLPOnTcghhWRvLaYbJ40K3UVaQCGFTGg==
+X-Received: by 2002:adf:fdd2:0:b0:2c8:b9cb:885e with SMTP id i18-20020adffdd2000000b002c8b9cb885emr1396166wrs.24.1677583014824;
+        Tue, 28 Feb 2023 03:16:54 -0800 (PST)
+Date: Tue, 28 Feb 2023 06:16:51 -0500
 From: "Michael S. Tsirkin" <mst@redhat.com>
-To: Jason Wang <jasowang@redhat.com>
-Cc: Heng Qi <hengqi@linux.alibaba.com>, virtio-comment@lists.oasis-open.org,
-	virtio-dev@lists.oasis-open.org, Parav Pandit <parav@nvidia.com>,
+To: Heng Qi <hengqi@linux.alibaba.com>
+Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org,
+	Parav Pandit <parav@nvidia.com>, Jason Wang <jasowang@redhat.com>,
 	Yuri Benditovich <yuri.benditovich@daynix.com>,
 	Cornelia Huck <cohuck@redhat.com>,
 	Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Message-ID: <20230228060352-mutt-send-email-mst@kernel.org>
-References: <0f53212f-a89b-ad3c-73e3-a7a7b5533058@linux.alibaba.com>
- <1047920c-5dd5-8f31-0c4c-a108f36155f8@redhat.com>
- <20230223075934-mutt-send-email-mst@kernel.org>
- <CACGkMEvc2Px_Zz11R5QYwMXYm_j5rsYV2LrZt5yf8tZQxuT_Bg@mail.gmail.com>
- <20230224030509-mutt-send-email-mst@kernel.org>
- <CACGkMEuOu=6qKQO2TJ0B6ZLRH_-rGtZMYVtw7gn+BFbnJgWkrw@mail.gmail.com>
- <20230227023657-mutt-send-email-mst@kernel.org>
- <CACGkMEtOFC-xygzgECi82j4Q6PacpjVnyPMs1Q6c9PN0RfX5bw@mail.gmail.com>
- <20230227124800-mutt-send-email-mst@kernel.org>
- <CACGkMEvUaQuzMx4iwkaYg9t9Bz2Ev0eHAwgrWbNEwtQHZOkkvQ@mail.gmail.com>
+Message-ID: <20230228061309-mutt-send-email-mst@kernel.org>
+References: <20230218143715.841-1-hengqi@linux.alibaba.com>
 MIME-Version: 1.0
-In-Reply-To: <CACGkMEvUaQuzMx4iwkaYg9t9Bz2Ev0eHAwgrWbNEwtQHZOkkvQ@mail.gmail.com>
+In-Reply-To: <20230218143715.841-1-hengqi@linux.alibaba.com>
 X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
 Subject: [virtio-dev] Re: [PATCH v9] virtio-net: support inner header hash
-Message-ID: <20230228110455.ENhtXz-4MVdidVAnV7xM0idVb3j9lnOz5lq2QFUwyBk@z>
+Message-ID: <20230228111651.Zq-AsD-3tZYHUsIBwHLtMlE0slZL2kJZGvoHUbu_gfM@z>
 
-On Tue, Feb 28, 2023 at 11:04:26AM +0800, Jason Wang wrote:
-> On Tue, Feb 28, 2023 at 1:49 AM Michael S. Tsirkin <mst@redhat.com> wrote:
-> >
-> > On Mon, Feb 27, 2023 at 04:35:09PM +0800, Jason Wang wrote:
-> > > On Mon, Feb 27, 2023 at 3:39 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > > >
-> > > > On Mon, Feb 27, 2023 at 12:07:17PM +0800, Jason Wang wrote:
-> > > > > Btw, this kind of 1:1 hash features seems not scalable and flexible.
-> > > > > It requires an endless extension on bits/fields. Modern NICs allow the
-> > > > > user to customize the hash calculation, for virtio-net we can allow to
-> > > > > use eBPF program to classify the packets. It seems to be more flexible
-> > > > > and scalable and there's almost no maintain burden in the spec (only
-> > > > > bytecode is required, no need any fancy features/interactions like
-> > > > > maps), easy to be migrated etc.
-> > > > >
-> > > > > Prototype is also easy, tun/tap had an eBPF classifier for years.
-> > > > >
-> > > > > Thanks
-> > > >
-> > > > Yea BPF offload would be great to have. We have been discussing it for
-> > > > years though - security issues keep blocking it. *Maybe* it's finally
-> > > > going to be there but I'm not going to block this work waiting for BPF
-> > > > offload.  And easily migrated is what BPF is not.
-> > >
-> > > Just to make sure we're at the same page. I meant to find a way to
-> > > allow the driver/user to fully customize what it wants to
-> > > hash/classify. Similar technologies which is based on private solution
-> > > has been used by some vendors, which allow user to customize the
-> > > classifier[1]
-> > >
-> > > ePBF looks like a good open-source solution candidate for this (there
-> > > could be others). But there could be many kinds of eBPF programs that
-> > > could be offloaded. One famous one is XDP which requires many features
-> > > other than the bytecode/VM like map access, tailcall. Starting from
-> > > such a complicated type is hard. Instead, we can start from a simple
-> > > type, that is the eBPF classifier. All it needs is to pass the
-> > > bytecode to the device, the device can choose to run it or compile it
-> > > to what it can understand for classifying. We don't need maps, tail
-> > > calls and other features.
-> >
-> > Until people start asking exactly for maps because they want
-> > state for their classifier?
-> 
-> Yes, but let's compare the eBPF without maps with the static feature
-> proposed here. It is much more scalable and flexible.
+On Sat, Feb 18, 2023 at 10:37:15PM +0800, Heng Qi wrote:
+> If the tunnel is used to encapsulate the packets, the hash calculated
+> using the outer header of the receive packets is always fixed for the
+> same flow packets, i.e. they will be steered to the same receive queue.
 
-I looked for some examples of RSS using BPF and only found this:
-https://github.com/Netronome/bpf-samples/blob/master/programmable_rss/rss_user.c
-seems to use maps.
+Wait a second. How is this true? Does not everyone stick the
+inner header hash in the outer source port to solve this?
+For example geneve spec says:
 
+   it is necessary for entropy from encapsulated packets to be
+   exposed in the tunnel header.  The most common technique for this is
+   to use the UDP source port
 
-> > And it makes sense - if you want
-> > e.g. load balancing you need stats which needs maps.
-> 
-> Yes, but we know it's possible to have that (through the XDP offload).
+same goes for vxlan did not check further.
 
-Not without a lot more work to make xdp offload happen.
+so what is the problem?  and which tunnel types actually suffer from the
+problem?
 
-> This is impossible with the approach proposed here.
-> 
-> >
-> > > We don't need to worry about the security
-> > > because of its simplicity: the eBPF program is only in charge of doing
-> > > classification, no other interactions with the driver and packet
-> > > modification is prohibited. The feature is limited only to the
-> > > VM/bytecode abstraction itself.
-> > >
-> > > What's more, it's a good first step to achieve full eBPF offloading in
-> > > the future.
-> > >
-> > > Thanks
-> > >
-> > > [1] https://www.intel.com/content/www/us/en/architecture-and-technology/ethernet/dynamic-device-personalization-brief.html
-> >
-> > Dave seems to have nacked this approach, no?
-> 
-> I may miss something but looking at kernel commit, there are few
-> patches to support that:
-> 
-> E.g
-> 
-> commit c7648810961682b9388be2dd041df06915647445
-> Author: Tony Nguyen <anthony.l.nguyen@intel.com>
-> Date:   Mon Sep 9 06:47:44 2019 -0700
-> 
->     ice: Implement Dynamic Device Personalization (DDP) download
-> 
-> And it has been used by DPDK drivers.
-> 
-> Thanks
-> 
-> >
-> > > >
-> > > > --
-> > > > MST
-> > > >
-> >
+-- 
+MST
 
 
 ---------------------------------------------------------------------
