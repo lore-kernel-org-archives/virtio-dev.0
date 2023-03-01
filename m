@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-11342-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-11343-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 6E6AAC64ED6
-	for <virtio-dev@archiver.kernel.org>; Wed,  1 Mar 2023 14:10:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3E7E5C64ED6
+	for <virtio-dev@archiver.kernel.org>; Wed,  1 Mar 2023 14:32:16 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id DF6C52A889
-	for <virtio-dev@archiver.kernel.org>; Wed,  1 Mar 2023 14:10:34 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id A94B02A8F6
+	for <virtio-dev@archiver.kernel.org>; Wed,  1 Mar 2023 14:32:14 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id CDE56986676
-	for <virtio-dev@archiver.kernel.org>; Wed,  1 Mar 2023 14:10:34 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 97B29986674
+	for <virtio-dev@archiver.kernel.org>; Wed,  1 Mar 2023 14:32:14 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id BEBF7986668; Wed,  1 Mar 2023 14:10:34 +0000 (UTC)
+	id 866C1986668; Wed,  1 Mar 2023 14:32:14 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-Id: <virtio-dev.lists.oasis-open.org>
 Precedence: bulk
@@ -23,241 +23,491 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id ABECF986669;
-	Wed,  1 Mar 2023 14:10:33 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 70D7A986669;
+	Wed,  1 Mar 2023 14:32:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045176;MF=hengqi@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0VctYfzU_1677679827;
-From: Heng Qi <hengqi@linux.alibaba.com>
-To: virtio-dev@lists.oasis-open.org,
-	virtio-comment@lists.oasis-open.org
-Cc: "Michael S . Tsirkin" <mst@redhat.com>,
-	Parav Pandit <parav@nvidia.com>,
-	Alvaro Karsz <alvaro.karsz@solid-run.com>,
-	David Edmondson <david.edmondson@oracle.com>,
-	Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-	Jason Wang <jasowang@redhat.com>
-Date: Wed,  1 Mar 2023 22:10:27 +0800
-Message-Id: <20230301141027.59500-1-hengqi@linux.alibaba.com>
-X-Mailer: git-send-email 2.19.1.6.gb485710b
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R321e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045170;MF=hengqi@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0VctWwtf_1677681126;
+Message-ID: <cd40db57-0e59-ab6b-457b-605f1065848f@linux.alibaba.com>
+Date: Wed, 1 Mar 2023 22:32:05 +0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.8.0
+To: Parav Pandit <parav@nvidia.com>, "Michael S . Tsirkin" <mst@redhat.com>,
+ Jason Wang <jasowang@redhat.com>
+Cc: Yuri Benditovich <yuri.benditovich@daynix.com>,
+ Cornelia Huck <cohuck@redhat.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+ "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
+ "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
+References: <20230218143715.841-1-hengqi@linux.alibaba.com>
+ <PH0PR12MB5481224CBC059BD482347133DCA59@PH0PR12MB5481.namprd12.prod.outlook.com>
+From: Heng Qi <hengqi@linux.alibaba.com>
+In-Reply-To: <PH0PR12MB5481224CBC059BD482347133DCA59@PH0PR12MB5481.namprd12.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Subject: [virtio-dev] [PATCH v10] virtio-net: support the virtqueue coalescing moderation
+Subject: [virtio-dev] Re: [PATCH v9] virtio-net: support inner header hash
 
-Currently, coalescing parameters are grouped for all transmit and receive
-virtqueues. This patch supports setting or getting the parameters for a
-specified virtqueue, and a typical application of this function is netdim[1].
 
-When the traffic between virtqueues is unbalanced, for example, one virtqueue
-is busy and another virtqueue is idle, then it will be very useful to
-control coalescing parameters at the virtqueue granularity.
 
-[1] https://docs.kernel.org/networking/net_dim.html
+在 2023/2/21 下午12:20, Parav Pandit 写道:
+>> From: Heng Qi <hengqi@linux.alibaba.com>
+>> Sent: Saturday, February 18, 2023 9:37 AM
+>> If the tunnel is used to encapsulate the packets, the hash calculated using the
+> s/hash calculated/hash is calculated
+>
+>> outer header of the receive packets is always fixed for the same flow packets,
+>> i.e. they will be steered to the same receive queue.
+>>
+> A little descriptive commit message like below reads better to me.
+>
+> Currently, when a received packet is an encapsulated packet meaning there is an outer and an inner header, virtio device is unable to calculate the hash for the inner header.
+> Due to this limitation, multiple different flows identified by the inner header for the same outer header result in selecting the same receive queue.
+> This effectively disables the RSS, resulting in poor receive performance.
+>
+> Hence, to overcome this limitation, a new feature is introduced using a feature bit VIRTIO_NET_F_HASH_TUNNEL.
+> This feature enables the device to advertise the capability to calculate the hash for the inner packet header.
+> Thereby regaining better RSS performance in presence of outer packet header.
+>
+>> We add a feature bit VIRTIO_NET_F_HASH_TUNNEL and related bitmasks in
+>> \field{hash_tunnel_types}, which instructs the device to calculate the hash
+>> using the inner headers of tunnel-encapsulated packets. Note that
+>> VIRTIO_NET_F_HASH_TUNNEL only indicates the ability of the inner header
+>> hash, and does not give the device the ability to use the hash value to select a
+>> receiving queue to place the packet.
+>>
+>> Also, a feature bit VIRTIO_NET_F_HASH_REPORT_TUNNEL are added to report
+>> an encapsulation type, and the feature depends on
+>> VIRTIO_NET_F_HASH_REPORT.
+> As we discussed that tunnel type alone is not useful the sw, neither as an individual field nor merged with some other field.
+> Hence, please remove this feature bit. HASH_TUNNEL is good enough.
+> Please remove the references to it at more places below.
 
-Signed-off-by: Heng Qi <hengqi@linux.alibaba.com>
-Reviewed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
----
-This patch is on top of Alvaro's latest v7 patch: https://lists.oasis-open.org/archives/virtio-dev/202302/msg00431.html .
+If there is no \field{hash_report_tunnel} in the virtio net hdr, we seem 
+to be able to re-place tunnel types
+such as VIRTIO_NET_HASH_TUNNEL_TYPE_VXLAN in \field{hash_types}, 
+combined with the
+VIRTIO_NET_F_HASH_TUNNEL feature we can satisfy the migration, and it is 
+simpler.
+i.e. we don't seem to need \field{hash_tunnel_types} anymore.
 
-v9->v10:
-       1. Remove the "global values". @Parav Pandit
-       2. Avoid multiple interpretations of command behavior. @Alvaro Karsz
+What do you think?
 
-v8->v9:
-       1. Declare the commands that can be sent for each feature. @Alvaro Karsz
-       2. Add information about "global values" in the command's explanation. @Alvaro Karsz
-
-v7->v8:
-       1. Use "best-effort" in Alvaro's patch instead of "the device may set the parameter to a value close to 2". @Michael S . Tsirkin, @David Edmondson
-
-v6->v7:
-       1. Clarify the relationship of VIRTIO_NET_CTRL_NOTF_COAL_TX/RX_SET and VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET. @Alvaro Karsz, @Michael S. Tsirkin
-       2. Remove the formula for vqn range. @Parav Pandit
-       3. Some expressions are clearer. @Parav Pandit, @Michael S. Tsirkin
-
-v5->v6:
-       1. Explain that the device may set a different value than the one passed in by the driver. @David Edmondson
-
-v4->v5:
-       1. Add the correspondence between virtio_net_ctrl_coal and virtio_net_ctrl_coal_vq and control commands. @Michael S. Tsirkin
-       2. Add read and write attributes for each field. @Michael S. Tsirkin
-       3. A clearer description of how to set coalescing parameters for vq reset. @Michael S. Tsirkin
-       4. Fix some syntax errors. @Michael S. Tsirkin, @David Edmondson
-
-v3->v4:
-       1. Include virtio_net_ctrl_coal in the virtio_net_ctrl_coal_vq structure. @Alvaro Karsz
-       2. Add consideration of vq reset. @Michael S. Tsirkin, @Parav Pandit, @Alvaro Karsz
-       3. Avoid too many examples by giving a comprehensive example. @Michael S. Tsirkin
-       4. Fix typos and streamline clarifications. @Michael S. Tsirkin, @Parav Pandit, @Alvaro Karsz
-
-v2->v3:
-       1. Add the netdim link. @Parav Pandit
-       2. VIRTIO_NET_F_VQ_NOTF_COAL no longer depends on VIRTIO_NET_F_NOTF_COAL. @Michael S. Tsirkin, @Alvaro Karsz
-       3. _VQ_GET is explained more. @Michael S. Tsirkin
-       4. Add more examples to avoid misunderstandings. @Michael S. Tsirkin
-       5. Clarify some statements. @Michael S. Tsirkin, @Parav Pandit, @Alvaro Karsz
-       6. Adjust the virtio_net_ctrl_coal_vq structure. @Michael S. Tsirkin
-       7. Fix some typos. @Michael S. Tsirkin
-
-v1->v2:
-       1. Rename VIRTIO_NET_F_PERQUEUE_NOTF_COAL to VIRTIO_NET_F_VQ_NOTF_COAL. @Michael S. Tsirkin
-       2. Use the \field{vqn} instead of the qid. @Michael S. Tsirkin
-       3. Unify tx and rx control structures into one structure virtio_net_ctrl_coal_vq. @Michael S. Tsirkin
-       4. Add a new control command VIRTIO_NET_CTRL_NOTF_COAL_VQ. @Michael S. Tsirkin, @Parav Pandit, @Alvaro Karsz
-       5. The special value 0xFFF is removed because VIRTIO_NET_CTRL_NOTF_COAL can be used. @Alvaro Karsz
-       6. Clarify some special scenarios. @Michael S. Tsirkin, @Parav Pandit, @Alvaro Karsz
-
- device-types/net/description.tex | 88 ++++++++++++++++++++++++++++----
- 1 file changed, 77 insertions(+), 11 deletions(-)
-
-diff --git a/device-types/net/description.tex b/device-types/net/description.tex
-index e71e33b..b5d45e8 100644
---- a/device-types/net/description.tex
-+++ b/device-types/net/description.tex
-@@ -83,6 +83,8 @@ \subsection{Feature bits}\label{sec:Device Types / Network Device / Feature bits
- \item[VIRTIO_NET_F_CTRL_MAC_ADDR(23)] Set MAC address through control
-     channel.
- 
-+\item[VIRTIO_NET_F_VQ_NOTF_COAL(52)] Device supports virtqueue notification coalescing.
-+
- \item[VIRTIO_NET_F_NOTF_COAL(53)] Device supports notifications coalescing.
- 
- \item[VIRTIO_NET_F_GUEST_USO4 (54)] Driver can receive USOv4 packets.
-@@ -139,6 +141,7 @@ \subsubsection{Feature bit requirements}\label{sec:Device Types / Network Device
- \item[VIRTIO_NET_F_NOTF_COAL] Requires VIRTIO_NET_F_CTRL_VQ.
- \item[VIRTIO_NET_F_RSC_EXT] Requires VIRTIO_NET_F_HOST_TSO4 or VIRTIO_NET_F_HOST_TSO6.
- \item[VIRTIO_NET_F_RSS] Requires VIRTIO_NET_F_CTRL_VQ.
-+\item[VIRTIO_NET_F_VQ_NOTF_COAL] Requires VIRTIO_NET_F_CTRL_VQ.
- \end{description}
- 
- \subsubsection{Legacy Interface: Feature bits}\label{sec:Device Types / Network Device / Feature bits / Legacy Interface: Feature bits}
-@@ -1505,13 +1508,13 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
- 
- \paragraph{Notifications Coalescing}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Notifications Coalescing}
- 
--If the VIRTIO_NET_F_NOTF_COAL feature is negotiated, the driver can
--send control commands for dynamically changing the coalescing parameters.
-+If the VIRTIO_NET_F_NOTF_COAL feature is negotiated, a driver can send
-+commands VIRTIO_NET_CTRL_NOTF_COAL_TX_SET and VIRTIO_NET_CTRL_NOTF_COAL_RX_SET
-+for notification coalescing.
- 
--\begin{note}
--The behavior of the device in response to these commands is best-effort:
--the device may generate notifications more or less frequently than specified.
--\end{note}
-+If the VIRTIO_NET_F_VQ_NOTF_COAL feature is negotiated, a driver can send
-+commands VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET and VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET
-+for notification coalescing.
- 
- \begin{lstlisting}
- struct virtio_net_ctrl_coal {
-@@ -1519,25 +1522,74 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
-     le32 max_usecs;
- };
- 
-+struct virtio_net_ctrl_coal_vq {
-+    le16 vqn;
-+    le16 reserved;
-+    struct virtio_net_ctrl_coal coal;
-+};
-+
- #define VIRTIO_NET_CTRL_NOTF_COAL 6
-  #define VIRTIO_NET_CTRL_NOTF_COAL_TX_SET  0
-  #define VIRTIO_NET_CTRL_NOTF_COAL_RX_SET 1
-+ #define VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET 2
-+ #define VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET 3
- \end{lstlisting}
- 
- Coalescing parameters:
- \begin{itemize}
-+\item \field{vqn}: The virtqueue number of an enabled transmit or receive virtqueue.
- \item \field{max_usecs} for RX: Maximum number of microseconds to delay a RX notification.
- \item \field{max_usecs} for TX: Maximum number of microseconds to delay a TX notification.
- \item \field{max_packets} for RX: Maximum number of packets to receive before a RX notification.
- \item \field{max_packets} for TX: Maximum number of packets to send before a TX notification.
- \end{itemize}
- 
--The class VIRTIO_NET_CTRL_NOTF_COAL has 2 commands:
-+\field{reserved} is reserved and it is ignored by a device.
-+
-+Read/Write attributes for coalescing parameters:
-+\begin{itemize}
-+\item For commands VIRTIO_NET_CTRL_NOTF_COAL_TX_SET and VIRTIO_NET_CTRL_NOTF_COAL_RX_SET, \field{max_usecs}
-+      and \field{max_packets} are write-only for a driver.
-+\item For the command VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET, \field{vqn}, \field{reserved}, \field{max_usecs}
-+      and \field{max_packets} are write-only for a driver.
-+\item For the command VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET, \field{vqn} and \field{reserved} are write-only
-+      for a driver, and, \field{max_usecs} and \field{max_packets} are read-only for the driver.
-+\end{itemize}
-+
-+The class VIRTIO_NET_CTRL_NOTF_COAL has 4 commands:
- \begin{enumerate}
--\item VIRTIO_NET_CTRL_NOTF_COAL_TX_SET: set the \field{max_usecs} and \field{max_packets} parameters for all transmit virtqueues.
--\item VIRTIO_NET_CTRL_NOTF_COAL_RX_SET: set the \field{max_usecs} and \field{max_packets} parameters for all receive virtqueues.
-+\item VIRTIO_NET_CTRL_NOTF_COAL_TX_SET: use the structure virtio_net_ctrl_coal to set the \field{max_usecs} and \field{max_packets} parameters for all transmit virtqueues.
-+\item VIRTIO_NET_CTRL_NOTF_COAL_RX_SET: use the structure virtio_net_ctrl_coal to set the \field{max_usecs} and \field{max_packets} parameters for all receive virtqueues.
-+\item VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET: use the structure virtio_net_ctrl_coal_vq to set the \field{max_usecs} and \field{max_packets} parameters
-+                                        for an enabled transmit/receive virtqueue whose number is \field{vqn}.
-+\item VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET: use the structure virtio_net_ctrl_coal_vq to get the \field{max_usecs} and \field{max_packets} parameters
-+                                        for an enabled transmit/receive virtqueue whose number is \field{vqn}.
- \end{enumerate}
- 
-+\begin{note}
-+The behavior of the device in response to these commands is best-effort:
-+the device may generate notifications more or less frequently than specified.
-+\end{note}
-+
-+If coalescing parameters are being set, the device applies the last coalescing parameters received for a
-+virtqueue, regardless of the command used to set the parameters. Use the following command sequence
-+with 2 pairs of virtqueues as an example:
-+Each of the following commands sets \field{max_usecs} and \field{max_packets} parameters for virtqueues.
-+\begin{itemize}
-+\item Command1: VIRTIO_NET_CTRL_NOTF_COAL_RX_SET sets coalescing parameters for virtqueue0 and virtqueue2, and, virtqueue1 and virtqueue3 retain their previous parameter values.
-+\item Command2: VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET with \field{vqn} = 0 sets coalescing parameters for virtqueue0, and virtqueue2 retains the values from command1.
-+\item Command3: VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET with \field{vqn} = 0, the device responds with coalescing parameters of virtqueue0 set by command2.
-+\item Command4: VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET with \field{vqn} = 1 sets coalescing parameters for virtqueue1, and virtqueue3 retains its previous values.
-+\item Command5: VIRTIO_NET_CTRL_NOTF_COAL_TX_SET sets coalescing parameters for virtqueue1 and virtqueue3, and overrides the values set by command4.
-+\item Command6: VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET with \field{vqn} = 1, the device responds with coalescing parameters of virtqueue1 set by command5.
-+\end{itemize}
-+
-+Upon disabling and re-enabling the transmit virtqueue, the device will set the coalescing parameters of the virtqueue
-+to those configured through the VIRTIO_NET_CTRL_NOTF_COAL_TX_SET command, or to 0 if the command did not set any TX coalescing parameters.
-+
-+Upon disabling and re-enabling the receive virtqueue, the device will set the coalescing parameters of the virtqueue
-+to those configured through the VIRTIO_NET_CTRL_NOTF_COAL_RX_SET command, or to 0 if the command did not set any RX coalescing parameters.
-+
- \subparagraph{Operation}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Notifications Coalescing / Operation}
- 
- The device sends a used buffer notification once the notification conditions are met and if the notifications are not suppressed as explained in \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Used Buffer Notification Suppression}.
-@@ -1585,11 +1637,25 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
- 
- \drivernormative{\subparagraph}{Notifications Coalescing}{Device Types / Network Device / Device Operation / Control Virtqueue / Notifications Coalescing}
- 
--If the VIRTIO_NET_F_NOTF_COAL feature has not been negotiated, the driver MUST NOT issue VIRTIO_NET_CTRL_NOTF_COAL commands.
-+A driver MUST negotiate the VIRTIO_NET_F_NOTF_COAL feature before issuing commands VIRTIO_NET_CTRL_NOTF_COAL_TX_SET and VIRIO_NET_CTRL_NOTF_COAL_RX_SET.
-+
-+A driver MUST negotiate the VIRTIO_NET_F_VQ_NOTF_COAL feature before issuing commands VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET and VIRIO_NET_CTRL_NOTF_COAL_VQ_GET.
-+
-+A driver MUST ignore the values of coalescing parameters received from the VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET command if a device responds with VIRTIO_NET_ERR.
- 
- \devicenormative{\subparagraph}{Notifications Coalescing}{Device Types / Network Device / Device Operation / Control Virtqueue / Notifications Coalescing}
- 
--A device SHOULD respond to the VIRTIO_NET_CTRL_NOTF_COAL commands with VIRTIO_NET_ERR if it was not able to change the parameters.
-+A device MUST ignore \field{reserved}.
-+
-+A device SHOULD respond to VIRTIO_NET_CTRL_NOTF_COAL_TX_SET and VIRTIO_NET_CTRL_NOTF_COAL_RX_SET commands with VIRTIO_NET_ERR if it was not able to change the parameters.
-+
-+A device MUST respond to the VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET command with VIRTIO_NET_ERR if it was not able to change the parameters.
-+
-+A device MUST respond to VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET and VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET commands with VIRTIO_NET_ERR if the given virtqueue is disabled.
-+
-+After disabling and re-enabling a transmit/receive virtqueue, the device MUST set coalescing parameters of the virtqueue
-+to those configured using the VIRTIO_NET_CTRL_NOTF_COAL_TX_SET/VIRTIO_NET_CTRL_NOTF_COAL_RX_SET command, or, if the command
-+did not configure TX/RX coalescing parameters, to 0.
- 
- A device SHOULD NOT send used buffer notifications to the driver if the notifications are suppressed, even if the notification conditions are met.
- 
--- 
-2.19.1.6.gb485710b
+>
+>> It only means that the encapsulation type can be reported, it cannot instruct
+>> the device to calculate the hash.
+>>
+>> +\item[VIRTIO_NET_F_HASH_TUNNEL(51)] Device supports inner header hash
+>> +	for tunnel-encapsulated packets.
+>> +
+>> +\item[VIRTIO_NET_F_HASH_REPORT_TUNNEL(52)] Device can report an
+>> encapsulation type.
+>> +
+> Please remove this.
+>
+>>   \item[VIRTIO_NET_F_NOTF_COAL(53)] Device supports notifications
+>> coalescing.
+>>
+>>   \item[VIRTIO_NET_F_GUEST_USO4 (54)] Driver can receive USOv4 packets.
+>> @@ -3140,6 +3145,8 @@ \subsubsection{Feature bit
+>> requirements}\label{sec:Device Types / Network Device
+>> \item[VIRTIO_NET_F_NOTF_COAL] Requires VIRTIO_NET_F_CTRL_VQ.
+>>   \item[VIRTIO_NET_F_RSC_EXT] Requires VIRTIO_NET_F_HOST_TSO4 or
+>> VIRTIO_NET_F_HOST_TSO6.
+>>   \item[VIRTIO_NET_F_RSS] Requires VIRTIO_NET_F_CTRL_VQ.
+>> +\item[VIRTIO_NET_F_HASH_TUNNEL] Requires VIRTIO_NET_F_CTRL_VQ.
+>> +\item[VIRTIO_NET_F_HASH_REPORT_TUNNEL] Requires
+>> VIRTIO_NET_F_HASH_REPORT.
+>>   \end{description}
+>>
+>>   \subsubsection{Legacy Interface: Feature bits}\label{sec:Device Types /
+>> Network Device / Feature bits / Legacy Interface: Feature bits} @@ -3199,20
+>> +3206,27 @@ \subsection{Device configuration layout}\label{sec:Device Types
+>> / Network Device
+>>           u8 rss_max_key_size;
+>>           le16 rss_max_indirection_table_length;
+>>           le32 supported_hash_types;
+>> +        le32 supported_tunnel_hash_types;
+>>   };
+>>   \end{lstlisting}
+>> -The following field, \field{rss_max_key_size} only exists if VIRTIO_NET_F_RSS
+>> or VIRTIO_NET_F_HASH_REPORT is set.
+>> +The following field, \field{rss_max_key_size} only exists if VIRTIO_NET_F_RSS,
+>> VIRTIO_NET_F_HASH_REPORT or VIRTIO_NET_F_HASH_TUNNEL is set.
+>>   It specifies the maximum supported length of RSS key in bytes.
+>>
+>>   The following field, \field{rss_max_indirection_table_length} only exists if
+>> VIRTIO_NET_F_RSS is set.
+>>   It specifies the maximum number of 16-bit entries in RSS indirection table.
+>>
+>>   The next field, \field{supported_hash_types} only exists if the device supports
+>> hash calculation, -i.e. if VIRTIO_NET_F_RSS or VIRTIO_NET_F_HASH_REPORT is
+>> set.
+>> +i.e. if VIRTIO_NET_F_RSS, VIRTIO_NET_F_HASH_REPORT or
+>> VIRTIO_NET_F_HASH_TUNNEL is set.
+>>
+>>   Field \field{supported_hash_types} contains the bitmask of supported hash
+>> types.
+>>   See \ref{sec:Device Types / Network Device / Device Operation / Processing of
+>> Incoming Packets / Hash calculation for incoming packets / Supported/enabled
+>> hash types} for details of supported hash types.
+>>
+>> +The next field, \field{supported_tunnel_hash_types} only exists if the
+>> +device supports inner hash calculation, i.e. if VIRTIO_NET_F_HASH_TUNNEL is
+>> set.
+>> +
+>> +Field \field{supported_tunnel_hash_types} contains the bitmask of supported
+>> tunnel hash types.
+>> +See \ref{sec:Device Types / Network Device / Device Operation / Processing
+>> of Incoming Packets / Hash calculation for incoming packets /
+>> Supported/enabled tunnel hash types} for details of supported tunnel hash
+>> types.
+>> +
+>>   \devicenormative{\subsubsection}{Device configuration layout}{Device Types /
+>> Network Device / Device configuration layout}
+>>
+>>   The device MUST set \field{max_virtqueue_pairs} to between 1 and 0x8000
+>> inclusive, @@ -3236,7 +3250,7 @@ \subsection{Device configuration
+>> layout}\label{sec:Device Types / Network Device  negotiated.
+>>
+>>   The device MUST set \field{rss_max_key_size} to at least 40, if it offers -
+>> VIRTIO_NET_F_RSS or VIRTIO_NET_F_HASH_REPORT.
+>> +VIRTIO_NET_F_RSS, VIRTIO_NET_F_HASH_REPORT or
+>> VIRTIO_NET_F_HASH_TUNNEL.
+>>
+>>   The device MUST set \field{rss_max_indirection_table_length} to at least 128,
+>> if it offers  VIRTIO_NET_F_RSS.
+>> @@ -3385,7 +3399,8 @@ \subsection{Device Operation}\label{sec:Device
+>> Types / Network Device / Device O
+>>           le16 csum_offset;
+>>           le16 num_buffers;
+>>           le32 hash_value;        (Only if VIRTIO_NET_F_HASH_REPORT negotiated)
+>> -        le16 hash_report;       (Only if VIRTIO_NET_F_HASH_REPORT negotiated)
+>> +        le16 hash_report;       (Only if VIRTIO_NET_F_HASH_REPORT negotiated,
+>> and the upper 8 bits indicates the
+>> +                                 encapsulation type if
+>> + VIRTIO_NET_F_HASH_REPORT_TUNNEL negotiated, otherwise reserved)
+>>           le16 padding_reserved;  (Only if VIRTIO_NET_F_HASH_REPORT
+>> negotiated)  };  \end{lstlisting} @@ -3838,11 +3853,15 @@
+>> \subsubsection{Processing of Incoming Packets}\label{sec:Device Types /
+>> Network  \begin{itemize}  \item The feature VIRTIO_NET_F_RSS was
+>> negotiated. The device uses the hash to determine the receive virtqueue to
+>> place incoming packets.
+>>   \item The feature VIRTIO_NET_F_HASH_REPORT was negotiated. The device
+>> reports the hash value and the hash type with the packet.
+>> +\item The feature VIRTIO_NET_F_HASH_TUNNEL was negotiated. The device
+>> supports inner hash calculation. If additionally
+>> +      VIRTIO_NET_F_HASH_REPORT_TUNNEL was negotiated, the device reports
+>> the encapsulation type as well.
+>>   \end{itemize}
+>>
+>>   If the feature VIRTIO_NET_F_RSS was negotiated:
+>>   \begin{itemize}
+>>   \item The device uses \field{hash_types} of the virtio_net_rss_config structure
+>> as 'Enabled hash types' bitmask.
+>> +	If additionally VIRTIO_NET_F_HASH_TUNNEL was negotiated, the
+>> device uses \field{hash_tunnel_types} of the
+>> +	virtio_net_rss_config structure as 'Enabled hash tunnel types' bitmask.
+>>   \item The device uses a key as defined in \field{hash_key_data} and
+>> \field{hash_key_length} of the virtio_net_rss_config structure (see
+>> \ref{sec:Device Types / Network Device / Device Operation / Control Virtqueue
+>> / Receive-side scaling (RSS) / Setting RSS parameters}).
+>>   \end{itemize}
+>> @@ -3850,11 +3869,13 @@ \subsubsection{Processing of Incoming
+>> Packets}\label{sec:Device Types / Network  If the feature VIRTIO_NET_F_RSS
+>> was not negotiated:
+>>   \begin{itemize}
+>>   \item The device uses \field{hash_types} of the virtio_net_hash_config
+>> structure as 'Enabled hash types' bitmask.
+>> +	If additionally VIRTIO_NET_F_HASH_TUNNEL was negotiated, the
+>> device uses \field{hash_tunnel_types} of the
+>> +	virtio_net_hash_config structure as 'Enabled hash tunnel types'
+>> bitmask.
+>>   \item The device uses a key as defined in \field{hash_key_data} and
+>> \field{hash_key_length} of the virtio_net_hash_config structure (see
+>> \ref{sec:Device Types / Network Device / Device Operation / Control Virtqueue
+>> / Automatic receive steering in multiqueue mode / Hash calculation}).
+>>   \end{itemize}
+>>
+>> -Note that if the device offers VIRTIO_NET_F_HASH_REPORT, even if it
+>> supports only one pair of virtqueues, it MUST support
+>> +Note that if the device offers VIRTIO_NET_F_HASH_REPORT or
+>> +VIRTIO_NET_F_HASH_TUNNEL, even if it supports only one pair of
+>> +virtqueues, it MUST support
+>>   at least one of commands of VIRTIO_NET_CTRL_MQ class to configure
+>> reported hash parameters:
+>>   \begin{itemize}
+>>   \item If the device offers VIRTIO_NET_F_RSS, it MUST support
+>> VIRTIO_NET_CTRL_MQ_RSS_CONFIG command per @@ -3863,8 +3884,36 @@
+>> \subsubsection{Processing of Incoming Packets}\label{sec:Device Types /
+>> Network
+>>    \ref{sec:Device Types / Network Device / Device Operation / Control
+>> Virtqueue / Automatic receive steering in multiqueue mode / Hash calculation}.
+>>   \end{itemize}
+>>
+>> +\subparagraph{Tunnel/Encapsulated packet} \label{sec:Device Types /
+>> +Network Device / Device Operation / Processing of Incoming Packets /
+>> +Hash calculation for incoming packets / Tunnel/Encapsulated packet} A
+>> +tunnel packet is encapsulated from the original packet based on the
+>> +tunneling protocol (only a single level of encapsulation is currently
+>> +supported). The encapsulated packet contains an outer header and an inner
+>> header, and the device calculates the hash over either the inner header or the
+>> outer header.
+>> +
+>> +When the feature VIRTIO_NET_F_HASH_TUNNEL is negotiated and the
+>> +corresponding encapsulation type is set in \field{hash_tunnel_types},
+>> +the hash for a specific type of encapsulated packet is calculated over the inner
+>> as opposed to outer header.
+> To the outer header.
+>
+> Here, you want to say that
+> When the feature VIRTIO_NET_F_HASH_TUNNEL is negotiated and a received packet's outer header matches one of the supported hash_tunnel_types, the hash of the inner header is calculated.
+>
+>> +Supported encapsulation types are listed in \ref{sec:Device Types /
+>> +Network Device / Device Operation / Processing of Incoming Packets /
+>> +Hash calculation for incoming packets / Supported/enabled hash tunnel
+>> types}.
+>> +
+>> +If both VIRTIO_NET_F_HASH_REPORT_TUNNEL and
+>> VIRTIO_NET_F_HASH_REPORT
+>> +are negotiated, and hash is calculated for an encapsulated  packet, the
+>> +device reports the encapsulation type in addition to the hash value and
+>> +hash type, regardless of whether the hash is calculated on the inner header or
+>> the outer header.
+>> +
+>> +If VIRTIO_NET_F_HASH_REPORT and VIRTIO_NET_F_HASH_REPORT_TUNNEL
+>> are
+>> +negotiated but VIRTIO_NET_F_HASH_TUNNEL is not negotiated, the device
+>> +calculates the hash over the outer header, and \field{hash_report} reports the
+>> hash type and encapsulation type.
+>> +
+>> +Some encapsulated packet types: \hyperref[intro:GRE]{[GRE]},
+>> +\hyperref[intro:VXLAN]{[VXLAN]}, \hyperref[intro:GENEVE]{[GENEVE]},
+>> \hyperref[intro:IPIP]{[IPIP]} and \hyperref[intro:NVGRE]{[NVGRE]}.
+>> +
+>>   \subparagraph{Supported/enabled hash types}  \label{sec:Device Types /
+>> Network Device / Device Operation / Processing of Incoming Packets / Hash
+>> calculation for incoming packets / Supported/enabled hash types}
+>> +This paragraph relies on definitions from \hyperref[intro:IP]{[IP]},
+>> +\hyperref[intro:UDP]{[UDP]} and \hyperref[intro:TCP]{[TCP]}.
+>>   Hash types applicable for IPv4 packets:
+>>   \begin{lstlisting}
+>>   #define VIRTIO_NET_HASH_TYPE_IPv4              (1 << 0)
+>> @@ -3884,6 +3933,32 @@ \subsubsection{Processing of Incoming
+>> Packets}\label{sec:Device Types / Network
+>>   #define VIRTIO_NET_HASH_TYPE_UDP_EX            (1 << 8)
+>>   \end{lstlisting}
+>>
+> Lets please remove the below encoding.
+>
+>> +\subparagraph{Supported/enabled tunnel hash types} \label{sec:Device
+>> +Types / Network Device / Device Operation / Processing of Incoming
+>> +Packets / Hash calculation for incoming packets / Supported/enabled
+>> +tunnel hash types} If the feature VIRTIO_NET_F_HASH_TUNNEL is
+>> +negotiated, the encapsulation hash type indicates that the hash is calculated
+>> over the inner header of the encapsulated packet:
+>> +Hash type applicable for inner payload of the gre-encapsulated packet
+>> +\begin{lstlisting}
+>> +#define VIRTIO_NET_HASH_TUNNEL_TYPE_GRE         (1 << 0)
+>> +\end{lstlisting}
+>> +Hash type applicable for inner payload of the vxlan-encapsulated packet
+>> +\begin{lstlisting}
+>> +#define VIRTIO_NET_HASH_TUNNEL_TYPE_VXLAN       (1 << 1)
+>> +\end{lstlisting}
+>> +Hash type applicable for inner payload of the geneve-encapsulated
+>> +packet \begin{lstlisting}
+>> +#define VIRTIO_NET_HASH_TUNNEL_TYPE_GENEVE      (1 << 2)
+>> +\end{lstlisting}
+>> +Hash type applicable for inner payload of the ip-encapsulated packet
+>> +\begin{lstlisting}
+>> +#define VIRTIO_NET_HASH_TUNNEL_TYPE_IPIP        (1 << 3)
+>> +\end{lstlisting}
+>> +Hash type applicable for inner payload of the nvgre-encapsulated packet
+>> +\begin{lstlisting}
+>> +#define VIRTIO_NET_HASH_TUNNEL_TYPE_NVGRE       (1 << 4)
+>> +\end{lstlisting}
+>> +
+>>   \subparagraph{IPv4 packets}
+>>   \label{sec:Device Types / Network Device / Device Operation / Processing of
+>> Incoming Packets / Hash calculation for incoming packets / IPv4 packets}  The
+>> device calculates the hash on IPv4 packets according to 'Enabled hash types'
+>> bitmask as follows:
+>> @@ -3975,17 +4050,47 @@ \subsubsection{Processing of Incoming
+>> Packets}\label{sec:Device Types / Network  (see \ref{sec:Device Types /
+>> Network Device / Device Operation / Processing of Incoming Packets / Hash
+>> calculation for incoming packets / IPv6 packets without extension header}).
+>>   \end{itemize}
+>>
+>> +\subparagraph{Inner hash calculation of an encapsulated packet} If the
+>> +feature VIRTIO_NET_F_HASH_TUNNEL is negotiated and the corresponding
+>> +encapsulation hash type is set in \field{hash_tunnel_types}, the device
+>> +calculates the hash on the inner header of an encapsulated packet (See
+>> +\ref{sec:Device Types / Network Device / Device Operation / Processing
+>> +of Incoming Packets / Hash calculation for incoming packets /
+>> Tunnel/Encapsulated packet}).
+>> +
+>> +\subparagraph{Security risks between encapsulated packets and RSS}
+>> +There may be potential security risks when encapsulated packets using
+> s/when encapsulated/when encapsulating/
+>
+>> +RSS to select queues for placement. When a user inside a tunnel tries
+>> +to control the enqueuing of encapsulated packets, then the user can
+>> +flood the device with invaild packets, and the flooded packets may be
+>> +hashed into the same queue as packets in other normal tunnels, which causing
+>> the queue to overflow.
+>>
+> Invalid packets are confusing and the wording of "which causing" is not proper.
+> There is some duplicate wording below too.
+>
+> I think above and below risk can be summarized in bit simpler manner.
+>
+> How about,
+>
+> When a specific receive queue is shared to receive packets of multiple tunnels, there is no quality of service for packets of multiple tunnels.
+>
+> +
+>> +This can pose several security risks:
+>> +\begin{itemize}
+>> +\item  Encapsulated packets in the normal tunnels cannot be enqueued due to
+>> queue
+>> +       overflow, resulting in a large amount of packet loss.
+>> +\item  The delay and retransmission of packets in the normal tunnels are
+>> extremely increased.
+> This is something very protocol specific and doesn't belong here.
+>
+>> +\item  The user can observe the traffic information and enqueue information
+>> of other normal
+>> +       tunnels, and conduct targeted DoS attacks.
+> Once hash_report_tunnel_types is removed, this second attack is no longer applicable.
+> Hence, please remove this too.
+>
+>> +\end{\itemize}
+>> +
+>>   \paragraph{Hash reporting for incoming packets}  \label{sec:Device Types /
+>> Network Device / Device Operation / Processing of Incoming Packets / Hash
+>> reporting for incoming packets}
+>> -
+>> -If VIRTIO_NET_F_HASH_REPORT was negotiated and
+>> - the device has calculated the hash for the packet, the device fills
+>> \field{hash_report} with the report type of calculated hash -and
+>> \field{hash_value} with the value of calculated hash.
+>> -
+>> -If VIRTIO_NET_F_HASH_REPORT was negotiated but due to any reason the -
+>> hash was not calculated, the device sets \field{hash_report} to
+>> VIRTIO_NET_HASH_REPORT_NONE.
+>> -
+>> -Possible values that the device can report in \field{hash_report} are defined
+>> below.
+>> +If VIRTIO_NET_F_HASH_REPORT was negotiated and the device has
+>> +calculated the hash for the packet, the device fills the lower 8 bits
+>> +of \field{hash_report} with the report type of calculated hash, and
+>> +\field{hash_value} with the value of calculated hash. Also, if
+>> +VIRTIO_NET_F_HASH_REPORT_TUNNEL was negotiated, the device needs to
+>> fill the upper 8 bits of \field{hash_report} with the encapsulation type.
+>> +
+>> +If VIRTIO_NET_F_HASH_REPORT was negotiated but due to any reason the
+>> +hash was not calculated, the device sets the lower 8 bits of
+>> +\field{hash_report} to VIRTIO_NET_HASH_REPORT_NONE.
+>> +
+>> +If VIRTIO_NET_F_HASH_REPORT_TUNNEL was negotiated, the device fills the
+>> +upper
+>> +8 bits of \field{hash_report} with the encapsulation type for an
+>> +encapsulated packet. Note that the upper 8 bits are all set to 0 for an
+>> +unencapsulated packet, regardless of whether
+>> VIRTIO_NET_F_HASH_REPORT_TUNNEL is negotiated or not.
+>> +
+>> +Possible hash types that the device can report in \field{hash_report} are
+>> defined below.
+>>   They correspond to supported hash types defined in  \ref{sec:Device Types /
+>> Network Device / Device Operation / Processing of Incoming Packets / Hash
+>> calculation for incoming packets / Supported/enabled hash types}  as follows:
+>> @@ -4005,6 +4110,26 @@ \subsubsection{Processing of Incoming
+>> Packets}\label{sec:Device Types / Network
+>>   #define VIRTIO_NET_HASH_REPORT_UDPv6_EX        9
+>>   \end{lstlisting}
+>>
+>> +The upper 8 bits of \field{hash_report} can report the encapsulation
+>> +type to the driver if VIRTIO_NET_F_HASH_REPORT_TUNNEL is negotiated.
+>> +Possible encapsulation types that the device can report in \field{hash_report}
+>> are defined below.
+>> +They correspond to supported hash tunnel types defined in
+>> +\ref{sec:Device Types / Network Device / Device Operation / Processing
+>> +of Incoming Packets / Hash calculation for incoming packets /
+>> Supported/enabled hash tunnel types} as follows:
+>> +
+>> +VIRTIO_NET_HASH_TUNNEL_TYPE_XXX = 1 <<
+>> +(VIRTIO_NET_HASH_TUNNEL_REPORT_XXX - 256)
+>> +
+>> +\begin{lstlisting}
+>> +#define VIRTIO_NET_HASH_TUNNEL_REPORT_GRE      256
+>> +#define VIRTIO_NET_HASH_TUNNEL_REPORT_VXLAN    257
+>> +#define VIRTIO_NET_HASH_TUNNEL_REPORT_GENEVE   258
+>> +#define VIRTIO_NET_HASH_TUNNEL_REPORT_IPIP     259
+>> +#define VIRTIO_NET_HASH_TUNNEL_REPORT_NVGRE    260
+>> +\end{lstlisting}
+>> +
+>> +They correspond to supported hash types defined in \ref{sec:Device
+>> +Types / Network Device / Device Operation / Processing of Incoming Packets /
+>> Hash calculation for incoming packets / Supported/enabled hash types}.
+>> +
+>>   \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device /
+>> Device Operation / Control Virtqueue}
+>>
+>>   The driver uses the control virtqueue (if VIRTIO_NET_F_CTRL_VQ is @@ -
+>> 4364,6 +4489,7 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types
+>> / Network Device / Devi  \begin{lstlisting}  struct virtio_net_hash_config {
+>>       le32 hash_types;
+>> +    le32 hash_tunnel_types;
+>>       le16 reserved[4];
+>>       u8 hash_key_length;
+>>       u8 hash_key_data[hash_key_length];
+>> @@ -4372,7 +4498,11 @@ \subsubsection{Control
+>> Virtqueue}\label{sec:Device Types / Network Device / Devi  Field
+>> \field{hash_types} contains a bitmask of allowed hash types as  defined in
+>> \ref{sec:Device Types / Network Device / Device Operation / Processing of
+>> Incoming Packets / Hash calculation for incoming packets / Supported/enabled
+>> hash types}.
+>> -Initially the device has all hash types disabled and reports only
+>> VIRTIO_NET_HASH_REPORT_NONE.
+>> +
+>> +Field \field{hash_tunnel_types} contains a bitmask of allowed hash
+>> +tunnel types as defined in \ref{sec:Device Types / Network Device / Device
+>> Operation / Processing of Incoming Packets / Hash calculation for incoming
+>> packets / Supported/enabled hash tunnel types}.
+>> +
+>> +Initially the device has all hash types and hash tunnel types disabled and
+>> reports only VIRTIO_NET_HASH_REPORT_NONE.
+>>
+>>   Field \field{reserved} MUST contain zeroes. It is defined to make the structure
+>> to match the layout of virtio_net_rss_config structure,  defined in
+>> \ref{sec:Device Types / Network Device / Device Operation / Control Virtqueue
+>> / Receive-side scaling (RSS)}.
+>> @@ -4390,6 +4520,7 @@ \subsubsection{Control Virtqueue}\label{sec:Device
+>> Types / Network Device / Devi  \begin{lstlisting}  struct virtio_net_rss_config {
+>>       le32 hash_types;
+>> +    le32 hash_tunnel_types;
+> This field is not needed as device config space advertisement for the support is enough.
+>
+> If the intent is to enable hashing for the specific tunnel(s), an individual command is better.
+>
+> Regardless, this new field cannot be in the middle of the new structure as it breaks backward compatibility.
+>
+>>       le16 indirection_table_mask;
+>>       le16 unclassified_queue;
+>>       le16 indirection_table[indirection_table_length];
+>> @@ -4402,6 +4533,9 @@ \subsubsection{Control Virtqueue}\label{sec:Device
+>> Types / Network Device / Devi  defined in  \ref{sec:Device Types / Network
+>> Device / Device Operation / Processing of Incoming Packets / Hash calculation
+>> for incoming packets / Supported/enabled hash types}.
+>>
+>> +Field \field{hash_tunnel_types} contains a bitmask of allowed hash
+>> +tunnel types as defined in \ref{sec:Device Types / Network Device / Device
+>> Operation / Processing of Incoming Packets / Hash calculation for incoming
+>> packets / Supported/enabled hash tunnel types}.
+>> +
+>>   Field \field{indirection_table_mask} is a mask to be applied to  the calculated
+>> hash to produce an index in the  \field{indirection_table} array.
+>> diff --git a/introduction.tex b/introduction.tex index 287c5fc..69b95ae 100644
+>> --- a/introduction.tex
+>> +++ b/introduction.tex
 
 
 ---------------------------------------------------------------------
