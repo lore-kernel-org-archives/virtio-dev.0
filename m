@@ -1,122 +1,156 @@
-Return-Path: <mst@redhat.com>
-Date: Tue, 28 Feb 2023 06:04:55 -0500
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: Re: [PATCH v9] virtio-net: support inner header hash
-Message-ID: <20230228060352-mutt-send-email-mst@kernel.org>
-References: <0f53212f-a89b-ad3c-73e3-a7a7b5533058@linux.alibaba.com>
- <1047920c-5dd5-8f31-0c4c-a108f36155f8@redhat.com>
- <20230223075934-mutt-send-email-mst@kernel.org>
- <CACGkMEvc2Px_Zz11R5QYwMXYm_j5rsYV2LrZt5yf8tZQxuT_Bg@mail.gmail.com>
- <20230224030509-mutt-send-email-mst@kernel.org>
- <CACGkMEuOu=6qKQO2TJ0B6ZLRH_-rGtZMYVtw7gn+BFbnJgWkrw@mail.gmail.com>
- <20230227023657-mutt-send-email-mst@kernel.org>
- <CACGkMEtOFC-xygzgECi82j4Q6PacpjVnyPMs1Q6c9PN0RfX5bw@mail.gmail.com>
- <20230227124800-mutt-send-email-mst@kernel.org>
- <CACGkMEvUaQuzMx4iwkaYg9t9Bz2Ev0eHAwgrWbNEwtQHZOkkvQ@mail.gmail.com>
+Return-Path: <jasowang@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <CACGkMEvUaQuzMx4iwkaYg9t9Bz2Ev0eHAwgrWbNEwtQHZOkkvQ@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-To: Jason Wang <jasowang@redhat.com>
+References: <0f53212f-a89b-ad3c-73e3-a7a7b5533058@linux.alibaba.com>
+ <1047920c-5dd5-8f31-0c4c-a108f36155f8@redhat.com> <20230223075934-mutt-send-email-mst@kernel.org>
+ <CACGkMEvc2Px_Zz11R5QYwMXYm_j5rsYV2LrZt5yf8tZQxuT_Bg@mail.gmail.com>
+ <20230224030509-mutt-send-email-mst@kernel.org> <CACGkMEuOu=6qKQO2TJ0B6ZLRH_-rGtZMYVtw7gn+BFbnJgWkrw@mail.gmail.com>
+ <20230227023657-mutt-send-email-mst@kernel.org> <CACGkMEtOFC-xygzgECi82j4Q6PacpjVnyPMs1Q6c9PN0RfX5bw@mail.gmail.com>
+ <20230227124800-mutt-send-email-mst@kernel.org> <CACGkMEvUaQuzMx4iwkaYg9t9Bz2Ev0eHAwgrWbNEwtQHZOkkvQ@mail.gmail.com>
+ <20230228060352-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20230228060352-mutt-send-email-mst@kernel.org>
+From: Jason Wang <jasowang@redhat.com>
+Date: Wed, 1 Mar 2023 10:36:41 +0800
+Message-ID: <CACGkMEvAGABhk6JX7+F-sDtRM7t1oONEz9wrgKM7iShmyYV34A@mail.gmail.com>
+Subject: Re: [PATCH v9] virtio-net: support inner header hash
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+To: "Michael S. Tsirkin" <mst@redhat.com>
 Cc: Heng Qi <hengqi@linux.alibaba.com>, virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org, Parav Pandit <parav@nvidia.com>, Yuri Benditovich <yuri.benditovich@daynix.com>, Cornelia Huck <cohuck@redhat.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 List-ID: <virtio-dev.lists.oasis-open.org>
 
-On Tue, Feb 28, 2023 at 11:04:26AM +0800, Jason Wang wrote:
-> On Tue, Feb 28, 2023 at 1:49 AM Michael S. Tsirkin <mst@redhat.com> wrote:
-> >
-> > On Mon, Feb 27, 2023 at 04:35:09PM +0800, Jason Wang wrote:
-> > > On Mon, Feb 27, 2023 at 3:39 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > > >
-> > > > On Mon, Feb 27, 2023 at 12:07:17PM +0800, Jason Wang wrote:
-> > > > > Btw, this kind of 1:1 hash features seems not scalable and flexible.
-> > > > > It requires an endless extension on bits/fields. Modern NICs allow the
-> > > > > user to customize the hash calculation, for virtio-net we can allow to
-> > > > > use eBPF program to classify the packets. It seems to be more flexible
-> > > > > and scalable and there's almost no maintain burden in the spec (only
-> > > > > bytecode is required, no need any fancy features/interactions like
-> > > > > maps), easy to be migrated etc.
+On Tue, Feb 28, 2023 at 7:05=E2=80=AFPM Michael S. Tsirkin <mst@redhat.com>=
+ wrote:
+>
+> On Tue, Feb 28, 2023 at 11:04:26AM +0800, Jason Wang wrote:
+> > On Tue, Feb 28, 2023 at 1:49=E2=80=AFAM Michael S. Tsirkin <mst@redhat.=
+com> wrote:
+> > >
+> > > On Mon, Feb 27, 2023 at 04:35:09PM +0800, Jason Wang wrote:
+> > > > On Mon, Feb 27, 2023 at 3:39=E2=80=AFPM Michael S. Tsirkin <mst@red=
+hat.com> wrote:
 > > > > >
-> > > > > Prototype is also easy, tun/tap had an eBPF classifier for years.
+> > > > > On Mon, Feb 27, 2023 at 12:07:17PM +0800, Jason Wang wrote:
+> > > > > > Btw, this kind of 1:1 hash features seems not scalable and flex=
+ible.
+> > > > > > It requires an endless extension on bits/fields. Modern NICs al=
+low the
+> > > > > > user to customize the hash calculation, for virtio-net we can a=
+llow to
+> > > > > > use eBPF program to classify the packets. It seems to be more f=
+lexible
+> > > > > > and scalable and there's almost no maintain burden in the spec =
+(only
+> > > > > > bytecode is required, no need any fancy features/interactions l=
+ike
+> > > > > > maps), easy to be migrated etc.
+> > > > > >
+> > > > > > Prototype is also easy, tun/tap had an eBPF classifier for year=
+s.
+> > > > > >
+> > > > > > Thanks
 > > > > >
-> > > > > Thanks
+> > > > > Yea BPF offload would be great to have. We have been discussing i=
+t for
+> > > > > years though - security issues keep blocking it. *Maybe* it's fin=
+ally
+> > > > > going to be there but I'm not going to block this work waiting fo=
+r BPF
+> > > > > offload.  And easily migrated is what BPF is not.
 > > > >
-> > > > Yea BPF offload would be great to have. We have been discussing it for
-> > > > years though - security issues keep blocking it. *Maybe* it's finally
-> > > > going to be there but I'm not going to block this work waiting for BPF
-> > > > offload.  And easily migrated is what BPF is not.
-> > >
-> > > Just to make sure we're at the same page. I meant to find a way to
-> > > allow the driver/user to fully customize what it wants to
-> > > hash/classify. Similar technologies which is based on private solution
-> > > has been used by some vendors, which allow user to customize the
-> > > classifier[1]
-> > >
-> > > ePBF looks like a good open-source solution candidate for this (there
-> > > could be others). But there could be many kinds of eBPF programs that
-> > > could be offloaded. One famous one is XDP which requires many features
-> > > other than the bytecode/VM like map access, tailcall. Starting from
-> > > such a complicated type is hard. Instead, we can start from a simple
-> > > type, that is the eBPF classifier. All it needs is to pass the
-> > > bytecode to the device, the device can choose to run it or compile it
-> > > to what it can understand for classifying. We don't need maps, tail
-> > > calls and other features.
-> >
-> > Until people start asking exactly for maps because they want
-> > state for their classifier?
-> 
-> Yes, but let's compare the eBPF without maps with the static feature
-> proposed here. It is much more scalable and flexible.
-
-I looked for some examples of RSS using BPF and only found this:
-https://github.com/Netronome/bpf-samples/blob/master/programmable_rss/rss_user.c
-seems to use maps.
-
-
-> > And it makes sense - if you want
-> > e.g. load balancing you need stats which needs maps.
-> 
-> Yes, but we know it's possible to have that (through the XDP offload).
-
-Not without a lot more work to make xdp offload happen.
-
-> This is impossible with the approach proposed here.
-> 
-> >
-> > > We don't need to worry about the security
-> > > because of its simplicity: the eBPF program is only in charge of doing
-> > > classification, no other interactions with the driver and packet
-> > > modification is prohibited. The feature is limited only to the
-> > > VM/bytecode abstraction itself.
-> > >
-> > > What's more, it's a good first step to achieve full eBPF offloading in
-> > > the future.
-> > >
-> > > Thanks
-> > >
-> > > [1] https://www.intel.com/content/www/us/en/architecture-and-technology/ethernet/dynamic-device-personalization-brief.html
-> >
-> > Dave seems to have nacked this approach, no?
-> 
-> I may miss something but looking at kernel commit, there are few
-> patches to support that:
-> 
-> E.g
-> 
-> commit c7648810961682b9388be2dd041df06915647445
-> Author: Tony Nguyen <anthony.l.nguyen@intel.com>
-> Date:   Mon Sep 9 06:47:44 2019 -0700
-> 
->     ice: Implement Dynamic Device Personalization (DDP) download
-> 
-> And it has been used by DPDK drivers.
-> 
-> Thanks
-> 
-> >
+> > > > Just to make sure we're at the same page. I meant to find a way to
+> > > > allow the driver/user to fully customize what it wants to
+> > > > hash/classify. Similar technologies which is based on private solut=
+ion
+> > > > has been used by some vendors, which allow user to customize the
+> > > > classifier[1]
 > > > >
-> > > > --
-> > > > MST
-> > > >
+> > > > ePBF looks like a good open-source solution candidate for this (the=
+re
+> > > > could be others). But there could be many kinds of eBPF programs th=
+at
+> > > > could be offloaded. One famous one is XDP which requires many featu=
+res
+> > > > other than the bytecode/VM like map access, tailcall. Starting from
+> > > > such a complicated type is hard. Instead, we can start from a simpl=
+e
+> > > > type, that is the eBPF classifier. All it needs is to pass the
+> > > > bytecode to the device, the device can choose to run it or compile =
+it
+> > > > to what it can understand for classifying. We don't need maps, tail
+> > > > calls and other features.
+> > >
+> > > Until people start asking exactly for maps because they want
+> > > state for their classifier?
 > >
+> > Yes, but let's compare the eBPF without maps with the static feature
+> > proposed here. It is much more scalable and flexible.
+>
+> I looked for some examples of RSS using BPF and only found this:
+> https://github.com/Netronome/bpf-samples/blob/master/programmable_rss/rss=
+_user.c
+> seems to use maps.
+
+Yes and this is also the way we emulate RSS with TUN/TAP via steering
+eBPF support for TUN/TAP. The reason is that it needs to emulate not
+only the hash but also the indirection. If we only replace the hash
+function with the eBPF program but reuse the RSS indirection table, we
+don't need maps.
+
+>
+>
+> > > And it makes sense - if you want
+> > > e.g. load balancing you need stats which needs maps.
+> >
+> > Yes, but we know it's possible to have that (through the XDP offload).
+>
+> Not without a lot more work to make xdp offload happen.
+>
+
+Yes, that's why a simple eBPF RSS hashing program looks much more easier.
+
+Thanks
+
+> > This is impossible with the approach proposed here.
+> >
+> > >
+> > > > We don't need to worry about the security
+> > > > because of its simplicity: the eBPF program is only in charge of do=
+ing
+> > > > classification, no other interactions with the driver and packet
+> > > > modification is prohibited. The feature is limited only to the
+> > > > VM/bytecode abstraction itself.
+> > > >
+> > > > What's more, it's a good first step to achieve full eBPF offloading=
+ in
+> > > > the future.
+> > > >
+> > > > Thanks
+> > > >
+> > > > [1] https://www.intel.com/content/www/us/en/architecture-and-techno=
+logy/ethernet/dynamic-device-personalization-brief.html
+> > >
+> > > Dave seems to have nacked this approach, no?
+> >
+> > I may miss something but looking at kernel commit, there are few
+> > patches to support that:
+> >
+> > E.g
+> >
+> > commit c7648810961682b9388be2dd041df06915647445
+> > Author: Tony Nguyen <anthony.l.nguyen@intel.com>
+> > Date:   Mon Sep 9 06:47:44 2019 -0700
+> >
+> >     ice: Implement Dynamic Device Personalization (DDP) download
+> >
+> > And it has been used by DPDK drivers.
+> >
+> > Thanks
+> >
+> > >
+> > > > >
+> > > > > --
+> > > > > MST
+> > > > >
+> > >
+>
 
