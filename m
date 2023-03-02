@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-11376-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-11377-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 973F1C678D4
-	for <virtio-dev@archiver.kernel.org>; Thu,  2 Mar 2023 13:40:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4C6AFC678D4
+	for <virtio-dev@archiver.kernel.org>; Thu,  2 Mar 2023 13:43:05 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id D3D3026A35
-	for <virtio-dev@archiver.kernel.org>; Thu,  2 Mar 2023 13:40:36 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 8023744347
+	for <virtio-dev@archiver.kernel.org>; Thu,  2 Mar 2023 13:43:04 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id CA8999866A7
-	for <virtio-dev@archiver.kernel.org>; Thu,  2 Mar 2023 13:40:36 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 765AE98678B
+	for <virtio-dev@archiver.kernel.org>; Thu,  2 Mar 2023 13:43:04 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id BF3CD986679; Thu,  2 Mar 2023 13:40:36 +0000 (UTC)
+	id 6B8D698667E; Thu,  2 Mar 2023 13:43:04 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-Id: <virtio-dev.lists.oasis-open.org>
 Precedence: bulk
@@ -23,31 +23,34 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id AB62B986674;
-	Thu,  2 Mar 2023 13:40:30 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 4EF8B986674;
+	Thu,  2 Mar 2023 13:43:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JA/XyUtFa6bzbAOpCAaHPGW0Rf6hc0uaFT4kBVRa2+KWjiQgErr6nkXi9ilaga9IiTNQGYOyK6v4XvOAlzyoTYLMdo4uWw3GqayoQ8ZHLYq8JZ78WOWXjmd+CqN3CojLiwIg/lxccxtxsmytevplOBlMr5kausS+3rq2z+eXERqzp1VxmIkNtqqPrhZEbSYS4wNG/jJ5C+9YJlxwGAwtiDP9Wzuq09PYn2SKYBCKUyDEf2piiv0H0+CCFbJnxcBehMMvlAPH28beouuO1xI+nvcHLavaU/mvV9Gv53q8u/ZsUZ2DEK0R00rpnsm8KcwcEPnP6j9ZcfeBokWQiOAm0Q==
+ b=N1fix+lptqUxteN86TEmxwsPNSgDc3iWqyGOKrqehFBCIQfFwxkHmcjj1cVYOrmsxTYBTR+lBxDxBhqYYsWft5uWJ3hVyo+i5q7x7uWYhwbywgyC+lMjUd1Nwx7NJ06VfHUIKwg9oH8A9bx2Fe9iGP7eogSjftOrx4k0Dj/HrrKCy57JDnAcyut6gjgljZaCGPFxieSF/3AtWRx4+dD0xPUXbHchHssRBzCksjDz4sW/N91fHnteJbU18wqLNVWu06UhVDU/AbErY8XO0f7+mdhFin04MKNQFtI6aTlDZy6c696879W56jqQh6bTfFaIJQpm5B4bs5AFyn2wClhTtw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=FhhfkXAdYH6x3xvuAfw7fug1in2k9XyRgihDbeAEaXs=;
- b=Izv6tYmk3yR6bHKWg9DPV8Ln4s8J1yPNmnbFJTSyPxYdrgvJq2Y6cAsEXmQTcEqZkxWePoxlC+68cKbLotMfC/k340hscFNbjW8cxrlSx7RKY8imW2xU94bTXMW4eXAnKzuUNGtU8n6E7lKUsRHrPR8hnPGlf+eUKq58QwsaynjfqjidLg3ZKAduRZwnvdrVX+NwGDGDZOwvQEC8BAY39ZJbwipUwDsw7jJoXvILtNS8odS1DOsA9jQfJweWc3RC7SJ+1rBb2mWAENkzf4AK1EfoWtF0/JQD2BLf17mxtXcO3k52WHvQvvPePWD+eP73Uru2LZOnorjKHb0hWhzSrg==
+ bh=TYAUApQ10OgVDRLYN1MeY9RkbHYOVgdeuUt9khGWIC4=;
+ b=lLcfmAIbTCqXgVxXxIfSdf1tO8rimIejD0LmAOOYa/WaX2svlH7XgI48yWzZXuTMbwPy1AMNaKvO4CTBZwKdw4Yga+Aq4z1YB9LHvc+RfguqaZCQHg11H1g30whePwvRgT6bOCgNAD5doYFM3nkD6nQN3UJctop0AgPcCg5CxAs7GixsPGH3b3idEReyBTlbT/M3l0Dap1O8lA2htrNr1mFV4zwHf8y3i+/AmY2p3anuizjOeuFRz5/o18rzUWXEUW1bTvYq4apwknjA2pw0h3Aq5NRJeBf87MBgugOKBxv+3ff69WgjrnE3awRJc1my8FZIcZTpM/KhA2lPn7uK1w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 From: Parav Pandit <parav@nvidia.com>
-To: "Michael S. Tsirkin" <mst@redhat.com>,
-	"virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
-	"virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
-CC: "virtio@lists.oasis-open.org" <virtio@lists.oasis-open.org>
-Thread-Topic: [virtio] [PATCH] makediff: make it work for fresh checkout
-Thread-Index: AQHZTPfqhGNNNLIR6kit/03mV3shI67nfwVw
-Date: Thu, 2 Mar 2023 13:40:28 +0000
+To: "Michael S. Tsirkin" <mst@redhat.com>, Halil Pasic <pasic@linux.ibm.com>
+CC: Cornelia Huck <cohuck@redhat.com>, "virtio-dev@lists.oasis-open.org"
+	<virtio-dev@lists.oasis-open.org>, "virtio-comment@lists.oasis-open.org"
+	<virtio-comment@lists.oasis-open.org>, Shahaf Shuler <shahafs@nvidia.com>
+Thread-Topic: [virtio-comment] Re: [PATCH 0/3] Rename queue index to queue
+ number
+Thread-Index: AQHZR0pAxGvxqZYuNUuHEK6ngQ2mvq7igR2AgAO1AICAAARNAIABUChg
+Date: Thu, 2 Mar 2023 13:42:59 +0000
 Message-ID:
- <PH0PR12MB5481CA9CC6E842F0B2A6BD7DDCB29@PH0PR12MB5481.namprd12.prod.outlook.com>
-References: <20230302111232.837604-1-mst@redhat.com>
-In-Reply-To: <20230302111232.837604-1-mst@redhat.com>
+ <PH0PR12MB5481F696FAA2F5D5DB35912BDCB29@PH0PR12MB5481.namprd12.prod.outlook.com>
+References: <20230223054624.168042-1-parav@nvidia.com>
+ <87a60z5wes.fsf@redhat.com> <20230301182207.23f995cd.pasic@linux.ibm.com>
+ <20230301123044-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20230301123044-mutt-send-email-mst@kernel.org>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach:
@@ -55,75 +58,111 @@ X-MS-TNEF-Correlator:
 authentication-results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: PH0PR12MB5481:EE_|CY5PR12MB6479:EE_
-x-ms-office365-filtering-correlation-id: f8c71920-c623-4259-936c-08db1b23af94
+x-ms-traffictypediagnostic: PH0PR12MB5481:EE_|IA1PR12MB6355:EE_
+x-ms-office365-filtering-correlation-id: 055201e3-0aa8-4683-3a9f-08db1b2409bf
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
 x-microsoft-antispam-message-info:
- qwzAR23wcICAqrm5ISoeeYjM9istNajJtxpOoxDv7PiY3nD2cWJdBcVwSiK+BzKr/iYP3fgaJ/UVsYIiu4ldc2nErUAINQgkk88YATyveviL39OgGHq2ZdaY3Nab8fjES5X1tce6tqCoD2adjJ7J6aONvxmsg44zviydh7CY0AAZDYU2TdcPxXTEwrclhRdrjLOKSdyHMxotlCYotJ8X5qKtcMnEObcBEqkAsieQEzFxyfigKT+IZZDFC9Q/9g920kLnr/BifYYJAkOKIdXWWdGKLfHYApOWgjCpKBh5cLgP8Wg8TsJRu9aPBsatizliBCEYrk1JJYFyu/F5N54j/XM2op/D9YdWpotBoRCymgoOzDjh8QhWuNuo4XOAmUokGQoq2UcHX8IfTBXyPrFVUald1jrHBe/g2ERHi5ns8h+/ztkqxlze4qW+cXFoOZZ/y/OIEnqm++Ao3xyM2bIiZrrKgGo5aX34kxU0irSjUgJkAZMElVg2zdCXdwyvDm5MttE0D/8336/BbOc17/IJvW64YSuHKW8+1O3bUenF3KpWBHao9t6+zqRldXaOpoCYVGivi1ufyAOJdLd4XGuK4pyyw6miwgl87V65pGgoZhKwd/NCiDKqvgKF/tthiVZD3EgII4k4XOUKN4cqAR4G5jdrAk5KnW0+iCvA6D40KrVxQLjoSpB/wvZnasoIAYuM
+ hSsctBFYnAB5nhNdMXMvAlANZJY4ARumETjtjDKpGTCVR3ac6kaDO/R54QojtsiWoXsQEkv7yiVZhiMv0KURGGL+W1glX3vI48jqt6kRs7MKYcL5cpRWXu8lI3xCgI2rIoQn9LCfYNpxtiCQQdvCKCzlJ18vqj8DcK8cm8o1/nn7NXtr5lSgvfafWNt77jj7Ppo6YvP74D2+15naaew2kxluvt7bec7nEcdvajJga0sZDu/pb/GmjDIqJcW5c3M5Lxzdd5Etd3loLN582PG6AcyYG4cdaimAFaylCCLGFTr9yBbnJn8Wyqm0O7lz5PfV+kYbFF5YZozKwiph4adp9zeDO5qhT6OzjIkwvfWnQLQ3Qvj6lqfb45LKxviPTdclWiLvHLbrnjn/s/yIBDnBy3DiOmXRE51JUYaCuISgqUg3KZe/Z0C48kIwQlp0Yf4VasNMnO9qVsc/JmLu/j131ErnktzPPkgOB4xsVH1qbVGT+C9gkmXGC++U9/KkCv+GnZgu4YwQcvneQ1a05BT/An+WSdqouCmiQBwxMBm97LrZFTkxNbO0GGOYVr1NtiQ0aTjAPoXOX0vK4SjP7szq+xviE9L1FWtuWzscRk3thJzAxa4aGyf7eSLmgkXHEf2Ff2kQsO/DB5kYbnmnua8d6qh7AN/ajvTsNrnMLZnrE1mtw+xWrFcA8uaJmthpG+C1+zeBmk2Q9VpOWJfO/uQJBA==
 x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(396003)(346002)(366004)(376002)(39860400002)(136003)(451199018)(316002)(71200400001)(4326008)(64756008)(110136005)(4744005)(66446008)(8936002)(83380400001)(2906002)(7696005)(33656002)(38100700002)(122000001)(66476007)(66556008)(52536014)(8676002)(41300700001)(478600001)(5660300002)(55016003)(186003)(86362001)(6506007)(26005)(66946007)(9686003)(38070700005)(76116006);DIR:OUT;SFP:1101;
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(346002)(39860400002)(376002)(136003)(396003)(366004)(451199018)(33656002)(86362001)(66946007)(52536014)(41300700001)(64756008)(66556008)(66476007)(55016003)(8936002)(8676002)(5660300002)(4326008)(66446008)(2906002)(122000001)(38100700002)(38070700005)(7696005)(71200400001)(107886003)(478600001)(316002)(54906003)(76116006)(110136005)(186003)(6506007)(9686003)(26005);DIR:OUT;SFP:1101;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
 x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?hZdvnv2KpqxaNrqko5TA5TigOX+HyvZkhl4wExam66eIkwXTKoyWrfkm3wsD?=
- =?us-ascii?Q?gneLd2VmjOWICtsgAGy4zX2z15dKQ/aSGzCFzYjXLN06wCgaz8QdIbda7WHU?=
- =?us-ascii?Q?jI+5/vRA7A2nIgMZPHFJ2WWpxAKpxhDHJEfaQTgyMYAi8J/XkjthLgiWreHv?=
- =?us-ascii?Q?TjsNJnHHBikAHhmrO2zKuLA+nMRwOjUsBEtuBJOyv5EDX2U2PJoEp1qHDral?=
- =?us-ascii?Q?gMgxM0oeE5phuf7TOCJRpbGTltxaGYM6Gav8NEUBFVW9qY56OQhHvkT0A7WR?=
- =?us-ascii?Q?eCvqMEAMRbhm2o9W2vSTWaCUv1kLbLXt7zWW+GQIP/8omeLVMU9yeeooSdSM?=
- =?us-ascii?Q?W/J3UXX01oqT5806ypjZ7zqTZd7+Ybb7v5Y2gZwSJYZqJQl/AEGjLH9koleB?=
- =?us-ascii?Q?kyrf1Dr2EG40CdaSl0d0z0guIsfPkQjkyVVBiPMzePh5DA0ky5V+1tV5d4CV?=
- =?us-ascii?Q?7X9kSQKMxY43S7AbgegK0sMWJ9C6bzLV+bfycErF6uZsqMYK7MA/mZQGkq7L?=
- =?us-ascii?Q?mWzIqLEPYfnQ1hhQTZAq48SKlFkEhj9YQhDdt38MqmjSig6BSJxIpfifxwsB?=
- =?us-ascii?Q?PbYww2nad7/TlbVC3ZvcHq6XNET87O+zIganvRCodDpNLo1qaoI89q+/pjTf?=
- =?us-ascii?Q?FQEN0DOhhWZf2st6eRPggBLRkUQMVfVCbwPf66w/FMmuFHEdbzl0TaBflF5T?=
- =?us-ascii?Q?5fbkvNdJZc8axDgT1UHXXWQo8JLsYbuCx9u687DV9dzMgrZm1nJ0AjDEy2qB?=
- =?us-ascii?Q?ZnnHzhOJhrlXiCpKuFTcWGbaPdhAS3VRSwSCPj0X2qaBgZkXsEcnX6x6Mxk9?=
- =?us-ascii?Q?xpTfuf45OZK084wI5iV/DILFdJ0tfQAW2wZGIWG8ZngPlgexXJHRzHpenoFk?=
- =?us-ascii?Q?BRHeRlt8GdSfli6AP0pyQpL/9UMNPyZt4YdxBqQAjttOqR5r2QfJyP5cd6DE?=
- =?us-ascii?Q?zDXH8+LffUQGtYRh1ujW5tH+LI9w2fwkFYnNFCc17Bq5kQL2zHOCuYF1H82/?=
- =?us-ascii?Q?71tWDhCjw4+WVxdey75y6S0JvGC4WmE34r2yaAqFI4cRn9hBZnGti/ErKhbB?=
- =?us-ascii?Q?/JaHvXSgPtB+DUAAEIMXIqzBlNgn9BYf0iHmH+JczznqutoDUGzTC0KQkZZ8?=
- =?us-ascii?Q?gNejBf3Xrj8KWF+tfp80o7OzMOGbm1HjTi2qzuFpwiL1JfrrfVzAR68byokY?=
- =?us-ascii?Q?1bRJU+JOoD4RCCCFmR2nWX2j8/v/k7WvjYwGR3CT60AiYLm6UOYOnMZbdI0J?=
- =?us-ascii?Q?MEsx1R5ffDbJFGFGAgUZL6eNp6kwfURCvHNk8k3PRn1xWjbZj12WmnYpCH0T?=
- =?us-ascii?Q?dXTCnkDvnLTBqv/5fCascAGRwVvl8xYJw8pCH2aKfYrjetDNBdW5bgWzZ8Ng?=
- =?us-ascii?Q?qQuW1UN0s2Ke8IgztW9b5DcIdQC0g3R6RzMCtiSXsoVjU1/xA1GifKduZWGC?=
- =?us-ascii?Q?ZuYnDUsb/KepHJD/DPragfSiJw/nYvEWpmM0p0KXiWl1laZqKF7d/9byZpI9?=
- =?us-ascii?Q?AWtenok5I+F5/r/7Be4sYUSzVFcU1kvBJKsMmx1blJcL/9aWJvQkaf5b7GcC?=
- =?us-ascii?Q?JAP0cteZehrzD/rChT0=3D?=
+ =?us-ascii?Q?dHnMndocXXBah6l4AsZ+T9WUKt+krDPMG3/HBjoeMRTNOVQrJIvtzlux4w90?=
+ =?us-ascii?Q?8+i0NaFXWbvJ+BEzti/4Y3ATXlPk4RPkabC86mPoNPY27BFkEmo+8wFnkizk?=
+ =?us-ascii?Q?ThHKTZzRi4l7F6K1oGk2AZ+pCkhdiaY44j2NsgCtstWxM2uG0adiJmqA6Y+J?=
+ =?us-ascii?Q?C40yWG2ZMbcbTX0GSEtuDGJ2jkPJHIJCW0EBUQoeQd3wQRYR7KIpSbDUC4ju?=
+ =?us-ascii?Q?L1GE5xajn4lZOUxWU1WqRhq8vJRjG6tr4n56r1fZYZpZTixNqR7WljCoFqtM?=
+ =?us-ascii?Q?M1XTper5hZClDjOwtWHFkHmynlXLW+1FjzG8t3KzIeGjfZbH9STX5cdJ3r+g?=
+ =?us-ascii?Q?lvtTmalvt9rXD3lyIND0YS4IITVu3WzIo0fxEEB/2kEYoVeI/xqSWkX5pH0E?=
+ =?us-ascii?Q?fWb0jg/7H+sRYXfsmv8fi90IGj7mrZ+PO+ocTIPHGjOQBdD4JjDP/buFnLEO?=
+ =?us-ascii?Q?PYcUH69ldWTN27BOOtOX2y07pWevyuEcxkLWS3e55yYCyNYFUtLvmiYTZDz5?=
+ =?us-ascii?Q?mpRzcINgOpaHTgDEU/9vqBz5g+43eOsRbIFNaiVZMk1IkA/CciAr3rAXNbhs?=
+ =?us-ascii?Q?e60pqsMEyZXEPBw09gO3vcj737p/W09ZtAA/MBj2Y/2lqzjdUr01kv5kOygP?=
+ =?us-ascii?Q?+s6kl8VkFpfc7dnezorLRZvUo5V0o/m1LxIp7h/rNNX4YUqxzj6TO/BmAbSR?=
+ =?us-ascii?Q?dg7nZUq6D8IRbjWFNQuBKGIQOIGwZQIutrLcbniD865UwPeZa1vUHuORanGx?=
+ =?us-ascii?Q?RvkyNh+ffYuclNGO6U50kxXUQ9LGrpmXrxaHRRw1CzE7bQgkXL4dLa/aeMyB?=
+ =?us-ascii?Q?lpBkHEzVC/F55RYfDeED+SZX45OJ1u0EiMHKRP7QfPWMwSMfRLMB4MIobx0S?=
+ =?us-ascii?Q?DBQcAeRsTDbEm9wIA/8mrE5FMRuFteNVEN6RbShgKuQCSgliqEj+b5NQX/UB?=
+ =?us-ascii?Q?HHhunV+K+qIG9L0kPnorYK4H8t5kY7RngQrw3SVDZWy98FNGTtpZ7DTjZOUP?=
+ =?us-ascii?Q?o/BmggpETy5RbxEu0vuMR4qE0nY+Vph1nkEPxNzbNpnsQK7oPlIGkQ6QFgR/?=
+ =?us-ascii?Q?ym8Q8pgMnAQ9IIEfX/ehC5tbeaCpg/xWWsOVopAhAO/yvMqNTxpO3pLXWIV1?=
+ =?us-ascii?Q?enhhpH9DK6qL86e1zZGwAcQWJajRLxW4QN9jU+MuC6U/Cd05oE1BRNe9ElMw?=
+ =?us-ascii?Q?uhXQKIx6z7QOgriJepgPefVmbRKVgh4Srl7ZqF9gqJsgovssy3olweK85lSh?=
+ =?us-ascii?Q?+MrhfEhqzfdmO/oRpGQkaAzo9JdVrxUXl+r6BkL9CkGY3goUbuLxO9px4a3p?=
+ =?us-ascii?Q?Kn3Itdz2kykqa2rffqByRnsOHx8koxFR3pSog1Tj6Rh+pN69ywfmGiXBihOH?=
+ =?us-ascii?Q?OHhD87rbsQroOUGosKJb3/ra7FFU7AXtOHdlcUKK7trxTaHXE2OqjLmqgVYk?=
+ =?us-ascii?Q?WPRrp5GCoFNmRElWfqzmdCWpBDDt+xk3pD6jC8ImP0IhzM7q10ZgToOLpXUG?=
+ =?us-ascii?Q?5Hhc0ZRt8yVqnQvxGe3RXY5TXIDKHRDwTXY3yAo3/eEdfeFJbJg5MIuMzStM?=
+ =?us-ascii?Q?1PpXUpP+2ApAyTso0Iw=3D?=
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: Nvidia.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f8c71920-c623-4259-936c-08db1b23af94
-X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Mar 2023 13:40:28.6143
+X-MS-Exchange-CrossTenant-Network-Message-Id: 055201e3-0aa8-4683-3a9f-08db1b2409bf
+X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Mar 2023 13:42:59.8732
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: D1p6VP6S0706C2juEr7YaqiJd0uXxcQtSLGsSOX0hxidZsblHl3pEBaBy40W5C7ApYfOsuKk5LK9yH7bAIFbRg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR12MB6479
-Subject: [virtio-dev] RE: [virtio] [PATCH] makediff: make it work for fresh checkout
+X-MS-Exchange-CrossTenant-userprincipalname: aV6RQwBdE4Ig0CcQ4yHpXQuTmJlhHis/vK5ND9LSQYg1yf3rkDn9LopIY17LzY7RihVWwa+S2QTQcYmKv0p2nQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB6355
+Subject: [virtio-dev] RE: [virtio-comment] Re: [PATCH 0/3] Rename queue index to queue
+ number
 
 
 
-> From: virtio@lists.oasis-open.org <virtio@lists.oasis-open.org> On Behalf=
- Of
-> Michael S. Tsirkin
+> From: Michael S. Tsirkin <mst@redhat.com>
+> Sent: Wednesday, March 1, 2023 12:38 PM
 >=20
-> 1st time one checks out our repo, latexdiff submodule is not initialized.=
- Pass --
-> init to update command to initialize it. It seems to be harmless if alrea=
-dy
-> initialized.
+> On Wed, Mar 01, 2023 at 06:22:07PM +0100, Halil Pasic wrote:
+> > On Mon, 27 Feb 2023 09:45:31 +0100
+> > Cornelia Huck <cohuck@redhat.com> wrote:
+> >
+> > > For the vq index/number, I'm not that sure that "virtqueue number"
+> > > is better that "virtqueue index" -- actually, I'd prefer the latter.
+> > > We'd need some renaming either way.
+> >
+> > I prefer index as well. Especially that we start indexing with 0. Also
+> > seems to be the more common term for such stuff in both Mathematics
+> > and CS.
+> >
+> > Regards,
+> > Halil
 >=20
-> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+>=20
+> Basically I am saying that this:
+>=20
+> /* Queue size for the currently selected queue - Write Only */
+> #define VIRTIO_MMIO_QUEUE_NUM           0x038
+>=20
+> is a bad name because queue number seems to be ambiguous.
+>=20
+> Maybe start with just getting rid of uses of QUEUE_NUM meaning size?
+>=20
+>=20
+> If we want to use queue index we need to fix RSS spec in networking
+> since that seems to want to use queue index in a very weird way:
+> networking has this idea of calling queues like this:
+> receiveq1 receiveq2 ....
+> why 1-based? I guess we wanted this to be clear even to a 5 year olds ;)
+>=20
+> And then for extra fun, in the RSS section we say "0 based index" where w=
+e
+> seem to mean "this number in the queue name, but subtract 1 in your head"=
+.
+> Why subtract 1? I guess we wanted these 5 year olds to practice math ...
 
-Tested-by: Parav Pandit <parav@nvidia.com>
+:)
+
+I think vqn is just fine that helps to keep things simple.
+
+I will insert the patch to fix the net device's index text and other text s=
+uggestions that Michael had for MMIO side.
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
