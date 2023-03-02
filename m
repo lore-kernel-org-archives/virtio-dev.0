@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-11402-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-11403-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 5EF6AC678D4
-	for <virtio-dev@archiver.kernel.org>; Thu,  2 Mar 2023 23:38:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 19C7AC6FA8E
+	for <virtio-dev@archiver.kernel.org>; Thu,  2 Mar 2023 23:43:23 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 9772F3309F
-	for <virtio-dev@archiver.kernel.org>; Thu,  2 Mar 2023 23:38:47 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 6D85D44348
+	for <virtio-dev@archiver.kernel.org>; Thu,  2 Mar 2023 23:43:22 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 6EE6C9866D9
-	for <virtio-dev@archiver.kernel.org>; Thu,  2 Mar 2023 23:38:47 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 54597986712
+	for <virtio-dev@archiver.kernel.org>; Thu,  2 Mar 2023 23:43:22 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 5BEC3984091; Thu,  2 Mar 2023 23:38:47 +0000 (UTC)
+	id 3D7E3984091; Thu,  2 Mar 2023 23:43:22 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-Id: <virtio-dev.lists.oasis-open.org>
 Precedence: bulk
@@ -23,143 +23,161 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 492149866AF
-	for <virtio-dev@lists.oasis-open.org>; Thu,  2 Mar 2023 23:38:47 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 2CFC09866AF
+	for <virtio-dev@lists.oasis-open.org>; Thu,  2 Mar 2023 23:43:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: eG7NzZ3aNSO3suoEmctjkg-1
+X-MC-Unique: HN18_hqwP9GhMlAwz1maWQ-1
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1677800324;
+        d=1e100.net; s=20210112; t=1677800598;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=04hd6lqGkpZeBZyObZlW8WWMmSbbwQcAeVd1FmazPFk=;
-        b=MU8Fo89AF1AKI34MUnLiCZavR93R9Ob0L70UBwVcRunleA5QLzIWJY9jRRK+aD2/ca
-         31crQV7TPAyDvDdO8BYW4uYLEuw0SYYsiTDLiOrXZJa0Lxx36owt+zkt7UgQ/GOigXoB
-         39knBLSqhDQE2Lwx0tuBc/OLDVTTx0swXsQZvaoP7FNg2JKyo7xsB2IF/o51PnoGS3Ex
-         0I9Nyvo+dOkZ/eT/UUWugFw9Ou+97HjU+2m5Vm3ITO6jBVWn5qzaila+d6KxtGEWKT94
-         Q2gkV5PgMKun+UdqX7DsCI5o/r6wPh8e9qBq4XVTSVBsmwpumzBk0YNK01MzPu8ojAnS
-         8J9w==
-X-Gm-Message-State: AO0yUKWYsJK8cqbpy+qA8v/0UORtvKDzyuk26qXK34DHIzFcAK25kxeu
-	JD9yqTyPm8DK31n4C8d1yV0gouaFSl0dn6GKm9Lj+8rpZEUZxc1HE51UmkyTyH+lH30wk3qACtD
-	6ySPKUETcZ7Wn2EAqPoQ65z6afrfd
-X-Received: by 2002:adf:fbc7:0:b0:2cc:4d13:908d with SMTP id d7-20020adffbc7000000b002cc4d13908dmr48467wrs.11.1677800323875;
-        Thu, 02 Mar 2023 15:38:43 -0800 (PST)
-X-Google-Smtp-Source: AK7set+3rjoBdkNKnXSx+37RI40zPyKw03swp4u9rFb/7RLlnlstFKvWgd5efT9PudxteBGjSVOJ2g==
-X-Received: by 2002:adf:fbc7:0:b0:2cc:4d13:908d with SMTP id d7-20020adffbc7000000b002cc4d13908dmr48457wrs.11.1677800323563;
-        Thu, 02 Mar 2023 15:38:43 -0800 (PST)
-Date: Thu, 2 Mar 2023 18:38:40 -0500
+        bh=1WKjjDFt6+mySWfY/0gaWPFeg8womcyZDSuMYhzN1tg=;
+        b=OsecEzIUN3jXCQgPr3zaqVvCkv8d5I+OH1HbdV/rkazudyl6NfMkCyDzBAxv8tdBRl
+         f1TtV9s0f57AzngxR6Tj+RvbAviEnncZzoJ8W9MpmmED8oe4eHSzAcIuKabeQF6UnuTP
+         4QoLwCjAVUDS8S8Bb7S0MqhrOmlLVbm+eRo+wJr7tJAJWAEwr3bFPVYC2r8RP14z1dvM
+         vtlmMgDUUdRa7qCqlaNpaP4szcsw5K+VB6GeoQZSxGtk4q/4bscCJFhFAVyTB/CZKp9K
+         eIbi1gisYKFKMcqKF9NAvqZkB3TQbxmRanHsoknu+CPiE+65HQVndWNzd0eW/1yOgqCe
+         BCAA==
+X-Gm-Message-State: AO0yUKXDszhHjKTBCLLiePmF5mfVvWElzvOFBQcPkWMHyp3Su/CmU7N/
+	vUq+G4IPemGURl2uzH/G6XYz5Je5iRIVkeY1kY7uUSDdODL8zKyAW0z1V8/UMOa/DmeUf6CzAl4
+	ztUHJse7dLDyQ/Zy2hHqtvqkh8uAf
+X-Received: by 2002:adf:cd10:0:b0:2c9:7ed3:6801 with SMTP id w16-20020adfcd10000000b002c97ed36801mr45863wrm.26.1677800598085;
+        Thu, 02 Mar 2023 15:43:18 -0800 (PST)
+X-Google-Smtp-Source: AK7set+n4fTJ2TD5eKbIb03edMTbmo1KmnOClWMM3Kc48kvvDSAylK/9mQAwjDAwshsSZs2PPzW2rQ==
+X-Received: by 2002:adf:cd10:0:b0:2c9:7ed3:6801 with SMTP id w16-20020adfcd10000000b002c97ed36801mr45851wrm.26.1677800597694;
+        Thu, 02 Mar 2023 15:43:17 -0800 (PST)
+Date: Thu, 2 Mar 2023 18:43:13 -0500
 From: "Michael S. Tsirkin" <mst@redhat.com>
 To: Parav Pandit <parav@nvidia.com>
-Cc: Halil Pasic <pasic@linux.ibm.com>,
+Cc: "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
 	"virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
+	"jasowang@redhat.com" <jasowang@redhat.com>,
 	"cohuck@redhat.com" <cohuck@redhat.com>,
-	"virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
+	"sgarzare@redhat.com" <sgarzare@redhat.com>,
+	"stefanha@redhat.com" <stefanha@redhat.com>,
+	"nrupal.jani@intel.com" <nrupal.jani@intel.com>,
+	"Piotr.Uminski@intel.com" <Piotr.Uminski@intel.com>,
+	"hang.yuan@intel.com" <hang.yuan@intel.com>,
+	"virtio@lists.oasis-open.org" <virtio@lists.oasis-open.org>,
+	Zhu Lingshan <lingshan.zhu@intel.com>,
+	"pasic@linux.ibm.com" <pasic@linux.ibm.com>,
 	Shahaf Shuler <shahafs@nvidia.com>,
-	Yuri Benditovich <yuri.benditovich@daynix.com>
-Message-ID: <20230302183736-mutt-send-email-mst@kernel.org>
-References: <20230223054624.168042-1-parav@nvidia.com>
- <20230227123751-mutt-send-email-mst@kernel.org>
- <20230302165216.1293d066.pasic@linux.ibm.com>
- <PH0PR12MB54810632DAE7C0D8BEABC9E9DCB29@PH0PR12MB5481.namprd12.prod.outlook.com>
+	Max Gurtovoy <mgurtovoy@nvidia.com>
+Message-ID: <20230302184301-mutt-send-email-mst@kernel.org>
+References: <cover.1677761896.git.mst@redhat.com>
+ <0a784140387c2a592f7e1e7bbc5ae926ec5b45da.1677761896.git.mst@redhat.com>
+ <PH0PR12MB54810807C3FB1E12BC5BF970DCB29@PH0PR12MB5481.namprd12.prod.outlook.com>
 MIME-Version: 1.0
-In-Reply-To: <PH0PR12MB54810632DAE7C0D8BEABC9E9DCB29@PH0PR12MB5481.namprd12.prod.outlook.com>
+In-Reply-To: <PH0PR12MB54810807C3FB1E12BC5BF970DCB29@PH0PR12MB5481.namprd12.prod.outlook.com>
 X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: redhat.com
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Subject: [virtio-dev] Re: [virtio-comment] Re: [PATCH 0/3] Rename queue index to queue
- number
+Subject: [virtio-dev] Re: [PATCH v10 01/10] virtio: document forward compatibility
+ guarantees
 
-On Thu, Mar 02, 2023 at 04:12:48PM +0000, Parav Pandit wrote:
+On Thu, Mar 02, 2023 at 06:39:29PM +0000, Parav Pandit wrote:
 > 
+> > From: Michael S. Tsirkin <mst@redhat.com>
+> > Sent: Thursday, March 2, 2023 8:05 AM
+> > 
+> > Feature negotiation forms the basis of forward compatibility guarantees of
+> > virtio but has never been properly documented.
+> > Do it now.
+> > 
+> > Suggested-by: Halil Pasic <pasic@linux.ibm.com>
+> > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+> > ---
 > 
-> > From: virtio-comment@lists.oasis-open.org <virtio-comment@lists.oasis-
-> > open.org> On Behalf Of Halil Pasic
-> > 
-> > On Mon, 27 Feb 2023 12:39:39 -0500
-> > "Michael S. Tsirkin" <mst@redhat.com> wrote:
-> > 
-> > > > This series is on top of [2].
-> > > >
-> > > > [1] https://github.com/oasis-tcs/virtio-spec/issues/163
-> > > > [2]
-> > > > https://lists.oasis-open.org/archives/virtio-dev/202302/msg00527.htm
-> > > > l
-> > >
-> > > What about RSS description in net? That says:
-> > >
-> > > description.tex:Field \field{unclassified_queue} contains the 0-based
-> > > index of
-> > >
-> > > is the index same as vq number? or something different?
-> > 
-> > It is something different. The full paragraph sound like this
-> > 
-> > """
-> > Field \field{unclassified_queue} contains the 0-based index of the receive
-> > virtqueue to place unclassified packets in. Index 0 corresponds to receiveq1.
-> > """
-> With vqn it can be as simply written as.
-> Field \field{unclassified_queue} contains the receive virtqueue number to use for unclassified incoming packets.
+> It may be little painful, but in 10 patch series, it is worth having per patch change log.
+> Because I do not know my reviewed by tag in [1] was dropped because of a big change, if so what was it or it was simply missed out.
 > 
-> Similarly rss description can be simplified.
+> [1] https://lists.oasis-open.org/archives/virtio-dev/202302/msg00237.html
 
-Unfortunately this is not what it is. It's actually vqn / 2.
+I just lost it, no change.
 
-> > Here follows the explanation.
+> >  content.tex | 42 ++++++++++++++++++++++++++++++++++++++++++
+> >  1 file changed, 42 insertions(+)
 > > 
-> > Disclaimer: For a brief math background see [1] and [2].
+> > diff --git a/content.tex b/content.tex
+> > index 0e474dd..0c2d917 100644
+> > --- a/content.tex
+> > +++ b/content.tex
+> > @@ -114,21 +114,63 @@ \section{Feature Bits}\label{sec:Basic Facilities of a
+> > Virtio Device / Feature B  In particular, new fields in the device configuration
+> > space are  indicated by offering a new feature bit.
 > > 
-> > Here the index set the set of natural numbers (which includes 0, the neutral
-> > element for the addition operation).
+> > +To keep the feature negotiation mechanism extensible, it is important
+> > +that devices \em{do not} offer any feature bits that they would not be
+> > +able to handle if the driver accepted them (even though drivers are not
+> > +supposed to accept them in the first place even if offered, according
+> > +to this version of the specification.) Likewise, it is important that
+> > +drivers \em{do not} accept feature bits they do not know how to handle
+> > +(even though devices are not supposed to offer them in the first place,
+> > +according to this version of the specification.) The preferred way for
+> > +handling reserved and unexpected features is that the driver ignores
+> > +them.
+> > +
+> > +In particular, this is
+> > +especially important for features limited to specific transports, as
+> > +enabling these for more transports in future versions of the
+> > +specification is highly likely to require changing the behaviour from
+> > +drivers and devices.  Drivers and devices supporting multiple
+> > +transports need to carefully maintain per-transport lists of allowed
+> > +features.
+> > +
+> >  \drivernormative{\subsection}{Feature Bits}{Basic Facilities of a Virtio Device /
+> > Feature Bits}  The driver MUST NOT accept a feature which the device did not
+> > offer,  and MUST NOT accept a feature which requires another feature which
+> > was  not accepted.
 > > 
-> > The indexed set is the set of receive virtqueues, each member of that set is
-> > associated with an unique member of the index set.
-> > 
-> > """
-> > \subsection{Virtqueues}\label{sec:Device Types / Network Device / Virtqueues}
-> > 
-> > \begin{description}
-> > \item[0] receiveq1
-> > \item[1] transmitq1
-> > \item[\ldots]
-> > \item[2(N-1)] receiveqN
-> > \item[2(N-1)+1] transmitqN
-> > \item[2N] controlq
-> > \end{description}
-> > """
-> > 
-> > But, as seen above, we happen to also use an other index set for the receive
-> > queues of an virtio-net device. I guess the intention is to use these as names, in
-> > any case the set is { "receiveq1", "receiveq2", ... } (yes, I'm a little sloppy here).
-> > 
-> > Thus we can say that:
-> > * the virtqueue index 2*(N-1)
-> > * the recieve virtqueue index N-1, and the
-> > * virtqueue name receiveqN
-> > refer to the very same virtqueue (for each N > 0)
-> > 
-> Receiveq1 is a name to virtuque number (currently index) 0.
-> And naming this way doesn't seem to be a problem in the description.
+> > +The driver MUST validate the feature bits offered by the device.
+> > +The driver MUST ignore and MUST NOT accept any feature bit that is
+> > +\begin{itemize} \item not described in this specification, \item marked
+> > +as reserved, \item not supported for the specific transport, \item not
+> > +defined for the device type.
+> > +\end{itemize}
+> > +
+> >  The driver SHOULD go into backwards compatibility mode  if the device does
+> The grammar tool is suggesting s/backwards/backward.
 > 
-> Section 5.1.2 is liste them already.
-> A short line tell about this mapping will suffice.
-
-can't parse this.
-
-
-> > And it depends on the context which scheme do we use. As far as I remember
-> > the names are not a part of any virtio interface. I.e. they are only there for the
-> > convenience of the spec and the reader. We could get rid of those. Although
-> > the possibility of corresponding to some network device, Linux network device
-> > or tooling naming convention is also to consider. But AFAIU Linux uses 0 based
-> > indexing for the rx and tx queues. 
-> Correct.
+> > not offer a feature it understands, otherwise MUST  set the FAILED \field{device
+> > status} bit and cease initialization.
+> > 
+> > +By contrast, the driver MUST NOT fail solely because a feature it does
+> > +not understand has been offered by the device.
+> > +
+> Above line can be written without introducing "has been" given we have only two entities (driver, dev) to care about.
 > 
-> > If the 1 based naming is really just
-> > constrained to the spec, we can change it without problem.
-> Yes, most changes are trivial I looked at.
->  
+> By contrast, the driver MUST NOT fail solely because it does not understand the feature offered by the device.
+> 
+> >  \devicenormative{\subsection}{Feature Bits}{Basic Facilities of a Virtio Device /
+> > Feature Bits}  The device MUST NOT offer a feature which requires another
+> > feature  which was not offered.  The device SHOULD accept any valid subset  of
+> Extra white space between feature and which, subset and of.
+> 
+> > features the driver accepts, otherwise it MUST fail to set the  FEATURES_OK
+> > \field{device status} bit when the driver writes it.
+> > 
+> Extra white space between the FEATURE_OK
+> 
+> > +The device MUST NOT offer feature bits corresponding to features it
+> > +would not support if accepted by the driver (even if the driver is
+> > +prohibited from accepting the feature bits by the specification); for
+> > +the sake of clarity, this refers to feature bits not described in this
+> > +specification, reserved feature bits and feature bits reserved or not
+> > +supported for the specific transport or the specific device type, but
+> > +this does not preclude devices written to a future version of this
+> > +specification from offering such feature bits should such a
+> > +specification have a provision for devices to support the corresponding
+> > +features.
+> > +
+> >  If a device has successfully negotiated a set of features  at least once (by
+> > accepting the FEATURES_OK \field{device  status} bit during device
+> > initialization), then it SHOULD
+> > --
+> > MST
 
 
 ---------------------------------------------------------------------
