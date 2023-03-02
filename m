@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-11365-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-11366-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id DAF28C6FA8E
-	for <virtio-dev@archiver.kernel.org>; Thu,  2 Mar 2023 13:05:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 42E0AC678D4
+	for <virtio-dev@archiver.kernel.org>; Thu,  2 Mar 2023 13:05:58 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id EF2152B35B
-	for <virtio-dev@archiver.kernel.org>; Thu,  2 Mar 2023 13:05:29 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 12C0A9258D
+	for <virtio-dev@archiver.kernel.org>; Thu,  2 Mar 2023 13:05:38 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id E591098669D
-	for <virtio-dev@archiver.kernel.org>; Thu,  2 Mar 2023 13:05:29 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 1C02098687E
+	for <virtio-dev@archiver.kernel.org>; Thu,  2 Mar 2023 13:05:36 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id D9D77986674; Thu,  2 Mar 2023 13:05:29 +0000 (UTC)
+	id 952E09867D9; Thu,  2 Mar 2023 13:05:34 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-Id: <virtio-dev.lists.oasis-open.org>
 Precedence: bulk
@@ -23,31 +23,31 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id BC626986672
-	for <virtio-dev@lists.oasis-open.org>; Thu,  2 Mar 2023 13:05:00 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id CEB3698667E
+	for <virtio-dev@lists.oasis-open.org>; Thu,  2 Mar 2023 13:05:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: TIm8aIJENFuZ6V51J8ls4w-1
+X-MC-Unique: -tqmbbyHMziwobe4jYhJ8Q-1
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1677762297;
+        d=1e100.net; s=20210112; t=1677762302;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=pEPlGcw2yod3MCEhIj3ZwcmWZS3U+lgcxD66oHp8Ww4=;
-        b=EH3wQF09LvDHjPI+N5SHxw35bwJ75GoGLJXtegtq8q16d8NAcy/2wQ9/nMkmpHyWx1
-         yaEDrtM0GGMZ1P1QOMzZXWlWAe8BLH0Kxfyu243dW9SqqexRhd/LHAS+/IOr7lGc/YO6
-         r7bOoV3QI/YmBBh7o8OS+N2lcqb6bkhF/cAs4OyxdMGmfm71AYifJ3tq8jd9rL+4Ezgp
-         aLjy3z3eMT2usa2DqxvvZUDy1LTGqJFso8FQJeIHfWfoZPkXqC9gGT2llf+XjZdYQmL2
-         /yXerBWoeLyZ0U5UN+8HAOlfGh/F88+LMXwdhsOOKCWHnp8KQ/DnXn1M39WSGYOHp+kF
-         q6EA==
-X-Gm-Message-State: AO0yUKX9mrHJr0emM2W58VpHZAt9F8oNFtPjCDkNLnB5MmCUeNIMTadV
-	Cdm+haVYnQwDIff5HuRkWDC9giv6+6UE4psFMxGmAoKTC6PizaVhIsMSO+R/iEUlGvNrAEULLpd
-	eqdJFmiCIRUFPxO2rrsPbdqi07FhU
-X-Received: by 2002:a05:600c:548c:b0:3eb:55d2:9c4c with SMTP id iv12-20020a05600c548c00b003eb55d29c4cmr1429904wmb.16.1677762297797;
-        Thu, 02 Mar 2023 05:04:57 -0800 (PST)
-X-Google-Smtp-Source: AK7set8ntCAQ9x2+2DpPrvTE+LBLIUKUzkIF485oQBWDV5kLdCC+KBPe3cqHfmP50CyWEnfsphy4fA==
-X-Received: by 2002:a05:600c:548c:b0:3eb:55d2:9c4c with SMTP id iv12-20020a05600c548c00b003eb55d29c4cmr1429886wmb.16.1677762297436;
-        Thu, 02 Mar 2023 05:04:57 -0800 (PST)
-Date: Thu, 2 Mar 2023 08:04:53 -0500
+        bh=LUpbJZsJabWUhEUX9xqo9dpaiS5/YsIeXbOx58Ii3uo=;
+        b=bhJVTdT8Aol+BD7Nb3BOV+e+kH04jQItYaa8CYrIX2fmkAIjeOQzwRO5gmpiSTaVp0
+         Sf1/ZQWzQACt/FD/GcALopa12sT7LIZAHCjv15a1i9CYOjuleXXjgKHr72zL+edFdwmX
+         8K7yeyEuTzwNnpIOnKeFGAYkpuSnlrqZ/kVldSEb2PZxwFRY1J79WBgNUrkschdAJ1sX
+         HOZ7sb+IxO8r2AJCiS6DailfpdgaqVoW+DI06TYhP/2Z1O4tVN1IZjJIoEUNJlsrsec7
+         XdoPWz+JarE06LjcSbbgF7vZktZK2b/tXpJzQ7qt5jP+vZdN4PKWXdT8JW0Vzq66Pi+h
+         Gcdg==
+X-Gm-Message-State: AO0yUKWXpOMCKjY8yZkLtWcOywbuqUIzQL3Z/V+bikQqjASY4YXbj7Ul
+	aG7Yg8ZwsRS2JaMNfT9JFfN4BSkDOIdbI5+5Zm04rDhfxBp5nBviIwLhIRyQFM2zIVi+CnNZK8N
+	xXlryCzMA3nvUNS7fo14qWZfIsBb3
+X-Received: by 2002:adf:e790:0:b0:2cb:c370:77f9 with SMTP id n16-20020adfe790000000b002cbc37077f9mr8159950wrm.9.1677762302180;
+        Thu, 02 Mar 2023 05:05:02 -0800 (PST)
+X-Google-Smtp-Source: AK7set+YzK8+0yLyPPmXQulhGYFKwX8rAMmMlKsQ/qqevWf568uKRRpbqChkuImEyC4nNu0dcnhbGQ==
+X-Received: by 2002:adf:e790:0:b0:2cb:c370:77f9 with SMTP id n16-20020adfe790000000b002cbc37077f9mr8159932wrm.9.1677762301935;
+        Thu, 02 Mar 2023 05:05:01 -0800 (PST)
+Date: Thu, 2 Mar 2023 08:04:57 -0500
 From: "Michael S. Tsirkin" <mst@redhat.com>
 To: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org,
 	jasowang@redhat.com, mst@redhat.com, cohuck@redhat.com,
@@ -57,7 +57,7 @@ Cc: virtio@lists.oasis-open.org, Zhu Lingshan <lingshan.zhu@intel.com>,
 	pasic@linux.ibm.com, Shahaf Shuler <shahafs@nvidia.com>,
 	Parav Pandit <parav@nvidia.com>,
 	Max Gurtovoy <mgurtovoy@nvidia.com>
-Message-ID: <0a784140387c2a592f7e1e7bbc5ae926ec5b45da.1677761896.git.mst@redhat.com>
+Message-ID: <2d232eba17d75c5dad2db17dc297f34a3612c33e.1677761896.git.mst@redhat.com>
 References: <cover.1677761896.git.mst@redhat.com>
 MIME-Version: 1.0
 In-Reply-To: <cover.1677761896.git.mst@redhat.com>
@@ -67,86 +67,103 @@ X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: redhat.com
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Subject: [virtio-dev] [PATCH v10 01/10] virtio: document forward compatibility guarantees
+Subject: [virtio-dev] [PATCH v10 02/10] admin: introduce device group and related concepts
 
-Feature negotiation forms the basis of forward compatibility
-guarantees of virtio but has never been properly documented.
-Do it now.
+Each device group has a type. For now, define one initial group:
 
-Suggested-by: Halil Pasic <pasic@linux.ibm.com>
+SR-IOV type - PCI SR-IOV virtual functions (VFs) of a given
+PCI SR-IOV physical function (PF). This group may contain zero or more
+virtio devices according to NumVFs configured.
+
+Each device within a group has a unique identifier. This identifier
+is the group member identifier.
+
+Note: one can argue both ways whether the new device group handling
+functionality (this and following patches) is closer
+to a new device type or a new transport type.
+
+However, I expect that we will add more features in the near future. To
+facilitate this as much as possible of the text is located in the new
+admin chapter.
+
+I did my best to minimize transport-specific text.
+
+Signed-off-by: Max Gurtovoy <mgurtovoy@nvidia.com>
 Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 ---
- content.tex | 42 ++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 42 insertions(+)
+ admin.tex   | 49 +++++++++++++++++++++++++++++++++++++++++++++++++
+ content.tex |  2 ++
+ 2 files changed, 51 insertions(+)
+ create mode 100644 admin.tex
 
+diff --git a/admin.tex b/admin.tex
+new file mode 100644
+index 0000000..3dc47be
+--- /dev/null
++++ b/admin.tex
+@@ -0,0 +1,49 @@
++\section{Device groups}\label{sec:Basic Facilities of a Virtio Device / Device groups}
++
++It is occasionally useful to have a device control a group of
++other devices. Terminology used in such cases:
++
++\begin{description}
++\item[Device group]
++        or just group, includes zero or more devices.
++\item[Owner device]
++        or owner, the device controlling the group.
++\item[Member device]
++        a device within a group. The owner device itself is not
++	a member of the group.
++\item[Member identifier]
++        each member has this identifier, unique within the group
++	and used to address it through the owner device.
++\item[Group type identifier]
++	specifies what kind of member devices there are in a
++	group, how is the member identifier is interpreted
++	and what kind of control the owner has.
++	A given owner can control a single group of a given type,
++	thus the type and the owner together identify the group.
++	\footnote{Even though some group types only support
++			specific transports, group type identifiers
++			are global rather than transport-specific -
++			we don't expect a flood of new group types.}
++\end{description}
++
++The following group types, and their identifiers, are currently specified):
++\begin{description}
++\item[SR-IOV group type (0x1)]
++This device group has a PCI Single Root I/O Virtualization
++(SR-IOV) physical function (PF) device as the owner and includes
++all its SR-IOV virtual functions (VFs) as members (see
++\hyperref[intro:PCIe]{[PCIe]}).
++
++The PF device itself is not a member of the group.
++
++The group type identifier for this group is 0x1.
++
++A member identifier for this group can have a value from 0x1 to 0xFFFF
++and equals the SR-IOV VF number of the member device (see
++\hyperref[intro:PCIe]{[PCIe]}).
++
++Both owner and member devices for this group type use the Virtio
++PCI transport (see \ref{sec:Virtio Transport Options / Virtio Over PCI Bus}).
++\end{description}
++
++
 diff --git a/content.tex b/content.tex
-index 0e474dd..0c2d917 100644
+index 0c2d917..ffe45c4 100644
 --- a/content.tex
 +++ b/content.tex
-@@ -114,21 +114,63 @@ \section{Feature Bits}\label{sec:Basic Facilities of a Virtio Device / Feature B
- In particular, new fields in the device configuration space are
- indicated by offering a new feature bit.
+@@ -491,6 +491,8 @@ \section{Exporting Objects}\label{sec:Basic Facilities of a Virtio Device / Expo
+ types. It is RECOMMENDED that devices generate version 4
+ UUIDs as specified by \hyperref[intro:rfc4122]{[RFC4122]}.
  
-+To keep the feature negotiation mechanism extensible, it is important
-+that devices \em{do not} offer any feature bits that they would not be
-+able to handle if the driver accepted them (even though drivers are not
-+supposed to accept them in the first place even if offered, according to
-+this version of the specification.) Likewise, it is important that
-+drivers \em{do not} accept feature bits they do not know how to handle
-+(even though devices are not supposed to offer them in the first place,
-+according to this version of the specification.) The preferred way for
-+handling reserved and unexpected features is that the driver ignores
-+them.
++\input{admin.tex}
 +
-+In particular, this is
-+especially important for features limited to specific transports,
-+as enabling these for more transports in future versions of the
-+specification is highly likely to require changing the behaviour
-+from drivers and devices.  Drivers and devices supporting
-+multiple transports need to carefully maintain per-transport
-+lists of allowed features.
-+
- \drivernormative{\subsection}{Feature Bits}{Basic Facilities of a Virtio Device / Feature Bits}
- The driver MUST NOT accept a feature which the device did not offer,
- and MUST NOT accept a feature which requires another feature which was
- not accepted.
+ \chapter{General Initialization And Device Operation}\label{sec:General Initialization And Device Operation}
  
-+The driver MUST validate the feature bits offered by the device.
-+The driver MUST ignore and MUST NOT accept any feature bit that is
-+\begin{itemize}
-+\item not described in this specification,
-+\item marked as reserved,
-+\item not supported for the specific transport,
-+\item not defined for the device type.
-+\end{itemize}
-+
- The driver SHOULD go into backwards compatibility mode
- if the device does not offer a feature it understands, otherwise MUST
- set the FAILED \field{device status} bit and cease initialization.
- 
-+By contrast, the driver MUST NOT fail solely because a feature
-+it does not understand has been offered by the device.
-+
- \devicenormative{\subsection}{Feature Bits}{Basic Facilities of a Virtio Device / Feature Bits}
- The device MUST NOT offer a feature which requires another feature
- which was not offered.  The device SHOULD accept any valid subset
- of features the driver accepts, otherwise it MUST fail to set the
- FEATURES_OK \field{device status} bit when the driver writes it.
- 
-+The device MUST NOT offer feature bits corresponding to features
-+it would not support if accepted by the driver (even if the
-+driver is prohibited from accepting the feature bits by the
-+specification); for the sake of clarity, this refers to feature
-+bits not described in this specification, reserved feature bits
-+and feature bits reserved or not supported for the specific
-+transport or the specific device type, but this does not preclude
-+devices written to a future version of this specification from
-+offering such feature bits should such a specification have a
-+provision for devices to support the corresponding features.
-+
- If a device has successfully negotiated a set of features
- at least once (by accepting the FEATURES_OK \field{device
- status} bit during device initialization), then it SHOULD
+ We start with an overview of device initialization, then expand on the
 -- 
 MST
 
