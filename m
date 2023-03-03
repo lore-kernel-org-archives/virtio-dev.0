@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-11411-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-11412-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8611AC678D4
-	for <virtio-dev@archiver.kernel.org>; Fri,  3 Mar 2023 00:05:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id BE414C6FA8E
+	for <virtio-dev@archiver.kernel.org>; Fri,  3 Mar 2023 03:26:49 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id DBF1E2AEFF
-	for <virtio-dev@archiver.kernel.org>; Fri,  3 Mar 2023 00:05:32 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id CA71F2CAD3
+	for <virtio-dev@archiver.kernel.org>; Fri,  3 Mar 2023 03:26:47 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id BCEE6986712
-	for <virtio-dev@archiver.kernel.org>; Fri,  3 Mar 2023 00:05:32 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id BDE0698678F
+	for <virtio-dev@archiver.kernel.org>; Fri,  3 Mar 2023 03:26:47 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id A326B9863C9; Fri,  3 Mar 2023 00:05:32 +0000 (UTC)
+	id AB5A69866D8; Fri,  3 Mar 2023 03:26:47 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-Id: <virtio-dev.lists.oasis-open.org>
 Precedence: bulk
@@ -23,218 +23,222 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 89B809866D5
-	for <virtio-dev@lists.oasis-open.org>; Fri,  3 Mar 2023 00:05:22 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 9602D9866F9;
+	Fri,  3 Mar 2023 03:26:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: bjfyI0zsMZWogbzQIF4zkw-1
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1677801919;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=h0M3hC93t0KzSYYqXr3hSBUDwm8x/mnSSJmC0BtZZEo=;
-        b=WFT/pBpUysFHVSA/somwyHVYeeslIKlmcTbSLFwRMJxUDE2vcwXbGTp/wTBwIecAdb
-         nkUUWM0HXLr2VT4xKoPz1MILULxD+F65hkFGYlJ6tsw8TaVFLuk0IODWgStq7ZZjwy9Q
-         ZE8QOuh27UX/zncL49U89PPD/7CmX7iRZ24RPgZoJLkn0iKErNa2WlUrMaV0yNhAR14E
-         PicOXB3q8CxleqwTF0Dgp3SspOnl3hEcNX5gOgkyVWPEHVstjtQYz3zMZ1jlF9E1Hsf7
-         rkgYpQrqyC+EYckI3EjJKHvsBZ/yoMfTZCVA5Nqfni5z922SJ8lvq9Lfxv4Z0RWyr98U
-         SeeQ==
-X-Gm-Message-State: AO0yUKV9UXsKsrRasrTsq8c73wg6tRW9/tGU+6KqtJFtUzyO/L4fysXO
-	i504rchJ4ovIXQle+QKE0rp7tDZy0RwtEuctiq/yfGeRdm2kNcwEcZKpBZ/OuI3gnztF+UDhBHo
-	8svVk5LTae2M8AMyGYkG+DgUTLYiJ
-X-Received: by 2002:a05:600c:2ed3:b0:3ea:e4bb:33ef with SMTP id q19-20020a05600c2ed300b003eae4bb33efmr9568150wmn.9.1677801918926;
-        Thu, 02 Mar 2023 16:05:18 -0800 (PST)
-X-Google-Smtp-Source: AK7set+7eF8ZYTW2drhU6/LDY4qpzZlIMuGhw0PjHratKQcYK33lN/O+Q4nyUt2TOPxY5SuMXZOBpw==
-X-Received: by 2002:a05:600c:2ed3:b0:3ea:e4bb:33ef with SMTP id q19-20020a05600c2ed300b003eae4bb33efmr9568126wmn.9.1677801918582;
-        Thu, 02 Mar 2023 16:05:18 -0800 (PST)
-Date: Thu, 2 Mar 2023 19:05:14 -0500
-From: "Michael S. Tsirkin" <mst@redhat.com>
-To: Stefan Hajnoczi <stefanha@redhat.com>
-Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org,
-	jasowang@redhat.com, cohuck@redhat.com, sgarzare@redhat.com,
-	nrupal.jani@intel.com, Piotr.Uminski@intel.com, hang.yuan@intel.com,
-	virtio@lists.oasis-open.org, Zhu Lingshan <lingshan.zhu@intel.com>,
-	pasic@linux.ibm.com, Shahaf Shuler <shahafs@nvidia.com>,
-	Parav Pandit <parav@nvidia.com>,
-	Max Gurtovoy <mgurtovoy@nvidia.com>
-Message-ID: <20230302190230-mutt-send-email-mst@kernel.org>
-References: <cover.1677761896.git.mst@redhat.com>
- <20c81b66f0b21b5bd646c24840ac3f8462c86acf.1677761896.git.mst@redhat.com>
- <20230302204007.GD2554028@fedora>
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R431e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046056;MF=hengqi@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0VczPgjM_1677814000;
+Message-ID: <817a8cef-21cf-a010-b21d-050c1328c8a0@linux.alibaba.com>
+Date: Fri, 3 Mar 2023 11:26:39 +0800
 MIME-Version: 1.0
-In-Reply-To: <20230302204007.GD2554028@fedora>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Subject: [virtio-dev] Re: [PATCH v10 04/10] admin: introduce virtio admin virtqueues
-
-On Thu, Mar 02, 2023 at 03:40:07PM -0500, Stefan Hajnoczi wrote:
-> On Thu, Mar 02, 2023 at 08:05:06AM -0500, Michael S. Tsirkin wrote:
-> > The admin virtqueues will be the first interface to issue admin commands.
-> > 
-> > Currently virtio specification defines control virtqueue to manipulate
-> > features and configuration of the device it operates on. However,
-> > control virtqueue commands are device type specific, which makes it very
-> > difficult to extend for device agnostic commands.
-> > 
-> > To support this requirement in a more generic way, this patch introduces
-> > a new admin virtqueue interface.
-> 
-> Is this referring to the existing virtio-net, virtio-scsi, etc control
-> virtqueues?
-> 
-> I see the admin virtqueue as the virtqueue equivalent to transport
-> feature bits. The admin queue does nothing device type-specific (net,
-> scsi, etc) and instead focusses on transport and core virtio tasks.
-> 
-> Keeping the device-specific virtqueue separate from the admin virtqueue
-> is simpler and has fewer potential problems. I don't think creating
-> common infrastructure for device-specific control virtqueues across
-> device types worthwhile or within the scope of this patch series.
-
-yes this commit log is outdated. referred to original
-proposal by Max which also planned to replace cvq.
-will update.
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.8.0
+To: Parav Pandit <parav@nvidia.com>,
+ "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
+ "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>
+Cc: "Michael S . Tsirkin" <mst@redhat.com>,
+ Alvaro Karsz <alvaro.karsz@solid-run.com>,
+ David Edmondson <david.edmondson@oracle.com>,
+ Xuan Zhuo <xuanzhuo@linux.alibaba.com>, Jason Wang <jasowang@redhat.com>
+References: <20230301141027.59500-1-hengqi@linux.alibaba.com>
+ <PH0PR12MB548192A8443A7F30A70CFE80DCB29@PH0PR12MB5481.namprd12.prod.outlook.com>
+From: Heng Qi <hengqi@linux.alibaba.com>
+In-Reply-To: <PH0PR12MB548192A8443A7F30A70CFE80DCB29@PH0PR12MB5481.namprd12.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Subject: Re: [virtio-dev] RE: [PATCH v10] virtio-net: support the virtqueue
+ coalescing moderation
 
 
-> > We also support more than one admin virtqueue, for QoS and
-> > scalability requirements.
-> > 
-> > Signed-off-by: Max Gurtovoy <mgurtovoy@nvidia.com>
-> > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> > ---
-> >  admin.tex   | 74 +++++++++++++++++++++++++++++++++++++++++++++++++++++
-> >  content.tex |  7 +++--
-> >  2 files changed, 79 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/admin.tex b/admin.tex
-> > index 7e28b77..3ffac2e 100644
-> > --- a/admin.tex
-> > +++ b/admin.tex
-> > @@ -155,3 +155,77 @@ \subsection{Group administration commands}\label{sec:Basic Facilities of a Virti
-> >  \field{command_specific_data} and \field{command_specific_result}
-> >  depends on these structures and is described separately or is
-> >  implicit in the structure description.
-> > +
-> > +\section{Administration Virtqueues}\label{sec:Basic Facilities of a Virtio Device / Administration Virtqueues}
-> > +
-> > +An administration virtqueue of an owner device is used to submit
-> > +group administration commands. An owner device can have more
-> > +than one administration virtqueue.
-> > +
-> > +If VIRTIO_F_ADMIN_VQ has been negotiated, an owner device exposes one
-> > +or more adminstration virtqueues. The number and locations of the
-> > +administration virtqueues are exposed by the owner device in a transport
-> > +specific manner.
-> > +
-> > +The driver submits commands by queueing them to an arbitrary
-> > +administration virtqueue, and they are processed by the
-> > +device in the order in which they are queued. It is the
-> > +responsibility of the driver to ensure ordering for commands
-> > +placed on different administration virtqueues, because they will
-> > +be executed with no order constraints.
-> 
-> Does "they are processed by the device in the order in which they are
-> queued" mean only 1 admin command can be running at any given time and
-> therefore they will complete in order? This would allow pipelining
-> dependent commands but prevent long-running commands because the
-> virtqueue is blocked while executing a command.
 
-we have multiple vqs for that.
+在 2023/3/2 下午10:48, Parav Pandit 写道:
+>
+>> From: Heng Qi <hengqi@linux.alibaba.com>
+>> Sent: Wednesday, March 1, 2023 9:10 AM
+>> Currently, coalescing parameters are grouped for all transmit and receive
+>> virtqueues. This patch supports setting or getting the parameters for a specified
+>> virtqueue, and a typical application of this function is netdim[1].
+>>
+>> When the traffic between virtqueues is unbalanced, for example, one
+>> virtqueue is busy and another virtqueue is idle, then it will be very useful to
+>> control coalescing parameters at the virtqueue granularity.
+>>
+> [..]
+>> +Read/Write attributes for coalescing parameters:
+>> +\begin{itemize}
+>> +\item For commands VIRTIO_NET_CTRL_NOTF_COAL_TX_SET and
+>> VIRTIO_NET_CTRL_NOTF_COAL_RX_SET, \field{max_usecs}
+>> +      and \field{max_packets} are write-only for a driver.
+>> +\item For the command VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET, \field{vqn},
+>> \field{reserved}, \field{max_usecs}
+>> +      and \field{max_packets} are write-only for a driver.
+>> +\item For the command VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET, \field{vqn}
+>> and \field{reserved} are write-only
+>> +      for a driver, and, \field{max_usecs} and \field{max_packets} are read-only
+>> for the driver.
+>> +\end{itemize}
+>> +
+> Maybe I missed the conversation while I was sick.
 
-> > +
-> > +Administration virtqueues are used as follows:
-> > +\begin{itemize}
-> > +\item The driver submits the command using the \field{struct virtio_admin_cmd}
-> > +structure using a buffer consisting of two parts: a device-readable one followed by a
-> > +device-writable one.
-> > +\item the device-readable part includes fields from \field{opcode}
-> > +through \field{command_specific_data}.
-> > +\item the device-writeable buffer includes fields from \field{status}
-> > +through \field{command_specific_result} inclusive.
-> > +\end{itemize}
-> > +
-> > +For each command, this specification describes a distinct
-> > +format structure used for \field{command_specific_data} and
-> > +\field{command_specific_result}, the length of these fields
-> > +depends on the command.
-> > +
-> > +However, to ensure forward compatibility
-> > +\begin{itemize}
-> > +\item drivers are allowed to submit buffers that are longer
-> > +than what the device expects
-> > +(that is, longer than the length of
-> > +\field{opcode} through \field{command_specific_data}).
-> > +This allows the driver to maintain
-> > +a single format structure even if some structure fields are
-> > +unused by the device.
-> > +\item drivers are allowed to submit buffers that are shorter
-> > +than what the device expects
-> > +(that is, shorter than the length of \field{status} through
-> > +\field{command_specific_result}). This allows the device to maintain
-> > +a single format structure even if some structure fields are
-> > +unused by the driver.
-> > +\end{itemize}
-> > +
-> > +The device compares the length of each part (device-readable and
-> > +device-writeable) of the buffer as submitted by driver to what it
-> > +expects and then silently truncates the structures to either the
-> > +length submitted by the driver, or the length described in this
-> > +specification, whichever is shorter.  The device silently ignores
-> > +any data falling outside the shorter of the two lengths. Any
-> > +missing fields are interpreted as set to zero.
-> > +
-> > +Similarly, the driver compares the used buffer length
-> > +of the buffer to what it expects and then silently
-> > +truncates the structure to the used buffer length.
-> > +The driver silently ignores any data falling outside
-> > +the used buffer length reported by the device.  Any missing
-> > +fields are interpreted as set to zero.
-> > +
-> > +This simplifies driver and device implementations since the
-> > +driver/device can simply maintain a single large structure (such
-> > +as a C structure) for a command and its result. As new versions
-> > +of the specification are designed, new fields can be added to the
-> > +tail of a structure, with the driver/device using the full
-> > +structure without concern for versioning.
-> > +>>>>>>> 0edc690... admin: introduce virtio admin virtqueues
-> 
-> A merge conflict line crept into the patch?
+I hope you'll be all right very soon.
 
-yes. I fixed it I thought but somehow it's still there :(
+> I remember we discussed that instead of mentioning each individual field, better to describe the whole structure being read-only or write-only.
 
-> > diff --git a/content.tex b/content.tex
-> > index ffe45c4..c8647c9 100644
-> > --- a/content.tex
-> > +++ b/content.tex
-> > @@ -99,10 +99,10 @@ \section{Feature Bits}\label{sec:Basic Facilities of a Virtio Device / Feature B
-> >  \begin{description}
-> >  \item[0 to 23, and 50 to 127] Feature bits for the specific device type
-> >  
-> > -\item[24 to 40] Feature bits reserved for extensions to the queue and
-> > +\item[24 to 41] Feature bits reserved for extensions to the queue and
-> >    feature negotiation mechanisms
-> >  
-> > -\item[41 to 49, and 128 and above] Feature bits reserved for future extensions.
-> > +\item[42 to 49, and 128 and above] Feature bits reserved for future extensions.
-> >  \end{description}
-> >  
-> >  \begin{note}
-> > @@ -7682,6 +7682,9 @@ \chapter{Reserved Feature Bits}\label{sec:Reserved Feature Bits}
-> >    that the driver can reset a queue individually.
-> >    See \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Reset}.
-> >  
-> > +  \item[VIRTIO_F_ADMIN_VQ(41)] This feature indicates that the device exposes one or more
-> > +  administration virtqueues.
-> > +
-> >  \end{description}
-> >  
-> >  \drivernormative{\section}{Reserved Feature Bits}{Reserved Feature Bits}
-> > -- 
-> > MST
-> > 
+Consider the following scenarios:
+1. A read-only field of the structure virtio_net_ctrl_coal is extended 
+for CTRL_NOTF_COAL_RX/TX_SET to get some extra information
+2. \field{reserved} of the structure virtio_net_ctrl_coal_vq is reused 
+by CTRL_NOTF_COAL_VQ_SET, and changed from write-only to read-only
+These cases still need to unpack the structure to describe it with 
+fields, and if we now use field descriptions, we can be satisfied with 
+minimal changes.
 
+>> +The class VIRTIO_NET_CTRL_NOTF_COAL has 4 commands:
+>>   \begin{enumerate}
+>> -\item VIRTIO_NET_CTRL_NOTF_COAL_TX_SET: set the \field{max_usecs} and
+>> \field{max_packets} parameters for all transmit virtqueues.
+>> -\item VIRTIO_NET_CTRL_NOTF_COAL_RX_SET: set the \field{max_usecs} and
+>> \field{max_packets} parameters for all receive virtqueues.
+>> +\item VIRTIO_NET_CTRL_NOTF_COAL_TX_SET: use the structure
+>> virtio_net_ctrl_coal to set the \field{max_usecs} and \field{max_packets}
+>> parameters for all transmit virtqueues.
+>> +\item VIRTIO_NET_CTRL_NOTF_COAL_RX_SET: use the structure
+>> virtio_net_ctrl_coal to set the \field{max_usecs} and \field{max_packets}
+>> parameters for all receive virtqueues.
+>> +\item VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET: use the structure
+>> virtio_net_ctrl_coal_vq to set the \field{max_usecs} and \field{max_packets}
+>> parameters
+>> +                                        for an enabled transmit/receive virtqueue whose
+>> number is \field{vqn}.
+>> +\item VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET: use the structure
+>> virtio_net_ctrl_coal_vq to get the \field{max_usecs} and \field{max_packets}
+>> parameters
+>> +                                        for an enabled transmit/receive virtqueue whose
+>> number is \field{vqn}.
+>>   \end{enumerate}
+>>
+>> +\begin{note}
+>> +The behavior of the device in response to these commands is best-effort:
+>> +the device may generate notifications more or less frequently than specified.
+>> +\end{note}
+>> +
+> Michael,
+> Why this should be a note? Shouldn't it be a normative line in the device requirements?
+>
+>> +If coalescing parameters are being set, the device applies the last
+>> +coalescing parameters received for a virtqueue, regardless of the
+> s/received/set to match the if condition wording and regardless sentence after.
+
+Ok. I'll modify it.
+
+>
+>> +command used to set the parameters. Use the following command sequence
+>> with 2 pairs of virtqueues as an example:
+>> +Each of the following commands sets \field{max_usecs} and
+>> \field{max_packets} parameters for virtqueues.
+>> +\begin{itemize}
+>> +\item Command1: VIRTIO_NET_CTRL_NOTF_COAL_RX_SET sets coalescing
+>> parameters for virtqueue0 and virtqueue2, and, virtqueue1 and virtqueue3
+>> retain their previous parameter values.
+>> +\item Command2: VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET with \field{vqn} =
+>> 0 sets coalescing parameters for virtqueue0, and virtqueue2 retains the values
+>> from command1.
+>> +\item Command3: VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET with \field{vqn} =
+>> 0, the device responds with coalescing parameters of virtqueue0 set by
+>> command2.
+>> +\item Command4: VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET with \field{vqn} =
+>> 1 sets coalescing parameters for virtqueue1, and virtqueue3 retains its previous
+>> values.
+>> +\item Command5: VIRTIO_NET_CTRL_NOTF_COAL_TX_SET sets coalescing
+>> parameters for virtqueue1 and virtqueue3, and overrides the values set by
+>> command4.
+>> +\item Command6: VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET with \field{vqn} =
+>> 1, the device responds with coalescing parameters of virtqueue1 set by
+>> command5.
+>> +\end{itemize}
+>> +
+>> +Upon disabling and re-enabling the transmit virtqueue, the device will
+>> +set the coalescing parameters of the virtqueue to those configured through
+>> the VIRTIO_NET_CTRL_NOTF_COAL_TX_SET command, or to 0 if the command
+>> did not set any TX coalescing parameters.
+>> +
+>> +Upon disabling and re-enabling the receive virtqueue, the device will
+>> +set the coalescing parameters of the virtqueue to those configured through
+>> the VIRTIO_NET_CTRL_NOTF_COAL_RX_SET command, or to 0 if the command
+>> did not set any RX coalescing parameters.
+>> +
+> Looks good, however you have well covered in the device normative statements.
+> So possibly it can be removed from here.
+
+I tend to keep this, as we have done in the past, we can have normative 
+descriptions and the corresponding non-normative descriptions.
+
+Thanks.
+
+>
+>>   \subparagraph{Operation}\label{sec:Device Types / Network Device / Device
+>> Operation / Control Virtqueue / Notifications Coalescing / Operation}
+>>
+>>   The device sends a used buffer notification once the notification conditions are
+>> met and if the notifications are not suppressed as explained in \ref{sec:Basic
+>> Facilities of a Virtio Device / Virtqueues / Used Buffer Notification Suppression}.
+>> @@ -1585,11 +1637,25 @@ \subsubsection{Control
+>> Virtqueue}\label{sec:Device Types / Network Device / Devi
+>>
+>>   \drivernormative{\subparagraph}{Notifications Coalescing}{Device Types /
+>> Network Device / Device Operation / Control Virtqueue / Notifications
+>> Coalescing}
+>>
+>> -If the VIRTIO_NET_F_NOTF_COAL feature has not been negotiated, the driver
+>> MUST NOT issue VIRTIO_NET_CTRL_NOTF_COAL commands.
+>> +A driver MUST negotiate the VIRTIO_NET_F_NOTF_COAL feature before
+>> issuing commands VIRTIO_NET_CTRL_NOTF_COAL_TX_SET and
+>> VIRIO_NET_CTRL_NOTF_COAL_RX_SET.
+>> +
+>> +A driver MUST negotiate the VIRTIO_NET_F_VQ_NOTF_COAL feature before
+>> issuing commands VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET and
+>> VIRIO_NET_CTRL_NOTF_COAL_VQ_GET.
+>> +
+>> +A driver MUST ignore the values of coalescing parameters received from the
+>> VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET command if a device responds with
+>> VIRTIO_NET_ERR.
+>>
+>>   \devicenormative{\subparagraph}{Notifications Coalescing}{Device Types /
+>> Network Device / Device Operation / Control Virtqueue / Notifications
+>> Coalescing}
+>>
+>> -A device SHOULD respond to the VIRTIO_NET_CTRL_NOTF_COAL commands
+>> with VIRTIO_NET_ERR if it was not able to change the parameters.
+>> +A device MUST ignore \field{reserved}.
+>> +
+>> +A device SHOULD respond to VIRTIO_NET_CTRL_NOTF_COAL_TX_SET and
+>> VIRTIO_NET_CTRL_NOTF_COAL_RX_SET commands with VIRTIO_NET_ERR if it
+>> was not able to change the parameters.
+>> +
+>> +A device MUST respond to the VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET
+>> command with VIRTIO_NET_ERR if it was not able to change the parameters.
+>> +
+>> +A device MUST respond to VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET and
+>> VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET commands with VIRTIO_NET_ERR if
+>> the given virtqueue is disabled.
+>> +
+>> +After disabling and re-enabling a transmit/receive virtqueue, the
+>> +device MUST set coalescing parameters of the virtqueue to those
+>> +configured using the
+>> VIRTIO_NET_CTRL_NOTF_COAL_TX_SET/VIRTIO_NET_CTRL_NOTF_COAL_RX_S
+>> ET command, or, if the command did not configure TX/RX coalescing
+>> parameters, to 0.
+>>
+>>   A device SHOULD NOT send used buffer notifications to the driver if the
+>> notifications are suppressed, even if the notification conditions are met.
+>>
+>> --
+>> 2.19.1.6.gb485710b
+> Rest looks good to me.
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
 
 ---------------------------------------------------------------------
