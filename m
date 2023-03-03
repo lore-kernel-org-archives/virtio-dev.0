@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-11417-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-11418-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9FBC0C678D4
-	for <virtio-dev@archiver.kernel.org>; Fri,  3 Mar 2023 13:13:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id CA04AC678D4
+	for <virtio-dev@archiver.kernel.org>; Fri,  3 Mar 2023 13:17:11 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id AFC231EAF0
-	for <virtio-dev@archiver.kernel.org>; Fri,  3 Mar 2023 13:13:43 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id F3F7960088
+	for <virtio-dev@archiver.kernel.org>; Fri,  3 Mar 2023 13:17:10 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 8BC6C9867AC
-	for <virtio-dev@archiver.kernel.org>; Fri,  3 Mar 2023 13:13:43 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id D0CCA9867AA
+	for <virtio-dev@archiver.kernel.org>; Fri,  3 Mar 2023 13:17:10 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 713929867A1; Fri,  3 Mar 2023 13:13:43 +0000 (UTC)
+	id BE6119867A1; Fri,  3 Mar 2023 13:17:10 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-Id: <virtio-dev.lists.oasis-open.org>
 Precedence: bulk
@@ -23,263 +23,124 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 617F19867A2
-	for <virtio-dev@lists.oasis-open.org>; Fri,  3 Mar 2023 13:13:43 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id ABC819867A3
+	for <virtio-dev@lists.oasis-open.org>; Fri,  3 Mar 2023 13:17:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: BLmh7KwoMb2QStY8-ZZPzQ-1
-Date: Fri, 3 Mar 2023 08:13:37 -0500
+X-MC-Unique: ydj0-cOIMSmKKrVSP1lFAw-1
+Date: Fri, 3 Mar 2023 08:17:03 -0500
 From: Stefan Hajnoczi <stefanha@redhat.com>
 To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org,
-	jasowang@redhat.com, cohuck@redhat.com, sgarzare@redhat.com,
-	nrupal.jani@intel.com, Piotr.Uminski@intel.com, hang.yuan@intel.com,
-	virtio@lists.oasis-open.org, Zhu Lingshan <lingshan.zhu@intel.com>,
-	pasic@linux.ibm.com, Shahaf Shuler <shahafs@nvidia.com>,
-	Parav Pandit <parav@nvidia.com>,
+Cc: Parav Pandit <parav@nvidia.com>,
+	"virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
+	"virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
+	"jasowang@redhat.com" <jasowang@redhat.com>,
+	"cohuck@redhat.com" <cohuck@redhat.com>,
+	"sgarzare@redhat.com" <sgarzare@redhat.com>,
+	"nrupal.jani@intel.com" <nrupal.jani@intel.com>,
+	"Piotr.Uminski@intel.com" <Piotr.Uminski@intel.com>,
+	"hang.yuan@intel.com" <hang.yuan@intel.com>,
+	"virtio@lists.oasis-open.org" <virtio@lists.oasis-open.org>,
+	Zhu Lingshan <lingshan.zhu@intel.com>,
+	"pasic@linux.ibm.com" <pasic@linux.ibm.com>,
+	Shahaf Shuler <shahafs@nvidia.com>,
 	Max Gurtovoy <mgurtovoy@nvidia.com>
-Message-ID: <20230303131337.GA2866370@fedora>
+Message-ID: <20230303131703.GB2866370@fedora>
 References: <cover.1677761896.git.mst@redhat.com>
  <910b3607a5f255134d30b3e1233e564f564eafb8.1677761896.git.mst@redhat.com>
- <20230302201011.GB2554028@fedora>
- <20230302185214-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB548116853CAC23DF9CA7345EDCB29@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20230302201912.GC2554028@fedora>
+ <20230302185803-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="hkbgpoq/+xtB5seq"
+	protocol="application/pgp-signature"; boundary="fmZlZDN9JY/kcEBO"
 Content-Disposition: inline
-In-Reply-To: <20230302185214-mutt-send-email-mst@kernel.org>
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.6
+In-Reply-To: <20230302185803-mutt-send-email-mst@kernel.org>
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.9
 Subject: [virtio-dev] Re: [PATCH v10 03/10] admin: introduce group administration commands
 
---hkbgpoq/+xtB5seq
+--fmZlZDN9JY/kcEBO
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Mar 02, 2023 at 06:57:24PM -0500, Michael S. Tsirkin wrote:
-> On Thu, Mar 02, 2023 at 03:10:11PM -0500, Stefan Hajnoczi wrote:
-> > On Thu, Mar 02, 2023 at 08:05:02AM -0500, Michael S. Tsirkin wrote:
-> > > This introduces a general structure for group administration commands,
-> > > used to control device groups through their owner.
+On Thu, Mar 02, 2023 at 07:01:56PM -0500, Michael S. Tsirkin wrote:
+> On Thu, Mar 02, 2023 at 03:19:12PM -0500, Stefan Hajnoczi wrote:
+> > On Thu, Mar 02, 2023 at 06:40:29PM +0000, Parav Pandit wrote:
 > > >=20
-> > > Following patches will introduce specific commands and an interface f=
-or
-> > > submitting these commands to the owner.
+> > > > From: Michael S. Tsirkin <mst@redhat.com>
+> > > > Sent: Thursday, March 2, 2023 8:05 AM
 > > >=20
-> > > Signed-off-by: Max Gurtovoy <mgurtovoy@nvidia.com>
-> > > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> > > ---
-> > >  admin.tex        | 108 +++++++++++++++++++++++++++++++++++++++++++++=
-++
-> > >  introduction.tex |   3 ++
-> > >  2 files changed, 111 insertions(+)
+> > > > +When \field{status} is VIRTIO_ADMIN_STATUS_OK, \field{status_qiali=
+fier}
+> > > > +is reserved and set to zero by the device.
+> > > > +
+> > > s/status_qialifier/status_qualifier
+> > > Missed from v10 of Feb.
 > > >=20
-> > > diff --git a/admin.tex b/admin.tex
-> > > index 3dc47be..7e28b77 100644
-> > > --- a/admin.tex
-> > > +++ b/admin.tex
-> > > @@ -46,4 +46,112 @@ \section{Device groups}\label{sec:Basic Facilitie=
-s of a Virtio Device / Device g
-> > >  PCI transport (see \ref{sec:Virtio Transport Options / Virtio Over P=
-CI Bus}).
-> > >  \end{description}
-> > > =20
-> > > +\subsection{Group administration commands}\label{sec:Basic Facilitie=
-s of a Virtio Device / Device groups / Group administration commands}
-> > > =20
-> > > +The driver sends group administration commands to the owner device of
+> > > > +When \field{status} is VIRTIO_ADMIN_STATUS_EINVAL, the following t=
+able
+> > > > +describes possible \field{status_qialifier} values:
+> > > s/status_qialifier/status_qualifier
+> > >=20
+> > > Can you please add other useful error codes in addition to the EINVAL?
+> > > Few that we are needed EAGAIN, ENOMEM, EBUSY, ENODEV.
 > >=20
-> > I notice that the terminology is simply "the driver". "Owner driver"
-> > and "group member driver" might be clearer because there will be two
-> > (possibly different) drivers involved.
+> > Please define a unique constant for each error condition that can occur
+> > instead of sharing catch-all errno constants between multiple error
+> > conditions. If a driver wants to squash them together into an errno,
+> > that's fine, but I think doing this at the hardware interface level is
+> > just propagating the mistakes of errnos.
+> >=20
+> > Only status_qualifier is needed and the vague status field can be
+> > dropped. It's not clear to me why adding EAGAIN, ENOMEM, EBUSY, and
+> > ENODEV is useful. They have no meaning to the driver, only the
+> > status_qualifier really indicates what is going on.
 >=20
-> Hmm I don't really want to repeat owner everywhere.
-> I will clarify that in this section simple "driver" and "device" are
-> owner, "member device" and "member driver" is always called explicitly.
-
-Sounds good.
-
-> > > +a group to control member devices of the group.
-> > > +This mechanism can
-> > > +be used, for example, to configure a member device before it is
-> > > +initialized by its driver.
-> > > +\footnote{The term "administration" is intended to be interpreted
-> > > +widely to include any kind of control. See specific commands
-> > > +for detail.}
-> > > +
-> > > +All the group administration commands are of the following form:
-> > > +
-> > > +\begin{lstlisting}
-> > > +struct virtio_admin_cmd {
-> > > +        /* Device-readable part */
-> > > +        le16 opcode;
-> > > +        /*
-> > > +         * 1 - SR-IOV
-> > > +         * 2 - 65535 reserved
-> > > +         */
-> > > +        le16 group_type;
-> > > +        /* unused, reserved for future extensions */
-> > > +        u8 reserved1[12];
-> > > +        le64 group_member_id;
-> > > +        u8 command_specific_data[];
-> > > +
-> > > +        /* Device-writable part */
-> > > +        le16 status;
-> > > +        le16 status_qualifier;
-> > > +        /* unused, reserved for future extensions */
-> > > +        u8 reserved2[4];
-> > > +        u8 command_specific_result[];
-> > > +};
-> > > +\end{lstlisting}
-> > > +
-> > > +For all commands, \field{opcode}, \field{group_type} and if
-> > > +necessary \field{group_member_id} and \field{command_specific_data} =
-are
-> > > +set by the driver, and the owner device sets \field{status} and if
-> > > +needed \field{status_qualifier} and
-> > > +\field{command_specific_result}.
-> > > +
-> > > +Generally, any unused device-readable fields are set to zero by the =
-driver
-> > > +and ignored by the device.  Any unused device-writeable fields are s=
-et to zero
-> > > +by the device and ignored by the driver.
-> > > +
-> > > +\field{opcode} specifies the command. The valid
-> > > +values for \field{opcode} can be found in the following table:
-> > > +
-> > > +\begin{tabular}{|l|l|}
-> > > +\hline
-> > > +opcode & Name & Command Description \\
-> > > +\hline \hline
-> > > +0x0000 - 0x7FFF & - &  Group administration commands    \\
-> > > +\hline
-> > > +0x8000 - 0xFFFF & - & Reserved    \\
-> > > +\hline
-> > > +\end{tabular}
-> >=20
-> > I thought all commands are "group administration commands" but this
-> > table makes it look like they are just a subset (0x0000 - 0x7FFF) of
-> > group administration commands, which is a paradox.
+> At a high level at the moment we have only two cases:
+> - ok
+> - invalid input supplied by driver
 >=20
-> Well the rest are reserved, maybe we will have more command types who
-> knows. No?
-
-I see. Does that mean the reserved commands don't need to be in the same
-format as struct virtio_admin_cmd?
-
-The entire section is called "Group administration commands" but I get
-the impression it's talking both about admin virtqueue commands in
-general and specifically about group administration commands.
-
-Is it possible to structure this as follows:
-
-  Admin Commands
-    ...common stuff...
-    Group Administration Commands (0x0000-0x7fff)
-      ...specific to group administration commands...
-    Reserved (0x8000-0xffff)
-
-> > > +
-> > > +The \field{group_type} specifies the group type identifier.
-> > > +The \field{group_member_id} specifies the member identifier within t=
-he group.
-> > > +See section \ref{sec:Introduction / Terminology / Device group}
-> > > +for the definition of the group type identifier and group member
-> > > +identifier.
-> > > +
-> > > +The following table describes possible \field{status} values;
-> > > +to simplify common implementations, they are intentionally
-> > > +matching common \hyperref[intro:errno]{Linux error names and numbers=
-}:
-> > > +
-> > > +\begin{tabular}{|l|l|l|}
-> > > +\hline
-> > > +Status (decimal) & Name & Description \\
-> > > +\hline \hline
-> > > +00   & VIRTIO_ADMIN_STATUS_OK    & successful completion  \\
-> > > +\hline
-> > > +22   & VIRTIO_ADMIN_STATUS_EINVAL    & invalid command \\
-> > > +\hline
-> > > +other   & -    & group administration command error  \\
-> > > +\hline
-> > > +\end{tabular}
-> > > +
-> > > +When \field{status} is VIRTIO_ADMIN_STATUS_OK, \field{status_qialifi=
-er}
-> >=20
-> > s/qialifier/qualifier/
-> >=20
-> > > +is reserved and set to zero by the device.
-> > > +
-> > > +When \field{status} is VIRTIO_ADMIN_STATUS_EINVAL,
-> > > +the following table describes possible \field{status_qialifier} valu=
-es:
-> >=20
-> > s/qialifier/qualifier/
-> >=20
-> > > +\begin{tabular}{|l|l|l|}
-> > > +\hline
-> > > +Status & Name & Description \\
-> > > +\hline \hline
-> > > +0x00   & VIRTIO_ADMIN_STATUS_Q_INVALID_COMMAND   & command error: no=
- additional information  \\
-> > > +\hline
-> > > +0x01   & VIRTIO_ADMIN_STATUS_Q_INVALID_OPCODE    & unsupported or in=
-valid \field{opcode}  \\
-> > > +\hline
-> > > +0x02   & VIRTIO_ADMIN_STATUS_Q_INVALID_FIELD    & unsupported or inv=
-alid field within \field{command_specific_data}  \\
-> > > +\hline
-> > > +0x03   & VIRTIO_ADMIN_STATUS_Q_INVALID_GROUP    & unsupported or inv=
-alid \field{group_type} \\
-> > > +\hline
-> > > +0x04   & VIRTIO_ADMIN_STATUS_Q_INVALID_MEMBER    & unsupported or in=
-valid \field{group_member_id} \\
-> > > +\hline
-> > > +0x05-0xFFFF   & -    & reserved for future use \\
-> > > +\hline
-> > > +\end{tabular}
-> > > +
-> > > +Each command uses a different \field{command_specific_data} and
-> > > +\field{command_specific_result} structures and the length of
-> > > +\field{command_specific_data} and \field{command_specific_result}
-> > > +depends on these structures and is described separately or is
-> > > +implicit in the structure description.
-> >=20
-> > On more thing:
-> >=20
-> > Does the owner device see commands in order but may complete them in any
-> > order?
-> >=20
-> > I think this information might be useful just to make it clear that
-> > driver authors shouldn't make assumptions about ordering and completion
-> > order, e.g. pipelining a bunch of dependent commands doesn't work
-> > because the first command is not necessarily completed before the second
-> > command is started.
+> maybe we will have more reasons for a failure - remains to
+> be seen.
 >=20
-> I think this is discussed when we discuss sending commands through vq.
-> in this section it's just about commands generally whatever the way
-> to send them to device. no?
+>=20
+>=20
+>=20
+>=20
+> >=20
+> > I'm sure you guys have discussed this previously, but please provide
+> > rationale in the spec because it looks weird to someone with fresh eyes.
+> >=20
+> > Stefan
+>=20
+> Really most drivers just want to propagate errno to userspace.
+> All the detailed reporting is for sure well intentional but
+> in the end it is at best printed into log - end to end
+> people just end up with a switch statement
+> converting these to errno codes.
+> So we are passing them from device and this way there will be
+> some uniformity.
 
-Okay. I'm reading this patch series linearly and the question popped
-into my mind here. Glad it's already covered elsewhere.
+Please clarify the rationale in the spec. I don't agree with it, as
+explained in my earlier email, but as long as its documented, people can
+try to follow it.
 
 Stefan
 
---hkbgpoq/+xtB5seq
+--fmZlZDN9JY/kcEBO
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmQB8oEACgkQnKSrs4Gr
-c8iEJggAl4TQD1YU+Lx9Ua0jJoS80G6DBZ7tJhvQ/tMXpeva1685SUe3lQoUPAmD
-PEZLEGw8tc3pqkwRwQMX7D6u/serw4l8/Ve766pJob05pJ8JmSsqo2TmWCe45140
-MRj4k9F0cOHujjIrEOIPR+bdv6OZV+DK9R9o21lc6DXuwUZmVSrQH8ztxY0mCKqw
-f/AKLopmki/MSz4k9EDD8UshIdfo+A3e9yVgvup+yvySC1ViQrkj81N3mM33ZFS+
-UNfWZEhEQDKP5oHm+lQyrd0bR1WKMIDDi27LPKGxE+HDVuCHdGLWI39V6jz2qulK
-9mMVLRFifhCImCP1vCldKAlEqkcBBg==
-=FaQR
+iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmQB808ACgkQnKSrs4Gr
+c8j1uwf+IVWO7qI/G/FYps5trebuCM9OhDQo5CgTJnv2cu0eR93fYANSku68FQb0
+3XOKyV2bv3ce9WhU5vYt1rXrA1oDscuyzbeKJm2m9c2YtzbGYGL/4c8uzp2X0VSh
+kxUqpuI59Y+e1Zj2QM0FWLPnm+6VycXfK1fMtC7mvBjwtgWxDxf1zALiTtuQbLqD
+nKo1Jy7O3NINB3eG1YHkW7jWI4HBwtGfwtWGNrxz7ECvcW8fJRR90lDMtwEkIV4y
+B6uW8rUHTS+JV3if1FiBPEI8SBqjN5VB5vA98Hr1pfvYiBBHrq7EwtuJ5Ynp2ZXt
+on4OWcSww0l9vTE/Wg9ebHaXofWHlQ==
+=AL+F
 -----END PGP SIGNATURE-----
 
---hkbgpoq/+xtB5seq--
+--fmZlZDN9JY/kcEBO--
 
