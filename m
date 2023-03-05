@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-11428-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-11429-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 451F3C6FA8E
-	for <virtio-dev@archiver.kernel.org>; Sun,  5 Mar 2023 09:39:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id AA265C61DA4
+	for <virtio-dev@archiver.kernel.org>; Sun,  5 Mar 2023 09:52:03 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id A9BBE71C8F
-	for <virtio-dev@archiver.kernel.org>; Sun,  5 Mar 2023 09:39:14 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id BB2227C386
+	for <virtio-dev@archiver.kernel.org>; Sun,  5 Mar 2023 09:52:02 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 95859986436
-	for <virtio-dev@archiver.kernel.org>; Sun,  5 Mar 2023 09:39:14 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 9ACBB986467
+	for <virtio-dev@archiver.kernel.org>; Sun,  5 Mar 2023 09:52:02 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 877499863D3; Sun,  5 Mar 2023 09:39:14 +0000 (UTC)
+	id 7B19C98638A; Sun,  5 Mar 2023 09:52:02 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-Id: <virtio-dev.lists.oasis-open.org>
 Precedence: bulk
@@ -23,68 +23,107 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 74F3A986448
-	for <virtio-dev@lists.oasis-open.org>; Sun,  5 Mar 2023 09:39:10 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 6661698638B
+	for <virtio-dev@lists.oasis-open.org>; Sun,  5 Mar 2023 09:52:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: Lge_bNEGOrOxaym2jf0wqA-1
+X-MC-Unique: dVUq9JVJMS-3N6RUaNN6_Q-1
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678009144;
+        d=1e100.net; s=20210112; t=1678009918;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=N048sCiPa8dCvUtJZqJRm0pckfHsh/MfhrWWCO1+AcQ=;
-        b=3BwJqVBFKELtZXHoIJ8t/7r8IwuVDCEVM1Biob9sOh8LiKJJKtG/K0H7fcN87yYS+Z
-         6+Yl8j7YUNdVYgjJHktidcprvcoFkDTYs0f6rbip/jZMwlBr03FU99SFhIo6QUTFJyvC
-         KnR3tMFeyijrLMeSxndYph6/2t/tCyfZm64cs5iti9bDurwwpkXS68Ex+0XXdQ7pFLf1
-         5rBLt2qi3NXF76EU7kw2KALd6Wkx4rweH0ybjAcUOCJNzs94JR7KBPVTuwD0JW/qbTef
-         Cww1XsvL6/CQuiaNltcIFsc8TB8m/XIDyxd8vs6cvUhcWVMfFa0tzyxkS244ihLjUek4
-         hi/Q==
-X-Gm-Message-State: AO0yUKUpQq6YS5mdUus1Tp+S6g1GZqUM8a7byzwgfhmRLafkLQi29nWw
-	NNHDFd/K0PwEAE0pkWTM32VIEQOYnD3oSqfP8T9M1sg8GR1fqKUTboMx9Q54om3A7GAwkNsX2As
-	I3XfjsNvnnuPiRD/4z5zPBTzy8f6s
-X-Received: by 2002:a5d:52c4:0:b0:2c7:390e:163c with SMTP id r4-20020a5d52c4000000b002c7390e163cmr5188936wrv.47.1678009144502;
-        Sun, 05 Mar 2023 01:39:04 -0800 (PST)
-X-Google-Smtp-Source: AK7set9sZcDf0HY83s9267Uclwt4GG0Hq4RlXJVeKy6Gh2F4hEyS8V/MV/CgT++2Vb4DDivTr3TLiA==
-X-Received: by 2002:a5d:52c4:0:b0:2c7:390e:163c with SMTP id r4-20020a5d52c4000000b002c7390e163cmr5188927wrv.47.1678009144251;
-        Sun, 05 Mar 2023 01:39:04 -0800 (PST)
-Date: Sun, 5 Mar 2023 04:38:59 -0500
+        bh=wG6/1zGawaKNDlMomaUl0ZeJ4VFpPMtvBYG+dbvPJzw=;
+        b=rxZPK1dtgtClACuNt1lJjzXrfRtVbJw6S2DLYppDXPwIwQMaAyOms4u60nt9WPIZb7
+         MlNEBCpyvgl/pWZW7W1BkOobXkJcQurP2scATF7731xGjbNLfqaCkCoJBhmeN1ULmrCW
+         OtAIPfoLAeEzEKFzZBR3kbW6JatiRUdlvUVn7UrOVPNVXbdcnL2P9DHNjhPn/bk3F3nF
+         A+UqrT7PkM056kiKOV6Y3J80XGSrxVxQSmldjB2DPImt9zT+lI6V7l20aUCVP0VCLluJ
+         oBjDBjrEOv//GJoOSC4NmI1TF84M9mMFJRAHkurMqkz8SQSelF3tpSW0s+OFQ+EKK20I
+         TDJQ==
+X-Gm-Message-State: AO0yUKXtlp+qVywDs6BJn1JsBWMeoZM1sOAb2Aq70VvrxHrAIbTJtpc+
+	2kgaPQTjYSV7LAhzXEDKhB14DDrCFji2OcwnHCWu4Hr3R/jo1tebXidzSSqyKoLYoogp7Y2bbaU
+	cbxAGDsruBXv3TJrMYSwxByTF5eWN
+X-Received: by 2002:adf:fc4f:0:b0:2ce:5056:7220 with SMTP id e15-20020adffc4f000000b002ce50567220mr2297928wrs.51.1678009918744;
+        Sun, 05 Mar 2023 01:51:58 -0800 (PST)
+X-Google-Smtp-Source: AK7set98FUfjhupZTHnFsw4q1KjqwcPXxN3Huadmrz6YldsWgMs5k1rQcfx1U+q7uuOvlVOPbMhCKg==
+X-Received: by 2002:adf:fc4f:0:b0:2ce:5056:7220 with SMTP id e15-20020adffc4f000000b002ce50567220mr2297918wrs.51.1678009918419;
+        Sun, 05 Mar 2023 01:51:58 -0800 (PST)
+Date: Sun, 5 Mar 2023 04:51:54 -0500
 From: "Michael S. Tsirkin" <mst@redhat.com>
-To: Stefan Hajnoczi <stefanha@redhat.com>
-Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org,
-	jasowang@redhat.com, cohuck@redhat.com, sgarzare@redhat.com,
-	nrupal.jani@intel.com, Piotr.Uminski@intel.com, hang.yuan@intel.com,
-	virtio@lists.oasis-open.org, Zhu Lingshan <lingshan.zhu@intel.com>,
-	pasic@linux.ibm.com, Shahaf Shuler <shahafs@nvidia.com>,
-	Parav Pandit <parav@nvidia.com>,
-	Max Gurtovoy <mgurtovoy@nvidia.com>
-Message-ID: <20230305043419-mutt-send-email-mst@kernel.org>
-References: <cover.1677761896.git.mst@redhat.com>
- <20c81b66f0b21b5bd646c24840ac3f8462c86acf.1677761896.git.mst@redhat.com>
- <20230302204007.GD2554028@fedora>
- <20230302190230-mutt-send-email-mst@kernel.org>
- <20230303132840.GC2866370@fedora>
- <20230303083213-mutt-send-email-mst@kernel.org>
- <20230303202133.GA2901137@fedora>
+To: Halil Pasic <pasic@linux.ibm.com>
+Cc: Cornelia Huck <cohuck@redhat.com>, Parav Pandit <parav@nvidia.com>,
+	virtio-dev@lists.oasis-open.org,
+	virtio-comment@lists.oasis-open.org, shahafs@nvidia.com
+Message-ID: <20230305043948-mutt-send-email-mst@kernel.org>
+References: <20230223054624.168042-1-parav@nvidia.com>
+ <87a60z5wes.fsf@redhat.com>
+ <20230301182207.23f995cd.pasic@linux.ibm.com>
+ <20230301123044-mutt-send-email-mst@kernel.org>
+ <87a60vmbub.fsf@redhat.com>
+ <20230303023949-mutt-send-email-mst@kernel.org>
+ <20230303224937.62fe64b9.pasic@linux.ibm.com>
 MIME-Version: 1.0
-In-Reply-To: <20230303202133.GA2901137@fedora>
+In-Reply-To: <20230303224937.62fe64b9.pasic@linux.ibm.com>
 X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: redhat.com
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Subject: [virtio-dev] Re: [virtio] Re: [PATCH v10 04/10] admin: introduce virtio admin
- virtqueues
+Subject: Re: [virtio-dev] Re: [virtio-comment] Re: [PATCH 0/3] Rename queue
+ index to queue number
 
-On Fri, Mar 03, 2023 at 03:21:33PM -0500, Stefan Hajnoczi wrote:
-> What happens if a command takes 1 second to complete, is the device
-> allowed to process the next command from the virtqueue during this time,
-> possibly completing it before the first command?
+On Fri, Mar 03, 2023 at 10:49:37PM +0100, Halil Pasic wrote:
+> On Fri, 3 Mar 2023 02:42:49 -0500
+> "Michael S. Tsirkin" <mst@redhat.com> wrote:
 > 
-> This requires additional clarification in the spec because "they are
-> processed by the device in the order in which they are queued" does not
-> explain whether commands block the virtqueue (in order completion) or
-> not (out of order completion).
+> > > >
+> > > > And then for extra fun, in the RSS section we say "0 based index" where we
+> > > > seem to mean "this number in the queue name, but subtract 1 in your head".
+> > > > Why subtract 1? I guess we wanted these 5 year olds to practice math ...  
+> > > 
+> > > Heh :)
+> > > 
+> > > Yeah, that looks like a mess... I don't think we should use a weird
+> > > substraction scheme. I haven't looked at the RSS stuff much, would it be
+> > > hard to fix it up?  
+> > 
+> > We can't change the ABI, I guess we can say that it's bits 1 to 15
+> > of the VQ number or equivalently VQ number divided
+> > by 2 (it's always an even number for any receiveq).
+> 
+> I don't think it would require an ABI change. We could just change the
+> queue names. AFAIK those are not part of the ABI. I don't think it would
+> be hard.
 
-Oh I begin to see. Hmm how does e.g. virtio scsi handle this?
+Well at the moment this is the mapping:
+
+RSS index -  queue name - virtio pci vqn
+
+0		receiveq1	0
+1		receiveq2	2
+2		receiveq3	4
+3		receiveq4	6
+
+
+
+
+> BTW what speaks for "VQ number" over "VQ index"?
+> 
+> Regards,
+> Halil
+
+We use "vq index" when referring to queue_select.
+
+But, we use "vq number" when talking about notifications.
+
+For fun MMIO calls the queue size field QueueNum
+
+
+So both number and index are taken by things other than the number,
+changing the meaning can confuse existing users.  Ideally we'd use some
+other new term to avoid confusion but I could not come up with one so
+far.  I feel there's less of a chance of a confusion between VQ size and
+its number. But it's not a strong prefrence, RSS is relatively young
+and it's the only incompatible user of index so far.
+
 
 -- 
 MST
