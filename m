@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-11468-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-11469-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id D3C67C678D5
-	for <virtio-dev@archiver.kernel.org>; Tue,  7 Mar 2023 07:40:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 04701C678D4
+	for <virtio-dev@archiver.kernel.org>; Tue,  7 Mar 2023 07:56:23 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 112BC2A82D
-	for <virtio-dev@archiver.kernel.org>; Tue,  7 Mar 2023 07:40:17 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 609C533585
+	for <virtio-dev@archiver.kernel.org>; Tue,  7 Mar 2023 07:56:22 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 0B9399866EB
-	for <virtio-dev@archiver.kernel.org>; Tue,  7 Mar 2023 07:40:17 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 58B559866DC
+	for <virtio-dev@archiver.kernel.org>; Tue,  7 Mar 2023 07:56:22 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 012B29866CC; Tue,  7 Mar 2023 07:40:17 +0000 (UTC)
+	id 4D6CC9866C9; Tue,  7 Mar 2023 07:56:22 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,126 +24,283 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id E24139866C2;
-	Tue,  7 Mar 2023 07:40:11 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 39DE09866C2;
+	Tue,  7 Mar 2023 07:56:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=k68+LWTgBnD5czwlxvtU4X2FqOxgqnG0G9dXHFlWifhPyO6iDwBMMOstua89SHmwxX3k8/cs4F1vOwyf0C/mVTx+2xH2efmX09SI/CR1nOW2GldeP+8x92ICgejC0TgoFXlpNzt2zSuhOolIni3R9tmFNslz5p/xXggJ+/hRR7FlQfG7gO1C0r4RqXDlOkAOn/2beCdH/mhvh/be0ZgctvEw0Gt29EsJuAIO+BSp2eA6BzduAtDD36dmo5devI1+fVAP3OeYYD8S1FyMml8gQBa5Y4/po8XEvkA54KI9fyPTKKzZh7wXhPLx+8fo/4izuLxAwzmhf29Stq/kwpjagg==
+ b=Nwzo9NCLEYG3nng9MExTkEqs4A0lW9bidKYVZO3Al63++7CEYrlT/GxGheoa8jrvkc5T3AlLRUCN8sxg2gVROApzZ0rhx5ts5L9b93OwErCGPD/y0BgoIiGrv5GB1ZZpP89gUMRwiocQ8/d4MJdKw27Z8/XfptNpZyJtasAwh4rIRauhh+8VrJnXTLKiXu9mOAtYXJ3tNL9s05lpaTjyx8FaKple5Oyl7riqMWO2bjvkhBFVVteRs4x3h7k6VCofiOqMlHahBuShiFi05PXCRijUa/mqmBh9IzjQdXUVlU6RCZXm96QJfe7lPo3Y2oc1ynSFsX42RyC8feY5Jg7GDA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=5EbjbBt/1cingbFTuWKJzPUziBtoKulzzouLXFbazZw=;
- b=TB4yl/vJahtNcuYcY5jCu0kZqmu2YM2BiGqIj45YYdNsW0kLQqMbxFxUdn/pXthw5DaauQbYjHXgjARNcHXyzXlkpgnkCVpfwEj0wKfQLpToWgiFz/invSDoW6sY+Vcq5KDH8mnPwxjkV/MIdb+YpeO4ZJBeh9XucK6M6elkvVqCwWIf2kzGCqsKiPAUakQ4Kr6DQW9+d6c9aikwmY6s9khbBsp7Ku1SSigUFX7S74ln+rTp/pcgVdzTLnSrIDaGVY2hbkdlrgTMqgu4h3884/J9jRao2v+e/L2Sz6ZsCQC+H3HVp7syt6434nXmtKwlv3Folpo7Inw0I+qf3SoZIw==
+ bh=ukdw/L4qumyl7d+D8IcxoXlgqPaXrLylrfE8U6JT+/8=;
+ b=gYJXCXQrVPvelyiMkm6aT/jXE9D0XxKqa3gpB/ww+GIk0q2YjY5aOTc3LXuLtDPSKJGV46Bue6i1kvTtmIfFVXedtOrZ0STKvcbPGuuJF9Zgss1PCfU9bQss0WSRbbLShbNfogVuNhJQJwg22Kbmdo6nJFcu6KrOAo+VbQ5DZYGLBxXq924O38H8McFJvnaPaca/86FB6sA6Vwfb9iZwm/Q3ZRUcBq9v+P/x0G32vAMHu169z9hzmXpYLUQ+i3uYnxSPG22lYJ5JQfGzXMwCwRWyVPatI/m5EdMsRrVaCH969EG6mugWTM0FoLOztHPtzsZrTgrcPuD+QEhly4+iRw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
-Date: Tue, 7 Mar 2023 08:40:04 +0100
+Date: Tue, 7 Mar 2023 08:56:08 +0100
 From: Jiri Pirko <jiri@nvidia.com>
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Parav Pandit <parav@nvidia.com>,
-	"virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
-	"virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
-	"jasowang@redhat.com" <jasowang@redhat.com>,
-	"cohuck@redhat.com" <cohuck@redhat.com>,
-	"sgarzare@redhat.com" <sgarzare@redhat.com>,
-	"stefanha@redhat.com" <stefanha@redhat.com>,
-	"nrupal.jani@intel.com" <nrupal.jani@intel.com>,
-	"Piotr.Uminski@intel.com" <Piotr.Uminski@intel.com>,
-	"hang.yuan@intel.com" <hang.yuan@intel.com>,
-	"virtio@lists.oasis-open.org" <virtio@lists.oasis-open.org>,
-	Zhu Lingshan <lingshan.zhu@intel.com>,
-	"pasic@linux.ibm.com" <pasic@linux.ibm.com>,
-	Shahaf Shuler <shahafs@nvidia.com>,
-	Max Gurtovoy <mgurtovoy@nvidia.com>
-Message-ID: <ZAbqVJKPO4q6u9DS@nanopsycho>
+To: Max Gurtovoy <mgurtovoy@nvidia.com>
+Cc: "Michael S. Tsirkin" <mst@redhat.com>,
+	Stefan Hajnoczi <stefanha@redhat.com>,
+	virtio-comment@lists.oasis-open.org,
+	virtio-dev@lists.oasis-open.org, jasowang@redhat.com,
+	cohuck@redhat.com, sgarzare@redhat.com, nrupal.jani@intel.com,
+	Piotr.Uminski@intel.com, hang.yuan@intel.com,
+	virtio@lists.oasis-open.org, Zhu Lingshan <lingshan.zhu@intel.com>,
+	pasic@linux.ibm.com, Shahaf Shuler <shahafs@nvidia.com>,
+	Parav Pandit <parav@nvidia.com>
+Message-ID: <ZAbuGE0E445bOB+R@nanopsycho>
 References: <cover.1677761896.git.mst@redhat.com>
- <dd9c34ed74ee296228562f6946d4ca3f2fbee1e1.1677761896.git.mst@redhat.com>
- <PH0PR12MB5481595368C8F0C0E16B681BDCB29@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20230303032434-mutt-send-email-mst@kernel.org>
- <ZAXB44F3MS9CxIiK@nanopsycho>
- <20230306134451-mutt-send-email-mst@kernel.org>
+ <20c81b66f0b21b5bd646c24840ac3f8462c86acf.1677761896.git.mst@redhat.com>
+ <20230302204007.GD2554028@fedora>
+ <20230302190230-mutt-send-email-mst@kernel.org>
+ <027fff1b-8ed7-abc0-2331-b188b8822bf4@nvidia.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230306134451-mutt-send-email-mst@kernel.org>
-X-ClientProxiedBy: FR3P281CA0142.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:95::16) To MN0PR12MB5979.namprd12.prod.outlook.com
+In-Reply-To: <027fff1b-8ed7-abc0-2331-b188b8822bf4@nvidia.com>
+X-ClientProxiedBy: FR2P281CA0070.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:9a::9) To MN0PR12MB5979.namprd12.prod.outlook.com
  (2603:10b6:208:37e::15)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MN0PR12MB5979:EE_|SJ0PR12MB7460:EE_
-X-MS-Office365-Filtering-Correlation-Id: 05a10efb-f89e-4254-586d-08db1edf2cf4
+X-MS-TrafficTypeDiagnostic: MN0PR12MB5979:EE_|DM4PR12MB8451:EE_
+X-MS-Office365-Filtering-Correlation-Id: 2adc7f01-3994-45d1-9279-08db1ee16c0c
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	mw/Lz4INlLGQTXX1p8zMjoV7LBcusfPpHtUBRbPfuFuXGMbbYUUU9iT7wX8ClxVtLGRXb/gSMzKkHbimSor0rn5fSHaulXmxwV7BTjS0dTCbc/Y4ge9oBKl1CjcBdSfP/D1A/Ynn8pLp9RXI3J33GBDBhKlFxlLGHmymIxmS3OR/fzmeuY48rerdMGRlcb5TRJRethbjlMdUnJcqujPBhWtN/OCGHHsD1QJhEw+6A1EBKbeJzJR+wNzMo01KKJ/K/ZhV9TIyiWkRucS5XRMhlDLKtyNhyPCFfATJJXSPAq301m1HFPZ3J3dyIxwq+ADDuDSFKhSgMhontJUgZQ4KlawTmeIbuVVRHbSkuTTi4JS8NShRl0k/edOpXeGPdlUgTnrwyo9jNfoW5aVQr+8QOuB5k2n39MB2cod5+Tp2kjozwz5bKd66x5+wnzfTbNQi0f1OjVWGiw0B432uPrI/l3BQWyKsVjCXnSppFYXholfFg3KOSCz5z4/U5X7zj3qHc4ahQa09/om7XFp9yP/IrK3bx34Ap1VNBvhmiSAGl8iReipbsAzAy04oANSpVCMpjL45yem0VmAzoSMfEseUSGEMWM6oP+R/NbkgorctKYjPhd+WYJge4vgA6UTnm1R1VeDplSYnOKyQcHDZMOM4GdAf1D1Bbn5lSx7fhUjlXKBQll2X5z7++A5/Xb8LzXdKfZZqCuaNycOvf7hqMawxw7M5adkpVsJG/giaztsVGZc=
+	YeQvZkwToPBpUk0qQmtNEBw242REP/wk1dyPzKSfvlFSRS27iVLwW/hXBP/pPhj5cBJJwc65mmE+LWQGFVLk90ofX5DaoBfmNoNkndUt3foWUlhkWVn9C30Oi1iSnoqbOjIyw1QEw07z7vN5U99NPnQowvdK50vRkUev8DhehFzmNxEue5lwhji3Rk9OtXKmCJI6CRKP2EnGeREJDJIHM59UumUQFXlW3VQ+fh+Poxyj8kt6Ht3ZSQEQrJw3Mmht/fqWFe/fmgtuM7GVo2AHV9Hb9vgJr9mAPpUyouPSj9xddCniLxa5mfHlr+WcxKR17FiiOYo6SxTmQ7sBsy4iMdT8VdeK1Gn7GpwoRDxj+n1CeqnyG8DPWRPZbR/nXllqymKSQfVlpVS4n17lCF9C1YET26jaZjjwU4M8rCbbqLoWSEZPqH32nye2aMdTLodc7D/OPXZ8F4zZuD7cUVBi+b+kbodZ5aDJKGzV/N2fD0n/tyJsidkXtqWqFU2sqIJWHQvvmrbJ6e8JpX8w1hMWVRLKAlgdy3J8Z9xzPEKtsNV1yy/81k6KEexzI/eEeFoO4Pzm3Uk/Hbn4+K35flutTII+ABBH9yU1gCF0uK9efoaVjesYi0NguJ+EjBHEXNvPtQyp3D6zJUNjyaIvEVtYhcSkj7UA/rW5pB59CwTCmZ48I6sNaF6RDUEAufOdwfGbd2djjW+V1K+KhNvEksbPOfWPzSgLKplvWJERTdpE4i5PncQTUF1phRs225QjI191yhetwUBLBs0PYj8hpRWOgQ==
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN0PR12MB5979.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(7916004)(346002)(376002)(366004)(39860400002)(136003)(396003)(451199018)(316002)(54906003)(478600001)(966005)(6486002)(7416002)(5660300002)(8936002)(2906002)(66556008)(66476007)(6916009)(66946007)(4326008)(8676002)(41300700001)(6666004)(6512007)(38100700002)(86362001)(6506007)(186003)(26005)(33716001)(9686003)(107886003)(83380400001)(66899018);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN0PR12MB5979.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(7916004)(376002)(39860400002)(366004)(136003)(396003)(346002)(451199018)(2906002)(7416002)(5660300002)(6862004)(66899018)(8936002)(41300700001)(4326008)(66476007)(66556008)(66946007)(8676002)(83380400001)(316002)(6636002)(54906003)(6666004)(107886003)(478600001)(6486002)(966005)(6506007)(6512007)(86362001)(9686003)(33716001)(26005)(38100700002)(186003)(67856001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?UBqZAXJyXwuetn9euC+2V6RFU7Y8BCqnKfLw31dsUfvvjEY3VVAp2r5+aIOM?=
- =?us-ascii?Q?im3FFi+S1YyBDIDBuMyq0xT5njt/lRZxGMDQbuNV0VGBGbPSUkDo05X+q9ze?=
- =?us-ascii?Q?dyk/DI6VS/CREBDxnB+mE3JiJ4ttHqzAg1AHPopaoPlPx+mSXz7Rl40LnPrG?=
- =?us-ascii?Q?GyiRr2WyF6+sKiik8Ssx9JQjItVHHzRGz/Hn94LSJGjeKgKCk6Ky+q1vFS5d?=
- =?us-ascii?Q?zMYly31r+4lmX7cfqEEqfEKtQiIJ8ncjh0XEc8oskGAxgfz2WLYXlyLzl2/W?=
- =?us-ascii?Q?iUhW4NBkqujRrMYovZ6jCBPipzq5hcFx3c20HM32aT+9Y9MnEDrmZdRy6D8r?=
- =?us-ascii?Q?4WL9storJdH+Q840/5OTvAjDUVjuibdq4eIyuclf8Sn9QCAv53U7t+tkPz8i?=
- =?us-ascii?Q?CMaKmykJ2NhYWGv8Uy88490rp2aSJS7mUIJW2HHVji8RbynmR10dCj3EYXpd?=
- =?us-ascii?Q?/8M9aWRR9AqgvhNtj95j8RdZ+lNUex/QCU0kys3XJ9J/dXH93vLiIuTyYjsb?=
- =?us-ascii?Q?hd6T6PQdt4QcaMxtoGcoM9brENU43NpJNG57x/ZSV6IH5Ej8rXMXfZQ0EPdV?=
- =?us-ascii?Q?hghHWswfhGHrbkwLQkPjilFLId/6s/1j4jkFxg3kY2+6mu+7nWK6AW+CVcIX?=
- =?us-ascii?Q?nvk+CINeqP658y+LpQxgWBz+H/d7OoKIVKSP0ZJiC6wvJkH5WpdPe5+8dFDR?=
- =?us-ascii?Q?PtzOLeebF0pBi7/I2iy5d3Bbbi0vco0Q26r21HldIc6OV2FoUJe/5n7YpldT?=
- =?us-ascii?Q?zz5wq9HjjncXG+YrmGkJdUFY96kCbVIbVbZ9ZH4zlFQpRifK/ZCyKbxIq+6i?=
- =?us-ascii?Q?eMN6FlbDlVKP9786IUO/qXd7k12rEPx/PY0oc0b/tcqU7e7fhf5czaGkO8ge?=
- =?us-ascii?Q?+OXkV18Bi8/1E+kx+kfiXFaghggmICseIbYvlPJ71Ieic36K64GX36YlZUBJ?=
- =?us-ascii?Q?JEO3sT12tbjw8pJUAUngZ2LH7hJpofmYkO8pO6r39VhkYhIj2+bELXIaECeq?=
- =?us-ascii?Q?C1Uc+LraW4BrD/b4rC9Bom8vWlQ4i0yesoQCnjIllBmJmUQhqo5f8OsE/ckY?=
- =?us-ascii?Q?cUl4BUUroaHt1MwjDgVzkNGlIDk9Nd/HgxndpnXbTYRe2JMSPEyS2ZDVoHjF?=
- =?us-ascii?Q?2hzQHPQN6VwAm9cRCkH1jcKBGRoFs5Jv37ZsvcO7MZWn+BO4xNpI9WiC6Kdi?=
- =?us-ascii?Q?BO/qHLfZFfTmqoFNirDxIvXjJ6MaVTMxcU1HRYmS27PLaXgYIZEkpVtIBC2G?=
- =?us-ascii?Q?VockLYi7JtJHytJo2C2oU2lFut8KEaHnH3zW5anq2kjMM4w1GnN66Y5wh38Q?=
- =?us-ascii?Q?zh1I67oAjZQF0x5ILXD3wqFXNCvydny+iMEkGKoCA96kTLIpXngaDvmXcnuE?=
- =?us-ascii?Q?XlL3oDQjLhnFd489VY2uxEj66psX9VqMCsjqOUT1ih/g9v5RaQmu78L4sx6e?=
- =?us-ascii?Q?05S8iXytpuQ695eC8FBV90NZC/Er51FnoJHXyzwA4u5P9czq2FLJBAn8qoEI?=
- =?us-ascii?Q?r7nxLXgYnVOlBRuVseKSEug0ydvxxIB/J/iEHsLtOlSrVrLuZWJc2sxyimN5?=
- =?us-ascii?Q?KjGgnEBv/JN+jHrgsCW8+uqXsDh3tPKEEUlbgLKZ?=
+	=?us-ascii?Q?vvL9uz3Snp8H3lGp5eOTLLDeFQY6aKsPJQRySHwsP5ArUEotxIIyUjrYa2UJ?=
+ =?us-ascii?Q?opTUMhgQnkBcFAMXquTioD2sa97XnbrlwjT9Kt8XWamMIvTrS8jBntnImJW3?=
+ =?us-ascii?Q?Aa2/g3IfGcigRXYIp1YJ5afXMPQ8iVyS5gkfrzJC/AiLZAUUBeNvtuTgY7Ev?=
+ =?us-ascii?Q?i91qXHjJDGwSDsLUJfwNRsbpUT9/nB8qthb/cF6jm7Tl7BsEr+reyW7/tkMp?=
+ =?us-ascii?Q?LlEEer5YMxJgruwV9o3mlsJIyNo+izIKj5+iFSqfdIy83bz6cRDhsv/fDYns?=
+ =?us-ascii?Q?ArWO+TAyctZJpbVzAgYhBQnXM9C9Av2Av7PFvAnsCXBErhYcyQnrDHLJ3RYc?=
+ =?us-ascii?Q?z3dbu9IkS/y2s2zRnjKe4KgIMAyFgw5BdVNJORbxXPPkqdzPnB4c3r1n5Q4s?=
+ =?us-ascii?Q?dFPsBqmoG1Mjy0dHeRIQV73gvLCntRu7DBsbABC2fZmsgdaImcmOYQ76vNUv?=
+ =?us-ascii?Q?T9UzJ+X+E1NWKSH8x8J318jJ07WlnZgQuSyZyUOBKlxsZjz+rZxx8d/w29UG?=
+ =?us-ascii?Q?qkakL4r5dqQHyawt5BD6NvGOS934+RjTriJGQ/4TKvfH2hubLKS0d3AWyNy9?=
+ =?us-ascii?Q?7JgVt0jmAO1UudpRZQij9yTodArIDp2YUnilrAh+yLCFG5V4zuRz6L4zqa82?=
+ =?us-ascii?Q?wbvjBXB1LqGtWLb5mXclMymb0Q3z04KTd3in1867EPsvYNEPQMULEu4sIR5I?=
+ =?us-ascii?Q?casf2hI+0zesr3APcp9PSQrg5seqJUo15xrrtULBBwhYZ8Jqfubotbxo35U1?=
+ =?us-ascii?Q?yxg7wmPhArBnTCX4m1O9B02jKW0XGHase1lJycF4NCFqCHoR5FUccX7Vlakk?=
+ =?us-ascii?Q?EA6k4pGePyB+Oz+El9grsjnoNrZHjGEP9JC8XgI3CgLZF2M+fqfqoJTsYAIB?=
+ =?us-ascii?Q?lUjA6GMdxuBu1pNR+NkFlGs7R2W+ilJGsBDStdL6s9KNqY4bo35IcH4R3TgA?=
+ =?us-ascii?Q?OHdpsJ6r5LjU8IheG5aJ0F47cL/ZkY3eGYTM0kpnD5O00p8Q2W/xBOCn/anJ?=
+ =?us-ascii?Q?yx7sHZnNo0w1kQ4G0ev7HwwwrDYpQ8FpM42vbpXlWvS1YepunzkspZbfahqK?=
+ =?us-ascii?Q?MjvjGTocUXbLNHuKSIDAW+pg7kk1oTkCI+gOXTtGOm0oih/09aoLTWWrnTno?=
+ =?us-ascii?Q?AE1mj/d52LsADhMowDKfAERl290YJhmPvKWTg97uYWb/yyBvJzWYvZQ4Ogli?=
+ =?us-ascii?Q?SbwaHamtIRC5+jF7dgBcgb30fGFuUjHWQqK2UB0w/Riu7BQ05R4EZA2D96xa?=
+ =?us-ascii?Q?2fIY1ZAbrrigKxwz+m/n4HRCwg9M8wI5w4LVetebSSwiPit0l/XdfIe3P/ks?=
+ =?us-ascii?Q?/WE6CPPbQbyC708jJ+onpXGBMyHStrU0cuHdhb4O99ZLWRRUSQj53h70+Tp+?=
+ =?us-ascii?Q?dTrLom2gW29kQ5o+ZCNV+Warx+KFSqQL19e//6XfLuoIK7DpnAgc0nAkLa9D?=
+ =?us-ascii?Q?D/wwF6yL+qBln+7dUkyMVeyp6mkbCOPpDl7NA/1bXjNwr2s/xn0LxAPiwrWe?=
+ =?us-ascii?Q?yDS8WOb/6ElQQQca7phgWd2cs2fbMGWy+Sfs2F7eWJ6a/26bgvyY4EKwy+I7?=
+ =?us-ascii?Q?uQ8ZXgELKVcjWbYMlRSSTiv+tNe/CtMqe9NQ7HUw?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 05a10efb-f89e-4254-586d-08db1edf2cf4
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2adc7f01-3994-45d1-9279-08db1ee16c0c
 X-MS-Exchange-CrossTenant-AuthSource: MN0PR12MB5979.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Mar 2023 07:40:08.5526
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Mar 2023 07:56:13.5576
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: BXaaWVu5nVJg98ulRRCHcpIazLOwL1tE3hQaQr4WLlzWBJG/DlIxhWmMiBnMXPx+
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB7460
-Subject: [virtio-dev] Re: [virtio-comment] Re: [virtio] Re: [PATCH v10 06/10] mmio:
- document ADMIN_VQ as reserved
+X-MS-Exchange-CrossTenant-UserPrincipalName: IKbSAdioL09bXbbma2mnuWsNO3fv2nVK/kuSeEvOyVBuTpQ0/UYejJ1wWlA7/tPK
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB8451
+Subject: [virtio-dev] Re: [virtio-comment] Re: [PATCH v10 04/10] admin: introduce virtio
+ admin virtqueues
 
-Mon, Mar 06, 2023 at 07:46:09PM CET, mst@redhat.com wrote:
->On Mon, Mar 06, 2023 at 11:35:15AM +0100, Jiri Pirko wrote:
->> Well, lots of these things (if not majority) are customary, not
->> really written up anywhere in Linux kernel netdev world. It's most of
->> the time just a matter of convenience I would say. For example
->> splitted-up patch changelog. I do it, but most of the people don't (even
->> maintainers). From time to time during review, I request it as I don't
->> want to be lost in the changes. It is nice if the submitter tries to
->> make reviewer's life a bit easier :)
+Mon, Mar 06, 2023 at 04:14:09PM CET, mgurtovoy@nvidia.com wrote:
 >
->True. With all this lore let's just agree netdev is not the easiest
->project to get started with, right?
+>
+>On 03/03/2023 2:05, Michael S. Tsirkin wrote:
+>> On Thu, Mar 02, 2023 at 03:40:07PM -0500, Stefan Hajnoczi wrote:
+>> > On Thu, Mar 02, 2023 at 08:05:06AM -0500, Michael S. Tsirkin wrote:
+>> > > The admin virtqueues will be the first interface to issue admin commands.
+>> > > 
+>> > > Currently virtio specification defines control virtqueue to manipulate
+>> > > features and configuration of the device it operates on. However,
+>> > > control virtqueue commands are device type specific, which makes it very
+>> > > difficult to extend for device agnostic commands.
+>> > > 
+>> > > To support this requirement in a more generic way, this patch introduces
+>> > > a new admin virtqueue interface.
+>> > 
+>> > Is this referring to the existing virtio-net, virtio-scsi, etc control
+>> > virtqueues?
+>> > 
+>> > I see the admin virtqueue as the virtqueue equivalent to transport
+>> > feature bits. The admin queue does nothing device type-specific (net,
+>> > scsi, etc) and instead focusses on transport and core virtio tasks.
+>> > 
+>> > Keeping the device-specific virtqueue separate from the admin virtqueue
+>> > is simpler and has fewer potential problems. I don't think creating
+>> > common infrastructure for device-specific control virtqueues across
+>> > device types worthwhile or within the scope of this patch series.
+>> 
+>> yes this commit log is outdated. referred to original
+>> proposal by Max which also planned to replace cvq.
+>> will update.
+>> 
+>> 
+>> > > We also support more than one admin virtqueue, for QoS and
+>> > > scalability requirements.
+>> > > 
+>> > > Signed-off-by: Max Gurtovoy <mgurtovoy@nvidia.com>
+>> > > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+>> > > ---
+>> > >   admin.tex   | 74 +++++++++++++++++++++++++++++++++++++++++++++++++++++
+>> > >   content.tex |  7 +++--
+>> > >   2 files changed, 79 insertions(+), 2 deletions(-)
+>> > > 
+>> > > diff --git a/admin.tex b/admin.tex
+>> > > index 7e28b77..3ffac2e 100644
+>> > > --- a/admin.tex
+>> > > +++ b/admin.tex
+>> > > @@ -155,3 +155,77 @@ \subsection{Group administration commands}\label{sec:Basic Facilities of a Virti
+>> > >   \field{command_specific_data} and \field{command_specific_result}
+>> > >   depends on these structures and is described separately or is
+>> > >   implicit in the structure description.
+>> > > +
+>> > > +\section{Administration Virtqueues}\label{sec:Basic Facilities of a Virtio Device / Administration Virtqueues}
+>> > > +
+>> > > +An administration virtqueue of an owner device is used to submit
+>> > > +group administration commands. An owner device can have more
+>> > > +than one administration virtqueue.
+>> > > +
+>> > > +If VIRTIO_F_ADMIN_VQ has been negotiated, an owner device exposes one
+>> > > +or more adminstration virtqueues. The number and locations of the
+>> > > +administration virtqueues are exposed by the owner device in a transport
+>> > > +specific manner.
+>> > > +
+>> > > +The driver submits commands by queueing them to an arbitrary
+>> > > +administration virtqueue, and they are processed by the
+>> > > +device in the order in which they are queued. It is the
+>> > > +responsibility of the driver to ensure ordering for commands
+>> > > +placed on different administration virtqueues, because they will
+>> > > +be executed with no order constraints.
+>> > 
+>> > Does "they are processed by the device in the order in which they are
+>> > queued" mean only 1 admin command can be running at any given time and
+>> > therefore they will complete in order? This would allow pipelining
+>> > dependent commands but prevent long-running commands because the
+>> > virtqueue is blocked while executing a command.
+>> 
+>> we have multiple vqs for that.
+>
+>why do we need multiple admin vqs ?
+>This is not performance oriented queue.
+>I don't think we need that.
+>I introduced F_AQ_IN_ORDER feature bit to distinguish the in_order logic
+>(same as we have for data queues).
+>Please re-think using this instead of complicating ourselves to multi AQ
+>specification.
 
-No clue, I'm soaked in for too long already :)
+Well, out of order processing is parallel to multiple queues isn't it?
+The only way to achieve that would require to have the same about of
+queues as possible parallel out of order commands, which does not
+make sense, does it?
 
 
 >
->-- 
->MST
+>We have a single ctrl vq so no need to introduce multiple admin vqs...
 >
+>> 
+>> > > +
+>> > > +Administration virtqueues are used as follows:
+>> > > +\begin{itemize}
+>> > > +\item The driver submits the command using the \field{struct virtio_admin_cmd}
+>> > > +structure using a buffer consisting of two parts: a device-readable one followed by a
+>> > > +device-writable one.
+>> > > +\item the device-readable part includes fields from \field{opcode}
+>> > > +through \field{command_specific_data}.
+>> > > +\item the device-writeable buffer includes fields from \field{status}
+>> > > +through \field{command_specific_result} inclusive.
+>> > > +\end{itemize}
+>> > > +
+>> > > +For each command, this specification describes a distinct
+>> > > +format structure used for \field{command_specific_data} and
+>> > > +\field{command_specific_result}, the length of these fields
+>> > > +depends on the command.
+>> > > +
+>> > > +However, to ensure forward compatibility
+>> > > +\begin{itemize}
+>> > > +\item drivers are allowed to submit buffers that are longer
+>> > > +than what the device expects
+>> > > +(that is, longer than the length of
+>> > > +\field{opcode} through \field{command_specific_data}).
+>> > > +This allows the driver to maintain
+>> > > +a single format structure even if some structure fields are
+>> > > +unused by the device.
+>> > > +\item drivers are allowed to submit buffers that are shorter
+>> > > +than what the device expects
+>> > > +(that is, shorter than the length of \field{status} through
+>> > > +\field{command_specific_result}). This allows the device to maintain
+>> > > +a single format structure even if some structure fields are
+>> > > +unused by the driver.
+>> > > +\end{itemize}
+>> > > +
+>> > > +The device compares the length of each part (device-readable and
+>> > > +device-writeable) of the buffer as submitted by driver to what it
+>> > > +expects and then silently truncates the structures to either the
+>> > > +length submitted by the driver, or the length described in this
+>> > > +specification, whichever is shorter.  The device silently ignores
+>> > > +any data falling outside the shorter of the two lengths. Any
+>> > > +missing fields are interpreted as set to zero.
+>> > > +
+>> > > +Similarly, the driver compares the used buffer length
+>> > > +of the buffer to what it expects and then silently
+>> > > +truncates the structure to the used buffer length.
+>> > > +The driver silently ignores any data falling outside
+>> > > +the used buffer length reported by the device.  Any missing
+>> > > +fields are interpreted as set to zero.
+>> > > +
+>> > > +This simplifies driver and device implementations since the
+>> > > +driver/device can simply maintain a single large structure (such
+>> > > +as a C structure) for a command and its result. As new versions
+>> > > +of the specification are designed, new fields can be added to the
+>> > > +tail of a structure, with the driver/device using the full
+>> > > +structure without concern for versioning.
+>> > > +>>>>>>> 0edc690... admin: introduce virtio admin virtqueues
+>> > 
+>> > A merge conflict line crept into the patch?
+>> 
+>> yes. I fixed it I thought but somehow it's still there :(
+>> 
+>> > > diff --git a/content.tex b/content.tex
+>> > > index ffe45c4..c8647c9 100644
+>> > > --- a/content.tex
+>> > > +++ b/content.tex
+>> > > @@ -99,10 +99,10 @@ \section{Feature Bits}\label{sec:Basic Facilities of a Virtio Device / Feature B
+>> > >   \begin{description}
+>> > >   \item[0 to 23, and 50 to 127] Feature bits for the specific device type
+>> > > -\item[24 to 40] Feature bits reserved for extensions to the queue and
+>> > > +\item[24 to 41] Feature bits reserved for extensions to the queue and
+>> > >     feature negotiation mechanisms
+>> > > -\item[41 to 49, and 128 and above] Feature bits reserved for future extensions.
+>> > > +\item[42 to 49, and 128 and above] Feature bits reserved for future extensions.
+>> > >   \end{description}
+>> > >   \begin{note}
+>> > > @@ -7682,6 +7682,9 @@ \chapter{Reserved Feature Bits}\label{sec:Reserved Feature Bits}
+>> > >     that the driver can reset a queue individually.
+>> > >     See \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Reset}.
+>> > > +  \item[VIRTIO_F_ADMIN_VQ(41)] This feature indicates that the device exposes one or more
+>> > > +  administration virtqueues.
+>> > > +
+>> > >   \end{description}
+>> > >   \drivernormative{\section}{Reserved Feature Bits}{Reserved Feature Bits}
+>> > > -- 
+>> > > MST
+>> > > 
+>> 
+>> 
 >
 >This publicly archived list offers a means to provide input to the
 >OASIS Virtual I/O Device (VIRTIO) TC.
