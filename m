@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-11471-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-11472-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 75C47C678DB
-	for <virtio-dev@archiver.kernel.org>; Tue,  7 Mar 2023 10:05:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id CB08EC678D5
+	for <virtio-dev@archiver.kernel.org>; Tue,  7 Mar 2023 10:32:06 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 8C3902B046
-	for <virtio-dev@archiver.kernel.org>; Tue,  7 Mar 2023 10:05:23 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 167372A8EF
+	for <virtio-dev@archiver.kernel.org>; Tue,  7 Mar 2023 10:32:06 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 75BFC9866CC
-	for <virtio-dev@archiver.kernel.org>; Tue,  7 Mar 2023 10:05:23 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 04CF29866CF
+	for <virtio-dev@archiver.kernel.org>; Tue,  7 Mar 2023 10:32:06 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 6233D983E53; Tue,  7 Mar 2023 10:05:23 +0000 (UTC)
+	id ED2659866C3; Tue,  7 Mar 2023 10:32:05 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,232 +24,273 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id B4D449866C2;
-	Tue,  7 Mar 2023 10:05:13 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id D899C9866C2;
+	Tue,  7 Mar 2023 10:32:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=M0BzbMAFVb/WSRpQgzq2nWqrDHmaFSxMG7XfPRH2JIr7D9hNBQbYLEKI/AmcaJnOolpp/Rry5QNLXmwgmG/KPhRwtgKYGFze3NAkPvQ2Xu29Tmh2frPsdsk4RfVucrxR9GbItonpDlshgSz99fWpw4QEOVZs8fs5uqrrj4Fn4noemQiUNEJg/Cb4XEi8NaYgC5oTeV73xuWVPKOtVTf42909WPZEM3cgRkamPD0oAH/6pVcMa4YT6LiajCLAJR1SGwSTVrtW0gFL6Vdni1RLqIbBMf7uxBnB2gM6CEfd2FWJSyr96756yTTX0jZ9pT2GtUEXKDlD3kVZfQFMOubCFg==
+ b=e0f7WsIgORu3SLCOutNXvRhhUM07V0bGaNKRdKw5Gd2WVRCdP6LDyaa8PCFl4nzAvaKcO7Za5ZK3YZof5zZYO43smI6MRBI3WZvlSLkqxO9S7MnGsvD3c6Z/E1fZ8MkUmmnfBEF5o26SlvDCXJ+6nmem8ubHGcqlKNjAxQdjAnIk6+u7VxP8jMM7N8uHzIIDmFh1rzQIYYbvOu2tarzHIxNUUeOwAoJUzHKgzAlPtTs8miYRe6si3ygNx9k5MKKiVw4WXCuo9sVoFuVNf/bOL/Y51q98ceKdsEVlpBDxN2s83uUM//uyjRGMLb1gpPoJ14IJ8igofNCnVHvpeenSsg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=xMGXs7DQ0wsHPjMbDVRmvBuawOVk3RhC13TcYigaDWQ=;
- b=mzXSUzPzO7zIY7l+4VspVz4GUJGHfmdvJrwt6aUPcl4OaQeb5Kxr87VjET1g7f9sgNo1Wmq/j90EB0z3PAOkj4b+i+gaZ79vu48pLdhsEuTANKIermCriQR2KPD9aL1qSiGstfFQj9Mtp4O0y6Xo4mFJaZGYOlozp7uE+/ygoHFniu/FHxVx9SeF+jmC/yn/dRDns5D6VmKoMWjHIojD85EYPUhEwJ0KI3aILRKvH1jA9t1EZdoPnwPjAj9T/KwwcwK7SzXZLknEbnJ/7RiooBgrzkqDkDoUdd4Nts4q8hvUxwFR69r7mZCH+3c6OtsL4GkjL6nafT1DdCCeCi8gUw==
+ bh=rzkt3sEnzqxOeY8j4tCmNmL88gor37qANFcioFcwdZw=;
+ b=Z0n8N6RZfRci6sp3V7l3BSVpI3HlZGXajAvq1hQ074Vglc0hi8HP5qffpdujhV8adTGMll2wyBsdLg0ZI7uilO6EIY9fWgAZyd4jpdr+8IGEU4jtuChq55FClVlStQThSuA90nYI0BBfvsJZXALhOzWZMO90Seg31L0i47VEhtQz67gJodzEpl7JeFNrqI5HiA/4I43mLLeMQ0BRZOAyd9UDD7pjGbNmx4yC5aBSpngOT0jP9LThyf1o48QCubJotqqDzmpxKNGZRK1jNbrsMHkH59tsmQVB+b3TWaGUPt1nlETEPaG0yi7V8Rd71bzvNbicR+F/r7w2OdRM56NLxA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
  dkim=pass header.d=oracle.com; arc=none
 From: David Edmondson <david.edmondson@oracle.com>
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org,
-        jasowang@redhat.com, cohuck@redhat.com, sgarzare@redhat.com,
-        stefanha@redhat.com, nrupal.jani@intel.com, Piotr.Uminski@intel.com,
-        hang.yuan@intel.com, virtio@lists.oasis-open.org,
-        Zhu Lingshan
- <lingshan.zhu@intel.com>, pasic@linux.ibm.com,
-        Shahaf Shuler
- <shahafs@nvidia.com>, Parav Pandit <parav@nvidia.com>,
-        Max Gurtovoy
- <mgurtovoy@nvidia.com>
-In-Reply-To: <20230306165907-mutt-send-email-mst@kernel.org>
+To: "Michael S. Tsirkin" <mst@redhat.com>, virtio-comment@lists.oasis-open.org,
+        virtio-dev@lists.oasis-open.org, jasowang@redhat.com, mst@redhat.com,
+        cohuck@redhat.com, sgarzare@redhat.com, stefanha@redhat.com,
+        nrupal.jani@intel.com, Piotr.Uminski@intel.com, hang.yuan@intel.com
+Cc: virtio@lists.oasis-open.org, Zhu Lingshan <lingshan.zhu@intel.com>,
+        pasic@linux.ibm.com, Shahaf Shuler <shahafs@nvidia.com>,
+        Parav Pandit
+ <parav@nvidia.com>, Max Gurtovoy <mgurtovoy@nvidia.com>
+In-Reply-To: <910b3607a5f255134d30b3e1233e564f564eafb8.1677761896.git.mst@redhat.com>
 References: <cover.1677761896.git.mst@redhat.com>
- <0a784140387c2a592f7e1e7bbc5ae926ec5b45da.1677761896.git.mst@redhat.com>
- <m2leka0yvl.fsf@oracle.com>
- <20230306165907-mutt-send-email-mst@kernel.org>
-Date: Tue, 07 Mar 2023 10:04:59 +0000
-Message-ID: <m2r0u0zxkk.fsf@oracle.com>
+ <910b3607a5f255134d30b3e1233e564f564eafb8.1677761896.git.mst@redhat.com>
+Date: Tue, 07 Mar 2023 10:31:47 +0000
+Message-ID: <m2lek8zwbw.fsf@oracle.com>
 Content-Type: text/plain
-X-ClientProxiedBy: LO4P123CA0283.GBRP123.PROD.OUTLOOK.COM
- (2603:10a6:600:195::18) To DS7PR10MB4926.namprd10.prod.outlook.com
+X-ClientProxiedBy: AM3PR07CA0105.eurprd07.prod.outlook.com
+ (2603:10a6:207:7::15) To DS7PR10MB4926.namprd10.prod.outlook.com
  (2603:10b6:5:3ac::20)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS7PR10MB4926:EE_|SJ0PR10MB5407:EE_
-X-MS-Office365-Filtering-Correlation-Id: bf31bdce-fa4b-4490-2415-08db1ef36d1a
+X-MS-TrafficTypeDiagnostic: DS7PR10MB4926:EE_|CH3PR10MB7396:EE_
+X-MS-Office365-Filtering-Correlation-Id: 34bb5a5d-000b-413a-f93c-08db1ef72b9a
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info: 
-	TOglNJIalcTuQ8SuLORh16spFk+lH4RPoo+C+3cuxThFFzGsNyNk8TqzGwIKovHJzQyj4NoChT9cry3s9Z4dWuPZRNIhHWT94U7DD0D9EkZ41RgEXUjMGU51bkCX32skP21BJ3Hu8PnllcFG4xZyAWTOzhwLyDvMN5+EO046XajbkNpxfFJ/Vmmg/m4dX0WKEg5cPHrtdMA0lLt0kZt2VWshOoTT/rM1IQtmrGQFo6bL0Pa/SUoOc3wy3jyjCgsgM/4PqeMTAo1BiAlphK9aZduPdNOn1/b+DAEIU07O9dQNbnLsPqvgTZzil3TnqNiQvneNpau1FtNjsSujQE7H3c0P6kYBLcnu8vEtJu6lUvjh4G5dQ8X4oG6kjewnrPG7rMJz8Dpygx23zZ2fkZDZpPjKG8dp2vjU2XCZk3kCG61thjvKiwccsk8UaJa9U+/GdN/jz8aJB5PoXWHh/9GFc1g3P3jcmqV1zxI1ssYFmGOFSIoLcK9r2X02YqrWMCBnJgkfh0Fb4DaP9I62kuapvgPsTHMPXJQ28TTgkWd6yz7aXd25nAqZcwWRqunGGtuG+V/pwN7jLgvV7Tkgp15UG1DjjLNHKIv7mwK4RJO8Jq1WHL7DGeDPH7p1YCZlId1h
+	doP37A73yD7zGhJy9oJ/+cZe8GUxgJwHcFmf2TDBc9FdrQ/dO7uFRh46wwEK9czs2HG/wEdYKF1Migvun5EHtKsIiHfdTrFmvFBpZyUUkEeTMqeUAqT5ih1zw50GV8RJ4aFwe0pXWXjYFOvI16dxrjzOCU3Hxv9Rg6miqlryd1D5kX3QjG7YNla75HcaHIvkjxjPEHOet+lxyCBptc6pjV1mp0BRs7/dL9mcNUklK685lQ2iIDy/+g8Lfuutp+0gfWQZUvWp+B/ITRoOE9FiC6/yXDz8snjnOBAKNbJwdw5o8MkXDTkH15M1ad4W01Sq5GddLx/SP3Piy7xvgtw7IBlYxi3I8ifkI6BTNM2nVz8Akh/t5qVHHqGOlgR+jr5pAW7TdSa3rQJc2U3szaV1zgaxbb2ZZhwzL7ROQW+A5HrNu/mNvERb1eu35msRaQBiRWG0KEsDyPLzXjg/W/kthVz4zNh6c8G0hz6Zaam+dcir7/UBl+EYB1i7O6/87SzyI8naico9fIfzb0nF8stKE0R3pHEmxfTtD+GKCR30pdOs7lNJXdrowcudEv+fQ9skSYWRHI3g+OLUnzh+KM+q8JEPIGyaHOS16elkZX7EdUFpLmdLZTr+hbpf1u0uAxvuEHt8Fmd/1y4CJVi6aDQZu7POmYJjT4Y7o23MolTb0Dhe3VGZKLrkNSn/AS01UC9A+idqUhRTMoj41cdye+vWOA==
 X-Forefront-Antispam-Report: 
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR10MB4926.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(376002)(136003)(366004)(346002)(39860400002)(396003)(451199018)(66899018)(8676002)(41300700001)(66946007)(66476007)(66556008)(7416002)(5660300002)(6916009)(4326008)(8936002)(44832011)(2906002)(38100700002)(86362001)(16799955002)(36756003)(26005)(6666004)(54906003)(478600001)(6506007)(6512007)(186003)(2616005)(316002)(83380400001)(6486002)(966005);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR10MB4926.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(346002)(376002)(396003)(39860400002)(366004)(136003)(451199018)(66899018)(66476007)(8676002)(66946007)(41300700001)(4326008)(66556008)(44832011)(7416002)(2906002)(5660300002)(921005)(86362001)(16799955002)(36756003)(38100700002)(8936002)(966005)(6486002)(478600001)(6666004)(316002)(6506007)(2616005)(54906003)(26005)(186003)(6512007)(83380400001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0: 
-	=?us-ascii?Q?1wBP9voQmArnDr2MXr8ySCh2t9IX6bTzXFUSi0XmKMKYXhr2lJzB81p3QSW0?=
- =?us-ascii?Q?cv0QlZYlS0godqBs/BxF17QM1e9bBduqEU4xmvbhqGyPpCptul+Wc4TMNY5v?=
- =?us-ascii?Q?lZPP+gaaj2d7cIDxo0wLT9wy/Pz8qyxcwDuur8CTE2LyBLviYOkV56pHDyy/?=
- =?us-ascii?Q?4I0jkDyIXJ8n8qK3zDeRykk8wiMZ47U37qmgkIaM27M9BuhBjuZLgCOTj0/w?=
- =?us-ascii?Q?/124CNnbW8e0DpH6x/63Dc5vvSdqwtQCYbWAbCtTrX1KDbhHMcE+JTFLiPei?=
- =?us-ascii?Q?Adk5NOnKYs8X7CexGpl3uIPB7awQ1yoZKQg65hXtyUyo5sEs5KoWd2XH+Th6?=
- =?us-ascii?Q?Q68MT5J8VOtS9nQkG4mGs36o/yuXbNcUj6J0TM49n60Kl5VjModCPpt6n9wi?=
- =?us-ascii?Q?ttZhgkbNg36+fIDTQjRoi65hEgLHA/C/ts3jc7X7DVcnvnKI5eS8kvPa2FOa?=
- =?us-ascii?Q?dD7paUjjoO45TiHxs4veBqNQGRNboXoPGSoD/Dh9K90RoTcqGcr2+MtHwiCd?=
- =?us-ascii?Q?KYxaCrf+9KnsNKor5D8oXhXbtshJvG1NzL6U7mmi5ek06B3NT5XZ2twE+yEO?=
- =?us-ascii?Q?EUm1CWhbjV7CAur8T+2cUUnxWtCyO9srm8eUOYmx/alpKXzACS9JnqJvyUit?=
- =?us-ascii?Q?Pcwqpbvk3dW8/L728QkU6zRKoN/Z5NXDx4ud9qH4ljGQ3b9xz9CAJo4DHC6n?=
- =?us-ascii?Q?jhAvZ1esPANzzGYozAOgcLl3fHKqIHuba5Bwd+J00RV88lURv4Ne+UhysVpC?=
- =?us-ascii?Q?NZYTZniou/OiF3BKH/6qGOxDJHGmPfcM4UecafvDItiDy+MW0SY91qS+0miL?=
- =?us-ascii?Q?fK5NZG3crVLRzqtuTtBFZ8kVf5MngPhT+YsIUQHeQ5xa3O5++ikNhT4eiLZo?=
- =?us-ascii?Q?5yiS9J6TdHVw/Q/GREV+gG3YVT0tCoIwnqligd7hemQqE6Z89LkWHyRFXbRQ?=
- =?us-ascii?Q?c4gZmGu+qu797FI/jO2i9d70I7l1vsSkTGFpPC9khZOY+4yZJptfkhP1GHme?=
- =?us-ascii?Q?4FSD7IkwSW6EQKyLCOKoKh9Wo3yXguM6iWsg0xwonGj1x2pFqS/unH5s+weu?=
- =?us-ascii?Q?qiQwcC1OlLFpSrTazMiWoa85g1K1wxhIwLplMWfwOru4MtXbmFn0VIb/zNVn?=
- =?us-ascii?Q?7/frmgiPo8ZSUwS9xFUM5Kfzu50yGlMQkasR78k0XWrqS+70YBB9WEMHVeOA?=
- =?us-ascii?Q?iZDq05w86awooAkeKhyVN/FH7gBcZBr3VNJzFIwLGNXBNMckpGp7ems1w0zh?=
- =?us-ascii?Q?6yYwcSv7JyDp6Q+27VMjATWFy8VDvv1386KO27MBYAwx9/2sesYalOoAip73?=
- =?us-ascii?Q?HTze6Mr54cXlFhmZOH9SmEz8NAOGwY23VHGcN7jylHQWaipTYtN6ozyuZBp8?=
- =?us-ascii?Q?uWOCb5tuVYOpDAjYGZ21XMNbbd51a21WWOH0tpUa716NVBwp3XdI761IZieZ?=
- =?us-ascii?Q?naHKmDFAcocK2rESRjjPCEUF8jL9O91sCF0ErGB8e9xhj1lZLMR+e4/3CpCG?=
- =?us-ascii?Q?8yITVTeE/dH5k2i/nOI+dSsknhV0LXDveoNmelvuaq8EnZs4KszI1xFTlKZv?=
- =?us-ascii?Q?f5KA7moBZL2alaaCXdafncEEk64YFOyfFiGzL1GAL1QS+QXqzQtMlV0yrv4h?=
- =?us-ascii?Q?0A=3D=3D?=
+	=?us-ascii?Q?IOTE4/Icf1IkiYWIcR5IJqGh0TJBu8OcagYxclACjXuujeYjDvriaWXQN6Mn?=
+ =?us-ascii?Q?syT2B7tGDZkAsGtCwToZjwOIItUV+h7qW2bQ5Y9UShXH+ck0Fd++fzDIuiQV?=
+ =?us-ascii?Q?AgXPF/XQ0qsAX1MIBbycjiBV3sATL+RcetiMG4UvEvRcrLQXPgYBJ0h4y8Ka?=
+ =?us-ascii?Q?RY1yAiKXNEltBCtzGXKQYKDGaW7JrmeNv6/RN8eIejiPQ+TgbJDVaEXMvzlT?=
+ =?us-ascii?Q?SSQWjb1jrdJnjzB9DwkIpJYZ5W/tG6IPCU1HMUSbLqsDO//VzX0NI7wDnvIR?=
+ =?us-ascii?Q?3Gvm0u9jyRzT5/xXKnZzMK0iB3E1/HpeC3Dho8HWQ9rsx/hnAKf591OA2us6?=
+ =?us-ascii?Q?Tx9lmY5fROPRKqCrSRFAL1ebmqxdP0PdYijPvQ/u+zHndW5poKc//TyGQSEL?=
+ =?us-ascii?Q?xY3CmiZESsPxKE0C/wbOr8/Odm4zcKwULEpI0aX/B1JeQHLX5FF8eWz8+LeW?=
+ =?us-ascii?Q?vZbCxGbA7KmZG9Gxq36k5Xyeria+y4maAif14nXtNKTFi1fHLbAglnfPry8l?=
+ =?us-ascii?Q?Nm8eTub/eyWv2/ebFCQx7fRPs+nFgW4wdK9KRea5O58/C60XJbBDvqq1tSD6?=
+ =?us-ascii?Q?WkBBROAfH1wy9Kv6h+mbqe3+fs8Emv/PeEdKeEC8xZIZ75DPSrK2NXGZItMh?=
+ =?us-ascii?Q?CEqq/sfoxyWt0ePjK8CDPnYCUQ/W6FGfXTRgADHpSF0NLlxHcN2K6lGufD1O?=
+ =?us-ascii?Q?MDUM49vf+5feDnV7+6lmHaThZKYitU1vUAbij+rzcM/2rmCo9DFq8ORJj/pE?=
+ =?us-ascii?Q?o35FkzjkU8fsojBSNx9xE7jRJHJub21gc+yDYgZ25yyGeMtGWZ+gxpe/ztHC?=
+ =?us-ascii?Q?41c4XbpWTR6KxGG57jiVOT/wGkmxudL6hdNNLLxOHDpubLQoqImn4eLUol0j?=
+ =?us-ascii?Q?YX2VW6KcH6xtwpzTAE43eQG0kEkOBhDGeHcSRhPor1deqkyxpu6elZUTAxLT?=
+ =?us-ascii?Q?iR+w0j3MIFAyO8SCtM/JAMTeBgxgaV3c2e30CYZ02nVBx77kbWDJLfjyPgxt?=
+ =?us-ascii?Q?cE+xJWh3grOerb7Z1MLCpSncEipyXEcS2CyUEvh/ZH+kl+aFuDCVlbQtneh5?=
+ =?us-ascii?Q?qd3Pm6uoA8JF6FkDaOaxbe20pXZ/PVejSIR29/BgCORfASp3jIMJTw+Eog2t?=
+ =?us-ascii?Q?OL0u0nMQS5BGjkT/k6mBMtolGpg8eKHsEE6sAcXe46OK7uMtKwslh9hJ+PuP?=
+ =?us-ascii?Q?8Kukd+kOm1/0q5G5BwAyZ3CO0c134N9N/vEHjorrjdvQayzQqSCEsxEDbfrk?=
+ =?us-ascii?Q?oUxDKmOgmGvM1zcs3PMKWoMQYTvEqCJH+RJcAMnHNHZEyjDMNzra6mOh6PEx?=
+ =?us-ascii?Q?65cIf8xVNWj0HABdHV9dba3gukb5f3qWj53jUH5ghvxfAYPUja2eRWnBiv3F?=
+ =?us-ascii?Q?i6/qF1DIRkWG0bNwvFv8wyrldKVmKSiANl7EulTpjLgieeUNza+ug1o0X1Lz?=
+ =?us-ascii?Q?WRuBJph5QeavG6WVD4+sakZ9lzXQTxpatHVD8vGEWfk1VYqM0yAwl/K5oRUa?=
+ =?us-ascii?Q?JcKOnoZTKJlLCoh4n3vIHmD2mWyI5ZJcERQlyaWbzrXwUE61vIHw/qlxnNe+?=
+ =?us-ascii?Q?Hpp/kEU7zhKeSxO2L4Hhcxk6Bv0C0mj24Owi04DzhovwlyPkT96jjJLpmxbw?=
+ =?us-ascii?Q?dA=3D=3D?=
 X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0: 
-	RrNosl059kQBnbo9MByIbPBdyV2De7pX7V0Ag6CRa1Z5P0qI5ZOLUgi2s2X4HqW0/yP2+5PFf+oIMa8XiV5w5Nd39b/8IXfIBmj3PfzfmdEXn9s+nPZJn7NA4VVcG9o4EiYAlWky7TW0FWrG9yAne8RaEPq9tPeusYj1PSOwpeblAAjZnudPvOAg2ZW/D6EE53XXVETR6j3PHivsXBB0DLmJ31CWZ1Hqhna1zWOYCQo46CwkVKECNZfH0dBapJSvPsGm8oWof3OidmvOCfrfB+87rja2XLi9OTk9601+HOL0KOBYfsHOEzLlAj6m1BYtzQe5q3i12pjeJbdE7v+KMSmDuMiX/tEOokpbYS12f6oCNx8n7M9DCsVftm0eeEaabWsA2dNy5VMTXssTVqvUiLFc7jcD6Zkj1Oy3KXLWldUXCXgnvKTGpkvuESb91tioWHNm8Csh0AoIPki7agb3PrcxXXwOKc7KWZmct8TeohjDFkjVPr++KpKzNuQRjPc4Jr/zKRz8nTzi7oIT4CRuc67mf6xpdvLNZoB9f2K1uyM6MmVHQ04sE8/eLg4OFUnxPHqRuO1pkyckVMLe59JsaLRzMezN/737s2TCxK5E/yZyCm2XZ/Maba9rsqukTMWBvLuiFyoLOg7HMLtvjWjOgQM0Eh7DgxjzgY1jv+zD05b+W4pjZTapIgcy91zZfXF89Gr8dKL03VLcMH0bcJyMMUuRE+9iyEV7K7GoQEIDFgaLd7njszS+BaWVqXECNBEJmUSI//HfyuvaRXMjbH98PdoW5RnHTIytDcqRExXmW4IxlX/xv/UUXPIeDHlZtdDzCgpcbw262rjeiLy5QJSAvVhOnLWtXKEm+eHAC+CNyM2a9QtD/CovQDq7u3bqpPibg/j2hZja4pXjbkwe+W2zXA==
+	MOErDhEY9SQFHiN7wtyWashA6c/jqLPjVPksDGejqEXui3JHiEFG313xcpEVoIB0Kh/2/+ROZAY7qPjTlIgGCHW4ChvIbZsNtWD51Z0NVn0rG+jSKs/dDIpgqQrItGKX0l7fOQD81ua5gg2IBITgGm0wdOtkj2IPq/im/avEwer22BQe0tM/umTUyysYWyFKYkvHJ+L0JkzBD9/mN1x4vuAdW17mhjGbpYghlgosvvRwmjJDBziQ3l8EL2GdvLPfxgfjX+P2XJNPiBZ4ZPSoil2xNkkkyMD0MXaSI6OIVtYBFdYnF1GB2fYMPwcMEc5uyXmac6CfgPv5higN4TPI/o2R15md8U+YZtlzF6jdAL1vBE252UJgeIMyIFbT4boAXjTO7ih8kd8M0o9bF2UTyVb0Lnr/wIf3ftqpcjcd+TNkM2mPPpIxwr/SuPFv/H/H12F7TL5XzhtwjMNRtvwD5jgP5NwWo4W+guKHWfR8rlmKpbLGL7qcJChahmf56wq9FOGE02iQZzNduujVr2BTmkQNtyNZuWBbClie6FUQFE/e+UFoivftUYLPdY9bMRw50W1k4IdB4BTqYZv1cfJpxqd6CPPSg9WFrI8hrwqXS1IYtPZMzqexPD+IC2YL6arHuD6K2y9YyW+TvOFNO5dPF8mQEUD0VJqT8OAhoFf2rqsLeOOv0xcFI0VAQ3ak9bXNtmwPDVD+Ag2ZvLocwlyowtZVXzaAiBiony47k+NlJtVsfySqk+QWhQ4bRdH7dWQGiF2C0WsYwjfxKu+bYirXXShcR1lx9DLoRoM3KTDFPGsCX5L0PG6EclAt+KoDnY9ioel5JG/nQ+N9RZurESbl+zLQcUDwE4htVejHL+Ov+xTit7liDZPUQ5S5xJvCjNQx5qmRmlmta2leNEEbKhrL+Q==
 X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: bf31bdce-fa4b-4490-2415-08db1ef36d1a
+X-MS-Exchange-CrossTenant-Network-Message-Id: 34bb5a5d-000b-413a-f93c-08db1ef72b9a
 X-MS-Exchange-CrossTenant-AuthSource: DS7PR10MB4926.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Mar 2023 10:05:06.1559
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Mar 2023 10:31:54.3057
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: xWUOvYaHIn7AKqg6KTLLPkCJEboeMxrvp8G7Ip537ZE7u1wrbZ8WWcLJUhIUAaW4xf3COJdWlVsvAaZ0l+uyp7Dc6fo0CVmsbgqo4i9pUoc=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR10MB5407
+X-MS-Exchange-CrossTenant-UserPrincipalName: Ni2wyIIblaYDA2X3qgxSTJCn72JtOWsmq+Q2COrskuveqEBHHH6RU7e9O161f0MlgVyu/mnpMCPW7R/XVQ+g8L5WE4zkaVT6WjxF3f1XBqI=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR10MB7396
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.219,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
- definitions=2023-03-07_04,2023-03-06_01,2023-02-09_01
+ definitions=2023-03-07_04,2023-03-07_01,2023-02-09_01
 X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 mlxscore=0 adultscore=0
  spamscore=0 suspectscore=0 mlxlogscore=999 phishscore=0 malwarescore=0
  classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2212070000
- definitions=main-2303070091
-X-Proofpoint-GUID: -_K5v6ddtyPMDkz-uNt_JFfY18wIymG5
-X-Proofpoint-ORIG-GUID: -_K5v6ddtyPMDkz-uNt_JFfY18wIymG5
-Subject: [virtio-dev] Re: [virtio] [PATCH v10 01/10] virtio: document forward
- compatibility guarantees
+ definitions=main-2303070094
+X-Proofpoint-GUID: CCOMQwtAttSpt2PfemX6L-XyqSvXbPHP
+X-Proofpoint-ORIG-GUID: CCOMQwtAttSpt2PfemX6L-XyqSvXbPHP
+Subject: [virtio-dev] Re: [virtio] [PATCH v10 03/10] admin: introduce group
+ administration commands
 
 "Michael S. Tsirkin" <mst@redhat.com> writes:
 
-> On Mon, Mar 06, 2023 at 01:53:50PM +0000, David Edmondson wrote:
->> "Michael S. Tsirkin" <mst@redhat.com> writes:
->> 
->> > Feature negotiation forms the basis of forward compatibility
->> > guarantees of virtio but has never been properly documented.
->> > Do it now.
->> >
->> > Suggested-by: Halil Pasic <pasic@linux.ibm.com>
->> > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
->> > ---
->> >  content.tex | 42 ++++++++++++++++++++++++++++++++++++++++++
->> >  1 file changed, 42 insertions(+)
->> >
->> > diff --git a/content.tex b/content.tex
->> > index 0e474dd..0c2d917 100644
->> > --- a/content.tex
->> > +++ b/content.tex
->> > @@ -114,21 +114,63 @@ \section{Feature Bits}\label{sec:Basic Facilities of a Virtio Device / Feature B
->> >  In particular, new fields in the device configuration space are
->> >  indicated by offering a new feature bit.
->> >  
->> > +To keep the feature negotiation mechanism extensible, it is important
->> > +that devices \em{do not} offer any feature bits that they would not be
->> > +able to handle if the driver accepted them (even though drivers are not
->> > +supposed to accept them in the first place even if offered, according to
->> > +this version of the specification.) 
->> 
->> I find this (the bit in parenthesis) confusing.
->> 
->> Why are drivers not supposed to accept features that they have been
->> offered, given that they can't know that the device cannot handle the
->> feature that it just offered?
->> 
->> Is this alluding to the later section:
->> 
->> > feature bits not described in this specification, reserved feature
->> > bits and feature bits reserved or not supported for the specific
->> > transport or the specific device type
->> 
->> ?
+> This introduces a general structure for group administration commands,
+> used to control device groups through their owner.
 >
-> exactly. how would you put this better? given an example?
+> Following patches will introduce specific commands and an interface for
+> submitting these commands to the owner.
+>
+> Signed-off-by: Max Gurtovoy <mgurtovoy@nvidia.com>
+> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+> ---
+>  admin.tex        | 108 +++++++++++++++++++++++++++++++++++++++++++++++
+>  introduction.tex |   3 ++
+>  2 files changed, 111 insertions(+)
+>
+> diff --git a/admin.tex b/admin.tex
+> index 3dc47be..7e28b77 100644
+> --- a/admin.tex
+> +++ b/admin.tex
+> @@ -46,4 +46,112 @@ \section{Device groups}\label{sec:Basic Facilities of a Virtio Device / Device g
+>  PCI transport (see \ref{sec:Virtio Transport Options / Virtio Over PCI Bus}).
+>  \end{description}
+>  
+> +\subsection{Group administration commands}\label{sec:Basic Facilities of a Virtio Device / Device groups / Group administration commands}
+>  
+> +The driver sends group administration commands to the owner device of
+> +a group to control member devices of the group.
+> +This mechanism can
+> +be used, for example, to configure a member device before it is
+> +initialized by its driver.
+> +\footnote{The term "administration" is intended to be interpreted
+> +widely to include any kind of control. See specific commands
+> +for detail.}
+> +
+> +All the group administration commands are of the following form:
+> +
+> +\begin{lstlisting}
+> +struct virtio_admin_cmd {
+> +        /* Device-readable part */
+> +        le16 opcode;
+> +        /*
+> +         * 1 - SR-IOV
+> +         * 2 - 65535 reserved
 
-Perhaps it would be enough to say:
+As before, this formatting is potentially confusing. There should be a
+difference between "value X has meaning Y" and "a range from X to Y".
 
-> (even though drivers are not supposed to accept unrecognised features in
-> the first place even if offered, according to the specification)
+> +         */
+> +        le16 group_type;
+> +        /* unused, reserved for future extensions */
+> +        u8 reserved1[12];
+> +        le64 group_member_id;
+> +        u8 command_specific_data[];
+> +
+> +        /* Device-writable part */
+> +        le16 status;
+> +        le16 status_qualifier;
+> +        /* unused, reserved for future extensions */
+> +        u8 reserved2[4];
+> +        u8 command_specific_result[];
+> +};
+> +\end{lstlisting}
+> +
+> +For all commands, \field{opcode}, \field{group_type} and if
+> +necessary \field{group_member_id} and \field{command_specific_data} are
+> +set by the driver, and the owner device sets \field{status} and if
+> +needed \field{status_qualifier} and
+> +\field{command_specific_result}.
+> +
+> +Generally, any unused device-readable fields are set to zero by the driver
+> +and ignored by the device.  Any unused device-writeable fields are set to zero
+> +by the device and ignored by the driver.
+> +
+> +\field{opcode} specifies the command. The valid
+> +values for \field{opcode} can be found in the following table:
+> +
+> +\begin{tabular}{|l|l|}
+> +\hline
+> +opcode & Name & Command Description \\
+> +\hline \hline
+> +0x0000 - 0x7FFF & - &  Group administration commands    \\
+> +\hline
+> +0x8000 - 0xFFFF & - & Reserved    \\
+> +\hline
+> +\end{tabular}
+> +
+> +The \field{group_type} specifies the group type identifier.
+> +The \field{group_member_id} specifies the member identifier within the group.
+> +See section \ref{sec:Introduction / Terminology / Device group}
+> +for the definition of the group type identifier and group member
+> +identifier.
+> +
+> +The following table describes possible \field{status} values;
+> +to simplify common implementations, they are intentionally
+> +matching common \hyperref[intro:errno]{Linux error names and numbers}:
+> +
+> +\begin{tabular}{|l|l|l|}
+> +\hline
+> +Status (decimal) & Name & Description \\
+> +\hline \hline
+> +00   & VIRTIO_ADMIN_STATUS_OK    & successful completion  \\
+> +\hline
+> +22   & VIRTIO_ADMIN_STATUS_EINVAL    & invalid command \\
+> +\hline
+> +other   & -    & group administration command error  \\
+> +\hline
+> +\end{tabular}
+> +
+> +When \field{status} is VIRTIO_ADMIN_STATUS_OK, \field{status_qialifier}
 
-"Unrecognised" is intended as a shorthand for the whole "not described,
-reserved, ...". Maybe "unrecognised or reserved"?
+"status_qualifier"
 
->> > Likewise, it is important that
->> > +drivers \em{do not} accept feature bits they do not know how to handle
->> > +(even though devices are not supposed to offer them in the first place,
->> > +according to this version of the specification.) The preferred way for
->> > +handling reserved and unexpected features is that the driver ignores
->> > +them.
->> > +
->> > +In particular, this is
->> > +especially important for features limited to specific transports,
->> > +as enabling these for more transports in future versions of the
->> > +specification is highly likely to require changing the behaviour
->> > +from drivers and devices.
->> 
->> "require changed behaviour from drivers and devices".
->> 
->> > Drivers and devices supporting
->> > +multiple transports need to carefully maintain per-transport
->> > +lists of allowed features.
->> > +
->> >  \drivernormative{\subsection}{Feature Bits}{Basic Facilities of a Virtio Device / Feature Bits}
->> >  The driver MUST NOT accept a feature which the device did not offer,
->> >  and MUST NOT accept a feature which requires another feature which was
->> >  not accepted.
->> >  
->> > +The driver MUST validate the feature bits offered by the device.
->> > +The driver MUST ignore and MUST NOT accept any feature bit that is
->> > +\begin{itemize}
->> > +\item not described in this specification,
->> > +\item marked as reserved,
->> > +\item not supported for the specific transport,
->> > +\item not defined for the device type.
->> > +\end{itemize}
->> > +
->> >  The driver SHOULD go into backwards compatibility mode
->> >  if the device does not offer a feature it understands, otherwise MUST
->> >  set the FAILED \field{device status} bit and cease initialization.
->> >  
->> > +By contrast, the driver MUST NOT fail solely because a feature
->> > +it does not understand has been offered by the device.
->> > +
->> >  \devicenormative{\subsection}{Feature Bits}{Basic Facilities of a Virtio Device / Feature Bits}
->> >  The device MUST NOT offer a feature which requires another feature
->> >  which was not offered.  The device SHOULD accept any valid subset
->> >  of features the driver accepts, otherwise it MUST fail to set the
->> >  FEATURES_OK \field{device status} bit when the driver writes it.
->> >  
->> > +The device MUST NOT offer feature bits corresponding to features
->> > +it would not support if accepted by the driver (even if the
->> > +driver is prohibited from accepting the feature bits by the
->> > +specification); for the sake of clarity, this refers to feature
->> > +bits not described in this specification, reserved feature bits
->> > +and feature bits reserved or not supported for the specific
->> > +transport or the specific device type, but this does not preclude
->> > +devices written to a future version of this specification from
->> > +offering such feature bits should such a specification have a
->> > +provision for devices to support the corresponding features.
->> > +
->> >  If a device has successfully negotiated a set of features
->> >  at least once (by accepting the FEATURES_OK \field{device
->> >  status} bit during device initialization), then it SHOULD
->> > -- 
->> > MST
->> >
->> >
->> > ---------------------------------------------------------------------
->> > To unsubscribe from this mail list, you must leave the OASIS TC that 
->> > generates this mail.  Follow this link to all your TCs in OASIS at:
->> > https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
+> +is reserved and set to zero by the device.
+> +
+> +When \field{status} is VIRTIO_ADMIN_STATUS_EINVAL,
+> +the following table describes possible \field{status_qialifier} values:
+> +\begin{tabular}{|l|l|l|}
+> +\hline
+> +Status & Name & Description \\
+> +\hline \hline
+> +0x00   & VIRTIO_ADMIN_STATUS_Q_INVALID_COMMAND   & command error: no additional information  \\
+> +\hline
+> +0x01   & VIRTIO_ADMIN_STATUS_Q_INVALID_OPCODE    & unsupported or invalid \field{opcode}  \\
+> +\hline
+> +0x02   & VIRTIO_ADMIN_STATUS_Q_INVALID_FIELD    & unsupported or invalid field within \field{command_specific_data}  \\
+> +\hline
+> +0x03   & VIRTIO_ADMIN_STATUS_Q_INVALID_GROUP    & unsupported or invalid \field{group_type} \\
+> +\hline
+> +0x04   & VIRTIO_ADMIN_STATUS_Q_INVALID_MEMBER    & unsupported or invalid \field{group_member_id} \\
+> +\hline
+> +0x05-0xFFFF   & -    & reserved for future use \\
+> +\hline
+> +\end{tabular}
+> +
+> +Each command uses a different \field{command_specific_data} and
+> +\field{command_specific_result} structures and the length of
+> +\field{command_specific_data} and \field{command_specific_result}
+> +depends on these structures and is described separately or is
+> +implicit in the structure description.
+
+Would it make sense to add some advisory text about alignment of the
+fields after command_specific_data? It would be annoying if status,
+status_qualifier, etc. were poorly aligned for a common hardware
+implementation.
+
+> diff --git a/introduction.tex b/introduction.tex
+> index 287c5fc..0d849a9 100644
+> --- a/introduction.tex
+> +++ b/introduction.tex
+> @@ -68,6 +68,9 @@ \section{Normative References}\label{sec:Normative References}
+>  	\phantomsection\label{intro:FUSE}\textbf{[FUSE]} &
+>  	Linux FUSE interface,
+>  	\newline\url{https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/uapi/linux/fuse.h}\\
+> +	\phantomsection\label{intro:errno}\textbf{[errno]} &
+> +	Linux error names and numbers,
+> +	\newline\url{https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/uapi/uapi/asm-generic/errno-base.h}\\
+>          \phantomsection\label{intro:eMMC}\textbf{[eMMC]} &
+>          eMMC Electrical Standard (5.1), JESD84-B51,
+>          \newline\url{http://www.jedec.org/sites/default/files/docs/JESD84-B51.pdf}\\
+> -- 
+> MST
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe from this mail list, you must leave the OASIS TC that 
+> generates this mail.  Follow this link to all your TCs in OASIS at:
+> https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
 -- 
-He caught a fleeting glimpse of a man, moving uphill pursued by a bus.
+There is one bird in my house.
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
