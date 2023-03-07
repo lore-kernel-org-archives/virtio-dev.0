@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-11475-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-11476-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1FD06C678DB
-	for <virtio-dev@archiver.kernel.org>; Tue,  7 Mar 2023 11:05:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3EF1AC678D5
+	for <virtio-dev@archiver.kernel.org>; Tue,  7 Mar 2023 11:16:11 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 85451776C3
-	for <virtio-dev@archiver.kernel.org>; Tue,  7 Mar 2023 11:05:25 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 86E54F3F45
+	for <virtio-dev@archiver.kernel.org>; Tue,  7 Mar 2023 11:16:10 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 2C02A9867B5
-	for <virtio-dev@archiver.kernel.org>; Tue,  7 Mar 2023 11:05:25 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 7CF529866D0
+	for <virtio-dev@archiver.kernel.org>; Tue,  7 Mar 2023 11:16:10 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id B9B239866C7; Tue,  7 Mar 2023 11:05:24 +0000 (UTC)
+	id 7340C9866C5; Tue,  7 Mar 2023 11:16:10 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,379 +24,738 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 8C3C79866C2;
-	Tue,  7 Mar 2023 11:04:48 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 606099866C3;
+	Tue,  7 Mar 2023 11:16:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nZMTFocKCRXL6Tu1ceyATZ/RGFyOQ5FGU6ebyTWbbQ85W0JbFLaBb1e78h3nNKJg1UaiAS+m6d2ARzHklFnrwieFvtKzbIMhuCbFj9KaHEjJDM+uhpjUVPjyqLni2beqCTBdRMJfBIIgjSAHk0flTLFd5DhXODEUOWNH5Mr/ZQjeQ2gpfYifJuHHBhaFBldGY2oJz3pkY4JcyayWCsfAeL3h2vVldS5AWoXuosLyR4FiaGxcP6/sgtoEssQH3Jq93z2b7yx+BkHCp5O3pw367ONxlo7ZyYZ55oFGuJ4VccYM4h2EyHJbqmzcPenz6sViJg0I7RRf0+tXU038ued2vA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=1nAHX/rf2yjOII7GIyJiNuQ6AVyNoPrpPYqRkQeA6Cw=;
- b=NClHgGE39cCcJ9IsBkHrNOZpXn41G8fMuW19/1BqoAkAPFID0xWHhOO1iifye5ZBASsJppL2+ohpz1FNVqRUa9p9/BSjixO0hO+a46t3l27HBlLYuuQW4LGnU963R94GhN18Fgjq7r7Z05uONyXoT58bSYg5ircxw+6fvwpQQYVclHmcEjd74Tqt0R83mn+zgkVRXFW0WAZ87C+acA6N8FTLo8JhcdE0VXckfZCbRPunjQ0l3bh5rGYDK+Plus+WyJpg1MLk2fXLIe3HL1tvJfHoocsGQdRUuOo+FhYoo+wN4BvWtZvxnHFdtvKiolQb9fEa7IpiObSbttfRnUsmLg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-From: David Edmondson <david.edmondson@oracle.com>
-To: "Michael S. Tsirkin" <mst@redhat.com>, virtio-comment@lists.oasis-open.org,
-        virtio-dev@lists.oasis-open.org, jasowang@redhat.com, mst@redhat.com,
-        cohuck@redhat.com, sgarzare@redhat.com, stefanha@redhat.com,
-        nrupal.jani@intel.com, Piotr.Uminski@intel.com, hang.yuan@intel.com
-Cc: virtio@lists.oasis-open.org, Zhu Lingshan <lingshan.zhu@intel.com>,
-        pasic@linux.ibm.com, Shahaf Shuler <shahafs@nvidia.com>,
-        Parav Pandit
- <parav@nvidia.com>, Max Gurtovoy <mgurtovoy@nvidia.com>
-In-Reply-To: <6677477d48dfc234d3d1a339fb39d8fa2a3b983d.1677761896.git.mst@redhat.com>
-References: <cover.1677761896.git.mst@redhat.com>
- <6677477d48dfc234d3d1a339fb39d8fa2a3b983d.1677761896.git.mst@redhat.com>
-Date: Tue, 07 Mar 2023 11:04:33 +0000
-Message-ID: <m27cvszuta.fsf@oracle.com>
-Content-Type: text/plain
-X-ClientProxiedBy: AS4PR09CA0015.eurprd09.prod.outlook.com
- (2603:10a6:20b:5e0::20) To DS7PR10MB4926.namprd10.prod.outlook.com
- (2603:10b6:5:3ac::20)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS7PR10MB4926:EE_|PH0PR10MB7062:EE_
-X-MS-Office365-Filtering-Correlation-Id: 3effa832-b183-40a2-8993-08db1efbbf73
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 
-	r/6RESTZxtvD2UEN1y3DgXnh8lDA3idaoS22zEE2fKwp4zvYGSYmKeJ3aE0guk/J41RboSX1CHEr5CR70RxvjbSr4W/GohEZ63+HTVlsVf+GI9wUMArc3Xlj5U0cKbzCs4OUytQVQzhLeMs29snCyHfl7816jzm11SjdN9Pd1SOye1c5Nw4K62BvrFvJGqeGk+hy1doOgkzs38Pi8R/z0UMREviETr/UwV5C0IwVwfeS4wPKbcEBVSajgEkUzVhd+AC8ohnekD9sYyiQNuQaCr7vT03GyXWuVjrpZzdlT9oYuB+n5cgdgGIvQg04SFZJhCNrZW7WtcArHj5hFzwNGe43Vt7lAXcMPzI6e5vvk3v1HOu4eANNMbjeip9/xv86F0tRxQ6BxI5faoTHiNO2wGF98Sqz3E4Kg/k1U35rSAH4Pi9jWXHRrzsxgEEnsfnscbN+PPrl0ZDmmHpOBjUrqlscIeobRSj7iAK4P2we3mzV6rdxxMIs0aeZ3uKetNYuMvMsHN6EbqE1K8wa195F/Y8/fwdkbkv4dkJG4MsVkfYfF60dDdkAkH33aN6b/scq90vl5OHRGlOzE2YeVm0hkcnBYc4AdhiUAbgv1PNSiBPBVOepU2pD+VGHhjE9elk5qKKS8OdRIdHSHQSLGeYnqutsAh4ad3ZCiQXpwWTE351KzitZFjmWVZ/W4vVTS6o6+QFwN0dMbzAMGE3VAvaZVg==
-X-Forefront-Antispam-Report: 
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR10MB4926.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(396003)(39860400002)(136003)(346002)(376002)(366004)(451199018)(36756003)(54906003)(316002)(478600001)(83380400001)(6486002)(966005)(2616005)(6666004)(30864003)(6506007)(26005)(6512007)(921005)(86362001)(5660300002)(8936002)(41300700001)(66476007)(7416002)(66556008)(66946007)(2906002)(8676002)(38100700002)(4326008)(186003)(44832011)(66899018);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: 
-	=?us-ascii?Q?gMzx6zLYrLTgSjSBvqvvDHdU7g8VGQrO0ZQb2lECmwjaq6LC7bhRX4TFV8Vw?=
- =?us-ascii?Q?hV6WYcYIkhTSKYgjYEo6RwMwv1pRp7HRwaLpVEoSbLi9p04ZMoomLkASRC9Z?=
- =?us-ascii?Q?MM43RFeESnVGYZHWO/2ioar2a4JUNrQ9IWCq/xD/Kw/EYV0YT3oQKSjsud3L?=
- =?us-ascii?Q?Zbef0M9RKeZ+h94QHB0BUDUCSuCI6T87cMdMtW0nKg1IG+bvEw8GjIcOTmlV?=
- =?us-ascii?Q?TA2aB2182HBZ24602VF+yjPJaUUJ1PXbLXyvlfe9QQfmP5BPiNzod06a0DqM?=
- =?us-ascii?Q?5RvDUru/aZL5GC32CBscvO0vumQrVSxtN2Ppbg79lmsJJT3TqkYk/QBtKa/V?=
- =?us-ascii?Q?YE/uWfHpIG3bTap9elHeO+vu1L5s//8dy+3nH9Y72i647V6Usqu+VfcqKGf/?=
- =?us-ascii?Q?FLIIhCFOs+SWmc6b9Kd8IvpjAZGBI/L5vWZjaWqiJ4eSdk+h2CDkih5w6PGt?=
- =?us-ascii?Q?6dSfALtkVx40UGuzR2MYmUar7LRny7joReUkh/XMIIiStoNLLOOmiO56+PLO?=
- =?us-ascii?Q?UTdkC/4TSOtEV74/INFEgs5wIse7k3VMPCpkWvr9uY7mb/jcrWxtc25f5iX7?=
- =?us-ascii?Q?GoW5hAxZDzlEtVBd6CBfxpA03LgmQMrL/X5igcqu0APvquK7wVF2yA7DS0f/?=
- =?us-ascii?Q?0DMCkHwYwlFl4Y3ilTUhSTxyCnbx0tVeP2xWPj8ne+OPGwfb8h/mqkrZxkR9?=
- =?us-ascii?Q?criDB6A5us8EDpeOwHxH5afXAJQeyzJ1w9ud8QwJflGfiVUPW2ZQZJF8XNBm?=
- =?us-ascii?Q?VQ8qGbd5iR2Z7pFDVw7Mdnqxg9CaurJBqJAxpslkiYbd8v0EsKzGe/IY1fSQ?=
- =?us-ascii?Q?hYKPv2R+45XrBFrg34jTmNPd12s7JFo5i5XXPMDK+mH0W3VykjwXFuNu6Qpn?=
- =?us-ascii?Q?dFhuDS+qJqORKVlF1J2wb7mSauhfwMkPEUJxHf61+T34nvMvoZsyYeRTJk9x?=
- =?us-ascii?Q?kHSrbmGe/6kmn1qMjJ7BX5qxfW9jIkzyt74b45MHJj+AY4CF/G3rNG7fcOBw?=
- =?us-ascii?Q?UTeLzqVYPleNm1z5cxL51AkQmGaIeMTkwMV2l16SxU9gcyYtqO4mvTABk3Bw?=
- =?us-ascii?Q?ktJbSIVm8oFqhElNO9Rlx6XkjIewrF34N/XrJfD3tL7CCRm70ckVQacDzK/M?=
- =?us-ascii?Q?ZwO3CPQiiLY0M1okwbfgYutRcIfZErrEHDB15MCCseT82ww3L/ftQCDWIt7d?=
- =?us-ascii?Q?8oRyyZm21Va/Z4B8i2+2KxznzErW1nhlh0+C+9P4ZQqj0h5NKzQ3bn8V4NBm?=
- =?us-ascii?Q?39mMdJX4up/HEPY2ICWZLS8jJeUVlHkaFJg/MTDm9hSAYBD1WzYQ5tkmDHx9?=
- =?us-ascii?Q?lV2khPx855o+lJRy7P/B2TrTqlh6gqlSOIBW1C8BdnMEEbszfgrtkxzxTAwM?=
- =?us-ascii?Q?Cb7z7cot1epgI+bjqNlJ3pBfVcGgAa8BNji0CgZMFxPJKezKwMUShikqkSv4?=
- =?us-ascii?Q?Egs8T5Gfeb36KZzBVYWLRaNi9H4z4/CfXtTU6d0eQNsEw/rMfMAakpZfm5ye?=
- =?us-ascii?Q?v5PvyixbMgm0IeZqvVZeYlm2R9dP/aYbdihe6LIpcwS2x/HkjcxUx4Q6PsHe?=
- =?us-ascii?Q?fe9fXHYgObx1sO2jh8mmUZYoMG6cOc27posmIJN8QAnd+gxqn60r/lPkW8XZ?=
- =?us-ascii?Q?xA=3D=3D?=
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0: 
-	q1k8xmHPKB3GCPSKHkg06n33rFPV9T2vBfi97PanUrb9YvN+jSCiTQbSRfeB48DPZVqXQv1LN6SvIgeCRPW3OHbQP9hX9w/ncYFOuLdDq8LtsZ3aGl2uErIB8Wi8wFxGe1sUplWsxVNswQwt0zJ7KeAELQWzG20FJN4DZzIFxbCXenVTyFgssVzvVbCgko+vCRs9cuxqNHJjroBEwGD0vC0k5SgzASNkrKnT1ajo4+lq/N6DoYOhTBxX9ewXPB2L2yCf+3MbJPNYftKzMdkBW6WdWWk/GwZ5CK8QgnhUFB9iAAS9tcw55wnsWBIOS84RFDyNHKLP74uJirHsd8g20sy2epjBUn+l3IqqSYVv86iBG1LbhgAbpJ01bfoBmkCxB2vsPIsZGk+HpiVcD56Ea45wplbYEtZKefl9SNItyOBUZQjcYhDvGi2QcUyp5eyc7RDA+2zwTyq32/uYQ1SDDq3AYgIrPGTiB/Kj+d5HwjPFuBb3FBg9x9RaJ5b6q93O/W95SmxD0QgAb+V7jpufCvpUHW6hIWkO3PQWeAduQpytdgiYhbIi+bsdHeZmgj3WPP1F/sdvKrpKhqJhp+bo7Ygbd2sVqBSfqpYv3mBsB28o+SlWqvhTnCG6V9Hd5u1jPlt5quzSxGG66IhwlYrD16B6eBBZ9Cmy+ecZgBSfl/71wNQT2DvcDEAHKo2AtSCunZf8EPRqEJsjuk6HM6PUauLTjHAMSfUflnlZnC2cb/+ygKPrtnMCbOb2lroqUu2IH43HopK8fjHZP0mn447JMVlvKoVLnpkmE3RcHZSaW1p81vQYx438Qzk4oJC0mxRSufWfGSGhD6YZRm/05nsUEIxw7S6i2BvuOJ82PxZ3HpEd9peBnFWjjjz1pEFuvGfE6SyH/6PZilBGrF9OgrPwOw==
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3effa832-b183-40a2-8993-08db1efbbf73
-X-MS-Exchange-CrossTenant-AuthSource: DS7PR10MB4926.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Mar 2023 11:04:40.3045
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 10rK85KZ58fqw24Y+iCAb2rlky1NoR/OyxexmVprToJEoU7N4uwieHRvqpBr1l2xP/sivnUjfEfKZ0qyushSRYX33ei+nb0CWzch/4yKll4=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR10MB7062
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
- definitions=2023-03-07_05,2023-03-07_01,2023-02-09_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 mlxlogscore=999
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 malwarescore=0
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2212070000 definitions=main-2303070100
-X-Proofpoint-GUID: pZutX5WBfU4QJNtxiIG1Xemc1m8r8Pbo
-X-Proofpoint-ORIG-GUID: pZutX5WBfU4QJNtxiIG1Xemc1m8r8Pbo
-Subject: [virtio-dev] Re: [virtio-comment] [PATCH v10 09/10] admin: conformance clauses
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045176;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=23;SR=0;TI=SMTPD_---0VdL2l-e_1678187758;
+Message-ID: <1678187717.5272117-2-xuanzhuo@linux.alibaba.com>
+Date: Tue, 7 Mar 2023 19:15:17 +0800
+From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Cc: hans@linux.alibaba.com,
+ herongguang@linux.alibaba.com,
+ zmlcc@linux.alibaba.com,
+ dust.li@linux.alibaba.com,
+ tonylu@linux.alibaba.com,
+ zhenzao@linux.alibaba.com,
+ helinguo@linux.alibaba.com,
+ gerry@linux.alibaba.com,
+ mst@redhat.com,
+ cohuck@redhat.com,
+ jasowang@redhat.com,
+ Jan Kiszka <jan.kiszka@siemens.com>,
+ wintera@linux.ibm.com,
+ kgraul@linux.ibm.com,
+ wenjia@linux.ibm.com,
+ jaka@linux.ibm.com,
+ hca@linux.ibm.com,
+ twinkler@linux.ibm.com,
+ raspl@linux.ibm.com,
+ virtio-dev@lists.oasis-open.org,
+ pasic@linux.ibm.com,
+ virtio-comment@lists.oasis-open.org
+References: <20230209033056.96657-1-xuanzhuo@linux.alibaba.com>
+ <20230209033056.96657-2-xuanzhuo@linux.alibaba.com>
+In-Reply-To: <20230209033056.96657-2-xuanzhuo@linux.alibaba.com>
+Subject: [virtio-dev] Re: [PATCH v3 1/1] virtio-ism: introduce new device virtio-ism
 
-"Michael S. Tsirkin" <mst@redhat.com> writes:
 
-> Add conformance clauses for admin commands and admin virtqueues.
+Any comments for this. ^_^
+
+Thanks.
+
+On Thu,  9 Feb 2023 11:30:56 +0800, Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
+> An ISM(Internal Shared Memory) device provides the ability to access memory
+> shared between multiple devices. This allows low-overhead communication in
+> presence of such memory. For example, memory can be shared with guests of
+> multiple virtual machines running on the same host, with each virtual machine
+> including an ism device and with the guests getting the shared memory by the ism
+> devices.
 >
-> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+> An ism device can communicate with multiple peers simultaneously. This
+> communication can be dynamically started and ended.
+>
+> |-------------------------------------------------------------------------------------------------------------|
+> | |------------------------------------------------|       |------------------------------------------------| |
+> | | Guest                                          |       | Guest                                          | |
+> | |                                                |       |                                                | |
+> | |   ----------------                             |       |   ----------------                             | |
+> | |   |    driver    |     [M1]   [M2]   [M3]      |       |   |    driver    |             [M2]   [M3]     | |
+> | |   ----------------       |      |      |       |       |   ----------------               |      |      | |
+> | |    |cq|                  |map   |map   |map    |       |    |cq|                          |map   |map   | |
+> | |    |  |                  |      |      |       |       |    |  |                          |      |      | |
+> | |    |  |                -------------------     |       |    |  |                --------------------    | |
+> | |----|--|----------------|  device memory  |-----|       |----|--|----------------|  device memory   |----| |
+> | |    |  |                -------------------     |       |    |  |                --------------------    | |
+> | |                                |               |       |                               |                | |
+> | |                                |               |       |                               |                | |
+> | | Qemu                           |               |       | Qemu                          |                | |
+> | |--------------------------------+---------------|       |-------------------------------+----------------| |
+> |                                  |                                                       |                  |
+> |                                  |                                                       |                  |
+> |                                  |------------------------------+------------------------|                  |
+> |                                                                 |                                           |
+> |                                                                 |                                           |
+> |                                                   --------------------------                                |
+> |                                                    | M1 |   | M2 |   | M3 |                                 |
+> |                                                   --------------------------                                |
+> |                                                                                                             |
+> | HOST                                                                                                        |
+> ---------------------------------------------------------------------------------------------------------------
+>
+> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> Signed-off-by: Jiang Liu <gerry@linux.alibaba.com>
+> Signed-off-by: Dust Li <dust.li@linux.alibaba.com>
+> Signed-off-by: Tony Lu <tonylu@linux.alibaba.com>
+> Signed-off-by: Helin Guo <helinguo@linux.alibaba.com>
+> Signed-off-by: Hans Zhang <hans@linux.alibaba.com>
+> Signed-off-by: He Rongguang <herongguang@linux.alibaba.com>
+> Suggested-by: Halil Pasic <pasic@linux.ibm.com>
 > ---
->  admin.tex | 216 +++++++++++++++++++++++++++++++++++++++++++++++++++++-
->  1 file changed, 215 insertions(+), 1 deletion(-)
+>  conformance.tex |  26 +++
+>  content.tex     |   1 +
+>  virtio-ism.tex  | 573 ++++++++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 600 insertions(+)
+>  create mode 100644 virtio-ism.tex
 >
-> diff --git a/admin.tex b/admin.tex
-> index 1172054..6c4f79c 100644
-> --- a/admin.tex
-> +++ b/admin.tex
-> @@ -251,6 +251,145 @@ \subsection{Group administration commands}\label{sec:Basic Facilities of a Virti
->  supporting multiple group types, the list of supported commands
->  might differ between different group types.
->  
-> +\devicenormative{\paragraph}{Group administration commands}{Basic Facilities of a Virtio Device / Device groups / Group administration commands}
+> diff --git a/conformance.tex b/conformance.tex
+> index c3c1d3e..0a1456a 100644
+> --- a/conformance.tex
+> +++ b/conformance.tex
+> @@ -335,6 +335,17 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
+>  \item \ref{drivernormative:Device Types / PMEM Device / Device Initialization}
+>  \end{itemize}
+>
+> +\conformance{\subsection}{ISM Driver Conformance}\label{sec:Conformance / Driver Conformance / ISM Driver Conformance}
 > +
-> +The device MUST validate \field{opcode}, \field{group_type} and
-> +\field{group_member_id}, and if any of these has an invalid or
-> +unsupported value, set \field{status} to
-> +VIRTIO_ADMIN_STATUS_EINVAL and set \field{status_qualifier}
-> +accordingly:
+> +A ISM driver MUST conform to the following normative statements:
+> +
 > +\begin{itemize}
-> +\item if \field{group_type} is invalid, \field{status_qualifier}
-> +	MUST be set to VIRTIO_ADMIN_STATUS_Q_INVALID_GROUP;
-> +\item otherwise, if \field{opcode} is invalid,
-> +	\field{status_qualifier} MUST be set to
-> +	VIRTIO_ADMIN_STATUS_Q_INVALID_OPCODE;
-> +\item otherwise, if \field{group_member_id} is used by the
-> +	specific command and is invalid, \field{status_qualifier} MUST be
-> +	set to VIRTIO_ADMIN_STATUS_Q_INVALID_MEMBER.
+> +\item \ref{drivernormative:Device Types / ISM Device / Device Initialization}
+> +\item \ref{drivernormative:Device Types / ISM Device / Device Operation / Alloc ISM Region}
+> +\item \ref{drivernormative:Device Types / ISM Device / Device Operation / Attach ISM Region}
+> +\item \ref{drivernormative:Device Types / ISM Device / Device Operation / Detach ISM Region}
 > +\end{itemize}
 > +
-> +If a command completes successfully, the device MUST set
-> +\field{status} to VIRTIO_ADMIN_STATUS_OK.
-> +
-> +If a command fails, the device MUST set
-> +\field{status} to a value different from VIRTIO_ADMIN_STATUS_OK.
-> +
-> +If \field{status} is set to VIRTIO_ADMIN_STATUS_EINVAL, the
-> +device state MUST NOT change, that is the command MUST NOT have
-> +any side effects on the device, in particular the device MUST not
-
-MUST NOT
-
-> +enter an error state as a result of this command.
-> +
-> +If a command fails, the device state generally SHOULD NOT change,
-> +as far as possible.
-> +
-> +The device MAY enforce additional restrictions and dependencies on
-> +opcodes used by the driver and MAY fail the command
-> +VIRTIO_ADMIN_CMD_LIST_USE with \field{status} set to VIRTIO_ADMIN_STATUS_EINVAL
-> +and \field{status_qualifier} set to VIRTIO_ADMIN_STATUS_Q_INVALID_FIELD
-> +if the list of commands used violate internal device dependencies.
-> +
-> +If the device supports multiple group types, commands for each group
-> +type MUST operate independently of each other, in particular,
-> +the device MAY return different results for VIRTIO_ADMIN_CMD_LIST_QUERY
-> +for different group types.
-> +
-> +After reset, if the device supports a given group type
-> +and before receiving VIRTIO_ADMIN_CMD_LIST_USE for this group type
-> +the device MUST assume
-> +that the list of legal commands used by the driver consists of
-> +the two commands VIRTIO_ADMIN_CMD_LIST_QUERY and VIRTIO_ADMIN_CMD_LIST_USE.
-> +
-> +After completing VIRTIO_ADMIN_CMD_LIST_USE successfully,
-> +the device MUST set the list of legal commands used by the driver
-> +to the one supplied in \field{command_specific_data}.
-> +
-> +The device MUST set the list of legal commands used by the driver
-> +to the one supplied in VIRTIO_ADMIN_CMD_LIST_USE.
-
-Are these last two paragraphs not saying the same thing?
-
-> +The device MUST validate commands against the list used by
-> +the driver and MUST fail any commands not in the list with
-> +\field{status} set to VIRTIO_ADMIN_STATUS_EINVAL
-> +and \field{status_qualifier} set to
-> +VIRTIO_ADMIN_STATUS_Q_INVALID_OPCODE.
-> +
-> +The list of supported commands MUST NOT shrink (but MAY expand):
-> +after reporting a given command as supported through
-> +VIRTIO_ADMIN_CMD_LIST_QUERY the device MUST NOT later report it
-> +as unsupported.  Further, after a given set of commands has been
-> +used (via a successful VIRTIO_ADMIN_CMD_LIST_USE), then after a
-> +device or system reset the device SHOULD complete successfully
-> +any following calls to VIRTIO_ADMIN_CMD_LIST_USE with the same
-> +list of commands; if this command VIRTIO_ADMIN_CMD_LIST_USE fails
-> +after a device or system reset, the device MUST not fail it
-> +solely because of the command list used.  Failure to do so would
-> +interfere with resuming from suspend and error recovery.
-> +
-> +When processing a command with the SR-IOV group type,
-> +if the device does not have an SR-IOV Extended Capability or
-> +if \field{VF Enable} is clear
-> +then the device MUST fail all commands with
-> +\field{status} set to VIRTIO_ADMIN_STATUS_EINVAL and
-> +\field{status_qualifier} set to
-> +VIRTIO_ADMIN_STATUS_Q_INVALID_GROUP;
-> +otherwise, if \field{group_member_id} is not
-> +between $1$ and \field{NumVFs} inclusive,
-> +the device MUST fail all commands with
-> +\field{status} set to VIRTIO_ADMIN_STATUS_EINVAL and
-> +\field{status_qualifier} set to
-> +VIRTIO_ADMIN_STATUS_Q_INVALID_MEMBER;
-> +\field{NumVFs}, \field{VF Migration Capable}  and
-> +\field{VF Enable} refer to registers within the SR-IOV Extended
-> +Capability as specified by \hyperref[intro:PCIe]{[PCIe]}.
-> +
-> +\drivernormative{\paragraph}{Group administration commands}{Basic Facilities of a Virtio Device / Device groups / Group administration commands}
-> +
-> +The driver MAY discover whether device supports a specific group type
-> +by issuing VIRTIO_ADMIN_CMD_LIST_QUERY with the matching
-> +\field{group_type}.
-> +
-> +The driver MUST issue VIRTIO_ADMIN_CMD_LIST_USE
-> +and wait for it to be completed with status
-> +VIRTIO_ADMIN_STATUS_OK before issuing any commands
-> +(except for the initial VIRTIO_ADMIN_CMD_LIST_QUERY
-> +and VIRTIO_ADMIN_CMD_LIST_USE).
-> +
-> +The driver SHOULD NOT set bits in device_admin_cmds
-> +if it is not familiar with how the command opcode
-> +is used, as dependencies between command opcodes might exist.
-> +
-> +The driver MUST NOT request (via VIRTIO_ADMIN_CMD_LIST_USE)
-> +the use of any commands not previously reported as
-> +supported for the same group type by VIRTIO_ADMIN_CMD_LIST_QUERY.
-> +
-> +The driver MUST NOT use any commands for a given group type
-> +before sending VIRTIO_ADMIN_CMD_LIST_USE with the correct
-> +list of command opcodes and group type.
-> +
-> +The driver MAY block use of VIRTIO_ADMIN_CMD_LIST_QUERY and
-> +VIRTIO_ADMIN_CMD_LIST_USE by issuing VIRTIO_ADMIN_CMD_LIST_USE
-> +with respective bits cleared in \field{command_specific_data}.
-
-This runs contrary to the assertion "The list of supported commands MUST
-NOT shrink", given that a driver is told to assume that
-VIRTIO_ADMIN_CMD_LIST_QUERY and VIRTIO_ADMIN_CMD_LIST_USE are the only
-commands initially available.
-
-> +The driver MUST handle a command error with a reserved \field{status}
-> +value in the same way as \field{status} set to VIRTIO_ADMIN_STATUS_EINVAL
-> +(except possibly for different error reporting/diagnostic messages).
-> +
-> +The driver MUST handle a command error with a reserved
-> +\field{status_qualifier} value in the same way as
-> +\field{status_qualifier} set to
-> +VIRTIO_ADMIN_STATUS_Q_INVALID_COMMAND (except possibly for
-> +different error reporting/diagnostic messages).
-> +
-> +When sending commands with the SR-IOV group type,
-> +the driver specify a value for \field{group_member_id}
-> +between $1$ and \field{NumVFs} inclusive,
-> +the driver MUST also make sure that as long as any such command
-> +is outstanding, \field{VF Migration Capable} is clear and
-> +\field{VF Enable} is set;
-> +\field{NumVFs}, \field{VF Migration Capable}  and
-> +\field{VF Enable} refer to registers within the SR-IOV Extended
-> +Capability as specified by \hyperref[intro:PCIe]{[PCIe]}.
-> +
->  \section{Administration Virtqueues}\label{sec:Basic Facilities of a Virtio Device / Administration Virtqueues}
->  
->  An administration virtqueue of an owner device is used to submit
-> @@ -323,4 +462,79 @@ \section{Administration Virtqueues}\label{sec:Basic Facilities of a Virtio Devic
->  of the specification are designed, new fields can be added to the
->  tail of a structure, with the driver/device using the full
->  structure without concern for versioning.
-> ->>>>>>> 0edc690... admin: introduce virtio admin virtqueues
-
-Oh, here is where it got removed :-)
-
-> +
-> +\devicenormative{\paragraph}{Group administration commands}{Basic Facilities of a Virtio Device / Administration virtqueues}
-> +
-> +The device MUST support device-readable and device-writeable buffers
-> +shorter than described in this specification, by
-> +\begin{enumerate}
-> +\item acting as if any data that would be read outside the
-> +device-readable buffers is set to zero, and
-> +\item discarding data that would be written outside the
-> +specified device-writeable buffers.
-> +\end{enumerate}
-> +
-> +The device MUST support device-readable and device-writeable buffers
-> +longer than described in this specification, by
-> +\begin{enumerate}
-> +\item ignoring any data in device-readable buffers outside
-> +the expected length, and
-> +\item only writing the expected structure to the device-writeable
-> +buffers, ignoring any extra buffers, and reporting the
-> +actual length of data written, in bytes,
-> +as buffer used length.
-> +\end{enumerate}
-> +
-> +The device SHOULD initialize the device-writeable buffer
-> +up to the length of the structure described by this specification or
-> +the length of the buffer supplied by the driver (even if the buffer is
-> +all set to zero), whichever is shorter.
-> +
-> +The device MUST NOT fail a command solely because the buffers
-> +provided are shorter or longer than described in this
-> +specification.
-> +
-> +The device MUST initialize the device-writeable part of
-> +\field{struct virtio_admin_cmd} that is a multiple of 64 bit in
-> +size.
-> +
-> +The device MUST initialize \field{status} in \field{struct
-> +virtio_admin_cmd}.
-> +
-> +The device MUST process commands on a given administration virtqueue
-> +in the order in which they are queued.
-> +
-> +If multiple administration virtqueues have been configured,
-> +device MAY process commands on distinct virtqueues with
-> +no order constraints.
-> +
-> +\drivernormative{\paragraph}{Group administration commands}{Basic Facilities of a Virtio Device / Administration virtqueues}
-> +
-> +The driver MAY supply device-readable or device-writeable parts
-> +of \field{struct virtio_admin_cmd} that are longer than described in
-> +this specification.
-> +
-> +The driver SHOULD supply device-readable part of
-> +\field{struct virtio_admin_cmd} that is at least as
-> +large as the structure described by this specification
-> +(even if the structure is all set to zero).
-> +
-> +The driver MUST supply both device-readable or device-writeable parts
-> +of \field{struct virtio_admin_cmd} that are a multiple of 64 bit
-> +in length.
-
-This addresses my question on a previous patch.
-
-> +The device MUST supply both device-readable or device-writeable parts
-> +of \field{struct virtio_admin_cmd} that are larger than zero in
-> +length. However, \field{command_specific_data} and
-> +\field{command_specific_result} MAY be zero in length, unless
-> +specified otherwise for the command.
-> +
-> +The driver MUST NOT assume that the device will initialize the whole
-> +device-writeable part of \field{struct virtio_admin_cmd} as described in the specification; instead,
-> +the driver MUST act as if the structure
-> +outside the part of the buffer used by the device
-> +is set to zero.
-> +
-> +If multiple administration virtqueues have been configured,
-> +the driver MUST ensure ordering for commands
-> +placed on different administration virtqueues.
-> -- 
-> MST
+>  \conformance{\section}{Device Conformance}\label{sec:Conformance / Device Conformance}
 >
+>  A device MUST conform to the following normative statements:
+> @@ -621,6 +632,21 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
+>  \item \ref{devicenormative:Device Types / PMEM Device / Device Operation / Virtqueue return}
+>  \end{itemize}
 >
-> This publicly archived list offers a means to provide input to the
-> OASIS Virtual I/O Device (VIRTIO) TC.
+> +\conformance{\subsection}{ISM Device Conformance}\label{sec:Conformance / Device Conformance / ISM Device Conformance}
+> +
+> +A ISM device MUST conform to the following normative statements:
+> +
+> +\begin{itemize}
+> +\item \ref{devicenormative:Device Types / ISM Device / Device configuration layout}
+> +\item \ref{devicenormative:Device Types / ISM Device / Device Initialization}
+> +\item \ref{devicenormative:Device Types / ISM Device / Device Operation / Alloc ISM Region}
+> +\item \ref{devicenormative:Device Types / ISM Device / Device Operation / Query ISM Region}
+> +\item \ref{devicenormative:Device Types / ISM Device / Device Operation / Attach ISM Region}
+> +\item \ref{devicenormative:Device Types / ISM Device / Device Operation / Detach ISM Region}
+> +\item \ref{devicenormative:Device Types / ISM Device / Device Operation / Grant ISM Region}
+> +\item \ref{devicenormative:Device Types / ISM Device / Device Operation / Inform Event IRQ Vector}
+> +\end{itemize}
+> +
+>  \conformance{\section}{Legacy Interface: Transitional Device and Transitional Driver Conformance}\label{sec:Conformance / Legacy Interface: Transitional Device and Transitional Driver Conformance}
+>  A conformant implementation MUST be either transitional or
+>  non-transitional, see \ref{intro:Legacy
+> diff --git a/content.tex b/content.tex
+> index 96f4723..fe02aec 100644
+> --- a/content.tex
+> +++ b/content.tex
+> @@ -7545,6 +7545,7 @@ \subsubsection{Legacy Interface: Framing Requirements}\label{sec:Device
+>  \input{virtio-scmi.tex}
+>  \input{virtio-gpio.tex}
+>  \input{virtio-pmem.tex}
+> +\input{virtio-ism.tex}
 >
-> In order to verify user consent to the Feedback License terms and
-> to minimize spam in the list archive, subscription is required
-> before posting.
+>  \chapter{Reserved Feature Bits}\label{sec:Reserved Feature Bits}
 >
-> Subscribe: virtio-comment-subscribe@lists.oasis-open.org
-> Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
-> List help: virtio-comment-help@lists.oasis-open.org
-> List archive: https://lists.oasis-open.org/archives/virtio-comment/
-> Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
-> List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
-> Committee: https://www.oasis-open.org/committees/virtio/
-> Join OASIS: https://www.oasis-open.org/join/
--- 
-Music has magic, it's good clear syncopation.
+> diff --git a/virtio-ism.tex b/virtio-ism.tex
+> new file mode 100644
+> index 0000000..a1720d8
+> --- /dev/null
+> +++ b/virtio-ism.tex
+> @@ -0,0 +1,573 @@
+> +\section{ISM Device}\label{sec:Device Types / ISM Device}
+> +
+> +\begin{lstlisting}
+> +|-------------------------------------------------------------------------------------------------------------|
+> +| |------------------------------------------------|    |------------------------------------------------|    |
+> +| | VM                      [M1]   [M2]   [M3]     |    | VM                             [M2]   [M3]     |    |
+> +| |                          |      |      |       |    |                                 |      |       |    |
+> +| |   -----------------------|------|------|---    |    |   ------------------------------|------|---    |    |
+> +| |   |             driver   |      |      |  |    |    |   |             driver          |      |  |    |    |
+> +| |   -----------------------|------|------|---    |    |   ------------------------------|------|---    |    |
+> +| |    |cq|                  |map   |map   |map    |    |    |cq|                         |map   |map    |    |
+> +| |    |  |                  |      |      |       |    |    |  |                         |      |       |    |
+> +| |    |  |                -------------------     |    |    |  |                -------------------     |    |
+> +| |----|--|----------------|  device memory  |-----|    |----|--|----------------|  device memory  |-----|    |
+> +| |    |  |                -------------------     |    |    |  |                -------------------     |    |
+> +| |                                |               |    |                                |               |    |
+> +| |                                |               |    |                                |               |    |
+> +| |                                |               |    |                                |               |    |
+> +| |--------------------------------+---------------|    |--------------------------------+---------------|    |
+> +|                                  |                                                       |                  |
+> +|                                  |                                                       |                  |
+> +|                                  |------------------------------+------------------------|                  |
+> +|                                                                 |                                           |
+> +|                                                                 |                                           |
+> +|                                                   --------------------------                                |
+> +|                                                    | M1 |   | M2 |   | M3 |                                 |
+> +|                                                   --------------------------                                |
+> +|                                                                                                             |
+> +|                                                                                                             |
+> +|-------------------------------------------------------------------------------------------------------------|
+> +\end{lstlisting}
+> +
+> +An ISM(Internal Shared Memory) device provides the ability to access memory
+> +shared between multiple devices. This allows low-overhead communication in
+> +presence of such memory. For example, memory can be shared with guests of
+> +multiple virtual machines running on the same host, with each virtual machine
+> +including an ism device and with the guests getting the shared memory by the ism
+> +devices.
+> +
+> +An ism device can communicate with multiple peers simultaneously. This
+> +communication can be dynamically started and ended.
+> +
+> +All the devices with the ability to communicate with each other form a
+> +communication domain. Two devices from different communication domains can't
+> +communicate.
+> +
+> +The device memory of the ism device is divided into multiple chunks with the
+> +same size. Every ism region contains multiple chunks. When communicating between
+> +two devices, an ism region is used as a shared memory.
+> +
+> +The ism region is the basis for communication between ism devices.
+> +
+> +The process of communication between two drivers is that one driver allocates an
+> +ism region and obtains a token. Then the peer uses this token to attach the same
+> +ism region, the two drivers realize the memory(ism region) sharing. The driver
+> +can also notify peer by kick notify-address the ism region has been updated.
+> +
+> +An ism region can be referred by its \field{token}, or the \field{offset}.
+> +The \field{offset} is the offset of the first chunk inside the ism region
+> +starting from the device memory head.
+> +
+> +\subsection{Device ID}\label{sec:Device Types / ISM Device / Device ID}
+> +	44
+> +
+> +\subsection{Virtqueues}\label{sec:Device Types / ISM Device / Virtqueues}
+> +\begin{description}
+> +\item[0] controlq
+> +\item[1] eventq
+> +\end{description}
+> +
+> +\subsection{Feature bits}\label{sec:Device Types / ISM Device / Feature bits}
+> +\begin{description}
+> +\item[VIRTIO_ISM_F_DEV_MEM(0)] Device provide memory for ism region, driver
+> +    don't need to provide memory for alloc/attach operation.
+> +
+> +\end{description}
+> +
+> +\subsection{Device configuration layout}\label{sec:Device Types / ISM Device / Device configuration layout}
+> +
+> +\begin{lstlisting}
+> +struct virtio_ism_config {
+> +	le128 cdid;
+> +	le64 devid;
+> +	le64 chunk_size;
+> +	le64 notify_size;
+> +};
+> +\end{lstlisting}
+> +
+> +\begin{description}
+> +    \item[\field{cdid}] This is used to identify the communication domain. Only
+> +        ism devices with the same \field{cdid} can communicate. A \field{cdid}
+> +        is world-wide unique in a sense that there not be another communication
+> +        domain with the same \field{cdid}.
+> +
+> +    \item[\field{devid}] This is used to identify the ism device in the single
+> +        communication domain.
+> +
+> +    \item[\field{chunk_size}] This is the size of the ism chunk. The device
+> +        memory is divided into multiple chunks. Every ism chunk has the same
+> +        size.
+> +
+> +    \item[\field{notify_size}] This is the size of the ism notify-address. The
+> +        notify-address is used to notify the device that the content of the
+> +        ism region has been updated.
+> +
+> +\end{description}
+> +
+> +\devicenormative{\subsubsection}{Device configuration layout}{Device Types / ISM Device / Device configuration layout}
+> +
+> +The device MUST ensure that the \field{cdid} of the device on the same
+> +communication domain is same. The \field{cdid} MUST be a version 4 UUID as
+> +specified by \hyperref[intro:rfc4122]{[RFC4122]}.
+> +
+> +In the single communication domain, the device MUST ensure that the \field{devid}
+> +is unique.
+> +
+> +\field{chunk_size} MUST be a power of two.
+> +
+> +\subsection{Physical Memory}\label{sec:Device Types / ISM Device / Event}
+> +
+> +The ism region is on the device memory. It is a physical memory for driver, but
+> +it is not for device. The device has the ability to modify the physical memory
+> +corresponding to the device memory.
+> +
+> +If VIRTIO_ISM_F_DEV_MEM is not negotiated, physical memory comes from driver.
+> +The driver pass its memory to the device when alloc a new ism region. The
+> +device map this physical memory into an ism region. If VIRTIO_ISM_F_DEV_MEM
+> +is negotiated, physical memory is provided by the device.
+> +
+> +For attach operation, if VIRTIO_ISM_F_DEV_MEM is not negotiated, the driver also
+> +provides memory to device. Under normal circumstances, this memory will not be
+> +used. This is to limit driver to take up too much memory based on attach
+> +operation.
+> +
+> +\subsection{Event}\label{sec:Device Types / ISM Device / Event}
+> +
+> +The ism device supports event notification of the ism region. When a device
+> +kick/attach/detach a region, other ism region referrers will receive related
+> +events.
+> +
+> +A buffer received from eventq can contain multiple event structures.
+> +
+> +\begin{lstlisting}
+> +#define   VIRTIO_ISM_EVENT_UPDATE (1 << 0)
+> +#define   VIRTIO_ISM_EVENT_ATTACH (1 << 1)
+> +#define   VIRTIO_ISM_EVENT_DETACH (1 << 2)
+> +#define   VIRTIO_ISM_EVENT_BUFFER_FREE (1 << 3)  // Only if VIRTIO_ISM_F_DEV_MEM is not negotiated
+> +\end{lstlisting}
+> +
+> +\begin{description}
+> +    \item[VIRTIO_ISM_EVENT_UPDATE] The driver kick the notify-address to notify
+> +        other peers of the update event of the ism region content.
+> +
+> +    \item[VIRTIO_ISM_EVENT_ATTACH] A new device attaches the ism region.
+> +    \item[VIRTIO_ISM_EVENT_DETACH] A device detaches the ism region.
+> +    \item[VIRTIO_ISM_EVENT_BUFFER_FREE] The buffer allocated by this driver has been free.
+> +\end{description}
+> +
+> +The event structures:
+> +\begin{lstlisting}
+> +struct virtio_ism_event_update {
+> +	le64 ev_type;
+> +	le64 offset;
+> +	le64 devid;
+> +};
+> +
+> +struct virtio_ism_event_attach_detach {
+> +	le64 ev_type;
+> +	le64 offset;
+> +	le64 devid;
+> +	le64 peers;
+> +};
+> +
+> +struct virtio_ism_event_buffer_free {
+> +	le64 ev_type;
+> +    void *buffer;
+> +};
+> +
+> +\end{lstlisting}
+> +
+> +\begin{description}
+> +\item[\field{ev_type}] The type of event, the driver can get the size of the
+> +    structure based on this.
+> +
+> +        If \field{ev_type} is VIRTIO_ISM_EVENT_UPDATE, the corresponding structure is struct virtio_ism_event_update.
+> +        If \field{ev_type} is VIRTIO_ISM_EVENT_ATTACH or VIRTIO_ISM_EVENT_DETACH, the corresponding structure struct virtio_ism_event_attach_detach.
+> +        If \field{ev_type} is VIRTIO_ISM_EVENT_BUFFER_FREE, the corresponding structure is struct virtio_ism_event_buffer_free.
+> +
+> +\item[\field{offset}] The offset of ism regions with the event.
+> +
+> +\item[\field{devid}] \field{devid} of the device that generated events.
+> +\item[\field{peers}] The number of the peers referring to this ism region. (does not include the
+> +    device that receiving this event)
+> +
+> +\item[\field{buffer}] The buffer passed to device when alloc/attach a new ism region.
+> +
+> +\end{description}
+> +
+> +\subsection{Permissions}\label{sec:Device Types / ISM Device / Permission}
+> +
+> +The permissions of an ism region determine whether this ism region can be
+> +attached and the read and write permissions after attach. The driver can set the
+> +default permissions for all devices, or set the dedicated permissions for a
+> +certain device. If there are dedicated permissions for a device, the default
+> +permissions are invalid for this device.
+> +
+> +For example, the driver can set the default permission of an ism region as
+> +read-only, and set the dedicated permissions as writable for a device with devid
+> +0xff. Then all devices except 0xff in such a communication domain can attach
+> +this ism region and only have read-only permission. And the device 0xff can
+> +write to the ism region after attaching.
+> +
+> +When a driver has the management permission of the ism region, then it can
+> +modify the permissions of this ism region. By default, only the device that
+> +allocated the ism region has this permission.
+> +
+> +\subsection{Device Initialization}\label{sec:Device Types / ISM Device / Device Initialization}
+> +
+> +\devicenormative{\subsubsection}{Device Initialization}{Device Types / ISM Device / Device Initialization}
+> +
+> +The device MUST generate a \field{devid}. \field{devid} remains unchanged
+> +during reset. \field{devid} MUST NOT be 0.
+> +
+> +The device exposes memory to the driver based on Shared Memory Regions
+> +\ref{sec:Basic Facilities of a Virtio Device / Shared Memory Regions}.
+> +However, it does not need to allocate physical memory during initialization.
+> +
+> +The \field{shmid} of a region MUST be one of the following
+> +\begin{lstlisting}
+> +enum virtio_ism_shm_id {
+> +	VIRTIO_ISM_SHM_ID_UNDEFINED = 0,
+> +	VIRTIO_ISM_SHM_ID_REGIONS   = 1,
+> +	VIRTIO_ISM_SHM_ID_NOTIFY    = 2,
+> +};
+> +\end{lstlisting}
+> +
+> +The device memory area with VIRTIO_ISM_SHM_ID_REGIONS is used to provide ism regions.
+> +
+> +The device MUST also provide a memory area with VIRTIO_ISM_SHM_ID_NOTIFY to the
+> +driver. This memory area is used to notify the device with update event, and
+> +each ism region MUST have a corresponding notify-address inside this area, and
+> +the size of the notify-address is \field{notify_size}.
+> +
+> +\drivernormative{\subsubsection}{Device Initialization}{Device Types / ISM Device / Device Initialization}
+> +
+> +The driver MUST NOT access any chunk before it is referred by one ism region.
+> +
+> +\subsection{Control Virtqueue}\label{sec:Device Types / ISM Device / Control Virtqueue}
+> +
+> +The driver uses the control virtqueue send commands to implement operations on
+> +the ism region and some global configurations.
+> +
+> +All commands are of the following form:
+> +\begin{lstlisting}
+> +struct virtio_ism_ctrl {
+> +	u8 class;
+> +	u8 command;
+> +	u8 command_specific_data[];
+> +	u8 ack;
+> +	u8 command_specific_data_reply[];
+> +};
+> +
+> +/* ack values */
+> +#define VIRTIO_ISM_OK      0
+> +#define VIRTIO_ISM_ERR     255
+> +
+> +#define VIRTIO_ISM_ENOENT  2
+> +#define VIRTIO_ISM_E2BIG   7
+> +#define VIRTIO_ISM_ENOMEM  12
+> +#define VIRTIO_ISM_ENOSPEC 28
+> +
+> +#define VIRTIO_ISM_PERM_EATTACH 100
+> +#define VIRTIO_ISM_PERM_EREAD   101
+> +#define VIRTIO_ISM_PERM_EWRITE  102
+> +\end{lstlisting}
+> +
+> +The \field{class}, \field{command} and command-specific-data are set by the
+> +driver, and the device sets the \field{ack} byte and optionally
+> +\field{command-specific-data-reply}.
+> +
+> +\subsection{Device Operation}\label{sec:Device Types / ISM Driver / Device Operation}
+> +
+> +\subsubsection{Alloc ISM Region}\label{sec:Device Types / ISM Device / Device Operation / Alloc ISM Region}
+> +
+> +Based on controlq, the driver can request to allocate an ism region.
+> +
+> +The reply from the device will carry a token, which can be passed
+> +to other driver for attaching to this ism region.
+> +
+> +The \field{command_specific_data} has the following format:
+> +\begin{lstlisting}
+> +struct virtio_ism_ctrl_alloc {
+> +	le64 size;
+> +    void *buffer; // Only if VIRTIO_ISM_F_DEV_MEM is not negotiated
+> +};
+> +\end{lstlisting}
+> +
+> +The \field{command_specific_data_reply} has the following format:
+> +\begin{lstlisting}
+> +struct virtio_ism_ctrl_alloc_reply {
+> +	le64 token;
+> +	le64 num;
+> +    le64 chunks[];
+> +};
+> +\end{lstlisting}
+> +
+> +The \field{class} and \field{command}:
+> +\begin{lstlisting}
+> +#define VIRTIO_ISM_CTRL_ALLOC  0
+> +	#define VIRTIO_ISM_CTRL_ALLOC_REGION 0
+> +\end{lstlisting}
+> +
+> +
+> +\devicenormative{\subparagraph}{Alloc ISM Region}{Device Types / ISM Device / Device Operation / Alloc ISM Region}
+> +
+> +For the command VIRTIO_ISM_CTRL_ALLOC_REGION, the device MUST first look for the
+> +free chunks from the device memory. And the physical memory is mapped to these
+> +chunks in order. If VIRTIO_ISM_F_DEV_MEM is negotiated, then the device MUST
+> +provide physical memory by itself. Otherwise, the memory provided by the driver
+> +will be used. If there is no enough free chunk, the device MUST set \field{ack}
+> +to VIRTIO_ISM_NOSPEC. If new physical memory cannot be allocated by the device,
+> +the device MUST set \field{ack} to VIRTIO_ISM_NOMEM.
+> +
+> +The device sets \field{ack} to VIRTIO_ISM_OK after successfully allocating the
+> +ism region. A new token MUST be dynamically created for this ism region
+> +simultaneously. The token MUST be unique inside this communication domain. And
+> +the device MUST fill \filed{chunks} with the offset of each chunk. \field{num}
+> +is the number of the chunks.
+> +
+> +The device MUST clear the memory of this ism region before committing to the
+> +driver.
+> +
+> +If \field{size} is smaller than \field{chunk_size}, the ism region also
+> +occupies one chunk.
+> +
+> +If virtio_ism_ctrl_alloc_reply is not enough, the device MUST set the \field{ack}
+> +to VIRTIO_ISM_E2BIG.
+> +
+> +\drivernormative{\subparagraph}{Alloc ISM Region}{Device Types / ISM Device / Device Operation / Alloc ISM Region}
+> +
+> +If VIRTIO_ISM_F_DEV_MEM is not negotiated, the driver MUST provide the buffer
+> +with \field{buffer}. The size of the buffer MUST equal to the size of the ism
+> +region that we want to allocate.
+> +
+> +\subsubsection{Query ISM Region}\label{sec:Device Types / ISM Device / Device Operation / Query ISM Region}
+> +Based on controlq, the driver can query the information of an ism region.
+> +
+> +The \field{command_specific_data} has the following format:
+> +\begin{lstlisting}
+> +struct virtio_ism_ctrl_query {
+> +	le64 token;
+> +};
+> +\end{lstlisting}
+> +
+> +The \field{command_specific_data_reply} has the following format:
+> +\begin{lstlisting}
+> +struct virtio_ism_ctrl_query_reply {
+> +	le64 size;
+> +	le64 permissions;
+> +};
+> +\end{lstlisting}
+> +
+> +The \field{class} and \field{command}:
+> +\begin{lstlisting}
+> +#define VIRTIO_ISM_CTRL_QUERY  1
+> +	#define VIRTIO_ISM_CTRL_QUERY_INFO 0
+> +\end{lstlisting}
+> +
+> +\devicenormative{\subparagraph}{Query ISM Region}{Device Types / ISM Device / Device Operation / Query ISM Region}
+> +
+> +If the ism region specified by \field{token} does not exist, the device MUST set
+> +\field{ack} to VIRTIO_ISM_ENOENT. Otherwise, the device MUST fill the
+> +\field{size} with the size of the ism region. The device MUST get the
+> +permissions of this ism region for the device-self, then fill in the
+> +\field{permissions}.
+> +
+> +\subsubsection{Attach ISM Region}\label{sec:Device Types / ISM Device / Device Operation / Attach ISM Region}
+> +
+> +Based on controlq, the driver can request to attach an ism region with a
+> +specified token.
+> +
+> +The \field{command_specific_data} has the following format:
+> +\begin{lstlisting}
+> +struct virtio_ism_ctrl_attach {
+> +	le64 token;
+> +	le64 rw_perm;
+> +    void *buffer; // Only if VIRTIO_ISM_F_DEV_MEM is not negotiated
+> +};
+> +\end{lstlisting}
+> +
+> +The \field{command_specific_data_reply} has the following format:
+> +\begin{lstlisting}
+> +struct virtio_ism_ctrl_attach_reply {
+> +	le64 size;
+> +	le64 num;
+> +    le64 chunks[];
+> +};
+> +\end{lstlisting}
+> +
+> +The \field{class} and \field{command}:
+> +\begin{lstlisting}
+> +#define VIRTIO_ISM_CTRL_ATTACH  2
+> +	#define VIRTIO_ISM_CTRL_ATTACH_REGION 0
+> +\end{lstlisting}
+> +
+> +\devicenormative{\subparagraph}{Attach ISM Region}{Device Types / ISM Device / Device Operation / Attach ISM Region}
+> +
+> +If the ism region specified by \field{token} does not exist, the device MUST set
+> +\field{ack} to VIRTIO_ISM_ENOENT.
+> +
+> +The device MUST first look for the free chunks from the device memory. And the
+> +physical memory of the ism region is mapped to these chunks in order. If there is
+> +no enough free chunk, the device MUST set \field{ack} to VIRTIO_ISM_NOSPEC.
+> +The device MUST fill \filed{chunks} with the offset of each chunk. \field{num}
+> +is the number of the chunks. \field{size} is the size of this ism region.
+> +
+> +The device MUST set \field{ack} to VIRTIO_ISM_OK after successfully finding and
+> +assigning the physical memory of this ism region into the device memory.
+> +
+> +If the device does not have the VIRTIO_ISM_PERM_ATTACH permission for this ism
+> +region, the device MUST set \field{ack} to VIRTIO_ISM_PERM_EATTACH. If
+> +\field{rw_perm} include VIRTIO_ISM_PERM_READ, but the device does not have the
+> +VIRTIO_ISM_PERM_READ permission for this region, the device MUST set \field{ack}
+> +to VIRTIO_ISM_PERM_EREAD. If \field{rw_perm} include VIRTIO_ISM_PERM_WRITE, but
+> +the device does not have the VIRTIO_ISM_PERM_WRITE permission for this region,
+> +the device MUST set \field{ack} to VIRTIO_ISM_PERM_EWRITE.
+> +
+> +The device MUST set the read and write permissions of the physical memory inside
+> +the device memory based on \field{rw_perm}.
+> +
+> +If virtio_ism_ctrl_alloc_reply is not enough, the device MUST set the \field{ack}
+> +to VIRTIO_ISM_E2BIG and set the \field{num} for next request.
+> +
+> +The device MUST generate a VIRTIO_ISM_EVENT_ATTACH event to other peers.
+> +
+> +\drivernormative{\subparagraph}{Attach ISM Region}{Device Types / ISM Device / Device Operation / Attach ISM Region}
+> +
+> +If VIRTIO_ISM_F_DEV_MEM is not negotiated, the driver MUST provide the buffer
+> +with \field{buffer}. The size of the buffer MUST equal to the size of the ism
+> +region that we want to allocate.
+> +
+> +If \field {size} is less than \field{num} times \field {chunk_size}, then only
+> +header part of the last chunk is effective.
+> +
+> +\subsubsection{Detach ISM Region}\label{sec:Device Types / ISM Device / Device Operation / Detach ISM Region}
+> +Based on controlq, the device can release references to the ism region.
+> +
+> +The \field{command_specific_data} has the following format:
+> +\begin{lstlisting}
+> +struct virtio_ism_ctrl_detach {
+> +	le64 token;
+> +};
+> +\end{lstlisting}
+> +
+> +The \field{class} and \field{command}:
+> +\begin{lstlisting}
+> +#define VIRTIO_ISM_CTRL_DETACH  3
+> +	#define VIRTIO_ISM_CTRL_DETACH_REGION 0
+> +\end{lstlisting}
+> +
+> +\devicenormative{\subparagraph}{Detach ISM Region}{Device Types / ISM Device / Device Operation / Detach ISM Region}
+> +
+> +If the ism region specified by \field{token} is not attached, the device MUST set
+> +\field{ack} to VIRTIO_ISM_ENOENT.
+> +
+> +The device MUST generate a VIRTIO_ISM_EVENT_DETACH event to other peers.
+> +
+> +If VIRTIO_ISM_F_DEV_MEM is not negotiated and no one is referred to this ism
+> +region, the device who allocated this ism region MUST generate a
+> +VIRTIO_ISM_EVENT_BUFFER_FREE event to the driver.
+> +
+> +\drivernormative{\subparagraph}{Detach ISM Region}{Device Types / ISM Device / Device Operation / Detach ISM Region}
+> +
+> +If VIRTIO_ISM_F_DEV_MEM is not negotiated and the driver got the ism region by
+> +attach operation, then the buffer is free after the detach operation.
+> +
+> +\subsubsection{Grant ISM Region}\label{sec:Device Types / ISM Device / Device Operation / Grant ISM Region}
+> +Based on controlq, the driver can set the permissions for each ism
+> +region.
+> +
+> +The \field{command_specific_data} has the following format:
+> +\begin{lstlisting}
+> +struct virtio_ism_ctrl_grant_default {
+> +	le64 token;
+> +	le64 permissions;
+> +};
+> +
+> +struct virtio_ism_ctrl_grant_dev {
+> +	le64 token;
+> +	le64 permissions;
+> +	le64 peer_devid;
+> +};
+> +\end{lstlisting}
+> +
+> +The \field{class} and \field{command}:
+> +\begin{lstlisting}
+> +#define VIRTIO_ISM_CTRL_GRANT  4
+> +	#define VIRTIO_ISM_CTRL_GRANT_SET_DEFAULT    0
+> +	#define VIRTIO_ISM_CTRL_GRANT_SET_FOR_DEVICE 1
+> +\end{lstlisting}
+> +
+> +The permissions:
+> +\begin{lstlisting}
+> +#define VIRTIO_ISM_PERM_READ       (1 << 0)
+> +#define VIRTIO_ISM_PERM_WRITE      (1 << 1)
+> +
+> +#define VIRTIO_ISM_PERM_ATTACH     (1 << 2)
+> +
+> +#define VIRTIO_ISM_PERM_MANAGE     (1 << 3)
+> +#define VIRTIO_ISM_PERM_CLEAN_DEFAULT     (1 << 4)
+> +\end{lstlisting}
+> +
+> +\begin{description}
+> +\item[VIRTIO_ISM_PERM_READ] read permission
+> +\item[VIRTIO_ISM_PERM_WRITE] write permission
+> +\item[VIRTIO_ISM_PERM_ATTACH] attach permission
+> +
+> +\item[VIRTIO_ISM_PERM_MANAGE] Management permission, the device with this
+> +	permission can modify the permission of this ism region. By default, only
+> +	the device that allocated the region has this permission.
+> +
+> +\item[VIRTIO_ISM_PERM_DENY_DEFAULT] Clean all permissions of default, just used
+> +    with VIRTIO_ISM_CTRL_GRANT_SET_FOR_DEVICE.
+> +
+> +\end{description}
+> +
+> +VIRTIO_ISM_CTRL_GRANT_SET_DEFAULT corresponds to virtio_ism_ctrl_grant_default;
+> +VIRTIO_ISM_CTRL_GRANT_SET_FOR_DEVICE corresponds to virtio_ism_ctrl_grant_dev;
+> +
+> +Permission control is divided into two categories, one is the dedicated
+> +permissions for a certain device, and the other is the default permissions for
+> +all device.
+> +
+> +\devicenormative{\subparagraph}{Grant ISM Region}{Device Types / ISM Device / Device Operation / Grant ISM Region}
+> +
+> +If the ism region specified by \field{token} is not attached, the device MUST set
+> +\field{ack} to VIRTIO_ISM_ENOENT.
+> +
+> +The default permissions of the newly allocated ism region MUST be  (VIRTIO_ISM_PERM_READ | VIRTIO_ISM_PERM_WRITE | VIRTIO_ISM_PERM_ATTACH).
+> +The device that allocated the ism region MUST have the permissions (VIRTIO_ISM_PERM_READ | VIRTIO_ISM_PERM_WRITE | VIRTIO_ISM_PERM_ATTACH | VIRTIO_ISM_PERM_MANAGE) for this region.
+> +
+> +For a certain device, if there is dedicated permissions, the default
+> +permissions are illegal to this device.
+> +
+> +\subsubsection{Inform Update Event IRQ Vector}\label{sec:Device Types / ISM Device / Device Operation / Inform Update Event IRQ Vector}
+> +
+> +For the ism region update event, the driver can bind an interrupt to the ism
+> +region. Then this ism region's update event will no longer be passed through
+> +eventq, but the interrupt will be directly triggered.
+> +
+> +The \field{command_specific_data} has the following format:
+> +\begin{lstlisting}
+> +struct virtio_ism_ctrl_irq_vector {
+> +	le64 token;
+> +	le64 vector;
+> +};
+> +\end{lstlisting}
+> +
+> +The \field{class} and \field{command}:
+> +\begin{lstlisting}
+> +#define VIRTIO_ISM_CTRL_EVENT_VECTOR  5
+> +	#define VIRTIO_ISM_CTRL_EVENT_VECTOR_SET 0
+> +\end{lstlisting}
+> +
+> +
+> +\devicenormative{\subparagraph}{Inform Event IRQ Vector}{Device Types / ISM Device / Device Operation / Inform Event IRQ Vector}
+> +
+> +The device MUST record the relationship between the ism region and the vector
+> +notified by the driver, and notify the update event of this region to driver
+> +by the corresponding vector. And the device MUST NOT use eventq to send the
+> +update event of this ism region.
+> +
+> +
+> --
+> 2.32.0.3.g01195cf9f
+>
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
