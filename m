@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-11491-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-11492-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 2FAA7C678D4
-	for <virtio-dev@archiver.kernel.org>; Tue,  7 Mar 2023 19:05:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id D343BC678D4
+	for <virtio-dev@archiver.kernel.org>; Tue,  7 Mar 2023 19:05:40 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 7B08941EE7
-	for <virtio-dev@archiver.kernel.org>; Tue,  7 Mar 2023 19:05:34 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 03B433243
+	for <virtio-dev@archiver.kernel.org>; Tue,  7 Mar 2023 19:05:36 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 569C39866E4
-	for <virtio-dev@archiver.kernel.org>; Tue,  7 Mar 2023 19:05:34 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 3D3EF986859
+	for <virtio-dev@archiver.kernel.org>; Tue,  7 Mar 2023 19:05:35 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 3DD3F9866D9; Tue,  7 Mar 2023 19:05:34 +0000 (UTC)
+	id 59FC19866E5; Tue,  7 Mar 2023 19:05:34 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,202 +24,124 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 6DFCB9866DC
-	for <virtio-dev@lists.oasis-open.org>; Tue,  7 Mar 2023 19:04:05 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 58C869866DE;
+	Tue,  7 Mar 2023 19:04:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: -75_Lrg8MFeKNdxK7ERxGA-1
-Date: Tue, 7 Mar 2023 14:03:47 -0500
-From: Stefan Hajnoczi <stefanha@redhat.com>
-To: Jiri Pirko <jiri@nvidia.com>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>,
-	virtio-comment@lists.oasis-open.org,
-	virtio-dev@lists.oasis-open.org, jasowang@redhat.com,
-	cohuck@redhat.com, sgarzare@redhat.com, nrupal.jani@intel.com,
-	Piotr.Uminski@intel.com, hang.yuan@intel.com,
-	virtio@lists.oasis-open.org, Zhu Lingshan <lingshan.zhu@intel.com>,
-	pasic@linux.ibm.com, Shahaf Shuler <shahafs@nvidia.com>,
-	Parav Pandit <parav@nvidia.com>,
-	Max Gurtovoy <mgurtovoy@nvidia.com>
-Message-ID: <20230307190347.GA153228@fedora>
-References: <20230303083213-mutt-send-email-mst@kernel.org>
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Srw8qjUBzw7ulzQd+6S5YfGDgM3vKhFq85ipinnMHpuoqpXs6P8B1kcUCa/IH8/lPZ6qPrI8pZEXoo7HC6bSW79+MtiB4LRHVzHv5DRPTLsrMTwBapNbelmUDnAVmRjtr7gyIkr1/agaQFOamCqIMPaALS+DdEt4BM6KWjpowUCmU5EY5l0TCd2kYPEvQNMEEs23imd7LvzLmYGSHrnxMX++9Wox6HlapNbBMbKHMUAJGPPFP7X1QRK8QJtf4afl887zIFfoOaNaCLPHI+YRZy017Gkp6cKaxt7nrVZjmGyt4kabwhiA2fWzy5ONPbrbcpVgr+l0ky1wzVZDa1m6wg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ISxndFuASAJQm6nqTCsXLPzj5mdYCSqIiRHL0ylbks8=;
+ b=cilfVhssWvY0ylBseMccTBvmQmrNh6O0zOOW+2absEfpKWDbeIbGIKwsw7xQD5nf4r75S3vuE7vt660A0ALv/evhxmOZsRc/xGsx1/1wIgvdj+AtZ36vy0kAK0EH93ZNVUvh5qaKqK7hu8ziYI6+igKTyYB6m231RDIn/c5aTpOoldo/B+sXi0K0KbrC2X2eoyYI1QOQnMgCinSoEqxWySxQNPPmb9tWh4l3VSWoAHVkpzggmJY9JTdkjh/oRfa1a3GdzOY2as4pRqz49pHBD2hLYkGxwLT7wDEfWXZCz4yD5azJxvsfRAlo8E0HMeJqKMBDqfiDon8Ags7LxrL0DA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+From: Parav Pandit <parav@nvidia.com>
+To: Stefan Hajnoczi <stefanha@redhat.com>, Max Gurtovoy <mgurtovoy@nvidia.com>
+CC: Jason Wang <jasowang@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>,
+	Zhu Lingshan <lingshan.zhu@intel.com>, "virtio-comment@lists.oasis-open.org"
+	<virtio-comment@lists.oasis-open.org>, "virtio-dev@lists.oasis-open.org"
+	<virtio-dev@lists.oasis-open.org>, "cohuck@redhat.com" <cohuck@redhat.com>,
+	"sgarzare@redhat.com" <sgarzare@redhat.com>, "nrupal.jani@intel.com"
+	<nrupal.jani@intel.com>, "Piotr.Uminski@intel.com" <Piotr.Uminski@intel.com>,
+	"hang.yuan@intel.com" <hang.yuan@intel.com>, "virtio@lists.oasis-open.org"
+	<virtio@lists.oasis-open.org>, "pasic@linux.ibm.com" <pasic@linux.ibm.com>,
+	Shahaf Shuler <shahafs@nvidia.com>
+Thread-Topic: [virtio] Re: [PATCH v10 04/10] admin: introduce virtio admin
+ virtqueues
+Thread-Index:
+ AQHZTQegoqm3ZFh/hkOgShx3CSU6867n9EmAgAA5TwCAAOB7AIAAAnmAgABw4oCAAnEigIAA8WoAgACFfwCAADfJAIAARSqAgAAQFwCAAb2vkA==
+Date: Tue, 7 Mar 2023 19:04:54 +0000
+Message-ID:
+ <PH0PR12MB5481F9231F27D06A0C630439DCB79@PH0PR12MB5481.namprd12.prod.outlook.com>
+References: <20230302204007.GD2554028@fedora>
+ <20230302190230-mutt-send-email-mst@kernel.org>
+ <20230303132840.GC2866370@fedora>
+ <20230303083213-mutt-send-email-mst@kernel.org>
  <20230303202133.GA2901137@fedora>
  <20230305043419-mutt-send-email-mst@kernel.org>
  <20230306000302.GA244754@fedora>
- <20230305191351-mutt-send-email-mst@kernel.org>
- <20230306110340.GA35392@fedora>
- <20230306133525-mutt-send-email-mst@kernel.org>
- <ZAbvxj+7lgaI1HkI@nanopsycho>
- <20230307143911.GC124259@fedora>
- <ZAdTSiVJGSrRIqZ3@nanopsycho>
+ <7f63fa0a-7deb-5875-6c6b-bfc651681653@redhat.com>
+ <20230306112030.GB35392@fedora>
+ <853c78d0-f752-05e9-d79d-811e82801627@nvidia.com>
+ <20230306162538.GA56760@fedora>
+In-Reply-To: <20230306162538.GA56760@fedora>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: PH0PR12MB5481:EE_|DM4PR12MB7672:EE_
+x-ms-office365-filtering-correlation-id: ddc977d2-7440-4de0-0a42-08db1f3ed608
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info:
+ Pbv5nLptSIQvGRt8rfpNBJI2oKAZfgTs0YMREgqqSgg500/hWIA9OJptvIKXArbLEDjZAqe2LQgcBEuSwzZzJJbc4/CzkhetnVCTZUev+5bCSdWpiOR2BXLVgUFDyzMVtqnmCN5bF2SgOnOMVASxd/HSa3uiNc4K/Xrq7ZCKUx9IclNcOjanGpN2AVLOmjU8JPvg8TlwaHRdc4+zwhAiioKcfi5k8V7hzYaAmkI/t9/+l1r2tKb0yo1iH/kni/sAzr2OL3joAoOFgrGj8tXkhF9+B8YN1dgv+KevO+EIQXb9Z0pUrao6yI9rnb8Oa2BZ30MH/Ba3XbnRRyI9d5QwEW46FQ3hePq9+1olFjuwYuSUG8mIswIFdBg7qGgl5eJ8H+nRJzwFvIQOtLR+3lF642a03ZUlU09hieCxJGRHTvuLxuIPknxGVGOxTYIYlPdefDfViGUecvuFV6yGgD0UqOxk6Y48lgZ+WH3WqMxKktWrJoLH2wHFdnThgAiFkAXoxoScD5kfc2ay+fM/y3s/+Bq7OHyvbGHMU7VxqQBHAFLa4Ov0YX1oEG660F7saxLTlKD+4rYQXnhatXADsfZ/eICAWOBvDKrrUcpgo9WczVAUgcEcBe9uPaCTR8BbbuAiVbqu1aUSLdEOHUPe1ImCclpxtVEW8FXVvAw6MLBEj9afPjBip6U+A/sxTLv+xrod3LfOTs0zcRLM0FZ2gNCspg==
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(376002)(136003)(39860400002)(346002)(396003)(366004)(451199018)(6636002)(316002)(110136005)(558084003)(83380400001)(54906003)(55016003)(33656002)(86362001)(2906002)(64756008)(9686003)(186003)(76116006)(26005)(5660300002)(478600001)(66556008)(66476007)(8676002)(41300700001)(4326008)(66946007)(6506007)(107886003)(7416002)(66446008)(7696005)(8936002)(71200400001)(122000001)(38100700002)(52536014)(38070700005);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?utf-8?B?U2R6MmlEODArYys2azJLYisyNDQ1RGFCKytxRnc3N0lHN0NqbTlTaE5zOU1V?=
+ =?utf-8?B?YUF4V1p6RFlTajN2Q1BtZXNZMUJURE5qUHpRK3NaV3psdldGSUtTYVpWZ05v?=
+ =?utf-8?B?Q2FqS3BON3RpK2RQR0VncTdOQ3hwd3JmU2pJTVdkaS9yRjJzVmFVRXBieE84?=
+ =?utf-8?B?K292eUFPU09hMEtTaktnYTZsWHZVU1AzbkMzcEhqNUtzQXV3NzlWTXZMQytS?=
+ =?utf-8?B?cFZhOXY2UTNLc2p1SktKWkh6UlowM2NaQSt2ME1WY0N0S2ZKaUVPTXkyYSsr?=
+ =?utf-8?B?L3Jyd3dVdkp6UE4rMzd4bVBHalR6ZU9TUitWbmRTZXJqMnRteVFIK004RldG?=
+ =?utf-8?B?K0RvM1UrUi9LSys2TmUybTZ0c01Wc1BYQkhhWURXNW1wajl6dnQwV2t4QUJY?=
+ =?utf-8?B?ZDUyWWNobldTZ3ZHZk5vYjBRS3QxdFhITFZVWDNFTDIxMFN0cEdNelk2OGNE?=
+ =?utf-8?B?d3VuSk1DaUk1UTZQMFZPTnlraXdLQys1Slh0V2JlcFMxS1F0ZlovcU5HenJj?=
+ =?utf-8?B?QTE3SVV0OFJia2ZZOFVpWFlSSVNNVHRPRVBIOUpDNkhKWUVaMk1TRysrN05N?=
+ =?utf-8?B?S0lRVEJUZDhBNTBkbEwzRnhvZ0dtNFFhQ1pWQWtjWloxSlQwcXBVd2Jqckc2?=
+ =?utf-8?B?N1RtNXppNk5WbEswZHJxckpTNnRhVzMrNUFqKzVPdVhqaDg1ZXNGM2Vna284?=
+ =?utf-8?B?WFFxOXFZYkd5QzVIMjBLOWczd1cvSHVodmIyUWY0R0R5bUpRUEFDMDlSZmQy?=
+ =?utf-8?B?S1AxenZ1dGNuWG0zbVM2eE9ldkwxZkFUckZVQW4rQUw0UkZ0ZnpIMFNSaFVv?=
+ =?utf-8?B?Q243SDllQ3FkcTNZcnp0VDRsN21hcm9lZURjemJ2TFk4aHF6bmtWZVNCdTRJ?=
+ =?utf-8?B?WFM1Q1JKUGFPODhST0NzVWpRQ29JY2dXOHl5amJyN1hXR2MwUTZxYWx5bjFu?=
+ =?utf-8?B?YzQ5aWorL3ZSNFQ0ZWR4bVVZeGRBVE51cG5nNm03ZW9zN1V6NHBhWGlLNEpM?=
+ =?utf-8?B?T2VaQ3RhcUEvblQ1djh1SzE1RTF1L1JONW9Db29EcXpaWTMyUi9zcnRZMWRk?=
+ =?utf-8?B?THJzc0cvbVlFS1pCQmc1WUU0L2Y1S3JVZEJmNmpaQllENy84bWZ5cUNnbjZO?=
+ =?utf-8?B?cmhDam1pQ2NTTVZMbHMxazVPU1BlbTlZUEE2U0xaSnlERFdFd3F4aTZiY2kx?=
+ =?utf-8?B?MVpVRkpucUJNU0xRRlhvSm5vU3hudkhmUXpSeU1pcGhoOTQzK1VFM1JMKzZs?=
+ =?utf-8?B?T0orTEVuQmFZNndhcEZ0RHNVeWVYdVYyd2VyaEFkbCtPaS91NWJibm5wc0Nl?=
+ =?utf-8?B?RmNyYU1DVS9pdjhyVjRZVzk4RWpnTmFLMmEvREZDUzQ0ZDdmOTFaWmtQQzRW?=
+ =?utf-8?B?VDRTL1ZTVkFQYU9PMldXTjhBS3dwcFhyVzVTcGMvQ0x3ck1mekZmaW1mWFI0?=
+ =?utf-8?B?cnZpN3dFK29kbXhJTXFMUzdFVWN3Q0NKQUJpaHYrdEZtVFRPNVhONkhWWmdh?=
+ =?utf-8?B?VjhVNnNrN3hUcWFwNFJnZ1Y2ZnlzTDQwMldOdHVNc3NkdU92VS8zbkRkSlg0?=
+ =?utf-8?B?RVoyRmhpNzNFb2gySTBnQVJOdm0xbXl1RkUzNkoySmw5bVpCSzJjZlRUZ2Ju?=
+ =?utf-8?B?QUdhc2g2ZjhuREpsaUtKSEVCdytkclh2bGkrR3hucEEwcVZuRmxSd04ra0Zz?=
+ =?utf-8?B?QzRtbFBzdldOR3E1SkZac0l0UzNnR2xZc3l4MkdjM0pOT0ZPeGRpM2hwemw0?=
+ =?utf-8?B?QmVTS21qUVpQV0R5VWdGOVpZbnVqek1IODR2UkEzNkRNZVFibFI1VnJncEow?=
+ =?utf-8?B?M1o0bWVmd0pUR3pvekF3cS85cWRSSFF3ZXJVdXlKOTVxakxTMzQxa2cyYllP?=
+ =?utf-8?B?T3IzRnRndUVENDNyRGdKSlJJMHBBeGVVQjFHeHNUczhFU2huZlRZcWdIcEU0?=
+ =?utf-8?B?K0Z4VE4raTN1bWw2TXJrcDh2eWJlaTlNYWxjbWM0NExqbjFjOG5XRDdSZEpN?=
+ =?utf-8?B?enpBREJMMG5vRitGODA2aW4vU0g0K3FGWlFBalVnSG56MVlaZHJ4U0xLMmNS?=
+ =?utf-8?B?cWdWRlhiemwrU05TM2RlMDFzandUY1FzZHVON3I2ekY2OVhLQ2w5VXpibHhL?=
+ =?utf-8?Q?KeXk=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="KWXI29eUOwKz8moj"
-Content-Disposition: inline
-In-Reply-To: <ZAdTSiVJGSrRIqZ3@nanopsycho>
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.6
-Subject: [virtio-dev] Re: [virtio-comment] Re: [virtio] Re: [PATCH v10 04/10] admin:
- introduce virtio admin virtqueues
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ddc977d2-7440-4de0-0a42-08db1f3ed608
+X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Mar 2023 19:04:54.1872
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: /AFNhCoXv5sCMPHVcoYYSdHshaXy1XnLB8hG8I6LCE/dfqSeMnJOJEbI7VQqzZp7JnNPp2Y+KE4PpfD7mzKuLQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB7672
+Subject: [virtio-dev] RE: [virtio] Re: [PATCH v10 04/10] admin: introduce virtio admin
+ virtqueues
 
---KWXI29eUOwKz8moj
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Tue, Mar 07, 2023 at 04:07:54PM +0100, Jiri Pirko wrote:
-> Tue, Mar 07, 2023 at 03:39:11PM CET, stefanha@redhat.com wrote:
-> >On Tue, Mar 07, 2023 at 09:03:18AM +0100, Jiri Pirko wrote:
-> >> Mon, Mar 06, 2023 at 07:37:31PM CET, mst@redhat.com wrote:
-> >> >On Mon, Mar 06, 2023 at 06:03:40AM -0500, Stefan Hajnoczi wrote:
-> >> >> On Sun, Mar 05, 2023 at 07:18:24PM -0500, Michael S. Tsirkin wrote:
-> >> >> > On Sun, Mar 05, 2023 at 07:03:02PM -0500, Stefan Hajnoczi wrote:
-> >> >> > > On Sun, Mar 05, 2023 at 04:38:59AM -0500, Michael S. Tsirkin wr=
-ote:
-> >> >> > > > On Fri, Mar 03, 2023 at 03:21:33PM -0500, Stefan Hajnoczi wro=
-te:
-> >> >> > > > > What happens if a command takes 1 second to complete, is th=
-e device
-> >> >> > > > > allowed to process the next command from the virtqueue duri=
-ng this time,
-> >> >> > > > > possibly completing it before the first command?
-> >> >> > > > >=20
-> >> >> > > > > This requires additional clarification in the spec because =
-"they are
-> >> >> > > > > processed by the device in the order in which they are queu=
-ed" does not
-> >> >> > > > > explain whether commands block the virtqueue (in order comp=
-letion) or
-> >> >> > > > > not (out of order completion).
-> >> >> > > >=20
-> >> >> > > > Oh I begin to see. Hmm how does e.g. virtio scsi handle this?
-> >> >> > >=20
-> >> >> > > virtio-scsi, virtio-blk, and NVMe requests may complete out of =
-order.
-> >> >> > > Several may be processed by the device at the same time.
-> >> >> >=20
-> >> >> > Let's say I submit a write followed by read - is read
-> >> >> > guaranteed to return an up to date info?
-> >> >>=20
-> >> >> In general, no. The driver must wait for the write completion before
-> >> >> submitting the read if it wants consistency.
-> >> >>=20
-> >> >> Stefan
-> >> >
-> >> >I see.  I think it's a good design to follow then.
-> >>=20
-> >> Hmm, is it suitable to have this approach for configuration interface?
-> >> Storage device is a different beast, having parallel reads and writes
-> >> makes complete sense for performance.
-> >>=20
-> >> ->read a req
-> >> ->read b req
-> >> ->read c req
-> >> <-read a rep
-> >> <-read b rep
-> >> <-read c rep
-> >>=20
-> >> There is no dependency, even between writes.
-> >>=20
-> >> But in case of configuration, does not make any sense to me.
-> >> Why is it needed? To pass the burden of consistency of
-> >> configuration to driver sounds odd at least.
-> >>=20
-> >> I sense there is no concete idea about what the "admin virtqueue" shou=
-ld
-> >> serve for exactly.
-> >
-> >It's useful for long-running commands because they prevent other
-> >commands from executing.
-> >
-> >An example I've given is that deleting a group member might require
-> >waiting for the group member's I/O activity to finish. If that I/O
-> >activity cannot be cancelled instantaneously, then it could take an
-> >unbounded amount of time to delete the group member. The device would be
-> >unable to process futher admin commands.
->=20
-> I see. Then I believe that the device should handle the dependencies.
-> Example 1:
-> -> REQ cmd to create group member A
-> -> REQ cmd to create group member B
-> <- REP cmd to create group member A
-> <- REP cmd to create group member B
->=20
-> The device according to internal implementation can either serialize the
-> 2 group member creations or do it in parallel, if it supports it.
->=20
-> Example 2:
-> -> REQ cmd to create group member A
-> -> REQ cmd config group member A
-> <- REP cmd to create group member A
-> <- REP cmd config group member A
->=20
-> Here the serialization is necessary and the device is the one to take
-> care of it.
->=20
-> Makes sense?
-
-Yes, I understand. The spec would need to define ordering rules for
-specific commands and the device must implement them. It allows the
-driver to pipeline commands while also allowing out-of-order completion
-(parallelism) in some cases. The disadvantage of this approach is
-complexity in the spec and implementations.
-
-An alternative is unconditional out-of-order completion, where there are
-no per-command ordering rules. The driver must wait for a command to
-complete if it relies on the results of that command for its next
-command. I like this approach because it's less complex in the spec and
-for device implementers, while the burden on the driver implementer is
-still reasonable.
-
-> >
-> >Group member creation might have similar issues if it involves acquiring
-> >remote resources (e.g. connecting to a Ceph cluster or allocating ports
-> >on a distributed network switch). It can be impossible to defer resource
->=20
-> Sidetrack: this is really fuzzy to me, how the new member is going to be
-> plugged into backend (network). Over the time, we learned that the
-> creation of device from the other side (switch side) makes more sense.
-> That is why I asked for motivation to introduce this infra.
-
-Michael, have you already thought about this?
-
-> >acquisition/initialization because because VIRTIO devices must be
-> >available as soon as the driver can see them (i.e. how do populate
-> >Configuration Space fields if you don't have the details of the resource
-> >yet?).
-> >
-> >So I have raised two questions:
-> >
-> >1. What are the admin queue command completion semantics: in-order or
-> >   out-of-order command completion?
->=20
-> I would add "dependencies/serialization" here.
->=20
->=20
-> >
-> >2. Will there be long-running commands and how will we deal with them
-> >   when they hang?
->=20
-> Yeah, sounds legit to define it in spec.
->=20
-> >
-> >Stefan
->=20
->=20
-
---KWXI29eUOwKz8moj
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmQHipMACgkQnKSrs4Gr
-c8iWpQf+PwhBI6tKjWzk++rtI5PkBokAi92Cp8Kxim26BMrbpOfgtWfzgXG2tiHQ
-FQEhn3CPF3IQTXFnT+USocqaAzRb10TKDMckpE0s8U+ZCJ7CLVrYsibdOc5mmf+e
-vKFR7n/AwgAwxWEE4L8aBprNPMGEzCdsXVCQq3xPr3jvZ7xJ84YOl1hRzngkb4Zh
-rRQxlXHGyyRm8+V58T6SYgqo8/IPZKoc6SDrVR0GXL8wHSYRrHI/UMKUm8n6P78j
-y0pJjXce8xz9NHlJIrneZBo2V22GGR2s0NNGHcWxqGqHFmCwLMVXQsG5LwR7NuZc
-hCkmavB1cyO5WOztEIex3Pv4xge3MQ==
-=KMcO
------END PGP SIGNATURE-----
-
---KWXI29eUOwKz8moj--
+DQoNCj4gRnJvbTogdmlydGlvQGxpc3RzLm9hc2lzLW9wZW4ub3JnIDx2aXJ0aW9AbGlzdHMub2Fz
+aXMtb3Blbi5vcmc+IE9uIEJlaGFsZiBPZg0KPiBTdGVmYW4gSGFqbm9jemkNCg0KPiBJJ20gbm90
+IHNheWluZyB0aGF0IGl0IG11c3QgYmUgcG9zc2libGUgdG8gYWJvcnQgYWRtaW4gY29tbWFuZHMu
+IFRoZXJlIGFyZQ0KPiBvdGhlciBvcHRpb25zLCBsaWtlIHJlcXVpcmluZyB0aGUgZGV2aWNlIGl0
+c2VsZiB0byBmYWlsIGEgY29tbWFuZCBhZnRlciBhIHRpbWVvdXQuDQpBbiBleGFtcGxlIHdoZXJl
+IEVBR0FJTiwgRUJVU1kgY2FuIGJlIHVzZWZ1bC4NCg==
 
