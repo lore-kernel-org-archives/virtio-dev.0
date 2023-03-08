@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-11544-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-11545-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0F27EC64EC4
-	for <virtio-dev@archiver.kernel.org>; Wed,  8 Mar 2023 17:21:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8EB93C678D5
+	for <virtio-dev@archiver.kernel.org>; Wed,  8 Mar 2023 17:23:05 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 56E272AEE2
-	for <virtio-dev@archiver.kernel.org>; Wed,  8 Mar 2023 17:21:54 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id EBE3541EEC
+	for <virtio-dev@archiver.kernel.org>; Wed,  8 Mar 2023 17:23:04 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 3FCB99866F7
-	for <virtio-dev@archiver.kernel.org>; Wed,  8 Mar 2023 17:21:54 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id DF7E59866FB
+	for <virtio-dev@archiver.kernel.org>; Wed,  8 Mar 2023 17:23:04 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 2B5259866F0; Wed,  8 Mar 2023 17:21:54 +0000 (UTC)
+	id D44ED9866F0; Wed,  8 Mar 2023 17:23:04 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,157 +24,105 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 19DE49866F1
-	for <virtio-dev@lists.oasis-open.org>; Wed,  8 Mar 2023 17:21:54 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id C2C339866F3
+	for <virtio-dev@lists.oasis-open.org>; Wed,  8 Mar 2023 17:23:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: hKeS_u98O7Cb_0-qdg2now-1
+X-MC-Unique: Ri994GzUNNKxCHRKwAb_Cw-1
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678296111;
+        d=1e100.net; s=20210112; t=1678296178;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=VW0JMB/9Hm6Z06xB7u2xQqU64HWqETYFjaslbTvoEDQ=;
-        b=75IEH4omtsTYKTmUgMI3ZOmbNlpXMQcAHjW3wfheNHdPLfm7Ih7mospBRiA0tffcLF
-         dWwBC+nm+O8fmLzHUjT8aZnQHL1OVSXgW8YHOSqfj/ii+1d5NUraLoyRjlTOv2t289M3
-         bCupf4xOm99r7Qo12EMDFyQp+sbloh3lHxmxcO+oifmHKyV6szozFjxr7U70X1Ggmn38
-         BVD5NPl7ys2eb5i9SN3tEW2fLK0q5Eq/1ToIoiEQN4xQ58Uja/ocepOwZlTI3Hu1hqN+
-         1VEx0pwojA+LT6vje0pVq1OwVK4y6qQZMAi98LATWdERP9O4tM7iaeMoJ8hVgFH4E3h7
-         0HhQ==
-X-Gm-Message-State: AO0yUKUxF2K90EKwqkI1YBVuepFX7SvbJY/73s45TDKk5J2T77/Y5ktG
-	I9uioruuLu6oO5k+L91aCYSdHxFyX9/Qzq8KmUrrjOJZJ7f6+CKKlw8fyNGIIPDGVJCvdLQKhSi
-	T70m4UqHW9f2d2+dY4UW/kaiXuthW
-X-Received: by 2002:adf:fe44:0:b0:2c7:bbe:456c with SMTP id m4-20020adffe44000000b002c70bbe456cmr10542879wrs.63.1678296110878;
-        Wed, 08 Mar 2023 09:21:50 -0800 (PST)
-X-Google-Smtp-Source: AK7set91xLR4bbekx9AFtaMKjB+75s1Dt3aw+hQVndApF+BS4cWk6fAvfbEbE2qKNPlXx4yf+MLYxw==
-X-Received: by 2002:adf:fe44:0:b0:2c7:bbe:456c with SMTP id m4-20020adffe44000000b002c70bbe456cmr10542868wrs.63.1678296110534;
-        Wed, 08 Mar 2023 09:21:50 -0800 (PST)
-Date: Wed, 8 Mar 2023 12:21:46 -0500
+        bh=8OQO6vgGRjx8r4UFBXDsH+HBJVJjmFXAW0zNX8/IUZ4=;
+        b=OOJtB0x23Xi/ctmQ9L5Gkk8GeJb5F8hoY3ji6pTPBgaQBT0+ItZDXiXNSWxb+SI4sg
+         jAQVA+zeRnjroh2UVFSy40c8mUxoSB60PSP9yIG/o2AejO7GUEqu6szndnMLrM7P+a+Y
+         E6n8NfiV8KwNIwWC2uVlGOFjh9A/mW/7mPiwb9ROzkhlxYFMAZjx1Gu/cLSPokhqmhKi
+         ycB9WzIF3uinV4lRU/N5PU3X0Md3ccAwx+655zpNzLGXpIpJwojXmhJK1nAsmsWNoo84
+         aoorNy1+S37hqyWMKCVqPPwYBmFyxDUOo9oIm+l44I+ZNZWdNnwzjySC9JfcI9iKVbuV
+         F1mg==
+X-Gm-Message-State: AO0yUKU6YrsZVbc92iLsIfLe/MnP6n52VL5Nh/W9QoEHDxspSVW+MYHL
+	uKSfVn1Vl+NgEKu+8fmx4BA/Hz7O1HNzvZ4EIMBrX4dnpcbudwj1xW/fRoKBM7sErgVMVC7TMav
+	S56hV3juNSdCJQDR+MHclp6VTQBhu
+X-Received: by 2002:a05:600c:4e92:b0:3e2:5c3:bcfc with SMTP id f18-20020a05600c4e9200b003e205c3bcfcmr17529169wmq.18.1678296178519;
+        Wed, 08 Mar 2023 09:22:58 -0800 (PST)
+X-Google-Smtp-Source: AK7set9As+i5DmiEyKgFyRyta7AH9zHOZPebPiqBk/O2udiLqjXc+UIX9LjWwbID51UwaBocFDsBOA==
+X-Received: by 2002:a05:600c:4e92:b0:3e2:5c3:bcfc with SMTP id f18-20020a05600c4e9200b003e205c3bcfcmr17529149wmq.18.1678296178204;
+        Wed, 08 Mar 2023 09:22:58 -0800 (PST)
+Date: Wed, 8 Mar 2023 12:22:53 -0500
 From: "Michael S. Tsirkin" <mst@redhat.com>
-To: Stefan Hajnoczi <stefanha@redhat.com>
-Cc: Max Gurtovoy <mgurtovoy@nvidia.com>, Jason Wang <jasowang@redhat.com>,
-	Zhu Lingshan <lingshan.zhu@intel.com>,
-	virtio-comment@lists.oasis-open.org,
-	virtio-dev@lists.oasis-open.org, cohuck@redhat.com,
-	sgarzare@redhat.com, nrupal.jani@intel.com, Piotr.Uminski@intel.com,
-	hang.yuan@intel.com, virtio@lists.oasis-open.org,
+To: Cornelia Huck <cohuck@redhat.com>
+Cc: Jiri Pirko <jiri@nvidia.com>, virtio-comment@lists.oasis-open.org,
+	virtio-dev@lists.oasis-open.org, jasowang@redhat.com,
+	sgarzare@redhat.com, stefanha@redhat.com, nrupal.jani@intel.com,
+	Piotr.Uminski@intel.com, hang.yuan@intel.com,
+	virtio@lists.oasis-open.org, Zhu Lingshan <lingshan.zhu@intel.com>,
 	pasic@linux.ibm.com, Shahaf Shuler <shahafs@nvidia.com>,
-	Parav Pandit <parav@nvidia.com>
-Message-ID: <20230308122017-mutt-send-email-mst@kernel.org>
-References: <20230305043419-mutt-send-email-mst@kernel.org>
- <20230306000302.GA244754@fedora>
- <7f63fa0a-7deb-5875-6c6b-bfc651681653@redhat.com>
- <20230306112030.GB35392@fedora>
- <853c78d0-f752-05e9-d79d-811e82801627@nvidia.com>
- <20230306162538.GA56760@fedora>
- <e74483a4-38fa-99b5-86b8-785f0b98d029@nvidia.com>
- <20230308141317.GC299426@fedora>
- <18ddbf69-19a6-3c6b-9e42-aaae66e20bcf@nvidia.com>
- <20230308171523.GA320810@fedora>
+	Parav Pandit <parav@nvidia.com>,
+	Max Gurtovoy <mgurtovoy@nvidia.com>
+Message-ID: <20230308122220-mutt-send-email-mst@kernel.org>
+References: <cover.1677761896.git.mst@redhat.com>
+ <ZAXcqqdwfoLokT2l@nanopsycho>
+ <20230306175020-mutt-send-email-mst@kernel.org>
+ <877cvrkxxj.fsf@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <20230308171523.GA320810@fedora>
+In-Reply-To: <877cvrkxxj.fsf@redhat.com>
 X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: redhat.com
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Subject: [virtio-dev] Re: [virtio-comment] Re: [virtio] Re: [PATCH v10 04/10] admin:
- introduce virtio admin virtqueues
+Subject: [virtio-dev] Re: [virtio-comment] [PATCH v10 00/10] Introduce device group and
+ device management
 
-On Wed, Mar 08, 2023 at 12:15:23PM -0500, Stefan Hajnoczi wrote:
-> > > > > Or we could say that admin commands must complete within bounded time,
-> > > > > but I'm not sure that is implementable for some device types like
-> > > > > virtio-blk, virtio-scsi, and virtiofs.
-> > > > 
-> > > > No we can't.
-> > > > Some commands, for example FW upgrade can take 10 minutes and it's perfectly
-> > > > fine. Other commands like setting feature bit will take 1 millisec.
-> > > > Each device implements commands in a different internal logic so we can't
-> > > > expect to complete after X time.
-> > > 
-> > > When I say bounded time, I mean that it finishes in a finite amount of
-> > > time. I'm not saying there is a specific time X that all device
-> > > implementations must satisfy. Unbounded means it might never finish.
-> > 
-> > There might be a chance that any command for any virtio device type will
-> > never finish. Nothing new here in the adminq.
-> > 
-> > what one can do is to set a timeout for himself and if this timeout expire -
-> > check the device status. If it needs_reset - do a reset. if status is ok,
-> > then wait some more time.
-> > After X retries, unmap buffers or reset the adminq.
+On Wed, Mar 08, 2023 at 05:30:48PM +0100, Cornelia Huck wrote:
+> On Mon, Mar 06 2023, "Michael S. Tsirkin" <mst@redhat.com> wrote:
 > 
-> Michael: What effect does resetting the group owner device have on group
-> member devices?
-
-virtio level reset? It's a good question. I'd expect them all to be
-reset no?
-
-> I'm concerned that this approach disrupts all group member devices. For
-> example, you try to add a new device but the command hangs. In order to
-> recover you now have to reset the group owner device and this breaks all
-> the group member devices.
-
-
-I agree. How about a VQ level reset though? Seems like exactly
-what's needed here?
-
-
-> > > 
-> > > > Device can go to so FATAL state in case a command is stuck and causing
-> > > > internal errors in it.
-> > > > 
-> > > > > 
-> > > > > > For your example, stopping a member is possible even it there are some
-> > > > > > errors in the network. You can for example destroy all the connections to
-> > > > > > the remote target and complete all the BIOS with some error.
-> > > > > 
-> > > > > Forgetting about in-flight requests doesn't necessarily make them go
-> > > > > away. It creates a race between forgotten requests and reconnection. In
-> > > > > the worst case a forgotten write request takes effect after
-> > > > > reconnection, causing data corruption.
-> > > > 
-> > > > For making it work without data corruption we need a cooperation of the
-> > > > target side for sure. But this is fine since the target in that case is part
-> > > > of the "virtio-blk backend".
-> > > > One solution is that the target can decide it will flush all the requests to
-> > > > the storage device before accepting new connections.
-> > > 
-> > > This solution shifts the unbounded time from disconnection to
-> > > connection. The Group Member Delete command will complete quickly but a
-> > > subsequent Group Member Create command for the same underlying storage
-> > > device would need to wait until the requests are done.
-> > > 
-> > > Therefore I think the admin queue must be designed under the assumption
-> > > that some commands take a very long time.
-> > 
-> > For sure an admin command may take long time. FW upgrade can take 10 minutes
-> > for example.
-> > But each device is free to implement internal logic as he choose.
-> > 
-> > Same for live migration, when we stop/quiesce a device we must make sure it
-> > doesn't master any DMA operations. Thus, in some implementations we need to
-> > wait for all inflights to end fast. In others, we can invalidate the access
-> > to host/guest memory and wait for completions until the freeze state.
-> > 
-> > Bottom line, this is device implementation specific consideration.
+> > On Mon, Mar 06, 2023 at 01:29:30PM +0100, Jiri Pirko wrote:
+> >> Thu, Mar 02, 2023 at 02:04:48PM CET, mst@redhat.com wrote:
+> >> 
+> >> [...]
+> >> 
+> >> >
+> >> >TODO (maybe?) - probably ok to defer until this part is upstream:
+> >> >
+> >> >	Add "all members" member id.
+> >> >
+> >> >	Add commands for MSI, feature discovery.
+> >> >
+> >> >	Add commands for transport vq.
+> >> >
+> >> >
+> >> >My intent is to try and support both SR-IOV and SIOV
+> >> >usecases with the same structure and maybe even the same
+> >> >VQ.
+> >> 
+> >> Sorry to be late to the party, I'm trying to catch up. Is it common to
+> >> have cover letter for features this brief? I mean, from the cover
+> >> letter, I'm totally unable to understand what you are introducing here.
+> >> 
+> >> Could you elaborate about what you are aiming to achive with this?
+> >> Could you shed some usecases perhaps?
+> >> 
+> >> I have to be missing something obvious, but I don't get why any notion
+> >> of SR-IOV could be beneficial for virtio.
+> >> 
+> >
+> > Good point, I'll add a bit of motivation.
+> >
+> > For SR-IOV, it is not unusual for PFs to excercise control over VFs.
+> > There is interest in the community to include an interface to allow this
+> > in the virtio spec, when the PF is a virtio device.  This is what this
+> > patch does.
 > 
-> What I'm asking is that the spec clarifies the command completion order
-> semantics (in-order or out-of-order), whether there is a mechanism to
-> abort commands, etc.
-> 
-> Device implementers can then take advantage of those aspects to
-> implement devices that don't hang (e.g. health monitoring becomes
-> unavailable when there is a long running command).
-> 
-> If the spec doesn't cover this, then device implementers will not be
-> able to work around it when implementing standard commands like
-> create/delete group member.
-> 
-> Does that make sense?
-> 
-> Stefan
+> Unfortunately, information in the cover letter does not make it into
+> git -- should things like that go into the github issue (and into the
+> ballot?) It's useful both for reviewing (cover letter) and understanding
+> the rationale later (github/ballot).
 
-It does, to me.
+Well the github issue has a link to the archives, but sure it's
+possible to copy that.
 
+-- 
+MST
 
 
 ---------------------------------------------------------------------
