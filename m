@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-11543-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-11544-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 45709C678D5
-	for <virtio-dev@archiver.kernel.org>; Wed,  8 Mar 2023 17:17:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0F27EC64EC4
+	for <virtio-dev@archiver.kernel.org>; Wed,  8 Mar 2023 17:21:54 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id A1AB941EE9
-	for <virtio-dev@archiver.kernel.org>; Wed,  8 Mar 2023 17:17:17 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 56E272AEE2
+	for <virtio-dev@archiver.kernel.org>; Wed,  8 Mar 2023 17:21:54 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 97AE19866F9
-	for <virtio-dev@archiver.kernel.org>; Wed,  8 Mar 2023 17:17:17 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 3FCB99866F7
+	for <virtio-dev@archiver.kernel.org>; Wed,  8 Mar 2023 17:21:54 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 8B9E59866F0; Wed,  8 Mar 2023 17:17:17 +0000 (UTC)
+	id 2B5259866F0; Wed,  8 Mar 2023 17:21:54 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,247 +24,160 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 7B7959866F1
-	for <virtio-dev@lists.oasis-open.org>; Wed,  8 Mar 2023 17:17:17 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 19DE49866F1
+	for <virtio-dev@lists.oasis-open.org>; Wed,  8 Mar 2023 17:21:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: oObPx70_PIec38xfKLTvyA-1
-Date: Wed, 8 Mar 2023 12:17:11 -0500
-From: Stefan Hajnoczi <stefanha@redhat.com>
-To: Jiri Pirko <jiri@nvidia.com>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>,
+X-MC-Unique: hKeS_u98O7Cb_0-qdg2now-1
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678296111;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=VW0JMB/9Hm6Z06xB7u2xQqU64HWqETYFjaslbTvoEDQ=;
+        b=75IEH4omtsTYKTmUgMI3ZOmbNlpXMQcAHjW3wfheNHdPLfm7Ih7mospBRiA0tffcLF
+         dWwBC+nm+O8fmLzHUjT8aZnQHL1OVSXgW8YHOSqfj/ii+1d5NUraLoyRjlTOv2t289M3
+         bCupf4xOm99r7Qo12EMDFyQp+sbloh3lHxmxcO+oifmHKyV6szozFjxr7U70X1Ggmn38
+         BVD5NPl7ys2eb5i9SN3tEW2fLK0q5Eq/1ToIoiEQN4xQ58Uja/ocepOwZlTI3Hu1hqN+
+         1VEx0pwojA+LT6vje0pVq1OwVK4y6qQZMAi98LATWdERP9O4tM7iaeMoJ8hVgFH4E3h7
+         0HhQ==
+X-Gm-Message-State: AO0yUKUxF2K90EKwqkI1YBVuepFX7SvbJY/73s45TDKk5J2T77/Y5ktG
+	I9uioruuLu6oO5k+L91aCYSdHxFyX9/Qzq8KmUrrjOJZJ7f6+CKKlw8fyNGIIPDGVJCvdLQKhSi
+	T70m4UqHW9f2d2+dY4UW/kaiXuthW
+X-Received: by 2002:adf:fe44:0:b0:2c7:bbe:456c with SMTP id m4-20020adffe44000000b002c70bbe456cmr10542879wrs.63.1678296110878;
+        Wed, 08 Mar 2023 09:21:50 -0800 (PST)
+X-Google-Smtp-Source: AK7set91xLR4bbekx9AFtaMKjB+75s1Dt3aw+hQVndApF+BS4cWk6fAvfbEbE2qKNPlXx4yf+MLYxw==
+X-Received: by 2002:adf:fe44:0:b0:2c7:bbe:456c with SMTP id m4-20020adffe44000000b002c70bbe456cmr10542868wrs.63.1678296110534;
+        Wed, 08 Mar 2023 09:21:50 -0800 (PST)
+Date: Wed, 8 Mar 2023 12:21:46 -0500
+From: "Michael S. Tsirkin" <mst@redhat.com>
+To: Stefan Hajnoczi <stefanha@redhat.com>
+Cc: Max Gurtovoy <mgurtovoy@nvidia.com>, Jason Wang <jasowang@redhat.com>,
+	Zhu Lingshan <lingshan.zhu@intel.com>,
 	virtio-comment@lists.oasis-open.org,
-	virtio-dev@lists.oasis-open.org, jasowang@redhat.com,
-	cohuck@redhat.com, sgarzare@redhat.com, nrupal.jani@intel.com,
-	Piotr.Uminski@intel.com, hang.yuan@intel.com,
-	virtio@lists.oasis-open.org, Zhu Lingshan <lingshan.zhu@intel.com>,
+	virtio-dev@lists.oasis-open.org, cohuck@redhat.com,
+	sgarzare@redhat.com, nrupal.jani@intel.com, Piotr.Uminski@intel.com,
+	hang.yuan@intel.com, virtio@lists.oasis-open.org,
 	pasic@linux.ibm.com, Shahaf Shuler <shahafs@nvidia.com>,
-	Parav Pandit <parav@nvidia.com>,
-	Max Gurtovoy <mgurtovoy@nvidia.com>
-Message-ID: <20230308171711.GB320810@fedora>
-References: <20230305191351-mutt-send-email-mst@kernel.org>
- <20230306110340.GA35392@fedora>
- <20230306133525-mutt-send-email-mst@kernel.org>
- <ZAbvxj+7lgaI1HkI@nanopsycho>
- <20230307143911.GC124259@fedora>
- <ZAdTSiVJGSrRIqZ3@nanopsycho>
- <20230307190347.GA153228@fedora>
- <ZAhgv21Nnex6vbDf@nanopsycho>
- <20230308124418.GB299426@fedora>
- <ZAiGR/3nGMKWaBtE@nanopsycho>
+	Parav Pandit <parav@nvidia.com>
+Message-ID: <20230308122017-mutt-send-email-mst@kernel.org>
+References: <20230305043419-mutt-send-email-mst@kernel.org>
+ <20230306000302.GA244754@fedora>
+ <7f63fa0a-7deb-5875-6c6b-bfc651681653@redhat.com>
+ <20230306112030.GB35392@fedora>
+ <853c78d0-f752-05e9-d79d-811e82801627@nvidia.com>
+ <20230306162538.GA56760@fedora>
+ <e74483a4-38fa-99b5-86b8-785f0b98d029@nvidia.com>
+ <20230308141317.GC299426@fedora>
+ <18ddbf69-19a6-3c6b-9e42-aaae66e20bcf@nvidia.com>
+ <20230308171523.GA320810@fedora>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="kTKOLfIrmK2x8b5V"
-Content-Disposition: inline
-In-Reply-To: <ZAiGR/3nGMKWaBtE@nanopsycho>
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.3
-Subject: [virtio-dev] Re: [virtio] Re: [virtio-comment] Re: [virtio] Re: [PATCH v10 04/10]
- admin: introduce virtio admin virtqueues
-
---kTKOLfIrmK2x8b5V
+In-Reply-To: <20230308171523.GA320810@fedora>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Subject: [virtio-dev] Re: [virtio-comment] Re: [virtio] Re: [PATCH v10 04/10] admin:
+ introduce virtio admin virtqueues
 
-On Wed, Mar 08, 2023 at 01:57:43PM +0100, Jiri Pirko wrote:
-> Wed, Mar 08, 2023 at 01:44:18PM CET, stefanha@redhat.com wrote:
-> >On Wed, Mar 08, 2023 at 11:17:35AM +0100, Jiri Pirko wrote:
-> >> Tue, Mar 07, 2023 at 08:03:47PM CET, stefanha@redhat.com wrote:
-> >> >On Tue, Mar 07, 2023 at 04:07:54PM +0100, Jiri Pirko wrote:
-> >> >> Tue, Mar 07, 2023 at 03:39:11PM CET, stefanha@redhat.com wrote:
-> >> >> >On Tue, Mar 07, 2023 at 09:03:18AM +0100, Jiri Pirko wrote:
-> >> >> >> Mon, Mar 06, 2023 at 07:37:31PM CET, mst@redhat.com wrote:
-> >> >> >> >On Mon, Mar 06, 2023 at 06:03:40AM -0500, Stefan Hajnoczi wrote:
-> >> >> >> >> On Sun, Mar 05, 2023 at 07:18:24PM -0500, Michael S. Tsirkin =
-wrote:
-> >> >> >> >> > On Sun, Mar 05, 2023 at 07:03:02PM -0500, Stefan Hajnoczi w=
-rote:
-> >> >> >> >> > > On Sun, Mar 05, 2023 at 04:38:59AM -0500, Michael S. Tsir=
-kin wrote:
-> >> >> >> >> > > > On Fri, Mar 03, 2023 at 03:21:33PM -0500, Stefan Hajnoc=
-zi wrote:
-> >> >> >> >> > > > > What happens if a command takes 1 second to complete,=
- is the device
-> >> >> >> >> > > > > allowed to process the next command from the virtqueu=
-e during this time,
-> >> >> >> >> > > > > possibly completing it before the first command?
-> >> >> >> >> > > > >=20
-> >> >> >> >> > > > > This requires additional clarification in the spec be=
-cause "they are
-> >> >> >> >> > > > > processed by the device in the order in which they ar=
-e queued" does not
-> >> >> >> >> > > > > explain whether commands block the virtqueue (in orde=
-r completion) or
-> >> >> >> >> > > > > not (out of order completion).
-> >> >> >> >> > > >=20
-> >> >> >> >> > > > Oh I begin to see. Hmm how does e.g. virtio scsi handle=
- this?
-> >> >> >> >> > >=20
-> >> >> >> >> > > virtio-scsi, virtio-blk, and NVMe requests may complete o=
-ut of order.
-> >> >> >> >> > > Several may be processed by the device at the same time.
-> >> >> >> >> >=20
-> >> >> >> >> > Let's say I submit a write followed by read - is read
-> >> >> >> >> > guaranteed to return an up to date info?
-> >> >> >> >>=20
-> >> >> >> >> In general, no. The driver must wait for the write completion=
- before
-> >> >> >> >> submitting the read if it wants consistency.
-> >> >> >> >>=20
-> >> >> >> >> Stefan
-> >> >> >> >
-> >> >> >> >I see.  I think it's a good design to follow then.
-> >> >> >>=20
-> >> >> >> Hmm, is it suitable to have this approach for configuration inte=
-rface?
-> >> >> >> Storage device is a different beast, having parallel reads and w=
-rites
-> >> >> >> makes complete sense for performance.
-> >> >> >>=20
-> >> >> >> ->read a req
-> >> >> >> ->read b req
-> >> >> >> ->read c req
-> >> >> >> <-read a rep
-> >> >> >> <-read b rep
-> >> >> >> <-read c rep
-> >> >> >>=20
-> >> >> >> There is no dependency, even between writes.
-> >> >> >>=20
-> >> >> >> But in case of configuration, does not make any sense to me.
-> >> >> >> Why is it needed? To pass the burden of consistency of
-> >> >> >> configuration to driver sounds odd at least.
-> >> >> >>=20
-> >> >> >> I sense there is no concete idea about what the "admin virtqueue=
-" should
-> >> >> >> serve for exactly.
-> >> >> >
-> >> >> >It's useful for long-running commands because they prevent other
-> >> >> >commands from executing.
-> >> >> >
-> >> >> >An example I've given is that deleting a group member might require
-> >> >> >waiting for the group member's I/O activity to finish. If that I/O
-> >> >> >activity cannot be cancelled instantaneously, then it could take an
-> >> >> >unbounded amount of time to delete the group member. The device wo=
-uld be
-> >> >> >unable to process futher admin commands.
-> >> >>=20
-> >> >> I see. Then I believe that the device should handle the dependencie=
-s.
-> >> >> Example 1:
-> >> >> -> REQ cmd to create group member A
-> >> >> -> REQ cmd to create group member B
-> >> >> <- REP cmd to create group member A
-> >> >> <- REP cmd to create group member B
-> >> >>=20
-> >> >> The device according to internal implementation can either serializ=
-e the
-> >> >> 2 group member creations or do it in parallel, if it supports it.
-> >> >>=20
-> >> >> Example 2:
-> >> >> -> REQ cmd to create group member A
-> >> >> -> REQ cmd config group member A
-> >> >> <- REP cmd to create group member A
-> >> >> <- REP cmd config group member A
-> >> >>=20
-> >> >> Here the serialization is necessary and the device is the one to ta=
-ke
-> >> >> care of it.
-> >> >>=20
-> >> >> Makes sense?
-> >> >
-> >> >Yes, I understand. The spec would need to define ordering rules for
-> >> >specific commands and the device must implement them. It allows the
-> >> >driver to pipeline commands while also allowing out-of-order completi=
-on
-> >> >(parallelism) in some cases. The disadvantage of this approach is
-> >> >complexity in the spec and implementations.
-> >> >
-> >> >An alternative is unconditional out-of-order completion, where there =
-are
-> >> >no per-command ordering rules. The driver must wait for a command to
-> >> >complete if it relies on the results of that command for its next
-> >> >command. I like this approach because it's less complex in the spec a=
-nd
-> >> >for device implementers, while the burden on the driver implementer is
-> >> >still reasonable.
-> >>=20
-> >> But isn't this duplicating the burden of maintaining dependencies to
-> >> both driver and device? I mean, device should not depend on driver doi=
-ng
-> >> the right thing, that means it has to check the dependencies for every
-> >> incoming command anyway. The only difference would be to wait instead =
-of
-> >> returning "-EBUSY" in case the dependency is not satisfied yet.
-> >
-> >The device does not need to reject commands that have dependencies with
-> >-EBUSY. The result of commands with dependencies is either A -> B or B
-> >-> A.
-> >
-> >For example:
-> >1. Create Group Member A
-> >2. Delete Group Member A
-> >
-> >Command 2 might succeed or it might fail with -ENOENT because Group
-> >Member A doesn't exist yet.
->=20
-> Yeah, correct.
->=20
-> >
-> >> Device knows exactly what are the dependencies. And I believe, those a=
-re
-> >> device implementation specific. For example, some implementation could
-> >> support parallel VF config cmd execution, some implementation might
-> >> need to serialize that. Driver has no clue.
-> >
-> >Yes, that's up to the device. Out-of-order completion is a superset of
-> >in-order completion. So the device is allowed to run commands in series
-> >when it wants. A driver designed for out-of-order completion will work
-> >fine either way.
->=20
-> Agreed.
->=20
->=20
-> >
-> >> Could you please elaborate a bit more what you mean by "complexity in
-> >> the spec"?
-> >
-> >When adding commands to the spec, the dependency relationships with
-> >other commands need to be thought about and documented.
-> >
-> >Device implementers need to get those relationships right. That means
-> >they need to remember that command B waits for command A.
->=20
-> That's my point, this is device implementation specific. Spec should not
-> define anything like this, that might be limiting in some of the cases.
->=20
-> >
-> >Driver implementers have to understand that command B waits for command
-> >A but not command C according to the spec.
-> >
-> >That seems complex to me.
->=20
-> Sure, I agree this does not belong to the spec, it can't, really.
-> For the record, I never suggested it.
->=20
-> I think we are in agreement.
+On Wed, Mar 08, 2023 at 12:15:23PM -0500, Stefan Hajnoczi wrote:
+> > > > > Or we could say that admin commands must complete within bounded time,
+> > > > > but I'm not sure that is implementable for some device types like
+> > > > > virtio-blk, virtio-scsi, and virtiofs.
+> > > > 
+> > > > No we can't.
+> > > > Some commands, for example FW upgrade can take 10 minutes and it's perfectly
+> > > > fine. Other commands like setting feature bit will take 1 millisec.
+> > > > Each device implements commands in a different internal logic so we can't
+> > > > expect to complete after X time.
+> > > 
+> > > When I say bounded time, I mean that it finishes in a finite amount of
+> > > time. I'm not saying there is a specific time X that all device
+> > > implementations must satisfy. Unbounded means it might never finish.
+> > 
+> > There might be a chance that any command for any virtio device type will
+> > never finish. Nothing new here in the adminq.
+> > 
+> > what one can do is to set a timeout for himself and if this timeout expire -
+> > check the device status. If it needs_reset - do a reset. if status is ok,
+> > then wait some more time.
+> > After X retries, unmap buffers or reset the adminq.
+> 
+> Michael: What effect does resetting the group owner device have on group
+> member devices?
 
-Okay. In that case I think I misunderstood what you meant. Sorry!
+virtio level reset? It's a good question. I'd expect them all to be
+reset no?
 
-Stefan
+> I'm concerned that this approach disrupts all group member devices. For
+> example, you try to add a new device but the command hangs. In order to
+> recover you now have to reset the group owner device and this breaks all
+> the group member devices.
 
---kTKOLfIrmK2x8b5V
-Content-Type: application/pgp-signature; name="signature.asc"
 
------BEGIN PGP SIGNATURE-----
+I agree. How about a VQ level reset though? Seems like exactly
+what's needed here?
 
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmQIwxcACgkQnKSrs4Gr
-c8g0IAgAoh5/xOoY2KSkqBYaDluY5CPOkmmCy2+gciYyWr5KNc9zXZ0URx63LBft
-45wMn/2fryYSK1upxDfwc1Klx942RjAJfCoYA/ZRBG+Xj9ScQI+mXhwZE8T12pbO
-EwgLQBAjLi9s6h+skk4f05QZzKAO9q9j2D+3nc/7qJbb17vvXM9D9mzG5DuT1Op9
-0K5YhNNHqqkCC+/rC6nooQBh+N56/GCcJCwbxsWUBSSnC75UedVFG2JlT+QBQhA5
-fZkKfCxRWl2IhYx4/Nw7oegVB4cMmTJyG/FkG6C+rlGBJQosGx74vjch1N9CB84Z
-6gXLnMJFzGcOdhytUl8CJKUcdKNOeQ==
-=sS3R
------END PGP SIGNATURE-----
 
---kTKOLfIrmK2x8b5V--
+> > > 
+> > > > Device can go to so FATAL state in case a command is stuck and causing
+> > > > internal errors in it.
+> > > > 
+> > > > > 
+> > > > > > For your example, stopping a member is possible even it there are some
+> > > > > > errors in the network. You can for example destroy all the connections to
+> > > > > > the remote target and complete all the BIOS with some error.
+> > > > > 
+> > > > > Forgetting about in-flight requests doesn't necessarily make them go
+> > > > > away. It creates a race between forgotten requests and reconnection. In
+> > > > > the worst case a forgotten write request takes effect after
+> > > > > reconnection, causing data corruption.
+> > > > 
+> > > > For making it work without data corruption we need a cooperation of the
+> > > > target side for sure. But this is fine since the target in that case is part
+> > > > of the "virtio-blk backend".
+> > > > One solution is that the target can decide it will flush all the requests to
+> > > > the storage device before accepting new connections.
+> > > 
+> > > This solution shifts the unbounded time from disconnection to
+> > > connection. The Group Member Delete command will complete quickly but a
+> > > subsequent Group Member Create command for the same underlying storage
+> > > device would need to wait until the requests are done.
+> > > 
+> > > Therefore I think the admin queue must be designed under the assumption
+> > > that some commands take a very long time.
+> > 
+> > For sure an admin command may take long time. FW upgrade can take 10 minutes
+> > for example.
+> > But each device is free to implement internal logic as he choose.
+> > 
+> > Same for live migration, when we stop/quiesce a device we must make sure it
+> > doesn't master any DMA operations. Thus, in some implementations we need to
+> > wait for all inflights to end fast. In others, we can invalidate the access
+> > to host/guest memory and wait for completions until the freeze state.
+> > 
+> > Bottom line, this is device implementation specific consideration.
+> 
+> What I'm asking is that the spec clarifies the command completion order
+> semantics (in-order or out-of-order), whether there is a mechanism to
+> abort commands, etc.
+> 
+> Device implementers can then take advantage of those aspects to
+> implement devices that don't hang (e.g. health monitoring becomes
+> unavailable when there is a long running command).
+> 
+> If the spec doesn't cover this, then device implementers will not be
+> able to work around it when implementing standard commands like
+> create/delete group member.
+> 
+> Does that make sense?
+> 
+> Stefan
+
+It does, to me.
+
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
