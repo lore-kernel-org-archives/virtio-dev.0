@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-11525-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-11526-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id D7E0FC7618B
-	for <virtio-dev@archiver.kernel.org>; Wed,  8 Mar 2023 14:12:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 10122C64EC4
+	for <virtio-dev@archiver.kernel.org>; Wed,  8 Mar 2023 14:13:30 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 399BF2A8F7
-	for <virtio-dev@archiver.kernel.org>; Wed,  8 Mar 2023 14:12:34 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 43AB93E30F
+	for <virtio-dev@archiver.kernel.org>; Wed,  8 Mar 2023 14:13:30 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 2BDDA9866FC
-	for <virtio-dev@archiver.kernel.org>; Wed,  8 Mar 2023 14:12:34 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 366F09866F9
+	for <virtio-dev@archiver.kernel.org>; Wed,  8 Mar 2023 14:13:30 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 1EB249866F1; Wed,  8 Mar 2023 14:12:34 +0000 (UTC)
+	id 29B439866EF; Wed,  8 Mar 2023 14:13:30 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,126 +24,220 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 0A8339866EF
-	for <virtio-dev@lists.oasis-open.org>; Wed,  8 Mar 2023 14:12:30 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 15F539866F0
+	for <virtio-dev@lists.oasis-open.org>; Wed,  8 Mar 2023 14:13:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: qnOuLSK0PQy9V9KYtIhvEA-1
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678284747;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=8pruHoaMxFEgALcLGx9ngc1OVBIItv+wn+Yja/fMhgI=;
-        b=BpLLm9Cjy9X9++bcVo8XX9czsFkwoX894IfdOjwWjw/xGkbXf4H8OHGrT0KYs/BdF7
-         SBTndNdpQeTH7EMmc3M5AqNDLgTfQwy6/3mDPEcQvj3Ijhh3VMD689SUdjM+PDRbLhra
-         TM5GidZWCF4qgQKZWHRHOJNUnOipBrd5teqiTKManVBwLNNWGNsKxGQpGAtNX+33px/h
-         UoZgwX+j/g+X8+Sa5KUTWNRJIB572g+MSzR94OXIwtVjEMVUMbhLNE3yMM3lR585FRs/
-         RC7widdck5pF1Pk4tfWH7k62nQQup8ZexwBIafFFfJgKoelHmrxnX61FGF+Ao8uWwIak
-         gdbQ==
-X-Gm-Message-State: AO0yUKWgcY5sGeSQcrGeArwjdGtfZdErQ7XUM6NdAUffBz8m1+yT07zX
-	mq3nC2aHZsIaQng7E2Pyw//ktrKovoYbU8hIgjCOBAyinN5ytpXu/311gHGkWaBB8qdVaRPQi/B
-	5lr2LyCrJhqC5PZBgJqfW4W03jFSK
-X-Received: by 2002:a5d:5706:0:b0:2c7:b8a0:c42a with SMTP id a6-20020a5d5706000000b002c7b8a0c42amr10421832wrv.31.1678284746854;
-        Wed, 08 Mar 2023 06:12:26 -0800 (PST)
-X-Google-Smtp-Source: AK7set9c0U9P3Im/6CdL1XjMiaqKZxxzqQrY6mFeodxNk97LC5u6vvgFrfrCXF8M1kv4D0OCCFjr6A==
-X-Received: by 2002:a5d:5706:0:b0:2c7:b8a0:c42a with SMTP id a6-20020a5d5706000000b002c7b8a0c42amr10421813wrv.31.1678284746512;
-        Wed, 08 Mar 2023 06:12:26 -0800 (PST)
-Date: Wed, 8 Mar 2023 09:12:22 -0500
-From: "Michael S. Tsirkin" <mst@redhat.com>
-To: Jiri Pirko <jiri@nvidia.com>
-Cc: David Edmondson <david.edmondson@oracle.com>,
+X-MC-Unique: aRGAOW2wOIqItEhCBujyRg-1
+Date: Wed, 8 Mar 2023 09:13:17 -0500
+From: Stefan Hajnoczi <stefanha@redhat.com>
+To: Max Gurtovoy <mgurtovoy@nvidia.com>
+Cc: Jason Wang <jasowang@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>,
+	Zhu Lingshan <lingshan.zhu@intel.com>,
 	virtio-comment@lists.oasis-open.org,
-	virtio-dev@lists.oasis-open.org, jasowang@redhat.com,
-	cohuck@redhat.com, sgarzare@redhat.com, stefanha@redhat.com,
-	nrupal.jani@intel.com, Piotr.Uminski@intel.com, hang.yuan@intel.com,
-	virtio@lists.oasis-open.org, Zhu Lingshan <lingshan.zhu@intel.com>,
+	virtio-dev@lists.oasis-open.org, cohuck@redhat.com,
+	sgarzare@redhat.com, nrupal.jani@intel.com, Piotr.Uminski@intel.com,
+	hang.yuan@intel.com, virtio@lists.oasis-open.org,
 	pasic@linux.ibm.com, Shahaf Shuler <shahafs@nvidia.com>,
-	Parav Pandit <parav@nvidia.com>,
-	Max Gurtovoy <mgurtovoy@nvidia.com>
-Message-ID: <20230308091103-mutt-send-email-mst@kernel.org>
-References: <cover.1677761896.git.mst@redhat.com>
- <6677477d48dfc234d3d1a339fb39d8fa2a3b983d.1677761896.git.mst@redhat.com>
- <m27cvszuta.fsf@oracle.com>
- <20230308065526-mutt-send-email-mst@kernel.org>
- <m24jqvz9ep.fsf@oracle.com>
- <ZAiH/d7igeVCt4WE@nanopsycho>
- <m21qlzz7br.fsf@oracle.com>
- <ZAiVXdawwbZ8CvXR@nanopsycho>
+	Parav Pandit <parav@nvidia.com>
+Message-ID: <20230308141317.GC299426@fedora>
+References: <20230303132840.GC2866370@fedora>
+ <20230303083213-mutt-send-email-mst@kernel.org>
+ <20230303202133.GA2901137@fedora>
+ <20230305043419-mutt-send-email-mst@kernel.org>
+ <20230306000302.GA244754@fedora>
+ <7f63fa0a-7deb-5875-6c6b-bfc651681653@redhat.com>
+ <20230306112030.GB35392@fedora>
+ <853c78d0-f752-05e9-d79d-811e82801627@nvidia.com>
+ <20230306162538.GA56760@fedora>
+ <e74483a4-38fa-99b5-86b8-785f0b98d029@nvidia.com>
 MIME-Version: 1.0
-In-Reply-To: <ZAiVXdawwbZ8CvXR@nanopsycho>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="5DVIKwcIJjHvSBzF"
 Content-Disposition: inline
-Subject: [virtio-dev] Re: [virtio] Re: [virtio-comment] [PATCH v10 09/10] admin:
- conformance clauses
+In-Reply-To: <e74483a4-38fa-99b5-86b8-785f0b98d029@nvidia.com>
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.1
+Subject: [virtio-dev] Re: [virtio-comment] Re: [virtio] Re: [PATCH v10 04/10] admin:
+ introduce virtio admin virtqueues
 
-On Wed, Mar 08, 2023 at 03:02:05PM +0100, Jiri Pirko wrote:
-> Wed, Mar 08, 2023 at 02:44:08PM CET, david.edmondson@oracle.com wrote:
-> >Jiri Pirko <jiri@nvidia.com> writes:
-> >
-> >> Wed, Mar 08, 2023 at 01:59:10PM CET, david.edmondson@oracle.com wrote:
-> >>>"Michael S. Tsirkin" <mst@redhat.com> writes:
-> >>>
-> >>>> On Tue, Mar 07, 2023 at 11:04:33AM +0000, David Edmondson wrote:
-> >>>>> "Michael S. Tsirkin" <mst@redhat.com> writes:
-> >>>>> > +The driver MAY block use of VIRTIO_ADMIN_CMD_LIST_QUERY and
-> >>>>> > +VIRTIO_ADMIN_CMD_LIST_USE by issuing VIRTIO_ADMIN_CMD_LIST_USE
-> >>>>> > +with respective bits cleared in \field{command_specific_data}.
-> >>>>> 
-> >>>>> This runs contrary to the assertion "The list of supported commands MUST
-> >>>>> NOT shrink", given that a driver is told to assume that
-> >>>>> VIRTIO_ADMIN_CMD_LIST_QUERY and VIRTIO_ADMIN_CMD_LIST_USE are the only
-> >>>>> commands initially available.
-> >>>>
-> >>>> Commands are still available just disabled, the meaning of
-> >>>> "MUST NOT shrink" is clarified by the following:
-> >>>>
-> >>>> 	> > +after reporting a given command as supported through
-> >>>> 	> > +VIRTIO_ADMIN_CMD_LIST_QUERY the device MUST NOT later report it
-> >>>> 	> > +as unsupported.
-> >>>> I will stick an "i.e." there to make it hopefully clearer.
-> >>>
-> >>>This puzzles me.
-> >>>
-> >>>I can see the point of blocking LIST_USE, but not of blocking
-> >>
-> >> What is that point, I'm curious.
-> >
-> >I might restrict the commands permitted by a device before handing it
-> >off to some subordinate less trusted code.
-> 
-> Hmm, that is theoretical, or is there a usecase for that?
-> 
+--5DVIKwcIJjHvSBzF
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Maybe there will be a future version replacing VIRTIO_ADMIN_CMD_LIST_QUERY
-with a different command. Then we start with a device supporting
-both VIRTIO_ADMIN_CMD_LIST_QUERY and the new VIRTIO_ADMIN_FOO,
-and we block VIRTIO_ADMIN_CMD_LIST_QUERY for testing, to make sure driver
-is able to handle future devices without VIRTIO_ADMIN_CMD_LIST_QUERY.
+On Wed, Mar 08, 2023 at 01:17:33PM +0200, Max Gurtovoy wrote:
+>=20
+>=20
+> On 06/03/2023 18:25, Stefan Hajnoczi wrote:
+> > On Mon, Mar 06, 2023 at 05:28:03PM +0200, Max Gurtovoy wrote:
+> > >=20
+> > >=20
+> > > On 06/03/2023 13:20, Stefan Hajnoczi wrote:
+> > > > On Mon, Mar 06, 2023 at 04:00:50PM +0800, Jason Wang wrote:
+> > > > >=20
+> > > > > =E5=9C=A8 2023/3/6 08:03, Stefan Hajnoczi =E5=86=99=E9=81=93:
+> > > > > > On Sun, Mar 05, 2023 at 04:38:59AM -0500, Michael S. Tsirkin wr=
+ote:
+> > > > > > > On Fri, Mar 03, 2023 at 03:21:33PM -0500, Stefan Hajnoczi wro=
+te:
+> > > > > > > > What happens if a command takes 1 second to complete, is th=
+e device
+> > > > > > > > allowed to process the next command from the virtqueue duri=
+ng this time,
+> > > > > > > > possibly completing it before the first command?
+> > > > > > > >=20
+> > > > > > > > This requires additional clarification in the spec because =
+"they are
+> > > > > > > > processed by the device in the order in which they are queu=
+ed" does not
+> > > > > > > > explain whether commands block the virtqueue (in order comp=
+letion) or
+> > > > > > > > not (out of order completion).
+> > > > > > > Oh I begin to see. Hmm how does e.g. virtio scsi handle this?
+> > > > > > virtio-scsi, virtio-blk, and NVMe requests may complete out of =
+order.
+> > > > > > Several may be processed by the device at the same time.
+> > > > > >=20
+> > > > > > They rely on multi-queue for abort operations:
+> > > > > >=20
+> > > > > > In virtio-scsi the abort requests (VIRTIO_SCSI_T_TMF_ABORT_TASK=
+) are
+> > > > > > sent on the control virtqueue. The the request identifier names=
+pace is
+> > > > > > shared across all virtqueues so it's possible to abort a reques=
+t that
+> > > > > > was submitted to any command virtqueue.
+> > > > > >=20
+> > > > > > NVMe also follows the same design where abort commands are sent=
+ on the
+> > > > > > Admin Submission Queue instead of an I/O Submission Queue. It's=
+ possible
+> > > > > > to identify NVMe requests by <Submission Queue ID, Command Iden=
+tifier>.
+> > > > > >=20
+> > > > > > virtio-blk doesn't support aborting requests.
+> > > > > >=20
+> > > > > > I think the logic behind this design is that if a queue gets st=
+uck
+> > > > > > processing long-running requests, then the device should not be=
+ forced
+> > > > > > to perform lookahead in the queue to find abort commands. A sep=
+arate
+> > > > > > control/admin queue is used for the abort requests.
+> > > > >=20
+> > > > >=20
+> > > > > Or device need mandate some kind of QOS here, e.g a request must =
+be complete
+> > > > > in some time. Otherwise we don't have sufficient reliability for =
+using it as
+> > > > > management task?
+> > > >=20
+> > > > Yes, if all commands can be executed in bounded time then a guarant=
+ee is
+> > > > possible.
+> > > >=20
+> > > > Here is an example where that's hard: imagine a virtio-blk device b=
+acked
+> > > > by network storage. When an admin queue command is used to delete a
+> > > > group member, any of the group member's in-flight I/O requests need=
+ to
+> > > > be aborted. If the network hangs while the group member is being
+> > > > deleted, then the device can't complete an orderly shutdown of I/O
+> > > > requests in a reasonable time.
+> > > >=20
+> > > > That example shows a basic group admin command that I think Michael=
+ is
+> > > > about to propose. We can't avoid this problem by not making it a gr=
+oup
+> > > > admin command - it needs to be a group admin command. So I think it=
+'s
+> > > > likely that there will be admin commands that take an unbounded amo=
+unt
+> > > > of time to complete. One way to achieve what you mentioned is timeo=
+uts.
+> > >=20
+> > > I think that you're getting into device specific implementation detai=
+ls and
+> > > I'm not sure it's necessary.
+> > >=20
+> > > I don't think we need to abort admin commands. Admin commands can be
+> > > flushed/aborted during the device reset phase.
+> > > Only IO commands should have the possibility to being aborted as you
+> > > mentioned in NVMe and SCSI (and potentially in virtio-blk).
+> >=20
+> > It's a general design issue that should be clarified now rather than
+> > being left unspecified.
+> >=20
+> > I'm not saying that it must be possible to abort admin commands. There
+> > are other options, like requiring the device itself to fail a command
+> > after a timeout.
+>=20
+> do you have an example of timeout today for control vq ?
 
+Do you mean the virtio-net control virtqueue? I don't think it has any
+commands with an unbounded execution time.
 
-> >
-> >>
-> >>>LIST_QUERY. What's the purpose of this?
-> >>
-> >> I think that this might be just for the sake of treating all
-> >> commands equally.
-> >>
-> >>
-> >>>-- 
-> >>>Time is waiting to explain, why refuse?
-> >>>
-> >>>---------------------------------------------------------------------
-> >>>To unsubscribe from this mail list, you must leave the OASIS TC that 
-> >>>generates this mail.  Follow this link to all your TCs in OASIS at:
-> >>>https://www.oasis-open.org/apps/org/workgroup/portal/my_workgroups.php 
-> >>>
-> >-- 
-> >I used to get mad at my school, the teachers who taught me weren't cool.
+> >=20
+> > Or we could say that admin commands must complete within bounded time,
+> > but I'm not sure that is implementable for some device types like
+> > virtio-blk, virtio-scsi, and virtiofs.
+>=20
+> No we can't.
+> Some commands, for example FW upgrade can take 10 minutes and it's perfec=
+tly
+> fine. Other commands like setting feature bit will take 1 millisec.
+> Each device implements commands in a different internal logic so we can't
+> expect to complete after X time.
 
+When I say bounded time, I mean that it finishes in a finite amount of
+time. I'm not saying there is a specific time X that all device
+implementations must satisfy. Unbounded means it might never finish.
 
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+> Device can go to so FATAL state in case a command is stuck and causing
+> internal errors in it.
+>=20
+> >=20
+> > > For your example, stopping a member is possible even it there are some
+> > > errors in the network. You can for example destroy all the connection=
+s to
+> > > the remote target and complete all the BIOS with some error.
+> >=20
+> > Forgetting about in-flight requests doesn't necessarily make them go
+> > away. It creates a race between forgotten requests and reconnection. In
+> > the worst case a forgotten write request takes effect after
+> > reconnection, causing data corruption.
+>=20
+> For making it work without data corruption we need a cooperation of the
+> target side for sure. But this is fine since the target in that case is p=
+art
+> of the "virtio-blk backend".
+> One solution is that the target can decide it will flush all the requests=
+ to
+> the storage device before accepting new connections.
+
+This solution shifts the unbounded time from disconnection to
+connection. The Group Member Delete command will complete quickly but a
+subsequent Group Member Create command for the same underlying storage
+device would need to wait until the requests are done.
+
+Therefore I think the admin queue must be designed under the assumption
+that some commands take a very long time.
+
+Stefan
+
+--5DVIKwcIJjHvSBzF
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmQIl/0ACgkQnKSrs4Gr
+c8j/hQf+LZgTlGjBd9/OJxRP2Dx7QREfuDp+i7i0huFppIeT+BFXzvOm09KDp7s5
+gQdZCnWA8jY/KQmqCFjPKUGeZxuGQ4TWocoCojpquti9vmjTGi0bfiqh5vxmctji
+us+SPY/XqBck1nL4Bhi3eZGGFdQb9stvqiWg+inDih858GrjbIK/yAsvq1+9EtnE
+SsD0wdXy8iY1rKLDKW1XX3+UmM106KsOqXdKD6J5moXPHyIEo9po+JJCHdKKqkOl
+Bb+afUjGzWWnJS7PrF+OfDCraH4OXAVd/wrcoV4iqrSWwbd7F8T229VjwupoMcMs
+NpBJ9tFmRxMm6xI0gBalMsG8eTHijg==
+=2uh3
+-----END PGP SIGNATURE-----
+
+--5DVIKwcIJjHvSBzF--
 
