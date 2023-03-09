@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-11565-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-11566-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 746D0C64EC4
-	for <virtio-dev@archiver.kernel.org>; Thu,  9 Mar 2023 08:51:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id D3185C64EC4
+	for <virtio-dev@archiver.kernel.org>; Thu,  9 Mar 2023 12:28:13 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id D170C67048
-	for <virtio-dev@archiver.kernel.org>; Thu,  9 Mar 2023 08:51:42 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 46BC72A889
+	for <virtio-dev@archiver.kernel.org>; Thu,  9 Mar 2023 12:28:13 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id C87B29866FD
-	for <virtio-dev@archiver.kernel.org>; Thu,  9 Mar 2023 08:51:42 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 3995C986701
+	for <virtio-dev@archiver.kernel.org>; Thu,  9 Mar 2023 12:28:13 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id BB81B9866C1; Thu,  9 Mar 2023 08:51:42 +0000 (UTC)
+	id 2F53B9866F6; Thu,  9 Mar 2023 12:28:13 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,77 +24,73 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id AA6449866F3
-	for <virtio-dev@lists.oasis-open.org>; Thu,  9 Mar 2023 08:51:42 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 1B3169866F3;
+	Thu,  9 Mar 2023 12:28:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678351901;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=IoLKXeFqXx7KD6iGKmnIOLpPoXbmwYAjlvz4PZEVkSA=;
-        b=157l126Y94BtlDnEiHSRM7iA10FC+g31Q3e5aCSTgP9CI+4FadqyGyKNmWjvtnIaPu
-         Go5gtcchoAMPdU4yz2XWabUDDp3IIJWIDfQBlDVBdTQhdIq5uJaSRgrEY+kZiv4KrZuZ
-         hd8dl+3eLJ/KIS94F4raPs3jHEgIl56EtrfrW2mJ3/v8JAfcePI9R9kgthHCvGevh2cY
-         /Tfxw97/KnSRzNZM0YJO1tHrJ/993qHn3PsgjFJaVcmTlQF0n90y87nGZ+kkKXeHmTj5
-         u64+QFL8R22Dzgivkqu7OdKO069EmRkJ0hIpqcxh6t55kXn7Aw3dz4/cOq3FXWKnNP5W
-         SeJA==
-X-Gm-Message-State: AO0yUKUi/JcJKwzOwhRp1qljo08nyr+R2n6a6iGLSKnMX/y1FqE6xngz
-	wAgsB27EDsLdwYoN71Eu16MhDg==
-X-Google-Smtp-Source: AK7set+XV8TLjm8RgYTqNTMsI0CUUR3mMd7SAtAvTG0E9Jgb0eD9NpjnCNEhIm4iXn1YYGJQOpSeoQ==
-X-Received: by 2002:a17:902:e80f:b0:19e:747e:813e with SMTP id u15-20020a170902e80f00b0019e747e813emr23672384plg.23.1678351901368;
-        Thu, 09 Mar 2023 00:51:41 -0800 (PST)
-Date: Thu, 9 Mar 2023 14:21:38 +0530
-From: Viresh Kumar <viresh.kumar@linaro.org>
-To: Stefan Hajnoczi <stefanha@redhat.com>
-Cc: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org,
-	"Michael S. Tsirkin" <mst@redhat.com>,
-	Vincent Guittot <vincent.guittot@linaro.org>,
-	Alex =?utf-8?Q?Benn=C3=A9e?= <alex.bennee@linaro.org>,
-	stratos-dev@op-lists.linaro.org,
-	Oleksandr Tyshchenko <olekstysh@gmail.com>, xen-devel@lists.xen.org,
-	Andrew Cooper <andrew.cooper3@citrix.com>,
-	Juergen Gross <jgross@suse.com>,
-	Sebastien Boeuf <sebastien.boeuf@intel.com>,
-	Liu Jiang <gerry@linux.alibaba.com>,
-	Mathieu Poirier <mathieu.poirier@linaro.org>
-Message-ID: <20230309085138.jsn5qwlwvtbtjszv@vireshk-i7>
-References: <7c3c120bcf2cf023e873800fd3f55239dd302e38.1678100850.git.viresh.kumar@linaro.org>
- <20230306153451.GB51288@fedora>
- <20230307054336.uvky5d7q2qqlxdcv@vireshk-i7>
- <20230307162237.GI124259@fedora>
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R161e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046049;MF=hengqi@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0VdTkCv2_1678364883;
+Message-ID: <e875b1f1-bf6e-9e0a-a679-2e61799f9b38@linux.alibaba.com>
+Date: Thu, 9 Mar 2023 20:28:00 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230307162237.GI124259@fedora>
-Subject: [virtio-dev] Re: [PATCH V2] docs: vhost-user: Add Xen specific memory mapping
- support
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.8.0
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org,
+ Parav Pandit <parav@nvidia.com>, Jason Wang <jasowang@redhat.com>,
+ Yuri Benditovich <yuri.benditovich@daynix.com>,
+ Cornelia Huck <cohuck@redhat.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+References: <20230218143715.841-1-hengqi@linux.alibaba.com>
+ <20230228061309-mutt-send-email-mst@kernel.org>
+From: Heng Qi <hengqi@linux.alibaba.com>
+In-Reply-To: <20230228061309-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Subject: Re: [virtio-dev] Re: [PATCH v9] virtio-net: support inner header hash
 
-On 07-03-23, 11:22, Stefan Hajnoczi wrote:
-> VHOST_USER_IOTLB_MSG probably isn't necessary because address
-> translation is not required. It will also reduce performance by adding
-> extra communication.
-> 
-> Instead, you could change the 1 memory region : 1 mmap relationship that
-> existing non-Xen vhost-user back-end implementations have. In Xen
-> vhost-user back-ends, the memory region details (including the file
-> descriptor and Xen domain id) would be stashed away in back-end when the
-> front-end adds memory regions. No mmap would be performed upon
-> VHOST_USER_ADD_MEM_REG or VHOST_USER_SET_MEM_TABLE.
-> 
-> Whenever the back-end needs to do DMA, it looks up the memory region and
-> performs the mmap + Xen-specific calls:
-> - A long-lived mmap of the vring is set up when
->   VHOST_USER_SET_VRING_ENABLE is received.
-> - Short-lived mmaps of the indirect descriptors and memory pointed to by
->   the descriptors is set up by the virtqueue processing code.
-> 
-> Does this sound workable to you?
 
-Sounds good. I have sent a proposal (v3) based on that now.
 
--- 
-viresh
+在 2023/2/28 下午7:16, Michael S. Tsirkin 写道:
+> On Sat, Feb 18, 2023 at 10:37:15PM +0800, Heng Qi wrote:
+>> If the tunnel is used to encapsulate the packets, the hash calculated
+>> using the outer header of the receive packets is always fixed for the
+>> same flow packets, i.e. they will be steered to the same receive queue.
+> Wait a second. How is this true? Does not everyone stick the
+> inner header hash in the outer source port to solve this?
+> For example geneve spec says:
+>
+>     it is necessary for entropy from encapsulated packets to be
+>     exposed in the tunnel header.  The most common technique for this is
+>     to use the UDP source port
+>
+> same goes for vxlan did not check further.
+>
+> so what is the problem?  and which tunnel types actually suffer from the
+> problem?
+>
+
+Inner hash can at least hash tunnel flows without outer transport 
+headers like GRE to multiple queues,
+which is beneficial to us.
+
+For tunnel flows with outer transport headers like VXLAN, although they 
+can hash flows to different queues
+by setting different outer udp port, this does not conflict with inner 
+hash. Inner hashing can also be used for this purpose.
+
+For the same flow, packets in the receiving and sending directions may 
+pass through different tunnels respectively, which cause
+the same flow to be hashed to different queues. In this case, we have to 
+calculate a symmetric hash (can be called an inner symmetric hash, which 
+is a type of inner hash.)
+through the inner header, so that the same flow can be hashed to the 
+same queue.
+
+Symmetric hashing can ignore the order of the 5-tuples to calculate the 
+hash, that is, the hash values ​​calculated by (a1, a2, a3, a4) and (a2, 
+a1, a4, a3) respectively are the same.
+
+Thanks.
+
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
