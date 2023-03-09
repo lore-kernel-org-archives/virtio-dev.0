@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-11587-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-11588-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 16E96C6FD19
-	for <virtio-dev@archiver.kernel.org>; Thu,  9 Mar 2023 19:36:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 99C46C61DA4
+	for <virtio-dev@archiver.kernel.org>; Thu,  9 Mar 2023 20:08:46 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 52D0626A36
-	for <virtio-dev@archiver.kernel.org>; Thu,  9 Mar 2023 19:36:43 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id CAF0A42A6C
+	for <virtio-dev@archiver.kernel.org>; Thu,  9 Mar 2023 20:08:45 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 481BA98670C
-	for <virtio-dev@archiver.kernel.org>; Thu,  9 Mar 2023 19:36:43 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id BAD7598671F
+	for <virtio-dev@archiver.kernel.org>; Thu,  9 Mar 2023 20:08:45 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 3C6509866FF; Thu,  9 Mar 2023 19:36:43 +0000 (UTC)
+	id ADA3F986708; Thu,  9 Mar 2023 20:08:45 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,198 +24,169 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 288B5986700
-	for <virtio-dev@lists.oasis-open.org>; Thu,  9 Mar 2023 19:36:38 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 90839986704;
+	Thu,  9 Mar 2023 20:08:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: lCbSIlBmN4CLoxjFYLUF6g-1
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678390595;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=vrc0ENZWAjfF8ubyNjZ4Dw7ZPty7y87bUKpLpAod5DY=;
-        b=MXbEH4BenRn1pYUDLuDXZvXunSCRqs17TZ9UAOKRFIoFS22VeOaC0N+a8y7d9qeTjC
-         hcGWYVfHbOpY813zoLcQoXcurK0H5+l8AoiEEqfIR4cvFXN2wUerYCYeSzPW0J9M1zPY
-         vfM0X7ppgpDjvYArM5eGoIBl9QCnYRS522SLZdJQSVPg96ji1RFro9nNAR+hmvLDGZHN
-         2GN1o0of19mBlu/0cSCkGIHlgcjImoTzqdByXHuysAKcxzZ9iHnX9kr7t7HrvsmUhOSS
-         x7IlIQLoWMmuUivbOi9ip0aE6OHgXvJ0zJCNVCw9dN5ODI7NtHvLWWTOtYsp8sN+zBlR
-         A/ig==
-X-Gm-Message-State: AO0yUKWp/KHw76c1DJ6jrX2wTCdV+CLKgQjbwmLliTxl+Kc7rWztB6bi
-	w/v2s/iHzaAC70na1xwMsaN9xxUMZZ0EOTQLO2byqrjs+5FSXHaENy2EfoCCj5a2ItLopiXFGf+
-	e5YvhUFDyDuEH9Dd6s7pUietsKrBh
-X-Received: by 2002:a17:907:9702:b0:8b1:2cdb:b8dd with SMTP id jg2-20020a170907970200b008b12cdbb8ddmr26025374ejc.58.1678390594819;
-        Thu, 09 Mar 2023 11:36:34 -0800 (PST)
-X-Google-Smtp-Source: AK7set9uWWSgLb9aaqUlp1HaqQeYcaaE1BMCO4PLpFqmP52yIQzJXv2f3DqRhKjpyUf86TGFSeOD8A==
-X-Received: by 2002:a17:907:9702:b0:8b1:2cdb:b8dd with SMTP id jg2-20020a170907970200b008b12cdbb8ddmr26025186ejc.58.1678390590686;
-        Thu, 09 Mar 2023 11:36:30 -0800 (PST)
-Date: Thu, 9 Mar 2023 14:36:26 -0500
-From: "Michael S. Tsirkin" <mst@redhat.com>
-To: Heng Qi <hengqi@linux.alibaba.com>
-Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org,
-	Parav Pandit <parav@nvidia.com>, Jason Wang <jasowang@redhat.com>,
-	Yuri Benditovich <yuri.benditovich@daynix.com>,
-	Cornelia Huck <cohuck@redhat.com>,
-	Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Message-ID: <20230309142612-mutt-send-email-mst@kernel.org>
-References: <20230218143715.841-1-hengqi@linux.alibaba.com>
- <20230228061309-mutt-send-email-mst@kernel.org>
- <25231225-59c8-91b0-e0dd-3dab8aa8164b@linux.alibaba.com>
- <20230308093311-mutt-send-email-mst@kernel.org>
- <c334a082-4b78-c7ea-e04a-6436f4965516@linux.alibaba.com>
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=af9pyt8HkVCxLfd07XdIwlwDlcJIwcDuqRU43EsP5CuA4uPZGUCHpCojEAvU2DubpQM/jd/DXZr2zOjnPxb3DwZ7UjozcTfrLcZYsSU16pKGHCABNOduqNsOrDfy3TEPIj3dyCjFC2hXaY/VxZIDD60brve85Cp9S1LOVc31DaHW9B5YG+Jz8AIIfDpl1BaLXLUoV7x4g0hOJ+Cp2OnIjn1n2PH6SyPX6hxpzx4RgAziMpwK2u6pJInlnqIhXsXGdg/U1AxLFWP1k8F2BnHeI+cF97zn8ztcx+1GeAhe9EdNL0hXTw4iUMMzj2vrR3hSnvx9QnYccdEgtCf69ppkQQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=JuwEYUSEBbm/TW4GKkxr60QrKZzfrRfv1PxdQ7znCpU=;
+ b=dbdzE/li3pJElGo2h5GU/ktSYniPXVtzB1xyOQqBFUZDKSGOqvZ6SXW81uv0sVcknHTPeff0zotC0zYeEVitDf+QzOcN1XCQFArKINcPsRoljp7FyS5oWWOC3czp5a6oXIxCl9KDGM3ri3bW1YA+akBhK093scI9L1t75N2ssLIVxjzgQ0K+zWieGfd/hGAeWlS2784Xq8Ik1xJmqYod2/moyL0O1GFPRzWcHkvONfMPkdmZTsWUSjItdsKRPDuIrDvpUZGLWbfO1NNbd0OiRqIrcwEG2VkY04UH9BeJ9jYP1gXwRNLDpGUGnvAOhQme74zgGIDci4eKop5w10EVEg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+From: Parav Pandit <parav@nvidia.com>
+To: "Michael S. Tsirkin" <mst@redhat.com>
+CC: Heng Qi <hengqi@linux.alibaba.com>, "virtio-dev@lists.oasis-open.org"
+	<virtio-dev@lists.oasis-open.org>, "virtio-comment@lists.oasis-open.org"
+	<virtio-comment@lists.oasis-open.org>, Alvaro Karsz
+	<alvaro.karsz@solid-run.com>, David Edmondson <david.edmondson@oracle.com>,
+	Jason Wang <jasowang@redhat.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Thread-Topic: [PATCH v11] virtio-net: support the virtqueue coalescing
+ moderation
+Thread-Index: AQHZUofRGNH/4WaD+0OGDLrUgHL6J67yy9mAgAAHEoCAAAIkgA==
+Date: Thu, 9 Mar 2023 20:08:37 +0000
+Message-ID:
+ <PH0PR12MB54813A3D192DAE134B002E91DCB59@PH0PR12MB5481.namprd12.prod.outlook.com>
+References: <20230309130521.109102-1-hengqi@linux.alibaba.com>
+ <8734c0de-b041-a4ba-9f48-44dc4ceeb513@nvidia.com>
+ <20230309140313-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20230309140313-mutt-send-email-mst@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: PH0PR12MB5481:EE_|SN7PR12MB7978:EE_
+x-ms-office365-filtering-correlation-id: ed4696ba-d65c-4230-a1e0-08db20da117e
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info:
+ 7Wr8ksLcwxDUdRF56Hv7BdYZtxDGZw6Gstp5vrN3Src8t4mmNr9Vi7xMWT8aPr9/J99MRXqdsvPx/e8h8BTG5DOaiQ4m/yPlXKbTsnhYeXMZ8chjE9/2xAqNKKpe8SGZadOuUN32NHAE7uulhpzmfu+itH9OiH3LQbz4dPjIShjIo7cofQLTf7wpb0/vB29AkI3kiAR1mMrACog0JF/CGh556AJoVBUwRFNLbOeLr+AnZXh9bqhg/TKHB9u3jnI+eiLCWnwbkbJnH1GbRjcQGL3lNYz8d7vx922z+i8B6Mroqnazk9YiC288ZHRrJtKPzvh1qO5vqotYmlN9YZ285fVsCFeBLl8n75dc21AYiff2Bnavh2aDXzY1+5s+3X3an15FNbsc7K2sAgoaUlUvezZpGx6Nb6mUY2JN8diji7I6gc2tNEff8nWBnogHASbpDyJvj7VAwLCLaNtne5uMYnN1yYdmEBZoc6AxT+XHB9rPxv0PXk18stNltSWaLjrhIesHiwKZGwKN6CM0Z20EojB9LlnczLenhJagetupeiZHbg7DCnPeEkBuQsFqBeIcZbIlICA14z2A+u6jy32KFTxETAHzs6iJq091nkpw6xYl7lP8mTZp2fTErgmbShvwNplkAcz/kzXuslBZdZLgHz6aao75F+dIrAs2wsP/NpbjBKdsxF8mmA/NKRYGDvU7MSEROCkR1wVj1QInAkf0Gw==
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(396003)(39860400002)(346002)(366004)(376002)(136003)(451199018)(33656002)(54906003)(478600001)(4326008)(5660300002)(7696005)(316002)(71200400001)(52536014)(8936002)(8676002)(2906002)(66476007)(66556008)(66446008)(76116006)(66946007)(64756008)(41300700001)(6916009)(6506007)(38070700005)(55016003)(38100700002)(9686003)(86362001)(186003)(122000001)(83380400001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?E56hHHOcbFUIUpyzzhcfagy2xZxhzwq8BJ7oqTmhy5NJ0H9ex1XrktFLdcS4?=
+ =?us-ascii?Q?Lg8ENxkLUWDb00Roc5HxqFQMSm/J40KiGhltYH+olbnnH+xRmY71Cw+wrJ8d?=
+ =?us-ascii?Q?hzMf8hpokthJr4S/l22RfrGPKlyWGsnvTRXv9rRV/Yj+6JR+zA4cHQeyoUOM?=
+ =?us-ascii?Q?dLeBI8wXWLQT3NyYLEAHujOzbS9xAjRl+EXn+t5ok7GUOtBdA7rlm64uO2Lt?=
+ =?us-ascii?Q?ntXkOOHTq6xAh8YDIci7wMDf4JmLD8NsOaHgIMGXMCa6dmvudbVVzL9X1NFP?=
+ =?us-ascii?Q?tMnVM/0EqbZsiGOKDuWCWNJTNtPLgBCV2wlR0qgzvihnq/GR2ormkYU2Ls/B?=
+ =?us-ascii?Q?DCpQwlxcByAE7Kxj4fWtL6YB+M7e7JX/BYnYtYpR9vKPxs/8xD5Ak+Qvf+wL?=
+ =?us-ascii?Q?O1SJ6po06v2tcPLgo9IXNStGRWmkpz7uJhXtUZRWURG89B8eDZn5TYqHSC3b?=
+ =?us-ascii?Q?U8z6tFA/n9i9WlzAijndqE2+QdPH72nMNhwAsgY3mtDexWLjQo9EbWWfwDxg?=
+ =?us-ascii?Q?lo+NXPaQLtgw0JNZl46/LXlT9vuuNFolj8j/nsfoJgWM0KGkGWHEg6NNGv+E?=
+ =?us-ascii?Q?+LAOnrOrofavr9dr+8NSY6lOB1qiaL/LH44Srw5ycwyEZ37QzCHpXsMREV2l?=
+ =?us-ascii?Q?RWHNgsqSn5OM+cL0MGCC0a2kChy+9ZM53Fv5k4xWKX8WPWpFQDP3vj+fPVpd?=
+ =?us-ascii?Q?Ok+3DyFU6P1Yyvf7eXIa4mRN9U1qoPzm289kq8loGOSqYyIcg3sx8xlVplbq?=
+ =?us-ascii?Q?LY5LOls39AghUwDdzlKZ7XAbtT0SKGLQXNnFJ9CUEVaPTHm63YndQ2PAcfyJ?=
+ =?us-ascii?Q?oQVnyKs6ZE99kMEqJYnZbBwOTanRSWPXEukNmuGX+HJLR69PynAEICKsLDuy?=
+ =?us-ascii?Q?PIuQLS/ZXtZp+vC2+X6j1iY8TegbS5FyQBDUbVlIYtw4Pj5cVONK+hd72EpN?=
+ =?us-ascii?Q?764tZTHGbcR5+lQdVFfvWIwbSsndyPpwazym5rymyw08IxITtHth0H7FwmCv?=
+ =?us-ascii?Q?mON2qwDsygW+uFYPO82zsUrFxRQVJVmjlOmY7CwRcqlyaeQR5rnkvdNJIoQ9?=
+ =?us-ascii?Q?V8iXteRt3lW2kKqNnekT61FduML57DAehPN0Xfgckr7Zdx7tHCnjjvsaCbZ0?=
+ =?us-ascii?Q?pH4V40Qh2MS6hdz1I2U0e9rR9Er3u2552kwjyfjq+fm5PUy5KHmTjabrVpZm?=
+ =?us-ascii?Q?f0sz3ScEv9ufk1xhpiAt14w+wNqn37bKe7ynEqS9VfihNE58jhIRK6llQ7G1?=
+ =?us-ascii?Q?YNhOsz14dPtSxKb8ifLyDdC2Rsy64Hm6i9arAAEaM2kKlmeenW4e/yeQSFcw?=
+ =?us-ascii?Q?yFv9WbUeqHVnvtmhwZIk8L9p18MgmoDZ+cg8MJ7R1QPLuzXSfrnsvLFvpB3H?=
+ =?us-ascii?Q?YcXGJcLAGhjAZS3ySSCI8j2ANf5E9onecQgldz6Z8Jxkb1QynghyZEoMb9jd?=
+ =?us-ascii?Q?Mp5SiV05YC8oKa/cTorKOO2rWAOej2lQJ6ghX74u6exHoeh2O70tJuKw5/yW?=
+ =?us-ascii?Q?bFMZtaB8svIEW3FHT0zkdTMXWKIGl+2pGBD08b52RjSSMTrDbA3c9TsclxLS?=
+ =?us-ascii?Q?QA7RHtHxtr2/VsvFL5PwJMgZ5n0DEBMzNwJkwwTp7pJf2kurPVenMgnKEHs8?=
+ =?us-ascii?Q?LrK4R6GpJpfJi37Up9AysD0=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-In-Reply-To: <c334a082-4b78-c7ea-e04a-6436f4965516@linux.alibaba.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Subject: Re: [virtio-dev] Re: [virtio-comment] Re: [virtio-dev] Re: [PATCH
- v9] virtio-net: support inner header hash
-
-On Thu, Mar 09, 2023 at 12:55:02PM +0800, Heng Qi wrote:
-> 
-> 
-> 在 2023/3/8 下午10:39, Michael S. Tsirkin 写道:
-> > On Wed, Mar 01, 2023 at 10:56:31AM +0800, Heng Qi wrote:
-> > > 
-> > > 在 2023/2/28 下午7:16, Michael S. Tsirkin 写道:
-> > > > On Sat, Feb 18, 2023 at 10:37:15PM +0800, Heng Qi wrote:
-> > > > > If the tunnel is used to encapsulate the packets, the hash calculated
-> > > > > using the outer header of the receive packets is always fixed for the
-> > > > > same flow packets, i.e. they will be steered to the same receive queue.
-> > > > Wait a second. How is this true? Does not everyone stick the
-> > > > inner header hash in the outer source port to solve this?
-> > > Yes, you are right. That's what we did before the inner header hash, but it
-> > > has a performance penalty, which I'll explain below.
-> > > 
-> > > > For example geneve spec says:
-> > > > 
-> > > >      it is necessary for entropy from encapsulated packets to be
-> > > >      exposed in the tunnel header.  The most common technique for this is
-> > > >      to use the UDP source port
-> > > The end point of the tunnel called the gateway (with DPDK on top of it).
-> > > 
-> > > 1. When there is no inner header hash, entropy can be inserted into the udp
-> > > src port of the outer header of the tunnel,
-> > > and then the tunnel packet is handed over to the host. The host needs to
-> > > take out a part of the CPUs to parse the outer headers (but not drop them)
-> > > to calculate the inner hash for the inner payloads,
-> > > and then use the inner
-> > > hash to forward them to another part of the CPUs that are responsible for
-> > > processing.
-> > I don't get this part. Leave inner hashes to the guest inside the
-> > tunnel, why is your host doing this?
-> 
-> Assuming that the same flow includes a unidirectional flow a->b, or a
-> bidirectional flow a->b and b->a,
-> such flow may be out of order when processed by the gateway(DPDK):
-> 
-> 1. In unidirectional mode, if the same flow is switched to another gateway
-> for some reason, resulting in different outer IP address,
->     then this flow may be processed by different CPUs after reaching the
-> host if there is no inner hash. So after the host receives the
->     flow, first use the forwarding CPUs to parse the inner hash, and then
-> use the hash to ensure that the flow is processed by the
->     same CPU.
-> 2. In bidirectional mode, a->b flow may go to gateway 1, and b->a flow may
-> go to gateway 2. In order to ensure that the same flow is
->     processed by the same CPU, we still need the forwarding CPUs to parse
-> the real inner hash(here, the hash key needs to be replaced with a symmetric
-> hash key).
-
-Oh intersting. What are those gateways, how come there's expectation
-that you can change their addresses and topology
-completely seamlessly without any reordering whatsoever?
-Isn't network topology change kind of guaranteed to change ordering
-sometimes?
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ed4696ba-d65c-4230-a1e0-08db20da117e
+X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Mar 2023 20:08:37.1059
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: hBu5AHSDDCX6SxZ4HT0XcQFZywF/giZ/y17Qx4orpMZ+3f3L0BPni6f2Gp6I8l/yxmNRNEerkkqORUpLuib+wg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB7978
+Subject: [virtio-dev] RE: [PATCH v11] virtio-net: support the virtqueue coalescing
+ moderation
 
 
-> > 
-> > > 1). During this process, the CPUs on the host is divided into two parts, one
-> > > part is used as a forwarding node to parse the outer header,
-> > >       and the CPU utilization is low. Another part handles packets.
-> > Some overhead is clearly involved in *sending* packets -
-> > to calculate the hash and stick it in the port number.
-> > This is, however, a separate problem and if you want to
-> > solve it then my suggestion would be to teach the *transmit*
-> > side about GRE offloads, so it can fill the source port in the card.
-> > 
-> > > 2). The entropy of the source udp src port is not enough, that is, the queue
-> > > is not widely distributed.
-> > how isn't it enough? 16 bit is enough to cover all vqs ...
-> 
-> A 5-tuple brings more entropy than a single port, doesn't it?
+> From: Michael S. Tsirkin <mst@redhat.com>
+> Sent: Thursday, March 9, 2023 2:19 PM
+>=20
+> On Thu, Mar 09, 2023 at 01:53:37PM -0500, Parav Pandit wrote:
+> >
+> > > Network Device / Device Operation / Control Virtqueue /
+> > > Notifications Coalescing} -If the VIRTIO_NET_F_NOTF_COAL feature is
+> negotiated, the driver can -send control commands for dynamically changin=
+g
+> the coalescing parameters.
+> > > +If the VIRTIO_NET_F_NOTF_COAL feature is negotiated, a driver can
+> > > +send
+> > Above text had "the driver".
+> > Better to not change it.
+>=20
+> I don't see why it matters. In most other cases we omit it.
 
-But you don't need more for RSS, the indirection table is not
-that large.
+The hunk that changes article from "the" to "a" doesn't belong to this patc=
+h.
 
-> In fact, the
-> inner hash of the physical network card used by
-> the business team is indeed better than the udp port number of the outer
-> header we modify now, but they did not give me the data.
+> > > +Upon disabling and re-enabling the transmit virtqueue, the device
+> > > +will set the coalescing parameters of the virtqueue to those configu=
+red
+> through the VIRTIO_NET_CTRL_NOTF_COAL_TX_SET command, or to 0 if the
+> command did not set any TX coalescing parameters.
+> > > +
+> > s/if the command/if the driver/
+>=20
+> please don't just tell people what to do. provide reasoning.
+>=20
+Reason I think is:=20
+The command is not the object or the actor.=20
+The device and driver are the object or actor setting the parameters throug=
+h the command.
 
-Admittedly, out hash value is 32 bit.
-
-> > > 2. When there is an inner header hash, the gateway will directly help parse
-> > > the outer header, and use the inner 5 tuples to calculate the inner hash.
-> > > The tunneled packet is then handed over to the host.
-> > > 1) All the CPUs of the host are used to process data packets, and there is
-> > > no need to use some CPUs to forward and parse the outer header.
-> > You really have to parse the outer header anyway,
-> > otherwise there's no tunneling.
-> > Unless you want to teach virtio to implement tunneling
-> > in hardware, which is something I'd find it easier to
-> > get behind.
-> 
-> There is no need to parse the outer header twice, because we use shared
-> memory.
-
-shared with what? you need the outer header to identify the tunnel.
-
-> > > 2) The entropy of the original quintuple is sufficient, and the queue is
-> > > widely distributed.
-> > It's exactly the same entropy, why would it be better? In fact you
-> > are taking out the outer hash entropy making things worse.
-> 
-> I don't get the point, why the entropy of the inner 5-tuple and the outer
-> tunnel header is the same,
-> multiple streams have the same outer header.
-> 
-> Thanks.
-
-well our hash is 32 bit. source port is just 16 bit.
-so yes it's more entropy but RSS can't use more than 16 bit.
-why do you need so many? you have more than 64k CPUs to offload to?
-
-
-> > 
-> > > Thanks.
-> > > > same goes for vxlan did not check further.
-> > > > 
-> > > > so what is the problem?  and which tunnel types actually suffer from the
-> > > > problem?
-> > > > 
-> > > 
-> > > This publicly archived list offers a means to provide input to the
-> > > OASIS Virtual I/O Device (VIRTIO) TC.
-> > > 
-> > > In order to verify user consent to the Feedback License terms and
-> > > to minimize spam in the list archive, subscription is required
-> > > before posting.
-> > > 
-> > > Subscribe: virtio-comment-subscribe@lists.oasis-open.org
-> > > Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
-> > > List help: virtio-comment-help@lists.oasis-open.org
-> > > List archive: https://lists.oasis-open.org/archives/virtio-comment/
-> > > Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
-> > > List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
-> > > Committee: https://www.oasis-open.org/committees/virtio/
-> > > Join OASIS: https://www.oasis-open.org/join/
-> > 
-> > ---------------------------------------------------------------------
-> > To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> > For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
-
+> +command, or, if the command
+> > s/if the command/if the driver/
+> > > +did not configure TX/RX coalescing parameters, to 0.
+> >
+> > Also the sentence structure should be:
+> > set params to value A configured using method1, else to params B if
+> > not configured.
+> >
+> > Instead currently it is,
+> > set params to value A using method1, else not configured to param B.
+>=20
+> I don't see anything wrong with the proposed structure, and the way you w=
+ant it
+> with if after else is IMHO weird and hard to read.
+>=20
+>=20
+>=20
+> > So to keep if-else pattern:
+> >
+> > the device MUST set coalescing parameters of the virtqueue to those
+> > configured using the
+> >
+> VIRTIO_NET_CTRL_NOTF_COAL_TX_SET/VIRTIO_NET_CTRL_NOTF_COAL_RX_S
+> ET
+> > command, or to 0 if the driver did not configure TX/RX coalescing
+> parameters.
+> >
+> > Just like how you wrote it in the non normative places. :)
+> >
+>=20
+> maybe fix non-normative too. If  A then B is simple and clear.
+> B if A is understandable but is harder to read.
+>=20
+Documenting one way is needed and without exact duplication at two places.
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
